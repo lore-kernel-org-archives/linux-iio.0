@@ -1,97 +1,52 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail3-relais-sop.national.inria.fr ([192.134.164.104]:59687
-        "EHLO mail3-relais-sop.national.inria.fr" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1753303AbdC2UhO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Mar 2017 16:37:14 -0400
-Date: Wed, 29 Mar 2017 22:37:11 +0200 (CEST)
-From: Julia Lawall <julia.lawall@lip6.fr>
-To: Arushi Singhal <arushisinghal19971997@gmail.com>
-cc: lars@metafoo.de, outreachy-kernel@googlegroups.com,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [Outreachy kernel] [PATCH v2] staging: iio: Remove unneeded
- parentheses.
-In-Reply-To: <20170329160551.GA7230@arushi-HP-Pavilion-Notebook>
-Message-ID: <alpine.DEB.2.20.1703292236290.2146@hadrien>
-References: <20170329160551.GA7230@arushi-HP-Pavilion-Notebook>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=7MEl=3G=linux.intel.com=srinivas.pandruvada@kernel.org>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH] iio: accel: hid-sensor-accel-3d: Fix duplicate scan index error
+Date: Wed, 29 Mar 2017 16:23:35 -0700
+Message-Id: <1490829815-18856-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
+When both accel_3d and gravity sensor are present, iio_device_register()
+fails with "Duplicate scan index" error.
+The reason for this is setting of indio_dev->num_channels based on
+accel_3d channel for both gravity and accel-3d sensor. But number of
+channels are not same, so for gravity it is pointing to some invalid
+memory and getting scan_index to compare which may match.
+To fix this issue, set the indio_dev->num_channels correctly based on
+the sensor type.
 
+Fixes: 0e377f3b9ae9 ('iio: Add gravity sensor support')
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/accel/hid-sensor-accel-3d.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-On Wed, 29 Mar 2017, Arushi Singhal wrote:
-
-> Remove the extra parenthesis remove the checkpatch issue.
-
-The patch replaces 1 << x by calls to BIT.  That doesn't correspond to the
-commit message.
-
-julia
-
->
-> Signed-off-by: Arushi Singhal <arushisinghal19971997@gmail.com>
-> ---
-> changes in v2
->  -done the changes according to the current tree
->
->  drivers/staging/iio/cdc/ad7746.c | 16 ++++++++--------
->  1 file changed, 8 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
-> index c2c8aa5585e4..7fa9913386f5 100644
-> --- a/drivers/staging/iio/cdc/ad7746.c
-> +++ b/drivers/staging/iio/cdc/ad7746.c
-> @@ -45,10 +45,10 @@
->  #define AD7746_STATUS_RDYCAP		BIT(0)
->
->  /* Capacitive Channel Setup Register Bit Designations (AD7746_REG_CAP_SETUP) */
-> -#define AD7746_CAPSETUP_CAPEN		(1 << 7)
-> -#define AD7746_CAPSETUP_CIN2		(1 << 6) /* AD7746 only */
-> -#define AD7746_CAPSETUP_CAPDIFF		(1 << 5)
-> -#define AD7746_CAPSETUP_CACHOP		(1 << 0)
-> +#define AD7746_CAPSETUP_CAPEN		BIT(7)
-> +#define AD7746_CAPSETUP_CIN2		BIT(6) /* AD7746 only */
-> +#define AD7746_CAPSETUP_CAPDIFF		BIT(5)
-> +#define AD7746_CAPSETUP_CACHOP		BIT(0)
->
->  /* Voltage/Temperature Setup Register Bit Designations (AD7746_REG_VT_SETUP) */
->  #define AD7746_VTSETUP_VTEN		(1 << 7)
-> @@ -56,9 +56,9 @@
->  #define AD7746_VTSETUP_VTMD_EXT_TEMP	(1 << 5)
->  #define AD7746_VTSETUP_VTMD_VDD_MON	(2 << 5)
->  #define AD7746_VTSETUP_VTMD_EXT_VIN	(3 << 5)
-> -#define AD7746_VTSETUP_EXTREF		(1 << 4)
-> -#define AD7746_VTSETUP_VTSHORT		(1 << 1)
-> -#define AD7746_VTSETUP_VTCHOP		(1 << 0)
-> +#define AD7746_VTSETUP_EXTREF		BIT(4)
-> +#define AD7746_VTSETUP_VTSHORT		BIT(1)
-> +#define AD7746_VTSETUP_VTCHOP		BIT(0)
->
->  /* Excitation Setup Register Bit Designations (AD7746_REG_EXC_SETUP) */
->  #define AD7746_EXCSETUP_CLKCTRL		BIT(7)
-> @@ -82,7 +82,7 @@
->  #define AD7746_CONF_MODE_GAIN_CAL	(6 << 0)
->
->  /* CAPDAC Register Bit Designations (AD7746_REG_CAPDACx) */
-> -#define AD7746_CAPDAC_DACEN		(1 << 7)
-> +#define AD7746_CAPDAC_DACEN		BIT(7)
->  #define AD7746_CAPDAC_DACP(x)		((x) & 0x7F)
->
->  /*
-> --
-> 2.11.0
->
-> --
-> You received this message because you are subscribed to the Google Groups "outreachy-kernel" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to outreachy-kernel+unsubscribe@googlegroups.com.
-> To post to this group, send email to outreachy-kernel@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/outreachy-kernel/20170329160551.GA7230%40arushi-HP-Pavilion-Notebook.
-> For more options, visit https://groups.google.com/d/optout.
->
+diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
+index ca5759c..43a6cb0 100644
+--- a/drivers/iio/accel/hid-sensor-accel-3d.c
++++ b/drivers/iio/accel/hid-sensor-accel-3d.c
+@@ -370,10 +370,12 @@ static int hid_accel_3d_probe(struct platform_device *pdev)
+ 		name = "accel_3d";
+ 		channel_spec = accel_3d_channels;
+ 		channel_size = sizeof(accel_3d_channels);
++		indio_dev->num_channels = ARRAY_SIZE(accel_3d_channels);
+ 	} else {
+ 		name = "gravity";
+ 		channel_spec = gravity_channels;
+ 		channel_size = sizeof(gravity_channels);
++		indio_dev->num_channels = ARRAY_SIZE(gravity_channels);
+ 	}
+ 	ret = hid_sensor_parse_common_attributes(hsdev, hsdev->usage,
+ 					&accel_state->common_attributes);
+@@ -395,7 +397,6 @@ static int hid_accel_3d_probe(struct platform_device *pdev)
+ 		goto error_free_dev_mem;
+ 	}
+ 
+-	indio_dev->num_channels = ARRAY_SIZE(accel_3d_channels);
+ 	indio_dev->dev.parent = &pdev->dev;
+ 	indio_dev->info = &accel_3d_info;
+ 	indio_dev->name = name;
+-- 
+2.7.4
