@@ -1,198 +1,330 @@
-Return-Path: <SRS0=WrBR=3G=aosc.io=icenowy@kernel.org>
-Date: Wed, 29 Mar 2017 14:57:02 +0800
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f46.google.com ([74.125.82.46]:38277 "EHLO
+        mail-wm0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754162AbdC2HyS (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Mar 2017 03:54:18 -0400
+Received: by mail-wm0-f46.google.com with SMTP id t189so17438812wmt.1
+        for <linux-iio@vger.kernel.org>; Wed, 29 Mar 2017 00:54:17 -0700 (PDT)
+Date: Wed, 29 Mar 2017 08:54:13 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Icenowy Zheng <icenowy@aosc.io>
+Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
+        Zhang Rui <rui.zhang@intel.com>, linux-pm@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        Jonathan Cameron <jic23@kernel.org>,
+        Maxime Ripard <maxime.ripard@free-electrons.com>,
+        linux-arm-kernel@lists.infradead.org, Chen-Yu Tsai <wens@csie.org>
 Subject: Re: [RFC PATCH 2/3] iio: adc: sun4i-gpadc-iio: add support for H3
  thermal sensor
-From: Icenowy Zheng <icenowy@aosc.io>
-To: Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: Zhang Rui <rui.zhang@intel.com>, linux-pm@vger.kernel.org, Rob Herring
- <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org, Lee Jones
- <lee.jones@linaro.org>, Jonathan Cameron <jic23@kernel.org>, Maxime Ripard
- <maxime.ripard@free-electrons.com>, linux-arm-kernel@lists.infradead.org,
- Chen-Yu Tsai <wens@csie.org>
+Message-ID: <20170329075413.sbfg6fw6w5gjbdkg@dell>
+References: <20170329065717.D0AF37C1EFF@relay.mailchannels.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Message-Id: <20170329065717.D0AF37C1EFF@relay.mailchannels.net>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20170329065717.D0AF37C1EFF@relay.mailchannels.net>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-CjIwMTflubQz5pyIMjnml6UgMTQ6NTTkuo4gUXVlbnRpbiBTY2h1bHogPHF1ZW50aW4uc2NodWx6
-QGZyZWUtZWxlY3Ryb25zLmNvbT7lhpnpgZPvvJoKPgo+IEhpLCAKPgo+IE9uIDI4LzAzLzIwMTcg
-MTk6MzAsIEljZW5vd3kgWmhlbmcgd3JvdGU6IAo+ID4gVGhpcyBhZGRzIHN1cHBvcnQgZm9yIHRo
-ZSBBbGx3aW5uZXIgSDMgdGhlcm1hbCBzZW5zb3IuIAo+ID4gCj4gPiBBbGx3aW5uZXIgSDMgaGFz
-IGEgdGhlcm1hbCBzZW5zb3IgbGlrZSB0aGUgb25lIGluIEEzMywgYnV0IGhhdmUgaXRzIAo+ID4g
-cmVnaXN0ZXJzIG5lYXJseSBhbGwgcmUtYXJyYW5nZWQsIHNhbXBsZSBjbG9jayBtb3ZlZCB0byBD
-Q1UgYW5kIGEgcGFpciAKPiA+IG9mIGJ1cyBjbG9jayBhbmQgcmVzZXQgYWRkZWQuIEl0J3MgYWxz
-byB0aGUgYmFzZSBvZiBuZXdlciBTb0NzJyB0aGVybWFsIAo+ID4gc2Vuc29ycy4gCj4gPiAKPiA+
-IEFuIG9wdGlvbiBpcyBhZGRlZCB0byBncGFkY19kYXRhIHN0cnVjdCwgdG8gaW5kaWNhdGUgd2hl
-dGhlciB0aGlzIGRldmljZSAKPiA+IGlzIGEgbmV3LWdlbmVyYXRpb24gQWxsd2lubmVyIHRoZXJt
-YWwgc2Vuc29yLiAKPiA+IAo+ID4gVGhlIHRoZXJtYWwgc2Vuc29ycyBvbiBBNjQgYW5kIEg1IGlz
-IGxpa2UgdGhlIG9uZSBvbiBIMywgYnV0IHdpdGggb2YgCj4gPiBjb3Vyc2UgZGlmZmVyZW50IGZv
-cm11bGEgZmFjdG9ycy4gCj4gPiAKPiA+IFNpZ25lZC1vZmYtYnk6IEljZW5vd3kgWmhlbmcgPGlj
-ZW5vd3lAYW9zYy5pbz4gCj4gPiAtLS0gCj4gPsKgIGRyaXZlcnMvaWlvL2FkYy9zdW40aS1ncGFk
-Yy1paW8uYyB8IDEzMCArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0tLSAKPiA+
-wqAgaW5jbHVkZS9saW51eC9tZmQvc3VuNGktZ3BhZGMuaMKgwqAgfMKgIDMzICsrKysrKysrKy0g
-Cj4gPsKgIDIgZmlsZXMgY2hhbmdlZCwgMTQxIGluc2VydGlvbnMoKyksIDIyIGRlbGV0aW9ucygt
-KSAKPiA+IAo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaWlvL2FkYy9zdW40aS1ncGFkYy1paW8u
-YyBiL2RyaXZlcnMvaWlvL2FkYy9zdW40aS1ncGFkYy1paW8uYyAKPiA+IGluZGV4IDc0NzA1YWEz
-Nzk4Mi4uNzUxMmIxY2FlODc3IDEwMDY0NCAKPiA+IC0tLSBhL2RyaXZlcnMvaWlvL2FkYy9zdW40
-aS1ncGFkYy1paW8uYyAKPiA+ICsrKyBiL2RyaXZlcnMvaWlvL2FkYy9zdW40aS1ncGFkYy1paW8u
-YyAKPiA+IEBAIC0yMiw2ICsyMiw3IEBAIAo+ID7CoMKgICogc2h1dGRvd24gZm9yIG5vdCBiZWlu
-ZyB1c2VkLiAKPiA+wqDCoCAqLyAKPiA+wqAgCj4gPiArI2luY2x1ZGUgPGxpbnV4L2Nsay5oPiAK
-PiA+wqAgI2luY2x1ZGUgPGxpbnV4L2NvbXBsZXRpb24uaD4gCj4gPsKgICNpbmNsdWRlIDxsaW51
-eC9pbnRlcnJ1cHQuaD4gCj4gPsKgICNpbmNsdWRlIDxsaW51eC9pby5oPiAKPiA+IEBAIC0zMSw2
-ICszMiw3IEBAIAo+ID7CoCAjaW5jbHVkZSA8bGludXgvcGxhdGZvcm1fZGV2aWNlLmg+IAo+ID7C
-oCAjaW5jbHVkZSA8bGludXgvcG1fcnVudGltZS5oPiAKPiA+wqAgI2luY2x1ZGUgPGxpbnV4L3Jl
-Z21hcC5oPiAKPiA+ICsjaW5jbHVkZSA8bGludXgvcmVzZXQuaD4gCj4gPsKgICNpbmNsdWRlIDxs
-aW51eC90aGVybWFsLmg+IAo+ID7CoCAjaW5jbHVkZSA8bGludXgvZGVsYXkuaD4gCj4gPsKgIAo+
-ID4gQEAgLTU2LDYgKzU4LDcgQEAgc3RydWN0IGdwYWRjX2RhdGEgeyAKPiA+wqAgdW5zaWduZWQg
-aW50IHRwX2FkY19zZWxlY3Q7IAo+ID7CoCB1bnNpZ25lZCBpbnQgKCphZGNfY2hhbl9zZWxlY3Qp
-KHVuc2lnbmVkIGludCBjaGFuKTsgCj4gPsKgIHVuc2lnbmVkIGludCBhZGNfY2hhbl9tYXNrOyAK
-PiA+ICsgYm9vbCBnZW4yX3RoczsgCj4gPsKgIH07IAo+ID7CoCAKPgo+IEluc3RlYWQgb2YgYSBi
-b29sZWFuLCBnaXZlIHRoZSBURU1QX0RBVEEgcmVnaXN0ZXIgYWRkcmVzcy4gCj4KPiA+wqAgc3Rh
-dGljIGNvbnN0IHN0cnVjdCBncGFkY19kYXRhIHN1bjRpX2dwYWRjX2RhdGEgPSB7IAo+ID4gQEAg
-LTg4LDcgKzkxLDIwIEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3QgZ3BhZGNfZGF0YSBzdW42aV9ncGFk
-Y19kYXRhID0geyAKPiA+wqAgc3RhdGljIGNvbnN0IHN0cnVjdCBncGFkY19kYXRhIHN1bjhpX2Ez
-M19ncGFkY19kYXRhID0geyAKPiA+wqAgLnRlbXBfb2Zmc2V0ID0gLTE2NjIsIAo+ID7CoCAudGVt
-cF9zY2FsZSA9IDE2MiwgCj4gPiAtIC50cF9tb2RlX2VuID0gU1VOOElfR1BBRENfQ1RSTDFfQ0hP
-UF9URU1QX0VOLCAKPiA+ICsgLnRwX21vZGVfZW4gPSBTVU44SV9BMjNfR1BBRENfQ1RSTDFfQ0hP
-UF9URU1QX0VOLCAKPiA+ICt9OyAKPgo+IFNlcGFyYXRlIHBhdGNoIGZvciB0aGlzPyAKPgo+ID4g
-KyAKPiA+ICtzdGF0aWMgY29uc3Qgc3RydWN0IGdwYWRjX2RhdGEgc3VuOGlfaDNfZ3BhZGNfZGF0
-YSA9IHsgCj4gPiArIC8qIAo+ID4gKyAqIFRoZSBvcmlnaW5hbCBmb3JtdWxhIG9uIHRoZSBkYXRh
-c2hlZXQgc2VlbXMgdG8gYmUgd3JvbmcuIAo+ID4gKyAqIFRoZXNlIGZhY3RvcnMgYXJlIGNhbGN1
-bGF0ZWQgYmFzZWQgb24gdGhlIGZvcm11bGEgaW4gdGhlIEJTUCAKPiA+ICsgKiBrZXJuZWwsIHdo
-aWNoIGlzIG9yaWdpbmFsbHkgVGVtID0gMjE3IC0gKFQgLyA4LjI1MyksIGluIHdoaWNoIFRlbSAK
-PiA+ICsgKiBpcyB0aGUgdGVtcGVyYXR1cmUgaW4gQ2Vsc2l1cyBkZWdyZWUgYW5kIFQgaXMgdGhl
-IHJhdyB2YWx1ZSAKPiA+ICsgKiBmcm9tIHRoZSBzZW5zb3IuIAo+ID4gKyAqLyAKPiA+ICsgLnRl
-bXBfb2Zmc2V0ID0gLTE3OTEsIAo+ID4gKyAudGVtcF9zY2FsZSA9IC0xMjEsIAo+ID4gKyAuZ2Vu
-Ml90aHMgPSB0cnVlLCAKPiA+wqAgfTsgCj4gPsKgIAo+ID7CoCBzdHJ1Y3Qgc3VuNGlfZ3BhZGNf
-aWlvIHsgCj4gPiBAQCAtMTAzLDYgKzExOSw5IEBAIHN0cnVjdCBzdW40aV9ncGFkY19paW8geyAK
-PiA+wqAgYXRvbWljX3QgaWdub3JlX3RlbXBfZGF0YV9pcnE7IAo+ID7CoCBjb25zdCBzdHJ1Y3Qg
-Z3BhZGNfZGF0YSAqZGF0YTsgCj4gPsKgIGJvb2wgbm9faXJxOyAKPiA+ICsgc3RydWN0IGNsayAq
-dGhzX2J1c19jbGs7IAo+ID4gKyBzdHJ1Y3QgY2xrICp0aHNfY2xrOyAKPiA+ICsgc3RydWN0IHJl
-c2V0X2NvbnRyb2wgKnJlc2V0OyAKPiA+wqAgLyogcHJldmVudHMgY29uY3VycmVudCByZWFkcyBv
-ZiB0ZW1wZXJhdHVyZSBhbmQgQURDICovIAo+ID7CoCBzdHJ1Y3QgbXV0ZXggbXV0ZXg7IAo+ID7C
-oCB9OyAKPiA+IEBAIC0yNzQsNyArMjkzLDExIEBAIHN0YXRpYyBpbnQgc3VuNGlfZ3BhZGNfdGVt
-cF9yZWFkKHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYsIGludCAqdmFsKSAKPiA+wqAgaWYgKGlu
-Zm8tPm5vX2lycSkgeyAKPiA+wqAgcG1fcnVudGltZV9nZXRfc3luYyhpbmRpb19kZXYtPmRldi5w
-YXJlbnQpOyAKPiA+wqAgCj4gPiAtIHJlZ21hcF9yZWFkKGluZm8tPnJlZ21hcCwgU1VONElfR1BB
-RENfVEVNUF9EQVRBLCB2YWwpOyAKPiA+ICsgaWYgKGluZm8tPmRhdGEtPmdlbjJfdGhzKSAKPiA+
-ICsgcmVnbWFwX3JlYWQoaW5mby0+cmVnbWFwLCBTVU44SV9IM19HUEFEQ19URU1QX0RBVEEsIAo+
-ID4gKyDCoMKgwqAgdmFsKTsgCj4gPiArIGVsc2UgCj4gPiArIHJlZ21hcF9yZWFkKGluZm8tPnJl
-Z21hcCwgU1VONElfR1BBRENfVEVNUF9EQVRBLCB2YWwpOyAKPiA+wqAgCj4KPiBJbnN0ZWFkIG9m
-IGdlbjJfdGhzLCB1c2UgdGhlIFRFTVBfREFUQSByZWdpc3RlciBhZGRyZXNzLiAKPgo+ID7CoCBw
-bV9ydW50aW1lX21hcmtfbGFzdF9idXN5KGluZGlvX2Rldi0+ZGV2LnBhcmVudCk7IAo+ID7CoCBw
-bV9ydW50aW1lX3B1dF9hdXRvc3VzcGVuZChpbmRpb19kZXYtPmRldi5wYXJlbnQpOyAKPiA+IEBA
-IC0zODYsMTAgKzQwOSwxNSBAQCBzdGF0aWMgaW50IHN1bjRpX2dwYWRjX3J1bnRpbWVfc3VzcGVu
-ZChzdHJ1Y3QgZGV2aWNlICpkZXYpIAo+ID7CoCB7IAo+ID7CoCBzdHJ1Y3Qgc3VuNGlfZ3BhZGNf
-aWlvICppbmZvID0gaWlvX3ByaXYoZGV2X2dldF9kcnZkYXRhKGRldikpOyAKPiA+wqAgCj4gPiAt
-IC8qIERpc2FibGUgdGhlIEFEQyBvbiBJUCAqLyAKPiA+IC0gcmVnbWFwX3dyaXRlKGluZm8tPnJl
-Z21hcCwgU1VONElfR1BBRENfQ1RSTDEsIDApOyAKPiA+IC0gLyogRGlzYWJsZSB0ZW1wZXJhdHVy
-ZSBzZW5zb3Igb24gSVAgKi8gCj4gPiAtIHJlZ21hcF93cml0ZShpbmZvLT5yZWdtYXAsIFNVTjRJ
-X0dQQURDX1RQUiwgMCk7IAo+ID4gKyBpZiAoaW5mby0+ZGF0YS0+Z2VuMl90aHMpIHsgCj4gPiAr
-IC8qIERpc2FibGUgdGVtcGVyYXR1cmUgc2Vuc29yICovIAo+ID4gKyByZWdtYXBfd3JpdGUoaW5m
-by0+cmVnbWFwLCBTVU44SV9IM19HUEFEQ19DVFJMMiwgMCk7IAo+ID4gKyB9IGVsc2UgeyAKPiA+
-ICsgLyogRGlzYWJsZSB0aGUgQURDIG9uIElQICovIAo+ID4gKyByZWdtYXBfd3JpdGUoaW5mby0+
-cmVnbWFwLCBTVU40SV9HUEFEQ19DVFJMMSwgMCk7IAo+ID4gKyAvKiBEaXNhYmxlIHRlbXBlcmF0
-dXJlIHNlbnNvciBvbiBJUCAqLyAKPiA+ICsgcmVnbWFwX3dyaXRlKGluZm8tPnJlZ21hcCwgU1VO
-NElfR1BBRENfVFBSLCAwKTsgCj4gPiArIH0gCj4gPsKgIAo+Cj4gRWl0aGVyIHVzZSBhbm90aGVy
-IHJlZ2lzdGVyIGFkZHJlc3Mgb3IgYWRkIGEgc3VzcGVuZCBmdW5jdGlvbiB0byBzdHJ1Y3QgCj4g
-Z3BhZGNfZGF0YSB3aGljaCB3aWxsIGJlIGRpZmZlcmVudCBmb3IgZWFjaCB2ZXJzaW9uIG9mIHRo
-ZSBJUC4gCj4KPiA+wqAgcmV0dXJuIDA7IAo+ID7CoCB9IAo+ID4gQEAgLTM5OCwxOSArNDI2LDM2
-IEBAIHN0YXRpYyBpbnQgc3VuNGlfZ3BhZGNfcnVudGltZV9yZXN1bWUoc3RydWN0IGRldmljZSAq
-ZGV2KSAKPiA+wqAgeyAKPiA+wqAgc3RydWN0IHN1bjRpX2dwYWRjX2lpbyAqaW5mbyA9IGlpb19w
-cml2KGRldl9nZXRfZHJ2ZGF0YShkZXYpKTsgCj4gPsKgIAo+ID4gLSAvKiBjbGtpbiA9IDZNSHog
-Ki8gCj4gPiAtIHJlZ21hcF93cml0ZShpbmZvLT5yZWdtYXAsIFNVTjRJX0dQQURDX0NUUkwwLCAK
-PiA+IC0gwqDCoMKgwqAgU1VONElfR1BBRENfQ1RSTDBfQURDX0NMS19ESVZJREVSKDIpIHwgCj4g
-PiAtIMKgwqDCoMKgIFNVTjRJX0dQQURDX0NUUkwwX0ZTX0RJVig3KSB8IAo+ID4gLSDCoMKgwqDC
-oCBTVU40SV9HUEFEQ19DVFJMMF9UX0FDUSg2MykpOyAKPiA+IC0gcmVnbWFwX3dyaXRlKGluZm8t
-PnJlZ21hcCwgU1VONElfR1BBRENfQ1RSTDEsIGluZm8tPmRhdGEtPnRwX21vZGVfZW4pOyAKPiA+
-IC0gcmVnbWFwX3dyaXRlKGluZm8tPnJlZ21hcCwgU1VONElfR1BBRENfQ1RSTDMsIAo+ID4gLSDC
-oMKgwqDCoCBTVU40SV9HUEFEQ19DVFJMM19GSUxURVJfRU4gfCAKPiA+IC0gwqDCoMKgwqAgU1VO
-NElfR1BBRENfQ1RSTDNfRklMVEVSX1RZUEUoMSkpOyAKPiA+IC0gLyogcGVyaW9kID0gU1VONElf
-R1BBRENfVFBSX1RFTVBfUEVSSU9EICogMjU2ICogMTYgLyBjbGtpbjsgfjAuNnMgKi8gCj4gPiAt
-IHJlZ21hcF93cml0ZShpbmZvLT5yZWdtYXAsIFNVTjRJX0dQQURDX1RQUiwgCj4gPiAtIMKgwqDC
-oMKgIFNVTjRJX0dQQURDX1RQUl9URU1QX0VOQUJMRSB8IAo+ID4gLSDCoMKgwqDCoCBTVU40SV9H
-UEFEQ19UUFJfVEVNUF9QRVJJT0QoODAwKSk7IAo+ID4gKyBpZiAoaW5mby0+ZGF0YS0+Z2VuMl90
-aHMpIHsgCj4gPiArIHJlZ21hcF93cml0ZShpbmZvLT5yZWdtYXAsIFNVTjhJX0gzX0dQQURDX0NU
-UkwyLCAKPiA+ICsgwqDCoMKgwqAgU1VOOElfSDNfR1BBRENfQ1RSTDJfVEVNUF9TRU5TRV9FTiB8
-IAo+ID4gKyDCoMKgwqDCoCBTVU44SV9IM19HUEFEQ19DVFJMMl9UX0FDUTEoMzEpKTsgCj4gPiAr
-IHJlZ21hcF93cml0ZShpbmZvLT5yZWdtYXAsIFNVTjRJX0dQQURDX0NUUkwwLCAKPiA+ICsgwqDC
-oMKgwqAgU1VONElfR1BBRENfQ1RSTDBfVF9BQ1EoMzEpKTsgCj4gPiArIHJlZ21hcF93cml0ZShp
-bmZvLT5yZWdtYXAsIFNVTjhJX0gzX0dQQURDX0NUUkwzLCAKPiA+ICsgwqDCoMKgwqAgU1VONElf
-R1BBRENfQ1RSTDNfRklMVEVSX0VOIHwgCj4gPiArIMKgwqDCoMKgIFNVTjRJX0dQQURDX0NUUkwz
-X0ZJTFRFUl9UWVBFKDEpKTsgCj4gPiArIHJlZ21hcF93cml0ZShpbmZvLT5yZWdtYXAsIFNVTjhJ
-X0gzX0dQQURDX0lOVEMsIAo+ID4gKyDCoMKgwqDCoCBTVU44SV9IM19HUEFEQ19JTlRDX1RFTVBf
-UEVSSU9EKDgwMCkpOyAKPiA+ICsgfSBlbHNlIHsgCj4gPiArIC8qIGNsa2luID0gNk1IeiAqLyAK
-PiA+ICsgcmVnbWFwX3dyaXRlKGluZm8tPnJlZ21hcCwgU1VONElfR1BBRENfQ1RSTDAsIAo+ID4g
-KyDCoMKgwqDCoCBTVU40SV9HUEFEQ19DVFJMMF9BRENfQ0xLX0RJVklERVIoMikgfCAKPiA+ICsg
-wqDCoMKgwqAgU1VONElfR1BBRENfQ1RSTDBfRlNfRElWKDcpIHwgCj4gPiArIMKgwqDCoMKgIFNV
-TjRJX0dQQURDX0NUUkwwX1RfQUNRKDYzKSk7IAo+ID4gKyByZWdtYXBfd3JpdGUoaW5mby0+cmVn
-bWFwLCBTVU40SV9HUEFEQ19DVFJMMSwgCj4gPiArIMKgwqDCoMKgIGluZm8tPmRhdGEtPnRwX21v
-ZGVfZW4pOyAKPiA+ICsgcmVnbWFwX3dyaXRlKGluZm8tPnJlZ21hcCwgU1VONElfR1BBRENfQ1RS
-TDMsIAo+ID4gKyDCoMKgwqDCoCBTVU40SV9HUEFEQ19DVFJMM19GSUxURVJfRU4gfCAKPiA+ICsg
-wqDCoMKgwqAgU1VONElfR1BBRENfQ1RSTDNfRklMVEVSX1RZUEUoMSkpOyAKPiA+ICsgLyogCj4g
-PiArICogcGVyaW9kID0gU1VONElfR1BBRENfVFBSX1RFTVBfUEVSSU9EICogMjU2ICogMTYgLyBj
-bGtpbjsgCj4gPiArICogfjAuNnMgCj4gPiArICovIAo+ID4gKyByZWdtYXBfd3JpdGUoaW5mby0+
-cmVnbWFwLCBTVU40SV9HUEFEQ19UUFIsIAo+ID4gKyDCoMKgwqDCoCBTVU40SV9HUEFEQ19UUFJf
-VEVNUF9FTkFCTEUgfCAKPiA+ICsgwqDCoMKgwqAgU1VONElfR1BBRENfVFBSX1RFTVBfUEVSSU9E
-KDgwMCkpOyAKPiA+ICsgfSAKPiA+wqAgCj4KPiBTYW1lIGhlcmUgYXMgc3VzcGVuZCBmdW5jdGlv
-bj8gCj4KPiA+wqAgcmV0dXJuIDA7IAo+ID7CoCB9IAo+ID4gQEAgLTQ5NCw2ICs1MzksMTAgQEAg
-c3RhdGljIGNvbnN0IHN0cnVjdCBvZl9kZXZpY2VfaWQgc3VuNGlfZ3BhZGNfb2ZfaWRbXSA9IHsg
-Cj4gPsKgIC5jb21wYXRpYmxlID0gImFsbHdpbm5lcixzdW44aS1hMzMtdGhzIiwgCj4gPsKgIC5k
-YXRhID0gJnN1bjhpX2EzM19ncGFkY19kYXRhLCAKPiA+wqAgfSwgCj4gPiArIHsgCj4gPiArIC5j
-b21wYXRpYmxlID0gImFsbHdpbm5lcixzdW44aS1oMy10aHMiLCAKPiA+ICsgLmRhdGEgPSAmc3Vu
-OGlfaDNfZ3BhZGNfZGF0YSwgCj4gPiArIH0sIAo+ID7CoCB7IC8qIHNlbnRpbmVsICovIH0gCj4g
-PsKgIH07IAo+ID7CoCAKPiA+IEBAIC01MjksNiArNTc4LDQzIEBAIHN0YXRpYyBpbnQgc3VuNGlf
-Z3BhZGNfcHJvYmVfZHQoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldiwgCj4gPsKgIHJldHVy
-biByZXQ7IAo+ID7CoCB9IAo+ID7CoCAKPiA+ICsgaWYgKGluZm8tPmRhdGEtPmdlbjJfdGhzKSB7
-IAo+ID4gKyBpbmZvLT5yZXNldCA9IGRldm1fcmVzZXRfY29udHJvbF9nZXQoJnBkZXYtPmRldiwg
-TlVMTCk7IAo+ID4gKyBpZiAoSVNfRVJSKGluZm8tPnJlc2V0KSkgeyAKPiA+ICsgcmV0ID0gUFRS
-X0VSUihpbmZvLT5yZXNldCk7IAo+ID4gKyByZXR1cm4gcmV0OyAKPiA+ICsgfSAKPiA+ICsgCj4g
-PiArIHJldCA9IHJlc2V0X2NvbnRyb2xfZGVhc3NlcnQoaW5mby0+cmVzZXQpOyAKPiA+ICsgaWYg
-KHJldCkgCj4gPiArIHJldHVybiByZXQ7IAo+ID4gKyAKPiA+ICsgaW5mby0+dGhzX2J1c19jbGsg
-PSBkZXZtX2Nsa19nZXQoJnBkZXYtPmRldiwgImJ1cyIpOyAKPiA+ICsgaWYgKElTX0VSUihpbmZv
-LT50aHNfYnVzX2NsaykpIHsgCj4gPiArIHJldCA9IFBUUl9FUlIoaW5mby0+dGhzX2J1c19jbGsp
-OyAKPiA+ICsgcmV0dXJuIHJldDsgCj4gPiArIH0gCj4gPiArIAo+ID4gKyByZXQgPSBjbGtfcHJl
-cGFyZV9lbmFibGUoaW5mby0+dGhzX2J1c19jbGspOyAKPiA+ICsgaWYgKHJldCkgCj4gPiArIHJl
-dHVybiByZXQ7IAo+ID4gKyAKPiA+ICsgaW5mby0+dGhzX2NsayA9IGRldm1fY2xrX2dldCgmcGRl
-di0+ZGV2LCAidGhzIik7IAo+ID4gKyBpZiAoSVNfRVJSKGluZm8tPnRoc19jbGspKSB7IAo+ID4g
-KyByZXQgPSBQVFJfRVJSKGluZm8tPnRoc19jbGspOyAKPiA+ICsgcmV0dXJuIHJldDsgCj4gPiAr
-IH0gCj4gPiArIAo+ID4gKyAvKiBSdW5uaW5nIGF0IDZNSHogKi8gCj4gPiArIHJldCA9IGNsa19z
-ZXRfcmF0ZShpbmZvLT50aHNfY2xrLCA2MDAwMDAwKTsgCj4gPiArIGlmIChyZXQpIAo+ID4gKyBy
-ZXR1cm4gcmV0OyAKPiA+ICsgCj4gPiArIHJldCA9IGNsa19wcmVwYXJlX2VuYWJsZShpbmZvLT50
-aHNfY2xrKTsgCj4gPiArIGlmIChyZXQpIAo+ID4gKyByZXR1cm4gcmV0OyAKPiA+ICsgfSAKPiA+
-ICsgCj4gPsKgIGlmICghSVNfRU5BQkxFRChDT05GSUdfVEhFUk1BTF9PRikpIAo+ID7CoCByZXR1
-cm4gMDsgCj4gPsKgIAo+ID4gQEAgLTY5MSw2ICs3NzcsMTIgQEAgc3RhdGljIGludCBzdW40aV9n
-cGFkY19yZW1vdmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikgCj4gPsKgIGlmICghaW5m
-by0+bm9faXJxICYmIElTX0VOQUJMRUQoQ09ORklHX1RIRVJNQUxfT0YpKSAKPiA+wqAgaWlvX21h
-cF9hcnJheV91bnJlZ2lzdGVyKGluZGlvX2Rldik7IAo+ID7CoCAKPiA+ICsgaWYgKGluZm8tPmRh
-dGEtPmdlbjJfdGhzKSB7IAo+ID4gKyBjbGtfZGlzYWJsZV91bnByZXBhcmUoaW5mby0+dGhzX2Ns
-ayk7IAo+ID4gKyBjbGtfZGlzYWJsZV91bnByZXBhcmUoaW5mby0+dGhzX2J1c19jbGspOyAKPiA+
-ICsgcmVzZXRfY29udHJvbF9kZWFzc2VydChpbmZvLT5yZXNldCk7IAo+ID4gKyB9IAo+ID4gKyAK
-Pgo+IEknbSBub3QgcmVhbGx5IGZvbmQgb2YgdXNpbmcgdGhpcyBib29sZWFuIGFzIEkgZG9uJ3Qg
-c2VlIGl0IGJlaW5nIAo+IHBvc3NpYmx5IHJldXNlZCBmb3IgYW55IG90aGVyIFNvQ3MgdGhhdCBo
-YXMgYSBHUEFEQyBvciBUSFMuIAoKQmVjYXVzZSB5b3UgZGlkbid0IGNhcmUgbmV3IFNvQ3MgOi0p
-CgpBbGwgU29DcyBhZnRlciBIMyAoQTY0LCBINSwgUjQwKSB1c2VzIHRoZSBzYW1lIFRIUyBhcmNo
-aXRlY3R1cmUgd2l0aCBIMy4KCj4KPiBIZXJlLCB5b3UgY291bGQgbWFrZSB1c2Ugb2YgYSBsaXN0
-L2FycmF5IG9mIGNsayB3aGljaCB0aGVuIGNhbiBiZSByZXVzZWQgCj4gZm9yIG90aGVyIFNvQ3Mg
-anVzdCBieSBjaGFuZ2luZyB0aGUgbGlzdC4gQWRkIGEgZGVmYXVsdCByYXRlIHRvIHRoZSAKPiBn
-cGFkY19kYXRhIHN0cnVjdHVyZSBhbmQgeW91J3JlIGdvIHRvIGdvLiAKPgo+ID7CoCByZXR1cm4g
-MDsgCj4gPsKgIH0gCj4gPsKgIAo+ID4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvbWZkL3N1
-bjRpLWdwYWRjLmggYi9pbmNsdWRlL2xpbnV4L21mZC9zdW40aS1ncGFkYy5oIAo+ID4gaW5kZXgg
-MTM5ODcyYzJlMGZlLi5mNzk0YTI5ODhhOTMgMTAwNjQ0IAo+ID4gLS0tIGEvaW5jbHVkZS9saW51
-eC9tZmQvc3VuNGktZ3BhZGMuaCAKPiA+ICsrKyBiL2luY2x1ZGUvbGludXgvbWZkL3N1bjRpLWdw
-YWRjLmggCj4gPiBAQCAtMzgsOSArMzgsMTIgQEAgCj4gPsKgICNkZWZpbmUgU1VONklfR1BBRENf
-Q1RSTDFfQURDX0NIQU5fU0VMRUNUKHgpIChHRU5NQVNLKDMsIDApICYgQklUKHgpKSAKPiA+wqAg
-I2RlZmluZSBTVU42SV9HUEFEQ19DVFJMMV9BRENfQ0hBTl9NQVNLIEdFTk1BU0soMywgMCkgCj4g
-PsKgIAo+ID4gLS8qIFRQX0NUUkwxIGJpdHMgZm9yIHN1bjhpIFNvQ3MgKi8gCj4gPiAtI2RlZmlu
-ZSBTVU44SV9HUEFEQ19DVFJMMV9DSE9QX1RFTVBfRU4gQklUKDgpIAo+ID4gLSNkZWZpbmUgU1VO
-OElfR1BBRENfQ1RSTDFfR1BBRENfQ0FMSV9FTiBCSVQoNykgCj4gPiArLyogVFBfQ1RSTDEgYml0
-cyBmb3Igc3VuOGkgQTIzL0EzMyBTb0NzICovIAo+ID4gKyNkZWZpbmUgU1VOOElfQTIzX0dQQURD
-X0NUUkwxX0NIT1BfVEVNUF9FTiBCSVQoOCkgCj4gPiArI2RlZmluZSBTVU44SV9BMjNfR1BBRENf
-Q1RSTDFfR1BBRENfQ0FMSV9FTiBCSVQoNykgCj4gPiArIAo+Cj4gRGlmZmVyZW50IHBhdGNoIGZv
-ciB0aGVzZT8gCj4KPiBUaGFua3MsIAo+IFF1ZW50aW4gCj4gLS0gCj4gUXVlbnRpbiBTY2h1bHos
-IEZyZWUgRWxlY3Ryb25zIAo+IEVtYmVkZGVkIExpbnV4IGFuZCBLZXJuZWwgZW5naW5lZXJpbmcg
-Cj4gaHR0cDovL2ZyZWUtZWxlY3Ryb25zLmNvbSAKPgo+IF9fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fIAo+IGxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0
-IAo+IGxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZyAKPiBodHRwOi8vbGlzdHMu
-aW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwgCg==
+On Wed, 29 Mar 2017, Icenowy Zheng wrote:
+
+> 
+> 2017年3月29日 14:54于 Quentin Schulz <quentin.schulz@free-electrons.com>写道：
+> >
+> > Hi, 
+> >
+> > On 28/03/2017 19:30, Icenowy Zheng wrote: 
+> > > This adds support for the Allwinner H3 thermal sensor. 
+> > > 
+> > > Allwinner H3 has a thermal sensor like the one in A33, but have its 
+> > > registers nearly all re-arranged, sample clock moved to CCU and a pair 
+> > > of bus clock and reset added. It's also the base of newer SoCs' thermal 
+> > > sensors. 
+> > > 
+> > > An option is added to gpadc_data struct, to indicate whether this device 
+> > > is a new-generation Allwinner thermal sensor. 
+> > > 
+> > > The thermal sensors on A64 and H5 is like the one on H3, but with of 
+> > > course different formula factors. 
+> > > 
+> > > Signed-off-by: Icenowy Zheng <icenowy@aosc.io> 
+> > > --- 
+> > >  drivers/iio/adc/sun4i-gpadc-iio.c | 130 ++++++++++++++++++++++++++++++++------ 
+> > >  include/linux/mfd/sun4i-gpadc.h   |  33 +++++++++- 
+> > >  2 files changed, 141 insertions(+), 22 deletions(-) 
+
+How have you managed to reply un-threaded?
+
+Please ensure you mailer attaches your reply to the rest of the
+thread, or things will become very confusing, very quickly.
+
+> > > diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c 
+> > > index 74705aa37982..7512b1cae877 100644 
+> > > --- a/drivers/iio/adc/sun4i-gpadc-iio.c 
+> > > +++ b/drivers/iio/adc/sun4i-gpadc-iio.c 
+> > > @@ -22,6 +22,7 @@ 
+> > >   * shutdown for not being used. 
+> > >   */ 
+> > >  
+> > > +#include <linux/clk.h> 
+> > >  #include <linux/completion.h> 
+> > >  #include <linux/interrupt.h> 
+> > >  #include <linux/io.h> 
+> > > @@ -31,6 +32,7 @@ 
+> > >  #include <linux/platform_device.h> 
+> > >  #include <linux/pm_runtime.h> 
+> > >  #include <linux/regmap.h> 
+> > > +#include <linux/reset.h> 
+> > >  #include <linux/thermal.h> 
+> > >  #include <linux/delay.h> 
+> > >  
+> > > @@ -56,6 +58,7 @@ struct gpadc_data { 
+> > >  unsigned int tp_adc_select; 
+> > >  unsigned int (*adc_chan_select)(unsigned int chan); 
+> > >  unsigned int adc_chan_mask; 
+> > > + bool gen2_ths; 
+> > >  }; 
+> > >  
+> >
+> > Instead of a boolean, give the TEMP_DATA register address. 
+> >
+> > >  static const struct gpadc_data sun4i_gpadc_data = { 
+> > > @@ -88,7 +91,20 @@ static const struct gpadc_data sun6i_gpadc_data = { 
+> > >  static const struct gpadc_data sun8i_a33_gpadc_data = { 
+> > >  .temp_offset = -1662, 
+> > >  .temp_scale = 162, 
+> > > - .tp_mode_en = SUN8I_GPADC_CTRL1_CHOP_TEMP_EN, 
+> > > + .tp_mode_en = SUN8I_A23_GPADC_CTRL1_CHOP_TEMP_EN, 
+> > > +}; 
+> >
+> > Separate patch for this? 
+> >
+> > > + 
+> > > +static const struct gpadc_data sun8i_h3_gpadc_data = { 
+> > > + /* 
+> > > + * The original formula on the datasheet seems to be wrong. 
+> > > + * These factors are calculated based on the formula in the BSP 
+> > > + * kernel, which is originally Tem = 217 - (T / 8.253), in which Tem 
+> > > + * is the temperature in Celsius degree and T is the raw value 
+> > > + * from the sensor. 
+> > > + */ 
+> > > + .temp_offset = -1791, 
+> > > + .temp_scale = -121, 
+> > > + .gen2_ths = true, 
+> > >  }; 
+> > >  
+> > >  struct sun4i_gpadc_iio { 
+> > > @@ -103,6 +119,9 @@ struct sun4i_gpadc_iio { 
+> > >  atomic_t ignore_temp_data_irq; 
+> > >  const struct gpadc_data *data; 
+> > >  bool no_irq; 
+> > > + struct clk *ths_bus_clk; 
+> > > + struct clk *ths_clk; 
+> > > + struct reset_control *reset; 
+> > >  /* prevents concurrent reads of temperature and ADC */ 
+> > >  struct mutex mutex; 
+> > >  }; 
+> > > @@ -274,7 +293,11 @@ static int sun4i_gpadc_temp_read(struct iio_dev *indio_dev, int *val) 
+> > >  if (info->no_irq) { 
+> > >  pm_runtime_get_sync(indio_dev->dev.parent); 
+> > >  
+> > > - regmap_read(info->regmap, SUN4I_GPADC_TEMP_DATA, val); 
+> > > + if (info->data->gen2_ths) 
+> > > + regmap_read(info->regmap, SUN8I_H3_GPADC_TEMP_DATA, 
+> > > +     val); 
+> > > + else 
+> > > + regmap_read(info->regmap, SUN4I_GPADC_TEMP_DATA, val); 
+> > >  
+> >
+> > Instead of gen2_ths, use the TEMP_DATA register address. 
+> >
+> > >  pm_runtime_mark_last_busy(indio_dev->dev.parent); 
+> > >  pm_runtime_put_autosuspend(indio_dev->dev.parent); 
+> > > @@ -386,10 +409,15 @@ static int sun4i_gpadc_runtime_suspend(struct device *dev) 
+> > >  { 
+> > >  struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(dev)); 
+> > >  
+> > > - /* Disable the ADC on IP */ 
+> > > - regmap_write(info->regmap, SUN4I_GPADC_CTRL1, 0); 
+> > > - /* Disable temperature sensor on IP */ 
+> > > - regmap_write(info->regmap, SUN4I_GPADC_TPR, 0); 
+> > > + if (info->data->gen2_ths) { 
+> > > + /* Disable temperature sensor */ 
+> > > + regmap_write(info->regmap, SUN8I_H3_GPADC_CTRL2, 0); 
+> > > + } else { 
+> > > + /* Disable the ADC on IP */ 
+> > > + regmap_write(info->regmap, SUN4I_GPADC_CTRL1, 0); 
+> > > + /* Disable temperature sensor on IP */ 
+> > > + regmap_write(info->regmap, SUN4I_GPADC_TPR, 0); 
+> > > + } 
+> > >  
+> >
+> > Either use another register address or add a suspend function to struct 
+> > gpadc_data which will be different for each version of the IP. 
+> >
+> > >  return 0; 
+> > >  } 
+> > > @@ -398,19 +426,36 @@ static int sun4i_gpadc_runtime_resume(struct device *dev) 
+> > >  { 
+> > >  struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(dev)); 
+> > >  
+> > > - /* clkin = 6MHz */ 
+> > > - regmap_write(info->regmap, SUN4I_GPADC_CTRL0, 
+> > > -      SUN4I_GPADC_CTRL0_ADC_CLK_DIVIDER(2) | 
+> > > -      SUN4I_GPADC_CTRL0_FS_DIV(7) | 
+> > > -      SUN4I_GPADC_CTRL0_T_ACQ(63)); 
+> > > - regmap_write(info->regmap, SUN4I_GPADC_CTRL1, info->data->tp_mode_en); 
+> > > - regmap_write(info->regmap, SUN4I_GPADC_CTRL3, 
+> > > -      SUN4I_GPADC_CTRL3_FILTER_EN | 
+> > > -      SUN4I_GPADC_CTRL3_FILTER_TYPE(1)); 
+> > > - /* period = SUN4I_GPADC_TPR_TEMP_PERIOD * 256 * 16 / clkin; ~0.6s */ 
+> > > - regmap_write(info->regmap, SUN4I_GPADC_TPR, 
+> > > -      SUN4I_GPADC_TPR_TEMP_ENABLE | 
+> > > -      SUN4I_GPADC_TPR_TEMP_PERIOD(800)); 
+> > > + if (info->data->gen2_ths) { 
+> > > + regmap_write(info->regmap, SUN8I_H3_GPADC_CTRL2, 
+> > > +      SUN8I_H3_GPADC_CTRL2_TEMP_SENSE_EN | 
+> > > +      SUN8I_H3_GPADC_CTRL2_T_ACQ1(31)); 
+> > > + regmap_write(info->regmap, SUN4I_GPADC_CTRL0, 
+> > > +      SUN4I_GPADC_CTRL0_T_ACQ(31)); 
+> > > + regmap_write(info->regmap, SUN8I_H3_GPADC_CTRL3, 
+> > > +      SUN4I_GPADC_CTRL3_FILTER_EN | 
+> > > +      SUN4I_GPADC_CTRL3_FILTER_TYPE(1)); 
+> > > + regmap_write(info->regmap, SUN8I_H3_GPADC_INTC, 
+> > > +      SUN8I_H3_GPADC_INTC_TEMP_PERIOD(800)); 
+> > > + } else { 
+> > > + /* clkin = 6MHz */ 
+> > > + regmap_write(info->regmap, SUN4I_GPADC_CTRL0, 
+> > > +      SUN4I_GPADC_CTRL0_ADC_CLK_DIVIDER(2) | 
+> > > +      SUN4I_GPADC_CTRL0_FS_DIV(7) | 
+> > > +      SUN4I_GPADC_CTRL0_T_ACQ(63)); 
+> > > + regmap_write(info->regmap, SUN4I_GPADC_CTRL1, 
+> > > +      info->data->tp_mode_en); 
+> > > + regmap_write(info->regmap, SUN4I_GPADC_CTRL3, 
+> > > +      SUN4I_GPADC_CTRL3_FILTER_EN | 
+> > > +      SUN4I_GPADC_CTRL3_FILTER_TYPE(1)); 
+> > > + /* 
+> > > + * period = SUN4I_GPADC_TPR_TEMP_PERIOD * 256 * 16 / clkin; 
+> > > + * ~0.6s 
+> > > + */ 
+> > > + regmap_write(info->regmap, SUN4I_GPADC_TPR, 
+> > > +      SUN4I_GPADC_TPR_TEMP_ENABLE | 
+> > > +      SUN4I_GPADC_TPR_TEMP_PERIOD(800)); 
+> > > + } 
+> > >  
+> >
+> > Same here as suspend function? 
+> >
+> > >  return 0; 
+> > >  } 
+> > > @@ -494,6 +539,10 @@ static const struct of_device_id sun4i_gpadc_of_id[] = { 
+> > >  .compatible = "allwinner,sun8i-a33-ths", 
+> > >  .data = &sun8i_a33_gpadc_data, 
+> > >  }, 
+> > > + { 
+> > > + .compatible = "allwinner,sun8i-h3-ths", 
+> > > + .data = &sun8i_h3_gpadc_data, 
+> > > + }, 
+> > >  { /* sentinel */ } 
+> > >  }; 
+> > >  
+> > > @@ -529,6 +578,43 @@ static int sun4i_gpadc_probe_dt(struct platform_device *pdev, 
+> > >  return ret; 
+> > >  } 
+> > >  
+> > > + if (info->data->gen2_ths) { 
+> > > + info->reset = devm_reset_control_get(&pdev->dev, NULL); 
+> > > + if (IS_ERR(info->reset)) { 
+> > > + ret = PTR_ERR(info->reset); 
+> > > + return ret; 
+> > > + } 
+> > > + 
+> > > + ret = reset_control_deassert(info->reset); 
+> > > + if (ret) 
+> > > + return ret; 
+> > > + 
+> > > + info->ths_bus_clk = devm_clk_get(&pdev->dev, "bus"); 
+> > > + if (IS_ERR(info->ths_bus_clk)) { 
+> > > + ret = PTR_ERR(info->ths_bus_clk); 
+> > > + return ret; 
+> > > + } 
+> > > + 
+> > > + ret = clk_prepare_enable(info->ths_bus_clk); 
+> > > + if (ret) 
+> > > + return ret; 
+> > > + 
+> > > + info->ths_clk = devm_clk_get(&pdev->dev, "ths"); 
+> > > + if (IS_ERR(info->ths_clk)) { 
+> > > + ret = PTR_ERR(info->ths_clk); 
+> > > + return ret; 
+> > > + } 
+> > > + 
+> > > + /* Running at 6MHz */ 
+> > > + ret = clk_set_rate(info->ths_clk, 6000000); 
+> > > + if (ret) 
+> > > + return ret; 
+> > > + 
+> > > + ret = clk_prepare_enable(info->ths_clk); 
+> > > + if (ret) 
+> > > + return ret; 
+> > > + } 
+> > > + 
+> > >  if (!IS_ENABLED(CONFIG_THERMAL_OF)) 
+> > >  return 0; 
+> > >  
+> > > @@ -691,6 +777,12 @@ static int sun4i_gpadc_remove(struct platform_device *pdev) 
+> > >  if (!info->no_irq && IS_ENABLED(CONFIG_THERMAL_OF)) 
+> > >  iio_map_array_unregister(indio_dev); 
+> > >  
+> > > + if (info->data->gen2_ths) { 
+> > > + clk_disable_unprepare(info->ths_clk); 
+> > > + clk_disable_unprepare(info->ths_bus_clk); 
+> > > + reset_control_deassert(info->reset); 
+> > > + } 
+> > > + 
+> >
+> > I'm not really fond of using this boolean as I don't see it being 
+> > possibly reused for any other SoCs that has a GPADC or THS. 
+> 
+> Because you didn't care new SoCs :-)
+> 
+> All SoCs after H3 (A64, H5, R40) uses the same THS architecture with H3.
+> 
+> >
+> > Here, you could make use of a list/array of clk which then can be reused 
+> > for other SoCs just by changing the list. Add a default rate to the 
+> > gpadc_data structure and you're go to go. 
+> >
+> > >  return 0; 
+> > >  } 
+> > >  
+> > > diff --git a/include/linux/mfd/sun4i-gpadc.h b/include/linux/mfd/sun4i-gpadc.h 
+> > > index 139872c2e0fe..f794a2988a93 100644 
+> > > --- a/include/linux/mfd/sun4i-gpadc.h 
+> > > +++ b/include/linux/mfd/sun4i-gpadc.h 
+> > > @@ -38,9 +38,12 @@ 
+> > >  #define SUN6I_GPADC_CTRL1_ADC_CHAN_SELECT(x) (GENMASK(3, 0) & BIT(x)) 
+> > >  #define SUN6I_GPADC_CTRL1_ADC_CHAN_MASK GENMASK(3, 0) 
+> > >  
+> > > -/* TP_CTRL1 bits for sun8i SoCs */ 
+> > > -#define SUN8I_GPADC_CTRL1_CHOP_TEMP_EN BIT(8) 
+> > > -#define SUN8I_GPADC_CTRL1_GPADC_CALI_EN BIT(7) 
+> > > +/* TP_CTRL1 bits for sun8i A23/A33 SoCs */ 
+> > > +#define SUN8I_A23_GPADC_CTRL1_CHOP_TEMP_EN BIT(8) 
+> > > +#define SUN8I_A23_GPADC_CTRL1_GPADC_CALI_EN BIT(7) 
+> > > + 
+> >
+> > Different patch for these? 
+> >
+> > Thanks, 
+> > Quentin 
+> >
+> > _______________________________________________ 
+> > linux-arm-kernel mailing list 
+> > linux-arm-kernel@lists.infradead.org 
+> > http://lists.infradead.org/mailman/listinfo/linux-arm-kernel 
+
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
