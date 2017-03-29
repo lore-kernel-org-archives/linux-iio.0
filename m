@@ -1,92 +1,68 @@
-Return-Path: <SRS0=dCcH=3G=gmail.com=amsfield22@kernel.org>
-Date: Wed, 29 Mar 2017 09:00:03 -0700
-From: Alison Schofield <amsfield22@gmail.com>
-To: simran singhal <singhalsimran0@gmail.com>
-Cc: jic23@kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
+Return-Path: <SRS0=3XZU=3G=gmail.com=arushisinghal19971997@kernel.org>
+Date: Wed, 29 Mar 2017 20:47:12 +0530
+From: Arushi Singhal <arushisinghal19971997@gmail.com>
+To: outreachy-kernel@googlegroups.com
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	outreachy-kernel@googlegroups.com
-Subject: Re: [Outreachy kernel] [PATCH] iio: accel: bma180: Set up buffer
- timestamps for non-zero values
-Message-ID: <20170329160002.GA21819@d830.WORKGROUP>
-References: <20170329141131.GA23646@singhal-Inspiron-5558>
- <20170329151658.GB20663@d830.WORKGROUP>
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Subject: [RESEND PATCH] staging: iio: Remove extra Parenthesis
+Message-ID: <20170329151712.GA5651@arushi-HP-Pavilion-Notebook>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20170329151658.GB20663@d830.WORKGROUP>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Mar 29, 2017 at 08:16:58AM -0700, Alison Schofield wrote:
-> On Wed, Mar 29, 2017 at 07:41:31PM +0530, simran singhal wrote:
-> > Use the iio_pollfunc_store_time parameter during triggered buffer set-up
-> > to get valid timestamps.
-> > 
-> > Signed-off-by: simran singhal <singhalsimran0@gmail.com>
-> 
-> Hi Simran,
-> I guess you knew I'd recognize this one ;)
-> 
-> My first thought were - "Wow that was a short and sweet description!
-> Is that all I said when I made similar patches?"  So, I went back
-> in history and sure enough - that is all I said in the changelog.
-> 
-> But I knew I had thought more about it than that changelog showed.
-> So, I went back to the mailing list and found the patchset cover
-> sheet where I had placed the greater explanation and options.
-> 
-> Note to myself: don't bury too much stuff in cover letters!
-> 
-> Note to you: Defects do repeat themselves so your method of hunting
-> is fine.  If you haven't done it already, add the step where you go
-> find the mailing list discussion of the patch.  That can be helpful.
-> 
-> Here's a link to the patchset on linux-iio:
-> http://marc.info/?l=linux-iio&m=146825066822274&w=2
-> 
-> The piece of interest is:
-> Alternative change would be to use iio_get_time_ns() directly in the
-> push_to_buffers call in the handler.  We can do this if you are not
-> one of those "devices (who) need a timestamp grabbed as soon as possible
-> after the trigger" (from iio_poll_func definition)
+Remove the extra parenthesis remove the checkpatch issue.
 
-Looked at driver.  It's already doing the above mentioned call
-to iio_get_time_ns() in the trigger handler.  So, it seems this
-change is not needed.
+Signed-off-by: Arushi Singhal <arushisinghal19971997@gmail.com>
+---
+ drivers/staging/iio/cdc/ad7746.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-alisons
-
-> 
-> This is all just FYI for you now.
-> 
-> Leave the patch for the reviewers to comment.
-> 
-> Thanks,
-> alisons
-> 
-> > ---
-> >  drivers/iio/accel/bma180.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
-> > index efc6773..4ae5c80 100644
-> > --- a/drivers/iio/accel/bma180.c
-> > +++ b/drivers/iio/accel/bma180.c
-> > @@ -762,7 +762,7 @@ static int bma180_probe(struct i2c_client *client,
-> >  			goto err_trigger_free;
-> >  	}
-> >  
-> > -	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-> > +	ret = iio_triggered_buffer_setup(indio_dev, iio_pollfunc_store_time,
-> >  			bma180_trigger_handler, NULL);
-> >  	if (ret < 0) {
-> >  		dev_err(&client->dev, "unable to setup iio triggered buffer\n");
-> > -- 
-> > 2.7.4
-> > 
-> > -- 
-> > You received this message because you are subscribed to the Google Groups "outreachy-kernel" group.
-> > To unsubscribe from this group and stop receiving emails from it, send an email to outreachy-kernel+unsubscribe@googlegroups.com.
-> > To post to this group, send email to outreachy-kernel@googlegroups.com.
-> > To view this discussion on the web visit https://groups.google.com/d/msgid/outreachy-kernel/20170329141131.GA23646%40singhal-Inspiron-5558.
-> > For more options, visit https://groups.google.com/d/optout.
+diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
+index 033a41fd9bee..b4afc12f827f 100644
+--- a/drivers/staging/iio/cdc/ad7746.c
++++ b/drivers/staging/iio/cdc/ad7746.c
+@@ -50,10 +50,10 @@
+ #define AD7746_STATUS_RDYCAP		BIT(0)
+ 
+ /* Capacitive Channel Setup Register Bit Designations (AD7746_REG_CAP_SETUP) */
+-#define AD7746_CAPSETUP_CAPEN		(BIT(7))
+-#define AD7746_CAPSETUP_CIN2		(BIT(6)) /* AD7746 only */
+-#define AD7746_CAPSETUP_CAPDIFF		(BIT(5))
+-#define AD7746_CAPSETUP_CACHOP		(BIT(0))
++#define AD7746_CAPSETUP_CAPEN		BIT(7)
++#define AD7746_CAPSETUP_CIN2		BIT(6) /* AD7746 only */
++#define AD7746_CAPSETUP_CAPDIFF		BIT(5)
++#define AD7746_CAPSETUP_CACHOP		BIT(0)
+ 
+ /* Voltage/Temperature Setup Register Bit Designations (AD7746_REG_VT_SETUP) */
+ #define AD7746_VTSETUP_VTEN		(1 << 7)
+@@ -61,9 +61,9 @@
+ #define AD7746_VTSETUP_VTMD_EXT_TEMP	(1 << 5)
+ #define AD7746_VTSETUP_VTMD_VDD_MON	(2 << 5)
+ #define AD7746_VTSETUP_VTMD_EXT_VIN	(3 << 5)
+-#define AD7746_VTSETUP_EXTREF		(BIT(4))
+-#define AD7746_VTSETUP_VTSHORT		(BIT(1))
+-#define AD7746_VTSETUP_VTCHOP		(BIT(0))
++#define AD7746_VTSETUP_EXTREF		BIT(4)
++#define AD7746_VTSETUP_VTSHORT		BIT(1)
++#define AD7746_VTSETUP_VTCHOP		BIT(0)
+ 
+ /* Excitation Setup Register Bit Designations (AD7746_REG_EXC_SETUP) */
+ #define AD7746_EXCSETUP_CLKCTRL		BIT(7)
+@@ -87,7 +87,7 @@
+ #define AD7746_CONF_MODE_GAIN_CAL	(6 << 0)
+ 
+ /* CAPDAC Register Bit Designations (AD7746_REG_CAPDACx) */
+-#define AD7746_CAPDAC_DACEN		(BIT(7))
++#define AD7746_CAPDAC_DACEN		BIT(7)
+ #define AD7746_CAPDAC_DACP(x)		((x) & 0x7F)
+ 
+ /*
+-- 
+2.11.0
