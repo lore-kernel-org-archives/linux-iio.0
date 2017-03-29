@@ -1,26 +1,31 @@
-Return-Path: <SRS0=vxmK=26=pmeerw.net=pmeerw@kernel.org>
-Date: Tue, 21 Mar 2017 22:16:10 +0100 (CET)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-ot0-f194.google.com ([74.125.82.194]:33164 "EHLO
+        mail-ot0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932760AbdC2Ad3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Mar 2017 20:33:29 -0400
+Date: Tue, 28 Mar 2017 19:33:26 -0500
+From: Rob Herring <robh@kernel.org>
 To: Rick Altherr <raltherr@google.com>
-cc: openbmc@lists.ozlabs.org, devicetree@vger.kernel.org,
-    linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-    Lars-Peter Clausen <lars@metafoo.de>, Mark Rutland <mark.rutland@arm.com>,
-    Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH v2 1/2] Documentation: dt-bindings: Document bindings
- for Aspeed AST2400/AST2500 ADC
-In-Reply-To: <20170321204828.31303-1-raltherr@google.com>
-Message-ID: <alpine.DEB.2.20.1703212215100.26011@vps.pmeerw.net>
+Cc: openbmc@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: Re: [PATCH v2 1/2] Documentation: dt-bindings: Document bindings for
+ Aspeed AST2400/AST2500 ADC
+Message-ID: <20170329003326.hhz6qz4o5vorugnh@rob-hp-laptop>
 References: <20170321204828.31303-1-raltherr@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20170321204828.31303-1-raltherr@google.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-
+On Tue, Mar 21, 2017 at 01:48:27PM -0700, Rick Altherr wrote:
 > Signed-off-by: Rick Altherr <raltherr@google.com>
-
-extreme nitpicking below
-
- ---
+> ---
 > 
 > Changes in v2:
 > - Rewritten as an IIO ADC device
@@ -28,39 +33,5 @@ extreme nitpicking below
 >  .../devicetree/bindings/iio/adc/aspeed_adc.txt       | 20 ++++++++++++++++++++
 >  1 file changed, 20 insertions(+)
 >  create mode 100644 Documentation/devicetree/bindings/iio/adc/aspeed_adc.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/aspeed_adc.txt b/Documentation/devicetree/bindings/iio/adc/aspeed_adc.txt
-> new file mode 100644
-> index 000000000000..7748c2c2ad0c
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/aspeed_adc.txt
-> @@ -0,0 +1,20 @@
-> +Aspeed AST2400/2500 ADC
-> +
-> +This device is a 10-bit converter for 16 voltage channels.  All inputs are
-> +single ended.
-> +
-> +Required properties:
-> +- compatible: Should be "aspeed,ast2400-adc" or "aspeed,ast2500-adc"
-> +- reg: memory window mapping address and length
-> +- clocks: Input clock used to derive the sample clock. Expected to be the
-> +          SoC's APB clock.
-> +- #io-channel-cells: Must be set to <1> to indicate channels are selected
-> +                     by index.
-> +
-> +Example:
-> +	adc@1e6e9000 {
-> +		compatible = "aspeed,ast2400-adc";
-> +		reg = <0x1e6e9000 0xB0>;
 
-maybe 0xb0 (consistent lowercase hex)?
-
-> +		clocks = <&clk_apb>;
-> +		#io-channel-cells = <1>;
-> +	};
-> 
-
--- 
-
-Peter Meerwald-Stadler
-Mobile: +43 664 24 44 418
+Acked-by: Rob Herring <robh@kernel.org>
