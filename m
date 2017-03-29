@@ -1,33 +1,42 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg0-f68.google.com ([74.125.83.68]:35677 "EHLO
-        mail-pg0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755883AbdC2MdR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Mar 2017 08:33:17 -0400
+Received: from mail-pf0-f194.google.com ([209.85.192.194]:33733 "EHLO
+        mail-pf0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932353AbdC2MdU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Mar 2017 08:33:20 -0400
 From: simran singhal <singhalsimran0@gmail.com>
 To: jic23@kernel.org
 Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         outreachy-kernel@googlegroups.com
-Subject: [PATCH 0/4] drivers: iio: Replace ternary operator with min macro
-Date: Wed, 29 Mar 2017 18:03:07 +0530
-Message-Id: <1490790791-5694-1-git-send-email-singhalsimran0@gmail.com>
+Subject: [PATCH 1/4] iio: common: st_sensors: Replace ternary operator with min macro
+Date: Wed, 29 Mar 2017 18:03:08 +0530
+Message-Id: <1490790791-5694-2-git-send-email-singhalsimran0@gmail.com>
+In-Reply-To: <1490790791-5694-1-git-send-email-singhalsimran0@gmail.com>
+References: <1490790791-5694-1-git-send-email-singhalsimran0@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Use macro min() to get the minimum of two values for brevity and readability. 
+Use macro min() to get the minimum of two values for brevity and
+readability.
 
-simran singhal (4):
-  iio: common: st_sensors: Replace ternary operator with min macro
-  iio: imu: st_lsm6dsx: Replace ternary operator with min macro
-  iio: imu: st_lsm6dsx: Replace ternary operator with min macro
-  iio: light: si1145: Replace ternary operator with min macro
-
+Signed-off-by: simran singhal <singhalsimran0@gmail.com>
+---
  drivers/iio/common/st_sensors/st_sensors_i2c.c | 2 +-
- drivers/iio/humidity/hts221_core.c             | 2 +-
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 2 +-
- drivers/iio/light/si1145.c                     | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/iio/common/st_sensors/st_sensors_i2c.c b/drivers/iio/common/st_sensors/st_sensors_i2c.c
+index c83df4d..7a68fdd 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_i2c.c
++++ b/drivers/iio/common/st_sensors/st_sensors_i2c.c
+@@ -39,7 +39,7 @@ static int st_sensors_i2c_read_byte(struct st_sensor_transfer_buffer *tb,
+ 	*res_byte = err & 0xff;
+ 
+ st_accel_i2c_read_byte_error:
+-	return err < 0 ? err : 0;
++	return min(err, 0);
+ }
+ 
+ static int st_sensors_i2c_read_multiple_byte(
 -- 
 2.7.4
 
