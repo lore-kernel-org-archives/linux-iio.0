@@ -1,65 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-vk0-f67.google.com ([209.85.213.67]:34112 "EHLO
-        mail-vk0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752931AbdC2Ox1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Mar 2017 10:53:27 -0400
-MIME-Version: 1.0
-In-Reply-To: <CALrZqyNRRC76QONYRxdtjrg9RyeZth=f+BzFywpvWbB_YYLHkg@mail.gmail.com>
+Received: from mail-pg0-f65.google.com ([74.125.83.65]:34998 "EHLO
+        mail-pg0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752656AbdC2S45 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Mar 2017 14:56:57 -0400
+Date: Wed, 29 Mar 2017 11:56:44 -0700
+From: Alison Schofield <amsfield22@gmail.com>
+To: simran singhal <singhalsimran0@gmail.com>
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, outreachy-kernel@googlegroups.com
+Subject: Re: [Outreachy kernel] [PATCH 0/4] drivers: iio: Replace ternary
+ operator with min macro
+Message-ID: <20170329185643.GA23885@d830.WORKGROUP>
 References: <1490790791-5694-1-git-send-email-singhalsimran0@gmail.com>
- <1490790791-5694-5-git-send-email-singhalsimran0@gmail.com>
- <alpine.DEB.2.20.1703291440070.2989@hadrien> <bd1805f2-4c8b-f51a-89fc-87d719f20ed6@metafoo.de>
- <CALrZqyNRRC76QONYRxdtjrg9RyeZth=f+BzFywpvWbB_YYLHkg@mail.gmail.com>
-From: SIMRAN SINGHAL <singhalsimran0@gmail.com>
-Date: Wed, 29 Mar 2017 20:23:25 +0530
-Message-ID: <CALrZqyOvQjwd49q2mkfy-2=2a0bepxbCc-686+sBtrk0ABRQrA@mail.gmail.com>
-Subject: Re: [Outreachy kernel] [PATCH 4/4] iio: light: si1145: Replace
- ternary operator with min macro
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Julia Lawall <julia.lawall@lip6.fr>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        outreachy-kernel <outreachy-kernel@googlegroups.com>
-Content-Type: text/plain; charset=UTF-8
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1490790791-5694-1-git-send-email-singhalsimran0@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Mar 29, 2017 at 8:22 PM, SIMRAN SINGHAL
-<singhalsimran0@gmail.com> wrote:
-> On Wed, Mar 29, 2017 at 6:23 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->> On 03/29/2017 02:40 PM, Julia Lawall wrote:
->>>
->>>
->>> On Wed, 29 Mar 2017, simran singhal wrote:
->>>
->>>> Use macro min() to get the minimum of two values for brevity and
->>>> readability.
->>>>
->>>> Signed-off-by: simran singhal <singhalsimran0@gmail.com>
->>>> ---
->>>>  drivers/iio/light/si1145.c | 2 +-
->>>>  1 file changed, 1 insertion(+), 1 deletion(-)
->>>>
->>>> diff --git a/drivers/iio/light/si1145.c b/drivers/iio/light/si1145.c
->>>> index 096034c..e7ad6fb 100644
->>>> --- a/drivers/iio/light/si1145.c
->>>> +++ b/drivers/iio/light/si1145.c
->>>> @@ -557,7 +557,7 @@ static int si1145_set_chlist(struct iio_dev *indio_dev, unsigned long scan_mask)
->>>>      data->scan_mask = scan_mask;
->>>>      ret = si1145_param_set(data, SI1145_PARAM_CHLIST, reg);
->>>>
->>>> -    return ret < 0 ? ret : 0;
->>>> +    return min(ret, 0);
->>>
->>> A similar change involving max was already rejected.  ret < 0 is a
->>> standard way of detecting an error, so perhaps leaving that explicitly
->>> present will be preferred.
->>
->> I think a more sensible thing to do here is to check whether ret/err can
->> actually take any positive values and if not, replace the whole thing with
->> just 'return ret;' or 'return some_fn()'. I'd expect that his can be done in
->> most of the cases.
->>
+On Wed, Mar 29, 2017 at 06:03:07PM +0530, simran singhal wrote:
+> Use macro min() to get the minimum of two values for brevity and readability. 
+> 
+> simran singhal (4):
+>   iio: common: st_sensors: Replace ternary operator with min macro
+>   iio: imu: st_lsm6dsx: Replace ternary operator with min macro
+>   iio: imu: st_lsm6dsx: Replace ternary operator with min macro
+>   iio: light: si1145: Replace ternary operator with min macro
 
-Lars, I will check it and resend it.
+Hi Simran,
+
+I'm guessing these were found by Coccinelle. Please reference that
+in the changelog.
+
+FYI: 'Mileage will vary' on cleanup patches sent upstream.  Their
+acceptance varies by subsystem and the change.  Consider sending
+one such patch and await feedback.  Another option is to send one
+and be direct. Ask below the line --- if such cleanup patches are
+welcome.  Sometimes they create too much churn and are only taken
+as part of a larger update to the particular driver.
+
+Just my thoughts for future patches as Outreachy window closes :(
+alisons
+
+> 
+>  drivers/iio/common/st_sensors/st_sensors_i2c.c | 2 +-
+>  drivers/iio/humidity/hts221_core.c             | 2 +-
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 2 +-
+>  drivers/iio/light/si1145.c                     | 2 +-
+>  4 files changed, 4 insertions(+), 4 deletions(-)
+> 
+> -- 
+> 2.7.4
+> 
+> -- 
+> You received this message because you are subscribed to the Google Groups "outreachy-kernel" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to outreachy-kernel+unsubscribe@googlegroups.com.
+> To post to this group, send email to outreachy-kernel@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/outreachy-kernel/1490790791-5694-1-git-send-email-singhalsimran0%40gmail.com.
+> For more options, visit https://groups.google.com/d/optout.
