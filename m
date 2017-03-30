@@ -1,117 +1,98 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.117]:48068 "EHLO vps.pmeerw.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1754280AbdC3IUK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 30 Mar 2017 04:20:10 -0400
-Date: Thu, 30 Mar 2017 10:20:08 +0200 (CEST)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Gargi Sharma <gs051095@gmail.com>
-cc: outreachy-kernel@googlegroups.com, linux-iio@vger.kernel.org,
-        lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org
-Subject: Re: [RFC v2] staging: iio: update locking method during frequency
- writes
-In-Reply-To: <1490855953-27552-1-git-send-email-gs051095@gmail.com>
-Message-ID: <alpine.DEB.2.20.1703301018510.14237@vps.pmeerw.net>
-References: <1490855953-27552-1-git-send-email-gs051095@gmail.com>
+Return-Path: <SRS0=Em96=3H=foxmail.com=chen.chenchacha@kernel.org>
+From: Chen Guanqiao <chen.chenchacha@foxmail.com>
+Subject: [PATCH] iio:meter:ade7759: Removing use of deprecated macros
+To: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+ knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org
+Cc: linux-iio@vger.kernel.org, trivial@kernel.org,
+ linux-kernel@vger.kernel.org, devel@driverdev.osuosl.org
+Message-ID: <51add231-117a-2fce-9ad8-d4d477707715@foxmail.com>
+Date: Thu, 30 Mar 2017 14:41:11 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 30 Mar 2017, Gargi Sharma wrote:
+Removing use of deprecated macros(S_IRUGO, SIWUGO, S_IXUGO), and replaced with 4 gidit octal.
 
-> The driver needs to insure atomicity during frequency
-> changes of bus and device. The iiodev->mlock as used
-> was not doing that. Replace it with the drivers existing
-> buffer lock and introduce an auxiliary spi_write() that does
-> not hold the lock.
+Signed-off-by: Chen Guanqiao <chen.chenchacha@foxmail.com>
+---
+ drivers/staging/iio/meter/ade7759.c | 26 ++++++++++++++------------
+ 1 file changed, 14 insertions(+), 12 deletions(-)
 
-nitpicking below
- 
-> Signed-off-by: Gargi Sharma <gs051095@gmail.com>
-> ---
-> Changes in v2:
->         - Added auxiliary function.
->         - Updated the buf_lock comment appropriately.
-> ---
->  drivers/staging/iio/meter/ade7754.c | 24 ++++++++++++++++++------
->  1 file changed, 18 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/meter/ade7754.c b/drivers/staging/iio/meter/ade7754.c
-> index c8d2d4c..f371030 100644
-> --- a/drivers/staging/iio/meter/ade7754.c
-> +++ b/drivers/staging/iio/meter/ade7754.c
-> @@ -97,7 +97,7 @@
->  /**
->   * struct ade7754_state - device instance specific data
->   * @us:			actual spi_device
-> - * @buf_lock:		mutex to protect tx and rx
-> + * @buf_lock:		mutex to protect tx, rx and write frequency
->   * @tx:			transmit buffer
->   * @rx:			receive buffer
->   **/
-> @@ -108,17 +108,29 @@ struct ade7754_state {
->  	u8			rx[ADE7754_MAX_RX];
->  };
->  
-> -static int ade7754_spi_write_reg_8(struct device *dev, u8 reg_address, u8 val)
-> +/* Unlocked version of ade7754_spi_write_reg_8 function */
-> +static int __ade7754_spi_write_reg_8(struct device *dev, u8 reg_address, u8 val)
->  {
->  	int ret;
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7754_state *st = iio_priv(indio_dev);
->  
-> -	mutex_lock(&st->buf_lock);
->  	st->tx[0] = ADE7754_WRITE_REG(reg_address);
->  	st->tx[1] = val;
->  
->  	ret = spi_write(st->us, st->tx, 2);
+diff --git a/drivers/staging/iio/meter/ade7759.c b/drivers/staging/iio/meter/ade7759.c
+index 0b65f1847510..dbd106f28cb7 100644
+--- a/drivers/staging/iio/meter/ade7759.c
++++ b/drivers/staging/iio/meter/ade7759.c
+@@ -279,49 +279,51 @@ static int ade7759_reset(struct device *dev)
+ }
 
-return directly, so
-return spi_write(st->us, st->tx, 2);
-and no need for ret variable anymore
+ static IIO_DEV_ATTR_AENERGY(ade7759_read_40bit, ADE7759_AENERGY);
+-static IIO_DEV_ATTR_CFDEN(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_CFDEN(0644,
+		ade7759_read_16bit,
+		ade7759_write_16bit,
+		ADE7759_CFDEN);
+-static IIO_DEV_ATTR_CFNUM(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_CFNUM(0644,
+		ade7759_read_8bit,
+		ade7759_write_8bit,
+		ADE7759_CFNUM);
+ static IIO_DEV_ATTR_CHKSUM(ade7759_read_8bit, ADE7759_CHKSUM);
+-static IIO_DEV_ATTR_PHCAL(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_PHCAL(0644,
+		ade7759_read_16bit,
+		ade7759_write_16bit,
+		ADE7759_PHCAL);
+-static IIO_DEV_ATTR_APOS(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_APOS(0644,
+		ade7759_read_16bit,
+		ade7759_write_16bit,
+		ADE7759_APOS);
+-static IIO_DEV_ATTR_SAGCYC(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_SAGCYC(0644,
+		ade7759_read_8bit,
+		ade7759_write_8bit,
+		ADE7759_SAGCYC);
+-static IIO_DEV_ATTR_SAGLVL(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_SAGLVL(0644,
+		ade7759_read_8bit,
+		ade7759_write_8bit,
+		ADE7759_SAGLVL);
+-static IIO_DEV_ATTR_LINECYC(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_LINECYC(0644,
+		ade7759_read_8bit,
+		ade7759_write_8bit,
+		ADE7759_LINECYC);
+ static IIO_DEV_ATTR_LENERGY(ade7759_read_40bit, ADE7759_LENERGY);
+-static IIO_DEV_ATTR_PGA_GAIN(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_PGA_GAIN(0644,
+		ade7759_read_8bit,
+		ade7759_write_8bit,
+		ADE7759_GAIN);
+-static IIO_DEV_ATTR_ACTIVE_POWER_GAIN(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_ACTIVE_POWER_GAIN(0644,
+		ade7759_read_16bit,
+		ade7759_write_16bit,
+		ADE7759_APGAIN);
+-static IIO_DEV_ATTR_CH_OFF(1, S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_CH_OFF(
++		1, 0644,
+		ade7759_read_8bit,
+		ade7759_write_8bit,
+		ADE7759_CH1OS);
+-static IIO_DEV_ATTR_CH_OFF(2, S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_CH_OFF(
++		2, 0644,
+		ade7759_read_8bit,
+		ade7759_write_8bit,
+		ADE7759_CH2OS);
+@@ -458,7 +460,7 @@ static IIO_DEV_ATTR_TEMP_RAW(ade7759_read_8bit);
+ static IIO_CONST_ATTR(in_temp_offset, "70 C");
+ static IIO_CONST_ATTR(in_temp_scale, "1 C");
 
-> +
-> +	return ret;
-> +}
-> +
-> +static int ade7754_spi_write_reg_8(struct device *dev, u8 reg_address, u8 val)
-> +{
-> +	int ret;
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct ade7754_state *st = iio_priv(indio_dev);
-> +
-> +	mutex_lock(&st->buf_lock);
-> +	ret = __ade7754_spi_write_reg_8(dev, reg_address, val);
->  	mutex_unlock(&st->buf_lock);
->  
->  	return ret;
-> @@ -513,7 +525,7 @@ static ssize_t ade7754_write_frequency(struct device *dev,
->  	if (!val)
->  		return -EINVAL;
->  
-> -	mutex_lock(&indio_dev->mlock);
-> +	mutex_lock(&st->buf_lock);
->  
->  	t = 26000 / val;
->  	if (t > 0)
-> @@ -531,10 +543,10 @@ static ssize_t ade7754_write_frequency(struct device *dev,
->  	reg &= ~(3 << 3);
->  	reg |= t << 3;
->  
-> -	ret = ade7754_spi_write_reg_8(dev, ADE7754_WAVMODE, reg);
-> +	ret = __ade7754_spi_write_reg_8(dev, ADE7754_WAVMODE, reg);
->  
->  out:
-> -	mutex_unlock(&indio_dev->mlock);
-> +	mutex_unlock(&st->buf_lock);
->  
->  	return ret ? ret : len;
->  }
-> 
+-static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_SAMP_FREQ(0644,
+		ade7759_read_frequency,
+		ade7759_write_frequency);
 
--- 
-
-Peter Meerwald-Stadler
-Mobile: +43 664 24 44 418
+--
+2.11.0
