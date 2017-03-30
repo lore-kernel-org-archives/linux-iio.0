@@ -1,52 +1,100 @@
-Return-Path: <SRS0=7MEl=3G=linux.intel.com=srinivas.pandruvada@kernel.org>
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
+Return-Path: <SRS0=z67z=3H=gmail.com=gs051095@kernel.org>
+From: Gargi Sharma <gs051095@gmail.com>
+To: outreachy-kernel@googlegroups.com
 Cc: linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH] iio: accel: hid-sensor-accel-3d: Fix duplicate scan index error
-Date: Wed, 29 Mar 2017 16:23:35 -0700
-Message-Id: <1490829815-18856-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	pmeerw@pmeerw.net,
+	gregkh@linuxfoundation.org,
+	Gargi Sharma <gs051095@gmail.com>
+Subject: [RFC v2] staging: iio: update locking method during frequency writes
+Date: Thu, 30 Mar 2017 12:09:13 +0530
+Message-Id: <1490855953-27552-1-git-send-email-gs051095@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-When both accel_3d and gravity sensor are present, iio_device_register()
-fails with "Duplicate scan index" error.
-The reason for this is setting of indio_dev->num_channels based on
-accel_3d channel for both gravity and accel-3d sensor. But number of
-channels are not same, so for gravity it is pointing to some invalid
-memory and getting scan_index to compare which may match.
-To fix this issue, set the indio_dev->num_channels correctly based on
-the sensor type.
+The driver needs to insure atomicity during frequency
+changes of bus and device. The iiodev->mlock as used
+was not doing that. Replace it with the drivers existing
+buffer lock and introduce an auxiliary spi_write() that does
+not hold the lock.
 
-Fixes: 0e377f3b9ae9 ('iio: Add gravity sensor support')
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Signed-off-by: Gargi Sharma <gs051095@gmail.com>
 ---
- drivers/iio/accel/hid-sensor-accel-3d.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Changes in v2:
+        - Added auxiliary function.
+        - Updated the buf_lock comment appropriately.
+---
+ drivers/staging/iio/meter/ade7754.c | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
-index ca5759c..43a6cb0 100644
---- a/drivers/iio/accel/hid-sensor-accel-3d.c
-+++ b/drivers/iio/accel/hid-sensor-accel-3d.c
-@@ -370,10 +370,12 @@ static int hid_accel_3d_probe(struct platform_device *pdev)
- 		name = "accel_3d";
- 		channel_spec = accel_3d_channels;
- 		channel_size = sizeof(accel_3d_channels);
-+		indio_dev->num_channels = ARRAY_SIZE(accel_3d_channels);
- 	} else {
- 		name = "gravity";
- 		channel_spec = gravity_channels;
- 		channel_size = sizeof(gravity_channels);
-+		indio_dev->num_channels = ARRAY_SIZE(gravity_channels);
- 	}
- 	ret = hid_sensor_parse_common_attributes(hsdev, hsdev->usage,
- 					&accel_state->common_attributes);
-@@ -395,7 +397,6 @@ static int hid_accel_3d_probe(struct platform_device *pdev)
- 		goto error_free_dev_mem;
- 	}
+diff --git a/drivers/staging/iio/meter/ade7754.c b/drivers/staging/iio/meter/ade7754.c
+index c8d2d4c..f371030 100644
+--- a/drivers/staging/iio/meter/ade7754.c
++++ b/drivers/staging/iio/meter/ade7754.c
+@@ -97,7 +97,7 @@
+ /**
+  * struct ade7754_state - device instance specific data
+  * @us:			actual spi_device
+- * @buf_lock:		mutex to protect tx and rx
++ * @buf_lock:		mutex to protect tx, rx and write frequency
+  * @tx:			transmit buffer
+  * @rx:			receive buffer
+  **/
+@@ -108,17 +108,29 @@ struct ade7754_state {
+ 	u8			rx[ADE7754_MAX_RX];
+ };
  
--	indio_dev->num_channels = ARRAY_SIZE(accel_3d_channels);
- 	indio_dev->dev.parent = &pdev->dev;
- 	indio_dev->info = &accel_3d_info;
- 	indio_dev->name = name;
+-static int ade7754_spi_write_reg_8(struct device *dev, u8 reg_address, u8 val)
++/* Unlocked version of ade7754_spi_write_reg_8 function */
++static int __ade7754_spi_write_reg_8(struct device *dev, u8 reg_address, u8 val)
+ {
+ 	int ret;
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ade7754_state *st = iio_priv(indio_dev);
+ 
+-	mutex_lock(&st->buf_lock);
+ 	st->tx[0] = ADE7754_WRITE_REG(reg_address);
+ 	st->tx[1] = val;
+ 
+ 	ret = spi_write(st->us, st->tx, 2);
++
++	return ret;
++}
++
++static int ade7754_spi_write_reg_8(struct device *dev, u8 reg_address, u8 val)
++{
++	int ret;
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct ade7754_state *st = iio_priv(indio_dev);
++
++	mutex_lock(&st->buf_lock);
++	ret = __ade7754_spi_write_reg_8(dev, reg_address, val);
+ 	mutex_unlock(&st->buf_lock);
+ 
+ 	return ret;
+@@ -513,7 +525,7 @@ static ssize_t ade7754_write_frequency(struct device *dev,
+ 	if (!val)
+ 		return -EINVAL;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&st->buf_lock);
+ 
+ 	t = 26000 / val;
+ 	if (t > 0)
+@@ -531,10 +543,10 @@ static ssize_t ade7754_write_frequency(struct device *dev,
+ 	reg &= ~(3 << 3);
+ 	reg |= t << 3;
+ 
+-	ret = ade7754_spi_write_reg_8(dev, ADE7754_WAVMODE, reg);
++	ret = __ade7754_spi_write_reg_8(dev, ADE7754_WAVMODE, reg);
+ 
+ out:
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&st->buf_lock);
+ 
+ 	return ret ? ret : len;
+ }
 -- 
 2.7.4
