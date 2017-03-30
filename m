@@ -1,7 +1,7 @@
-Return-Path: <SRS0=Foea=3H=free-electrons.com=alexandre.belloni@kernel.org>
-Date: Thu, 30 Mar 2017 19:23:12 +0200
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-To: jacopo <jacopo@jmondi.org>
+Return-Path: <SRS0=SHBH=3H=jmondi.org=jacopo@kernel.org>
+Date: Thu, 30 Mar 2017 20:06:18 +0200
+From: jacopo <jacopo@jmondi.org>
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 Cc: Arushi Singhal <arushisinghal19971997@gmail.com>,
 	outreachy-kernel@googlegroups.com,
 	Jonathan Cameron <jic23@kernel.org>,
@@ -10,49 +10,63 @@ Cc: Arushi Singhal <arushisinghal19971997@gmail.com>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH] iio: adc: replace comma with a semicolon
-Message-ID: <20170330172312.ooxwqmkz6sw7smgd@piout.net>
+Message-ID: <20170330180618.GD7900@w540>
 References: <20170330124603.GA29301@arushi-HP-Pavilion-Notebook>
  <20170330133046.GA7900@w540>
+ <20170330172312.ooxwqmkz6sw7smgd@piout.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20170330133046.GA7900@w540>
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20170330172312.ooxwqmkz6sw7smgd@piout.net>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 30/03/2017 at 15:30:46 +0200, jacopo wrote:
-> Hi Arushi,
->    thanks for your patch
-> 
-> On Thu, Mar 30, 2017 at 06:16:03PM +0530, Arushi Singhal wrote:
-> > Replace a comma between expression statements by a semicolon. This
-> > changes the semantics of the code, but given the current indentation
-> > appears to be what is intended.
-> > A simplified version of the Coccinelle semantic patch that performs this
-> > transformation is as follows:
+Hi Alexandre
+   hope you're doing good!
+
+On Thu, Mar 30, 2017 at 07:23:12PM +0200, Alexandre Belloni wrote:
+> On 30/03/2017 at 15:30:46 +0200, jacopo wrote:
+> > Hi Arushi,
+> >    thanks for your patch
 > > 
-> > // <smpl>
-> > @r@
-> > expression e1,e2;
-> > @@
+> > On Thu, Mar 30, 2017 at 06:16:03PM +0530, Arushi Singhal wrote:
+> > > Replace a comma between expression statements by a semicolon. This
+> > > changes the semantics of the code, but given the current indentation
+> > > appears to be what is intended.
+> > > A simplified version of the Coccinelle semantic patch that performs this
+> > > transformation is as follows:
+> > > 
+> > > // <smpl>
+> > > @r@
+> > > expression e1,e2;
+> > > @@
+> > > 
+> > >  e1
+> > > -,
+> > > +;
+> > >  e2;
+> > > // </smpl>
+> > > 
 > > 
-> >  e1
-> > -,
-> > +;
-> >  e2;
-> > // </smpl>
+> > You can simply say that this fixes what appears to be a bug to me.
+> > I wonder how this does even compile..
 > > 
 > 
-> You can simply say that this fixes what appears to be a bug to me.
-> I wonder how this does even compile..
+> It is not a bug, it is perfectly valid and working as expected/intended.
+> This is just a cosmetic change.
+> 
+> See https://en.wikipedia.org/wiki/Comma_operator if you want to
+> understand.
 > 
 
-It is not a bug, it is perfectly valid and working as expected/intended.
-This is just a cosmetic change.
+Thanks! That's valid and legal (I should have thought at multiple
+expression in for(;;) as an example).
+Ignore my comment then (I still don't think it was "intended" as it's
+quite unusual to see commas there :)
 
-See https://en.wikipedia.org/wiki/Comma_operator if you want to
-understand.
+Thanks
+   j
 
-
--- 
-Alexandre Belloni, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+> 
+> -- 
+> Alexandre Belloni, Free Electrons
+> Embedded Linux and Kernel engineering
+> http://free-electrons.com
