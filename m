@@ -1,321 +1,443 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48090 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41064 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751165AbdDBKvO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Apr 2017 06:51:14 -0400
-Subject: Re: [RFC PATCH 2/3] iio: adc: sun4i-gpadc-iio: add support for H3
- thermal sensor
-To: Quentin Schulz <quentin.schulz@free-electrons.com>,
-        Icenowy Zheng <icenowy@aosc.io>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Maxime Ripard <maxime.ripard@free-electrons.com>,
-        Chen-Yu Tsai <wens@csie.org>, Zhang Rui <rui.zhang@intel.com>
-References: <20170328173013.16539-1-icenowy@aosc.io>
- <20170328173013.16539-3-icenowy@aosc.io>
- <813dc1d8-89b4-9c0e-c1cc-e76efde2be1f@free-electrons.com>
-Cc: devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-pm@vger.kernel.org
+        with ESMTP id S1751590AbdDAK4c (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 1 Apr 2017 06:56:32 -0400
+Subject: Re: [PATCH v5 2/2] iio: Aspeed ADC
+To: Xo Wang <xow@google.com>, Joel Stanley <joel@jms.id.au>
+References: <20170328215259.31622-1-raltherr@google.com>
+ <20170328215259.31622-2-raltherr@google.com>
+ <CACPK8XdHO35VKYsByHfyUu__1JQfbq-FBg7NZZ8Zxnv113v83w@mail.gmail.com>
+ <CAPH-5w5-N5Dd=zfBci_k_B=q1Eqo9M=1QALp7RaqpCWEoZ17Og@mail.gmail.com>
+Cc: Rick Altherr <raltherr@google.com>, Rob Herring <robh@kernel.org>,
+        Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Fabrice Gasnier <fabrice.gasnier@st.com>,
+        Scott Branden <scott.branden@broadcom.com>,
+        linux-iio@vger.kernel.org, Zhiyong Tao <zhiyong.tao@mediatek.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@codeaurora.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        linux-clk@vger.kernel.org,
+        Quentin Schulz <quentin.schulz@free-electrons.com>,
+        Akinobu Mita <akinobu.mita@gmail.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Andreas Klinger <ak@it-klinger.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Crestez Dan Leonard <leonard.crestez@intel.com>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <7d417051-b40c-1cee-3292-177ba0e98b9f@kernel.org>
-Date: Sun, 2 Apr 2017 11:51:10 +0100
+Message-ID: <661ef6ee-ca1a-7188-7e11-3e0084c54082@kernel.org>
+Date: Sat, 1 Apr 2017 11:56:29 +0100
 MIME-Version: 1.0
-In-Reply-To: <813dc1d8-89b4-9c0e-c1cc-e76efde2be1f@free-electrons.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CAPH-5w5-N5Dd=zfBci_k_B=q1Eqo9M=1QALp7RaqpCWEoZ17Og@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 29/03/17 07:54, Quentin Schulz wrote:
-> Hi,
-> 
-> On 28/03/2017 19:30, Icenowy Zheng wrote:
->> This adds support for the Allwinner H3 thermal sensor.
+On 31/03/17 21:57, Xo Wang wrote:
+> On Tue, Mar 28, 2017 at 7:33 PM, Joel Stanley <joel@jms.id.au> wrote:
+>> On Wed, Mar 29, 2017 at 8:22 AM, Rick Altherr <raltherr@google.com> wrote:
+>>> Aspeed BMC SoCs include a 16 channel, 10-bit ADC. Low and high threshold
+>>> interrupts are supported by the hardware but are not currently implemented.
+>>>
+>>> Signed-off-by: Rick Altherr <raltherr@google.com>
 >>
->> Allwinner H3 has a thermal sensor like the one in A33, but have its
->> registers nearly all re-arranged, sample clock moved to CCU and a pair
->> of bus clock and reset added. It's also the base of newer SoCs' thermal
->> sensors.
+>> Reviewed-by: Joel Stanley <joel@jms.id.au>
 >>
->> An option is added to gpadc_data struct, to indicate whether this device
->> is a new-generation Allwinner thermal sensor.
->>
->> The thermal sensors on A64 and H5 is like the one on H3, but with of
->> course different formula factors.
->>
->> Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
->> ---
->>  drivers/iio/adc/sun4i-gpadc-iio.c | 130 ++++++++++++++++++++++++++++++++------
->>  include/linux/mfd/sun4i-gpadc.h   |  33 +++++++++-
->>  2 files changed, 141 insertions(+), 22 deletions(-)
->>
->> diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
->> index 74705aa37982..7512b1cae877 100644
->> --- a/drivers/iio/adc/sun4i-gpadc-iio.c
->> +++ b/drivers/iio/adc/sun4i-gpadc-iio.c
->> @@ -22,6 +22,7 @@
->>   * shutdown for not being used.
->>   */
->>  
->> +#include <linux/clk.h>
->>  #include <linux/completion.h>
->>  #include <linux/interrupt.h>
->>  #include <linux/io.h>
->> @@ -31,6 +32,7 @@
->>  #include <linux/platform_device.h>
->>  #include <linux/pm_runtime.h>
->>  #include <linux/regmap.h>
->> +#include <linux/reset.h>
->>  #include <linux/thermal.h>
->>  #include <linux/delay.h>
->>  
->> @@ -56,6 +58,7 @@ struct gpadc_data {
->>  	unsigned int	tp_adc_select;
->>  	unsigned int	(*adc_chan_select)(unsigned int chan);
->>  	unsigned int	adc_chan_mask;
->> +	bool		gen2_ths;
->>  };
->>  
 > 
-> Instead of a boolean, give the TEMP_DATA register address.
+> Tested-by: Xo Wang <xow@google.com>
 > 
->>  static const struct gpadc_data sun4i_gpadc_data = {
->> @@ -88,7 +91,20 @@ static const struct gpadc_data sun6i_gpadc_data = {
->>  static const struct gpadc_data sun8i_a33_gpadc_data = {
->>  	.temp_offset = -1662,
->>  	.temp_scale = 162,
->> -	.tp_mode_en = SUN8I_GPADC_CTRL1_CHOP_TEMP_EN,
->> +	.tp_mode_en = SUN8I_A23_GPADC_CTRL1_CHOP_TEMP_EN,
->> +};
+> Tested on a Zaius OpenPOWER server running a AST2500 BMC alongside configs:
 > 
-> Separate patch for this?
-Indeed, ideal to rework original first (really easy to review)
-then add support for new part.
+>   CONFIG_IIO=y
+>   CONFIG_ASPEED_ADC=y
+>   CONFIG_SENSORS_IIO_HWMON=y
 > 
->> +
->> +static const struct gpadc_data sun8i_h3_gpadc_data = {
->> +	/*
->> +	 * The original formula on the datasheet seems to be wrong.
->> +	 * These factors are calculated based on the formula in the BSP
->> +	 * kernel, which is originally Tem = 217 - (T / 8.253), in which Tem
->> +	 * is the temperature in Celsius degree and T is the raw value
->> +	 * from the sensor.
->> +	 */
->> +	.temp_offset = -1791,
->> +	.temp_scale = -121,
->> +	.gen2_ths = true,
->>  };
->>  
->>  struct sun4i_gpadc_iio {
->> @@ -103,6 +119,9 @@ struct sun4i_gpadc_iio {
->>  	atomic_t			ignore_temp_data_irq;
->>  	const struct gpadc_data		*data;
->>  	bool				no_irq;
->> +	struct clk			*ths_bus_clk;
->> +	struct clk			*ths_clk;
->> +	struct reset_control		*reset;
->>  	/* prevents concurrent reads of temperature and ADC */
->>  	struct mutex			mutex;
->>  };
->> @@ -274,7 +293,11 @@ static int sun4i_gpadc_temp_read(struct iio_dev *indio_dev, int *val)
->>  	if (info->no_irq) {
->>  		pm_runtime_get_sync(indio_dev->dev.parent);
->>  
->> -		regmap_read(info->regmap, SUN4I_GPADC_TEMP_DATA, val);
->> +		if (info->data->gen2_ths)
->> +			regmap_read(info->regmap, SUN8I_H3_GPADC_TEMP_DATA,
->> +				    val);
->> +		else
->> +			regmap_read(info->regmap, SUN4I_GPADC_TEMP_DATA, val);
->>  
-> 
-> Instead of gen2_ths, use the TEMP_DATA register address.
-Agreed. Put a set of register addresses into the gpadc_data structure.
-Both more flexible and easier to read.
-> 
->>  		pm_runtime_mark_last_busy(indio_dev->dev.parent);
->>  		pm_runtime_put_autosuspend(indio_dev->dev.parent);
->> @@ -386,10 +409,15 @@ static int sun4i_gpadc_runtime_suspend(struct device *dev)
->>  {
->>  	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(dev));
->>  
->> -	/* Disable the ADC on IP */
->> -	regmap_write(info->regmap, SUN4I_GPADC_CTRL1, 0);
->> -	/* Disable temperature sensor on IP */
->> -	regmap_write(info->regmap, SUN4I_GPADC_TPR, 0);
->> +	if (info->data->gen2_ths) {
->> +		/* Disable temperature sensor */
->> +		regmap_write(info->regmap, SUN8I_H3_GPADC_CTRL2, 0);
->> +	} else {
->> +		/* Disable the ADC on IP */
->> +		regmap_write(info->regmap, SUN4I_GPADC_CTRL1, 0);
->> +		/* Disable temperature sensor on IP */
->> +		regmap_write(info->regmap, SUN4I_GPADC_TPR, 0);
->> +	}
->>  
-> 
-> Either use another register address or add a suspend function to struct
-> gpadc_data which will be different for each version of the IP.
-> 
->>  	return 0;
->>  }
->> @@ -398,19 +426,36 @@ static int sun4i_gpadc_runtime_resume(struct device *dev)
->>  {
->>  	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(dev));
->>  
->> -	/* clkin = 6MHz */
->> -	regmap_write(info->regmap, SUN4I_GPADC_CTRL0,
->> -		     SUN4I_GPADC_CTRL0_ADC_CLK_DIVIDER(2) |
->> -		     SUN4I_GPADC_CTRL0_FS_DIV(7) |
->> -		     SUN4I_GPADC_CTRL0_T_ACQ(63));
->> -	regmap_write(info->regmap, SUN4I_GPADC_CTRL1, info->data->tp_mode_en);
->> -	regmap_write(info->regmap, SUN4I_GPADC_CTRL3,
->> -		     SUN4I_GPADC_CTRL3_FILTER_EN |
->> -		     SUN4I_GPADC_CTRL3_FILTER_TYPE(1));
->> -	/* period = SUN4I_GPADC_TPR_TEMP_PERIOD * 256 * 16 / clkin; ~0.6s */
->> -	regmap_write(info->regmap, SUN4I_GPADC_TPR,
->> -		     SUN4I_GPADC_TPR_TEMP_ENABLE |
->> -		     SUN4I_GPADC_TPR_TEMP_PERIOD(800));
->> +	if (info->data->gen2_ths) {
->> +		regmap_write(info->regmap, SUN8I_H3_GPADC_CTRL2,
->> +			     SUN8I_H3_GPADC_CTRL2_TEMP_SENSE_EN |
->> +			     SUN8I_H3_GPADC_CTRL2_T_ACQ1(31));
->> +		regmap_write(info->regmap, SUN4I_GPADC_CTRL0,
->> +			     SUN4I_GPADC_CTRL0_T_ACQ(31));
->> +		regmap_write(info->regmap, SUN8I_H3_GPADC_CTRL3,
->> +			     SUN4I_GPADC_CTRL3_FILTER_EN |
->> +			     SUN4I_GPADC_CTRL3_FILTER_TYPE(1));
->> +		regmap_write(info->regmap, SUN8I_H3_GPADC_INTC,
->> +			     SUN8I_H3_GPADC_INTC_TEMP_PERIOD(800));
->> +	} else {
->> +		/* clkin = 6MHz */
->> +		regmap_write(info->regmap, SUN4I_GPADC_CTRL0,
->> +			     SUN4I_GPADC_CTRL0_ADC_CLK_DIVIDER(2) |
->> +			     SUN4I_GPADC_CTRL0_FS_DIV(7) |
->> +			     SUN4I_GPADC_CTRL0_T_ACQ(63));
-Looks like you'll need something like a function pointer in your
-_data structure as well to cover cases where they are totally
-different like here.  or you could use regmap fields if they map
-reasonably well... (doesn't look like they do though!)
->> +		regmap_write(info->regmap, SUN4I_GPADC_CTRL1,
->> +			     info->data->tp_mode_en);
->> +		regmap_write(info->regmap, SUN4I_GPADC_CTRL3,
->> +			     SUN4I_GPADC_CTRL3_FILTER_EN |
->> +			     SUN4I_GPADC_CTRL3_FILTER_TYPE(1));
->> +		/*
->> +		 * period = SUN4I_GPADC_TPR_TEMP_PERIOD * 256 * 16 / clkin;
->> +		 * ~0.6s
->> +		 */
->> +		regmap_write(info->regmap, SUN4I_GPADC_TPR,
->> +			     SUN4I_GPADC_TPR_TEMP_ENABLE |
->> +			     SUN4I_GPADC_TPR_TEMP_PERIOD(800));
->> +	}
->>  
-> 
-> Same here as suspend function?
-> 
->>  	return 0;
->>  }
->> @@ -494,6 +539,10 @@ static const struct of_device_id sun4i_gpadc_of_id[] = {
->>  		.compatible = "allwinner,sun8i-a33-ths",
->>  		.data = &sun8i_a33_gpadc_data,
->>  	},
->> +	{
->> +		.compatible = "allwinner,sun8i-h3-ths",
->> +		.data = &sun8i_h3_gpadc_data,
->> +	},
->>  	{ /* sentinel */ }
->>  };
->>  
->> @@ -529,6 +578,43 @@ static int sun4i_gpadc_probe_dt(struct platform_device *pdev,
->>  		return ret;
->>  	}
->>  
->> +	if (info->data->gen2_ths) {
->> +		info->reset = devm_reset_control_get(&pdev->dev, NULL);
->> +		if (IS_ERR(info->reset)) {
->> +			ret = PTR_ERR(info->reset);
->> +			return ret;
->> +		}
->> +
->> +		ret = reset_control_deassert(info->reset);
->> +		if (ret)
->> +			return ret;
->> +
->> +		info->ths_bus_clk = devm_clk_get(&pdev->dev, "bus");
->> +		if (IS_ERR(info->ths_bus_clk)) {
->> +			ret = PTR_ERR(info->ths_bus_clk);
->> +			return ret;
->> +		}
->> +
->> +		ret = clk_prepare_enable(info->ths_bus_clk);
->> +		if (ret)
->> +			return ret;
->> +
->> +		info->ths_clk = devm_clk_get(&pdev->dev, "ths");
->> +		if (IS_ERR(info->ths_clk)) {
->> +			ret = PTR_ERR(info->ths_clk);
->> +			return ret;
->> +		}
->> +
->> +		/* Running at 6MHz */
->> +		ret = clk_set_rate(info->ths_clk, 6000000);
->> +		if (ret)
->> +			return ret;
->> +
->> +		ret = clk_prepare_enable(info->ths_clk);
->> +		if (ret)
->> +			return ret;
->> +	}
->> +
->>  	if (!IS_ENABLED(CONFIG_THERMAL_OF))
->>  		return 0;
->>  
->> @@ -691,6 +777,12 @@ static int sun4i_gpadc_remove(struct platform_device *pdev)
->>  	if (!info->no_irq && IS_ENABLED(CONFIG_THERMAL_OF))
->>  		iio_map_array_unregister(indio_dev);
->>  
->> +	if (info->data->gen2_ths) {
->> +		clk_disable_unprepare(info->ths_clk);
->> +		clk_disable_unprepare(info->ths_bus_clk);
->> +		reset_control_deassert(info->reset);
->> +	}
->> +
-> 
-> I'm not really fond of using this boolean as I don't see it being
-> possibly reused for any other SoCs that has a GPADC or THS.
-> 
-> Here, you could make use of a list/array of clk which then can be reused
-> for other SoCs just by changing the list. Add a default rate to the
-> gpadc_data structure and you're go to go.
-> 
->>  	return 0;
->>  }
->>  
->> diff --git a/include/linux/mfd/sun4i-gpadc.h b/include/linux/mfd/sun4i-gpadc.h
->> index 139872c2e0fe..f794a2988a93 100644
->> --- a/include/linux/mfd/sun4i-gpadc.h
->> +++ b/include/linux/mfd/sun4i-gpadc.h
->> @@ -38,9 +38,12 @@
->>  #define SUN6I_GPADC_CTRL1_ADC_CHAN_SELECT(x)		(GENMASK(3, 0) & BIT(x))
->>  #define SUN6I_GPADC_CTRL1_ADC_CHAN_MASK			GENMASK(3, 0)
->>  
->> -/* TP_CTRL1 bits for sun8i SoCs */
->> -#define SUN8I_GPADC_CTRL1_CHOP_TEMP_EN			BIT(8)
->> -#define SUN8I_GPADC_CTRL1_GPADC_CALI_EN			BIT(7)
->> +/* TP_CTRL1 bits for sun8i A23/A33 SoCs */
->> +#define SUN8I_A23_GPADC_CTRL1_CHOP_TEMP_EN		BIT(8)
->> +#define SUN8I_A23_GPADC_CTRL1_GPADC_CALI_EN		BIT(7)
->> +
-> 
-> Different patch for these?
-Looks to me like you want a precursor that reworks the driver to
-be ready to support the new part, followed by a patch that actually
-introduces the new part.
+> as well as the appropriate device tree entries.
+Thanks Xo and Joel,
+
+Testing and reviewing is sometimes a thankless task so it
+is always nice when several people do these for a new driver!
 
 Jonathan
 > 
-> Thanks,
-> Quentin
+>>> ---
+>>>
+>>> Changes in v5:
+>>> - Return EINVAL for unimplemented read/write channel infos.
+>>> - Return EPERM for write attempts to read-only channel infos.
+>>>
+>>> Changes in v4:
+>>> - Avoid copying per-model data to per-instance data
+>>>
+>>> Changes in v3:
+>>> - Drop model numbers from description as same IP is used in every generation
+>>> - Remove unused macros
+>>> - Shorten macro prefix to just ASPEED_
+>>> - Remove extraneous whitespace
+>>> - Rename 2nd argument of ASPEED_CHAN() to clarify purpose
+>>> - Use existing macros in place of magic constants
+>>> - Remove unnecessary logging in failure conditions during probe
+>>> - Disable ADC hardware during remove()
+>>> - Add a NULL terminator to of_match_table
+>>> - Add per-model data to accomodate slight variations (vref, min/max sample rate)
+>>> - Added missing Kconfig depends on COMMON_CLK
+>>>
+>>> Changes in v2:
+>>> - Rewritten as an IIO device
+>>> - Renamed register macros to describe the register's purpose
+>>> - Replaced awkward reading of 16-bit data registers with readw()
+>>> - Added Kconfig dependency on COMPILE_TEST
+>>>
+>>>  drivers/iio/adc/Kconfig      |  11 ++
+>>>  drivers/iio/adc/Makefile     |   1 +
+>>>  drivers/iio/adc/aspeed_adc.c | 294 +++++++++++++++++++++++++++++++++++++++++++
+>>>  3 files changed, 306 insertions(+)
+>>>  create mode 100644 drivers/iio/adc/aspeed_adc.c
+>>>
+>>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>>> index 2268a6fb9865..236d05f99e80 100644
+>>> --- a/drivers/iio/adc/Kconfig
+>>> +++ b/drivers/iio/adc/Kconfig
+>>> @@ -130,6 +130,17 @@ config AD799X
+>>>           To compile this driver as a module, choose M here: the module will be
+>>>           called ad799x.
+>>>
+>>> +config ASPEED_ADC
+>>> +       tristate "Aspeed ADC"
+>>> +       depends on ARCH_ASPEED || COMPILE_TEST
+>>> +       depends on COMMON_CLK
+>>> +       help
+>>> +         If you say yes here you get support for the ADC included in Aspeed
+>>> +         BMC SoCs.
+>>> +
+>>> +         To compile this driver as a module, choose M here: the module will be
+>>> +         called aspeed_adc.
+>>> +
+>>>  config AT91_ADC
+>>>         tristate "Atmel AT91 ADC"
+>>>         depends on ARCH_AT91
+>>> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+>>> index 73dbe399f894..306f10ffca74 100644
+>>> --- a/drivers/iio/adc/Makefile
+>>> +++ b/drivers/iio/adc/Makefile
+>>> @@ -14,6 +14,7 @@ obj-$(CONFIG_AD7791) += ad7791.o
+>>>  obj-$(CONFIG_AD7793) += ad7793.o
+>>>  obj-$(CONFIG_AD7887) += ad7887.o
+>>>  obj-$(CONFIG_AD799X) += ad799x.o
+>>> +obj-$(CONFIG_ASPEED_ADC) += aspeed_adc.o
+>>>  obj-$(CONFIG_AT91_ADC) += at91_adc.o
+>>>  obj-$(CONFIG_AT91_SAMA5D2_ADC) += at91-sama5d2_adc.o
+>>>  obj-$(CONFIG_AXP288_ADC) += axp288_adc.o
+>>> diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
+>>> new file mode 100644
+>>> index 000000000000..2283ed202194
+>>> --- /dev/null
+>>> +++ b/drivers/iio/adc/aspeed_adc.c
+>>> @@ -0,0 +1,294 @@
+>>> +/*
+>>> + * Aspeed AST2400/2500 ADC
+>>> + *
+>>> + * Copyright (C) 2017 Google, Inc.
+>>> + *
+>>> + * This program is free software; you can redistribute it and/or modify it
+>>> + * under the terms and conditions of the GNU General Public License,
+>>> + * version 2, as published by the Free Software Foundation.
+>>> + *
+>>> + */
+>>> +
+>>> +#include <asm/io.h>
+>>> +#include <linux/clk.h>
+>>> +#include <linux/clk-provider.h>
+>>> +#include <linux/err.h>
+>>> +#include <linux/errno.h>
+>>> +#include <linux/module.h>
+>>> +#include <linux/of_platform.h>
+>>> +#include <linux/platform_device.h>
+>>> +#include <linux/spinlock.h>
+>>> +#include <linux/types.h>
+>>> +
+>>> +#include <linux/iio/iio.h>
+>>> +#include <linux/iio/driver.h>
+>>> +
+>>> +#define ASPEED_RESOLUTION_BITS         10
+>>> +#define ASPEED_CLOCKS_PER_SAMPLE       12
+>>> +
+>>> +#define ASPEED_REG_ENGINE_CONTROL      0x00
+>>> +#define ASPEED_REG_INTERRUPT_CONTROL   0x04
+>>> +#define ASPEED_REG_VGA_DETECT_CONTROL  0x08
+>>> +#define ASPEED_REG_CLOCK_CONTROL       0x0C
+>>> +#define ASPEED_REG_MAX                 0xC0
+>>> +
+>>> +#define ASPEED_OPERATION_MODE_POWER_DOWN       (0x0 << 1)
+>>> +#define ASPEED_OPERATION_MODE_STANDBY          (0x1 << 1)
+>>> +#define ASPEED_OPERATION_MODE_NORMAL           (0x7 << 1)
+>>> +
+>>> +#define ASPEED_ENGINE_ENABLE           BIT(0)
+>>> +
+>>> +struct aspeed_adc_model_data {
+>>> +       const char *model_name;
+>>> +       unsigned int min_sampling_rate; // Hz
+>>> +       unsigned int max_sampling_rate; // Hz
+>>> +       unsigned int vref_voltage;      // mV
+>>> +};
+>>> +
+>>> +struct aspeed_adc_data {
+>>> +       struct device   *dev;
+>>> +       void __iomem    *base;
+>>> +       spinlock_t      clk_lock;
+>>> +       struct clk_hw   *clk_prescaler;
+>>> +       struct clk_hw   *clk_scaler;
+>>> +};
+>>> +
+>>> +#define ASPEED_CHAN(_idx, _data_reg_addr) {                    \
+>>> +       .type = IIO_VOLTAGE,                                    \
+>>> +       .indexed = 1,                                           \
+>>> +       .channel = (_idx),                                      \
+>>> +       .address = (_data_reg_addr),                            \
+>>> +       .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),           \
+>>> +       .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |  \
+>>> +                               BIT(IIO_CHAN_INFO_SAMP_FREQ),   \
+>>> +}
+>>> +
+>>> +static const struct iio_chan_spec aspeed_adc_iio_channels[] = {
+>>> +       ASPEED_CHAN(0, 0x10),
+>>> +       ASPEED_CHAN(1, 0x12),
+>>> +       ASPEED_CHAN(2, 0x14),
+>>> +       ASPEED_CHAN(3, 0x16),
+>>> +       ASPEED_CHAN(4, 0x18),
+>>> +       ASPEED_CHAN(5, 0x1A),
+>>> +       ASPEED_CHAN(6, 0x1C),
+>>> +       ASPEED_CHAN(7, 0x1E),
+>>> +       ASPEED_CHAN(8, 0x20),
+>>> +       ASPEED_CHAN(9, 0x22),
+>>> +       ASPEED_CHAN(10, 0x24),
+>>> +       ASPEED_CHAN(11, 0x26),
+>>> +       ASPEED_CHAN(12, 0x28),
+>>> +       ASPEED_CHAN(13, 0x2A),
+>>> +       ASPEED_CHAN(14, 0x2C),
+>>> +       ASPEED_CHAN(15, 0x2E),
+>>> +};
+>>> +
+>>> +static int aspeed_adc_read_raw(struct iio_dev *indio_dev,
+>>> +                              struct iio_chan_spec const *chan,
+>>> +                              int *val, int *val2, long mask)
+>>> +{
+>>> +       struct aspeed_adc_data *data = iio_priv(indio_dev);
+>>> +       const struct aspeed_adc_model_data *model_data =
+>>> +                       of_device_get_match_data(data->dev);
+>>> +
+>>> +       switch (mask) {
+>>> +       case IIO_CHAN_INFO_RAW:
+>>> +               *val = readw(data->base + chan->address);
+>>> +               return IIO_VAL_INT;
+>>> +
+>>> +       case IIO_CHAN_INFO_SCALE:
+>>> +               *val = model_data->vref_voltage;
+>>> +               *val2 = ASPEED_RESOLUTION_BITS;
+>>> +               return IIO_VAL_FRACTIONAL_LOG2;
+>>> +
+>>> +       case IIO_CHAN_INFO_SAMP_FREQ:
+>>> +               *val = clk_get_rate(data->clk_scaler->clk) /
+>>> +                               ASPEED_CLOCKS_PER_SAMPLE;
+>>> +               return IIO_VAL_INT;
+>>> +
+>>> +       default:
+>>> +               return -EINVAL;
+>>> +       }
+>>> +}
+>>> +
+>>> +static int aspeed_adc_write_raw(struct iio_dev *indio_dev,
+>>> +                               struct iio_chan_spec const *chan,
+>>> +                               int val, int val2, long mask)
+>>> +{
+>>> +       struct aspeed_adc_data *data = iio_priv(indio_dev);
+>>> +       const struct aspeed_adc_model_data *model_data =
+>>> +                       of_device_get_match_data(data->dev);
+>>> +
+>>> +       switch (mask) {
+>>> +       case IIO_CHAN_INFO_SAMP_FREQ:
+>>> +               if (val < model_data->min_sampling_rate ||
+>>> +                       val > model_data->max_sampling_rate)
+>>> +                       return -EINVAL;
+>>> +
+>>> +               clk_set_rate(data->clk_scaler->clk,
+>>> +                               val * ASPEED_CLOCKS_PER_SAMPLE);
+>>> +               return 0;
+>>> +
+>>> +       case IIO_CHAN_INFO_SCALE:
+>>> +       case IIO_CHAN_INFO_RAW:
+>>> +               /*
+>>> +                * Technically, these could be written but the only reasons
+>>> +                * for doing so seem better handled in userspace.  EPERM is
+>>> +                * returned to signal this is a policy choice rather than a
+>>> +                * hardware limitation.
+>>> +                */
+>>> +               return -EPERM;
+>>> +
+>>> +       default:
+>>> +               return -EINVAL;
+>>> +       }
+>>> +}
+>>> +
+>>> +static int aspeed_adc_reg_access(struct iio_dev *indio_dev,
+>>> +                                unsigned int reg, unsigned int writeval,
+>>> +                                unsigned int *readval)
+>>> +{
+>>> +       struct aspeed_adc_data *data = iio_priv(indio_dev);
+>>> +
+>>> +       if (!readval || reg % 4 || reg > ASPEED_REG_MAX)
+>>> +               return -EINVAL;
+>>> +
+>>> +       *readval = readl(data->base + reg);
+>>> +       return 0;
+>>> +}
+>>> +
+>>> +static const struct iio_info aspeed_adc_iio_info = {
+>>> +       .driver_module = THIS_MODULE,
+>>> +       .read_raw = aspeed_adc_read_raw,
+>>> +       .write_raw = aspeed_adc_write_raw,
+>>> +       .debugfs_reg_access = aspeed_adc_reg_access,
+>>> +};
+>>> +
+>>> +static int aspeed_adc_probe(struct platform_device *pdev)
+>>> +{
+>>> +       struct iio_dev *indio_dev;
+>>> +       struct aspeed_adc_data *data;
+>>> +       const struct aspeed_adc_model_data *model_data;
+>>> +       struct resource *res;
+>>> +       const char *clk_parent_name;
+>>> +       int ret;
+>>> +       u32 adc_engine_control_reg_val;
+>>> +
+>>> +       indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*data));
+>>> +       if (!indio_dev)
+>>> +               return -ENOMEM;
+>>> +
+>>> +       data = iio_priv(indio_dev);
+>>> +       data->dev = &pdev->dev;
+>>> +
+>>> +       res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>> +       data->base = devm_ioremap_resource(&pdev->dev, res);
+>>> +       if (IS_ERR(data->base))
+>>> +               return PTR_ERR(data->base);
+>>> +
+>>> +       /* Register ADC clock prescaler with source specified by device tree. */
+>>> +       spin_lock_init(&data->clk_lock);
+>>> +       clk_parent_name = of_clk_get_parent_name(pdev->dev.of_node, 0);
+>>> +
+>>> +       data->clk_prescaler = clk_hw_register_divider(
+>>> +                               &pdev->dev, "prescaler", clk_parent_name, 0,
+>>> +                               data->base + ASPEED_REG_CLOCK_CONTROL,
+>>> +                               17, 15, 0, &data->clk_lock);
+>>> +       if (IS_ERR(data->clk_prescaler))
+>>> +               return PTR_ERR(data->clk_prescaler);
+>>> +
+>>> +       /*
+>>> +        * Register ADC clock scaler downstream from the prescaler. Allow rate
+>>> +        * setting to adjust the prescaler as well.
+>>> +        */
+>>> +       data->clk_scaler = clk_hw_register_divider(
+>>> +                               &pdev->dev, "scaler", "prescaler",
+>>> +                               CLK_SET_RATE_PARENT,
+>>> +                               data->base + ASPEED_REG_CLOCK_CONTROL,
+>>> +                               0, 10, 0, &data->clk_lock);
+>>> +       if (IS_ERR(data->clk_scaler)) {
+>>> +               ret = PTR_ERR(data->clk_scaler);
+>>> +               goto scaler_error;
+>>> +       }
+>>> +
+>>> +       /* Start all channels in normal mode. */
+>>> +       clk_prepare_enable(data->clk_scaler->clk);
+>>> +       adc_engine_control_reg_val = GENMASK(31, 16) |
+>>> +               ASPEED_OPERATION_MODE_NORMAL | ASPEED_ENGINE_ENABLE;
+>>> +       writel(adc_engine_control_reg_val,
+>>> +               data->base + ASPEED_REG_ENGINE_CONTROL);
+>>> +
+>>> +       model_data = of_device_get_match_data(&pdev->dev);
+>>> +       indio_dev->name = model_data->model_name;
+>>> +       indio_dev->dev.parent = &pdev->dev;
+>>> +       indio_dev->info = &aspeed_adc_iio_info;
+>>> +       indio_dev->modes = INDIO_DIRECT_MODE;
+>>> +       indio_dev->channels = aspeed_adc_iio_channels;
+>>> +       indio_dev->num_channels = ARRAY_SIZE(aspeed_adc_iio_channels);
+>>> +
+>>> +       ret = iio_device_register(indio_dev);
+>>> +       if (ret)
+>>> +               goto iio_register_error;
+>>> +
+>>> +       return 0;
+>>> +
+>>> +iio_register_error:
+>>> +       writel(ASPEED_OPERATION_MODE_POWER_DOWN,
+>>> +               data->base + ASPEED_REG_ENGINE_CONTROL);
+>>> +       clk_disable_unprepare(data->clk_scaler->clk);
+>>> +       clk_hw_unregister_divider(data->clk_scaler);
+>>> +
+>>> +scaler_error:
+>>> +       clk_hw_unregister_divider(data->clk_prescaler);
+>>> +       return ret;
+>>> +}
+>>> +
+>>> +static int aspeed_adc_remove(struct platform_device *pdev)
+>>> +{
+>>> +       struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+>>> +       struct aspeed_adc_data *data = iio_priv(indio_dev);
+>>> +
+>>> +       iio_device_unregister(indio_dev);
+>>> +       writel(ASPEED_OPERATION_MODE_POWER_DOWN,
+>>> +               data->base + ASPEED_REG_ENGINE_CONTROL);
+>>> +       clk_disable_unprepare(data->clk_scaler->clk);
+>>> +       clk_hw_unregister_divider(data->clk_scaler);
+>>> +       clk_hw_unregister_divider(data->clk_prescaler);
+>>> +
+>>> +       return 0;
+>>> +}
+>>> +
+>>> +static const struct aspeed_adc_model_data ast2400_model_data = {
+>>> +       .model_name = "ast2400-adc",
+>>> +       .vref_voltage = 2500, // mV
+>>> +       .min_sampling_rate = 10000,
+>>> +       .max_sampling_rate = 500000,
+>>> +};
+>>> +
+>>> +static const struct aspeed_adc_model_data ast2500_model_data = {
+>>> +       .model_name = "ast2500-adc",
+>>> +       .vref_voltage = 1800, // mV
+>>> +       .min_sampling_rate = 1,
+>>> +       .max_sampling_rate = 1000000,
+>>> +};
+>>> +
+>>> +static const struct of_device_id aspeed_adc_matches[] = {
+>>> +       { .compatible = "aspeed,ast2400-adc", .data = &ast2400_model_data },
+>>> +       { .compatible = "aspeed,ast2500-adc", .data = &ast2500_model_data },
+>>> +       {},
+>>> +};
+>>> +MODULE_DEVICE_TABLE(of, aspeed_adc_matches);
+>>> +
+>>> +static struct platform_driver aspeed_adc_driver = {
+>>> +       .probe = aspeed_adc_probe,
+>>> +       .remove = aspeed_adc_remove,
+>>> +       .driver = {
+>>> +               .name = KBUILD_MODNAME,
+>>> +               .of_match_table = aspeed_adc_matches,
+>>> +       }
+>>> +};
+>>> +
+>>> +module_platform_driver(aspeed_adc_driver);
+>>> +
+>>> +MODULE_AUTHOR("Rick Altherr <raltherr@google.com>");
+>>> +MODULE_DESCRIPTION("Aspeed AST2400/2500 ADC Driver");
+>>> +MODULE_LICENSE("GPL");
+>>> --
+>>> 2.12.2.564.g063fe858b8-goog
+>>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
