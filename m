@@ -1,68 +1,52 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47248 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750931AbdDBIuE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Apr 2017 04:50:04 -0400
-Subject: Re: [PATCH] iio: dac: ad5504: Remove unnecessary cast on void pointer
-To: simran singhal <singhalsimran0@gmail.com>, lars@metafoo.de
-References: <20170401141153.GA26918@singhal-Inspiron-5558>
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <7a4d91fe-9401-f799-0e72-9b3431aa7ac3@kernel.org>
-Date: Sun, 2 Apr 2017 09:50:02 +0100
+Return-Path: <SRS0=bHRo=3J=gmail.com=singhalsimran0@kernel.org>
+Date: Sat, 1 Apr 2017 19:44:15 +0530
+From: simran singhal <singhalsimran0@gmail.com>
+To: jic23@kernel.org
+Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: humidity: hts221_buffer: Remove unnecessary cast on
+ void pointer
+Message-ID: <20170401141415.GA29239@singhal-Inspiron-5558>
 MIME-Version: 1.0
-In-Reply-To: <20170401141153.GA26918@singhal-Inspiron-5558>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+List-ID: <linux-iio@vger.kernel.org>
 
-On 01/04/17 15:11, simran singhal wrote:
-> The following Coccinelle script was used to detect this:
-> @r@
-> expression x;
-> void* e;
-> type T;
-> identifier f;
-> @@
-> (
->   *((T *)e)
-> |
->   ((T *)x)[...]
-> |
->   ((T*)x)->f
-> |
-> - (T*)
->   e
-> )
-> 
-> Signed-off-by: simran singhal <singhalsimran0@gmail.com>
-It could be argued for this one that it is acting as documentation
-as it might not be obvious without looking up the definition of
-the iio_get_time_ns function that it takes a struct iio_dev.
+The following Coccinelle script was used to detect this:
+@r@
+expression x;
+void* e;
+type T;
+identifier f;
+@@
+(
+  *((T *)e)
+|
+  ((T *)x)[...]
+|
+  ((T*)x)->f
+|
+- (T*)
+  e
+)
 
-However, on balance I think that this case is simple enough that
-it should be fine as you have it.
+Signed-off-by: simran singhal <singhalsimran0@gmail.com>
+---
+ drivers/iio/humidity/hts221_buffer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Applied.
-> ---
->  drivers/iio/dac/ad5504.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/dac/ad5504.c b/drivers/iio/dac/ad5504.c
-> index 22a027d..712d86b 100644
-> --- a/drivers/iio/dac/ad5504.c
-> +++ b/drivers/iio/dac/ad5504.c
-> @@ -223,7 +223,7 @@ static irqreturn_t ad5504_event_handler(int irq, void *private)
->  					    0,
->  					    IIO_EV_TYPE_THRESH,
->  					    IIO_EV_DIR_RISING),
-> -		       iio_get_time_ns((struct iio_dev *)private));
-> +		       iio_get_time_ns(private));
->  
->  	return IRQ_HANDLED;
->  }
-> 
-
+diff --git a/drivers/iio/humidity/hts221_buffer.c b/drivers/iio/humidity/hts221_buffer.c
+index 72ddcda..7d19a3d 100644
+--- a/drivers/iio/humidity/hts221_buffer.c
++++ b/drivers/iio/humidity/hts221_buffer.c
+@@ -41,7 +41,7 @@ static const struct iio_trigger_ops hts221_trigger_ops = {
+ 
+ static irqreturn_t hts221_trigger_handler_thread(int irq, void *private)
+ {
+-	struct hts221_hw *hw = (struct hts221_hw *)private;
++	struct hts221_hw *hw = private;
+ 	u8 status;
+ 	int err;
+ 
+-- 
+2.7.4
