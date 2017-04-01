@@ -1,62 +1,86 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40935 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751856AbdDAKlI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 1 Apr 2017 06:41:08 -0400
-Subject: Re: [PATCH] staging: iio: light: constify attribute_group structures
-To: simran singhal <singhalsimran0@gmail.com>
-References: <20170401022856.GA9305@singhal-Inspiron-5558>
+Received: from mail-pg0-f67.google.com ([74.125.83.67]:34545 "EHLO
+        mail-pg0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750797AbdDAIRz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 1 Apr 2017 04:17:55 -0400
+Date: Sat, 1 Apr 2017 13:47:51 +0530
+From: simran singhal <singhalsimran0@gmail.com>
+To: jic23@kernel.org
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <277e5ae4-5154-547a-147c-9fee105ba5a6@kernel.org>
-Date: Sat, 1 Apr 2017 11:41:06 +0100
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: adc: hx711: constify attribute_group structures
+Message-ID: <20170401081751.GA30133@singhal-Inspiron-5558>
 MIME-Version: 1.0
-In-Reply-To: <20170401022856.GA9305@singhal-Inspiron-5558>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/04/17 03:28, simran singhal wrote:
-> As the event_attrs field of iio_info structures is constant, so these
-> attribute_group structures can also be declared constant.
-> 
-> File size before:
->    text	   data	    bss	    dec	    hex	filename
->   15064	   1528	      0	  16592	   40d0
-> drivers/staging/iio/light/tsl2x7x_core.o
-> 
-> File size after:
->    text	   data	    bss	    dec	    hex	filename
->   15192	   1400	      0	  16592	   40d0
-> drivers/staging/iio/light/tsl2x7x_core.o
-> 
-> Signed-off-by: simran singhal <singhalsimran0@gmail.com>
-Not a big thing, but as this only touches the one driver, i would have
-liked that mentioned in the naming of the patch...
+Check for attribute_group structures that are only stored in the
+attrs filed of iio_info structure. As the attrs field of iio_info
+structures is constant, so these attribute_group structures can also be
+declared constant.
+Done using coccinelle:
 
-I've added it.
-Applied.
-> ---
->  drivers/staging/iio/light/tsl2x7x_core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/iio/light/tsl2x7x_core.c b/drivers/staging/iio/light/tsl2x7x_core.c
-> index 0490c1d..9a0046a 100644
-> --- a/drivers/staging/iio/light/tsl2x7x_core.c
-> +++ b/drivers/staging/iio/light/tsl2x7x_core.c
-> @@ -1676,7 +1676,7 @@ static const struct attribute_group tsl2X7X_device_attr_group_tbl[] = {
->  	},
->  };
->  
-> -static struct attribute_group tsl2X7X_event_attr_group_tbl[] = {
-> +static const struct attribute_group tsl2X7X_event_attr_group_tbl[] = {
->  	[ALS] = {
->  		.attrs = tsl2X7X_ALS_event_attrs,
->  		.name = "events",
-> 
+@r1 disable optional_qualifier @
+identifier i;
+position p;
+@@
+static struct attribute_group i@p = {...};
+
+@ok1@
+identifier r1.i;
+position p;
+struct iio_info x;
+@@
+x.attrs=&i@p;
+
+@bad@
+position p!={r1.p,ok1.p};
+identifier r1.i;
+@@
+i@p
+
+@depends on !bad disable optional_qualifier@
+identifier r1.i;
+@@
+static
++const
+struct attribute_group i={...};
+
+@depends on !bad disable optional_qualifier@
+identifier r1.i;
+@@
++const
+struct attribute_group i;
+
+File size before:
+   text	   data	    bss	    dec	    hex	filename
+   3042	    480	      0	   3522	    dc2	drivers/iio/adc/hx711.o
+
+File size after:
+   text	   data	    bss	    dec	    hex	filename
+   3098	    416	      0	   3514	    dba	drivers/iio/adc/hx711.o
+
+Signed-off-by: simran singhal <singhalsimran0@gmail.com>
+---
+ drivers/iio/adc/hx711.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/adc/hx711.c b/drivers/iio/adc/hx711.c
+index 139639f..27005d8 100644
+--- a/drivers/iio/adc/hx711.c
++++ b/drivers/iio/adc/hx711.c
+@@ -369,7 +369,7 @@ static struct attribute *hx711_attributes[] = {
+ 	NULL,
+ };
+ 
+-static struct attribute_group hx711_attribute_group = {
++static const struct attribute_group hx711_attribute_group = {
+ 	.attrs = hx711_attributes,
+ };
+ 
+-- 
+2.7.4
 
