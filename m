@@ -1,46 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wr0-f176.google.com ([209.85.128.176]:33656 "EHLO
-        mail-wr0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754055AbdDFMMC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 6 Apr 2017 08:12:02 -0400
-Received: by mail-wr0-f176.google.com with SMTP id g19so14811044wrb.0
-        for <linux-iio@vger.kernel.org>; Thu, 06 Apr 2017 05:12:02 -0700 (PDT)
-Date: Thu, 6 Apr 2017 13:11:58 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Icenowy Zheng <icenowy@aosc.io>
-Cc: Rob Herring <robh@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
-        linux-sunxi <linux-sunxi@googlegroups.com>,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        Quentin Schulz <quentin.schulz@free-electrons.com>,
+Received: from hermes.aosc.io ([199.195.250.187]:49542 "EHLO hermes.aosc.io"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751401AbdDBNoP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 2 Apr 2017 09:44:15 -0400
+From: Icenowy Zheng <icenowy@aosc.io>
+To: Lee Jones <lee.jones@linaro.org>,
         Maxime Ripard <maxime.ripard@free-electrons.com>,
+        Chen-Yu Tsai <wens@csie.org>,
         Jonathan Cameron <jic23@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, Chen-Yu Tsai <wens@csie.org>
-Subject: Re: [RFC PATCH v2 1/4] dt-bindings: update the Allwinner GPADC
- device tree binding for H3
-Message-ID: <20170406121158.b33rrt4f54k3dz6f@dell>
-References: <20170406095534.299945C355D@relay.mailchannels.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <20170406095534.299945C355D@relay.mailchannels.net>
+        Quentin Schulz <quentin.schulz@free-electrons.com>,
+        Zhang Rui <rui.zhang@intel.com>
+Cc: devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-sunxi@googlegroups.com,
+        Icenowy Zheng <icenowy@aosc.io>
+Subject: [RFC PATCH v2 2/4] iio: adc: sun4i-gpadc-iio: rename A23/A33-specified registers to contain A23
+Date: Sun,  2 Apr 2017 21:33:02 +0800
+Message-Id: <20170402133304.56824-3-icenowy@aosc.io>
+In-Reply-To: <20170402133304.56824-1-icenowy@aosc.io>
+References: <20170402133304.56824-1-icenowy@aosc.io>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 06 Apr 2017, Icenowy Zheng wrote:
-> 2017年4月6日 03:04于 Rob Herring <robh@kernel.org>写道：
-> > On Tue, Apr 4, 2017 at 10:02 AM, Icenowy Zheng <icenowy@aosc.io> wrote: 
+As the H3 SoC, which is also in sun8i line, has totally different
+register map for the thermal sensor (a cut down version of GPADC), we
+should rename A23/A33-specified registers to contain A23, in order to
+prevent obfuscation with H3 registers. Currently these registers are
+only prefixed "SUN8I", not "SUN8I_A23".
 
-> > > 在 2017年04月04日 22:47, Rob Herring 写道: 
+Add "_A23" after "SUN8I" on the register names.
 
-> OK. I will make it :
-> ths: temperature-sensor@1c25000
+Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+---
+Splited from RFC v1's 2/3.
 
-Can you fix your broken email client please?  You need to set it up to
-reply to mails to they stay threaded.  Your mailer is currently
-sending all of your replies as their own, independent messages.
+ drivers/iio/adc/sun4i-gpadc-iio.c | 2 +-
+ include/linux/mfd/sun4i-gpadc.h   | 6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
+index 74705aa37982..01cf806f47f8 100644
+--- a/drivers/iio/adc/sun4i-gpadc-iio.c
++++ b/drivers/iio/adc/sun4i-gpadc-iio.c
+@@ -88,7 +88,7 @@ static const struct gpadc_data sun6i_gpadc_data = {
+ static const struct gpadc_data sun8i_a33_gpadc_data = {
+ 	.temp_offset = -1662,
+ 	.temp_scale = 162,
+-	.tp_mode_en = SUN8I_GPADC_CTRL1_CHOP_TEMP_EN,
++	.tp_mode_en = SUN8I_A23_GPADC_CTRL1_CHOP_TEMP_EN,
+ };
+ 
+ struct sun4i_gpadc_iio {
+diff --git a/include/linux/mfd/sun4i-gpadc.h b/include/linux/mfd/sun4i-gpadc.h
+index 139872c2e0fe..d31d962bb7d8 100644
+--- a/include/linux/mfd/sun4i-gpadc.h
++++ b/include/linux/mfd/sun4i-gpadc.h
+@@ -38,9 +38,9 @@
+ #define SUN6I_GPADC_CTRL1_ADC_CHAN_SELECT(x)		(GENMASK(3, 0) & BIT(x))
+ #define SUN6I_GPADC_CTRL1_ADC_CHAN_MASK			GENMASK(3, 0)
+ 
+-/* TP_CTRL1 bits for sun8i SoCs */
+-#define SUN8I_GPADC_CTRL1_CHOP_TEMP_EN			BIT(8)
+-#define SUN8I_GPADC_CTRL1_GPADC_CALI_EN			BIT(7)
++/* TP_CTRL1 bits for sun8i A23/A33 SoCs */
++#define SUN8I_A23_GPADC_CTRL1_CHOP_TEMP_EN		BIT(8)
++#define SUN8I_A23_GPADC_CTRL1_GPADC_CALI_EN		BIT(7)
+ 
+ #define SUN4I_GPADC_CTRL2				0x08
+ 
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.12.2
+
