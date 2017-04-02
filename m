@@ -1,211 +1,77 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.130]:61675 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754995AbdDJQtL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 10 Apr 2017 12:49:11 -0400
-Date: Mon, 10 Apr 2017 18:47:50 +0200
-From: Andreas Klinger <ak@it-klinger.de>
-To: Matt Ranostay <matt.ranostay@konsulko.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        Vlad Dogaru <ddvlad@gmail.com>,
-        Akinobu Mita <akinobu.mita@gmail.com>,
-        Wei Yongjun <yongjun_wei@trendmicro.com.cn>,
-        Aniroop Mathur <a.mathur@samsung.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] IIO: bmp280-core.c: fix error in humidity calculation
-Message-ID: <20170410164750.GA1784@project>
-References: <20170327100646.GA8128@project>
- <2bec8c26-f33c-d331-aa97-047871b4cc57@kernel.org>
- <CACRpkdb06PcUwC_zRThLXcw=haiDzuqP-gsVjchNnSWkootT0Q@mail.gmail.com>
- <20170402172949.GA1479@project>
- <CAJCx=g=E-4i=S+a0euYa8zJd=A2+zH8DgvngQPCF5vydzs+Cww@mail.gmail.com>
- <CAJCx=gnBZ3QbqftmuMOKuPKJ5+QBUjq41MireL4_8E0PM3LXiA@mail.gmail.com>
- <20170407192727.GA4205@project>
- <CAJCx=gkFU+PK+gROVRKGiNuXdjsBDFmBva0zqoHdQQ=YEy2xRw@mail.gmail.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47626 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751024AbdDBJfn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Apr 2017 05:35:43 -0400
+Subject: Re: [PATCH v4 1/4] Documentation: dt-bindings: iio: Add max9611 ADC
+To: Jacopo Mondi <jacopo+renesas@jmondi.org>, geert@linux-m68k.org,
+        wsa+renesas@sang-engineering.com, magnus.damm@gmail.com,
+        laurent.pinchart@ideasonboard.com, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, robh+dt@kernel.org,
+        mark.rutland@arm.com
+References: <1490627578-15938-1-git-send-email-jacopo+renesas@jmondi.org>
+ <1490627578-15938-2-git-send-email-jacopo+renesas@jmondi.org>
+Cc: linux-iio@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        devicetree@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <eeffe49b-7f70-0cad-88c4-76b3e5807b7b@kernel.org>
+Date: Sun, 2 Apr 2017 10:35:40 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <CAJCx=gkFU+PK+gROVRKGiNuXdjsBDFmBva0zqoHdQQ=YEy2xRw@mail.gmail.com>
+In-Reply-To: <1490627578-15938-2-git-send-email-jacopo+renesas@jmondi.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-> On Fri, Apr 7, 2017 at 12:27 PM, Andreas Klinger <ak@it-klinger.de> wrote:
-> > Hi Matt,
-> >
-> > i've extracted the error condition in a small userspace application for
-> > demonstration. Just compile and see that in this case the variable H3 is zero
-> > but the whole term evaluates differently if treated as unsigned or signed.
-> >
-> > The whole example including the values of the variables are taken from the real
-> > driver.
-> >
+On 27/03/17 16:12, Jacopo Mondi wrote:
+> Add device tree bindings documentation for Maxim max9611/max9612 current
+> sense amplifier.
 > 
-> Ok now I see what you are referencing from the datasheet, and can
-> confirm the values are incorrect.
+> Signed-off-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
+> ---
+>  .../devicetree/bindings/iio/adc/max9611.txt        | 26 ++++++++++++++++++++++
+>  1 file changed, 26 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/max9611.txt
 > 
-> Just a suggestion rather than have all those casts it would be easier
-> to just change H1 and H3 types
-> to signed integers.
+> diff --git a/Documentation/devicetree/bindings/iio/adc/max9611.txt b/Documentation/devicetree/bindings/iio/adc/max9611.txt
+> new file mode 100644
+> index 0000000..8430d3b
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/max9611.txt
+> @@ -0,0 +1,26 @@
+> +* Maxim max9611/max9612 current sense amplifier with 12-bits ADC interface
+> +
+> +Maxim max9611/max9612 is an high-side current sense amplifier with integrated
+> +12-bits ADC communicating over I2c bus.
+> +The device node for this driver shall be a child of a I2c controller.
+> +
+> +Required properties
+> +  - compatible: Should be "maxim,max9611" or "maxim,max9612"
+> +  - reg: The 7-bits long I2c address of the device
+> +  - shunt-resistor-uohm: Value, in uOhm, of the current sense shunt resistor
+Just did a quick grep for this see if I felt comfortable enough to
+not wait for Rob / Mark to have a chance to look at it.
+Grep gave me:
+shunt-resistor-micro-ohms for the ina2xx.
+Feels rather like we should match that.
+
+Otherwise looks good to me.
+
+Jonathan
+> +
+> +Example:
+> +
+> +&i2c4 {
+> +	csa: adc@7c {
+> +		compatible = "maxim,max9611";
+> +		reg = <0x7c>;
+> +
+> +		shunt-resistor-uohm = <5000>;
+> +	};
+> +};
+> +
+> +This device node describes a current sense amplifier sitting on I2c4 bus
+> +with address 0x7c (read address is 0xf9, write address is 0xf8).
+> +A sense resistor of 0,005 Ohm is installed between RS+ and RS- current-sensing
+> +inputs.
 > 
 
-That's right. But i wanted to keep close to the documentation. 
-
-> Thanks,
-> 
-> Matt
-> 
-> 
-> > Andreas
-> >
-> >
-> > Now the example:
-> >
-> > ---
-> >
-> > /*
-> >  * humidity.c
-> >  * this test program is just for demonstrating the difference in the
-> >  * calculation of humidity compensation with BME280 sensor
-> >  *
-> >  * This program is free software; you can redistribute it and/or modify
-> >  * it under the terms of the GNU General Public License version 2 as
-> >  * published by the Free Software Foundation.
-> >  *
-> >  */
-> >
-> > #include <stdio.h>
-> > #include <stdlib.h>
-> >
-> > int main(int argn, char* argv[])
-> > {
-> >         int adc_humidity = 28275;
-> >         int t_fine = 50623;
-> >         unsigned int H1 = 75, H3 = 0;
-> >         int H2 = 360, H4 = 324, H5 = 0, H6 = 30;
-> >         int var;
-> >
-> >         var = -26177;
-> >         /* extracted errornous term with cast */
-> >         printf("with cast:    %d\n", (((var * H6) >> 10) * (((var * (int)H3) >> 11)
-> >                                                         + (int)32768)) >> 10);
-> >         /* extracted errornous term now without a cast */
-> >         printf("without cast: %d\n", (((var * H6) >> 10) * (((var * H3) >> 11)
-> >                                                         + 32768)) >> 10);
-> >
-> >         printf("\n");
-> >         printf("t_fine: %d; humidity: %d\nH: %d; %d; %d; %d; %d; %d\n",
-> >                         t_fine, adc_humidity, H1, H2, H3, H4, H5, H6);
-> >         printf("\n");
-> >
-> >         /* the whole example taken from the driver */
-> >         /* with the cast as proposed by the documentation */
-> >         var = ((int)t_fine) - (int)76800;
-> >         var = ((((adc_humidity << 14) - (H4 << 20) - (H5 * var))
-> >                 + (int)16384) >> 15) * (((((((var * H6) >> 10)
-> >                 * (((var * (int)H3) >> 11) + (int)32768)) >> 10)
-> >                 + (int)2097152) * H2 + 8192) >> 14);
-> >         var -= ((((var >> 15) * (var >> 15)) >> 7) * (int)H1) >> 4;
-> >
-> >         printf("with cast:    var: %d\n", var>>12);
-> >         printf("\n");
-> >
-> >         /* now the same calculation without the cast */
-> >         var = (t_fine) - 76800;
-> >         var = ((((adc_humidity << 14) - (H4 << 20) - (H5 * var))
-> >                 + 16384) >> 15) * (((((((var * H6) >> 10)
-> >                 * (((var * H3) >> 11) + 32768)) >> 10)
-> >                 + 2097152) * H2 + 8192) >> 14);
-> >         var -= ((((var >> 15) * (var >> 15)) >> 7) * H1) >> 4;
-> >
-> >         printf("without cast: var: %d\n", var>>12);
-> >
-> >         return 0;
-> > }
-> >
-> > ---
-> >
-> > Output:
-> >
-> > with cast:    -24544
-> > without cast: 4169760
-> >
-> > t_fine: 50623; humidity: 28275
-> > H: 75; 360; 0; 324; 0; 30
-> >
-> > with cast:    var: 41671
-> >
-> > without cast: var: 124497
-> >
-> > ---
-> >
-> > Matt Ranostay <matt.ranostay@konsulko.com> schrieb am Thu, 06. Apr 23:13:
-> >> On Mon, Apr 3, 2017 at 11:16 PM, Matt Ranostay
-> >> <matt.ranostay@konsulko.com> wrote:
-> >> > On Sun, Apr 2, 2017 at 10:29 AM, Andreas Klinger <ak@it-klinger.de> wrote:
-> >> >> Linus Walleij <linus.walleij@linaro.org> schrieb am Sun, 02. Apr 16:56:
-> >> >>> On Sun, Apr 2, 2017 at 11:32 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-> >> >>> > On 27/03/17 11:06, Andreas Klinger wrote:
-> >> >>> >> While calculating the compensation of the humidity there are negative
-> >> >>> >> values interpreted as unsigned because of unsigned variables used.
-> >> >>> >> These values need to be casted to signed as indicated by the documentation
-> >> >>> >> of the sensor.
-> >> >>> >>
-> >> >>> >> Signed-off-by: Andreas Klinger <ak@it-klinger.de>
-> >> >>> >
-> >> >>> > Looks superficially right to me, but would like an Ack from Linus Walleij.
-> >> >>>
-> >> >>> I didn't work on these calculations, only infrastructure for the driver
-> >> >>> but FWIW:
-> >> >>> Acked-by: Linus Walleij <linus.walleij@linaro.org>
-> >> >>>
-> >> >>> Matt Ranostay @Intel is the person you probably want to ACK it though,
-> >> >>> he added the humidity calculations :)
-> >> >>
-> >> >> It just turned out that there must be another error in the calculation. I'll fix
-> >> >> and test it first.
-> >> >>
-> >> >> When i'm done i'll send a new version of the patch.
-> >> >>
-> >> >
-> >> > Ok will hold off till review till the next patchset... BTW this
-> >> > datasheet's calculations made my eyes bleed so it is quiet likely it
-> >> > has bugs...
-> >>
-> >> Hmm the datatypes you are casting to s32 are already signed
-> >> integers...  Interested in what you found on what the actual bug is.
-> >>
-> >> >
-> >> > Thanks,
-> >> >
-> >> > Matt
-> >> >
-> >> >> Andreas
-> >> >>
-> >> >>>
-> >> >>> Yours,
-> >> >>> Linus Walleij
-> >> >>
-> >> >> --
-> >> >> --
-> >> >> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> >> >> the body of a message to majordomo@vger.kernel.org
-> >> >> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> >
-> > --
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
--- 
-Andreas Klinger
-Grabenreith 27
-84508 Burgkirchen
-+49 8623 919966
-ak@it-klinger.de
-www.it-klinger.de
-www.grabenreith.de
