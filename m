@@ -1,74 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40700 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47498 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751297AbdDAKA7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 1 Apr 2017 06:00:59 -0400
-Subject: Re: [PATCH] iio: adc: replace comma with a semicolon
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        jacopo <jacopo@jmondi.org>
-References: <20170330124603.GA29301@arushi-HP-Pavilion-Notebook>
- <20170330133046.GA7900@w540>
- <alpine.DEB.2.20.1703301534380.24907@vps.pmeerw.net>
-Cc: Arushi Singhal <arushisinghal19971997@gmail.com>,
-        outreachy-kernel@googlegroups.com,
+        with ESMTP id S1750984AbdDBJSd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Apr 2017 05:18:33 -0400
+Subject: Re: [RESEND PATCH] iio: st_pressure: initialize lps22hb bootime
+To: Shrirang Bagul <shrirang.bagul@canonical.com>
+References: <20170330154723.9612-1-shrirang.bagul@canonical.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Gregor Boirie <gregor.boirie@parrot.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Marcin Niestroj <m.niestroj@grinn-global.com>,
+        Rob Herring <rob@kernel.org>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <dd41628a-bd56-0ccf-0baf-238a717049aa@kernel.org>
-Date: Sat, 1 Apr 2017 11:00:58 +0100
+Message-ID: <7618daba-7fb8-4e14-97ed-72bdd13a14a3@kernel.org>
+Date: Sun, 2 Apr 2017 10:18:31 +0100
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.20.1703301534380.24907@vps.pmeerw.net>
+In-Reply-To: <20170330154723.9612-1-shrirang.bagul@canonical.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 30/03/17 14:38, Peter Meerwald-Stadler wrote:
+On 30/03/17 16:47, Shrirang Bagul wrote:
+> This patch initializes the bootime in struct st_sensor_settings for
+> lps22hb sensor. Without this, sensor channels read from sysfs always
+> report stale values.
 > 
->> On Thu, Mar 30, 2017 at 06:16:03PM +0530, Arushi Singhal wrote:
->>> Replace a comma between expression statements by a semicolon. This
->>> changes the semantics of the code, but given the current indentation
->>> appears to be what is intended.
-> 
->> You can simply say that this fixes what appears to be a bug to me.
->> I wonder how this does even compile..
-> 
-> it's valid C and I think it does the correct thing (i.e. assign those 
-> variables); the style is weird obviously
-Hohum I am clearly going crazy in my old age.
-Not a bug, but nice to fix so
-Applied to the togreg branch of iio.git.  Sorry for messing my little
-change up Jacopo!  Always worth checking a maintainer isn't being
-an idiot when they apply your patches. As others will certify we
-make plenty of mistakes.
+> Signed-off-by: Shrirang Bagul <shrirang.bagul@canonical.com>
+Applied to the fixes-togreg branch of iio.git and marked for stable.
+
+Thanks,
 
 Jonathan
-
+> ---
+>  drivers/iio/pressure/st_pressure_core.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
->> [1] https://marc.info/?l=linux-iio&m=148475728729617&w=2
->>
->>> Signed-off-by: Arushi Singhal <arushisinghal19971997@gmail.com>
->>> ---
->>>  drivers/iio/adc/max11100.c | 4 ++--
->>>  1 file changed, 2 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/iio/adc/max11100.c b/drivers/iio/adc/max11100.c
->>> index 23c060e1b663..1180bcc22ff1 100644
->>> --- a/drivers/iio/adc/max11100.c
->>> +++ b/drivers/iio/adc/max11100.c
->>> @@ -124,8 +124,8 @@ static int max11100_probe(struct spi_device *spi)
->>>  	indio_dev->name = "max11100";
->>>  	indio_dev->info = &max11100_info;
->>>  	indio_dev->modes = INDIO_DIRECT_MODE;
->>> -	indio_dev->channels = max11100_channels,
->>> -	indio_dev->num_channels = ARRAY_SIZE(max11100_channels),
->>> +	indio_dev->channels = max11100_channels;
->>> +	indio_dev->num_channels = ARRAY_SIZE(max11100_channels);
->>>  
->>>  	state->vref_reg = devm_regulator_get(&spi->dev, "vref");
->>>  	if (IS_ERR(state->vref_reg))
->>> -- 
->>> 2.11.0
->>>
->>
+> diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
+> index 5f26808..fd0edca 100644
+> --- a/drivers/iio/pressure/st_pressure_core.c
+> +++ b/drivers/iio/pressure/st_pressure_core.c
+> @@ -457,6 +457,7 @@ static const struct st_sensor_settings st_press_sensors_settings[] = {
+>  			.addr_stat_drdy = ST_SENSORS_DEFAULT_STAT_ADDR,
+>  		},
+>  		.multi_read_bit = true,
+> +		.bootime = 2,
+>  	},
+>  };
+>  
 > 
 
