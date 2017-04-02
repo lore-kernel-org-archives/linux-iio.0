@@ -1,44 +1,79 @@
-Return-Path: <SRS0=JtcQ=3L=gmail.com=robherring2@kernel.org>
-Date: Mon, 3 Apr 2017 10:54:25 -0500
-From: Rob Herring <robh@kernel.org>
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH 1/5 v3] iio: xoadc: augment DT bindings a bit
-Message-ID: <20170403155425.fmmstdwfacmnsn7w@rob-hp-laptop>
-References: <20170330080541.4065-1-linus.walleij@linaro.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47524 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750984AbdDBJVt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Apr 2017 05:21:49 -0400
+Subject: Re: [PATCH] staging: iio: ad9832: use 4-digit octal permissions
+To: Guru Das Srinagesh <gurooodas@gmail.com>, lars@metafoo.de,
+        Michael.Hennerich@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net,
+        gregkh@linuxfoundation.org
+References: <1490867739-12444-1-git-send-email-gurooodas@gmail.com>
+Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <c5c7f978-d9e1-d428-b47d-c93083df21ba@kernel.org>
+Date: Sun, 2 Apr 2017 10:21:47 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-In-Reply-To: <20170330080541.4065-1-linus.walleij@linaro.org>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1490867739-12444-1-git-send-email-gurooodas@gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, Mar 30, 2017 at 10:05:41AM +0200, Linus Walleij wrote:
-> In order to accommodate in a logical manner for the premuxed channels
-> in PM8921 and the similarly addressed channels in later PMICs, we
-> need a twocell arrangement with premux and analog mux setting as
-> a tuple to uniquely identify a hardware channel.
+On 30/03/17 10:55, Guru Das Srinagesh wrote:
+> This fixes the coding style issue of using S_IWUSR in place of 4-digit
+> octal numbers.
 > 
-> These bindings are not yet in use, so it should be fine to augment
-> them before we actually start using it in drivers and device trees.
+> Issue detected by checkpatch.
 > 
-> This scheme came out of lengthy discussions and reverse-engineering
-> and reading of the few information sources we have.
-> 
-> Cc: devicetree@vger.kernel.org
-> Cc: Rob Herring <robh+dt@kernel.org>
-> Suggested-by: Björn Andersson <bjorn.andersson@linaro.org>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> Signed-off-by: Guru Das Srinagesh <gurooodas@gmail.com>
+Applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to play with it.
+
+Most of these if not all should go away when this driver gets properly
+cleaned up, but in the meantime I guess it's just about worth making this
+change.
+
+Jonathan
 > ---
-> ChangeLog v2->v3:
-> - Drop leading zeroes on unit addresses.
-> ChangeLog v1->v2:
-> - Name nodes with <01 02> in a foo@0102 pattern.
-> - Minor spelling nits.
-> - Delete flimsy leftover docs from an interrim development path.
-> ---
->  .../bindings/iio/adc/qcom,pm8xxx-xoadc.txt         | 76 ++++++++++++----------
->  1 file changed, 42 insertions(+), 34 deletions(-)
+>  drivers/staging/iio/frequency/ad9832.c | 20 ++++++++++----------
+>  1 file changed, 10 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
+> index 425b8ab..6da46ed 100644
+> --- a/drivers/staging/iio/frequency/ad9832.c
+> +++ b/drivers/staging/iio/frequency/ad9832.c
+> @@ -250,22 +250,22 @@ static ssize_t ad9832_write(struct device *dev, struct device_attribute *attr,
+>   * see dds.h for further information
+>   */
+>  
+> -static IIO_DEV_ATTR_FREQ(0, 0, S_IWUSR, NULL, ad9832_write, AD9832_FREQ0HM);
+> -static IIO_DEV_ATTR_FREQ(0, 1, S_IWUSR, NULL, ad9832_write, AD9832_FREQ1HM);
+> -static IIO_DEV_ATTR_FREQSYMBOL(0, S_IWUSR, NULL, ad9832_write, AD9832_FREQ_SYM);
+> +static IIO_DEV_ATTR_FREQ(0, 0, 0200, NULL, ad9832_write, AD9832_FREQ0HM);
+> +static IIO_DEV_ATTR_FREQ(0, 1, 0200, NULL, ad9832_write, AD9832_FREQ1HM);
+> +static IIO_DEV_ATTR_FREQSYMBOL(0, 0200, NULL, ad9832_write, AD9832_FREQ_SYM);
+>  static IIO_CONST_ATTR_FREQ_SCALE(0, "1"); /* 1Hz */
+>  
+> -static IIO_DEV_ATTR_PHASE(0, 0, S_IWUSR, NULL, ad9832_write, AD9832_PHASE0H);
+> -static IIO_DEV_ATTR_PHASE(0, 1, S_IWUSR, NULL, ad9832_write, AD9832_PHASE1H);
+> -static IIO_DEV_ATTR_PHASE(0, 2, S_IWUSR, NULL, ad9832_write, AD9832_PHASE2H);
+> -static IIO_DEV_ATTR_PHASE(0, 3, S_IWUSR, NULL, ad9832_write, AD9832_PHASE3H);
+> -static IIO_DEV_ATTR_PHASESYMBOL(0, S_IWUSR, NULL,
+> +static IIO_DEV_ATTR_PHASE(0, 0, 0200, NULL, ad9832_write, AD9832_PHASE0H);
+> +static IIO_DEV_ATTR_PHASE(0, 1, 0200, NULL, ad9832_write, AD9832_PHASE1H);
+> +static IIO_DEV_ATTR_PHASE(0, 2, 0200, NULL, ad9832_write, AD9832_PHASE2H);
+> +static IIO_DEV_ATTR_PHASE(0, 3, 0200, NULL, ad9832_write, AD9832_PHASE3H);
+> +static IIO_DEV_ATTR_PHASESYMBOL(0, 0200, NULL,
+>  				ad9832_write, AD9832_PHASE_SYM);
+>  static IIO_CONST_ATTR_PHASE_SCALE(0, "0.0015339808"); /* 2PI/2^12 rad*/
+>  
+> -static IIO_DEV_ATTR_PINCONTROL_EN(0, S_IWUSR, NULL,
+> +static IIO_DEV_ATTR_PINCONTROL_EN(0, 0200, NULL,
+>  				ad9832_write, AD9832_PINCTRL_EN);
+> -static IIO_DEV_ATTR_OUT_ENABLE(0, S_IWUSR, NULL,
+> +static IIO_DEV_ATTR_OUT_ENABLE(0, 0200, NULL,
+>  				ad9832_write, AD9832_OUTPUT_EN);
+>  
+>  static struct attribute *ad9832_attributes[] = {
+> 
 
-Other than the few typos mentioned,
-
-Acked-by: Rob Herring <robh@kernel.org> 
