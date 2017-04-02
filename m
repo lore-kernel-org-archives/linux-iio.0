@@ -1,174 +1,78 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp.codeaurora.org ([198.145.29.96]:59074 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752117AbdDFXDo (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 6 Apr 2017 19:03:44 -0400
-Date: Thu, 6 Apr 2017 16:03:41 -0700
-From: Stephen Boyd <sboyd@codeaurora.org>
-To: Rick Altherr <raltherr@google.com>
-Cc: OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-iio@vger.kernel.org,
-        Quentin Schulz <quentin.schulz@free-electrons.com>,
-        David Lechner <david@lechnology.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        linux-clk@vger.kernel.org, Andreas Klinger <ak@it-klinger.de>,
-        Marek Vasut <marek.vasut+renesas@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Rob Herring <robh@kernel.org>,
-        Alison Schofield <amsfield22@gmail.com>,
-        Fabrice Gasnier <fabrice.gasnier@st.com>,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47549 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750984AbdDBJ0b (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Apr 2017 05:26:31 -0400
+Subject: Re: [PATCH] iio: core: Fix IIO_VAL_FRACTIONAL_LOG2 for negative
+ values
+To: Nikolaus Schulz <nikolaus.schulz@avionic-design.de>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Akinobu Mita <akinobu.mita@gmail.com>,
-        Matt Ranostay <mranostay@gmail.com>
-Subject: Re: [PATCH v4 2/2] iio: Aspeed ADC
-Message-ID: <20170406230341.GR7065@codeaurora.org>
-References: <20170323184136.7349-1-raltherr@google.com>
- <20170323184136.7349-2-raltherr@google.com>
- <20170405202744.GB7065@codeaurora.org>
- <CAPLgG=nYnVuwRZOdXuFCaFy9P0cx_zqfk0f9orBv+8+HxcnqKQ@mail.gmail.com>
- <20170406011003.GP7065@codeaurora.org>
- <CAPLgG=mVG1iayk-m5Bu4QRZbMDaxXRTM-mJPQzTwgbOjGKwDpQ@mail.gmail.com>
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <1490359311-21042-1-git-send-email-nikolaus.schulz@avionic-design.de>
+ <c2b4855d-f7cb-2dd8-39ed-0cf8e6a21428@kernel.org>
+Cc: stable@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <0cec95d3-0520-998e-fba2-de237659f3a1@kernel.org>
+Date: Sun, 2 Apr 2017 10:26:29 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <CAPLgG=mVG1iayk-m5Bu4QRZbMDaxXRTM-mJPQzTwgbOjGKwDpQ@mail.gmail.com>
+In-Reply-To: <c2b4855d-f7cb-2dd8-39ed-0cf8e6a21428@kernel.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/06, Rick Altherr wrote:
-> On Wed, Apr 5, 2017 at 6:10 PM, Stephen Boyd <sboyd@codeaurora.org> wrote:
-> > On 04/05, Rick Altherr wrote:
-> >> On Wed, Apr 5, 2017 at 1:27 PM, Stephen Boyd <sboyd@codeaurora.org> wrote:
-> >> > On 03/23, Rick Altherr wrote:
-> >> >> +
-> >> >> +static int aspeed_adc_probe(struct platform_device *pdev)
-> >> >> +{
-> >> >> +     struct iio_dev *indio_dev;
-> >> >> +     struct aspeed_adc_data *data;
-> >> >> +     const struct aspeed_adc_model_data *model_data;
-> >> >> +     struct resource *res;
-> >> >> +     const char *clk_parent_name;
-> >> >> +     int ret;
-> >> >> +     u32 adc_engine_control_reg_val;
-> >> >> +
-> >> >> +     indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*data));
-> >> >> +     if (!indio_dev)
-> >> >> +             return -ENOMEM;
-> >> >> +
-> >> >> +     data = iio_priv(indio_dev);
-> >> >> +     data->dev = &pdev->dev;
-> >> >> +
-> >> >> +     res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> >> >> +     data->base = devm_ioremap_resource(&pdev->dev, res);
-> >> >> +     if (IS_ERR(data->base))
-> >> >> +             return PTR_ERR(data->base);
-> >> >> +
-> >> >> +     /* Register ADC clock prescaler with source specified by device tree. */
-> >> >> +     spin_lock_init(&data->clk_lock);
-> >> >> +     clk_parent_name = of_clk_get_parent_name(pdev->dev.of_node, 0);
-> >> >
-> >> > What if the parent clk is not registered yet? Or if we're not
-> >> > always using DT in this driver? Put another way, this code is
-> >> > fragile. But I guess it probably works well enough for now so no
-> >> > big deal, just pointing out my fear.
-> >>
-> >> I'm not terribly worried about not using DT for this driver as it is
-> >> for an ARM SoC's built-in ADC which is only supported via DT.  I take
-> >> your point though.  What's the right way to do this?  Use clk_get() to
-> >> request by name and clock-names in the DT?
-> >
-> > Yes that will work. When we add probe defer to clk_get() things
-> > will work better. Presumably the clocks property already exists
-> > for this device so that of_clk_get_parent_name() works so it's
-> > not a binding change?
+On 25/03/17 18:03, Jonathan Cameron wrote:
+> On 24/03/17 12:41, Nikolaus Schulz wrote:
+>> Fix formatting of negative values of type IIO_VAL_FRACTIONAL_LOG2 by
+>> switching from do_div(), which can't handle negative numbers, to
+>> div_s64_rem().  Also use shift_right for shifting, which is safe with
+>> negative values.
+>>
+>> Signed-off-by: Nikolaus Schulz <nikolaus.schulz@avionic-design.de>
+>> Cc: stable@vger.kernel.org
+> Looks sane to me, but I'd like to give others time to comment on this
+> just in case there is some odd condition neither of us has thought of!
 > 
-> The bindings include clocks but not clock-names.  In this case,
-> clk_register_divider() only has variants that take a parent clock
-> name.  I can't see what I'd do with the result of clk_get().  If the
-> bindings provide clock-names, I can provide a fixed string for the
-> parent name instead of relying on of_clk_get_parent_name().  The
-> removes an explicit driver dependency on DT.  I'm unclear if it
-> resolves your concerns about registration ordering.
+> Give me a poke if we get nothing else for a few weeks.
+Lars, I think this might have been your magic in the first place.
 
-We have __clk_get_name() as a helper in clk-provider.h to assist
-drivers in finding parent names of clks they get through
-clk_get(). Eventually we want to get rid of that function, but
-using it at least helps us find it later.
+Could you sanity check this one please. It's in the category of very
+risky of both Nikolaus and I have missed something!
 
-Aside: This is a problem we've had for a while. You're an
-innocent bystander here. The usage of strings for clk tree
-description is not working well and we really need to move away
-from it. So far we have no solution so all I can say is sorry you
-tripped up on this.
+Thanks,
 
+Jonathan
 > 
-> >
-> >>
-> >> >
-> >> >> +
-> >> >> +     data->clk_prescaler = clk_hw_register_divider(
-> >> >> +                             &pdev->dev, "prescaler", clk_parent_name, 0,
-> >> >> +                             data->base + ASPEED_REG_CLOCK_CONTROL,
-> >> >> +                             17, 15, 0, &data->clk_lock);
-> >> >> +     if (IS_ERR(data->clk_prescaler))
-> >> >> +             return PTR_ERR(data->clk_prescaler);
-> >> >> +
-> >> >> +     /*
-> >> >> +      * Register ADC clock scaler downstream from the prescaler. Allow rate
-> >> >> +      * setting to adjust the prescaler as well.
-> >> >> +      */
-> >> >> +     data->clk_scaler = clk_hw_register_divider(
-> >> >> +                             &pdev->dev, "scaler", "prescaler",
-> >> >> +                             CLK_SET_RATE_PARENT,
-> >> >> +                             data->base + ASPEED_REG_CLOCK_CONTROL,
-> >> >> +                             0, 10, 0, &data->clk_lock);
-> >> >> +     if (IS_ERR(data->clk_scaler)) {
-> >> >> +             ret = PTR_ERR(data->clk_scaler);
-> >> >> +             goto scaler_error;
-> >> >> +     }
-> >> >> +
-> >> >> +     /* Start all channels in normal mode. */
-> >> >> +     clk_prepare_enable(data->clk_scaler->clk);
-> >> >
-> >> > Eventually we'd like to get rid of hw->clk pointer so that users
-> >> > have to call some sort of clk_get() API and then we get warm
-> >> > fuzzies from knowing who is consuming a clk structure. Can you
-> >> > change this to register a clk provider and call clk_get()? I
-> >> > think a device that references itself should be OK in DT still,
-> >> > and would properly reflect what's going on.
-> >>
-> >> Do you mean call of_clk_add_hw_provider with of_clk_hw_simple_get or
-> >> something else?  I'm still wrapping my head around the distinction
-> >> between clk, clk_hw, and a clk provider.
-> >>
-> >
-> > Yes. Unless you don't want to expose these details in DT because
-> > it's all internal to the device?
-> >
+> Jonathan
+>> ---
+>>  drivers/iio/industrialio-core.c | 7 +++----
+>>  1 file changed, 3 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+>> index d18ded4..3ff91e0 100644
+>> --- a/drivers/iio/industrialio-core.c
+>> +++ b/drivers/iio/industrialio-core.c
+>> @@ -610,10 +610,9 @@ static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
+>>  		tmp0 = (int)div_s64_rem(tmp, 1000000000, &tmp1);
+>>  		return snprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
+>>  	case IIO_VAL_FRACTIONAL_LOG2:
+>> -		tmp = (s64)vals[0] * 1000000000LL >> vals[1];
+>> -		tmp1 = do_div(tmp, 1000000000LL);
+>> -		tmp0 = tmp;
+>> -		return snprintf(buf, len, "%d.%09u", tmp0, tmp1);
+>> +		tmp = shift_right((s64)vals[0] * 1000000000LL, vals[1]);
+>> +		tmp0 = (int)div_s64_rem(tmp, 1000000000LL, &tmp1);
+>> +		return snprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
+>>  	case IIO_VAL_INT_MULTIPLE:
+>>  	{
+>>  		int i;
+>>
 > 
-> There's no reason to expose the scaler or prescaler in DT.  These are
-> clocks that internal to the ADC and have no way for other devices to
-> use them.  I only used the clock framework to avoid reinventing the
-> wheel on calculating divider values for a desired clock rate.
-> 
-> > In that case we need to go merge that patch on the clk list to
-> > have clk_hw_create_clk() or something like that, so we can turn a
-> > clk_hw structure into a clk pointer without directly referencing
-> > the clk member of clk_hw.
-> 
-> This makes the most sense to me.
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
-Ok. Let me see what I can do to merge that patch now. I should be
-able to put it on its own branch that could be pulled into the
-tree for this driver. Or a merge window can pass and things fixed
-then.
-
--- 
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
