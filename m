@@ -1,459 +1,85 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f68.google.com ([74.125.82.68]:36575 "EHLO
-        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752086AbdDNTNE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 14 Apr 2017 15:13:04 -0400
-Received: by mail-wm0-f68.google.com with SMTP id q125so25380wmd.3
-        for <linux-iio@vger.kernel.org>; Fri, 14 Apr 2017 12:12:58 -0700 (PDT)
-Subject: Re: [PATCH] iio: meter: fix indentation and spacing errors
-To: Jonathan Cameron <jic23@kernel.org>, gregkh@linuxfoundation.org,
-        knaack.h@gmx.de, linux-iio@vger.kernel.org, lars@metafoo.de,
-        Michael.Hennerich@analog.com, pmeerw@pmeerw.net
-References: <86c75d65-09e0-70ac-177b-c2ddea4478da@kernel.org>
- <20170410201958.3816-1-nikola.jelic83@gmail.com>
- <6f24f18d-7a76-cdab-951d-f39364a42ab9@kernel.org>
-From: =?UTF-8?B?0J3QuNC60L7Qu9CwINCI0LXQu9C40Zs=?=
-        <nikola.jelic83@gmail.com>
-Message-ID: <c41a3f52-bd85-6007-218f-3273578ca6a0@gmail.com>
-Date: Fri, 14 Apr 2017 21:12:55 +0200
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47389 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750902AbdDBJEL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Apr 2017 05:04:11 -0400
+Subject: Re: [PATCH] staging: iio: meter: Replace mlock with driver private
+ buf_lock
+To: Arushi Singhal <arushisinghal19971997@gmail.com>, lars@metafoo.de
+References: <20170331024702.GA18533@arushi-HP-Pavilion-Notebook>
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <3850b99e-dfb2-7b67-cb50-3879641df3ab@kernel.org>
+Date: Sun, 2 Apr 2017 10:04:08 +0100
 MIME-Version: 1.0
-In-Reply-To: <6f24f18d-7a76-cdab-951d-f39364a42ab9@kernel.org>
+In-Reply-To: <20170331024702.GA18533@arushi-HP-Pavilion-Notebook>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-I used `indent --linux-style`, and started from there. Also, I checked
-with checkpatch.pl, but I understand that I may overshot with the patch,
-sorry.
+On 31/03/17 03:47, Arushi Singhal wrote:
+> The driver needs to insure atomicity during frequency
+> changes of bus and device. The iiodev->mlock as used
+> was not doing that. Replace it with the drivers existing
+> buffer lock and execute spi_write directly.
+> 
+> Signed-off-by: Arushi Singhal <arushisinghal19971997@gmail.com>
+Firstly please put the driver name in the title when a patch only
+effects one driver.
 
+Secondly, please see final version of Gargi Sharma's patch for
+the ade7754.
 
-On 14.04.2017. 16:21, Jonathan Cameron wrote:
-> On 10/04/17 21:19, Nikola Jelic wrote:
->> A lot of function declarations and calls had wrong indentations for the
->> arguments. Also, there were unnecessary spaces after casts and within
->> pointer arguments, such as "int * name", etc.
-> Firstly the int * name thing doesn't appear to occur here - or at least
-> I can't find it with a quick search.
-> A lot of the 'wrong indentation' is either an acceptable variation or
-> actually write.
+As with that one, the basic principle is fine, but I didn't
+like the V2 version which did the local copy of spi_write as
+you have here.
+
+Introduced an unlocked version of the ade7759_spi_write_reg_16
+function and call it both from ade7759_spi_write_reg_16 and
+directly here.
+
+Puts the _WRITE_REG magic all in one place.
+
+Otherwise, looks good!
+
+Jonathan
+> ---
+>  drivers/staging/iio/meter/ade7759.c | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
 > 
-> Fixing the parameter alignment is fine, most the rest harder to justify.
-> 
-> In one or two cases I am curious to know why you made the change at all
-> as they run counter to common kernel coding style.
-> 
-> Jonathan
-> 
->>
->> Signed-off-by: Nikola Jelic <nikola.jelic83@gmail.com>
->> ---
->>  drivers/staging/iio/meter/ade7759.c | 177 +++++++++++++++---------------------
->>  1 file changed, 73 insertions(+), 104 deletions(-)
->>
->> diff --git a/drivers/staging/iio/meter/ade7759.c b/drivers/staging/iio/meter/ade7759.c
->> index 0b65f1847510..0943ccdeda59 100644
->> --- a/drivers/staging/iio/meter/ade7759.c
->> +++ b/drivers/staging/iio/meter/ade7759.c
->> @@ -65,15 +65,13 @@
->>   * @rx:			receive buffer
->>   **/
->>  struct ade7759_state {
->> -	struct spi_device	*us;
->> -	struct mutex		buf_lock;
->> -	u8			tx[ADE7759_MAX_TX] ____cacheline_aligned;
->> -	u8			rx[ADE7759_MAX_RX];
->> +	struct spi_device *us;
->> +	struct mutex buf_lock;
->> +	u8 tx[ADE7759_MAX_TX] ____cacheline_aligned;
->> +	u8 rx[ADE7759_MAX_RX];
->>  };
-> This first one is very much a matter of personal taste as it can be argued that
-> the alignment makes it easier to read.  As such please drop this part.
->>  
->> -static int ade7759_spi_write_reg_8(struct device *dev,
->> -		u8 reg_address,
->> -		u8 val)
->> +static int ade7759_spi_write_reg_8(struct device *dev, u8 reg_address, u8 val)
->>  {
->>  	int ret;
->>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->> @@ -90,8 +88,7 @@ static int ade7759_spi_write_reg_8(struct device *dev,
->>  }
->>  
->>  static int ade7759_spi_write_reg_16(struct device *dev,
->> -		u8 reg_address,
->> -		u16 value)
->> +				    u8 reg_address, u16 value)
-> It is fairly uniformly accepted that this is an improvement so keep these.
->>  {
->>  	int ret;
->>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->> @@ -107,9 +104,7 @@ static int ade7759_spi_write_reg_16(struct device *dev,
->>  	return ret;
->>  }
->>  
->> -static int ade7759_spi_read_reg_8(struct device *dev,
->> -		u8 reg_address,
->> -		u8 *val)
->> +static int ade7759_spi_read_reg_8(struct device *dev, u8 reg_address, u8 *val)
->>  {
->>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>  	struct ade7759_state *st = iio_priv(indio_dev);
->> @@ -117,8 +112,9 @@ static int ade7759_spi_read_reg_8(struct device *dev,
->>  
->>  	ret = spi_w8r8(st->us, ADE7759_READ_REG(reg_address));
->>  	if (ret < 0) {
->> -		dev_err(&st->us->dev, "problem when reading 8 bit register 0x%02X",
->> -				reg_address);
->> +		dev_err(&st->us->dev,
->> +			"problem when reading 8 bit register 0x%02X",
->> +			reg_address);
->>  		return ret;
->>  	}
->>  	*val = ret;
->> @@ -127,8 +123,7 @@ static int ade7759_spi_read_reg_8(struct device *dev,
->>  }
->>  
->>  static int ade7759_spi_read_reg_16(struct device *dev,
->> -		u8 reg_address,
->> -		u16 *val)
->> +				   u8 reg_address, u16 *val)
->>  {
->>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>  	struct ade7759_state *st = iio_priv(indio_dev);
->> @@ -136,7 +131,8 @@ static int ade7759_spi_read_reg_16(struct device *dev,
->>  
->>  	ret = spi_w8r16be(st->us, ADE7759_READ_REG(reg_address));
->>  	if (ret < 0) {
->> -		dev_err(&st->us->dev, "problem when reading 16 bit register 0x%02X",
->> +		dev_err(&st->us->dev,
->> +			"problem when reading 16 bit register 0x%02X",
->>  			reg_address);
->>  		return ret;
->>  	}
->> @@ -147,19 +143,18 @@ static int ade7759_spi_read_reg_16(struct device *dev,
->>  }
->>  
->>  static int ade7759_spi_read_reg_40(struct device *dev,
->> -		u8 reg_address,
->> -		u64 *val)
->> +				   u8 reg_address, u64 *val)
->>  {
->>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>  	struct ade7759_state *st = iio_priv(indio_dev);
->>  	int ret;
->>  	struct spi_transfer xfers[] = {
->>  		{
->> -			.tx_buf = st->tx,
->> -			.rx_buf = st->rx,
->> -			.bits_per_word = 8,
->> -			.len = 6,
->> -		},
->> +		 .tx_buf = st->tx,
->> +		 .rx_buf = st->rx,
->> +		 .bits_per_word = 8,
->> +		 .len = 6,
->> +		 },
-> This is counter to common formatting, what suggested it to you?
->>  	};
->>  
->>  	mutex_lock(&st->buf_lock);
->> @@ -168,21 +163,21 @@ static int ade7759_spi_read_reg_40(struct device *dev,
->>  
->>  	ret = spi_sync_transfer(st->us, xfers, ARRAY_SIZE(xfers));
->>  	if (ret) {
->> -		dev_err(&st->us->dev, "problem when reading 40 bit register 0x%02X",
->> -				reg_address);
->> +		dev_err(&st->us->dev,
->> +			"problem when reading 40 bit register 0x%02X",
->> +			reg_address);
->>  		goto error_ret;
->>  	}
->>  	*val = ((u64)st->rx[1] << 32) | (st->rx[2] << 24) |
->> -		(st->rx[3] << 16) | (st->rx[4] << 8) | st->rx[5];
->> +	    (st->rx[3] << 16) | (st->rx[4] << 8) | st->rx[5];
-> I'm not sure this one adds anything.
->>  
->> -error_ret:
->> + error_ret:
-> Why non standard indenting for the label?
->>  	mutex_unlock(&st->buf_lock);
->>  	return ret;
->>  }
->>  
->>  static ssize_t ade7759_read_8bit(struct device *dev,
->> -		struct device_attribute *attr,
->> -		char *buf)
->> +				 struct device_attribute *attr, char *buf)
->>  {
->>  	int ret;
->>  	u8 val = 0;
->> @@ -196,8 +191,7 @@ static ssize_t ade7759_read_8bit(struct device *dev,
->>  }
->>  
->>  static ssize_t ade7759_read_16bit(struct device *dev,
->> -		struct device_attribute *attr,
->> -		char *buf)
->> +				  struct device_attribute *attr, char *buf)
->>  {
->>  	int ret;
->>  	u16 val = 0;
->> @@ -211,8 +205,7 @@ static ssize_t ade7759_read_16bit(struct device *dev,
->>  }
->>  
->>  static ssize_t ade7759_read_40bit(struct device *dev,
->> -		struct device_attribute *attr,
->> -		char *buf)
->> +				  struct device_attribute *attr, char *buf)
->>  {
->>  	int ret;
->>  	u64 val = 0;
->> @@ -226,9 +219,8 @@ static ssize_t ade7759_read_40bit(struct device *dev,
->>  }
->>  
->>  static ssize_t ade7759_write_8bit(struct device *dev,
->> -		struct device_attribute *attr,
->> -		const char *buf,
->> -		size_t len)
->> +				  struct device_attribute *attr,
->> +				  const char *buf, size_t len)
->>  {
->>  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->>  	int ret;
->> @@ -239,14 +231,13 @@ static ssize_t ade7759_write_8bit(struct device *dev,
->>  		goto error_ret;
->>  	ret = ade7759_spi_write_reg_8(dev, this_attr->address, val);
->>  
->> -error_ret:
->> + error_ret:
->>  	return ret ? ret : len;
->>  }
->>  
->>  static ssize_t ade7759_write_16bit(struct device *dev,
->> -		struct device_attribute *attr,
->> -		const char *buf,
->> -		size_t len)
->> +				   struct device_attribute *attr,
->> +				   const char *buf, size_t len)
->>  {
->>  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->>  	int ret;
->> @@ -257,7 +248,7 @@ static ssize_t ade7759_write_16bit(struct device *dev,
->>  		goto error_ret;
->>  	ret = ade7759_spi_write_reg_16(dev, this_attr->address, val);
->>  
->> -error_ret:
->> + error_ret:
->>  	return ret ? ret : len;
->>  }
->>  
->> @@ -266,65 +257,48 @@ static int ade7759_reset(struct device *dev)
->>  	int ret;
->>  	u16 val;
->>  
->> -	ret = ade7759_spi_read_reg_16(dev,
->> -			ADE7759_MODE,
->> -			&val);
->> +	ret = ade7759_spi_read_reg_16(dev, ADE7759_MODE, &val);
->>  	if (ret < 0)
->>  		return ret;
->>  
->> -	val |= BIT(6); /* Software Chip Reset */
->> -	return ade7759_spi_write_reg_16(dev,
->> -			ADE7759_MODE,
->> -			val);
->> +	val |= BIT(6);		/* Software Chip Reset */
->> +	return ade7759_spi_write_reg_16(dev, ADE7759_MODE, val);
->>  }
->>  
->>  static IIO_DEV_ATTR_AENERGY(ade7759_read_40bit, ADE7759_AENERGY);
->>  static IIO_DEV_ATTR_CFDEN(S_IWUSR | S_IRUGO,
->> -		ade7759_read_16bit,
->> -		ade7759_write_16bit,
->> -		ADE7759_CFDEN);
->> +			  ade7759_read_16bit,
->> +			  ade7759_write_16bit, ADE7759_CFDEN);
->>  static IIO_DEV_ATTR_CFNUM(S_IWUSR | S_IRUGO,
->> -		ade7759_read_8bit,
->> -		ade7759_write_8bit,
->> -		ADE7759_CFNUM);
->> +			  ade7759_read_8bit, ade7759_write_8bit, ADE7759_CFNUM);
->>  static IIO_DEV_ATTR_CHKSUM(ade7759_read_8bit, ADE7759_CHKSUM);
->>  static IIO_DEV_ATTR_PHCAL(S_IWUSR | S_IRUGO,
->> -		ade7759_read_16bit,
->> -		ade7759_write_16bit,
->> -		ADE7759_PHCAL);
->> +			  ade7759_read_16bit,
->> +			  ade7759_write_16bit, ADE7759_PHCAL);
->>  static IIO_DEV_ATTR_APOS(S_IWUSR | S_IRUGO,
->> -		ade7759_read_16bit,
->> -		ade7759_write_16bit,
->> -		ADE7759_APOS);
->> +			 ade7759_read_16bit, ade7759_write_16bit, ADE7759_APOS);
->>  static IIO_DEV_ATTR_SAGCYC(S_IWUSR | S_IRUGO,
->> -		ade7759_read_8bit,
->> -		ade7759_write_8bit,
->> -		ADE7759_SAGCYC);
->> +			   ade7759_read_8bit,
->> +			   ade7759_write_8bit, ADE7759_SAGCYC);
->>  static IIO_DEV_ATTR_SAGLVL(S_IWUSR | S_IRUGO,
->> -		ade7759_read_8bit,
->> -		ade7759_write_8bit,
->> -		ADE7759_SAGLVL);
->> +			   ade7759_read_8bit,
->> +			   ade7759_write_8bit, ADE7759_SAGLVL);
->>  static IIO_DEV_ATTR_LINECYC(S_IWUSR | S_IRUGO,
->> -		ade7759_read_8bit,
->> -		ade7759_write_8bit,
->> -		ADE7759_LINECYC);
->> +			    ade7759_read_8bit,
->> +			    ade7759_write_8bit, ADE7759_LINECYC);
->>  static IIO_DEV_ATTR_LENERGY(ade7759_read_40bit, ADE7759_LENERGY);
->>  static IIO_DEV_ATTR_PGA_GAIN(S_IWUSR | S_IRUGO,
->> -		ade7759_read_8bit,
->> -		ade7759_write_8bit,
->> -		ADE7759_GAIN);
->> +			     ade7759_read_8bit,
->> +			     ade7759_write_8bit, ADE7759_GAIN);
->>  static IIO_DEV_ATTR_ACTIVE_POWER_GAIN(S_IWUSR | S_IRUGO,
->> -		ade7759_read_16bit,
->> -		ade7759_write_16bit,
->> -		ADE7759_APGAIN);
->> +				      ade7759_read_16bit,
->> +				      ade7759_write_16bit, ADE7759_APGAIN);
->>  static IIO_DEV_ATTR_CH_OFF(1, S_IWUSR | S_IRUGO,
->> -		ade7759_read_8bit,
->> -		ade7759_write_8bit,
->> -		ADE7759_CH1OS);
->> +			   ade7759_read_8bit,
->> +			   ade7759_write_8bit, ADE7759_CH1OS);
->>  static IIO_DEV_ATTR_CH_OFF(2, S_IWUSR | S_IRUGO,
->> -		ade7759_read_8bit,
->> -		ade7759_write_8bit,
->> -		ADE7759_CH2OS);
->> +			   ade7759_read_8bit,
->> +			   ade7759_write_8bit, ADE7759_CH2OS);
->>  
->>  static int ade7759_set_irq(struct device *dev, bool enable)
->>  {
->> @@ -336,15 +310,15 @@ static int ade7759_set_irq(struct device *dev, bool enable)
->>  		goto error_ret;
->>  
->>  	if (enable)
->> -		irqen |= BIT(3); /* Enables an interrupt when a data is
->> -				  * present in the waveform register
->> -				  */
->> +		irqen |= BIT(3);	/* Enables an interrupt when a data is
->> +					 * present in the waveform register
->> +					 */
-> I'm not really sure what this bit of reformatting adds?
-> The comment was oddly formatted in the first place.  Now it's still oddly
-> formatted but differently...
->>  	else
->>  		irqen &= ~BIT(3);
->>  
->>  	ret = ade7759_spi_write_reg_8(dev, ADE7759_IRQEN, irqen);
->>  
->> -error_ret:
->> + error_ret:
->>  	return ret;
->>  }
->>  
->> @@ -354,16 +328,14 @@ static int ade7759_stop_device(struct device *dev)
->>  	int ret;
->>  	u16 val;
->>  
->> -	ret = ade7759_spi_read_reg_16(dev,
->> -			ADE7759_MODE,
->> -			&val);
->> +	ret = ade7759_spi_read_reg_16(dev, ADE7759_MODE, &val);
->>  	if (ret < 0) {
->>  		dev_err(dev, "unable to power down the device, error: %d\n",
->>  			ret);
->>  		return ret;
->>  	}
->>  
->> -	val |= BIT(4);  /* AD converters can be turned off */
->> +	val |= BIT(4);		/* AD converters can be turned off */
->>  
->>  	return ade7759_spi_write_reg_16(dev, ADE7759_MODE, val);
->>  }
->> @@ -388,21 +360,18 @@ static int ade7759_initial_setup(struct iio_dev *indio_dev)
->>  	ade7759_reset(dev);
->>  	usleep_range(ADE7759_STARTUP_DELAY, ADE7759_STARTUP_DELAY + 100);
->>  
->> -err_ret:
->> + err_ret:
->>  	return ret;
->>  }
->>  
->>  static ssize_t ade7759_read_frequency(struct device *dev,
->> -		struct device_attribute *attr,
->> -		char *buf)
->> +				      struct device_attribute *attr, char *buf)
->>  {
->>  	int ret;
->>  	u16 t;
->>  	int sps;
->>  
->> -	ret = ade7759_spi_read_reg_16(dev,
->> -			ADE7759_MODE,
->> -			&t);
->> +	ret = ade7759_spi_read_reg_16(dev, ADE7759_MODE, &t);
->>  	if (ret)
->>  		return ret;
->>  
->> @@ -413,9 +382,8 @@ static ssize_t ade7759_read_frequency(struct device *dev,
->>  }
->>  
->>  static ssize_t ade7759_write_frequency(struct device *dev,
->> -		struct device_attribute *attr,
->> -		const char *buf,
->> -		size_t len)
->> +				       struct device_attribute *attr,
->> +				       const char *buf, size_t len)
->>  {
->>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>  	struct ade7759_state *st = iio_priv(indio_dev);
->> @@ -449,18 +417,18 @@ static ssize_t ade7759_write_frequency(struct device *dev,
->>  
->>  	ret = ade7759_spi_write_reg_16(dev, ADE7759_MODE, reg);
->>  
->> -out:
->> + out:
->>  	mutex_unlock(&indio_dev->mlock);
->>  
->>  	return ret ? ret : len;
->>  }
->> +
->>  static IIO_DEV_ATTR_TEMP_RAW(ade7759_read_8bit);
->>  static IIO_CONST_ATTR(in_temp_offset, "70 C");
->>  static IIO_CONST_ATTR(in_temp_scale, "1 C");
->>  
->>  static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
->> -		ade7759_read_frequency,
->> -		ade7759_write_frequency);
->> +			      ade7759_read_frequency, ade7759_write_frequency);
->>  
->>  static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("27900 14000 7000 3500");
->>  
->> @@ -537,11 +505,12 @@ static int ade7759_remove(struct spi_device *spi)
->>  
->>  static struct spi_driver ade7759_driver = {
->>  	.driver = {
->> -		.name = "ade7759",
->> -	},
->> +		   .name = "ade7759",
->> +		   },
-> Why?
->>  	.probe = ade7759_probe,
->>  	.remove = ade7759_remove,
->>  };
->> +
-> Why?  Convention is absolutely to not have a blank line here.
->>  module_spi_driver(ade7759_driver);
->>  
->>  MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");
->>
+> diff --git a/drivers/staging/iio/meter/ade7759.c b/drivers/staging/iio/meter/ade7759.c
+> index 0b65f1847510..a5ee4501d30a 100644
+> --- a/drivers/staging/iio/meter/ade7759.c
+> +++ b/drivers/staging/iio/meter/ade7759.c
+> @@ -429,7 +429,7 @@ static ssize_t ade7759_write_frequency(struct device *dev,
+>  	if (!val)
+>  		return -EINVAL;
+>  
+> -	mutex_lock(&indio_dev->mlock);
+> +	mutex_lock(&st->buf_lock);
+>  
+>  	t = 27900 / val;
+>  	if (t > 0)
+> @@ -447,10 +447,13 @@ static ssize_t ade7759_write_frequency(struct device *dev,
+>  	reg &= ~(3 << 13);
+>  	reg |= t << 13;
+>  
+> -	ret = ade7759_spi_write_reg_16(dev, ADE7759_MODE, reg);
+> +	st->tx[0] = ADE7759_WRITE_REG(ADE7759_MODE);
+> +	st->tx[1] = reg;
+> +
+> +	ret = spi_write(st->us, st->tx, 2);
+>  
+>  out:
+> -	mutex_unlock(&indio_dev->mlock);
+> +	mutex_unlock(&st->buf_lock);
+>  
+>  	return ret ? ret : len;
+>  }
 > 
 
