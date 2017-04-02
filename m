@@ -1,21 +1,20 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47191 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47173 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750902AbdDBIoH (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Apr 2017 04:44:07 -0400
-Subject: Re: [PATCH 2/3] staging: iio: frequency: Remove useless type
- conversion
+        with ESMTP id S1750881AbdDBImB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Apr 2017 04:42:01 -0400
+Subject: Re: [PATCH 3/3] staging: iio: light: Remove useless type conversion
 To: simran singhal <singhalsimran0@gmail.com>
 References: <1490972930-15476-1-git-send-email-singhalsimran0@gmail.com>
- <1490972930-15476-3-git-send-email-singhalsimran0@gmail.com>
+ <1490972930-15476-4-git-send-email-singhalsimran0@gmail.com>
 Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
         gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
         devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <4cfab900-7632-2f34-7bb8-bd432a75904d@kernel.org>
-Date: Sun, 2 Apr 2017 09:44:05 +0100
+Message-ID: <06fde090-96a6-8a28-3553-d6446dd9b58d@kernel.org>
+Date: Sun, 2 Apr 2017 09:41:59 +0100
 MIME-Version: 1.0
-In-Reply-To: <1490972930-15476-3-git-send-email-singhalsimran0@gmail.com>
+In-Reply-To: <1490972930-15476-4-git-send-email-singhalsimran0@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
@@ -41,26 +40,26 @@ On 31/03/17 16:08, simran singhal wrote:
 > + &a
 > )
 > 
+Description is largely irrelevant.  Please tailor it to the patch.
+Also if only effecting one driver, the title should include the name of
+the driver.
 > Signed-off-by: simran singhal <singhalsimran0@gmail.com>
-driver name in title please, plus a patch description rather more tailored
-to the patch. 
-
 > ---
->  drivers/staging/iio/frequency/ad9832.c | 2 +-
+>  drivers/staging/iio/light/tsl2x7x_core.c | 2 +-
 >  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
-> index 425b8ab..01bdf8e 100644
-> --- a/drivers/staging/iio/frequency/ad9832.c
-> +++ b/drivers/staging/iio/frequency/ad9832.c
-> @@ -119,7 +119,7 @@ struct ad9832_state {
->  static unsigned long ad9832_calc_freqreg(unsigned long mclk, unsigned long fout)
->  {
->  	unsigned long long freqreg = (u64)fout *
-> -				     (u64)((u64)1L << AD9832_FREQ_BITS);
-> +				     (u64)1L << AD9832_FREQ_BITS;
->  	do_div(freqreg, mclk);
->  	return freqreg;
+> diff --git a/drivers/staging/iio/light/tsl2x7x_core.c b/drivers/staging/iio/light/tsl2x7x_core.c
+> index ea15bc1..0490c1d 100644
+> --- a/drivers/staging/iio/light/tsl2x7x_core.c
+> +++ b/drivers/staging/iio/light/tsl2x7x_core.c
+> @@ -624,7 +624,7 @@ static int tsl2x7x_als_calibrate(struct iio_dev *indio_dev)
+>  	dev_info(&chip->client->dev,
+>  		 "%s als_calibrate completed\n", chip->client->name);
+>  
+> -	return (int)gain_trim_val;
+> +	return gain_trim_val;
 >  }
+>  
+>  static int tsl2x7x_chip_on(struct iio_dev *indio_dev)
 > 
 
