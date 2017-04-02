@@ -1,177 +1,153 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58190 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47141 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752402AbdDCTqs (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Apr 2017 15:46:48 -0400
-Subject: Re: [PATCH v2 2/2] iio: adc: stm32: add dt option to set resolution
-To: Fabrice Gasnier <fabrice.gasnier@st.com>, linux@armlinux.org.uk,
-        robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1490963559-32159-1-git-send-email-fabrice.gasnier@st.com>
- <1490963559-32159-3-git-send-email-fabrice.gasnier@st.com>
- <8d440abd-3548-6aab-bba9-3f62fe27e72d@kernel.org>
-Cc: linux-iio@vger.kernel.org, mark.rutland@arm.com,
-        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com,
-        lars@metafoo.de, knaack.h@gmx.de, pmeerw@pmeerw.net,
-        benjamin.gaignard@linaro.org, benjamin.gaignard@st.com,
-        linus.walleij@linaro.org
+        with ESMTP id S1750881AbdDBIie (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Apr 2017 04:38:34 -0400
+Subject: Re: [PATCH 1/3] staging: iio: accel: Remove useless type conversion
+To: simran singhal <singhalsimran0@gmail.com>
+References: <1490972930-15476-1-git-send-email-singhalsimran0@gmail.com>
+ <1490972930-15476-2-git-send-email-singhalsimran0@gmail.com>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <e0979bed-603b-c84f-62f2-ee432fc021b4@kernel.org>
-Date: Mon, 3 Apr 2017 20:46:43 +0100
+Message-ID: <42c3c1b6-16c4-7dba-14d8-5b982e191241@kernel.org>
+Date: Sun, 2 Apr 2017 09:38:30 +0100
 MIME-Version: 1.0
-In-Reply-To: <8d440abd-3548-6aab-bba9-3f62fe27e72d@kernel.org>
+In-Reply-To: <1490972930-15476-2-git-send-email-singhalsimran0@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/04/17 09:54, Jonathan Cameron wrote:
-> On 31/03/17 13:32, Fabrice Gasnier wrote:
->> stm32 adc supports several resolution. Add 'assigned-resolution-bits'
->> dt optional property to set it. Default to maximum resolution in case
->> it isn't set.
->>
->> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-> The code is fine.  Just waiting on review of the binding.
-> 
-> Give me a poke if I seem to have dropped this in a week or two.
-Applied to the togreg branch of iio.git and pushed out as
-testing for the autobuilders to play with it.
+On 31/03/17 16:08, simran singhal wrote:
+> Some type conversions like casting a pointer to a pointer of same type,
+> casting to the original type using addressof(&) operator etc. are not
+> needed. Therefore, remove them. Done using coccinelle:
+Please write a more specific commit message.  No where in here
+for example is that particular case relevant as we aren't ever looking
+at pointers.
 
-Thanks,
+More stuff below.  There's a better way of improving this code!
+> 
+> @@
+> type t;
+> t *p;
+> t a;
+> @@
+> (
+> - (t)(a)
+> + a
+> |
+> - (t *)(p)
+> + p
+> |
+> - (t *)(&a)
+> + &a
+> )
+> 
+> Signed-off-by: simran singhal <singhalsimran0@gmail.com>
+> ---
+>  drivers/staging/iio/accel/adis16201.c | 2 +-
+>  drivers/staging/iio/accel/adis16203.c | 2 +-
+>  drivers/staging/iio/accel/adis16209.c | 2 +-
+>  drivers/staging/iio/accel/adis16240.c | 6 +++---
+>  4 files changed, 6 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/accel/adis16201.c b/drivers/staging/iio/accel/adis16201.c
+> index fbc2406..b7381d3 100644
+> --- a/drivers/staging/iio/accel/adis16201.c
+> +++ b/drivers/staging/iio/accel/adis16201.c
+> @@ -228,7 +228,7 @@ static int adis16201_read_raw(struct iio_dev *indio_dev,
+>  		if (ret)
+>  			return ret;
+>  		val16 &= (1 << bits) - 1;
+> -		val16 = (s16)(val16 << (16 - bits)) >> (16 - bits);
+> +		val16 = val16 << (16 - bits) >> (16 - bits);
+hmm. bits is integer and val16 an s16
+*looks up type promotion rules*
 
-Jonathan
-> 
-> Thanks,
-> 
-> Jonathan
->> ---
->> Changes in v2:
->> - rename property from 'st,adc-res' to 'assigned-resolution-bits', so it
->>   is more common.
->> ---
->>  drivers/iio/adc/stm32-adc.c | 50 ++++++++++++++++++++++++++++++++++++++++++++-
->>  1 file changed, 49 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
->> index 9b49a6ad..c28e7ff 100644
->> --- a/drivers/iio/adc/stm32-adc.c
->> +++ b/drivers/iio/adc/stm32-adc.c
->> @@ -60,6 +60,8 @@
->>  #define STM32F4_EOC			BIT(1)
->>  
->>  /* STM32F4_ADC_CR1 - bit fields */
->> +#define STM32F4_RES_SHIFT		24
->> +#define STM32F4_RES_MASK		GENMASK(25, 24)
->>  #define STM32F4_SCAN			BIT(8)
->>  #define STM32F4_EOCIE			BIT(5)
->>  
->> @@ -141,6 +143,7 @@ struct stm32_adc_regs {
->>   * @lock:		spinlock
->>   * @bufi:		data buffer index
->>   * @num_conv:		expected number of scan conversions
->> + * @res:		data resolution (e.g. RES bitfield value)
->>   * @trigger_polarity:	external trigger polarity (e.g. exten)
->>   * @dma_chan:		dma channel
->>   * @rx_buf:		dma rx buffer cpu address
->> @@ -157,6 +160,7 @@ struct stm32_adc {
->>  	spinlock_t		lock;		/* interrupt lock */
->>  	unsigned int		bufi;
->>  	unsigned int		num_conv;
->> +	u32			res;
->>  	u32			trigger_polarity;
->>  	struct dma_chan		*dma_chan;
->>  	u8			*rx_buf;
->> @@ -196,6 +200,11 @@ struct stm32_adc_chan_spec {
->>  	{ IIO_VOLTAGE, 15, "in15" },
->>  };
->>  
->> +static const unsigned int stm32f4_adc_resolutions[] = {
->> +	/* sorted values so the index matches RES[1:0] in STM32F4_ADC_CR1 */
->> +	12, 10, 8, 6,
->> +};
->> +
->>  /**
->>   * stm32f4_sq - describe regular sequence registers
->>   * - L: sequence len (register & bit field)
->> @@ -302,6 +311,14 @@ static void stm32_adc_conv_irq_disable(struct stm32_adc *adc)
->>  	stm32_adc_clr_bits(adc, STM32F4_ADC_CR1, STM32F4_EOCIE);
->>  }
->>  
->> +static void stm32_adc_set_res(struct stm32_adc *adc)
->> +{
->> +	u32 val = stm32_adc_readl(adc, STM32F4_ADC_CR1);
->> +
->> +	val = (val & ~STM32F4_RES_MASK) | (adc->res << STM32F4_RES_SHIFT);
->> +	stm32_adc_writel(adc, STM32F4_ADC_CR1, val);
->> +}
->> +
->>  /**
->>   * stm32_adc_start_conv() - Start conversions for regular channels.
->>   * @adc: stm32 adc instance
->> @@ -870,11 +887,37 @@ static irqreturn_t stm32_adc_trigger_handler(int irq, void *p)
->>  	{},
->>  };
->>  
->> +static int stm32_adc_of_get_resolution(struct iio_dev *indio_dev)
->> +{
->> +	struct device_node *node = indio_dev->dev.of_node;
->> +	struct stm32_adc *adc = iio_priv(indio_dev);
->> +	unsigned int i;
->> +	u32 res;
->> +
->> +	if (of_property_read_u32(node, "assigned-resolution-bits", &res))
->> +		res = stm32f4_adc_resolutions[0];
->> +
->> +	for (i = 0; i < ARRAY_SIZE(stm32f4_adc_resolutions); i++)
->> +		if (res == stm32f4_adc_resolutions[i])
->> +			break;
->> +	if (i >= ARRAY_SIZE(stm32f4_adc_resolutions)) {
->> +		dev_err(&indio_dev->dev, "Bad resolution: %u bits\n", res);
->> +		return -EINVAL;
->> +	}
->> +
->> +	dev_dbg(&indio_dev->dev, "Using %u bits resolution\n", res);
->> +	adc->res = i;
->> +
->> +	return 0;
->> +}
->> +
->>  static void stm32_adc_chan_init_one(struct iio_dev *indio_dev,
->>  				    struct iio_chan_spec *chan,
->>  				    const struct stm32_adc_chan_spec *channel,
->>  				    int scan_index)
->>  {
->> +	struct stm32_adc *adc = iio_priv(indio_dev);
->> +
->>  	chan->type = channel->type;
->>  	chan->channel = channel->channel;
->>  	chan->datasheet_name = channel->name;
->> @@ -883,7 +926,7 @@ static void stm32_adc_chan_init_one(struct iio_dev *indio_dev,
->>  	chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
->>  	chan->info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE);
->>  	chan->scan_type.sign = 'u';
->> -	chan->scan_type.realbits = 12;
->> +	chan->scan_type.realbits = stm32f4_adc_resolutions[adc->res];
->>  	chan->scan_type.storagebits = 16;
->>  	chan->ext_info = stm32_adc_ext_info;
->>  }
->> @@ -1022,6 +1065,11 @@ static int stm32_adc_probe(struct platform_device *pdev)
->>  		return ret;
->>  	}
->>  
->> +	ret = stm32_adc_of_get_resolution(indio_dev);
->> +	if (ret < 0)
->> +		goto err_clk_disable;
->> +	stm32_adc_set_res(adc);
->> +
->>  	ret = stm32_adc_chan_of_init(indio_dev);
->>  	if (ret < 0)
->>  		goto err_clk_disable;
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Hohum. I hope someone else will check I get this right.
+
+Both instances of 16-bits will be signed integers.
+val16 will get promoted to a signed integer as well.
+
+Had it been a u16 value this would all have been necessary
+to ensure that the final right shift was pulling in ones.
+
+So all in all this looks like the cast is probably there to suppress
+a warning if the compiler isn't clever enough to figure out it will never
+truncate unecessarily.
+
+However, the fun thing about this is to take a look at what it is
+actually doing.  It's doing sign extension to an s16, then just below
+assigns it to an int.
+
+So how could you do that better?
+
+search for sign_extend32 and see what you can do with it.
+
+It's actually a more recent introduction to the kernel than this driver
+(IIRC) so not surprising it isn't already being used here.
+ 
+>  		*val = val16;
+>  		return IIO_VAL_INT;
+>  	}
+> diff --git a/drivers/staging/iio/accel/adis16203.c b/drivers/staging/iio/accel/adis16203.c
+> index b59755a..25e5e52 100644
+> --- a/drivers/staging/iio/accel/adis16203.c
+> +++ b/drivers/staging/iio/accel/adis16203.c
+> @@ -211,7 +211,7 @@ static int adis16203_read_raw(struct iio_dev *indio_dev,
+>  			return ret;
+>  		}
+>  		val16 &= (1 << bits) - 1;
+> -		val16 = (s16)(val16 << (16 - bits)) >> (16 - bits);
+> +		val16 = val16 << (16 - bits) >> (16 - bits);
+>  		*val = val16;
+>  		mutex_unlock(&indio_dev->mlock);
+>  		return IIO_VAL_INT;
+> diff --git a/drivers/staging/iio/accel/adis16209.c b/drivers/staging/iio/accel/adis16209.c
+> index 52fa2e0..7aac310 100644
+> --- a/drivers/staging/iio/accel/adis16209.c
+> +++ b/drivers/staging/iio/accel/adis16209.c
+> @@ -259,7 +259,7 @@ static int adis16209_read_raw(struct iio_dev *indio_dev,
+>  			return ret;
+>  		}
+>  		val16 &= (1 << bits) - 1;
+> -		val16 = (s16)(val16 << (16 - bits)) >> (16 - bits);
+> +		val16 = val16 << (16 - bits) >> (16 - bits);
+>  		*val = val16;
+>  		return IIO_VAL_INT;
+>  	}
+> diff --git a/drivers/staging/iio/accel/adis16240.c b/drivers/staging/iio/accel/adis16240.c
+> index 6e3c95c..2c55b65 100644
+> --- a/drivers/staging/iio/accel/adis16240.c
+> +++ b/drivers/staging/iio/accel/adis16240.c
+> @@ -220,7 +220,7 @@ static ssize_t adis16240_spi_read_signed(struct device *dev,
+>  	if (val & ADIS16240_ERROR_ACTIVE)
+>  		adis_check_status(st);
+>  
+> -	val = (s16)(val << shift) >> shift;
+> +	val = val << shift >> shift;
+>  	return sprintf(buf, "%d\n", val);
+>  }
+>  
+> @@ -294,7 +294,7 @@ static int adis16240_read_raw(struct iio_dev *indio_dev,
+>  			return ret;
+>  		}
+>  		val16 &= (1 << bits) - 1;
+> -		val16 = (s16)(val16 << (16 - bits)) >> (16 - bits);
+> +		val16 = val16 << (16 - bits) >> (16 - bits);
+>  		*val = val16;
+>  		return IIO_VAL_INT;
+>  	case IIO_CHAN_INFO_PEAK:
+> @@ -305,7 +305,7 @@ static int adis16240_read_raw(struct iio_dev *indio_dev,
+>  			return ret;
+>  		}
+>  		val16 &= (1 << bits) - 1;
+> -		val16 = (s16)(val16 << (16 - bits)) >> (16 - bits);
+> +		val16 = val16 << (16 - bits) >> (16 - bits);
+>  		*val = val16;
+>  		return IIO_VAL_INT;
+>  	}
 > 
 
