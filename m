@@ -1,51 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:60518 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750948AbdDBQ1g (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 2 Apr 2017 12:27:36 -0400
-Message-ID: <1491150454.7991.1.camel@linux.intel.com>
-Subject: Re: [PATCH] iio: hid-sensor-hub: Implement batch mode
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, jikos@kernel.org
-Cc: linux-iio@vger.kernel.org
-Date: Sun, 02 Apr 2017 09:27:34 -0700
-In-Reply-To: <3c5824ca-e56b-f1c2-2fda-42f4b4bafa61@kernel.org>
-References: <1490738130-54272-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-         <3c5824ca-e56b-f1c2-2fda-42f4b4bafa61@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47968 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751216AbdDBKby (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Apr 2017 06:31:54 -0400
+Subject: Re: [PATCH] staging:iio:accel:adis16029 fixed checkpatch issue - drop
+ braces around single if statement
+To: Andrea della Porta <sfaragnaus@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+References: <20170329083624.GA3281@gmail.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <66958d0b-58ef-98fc-c8f2-e4b1cfd81c41@kernel.org>
+Date: Sun, 2 Apr 2017 11:31:51 +0100
+MIME-Version: 1.0
+In-Reply-To: <20170329083624.GA3281@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, 2017-04-02 at 11:59 +0100, Jonathan Cameron wrote:
-> On 28/03/17 22:55, Srinivas Pandruvada wrote:
-> > HID sensor hubs using Integrated Senor Hub (ISH) has added
-> > capability to
-> > support batch mode. This allows host processor to go to sleep for
-> > extended
-> > duration, while the sensor hub is storing samples in its internal
-> > buffers.
-> > 
+See patch title. Check the part number...
 
-[...]
-
-> > hid_sensor_get_report_latency(iio_trigger_get_drvdata(indio_dev-
-> > >trig));
-> > +	if (latency < 0)
-> > +		return latency;
-> > +
-> > +	return sprintf(buf, "%d\n", latency / 1000);
+On 29/03/17 09:36, Andrea della Porta wrote:
+> Fixed the followinf checkpatch warning:
+> WARNING: braces {} are not necessary for single statement blocks
+> #258: FILE: drivers/staging/iio/accel/adis16209.c:258:
+> +		if (ret) {
+> +			return ret;
+> +		}
 > 
-> Seems to me that you'll be wanting latencies of sub one second
-> sometimes...
-> hence I'd make this fixed point.  The core IIO functions should be
-> available
-> to help with conversion if you want to use them.
+> Signed-off-by: Andrea della Porta <sfaragnaus@gmail.com>
+Was fixed about a week ago by Mark Stenglein.
 
-Correct. We want latency less than 1 second too, which is granularity
-for poll() system call.
-So we should be in this case should be able to enter 0.5 for 500
-milliseconds using hwfifo_timeout. 
+Patch has made it through the IIO tree to staging yet though.
+Should be heading that way this afternoon (depending on how
+long Greg's backlog of emails still is ;)
 
-Thanks,
-Srinivas
+Jonathan
+> ---
+>  drivers/staging/iio/accel/adis16209.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/accel/adis16209.c b/drivers/staging/iio/accel/adis16209.c
+> index 52fa2e0..159a687 100644
+> --- a/drivers/staging/iio/accel/adis16209.c
+> +++ b/drivers/staging/iio/accel/adis16209.c
+> @@ -255,9 +255,9 @@ static int adis16209_read_raw(struct iio_dev *indio_dev,
+>  		}
+>  		addr = adis16209_addresses[chan->scan_index][0];
+>  		ret = adis_read_reg_16(st, addr, &val16);
+> -		if (ret) {
+> +		if (ret)
+>  			return ret;
+> -		}
+> +
+>  		val16 &= (1 << bits) - 1;
+>  		val16 = (s16)(val16 << (16 - bits)) >> (16 - bits);
+>  		*val = val16;
+> 
+
