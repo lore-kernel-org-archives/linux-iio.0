@@ -1,109 +1,142 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:33426 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1030785AbdDTJ7w (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 20 Apr 2017 05:59:52 -0400
-Subject: Re: [PATCH v2 5/5] mfd: cros_ec: add RTC as mfd subdevice
-To: Lee Jones <lee.jones@linaro.org>
-References: <20170403163536.25634-1-enric.balletbo@collabora.com>
- <20170403163536.25634-6-enric.balletbo@collabora.com>
- <20170411094825.64kwe5uckdpc3n4q@dell>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-        Olof Johansson <olof@lixom.net>, bleung@chromium.org,
-        martinez.javier@gmail.com, Guenter Roeck <groeck@chromium.org>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        rtc-linux@googlegroups.com, Stephen Barber <smbarber@chromium.org>
-From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Message-ID: <ecd78225-582d-92bd-deb3-34cf46bf922a@collabora.com>
-Date: Thu, 20 Apr 2017 11:59:42 +0200
-MIME-Version: 1.0
-In-Reply-To: <20170411094825.64kwe5uckdpc3n4q@dell>
-Content-Type: text/plain; charset=utf-8
+Received: from mail-wr0-f196.google.com ([209.85.128.196]:34876 "EHLO
+        mail-wr0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752389AbdDCR1u (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Apr 2017 13:27:50 -0400
+Received: by mail-wr0-f196.google.com with SMTP id p52so35489951wrc.2
+        for <linux-iio@vger.kernel.org>; Mon, 03 Apr 2017 10:27:49 -0700 (PDT)
+From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, lorenzo.bianconi@st.com
+Subject: [PATCH] iio: imu: st_lsm6dsx: use i2c/spi device name for iio_dev name
+Date: Mon,  3 Apr 2017 19:27:39 +0200
+Message-Id: <20170403172739.7291-1-lorenzo.bianconi@st.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Lee,
+Use the correct chip name (e.g. lsm6dsm) as suffix for iio_dev name
+instead of a generic one (lsm6dsx)
 
-On 11/04/17 11:48, Lee Jones wrote:
-> On Mon, 03 Apr 2017, Enric Balletbo i Serra wrote:
-> 
->> From: Stephen Barber <smbarber@chromium.org>
->>
->> If the EC supports RTC host commands, expose an RTC device.
-> 
-> This could be made nicer by checking RTC compatibility in the RTC
-> driver.  So register it regardless, then check if the device is
-> supported from within.  If it's not supported simply return -ENODEV
-> from probe.
-> 
+Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+---
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h      |  4 +++-
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 14 +++++++++-----
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c  |  2 +-
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c  |  2 +-
+ 4 files changed, 14 insertions(+), 8 deletions(-)
 
-Currently rtc-cros-ec and the other subdevices doesn't know how to check the
-cros-ec MFD features, to do this I need to export cros_ec_check_features to a
-public header and the rtc and other subdrivers should call the check function.
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+index 6a9849e..4839db7 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+@@ -71,6 +71,7 @@ enum st_lsm6dsx_fifo_mode {
+ 
+ /**
+  * struct st_lsm6dsx_sensor - ST IMU sensor instance
++ * @name: Sensor name.
+  * @id: Sensor identifier.
+  * @hw: Pointer to instance of struct st_lsm6dsx_hw.
+  * @gain: Configured sensor sensitivity.
+@@ -83,6 +84,7 @@ enum st_lsm6dsx_fifo_mode {
+  * @ts: Latest timestamp from the interrupt handler.
+  */
+ struct st_lsm6dsx_sensor {
++	char name[32];
+ 	enum st_lsm6dsx_sensor_id id;
+ 	struct st_lsm6dsx_hw *hw;
+ 
+@@ -133,7 +135,7 @@ struct st_lsm6dsx_hw {
+ #endif /* CONFIG_SPI_MASTER */
+ };
+ 
+-int st_lsm6dsx_probe(struct device *dev, int irq, int hw_id,
++int st_lsm6dsx_probe(struct device *dev, int irq, int hw_id, const char *name,
+ 		     const struct st_lsm6dsx_transfer_function *tf_ops);
+ int st_lsm6dsx_sensor_enable(struct st_lsm6dsx_sensor *sensor);
+ int st_lsm6dsx_sensor_disable(struct st_lsm6dsx_sensor *sensor);
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+index f80a3d4..98b51d7 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+@@ -642,7 +642,8 @@ static int st_lsm6dsx_init_device(struct st_lsm6dsx_hw *hw)
+ }
+ 
+ static struct iio_dev *st_lsm6dsx_alloc_iiodev(struct st_lsm6dsx_hw *hw,
+-					       enum st_lsm6dsx_sensor_id id)
++					       enum st_lsm6dsx_sensor_id id,
++					       const char *name)
+ {
+ 	struct st_lsm6dsx_sensor *sensor;
+ 	struct iio_dev *iio_dev;
+@@ -666,27 +667,30 @@ static struct iio_dev *st_lsm6dsx_alloc_iiodev(struct st_lsm6dsx_hw *hw,
+ 	case ST_LSM6DSX_ID_ACC:
+ 		iio_dev->channels = st_lsm6dsx_acc_channels;
+ 		iio_dev->num_channels = ARRAY_SIZE(st_lsm6dsx_acc_channels);
+-		iio_dev->name = "lsm6dsx_accel";
+ 		iio_dev->info = &st_lsm6dsx_acc_info;
+ 
+ 		sensor->decimator_mask = ST_LSM6DSX_REG_ACC_DEC_MASK;
++		scnprintf(sensor->name, sizeof(sensor->name), "%s_accel",
++			  name);
+ 		break;
+ 	case ST_LSM6DSX_ID_GYRO:
+ 		iio_dev->channels = st_lsm6dsx_gyro_channels;
+ 		iio_dev->num_channels = ARRAY_SIZE(st_lsm6dsx_gyro_channels);
+-		iio_dev->name = "lsm6dsx_gyro";
+ 		iio_dev->info = &st_lsm6dsx_gyro_info;
+ 
+ 		sensor->decimator_mask = ST_LSM6DSX_REG_GYRO_DEC_MASK;
++		scnprintf(sensor->name, sizeof(sensor->name), "%s_gyro",
++			  name);
+ 		break;
+ 	default:
+ 		return NULL;
+ 	}
++	iio_dev->name = sensor->name;
+ 
+ 	return iio_dev;
+ }
+ 
+-int st_lsm6dsx_probe(struct device *dev, int irq, int hw_id,
++int st_lsm6dsx_probe(struct device *dev, int irq, int hw_id, const char *name,
+ 		     const struct st_lsm6dsx_transfer_function *tf_ops)
+ {
+ 	struct st_lsm6dsx_hw *hw;
+@@ -710,7 +714,7 @@ int st_lsm6dsx_probe(struct device *dev, int irq, int hw_id,
+ 		return err;
+ 
+ 	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++) {
+-		hw->iio_devs[i] = st_lsm6dsx_alloc_iiodev(hw, i);
++		hw->iio_devs[i] = st_lsm6dsx_alloc_iiodev(hw, i, name);
+ 		if (!hw->iio_devs[i])
+ 			return -ENOMEM;
+ 	}
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
+index 2e4ed26..09a51cf 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
+@@ -61,7 +61,7 @@ static int st_lsm6dsx_i2c_probe(struct i2c_client *client,
+ 				const struct i2c_device_id *id)
+ {
+ 	return st_lsm6dsx_probe(&client->dev, client->irq,
+-				(int)id->driver_data,
++				(int)id->driver_data, id->name,
+ 				&st_lsm6dsx_transfer_fn);
+ }
+ 
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
+index 1bf4a58..f765a50 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
+@@ -78,7 +78,7 @@ static int st_lsm6dsx_spi_probe(struct spi_device *spi)
+ 	const struct spi_device_id *id = spi_get_device_id(spi);
+ 
+ 	return st_lsm6dsx_probe(&spi->dev, spi->irq,
+-				(int)id->driver_data,
++				(int)id->driver_data, id->name,
+ 				&st_lsm6dsx_transfer_fn);
+ }
+ 
+-- 
+2.9.3
 
-Seems to me more reasonable that the MFD checks the possible cells that can have
-and only register the ones that really has (the cros-ec MFD can have different
-cells depending on the device). Call every probe for all possible cells seems to
-me a unnecessary step. The MFD is able to know which cells has, so IMHO then the
-subdrivers are more independent of the MFD.
-
-It's just an opinion so I'll let you the final decision.
-
-Cheers,
- Enric
-
->> Signed-off-by: Stephen Barber <smbarber@chromium.org>
->> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
->> ---
->>
->> Changes since v1:
->>  - Use PLATFORM_DEVID_AUTO to add the subdevice.
->>
->>  drivers/mfd/cros_ec.c | 18 ++++++++++++++++++
->>  1 file changed, 18 insertions(+)
->>
->> diff --git a/drivers/mfd/cros_ec.c b/drivers/mfd/cros_ec.c
->> index bbc17ab..76874be 100644
->> --- a/drivers/mfd/cros_ec.c
->> +++ b/drivers/mfd/cros_ec.c
->> @@ -51,6 +51,10 @@ static const struct mfd_cell ec_pd_cell = {
->>  	.pdata_size = sizeof(pd_p),
->>  };
->>  
->> +static const struct mfd_cell ec_rtc_cell = {
->> +	.name = "cros-ec-rtc",
->> +};
->> +
->>  static irqreturn_t ec_irq_thread(int irq, void *data)
->>  {
->>  	struct cros_ec_device *ec_dev = data;
->> @@ -238,6 +242,16 @@ static void cros_ec_sensors_register(struct cros_ec_device *ec_dev)
->>  	kfree(msg);
->>  }
->>  
->> +static void cros_ec_rtc_register(struct cros_ec_device *ec_dev)
->> +{
->> +	int ret;
->> +
->> +	ret = mfd_add_devices(ec_dev->dev, PLATFORM_DEVID_AUTO, &ec_rtc_cell,
->> +			      1, NULL, 0, NULL);
->> +	if (ret)
->> +		dev_err(ec_dev->dev, "failed to add EC RTC\n");
->> +}
->> +
->>  int cros_ec_register(struct cros_ec_device *ec_dev)
->>  {
->>  	struct device *dev = ec_dev->dev;
->> @@ -287,6 +301,10 @@ int cros_ec_register(struct cros_ec_device *ec_dev)
->>  	if (cros_ec_check_features(ec_dev, EC_FEATURE_MOTION_SENSE))
->>  		cros_ec_sensors_register(ec_dev);
->>  
->> +	/* Check whether this EC has RTC support */
->> +	if (cros_ec_check_features(ec_dev, EC_FEATURE_RTC))
->> +		cros_ec_rtc_register(ec_dev);
->> +
->>  	if (ec_dev->max_passthru) {
->>  		/*
->>  		 * Register a PD device as well on top of this device.
-> 
