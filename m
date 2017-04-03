@@ -8,46 +8,37 @@ CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, Peter
 	<lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Mauro Carvalho
  Chehab <mchehab@kernel.org>, <linux-i2c@vger.kernel.org>,
 	<linux-iio@vger.kernel.org>, <linux-media@vger.kernel.org>
-Subject: [PATCH 1/9] i2c: mux: provide more info on failure in i2c_mux_add_adapter
-Date: Mon, 3 Apr 2017 10:38:30 +0200
-Message-ID: <1491208718-32068-2-git-send-email-peda@axentia.se>
+Subject: [PATCH 2/9] i2c: arb: gpio-challenge: stop double error reporting
+Date: Mon, 3 Apr 2017 10:38:31 +0200
+Message-ID: <1491208718-32068-3-git-send-email-peda@axentia.se>
 In-Reply-To: <1491208718-32068-1-git-send-email-peda@axentia.se>
 References: <1491208718-32068-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-No callers then need to report any further info, thus reducing both the
-amount of code and the log noise.
+i2c_mux_add_adapter already logs a message on failure.
 
 Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/i2c/i2c-mux.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/i2c/muxes/i2c-arb-gpio-challenge.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/i2c/i2c-mux.c b/drivers/i2c/i2c-mux.c
-index 2178266bca79..26f7237558ba 100644
---- a/drivers/i2c/i2c-mux.c
-+++ b/drivers/i2c/i2c-mux.c
-@@ -395,13 +395,16 @@ int i2c_mux_add_adapter(struct i2c_mux_core *muxc,
- 	if (force_nr) {
- 		priv->adap.nr = force_nr;
- 		ret = i2c_add_numbered_adapter(&priv->adap);
-+		dev_err(&parent->dev,
-+			"failed to add mux-adapter %u as bus %u (error=%d)\n",
-+			chan_id, force_nr, ret);
- 	} else {
- 		ret = i2c_add_adapter(&priv->adap);
-+		dev_err(&parent->dev,
-+			"failed to add mux-adapter %u (error=%d)\n",
-+			chan_id, ret);
- 	}
- 	if (ret < 0) {
--		dev_err(&parent->dev,
--			"failed to add mux-adapter (error=%d)\n",
--			ret);
- 		kfree(priv);
- 		return ret;
- 	}
+diff --git a/drivers/i2c/muxes/i2c-arb-gpio-challenge.c b/drivers/i2c/muxes/i2c-arb-gpio-challenge.c
+index 86fc2d4c081b..812b8cff265f 100644
+--- a/drivers/i2c/muxes/i2c-arb-gpio-challenge.c
++++ b/drivers/i2c/muxes/i2c-arb-gpio-challenge.c
+@@ -202,10 +202,8 @@ static int i2c_arbitrator_probe(struct platform_device *pdev)
+ 
+ 	/* Actually add the mux adapter */
+ 	ret = i2c_mux_add_adapter(muxc, 0, 0, 0);
+-	if (ret) {
+-		dev_err(dev, "Failed to add adapter\n");
++	if (ret)
+ 		i2c_put_adapter(muxc->parent);
+-	}
+ 
+ 	return ret;
+ }
 -- 
 2.1.4
