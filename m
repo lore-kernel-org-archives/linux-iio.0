@@ -1,102 +1,66 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47861 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751167AbdDBKPN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Apr 2017 06:15:13 -0400
-Subject: Re: [PATCH] iio: core: Fix IIO_VAL_FRACTIONAL_LOG2 for negative
- values
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Nikolaus Schulz <nikolaus.schulz@avionic-design.de>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <1490359311-21042-1-git-send-email-nikolaus.schulz@avionic-design.de>
- <c2b4855d-f7cb-2dd8-39ed-0cf8e6a21428@kernel.org>
- <0cec95d3-0520-998e-fba2-de237659f3a1@kernel.org>
- <f7f89d70-3449-71c2-1c8c-8b858a3d4e85@metafoo.de>
-Cc: stable@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <c179f481-7e8a-b1ec-e7a5-a868072d0368@kernel.org>
-Date: Sun, 2 Apr 2017 11:15:10 +0100
+Return-Path: <SRS0=nErL=3L=linaro.org=lee.jones@kernel.org>
+Date: Mon, 3 Apr 2017 15:23:57 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Olof Johansson <olof@lixom.net>,
+	bleung@chromium.org, martinez.javier@gmail.com,
+	Guenter Roeck <groeck@chromium.org>,
+	Gwendal Grignou <gwendal@chromium.org>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	rtc-linux@googlegroups.com, Vic Yang <victoryang@google.com>
+Subject: Re: [PATCH 1/7] mfd: cros-ec: Fix host command buffer size
+Message-ID: <20170403142357.2usczfylqbg6cgcx@dell>
+References: <20170324174407.25401-1-enric.balletbo@collabora.com>
+ <20170324174407.25401-2-enric.balletbo@collabora.com>
 MIME-Version: 1.0
-In-Reply-To: <f7f89d70-3449-71c2-1c8c-8b858a3d4e85@metafoo.de>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20170324174407.25401-2-enric.balletbo@collabora.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 02/04/17 11:09, Lars-Peter Clausen wrote:
-> On 04/02/2017 11:26 AM, Jonathan Cameron wrote:
->> On 25/03/17 18:03, Jonathan Cameron wrote:
->>> On 24/03/17 12:41, Nikolaus Schulz wrote:
->>>> Fix formatting of negative values of type IIO_VAL_FRACTIONAL_LOG2 by
->>>> switching from do_div(), which can't handle negative numbers, to
->>>> div_s64_rem().  Also use shift_right for shifting, which is safe with
->>>> negative values.
->>>>
->>>> Signed-off-by: Nikolaus Schulz <nikolaus.schulz@avionic-design.de>
->>>> Cc: stable@vger.kernel.org
->>> Looks sane to me, but I'd like to give others time to comment on this
->>> just in case there is some odd condition neither of us has thought of!
->>>
->>> Give me a poke if we get nothing else for a few weeks.
->> Lars, I think this might have been your magic in the first place.
->>
->> Could you sanity check this one please. It's in the category of very
->> risky of both Nikolaus and I have missed something!
-> 
-> It's the same as this:
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/iio/industrialio-core.c?id=171c0091837c81ed5c949fec6966bb5afff2d1cf
-> 
-> Should be OK.
-> 
-> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
-Good point.  I'd not thought to check and had forgotten that one.
+On Fri, 24 Mar 2017, Enric Balletbo i Serra wrote:
 
-Applied to the fixes-togreg branch.  Thanks,
-
-Jonathan
+> From: Vic Yang <victoryang@google.com>
 > 
->>
->> Thanks,
->>
->> Jonathan
->>>
->>> Jonathan
->>>> ---
->>>>  drivers/iio/industrialio-core.c | 7 +++----
->>>>  1 file changed, 3 insertions(+), 4 deletions(-)
->>>>
->>>> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
->>>> index d18ded4..3ff91e0 100644
->>>> --- a/drivers/iio/industrialio-core.c
->>>> +++ b/drivers/iio/industrialio-core.c
->>>> @@ -610,10 +610,9 @@ static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
->>>>  		tmp0 = (int)div_s64_rem(tmp, 1000000000, &tmp1);
->>>>  		return snprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
->>>>  	case IIO_VAL_FRACTIONAL_LOG2:
->>>> -		tmp = (s64)vals[0] * 1000000000LL >> vals[1];
->>>> -		tmp1 = do_div(tmp, 1000000000LL);
->>>> -		tmp0 = tmp;
->>>> -		return snprintf(buf, len, "%d.%09u", tmp0, tmp1);
->>>> +		tmp = shift_right((s64)vals[0] * 1000000000LL, vals[1]);
->>>> +		tmp0 = (int)div_s64_rem(tmp, 1000000000LL, &tmp1);
->>>> +		return snprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
->>>>  	case IIO_VAL_INT_MULTIPLE:
->>>>  	{
->>>>  		int i;
->>>>
->>>
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>> the body of a message to majordomo@vger.kernel.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
+> For SPI, we can get up to 32 additional bytes for response preamble.
+> The current overhead (2 bytes) may cause problems when we try to receive
+> a big response. Update it to 32 bytes.
 > 
+> Without this fix we could see a kernel BUG when we receive a big response
+> from the Chrome EC when is connected via SPI.
+> 
+> Signed-off-by: Vic Yang <victoryang@google.com>
+> Tested-by: Enric Balletbo i Serra <enric.balletbo.collabora.com>
+> ---
+> 
+>   This patch is a FIX, and I think that would be interesting see it merged
+> in this release cycle. This should go through the MFD tree and can be picked
+> independently of the other patches. Lee Jones I think this is for you.
+> 
+>  include/linux/mfd/cros_ec.h | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 
+Applied, thanks.
+
+> diff --git a/include/linux/mfd/cros_ec.h b/include/linux/mfd/cros_ec.h
+> index b3e812f..3b16c90 100644
+> --- a/include/linux/mfd/cros_ec.h
+> +++ b/include/linux/mfd/cros_ec.h
+> @@ -35,10 +35,11 @@
+>   * Max bus-specific overhead incurred by request/responses.
+>   * I2C requires 1 additional byte for requests.
+>   * I2C requires 2 additional bytes for responses.
+> + * SPI requires up to 32 additional bytes for responses.
+>   * */
+>  #define EC_PROTO_VERSION_UNKNOWN	0
+>  #define EC_MAX_REQUEST_OVERHEAD		1
+> -#define EC_MAX_RESPONSE_OVERHEAD	2
+> +#define EC_MAX_RESPONSE_OVERHEAD	32
+>  
+>  /*
+>   * Command interface between EC and AP, for LPC, I2C and SPI interfaces.
+
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
