@@ -8,48 +8,46 @@ CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, Peter
 	<lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Mauro Carvalho
  Chehab <mchehab@kernel.org>, <linux-i2c@vger.kernel.org>,
 	<linux-iio@vger.kernel.org>, <linux-media@vger.kernel.org>
-Subject: [PATCH 0/9] Unify i2c_mux_add_adapter error reporting
-Date: Mon, 3 Apr 2017 10:38:29 +0200
-Message-ID: <1491208718-32068-1-git-send-email-peda@axentia.se>
+Subject: [PATCH 1/9] i2c: mux: provide more info on failure in i2c_mux_add_adapter
+Date: Mon, 3 Apr 2017 10:38:30 +0200
+Message-ID: <1491208718-32068-2-git-send-email-peda@axentia.se>
+In-Reply-To: <1491208718-32068-1-git-send-email-peda@axentia.se>
+References: <1491208718-32068-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi!
+No callers then need to report any further info, thus reducing both the
+amount of code and the log noise.
 
-Many users of the i2c_mux_add_adapter interface log a message
-on failure, but the function already logs such a message. One
-or two of those users actually add more information than already
-provided by the central failure message.
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ drivers/i2c/i2c-mux.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-So, first fix the central error reporting to provide as much
-information as any current user, and then remove the surplus
-error reporting at the call sites.
-
-Cheers,
-peda
-
-Peter Rosin (9):
-  i2c: mux: provide more info on failure in i2c_mux_add_adapter
-  i2c: arb: gpio-challenge: stop double error reporting
-  i2c: mux: gpio: stop double error reporting
-  i2c: mux: pca9541: stop double error reporting
-  i2c: mux: pca954x: stop double error reporting
-  i2c: mux: pinctrl: stop double error reporting
-  i2c: mux: reg: stop double error reporting
-  iio: gyro: mpu3050: stop double error reporting
-  [media] cx231xx: stop double error reporting
-
- drivers/i2c/i2c-mux.c                      |  9 ++++++---
- drivers/i2c/muxes/i2c-arb-gpio-challenge.c |  4 +---
- drivers/i2c/muxes/i2c-mux-gpio.c           |  4 +---
- drivers/i2c/muxes/i2c-mux-pca9541.c        |  4 +---
- drivers/i2c/muxes/i2c-mux-pca954x.c        |  7 +------
- drivers/i2c/muxes/i2c-mux-pinctrl.c        |  4 +---
- drivers/i2c/muxes/i2c-mux-reg.c            |  4 +---
- drivers/iio/gyro/mpu3050-i2c.c             |  5 ++---
- drivers/media/usb/cx231xx/cx231xx-i2c.c    | 15 ++++-----------
- 9 files changed, 18 insertions(+), 38 deletions(-)
-
+diff --git a/drivers/i2c/i2c-mux.c b/drivers/i2c/i2c-mux.c
+index 2178266bca79..26f7237558ba 100644
+--- a/drivers/i2c/i2c-mux.c
++++ b/drivers/i2c/i2c-mux.c
+@@ -395,13 +395,16 @@ int i2c_mux_add_adapter(struct i2c_mux_core *muxc,
+ 	if (force_nr) {
+ 		priv->adap.nr = force_nr;
+ 		ret = i2c_add_numbered_adapter(&priv->adap);
++		dev_err(&parent->dev,
++			"failed to add mux-adapter %u as bus %u (error=%d)\n",
++			chan_id, force_nr, ret);
+ 	} else {
+ 		ret = i2c_add_adapter(&priv->adap);
++		dev_err(&parent->dev,
++			"failed to add mux-adapter %u (error=%d)\n",
++			chan_id, ret);
+ 	}
+ 	if (ret < 0) {
+-		dev_err(&parent->dev,
+-			"failed to add mux-adapter (error=%d)\n",
+-			ret);
+ 		kfree(priv);
+ 		return ret;
+ 	}
 -- 
 2.1.4
