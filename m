@@ -1,71 +1,69 @@
-Return-Path: <SRS0=wlz8=3L=axentia.se=peda@kernel.org>
-Subject: Re: [PATCH 9/9] [media] cx231xx: stop double error reporting
-To: Wolfram Sang <wsa@the-dreams.de>
+Return-Path: <SRS0=kXsA=3L=sang-engineering.com=wsa-dev@kernel.org>
+Date: Mon, 3 Apr 2017 12:27:23 +0200
+From: Wolfram Sang <wsa@the-dreams.de>
+To: Peter Rosin <peda@axentia.se>
+Cc: linux-kernel@vger.kernel.org,
+	Peter Korsgaard <peter.korsgaard@barco.com>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-media@vger.kernel.org
+Subject: Re: [PATCH 0/9] Unify i2c_mux_add_adapter error reporting
+Message-ID: <20170403102722.GB2750@katana>
 References: <1491208718-32068-1-git-send-email-peda@axentia.se>
- <1491208718-32068-10-git-send-email-peda@axentia.se>
- <20170403102646.GA2750@katana>
-CC: <linux-kernel@vger.kernel.org>, Peter Korsgaard
-	<peter.korsgaard@barco.com>, Guenter Roeck <linux@roeck-us.net>, Linus
- Walleij <linus.walleij@linaro.org>, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter
- Meerwald-Stadler <pmeerw@pmeerw.net>, Mauro Carvalho Chehab
-	<mchehab@kernel.org>, <linux-i2c@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>, <linux-media@vger.kernel.org>
-From: Peter Rosin <peda@axentia.se>
-Message-ID: <82a2980a-732e-54f0-22f3-3d54bf99ef37@axentia.se>
-Date: Mon, 3 Apr 2017 13:13:41 +0200
 MIME-Version: 1.0
-In-Reply-To: <20170403102646.GA2750@katana>
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="CUfgB8w4ZwR/yMy5"
+In-Reply-To: <1491208718-32068-1-git-send-email-peda@axentia.se>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 2017-04-03 12:26, Wolfram Sang wrote:
-> On Mon, Apr 03, 2017 at 10:38:38AM +0200, Peter Rosin wrote:
->> i2c_mux_add_adapter already logs a message on failure.
->>
->> Signed-off-by: Peter Rosin <peda@axentia.se>
->> ---
->>  drivers/media/usb/cx231xx/cx231xx-i2c.c | 15 ++++-----------
->>  1 file changed, 4 insertions(+), 11 deletions(-)
->>
->> diff --git a/drivers/media/usb/cx231xx/cx231xx-i2c.c b/drivers/media/usb/cx231xx/cx231xx-i2c.c
->> index 35e9acfe63d3..dff514e147da 100644
->> --- a/drivers/media/usb/cx231xx/cx231xx-i2c.c
->> +++ b/drivers/media/usb/cx231xx/cx231xx-i2c.c
->> @@ -576,17 +576,10 @@ int cx231xx_i2c_mux_create(struct cx231xx *dev)
->>  
->>  int cx231xx_i2c_mux_register(struct cx231xx *dev, int mux_no)
->>  {
->> -	int rc;
->> -
->> -	rc = i2c_mux_add_adapter(dev->muxc,
->> -				 0,
->> -				 mux_no /* chan_id */,
->> -				 0 /* class */);
->> -	if (rc)
->> -		dev_warn(dev->dev,
->> -			 "i2c mux %d register FAILED\n", mux_no);
->> -
->> -	return rc;
->> +	return i2c_mux_add_adapter(dev->muxc,
->> +				   0,
->> +				   mux_no /* chan_id */,
->> +				   0 /* class */);
-> 
-> Could be argued that the whole function is obsolete now and the
-> c231xx-core can call i2c_mux_add_adapter() directly. But maybe this is a
-> seperate patch.
 
-Agreed on all counts. BTW, the ..._unregister function below is equally
-"obsolete". I'm going to leave the removal of both functions at the
-discretion of whomever takes care of cx231xx maintenance...
+--CUfgB8w4ZwR/yMy5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Cheers,
-peda
+On Mon, Apr 03, 2017 at 10:38:29AM +0200, Peter Rosin wrote:
+> Hi!
+>=20
+> Many users of the i2c_mux_add_adapter interface log a message
+> on failure, but the function already logs such a message. One
+> or two of those users actually add more information than already
+> provided by the central failure message.
+>=20
+> So, first fix the central error reporting to provide as much
+> information as any current user, and then remove the surplus
+> error reporting at the call sites.
 
->>  }
->>  
->>  void cx231xx_i2c_mux_unregister(struct cx231xx *dev)
->> -- 
->> 2.1.4
->>
+Yes, I like.
+
+Reviewed-by: Wolfram Sang <wsa@the-dreams.de>
+
+
+--CUfgB8w4ZwR/yMy5
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJY4iOKAAoJEBQN5MwUoCm2wg0P/3JCuM7Z98JlCLi1IsO64z+z
+mR+FRXYt+yHhH+RRNxJyCSD8O4nf/EietPa0WofCtLJ3c2ARZ0CWKqGcn1qngdY6
+sbIW4C0L4Q7xiPp0UblgiUDCMCtCRe+FXEMVyLR6577uTGA4LkK4JoIhjgO4KGTF
+4hwXyzBmQb/jgU4oQ6PrVFy5WqM1Xe4hFUoO0FyAvdNDcbsa4F9Ro7MreZjGXa8I
+fsrATdx+Mlgp4gB9iN5JTKP1dOMmv5a3HeM+KuG6bHuP40Li3RwCZUNlK52S/oDQ
+hvMshqK43PJPlvpq/GperEe8m0N1j6WfeGfPzwmEvhXsmAsYGS2kl8fcplcryG4t
+A+Q0ivfRD2D/x9ElHI9VUnqXi+RrtXJeJd7o9sVKTbQz5xowwIRwHyF9YmA7BE0U
+7PzazArDZBxDLK+jxCBq5NchLSf6E1OETBy+tlE0dk/wwUf84hiF/fXkbAEceNlI
+i2KM27EOilE4Mt4nScUycw92vEZN9h0uVrcvIAjyzle1GxDNe8rVTowf7YFPVRkN
+rVVhJrfdOhB43FBgvPaY5TZXTrFQhcPlgjMLSI8ZurU9CGcLrcEK8EYnUIFDLVuQ
+KX+ybgdJo1/LybV7dWKYB6fd0PqVB7S+7zynXP5l+ukAXRmgCDcwuaziQJgcrmF9
+M+9wQ6P9OnJG+Qd/VBW6
+=/LhN
+-----END PGP SIGNATURE-----
+
+--CUfgB8w4ZwR/yMy5--
