@@ -1,44 +1,44 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58255 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751646AbdDCTxZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Apr 2017 15:53:25 -0400
-Subject: Re: [PATCH] iio:meter:ade7759: Removing use of deprecated macros
-To: Chen Guanqiao <chen.chenchacha@foxmail.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <51add231-117a-2fce-9ad8-d4d477707715@foxmail.com>
- <alpine.DEB.2.20.1703301020240.14237@vps.pmeerw.net>
- <38f92160-0ab0-1472-528b-023dc1edda8f@foxmail.com>
-Cc: Michael.Hennerich@analog.com, linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <e3ee4905-45c0-da60-3f71-48b2665fa99a@kernel.org>
-Date: Mon, 3 Apr 2017 20:53:22 +0100
+Return-Path: <SRS0=JtcQ=3L=gmail.com=robherring2@kernel.org>
+Date: Mon, 3 Apr 2017 10:54:25 -0500
+From: Rob Herring <robh@kernel.org>
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH 1/5 v3] iio: xoadc: augment DT bindings a bit
+Message-ID: <20170403155425.fmmstdwfacmnsn7w@rob-hp-laptop>
+References: <20170330080541.4065-1-linus.walleij@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <38f92160-0ab0-1472-528b-023dc1edda8f@foxmail.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=iso-8859-1
+In-Reply-To: <20170330080541.4065-1-linus.walleij@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 02/04/17 18:41, Chen Guanqiao wrote:
-> On 2017年03月30日 16:21, Peter Meerwald-Stadler wrote:
->> nOn Thu, 30 Mar 2017, Chen Guanqiao wrote:
->>
->>> Removing use of deprecated macros(S_IRUGO, SIWUGO, S_IXUGO), and replaced with 4 gidit octal.
->>
->> digit
+On Thu, Mar 30, 2017 at 10:05:41AM +0200, Linus Walleij wrote:
+> In order to accommodate in a logical manner for the premuxed channels
+> in PM8921 and the similarly addressed channels in later PMICs, we
+> need a twocell arrangement with premux and analog mux setting as
+> a tuple to uniquely identify a hardware channel.
 > 
-> Thank you for replies with me, do I need to submit the [patch v2] again?
+> These bindings are not yet in use, so it should be fine to augment
+> them before we actually start using it in drivers and device trees.
 > 
-Please do.  Also could you mention what sort of macros in the title? 
-Makes it easier to scan a list of patches and think - oh another one of
-those!
-
-Thanks,
-
-Jonathan
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> This scheme came out of lengthy discussions and reverse-engineering
+> and reading of the few information sources we have.
 > 
+> Cc: devicetree@vger.kernel.org
+> Cc: Rob Herring <robh+dt@kernel.org>
+> Suggested-by: Bj�rn Andersson <bjorn.andersson@linaro.org>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+> ChangeLog v2->v3:
+> - Drop leading zeroes on unit addresses.
+> ChangeLog v1->v2:
+> - Name nodes with <01 02> in a foo@0102 pattern.
+> - Minor spelling nits.
+> - Delete flimsy leftover docs from an interrim development path.
+> ---
+>  .../bindings/iio/adc/qcom,pm8xxx-xoadc.txt         | 76 ++++++++++++----------
+>  1 file changed, 42 insertions(+), 34 deletions(-)
 
+Other than the few typos mentioned,
+
+Acked-by: Rob Herring <robh@kernel.org> 
