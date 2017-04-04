@@ -1,166 +1,193 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38581 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752066AbdDHR2G (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 8 Apr 2017 13:28:06 -0400
-Subject: Re: [PATCH v4 2/2] iio: stm32 trigger: Add counter enable modes
-To: Benjamin Gaignard <benjamin.gaignard@linaro.org>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        vilhelm.gray@gmail.com, mwelling@ieee.org
-References: <1491292072-8535-1-git-send-email-benjamin.gaignard@st.com>
- <1491292072-8535-3-git-send-email-benjamin.gaignard@st.com>
-Cc: fabrice.gasnier@st.com, linaro-kernel@lists.linaro.org,
-        Benjamin Gaignard <benjamin.gaignard@st.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <e694dda3-7419-8240-b2c8-7b5c8dfde167@kernel.org>
-Date: Sat, 8 Apr 2017 18:28:04 +0100
+Return-Path: <SRS0=v83q=3M=linaro.org=linus.walleij@kernel.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+	devicetree@vger.kernel.org
+Subject: [PATCH 1/3 v5] iio: xoadc: augment DT bindings a bit
+Date: Tue,  4 Apr 2017 14:08:17 +0200
+Message-Id: <20170404120819.6921-1-linus.walleij@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <1491292072-8535-3-git-send-email-benjamin.gaignard@st.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 04/04/17 08:47, Benjamin Gaignard wrote:
-> Device counting could be controlled by the level or the edges of
-> a trigger.
-> in_count0_enable_mode attibute allow to set the control mode.
-> 
-> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+In order to accommodate in a logical manner for the premuxed channels
+in PM8921 and the similarly addressed channels in later PMICs, we
+need a twocell arrangement with premux and analog mux setting as
+a tuple to uniquely identify a hardware channel.
 
-Thanks,
+These bindings are not yet in use, so it should be fine to augment
+them before we actually start using it in drivers and device trees.
 
-Jonathan
-> ---
-> version 4:
-> - reword triggered description
-> 
->  .../ABI/testing/sysfs-bus-iio-timer-stm32          | 25 ++++++++
->  drivers/iio/trigger/stm32-timer-trigger.c          | 70 ++++++++++++++++++++++
->  2 files changed, 95 insertions(+)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32 b/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
-> index a55ad44..230020e 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
-> @@ -65,3 +65,28 @@ Description:
->  		quadrature:
->  			Encoder A and B inputs are mixed to get direction
->  			and count with a scale of 0.25.
-> +
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_count_enable_mode_available
-> +KernelVersion:	4.12
-> +Contact:	benjamin.gaignard@st.com
-> +Description:
-> +		Reading returns the list possible enable modes.
-> +
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_count0_enable_mode
-> +KernelVersion:	4.12
-> +Contact:	benjamin.gaignard@st.com
-> +Description:
-> +		Configure the device counter enable modes, in all case
-> +		counting direction is set by in_count0_count_direction
-> +		attribute and the counter is clocked by the internal clock.
-> +		always:
-> +			Counter is always ON.
-> +
-> +		gated:
-> +			Counting is enabled when connected trigger signal
-> +			level is high else counting is disabled.
-> +
-> +		triggered:
-> +			Counting is enabled on rising edge of the connected
-> +			trigger, and remains enabled for the duration of this
-> +			selected mode.
-> diff --git a/drivers/iio/trigger/stm32-timer-trigger.c b/drivers/iio/trigger/stm32-timer-trigger.c
-> index 7db904c..0f1a2cf 100644
-> --- a/drivers/iio/trigger/stm32-timer-trigger.c
-> +++ b/drivers/iio/trigger/stm32-timer-trigger.c
-> @@ -353,6 +353,74 @@ static int stm32_counter_write_raw(struct iio_dev *indio_dev,
->  	.write_raw = stm32_counter_write_raw
->  };
->  
-> +static const char *const stm32_enable_modes[] = {
-> +	"always",
-> +	"gated",
-> +	"triggered",
-> +};
-> +
-> +static int stm32_enable_mode2sms(int mode)
-> +{
-> +	switch (mode) {
-> +	case 0:
-> +		return 0;
-> +	case 1:
-> +		return 5;
-> +	case 2:
-> +		return 6;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static int stm32_set_enable_mode(struct iio_dev *indio_dev,
-> +				 const struct iio_chan_spec *chan,
-> +				 unsigned int mode)
-> +{
-> +	struct stm32_timer_trigger *priv = iio_priv(indio_dev);
-> +	int sms = stm32_enable_mode2sms(mode);
-> +
-> +	if (sms < 0)
-> +		return sms;
-> +
-> +	regmap_update_bits(priv->regmap, TIM_SMCR, TIM_SMCR_SMS, sms);
-> +
-> +	return 0;
-> +}
-> +
-> +static int stm32_sms2enable_mode(int mode)
-> +{
-> +	switch (mode) {
-> +	case 0:
-> +		return 0;
-> +	case 5:
-> +		return 1;
-> +	case 6:
-> +		return 2;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static int stm32_get_enable_mode(struct iio_dev *indio_dev,
-> +				 const struct iio_chan_spec *chan)
-> +{
-> +	struct stm32_timer_trigger *priv = iio_priv(indio_dev);
-> +	u32 smcr;
-> +
-> +	regmap_read(priv->regmap, TIM_SMCR, &smcr);
-> +	smcr &= TIM_SMCR_SMS;
-> +
-> +	return stm32_sms2enable_mode(smcr);
-> +}
-> +
-> +static const struct iio_enum stm32_enable_mode_enum = {
-> +	.items = stm32_enable_modes,
-> +	.num_items = ARRAY_SIZE(stm32_enable_modes),
-> +	.set = stm32_set_enable_mode,
-> +	.get = stm32_get_enable_mode
-> +};
-> +
->  static const char *const stm32_quadrature_modes[] = {
->  	"channel_A",
->  	"channel_B",
-> @@ -466,6 +534,8 @@ static ssize_t stm32_count_set_preset(struct iio_dev *indio_dev,
->  	IIO_ENUM_AVAILABLE("count_direction", &stm32_count_direction_enum),
->  	IIO_ENUM("quadrature_mode", IIO_SEPARATE, &stm32_quadrature_mode_enum),
->  	IIO_ENUM_AVAILABLE("quadrature_mode", &stm32_quadrature_mode_enum),
-> +	IIO_ENUM("enable_mode", IIO_SEPARATE, &stm32_enable_mode_enum),
-> +	IIO_ENUM_AVAILABLE("enable_mode", &stm32_enable_mode_enum),
->  	{}
->  };
->  
-> 
+This scheme came out of lengthy discussions and reverse-engineering
+and reading of the few information sources we have.
 
+Cc: devicetree@vger.kernel.org
+Acked-by: Rob Herring <robh+dt@kernel.org>
+Suggested-by: Björn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v3->v5:
+- Some nitpicky spelling fixes. Added Rob's ACK.
+ChangeLog v2->v3:
+- Drop leading zeroes on unit addresses.
+ChangeLog v1->v2:
+- Name nodes with <01 02> in a foo@0102 pattern.
+- Minor spelling nits.
+- Delete flimsy leftover docs from an interrim development path.
+---
+ .../bindings/iio/adc/qcom,pm8xxx-xoadc.txt         | 76 ++++++++++++----------
+ 1 file changed, 42 insertions(+), 34 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,pm8xxx-xoadc.txt b/Documentation/devicetree/bindings/iio/adc/qcom,pm8xxx-xoadc.txt
+index 53cd146d8096..3ae06127789e 100644
+--- a/Documentation/devicetree/bindings/iio/adc/qcom,pm8xxx-xoadc.txt
++++ b/Documentation/devicetree/bindings/iio/adc/qcom,pm8xxx-xoadc.txt
+@@ -19,32 +19,42 @@ Required properties:
+   with PMIC variant but is typically something like 2.2 or 1.8V.
+ 
+ The following required properties are standard for IO channels, see
+-iio-bindings.txt for more details:
++iio-bindings.txt for more details, but notice that this particular
++ADC has a special addressing scheme that require two cells for
++identifying each ADC channel:
+ 
+-- #address-cells: should be set to <1>
++- #address-cells: should be set to <2>, the first cell is the
++  prescaler (on PM8058) or premux (on PM8921) with two valid bits
++  so legal values are 0x00, 0x01 or 0x02. The second cell
++  is the main analog mux setting (0x00..0x0f). The combination
++  of prescaler/premux and analog mux uniquely addresses a hardware
++  channel on all systems.
+ 
+ - #size-cells: should be set to <0>
+ 
+-- #io-channel-cells: should be set to <1>
++- #io-channel-cells: should be set to <2>, again the cells are
++  precaler or premux followed by the analog muxing line.
+ 
+ - interrupts: should refer to the parent PMIC interrupt controller
+   and reference the proper ADC interrupt.
+ 
+ Required subnodes:
+ 
+-The ADC channels are configured as subnodes of the ADC. Since some of
+-them are used for calibrating the ADC, these nodes are compulsory:
++The ADC channels are configured as subnodes of the ADC.
++
++Since some of them are used for calibrating the ADC, these nodes are
++compulsory:
+ 
+ adc-channel@c {
+-	reg = <0x0c>;
++	reg = <0x00 0x0c>;
+ };
+ 
+ adc-channel@d {
+-	reg = <0x0d>;
++	reg = <0x00 0x0d>;
+ };
+ 
+ adc-channel@f {
+-	reg = <0x0f>;
++	reg = <0x00 0x0f>;
+ };
+ 
+ These three nodes are used for absolute and ratiometric calibration
+@@ -52,13 +62,13 @@ and only need to have these reg values: they are by hardware definition
+ 1:1 ratio converters that sample 625, 1250 and 0 milliV and create
+ an interpolation calibration for all other ADCs.
+ 
+-Optional subnodes: any channels other than channel 0x0c, 0x0d and
+-0x0f are optional.
++Optional subnodes: any channels other than channels [0x00 0x0c],
++[0x00 0x0d] and [0x00 0x0f] are optional.
+ 
+ Required channel node properties:
+ 
+ - reg: should contain the hardware channel number in the range
+-  0 .. 0x0f (4 bits). The hardware only supports 16 channels.
++  0 .. 0xff (8 bits).
+ 
+ Optional channel node properties:
+ 
+@@ -94,56 +104,54 @@ Example:
+ xoadc: xoadc@197 {
+ 	compatible = "qcom,pm8058-adc";
+ 	reg = <0x197>;
+-	interrupt-parent = <&pm8058>;
+-	interrupts = <76 1>;
+-	#address-cells = <1>;
++	interrupts-extended = <&pm8058 76 IRQ_TYPE_EDGE_RISING>;
++	#address-cells = <2>;
+ 	#size-cells = <0>;
+-	#io-channel-cells = <1>;
++	#io-channel-cells = <2>;
+ 
+ 	vcoin: adc-channel@0 {
+-		reg = <0x00>;
++		reg = <0x00 0x00>;
+ 	};
+ 	vbat: adc-channel@1 {
+-		reg = <0x01>;
++		reg = <0x00 0x01>;
+ 	};
+ 	dcin: adc-channel@2 {
+-		reg = <0x02>;
++		reg = <0x00 0x02>;
+ 	};
+ 	ichg: adc-channel@3 {
+-		reg = <0x03>;
++		reg = <0x00 0x03>;
+ 	};
+ 	vph_pwr: adc-channel@4 {
+-		reg = <0x04>;
++		reg = <0x00 0x04>;
+ 	};
+ 	usb_vbus: adc-channel@a {
+-		reg = <0x0a>;
++		reg = <0x00 0x0a>;
+ 	};
+ 	die_temp: adc-channel@b {
+-		reg = <0x0b>;
++		reg = <0x00 0x0b>;
+ 	};
+ 	ref_625mv: adc-channel@c {
+-		reg = <0x0c>;
++		reg = <0x00 0x0c>;
+ 	};
+ 	ref_1250mv: adc-channel@d {
+-		reg = <0x0d>;
++		reg = <0x00 0x0d>;
+ 	};
+ 	ref_325mv: adc-channel@e {
+-		reg = <0x0e>;
++		reg = <0x00 0x0e>;
+ 	};
+ 	ref_muxoff: adc-channel@f {
+-		reg = <0x0f>;
++		reg = <0x00 0x0f>;
+ 	};
+ };
+ 
+-
+ /* IIO client node */
+ iio-hwmon {
+ 	compatible = "iio-hwmon";
+-	io-channels = <&xoadc 0x01>, /* Battery */
+-		    <&xoadc 0x02>, /* DC in (charger) */
+-		    <&xoadc 0x04>, /* VPH the main system voltage */
+-		    <&xoadc 0x0b>, /* Die temperature */
+-		    <&xoadc 0x0c>, /* Reference voltage 1.25V */
+-		    <&xoadc 0x0d>, /* Reference voltage 0.625V */
+-		    <&xoadc 0x0e>; /* Reference voltage 0.325V */
++	io-channels = <&xoadc 0x00 0x01>, /* Battery */
++		    <&xoadc 0x00 0x02>, /* DC in (charger) */
++		    <&xoadc 0x00 0x04>, /* VPH the main system voltage */
++		    <&xoadc 0x00 0x0b>, /* Die temperature */
++		    <&xoadc 0x00 0x0c>, /* Reference voltage 1.25V */
++		    <&xoadc 0x00 0x0d>, /* Reference voltage 0.625V */
++		    <&xoadc 0x00 0x0e>; /* Reference voltage 0.325V */
+ };
+-- 
+2.9.3
