@@ -1,85 +1,53 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58178 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1949998AbdDZFwD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Apr 2017 01:52:03 -0400
-Subject: Re: [GIT PULL] Immutable branch between MFD and IIO due for the v4.12
- merge window
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Quentin Schulz <quentin.schulz@free-electrons.com>, sre@kernel.org,
-        robh+dt@kernel.org, mark.rutland@arm.com, wens@csie.org,
-        linux@armlinux.org.uk, maxime.ripard@free-electrons.com,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        icenowy@aosc.xyz, liam@networkimprov.net,
-        thomas.petazzoni@free-electrons.com, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-        linux-sunxi@googlegroups.com
-References: <20170404063441.7656-1-quentin.schulz@free-electrons.com>
- <20170411100528.2zif3fyi7uoyw33n@dell>
- <0f30afec-ff42-e125-96d6-35893324f7ef@kernel.org>
- <20170424110239.cv5nylgvymhwvg4w@dell>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <64e7d5f8-0134-9a1c-6e2c-3e67cbafb01d@kernel.org>
-Date: Wed, 26 Apr 2017 06:51:53 +0100
-MIME-Version: 1.0
-In-Reply-To: <20170424110239.cv5nylgvymhwvg4w@dell>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=WF3d=3M=linaro.org=benjamin.gaignard@kernel.org>
+From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+To: linux-kernel@vger.kernel.org,
+	jic23@kernel.org,
+	linux-iio@vger.kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	vilhelm.gray@gmail.com,
+	mwelling@ieee.org
+Cc: fabrice.gasnier@st.com,
+	linaro-kernel@lists.linaro.org,
+	benjamin.gaignard@linaro.org,
+	Benjamin Gaignard <benjamin.gaignard@st.com>
+Subject: [PATCH v4 0/2] iio: stm32 trigger: Add quadrature device and counter 
+Date: Tue,  4 Apr 2017 09:47:50 +0200
+Message-Id: <1491292072-8535-1-git-send-email-benjamin.gaignard@st.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 24/04/17 12:02, Lee Jones wrote:
-> On Fri, 14 Apr 2017, Jonathan Cameron wrote:
-> 
->> On 11/04/17 11:05, Lee Jones wrote:
->>> Enjoy!
->>>
->>> The following changes since commit c1ae3cfa0e89fa1a7ecc4c99031f5e9ae99d9201:
->>>
->>>   Linux 4.11-rc1 (2017-03-05 12:59:56 -0800)
->>>
->>> are available in the git repository at:
->>>
->>>   git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git ib-mfd-iio-v4.12
->>>
->>> for you to fetch changes up to f2499ab450d3052097ba53a7d763f767935c0c59:
->>>
->>>   iio: adc: add support for X-Powers AXP20X and AXP22X PMICs ADCs (2017-04-11 11:02:33 +0100)
->>>
->>> ----------------------------------------------------------------
->>> Immutable branch between MFD and IIO due for the v4.12 merge window
->>>
->>> ----------------------------------------------------------------
->>> Quentin Schulz (1):
->>>       iio: adc: add support for X-Powers AXP20X and AXP22X PMICs ADCs
->>>
->>>  drivers/iio/adc/Kconfig      |  10 +
->>>  drivers/iio/adc/Makefile     |   1 +
->>>  drivers/iio/adc/axp20x_adc.c | 617 +++++++++++++++++++++++++++++++++++++++++++
->>>  3 files changed, 628 insertions(+)
->>>  create mode 100644 drivers/iio/adc/axp20x_adc.c
->>>
->> Hi Lee, 
->>
->> Thanks for doing this, but the reason it was going to go through your
->> tree in the first place was a dependency on
->> commit 4707274714ef ("mfd: axp20x: Correct name of temperature data ADC registers")
->>
->> Not present in the immutable branch.
->>
->> There isn't much time for anything else going on around this driver though
->> so other than a possible merge conflict on the Kconfig and Makefile shouldn't
->> matter if this just goes through mfd. (famous last words ;)
-> 
-> It's not as though you committed it to text and sent it out to a
-> public mailing list for us all to reference though is it?  Doh!
-> 
-It came up in the original discussions (which was the only reason I knew).
-Chen-Yu Tsai in email:
+A first encoder IIO driver (104-quad-8) with a count channel already exist.
+STM32 driver have the same type of feature but with different counting modes.
+Some parts, like counting direction (up/down) could be generalized so move the
+corresponding documentation from driver file to sysfs-bus-iio.
 
-http://lists.infradead.org/pipermail/linux-arm-kernel/2017-March/495789.html
+version 4:
+- fix indentation in documentation
+- reword triggered description
 
-Quentin did put a link in his request that you take it, but removing the
-need to click would have been better!
+version 3:
+- fix typo in documentation
+- change some functions names
 
-Jonathan
+version 2:
+- since iio: Generalize counting direction modes commit of version has being
+  pushed in iio.git testing branch I have remove it from this serie.
+- split the original attribute in 2: one for quadrature modes and one for
+  enable modes.
+- add scale info
+- change modes to more generic names to be able to merge them with 104-quad-8
+  in the futur.
+
+
+Benjamin Gaignard (2):
+  iio: stm32 trigger: Add quadrature encoder device
+  iio: stm32 trigger: Add counter enable modes
+
+ .../ABI/testing/sysfs-bus-iio-timer-stm32          |  71 ++++-
+ drivers/iio/trigger/stm32-timer-trigger.c          | 314 ++++++++++++++++++++-
+ include/linux/mfd/stm32-timers.h                   |   2 +
+ 3 files changed, 377 insertions(+), 10 deletions(-)
+
+-- 
+1.9.1
