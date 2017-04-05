@@ -1,79 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga06.intel.com ([134.134.136.31]:22464 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752510AbdDEBND (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 4 Apr 2017 21:13:03 -0400
-From: "Song, Hongyan" <hongyan.song@intel.com>
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        "rrs@researchut.com" <rrs@researchut.com>,
-        linux-iio <linux-iio@vger.kernel.org>
-CC: "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [STABLE REGRESSION] iio: hid-sensor-trigger: Change get poll
+Received: from mail-pf0-f193.google.com ([209.85.192.193]:32964 "EHLO
+        mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754534AbdDEKwE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 5 Apr 2017 06:52:04 -0400
+Received: by mail-pf0-f193.google.com with SMTP id 197so1386505pfv.0
+        for <linux-iio@vger.kernel.org>; Wed, 05 Apr 2017 03:52:04 -0700 (PDT)
+Message-ID: <1491389519.7588.1.camel@researchut.com>
+Subject: Re: [STABLE REGRESSION] iio: hid-sensor-trigger: Change get poll
  value function order to avoid sensor properties losing after resume from S3
-Date: Wed, 5 Apr 2017 01:12:59 +0000
-Message-ID: <AE3E3DFA698D6144A7445C92D1D41E2F10BF6A4B@SHSMSX103.ccr.corp.intel.com>
+From: Ritesh Raj Sarraf <rrs@researchut.com>
+Reply-To: rrs@researchut.com
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Song Hongyan <hongyan.song@intel.com>,
+        linux-iio <linux-iio@vger.kernel.org>
+Cc: stable@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Date: Wed, 05 Apr 2017 16:21:59 +0530
+In-Reply-To: <1491353080.3695.4.camel@linux.intel.com>
 References: <1491035833.10386.1.camel@researchut.com>
          <1491059661.30396.37.camel@linux.intel.com>
          <1491246858.17255.10.camel@researchut.com>
- <1491353080.3695.4.camel@linux.intel.com>
-In-Reply-To: <1491353080.3695.4.camel@linux.intel.com>
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
+         <1491353080.3695.4.camel@linux.intel.com>
+Content-Type: multipart/signed; micalg="pgp-sha512";
+        protocol="application/pgp-signature"; boundary="=-eZ97G1uHUGi+8GNR68e0"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-SGkgQWxsLA0KCVNvcnJ5IGZvciB0aGUgbGF0ZSByZXNwb25zZSwgZm9yIEkgYW0gb24gUWluZ21p
-bmcgRmVzdGl2YWwgZm9yIHRoZSBsYXN0IDMgZGF5cy4NCkkgbm90aWNlZCBSaXRlc2ggaGFzIHRy
-aWVkIGEgVVNCIHNlbnNvciwgSSBkbyBub3QgaGF2ZSB0aGF0IGtpbmQgb2Ygc2Vuc29yIGF0IGhh
-bmQgYW5kIGhhdmUgbm90IHRyaWVkIGl0IHlldC4gTXkgcGF0Y2ggd29ya2VkIHdlbGwgZm9yIElT
-SCBidXQgSSBhbSBub3Qgc3VyZSB3aGV0aGVyIGl0IGlzIGZpbmUgZm9yIFVTQiBzZW5zb3IuIFNv
-cnJ5IGZvciBub3QgbXVjaCBpbmZvcm1hdGlvbiBjYW4gcHJvdmlkZS4gSSB3aWxsIHRyeSB0byBz
-ZWUgaWYgSSBjYW4gZmluZCBvbmUgZGV2aWNlIGFuZCB0cnkuDQoNCg0KDQpCUg0KU29uZyBIb25n
-eWFuDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBTcmluaXZhcyBQYW5kcnV2
-YWRhIFttYWlsdG86c3Jpbml2YXMucGFuZHJ1dmFkYUBsaW51eC5pbnRlbC5jb21dDQpTZW50OiBX
-ZWRuZXNkYXksIEFwcmlsIDUsIDIwMTcgODo0NSBBTQ0KVG86IHJyc0ByZXNlYXJjaHV0LmNvbTsg
-U29uZywgSG9uZ3lhbiA8aG9uZ3lhbi5zb25nQGludGVsLmNvbT47IGxpbnV4LWlpbyA8bGludXgt
-aWlvQHZnZXIua2VybmVsLm9yZz4NCkNjOiBzdGFibGVAdmdlci5rZXJuZWwub3JnOyBsaW51eC1r
-ZXJuZWxAdmdlci5rZXJuZWwub3JnDQpTdWJqZWN0OiBSZTogW1NUQUJMRSBSRUdSRVNTSU9OXSBp
-aW86IGhpZC1zZW5zb3ItdHJpZ2dlcjogQ2hhbmdlIGdldCBwb2xsIHZhbHVlIGZ1bmN0aW9uIG9y
-ZGVyIHRvIGF2b2lkIHNlbnNvciBwcm9wZXJ0aWVzIGxvc2luZyBhZnRlciByZXN1bWUgZnJvbSBT
-Mw0KDQpIaSBSaXRlc2gsDQoNCkRvZXMgdGhlIGF0dGFjaGVkIHBhdGNoIGhlbHBzPw0KDQpUaGFu
-a3MsDQpTcmluaXZhcw0KDQpPbiBUdWUsIDIwMTctMDQtMDQgYXQgMDA6NDQgKzA1MzAsIFJpdGVz
-aCBSYWogU2FycmFmIHdyb3RlOg0KPiBBZGRpbmcgU3RhYmxlLCBMS01MIGFuZCBJSU8gTUxzLg0K
-PiANCj4gSGVsbG8gSG9uZ3lhbiwNCj4gDQo+IERvIHlvdSBoYXZlIGFueSBmZWVkYmFjayA/IFdp
-dGggdGhlIGJpc2VjdGVkIGNvbW1pdCByZXZlcnRlZCwgSSd2ZSANCj4gYmVlbiBzdWNjZXNzZnVs
-bHkgcnVubmluZyB0aGUgbWFjaGluZSB3aXRob3V0IGFueSBpc3N1ZXMuDQo+IA0KPiBSaXRlc2gN
-Cj4gDQo+IA0KPiBPbiBTYXQsIDIwMTctMDQtMDEgYXQgMDg6MTQgLTA3MDAsIFNyaW5pdmFzIFBh
-bmRydXZhZGEgd3JvdGU6DQo+ID4gSGVsbG8gSG9uZ3lhbiwNCj4gPiANCj4gPiBDYW4geW91IGNo
-ZWNrIHRoZSBmaW5kaW5ncyBvZiBSaXRlc2g/DQo+ID4gDQo+ID4gVGhhbmtzLA0KPiA+IFNyaW5p
-dmFzDQo+ID4gDQo+ID4gT24gU2F0LCAyMDE3LTA0LTAxIGF0IDE0OjA3ICswNTMwLCBSaXRlc2gg
-UmFqIFNhcnJhZiB3cm90ZToNCj4gPiA+IEhlbGxvIFNyaW5pdmFzLA0KPiA+ID4gDQo+ID4gPiBX
-aXRoIHRoZSBMaW51eCA0LjEwLjcgcmVsZWFzZSwgSSBoYXZlIGVuY291bnRlcmVkIGEgcmVncmVz
-c2lvbiANCj4gPiA+IGludHJvZHVjZWQgb24gbXkgTGVub3ZvIFlvZ2EgMiAxMywgZm9yIHRoZSBJ
-VEUgUm90YXRpb24gU2Vuc29yLg0KPiA+ID4gDQo+ID4gPiANCj4gPiA+IHJyc0BsZWFybmVyOn4k
-IGxzdXNiDQo+ID4gPiBCdXMgMDAxIERldmljZSAwMDI6IElEIDgwODc6ODAwMCBJbnRlbCBDb3Jw
-LiBCdXMgMDAxIERldmljZSAwMDE6IA0KPiA+ID4gSUQgMWQ2YjowMDAyIExpbnV4IEZvdW5kYXRp
-b24gMi4wIHJvb3QgaHViIEJ1cyAwMDMgRGV2aWNlIDAwMTogSUQNCj4gPiA+IDFkNmI6MDAwMyBM
-aW51eCBGb3VuZGF0aW9uIDMuMCByb290IGh1YiBCdXMgMDAyIERldmljZSAwMDY6IElEDQo+ID4g
-PiAwNDhkOjgzNTAgSW50ZWdyYXRlZCBUZWNobm9sb2d5IEV4cHJlc3MsIEluYy4NCj4gPiA+IEJ1
-cyAwMDIgRGV2aWNlIDAwNTogSUQgMGJkYTpiNzI4IFJlYWx0ZWsgU2VtaWNvbmR1Y3RvciBDb3Jw
-LiBCdXMNCj4gPiA+IDAwMiBEZXZpY2UgMDA0OiBJRCAwNGYyOmI0MGYgQ2hpY29ueSBFbGVjdHJv
-bmljcyBDby4sIEx0ZCBCdXMgMDAyIA0KPiA+ID4gRGV2aWNlIDAwMzogSUQgMDRmMzowMzAzIEVs
-YW4gTWljcm9lbGVjdHJvbmljcyBDb3JwLg0KPiA+ID4gQnVzIDAwMiBEZXZpY2UgMDAyOiBJRCAw
-YmRhOjAxMjkgUmVhbHRlayBTZW1pY29uZHVjdG9yIENvcnAuDQo+ID4gPiBSVFM1MTI5DQo+ID4g
-PiBDYXJkIFJlYWRlcg0KPiA+ID4gQ29udHJvbGxlcg0KPiA+ID4gQnVzIDAwMiBEZXZpY2UgMDAx
-OiBJRCAxZDZiOjAwMDIgTGludXggRm91bmRhdGlvbiAyLjAgcm9vdCBodWINCj4gPiA+IDIwMTct
-MDQtMDEgLyAxNDowNDo0OSDimZLimZLimZLCoMKg4pi6DQo+ID4gPiANCj4gPiA+IA0KPiA+ID4g
-VGhlIElURSBzZW5zb3JzIGRvIG5vdCBmZWVkIGFueSBkYXRhIG9uIHRoZSA0LjEwLjcga2VybmVs
-Lg0KPiA+ID4gUmV2ZXJ0aW5nDQo+ID4gPiBiYWNrIHRvDQo+ID4gPiA0LjEwLjUsIGV2ZXJ5dGhp
-bmcgd29ya3MgYmFjay4NCj4gPiA+IA0KPiA+ID4gDQo+ID4gPiBBZnRlciBhIGdpdCBiaXNlY3Qs
-IHRoZSBjdWxwcml0IHJlcG9ydGVkIGlzOg0KPiA+ID4gDQo+ID4gPiBCaXNlY3Rpbmc6IDAgcmV2
-aXNpb25zIGxlZnQgdG8gdGVzdCBhZnRlciB0aGlzIChyb3VnaGx5IDAgc3RlcHMpIA0KPiA+ID4g
-WzZjMmFhYjA3ZDEyNDM2YWYxY2Q4ZDlhYzFkMTE3YTQ0MmNjOTFlZWNdIGlpbzogaGlkLXNlbnNv
-ci0NCj4gPiA+IHRyaWdnZXI6DQo+ID4gPiBDaGFuZ2UgZ2V0DQo+ID4gPiBwb2xsIHZhbHVlIGZ1
-bmN0aW9uIG9yZGVyIHRvIGF2b2lkIHNlbnNvciBwcm9wZXJ0aWVzIGxvc2luZyBhZnRlciANCj4g
-PiA+IHJlc3VtZSBmcm9tIFMzDQo+ID4gPiAxDQo+ID4gPiANCj4gPiA+IENhbiB5b3UgcGxlYXNl
-IHJldmlldyBteSBmaW5kaW5ncyB0byBjb25maXJtIHRoYXQgaXQgcmVhbGx5IGlzIGEgDQo+ID4g
-PiByZWdyZXNzaW9uIGJ1ZyA/DQo+ID4gPiANCj4gPiA+IA0KPiA+ID4gVGhhbmtzLA0KPiA+ID4g
-Uml0ZXNoDQo+ID4gPiANCg==
+
+--=-eZ97G1uHUGi+8GNR68e0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+On Tue, 2017-04-04 at 17:44 -0700, Srinivas Pandruvada wrote:
+> Hi Ritesh,
+>=20
+> Does the attached patch helps?
+
+Thank you Srinivas. I tested your patch on top of 4.10.8 and it is working
+perfect.
+
+Ritesh
+
+--=20
+Ritesh Raj Sarraf
+RESEARCHUT - http://www.researchut.com
+"Necessity is the mother of invention."
+--=-eZ97G1uHUGi+8GNR68e0
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEQCVDstmIVAB/Yn02pjpYo/LhdWkFAljkzE8ACgkQpjpYo/Lh
+dWm+sw//ZWn4KKcM7KMOZ/5m5hQ0217+X6bGSlOLLK10wsyrlJKKFRKUikEAboRt
+Wp+qcSoR6uT1sKytsPsONI+/yPTcs5i6wFr1yGwglHgowCv7d+EtB/U9xoS2QhBt
+wZDDSC40FQ9cAyFteGdqnTUXyY3S/8edF8BgsfIXWRxwd0wVdB+EhVdvHpyPIzXj
+kgquH5N/ZqRlEQHYydJP5Ohf2OEqNomAvr2g/I6DVrU6os0A32lob9HWEawQvsTv
+h8nmdDONKgoILefz96kobod4soLk5vUdAPNl1K1wsJxh0tkw/BX/BwFdZeGD2jGl
+ViQUpwgBcWTwSz35nlm3+dFWK+GST7UPSimag1RkjWAoLCQF1o7xx33LQr0Unv+W
+pozZjS6ClWfrInrEZitUN7KCjP+jdpKDQlGnGMueoGx97jFe9OpoZgxgFrXFY//O
+NDrjcEUIYmNH0wGwSg5HLCW/AibHws4IvThhfUnZj+MYc+D5/cHV7S4DddbWTS8f
+NEVvkNWqPAjiuJHz9K1vC1zjsozxYSymY4Ntb30SJzH/G/g7xTgWX8xkjuD6B5mw
+Z0H2t7EdlkKK4jH/s+mj4npCUTkYLk014dTZI1JtKms3UjMpk+JW1B7j9Zs9mX6n
+uUTgawk90ogJybJm1YypqSt1LmYZLR6z6C7hadhUyfynyAfBF9g=
+=YKEx
+-----END PGP SIGNATURE-----
+
+--=-eZ97G1uHUGi+8GNR68e0--
+
