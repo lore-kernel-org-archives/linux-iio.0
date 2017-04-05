@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:59848 "EHLO
+Received: from mail.free-electrons.com ([62.4.15.54]:59830 "EHLO
         mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754342AbdDEILU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 5 Apr 2017 04:11:20 -0400
+        with ESMTP id S1753382AbdDEILV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 5 Apr 2017 04:11:21 -0400
 From: Quentin Schulz <quentin.schulz@free-electrons.com>
 To: sre@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com,
         wens@csie.org, linux@armlinux.org.uk,
@@ -14,20 +14,20 @@ Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
         linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-iio@vger.kernel.org, linux-sunxi@googlegroups.com
-Subject: [PATCH v5 4/7] ARM: dtsi: axp209: add battery power supply subnode
-Date: Wed,  5 Apr 2017 10:10:56 +0200
-Message-Id: <20170405081059.1684-5-quentin.schulz@free-electrons.com>
+Subject: [PATCH v5 5/7] ARM: dtsi: axp22x: add battery power supply subnode
+Date: Wed,  5 Apr 2017 10:10:57 +0200
+Message-Id: <20170405081059.1684-6-quentin.schulz@free-electrons.com>
 In-Reply-To: <20170405081059.1684-1-quentin.schulz@free-electrons.com>
 References: <20170405081059.1684-1-quentin.schulz@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The X-Powers AXP209 PMIC exposes battery supply various data such as
+The X-Powers AXP22X PMIC exposes battery supply various data such as
 the battery status (charging, discharging, full, dead), current max
 limit, current current, battery capacity (in percentage), voltage max
-and min limits, current voltage, and battery capacity (in Ah).
+limit, current voltage, and battery capacity (in Ah).
 
-This adds the battery power supply subnode for AXP20X PMIC.
+This adds the battery power supply subnode for AXP22X PMIC.
 
 Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
 Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
@@ -40,25 +40,25 @@ v2:
  - removed io-channels and io-channel-names from DT (the IIO mapping is
  done in the IIO ADC driver now),
 
- arch/arm/boot/dts/axp209.dtsi | 5 +++++
+ arch/arm/boot/dts/axp22x.dtsi | 5 +++++
  1 file changed, 5 insertions(+)
 
-diff --git a/arch/arm/boot/dts/axp209.dtsi b/arch/arm/boot/dts/axp209.dtsi
-index 9677dd5..3c8fa26 100644
---- a/arch/arm/boot/dts/axp209.dtsi
-+++ b/arch/arm/boot/dts/axp209.dtsi
-@@ -64,6 +64,11 @@
- 		#gpio-cells = <2>;
+diff --git a/arch/arm/boot/dts/axp22x.dtsi b/arch/arm/boot/dts/axp22x.dtsi
+index 67331c5..87fb08e 100644
+--- a/arch/arm/boot/dts/axp22x.dtsi
++++ b/arch/arm/boot/dts/axp22x.dtsi
+@@ -57,6 +57,11 @@
+ 		status = "disabled";
  	};
  
 +	battery_power_supply: battery-power-supply {
-+		compatible = "x-powers,axp209-battery-power-supply";
++		compatible = "x-powers,axp221-battery-power-supply";
 +		status = "disabled";
 +	};
 +
  	regulators {
  		/* Default work frequency for buck regulators */
- 		x-powers,dcdc-freq = <1500>;
+ 		x-powers,dcdc-freq = <3000>;
 -- 
 2.9.3
 
