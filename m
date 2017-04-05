@@ -1,73 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga04.intel.com ([192.55.52.120]:6897 "EHLO mga04.intel.com"
+Received: from mga02.intel.com ([134.134.136.20]:1615 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751266AbdDFFSi (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 6 Apr 2017 01:18:38 -0400
-Message-ID: <1491455916.6135.1.camel@linux.intel.com>
-Subject: Re: [STABLE REGRESSION] iio: hid-sensor-trigger: Change get poll
- value function order to avoid sensor properties losing after resume from S3
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: "Song, Hongyan" <hongyan.song@intel.com>,
-        "rrs@researchut.com" <rrs@researchut.com>,
+        id S1751040AbdDEE7g (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 5 Apr 2017 00:59:36 -0400
+From: "Song, Hongyan" <hongyan.song@intel.com>
+To: "rrs@researchut.com" <rrs@researchut.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
         linux-iio <linux-iio@vger.kernel.org>
-Cc: "stable@vger.kernel.org" <stable@vger.kernel.org>,
+CC: "stable@vger.kernel.org" <stable@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Date: Wed, 05 Apr 2017 22:18:36 -0700
-In-Reply-To: <AE3E3DFA698D6144A7445C92D1D41E2F10BF7BCE@SHSMSX103.ccr.corp.intel.com>
+Subject: RE: [STABLE REGRESSION] iio: hid-sensor-trigger: Change get poll
+ value function order to avoid sensor properties losing after resume from S3
+Date: Wed, 5 Apr 2017 04:59:31 +0000
+Message-ID: <AE3E3DFA698D6144A7445C92D1D41E2F10BF6AFB@SHSMSX103.ccr.corp.intel.com>
 References: <1491035833.10386.1.camel@researchut.com>
          <1491059661.30396.37.camel@linux.intel.com>
-         <1491246858.17255.10.camel@researchut.com>
-         <1491353080.3695.4.camel@linux.intel.com>
-         <1491389519.7588.1.camel@researchut.com>
-         <1491406549.9822.107.camel@linux.intel.com>
-         <AE3E3DFA698D6144A7445C92D1D41E2F10BF7BCE@SHSMSX103.ccr.corp.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+ <1491246858.17255.10.camel@researchut.com>
+In-Reply-To: <1491246858.17255.10.camel@researchut.com>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
-On Thu, 2017-04-06 at 04:58 +0000, Song, Hongyan wrote:
-> Hi Srinivas,
-> 	I have checked the patch dose not meets my requirement for ISH.
-> With this patch sensor properties still losing after resume from S3.
-What is your test case? I want to try.
-
-Thanks,
-Srinivas
-
-> 
-> BR
-> Song Hongyan
-> 
-> -----Original Message-----
-> From: Srinivas Pandruvada [mailto:srinivas.pandruvada@linux.intel.com
-> ] 
-> Sent: Wednesday, April 5, 2017 11:36 PM
-> To: rrs@researchut.com; Song, Hongyan <hongyan.song@intel.com>;
-> linux-iio <linux-iio@vger.kernel.org>
-> Cc: stable@vger.kernel.org; linux-kernel@vger.kernel.org
-> Subject: Re: [STABLE REGRESSION] iio: hid-sensor-trigger: Change get
-> poll value function order to avoid sensor properties losing after
-> resume from S3
-> 
-> Hi Hongyan,
-> 
-> Can you check if the patch meets your requirement/needs for ISH?
-> 
-> Thanks,
-> Srinivas
-> 
-> On Wed, 2017-04-05 at 16:21 +0530, Ritesh Raj Sarraf wrote:
-> > 
-> > On Tue, 2017-04-04 at 17:44 -0700, Srinivas Pandruvada wrote:
-> > > 
-> > > 
-> > > Hi Ritesh,
-> > > 
-> > > Does the attached patch helps?
-> > Thank you Srinivas. I tested your patch on top of 4.10.8 and it is 
-> > working perfect.
-> > 
-> > Ritesh
-> > 
+SGkgUml0ZXNoLA0KCUkgZG8gbm90IGhhdmUgdGhlIGVudmlyb25tZW50IHNvIHNob3VsZCBub3Qg
+aGF2ZSBhIHRyeSBidXQgSSB0aGluayBTcmluaXZhcydzIHBhdGNoIHNob3VsZCBiZSBPayBmb3Ig
+eW91ciBwbGF0Zm9ybS4NClBsZWFzZSBoYXZlIGEgdHJ5Lg0KDQpUaGFua3MgYSBsb3QhDQoNCg0K
+QlINClNvbmcgSG9uZ3lhbg0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogUml0
+ZXNoIFJhaiBTYXJyYWYgW21haWx0bzpycnNAcmVzZWFyY2h1dC5jb21dIA0KU2VudDogVHVlc2Rh
+eSwgQXByaWwgNCwgMjAxNyAzOjE0IEFNDQpUbzogU3Jpbml2YXMgUGFuZHJ1dmFkYSA8c3Jpbml2
+YXMucGFuZHJ1dmFkYUBsaW51eC5pbnRlbC5jb20+OyBTb25nLCBIb25neWFuIDxob25neWFuLnNv
+bmdAaW50ZWwuY29tPjsgbGludXgtaWlvIDxsaW51eC1paW9Admdlci5rZXJuZWwub3JnPg0KQ2M6
+IHN0YWJsZUB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNClN1
+YmplY3Q6IFJlOiBbU1RBQkxFIFJFR1JFU1NJT05dIGlpbzogaGlkLXNlbnNvci10cmlnZ2VyOiBD
+aGFuZ2UgZ2V0IHBvbGwgdmFsdWUgZnVuY3Rpb24gb3JkZXIgdG8gYXZvaWQgc2Vuc29yIHByb3Bl
+cnRpZXMgbG9zaW5nIGFmdGVyIHJlc3VtZSBmcm9tIFMzDQoNCkFkZGluZyBTdGFibGUsIExLTUwg
+YW5kIElJTyBNTHMuDQoNCkhlbGxvIEhvbmd5YW4sDQoNCkRvIHlvdSBoYXZlIGFueSBmZWVkYmFj
+ayA/IFdpdGggdGhlIGJpc2VjdGVkIGNvbW1pdCByZXZlcnRlZCwgSSd2ZSBiZWVuIHN1Y2Nlc3Nm
+dWxseSBydW5uaW5nIHRoZSBtYWNoaW5lIHdpdGhvdXQgYW55IGlzc3Vlcy4NCg0KUml0ZXNoDQoN
+Cg0KT24gU2F0LCAyMDE3LTA0LTAxIGF0IDA4OjE0IC0wNzAwLCBTcmluaXZhcyBQYW5kcnV2YWRh
+IHdyb3RlOg0KPiBIZWxsbyBIb25neWFuLA0KPiANCj4gQ2FuIHlvdSBjaGVjayB0aGUgZmluZGlu
+Z3Mgb2YgUml0ZXNoPw0KPiANCj4gVGhhbmtzLA0KPiBTcmluaXZhcw0KPiANCj4gT24gU2F0LCAy
+MDE3LTA0LTAxIGF0IDE0OjA3ICswNTMwLCBSaXRlc2ggUmFqIFNhcnJhZiB3cm90ZToNCj4gPiBI
+ZWxsbyBTcmluaXZhcywNCj4gPiANCj4gPiBXaXRoIHRoZSBMaW51eCA0LjEwLjcgcmVsZWFzZSwg
+SSBoYXZlIGVuY291bnRlcmVkIGEgcmVncmVzc2lvbiANCj4gPiBpbnRyb2R1Y2VkIG9uIG15IExl
+bm92byBZb2dhIDIgMTMsIGZvciB0aGUgSVRFIFJvdGF0aW9uIFNlbnNvci4NCj4gPiANCj4gPiAN
+Cj4gPiBycnNAbGVhcm5lcjp+JCBsc3VzYg0KPiA+IEJ1cyAwMDEgRGV2aWNlIDAwMjogSUQgODA4
+Nzo4MDAwIEludGVsIENvcnAuIEJ1cyAwMDEgRGV2aWNlIDAwMTogSUQgDQo+ID4gMWQ2YjowMDAy
+IExpbnV4IEZvdW5kYXRpb24gMi4wIHJvb3QgaHViIEJ1cyAwMDMgRGV2aWNlIDAwMTogSUQgDQo+
+ID4gMWQ2YjowMDAzIExpbnV4IEZvdW5kYXRpb24gMy4wIHJvb3QgaHViIEJ1cyAwMDIgRGV2aWNl
+IDAwNjogSUQgDQo+ID4gMDQ4ZDo4MzUwIEludGVncmF0ZWQgVGVjaG5vbG9neSBFeHByZXNzLCBJ
+bmMuDQo+ID4gQnVzIDAwMiBEZXZpY2UgMDA1OiBJRCAwYmRhOmI3MjggUmVhbHRlayBTZW1pY29u
+ZHVjdG9yIENvcnAuIEJ1cyAwMDIgDQo+ID4gRGV2aWNlIDAwNDogSUQgMDRmMjpiNDBmIENoaWNv
+bnkgRWxlY3Ryb25pY3MgQ28uLCBMdGQgQnVzIDAwMiBEZXZpY2UgDQo+ID4gMDAzOiBJRCAwNGYz
+OjAzMDMgRWxhbiBNaWNyb2VsZWN0cm9uaWNzIENvcnAuDQo+ID4gQnVzIDAwMiBEZXZpY2UgMDAy
+OiBJRCAwYmRhOjAxMjkgUmVhbHRlayBTZW1pY29uZHVjdG9yIENvcnAuIFJUUzUxMjkgDQo+ID4g
+Q2FyZCBSZWFkZXIgQ29udHJvbGxlciBCdXMgMDAyIERldmljZSAwMDE6IElEIDFkNmI6MDAwMiBM
+aW51eCANCj4gPiBGb3VuZGF0aW9uIDIuMCByb290IGh1Yg0KPiA+IDIwMTctMDQtMDEgLyAxNDow
+NDo0OSDimZLimZLimZLCoMKg4pi6DQo+ID4gDQo+ID4gDQo+ID4gVGhlIElURSBzZW5zb3JzIGRv
+IG5vdCBmZWVkIGFueSBkYXRhIG9uIHRoZSA0LjEwLjcga2VybmVsLiBSZXZlcnRpbmcNCj4gPiBi
+YWNrIHRvDQo+ID4gNC4xMC41LCBldmVyeXRoaW5nIHdvcmtzIGJhY2suDQo+ID4gDQo+ID4gDQo+
+ID4gQWZ0ZXIgYSBnaXQgYmlzZWN0LCB0aGUgY3VscHJpdCByZXBvcnRlZCBpczoNCj4gPiANCj4g
+PiBCaXNlY3Rpbmc6IDAgcmV2aXNpb25zIGxlZnQgdG8gdGVzdCBhZnRlciB0aGlzIChyb3VnaGx5
+IDAgc3RlcHMpDQo+ID4gWzZjMmFhYjA3ZDEyNDM2YWYxY2Q4ZDlhYzFkMTE3YTQ0MmNjOTFlZWNd
+IGlpbzogaGlkLXNlbnNvci10cmlnZ2VyOg0KPiA+IENoYW5nZSBnZXQNCj4gPiBwb2xsIHZhbHVl
+IGZ1bmN0aW9uIG9yZGVyIHRvIGF2b2lkIHNlbnNvciBwcm9wZXJ0aWVzIGxvc2luZyBhZnRlcg0K
+PiA+IHJlc3VtZSBmcm9tIFMzDQo+ID4gMQ0KPiA+IA0KPiA+IENhbiB5b3UgcGxlYXNlIHJldmll
+dyBteSBmaW5kaW5ncyB0byBjb25maXJtIHRoYXQgaXQgcmVhbGx5IGlzIGENCj4gPiByZWdyZXNz
+aW9uIGJ1Zw0KPiA+ID8NCj4gPiANCj4gPiANCj4gPiBUaGFua3MsDQo+ID4gUml0ZXNoDQo+ID4g
+DQotLSANClJpdGVzaCBSYWogU2FycmFmDQpSRVNFQVJDSFVUIC0gaHR0cDovL3d3dy5yZXNlYXJj
+aHV0LmNvbQ0KIk5lY2Vzc2l0eSBpcyB0aGUgbW90aGVyIG9mIGludmVudGlvbi4iDQo=
