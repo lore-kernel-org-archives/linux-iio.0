@@ -1,85 +1,57 @@
-Return-Path: <SRS0=CTjH=3Q=jmondi.org=jacopo@kernel.org>
-Date: Sat, 8 Apr 2017 18:45:03 +0200
-From: jmondi <jacopo@jmondi.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>,
-	Jacopo Mondi <jacopo+renesas@jmondi.org>,
-	Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	Magnus Damm <magnus.damm@gmail.com>,
-	Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Rob Herring <robh+dt@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
-	Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v5 1/4] Documentation: dt-bindings: iio: Add max9611 ADC
-Message-ID: <20170408164503.GB9459@w540>
+Return-Path: <SRS0=pypW=3O=jmondi.org=jacopo+renesas@kernel.org>
+From: Jacopo Mondi <jacopo+renesas@jmondi.org>
+To: geert@linux-m68k.org,
+	wsa+renesas@sang-engineering.com,
+	magnus.damm@gmail.com,
+	laurent.pinchart@ideasonboard.com,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	robh+dt@kernel.org,
+	mark.rutland@arm.com
+Cc: linux-iio@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: [PATCH v5 2/4] iio: Documentation: Add max9611 sysfs documentation
+Date: Thu,  6 Apr 2017 16:20:52 +0200
+Message-Id: <1491488454-22468-3-git-send-email-jacopo+renesas@jmondi.org>
+In-Reply-To: <1491488454-22468-1-git-send-email-jacopo+renesas@jmondi.org>
 References: <1491488454-22468-1-git-send-email-jacopo+renesas@jmondi.org>
- <1491488454-22468-2-git-send-email-jacopo+renesas@jmondi.org>
- <CAMuHMdUNWJ2C9b9Xzod5HRU_ZG3mVamN6a-ZdOywODJqv6TxQw@mail.gmail.com>
- <e7a53314-2e57-ae3a-af53-0d22ab445f5a@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <e7a53314-2e57-ae3a-af53-0d22ab445f5a@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi Jonathan,
+Add documentation for max9611 driver.
+Document attributes describing value of shunt resistor installed between
+RS+ and RS- voltage sense inputs.
 
-On Sat, Apr 08, 2017 at 04:59:39PM +0100, Jonathan Cameron wrote:
-> On 06/04/17 15:43, Geert Uytterhoeven wrote:
->
-> > On Thu, Apr 6, 2017 at 4:20 PM, Jacopo Mondi <jacopo+renesas@jmondi.org> wrote:
-> >> --- /dev/null
-> >> +++ b/Documentation/devicetree/bindings/iio/adc/max9611.txt
-> >> @@ -0,0 +1,27 @@
-> >> +* Maxim max9611/max9612 current sense amplifier with 12-bits ADC interface
-> >> +
-> >> +Maxim max9611/max9612 is an high-side current sense amplifier with integrated
-> >> +12-bits ADC communicating over I2c bus.
-> >> +The device node for this driver shall be a child of a I2c controller.
-> >> +
-> >> +Required properties
-> >> +  - compatible: Should be "maxim,max9611" or "maxim,max9612"
-> >> +  - reg: The 7-bits long I2c address of the device
-> >> +  - shunt-resistor-micro-homs: Value, in micro Ohms, of the current sense shunt
-> >
-> > s/homs/ohms/
-> I'll fix the title as Rob requested and this.
->
+Signed-off-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
+---
+ Documentation/ABI/testing/sysfs-bus-iio-adc-max9611 | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-adc-max9611
 
-Uh! I missed that title thing! Sorry about this, and thank you
-Jonathan for doing that!
-
-> Applied to the togreg branch of iio.git and pushed out as testing
-> for the autobuilders to play with it.
->
-> Thanks for your hard work on this one!
->
-
-Thank you all for your effort in reviewing this
-
-Thanks
-   j
-
-> Jonathan
-> >
-> >> +                               resistor
-> >
-> > Gr{oetje,eeting}s,
-> >
-> >                         Geert
-> >
-> > --
-> > Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-> >
-> > In personal conversations with technical people, I call myself a hacker. But
-> > when I'm talking to journalists I just say "programmer" or something like that.
-> >                                 -- Linus Torvalds
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> > the body of a message to majordomo@vger.kernel.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> >
->
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-adc-max9611 b/Documentation/ABI/testing/sysfs-bus-iio-adc-max9611
+new file mode 100644
+index 0000000..6d2d2b0
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-adc-max9611
+@@ -0,0 +1,17 @@
++What:		/sys/bus/iio/devices/iio:deviceX/in_power_shunt_resistor
++Date:		March 2017
++KernelVersion:	4.12
++Contact:	linux-iio@vger.kernel.org
++Description: 	The value of the shunt resistor used to compute power drain on
++                common input voltage pin (RS+). In Ohms.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_current_shunt_resistor
++Date:		March 2017
++KernelVersion:	4.12
++Contact:	linux-iio@vger.kernel.org
++Description: 	The value of the shunt resistor used to compute current flowing
++                between RS+ and RS- voltage sense inputs. In Ohms.
++
++These attributes describe a single physical component, exposed as two distinct
++attributes as it is used to calculate two different values: power load and
++current flowing between RS+ and RS- inputs.
+-- 
+2.7.4
