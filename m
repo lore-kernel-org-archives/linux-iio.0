@@ -1,42 +1,37 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from kirsty.vergenet.net ([202.4.237.240]:50868 "EHLO
-        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S940790AbdDTJQb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 20 Apr 2017 05:16:31 -0400
-Date: Thu, 20 Apr 2017 18:16:25 +0900
-From: Simon Horman <horms@verge.net.au>
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Jacopo Mondi <jacopo+renesas@jmondi.org>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v5 4/4] arm64: dts: salvator-x: Add current sense
- amplifiers
-Message-ID: <20170420091624.GM3760@verge.net.au>
-References: <1491488454-22468-1-git-send-email-jacopo+renesas@jmondi.org>
- <1491488454-22468-5-git-send-email-jacopo+renesas@jmondi.org>
- <CAMuHMdXkixLn9xdnrhEXW9pCg-4WjOuoPdyxXYeBwRfetMSYsA@mail.gmail.com>
+Received: from mail-oi0-f53.google.com ([209.85.218.53]:33153 "EHLO
+        mail-oi0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933835AbdDFOYT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 6 Apr 2017 10:24:19 -0400
+Received: by mail-oi0-f53.google.com with SMTP id b187so53136680oif.0
+        for <linux-iio@vger.kernel.org>; Thu, 06 Apr 2017 07:24:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <CAMuHMdXkixLn9xdnrhEXW9pCg-4WjOuoPdyxXYeBwRfetMSYsA@mail.gmail.com>
+From: George McCollister <george.mccollister@gmail.com>
+Date: Thu, 6 Apr 2017 09:24:17 -0500
+Message-ID: <CAFSKS=O-CrzxA6RJxrMNR=Vz-dN+zn1B95d+fUbUGcghRQgAjA@mail.gmail.com>
+Subject: Digital I/O in IIO
+To: "open list:IIO SUBSYSTEM AND..." <linux-iio@vger.kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Apr 19, 2017 at 10:40:21AM +0200, Geert Uytterhoeven wrote:
-> Hi Jacopo,
-> 
-> On Thu, Apr 6, 2017 at 4:20 PM, Jacopo Mondi <jacopo+renesas@jmondi.org> wrote:
-> > [PATCH v5 4/4] arm64: dts: salvator-x: Add current sense amplifiers
-> 
-> This should be "arm64: dts: r8a7796: salvator-x: Add current sense amplifiers".
-> Perhaps Simon can just fix that himself while applying?
+In many industrial applications it's common to mix digital (binary)
+and analog I/O. In many cases digital input modules have change
+buffers and sometimes event time stamping capabilities. While the gpio
+subsystem can support software timestamping and buffering it doesn't
+fit well for many industrial digital applications where the host
+process reads buffered digital samples or events from input modules.
 
-Done :)
+Would anyone appose or support the addition of digital channel type or
+suggest an alternative path to supporting this use case?
+
+A possible alternative is to use 1 bit for storage and use voltage for
+type. For instance a 16 channel 24V DC Input module would present 16
+input voltage channels with 1 bit of storage each. 0 would correspond
+to 0VDC and 1 to 24VDC.
+
+Cheers,
+George McCollister
+Software Architect
+NovaTech LLC
