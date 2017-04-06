@@ -1,74 +1,46 @@
-Return-Path: <SRS0=ybYS=3O=aosc.io=icenowy@kernel.org>
-Date: Thu, 06 Apr 2017 03:11:38 +0800
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wr0-f176.google.com ([209.85.128.176]:33656 "EHLO
+        mail-wr0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754055AbdDFMMC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 6 Apr 2017 08:12:02 -0400
+Received: by mail-wr0-f176.google.com with SMTP id g19so14811044wrb.0
+        for <linux-iio@vger.kernel.org>; Thu, 06 Apr 2017 05:12:02 -0700 (PDT)
+Date: Thu, 6 Apr 2017 13:11:58 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Icenowy Zheng <icenowy@aosc.io>
+Cc: Rob Herring <robh@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
+        linux-sunxi <linux-sunxi@googlegroups.com>,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        Quentin Schulz <quentin.schulz@free-electrons.com>,
+        Maxime Ripard <maxime.ripard@free-electrons.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, Chen-Yu Tsai <wens@csie.org>
 Subject: Re: [RFC PATCH v2 1/4] dt-bindings: update the Allwinner GPADC
  device tree binding for H3
-From: Icenowy Zheng <icenowy@aosc.io>
-To: Rob Herring <robh@kernel.org>
-Cc: Zhang Rui <rui.zhang@intel.com>, linux-sunxi
- <linux-sunxi@googlegroups.com>, linux-pm@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, Quentin Schulz
- <quentin.schulz@free-electrons.com>, Lee Jones <lee.jones@linaro.org>,
- Maxime Ripard <maxime.ripard@free-electrons.com>, Jonathan Cameron
- <jic23@kernel.org>, linux-arm-kernel@lists.infradead.org, Chen-Yu Tsai
- <wens@csie.org>
+Message-ID: <20170406121158.b33rrt4f54k3dz6f@dell>
+References: <20170406095534.299945C355D@relay.mailchannels.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Message-Id: <20170406095534.299945C355D@relay.mailchannels.net>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20170406095534.299945C355D@relay.mailchannels.net>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-CjIwMTflubQ05pyINuaXpSAwMzowNOS6jiBSb2IgSGVycmluZyA8cm9iaEBrZXJuZWwub3JnPuWG
-memBk++8mgo+Cj4gT24gVHVlLCBBcHIgNCwgMjAxNyBhdCAxMDowMiBBTSwgSWNlbm93eSBaaGVu
-ZyA8aWNlbm93eUBhb3NjLmlvPiB3cm90ZTogCj4gPiAKPiA+IAo+ID4g5ZyoIDIwMTflubQwNOac
-iDA05pelIDIyOjQ3LCBSb2IgSGVycmluZyDlhpnpgZM6IAo+ID4+IAo+ID4+IE9uIFN1biwgQXBy
-IDAyLCAyMDE3IGF0IDA5OjMzOjAxUE0gKzA4MDAsIEljZW5vd3kgWmhlbmcgd3JvdGU6IAo+ID4+
-PiAKPiA+Pj4gQWxsd2lubmVyIEgzIGZlYXR1cmVzIGEgdGhlcm1hbCBzZW5zb3IgbGlrZSB0aGUg
-b25lIGluIEEzMywgYnV0IGhhcyBpdHMgCj4gPj4+IHJlZ2lzdGVyIHJlLWFycmFuZ2VkLCB0aGUg
-Y2xvY2sgZGl2aWRlciBtb3ZlZCB0byBDQ1UgKG9yaWdpbmFsbHkgdGhlIAo+ID4+PiBjbG9jayBk
-aXZpZGVyIGlzIGluIEFEQykgYW5kIGFkZGVkIGEgcGFpciBvZiBidXMgY2xvY2sgYW5kIHJlc2V0
-LiAKPiA+Pj4gCj4gPj4+IFVwZGF0ZSB0aGUgYmluZGluZyBkb2N1bWVudCB0byBjb3ZlciBIMy4g
-Cj4gPj4+IAo+ID4+PiBTaWduZWQtb2ZmLWJ5OiBJY2Vub3d5IFpoZW5nIDxpY2Vub3d5QGFvc2Mu
-aW8+IAo+ID4+PiAtLS0gCj4gPj4+wqAgLi4uL2RldmljZXRyZWUvYmluZGluZ3MvbWZkL3N1bjRp
-LWdwYWRjLnR4dMKgwqDCoMKgwqDCoMKgIHwgMjMgCj4gPj4+ICsrKysrKysrKysrKysrKysrKysr
-LS0gCj4gPj4+wqAgMSBmaWxlIGNoYW5nZWQsIDIxIGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25z
-KC0pIAo+ID4+PiAKPiA+Pj4gZGlmZiAtLWdpdCBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9i
-aW5kaW5ncy9tZmQvc3VuNGktZ3BhZGMudHh0IAo+ID4+PiBiL0RvY3VtZW50YXRpb24vZGV2aWNl
-dHJlZS9iaW5kaW5ncy9tZmQvc3VuNGktZ3BhZGMudHh0IAo+ID4+PiBpbmRleCBiYWRmZjM2MTFh
-OTguLjc3NTMxMzNjYTBmZiAxMDA2NDQgCj4gPj4+IC0tLSBhL0RvY3VtZW50YXRpb24vZGV2aWNl
-dHJlZS9iaW5kaW5ncy9tZmQvc3VuNGktZ3BhZGMudHh0IAo+ID4+PiArKysgYi9Eb2N1bWVudGF0
-aW9uL2RldmljZXRyZWUvYmluZGluZ3MvbWZkL3N1bjRpLWdwYWRjLnR4dCAKPiA+Pj4gQEAgLTQs
-MTIgKzQsMjAgQEAgVGhlIEFsbHdpbm5lciBTb0NzIGFsbCBoYXZlIGFuIEFEQyB0aGF0IGNhbiBh
-bHNvIGFjdCBhcyAKPiA+Pj4gYSB0aGVybWFsIHNlbnNvciAKPiA+Pj7CoCBhbmQgc29tZXRpbWVz
-IGFzIGEgdG91Y2hzY3JlZW4gY29udHJvbGxlci4gCj4gPj4+IAo+ID4+PsKgIFJlcXVpcmVkIHBy
-b3BlcnRpZXM6IAo+ID4+PiAtwqAgLSBjb21wYXRpYmxlOiAiYWxsd2lubmVyLHN1bjhpLWEzMy10
-aHMiLCAKPiA+Pj4gK8KgIC0gY29tcGF0aWJsZTogbXVzdCBjb250YWluIG9uZSBvZiB0aGUgZm9s
-bG93aW5nIGNvbXBhdGlibGVzOiAKPiA+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
-LSAiYWxsd2lubmVyLHN1bjhpLWEzMy10aHMiIAo+ID4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoCAtICJhbGx3aW5uZXIsc3VuOGktaDMtdGhzIiAKPiA+Pj7CoMKgwqAgLSByZWc6IG1t
-aW8gYWRkcmVzcyByYW5nZSBvZiB0aGUgY2hpcCwgCj4gPj4+wqDCoMKgIC0gI3RoZXJtYWwtc2Vu
-c29yLWNlbGxzOiBzaGFsbCBiZSAwLCAKPiA+Pj7CoMKgwqAgLSAjaW8tY2hhbm5lbC1jZWxsczog
-c2hhbGwgYmUgMCwgCj4gPj4+IAo+ID4+PiAtRXhhbXBsZTogCj4gPj4+ICtSZXF1aXJlZCBwcm9w
-ZXJ0aWVzIGZvciB0aGUgZm9sbG93aW5nIGNvbXBhdGlibGVzOiAKPiA+Pj4gK8KgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqAgLSAiYWxsd2lubmVyLHN1bjhpLWgzLXRocyIgCj4gPj4+ICvCoCAt
-IGNsb2NrczogdGhlIGJ1cyBjbG9jayBhbmQgdGhlIGlucHV0IGNsb2NrIG9mIHRoZSBBREMsIAo+
-ID4+PiArwqAgLSBjbG9jay1uYW1lczogc2hvdWxkIGJlICJidXMiIGFuZCAidGhzIiwgCj4gPj4+
-ICvCoCAtIHJlc2V0czogdGhlIGJ1cyByZXNldCBvZiB0aGUgQURDLCAKPiA+Pj4gKyAKPiA+Pj4g
-K0V4YW1wbGUgZm9yIEEzMzogCj4gPj4+wqDCoMKgwqDCoMKgwqDCoCB0aHM6IHRoc0AwMWMyNTAw
-MCB7IAo+ID4+PsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNvbXBhdGlibGUgPSAi
-YWxsd2lubmVyLHN1bjhpLWEzMy10aHMiOyAKPiA+Pj7CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoCByZWcgPSA8MHgwMWMyNTAwMCAweDEwMD47IAo+ID4+PiBAQCAtMTcsNiArMjUsMTcg
-QEAgRXhhbXBsZTogCj4gPj4+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgI2lvLWNo
-YW5uZWwtY2VsbHMgPSA8MD47IAo+ID4+PsKgwqDCoMKgwqDCoMKgwqAgfTsgCj4gPj4+IAo+ID4+
-PiArRXhhbXBsZSBmb3IgSDM6IAo+ID4+PiArwqDCoMKgwqDCoMKgIHRoczogdGhzQDAxYzI1MDAw
-IHsgCj4gPj4gCj4gPj4gCj4gPj4gYWRjQC4uLiAKPiA+IAo+ID4gCj4gPiBJdCdzIGEgdGhlcm1h
-bCBzZW5zb3IsIHNvIEkgdGhpbmsgY2FsbCBpdCBUSFMgaXMgbW9yZSBhcHByb3ByaWF0ZSAKPiA+
-IGhlcmUuIEl0J3MgaW1wbGVtZW50ZWQgYXMgYW4gQURDIGRyaXZlciBqdXN0IGJlY2F1c2UgdGhl
-IGludGVybmFsIAo+ID4gY29kZSByZXVzaW5nIG9mIExpbnV4LiBGcm9tIGRldmljZSB0cmVlIGJp
-bmRpbmcgdmlldyBJIGNob29zZSB0byAKPiA+IGNhbGwgaXQgdGhzLiAKPgo+IFRoZXJlJ3MgbnVt
-ZXJvdXMgb2NjdXJyZW5jZXMgaW4gdGhpcyBmaWxlIGFuZCB0aGUgZmlsZW5hbWUgdGhhdCBjYWxs
-IGl0IGFuIEFEQy4gCj4KPiBGdXJ0aGVybW9yZSwgbm9kZSBuYW1lcyBhcmUgc3VwcG9zZWQgdG8g
-YmUgZ2VuZXJpYywgbm90IHBhcnQgIydzIG9yIAo+IHdoYXRldmVyIHlvdSBkZWNpZGUgdG8gbWFr
-ZSB1cC4gU28gcGljayBmcm9tIGFkYyBvciB0ZW1wZXJhdHVyZS1zZW5zb3IgCj4gYXMgdGhvc2Ug
-YXJlIHRoZSBzdGFuZGFyZCBuYW1lcyAuIAoKT0suIEkgd2lsbCBtYWtlIGl0IDoKdGhzOiB0ZW1w
-ZXJhdHVyZS1zZW5zb3JAMWMyNTAwMAoKKENhbGxpbmcgaXQgdGVtcGVyYXR1cmUgc2Vuc29yIGlz
-IGFjY29yZGluZyB0byB0aGUgZGF0YXNoZWV0IG5hbWUpCgo+Cj4gUm9iIAo=
+On Thu, 06 Apr 2017, Icenowy Zheng wrote:
+> 2017年4月6日 03:04于 Rob Herring <robh@kernel.org>写道：
+> > On Tue, Apr 4, 2017 at 10:02 AM, Icenowy Zheng <icenowy@aosc.io> wrote: 
+
+> > > 在 2017年04月04日 22:47, Rob Herring 写道: 
+
+> OK. I will make it :
+> ths: temperature-sensor@1c25000
+
+Can you fix your broken email client please?  You need to set it up to
+reply to mails to they stay threaded.  Your mailer is currently
+sending all of your replies as their own, independent messages.
+
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
