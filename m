@@ -1,255 +1,114 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailgate1.rohmeurope.com ([178.15.145.194]:52676 "EHLO
-        mailgate1.rohmeurope.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932938AbdDGML5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 7 Apr 2017 08:11:57 -0400
-From: "Koivunen, Mikko" <Mikko.Koivunen@fi.rohmeurope.com>
-To: Daniel Baluta <daniel.baluta@gmail.com>
-CC: Jonathan Cameron <jic23@kernel.org>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 6/6] iio: light: rpr0521 triggered buffer added
-Date: Fri, 7 Apr 2017 11:56:50 +0000
-Message-ID: <E223F49C7E3E1C4E8F3928A8EC9CF0F8DBEC1F9F@WILL-MAIL002.REu.RohmEu.com>
-References: <1491460627-18685-1-git-send-email-mikko.koivunen@fi.rohmeurope.com>
- <1491460627-18685-6-git-send-email-mikko.koivunen@fi.rohmeurope.com>
- <CAEnQRZCsho7KCjO0wkKJRa5WGR9CT6oz6EbuO7VMgQ-RKiHuxg@mail.gmail.com>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=pypW=3O=jmondi.org=jacopo+renesas@kernel.org>
+From: Jacopo Mondi <jacopo+renesas@jmondi.org>
+To: geert@linux-m68k.org,
+	wsa+renesas@sang-engineering.com,
+	magnus.damm@gmail.com,
+	laurent.pinchart@ideasonboard.com,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	robh+dt@kernel.org,
+	mark.rutland@arm.com
+Cc: linux-iio@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: [PATCH v5 0/4] iio: adc: Maxim max9611 driver
+Date: Thu,  6 Apr 2017 16:20:50 +0200
+Message-Id: <1491488454-22468-1-git-send-email-jacopo+renesas@jmondi.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 6.4.2017 10:55, Daniel Baluta wrote:
-> On Thu, Apr 6, 2017 at 9:37 AM, Mikko Koivunen
-> <mikko.koivunen@fi.rohmeurope.com> wrote:
->> Driver sets up and uses triggered buffer if there is irq defined for device in
->> device tree. Trigger producer triggers from rpr0521 drdy interrupt line.
->> Trigger consumer reads rpr0521 data to scan buffer.
->> Depends on previous commits of _scale and _offset.
->>
->> Tested on LeMaker HiKey with AOSP7.1, IIO_HAL and kernel 4.4.
->> Builds OK with torvalds/linux 4.9
->> checkpatch.pl OK.
->>
-> Comments like this will not matter for commit history. It's only
-> useful now, so I would suggest adding them under the scissor line.
->
->> Signed-off-by: Mikko Koivunen <mikko.koivunen@fi.rohmeurope.com>
->> ---
-> ^ this is the scissor line.
+Hi there,
+   fifth round for max9611/9612 ADC iio driver.
 
-Ack.
+I have changed dt-bindings to use "shunt-resistor-micro-ohms" as ina2xx does,
+and changed the sysfs attributes exposing the shunt resistor value to use Ohms
+as units.
 
->>  drivers/iio/light/rpr0521.c | 316 +++++++++++++++++++++++++++++++++++++++++++-
->>  1 file changed, 311 insertions(+), 5 deletions(-)
->>
->> diff --git a/drivers/iio/light/rpr0521.c b/drivers/iio/light/rpr0521.c
->> index fa642b7..22cb097 100644
->> --- a/drivers/iio/light/rpr0521.c
->> +++ b/drivers/iio/light/rpr0521.c
->> @@ -9,9 +9,11 @@
->>   *
->>   * IIO driver for RPR-0521RS (7-bit I2C slave address 0x38).
->>   *
->> - * TODO: illuminance channel, PM support, buffer
->> + * TODO: illuminance channel, PM support
->>   */
->>
->> +#define RPR0521_TRIGGERS
-> Why do we need this define?
+Output of iio_info on Salvator-X board for max9611 chip installed on
+VDD_0.8 lines.
+The VDD_0.8 line powers the CPU cluster and on-board RAM.
 
-No you don't. This was old habit of getting extra code out when not
-using the feature. Removing.
+        iio:device0: max9611
+                5 channels found:
+                        voltage0:  (input)
+                        1 channel-specific attributes found:
+                                attr 0: input value: 4.085000000
+                        voltage1:  (input)
+                        3 channel-specific attributes found:
+                                attr 0: scale value: 14
+                                attr 1: offset value: 1
+                                attr 2: raw value: 59
+                        power:  (input)
+                        2 channel-specific attributes found:
+                                attr 0: shunt_resistor value: 5.000
+                                attr 1: input value: 663.404000000
+                        current:  (input)
+                        2 channel-specific attributes found:
+                                attr 0: shunt_resistor value: 5.000
+                                attr 1: input value: 817.000000000
+                        temp:  (input)
+                        2 channel-specific attributes found:
+                                attr 0: scale value: 480.076812289
+                                attr 1: raw value: 59
 
->> +
->>  #include <linux/module.h>
->>  #include <linux/init.h>
->>  #include <linux/i2c.h>
->> @@ -20,6 +22,12 @@
->>  #include <linux/acpi.h>
->>
->>  #include <linux/iio/iio.h>
->> +#ifdef RPR0521_TRIGGERS
->> +#include <linux/iio/buffer.h>
->> +#include <linux/iio/trigger.h>
->> +#include <linux/iio/trigger_consumer.h>
->> +#include <linux/iio/triggered_buffer.h>
->> +#endif
->>  #include <linux/iio/sysfs.h>
->>  #include <linux/pm_runtime.h>
->>
->> @@ -30,6 +38,7 @@
->>  #define RPR0521_REG_PXS_DATA           0x44 /* 16-bit, little endian */
->>  #define RPR0521_REG_ALS_DATA0          0x46 /* 16-bit, little endian */
->>  #define RPR0521_REG_ALS_DATA1          0x48 /* 16-bit, little endian */
->> +#define RPR0521_REG_INTERRUPT          0x4A
->>  #define RPR0521_PS_OFFSET_LSB          0x53
->>  #define RPR0521_PS_OFFSET_MSB          0x54
->>
->> @@ -44,16 +53,33 @@
->>  #define RPR0521_ALS_DATA1_GAIN_SHIFT   2
->>  #define RPR0521_PXS_GAIN_MASK          GENMASK(5, 4)
->>  #define RPR0521_PXS_GAIN_SHIFT         4
->> +#define RPR0521_PXS_PERSISTENCE_MASK   GENMASK(3, 0)
->> +#define RPR0521_INTERRUPT_INT_TRIG_PS_MASK     BIT(0)
->> +#define RPR0521_INTERRUPT_INT_TRIG_ALS_MASK    BIT(1)
->> +#define RPR0521_INTERRUPT_INT_LATCH_MASK       BIT(2)
->> +#define RPR0521_INTERRUPT_INT_REASSERT_MASK    BIT(3)
->> +#define RPR0521_INTERRUPT_INT_MODE_MASK                GENMASK(5, 4)
->>
->>  #define RPR0521_MODE_ALS_ENABLE                BIT(7)
->>  #define RPR0521_MODE_ALS_DISABLE       0x00
->>  #define RPR0521_MODE_PXS_ENABLE                BIT(6)
->>  #define RPR0521_MODE_PXS_DISABLE       0x00
->> +#define RPR0521_PXS_PERSISTENCE_DRDY   0x00
->> +#define RPR0521_INTERRUPT_INT_TRIG_PS_ENABLE   BIT(0)
->> +#define RPR0521_INTERRUPT_INT_TRIG_PS_DISABLE  0x00
->> +#define RPR0521_INTERRUPT_INT_TRIG_ALS_ENABLE  BIT(1)
->> +#define RPR0521_INTERRUPT_INT_TRIG_ALS_DISABLE 0x00
->> +#define RPR0521_INTERRUPT_INT_LATCH_DISABLE    BIT(2)
->> +#define RPR0521_INTERRUPT_INT_LATCH_ENABLE     0x00
->> +#define RPR0521_INTERRUPT_INT_REASSERT_ENABLE  BIT(3)
->> +#define RPR0521_INTERRUPT_INT_REASSERT_DISABLE 0x00
->> +#define RPR0521_INTERRUPT_INT_PS_OUTSIDE_DETECT        BIT(5)
->>
->>  #define RPR0521_MANUFACT_ID            0xE0
->>  #define RPR0521_DEFAULT_MEAS_TIME      0x06 /* ALS - 100ms, PXS - 100ms */
->>
->>  #define RPR0521_DRV_NAME               "RPR0521"
->> +#define RPR0521_IRQ_NAME               "rpr0521_event"
->>  #define RPR0521_REGMAP_NAME            "rpr0521_regmap"
->>
->>  #define RPR0521_SLEEP_DELAY_MS 2000
->> @@ -169,6 +195,11 @@ struct rpr0521_data {
->>         bool als_dev_en;
->>         bool pxs_dev_en;
->>
->> +#ifdef RPR0521_TRIGGERS
->> +       struct iio_trigger *drdy_trigger0;
->> +       bool drdy_trigger_on;
->> +       u16 *scan_buffer;
->> +#endif
->>         /* optimize runtime pm ops - enable device only if needed */
->>         bool als_ps_need_en;
->>         bool pxs_ps_need_en;
->> @@ -194,6 +225,13 @@ struct rpr0521_data {
->>         .attrs = rpr0521_attributes,
->>  };
->>
->> +/* Order of the channel data in buffer */
->> +enum rpr0521_scan_index_order {
->> +       RPR0521_CHAN_INDEX_PXS,
->> +       RPR0521_CHAN_INDEX_BOTH,
->> +       RPR0521_CHAN_INDEX_IR,
->> +};
->> +
->>  static const struct iio_chan_spec rpr0521_channels[] = {
->>         {
->>                 .type = IIO_PROXIMITY,
->> @@ -202,6 +240,13 @@ struct rpr0521_data {
->>                         BIT(IIO_CHAN_INFO_OFFSET) |
->>                         BIT(IIO_CHAN_INFO_SCALE),
->>                 .info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
->> +               .scan_index = RPR0521_CHAN_INDEX_PXS,
->> +               .scan_type = {
->> +                       .sign = 'u',
->> +                       .realbits = 16,
->> +                       .storagebits = 16,
->> +                       .shift = 0,
->> +               },
->>         },
->>         {
->>                 .type = IIO_INTENSITY,
->> @@ -211,6 +256,13 @@ struct rpr0521_data {
->>                 .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->>                         BIT(IIO_CHAN_INFO_SCALE),
->>                 .info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
->> +               .scan_index = RPR0521_CHAN_INDEX_BOTH,
->> +               .scan_type = {
->> +                       .sign = 'u',
->> +                       .realbits = 16,
->> +                       .storagebits = 16,
->> +                       .shift = 0,
->> +               },
->>         },
->>         {
->>                 .type = IIO_INTENSITY,
->> @@ -220,9 +272,155 @@ struct rpr0521_data {
->>                 .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->>                         BIT(IIO_CHAN_INFO_SCALE),
->>                 .info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
->> +               .scan_index = RPR0521_CHAN_INDEX_IR,
->> +               .scan_type = {
->> +                       .sign = 'u',
->> +                       .realbits = 16,
->> +                       .storagebits = 16,
->> +                       .shift = 0,
->> +               },
->>         },
->>  };
->>
->> +#ifdef RPR0521_TRIGGERS
->> +static int rpr0521_set_power_state(struct rpr0521_data *data, bool on,
->> +                                  u8 device_mask);
->> +static int rpr0521_als_enable(struct rpr0521_data *data, u8 status);
->> +static int rpr0521_pxs_enable(struct rpr0521_data *data, u8 status);
->> +
->> +/* IRQ to trigger -handler */
->> +static irqreturn_t rpr0521_drdy_irq_handler(int irq, void *private)
->> +{
->> +       struct iio_dev *indio_dev = private;
->> +       struct rpr0521_data *data = iio_priv(indio_dev);
->> +
->> +       /* Notify trigger0 consumers/subscribers */
->> +       if (data->drdy_trigger_on)
->> +               iio_trigger_poll(data->drdy_trigger0);
->> +
->> +       return IRQ_HANDLED;
->> +}
->> +
->> +static irqreturn_t rpr0521_trigger_consumer_handler(int irq, void *p)
->> +{
->> +       struct iio_poll_func *pf = p;
->> +       struct iio_dev *indio_dev = pf->indio_dev;
->> +       struct rpr0521_data *data = iio_priv(indio_dev);
->> +       int ret;
->> +
->> +       u8 buffer[16]; /* 3 16-bit channels + padding + ts */
->> +
->> +       ret = regmap_bulk_read(data->regmap,
->> +               RPR0521_REG_PXS_DATA,
->> +               &buffer,
->> +               (3*2)+1);       /* 3 * 16-bit + (discarded) int clear reg. */
->> +       if (ret < 0)
->> +               goto done;
->> +
->> +       iio_push_to_buffers_with_timestamp(indio_dev,
->> +               buffer,
->> +               pf->timestamp);
->> +done:
->> +       iio_trigger_notify_done(indio_dev->trig);
->> +
->> +       return IRQ_HANDLED;
->> +}
->> +
->> +static int rpr0521_write_int_enable(struct rpr0521_data *data)
->> +{
->> +       int err;
->> +
->> +       /* Interrupt after each measurement */
->> +       err = regmap_update_bits(data->regmap, RPR0521_REG_PXS_CTRL,
->> +               RPR0521_PXS_PERSISTENCE_MASK,
->> +               RPR0521_PXS_PERSISTENCE_DRDY);
-> Is there any reason to continue if regmap_update_bits fails?
->
-> err = err || regmap_update_bits(), this looks strange :).
+The collected information represent:
 
-No reason to continue after fail.
-It will skip the rest of the lines since rest of the lines get evaluated
-already true on "= err ||" before executing the functions after "||".
+* voltage0 (current sense voltage) Vcsa
+  voltage drop between RS+ and RS- input = 4,085 mV
+* voltage1: (common input voltage) Vcim
+  voltage at RS+ input = (59 - 1) * 14 = 812 mV
+* current flowing on shunt resistor (Icsa)
+  = Vcsa / Rshunt = 817 mA
+* power load on the sensed line (Pload)
+  = Vcim * Icsa = 663 m
+* die temperature = (57 * 480.07) = 27360 milli Celsius
+
+v1 -> v2:
+- Drop wildcard (max961x) in driver, documentation and dt-bindings. Use
+  max9611 instead.
+- Make 3 processed channels for csa voltage, csa current and power load
+- Remove wrapper functions around i2c buffer access
+- Add locking in read_raw()
+- Make 2 separate attributes for shunt resistor: current and power
+- Renamed shunt resistor attribute
+- Fixed several review comments
+
+v2 -> v3:
+- Incorporated Geert's suggestions on using a more generic name for ADC nodes
+  in device tree
+- Changed "maxim,shunt-resistor-uohm" to "shunt-resistor-uohm"
+- Update documentation accordingly to the two previous changes
+
+v3 -> v4:
+- Move all locking to read_single() function
+- Re-structure read_raw() with Jonathan's and Peter's comments
+- Rename some defines pre-pending MAX9611 prefix
+- Use values from .comaptible entries for device name
+- Change temperature scale to have a value in milli Celsius
+- Simplify init routine using read_single
+
+v4 -> v5:
+- Change device tree property name for shunt resistor in
+  "shunt-resistor-micro-ohms"
+- Display shunt resistor value with Ohms as units in sysfs
+
+Jacopo Mondi (4):
+  Documentation: dt-bindings: iio: Add max9611 ADC
+  iio: Documentation: Add max9611 sysfs documentation
+  iio: adc: Add Maxim max9611 ADC driver
+  arm64: dts: salvator-x: Add current sense amplifiers
+
+ .../ABI/testing/sysfs-bus-iio-adc-max9611          |  17 +
+ .../devicetree/bindings/iio/adc/max9611.txt        |  27 +
+ arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts |  18 +
+ drivers/iio/adc/Kconfig                            |  10 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/max9611.c                          | 587 +++++++++++++++++++++
+ 6 files changed, 660 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-adc-max9611
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/max9611.txt
+ create mode 100644 drivers/iio/adc/max9611.c
 
 --
-
-
+2.7.4
