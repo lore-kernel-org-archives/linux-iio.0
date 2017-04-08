@@ -1,49 +1,162 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41182 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752384AbdDLOg6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Apr 2017 10:36:58 -0400
-Date: Wed, 12 Apr 2017 15:36:44 +0100
-In-Reply-To: <CAN_72e0zOws-Qusya-yhifbaQ6qDGc5wcOWX+RgT4d0fPpx7-w@mail.gmail.com>
-References: <CAN_72e1apsS2nKh7SYiETz+=bJW7mEBS6GV8DmzZEPzroaeACg@mail.gmail.com> <23293209-00F9-4D1E-8822-00B3B267EF79@sense.com> <CAN_72e0u+fgOB9TmvP55pDLOC1Z9vGYnNj5Zpogc1b-K7xW7WA@mail.gmail.com> <AD6B3C1C-0A2A-4941-86E6-D2AFB6446E18@sense.com> <CAN_72e3-Zzr7b9sLfKk1EGeAYwb03=UrJsGpLOGbR4C-QjOtLw@mail.gmail.com> <4311cd69-c853-8fee-c0d2-0476b24580e4@kernel.org> <CAN_72e1voayyNrg2+6V7hhGG4uJi0FSotwrT9FeQ4QgTPoawUw@mail.gmail.com> <CAN_72e0zOws-Qusya-yhifbaQ6qDGc5wcOWX+RgT4d0fPpx7-w@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Subject: Re: Raw data block input: is IIO a good choice?
-To: Pavel Roskin <plroskin@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>
-CC: Jonah Petri <jonah@sense.com>, linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Message-ID: <6C2F73E4-E1A9-4F25-9953-D6D8441799DA@jic23.retrosnub.co.uk>
+Received: from mga03.intel.com ([134.134.136.65]:52635 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1753758AbdDHAN4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 7 Apr 2017 20:13:56 -0400
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        stable@vger.kernel.org
+Subject: [PATCH] iio: hid-sensor: Store restore poll and hysteresis on S3
+Date: Fri,  7 Apr 2017 17:13:17 -0700
+Message-Id: <20170408001317.4769-1-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+This change undo the change done by 'commit 3bec24747446
+("iio: hid-sensor-trigger: Change get poll value function order to avoid
+sensor properties losing after resume from S3")' as this breaks some
+USB/i2c sensor hubs.
 
+Instead of relying on HW for restoring poll and hysteresis, driver stores
+and restores on resume (S3). In this way user space modified settings are
+not lost for any kind of sensor hub behavior.
 
-On 12 April 2017 01:05:17 BST, Pavel Roskin <plroskin@gmail.com> wrote:
->Hi Jonathan,
->
->I tried to describe all channels, and it turns out many of them cannot
->be adequately described by the types in iio_chan_type. How do I
->describe the message sequence number? 
-That wouldn't normally be of interest to userspace as driver would guarantee order.
+In this change, whenever user space modifies sampling frequency or
+hysteresis driver will get the feature value from the hub and store in the
+per device hid_sensor_common data structure. On resume callback from S3,
+system will set the feature to sensor hub, if user space ever modified the
+feature value.
 
-How about the control register
->value at the time when the data was captured? That data needs to be
->passed to the userspace.
+Fixes: 3bec24747446 ("iio: hid-sensor-trigger: Change get poll value function order to avoid sensor properties losing after resume from S3")
+Reported-by: Ritesh Raj Sarraf <rrs@researchut.com>
+Tested-by: Ritesh Raj Sarraf <rrs@researchut.com>
+Tested-by: Song, Hongyan <hongyan.song@intel.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ .../iio/common/hid-sensors/hid-sensor-attributes.c | 26 ++++++++++++++++++++--
+ .../iio/common/hid-sensors/hid-sensor-trigger.c    | 20 ++++++++++++++---
+ include/linux/hid-sensor-hub.h                     |  2 ++
+ 3 files changed, 43 insertions(+), 5 deletions(-)
 
-Is it changing on its own? If not normally that is represented via out of band reads of sysfs.
-
->
->I checked sca3000 driver. I see that it uses
->sca3000_read_first_n_hw_rb() to read the data from the buffer. Can
->that data be accessed by the userspace as is, without any processing?
-
-It is supplied raw to userspace. You can do what you like.
-
-J
->
->Pavel
-
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+index 7afdac42..efd3151 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+@@ -221,7 +221,15 @@ int hid_sensor_write_samp_freq_value(struct hid_sensor_common *st,
+ 	if (ret < 0 || value < 0)
+ 		ret = -EINVAL;
+ 
+-	return ret;
++	ret = sensor_hub_get_feature(st->hsdev,
++				     st->poll.report_id,
++				     st->poll.index, sizeof(value), &value);
++	if (ret < 0 || value < 0)
++		return -EINVAL;
++
++	st->poll_interval = value;
++
++	return 0;
+ }
+ EXPORT_SYMBOL(hid_sensor_write_samp_freq_value);
+ 
+@@ -266,7 +274,16 @@ int hid_sensor_write_raw_hyst_value(struct hid_sensor_common *st,
+ 	if (ret < 0 || value < 0)
+ 		ret = -EINVAL;
+ 
+-	return ret;
++	ret = sensor_hub_get_feature(st->hsdev,
++				     st->sensitivity.report_id,
++				     st->sensitivity.index, sizeof(value),
++				     &value);
++	if (ret < 0 || value < 0)
++		return -EINVAL;
++
++	st->raw_hystersis = value;
++
++	return 0;
+ }
+ EXPORT_SYMBOL(hid_sensor_write_raw_hyst_value);
+ 
+@@ -369,6 +386,9 @@ int hid_sensor_get_reporting_interval(struct hid_sensor_hub_device *hsdev,
+ 	/* Default unit of measure is milliseconds */
+ 	if (st->poll.units == 0)
+ 		st->poll.units = HID_USAGE_SENSOR_UNITS_MILLISECOND;
++
++	st->poll_interval = -1;
++
+ 	return 0;
+ 
+ }
+@@ -397,6 +417,8 @@ int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
+ 			HID_USAGE_SENSOR_PROP_SENSITIVITY_ABS,
+ 			 &st->sensitivity);
+ 
++	st->raw_hystersis = -1;
++
+ 	sensor_hub_input_get_attribute_info(hsdev,
+ 					    HID_INPUT_REPORT, usage_id,
+ 					    HID_USAGE_SENSOR_TIME_TIMESTAMP,
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+index ecf592d..6082934 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+@@ -51,6 +51,8 @@ static int _hid_sensor_power_state(struct hid_sensor_common *st, bool state)
+ 			st->report_state.report_id,
+ 			st->report_state.index,
+ 			HID_USAGE_SENSOR_PROP_REPORTING_STATE_ALL_EVENTS_ENUM);
++
++		poll_value = hid_sensor_read_poll_value(st);
+ 	} else {
+ 		int val;
+ 
+@@ -87,9 +89,7 @@ static int _hid_sensor_power_state(struct hid_sensor_common *st, bool state)
+ 	sensor_hub_get_feature(st->hsdev, st->power_state.report_id,
+ 			       st->power_state.index,
+ 			       sizeof(state_val), &state_val);
+-	if (state)
+-		poll_value = hid_sensor_read_poll_value(st);
+-	if (poll_value > 0)
++	if (state && poll_value)
+ 		msleep_interruptible(poll_value * 2);
+ 
+ 	return 0;
+@@ -127,6 +127,20 @@ static void hid_sensor_set_power_work(struct work_struct *work)
+ 	struct hid_sensor_common *attrb = container_of(work,
+ 						       struct hid_sensor_common,
+ 						       work);
++
++	if (attrb->poll_interval >= 0)
++		sensor_hub_set_feature(attrb->hsdev, attrb->poll.report_id,
++				       attrb->poll.index,
++				       sizeof(attrb->poll_interval),
++				       &attrb->poll_interval);
++
++	if (attrb->raw_hystersis >= 0)
++		sensor_hub_set_feature(attrb->hsdev,
++				       attrb->sensitivity.report_id,
++				       attrb->sensitivity.index,
++				       sizeof(attrb->raw_hystersis),
++				       &attrb->raw_hystersis);
++
+ 	_hid_sensor_power_state(attrb, true);
+ }
+ 
+diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
+index 7ef111d..f32d7c3 100644
+--- a/include/linux/hid-sensor-hub.h
++++ b/include/linux/hid-sensor-hub.h
+@@ -231,6 +231,8 @@ struct hid_sensor_common {
+ 	unsigned usage_id;
+ 	atomic_t data_ready;
+ 	atomic_t user_requested_state;
++	int poll_interval;
++	int raw_hystersis;
+ 	struct iio_trigger *trigger;
+ 	int timestamp_ns_scale;
+ 	struct hid_sensor_hub_attribute_info poll;
 -- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+2.9.3
+
