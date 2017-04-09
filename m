@@ -1,77 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42714 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752066AbdDII00 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 9 Apr 2017 04:26:26 -0400
-Subject: Re: [PATCH v3 2/2] iio:meter:ade7759: realign the rest with opening
- bracket
-To: Chen Guanqiao <chen.chenchacha@foxmail.com>, pmeerw@pmeerw.net
-References: <260495ce-b068-a5ce-6ec3-a90fdd7e2510@foxmail.com>
- <20170409043027.13930-1-chen.chenchacha@foxmail.com>
- <20170409043027.13930-3-chen.chenchacha@foxmail.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Cc: Michael.Hennerich@analog.com, linux-iio@vger.kernel.org
-Message-ID: <a6af82bd-6dc0-cbe0-dab9-248645c0e3ff@kernel.org>
-Date: Sun, 9 Apr 2017 09:26:25 +0100
-MIME-Version: 1.0
+Received: from smtpbgbr2.qq.com ([54.207.22.56]:56933 "EHLO smtpbgbr2.qq.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1752298AbdDIPVR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 9 Apr 2017 11:21:17 -0400
+From: Chen Guanqiao <chen.chenchacha@foxmail.com>
+To: pmeerw@pmeerw.net, jic23@kernel.org
+Cc: Michael.Hennerich@analog.com, linux-iio@vger.kernel.org,
+        Chen Guanqiao <chen.chenchacha@foxmail.com>
+Subject: [PATCH v4 0/1] iio:meter:ade7759: use 4-digit octal permissions
+Date: Sun,  9 Apr 2017 23:20:59 +0800
+Message-Id: <20170409152100.30778-1-chen.chenchacha@foxmail.com>
 In-Reply-To: <20170409043027.13930-3-chen.chenchacha@foxmail.com>
-Content-Type: text/plain; charset=windows-1252
+References: <20170409043027.13930-3-chen.chenchacha@foxmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/04/17 05:30, Chen Guanqiao wrote:
-> This fixes the coding style issue of using (S_IWUSR | S_IRUGO) in place of
-> 4-digit octal numbers with realign the rest with opening bracket.
-> 
-> Signed-off-by: Chen Guanqiao <chen.chenchacha@foxmail.com>
-Sorry, nope.  That wasn't what I meant.  The parameters should stay on the
-first line, but the later parameters should then be aligned with the first
-ones.
+This patch that fixes coding style problem.
 
-e.g.
-static IIO_DEV_ATTR_CH_OFF(1, 0644,
-			   ade7759_read_8bit,
-			   ade7759_write_8bit,
-			   ADE7759_CH10S);
+Please note:
+the checkpatch.pl will be reports error:
+>ERROR: Use 4 digit octal (0777) not decimal permissions
+>#320: FILE: drivers/staging/iio/meter/ade7759.c:320:
+>+static IIO_DEV_ATTR_CH_OFF(1,
+>+						   0644,
+>+						   ade7759_read_8bit,
+>+						   ade7759_write_8bit,
+>+						   ADE7759_CH1OS);
+>ERROR: Use 4 digit octal (0777) not decimal permissions
+>#325: FILE: drivers/staging/iio/meter/ade7759.c:325:
+>+static IIO_DEV_ATTR_CH_OFF(2,
+>+						   0644,
+>+						   ade7759_read_8bit,
+>+						   ade7759_write_8bit,
+>+						   ADE7759_CH2OS);
+Because the script checks the first parameter as permissions in function like
+"IIO_DEV_ATTR_[A-Z_]+" and the IIO_DEV_ATTR_CH_OFF permissions parameter is
+second.
 
-or given the multiple line format doesn't really help with readability...
-static IIO_DEV_ATTR_CH_OFF(1, 0644, ade7759_read_8bit, ade7759_write_8bit,
-			   ADE7759_CH10S);
+So, I think this is a problem of checkpatch.pl.
 
-Key bit is aligning with the opening bracket.
+version 4:
+- fixes the IIO_DEV_ATTR_CH_OFF
 
-First patch is now applied, so just post the update of this one if you
-want to tidy this up.
+version 3:
+- update the title and patch scription
+- divide the patch into two parts
 
-Thanks,
+version 2:
+- corrected spelling error
 
-Jonathan
+Chen Guanqiao (1):
+  iio:meter:ade7759: Removing use of deprecated macros (S_IRUGO,
+    S_IWUSR)
 
-> ---
->  drivers/staging/iio/meter/ade7759.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/meter/ade7759.c b/drivers/staging/iio/meter/ade7759.c
-> index 68405046dae3..9ddfa4ec7da9 100644
-> --- a/drivers/staging/iio/meter/ade7759.c
-> +++ b/drivers/staging/iio/meter/ade7759.c
-> @@ -317,11 +317,15 @@ static IIO_DEV_ATTR_ACTIVE_POWER_GAIN(0644,
->  		ade7759_read_16bit,
->  		ade7759_write_16bit,
->  		ADE7759_APGAIN);
-> -static IIO_DEV_ATTR_CH_OFF(1, S_IWUSR | S_IRUGO,
-> +static IIO_DEV_ATTR_CH_OFF(
-> +		1,
-> +		0644,
->  		ade7759_read_8bit,
->  		ade7759_write_8bit,
->  		ADE7759_CH1OS);
-> -static IIO_DEV_ATTR_CH_OFF(2, S_IWUSR | S_IRUGO,
-> +static IIO_DEV_ATTR_CH_OFF(
-> +		2,
-> +		0644,
->  		ade7759_read_8bit,
->  		ade7759_write_8bit,
->  		ADE7759_CH2OS);
-> 
+ drivers/staging/iio/meter/ade7759.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+-- 
+2.11.0
+
+
 
