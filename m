@@ -1,308 +1,214 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37472 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751886AbdDHOmZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 8 Apr 2017 10:42:25 -0400
-Subject: Re: [PATCH v2] iio: hid-sensor-hub: Implement batch mode
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-References: <20170408022206.17963-1-srinivas.pandruvada@linux.intel.com>
-Cc: linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <8066239c-cd10-8cf8-14aa-214346a84750@kernel.org>
-Date: Sat, 8 Apr 2017 15:42:23 +0100
-MIME-Version: 1.0
-In-Reply-To: <20170408022206.17963-1-srinivas.pandruvada@linux.intel.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=DX54=3R=gmail.com=narcisaanamaria12@kernel.org>
+From: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
+To: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	pmeerw@pmeerw.net,
+	gregkh@linuxfoundation.org
+Cc: outreachy-kernel@googlegroups.com,
+	linux-iio@vger.kernel.org,
+	Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
+Subject: [PATCH v2] staging: iio: ad5933: Protect DIRECT mode using claim/release helpers
+Date: Sun,  9 Apr 2017 13:40:07 +0300
+Message-Id: <1491734407-3886-1-git-send-email-narcisaanamaria12@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 08/04/17 03:22, Srinivas Pandruvada wrote:
-> HID sensor hubs using Integrated Senor Hub (ISH) has added capability to
-> support batch mode. This allows host processor to go to sleep for extended
-> duration, while the sensor hub is storing samples in its internal buffers.
-> 
-> 'Commit f4f4673b7535 ("iio: add support for hardware fifo")' implements
-> feature in IIO core to implement such feature. This feature is used in
-> bmc150-accel-core.c to implement batch mode. This implementation allows
-> software device buffer watermark to be used as a hint to adjust hardware
-> FIFO.
-> 
-> But HID sensor hubs don't allow to change internal buffer size of FIFOs.
-> Instead an additional usage id to set "maximum report latency" is defined.
-> This allows host to go to sleep upto this latency period without getting
-> any report. Since there is no ABI to set this latency, a new attribute
-> "hwfifo_timeout" is added so that user mode can specify a latency.
-> 
-> This change checks presence of usage id to get/set maximum report latency
-> and if present, it will expose hwfifo_timeout.
-> 
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-I'm happy with this. Spotted one typo inline.
+This device operates in DIRECT_MODE and BUFFER_HARDWARE mode.
+Replace usages of iio_dev->mlock with iio_device_{claim|release}_direct_mode()
+helper functions to guarantee DIRECT mode and consequently protect
+BUFFER mode too.
 
-However, it's run into the back of the two fixes you posted earlier so
-doesn't currently apply to the togreg branch. We'll have to let those
-unwind first and rebase as necessary.  Feel free to poke me if I
-seem to have forgotten this!
+Add and use a device private lock to protect against conflicting access of the
+state data.
+This helps with IIO subsystem redefining iio_dev->mlock to be used by
+the IIO core only for protecting device operating mode changes.
+ie. Changes between INDIO_DIRECT_MODE, INDIO_BUFFER_* modes.
 
-I guess this gives it a bit longer for others to comment which is perhaps
-no bad thing.
+Protect changing of attributes inside ad5933_store(). Attributes
+can no longer be changed while in buffered mode.
 
-Thanks,
+Remove lock from ad5933_work() because buffer mode should be enabled
+when we reach this, and claiming DIRECT mode in all the other places
+should protect it.
 
-Jonathan
-> ---
-> v2:
-> - Fifo timeout can be in fractions also.
-> - Restore latency on resume from S3.
-> 
-> Changed compared to RFC:
-> - Removed min/max Fifo size attributes
-> - Removed flush callback. Since this usage id is not present in any hubs,
-> we can add later when we have some HW to test. This was causing some
-> ugliness.
-> - Moved the hwfifo_timout documentation to sysfs-bus-iio
-> 
->  Documentation/ABI/testing/sysfs-bus-iio            | 11 +++
->  .../iio/common/hid-sensors/hid-sensor-attributes.c | 44 ++++++++++++
->  .../iio/common/hid-sensors/hid-sensor-trigger.c    | 80 ++++++++++++++++++++++
->  include/linux/hid-sensor-hub.h                     |  5 ++
->  include/linux/hid-sensor-ids.h                     |  3 +
->  5 files changed, 143 insertions(+)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index 530809c..b09f373 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -1424,6 +1424,17 @@ Description:
->  		guarantees that the hardware fifo is flushed to the device
->  		buffer.
->  
-> +What:		/sys/bus/iio/devices/iio:device*/buffer/hwfifo_timeout
-> +KernelVersion:	4.12
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		A read/write property to provide capability to delay reporting of
-> +		samples till a timeout is reached. This allows host processors to
-> +		sleep, while the sensor is storing samples in its internal fifo.
-> +		The maximum timeout in seconds can be specified by setting
-> +		hwfifo_timeout.The current delay can be read by reading
-> +		hwfifo_timeout. A value of 0 means that there is no timout.
-timeout. I'll fix.
-> +
->  What:		/sys/bus/iio/devices/iio:deviceX/buffer/hwfifo_watermark
->  KernelVersion: 4.2
->  Contact:	linux-iio@vger.kernel.org
-> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> index efd3151..89c3f9c 100644
-> --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> @@ -393,6 +393,48 @@ int hid_sensor_get_reporting_interval(struct hid_sensor_hub_device *hsdev,
->  
->  }
->  
-> +static void hid_sensor_get_report_latency_info(struct hid_sensor_hub_device *hsdev,
-> +					       u32 usage_id,
-> +					       struct hid_sensor_common *st)
-> +{
-> +	sensor_hub_input_get_attribute_info(hsdev, HID_FEATURE_REPORT,
-> +					    usage_id,
-> +					    HID_USAGE_SENSOR_PROP_REPORT_LATENCY,
-> +					    &st->report_latency);
-> +
-> +	hid_dbg(hsdev->hdev, "Report latency attributes: %x:%x\n",
-> +		st->report_latency.index, st->report_latency.report_id);
-> +}
-> +
-> +int hid_sensor_get_report_latency(struct hid_sensor_common *st)
-> +{
-> +	int ret;
-> +	int value;
-> +
-> +	ret = sensor_hub_get_feature(st->hsdev, st->report_latency.report_id,
-> +				     st->report_latency.index, sizeof(value),
-> +				     &value);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return value;
-> +}
-> +EXPORT_SYMBOL(hid_sensor_get_report_latency);
-> +
-> +int hid_sensor_set_report_latency(struct hid_sensor_common *st, int latency_ms)
-> +{
-> +	return sensor_hub_set_feature(st->hsdev, st->report_latency.report_id,
-> +				      st->report_latency.index,
-> +				      sizeof(latency_ms), &latency_ms);
-> +}
-> +EXPORT_SYMBOL(hid_sensor_set_report_latency);
-> +
-> +bool hid_sensor_batch_mode_supported(struct hid_sensor_common *st)
-> +{
-> +	return st->report_latency.index > 0 && st->report_latency.report_id > 0;
-> +}
-> +EXPORT_SYMBOL(hid_sensor_batch_mode_supported);
-> +
->  int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
->  					u32 usage_id,
->  					struct hid_sensor_common *st)
-> @@ -432,6 +474,8 @@ int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
->  	} else
->  		st->timestamp_ns_scale = 1000000000;
->  
-> +	hid_sensor_get_report_latency_info(hsdev, usage_id, st);
-> +
->  	hid_dbg(hsdev->hdev, "common attributes: %x:%x, %x:%x, %x:%x %x:%x %x:%x\n",
->  		st->poll.index, st->poll.report_id,
->  		st->report_state.index, st->report_state.report_id,
-> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> index 0b5dea0..16ade0a 100644
-> --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> @@ -26,9 +26,84 @@
->  #include <linux/hid-sensor-hub.h>
->  #include <linux/iio/iio.h>
->  #include <linux/iio/trigger.h>
-> +#include <linux/iio/buffer.h>
->  #include <linux/iio/sysfs.h>
->  #include "hid-sensor-trigger.h"
->  
-> +static ssize_t _hid_sensor_set_report_latency(struct device *dev,
-> +					      struct device_attribute *attr,
-> +					      const char *buf, size_t len)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct hid_sensor_common *attrb = iio_device_get_drvdata(indio_dev);
-> +	int integer, fract, ret;
-> +	int latency;
-> +
-> +	ret = iio_str_to_fixpoint(buf, 100000, &integer, &fract);
-> +	if (ret)
-> +		return ret;
-> +
-> +	latency = integer * 1000 + fract / 1000;
-> +	ret = hid_sensor_set_report_latency(attrb, latency);
-> +	if (ret < 0)
-> +		return len;
-> +
-> +	attrb->latency_ms = hid_sensor_get_report_latency(attrb);
-> +
-> +	return len;
-> +}
-> +
-> +static ssize_t _hid_sensor_get_report_latency(struct device *dev,
-> +					      struct device_attribute *attr,
-> +					      char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct hid_sensor_common *attrb = iio_device_get_drvdata(indio_dev);
-> +	int latency;
-> +
-> +	latency = hid_sensor_get_report_latency(attrb);
-> +	if (latency < 0)
-> +		return latency;
-> +
-> +	return sprintf(buf, "%d.%06u\n", latency / 1000, (latency % 1000) * 1000);
-> +}
-> +
-> +static ssize_t _hid_sensor_get_fifo_state(struct device *dev,
-> +					  struct device_attribute *attr,
-> +					  char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct hid_sensor_common *attrb = iio_device_get_drvdata(indio_dev);
-> +	int latency;
-> +
-> +	latency = hid_sensor_get_report_latency(attrb);
-> +	if (latency < 0)
-> +		return latency;
-> +
-> +	return sprintf(buf, "%d\n", !!latency);
-> +}
-> +
-> +static IIO_DEVICE_ATTR(hwfifo_timeout, 0644,
-> +		       _hid_sensor_get_report_latency,
-> +		       _hid_sensor_set_report_latency, 0);
-> +static IIO_DEVICE_ATTR(hwfifo_enabled, 0444,
-> +		       _hid_sensor_get_fifo_state, NULL, 0);
-> +
-> +static const struct attribute *hid_sensor_fifo_attributes[] = {
-> +	&iio_dev_attr_hwfifo_timeout.dev_attr.attr,
-> +	&iio_dev_attr_hwfifo_enabled.dev_attr.attr,
-> +	NULL,
-> +};
-> +
-> +static void hid_sensor_setup_batch_mode(struct iio_dev *indio_dev,
-> +					struct hid_sensor_common *st)
-> +{
-> +	if (!hid_sensor_batch_mode_supported(st))
-> +		return;
-> +
-> +	iio_buffer_set_attrs(indio_dev->buffer, hid_sensor_fifo_attributes);
-> +}
-> +
->  static int _hid_sensor_power_state(struct hid_sensor_common *st, bool state)
->  {
->  	int state_val;
-> @@ -141,6 +216,9 @@ static void hid_sensor_set_power_work(struct work_struct *work)
->  				       sizeof(attrb->raw_hystersis),
->  				       &attrb->raw_hystersis);
->  
-> +	if (attrb->latency_ms > 0)
-> +		hid_sensor_set_report_latency(attrb, attrb->latency_ms);
-> +
->  	_hid_sensor_power_state(attrb, true);
->  }
->  
-> @@ -192,6 +270,8 @@ int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
->  	attrb->trigger = trig;
->  	indio_dev->trig = iio_trigger_get(trig);
->  
-> +	hid_sensor_setup_batch_mode(indio_dev, attrb);
-> +
->  	ret = pm_runtime_set_active(&indio_dev->dev);
->  	if (ret)
->  		goto error_unreg_trigger;
-> diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
-> index f32d7c3..fc7aae6 100644
-> --- a/include/linux/hid-sensor-hub.h
-> +++ b/include/linux/hid-sensor-hub.h
-> @@ -233,12 +233,14 @@ struct hid_sensor_common {
->  	atomic_t user_requested_state;
->  	int poll_interval;
->  	int raw_hystersis;
-> +	int latency_ms;
->  	struct iio_trigger *trigger;
->  	int timestamp_ns_scale;
->  	struct hid_sensor_hub_attribute_info poll;
->  	struct hid_sensor_hub_attribute_info report_state;
->  	struct hid_sensor_hub_attribute_info power_state;
->  	struct hid_sensor_hub_attribute_info sensitivity;
-> +	struct hid_sensor_hub_attribute_info report_latency;
->  	struct work_struct work;
->  };
->  
-> @@ -276,5 +278,8 @@ s32 hid_sensor_read_poll_value(struct hid_sensor_common *st);
->  
->  int64_t hid_sensor_convert_timestamp(struct hid_sensor_common *st,
->  				     int64_t raw_value);
-> +bool hid_sensor_batch_mode_supported(struct hid_sensor_common *st);
-> +int hid_sensor_set_report_latency(struct hid_sensor_common *st, int latency);
-> +int hid_sensor_get_report_latency(struct hid_sensor_common *st);
->  
->  #endif
-> diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
-> index 30c7dc4..d7caf8c 100644
-> --- a/include/linux/hid-sensor-ids.h
-> +++ b/include/linux/hid-sensor-ids.h
-> @@ -142,6 +142,9 @@
->  #define HID_USAGE_SENSOR_PROP_REPORT_STATE			0x200316
->  #define HID_USAGE_SENSOR_PROY_POWER_STATE			0x200319
->  
-> +/* Batch mode selectors */
-> +#define HID_USAGE_SENSOR_PROP_REPORT_LATENCY			0x20031B
-> +
->  /* Per data field properties */
->  #define HID_USAGE_SENSOR_DATA_MOD_NONE					0x00
->  #define HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS		0x1000
-> 
+Signed-off-by: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
+---
+Changes in v2:
+  - Make the commit message clearer
 
+ drivers/staging/iio/impedance-analyzer/ad5933.c | 50 ++++++++++++++-----------
+ 1 file changed, 28 insertions(+), 22 deletions(-)
+
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index 297665d..3d539ee 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -98,6 +98,7 @@ struct ad5933_state {
+ 	struct i2c_client		*client;
+ 	struct regulator		*reg;
+ 	struct delayed_work		work;
++	struct mutex			lock; /* Protect sensor state */
+ 	unsigned long			mclk_hz;
+ 	unsigned char			ctrl_hb;
+ 	unsigned char			ctrl_lb;
+@@ -306,9 +307,11 @@ static ssize_t ad5933_show_frequency(struct device *dev,
+ 		u8 d8[4];
+ 	} dat;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	ret = iio_device_claim_direct_mode(indio_dev);
++	if (ret)
++		return ret;
+ 	ret = ad5933_i2c_read(st->client, this_attr->address, 3, &dat.d8[1]);
+-	mutex_unlock(&indio_dev->mlock);
++	iio_device_release_direct_mode(indio_dev);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -338,9 +341,11 @@ static ssize_t ad5933_store_frequency(struct device *dev,
+ 	if (val > AD5933_MAX_OUTPUT_FREQ_Hz)
+ 		return -EINVAL;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	ret = iio_device_claim_direct_mode(indio_dev);
++	if (ret)
++		return ret;
+ 	ret = ad5933_set_freq(st, this_attr->address, val);
+-	mutex_unlock(&indio_dev->mlock);
++	iio_device_release_direct_mode(indio_dev);
+ 
+ 	return ret ? ret : len;
+ }
+@@ -364,7 +369,7 @@ static ssize_t ad5933_show(struct device *dev,
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	int ret = 0, len = 0;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&st->lock);
+ 	switch ((u32)this_attr->address) {
+ 	case AD5933_OUT_RANGE:
+ 		len = sprintf(buf, "%u\n",
+@@ -393,7 +398,7 @@ static ssize_t ad5933_show(struct device *dev,
+ 		ret = -EINVAL;
+ 	}
+ 
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&st->lock);
+ 	return ret ? ret : len;
+ }
+ 
+@@ -415,7 +420,10 @@ static ssize_t ad5933_store(struct device *dev,
+ 			return ret;
+ 	}
+ 
+-	mutex_lock(&indio_dev->mlock);
++	ret = iio_device_claim_direct_mode(indio_dev);
++	if (ret)
++		return ret;
++	mutex_lock(&st->lock);
+ 	switch ((u32)this_attr->address) {
+ 	case AD5933_OUT_RANGE:
+ 		ret = -EINVAL;
+@@ -465,7 +473,8 @@ static ssize_t ad5933_store(struct device *dev,
+ 		ret = -EINVAL;
+ 	}
+ 
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&st->lock);
++	iio_device_release_direct_mode(indio_dev);
+ 	return ret ? ret : len;
+ }
+ 
+@@ -532,11 +541,9 @@ static int ad5933_read_raw(struct iio_dev *indio_dev,
+ 
+ 	switch (m) {
+ 	case IIO_CHAN_INFO_RAW:
+-		mutex_lock(&indio_dev->mlock);
+-		if (iio_buffer_enabled(indio_dev)) {
+-			ret = -EBUSY;
+-			goto out;
+-		}
++		ret = iio_device_claim_direct_mode(indio_dev);
++		if (ret)
++			return ret;
+ 		ret = ad5933_cmd(st, AD5933_CTRL_MEASURE_TEMP);
+ 		if (ret < 0)
+ 			goto out;
+@@ -549,7 +556,7 @@ static int ad5933_read_raw(struct iio_dev *indio_dev,
+ 				      2, (u8 *)&dat);
+ 		if (ret < 0)
+ 			goto out;
+-		mutex_unlock(&indio_dev->mlock);
++		iio_device_release_direct_mode(indio_dev);
+ 		*val = sign_extend32(be16_to_cpu(dat), 13);
+ 
+ 		return IIO_VAL_INT;
+@@ -561,7 +568,7 @@ static int ad5933_read_raw(struct iio_dev *indio_dev,
+ 
+ 	return -EINVAL;
+ out:
+-	mutex_unlock(&indio_dev->mlock);
++	iio_device_release_direct_mode(indio_dev);
+ 	return ret;
+ }
+ 
+@@ -657,18 +664,17 @@ static void ad5933_work(struct work_struct *work)
+ 	unsigned char status;
+ 	int ret;
+ 
+-	mutex_lock(&indio_dev->mlock);
+ 	if (st->state == AD5933_CTRL_INIT_START_FREQ) {
+ 		/* start sweep */
+ 		ad5933_cmd(st, AD5933_CTRL_START_SWEEP);
+ 		st->state = AD5933_CTRL_START_SWEEP;
+ 		schedule_delayed_work(&st->work, st->poll_time_jiffies);
+-		goto out;
++		return;
+ 	}
+ 
+ 	ret = ad5933_i2c_read(st->client, AD5933_REG_STATUS, 1, &status);
+ 	if (ret)
+-		goto out;
++		return;
+ 
+ 	if (status & AD5933_STAT_DATA_VALID) {
+ 		int scan_count = bitmap_weight(indio_dev->active_scan_mask,
+@@ -678,7 +684,7 @@ static void ad5933_work(struct work_struct *work)
+ 				AD5933_REG_REAL_DATA : AD5933_REG_IMAG_DATA,
+ 				scan_count * 2, (u8 *)buf);
+ 		if (ret)
+-			goto out;
++			return;
+ 
+ 		if (scan_count == 2) {
+ 			val[0] = be16_to_cpu(buf[0]);
+@@ -690,7 +696,7 @@ static void ad5933_work(struct work_struct *work)
+ 	} else {
+ 		/* no data available - try again later */
+ 		schedule_delayed_work(&st->work, st->poll_time_jiffies);
+-		goto out;
++		return;
+ 	}
+ 
+ 	if (status & AD5933_STAT_SWEEP_DONE) {
+@@ -703,8 +709,6 @@ static void ad5933_work(struct work_struct *work)
+ 		ad5933_cmd(st, AD5933_CTRL_INC_FREQ);
+ 		schedule_delayed_work(&st->work, st->poll_time_jiffies);
+ 	}
+-out:
+-	mutex_unlock(&indio_dev->mlock);
+ }
+ 
+ static int ad5933_probe(struct i2c_client *client,
+@@ -723,6 +727,8 @@ static int ad5933_probe(struct i2c_client *client,
+ 	i2c_set_clientdata(client, indio_dev);
+ 	st->client = client;
+ 
++	mutex_init(&st->lock);
++
+ 	if (!pdata)
+ 		pdata = &ad5933_default_pdata;
+ 
+-- 
+1.9.1
