@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:38305 "EHLO
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:38303 "EHLO
         mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1753566AbdDJPvS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 10 Apr 2017 11:51:18 -0400
+        by vger.kernel.org with ESMTP id S1753724AbdDJPvL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 10 Apr 2017 11:51:11 -0400
 From: Fabrice Gasnier <fabrice.gasnier@st.com>
 To: <jic23@kernel.org>, <linux@armlinux.org.uk>, <robh+dt@kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
@@ -12,65 +12,95 @@ CC: <linux-iio@vger.kernel.org>, <mark.rutland@arm.com>,
         <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
         <fabrice.gasnier@st.com>, <benjamin.gaignard@linaro.org>,
         <benjamin.gaignard@st.com>
-Subject: [PATCH v3 0/2] Add STM32H7 DAC driver
-Date: Mon, 10 Apr 2017 17:49:48 +0200
-Message-ID: <1491839390-2449-1-git-send-email-fabrice.gasnier@st.com>
+Subject: [PATCH v3 1/2] dt-bindings: iio: stm32-dac: Add support for STM32 DAC
+Date: Mon, 10 Apr 2017 17:49:49 +0200
+Message-ID: <1491839390-2449-2-git-send-email-fabrice.gasnier@st.com>
+In-Reply-To: <1491839390-2449-1-git-send-email-fabrice.gasnier@st.com>
+References: <1491839390-2449-1-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patchset adds support for the STM32H7 DAC controller
+Document STMicroelectronics STM32 DAC (digital-to-analog converter).
 
-It's a 12-bit, voltage output digital-to-analog converter. It has two
-output channels, each with its own converter, trigger sources and
-waveform generator.
-
-Each channel can be used independently, so common resources are managed
-in stm32-dac-core driver (e.g. clock, reset, regulator, registers).
-One IIO device is instantiated per DAC output channel, in stm32-dac
-driver, so each channel can have its own trigger.
-
-Examples, using this driver to generate DC voltage output on channel1:
-# set max DC voltage / enable / min DC voltage / disable on out1
-cd /sys/bus/iio/devices/iio\:device0
-echo 4095 > out_voltage1_raw
-echo 0 > out_voltage1_powerdown
-echo 0 > out_voltage1_raw
-echo 1 > out_voltage1_powerdown
-cat out_voltage_powerdown_mode_available
-three_state
-
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 ---
-Changes in v3:
-- Fix powerdown mode, use 'three_state' as documented in sysfs-bus-iio
-- For now, drop support for triggers & waveform generator that requires more work.
-  This needs to be discussed more deeply.
-
 Changes in v2:
-- Update dt binding, use 'reg' property to select channel
-- Use 'powerdown' attribute instead of 'enable'
-- Added set_trigger callback
-- Use 'offset' attribute in waveform generation mode to add DC offset
-- rework ABI for waveform generation mode
-- Various typos, comments
-
-Fabrice Gasnier (2):
-  dt-bindings: iio: stm32-dac: Add support for STM32 DAC
-  iio: dac: add support for stm32 DAC
-
- .../devicetree/bindings/iio/dac/st,stm32-dac.txt   |  61 ++++
- drivers/iio/dac/Kconfig                            |  15 +
- drivers/iio/dac/Makefile                           |   2 +
- drivers/iio/dac/stm32-dac-core.c                   | 180 +++++++++++
- drivers/iio/dac/stm32-dac-core.h                   |  51 ++++
- drivers/iio/dac/stm32-dac.c                        | 334 +++++++++++++++++++++
- 6 files changed, 643 insertions(+)
+- use 'reg' instead of 'st,dac-channel' property
+- remove alignment from description
+---
+ .../devicetree/bindings/iio/dac/st,stm32-dac.txt   | 61 ++++++++++++++++++++++
+ 1 file changed, 61 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iio/dac/st,stm32-dac.txt
- create mode 100644 drivers/iio/dac/stm32-dac-core.c
- create mode 100644 drivers/iio/dac/stm32-dac-core.h
- create mode 100644 drivers/iio/dac/stm32-dac.c
 
+diff --git a/Documentation/devicetree/bindings/iio/dac/st,stm32-dac.txt b/Documentation/devicetree/bindings/iio/dac/st,stm32-dac.txt
+new file mode 100644
+index 0000000..bcee71f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/dac/st,stm32-dac.txt
+@@ -0,0 +1,61 @@
++STMicroelectronics STM32 DAC
++
++The STM32 DAC is a 12-bit voltage output digital-to-analog converter. The DAC
++may be configured in 8 or 12-bit mode. It has two output channels, each with
++its own converter.
++It has built-in noise and triangle waveform generator and supports external
++triggers for conversions. The DAC's output buffer allows a high drive output
++current.
++
++Contents of a stm32 dac root node:
++-----------------------------------
++Required properties:
++- compatible: Must be "st,stm32h7-dac-core".
++- reg: Offset and length of the device's register set.
++- clocks: Must contain an entry for pclk (which feeds the peripheral bus
++  interface)
++- clock-names: Must be "pclk".
++- vref-supply: Phandle to the vref+ input analog reference supply.
++- #address-cells = <1>;
++- #size-cells = <0>;
++
++Optional properties:
++- resets: Must contain the phandle to the reset controller.
++- A pinctrl state named "default" for each DAC channel may be defined to set
++  DAC_OUTx pin in mode of operation for analog output on external pin.
++
++Contents of a stm32 dac child node:
++-----------------------------------
++DAC core node should contain at least one subnode, representing a
++DAC instance/channel available on the machine.
++
++Required properties:
++- compatible: Must be "st,stm32-dac".
++- reg: Must be either 1 or 2, to define (single) channel in use
++- #io-channel-cells = <1>: See the IIO bindings section "IIO consumers" in
++  Documentation/devicetree/bindings/iio/iio-bindings.txt
++
++Example:
++	dac: dac@40007400 {
++		compatible = "st,stm32h7-dac-core";
++		reg = <0x40007400 0x400>;
++		clocks = <&clk>;
++		clock-names = "pclk";
++		vref-supply = <&reg_vref>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&dac_out1 &dac_out2>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		dac1: dac@1 {
++			compatible = "st,stm32-dac";
++			#io-channels-cells = <1>;
++			reg = <1>;
++		};
++
++		dac2: dac@2 {
++			compatible = "st,stm32-dac";
++			#io-channels-cells = <1>;
++			reg = <2>;
++		};
++	};
 -- 
 1.9.1
 
