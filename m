@@ -1,504 +1,255 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58309 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1950965AbdDZGLA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Apr 2017 02:11:00 -0400
-Subject: Re: [PATCH 1/2] iio: adc: Fix integration time/averaging for
- INA219/220
-To: Stefan Bruens <stefan.bruens@rwth-aachen.de>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Return-Path: <SRS0=7pg1=3U=rwth-aachen.de=Stefan.Bruens@kernel.org>
+From: =?UTF-8?q?Stefan=20Br=C3=BCns?= <stefan.bruens@rwth-aachen.de>
+To: <linux-iio@vger.kernel.org>
+CC: <linux-kernel@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter
+ Meerwald-Stadler <pmeerw@pmeerw.net>, =?UTF-8?q?Stefan=20Br=C3=BCns?=
+	<stefan.bruens@rwth-aachen.de>
+Subject: [PATCH 2/2] iio: adc: Allow setting Shunt Voltage PGA gain and Bus Voltage range
+Date: Wed, 12 Apr 2017 05:01:40 +0200
+In-Reply-To: <20170412030140.9328-1-stefan.bruens@rwth-aachen.de>
 References: <20170412030140.9328-1-stefan.bruens@rwth-aachen.de>
- <3db609e9c774475aab2bf7a5c3007247@rwthex-w2-b.rwth-ad.de>
- <a8e5c13c-e01c-c9b1-682b-e950d52b461b@kernel.org>
- <2091508.eyvxVyiBGb@pebbles.site>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <2c1d03fd-77bc-28dc-9e4b-bc89eb88feb4@kernel.org>
-Date: Wed, 26 Apr 2017 07:10:55 +0100
 MIME-Version: 1.0
-In-Reply-To: <2091508.eyvxVyiBGb@pebbles.site>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Message-ID: <81f81a0af7dd420db51f97d9be4dcbad@rwthex-w2-b.rwth-ad.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 17/04/17 13:41, Stefan Bruens wrote:
-> On Freitag, 14. April 2017 17:02:33 CEST Jonathan Cameron wrote:
->> On 12/04/17 04:01, Stefan Brüns wrote:
->>> INA226/230/231 has integration times per voltage channel and common
->>> averaging setting for both channels, while the INA219/220 only has a
->>> combined integration time/averaging setting per channel.
->>> Only expose the averaging attribute for the INA226, and expose the correct
->>> integration times for the INA219.
->>>
->>> Signed-off-by: Stefan Brüns <stefan.bruens@rwth-aachen.de>
->>
->> A few bits inline.
->>
->> The info_mask_shared_by_dir isn't right in the driver currently.
->> Those elements should be list for every channel in that direction.  This
->> moves where they are rather than fixing that.
->>
->> Please sort that mess out whilst you are here.
->>
->> Thanks,
->>
->> Jonathan
->>
->>> ---
->>>
->>>  drivers/iio/adc/ina2xx-adc.c | 179
->>>  ++++++++++++++++++++++++++++++++++++++----- 1 file changed, 158
->>>  insertions(+), 21 deletions(-)
->>>
->>> diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
->>> index 3263231276ca..d1678f886297 100644
->>> --- a/drivers/iio/adc/ina2xx-adc.c
->>> +++ b/drivers/iio/adc/ina2xx-adc.c
->>> @@ -48,6 +48,7 @@
->>>
->>>  /* settings - depend on use case */
->>>  #define INA219_CONFIG_DEFAULT           0x399F	/* PGA=8 */
->>>
->>> +#define INA219_DEFAULT_IT		532
->>>
->>>  #define INA226_CONFIG_DEFAULT           0x4327
->>>  #define INA226_DEFAULT_AVG              4
->>>  #define INA226_DEFAULT_IT		1110
->>>
->>> @@ -55,19 +56,24 @@
->>>
->>>  #define INA2XX_RSHUNT_DEFAULT           10000
->>>  
->>>  /*
->>>
->>> - * bit mask for reading the averaging setting in the configuration
->>> register + * bit masks for reading the settings in the configuration
->>> register> 
->>>   * FIXME: use regmap_fields.
->>
->> Either fix this or drop the fixme. It's fine to regmap fields if you
->> like, but it it's not broken if it doesn't use them.
-> 
-> The FIXME was not added nor changed by me. I see no reason to drop it.
-oops., My mistake.
->  
->>>   */
->>>  
->>>  #define INA2XX_MODE_MASK	GENMASK(3, 0)
->>>
->>> +/* Averaging for VBus/VShunt/Power */
->>>
->>>  #define INA226_AVG_MASK		GENMASK(11, 9)
->>>  #define INA226_SHIFT_AVG(val)	((val) << 9)
->>>  
->>>  /* Integration time for VBus */
->>>
->>> +#define INA219_ITB_MASK		GENMASK(10, 7)
->>> +#define INA219_SHIFT_ITB(val)	((val) << 7)
->>>
->>>  #define INA226_ITB_MASK		GENMASK(8, 6)
->>>  #define INA226_SHIFT_ITB(val)	((val) << 6)
->>>  
->>>  /* Integration time for VShunt */
->>>
->>> +#define INA219_ITS_MASK		GENMASK(6, 3)
->>> +#define INA219_SHIFT_ITS(val)	((val) << 3)
->>>
->>>  #define INA226_ITS_MASK		GENMASK(5, 3)
->>>  #define INA226_SHIFT_ITS(val)	((val) << 3)
->>>
->>> @@ -107,6 +113,7 @@ struct ina2xx_config {
->>>
->>>  	int bus_voltage_shift;
->>>  	int bus_voltage_lsb;	/* uV */
->>>  	int power_lsb;		/* uW */
->>>
->>> +	enum ina2xx_ids chip_id;
->>>
->>>  };
->>>  
->>>  struct ina2xx_chip_info {
->>>
->>> @@ -129,6 +136,7 @@ static const struct ina2xx_config ina2xx_config[] = {
->>>
->>>  		.bus_voltage_shift = 3,
->>>  		.bus_voltage_lsb = 4000,
->>>  		.power_lsb = 20000,
->>>
->>> +		.chip_id = ina219,
->>>
->>>  	},
->>>  	[ina226] = {
->>>  	
->>>  		.config_default = INA226_CONFIG_DEFAULT,
->>>
->>> @@ -137,6 +145,7 @@ static const struct ina2xx_config ina2xx_config[] = {
->>>
->>>  		.bus_voltage_shift = 0,
->>>  		.bus_voltage_lsb = 1250,
->>>  		.power_lsb = 25000,
->>>
->>> +		.chip_id = ina226,
->>>
->>>  	},
->>>  
->>>  };
->>>
->>> @@ -282,6 +291,66 @@ static int ina226_set_int_time_vshunt(struct
->>> ina2xx_chip_info *chip,> 
->>>  	return 0;
->>>  
->>>  }
->>>
->>> +/* Conversion times in uS. */
->>> +static const int ina219_conv_time_tab_subsample[] = { 84, 148, 276, 532
->>> };
->>> +static const int ina219_conv_time_tab_average[] = { 532, 1060, 2130,
->>> 4260,
->>> +						    8510, 17020, 34050, 68100};
->>> +
->>> +static int ina219_lookup_int_time(unsigned int *val_us, int *bits)
->>> +{
->>> +	if (*val_us > 68100 || *val_us < 84)
->>> +		return -EINVAL;
->>> +
->>> +	if (*val_us <= 532) {
->>> +		*bits = find_closest(*val_us, ina219_conv_time_tab_subsample,
->>> +				    ARRAY_SIZE(ina219_conv_time_tab_subsample));
->>> +		*val_us = ina219_conv_time_tab_subsample[*bits];
->>> +	} else {
->>> +		*bits = find_closest(*val_us, ina219_conv_time_tab_average,
->>> +				    ARRAY_SIZE(ina219_conv_time_tab_average));
->>> +		*val_us = ina219_conv_time_tab_average[*bits];
->>> +		*bits |= 0x8;
->>> +	}
->>> +
->>> +	return 0;
->>> +}
->>> +
->>> +static int ina219_set_int_time_vbus(struct ina2xx_chip_info *chip,
->>> +				    unsigned int val_us, unsigned int *config)
->>> +{
->>> +	int bits, ret;
->>> +	unsigned int val_us_best = val_us;
->>> +
->>> +	ret = ina219_lookup_int_time(&val_us_best, &bits);
->>> +	if (ret)
->>> +		return ret;
->>> +
->>> +	chip->int_time_vbus = val_us_best;
->>> +
->>> +	*config &= ~INA219_ITB_MASK;
->>> +	*config |= INA219_SHIFT_ITB(bits) & INA219_ITB_MASK;
->>> +
->>> +	return 0;
->>> +}
->>> +
->>> +static int ina219_set_int_time_vshunt(struct ina2xx_chip_info *chip,
->>> +				      unsigned int val_us, unsigned int *config)
->>> +{
->>> +	int bits, ret;
->>> +	unsigned int val_us_best = val_us;
->>> +
->>> +	ret = ina219_lookup_int_time(&val_us_best, &bits);
->>> +	if (ret)
->>> +		return ret;
->>> +
->>> +	chip->int_time_vshunt = val_us_best;
->>> +
->>> +	*config &= ~INA219_ITS_MASK;
->>> +	*config |= INA219_SHIFT_ITS(bits) & INA219_ITS_MASK;
->>> +
->>> +	return 0;
->>> +}
->>> +
->>>
->>>  static int ina2xx_write_raw(struct iio_dev *indio_dev,
->>>  
->>>  			    struct iio_chan_spec const *chan,
->>>  			    int val, int val2, long mask)
->>>
->>> @@ -307,10 +376,15 @@ static int ina2xx_write_raw(struct iio_dev
->>> *indio_dev,> 
->>>  		break;
->>>  	
->>>  	case IIO_CHAN_INFO_INT_TIME:
->>> -		if (chan->address == INA2XX_SHUNT_VOLTAGE)
->>> +		if ((chip->config->chip_id == ina226) &&
->>> +		    (chan->address == INA2XX_SHUNT_VOLTAGE))
->>>
->>>  			ret = ina226_set_int_time_vshunt(chip, val2, &tmp);
->>>
->>> -		else
->>> +		else if (chip->config->chip_id == ina226)
->>>
->>>  			ret = ina226_set_int_time_vbus(chip, val2, &tmp);
->>>
->>> +		else if (chan->address == INA2XX_SHUNT_VOLTAGE)
->>> +			ret = ina219_set_int_time_vshunt(chip, val2, &tmp);
->>> +		else
->>> +			ret = ina219_set_int_time_vbus(chip, val2, &tmp);
->>
->> This new ordering of the if statement is convoluted and difficult to follow.
->> Just use a nested if and I think it'll be easier to read.
-> 
-> I can change this, but the extra indentation level will force a line break to 
-> not exceed the 78 character limit.
-I think readability will still be improved so go for it.
->  
->>>  		break;
->>>  	
->>>  	default:
->>> @@ -416,10 +490,8 @@ static ssize_t ina2xx_shunt_resistor_store(struct
->>> device *dev,> 
->>>  	.address = (_address), \
->>>  	.indexed = 1, \
->>>  	.channel = (_index), \
->>>
->>> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) \
->>> -	| BIT(IIO_CHAN_INFO_SCALE), \
->>> -	.info_mask_shared_by_dir = BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
->>> -				   BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), \
->>> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
->>> +			      BIT(IIO_CHAN_INFO_SCALE), \
->>
->> Sometimes it just feels like diff is trying to make it really hard
->> to see what has changed.
->>
->> Firstly the new info_mask_separate is just a reformat.  Fine, but not
->> in this patch.  Should be in it's own patch.
->>
->> The dropping of the shared_by_dir however makes me wonder what is going
->> on.  Shared_by_dir elements should be present in every single channel
->> of that direction.  This already isn't true in the driver and should be
->> fixed to maintain consistency.  This makes it worse.
-> 
-> Unfortunately there is no documentation how the *_shared_by_* fields have to 
-> be used. It seems to work if a bit is only set on some channels of a group.
-It will work just fine but the intent is to have them set for all relevant
-channels. Agreed, our documentation could do with improving on this.
-> 
-> This patch makes is neither better nor worse. Previously, e.g. 
-> IIO_CHAN_INFO_SAMP_FREQ was set on both the power and current channels, now it 
-> is set on the bus and shunt voltage channels. Both variants create a single 
-> in_sample_frequency attribute.
-If we can clean this up whilst you were here it would be great. If not fair
-enough - we'll get to it one day!
->  
->>>  	.scan_index = (_index), \
->>>  	.scan_type = { \
->>>  	
->>>  		.sign = 'u', \
->>>
->>> @@ -433,7 +505,26 @@ static ssize_t ina2xx_shunt_resistor_store(struct
->>> device *dev,> 
->>>   * Sampling Freq is a consequence of the integration times of
->>>   * the Voltage channels.
->>>   */
->>>
->>> -#define INA2XX_CHAN_VOLTAGE(_index, _address) { \
->>> +#define INA226_CHAN_VOLTAGE(_index, _address) { \
->>> +	.type = IIO_VOLTAGE, \
->>> +	.address = (_address), \
->>> +	.indexed = 1, \
->>> +	.channel = (_index), \
->>> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
->>> +			      BIT(IIO_CHAN_INFO_SCALE) | \
->>> +			      BIT(IIO_CHAN_INFO_INT_TIME), \
->>> +	.info_mask_shared_by_dir = BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
->>> +				   BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), \
->>> +	.scan_index = (_index), \
->>> +	.scan_type = { \
->>> +		.sign = 'u', \
->>> +		.realbits = 16, \
->>> +		.storagebits = 16, \
->>> +		.endianness = IIO_LE, \
->>> +	} \
->>> +}
->>> +
->>> +#define INA219_CHAN_VOLTAGE(_index, _address) { \
->>>
->>>  	.type = IIO_VOLTAGE, \
->>>  	.address = (_address), \
->>>  	.indexed = 1, \
->>>
->>> @@ -441,6 +532,7 @@ static ssize_t ina2xx_shunt_resistor_store(struct
->>> device *dev,> 
->>>  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
->>>  	
->>>  			      BIT(IIO_CHAN_INFO_SCALE) | \
->>>  			      BIT(IIO_CHAN_INFO_INT_TIME), \
->>>
->>> +	.info_mask_shared_by_dir = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
->>
->> This looks sort of like a bug fix.  As it is just shared_by_dir it will
->> apply to all input channels so should have been specified for them all in
->> the first place.  However, if so, the oversampling ratio should be the
->> same.
-> 
-> No. TI226 has one oversampling ("averaging" in the DS) setting applying to all 
-> channels. TI219 has no explicit averaging.
-> 
-> Apparently, on the TI226, all 4 channels (current, power, bus voltage, shunt) 
-> should have the IIO_CHAN_INFO_SAMP_FREQ and IIO_CHAN_INFO_OVERSAMPLING bits 
-> set in the info_mask_shared_by_dir, while the TI219 should have set only the 
-> IIO_CHAN_INFO_SAMP_FREQ bit.
-Sounds right to me.
-> 
->>>  	.scan_index = (_index), \
->>>  	.scan_type = { \
->>>  	
->>>  		.sign = 'u', \
->>>
->>> @@ -450,9 +542,18 @@ static ssize_t ina2xx_shunt_resistor_store(struct
->>> device *dev,> 
->>>  	} \
->>>  
->>>  }
->>>
->>> -static const struct iio_chan_spec ina2xx_channels[] = {
->>> -	INA2XX_CHAN_VOLTAGE(0, INA2XX_SHUNT_VOLTAGE),
->>> -	INA2XX_CHAN_VOLTAGE(1, INA2XX_BUS_VOLTAGE),
->>> +
->>> +static const struct iio_chan_spec ina226_channels[] = {
->>> +	INA226_CHAN_VOLTAGE(0, INA2XX_SHUNT_VOLTAGE),
->>> +	INA226_CHAN_VOLTAGE(1, INA2XX_BUS_VOLTAGE),
->>> +	INA2XX_CHAN(IIO_POWER, 2, INA2XX_POWER),
->>> +	INA2XX_CHAN(IIO_CURRENT, 3, INA2XX_CURRENT),
->>> +	IIO_CHAN_SOFT_TIMESTAMP(4),
->>> +};
->>> +
->>> +static const struct iio_chan_spec ina219_channels[] = {
->>> +	INA219_CHAN_VOLTAGE(0, INA2XX_SHUNT_VOLTAGE),
->>> +	INA219_CHAN_VOLTAGE(1, INA2XX_BUS_VOLTAGE),
->>>
->>>  	INA2XX_CHAN(IIO_POWER, 2, INA2XX_POWER),
->>>  	INA2XX_CHAN(IIO_CURRENT, 3, INA2XX_CURRENT),
->>>  	IIO_CHAN_SOFT_TIMESTAMP(4),
->>>
->>> @@ -589,7 +690,14 @@ static int ina2xx_debug_reg(struct iio_dev
->>> *indio_dev,
->>>
->>>  }
->>>  
->>>  
->>>  /* Possible integration times for vshunt and vbus */
->>>
->>> -static IIO_CONST_ATTR_INT_TIME_AVAIL("0.000140 0.000204 0.000332 0.000588
->>> 0.001100 0.002116 0.004156 0.008244"); +static
->>> IIO_CONST_ATTR_NAMED(ina219_integration_time_available,
->>> +			    integration_time_available,
->>> +			    "0.000084 0.000148 0.000276 0.000532 0.001060 0.002130 
-> 0.004260
->>> 0.008510 0.017020 0.034050 0.068100"); +
->>> +static IIO_CONST_ATTR_NAMED(ina226_integration_time_available,
->>> +			    integration_time_available,
->>> +			    "0.000140 0.000204 0.000332 0.000588 0.001100 0.002116 
-> 0.004156
->>> 0.008244"); +
->>>
->>>  static IIO_DEVICE_ATTR(in_allow_async_readout, S_IRUGO | S_IWUSR,
->>>  
->>>  		       ina2xx_allow_async_readout_show,
->>>
->>> @@ -599,20 +707,39 @@ static IIO_DEVICE_ATTR(in_shunt_resistor, S_IRUGO |
->>> S_IWUSR,> 
->>>  		       ina2xx_shunt_resistor_show,
->>>  		       ina2xx_shunt_resistor_store, 0);
->>>
->>> -static struct attribute *ina2xx_attributes[] = {
->>> +static struct attribute *ina219_attributes[] = {
->>> +	&iio_dev_attr_in_allow_async_readout.dev_attr.attr,
->>> +	&iio_const_attr_ina219_integration_time_available.dev_attr.attr,
->>> +	&iio_dev_attr_in_shunt_resistor.dev_attr.attr,
->>> +	NULL,
->>> +};
->>> +
->>> +static struct attribute *ina226_attributes[] = {
->>>
->>>  	&iio_dev_attr_in_allow_async_readout.dev_attr.attr,
->>>
->>> -	&iio_const_attr_integration_time_available.dev_attr.attr,
->>> +	&iio_const_attr_ina226_integration_time_available.dev_attr.attr,
->>>
->>>  	&iio_dev_attr_in_shunt_resistor.dev_attr.attr,
->>>  	NULL,
->>>  
->>>  };
->>>
->>> -static const struct attribute_group ina2xx_attribute_group = {
->>> -	.attrs = ina2xx_attributes,
->>> +static const struct attribute_group ina219_attribute_group = {
->>> +	.attrs = ina219_attributes,
->>>
->>>  };
->>>
->>> -static const struct iio_info ina2xx_info = {
->>> +static const struct attribute_group ina226_attribute_group = {
->>> +	.attrs = ina226_attributes,
->>> +};
->>> +
->>> +static const struct iio_info ina219_info = {
->>>
->>>  	.driver_module = THIS_MODULE,
->>>
->>> -	.attrs = &ina2xx_attribute_group,
->>> +	.attrs = &ina219_attribute_group,
->>> +	.read_raw = ina2xx_read_raw,
->>> +	.write_raw = ina2xx_write_raw,
->>> +	.debugfs_reg_access = ina2xx_debug_reg,
->>> +};
->>> +
->>> +static const struct iio_info ina226_info = {
->>> +	.driver_module = THIS_MODULE,
->>> +	.attrs = &ina226_attribute_group,
->>>
->>>  	.read_raw = ina2xx_read_raw,
->>>  	.write_raw = ina2xx_write_raw,
->>>  	.debugfs_reg_access = ina2xx_debug_reg,
->>>
->>> @@ -678,6 +805,10 @@ static int ina2xx_probe(struct i2c_client *client,
->>>
->>>  		ina226_set_average(chip, INA226_DEFAULT_AVG, &val);
->>>  		ina226_set_int_time_vbus(chip, INA226_DEFAULT_IT, &val);
->>>  		ina226_set_int_time_vshunt(chip, INA226_DEFAULT_IT, &val);
->>>
->>> +	} else {
->>> +		chip->avg = 1;
->>> +		ina219_set_int_time_vbus(chip, INA219_DEFAULT_IT, &val);
->>> +		ina219_set_int_time_vshunt(chip, INA219_DEFAULT_IT, &val);
->>>
->>>  	}
->>>  	
->>>  	ret = ina2xx_init(chip, val);
->>>
->>> @@ -689,10 +820,16 @@ static int ina2xx_probe(struct i2c_client *client,
->>>
->>>  	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_SOFTWARE;
->>>  	indio_dev->dev.parent = &client->dev;
->>>  	indio_dev->dev.of_node = client->dev.of_node;
->>>
->>> -	indio_dev->channels = ina2xx_channels;
->>> -	indio_dev->num_channels = ARRAY_SIZE(ina2xx_channels);
->>> +	if (id->driver_data == ina226) {
->>> +		indio_dev->channels = ina226_channels;
->>> +		indio_dev->num_channels = ARRAY_SIZE(ina226_channels);
->>> +		indio_dev->info = &ina226_info;
->>> +	} else {
->>> +		indio_dev->channels = ina219_channels;
->>> +		indio_dev->num_channels = ARRAY_SIZE(ina219_channels);
->>> +		indio_dev->info = &ina219_info;
->>> +	}
->>>
->>>  	indio_dev->name = id->name;
->>>
->>> -	indio_dev->info = &ina2xx_info;
->>>
->>>  	indio_dev->setup_ops = &ina2xx_setup_ops;
->>>  	
->>>  	buffer = devm_iio_kfifo_allocate(&indio_dev->dev);
-> 
-> 
+Reducing shunt and bus voltage range improves the accuracy, so allow
+altering the default settings.
 
+Signed-off-by: Stefan Brüns <stefan.bruens@rwth-aachen.de>
+---
+ drivers/iio/adc/ina2xx-adc.c | 165 ++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 164 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
+index d1678f886297..856409ecceb3 100644
+--- a/drivers/iio/adc/ina2xx-adc.c
++++ b/drivers/iio/adc/ina2xx-adc.c
+@@ -47,8 +47,10 @@
+ #define INA2XX_MAX_REGISTERS            8
+ 
+ /* settings - depend on use case */
+-#define INA219_CONFIG_DEFAULT           0x399F	/* PGA=8 */
++#define INA219_CONFIG_DEFAULT           0x399F	/* PGA=1/8, BRNG=32V */
+ #define INA219_DEFAULT_IT		532
++#define INA219_DEFAULT_BRNG             32
++#define INA219_DEFAULT_PGA              125 /* 1000/8 */
+ #define INA226_CONFIG_DEFAULT           0x4327
+ #define INA226_DEFAULT_AVG              4
+ #define INA226_DEFAULT_IT		1110
+@@ -61,6 +63,14 @@
+  */
+ #define INA2XX_MODE_MASK	GENMASK(3, 0)
+ 
++/* Gain for VShunt: 1/8 (default), 1/4, 1/2, 1 */
++#define INA219_PGA_MASK		GENMASK(12, 11)
++#define INA219_SHIFT_PGA(val)	((val) << 11)
++
++/* VBus range: 32V (default), 16V */
++#define INA219_BRNG_MASK	BIT(13)
++#define INA219_SHIFT_BRNG(val)	((val) << 13)
++
+ /* Averaging for VBus/VShunt/Power */
+ #define INA226_AVG_MASK		GENMASK(11, 9)
+ #define INA226_SHIFT_AVG(val)	((val) << 9)
+@@ -125,6 +135,8 @@ struct ina2xx_chip_info {
+ 	int avg;
+ 	int int_time_vbus; /* Bus voltage integration time uS */
+ 	int int_time_vshunt; /* Shunt voltage integration time uS */
++	int range_vbus; /* Bus voltage maximum in V */
++	int pga_gain_vshunt; /* Shunt voltage PGA gain */
+ 	bool allow_async_readout;
+ };
+ 
+@@ -351,6 +363,44 @@ static int ina219_set_int_time_vshunt(struct ina2xx_chip_info *chip,
+ 	return 0;
+ }
+ 
++static int ina219_set_vbus_range(struct ina2xx_chip_info *chip,
++				 unsigned int range,
++				 unsigned int *config)
++{
++	if (range != 16 && range != 32)
++		return -EINVAL;
++
++	chip->range_vbus = range;
++
++	*config &= ~INA219_BRNG_MASK;
++	*config |= INA219_SHIFT_BRNG(range == 32 ? 1 : 0) & INA219_BRNG_MASK;
++
++	return 0;
++}
++
++static const int ina219_vshunt_gain_tab[] = { 125, 250, 500, 1000 };
++
++static int ina219_set_vshunt_pga_gain(struct ina2xx_chip_info *chip,
++				      unsigned int gain,
++				      unsigned int *config)
++{
++	int bits;
++
++	if (gain < 125 || gain > 1000)
++		return -EINVAL;
++
++	bits = find_closest(gain, ina219_vshunt_gain_tab,
++			    ARRAY_SIZE(ina219_vshunt_gain_tab));
++
++	chip->pga_gain_vshunt = ina219_vshunt_gain_tab[bits];
++	bits = 3 - bits;
++
++	*config &= ~INA219_PGA_MASK;
++	*config |= INA219_SHIFT_PGA(bits) & INA219_PGA_MASK;
++
++	return 0;
++}
++
+ static int ina2xx_write_raw(struct iio_dev *indio_dev,
+ 			    struct iio_chan_spec const *chan,
+ 			    int val, int val2, long mask)
+@@ -485,6 +535,92 @@ static ssize_t ina2xx_shunt_resistor_store(struct device *dev,
+ 	return len;
+ }
+ 
++static ssize_t ina219_bus_voltage_range_show(struct device *dev,
++					     struct device_attribute *attr,
++					     char *buf)
++{
++	struct ina2xx_chip_info *chip = iio_priv(dev_to_iio_dev(dev));
++
++	return sprintf(buf, "%d\n", chip->range_vbus);
++}
++
++static ssize_t ina219_bus_voltage_range_store(struct device *dev,
++					      struct device_attribute *attr,
++					      const char *buf, size_t len)
++{
++	struct ina2xx_chip_info *chip = iio_priv(dev_to_iio_dev(dev));
++	unsigned long val;
++	unsigned int config, tmp;
++	int ret;
++
++	ret = kstrtoul((const char *) buf, 10, &val);
++	if (ret)
++		return ret;
++
++	mutex_lock(&chip->state_lock);
++
++	ret = regmap_read(chip->regmap, INA2XX_CONFIG, &config);
++	if (ret)
++		goto err;
++
++	tmp = config;
++
++	ret = ina219_set_vbus_range(chip, val, &config);
++
++	if (!ret && (tmp != config))
++		ret = regmap_write(chip->regmap, INA2XX_CONFIG, config);
++
++	if (!ret)
++		ret = len;
++err:
++	mutex_unlock(&chip->state_lock);
++
++	return ret;
++}
++
++static ssize_t ina219_shunt_voltage_gain_show(struct device *dev,
++					      struct device_attribute *attr,
++					      char *buf)
++{
++	struct ina2xx_chip_info *chip = iio_priv(dev_to_iio_dev(dev));
++	int vals[2] = { chip->pga_gain_vshunt, 1000 };
++
++	return iio_format_value(buf, IIO_VAL_FRACTIONAL, 1, vals);
++}
++
++static ssize_t ina219_shunt_voltage_gain_store(struct device *dev,
++					       struct device_attribute *attr,
++					       const char *buf, size_t len)
++{
++	struct ina2xx_chip_info *chip = iio_priv(dev_to_iio_dev(dev));
++	unsigned int config, tmp;
++	int val, val_fract, ret;
++
++	ret = iio_str_to_fixpoint(buf, 100, &val, &val_fract);
++	if (ret)
++		return ret;
++
++	mutex_lock(&chip->state_lock);
++
++	ret = regmap_read(chip->regmap, INA2XX_CONFIG, &config);
++	if (ret)
++		goto err;
++
++	tmp = config;
++
++	ret = ina219_set_vshunt_pga_gain(chip, val * 1000 + val_fract, &config);
++
++	if (!ret && (tmp != config))
++		ret = regmap_write(chip->regmap, INA2XX_CONFIG, config);
++
++	if (!ret)
++		ret = len;
++err:
++	mutex_unlock(&chip->state_lock);
++
++	return ret;
++}
++
+ #define INA2XX_CHAN(_type, _index, _address) { \
+ 	.type = (_type), \
+ 	.address = (_address), \
+@@ -698,6 +834,15 @@ static IIO_CONST_ATTR_NAMED(ina226_integration_time_available,
+ 			    integration_time_available,
+ 			    "0.000140 0.000204 0.000332 0.000588 0.001100 0.002116 0.004156 0.008244");
+ 
++/* INA219/220 Bus voltage range */
++static IIO_CONST_ATTR_NAMED(ina219_bus_voltage_range_available,
++			    in_bus_voltage_range_available,
++			    "16 32");
++
++/* INA219/220 Shunt voltage PGA gain */
++static IIO_CONST_ATTR_NAMED(ina219_shunt_voltage_gain_available,
++			    in_shunt_voltage_gain_available,
++			    "0.125 0.25 0.5 1");
+ 
+ static IIO_DEVICE_ATTR(in_allow_async_readout, S_IRUGO | S_IWUSR,
+ 		       ina2xx_allow_async_readout_show,
+@@ -707,9 +852,25 @@ static IIO_DEVICE_ATTR(in_shunt_resistor, S_IRUGO | S_IWUSR,
+ 		       ina2xx_shunt_resistor_show,
+ 		       ina2xx_shunt_resistor_store, 0);
+ 
++static IIO_DEVICE_ATTR_NAMED(ina219_bus_voltage_range,
++			     in_bus_voltage_range,
++			     S_IRUGO | S_IWUSR,
++			     ina219_bus_voltage_range_show,
++			     ina219_bus_voltage_range_store, 0);
++
++static IIO_DEVICE_ATTR_NAMED(ina219_shunt_voltage_gain,
++			     in_shunt_voltage_gain,
++			     S_IRUGO | S_IWUSR,
++			     ina219_shunt_voltage_gain_show,
++			     ina219_shunt_voltage_gain_store, 0);
++
+ static struct attribute *ina219_attributes[] = {
+ 	&iio_dev_attr_in_allow_async_readout.dev_attr.attr,
+ 	&iio_const_attr_ina219_integration_time_available.dev_attr.attr,
++	&iio_dev_attr_ina219_bus_voltage_range.dev_attr.attr,
++	&iio_const_attr_ina219_bus_voltage_range_available.dev_attr.attr,
++	&iio_dev_attr_ina219_shunt_voltage_gain.dev_attr.attr,
++	&iio_const_attr_ina219_shunt_voltage_gain_available.dev_attr.attr,
+ 	&iio_dev_attr_in_shunt_resistor.dev_attr.attr,
+ 	NULL,
+ };
+@@ -809,6 +970,8 @@ static int ina2xx_probe(struct i2c_client *client,
+ 		chip->avg = 1;
+ 		ina219_set_int_time_vbus(chip, INA219_DEFAULT_IT, &val);
+ 		ina219_set_int_time_vshunt(chip, INA219_DEFAULT_IT, &val);
++		ina219_set_vbus_range(chip, INA219_DEFAULT_BRNG, &val);
++		ina219_set_vshunt_pga_gain(chip, INA219_DEFAULT_PGA, &val);
+ 	}
+ 
+ 	ret = ina2xx_init(chip, val);
+-- 
+2.12.0
