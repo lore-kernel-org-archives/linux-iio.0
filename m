@@ -1,91 +1,149 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.4.pengutronix.de ([92.198.50.35]:48857 "EHLO
-        metis.ext.4.pengutronix.de" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1039265AbdDUQjo (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Apr 2017 12:39:44 -0400
-Message-ID: <1492787944.2364.16.camel@pengutronix.de>
-Subject: Re: [PATCH v13 03/10] mux: minimal mux subsystem and gpio-based mux
- controller
-From: Philipp Zabel <p.zabel@pengutronix.de>
-To: Peter Rosin <peda@axentia.se>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>, kernel@pengutronix.de,
-        Wolfram Sang <wsa@the-dreams.de>, linux-iio@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Rob Herring <robh+dt@kernel.org>, linux-i2c@vger.kernel.org,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Colin Ian King <colin.king@canonical.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jonathan Cameron <jic23@kernel.org>
-Date: Fri, 21 Apr 2017 17:19:04 +0200
-In-Reply-To: <6bc3120a-81dd-3b6c-d246-559a3c072969@axentia.se>
+Return-Path: <SRS0=zQt0=3V=axentia.se=peda@kernel.org>
+From: Peter Rosin <peda@axentia.se>
+To: <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>
+CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, Rob
+ Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Jonathan
+ Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter
+ Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Jonathan Corbet <corbet@lwn.net>, <linux-i2c@vger.kernel.org>,
+	<devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+	<linux-doc@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Colin
+ Ian King <colin.king@canonical.com>, Paul Gortmaker
+	<paul.gortmaker@windriver.com>, Philipp Zabel <p.zabel@pengutronix.de>,
+	<kernel@pengutronix.de>
+Subject: [PATCH v13 04/10] iio: inkern: api for manipulating ext_info of iio channels
+Date: Thu, 13 Apr 2017 18:43:08 +0200
+Message-ID: <1492101794-13444-5-git-send-email-peda@axentia.se>
+In-Reply-To: <1492101794-13444-1-git-send-email-peda@axentia.se>
 References: <1492101794-13444-1-git-send-email-peda@axentia.se>
-         <1492101794-13444-4-git-send-email-peda@axentia.se>
-         <1492784582.2364.10.camel@pengutronix.de>
-         <9e3d48c4-0dbc-3e80-c653-b0357abf1d6f@axentia.se>
-         <1492785664.2364.13.camel@pengutronix.de>
-         <6bc3120a-81dd-3b6c-d246-559a3c072969@axentia.se>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+MIME-Version: 1.0
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, 2017-04-21 at 16:55 +0200, Peter Rosin wrote:
-> On 2017-04-21 16:41, Philipp Zabel wrote:
-> > On Fri, 2017-04-21 at 16:32 +0200, Peter Rosin wrote:
-> >> On 2017-04-21 16:23, Philipp Zabel wrote:
-> >>> On Thu, 2017-04-13 at 18:43 +0200, Peter Rosin wrote:
-> >>> [...]
-> >>>> +int mux_chip_register(struct mux_chip *mux_chip)
-> >>>> +{
-> >>>> +	int i;
-> >>>> +	int ret;
-> >>>> +
-> >>>> +	for (i = 0; i < mux_chip->controllers; ++i) {
-> >>>> +		struct mux_control *mux = &mux_chip->mux[i];
-> >>>> +
-> >>>> +		if (mux->idle_state == mux->cached_state)
-> >>>> +			continue;
-> >>>
-> >>> I think this should be changed to
-> >>>  
-> >>> -               if (mux->idle_state == mux->cached_state)
-> >>> +               if (mux->idle_state == mux->cached_state ||
-> >>> +                   mux->idle_state == MUX_IDLE_AS_IS)
-> >>>                         continue;
-> >>>
-> >>> or the following mux_control_set will be called with state ==
-> >>> MUX_IDLE_AS_IS. Alternatively, mux_control_set should return when passed
-> >>> this value.
-> >>
-> >> That cannot happen because ->cached_state is initialized to -1
-> >> in mux_chip_alloc, so should always be == MUX_IDLE_AS_IS when
-> >> registering. And drivers are not supposed to touch ->cached_state.
-> >> I.e., ->cached_state is "owned" by the core.
-> > 
-> > So this was caused by me filling cached_state from register reads in the
-> > mmio driver. Makes me wonder why I am not allowed to do this, though, if
-> > I am able to read back the initial state?
-> 
-> You gain fairly little by reading back the original state. If the mux
-> should idle-as-is, you can avoid a maximum of one mux update if the first
-> consumer happens to starts by requesting the previously active state.
-> Similarly, if the mux should idle in a specific state, you can avoid a
-> maximum of one mux update.
-> 
-> In both cases it costs one unconditional read of the mux state.
-> 
-> Sure, in some cases reads are cheaper than writes, but I didn't think
-> support for seeding the cache was worth it. Is it worth it?
+Extend the inkern api with functions for reading and writing ext_info
+of iio channels.
 
-Probably not, I'll just drop the cached_state initialization. It should
-be documented in the mux.h that this field is framework internal and not
-to be touched by the drivers. At least I was surprised.
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ drivers/iio/inkern.c         | 60 ++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/iio/consumer.h | 37 +++++++++++++++++++++++++++
+ 2 files changed, 97 insertions(+)
 
-regards
-Philipp
-
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index 7a13535dc3e9..8292ad4435ea 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -869,3 +869,63 @@ int iio_write_channel_raw(struct iio_channel *chan, int val)
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(iio_write_channel_raw);
++
++unsigned int iio_get_channel_ext_info_count(struct iio_channel *chan)
++{
++	const struct iio_chan_spec_ext_info *ext_info;
++	unsigned int i = 0;
++
++	if (!chan->channel->ext_info)
++		return i;
++
++	for (ext_info = chan->channel->ext_info; ext_info->name; ext_info++)
++		++i;
++
++	return i;
++}
++EXPORT_SYMBOL_GPL(iio_get_channel_ext_info_count);
++
++static const struct iio_chan_spec_ext_info *iio_lookup_ext_info(
++						const struct iio_channel *chan,
++						const char *attr)
++{
++	const struct iio_chan_spec_ext_info *ext_info;
++
++	if (!chan->channel->ext_info)
++		return NULL;
++
++	for (ext_info = chan->channel->ext_info; ext_info->name; ++ext_info) {
++		if (!strcmp(attr, ext_info->name))
++			return ext_info;
++	}
++
++	return NULL;
++}
++
++ssize_t iio_read_channel_ext_info(struct iio_channel *chan,
++				  const char *attr, char *buf)
++{
++	const struct iio_chan_spec_ext_info *ext_info;
++
++	ext_info = iio_lookup_ext_info(chan, attr);
++	if (!ext_info)
++		return -EINVAL;
++
++	return ext_info->read(chan->indio_dev, ext_info->private,
++			      chan->channel, buf);
++}
++EXPORT_SYMBOL_GPL(iio_read_channel_ext_info);
++
++ssize_t iio_write_channel_ext_info(struct iio_channel *chan, const char *attr,
++				   const char *buf, size_t len)
++{
++	const struct iio_chan_spec_ext_info *ext_info;
++
++	ext_info = iio_lookup_ext_info(chan, attr);
++	if (!ext_info)
++		return -EINVAL;
++
++	return ext_info->write(chan->indio_dev, ext_info->private,
++			       chan->channel, buf, len);
++}
++EXPORT_SYMBOL_GPL(iio_write_channel_ext_info);
+diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
+index 47eeec3218b5..5e347a9805fd 100644
+--- a/include/linux/iio/consumer.h
++++ b/include/linux/iio/consumer.h
+@@ -312,4 +312,41 @@ int iio_read_channel_scale(struct iio_channel *chan, int *val,
+ int iio_convert_raw_to_processed(struct iio_channel *chan, int raw,
+ 	int *processed, unsigned int scale);
+ 
++/**
++ * iio_get_channel_ext_info_count() - get number of ext_info attributes
++ *				      connected to the channel.
++ * @chan:		The channel being queried
++ *
++ * Returns the number of ext_info attributes
++ */
++unsigned int iio_get_channel_ext_info_count(struct iio_channel *chan);
++
++/**
++ * iio_read_channel_ext_info() - read ext_info attribute from a given channel
++ * @chan:		The channel being queried.
++ * @attr:		The ext_info attribute to read.
++ * @buf:		Where to store the attribute value. Assumed to hold
++ *			at least PAGE_SIZE bytes.
++ *
++ * Returns the number of bytes written to buf (perhaps w/o zero termination;
++ * it need not even be a string), or an error code.
++ */
++ssize_t iio_read_channel_ext_info(struct iio_channel *chan,
++				  const char *attr, char *buf);
++
++/**
++ * iio_write_channel_ext_info() - write ext_info attribute from a given channel
++ * @chan:		The channel being queried.
++ * @attr:		The ext_info attribute to read.
++ * @buf:		The new attribute value. Strings needs to be zero-
++ *			terminated, but the terminator should not be included
++ *			in the below len.
++ * @len:		The size of the new attribute value.
++ *
++ * Returns the number of accepted bytes, which should be the same as len.
++ * An error code can also be returned.
++ */
++ssize_t iio_write_channel_ext_info(struct iio_channel *chan, const char *attr,
++				   const char *buf, size_t len);
++
+ #endif
+-- 
+2.1.4
