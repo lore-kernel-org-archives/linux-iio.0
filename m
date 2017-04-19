@@ -1,71 +1,340 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:48633 "EHLO
-        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1167406AbdDXJFV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 24 Apr 2017 05:05:21 -0400
-Date: Mon, 24 Apr 2017 11:04:43 +0200
-From: Ludovic Desroches <ludovic.desroches@microchip.com>
-To: Eugen Hristev <eugen.hristev@microchip.com>
-CC: <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@free-electrons.com>,
-        <linux-iio@vger.kernel.org>, <jic23@kernel.org>, <lars@metafoo.de>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <ludovic.desroches@microchip.com>
-Subject: Re: [PATCH 1/3] ARM: dts: at91: sama5d2_xplained: enable ADTRG pin
-Message-ID: <20170424090443.g4ywq5soomzbjmk3@rfolt0960.corp.atmel.com>
+Return-Path: <SRS0=MhQT=33=microchip.com=Eugen.Hristev@kernel.org>
+From: Eugen Hristev <eugen.hristev@microchip.com>
+To: <nicolas.ferre@microchip.com>, <alexandre.belloni@free-electrons.com>,
+	<linux-iio@vger.kernel.org>, <jic23@kernel.org>, <lars@metafoo.de>,
+	<linux-arm-kernel@lists.infradead.org>, <devicetree@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>
+CC: <ludovic.desroches@microchip.com>, <eugen.hristev@microchip.com>
+Subject: [PATCH 2/3] iio: adc: at91-sama5d2_adc: add hw trigger and buffer support
+Date: Wed, 19 Apr 2017 11:20:44 +0300
+Message-ID: <1492590045-17329-3-git-send-email-eugen.hristev@microchip.com>
+In-Reply-To: <1492590045-17329-1-git-send-email-eugen.hristev@microchip.com>
 References: <1492590045-17329-1-git-send-email-eugen.hristev@microchip.com>
- <1492590045-17329-2-git-send-email-eugen.hristev@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-In-Reply-To: <1492590045-17329-2-git-send-email-eugen.hristev@microchip.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Apr 19, 2017 at 11:20:43AM +0300, Eugen Hristev wrote:
-> Enable pinctrl for ADTRG pin (PD31) for ADC hardware trigger support.
-> 
-> Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-Acked-by: Ludovic Desroches <ludovic.desroches@microchip.com>
+Added support for the external hardware trigger on pin ADTRG,
+integrated the three possible edge triggers into the subsystem
+and created buffer management for data retrieval
 
-> ---
->  arch/arm/boot/dts/at91-sama5d2_xplained.dts | 16 +++++++++++++++-
->  1 file changed, 15 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/arm/boot/dts/at91-sama5d2_xplained.dts b/arch/arm/boot/dts/at91-sama5d2_xplained.dts
-> index 0bef9e0..04754b1 100644
-> --- a/arch/arm/boot/dts/at91-sama5d2_xplained.dts
-> +++ b/arch/arm/boot/dts/at91-sama5d2_xplained.dts
-> @@ -303,7 +303,7 @@
->  				vddana-supply = <&vdd_3v3_lp_reg>;
->  				vref-supply = <&vdd_3v3_lp_reg>;
->  				pinctrl-names = "default";
-> -				pinctrl-0 = <&pinctrl_adc_default>;
-> +				pinctrl-0 = <&pinctrl_adc_default &pinctrl_adtrg_default>;
->  				status = "okay";
->  			};
->  
-> @@ -322,6 +322,20 @@
->  					bias-disable;
->  				};
->  
-> +				/*
-> +				 * The ADTRG pin can work on any edge type.
-> +				 * In here it's being pulled up, so need to
-> +				 * connect it to ground to get an edge e.g.
-> +				 * Trigger can be configured on falling, rise
-> +				 * or any edge, and the pull-up can be changed
-> +				 * to pull-down or left floating according to
-> +				 * needs.
-> +				 */
-> +				pinctrl_adtrg_default: adtrg_default {
-> +					pinmux = <PIN_PD31__ADTRG>;
-> +					bias-pull-up;
-> +				};
-> +
->  				pinctrl_charger_chglev: charger_chglev {
->  					pinmux = <PIN_PA12__GPIO>;
->  					bias-disable;
-> -- 
-> 2.7.4
-> 
+Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+---
+ drivers/iio/adc/at91-sama5d2_adc.c | 207 ++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 204 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
+index e10dca3..09a8c3d 100644
+--- a/drivers/iio/adc/at91-sama5d2_adc.c
++++ b/drivers/iio/adc/at91-sama5d2_adc.c
+@@ -23,8 +23,15 @@
+ #include <linux/platform_device.h>
+ #include <linux/sched.h>
+ #include <linux/wait.h>
++#include <linux/slab.h>
++
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/trigger.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
++
+ #include <linux/regulator/consumer.h>
+ 
+ /* Control Register */
+@@ -132,6 +139,17 @@
+ #define AT91_SAMA5D2_PRESSR	0xbc
+ /* Trigger Register */
+ #define AT91_SAMA5D2_TRGR	0xc0
++/* Mask for TRGMOD field of TRGR register */
++#define AT91_SAMA5D2_TRGR_TRGMOD_MASK GENMASK(2, 0)
++/* No trigger, only software trigger can start conversions */
++#define AT91_SAMA5D2_TRGR_TRGMOD_NO_TRIGGER 0
++/* Trigger Mode external trigger rising edge */
++#define AT91_SAMA5D2_TRGR_TRGMOD_EXT_TRIG_RISE 1
++/* Trigger Mode external trigger falling edge */
++#define AT91_SAMA5D2_TRGR_TRGMOD_EXT_TRIG_FALL 2
++/* Trigger Mode external trigger any edge */
++#define AT91_SAMA5D2_TRGR_TRGMOD_EXT_TRIG_ANY 3
++
+ /* Correction Select Register */
+ #define AT91_SAMA5D2_COSR	0xd0
+ /* Correction Value Register */
+@@ -145,14 +163,20 @@
+ /* Version Register */
+ #define AT91_SAMA5D2_VERSION	0xfc
+ 
++#define AT91_SAMA5D2_HW_TRIG_CNT 3
++#define AT91_SAMA5D2_SINGLE_CHAN_CNT 12
++#define AT91_SAMA5D2_DIFF_CHAN_CNT 6
++
+ #define AT91_SAMA5D2_CHAN_SINGLE(num, addr)				\
+ 	{								\
+ 		.type = IIO_VOLTAGE,					\
+ 		.channel = num,						\
+ 		.address = addr,					\
++		.scan_index = num,					\
+ 		.scan_type = {						\
+ 			.sign = 'u',					\
+ 			.realbits = 12,					\
++			.storagebits = 16,				\
+ 		},							\
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+ 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+@@ -168,9 +192,11 @@
+ 		.channel = num,						\
+ 		.channel2 = num2,					\
+ 		.address = addr,					\
++		.scan_index = num + AT91_SAMA5D2_SINGLE_CHAN_CNT,	\
+ 		.scan_type = {						\
+ 			.sign = 's',					\
+ 			.realbits = 12,					\
++			.storagebits = 16,				\
+ 		},							\
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+ 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+@@ -188,18 +214,26 @@ struct at91_adc_soc_info {
+ 	unsigned			max_sample_rate;
+ };
+ 
++struct at91_adc_trigger {
++	char				*name;
++	unsigned int			trgmod_value;
++};
++
+ struct at91_adc_state {
+ 	void __iomem			*base;
+ 	int				irq;
+ 	struct clk			*per_clk;
+ 	struct regulator		*reg;
+ 	struct regulator		*vref;
++	u16				*buffer;
+ 	int				vref_uv;
+ 	const struct iio_chan_spec	*chan;
+ 	bool				conversion_done;
+ 	u32				conversion_value;
+ 	struct at91_adc_soc_info	soc_info;
+ 	wait_queue_head_t		wq_data_available;
++	struct iio_trigger		**trig;
++	const struct at91_adc_trigger	*trigger_list;
+ 	/*
+ 	 * lock to prevent concurrent 'single conversion' requests through
+ 	 * sysfs.
+@@ -207,6 +241,21 @@ struct at91_adc_state {
+ 	struct mutex			lock;
+ };
+ 
++static const struct at91_adc_trigger at91_adc_trigger_list[] = {
++	{
++		.name = "external-rising",
++		.trgmod_value = AT91_SAMA5D2_TRGR_TRGMOD_EXT_TRIG_RISE,
++	},
++	{
++		.name = "external-falling",
++		.trgmod_value = AT91_SAMA5D2_TRGR_TRGMOD_EXT_TRIG_FALL,
++	},
++	{
++		.name = "external-any",
++		.trgmod_value = AT91_SAMA5D2_TRGR_TRGMOD_EXT_TRIG_ANY,
++	},
++};
++
+ static const struct iio_chan_spec at91_adc_channels[] = {
+ 	AT91_SAMA5D2_CHAN_SINGLE(0, 0x50),
+ 	AT91_SAMA5D2_CHAN_SINGLE(1, 0x54),
+@@ -226,8 +275,141 @@ static const struct iio_chan_spec at91_adc_channels[] = {
+ 	AT91_SAMA5D2_CHAN_DIFF(6, 7, 0x68),
+ 	AT91_SAMA5D2_CHAN_DIFF(8, 9, 0x70),
+ 	AT91_SAMA5D2_CHAN_DIFF(10, 11, 0x78),
++	IIO_CHAN_SOFT_TIMESTAMP(AT91_SAMA5D2_SINGLE_CHAN_CNT
++				+ AT91_SAMA5D2_DIFF_CHAN_CNT + 1),
+ };
+ 
++static int at91_adc_configure_trigger(struct iio_trigger *trig, bool state)
++{
++	struct iio_dev *indio = iio_trigger_get_drvdata(trig);
++	struct at91_adc_state *st = iio_priv(indio);
++	u32 status = at91_adc_readl(st, AT91_SAMA5D2_TRGR);
++	u8 bit;
++	int i;
++
++	/* clear TRGMOD */
++	status &= ~AT91_SAMA5D2_TRGR_TRGMOD_MASK;
++
++	/* if we are disabling the trigger, it's enough to clear TRGMOD */
++	if (!state) {
++		at91_adc_writel(st, AT91_SAMA5D2_TRGR, status);
++		kfree(st->buffer);
++		return 0;
++	}
++
++	st->buffer = kmalloc(indio->scan_bytes, GFP_KERNEL);
++	if (!st->buffer)
++		return -ENOMEM;
++
++	for (i = 0; i < AT91_SAMA5D2_HW_TRIG_CNT; i++) {
++		if (!strstr(trig->name, st->trigger_list[i].name)) {
++			status |= st->trigger_list[i].trgmod_value;
++			break;
++		}
++	}
++
++	/* setup hw trigger */
++	at91_adc_writel(st, AT91_SAMA5D2_TRGR, status);
++
++	for_each_set_bit(bit, indio->active_scan_mask, indio->num_channels) {
++		struct iio_chan_spec const *chan = indio->channels + bit;
++
++		at91_adc_writel(st, AT91_SAMA5D2_CHER, BIT(chan->channel));
++		at91_adc_writel(st, AT91_SAMA5D2_IER, BIT(chan->channel));
++	}
++
++	return 0;
++}
++
++static const struct iio_trigger_ops at91_adc_trigger_ops = {
++	.owner = THIS_MODULE,
++	.set_trigger_state = &at91_adc_configure_trigger,
++};
++
++static struct iio_trigger *at91_adc_allocate_trigger(struct iio_dev *indio,
++						     char *trigger_name)
++{
++	struct iio_trigger *trig;
++	int ret;
++
++	trig = devm_iio_trigger_alloc(&indio->dev, "%s-dev%d-%s", indio->name,
++				      indio->id, trigger_name);
++	if (!trig)
++		return NULL;
++
++	trig->dev.parent = indio->dev.parent;
++	iio_trigger_set_drvdata(trig, indio);
++	trig->ops = &at91_adc_trigger_ops;
++
++	ret = devm_iio_trigger_register(&indio->dev, trig);
++
++	if (ret)
++		return NULL;
++
++	return trig;
++}
++
++static int at91_adc_trigger_init(struct iio_dev *indio)
++{
++	struct at91_adc_state *st = iio_priv(indio);
++	int i;
++
++	st->trig = devm_kzalloc(&indio->dev,
++				AT91_SAMA5D2_HW_TRIG_CNT * sizeof(*st->trig),
++				GFP_KERNEL);
++
++	if (!st->trig) {
++		dev_err(&indio->dev, "could not allocate trig list memory\n");
++		return -ENOMEM;
++	}
++
++	for (i = 0; i < AT91_SAMA5D2_HW_TRIG_CNT; i++) {
++		st->trig[i] = at91_adc_allocate_trigger(indio,
++						st->trigger_list[i].name);
++		if (!st->trig[i]) {
++			dev_err(&indio->dev,
++				"could not allocate trigger %d\n", i);
++			return -ENOMEM;
++		}
++	}
++
++	return 0;
++}
++
++static irqreturn_t at91_adc_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio = pf->indio_dev;
++	struct at91_adc_state *st = iio_priv(indio);
++	int i = 0;
++	u8 bit;
++
++	for_each_set_bit(bit, indio->active_scan_mask, indio->num_channels) {
++		struct iio_chan_spec const *chan = indio->channels + bit;
++
++		st->buffer[i] = at91_adc_readl(st, chan->address);
++		i++;
++	}
++
++	iio_push_to_buffers_with_timestamp(indio, st->buffer, pf->timestamp);
++
++	iio_trigger_notify_done(indio->trig);
++
++	/* Needed to ACK the DRDY interruption */
++	at91_adc_readl(st, AT91_SAMA5D2_LCDR);
++
++	enable_irq(st->irq);
++
++	return IRQ_HANDLED;
++}
++
++static int at91_adc_buffer_init(struct iio_dev *indio)
++{
++	return devm_iio_triggered_buffer_setup(&indio->dev, indio,
++			&iio_pollfunc_store_time,
++			&at91_adc_trigger_handler, NULL);
++}
++
+ static unsigned at91_adc_startup_time(unsigned startup_time_min,
+ 				      unsigned adc_clk_khz)
+ {
+@@ -293,14 +475,19 @@ static irqreturn_t at91_adc_interrupt(int irq, void *private)
+ 	u32 status = at91_adc_readl(st, AT91_SAMA5D2_ISR);
+ 	u32 imr = at91_adc_readl(st, AT91_SAMA5D2_IMR);
+ 
+-	if (status & imr) {
++	if (!(status & imr))
++		return IRQ_NONE;
++
++	if (iio_buffer_enabled(indio)) {
++		disable_irq_nosync(irq);
++		iio_trigger_poll(indio->trig);
++	} else {
+ 		st->conversion_value = at91_adc_readl(st, st->chan->address);
+ 		st->conversion_done = true;
+ 		wake_up_interruptible(&st->wq_data_available);
+-		return IRQ_HANDLED;
+ 	}
+ 
+-	return IRQ_NONE;
++	return IRQ_HANDLED;
+ }
+ 
+ static int at91_adc_read_raw(struct iio_dev *indio_dev,
+@@ -406,6 +593,8 @@ static int at91_adc_probe(struct platform_device *pdev)
+ 
+ 	st = iio_priv(indio_dev);
+ 
++	st->trigger_list = at91_adc_trigger_list;
++
+ 	ret = of_property_read_u32(pdev->dev.of_node,
+ 				   "atmel,min-sample-rate-hz",
+ 				   &st->soc_info.min_sample_rate);
+@@ -499,6 +688,18 @@ static int at91_adc_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, indio_dev);
+ 
++	ret = at91_adc_buffer_init(indio_dev);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "couldn't initialize the buffer.\n");
++		goto per_clk_disable_unprepare;
++	}
++
++	ret = at91_adc_trigger_init(indio_dev);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "couldn't setup the triggers.\n");
++		goto per_clk_disable_unprepare;
++	}
++
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret < 0)
+ 		goto per_clk_disable_unprepare;
+-- 
+2.7.4
