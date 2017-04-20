@@ -1,48 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wr0-f196.google.com ([209.85.128.196]:33341 "EHLO
-        mail-wr0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756764AbdDQS2f (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Apr 2017 14:28:35 -0400
-From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, robh+dt@kernel.org, mark.rutland@arm.com,
-        linux-iio@vger.kernel.org
-Cc: carlo@caione.org, khilman@baylibre.com, devicetree@vger.kernel.org,
+Received: from mail-oi0-f67.google.com ([209.85.218.67]:35138 "EHLO
+        mail-oi0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S946328AbdDTOVi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 20 Apr 2017 10:21:38 -0400
+Date: Thu, 20 Apr 2017 09:21:35 -0500
+From: Rob Herring <robh@kernel.org>
+To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, mark.rutland@arm.com, linux-iio@vger.kernel.org,
+        carlo@caione.org, khilman@baylibre.com, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH 1/3] Documentation: dt-bindings: iio: adc: add Meson8 and Meson8b support
-Date: Mon, 17 Apr 2017 20:28:18 +0200
-Message-Id: <20170417182820.26670-2-martin.blumenstingl@googlemail.com>
-In-Reply-To: <20170417182820.26670-1-martin.blumenstingl@googlemail.com>
+        linux-amlogic@lists.infradead.org
+Subject: Re: [PATCH 1/3] Documentation: dt-bindings: iio: adc: add Meson8 and
+ Meson8b support
+Message-ID: <20170420142135.4abputt7z4pkvvdx@rob-hp-laptop>
 References: <20170417182820.26670-1-martin.blumenstingl@googlemail.com>
+ <20170417182820.26670-2-martin.blumenstingl@googlemail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20170417182820.26670-2-martin.blumenstingl@googlemail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The Amlogic Meson SAR ADC driver can be used on Meson8 and Meson8b
-(probably on earlier SoC generations as well, but I don't have any
-hardware available for testing that).
-Add a separate compatible for Meson8 and Meson8b because it does not
-need any of the BL30 magic (unlike the GX SoCs).
+On Mon, Apr 17, 2017 at 08:28:18PM +0200, Martin Blumenstingl wrote:
+> The Amlogic Meson SAR ADC driver can be used on Meson8 and Meson8b
+> (probably on earlier SoC generations as well, but I don't have any
+> hardware available for testing that).
+> Add a separate compatible for Meson8 and Meson8b because it does not
+> need any of the BL30 magic (unlike the GX SoCs).
+> 
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> ---
+>  Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt | 2 ++
+>  1 file changed, 2 insertions(+)
 
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
----
- Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt | 2 ++
- 1 file changed, 2 insertions(+)
+I'd prefer "Documentation: " prefix is dropped as that's implied with 
+"dt-bindings". Otherwise,
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt
-index f9e3ff2c656e..08cee82e54c3 100644
---- a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt
-+++ b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt
-@@ -2,6 +2,8 @@
- 
- Required properties:
- - compatible:	depending on the SoC this should be one of:
-+			- "amlogic,meson8-saradc" for Meson8
-+			- "amlogic,meson8b-saradc" for Meson8b
- 			- "amlogic,meson-gxbb-saradc" for GXBB
- 			- "amlogic,meson-gxl-saradc" for GXL
- 			- "amlogic,meson-gxm-saradc" for GXM
--- 
-2.12.2
-
+Acked-by: Rob Herring <robh@kernel.org>
