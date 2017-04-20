@@ -1,60 +1,41 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37486 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933955AbdD0E7y (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Apr 2017 00:59:54 -0400
-Subject: Re: [PATCH] iio: adc: Derive interface clock speed from fck clock
-To: Geert Uytterhoeven <geert@linux-m68k.org>,
-        Marek Vasut <marek.vasut@gmail.com>
-Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        linux-iio@vger.kernel.org,
-        Marek Vasut <marek.vasut+renesas@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-References: <20170420154310.32759-1-marek.vasut+renesas@gmail.com>
- <CAMuHMdX4MWKBRKPG6OtRycGFRhOGmR556sR_SWBR3D6Sd+tggA@mail.gmail.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <db48a38f-cbca-2396-90b4-9d2426e49095@kernel.org>
-Date: Thu, 27 Apr 2017 05:59:48 +0100
+Return-Path: <SRS0=+/oH=34=axentia.se=peda@kernel.org>
+From: Peter Rosin <peda@axentia.se>
+To: <linux-kernel@vger.kernel.org>
+CC: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter
+ Meerwald-Stadler <pmeerw@pmeerw.net>, <linux-iio@vger.kernel.org>
+Subject: [PATCH] iio: inkern: fix a static checker error
+Date: Thu, 20 Apr 2017 23:01:57 +0200
+Message-ID: <1492722117-19618-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
-In-Reply-To: <CAMuHMdX4MWKBRKPG6OtRycGFRhOGmR556sR_SWBR3D6Sd+tggA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On 20/04/17 18:30, Geert Uytterhoeven wrote:
-> On Thu, Apr 20, 2017 at 5:43 PM, Marek Vasut <marek.vasut@gmail.com> wrote:
->> The "if" interface clock speed is actually derived from the "fck"
->> block clock, as in the hardware they are the same clock. Drop the
->> incorrect second "if" clock and get the clock speed from "fck".
->>
->> Signed-off-by: Marek Vasut <marek.vasut+renesas@gmail.com>
->> Cc: Geert Uytterhoeven <geert+renesas@glider.be>
->> Cc: Jonathan Cameron <jic23@kernel.org>
->> Cc: linux-renesas-soc@vger.kernel.orgPlease include the name of the driver in the patch title.
-I've added it.
+Avoid this smatch error:
+drivers/iio/inkern.c:751 iio_read_avail_channel_raw() error: double unlock 'mutex:&chan->indio_dev->info_exist_lock'
 
-> 
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Applied to the togreg branch of iio.git - initially pushed out
-as testing for the autobuilders to play with it.
+Fixes: 00c5f80c2fad ("iio: inkern: add helpers to query available values from channels")
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ drivers/iio/inkern.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-Thanks,
-
-Jonathan
-> 
-> Gr{oetje,eeting}s,
-> 
->                         Geert
-> 
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-> 
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index 7a13535dc3e9..a3941bade6a7 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -750,11 +750,9 @@ int iio_read_avail_channel_raw(struct iio_channel *chan,
+ err_unlock:
+ 	mutex_unlock(&chan->indio_dev->info_exist_lock);
+ 
+-	if (ret >= 0 && type != IIO_VAL_INT) {
++	if (ret >= 0 && type != IIO_VAL_INT)
+ 		/* raw values are assumed to be IIO_VAL_INT */
+ 		ret = -EINVAL;
+-		goto err_unlock;
+-	}
+ 
+ 	return ret;
+ }
+-- 
+2.1.4
