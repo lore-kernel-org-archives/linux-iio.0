@@ -1,56 +1,88 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58382 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1431836AbdDZGZa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Apr 2017 02:25:30 -0400
-Subject: Re: [PATCH] iio: adc: Max9611: checking for ERR_PTR instead of NULL
- in probe
-To: Dan Carpenter <dan.carpenter@oracle.com>,
-        Jacopo Mondi <jacopo+renesas@jmondi.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org
-References: <20170420102618.z6xqguj5rnob67if@mwanda>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <1c0a27bd-7de6-aa02-189d-7d3fb2343b06@kernel.org>
-Date: Wed, 26 Apr 2017 07:25:24 +0100
-MIME-Version: 1.0
-In-Reply-To: <20170420102618.z6xqguj5rnob67if@mwanda>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=Nowh=34=gmail.com=marek.vasut@kernel.org>
+From: Marek Vasut <marek.vasut@gmail.com>
+To: linux-renesas-soc@vger.kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Marek Vasut <marek.vasut+renesas@gmail.com>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH] iio: adc: Derive interface clock speed from fck clock
+Date: Thu, 20 Apr 2017 17:43:10 +0200
+Message-Id: <20170420154310.32759-1-marek.vasut+renesas@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 20/04/17 11:26, Dan Carpenter wrote:
-> devm_iio_device_alloc() doesn't return ERR_PTRs, it returns NULLs.
-> 
-> Fixes: 69780a3bbc0b ("iio: adc: Add Maxim max9611 ADC driver")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> 
-Applied to the fixes-togreg branch of iio.git.  Will get this to
-Greg soon after the merge window closes.
+The "if" interface clock speed is actually derived from the "fck"
+block clock, as in the hardware they are the same clock. Drop the
+incorrect second "if" clock and get the clock speed from "fck".
 
-Thanks,
+Signed-off-by: Marek Vasut <marek.vasut+renesas@gmail.com>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-renesas-soc@vger.kernel.org
+---
+ drivers/iio/adc/rcar-gyroadc.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-Jonathan
-> diff --git a/drivers/iio/adc/max9611.c b/drivers/iio/adc/max9611.c
-> index ec82106480e1..dc3869bf3248 100644
-> --- a/drivers/iio/adc/max9611.c
-> +++ b/drivers/iio/adc/max9611.c
-> @@ -536,8 +536,8 @@ static int max9611_probe(struct i2c_client *client,
->  	int ret;
->  
->  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*max9611));
-> -	if (IS_ERR(indio_dev))
-> -		return PTR_ERR(indio_dev);
-> +	if (!indio_dev)
-> +		return -ENOMEM;
->  
->  	i2c_set_clientdata(client, indio_dev);
->  
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-
+diff --git a/drivers/iio/adc/rcar-gyroadc.c b/drivers/iio/adc/rcar-gyroadc.c
+index 018ed360e717..27a318164619 100644
+--- a/drivers/iio/adc/rcar-gyroadc.c
++++ b/drivers/iio/adc/rcar-gyroadc.c
+@@ -73,7 +73,7 @@ enum rcar_gyroadc_model {
+ struct rcar_gyroadc {
+ 	struct device			*dev;
+ 	void __iomem			*regs;
+-	struct clk			*iclk;
++	struct clk			*clk;
+ 	struct regulator		*vref[8];
+ 	unsigned int			num_channels;
+ 	enum rcar_gyroadc_model		model;
+@@ -83,7 +83,7 @@ struct rcar_gyroadc {
+ 
+ static void rcar_gyroadc_hw_init(struct rcar_gyroadc *priv)
+ {
+-	const unsigned long clk_mhz = clk_get_rate(priv->iclk) / 1000000;
++	const unsigned long clk_mhz = clk_get_rate(priv->clk) / 1000000;
+ 	const unsigned long clk_mul =
+ 		(priv->mode == RCAR_GYROADC_MODE_SELECT_1_MB88101A) ? 10 : 5;
+ 	unsigned long clk_len = clk_mhz * clk_mul;
+@@ -510,9 +510,9 @@ static int rcar_gyroadc_probe(struct platform_device *pdev)
+ 	if (IS_ERR(priv->regs))
+ 		return PTR_ERR(priv->regs);
+ 
+-	priv->iclk = devm_clk_get(dev, "if");
+-	if (IS_ERR(priv->iclk)) {
+-		ret = PTR_ERR(priv->iclk);
++	priv->clk = devm_clk_get(dev, "fck");
++	if (IS_ERR(priv->clk)) {
++		ret = PTR_ERR(priv->clk);
+ 		if (ret != -EPROBE_DEFER)
+ 			dev_err(dev, "Failed to get IF clock (ret=%i)\n", ret);
+ 		return ret;
+@@ -536,7 +536,7 @@ static int rcar_gyroadc_probe(struct platform_device *pdev)
+ 	indio_dev->info = &rcar_gyroadc_iio_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+-	ret = clk_prepare_enable(priv->iclk);
++	ret = clk_prepare_enable(priv->clk);
+ 	if (ret) {
+ 		dev_err(dev, "Could not prepare or enable the IF clock.\n");
+ 		goto err_clk_if_enable;
+@@ -565,7 +565,7 @@ static int rcar_gyroadc_probe(struct platform_device *pdev)
+ 	pm_runtime_put_sync(dev);
+ 	pm_runtime_disable(dev);
+ 	pm_runtime_set_suspended(dev);
+-	clk_disable_unprepare(priv->iclk);
++	clk_disable_unprepare(priv->clk);
+ err_clk_if_enable:
+ 	rcar_gyroadc_deinit_supplies(indio_dev);
+ 
+@@ -584,7 +584,7 @@ static int rcar_gyroadc_remove(struct platform_device *pdev)
+ 	pm_runtime_put_sync(dev);
+ 	pm_runtime_disable(dev);
+ 	pm_runtime_set_suspended(dev);
+-	clk_disable_unprepare(priv->iclk);
++	clk_disable_unprepare(priv->clk);
+ 	rcar_gyroadc_deinit_supplies(indio_dev);
+ 
+ 	return 0;
+-- 
+2.11.0
