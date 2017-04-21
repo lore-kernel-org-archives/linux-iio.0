@@ -1,16 +1,14 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ve1eur01on0139.outbound.protection.outlook.com ([104.47.1.139]:54580
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1161812AbdDUQkF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 21 Apr 2017 12:40:05 -0400
+Received: from metis.ext.4.pengutronix.de ([92.198.50.35]:38613 "EHLO
+        metis.ext.4.pengutronix.de" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1161688AbdDUOXS (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Apr 2017 10:23:18 -0400
+Message-ID: <1492784582.2364.10.camel@pengutronix.de>
 Subject: Re: [PATCH v13 03/10] mux: minimal mux subsystem and gpio-based mux
  controller
-To: Philipp Zabel <p.zabel@pengutronix.de>
-References: <1492101794-13444-1-git-send-email-peda@axentia.se>
- <1492101794-13444-4-git-send-email-peda@axentia.se>
- <1492784318.2364.8.camel@pengutronix.de>
-CC: <linux-kernel@vger.kernel.org>,
+From: Philipp Zabel <p.zabel@pengutronix.de>
+To: Peter Rosin <peda@axentia.se>
+Cc: linux-kernel@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Wolfram Sang <wsa@the-dreams.de>,
         Rob Herring <robh+dt@kernel.org>,
@@ -19,41 +17,61 @@ CC: <linux-kernel@vger.kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Jonathan Corbet <corbet@lwn.net>, <linux-i2c@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-doc@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, linux-i2c@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-doc@vger.kernel.org,
         Andrew Morton <akpm@linux-foundation.org>,
         Colin Ian King <colin.king@canonical.com>,
         Paul Gortmaker <paul.gortmaker@windriver.com>,
-        <kernel@pengutronix.de>
-From: Peter Rosin <peda@axentia.se>
-Message-ID: <23158179-3667-c4d7-c8ac-b7a011d77749@axentia.se>
-Date: Fri, 21 Apr 2017 17:08:17 +0200
-MIME-Version: 1.0
-In-Reply-To: <1492784318.2364.8.camel@pengutronix.de>
-Content-Type: text/plain; charset="utf-8"
+        kernel@pengutronix.de
+Date: Fri, 21 Apr 2017 16:23:02 +0200
+In-Reply-To: <1492101794-13444-4-git-send-email-peda@axentia.se>
+References: <1492101794-13444-1-git-send-email-peda@axentia.se>
+         <1492101794-13444-4-git-send-email-peda@axentia.se>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 2017-04-21 16:18, Philipp Zabel wrote:
-> Hi Peter,
-> 
-> On Thu, 2017-04-13 at 18:43 +0200, Peter Rosin wrote:
-> [...]
->> +int mux_control_select(struct mux_control *mux, int state)
-> 
-> state could be unsigned int for the consumer facing API.
-> 
->> +{
->> +	int ret;
-> 
-> And mux_control_select should check that (0 <= state < mux->states).
+On Thu, 2017-04-13 at 18:43 +0200, Peter Rosin wrote:
+[...]
+> +int mux_chip_register(struct mux_chip *mux_chip)
+> +{
+> +	int i;
+> +	int ret;
+> +
+> +	for (i = 0; i < mux_chip->controllers; ++i) {
+> +		struct mux_control *mux = &mux_chip->mux[i];
+> +
+> +		if (mux->idle_state == mux->cached_state)
+> +			continue;
 
-Yes, that makes sense. I worried that we might end up with
-signed/unsigned comparisons since the internal state still needs
-to be signed, but that didn't happen when I tried...
+I think this should be changed to
+ 
+-               if (mux->idle_state == mux->cached_state)
++               if (mux->idle_state == mux->cached_state ||
++                   mux->idle_state == MUX_IDLE_AS_IS)
+                        continue;
 
-I'll include this change in v14.
+or the following mux_control_set will be called with state ==
+MUX_IDLE_AS_IS. Alternatively, mux_control_set should return when passed
+this value.
 
-Cheers,
-peda
+> +		ret = mux_control_set(mux, mux->idle_state);
+> +		if (ret < 0) {
+> +			dev_err(&mux_chip->dev, "unable to set idle state\n");
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	ret = device_add(&mux_chip->dev);
+> +	if (ret < 0)
+> +		dev_err(&mux_chip->dev,
+> +			"device_add failed in mux_chip_register: %d\n", ret);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(mux_chip_register);
+
+regards
+Philipp
+
