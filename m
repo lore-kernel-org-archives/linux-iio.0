@@ -1,67 +1,31 @@
-Return-Path: <SRS0=B/yk=4G=axis.com=marten.lindahl@kernel.org>
-Message-ID: <1493556147.2883.33.camel@axis.com>
-Subject: Re: [PATCH] iio: adc: add driver for the ti-adc084s021 chip
-From: =?ISO-8859-1?Q?M=E5rten?= Lindahl <marten.lindahl@axis.com>
-To: Rob Herring <robh@kernel.org>
-Cc: =?ISO-8859-1?Q?M=E5rten?= Lindahl <martenli@axis.com>, jic23@kernel.org,
-  knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
- linux-iio@vger.kernel.org,  mark.rutland@arm.com, devicetree@vger.kernel.org
-Date: Sun, 30 Apr 2017 14:42:27 +0200
-In-Reply-To: <20170428135248.du6smmzktqldj4u4@rob-hp-laptop>
-References: <1492786703-5149-1-git-send-email-marten.lindahl@axis.com>
-	 <20170428135248.du6smmzktqldj4u4@rob-hp-laptop>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f65.google.com ([74.125.82.65]:35913 "EHLO
+        mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1036086AbdDUSWY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Apr 2017 14:22:24 -0400
+Received: by mail-wm0-f65.google.com with SMTP id u65so6335582wmu.3
+        for <linux-iio@vger.kernel.org>; Fri, 21 Apr 2017 11:22:24 -0700 (PDT)
+From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, lorenzo.bianconi@st.com
+Subject: [PATCH 0/2] add power management support to st_lsm6dsx driver
+Date: Fri, 21 Apr 2017 20:22:11 +0200
+Message-Id: <20170421182213.21481-1-lorenzo.bianconi@st.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Fri, 2017-04-28 at 08:52 -0500, Rob Herring wrote:
-> On Fri, Apr 21, 2017 at 04:58:23PM +0200, Mårten Lindahl wrote:
-> > From: Mårten Lindahl <martenli@axis.com>
-> > 
-> > This adds support for the Texas Instruments ADC084S021 ADC chip.
-> > 
-> > Signed-off-by: Mårten Lindahl <martenli@axis.com>
-> > ---
-> >  .../devicetree/bindings/iio/adc/ti-adc084s021.txt  |  25 ++
-> 
-> It's preferred to put bindings in a separate patch.
-I am sorry for that. I split this into its own patch in v2.
-> 
-> >  drivers/iio/adc/Kconfig                            |  12 +
-> >  drivers/iio/adc/Makefile                           |   1 +
-> >  drivers/iio/adc/ti-adc084s021.c                    | 342 +++++++++++++++++++++
-> >  4 files changed, 380 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc084s021.txt
-> >  create mode 100644 drivers/iio/adc/ti-adc084s021.c
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/adc/ti-adc084s021.txt b/Documentation/devicetree/bindings/iio/adc/ti-adc084s021.txt
-> > new file mode 100644
-> > index 0000000..921eb46
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/adc/ti-adc084s021.txt
-> > @@ -0,0 +1,25 @@
-> > +* Texas Instruments' ADC084S021
-> > +
-> > +Required properties:
-> > + - compatible        : Must be "ti,adc084s021"
-> > + - reg               : SPI chip select number for the device
-> > + - vref-supply       : The regulator supply for ADC reference voltage
-> > + - spi-max-frequency : Definition as per Documentation/devicetree/bindings/spi/spi-bus.txt
-> > +
-> > +Optional properties:
-> > + - spi-cpol          : SPI inverse clock polarity, as per spi-bus bindings
-> > + - spi-cpha          : SPI shifted clock phase (CPHA), as per spi-bus bindings
-> > + - spi-cs-high       : SPI chip select active high, as per spi-bus bindings
-> 
-> How are these optional? A given device should have specific properties 
-> required here.
-No, they are not optional. I removed this section in v2 and updated the
-required properties section.
-> 
-> Also, no need to define them, "per spi-bus bindings" is enough.
-Fixed in v2.
-> 
-> Rob
+Lorenzo Bianconi (2):
+  iio: imu: st_lsm6dsx: export st_lsm6dsx_flush_fifo() and
+    st_lsm6dsx_set_fifo_mode() routines
+  iio: imu: st_lsm6dsx: add system sleep power management support
 
-Thanks,
-Mårten
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h        |  5 +++
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c |  6 +--
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c   | 54 ++++++++++++++++++++++++++
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c    |  1 +
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c    |  1 +
+ 5 files changed, 64 insertions(+), 3 deletions(-)
+
+-- 
+2.9.3
+
