@@ -1,84 +1,138 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:24048 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1946896AbdDZHNa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Apr 2017 03:13:30 -0400
-From: Lorenzo BIANCONI <lorenzo.bianconi@st.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 1/2] iio: imu: st_lsm6dsx: export st_lsm6dsx_flush_fifo()
- and st_lsm6dsx_set_fifo_mode() routines
-Date: Wed, 26 Apr 2017 07:13:23 +0000
-Message-ID: <20170426071323.GA4960@ctocxl0005.oa.cto.st.com>
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:35214 "EHLO
+        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1041708AbdDUSWW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Apr 2017 14:22:22 -0400
+Received: by mail-wm0-f66.google.com with SMTP id d79so6357114wmi.2
+        for <linux-iio@vger.kernel.org>; Fri, 21 Apr 2017 11:22:21 -0700 (PDT)
+From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, lorenzo.bianconi@st.com
+Subject: [PATCH 2/2] iio: imu: st_lsm6dsx: add system sleep power management support
+Date: Fri, 21 Apr 2017 20:22:13 +0200
+Message-Id: <20170421182213.21481-3-lorenzo.bianconi@st.com>
+In-Reply-To: <20170421182213.21481-1-lorenzo.bianconi@st.com>
 References: <20170421182213.21481-1-lorenzo.bianconi@st.com>
- <20170421182213.21481-2-lorenzo.bianconi@st.com>
- <13c8b737-a6a2-ca69-55b1-e38ad89d6d1c@kernel.org>
-In-Reply-To: <13c8b737-a6a2-ca69-55b1-e38ad89d6d1c@kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Apr 26, Jonathan Cameron wrote:
-> On 21/04/17 19:22, Lorenzo Bianconi wrote:
-> > Remove static qualifier from st_lsm6dsx_flush_fifo() and
-> > st_lsm6dsx_set_fifo_mode() in order to use them in system sleep pm support
-> Export kind of implies exporting the symbols when referring to kernel code.
-> Here you are just making them available to other parts of the same driver.
-> Perhaps reword the patch title.
+Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+---
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h      |  2 ++
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 54 ++++++++++++++++++++++++++++
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c  |  1 +
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c  |  1 +
+ 4 files changed, 58 insertions(+)
 
-Ack, will do in v2.
-Thx,
-Lorenzo
-
-> 
-> Jonathan
-> > 
-> > Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
-> > ---
-> >  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h        | 3 +++
-> >  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 6 +++---
-> >  2 files changed, 6 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-> > index 4839db7..7778520 100644
-> > --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-> > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-> > @@ -144,5 +144,8 @@ int st_lsm6dsx_write_with_mask(struct st_lsm6dsx_hw *hw, u8 addr, u8 mask,
-> >  			       u8 val);
-> >  int st_lsm6dsx_update_watermark(struct st_lsm6dsx_sensor *sensor,
-> >  				u16 watermark);
-> > +int st_lsm6dsx_flush_fifo(struct st_lsm6dsx_hw *hw);
-> > +int st_lsm6dsx_set_fifo_mode(struct st_lsm6dsx_hw *hw,
-> > +			     enum st_lsm6dsx_fifo_mode fifo_mode);
-> >  
-> >  #endif /* ST_LSM6DSX_H */
-> > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> > index c8e5cfd..b19a62d 100644
-> > --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> > @@ -130,8 +130,8 @@ static int st_lsm6dsx_update_decimators(struct st_lsm6dsx_hw *hw)
-> >  	return 0;
-> >  }
-> >  
-> > -static int st_lsm6dsx_set_fifo_mode(struct st_lsm6dsx_hw *hw,
-> > -				    enum st_lsm6dsx_fifo_mode fifo_mode)
-> > +int st_lsm6dsx_set_fifo_mode(struct st_lsm6dsx_hw *hw,
-> > +			     enum st_lsm6dsx_fifo_mode fifo_mode)
-> >  {
-> >  	u8 data;
-> >  	int err;
-> > @@ -303,7 +303,7 @@ static int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
-> >  	return read_len;
-> >  }
-> >  
-> > -static int st_lsm6dsx_flush_fifo(struct st_lsm6dsx_hw *hw)
-> > +int st_lsm6dsx_flush_fifo(struct st_lsm6dsx_hw *hw)
-> >  {
-> >  	int err;
-> >  
-> > 
-> 
-
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+index 7778520..46352c7 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+@@ -135,6 +135,8 @@ struct st_lsm6dsx_hw {
+ #endif /* CONFIG_SPI_MASTER */
+ };
+ 
++extern const struct dev_pm_ops st_lsm6dsx_pm_ops;
++
+ int st_lsm6dsx_probe(struct device *dev, int irq, int hw_id, const char *name,
+ 		     const struct st_lsm6dsx_transfer_function *tf_ops);
+ int st_lsm6dsx_sensor_enable(struct st_lsm6dsx_sensor *sensor);
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+index 462a27b..1b53848 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+@@ -36,6 +36,7 @@
+ #include <linux/delay.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
++#include <linux/pm.h>
+ 
+ #include <linux/platform_data/st_sensors_pdata.h>
+ 
+@@ -731,6 +732,59 @@ int st_lsm6dsx_probe(struct device *dev, int irq, int hw_id, const char *name,
+ }
+ EXPORT_SYMBOL(st_lsm6dsx_probe);
+ 
++#ifdef CONFIG_PM
++static int st_lsm6dsx_suspend(struct device *dev)
++{
++	struct st_lsm6dsx_hw *hw = dev_get_drvdata(dev);
++	struct st_lsm6dsx_sensor *sensor;
++	int i, err = 0;
++
++	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++) {
++		sensor = iio_priv(hw->iio_devs[i]);
++		if (!(hw->enable_mask & BIT(sensor->id)))
++			continue;
++
++		err = st_lsm6dsx_write_with_mask(hw,
++				st_lsm6dsx_odr_table[sensor->id].reg.addr,
++				st_lsm6dsx_odr_table[sensor->id].reg.mask, 0);
++		if (err < 0)
++			return err;
++	}
++
++	if (hw->fifo_mode != ST_LSM6DSX_FIFO_BYPASS)
++		err = st_lsm6dsx_flush_fifo(hw);
++
++	return err;
++}
++
++static int st_lsm6dsx_resume(struct device *dev)
++{
++	struct st_lsm6dsx_hw *hw = dev_get_drvdata(dev);
++	struct st_lsm6dsx_sensor *sensor;
++	int i, err = 0;
++
++	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++) {
++		sensor = iio_priv(hw->iio_devs[i]);
++		if (!(hw->enable_mask & BIT(sensor->id)))
++			continue;
++
++		err = st_lsm6dsx_set_odr(sensor, sensor->odr);
++		if (err < 0)
++			return err;
++	}
++
++	if (hw->enable_mask)
++		err = st_lsm6dsx_set_fifo_mode(hw, ST_LSM6DSX_FIFO_CONT);
++
++	return err;
++}
++#endif /* CONFIG_PM */
++
++const struct dev_pm_ops st_lsm6dsx_pm_ops = {
++	SET_SYSTEM_SLEEP_PM_OPS(st_lsm6dsx_suspend, st_lsm6dsx_resume)
++};
++EXPORT_SYMBOL(st_lsm6dsx_pm_ops);
++
+ MODULE_AUTHOR("Lorenzo Bianconi <lorenzo.bianconi@st.com>");
+ MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
+ MODULE_DESCRIPTION("STMicroelectronics st_lsm6dsx driver");
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
+index 09a51cf..305fec7 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
+@@ -98,6 +98,7 @@ MODULE_DEVICE_TABLE(i2c, st_lsm6dsx_i2c_id_table);
+ static struct i2c_driver st_lsm6dsx_driver = {
+ 	.driver = {
+ 		.name = "st_lsm6dsx_i2c",
++		.pm = &st_lsm6dsx_pm_ops,
+ 		.of_match_table = of_match_ptr(st_lsm6dsx_i2c_of_match),
+ 	},
+ 	.probe = st_lsm6dsx_i2c_probe,
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
+index f765a50..95472f1 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
+@@ -115,6 +115,7 @@ MODULE_DEVICE_TABLE(spi, st_lsm6dsx_spi_id_table);
+ static struct spi_driver st_lsm6dsx_driver = {
+ 	.driver = {
+ 		.name = "st_lsm6dsx_spi",
++		.pm = &st_lsm6dsx_pm_ops,
+ 		.of_match_table = of_match_ptr(st_lsm6dsx_spi_of_match),
+ 	},
+ 	.probe = st_lsm6dsx_spi_probe,
 -- 
+2.9.3
+
