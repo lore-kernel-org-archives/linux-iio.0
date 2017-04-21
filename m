@@ -1,88 +1,86 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57831 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2993409AbdDZFEH (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Apr 2017 01:04:07 -0400
-Subject: Re: [PATCH] iio: inkern: fix a static checker error
-To: Peter Rosin <peda@axentia.se>,
+Received: from mx1.redhat.com ([209.132.183.28]:41764 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1036092AbdDUHiP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 21 Apr 2017 03:38:15 -0400
+From: Hans de Goede <hdegoede@redhat.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hans de Goede <hdegoede@redhat.com>, linux-acpi@vger.kernel.org,
         Lars-Peter Clausen <lars@metafoo.de>,
-        linux-kernel@vger.kernel.org
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org
-References: <1492722117-19618-1-git-send-email-peda@axentia.se>
- <9b2138e1-11a1-a923-4c9c-7091b3e54f99@metafoo.de>
- <7b6ad5b7-a538-9007-8981-f36f9877a8e3@axentia.se>
- <60934fcd-214e-3618-84ff-46484197e737@axentia.se>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <809cc676-36fe-0c54-466d-541979af2d08@kernel.org>
-Date: Wed, 26 Apr 2017 06:04:00 +0100
-MIME-Version: 1.0
-In-Reply-To: <60934fcd-214e-3618-84ff-46484197e737@axentia.se>
-Content-Type: text/plain; charset=windows-1252
+Subject: [PATCH] iio: accel: bma180: Add ACPI enumeration support
+Date: Fri, 21 Apr 2017 09:38:12 +0200
+Message-Id: <20170421073812.12531-1-hdegoede@redhat.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 24/04/17 10:32, Peter Rosin wrote:
-> On 2017-04-20 23:13, Peter Rosin wrote:
->> On 2017-04-20 23:12, Lars-Peter Clausen wrote:
->>> On 04/20/2017 11:01 PM, Peter Rosin wrote:
->>>> Avoid this smatch error:
->>>> drivers/iio/inkern.c:751 iio_read_avail_channel_raw() error: double unlock 'mutex:&chan->indio_dev->info_exist_lock'
->>>
->>> Looks good, but it's not just the smatch error, this is a real issue. This
->>> even seems to be a endless loop, always jumping back to err_unlock.
->>
->> Yes, it should probably go to stable too...
-> 
-> Nope, not an endless loop, but I of course only noticed after sending
-> a v2 [1] which falsely stated just that. Ignore that v2 patch and take
-> this one instead, for the reasons stated in my followup [2] to that
-> message.
-> 
-> Involving stable is probably not needed either...
-Applied to the togreg branch of iio.git.  Thanks,
+Some x86 tablets use the bms250 accelerometer, add support for this.
 
-Jonathan
-> 
-> Cheers,
-> peda
-> 
-> [1] https://lkml.org/lkml/2017/4/24/179
-> [2] https://lkml.org/lkml/2017/4/24/221
-> 
->>>>
->>>> Fixes: 00c5f80c2fad ("iio: inkern: add helpers to query available values from channels")
->>>> Signed-off-by: Peter Rosin <peda@axentia.se>
->>>
->>>> ---
->>>>  drivers/iio/inkern.c | 4 +---
->>>>  1 file changed, 1 insertion(+), 3 deletions(-)
->>>>
->>>> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
->>>> index 7a13535dc3e9..a3941bade6a7 100644
->>>> --- a/drivers/iio/inkern.c
->>>> +++ b/drivers/iio/inkern.c
->>>> @@ -750,11 +750,9 @@ int iio_read_avail_channel_raw(struct iio_channel *chan,
->>>>  err_unlock:
->>>>  	mutex_unlock(&chan->indio_dev->info_exist_lock);
->>>>  
->>>> -	if (ret >= 0 && type != IIO_VAL_INT) {
->>>> +	if (ret >= 0 && type != IIO_VAL_INT)
->>>>  		/* raw values are assumed to be IIO_VAL_INT */
->>>>  		ret = -EINVAL;
->>>> -		goto err_unlock;
->>>> -	}
->>>>  
->>>>  	return ret;
->>>>  }
->>>>
->>>
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/iio/accel/bma180.c | 20 +++++++++++++++++++-
+ 1 file changed, 19 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+index 0890934..5c75190 100644
+--- a/drivers/iio/accel/bma180.c
++++ b/drivers/iio/accel/bma180.c
+@@ -14,6 +14,7 @@
+  * BMA250: 7-bit I2C slave address 0x18 or 0x19
+  */
+ 
++#include <linux/acpi.h>
+ #include <linux/module.h>
+ #include <linux/i2c.h>
+ #include <linux/interrupt.h>
+@@ -705,6 +706,8 @@ static const struct iio_trigger_ops bma180_trigger_ops = {
+ static int bma180_probe(struct i2c_client *client,
+ 		const struct i2c_device_id *id)
+ {
++	struct device *dev = &client->dev;
++	const struct acpi_device_id *acpi_id;
+ 	struct bma180_data *data;
+ 	struct iio_dev *indio_dev;
+ 	int ret;
+@@ -716,7 +719,15 @@ static int bma180_probe(struct i2c_client *client,
+ 	data = iio_priv(indio_dev);
+ 	i2c_set_clientdata(client, indio_dev);
+ 	data->client = client;
+-	data->part_info = &bma180_part_info[id->driver_data];
++	if (id) {
++		data->part_info = &bma180_part_info[id->driver_data];
++	} else {
++		acpi_id = acpi_match_device(dev->driver->acpi_match_table, dev);
++		if (!acpi_id)
++			return -ENODEV;
++
++		data->part_info = &bma180_part_info[acpi_id->driver_data];
++	}
+ 
+ 	ret = data->part_info->chip_config(data);
+ 	if (ret < 0)
+@@ -836,6 +847,12 @@ static SIMPLE_DEV_PM_OPS(bma180_pm_ops, bma180_suspend, bma180_resume);
+ #define BMA180_PM_OPS NULL
+ #endif
+ 
++static const struct acpi_device_id bma180_acpi_match[] = {
++	{ "BMA250E", BMA250 },
++	{ }
++};
++MODULE_DEVICE_TABLE(acpi, bma180_acpi_match);
++
+ static struct i2c_device_id bma180_ids[] = {
+ 	{ "bma180", BMA180 },
+ 	{ "bma250", BMA250 },
+@@ -847,6 +864,7 @@ MODULE_DEVICE_TABLE(i2c, bma180_ids);
+ static struct i2c_driver bma180_driver = {
+ 	.driver = {
+ 		.name	= "bma180",
++		.acpi_match_table = ACPI_PTR(bma180_acpi_match),
+ 		.pm	= BMA180_PM_OPS,
+ 	},
+ 	.probe		= bma180_probe,
+-- 
+2.9.3
 
