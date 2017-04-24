@@ -1,59 +1,51 @@
-Return-Path: <SRS0=9oZt=37=infradead.org=rdunlap@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from fllnx210.ext.ti.com ([198.47.19.17]:42874 "EHLO
+        fllnx210.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1168463AbdDXLl3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 24 Apr 2017 07:41:29 -0400
 Subject: Re: [PATCH v2] tools/iio: Use include/uapi with __EXPORTED_HEADERS__
-To: Sekhar Nori <nsekhar@ti.com>, Jonathan Cameron <jic23@kernel.org>
+To: Randy Dunlap <rdunlap@infradead.org>,
+        Jonathan Cameron <jic23@kernel.org>
 References: <5cfc29b0d8fa6c5bd97e59f7ab0ff718132efdec.1492777014.git.nsekhar@ti.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-From: Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <0a357589-7169-5cff-e842-657b52049b15@infradead.org>
-Date: Sat, 22 Apr 2017 19:22:35 -0700
+ <0a357589-7169-5cff-e842-657b52049b15@infradead.org>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+From: Sekhar Nori <nsekhar@ti.com>
+Message-ID: <f257820e-7010-72d8-c005-924a158ee4c1@ti.com>
+Date: Mon, 24 Apr 2017 17:10:38 +0530
 MIME-Version: 1.0
-In-Reply-To: <5cfc29b0d8fa6c5bd97e59f7ab0ff718132efdec.1492777014.git.nsekhar@ti.com>
-Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <0a357589-7169-5cff-e842-657b52049b15@infradead.org>
+Content-Type: text/plain; charset="windows-1252"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 04/21/17 05:31, Sekhar Nori wrote:
-> Use the local uapi headers to keep in sync with "recently" added enum
-> values like IIO_UVINDEX.
+Hi Randy,
+
+On Sunday 23 April 2017 07:52 AM, Randy Dunlap wrote:
+> On 04/21/17 05:31, Sekhar Nori wrote:
+>> Use the local uapi headers to keep in sync with "recently" added enum
+>> values like IIO_UVINDEX.
+>>
+>> Build tested using:
+>> $ make -C <kernelsrcdir> tools/iio
+>> $ make -C <kernelsrcdir>/tools iio
+>> $ make -C <kernelsrcdir>/tools/iio
 > 
-> Build tested using:
-> $ make -C <kernelsrcdir> tools/iio
-> $ make -C <kernelsrcdir>/tools iio
-> $ make -C <kernelsrcdir>/tools/iio
+> Hi,
+> Did you do any testing with O=<outputdir> ?
 
-Hi,
-Did you do any testing with O=<outputdir> ?
+I hadn't, but I just checked with:
 
-Thanks.
+$ make -C <kernelsrcdir>/tools iio O=<outputdir>
 
-> This follows a strategy similar to that used by tools/hv, tools/net and
-> tools/leds among others.
-> 
-> Cc: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Signed-off-by: Sekhar Nori <nsekhar@ti.com>
-> ---
-> Change since v1:
-> Shift to a strategy similar to that used by other makefiles in
-> tools/ folder. v1 posting here: https://patchwork.kernel.org/patch/9674937/
-> 
->  tools/iio/Makefile | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tools/iio/Makefile b/tools/iio/Makefile
-> index 5446d625e17d..8f08e03a9a5e 100644
-> --- a/tools/iio/Makefile
-> +++ b/tools/iio/Makefile
-> @@ -1,5 +1,5 @@
->  CC = $(CROSS_COMPILE)gcc
-> -CFLAGS += -Wall -g -D_GNU_SOURCE
-> +CFLAGS += -Wall -g -D_GNU_SOURCE -D__EXPORTED_HEADERS__ -I../../include/uapi -I../../include
->  
->  BINDIR=usr/bin
->  INSTALL_PROGRAM=install -m 755 -p
-> 
+Although there is an iio folder created under <outputdir>, the actual
+binaries are still built under <kernelsrcdir>/tools/iio. So I think
+there is some more work to be done to respect the O= option passed from
+command line.
 
+The behavior remains same with or without my patch.
 
--- 
-~Randy
+Thanks,
+Sekhar
