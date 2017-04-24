@@ -1,5 +1,6 @@
 Return-Path: <SRS0=Z/jO=4A=users.sourceforge.net=elfring@kernel.org>
-Subject: [PATCH 1/7] HID: sensor-hub: Use devm_kcalloc() in sensor_hub_probe()
+Subject: [PATCH 2/7] HID: sensor-hub: Delete error messages for failed memory
+ allocations in sensor_hub_probe()
 From: SF Markus Elfring <elfring@users.sourceforge.net>
 To: linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
  Benjamin Tissoires <benjamin.tissoires@redhat.com>,
@@ -7,51 +8,62 @@ To: linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
  Henrik Rydberg <rydberg@bitmath.org>, Jiri Kosina <jikos@kernel.org>,
  Jonathan Cameron <jic23@kernel.org>,
  Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
+Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org,
+ Wolfram Sang <wsa@the-dreams.de>
 References: <2d526d72-a740-367b-04a9-ed698435f8ed@users.sourceforge.net>
-Message-ID: <8a50aeac-0c9e-fff9-a7e7-61bcd733dfce@users.sourceforge.net>
-Date: Mon, 24 Apr 2017 22:16:09 +0200
+Message-ID: <7f9e0982-90b9-0e74-4732-7e3153813b2b@users.sourceforge.net>
+Date: Mon, 24 Apr 2017 22:17:54 +0200
 MIME-Version: 1.0
 In-Reply-To: <2d526d72-a740-367b-04a9-ed698435f8ed@users.sourceforge.net>
 Content-Type: text/plain; charset=utf-8
 List-ID: <linux-iio@vger.kernel.org>
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Mon, 24 Apr 2017 19:25:29 +0200
+Date: Mon, 24 Apr 2017 19:45:25 +0200
 
-* A multiplication for the size determination of a memory allocation
-  indicated that an array data structure should be processed.
-  Thus use the corresponding function "devm_kcalloc".
+The script "checkpatch.pl" pointed information out like the following.
 
-  This issue was detected by using the Coccinelle software.
+WARNING: Possible unnecessary 'out of memory' message
 
-* Replace the specification of a data structure by a pointer dereference
-  to make the corresponding size determination a bit safer according to
-  the Linux coding style convention.
+Thus remove such statements here.
 
+Link: http://events.linuxfoundation.org/sites/events/files/slides/LCJ16-Refactor_Strings-WSang_0.pdf
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- drivers/hid/hid-sensor-hub.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/hid/hid-sensor-hub.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
 diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
-index 4ef73374a8f9..349494fc8def 100644
+index 349494fc8def..feb4bb8ee3ec 100644
 --- a/drivers/hid/hid-sensor-hub.c
 +++ b/drivers/hid/hid-sensor-hub.c
-@@ -672,9 +672,11 @@ static int sensor_hub_probe(struct hid_device *hdev,
- 		ret = -EINVAL;
+@@ -640,10 +640,8 @@ static int sensor_hub_probe(struct hid_device *hdev,
+ 	struct hid_sensor_hub_device *collection_hsdev = NULL;
+ 
+ 	sd = devm_kzalloc(&hdev->dev, sizeof(*sd), GFP_KERNEL);
+-	if (!sd) {
+-		hid_err(hdev, "cannot allocate Sensor data\n");
++	if (!sd)
+ 		return -ENOMEM;
+-	}
+ 
+ 	hid_set_drvdata(hdev, sd);
+ 	sd->quirks = id->driver_data;
+@@ -678,7 +676,6 @@ static int sensor_hub_probe(struct hid_device *hdev,
+ 			       sizeof(*sd->hid_sensor_hub_client_devs),
+ 			       GFP_KERNEL);
+ 	if (sd->hid_sensor_hub_client_devs == NULL) {
+-		hid_err(hdev, "Failed to allocate memory for mfd cells\n");
+ 		ret = -ENOMEM;
  		goto err_stop_hw;
  	}
--	sd->hid_sensor_hub_client_devs = devm_kzalloc(&hdev->dev, dev_cnt *
--						      sizeof(struct mfd_cell),
--						      GFP_KERNEL);
-+	sd->hid_sensor_hub_client_devs
-+		= devm_kcalloc(&hdev->dev,
-+			       dev_cnt,
-+			       sizeof(*sd->hid_sensor_hub_client_devs),
-+			       GFP_KERNEL);
- 	if (sd->hid_sensor_hub_client_devs == NULL) {
- 		hid_err(hdev, "Failed to allocate memory for mfd cells\n");
- 		ret = -ENOMEM;
+@@ -692,7 +689,6 @@ static int sensor_hub_probe(struct hid_device *hdev,
+ 			hsdev = devm_kzalloc(&hdev->dev, sizeof(*hsdev),
+ 					     GFP_KERNEL);
+ 			if (!hsdev) {
+-				hid_err(hdev, "cannot allocate hid_sensor_hub_device\n");
+ 				ret = -ENOMEM;
+ 				goto err_stop_hw;
+ 			}
 -- 
 2.12.2
