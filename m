@@ -1,81 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37882 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S938457AbdD0GEl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Apr 2017 02:04:41 -0400
+Received: from thoth.sbs.de ([192.35.17.2]:56547 "EHLO thoth.sbs.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S980492AbdDYGGT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 25 Apr 2017 02:06:19 -0400
 Subject: Re: [PATCH] iio: adc: Add support for TI ADC1x8s102
-From: Jonathan Cameron <jic23@kernel.org>
-To: Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-iio@vger.kernel.org,
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jonathan Cameron <jic23@kernel.org>
+References: <6e0f0b52-27a1-0ce5-c217-3aa941babe63@siemens.com>
+ <1493064330.24567.180.camel@linux.intel.com>
+Cc: linux-iio@vger.kernel.org,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Sascha Weisenberger <sascha.weisenberger@siemens.com>,
-        Mark Brown <broonie@kernel.org>
-References: <CAHp75VfzH922Z5FfGQ7gS-+FLR7H_Q3mKm_58xmchZn5KEjiqQ@mail.gmail.com>
- <38f562f3-69d2-67d0-ecc2-4b44d67286e2@siemens.com>
- <CAHp75Vf517+vfe7GiTH2Gb0WBDdqi4fcR5Z1O6ideJMpbDhysw@mail.gmail.com>
- <08d40bf0-4e68-d763-af99-be1f60e369fc@siemens.com>
- <1493119630.24567.192.camel@linux.intel.com>
- <20170425113513.GQ7152@lahna.fi.intel.com>
- <2a116105-0046-bcc1-b560-f6986220fb4b@siemens.com>
- <20170425123029.GS7152@lahna.fi.intel.com>
- <ca23678c-be8c-1e3f-4688-67b29770c99b@siemens.com>
- <32803199-239f-821c-7942-748436d53261@siemens.com>
- <20170426090158.GV7152@lahna.fi.intel.com>
- <9a210132-854b-cf3e-da33-fc3d073ad491@kernel.org>
-Message-ID: <d86de554-eb66-d774-654f-aeaa213597c6@kernel.org>
-Date: Thu, 27 Apr 2017 07:04:36 +0100
+        Sascha Weisenberger <sascha.weisenberger@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <d0882257-5fe9-4b1b-af3c-812972b68770@siemens.com>
+Date: Tue, 25 Apr 2017 08:06:01 +0200
 MIME-Version: 1.0
-In-Reply-To: <9a210132-854b-cf3e-da33-fc3d073ad491@kernel.org>
+In-Reply-To: <1493064330.24567.180.camel@linux.intel.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 27/04/17 07:01, Jonathan Cameron wrote:
-> On 26/04/17 10:01, Mika Westerberg wrote:
->> On Tue, Apr 25, 2017 at 06:12:12PM +0200, Jan Kiszka wrote:
->>> Now, do you also a suggestion where to put that 5 V reference voltage
->>> value that is hard-coded (via wiring) on the target boards for the ADC?
->>> That is now device-specific, not a controller parameter. Is there an
->>> ACPI-way to express such a parameter?
->>
->> You may put it into device property using _DSD (as long as you don't try
->> to represent regulators or so).
->>
->>> How would that be done for DTs?
->>
->> I don't know but you may look under Documentation/devicetree/bindings if
->> there is anything.
-> Under DT it would be done using a fixed voltage regulator.
-Though having actually looked at the driver, you presumably already know this
-given you are requesting an appropriate regulator...
->>
->>> Plan B would be hard-coding in the code for now, waiting for a second,
->>> non-ACPI user to address it.
->>
->> Sounds reasonable.
-> Somewhat of a pain to basically use a random value as the default going
-> forward.  Presumably this isn't the first ever ACPI table to need to
-> tell use about a reference voltage...
+On 2017-04-24 22:05, Andy Shevchenko wrote:
+>> +{
+>> +	int ret;
+>> +	struct adc1x8s102_state *st;
+>> +
+>> +	st = iio_priv(indio_dev);
+>> +
+>> +	switch (m) {
+>> +	case IIO_CHAN_INFO_RAW:
+>> +		mutex_lock(&indio_dev->mlock);
+>> +		if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED)
+>> {
+>> +			ret = -EBUSY;
 > 
-> Mark, seen anything similar?
+>> +			dev_warn(&st->spi->dev,
+>> +			 "indio_dev->currentmode is
+>> INDIO_BUFFER_TRIGGERED\n");
 > 
-> I see https://www.kernel.org/doc/Documentation/arm64/arm-acpi.txt suggests
-> that mapping to regulators isn't expected to ever happen...
-> 
-> Jonathan
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+> Indentation?
 
+Actually, this block needs to be converted to
+iio_device_claim_direct_mode / iio_device_release_direct_mode, instead
+of doing the old open-coded locking way.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
