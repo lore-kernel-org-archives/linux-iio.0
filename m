@@ -1,59 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtprelay.restena.lu ([158.64.1.62]:47043 "EHLO
-        smtprelay.restena.lu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1164724AbdDYGuB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Apr 2017 02:50:01 -0400
-Date: Tue, 25 Apr 2017 08:40:51 +0200
-From: Bruno =?UTF-8?B?UHLDqW1vbnQ=?= <bonbons@linux-vserver.org>
-To: SF Markus Elfring <elfring@users.sourceforge.net>
-Cc: linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Henrik Rydberg <rydberg@bitmath.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH 7/7] HID: picoLCD: Replace two seq_printf() calls by
- seq_puts() in picolcd_debug_reset_show()
-Message-ID: <20170425084051.5b981b48@pluto.restena.lu>
-In-Reply-To: <ceee0ae6-fd37-66b6-116a-319f5e393327@users.sourceforge.net>
-References: <2d526d72-a740-367b-04a9-ed698435f8ed@users.sourceforge.net>
-        <ceee0ae6-fd37-66b6-116a-319f5e393327@users.sourceforge.net>
+Received: from sci-ig2.spreadtrum.com ([222.66.158.135]:23930 "EHLO
+        SHSQR01.spreadtrum.com" rhost-flags-OK-FAIL-OK-OK) by vger.kernel.org
+        with ESMTP id S979630AbdDYBp5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 24 Apr 2017 21:45:57 -0400
+From: Orson Zhai <orson.zhai@spreadtrum.com>
+To: <jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
+        <pmeerw@pmeerw.net>
+CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Orson Zhai <orson.zhai@spreadtrum.com>
+Subject: [PATCH] iio: core: Fix suspicious sizeof usage
+Date: Tue, 25 Apr 2017 09:16:56 +0800
+Message-ID: <1493083016-20571-1-git-send-email-orson.zhai@spreadtrum.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Acked-by: Bruno Prémont <bonbons@linux-vserver.org>
+Pointer size is variours in different system, say 32bit for 4 and 64bit
+for 8. The 'sizeof(infomask)' may lead to wrong bit numbers.
 
-On Mon, 24 Apr 2017 22:23:02 +0200 SF Markus Elfring wrote:
-> From: Markus Elfring <elfring@users.sourceforge.net>
-> Date: Mon, 24 Apr 2017 21:27:42 +0200
-> 
-> Strings which did not contain data format specifications should be put
-> into a sequence. Thus use the corresponding function "seq_puts".
-> 
-> This issue was detected by using the Coccinelle software.
-> 
-> Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
-> ---
->  drivers/hid/hid-picolcd_debugfs.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/hid/hid-picolcd_debugfs.c b/drivers/hid/hid-picolcd_debugfs.c
-> index 3e0feb4bb538..975f36601d59 100644
-> --- a/drivers/hid/hid-picolcd_debugfs.c
-> +++ b/drivers/hid/hid-picolcd_debugfs.c
-> @@ -33,9 +33,9 @@
->  static int picolcd_debug_reset_show(struct seq_file *f, void *p)
->  {
->  	if (picolcd_fbinfo((struct picolcd_data *)f->private))
-> -		seq_printf(f, "all fb\n");
-> +		seq_puts(f, "all fb\n");
->  	else
-> -		seq_printf(f, "all\n");
-> +		seq_puts(f, "all\n");
->  	return 0;
->  }
->  
+Signed-off-by: Orson Zhai <orson.zhai@spreadtrum.com>
+---
+ drivers/iio/industrialio-core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 3ff91e0..795f53c 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -1089,7 +1089,7 @@ static int iio_device_add_info_mask_type(struct iio_dev *indio_dev,
+ {
+ 	int i, ret, attrcount = 0;
+ 
+-	for_each_set_bit(i, infomask, sizeof(infomask)*8) {
++	for_each_set_bit(i, infomask, sizeof(*infomask)*8) {
+ 		if (i >= ARRAY_SIZE(iio_chan_info_postfix))
+ 			return -EINVAL;
+ 		ret = __iio_add_chan_devattr(iio_chan_info_postfix[i],
+@@ -1118,7 +1118,7 @@ static int iio_device_add_info_mask_type_avail(struct iio_dev *indio_dev,
+ 	int i, ret, attrcount = 0;
+ 	char *avail_postfix;
+ 
+-	for_each_set_bit(i, infomask, sizeof(infomask) * 8) {
++	for_each_set_bit(i, infomask, sizeof(*infomask) * 8) {
+ 		avail_postfix = kasprintf(GFP_KERNEL,
+ 					  "%s_available",
+ 					  iio_chan_info_postfix[i]);
+-- 
+1.9.1
+
