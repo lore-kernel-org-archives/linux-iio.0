@@ -1,209 +1,429 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx6-14.smtp.antispamcloud.com ([95.211.2.226]:35469 "EHLO
-        mx6-14.smtp.antispamcloud.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S939557AbdD0SLv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Apr 2017 14:11:51 -0400
-Subject: Re: [PATCH] iio:ad5064: Add support for ltc2633 and similar devices
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Jonathan Cameron <jic23@kernel.org>,
-        <linux-iio@vger.kernel.org>
-References: <1493199875-11912-1-git-send-email-mike.looijmans@topic.nl>
- <20b926f2-58ee-52d8-6520-a99e4640125d@kernel.org>
- <646b634f-c0ad-f39c-a395-02461f5e8352@metafoo.de>
-CC: <linux-kernel@vger.kernel.org>, <Michael.Hennerich@analog.com>,
-        <knaack.h@gmx.de>, <pmeerw@pmeerw.net>
-From: Mike Looijmans <mike.looijmans@topic.nl>
-Message-ID: <68f2f512-ec3e-c8ef-bf4a-5448f3b81f6b@topic.nl>
-Date: Thu, 27 Apr 2017 19:09:18 +0200
+Received: from mail-pf0-f193.google.com ([209.85.192.193]:36493 "EHLO
+        mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S3001288AbdDZOdm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Apr 2017 10:33:42 -0400
+From: Joel Stanley <joel@jms.id.au>
+To: Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>
+Cc: linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        linux-iio@vger.kernel.org, openbmc@lists.ozlabs.org,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: [RFC PATCH] hwmon: Add driver for Infineon DPS310
+Date: Thu, 27 Apr 2017 00:03:21 +0930
+Message-Id: <20170426143321.32000-1-joel@jms.id.au>
 MIME-Version: 1.0
-In-Reply-To: <646b634f-c0ad-f39c-a395-02461f5e8352@metafoo.de>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-﻿On 27-04-17 11:16, Lars-Peter Clausen wrote:
-> On 04/27/2017 07:52 AM, Jonathan Cameron wrote:
->> On 26/04/17 10:44, Mike Looijmans wrote:
->>> The Linear Technology LTC2631, LTC2633 and LTC2635 are very similar
->>> to the AD5064 device, in particular the LTC2627.
->>>
->>> This patch adds support for those devices. Only the LTC2633 has been
->>> tested, which is the 2-channel variant. The LTC2631 is the 1-channel,
->>> and the LTC2635 the 4-channel version. The actual DAC resolution depends
->>> on the exact chip type and can be 12, 10 or 8 bits, using the upper bits
->>> so this has no effect on the register map. The internal reference is set
->>> to 2.5V on "L" versions, and it's 4.096V for "H" versions.
->>>
->>> Datasheets:
->>>     LTC2631: http://www.linear.com/docs/26553
->>>     LTC2633: http://www.linear.com/docs/39529
->>>     LTC2635: http://www.linear.com/docs/28754
->>>
->>> Signed-off-by: Mike Looijmans <mike.looijmans@topic.nl>
->
-> Ah, its always good if somebody manages to clear an item from your TODO list
-> before you :)
+Hi Guenter,
 
-Glad to be able to reverse the roles this time :)
+Below is a work in progress hwmon driver for the DPS310[1]. The device does
+both pressure and temperature monitoring over either I2C or SPI. There's a
+public datasheet available on Infineon's website.
 
->> Looks fine to me, but I'd like to give time for Lars to take a look
->> as it is his driver.
->
-> Patch looks good, but I'd prefer it if we had different entries in the
-> device table for different resolutions. So you don't have to manually shift
-> the output value by 12 when you are using the 8-bit version. This is how it
-> has been done for other DAC drivers and it would be good to stay consistent.
+I require a driver that reads the temperature data over I2C and exposes it to
+userspace as a hwmon device. I wanted your opinion weather this should be an
+IIO driver (and we could then use the IIO HWMON bridge in our application), or
+if it should be a native HWMON driver?
 
-Doing so would add 18 entries (3 channels, 2 ranges, 3 resolutions) 
-instead of a mere 6. That's why I refrained from it.
+Once we've agreed on a subsystem I will clean the driver up and submit it
+properly.
 
->
-> Maybe even include the reset-to-midscale/reset-to-gnd designator of the part
-> number in the compatible string.
->
-> http://cds.linear.com/docs/en/datasheet/2631fc.pdf#page=3
+Cheers,
 
-And that would make the number of entries to add 36. I think if we go 
-that path, we should make things parameterizable, e.g. have channel 
-count, bit resolution, reset state and range as devicetree parameters, 
-so that the "compatible" string needn't hold all information. It would 
-impact existing trees though.
+Joel
 
+[1] https://www.infineon.com/cms/en/product/sensor/capacitive-pressure-sensor-for-consumer-applications/channel.html
 
->> Jonathan
->>> ---
->>>  drivers/iio/dac/Kconfig  |  3 ++-
->>>  drivers/iio/dac/ad5064.c | 58 ++++++++++++++++++++++++++++++++++++++++++++++--
->>>  2 files changed, 58 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
->>> index d3084028..31ffb67 100644
->>> --- a/drivers/iio/dac/Kconfig
->>> +++ b/drivers/iio/dac/Kconfig
->>> @@ -13,7 +13,8 @@ config AD5064
->>>  	  AD5045, AD5064, AD5064-1, AD5065, AD5625, AD5625R, AD5627, AD5627R,
->>>  	  AD5628, AD5629R, AD5645R, AD5647R, AD5648, AD5665, AD5665R, AD5666,
->>>  	  AD5667, AD5667R, AD5668, AD5669R, LTC2606, LTC2607, LTC2609, LTC2616,
->>> -	  LTC2617, LTC2619, LTC2626, LTC2627, LTC2629 Digital to Analog Converter.
->>> +	  LTC2617, LTC2619, LTC2626, LTC2627, LTC2629, LTC2631, LTC2633, LTC2635
->>> +	  Digital to Analog Converter.
->>>
->>>  	  To compile this driver as a module, choose M here: the
->>>  	  module will be called ad5064.
->>> diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
->>> index 6803e4a..b440180 100644
->>> --- a/drivers/iio/dac/ad5064.c
->>> +++ b/drivers/iio/dac/ad5064.c
->>> @@ -2,8 +2,8 @@
->>>   * AD5024, AD5025, AD5044, AD5045, AD5064, AD5064-1, AD5065, AD5625, AD5625R,
->>>   * AD5627, AD5627R, AD5628, AD5629R, AD5645R, AD5647R, AD5648, AD5665, AD5665R,
->>>   * AD5666, AD5667, AD5667R, AD5668, AD5669R, LTC2606, LTC2607, LTC2609, LTC2616,
->>> - * LTC2617, LTC2619, LTC2626, LTC2627, LTC2629 Digital to analog converters
->>> - * driver
->>> + * LTC2617, LTC2619, LTC2626, LTC2627, LTC2629, LTC2631, LTC2633, LTC2635
->>> + * Digital to analog converters driver
->>>   *
->>>   * Copyright 2011 Analog Devices Inc.
->>>   *
->>> @@ -168,6 +168,12 @@ enum ad5064_type {
->>>  	ID_LTC2626,
->>>  	ID_LTC2627,
->>>  	ID_LTC2629,
->>> +	ID_LTC2631_L,
->>> +	ID_LTC2631_H,
->>> +	ID_LTC2633_L,
->>> +	ID_LTC2633_H,
->>> +	ID_LTC2635_L,
->>> +	ID_LTC2635_H,
->>>  };
->>>
->>>  static int ad5064_write(struct ad5064_state *st, unsigned int cmd,
->>> @@ -724,6 +730,48 @@ static int ad5064_write_raw(struct iio_dev *indio_dev,
->>>  		.num_channels = 4,
->>>  		.regmap_type = AD5064_REGMAP_LTC,
->>>  	},
->>> +	[ID_LTC2631_L] = {
->>> +		.shared_vref = true,
->>> +		.internal_vref = 2500000,
->>> +		.channels = ltc2627_channels,
->>> +		.num_channels = 1,
->>> +		.regmap_type = AD5064_REGMAP_LTC,
->>> +	},
->>> +	[ID_LTC2631_H] = {
->>> +		.shared_vref = true,
->>> +		.internal_vref = 4096000,
->>> +		.channels = ltc2627_channels,
->>> +		.num_channels = 1,
->>> +		.regmap_type = AD5064_REGMAP_LTC,
->>> +	},
->>> +	[ID_LTC2633_L] = {
->>> +		.shared_vref = true,
->>> +		.internal_vref = 2500000,
->>> +		.channels = ltc2627_channels,
->>> +		.num_channels = 2,
->>> +		.regmap_type = AD5064_REGMAP_LTC,
->>> +	},
->>> +	[ID_LTC2633_H] = {
->>> +		.shared_vref = true,
->>> +		.internal_vref = 4096000,
->>> +		.channels = ltc2627_channels,
->>> +		.num_channels = 2,
->>> +		.regmap_type = AD5064_REGMAP_LTC,
->>> +	},
->>> +	[ID_LTC2635_L] = {
->>> +		.shared_vref = true,
->>> +		.internal_vref = 2500000,
->>> +		.channels = ltc2627_channels,
->>> +		.num_channels = 4,
->>> +		.regmap_type = AD5064_REGMAP_LTC,
->>> +	},
->>> +	[ID_LTC2635_H] = {
->>> +		.shared_vref = true,
->>> +		.internal_vref = 4096000,
->>> +		.channels = ltc2627_channels,
->>> +		.num_channels = 4,
->>> +		.regmap_type = AD5064_REGMAP_LTC,
->>> +	},
->>>  };
->>>
->>>  static inline unsigned int ad5064_num_vref(struct ad5064_state *st)
->>> @@ -982,6 +1030,12 @@ static int ad5064_i2c_remove(struct i2c_client *i2c)
->>>  	{"ltc2626", ID_LTC2626},
->>>  	{"ltc2627", ID_LTC2627},
->>>  	{"ltc2629", ID_LTC2629},
->>> +	{"ltc2631-l", ID_LTC2631_L},
->>> +	{"ltc2631-h", ID_LTC2631_H},
->>> +	{"ltc2633-l", ID_LTC2633_L},
->>> +	{"ltc2633-h", ID_LTC2633_H},
->>> +	{"ltc2635-l", ID_LTC2635_L},
->>> +	{"ltc2635-h", ID_LTC2635_H},
->>>  	{}
->>>  };
->>>  MODULE_DEVICE_TABLE(i2c, ad5064_i2c_ids);
->>>
->>
->
+---
 
+The DPS310 is a temperature and pressure sensor. It can be accessed over
+i2c and SPI.
 
+This driver supports continual measurement of temperature over i2c only.
+
+Signed-off-by: Joel Stanley <joel@jms.id.au>
+---
+ drivers/hwmon/Kconfig  |  12 ++
+ drivers/hwmon/Makefile |   1 +
+ drivers/hwmon/dps310.c | 331 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 344 insertions(+)
+ create mode 100644 drivers/hwmon/dps310.c
+
+diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
+index 190d270b20a2..8229b2f8c591 100644
+--- a/drivers/hwmon/Kconfig
++++ b/drivers/hwmon/Kconfig
+@@ -1349,6 +1349,18 @@ config SENSORS_DME1737
+ 	  This driver can also be built as a module.  If so, the module
+ 	  will be called dme1737.
+ 
++config SENSORS_DPS310
++	tristate "Infineon DPS310"
++	depends on I2C
++	select HWMON_VID
++	select REGMAP_I2C
++	help
++	  If you say yes here you get support for the hardware monitoring
++	  features of the Infineon DPS310 digital barometric pressure sensor.
++
++	  This driver can also be built as a module.  If so, the module
++	  will be called dps310.
++
+ config SENSORS_EMC1403
+ 	tristate "SMSC EMC1403/23 thermal sensor"
+ 	depends on I2C
+diff --git a/drivers/hwmon/Makefile b/drivers/hwmon/Makefile
+index d2cb7e804a0f..3a5ad06d6d89 100644
+--- a/drivers/hwmon/Makefile
++++ b/drivers/hwmon/Makefile
+@@ -52,6 +52,7 @@ obj-$(CONFIG_SENSORS_DA9052_ADC)+= da9052-hwmon.o
+ obj-$(CONFIG_SENSORS_DA9055)+= da9055-hwmon.o
+ obj-$(CONFIG_SENSORS_DELL_SMM)	+= dell-smm-hwmon.o
+ obj-$(CONFIG_SENSORS_DME1737)	+= dme1737.o
++obj-$(CONFIG_SENSORS_DPS310)	+= dps310.o
+ obj-$(CONFIG_SENSORS_DS620)	+= ds620.o
+ obj-$(CONFIG_SENSORS_DS1621)	+= ds1621.o
+ obj-$(CONFIG_SENSORS_EMC1403)	+= emc1403.o
+diff --git a/drivers/hwmon/dps310.c b/drivers/hwmon/dps310.c
+new file mode 100644
+index 000000000000..b014f01d0d3f
+--- /dev/null
++++ b/drivers/hwmon/dps310.c
+@@ -0,0 +1,331 @@
++/*
++ * Copyright 2017 IBM Corporation
++ *
++ * Joel Stanley <joel@jms.id.au>
++ *
++ * The DPS310 is a barometric pressure and temperature sensor.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version
++ * 2 of the License, or (at your option) any later version.
++ */
++
++#include <linux/i2c.h>
++#include <linux/regmap.h>
++#include <linux/hwmon.h>
++#include <linux/module.h>
++
++#define PRS_B2		0x00
++#define PRS_B1		0x01
++#define PRS_B0		0x02
++#define TMP_B2		0x03
++#define TMP_B1		0x04
++#define TMP_B0		0x05
++#define PRS_CFG		0x06
++#define TMP_CFG		0x07
++#define  TMP_RATE_BITS	GENMASK(6, 4)
++#define  TMP_EXT	BIT(7)
++#define MEAS_CFG	0x08
++#define  MEAS_CTRL_BITS	GENMASK(2, 0)
++#define   PRESSURE_EN	BIT(0)
++#define   TEMP_EN	BIT(1)
++#define   BACKGROUND	BIT(2)
++#define  PRS_RDY	BIT(4)
++#define  TMP_RDY	BIT(5)
++#define  SENSOR_RDY	BIT(6)
++#define  COEF_RDY	BIT(7)
++#define RESET		0x0c
++#define  RESET_MAGIC	(BIT(0) | BIT(3))
++#define COEF_BASE	0x10
++
++#define TMP_BASE	TMP_B2
++#define PRS_BASE	PRS_B2
++
++#define TMP_RATE(_n)	ilog2(_n)
++#define TMP_PRC(_n)	ilog2(_n)
++
++const int scale_factor[] = {
++	 524288,
++	1572864,
++	3670016,
++	7864320,
++	 253952,
++	 516096,
++	1040384,
++	2088960,
++};
++
++struct dps310_data {
++	struct regmap *regmap;
++	int interval;
++	s32 c0, c1;
++};
++
++static s32 dps310_twos_compliment(u32 raw, size_t num_bits)
++{
++	s32 out = raw;
++
++	if (raw & BIT(num_bits - 1))
++		out = raw - BIT(num_bits);
++
++	return out;
++}
++
++static int dps310_get_temp_coef(struct dps310_data *data)
++{
++	struct regmap *regmap = data->regmap;
++	uint8_t coef[3] = {0};
++	int ready, r;
++	u32 c0, c1;
++
++	r = regmap_read(regmap, MEAS_CFG, &ready);
++	if (r < 0)
++		return r;
++
++	if (!(ready & COEF_RDY))
++		return -EAGAIN;
++
++	/*
++	 * Read temperature calibration coefficients c0 and c1 from the
++	 * COEF register. The numbers are 12-bit 2's compliment numbers
++	 */
++	r = regmap_bulk_read(regmap, COEF_BASE, coef, 3);
++	if (r < 0)
++		return r;
++
++	c0 = (coef[0] << 4) | (coef[1] >> 4);
++	data->c0 = dps310_twos_compliment(c0, 12);
++
++	c1 = ((coef[1] & GENMASK(3, 0)) << 8) | coef[2];
++	data->c1 = dps310_twos_compliment(c1, 12);
++
++	return 0;
++}
++
++static int dps310_get_scale_factor(struct device *dev)
++{
++	struct dps310_data *data = dev_get_drvdata(dev);
++	int val, r;
++
++	r = regmap_read(data->regmap, TMP_CFG, &val);
++	if (r < 0)
++		return r;
++
++	/* Scale factor is bottom 4 bits of the register */
++	val = val & GENMASK(3, 0);
++	if (val < 0 || val > ARRAY_SIZE(scale_factor))
++		return -EINVAL;
++
++	return scale_factor[val];
++}
++
++static int dps310_read_temp(struct device *dev, u32 attr, int channel,
++			     long *temp)
++{
++	struct dps310_data *data = dev_get_drvdata(dev);
++	struct regmap *regmap = data->regmap;
++	uint8_t val[3] = {0};
++	int r, ready;
++	int kT, T_raw;
++
++	switch (attr) {
++	case hwmon_temp_input:
++		r = regmap_read(regmap, MEAS_CFG, &ready);
++		if (r < 0)
++			return r;
++		if (!(ready & TMP_RDY)) {
++			dev_err(dev, "tmp not ready\n");
++			return -EAGAIN;
++		}
++
++		/* Choose scaling factor kT based on chosen precision rate */
++		kT = dps310_get_scale_factor(dev);
++
++		r = regmap_bulk_read(regmap, TMP_BASE, val, 3);
++		if (r < 0)
++			return r;
++		T_raw = (val[0] << 16) | (val[1] << 8) | val[2];
++		T_raw = dps310_twos_compliment(T_raw, 24);
++
++		/* (c0 * 0.5 + c1 * T_raw / kT) * 1000 m°C */
++		*temp = ((data->c0 >> 1) + (data->c1 * T_raw) / kT) * 1000;
++
++		return 0;
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
++static int dps310_read(struct device *dev, enum hwmon_sensor_types type,
++			u32 attr, int channel, long *val)
++{
++	switch (type) {
++	case hwmon_temp:
++		return dps310_read_temp(dev, attr, channel, val);
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
++static int dps310_write(struct device *dev, enum hwmon_sensor_types type,
++			 u32 attr, int channel, long val)
++{
++	switch (type) {
++	case hwmon_temp:
++		/* Fall through */
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
++static umode_t dps310_is_visible(const void *data,
++				  enum hwmon_sensor_types type,
++				  u32 attr, int channel)
++{
++	switch (type) {
++	case hwmon_temp:
++		switch (attr) {
++		case hwmon_temp_input:
++			return 0444;
++		default:
++			return 0;
++		}
++	default:
++		return 0;
++	}
++}
++
++
++static const u32 dps310_temp_config[] = {
++	HWMON_T_INPUT,
++	0
++};
++
++static const struct hwmon_channel_info dps310_temp = {
++	.type = hwmon_temp,
++	.config = dps310_temp_config,
++};
++
++static const struct hwmon_channel_info *dps310_info[] = {
++	&dps310_temp,
++	NULL
++};
++
++static const struct hwmon_ops dps310_hwmon_ops = {
++	.is_visible = dps310_is_visible,
++	.read = dps310_read,
++	.write = dps310_write,
++};
++
++static const struct hwmon_chip_info dps310_chip_info = {
++	.ops = &dps310_hwmon_ops,
++	.info = dps310_info,
++};
++
++static bool dps310_is_writeable_reg(struct device *dev, unsigned int reg)
++{
++	switch (reg) {
++	case PRS_CFG:
++	case TMP_CFG:
++	case MEAS_CFG:
++	case RESET:
++		return true;
++	default:
++		return false;
++	}
++}
++
++static bool dps310_is_volatile_reg(struct device *dev, unsigned int reg)
++{
++	switch (reg) {
++	case PRS_B2:
++	case PRS_B1:
++	case PRS_B0:
++	case TMP_B2:
++	case TMP_B1:
++	case TMP_B0:
++	case MEAS_CFG:
++		return true;
++	default:
++		return false;
++	}
++}
++
++static const struct regmap_config dps310_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.writeable_reg = dps310_is_writeable_reg,
++	.volatile_reg = dps310_is_volatile_reg,
++	.cache_type = REGCACHE_RBTREE,
++	.use_single_rw = true,
++};
++
++static int dps310_probe(struct i2c_client *client,
++			const struct i2c_device_id *id)
++{
++	struct dps310_data *data;
++	struct device *hwmon_dev;
++	int r;
++
++	data = devm_kzalloc(&client->dev,  sizeof(*data), GFP_KERNEL);
++	if (!data)
++		return -ENOMEM;
++
++	data->regmap = devm_regmap_init_i2c(client, &dps310_regmap_config);
++	if (IS_ERR(data->regmap))
++		return PTR_ERR(data->regmap);
++
++	r = regmap_write(data->regmap, TMP_CFG, TMP_EXT | TMP_PRC(128));
++	if (r < 0)
++		return r;
++
++	/* Turn on background temperature measurement */
++	r = regmap_update_bits(data->regmap, MEAS_CFG, MEAS_CTRL_BITS,
++			TEMP_EN);
++	if (r < 0)
++		return r;
++
++	/* Get calibration coefficients required for reporting temperature */
++	r = dps310_get_temp_coef(data);
++	if (r == -EAGAIN)
++		return -EPROBE_DEFER;
++	if (r < 0)
++		return r;
++
++	hwmon_dev = devm_hwmon_device_register_with_info(&client->dev,
++			client->name, data, &dps310_chip_info, NULL);
++
++	if (IS_ERR(hwmon_dev))
++		return PTR_ERR(hwmon_dev);
++
++	dev_info(&client->dev, "%s: sensor '%s'\n", dev_name(hwmon_dev),
++			client->name);
++
++	return 0;
++}
++
++static const struct i2c_device_id dps310_id[] = {
++	{ "dps310", 0 },
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, dps310_id);
++
++static const unsigned short normal_i2c[] = {
++	0x77, 0x76, I2C_CLIENT_END
++};
++
++static struct i2c_driver dps310_driver = {
++	.class = I2C_CLASS_HWMON,
++	.driver = {
++		.name = "dps310",
++	},
++	.probe = dps310_probe,
++	.address_list = normal_i2c,
++	.id_table = dps310_id,
++};
++module_i2c_driver(dps310_driver);
++
++MODULE_AUTHOR("Joel Stanley <joel@jms.id.au>");
++MODULE_DESCRIPTION("Infineon DPS310 driver");
++MODULE_LICENSE("GPL");
 -- 
-Mike Looijmans
-
-
-Kind regards,
-
-Mike Looijmans
-System Expert
-
-TOPIC Products
-Materiaalweg 4, NL-5681 RJ Best
-Postbus 440, NL-5680 AK Best
-Telefoon: +31 (0) 499 33 69 79
-E-mail: mike.looijmans@topicproducts.com
-Website: www.topicproducts.com
-
-Please consider the environment before printing this e-mail
-
-
-
-
+2.11.0
 
