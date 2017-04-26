@@ -1,15 +1,20 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from thoth.sbs.de ([192.35.17.2]:46404 "EHLO thoth.sbs.de"
+Received: from mga03.intel.com ([134.134.136.65]:24935 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1949884AbdDYQMW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 25 Apr 2017 12:12:22 -0400
+        id S934607AbdDZJCE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 26 Apr 2017 05:02:04 -0400
+Date: Wed, 26 Apr 2017 12:01:58 +0300
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Sascha Weisenberger <sascha.weisenberger@siemens.com>
 Subject: Re: [PATCH] iio: adc: Add support for TI ADC1x8s102
-To: Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <6e0f0b52-27a1-0ce5-c217-3aa941babe63@siemens.com>
- <1493064330.24567.180.camel@linux.intel.com>
- <dcba0513-e3c2-33f2-6cc9-c23d05a7e6ba@siemens.com>
- <CAHp75VfzH922Z5FfGQ7gS-+FLR7H_Q3mKm_58xmchZn5KEjiqQ@mail.gmail.com>
+Message-ID: <20170426090158.GV7152@lahna.fi.intel.com>
+References: <CAHp75VfzH922Z5FfGQ7gS-+FLR7H_Q3mKm_58xmchZn5KEjiqQ@mail.gmail.com>
  <38f562f3-69d2-67d0-ecc2-4b44d67286e2@siemens.com>
  <CAHp75Vf517+vfe7GiTH2Gb0WBDdqi4fcR5Z1O6ideJMpbDhysw@mail.gmail.com>
  <08d40bf0-4e68-d763-af99-be1f60e369fc@siemens.com>
@@ -18,83 +23,28 @@ References: <6e0f0b52-27a1-0ce5-c217-3aa941babe63@siemens.com>
  <2a116105-0046-bcc1-b560-f6986220fb4b@siemens.com>
  <20170425123029.GS7152@lahna.fi.intel.com>
  <ca23678c-be8c-1e3f-4688-67b29770c99b@siemens.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Sascha Weisenberger <sascha.weisenberger@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <32803199-239f-821c-7942-748436d53261@siemens.com>
-Date: Tue, 25 Apr 2017 18:12:12 +0200
+ <32803199-239f-821c-7942-748436d53261@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <ca23678c-be8c-1e3f-4688-67b29770c99b@siemens.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <32803199-239f-821c-7942-748436d53261@siemens.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 2017-04-25 15:47, Jan Kiszka wrote:
-> On 2017-04-25 14:30, Mika Westerberg wrote:
->> On Tue, Apr 25, 2017 at 02:17:23PM +0200, Jan Kiszka wrote:
->>> I'm not ACPI guru: How do we come from a SSDT to information that is
->>> carried in the DSDT so far? How can we overload wrong information in the
->>> built in DSDT this way? I'm all ears if we could fix our (and also the
->>> Galileo) quirks like that!
->>
->> SSDT stands for Secondary System Description table which basically adds
->> stuff to DSDT (the main table). Main use for SSDTs is to add devices but
->> you can also amend an existing device in DSDT by adding methods and so
->> forth.
->>
->> In case of Galileo the SPI1 host controller happens to miss _CRS method
->> so we can use SSDT like below to add that method there:
->>
->> Scope (\_SB.PCI0.SPI1)
->> {
->>     Name (_CRS, ResourceTemplate () {
->>         GpioIo (Exclusive, PullUp, 0, 0, IoRestrictionOutputOnly,
->>                 "\\_SB.PCI0.GIP0.GPO", 0) {2} // MUX6_IO
->>     })
->>
->>     Name (_DSD, Package () {
->>         ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
->>         Package () {
->>             Package () {
->>                 "cs-gpios", Package () {^SPI1, 0, 0, 0},
->>             },
->>         }
->>     })
->> }
->>
->> This effectively means that once the table is parsed we find the SPI1
->> device with two new methods, _CRS and _DSD and the kernel is happy to
->> handle the rest.
->>
->> Important thing here is the
->>
->> 	Scope (\_SB.PCI0.SPI1)
->>
->> which allows us to reference an object in DSDT.
->>
-> 
-> Ah, now I recall: I think we discussed this before, but for a case were
-> we would need to patch an existing element that contains one wrong value
-> - that won't work. This case should, though. I'll give that a try.
-> 
+On Tue, Apr 25, 2017 at 06:12:12PM +0200, Jan Kiszka wrote:
+> Now, do you also a suggestion where to put that 5 V reference voltage
+> value that is hard-coded (via wiring) on the target boards for the ADC?
+> That is now device-specific, not a controller parameter. Is there an
+> ACPI-way to express such a parameter?
 
-Works fine via an SSDT overlay - perfect!
+You may put it into device property using _DSD (as long as you don't try
+to represent regulators or so).
 
-Now, do you also a suggestion where to put that 5 V reference voltage
-value that is hard-coded (via wiring) on the target boards for the ADC?
-That is now device-specific, not a controller parameter. Is there an
-ACPI-way to express such a parameter?
+> How would that be done for DTs?
 
-How would that be done for DTs?
+I don't know but you may look under Documentation/devicetree/bindings if
+there is anything.
 
-Plan B would be hard-coding in the code for now, waiting for a second,
-non-ACPI user to address it.
+> Plan B would be hard-coding in the code for now, waiting for a second,
+> non-ACPI user to address it.
 
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+Sounds reasonable.
