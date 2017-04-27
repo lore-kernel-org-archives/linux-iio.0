@@ -1,49 +1,198 @@
-Return-Path: <SRS0=SzcG=4D=collabora.co.uk=sebastian.reichel@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:50162 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S938853AbdD0Pae (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Apr 2017 11:30:34 -0400
 From: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
 To: Sebastian Reichel <sre@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Jean Delvare <jdelvare@suse.com>,
-	Guenter Roeck <linux@roeck-us.net>
-Cc: J Keerthy <j-keerthy@ti.com>,
-	linux-iio@vger.kernel.org,
-	linux-hwmon@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Sebastian Reichel <sebastian.reichel@collabora.co.uk>
-Subject: [PATCH 0/7] twl4030-madc cleanup
-Date: Thu, 27 Apr 2017 17:30:05 +0200
-Message-Id: <20170427153012.32310-1-sebastian.reichel@collabora.co.uk>
-List-ID: <linux-iio@vger.kernel.org>
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>
+Cc: J Keerthy <j-keerthy@ti.com>, linux-iio@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+Subject: [PATCH 1/7] hwmon: twl4030-madc: drop driver
+Date: Thu, 27 Apr 2017 17:30:06 +0200
+Message-Id: <20170427153012.32310-2-sebastian.reichel@collabora.co.uk>
+In-Reply-To: <20170427153012.32310-1-sebastian.reichel@collabora.co.uk>
+References: <20170427153012.32310-1-sebastian.reichel@collabora.co.uk>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi,
+This driver is no longer needed:
 
-Here are a few cleanup patches for the twl4030-madc
-driver, that remove the last users of the driver's
-legacy API and then remove it.
+ * It has no mainline users
+ * It has no DT support and OMAP is DT only
+ * iio-hwmon can be used for madc, which also works with DT
 
--- Sebastian
-
-Sebastian Reichel (7):
-  hwmon: twl4030-madc: drop driver
-  power: supply: avoid unused twl4030-madc.h
-  iio: adc: twl4030: Drop twl4030_get_madc_conversion()
-  iio: adc: twl4030: Unexport twl4030_madc_conversion()
-  iio: adc: twl4030: Drop struct twl4030_madc_user_parms
-  iio: adc: twl4030: Remove twl4030_madc_request.func_cb
-  iio: adc: twl4030: Fold twl4030-madc.h into driver
-
- drivers/hwmon/Kconfig                       |  10 --
- drivers/hwmon/Makefile                      |   1 -
- drivers/hwmon/twl4030-madc-hwmon.c          | 118 ----------------
- drivers/iio/adc/twl4030-madc.c              | 209 +++++++++++++++-------------
- drivers/power/supply/rx51_battery.c         |   1 -
- drivers/power/supply/twl4030_madc_battery.c |   1 -
- include/linux/i2c/twl4030-madc.h            | 147 -------------------
- 7 files changed, 115 insertions(+), 372 deletions(-)
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+---
+ drivers/hwmon/Kconfig              |  10 ----
+ drivers/hwmon/Makefile             |   1 -
+ drivers/hwmon/twl4030-madc-hwmon.c | 118 -------------------------------------
+ 3 files changed, 129 deletions(-)
  delete mode 100644 drivers/hwmon/twl4030-madc-hwmon.c
- delete mode 100644 include/linux/i2c/twl4030-madc.h
 
+diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
+index 0649d53f3d16..776d1ac2bfee 100644
+--- a/drivers/hwmon/Kconfig
++++ b/drivers/hwmon/Kconfig
+@@ -1643,16 +1643,6 @@ config SENSORS_TMP421
+ 	  This driver can also be built as a module.  If so, the module
+ 	  will be called tmp421.
+ 
+-config SENSORS_TWL4030_MADC
+-	tristate "Texas Instruments TWL4030 MADC Hwmon"
+-	depends on TWL4030_MADC
+-	help
+-	If you say yes here you get hwmon support for triton
+-	TWL4030-MADC.
+-
+-	This driver can also be built as a module. If so it will be called
+-	twl4030-madc-hwmon.
+-
+ config SENSORS_VEXPRESS
+ 	tristate "Versatile Express"
+ 	depends on VEXPRESS_CONFIG
+diff --git a/drivers/hwmon/Makefile b/drivers/hwmon/Makefile
+index 5509edf6186a..c05530d6cb6e 100644
+--- a/drivers/hwmon/Makefile
++++ b/drivers/hwmon/Makefile
+@@ -157,7 +157,6 @@ obj-$(CONFIG_SENSORS_TMP103)	+= tmp103.o
+ obj-$(CONFIG_SENSORS_TMP108)	+= tmp108.o
+ obj-$(CONFIG_SENSORS_TMP401)	+= tmp401.o
+ obj-$(CONFIG_SENSORS_TMP421)	+= tmp421.o
+-obj-$(CONFIG_SENSORS_TWL4030_MADC)+= twl4030-madc-hwmon.o
+ obj-$(CONFIG_SENSORS_VEXPRESS)	+= vexpress-hwmon.o
+ obj-$(CONFIG_SENSORS_VIA_CPUTEMP)+= via-cputemp.o
+ obj-$(CONFIG_SENSORS_VIA686A)	+= via686a.o
+diff --git a/drivers/hwmon/twl4030-madc-hwmon.c b/drivers/hwmon/twl4030-madc-hwmon.c
+deleted file mode 100644
+index b5caf7fdb487..000000000000
+--- a/drivers/hwmon/twl4030-madc-hwmon.c
++++ /dev/null
+@@ -1,118 +0,0 @@
+-/*
+- *
+- * TWL4030 MADC Hwmon driver-This driver monitors the real time
+- * conversion of analog signals like battery temperature,
+- * battery type, battery level etc. User can ask for the conversion on a
+- * particular channel using the sysfs nodes.
+- *
+- * Copyright (C) 2011 Texas Instruments Incorporated - http://www.ti.com/
+- * J Keerthy <j-keerthy@ti.com>
+- *
+- * This program is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU General Public License
+- * version 2 as published by the Free Software Foundation.
+- *
+- * This program is distributed in the hope that it will be useful, but
+- * WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+- * 02110-1301 USA
+- *
+- */
+-#include <linux/init.h>
+-#include <linux/module.h>
+-#include <linux/kernel.h>
+-#include <linux/i2c/twl.h>
+-#include <linux/device.h>
+-#include <linux/platform_device.h>
+-#include <linux/i2c/twl4030-madc.h>
+-#include <linux/hwmon.h>
+-#include <linux/hwmon-sysfs.h>
+-#include <linux/stddef.h>
+-#include <linux/sysfs.h>
+-#include <linux/err.h>
+-#include <linux/types.h>
+-
+-/*
+- * sysfs hook function
+- */
+-static ssize_t madc_read(struct device *dev,
+-			 struct device_attribute *devattr, char *buf)
+-{
+-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+-	struct twl4030_madc_request req = {
+-		.channels = 1 << attr->index,
+-		.method = TWL4030_MADC_SW2,
+-		.type = TWL4030_MADC_WAIT,
+-	};
+-	long val;
+-
+-	val = twl4030_madc_conversion(&req);
+-	if (val < 0)
+-		return val;
+-
+-	return sprintf(buf, "%d\n", req.rbuf[attr->index]);
+-}
+-
+-/* sysfs nodes to read individual channels from user side */
+-static SENSOR_DEVICE_ATTR(in0_input, S_IRUGO, madc_read, NULL, 0);
+-static SENSOR_DEVICE_ATTR(temp1_input, S_IRUGO, madc_read, NULL, 1);
+-static SENSOR_DEVICE_ATTR(in2_input, S_IRUGO, madc_read, NULL, 2);
+-static SENSOR_DEVICE_ATTR(in3_input, S_IRUGO, madc_read, NULL, 3);
+-static SENSOR_DEVICE_ATTR(in4_input, S_IRUGO, madc_read, NULL, 4);
+-static SENSOR_DEVICE_ATTR(in5_input, S_IRUGO, madc_read, NULL, 5);
+-static SENSOR_DEVICE_ATTR(in6_input, S_IRUGO, madc_read, NULL, 6);
+-static SENSOR_DEVICE_ATTR(in7_input, S_IRUGO, madc_read, NULL, 7);
+-static SENSOR_DEVICE_ATTR(in8_input, S_IRUGO, madc_read, NULL, 8);
+-static SENSOR_DEVICE_ATTR(in9_input, S_IRUGO, madc_read, NULL, 9);
+-static SENSOR_DEVICE_ATTR(curr10_input, S_IRUGO, madc_read, NULL, 10);
+-static SENSOR_DEVICE_ATTR(in11_input, S_IRUGO, madc_read, NULL, 11);
+-static SENSOR_DEVICE_ATTR(in12_input, S_IRUGO, madc_read, NULL, 12);
+-static SENSOR_DEVICE_ATTR(in15_input, S_IRUGO, madc_read, NULL, 15);
+-
+-static struct attribute *twl4030_madc_attrs[] = {
+-	&sensor_dev_attr_in0_input.dev_attr.attr,
+-	&sensor_dev_attr_temp1_input.dev_attr.attr,
+-	&sensor_dev_attr_in2_input.dev_attr.attr,
+-	&sensor_dev_attr_in3_input.dev_attr.attr,
+-	&sensor_dev_attr_in4_input.dev_attr.attr,
+-	&sensor_dev_attr_in5_input.dev_attr.attr,
+-	&sensor_dev_attr_in6_input.dev_attr.attr,
+-	&sensor_dev_attr_in7_input.dev_attr.attr,
+-	&sensor_dev_attr_in8_input.dev_attr.attr,
+-	&sensor_dev_attr_in9_input.dev_attr.attr,
+-	&sensor_dev_attr_curr10_input.dev_attr.attr,
+-	&sensor_dev_attr_in11_input.dev_attr.attr,
+-	&sensor_dev_attr_in12_input.dev_attr.attr,
+-	&sensor_dev_attr_in15_input.dev_attr.attr,
+-	NULL
+-};
+-ATTRIBUTE_GROUPS(twl4030_madc);
+-
+-static int twl4030_madc_hwmon_probe(struct platform_device *pdev)
+-{
+-	struct device *hwmon;
+-
+-	hwmon = devm_hwmon_device_register_with_groups(&pdev->dev,
+-						       "twl4030_madc", NULL,
+-						       twl4030_madc_groups);
+-	return PTR_ERR_OR_ZERO(hwmon);
+-}
+-
+-static struct platform_driver twl4030_madc_hwmon_driver = {
+-	.probe = twl4030_madc_hwmon_probe,
+-	.driver = {
+-		   .name = "twl4030_madc_hwmon",
+-		   },
+-};
+-
+-module_platform_driver(twl4030_madc_hwmon_driver);
+-
+-MODULE_DESCRIPTION("TWL4030 ADC Hwmon driver");
+-MODULE_LICENSE("GPL");
+-MODULE_AUTHOR("J Keerthy");
+-MODULE_ALIAS("platform:twl4030_madc_hwmon");
 -- 
 2.11.0
+
