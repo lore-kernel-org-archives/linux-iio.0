@@ -1,50 +1,62 @@
-Return-Path: <SRS0=b0q2=4A=infradead.org=rdunlap@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37682 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750763AbdD0Fd5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Apr 2017 01:33:57 -0400
 Subject: Re: [PATCH v2] tools/iio: Use include/uapi with __EXPORTED_HEADERS__
-To: Sekhar Nori <nsekhar@ti.com>, Jonathan Cameron <jic23@kernel.org>
+To: Sekhar Nori <nsekhar@ti.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Randy Dunlap <rdunlap@infradead.org>
 References: <5cfc29b0d8fa6c5bd97e59f7ab0ff718132efdec.1492777014.git.nsekhar@ti.com>
- <0a357589-7169-5cff-e842-657b52049b15@infradead.org>
- <f257820e-7010-72d8-c005-924a158ee4c1@ti.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-From: Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <fd6f4279-949d-ef4d-e348-bd79804b4efe@infradead.org>
-Date: Mon, 24 Apr 2017 08:30:16 -0700
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <69250d97-707a-ff2f-ce74-f049bc42faf1@kernel.org>
+Date: Thu, 27 Apr 2017 06:33:52 +0100
 MIME-Version: 1.0
-In-Reply-To: <f257820e-7010-72d8-c005-924a158ee4c1@ti.com>
-Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <5cfc29b0d8fa6c5bd97e59f7ab0ff718132efdec.1492777014.git.nsekhar@ti.com>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 04/24/17 04:40, Sekhar Nori wrote:
-> Hi Randy,
+On 21/04/17 13:31, Sekhar Nori wrote:
+> Use the local uapi headers to keep in sync with "recently" added enum
+> values like IIO_UVINDEX.
 > 
-> On Sunday 23 April 2017 07:52 AM, Randy Dunlap wrote:
->> On 04/21/17 05:31, Sekhar Nori wrote:
->>> Use the local uapi headers to keep in sync with "recently" added enum
->>> values like IIO_UVINDEX.
->>>
->>> Build tested using:
->>> $ make -C <kernelsrcdir> tools/iio
->>> $ make -C <kernelsrcdir>/tools iio
->>> $ make -C <kernelsrcdir>/tools/iio
->>
->> Hi,
->> Did you do any testing with O=<outputdir> ?
+> Build tested using:
+> $ make -C <kernelsrcdir> tools/iio
+> $ make -C <kernelsrcdir>/tools iio
+> $ make -C <kernelsrcdir>/tools/iio
 > 
-> I hadn't, but I just checked with:
+> This follows a strategy similar to that used by tools/hv, tools/net and
+> tools/leds among others.
 > 
-> $ make -C <kernelsrcdir>/tools iio O=<outputdir>
-> 
-> Although there is an iio folder created under <outputdir>, the actual
-> binaries are still built under <kernelsrcdir>/tools/iio. So I think
-> there is some more work to be done to respect the O= option passed from
-> command line.
-> 
-> The behavior remains same with or without my patch.
+> Cc: Randy Dunlap <rdunlap@infradead.org>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Signed-off-by: Sekhar Nori <nsekhar@ti.com>
+Applied to the togreg branch of iio.git and pushed out as testing for the
+autobuilders to ignore it.
 
-Yes, agreed.  This is a common problem in tools.
+Jonathan
+> ---
+> Change since v1:
+> Shift to a strategy similar to that used by other makefiles in
+> tools/ folder. v1 posting here: https://patchwork.kernel.org/patch/9674937/
+> 
+>  tools/iio/Makefile | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/tools/iio/Makefile b/tools/iio/Makefile
+> index 5446d625e17d..8f08e03a9a5e 100644
+> --- a/tools/iio/Makefile
+> +++ b/tools/iio/Makefile
+> @@ -1,5 +1,5 @@
+>  CC = $(CROSS_COMPILE)gcc
+> -CFLAGS += -Wall -g -D_GNU_SOURCE
+> +CFLAGS += -Wall -g -D_GNU_SOURCE -D__EXPORTED_HEADERS__ -I../../include/uapi -I../../include
+>  
+>  BINDIR=usr/bin
+>  INSTALL_PROGRAM=install -m 755 -p
+> 
 
-Thanks.
-
--- 
-~Randy
