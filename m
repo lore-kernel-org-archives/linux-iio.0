@@ -1,35 +1,35 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f196.google.com ([209.85.192.196]:34471 "EHLO
-        mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1030213AbdDZVMe (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Apr 2017 17:12:34 -0400
-Date: Wed, 26 Apr 2017 14:12:31 -0700
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Received: from mail-wm0-f49.google.com ([74.125.82.49]:37443 "EHLO
+        mail-wm0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932707AbdD0ID6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Apr 2017 04:03:58 -0400
+Received: by mail-wm0-f49.google.com with SMTP id m123so10413198wma.0
+        for <linux-iio@vger.kernel.org>; Thu, 27 Apr 2017 01:03:57 -0700 (PDT)
+Date: Thu, 27 Apr 2017 09:03:54 +0100
+From: Lee Jones <lee.jones@linaro.org>
 To: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>, Marek Vasut <marex@denx.de>,
-        linux-input@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-iio@vger.kernel.org
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+        Marek Vasut <marex@denx.de>, linux-input@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-iio@vger.kernel.org
 Subject: Re: [PATCH 2/2] input: touchscreen: mxs-lradc: || vs && typos
-Message-ID: <20170426211231.GA34586@dtor-ws>
+Message-ID: <20170427080354.ltqoisfnnnrdki24@dell>
 References: <20170426210431.mqze5ehrijm7l2ey@mwanda>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 In-Reply-To: <20170426210431.mqze5ehrijm7l2ey@mwanda>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Apr 27, 2017 at 12:04:31AM +0300, Dan Carpenter wrote:
+On Thu, 27 Apr 2017, Dan Carpenter wrote:
+
 > These tests are meaningless as is because "adapt" can't possibly be both
 > less than 1 and greater than 32.
 > 
 > Fixes: d81ca730e3e4 ("input: touchscreen: mxs-lradc: Add support for touchscreen")
 > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> 
 
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-
-Lee, could you take this one?
+Applied, thanks.
 
 > diff --git a/drivers/input/touchscreen/mxs-lradc-ts.c b/drivers/input/touchscreen/mxs-lradc-ts.c
 > index ff9cda29d9a0..369ef83234ef 100644
@@ -63,7 +63,8 @@ Lee, could you take this one?
 >  		} else {
 >  			dev_err(ts->dev, "Invalid settling delay (%u)\n",
 
-Thanks.
-
 -- 
-Dmitry
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
