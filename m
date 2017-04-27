@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:50193 "EHLO
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:50200 "EHLO
         bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S968341AbdD0PbL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Apr 2017 11:31:11 -0400
+        with ESMTP id S968308AbdD0Pau (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Apr 2017 11:30:50 -0400
 From: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
 To: Sebastian Reichel <sre@kernel.org>,
         Jonathan Cameron <jic23@kernel.org>,
@@ -14,36 +14,151 @@ To: Sebastian Reichel <sre@kernel.org>,
 Cc: J Keerthy <j-keerthy@ti.com>, linux-iio@vger.kernel.org,
         linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
         Sebastian Reichel <sebastian.reichel@collabora.co.uk>
-Subject: [PATCH 5/7] iio: adc: twl4030: Drop struct twl4030_madc_user_parms
-Date: Thu, 27 Apr 2017 17:30:10 +0200
-Message-Id: <20170427153012.32310-6-sebastian.reichel@collabora.co.uk>
+Subject: [PATCH 6/7] iio: adc: twl4030: Remove twl4030_madc_request.func_cb
+Date: Thu, 27 Apr 2017 17:30:11 +0200
+Message-Id: <20170427153012.32310-7-sebastian.reichel@collabora.co.uk>
 In-Reply-To: <20170427153012.32310-1-sebastian.reichel@collabora.co.uk>
 References: <20170427153012.32310-1-sebastian.reichel@collabora.co.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This struct is no longer used by anything in the kernel.
+This functionality is not used by the IIO subsystem. Due
+to removal of legacy API it can also be removed.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
 ---
- include/linux/i2c/twl4030-madc.h | 6 ------
- 1 file changed, 6 deletions(-)
+ drivers/iio/adc/twl4030-madc.c   | 70 ----------------------------------------
+ include/linux/i2c/twl4030-madc.h |  1 -
+ 2 files changed, 71 deletions(-)
 
+diff --git a/drivers/iio/adc/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
+index be60f76d1a50..21df5b932bd1 100644
+--- a/drivers/iio/adc/twl4030-madc.c
++++ b/drivers/iio/adc/twl4030-madc.c
+@@ -86,7 +86,6 @@ static int twl4030_madc_read(struct iio_dev *iio_dev,
+ 
+ 	req.channels = BIT(chan->channel);
+ 	req.active = false;
+-	req.func_cb = NULL;
+ 	req.type = TWL4030_MADC_WAIT;
+ 	req.raw = !(mask == IIO_CHAN_INFO_PROCESSED);
+ 	req.do_avg = (mask == IIO_CHAN_INFO_AVERAGE_RAW);
+@@ -343,37 +342,6 @@ static int twl4030_madc_read_channels(struct twl4030_madc_data *madc,
+ }
+ 
+ /*
+- * Enables irq.
+- * @madc - pointer to twl4030_madc_data struct
+- * @id - irq number to be enabled
+- * can take one of TWL4030_MADC_RT, TWL4030_MADC_SW1, TWL4030_MADC_SW2
+- * corresponding to RT, SW1, SW2 conversion requests.
+- * If the i2c read fails it returns an error else returns 0.
+- */
+-static int twl4030_madc_enable_irq(struct twl4030_madc_data *madc, u8 id)
+-{
+-	u8 val;
+-	int ret;
+-
+-	ret = twl_i2c_read_u8(TWL4030_MODULE_MADC, &val, madc->imr);
+-	if (ret) {
+-		dev_err(madc->dev, "unable to read imr register 0x%X\n",
+-			madc->imr);
+-		return ret;
+-	}
+-
+-	val &= ~(1 << id);
+-	ret = twl_i2c_write_u8(TWL4030_MODULE_MADC, val, madc->imr);
+-	if (ret) {
+-		dev_err(madc->dev,
+-			"unable to write imr register 0x%X\n", madc->imr);
+-		return ret;
+-	}
+-
+-	return 0;
+-}
+-
+-/*
+  * Disables irq.
+  * @madc - pointer to twl4030_madc_data struct
+  * @id - irq number to be disabled
+@@ -442,11 +410,6 @@ static irqreturn_t twl4030_madc_threaded_irq_handler(int irq, void *_madc)
+ 		/* Read results */
+ 		len = twl4030_madc_read_channels(madc, method->rbase,
+ 						 r->channels, r->rbuf, r->raw);
+-		/* Return results to caller */
+-		if (r->func_cb != NULL) {
+-			r->func_cb(len, r->channels, r->rbuf);
+-			r->func_cb = NULL;
+-		}
+ 		/* Free request */
+ 		r->result_pending = 0;
+ 		r->active = 0;
+@@ -468,11 +431,6 @@ static irqreturn_t twl4030_madc_threaded_irq_handler(int irq, void *_madc)
+ 		/* Read results */
+ 		len = twl4030_madc_read_channels(madc, method->rbase,
+ 						 r->channels, r->rbuf, r->raw);
+-		/* Return results to caller */
+-		if (r->func_cb != NULL) {
+-			r->func_cb(len, r->channels, r->rbuf);
+-			r->func_cb = NULL;
+-		}
+ 		/* Free request */
+ 		r->result_pending = 0;
+ 		r->active = 0;
+@@ -482,23 +440,6 @@ static irqreturn_t twl4030_madc_threaded_irq_handler(int irq, void *_madc)
+ 	return IRQ_HANDLED;
+ }
+ 
+-static int twl4030_madc_set_irq(struct twl4030_madc_data *madc,
+-				struct twl4030_madc_request *req)
+-{
+-	struct twl4030_madc_request *p;
+-	int ret;
+-
+-	p = &madc->requests[req->method];
+-	memcpy(p, req, sizeof(*req));
+-	ret = twl4030_madc_enable_irq(madc, req->method);
+-	if (ret < 0) {
+-		dev_err(madc->dev, "enable irq failed!!\n");
+-		return ret;
+-	}
+-
+-	return 0;
+-}
+-
+ /*
+  * Function which enables the madc conversion
+  * by writing to the control register.
+@@ -607,17 +548,6 @@ static int twl4030_madc_conversion(struct twl4030_madc_request *req)
+ 			goto out;
+ 		}
+ 	}
+-	if (req->type == TWL4030_MADC_IRQ_ONESHOT && req->func_cb != NULL) {
+-		ret = twl4030_madc_set_irq(twl4030_madc, req);
+-		if (ret < 0)
+-			goto out;
+-		ret = twl4030_madc_start_conversion(twl4030_madc, req->method);
+-		if (ret < 0)
+-			goto out;
+-		twl4030_madc->requests[req->method].active = 1;
+-		ret = 0;
+-		goto out;
+-	}
+ 	/* With RT method we should not be here anymore */
+ 	if (req->method == TWL4030_MADC_RT) {
+ 		ret = -EINVAL;
 diff --git a/include/linux/i2c/twl4030-madc.h b/include/linux/i2c/twl4030-madc.h
-index be9260e261ac..f395700fb933 100644
+index f395700fb933..34e94747b61e 100644
 --- a/include/linux/i2c/twl4030-madc.h
 +++ b/include/linux/i2c/twl4030-madc.h
-@@ -135,10 +135,4 @@ enum sample_type {
- #define TWL4030_REG_GPBR1		0x0c
- #define TWL4030_GPBR1_MADC_HFCLK_EN	(1 << 7)
+@@ -51,7 +51,6 @@ struct twl4030_madc_request {
+ 	bool result_pending;
+ 	bool raw;
+ 	int rbuf[TWL4030_MADC_MAX_CHANNELS];
+-	void (*func_cb)(int len, int channels, int *buf);
+ };
  
--struct twl4030_madc_user_parms {
--	int channel;
--	int average;
--	int status;
--	u16 result;
--};
- #endif
+ enum conversion_methods {
 -- 
 2.11.0
 
