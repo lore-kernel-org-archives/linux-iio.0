@@ -1,29 +1,33 @@
-Return-Path: <SRS0=zo7l=4A=microchip.com=Ludovic.Desroches@kernel.org>
-Date: Mon, 24 Apr 2017 11:06:10 +0200
-From: Ludovic Desroches <ludovic.desroches@microchip.com>
-To: Eugen Hristev <eugen.hristev@microchip.com>
-CC: <nicolas.ferre@microchip.com>, <alexandre.belloni@free-electrons.com>,
-	<linux-iio@vger.kernel.org>, <jic23@kernel.org>, <lars@metafoo.de>,
-	<linux-arm-kernel@lists.infradead.org>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <ludovic.desroches@microchip.com>
-Subject: Re: [PATCH 2/3] iio: adc: at91-sama5d2_adc: add hw trigger and
- buffer support
-Message-ID: <20170424090610.6axxhv2lg5dnurvj@rfolt0960.corp.atmel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37607 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1161852AbdD0FSt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Apr 2017 01:18:49 -0400
+Subject: Re: [PATCH 2/3] iio: adc: at91-sama5d2_adc: add hw trigger and buffer
+ support
+To: Eugen Hristev <eugen.hristev@microchip.com>,
+        nicolas.ferre@microchip.com, alexandre.belloni@free-electrons.com,
+        linux-iio@vger.kernel.org, lars@metafoo.de,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc: ludovic.desroches@microchip.com
 References: <1492590045-17329-1-git-send-email-eugen.hristev@microchip.com>
  <1492590045-17329-3-git-send-email-eugen.hristev@microchip.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <dec1b912-970f-f34f-6b7f-72607455396d@kernel.org>
+Date: Thu, 27 Apr 2017 06:18:43 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 In-Reply-To: <1492590045-17329-3-git-send-email-eugen.hristev@microchip.com>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, Apr 19, 2017 at 11:20:44AM +0300, Eugen Hristev wrote:
+On 19/04/17 09:20, Eugen Hristev wrote:
 > Added support for the external hardware trigger on pin ADTRG,
 > integrated the three possible edge triggers into the subsystem
 > and created buffer management for data retrieval
 > 
 > Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-Acked-by: Ludovic Desroches <ludovic.desroches@microchip.com>
-
 > ---
 >  drivers/iio/adc/at91-sama5d2_adc.c | 207 ++++++++++++++++++++++++++++++++++++-
 >  1 file changed, 204 insertions(+), 3 deletions(-)
@@ -171,10 +175,17 @@ Acked-by: Ludovic Desroches <ludovic.desroches@microchip.com>
 > +	if (!state) {
 > +		at91_adc_writel(st, AT91_SAMA5D2_TRGR, status);
 > +		kfree(st->buffer);
+Would normally expect to see elements related to the buffer in the
+preenable callback for the buffer. In this case it might not make
+much difference, but that's conceptually where it belongs.
 > +		return 0;
 > +	}
 > +
 > +	st->buffer = kmalloc(indio->scan_bytes, GFP_KERNEL);
+How big does this get?  I'd be tempted to just use a fixed size big 
+enough to take the maximum possible.  Will probably end up more
+efficient than allocating it separately.  Not to mention slightly
+simplified code.
 > +	if (!st->buffer)
 > +		return -ENOMEM;
 > +
@@ -234,6 +245,8 @@ Acked-by: Ludovic Desroches <ludovic.desroches@microchip.com>
 > +	st->trig = devm_kzalloc(&indio->dev,
 > +				AT91_SAMA5D2_HW_TRIG_CNT * sizeof(*st->trig),
 > +				GFP_KERNEL);
+Given it's a fixed sized allocation, why not just make the resulting array
+part of st directly?
 > +
 > +	if (!st->trig) {
 > +		dev_err(&indio->dev, "could not allocate trig list memory\n");
@@ -276,6 +289,15 @@ Acked-by: Ludovic Desroches <ludovic.desroches@microchip.com>
 > +	at91_adc_readl(st, AT91_SAMA5D2_LCDR);
 > +
 > +	enable_irq(st->irq);
+Unusual to have to disable the irq until this point.  Firstly
+if you did need to do this, it should be in the tryreeenable callback.
+You haven't restricted this trigger to just this device, so other
+drivers could be hanging of it.
+
+Secondly this irq is always defined to be a threaded oneshot irq
+so it should be nicely masked anyway.
+
+
 > +
 > +	return IRQ_HANDLED;
 > +}
@@ -285,6 +307,9 @@ Acked-by: Ludovic Desroches <ludovic.desroches@microchip.com>
 > +	return devm_iio_triggered_buffer_setup(&indio->dev, indio,
 > +			&iio_pollfunc_store_time,
 > +			&at91_adc_trigger_handler, NULL);
+This particular wrapper doesn't seem to add much over having it
+inline. I'd be tempted to drop it but unimportant if you'd rather
+keep it.
 > +}
 > +
 >  static unsigned at91_adc_startup_time(unsigned startup_time_min,
@@ -317,7 +342,7 @@ Acked-by: Ludovic Desroches <ludovic.desroches@microchip.com>
 >  
 >  	st = iio_priv(indio_dev);
 >  
-> +	st->trigger_list = at91_adc_trigger_list;
+> +	st->trigger_list = at91_adc_trigger_list;Given it's const, why not just use it directly?
 > +
 >  	ret = of_property_read_u32(pdev->dev.of_node,
 >  				   "atmel,min-sample-rate-hz",
@@ -341,6 +366,5 @@ Acked-by: Ludovic Desroches <ludovic.desroches@microchip.com>
 >  	ret = iio_device_register(indio_dev);
 >  	if (ret < 0)
 >  		goto per_clk_disable_unprepare;
-> -- 
-> 2.7.4
 > 
+
