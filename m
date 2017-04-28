@@ -1,151 +1,80 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35050 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1165080AbdD3RBk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Apr 2017 13:01:40 -0400
-Subject: Re: [PATCH v2 2/2] iio: imu: st_lsm6dsx: add system power management
- support
-To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-Cc: linux-iio@vger.kernel.org, lorenzo.bianconi@st.com
-References: <20170427203156.18637-1-lorenzo.bianconi@st.com>
- <20170427203156.18637-3-lorenzo.bianconi@st.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5b516fe3-2485-a175-bd44-68332b3427a8@kernel.org>
-Date: Sun, 30 Apr 2017 18:01:36 +0100
+Return-Path: <SRS0=f6FN=4E=collabora.co.uk=sebastian.reichel@kernel.org>
+From: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+To: Sebastian Reichel <sre@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Brian Masney <masneyb@onstation.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org,
+	Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+Subject: [PATCH] staging: iio: isl29028: add isl29030 support
+Date: Fri, 28 Apr 2017 17:55:58 +0200
+Message-Id: <20170428155558.17723-1-sebastian.reichel@collabora.co.uk>
 MIME-Version: 1.0
-In-Reply-To: <20170427203156.18637-3-lorenzo.bianconi@st.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 27/04/17 21:31, Lorenzo Bianconi wrote:
-> Add system sleep power management support to st_lsm6dsx driver.
-> In particular during suspend phase each sensor is disabled and
-> hw fifo is configured in bypass in order to avoid subsequent
-> I/O operations. The patch has been tested on HiKey board device
-> 
-> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
-Applied to the togreg branch of iio.git and pushed out as testing for the
-auto builders to play with it.
+isl29030 is basically the same chip. The only difference
+is the chip's first pin. For isl29028 its named ADDR0 and
+can be used to change the chip's i2c address. For isl29030
+on the other hand that pin is named Ials and is an analog
+current output proportional to ALS/IR. This change is
+irrelevant for the Linux driver.
 
-Thanks,
+This has been tested on Motorola Droid 4.
 
-jonathan
-> ---
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h      |  2 ++
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 54 ++++++++++++++++++++++++++++
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c  |  1 +
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c  |  1 +
->  4 files changed, 58 insertions(+)
-> 
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-> index 7778520..46352c7 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-> @@ -135,6 +135,8 @@ struct st_lsm6dsx_hw {
->  #endif /* CONFIG_SPI_MASTER */
->  };
->  
-> +extern const struct dev_pm_ops st_lsm6dsx_pm_ops;
-> +
->  int st_lsm6dsx_probe(struct device *dev, int irq, int hw_id, const char *name,
->  		     const struct st_lsm6dsx_transfer_function *tf_ops);
->  int st_lsm6dsx_sensor_enable(struct st_lsm6dsx_sensor *sensor);
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> index 462a27b..1b53848 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> @@ -36,6 +36,7 @@
->  #include <linux/delay.h>
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
-> +#include <linux/pm.h>
->  
->  #include <linux/platform_data/st_sensors_pdata.h>
->  
-> @@ -731,6 +732,59 @@ int st_lsm6dsx_probe(struct device *dev, int irq, int hw_id, const char *name,
->  }
->  EXPORT_SYMBOL(st_lsm6dsx_probe);
->  
-> +#ifdef CONFIG_PM
-> +static int st_lsm6dsx_suspend(struct device *dev)
-> +{
-> +	struct st_lsm6dsx_hw *hw = dev_get_drvdata(dev);
-> +	struct st_lsm6dsx_sensor *sensor;
-> +	int i, err = 0;
-> +
-> +	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++) {
-> +		sensor = iio_priv(hw->iio_devs[i]);
-> +		if (!(hw->enable_mask & BIT(sensor->id)))
-> +			continue;
-> +
-> +		err = st_lsm6dsx_write_with_mask(hw,
-> +				st_lsm6dsx_odr_table[sensor->id].reg.addr,
-> +				st_lsm6dsx_odr_table[sensor->id].reg.mask, 0);
-> +		if (err < 0)
-> +			return err;
-> +	}
-> +
-> +	if (hw->fifo_mode != ST_LSM6DSX_FIFO_BYPASS)
-> +		err = st_lsm6dsx_flush_fifo(hw);
-> +
-> +	return err;
-> +}
-> +
-> +static int st_lsm6dsx_resume(struct device *dev)
-> +{
-> +	struct st_lsm6dsx_hw *hw = dev_get_drvdata(dev);
-> +	struct st_lsm6dsx_sensor *sensor;
-> +	int i, err = 0;
-> +
-> +	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++) {
-> +		sensor = iio_priv(hw->iio_devs[i]);
-> +		if (!(hw->enable_mask & BIT(sensor->id)))
-> +			continue;
-> +
-> +		err = st_lsm6dsx_set_odr(sensor, sensor->odr);
-> +		if (err < 0)
-> +			return err;
-> +	}
-> +
-> +	if (hw->enable_mask)
-> +		err = st_lsm6dsx_set_fifo_mode(hw, ST_LSM6DSX_FIFO_CONT);
-> +
-> +	return err;
-> +}
-> +#endif /* CONFIG_PM */
-> +
-> +const struct dev_pm_ops st_lsm6dsx_pm_ops = {
-> +	SET_SYSTEM_SLEEP_PM_OPS(st_lsm6dsx_suspend, st_lsm6dsx_resume)
-> +};
-> +EXPORT_SYMBOL(st_lsm6dsx_pm_ops);
-> +
->  MODULE_AUTHOR("Lorenzo Bianconi <lorenzo.bianconi@st.com>");
->  MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
->  MODULE_DESCRIPTION("STMicroelectronics st_lsm6dsx driver");
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-> index 09a51cf..305fec7 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-> @@ -98,6 +98,7 @@ MODULE_DEVICE_TABLE(i2c, st_lsm6dsx_i2c_id_table);
->  static struct i2c_driver st_lsm6dsx_driver = {
->  	.driver = {
->  		.name = "st_lsm6dsx_i2c",
-> +		.pm = &st_lsm6dsx_pm_ops,
->  		.of_match_table = of_match_ptr(st_lsm6dsx_i2c_of_match),
->  	},
->  	.probe = st_lsm6dsx_i2c_probe,
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
-> index f765a50..95472f1 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
-> @@ -115,6 +115,7 @@ MODULE_DEVICE_TABLE(spi, st_lsm6dsx_spi_id_table);
->  static struct spi_driver st_lsm6dsx_driver = {
->  	.driver = {
->  		.name = "st_lsm6dsx_spi",
-> +		.pm = &st_lsm6dsx_pm_ops,
->  		.of_match_table = of_match_ptr(st_lsm6dsx_spi_of_match),
->  	},
->  	.probe = st_lsm6dsx_spi_probe,
-> 
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+---
+ Documentation/devicetree/bindings/i2c/trivial-devices.txt | 1 +
+ drivers/staging/iio/light/isl29028.c                      | 6 ++++++
+ 2 files changed, 7 insertions(+)
 
+diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+index ad10fbe61562..010e2ac43f62 100644
+--- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
++++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+@@ -55,6 +55,7 @@ gmt,g751		G751: Digital Temperature Sensor and Thermal Watchdog with Two-Wire In
+ infineon,slb9635tt	Infineon SLB9635 (Soft-) I2C TPM (old protocol, max 100khz)
+ infineon,slb9645tt	Infineon SLB9645 I2C TPM (new protocol, max 400khz)
+ isil,isl29028		Intersil ISL29028 Ambient Light and Proximity Sensor
++isil,isl29030		Intersil ISL29030 Ambient Light and Proximity Sensor
+ maxim,ds1050		5 Bit Programmable, Pulse-Width Modulator
+ maxim,max1237		Low-Power, 4-/12-Channel, 2-Wire Serial, 12-Bit ADCs
+ maxim,max6625		9-Bit/12-Bit Temperature Sensors with I²C-Compatible Serial Interface
+diff --git a/drivers/staging/iio/light/isl29028.c b/drivers/staging/iio/light/isl29028.c
+index 6bb6d37cc7d1..564a62e54b05 100644
+--- a/drivers/staging/iio/light/isl29028.c
++++ b/drivers/staging/iio/light/isl29028.c
+@@ -15,6 +15,10 @@
+  *
+  * You should have received a copy of the GNU General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ *
++ * Datasheets:
++ *  - http://www.intersil.com/content/dam/Intersil/documents/isl2/isl29028.pdf
++ *  - http://www.intersil.com/content/dam/Intersil/documents/isl2/isl29030.pdf
+  */
+ 
+ #include <linux/module.h>
+@@ -651,6 +655,7 @@ static const struct dev_pm_ops isl29028_pm_ops = {
+ 
+ static const struct i2c_device_id isl29028_id[] = {
+ 	{"isl29028", 0},
++	{"isl29030", 0},
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(i2c, isl29028_id);
+@@ -658,6 +663,7 @@ MODULE_DEVICE_TABLE(i2c, isl29028_id);
+ static const struct of_device_id isl29028_of_match[] = {
+ 	{ .compatible = "isl,isl29028", }, /* for backward compat., don't use */
+ 	{ .compatible = "isil,isl29028", },
++	{ .compatible = "isil,isl29030", },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, isl29028_of_match);
+-- 
+2.11.0
