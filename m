@@ -1,129 +1,62 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58621 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1435152AbdDZG7y (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Apr 2017 02:59:54 -0400
-Subject: Re: [PATCH 2/2] iio: adc: Allow setting Shunt Voltage PGA gain and
- Bus Voltage range
-From: Jonathan Cameron <jic23@kernel.org>
-To: Stefan Bruens <stefan.bruens@rwth-aachen.de>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Hartmut Knaack <knaack.h@gmx.de>,
+Received: from mx-out-1.rwth-aachen.de ([134.130.5.186]:38322 "EHLO
+        mx-out-1.rwth-aachen.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1035207AbdD2Uha (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 29 Apr 2017 16:37:30 -0400
+From: Stefan Bruens <stefan.bruens@rwth-aachen.de>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "Hartmut Knaack" <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        "Peter Meerwald-Stadler" <pmeerw@pmeerw.net>,
         Marc Titinger <mtitinger@baylibre.com>
-References: <20170412030140.9328-1-stefan.bruens@rwth-aachen.de>
- <81f81a0af7dd420db51f97d9be4dcbad@rwthex-w2-b.rwth-ad.de>
- <9c003dd5-d3f9-0652-4f89-fe259ba5f8ea@kernel.org>
- <8597867.ugCcYUdi7l@pebbles.site>
- <c94eddda-9d22-2f9a-a31d-9c7ae5e58440@kernel.org>
-Message-ID: <5135aead-65d6-35b2-8fed-f8ed2024cd51@kernel.org>
-Date: Wed, 26 Apr 2017 07:59:47 +0100
+Subject: Re: [PATCH 2/2] iio: adc: Allow setting Shunt Voltage PGA gain and Bus Voltage range
+Date: Sat, 29 Apr 2017 22:37:27 +0200
+Message-ID: <9342701.uSTzCLhmiO@pebbles.site>
+In-Reply-To: <5135aead-65d6-35b2-8fed-f8ed2024cd51@kernel.org>
+References: <20170412030140.9328-1-stefan.bruens@rwth-aachen.de> <c94eddda-9d22-2f9a-a31d-9c7ae5e58440@kernel.org> <5135aead-65d6-35b2-8fed-f8ed2024cd51@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <c94eddda-9d22-2f9a-a31d-9c7ae5e58440@kernel.org>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="iso-8859-1"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 26/04/17 07:19, Jonathan Cameron wrote:
-> On 17/04/17 23:08, Stefan Bruens wrote:
->> On Freitag, 14. April 2017 17:12:03 CEST Jonathan Cameron wrote:
->>> On 12/04/17 04:01, Stefan BrÃ¼ns wrote:
->>>> Reducing shunt and bus voltage range improves the accuracy, so allow
->>>> altering the default settings.
->>>>
->>>> Signed-off-by: Stefan BrÃ¼ns <stefan.bruens@rwth-aachen.de>
->>>
->>> Hi Stefan,
->>>
->>> There is new userspace ABI in here, so starting point is to document that.
->>>
->>> That would allow the discussion of whether it is the right ABI to begin.
->>>
->>> In particular can one of these at least be rolled into the standard
->>> scale attributes that are already supported by the driver?
->>> It looks to me like they both probably can - perhaps in conjunction with
->>> use of the _available callback to notify userspace the range available from
->>> _raw thus allowing easy computation of the range you are providing.
->>>
->>> Keeping new ABI to a minimum makes life a lot easier for userspace tooling!
->>>
->>> I particularly love the way it's described in the datasheet as a gain
->>> for the shunt voltage but a range for the bus voltage - despite being the
->>> same PGA (at least in the symbolic representation).
->>
->> Unfortunately, correct use of raw and scale is somewhat underdocumented. I 
->> would expect the raw values to reflect the value read from the device, 
->> unaltered.
-> The raw value will indeed give you that.  The _available callbacks provide
-> the range of a particular value.  They are rather undocumented though and
-> rather new which is indeed less than ideal.
+On Mittwoch, 26. April 2017 08:59:47 CEST Jonathan Cameron wrote:
+> On 26/04/17 07:19, Jonathan Cameron wrote:
+> > On 17/04/17 23:08, Stefan Bruens wrote:
+> >> On Freitag, 14. April 2017 17:12:03 CEST Jonathan Cameron wrote:
+[...]
+> > 
+> >> 4. Any user of the gain settings had to be made aware of the possibility
+> >> to
+> >> change it, no matter how it is exposed. Making it part of the scale, and
+> >> thus changing the meaning of the raw values, would be breaking the
+> >> existing ABI.> 
+> > The raw values should indeed not change.  That was a missunderstanding on
+> > my part.  Usually when a device has a PGA it is not compensated for in
+> > the output. So normally it's up to the driver to 'apply' the effective
+> > gain to the incoming reading.  When that isn't the case, it can be
+> > considered some sort of internal trim - hence the use of calibscale for
+> > this case.
+> Mulling this over, calibscale might not work either in this case. The
+> datasheet helpfully sometimes uses ranges and sometimes uses scale factors.
+> There is also obviously the calibration register kicking around which would
+> also be handled with calibscale if exposed to userspace (currently it isn't)
 > 
-> Correct use of raw and scale themselves is pretty well covered by the ABI
-> docs.
-> Documentation/ABI/testing/sysfs-bus-iio*
-> 
->>
->> For the INA226, all value registers are 16 bit, while for the INA219 the 
->> voltage register is 13bit (msb aligned, lowest 3 bits from the register are 
->> masked), the other 3 registers are 16 bit as well.
->>
->> The INA219 incorporates the bus range and shunt voltage gain in the register 
->> value, i.e. the shunt voltage value 0x0100 always corresponds to 256 * 10uV, 
->> irrespective of the PGA setting.
-> Ah. I hadn't realised that.  In that case the standard approach for this
-> is to use calibscale which reflects changes that are within the hardware
-> but not in the resulting _raw values (i.e. devices that apply the scale
-> internally only)
->>
->> I think its a bad idea to incorporate the gain settings into the scale 
->> attribute:
->> 1. Raw values would no longer be raw values
-> I think this one is me being unclear in my original response.
->> 2. Scale for the INA219 would be settable, but readonly for the INA226
-> That's not really a problem...
-> 
->> 3. If the device has a gain setting, it should be exposed as such, and names 
->> should correspond to the datasheet
-> Not necessarily. The aim here is to produce a single unified (and normally
-> minimal) ABI for all devices.  If a particular datasheet takes one particular
-> naming they user should not be obliged to get out said datasheet to find
-> out what it means.  Some of the early parts we supported did everything in
-> terms of scaling in the datasheets. They got in first and so we are stuck
-> with that ABI if we can possibly use it.
->> 4. Any user of the gain settings had to be made aware of the possibility to 
->> change it, no matter how it is exposed. Making it part of the scale, and thus 
->> changing the meaning of the raw values, would be breaking the existing ABI.
-> The raw values should indeed not change.  That was a missunderstanding on my
-> part.  Usually when a device has a PGA it is not compensated for in the
-> output. So normally it's up to the driver to 'apply' the effective gain to
-> the incoming reading.  When that isn't the case, it can be considered some
-> sort of internal trim - hence the use of calibscale for this case.
-Mulling this over, calibscale might not work either in this case. The datasheet
-helpfully sometimes uses ranges and sometimes uses scale factors.
-There is also obviously the calibration register kicking around which would
-also be handled with calibscale if exposed to userspace (currently it isn't)
+> I'm out of time tonight so will think it bit more about this and get back to
+> you in the next few days...
 
-I'm out of time tonight so will think it bit more about this and get back to you
-in the next few days...
+hardwaregain may be a viable option. For the shunt voltage, available values 
+would be [0.125, 0.25, 0.5, 1.0], for the bus range we would have either [0.5, 
+1.0] or [1.0, 2.0] for bus ranges [32V, 16V].
 
-Jonathan
-> 
-> Sorry for the delay in replying, I'm travelling at the moment and reviewing
-> with jet lag isn't much fun!
-> 
-> Thanks,
-> 
-> Jonathan
->>
->> Kind regards,
->>
->> Stefan
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Does hardwaregain have the right semantics for shunt voltage gain and/or bus 
+range?
 
+Kind regards,
+
+Stefan
+
+-- 
+Stefan Brüns  /  Bergstraße 21  /  52062 Aachen
+home: +49 241 53809034     mobile: +49 151 50412019
+work: +49 2405 49936-424
