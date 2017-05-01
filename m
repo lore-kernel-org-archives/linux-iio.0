@@ -1,242 +1,89 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47137 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753458AbdENQCf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 14 May 2017 12:02:35 -0400
-Subject: Re: [PATCH 2/2] iio: make stm32 trigger driver use
- INDIO_HARDWARE_TRIGGERED mode
-To: Benjamin Gaignard <benjamin.gaignard@linaro.org>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>, mwelling@ieee.org,
-        Fabrice Gasnier <fabrice.gasnier@st.com>,
-        Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>,
-        Benjamin Gaignard <benjamin.gaignard@st.com>
-References: <1493299756-18157-1-git-send-email-benjamin.gaignard@st.com>
- <1493299756-18157-3-git-send-email-benjamin.gaignard@st.com>
- <22f5c5c2-bab4-a583-108e-11fbaf233eed@kernel.org>
- <194c7da3-f674-e024-ba59-8b353c3f089b@kernel.org>
- <20170508151701.GA26979@sophia>
- <CA+M3ks6Ywvk+S8006ezz-+MNAXFbnsvFeczLp50fuA5NpUD8bA@mail.gmail.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <274c53a7-4e05-4378-92a5-8c43b50fbe17@kernel.org>
-Date: Sun, 14 May 2017 17:02:32 +0100
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:57463 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S376629AbdEAJ16 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 1 May 2017 05:27:58 -0400
+Date: Mon, 1 May 2017 11:27:54 +0200
+From: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>
+Subject: Re: [PATCH 1/7] hwmon: twl4030-madc: drop driver
+Message-ID: <20170501092754.wgwhbrjjigpc7xjf@earth>
+References: <20170427153012.32310-1-sebastian.reichel@collabora.co.uk>
+ <20170427153012.32310-2-sebastian.reichel@collabora.co.uk>
+ <20170427165159.GB30189@roeck-us.net>
+ <567f0680-abe9-790e-aea7-65c98ae0698a@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <CA+M3ks6Ywvk+S8006ezz-+MNAXFbnsvFeczLp50fuA5NpUD8bA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="4mcfwyvdrigzennk"
+In-Reply-To: <567f0680-abe9-790e-aea7-65c98ae0698a@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/05/17 08:46, Benjamin Gaignard wrote:
-> 2017-05-08 17:17 GMT+02:00 William Breathitt Gray <vilhelm.gray@gmail.com>:
->> On Sun, May 07, 2017 at 02:49:16PM +0100, Jonathan Cameron wrote:
->>> On 01/05/17 01:50, Jonathan Cameron wrote:
->>>> On 27/04/17 14:29, Benjamin Gaignard wrote:
->>>>> Add validate function to be use to use the correct trigger.
->>>>> Add an attribute to configure device mode like for quadrature and
->>>>> enable modes
->>>>>
->>>>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
->>>> Hmm.  I think I quite like this as an approach but have changed my
->>>> mind several times over the last few days :)
->>>>
->>>> Hence I'd ideally like some more opinions and will be leaving it
->>>> on the list for at least a short time longer.
->>>>
->>>> It's missed the current merge window anyway so plenty of time to
->>>> tick off this last element of your support.
->>>>
->>>> I also just checked and our docs for the existing modes is rubbish
->>>> (or I can't find it with a quick grep ;)
->>>> so we should tidy that up and add some description of this as well.
->>> Still looking for more input on this!
->>>
->>> Lars - do you have time for a quick look?
->>>
->>> No real rush though as we are early in the cycle.
->>>
->>> Thanks,
->>>
->>> Jonathan
->>
->> I haven't used triggers before in my drivers so perhaps I can provide
->> the naive perspective of someone approaching the API for the first time.
->>
->>  From what I gather, the INDIO_BUFFERED_TRIGGERED option is used for
->> triggers associated with a buffer; for example, a device keeping track
->> of ambient temperature may periodically sample its sensors and store the
->> data in a buffer for later evaluation.
->>
->> The INDIO_EVENT_TRIGGERED option appears to be used for triggers
->> associated with some sort of event; for example, a threshold voltage is
->> reached on an ADC device.
->>
->> I'm having trouble groking how the INDIO_HARDWARE_TRIGGERED option
->> differs from the INDIO_EVENT_TRIGGERED option. It looks like the
->> INDIO_HARDWARE_TRIGGERED option is used in this case to associate a
->> trigger with a clock edge (first timer chained to second timer).
->> Wouldn't an INDIO_EVENT_TRIGGERED option be sufficient in this case
->> where the event is defined as the clock edge input to the second timer?
-> 
-> The main difference I have introduce between INDIO_EVENT_TRIGGERED and
-> INDIO_HARDWARE_TRIGGERED is that this last one doesn't have poll function
-> (i.e. userland can't wait on the event).
-INDIO_EVENT_TRIGGERED has a different intent as well. It's about doing
-synchronized acquisition of whether a threshold has been passed or not.
-It's used for comparator chips that don't have anything else to them.
-Right now the only user is the hi8435.  It took a lot of bouncing backwards
-and forwards before we came up with this way of handling that chip.
-So what you have is a comparator with lots of channels, but it will only
-give you info on which are above threshold when you ask it (not interrupts
-or internal clocking).  Odd beasts typically used in PLCs where you have
-a scan function polling the lot in realtime very 5 msecs or so.
 
-> For me userland doesn't need to be informed of each clock rising edge.
-> More generally this new mode can be used when the event can't/doesn't need be
-> notified to userland which is the case in my hardware where it is a
-> signal on internal
-> wire.
-Absolutely.  The 'fun' corner case is triggers that 'can' be exposed to userspace
-(so there is an interrupt available) but don't have to be to run the
-capture on a tightly coupled bit of hardware.  Conceptually there is a hardware
-implementation of the interrupt handler available.
-> 
->>
->> William Breathitt Gray
->>
->>>>
->>>> Jonathan
->>>>> ---
->>>>>   .../ABI/testing/sysfs-bus-iio-timer-stm32          | 15 ++++++
->>>>>   drivers/iio/trigger/stm32-timer-trigger.c          | 61 ++++++++++++++++++++++
->>>>>   2 files changed, 76 insertions(+)
->>>>>
->>>>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32 b/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
->>>>> index 230020e..cccdf57 100644
->>>>> --- a/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
->>>>> +++ b/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
->>>>> @@ -90,3 +90,18 @@ Description:
->>>>>                      Counting is enabled on rising edge of the connected
->>>>>                      trigger, and remains enabled for the duration of this
->>>>>                      selected mode.
->>>>> +
->>>>> +What:              /sys/bus/iio/devices/iio:deviceX/in_count_trigger_mode_available
->>>>> +KernelVersion:     4.13
->>>>> +Contact:   benjamin.gaignard@st.com
->>>>> +Description:
->>>>> +           Reading returns the list possible trigger modes.
->>>>> +
->>>>> +What:              /sys/bus/iio/devices/iio:deviceX/in_count0_trigger_mode
->>>>> +KernelVersion:     4.13
->>>>> +Contact:   benjamin.gaignard@st.com
->>>>> +Description:
->>>>> +           Configure the device counter trigger mode
->>>>> +           counting direction is set by in_count0_count_direction
->>>>> +           attribute and the counter is clocked by the connected trigger
->>>>> +           rising edges.
->>>>> diff --git a/drivers/iio/trigger/stm32-timer-trigger.c b/drivers/iio/trigger/stm32-timer-trigger.c
->>>>> index 0f1a2cf..7c6e90e 100644
->>>>> --- a/drivers/iio/trigger/stm32-timer-trigger.c
->>>>> +++ b/drivers/iio/trigger/stm32-timer-trigger.c
->>>>> @@ -347,12 +347,70 @@ static int stm32_counter_write_raw(struct iio_dev *indio_dev,
->>>>>      return -EINVAL;
->>>>>   }
->>>>>
->>>>> +static int stm32_counter_validate_trigger(struct iio_dev *indio_dev,
->>>>> +                                     struct iio_trigger *trig)
->>>>> +{
->>>>> +   struct stm32_timer_trigger *priv = iio_priv(indio_dev);
->>>>> +   const char * const *cur = priv->valids;
->>>>> +   unsigned int i = 0;
->>>>> +
->>>>> +   if (!is_stm32_timer_trigger(trig))
->>>>> +           return -EINVAL;
->>>>> +
->>>>> +   while (cur && *cur) {
->>>>> +           if (!strncmp(trig->name, *cur, strlen(trig->name))) {
->>>>> +                   regmap_update_bits(priv->regmap,
->>>>> +                                      TIM_SMCR, TIM_SMCR_TS,
->>>>> +                                      i << TIM_SMCR_TS_SHIFT);
->>>>> +                   return 0;
->>>>> +           }
->>>>> +           cur++;
->>>>> +           i++;
->>>>> +   }
->>>>> +
->>>>> +   return -EINVAL;
->>>>> +}
->>>>> +
->>>>>   static const struct iio_info stm32_trigger_info = {
->>>>>      .driver_module = THIS_MODULE,
->>>>> +   .validate_trigger = stm32_counter_validate_trigger,
->>>>>      .read_raw = stm32_counter_read_raw,
->>>>>      .write_raw = stm32_counter_write_raw
->>>>>   };
->>>>>
->>>>> +static const char *const stm32_trigger_modes[] = {
->>>>> +   "trigger",
->>>>> +};
->>>>> +
->>>>> +static int stm32_set_trigger_mode(struct iio_dev *indio_dev,
->>>>> +                             const struct iio_chan_spec *chan,
->>>>> +                             unsigned int mode)
->>>>> +{
->>>>> +   struct stm32_timer_trigger *priv = iio_priv(indio_dev);
->>>>> +
->>>>> +   regmap_update_bits(priv->regmap, TIM_SMCR, TIM_SMCR_SMS, TIM_SMCR_SMS);
->>>>> +
->>>>> +   return 0;
->>>>> +}
->>>>> +
->>>>> +static int stm32_get_trigger_mode(struct iio_dev *indio_dev,
->>>>> +                             const struct iio_chan_spec *chan)
->>>>> +{
->>>>> +   struct stm32_timer_trigger *priv = iio_priv(indio_dev);
->>>>> +   u32 smcr;
->>>>> +
->>>>> +   regmap_read(priv->regmap, TIM_SMCR, &smcr);
->>>>> +
->>>>> +   return smcr == TIM_SMCR_SMS ? 0 : -EINVAL;
->>>>> +}
->>>>> +
->>>>> +static const struct iio_enum stm32_trigger_mode_enum = {
->>>>> +   .items = stm32_trigger_modes,
->>>>> +   .num_items = ARRAY_SIZE(stm32_trigger_modes),
->>>>> +   .set = stm32_set_trigger_mode,
->>>>> +   .get = stm32_get_trigger_mode
->>>>> +};
->>>>> +
->>>>>   static const char *const stm32_enable_modes[] = {
->>>>>      "always",
->>>>>      "gated",
->>>>> @@ -536,6 +594,8 @@ static ssize_t stm32_count_set_preset(struct iio_dev *indio_dev,
->>>>>      IIO_ENUM_AVAILABLE("quadrature_mode", &stm32_quadrature_mode_enum),
->>>>>      IIO_ENUM("enable_mode", IIO_SEPARATE, &stm32_enable_mode_enum),
->>>>>      IIO_ENUM_AVAILABLE("enable_mode", &stm32_enable_mode_enum),
->>>>> +   IIO_ENUM("trigger_mode", IIO_SEPARATE, &stm32_trigger_mode_enum),
->>>>> +   IIO_ENUM_AVAILABLE("trigger_mode", &stm32_trigger_mode_enum),
->>>>>      {}
->>>>>   };
->>>>>
->>>>> @@ -560,6 +620,7 @@ static struct stm32_timer_trigger *stm32_setup_counter_device(struct device *dev
->>>>>      indio_dev->name = dev_name(dev);
->>>>>      indio_dev->dev.parent = dev;
->>>>>      indio_dev->info = &stm32_trigger_info;
->>>>> +   indio_dev->modes = INDIO_HARDWARE_TRIGGERED;
->>>>>      indio_dev->num_channels = 1;
->>>>>      indio_dev->channels = &stm32_trigger_channel;
->>>>>      indio_dev->dev.of_node = dev->of_node;
->>>>>
->>>>
->>>> --
->>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>>> the body of a message to majordomo@vger.kernel.org
->>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>>
->>>
-> 
-> 
-> 
+--4mcfwyvdrigzennk
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+Hi,
+
+On Sun, Apr 30, 2017 at 05:41:05PM +0100, Jonathan Cameron wrote:
+> On 27/04/17 17:51, Guenter Roeck wrote:
+> > On Thu, Apr 27, 2017 at 05:30:06PM +0200, Sebastian Reichel wrote:
+> >> This driver is no longer needed:
+> >>
+> >>  * It has no mainline users
+> >>  * It has no DT support and OMAP is DT only
+> >>  * iio-hwmon can be used for madc, which also works with DT
+> >>
+> >> Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+> >=20
+> > Acked-by: Guenter Roeck <linux@roeck-us.net>
+> >=20
+> > ... assuming this will be pushed through the same tree as the rest
+> > of the series. Let me know if I should queue it up in hwmon for v4.12.
+> We are too late for the series to go through IIO for the 4.12 cycle, so I=
+ guess it
+> makes sense to take this one through hwmon if you still have time.
+>=20
+> I can then pick up the rest once I have acks from Wolfram
+> (who should have been cc'd as we are hoovering up things from the
+> i2c directories in this series)
+
+$ ./scripts/get_maintainer.pl -f include/linux/i2c/twl4030-madc.h
+linux-kernel@vger.kernel.org (open list)
+
+This directory contains headers for random i2c chips
+and Wolfram maintains the bus drivers (and is already
+overloaded with work afaik), so I did not Cc him.
+
+> + power supply side of things.
+
+I just send my pull-request for 4.12. I will queue this up for my
+early -rc/late merge window pull-request.
+
+-- Sebastian
+
+--4mcfwyvdrigzennk
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAlkG/5cACgkQ2O7X88g7
++ppyCQ/+OSbCHhn1A/HWU0qbgFUd0iNJt/M4pN0YxOMrdlgw1+KRnD0wK8G2R0KZ
+BQg9VmAEe1LdasNLvv3LgLTPKAyWD8wtr1dE5rNjVbZv8RRQdmLzjZhYr2v/8O0R
+EozadcpQDA1D4Srb1ixZcp3IX/RlTTcUGcF/pMZOD2ZjpVN7GvX36vZ1kFfu5ean
++YA6x3nbG0hbZPcrMutey8t70WTnlHgPx+24HzBV08taWjfekFs0dHpKZ1hjBMuj
+ZnjUNtqj2eNShQpeQpHM1pVokUDBFf3gVbWD66F4MzgYNBbNgMX3w93FztBkruEh
+eIpjYS51KFN20Mf1ubPdv0HG1cEoBMKCqD4Gv7N0JHb1s742456zp+8jY1ed3uMC
+rQU9BNQlQ5zzBFEGff5pDb/jD1mh/N90G1vMI8U21WFoeIGVv1L/tYmqAETZGFO8
+0ocgiMSGMh0R2ivkbbwmkDfwIQsD1xyY/rJ879Ox2j66usbvLUqddvds+5axtnxl
+1HOcXrUpTHXfAKt5FntJuUJSLkuArAoCSjIhfG95nMr0Gj1FITDxCiSjmoGLrB/U
+FYxcRyGgD3IymG2zoTzmSHfcX/n/Rn0GEfjHCp0UYR2J8dBix6pnOPyGSWPmtqt8
+gMUWh7N4SrH8457h0n+iQctVNooQsaOfuzk0FNZqR+H7q0AcKFA=
+=VcoC
+-----END PGP SIGNATURE-----
+
+--4mcfwyvdrigzennk--
