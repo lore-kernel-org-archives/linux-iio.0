@@ -1,62 +1,68 @@
-Return-Path: <SRS0=6xFd=44=sirena.org.uk=broonie@kernel.org>
-Date: Mon, 22 May 2017 11:06:48 +0100
-From: Mark Brown <broonie@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>,
-	Jan Kiszka <jan.kiszka@siemens.com>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Andy Shevchenko <andy.shevchenko@gmail.com>,
-	linux-iio@vger.kernel.org,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Sascha Weisenberger <sascha.weisenberger@siemens.com>
-Message-ID: <20170522100648.q65ubrw2aannwtjn@sirena.org.uk>
-References: <1493119630.24567.192.camel@linux.intel.com>
- <20170425113513.GQ7152@lahna.fi.intel.com>
- <2a116105-0046-bcc1-b560-f6986220fb4b@siemens.com>
- <20170425123029.GS7152@lahna.fi.intel.com>
- <ca23678c-be8c-1e3f-4688-67b29770c99b@siemens.com>
- <32803199-239f-821c-7942-748436d53261@siemens.com>
- <20170426090158.GV7152@lahna.fi.intel.com>
- <9a210132-854b-cf3e-da33-fc3d073ad491@kernel.org>
- <20170519160133.ukkne2emubfbrrvg@sirena.org.uk>
- <e224532c-260c-a2df-23be-35e5b3243151@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-qt0-f194.google.com ([209.85.216.194]:33206 "EHLO
+        mail-qt0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750767AbdEAWWG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 1 May 2017 18:22:06 -0400
+Received: by mail-qt0-f194.google.com with SMTP id c45so18005668qtb.0
+        for <linux-iio@vger.kernel.org>; Mon, 01 May 2017 15:22:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="raaukt2yjibaci6f"
-In-Reply-To: <e224532c-260c-a2df-23be-35e5b3243151@kernel.org>
-Subject: Re: [PATCH] iio: adc: Add support for TI ADC1x8s102
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1fffc4ab-8952-1252-8e84-6e9b6583dfc3@kernel.org>
+References: <20170425033612.27251-1-weiyj.lk@gmail.com> <20170427151413.23843-1-weiyj.lk@gmail.com>
+ <1fffc4ab-8952-1252-8e84-6e9b6583dfc3@kernel.org>
+From: =?UTF-8?Q?Ksenija_Stanojevi=C4=87?= <ksenija.stanojevic@gmail.com>
+Date: Tue, 2 May 2017 00:22:05 +0200
+Message-ID: <CAL7P5j+rw0VoQkKgM=ZvNtEdfKtuEqUyJmRyfdtZfjKQfysCLw@mail.gmail.com>
+Subject: Re: [PATCH -next v2] iio: adc: mxs-lradc: Fix return value check in mxs_lradc_adc_probe()
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Wei Yongjun <weiyj.lk@gmail.com>, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Marek Vasut <marex@denx.de>, Lee Jones <lee.jones@linaro.org>,
+        Wei Yongjun <weiyongjun1@huawei.com>, linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
+
+Hi Wei,
+
+On Sun, Apr 30, 2017 at 6:31 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 27/04/17 16:14, Wei Yongjun wrote:
+>> From: Wei Yongjun <weiyongjun1@huawei.com>
+>>
+>> In case of error, the function devm_ioremap() returns NULL pointer not
+>> ERR_PTR(). Use devm_ioremap_resource() instead of devm_ioremap().
+>>
+>> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+> I'll be wanting a tested-by for this one.
+>
+> Thanks,
+>
+> Jonathan
+>> ---
+>> v1 -> v2: use devm_ioremap_resource()
+>> ---
+>>  drivers/iio/adc/mxs-lradc-adc.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iio/adc/mxs-lradc-adc.c b/drivers/iio/adc/mxs-lradc-adc.c
+>> index b0c7d8e..2faf65f 100644
+>> --- a/drivers/iio/adc/mxs-lradc-adc.c
+>> +++ b/drivers/iio/adc/mxs-lradc-adc.c
+>> @@ -718,7 +718,7 @@ static int mxs_lradc_adc_probe(struct platform_device *pdev)
+>>       adc->dev = dev;
+>>
+>>       iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>> -     adc->base = devm_ioremap(dev, iores->start, resource_size(iores));
+>> +     adc->base = devm_ioremap_resource(dev, iores);
+>>       if (IS_ERR(adc->base))
+>>               return PTR_ERR(adc->base);
+>>
 
 
---raaukt2yjibaci6f
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+I tested your patch on i.mx28 and it causes probe failure. Here's dmesg output:
 
-On Sat, May 20, 2017 at 05:26:30PM +0100, Jonathan Cameron wrote:
+[    3.065959] mxs-lradc-adc mxs-lradc-adc: can't request region for
+resource [mem 0x80050000-0x80051fff]
+[    3.075537] mxs-lradc-adc: probe of mxs-lradc-adc failed with error -16
 
-> Just to clarify what do we do here, where a regulator is providing a
-> reference voltage and there appears to be no information on it in ACPI?
-
-> Right now we are just going with a fixed value that matches the board
-> someone has, but that's hardly sustainable.
-
-Yes, the ACPI people need to come up with some standard regulator
-bindings for this sort of application.
-
---raaukt2yjibaci6f
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAlkiuDgACgkQJNaLcl1U
-h9DxyQf5AZ1nyzrWNRPzTaMogDQ1tEhSs1HQAMkq6xD0siLsp3Q3ss2VZeXORn5D
-uAjEXZKnV+XxlDwMalC8PAMCEIo66iZzvoq0agt0prrwKD/A4Zj/XOBkQTohKaO+
-LxLxgtNUdWPZzgC22guz6Cf35D+d+LYci4YnkcfguNoeMJAjae82C9X1zbNGiLxz
-7GCOQQJF6pXRzfzENfpk/1ZUT4vsoHFhOGaDGRXtAYaNFVKwvgAOzuppTPsiA0wj
-c4MWuZ97BjrBcHU7AHZks6LjCp6w+mCqVbAgAl5hQPAN0SDFEqs/E37cNRzxU3mO
-9DwF2mFSfqHTs5sDkAn2XvDH9BNfuA==
-=/Pn4
------END PGP SIGNATURE-----
-
---raaukt2yjibaci6f--
+Ksenija
