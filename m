@@ -1,56 +1,62 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57508 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750923AbdEGWBB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 7 May 2017 18:01:01 -0400
-Subject: Re: [PATCH 1/2] [PATCH 1/2] iio: adc: sun4i-gpadc-iio: Fix module
- autoload when PLATFORM devices are registered
-To: Chen-Yu Tsai <wens@csie.org>,
-        Eduardo Molinas <edu.molinas@gmail.com>
-Cc: linux-kernel <linux-kernel@vger.kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>, knaack.h@gmx.de,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
-References: <20170501224559.21028-1-edu.molinas@gmail.com>
- <CAGb2v65Cgtxjhuj8v5A8RF8pGTK0FD3MDmDeirO4T_T7UCF4Vw@mail.gmail.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <a7956be3-3598-0290-8810-8434f62834e7@kernel.org>
-Date: Sun, 7 May 2017 14:45:22 +0100
+Received: from mail-wr0-f193.google.com ([209.85.128.193]:33793 "EHLO
+        mail-wr0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750819AbdEBGqt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 2 May 2017 02:46:49 -0400
+Date: Tue, 2 May 2017 08:46:43 +0200
+From: Corentin Labbe <clabbe.montjoie@gmail.com>
+To: quentin.schulz@free-electrons.com, jic23@kernel.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        maxime.ripard@free-electrons.com, wens@csie.org
+Cc: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [BUG] crash when removing sun4i_gpadc_iio module
+Message-ID: <20170502064643.GA8231@Red>
 MIME-Version: 1.0
-In-Reply-To: <CAGb2v65Cgtxjhuj8v5A8RF8pGTK0FD3MDmDeirO4T_T7UCF4Vw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/05/17 03:10, Chen-Yu Tsai wrote:
-> On Tue, May 2, 2017 at 6:45 AM, Eduardo Molinas <edu.molinas@gmail.com> wrote:
->> If the driver is built as a module, it won't be autloaded if the devices
->> are registered via PLATFORM code because the PLATFORM device table
->> entries are not exported as aliases
->>
->> Before the patch:
->> $ modinfo drivers/iio/adc/sun4i-gpadc-iio.ko | grep alias
->> $
->>
->> After th patch:
-> 
->         ^^ the
-> 
->> $ modinfo drivers/iio/adc/sun4i-gpadc-iio.ko | grep alias
->> alias:          platform:sun6i-a31-gpadc-iio
->> alias:          platform:sun5i-a13-gpadc-iio
->> alias:          platform:sun4i-a10-gpadc-iio
->>
->> Signed-off-by: Eduardo Molinas <edu.molinas@gmail.com>
-> 
-> Acked-by: Chen-Yu Tsai <wens@csie.org>
-> 
-> Can we merge this as a fix for 4.12?
-Applied to fixes-togreg branch of iio.git.
+Hello
 
-Thanks,
+When inserting sun4i_gpadc_iio I got the following error in dmesg:
+[79961.039826] thermal thermal_zone0: failed to read out thermal zone (-110)
 
-Jonathan
-> 
+Then removing the module cause an oops:
+[80105.370937] Unable to handle kernel paging request at virtual address bf0ad1d0
+[80105.370958] pgd = c0004000
+[80105.370968] [bf0ad1d0] *pgd=6e470811, *pte=00000000, *ppte=00000000
+[80105.371009] Internal error: Oops: 80000007 [#1] PREEMPT SMP ARM
+[80105.376940] Modules linked in: algif_aead ccm gcm algif_rng crypto_user algif_skcipher algif_hash af_alg ghash_generic aes_arm_bs axp20x_ac_power axp20x_usb_power axp20x_adc gpio_axp209 nvmem_sunxi_sid sun4i_ss sun4i_dma virt_dma [last unloaded: sun4i_gpadc_iio]
+[80105.400199] CPU: 0 PID: 14663 Comm: kworker/0:0 Tainted: G        W       4.11.0-rc8-next-20170428+ #96
+[80105.409581] Hardware name: Allwinner sun7i (A20) Family
+[80105.414821] Workqueue: events_freezable thermal_zone_device_check
+[80105.420915] task: ee7d2880 task.stack: ea4fa000
+[80105.425447] PC is at 0xbf0ad1d0
+[80105.428594] LR is at arch_timer_read_counter_long+0x14/0x18
+[80105.434166] pc : [<bf0ad1d0>]    lr : [<c010eab8>]    psr: 60070013
+               sp : ea4fbea8  ip : ee7d2e00  fp : 00000001
+[80105.445630] r10: ea4fbed4  r9 : 0000007b  r8 : 00000000
+[80105.450852] r7 : ee7ffc14  r6 : ee7ff800  r5 : c09e2260  r4 : 0000005a
+[80105.457373] r3 : c058e3d4  r2 : fac81000  r1 : 000001bf  r0 : 00005dbf
+[80105.463897] Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
+[80105.471025] Control: 10c5387d  Table: 66c9c06a  DAC: 00000051
+[80105.476766] Process kworker/0:0 (pid: 14663, stack limit = 0xea4fa210)
+[80105.483288] Stack: (0xea4fbea8 to 0xea4fc000)
+[80105.487648] bea0:                   00000001 00000010 ee7ffbc0 ea4fbefc ef26dad4 ef7c2500
+[80105.495821] bec0: ea4fbf28 00000000 00000000 bf0ad7e0 00000001 c070e80c c055d600 ef26d800
+[80105.503994] bee0: ea4fbefc c055d614 00000000 ef26d800 ef7bef00 c055b040 ea4fbf28 ef26db20
+[80105.512167] bf00: ef26db20 edf65680 ef7bef00 c013b374 00000001 00000000 c013b304 c013b798
+[80105.520340] bf20: 00000000 00000000 c12624a4 c0dcdf20 00000000 c09c0e10 c0c04900 ef7bef00
+[80105.528512] bf40: edf65698 00000008 c0c04900 ef7bef34 ea4fa000 ef7bef00 edf65680 c013b6f8
+[80105.536685] bf60: ef7bf09c 00000000 edf65680 edf65380 00000000 e6c90700 edf65680 c013b6c0
+[80105.544858] bf80: edf653b8 edf91e84 00000000 c01415c0 e6c90700 c0141484 00000000 00000000
+[80105.553030] bfa0: 00000000 00000000 00000000 c01079b8 00000000 00000000 00000000 00000000
+[80105.561202] bfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+[80105.569374] bfe0: 00000000 00000000 00000000 00000000 00000013 00000000 6fffd861 6fffdc61
+[80105.577558] [<c010eab8>] (arch_timer_read_counter_long) from [<00000010>] (0x10)
+[80105.584952] Code: bad PC value
+[80105.588283] ---[ end trace ff84d9d449c6a5b5 ]---
 
+Regards
+Corentin Labbe
