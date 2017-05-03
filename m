@@ -1,63 +1,82 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from goliath.siemens.de ([192.35.17.28]:37783 "EHLO
-        goliath.siemens.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753241AbdECRMB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 3 May 2017 13:12:01 -0400
-Subject: Re: [PATCH v2] iio: adc: Add support for TI ADC1x8s102
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-References: <c0fa84e3-1016-212f-280c-40bb83706895@siemens.com>
- <CAHp75VcG4qQktEOCXKc2saTNzpWo2sjneA4Afb7rHoEqkP8FtQ@mail.gmail.com>
- <8e6a0016-175a-8374-76f9-8bef1815f66f@siemens.com>
- <CAHp75VeyQ=uU=X3DxcNtVKDqkQV=9wK42nDaxs4ztDBU5iKTRw@mail.gmail.com>
- <395643b8-c5cc-6a50-f424-98b4c5ec339b@siemens.com>
- <CAHp75VeBa8wUX6U+S=QmrLmqrwdMuFg3TCw3nyY62NraZaDrNg@mail.gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
-        linux-iio@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Sascha Weisenberger <sascha.weisenberger@siemens.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <edfb6049-c2f5-93ab-6c74-10b00d0a5254@siemens.com>
-Date: Wed, 3 May 2017 19:11:49 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAHp75VeBa8wUX6U+S=QmrLmqrwdMuFg3TCw3nyY62NraZaDrNg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+Received: from www.osadl.org ([62.245.132.105]:49429 "EHLO www.osadl.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751264AbdECLxg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 3 May 2017 07:53:36 -0400
+From: Nicholas Mc Guire <der.herr@hofr.at>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        simran singhal <singhalsimran0@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Gregor Boirie <gregor.boirie@parrot.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Nicholas Mc Guire <der.herr@hofr.at>
+Subject: [BUG RFC] iio: pressure: zpa2326: incorrect condition or inconsistent return handling
+Date: Wed,  3 May 2017 12:53:50 +0200
+Message-Id: <1493808830-25837-1-git-send-email-der.herr@hofr.at>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 2017-05-03 10:43, Andy Shevchenko wrote:
-> On Wed, May 3, 2017 at 11:24 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
->> On 2017-05-03 10:06, Andy Shevchenko wrote:
->>> On Wed, May 3, 2017 at 8:35 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
->>>> On 2017-05-02 22:53, Andy Shevchenko wrote:
-> 
->>>>>> +       ret = device_property_read_u32(&spi->dev, "ext-vin-microvolt", &val);
->>>>>
->>>>> Why not to read u16 here?
->>>>>
->>>>
->>>> Can I read a property with arbitrary width? Then this would simplify
->>>> things.
->>>
->>> device_property_read_u16();
->>
->> By now I found out that ACPI does not care about the property type
->> width, only DT does. So reading it as u16 under ACPI would be fine. But
->> with DT, we will need a correctly sized property as well - default is u32.
-> 
-> I'm a bit lost here. ACPI cares and DT cares about property size.
+wait_for_completion_interruptible_timeout() returns -ERESTARTSYS, 0 or
+remaining time in jiffies (atleast 1), thus the if (ret != -ERESTARTSYS)
+case here is unreachable. 
 
-ACPI_TYPE_INTEGER, used for properties, is always stored and read as
-64-bit value and then casted to the requested type.
+As it is not clear from the warn message if this should simply be changed
+to if (ret == -ERESTARTSYS), this needs a review by someone that knows
+the intent of this condition. In any case the current treatment of the
+return value of wait_for_completion_interruptible_timeout() is inconsistent
+with the specification of the same.
 
-In contrast, if you restrict a DT property via "/bits/ XX", its storage
-format changes, and you are better off using the correct access function
-for it. That's what I mean.
+Also wait_for_completion_interruptible_timeout() returns a long not int.
 
-Jan
+Problem was introduced in commit 03b262f2bbf4 ("iio:pressure: initial zpa2326 barometer support")
 
+ drivers/iio/pressure/zpa2326.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/pressure/zpa2326.c b/drivers/iio/pressure/zpa2326.c
+index e58a0ad..80ca6ec 100644
+--- a/drivers/iio/pressure/zpa2326.c
++++ b/drivers/iio/pressure/zpa2326.c
+@@ -872,35 +872,35 @@ static int zpa2326_wait_oneshot_completion(const struct iio_dev   *indio_dev,
+ 
+ 	ret = wait_for_completion_interruptible_timeout(
+ 		&private->data_ready, ZPA2326_CONVERSION_JIFFIES);
+ 	if (ret > 0)
+ 		/*
+ 		 * Interrupt handler completed before timeout: return operation
+ 		 * status.
+ 		 */
+ 		return private->result;
+ 
+ 	/* Clear all interrupts just to be sure. */
+ 	regmap_read(private->regmap, ZPA2326_INT_SOURCE_REG, &val);
+ 
+ 	if (!ret)
+ 		/* Timed out. */
+ 		ret = -ETIME;
+ 
+-	if (ret != -ERESTARTSYS)
++	if (ret == -ERESTARTSYS)
+ 		zpa2326_warn(indio_dev, "no one shot interrupt occurred (%d)",
+ 			     ret);
+ 
+ 	return ret;
+ }
+ 
+ static int zpa2326_init_managed_irq(struct device          *parent,
+ 				    struct iio_dev         *indio_dev,
+ 				    struct zpa2326_private *private,
+ 				    int                     irq)
+ {
+ 	int err;
+ 
+ 	private->irq = irq;
+ 
+ 	if (irq <= 0) {
+ 		/*
 -- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+2.1.4
+
