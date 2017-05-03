@@ -1,92 +1,69 @@
-Return-Path: <SRS0=xkDT=4J=pmeerw.net=pmeerw@kernel.org>
-Date: Wed, 3 May 2017 13:42:08 +0200 (CEST)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Nicholas Mc Guire <der.herr@hofr.at>
-cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
-    simran singhal <singhalsimran0@gmail.com>,
-    Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org,
-    linux-kernel@vger.kernel.org
-Subject: Re: [BUG RFC] iio: pressure: zpa2326: incorrect condition or
- inconsistent return handling
-In-Reply-To: <1493808830-25837-1-git-send-email-der.herr@hofr.at>
-Message-ID: <alpine.DEB.2.20.1705031340050.29003@vps.pmeerw.net>
-References: <1493808830-25837-1-git-send-email-der.herr@hofr.at>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from bes.se.axis.com ([195.60.68.10]:55806 "EHLO bes.se.axis.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1754155AbdECMCC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 3 May 2017 08:02:02 -0400
+From: =?UTF-8?q?M=C3=A5rten=20Lindahl?= <marten.lindahl@axis.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-iio@vger.kernel.org, robh+dt@kernel.org,
+        mark.rutland@arm.com, devicetree@vger.kernel.org,
+        =?UTF-8?q?M=C3=A5rten=20Lindahl?= <martenli@axis.com>
+Subject: [PATCH v3 0/2] add driver for the ti-adc084s021 chip
+Date: Wed,  3 May 2017 14:01:43 +0200
+Message-Id: <1493812905-28904-1-git-send-email-marten.lindahl@axis.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hello,
+From: Mårten Lindahl <martenli@axis.com>
 
-> wait_for_completion_interruptible_timeout() returns -ERESTARTSYS, 0 or
-> remaining time in jiffies (atleast 1), thus the if (ret != -ERESTARTSYS)
-> case here is unreachable. 
+This adds support for the Texas Instruments ADC084S021 ADC chip.
 
-if is not unreachable, there is a ret = -ETIME above it
- 
-> As it is not clear from the warn message if this should simply be changed
-> to if (ret == -ERESTARTSYS), this needs a review by someone that knows
-> the intent of this condition. In any case the current treatment of the
-> return value of wait_for_completion_interruptible_timeout() is inconsistent
-> with the specification of the same.
+---
+Changes in v3:
+- Removed unnecessary comment about channel specification
+- Skipped usage of 'address' in iio_chan_spec config macro
+- Mask and shift channel readings only for _read_raw function
+- Enable/disable regulator in _read_raw function
+- Improved setup of ADC channel readings
+- Use SPI config of speed_hz and bits_per_word
+- Use devm_iio_triggered_buffer_setup and devm_iio_device_register
+- Removed error message for failed devm_iio_device_register
+- Removed driver _remove callback function
 
-the intention of the code is not very clear, I agree
+Changes in v2:
+- Split dt-bindings and iio/adc into separate patches
+- Updated dt-bindings after Robs comments
+- Removed most #defines to inlines
+- Corrected channel macro
+- Removed configuration array with only one item
+- Updated func adc084s021_adc_conversion to use be16_to_cpu
+- Added IIO_CHAN_INFO_SCALE to func adc084s021_read_raw
+- Use iio_device_claim_direct_mode in func adc084s021_read_raw
+- Removed documentation for standard driver functions
+- Changed retval to ret everywhere
+- Removed dynamic alloc for data buffer in trigger handler
+- Keeping mutex for all iterations in trigger handler
+- Removed usage of events in this driver
+- Removed info log in probe
+- Use spi_message_init_with_transfers for spi message structs
+- Use preenable and postdisable functions for regulator
+- Inserted blank line before last return in all functions
 
-"no one shot interrupt" should probably be printed for the -ETIME case, 
-i.e. when a timeout occurs
- 
-> Also wait_for_completion_interruptible_timeout() returns a long not int.
+Mårten Lindahl (2):
+  dt-bindings: iio: adc: add driver for the ti-adc084s021 chip
+  iio: adc: add driver for the ti-adc084s021 chip
 
-true
- 
-> Problem was introduced in commit 03b262f2bbf4 ("iio:pressure: initial zpa2326 barometer support")
-> 
->  drivers/iio/pressure/zpa2326.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/pressure/zpa2326.c b/drivers/iio/pressure/zpa2326.c
-> index e58a0ad..80ca6ec 100644
-> --- a/drivers/iio/pressure/zpa2326.c
-> +++ b/drivers/iio/pressure/zpa2326.c
-> @@ -872,35 +872,35 @@ static int zpa2326_wait_oneshot_completion(const struct iio_dev   *indio_dev,
->  
->  	ret = wait_for_completion_interruptible_timeout(
->  		&private->data_ready, ZPA2326_CONVERSION_JIFFIES);
->  	if (ret > 0)
->  		/*
->  		 * Interrupt handler completed before timeout: return operation
->  		 * status.
->  		 */
->  		return private->result;
->  
->  	/* Clear all interrupts just to be sure. */
->  	regmap_read(private->regmap, ZPA2326_INT_SOURCE_REG, &val);
->  
->  	if (!ret)
->  		/* Timed out. */
->  		ret = -ETIME;
->  
-> -	if (ret != -ERESTARTSYS)
-> +	if (ret == -ERESTARTSYS)
->  		zpa2326_warn(indio_dev, "no one shot interrupt occurred (%d)",
->  			     ret);
->  
->  	return ret;
->  }
->  
->  static int zpa2326_init_managed_irq(struct device          *parent,
->  				    struct iio_dev         *indio_dev,
->  				    struct zpa2326_private *private,
->  				    int                     irq)
->  {
->  	int err;
->  
->  	private->irq = irq;
->  
->  	if (irq <= 0) {
->  		/*
-> 
+ .../devicetree/bindings/iio/adc/ti-adc084s021.txt  |  19 ++
+ drivers/iio/adc/Kconfig                            |  12 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/ti-adc084s021.c                    | 302 +++++++++++++++++++++
+ 4 files changed, 334 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc084s021.txt
+ create mode 100644 drivers/iio/adc/ti-adc084s021.c
 
 -- 
+2.1.4
 
-Peter Meerwald-Stadler
-Mobile: +43 664 24 44 418
