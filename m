@@ -1,11 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:52362 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751943AbdECItg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 3 May 2017 04:49:36 -0400
+Received: from goliath.siemens.de ([192.35.17.28]:37783 "EHLO
+        goliath.siemens.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753241AbdECRMB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 3 May 2017 13:12:01 -0400
 Subject: Re: [PATCH v2] iio: adc: Add support for TI ADC1x8s102
-To: Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Jan Kiszka <jan.kiszka@siemens.com>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
 References: <c0fa84e3-1016-212f-280c-40bb83706895@siemens.com>
  <CAHp75VcG4qQktEOCXKc2saTNzpWo2sjneA4Afb7rHoEqkP8FtQ@mail.gmail.com>
  <8e6a0016-175a-8374-76f9-8bef1815f66f@siemens.com>
@@ -19,35 +18,46 @@ Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Mika Westerberg <mika.westerberg@linux.intel.com>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <920e159a-d082-3879-5d8b-f407c5df5915@metafoo.de>
-Date: Wed, 3 May 2017 10:49:30 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <edfb6049-c2f5-93ab-6c74-10b00d0a5254@siemens.com>
+Date: Wed, 3 May 2017 19:11:49 +0200
 MIME-Version: 1.0
 In-Reply-To: <CAHp75VeBa8wUX6U+S=QmrLmqrwdMuFg3TCw3nyY62NraZaDrNg@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/03/2017 10:43 AM, Andy Shevchenko wrote:
->>>>>> +               .owner  = THIS_MODULE,
+On 2017-05-03 10:43, Andy Shevchenko wrote:
+> On Wed, May 3, 2017 at 11:24 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>> On 2017-05-03 10:06, Andy Shevchenko wrote:
+>>> On Wed, May 3, 2017 at 8:35 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>>>> On 2017-05-02 22:53, Andy Shevchenko wrote:
+> 
+>>>>>> +       ret = device_property_read_u32(&spi->dev, "ext-vin-microvolt", &val);
 >>>>>
->>>>> This is redundant I'm pretty sure.
+>>>>> Why not to read u16 here?
+>>>>>
 >>>>
->>>> Even in 2017, drivers keep being added that carry such assignments. Can
->>>> you explain when it is needed and when not? Otherwise, I will leave it in.
+>>>> Can I read a property with arbitrary width? Then this would simplify
+>>>> things.
 >>>
->>> The above I'm 100% sure is not needed. It's needed only in cases when
->>> framework / device core doesn't do this for ya.
->>>
->>> In the above case IIRC device core does it once for all.
+>>> device_property_read_u16();
+>>
+>> By now I found out that ACPI does not care about the property type
+>> width, only DT does. So reading it as u16 under ACPI would be fine. But
+>> with DT, we will need a correctly sized property as well - default is u32.
 > 
->> Then this is not consistently filtered out in new driver reviews. I can
->> remove it, of course.
-> 
-> Please, remove.
-> 
-> I guess many of new drivers just lack of proper review :-(
-> 
+> I'm a bit lost here. ACPI cares and DT cares about property size.
 
-The kbuild bot will even send automated patches to remove the owner field if
-a patch that has the owner field is merged. So definitely remove it.
+ACPI_TYPE_INTEGER, used for properties, is always stored and read as
+64-bit value and then casted to the requested type.
+
+In contrast, if you restrict a DT property via "/bits/ XX", its storage
+format changes, and you are better off using the correct access function
+for it. That's what I mean.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RDA ITP SES-DE
+Corporate Competence Center Embedded Linux
