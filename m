@@ -1,58 +1,37 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57560 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756552AbdEGWLH (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 7 May 2017 18:11:07 -0400
-Subject: Re: [PATCH v2 3/3] iio: tools: generic_buffer: increase trigger
- length
-To: Eugen Hristev <eugen.hristev@microchip.com>,
-        nicolas.ferre@microchip.com, alexandre.belloni@free-electrons.com,
-        linux-iio@vger.kernel.org, lars@metafoo.de,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc: ludovic.desroches@microchip.com
-References: <1493900000-26220-1-git-send-email-eugen.hristev@microchip.com>
- <1493900000-26220-4-git-send-email-eugen.hristev@microchip.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <c02626ec-4580-ef36-3b38-535e18531473@kernel.org>
-Date: Sun, 7 May 2017 16:03:01 +0100
+Received: from esa1.microchip.iphmx.com ([68.232.147.91]:43044 "EHLO
+        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752679AbdEDNHa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 4 May 2017 09:07:30 -0400
+From: <Eugen.Hristev@microchip.com>
+To: <jic23@kernel.org>, <lars@metafoo.de>, <linux-iio@vger.kernel.org>
+CC: <Nicolas.Ferre@microchip.com>
+Subject: DMA support for at91-sama5d2 ADC driver
+Date: Thu, 4 May 2017 13:07:19 +0000
+Message-ID: <EA573BDD7CF69549972F7393812B404A558EA7@CHN-SV-EXMX03.mchp-main.com>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-In-Reply-To: <1493900000-26220-4-git-send-email-eugen.hristev@microchip.com>
-Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/05/17 13:13, Eugen Hristev wrote:
-> Increased trigger length to 64 in order to cope with trigger names
-> like fc030000.adc-dev0-external-rising
-> 
-> Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-Might as well change this now.
+Hello,
 
-Applied to the togreg branch of iio.git.
+I am making a proof of concept for DMA functionality for the
+at91-sama5d2 ADC driver.
+I would like to ask if it's better to implement in an old fashion way
+(request dma channel, allocate memory, start transfer), or try to
+integrate with the DMA-buffer in the iio subsystem ?
+Is there any driver using that system in the current kernel ?
 
-Thanks,
+Also, is there a way to enable/disable DMA coming from the subsystem to
+the driver ? (I mean from sysfs, to have or create an option for the
+buffer to use DMA or not).
+Using DMA has the advantage of less interrupts coming, but much less
+granularity on the incoming triggered conversions. So I thought a way
+for the user to enable or disable it might be convenient.
 
-Jonathan
-> ---
->  Changes in v2:
->  - Modified trigger name length to 64
-> 
->  tools/iio/iio_utils.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tools/iio/iio_utils.h b/tools/iio/iio_utils.h
-> index 780f201..8b379da 100644
-> --- a/tools/iio/iio_utils.h
-> +++ b/tools/iio/iio_utils.h
-> @@ -13,7 +13,7 @@
->  #include <stdint.h>
->  
->  /* Made up value to limit allocation sizes */
-> -#define IIO_MAX_NAME_LENGTH 30
-> +#define IIO_MAX_NAME_LENGTH 64
->  
->  #define FORMAT_SCAN_ELEMENTS_DIR "%s/scan_elements"
->  #define FORMAT_TYPE_FILE "%s_type"
-> 
+
+Thanks for all the inputs,
+
+Eugen Hristev
 
