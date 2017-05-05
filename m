@@ -1,65 +1,119 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-it0-f65.google.com ([209.85.214.65]:36282 "EHLO
-        mail-it0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753765AbdEOM3I (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 15 May 2017 08:29:08 -0400
-Received: by mail-it0-f65.google.com with SMTP id z15so10233935ite.3
-        for <linux-iio@vger.kernel.org>; Mon, 15 May 2017 05:29:07 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <E223F49C7E3E1C4E8F3928A8EC9CF0F8DBEC70AB@WILL-MAIL002.REu.RohmEu.com>
-References: <1493983193-8753-1-git-send-email-mikko.koivunen@fi.rohmeurope.com>
- <CAEnQRZA=YwX4jP95JutzDkPmtTVCR4vbiYrQRr3aBRMpvT1+5w@mail.gmail.com> <E223F49C7E3E1C4E8F3928A8EC9CF0F8DBEC70AB@WILL-MAIL002.REu.RohmEu.com>
-From: Daniel Baluta <daniel.baluta@intel.com>
-Date: Mon, 15 May 2017 15:29:06 +0300
-Message-ID: <CAEnQRZBEOipt-JSET2_qz47W8_FAHTiFg3O_jw1Th5Lp6HYzTA@mail.gmail.com>
-Subject: Re: [PATCH v3 1/9] iio: light: rpr0521 disable sensor -bugfix
-To: "Koivunen, Mikko" <Mikko.Koivunen@fi.rohmeurope.com>
-Cc: Daniel Baluta <daniel.baluta@intel.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Received: from mga11.intel.com ([192.55.52.93]:19876 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1754840AbdEEFQe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 5 May 2017 01:16:34 -0400
+From: Song Hongyan <hongyan.song@intel.com>
+To: linux-input@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: jikos@kernel.org, jic23@kernel.org, srinivas.pandruvada@intel.com,
+        Song Hongyan <hongyan.song@intel.com>
+Subject: [PATCH 1/3] iio: hid-sensor-rotation: Add relative orientation sensor hid support
+Date: Fri,  5 May 2017 21:39:23 +0800
+Message-Id: <1493991565-17947-1-git-send-email-hongyan.song@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, May 15, 2017 at 1:25 PM, Koivunen, Mikko
-<Mikko.Koivunen@fi.rohmeurope.com> wrote:
-> On 5.5.2017 14:24, Daniel Baluta wrote:
->> On Fri, May 5, 2017 at 2:19 PM, Mikko Koivunen
->> <mikko.koivunen@fi.rohmeurope.com> wrote:
->>> Sensor was marked enabled on each call even if the call was for disabling
->>> sensor.
->>>
->>> Signed-off-by: Mikko Koivunen <mikko.koivunen@fi.rohmeurope.com>
->>> ---
->>> Tested on LeMaker HiKey with AOSP7.1 kernel 4.4.
->>> Patch v2->v3 changes:
->>> whitespace change.
->>>
->>>  drivers/iio/light/rpr0521.c |   10 ++++++++--
->>>  1 file changed, 8 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/iio/light/rpr0521.c b/drivers/iio/light/rpr0521.c
->>> index 7de0f39..03504f6 100644
->>> --- a/drivers/iio/light/rpr0521.c
->>> +++ b/drivers/iio/light/rpr0521.c
->>> @@ -197,7 +197,10 @@ static int rpr0521_als_enable(struct rpr0521_data *data, u8 status)
->>>         if (ret < 0)
->>>                 return ret;
->>>
->>> -       data->als_dev_en = true;
->> How about:
->>
->> data->als_dev_en = !!(status & RPR0521_MODE_ALS_MASK);
->>
->> Thanks for fixing this!
->>
-> I got the impression previously that we should prefer verbosity instead
-> of shortness when it helps understanding the code. Otherwise yes, that
-> could work too.
+Relative orientation(AG) sensor is a 6dof orientation sensor,
+it depends on acceleration and gyroscope sensor data. It gives
+a quaternion describing the orientation of the device relative
+to an initial orientation. It is a standard HID sensor.
 
-It depends on the mood :). But you are right, lets go with your variant.
+More information can be found in:
+http://www.usb.org/developers/hidpage/HUTRR59_-_Usages_for_Wearables.pdf
 
-Daniel.
+Relative orientation(AG) sensor and dev rotation sensor have same
+channels and share channel usage id. So the most of the code for
+relative orientation sensor can be reused.
+
+Signed-off-by: Song Hongyan <hongyan.song@intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Reviewed-by: Xu Even <even.xu@intel.com>
+Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/orientation/hid-sensor-rotation.c | 22 ++++++++++++++--------
+ include/linux/hid-sensor-ids.h                |  1 +
+ 2 files changed, 15 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/iio/orientation/hid-sensor-rotation.c b/drivers/iio/orientation/hid-sensor-rotation.c
+index a97e802c..5f07a5a 100644
+--- a/drivers/iio/orientation/hid-sensor-rotation.c
++++ b/drivers/iio/orientation/hid-sensor-rotation.c
+@@ -218,7 +218,7 @@ static int dev_rot_parse_report(struct platform_device *pdev,
+ static int hid_dev_rot_probe(struct platform_device *pdev)
+ {
+ 	int ret;
+-	static char *name = "dev_rotation";
++	static char *name;
+ 	struct iio_dev *indio_dev;
+ 	struct dev_rot_state *rot_state;
+ 	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
+@@ -234,8 +234,12 @@ static int hid_dev_rot_probe(struct platform_device *pdev)
+ 	rot_state->common_attributes.hsdev = hsdev;
+ 	rot_state->common_attributes.pdev = pdev;
+ 
+-	ret = hid_sensor_parse_common_attributes(hsdev,
+-				HID_USAGE_SENSOR_DEVICE_ORIENTATION,
++	if (hsdev->usage == HID_USAGE_SENSOR_DEVICE_ORIENTATION)
++		name = "dev_rotation";
++	else if (hsdev->usage == HID_USAGE_SENSOR_RELATIVE_ORIENTATION)
++		name = "relative_orientation";
++
++	ret = hid_sensor_parse_common_attributes(hsdev, hsdev->usage,
+ 				&rot_state->common_attributes);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "failed to setup common attributes\n");
+@@ -252,8 +256,7 @@ static int hid_dev_rot_probe(struct platform_device *pdev)
+ 
+ 	ret = dev_rot_parse_report(pdev, hsdev,
+ 				   (struct iio_chan_spec *)indio_dev->channels,
+-				   HID_USAGE_SENSOR_DEVICE_ORIENTATION,
+-				   rot_state);
++					hsdev->usage, rot_state);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "failed to setup attributes\n");
+ 		return ret;
+@@ -288,8 +291,7 @@ static int hid_dev_rot_probe(struct platform_device *pdev)
+ 	rot_state->callbacks.send_event = dev_rot_proc_event;
+ 	rot_state->callbacks.capture_sample = dev_rot_capture_sample;
+ 	rot_state->callbacks.pdev = pdev;
+-	ret = sensor_hub_register_callback(hsdev,
+-					HID_USAGE_SENSOR_DEVICE_ORIENTATION,
++	ret = sensor_hub_register_callback(hsdev, hsdev->usage,
+ 					&rot_state->callbacks);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "callback reg failed\n");
+@@ -314,7 +316,7 @@ static int hid_dev_rot_remove(struct platform_device *pdev)
+ 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+ 	struct dev_rot_state *rot_state = iio_priv(indio_dev);
+ 
+-	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_DEVICE_ORIENTATION);
++	sensor_hub_remove_callback(hsdev, hsdev->usage);
+ 	iio_device_unregister(indio_dev);
+ 	hid_sensor_remove_trigger(&rot_state->common_attributes);
+ 	iio_triggered_buffer_cleanup(indio_dev);
+@@ -327,6 +329,10 @@ static int hid_dev_rot_remove(struct platform_device *pdev)
+ 		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
+ 		.name = "HID-SENSOR-20008a",
+ 	},
++	{
++		/* Relatve orientation(AG) sensor */
++		.name = "HID-SENSOR-20008e",
++	},
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(platform, hid_dev_rot_ids);
+diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
+index 30c7dc4..b61b985 100644
+--- a/include/linux/hid-sensor-ids.h
++++ b/include/linux/hid-sensor-ids.h
+@@ -82,6 +82,7 @@
+ #define HID_USAGE_SENSOR_ORIENT_TILT_Z				0x200481
+ 
+ #define HID_USAGE_SENSOR_DEVICE_ORIENTATION			0x20008A
++#define HID_USAGE_SENSOR_RELATIVE_ORIENTATION			0x20008E
+ #define HID_USAGE_SENSOR_ORIENT_ROTATION_MATRIX			0x200482
+ #define HID_USAGE_SENSOR_ORIENT_QUATERNION			0x200483
+ #define HID_USAGE_SENSOR_ORIENT_MAGN_FLUX			0x200484
+-- 
+1.9.1
+
