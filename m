@@ -1,191 +1,128 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57390 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755955AbdEGVlC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 7 May 2017 17:41:02 -0400
-Subject: Re: [PATCH v4 3/3] iio: adc: meson-saradc: add Meson8b SoC
- compatibility
-To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        robh+dt@kernel.org, mark.rutland@arm.com, linux-iio@vger.kernel.org
-Cc: carlo@caione.org, khilman@baylibre.com, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, thomas.langer@intel.com
-References: <20170506134929.31190-1-martin.blumenstingl@googlemail.com>
- <20170506134929.31190-4-martin.blumenstingl@googlemail.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <b57c749f-47c0-f0e3-40da-c678371832f2@kernel.org>
-Date: Sun, 7 May 2017 12:35:48 +0100
-MIME-Version: 1.0
-In-Reply-To: <20170506134929.31190-4-martin.blumenstingl@googlemail.com>
-Content-Type: text/plain; charset=utf-8
+Received: from mga04.intel.com ([192.55.52.120]:62260 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1756663AbdEGWXY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 7 May 2017 18:23:24 -0400
+From: Song Hongyan <hongyan.song@intel.com>
+To: linux-input@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: jikos@kernel.org, jic23@kernel.org, srinivas.pandruvada@intel.com,
+        Song Hongyan <hongyan.song@intel.com>
+Subject: [PATCH v2 1/3] iio: hid-sensor-rotation: Add relative orientation sensor hid support
+Date: Sun,  7 May 2017 18:24:24 +0800
+Message-Id: <1494152666-25632-1-git-send-email-hongyan.song@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/05/17 14:49, Martin Blumenstingl wrote:
-> Meson GX SoCs however use some magic bits to prevent simultaneous (=
-> conflicting, because only consumer should use the FIFO buffer with the
-> ADC results) usage by the Linux kernel and the bootloader (the BL30
-> bootloader uses the SAR ADC to read the CPU temperature).
-> This patch changes guards all BL30 functionality so it is skipped on
-> SoCs which don't have it. Since the hardware itself doesn't know whether
-> BL30 is available the internal meson_sar_adc_data is extended so this
-> information can be provided per of_device_id.data inside the driver.
-> 
-> Additionally the clocks "adc_clk" and "adc_sel" are not provided by the
-> clock-controller itself. "adc_sel" is not available at all. "adc_clk"
-> is provided by the SAR ADC IP block itself on Meson8b (and earlier).
-> This is already supported by the meson_saradc driver.
-> 
-> Finally this introduces new of_device_ids for the Meson8 and Meson8b
-> SoCs so the driver can be wired up in the corresponding DT.
-> 
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+Relative orientation(AG) sensor is a 6dof orientation sensor,
+it depends on acceleration and gyroscope sensor data. It gives
+a quaternion describing the orientation of the device relative
+to an initial orientation. It is a standard HID sensor.
 
-Thanks,
+More information can be found in:
+http://www.usb.org/developers/hidpage/HUTRR59_-_Usages_for_Wearables.pdf
 
-Jonathan
-> ---
->  drivers/iio/adc/meson_saradc.c | 80 +++++++++++++++++++++++++++++-------------
->  1 file changed, 56 insertions(+), 24 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
-> index 2f6fec995264..81cd39a57fe3 100644
-> --- a/drivers/iio/adc/meson_saradc.c
-> +++ b/drivers/iio/adc/meson_saradc.c
-> @@ -220,6 +220,7 @@ enum meson_sar_adc_chan7_mux_sel {
->  };
->  
->  struct meson_sar_adc_data {
-> +	bool					has_bl30_integration;
->  	unsigned int				resolution;
->  	const char				*name;
->  };
-> @@ -437,19 +438,24 @@ static int meson_sar_adc_lock(struct iio_dev *indio_dev)
->  
->  	mutex_lock(&indio_dev->mlock);
->  
-> -	/* prevent BL30 from using the SAR ADC while we are using it */
-> -	regmap_update_bits(priv->regmap, MESON_SAR_ADC_DELAY,
-> -			   MESON_SAR_ADC_DELAY_KERNEL_BUSY,
-> -			   MESON_SAR_ADC_DELAY_KERNEL_BUSY);
-> -
-> -	/* wait until BL30 releases it's lock (so we can use the SAR ADC) */
-> -	do {
-> -		udelay(1);
-> -		regmap_read(priv->regmap, MESON_SAR_ADC_DELAY, &val);
-> -	} while (val & MESON_SAR_ADC_DELAY_BL30_BUSY && timeout--);
-> -
-> -	if (timeout < 0)
-> -		return -ETIMEDOUT;
-> +	if (priv->data->has_bl30_integration) {
-> +		/* prevent BL30 from using the SAR ADC while we are using it */
-> +		regmap_update_bits(priv->regmap, MESON_SAR_ADC_DELAY,
-> +				MESON_SAR_ADC_DELAY_KERNEL_BUSY,
-> +				MESON_SAR_ADC_DELAY_KERNEL_BUSY);
-> +
-> +		/*
-> +		 * wait until BL30 releases it's lock (so we can use the SAR
-> +		 * ADC)
-> +		 */
-> +		do {
-> +			udelay(1);
-> +			regmap_read(priv->regmap, MESON_SAR_ADC_DELAY, &val);
-> +		} while (val & MESON_SAR_ADC_DELAY_BL30_BUSY && timeout--);
-> +
-> +		if (timeout < 0)
-> +			return -ETIMEDOUT;
-> +	}
->  
->  	return 0;
->  }
-> @@ -458,9 +464,10 @@ static void meson_sar_adc_unlock(struct iio_dev *indio_dev)
->  {
->  	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
->  
-> -	/* allow BL30 to use the SAR ADC again */
-> -	regmap_update_bits(priv->regmap, MESON_SAR_ADC_DELAY,
-> -			   MESON_SAR_ADC_DELAY_KERNEL_BUSY, 0);
-> +	if (priv->data->has_bl30_integration)
-> +		/* allow BL30 to use the SAR ADC again */
-> +		regmap_update_bits(priv->regmap, MESON_SAR_ADC_DELAY,
-> +				MESON_SAR_ADC_DELAY_KERNEL_BUSY, 0);
->  
->  	mutex_unlock(&indio_dev->mlock);
->  }
-> @@ -614,14 +621,16 @@ static int meson_sar_adc_init(struct iio_dev *indio_dev)
->  	 */
->  	meson_sar_adc_set_chan7_mux(indio_dev, CHAN7_MUX_CH7_INPUT);
->  
-> -	/*
-> -	 * leave sampling delay and the input clocks as configured by BL30 to
-> -	 * make sure BL30 gets the values it expects when reading the
-> -	 * temperature sensor.
-> -	 */
-> -	regmap_read(priv->regmap, MESON_SAR_ADC_REG3, &regval);
-> -	if (regval & MESON_SAR_ADC_REG3_BL30_INITIALIZED)
-> -		return 0;
-> +	if (priv->data->has_bl30_integration) {
-> +		/*
-> +		 * leave sampling delay and the input clocks as configured by
-> +		 * BL30 to make sure BL30 gets the values it expects when
-> +		 * reading the temperature sensor.
-> +		 */
-> +		regmap_read(priv->regmap, MESON_SAR_ADC_REG3, &regval);
-> +		if (regval & MESON_SAR_ADC_REG3_BL30_INITIALIZED)
-> +			return 0;
-> +	}
->  
->  	meson_sar_adc_stop_sample_engine(indio_dev);
->  
-> @@ -834,23 +843,46 @@ static const struct iio_info meson_sar_adc_iio_info = {
->  	.driver_module = THIS_MODULE,
->  };
->  
-> +static const struct meson_sar_adc_data meson_sar_adc_meson8_data = {
-> +	.has_bl30_integration = false,
-> +	.resolution = 10,
-> +	.name = "meson-meson8-saradc",
-> +};
-> +
-> +static const struct meson_sar_adc_data meson_sar_adc_meson8b_data = {
-> +	.has_bl30_integration = false,
-> +	.resolution = 10,
-> +	.name = "meson-meson8b-saradc",
-> +};
-> +
->  static const struct meson_sar_adc_data meson_sar_adc_gxbb_data = {
-> +	.has_bl30_integration = true,
->  	.resolution = 10,
->  	.name = "meson-gxbb-saradc",
->  };
->  
->  static const struct meson_sar_adc_data meson_sar_adc_gxl_data = {
-> +	.has_bl30_integration = true,
->  	.resolution = 12,
->  	.name = "meson-gxl-saradc",
->  };
->  
->  static const struct meson_sar_adc_data meson_sar_adc_gxm_data = {
-> +	.has_bl30_integration = true,
->  	.resolution = 12,
->  	.name = "meson-gxm-saradc",
->  };
->  
->  static const struct of_device_id meson_sar_adc_of_match[] = {
->  	{
-> +		.compatible = "amlogic,meson8-saradc",
-> +		.data = &meson_sar_adc_meson8_data,
-> +	},
-> +	{
-> +		.compatible = "amlogic,meson8b-saradc",
-> +		.data = &meson_sar_adc_meson8b_data,
-> +	},
-> +	{
->  		.compatible = "amlogic,meson-gxbb-saradc",
->  		.data = &meson_sar_adc_gxbb_data,
->  	}, {
-> 
+Relative orientation(AG) sensor and dev rotation sensor have same
+channels and share channel usage id. So the most of the code for
+relative orientation sensor can be reused.
+
+Signed-off-by: Song Hongyan <hongyan.song@intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Reviewed-by: Xu Even <even.xu@intel.com>
+Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+changes: change name definition select statement from "if ...else" to "switch ...case"
+fix typo of "relative" in comment.
+
+ drivers/iio/orientation/hid-sensor-rotation.c | 28 +++++++++++++++++++--------
+ include/linux/hid-sensor-ids.h                |  1 +
+ 2 files changed, 21 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/iio/orientation/hid-sensor-rotation.c b/drivers/iio/orientation/hid-sensor-rotation.c
+index a97e802c..4d953c2 100644
+--- a/drivers/iio/orientation/hid-sensor-rotation.c
++++ b/drivers/iio/orientation/hid-sensor-rotation.c
+@@ -218,7 +218,7 @@ static int dev_rot_parse_report(struct platform_device *pdev,
+ static int hid_dev_rot_probe(struct platform_device *pdev)
+ {
+ 	int ret;
+-	static char *name = "dev_rotation";
++	static char *name;
+ 	struct iio_dev *indio_dev;
+ 	struct dev_rot_state *rot_state;
+ 	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
+@@ -234,8 +234,18 @@ static int hid_dev_rot_probe(struct platform_device *pdev)
+ 	rot_state->common_attributes.hsdev = hsdev;
+ 	rot_state->common_attributes.pdev = pdev;
+ 
+-	ret = hid_sensor_parse_common_attributes(hsdev,
+-				HID_USAGE_SENSOR_DEVICE_ORIENTATION,
++	switch (hsdev->usage) {
++	case HID_USAGE_SENSOR_DEVICE_ORIENTATION:
++		name = "dev_rotation";
++		break;
++	case HID_USAGE_SENSOR_RELATIVE_ORIENTATION:
++		name = "relative_orientation";
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	ret = hid_sensor_parse_common_attributes(hsdev, hsdev->usage,
+ 				&rot_state->common_attributes);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "failed to setup common attributes\n");
+@@ -252,8 +262,7 @@ static int hid_dev_rot_probe(struct platform_device *pdev)
+ 
+ 	ret = dev_rot_parse_report(pdev, hsdev,
+ 				   (struct iio_chan_spec *)indio_dev->channels,
+-				   HID_USAGE_SENSOR_DEVICE_ORIENTATION,
+-				   rot_state);
++					hsdev->usage, rot_state);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "failed to setup attributes\n");
+ 		return ret;
+@@ -288,8 +297,7 @@ static int hid_dev_rot_probe(struct platform_device *pdev)
+ 	rot_state->callbacks.send_event = dev_rot_proc_event;
+ 	rot_state->callbacks.capture_sample = dev_rot_capture_sample;
+ 	rot_state->callbacks.pdev = pdev;
+-	ret = sensor_hub_register_callback(hsdev,
+-					HID_USAGE_SENSOR_DEVICE_ORIENTATION,
++	ret = sensor_hub_register_callback(hsdev, hsdev->usage,
+ 					&rot_state->callbacks);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "callback reg failed\n");
+@@ -314,7 +322,7 @@ static int hid_dev_rot_remove(struct platform_device *pdev)
+ 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+ 	struct dev_rot_state *rot_state = iio_priv(indio_dev);
+ 
+-	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_DEVICE_ORIENTATION);
++	sensor_hub_remove_callback(hsdev, hsdev->usage);
+ 	iio_device_unregister(indio_dev);
+ 	hid_sensor_remove_trigger(&rot_state->common_attributes);
+ 	iio_triggered_buffer_cleanup(indio_dev);
+@@ -327,6 +335,10 @@ static int hid_dev_rot_remove(struct platform_device *pdev)
+ 		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
+ 		.name = "HID-SENSOR-20008a",
+ 	},
++	{
++		/* Relative orientation(AG) sensor */
++		.name = "HID-SENSOR-20008e",
++	},
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(platform, hid_dev_rot_ids);
+diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
+index 30c7dc4..b61b985 100644
+--- a/include/linux/hid-sensor-ids.h
++++ b/include/linux/hid-sensor-ids.h
+@@ -82,6 +82,7 @@
+ #define HID_USAGE_SENSOR_ORIENT_TILT_Z				0x200481
+ 
+ #define HID_USAGE_SENSOR_DEVICE_ORIENTATION			0x20008A
++#define HID_USAGE_SENSOR_RELATIVE_ORIENTATION			0x20008E
+ #define HID_USAGE_SENSOR_ORIENT_ROTATION_MATRIX			0x200482
+ #define HID_USAGE_SENSOR_ORIENT_QUATERNION			0x200483
+ #define HID_USAGE_SENSOR_ORIENT_MAGN_FLUX			0x200484
+-- 
+1.9.1
 
