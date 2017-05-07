@@ -1,157 +1,145 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42930 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751069AbdEESab (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 5 May 2017 14:30:31 -0400
-Subject: Re: [PATCH 1/3] iio: hid-sensor-rotation: Add relative orientation
- sensor hid support
-To: Matt Ranostay <matt.ranostay@konsulko.com>,
-        Song Hongyan <hongyan.song@intel.com>
-Cc: linux-input@vger.kernel.org,
+Received: from mga11.intel.com ([192.55.52.93]:37046 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751637AbdEGW0C (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 7 May 2017 18:26:02 -0400
+From: "Song, Hongyan" <hongyan.song@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Matt Ranostay <matt.ranostay@konsulko.com>
+CC: "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
         "open list:IIO SUBSYSTEM AND..." <linux-iio@vger.kernel.org>,
-        jikos@kernel.org, srinivas.pandruvada@intel.com
+        "jikos@kernel.org" <jikos@kernel.org>,
+        "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+Subject: RE: [PATCH 1/3] iio: hid-sensor-rotation: Add relative orientation
+ sensor hid support
+Date: Sun, 7 May 2017 02:03:57 +0000
+Message-ID: <AE3E3DFA698D6144A7445C92D1D41E2F10BFAB92@SHSMSX103.ccr.corp.intel.com>
 References: <1493991565-17947-1-git-send-email-hongyan.song@intel.com>
  <CAJCx=gnij32Z=0U+1sTDtipJXBKrM6AJ9R7i0sYKvc0jDnLGwg@mail.gmail.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <caa90492-048a-56a1-76fa-08cfdc879fb3@kernel.org>
-Date: Fri, 5 May 2017 19:30:28 +0100
+ <caa90492-048a-56a1-76fa-08cfdc879fb3@kernel.org>
+In-Reply-To: <caa90492-048a-56a1-76fa-08cfdc879fb3@kernel.org>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <CAJCx=gnij32Z=0U+1sTDtipJXBKrM6AJ9R7i0sYKvc0jDnLGwg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/05/17 07:18, Matt Ranostay wrote:
-> On Fri, May 5, 2017 at 6:39 AM, Song Hongyan <hongyan.song@intel.com> wrote:
->> Relative orientation(AG) sensor is a 6dof orientation sensor,
->> it depends on acceleration and gyroscope sensor data. It gives
->> a quaternion describing the orientation of the device relative
->> to an initial orientation. It is a standard HID sensor.
->>
->> More information can be found in:
->> http://www.usb.org/developers/hidpage/HUTRR59_-_Usages_for_Wearables.pdf
->>
->> Relative orientation(AG) sensor and dev rotation sensor have same
->> channels and share channel usage id. So the most of the code for
->> relative orientation sensor can be reused.
->>
->> Signed-off-by: Song Hongyan <hongyan.song@intel.com>
->> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
->> Reviewed-by: Xu Even <even.xu@intel.com>
->> Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
->> ---
->>  drivers/iio/orientation/hid-sensor-rotation.c | 22 ++++++++++++++--------
->>  include/linux/hid-sensor-ids.h                |  1 +
->>  2 files changed, 15 insertions(+), 8 deletions(-)
->>
->> diff --git a/drivers/iio/orientation/hid-sensor-rotation.c b/drivers/iio/orientation/hid-sensor-rotation.c
->> index a97e802c..5f07a5a 100644
->> --- a/drivers/iio/orientation/hid-sensor-rotation.c
->> +++ b/drivers/iio/orientation/hid-sensor-rotation.c
->> @@ -218,7 +218,7 @@ static int dev_rot_parse_report(struct platform_device *pdev,
->>  static int hid_dev_rot_probe(struct platform_device *pdev)
->>  {
->>         int ret;
->> -       static char *name = "dev_rotation";
->> +       static char *name;
->>         struct iio_dev *indio_dev;
->>         struct dev_rot_state *rot_state;
->>         struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
->> @@ -234,8 +234,12 @@ static int hid_dev_rot_probe(struct platform_device *pdev)
->>         rot_state->common_attributes.hsdev = hsdev;
->>         rot_state->common_attributes.pdev = pdev;
->>
->> -       ret = hid_sensor_parse_common_attributes(hsdev,
->> -                               HID_USAGE_SENSOR_DEVICE_ORIENTATION,
->> +       if (hsdev->usage == HID_USAGE_SENSOR_DEVICE_ORIENTATION)
->> +               name = "dev_rotation";
->> +       else if (hsdev->usage == HID_USAGE_SENSOR_RELATIVE_ORIENTATION)
->> +               name = "relative_orientation";
-> 
-> Since you have yet another "else if" in another patch in this series..
-> it would be better to have
-> 
-> switch (hsdev->usage) {
-> case HID_USAGE_SENSOR_DEVICE_ORIENTATION:
->     name = "dev_rotation"
->     break;
-> case HID_USAGE_SENSOR_RELATIVE_ORIENTATION:
->     name = "relative_orientation";
->     break;
-> default:
->     **probably some error out if somehow we get here**
-> }
-> 
-> 
-Seconded.  Otherwise the series looks good to me!
-
-Jonathan
-> 
-> 
->> +
->> +       ret = hid_sensor_parse_common_attributes(hsdev, hsdev->usage,
->>                                 &rot_state->common_attributes);
->>         if (ret) {
->>                 dev_err(&pdev->dev, "failed to setup common attributes\n");
->> @@ -252,8 +256,7 @@ static int hid_dev_rot_probe(struct platform_device *pdev)
->>
->>         ret = dev_rot_parse_report(pdev, hsdev,
->>                                    (struct iio_chan_spec *)indio_dev->channels,
->> -                                  HID_USAGE_SENSOR_DEVICE_ORIENTATION,
->> -                                  rot_state);
->> +                                       hsdev->usage, rot_state);
->>         if (ret) {
->>                 dev_err(&pdev->dev, "failed to setup attributes\n");
->>                 return ret;
->> @@ -288,8 +291,7 @@ static int hid_dev_rot_probe(struct platform_device *pdev)
->>         rot_state->callbacks.send_event = dev_rot_proc_event;
->>         rot_state->callbacks.capture_sample = dev_rot_capture_sample;
->>         rot_state->callbacks.pdev = pdev;
->> -       ret = sensor_hub_register_callback(hsdev,
->> -                                       HID_USAGE_SENSOR_DEVICE_ORIENTATION,
->> +       ret = sensor_hub_register_callback(hsdev, hsdev->usage,
->>                                         &rot_state->callbacks);
->>         if (ret) {
->>                 dev_err(&pdev->dev, "callback reg failed\n");
->> @@ -314,7 +316,7 @@ static int hid_dev_rot_remove(struct platform_device *pdev)
->>         struct iio_dev *indio_dev = platform_get_drvdata(pdev);
->>         struct dev_rot_state *rot_state = iio_priv(indio_dev);
->>
->> -       sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_DEVICE_ORIENTATION);
->> +       sensor_hub_remove_callback(hsdev, hsdev->usage);
->>         iio_device_unregister(indio_dev);
->>         hid_sensor_remove_trigger(&rot_state->common_attributes);
->>         iio_triggered_buffer_cleanup(indio_dev);
->> @@ -327,6 +329,10 @@ static int hid_dev_rot_remove(struct platform_device *pdev)
->>                 /* Format: HID-SENSOR-usage_id_in_hex_lowercase */
->>                 .name = "HID-SENSOR-20008a",
->>         },
->> +       {
->> +               /* Relatve orientation(AG) sensor */
-> 
-> Slight typo. Should be "Relative"
->> +               .name = "HID-SENSOR-20008e",
->> +       },
->>         { /* sentinel */ }
->>  };
->>  MODULE_DEVICE_TABLE(platform, hid_dev_rot_ids);
->> diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
->> index 30c7dc4..b61b985 100644
->> --- a/include/linux/hid-sensor-ids.h
->> +++ b/include/linux/hid-sensor-ids.h
->> @@ -82,6 +82,7 @@
->>  #define HID_USAGE_SENSOR_ORIENT_TILT_Z                         0x200481
->>
->>  #define HID_USAGE_SENSOR_DEVICE_ORIENTATION                    0x20008A
->> +#define HID_USAGE_SENSOR_RELATIVE_ORIENTATION                  0x20008E
->>  #define HID_USAGE_SENSOR_ORIENT_ROTATION_MATRIX                        0x200482
->>  #define HID_USAGE_SENSOR_ORIENT_QUATERNION                     0x200483
->>  #define HID_USAGE_SENSOR_ORIENT_MAGN_FLUX                      0x200484
->> --
->> 1.9.1
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
+VGhhbmtzIEpvbmF0aGFuICYgTWF0dCwgcGF0Y2ggaGF2ZSBiZWVuIHVwZGF0ZWQuDQoNCkJSDQpT
+b25nIEhvbmd5YW4NCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IEpvbmF0aGFu
+IENhbWVyb24gW21haWx0bzpqaWMyM0BrZXJuZWwub3JnXSANClNlbnQ6IFNhdHVyZGF5LCBNYXkg
+NiwgMjAxNyAyOjMwIEFNDQpUbzogTWF0dCBSYW5vc3RheSA8bWF0dC5yYW5vc3RheUBrb25zdWxr
+by5jb20+OyBTb25nLCBIb25neWFuIDxob25neWFuLnNvbmdAaW50ZWwuY29tPg0KQ2M6IGxpbnV4
+LWlucHV0QHZnZXIua2VybmVsLm9yZzsgb3BlbiBsaXN0OklJTyBTVUJTWVNURU0gQU5ELi4uIDxs
+aW51eC1paW9Admdlci5rZXJuZWwub3JnPjsgamlrb3NAa2VybmVsLm9yZzsgUGFuZHJ1dmFkYSwg
+U3Jpbml2YXMgPHNyaW5pdmFzLnBhbmRydXZhZGFAaW50ZWwuY29tPg0KU3ViamVjdDogUmU6IFtQ
+QVRDSCAxLzNdIGlpbzogaGlkLXNlbnNvci1yb3RhdGlvbjogQWRkIHJlbGF0aXZlIG9yaWVudGF0
+aW9uIHNlbnNvciBoaWQgc3VwcG9ydA0KDQpPbiAwNS8wNS8xNyAwNzoxOCwgTWF0dCBSYW5vc3Rh
+eSB3cm90ZToNCj4gT24gRnJpLCBNYXkgNSwgMjAxNyBhdCA2OjM5IEFNLCBTb25nIEhvbmd5YW4g
+PGhvbmd5YW4uc29uZ0BpbnRlbC5jb20+IHdyb3RlOg0KPj4gUmVsYXRpdmUgb3JpZW50YXRpb24o
+QUcpIHNlbnNvciBpcyBhIDZkb2Ygb3JpZW50YXRpb24gc2Vuc29yLCBpdCANCj4+IGRlcGVuZHMg
+b24gYWNjZWxlcmF0aW9uIGFuZCBneXJvc2NvcGUgc2Vuc29yIGRhdGEuIEl0IGdpdmVzIGEgDQo+
+PiBxdWF0ZXJuaW9uIGRlc2NyaWJpbmcgdGhlIG9yaWVudGF0aW9uIG9mIHRoZSBkZXZpY2UgcmVs
+YXRpdmUgdG8gYW4gDQo+PiBpbml0aWFsIG9yaWVudGF0aW9uLiBJdCBpcyBhIHN0YW5kYXJkIEhJ
+RCBzZW5zb3IuDQo+Pg0KPj4gTW9yZSBpbmZvcm1hdGlvbiBjYW4gYmUgZm91bmQgaW46DQo+PiBo
+dHRwOi8vd3d3LnVzYi5vcmcvZGV2ZWxvcGVycy9oaWRwYWdlL0hVVFJSNTlfLV9Vc2FnZXNfZm9y
+X1dlYXJhYmxlcy4NCj4+IHBkZg0KPj4NCj4+IFJlbGF0aXZlIG9yaWVudGF0aW9uKEFHKSBzZW5z
+b3IgYW5kIGRldiByb3RhdGlvbiBzZW5zb3IgaGF2ZSBzYW1lIA0KPj4gY2hhbm5lbHMgYW5kIHNo
+YXJlIGNoYW5uZWwgdXNhZ2UgaWQuIFNvIHRoZSBtb3N0IG9mIHRoZSBjb2RlIGZvciANCj4+IHJl
+bGF0aXZlIG9yaWVudGF0aW9uIHNlbnNvciBjYW4gYmUgcmV1c2VkLg0KPj4NCj4+IFNpZ25lZC1v
+ZmYtYnk6IFNvbmcgSG9uZ3lhbiA8aG9uZ3lhbi5zb25nQGludGVsLmNvbT4NCj4+IFJldmlld2Vk
+LWJ5OiBBbmR5IFNoZXZjaGVua28gPGFuZHJpeS5zaGV2Y2hlbmtvQGludGVsLmNvbT4NCj4+IFJl
+dmlld2VkLWJ5OiBYdSBFdmVuIDxldmVuLnh1QGludGVsLmNvbT4NCj4+IEFja2VkLWJ5OiBTcmlu
+aXZhcyBQYW5kcnV2YWRhIDxzcmluaXZhcy5wYW5kcnV2YWRhQGxpbnV4LmludGVsLmNvbT4NCj4+
+IC0tLQ0KPj4gIGRyaXZlcnMvaWlvL29yaWVudGF0aW9uL2hpZC1zZW5zb3Itcm90YXRpb24uYyB8
+IDIyICsrKysrKysrKysrKysrLS0tLS0tLS0NCj4+ICBpbmNsdWRlL2xpbnV4L2hpZC1zZW5zb3It
+aWRzLmggICAgICAgICAgICAgICAgfCAgMSArDQo+PiAgMiBmaWxlcyBjaGFuZ2VkLCAxNSBpbnNl
+cnRpb25zKCspLCA4IGRlbGV0aW9ucygtKQ0KPj4NCj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lp
+by9vcmllbnRhdGlvbi9oaWQtc2Vuc29yLXJvdGF0aW9uLmMgDQo+PiBiL2RyaXZlcnMvaWlvL29y
+aWVudGF0aW9uL2hpZC1zZW5zb3Itcm90YXRpb24uYw0KPj4gaW5kZXggYTk3ZTgwMmMuLjVmMDdh
+NWEgMTAwNjQ0DQo+PiAtLS0gYS9kcml2ZXJzL2lpby9vcmllbnRhdGlvbi9oaWQtc2Vuc29yLXJv
+dGF0aW9uLmMNCj4+ICsrKyBiL2RyaXZlcnMvaWlvL29yaWVudGF0aW9uL2hpZC1zZW5zb3Itcm90
+YXRpb24uYw0KPj4gQEAgLTIxOCw3ICsyMTgsNyBAQCBzdGF0aWMgaW50IGRldl9yb3RfcGFyc2Vf
+cmVwb3J0KHN0cnVjdCANCj4+IHBsYXRmb3JtX2RldmljZSAqcGRldiwgIHN0YXRpYyBpbnQgaGlk
+X2Rldl9yb3RfcHJvYmUoc3RydWN0IA0KPj4gcGxhdGZvcm1fZGV2aWNlICpwZGV2KSAgew0KPj4g
+ICAgICAgICBpbnQgcmV0Ow0KPj4gLSAgICAgICBzdGF0aWMgY2hhciAqbmFtZSA9ICJkZXZfcm90
+YXRpb24iOw0KPj4gKyAgICAgICBzdGF0aWMgY2hhciAqbmFtZTsNCj4+ICAgICAgICAgc3RydWN0
+IGlpb19kZXYgKmluZGlvX2RldjsNCj4+ICAgICAgICAgc3RydWN0IGRldl9yb3Rfc3RhdGUgKnJv
+dF9zdGF0ZTsNCj4+ICAgICAgICAgc3RydWN0IGhpZF9zZW5zb3JfaHViX2RldmljZSAqaHNkZXYg
+PSANCj4+IHBkZXYtPmRldi5wbGF0Zm9ybV9kYXRhOyBAQCAtMjM0LDggKzIzNCwxMiBAQCBzdGF0
+aWMgaW50IGhpZF9kZXZfcm90X3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQo+
+PiAgICAgICAgIHJvdF9zdGF0ZS0+Y29tbW9uX2F0dHJpYnV0ZXMuaHNkZXYgPSBoc2RldjsNCj4+
+ICAgICAgICAgcm90X3N0YXRlLT5jb21tb25fYXR0cmlidXRlcy5wZGV2ID0gcGRldjsNCj4+DQo+
+PiAtICAgICAgIHJldCA9IGhpZF9zZW5zb3JfcGFyc2VfY29tbW9uX2F0dHJpYnV0ZXMoaHNkZXYs
+DQo+PiAtICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEhJRF9VU0FHRV9TRU5TT1JfREVW
+SUNFX09SSUVOVEFUSU9OLA0KPj4gKyAgICAgICBpZiAoaHNkZXYtPnVzYWdlID09IEhJRF9VU0FH
+RV9TRU5TT1JfREVWSUNFX09SSUVOVEFUSU9OKQ0KPj4gKyAgICAgICAgICAgICAgIG5hbWUgPSAi
+ZGV2X3JvdGF0aW9uIjsNCj4+ICsgICAgICAgZWxzZSBpZiAoaHNkZXYtPnVzYWdlID09IEhJRF9V
+U0FHRV9TRU5TT1JfUkVMQVRJVkVfT1JJRU5UQVRJT04pDQo+PiArICAgICAgICAgICAgICAgbmFt
+ZSA9ICJyZWxhdGl2ZV9vcmllbnRhdGlvbiI7DQo+IA0KPiBTaW5jZSB5b3UgaGF2ZSB5ZXQgYW5v
+dGhlciAiZWxzZSBpZiIgaW4gYW5vdGhlciBwYXRjaCBpbiB0aGlzIHNlcmllcy4uDQo+IGl0IHdv
+dWxkIGJlIGJldHRlciB0byBoYXZlDQo+IA0KPiBzd2l0Y2ggKGhzZGV2LT51c2FnZSkgew0KPiBj
+YXNlIEhJRF9VU0FHRV9TRU5TT1JfREVWSUNFX09SSUVOVEFUSU9OOg0KPiAgICAgbmFtZSA9ICJk
+ZXZfcm90YXRpb24iDQo+ICAgICBicmVhazsNCj4gY2FzZSBISURfVVNBR0VfU0VOU09SX1JFTEFU
+SVZFX09SSUVOVEFUSU9OOg0KPiAgICAgbmFtZSA9ICJyZWxhdGl2ZV9vcmllbnRhdGlvbiI7DQo+
+ICAgICBicmVhazsNCj4gZGVmYXVsdDoNCj4gICAgICoqcHJvYmFibHkgc29tZSBlcnJvciBvdXQg
+aWYgc29tZWhvdyB3ZSBnZXQgaGVyZSoqIH0NCj4gDQo+IA0KU2Vjb25kZWQuICBPdGhlcndpc2Ug
+dGhlIHNlcmllcyBsb29rcyBnb29kIHRvIG1lIQ0KDQpKb25hdGhhbg0KPiANCj4gDQo+PiArDQo+
+PiArICAgICAgIHJldCA9IGhpZF9zZW5zb3JfcGFyc2VfY29tbW9uX2F0dHJpYnV0ZXMoaHNkZXYs
+IGhzZGV2LT51c2FnZSwNCj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgJnJvdF9z
+dGF0ZS0+Y29tbW9uX2F0dHJpYnV0ZXMpOw0KPj4gICAgICAgICBpZiAocmV0KSB7DQo+PiAgICAg
+ICAgICAgICAgICAgZGV2X2VycigmcGRldi0+ZGV2LCAiZmFpbGVkIHRvIHNldHVwIGNvbW1vbiAN
+Cj4+IGF0dHJpYnV0ZXNcbiIpOyBAQCAtMjUyLDggKzI1Niw3IEBAIHN0YXRpYyBpbnQgDQo+PiBo
+aWRfZGV2X3JvdF9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQ0KPj4NCj4+ICAg
+ICAgICAgcmV0ID0gZGV2X3JvdF9wYXJzZV9yZXBvcnQocGRldiwgaHNkZXYsDQo+PiAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIChzdHJ1Y3QgaWlvX2NoYW5fc3BlYyAqKWluZGlv
+X2Rldi0+Y2hhbm5lbHMsDQo+PiAtICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEhJ
+RF9VU0FHRV9TRU5TT1JfREVWSUNFX09SSUVOVEFUSU9OLA0KPj4gLSAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICByb3Rfc3RhdGUpOw0KPj4gKyAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgIGhzZGV2LT51c2FnZSwgcm90X3N0YXRlKTsNCj4+ICAgICAgICAgaWYg
+KHJldCkgew0KPj4gICAgICAgICAgICAgICAgIGRldl9lcnIoJnBkZXYtPmRldiwgImZhaWxlZCB0
+byBzZXR1cCBhdHRyaWJ1dGVzXG4iKTsNCj4+ICAgICAgICAgICAgICAgICByZXR1cm4gcmV0Ow0K
+Pj4gQEAgLTI4OCw4ICsyOTEsNyBAQCBzdGF0aWMgaW50IGhpZF9kZXZfcm90X3Byb2JlKHN0cnVj
+dCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQo+PiAgICAgICAgIHJvdF9zdGF0ZS0+Y2FsbGJhY2tz
+LnNlbmRfZXZlbnQgPSBkZXZfcm90X3Byb2NfZXZlbnQ7DQo+PiAgICAgICAgIHJvdF9zdGF0ZS0+
+Y2FsbGJhY2tzLmNhcHR1cmVfc2FtcGxlID0gZGV2X3JvdF9jYXB0dXJlX3NhbXBsZTsNCj4+ICAg
+ICAgICAgcm90X3N0YXRlLT5jYWxsYmFja3MucGRldiA9IHBkZXY7DQo+PiAtICAgICAgIHJldCA9
+IHNlbnNvcl9odWJfcmVnaXN0ZXJfY2FsbGJhY2soaHNkZXYsDQo+PiAtICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgSElEX1VTQUdFX1NFTlNPUl9ERVZJQ0VfT1JJRU5UQVRJ
+T04sDQo+PiArICAgICAgIHJldCA9IHNlbnNvcl9odWJfcmVnaXN0ZXJfY2FsbGJhY2soaHNkZXYs
+IGhzZGV2LT51c2FnZSwNCj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAmcm90X3N0YXRlLT5jYWxsYmFja3MpOw0KPj4gICAgICAgICBpZiAocmV0KSB7DQo+PiAgICAg
+ICAgICAgICAgICAgZGV2X2VycigmcGRldi0+ZGV2LCAiY2FsbGJhY2sgcmVnIGZhaWxlZFxuIik7
+IEBAIA0KPj4gLTMxNCw3ICszMTYsNyBAQCBzdGF0aWMgaW50IGhpZF9kZXZfcm90X3JlbW92ZShz
+dHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQ0KPj4gICAgICAgICBzdHJ1Y3QgaWlvX2RldiAq
+aW5kaW9fZGV2ID0gcGxhdGZvcm1fZ2V0X2RydmRhdGEocGRldik7DQo+PiAgICAgICAgIHN0cnVj
+dCBkZXZfcm90X3N0YXRlICpyb3Rfc3RhdGUgPSBpaW9fcHJpdihpbmRpb19kZXYpOw0KPj4NCj4+
+IC0gICAgICAgc2Vuc29yX2h1Yl9yZW1vdmVfY2FsbGJhY2soaHNkZXYsIEhJRF9VU0FHRV9TRU5T
+T1JfREVWSUNFX09SSUVOVEFUSU9OKTsNCj4+ICsgICAgICAgc2Vuc29yX2h1Yl9yZW1vdmVfY2Fs
+bGJhY2soaHNkZXYsIGhzZGV2LT51c2FnZSk7DQo+PiAgICAgICAgIGlpb19kZXZpY2VfdW5yZWdp
+c3RlcihpbmRpb19kZXYpOw0KPj4gICAgICAgICBoaWRfc2Vuc29yX3JlbW92ZV90cmlnZ2VyKCZy
+b3Rfc3RhdGUtPmNvbW1vbl9hdHRyaWJ1dGVzKTsNCj4+ICAgICAgICAgaWlvX3RyaWdnZXJlZF9i
+dWZmZXJfY2xlYW51cChpbmRpb19kZXYpOw0KPj4gQEAgLTMyNyw2ICszMjksMTAgQEAgc3RhdGlj
+IGludCBoaWRfZGV2X3JvdF9yZW1vdmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikNCj4+
+ICAgICAgICAgICAgICAgICAvKiBGb3JtYXQ6IEhJRC1TRU5TT1ItdXNhZ2VfaWRfaW5faGV4X2xv
+d2VyY2FzZSAqLw0KPj4gICAgICAgICAgICAgICAgIC5uYW1lID0gIkhJRC1TRU5TT1ItMjAwMDhh
+IiwNCj4+ICAgICAgICAgfSwNCj4+ICsgICAgICAgew0KPj4gKyAgICAgICAgICAgICAgIC8qIFJl
+bGF0dmUgb3JpZW50YXRpb24oQUcpIHNlbnNvciAqLw0KPiANCj4gU2xpZ2h0IHR5cG8uIFNob3Vs
+ZCBiZSAiUmVsYXRpdmUiDQo+PiArICAgICAgICAgICAgICAgLm5hbWUgPSAiSElELVNFTlNPUi0y
+MDAwOGUiLA0KPj4gKyAgICAgICB9LA0KPj4gICAgICAgICB7IC8qIHNlbnRpbmVsICovIH0NCj4+
+ICB9Ow0KPj4gIE1PRFVMRV9ERVZJQ0VfVEFCTEUocGxhdGZvcm0sIGhpZF9kZXZfcm90X2lkcyk7
+IGRpZmYgLS1naXQgDQo+PiBhL2luY2x1ZGUvbGludXgvaGlkLXNlbnNvci1pZHMuaCBiL2luY2x1
+ZGUvbGludXgvaGlkLXNlbnNvci1pZHMuaCANCj4+IGluZGV4IDMwYzdkYzQuLmI2MWI5ODUgMTAw
+NjQ0DQo+PiAtLS0gYS9pbmNsdWRlL2xpbnV4L2hpZC1zZW5zb3ItaWRzLmgNCj4+ICsrKyBiL2lu
+Y2x1ZGUvbGludXgvaGlkLXNlbnNvci1pZHMuaA0KPj4gQEAgLTgyLDYgKzgyLDcgQEANCj4+ICAj
+ZGVmaW5lIEhJRF9VU0FHRV9TRU5TT1JfT1JJRU5UX1RJTFRfWiAgICAgICAgICAgICAgICAgICAg
+ICAgICAweDIwMDQ4MQ0KPj4NCj4+ICAjZGVmaW5lIEhJRF9VU0FHRV9TRU5TT1JfREVWSUNFX09S
+SUVOVEFUSU9OICAgICAgICAgICAgICAgICAgICAweDIwMDA4QQ0KPj4gKyNkZWZpbmUgSElEX1VT
+QUdFX1NFTlNPUl9SRUxBVElWRV9PUklFTlRBVElPTiAgICAgICAgICAgICAgICAgIDB4MjAwMDhF
+DQo+PiAgI2RlZmluZSBISURfVVNBR0VfU0VOU09SX09SSUVOVF9ST1RBVElPTl9NQVRSSVggICAg
+ICAgICAgICAgICAgICAgICAgICAweDIwMDQ4Mg0KPj4gICNkZWZpbmUgSElEX1VTQUdFX1NFTlNP
+Ul9PUklFTlRfUVVBVEVSTklPTiAgICAgICAgICAgICAgICAgICAgIDB4MjAwNDgzDQo+PiAgI2Rl
+ZmluZSBISURfVVNBR0VfU0VOU09SX09SSUVOVF9NQUdOX0ZMVVggICAgICAgICAgICAgICAgICAg
+ICAgMHgyMDA0ODQNCj4+IC0tDQo+PiAxLjkuMQ0KPj4NCj4+IC0tDQo+PiBUbyB1bnN1YnNjcmli
+ZSBmcm9tIHRoaXMgbGlzdDogc2VuZCB0aGUgbGluZSAidW5zdWJzY3JpYmUgbGludXgtaWlvIiAN
+Cj4+IGluIHRoZSBib2R5IG9mIGEgbWVzc2FnZSB0byBtYWpvcmRvbW9Admdlci5rZXJuZWwub3Jn
+IE1vcmUgbWFqb3Jkb21vIA0KPj4gaW5mbyBhdCAgaHR0cDovL3ZnZXIua2VybmVsLm9yZy9tYWpv
+cmRvbW8taW5mby5odG1sDQoNCg==
