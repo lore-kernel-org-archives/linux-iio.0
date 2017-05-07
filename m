@@ -1,103 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57612 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57608 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755034AbdEGWVB (ORCPT
+        with ESMTP id S1753935AbdEGWVB (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Sun, 7 May 2017 18:21:01 -0400
-Subject: Re: [PATCH 2/2] tsl2x7x_core: use octal permission representation
+Subject: Re: [PATCH 1/2] tsl2x7x_core: remove paragraph about writing to the
+ FSF's mailing address
 To: Enric Balletbo i Serra <eballetbo@gmail.com>
 Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
+        linux-kernel@vger.kernel.org, Brian Masney <masneyb@onstation.org>
 References: <20170504203832.5525-1-eballetbo@gmail.com>
- <20170504203832.5525-2-eballetbo@gmail.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <780d1ecd-fb0e-9038-113f-791a7d155a5b@kernel.org>
-Date: Sun, 7 May 2017 13:55:53 +0100
+Message-ID: <6a117702-e456-1ec9-0b71-f302a6b351ad@kernel.org>
+Date: Sun, 7 May 2017 13:51:45 +0100
 MIME-Version: 1.0
-In-Reply-To: <20170504203832.5525-2-eballetbo@gmail.com>
+In-Reply-To: <20170504203832.5525-1-eballetbo@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 04/05/17 21:38, Enric Balletbo i Serra wrote:
-> Fix the output from checkpatch.pl like:
->   Symbolic permissions 'S_IRUSR' are not preferred.
->   Consider using octal permissions '0400'.
-> 
-> Also fix the alignment DEVICE_ATTR variables as should match open
-> parenthesis.
+> Do not include the paragraph about writing to the Free Software
+> Foundation's mailing address from the sample GPL notice. The FSF
+> has changed addresses in the past, and may do so again. Linux
+> already includes a copy of the GPL.
 > 
 > Signed-off-by: Enric Balletbo i Serra <eballetbo@gmail.com>
-I already have a patch in place doing this from a couple of weeks ago
-(Paulo Cretaro - April 25th)
+Applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to play with it.
 
-Thanks
+I dealt with the fact this crossed with a file rename patch and
+the file is now called tsl2x7x.c
 
 Jonathan
 > ---
->  drivers/staging/iio/light/tsl2x7x_core.c | 42 +++++++++++++++++---------------
->  1 file changed, 22 insertions(+), 20 deletions(-)
+>  drivers/staging/iio/light/tsl2x7x_core.c | 4 ----
+>  1 file changed, 4 deletions(-)
 > 
 > diff --git a/drivers/staging/iio/light/tsl2x7x_core.c b/drivers/staging/iio/light/tsl2x7x_core.c
-> index b35ff63f7f60..41b8f5332737 100644
+> index ea15bc1c300c..b35ff63f7f60 100644
 > --- a/drivers/staging/iio/light/tsl2x7x_core.c
 > +++ b/drivers/staging/iio/light/tsl2x7x_core.c
-> @@ -1494,35 +1494,37 @@ static int tsl2x7x_write_raw(struct iio_dev *indio_dev,
->  	return 0;
->  }
+> @@ -13,10 +13,6 @@
+>   * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+>   * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+>   * more details.
+> - *
+> - * You should have received a copy of the GNU General Public License along
+> - * with this program; if not, write to the Free Software Foundation, Inc.,
+> - * 51 Franklin Street, Fifth Floor, Boston, MA        02110-1301, USA.
+>   */
 >  
-> -static DEVICE_ATTR(power_state, S_IRUGO | S_IWUSR,
-> -		tsl2x7x_power_state_show, tsl2x7x_power_state_store);
-> +static DEVICE_ATTR(power_state, 0644, tsl2x7x_power_state_show,
-> +		   tsl2x7x_power_state_store);
->  
-> -static DEVICE_ATTR(in_proximity0_calibscale_available, S_IRUGO,
-> -		tsl2x7x_prox_gain_available_show, NULL);
-> +static DEVICE_ATTR(in_proximity0_calibscale_available, 0444,
-> +		   tsl2x7x_prox_gain_available_show, NULL);
->  
-> -static DEVICE_ATTR(in_illuminance0_calibscale_available, S_IRUGO,
-> -		tsl2x7x_gain_available_show, NULL);
-> +static DEVICE_ATTR(in_illuminance0_calibscale_available, 0444,
-> +		   tsl2x7x_gain_available_show, NULL);
->  
-> -static DEVICE_ATTR(in_illuminance0_integration_time, S_IRUGO | S_IWUSR,
-> -		tsl2x7x_als_time_show, tsl2x7x_als_time_store);
-> +static DEVICE_ATTR(in_illuminance0_integration_time, 0644,
-> +		   tsl2x7x_als_time_show, tsl2x7x_als_time_store);
->  
-> -static DEVICE_ATTR(in_illuminance0_target_input, S_IRUGO | S_IWUSR,
-> -		tsl2x7x_als_cal_target_show, tsl2x7x_als_cal_target_store);
-> +static DEVICE_ATTR(in_illuminance0_target_input, 0644,
-> +		   tsl2x7x_als_cal_target_show, tsl2x7x_als_cal_target_store);
->  
-> -static DEVICE_ATTR(in_illuminance0_calibrate, S_IWUSR, NULL,
-> -		tsl2x7x_do_calibrate);
-> +static DEVICE_ATTR(in_illuminance0_calibrate, 0200, NULL,
-> +		   tsl2x7x_do_calibrate);
->  
-> -static DEVICE_ATTR(in_proximity0_calibrate, S_IWUSR, NULL,
-> -		tsl2x7x_do_prox_calibrate);
-> +static DEVICE_ATTR(in_proximity0_calibrate, 0200, NULL,
-> +		   tsl2x7x_do_prox_calibrate);
->  
-> -static DEVICE_ATTR(in_illuminance0_lux_table, S_IRUGO | S_IWUSR,
-> -		tsl2x7x_luxtable_show, tsl2x7x_luxtable_store);
-> +static DEVICE_ATTR(in_illuminance0_lux_table, 0644, tsl2x7x_luxtable_show,
-> +		   tsl2x7x_luxtable_store);
->  
-> -static DEVICE_ATTR(in_intensity0_thresh_period, S_IRUGO | S_IWUSR,
-> -		tsl2x7x_als_persistence_show, tsl2x7x_als_persistence_store);
-> +static DEVICE_ATTR(in_intensity0_thresh_period, 0644,
-> +		   tsl2x7x_als_persistence_show,
-> +		   tsl2x7x_als_persistence_store);
->  
-> -static DEVICE_ATTR(in_proximity0_thresh_period, S_IRUGO | S_IWUSR,
-> -		tsl2x7x_prox_persistence_show, tsl2x7x_prox_persistence_store);
-> +static DEVICE_ATTR(in_proximity0_thresh_period, 0644,
-> +		   tsl2x7x_prox_persistence_show,
-> +		   tsl2x7x_prox_persistence_store);
->  
->  /* Use the default register values to identify the Taos device */
->  static int tsl2x7x_device_id(unsigned char *id, int target)
+>  #include <linux/kernel.h>
 > 
 
