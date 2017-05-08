@@ -1,191 +1,323 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ua0-f171.google.com ([209.85.217.171]:34884 "EHLO
-        mail-ua0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751531AbdEQAiY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 16 May 2017 20:38:24 -0400
-Received: by mail-ua0-f171.google.com with SMTP id e55so110480925uaa.2
-        for <linux-iio@vger.kernel.org>; Tue, 16 May 2017 17:38:24 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <c71c0035-1bc5-2964-5b03-34c7851bd065@kernel.org>
-References: <20170508015041.10285-1-matt.ranostay@konsulko.com> <c71c0035-1bc5-2964-5b03-34c7851bd065@kernel.org>
-From: Matt Ranostay <matt.ranostay@konsulko.com>
-Date: Tue, 16 May 2017 17:38:22 -0700
-Message-ID: <CAJCx=gkT3E=uDFXABOpzDtsguKwdxSosSobtgv-L2TYA5_jpVQ@mail.gmail.com>
-Subject: Re: [PATCH] iio: proximity: as3935: noise detection + threshold changes
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "open list:IIO SUBSYSTEM AND..." <linux-iio@vger.kernel.org>,
-        devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Received: from mail-pf0-f195.google.com ([209.85.192.195]:35112 "EHLO
+        mail-pf0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750862AbdEHEQV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 8 May 2017 00:16:21 -0400
+From: Harinath Nampally <harinath922@gmail.com>
+To: lars@metafoo.de
+Cc: Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: iio: meter: This patch fixes warnings found in ade7753.c
+Date: Mon,  8 May 2017 00:16:17 -0400
+Message-Id: <1494216977-26852-1-git-send-email-harinath922@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, May 14, 2017 at 7:45 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 08/05/17 02:50, Matt Ranostay wrote:
->>
->> Most applications are too noisy to allow the default noise and
->> watchdog settings, and thus need to be configurable via DT
->> properties.
->>
->> Also default settings to POR defaults on a reset, and register
->> distuber interrupts as noise since it prevents proper usage.
->>
->> Cc: devicetree@vger.kernel.org
->> Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
->> ---
->>   .../devicetree/bindings/iio/proximity/as3935.txt   |  6 +++
->>   drivers/iio/proximity/as3935.c                     | 43
->> ++++++++++++++++++++--
->>   2 files changed, 46 insertions(+), 3 deletions(-)
->>
->> diff --git a/Documentation/devicetree/bindings/iio/proximity/as3935.txt
->> b/Documentation/devicetree/bindings/iio/proximity/as3935.txt
->> index ae23dd8da736..50d370fca533 100644
->> --- a/Documentation/devicetree/bindings/iio/proximity/as3935.txt
->> +++ b/Documentation/devicetree/bindings/iio/proximity/as3935.txt
->> @@ -15,14 +15,20 @@ Optional properties:
->>         - ams,tuning-capacitor-pf: Calibration tuning capacitor stepping
->>           value 0 - 120pF. This will require using the calibration data
->> from
->>           the manufacturer.
->> +       - ams,nflwdth: Set the noise and watchdog threshold register on
->> +         startup. This will need to set according to the noise from the
->> +         MCU board, and possibly the local environment. Refer to the
->> +         datasheet for the threshold settings.
->>     Example:
->>     as3935@0 {
->>         compatible = "ams,as3935";
->>         reg = <0>;
->> +       spi-max-frequency = <400000>;
->
-> Matt, this should be in a different patch.  Worthwhile addition
-> but not mentioned in the patch description or title at all...
+All below warnings are found and fixed by checkpatch.pl:
+CHECK: struct mutex definition without comment
+CHECK: Alignment should match open parenthesis
+WARNING: Symbolic permissions 'S_IWUSR | S_IRUGO' are not preferred.
 
-Noted.
+Below errors are false positives:
+ade7753.c:382: ERROR: Use 4 digit octal (0777) not decimal permissions
+ade7753.c:386: ERROR: Use 4 digit octal (0777) not decimal permissions
 
->>
->>         spi-cpha;
->>         interrupt-parent = <&gpio1>;
->>         interrupts = <16 1>;
->>         ams,tuning-capacitor-pf = <80>;
->> +       ams,nflwdth = <0x44>;
->>   };
->> diff --git a/drivers/iio/proximity/as3935.c
->> b/drivers/iio/proximity/as3935.c
->> index aa4df0dcc8c9..ec2f40e0791c 100644
->> --- a/drivers/iio/proximity/as3935.c
->> +++ b/drivers/iio/proximity/as3935.c
->> @@ -39,8 +39,12 @@
->>   #define AS3935_AFE_GAIN_MAX   0x1F
->>   #define AS3935_AFE_PWR_BIT    BIT(0)
->>   +#define AS3935_NFLWDTH               0x01
->> +#define AS3935_NFLWDTH_MASK    0x7f
->> +
->>   #define AS3935_INT            0x03
->>   #define AS3935_INT_MASK               0x0f
->> +#define AS3935_DISTURB_INT     BIT(2)
->>   #define AS3935_EVENT_INT      BIT(3)
->>   #define AS3935_NOISE_INT      BIT(0)
->>   @@ -48,6 +52,7 @@
->>   #define AS3935_DATA_MASK      0x3F
->>     #define AS3935_TUNE_CAP             0x08
->> +#define AS3935_DEFAULTS                0x3C
->>   #define AS3935_CALIBRATE      0x3D
->>     #define AS3935_READ_DATA    BIT(14)
->> @@ -62,7 +67,9 @@ struct as3935_state {
->>         struct mutex lock;
->>         struct delayed_work work;
->>   +     unsigned long noise_tripped;
->>         u32 tune_cap;
->> +       u32 nflwdth_reg;
->>         u8 buffer[16]; /* 8-bit data + 56-bit padding + 64-bit timestamp
->> */
->>         u8 buf[2] ____cacheline_aligned;
->>   };
->> @@ -145,12 +152,29 @@ static ssize_t
->> as3935_sensor_sensitivity_store(struct device *dev,
->>         return len;
->>   }
->>   +static ssize_t as3935_noise_level_tripped_show(struct device *dev,
->> +                                       struct device_attribute *attr,
->> +                                       char *buf)
->> +{
->> +       struct as3935_state *st = iio_priv(dev_to_iio_dev(dev));
->> +       int ret;
->> +
->> +       mutex_lock(&st->lock);
->> +       ret = sprintf(buf, "%d\n", !time_after(jiffies, st->noise_tripped
->> + HZ));
->
-> Documentation of this attribute?
+Signed-off-by: Harinath Nampally <harinath922@gmail.com>
+---
+ drivers/staging/iio/meter/ade7753.c | 104 ++++++++++++++++++------------------
+ 1 file changed, 52 insertions(+), 52 deletions(-)
 
-Ok will add.
+diff --git a/drivers/staging/iio/meter/ade7753.c b/drivers/staging/iio/meter/ade7753.c
+index b71fbd3..2534bd0 100644
+--- a/drivers/staging/iio/meter/ade7753.c
++++ b/drivers/staging/iio/meter/ade7753.c
+@@ -78,12 +78,13 @@
+ /**
+  * struct ade7753_state - device instance specific data
+  * @us:         actual spi_device
++ * @buf_lock:       mutex to protect tx and rx
+  * @tx:         transmit buffer
+  * @rx:         receive buffer
+- * @buf_lock:       mutex to protect tx and rx
+  **/
+ struct ade7753_state {
+ 	struct spi_device   *us;
++ /* mutex to protect tx and rx */
+ 	struct mutex        buf_lock;
+ 	u8          tx[ADE7753_MAX_TX] ____cacheline_aligned;
+ 	u8          rx[ADE7753_MAX_RX];
+@@ -107,9 +108,8 @@ static int ade7753_spi_write_reg_8(struct device *dev,
+ 	return ret;
+ }
+ 
+-static int ade7753_spi_write_reg_16(struct device *dev,
+-		u8 reg_address,
+-		u16 value)
++static int ade7753_spi_write_reg_16(struct device *dev, u8 reg_address,
++				    u16 value)
+ {
+ 	int ret;
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+@@ -126,8 +126,8 @@ static int ade7753_spi_write_reg_16(struct device *dev,
+ }
+ 
+ static int ade7753_spi_read_reg_8(struct device *dev,
+-		u8 reg_address,
+-		u8 *val)
++				  u8 reg_address,
++				  u8 *val)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ade7753_state *st = iio_priv(indio_dev);
+@@ -136,7 +136,7 @@ static int ade7753_spi_read_reg_8(struct device *dev,
+ 	ret = spi_w8r8(st->us, ADE7753_READ_REG(reg_address));
+ 	if (ret < 0) {
+ 		dev_err(&st->us->dev, "problem when reading 8 bit register 0x%02X",
+-				reg_address);
++			reg_address);
+ 		return ret;
+ 	}
+ 	*val = ret;
+@@ -145,8 +145,8 @@ static int ade7753_spi_read_reg_8(struct device *dev,
+ }
+ 
+ static int ade7753_spi_read_reg_16(struct device *dev,
+-		u8 reg_address,
+-		u16 *val)
++				   u8 reg_address,
++				   u16 *val)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ade7753_state *st = iio_priv(indio_dev);
+@@ -165,8 +165,8 @@ static int ade7753_spi_read_reg_16(struct device *dev,
+ }
+ 
+ static int ade7753_spi_read_reg_24(struct device *dev,
+-		u8 reg_address,
+-		u32 *val)
++				   u8 reg_address,
++				   u32 *val)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ade7753_state *st = iio_priv(indio_dev);
+@@ -189,7 +189,7 @@ static int ade7753_spi_read_reg_24(struct device *dev,
+ 	ret = spi_sync_transfer(st->us, xfers, ARRAY_SIZE(xfers));
+ 	if (ret) {
+ 		dev_err(&st->us->dev, "problem when reading 24 bit register 0x%02X",
+-				reg_address);
++			reg_address);
+ 		goto error_ret;
+ 	}
+ 	*val = (st->rx[0] << 16) | (st->rx[1] << 8) | st->rx[2];
+@@ -200,8 +200,8 @@ static int ade7753_spi_read_reg_24(struct device *dev,
+ }
+ 
+ static ssize_t ade7753_read_8bit(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
++				 struct device_attribute *attr,
++				 char *buf)
+ {
+ 	int ret;
+ 	u8 val;
+@@ -215,8 +215,8 @@ static ssize_t ade7753_read_8bit(struct device *dev,
+ }
+ 
+ static ssize_t ade7753_read_16bit(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
++				  struct device_attribute *attr,
++				  char *buf)
+ {
+ 	int ret;
+ 	u16 val;
+@@ -230,8 +230,8 @@ static ssize_t ade7753_read_16bit(struct device *dev,
+ }
+ 
+ static ssize_t ade7753_read_24bit(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
++				  struct device_attribute *attr,
++				  char *buf)
+ {
+ 	int ret;
+ 	u32 val;
+@@ -245,9 +245,9 @@ static ssize_t ade7753_read_24bit(struct device *dev,
+ }
+ 
+ static ssize_t ade7753_write_8bit(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
++				  struct device_attribute *attr,
++				  const char *buf,
++				  size_t len)
+ {
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	int ret;
+@@ -263,9 +263,9 @@ static ssize_t ade7753_write_8bit(struct device *dev,
+ }
+ 
+ static ssize_t ade7753_write_16bit(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
++				   struct device_attribute *attr,
++				   const char *buf,
++				   size_t len)
+ {
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	int ret;
+@@ -298,92 +298,92 @@ static IIO_DEV_ATTR_AENERGY(ade7753_read_24bit, ADE7753_AENERGY);
+ static IIO_DEV_ATTR_LAENERGY(ade7753_read_24bit, ADE7753_LAENERGY);
+ static IIO_DEV_ATTR_VAENERGY(ade7753_read_24bit, ADE7753_VAENERGY);
+ static IIO_DEV_ATTR_LVAENERGY(ade7753_read_24bit, ADE7753_LVAENERGY);
+-static IIO_DEV_ATTR_CFDEN(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_CFDEN(0644,
+ 		ade7753_read_16bit,
+ 		ade7753_write_16bit,
+ 		ADE7753_CFDEN);
+-static IIO_DEV_ATTR_CFNUM(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_CFNUM(0644,
+ 		ade7753_read_8bit,
+ 		ade7753_write_8bit,
+ 		ADE7753_CFNUM);
+ static IIO_DEV_ATTR_CHKSUM(ade7753_read_8bit, ADE7753_CHKSUM);
+-static IIO_DEV_ATTR_PHCAL(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_PHCAL(0644,
+ 		ade7753_read_16bit,
+ 		ade7753_write_16bit,
+ 		ADE7753_PHCAL);
+-static IIO_DEV_ATTR_APOS(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_APOS(0644,
+ 		ade7753_read_16bit,
+ 		ade7753_write_16bit,
+ 		ADE7753_APOS);
+-static IIO_DEV_ATTR_SAGCYC(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_SAGCYC(0644,
+ 		ade7753_read_8bit,
+ 		ade7753_write_8bit,
+ 		ADE7753_SAGCYC);
+-static IIO_DEV_ATTR_SAGLVL(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_SAGLVL(0644,
+ 		ade7753_read_8bit,
+ 		ade7753_write_8bit,
+ 		ADE7753_SAGLVL);
+-static IIO_DEV_ATTR_LINECYC(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_LINECYC(0644,
+ 		ade7753_read_8bit,
+ 		ade7753_write_8bit,
+ 		ADE7753_LINECYC);
+-static IIO_DEV_ATTR_WDIV(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_WDIV(0644,
+ 		ade7753_read_8bit,
+ 		ade7753_write_8bit,
+ 		ADE7753_WDIV);
+-static IIO_DEV_ATTR_IRMS(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_IRMS(0644,
+ 		ade7753_read_24bit,
+ 		NULL,
+ 		ADE7753_IRMS);
+-static IIO_DEV_ATTR_VRMS(S_IRUGO,
++static IIO_DEV_ATTR_VRMS(0444,
+ 		ade7753_read_24bit,
+ 		NULL,
+ 		ADE7753_VRMS);
+-static IIO_DEV_ATTR_IRMSOS(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_IRMSOS(0644,
+ 		ade7753_read_16bit,
+ 		ade7753_write_16bit,
+ 		ADE7753_IRMSOS);
+-static IIO_DEV_ATTR_VRMSOS(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_VRMSOS(0644,
+ 		ade7753_read_16bit,
+ 		ade7753_write_16bit,
+ 		ADE7753_VRMSOS);
+-static IIO_DEV_ATTR_WGAIN(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_WGAIN(0644,
+ 		ade7753_read_16bit,
+ 		ade7753_write_16bit,
+ 		ADE7753_WGAIN);
+-static IIO_DEV_ATTR_VAGAIN(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_VAGAIN(0644,
+ 		ade7753_read_16bit,
+ 		ade7753_write_16bit,
+ 		ADE7753_VAGAIN);
+-static IIO_DEV_ATTR_PGA_GAIN(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_PGA_GAIN(0644,
+ 		ade7753_read_16bit,
+ 		ade7753_write_16bit,
+ 		ADE7753_GAIN);
+-static IIO_DEV_ATTR_IPKLVL(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_IPKLVL(0644,
+ 		ade7753_read_8bit,
+ 		ade7753_write_8bit,
+ 		ADE7753_IPKLVL);
+-static IIO_DEV_ATTR_VPKLVL(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_VPKLVL(0644,
+ 		ade7753_read_8bit,
+ 		ade7753_write_8bit,
+ 		ADE7753_VPKLVL);
+-static IIO_DEV_ATTR_IPEAK(S_IRUGO,
++static IIO_DEV_ATTR_IPEAK(0444,
+ 		ade7753_read_24bit,
+ 		NULL,
+ 		ADE7753_IPEAK);
+-static IIO_DEV_ATTR_VPEAK(S_IRUGO,
++static IIO_DEV_ATTR_VPEAK(0444,
+ 		ade7753_read_24bit,
+ 		NULL,
+ 		ADE7753_VPEAK);
+-static IIO_DEV_ATTR_VPERIOD(S_IRUGO,
++static IIO_DEV_ATTR_VPERIOD(0444,
+ 		ade7753_read_16bit,
+ 		NULL,
+ 		ADE7753_PERIOD);
+-static IIO_DEV_ATTR_CH_OFF(1, S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_CH_OFF(1, 0644,
+ 		ade7753_read_8bit,
+ 		ade7753_write_8bit,
+ 		ADE7753_CH1OS);
+-static IIO_DEV_ATTR_CH_OFF(2, S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_CH_OFF(2, 0644,
+ 		ade7753_read_8bit,
+ 		ade7753_write_8bit,
+ 		ADE7753_CH2OS);
+@@ -450,8 +450,8 @@ static int ade7753_initial_setup(struct iio_dev *indio_dev)
+ }
+ 
+ static ssize_t ade7753_read_frequency(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
++				      struct device_attribute *attr,
++				      char *buf)
+ {
+ 	int ret;
+ 	u16 t;
+@@ -468,9 +468,9 @@ static ssize_t ade7753_read_frequency(struct device *dev,
+ }
+ 
+ static ssize_t ade7753_write_frequency(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
++				       struct device_attribute *attr,
++				       const char *buf,
++				       size_t len)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ade7753_state *st = iio_priv(indio_dev);
+@@ -514,7 +514,7 @@ static IIO_DEV_ATTR_TEMP_RAW(ade7753_read_8bit);
+ static IIO_CONST_ATTR(in_temp_offset, "-25 C");
+ static IIO_CONST_ATTR(in_temp_scale, "0.67 C");
+ 
+-static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_SAMP_FREQ(0644,
+ 		ade7753_read_frequency,
+ 		ade7753_write_frequency);
+ 
+-- 
+2.7.4
 
->>
->> +       mutex_unlock(&st->lock);
->> +
->> +       return ret;
->> +}
->> +
->>   static IIO_DEVICE_ATTR(sensor_sensitivity, S_IRUGO | S_IWUSR,
->>         as3935_sensor_sensitivity_show, as3935_sensor_sensitivity_store,
->> 0);
->>   +static IIO_DEVICE_ATTR(noise_level_tripped, S_IRUGO,
->> +       as3935_noise_level_tripped_show, NULL, 0);
->>     static struct attribute *as3935_attributes[] = {
->>         &iio_dev_attr_sensor_sensitivity.dev_attr.attr,
->> +       &iio_dev_attr_noise_level_tripped.dev_attr.attr,
->>         NULL,
->>   };
->>   @@ -246,7 +270,11 @@ static void as3935_event_work(struct work_struct
->> *work)
->>         case AS3935_EVENT_INT:
->>                 iio_trigger_poll_chained(st->trig);
->>                 break;
->> +       case AS3935_DISTURB_INT:
->>         case AS3935_NOISE_INT:
->> +               mutex_lock(&st->lock);
->> +               st->noise_tripped = jiffies;
->> +               mutex_unlock(&st->lock);
->>                 dev_warn(&st->spi->dev, "noise level is too high\n");
->>                 break;
->>         }
->> @@ -269,15 +297,14 @@ static irqreturn_t as3935_interrupt_handler(int irq,
->> void *private)
->>     static void calibrate_as3935(struct as3935_state *st)
->>   {
->> -       /* mask disturber interrupt bit */
->> -       as3935_write(st, AS3935_INT, BIT(5));
->> -
->> +       as3935_write(st, AS3935_DEFAULTS, 0x96);
->>         as3935_write(st, AS3935_CALIBRATE, 0x96);
->>         as3935_write(st, AS3935_TUNE_CAP,
->>                 BIT(5) | (st->tune_cap / TUNE_CAP_DIV));
->>         mdelay(2);
->>         as3935_write(st, AS3935_TUNE_CAP, (st->tune_cap / TUNE_CAP_DIV));
->> +       as3935_write(st, AS3935_NFLWDTH, st->nflwdth_reg);
->>   }
->>     #ifdef CONFIG_PM_SLEEP
->> @@ -370,6 +397,15 @@ static int as3935_probe(struct spi_device *spi)
->>                 return -EINVAL;
->>         }
->>   +     ret = of_property_read_u32(np,
->> +                       "ams,nflwdth", &st->nflwdth_reg);
->> +       if (!ret && st->nflwdth_reg > AS3935_NFLWDTH_MASK) {
->> +               dev_err(&spi->dev,
->> +                       "invalid nflwdth setting of %d\n",
->> +                       st->nflwdth_reg);
->> +               return -EINVAL;
->> +       }
->> +
->>         indio_dev->dev.parent = &spi->dev;
->>         indio_dev->name = spi_get_device_id(spi)->name;
->>         indio_dev->channels = as3935_channels;
->> @@ -384,6 +420,7 @@ static int as3935_probe(struct spi_device *spi)
->>                 return -ENOMEM;
->>         st->trig = trig;
->> +       st->noise_tripped = jiffies - HZ;
->>         trig->dev.parent = indio_dev->dev.parent;
->>         iio_trigger_set_drvdata(trig, indio_dev);
->>         trig->ops = &iio_interrupt_trigger_ops;
->>
->
