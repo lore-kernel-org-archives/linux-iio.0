@@ -1,139 +1,179 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57454 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752886AbdEGVvG (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 7 May 2017 17:51:06 -0400
-Subject: Re: [PATCH v2 1/3] iio: hid-sensor-rotation: Add relative orientation
- sensor hid support
-To: Song Hongyan <hongyan.song@intel.com>, linux-input@vger.kernel.org,
-        linux-iio@vger.kernel.org
-Cc: jikos@kernel.org, srinivas.pandruvada@intel.com
-References: <1494152666-25632-1-git-send-email-hongyan.song@intel.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <be435cc8-4aa4-ed75-1cce-938444c0c250@kernel.org>
-Date: Sun, 7 May 2017 12:11:51 +0100
-MIME-Version: 1.0
-In-Reply-To: <1494152666-25632-1-git-send-email-hongyan.song@intel.com>
-Content-Type: text/plain; charset=utf-8
+Received: from mail-pf0-f177.google.com ([209.85.192.177]:35143 "EHLO
+        mail-pf0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751037AbdEHBuj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 7 May 2017 21:50:39 -0400
+Received: by mail-pf0-f177.google.com with SMTP id v14so25572324pfd.2
+        for <linux-iio@vger.kernel.org>; Sun, 07 May 2017 18:50:39 -0700 (PDT)
+From: Matt Ranostay <matt.ranostay@konsulko.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+        Matt Ranostay <matt.ranostay@konsulko.com>,
+        devicetree@vger.kernel.org
+Subject: [PATCH] iio: proximity: as3935: noise detection + threshold changes
+Date: Sun,  7 May 2017 18:50:41 -0700
+Message-Id: <20170508015041.10285-1-matt.ranostay@konsulko.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/05/17 11:24, Song Hongyan wrote:
-> Relative orientation(AG) sensor is a 6dof orientation sensor,
-> it depends on acceleration and gyroscope sensor data. It gives
-> a quaternion describing the orientation of the device relative
-> to an initial orientation. It is a standard HID sensor.
-> 
-> More information can be found in:
-> http://www.usb.org/developers/hidpage/HUTRR59_-_Usages_for_Wearables.pdf
-> 
-> Relative orientation(AG) sensor and dev rotation sensor have same
-> channels and share channel usage id. So the most of the code for
-> relative orientation sensor can be reused.
-> 
-> Signed-off-by: Song Hongyan <hongyan.song@intel.com>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> Reviewed-by: Xu Even <even.xu@intel.com>
-> Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+Most applications are too noisy to allow the default noise and
+watchdog settings, and thus need to be configurable via DT
+properties.
 
-Thanks,
+Also default settings to POR defaults on a reset, and register
+distuber interrupts as noise since it prevents proper usage.
 
-Jonathan
-> ---
-> changes: change name definition select statement from "if ...else" to "switch ...case"
-> fix typo of "relative" in comment.
-> 
->  drivers/iio/orientation/hid-sensor-rotation.c | 28 +++++++++++++++++++--------
->  include/linux/hid-sensor-ids.h                |  1 +
->  2 files changed, 21 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iio/orientation/hid-sensor-rotation.c b/drivers/iio/orientation/hid-sensor-rotation.c
-> index a97e802c..4d953c2 100644
-> --- a/drivers/iio/orientation/hid-sensor-rotation.c
-> +++ b/drivers/iio/orientation/hid-sensor-rotation.c
-> @@ -218,7 +218,7 @@ static int dev_rot_parse_report(struct platform_device *pdev,
->  static int hid_dev_rot_probe(struct platform_device *pdev)
->  {
->  	int ret;
-> -	static char *name = "dev_rotation";
-> +	static char *name;
->  	struct iio_dev *indio_dev;
->  	struct dev_rot_state *rot_state;
->  	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
-> @@ -234,8 +234,18 @@ static int hid_dev_rot_probe(struct platform_device *pdev)
->  	rot_state->common_attributes.hsdev = hsdev;
->  	rot_state->common_attributes.pdev = pdev;
->  
-> -	ret = hid_sensor_parse_common_attributes(hsdev,
-> -				HID_USAGE_SENSOR_DEVICE_ORIENTATION,
-> +	switch (hsdev->usage) {
-> +	case HID_USAGE_SENSOR_DEVICE_ORIENTATION:
-> +		name = "dev_rotation";
-> +		break;
-> +	case HID_USAGE_SENSOR_RELATIVE_ORIENTATION:
-> +		name = "relative_orientation";
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	ret = hid_sensor_parse_common_attributes(hsdev, hsdev->usage,
->  				&rot_state->common_attributes);
->  	if (ret) {
->  		dev_err(&pdev->dev, "failed to setup common attributes\n");
-> @@ -252,8 +262,7 @@ static int hid_dev_rot_probe(struct platform_device *pdev)
->  
->  	ret = dev_rot_parse_report(pdev, hsdev,
->  				   (struct iio_chan_spec *)indio_dev->channels,
-> -				   HID_USAGE_SENSOR_DEVICE_ORIENTATION,
-> -				   rot_state);
-> +					hsdev->usage, rot_state);
->  	if (ret) {
->  		dev_err(&pdev->dev, "failed to setup attributes\n");
->  		return ret;
-> @@ -288,8 +297,7 @@ static int hid_dev_rot_probe(struct platform_device *pdev)
->  	rot_state->callbacks.send_event = dev_rot_proc_event;
->  	rot_state->callbacks.capture_sample = dev_rot_capture_sample;
->  	rot_state->callbacks.pdev = pdev;
-> -	ret = sensor_hub_register_callback(hsdev,
-> -					HID_USAGE_SENSOR_DEVICE_ORIENTATION,
-> +	ret = sensor_hub_register_callback(hsdev, hsdev->usage,
->  					&rot_state->callbacks);
->  	if (ret) {
->  		dev_err(&pdev->dev, "callback reg failed\n");
-> @@ -314,7 +322,7 @@ static int hid_dev_rot_remove(struct platform_device *pdev)
->  	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
->  	struct dev_rot_state *rot_state = iio_priv(indio_dev);
->  
-> -	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_DEVICE_ORIENTATION);
-> +	sensor_hub_remove_callback(hsdev, hsdev->usage);
->  	iio_device_unregister(indio_dev);
->  	hid_sensor_remove_trigger(&rot_state->common_attributes);
->  	iio_triggered_buffer_cleanup(indio_dev);
-> @@ -327,6 +335,10 @@ static int hid_dev_rot_remove(struct platform_device *pdev)
->  		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
->  		.name = "HID-SENSOR-20008a",
->  	},
-> +	{
-> +		/* Relative orientation(AG) sensor */
-> +		.name = "HID-SENSOR-20008e",
-> +	},
->  	{ /* sentinel */ }
->  };
->  MODULE_DEVICE_TABLE(platform, hid_dev_rot_ids);
-> diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
-> index 30c7dc4..b61b985 100644
-> --- a/include/linux/hid-sensor-ids.h
-> +++ b/include/linux/hid-sensor-ids.h
-> @@ -82,6 +82,7 @@
->  #define HID_USAGE_SENSOR_ORIENT_TILT_Z				0x200481
->  
->  #define HID_USAGE_SENSOR_DEVICE_ORIENTATION			0x20008A
-> +#define HID_USAGE_SENSOR_RELATIVE_ORIENTATION			0x20008E
->  #define HID_USAGE_SENSOR_ORIENT_ROTATION_MATRIX			0x200482
->  #define HID_USAGE_SENSOR_ORIENT_QUATERNION			0x200483
->  #define HID_USAGE_SENSOR_ORIENT_MAGN_FLUX			0x200484
-> 
+Cc: devicetree@vger.kernel.org
+Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
+---
+ .../devicetree/bindings/iio/proximity/as3935.txt   |  6 +++
+ drivers/iio/proximity/as3935.c                     | 43 ++++++++++++++++++++--
+ 2 files changed, 46 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/iio/proximity/as3935.txt b/Documentation/devicetree/bindings/iio/proximity/as3935.txt
+index ae23dd8da736..50d370fca533 100644
+--- a/Documentation/devicetree/bindings/iio/proximity/as3935.txt
++++ b/Documentation/devicetree/bindings/iio/proximity/as3935.txt
+@@ -15,14 +15,20 @@ Optional properties:
+ 	- ams,tuning-capacitor-pf: Calibration tuning capacitor stepping
+ 	  value 0 - 120pF. This will require using the calibration data from
+ 	  the manufacturer.
++	- ams,nflwdth: Set the noise and watchdog threshold register on
++	  startup. This will need to set according to the noise from the
++	  MCU board, and possibly the local environment. Refer to the
++	  datasheet for the threshold settings.
+ 
+ Example:
+ 
+ as3935@0 {
+ 	compatible = "ams,as3935";
+ 	reg = <0>;
++	spi-max-frequency = <400000>;
+ 	spi-cpha;
+ 	interrupt-parent = <&gpio1>;
+ 	interrupts = <16 1>;
+ 	ams,tuning-capacitor-pf = <80>;
++	ams,nflwdth = <0x44>;
+ };
+diff --git a/drivers/iio/proximity/as3935.c b/drivers/iio/proximity/as3935.c
+index aa4df0dcc8c9..ec2f40e0791c 100644
+--- a/drivers/iio/proximity/as3935.c
++++ b/drivers/iio/proximity/as3935.c
+@@ -39,8 +39,12 @@
+ #define AS3935_AFE_GAIN_MAX	0x1F
+ #define AS3935_AFE_PWR_BIT	BIT(0)
+ 
++#define AS3935_NFLWDTH		0x01
++#define AS3935_NFLWDTH_MASK	0x7f
++
+ #define AS3935_INT		0x03
+ #define AS3935_INT_MASK		0x0f
++#define AS3935_DISTURB_INT	BIT(2)
+ #define AS3935_EVENT_INT	BIT(3)
+ #define AS3935_NOISE_INT	BIT(0)
+ 
+@@ -48,6 +52,7 @@
+ #define AS3935_DATA_MASK	0x3F
+ 
+ #define AS3935_TUNE_CAP		0x08
++#define AS3935_DEFAULTS		0x3C
+ #define AS3935_CALIBRATE	0x3D
+ 
+ #define AS3935_READ_DATA	BIT(14)
+@@ -62,7 +67,9 @@ struct as3935_state {
+ 	struct mutex lock;
+ 	struct delayed_work work;
+ 
++	unsigned long noise_tripped;
+ 	u32 tune_cap;
++	u32 nflwdth_reg;
+ 	u8 buffer[16]; /* 8-bit data + 56-bit padding + 64-bit timestamp */
+ 	u8 buf[2] ____cacheline_aligned;
+ };
+@@ -145,12 +152,29 @@ static ssize_t as3935_sensor_sensitivity_store(struct device *dev,
+ 	return len;
+ }
+ 
++static ssize_t as3935_noise_level_tripped_show(struct device *dev,
++					struct device_attribute *attr,
++					char *buf)
++{
++	struct as3935_state *st = iio_priv(dev_to_iio_dev(dev));
++	int ret;
++
++	mutex_lock(&st->lock);
++	ret = sprintf(buf, "%d\n", !time_after(jiffies, st->noise_tripped + HZ));
++	mutex_unlock(&st->lock);
++
++	return ret;
++}
++
+ static IIO_DEVICE_ATTR(sensor_sensitivity, S_IRUGO | S_IWUSR,
+ 	as3935_sensor_sensitivity_show, as3935_sensor_sensitivity_store, 0);
+ 
++static IIO_DEVICE_ATTR(noise_level_tripped, S_IRUGO,
++	as3935_noise_level_tripped_show, NULL, 0);
+ 
+ static struct attribute *as3935_attributes[] = {
+ 	&iio_dev_attr_sensor_sensitivity.dev_attr.attr,
++	&iio_dev_attr_noise_level_tripped.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -246,7 +270,11 @@ static void as3935_event_work(struct work_struct *work)
+ 	case AS3935_EVENT_INT:
+ 		iio_trigger_poll_chained(st->trig);
+ 		break;
++	case AS3935_DISTURB_INT:
+ 	case AS3935_NOISE_INT:
++		mutex_lock(&st->lock);
++		st->noise_tripped = jiffies;
++		mutex_unlock(&st->lock);
+ 		dev_warn(&st->spi->dev, "noise level is too high\n");
+ 		break;
+ 	}
+@@ -269,15 +297,14 @@ static irqreturn_t as3935_interrupt_handler(int irq, void *private)
+ 
+ static void calibrate_as3935(struct as3935_state *st)
+ {
+-	/* mask disturber interrupt bit */
+-	as3935_write(st, AS3935_INT, BIT(5));
+-
++	as3935_write(st, AS3935_DEFAULTS, 0x96);
+ 	as3935_write(st, AS3935_CALIBRATE, 0x96);
+ 	as3935_write(st, AS3935_TUNE_CAP,
+ 		BIT(5) | (st->tune_cap / TUNE_CAP_DIV));
+ 
+ 	mdelay(2);
+ 	as3935_write(st, AS3935_TUNE_CAP, (st->tune_cap / TUNE_CAP_DIV));
++	as3935_write(st, AS3935_NFLWDTH, st->nflwdth_reg);
+ }
+ 
+ #ifdef CONFIG_PM_SLEEP
+@@ -370,6 +397,15 @@ static int as3935_probe(struct spi_device *spi)
+ 		return -EINVAL;
+ 	}
+ 
++	ret = of_property_read_u32(np,
++			"ams,nflwdth", &st->nflwdth_reg);
++	if (!ret && st->nflwdth_reg > AS3935_NFLWDTH_MASK) {
++		dev_err(&spi->dev,
++			"invalid nflwdth setting of %d\n",
++			st->nflwdth_reg);
++		return -EINVAL;
++	}
++
+ 	indio_dev->dev.parent = &spi->dev;
+ 	indio_dev->name = spi_get_device_id(spi)->name;
+ 	indio_dev->channels = as3935_channels;
+@@ -384,6 +420,7 @@ static int as3935_probe(struct spi_device *spi)
+ 		return -ENOMEM;
+ 
+ 	st->trig = trig;
++	st->noise_tripped = jiffies - HZ;
+ 	trig->dev.parent = indio_dev->dev.parent;
+ 	iio_trigger_set_drvdata(trig, indio_dev);
+ 	trig->ops = &iio_interrupt_trigger_ops;
+-- 
+2.11.0
 
