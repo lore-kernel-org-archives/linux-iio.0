@@ -1,17 +1,17 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-io0-f193.google.com ([209.85.223.193]:36627 "EHLO
-        mail-io0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755128AbdEICAn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 8 May 2017 22:00:43 -0400
+Received: from mail-io0-f195.google.com ([209.85.223.195]:33107 "EHLO
+        mail-io0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1755214AbdEICAo (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 8 May 2017 22:00:44 -0400
 From: Harinath Nampally <harinath922@gmail.com>
 To: lars@metafoo.de
 Cc: Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
         pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
         linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 2/3] staging: iio: meter: Fix the identations for proper alignments
-Date: Mon,  8 May 2017 22:00:38 -0400
-Message-Id: <39df9167707c234aeed4825e5aded97056d565c5.1494293664.git.harinath922@gmail.com>
+Subject: [PATCH 3/3] staging: iio: meter: Replace symbolic permissions with octal permissions
+Date: Mon,  8 May 2017 22:00:39 -0400
+Message-Id: <5f6a26eefe013534d892c98f3d502fb985fd4629.1494293664.git.harinath922@gmail.com>
 In-Reply-To: <cover.1494293664.git.harinath922@gmail.com>
 References: <1494216977-26852-1-git-send-email-harinath922@gmail.com>
  <cover.1494293664.git.harinath922@gmail.com>
@@ -20,164 +20,146 @@ References: <cover.1494293664.git.harinath922@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch fixes below checkpatch.pl kind of warnings:
-CHECK: Alignment should match open parenthesis
+This patch fixes below kind of warnings:
+WARNING: Symbolic permissions 'S_IXXX | S_IXXX' are not preferred.
+
+Below errors are false positives:
+ade7753.c:382: ERROR: Use 4 digit octal (0777) not decimal permissions
+ade7753.c:386: ERROR: Use 4 digit octal (0777) not decimal permissions
 
 Signed-off-by: Harinath Nampally <harinath922@gmail.com>
 ---
- drivers/staging/iio/meter/ade7753.c | 55 ++++++++++++++++++-------------------
- 1 file changed, 27 insertions(+), 28 deletions(-)
+ drivers/staging/iio/meter/ade7753.c | 46 ++++++++++++++++++-------------------
+ 1 file changed, 23 insertions(+), 23 deletions(-)
 
 diff --git a/drivers/staging/iio/meter/ade7753.c b/drivers/staging/iio/meter/ade7753.c
-index cffe6bf..5d45a68 100644
+index 5d45a68..2534bd0 100644
 --- a/drivers/staging/iio/meter/ade7753.c
 +++ b/drivers/staging/iio/meter/ade7753.c
-@@ -108,9 +108,8 @@ static int ade7753_spi_write_reg_8(struct device *dev,
- 	return ret;
- }
+@@ -298,92 +298,92 @@ static IIO_DEV_ATTR_AENERGY(ade7753_read_24bit, ADE7753_AENERGY);
+ static IIO_DEV_ATTR_LAENERGY(ade7753_read_24bit, ADE7753_LAENERGY);
+ static IIO_DEV_ATTR_VAENERGY(ade7753_read_24bit, ADE7753_VAENERGY);
+ static IIO_DEV_ATTR_LVAENERGY(ade7753_read_24bit, ADE7753_LVAENERGY);
+-static IIO_DEV_ATTR_CFDEN(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_CFDEN(0644,
+ 		ade7753_read_16bit,
+ 		ade7753_write_16bit,
+ 		ADE7753_CFDEN);
+-static IIO_DEV_ATTR_CFNUM(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_CFNUM(0644,
+ 		ade7753_read_8bit,
+ 		ade7753_write_8bit,
+ 		ADE7753_CFNUM);
+ static IIO_DEV_ATTR_CHKSUM(ade7753_read_8bit, ADE7753_CHKSUM);
+-static IIO_DEV_ATTR_PHCAL(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_PHCAL(0644,
+ 		ade7753_read_16bit,
+ 		ade7753_write_16bit,
+ 		ADE7753_PHCAL);
+-static IIO_DEV_ATTR_APOS(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_APOS(0644,
+ 		ade7753_read_16bit,
+ 		ade7753_write_16bit,
+ 		ADE7753_APOS);
+-static IIO_DEV_ATTR_SAGCYC(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_SAGCYC(0644,
+ 		ade7753_read_8bit,
+ 		ade7753_write_8bit,
+ 		ADE7753_SAGCYC);
+-static IIO_DEV_ATTR_SAGLVL(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_SAGLVL(0644,
+ 		ade7753_read_8bit,
+ 		ade7753_write_8bit,
+ 		ADE7753_SAGLVL);
+-static IIO_DEV_ATTR_LINECYC(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_LINECYC(0644,
+ 		ade7753_read_8bit,
+ 		ade7753_write_8bit,
+ 		ADE7753_LINECYC);
+-static IIO_DEV_ATTR_WDIV(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_WDIV(0644,
+ 		ade7753_read_8bit,
+ 		ade7753_write_8bit,
+ 		ADE7753_WDIV);
+-static IIO_DEV_ATTR_IRMS(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_IRMS(0644,
+ 		ade7753_read_24bit,
+ 		NULL,
+ 		ADE7753_IRMS);
+-static IIO_DEV_ATTR_VRMS(S_IRUGO,
++static IIO_DEV_ATTR_VRMS(0444,
+ 		ade7753_read_24bit,
+ 		NULL,
+ 		ADE7753_VRMS);
+-static IIO_DEV_ATTR_IRMSOS(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_IRMSOS(0644,
+ 		ade7753_read_16bit,
+ 		ade7753_write_16bit,
+ 		ADE7753_IRMSOS);
+-static IIO_DEV_ATTR_VRMSOS(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_VRMSOS(0644,
+ 		ade7753_read_16bit,
+ 		ade7753_write_16bit,
+ 		ADE7753_VRMSOS);
+-static IIO_DEV_ATTR_WGAIN(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_WGAIN(0644,
+ 		ade7753_read_16bit,
+ 		ade7753_write_16bit,
+ 		ADE7753_WGAIN);
+-static IIO_DEV_ATTR_VAGAIN(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_VAGAIN(0644,
+ 		ade7753_read_16bit,
+ 		ade7753_write_16bit,
+ 		ADE7753_VAGAIN);
+-static IIO_DEV_ATTR_PGA_GAIN(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_PGA_GAIN(0644,
+ 		ade7753_read_16bit,
+ 		ade7753_write_16bit,
+ 		ADE7753_GAIN);
+-static IIO_DEV_ATTR_IPKLVL(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_IPKLVL(0644,
+ 		ade7753_read_8bit,
+ 		ade7753_write_8bit,
+ 		ADE7753_IPKLVL);
+-static IIO_DEV_ATTR_VPKLVL(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_VPKLVL(0644,
+ 		ade7753_read_8bit,
+ 		ade7753_write_8bit,
+ 		ADE7753_VPKLVL);
+-static IIO_DEV_ATTR_IPEAK(S_IRUGO,
++static IIO_DEV_ATTR_IPEAK(0444,
+ 		ade7753_read_24bit,
+ 		NULL,
+ 		ADE7753_IPEAK);
+-static IIO_DEV_ATTR_VPEAK(S_IRUGO,
++static IIO_DEV_ATTR_VPEAK(0444,
+ 		ade7753_read_24bit,
+ 		NULL,
+ 		ADE7753_VPEAK);
+-static IIO_DEV_ATTR_VPERIOD(S_IRUGO,
++static IIO_DEV_ATTR_VPERIOD(0444,
+ 		ade7753_read_16bit,
+ 		NULL,
+ 		ADE7753_PERIOD);
+-static IIO_DEV_ATTR_CH_OFF(1, S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_CH_OFF(1, 0644,
+ 		ade7753_read_8bit,
+ 		ade7753_write_8bit,
+ 		ADE7753_CH1OS);
+-static IIO_DEV_ATTR_CH_OFF(2, S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_CH_OFF(2, 0644,
+ 		ade7753_read_8bit,
+ 		ade7753_write_8bit,
+ 		ADE7753_CH2OS);
+@@ -514,7 +514,7 @@ static IIO_DEV_ATTR_TEMP_RAW(ade7753_read_8bit);
+ static IIO_CONST_ATTR(in_temp_offset, "-25 C");
+ static IIO_CONST_ATTR(in_temp_scale, "0.67 C");
  
--static int ade7753_spi_write_reg_16(struct device *dev,
--		u8 reg_address,
--		u16 value)
-+static int ade7753_spi_write_reg_16(struct device *dev, u8 reg_address,
-+				    u16 value)
- {
- 	int ret;
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-@@ -127,8 +126,8 @@ static int ade7753_spi_write_reg_16(struct device *dev,
- }
+-static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
++static IIO_DEV_ATTR_SAMP_FREQ(0644,
+ 		ade7753_read_frequency,
+ 		ade7753_write_frequency);
  
- static int ade7753_spi_read_reg_8(struct device *dev,
--		u8 reg_address,
--		u8 *val)
-+				  u8 reg_address,
-+				  u8 *val)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ade7753_state *st = iio_priv(indio_dev);
-@@ -137,7 +136,7 @@ static int ade7753_spi_read_reg_8(struct device *dev,
- 	ret = spi_w8r8(st->us, ADE7753_READ_REG(reg_address));
- 	if (ret < 0) {
- 		dev_err(&st->us->dev, "problem when reading 8 bit register 0x%02X",
--				reg_address);
-+			reg_address);
- 		return ret;
- 	}
- 	*val = ret;
-@@ -146,8 +145,8 @@ static int ade7753_spi_read_reg_8(struct device *dev,
- }
- 
- static int ade7753_spi_read_reg_16(struct device *dev,
--		u8 reg_address,
--		u16 *val)
-+				   u8 reg_address,
-+				   u16 *val)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ade7753_state *st = iio_priv(indio_dev);
-@@ -166,8 +165,8 @@ static int ade7753_spi_read_reg_16(struct device *dev,
- }
- 
- static int ade7753_spi_read_reg_24(struct device *dev,
--		u8 reg_address,
--		u32 *val)
-+				   u8 reg_address,
-+				   u32 *val)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ade7753_state *st = iio_priv(indio_dev);
-@@ -190,7 +189,7 @@ static int ade7753_spi_read_reg_24(struct device *dev,
- 	ret = spi_sync_transfer(st->us, xfers, ARRAY_SIZE(xfers));
- 	if (ret) {
- 		dev_err(&st->us->dev, "problem when reading 24 bit register 0x%02X",
--				reg_address);
-+			reg_address);
- 		goto error_ret;
- 	}
- 	*val = (st->rx[0] << 16) | (st->rx[1] << 8) | st->rx[2];
-@@ -201,8 +200,8 @@ static int ade7753_spi_read_reg_24(struct device *dev,
- }
- 
- static ssize_t ade7753_read_8bit(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
-+				 struct device_attribute *attr,
-+				 char *buf)
- {
- 	int ret;
- 	u8 val;
-@@ -216,8 +215,8 @@ static ssize_t ade7753_read_8bit(struct device *dev,
- }
- 
- static ssize_t ade7753_read_16bit(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
-+				  struct device_attribute *attr,
-+				  char *buf)
- {
- 	int ret;
- 	u16 val;
-@@ -231,8 +230,8 @@ static ssize_t ade7753_read_16bit(struct device *dev,
- }
- 
- static ssize_t ade7753_read_24bit(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
-+				  struct device_attribute *attr,
-+				  char *buf)
- {
- 	int ret;
- 	u32 val;
-@@ -246,9 +245,9 @@ static ssize_t ade7753_read_24bit(struct device *dev,
- }
- 
- static ssize_t ade7753_write_8bit(struct device *dev,
--		struct device_attribute *attr,
--		const char *buf,
--		size_t len)
-+				  struct device_attribute *attr,
-+				  const char *buf,
-+				  size_t len)
- {
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 	int ret;
-@@ -264,9 +263,9 @@ static ssize_t ade7753_write_8bit(struct device *dev,
- }
- 
- static ssize_t ade7753_write_16bit(struct device *dev,
--		struct device_attribute *attr,
--		const char *buf,
--		size_t len)
-+				   struct device_attribute *attr,
-+				   const char *buf,
-+				   size_t len)
- {
- 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
- 	int ret;
-@@ -451,8 +450,8 @@ static int ade7753_initial_setup(struct iio_dev *indio_dev)
- }
- 
- static ssize_t ade7753_read_frequency(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
-+				      struct device_attribute *attr,
-+				      char *buf)
- {
- 	int ret;
- 	u16 t;
-@@ -469,9 +468,9 @@ static ssize_t ade7753_read_frequency(struct device *dev,
- }
- 
- static ssize_t ade7753_write_frequency(struct device *dev,
--		struct device_attribute *attr,
--		const char *buf,
--		size_t len)
-+				       struct device_attribute *attr,
-+				       const char *buf,
-+				       size_t len)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ade7753_state *st = iio_priv(indio_dev);
 -- 
 2.7.4
 
