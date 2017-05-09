@@ -1,90 +1,75 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46995 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1759320AbdENPjq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 14 May 2017 11:39:46 -0400
-Subject: Re: [PATCH] iio: adc: max9611: Fix attribute measure unit
-To: Geert Uytterhoeven <geert@linux-m68k.org>,
-        Jacopo Mondi <jacopo+renesas@jmondi.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
-References: <1494316677-26324-1-git-send-email-jacopo+renesas@jmondi.org>
- <CAMuHMdV4T02orob33-WRuGWnp2P4n2063UahrS8mWdRAnhd-HQ@mail.gmail.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <48eef92e-77ff-defa-681b-51d4b2c315eb@kernel.org>
-Date: Sun, 14 May 2017 16:39:42 +0100
+Received: from bastet.se.axis.com ([195.60.68.11]:52835 "EHLO
+        bastet.se.axis.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1755196AbdEIQFT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 9 May 2017 12:05:19 -0400
+From: =?UTF-8?q?M=C3=A5rten=20Lindahl?= <marten.lindahl@axis.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-iio@vger.kernel.org, robh+dt@kernel.org,
+        mark.rutland@arm.com, devicetree@vger.kernel.org,
+        =?UTF-8?q?M=C3=A5rten=20Lindahl?= <martenli@axis.com>
+Subject: [PATCH v4 0/2] add driver for the ti-adc084s021 chip
+Date: Tue,  9 May 2017 18:04:59 +0200
+Message-Id: <1494345901-4714-1-git-send-email-marten.lindahl@axis.com>
 MIME-Version: 1.0
-In-Reply-To: <CAMuHMdV4T02orob33-WRuGWnp2P4n2063UahrS8mWdRAnhd-HQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/05/17 12:53, Geert Uytterhoeven wrote:
-> Hi Jacopo,
-> 
-> On Tue, May 9, 2017 at 9:57 AM, Jacopo Mondi <jacopo+renesas@jmondi.org> wrote:
->> The power and current "shunt-resistor" attribute's 'show' function
->> displays the resistor value in milli-Ohms, while the ABI description
->> specifies it should be displayed in Ohms. Fix it.
->>
->> Reported-by: Geert Uytterhoeven <geert+renesas@glider.be>
->> Signed-off-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
-> 
-> # cat /sys/bus/iio/devices/iio:device*/in_*_shunt_resistor
-> 0.005000
-> 0.005000
-> 0.005000
-> 0.005000
-> #
-> 
-> $ grep shunt-resistor -- arch/arm64/boot/dts/renesas/salvator-x.dtsi
-> shunt-resistor-micro-ohms = <5000>;
-> shunt-resistor-micro-ohms = <5000>;
-> $
-> 
-> Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Applied to the fixes-togreg branch of iio.git.
+From: Mårten Lindahl <martenli@axis.com>
 
-Thanks,
+This adds support for the Texas Instruments ADC084S021 ADC chip.
 
-Jonathan
-> 
->> ---
->>   drivers/iio/adc/max9611.c | 6 +++---
->>   1 file changed, 3 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/iio/adc/max9611.c b/drivers/iio/adc/max9611.c
->> index ec82106..4580ebd 100644
->> --- a/drivers/iio/adc/max9611.c
->> +++ b/drivers/iio/adc/max9611.c
->> @@ -438,10 +438,10 @@ static ssize_t max9611_shunt_resistor_show(struct device *dev,
->>          struct max9611_dev *max9611 = iio_priv(dev_to_iio_dev(dev));
->>          unsigned int i, r;
->>
->> -       i = max9611->shunt_resistor_uohm / 1000;
->> -       r = max9611->shunt_resistor_uohm % 1000;
->> +       i = max9611->shunt_resistor_uohm / 1000000;
->> +       r = max9611->shunt_resistor_uohm % 1000000;
->>
->> -       return sprintf(buf, "%u.%03u\n", i, r);
->> +       return sprintf(buf, "%u.%06u\n", i, r);
->>   }
-> 
-> Gr{oetje,eeting}s,
-> 
->                          Geert
-> 
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-> 
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                  -- Linus Torvalds
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+---
+Changes in v4:
+- Added Rob's Acked-by tag
+- Use same cacheline for rx and tx buffers
+- Inlining regulator enable/disable instead of functions
+- Do kernel endian conversion only for _read_raw access
+
+Changes in v3:
+- Removed unnecessary comment about channel specification
+- Skipped usage of 'address' in iio_chan_spec config macro
+- Mask and shift channel readings only for _read_raw function
+- Enable/disable regulator in _read_raw function
+- Improved setup of ADC channel readings
+- Use SPI config of speed_hz and bits_per_word
+- Use devm_iio_triggered_buffer_setup and devm_iio_device_register
+- Removed error message for failed devm_iio_device_register
+- Removed driver _remove callback function
+
+Changes in v2:
+- Split dt-bindings and iio/adc into separate patches
+- Updated dt-bindings after Robs comments
+- Removed most #defines to inlines
+- Corrected channel macro
+- Removed configuration array with only one item
+- Updated func adc084s021_adc_conversion to use be16_to_cpu
+- Added IIO_CHAN_INFO_SCALE to func adc084s021_read_raw
+- Use iio_device_claim_direct_mode in func adc084s021_read_raw
+- Removed documentation for standard driver functions
+- Changed retval to ret everywhere
+- Removed dynamic alloc for data buffer in trigger handler
+- Keeping mutex for all iterations in trigger handler
+- Removed usage of events in this driver
+- Removed info log in probe
+- Use spi_message_init_with_transfers for spi message structs
+- Use preenable and postdisable functions for regulator
+- Inserted blank line before last return in all functions
+
+Mårten Lindahl (2):
+  dt-bindings: iio: adc: add driver for the ti-adc084s021 chip
+  iio: adc: add driver for the ti-adc084s021 chip
+
+ .../devicetree/bindings/iio/adc/ti-adc084s021.txt  |  19 ++
+ drivers/iio/adc/Kconfig                            |  12 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/ti-adc084s021.c                    | 275 +++++++++++++++++++++
+ 4 files changed, 307 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc084s021.txt
+ create mode 100644 drivers/iio/adc/ti-adc084s021.c
+
+-- 
+2.1.4
 
