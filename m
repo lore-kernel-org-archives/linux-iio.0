@@ -1,58 +1,147 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46852 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1758907AbdENPWE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 14 May 2017 11:22:04 -0400
-Subject: Re: [PATCH] iio: adc: ti_am335x_adc: allocating too much in probe
-To: Dan Carpenter <dan.carpenter@oracle.com>,
-        "Andrew F. Davis" <afd@ti.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Vignesh R <vigneshr@ti.com>,
-        Mugunthan V N <mugunthanvnm@ti.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Michael Engl <michael.engl@wjw-solutions.com>,
-        linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org
-References: <20170510055109.i2aql4xg4rovcqmw@mwanda>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <217724b6-7331-dc10-61eb-05ce489ae375@kernel.org>
-Date: Sun, 14 May 2017 16:22:02 +0100
+Return-Path: <SRS0=6Ed5=4Q=gmail.com=gizero@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20170510055109.i2aql4xg4rovcqmw@mwanda>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <56632BE7.2050000@kernel.org>
+References: <1445976718-7449-1-git-send-email-nicola@corna.info>
+ <1446118467-26453-1-git-send-email-nicola@corna.info> <1446118467-26453-5-git-send-email-nicola@corna.info>
+ <56349644.2060308@kernel.org> <20151130173324.GG9554@katana> <56632BE7.2050000@kernel.org>
+From: Andrea Galbusera <gizero@gmail.com>
+Date: Wed, 10 May 2017 16:46:09 +0200
+Message-ID: <CAC+thW1ZL_vOLcQ87rbGk7OJfB+T=tGeEDUiLEVsu2jpbM0rrA@mail.gmail.com>
+Subject: Re: [PATCH v5 5/5] iio: humidity: si7020: add No Hold read mode
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Wolfram Sang <wsa@the-dreams.de>, Nicola Corna <nicola@corna.info>,
+	Stephen Warren <swarren@wwwdotorg.org>, Lee Jones <lee@kernel.org>, Eric Anholt <eric@anholt.net>,
+	linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org, linux-rpi-kernel@lists.infradead.org
+Content-Type: multipart/alternative; boundary=94eb2c063dc4e05388054f2c89a2
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/05/17 06:51, Dan Carpenter wrote:
-> We should be allocating enough information for a tiadc_device struct
-> which is about 400 bytes but instead we allocate enough for a second
-> iio_dev struct which is over 2000 bytes.
-> 
-> Fixes: fea89e2dfcea ("iio: adc: ti_am335x_adc: use variable names for sizeof() operator")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Applied to the fixes-togreg branch of iio.git.
+--94eb2c063dc4e05388054f2c89a2
+Content-Type: text/plain; charset=UTF-8
 
-Thanks,
+Hi!
 
-Jonathan
-> 
-> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-> index 4282ceca3d8f..6cbed7eb118a 100644
-> --- a/drivers/iio/adc/ti_am335x_adc.c
-> +++ b/drivers/iio/adc/ti_am335x_adc.c
-> @@ -614,7 +614,7 @@ static int tiadc_probe(struct platform_device *pdev)
->   		return -EINVAL;
->   	}
->   
-> -	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*indio_dev));
-> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*adc_dev));
->   	if (indio_dev == NULL) {
->   		dev_err(&pdev->dev, "failed to allocate iio device\n");
->   		return -ENOMEM;
+On Sat, Dec 5, 2015 at 7:24 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+
+> On 30/11/15 17:33, Wolfram Sang wrote:
+> > On Sat, Oct 31, 2015 at 10:21:56AM +0000, Jonathan Cameron wrote:
+> >> On 29/10/15 11:34, Nicola Corna wrote:
+> >>> The Si7013/20/21 modules support 2 read modes:
+> >>>  * Hold mode (blocking), where the device stretches the clock until
+> the end
+> >>> of the measurement
+> >>>  * No Hold mode (non-blocking), where the device replies NACK for
+> every I2C
+> >>> call during the measurement
+> >>> Here the No Hold mode is implemented, selectable with the blocking_io
+> >>> variable within si7020_platform_data. The default mode is Hold, unless
+> the
+> >>> adapter does not support clock stretching, in which case the No Hold
+> mode
+> >>> is used.
+> >>>
+> >>> Signed-off-by: Nicola Corna <nicola@corna.info>
+> >> I'm fine with this.  The dependency below should I think show up in the
+> >> coming merge window, so this lot might as well go via Wolfram.
+> >>
+> >> Acked-by: Jonathan Cameron <jic23@kernel.org>
+> >
+> > Not sure, will think about it...
+> >
+> Nicola,
+>
+> If Wolfram doesn't pick this up, please ping me after the next merge
+> window.
+> Whilst I'll still have it in my queue, it'll be so long ago by then I'll
+> probably
+> miss it!
+>
+> Jonathan
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+>
 
+Resurrecting this almost two years old thread because I just found myself
+in the situation of using Si7020 with an I2C adapter with broken clock
+stretching (probably the same that originated this work). Well, AFAIKT it
+seems that this already ack-ed patchset never landed in mainline, probably
+due to unlucky timing with merging windows. Didn't try the original patches
+myself yet, but going to do it soon... Just wanted to ping people who may
+already have an updated version at hand...
+
+Regards
+
+P.S: sorry for unintentional double posting of HTML emails... :-(
+
+--94eb2c063dc4e05388054f2c89a2
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra"><div class=3D"gmail_quote">Hi!<=
+br></div><div class=3D"gmail_quote"><br>On Sat, Dec 5, 2015 at 7:24 PM, Jon=
+athan Cameron <span dir=3D"ltr">&lt;<a href=3D"mailto:jic23@kernel.org" tar=
+get=3D"_blank">jic23@kernel.org</a>&gt;</span> wrote:<br><blockquote class=
+=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rg=
+b(204,204,204);padding-left:1ex"><div class=3D"gmail-HOEnZb"><div class=3D"=
+gmail-h5">On 30/11/15 17:33, Wolfram Sang wrote:<br>
+&gt; On Sat, Oct 31, 2015 at 10:21:56AM +0000, Jonathan Cameron wrote:<br>
+&gt;&gt; On 29/10/15 11:34, Nicola Corna wrote:<br>
+&gt;&gt;&gt; The Si7013/20/21 modules support 2 read modes:<br>
+&gt;&gt;&gt;=C2=A0 * Hold mode (blocking), where the device stretches the c=
+lock until the end<br>
+&gt;&gt;&gt; of the measurement<br>
+&gt;&gt;&gt;=C2=A0 * No Hold mode (non-blocking), where the device replies =
+NACK for every I2C<br>
+&gt;&gt;&gt; call during the measurement<br>
+&gt;&gt;&gt; Here the No Hold mode is implemented, selectable with the bloc=
+king_io<br>
+&gt;&gt;&gt; variable within si7020_platform_data. The default mode is Hold=
+, unless the<br>
+&gt;&gt;&gt; adapter does not support clock stretching, in which case the N=
+o Hold mode<br>
+&gt;&gt;&gt; is used.<br>
+&gt;&gt;&gt;<br>
+&gt;&gt;&gt; Signed-off-by: Nicola Corna &lt;<a href=3D"mailto:nicola@corna=
+.info">nicola@corna.info</a>&gt;<br>
+&gt;&gt; I&#39;m fine with this.=C2=A0 The dependency below should I think =
+show up in the<br>
+&gt;&gt; coming merge window, so this lot might as well go via Wolfram.<br>
+&gt;&gt;<br>
+&gt;&gt; Acked-by: Jonathan Cameron &lt;<a href=3D"mailto:jic23@kernel.org"=
+>jic23@kernel.org</a>&gt;<br>
+&gt;<br>
+&gt; Not sure, will think about it...<br>
+&gt;<br>
+</div></div>Nicola,<br>
+<br>
+If Wolfram doesn&#39;t pick this up, please ping me after the next merge wi=
+ndow.<br>
+Whilst I&#39;ll still have it in my queue, it&#39;ll be so long ago by then=
+ I&#39;ll probably<br>
+miss it!<br>
+<span class=3D"gmail-HOEnZb"><font color=3D"#888888"><br>
+Jonathan<br>
+</font></span><div class=3D"gmail-HOEnZb"><div class=3D"gmail-h5">--<br>
+To unsubscribe from this list: send the line &quot;unsubscribe linux-iio&qu=
+ot; in<br>
+the body of a message to <a href=3D"mailto:majordomo@vger.kernel.org">major=
+domo@vger.kernel.org</a><br>
+More majordomo info at=C2=A0 <a href=3D"http://vger.kernel.org/majordomo-in=
+fo.html" rel=3D"noreferrer" target=3D"_blank">http://vger.kernel.org/<wbr>m=
+ajordomo-info.html</a></div></div></blockquote><div><br><div>Resurrecting t=
+his almost two years old thread because I just found myself in the situatio=
+n of using <span class=3D"gmail-il">Si7020</span>
+ with an I2C adapter with broken clock stretching (probably the same=20
+that originated this work). Well, AFAIKT it seems that this already=20
+ack-ed patchset never landed in mainline, probably due to unlucky timing
+ with merging windows. Didn&#39;t try the original patches myself yet, but=
+=20
+going to do it soon... Just wanted to ping people who may already have=20
+an updated version at hand...<br><br></div>Regards<br><br></div><div>P.S: s=
+orry for unintentional double posting of HTML emails... :-(<br></div></div>=
+</div></div>
+
+--94eb2c063dc4e05388054f2c89a2--
