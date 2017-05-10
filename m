@@ -1,152 +1,109 @@
-Return-Path: <SRS0=vwPS=4Q=gmail.com=lorenzo.bianconi83@kernel.org>
-From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	lorenzo.bianconi@st.com
-Subject: [PATCH] iio: humidity: hts221: add power management support
-Date: Wed, 10 May 2017 22:40:05 +0200
-Message-Id: <20170510204005.2576-1-lorenzo.bianconi@st.com>
+Return-Path: <SRS0=IpA6=4Q=onstation.org=masneyb@kernel.org>
+Date: Wed, 10 May 2017 16:57:17 -0400
+From: Brian Masney <masneyb@onstation.org>
+To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+Cc: jic23@kernel.org, linux-iio@vger.kernel.org, lorenzo.bianconi@st.com
+Subject: Re: [PATCH] iio: humidity: hts221: add power management support
+Message-ID: <20170510205717.GA18948@607924cbbc93>
+References: <20170510204005.2576-1-lorenzo.bianconi@st.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20170510204005.2576-1-lorenzo.bianconi@st.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Add system sleep power management support to hts221 driver
+On Wed, May 10, 2017 at 10:40:05PM +0200, Lorenzo Bianconi wrote:
+> Add system sleep power management support to hts221 driver
+> 
+> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+> ---
+>  drivers/iio/humidity/hts221.h      |  3 ++
+>  drivers/iio/humidity/hts221_core.c | 56 +++++++++++++++++++++++++++++++++++---
+>  drivers/iio/humidity/hts221_i2c.c  |  1 +
+>  drivers/iio/humidity/hts221_spi.c  |  1 +
+>  4 files changed, 57 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iio/humidity/hts221.h b/drivers/iio/humidity/hts221.h
+> index c7154665512e..94510266e0a5 100644
+> --- a/drivers/iio/humidity/hts221.h
+> +++ b/drivers/iio/humidity/hts221.h
+> @@ -57,12 +57,15 @@ struct hts221_hw {
+>  
+>  	struct hts221_sensor sensors[HTS221_SENSOR_MAX];
+>  
+> +	bool enabled;
+>  	u8 odr;
+>  
+>  	const struct hts221_transfer_function *tf;
+>  	struct hts221_transfer_buffer tb;
+>  };
+>  
+> +extern const struct dev_pm_ops hts221_pm_ops;
+> +
+>  int hts221_config_drdy(struct hts221_hw *hw, bool enable);
+>  int hts221_probe(struct iio_dev *iio_dev);
+>  int hts221_power_on(struct hts221_hw *hw);
+> diff --git a/drivers/iio/humidity/hts221_core.c b/drivers/iio/humidity/hts221_core.c
+> index 3f3ef4a1a474..ccb07e7f993f 100644
+> --- a/drivers/iio/humidity/hts221_core.c
+> +++ b/drivers/iio/humidity/hts221_core.c
+> @@ -13,6 +13,7 @@
+>  #include <linux/device.h>
+>  #include <linux/iio/sysfs.h>
+>  #include <linux/delay.h>
+> +#include <linux/pm.h>
+>  #include <asm/unaligned.h>
+>  
+>  #include "hts221.h"
+> @@ -307,15 +308,30 @@ hts221_sysfs_temp_oversampling_avail(struct device *dev,
+>  
+>  int hts221_power_on(struct hts221_hw *hw)
+>  {
+> -	return hts221_update_odr(hw, hw->odr);
+> +	int err;
+> +
+> +	err = hts221_update_odr(hw, hw->odr);
+> +	if (err < 0)
+> +		return err;
+> +
+> +	hw->enabled = true;
+> +
+> +	return 0;
+>  }
+>  
+>  int hts221_power_off(struct hts221_hw *hw)
+>  {
+> -	u8 data[] = {0x00, 0x00};
+> +	__le16 data = 0;
+> +	int err;
+>  
+> -	return hw->tf->write(hw->dev, HTS221_REG_CNTRL1_ADDR, sizeof(data),
+> -			     data);
+> +	err = hw->tf->write(hw->dev, HTS221_REG_CNTRL1_ADDR, sizeof(data),
+> +			    (u8 *)&data);
+> +	if (err < 0)
+> +		return err;
+> +
+> +	hw->enabled = false;
+> +
+> +	return 0;
+>  }
+>  
+>  static int hts221_parse_temp_caldata(struct hts221_hw *hw)
+> @@ -682,6 +698,38 @@ int hts221_probe(struct iio_dev *iio_dev)
+>  }
+>  EXPORT_SYMBOL(hts221_probe);
+>  
+> +#ifdef CONFIG_PM
+> +static int hts221_suspend(struct device *dev)
 
-Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
----
- drivers/iio/humidity/hts221.h      |  3 ++
- drivers/iio/humidity/hts221_core.c | 56 +++++++++++++++++++++++++++++++++++---
- drivers/iio/humidity/hts221_i2c.c  |  1 +
- drivers/iio/humidity/hts221_spi.c  |  1 +
- 4 files changed, 57 insertions(+), 4 deletions(-)
+You can get rid of this #ifdef by adding __maybe_unused to the
+_suspend and _resume function declarations. This will allow for
+additional compile-time code checking if power management is
+disabled.
 
-diff --git a/drivers/iio/humidity/hts221.h b/drivers/iio/humidity/hts221.h
-index c7154665512e..94510266e0a5 100644
---- a/drivers/iio/humidity/hts221.h
-+++ b/drivers/iio/humidity/hts221.h
-@@ -57,12 +57,15 @@ struct hts221_hw {
- 
- 	struct hts221_sensor sensors[HTS221_SENSOR_MAX];
- 
-+	bool enabled;
- 	u8 odr;
- 
- 	const struct hts221_transfer_function *tf;
- 	struct hts221_transfer_buffer tb;
- };
- 
-+extern const struct dev_pm_ops hts221_pm_ops;
-+
- int hts221_config_drdy(struct hts221_hw *hw, bool enable);
- int hts221_probe(struct iio_dev *iio_dev);
- int hts221_power_on(struct hts221_hw *hw);
-diff --git a/drivers/iio/humidity/hts221_core.c b/drivers/iio/humidity/hts221_core.c
-index 3f3ef4a1a474..ccb07e7f993f 100644
---- a/drivers/iio/humidity/hts221_core.c
-+++ b/drivers/iio/humidity/hts221_core.c
-@@ -13,6 +13,7 @@
- #include <linux/device.h>
- #include <linux/iio/sysfs.h>
- #include <linux/delay.h>
-+#include <linux/pm.h>
- #include <asm/unaligned.h>
- 
- #include "hts221.h"
-@@ -307,15 +308,30 @@ hts221_sysfs_temp_oversampling_avail(struct device *dev,
- 
- int hts221_power_on(struct hts221_hw *hw)
- {
--	return hts221_update_odr(hw, hw->odr);
-+	int err;
-+
-+	err = hts221_update_odr(hw, hw->odr);
-+	if (err < 0)
-+		return err;
-+
-+	hw->enabled = true;
-+
-+	return 0;
- }
- 
- int hts221_power_off(struct hts221_hw *hw)
- {
--	u8 data[] = {0x00, 0x00};
-+	__le16 data = 0;
-+	int err;
- 
--	return hw->tf->write(hw->dev, HTS221_REG_CNTRL1_ADDR, sizeof(data),
--			     data);
-+	err = hw->tf->write(hw->dev, HTS221_REG_CNTRL1_ADDR, sizeof(data),
-+			    (u8 *)&data);
-+	if (err < 0)
-+		return err;
-+
-+	hw->enabled = false;
-+
-+	return 0;
- }
- 
- static int hts221_parse_temp_caldata(struct hts221_hw *hw)
-@@ -682,6 +698,38 @@ int hts221_probe(struct iio_dev *iio_dev)
- }
- EXPORT_SYMBOL(hts221_probe);
- 
-+#ifdef CONFIG_PM
-+static int hts221_suspend(struct device *dev)
-+{
-+	struct iio_dev *iio_dev = dev_get_drvdata(dev);
-+	struct hts221_hw *hw = iio_priv(iio_dev);
-+	__le16 data = 0;
-+	int err;
-+
-+	err = hw->tf->write(hw->dev, HTS221_REG_CNTRL1_ADDR, sizeof(data),
-+			    (u8 *)&data);
-+
-+	return err < 0 ? err : 0;
-+}
-+
-+static int hts221_resume(struct device *dev)
-+{
-+	struct iio_dev *iio_dev = dev_get_drvdata(dev);
-+	struct hts221_hw *hw = iio_priv(iio_dev);
-+	int err = 0;
-+
-+	if (hw->enabled)
-+		err = hts221_update_odr(hw, hw->odr);
-+
-+	return err;
-+}
-+#endif /* CONFIG_PM */
-+
-+const struct dev_pm_ops hts221_pm_ops = {
-+	SET_SYSTEM_SLEEP_PM_OPS(hts221_suspend, hts221_resume)
-+};
-+EXPORT_SYMBOL(hts221_pm_ops);
-+
- MODULE_AUTHOR("Lorenzo Bianconi <lorenzo.bianconi@st.com>");
- MODULE_DESCRIPTION("STMicroelectronics hts221 sensor driver");
- MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/humidity/hts221_i2c.c b/drivers/iio/humidity/hts221_i2c.c
-index 8333c0296c0e..f38e4b7e0160 100644
---- a/drivers/iio/humidity/hts221_i2c.c
-+++ b/drivers/iio/humidity/hts221_i2c.c
-@@ -105,6 +105,7 @@ MODULE_DEVICE_TABLE(i2c, hts221_i2c_id_table);
- static struct i2c_driver hts221_driver = {
- 	.driver = {
- 		.name = "hts221_i2c",
-+		.pm = &hts221_pm_ops,
- 		.of_match_table = of_match_ptr(hts221_i2c_of_match),
- 		.acpi_match_table = ACPI_PTR(hts221_acpi_match),
- 	},
-diff --git a/drivers/iio/humidity/hts221_spi.c b/drivers/iio/humidity/hts221_spi.c
-index 70df5e7150c1..57cbc256771b 100644
---- a/drivers/iio/humidity/hts221_spi.c
-+++ b/drivers/iio/humidity/hts221_spi.c
-@@ -113,6 +113,7 @@ MODULE_DEVICE_TABLE(spi, hts221_spi_id_table);
- static struct spi_driver hts221_driver = {
- 	.driver = {
- 		.name = "hts221_spi",
-+		.pm = &hts221_pm_ops,
- 		.of_match_table = of_match_ptr(hts221_spi_of_match),
- 	},
- 	.probe = hts221_spi_probe,
--- 
-2.12.2
+If desired, one way to get rid of the enabled flag would be to
+add support for runtime power management to automatically shutdown
+the chip after a period of inactivity. See
+https://lkml.org/lkml/2017/4/25/101 for an example.
+
+Brian
