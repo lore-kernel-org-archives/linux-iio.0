@@ -1,141 +1,46 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:8458 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1754025AbdEKJfV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 11 May 2017 05:35:21 -0400
-From: Lorenzo BIANCONI <lorenzo.bianconi@st.com>
-To: Brian Masney <masneyb@onstation.org>
-CC: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Return-Path: <SRS0=9jsu=4R=onstation.org=masneyb@kernel.org>
+Date: Thu, 11 May 2017 06:55:04 -0400
+From: Brian Masney <masneyb@onstation.org>
+To: Lorenzo BIANCONI <lorenzo.bianconi@st.com>
+Cc: "jic23@kernel.org" <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 Subject: Re: [PATCH] iio: humidity: hts221: add power management support
-Date: Thu, 11 May 2017 09:35:12 +0000
-Message-ID: <20170511093512.GA4932@ctocxl0005.oa.cto.st.com>
+Message-ID: <20170511105503.GA22606@607924cbbc93>
 References: <20170510204005.2576-1-lorenzo.bianconi@st.com>
  <20170510205717.GA18948@607924cbbc93>
-In-Reply-To: <20170510205717.GA18948@607924cbbc93>
-Content-Type: text/plain; charset="us-ascii"
+ <20170511093512.GA4932@ctocxl0005.oa.cto.st.com>
 MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20170511093512.GA4932@ctocxl0005.oa.cto.st.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Brian,
-
-Thanks for the review. Comments inline.
-
-Regards,
-Lorenzo
-
-> On Wed, May 10, 2017 at 10:40:05PM +0200, Lorenzo Bianconi wrote:
-> > Add system sleep power management support to hts221 driver
+On Thu, May 11, 2017 at 09:35:12AM +0000, Lorenzo BIANCONI wrote:
+> > If desired, one way to get rid of the enabled flag would be to
+> > add support for runtime power management to automatically shutdown
+> > the chip after a period of inactivity. See
+> > https://lkml.org/lkml/2017/4/25/101 for an example.
 > > 
-> > Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
-> > ---
-> >  drivers/iio/humidity/hts221.h      |  3 ++
-> >  drivers/iio/humidity/hts221_core.c | 56 +++++++++++++++++++++++++++++++++++---
-> >  drivers/iio/humidity/hts221_i2c.c  |  1 +
-> >  drivers/iio/humidity/hts221_spi.c  |  1 +
-> >  4 files changed, 57 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/drivers/iio/humidity/hts221.h b/drivers/iio/humidity/hts221.h
-> > index c7154665512e..94510266e0a5 100644
-> > --- a/drivers/iio/humidity/hts221.h
-> > +++ b/drivers/iio/humidity/hts221.h
-> > @@ -57,12 +57,15 @@ struct hts221_hw {
-> >  
-> >  	struct hts221_sensor sensors[HTS221_SENSOR_MAX];
-> >  
-> > +	bool enabled;
-> >  	u8 odr;
-> >  
-> >  	const struct hts221_transfer_function *tf;
-> >  	struct hts221_transfer_buffer tb;
-> >  };
-> >  
-> > +extern const struct dev_pm_ops hts221_pm_ops;
-> > +
-> >  int hts221_config_drdy(struct hts221_hw *hw, bool enable);
-> >  int hts221_probe(struct iio_dev *iio_dev);
-> >  int hts221_power_on(struct hts221_hw *hw);
-> > diff --git a/drivers/iio/humidity/hts221_core.c b/drivers/iio/humidity/hts221_core.c
-> > index 3f3ef4a1a474..ccb07e7f993f 100644
-> > --- a/drivers/iio/humidity/hts221_core.c
-> > +++ b/drivers/iio/humidity/hts221_core.c
-> > @@ -13,6 +13,7 @@
-> >  #include <linux/device.h>
-> >  #include <linux/iio/sysfs.h>
-> >  #include <linux/delay.h>
-> > +#include <linux/pm.h>
-> >  #include <asm/unaligned.h>
-> >  
-> >  #include "hts221.h"
-> > @@ -307,15 +308,30 @@ hts221_sysfs_temp_oversampling_avail(struct device *dev,
-> >  
-> >  int hts221_power_on(struct hts221_hw *hw)
-> >  {
-> > -	return hts221_update_odr(hw, hw->odr);
-> > +	int err;
-> > +
-> > +	err = hts221_update_odr(hw, hw->odr);
-> > +	if (err < 0)
-> > +		return err;
-> > +
-> > +	hw->enabled = true;
-> > +
-> > +	return 0;
-> >  }
-> >  
-> >  int hts221_power_off(struct hts221_hw *hw)
-> >  {
-> > -	u8 data[] = {0x00, 0x00};
-> > +	__le16 data = 0;
-> > +	int err;
-> >  
-> > -	return hw->tf->write(hw->dev, HTS221_REG_CNTRL1_ADDR, sizeof(data),
-> > -			     data);
-> > +	err = hw->tf->write(hw->dev, HTS221_REG_CNTRL1_ADDR, sizeof(data),
-> > +			    (u8 *)&data);
-> > +	if (err < 0)
-> > +		return err;
-> > +
-> > +	hw->enabled = false;
-> > +
-> > +	return 0;
-> >  }
-> >  
-> >  static int hts221_parse_temp_caldata(struct hts221_hw *hw)
-> > @@ -682,6 +698,38 @@ int hts221_probe(struct iio_dev *iio_dev)
-> >  }
-> >  EXPORT_SYMBOL(hts221_probe);
-> >  
-> > +#ifdef CONFIG_PM
-> > +static int hts221_suspend(struct device *dev)
 > 
-> You can get rid of this #ifdef by adding __maybe_unused to the
-> _suspend and _resume function declarations. This will allow for
-> additional compile-time code checking if power management is
-> disabled.
+> I am not a pm_runtime expert but according to the documentation runtime_suspend
+> callback is called when device's usage counter and counter of 'active' children
+> of the device are equal to 0. Moreover device possible states are 'disabled'
+> (HTS221_REG_CNTRL1_ADDR register set to 0) or 'active' (HTS221_REG_CNTRL1_ADDR
+> register configured with a given sample rate). In the first condition
+> runtime_suspend() will not take any effect whereas in the latter one the
+> callback will not be called since device's usage counter is grater than 0.
+> Moreover implement system-wide pm support through runtime pm support just to
+> avoid a boolean flag seems a little bit overkill to me. What do you think?
+> Is my understanding correct?
 
-Fair enough :). I did in that way to maintain consistency with other drivers.
+Sorry, I should have also said that I didn't think that runtime PM was
+absolutely required. I also agree adding runtime PM just to remove the
+flag is overkill. Runtime PM is nice to have if this sensor is hooked
+up to something that may run off a battery (such as a weather station)
+to help conserve power. The flag removal is a by product of this. :)
 
-> 
-> If desired, one way to get rid of the enabled flag would be to
-> add support for runtime power management to automatically shutdown
-> the chip after a period of inactivity. See
-> https://lkml.org/lkml/2017/4/25/101 for an example.
-> 
+As for the runtime PM reference count, when your driver is initialized,
+keep the device off so that the device usage count is initially zero.
+Wrap your _write_raw() and _read_raw() functions with the runtime PM
+calls and the device will power on and off as needed.
 
-I am not a pm_runtime expert but according to the documentation runtime_suspend
-callback is called when device's usage counter and counter of 'active' children
-of the device are equal to 0. Moreover device possible states are 'disabled'
-(HTS221_REG_CNTRL1_ADDR register set to 0) or 'active' (HTS221_REG_CNTRL1_ADDR
-register configured with a given sample rate). In the first condition
-runtime_suspend() will not take any effect whereas in the latter one the
-callback will not be called since device's usage counter is grater than 0.
-Moreover implement system-wide pm support through runtime pm support just to
-avoid a boolean flag seems a little bit overkill to me. What do you think?
-Is my understanding correct?
-
-> Brian
-
--- 
+Brian
