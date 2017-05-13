@@ -1,290 +1,85 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qk0-f193.google.com ([209.85.220.193]:34135 "EHLO
-        mail-qk0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753994AbdESCBw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 18 May 2017 22:01:52 -0400
-MIME-Version: 1.0
-In-Reply-To: <abe3f4bf-9bdf-45be-a99e-7d5a7b9e5c57@kernel.org>
-References: <1494623944-7174-1-git-send-email-harinath922@gmail.com>
- <bcf17863-87f3-2ba8-e7c9-768161a8c94a@kernel.org> <CAAGUq_qi8GW4LVmTtU=1uZFTJvtjc-9RMP3AXbZYb9FcZZ2hDg@mail.gmail.com>
- <CAAGUq_qL3YCrqh3amXqgOBsGk7X6y-ZGRLx5gStB2rcA2gFJjg@mail.gmail.com>
- <CAAGUq_qYsJa9zZSvcg080iXNv3BvxBgASNJ6fW6XssZ_q12F0g@mail.gmail.com> <abe3f4bf-9bdf-45be-a99e-7d5a7b9e5c57@kernel.org>
-From: harinath Nampally <harinath922@gmail.com>
-Date: Thu, 18 May 2017 22:01:11 -0400
-Message-ID: <CAAGUq_pVAu0dwU11DF1iyCVJBV00yAo_W+ibY8Cdx_jLpwUmpA@mail.gmail.com>
-Subject: Re: [PATCH] staging: iio: meter: Replace symbolic permissions with
- octal permissions
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
+Received: from mail-pf0-f173.google.com ([209.85.192.173]:34732 "EHLO
+        mail-pf0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751243AbdEMGrU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 13 May 2017 02:47:20 -0400
+Received: by mail-pf0-f173.google.com with SMTP id e64so39680394pfd.1
+        for <linux-iio@vger.kernel.org>; Fri, 12 May 2017 23:47:20 -0700 (PDT)
+From: Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Pavel Roskin <plroskin@gmail.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>
+Cc: linux-iio@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com
+Subject: [PATCH] iio: adc: bcm_iproc_adc: swap primary and secondary isr handler's
+Date: Sat, 13 May 2017 12:17:13 +0530
+Message-Id: <1494658033-11503-1-git-send-email-raveendra.padasalagi@broadcom.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Jonathan,
+The third argument of devm_request_threaded_irq() is the primary
+handler. It is called in hardirq context and checks whether the
+interrupt is relevant to the device. If the primary handler returns
+IRQ_WAKE_THREAD, the secondary handler (a.k.a. handler thread) is
+scheduled to run in process context.
 
-Yes I see it in the testing branch, thank you for letting me know.
+bcm_iproc_adc.c uses the secondary handler as the primary one
+and the other way around. So this patch fixes the same, along with
+re-naming the secondary handler and primary handler names properly.
 
-Thanks,
-Harinath
+Tested on the BCM9583XX iProc SoC based boards.
 
-On Tue, May 16, 2017 at 2:24 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 15/05/17 05:38, harinath Nampally wrote:
->>
->> Jonathan,
->>
->> Thank you for letting me know about correct iio git tree.
->>
->> I checked out 'togreg' branch, and noticed that
->> latest ade7758_core.c still has checkpatch.pl warnings.
->>
->> Actually Quentin Swain fixed the similar warnings in the ade7854.c,
->> and my patch is fix for similar warnings but it is for different file
->> ade7758_core.c
->
-> I guess he did both.
-> http://marc.info/?l=linux-iio&m=149359424405696&w=2
->
-> Chances are it was still sat in my testing branch as I hadn't
-> yet pushed it out as togreg post the autobuilders running
-> build tests on it.  I pushed out a few minutes ago so
-> should be up to date on the front end servers by now.
->
-> Jonathan
->
->>
->> Please correct me if I am wrong.
->>
->> Thanks,
->> Harinath
->>
->> On Mon, May 15, 2017 at 12:27 AM, harinath Nampally
->> <harinath922@gmail.com> wrote:
->>>
->>> Jonathan,
->>>
->>> Thank you for letting me know about correct iio git tree.
->>>
->>> I checked out 'togreg' branch, and noticed that
->>> latest ade7758_core.c still has checkpatch.pl warnings.
->>>
->>> Actually Quentin Swain fixed the similar warnings in the ade7854.c,
->>> and my patch is fix for similar warnings but it is for different file
->>> ade7758_core.c
->>>
->>> Please refer to below link for Quentin Swain's patch.
->>> https://www.spinics.net/lists/linux-iio/msg33010.html
->>>
->>> Please let me know if I am wrong.
->>>
->>> Thanks,
->>> Harinath
->>>
->>> On Mon, May 15, 2017 at 12:22 AM, harinath Nampally
->>> <harinath922@gmail.com> wrote:
->>>>
->>>> Jonathan,
->>>>
->>>> Thank you for letting me know about correct iio git tree.
->>>>
->>>> I checked out 'togreg' branch, and noticed that
->>>> latest ade7758_core.c still has checkpatch.pl warnings.
->>>>
->>>> Actually Quentin Swain fixed the similar warnings in the ade7854.c,
->>>> and my patch is fix for similar warnings but it is for different file
->>>> ade7758_core.c
->>>>
->>>> Please refer to below link for Quentin Swain's patch.
->>>> https://www.spinics.net/lists/linux-iio/msg33010.html
->>>>
->>>> Please let me know if I am wrong.
->>>>
->>>> Thanks,
->>>> Harinath
->>>>
->>>> On Sun, May 14, 2017 at 10:41 AM, Jonathan Cameron <jic23@kernel.org>
->>>> wrote:
->>>>>
->>>>>
->>>>> On 12/05/17 22:19, Harinath Nampally wrote:
->>>>>>
->>>>>>
->>>>>> This patch fixes below kind of warnings:
->>>>>> WARNING: Symbolic permissions 'S_IXXX | S_IXXX' are not preferred.
->>>>>>
->>>>>> Issue found and fixed by checkpatch.pl
->>>>>>
->>>>>> Signed-off-by: Harinath Nampally <harinath922@gmail.com>
->>>>>
->>>>>
->>>>> Already done by Quentin Swain <dudebrobro179@gmail.com> last month...
->>>>>
->>>>> For IIO related patches, stuff gets queued up in iio.git on
->>>>> kernel.org before it gets sent on to Greg.  This is relatively
->>>>> unusual for staging, but does lead to lots of repeats of
->>>>> patches like this unfortunately.
->>>>>
->>>>> Jonathan
->>>>>
->>>>>> ---
->>>>>>    drivers/staging/iio/meter/ade7758_core.c | 50
->>>>>> ++++++++++++++++----------------
->>>>>>    1 file changed, 25 insertions(+), 25 deletions(-)
->>>>>>
->>>>>> diff --git a/drivers/staging/iio/meter/ade7758_core.c
->>>>>> b/drivers/staging/iio/meter/ade7758_core.c
->>>>>> index 99c89e6..40498af 100644
->>>>>> --- a/drivers/staging/iio/meter/ade7758_core.c
->>>>>> +++ b/drivers/staging/iio/meter/ade7758_core.c
->>>>>> @@ -301,103 +301,103 @@ static int ade7758_reset(struct device *dev)
->>>>>>          return ret;
->>>>>>    }
->>>>>>    -static IIO_DEV_ATTR_VPEAK(S_IWUSR | S_IRUGO,
->>>>>> +static IIO_DEV_ATTR_VPEAK(0644,
->>>>>>                  ade7758_read_8bit,
->>>>>>                  ade7758_write_8bit,
->>>>>>                  ADE7758_VPEAK);
->>>>>> -static IIO_DEV_ATTR_IPEAK(S_IWUSR | S_IRUGO,
->>>>>> +static IIO_DEV_ATTR_IPEAK(0644,
->>>>>>                  ade7758_read_8bit,
->>>>>>                  ade7758_write_8bit,
->>>>>>                  ADE7758_VPEAK);
->>>>>> -static IIO_DEV_ATTR_APHCAL(S_IWUSR | S_IRUGO,
->>>>>> +static IIO_DEV_ATTR_APHCAL(0644,
->>>>>>                  ade7758_read_8bit,
->>>>>>                  ade7758_write_8bit,
->>>>>>                  ADE7758_APHCAL);
->>>>>> -static IIO_DEV_ATTR_BPHCAL(S_IWUSR | S_IRUGO,
->>>>>> +static IIO_DEV_ATTR_BPHCAL(0644,
->>>>>>                  ade7758_read_8bit,
->>>>>>                  ade7758_write_8bit,
->>>>>>                  ADE7758_BPHCAL);
->>>>>> -static IIO_DEV_ATTR_CPHCAL(S_IWUSR | S_IRUGO,
->>>>>> +static IIO_DEV_ATTR_CPHCAL(0644,
->>>>>>                  ade7758_read_8bit,
->>>>>>                  ade7758_write_8bit,
->>>>>>                  ADE7758_CPHCAL);
->>>>>> -static IIO_DEV_ATTR_WDIV(S_IWUSR | S_IRUGO,
->>>>>> +static IIO_DEV_ATTR_WDIV(0644,
->>>>>>                  ade7758_read_8bit,
->>>>>>                  ade7758_write_8bit,
->>>>>>                  ADE7758_WDIV);
->>>>>> -static IIO_DEV_ATTR_VADIV(S_IWUSR | S_IRUGO,
->>>>>> +static IIO_DEV_ATTR_VADIV(0644,
->>>>>>                  ade7758_read_8bit,
->>>>>>                  ade7758_write_8bit,
->>>>>>                  ADE7758_VADIV);
->>>>>> -static IIO_DEV_ATTR_AIRMS(S_IRUGO,
->>>>>> +static IIO_DEV_ATTR_AIRMS(0444,
->>>>>>                  ade7758_read_24bit,
->>>>>>                  NULL,
->>>>>>                  ADE7758_AIRMS);
->>>>>> -static IIO_DEV_ATTR_BIRMS(S_IRUGO,
->>>>>> +static IIO_DEV_ATTR_BIRMS(0444,
->>>>>>                  ade7758_read_24bit,
->>>>>>                  NULL,
->>>>>>                  ADE7758_BIRMS);
->>>>>> -static IIO_DEV_ATTR_CIRMS(S_IRUGO,
->>>>>> +static IIO_DEV_ATTR_CIRMS(0444,
->>>>>>                  ade7758_read_24bit,
->>>>>>                  NULL,
->>>>>>                  ADE7758_CIRMS);
->>>>>> -static IIO_DEV_ATTR_AVRMS(S_IRUGO,
->>>>>> +static IIO_DEV_ATTR_AVRMS(0444,
->>>>>>                  ade7758_read_24bit,
->>>>>>                  NULL,
->>>>>>                  ADE7758_AVRMS);
->>>>>> -static IIO_DEV_ATTR_BVRMS(S_IRUGO,
->>>>>> +static IIO_DEV_ATTR_BVRMS(0444,
->>>>>>                  ade7758_read_24bit,
->>>>>>                  NULL,
->>>>>>                  ADE7758_BVRMS);
->>>>>> -static IIO_DEV_ATTR_CVRMS(S_IRUGO,
->>>>>> +static IIO_DEV_ATTR_CVRMS(0444,
->>>>>>                  ade7758_read_24bit,
->>>>>>                  NULL,
->>>>>>                  ADE7758_CVRMS);
->>>>>> -static IIO_DEV_ATTR_AIRMSOS(S_IWUSR | S_IRUGO,
->>>>>> +static IIO_DEV_ATTR_AIRMSOS(0644,
->>>>>>                  ade7758_read_16bit,
->>>>>>                  ade7758_write_16bit,
->>>>>>                  ADE7758_AIRMSOS);
->>>>>> -static IIO_DEV_ATTR_BIRMSOS(S_IWUSR | S_IRUGO,
->>>>>> +static IIO_DEV_ATTR_BIRMSOS(0644,
->>>>>>                  ade7758_read_16bit,
->>>>>>                  ade7758_write_16bit,
->>>>>>                  ADE7758_BIRMSOS);
->>>>>> -static IIO_DEV_ATTR_CIRMSOS(S_IWUSR | S_IRUGO,
->>>>>> +static IIO_DEV_ATTR_CIRMSOS(0644,
->>>>>>                  ade7758_read_16bit,
->>>>>>                  ade7758_write_16bit,
->>>>>>                  ADE7758_CIRMSOS);
->>>>>> -static IIO_DEV_ATTR_AVRMSOS(S_IWUSR | S_IRUGO,
->>>>>> +static IIO_DEV_ATTR_AVRMSOS(0644,
->>>>>>                  ade7758_read_16bit,
->>>>>>                  ade7758_write_16bit,
->>>>>>                  ADE7758_AVRMSOS);
->>>>>> -static IIO_DEV_ATTR_BVRMSOS(S_IWUSR | S_IRUGO,
->>>>>> +static IIO_DEV_ATTR_BVRMSOS(0644,
->>>>>>                  ade7758_read_16bit,
->>>>>>                  ade7758_write_16bit,
->>>>>>                  ADE7758_BVRMSOS);
->>>>>> -static IIO_DEV_ATTR_CVRMSOS(S_IWUSR | S_IRUGO,
->>>>>> +static IIO_DEV_ATTR_CVRMSOS(0644,
->>>>>>                  ade7758_read_16bit,
->>>>>>                  ade7758_write_16bit,
->>>>>>                  ADE7758_CVRMSOS);
->>>>>> -static IIO_DEV_ATTR_AIGAIN(S_IWUSR | S_IRUGO,
->>>>>> +static IIO_DEV_ATTR_AIGAIN(0644,
->>>>>>                  ade7758_read_16bit,
->>>>>>                  ade7758_write_16bit,
->>>>>>                  ADE7758_AIGAIN);
->>>>>> -static IIO_DEV_ATTR_BIGAIN(S_IWUSR | S_IRUGO,
->>>>>> +static IIO_DEV_ATTR_BIGAIN(0644,
->>>>>>                  ade7758_read_16bit,
->>>>>>                  ade7758_write_16bit,
->>>>>>                  ADE7758_BIGAIN);
->>>>>> -static IIO_DEV_ATTR_CIGAIN(S_IWUSR | S_IRUGO,
->>>>>> +static IIO_DEV_ATTR_CIGAIN(0644,
->>>>>>                  ade7758_read_16bit,
->>>>>>                  ade7758_write_16bit,
->>>>>>                  ADE7758_CIGAIN);
->>>>>> -static IIO_DEV_ATTR_AVRMSGAIN(S_IWUSR | S_IRUGO,
->>>>>> +static IIO_DEV_ATTR_AVRMSGAIN(0644,
->>>>>>                  ade7758_read_16bit,
->>>>>>                  ade7758_write_16bit,
->>>>>>                  ADE7758_AVRMSGAIN);
->>>>>> -static IIO_DEV_ATTR_BVRMSGAIN(S_IWUSR | S_IRUGO,
->>>>>> +static IIO_DEV_ATTR_BVRMSGAIN(0644,
->>>>>>                  ade7758_read_16bit,
->>>>>>                  ade7758_write_16bit,
->>>>>>                  ADE7758_BVRMSGAIN);
->>>>>> -static IIO_DEV_ATTR_CVRMSGAIN(S_IWUSR | S_IRUGO,
->>>>>> +static IIO_DEV_ATTR_CVRMSGAIN(0644,
->>>>>>                  ade7758_read_16bit,
->>>>>>                  ade7758_write_16bit,
->>>>>>                  ADE7758_CVRMSGAIN);
->>>>>>
->>>>>
->>>>
->>>>
->>>>
->>>> --
->>>> Thanks,
->>>> Harinath
->>>>
->>>>
->>>
->>>
->>>
->>> --
->>> Thanks,
->>> Harinath
->>
->>
->>
->>
->
+Reported-by: Pavel Roskin <plroskin@gmail.com>
+Signed-off-by: Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>
+---
+ drivers/iio/adc/bcm_iproc_adc.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iio/adc/bcm_iproc_adc.c b/drivers/iio/adc/bcm_iproc_adc.c
+index 21d38c8..7f4f9c4 100644
+--- a/drivers/iio/adc/bcm_iproc_adc.c
++++ b/drivers/iio/adc/bcm_iproc_adc.c
+@@ -143,7 +143,7 @@ static void iproc_adc_reg_dump(struct iio_dev *indio_dev)
+ 	iproc_adc_dbg_reg(dev, adc_priv, IPROC_SOFT_BYPASS_DATA);
+ }
+ 
+-static irqreturn_t iproc_adc_interrupt_handler(int irq, void *data)
++static irqreturn_t iproc_adc_interrupt_thread(int irq, void *data)
+ {
+ 	u32 channel_intr_status;
+ 	u32 intr_status;
+@@ -167,7 +167,7 @@ static irqreturn_t iproc_adc_interrupt_handler(int irq, void *data)
+ 	return IRQ_NONE;
+ }
+ 
+-static irqreturn_t iproc_adc_interrupt_thread(int irq, void *data)
++static irqreturn_t iproc_adc_interrupt_handler(int irq, void *data)
+ {
+ 	irqreturn_t retval = IRQ_NONE;
+ 	struct iproc_adc_priv *adc_priv;
+@@ -181,7 +181,7 @@ static irqreturn_t iproc_adc_interrupt_thread(int irq, void *data)
+ 	adc_priv = iio_priv(indio_dev);
+ 
+ 	regmap_read(adc_priv->regmap, IPROC_INTERRUPT_STATUS, &intr_status);
+-	dev_dbg(&indio_dev->dev, "iproc_adc_interrupt_thread(),INTRPT_STS:%x\n",
++	dev_dbg(&indio_dev->dev, "iproc_adc_interrupt_handler(),INTRPT_STS:%x\n",
+ 			intr_status);
+ 
+ 	intr_channels = (intr_status & IPROC_ADC_INTR_MASK) >> IPROC_ADC_INTR;
+@@ -566,8 +566,8 @@ static int iproc_adc_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	ret = devm_request_threaded_irq(&pdev->dev, adc_priv->irqno,
+-				iproc_adc_interrupt_thread,
+ 				iproc_adc_interrupt_handler,
++				iproc_adc_interrupt_thread,
+ 				IRQF_SHARED, "iproc-adc", indio_dev);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "request_irq error %d\n", ret);
+-- 
+1.9.1
+
