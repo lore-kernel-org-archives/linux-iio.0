@@ -1,52 +1,52 @@
-Return-Path: <SRS0=2QgY=4U=gmail.com=alexander.sverdlin@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wr0-f195.google.com ([209.85.128.195]:34546 "EHLO
+        mail-wr0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751689AbdENJcO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 14 May 2017 05:32:14 -0400
+Received: by mail-wr0-f195.google.com with SMTP id 6so11334881wrb.1
+        for <linux-iio@vger.kernel.org>; Sun, 14 May 2017 02:32:14 -0700 (PDT)
 From: Alexander Sverdlin <alexander.sverdlin@gmail.com>
-To: linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	Hartley Sweeten <hsweeten@visionengravers.com>,
-	Ryan Mallon <rmallon@gmail.com>
+To: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Hartley Sweeten <hsweeten@visionengravers.com>,
+        Ryan Mallon <rmallon@gmail.com>
 Cc: Alexander Sverdlin <alexander.sverdlin@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: [PATCH v3 0/5] iio: ADC driver for EP93xx SoC
-Date: Sun, 14 May 2017 11:29:49 +0200
-Message-Id: <20170514092954.12790-1-alexander.sverdlin@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: [PATCH v3 1/5] clk: ep93xx: Implement clk_get_parent()
+Date: Sun, 14 May 2017 11:29:50 +0200
+Message-Id: <20170514092954.12790-2-alexander.sverdlin@gmail.com>
+In-Reply-To: <20170514092954.12790-1-alexander.sverdlin@gmail.com>
+References: <20170514092954.12790-1-alexander.sverdlin@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This series prepares the necessary infrastructure for ADC platform device on
-Cirrus Logic EP93xx family of SoCs and adds the driver for ADC device using
-IIO subsystem.
+Trivial implementation of clk_get_parent(), but necessary for some drivers,
+such as ADC.
 
-Changelog
-v3:
-  Rebased to the current master
-  sizeof(struct foo) -> sizeof(*bar)
-v2:
-  Added Documentation/iio/ep93xx_adc.txt
-  Removed extend_name
-  Added timeout to the status polling loop
-  Used iio_device_register() instead of devm_iio_device_register()
+Signed-off-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+---
+ arch/arm/mach-ep93xx/clock.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Alexander Sverdlin (5):
-  clk: ep93xx: Implement clk_get_parent()
-  clk: ep93xx: Add ADC clock
-  ep93xx: Add ADC platform device support to core
-  edb93xx: Add ADC platform device
-  iio: adc: New driver for Cirrus Logic EP93xx ADC
-
- Documentation/iio/ep93xx_adc.txt             |  29 +++
- arch/arm/mach-ep93xx/clock.c                 |  14 ++
- arch/arm/mach-ep93xx/core.c                  |  24 +++
- arch/arm/mach-ep93xx/edb93xx.c               |   1 +
- arch/arm/mach-ep93xx/include/mach/platform.h |   1 +
- arch/arm/mach-ep93xx/soc.h                   |   1 +
- drivers/iio/adc/Kconfig                      |  11 ++
- drivers/iio/adc/Makefile                     |   1 +
- drivers/iio/adc/ep93xx_adc.c                 | 260 +++++++++++++++++++++++++++
- 9 files changed, 342 insertions(+)
- create mode 100644 Documentation/iio/ep93xx_adc.txt
- create mode 100644 drivers/iio/adc/ep93xx_adc.c
-
+diff --git a/arch/arm/mach-ep93xx/clock.c b/arch/arm/mach-ep93xx/clock.c
+index 39ef3b613912..b9cd9d7da14d 100644
+--- a/arch/arm/mach-ep93xx/clock.c
++++ b/arch/arm/mach-ep93xx/clock.c
+@@ -475,6 +475,12 @@ int clk_set_rate(struct clk *clk, unsigned long rate)
+ }
+ EXPORT_SYMBOL(clk_set_rate);
+ 
++struct clk *clk_get_parent(struct clk *clk)
++{
++	return clk->parent;
++}
++EXPORT_SYMBOL(clk_get_parent);
++
+ 
+ static char fclk_divisors[] = { 1, 2, 4, 8, 16, 1, 1, 1 };
+ static char hclk_divisors[] = { 1, 2, 4, 5, 6, 8, 16, 32 };
 -- 
 2.12.2
+
