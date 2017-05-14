@@ -1,13 +1,11 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f196.google.com ([209.85.192.196]:36288 "EHLO
-        mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750733AbdEJNYy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 10 May 2017 09:24:54 -0400
-Date: Wed, 10 May 2017 21:24:50 +0800
-From: Eva Rachel Retuya <eraretuya@gmail.com>
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-        Hartmut Knaack <knaack.h@gmx.de>,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46808 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1758573AbdENPPk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 14 May 2017 11:15:40 -0400
+Subject: Re: [PATCH v2 3/4] iio: accel: adxl345: Setup DATA_READY trigger
+To: Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald <pmeerw@pmeerw.net>,
         Dmitry Torokhov <dmitry.torokhov@gmail.com>,
@@ -16,80 +14,99 @@ Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
         Alison Schofield <amsfield22@gmail.com>,
         Florian Vaussard <florian.vaussard@heig-vd.ch>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 3/4] iio: accel: adxl345: Setup DATA_READY trigger
-Message-ID: <20170510132448.GB5456@Socrates-UM>
 References: <cover.1493450577.git.eraretuya@gmail.com>
  <d5c737cf4e5a2d639d09ad95f58ab32e01d0c338.1493450577.git.eraretuya@gmail.com>
  <CAHp75VcTptSxGnHJzosbio-8PG3ojgr2vfhL9QuUf+OgeCQWGA@mail.gmail.com>
  <20170502121554.GD3030@Socrates-UM>
  <CAHp75Vfu_6Lw-JbuB0ensrP-9hPDKavaSJO0s3wGM8Vm2Gwuhg@mail.gmail.com>
+ <20170510132448.GB5456@Socrates-UM>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <683cefe7-77f8-1671-85b0-286122b72c9d@kernel.org>
+Date: Sun, 14 May 2017 16:15:37 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <CAHp75Vfu_6Lw-JbuB0ensrP-9hPDKavaSJO0s3wGM8Vm2Gwuhg@mail.gmail.com>
+In-Reply-To: <20170510132448.GB5456@Socrates-UM>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, May 03, 2017 at 12:05:00AM +0300, Andy Shevchenko wrote:
-> On Tue, May 2, 2017 at 3:15 PM, Eva Rachel Retuya <eraretuya@gmail.com> wrote:
-> > On Mon, May 01, 2017 at 02:31:00PM +0300, Andy Shevchenko wrote:
-> > [...]
-> >> > -int adxl345_core_probe(struct device *dev, struct regmap *regmap,
-> >> > +int adxl345_core_probe(struct device *dev, struct regmap *regmap, int irq,
-> >> >                        const char *name);
-> >>
-> >> I think I commented this once. Instead of increasing parameters,
-> >> please introduce a new struct (as separate preparatory patch) which
-> >> will hold current parameters. Let's call it
-> >> strut adxl345_chip {
-> >>  struct device *dev;
-> >>  struct regmap *regmap;
-> >>  const char *name;
-> >> };
-> >>
-> >> I insisnt in this chage.
-> >
-> > I'm not sure if what you want is more simpler, is it something like what
-> > this driver does?
+On 10/05/17 14:24, Eva Rachel Retuya wrote:
+> On Wed, May 03, 2017 at 12:05:00AM +0300, Andy Shevchenko wrote:
+>> On Tue, May 2, 2017 at 3:15 PM, Eva Rachel Retuya <eraretuya@gmail.com> wrote:
+>>> On Mon, May 01, 2017 at 02:31:00PM +0300, Andy Shevchenko wrote:
+>>> [...]
+>>>>> -int adxl345_core_probe(struct device *dev, struct regmap *regmap,
+>>>>> +int adxl345_core_probe(struct device *dev, struct regmap *regmap, int irq,
+>>>>>                         const char *name);
+>>>>
+>>>> I think I commented this once. Instead of increasing parameters,
+>>>> please introduce a new struct (as separate preparatory patch) which
+>>>> will hold current parameters. Let's call it
+>>>> strut adxl345_chip {
+>>>>   struct device *dev;
+>>>>   struct regmap *regmap;
+>>>>   const char *name;
+>>>> };
+>>>>
+>>>> I insisnt in this chage.
+>>>
+>>> I'm not sure if what you want is more simpler, is it something like what
+>>> this driver does?
+>>
+>> Nope. The driver you were referring to does the same you did.
+>>
+>> I'm proposing the above struct to be introduced along with changing
+>> prototype like:
+>>
+>>   -int adxl345_core_probe(struct device *dev, struct regmap *regmap,
+>> const char *name);
+>>   +int adxl345_core_probe(struct adxl345_chip *chip);
+>>
+>> In next patch adding interrupt would not touch prototypes at all!
+>>
 > 
-> Nope. The driver you were referring to does the same you did.
+> OK, got it. Thanks for clarifying.
 > 
-> I'm proposing the above struct to be introduced along with changing
-> prototype like:
+>>>
+>>> http://lxr.free-electrons.com/source/drivers/iio/gyro/mpu3050.h#L41
+>>> http://lxr.free-electrons.com/source/drivers/iio/gyro/mpu3050-i2c.c#L34
+>>
+>>>>> +#include <linux/of_irq.h>
+>>>>
+>>>> Can we get rid of gnostic resource providers?
+>>>>
+>>>
+>>> I'm uninformed and still learning. Please let me know how to approach
+>>> this in some other way.
+>>
+>> I suppose something like platform_get_irq(); to use.
+>> But it would be nice to you to investigate more.
 > 
->  -int adxl345_core_probe(struct device *dev, struct regmap *regmap,
-> const char *name);
->  +int adxl345_core_probe(struct adxl345_chip *chip);
-> 
-> In next patch adding interrupt would not touch prototypes at all!
-> 
+> I had a look and it seems I have to convert to platform_driver in order
+> to make use of that function. Is this correct?
+I believe Andy was suggesting a function 'similar to' that one rather
+than actually using platform_get_irq.
 
-OK, got it. Thanks for clarifying.
+It's not an area I know all that much about either, but there
+are moves to try and move the boiler plat needed to get the same
+parameters from devicetree and acpi into core library code so
+that a single function can be called to get the parameter in
+either case.
 
-> >
-> > http://lxr.free-electrons.com/source/drivers/iio/gyro/mpu3050.h#L41
-> > http://lxr.free-electrons.com/source/drivers/iio/gyro/mpu3050-i2c.c#L34
+Jonathan
 > 
-> >> > +#include <linux/of_irq.h>
-> >>
-> >> Can we get rid of gnostic resource providers?
-> >>
-> >
-> > I'm uninformed and still learning. Please let me know how to approach
-> > this in some other way.
+> Eva
 > 
-> I suppose something like platform_get_irq(); to use.
-> But it would be nice to you to investigate more.
-
-I had a look and it seems I have to convert to platform_driver in order
-to make use of that function. Is this correct?
-
-Eva
-
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
+>>
+>> -- 
+>> With Best Regards,
+>> Andy Shevchenko
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+
