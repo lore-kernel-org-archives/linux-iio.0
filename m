@@ -1,101 +1,78 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37039 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751233AbdEUMCS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 May 2017 08:02:18 -0400
-Subject: Re: [PATCH v2] iio: adc: bcm_iproc_adc: swap primary and secondary
- isr handler's
-To: Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>,
-        Pavel Roskin <plroskin@gmail.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>
-Cc: linux-iio@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-References: <1494917562-31439-1-git-send-email-raveendra.padasalagi@broadcom.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <7411eec7-b69d-7301-9231-15f78efbb7d8@kernel.org>
-Date: Sun, 21 May 2017 13:02:16 +0100
+Received: from mxout2.idt.com ([157.165.5.26]:60931 "EHLO mxout2.idt.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751104AbdEPJGg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 16 May 2017 05:06:36 -0400
+From: Franziska Naepelt <franziska.naepelt@idt.com>
+Subject: ltr501 register field mapping als/ps interrupt mode interchanged
+To: pmeerw@pmeer
+Cc: linux-iio@vger.kernel.org
+Message-ID: <6552089e-27f9-efb9-ae51-67f5f05cd9be@idt.com>
+Date: Tue, 16 May 2017 10:17:07 +0200
 MIME-Version: 1.0
-In-Reply-To: <1494917562-31439-1-git-send-email-raveendra.padasalagi@broadcom.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 16/05/17 07:52, Raveendra Padasalagi wrote:
-> The third argument of devm_request_threaded_irq() is the primary
-> handler. It is called in hardirq context and checks whether the
-> interrupt is relevant to the device. If the primary handler returns
-> IRQ_WAKE_THREAD, the secondary handler (a.k.a. handler thread) is
-> scheduled to run in process context.
-> 
-> bcm_iproc_adc.c uses the secondary handler as the primary one
-> and the other way around. So this patch fixes the same, along with
-> re-naming the secondary handler and primary handler names properly.
-> 
-> Tested on the BCM9583XX iProc SoC based boards.
-> 
-> Fixes: 4324c97ecedc ("iio: Add driver for Broadcom iproc-static-adc")
-> Reported-by: Pavel Roskin <plroskin@gmail.com>
-> Signed-off-by: Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>
-> Cc: stable@vger.kernel.org
-Applied to the fixes-togreg branch of iio.git.
+Hi Peter,
 
-Thanks,
+I just studied the ltr501 driver for reference and found the following:
 
-Jonathan
-> ---
-> 
-> Changes in v2:
->   - Added Cc tag in the Signed-off area to send the patch to stable kernel
->   - Fixes tag corrected with proper formatting
-> 
->   drivers/iio/adc/bcm_iproc_adc.c | 8 ++++----
->   1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/bcm_iproc_adc.c b/drivers/iio/adc/bcm_iproc_adc.c
-> index 21d38c8..7f4f9c4 100644
-> --- a/drivers/iio/adc/bcm_iproc_adc.c
-> +++ b/drivers/iio/adc/bcm_iproc_adc.c
-> @@ -143,7 +143,7 @@ static void iproc_adc_reg_dump(struct iio_dev *indio_dev)
->   	iproc_adc_dbg_reg(dev, adc_priv, IPROC_SOFT_BYPASS_DATA);
->   }
->   
-> -static irqreturn_t iproc_adc_interrupt_handler(int irq, void *data)
-> +static irqreturn_t iproc_adc_interrupt_thread(int irq, void *data)
->   {
->   	u32 channel_intr_status;
->   	u32 intr_status;
-> @@ -167,7 +167,7 @@ static irqreturn_t iproc_adc_interrupt_handler(int irq, void *data)
->   	return IRQ_NONE;
->   }
->   
-> -static irqreturn_t iproc_adc_interrupt_thread(int irq, void *data)
-> +static irqreturn_t iproc_adc_interrupt_handler(int irq, void *data)
->   {
->   	irqreturn_t retval = IRQ_NONE;
->   	struct iproc_adc_priv *adc_priv;
-> @@ -181,7 +181,7 @@ static irqreturn_t iproc_adc_interrupt_thread(int irq, void *data)
->   	adc_priv = iio_priv(indio_dev);
->   
->   	regmap_read(adc_priv->regmap, IPROC_INTERRUPT_STATUS, &intr_status);
-> -	dev_dbg(&indio_dev->dev, "iproc_adc_interrupt_thread(),INTRPT_STS:%x\n",
-> +	dev_dbg(&indio_dev->dev, "iproc_adc_interrupt_handler(),INTRPT_STS:%x\n",
->   			intr_status);
->   
->   	intr_channels = (intr_status & IPROC_ADC_INTR_MASK) >> IPROC_ADC_INTR;
-> @@ -566,8 +566,8 @@ static int iproc_adc_probe(struct platform_device *pdev)
->   	}
->   
->   	ret = devm_request_threaded_irq(&pdev->dev, adc_priv->irqno,
-> -				iproc_adc_interrupt_thread,
->   				iproc_adc_interrupt_handler,
-> +				iproc_adc_interrupt_thread,
->   				IRQF_SHARED, "iproc-adc", indio_dev);
->   	if (ret) {
->   		dev_err(&pdev->dev, "request_irq error %d\n", ret);
-> 
+The register mapping for the IIO driver for the Liteon Light and Proximity sensor LTR501 interrupt mode is interchanged (ALS/PS).
+
+There is a register called INTERRUPT register (address 0x8F)
+Bit 0 represents PS measurement trigger.
+Bit 1 represents ALS measurement trigger.
+
+seedatesheet: http://optoelectronics.liteon.com/upload/download/DS86-2012-0006/S_110_LTR-501ALS-01_PrelimDS_ver1%5B1%5D.pdf - page 24
+
+This two bit fields are interchanged within the driver: drivers/iio/light/ltr501.c.
+
+I just refer to the datasheet because I don't have such kind of sensor to test it. The datasheet of the LTR559 which is covered by this driver as well
+has the same register mapping like LTR501.
+
+Regards,
+Franziska
+
+./-ver_linux
+Linux raspberrypi 4.9.25-v7+ #1 SMP Thu May 11 15:56:46 CEST 2017 armv7l GNU/Linux
+
+GNU C               	4.9.2
+GNU Make            	4.0
+Binutils            	2.25
+Util-linux          	2.25.2
+Mount               	2.25.2
+Module-init-tools   	18
+E2fsprogs           	1.42.12
+Nfs-utils           	1.2.8
+Linux C Library     	2.19
+Dynamic linker (ldd)	2.19
+Linux C++ Library   	6.0.20
+Procps              	3.3.9
+Net-tools           	1.60
+Kbd                 	1.15.5
+Console-tools       	1.15.5
+Sh-utils            	8.23
+Udev                	215
+Wireless-tools      	30
+Modules Loaded      	bcm2835_gpiomem bluetooth bnep brcmfmac brcmutil btbcm cfg80211 fixed hci_uart i2c_bcm2835 i2c_dev industrialio industrialio_triggered_buffer ipv6 kfifo_buf rfkill snd snd_bcm2835 snd_pcm snd_timer uio uio_pdrv_genirq
+
+patch:
+
+diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
+index 3afc53a..c298fd8 100644
+--- a/drivers/iio/light/ltr501.c
++++ b/drivers/iio/light/ltr501.c
+@@ -74,9 +74,9 @@
+  static const struct reg_field reg_field_it =
+                                 REG_FIELD(LTR501_ALS_MEAS_RATE, 3, 4);
+  static const struct reg_field reg_field_als_intr =
+-                               REG_FIELD(LTR501_INTR, 0, 0);
+-static const struct reg_field reg_field_ps_intr =
+                                 REG_FIELD(LTR501_INTR, 1, 1);
++static const struct reg_field reg_field_ps_intr =
++                               REG_FIELD(LTR501_INTR, 0, 0);
+  static const struct reg_field reg_field_als_rate =
+                                 REG_FIELD(LTR501_ALS_MEAS_RATE, 0, 2);
+  static const struct reg_field reg_field_ps_rate =
 
