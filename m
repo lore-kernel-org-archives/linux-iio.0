@@ -1,125 +1,128 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37114 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753357AbdEUMOI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 May 2017 08:14:08 -0400
-Subject: Re: [PATCH v2 1/2] iio: accel: bma180: Add support for BMA250E
-From: Jonathan Cameron <jic23@kernel.org>
-To: Hans de Goede <hdegoede@redhat.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-References: <20170516125159.25403-1-hdegoede@redhat.com>
- <d2cbc135-45b1-48e8-0552-8f0934c26417@kernel.org>
-Message-ID: <2f5d2298-8ad4-c653-171a-7fd44cab6e5b@kernel.org>
-Date: Sun, 21 May 2017 13:14:05 +0100
+Received: from mail-bl2nam02on0088.outbound.protection.outlook.com ([104.47.38.88]:36299
+        "EHLO NAM02-BL2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1751726AbdEPNMP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 16 May 2017 09:12:15 -0400
+From: Jean-Baptiste Maneyrol <JManeyrol@invensense.com>
+To: linux-iio <linux-iio@vger.kernel.org>
+Subject: [PATCH] iio: imu: inv_mpu6050: add accel lpf register setting for
+  chip >= MPU6500
+Date: Tue, 16 May 2017 13:12:12 +0000
+Message-ID: <BLUPR12MB065762A82F5B262968B67FA9C4E60@BLUPR12MB0657.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-In-Reply-To: <d2cbc135-45b1-48e8-0552-8f0934c26417@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 16/05/17 19:21, Jonathan Cameron wrote:
-> On 16/05/17 13:51, Hans de Goede wrote:
->> The BMA250E adds a new fifo mode and is fully backwards compatible
->> with the BMA250, but with a different chip-id.
->>
->> This commit adds support for it by adjusting the chip-id check and
->> otherwise treating it as a regular BMA250.
->>
->> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+Starting from MPU6500, accelerometer dlpf is set in a separate register
+named ACCEL_CONFIG_2.
+Add this new register in the map and set it for the corresponding chips.
 
-Thanks,
+Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 32 ++++++++++++++++++++++++++=
++---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  3 +++
+ 2 files changed, 32 insertions(+), 3 deletions(-)
 
-Jonathan
->> ---
->>   drivers/iio/accel/bma180.c | 24 +++++++++++++++++++++++-
->>   1 file changed, 23 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
->> index efc67739c28f..3d6694821a96 100644
->> --- a/drivers/iio/accel/bma180.c
->> +++ b/drivers/iio/accel/bma180.c
->> @@ -36,6 +36,7 @@
->>   enum chip_ids {
->>       BMA180,
->>       BMA250,
->> +    BMA250E,
->>   };
->>   struct bma180_data;
->> @@ -55,6 +56,7 @@ struct bma180_part_info {
->>       u8 power_reg, power_mask, lowpower_val;
->>       u8 int_enable_reg, int_enable_mask;
->>       u8 softreset_reg;
->> +    u8 chip_id;
->>       int (*chip_config)(struct bma180_data *data);
->>       void (*chip_disable)(struct bma180_data *data);
->> @@ -112,6 +114,8 @@ struct bma180_part_info {
->>   #define BMA250_INT1_DATA_MASK    BIT(0)
->>   #define BMA250_INT_RESET_MASK    BIT(7) /* Reset pending interrupts */
->> +#define BMA250E_CHIP_ID        0xf9
->> +
->>   struct bma180_data {
->>       struct i2c_client *client;
->>       struct iio_trigger *trig;
->> @@ -309,7 +313,7 @@ static int bma180_chip_init(struct bma180_data *data)
->>       if (ret < 0)
->>           return ret;
->> -    if (ret != BMA180_ID_REG_VAL)
->> +    if (ret != data->part_info->chip_id)
->>           return -ENODEV;
->>       ret = bma180_soft_reset(data);
->> @@ -632,6 +636,7 @@ static const struct bma180_part_info bma180_part_info[] = {
->>           BMA180_TCO_Z, BMA180_MODE_CONFIG, BMA180_LOW_POWER,
->>           BMA180_CTRL_REG3, BMA180_NEW_DATA_INT,
->>           BMA180_RESET,
->> +        BMA180_CHIP_ID,
->>           bma180_chip_config,
->>           bma180_chip_disable,
->>       },
->> @@ -646,6 +651,22 @@ static const struct bma180_part_info bma180_part_info[] = {
->>           BMA250_POWER_REG, BMA250_LOWPOWER_MASK, 1,
->>           BMA250_INT_ENABLE_REG, BMA250_DATA_INTEN_MASK,
->>           BMA250_RESET_REG,
->> +        BMA180_CHIP_ID,
->> +        bma250_chip_config,
->> +        bma250_chip_disable,
->> +    },
->> +    [BMA250E] = {
->> +        bma250_channels, ARRAY_SIZE(bma250_channels),
->> +        bma250_scale_table, ARRAY_SIZE(bma250_scale_table),
->> +        bma250_bw_table, ARRAY_SIZE(bma250_bw_table),
->> +        BMA250_INT_RESET_REG, BMA250_INT_RESET_MASK,
->> +        BMA250_POWER_REG, BMA250_SUSPEND_MASK,
->> +        BMA250_BW_REG, BMA250_BW_MASK,
->> +        BMA250_RANGE_REG, BMA250_RANGE_MASK,
->> +        BMA250_POWER_REG, BMA250_LOWPOWER_MASK, 1,
->> +        BMA250_INT_ENABLE_REG, BMA250_DATA_INTEN_MASK,
->> +        BMA250_RESET_REG,
->> +        BMA250E_CHIP_ID,
->>           bma250_chip_config,
->>           bma250_chip_disable,
->>       },
-> Yikes.  I never picked up on this being there before.
-> Assigning elements of such a large structure is always going to be fragile.
-> 
-> I'll probably take this patch as is, but we really ought to move over to
-> using named element assignment in here.  It'll be a little more verbose but
-> way less fragile!   Not to mention allows the possibly upcoming
-> structure random ordering to work (if that merges).
->> @@ -845,6 +866,7 @@ static SIMPLE_DEV_PM_OPS(bma180_pm_ops, bma180_suspend, bma180_resume);
->>   static struct i2c_device_id bma180_ids[] = {
->>       { "bma180", BMA180 },
->>       { "bma250", BMA250 },
->> +    { "bma250e", BMA250E },
->>       { }
->>   };
->>
-> 
-> -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/i=
+nv_mpu6050/inv_mpu_core.c
+index 96dabbd..605b9da4 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -41,6 +41,7 @@
+ static const struct inv_mpu6050_reg_map reg_set_6500 =3D {
+ 	.sample_rate_div	=3D INV_MPU6050_REG_SAMPLE_RATE_DIV,
+ 	.lpf                    =3D INV_MPU6050_REG_CONFIG,
++	.accel_lpf              =3D INV_MPU6500_REG_ACCEL_CONFIG_2,
+ 	.user_ctrl              =3D INV_MPU6050_REG_USER_CTRL,
+ 	.fifo_en                =3D INV_MPU6050_REG_FIFO_EN,
+ 	.gyro_config            =3D INV_MPU6050_REG_GYRO_CONFIG,
+@@ -211,6 +212,32 @@ int inv_mpu6050_set_power_itg(struct inv_mpu6050_state=
+ *st, bool power_on)
+ EXPORT_SYMBOL_GPL(inv_mpu6050_set_power_itg);
+=20
+ /**
++ *  inv_mpu6050_set_lpf_regs() - set low pass filter registers, chip depen=
+dent
++ *
++ *  MPU60xx/MPU9150 use only 1 register for accelerometer + gyroscope
++ *  MPU6500 and above have a dedicated register for accelerometer
++ */
++static int inv_mpu6050_set_lpf_regs(struct inv_mpu6050_state *st,
++				    enum inv_mpu6050_filter_e val)
++{
++	int result;
++
++	result =3D regmap_write(st->map, st->reg->lpf, val);
++	if (result)
++		return result;
++
++	/* set accel lpf for chip >=3D MPU6500 */
++	if (st->chip_type !=3D INV_MPU6050 && st->chip_type !=3D INV_MPU6000 &&
++			st->chip_type !=3D INV_MPU9150) {
++		result =3D regmap_write(st->map, st->reg->accel_lpf, val);
++		if (result)
++			return result;
++	}
++
++	return 0;
++}
++
++/**
+  *  inv_mpu6050_init_config() - Initialize hardware, disable FIFO.
+  *
+  *  Initial configuration:
+@@ -233,8 +260,7 @@ static int inv_mpu6050_init_config(struct iio_dev *indi=
+o_dev)
+ 	if (result)
+ 		return result;
+=20
+-	d =3D INV_MPU6050_FILTER_20HZ;
+-	result =3D regmap_write(st->map, st->reg->lpf, d);
++	result =3D inv_mpu6050_set_lpf_regs(st, INV_MPU6050_FILTER_20HZ);
+ 	if (result)
+ 		return result;
+=20
+@@ -552,7 +578,7 @@ static int inv_mpu6050_set_lpf(struct inv_mpu6050_state=
+ *st, int rate)
+ 	while ((h < hz[i]) && (i < ARRAY_SIZE(d) - 1))
+ 		i++;
+ 	data =3D d[i];
+-	result =3D regmap_write(st->map, st->reg->lpf, data);
++	result =3D inv_mpu6050_set_lpf_regs(st, data);
+ 	if (result)
+ 		return result;
+ 	st->chip_config.lpf =3D data;
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/in=
+v_mpu6050/inv_mpu_iio.h
+index ef13de7..953a0c0 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+@@ -28,6 +28,7 @@
+  *  struct inv_mpu6050_reg_map - Notable registers.
+  *  @sample_rate_div:	Divider applied to gyro output rate.
+  *  @lpf:		Configures internal low pass filter.
++ *  @accel_lpf:		Configures accelerometer low pass filter.
+  *  @user_ctrl:		Enables/resets the FIFO.
+  *  @fifo_en:		Determines which data will appear in FIFO.
+  *  @gyro_config:	gyro config register.
+@@ -47,6 +48,7 @@
+ struct inv_mpu6050_reg_map {
+ 	u8 sample_rate_div;
+ 	u8 lpf;
++	u8 accel_lpf;
+ 	u8 user_ctrl;
+ 	u8 fifo_en;
+ 	u8 gyro_config;
+@@ -188,6 +190,7 @@ struct inv_mpu6050_state {
+ #define INV_MPU6050_FIFO_THRESHOLD           500
+=20
+ /* mpu6500 registers */
++#define INV_MPU6500_REG_ACCEL_CONFIG_2      0x1D
+ #define INV_MPU6500_REG_ACCEL_OFFSET        0x77
+=20
+ /* delay time in milliseconds */
+--=20
+1.9.1
