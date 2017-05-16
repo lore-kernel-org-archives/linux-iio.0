@@ -1,74 +1,119 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-he1eur01on0137.outbound.protection.outlook.com ([104.47.0.137]:48617
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1752478AbdEENT7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 5 May 2017 09:19:59 -0400
-Subject: Re: [PATCH v13 03/10] mux: minimal mux subsystem and gpio-based mux
- controller
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-References: <1492101794-13444-1-git-send-email-peda@axentia.se>
- <1492101794-13444-4-git-send-email-peda@axentia.se>
- <20170418085156.GA4773@kroah.com>
- <bdeecccf-02d6-226b-8516-1d41e3602a7a@axentia.se>
-CC: <linux-kernel@vger.kernel.org>, Wolfram Sang <wsa@the-dreams.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
+Received: from mx1.redhat.com ([209.132.183.28]:52792 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751264AbdEPIJN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 16 May 2017 04:09:13 -0400
+Subject: Re: [PATCH] iio: accel: bma180: Add ACPI enumeration support
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-acpi@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Jonathan Corbet <corbet@lwn.net>, <linux-i2c@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-doc@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Colin Ian King <colin.king@canonical.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>, <kernel@pengutronix.de>
-From: Peter Rosin <peda@axentia.se>
-Message-ID: <a159179b-6e2f-ca92-20ce-898009773900@axentia.se>
-Date: Fri, 5 May 2017 15:19:48 +0200
+        linux-iio@vger.kernel.org
+References: <20170421073812.12531-1-hdegoede@redhat.com>
+ <08327ffe-119a-b62b-a6f9-0f485444bd9a@kernel.org>
+From: Hans de Goede <hdegoede@redhat.com>
+Message-ID: <c0fc13a6-06b1-456d-826b-61c7313063e8@redhat.com>
+Date: Tue, 16 May 2017 10:09:10 +0200
 MIME-Version: 1.0
-In-Reply-To: <bdeecccf-02d6-226b-8516-1d41e3602a7a@axentia.se>
-Content-Type: text/plain; charset="windows-1252"
+In-Reply-To: <08327ffe-119a-b62b-a6f9-0f485444bd9a@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 2017-04-18 12:59, Peter Rosin wrote:
-> On 2017-04-18 10:51, Greg Kroah-Hartman wrote:
->> On Thu, Apr 13, 2017 at 06:43:07PM +0200, Peter Rosin wrote:
->>> +/**
->>> + * devm_mux_chip_unregister() - Resource-managed version mux_chip_unregister().
->>> + * @dev: The device that originally registered the mux-chip.
->>> + * @mux_chip: The mux-chip to unregister.
->>> + *
->>> + * See mux_chip_unregister() for more details.
->>> + *
->>> + * Note that you do not normally need to call this function.
+Hi,
+
+On 26-04-17 08:40, Jonathan Cameron wrote:
+> On 21/04/17 08:38, Hans de Goede wrote:
+>> Some x86 tablets use the bms250 accelerometer, add support for this.
 >>
->> Odd, then why is it exported???
+>> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+> Hi Hans,
 > 
-> You normally don't call the devm_foo_{free,release,unregister,etc} functions.
-> The intention is of course that the resourse cleans up automatically. But there
-> are no cases where the manual clean up is not available, at least not that I can
-> find?
+> Would you mind rebasing this on the latest iio.git togreg branch?
+> (which should be the same as linux-next by now if that is easier)
+> Some OF bindings got added in the recent cycle that make it not
+> apply cleanly.
 
-I had a second look and there are of course plenty of examples of missing clean up
-versions for devm function. I simply hadn't looked very hard at all.
+Sure I can rebase,, actually I just tested a rebased version and noticed:
 
-So, for v15 I intend to remove all of devm_mux_chip_unregister, devm_mux_chip_free
-and devm_mux_control_put. They are all just sitting there with no callers. And the
-mux-mmio/video-mux drivers by Philipp Zabel that build on top of this series don't
-need them either. Besides, easy to resurrect if needed...
+[   20.705333] bma180 i2c-BMA250E:00: failed to config the chip
 
-I will do v15 with the above, the change from mutex to semaphore for locking the
-mux controller state [1] and a few small documentation improvements. That will be
-rebased onto v4.12-rc1 and sent in 10 days or so, or whenever v4.12-rc1 is out.
+Which is because the BMA250E and BMA250 are not the same chip
+as I thought. So v2 is going to be 2 patches one to add support
+for the BMA250E (it is compatible but reports a different chip-id)
+and another one actually adding the ACPI enumeration support
+for it.
 
-Meanwhile, what I currently intend for v15 but based on v4.11 is available from
-https://gitlab.com/peda-linux/mux.git in the "mux" branch.
+Regards,
 
-Cheers,
-peda
+Hans
 
-[1] https://lkml.org/lkml/2017/4/25/411
+
+> 
+> Thanks,
+> 
+> Jonathan
+>> ---
+>>   drivers/iio/accel/bma180.c | 20 +++++++++++++++++++-
+>>   1 file changed, 19 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+>> index 0890934..5c75190 100644
+>> --- a/drivers/iio/accel/bma180.c
+>> +++ b/drivers/iio/accel/bma180.c
+>> @@ -14,6 +14,7 @@
+>>    * BMA250: 7-bit I2C slave address 0x18 or 0x19
+>>    */
+>>   
+>> +#include <linux/acpi.h>
+>>   #include <linux/module.h>
+>>   #include <linux/i2c.h>
+>>   #include <linux/interrupt.h>
+>> @@ -705,6 +706,8 @@ static const struct iio_trigger_ops bma180_trigger_ops = {
+>>   static int bma180_probe(struct i2c_client *client,
+>>   		const struct i2c_device_id *id)
+>>   {
+>> +	struct device *dev = &client->dev;
+>> +	const struct acpi_device_id *acpi_id;
+>>   	struct bma180_data *data;
+>>   	struct iio_dev *indio_dev;
+>>   	int ret;
+>> @@ -716,7 +719,15 @@ static int bma180_probe(struct i2c_client *client,
+>>   	data = iio_priv(indio_dev);
+>>   	i2c_set_clientdata(client, indio_dev);
+>>   	data->client = client;
+>> -	data->part_info = &bma180_part_info[id->driver_data];
+>> +	if (id) {
+>> +		data->part_info = &bma180_part_info[id->driver_data];
+>> +	} else {
+>> +		acpi_id = acpi_match_device(dev->driver->acpi_match_table, dev);
+>> +		if (!acpi_id)
+>> +			return -ENODEV;
+>> +
+>> +		data->part_info = &bma180_part_info[acpi_id->driver_data];
+>> +	}
+>>   
+>>   	ret = data->part_info->chip_config(data);
+>>   	if (ret < 0)
+>> @@ -836,6 +847,12 @@ static SIMPLE_DEV_PM_OPS(bma180_pm_ops, bma180_suspend, bma180_resume);
+>>   #define BMA180_PM_OPS NULL
+>>   #endif
+>>   
+>> +static const struct acpi_device_id bma180_acpi_match[] = {
+>> +	{ "BMA250E", BMA250 },
+>> +	{ }
+>> +};
+>> +MODULE_DEVICE_TABLE(acpi, bma180_acpi_match);
+>> +
+>>   static struct i2c_device_id bma180_ids[] = {
+>>   	{ "bma180", BMA180 },
+>>   	{ "bma250", BMA250 },
+>> @@ -847,6 +864,7 @@ MODULE_DEVICE_TABLE(i2c, bma180_ids);
+>>   static struct i2c_driver bma180_driver = {
+>>   	.driver = {
+>>   		.name	= "bma180",
+>> +		.acpi_match_table = ACPI_PTR(bma180_acpi_match),
+>>   		.pm	= BMA180_PM_OPS,
+>>   	},
+>>   	.probe		= bma180_probe,
+>>
+> 
