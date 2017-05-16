@@ -1,18 +1,21 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
 Received: from mxout2.idt.com ([157.165.5.26]:60931 "EHLO mxout2.idt.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751104AbdEPJGg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 16 May 2017 05:06:36 -0400
-From: Franziska Naepelt <franziska.naepelt@idt.com>
-Subject: ltr501 register field mapping als/ps interrupt mode interchanged
-To: pmeerw@pmeer
+        id S1751272AbdEPJGj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 16 May 2017 05:06:39 -0400
+Subject: Fwd: ltr501 register field mapping als/ps interrupt mode interchanged
+References: <6552089e-27f9-efb9-ae51-67f5f05cd9be@idt.com>
+To: pmeerw@pmeerw.net
 Cc: linux-iio@vger.kernel.org
-Message-ID: <6552089e-27f9-efb9-ae51-67f5f05cd9be@idt.com>
-Date: Tue, 16 May 2017 10:17:07 +0200
+From: Franziska Naepelt <franziska.naepelt@idt.com>
+Message-ID: <d8f18cdc-7aee-cf56-8045-f9bd2b4c7bfa@idt.com>
+Date: Tue, 16 May 2017 10:20:12 +0200
 MIME-Version: 1.0
+In-Reply-To: <6552089e-27f9-efb9-ae51-67f5f05cd9be@idt.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
+
 
 Hi Peter,
 
@@ -24,7 +27,7 @@ There is a register called INTERRUPT register (address 0x8F)
 Bit 0 represents PS measurement trigger.
 Bit 1 represents ALS measurement trigger.
 
-seedatesheet: http://optoelectronics.liteon.com/upload/download/DS86-2012-0006/S_110_LTR-501ALS-01_PrelimDS_ver1%5B1%5D.pdf - page 24
+see datesheet: http://optoelectronics.liteon.com/upload/download/DS86-2012-0006/S_110_LTR-501ALS-01_PrelimDS_ver1%5B1%5D.pdf - page 24
 
 This two bit fields are interchanged within the driver: drivers/iio/light/ltr501.c.
 
