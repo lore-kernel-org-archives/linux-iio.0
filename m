@@ -1,51 +1,88 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga03.intel.com ([134.134.136.65]:42836 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751113AbdEVGr2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 22 May 2017 02:47:28 -0400
-Subject: Re: Accelometer data not changes
-To: Arek Burdach <arek.burdach@gmail.com>, lorenzo.pieralisi@arm.com
-References: <b9234130-1af6-738f-a174-379d441caedf@gmail.com>
- <eb2166ea-ba3a-635c-49bc-583ebc9cb4dd@gmail.com>
-Cc: Benjamin Tissoires <benjamin.tissoires@gmail.com>,
-        srinivas.pandruvada@intel.com, linux-iio@vger.kernel.org,
-        ard.biesheuvel@linaro.org, wsa@the-dreams.de
-From: Jarkko Nikula <jarkko.nikula@linux.intel.com>
-Message-ID: <18bd3103-c560-9a87-4df7-b1786ce91f8c@linux.intel.com>
-Date: Mon, 22 May 2017 09:47:24 +0300
-MIME-Version: 1.0
-In-Reply-To: <eb2166ea-ba3a-635c-49bc-583ebc9cb4dd@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Received: from mail-wm0-f49.google.com ([74.125.82.49]:37988 "EHLO
+        mail-wm0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751264AbdEPFtw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 16 May 2017 01:49:52 -0400
+Received: by mail-wm0-f49.google.com with SMTP id v15so76755400wmv.1
+        for <linux-iio@vger.kernel.org>; Mon, 15 May 2017 22:49:51 -0700 (PDT)
+From: Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Pavel Roskin <plroskin@gmail.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>
+Cc: linux-iio@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        stable@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>
+Subject: [RESEND PATCH] iio: adc: bcm_iproc_adc: swap primary and secondary isr handler's
+Date: Tue, 16 May 2017 11:19:32 +0530
+Message-Id: <1494913772-30904-1-git-send-email-raveendra.padasalagi@broadcom.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi
+The third argument of devm_request_threaded_irq() is the primary
+handler. It is called in hardirq context and checks whether the
+interrupt is relevant to the device. If the primary handler returns
+IRQ_WAKE_THREAD, the secondary handler (a.k.a. handler thread) is
+scheduled to run in process context.
 
-On 05/21/2017 07:06 PM, Arek Burdach wrote:
-> Hi Lorenzo,
->
-> I wanted to check if your newest fix
-> 9d6408433019bfae15e2d0d5f4498c4ff70b86c0 resolved my problem but it
-> looks like it breaks i2c devices on yoga 910 at all.
->
-> One thing that I see in dmesg is:
-> [    5.443582] i2c_designware i2c_designware.1: controller timed out
-> [    5.443601] i2c_hid i2c-SYNA2B31:00: hid_descr_cmd failed
-> [    6.595650] i2c_designware i2c_designware.2: controller timed out
-> [    6.595673] i2c_hid i2c-ITE8186:00: hid_descr_cmd failed
->
-> More details you can see in mentioned isssue.
-> BTW maybe you have an idea what is the root of my problem. I've attached
-> i2c_hid logs for previous version.
->
-Commit 9d6408433019 ("i2c: designware: don't infer timings described by 
-ACPI from clock rate") had issue with uninitialized variables that show 
-up when ACPI platform doesn't provide timing parameters for the I2C but 
-fortunately that was caught quickly.
+bcm_iproc_adc.c uses the secondary handler as the primary one
+and the other way around. So this patch fixes the same, along with
+re-naming the secondary handler and primary handler names properly.
 
-Could you try does a patch from Jan Kiszka fix the issue you are seeing?
+Tested on the BCM9583XX iProc SoC based boards.
 
-https://lkml.org/lkml/2017/5/22/24
+Reported-by: Pavel Roskin <plroskin@gmail.com>
+Fixes: 4324c97ecedc("iio: Add driver for Broadcom iproc-static-adc")
+Signed-off-by: Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>
+---
+ drivers/iio/adc/bcm_iproc_adc.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/iio/adc/bcm_iproc_adc.c b/drivers/iio/adc/bcm_iproc_adc.c
+index 21d38c8..7f4f9c4 100644
+--- a/drivers/iio/adc/bcm_iproc_adc.c
++++ b/drivers/iio/adc/bcm_iproc_adc.c
+@@ -143,7 +143,7 @@ static void iproc_adc_reg_dump(struct iio_dev *indio_dev)
+ 	iproc_adc_dbg_reg(dev, adc_priv, IPROC_SOFT_BYPASS_DATA);
+ }
+ 
+-static irqreturn_t iproc_adc_interrupt_handler(int irq, void *data)
++static irqreturn_t iproc_adc_interrupt_thread(int irq, void *data)
+ {
+ 	u32 channel_intr_status;
+ 	u32 intr_status;
+@@ -167,7 +167,7 @@ static irqreturn_t iproc_adc_interrupt_handler(int irq, void *data)
+ 	return IRQ_NONE;
+ }
+ 
+-static irqreturn_t iproc_adc_interrupt_thread(int irq, void *data)
++static irqreturn_t iproc_adc_interrupt_handler(int irq, void *data)
+ {
+ 	irqreturn_t retval = IRQ_NONE;
+ 	struct iproc_adc_priv *adc_priv;
+@@ -181,7 +181,7 @@ static irqreturn_t iproc_adc_interrupt_thread(int irq, void *data)
+ 	adc_priv = iio_priv(indio_dev);
+ 
+ 	regmap_read(adc_priv->regmap, IPROC_INTERRUPT_STATUS, &intr_status);
+-	dev_dbg(&indio_dev->dev, "iproc_adc_interrupt_thread(),INTRPT_STS:%x\n",
++	dev_dbg(&indio_dev->dev, "iproc_adc_interrupt_handler(),INTRPT_STS:%x\n",
+ 			intr_status);
+ 
+ 	intr_channels = (intr_status & IPROC_ADC_INTR_MASK) >> IPROC_ADC_INTR;
+@@ -566,8 +566,8 @@ static int iproc_adc_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	ret = devm_request_threaded_irq(&pdev->dev, adc_priv->irqno,
+-				iproc_adc_interrupt_thread,
+ 				iproc_adc_interrupt_handler,
++				iproc_adc_interrupt_thread,
+ 				IRQF_SHARED, "iproc-adc", indio_dev);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "request_irq error %d\n", ret);
 -- 
-Jarkko
+1.9.1
+
