@@ -1,106 +1,62 @@
-Return-Path: <SRS0=J6fK=44=siemens.com=jan.kiszka@kernel.org>
-Subject: Re: [PATCH v6] iio: adc: Add support for TI ADC108S102 and ADC128S102
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Sascha Weisenberger <sascha.weisenberger@siemens.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh@kernel.org>
-References: <e96cd67d-ac54-435e-b376-0d029fdb75c3@siemens.com>
- <9eae4928-c278-62e5-05d1-728326aad45b@kernel.org>
- <9f60dc23-6ba1-335a-d95b-870cdd250539@siemens.com>
- <ef515402-40fd-a4be-1402-6e893f69b08f@kernel.org>
- <a2978699-8791-90d6-ba3a-9748545d2689@kernel.org>
- <eb74c0c5-beaa-e6f4-68b5-52ee28682fd3@siemens.com>
- <71a8146f-6e90-bd8e-8c1e-9150fb941fa9@kernel.org>
- <15096487-0d8a-6099-c54c-c91b28ad3f83@kernel.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Message-ID: <912f58a1-a76b-2d6a-0bbd-ef04b75e25b7@siemens.com>
-Date: Mon, 22 May 2017 07:52:42 +0200
-MIME-Version: 1.0
-In-Reply-To: <15096487-0d8a-6099-c54c-c91b28ad3f83@kernel.org>
-Content-Type: text/plain; charset=iso-8859-15
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f68.google.com ([74.125.82.68]:34465 "EHLO
+        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753224AbdEQROF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 17 May 2017 13:14:05 -0400
+Received: by mail-wm0-f68.google.com with SMTP id d127so5057331wmf.1
+        for <linux-iio@vger.kernel.org>; Wed, 17 May 2017 10:14:04 -0700 (PDT)
+From: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+To: linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Hartley Sweeten <hsweeten@visionengravers.com>,
+        Ryan Mallon <rmallon@gmail.com>
+Cc: Alexander Sverdlin <alexander.sverdlin@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: [PATCH v4 0/5] iio: ADC driver for EP93xx SoC
+Date: Wed, 17 May 2017 19:13:47 +0200
+Message-Id: <20170517171352.20369-1-alexander.sverdlin@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 2017-05-21 16:13, Jonathan Cameron wrote:
-> On 21/05/17 15:06, Jonathan Cameron wrote:
->> On 21/05/17 13:44, Jan Kiszka wrote:
->>> On 2017-05-21 14:18, Jonathan Cameron wrote:
->>>> On 21/05/17 13:17, Jonathan Cameron wrote:
->>>>> On 21/05/17 12:59, Jan Kiszka wrote:
->>>>>> On 2017-05-21 12:47, Jonathan Cameron wrote:
->>>>>>> On 17/05/17 16:28, Jan Kiszka wrote:
->>>>>>>> This is an upstream port of an IIO driver for the TI ADC108S102 and
->>>>>>>> ADC128S102. The former can be found on the Intel Galileo Gen2
->>>>>>>> and the
->>>>>>>> Siemens SIMATIC IOT2000. For those boards, ACPI-based
->>>>>>>> enumeration is
->>>>>>>> included.
->>>>>>>>
->>>>>>>> Due to the lack of regulators under ACPI, we hard-code the voltage
->>>>>>>> provided to the VA pin of the ADC to 5 V, the value used on Galileo
->>>>>>>> and
->>>>>>>> IOT2000. For DT usage, the regulator "vref-supply" provides this
->>>>>>>> information. Note that DT usage has not been tested.
->>>>>>>>
->>>>>>>> Original author: Bogdan Pricop <bogdan.pricop@emutex.com>
->>>>>>>> Ported from Intel Galileo Gen2 BSP to Intel Yocto kernel:
->>>>>>>> Todor Minchev <todor@minchev.co.uk>.
->>>>>>>>
->>>>>>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->>>>>>> Still an issue wrt to it being obviously correct in the ordering in
->>>>>>> probe
->>>>>>> and remove.
->>>>>>>
->>>>>>> As a reviewer I want to be able to run through each step in probe
->>>>>>> and
->>>>>>> compare with remove to ensure they occur in the opposite order and
->>>>>>> reverse all the steps in probe.  Where ever it deviates from that I
->>>>>>> have
->>>>>>> to think about it and we all know the last thing a reviewer with
->>>>>>> a big
->>>>>>> backlog of patches wants to do is to think hard ;)
->>>>>>>
->>>>>>> Anyhow, I've fixed up and applied to the togreg branch of iio.git
->>>>>>> and
->>>>>>> pushed out as testing for the autobuilders to play with it.
->>>>>>>
->>>>>>> Please check I haven't made a mess of it.
->>>>>>
->>>>>> Forgot to push? Not finding it in togreg, which is 5 days old.
->>>>>>
->>>>> As it says, pushed out as testing...  Togreg is non rebasing so only
->>>>> gets pushed out publicly once all the trivial stuff the autobuilders
->>>>> find has been sorted.
->>>>>
->>>>> Depending on how busy I am it can be a few days before I get a chance
->>>>> to push out togreg, whereas testing goes every few patches when I'm
->>>>> merging stuff.
->>>> Mind you I hadn't pushed that for half an hour or so hence that might
->>>> have been out of date too ;)
->>>
->>> OK, now I see what went wrong: Please have a second look at commit
->>> 52d4de2441af... ;)
->>>
->>> Jan
->>>
->> Gah!  Thanks.  I knew I did that initially but thought I'd unwound the
->> mess.
->> Seems not - here goes again for trying not to be an idiot.
->>
->> Thanks for pointing this mess out.
-> Should now all be fixed up.   I pulled the messed up patch to the tip and
-> split it up into the original two patches.  'looks' right now I think but
-> if you wouldn't mind having a quick look that would be great.
-> 
+This series prepares the necessary infrastructure for ADC platform device on
+Cirrus Logic EP93xx family of SoCs and adds the driver for ADC device using
+IIO subsystem.
 
-Looks and works fine!
+Changelog
+v4:
+  Spelling improvements
+  sign_extend32() usage
+v3:
+  Rebased to the current master
+  sizeof(struct foo) -> sizeof(*bar)
+v2:
+  Added Documentation/iio/ep93xx_adc.txt
+  Removed extend_name
+  Added timeout to the status polling loop
+  Used iio_device_register() instead of devm_iio_device_register()
 
-Thanks,
-Jan
+Alexander Sverdlin (5):
+  clk: ep93xx: Implement clk_get_parent()
+  clk: ep93xx: Add ADC clock
+  ep93xx: Add ADC platform device support to core
+  edb93xx: Add ADC platform device
+  iio: adc: New driver for Cirrus Logic EP93xx ADC
+
+ Documentation/iio/ep93xx_adc.txt             |  29 +++
+ arch/arm/mach-ep93xx/clock.c                 |  14 ++
+ arch/arm/mach-ep93xx/core.c                  |  24 +++
+ arch/arm/mach-ep93xx/edb93xx.c               |   1 +
+ arch/arm/mach-ep93xx/include/mach/platform.h |   1 +
+ arch/arm/mach-ep93xx/soc.h                   |   1 +
+ drivers/iio/adc/Kconfig                      |  11 ++
+ drivers/iio/adc/Makefile                     |   1 +
+ drivers/iio/adc/ep93xx_adc.c                 | 255 +++++++++++++++++++++++++++
+ 9 files changed, 337 insertions(+)
+ create mode 100644 Documentation/iio/ep93xx_adc.txt
+ create mode 100644 drivers/iio/adc/ep93xx_adc.c
 
 -- 
-Siemens AG, Corporate Technology, CT RDA ITP SES-DE
-Corporate Competence Center Embedded Linux
+2.12.2
+
