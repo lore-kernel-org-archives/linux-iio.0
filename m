@@ -1,113 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36916 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751198AbdEULjH (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 May 2017 07:39:07 -0400
-Subject: Re: [PATCH] iio: trigger: fix NULL pointer dereference in
- iio_trigger_write_current()
-To: Marcin Niestroj <m.niestroj@grinn-global.com>
-Cc: Alison Schofield <amsfield22@gmail.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-References: <20170518071206.2512-1-m.niestroj@grinn-global.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <66cca02e-5914-ad0f-c48d-8210ed891e37@kernel.org>
-Date: Sun, 21 May 2017 12:39:05 +0100
+Received: from mail.free-electrons.com ([62.4.15.54]:47655 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754813AbdERHl5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 18 May 2017 03:41:57 -0400
+Date: Thu, 18 May 2017 09:41:46 +0200
+From: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org
+Subject: spear_adc driver help needed ?
+Message-ID: <20170518094146.6504821a@free-electrons.com>
 MIME-Version: 1.0
-In-Reply-To: <20170518071206.2512-1-m.niestroj@grinn-global.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 18/05/17 08:12, Marcin Niestroj wrote:
-> In case oldtrig == trig == NULL (which happens when we set none
-> trigger, when there is already none set) there is a NULL pointer
-> dereference during iio_trigger_put(trig). Below is kernel output when
-> this occurs:
-> 
-> [   26.741790] Unable to handle kernel NULL pointer dereference at virtual address 00000000
-> [   26.750179] pgd = cacc0000
-> [   26.752936] [00000000] *pgd=8adc6835, *pte=00000000, *ppte=00000000
-> [   26.759531] Internal error: Oops: 17 [#1] SMP ARM
-> [   26.764261] Modules linked in: usb_f_ncm u_ether usb_f_acm u_serial usb_f_fs libcomposite configfs evbug
-> [   26.773844] CPU: 0 PID: 152 Comm: synchro Not tainted 4.12.0-rc1 #2
-> [   26.780128] Hardware name: Freescale i.MX6 Ultralite (Device Tree)
-> [   26.786329] task: cb1de200 task.stack: cac92000
-> [   26.790892] PC is at iio_trigger_write_current+0x188/0x1f4
-> [   26.796403] LR is at lock_release+0xf8/0x20c
-> [   26.800696] pc : [<c0736f34>]    lr : [<c016efb0>]    psr: 600d0013
-> [   26.800696] sp : cac93e30  ip : cac93db0  fp : cac93e5c
-> [   26.812193] r10: c0e64fe8  r9 : 00000000  r8 : 00000001
-> [   26.817436] r7 : cb190810  r6 : 00000010  r5 : 00000001  r4 : 00000000
-> [   26.823982] r3 : 00000000  r2 : 00000000  r1 : cb1de200  r0 : 00000000
-> [   26.830528] Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
-> [   26.837683] Control: 10c5387d  Table: 8acc006a  DAC: 00000051
-> [   26.843448] Process synchro (pid: 152, stack limit = 0xcac92210)
-> [   26.849475] Stack: (0xcac93e30 to 0xcac94000)
-> [   26.853857] 3e20:                                     00000001 c0736dac c054033c cae6b680
-> [   26.862060] 3e40: cae6b680 00000000 00000001 cb3f8610 cac93e74 cac93e60 c054035c c0736db8
-> [   26.870264] 3e60: 00000001 c054033c cac93e94 cac93e78 c029bf34 c0540348 00000000 00000000
-> [   26.878469] 3e80: cb3f8600 cae6b680 cac93ed4 cac93e98 c029b320 c029bef0 00000000 00000000
-> [   26.886672] 3ea0: 00000000 cac93f78 cb2d41fc caed3280 c029b214 cac93f78 00000001 000e20f8
-> [   26.894874] 3ec0: 00000001 00000000 cac93f44 cac93ed8 c0221dcc c029b220 c0e1ca39 cb2d41fc
-> [   26.903079] 3ee0: cac93f04 cac93ef0 c0183ef0 c0183ab0 cb2d41fc 00000000 cac93f44 cac93f08
-> [   26.911282] 3f00: c0225eec c0183ebc 00000001 00000000 c0223728 00000000 c0245454 00000001
-> [   26.919485] 3f20: 00000001 caed3280 000e20f8 cac93f78 000e20f8 00000001 cac93f74 cac93f48
-> [   26.927690] 3f40: c0223680 c0221da4 c0246520 c0245460 caed3283 caed3280 00000000 00000000
-> [   26.935893] 3f60: 000e20f8 00000001 cac93fa4 cac93f78 c0224520 c02235e4 00000000 00000000
-> [   26.944096] 3f80: 00000001 000e20f8 00000001 00000004 c0107f84 cac92000 00000000 cac93fa8
-> [   26.952299] 3fa0: c0107de0 c02244e8 00000001 000e20f8 0000000e 000e20f8 00000001 fbad2484
-> [   26.960502] 3fc0: 00000001 000e20f8 00000001 00000004 beb6b698 00064260 0006421c beb6b4b4
-> [   26.968705] 3fe0: 00000000 beb6b450 b6f219a0 b6e2f268 800d0010 0000000e cac93ff4 cac93ffc
-> [   26.976896] Backtrace:
-> [   26.979388] [<c0736dac>] (iio_trigger_write_current) from [<c054035c>] (dev_attr_store+0x20/0x2c)
-> [   26.988289]  r10:cb3f8610 r9:00000001 r8:00000000 r7:cae6b680 r6:cae6b680 r5:c054033c
-> [   26.996138]  r4:c0736dac r3:00000001
-> [   26.999747] [<c054033c>] (dev_attr_store) from [<c029bf34>] (sysfs_kf_write+0x50/0x54)
-> [   27.007686]  r5:c054033c r4:00000001
-> [   27.011290] [<c029bee4>] (sysfs_kf_write) from [<c029b320>] (kernfs_fop_write+0x10c/0x224)
-> [   27.019579]  r7:cae6b680 r6:cb3f8600 r5:00000000 r4:00000000
-> [   27.025271] [<c029b214>] (kernfs_fop_write) from [<c0221dcc>] (__vfs_write+0x34/0x120)
-> [   27.033214]  r10:00000000 r9:00000001 r8:000e20f8 r7:00000001 r6:cac93f78 r5:c029b214
-> [   27.041059]  r4:caed3280
-> [   27.043622] [<c0221d98>] (__vfs_write) from [<c0223680>] (vfs_write+0xa8/0x170)
-> [   27.050959]  r9:00000001 r8:000e20f8 r7:cac93f78 r6:000e20f8 r5:caed3280 r4:00000001
-> [   27.058731] [<c02235d8>] (vfs_write) from [<c0224520>] (SyS_write+0x44/0x98)
-> [   27.065806]  r9:00000001 r8:000e20f8 r7:00000000 r6:00000000 r5:caed3280 r4:caed3283
-> [   27.073582] [<c02244dc>] (SyS_write) from [<c0107de0>] (ret_fast_syscall+0x0/0x1c)
-> [   27.081179]  r9:cac92000 r8:c0107f84 r7:00000004 r6:00000001 r5:000e20f8 r4:00000001
-> [   27.088947] Code: 1a000009 e1a04009 e3a06010 e1a05008 (e5943000)
-> [   27.095244] ---[ end trace 06d1dab86d6e6bab ]---
-> 
-> To fix that problem call iio_trigger_put(trig) only when trig is not
-> NULL.
-> 
-> Fixes: d5d24bcc0a10 ("iio: trigger: close race condition in acquiring trigger reference")
-> Signed-off-by: Marcin Niestroj <m.niestroj@grinn-global.com>
-Good catch.  Applied to the fixes-togreg branch of iio.git.
+Hello Jonathan,
 
-Thanks,
+I've been working on a SPEAr600 platform recently, which uses the
+spear_adc driver, and was about to start working on moving the driver
+out of staging... only to discover in 4.12-rc1 that you already moved
+it out of staging.
 
-Jonathan
-> ---
->   drivers/iio/industrialio-trigger.c | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-> index 978e1592c2a3..4061fed93f1f 100644
-> --- a/drivers/iio/industrialio-trigger.c
-> +++ b/drivers/iio/industrialio-trigger.c
-> @@ -451,7 +451,8 @@ static ssize_t iio_trigger_write_current(struct device *dev,
->   	return len;
->   
->   out_trigger_put:
-> -	iio_trigger_put(trig);
-> +	if (trig)
-> +		iio_trigger_put(trig);
->   	return ret;
->   }
->   
-> 
+In the commit log that moves it out of staging, you're saying:
 
+    There are some unanswered questions due to disagreements between the code
+    and various datasheets (including between different datasheets for the same
+    part).
+    
+    I don't think that is necessarily a reason to keep it in staging however.
+    I'm partly posting this patch inorder to reignite debate and with a bit
+    of luck find someone who has one of these to test!
+
+What are the unanswered questions you are talking about?
+
+Also, I am currently using the driver on a SPEAr600 device, so I can do
+some testing.
+
+The driver has support for the SPEAr3xx, but it isn't used anywhere:
+there is no compatible string for it, and nowhere is old-style probing
+used for "spear-adc".
+
+So I'm thinking of:
+
+ - Dropping SPEAr3xx support, because it's unused. This will also
+   remove the ugly checks done on the compatible string all over the
+   place.
+
+ - Moving to a "base + offset" style of register accesses, rather than
+   the struct-based accesses.
+
+What do you think ?
+
+Best regards,
+
+Thomas
+-- 
+Thomas Petazzoni, CTO, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
