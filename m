@@ -1,100 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60760 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755300AbdETSBk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 20 May 2017 14:01:40 -0400
-Subject: Re: [PATCH] iio: imu: st_lsm6dsx: substitute ifdef CONFIG_PM with
- __maybe_unused macro
-To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-Cc: linux-iio@vger.kernel.org,
-        Lorenzo BIANCONI <lorenzo.bianconi@st.com>
-References: <20170519201136.11658-1-lorenzo.bianconi@st.com>
- <004306ae-015e-0903-f548-82a1d2ed1876@kernel.org>
- <CAA2SeNLiwcG=ZBj36h27n9ApCsThUf+oHOw5fVH_CCuLpusvWw@mail.gmail.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <b0f5708c-f46d-a4cc-c84a-8be35cdfca05@kernel.org>
-Date: Sat, 20 May 2017 19:01:38 +0100
-MIME-Version: 1.0
-In-Reply-To: <CAA2SeNLiwcG=ZBj36h27n9ApCsThUf+oHOw5fVH_CCuLpusvWw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Received: from mail-pg0-f44.google.com ([74.125.83.44]:34650 "EHLO
+        mail-pg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932471AbdESV3L (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 May 2017 17:29:11 -0400
+Received: by mail-pg0-f44.google.com with SMTP id u28so43430143pgn.1
+        for <linux-iio@vger.kernel.org>; Fri, 19 May 2017 14:29:11 -0700 (PDT)
+From: Matthias Kaehlcke <mka@chromium.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Brian Masney <masneyb@onstation.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Guenter Roeck <groeck@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>
+Subject: [PATCH] iio: light: isl29018: Only declare ACPI table when ACPI is enabled
+Date: Fri, 19 May 2017 14:28:53 -0700
+Message-Id: <20170519212853.151172-1-mka@chromium.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/05/17 17:45, Lorenzo Bianconi wrote:
->> On 19/05/17 21:11, Lorenzo Bianconi wrote:
->>>
->>> Get rid of #ifdef CONFIG_PM by adding __maybe_unused macro to
->>> st_lsm6dsx_suspend and st_lsm6dsx_resume function declarations
->>>
->>> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
->>
->> Why?
->>
->> I'm not against the change, but there should be some sort of
->> explanation of why you are making it in the patch description.
->>
->> I'm going to hazard a guess it is because you can have CONFIG_PM
->> without CONFIG_PM_SLEEP which in pm.h results in you still
->> getting a warning as SET_SYSTEM_SLEEP_PM_OPS is stubbed out..
->>
->> A good reason, but should be stated here.
->>
->> Jonathan
->>
->>
->>> ---
->>>    drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 6 ++----
->>>    1 file changed, 2 insertions(+), 4 deletions(-)
->>>
->>> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
->>> b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
->>> index 1b53848cdfd8..b485540da89e 100644
->>> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
->>> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
->>> @@ -732,8 +732,7 @@ int st_lsm6dsx_probe(struct device *dev, int irq, int
->>> hw_id, const char *name,
->>>    }
->>>    EXPORT_SYMBOL(st_lsm6dsx_probe);
->>>    -#ifdef CONFIG_PM
->>> -static int st_lsm6dsx_suspend(struct device *dev)
->>> +static int __maybe_unused st_lsm6dsx_suspend(struct device *dev)
->>>    {
->>>          struct st_lsm6dsx_hw *hw = dev_get_drvdata(dev);
->>>          struct st_lsm6dsx_sensor *sensor;
->>> @@ -757,7 +756,7 @@ static int st_lsm6dsx_suspend(struct device *dev)
->>>          return err;
->>>    }
->>>    -static int st_lsm6dsx_resume(struct device *dev)
->>> +static int __maybe_unused st_lsm6dsx_resume(struct device *dev)
->>>    {
->>>          struct st_lsm6dsx_hw *hw = dev_get_drvdata(dev);
->>>          struct st_lsm6dsx_sensor *sensor;
->>> @@ -778,7 +777,6 @@ static int st_lsm6dsx_resume(struct device *dev)
->>>          return err;
->>>    }
->>> -#endif /* CONFIG_PM */
->>>      const struct dev_pm_ops st_lsm6dsx_pm_ops = {
->>>          SET_SYSTEM_SLEEP_PM_OPS(st_lsm6dsx_suspend, st_lsm6dsx_resume)
->>>
->>
-> 
-> Hi Jonathan,
-> 
-> Just to align st_lsm6dsx driver to what we have done in hts221. We
-> agreed __maybe_unused macro is becoming more common and is the
-> preferred choice now.
-> 
-True enough, but the reason it is becoming the preferred choice is
-primarily because of the complexity around the config PM* options!
+This fixes the following warning when building with clang:
 
-Meh. I'll take it as is as the reason isn't that important in
-a warning squash patch.  I added a brief comment on why this
-change is generally desirable.  It may well be the sort of thing
-that gets picked up by say outreachy or other relative newbies in
-future so helps to have some hint as to why we are bothering.
+drivers/iio/light/isl29018.c:808:36: error: variable
+    'isl29018_acpi_match' is not needed and will not be emitted
+    [-Werror,-Wunneeded-internal-declaration]
 
-Jonathan
-> Regards,
-> Lorenzo
-> 
+Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+---
+ drivers/iio/light/isl29018.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/iio/light/isl29018.c b/drivers/iio/light/isl29018.c
+index 917dd8b43e72..61f5924b472d 100644
+--- a/drivers/iio/light/isl29018.c
++++ b/drivers/iio/light/isl29018.c
+@@ -807,6 +807,7 @@ static SIMPLE_DEV_PM_OPS(isl29018_pm_ops, isl29018_suspend, isl29018_resume);
+ #define ISL29018_PM_OPS NULL
+ #endif
+ 
++#ifdef CONFIG_ACPI
+ static const struct acpi_device_id isl29018_acpi_match[] = {
+ 	{"ISL29018", isl29018},
+ 	{"ISL29023", isl29023},
+@@ -814,6 +815,7 @@ static const struct acpi_device_id isl29018_acpi_match[] = {
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(acpi, isl29018_acpi_match);
++#endif
+ 
+ static const struct i2c_device_id isl29018_id[] = {
+ 	{"isl29018", isl29018},
+-- 
+2.13.0.303.g4ebf302169-goog
 
