@@ -1,33 +1,37 @@
-Return-Path: <SRS0=jstH=4Y=nxp.com=daniel.baluta@kernel.org>
-From: Daniel Baluta <daniel.baluta@nxp.com>
-To: "mikko.koivunen@fi.rohmeurope.com" <mikko.koivunen@fi.rohmeurope.com>,
-	"jic23@kernel.org" <jic23@kernel.org>
-CC: "knaack.h@gmx.de" <knaack.h@gmx.de>, "lars@metafoo.de" <lars@metafoo.de>,
-	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v5 0/9] iio: light: rpr0521
-Date: Thu, 18 May 2017 12:20:26 +0000
-Message-ID: <1495110025.3357.6.camel@nxp.com>
-References: <1495109577-29596-1-git-send-email-mikko.koivunen@fi.rohmeurope.com>
-In-Reply-To: <1495109577-29596-1-git-send-email-mikko.koivunen@fi.rohmeurope.com>
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from muru.com ([72.249.23.125]:48288 "EHLO muru.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1756237AbdESDk4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 18 May 2017 23:40:56 -0400
+From: Tony Lindgren <tony@atomide.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, linux-omap@vger.kernel.org
+Subject: [PATCH 0/3] Few non-critical cpcap ADC fixes
+Date: Thu, 18 May 2017 20:40:32 -0700
+Message-Id: <20170519034035.16795-1-tony@atomide.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-T24gSm8sIDIwMTctMDUtMTggYXQgMTU6MTIgKzAzMDAsIE1pa2tvIEtvaXZ1bmVuIHdyb3RlOg0K
-PiBQYXRjaHNldCB2NC0+djUgY2hhbmdlczoNCj4gwqAgY292ZXIgbGV0dGVyIGFkZGVkDQo+IMKg
-IDAwMDIgKHZvaWQpIHJlbW92ZWQNCj4gDQo+IFBhdGNoc2V0IHYzLT52NCBjaGFuZ2VzOg0KPiDC
-oCAwMDA2IGluZGVudCBmaXgNCj4gwqAgMDAwOSBvbi9vZmYgdG8gcHJlZW5hYmxlL3Bvc3RkaXNh
-YmxlDQo+IA0KPiBQYXRjaHNldCB2Mi0+djMgY2hhbmdlczoNCj4gwqAgTW9yZSBjb21taXRzLCBu
-dW1iZXJzIGNoYW5nZSwgb3JkZXIgY2hhbmdlDQo+IMKgIENoYW5nZXMgbGlzdGVkIGluIGluZGl2
-aWR1YWwgY29tbWl0cw0KPiANCj4gTWlra28gS29pdnVuZW4gKDkpOg0KPiDCoCBpaW86IGxpZ2h0
-OiBycHIwNTIxIGRpc2FibGUgc2Vuc29yIC1idWdmaXgNCj4gwqAgaWlvOiBsaWdodDogcnByMDUy
-MSBwb3dlcm9mZiBmb3IgcHJvYmUgZmFpbHMNCj4gwqAgaWlvOiBsaWdodDogcnByMDUyMSBvbi1v
-ZmYgc2VxdWVuY2UgY2hhbmdlIGZvciBDT05GSUdfUE0NCj4gwqAgaWlvOiBsaWdodDogcnByMDUy
-MSBtYWdpYyBudW1iZXIgdG8gc2l6ZW9mKCkgb24gdmFsdWUgcmVhZA0KPiDCoCBpaW86IGxpZ2h0
-OiBycHIwNTIxIHdoaXRlc3BhY2UgZml4ZXMNCj4gwqAgaWlvOiBsaWdodDogcnByMDUyMSBzYW1w
-bGVfZnJlcXVlbmN5IHJlYWQvd3JpdGUNCj4gwqAgaWlvOiBsaWdodDogcnByMDUyMSBwcm94aW1p
-dHkgb2Zmc2V0IHJlYWQvd3JpdGUNCj4gwqAgaWlvOiBsaWdodDogcnByMDUyMSBjaGFubmVsIG51
-bWJlcnMgcmVvcmRlcmVkDQo+IMKgIGlpbzogbGlnaHQ6IHJwcjA1MjEgdHJpZ2dlcmVkIGJ1ZmZl
-cg0KDQoNCkFja2VkLWJ5OiBEYW5pZWwgQmFsdXRhIDxkYW5pZWwuYmFsdXRhQG54cC5jb20+DQoN
-ClRoYW5rcyBhIGxvdCBNaWtrbyENCg0KRGFuaWVsLg==
+Hi all,
+
+Here are few fixes for cpcap ADC mostly to get temperature readings
+produce sane values. AFAIK no need for urgency with these and they
+can all wait for v4.13 merge window.
+
+Regards,
+
+Tony
+
+Tony Lindgren (3):
+  iio: adc: cpcap: Fix default register values and battery temperature
+  iio: adc: cpcap: Fix die temperature
+  iio: adc: cpcap: Remove hung interrupt quirk
+
+ drivers/iio/adc/cpcap-adc.c | 101 ++++++++++++++++++++++++++++++++------------
+ 1 file changed, 73 insertions(+), 28 deletions(-)
+
+-- 
+2.13.0
