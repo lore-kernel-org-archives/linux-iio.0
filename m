@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f49.google.com ([209.85.215.49]:33186 "EHLO
-        mail-lf0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752018AbdESOsa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 May 2017 10:48:30 -0400
-Received: by mail-lf0-f49.google.com with SMTP id m18so2327494lfj.0
-        for <linux-iio@vger.kernel.org>; Fri, 19 May 2017 07:48:29 -0700 (PDT)
+Received: from mail-lf0-f50.google.com ([209.85.215.50]:35655 "EHLO
+        mail-lf0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752475AbdESOsb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 May 2017 10:48:31 -0400
+Received: by mail-lf0-f50.google.com with SMTP id y126so2268095lfc.2
+        for <linux-iio@vger.kernel.org>; Fri, 19 May 2017 07:48:30 -0700 (PDT)
 From: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
 To: Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
@@ -18,70 +18,59 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         Chris Healy <Chris.Healy@zii.aero>,
         Vladimir Barinov <vladimir.barinov@cogentembedded.com>,
         Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Subject: [PATCH 1/4] iio: hi8435: add raw access
-Date: Fri, 19 May 2017 17:47:59 +0300
-Message-Id: <20170519144802.14427-1-nikita.yoush@cogentembedded.com>
+Subject: [PATCH 2/4] iio: hi8435: avoid garbage event at first enable
+Date: Fri, 19 May 2017 17:48:00 +0300
+Message-Id: <20170519144802.14427-2-nikita.yoush@cogentembedded.com>
+In-Reply-To: <20170519144802.14427-1-nikita.yoush@cogentembedded.com>
+References: <20170519144802.14427-1-nikita.yoush@cogentembedded.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-With current event-only driver, it is not possible for user space
-application to know current senses if they don't change since
-application starts.
+Currently, driver generates events for channels if new reading differs
+from previous one. This "previous value" is initialized to zero, which
+results into event if value is constant-one.
 
-Address that by adding raw access to channels.
+Fix that by initializing "previous value" by reading at event enable
+time.
+
+This provides reliable sequence for userspace:
+- enable event,
+- AFTER THAT read current value,
+- AFTER THAT each event will correspond to change.
 
 Signed-off-by: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
 ---
- drivers/iio/adc/hi8435.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ drivers/iio/adc/hi8435.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/adc/hi8435.c b/drivers/iio/adc/hi8435.c
-index 678e8c7ea763..cb8e6342eddf 100644
+index cb8e6342eddf..45a92e3e8f2b 100644
 --- a/drivers/iio/adc/hi8435.c
 +++ b/drivers/iio/adc/hi8435.c
-@@ -105,6 +105,26 @@ static int hi8435_writew(struct hi8435_priv *priv, u8 reg, u16 val)
- 	return spi_write(priv->spi, priv->reg_buffer, 3);
- }
- 
-+static int hi8435_read_raw(struct iio_dev *idev,
-+			   const struct iio_chan_spec *chan,
-+			   int *val, int *val2, long mask)
-+{
-+	struct hi8435_priv *priv = iio_priv(idev);
-+	u32 tmp;
+@@ -141,10 +141,21 @@ static int hi8435_write_event_config(struct iio_dev *idev,
+ 				     enum iio_event_direction dir, int state)
+ {
+ 	struct hi8435_priv *priv = iio_priv(idev);
 +	int ret;
++	u32 tmp;
 +
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
++	if (state) {
 +		ret = hi8435_readl(priv, HI8435_SO31_0_REG, &tmp);
 +		if (ret < 0)
 +			return ret;
-+		*val = !!(tmp & BIT(chan->channel));
-+		return IIO_VAL_INT;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
- static int hi8435_read_event_config(struct iio_dev *idev,
- 				    const struct iio_chan_spec *chan,
- 				    enum iio_event_type type,
-@@ -333,6 +353,7 @@ static const struct iio_chan_spec_ext_info hi8435_ext_info[] = {
- 	.type = IIO_VOLTAGE,				\
- 	.indexed = 1,					\
- 	.channel = num,					\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
- 	.event_spec = hi8435_events,			\
- 	.num_event_specs = ARRAY_SIZE(hi8435_events),	\
- 	.ext_info = hi8435_ext_info,			\
-@@ -376,6 +397,7 @@ static const struct iio_chan_spec hi8435_channels[] = {
++		if (tmp & BIT(chan->channel))
++			priv->event_prev_val |= BIT(chan->channel);
++		else
++			priv->event_prev_val &= ~BIT(chan->channel);
  
- static const struct iio_info hi8435_info = {
- 	.driver_module = THIS_MODULE,
-+	.read_raw = hi8435_read_raw,
- 	.read_event_config = &hi8435_read_event_config,
- 	.write_event_config = hi8435_write_event_config,
- 	.read_event_value = &hi8435_read_event_value,
+-	priv->event_scan_mask &= ~BIT(chan->channel);
+-	if (state)
+ 		priv->event_scan_mask |= BIT(chan->channel);
++	} else
++		priv->event_scan_mask &= ~BIT(chan->channel);
+ 
+ 	return 0;
+ }
 -- 
 2.11.0
 
