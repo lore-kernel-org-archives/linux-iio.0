@@ -1,119 +1,72 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx1.redhat.com ([209.132.183.28]:52792 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751264AbdEPIJN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 16 May 2017 04:09:13 -0400
-Subject: Re: [PATCH] iio: accel: bma180: Add ACPI enumeration support
+Return-Path: <SRS0=dHSl=4Z=sirena.org.uk=broonie@kernel.org>
+Date: Fri, 19 May 2017 17:01:33 +0100
+From: Mark Brown <broonie@kernel.org>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-acpi@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-References: <20170421073812.12531-1-hdegoede@redhat.com>
- <08327ffe-119a-b62b-a6f9-0f485444bd9a@kernel.org>
-From: Hans de Goede <hdegoede@redhat.com>
-Message-ID: <c0fc13a6-06b1-456d-826b-61c7313063e8@redhat.com>
-Date: Tue, 16 May 2017 10:09:10 +0200
+Cc: Mika Westerberg <mika.westerberg@linux.intel.com>,
+	Jan Kiszka <jan.kiszka@siemens.com>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	linux-iio@vger.kernel.org,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	Sascha Weisenberger <sascha.weisenberger@siemens.com>
+Message-ID: <20170519160133.ukkne2emubfbrrvg@sirena.org.uk>
+References: <CAHp75Vf517+vfe7GiTH2Gb0WBDdqi4fcR5Z1O6ideJMpbDhysw@mail.gmail.com>
+ <08d40bf0-4e68-d763-af99-be1f60e369fc@siemens.com>
+ <1493119630.24567.192.camel@linux.intel.com>
+ <20170425113513.GQ7152@lahna.fi.intel.com>
+ <2a116105-0046-bcc1-b560-f6986220fb4b@siemens.com>
+ <20170425123029.GS7152@lahna.fi.intel.com>
+ <ca23678c-be8c-1e3f-4688-67b29770c99b@siemens.com>
+ <32803199-239f-821c-7942-748436d53261@siemens.com>
+ <20170426090158.GV7152@lahna.fi.intel.com>
+ <9a210132-854b-cf3e-da33-fc3d073ad491@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <08327ffe-119a-b62b-a6f9-0f485444bd9a@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
-
-Hi,
-
-On 26-04-17 08:40, Jonathan Cameron wrote:
-> On 21/04/17 08:38, Hans de Goede wrote:
->> Some x86 tablets use the bms250 accelerometer, add support for this.
->>
->> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-> Hi Hans,
-> 
-> Would you mind rebasing this on the latest iio.git togreg branch?
-> (which should be the same as linux-next by now if that is easier)
-> Some OF bindings got added in the recent cycle that make it not
-> apply cleanly.
-
-Sure I can rebase,, actually I just tested a rebased version and noticed:
-
-[   20.705333] bma180 i2c-BMA250E:00: failed to config the chip
-
-Which is because the BMA250E and BMA250 are not the same chip
-as I thought. So v2 is going to be 2 patches one to add support
-for the BMA250E (it is compatible but reports a different chip-id)
-and another one actually adding the ACPI enumeration support
-for it.
-
-Regards,
-
-Hans
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="74r3a7rrizpn442x"
+In-Reply-To: <9a210132-854b-cf3e-da33-fc3d073ad491@kernel.org>
+Subject: Re: [PATCH] iio: adc: Add support for TI ADC1x8s102
+List-ID: <linux-iio@vger.kernel.org>
 
 
-> 
-> Thanks,
-> 
-> Jonathan
->> ---
->>   drivers/iio/accel/bma180.c | 20 +++++++++++++++++++-
->>   1 file changed, 19 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
->> index 0890934..5c75190 100644
->> --- a/drivers/iio/accel/bma180.c
->> +++ b/drivers/iio/accel/bma180.c
->> @@ -14,6 +14,7 @@
->>    * BMA250: 7-bit I2C slave address 0x18 or 0x19
->>    */
->>   
->> +#include <linux/acpi.h>
->>   #include <linux/module.h>
->>   #include <linux/i2c.h>
->>   #include <linux/interrupt.h>
->> @@ -705,6 +706,8 @@ static const struct iio_trigger_ops bma180_trigger_ops = {
->>   static int bma180_probe(struct i2c_client *client,
->>   		const struct i2c_device_id *id)
->>   {
->> +	struct device *dev = &client->dev;
->> +	const struct acpi_device_id *acpi_id;
->>   	struct bma180_data *data;
->>   	struct iio_dev *indio_dev;
->>   	int ret;
->> @@ -716,7 +719,15 @@ static int bma180_probe(struct i2c_client *client,
->>   	data = iio_priv(indio_dev);
->>   	i2c_set_clientdata(client, indio_dev);
->>   	data->client = client;
->> -	data->part_info = &bma180_part_info[id->driver_data];
->> +	if (id) {
->> +		data->part_info = &bma180_part_info[id->driver_data];
->> +	} else {
->> +		acpi_id = acpi_match_device(dev->driver->acpi_match_table, dev);
->> +		if (!acpi_id)
->> +			return -ENODEV;
->> +
->> +		data->part_info = &bma180_part_info[acpi_id->driver_data];
->> +	}
->>   
->>   	ret = data->part_info->chip_config(data);
->>   	if (ret < 0)
->> @@ -836,6 +847,12 @@ static SIMPLE_DEV_PM_OPS(bma180_pm_ops, bma180_suspend, bma180_resume);
->>   #define BMA180_PM_OPS NULL
->>   #endif
->>   
->> +static const struct acpi_device_id bma180_acpi_match[] = {
->> +	{ "BMA250E", BMA250 },
->> +	{ }
->> +};
->> +MODULE_DEVICE_TABLE(acpi, bma180_acpi_match);
->> +
->>   static struct i2c_device_id bma180_ids[] = {
->>   	{ "bma180", BMA180 },
->>   	{ "bma250", BMA250 },
->> @@ -847,6 +864,7 @@ MODULE_DEVICE_TABLE(i2c, bma180_ids);
->>   static struct i2c_driver bma180_driver = {
->>   	.driver = {
->>   		.name	= "bma180",
->> +		.acpi_match_table = ACPI_PTR(bma180_acpi_match),
->>   		.pm	= BMA180_PM_OPS,
->>   	},
->>   	.probe		= bma180_probe,
->>
-> 
+--74r3a7rrizpn442x
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Thu, Apr 27, 2017 at 07:01:07AM +0100, Jonathan Cameron wrote:
+
+> Somewhat of a pain to basically use a random value as the default going
+> forward.  Presumably this isn't the first ever ACPI table to need to
+> tell use about a reference voltage...
+
+> Mark, seen anything similar?
+
+> I see https://www.kernel.org/doc/Documentation/arm64/arm-acpi.txt suggests
+> that mapping to regulators isn't expected to ever happen...
+
+There's multiple different camps trying to use ACPI for very different
+things.  There's the server people on both x86 and ARM who want to use
+standard ACPI and nothing but with the power management all hidden in
+the AML but there's also the embedded x86 people who have the same needs
+as DT platforms but find themselves unable to use DT so have to map all
+the DT support into ACPI.  This has been accepted in areas that clearly
+don't overlap with areas where there are existing ACPI bindings for
+things, power management is one area where there are clear bindings
+though.
+
+--74r3a7rrizpn442x
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAlkfFtgACgkQJNaLcl1U
+h9DaNgf+POVTKtea4fn1SaKG48ZQVgjmu8ymoeD8EqhREHQK7GTA6DaooF93oedW
+vpWgY9GDh3uhztwWg3/9FrmKsT7fqmsT+fsjapx0/uG0WgqALf+lCzR1GfZ/ON9N
+JY85/4G2bbtWMlxVcxGbEewhIK3KA5vhkfO1g/m7GtgGb3P1Md3q2Lz45A+dxP4D
+qWAYG63mqmpuK/gKVBnw91KXoxNYb8xUGSld+om16M7e2/UBW4b670ers7/L/jU/
+fTPnKawwlGjQnGH9xrDhvTax3BP0dv/68+CToyd+Io+1ncJHBPxiRgdonT6nsAcT
+zsZj9+RqdBGwOv28hk3lltvoenImdA==
+=tB2j
+-----END PGP SIGNATURE-----
+
+--74r3a7rrizpn442x--
