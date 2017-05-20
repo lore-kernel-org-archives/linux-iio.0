@@ -1,108 +1,96 @@
-Return-Path: <SRS0=qmBI=5D=linaro.org=linus.walleij@kernel.org>
-MIME-Version: 1.0
-In-Reply-To: <b2b461d4-586d-d2e8-4188-8e25d5d7211e@cogentembedded.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60307 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753531AbdETQdk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 20 May 2017 12:33:40 -0400
+Subject: Re: [PATCH 1/4] iio: hi8435: add raw access
+To: Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Matt Ranostay <mranostay@gmail.com>,
+        Gregor Boirie <gregor.boirie@parrot.com>,
+        Sanchayan Maity <maitysanchayan@gmail.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jeff White <Jeff.White@zii.aero>,
+        Chris Healy <Chris.Healy@zii.aero>,
+        Vladimir Barinov <vladimir.barinov@cogentembedded.com>
 References: <20170519144802.14427-1-nikita.yoush@cogentembedded.com>
- <20170519144802.14427-4-nikita.yoush@cogentembedded.com> <18fc343b-d7a4-c5b8-84e6-702af6e94e44@cogentembedded.com>
- <4ba5a0ce-d443-bdf0-bb23-9941b7db59a4@cogentembedded.com> <5eec10c5-9e13-b0fc-fe40-a8b74a4fdbb0@cogentembedded.com>
- <20170524203808.34aec03a@kernel.org> <b2b461d4-586d-d2e8-4188-8e25d5d7211e@cogentembedded.com>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Mon, 29 May 2017 19:08:59 +0200
-Message-ID: <CACRpkdYLyCr2pH3ayrjgx7AZY=aWrPdFFpBfKoq=RNRT=dxztg@mail.gmail.com>
-Subject: Re: [PATCH 4/4] iio: hi8435: cleanup reset gpio
-To: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Vladimir Barinov <vladimir.barinov@cogentembedded.com>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Matt Ranostay <mranostay@gmail.com>,
-	Gregor Boirie <gregor.boirie@parrot.com>, Sanchayan Maity <maitysanchayan@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Jeff White <Jeff.White@zii.aero>,
-	Chris Healy <Chris.Healy@zii.aero>
-Content-Type: text/plain; charset="UTF-8"
-List-ID: <linux-iio@vger.kernel.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <67afb274-c93b-f35b-64c1-0ab8ccb21557@kernel.org>
+Date: Sat, 20 May 2017 17:33:40 +0100
+MIME-Version: 1.0
+In-Reply-To: <20170519144802.14427-1-nikita.yoush@cogentembedded.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, May 25, 2017 at 8:27 AM, Nikita Yushchenko
-<nikita.yoush@cogentembedded.com> wrote:
+On 19/05/17 15:47, Nikita Yushchenko wrote:
+> With current event-only driver, it is not possible for user space
+> application to know current senses if they don't change since
+> application starts.
+> 
+> Address that by adding raw access to channels.
+> 
+> Signed-off-by: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+Ideally I'd like Vladimir's ack on these, but I am going to guess
+that he is fine with this and rely on him shouting if not ;)
 
-> - I found that chip's reset line is active low per datasheet, but device
-> tree for board I work with states it is active high
+Applied to the togreg branch of iio.git and pushed out as testing.
 
-There you have it, there is a bug in the device tree, because it is
-not properly describing the hardware.
+Thanks,
 
-> - I checked driver code and found that driver depends on this incorrect
-> setting, it won't work if device tree will state that gpio is active low
+Jonathan
+> ---
+>   drivers/iio/adc/hi8435.c | 22 ++++++++++++++++++++++
+>   1 file changed, 22 insertions(+)
+> 
+> diff --git a/drivers/iio/adc/hi8435.c b/drivers/iio/adc/hi8435.c
+> index 678e8c7ea763..cb8e6342eddf 100644
+> --- a/drivers/iio/adc/hi8435.c
+> +++ b/drivers/iio/adc/hi8435.c
+> @@ -105,6 +105,26 @@ static int hi8435_writew(struct hi8435_priv *priv, u8 reg, u16 val)
+>   	return spi_write(priv->spi, priv->reg_buffer, 3);
+>   }
+>   
+> +static int hi8435_read_raw(struct iio_dev *idev,
+> +			   const struct iio_chan_spec *chan,
+> +			   int *val, int *val2, long mask)
+> +{
+> +	struct hi8435_priv *priv = iio_priv(idev);
+> +	u32 tmp;
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		ret = hi8435_readl(priv, HI8435_SO31_0_REG, &tmp);
+> +		if (ret < 0)
+> +			return ret;
+> +		*val = !!(tmp & BIT(chan->channel));
+> +		return IIO_VAL_INT;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+>   static int hi8435_read_event_config(struct iio_dev *idev,
+>   				    const struct iio_chan_spec *chan,
+>   				    enum iio_event_type type,
+> @@ -333,6 +353,7 @@ static const struct iio_chan_spec_ext_info hi8435_ext_info[] = {
+>   	.type = IIO_VOLTAGE,				\
+>   	.indexed = 1,					\
+>   	.channel = num,					\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
+>   	.event_spec = hi8435_events,			\
+>   	.num_event_specs = ARRAY_SIZE(hi8435_events),	\
+>   	.ext_info = hi8435_ext_info,			\
+> @@ -376,6 +397,7 @@ static const struct iio_chan_spec hi8435_channels[] = {
+>   
+>   static const struct iio_info hi8435_info = {
+>   	.driver_module = THIS_MODULE,
+> +	.read_raw = hi8435_read_raw,
+>   	.read_event_config = &hi8435_read_event_config,
+>   	.write_event_config = hi8435_write_event_config,
+>   	.read_event_value = &hi8435_read_event_value,
+> 
 
-Yeah...
-
-> - I could revert values in driver code AND in device tree, this way make
-> device tree be correct (against reality) but make dtb files flashed into
-> existing systems incompatible with future kernels -  which I disliked
-
-Is this one of those systems where people actually flash a DTB and
-never change it?
-
-If not, then just patch the DTS source and stop worrying already.
-We don't do backwards compatibility just because it's fun.
-
-If it is really deployed and really not seeing updates...
-
-In that case I want a way to check the signature (such as a checksum)
-of the DTB and apply a workaround for elder (incorrect) device trees
-when detected, and let newer (corrected) device trees describe the
-hardware properly.
-
-> - Thus I thought that I can remove explicit definition of polarity from
-> device tree (replacing it with neutrally-looking zero), and change
-> driver to use _raw.  I assumed that there is no real gain to let device
-> tree override gpio polarity for signal that is per-datasheet always
-> active low
->
-> - Thinking further on this, I realized that for common case signal
-> polarity is something defined by chip, and thus this knowledge belongs
-> to chip's driver and not to chip user's device tree.
-
-That is a fallacy IMO.
-
-Just like we define regulators for all voltage inputs on a chip and
-set the voltage constraints accordingly in the device tree, so we
-set the polarity of signals in the device tree.
-
-GPIOs, like regulators, are defined in terms of the consumer
-properties. Else having a signal iversion flag (*ACTIVE_LOW) would
-not make sense.
-
-> Moreover, device
-> tree writer could easily be not aware of signal polarity (too many
-> datasheets are NDA-closed), thus hello copy-pasting, try-and-check and
-> other counterproductive approaches.
-
-Mistakes will be made but seriously, device tree writers know as much as
-driver writers do in my experience. If it is unknown they will look
-at some hint from the rail, like it being named RESETN on the schematic
-indicating negative (active low) polarity.
-
-> - revert the patch, restore situation with driver depending on wrong
-> statement in dts, maybe document that in bindings,
-> - replace patch with code assuming that device tree has correct
-> definition of reset gpio polarity; break existing device trees (all are
-> out-of-tree as of today),
-> - keep the patch, thus not break anything and still stop requiring
-> device tree to contain wrong statement, but make entire situation
-> somewhat hacky and loose support for board reverting signal between gpio
-> provider and hi8435's pin (hopefully no such board exists).
-
-I would fix the device tree and the driver to handle it correctly.
-
-Signal active low in the device tree.
-
-Assert with high level in the code.
-
-Then, if backward compatibility for older device trees is needed,
-find a way to detect elder device trees and then alter the behaviour
-with an extra inversion on those.
-
-Preferably by altering the device tree in memory actually, but that may be
-hard. (Code for this exists.)
-
-Yours,
-Linus Walleij
