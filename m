@@ -1,9 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37672 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37706 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751198AbdEUOGz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 May 2017 10:06:55 -0400
+        with ESMTP id S1750937AbdEUONd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 May 2017 10:13:33 -0400
 Subject: Re: [PATCH v6] iio: adc: Add support for TI ADC108S102 and ADC128S102
+From: Jonathan Cameron <jic23@kernel.org>
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: linux-iio@vger.kernel.org,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
@@ -18,72 +19,83 @@ References: <e96cd67d-ac54-435e-b376-0d029fdb75c3@siemens.com>
  <ef515402-40fd-a4be-1402-6e893f69b08f@kernel.org>
  <a2978699-8791-90d6-ba3a-9748545d2689@kernel.org>
  <eb74c0c5-beaa-e6f4-68b5-52ee28682fd3@siemens.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <71a8146f-6e90-bd8e-8c1e-9150fb941fa9@kernel.org>
-Date: Sun, 21 May 2017 15:06:52 +0100
+ <71a8146f-6e90-bd8e-8c1e-9150fb941fa9@kernel.org>
+Message-ID: <15096487-0d8a-6099-c54c-c91b28ad3f83@kernel.org>
+Date: Sun, 21 May 2017 15:13:31 +0100
 MIME-Version: 1.0
-In-Reply-To: <eb74c0c5-beaa-e6f4-68b5-52ee28682fd3@siemens.com>
+In-Reply-To: <71a8146f-6e90-bd8e-8c1e-9150fb941fa9@kernel.org>
 Content-Type: text/plain; charset=iso-8859-15; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 21/05/17 13:44, Jan Kiszka wrote:
-> On 2017-05-21 14:18, Jonathan Cameron wrote:
->> On 21/05/17 13:17, Jonathan Cameron wrote:
->>> On 21/05/17 12:59, Jan Kiszka wrote:
->>>> On 2017-05-21 12:47, Jonathan Cameron wrote:
->>>>> On 17/05/17 16:28, Jan Kiszka wrote:
->>>>>> This is an upstream port of an IIO driver for the TI ADC108S102 and
->>>>>> ADC128S102. The former can be found on the Intel Galileo Gen2 and the
->>>>>> Siemens SIMATIC IOT2000. For those boards, ACPI-based enumeration is
->>>>>> included.
+On 21/05/17 15:06, Jonathan Cameron wrote:
+> On 21/05/17 13:44, Jan Kiszka wrote:
+>> On 2017-05-21 14:18, Jonathan Cameron wrote:
+>>> On 21/05/17 13:17, Jonathan Cameron wrote:
+>>>> On 21/05/17 12:59, Jan Kiszka wrote:
+>>>>> On 2017-05-21 12:47, Jonathan Cameron wrote:
+>>>>>> On 17/05/17 16:28, Jan Kiszka wrote:
+>>>>>>> This is an upstream port of an IIO driver for the TI ADC108S102 and
+>>>>>>> ADC128S102. The former can be found on the Intel Galileo Gen2 and the
+>>>>>>> Siemens SIMATIC IOT2000. For those boards, ACPI-based enumeration is
+>>>>>>> included.
+>>>>>>>
+>>>>>>> Due to the lack of regulators under ACPI, we hard-code the voltage
+>>>>>>> provided to the VA pin of the ADC to 5 V, the value used on Galileo
+>>>>>>> and
+>>>>>>> IOT2000. For DT usage, the regulator "vref-supply" provides this
+>>>>>>> information. Note that DT usage has not been tested.
+>>>>>>>
+>>>>>>> Original author: Bogdan Pricop <bogdan.pricop@emutex.com>
+>>>>>>> Ported from Intel Galileo Gen2 BSP to Intel Yocto kernel:
+>>>>>>> Todor Minchev <todor@minchev.co.uk>.
+>>>>>>>
+>>>>>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>>>>>> Still an issue wrt to it being obviously correct in the ordering in
+>>>>>> probe
+>>>>>> and remove.
 >>>>>>
->>>>>> Due to the lack of regulators under ACPI, we hard-code the voltage
->>>>>> provided to the VA pin of the ADC to 5 V, the value used on Galileo
->>>>>> and
->>>>>> IOT2000. For DT usage, the regulator "vref-supply" provides this
->>>>>> information. Note that DT usage has not been tested.
+>>>>>> As a reviewer I want to be able to run through each step in probe and
+>>>>>> compare with remove to ensure they occur in the opposite order and
+>>>>>> reverse all the steps in probe.  Where ever it deviates from that I
+>>>>>> have
+>>>>>> to think about it and we all know the last thing a reviewer with a big
+>>>>>> backlog of patches wants to do is to think hard ;)
 >>>>>>
->>>>>> Original author: Bogdan Pricop <bogdan.pricop@emutex.com>
->>>>>> Ported from Intel Galileo Gen2 BSP to Intel Yocto kernel:
->>>>>> Todor Minchev <todor@minchev.co.uk>.
+>>>>>> Anyhow, I've fixed up and applied to the togreg branch of iio.git and
+>>>>>> pushed out as testing for the autobuilders to play with it.
 >>>>>>
->>>>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->>>>> Still an issue wrt to it being obviously correct in the ordering in
->>>>> probe
->>>>> and remove.
+>>>>>> Please check I haven't made a mess of it.
 >>>>>
->>>>> As a reviewer I want to be able to run through each step in probe and
->>>>> compare with remove to ensure they occur in the opposite order and
->>>>> reverse all the steps in probe.  Where ever it deviates from that I
->>>>> have
->>>>> to think about it and we all know the last thing a reviewer with a big
->>>>> backlog of patches wants to do is to think hard ;)
+>>>>> Forgot to push? Not finding it in togreg, which is 5 days old.
 >>>>>
->>>>> Anyhow, I've fixed up and applied to the togreg branch of iio.git and
->>>>> pushed out as testing for the autobuilders to play with it.
->>>>>
->>>>> Please check I haven't made a mess of it.
+>>>> As it says, pushed out as testing...  Togreg is non rebasing so only
+>>>> gets pushed out publicly once all the trivial stuff the autobuilders
+>>>> find has been sorted.
 >>>>
->>>> Forgot to push? Not finding it in togreg, which is 5 days old.
->>>>
->>> As it says, pushed out as testing...  Togreg is non rebasing so only
->>> gets pushed out publicly once all the trivial stuff the autobuilders
->>> find has been sorted.
->>>
->>> Depending on how busy I am it can be a few days before I get a chance
->>> to push out togreg, whereas testing goes every few patches when I'm
->>> merging stuff.
->> Mind you I hadn't pushed that for half an hour or so hence that might
->> have been out of date too ;)
+>>>> Depending on how busy I am it can be a few days before I get a chance
+>>>> to push out togreg, whereas testing goes every few patches when I'm
+>>>> merging stuff.
+>>> Mind you I hadn't pushed that for half an hour or so hence that might
+>>> have been out of date too ;)
+>>
+>> OK, now I see what went wrong: Please have a second look at commit
+>> 52d4de2441af... ;)
+>>
+>> Jan
+>>
+> Gah!  Thanks.  I knew I did that initially but thought I'd unwound the mess.
+> Seems not - here goes again for trying not to be an idiot.
 > 
-> OK, now I see what went wrong: Please have a second look at commit
-> 52d4de2441af... ;)
-> 
-> Jan
-> 
-Gah!  Thanks.  I knew I did that initially but thought I'd unwound the mess.
-Seems not - here goes again for trying not to be an idiot.
+> Thanks for pointing this mess out.
+Should now all be fixed up.   I pulled the messed up patch to the tip and
+split it up into the original two patches.  'looks' right now I think but
+if you wouldn't mind having a quick look that would be great.
 
-Thanks for pointing this mess out.
-J
+Jonathan
+> J
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
