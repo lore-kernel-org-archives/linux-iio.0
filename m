@@ -1,82 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60169 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751417AbdETQIu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 20 May 2017 12:08:50 -0400
-Subject: Re: [PATCH] iio: light: isl29018: Only declare ACPI table when ACPI
- is enabled
-To: Guenter Roeck <groeck@google.com>,
-        Matthias Kaehlcke <mka@chromium.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Brian Masney <masneyb@onstation.org>,
-        linux-iio@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Guenter Roeck <groeck@chromium.org>
-References: <20170519212853.151172-1-mka@chromium.org>
- <CABXOdTeyRJigdSr6EsUTcoc6t6nCBP1u9nMPYTt5_+t-BZ3MnA@mail.gmail.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <1102f6ab-e457-f0cb-4b71-7f855383949e@kernel.org>
-Date: Sat, 20 May 2017 17:08:49 +0100
-MIME-Version: 1.0
-In-Reply-To: <CABXOdTeyRJigdSr6EsUTcoc6t6nCBP1u9nMPYTt5_+t-BZ3MnA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Received: from sauhun.de ([88.99.104.3]:55055 "EHLO pokefinder.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751583AbdEUUes (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 21 May 2017 16:34:48 -0400
+From: Wolfram Sang <wsa@the-dreams.de>
+To: linux-i2c@vger.kernel.org
+Cc: Wolfram Sang <wsa@the-dreams.de>, linux-doc@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 0/5] hwmon: move include files out of include/linux/i2c
+Date: Sun, 21 May 2017 22:34:38 +0200
+Message-Id: <20170521203443.6387-1-wsa@the-dreams.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/05/17 22:57, Guenter Roeck wrote:
-> On Fri, May 19, 2017 at 2:28 PM, Matthias Kaehlcke <mka@chromium.org> wrote:
->> This fixes the following warning when building with clang:
->>
->> drivers/iio/light/isl29018.c:808:36: error: variable
->>      'isl29018_acpi_match' is not needed and will not be emitted
->>      [-Werror,-Wunneeded-internal-declaration]
->>
->> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-> 
-> Reviewed-by: Guenter Roeck <groeck@chromium.org>
-I wondered if we would be slightly neater if we went with
-__maybe_unused markings but realised I didn't really care enough
-to make you respin the patch ;)  So if anyone else has strong
-feelings on the two options, shout out now.
+It doesn't make sense to use include/linux/i2c for client drivers which may in
+fact rather be hwmon or input or whatever devices. As a result, I want to
+deprecate include/linux/i2c for good. This series moves the include files to a
+better location, largely include/platform_data because that is what most of the
+moved include files contain. Note that some files don't seem to have upstream
+users in board code, so they maybe could even be removed? I didn't check for
+that now, but I did it for one i2c master driver recently. So, it may be
+possible. pmbus.h got moved just one layer upwards, see the patch description
+there.
 
-Applied to the togreg branch of iio.git and pushed out as testing.
+I prefer the series to go upstream via the subsystem tree; if you prefer that I
+take it via I2C, just let me know.
 
-Thanks,
+No runtime testing because of no HW, but buildbot is happy with this series at
+least. A branch can be found here:
 
-Jonathan
-> 
->> ---
->>   drivers/iio/light/isl29018.c | 2 ++
->>   1 file changed, 2 insertions(+)
->>
->> diff --git a/drivers/iio/light/isl29018.c b/drivers/iio/light/isl29018.c
->> index 917dd8b43e72..61f5924b472d 100644
->> --- a/drivers/iio/light/isl29018.c
->> +++ b/drivers/iio/light/isl29018.c
->> @@ -807,6 +807,7 @@ static SIMPLE_DEV_PM_OPS(isl29018_pm_ops, isl29018_suspend, isl29018_resume);
->>   #define ISL29018_PM_OPS NULL
->>   #endif
->>
->> +#ifdef CONFIG_ACPI
->>   static const struct acpi_device_id isl29018_acpi_match[] = {
->>          {"ISL29018", isl29018},
->>          {"ISL29023", isl29023},
->> @@ -814,6 +815,7 @@ static const struct acpi_device_id isl29018_acpi_match[] = {
->>          {},
->>   };
->>   MODULE_DEVICE_TABLE(acpi, isl29018_acpi_match);
->> +#endif
->>
->>   static const struct i2c_device_id isl29018_id[] = {
->>          {"isl29018", isl29018},
->> --
->> 2.13.0.303.g4ebf302169-goog
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git i2c/platform_data
+
+Thanks and kind regards,
+
+   Wolfram
+
+
+Wolfram Sang (5):
+  hwmon: ads1015: move header file out of I2C realm
+  hwmon: ds620: move header file out of I2C realm
+  hwmon: ltc4245: move header file out of I2C realm
+  hwmon: max6639: move header file out of I2C realm
+  hwmon: pmbus: move header file out of I2C realm
+
+ Documentation/hwmon/ads1015                    | 2 +-
+ Documentation/hwmon/ltc4245                    | 2 +-
+ Documentation/hwmon/pmbus-core                 | 2 +-
+ MAINTAINERS                                    | 4 ++--
+ drivers/hwmon/ads1015.c                        | 2 +-
+ drivers/hwmon/ds620.c                          | 2 +-
+ drivers/hwmon/ltc4245.c                        | 2 +-
+ drivers/hwmon/max6639.c                        | 2 +-
+ drivers/hwmon/pmbus/pmbus.c                    | 2 +-
+ drivers/hwmon/pmbus/pmbus_core.c               | 2 +-
+ drivers/hwmon/pmbus/ucd9000.c                  | 2 +-
+ drivers/hwmon/pmbus/ucd9200.c                  | 2 +-
+ drivers/iio/adc/ti-ads1015.c                   | 2 +-
+ include/linux/{i2c => platform_data}/ads1015.h | 0
+ include/linux/{i2c => platform_data}/ds620.h   | 0
+ include/linux/{i2c => platform_data}/ltc4245.h | 0
+ include/linux/{i2c => platform_data}/max6639.h | 0
+ include/linux/{i2c => }/pmbus.h                | 0
+ 18 files changed, 14 insertions(+), 14 deletions(-)
+ rename include/linux/{i2c => platform_data}/ads1015.h (100%)
+ rename include/linux/{i2c => platform_data}/ds620.h (100%)
+ rename include/linux/{i2c => platform_data}/ltc4245.h (100%)
+ rename include/linux/{i2c => platform_data}/max6639.h (100%)
+ rename include/linux/{i2c => }/pmbus.h (100%)
+
+-- 
+2.11.0
 
