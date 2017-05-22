@@ -1,77 +1,88 @@
-Return-Path: <SRS0=0IzW=5D=samsung.com=b.zolnierkie@kernel.org>
-From: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-To: Wolfram Sang <wsa@the-dreams.de>
-Cc: linux-i2c@vger.kernel.org, Tony Lindgren <tony@atomide.com>, Russell
-	King <linux@armlinux.org.uk>, Linus Walleij <linus.walleij@linaro.org>,
-	Alexandre Courbot <gnurou@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Dmitry Torokhov
-	<dmitry.torokhov@gmail.com>, Lee Jones <lee.jones@linaro.org>, Kishon Vijay
-	Abraham I <kishon@ti.com>, Sebastian Reichel <sre@kernel.org>, Thierry
-	Reding <thierry.reding@gmail.com>, Liam Girdwood <lgirdwood@gmail.com>, Mark
-	Brown <broonie@kernel.org>, Alessandro Zummo <a.zummo@towertech.it>,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>, Felipe Balbi
-	<balbi@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Daniel
-	Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>,
-	Wim Van Sebroeck <wim@iguana.be>, Guenter Roeck <linux@roeck-us.net>, Peter
-	Ujfalusi <peter.ujfalusi@ti.com>, Jaroslav Kysela <perex@perex.cz>, Takashi
-	Iwai <tiwai@suse.com>, linux-omap@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org, linux-pm@vger.kernel.org,
-	linux-pwm@vger.kernel.org, rtc-linux@googlegroups.com,
-	linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
-	linux-watchdog@vger.kernel.org, alsa-devel@alsa-project.org
-Subject: Re: [PATCH 3/3] mfd: twl: move header file out of I2C realm
-Date: Mon, 29 May 2017 11:20:33 +0200
-Message-id: <7306372.PblijfWnMI@amdc3058>
-In-reply-to: <20170521220212.1404-4-wsa@the-dreams.de>
-MIME-version: 1.0
-Content-type: text/plain; charset="us-ascii"
-References: <20170521220212.1404-1-wsa@the-dreams.de>
-	<CGME20170521220224epcas2p4fbcfe69660d457b8af95ddc196c04a9b@epcas2p4.samsung.com>
-	<20170521220212.1404-4-wsa@the-dreams.de>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.99]:45570 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1760729AbdEVSp7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 22 May 2017 14:45:59 -0400
+Date: Mon, 22 May 2017 19:45:55 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org
+Subject: [PULL] First set of IIO fixes for the 4.12 cycle.
+Message-ID: <20170522194318.25e236ac@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Monday, May 22, 2017 12:02:10 AM Wolfram Sang wrote:
-> include/linux/i2c is not for client devices. Move the header file to a
-> more appropriate location.
-> 
-> Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
+The following changes since commit e44adf05b85e5a9d1d224f5ecde1c1c5e5371e36:
 
-Acked-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+  staging/android: Update Ion TODO list (2017-04-18 20:43:14 +0200)
 
-> ---
->  arch/arm/mach-omap2/common.h            | 2 +-
->  arch/arm/mach-omap2/omap_twl.c          | 2 +-
->  drivers/gpio/gpio-twl4030.c             | 2 +-
->  drivers/iio/adc/twl4030-madc.c          | 2 +-
->  drivers/iio/adc/twl6030-gpadc.c         | 2 +-
->  drivers/input/keyboard/twl4030_keypad.c | 2 +-
->  drivers/input/misc/twl4030-pwrbutton.c  | 2 +-
->  drivers/input/misc/twl4030-vibra.c      | 2 +-
->  drivers/mfd/twl-core.c                  | 6 +++---
->  drivers/mfd/twl4030-audio.c             | 2 +-
->  drivers/mfd/twl4030-irq.c               | 2 +-
->  drivers/mfd/twl4030-power.c             | 2 +-
->  drivers/mfd/twl6030-irq.c               | 2 +-
->  drivers/phy/phy-twl4030-usb.c           | 2 +-
->  drivers/power/supply/twl4030_charger.c  | 2 +-
->  drivers/pwm/pwm-twl-led.c               | 2 +-
->  drivers/pwm/pwm-twl.c                   | 2 +-
->  drivers/regulator/twl-regulator.c       | 2 +-
->  drivers/regulator/twl6030-regulator.c   | 2 +-
->  drivers/rtc/rtc-twl.c                   | 2 +-
->  drivers/usb/phy/phy-twl6030-usb.c       | 2 +-
->  drivers/video/backlight/pandora_bl.c    | 2 +-
->  drivers/watchdog/twl4030_wdt.c          | 2 +-
->  include/linux/{i2c => mfd}/twl.h        | 0
->  sound/soc/codecs/twl4030.c              | 2 +-
->  25 files changed, 26 insertions(+), 26 deletions(-)
->  rename include/linux/{i2c => mfd}/twl.h (100%)
+are available in the git repository at:
 
-Best regards,
---
-Bartlomiej Zolnierkiewicz
-Samsung R&D Institute Poland
-Samsung Electronics
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.12a
+
+for you to fetch changes up to 82237f268281d338aa35cd014be8ffb0b5445482:
+
+  iio: adc: sun4i-gpadc-iio: fix parent device being used in devm function (2017-05-21 15:17:40 +0100)
+
+----------------------------------------------------------------
+First set of IIO fixes in the 4.12 cycle.
+
+Matt finally set up the lightning storm he needed to test the as3935.
+
+* core
+  - Fix a null pointer deference in iio_trigger_write_current when changing
+  from a non existent trigger to another non existent trigger.
+* a3935
+  - Recalibrate the RCO after resume.
+  - Fix interrupt mask so that we actually get some interrupts.
+  - Use iio_trigger_poll_chained as we aren't in interrupt context.
+* am335x
+  - Fix wrong allocation size provided for private data to iio_device_alloc.
+* bcm_iproc
+  - Swapped primary and secondary isr handlers.
+* ltr501
+  - Fix swapped als/ps register fields when enabling interrupts
+* max9611
+  - Wrong scale factor for the shunt_resistor attribute.
+* sun4-gpadc
+  - Module autoloading fixes by adding the device table declarations.
+  - Fix parent device being used in devm functions.
+
+----------------------------------------------------------------
+Dan Carpenter (2):
+      iio: adc: Max9611: checking for ERR_PTR instead of NULL in probe
+      iio: adc: ti_am335x_adc: allocating too much in probe
+
+Eduardo Molinas (2):
+      iio: adc: sun4i-gpadc-iio: Fix module autoload when PLATFORM devices are registered
+      iio: adc: sun4i-gpadc-iio: Fix module autoload when OF devices are registered
+
+Franziska Naepelt (1):
+      iio: light: ltr501 Fix interchanged als/ps register field
+
+Jacopo Mondi (1):
+      iio: adc: max9611: Fix attribute measure unit
+
+Marcin Niestroj (1):
+      iio: trigger: fix NULL pointer dereference in iio_trigger_write_current()
+
+Matt Ranostay (3):
+      iio: proximity: as3935: recalibrate RCO after resume
+      iio: proximity: as3935: fix AS3935_INT mask
+      iio: proximity: as3935: fix iio_trigger_poll issue
+
+Quentin Schulz (1):
+      iio: adc: sun4i-gpadc-iio: fix parent device being used in devm function
+
+Raveendra Padasalagi (1):
+      iio: adc: bcm_iproc_adc: swap primary and secondary isr handler's
+
+ drivers/iio/adc/bcm_iproc_adc.c    |  8 ++++----
+ drivers/iio/adc/max9611.c          | 10 +++++-----
+ drivers/iio/adc/sun4i-gpadc-iio.c  | 38 ++++++++++++++++++++++++--------------
+ drivers/iio/adc/ti_am335x_adc.c    |  2 +-
+ drivers/iio/industrialio-trigger.c |  3 ++-
+ drivers/iio/light/ltr501.c         |  4 ++--
+ drivers/iio/proximity/as3935.c     | 14 ++++++--------
+ 7 files changed, 44 insertions(+), 35 deletions(-)
