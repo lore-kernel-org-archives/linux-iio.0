@@ -1,88 +1,86 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bh-25.webhostbox.net ([208.91.199.152]:41656 "EHLO
-        bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751344AbdEVDCL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 May 2017 23:02:11 -0400
+Received: from www.zeus03.de ([194.117.254.33]:33016 "EHLO mail.zeus03.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751119AbdEVGht (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 22 May 2017 02:37:49 -0400
+Date: Mon, 22 May 2017 08:37:46 +0200
+From: Wolfram Sang <wsa@the-dreams.de>
+To: Guenter Roeck <linux@roeck-us.net>
+Cc: linux-i2c@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Subject: Re: [PATCH 0/5] hwmon: move include files out of include/linux/i2c
-To: Wolfram Sang <wsa@the-dreams.de>, linux-i2c@vger.kernel.org
-Cc: linux-doc@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-ID: <20170522063746.GA1454@katana>
 References: <20170521203443.6387-1-wsa@the-dreams.de>
-From: Guenter Roeck <linux@roeck-us.net>
-Message-ID: <b876bed9-38dc-233f-053a-4b0d4ad990b2@roeck-us.net>
-Date: Sun, 21 May 2017 20:02:07 -0700
+ <b876bed9-38dc-233f-053a-4b0d4ad990b2@roeck-us.net>
 MIME-Version: 1.0
-In-Reply-To: <20170521203443.6387-1-wsa@the-dreams.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="SLDf9lqlvOQaIe6s"
+In-Reply-To: <b876bed9-38dc-233f-053a-4b0d4ad990b2@roeck-us.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/21/2017 01:34 PM, Wolfram Sang wrote:
-> It doesn't make sense to use include/linux/i2c for client drivers which may in
-> fact rather be hwmon or input or whatever devices. As a result, I want to
-> deprecate include/linux/i2c for good. This series moves the include files to a
-> better location, largely include/platform_data because that is what most of th > moved include files contain. Note that some files don't seem to have upstream
-> users in board code, so they maybe could even be removed? I didn't check for
 
-While I understand where you are coming from, I am not typically that aggressive.
-Such removals force vendors who are not really forthcoming with upstreaming to
-deviate even further from upstream. It makes them even less likely to submit their
-code upstream, and it may result in enforcing their belief that upstream doesn't
-really care about vendors struggling to release boards and systems to their
-customers.
+--SLDf9lqlvOQaIe6s
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> that now, but I did it for one i2c master driver recently. So, it may be
-> possible. pmbus.h got moved just one layer upwards, see the patch description
-> there.
-> 
-> I prefer the series to go upstream via the subsystem tree; if you prefer that I
-> take it via I2C, just let me know.
-> 
-Series applied to hwmon-next.
+Hi Guenter,
 
-Thanks,
-Guenter
+> > Note that some files don't seem to have upstream
+> > users in board code, so they maybe could even be removed? I didn't chec=
+k for
+>=20
+> While I understand where you are coming from, I am not typically that agg=
+ressive.
+> Such removals force vendors who are not really forthcoming with upstreami=
+ng to
+> deviate even further from upstream. It makes them even less likely to sub=
+mit their
+> code upstream, and it may result in enforcing their belief that upstream =
+doesn't
+> really care about vendors struggling to release boards and systems to the=
+ir
+> customers.
 
-> No runtime testing because of no HW, but buildbot is happy with this series at
-> least. A branch can be found here:
-> 
-> git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git i2c/platform_data
-> 
-> Thanks and kind regards,
-> 
->     Wolfram
-> 
-> 
-> Wolfram Sang (5):
->    hwmon: ads1015: move header file out of I2C realm
->    hwmon: ds620: move header file out of I2C realm
->    hwmon: ltc4245: move header file out of I2C realm
->    hwmon: max6639: move header file out of I2C realm
->    hwmon: pmbus: move header file out of I2C realm
-> 
->   Documentation/hwmon/ads1015                    | 2 +-
->   Documentation/hwmon/ltc4245                    | 2 +-
->   Documentation/hwmon/pmbus-core                 | 2 +-
->   MAINTAINERS                                    | 4 ++--
->   drivers/hwmon/ads1015.c                        | 2 +-
->   drivers/hwmon/ds620.c                          | 2 +-
->   drivers/hwmon/ltc4245.c                        | 2 +-
->   drivers/hwmon/max6639.c                        | 2 +-
->   drivers/hwmon/pmbus/pmbus.c                    | 2 +-
->   drivers/hwmon/pmbus/pmbus_core.c               | 2 +-
->   drivers/hwmon/pmbus/ucd9000.c                  | 2 +-
->   drivers/hwmon/pmbus/ucd9200.c                  | 2 +-
->   drivers/iio/adc/ti-ads1015.c                   | 2 +-
->   include/linux/{i2c => platform_data}/ads1015.h | 0
->   include/linux/{i2c => platform_data}/ds620.h   | 0
->   include/linux/{i2c => platform_data}/ltc4245.h | 0
->   include/linux/{i2c => platform_data}/max6639.h | 0
->   include/linux/{i2c => }/pmbus.h                | 0
->   18 files changed, 14 insertions(+), 14 deletions(-)
->   rename include/linux/{i2c => platform_data}/ads1015.h (100%)
->   rename include/linux/{i2c => platform_data}/ds620.h (100%)
->   rename include/linux/{i2c => platform_data}/ltc4245.h (100%)
->   rename include/linux/{i2c => platform_data}/max6639.h (100%)
->   rename include/linux/{i2c => }/pmbus.h (100%)
-> 
+I clearly see your point. I meant more the case where platform_data
+became cruft because platforms moved to DT. I agree this is not so much
+the case for HWMON but it was true for the I2C master driver where I
+could remove the platform data and could save the include file and some
+code. That was just a nice cleanup.
 
+> >I prefer the series to go upstream via the subsystem tree; if you prefer=
+ that I
+> >take it via I2C, just let me know.
+> >
+> Series applied to hwmon-next.
+
+Super, thanks!
+
+Regards,
+
+   Wolfram
+
+
+--SLDf9lqlvOQaIe6s
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAlkihzUACgkQFA3kzBSg
+Kbbssw/+JuPK0Vq4fgoKu9Br2Gb7W2JiG94K9sK8r17E7w7/B2clgdg3pR+sLt4H
+1N6wBWYqW4ESH4Wh9vzCYJ3PB8UvDVupft0wgTqHXgvHwQg9ktm4xXU4NG7TmpWq
+sLPw879p7oq97vFaI4vXUrJSgwyKFph/ry4Cawga6Ze3jLZQGtcG2MsyCl325ZB4
+nG3FEo/kvrzSjKZZX/LcMZwrux5VJO2jhVESGPRVgaksjPTazVB/qQib3kkLs2AW
+XXv097JS+qDkVpKFKRCbarbYQjevy1YrRZkaYid27eUzRpiJho6kUswI9X16Hr8x
+QE6Hmw3N6x1Im85rXvI8pJT6VkPEJMQ1AJLTgYiYK4PvRkH/PZMYiQPPIxhYFFQ9
+a3j6aDRV8VKtP2kkdC/4l1hlB9mkX4HQzPPQb6ikCbiAApp2XaLOyFqvRLWibh/V
+yPR3DSJqnZEb4Sj6bPWKFIl3bSYect0tJPbj6O3W4UGGNCCnLuAQ69rgBFxddu+0
+HUh2grKkiytRXAC6hc7julq/Awx8INyVpH9GzUgGykU84Ysb1+Au+HpJ7nHzX64D
+JGYQ0ryhlhF2NYpjy8n9KvQ/Z0JWzItbGE6NpuR2M982sQRxKpNYxtV1ZdXhpdMm
+Nxci52OaqbgGiu391KLBpCta4yszf17oLrRLgKeZNHnBhitSf2I=
+=ObKu
+-----END PGP SIGNATURE-----
+
+--SLDf9lqlvOQaIe6s--
