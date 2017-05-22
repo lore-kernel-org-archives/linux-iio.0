@@ -1,56 +1,49 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:46212 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S933050AbdEVUeS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 22 May 2017 16:34:18 -0400
-Date: Mon, 22 May 2017 21:34:08 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <SRS0=L8s9=44=gmail.com=dmitry.torokhov@kernel.org>
+Date: Mon, 22 May 2017 16:37:58 -0700
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 To: Wolfram Sang <wsa@the-dreams.de>
 Cc: linux-i2c@vger.kernel.org, Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alexandre Courbot <gnurou@gmail.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-        Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Wim Van Sebroeck <wim@iguana.be>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Peter Ujfalusi <peter.ujfalusi@ti.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, linux-omap@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-pwm@vger.kernel.org, rtc-linux@googlegroups.com,
-        linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, alsa-devel@alsa-project.org
+	Russell King <linux@armlinux.org.uk>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Alexandre Courbot <gnurou@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Lee Jones <lee.jones@linaro.org>,
+	Kishon Vijay Abraham I <kishon@ti.com>,
+	Sebastian Reichel <sre@kernel.org>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Alessandro Zummo <a.zummo@towertech.it>,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+	Felipe Balbi <balbi@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Daniel Thompson <daniel.thompson@linaro.org>,
+	Jingoo Han <jingoohan1@gmail.com>,
+	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+	Wim Van Sebroeck <wim@iguana.be>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Peter Ujfalusi <peter.ujfalusi@ti.com>,
+	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+	linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	linux-pm@vger.kernel.org, linux-pwm@vger.kernel.org,
+	rtc-linux@googlegroups.com, linux-usb@vger.kernel.org,
+	linux-fbdev@vger.kernel.org, linux-watchdog@vger.kernel.org,
+	alsa-devel@alsa-project.org
 Subject: Re: [PATCH 3/3] mfd: twl: move header file out of I2C realm
-Message-ID: <20170522213408.0c5871d6@kernel.org>
-In-Reply-To: <20170521220212.1404-4-wsa@the-dreams.de>
+Message-ID: <20170522233758.GC12016@dtor-ws>
 References: <20170521220212.1404-1-wsa@the-dreams.de>
-        <20170521220212.1404-4-wsa@the-dreams.de>
+ <20170521220212.1404-4-wsa@the-dreams.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20170521220212.1404-4-wsa@the-dreams.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, 22 May 2017 00:02:10 +0200
-Wolfram Sang <wsa@the-dreams.de> wrote:
-
+On Mon, May 22, 2017 at 12:02:10AM +0200, Wolfram Sang wrote:
 > include/linux/i2c is not for client devices. Move the header file to a
 > more appropriate location.
 > 
@@ -59,15 +52,14 @@ Wolfram Sang <wsa@the-dreams.de> wrote:
 >  arch/arm/mach-omap2/common.h            | 2 +-
 >  arch/arm/mach-omap2/omap_twl.c          | 2 +-
 >  drivers/gpio/gpio-twl4030.c             | 2 +-
-
 >  drivers/iio/adc/twl4030-madc.c          | 2 +-
 >  drivers/iio/adc/twl6030-gpadc.c         | 2 +-
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-
-Thanks,
 >  drivers/input/keyboard/twl4030_keypad.c | 2 +-
 >  drivers/input/misc/twl4030-pwrbutton.c  | 2 +-
 >  drivers/input/misc/twl4030-vibra.c      | 2 +-
+
+Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+
 >  drivers/mfd/twl-core.c                  | 6 +++---
 >  drivers/mfd/twl4030-audio.c             | 2 +-
 >  drivers/mfd/twl4030-irq.c               | 2 +-
@@ -422,4 +414,9 @@ Thanks,
 >  #include <linux/slab.h>
 >  #include <linux/gpio.h>
 >  #include <sound/core.h>
+> -- 
+> 2.11.0
+> 
 
+-- 
+Dmitry
