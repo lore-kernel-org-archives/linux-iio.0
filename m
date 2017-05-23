@@ -1,31 +1,38 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:53192 "EHLO
-        mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751080AbdE2Ocp (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 May 2017 10:32:45 -0400
-Date: Mon, 29 May 2017 16:16:44 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
+Return-Path: <SRS0=cE2T=45=atomide.com=tony@kernel.org>
+From: Tony Lindgren <tony@atomide.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: [PULL] First set of new device support, features and cleanups
- for IIO in the 4.13 cycle.
-Message-ID: <20170529141644.GA16586@kroah.com>
-References: <20170522212612.4b50d744@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20170522212612.4b50d744@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org,
+	linux-omap@vger.kernel.org
+Subject: [PATCHv2 0/3] Few non-critical cpcap ADC fixes
+Date: Mon, 22 May 2017 17:51:43 -0700
+Message-Id: <20170523005146.726-1-tony@atomide.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, May 22, 2017 at 09:26:12PM +0100, Jonathan Cameron wrote:
-> The following changes since commit e44adf05b85e5a9d1d224f5ecde1c1c5e5371e36:
-> 
->   staging/android: Update Ion TODO list (2017-04-18 20:43:14 +0200)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-4.13a
+Hi all,
 
-Pulled and pushed out, sorry for the delay.
+Here are few fixes for cpcap ADC mostly to get temperature readings                                  produce sane values. AFAIK no need for urgency with these and they                                   can all wait for v4.13 merge window.
 
-greg k-h
+Regards,
+
+Tony
+
+Changes since v1:
+
+- Rename CPCAP_ADC_AD0_BATTDETB to just CPCAP_ADC_AD0 based on
+  Matt Ranostay's suggestion as it's the battery temperature
+
+- Add ack from Sebastian Reichel
+
+Tony Lindgren (3):
+  iio: adc: cpcap: Fix default register values and battery temperature
+  iio: adc: cpcap: Fix die temperature
+  iio: adc: cpcap: Remove hung interrupt quirk
+
+ drivers/iio/adc/cpcap-adc.c | 109 +++++++++++++++++++++++++++++++-------------
+ 1 file changed, 77 insertions(+), 32 deletions(-)
+
+-- 
+2.13.0
