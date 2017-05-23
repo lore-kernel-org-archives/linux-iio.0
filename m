@@ -1,6 +1,6 @@
-Return-Path: <SRS0=L8s9=44=gmail.com=dmitry.torokhov@kernel.org>
-Date: Mon, 22 May 2017 16:37:58 -0700
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Return-Path: <SRS0=U24F=45=linaro.org=lee.jones@kernel.org>
+Date: Tue, 23 May 2017 08:16:36 +0100
+From: Lee Jones <lee.jones@linaro.org>
 To: Wolfram Sang <wsa@the-dreams.de>
 Cc: linux-i2c@vger.kernel.org, Tony Lindgren <tony@atomide.com>,
 	Russell King <linux@armlinux.org.uk>,
@@ -10,7 +10,7 @@ Cc: linux-i2c@vger.kernel.org, Tony Lindgren <tony@atomide.com>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Lee Jones <lee.jones@linaro.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
 	Kishon Vijay Abraham I <kishon@ti.com>,
 	Sebastian Reichel <sre@kernel.org>,
 	Thierry Reding <thierry.reding@gmail.com>,
@@ -35,15 +35,16 @@ Cc: linux-i2c@vger.kernel.org, Tony Lindgren <tony@atomide.com>,
 	linux-fbdev@vger.kernel.org, linux-watchdog@vger.kernel.org,
 	alsa-devel@alsa-project.org
 Subject: Re: [PATCH 3/3] mfd: twl: move header file out of I2C realm
-Message-ID: <20170522233758.GC12016@dtor-ws>
+Message-ID: <20170523071636.hiws54msfxpg6qkb@dell>
 References: <20170521220212.1404-1-wsa@the-dreams.de>
  <20170521220212.1404-4-wsa@the-dreams.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 In-Reply-To: <20170521220212.1404-4-wsa@the-dreams.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, May 22, 2017 at 12:02:10AM +0200, Wolfram Sang wrote:
+On Mon, 22 May 2017, Wolfram Sang wrote:
+
 > include/linux/i2c is not for client devices. Move the header file to a
 > more appropriate location.
 > 
@@ -58,13 +59,17 @@ On Mon, May 22, 2017 at 12:02:10AM +0200, Wolfram Sang wrote:
 >  drivers/input/misc/twl4030-pwrbutton.c  | 2 +-
 >  drivers/input/misc/twl4030-vibra.c      | 2 +-
 
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-
 >  drivers/mfd/twl-core.c                  | 6 +++---
 >  drivers/mfd/twl4030-audio.c             | 2 +-
 >  drivers/mfd/twl4030-irq.c               | 2 +-
 >  drivers/mfd/twl4030-power.c             | 2 +-
 >  drivers/mfd/twl6030-irq.c               | 2 +-
+
+For my own reference:
+  Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+
+I guess this will be going through the MFD tree?
+
 >  drivers/phy/phy-twl4030-usb.c           | 2 +-
 >  drivers/power/supply/twl4030_charger.c  | 2 +-
 >  drivers/pwm/pwm-twl-led.c               | 2 +-
@@ -414,9 +419,9 @@ Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 >  #include <linux/slab.h>
 >  #include <linux/gpio.h>
 >  #include <sound/core.h>
-> -- 
-> 2.11.0
-> 
 
 -- 
-Dmitry
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
