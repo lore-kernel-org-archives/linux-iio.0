@@ -1,136 +1,83 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:40824 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1030292AbdEXT47 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 24 May 2017 15:56:59 -0400
-Date: Wed, 24 May 2017 20:56:54 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Stefan =?UTF-8?B?QnLDvG5z?= <stefan.bruens@rwth-aachen.de>
-Cc: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+Received: from mail2-relais-roc.national.inria.fr ([192.134.164.83]:44712 "EHLO
+        mail2-relais-roc.national.inria.fr" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S966711AbdEXHj6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 24 May 2017 03:39:58 -0400
+Date: Wed, 24 May 2017 09:39:54 +0200 (CEST)
+From: Julia Lawall <julia.lawall@lip6.fr>
+To: Tony Lindgren <tony@atomide.com>
+cc: Jonathan Cameron <jic23@kernel.org>, kbuild-all@01.org,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Marc Titinger <mtitinger@baylibre.com>, afd@ti.com
-Subject: Re: [PATCH v2 3/3] iio: adc: Fix polling of INA219 conversion ready
- flag
-Message-ID: <20170524205641.20252455@jic23.retrosnub.co.uk>
-In-Reply-To: <20170524205335.166b7085@kernel.org>
-References: <20170524000907.7788-1-stefan.bruens@rwth-aachen.de>
-        <7cc7733c6bc8407bb4d5233e9407c0d8@rwthex-w2-b.rwth-ad.de>
-        <20170524205335.166b7085@kernel.org>
+        linux-iio@vger.kernel.org, linux-omap@vger.kernel.org,
+        Marcel Partap <mpartap@gmx.net>,
+        Michael Scott <michael.scott@linaro.org>,
+        Sebastian Reichel <sre@kernel.org>
+Subject: Re: [PATCH 1/3] iio: adc: cpcap: Fix default register values and
+ battery temperature (fwd)
+Message-ID: <alpine.DEB.2.20.1705240938520.2983@hadrien>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 24 May 2017 20:53:35 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+CPCAP_BIT_ADTRIG_DIS is duplicated on lines 77-82.
 
-> On Wed, 24 May 2017 02:09:07 +0200
-> Stefan Brüns <stefan.bruens@rwth-aachen.de> wrote:
-> 
-> > While the INA226 has a conversion ready flag (CVRF) in the R/W Mask/Enable
-> > register with read-to-clear semantics, the corresponding bit of the INA219
-> > (CNVR) is part of the bus voltage register. The flag is cleared by reading
-> > the power register.
-> > 
-> > Signed-off-by: Stefan Brüns <stefan.bruens@rwth-aachen.de>  
-> Again, looks good to me, but I would like input form Marc or Andrew
-> who are more familiar with these devices than me!
-> 
-> Ping me in a week or two if nothing is happening and I look to have
-> lost these!
-Ah Marc's old email is bouncing.  If no one has a more up to
-data address I guess we'll be looking at Andrew to have a chance to
-respond (which is more likely if I actually cc him ;)
-> 
-> Thanks,
-> 
-> Jonathan
-> > ---
-> >  drivers/iio/adc/ina2xx-adc.c | 36 +++++++++++++++++++++++++++++-------
-> >  1 file changed, 29 insertions(+), 7 deletions(-)
-> > 
-> > diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
-> > index 232c0b80d658..68884d26b50c 100644
-> > --- a/drivers/iio/adc/ina2xx-adc.c
-> > +++ b/drivers/iio/adc/ina2xx-adc.c
-> > @@ -44,6 +44,7 @@
-> >  
-> >  #define INA226_MASK_ENABLE		0x06
-> >  #define INA226_CVRF			BIT(3)
-> > +#define INA219_CNVR			BIT(1)
-> >  
-> >  #define INA2XX_MAX_REGISTERS            8
-> >  
-> > @@ -592,6 +593,7 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
-> >  	int bit, ret, i = 0;
-> >  	s64 time_a, time_b;
-> >  	unsigned int alert;
-> > +	int cnvr_need_clear = 0;
-> >  
-> >  	time_a = iio_get_time_ns(indio_dev);
-> >  
-> > @@ -603,22 +605,30 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
-> >  	 * we check the ConVersionReadyFlag.
-> >  	 * On hardware that supports using the ALERT pin to toggle a
-> >  	 * GPIO a triggered buffer could be used instead.
-> > -	 * For now, we pay for that extra read of the ALERT register
-> > +	 * For now, we do an extra read of the MASK_ENABLE register (INA226)
-> > +	 * resp. the BUS_VOLTAGE register (INA219).
-> >  	 */
-> >  	if (!chip->allow_async_readout)
-> >  		do {
-> > -			ret = regmap_read(chip->regmap, INA226_MASK_ENABLE,
-> > -					  &alert);
-> > +			if (chip->config->chip_id == ina226) {
-> > +				ret = regmap_read(chip->regmap,
-> > +						  INA226_MASK_ENABLE, &alert);
-> > +				alert &= INA226_CVRF;
-> > +			} else {
-> > +				ret = regmap_read(chip->regmap,
-> > +						  INA2XX_BUS_VOLTAGE, &alert);
-> > +				alert &= INA219_CNVR;
-> > +				cnvr_need_clear = alert;
-> > +			}
-> > +
-> >  			if (ret < 0)
-> >  				return ret;
-> >  
-> > -			alert &= INA226_CVRF;
-> >  		} while (!alert);
-> >  
-> >  	/*
-> > -	 * Single register reads: bulk_read will not work with ina226
-> > -	 * as there is no auto-increment of the address register for
-> > -	 * data length longer than 16bits.
-> > +	 * Single register reads: bulk_read will not work with ina226/219
-> > +	 * as there is no auto-increment of the register pointer.
-> >  	 */
-> >  	for_each_set_bit(bit, indio_dev->active_scan_mask,
-> >  			 indio_dev->masklength) {
-> > @@ -630,6 +640,18 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
-> >  			return ret;
-> >  
-> >  		data[i++] = val;
-> > +
-> > +		if (INA2XX_SHUNT_VOLTAGE + bit == INA2XX_POWER)
-> > +			cnvr_need_clear = 0;
-> > +	}
-> > +
-> > +	/* Dummy read on INA219 power register to clear CNVR flag */
-> > +	if (cnvr_need_clear && chip->config->chip_id == ina219) {
-> > +		unsigned int val;
-> > +
-> > +		ret = regmap_read(chip->regmap, INA2XX_POWER, &val);
-> > +		if (ret < 0)
-> > +			return ret;
-> >  	}
-> >  
-> >  	time_b = iio_get_time_ns(indio_dev);  
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+julia
 
+---------- Forwarded message ----------
+Date: Wed, 24 May 2017 03:18:35 +0800
+From: kbuild test robot <fengguang.wu@intel.com>
+To: kbuild@01.org
+Cc: Julia Lawall <julia.lawall@lip6.fr>
+Subject: Re: [PATCH 1/3] iio: adc: cpcap: Fix default register values and
+    battery temperature
+
+Hi Tony,
+
+[auto build test WARNING on iio/togreg]
+[also build test WARNING on v4.12-rc2 next-20170523]
+[if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
+
+url:    https://github.com/0day-ci/linux/commits/Tony-Lindgren/Few-non-critical-cpcap-ADC-fixes/20170524-012140
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
+:::::: branch date: 2 hours ago
+:::::: commit date: 2 hours ago
+
+>> drivers/iio/adc/cpcap-adc.c:78:6-26: duplicated argument to & or |
+
+git remote add linux-review https://github.com/0day-ci/linux
+git remote update linux-review
+git checkout 02e16000e23c899bba86e7dde2b3eaaf8fc76da2
+vim +78 drivers/iio/adc/cpcap-adc.c
+
+25ec2496 Tony Lindgren 2017-03-23  62  #define CPCAP_BIT_ADTRIG_ONESHOT	BIT(13)	/* Set for !TIMING_IMM */
+25ec2496 Tony Lindgren 2017-03-23  63  #define CPCAP_BIT_ASC			BIT(12)	/* Set for TIMING_IMM */
+25ec2496 Tony Lindgren 2017-03-23  64  #define CPCAP_BIT_ATOX_PS_FACTOR	BIT(11)
+25ec2496 Tony Lindgren 2017-03-23  65  #define CPCAP_BIT_ADC_PS_FACTOR1	BIT(10)
+25ec2496 Tony Lindgren 2017-03-23  66  #define CPCAP_BIT_ADC_PS_FACTOR0	BIT(9)
+25ec2496 Tony Lindgren 2017-03-23  67  #define CPCAP_BIT_AD4_SELECT		BIT(8)	/* Currently unused */
+25ec2496 Tony Lindgren 2017-03-23  68  #define CPCAP_BIT_ADC_BUSY		BIT(7)	/* Currently unused */
+02e16000 Tony Lindgren 2017-05-22  69  #define CPCAP_BIT_THERMBIAS_EN		BIT(6)	/* Bias for AD0_BATTDETB */
+25ec2496 Tony Lindgren 2017-03-23  70  #define CPCAP_BIT_ADTRIG_DIS		BIT(5)	/* Disable interrupt */
+25ec2496 Tony Lindgren 2017-03-23  71  #define CPCAP_BIT_LIADC			BIT(4)	/* Currently unused */
+25ec2496 Tony Lindgren 2017-03-23  72  #define CPCAP_BIT_TS_REFEN		BIT(3)	/* Currently unused */
+25ec2496 Tony Lindgren 2017-03-23  73  #define CPCAP_BIT_TS_M2			BIT(2)	/* Currently unused */
+25ec2496 Tony Lindgren 2017-03-23  74  #define CPCAP_BIT_TS_M1			BIT(1)	/* Currently unused */
+25ec2496 Tony Lindgren 2017-03-23  75  #define CPCAP_BIT_TS_M0			BIT(0)	/* Currently unused */
+25ec2496 Tony Lindgren 2017-03-23  76
+02e16000 Tony Lindgren 2017-05-22  77  #define CPCAP_REG_ADCC2_DEFAULTS	(CPCAP_BIT_AD4_SELECT | \
+02e16000 Tony Lindgren 2017-05-22 @78  					 CPCAP_BIT_ADTRIG_DIS | \
+02e16000 Tony Lindgren 2017-05-22  79  					 CPCAP_BIT_ADTRIG_DIS | \
+02e16000 Tony Lindgren 2017-05-22  80  					 CPCAP_BIT_LIADC | \
+02e16000 Tony Lindgren 2017-05-22  81  					 CPCAP_BIT_TS_M2 | \
+02e16000 Tony Lindgren 2017-05-22  82  					 CPCAP_BIT_TS_M1)
+02e16000 Tony Lindgren 2017-05-22  83
+25ec2496 Tony Lindgren 2017-03-23  84  #define CPCAP_MAX_TEMP_LVL		27
+25ec2496 Tony Lindgren 2017-03-23  85  #define CPCAP_FOUR_POINT_TWO_ADC	801
+25ec2496 Tony Lindgren 2017-03-23  86  #define ST_ADC_CAL_CHRGI_HIGH_THRESHOLD	530
+
+---
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
