@@ -1,72 +1,50 @@
-Return-Path: <SRS0=Wi5e=5F=gmail.com=robherring2@kernel.org>
-Date: Wed, 31 May 2017 12:59:18 -0500
-From: Rob Herring <robh@kernel.org>
-To: Eugen Hristev <eugen.hristev@microchip.com>
-Cc: nicolas.ferre@microchip.com, alexandre.belloni@microchip.com,
-	linux-iio@vger.kernel.org, lars@metafoo.de,
-	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, ludovic.desroches@microchip.com,
-	jic23@kernel.org
-Subject: Re: [PATCH v3 2/4] Documentation: dt: iio: at91-sama5d2_adc: add
- adtrg trigger binding
-Message-ID: <20170531175918.3fne7ijavvrw4sf6@rob-hp-laptop>
+Return-Path: <SRS0=Hb49=47=microchip.com=Eugen.Hristev@kernel.org>
+From: Eugen Hristev <eugen.hristev@microchip.com>
+To: <nicolas.ferre@microchip.com>, <alexandre.belloni@microchip.com>,
+	<linux-iio@vger.kernel.org>, <lars@metafoo.de>,
+	<linux-arm-kernel@lists.infradead.org>, <devicetree@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <ludovic.desroches@microchip.com>,
+	<jic23@kernel.org>
+CC: <eugen.hristev@microchip.com>
+Subject: [PATCH v3 3/4] ARM: dts: at91: sama5d2: add ADC hw trigger
+Date: Thu, 25 May 2017 14:17:13 +0300
+Message-ID: <1495711034-28410-4-git-send-email-eugen.hristev@microchip.com>
+In-Reply-To: <1495711034-28410-1-git-send-email-eugen.hristev@microchip.com>
 References: <1495711034-28410-1-git-send-email-eugen.hristev@microchip.com>
- <1495711034-28410-3-git-send-email-eugen.hristev@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1495711034-28410-3-git-send-email-eugen.hristev@microchip.com>
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, May 25, 2017 at 02:17:12PM +0300, Eugen Hristev wrote:
-> Add node information for ADTRG hardware pin and the three possible
-> edge nodes that are available for the driver
-> 
-> Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-> ---
->  .../devicetree/bindings/iio/adc/at91-sama5d2_adc.txt    | 17 +++++++++++++++++
->  1 file changed, 17 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/at91-sama5d2_adc.txt b/Documentation/devicetree/bindings/iio/adc/at91-sama5d2_adc.txt
-> index 3223684..e30ede3 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/at91-sama5d2_adc.txt
-> +++ b/Documentation/devicetree/bindings/iio/adc/at91-sama5d2_adc.txt
-> @@ -11,6 +11,13 @@ Required properties:
->    - atmel,min-sample-rate-hz: Minimum sampling rate, it depends on SoC.
->    - atmel,max-sample-rate-hz: Maximum sampling rate, it depends on SoC.
->    - atmel,startup-time-ms: Startup time expressed in ms, it depends on SoC.
-> +  - atmel,trigger-edge-type: phandle to one of the adtrg possible edge types
-> +
-> +Required adtrg node:
-> +  - Required edge nodes:
-> +	For each possible edge type for the ADTRG hardware trigger pin,
-> +	 a specific sub node. The driver recognises only the three possible
-> +	 edge types: external_rising, external_falling, external_any.
+Add ADTRG hardware pin possible edge types as nodes
+and default edge as property to the ADC
 
-Why is this not just a simple property? Having 4 nodes just for this is 
-pointless.
+Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+---
+ arch/arm/boot/dts/sama5d2.dtsi | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
->  
->  Example:
->  
-> @@ -25,4 +32,14 @@ adc: adc@fc030000 {
->  	atmel,startup-time-ms = <4>;
->  	vddana-supply = <&vdd_3v3_lp_reg>;
->  	vref-supply = <&vdd_3v3_lp_reg>;
-> +	atmel,trigger-edge-type = <&external_rising>;
-> +
-> +	adtrg: adtrg {
-> +		external_rising: external_rising {
-> +		};
-> +		external_falling: external_falling {
-> +		};
-> +		external_any: external_any {
-> +		};
-> +	};
->  }
-> -- 
-> 2.7.4
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe devicetree" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/arch/arm/boot/dts/sama5d2.dtsi b/arch/arm/boot/dts/sama5d2.dtsi
+index 8067c71..a06ca8d 100644
+--- a/arch/arm/boot/dts/sama5d2.dtsi
++++ b/arch/arm/boot/dts/sama5d2.dtsi
+@@ -1267,7 +1267,18 @@
+ 				atmel,min-sample-rate-hz = <200000>;
+ 				atmel,max-sample-rate-hz = <20000000>;
+ 				atmel,startup-time-ms = <4>;
++				atmel,trigger-edge-type = <&external_rising>;
+ 				status = "disabled";
++
++				/* possible edge type for ADTRG trigger pin */
++				adtrg: adtrg {
++					external_rising: external_rising {
++					};
++					external_falling: external_falling {
++					};
++					external_any: external_any {
++					};
++				};
+ 			};
+ 
+ 			pioA: pinctrl@fc038000 {
+-- 
+2.7.4
