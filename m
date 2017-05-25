@@ -1,55 +1,73 @@
-Return-Path: <SRS0=tTUC=5E=gmail.com=robherring2@kernel.org>
-Date: Tue, 30 May 2017 16:32:59 -0500
-From: Rob Herring <robh@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Matt Ranostay <matt.ranostay@konsulko.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [PATCH v2] iio: proximity: as3935: noise detection + threshold
- changes
-Message-ID: <20170530213259.qbcikyy446g726pk@rob-hp-laptop>
-References: <20170525055229.11659-1-matt.ranostay@konsulko.com>
- <20170528165830.3878c05c@kernel.org>
+Return-Path: <SRS0=Hb49=47=microchip.com=Eugen.Hristev@kernel.org>
+From: Eugen Hristev <eugen.hristev@microchip.com>
+To: <nicolas.ferre@microchip.com>, <alexandre.belloni@microchip.com>,
+	<linux-iio@vger.kernel.org>, <lars@metafoo.de>,
+	<linux-arm-kernel@lists.infradead.org>, <devicetree@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <ludovic.desroches@microchip.com>,
+	<jic23@kernel.org>
+CC: <eugen.hristev@microchip.com>
+Subject: [PATCH v3 0/4] iio: adc: sama5d2_adc hw triggers and buffers
+Date: Thu, 25 May 2017 14:17:10 +0300
+Message-ID: <1495711034-28410-1-git-send-email-eugen.hristev@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20170528165830.3878c05c@kernel.org>
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, May 28, 2017 at 04:58:30PM +0100, Jonathan Cameron wrote:
-> On Wed, 24 May 2017 22:52:29 -0700
-> Matt Ranostay <matt.ranostay@konsulko.com> wrote:
-> 
-> > Most applications are too noisy to allow the default noise and
-> > watchdog settings, and thus need to be configurable via DT
-> > properties.
-> > 
-> > Also default settings to POR defaults on a reset, and register
-> > distuber interrupts as noise since it prevents proper usage.
-> > 
-> > Cc: devicetree@vger.kernel.org
-> > Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
-> I wonder if there are many other devices where this sort of
-> feature is relevant.  Anyone else come across any?
-> 
-> I suppose if we need to modify the ABI for any that show up
-> in future, it shouldn't be too hard to maintain this one
-> for backwards compatibility.
-> 
-> Anyhow, new devicetree bindings so I'll give Rob / Mark time
-> to have a chance to look at it.
+This patch implements the hardware triggers support and buffer management
+for sama5d2.
+The DT modifications ( [PATCH 1/3] ARM: dts: at91: sama5d2_xplained:
+enable ADTRG pin) are for demonstration purposes of the feature,
+setting the pinctrl for the ADC hw trigger pin,should go through
+at91 maintainers.
+As discussed on the mailing list, since we have a single external trigger
+namely the ADTRG, but three different possible edges that can trigger it,
+will have a single trigger in the IIO subsystem and three possible edges
+which can be selected from the device tree.
+Thus I created new bindings in the device tree for having the possible
+edge types for the ADTRG pin.
+The documentation for the bindings is in the patch
+[PATCH v3 2/4] Documentation: dt: iio: at91-sama5d2_adc: add adtrg
+ trigger binding
+The modifications in the DT are in the patch
+[PATCH v3 3/4] ARM: dts: at91: sama5d2: add ADC hw trigger
 
-I acked v1.
+  Changes in v3:
+ - No longer have all three possible triggers registered in the subsystem and
+   available in the sysfs. Only registering one trigger, and the possible edge
+   is being read from the device tree. In the device tree, any possible edge
+   can be set. There are three already made nodes for each possible edge which
+   can be selected.
+ - Fixed a bug where software triggered conversion could be started even if
+   the hardware trigger was enabled.
+ - Preallocate enough space for the buffer, considering all the channels
+   and timestamp
 
-> My immediate thought is that you might be able to do something
-> a little more user (i.e. devicetree writer) friendly than
-> just using the register value...
 
-We certainly don't want that to be the norm, but sometimes it makes 
-sense when it's very specific to a certain device.
 
-> I see there are values, but it depends on whether the device
-> is in 'indoor mode' or 'outdoor mode' (which are just gain
-> settings?).  You could just use them though.
-> 
-> Given the gain is userspace controlled, and seems to effect
-> the meaning of this setting, is it valid to just put it
-> in the devicetree?
+  Changes in v2:
+ - Moved buffer allocation and freeing into the preenable and postdisable
+   callbacks.
+   We have a total of scan bytes that can vary a lot depending on each channel
+   enabled at a certain point.
+ - made the at91 trigger list part of state structure
+ - made the iio trigger list preallocated in state structure
+ - moved irq enabling/disabling into the try_reenable callback
+ - on trigger disable must write disable registries as well
+ - Modified trigger name length to 64
+
+
+
+Eugen Hristev (4):
+  ARM: dts: at91: sama5d2_xplained: enable ADTRG pin
+  Documentation: dt: iio: at91-sama5d2_adc: add adtrg trigger binding
+  ARM: dts: at91: sama5d2: add ADC hw trigger
+  iio: adc: at91-sama5d2_adc: add hw trigger and buffer support
+
+ .../bindings/iio/adc/at91-sama5d2_adc.txt          |  17 ++
+ arch/arm/boot/dts/at91-sama5d2_xplained.dts        |  16 +-
+ arch/arm/boot/dts/sama5d2.dtsi                     |  11 +
+ drivers/iio/adc/at91-sama5d2_adc.c                 | 229 ++++++++++++++++++++-
+ 4 files changed, 267 insertions(+), 6 deletions(-)
+
+-- 
+2.7.4
