@@ -1,85 +1,46 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:34518 "EHLO mail.kernel.org"
+Received: from sauhun.de ([88.99.104.3]:50732 "EHLO pokefinder.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750791AbdE1Oqv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 28 May 2017 10:46:51 -0400
-Date: Sun, 28 May 2017 15:46:48 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, ldv-project@linuxtesting.org
-Subject: Re: [PATCH] staging: iio: ad7152: Fix deadlock in
- ad7152_write_raw_samp_freq()
-Message-ID: <20170528154648.4186501c@kernel.org>
-In-Reply-To: <38c5952c-8c92-9d97-73cd-06fd0d74aaf3@metafoo.de>
-References: <1495839184-28468-1-git-send-email-khoroshilov@ispras.ru>
-        <38c5952c-8c92-9d97-73cd-06fd0d74aaf3@metafoo.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S1750989AbdE1Ja4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 28 May 2017 05:30:56 -0400
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+To: linux-renesas-soc@vger.kernel.org
+Cc: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        devicetree@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-pci@vger.kernel.org
+Subject: [PATCH 0/7] tree-wide: use proper 'R-Car' product name
+Date: Sun, 28 May 2017 11:30:43 +0200
+Message-Id: <20170528093051.11816-1-wsa+renesas@sang-engineering.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, 28 May 2017 11:47:04 +0200
-Lars-Peter Clausen <lars@metafoo.de> wrote:
+Small series to get the R-Car product name proper. Based on
+renesas-drivers/master, but can be applied to current linus/master as well.
+Except for the MMC patch, which depends on mmc/next.
 
-> On 05/27/2017 12:53 AM, Alexey Khoroshilov wrote:
-> > ad7152_write_raw_samp_freq() is called by ad7152_write_raw() with
-> > chip->state_lock held. So, there is unavoidable deadlock when
-> > ad7152_write_raw_samp_freq() locks the mutex itself.
-> > 
-> > The patch removes unneeded locking.
-> > 
-> > Found by Linux Driver Verification project (linuxtesting.org).
-> > 
-> > Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>  
-> 
-> Looks good, thanks.
-> 
-> Fixes: 6572389bcc11 ("staging: iio: cdc: ad7152: Implement
-> IIO_CHAN_INFO_SAMP_FREQ attribute")
-> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the fixes-togreg branch of iio.git.
+Please apply.
 
-Thanks,
+Wolfram Sang (7):
+  dmaengine: use proper name for the R-Car SoC
+  i2c: use proper name for the R-Car SoC
+  iio: use proper name for the R-Car SoC
+  mmc: use proper name for the R-Car SoC
+  pci: use proper name for the R-Car SoC
+  [media] soc_camera: rcar_vin: use proper name for the R-Car SoC
+  [media] v4l: rcar_fdp1: use proper name for the R-Car SoC
 
-Jonathan
-> 
-> 
-> > ---
-> >  drivers/staging/iio/cdc/ad7152.c | 6 +-----
-> >  1 file changed, 1 insertion(+), 5 deletions(-)
-> > 
-> > diff --git a/drivers/staging/iio/cdc/ad7152.c b/drivers/staging/iio/cdc/ad7152.c
-> > index dc6ecd824365..ff10d1f0a7e4 100644
-> > --- a/drivers/staging/iio/cdc/ad7152.c
-> > +++ b/drivers/staging/iio/cdc/ad7152.c
-> > @@ -231,16 +231,12 @@ static int ad7152_write_raw_samp_freq(struct device *dev, int val)
-> >  	if (i >= ARRAY_SIZE(ad7152_filter_rate_table))
-> >  		i = ARRAY_SIZE(ad7152_filter_rate_table) - 1;
-> >  
-> > -	mutex_lock(&chip->state_lock);
-> >  	ret = i2c_smbus_write_byte_data(chip->client,
-> >  					AD7152_REG_CFG2, AD7152_CFG2_OSR(i));
-> > -	if (ret < 0) {
-> > -		mutex_unlock(&chip->state_lock);
-> > +	if (ret < 0)
-> >  		return ret;
-> > -	}
-> >  
-> >  	chip->filter_rate_setup = i;
-> > -	mutex_unlock(&chip->state_lock);
-> >  
-> >  	return ret;
-> >  }
-> >   
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+ Documentation/devicetree/bindings/dma/shdma.txt               | 2 +-
+ Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt | 2 +-
+ Documentation/devicetree/bindings/media/rcar_vin.txt          | 4 ++--
+ Documentation/devicetree/bindings/pci/rcar-pci.txt            | 2 +-
+ drivers/i2c/busses/i2c-rcar.c                                 | 2 +-
+ drivers/media/platform/rcar_fdp1.c                            | 2 +-
+ drivers/mmc/host/renesas_sdhi_core.c                          | 2 +-
+ include/linux/mfd/tmio.h                                      | 2 +-
+ 8 files changed, 9 insertions(+), 9 deletions(-)
+
+-- 
+2.11.0
 
