@@ -1,30 +1,33 @@
-Return-Path: <SRS0=Wi5e=5F=gmail.com=robherring2@kernel.org>
-Date: Wed, 31 May 2017 14:46:34 -0500
-From: Rob Herring <robh@kernel.org>
-To: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc: linux-renesas-soc@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/7] iio: use proper name for the R-Car SoC
-Message-ID: <20170531194634.hs42qazk7y6uan7h@rob-hp-laptop>
-References: <20170528093051.11816-1-wsa+renesas@sang-engineering.com>
- <20170528093051.11816-4-wsa+renesas@sang-engineering.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20170528093051.11816-4-wsa+renesas@sang-engineering.com>
+Return-Path: <SRS0=Behn=5C=gmail.com=paolocretaro@kernel.org>
+From: Paolo Cretaro <paolocretaro@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Paolo Cretaro <paolocretaro@gmail.com>
+Subject: [PATCH] iio: adc: meson-saradc: use NULL instead of 0 for pointer
+Date: Sun, 28 May 2017 13:24:38 +0200
+Message-Id: <20170528112438.10427-1-paolocretaro@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, May 28, 2017 at 11:30:46AM +0200, Wolfram Sang wrote:
-> It is 'R-Car', not 'RCar'. No code or binding changes, only descriptive text.
-> 
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> ---
-> I suggest this trivial patch should be picked individually per susbsystem.
-> 
->  Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+Fix sparse warning: Using plain integer as NULL pointer
 
-Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Paolo Cretaro <paolocretaro@gmail.com>
+---
+ drivers/iio/adc/meson_saradc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
+index 81cd39a57fe3..fb3f67a9ae1f 100644
+--- a/drivers/iio/adc/meson_saradc.c
++++ b/drivers/iio/adc/meson_saradc.c
+@@ -481,7 +481,7 @@ static void meson_sar_adc_clear_fifo(struct iio_dev *indio_dev)
+ 		if (!meson_sar_adc_get_fifo_count(indio_dev))
+ 			break;
+ 
+-		regmap_read(priv->regmap, MESON_SAR_ADC_FIFO_RD, 0);
++		regmap_read(priv->regmap, MESON_SAR_ADC_FIFO_RD, NULL);
+ 	}
+ }
+ 
+-- 
+2.13.0
