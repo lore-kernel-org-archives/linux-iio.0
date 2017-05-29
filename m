@@ -1,141 +1,53 @@
-Return-Path: <jic23@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36891 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751038AbdE2PwP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 May 2017 11:52:15 -0400
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 18/38] iio:magnetometer: drop assign iio_info.driver_module and iio_trigger_ops.owner
-Date: Mon, 29 May 2017 16:51:34 +0100
-Message-Id: <20170529155154.22580-19-jic23@kernel.org>
+Subject: [PATCH 19/38] iio:orientation: drop assign iio_info.driver_module
+Date: Mon, 29 May 2017 16:51:35 +0100
+Message-Id: <20170529155154.22580-20-jic23@kernel.org>
 In-Reply-To: <20170529155154.22580-1-jic23@kernel.org>
 References: <20170529155154.22580-1-jic23@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-The equivalent of both of these are now done via macro magic when
-the relevant register calls are made.  The actual structure
+The equivalent of this is now done via macro magic when
+the relevant register call is made.  The actual structure
 elements will shortly go away.
 
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/iio/magnetometer/ak8974.c             | 1 -
- drivers/iio/magnetometer/ak8975.c             | 1 -
- drivers/iio/magnetometer/bmc150_magn.c        | 2 --
- drivers/iio/magnetometer/hid-sensor-magn-3d.c | 1 -
- drivers/iio/magnetometer/hmc5843_core.c       | 1 -
- drivers/iio/magnetometer/mag3110.c            | 1 -
- drivers/iio/magnetometer/mmc35240.c           | 1 -
- drivers/iio/magnetometer/st_magn_core.c       | 2 --
- 8 files changed, 10 deletions(-)
+ drivers/iio/orientation/hid-sensor-incl-3d.c  | 1 -
+ drivers/iio/orientation/hid-sensor-rotation.c | 1 -
+ 2 files changed, 2 deletions(-)
 
-diff --git a/drivers/iio/magnetometer/ak8974.c b/drivers/iio/magnetometer/ak8974.c
-index e13370dc9b1c..6b773e0e3215 100644
---- a/drivers/iio/magnetometer/ak8974.c
-+++ b/drivers/iio/magnetometer/ak8974.c
-@@ -568,7 +568,6 @@ static const unsigned long ak8974_scan_masks[] = { 0x7, 0 };
- 
- static const struct iio_info ak8974_info = {
- 	.read_raw = &ak8974_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static bool ak8974_writeable_reg(struct device *dev, unsigned int reg)
-diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index 825369fb1c57..1571d542edda 100644
---- a/drivers/iio/magnetometer/ak8975.c
-+++ b/drivers/iio/magnetometer/ak8975.c
-@@ -781,7 +781,6 @@ static const unsigned long ak8975_scan_masks[] = { 0x7, 0 };
- 
- static const struct iio_info ak8975_info = {
- 	.read_raw = &ak8975_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static const struct acpi_device_id ak_acpi_match[] = {
-diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
-index d104fb8d9379..d91cb845e3d6 100644
---- a/drivers/iio/magnetometer/bmc150_magn.c
-+++ b/drivers/iio/magnetometer/bmc150_magn.c
-@@ -651,7 +651,6 @@ static const struct iio_info bmc150_magn_info = {
- 	.attrs = &bmc150_magn_attrs_group,
- 	.read_raw = bmc150_magn_read_raw,
- 	.write_raw = bmc150_magn_write_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static const unsigned long bmc150_magn_scan_masks[] = {
-@@ -811,7 +810,6 @@ static int bmc150_magn_data_rdy_trigger_set_state(struct iio_trigger *trig,
- static const struct iio_trigger_ops bmc150_magn_trigger_ops = {
- 	.set_trigger_state = bmc150_magn_data_rdy_trigger_set_state,
- 	.try_reenable = bmc150_magn_trig_try_reen,
--	.owner = THIS_MODULE,
- };
- 
- static int bmc150_magn_buffer_preenable(struct iio_dev *indio_dev)
-diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-index 0e791b02ed4a..a1fd9d591818 100644
---- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-+++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-@@ -282,7 +282,6 @@ static int magn_3d_write_raw(struct iio_dev *indio_dev,
+diff --git a/drivers/iio/orientation/hid-sensor-incl-3d.c b/drivers/iio/orientation/hid-sensor-incl-3d.c
+index fd1b3696ee42..1e5451d1ff88 100644
+--- a/drivers/iio/orientation/hid-sensor-incl-3d.c
++++ b/drivers/iio/orientation/hid-sensor-incl-3d.c
+@@ -186,7 +186,6 @@ static int incl_3d_write_raw(struct iio_dev *indio_dev,
  }
  
- static const struct iio_info magn_3d_info = {
+ static const struct iio_info incl_3d_info = {
 -	.driver_module = THIS_MODULE,
- 	.read_raw = &magn_3d_read_raw,
- 	.write_raw = &magn_3d_write_raw,
+ 	.read_raw = &incl_3d_read_raw,
+ 	.write_raw = &incl_3d_write_raw,
  };
-diff --git a/drivers/iio/magnetometer/hmc5843_core.c b/drivers/iio/magnetometer/hmc5843_core.c
-index ba3e2a374ee5..ada142fb7aa3 100644
---- a/drivers/iio/magnetometer/hmc5843_core.c
-+++ b/drivers/iio/magnetometer/hmc5843_core.c
-@@ -597,7 +597,6 @@ static const struct iio_info hmc5843_info = {
- 	.read_raw = &hmc5843_read_raw,
- 	.write_raw = &hmc5843_write_raw,
- 	.write_raw_get_fmt = &hmc5843_write_raw_get_fmt,
--	.driver_module = THIS_MODULE,
- };
- 
- static const unsigned long hmc5843_scan_masks[] = {0x7, 0};
-diff --git a/drivers/iio/magnetometer/mag3110.c b/drivers/iio/magnetometer/mag3110.c
-index dad8d57f7402..b34ace76d31b 100644
---- a/drivers/iio/magnetometer/mag3110.c
-+++ b/drivers/iio/magnetometer/mag3110.c
-@@ -333,7 +333,6 @@ static const struct iio_info mag3110_info = {
- 	.attrs = &mag3110_group,
- 	.read_raw = &mag3110_read_raw,
- 	.write_raw = &mag3110_write_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static const unsigned long mag3110_scan_masks[] = {0x7, 0xf, 0};
-diff --git a/drivers/iio/magnetometer/mmc35240.c b/drivers/iio/magnetometer/mmc35240.c
-index 176e14a61558..6b640c6338c9 100644
---- a/drivers/iio/magnetometer/mmc35240.c
-+++ b/drivers/iio/magnetometer/mmc35240.c
-@@ -418,7 +418,6 @@ static int mmc35240_write_raw(struct iio_dev *indio_dev,
+diff --git a/drivers/iio/orientation/hid-sensor-rotation.c b/drivers/iio/orientation/hid-sensor-rotation.c
+index e9fa86c87db5..257a06a724a4 100644
+--- a/drivers/iio/orientation/hid-sensor-rotation.c
++++ b/drivers/iio/orientation/hid-sensor-rotation.c
+@@ -138,7 +138,6 @@ static int dev_rot_write_raw(struct iio_dev *indio_dev,
  }
  
- static const struct iio_info mmc35240_info = {
--	.driver_module	= THIS_MODULE,
- 	.read_raw	= mmc35240_read_raw,
- 	.write_raw	= mmc35240_write_raw,
- 	.attrs		= &mmc35240_attribute_group,
-diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-index 8e1b0861fbe4..92ad36b8c7a6 100644
---- a/drivers/iio/magnetometer/st_magn_core.c
-+++ b/drivers/iio/magnetometer/st_magn_core.c
-@@ -435,7 +435,6 @@ static const struct attribute_group st_magn_attribute_group = {
- };
- 
- static const struct iio_info magn_info = {
+ static const struct iio_info dev_rot_info = {
 -	.driver_module = THIS_MODULE,
- 	.attrs = &st_magn_attribute_group,
- 	.read_raw = &st_magn_read_raw,
- 	.write_raw = &st_magn_write_raw,
-@@ -444,7 +443,6 @@ static const struct iio_info magn_info = {
- 
- #ifdef CONFIG_IIO_TRIGGER
- static const struct iio_trigger_ops st_magn_trigger_ops = {
--	.owner = THIS_MODULE,
- 	.set_trigger_state = ST_MAGN_TRIGGER_SET_STATE,
- 	.validate_device = st_sensors_validate_device,
+ 	.read_raw_multi = &dev_rot_read_raw,
+ 	.write_raw = &dev_rot_write_raw,
  };
 -- 
 2.13.0
+
