@@ -1,46 +1,43 @@
-Return-Path: <SRS0=9t7F=5D=gmail.com=arvind.yadav.cs@kernel.org>
-From: Arvind Yadav <arvind.yadav.cs@gmail.com>
-To: jic23@kernel.org,
-	knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: Aspeed ADC - Handle return value of clk_prepare_enable
-Date: Mon, 29 May 2017 13:12:12 +0530
-Message-Id: <4d7cbfdca6b7e89a312a08dad6c49b3289299bd8.1496041572.git.arvind.yadav.cs@gmail.com>
+Return-Path: <SRS0=EDDA=5D=st.com=fabrice.gasnier@kernel.org>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+To: <jic23@kernel.org>, <linux@armlinux.org.uk>, <robh+dt@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC: <linux-iio@vger.kernel.org>, <mark.rutland@arm.com>,
+        <mcoquelin.stm32@gmail.com>, <alexandre.torgue@st.com>,
+        <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
+        <fabrice.gasnier@st.com>, <benjamin.gaignard@linaro.org>,
+        <benjamin.gaignard@st.com>
+Subject: [PATCH v2 0/5] iio: add support for STM32H7 ADC
+Date: Mon, 29 May 2017 11:28:15 +0200
+Message-ID: <1496050100-25854-1-git-send-email-fabrice.gasnier@st.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-clk_prepare_enable() can fail here and we must check its return value.
+Add support for STM32H7 Analog to Digital Converter variant.
+It has up to 20 external channels, resolution ranges from 8 to 16bits.
+Differences are regarding clocking, registers and bitfields have also
+been re-arranged, but behavior is similar. It also has additional self
+calibration and power on/off procedures.
 
-Signed-off-by: Arvind Yadav <arvind.yadav.cs@gmail.com>
 ---
- drivers/iio/adc/aspeed_adc.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+Changes in v2:
+- update bindings with Rob's remarks, document stm32h7 resolutions
+- Slightly re-arrange channels definition, remove a trivial comment
 
-diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
-index 62670cb..e0ea411 100644
---- a/drivers/iio/adc/aspeed_adc.c
-+++ b/drivers/iio/adc/aspeed_adc.c
-@@ -212,7 +212,10 @@ static int aspeed_adc_probe(struct platform_device *pdev)
- 	}
- 
- 	/* Start all channels in normal mode. */
--	clk_prepare_enable(data->clk_scaler->clk);
-+	ret = clk_prepare_enable(data->clk_scaler->clk);
-+	if (ret)
-+		goto clk_enable_error;
-+
- 	adc_engine_control_reg_val = GENMASK(31, 16) |
- 		ASPEED_OPERATION_MODE_NORMAL | ASPEED_ENGINE_ENABLE;
- 	writel(adc_engine_control_reg_val,
-@@ -236,6 +239,7 @@ static int aspeed_adc_probe(struct platform_device *pdev)
- 	writel(ASPEED_OPERATION_MODE_POWER_DOWN,
- 		data->base + ASPEED_REG_ENGINE_CONTROL);
- 	clk_disable_unprepare(data->clk_scaler->clk);
-+clk_enable_error:
- 	clk_hw_unregister_divider(data->clk_scaler);
- 
- scaler_error:
+Fabrice Gasnier (5):
+  dt-bindings: iio: stm32-adc: add support for STM32H7
+  iio: adc: stm32: make core adc clock optional by default
+  iio: adc: stm32: introduce compatible data cfg
+  iio: adc: stm32: make per instance bus clock optional
+  iio: adc: stm32: add support for STM32H7
+
+ .../devicetree/bindings/iio/adc/st,stm32-adc.txt   |  28 +-
+ drivers/iio/adc/stm32-adc-core.c                   | 269 +++++++-
+ drivers/iio/adc/stm32-adc-core.h                   |   2 +
+ drivers/iio/adc/stm32-adc.c                        | 762 +++++++++++++++++++--
+ 4 files changed, 972 insertions(+), 89 deletions(-)
+
 -- 
 1.9.1
