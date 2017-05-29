@@ -1,47 +1,31 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:45862 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751058AbdE2OCi (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 29 May 2017 10:02:38 -0400
-Date: Mon, 29 May 2017 15:02:34 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Greg KH <gregkh@linuxfoundation.org>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:53192 "EHLO
+        mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751080AbdE2Ocp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 May 2017 10:32:45 -0400
+Date: Mon, 29 May 2017 16:16:44 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
 Cc: linux-iio@vger.kernel.org
 Subject: Re: [PULL] First set of new device support, features and cleanups
  for IIO in the 4.13 cycle.
-Message-ID: <20170529150234.1ddabd6f@kernel.org>
-In-Reply-To: <20170529135245.GA17569@kroah.com>
+Message-ID: <20170529141644.GA16586@kroah.com>
 References: <20170522212612.4b50d744@kernel.org>
-        <20170528170457.21896af0@jic23.retrosnub.co.uk>
-        <20170529135245.GA17569@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20170522212612.4b50d744@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 29 May 2017 15:52:45 +0200
-Greg KH <gregkh@linuxfoundation.org> wrote:
-
-> On Sun, May 28, 2017 at 05:05:05PM +0100, Jonathan Cameron wrote:
-> > On Mon, 22 May 2017 21:26:12 +0100
-> > Jonathan Cameron <jic23@kernel.org> wrote:
-> > 
-> > Hi Greg,
-> > 
-> > Just a quick bump, at least partly as I've changed my emails setup and
-> > this may well not have gotten to you! I have a few bits waiting on stuff
-> > from the recent merge windows, so looking forward to bringing my tree up
-> > to date post this set.  
+On Mon, May 22, 2017 at 09:26:12PM +0100, Jonathan Cameron wrote:
+> The following changes since commit e44adf05b85e5a9d1d224f5ecde1c1c5e5371e36:
 > 
-> Ugh, very sorry, for some reason I missed this (it was in my inbox, but
-> I was traveling last week...)
+>   staging/android: Update Ion TODO list (2017-04-18 20:43:14 +0200)
 > 
-> I'll go pull this now.
+> are available in the git repository at:
 > 
-> greg k-h
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-4.13a
 
-Not to worry!  No particularly rush so early in the cycle :)
+Pulled and pushed out, sorry for the delay.
 
-Thanks,
-
-Jonathan
+greg k-h
