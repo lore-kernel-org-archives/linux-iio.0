@@ -1,49 +1,56 @@
-Return-Path: <SRS0=Ufxp=5D=gmail.com=andy.shevchenko@kernel.org>
-MIME-Version: 1.0
-In-Reply-To: <20170529155154.22580-38-jic23@kernel.org>
-References: <20170529155154.22580-1-jic23@kernel.org> <20170529155154.22580-38-jic23@kernel.org>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Mon, 29 May 2017 20:56:20 +0300
-Message-ID: <CAHp75VfwHXLHBv1E59W7PLCuh1fA8CZhFEmHnqY7uqvCZrTiKw@mail.gmail.com>
-Subject: Re: [PATCH 37/38] platform/x86: toshiba_acpi: drop assignment of iio_info.driver_module
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, Azael Avalos <coproscefalo@gmail.com>,
-	Platform Driver <platform-driver-x86@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Return-Path: <jic23@kernel.org>
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 38/38] iio: drop iio_info.driver_module and iio_trigger_ops.owner.
+Date: Mon, 29 May 2017 16:51:54 +0100
+Message-Id: <20170529155154.22580-39-jic23@kernel.org>
+In-Reply-To: <20170529155154.22580-1-jic23@kernel.org>
+References: <20170529155154.22580-1-jic23@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, May 29, 2017 at 6:51 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> This is now handled by use of a macro for device registration.  The field
-> in iio_info will be going away shortly as it is no longer used.
->
-> Cc: Azael Avalos <coproscefalo@gmail.com>
-> Cc: <platform-driver-x86@vger.kernel.org>
+The equivalents are now assigned automatically in the relevant
+registration calls and so are not needed in these operations
+structures.
 
-Acked-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ include/linux/iio/iio.h     | 3 ---
+ include/linux/iio/trigger.h | 1 -
+ 2 files changed, 4 deletions(-)
 
-> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-> ---
->  drivers/platform/x86/toshiba_acpi.c | 1 -
->  1 file changed, 1 deletion(-)
->
-> diff --git a/drivers/platform/x86/toshiba_acpi.c b/drivers/platform/x86/toshiba_acpi.c
-> index d0daf75cbed1..ef4301f41727 100644
-> --- a/drivers/platform/x86/toshiba_acpi.c
-> +++ b/drivers/platform/x86/toshiba_acpi.c
-> @@ -2515,7 +2515,6 @@ static const struct iio_chan_spec toshiba_iio_accel_channels[] = {
->  };
->
->  static const struct iio_info toshiba_iio_accel_info = {
-> -       .driver_module = THIS_MODULE,
->         .read_raw = &toshiba_iio_accel_read_raw,
->  };
->
-> --
-> 2.13.0
->
-
-
-
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index f65391067089..02c2a78ada5a 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -363,8 +363,6 @@ struct iio_dev;
+ 
+ /**
+  * struct iio_info - constant information about device
+- * @driver_module:	module structure used to ensure correct
+- *			ownership of chrdevs etc
+  * @event_attrs:	event control attributes
+  * @attrs:		general purpose device attributes
+  * @read_raw:		function to request a value from the device.
+@@ -419,7 +417,6 @@ struct iio_dev;
+  *			were flushed and there was an error.
+  **/
+ struct iio_info {
+-	struct module			*driver_module;
+ 	const struct attribute_group	*event_attrs;
+ 	const struct attribute_group	*attrs;
+ 
+diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
+index 2e1800ad265b..ff2b7c7a9652 100644
+--- a/include/linux/iio/trigger.h
++++ b/include/linux/iio/trigger.h
+@@ -34,7 +34,6 @@ struct iio_trigger;
+  * instances of a given device.
+  **/
+ struct iio_trigger_ops {
+-	struct module *owner;
+ 	int (*set_trigger_state)(struct iio_trigger *trig, bool state);
+ 	int (*try_reenable)(struct iio_trigger *trig);
+ 	int (*validate_device)(struct iio_trigger *trig,
 -- 
-With Best Regards,
-Andy Shevchenko
+2.13.0
