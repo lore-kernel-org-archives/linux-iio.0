@@ -2,370 +2,194 @@ Return-Path: <jic23@kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 00/38] IIO: Drop manual assignment of THIS_MODULE
-Date: Mon, 29 May 2017 16:51:16 +0100
-Message-Id: <20170529155154.22580-1-jic23@kernel.org>
+Subject: [PATCH 01/38] iio: Use macro magic to avoid manual assign of driver_module
+Date: Mon, 29 May 2017 16:51:17 +0100
+Message-Id: <20170529155154.22580-2-jic23@kernel.org>
+In-Reply-To: <20170529155154.22580-1-jic23@kernel.org>
+References: <20170529155154.22580-1-jic23@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-This has been in the todo list for quite some time.  There are two
-places in IIO in which every driver assigns THIS_MODULE to a structure
-element, so that the core can correctly assign ownership of various
-resources.
+Starting point in boiler plate reduction similar to that done for
+many similar cases elsewhere in the kernel.
 
-With a simple macro, and moving the actual element used to store these
-out of the relevant ops structures we can remove the necessity to do
-this leading to a reduction in boilerplate.
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/iio/industrialio-core.c    | 35 +++++++++--------------------------
+ drivers/iio/industrialio-trigger.c |  6 +++---
+ include/linux/iio/iio.h            | 31 +++++++++++++++++++++++++++++--
+ 3 files changed, 41 insertions(+), 31 deletions(-)
 
-We have a few iio drivers as part of other drivers outside of IIO, but
-I have hopefully caught all of those.
-
-I've split it mainly up into directories just to avoid having several
-hundred patches for such a trivial per driver change.  I'm not going
-to attempt to put together a coherent cc list for these and instead
-am mostly just going to post them to the mailing list for general
-review.
-
-Thanks,
-
-Jonathan
-
-Jonathan Cameron (38):
-  iio: Use macro magic to avoid manual assign of driver_module
-  iio: triggers: Use macros to avoid boilerplate assignment of owner.
-  coccinelle: Add an iio_no_owner semantic patch to drop driver_owner
-  iio:adc: drop assign iio_info.driver_module and iio_trigger_ops.owner
-  iio:accel: drop assign iio_info.driver_module and
-    iio_trigger_ops.owner
-  iio:amplifiers:ad8366 drop assign iio_info.driver_module and
-    iio_trigger_ops.owner
-  iio:chemical: drop assign iio_info.driver_module and
-    iio_trigger_ops.owner
-  iio:common: drop assign iio_info.driver_module and
-    iio_trigger_ops.owner
-  iio:counter:104-quad-8 drop assign iio_info.driver_module
-  iio:dac: drop assignment of iio_info.driver_module
-  iio:dummy: drop assignment of iio_info.driver_module
-  iio:frequency: drop assign iio_info.driver_module
-  iio:gyro: drop assign iio_info.driver_module and iio_trigger_ops.owner
-  iio:health: drop assign iio_info.driver_module and
-    iio_trigger_ops.owner
-  iio:humidity: drop assign iio_info.driver_module and
-    iio_trigger_ops.owner
-  iio:imu: drop assign iio_info.driver_module and iio_trigger_ops.owner
-  iio:light: drop assign iio_info.driver_module and
-    iio_trigger_ops.owner
-  iio:magnetometer: drop assign iio_info.driver_module and
-    iio_trigger_ops.owner
-  iio:orientation: drop assign iio_info.driver_module
-  iio:dpot: drop assign iio_info.driver_module
-  iio:potentiostat:lmp91000 drop assign iio_info.driver_module and
-    iio_trigger_ops.owner
-  iio:pressure: drop assign iio_info.driver_module and
-    iio_trigger_ops.owner
-  iio:proximity: drop assign iio_info.driver_module and
-    iio_trigger_ops.owner
-  iio:temperature: drop assignment of iio_info.driver_module
-  iio:triggers: drop assign iio_info.driver_module and
-    iio_trigger_ops.owner
-  staging:iio:accel: drop assignment of iio_info.driver_module
-  staging:iio:adc: drop assign iio_info.driver_module
-  staging:iio:cdc: drop assign iio_info.driver_module
-  staging:iio:frequency: drop assign iio_info.driver_module
-  staging:iio:gyro:adis16060 drop assign iio_info.driver_module
-  staging:iio:ad5933: drop assign iio_info.driver_module
-  staging:iio:meter: drop assign iio_info.driver_module and
-    iio_trigger_ops.owner
-  iio:resolver: drop assignment of iio_info.driver_module
-  iio:adc: drop assignment of iio_trigger_ops.owner
-  staging:iio:light:tsl2x7x drop assignment of driver_module
-  input: tsc2007 - drop the driver_module assignment in iio interface.
-  platform/x86: toshiba_acpi: drop assignment of iio_info.driver_module
-  iio: drop iio_info.driver_module and iio_trigger_ops.owner.
-
- drivers/iio/accel/adxl345_core.c                   |  1 -
- drivers/iio/accel/bma180.c                         |  2 -
- drivers/iio/accel/bma220_spi.c                     |  1 -
- drivers/iio/accel/bmc150-accel-core.c              |  3 -
- drivers/iio/accel/da280.c                          |  1 -
- drivers/iio/accel/da311.c                          |  1 -
- drivers/iio/accel/dmard06.c                        |  1 -
- drivers/iio/accel/dmard09.c                        |  1 -
- drivers/iio/accel/dmard10.c                        |  1 -
- drivers/iio/accel/hid-sensor-accel-3d.c            |  1 -
- drivers/iio/accel/kxcjk-1013.c                     |  2 -
- drivers/iio/accel/kxsd9.c                          |  1 -
- drivers/iio/accel/mc3230.c                         |  1 -
- drivers/iio/accel/mma7455_core.c                   |  1 -
- drivers/iio/accel/mma7660.c                        |  1 -
- drivers/iio/accel/mma8452.c                        |  2 -
- drivers/iio/accel/mma9551.c                        |  1 -
- drivers/iio/accel/mma9553.c                        |  1 -
- drivers/iio/accel/mxc4005.c                        |  2 -
- drivers/iio/accel/mxc6255.c                        |  1 -
- drivers/iio/accel/sca3000.c                        |  1 -
- drivers/iio/accel/st_accel_core.c                  |  2 -
- drivers/iio/accel/stk8312.c                        |  2 -
- drivers/iio/accel/stk8ba50.c                       |  2 -
- drivers/iio/adc/ad7266.c                           |  1 -
- drivers/iio/adc/ad7291.c                           |  1 -
- drivers/iio/adc/ad7298.c                           |  1 -
- drivers/iio/adc/ad7476.c                           |  1 -
- drivers/iio/adc/ad7766.c                           |  2 -
- drivers/iio/adc/ad7791.c                           |  2 -
- drivers/iio/adc/ad7793.c                           |  2 -
- drivers/iio/adc/ad7887.c                           |  1 -
- drivers/iio/adc/ad7923.c                           |  1 -
- drivers/iio/adc/ad799x.c                           |  3 -
- drivers/iio/adc/ad_sigma_delta.c                   |  1 -
- drivers/iio/adc/aspeed_adc.c                       |  1 -
- drivers/iio/adc/at91-sama5d2_adc.c                 |  1 -
- drivers/iio/adc/at91_adc.c                         |  2 -
- drivers/iio/adc/axp288_adc.c                       |  1 -
- drivers/iio/adc/bcm_iproc_adc.c                    |  1 -
- drivers/iio/adc/berlin2-adc.c                      |  1 -
- drivers/iio/adc/cc10001_adc.c                      |  1 -
- drivers/iio/adc/cpcap-adc.c                        |  1 -
- drivers/iio/adc/da9150-gpadc.c                     |  1 -
- drivers/iio/adc/envelope-detector.c                |  1 -
- drivers/iio/adc/exynos_adc.c                       |  1 -
- drivers/iio/adc/hi8435.c                           |  1 -
- drivers/iio/adc/hx711.c                            |  1 -
- drivers/iio/adc/imx7d_adc.c                        |  1 -
- drivers/iio/adc/ina2xx-adc.c                       |  1 -
- drivers/iio/adc/lp8788_adc.c                       |  1 -
- drivers/iio/adc/lpc18xx_adc.c                      |  1 -
- drivers/iio/adc/lpc32xx_adc.c                      |  1 -
- drivers/iio/adc/ltc2485.c                          |  1 -
- drivers/iio/adc/ltc2497.c                          |  1 -
- drivers/iio/adc/max1027.c                          |  2 -
- drivers/iio/adc/max11100.c                         |  1 -
- drivers/iio/adc/max1118.c                          |  1 -
- drivers/iio/adc/max1363.c                          |  2 -
- drivers/iio/adc/max9611.c                          |  1 -
- drivers/iio/adc/mcp320x.c                          |  1 -
- drivers/iio/adc/mcp3422.c                          |  1 -
- drivers/iio/adc/men_z188_adc.c                     |  1 -
- drivers/iio/adc/meson_saradc.c                     |  1 -
- drivers/iio/adc/mt6577_auxadc.c                    |  1 -
- drivers/iio/adc/mxs-lradc-adc.c                    |  2 -
- drivers/iio/adc/nau7802.c                          |  1 -
- drivers/iio/adc/palmas_gpadc.c                     |  1 -
- drivers/iio/adc/qcom-pm8xxx-xoadc.c                |  1 -
- drivers/iio/adc/qcom-spmi-iadc.c                   |  1 -
- drivers/iio/adc/qcom-spmi-vadc.c                   |  1 -
- drivers/iio/adc/rcar-gyroadc.c                     |  1 -
- drivers/iio/adc/rockchip_saradc.c                  |  1 -
- drivers/iio/adc/spear_adc.c                        |  1 -
- drivers/iio/adc/stm32-adc.c                        |  1 -
- drivers/iio/adc/stx104.c                           |  1 -
- drivers/iio/adc/sun4i-gpadc-iio.c                  |  1 -
- drivers/iio/adc/ti-adc081c.c                       |  1 -
- drivers/iio/adc/ti-adc0832.c                       |  1 -
- drivers/iio/adc/ti-adc084s021.c                    |  1 -
- drivers/iio/adc/ti-adc108s102.c                    |  1 -
- drivers/iio/adc/ti-adc12138.c                      |  1 -
- drivers/iio/adc/ti-adc128s052.c                    |  1 -
- drivers/iio/adc/ti-adc161s626.c                    |  1 -
- drivers/iio/adc/ti-ads1015.c                       |  2 -
- drivers/iio/adc/ti-ads7950.c                       |  1 -
- drivers/iio/adc/ti-ads8688.c                       |  1 -
- drivers/iio/adc/ti-tlc4541.c                       |  1 -
- drivers/iio/adc/ti_am335x_adc.c                    |  1 -
- drivers/iio/adc/twl4030-madc.c                     |  1 -
- drivers/iio/adc/twl6030-gpadc.c                    |  1 -
- drivers/iio/adc/vf610_adc.c                        |  1 -
- drivers/iio/adc/viperboard_adc.c                   |  1 -
- drivers/iio/adc/xilinx-xadc-core.c                 |  2 -
- drivers/iio/amplifiers/ad8366.c                    |  1 -
- drivers/iio/chemical/ams-iaq-core.c                |  1 -
- drivers/iio/chemical/atlas-ph-sensor.c             |  2 -
- drivers/iio/chemical/vz89x.c                       |  1 -
- .../iio/common/cros_ec_sensors/cros_ec_sensors.c   |  1 -
- .../iio/common/hid-sensors/hid-sensor-trigger.c    |  1 -
- drivers/iio/counter/104-quad-8.c                   |  1 -
- drivers/iio/dac/ad5064.c                           |  1 -
- drivers/iio/dac/ad5360.c                           |  1 -
- drivers/iio/dac/ad5380.c                           |  1 -
- drivers/iio/dac/ad5421.c                           |  1 -
- drivers/iio/dac/ad5446.c                           |  1 -
- drivers/iio/dac/ad5449.c                           |  1 -
- drivers/iio/dac/ad5504.c                           |  1 -
- drivers/iio/dac/ad5592r-base.c                     |  1 -
- drivers/iio/dac/ad5624r_spi.c                      |  1 -
- drivers/iio/dac/ad5686.c                           |  1 -
- drivers/iio/dac/ad5755.c                           |  1 -
- drivers/iio/dac/ad5761.c                           |  1 -
- drivers/iio/dac/ad5764.c                           |  1 -
- drivers/iio/dac/ad5791.c                           |  1 -
- drivers/iio/dac/ad7303.c                           |  1 -
- drivers/iio/dac/ad8801.c                           |  1 -
- drivers/iio/dac/cio-dac.c                          |  1 -
- drivers/iio/dac/dpot-dac.c                         |  1 -
- drivers/iio/dac/lpc18xx_dac.c                      |  1 -
- drivers/iio/dac/ltc2632.c                          |  1 -
- drivers/iio/dac/m62332.c                           |  1 -
- drivers/iio/dac/max517.c                           |  1 -
- drivers/iio/dac/max5821.c                          |  1 -
- drivers/iio/dac/mcp4725.c                          |  1 -
- drivers/iio/dac/mcp4922.c                          |  1 -
- drivers/iio/dac/stm32-dac.c                        |  1 -
- drivers/iio/dac/vf610_dac.c                        |  1 -
- drivers/iio/dummy/iio_simple_dummy.c               |  1 -
- drivers/iio/frequency/ad9523.c                     |  1 -
- drivers/iio/frequency/adf4350.c                    |  1 -
- drivers/iio/gyro/adis16080.c                       |  1 -
- drivers/iio/gyro/adis16130.c                       |  1 -
- drivers/iio/gyro/adis16136.c                       |  1 -
- drivers/iio/gyro/adis16260.c                       |  1 -
- drivers/iio/gyro/adxrs450.c                        |  1 -
- drivers/iio/gyro/bmg160_core.c                     |  2 -
- drivers/iio/gyro/hid-sensor-gyro-3d.c              |  1 -
- drivers/iio/gyro/itg3200_buffer.c                  |  1 -
- drivers/iio/gyro/itg3200_core.c                    |  1 -
- drivers/iio/gyro/mpu3050-core.c                    |  2 -
- drivers/iio/gyro/st_gyro_core.c                    |  2 -
- drivers/iio/health/afe4403.c                       |  2 -
- drivers/iio/health/afe4404.c                       |  2 -
- drivers/iio/health/max30100.c                      |  1 -
- drivers/iio/health/max30102.c                      |  1 -
- drivers/iio/humidity/am2315.c                      |  1 -
- drivers/iio/humidity/dht11.c                       |  1 -
- drivers/iio/humidity/hdc100x.c                     |  1 -
- drivers/iio/humidity/hid-sensor-humidity.c         |  1 -
- drivers/iio/humidity/hts221_buffer.c               |  1 -
- drivers/iio/humidity/hts221_core.c                 |  1 -
- drivers/iio/humidity/htu21.c                       |  1 -
- drivers/iio/humidity/si7005.c                      |  1 -
- drivers/iio/humidity/si7020.c                      |  1 -
- drivers/iio/imu/adis16400_core.c                   |  1 -
- drivers/iio/imu/adis16480.c                        |  1 -
- drivers/iio/imu/adis_trigger.c                     |  1 -
- drivers/iio/imu/bmi160/bmi160_core.c               |  1 -
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c         |  1 -
- drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c      |  1 -
- drivers/iio/imu/kmx61.c                            |  3 -
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c       |  2 -
- drivers/iio/industrialio-core.c                    | 35 +++-----
- drivers/iio/industrialio-trigger.c                 | 24 +++---
- drivers/iio/light/acpi-als.c                       |  1 -
- drivers/iio/light/adjd_s311.c                      |  1 -
- drivers/iio/light/al3320a.c                        |  1 -
- drivers/iio/light/apds9300.c                       |  2 -
- drivers/iio/light/apds9960.c                       |  1 -
- drivers/iio/light/bh1750.c                         |  1 -
- drivers/iio/light/bh1780.c                         |  1 -
- drivers/iio/light/cm32181.c                        |  1 -
- drivers/iio/light/cm3232.c                         |  1 -
- drivers/iio/light/cm3323.c                         |  1 -
- drivers/iio/light/cm3605.c                         |  1 -
- drivers/iio/light/cm36651.c                        |  1 -
- drivers/iio/light/cros_ec_light_prox.c             |  1 -
- drivers/iio/light/gp2ap020a00f.c                   |  2 -
- drivers/iio/light/hid-sensor-als.c                 |  1 -
- drivers/iio/light/hid-sensor-prox.c                |  1 -
- drivers/iio/light/isl29018.c                       |  2 -
- drivers/iio/light/isl29028.c                       |  1 -
- drivers/iio/light/isl29125.c                       |  1 -
- drivers/iio/light/jsa1212.c                        |  1 -
- drivers/iio/light/lm3533-als.c                     |  1 -
- drivers/iio/light/ltr501.c                         |  4 -
- drivers/iio/light/max44000.c                       |  1 -
- drivers/iio/light/opt3001.c                        |  1 -
- drivers/iio/light/pa12203001.c                     |  1 -
- drivers/iio/light/rpr0521.c                        |  1 -
- drivers/iio/light/si1145.c                         |  3 -
- drivers/iio/light/stk3310.c                        |  1 -
- drivers/iio/light/tcs3414.c                        |  1 -
- drivers/iio/light/tcs3472.c                        |  1 -
- drivers/iio/light/tsl2563.c                        |  2 -
- drivers/iio/light/tsl2583.c                        |  1 -
- drivers/iio/light/tsl4531.c                        |  1 -
- drivers/iio/light/us5182d.c                        |  1 -
- drivers/iio/light/vcnl4000.c                       |  1 -
- drivers/iio/light/veml6070.c                       |  1 -
- drivers/iio/light/vl6180.c                         |  1 -
- drivers/iio/magnetometer/ak8974.c                  |  1 -
- drivers/iio/magnetometer/ak8975.c                  |  1 -
- drivers/iio/magnetometer/bmc150_magn.c             |  2 -
- drivers/iio/magnetometer/hid-sensor-magn-3d.c      |  1 -
- drivers/iio/magnetometer/hmc5843_core.c            |  1 -
- drivers/iio/magnetometer/mag3110.c                 |  1 -
- drivers/iio/magnetometer/mmc35240.c                |  1 -
- drivers/iio/magnetometer/st_magn_core.c            |  2 -
- drivers/iio/orientation/hid-sensor-incl-3d.c       |  1 -
- drivers/iio/orientation/hid-sensor-rotation.c      |  1 -
- drivers/iio/potentiometer/ds1803.c                 |  1 -
- drivers/iio/potentiometer/max5481.c                |  1 -
- drivers/iio/potentiometer/max5487.c                |  1 -
- drivers/iio/potentiometer/mcp4131.c                |  1 -
- drivers/iio/potentiometer/mcp4531.c                |  1 -
- drivers/iio/potentiometer/tpl0102.c                |  1 -
- drivers/iio/potentiostat/lmp91000.c                |  2 -
- drivers/iio/pressure/abp060mg.c                    |  1 -
- drivers/iio/pressure/bmp280-core.c                 |  1 -
- drivers/iio/pressure/cros_ec_baro.c                |  1 -
- drivers/iio/pressure/hid-sensor-press.c            |  1 -
- drivers/iio/pressure/hp03.c                        |  1 -
- drivers/iio/pressure/hp206c.c                      |  1 -
- drivers/iio/pressure/mpl115.c                      |  1 -
- drivers/iio/pressure/mpl3115.c                     |  1 -
- drivers/iio/pressure/ms5611_core.c                 |  1 -
- drivers/iio/pressure/ms5637.c                      |  1 -
- drivers/iio/pressure/st_pressure_core.c            |  2 -
- drivers/iio/pressure/t5403.c                       |  1 -
- drivers/iio/pressure/zpa2326.c                     |  2 -
- drivers/iio/proximity/as3935.c                     |  2 -
- drivers/iio/proximity/pulsedlight-lidar-lite-v2.c  |  1 -
- drivers/iio/proximity/srf04.c                      |  1 -
- drivers/iio/proximity/srf08.c                      |  1 -
- drivers/iio/proximity/sx9500.c                     |  2 -
- drivers/iio/temperature/hid-sensor-temperature.c   |  1 -
- drivers/iio/temperature/maxim_thermocouple.c       |  1 -
- drivers/iio/temperature/mlx90614.c                 |  1 -
- drivers/iio/temperature/tmp006.c                   |  1 -
- drivers/iio/temperature/tmp007.c                   |  1 -
- drivers/iio/temperature/tsys01.c                   |  1 -
- drivers/iio/temperature/tsys02d.c                  |  1 -
- drivers/iio/trigger/iio-trig-hrtimer.c             |  1 -
- drivers/iio/trigger/iio-trig-interrupt.c           |  1 -
- drivers/iio/trigger/iio-trig-loop.c                |  1 -
- drivers/iio/trigger/iio-trig-sysfs.c               |  1 -
- drivers/iio/trigger/stm32-timer-trigger.c          |  2 -
- drivers/input/touchscreen/tsc2007_iio.c            |  1 -
- drivers/platform/x86/toshiba_acpi.c                |  1 -
- drivers/staging/iio/accel/adis16201.c              |  1 -
- drivers/staging/iio/accel/adis16203.c              |  1 -
- drivers/staging/iio/accel/adis16209.c              |  1 -
- drivers/staging/iio/accel/adis16240.c              |  1 -
- drivers/staging/iio/adc/ad7192.c                   |  2 -
- drivers/staging/iio/adc/ad7280a.c                  |  1 -
- drivers/staging/iio/adc/ad7606.c                   |  4 -
- drivers/staging/iio/adc/ad7780.c                   |  1 -
- drivers/staging/iio/adc/ad7816.c                   |  1 -
- drivers/staging/iio/addac/adt7316.c                |  2 -
- drivers/staging/iio/cdc/ad7150.c                   |  1 -
- drivers/staging/iio/cdc/ad7152.c                   |  1 -
- drivers/staging/iio/cdc/ad7746.c                   |  1 -
- drivers/staging/iio/frequency/ad9832.c             |  1 -
- drivers/staging/iio/frequency/ad9834.c             |  2 -
- drivers/staging/iio/gyro/adis16060_core.c          |  1 -
- drivers/staging/iio/impedance-analyzer/ad5933.c    |  1 -
- drivers/staging/iio/light/tsl2x7x.c                |  5 --
- drivers/staging/iio/meter/ade7753.c                |  1 -
- drivers/staging/iio/meter/ade7754.c                |  1 -
- drivers/staging/iio/meter/ade7758_core.c           |  1 -
- drivers/staging/iio/meter/ade7758_trigger.c        |  1 -
- drivers/staging/iio/meter/ade7759.c                |  1 -
- drivers/staging/iio/meter/ade7854.c                |  1 -
- drivers/staging/iio/resolver/ad2s1200.c            |  1 -
- drivers/staging/iio/resolver/ad2s1210.c            |  1 -
- drivers/staging/iio/resolver/ad2s90.c              |  1 -
- drivers/staging/iio/trigger/iio-trig-bfin-timer.c  |  1 -
- include/linux/iio/iio.h                            | 34 ++++++--
- include/linux/iio/trigger.h                        | 20 +++--
- scripts/coccinelle/api/iio_no_owner.cocci          | 94 ++++++++++++++++++++++
- 282 files changed, 160 insertions(+), 380 deletions(-)
- create mode 100644 scripts/coccinelle/api/iio_no_owner.cocci
-
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 4a1de59d153a..62dafa4414e3 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -1665,14 +1665,11 @@ static int iio_check_unique_scan_index(struct iio_dev *indio_dev)
+ 
+ static const struct iio_buffer_setup_ops noop_ring_setup_ops;
+ 
+-/**
+- * iio_device_register() - register a device with the IIO subsystem
+- * @indio_dev:		Device structure filled by the device driver
+- **/
+-int iio_device_register(struct iio_dev *indio_dev)
++int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
+ {
+ 	int ret;
+ 
++	indio_dev->driver_module = this_mod;
+ 	/* If the calling driver did not initialize of_node, do it here */
+ 	if (!indio_dev->dev.of_node && indio_dev->dev.parent)
+ 		indio_dev->dev.of_node = indio_dev->dev.parent->of_node;
+@@ -1718,7 +1715,8 @@ int iio_device_register(struct iio_dev *indio_dev)
+ 		indio_dev->setup_ops = &noop_ring_setup_ops;
+ 
+ 	cdev_init(&indio_dev->chrdev, &iio_buffer_fileops);
+-	indio_dev->chrdev.owner = indio_dev->info->driver_module;
++
++	indio_dev->chrdev.owner = this_mod;
+ 
+ 	ret = cdev_device_add(&indio_dev->chrdev, &indio_dev->dev);
+ 	if (ret < 0)
+@@ -1736,7 +1734,7 @@ int iio_device_register(struct iio_dev *indio_dev)
+ 	iio_device_unregister_debugfs(indio_dev);
+ 	return ret;
+ }
+-EXPORT_SYMBOL(iio_device_register);
++EXPORT_SYMBOL(__iio_device_register);
+ 
+ /**
+  * iio_device_unregister() - unregister a device from the IIO subsystem
+@@ -1768,23 +1766,8 @@ static void devm_iio_device_unreg(struct device *dev, void *res)
+ 	iio_device_unregister(*(struct iio_dev **)res);
+ }
+ 
+-/**
+- * devm_iio_device_register - Resource-managed iio_device_register()
+- * @dev:	Device to allocate iio_dev for
+- * @indio_dev:	Device structure filled by the device driver
+- *
+- * Managed iio_device_register.  The IIO device registered with this
+- * function is automatically unregistered on driver detach. This function
+- * calls iio_device_register() internally. Refer to that function for more
+- * information.
+- *
+- * If an iio_dev registered with this function needs to be unregistered
+- * separately, devm_iio_device_unregister() must be used.
+- *
+- * RETURNS:
+- * 0 on success, negative error number on failure.
+- */
+-int devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev)
++int __devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev,
++			       struct module *this_mod)
+ {
+ 	struct iio_dev **ptr;
+ 	int ret;
+@@ -1794,7 +1777,7 @@ int devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev)
+ 		return -ENOMEM;
+ 
+ 	*ptr = indio_dev;
+-	ret = iio_device_register(indio_dev);
++	ret = __iio_device_register(indio_dev, this_mod);
+ 	if (!ret)
+ 		devres_add(dev, ptr);
+ 	else
+@@ -1802,7 +1785,7 @@ int devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev)
+ 
+ 	return ret;
+ }
+-EXPORT_SYMBOL_GPL(devm_iio_device_register);
++EXPORT_SYMBOL_GPL(__devm_iio_device_register);
+ 
+ /**
+  * devm_iio_device_unregister - Resource-managed iio_device_unregister()
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+index 978e1592c2a3..067e58863592 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -250,7 +250,7 @@ static int iio_trigger_attach_poll_func(struct iio_trigger *trig,
+ 		= bitmap_empty(trig->pool, CONFIG_IIO_CONSUMERS_PER_TRIGGER);
+ 
+ 	/* Prevent the module from being removed whilst attached to a trigger */
+-	__module_get(pf->indio_dev->info->driver_module);
++	__module_get(pf->indio_dev->driver_module);
+ 
+ 	/* Get irq number */
+ 	pf->irq = iio_trigger_get_irq(trig);
+@@ -286,7 +286,7 @@ static int iio_trigger_attach_poll_func(struct iio_trigger *trig,
+ out_put_irq:
+ 	iio_trigger_put_irq(trig, pf->irq);
+ out_put_module:
+-	module_put(pf->indio_dev->info->driver_module);
++	module_put(pf->indio_dev->driver_module);
+ 	return ret;
+ }
+ 
+@@ -307,7 +307,7 @@ static int iio_trigger_detach_poll_func(struct iio_trigger *trig,
+ 		trig->attached_own_device = false;
+ 	iio_trigger_put_irq(trig, pf->irq);
+ 	free_irq(pf->irq, pf);
+-	module_put(pf->indio_dev->info->driver_module);
++	module_put(pf->indio_dev->driver_module);
+ 
+ 	return ret;
+ }
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 3f5ea2e9a39e..f65391067089 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -512,6 +512,7 @@ struct iio_buffer_setup_ops {
+ /**
+  * struct iio_dev - industrial I/O device
+  * @id:			[INTERN] used to identify device internally
++ * @driver_module:	[INTERN] used to make it harder to undercut users
+  * @modes:		[DRIVER] operating modes supported by device
+  * @currentmode:	[DRIVER] current operating mode
+  * @dev:		[DRIVER] device structure, should be assigned a parent
+@@ -552,6 +553,7 @@ struct iio_buffer_setup_ops {
+  */
+ struct iio_dev {
+ 	int				id;
++	struct module			*driver_module;
+ 
+ 	int				modes;
+ 	int				currentmode;
+@@ -598,9 +600,34 @@ struct iio_dev {
+ 
+ const struct iio_chan_spec
+ *iio_find_channel_from_si(struct iio_dev *indio_dev, int si);
+-int iio_device_register(struct iio_dev *indio_dev);
++/**
++ * iio_device_register() - register a device with the IIO subsystem
++ * @indio_dev:		Device structure filled by the device driver
++ **/
++#define iio_device_register(iio_dev) \
++	__iio_device_register(iio_dev, THIS_MODULE)
++int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod);
+ void iio_device_unregister(struct iio_dev *indio_dev);
+-int devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev);
++/**
++ * devm_iio_device_register - Resource-managed iio_device_register()
++ * @dev:	Device to allocate iio_dev for
++ * @indio_dev:	Device structure filled by the device driver
++ *
++ * Managed iio_device_register.  The IIO device registered with this
++ * function is automatically unregistered on driver detach. This function
++ * calls iio_device_register() internally. Refer to that function for more
++ * information.
++ *
++ * If an iio_dev registered with this function needs to be unregistered
++ * separately, devm_iio_device_unregister() must be used.
++ *
++ * RETURNS:
++ * 0 on success, negative error number on failure.
++ */
++#define devm_iio_device_register(dev, indio_dev) \
++	__devm_iio_device_register(dev, indio_dev, THIS_MODULE);
++int __devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev,
++			       struct module *this_mod);
+ void devm_iio_device_unregister(struct device *dev, struct iio_dev *indio_dev);
+ int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp);
+ int iio_device_claim_direct_mode(struct iio_dev *indio_dev);
 -- 
 2.13.0
