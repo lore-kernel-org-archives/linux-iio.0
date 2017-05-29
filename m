@@ -2,33 +2,67 @@ Return-Path: <jic23@kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 34/38] iio:adc: drop assignment of iio_trigger_ops.owner
-Date: Mon, 29 May 2017 16:51:50 +0100
-Message-Id: <20170529155154.22580-35-jic23@kernel.org>
+Subject: [PATCH 35/38] staging:iio:light:tsl2x7x drop assignment of driver_module
+Date: Mon, 29 May 2017 16:51:51 +0100
+Message-Id: <20170529155154.22580-36-jic23@kernel.org>
 In-Reply-To: <20170529155154.22580-1-jic23@kernel.org>
 References: <20170529155154.22580-1-jic23@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-The equivalent of this is now done via macro magic when
-the relevant register call is made.  The actual structure
-elements will shortly go away.
+The equivalent is now done via macro magic in the register call.
+
+Note this is the only case not found by the coccinelle script
+suggesting that perhaps that script needs to be a little more
+clever!
 
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/trigger/iio-trig-bfin-timer.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/staging/iio/light/tsl2x7x.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
-index 4e0b4eedb53d..d80dcf82eba9 100644
---- a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
-+++ b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
-@@ -172,7 +172,6 @@ static int iio_bfin_tmr_get_number(int irq)
- }
- 
- static const struct iio_trigger_ops iio_bfin_tmr_trigger_ops = {
--	.owner = THIS_MODULE,
- 	.set_trigger_state = iio_bfin_tmr_set_state,
- };
- 
+diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
+index 146719928fb3..3b4bf710da2a 100644
+--- a/drivers/staging/iio/light/tsl2x7x.c
++++ b/drivers/staging/iio/light/tsl2x7x.c
+@@ -1681,7 +1681,6 @@ static const struct iio_info tsl2X7X_device_info[] = {
+ 	[ALS] = {
+ 		.attrs = &tsl2X7X_device_attr_group_tbl[ALS],
+ 		.event_attrs = &tsl2X7X_event_attr_group_tbl[ALS],
+-		.driver_module = THIS_MODULE,
+ 		.read_raw = &tsl2x7x_read_raw,
+ 		.write_raw = &tsl2x7x_write_raw,
+ 		.read_event_value = &tsl2x7x_read_thresh,
+@@ -1692,7 +1691,6 @@ static const struct iio_info tsl2X7X_device_info[] = {
+ 	[PRX] = {
+ 		.attrs = &tsl2X7X_device_attr_group_tbl[PRX],
+ 		.event_attrs = &tsl2X7X_event_attr_group_tbl[PRX],
+-		.driver_module = THIS_MODULE,
+ 		.read_raw = &tsl2x7x_read_raw,
+ 		.write_raw = &tsl2x7x_write_raw,
+ 		.read_event_value = &tsl2x7x_read_thresh,
+@@ -1703,7 +1701,6 @@ static const struct iio_info tsl2X7X_device_info[] = {
+ 	[ALSPRX] = {
+ 		.attrs = &tsl2X7X_device_attr_group_tbl[ALSPRX],
+ 		.event_attrs = &tsl2X7X_event_attr_group_tbl[ALSPRX],
+-		.driver_module = THIS_MODULE,
+ 		.read_raw = &tsl2x7x_read_raw,
+ 		.write_raw = &tsl2x7x_write_raw,
+ 		.read_event_value = &tsl2x7x_read_thresh,
+@@ -1714,7 +1711,6 @@ static const struct iio_info tsl2X7X_device_info[] = {
+ 	[PRX2] = {
+ 		.attrs = &tsl2X7X_device_attr_group_tbl[PRX2],
+ 		.event_attrs = &tsl2X7X_event_attr_group_tbl[PRX],
+-		.driver_module = THIS_MODULE,
+ 		.read_raw = &tsl2x7x_read_raw,
+ 		.write_raw = &tsl2x7x_write_raw,
+ 		.read_event_value = &tsl2x7x_read_thresh,
+@@ -1725,7 +1721,6 @@ static const struct iio_info tsl2X7X_device_info[] = {
+ 	[ALSPRX2] = {
+ 		.attrs = &tsl2X7X_device_attr_group_tbl[ALSPRX2],
+ 		.event_attrs = &tsl2X7X_event_attr_group_tbl[ALSPRX],
+-		.driver_module = THIS_MODULE,
+ 		.read_raw = &tsl2x7x_read_raw,
+ 		.write_raw = &tsl2x7x_write_raw,
+ 		.read_event_value = &tsl2x7x_read_thresh,
 -- 
 2.13.0
