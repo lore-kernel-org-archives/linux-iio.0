@@ -1,14 +1,14 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36883 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36884 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751074AbdE2PwL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 May 2017 11:52:11 -0400
+        with ESMTP id S1751105AbdE2PwM (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 May 2017 11:52:12 -0400
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 04/38] iio:adc: drop assign iio_info.driver_module and iio_trigger_ops.owner
-Date: Mon, 29 May 2017 16:51:20 +0100
-Message-Id: <20170529155154.22580-5-jic23@kernel.org>
+Subject: [PATCH 05/38] iio:accel: drop assign iio_info.driver_module and iio_trigger_ops.owner
+Date: Mon, 29 May 2017 16:51:21 +0100
+Message-Id: <20170529155154.22580-6-jic23@kernel.org>
 In-Reply-To: <20170529155154.22580-1-jic23@kernel.org>
 References: <20170529155154.22580-1-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
@@ -20,999 +20,392 @@ elements will shortly go away.
 
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/iio/adc/ad7266.c            | 1 -
- drivers/iio/adc/ad7291.c            | 1 -
- drivers/iio/adc/ad7298.c            | 1 -
- drivers/iio/adc/ad7476.c            | 1 -
- drivers/iio/adc/ad7766.c            | 2 --
- drivers/iio/adc/ad7791.c            | 2 --
- drivers/iio/adc/ad7793.c            | 2 --
- drivers/iio/adc/ad7887.c            | 1 -
- drivers/iio/adc/ad7923.c            | 1 -
- drivers/iio/adc/ad799x.c            | 3 ---
- drivers/iio/adc/ad_sigma_delta.c    | 1 -
- drivers/iio/adc/aspeed_adc.c        | 1 -
- drivers/iio/adc/at91-sama5d2_adc.c  | 1 -
- drivers/iio/adc/at91_adc.c          | 2 --
- drivers/iio/adc/axp288_adc.c        | 1 -
- drivers/iio/adc/bcm_iproc_adc.c     | 1 -
- drivers/iio/adc/berlin2-adc.c       | 1 -
- drivers/iio/adc/cc10001_adc.c       | 1 -
- drivers/iio/adc/cpcap-adc.c         | 1 -
- drivers/iio/adc/da9150-gpadc.c      | 1 -
- drivers/iio/adc/envelope-detector.c | 1 -
- drivers/iio/adc/exynos_adc.c        | 1 -
- drivers/iio/adc/hi8435.c            | 1 -
- drivers/iio/adc/hx711.c             | 1 -
- drivers/iio/adc/imx7d_adc.c         | 1 -
- drivers/iio/adc/ina2xx-adc.c        | 1 -
- drivers/iio/adc/lp8788_adc.c        | 1 -
- drivers/iio/adc/lpc18xx_adc.c       | 1 -
- drivers/iio/adc/lpc32xx_adc.c       | 1 -
- drivers/iio/adc/ltc2485.c           | 1 -
- drivers/iio/adc/ltc2497.c           | 1 -
- drivers/iio/adc/max1027.c           | 2 --
- drivers/iio/adc/max11100.c          | 1 -
- drivers/iio/adc/max1118.c           | 1 -
- drivers/iio/adc/max1363.c           | 2 --
- drivers/iio/adc/max9611.c           | 1 -
- drivers/iio/adc/mcp320x.c           | 1 -
- drivers/iio/adc/mcp3422.c           | 1 -
- drivers/iio/adc/men_z188_adc.c      | 1 -
- drivers/iio/adc/meson_saradc.c      | 1 -
- drivers/iio/adc/mt6577_auxadc.c     | 1 -
- drivers/iio/adc/mxs-lradc-adc.c     | 2 --
- drivers/iio/adc/nau7802.c           | 1 -
- drivers/iio/adc/palmas_gpadc.c      | 1 -
- drivers/iio/adc/qcom-pm8xxx-xoadc.c | 1 -
- drivers/iio/adc/qcom-spmi-iadc.c    | 1 -
- drivers/iio/adc/qcom-spmi-vadc.c    | 1 -
- drivers/iio/adc/rcar-gyroadc.c      | 1 -
- drivers/iio/adc/rockchip_saradc.c   | 1 -
- drivers/iio/adc/spear_adc.c         | 1 -
- drivers/iio/adc/stm32-adc.c         | 1 -
- drivers/iio/adc/stx104.c            | 1 -
- drivers/iio/adc/sun4i-gpadc-iio.c   | 1 -
- drivers/iio/adc/ti-adc081c.c        | 1 -
- drivers/iio/adc/ti-adc0832.c        | 1 -
- drivers/iio/adc/ti-adc084s021.c     | 1 -
- drivers/iio/adc/ti-adc108s102.c     | 1 -
- drivers/iio/adc/ti-adc12138.c       | 1 -
- drivers/iio/adc/ti-adc128s052.c     | 1 -
- drivers/iio/adc/ti-adc161s626.c     | 1 -
- drivers/iio/adc/ti-ads1015.c        | 2 --
- drivers/iio/adc/ti-ads7950.c        | 1 -
- drivers/iio/adc/ti-ads8688.c        | 1 -
- drivers/iio/adc/ti-tlc4541.c        | 1 -
- drivers/iio/adc/ti_am335x_adc.c     | 1 -
- drivers/iio/adc/twl4030-madc.c      | 1 -
- drivers/iio/adc/twl6030-gpadc.c     | 1 -
- drivers/iio/adc/vf610_adc.c         | 1 -
- drivers/iio/adc/viperboard_adc.c    | 1 -
- drivers/iio/adc/xilinx-xadc-core.c  | 2 --
- 70 files changed, 81 deletions(-)
+ drivers/iio/accel/adxl345_core.c        | 1 -
+ drivers/iio/accel/bma180.c              | 2 --
+ drivers/iio/accel/bma220_spi.c          | 1 -
+ drivers/iio/accel/bmc150-accel-core.c   | 3 ---
+ drivers/iio/accel/da280.c               | 1 -
+ drivers/iio/accel/da311.c               | 1 -
+ drivers/iio/accel/dmard06.c             | 1 -
+ drivers/iio/accel/dmard09.c             | 1 -
+ drivers/iio/accel/dmard10.c             | 1 -
+ drivers/iio/accel/hid-sensor-accel-3d.c | 1 -
+ drivers/iio/accel/kxcjk-1013.c          | 2 --
+ drivers/iio/accel/kxsd9.c               | 1 -
+ drivers/iio/accel/mc3230.c              | 1 -
+ drivers/iio/accel/mma7455_core.c        | 1 -
+ drivers/iio/accel/mma7660.c             | 1 -
+ drivers/iio/accel/mma8452.c             | 2 --
+ drivers/iio/accel/mma9551.c             | 1 -
+ drivers/iio/accel/mma9553.c             | 1 -
+ drivers/iio/accel/mxc4005.c             | 2 --
+ drivers/iio/accel/mxc6255.c             | 1 -
+ drivers/iio/accel/sca3000.c             | 1 -
+ drivers/iio/accel/st_accel_core.c       | 2 --
+ drivers/iio/accel/stk8312.c             | 2 --
+ drivers/iio/accel/stk8ba50.c            | 2 --
+ 24 files changed, 33 deletions(-)
 
-diff --git a/drivers/iio/adc/ad7266.c b/drivers/iio/adc/ad7266.c
-index b8d5cfd57ec4..605eb5e7e829 100644
---- a/drivers/iio/adc/ad7266.c
-+++ b/drivers/iio/adc/ad7266.c
-@@ -280,7 +280,6 @@ static AD7266_DECLARE_DIFF_CHANNELS_FIXED(u, 'u');
- static const struct iio_info ad7266_info = {
- 	.read_raw = &ad7266_read_raw,
- 	.update_scan_mode = &ad7266_update_scan_mode,
--	.driver_module = THIS_MODULE,
- };
- 
- static const unsigned long ad7266_available_scan_masks[] = {
-diff --git a/drivers/iio/adc/ad7291.c b/drivers/iio/adc/ad7291.c
-index 1d90b02732bb..a862b5d8fb4b 100644
---- a/drivers/iio/adc/ad7291.c
-+++ b/drivers/iio/adc/ad7291.c
-@@ -461,7 +461,6 @@ static const struct iio_info ad7291_info = {
- 	.write_event_config = &ad7291_write_event_config,
- 	.read_event_value = &ad7291_read_event_value,
- 	.write_event_value = &ad7291_write_event_value,
--	.driver_module = THIS_MODULE,
- };
- 
- static int ad7291_probe(struct i2c_client *client,
-diff --git a/drivers/iio/adc/ad7298.c b/drivers/iio/adc/ad7298.c
-index e399bf04c73a..2b20c6c8ec7f 100644
---- a/drivers/iio/adc/ad7298.c
-+++ b/drivers/iio/adc/ad7298.c
-@@ -280,7 +280,6 @@ static int ad7298_read_raw(struct iio_dev *indio_dev,
- static const struct iio_info ad7298_info = {
- 	.read_raw = &ad7298_read_raw,
- 	.update_scan_mode = ad7298_update_scan_mode,
--	.driver_module = THIS_MODULE,
- };
- 
- static int ad7298_probe(struct spi_device *spi)
-diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
-index b7ecf9aab90f..b7706bf10ffe 100644
---- a/drivers/iio/adc/ad7476.c
-+++ b/drivers/iio/adc/ad7476.c
-@@ -195,7 +195,6 @@ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
- };
- 
- static const struct iio_info ad7476_info = {
--	.driver_module = THIS_MODULE,
- 	.read_raw = &ad7476_read_raw,
- };
- 
-diff --git a/drivers/iio/adc/ad7766.c b/drivers/iio/adc/ad7766.c
-index 75cca42b6e70..0135687bc7eb 100644
---- a/drivers/iio/adc/ad7766.c
-+++ b/drivers/iio/adc/ad7766.c
-@@ -187,7 +187,6 @@ static const struct iio_buffer_setup_ops ad7766_buffer_setup_ops = {
- };
- 
- static const struct iio_info ad7766_info = {
--	.driver_module = THIS_MODULE,
- 	.read_raw = &ad7766_read_raw,
- };
- 
-@@ -210,7 +209,6 @@ static int ad7766_set_trigger_state(struct iio_trigger *trig, bool enable)
+diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_core.c
+index 9ccb5828db98..7251d0e63d74 100644
+--- a/drivers/iio/accel/adxl345_core.c
++++ b/drivers/iio/accel/adxl345_core.c
+@@ -95,7 +95,6 @@ static int adxl345_read_raw(struct iio_dev *indio_dev,
  }
  
- static const struct iio_trigger_ops ad7766_trigger_ops = {
+ static const struct iio_info adxl345_info = {
+-	.driver_module	= THIS_MODULE,
+ 	.read_raw	= adxl345_read_raw,
+ };
+ 
+diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+index 17b7953f2502..66e3e18e329d 100644
+--- a/drivers/iio/accel/bma180.c
++++ b/drivers/iio/accel/bma180.c
+@@ -541,7 +541,6 @@ static const struct iio_info bma180_info = {
+ 	.attrs			= &bma180_attrs_group,
+ 	.read_raw		= bma180_read_raw,
+ 	.write_raw		= bma180_write_raw,
+-	.driver_module		= THIS_MODULE,
+ };
+ 
+ static const char * const bma180_power_modes[] = { "low_noise", "low_power" };
+@@ -722,7 +721,6 @@ static int bma180_trig_try_reen(struct iio_trigger *trig)
+ static const struct iio_trigger_ops bma180_trigger_ops = {
+ 	.set_trigger_state = bma180_data_rdy_trigger_set_state,
+ 	.try_reenable = bma180_trig_try_reen,
 -	.owner = THIS_MODULE,
- 	.set_trigger_state = ad7766_set_trigger_state,
+ };
+ 
+ static int bma180_probe(struct i2c_client *client,
+diff --git a/drivers/iio/accel/bma220_spi.c b/drivers/iio/accel/bma220_spi.c
+index 5099f295dd37..e25d91c017ed 100644
+--- a/drivers/iio/accel/bma220_spi.c
++++ b/drivers/iio/accel/bma220_spi.c
+@@ -186,7 +186,6 @@ static int bma220_write_raw(struct iio_dev *indio_dev,
+ }
+ 
+ static const struct iio_info bma220_info = {
+-	.driver_module		= THIS_MODULE,
+ 	.read_raw		= bma220_read_raw,
+ 	.write_raw		= bma220_write_raw,
+ 	.attrs			= &bma220_attribute_group,
+diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+index 6b5d3be283c4..1d511c27d128 100644
+--- a/drivers/iio/accel/bmc150-accel-core.c
++++ b/drivers/iio/accel/bmc150-accel-core.c
+@@ -1100,7 +1100,6 @@ static const struct iio_info bmc150_accel_info = {
+ 	.write_event_value	= bmc150_accel_write_event,
+ 	.write_event_config	= bmc150_accel_write_event_config,
+ 	.read_event_config	= bmc150_accel_read_event_config,
+-	.driver_module		= THIS_MODULE,
+ };
+ 
+ static const struct iio_info bmc150_accel_info_fifo = {
+@@ -1114,7 +1113,6 @@ static const struct iio_info bmc150_accel_info_fifo = {
+ 	.validate_trigger	= bmc150_accel_validate_trigger,
+ 	.hwfifo_set_watermark	= bmc150_accel_set_watermark,
+ 	.hwfifo_flush_to_buffer	= bmc150_accel_fifo_flush,
+-	.driver_module		= THIS_MODULE,
+ };
+ 
+ static const unsigned long bmc150_accel_scan_masks[] = {
+@@ -1206,7 +1204,6 @@ static int bmc150_accel_trigger_set_state(struct iio_trigger *trig,
+ static const struct iio_trigger_ops bmc150_accel_trigger_ops = {
+ 	.set_trigger_state = bmc150_accel_trigger_set_state,
+ 	.try_reenable = bmc150_accel_trig_try_reen,
+-	.owner = THIS_MODULE,
+ };
+ 
+ static int bmc150_accel_handle_roc_event(struct iio_dev *indio_dev)
+diff --git a/drivers/iio/accel/da280.c b/drivers/iio/accel/da280.c
+index ed8343aeac9c..6c214783241c 100644
+--- a/drivers/iio/accel/da280.c
++++ b/drivers/iio/accel/da280.c
+@@ -88,7 +88,6 @@ static int da280_read_raw(struct iio_dev *indio_dev,
+ }
+ 
+ static const struct iio_info da280_info = {
+-	.driver_module	= THIS_MODULE,
+ 	.read_raw	= da280_read_raw,
+ };
+ 
+diff --git a/drivers/iio/accel/da311.c b/drivers/iio/accel/da311.c
+index 537cfa8b6edf..0e85f544b4fb 100644
+--- a/drivers/iio/accel/da311.c
++++ b/drivers/iio/accel/da311.c
+@@ -212,7 +212,6 @@ static int da311_read_raw(struct iio_dev *indio_dev,
+ }
+ 
+ static const struct iio_info da311_info = {
+-	.driver_module	= THIS_MODULE,
+ 	.read_raw	= da311_read_raw,
+ };
+ 
+diff --git a/drivers/iio/accel/dmard06.c b/drivers/iio/accel/dmard06.c
+index 656ca8e1927f..d87e2c751475 100644
+--- a/drivers/iio/accel/dmard06.c
++++ b/drivers/iio/accel/dmard06.c
+@@ -124,7 +124,6 @@ static int dmard06_read_raw(struct iio_dev *indio_dev,
+ }
+ 
+ static const struct iio_info dmard06_info = {
+-	.driver_module	= THIS_MODULE,
+ 	.read_raw	= dmard06_read_raw,
+ };
+ 
+diff --git a/drivers/iio/accel/dmard09.c b/drivers/iio/accel/dmard09.c
+index d3a28f96565c..16a7e74f5e9a 100644
+--- a/drivers/iio/accel/dmard09.c
++++ b/drivers/iio/accel/dmard09.c
+@@ -93,7 +93,6 @@ static int dmard09_read_raw(struct iio_dev *indio_dev,
+ }
+ 
+ static const struct iio_info dmard09_info = {
+-	.driver_module	= THIS_MODULE,
+ 	.read_raw	= dmard09_read_raw,
+ };
+ 
+diff --git a/drivers/iio/accel/dmard10.c b/drivers/iio/accel/dmard10.c
+index b8736cc75656..9518ea00167e 100644
+--- a/drivers/iio/accel/dmard10.c
++++ b/drivers/iio/accel/dmard10.c
+@@ -170,7 +170,6 @@ static int dmard10_read_raw(struct iio_dev *indio_dev,
+ }
+ 
+ static const struct iio_info dmard10_info = {
+-	.driver_module	= THIS_MODULE,
+ 	.read_raw	= dmard10_read_raw,
+ };
+ 
+diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
+index 2238a26aba63..c066a3bdbff7 100644
+--- a/drivers/iio/accel/hid-sensor-accel-3d.c
++++ b/drivers/iio/accel/hid-sensor-accel-3d.c
+@@ -225,7 +225,6 @@ static int accel_3d_write_raw(struct iio_dev *indio_dev,
+ }
+ 
+ static const struct iio_info accel_3d_info = {
+-	.driver_module = THIS_MODULE,
+ 	.read_raw = &accel_3d_read_raw,
+ 	.write_raw = &accel_3d_write_raw,
+ };
+diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+index 3f968c46e667..1e0b59f3e221 100644
+--- a/drivers/iio/accel/kxcjk-1013.c
++++ b/drivers/iio/accel/kxcjk-1013.c
+@@ -950,7 +950,6 @@ static const struct iio_info kxcjk1013_info = {
+ 	.write_event_value	= kxcjk1013_write_event,
+ 	.write_event_config	= kxcjk1013_write_event_config,
+ 	.read_event_config	= kxcjk1013_read_event_config,
+-	.driver_module		= THIS_MODULE,
+ };
+ 
+ static const unsigned long kxcjk1013_scan_masks[] = {0x7, 0};
+@@ -1036,7 +1035,6 @@ static int kxcjk1013_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ static const struct iio_trigger_ops kxcjk1013_trigger_ops = {
+ 	.set_trigger_state = kxcjk1013_data_rdy_trigger_set_state,
+ 	.try_reenable = kxcjk1013_trig_try_reen,
+-	.owner = THIS_MODULE,
+ };
+ 
+ static irqreturn_t kxcjk1013_event_handler(int irq, void *private)
+diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
+index 9af60ac70738..0c0df4fce420 100644
+--- a/drivers/iio/accel/kxsd9.c
++++ b/drivers/iio/accel/kxsd9.c
+@@ -390,7 +390,6 @@ static const struct iio_info kxsd9_info = {
+ 	.read_raw = &kxsd9_read_raw,
+ 	.write_raw = &kxsd9_write_raw,
+ 	.attrs = &kxsd9_attribute_group,
+-	.driver_module = THIS_MODULE,
+ };
+ 
+ /* Four channels apart from timestamp, scan mask = 0x0f */
+diff --git a/drivers/iio/accel/mc3230.c b/drivers/iio/accel/mc3230.c
+index 4ea2ff623a6d..8b11604eed63 100644
+--- a/drivers/iio/accel/mc3230.c
++++ b/drivers/iio/accel/mc3230.c
+@@ -107,7 +107,6 @@ static int mc3230_read_raw(struct iio_dev *indio_dev,
+ }
+ 
+ static const struct iio_info mc3230_info = {
+-	.driver_module	= THIS_MODULE,
+ 	.read_raw	= mc3230_read_raw,
+ };
+ 
+diff --git a/drivers/iio/accel/mma7455_core.c b/drivers/iio/accel/mma7455_core.c
+index 6551085bedd7..da0ceaac46b5 100644
+--- a/drivers/iio/accel/mma7455_core.c
++++ b/drivers/iio/accel/mma7455_core.c
+@@ -199,7 +199,6 @@ static const struct iio_info mma7455_info = {
+ 	.attrs = &mma7455_group,
+ 	.read_raw = mma7455_read_raw,
+ 	.write_raw = mma7455_write_raw,
+-	.driver_module = THIS_MODULE,
+ };
+ 
+ #define MMA7455_CHANNEL(axis, idx) { \
+diff --git a/drivers/iio/accel/mma7660.c b/drivers/iio/accel/mma7660.c
+index 42fa57e41bdd..f1a13724efb3 100644
+--- a/drivers/iio/accel/mma7660.c
++++ b/drivers/iio/accel/mma7660.c
+@@ -168,7 +168,6 @@ static int mma7660_read_raw(struct iio_dev *indio_dev,
+ }
+ 
+ static const struct iio_info mma7660_info = {
+-	.driver_module	= THIS_MODULE,
+ 	.read_raw		= mma7660_read_raw,
+ 	.attrs			= &mma7660_attribute_group,
+ };
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index eb6e3dc789b2..7094c2ffcdc4 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -1337,7 +1337,6 @@ static const struct iio_info mma8452_info = {
+ 	.read_event_config = &mma8452_read_event_config,
+ 	.write_event_config = &mma8452_write_event_config,
+ 	.debugfs_reg_access = &mma8452_reg_access_dbg,
+-	.driver_module = THIS_MODULE,
+ };
+ 
+ static const unsigned long mma8452_scan_masks[] = {0x7, 0};
+@@ -1368,7 +1367,6 @@ static int mma8452_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ static const struct iio_trigger_ops mma8452_trigger_ops = {
+ 	.set_trigger_state = mma8452_data_rdy_trigger_set_state,
  	.validate_device = iio_trigger_validate_own_device,
- };
-diff --git a/drivers/iio/adc/ad7791.c b/drivers/iio/adc/ad7791.c
-index 1817ebf5ad84..ec7cf2293879 100644
---- a/drivers/iio/adc/ad7791.c
-+++ b/drivers/iio/adc/ad7791.c
-@@ -310,13 +310,11 @@ static const struct iio_info ad7791_info = {
- 	.read_raw = &ad7791_read_raw,
- 	.attrs = &ad7791_attribute_group,
- 	.validate_trigger = ad_sd_validate_trigger,
--	.driver_module = THIS_MODULE,
- };
- 
- static const struct iio_info ad7791_no_filter_info = {
- 	.read_raw = &ad7791_read_raw,
- 	.validate_trigger = ad_sd_validate_trigger,
--	.driver_module = THIS_MODULE,
- };
- 
- static int ad7791_setup(struct ad7791_state *st,
-diff --git a/drivers/iio/adc/ad7793.c b/drivers/iio/adc/ad7793.c
-index e6706a09e100..c40263ad881f 100644
---- a/drivers/iio/adc/ad7793.c
-+++ b/drivers/iio/adc/ad7793.c
-@@ -563,7 +563,6 @@ static const struct iio_info ad7793_info = {
- 	.write_raw_get_fmt = &ad7793_write_raw_get_fmt,
- 	.attrs = &ad7793_attribute_group,
- 	.validate_trigger = ad_sd_validate_trigger,
--	.driver_module = THIS_MODULE,
- };
- 
- static const struct iio_info ad7797_info = {
-@@ -572,7 +571,6 @@ static const struct iio_info ad7797_info = {
- 	.write_raw_get_fmt = &ad7793_write_raw_get_fmt,
- 	.attrs = &ad7793_attribute_group,
- 	.validate_trigger = ad_sd_validate_trigger,
--	.driver_module = THIS_MODULE,
- };
- 
- #define DECLARE_AD7793_CHANNELS(_name, _b, _sb, _s) \
-diff --git a/drivers/iio/adc/ad7887.c b/drivers/iio/adc/ad7887.c
-index 7a483bfbd70c..205c0f1761aa 100644
---- a/drivers/iio/adc/ad7887.c
-+++ b/drivers/iio/adc/ad7887.c
-@@ -229,7 +229,6 @@ static const struct ad7887_chip_info ad7887_chip_info_tbl[] = {
- 
- static const struct iio_info ad7887_info = {
- 	.read_raw = &ad7887_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static int ad7887_probe(struct spi_device *spi)
-diff --git a/drivers/iio/adc/ad7923.c b/drivers/iio/adc/ad7923.c
-index 77a675e11ebb..ffb7e089969c 100644
---- a/drivers/iio/adc/ad7923.c
-+++ b/drivers/iio/adc/ad7923.c
-@@ -262,7 +262,6 @@ static int ad7923_read_raw(struct iio_dev *indio_dev,
- static const struct iio_info ad7923_info = {
- 	.read_raw = &ad7923_read_raw,
- 	.update_scan_mode = ad7923_update_scan_mode,
--	.driver_module = THIS_MODULE,
- };
- 
- static int ad7923_probe(struct spi_device *spi)
-diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
-index 22426ae4af97..e1da67d5ee22 100644
---- a/drivers/iio/adc/ad799x.c
-+++ b/drivers/iio/adc/ad799x.c
-@@ -526,13 +526,11 @@ static const struct attribute_group ad799x_event_attrs_group = {
- 
- static const struct iio_info ad7991_info = {
- 	.read_raw = &ad799x_read_raw,
--	.driver_module = THIS_MODULE,
- 	.update_scan_mode = ad799x_update_scan_mode,
- };
- 
- static const struct iio_info ad7993_4_7_8_noirq_info = {
- 	.read_raw = &ad799x_read_raw,
--	.driver_module = THIS_MODULE,
- 	.update_scan_mode = ad799x_update_scan_mode,
- };
- 
-@@ -543,7 +541,6 @@ static const struct iio_info ad7993_4_7_8_irq_info = {
- 	.write_event_config = &ad799x_write_event_config,
- 	.read_event_value = &ad799x_read_event_value,
- 	.write_event_value = &ad799x_write_event_value,
--	.driver_module = THIS_MODULE,
- 	.update_scan_mode = ad799x_update_scan_mode,
- };
- 
-diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
-index d10bd0c97233..e3ed74ee41d1 100644
---- a/drivers/iio/adc/ad_sigma_delta.c
-+++ b/drivers/iio/adc/ad_sigma_delta.c
-@@ -435,7 +435,6 @@ int ad_sd_validate_trigger(struct iio_dev *indio_dev, struct iio_trigger *trig)
- EXPORT_SYMBOL_GPL(ad_sd_validate_trigger);
- 
- static const struct iio_trigger_ops ad_sd_trigger_ops = {
 -	.owner = THIS_MODULE,
  };
  
- static int ad_sd_probe_trigger(struct iio_dev *indio_dev)
-diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
-index 62670cbfa2bb..238c8f5a2118 100644
---- a/drivers/iio/adc/aspeed_adc.c
-+++ b/drivers/iio/adc/aspeed_adc.c
-@@ -158,7 +158,6 @@ static int aspeed_adc_reg_access(struct iio_dev *indio_dev,
+ static int mma8452_trigger_setup(struct iio_dev *indio_dev)
+diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
+index bf2704435629..715000389f74 100644
+--- a/drivers/iio/accel/mma9551.c
++++ b/drivers/iio/accel/mma9551.c
+@@ -333,7 +333,6 @@ static const struct iio_chan_spec mma9551_channels[] = {
+ };
+ 
+ static const struct iio_info mma9551_info = {
+-	.driver_module = THIS_MODULE,
+ 	.read_raw = mma9551_read_raw,
+ 	.read_event_config = mma9551_read_event_config,
+ 	.write_event_config = mma9551_write_event_config,
+diff --git a/drivers/iio/accel/mma9553.c b/drivers/iio/accel/mma9553.c
+index 36bf19733be0..b52a3f182190 100644
+--- a/drivers/iio/accel/mma9553.c
++++ b/drivers/iio/accel/mma9553.c
+@@ -987,7 +987,6 @@ static const struct iio_chan_spec mma9553_channels[] = {
+ };
+ 
+ static const struct iio_info mma9553_info = {
+-	.driver_module = THIS_MODULE,
+ 	.read_raw = mma9553_read_raw,
+ 	.write_raw = mma9553_write_raw,
+ 	.read_event_config = mma9553_read_event_config,
+diff --git a/drivers/iio/accel/mxc4005.c b/drivers/iio/accel/mxc4005.c
+index c23f47af7256..58099e40d717 100644
+--- a/drivers/iio/accel/mxc4005.c
++++ b/drivers/iio/accel/mxc4005.c
+@@ -264,7 +264,6 @@ static int mxc4005_write_raw(struct iio_dev *indio_dev,
  }
  
- static const struct iio_info aspeed_adc_iio_info = {
--	.driver_module = THIS_MODULE,
- 	.read_raw = aspeed_adc_read_raw,
- 	.write_raw = aspeed_adc_write_raw,
- 	.debugfs_reg_access = aspeed_adc_reg_access,
-diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
-index e10dca3ed74b..d148d8fd372b 100644
---- a/drivers/iio/adc/at91-sama5d2_adc.c
-+++ b/drivers/iio/adc/at91-sama5d2_adc.c
-@@ -383,7 +383,6 @@ static int at91_adc_write_raw(struct iio_dev *indio_dev,
- static const struct iio_info at91_adc_info = {
- 	.read_raw = &at91_adc_read_raw,
- 	.write_raw = &at91_adc_write_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static int at91_adc_probe(struct platform_device *pdev)
-diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-index 34b928cefeed..7cf5a77f5d66 100644
---- a/drivers/iio/adc/at91_adc.c
-+++ b/drivers/iio/adc/at91_adc.c
-@@ -594,7 +594,6 @@ static int at91_adc_configure_trigger(struct iio_trigger *trig, bool state)
- }
- 
- static const struct iio_trigger_ops at91_adc_trigger_ops = {
--	.owner = THIS_MODULE,
- 	.set_trigger_state = &at91_adc_configure_trigger,
- };
- 
-@@ -976,7 +975,6 @@ static int at91_adc_probe_pdata(struct at91_adc_state *st,
- }
- 
- static const struct iio_info at91_adc_info = {
--	.driver_module = THIS_MODULE,
- 	.read_raw = &at91_adc_read_raw,
- };
- 
-diff --git a/drivers/iio/adc/axp288_adc.c b/drivers/iio/adc/axp288_adc.c
-index 64799ad7ebad..bc9fd54868f2 100644
---- a/drivers/iio/adc/axp288_adc.c
-+++ b/drivers/iio/adc/axp288_adc.c
-@@ -143,7 +143,6 @@ static int axp288_adc_read_raw(struct iio_dev *indio_dev,
- 
- static const struct iio_info axp288_adc_iio_info = {
- 	.read_raw = &axp288_adc_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static int axp288_adc_probe(struct platform_device *pdev)
-diff --git a/drivers/iio/adc/bcm_iproc_adc.c b/drivers/iio/adc/bcm_iproc_adc.c
-index 21d38c8af21e..7094550df43e 100644
---- a/drivers/iio/adc/bcm_iproc_adc.c
-+++ b/drivers/iio/adc/bcm_iproc_adc.c
-@@ -492,7 +492,6 @@ static int iproc_adc_read_raw(struct iio_dev *indio_dev,
- 
- static const struct iio_info iproc_adc_iio_info = {
- 	.read_raw = &iproc_adc_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- #define IPROC_ADC_CHANNEL(_index, _id) {                \
-diff --git a/drivers/iio/adc/berlin2-adc.c b/drivers/iio/adc/berlin2-adc.c
-index 71c806ecc722..72d8fa94ab31 100644
---- a/drivers/iio/adc/berlin2-adc.c
-+++ b/drivers/iio/adc/berlin2-adc.c
-@@ -277,7 +277,6 @@ static irqreturn_t berlin2_adc_tsen_irq(int irq, void *private)
- }
- 
- static const struct iio_info berlin2_adc_info = {
+ static const struct iio_info mxc4005_info = {
 -	.driver_module	= THIS_MODULE,
- 	.read_raw	= berlin2_adc_read_raw,
- };
- 
-diff --git a/drivers/iio/adc/cc10001_adc.c b/drivers/iio/adc/cc10001_adc.c
-index 91636c0ba5b5..707d8b24b072 100644
---- a/drivers/iio/adc/cc10001_adc.c
-+++ b/drivers/iio/adc/cc10001_adc.c
-@@ -262,7 +262,6 @@ static int cc10001_update_scan_mode(struct iio_dev *indio_dev,
- }
- 
- static const struct iio_info cc10001_adc_info = {
--	.driver_module = THIS_MODULE,
- 	.read_raw = &cc10001_adc_read_raw,
- 	.update_scan_mode = &cc10001_update_scan_mode,
- };
-diff --git a/drivers/iio/adc/cpcap-adc.c b/drivers/iio/adc/cpcap-adc.c
-index 6e419d5a7c14..3576ec73ec23 100644
---- a/drivers/iio/adc/cpcap-adc.c
-+++ b/drivers/iio/adc/cpcap-adc.c
-@@ -932,7 +932,6 @@ static int cpcap_adc_read(struct iio_dev *indio_dev,
- 
- static const struct iio_info cpcap_adc_info = {
- 	.read_raw = &cpcap_adc_read,
--	.driver_module = THIS_MODULE,
- };
- 
- /*
-diff --git a/drivers/iio/adc/da9150-gpadc.c b/drivers/iio/adc/da9150-gpadc.c
-index 3445107e10b7..0a5d9ce79164 100644
---- a/drivers/iio/adc/da9150-gpadc.c
-+++ b/drivers/iio/adc/da9150-gpadc.c
-@@ -249,7 +249,6 @@ static int da9150_gpadc_read_raw(struct iio_dev *indio_dev,
- 
- static const struct iio_info da9150_gpadc_info = {
- 	.read_raw = &da9150_gpadc_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- #define DA9150_GPADC_CHANNEL(_id, _hw_id, _type, chan_info,	\
-diff --git a/drivers/iio/adc/envelope-detector.c b/drivers/iio/adc/envelope-detector.c
-index fef15c0d7c9c..4ebda8ab54fe 100644
---- a/drivers/iio/adc/envelope-detector.c
-+++ b/drivers/iio/adc/envelope-detector.c
-@@ -322,7 +322,6 @@ static const struct iio_chan_spec envelope_detector_iio_channel = {
- 
- static const struct iio_info envelope_detector_info = {
- 	.read_raw = &envelope_detector_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static int envelope_detector_probe(struct platform_device *pdev)
-diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
-index 6c5a7be9f8c1..f10443f92e4c 100644
---- a/drivers/iio/adc/exynos_adc.c
-+++ b/drivers/iio/adc/exynos_adc.c
-@@ -657,7 +657,6 @@ static int exynos_adc_reg_access(struct iio_dev *indio_dev,
- static const struct iio_info exynos_adc_iio_info = {
- 	.read_raw = &exynos_read_raw,
- 	.debugfs_reg_access = &exynos_adc_reg_access,
--	.driver_module = THIS_MODULE,
- };
- 
- #define ADC_CHANNEL(_index, _id) {			\
-diff --git a/drivers/iio/adc/hi8435.c b/drivers/iio/adc/hi8435.c
-index adf7dc712937..6f6c9a348158 100644
---- a/drivers/iio/adc/hi8435.c
-+++ b/drivers/iio/adc/hi8435.c
-@@ -408,7 +408,6 @@ static const struct iio_chan_spec hi8435_channels[] = {
- };
- 
- static const struct iio_info hi8435_info = {
--	.driver_module = THIS_MODULE,
- 	.read_raw = hi8435_read_raw,
- 	.read_event_config = hi8435_read_event_config,
- 	.write_event_config = hi8435_write_event_config,
-diff --git a/drivers/iio/adc/hx711.c b/drivers/iio/adc/hx711.c
-index 27005d84ed73..d10b9f13d557 100644
---- a/drivers/iio/adc/hx711.c
-+++ b/drivers/iio/adc/hx711.c
-@@ -374,7 +374,6 @@ static const struct attribute_group hx711_attribute_group = {
- };
- 
- static const struct iio_info hx711_iio_info = {
--	.driver_module		= THIS_MODULE,
- 	.read_raw		= hx711_read_raw,
- 	.write_raw		= hx711_write_raw,
- 	.write_raw_get_fmt	= hx711_write_raw_get_fmt,
-diff --git a/drivers/iio/adc/imx7d_adc.c b/drivers/iio/adc/imx7d_adc.c
-index 254b29a68b9d..cfab31162845 100644
---- a/drivers/iio/adc/imx7d_adc.c
-+++ b/drivers/iio/adc/imx7d_adc.c
-@@ -412,7 +412,6 @@ static int imx7d_adc_reg_access(struct iio_dev *indio_dev,
- }
- 
- static const struct iio_info imx7d_adc_iio_info = {
--	.driver_module = THIS_MODULE,
- 	.read_raw = &imx7d_adc_read_raw,
- 	.debugfs_reg_access = &imx7d_adc_reg_access,
- };
-diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
-index bba10a1b2fcb..ade84a65bbcd 100644
---- a/drivers/iio/adc/ina2xx-adc.c
-+++ b/drivers/iio/adc/ina2xx-adc.c
-@@ -614,7 +614,6 @@ static const struct attribute_group ina2xx_attribute_group = {
- };
- 
- static const struct iio_info ina2xx_info = {
--	.driver_module = THIS_MODULE,
- 	.attrs = &ina2xx_attribute_group,
- 	.read_raw = ina2xx_read_raw,
- 	.write_raw = ina2xx_write_raw,
-diff --git a/drivers/iio/adc/lp8788_adc.c b/drivers/iio/adc/lp8788_adc.c
-index 152cfc8e1c7b..3bc4df916420 100644
---- a/drivers/iio/adc/lp8788_adc.c
-+++ b/drivers/iio/adc/lp8788_adc.c
-@@ -125,7 +125,6 @@ static int lp8788_adc_read_raw(struct iio_dev *indio_dev,
- 
- static const struct iio_info lp8788_adc_info = {
- 	.read_raw = &lp8788_adc_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- #define LP8788_CHAN(_id, _type) {				\
-diff --git a/drivers/iio/adc/lpc18xx_adc.c b/drivers/iio/adc/lpc18xx_adc.c
-index 3ef18f4b27f0..041dc4a3f66c 100644
---- a/drivers/iio/adc/lpc18xx_adc.c
-+++ b/drivers/iio/adc/lpc18xx_adc.c
-@@ -116,7 +116,6 @@ static int lpc18xx_adc_read_raw(struct iio_dev *indio_dev,
- 
- static const struct iio_info lpc18xx_adc_info = {
- 	.read_raw = lpc18xx_adc_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static int lpc18xx_adc_probe(struct platform_device *pdev)
-diff --git a/drivers/iio/adc/lpc32xx_adc.c b/drivers/iio/adc/lpc32xx_adc.c
-index 0de709b4288b..f578b3e5b2b3 100644
---- a/drivers/iio/adc/lpc32xx_adc.c
-+++ b/drivers/iio/adc/lpc32xx_adc.c
-@@ -100,7 +100,6 @@ static int lpc32xx_read_raw(struct iio_dev *indio_dev,
- 
- static const struct iio_info lpc32xx_adc_iio_info = {
- 	.read_raw = &lpc32xx_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- #define LPC32XX_ADC_CHANNEL(_index) {			\
-diff --git a/drivers/iio/adc/ltc2485.c b/drivers/iio/adc/ltc2485.c
-index eab91f12454a..b24c14037fd4 100644
---- a/drivers/iio/adc/ltc2485.c
-+++ b/drivers/iio/adc/ltc2485.c
-@@ -90,7 +90,6 @@ static const struct iio_chan_spec ltc2485_channel[] = {
- 
- static const struct iio_info ltc2485_info = {
- 	.read_raw = ltc2485_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static int ltc2485_probe(struct i2c_client *client,
-diff --git a/drivers/iio/adc/ltc2497.c b/drivers/iio/adc/ltc2497.c
-index 2691b10023f5..46d33fa2f9d8 100644
---- a/drivers/iio/adc/ltc2497.c
-+++ b/drivers/iio/adc/ltc2497.c
-@@ -184,7 +184,6 @@ static const struct iio_chan_spec ltc2497_channel[] = {
- 
- static const struct iio_info ltc2497_info = {
- 	.read_raw = ltc2497_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static int ltc2497_probe(struct i2c_client *client,
-diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
-index ebc715927e63..375da6491499 100644
---- a/drivers/iio/adc/max1027.c
-+++ b/drivers/iio/adc/max1027.c
-@@ -381,13 +381,11 @@ static irqreturn_t max1027_trigger_handler(int irq, void *private)
- }
- 
- static const struct iio_trigger_ops max1027_trigger_ops = {
+ 	.read_raw	= mxc4005_read_raw,
+ 	.write_raw	= mxc4005_write_raw,
+ 	.attrs		= &mxc4005_attrs_group,
+@@ -376,7 +375,6 @@ static int mxc4005_trigger_try_reen(struct iio_trigger *trig)
+ static const struct iio_trigger_ops mxc4005_trigger_ops = {
+ 	.set_trigger_state = mxc4005_set_trigger_state,
+ 	.try_reenable = mxc4005_trigger_try_reen,
 -	.owner = THIS_MODULE,
- 	.validate_device = &iio_trigger_validate_own_device,
- 	.set_trigger_state = &max1027_set_trigger_state,
  };
  
- static const struct iio_info max1027_info = {
--	.driver_module = THIS_MODULE,
- 	.read_raw = &max1027_read_raw,
- 	.validate_trigger = &max1027_validate_trigger,
- 	.debugfs_reg_access = &max1027_debugfs_reg_access,
-diff --git a/drivers/iio/adc/max11100.c b/drivers/iio/adc/max11100.c
-index 1180bcc22ff1..af59ab2e650c 100644
---- a/drivers/iio/adc/max11100.c
-+++ b/drivers/iio/adc/max11100.c
-@@ -100,7 +100,6 @@ static int max11100_read_raw(struct iio_dev *indio_dev,
+ static int mxc4005_chip_init(struct mxc4005_data *data)
+diff --git a/drivers/iio/accel/mxc6255.c b/drivers/iio/accel/mxc6255.c
+index 0abad6948201..ddd50d1781c5 100644
+--- a/drivers/iio/accel/mxc6255.c
++++ b/drivers/iio/accel/mxc6255.c
+@@ -78,7 +78,6 @@ static int mxc6255_read_raw(struct iio_dev *indio_dev,
  }
  
- static const struct iio_info max11100_info = {
--	.driver_module = THIS_MODULE,
- 	.read_raw = max11100_read_raw,
- };
- 
-diff --git a/drivers/iio/adc/max1118.c b/drivers/iio/adc/max1118.c
-index 2e9648a078c4..49db9e9ae625 100644
---- a/drivers/iio/adc/max1118.c
-+++ b/drivers/iio/adc/max1118.c
-@@ -155,7 +155,6 @@ static int max1118_read_raw(struct iio_dev *indio_dev,
- 
- static const struct iio_info max1118_info = {
- 	.read_raw = max1118_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static irqreturn_t max1118_trigger_handler(int irq, void *p)
-diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
-index 80eada4886b3..7f1848dac9bf 100644
---- a/drivers/iio/adc/max1363.c
-+++ b/drivers/iio/adc/max1363.c
-@@ -1029,7 +1029,6 @@ static int max1363_update_scan_mode(struct iio_dev *indio_dev,
- 
- static const struct iio_info max1238_info = {
- 	.read_raw = &max1363_read_raw,
--	.driver_module = THIS_MODULE,
- 	.update_scan_mode = &max1363_update_scan_mode,
- };
- 
-@@ -1040,7 +1039,6 @@ static const struct iio_info max1363_info = {
- 	.write_event_config = &max1363_write_event_config,
- 	.read_raw = &max1363_read_raw,
- 	.update_scan_mode = &max1363_update_scan_mode,
--	.driver_module = THIS_MODULE,
- 	.event_attrs = &max1363_event_attribute_group,
- };
- 
-diff --git a/drivers/iio/adc/max9611.c b/drivers/iio/adc/max9611.c
-index ec82106480e1..fbc8aaae0a68 100644
---- a/drivers/iio/adc/max9611.c
-+++ b/drivers/iio/adc/max9611.c
-@@ -460,7 +460,6 @@ static const struct attribute_group max9611_attribute_group = {
- };
- 
- static const struct iio_info indio_info = {
+ static const struct iio_info mxc6255_info = {
 -	.driver_module	= THIS_MODULE,
- 	.read_raw	= max9611_read_raw,
- 	.attrs		= &max9611_attribute_group,
+ 	.read_raw	= mxc6255_read_raw,
  };
-diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
-index 634717ae12f3..06bc2453caf9 100644
---- a/drivers/iio/adc/mcp320x.c
-+++ b/drivers/iio/adc/mcp320x.c
-@@ -242,7 +242,6 @@ static const struct iio_chan_spec mcp3208_channels[] = {
  
- static const struct iio_info mcp320x_info = {
- 	.read_raw = mcp320x_read_raw,
+diff --git a/drivers/iio/accel/sca3000.c b/drivers/iio/accel/sca3000.c
+index cb1d83fa19a0..23c9c0929312 100644
+--- a/drivers/iio/accel/sca3000.c
++++ b/drivers/iio/accel/sca3000.c
+@@ -1454,7 +1454,6 @@ static const struct iio_info sca3000_info = {
+ 	.write_event_value = &sca3000_write_event_value,
+ 	.read_event_config = &sca3000_read_event_config,
+ 	.write_event_config = &sca3000_write_event_config,
 -	.driver_module = THIS_MODULE,
  };
  
- static const struct mcp320x_chip_info mcp320x_chip_infos[] = {
-diff --git a/drivers/iio/adc/mcp3422.c b/drivers/iio/adc/mcp3422.c
-index 254135e07792..9233cffabd67 100644
---- a/drivers/iio/adc/mcp3422.c
-+++ b/drivers/iio/adc/mcp3422.c
-@@ -327,7 +327,6 @@ static const struct iio_info mcp3422_info = {
- 	.write_raw = mcp3422_write_raw,
- 	.write_raw_get_fmt = mcp3422_write_raw_get_fmt,
- 	.attrs = &mcp3422_attribute_group,
+ static int sca3000_probe(struct spi_device *spi)
+diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+index 07d1489cd457..71e3882709af 100644
+--- a/drivers/iio/accel/st_accel_core.c
++++ b/drivers/iio/accel/st_accel_core.c
+@@ -689,7 +689,6 @@ static const struct attribute_group st_accel_attribute_group = {
+ };
+ 
+ static const struct iio_info accel_info = {
 -	.driver_module = THIS_MODULE,
- };
+ 	.attrs = &st_accel_attribute_group,
+ 	.read_raw = &st_accel_read_raw,
+ 	.write_raw = &st_accel_write_raw,
+@@ -698,7 +697,6 @@ static const struct iio_info accel_info = {
  
- static int mcp3422_probe(struct i2c_client *client,
-diff --git a/drivers/iio/adc/men_z188_adc.c b/drivers/iio/adc/men_z188_adc.c
-index 8f3606de4eaf..c80261748d8f 100644
---- a/drivers/iio/adc/men_z188_adc.c
-+++ b/drivers/iio/adc/men_z188_adc.c
-@@ -80,7 +80,6 @@ static int z188_iio_read_raw(struct iio_dev *iio_dev,
- 
- static const struct iio_info z188_adc_info = {
- 	.read_raw = &z188_iio_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static void men_z188_config_channels(void __iomem *addr)
-diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
-index 81cd39a57fe3..f537a53b2011 100644
---- a/drivers/iio/adc/meson_saradc.c
-+++ b/drivers/iio/adc/meson_saradc.c
-@@ -840,7 +840,6 @@ static int meson_sar_adc_calib(struct iio_dev *indio_dev)
- 
- static const struct iio_info meson_sar_adc_iio_info = {
- 	.read_raw = meson_sar_adc_iio_info_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static const struct meson_sar_adc_data meson_sar_adc_meson8_data = {
-diff --git a/drivers/iio/adc/mt6577_auxadc.c b/drivers/iio/adc/mt6577_auxadc.c
-index 2d104c828041..f7384828fb5c 100644
---- a/drivers/iio/adc/mt6577_auxadc.c
-+++ b/drivers/iio/adc/mt6577_auxadc.c
-@@ -180,7 +180,6 @@ static int mt6577_auxadc_read_raw(struct iio_dev *indio_dev,
- }
- 
- static const struct iio_info mt6577_auxadc_info = {
--	.driver_module = THIS_MODULE,
- 	.read_raw = &mt6577_auxadc_read_raw,
- };
- 
-diff --git a/drivers/iio/adc/mxs-lradc-adc.c b/drivers/iio/adc/mxs-lradc-adc.c
-index b0c7d8ee5cb8..102898b6e3b3 100644
---- a/drivers/iio/adc/mxs-lradc-adc.c
-+++ b/drivers/iio/adc/mxs-lradc-adc.c
-@@ -382,7 +382,6 @@ static const struct attribute_group mxs_lradc_adc_attribute_group = {
- };
- 
- static const struct iio_info mxs_lradc_adc_iio_info = {
--	.driver_module		= THIS_MODULE,
- 	.read_raw		= mxs_lradc_adc_read_raw,
- 	.write_raw		= mxs_lradc_adc_write_raw,
- 	.write_raw_get_fmt	= mxs_lradc_adc_write_raw_get_fmt,
-@@ -455,7 +454,6 @@ static int mxs_lradc_adc_configure_trigger(struct iio_trigger *trig, bool state)
- }
- 
- static const struct iio_trigger_ops mxs_lradc_adc_trigger_ops = {
+ #ifdef CONFIG_IIO_TRIGGER
+ static const struct iio_trigger_ops st_accel_trigger_ops = {
 -	.owner = THIS_MODULE,
- 	.set_trigger_state = &mxs_lradc_adc_configure_trigger,
+ 	.set_trigger_state = ST_ACCEL_TRIGGER_SET_STATE,
+ 	.validate_device = st_sensors_validate_device,
  };
+diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
+index e31023dc5f1b..cacc0da2f874 100644
+--- a/drivers/iio/accel/stk8312.c
++++ b/drivers/iio/accel/stk8312.c
+@@ -237,7 +237,6 @@ static int stk8312_data_rdy_trigger_set_state(struct iio_trigger *trig,
  
-diff --git a/drivers/iio/adc/nau7802.c b/drivers/iio/adc/nau7802.c
-index 08f446695f97..8997e74a8847 100644
---- a/drivers/iio/adc/nau7802.c
-+++ b/drivers/iio/adc/nau7802.c
-@@ -402,7 +402,6 @@ static int nau7802_write_raw_get_fmt(struct iio_dev *indio_dev,
- }
- 
- static const struct iio_info nau7802_info = {
--	.driver_module = THIS_MODULE,
- 	.read_raw = &nau7802_read_raw,
- 	.write_raw = &nau7802_write_raw,
- 	.write_raw_get_fmt = nau7802_write_raw_get_fmt,
-diff --git a/drivers/iio/adc/palmas_gpadc.c b/drivers/iio/adc/palmas_gpadc.c
-index 7d61b566e148..69b9affeef1e 100644
---- a/drivers/iio/adc/palmas_gpadc.c
-+++ b/drivers/iio/adc/palmas_gpadc.c
-@@ -430,7 +430,6 @@ static int palmas_gpadc_read_raw(struct iio_dev *indio_dev,
- 
- static const struct iio_info palmas_gpadc_iio_info = {
- 	.read_raw = palmas_gpadc_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- #define PALMAS_ADC_CHAN_IIO(chan, _type, chan_info)	\
-diff --git a/drivers/iio/adc/qcom-pm8xxx-xoadc.c b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
-index cea8f1fb444a..b093ecddf1a8 100644
---- a/drivers/iio/adc/qcom-pm8xxx-xoadc.c
-+++ b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
-@@ -728,7 +728,6 @@ static int pm8xxx_of_xlate(struct iio_dev *indio_dev,
- }
- 
- static const struct iio_info pm8xxx_xoadc_info = {
--	.driver_module = THIS_MODULE,
- 	.of_xlate = pm8xxx_of_xlate,
- 	.read_raw = pm8xxx_read_raw,
- };
-diff --git a/drivers/iio/adc/qcom-spmi-iadc.c b/drivers/iio/adc/qcom-spmi-iadc.c
-index fabd24edc2a1..3f062cd61aba 100644
---- a/drivers/iio/adc/qcom-spmi-iadc.c
-+++ b/drivers/iio/adc/qcom-spmi-iadc.c
-@@ -356,7 +356,6 @@ static int iadc_read_raw(struct iio_dev *indio_dev,
- 
- static const struct iio_info iadc_info = {
- 	.read_raw = iadc_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static irqreturn_t iadc_isr(int irq, void *dev_id)
-diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
-index 9e600bfd1765..3680e0d47412 100644
---- a/drivers/iio/adc/qcom-spmi-vadc.c
-+++ b/drivers/iio/adc/qcom-spmi-vadc.c
-@@ -506,7 +506,6 @@ static int vadc_of_xlate(struct iio_dev *indio_dev,
- static const struct iio_info vadc_info = {
- 	.read_raw = vadc_read_raw,
- 	.of_xlate = vadc_of_xlate,
--	.driver_module = THIS_MODULE,
- };
- 
- struct vadc_channels {
-diff --git a/drivers/iio/adc/rcar-gyroadc.c b/drivers/iio/adc/rcar-gyroadc.c
-index 27a318164619..2cb5397ceeea 100644
---- a/drivers/iio/adc/rcar-gyroadc.c
-+++ b/drivers/iio/adc/rcar-gyroadc.c
-@@ -277,7 +277,6 @@ static int rcar_gyroadc_reg_access(struct iio_dev *indio_dev,
- }
- 
- static const struct iio_info rcar_gyroadc_iio_info = {
--	.driver_module		= THIS_MODULE,
- 	.read_raw		= rcar_gyroadc_read_raw,
- 	.debugfs_reg_access	= rcar_gyroadc_reg_access,
- };
-diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
-index ae6d3324f518..cfa1a0f335d0 100644
---- a/drivers/iio/adc/rockchip_saradc.c
-+++ b/drivers/iio/adc/rockchip_saradc.c
-@@ -125,7 +125,6 @@ static irqreturn_t rockchip_saradc_isr(int irq, void *dev_id)
- 
- static const struct iio_info rockchip_saradc_iio_info = {
- 	.read_raw = rockchip_saradc_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- #define ADC_CHANNEL(_index, _id) {				\
-diff --git a/drivers/iio/adc/spear_adc.c b/drivers/iio/adc/spear_adc.c
-index 5dd61f6a57b9..b1da2c46107c 100644
---- a/drivers/iio/adc/spear_adc.c
-+++ b/drivers/iio/adc/spear_adc.c
-@@ -254,7 +254,6 @@ static int spear_adc_configure(struct spear_adc_state *st)
- static const struct iio_info spear_adc_info = {
- 	.read_raw = &spear_adc_read_raw,
- 	.write_raw = &spear_adc_write_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static int spear_adc_probe(struct platform_device *pdev)
-diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
-index c28e7ff80e11..1331045d9d6f 100644
---- a/drivers/iio/adc/stm32-adc.c
-+++ b/drivers/iio/adc/stm32-adc.c
-@@ -699,7 +699,6 @@ static const struct iio_info stm32_adc_iio_info = {
- 	.update_scan_mode = stm32_adc_update_scan_mode,
- 	.debugfs_reg_access = stm32_adc_debugfs_reg_access,
- 	.of_xlate = stm32_adc_of_xlate,
--	.driver_module = THIS_MODULE,
- };
- 
- static unsigned int stm32_adc_dma_residue(struct stm32_adc *adc)
-diff --git a/drivers/iio/adc/stx104.c b/drivers/iio/adc/stx104.c
-index 2da741d27540..17b021f33180 100644
---- a/drivers/iio/adc/stx104.c
-+++ b/drivers/iio/adc/stx104.c
-@@ -172,7 +172,6 @@ static int stx104_write_raw(struct iio_dev *indio_dev,
- }
- 
- static const struct iio_info stx104_info = {
--	.driver_module = THIS_MODULE,
- 	.read_raw = stx104_read_raw,
- 	.write_raw = stx104_write_raw
- };
-diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
-index b23527309088..72c635cd1470 100644
---- a/drivers/iio/adc/sun4i-gpadc-iio.c
-+++ b/drivers/iio/adc/sun4i-gpadc-iio.c
-@@ -349,7 +349,6 @@ static int sun4i_gpadc_read_raw(struct iio_dev *indio_dev,
- 
- static const struct iio_info sun4i_gpadc_iio_info = {
- 	.read_raw = sun4i_gpadc_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static irqreturn_t sun4i_gpadc_temp_data_irq_handler(int irq, void *dev_id)
-diff --git a/drivers/iio/adc/ti-adc081c.c b/drivers/iio/adc/ti-adc081c.c
-index 319172cf7da8..405e3779c0c5 100644
---- a/drivers/iio/adc/ti-adc081c.c
-+++ b/drivers/iio/adc/ti-adc081c.c
-@@ -124,7 +124,6 @@ static struct adcxx1c_model adcxx1c_models[] = {
- 
- static const struct iio_info adc081c_info = {
- 	.read_raw = adc081c_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static irqreturn_t adc081c_trigger_handler(int irq, void *p)
-diff --git a/drivers/iio/adc/ti-adc0832.c b/drivers/iio/adc/ti-adc0832.c
-index e952e94a14af..188dae705bf7 100644
---- a/drivers/iio/adc/ti-adc0832.c
-+++ b/drivers/iio/adc/ti-adc0832.c
-@@ -195,7 +195,6 @@ static int adc0832_read_raw(struct iio_dev *iio,
- 
- static const struct iio_info adc0832_info = {
- 	.read_raw = adc0832_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static irqreturn_t adc0832_trigger_handler(int irq, void *p)
-diff --git a/drivers/iio/adc/ti-adc084s021.c b/drivers/iio/adc/ti-adc084s021.c
-index a355121c11a4..25504640e126 100644
---- a/drivers/iio/adc/ti-adc084s021.c
-+++ b/drivers/iio/adc/ti-adc084s021.c
-@@ -186,7 +186,6 @@ static int adc084s021_buffer_postdisable(struct iio_dev *indio_dev)
- 
- static const struct iio_info adc084s021_info = {
- 	.read_raw = adc084s021_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static const struct iio_buffer_setup_ops adc084s021_buffer_setup_ops = {
-diff --git a/drivers/iio/adc/ti-adc108s102.c b/drivers/iio/adc/ti-adc108s102.c
-index de4e5ac98c6e..841203edaac5 100644
---- a/drivers/iio/adc/ti-adc108s102.c
-+++ b/drivers/iio/adc/ti-adc108s102.c
-@@ -220,7 +220,6 @@ static int adc108s102_read_raw(struct iio_dev *indio_dev,
- static const struct iio_info adc108s102_info = {
- 	.read_raw		= &adc108s102_read_raw,
- 	.update_scan_mode	= &adc108s102_update_scan_mode,
--	.driver_module		= THIS_MODULE,
- };
- 
- static int adc108s102_probe(struct spi_device *spi)
-diff --git a/drivers/iio/adc/ti-adc12138.c b/drivers/iio/adc/ti-adc12138.c
-index 072f03bfe6a0..bf890244789a 100644
---- a/drivers/iio/adc/ti-adc12138.c
-+++ b/drivers/iio/adc/ti-adc12138.c
-@@ -277,7 +277,6 @@ static int adc12138_read_raw(struct iio_dev *iio,
- 
- static const struct iio_info adc12138_info = {
- 	.read_raw = adc12138_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static int adc12138_init(struct adc12138 *adc)
-diff --git a/drivers/iio/adc/ti-adc128s052.c b/drivers/iio/adc/ti-adc128s052.c
-index 89dfbd31be5c..7cf39b3e2416 100644
---- a/drivers/iio/adc/ti-adc128s052.c
-+++ b/drivers/iio/adc/ti-adc128s052.c
-@@ -130,7 +130,6 @@ static const struct adc128_configuration adc128_config[] = {
- 
- static const struct iio_info adc128_info = {
- 	.read_raw = adc128_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static int adc128_probe(struct spi_device *spi)
-diff --git a/drivers/iio/adc/ti-adc161s626.c b/drivers/iio/adc/ti-adc161s626.c
-index 4836a0d7aef5..10fa7677ac4b 100644
---- a/drivers/iio/adc/ti-adc161s626.c
-+++ b/drivers/iio/adc/ti-adc161s626.c
-@@ -173,7 +173,6 @@ static int ti_adc_read_raw(struct iio_dev *indio_dev,
- }
- 
- static const struct iio_info ti_adc_info = {
--	.driver_module = THIS_MODULE,
- 	.read_raw = ti_adc_read_raw,
- };
- 
-diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
-index f76d979fb7e8..e30362dd868a 100644
---- a/drivers/iio/adc/ti-ads1015.c
-+++ b/drivers/iio/adc/ti-ads1015.c
-@@ -474,14 +474,12 @@ static const struct attribute_group ads1115_attribute_group = {
- };
- 
- static const struct iio_info ads1015_info = {
--	.driver_module	= THIS_MODULE,
- 	.read_raw	= ads1015_read_raw,
- 	.write_raw	= ads1015_write_raw,
- 	.attrs          = &ads1015_attribute_group,
- };
- 
- static const struct iio_info ads1115_info = {
--	.driver_module	= THIS_MODULE,
- 	.read_raw	= ads1015_read_raw,
- 	.write_raw	= ads1015_write_raw,
- 	.attrs          = &ads1115_attribute_group,
-diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
-index 16a06633332c..9e1c864d3901 100644
---- a/drivers/iio/adc/ti-ads7950.c
-+++ b/drivers/iio/adc/ti-ads7950.c
-@@ -360,7 +360,6 @@ static int ti_ads7950_read_raw(struct iio_dev *indio_dev,
- static const struct iio_info ti_ads7950_info = {
- 	.read_raw		= &ti_ads7950_read_raw,
- 	.update_scan_mode	= ti_ads7950_update_scan_mode,
--	.driver_module		= THIS_MODULE,
- };
- 
- static int ti_ads7950_probe(struct spi_device *spi)
-diff --git a/drivers/iio/adc/ti-ads8688.c b/drivers/iio/adc/ti-ads8688.c
-index 4a163496d9e4..ff4756352ac1 100644
---- a/drivers/iio/adc/ti-ads8688.c
-+++ b/drivers/iio/adc/ti-ads8688.c
-@@ -369,7 +369,6 @@ static const struct iio_info ads8688_info = {
- 	.write_raw = &ads8688_write_raw,
- 	.write_raw_get_fmt = &ads8688_write_raw_get_fmt,
- 	.attrs = &ads8688_attribute_group,
--	.driver_module = THIS_MODULE,
- };
- 
- static const struct ads8688_chip_info ads8688_chip_info_tbl[] = {
-diff --git a/drivers/iio/adc/ti-tlc4541.c b/drivers/iio/adc/ti-tlc4541.c
-index 78d91a069ea4..2290024c89fc 100644
---- a/drivers/iio/adc/ti-tlc4541.c
-+++ b/drivers/iio/adc/ti-tlc4541.c
-@@ -157,7 +157,6 @@ static int tlc4541_read_raw(struct iio_dev *indio_dev,
- 
- static const struct iio_info tlc4541_info = {
- 	.read_raw = &tlc4541_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static int tlc4541_probe(struct spi_device *spi)
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index 4282ceca3d8f..685b869fcf4e 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -533,7 +533,6 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
- 
- static const struct iio_info tiadc_info = {
- 	.read_raw = &tiadc_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static int tiadc_request_dma(struct platform_device *pdev,
-diff --git a/drivers/iio/adc/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
-index 0c74869a540a..245b8af61794 100644
---- a/drivers/iio/adc/twl4030-madc.c
-+++ b/drivers/iio/adc/twl4030-madc.c
-@@ -100,7 +100,6 @@ static int twl4030_madc_read(struct iio_dev *iio_dev,
- 
- static const struct iio_info twl4030_madc_iio_info = {
- 	.read_raw = &twl4030_madc_read,
--	.driver_module = THIS_MODULE,
- };
- 
- #define TWL4030_ADC_CHANNEL(_channel, _type, _name) {	\
-diff --git a/drivers/iio/adc/twl6030-gpadc.c b/drivers/iio/adc/twl6030-gpadc.c
-index becbb0aef232..3c5a73ccb1cc 100644
---- a/drivers/iio/adc/twl6030-gpadc.c
-+++ b/drivers/iio/adc/twl6030-gpadc.c
-@@ -843,7 +843,6 @@ static const struct iio_chan_spec twl6032_gpadc_iio_channels[] = {
- 
- static const struct iio_info twl6030_gpadc_iio_info = {
- 	.read_raw = &twl6030_gpadc_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static const struct twl6030_gpadc_platform_data twl6030_pdata = {
-diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
-index 01fc76f7d660..b851b44cf1be 100644
---- a/drivers/iio/adc/vf610_adc.c
-+++ b/drivers/iio/adc/vf610_adc.c
-@@ -799,7 +799,6 @@ static int vf610_adc_reg_access(struct iio_dev *indio_dev,
- }
- 
- static const struct iio_info vf610_adc_iio_info = {
--	.driver_module = THIS_MODULE,
- 	.read_raw = &vf610_read_raw,
- 	.write_raw = &vf610_write_raw,
- 	.debugfs_reg_access = &vf610_adc_reg_access,
-diff --git a/drivers/iio/adc/viperboard_adc.c b/drivers/iio/adc/viperboard_adc.c
-index 3be2e35721cc..53eb5a4136fe 100644
---- a/drivers/iio/adc/viperboard_adc.c
-+++ b/drivers/iio/adc/viperboard_adc.c
-@@ -107,7 +107,6 @@ static int vprbrd_iio_read_raw(struct iio_dev *iio_dev,
- 
- static const struct iio_info vprbrd_adc_iio_info = {
- 	.read_raw = &vprbrd_iio_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static int vprbrd_adc_probe(struct platform_device *pdev)
-diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
-index 4a60497a1f19..d4f21d1be6c8 100644
---- a/drivers/iio/adc/xilinx-xadc-core.c
-+++ b/drivers/iio/adc/xilinx-xadc-core.c
-@@ -675,7 +675,6 @@ static int xadc_trigger_set_state(struct iio_trigger *trigger, bool state)
- }
- 
- static const struct iio_trigger_ops xadc_trigger_ops = {
+ static const struct iio_trigger_ops stk8312_trigger_ops = {
+ 	.set_trigger_state = stk8312_data_rdy_trigger_set_state,
 -	.owner = THIS_MODULE,
- 	.set_trigger_state = &xadc_trigger_set_state,
  };
  
-@@ -1028,7 +1027,6 @@ static const struct iio_info xadc_info = {
- 	.read_event_value = &xadc_read_event_value,
- 	.write_event_value = &xadc_write_event_value,
- 	.update_scan_mode = &xadc_update_scan_mode,
--	.driver_module = THIS_MODULE,
+ static int stk8312_set_sample_rate(struct stk8312_data *data, u8 rate)
+@@ -421,7 +420,6 @@ static int stk8312_write_raw(struct iio_dev *indio_dev,
+ }
+ 
+ static const struct iio_info stk8312_info = {
+-	.driver_module		= THIS_MODULE,
+ 	.read_raw		= stk8312_read_raw,
+ 	.write_raw		= stk8312_write_raw,
+ 	.attrs			= &stk8312_attribute_group,
+diff --git a/drivers/iio/accel/stk8ba50.c b/drivers/iio/accel/stk8ba50.c
+index 300d955bad00..576b6b140f08 100644
+--- a/drivers/iio/accel/stk8ba50.c
++++ b/drivers/iio/accel/stk8ba50.c
+@@ -179,7 +179,6 @@ static int stk8ba50_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 
+ static const struct iio_trigger_ops stk8ba50_trigger_ops = {
+ 	.set_trigger_state = stk8ba50_data_rdy_trigger_set_state,
+-	.owner = THIS_MODULE,
  };
  
- static const struct of_device_id xadc_of_match_table[] = {
+ static int stk8ba50_set_power(struct stk8ba50_data *data, bool mode)
+@@ -307,7 +306,6 @@ static int stk8ba50_write_raw(struct iio_dev *indio_dev,
+ }
+ 
+ static const struct iio_info stk8ba50_info = {
+-	.driver_module		= THIS_MODULE,
+ 	.read_raw		= stk8ba50_read_raw,
+ 	.write_raw		= stk8ba50_write_raw,
+ 	.attrs			= &stk8ba50_attribute_group,
 -- 
 2.13.0
 
