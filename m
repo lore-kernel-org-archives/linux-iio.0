@@ -1,37 +1,30 @@
-Return-Path: <SRS0=2jyz=5D=gmail.com=geert.uytterhoeven@kernel.org>
-MIME-Version: 1.0
-Sender: geert.uytterhoeven@gmail.com
-In-Reply-To: <20170528093051.11816-4-wsa+renesas@sang-engineering.com>
-References: <20170528093051.11816-1-wsa+renesas@sang-engineering.com> <20170528093051.11816-4-wsa+renesas@sang-engineering.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Mon, 29 May 2017 11:11:47 +0200
-Message-ID: <CAMuHMdW8KeC6E5v3n409q7xeeEPe_U8z6XXZXkTOdT7yUrGGEg@mail.gmail.com>
-Subject: Re: [PATCH 3/7] iio: use proper name for the R-Car SoC
+Return-Path: <SRS0=Wi5e=5F=gmail.com=robherring2@kernel.org>
+Date: Wed, 31 May 2017 14:46:34 -0500
+From: Rob Herring <robh@kernel.org>
 To: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Rob Herring <robh+dt@kernel.org>,
+Cc: linux-renesas-soc@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/7] iio: use proper name for the R-Car SoC
+Message-ID: <20170531194634.hs42qazk7y6uan7h@rob-hp-laptop>
+References: <20170528093051.11816-1-wsa+renesas@sang-engineering.com>
+ <20170528093051.11816-4-wsa+renesas@sang-engineering.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20170528093051.11816-4-wsa+renesas@sang-engineering.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, May 28, 2017 at 11:30 AM, Wolfram Sang
-<wsa+renesas@sang-engineering.com> wrote:
+On Sun, May 28, 2017 at 11:30:46AM +0200, Wolfram Sang wrote:
 > It is 'R-Car', not 'RCar'. No code or binding changes, only descriptive text.
->
+> 
 > Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> ---
+> I suggest this trivial patch should be picked individually per susbsystem.
+> 
+>  Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Acked-by: Rob Herring <robh@kernel.org>
