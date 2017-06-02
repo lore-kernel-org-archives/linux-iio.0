@@ -1,15 +1,15 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-by2nam01on0076.outbound.protection.outlook.com ([104.47.34.76]:41040
-        "EHLO NAM01-BY2-obe.outbound.protection.outlook.com"
+Received: from mail-sn1nam01on0050.outbound.protection.outlook.com ([104.47.32.50]:36862
+        "EHLO NAM01-SN1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1750813AbdFBPKh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 2 Jun 2017 11:10:37 -0400
+        id S1750955AbdFBQVe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 2 Jun 2017 12:21:34 -0400
 From: Jean-Baptiste Maneyrol <JManeyrol@invensense.com>
 To: linux-iio <linux-iio@vger.kernel.org>
-Subject: [PATCH ] iio: imu: inv_mpu6050: fix lock and error path multiple
- issues
-Date: Fri, 2 Jun 2017 15:10:34 +0000
-Message-ID: <CY1PR12MB066687A62799E2803715FB66C4F70@CY1PR12MB0666.namprd12.prod.outlook.com>
+Subject: [PATCH 1/2] iio: imu: inv_mpu6050: fix lock and error path multiple
+  issues
+Date: Fri, 2 Jun 2017 16:21:31 +0000
+Message-ID: <CY1PR12MB06661CC158DECAFDE14B1597C4F70@CY1PR12MB0666.namprd12.prod.outlook.com>
 Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
@@ -566,4 +566,3 @@ o_dev, bool enable)
  static const struct iio_trigger_ops inv_mpu_trigger_ops =3D {
 --=20
 1.9.1
-
