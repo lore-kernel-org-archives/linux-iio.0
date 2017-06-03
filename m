@@ -1,120 +1,220 @@
-Return-Path: <SRS0=rk2p=5L=invensense.com=JManeyrol@kernel.org>
-From: Jean-Baptiste Maneyrol <JManeyrol@invensense.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v2] iio: imu: inv_mpu6050: test whoami against invalid
- values and do it first
-Date: Tue, 6 Jun 2017 08:59:54 +0000
-Message-ID: <BLUPR12MB06574B4197A3CCC8D6315251C4CB0@BLUPR12MB0657.namprd12.prod.outlook.com>
-References: <BLUPR12MB06575D31F4F7233ED58923E1C4F30@BLUPR12MB0657.namprd12.prod.outlook.com>,<20170603094733.545ceda2@jic23.retrosnub.co.uk>
-In-Reply-To: <20170603094733.545ceda2@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset="iso-8859-1"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.99]:41206 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1750765AbdFCIhk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 3 Jun 2017 04:37:40 -0400
+Date: Sat, 3 Jun 2017 09:37:36 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: Re: [PATCH 01/38] iio: Use macro magic to avoid manual assign of
+ driver_module
+Message-ID: <20170603093736.2d9e0d03@kernel.org>
+In-Reply-To: <20170529155154.22580-2-jic23@kernel.org>
+References: <20170529155154.22580-1-jic23@kernel.org>
+        <20170529155154.22580-2-jic23@kernel.org>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+On Mon, 29 May 2017 16:51:17 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
 
->From: Jonathan Cameron <jic23@kernel.org>
->Sent: Saturday, June 3, 2017 10:47
->To: Jean-Baptiste Maneyrol
->Cc: linux-iio
->Subject: Re: [PATCH v2] iio: imu: inv_mpu6050: test whoami against invalid=
- values and do it first
->  =20
->On Mon, 29 May 2017 13:17:14 +0000
->Jean-Baptiste Maneyrol <JManeyrol@invensense.com> wrote:
->
->> SPI bus is never generating error during transfer, so to check if
->> a chip is correctly connected on a SPI bus we enforce whoami check
->> to be correct.
->> In this way we can assure SPI probe is failing if there is no chip
->> connected.
->>=20
->> Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
->Hi Jean-Baptiste,
->
->Sorry, I have just read back the previous emails and realised
->I wasn't being very clear.=A0 What I was suggesting was that we should
->check against all valid ids that are known, not just the one registered.
->So many of invensense's parts are 'nearly' compatible that it is
->common to get different revisions of boards using different versions.
->As such we are sure to break boards if we insist the code is right.
->(for starters I know there are DTSs out there for the beaglebone blue
->claiming it has a 9150 when it actually always has a 9250)
->
->So what I was looking for was a check over all valid IDs. Perhaps
->stick a warning in the log if the wrong one is found and fix up
->which chip info we are using.
->
->I'm afraid I thought this was what you meant when I agreed in
->the v1 thread, whereas it's clear you were thinking to enforce people
->getting it 'right!' (sadly something we know they don't always do).
->
->Jonathan
-Hi Jonathan,
+> Starting point in boiler plate reduction similar to that done for
+> many similar cases elsewhere in the kernel.
+> 
+> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+Hi all,
 
-you're right, I misunderstood what you were meaning. Sorry about that.
-Now it's crystal clear, thanks for the explanation.
+I've been slightly less lazy than last week and added some cc's.
 
-I will do a patch v3 checking against all known ids and if there is a
-mismatch, emit a warning and print the real chip name.
+If any of you lovely people have a bit of time to take a look at
+the first two patches in this series that would be great.
 
-Thanks.
-Jean-Baptiste
+I'm definitely looking for a acked-by or reviewed-by on this series
+before applying.
 
+Thanks,
+
+Jonathan
 > ---
->=A0 drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 21 +++++++++++----------
->=A0 1 file changed, 11 insertions(+), 10 deletions(-)
->=20
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu=
-/inv_mpu6050/inv_mpu_core.c
-> index 96dabbd..57b3442 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -774,23 +774,24 @@ static int inv_check_and_setup_chip(struct inv_mpu6=
-050_state *st)
->=A0=A0=A0=A0=A0=A0=A0 st->hw=A0 =3D &hw_info[st->chip_type];
->=A0=A0=A0=A0=A0=A0=A0 st->reg =3D hw_info[st->chip_type].reg;
->=A0=20
-> -=A0=A0=A0=A0 /* reset to make sure previous state are not there */
-> -=A0=A0=A0=A0 result =3D regmap_write(st->map, st->reg->pwr_mgmt_1,
-> -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0 INV_MPU6050_BIT_H_RESET);
-> -=A0=A0=A0=A0 if (result)
-> -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 return result;
-> -=A0=A0=A0=A0 msleep(INV_MPU6050_POWER_UP_TIME);
-> -
->=A0=A0=A0=A0=A0=A0=A0 /* check chip self-identification */
->=A0=A0=A0=A0=A0=A0=A0 result =3D regmap_read(st->map, INV_MPU6050_REG_WHOA=
-MI, &regval);
->=A0=A0=A0=A0=A0=A0=A0 if (result)
->=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 return result;
->=A0=A0=A0=A0=A0=A0=A0 if (regval !=3D st->hw->whoami) {
-> -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 dev_warn(regmap_get_device(st->map)=
-,
-> -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0=A0=A0 "whoami mismatch got %#02x expected %#02hhx for %s\n",
-> -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0=A0=A0 regval, st->hw->whoami, st->hw->name);
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 dev_err(regmap_get_device(st->map),
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 "invalid wh=
-oami got %#02x expected %#02hhx for %s\n",
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 regval, st-=
->hw->whoami, st->hw->name);
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 return -ENODEV;
->=A0=A0=A0=A0=A0=A0=A0 }
->=A0=20
-> +=A0=A0=A0=A0 /* reset to make sure previous state are not there */
-> +=A0=A0=A0=A0 result =3D regmap_write(st->map, st->reg->pwr_mgmt_1,
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0 INV_MPU6050_BIT_H_RESET);
-> +=A0=A0=A0=A0 if (result)
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 return result;
-> +=A0=A0=A0=A0 msleep(INV_MPU6050_POWER_UP_TIME);
+>  drivers/iio/industrialio-core.c    | 35 +++++++++--------------------------
+>  drivers/iio/industrialio-trigger.c |  6 +++---
+>  include/linux/iio/iio.h            | 31 +++++++++++++++++++++++++++++--
+>  3 files changed, 41 insertions(+), 31 deletions(-)
+> 
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index 4a1de59d153a..62dafa4414e3 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -1665,14 +1665,11 @@ static int iio_check_unique_scan_index(struct iio_dev *indio_dev)
+>  
+>  static const struct iio_buffer_setup_ops noop_ring_setup_ops;
+>  
+> -/**
+> - * iio_device_register() - register a device with the IIO subsystem
+> - * @indio_dev:		Device structure filled by the device driver
+> - **/
+> -int iio_device_register(struct iio_dev *indio_dev)
+> +int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
+>  {
+>  	int ret;
+>  
+> +	indio_dev->driver_module = this_mod;
+>  	/* If the calling driver did not initialize of_node, do it here */
+>  	if (!indio_dev->dev.of_node && indio_dev->dev.parent)
+>  		indio_dev->dev.of_node = indio_dev->dev.parent->of_node;
+> @@ -1718,7 +1715,8 @@ int iio_device_register(struct iio_dev *indio_dev)
+>  		indio_dev->setup_ops = &noop_ring_setup_ops;
+>  
+>  	cdev_init(&indio_dev->chrdev, &iio_buffer_fileops);
+> -	indio_dev->chrdev.owner = indio_dev->info->driver_module;
 > +
->=A0=A0=A0=A0=A0=A0=A0 /*
->=A0=A0=A0=A0=A0=A0=A0=A0 * toggle power state. After reset, the sleep bit =
-could be on
->=A0=A0=A0=A0=A0=A0=A0=A0 * or off depending on the OTP settings. Toggling =
-power would
+> +	indio_dev->chrdev.owner = this_mod;
+>  
+>  	ret = cdev_device_add(&indio_dev->chrdev, &indio_dev->dev);
+>  	if (ret < 0)
+> @@ -1736,7 +1734,7 @@ int iio_device_register(struct iio_dev *indio_dev)
+>  	iio_device_unregister_debugfs(indio_dev);
+>  	return ret;
+>  }
+> -EXPORT_SYMBOL(iio_device_register);
+> +EXPORT_SYMBOL(__iio_device_register);
+>  
+>  /**
+>   * iio_device_unregister() - unregister a device from the IIO subsystem
+> @@ -1768,23 +1766,8 @@ static void devm_iio_device_unreg(struct device *dev, void *res)
+>  	iio_device_unregister(*(struct iio_dev **)res);
+>  }
+>  
+> -/**
+> - * devm_iio_device_register - Resource-managed iio_device_register()
+> - * @dev:	Device to allocate iio_dev for
+> - * @indio_dev:	Device structure filled by the device driver
+> - *
+> - * Managed iio_device_register.  The IIO device registered with this
+> - * function is automatically unregistered on driver detach. This function
+> - * calls iio_device_register() internally. Refer to that function for more
+> - * information.
+> - *
+> - * If an iio_dev registered with this function needs to be unregistered
+> - * separately, devm_iio_device_unregister() must be used.
+> - *
+> - * RETURNS:
+> - * 0 on success, negative error number on failure.
+> - */
+> -int devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev)
+> +int __devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev,
+> +			       struct module *this_mod)
+>  {
+>  	struct iio_dev **ptr;
+>  	int ret;
+> @@ -1794,7 +1777,7 @@ int devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev)
+>  		return -ENOMEM;
+>  
+>  	*ptr = indio_dev;
+> -	ret = iio_device_register(indio_dev);
+> +	ret = __iio_device_register(indio_dev, this_mod);
+>  	if (!ret)
+>  		devres_add(dev, ptr);
+>  	else
+> @@ -1802,7 +1785,7 @@ int devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev)
+>  
+>  	return ret;
+>  }
+> -EXPORT_SYMBOL_GPL(devm_iio_device_register);
+> +EXPORT_SYMBOL_GPL(__devm_iio_device_register);
+>  
+>  /**
+>   * devm_iio_device_unregister - Resource-managed iio_device_unregister()
+> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+> index 978e1592c2a3..067e58863592 100644
+> --- a/drivers/iio/industrialio-trigger.c
+> +++ b/drivers/iio/industrialio-trigger.c
+> @@ -250,7 +250,7 @@ static int iio_trigger_attach_poll_func(struct iio_trigger *trig,
+>  		= bitmap_empty(trig->pool, CONFIG_IIO_CONSUMERS_PER_TRIGGER);
+>  
+>  	/* Prevent the module from being removed whilst attached to a trigger */
+> -	__module_get(pf->indio_dev->info->driver_module);
+> +	__module_get(pf->indio_dev->driver_module);
+>  
+>  	/* Get irq number */
+>  	pf->irq = iio_trigger_get_irq(trig);
+> @@ -286,7 +286,7 @@ static int iio_trigger_attach_poll_func(struct iio_trigger *trig,
+>  out_put_irq:
+>  	iio_trigger_put_irq(trig, pf->irq);
+>  out_put_module:
+> -	module_put(pf->indio_dev->info->driver_module);
+> +	module_put(pf->indio_dev->driver_module);
+>  	return ret;
+>  }
+>  
+> @@ -307,7 +307,7 @@ static int iio_trigger_detach_poll_func(struct iio_trigger *trig,
+>  		trig->attached_own_device = false;
+>  	iio_trigger_put_irq(trig, pf->irq);
+>  	free_irq(pf->irq, pf);
+> -	module_put(pf->indio_dev->info->driver_module);
+> +	module_put(pf->indio_dev->driver_module);
+>  
+>  	return ret;
+>  }
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index 3f5ea2e9a39e..f65391067089 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -512,6 +512,7 @@ struct iio_buffer_setup_ops {
+>  /**
+>   * struct iio_dev - industrial I/O device
+>   * @id:			[INTERN] used to identify device internally
+> + * @driver_module:	[INTERN] used to make it harder to undercut users
+>   * @modes:		[DRIVER] operating modes supported by device
+>   * @currentmode:	[DRIVER] current operating mode
+>   * @dev:		[DRIVER] device structure, should be assigned a parent
+> @@ -552,6 +553,7 @@ struct iio_buffer_setup_ops {
+>   */
+>  struct iio_dev {
+>  	int				id;
+> +	struct module			*driver_module;
+>  
+>  	int				modes;
+>  	int				currentmode;
+> @@ -598,9 +600,34 @@ struct iio_dev {
+>  
+>  const struct iio_chan_spec
+>  *iio_find_channel_from_si(struct iio_dev *indio_dev, int si);
+> -int iio_device_register(struct iio_dev *indio_dev);
+> +/**
+> + * iio_device_register() - register a device with the IIO subsystem
+> + * @indio_dev:		Device structure filled by the device driver
+> + **/
+> +#define iio_device_register(iio_dev) \
+> +	__iio_device_register(iio_dev, THIS_MODULE)
+> +int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod);
+>  void iio_device_unregister(struct iio_dev *indio_dev);
+> -int devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev);
+> +/**
+> + * devm_iio_device_register - Resource-managed iio_device_register()
+> + * @dev:	Device to allocate iio_dev for
+> + * @indio_dev:	Device structure filled by the device driver
+> + *
+> + * Managed iio_device_register.  The IIO device registered with this
+> + * function is automatically unregistered on driver detach. This function
+> + * calls iio_device_register() internally. Refer to that function for more
+> + * information.
+> + *
+> + * If an iio_dev registered with this function needs to be unregistered
+> + * separately, devm_iio_device_unregister() must be used.
+> + *
+> + * RETURNS:
+> + * 0 on success, negative error number on failure.
+> + */
+> +#define devm_iio_device_register(dev, indio_dev) \
+> +	__devm_iio_device_register(dev, indio_dev, THIS_MODULE);
+> +int __devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev,
+> +			       struct module *this_mod);
+>  void devm_iio_device_unregister(struct device *dev, struct iio_dev *indio_dev);
+>  int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp);
+>  int iio_device_claim_direct_mode(struct iio_dev *indio_dev);
 
-    =
