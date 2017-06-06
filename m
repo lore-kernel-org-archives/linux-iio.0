@@ -1,58 +1,37 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:42284 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751916AbdFKNtb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 11 Jun 2017 09:49:31 -0400
-Date: Sun, 11 Jun 2017 14:49:26 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-Cc: linux-iio@vger.kernel.org, lorenzo.bianconi@st.com,
-        denis.ciocca@st.com
-Subject: Re: [PATCH 1/2] iio: accel: st_accel_spi: fix spi_device_id table
-Message-ID: <20170611144926.5f6a49c1@kernel.org>
-In-Reply-To: <20170606205124.14905-2-lorenzo.bianconi@st.com>
+Return-Path: <SRS0=hlQU=5L=gmail.com=lorenzo.bianconi83@kernel.org>
+From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	lorenzo.bianconi@st.com,
+	denis.ciocca@st.com
+Subject: [PATCH 2/2] iio: magnetometer: st_magn_spi: fix spi_device_id table
+Date: Tue,  6 Jun 2017 22:51:24 +0200
+Message-Id: <20170606205124.14905-3-lorenzo.bianconi@st.com>
+In-Reply-To: <20170606205124.14905-1-lorenzo.bianconi@st.com>
 References: <20170606205124.14905-1-lorenzo.bianconi@st.com>
-        <20170606205124.14905-2-lorenzo.bianconi@st.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue,  6 Jun 2017 22:51:23 +0200
-Lorenzo Bianconi <lorenzo.bianconi83@gmail.com> wrote:
+Remove LSM303DLHC, LSM303DLM from st_magn_id_table since LSM303DL series
+does not support spi interface
 
-> Remove LSM303DL, LSM303DLM, LSM303DLH, LSM303DLHC from st_accel_id_table
-> since LSM303DL series does not support spi interface
-> 
-> Fixes: d62511689de5 (iio: accel: Add STMicroelectronics accel driver)
-> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
-Applied to the togreg branch of iio.git.
+Fixes: 872e79add756 (iio: magn: Add STMicroelectronics magn driver)
+Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+---
+ drivers/iio/magnetometer/st_magn_spi.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-Thanks,
-
-Jonathan
-> ---
->  drivers/iio/accel/st_accel_spi.c | 4 ----
->  1 file changed, 4 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/st_accel_spi.c b/drivers/iio/accel/st_accel_spi.c
-> index 29a15f27a51b..1a867f5563a4 100644
-> --- a/drivers/iio/accel/st_accel_spi.c
-> +++ b/drivers/iio/accel/st_accel_spi.c
-> @@ -47,15 +47,11 @@ static int st_accel_spi_remove(struct spi_device *spi)
->  }
->  
->  static const struct spi_device_id st_accel_id_table[] = {
-> -	{ LSM303DLH_ACCEL_DEV_NAME },
-> -	{ LSM303DLHC_ACCEL_DEV_NAME },
->  	{ LIS3DH_ACCEL_DEV_NAME },
->  	{ LSM330D_ACCEL_DEV_NAME },
->  	{ LSM330DL_ACCEL_DEV_NAME },
->  	{ LSM330DLC_ACCEL_DEV_NAME },
->  	{ LIS331DLH_ACCEL_DEV_NAME },
-> -	{ LSM303DL_ACCEL_DEV_NAME },
-> -	{ LSM303DLM_ACCEL_DEV_NAME },
->  	{ LSM330_ACCEL_DEV_NAME },
->  	{ LSM303AGR_ACCEL_DEV_NAME },
->  	{ LIS2DH12_ACCEL_DEV_NAME },
-
+diff --git a/drivers/iio/magnetometer/st_magn_spi.c b/drivers/iio/magnetometer/st_magn_spi.c
+index 6325e7dc8e03..f3cb4dc05391 100644
+--- a/drivers/iio/magnetometer/st_magn_spi.c
++++ b/drivers/iio/magnetometer/st_magn_spi.c
+@@ -48,8 +48,6 @@ static int st_magn_spi_remove(struct spi_device *spi)
+ }
+ 
+ static const struct spi_device_id st_magn_id_table[] = {
+-	{ LSM303DLHC_MAGN_DEV_NAME },
+-	{ LSM303DLM_MAGN_DEV_NAME },
+ 	{ LIS3MDL_MAGN_DEV_NAME },
+ 	{ LSM303AGR_MAGN_DEV_NAME },
+ 	{},
+-- 
+2.12.2
