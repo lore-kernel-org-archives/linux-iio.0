@@ -1,82 +1,51 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:42198 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750836AbdFCJO6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 3 Jun 2017 05:14:58 -0400
-Date: Sat, 3 Jun 2017 10:14:53 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Ryan Mallon <rmallon@gmail.com>
-Cc: Alexander Sverdlin <alexander.sverdlin@gmail.com>,
-        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Hartley Sweeten <hsweeten@visionengravers.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v4 0/5] iio: ADC driver for EP93xx SoC
-Message-ID: <20170603101453.6b44b85a@kernel.org>
-In-Reply-To: <5921F894.90809@gmail.com>
-References: <20170517171352.20369-1-alexander.sverdlin@gmail.com>
-        <df337513-23c7-06b8-50e4-94560e75650c@kernel.org>
-        <5921F894.90809@gmail.com>
+Return-Path: <SRS0=ILwk=5M=atomide.com=tony@kernel.org>
+Date: Tue, 6 Jun 2017 23:22:00 -0700
+From: Tony Lindgren <tony@atomide.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org, linux-omap@vger.kernel.org,
+	Marcel Partap <mpartap@gmx.net>,
+	Michael Scott <michael.scott@linaro.org>,
+	Sebastian Reichel <sre@kernel.org>
+Subject: Re: [PATCH 1/3] iio: adc: cpcap: Fix default register values and
+ battery temperature
+Message-ID: <20170607062200.GD3730@atomide.com>
+References: <20170523005146.726-1-tony@atomide.com>
+ <20170523005146.726-2-tony@atomide.com>
+ <20170524201831.3504c42d@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20170524201831.3504c42d@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, 22 May 2017 06:29:08 +1000
-Ryan Mallon <rmallon@gmail.com> wrote:
-
-> On 22/05/17 00:03, Jonathan Cameron wrote:
-> > On 17/05/17 18:13, Alexander Sverdlin wrote:  
-> >> This series prepares the necessary infrastructure for ADC platform
-> >> device on
-> >> Cirrus Logic EP93xx family of SoCs and adds the driver for ADC device
-> >> using
-> >> IIO subsystem.  
-> > Hartley, Ryan,
+* Jonathan Cameron <jic23@kernel.org> [170524 12:22]:
+> On Mon, 22 May 2017 17:51:44 -0700
+> Tony Lindgren <tony@atomide.com> wrote:
+> 
+> > Looking at the register dumps from Android kernel on droid 4, I noticed
+> > the values with the mainline kernel don't match. Let's fix this by
+> > initializing the ADC registers to what Android does.
 > > 
-> > How do you want to handle taking this series forward.
-> > Clearly we have a few arch specific bits and then the driver which
-> > is dependent on some of them.  
-> 
-> I no longer maintain an ep93xx tree because the architecture gets very
-> few patches now. Patches should go via the arm-soc tree, which is
-> maintained by (I believe) Arnd and Olaf.
-> 
+> > For getting correct values from the battery thermistor, we need to
+> > toggle the CPCAP_BIT_THERMBIAS_EN when measuring battery temperature
+> > to get correct battery temperatures. And looks like we also need to
+> > wait a little bit before reading the battery temperature as otherwise
+> > the results are inaccurate.
 > > 
-> > I'm happy to take the lot through the IIO tree, but will be wanting
-> > a few acks.  
-> 
-> Sure, the series looks fine to me. For the ep93xx specific bits:
-> 
-> Acked-by: Ryan Mallon <rmallon@gmail.com>
-> 
-> > I'm interested to note how few implementations there are of clk_get_parent
-> > in tree.  Any comments on that little bit of the code would be
-> > particularly welcome.  
-> 
-> The ep93xx architecture is old and obsolete. Because of this, and the
-> relatively few number of people developing for it and with hardware to
-> test, it hasn't gotten upgraded to some of the more modern kernel apis
-> like the common clock framework.
-> 
-> It probably isn't too difficult to move ep93xx to the common clock
-> framework, but it is a separate change and I don't think Alexander
-> should have to do it as a prerequisite to getting this adc support merged.
-Agreed entirely!
+> > Cc: Marcel Partap <mpartap@gmx.net>
+> > Cc: Michael Scott <michael.scott@linaro.org>
+> > Cc: Sebastian Reichel <sre@kernel.org>
+> > Signed-off-by: Tony Lindgren <tony@atomide.com>
+> Applied to the togreg branch of iio.git and will be shortly pushed
+> out as testing for the autobuilders to play with it.
 
-Alexander, would you mind reposting the whole series, with
-the linux-arm-kernel@lists.infrared.org cc'd.
+Not seeing these in your togreg brach or in next? The
+branch I just checked is the one below, maybe I'm looking
+at a wrong branch or something.
 
-I've cc'd it to this email to provide a bit of background to
-the maintainers, but please add a note to the cover letter
-highlighting what Ryan has covered here.
+Regards,
 
-Thanks,
+Tony
 
-Jonathan
-
-> 
-> ~Ryan
-
+https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/log/?h=togreg
