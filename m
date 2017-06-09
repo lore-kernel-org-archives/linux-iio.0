@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from esa6.microchip.iphmx.com ([216.71.154.253]:21698 "EHLO
-        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751505AbdFIHIz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Jun 2017 03:08:55 -0400
+Received: from esa1.microchip.iphmx.com ([68.232.147.91]:62932 "EHLO
+        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751629AbdFIHJ1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Jun 2017 03:09:27 -0400
 From: Eugen Hristev <eugen.hristev@microchip.com>
 To: <nicolas.ferre@microchip.com>,
         <alexandre.belloni@free-electrons.com>,
@@ -11,76 +11,57 @@ To: <nicolas.ferre@microchip.com>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <ludovic.desroches@microchip.com>, <jic23@kernel.org>
 CC: <eugen.hristev@microchip.com>
-Subject: [PATCH v4 0/4] iio: adc: sama5d2_adc hw triggers and buffers
-Date: Fri, 9 Jun 2017 10:07:15 +0300
-Message-ID: <1496992039-17964-1-git-send-email-eugen.hristev@microchip.com>
+Subject: [PATCH v4 1/4] ARM: dts: at91: sama5d2_xplained: enable ADTRG pin
+Date: Fri, 9 Jun 2017 10:07:16 +0300
+Message-ID: <1496992039-17964-2-git-send-email-eugen.hristev@microchip.com>
+In-Reply-To: <1496992039-17964-1-git-send-email-eugen.hristev@microchip.com>
+References: <1496992039-17964-1-git-send-email-eugen.hristev@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch implements the hardware triggers support and buffer management
-for sama5d2.
-The DT modifications ( [PATCH v4 1/4] ARM: dts: at91: sama5d2_xplained:
-enable ADTRG pin) are for demonstration purposes of the feature,
-setting the pinctrl for the ADC hw trigger pin,should go through
-at91 maintainers.
-As discussed on the mailing list, since we have a single external trigger
-namely the ADTRG, but three different possible edges that can trigger it,
-will have a single trigger in the IIO subsystem and three possible edges
-which can be selected from the device tree.
-Thus I created new bindings in the device tree for having the possible
-edge types for the ADTRG pin.
-The documentation for the bindings is in the patch
-[PATCH v4 2/4] Documentation: dt: iio: at91-sama5d2_adc: add adtrg
- trigger binding
-The modifications in the DT are in the patch
-[PATCH v4 3/4] ARM: dts: at91: sama5d2: add ADC hw trigger
-The new property must be set with the values from interrupt edge types, as this
-pin is effectively an internal interrupt.
+Enable pinctrl for ADTRG pin (PD31) for ADC hardware trigger support.
 
-  Changes in v4:
- - Modified bindings to be similar with interrupts
- - Used iio claim direct to make sure buffer is not enabled when someone might
-   try to use a software triggered conversion
+Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+---
+ arch/arm/boot/dts/at91-sama5d2_xplained.dts | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
 
-  Changes in v3:
- - No longer have all three possible triggers registered in the subsystem and
-   available in the sysfs. Only registering one trigger, and the possible edge
-   is being read from the device tree. In the device tree, any possible edge
-   can be set. There are three already made nodes for each possible edge which
-   can be selected.
- - Fixed a bug where software triggered conversion could be started even if
-   the hardware trigger was enabled.
- - Preallocate enough space for the buffer, considering all the channels
-   and timestamp
-
-
-
-  Changes in v2:
- - Moved buffer allocation and freeing into the preenable and postdisable
-   callbacks.
-   We have a total of scan bytes that can vary a lot depending on each channel
-   enabled at a certain point.
- - made the at91 trigger list part of state structure
- - made the iio trigger list preallocated in state structure
- - moved irq enabling/disabling into the try_reenable callback
- - on trigger disable must write disable registries as well
- - Modified trigger name length to 64
-
-
-Eugen Hristev (4):
-  ARM: dts: at91: sama5d2_xplained: enable ADTRG pin
-  Documentation: dt: iio: at91-sama5d2_adc: add hw trigger edge binding
-  ARM: dts: at91: sama5d2: add ADC hw trigger edge type
-  iio: adc: at91-sama5d2_adc: add hw trigger and buffer support
-
- .../bindings/iio/adc/at91-sama5d2_adc.txt          |   6 +
- arch/arm/boot/dts/at91-sama5d2_xplained.dts        |  16 +-
- arch/arm/boot/dts/sama5d2.dtsi                     |   1 +
- drivers/iio/adc/at91-sama5d2_adc.c                 | 236 ++++++++++++++++++++-
- 4 files changed, 253 insertions(+), 6 deletions(-)
-
+diff --git a/arch/arm/boot/dts/at91-sama5d2_xplained.dts b/arch/arm/boot/dts/at91-sama5d2_xplained.dts
+index 0bef9e0..04754b1 100644
+--- a/arch/arm/boot/dts/at91-sama5d2_xplained.dts
++++ b/arch/arm/boot/dts/at91-sama5d2_xplained.dts
+@@ -303,7 +303,7 @@
+ 				vddana-supply = <&vdd_3v3_lp_reg>;
+ 				vref-supply = <&vdd_3v3_lp_reg>;
+ 				pinctrl-names = "default";
+-				pinctrl-0 = <&pinctrl_adc_default>;
++				pinctrl-0 = <&pinctrl_adc_default &pinctrl_adtrg_default>;
+ 				status = "okay";
+ 			};
+ 
+@@ -322,6 +322,20 @@
+ 					bias-disable;
+ 				};
+ 
++				/*
++				 * The ADTRG pin can work on any edge type.
++				 * In here it's being pulled up, so need to
++				 * connect it to ground to get an edge e.g.
++				 * Trigger can be configured on falling, rise
++				 * or any edge, and the pull-up can be changed
++				 * to pull-down or left floating according to
++				 * needs.
++				 */
++				pinctrl_adtrg_default: adtrg_default {
++					pinmux = <PIN_PD31__ADTRG>;
++					bias-pull-up;
++				};
++
+ 				pinctrl_charger_chglev: charger_chglev {
+ 					pinmux = <PIN_PA12__GPIO>;
+ 					bias-disable;
 -- 
 2.7.4
 
