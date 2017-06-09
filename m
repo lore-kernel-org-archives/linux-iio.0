@@ -1,60 +1,43 @@
-Return-Path: <SRS0=S0G0=5Q=gmail.com=lorenzo.bianconi83@kernel.org>
-MIME-Version: 1.0
-In-Reply-To: <20170611120952.17624c24@jic23.retrosnub.co.uk>
-References: <CAA2SeNJKoERD=ejx8ip=4fhdjB7AY8-9KZyndnnFyvcfU0TohQ@mail.gmail.com>
- <20170611120952.17624c24@jic23.retrosnub.co.uk>
-From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-Date: Sun, 11 Jun 2017 21:50:52 +0200
-Message-ID: <CAA2SeNKBMrhOtp_paL+OACC695=voOBoiZzx6+VRs_VCnjs9ng@mail.gmail.com>
-Subject: Re: spi 3wire support for ST MEMs sensors
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Return-Path: <SRS0=Iqip=5O=linux.intel.com=andriy.shevchenko@kernel.org>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: linux-iio@vger.kernel.org
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH v1] iio: adc: ad7791: Use sysfs_match_string() helper
+Date: Fri,  9 Jun 2017 15:08:10 +0300
+Message-Id: <20170609120810.22057-1-andriy.shevchenko@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-> On Fri, 9 Jun 2017 11:30:00 +0200
-> Lorenzo Bianconi <lorenzo.bianconi83@gmail.com> wrote:
->
->> Hi all,
->>
->> I started working on supporting spi-3wire mode in some STM MEMs
->> drivers and I am facing a tricky issue. Let's consider the driver for
->> LSM303AGR accel device
->> (http://www.st.com/resource/en/datasheet/lsm303agr.pdf). The sensor is
->> configured by default in spi 4 wire mode (BIT 0 in register 0x23) but
->> the package does not export the MISO line for accelerometer. The only
->> way to support spi is to enable 3-wire at bootstrap. I am wondering
->> how to figure out the correct register address since it is not
->> possible to read the device whoami. The only way that come up to my
->> mind is to add a lookup table in st_accel_spi.c based on
->> spi_device_id. Is there something better? Or should I just remove the
->> spi support for LSM303AGR? Thanks
->>
->> Regards,
->> Lorenzo
->>
->
-> Hi Lorenzo,
->
+Use sysfs_match_string() helper instead of open coded variant.
 
-Hi Jonathan,
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/iio/adc/ad7791.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-> Look up table is probably the best option when a device only supports
-> 3 wire mode.
->
-> However, don't we need DT of ACPI to provide info on whether a 3 wire
-> bus is being used?  If so can we query it from the spi core?
->
-
-Right, the user has to request the 3-wire mode using the standard
-spi-3wire property.
-
-> Jonathan
-
-Regards,
-Lorenzo
-
+diff --git a/drivers/iio/adc/ad7791.c b/drivers/iio/adc/ad7791.c
+index 1817ebf5ad84..34e353c43ac8 100644
+--- a/drivers/iio/adc/ad7791.c
++++ b/drivers/iio/adc/ad7791.c
+@@ -272,11 +272,9 @@ static ssize_t ad7791_write_frequency(struct device *dev,
+ 	struct ad7791_state *st = iio_priv(indio_dev);
+ 	int i, ret;
+ 
+-	for (i = 0; i < ARRAY_SIZE(ad7791_sample_freq_avail); i++)
+-		if (sysfs_streq(ad7791_sample_freq_avail[i], buf))
+-			break;
+-	if (i == ARRAY_SIZE(ad7791_sample_freq_avail))
+-		return -EINVAL;
++	i = sysfs_match_string(ad7791_sample_freq_avail, buf);
++	if (i < 0)
++		return i;
+ 
+ 	ret = iio_device_claim_direct_mode(indio_dev);
+ 	if (ret)
 -- 
-UNIX is Sexy: who | grep -i blonde | talk; cd ~; wine; talk; touch;
-unzip; touch; strip; gasp; finger; gasp; mount; fsck; more; yes; gasp;
-umount; make clean; sleep
+2.11.0
