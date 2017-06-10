@@ -1,68 +1,58 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:36752 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751565AbdFKLAf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 11 Jun 2017 07:00:35 -0400
-Date: Sun, 11 Jun 2017 12:00:31 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v1] iio: core: Use __sysfs_match_string() helper
-Message-ID: <20170611120031.48a42424@kernel.org>
-In-Reply-To: <20170609120816.22106-1-andriy.shevchenko@linux.intel.com>
-References: <20170609120816.22106-1-andriy.shevchenko@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=vy6h=5P=linux.intel.com=andriy.shevchenko@kernel.org>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1] iio: accel: mma9551: use NULL for GPIO connection ID
+Date: Sat, 10 Jun 2017 21:58:41 +0300
+Message-Id: <20170610185841.49911-1-andriy.shevchenko@linux.intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri,  9 Jun 2017 15:08:16 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+While using GPIO library API we might get into troubles in the future,
+because we can't rely on label name in the driver since vendor firmware
+might provide any GPIO pin there, e.g. "reset", and even mark it in _DSD
+(in which case the request will fail).
 
-> Use __sysfs_match_string() helper instead of open coded variant.
-> 
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Hmm. I'm sure I replied to this but it seems to have gone astray.
-Anyhow, applied to the togreg branch of iio.git and pushed out as
-testing for the autobuilders to play with it.
+To avoid inconsistency and potential issues we have two options:
+a) generate GPIO ACPI mapping table and supply it via
+acpi_dev_add_driver_gpios(), or
+b) just pass NULL as connection ID.
 
-Thanks,
+The b) approach is much simpler and would work since the driver relies
+on GPIO indices only. Moreover, the _CRS fallback mechanism, when
+requesting GPIO, is going to be stricter, and supplying non-NULL
+connection ID when neither _DSD, nor GPIO ACPI mapping is present, will
+make request fail.
 
-Jonathan
-> ---
->  drivers/iio/industrialio-core.c | 13 ++++---------
->  1 file changed, 4 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index 4a1de59d153a..15c86a8cd704 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -478,21 +478,16 @@ ssize_t iio_enum_write(struct iio_dev *indio_dev,
->  	size_t len)
->  {
->  	const struct iio_enum *e = (const struct iio_enum *)priv;
-> -	unsigned int i;
->  	int ret;
->  
->  	if (!e->set)
->  		return -EINVAL;
->  
-> -	for (i = 0; i < e->num_items; i++) {
-> -		if (sysfs_streq(buf, e->items[i]))
-> -			break;
-> -	}
-> -
-> -	if (i == e->num_items)
-> -		return -EINVAL;
-> +	ret = __sysfs_match_string(e->items, e->num_items, buf);
-> +	if (ret < 0)
-> +		return ret;
->  
-> -	ret = e->set(indio_dev, chan, i);
-> +	ret = e->set(indio_dev, chan, ret);
->  	return ret ? ret : len;
->  }
->  EXPORT_SYMBOL_GPL(iio_enum_write);
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/iio/accel/mma9551.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
+diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
+index bf2704435629..1f53f08476f5 100644
+--- a/drivers/iio/accel/mma9551.c
++++ b/drivers/iio/accel/mma9551.c
+@@ -27,7 +27,6 @@
+ 
+ #define MMA9551_DRV_NAME		"mma9551"
+ #define MMA9551_IRQ_NAME		"mma9551_event"
+-#define MMA9551_GPIO_NAME		"mma9551_int"
+ #define MMA9551_GPIO_COUNT		4
+ 
+ /* Tilt application (inclination in IIO terms). */
+@@ -418,8 +417,7 @@ static int mma9551_gpio_probe(struct iio_dev *indio_dev)
+ 	struct device *dev = &data->client->dev;
+ 
+ 	for (i = 0; i < MMA9551_GPIO_COUNT; i++) {
+-		gpio = devm_gpiod_get_index(dev, MMA9551_GPIO_NAME, i,
+-					    GPIOD_IN);
++		gpio = devm_gpiod_get_index(dev, NULL, i, GPIOD_IN);
+ 		if (IS_ERR(gpio)) {
+ 			dev_err(dev, "acpi gpio get index failed\n");
+ 			return PTR_ERR(gpio);
+-- 
+2.11.0
