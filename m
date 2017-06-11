@@ -1,58 +1,133 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:36134 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751861AbdFKKdt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 11 Jun 2017 06:33:49 -0400
-Date: Sun, 11 Jun 2017 11:33:51 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+Received: from mail2-relais-roc.national.inria.fr ([192.134.164.83]:36761 "EHLO
+        mail2-relais-roc.national.inria.fr" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1751649AbdFKOTZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 11 Jun 2017 10:19:25 -0400
+From: Julia Lawall <Julia.Lawall@lip6.fr>
+To: Julia Lawall <Julia.Lawall@lip6.fr>
+Cc: kernel-janitors@vger.kernel.org,
+        Gilles Muller <Gilles.Muller@lip6.fr>,
+        Nicolas Palix <nicolas.palix@imag.fr>,
+        Michal Marek <mmarek@suse.com>, cocci@systeme.lip6.fr,
+        linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Julia Lawall <Julia.Lawall@lip6.fr>
-Subject: Re: [PATCH v1] iio: proximity: sx9500: Use devm_gpiod_get()
-Message-ID: <20170611113351.09b6c6b0@kernel.org>
-In-Reply-To: <20170610190821.53499-1-andriy.shevchenko@linux.intel.com>
-References: <20170610190821.53499-1-andriy.shevchenko@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: [PATCH] scripts/coccinelle/api/gpiod_get_index.cocci: use gpiod_get variant when possible
+Date: Sun, 11 Jun 2017 15:53:56 +0200
+Message-Id: <1497189236-4666-1-git-send-email-Julia.Lawall@lip6.fr>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, 10 Jun 2017 22:08:21 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+Coccinelle script to use the shorter gpiod_get function when the third
+argument to a gpiod_get_index function is 0.
 
-> Since index is always 0 replace devm_gpiod_get_index() by devm_gpiod_get().
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Hi Andy,
+This rule avoids modifying wrapper functions and cases where there is a
+series of gpiod_get_index calls.
 
-Good little tidy up. Looks like a classic use for a coccinelle patch
-if you have time to take it further.  Sort of thing that will sneak in
-within future drivers so good to tidy up all cases automatically ;)
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+---
+ scripts/coccinelle/api/gpiod_get_index.cocci |   92 +++++++++++++++++++++++++++
+ 1 file changed, 92 insertions(+)
 
-Thanks,
-
-Jonathan
-> ---
->  drivers/iio/proximity/sx9500.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/proximity/sx9500.c b/drivers/iio/proximity/sx9500.c
-> index 9ea147f1a50d..f42b3a1c75ff 100644
-> --- a/drivers/iio/proximity/sx9500.c
-> +++ b/drivers/iio/proximity/sx9500.c
-> @@ -878,8 +878,7 @@ static void sx9500_gpio_probe(struct i2c_client *client,
->  
->  	dev = &client->dev;
->  
-> -	data->gpiod_rst = devm_gpiod_get_index(dev, SX9500_GPIO_RESET,
-> -					       0, GPIOD_OUT_HIGH);
-> +	data->gpiod_rst = devm_gpiod_get(dev, SX9500_GPIO_RESET, GPIOD_OUT_HIGH);
->  	if (IS_ERR(data->gpiod_rst)) {
->  		dev_warn(dev, "gpio get reset pin failed\n");
->  		data->gpiod_rst = NULL;
+diff --git a/scripts/coccinelle/api/gpiod_get_index.cocci b/scripts/coccinelle/api/gpiod_get_index.cocci
+new file mode 100644
+index 0000000..a670a29
+--- /dev/null
++++ b/scripts/coccinelle/api/gpiod_get_index.cocci
+@@ -0,0 +1,92 @@
++/// Use the shorter gpiod_get function when the third argument to a
++/// gpiod_get_index function is 0.
++//# The change might not be desired when there is a series of calls, for 0, 1,
++//# 2, etc.  This rule checks for another such call subsequently only.
++///
++// Confidence: Moderate
++// Copyright: (C) 2017 Julia Lawall, Inria. GPLv2.
++// URL: http://coccinelle.lip6.fr/
++// Options: --no-includes --include-headers
++// Keywords: gpiod_get_index
++
++virtual patch
++virtual context
++virtual org
++virtual report
++
++@initialize:python@
++@@
++
++def not_wrapper(p):
++  return (p[0].current_element != "devm_gpiod_get_optional" and
++          p[0].current_element != "devm_gpiod_get" and
++          p[0].current_element != "gpiod_get_optional" and
++          p[0].current_element != "gpiod_get");
++
++@r depends on patch && !context && !org && !report@
++expression e1,e2,e3,e4,e5,e6,n != 0;
++position p : script:python() { not_wrapper(p) };
++@@
++
++(
++- devm_gpiod_get_index_optional@p
+++ devm_gpiod_get_optional
++|
++- devm_gpiod_get_index@p
+++ devm_gpiod_get
++|
++- gpiod_get_index_optional@p
+++ gpiod_get_optional
++|
++- gpiod_get_index@p
+++ gpiod_get
++)
++   (e1,e2,
++-   0,
++    e3)
++ ... when != devm_gpiod_get_index_optional(e4,e5,n,e6)
++     when != devm_gpiod_get_index(e4,e5,n,e6)
++     when != gpiod_get_index_optional(e4,e5,n,e6)
++     when != gpiod_get_index(e4,e5,n,e6)
++
++// ----------------------------------------------------------------------------
++
++@r_context depends on !patch && (context || org || report) forall@
++expression e1, e2, e3, e4, e5, e6, n != 0;
++position p: script:python () { not_wrapper(p) };
++@@
++
++(
++*  devm_gpiod_get_index_optional@p
++|
++*  devm_gpiod_get_index@p
++|
++*  gpiod_get_index_optional@p
++|
++*  gpiod_get_index@p
++)
++   (e1,e2,
++*    0,
++    e3)
++ ... when != devm_gpiod_get_index_optional(e4,e5,n,e6)
++     when != devm_gpiod_get_index(e4,e5,n,e6)
++     when != gpiod_get_index_optional(e4,e5,n,e6)
++     when != gpiod_get_index(e4,e5,n,e6)
++
++// ----------------------------------------------------------------------------
++
++@script:python r_org depends on org@
++p << r_context.p;
++@@
++
++msg = "Use non _index variant in 0 case."
++coccilib.org.print_todo(p[0], msg)
++
++// ----------------------------------------------------------------------------
++
++@script:python r_report depends on report@
++p << r_context.p;
++@@
++
++msg = "Use non _index variant in 0 case around line %s." % (p[0].line)
++coccilib.report.print_report(p[0], msg)
 
