@@ -1,14 +1,14 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:37672 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:36752 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752168AbdFMSNY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 13 Jun 2017 14:13:24 -0400
-Date: Sun, 11 Jun 2017 11:52:45 +0100
+        id S1751565AbdFKLAf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 11 Jun 2017 07:00:35 -0400
+Date: Sun, 11 Jun 2017 12:00:31 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
 Subject: Re: [PATCH v1] iio: core: Use __sysfs_match_string() helper
-Message-ID: <20170611115245.6215189e@kernel.org>
+Message-ID: <20170611120031.48a42424@kernel.org>
 In-Reply-To: <20170609120816.22106-1-andriy.shevchenko@linux.intel.com>
 References: <20170609120816.22106-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
@@ -24,11 +24,11 @@ Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 > Cc: Jonathan Cameron <jic23@kernel.org>
 > Cc: Lars-Peter Clausen <lars@metafoo.de>
 > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Hmm. I'm sure I replied to this but it seems to have gone astray.
+Anyhow, applied to the togreg branch of iio.git and pushed out as
+testing for the autobuilders to play with it.
 
-A nice little tidy up.  I'd missed that function being added.
-
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with.
+Thanks,
 
 Jonathan
 > ---
