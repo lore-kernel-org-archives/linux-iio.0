@@ -1,57 +1,51 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:44906 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751793AbdFMUN1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 13 Jun 2017 16:13:27 -0400
-Date: Tue, 13 Jun 2017 21:13:22 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Alexander Wuerstlein <arw@arw.name>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+Return-Path: <SRS0=HePV=5R=ti.com=m-stecklein@kernel.org>
+From: Michael Stecklein <m-stecklein@ti.com>
+To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Subject: Re: [PATCH] iio hid-sensor-trigger: add Kconfig depends on
- IIO_BUFFER
-Message-ID: <20170613211322.5ed84610@kernel.org>
-In-Reply-To: <20170612115608.28058-1-arw@arw.name>
-References: <20170612115608.28058-1-arw@arw.name>
+        Peter Meerwald-Stadler
+	<pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>, Mark Rutland
+	<mark.rutland@arm.com>
+CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Andrew Davis <afd@ti.com>,
+        Michael Stecklein
+	<m-stecklein@ti.com>
+Subject: [PATCH 1/3] dt-bindings: iio: humidity: add bindings for HDC100x sensors
+Date: Mon, 12 Jun 2017 09:49:08 -0500
+Message-ID: <1497278950-12973-1-git-send-email-m-stecklein@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, 12 Jun 2017 13:56:05 +0200
-Alexander Wuerstlein <arw@arw.name> wrote:
+Add the bindings for the family of HDC100x sensors.
 
-> Building a kernel with my configuration failed with:
-> > drivers/built-in.o: In function `hid_sensor_setup_batch_mode': staging/drivers/iio/common/hid-sensors/hid-sensor-trigger.c:104: undefined reference to `iio_buffer_set_attrs'  
-> which is fixed by this patch.
-> 
-> Signed-off-by: Alexander Wuerstlein <arw@arw.name>
-Added a fixes tag as the issue was only introduced very recently.
+Signed-off-by: Michael Stecklein <m-stecklein@ti.com>
+---
+ .../devicetree/bindings/iio/humidity/hdc100x.txt         | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/humidity/hdc100x.txt
 
-Applied to the togreg branch of iio.git.
-
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/iio/common/hid-sensors/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/common/hid-sensors/Kconfig b/drivers/iio/common/hid-sensors/Kconfig
-> index 39188b72cd3b..80105378b0ba 100644
-> --- a/drivers/iio/common/hid-sensors/Kconfig
-> +++ b/drivers/iio/common/hid-sensors/Kconfig
-> @@ -16,7 +16,7 @@ config HID_SENSOR_IIO_COMMON
->  
->  config HID_SENSOR_IIO_TRIGGER
->  	tristate "Common module (trigger) for all HID Sensor IIO drivers"
-> -	depends on HID_SENSOR_HUB && HID_SENSOR_IIO_COMMON
-> +	depends on HID_SENSOR_HUB && HID_SENSOR_IIO_COMMON && IIO_BUFFER
->  	select IIO_TRIGGER
->  	help
->  	  Say yes here to build trigger support for HID sensors.
-
+diff --git a/Documentation/devicetree/bindings/iio/humidity/hdc100x.txt b/Documentation/devicetree/bindings/iio/humidity/hdc100x.txt
+new file mode 100644
+index 0000000..6f272fa
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/humidity/hdc100x.txt
+@@ -0,0 +1,16 @@
++* HDC100x temperature + humidity sensors
++
++Required properties:
++  - compatible: Should contain one of the following:
++	ti,hdc100x
++	ti,hdc1010
++	ti,hdc1050
++	ti,hdc1080
++  - reg: i2c address of the sensor
++
++Example:
++
++hdc100x@40 {
++	compatible = "ti,hdc100x";
++	reg = <0x40>;
++};
+-- 
+2.7.4
