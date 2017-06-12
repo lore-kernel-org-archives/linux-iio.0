@@ -1,70 +1,31 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:42810 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751779AbdFKODm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 11 Jun 2017 10:03:42 -0400
-Date: Sun, 11 Jun 2017 15:03:38 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Azael Avalos <coproscefalo@gmail.com>
-Cc: linux-iio@vger.kernel.org,
-        "platform-driver-x86@vger.kernel.org"
-        <platform-driver-x86@vger.kernel.org>
-Subject: Re: [PATCH 37/38] platform/x86: toshiba_acpi: drop assignment of
- iio_info.driver_module
-Message-ID: <20170611150338.62de672b@kernel.org>
-In-Reply-To: <CAGdLNWGf4+5zJUe2dREadjs92Vg_SHbANjG1kz6f4JsTGL-TPQ@mail.gmail.com>
+Return-Path: <SRS0=/uUQ=5R=metafoo.de=lars@kernel.org>
+Subject: Re: [PATCH 38/38] iio: drop iio_info.driver_module and
+ iio_trigger_ops.owner.
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
 References: <20170529155154.22580-1-jic23@kernel.org>
-        <20170529155154.22580-38-jic23@kernel.org>
-        <CAGdLNWGf4+5zJUe2dREadjs92Vg_SHbANjG1kz6f4JsTGL-TPQ@mail.gmail.com>
+ <20170529155154.22580-39-jic23@kernel.org>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <87aa917c-8e89-83f5-0ca4-ca8bb40e9b18@metafoo.de>
+Date: Mon, 12 Jun 2017 18:16:56 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <20170529155154.22580-39-jic23@kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, 7 Jun 2017 08:53:09 -0600
-Azael Avalos <coproscefalo@gmail.com> wrote:
+On 05/29/2017 05:51 PM, Jonathan Cameron wrote:
+> diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
+> index 2e1800ad265b..ff2b7c7a9652 100644
+> --- a/include/linux/iio/trigger.h
+> +++ b/include/linux/iio/trigger.h
+> @@ -34,7 +34,6 @@ struct iio_trigger;
 
-> Sorry for being this late, been a bit busy.
-That's fine, I'm still waiting for reviews on the two core patches
-at the start of the series :(  
+Update to the kernel-doc is missing here.
 
-Trying to avoid playing the maintainer game and applying loads
-of my own patches without review!
-
-Thanks,
-
-Jonathan
-> 
-> 2017-05-29 9:51 GMT-06:00 Jonathan Cameron <jic23@kernel.org>:
-> > This is now handled by use of a macro for device registration.  The field
-> > in iio_info will be going away shortly as it is no longer used.
-> >
-> > Cc: Azael Avalos <coproscefalo@gmail.com>
-> > Cc: <platform-driver-x86@vger.kernel.org>  
-> 
-> Acked-by: Azael Avalos <coproscefalo@gmail.com>
-> 
-> > Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-> > ---
-> >  drivers/platform/x86/toshiba_acpi.c | 1 -
-> >  1 file changed, 1 deletion(-)
-> >
-> > diff --git a/drivers/platform/x86/toshiba_acpi.c b/drivers/platform/x86/toshiba_acpi.c
-> > index d0daf75cbed1..ef4301f41727 100644
-> > --- a/drivers/platform/x86/toshiba_acpi.c
-> > +++ b/drivers/platform/x86/toshiba_acpi.c
-> > @@ -2515,7 +2515,6 @@ static const struct iio_chan_spec toshiba_iio_accel_channels[] = {
-> >  };
-> >
-> >  static const struct iio_info toshiba_iio_accel_info = {
-> > -       .driver_module = THIS_MODULE,
-> >         .read_raw = &toshiba_iio_accel_read_raw,
-> >  };
-> >
-> > --
-> > 2.13.0
-> >  
-> 
-> 
-> 
-
+>   * instances of a given device.
+>   **/
+>  struct iio_trigger_ops {
+> -	struct module *owner;
+>  	int (*set_trigger_state)(struct iio_trigger *trig, bool state);
+>  	int (*try_reenable)(struct iio_trigger *trig);
+>  	int (*validate_device)(struct iio_trigger *trig,
+>
