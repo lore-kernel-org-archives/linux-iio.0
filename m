@@ -1,84 +1,36 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:44944 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750765AbdFCJxb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 3 Jun 2017 05:53:31 -0400
-Date: Sat, 3 Jun 2017 10:53:26 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Wei Yongjun <weiyj.lk@gmail.com>, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
+Return-Path: <SRS0=Y9NC=5S=oracle.com=dan.carpenter@kernel.org>
+Date: Tue, 13 Jun 2017 11:39:05 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+        Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>, Marek Vasut <marex@denx.de>
-Cc: Wei Yongjun <weiyongjun1@huawei.com>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH -next v3] iio: adc: mxs-lradc: Fix return value check in
- mxs_lradc_adc_probe()
-Message-ID: <20170603105326.41e8c180@kernel.org>
-In-Reply-To: <e7789db6-27f3-0da7-cacb-bdc2b98a5e02@kernel.org>
-References: <20170427151413.23843-1-weiyj.lk@gmail.com>
-        <20170516152612.19090-1-weiyj.lk@gmail.com>
-        <e7789db6-27f3-0da7-cacb-bdc2b98a5e02@kernel.org>
+        Lee Jones <lee.jones@linaro.org>, Marek Vasut <marex@denx.de>,
+        linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: mxs-lradc: Checking IS_ERR() instead of NULL
+Message-ID: <20170613083905.7aiaxvfjg2ypkfq2@mwanda>
+References: <20170426210349.sjmf65ck5awfgz22@mwanda>
+ <13f3bcd0-c6c8-7abc-d732-91a19618f5a5@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <13f3bcd0-c6c8-7abc-d732-91a19618f5a5@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, 21 May 2017 13:12:37 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
-
-> On 16/05/17 16:26, Wei Yongjun wrote:
-> > From: Wei Yongjun <weiyongjun1@huawei.com>
+On Thu, Apr 27, 2017 at 07:21:09AM +0100, Jonathan Cameron wrote:
+> On 26/04/17 22:03, Dan Carpenter wrote:
+> > devm_ioremap() returns NULL on error.  It doesn't return error pointers.
 > > 
-> > In case of error, the function devm_ioremap() returns NULL pointer
-> > not ERR_PTR(). The IS_ERR() test in the return value check should
-> > be replaced with NULL test. Also add NULL test for iores.
+> > Fixes: 6dd112b9f85e ("iio: adc: mxs-lradc: Add support for ADC driver")
+> > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 > > 
-> > Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>  
-> Hi Wei,
+> Hi Dan,
 > 
-> At the moment I haven't yet sent a pull request to Greg since the
-> merge window closed.  Up shot is that I don't have the current version
-> of this code in my tree just yet.  That should be sorted in the
-> next week or so.  Please remind me if it looks like I have forgotten
-> this patch.
+> Already another patch for this under review.  Open question there is whether
+> devm_ioremap_resource is the way to go instead.
 > 
-> Thanks,
-> 
-> Jonathan
-Applied to the fixes-togreg branch of iio.git.
 
-Thanks,
+I wasn't on that other thread...  Nothing appears to have happened with
+this or the touchscreen bug either.
 
-Jonathan
-> > ---
-> > v2 -> v3: use NULL test instead of devm_ioremap_resource()
-> > ---
-> >   drivers/iio/adc/mxs-lradc-adc.c | 7 +++++--
-> >   1 file changed, 5 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/iio/adc/mxs-lradc-adc.c b/drivers/iio/adc/mxs-lradc-adc.c
-> > index b0c7d8e..6888167 100644
-> > --- a/drivers/iio/adc/mxs-lradc-adc.c
-> > +++ b/drivers/iio/adc/mxs-lradc-adc.c
-> > @@ -718,9 +718,12 @@ static int mxs_lradc_adc_probe(struct platform_device *pdev)
-> >   	adc->dev = dev;
-> >   
-> >   	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> > +	if (!iores)
-> > +		return -EINVAL;
-> > +
-> >   	adc->base = devm_ioremap(dev, iores->start, resource_size(iores));
-> > -	if (IS_ERR(adc->base))
-> > -		return PTR_ERR(adc->base);
-> > +	if (!adc->base)
-> > +		return -ENOMEM;
-> >   
-> >   	init_completion(&adc->completion);
-> >   	spin_lock_init(&adc->lock);
-> >   
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
+regards,
+dan carpenter
