@@ -1,15 +1,20 @@
-Return-Path: <SRS1=KQ5J=mail.kernel.org==b5ZO=5S=manivannan.sadhasivam@kernel.org>
-Date: Tue, 13 Jun 2017 19:24:55 +0530
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pg0-f53.google.com ([74.125.83.53]:32941 "EHLO
+        mail-pg0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751758AbdFMPwb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 13 Jun 2017 11:52:31 -0400
+Received: by mail-pg0-f53.google.com with SMTP id f185so62558346pgc.0
+        for <linux-iio@vger.kernel.org>; Tue, 13 Jun 2017 08:52:30 -0700 (PDT)
 From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 To: jic23@kernel.org, pmeerw@pmeerw.net, robh+dt@kernel.org,
-	ludovic.tancerel@maplehightech.com, william.markezana@meas-spec.com
+        william.markezana@meas-spec.com, ludovic.tancerel@maplehightech.com
 Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	amit.kucheria@linaro.org, nicolas.dechesne@linaro.org
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 Subject: [PATCH 1/2] iio: temperature: tsys01: Add OF match table
-Message-ID: <20170613135455.GA29267@manivannan.sadhasivam@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-List-ID: <linux-iio@vger.kernel.org>
+Date: Tue, 13 Jun 2017 21:22:22 +0530
+Message-Id: <1497369142-32473-1-git-send-email-manivannan.sadhasivam@linaro.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 Add of_match_table for Measurement Specialties TSYS01 temperature sensor
 
@@ -43,3 +48,4 @@ index 3e60c61..d8aa211 100644
  
 -- 
 2.7.4
+
