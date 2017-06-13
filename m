@@ -1,54 +1,45 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:43354 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752326AbdFMTzS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 13 Jun 2017 15:55:18 -0400
-Date: Tue, 13 Jun 2017 20:55:14 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Phil Reid <preid@electromag.com.au>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/1] iio: buffer-dmaengine: Add missing header
- buffer_impl.h
-Message-ID: <20170613205514.536a3336@kernel.org>
-In-Reply-To: <1497330755-30742-1-git-send-email-preid@electromag.com.au>
-References: <1497330755-30742-1-git-send-email-preid@electromag.com.au>
+Return-Path: <SRS1=KQ5J=mail.kernel.org==b5ZO=5S=manivannan.sadhasivam@kernel.org>
+Date: Tue, 13 Jun 2017 19:24:55 +0530
+From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To: jic23@kernel.org, pmeerw@pmeerw.net, robh+dt@kernel.org,
+	ludovic.tancerel@maplehightech.com, william.markezana@meas-spec.com
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	amit.kucheria@linaro.org, nicolas.dechesne@linaro.org
+Subject: [PATCH 1/2] iio: temperature: tsys01: Add OF match table
+Message-ID: <20170613135455.GA29267@manivannan.sadhasivam@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, 13 Jun 2017 13:12:35 +0800
-Phil Reid <preid@electromag.com.au> wrote:
+Add of_match_table for Measurement Specialties TSYS01 temperature sensor
 
-> Add buffer_impl.h as buffer.h was split into interface for using and
-> for internals. Without this industrialio-buffer-dmaengine.c fails
-> to compile.
-> 
-> Fixes:
-> commit 33dd94cb972175249258329c4aaffddcc82c2005 ("iio:buffer.h - split
-> into buffer.h and buffer_impl.h")
-> 
-> Signed-off-by: Phil Reid <preid@electromag.com.au>
-Applied to the fixes-togreg branch of iio.git.
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+---
+ drivers/iio/temperature/tsys01.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-Thanks,
-
-Jonathan
-> ---
->  drivers/iio/buffer/industrialio-buffer-dmaengine.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-> index 9fabed4..2b5a320 100644
-> --- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-> +++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-> @@ -14,6 +14,7 @@
->  
->  #include <linux/iio/iio.h>
->  #include <linux/iio/buffer.h>
-> +#include <linux/iio/buffer_impl.h>
->  #include <linux/iio/buffer-dma.h>
->  #include <linux/iio/buffer-dmaengine.h>
->  
-
+diff --git a/drivers/iio/temperature/tsys01.c b/drivers/iio/temperature/tsys01.c
+index 3e60c61..d8aa211 100644
+--- a/drivers/iio/temperature/tsys01.c
++++ b/drivers/iio/temperature/tsys01.c
+@@ -214,11 +214,18 @@ static const struct i2c_device_id tsys01_id[] = {
+ };
+ MODULE_DEVICE_TABLE(i2c, tsys01_id);
+ 
++static const struct of_device_id tsys01_of_match[] = {
++	{ .compatible = "meas,tsys01", },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, tsys01_of_match);
++
+ static struct i2c_driver tsys01_driver = {
+ 	.probe = tsys01_i2c_probe,
+ 	.id_table = tsys01_id,
+ 	.driver = {
+ 		   .name = "tsys01",
++		   .of_match_table = of_match_ptr(tsys01_of_match),
+ 		   },
+ };
+ 
+-- 
+2.7.4
