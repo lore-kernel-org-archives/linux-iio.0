@@ -1,89 +1,53 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from esa5.microchip.iphmx.com ([216.71.150.166]:34366 "EHLO
-        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750927AbdFUHua (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Jun 2017 03:50:30 -0400
-Subject: Re: [PATCH v5 1/4] ARM: dts: at91: sama5d2_xplained: enable ADTRG pin
-To: Eugen Hristev <eugen.hristev@microchip.com>,
-        <alexandre.belloni@free-electrons.com>
-CC: Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
-        <lars@metafoo.de>, <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <ludovic.desroches@microchip.com>, <robh@kernel.org>
+Return-Path: <SRS0=7O/Q=5U=microchip.com=Eugen.Hristev@kernel.org>
+From: Eugen Hristev <eugen.hristev@microchip.com>
+To: <nicolas.ferre@microchip.com>, <alexandre.belloni@free-electrons.com>,
+	<linux-iio@vger.kernel.org>, <lars@metafoo.de>,
+	<linux-arm-kernel@lists.infradead.org>, <devicetree@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <ludovic.desroches@microchip.com>,
+	<jic23@kernel.org>, <robh@kernel.org>
+CC: <eugen.hristev@microchip.com>
+Subject: [PATCH v5 2/4] Documentation: dt: iio: at91-sama5d2_adc: add hw trigger edge binding
+Date: Thu, 15 Jun 2017 16:24:55 +0300
+Message-ID: <1497533097-12052-3-git-send-email-eugen.hristev@microchip.com>
+In-Reply-To: <1497533097-12052-1-git-send-email-eugen.hristev@microchip.com>
 References: <1497533097-12052-1-git-send-email-eugen.hristev@microchip.com>
- <1497533097-12052-2-git-send-email-eugen.hristev@microchip.com>
- <20170620175552.2ec49c56@kernel.org>
-From: Nicolas Ferre <nicolas.ferre@microchip.com>
-Message-ID: <09e9462b-f375-2259-179f-0a723b2cb5aa@microchip.com>
-Date: Wed, 21 Jun 2017 09:50:56 +0200
 MIME-Version: 1.0
-In-Reply-To: <20170620175552.2ec49c56@kernel.org>
-Content-Type: text/plain; charset="utf-8"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On 20/06/2017 at 18:55, Jonathan Cameron wrote:
-> On Thu, 15 Jun 2017 16:24:54 +0300
-> Eugen Hristev <eugen.hristev@microchip.com> wrote:
-> 
->> Enable pinctrl for ADTRG pin (PD31) for ADC hardware trigger support.
->>
->> Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
->> Acked-by: Ludovic Desroches <ludovic.desroches@microchip.com>
-> The driver changes are on their way upstream.
-> 
-> Acked-by: Jonathan Cameron <jic23@kernel.org>
+Add property for the edge type of the hardware trigger pin ADTRG
 
-Thanks Jonathan,
+Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+Acked-by: Rob Herring <robh@kernel.org>
+Acked-by: Ludovic Desroches <ludovic.desroches@microchip.com>
+---
+  Changes in v4:
+ - Modified bindings to be similar with interrupts
 
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+ Documentation/devicetree/bindings/iio/adc/at91-sama5d2_adc.txt | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Eugen, note that we may need to wait for 4.14 as our changes for 4.13
-are already queued in arm-soc...
-
-Best regards,
-
->> ---
->>  arch/arm/boot/dts/at91-sama5d2_xplained.dts | 16 +++++++++++++++-
->>  1 file changed, 15 insertions(+), 1 deletion(-)
->>
->> diff --git a/arch/arm/boot/dts/at91-sama5d2_xplained.dts b/arch/arm/boot/dts/at91-sama5d2_xplained.dts
->> index 0bef9e0..04754b1 100644
->> --- a/arch/arm/boot/dts/at91-sama5d2_xplained.dts
->> +++ b/arch/arm/boot/dts/at91-sama5d2_xplained.dts
->> @@ -303,7 +303,7 @@
->>  				vddana-supply = <&vdd_3v3_lp_reg>;
->>  				vref-supply = <&vdd_3v3_lp_reg>;
->>  				pinctrl-names = "default";
->> -				pinctrl-0 = <&pinctrl_adc_default>;
->> +				pinctrl-0 = <&pinctrl_adc_default &pinctrl_adtrg_default>;
->>  				status = "okay";
->>  			};
->>  
->> @@ -322,6 +322,20 @@
->>  					bias-disable;
->>  				};
->>  
->> +				/*
->> +				 * The ADTRG pin can work on any edge type.
->> +				 * In here it's being pulled up, so need to
->> +				 * connect it to ground to get an edge e.g.
->> +				 * Trigger can be configured on falling, rise
->> +				 * or any edge, and the pull-up can be changed
->> +				 * to pull-down or left floating according to
->> +				 * needs.
->> +				 */
->> +				pinctrl_adtrg_default: adtrg_default {
->> +					pinmux = <PIN_PD31__ADTRG>;
->> +					bias-pull-up;
->> +				};
->> +
->>  				pinctrl_charger_chglev: charger_chglev {
->>  					pinmux = <PIN_PA12__GPIO>;
->>  					bias-disable;
-> 
-> 
-
-
+diff --git a/Documentation/devicetree/bindings/iio/adc/at91-sama5d2_adc.txt b/Documentation/devicetree/bindings/iio/adc/at91-sama5d2_adc.txt
+index 3223684..552e7a8 100644
+--- a/Documentation/devicetree/bindings/iio/adc/at91-sama5d2_adc.txt
++++ b/Documentation/devicetree/bindings/iio/adc/at91-sama5d2_adc.txt
+@@ -11,6 +11,11 @@ Required properties:
+   - atmel,min-sample-rate-hz: Minimum sampling rate, it depends on SoC.
+   - atmel,max-sample-rate-hz: Maximum sampling rate, it depends on SoC.
+   - atmel,startup-time-ms: Startup time expressed in ms, it depends on SoC.
++  - atmel,trigger-edge-type: One of possible edge types for the ADTRG hardware
++  trigger pin. When the specific edge type is detected, the conversion will
++  start. Possible values are rising, falling, or both.
++  This property uses the IRQ edge types values: IRQ_TYPE_EDGE_RISING ,
++  IRQ_TYPE_EDGE_FALLING or IRQ_TYPE_EDGE_BOTH
+ 
+ Example:
+ 
+@@ -25,4 +30,5 @@ adc: adc@fc030000 {
+ 	atmel,startup-time-ms = <4>;
+ 	vddana-supply = <&vdd_3v3_lp_reg>;
+ 	vref-supply = <&vdd_3v3_lp_reg>;
++	atmel,trigger-edge-type = <IRQ_TYPE_EDGE_BOTH>;
+ }
 -- 
-Nicolas Ferre
+2.7.4
