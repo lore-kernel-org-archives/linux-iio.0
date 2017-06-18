@@ -1,55 +1,56 @@
-Return-Path: <SRS0=HePV=5R=ti.com=m-stecklein@kernel.org>
-From: Michael Stecklein <m-stecklein@ti.com>
-To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler
-	<pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>, Mark Rutland
-	<mark.rutland@arm.com>
-CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Andrew Davis <afd@ti.com>,
-        Michael Stecklein
-	<m-stecklein@ti.com>
-Subject: [PATCH 3/3] iio: humidity: hdc100x: add match table and device id's
-Date: Mon, 12 Jun 2017 09:49:10 -0500
-Message-ID: <1497278950-12973-3-git-send-email-m-stecklein@ti.com>
-In-Reply-To: <1497278950-12973-1-git-send-email-m-stecklein@ti.com>
+Return-Path: <SRS0=KlWK=5X=gmail.com=robherring2@kernel.org>
+Date: Sun, 18 Jun 2017 09:04:43 -0500
+From: Rob Herring <robh@kernel.org>
+To: Michael Stecklein <m-stecklein@ti.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Andrew Davis <afd@ti.com>
+Subject: Re: [PATCH 1/3] dt-bindings: iio: humidity: add bindings for HDC100x
+ sensors
+Message-ID: <20170618140443.5nstmwkbaibprg2l@rob-hp-laptop>
 References: <1497278950-12973-1-git-send-email-m-stecklein@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1497278950-12973-1-git-send-email-m-stecklein@ti.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Add of_match_table and point it to a list of compatible device tree
-device id's.
+On Mon, Jun 12, 2017 at 09:49:08AM -0500, Michael Stecklein wrote:
+> Add the bindings for the family of HDC100x sensors.
+> 
+> Signed-off-by: Michael Stecklein <m-stecklein@ti.com>
+> ---
+>  .../devicetree/bindings/iio/humidity/hdc100x.txt         | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/humidity/hdc100x.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/humidity/hdc100x.txt b/Documentation/devicetree/bindings/iio/humidity/hdc100x.txt
+> new file mode 100644
+> index 0000000..6f272fa
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/humidity/hdc100x.txt
+> @@ -0,0 +1,16 @@
+> +* HDC100x temperature + humidity sensors
+> +
+> +Required properties:
+> +  - compatible: Should contain one of the following:
+> +	ti,hdc100x
 
-Signed-off-by: Michael Stecklein <m-stecklein@ti.com>
----
- drivers/iio/humidity/hdc100x.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+No wildcards in compatible strings please.
 
-diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
-index 0e5962f..659d7da 100644
---- a/drivers/iio/humidity/hdc100x.c
-+++ b/drivers/iio/humidity/hdc100x.c
-@@ -427,9 +427,19 @@ static const struct i2c_device_id hdc100x_id[] = {
- };
- MODULE_DEVICE_TABLE(i2c, hdc100x_id);
- 
-+static const struct of_device_id hdc100x_dt_ids[] = {
-+	{ .compatible = "ti,hdc100x" },
-+	{ .compatible = "ti,hdc1010" },
-+	{ .compatible = "ti,hdc1050" },
-+	{ .compatible = "ti,hdc1080" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, hdc100x_dt_ids);
-+
- static struct i2c_driver hdc100x_driver = {
- 	.driver = {
- 		.name	= "hdc100x",
-+		.of_match_table = of_match_ptr(hdc100x_dt_ids),
- 	},
- 	.probe = hdc100x_probe,
- 	.remove = hdc100x_remove,
--- 
-2.7.4
+> +	ti,hdc1010
+> +	ti,hdc1050
+> +	ti,hdc1080
+> +  - reg: i2c address of the sensor
+> +
+> +Example:
+> +
+> +hdc100x@40 {
+> +	compatible = "ti,hdc100x";
+> +	reg = <0x40>;
+> +};
+> -- 
+> 2.7.4
+> 
