@@ -1,46 +1,51 @@
-Return-Path: <SRS0=9dm9=5Y=gmail.com=olivier.dugas.1@kernel.org>
-Subject: Re: SI1133 light sensor: Is there anything to refer to?
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: jic23@kernel.org, leonard.crestez@intel.com, linux-iio@vger.kernel.org
-References: <938fc03d-63d9-de58-d536-de1cd51c732d@gmail.com>
- <alpine.DEB.2.20.1706191652040.15475@vps.pmeerw.net>
-From: Olivier Dugas <olivier.dugas.1@gmail.com>
-Message-ID: <ec438ed1-2b6a-0f23-ed9d-eb6bcbbd3b05@gmail.com>
-Date: Mon, 19 Jun 2017 12:04:07 -0400
+Return-Path: <SRS0=fSvt=5Y=ti.com=m-stecklein@kernel.org>
+From: Michael Stecklein <m-stecklein@ti.com>
+To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler
+	<pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>, Mark Rutland
+	<mark.rutland@arm.com>
+CC: "Andrew F . Davis" <afd@ti.com>, Michael Stecklein <m-stecklein@ti.com>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 1/3] dt-bindings: iio: humidity: add bindings for HDC100x sensors
+Date: Mon, 19 Jun 2017 11:01:04 -0500
+Message-ID: <1497888066-12652-1-git-send-email-m-stecklein@ti.com>
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.20.1706191652040.15475@vps.pmeerw.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-Excellent news. I'll keep a watch for this new driver to show up.
-In the meantime, we just got the sensor to respond correctly using 
-i2cget|set commands.
+Add the bindings for the family of HDC100x sensors.
 
-FYI, the issue we had was that the reset value of ADCCONFIGx is not 0x00 
-(as specified by the datasheet), but 0x0f, which selected no photodiode. 
-Hence, we received only noise values.
+Signed-off-by: Michael Stecklein <m-stecklein@ti.com>
+---
+ .../devicetree/bindings/iio/humidity/hdc100x.txt        | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/humidity/hdc100x.txt
 
-Thanks a lot and have a good day
-
+diff --git a/Documentation/devicetree/bindings/iio/humidity/hdc100x.txt b/Documentation/devicetree/bindings/iio/humidity/hdc100x.txt
+new file mode 100644
+index 0000000..c52333b
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/humidity/hdc100x.txt
+@@ -0,0 +1,17 @@
++* HDC100x temperature + humidity sensors
++
++Required properties:
++  - compatible: Should contain one of the following:
++	ti,hdc1000
++	ti,hdc1008
++	ti,hdc1010
++	ti,hdc1050
++	ti,hdc1080
++  - reg: i2c address of the sensor
++
++Example:
++
++hdc100x@40 {
++	compatible = "ti,hdc1000";
++	reg = <0x40>;
++};
 -- 
-
-Olivier Dugas
-
-On 17-06-19 11:10 AM, Peter Meerwald-Stadler wrote:
-> Hello Olivier,
->
->> We've recently been trying to make the SI1133 light sensor work according to
->> what's written in its datasheet. Unfortunately many questions remain and the
->> si1145.c driver seems largely different from si1133. We believe that any code
->> sample would be of a great help. Are you aware of any driver, unmerged patch
->> or other code sample for this sensor?
-> the si1133 belongs in the same family as the si1153 which has a different
-> register layout than the previous chips, so I think a separate driver is
-> needed
->
-> I do have an eval board for the si1153 and started a driver, but it's not
-> ready for submission (yet), the si1133 should be a lot simpler than the
-> si1153
->
-> regards, p.
->
+2.7.4
