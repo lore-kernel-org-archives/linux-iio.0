@@ -1,51 +1,37 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:43882 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750946AbdFTQu0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 20 Jun 2017 12:50:26 -0400
-Date: Tue, 20 Jun 2017 17:50:22 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Fabio Estevam <festevam@gmail.com>
-Cc: linux-iio@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>
-Subject: Re: [PATCH] iio: adc: Kconfig: Append vendor name for IMX7D_ADC
-Message-ID: <20170620175022.18ee0f7d@kernel.org>
-In-Reply-To: <1497733216-14848-1-git-send-email-festevam@gmail.com>
-References: <1497733216-14848-1-git-send-email-festevam@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=41xl=5Y=redhat.com=hdegoede@kernel.org>
+From: Hans de Goede <hdegoede@redhat.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hans de Goede <hdegoede@redhat.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org
+Subject: [PATCH] iio: accel: bmc150: Add support for BOSC0200 ACPI device id
+Date: Mon, 19 Jun 2017 08:22:25 +0200
+Message-Id: <20170619062225.3402-1-hdegoede@redhat.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, 17 Jun 2017 18:00:16 -0300
-Fabio Estevam <festevam@gmail.com> wrote:
+Add support for the BOSC0200 ACPI device id used on some x86 tablets.
+note driver_data is not set to a specific model, driver_data is not
+used anyways (instead detection is done on the chip_id reg) and the
+2 tablets with a BOSC0200 ACPI device id I've have 2 different chips,
+one has a BMA250E, the other a BMA222E.
 
-> From: Fabio Estevam <fabio.estevam@nxp.com>
-> 
-> To keep IMX7D_ADC text consistent with other iio/adc entries, add
-> the vendor name to the driver menu text.
-> 
-> Signed-off-by: Fabio Estevam <fabio.estevam@nxp.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-whilst the autobuilders play with the other patches.
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/iio/accel/bmc150-accel-i2c.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Thanks,
-
-Jonathan
-> ---
->  drivers/iio/adc/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 614fa41..b56c4a1 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -322,7 +322,7 @@ config INA2XX_ADC
->  	  This driver is mutually exclusive with the HWMON version.
->  
->  config IMX7D_ADC
-> -	tristate "IMX7D ADC driver"
-> +	tristate "Freescale IMX7D ADC driver"
->  	depends on ARCH_MXC || COMPILE_TEST
->  	depends on HAS_IOMEM
->  	help
-
+diff --git a/drivers/iio/accel/bmc150-accel-i2c.c b/drivers/iio/accel/bmc150-accel-i2c.c
+index 8ca8041267ef..f85014fbaa12 100644
+--- a/drivers/iio/accel/bmc150-accel-i2c.c
++++ b/drivers/iio/accel/bmc150-accel-i2c.c
+@@ -64,6 +64,7 @@ static const struct acpi_device_id bmc150_accel_acpi_match[] = {
+ 	{"BMA250E",	bma250e},
+ 	{"BMA222E",	bma222e},
+ 	{"BMA0280",	bma280},
++	{"BOSC0200"},
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(acpi, bmc150_accel_acpi_match);
+-- 
+2.13.0
