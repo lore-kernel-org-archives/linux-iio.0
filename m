@@ -1,58 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-io0-f176.google.com ([209.85.223.176]:33758 "EHLO
-        mail-io0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752370AbdF2Lqe (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 29 Jun 2017 07:46:34 -0400
-Received: by mail-io0-f176.google.com with SMTP id h64so5340769iod.0
-        for <linux-iio@vger.kernel.org>; Thu, 29 Jun 2017 04:46:33 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <CAA2SeNJ5yPqMiW2tVSc9ZSC5Rt=Q+CRoMibzigjvPyw05Qsr5Q@mail.gmail.com>
+Received: from mail-wr0-f196.google.com ([209.85.128.196]:33054 "EHLO
+        mail-wr0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751041AbdFUTVf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Jun 2017 15:21:35 -0400
+From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        lorenzo.bianconi@st.com
+Subject: [PATCH 2/2] dt-bindings: iio: imu: st_lsm6dsx: support open drain mode
+Date: Wed, 21 Jun 2017 21:21:29 +0200
+Message-Id: <20170621192129.10226-3-lorenzo.bianconi@st.com>
+In-Reply-To: <20170621192129.10226-1-lorenzo.bianconi@st.com>
 References: <20170621192129.10226-1-lorenzo.bianconi@st.com>
- <20170621192129.10226-2-lorenzo.bianconi@st.com> <20170624210835.56ffdd1c@kernel.org>
- <CAA2SeNJ5yPqMiW2tVSc9ZSC5Rt=Q+CRoMibzigjvPyw05Qsr5Q@mail.gmail.com>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Thu, 29 Jun 2017 13:46:32 +0200
-Message-ID: <CACRpkdYLbHrNehFeJZDAHoOfegBJqqTesJUrXSALNqGLPT_SPA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] iio: imu: st_lsm6dsx: support open drain mode
-To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Lorenzo BIANCONI <lorenzo.bianconi@st.com>
-Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Jun 25, 2017 at 11:34 AM, Lorenzo Bianconi
-<lorenzo.bianconi83@gmail.com> wrote:
+Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+---
+ Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
->> In common with the mpu3050 which was the first driver in IIO to do open drain,
+diff --git a/Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt b/Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
+index 6f28ff55f3ec..1ff1af799c76 100644
+--- a/Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
++++ b/Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
+@@ -11,6 +11,14 @@ Required properties:
+ Optional properties:
+ - st,drdy-int-pin: the pin on the package that will be used to signal
+   "data ready" (valid values: 1 or 2).
++- drive-open-drain: the interrupt/data ready line will be configured
++  as open drain, which is useful if several sensors share the same
++  interrupt line. This is a boolean property.
++  (This binding is taken from pinctrl/pinctrl-bindings.txt)
++  If the requested interrupt is configured as IRQ_TYPE_LEVEL_HIGH or
++  IRQ_TYPE_EDGE_RISING a pull-down resistor is needed to drive the line
++  when it is not active, whereas a pull-up one is needed when interrupt
++  line is configured as IRQ_TYPE_LEVEL_LOW or IRQ_TYPE_EDGE_FALLING.
+ - interrupt-parent: should be the phandle for the interrupt controller
+ - interrupts: interrupt mapping for IRQ. It should be configured with
+   flags IRQ_TYPE_LEVEL_HIGH, IRQ_TYPE_EDGE_RISING, IRQ_TYPE_LEVEL_LOW or
+-- 
+2.13.1
 
-I think I implemented it on the ST sensors first actually.
-
->> I think you need to think about precedence as we allow for IRQF_RISING
->> and IRQF_FALLING already.  Open drain only allows for shared interrupts
->> if IRQF_FALLING (I think)
->>>       err = devm_request_threaded_irq(hw->dev, hw->irq,
->>>                                       st_lsm6dsx_handler_irq,
->>>                                       st_lsm6dsx_handler_thread,
->
-> I have not got the difference between IRQF_RISING and IRQF_FALLING
-> when the irq line
-> is marked as shared (when open drain is enabled).
-> Looking at the code, mpu3050 gyro sensor does not support shared interrupts
-> with IRQF_RISING and IRQF_TRIGGER_HIGH. Is it a hw limitation?
-
-It seems like I have inverted the logic in the MPU3050 driver.
-I'll send a patch.
-
-> Speaking with digital designer, lsm6dsx series allows open drain mode
-> even if the requested irq line
-> is IRQF_TRIGGER_HIGH or IRQF_RISING, we need to add a pull-down resistor.
-> Moreover ST framework already supports open drain if the requested
-> interrupt is IRQF_RISING.
-
-This seems correct.
-
-Yours,
-Linus Walleij
