@@ -1,62 +1,162 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailgw01.mediatek.com ([218.249.47.110]:59054 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1751521AbdFZBzr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 25 Jun 2017 21:55:47 -0400
-Message-ID: <1498442139.536.4.camel@mhfsdcap03>
-Subject: Re: [PATCH 3/3] iio: adc: mt7622: Add compatible node for mt7622.
-From: zhiyong tao <zhiyong.tao@mediatek.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: <robh+dt@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
-        <pmeerw@pmeerw.net>, <srv_heupstream@mediatek.com>,
-        <liguo.zhang@mediatek.com>, <yingjoe.chen@mediatek.com>,
-        <sean.wang@mediatek.com>, <matthias.bgg@gmail.com>,
-        <s.hauer@pengutronix.de>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-iio@vger.kernel.org>, <linux-mediatek@lists.infradead.org>
-Date: Mon, 26 Jun 2017 09:55:39 +0800
-In-Reply-To: <20170624210213.5e552e5c@kernel.org>
-References: <1498110274-18678-1-git-send-email-zhiyong.tao@mediatek.com>
-         <1498110274-18678-4-git-send-email-zhiyong.tao@mediatek.com>
-         <20170624210213.5e552e5c@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Received: from esa5.microchip.iphmx.com ([216.71.150.166]:9921 "EHLO
+        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751248AbdFVMtl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 22 Jun 2017 08:49:41 -0400
+From: Eugen Hristev <eugen.hristev@microchip.com>
+To: <nicolas.ferre@microchip.com>, <linux-iio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <ludovic.desroches@microchip.com>,
+        <jic23@kernel.org>
+CC: <eugen.hristev@microchip.com>
+Subject: [PATCH] iio: adc: at91-sama5d2_adc: add support for suspend/resume functionality
+Date: Thu, 22 Jun 2017 15:46:33 +0300
+Message-ID: <1498135593-14017-1-git-send-email-eugen.hristev@microchip.com>
 MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, 2017-06-24 at 21:02 +0100, Jonathan Cameron wrote:
-> On Thu, 22 Jun 2017 13:44:34 +0800
-> Zhiyong Tao <zhiyong.tao@mediatek.com> wrote:
-> 
-> > This commit adds mt7622 compatible node.
-> > 
-> > Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
-> > ---
-> >  drivers/iio/adc/mt6577_auxadc.c |    1 +
-> >  1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/drivers/iio/adc/mt6577_auxadc.c b/drivers/iio/adc/mt6577_auxadc.c
-> > index 2dd7c74..4a2cd9e 100644
-> > --- a/drivers/iio/adc/mt6577_auxadc.c
-> > +++ b/drivers/iio/adc/mt6577_auxadc.c
-> > @@ -308,6 +308,7 @@ static int mt6577_auxadc_remove(struct platform_device *pdev)
-> >  static const struct of_device_id mt6577_auxadc_of_match[] = {
-> >  	{ .compatible = "mediatek,mt2701-auxadc", },
-> >  	{ .compatible = "mediatek,mt8173-auxadc", },
-> > +	{ .compatible = "mediatek,mt7622-auxadc", },
-> Keep them in numeric order perhaps?
-> 
-> Might become a worthwhile step if this logic gets used for lot more parts in future!
-> 
-> Jonathan
+Added support for suspend/resume functionality for the ADC IP
+in sama5d2 SoC.
+In order to enter Suspend to ram mode (backup + self refresh mode for
+memory), in which the ADC IP is no longer powered, we need to reset the
+pins to default state, for the scenario when they are also used for I2C
+bus to communicate with the PMIC.
+On resume, we need to reconfigure the ADC IP registers and reconfigure the
+trigger registers in the case when the suspend procedure is done while
+sysfs has the buffer and trigger enabled.
+In the case the suspend happens exactly during a software triggered
+conversion, the request will time out, because we reset and power down
+the ADC.
 
-==>Ok, we will change them in numeric order perhaps in v2.
-Thanks.
+Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+---
+ drivers/iio/adc/at91-sama5d2_adc.c | 91 +++++++++++++++++++++++++++++++++-----
+ 1 file changed, 81 insertions(+), 10 deletions(-)
 
-> >  	{ }
-> >  };
-> >  MODULE_DEVICE_TABLE(of, mt6577_auxadc_of_match);
-> 
-
+diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
+index 1773a5d..3e775c7 100644
+--- a/drivers/iio/adc/at91-sama5d2_adc.c
++++ b/drivers/iio/adc/at91-sama5d2_adc.c
+@@ -576,6 +576,20 @@ static const struct iio_info at91_adc_info = {
+ 	.driver_module = THIS_MODULE,
+ };
+ 
++static void at91_adc_hw_init(struct at91_adc_state *st)
++{
++	at91_adc_writel(st, AT91_SAMA5D2_CR, AT91_SAMA5D2_CR_SWRST);
++	at91_adc_writel(st, AT91_SAMA5D2_IDR, 0xffffffff);
++	/*
++	 * Transfer field must be set to 2 according to the datasheet and
++	 * allows different analog settings for each channel.
++	 */
++	at91_adc_writel(st, AT91_SAMA5D2_MR,
++			AT91_SAMA5D2_MR_TRANSFER(2) | AT91_SAMA5D2_MR_ANACH);
++
++	at91_adc_setup_samp_freq(st, st->soc_info.min_sample_rate);
++}
++
+ static int at91_adc_probe(struct platform_device *pdev)
+ {
+ 	struct iio_dev *indio_dev;
+@@ -694,16 +708,7 @@ static int at91_adc_probe(struct platform_device *pdev)
+ 		goto vref_disable;
+ 	}
+ 
+-	at91_adc_writel(st, AT91_SAMA5D2_CR, AT91_SAMA5D2_CR_SWRST);
+-	at91_adc_writel(st, AT91_SAMA5D2_IDR, 0xffffffff);
+-	/*
+-	 * Transfer field must be set to 2 according to the datasheet and
+-	 * allows different analog settings for each channel.
+-	 */
+-	at91_adc_writel(st, AT91_SAMA5D2_MR,
+-			AT91_SAMA5D2_MR_TRANSFER(2) | AT91_SAMA5D2_MR_ANACH);
+-
+-	at91_adc_setup_samp_freq(st, st->soc_info.min_sample_rate);
++	at91_adc_hw_init(st);
+ 
+ 	ret = clk_prepare_enable(st->per_clk);
+ 	if (ret)
+@@ -759,6 +764,71 @@ static int at91_adc_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_PM_SLEEP
++static int at91_adc_suspend(struct device *dev)
++{
++	struct iio_dev *indio_dev =
++			platform_get_drvdata(to_platform_device(dev));
++	struct at91_adc_state *st = iio_priv(indio_dev);
++
++	/*
++	 * Do a sofware reset of the ADC before we go to suspend.
++	 * this will ensure that all pins are free from being muxed by the ADC
++	 * and can be used by for other devices.
++	 * Otherwise, ADC will hog them and we can't go to suspend mode.
++	 */
++	at91_adc_writel(st, AT91_SAMA5D2_CR, AT91_SAMA5D2_CR_SWRST);
++
++	clk_disable_unprepare(st->per_clk);
++	regulator_disable(st->vref);
++	regulator_disable(st->reg);
++
++	return pinctrl_pm_select_sleep_state(dev);
++}
++
++static int at91_adc_resume(struct device *dev)
++{
++	struct iio_dev *indio_dev =
++			platform_get_drvdata(to_platform_device(dev));
++	struct at91_adc_state *st = iio_priv(indio_dev);
++	int ret;
++
++	ret = pinctrl_pm_select_default_state(dev);
++	if (ret)
++		goto resume_failed;
++
++	ret = regulator_enable(st->reg);
++	if (ret)
++		goto resume_failed;
++
++	ret = regulator_enable(st->vref);
++	if (ret)
++		goto reg_disable_resume;
++
++	ret = clk_prepare_enable(st->per_clk);
++	if (ret)
++		goto vref_disable_resume;
++
++	at91_adc_hw_init(st);
++
++	/* reconfiguring trigger hardware state */
++	if (iio_buffer_enabled(indio_dev))
++		at91_adc_configure_trigger(st->trig, true);
++
++	return 0;
++
++vref_disable_resume:
++	regulator_disable(st->vref);
++reg_disable_resume:
++	regulator_disable(st->reg);
++resume_failed:
++	dev_err(&indio_dev->dev, "failed to resume\n");
++	return ret;
++}
++#endif
++
++static SIMPLE_DEV_PM_OPS(at91_adc_pm_ops, at91_adc_suspend, at91_adc_resume);
++
+ static const struct of_device_id at91_adc_dt_match[] = {
+ 	{
+ 		.compatible = "atmel,sama5d2-adc",
+@@ -774,6 +844,7 @@ static struct platform_driver at91_adc_driver = {
+ 	.driver = {
+ 		.name = "at91-sama5d2_adc",
+ 		.of_match_table = at91_adc_dt_match,
++		.pm = &at91_adc_pm_ops,
+ 	},
+ };
+ module_platform_driver(at91_adc_driver)
+-- 
+2.7.4
 
