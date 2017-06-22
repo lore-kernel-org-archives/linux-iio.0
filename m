@@ -1,40 +1,40 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailgw01.mediatek.com ([210.61.82.183]:60284 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1752574AbdFVFpB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 22 Jun 2017 01:45:01 -0400
+Return-Path: <SRS0=Mtcm=53=mediatek.com=zhiyong.tao@kernel.org>
 From: Zhiyong Tao <zhiyong.tao@mediatek.com>
 To: <robh+dt@kernel.org>, <jic23@kernel.org>, <knaack.h@gmx.de>,
-        <lars@metafoo.de>, <pmeerw@pmeerw.net>
+	<lars@metafoo.de>, <pmeerw@pmeerw.net>
 CC: <srv_heupstream@mediatek.com>, <liguo.zhang@mediatek.com>,
-        <yingjoe.chen@mediatek.com>, <sean.wang@mediatek.com>,
-        <matthias.bgg@gmail.com>, <s.hauer@pengutronix.de>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-iio@vger.kernel.org>, <linux-mediatek@lists.infradead.org>
-Subject: [PATCH 0/3] ADC: Mediatek auxadc driver for mt7622 
-Date: Thu, 22 Jun 2017 13:44:31 +0800
-Message-ID: <1498110274-18678-1-git-send-email-zhiyong.tao@mediatek.com>
+	<yingjoe.chen@mediatek.com>, <sean.wang@mediatek.com>,
+	<matthias.bgg@gmail.com>, <s.hauer@pengutronix.de>,
+	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>,
+	<linux-mediatek@lists.infradead.org>, Zhiyong Tao <zhiyong.tao@mediatek.com>
+Subject: [PATCH 1/3] dt-bindings: adc: mt7622: add binding document
+Date: Thu, 22 Jun 2017 13:44:32 +0800
+Message-ID: <1498110274-18678-2-git-send-email-zhiyong.tao@mediatek.com>
+In-Reply-To: <1498110274-18678-1-git-send-email-zhiyong.tao@mediatek.com>
+References: <1498110274-18678-1-git-send-email-zhiyong.tao@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-These patches are first version of Mediatek auxadc driver for mt7622.
-These patches include three patches.
-The First patch adds mt7622 compatible node in binding document.
-The second patch adds support for suspend/resume.
-The last patch adds mt7622 compatible node in auxadc driver.
+The commit adds mt7622 compatible node in binding document.
 
-Zhiyong Tao (3):
-  dt-bindings: adc: mt7622: add binding document
-  iio: adc: mt7622: add support for suspend/resume.
-  iio: adc: mt7622: Add compatible node for mt7622.
-
+Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
+---
  .../devicetree/bindings/iio/adc/mt6577_auxadc.txt  |    1 +
- drivers/iio/adc/mt6577_auxadc.c                    |   38 ++++++++++++++++++++
- 2 files changed, 39 insertions(+)
+ 1 file changed, 1 insertion(+)
 
---
+diff --git a/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt b/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
+index 68c45cb..e6aa30a 100644
+--- a/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
++++ b/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
+@@ -13,6 +13,7 @@ Required properties:
+   - compatible: Should be one of:
+     - "mediatek,mt2701-auxadc": For MT2701 family of SoCs
+     - "mediatek,mt8173-auxadc": For MT8173 family of SoCs
++    - "mediatek,mt7622-auxadc": For MT7622 family of SoCs
+   - reg: Address range of the AUXADC unit.
+   - clocks: Should contain a clock specifier for each entry in clock-names
+   - clock-names: Should contain "main".
+-- 
 1.7.9.5
-
