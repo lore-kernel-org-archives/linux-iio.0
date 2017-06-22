@@ -1,41 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:42134 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751072AbdF3SWf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 30 Jun 2017 14:22:35 -0400
-Date: Fri, 30 Jun 2017 19:22:31 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Rob Herring <robh@kernel.org>
-Cc: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        lorenzo.bianconi@st.com
-Subject: Re: [PATCH 2/2] dt-bindings: iio: imu: st_lsm6dsx: support open
- drain mode
-Message-ID: <20170630192231.407ce687@kernel.org>
-In-Reply-To: <20170626182411.khtvzaqhp2y2d6nm@rob-hp-laptop>
-References: <20170621192129.10226-1-lorenzo.bianconi@st.com>
-        <20170621192129.10226-3-lorenzo.bianconi@st.com>
-        <20170626182411.khtvzaqhp2y2d6nm@rob-hp-laptop>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from mail-pf0-f195.google.com ([209.85.192.195]:34475 "EHLO
+        mail-pf0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752545AbdFVDTs (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Jun 2017 23:19:48 -0400
+From: Jack Andersen <jackoalan@gmail.com>
+To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Jack Andersen <jackoalan@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Daniel Baluta <daniel.baluta@intel.com>,
+        Octavian Purdila <octavian.purdila@intel.com>
+Subject: [PATCH] DLN2 module for ADC interface
+Date: Wed, 21 Jun 2017 17:19:08 -1000
+Message-Id: <1498101549-6252-1-git-send-email-jackoalan@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 26 Jun 2017 13:24:11 -0500
-Rob Herring <robh@kernel.org> wrote:
+Hello,
 
-> On Wed, Jun 21, 2017 at 09:21:29PM +0200, Lorenzo Bianconi wrote:
-> > Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
-> > ---
-> >  Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt | 8 ++++++++
-> >  1 file changed, 8 insertions(+)  
-> 
-> Acked-by: Rob Herring <robh@kernel.org>
-Added, thanks Rob.
+I've been having to blacklist the dln2 module in order to use Diolan's iffy
+libusb-based "driver". I'd much rather use dln2, but the lack of ADC support
+has been an issue for my robotics application.
 
-Jonathan
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+I've extended the dln2 module with an additional platform driver to expose the
+ADC using the IIO subsystem. It supports triggered buffering via the event
+handle kept by dln2, as well as direct raw reads. The voltage scale is fixed
+at 3.3v over 10-bits, since that appears to be the maximum resolution supported
+by the hardware.
+
+I've tested the module under 4.11.6 and everything appears to be stable.
+However, this is my first patch, so it's possible I've missed something.
+
+Jack Andersen (1):
+  iio: adc: Add support for DLN2 ADC
+
+ drivers/iio/adc/Kconfig    |   9 +
+ drivers/iio/adc/Makefile   |   1 +
+ drivers/iio/adc/dln2-adc.c | 648 +++++++++++++++++++++++++++++++++++++++++++++
+ drivers/mfd/dln2.c         |  12 +
+ 4 files changed, 670 insertions(+)
+ create mode 100644 drivers/iio/adc/dln2-adc.c
+
+-- 
+1.9.1
 
