@@ -1,37 +1,27 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:59790 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750827AbdFUUFp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 21 Jun 2017 16:05:45 -0400
-Date: Wed, 21 Jun 2017 21:05:38 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <SRS0=ViTE=53=linaro.org=lee.jones@kernel.org>
+Date: Thu, 22 Jun 2017 16:43:57 +0100
+From: Lee Jones <lee.jones@linaro.org>
 To: Fabrice Gasnier <fabrice.gasnier@st.com>
-Cc: <lee.jones@linaro.org>, <benjamin.gaignard@linaro.org>,
-        <thierry.reding@gmail.com>, <robh+dt@kernel.org>,
-        <mark.rutland@arm.com>, <alexandre.torgue@st.com>,
-        <mcoquelin.stm32@gmail.com>, <benjamin.gaignard@st.com>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>
+Cc: benjamin.gaignard@linaro.org, jic23@kernel.org,
+	thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com,
+	alexandre.torgue@st.com, mcoquelin.stm32@gmail.com,
+	benjamin.gaignard@st.com, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 Subject: Re: [PATCH v2 1/8] dt-bindings: mfd: Add STM32 LPTimer binding
-Message-ID: <20170621210538.568b0440@kernel.org>
-In-Reply-To: <1498055415-31513-2-git-send-email-fabrice.gasnier@st.com>
+Message-ID: <20170622154357.fedg2etrrqdslnr7@dell>
 References: <1498055415-31513-1-git-send-email-fabrice.gasnier@st.com>
-        <1498055415-31513-2-git-send-email-fabrice.gasnier@st.com>
+ <1498055415-31513-2-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1498055415-31513-2-git-send-email-fabrice.gasnier@st.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, 21 Jun 2017 16:30:08 +0200
-Fabrice Gasnier <fabrice.gasnier@st.com> wrote:
+On Wed, 21 Jun 2017, Fabrice Gasnier wrote:
 
 > Add documentation for STMicroelectronics STM32 Low-Power Timer binding.
 > 
 > Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-Looks sensible to me.
-
-Acked-by: Jonathan Cameron <jic23@kernel.org>
 > ---
 > Changes in v2:
 > - Lee's comments: s/Low Power/Low-Power/, remove 0x in example, improve
@@ -40,7 +30,10 @@ Acked-by: Jonathan Cameron <jic23@kernel.org>
 >  .../devicetree/bindings/mfd/stm32-lptimer.txt      | 48 ++++++++++++++++++++++
 >  1 file changed, 48 insertions(+)
 >  create mode 100644 Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
-> 
+
+For my own reference:
+  Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+  
 > diff --git a/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt b/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
 > new file mode 100644
 > index 0000000..af859c8
@@ -96,3 +89,8 @@ Acked-by: Jonathan Cameron <jic23@kernel.org>
 > +		};
 > +	};
 
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
