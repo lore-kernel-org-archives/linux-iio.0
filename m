@@ -1,24 +1,23 @@
-Return-Path: <SRS0=ViTE=53=linaro.org=lee.jones@kernel.org>
-Date: Thu, 22 Jun 2017 16:43:57 +0100
-From: Lee Jones <lee.jones@linaro.org>
+Return-Path: <SRS0=I9G9=57=gmail.com=robherring2@kernel.org>
+Date: Mon, 26 Jun 2017 13:07:44 -0500
+From: Rob Herring <robh@kernel.org>
 To: Fabrice Gasnier <fabrice.gasnier@st.com>
-Cc: benjamin.gaignard@linaro.org, jic23@kernel.org,
-	thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com,
+Cc: lee.jones@linaro.org, benjamin.gaignard@linaro.org, jic23@kernel.org,
+	thierry.reding@gmail.com, mark.rutland@arm.com,
 	alexandre.torgue@st.com, mcoquelin.stm32@gmail.com,
 	benjamin.gaignard@st.com, linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 Subject: Re: [PATCH v2 1/8] dt-bindings: mfd: Add STM32 LPTimer binding
-Message-ID: <20170622154357.fedg2etrrqdslnr7@dell>
+Message-ID: <20170626180744.fyyzjsu4pmurohap@rob-hp-laptop>
 References: <1498055415-31513-1-git-send-email-fabrice.gasnier@st.com>
  <1498055415-31513-2-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 In-Reply-To: <1498055415-31513-2-git-send-email-fabrice.gasnier@st.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, 21 Jun 2017, Fabrice Gasnier wrote:
-
+On Wed, Jun 21, 2017 at 04:30:08PM +0200, Fabrice Gasnier wrote:
 > Add documentation for STMicroelectronics STM32 Low-Power Timer binding.
 > 
 > Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
@@ -30,10 +29,7 @@ On Wed, 21 Jun 2017, Fabrice Gasnier wrote:
 >  .../devicetree/bindings/mfd/stm32-lptimer.txt      | 48 ++++++++++++++++++++++
 >  1 file changed, 48 insertions(+)
 >  create mode 100644 Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
-
-For my own reference:
-  Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
-  
+> 
 > diff --git a/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt b/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
 > new file mode 100644
 > index 0000000..af859c8
@@ -64,6 +60,9 @@ For my own reference:
 > +Example:
 > +
 > +	lptimer1: lptimer@40002400 {
+
+timer@...
+
 > +		compatible = "st,stm32-lptimer";
 > +		reg = <0x40002400 0x400>;
 > +		clocks = <&timer_clk>;
@@ -80,6 +79,9 @@ For my own reference:
 > +		trigger@0 {
 > +			compatible = "st,stm32-lptimer-trigger";
 > +			reg = <0>;
+
+Is there more than 1? 
+
 > +		};
 > +
 > +		counter {
@@ -88,9 +90,6 @@ For my own reference:
 > +			pinctrl-0 = <&lptim1_in_pins>;
 > +		};
 > +	};
-
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+> -- 
+> 1.9.1
+> 
