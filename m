@@ -1,45 +1,31 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58240 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751354AbdFYUm6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 25 Jun 2017 16:42:58 -0400
-Date: Sun, 25 Jun 2017 22:42:53 +0200
-In-Reply-To: <20170625183241.GA18491@kroah.com>
-References: <20170620171217.6f8dd834@kernel.org> <20170625172045.76f28fe7@jic23.retrosnub.co.uk> <20170625183241.GA18491@kroah.com>
+Return-Path: <SRS0=cSj6=57=linuxfoundation.org=gregkh@kernel.org>
+Date: Mon, 26 Jun 2017 07:10:17 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org
+Subject: Re: [PULL] Second set of new device support, cleanups etc for IIO in
+ the 4.13 cycle.
+Message-ID: <20170626051017.GA24188@kroah.com>
+References: <20170620171217.6f8dd834@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Subject: Re: [PULL] Second set of new device support, cleanups etc for IIO in the 4.13 cycle.
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC: linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Message-ID: <1A005740-4652-411A-8656-15D2A3DA5AD6@jic23.retrosnub.co.uk>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20170620171217.6f8dd834@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-
-
-On 25 June 2017 20:32:41 CEST, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
->On Sun, Jun 25, 2017 at 05:20:45PM +0100, Jonathan Cameron wrote:
->> Hi Greg,
->> 
->> A polite nudge. I'd normally just assume this was buried in your
->inbox, but
->> as we are rather tight on the possible earliest date for the merge
->window
->> to open, I just wanted to check this wasn't buried too deep.
->> 
->> I've been rather snowed under with travel this cycle, so been running
->a bit
->> late with everything. Sorry about that!
+On Tue, Jun 20, 2017 at 05:12:17PM +0100, Jonathan Cameron wrote:
+> The following changes since commit 57d14635f976404fac165047389ff0dbe83bcd5b:
+> 
+>   staging: vchiq_core: Replace remaining BUG_ON with WARN_ON (2017-05-29 17:04:13 +0200)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-4.13b
+> 
+> for you to fetch changes up to 881b556f6cf22d37be9340f293f2db10ce7ae8bf:
+> 
+>   iio: imu: inv_mpu6050: test whoami first and against all known values (2017-06-13 21:18:17 +0100)
 >
->Yes, it is burried, sorry, just returned from China...
->
->Will get to this in the morning, sorry for the delay,
->
->greg k-h
 
-Not to worry. Hope you had a good trip!
+Now merged and pushed out, thanks,
 
--- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+greg k-h
