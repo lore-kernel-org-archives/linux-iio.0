@@ -1,40 +1,28 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:33778 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751586AbdFXUKs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 24 Jun 2017 16:10:48 -0400
-Date: Sat, 24 Jun 2017 21:10:42 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <SRS0=I9G9=57=gmail.com=robherring2@kernel.org>
+Date: Mon, 26 Jun 2017 13:14:16 -0500
+From: Rob Herring <robh@kernel.org>
 To: Fabrice Gasnier <fabrice.gasnier@st.com>
-Cc: <lee.jones@linaro.org>, <benjamin.gaignard@linaro.org>,
-        <thierry.reding@gmail.com>, <robh+dt@kernel.org>,
-        <mark.rutland@arm.com>, <alexandre.torgue@st.com>,
-        <mcoquelin.stm32@gmail.com>, <benjamin.gaignard@st.com>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>
+Cc: lee.jones@linaro.org, benjamin.gaignard@linaro.org, jic23@kernel.org,
+	thierry.reding@gmail.com, mark.rutland@arm.com,
+	alexandre.torgue@st.com, mcoquelin.stm32@gmail.com,
+	benjamin.gaignard@st.com, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 Subject: Re: [PATCH v2 5/8] dt-bindings: iio: Add STM32 LPTimer trigger
  binding
-Message-ID: <20170624211042.1f37f575@kernel.org>
-In-Reply-To: <1498055415-31513-6-git-send-email-fabrice.gasnier@st.com>
+Message-ID: <20170626181416.b7wr6wswuzeasuks@rob-hp-laptop>
 References: <1498055415-31513-1-git-send-email-fabrice.gasnier@st.com>
-        <1498055415-31513-6-git-send-email-fabrice.gasnier@st.com>
+ <1498055415-31513-6-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1498055415-31513-6-git-send-email-fabrice.gasnier@st.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, 21 Jun 2017 16:30:12 +0200
-Fabrice Gasnier <fabrice.gasnier@st.com> wrote:
-
+On Wed, Jun 21, 2017 at 04:30:12PM +0200, Fabrice Gasnier wrote:
 > Add documentation for STMicroelectronics STM32 Low-Power Timer Trigger
 > binding.
 > 
 > Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-looks sensible to me.
-I'm kind of assuming this whole series will end up going through Lee and MFD.
-
-Acked-by: Jonathan Cameron <jic23@kernel.org>
 > ---
 > Changes in v2:
 > - s/Low Power/Low-Power
@@ -64,14 +52,10 @@ Acked-by: Jonathan Cameron <jic23@kernel.org>
 > +- reg:			Selects trigger hardware block. Must be 0, 1 or 2
 > +			respectively for lptimer1, lptimer2 or lptimer3
 > +			trigger output.
-> +
-> +Example:
-> +	lptimer1: lptimer@40002400 {
-> +		compatible = "st,stm32-lptimer";
-> +		...
-> +		trigger@0 {
-> +			compatible = "st,stm32-lptimer-trigger";
-> +			reg = <0>;
-> +		};
-> +	};
 
+I guess this answers my question. However, this seems like abuse of the 
+reg prop. This should not be how you select a trigger. The DT should 
+describe all the h/w blocks and then the adc connection is a separate 
+property.
+
+Rob
