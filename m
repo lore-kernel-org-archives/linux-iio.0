@@ -1,37 +1,28 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:34030 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1754667AbdFXUOs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 24 Jun 2017 16:14:48 -0400
-Date: Sat, 24 Jun 2017 21:14:41 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <SRS0=I9G9=57=gmail.com=robherring2@kernel.org>
+Date: Mon, 26 Jun 2017 13:16:58 -0500
+From: Rob Herring <robh@kernel.org>
 To: Fabrice Gasnier <fabrice.gasnier@st.com>
-Cc: <lee.jones@linaro.org>, <benjamin.gaignard@linaro.org>,
-        <thierry.reding@gmail.com>, <robh+dt@kernel.org>,
-        <mark.rutland@arm.com>, <alexandre.torgue@st.com>,
-        <mcoquelin.stm32@gmail.com>, <benjamin.gaignard@st.com>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>
+Cc: lee.jones@linaro.org, benjamin.gaignard@linaro.org, jic23@kernel.org,
+	thierry.reding@gmail.com, mark.rutland@arm.com,
+	alexandre.torgue@st.com, mcoquelin.stm32@gmail.com,
+	benjamin.gaignard@st.com, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 Subject: Re: [PATCH v2 7/8] dt-bindings: iio: Add STM32 LPTimer quadrature
  encoder and counter
-Message-ID: <20170624211441.18ddfe81@kernel.org>
-In-Reply-To: <1498055415-31513-8-git-send-email-fabrice.gasnier@st.com>
+Message-ID: <20170626181658.nbl7jmaru7bnoigg@rob-hp-laptop>
 References: <1498055415-31513-1-git-send-email-fabrice.gasnier@st.com>
-        <1498055415-31513-8-git-send-email-fabrice.gasnier@st.com>
+ <1498055415-31513-8-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1498055415-31513-8-git-send-email-fabrice.gasnier@st.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, 21 Jun 2017 16:30:14 +0200
-Fabrice Gasnier <fabrice.gasnier@st.com> wrote:
-
+On Wed, Jun 21, 2017 at 04:30:14PM +0200, Fabrice Gasnier wrote:
 > Add documentation for STMicroelectronics STM32 Low-Power Timer
 > quadrature encoder and counter binding.
 > 
 > Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
 > ---
 > Changes in v2:
 > - s/Low Power/Low-Power
@@ -67,12 +58,9 @@ Acked-by: Jonathan Cameron <jic23@kernel.org>
 > +
 > +Example:
 > +	lptimer1: lptimer@40002400 {
-> +		compatible = "st,stm32-lptimer";
-> +		...
-> +		counter {
-> +			compatible = "st,stm32-lptimer-counter";
-> +			pinctrl-names = "default";
-> +			pinctrl-0 = <&lptim1_in_pins>;
-> +		};
-> +	};
 
+timer@...
+
+With that,
+
+Acked-by: Rob Herring <robh@kernel.org>
