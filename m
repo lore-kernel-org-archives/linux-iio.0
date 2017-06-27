@@ -1,62 +1,41 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f174.google.com ([209.85.161.174]:35521 "EHLO
-        mail-yw0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751515AbdF1VIb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 28 Jun 2017 17:08:31 -0400
-Received: by mail-yw0-f174.google.com with SMTP id j11so29593603ywa.2
-        for <linux-iio@vger.kernel.org>; Wed, 28 Jun 2017 14:08:31 -0700 (PDT)
+Received: from alln-iport-2.cisco.com ([173.37.142.89]:33028 "EHLO
+        alln-iport-2.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751576AbdF0Qzp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 27 Jun 2017 12:55:45 -0400
+Date: Tue, 27 Jun 2017 09:46:01 -0700
+From: Gaurav Gupta <gauragup@cisco.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, linux-iio@vger.kernel.org
+Subject: [PATCH] iio: core: Fix mapping of iio channels to entry numbers
+Message-ID: <20170627164601.GA30866@sjc-ads-988.cisco.com>
 MIME-Version: 1.0
-In-Reply-To: <64278d08a137561f241f440bb0265698@vanmierlo.com>
-References: <64278d08a137561f241f440bb0265698@vanmierlo.com>
-From: Angelo Compagnucci <angelo.compagnucci@gmail.com>
-Date: Wed, 28 Jun 2017 23:07:50 +0200
-Message-ID: <CA+TH9VmavT-VEnuGeQZXWy=GSwnkarm0Q_-kc3K1CmPGZbN1iA@mail.gmail.com>
-Subject: Re: iio:adc mcp3422 initial config
-To: Maarten Brock <m.brock@vanmierlo.com>
-Cc: linux-iio <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Marteen,
+When adding maps to the list, they were added using list_add, which adds
+them in LIFO order. When parsing using iio_channel_get_all(), these
+elements are hence returned in reverse order. As a result, the iio_hwmon
+mapping maps the first entry to the last channel and so on.
 
-2017-06-27 11:53 GMT+02:00 Maarten Brock <m.brock@vanmierlo.com>:
-> Hello,
->
-> Looking in the mcp3422.c iio kernel driver I see a few issues with the
-> initialization of the config word for the adc in mcp3422_probe().
->
-> 1. It uses MCP3422_CHANNEL_VALUE(1). Why is channel 2 the default?
+Signed-off-by: Gaurav Gupta <gauragup@cisco.com>
+---
+ drivers/iio/inkern.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-No particular reason here, it could be changed to channel 0 without problems.
-
-> 2. It tries to set MCP3422_CONT_SAMPLING, but if this first I2C transfer
-> fails it will never be set again. The initial config is not stored in
-> adc->config and adc->config is uninitialized! All subsequent writes will
-> leave MCP3422_CONT_SAMPLING off.
-
-Unfortunately this is true. I had should use adc->config instead of
-config there.
-
-> 3. The return value of mcp3422_update_config() is not checked. Not sure if
-> it should though. I wouldn't want a single failure to disable the driver. It
-> might even be that the adc is not available yet at linux boot time.
-
-And btw also the error condition should be checked.
-
-> Number 2 is the most important one. We saw it fail because our I2C goes
-> through an FPGA which was not loaded yet.
->
-> I can write a patch, but welcome some insights first.
-
-I'll fix these in minutes, thanks for spotting!
-
->
-> Kind regards,
-> Maarten Brock
->
-
-
-
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index 7a13535..9b0715c 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -44,7 +44,7 @@ int iio_map_array_register(struct iio_dev *indio_dev, struct iio_map *maps)
+ 		}
+ 		mapi->map = &maps[i];
+ 		mapi->indio_dev = indio_dev;
+-		list_add(&mapi->l, &iio_map_list);
++		list_add_tail(&mapi->l, &iio_map_list);
+ 		i++;
+ 	}
+ error_ret:
 -- 
-Profile: http://it.linkedin.com/in/compagnucciangelo
+2.10.2.dirty
