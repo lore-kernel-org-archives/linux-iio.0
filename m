@@ -1,64 +1,48 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from userp1040.oracle.com ([156.151.31.81]:42630 "EHLO
-        userp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751492AbdF1La5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 28 Jun 2017 07:30:57 -0400
-Date: Wed, 28 Jun 2017 14:30:27 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: hdegoede@redhat.com
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-Subject: [bug report] iio: accel: bma180: Add ACPI enumeration support for
- BMA250E
-Message-ID: <20170628113027.g6g7prztloozs7uo@mwanda>
+Return-Path: <SRS0=o7HV=6B=canonical.com=colin.king@kernel.org>
+From: Colin King <colin.king@canonical.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@st.com>,
+	Fabrice Gasnier <fabrice.gasnier@st.com>,
+	linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Cc: kernel-janitors@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH][iio-next] iio: adc: stm32: make array stm32h7_adc_ckmodes_spec static
+Date: Wed, 28 Jun 2017 14:06:50 +0100
+Message-Id: <20170628130650.21872-1-colin.king@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+List-ID: <linux-iio@vger.kernel.org>
 
-Hello Hans de Goede,
+From: Colin Ian King <colin.king@canonical.com>
 
-This is a semi-automatic email about new static checker warnings.
+The array stm32h7_adc_ckmodes_spec does not need to be in global scope, so
+make it static.
 
-The patch 5333e88661f2: "iio: accel: bma180: Add ACPI enumeration 
-support for BMA250E" from May 16, 2017, leads to the following Smatch 
-complaint:
+Cleans up sparse warning:
+"symbol 'stm32h7_adc_ckmodes_spec' was not declared. Should it be static?"
 
-drivers/iio/accel/bma180.c:766 bma180_probe()
-	 error: we previously assumed 'id' could be null (see line 747)
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/iio/adc/stm32-adc-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-drivers/iio/accel/bma180.c
-   746			chip = (enum chip_ids)of_device_get_match_data(&client->dev);
-   747		} else if (id) {
-                           ^^
-New check for NULL.
-
-   748			chip = id->driver_data;
-   749		} else {
-   750			acpi_id = acpi_match_device(dev->driver->acpi_match_table, dev);
-   751			if (!acpi_id)
-   752				return -ENODEV;
-   753	
-   754			chip = acpi_id->driver_data;
-   755		}
-   756		data->part_info = &bma180_part_info[chip];
-   757	
-   758		ret = data->part_info->chip_config(data);
-   759		if (ret < 0)
-   760			goto err_chip_disable;
-   761	
-   762		mutex_init(&data->mutex);
-   763		indio_dev->dev.parent = &client->dev;
-   764		indio_dev->channels = data->part_info->channels;
-   765		indio_dev->num_channels = data->part_info->num_channels;
-   766		indio_dev->name = id->name;
-                                  ^^^^^^^^
-Old code assumes "id" is always non-NULL.
-
-   767		indio_dev->modes = INDIO_DIRECT_MODE;
-   768		indio_dev->info = &bma180_info;
-
-regards,
-dan carpenter
+diff --git a/drivers/iio/adc/stm32-adc-core.c b/drivers/iio/adc/stm32-adc-core.c
+index e09233b03c05..9d083c2338f9 100644
+--- a/drivers/iio/adc/stm32-adc-core.c
++++ b/drivers/iio/adc/stm32-adc-core.c
+@@ -172,7 +172,7 @@ struct stm32h7_adc_ck_spec {
+ 	int div;
+ };
+ 
+-const struct stm32h7_adc_ck_spec stm32h7_adc_ckmodes_spec[] = {
++static const struct stm32h7_adc_ck_spec stm32h7_adc_ckmodes_spec[] = {
+ 	/* 00: CK_ADC[1..3]: Asynchronous clock modes */
+ 	{ 0, 0, 1 },
+ 	{ 0, 1, 2 },
+-- 
+2.11.0
