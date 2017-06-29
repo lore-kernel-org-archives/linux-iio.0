@@ -1,89 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f65.google.com ([74.125.82.65]:35554 "EHLO
-        mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751540AbdF1V7C (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 28 Jun 2017 17:59:02 -0400
-Received: by mail-wm0-f65.google.com with SMTP id 131so13852394wmq.2
-        for <linux-iio@vger.kernel.org>; Wed, 28 Jun 2017 14:59:02 -0700 (PDT)
-From: Angelo Compagnucci <angelo.compagnucci@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 3/3] iio: adc: mcp3422: cosmetic fixes
-Date: Wed, 28 Jun 2017 23:53:11 +0200
-Message-Id: <1498687088-28529-3-git-send-email-angelo.compagnucci@gmail.com>
-In-Reply-To: <1498687088-28529-1-git-send-email-angelo.compagnucci@gmail.com>
-References: <1498687088-28529-1-git-send-email-angelo.compagnucci@gmail.com>
+Received: from mail-lf0-f46.google.com ([209.85.215.46]:35738 "EHLO
+        mail-lf0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752150AbdF2L5N (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 29 Jun 2017 07:57:13 -0400
+Received: by mail-lf0-f46.google.com with SMTP id b207so51288326lfg.2
+        for <linux-iio@vger.kernel.org>; Thu, 29 Jun 2017 04:57:12 -0700 (PDT)
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH] iio: gyro: mpu3050: Allow open drain with anything
+Date: Thu, 29 Jun 2017 13:57:04 +0200
+Message-Id: <20170629115704.20717-1-linus.walleij@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch fixes some cosmetics in source code, it uniforms
-tabs after carriage return on methods and fixes formatting.
+Open drain should work fine with rising or high level IRQs,
+this code was due to some misunderstanding on my part.
 
-Signed-off-by: Angelo Compagnucci <angelo.compagnucci@gmail.com>
+Reported-by: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/iio/adc/mcp3422.c | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+ drivers/iio/gyro/mpu3050-core.c | 10 ----------
+ 1 file changed, 10 deletions(-)
 
-diff --git a/drivers/iio/adc/mcp3422.c b/drivers/iio/adc/mcp3422.c
-index 63de705..866d02f 100644
---- a/drivers/iio/adc/mcp3422.c
-+++ b/drivers/iio/adc/mcp3422.c
-@@ -135,7 +135,7 @@ static int mcp3422_read(struct mcp3422 *adc, int *value, u8 *config)
- }
- 
- static int mcp3422_read_channel(struct mcp3422 *adc,
--				struct iio_chan_spec const *channel, int *value)
-+		struct iio_chan_spec const *channel, int *value)
- {
- 	int ret;
- 	u8 config;
-@@ -157,14 +157,14 @@ static int mcp3422_read_channel(struct mcp3422 *adc,
- }
- 
- static int mcp3422_read_raw(struct iio_dev *iio,
--			struct iio_chan_spec const *channel, int *val1,
--			int *val2, long mask)
-+		struct iio_chan_spec const *channel, int *val1,
-+		int *val2, long mask)
- {
- 	struct mcp3422 *adc = iio_priv(iio);
- 	int err;
- 
- 	u8 sample_rate = MCP3422_SAMPLE_RATE(adc->config);
--	u8 pga		 = MCP3422_PGA(adc->config);
-+	u8 pga = MCP3422_PGA(adc->config);
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
-@@ -174,7 +174,6 @@ static int mcp3422_read_raw(struct iio_dev *iio,
- 		return IIO_VAL_INT;
- 
- 	case IIO_CHAN_INFO_SCALE:
--
- 		*val1 = 0;
- 		*val2 = mcp3422_scales[sample_rate][pga];
- 		return IIO_VAL_INT_PLUS_NANO;
-@@ -191,8 +190,8 @@ static int mcp3422_read_raw(struct iio_dev *iio,
- }
- 
- static int mcp3422_write_raw(struct iio_dev *iio,
--			struct iio_chan_spec const *channel, int val1,
--			int val2, long mask)
-+		struct iio_chan_spec const *channel, int val1,
-+		int val2, long mask)
- {
- 	struct mcp3422 *adc = iio_priv(iio);
- 	u8 temp;
-@@ -331,7 +330,7 @@ static const struct iio_info mcp3422_info = {
- };
- 
- static int mcp3422_probe(struct i2c_client *client,
--			 const struct i2c_device_id *id)
-+		const struct i2c_device_id *id)
- {
- 	struct iio_dev *indio_dev;
- 	struct mcp3422 *adc;
+diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
+index 2be2a5d287e6..e0d241a9aa30 100644
+--- a/drivers/iio/gyro/mpu3050-core.c
++++ b/drivers/iio/gyro/mpu3050-core.c
+@@ -1063,11 +1063,6 @@ static int mpu3050_trigger_probe(struct iio_dev *indio_dev, int irq)
+ 	case IRQF_TRIGGER_RISING:
+ 		dev_info(&indio_dev->dev,
+ 			 "pulse interrupts on the rising edge\n");
+-		if (mpu3050->irq_opendrain) {
+-			dev_info(&indio_dev->dev,
+-				 "rising edge incompatible with open drain\n");
+-			mpu3050->irq_opendrain = false;
+-		}
+ 		break;
+ 	case IRQF_TRIGGER_FALLING:
+ 		mpu3050->irq_actl = true;
+@@ -1078,11 +1073,6 @@ static int mpu3050_trigger_probe(struct iio_dev *indio_dev, int irq)
+ 		mpu3050->irq_latch = true;
+ 		dev_info(&indio_dev->dev,
+ 			 "interrupts active high level\n");
+-		if (mpu3050->irq_opendrain) {
+-			dev_info(&indio_dev->dev,
+-				 "active high incompatible with open drain\n");
+-			mpu3050->irq_opendrain = false;
+-		}
+ 		/*
+ 		 * With level IRQs, we mask the IRQ until it is processed,
+ 		 * but with edge IRQs (pulses) we can queue several interrupts
 -- 
-2.7.4
+2.9.4
 
