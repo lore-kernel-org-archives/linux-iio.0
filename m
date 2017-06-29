@@ -8,83 +8,106 @@ Cc: gregkh@linuxfoundation.org,
 	lars@metafoo.de,
 	pmeerw@pmeerw.net,
 	linux-kernel@vger.kernel.org,
-	Jon.Brenner@ams.com,
-	Rob Herring <robh+dt@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	devicetree@vger.kernel.org
-Subject: [PATCH 1/6] staging: iio: tsl2x7x: add of_match table for device tree support
-Date: Thu, 29 Jun 2017 13:03:47 -0400
-Message-Id: <20170629170352.11264-2-masneyb@onstation.org>
+	Jon.Brenner@ams.com
+Subject: [PATCH 2/6] staging: iio: tsl2x7x: remove redundant power_state sysfs attribute
+Date: Thu, 29 Jun 2017 13:03:48 -0400
+Message-Id: <20170629170352.11264-3-masneyb@onstation.org>
 In-Reply-To: <20170629170352.11264-1-masneyb@onstation.org>
 References: <20170629170352.11264-1-masneyb@onstation.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-Add device tree support for the tsl2x7x IIO driver with no custom
-properties.
+The TSL2X7X driver has a custom power_state sysfs attribute. Remove this
+attribute since the runtime power management code provides a sysfs
+attribute to control the power state of the device.
 
 Signed-off-by: Brian Masney <masneyb@onstation.org>
-CC: Rob Herring <robh+dt@kernel.org>
-CC: Mark Rutland <mark.rutland@arm.com>
-CC: devicetree@vger.kernel.org
 ---
- Documentation/devicetree/bindings/trivial-devices.txt | 10 ++++++++++
- drivers/staging/iio/light/tsl2x7x.c                   | 16 ++++++++++++++++
- 2 files changed, 26 insertions(+)
+ drivers/staging/iio/light/tsl2x7x.c | 34 ----------------------------------
+ 1 file changed, 34 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/trivial-devices.txt b/Documentation/devicetree/bindings/trivial-devices.txt
-index 35f406d..0e6e953 100644
---- a/Documentation/devicetree/bindings/trivial-devices.txt
-+++ b/Documentation/devicetree/bindings/trivial-devices.txt
-@@ -21,6 +21,16 @@ adi,adt7490		+/-1C TDM Extended Temp Range I.C
- adi,adxl345		Three-Axis Digital Accelerometer
- adi,adxl346		Three-Axis Digital Accelerometer (backward-compatibility value "adi,adxl345" must be listed too)
- ams,iaq-core		AMS iAQ-Core VOC Sensor
-+amstaos,tsl2571		AMS/TAOS ALS and proximity sensor
-+amstaos,tsl2671		AMS/TAOS ALS and proximity sensor
-+amstaos,tmd2671		AMS/TAOS ALS and proximity sensor
-+amstaos,tsl2771		AMS/TAOS ALS and proximity sensor
-+amstaos,tmd2771		AMS/TAOS ALS and proximity sensor
-+amstaos,tsl2572		AMS/TAOS ALS and proximity sensor
-+amstaos,tsl2672		AMS/TAOS ALS and proximity sensor
-+amstaos,tmd2672		AMS/TAOS ALS and proximity sensor
-+amstaos,tsl2772		AMS/TAOS ALS and proximity sensor
-+amstaos,tmd2772		AMS/TAOS ALS and proximity sensor
- at,24c08		i2c serial eeprom  (24cxx)
- atmel,at97sc3204t	i2c trusted platform module (TPM)
- capella,cm32181		CM32181: Ambient Light Sensor
 diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
-index 1467199..3f4f1f3 100644
+index 3f4f1f3..3ea29e2 100644
 --- a/drivers/staging/iio/light/tsl2x7x.c
 +++ b/drivers/staging/iio/light/tsl2x7x.c
-@@ -2026,6 +2026,21 @@ static struct i2c_device_id tsl2x7x_idtable[] = {
+@@ -915,33 +915,6 @@ static void tsl2x7x_prox_cal(struct iio_dev *indio_dev)
+ 		tsl2x7x_chip_on(indio_dev);
+ }
  
- MODULE_DEVICE_TABLE(i2c, tsl2x7x_idtable);
+-static ssize_t power_state_show(struct device *dev,
+-					struct device_attribute *attr,
+-					char *buf)
+-{
+-	struct tsl2X7X_chip *chip = iio_priv(dev_to_iio_dev(dev));
+-
+-	return snprintf(buf, PAGE_SIZE, "%d\n", chip->tsl2x7x_chip_status);
+-}
+-
+-static ssize_t power_state_store(struct device *dev,
+-					 struct device_attribute *attr,
+-					 const char *buf, size_t len)
+-{
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	bool value;
+-
+-	if (strtobool(buf, &value))
+-		return -EINVAL;
+-
+-	if (value)
+-		tsl2x7x_chip_on(indio_dev);
+-	else
+-		tsl2x7x_chip_off(indio_dev);
+-
+-	return len;
+-}
+-
+ static ssize_t in_illuminance0_calibscale_available_show(struct device *dev,
+ 					   struct device_attribute *attr,
+ 					   char *buf)
+@@ -1494,8 +1467,6 @@ static int tsl2x7x_write_raw(struct iio_dev *indio_dev,
+ 	return 0;
+ }
  
-+static const struct of_device_id tsl2x7x_of_match[] = {
-+        { .compatible = "amstaos,tsl2571" },
-+        { .compatible = "amstaos,tsl2671" },
-+        { .compatible = "amstaos,tmd2671" },
-+        { .compatible = "amstaos,tsl2771" },
-+        { .compatible = "amstaos,tmd2771" },
-+        { .compatible = "amstaos,tsl2572" },
-+        { .compatible = "amstaos,tsl2672" },
-+        { .compatible = "amstaos,tmd2672" },
-+        { .compatible = "amstaos,tsl2772" },
-+        { .compatible = "amstaos,tmd2772" },
-+        {}
-+};
-+MODULE_DEVICE_TABLE(of, tsl2x7x_of_match);
-+
- static const struct dev_pm_ops tsl2x7x_pm_ops = {
- 	.suspend = tsl2x7x_suspend,
- 	.resume  = tsl2x7x_resume,
-@@ -2035,6 +2050,7 @@ static const struct dev_pm_ops tsl2x7x_pm_ops = {
- static struct i2c_driver tsl2x7x_driver = {
- 	.driver = {
- 		.name = "tsl2x7x",
-+		.of_match_table = tsl2x7x_of_match,
- 		.pm = &tsl2x7x_pm_ops,
- 	},
- 	.id_table = tsl2x7x_idtable,
+-static DEVICE_ATTR_RW(power_state);
+-
+ static DEVICE_ATTR_RO(in_proximity0_calibscale_available);
+ 
+ static DEVICE_ATTR_RO(in_illuminance0_calibscale_available);
+@@ -1580,7 +1551,6 @@ static irqreturn_t tsl2x7x_event_handler(int irq, void *private)
+ }
+ 
+ static struct attribute *tsl2x7x_ALS_device_attrs[] = {
+-	&dev_attr_power_state.attr,
+ 	&dev_attr_in_illuminance0_calibscale_available.attr,
+ 	&dev_attr_in_illuminance0_integration_time.attr,
+ 	&iio_const_attr_in_illuminance0_integration_time_available.dev_attr.attr,
+@@ -1591,13 +1561,11 @@ static struct attribute *tsl2x7x_ALS_device_attrs[] = {
+ };
+ 
+ static struct attribute *tsl2x7x_PRX_device_attrs[] = {
+-	&dev_attr_power_state.attr,
+ 	&dev_attr_in_proximity0_calibrate.attr,
+ 	NULL
+ };
+ 
+ static struct attribute *tsl2x7x_ALSPRX_device_attrs[] = {
+-	&dev_attr_power_state.attr,
+ 	&dev_attr_in_illuminance0_calibscale_available.attr,
+ 	&dev_attr_in_illuminance0_integration_time.attr,
+ 	&iio_const_attr_in_illuminance0_integration_time_available.dev_attr.attr,
+@@ -1609,14 +1577,12 @@ static struct attribute *tsl2x7x_ALSPRX_device_attrs[] = {
+ };
+ 
+ static struct attribute *tsl2x7x_PRX2_device_attrs[] = {
+-	&dev_attr_power_state.attr,
+ 	&dev_attr_in_proximity0_calibrate.attr,
+ 	&dev_attr_in_proximity0_calibscale_available.attr,
+ 	NULL
+ };
+ 
+ static struct attribute *tsl2x7x_ALSPRX2_device_attrs[] = {
+-	&dev_attr_power_state.attr,
+ 	&dev_attr_in_illuminance0_calibscale_available.attr,
+ 	&dev_attr_in_illuminance0_integration_time.attr,
+ 	&iio_const_attr_in_illuminance0_integration_time_available.dev_attr.attr,
 -- 
 2.9.4
