@@ -1,115 +1,126 @@
-Return-Path: <SRS0=I9G9=57=gmail.com=robherring2@kernel.org>
-Date: Mon, 26 Jun 2017 14:56:39 -0500
-From: Rob Herring <robh@kernel.org>
-To: Ismail Kose <Ismail.Kose@maximintegrated.com>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	mark.rutland@arm.com, vilhelm.gray@gmail.com,
-	linus.walleij@linaro.org, jeff.dagenais@gmail.com,
-	fabrice.gasnier@st.com, gwenhael.goavec-merou@trabucayre.com,
-	peda@axentia.se, maxime.roussinbelanger@gmail.com, ihkose@gmail.com,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: dac: DS4424: add Maxim DS4422/DS4424 DAC driver
- support
-Message-ID: <20170626195639.ouc4ohznqc4vkmwj@rob-hp-laptop>
-References: <20170623230404.2283-1-Ismail.Kose@maximintegrated.com>
+Return-Path: <SRS0=b2ZH=6C=linaro.org=linus.walleij@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 In-Reply-To: <20170623230404.2283-1-Ismail.Kose@maximintegrated.com>
+References: <20170623230404.2283-1-Ismail.Kose@maximintegrated.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Thu, 29 Jun 2017 14:47:06 +0200
+Message-ID: <CACRpkdbNz9HSBWjQrntMpJDOaaEYKaNgrm6=qzdhiH8rfv+F1g@mail.gmail.com>
+Subject: Re: [PATCH] iio: dac: DS4424: add Maxim DS4422/DS4424 DAC driver support
+To: Ismail Kose <Ismail.Kose@maximintegrated.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>, Rob Herring <robh+dt@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>, William Breathitt Gray <vilhelm.gray@gmail.com>,
+	Jean-Francois Dagenais <jeff.dagenais@gmail.com>, Fabrice Gasnier <fabrice.gasnier@st.com>,
+	gwenhael.goavec-merou@trabucayre.com, Peter Rosin <peda@axentia.se>,
+	maxime.roussinbelanger@gmail.com, ihkose@gmail.com,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, Jun 23, 2017 at 04:04:04PM -0700, Ismail Kose wrote:
-> From: "Ismail H. Kose" <ihkose@gmail.com>
-> 
-> Add iio driver for DS4422/DS4424 chips that support two/four channel 7-bit
-> Sink/Source Current DAC.
-> 
-> The driver supports device tree and platfrom files for the configurations.
-> 
-> Datasheet publicly available at:
-> https://datasheets.maximintegrated.com/en/ds/DS4422-DS4424.pdf
-> 
-> Signed-off-by: Ismail Kose <Ismail.Kose@maximintegrated.com>
-> ---
->  .../devicetree/bindings/iio/dac/ds4424.txt         |  41 ++
+On Sat, Jun 24, 2017 at 1:04 AM, Ismail Kose
+<Ismail.Kose@maximintegrated.com> wrote:
 
-Please make the binding a separate patch.
-
->  drivers/iio/dac/Kconfig                            |   9 +
->  drivers/iio/dac/Makefile                           |   1 +
->  drivers/iio/dac/ds4424.c                           | 733 +++++++++++++++++++++
->  include/linux/iio/dac/ds4424.h                     |  29 +
->  5 files changed, 813 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/dac/ds4424.txt
->  create mode 100644 drivers/iio/dac/ds4424.c
->  create mode 100644 include/linux/iio/dac/ds4424.h
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/dac/ds4424.txt b/Documentation/devicetree/bindings/iio/dac/ds4424.txt
-> new file mode 100644
-> index 000000000000..03c1b575a6db
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/dac/ds4424.txt
-> @@ -0,0 +1,41 @@
-> +Maxim Integrated DS4422/DS4424 DAC device driver
-
-Bindings describe h/w not device drivers.
-
-> +
-> +Required properties:
-> +	- compatible: Must be "maxim,ds4422" or "maxim,ds4424"
-> +	- reg: Should contain the DAC I2C address
-> +	- min_rfs, max_rfs: In order to get the correct processed data values,
-
-Don't use '_' in property names, and these all need vendor prefixes.
-
-> +		   these resistor values should be changed to the correct values
-> +		   that match the user's system resistor values for RFS0 to RFS1.
-> +		   Resistance values for rfs_resistor are listed in 100 Ohm units;
-> +		   ie, 800 is 80K. Acceptable RFS values are 40K to 160K.
-
-Just use ohms (adding a suffix). Perhaps do a 2 value property with min 
-and max values.
-
-> +	- ifs_scale: 61000*100 = 6100000 = 100,000,000 * .976/16
-> +	- max_picoamp: Should contain DAC maximum pico amper value.
-
-Add any new units to property-units.txt.
-
-> +	- rfs_resistor: Should contain reference resistor
-
-unit suffix?
-
-> +	- iio map: Should contain IIO Map info
-
-Can't have a space in property names.
-
-> +
 > +Optional properties:
-> +	- vcc-supply: Power supply us optional. If not defined, driver will ignore it.
+> +       - vcc-supply: Power supply us optional. If not defined, driver will ignore it.
+
+*is* optional I guess.
+
+No need to mention the driver.
+
+> +#include <linux/regulator/consumer.h>
+(...)
+> +       struct regulator *vcc_reg;
+> +       const char *vcc_reg_name;
+> +       bool regulator_state;
+
+Why do you do this funky stuff?
+
+> +int ds4424_regulator_onoff(struct iio_dev *indio_dev, bool enable)
+> +{
+> +       struct ds4424_data *data = iio_priv(indio_dev);
+> +       int ret = 0;
 > +
-> +Example:
-> +	ds4224@10 {
-> +		compatible = "maxim,ds4424";
-> +		reg = <0x10>; /* When A0, A1 pins are ground */
-> +		vcc-supply = "dac_vcc_3v3";
-> +		max-picoamp = <200000000>; /* 200uA */
-> +		ifs-scale = <61000>;
-> +		/* In order to get the correct processed data values,
-> +		   these resistor values should be changed to the correct values that match the
-> +		   user's system resistor values for RFS0 to RFS1.
-> +		   Resistance values for rfs_resistor are listed in 100 Ohm units;
-> +		   ie, 800 is 80K. Acceptable RFS values are 40K to 160K.
-> +		*/
-> +		min-rfs = <400>;
-> +		max-rfs = <1600>;
-> +		rfs-resistors = <400 800 1000 1600>;
-> +		dac-iio-map =
+> +       if (data->vcc_reg == NULL)
+> +               return ret;
 
-Doesn't match above doc.
+This should not happen.
 
-> +		/*	consumer_dev_name, consumer_channel, adc_channel_label */
-> +			"ds4424_dac-consumer-dev_name-1", "ds4424_dac1", "OUT1",
-> +			"ds4424_dac-consumer-dev_name-2", "ds4424_dac2", "OUT2",
-> +			"ds4424_dac-consumer-dev_name-3", "ds4424_dac3", "OUT3",
-> +			"ds4424_dac-consumer-dev_name-4", "ds4424_dac4", "OUT4";
-> +	};
+You get dummy regulators or stubs if the regulator is not there
+and that works just fine.
+
+> +
+> +       if (data->regulator_state == PWR_OFF && enable == PWR_ON) {
+> +               ret = regulator_enable(data->vcc_reg);
+> +               if (ret) {
+> +                       pr_err("%s - enable vcc_reg failed, ret=%d\n",
+> +                               __func__, ret);
+> +                       goto done;
+> +               }
+> +       } else if (data->regulator_state == PWR_ON && enable == PWR_OFF) {
+> +               ret = regulator_disable(data->vcc_reg);
+> +               if (ret) {
+> +                       pr_err("%s - disable vcc_reg failed, ret=%d\n",
+> +                               __func__, ret);
+> +                       goto done;
+> +               }
+> +       }
+> +
+> +       data->regulator_state = enable;
+> +done:
+> +       return ret;
+> +}
+
+The regulator already has a state and knows if it is on or
+off. Why do you insist on having a "regulator state" reinventing
+the wheel in the driver?
+
+> +       ret = of_property_read_string(node, "vcc-supply", &data->vcc_reg_name);
+> +       if (ret < 0) {
+> +               pr_info("DAC vcc-supply is not available in dts\n");
+> +               data->vcc_reg_name = NULL;
+> +       }
+
+Don't do this. Just try to get the regulator by name and do not try
+to be clever about this, the regulator core will give you a dummy supply
+if the regulator is not there.
+
+> +       if (data->vcc_reg_name) {
+
+Just skip this check.
+
+> +               data->vcc_reg = devm_regulator_get(&client->dev,
+> +                       data->vcc_reg_name);
+
+Just
+
+data->vcc_reg = devm_regulator_get(&client->dev, "vcc");
+
+
+> +               if (IS_ERR(data->vcc_reg)) {
+> +                       ret = PTR_ERR(data->vcc_reg);
+> +                       dev_err(&client->dev,
+> +                               "Failed to get vcc_reg regulator: %d\n", ret);
+> +                       return ret;
+> +               }
+
+And keep this.
+
+You will get a dummy or stub working just fine if the regulator is not there.
+
+> +       ret = ds4424_regulator_onoff(indio_dev, PWR_ON);
+> +       if (ret < 0) {
+> +               pr_err("Unable to turn on the regulator. %s:%d, ret: %d\n",
+> +                       __func__, __LINE__, ret);
+> +               return ret;
+> +       }
+
+I don't think this helper is even needed. Just enable it here.
+
+Disable it on the other paths.
+
+Problem solved.
+
+Yours,
+Linus Walleij
