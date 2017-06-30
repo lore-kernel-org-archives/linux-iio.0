@@ -1,28 +1,19 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-io0-f170.google.com ([209.85.223.170]:33490 "EHLO
-        mail-io0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751987AbdF3OAB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 30 Jun 2017 10:00:01 -0400
-Received: by mail-io0-f170.google.com with SMTP id h64so24455994iod.0
-        for <linux-iio@vger.kernel.org>; Fri, 30 Jun 2017 07:00:01 -0700 (PDT)
+Return-Path: <robh+dt@kernel.org>
 MIME-Version: 1.0
 In-Reply-To: <20170630145319.20ec3696@jic23.retrosnub.co.uk>
 References: <b60def9a-45dc-bf97-e059-abbe105648b2@topic.nl> <20170630145319.20ec3696@jic23.retrosnub.co.uk>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Fri, 30 Jun 2017 15:59:59 +0200
-Message-ID: <CACRpkdZ0FKgbVJeLoFcYZF8Xd+oYn8mja1dy-ij6ArNGNC7O8w@mail.gmail.com>
+From: Rob Herring <robh+dt@kernel.org>
+Date: Fri, 30 Jun 2017 10:33:05 -0500
+Message-ID: <CAL_JsqJ4gD=sSW40qE_gbKDBG_NA6eng_sr26b-4AV5D0uXjkA@mail.gmail.com>
 Subject: Re: "Generic" MMIO ADC
 To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 Cc: Mike Looijmans <mike.looijmans@topic.nl>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Linus Walleij <linus.walleij@linaro.org>
 Content-Type: text/plain; charset="UTF-8"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, Jun 30, 2017 at 3:53 PM, Jonathan Cameron
+On Fri, Jun 30, 2017 at 8:53 AM, Jonathan Cameron
 <jic23@jic23.retrosnub.co.uk> wrote:
 > On Fri, 30 Jun 2017 10:44:42 +0200
 > Mike Looijmans <mike.looijmans@topic.nl> wrote:
@@ -49,24 +40,34 @@ his
 > discussion because in many ways it's more about the strategy on bindings
 > than the actual driver...  Also Linus Walleij for any experience handing
 > the gpio-mmio driver which strikes me as fairly similar in aim.
+>
+> To the driver question, yes absolutely this would be a good thing to have=
+.
+> The majority of ADCs out there are irritatingly more complex than what
+> you have.  Everyone seems to feel obliged to put in their own 'special
+> sauce'.
+>
+> As for bindings, there are two options, either we
+>
+> 1) As you suggest push all differences between different parts into the
+> bindings.  Note we'll still need a compatible list in the driver.
+> So this is something like gpio-mmio.c
+>
+> 2) Do something similar to the irq generic_chip (CONFIG_GENERIC_IRQ)
+> infrastructure and actually have very slim wrapper drivers around a
+> library.   That allows those elements that are constrained by the
+> hardware to not need specifying in device tree bindings.
+>
+>>
+>> And a related question: Is there a driver that's close to this?
+> I can't immediately think of one, but it's possible that one
+> of the SoC ADC drivers is simple enough to describe this way.
+>
+> So Mark / Rob.  You guys have experience with how the bindings
+> worked out for each approach.  Which do you prefer?
+> Either approach is fine with me.
 
-The gpio-mmio is for the simple case where we have one bit per
-GPIO, one bit reads/writes value, one bit sets direction etc.
+The latter case. Specific bindings can map to a generic driver or
+evolve to a specific driver if the generic one becomes inadequate.
 
-(I am happy we did not call it "gpio-simple" because these "simple"
-things are seldom simple in practice. So MMIO ADC is a good name.)
-
-I would ask the following architectural questions:
-
-- Is it really that simple, no clocks, regulator etc?
-
-- Is it advisible to have it as a child of a syscon, using "simple-mfd"
-  to spawn the child device c.f.
-  Documentation/devicetree/bindings/leds/register-bit-led.txt
-  drivers/leds/leds-syscon.c
-
-- drivers/power/reset/syscon-*
-  also use the syscon child approach
-
-Yours,
-Linus Walleij
+Rob
