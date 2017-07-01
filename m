@@ -1,9 +1,9 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:37472 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:37572 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751452AbdGAJTc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 1 Jul 2017 05:19:32 -0400
-Date: Sat, 1 Jul 2017 10:19:26 +0100
+        id S1751452AbdGAJVT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 1 Jul 2017 05:21:19 -0400
+Date: Sat, 1 Jul 2017 10:21:13 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Zhiyong Tao <zhiyong.tao@mediatek.com>
 Cc: <robh+dt@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
@@ -14,100 +14,42 @@ Cc: <robh+dt@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
         <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-iio@vger.kernel.org>, <linux-mediatek@lists.infradead.org>
-Subject: Re: [PATCH v2 2/3] iio: adc: mt7622: add support for
- suspend/resume.
-Message-ID: <20170701101926.1f6f35f6@kernel.org>
-In-Reply-To: <1498457502-3669-3-git-send-email-zhiyong.tao@mediatek.com>
+Subject: Re: [PATCH v2 3/3] iio: adc: mt7622: Add compatible node for
+ mt7622.
+Message-ID: <20170701102113.2f53742c@kernel.org>
+In-Reply-To: <1498457502-3669-4-git-send-email-zhiyong.tao@mediatek.com>
 References: <1498457502-3669-1-git-send-email-zhiyong.tao@mediatek.com>
-        <1498457502-3669-3-git-send-email-zhiyong.tao@mediatek.com>
+        <1498457502-3669-4-git-send-email-zhiyong.tao@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 26 Jun 2017 14:11:41 +0800
+On Mon, 26 Jun 2017 14:11:42 +0800
 Zhiyong Tao <zhiyong.tao@mediatek.com> wrote:
 
-> This patch supports auxadc suspend/resume flow.
-> Disable auxadc clk and power in suspend function.
-> Enable axuadc clk and power in resume function.
+> This commit adds mt7622 compatible node.
 > 
 > Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
-small point inline.
-
-Applied to the togreg branch of iio.git and pushed out as testing for the
-autobuilders to play with it.
+Applied.
 
 Thanks,
 
 Jonathan
 > ---
->  drivers/iio/adc/mt6577_auxadc.c |   38 ++++++++++++++++++++++++++++++++++++++
->  1 file changed, 38 insertions(+)
+>  drivers/iio/adc/mt6577_auxadc.c |    1 +
+>  1 file changed, 1 insertion(+)
 > 
 > diff --git a/drivers/iio/adc/mt6577_auxadc.c b/drivers/iio/adc/mt6577_auxadc.c
-> index 2d104c8..c174b73 100644
+> index c174b73..4224fc0 100644
 > --- a/drivers/iio/adc/mt6577_auxadc.c
 > +++ b/drivers/iio/adc/mt6577_auxadc.c
-> @@ -184,6 +184,39 @@ static int mt6577_auxadc_read_raw(struct iio_dev *indio_dev,
->  	.read_raw = &mt6577_auxadc_read_raw,
->  };
+> @@ -308,6 +308,7 @@ static SIMPLE_DEV_PM_OPS(mt6577_auxadc_pm_ops,
 >  
-> +#ifdef CONFIG_PM_SLEEP
-There is no need to have the ifdefs as well as the __maybe_unused.
-I'll drop them when applying.
-> +static int __maybe_unused mt6577_auxadc_resume(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct mt6577_auxadc_device *adc_dev = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	ret = clk_prepare_enable(adc_dev->adc_clk);
-> +	if (ret) {
-> +		pr_err("failed to enable auxadc clock\n");
-> +		return ret;
-> +	}
-> +
-> +	mt6577_auxadc_mod_reg(adc_dev->reg_base + MT6577_AUXADC_MISC,
-> +			      MT6577_AUXADC_PDN_EN, 0);
-> +	mdelay(MT6577_AUXADC_POWER_READY_MS);
-> +
-> +	return 0;
-> +}
-> +
-> +static int __maybe_unused mt6577_auxadc_suspend(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct mt6577_auxadc_device *adc_dev = iio_priv(indio_dev);
-> +
-> +	mt6577_auxadc_mod_reg(adc_dev->reg_base + MT6577_AUXADC_MISC,
-> +			      0, MT6577_AUXADC_PDN_EN);
-> +	clk_disable_unprepare(adc_dev->adc_clk);
-> +
-> +	return 0;
-> +}
-> +#endif
-> +
->  static int mt6577_auxadc_probe(struct platform_device *pdev)
->  {
->  	struct mt6577_auxadc_device *adc_dev;
-> @@ -269,6 +302,10 @@ static int mt6577_auxadc_remove(struct platform_device *pdev)
->  	return 0;
->  }
->  
-> +static SIMPLE_DEV_PM_OPS(mt6577_auxadc_pm_ops,
-> +			 mt6577_auxadc_suspend,
-> +			 mt6577_auxadc_resume);
-> +
 >  static const struct of_device_id mt6577_auxadc_of_match[] = {
 >  	{ .compatible = "mediatek,mt2701-auxadc", },
+> +	{ .compatible = "mediatek,mt7622-auxadc", },
 >  	{ .compatible = "mediatek,mt8173-auxadc", },
-> @@ -280,6 +317,7 @@ static int mt6577_auxadc_remove(struct platform_device *pdev)
->  	.driver = {
->  		.name   = "mt6577-auxadc",
->  		.of_match_table = mt6577_auxadc_of_match,
-> +		.pm = &mt6577_auxadc_pm_ops,
->  	},
->  	.probe	= mt6577_auxadc_probe,
->  	.remove	= mt6577_auxadc_remove,
+>  	{ }
+>  };
 
