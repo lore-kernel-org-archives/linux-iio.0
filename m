@@ -1,328 +1,732 @@
-Return-Path: <SRS0=LKit=6K=st.com=fabrice.gasnier@kernel.org>
-Subject: Re: [PATCH v2 4/8] pwm: Add STM32 LPTimer PWM driver
-To: Thierry Reding <thierry.reding@gmail.com>
-CC: <lee.jones@linaro.org>, <benjamin.gaignard@linaro.org>, <jic23@kernel.org>,
-        <robh+dt@kernel.org>, <mark.rutland@arm.com>,
-        <alexandre.torgue@st.com>, <mcoquelin.stm32@gmail.com>,
-        <benjamin.gaignard@st.com>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.99]:45728 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751805AbdGAMZY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 1 Jul 2017 08:25:24 -0400
+Date: Sat, 1 Jul 2017 13:25:18 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+Cc: William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Fabrice Gasnier <fabrice.gasnier@st.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Benjamin GAIGNARD <benjamin.gaignard@st.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PWM List <linux-pwm@vger.kernel.org>
+Subject: Re: [PATCH v2 8/8] iio: counter: Add support for STM32 LPTimer
+Message-ID: <20170701132518.4ce92c96@kernel.org>
+In-Reply-To: <CA+M3ks5PXzUVrnoEEcmRObB-65_Er9CVQcN9c8wJyjgP3=0Oxg@mail.gmail.com>
 References: <1498055415-31513-1-git-send-email-fabrice.gasnier@st.com>
- <1498055415-31513-5-git-send-email-fabrice.gasnier@st.com>
- <20170706074320.GK16144@ulmo.fritz.box>
- <b82d9c76-d8c5-43bf-45cc-b5c26c1c7164@st.com>
- <20170707092316.GA15652@ulmo.fritz.box>
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Message-ID: <af822b98-8258-ff91-92ba-13add262743f@st.com>
-Date: Fri, 7 Jul 2017 12:11:11 +0200
+        <1498055415-31513-9-git-send-email-fabrice.gasnier@st.com>
+        <20170624213539.6c4337d1@kernel.org>
+        <20170626202943.GA10994@sophia>
+        <CA+M3ks73_-TRVRFYrGyWqB24aZCjdXv5ZwmnFQvvbOvKUVn-rw@mail.gmail.com>
+        <20170630191959.096f4de7@kernel.org>
+        <CA+M3ks5PXzUVrnoEEcmRObB-65_Er9CVQcN9c8wJyjgP3=0Oxg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20170707092316.GA15652@ulmo.fritz.box>
-Content-Type: text/plain; charset="windows-1252"
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 07/07/2017 11:23 AM, Thierry Reding wrote:
-> On Fri, Jul 07, 2017 at 10:10:32AM +0200, Fabrice Gasnier wrote:
->> On 07/06/2017 09:43 AM, Thierry Reding wrote:
->>> On Wed, Jun 21, 2017 at 04:30:11PM +0200, Fabrice Gasnier wrote:
->>>> Add support for single PWM channel on Low-Power Timer, that can be
->>>> found on some STM32 platforms.
->>>>
->>>> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
->>>> ---
->>>> Changes in v2:
->>>> - s/Low Power/Low-Power
->>>> - update few comment lines
->>>> ---
->>>>  drivers/pwm/Kconfig        |  10 +++
->>>>  drivers/pwm/Makefile       |   1 +
->>>>  drivers/pwm/pwm-stm32-lp.c | 216 +++++++++++++++++++++++++++++++++++++++++++++
->>>>  3 files changed, 227 insertions(+)
->>>>  create mode 100644 drivers/pwm/pwm-stm32-lp.c
->>>>
->>>> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
->>>> index 313c107..7cb982b 100644
->>>> --- a/drivers/pwm/Kconfig
->>>> +++ b/drivers/pwm/Kconfig
->>>> @@ -417,6 +417,16 @@ config PWM_STM32
->>>>  	  To compile this driver as a module, choose M here: the module
->>>>  	  will be called pwm-stm32.
->>>>  
->>>> +config PWM_STM32_LP
->>>> +	tristate "STMicroelectronics STM32 PWM LP"
->>>> +	depends on MFD_STM32_LPTIMER || COMPILE_TEST
->>>> +	help
->>>> +	  Generic PWM framework driver for STMicroelectronics STM32 SoCs
->>>> +	  with Low-Power Timer (LPTIM).
->>>> +
->>>> +	  To compile this driver as a module, choose M here: the module
->>>> +	  will be called pwm-stm32-lp.
->>>> +
->>>>  config PWM_STMPE
->>>>  	bool "STMPE expander PWM export"
->>>>  	depends on MFD_STMPE
->>>> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
->>>> index 93da1f7..a3a4bee 100644
->>>> --- a/drivers/pwm/Makefile
->>>> +++ b/drivers/pwm/Makefile
->>>> @@ -40,6 +40,7 @@ obj-$(CONFIG_PWM_SAMSUNG)	+= pwm-samsung.o
->>>>  obj-$(CONFIG_PWM_SPEAR)		+= pwm-spear.o
->>>>  obj-$(CONFIG_PWM_STI)		+= pwm-sti.o
->>>>  obj-$(CONFIG_PWM_STM32)		+= pwm-stm32.o
->>>> +obj-$(CONFIG_PWM_STM32_LP)	+= pwm-stm32-lp.o
->>>>  obj-$(CONFIG_PWM_STMPE)		+= pwm-stmpe.o
->>>>  obj-$(CONFIG_PWM_SUN4I)		+= pwm-sun4i.o
->>>>  obj-$(CONFIG_PWM_TEGRA)		+= pwm-tegra.o
->>>> diff --git a/drivers/pwm/pwm-stm32-lp.c b/drivers/pwm/pwm-stm32-lp.c
->>>> new file mode 100644
->>>> index 0000000..eb997a8
->>>> --- /dev/null
->>>> +++ b/drivers/pwm/pwm-stm32-lp.c
->>>> @@ -0,0 +1,216 @@
->>>> +/*
->>>> + * STM32 Low-Power Timer PWM driver
->>>> + *
->>>> + * Copyright (C) STMicroelectronics 2017
->>>> + *
->>>> + * Author: Gerald Baeza <gerald.baeza@st.com>
->>>> + *
->>>> + * License terms: GNU General Public License (GPL), version 2
->>>> + *
->>>> + * Inspired by Gerald Baeza's pwm-stm32 driver
->>>> + */
->>>> +
->>>> +#include <linux/bitfield.h>
->>>> +#include <linux/mfd/stm32-lptimer.h>
->>>> +#include <linux/module.h>
->>>> +#include <linux/of.h>
->>>> +#include <linux/platform_device.h>
->>>> +#include <linux/pwm.h>
->>>> +
->>>> +struct stm32_pwm_lp {
->>>> +	struct pwm_chip chip;
->>>> +	struct clk *clk;
->>>> +	struct regmap *regmap;
->>>> +};
->>>> +
->>>> +static inline struct stm32_pwm_lp *to_stm32_pwm_lp(struct pwm_chip *chip)
->>>> +{
->>>> +	return container_of(chip, struct stm32_pwm_lp, chip);
->>>> +}
->>>> +
->>>> +static const u8 prescalers[] = {1, 2, 4, 8, 16, 32, 64, 128};
->>>> +
->>>> +static int stm32_pwm_lp_apply(struct pwm_chip *chip, struct pwm_device *pwm,
->>>> +			      struct pwm_state *state)
->>>> +{
->>>> +	struct stm32_pwm_lp *priv = to_stm32_pwm_lp(chip);
->>>> +	unsigned long long prd, div, dty;
->>>> +	struct pwm_state cstate;
->>>> +	u32 val, mask, cfgr, wavpol, presc = 0;
->>>> +	bool reenable = false;
->>>> +	int ret;
->>>> +
->>>> +	pwm_get_state(pwm, &cstate);
->>>> +
->>>> +	if (!state->enabled) {
->>>> +		if (cstate.enabled) {
->>>> +			/* Disable LP timer */
->>>> +			ret = regmap_write(priv->regmap, STM32_LPTIM_CR, 0);
->>>> +			if (ret)
->>>> +				return ret;
->>>> +			clk_disable(priv->clk);
->>>> +		}
->>>> +		return 0;
->>>> +	}
->>>> +
->>>> +	/* Calculate the period and prescaler value */
->>>> +	div = (unsigned long long)clk_get_rate(priv->clk) * state->period;
->>>> +	do_div(div, NSEC_PER_SEC);
->>>> +	prd = div;
->>>> +	while (div > STM32_LPTIM_MAX_ARR) {
->>>> +		presc++;
->>>> +		if (presc >= ARRAY_SIZE(prescalers)) {
->>>> +			dev_err(priv->chip.dev, "max prescaler exceeded\n");
->>>> +			return -EINVAL;
->>>> +		}
->>>> +		div = prd;
->>>> +		do_div(div, prescalers[presc]);
->>>> +	}
->>>> +	prd = div;
->>>> +
->>>> +	/* Calculate the duty cycle */
->>>> +	dty = prd * state->duty_cycle;
->>>> +	do_div(dty, state->period);
->>>> +
->>>> +	wavpol = FIELD_PREP(STM32_LPTIM_WAVPOL, state->polarity);
->>>> +
->>>> +	if (!cstate.enabled) {
->>>> +		ret = clk_enable(priv->clk);
->>>> +		if (ret)
->>>> +			return ret;
->>>> +	}
->>>
->>> Why do you need the checks here? Clock enabled are reference counted, so
->>> you could do the clk_enable() unconditionally.
->>
->> Hi Thierry,
->>
->> This clock is used to generate PWM (source for LP timer counter). I
->> enable it here as:
->> - required state is 'enabled'
->> - current state is 'disabled'.
->> PWM is being turned on: first enable clock, then configure & enable PWM
->> bellow.
->>
->> The opposite is done earlier, at the beginning of this routine:
->> - required state is 'disabled'
->> - current state is 'enabled'
->> PWM is turned off, then clock is disabled.
->>
->> Enable count should be balanced, and clock is enabled when required
->> (e.g. when PWM is 'on'). Doing it unconditionally here may cause
->> unbalanced enable count (e.g. any duty_cycle update would increase
->> enable count)
->> Is it ok to keep this ?
-> 
-> The placement of the call suggested that you also need to enable the
-> clock in order to access any of the registers. In such cases it's often
-> simpler to take (and release) the reference to the clock irrespective
-> of the current state.
-> 
-> So the general sequence might look like this:
-> 
-> 	/* allow access to registers */
-> 	clk_enable();
-> 
-> 	/* modify registers */
-> 	...
-> 
-> 	/* enable clock to drive PWM counter */
-> 	if (state->enabled && !cstate.enabled)
-> 		clk_enable();
-> 
-> 	/* disable clock to PWM counter */
-> 	if (!state->enabled && cstate.enabled)
-> 		clk_disable();
-> 
-> 	/* access to registers no longer needed */
-> 	clk_disable();
-> 
-> This ensures that as long as you keep the "register" reference to the
-> clock, the clock will remain on.
+On Fri, 30 Jun 2017 22:36:48 +0200
+Benjamin Gaignard <benjamin.gaignard@linaro.org> wrote:
 
-Hi Thierry,
+> 2017-06-30 20:19 GMT+02:00 Jonathan Cameron <jic23@kernel.org>:
+> > On Tue, 27 Jun 2017 10:21:43 +0200
+> > Benjamin Gaignard <benjamin.gaignard@linaro.org> wrote:
+> >  
+> >> 2017-06-26 22:29 GMT+02:00 William Breathitt Gray <vilhelm.gray@gmail.com>:  
+> >> > On Sat, Jun 24, 2017 at 09:35:39PM +0100, Jonathan Cameron wrote:  
+> >> >>On Wed, 21 Jun 2017 16:30:15 +0200
+> >> >>Fabrice Gasnier <fabrice.gasnier@st.com> wrote:
+> >> >>  
+> >> >>> Add support for STM32 Low-Power Timer, that can be used as counter
+> >> >>> or quadrature encoder.
+> >> >>>
+> >> >>> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>  
+> >> >>Hmm. Sometime I'm going to ask you guys to document how all these different
+> >> >>components fit together.  Far too many ways of cooking the same dish with
+> >> >>some of these ST parts ;)
+> >> >>
+> >> >>I've cc'd William.  You already have Benjamin.  Hopefully they also
+> >> >>have time to cast their eyes over this patch as it would be very helpful.
+> >> >>We are still defining new ABI for these devices so good to have more eyes
+> >> >>than for a normal patch.
+> >> >>Jonathan  
+> >> >>> ---
+> >> >>> Changes in v2:
+> >> >>> - s/Low Power/Low-Power
+> >> >>> - update few comments
+> >> >>> ---
+> >> >>>  .../ABI/testing/sysfs-bus-iio-lptimer-stm32        |  57 +++
+> >> >>>  drivers/iio/counter/Kconfig                        |   9 +
+> >> >>>  drivers/iio/counter/Makefile                       |   1 +
+> >> >>>  drivers/iio/counter/stm32-lptimer-cnt.c            | 383 +++++++++++++++++++++
+> >> >>>  4 files changed, 450 insertions(+)
+> >> >>>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32
+> >> >>>  create mode 100644 drivers/iio/counter/stm32-lptimer-cnt.c
+> >> >>>
+> >> >>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32 b/Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32
+> >> >>> new file mode 100644
+> >> >>> index 0000000..ad2cc63
+> >> >>> --- /dev/null
+> >> >>> +++ b/Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32
+> >> >>> @@ -0,0 +1,57 @@
+> >> >>> +What:               /sys/bus/iio/devices/iio:deviceX/in_count0_preset
+> >> >>> +KernelVersion:      4.13
+> >> >>> +Contact:    fabrice.gasnier@st.com
+> >> >>> +Description:
+> >> >>> +            Reading returns the current preset value. Writing sets the
+> >> >>> +            preset value. Encoder counts continuously from 0 to preset
+> >> >>> +            value, depending on direction (up/down).  
+> >> >>Some of these are generic now and used by several parts.  Time we started
+> >> >>thinking about a more generic file. sysfs-bus-iio-counter  
+> >> >>> +
+> >> >>> +What:               /sys/bus/iio/devices/iio:deviceX/in_count_quadrature_mode_available
+> >> >>> +KernelVersion:      4.13
+> >> >>> +Contact:    fabrice.gasnier@st.com
+> >> >>> +Description:
+> >> >>> +            Reading returns the list possible quadrature modes.
+> >> >>> +
+> >> >>> +What:               /sys/bus/iio/devices/iio:deviceX/in_count0_quadrature_mode
+> >> >>> +KernelVersion:      4.13
+> >> >>> +Contact:    fabrice.gasnier@st.com
+> >> >>> +Description:
+> >> >>> +            Configure the device counter quadrature modes:
+> >> >>> +            - non-quadrature:
+> >> >>> +                    Encoder IN1 input servers as the count input (up
+> >> >>> +                    direction).
+> >> >>> +            - quadrature:
+> >> >>> +                    Encoder IN1 and IN2 inputs are mixed to get direction
+> >> >>> +                    and count.  
+> >> >>Don't suppose we can call them A and B in common with labelling on many encoders?
+> >> >>Also makes this documentation same as for the 104 device.  
+> >> >>> +
+> >> >>> +What:               /sys/bus/iio/devices/iio:deviceX/in_count_polarity_available
+> >> >>> +KernelVersion:      4.13
+> >> >>> +Contact:    fabrice.gasnier@st.com
+> >> >>> +Description:
+> >> >>> +            Reading returns the list possible active edges.
+> >> >>> +
+> >> >>> +What:               /sys/bus/iio/devices/iio:deviceX/in_count0_polarity
+> >> >>> +KernelVersion:      4.13
+> >> >>> +Contact:    fabrice.gasnier@st.com
+> >> >>> +Description:
+> >> >>> +            Configure the device encoder/counter active edge:
+> >> >>> +            - rising-edge
+> >> >>> +            - falling-edge
+> >> >>> +            - both-edges  
+> >> >>For both edges, I believe we last supported this with scale.
+> >> >>So can we have both edges for the non quadrature?  If so your scale reported
+> >> >>is not taking this into account.  
+> >> >>> +
+> >> >>> +            In non-quadrature mode, device counts up on active edge.
+> >> >>> +            In quadrature mode, encoder counting scenarios are as follows:
+> >> >>> +            ----------------------------------------------------------------
+> >> >>> +            | Active  | Level on |      IN1 signal    |     IN2 signal     |
+> >> >>> +            | edge    | opposite |------------------------------------------
+> >> >>> +            |         | signal   |  Rising  | Falling |  Rising  | Falling |
+> >> >>> +            ----------------------------------------------------------------
+> >> >>> +            | Rising  | High ->  |   Down   |    -    |    Up    |    -    |
+> >> >>> +            | edge    | Low  ->  |    Up    |    -    |   Down   |    -    |
+> >> >>> +            ----------------------------------------------------------------
+> >> >>> +            | Falling | High ->  |    -     |    Up   |    -     |   Down  |
+> >> >>> +            | edge    | Low  ->  |    -     |   Down  |    -     |    Up   |
+> >> >>> +            ----------------------------------------------------------------
+> >> >>> +            | Both    | High ->  |   Down   |    Up   |    Up    |   Down  |
+> >> >>> +            | edges   | Low  ->  |    Up    |   Down  |   Down   |    Up   |
+> >> >>> +            ----------------------------------------------------------------  
+> >> >>Last case was definitely done with scale for the 104 counter - not that it
+> >> >>is detailed enough here to cover the other two cases.
+> >> >>It might make sense to add any new interface to that one as well to become
+> >> >>the favoured way of setting or reading this...
+> >> >>
+> >> >>Anyone else have a better idea?  
+> >> >
+> >> > When we introduced the first counter device driver to the iio subsystem
+> >> > we anticipated the arrival of subsequent counter device drivers to
+> >> > elucidate the common functionality of these kinds of devices; I believe
+> >> > the new counter device drivers added to the kernel in these past few
+> >> > releases have provided us with enough to see the trends in these
+> >> > devices. Congolmerating the attributes we see repeated among these
+> >> > drivers into a common sysfs-bus-iio-counter interface would be
+> >> > beneficial for future authors.
+> >> >
+> >> > Specific devices are bound to require specific attributes, but there are
+> >> > certain functionalities that all counters share -- determining the
+> >> > essence of a counter is key to defining a useful generic counter
+> >> > interface. For example, a good number of counter devices I've
+> >> > encountered have some sort of "preset" functionality; but whereas one
+> >> > device may treat the "preset" value as a count ceiling, another may
+> >> > treat it as a count floor. Knowing where to draw the line of defining
+> >> > what the "preset" attribute represents is the problem.  
+> >>
+> >> Maybe we should have min, max and reset values attribut instead of using
+> >> preset ?
+> >>  
+> >> >
+> >> > Allow me to propose the following generic definition of an idealized
+> >> > counter device: a counter is a device that accumulates the state changes
+> >> > of one or more signal lines to a defined value. This generic definition
+> >> > should guide us in defining a proper generic iio counter interface.
+> >> >
+> >> > Referring to the generic description, we know that every counter device
+> >> > will have a "value" attribute where the accumulation of the signal lines
+> >> > are held. Furthermore, the accumulation operation must be defined: some
+> >> > devices count up, some down, and some either; an attribute can be used
+> >> > to select the accumulation operation.
+> >> >
+> >> > The accumulation operation in these devices must have a trigger
+> >> > condition (i.e. state change). This is where we've had trouble in the
+> >> > past trying to deal with quadrature modes. I propose that we separate
+> >> > the idea of quadrature modes from the concept of state changes.
+> >> >
+> >> > Quadrature counters in my mind are simply regular counters that
+> >> > accumulate state changes on multiple wires at the same time to a single
+> >> > value; the fact that the signals are quadrature (90 degrees offset) is
+> >> > of no consequence: reversal of direction is simply a change of the
+> >> > accumulation operation in most devices to indicate the change to
+> >> > counting is the opposite direction.
+> >> >
+> >> > I don't particularly like how the "scale" attribute is used to hide the
+> >> > quadrature modes (x1, x2, and x4) of the 104-QUAD-8 device: the various
+> >> > quadrature modes indicate how state changes are interpreted by the
+> >> > device, but "scale" loses such information by representing it as simply
+> >> > a scaled accumulated value which could overlap with another counting
+> >> > mode.
+> >> >
+> >> > For example, traditionally quadrature modes are defined as such: x1
+> >> > counts the rising edges of channel A in the forward direction and the
+> >> > falling edges of channel A in the backward direction, x2 counts both
+> >> > rising and falling edges of channel A, and x4 counts both rising and
+> >> > falling edges of both channel A and channel B. Now suppose a device
+> >> > allows another possible mode where just the rising edges of both channel
+> >> > A and channel B are, or a mode where just the falling edges of both
+> >> > channel A and channel B, or a mode where only channle B is counted
+> >> > instead of channel A, etc.? In these modes, the accumulated value may
+> >> > match closely to one of the traditional quadrature modes, but the
+> >> > "scale" attribute does not display this information.
+> >> >
+> >> > The reason I point out these hypothetical modes is because I don't
+> >> > think the iio counter interface should be so tied to quadrature encoder
+> >> > functionality: although, position tracking is a useful functionality of
+> >> > a counter, a counter should be able to count arbitrary signals based on
+> >> > well defined state changes. This will allow counter drivers to be
+> >> > written to serve a diverse variety of devices. That is why the focus
+> >> > should be on what constitutes a "state change."
+> >> >
+> >> > So let us separate what we have been calling "quadrature mode" into a
+> >> > more generic interface of "signal lines" and "state changes." A "signal
+> >> > line" would be the channels associated with a single accumulation
+> >> > "value," such as channel A and channel B. Each signal line can then have
+> >> > an associated "state change" mode (i.e. the trigger for the accumulation
+> >> > operation) which can be set to the desired mode such as "None," "Rising
+> >> > Edge," "Falling Edge," "Both," etc. In this way, multiple signal lines
+> >> > (even more than 2) can be associated to an accumulation value, and
+> >> > configured to the desired mode (e.g. quadrature mode) to handle whatever
+> >> > kind of data is represented by those incoming signal lines.  
+> >>
+> >>
+> >> Name it  "Signal lines" sound good for me, I would prefer "active state" rather
+> >> than "state changes" but it just wording so with a good documentation
+> >> it could works.
+> >> If you propose patch (and documentation) for that I could convert my
+> >> stm32 timers
+> >> driver to this interface.
+> >>  
+> >> >
+> >> > To summarize: the generic iio counter interface should feature
+> >> > accumulation value attributes, which shall each have an associated
+> >> > accumulation operation attribute and respective number of signal line
+> >> > attributes associated with the accumulation value, where each signal
+> >> > line has an associated state change mode which defines the condition
+> >> > on the respective signal line that triggers the accumulation operation.  
+> > As I read this, the complexities of quadrature counting aren't covered...
+> > The reason it works and can tell direction is down to order of state
+> > transitions across the two channels.  So how do we describe that?  It's not
+> > even the case that a particular existing state is relevant, there is
+> > a temporal element (basically the state machine).
+> > http://www.edn.com/design/integrated-circuit-design/4363949/Decode-a-quadrature-encoder-in-software
+> > is a good description of the algorithm...  
+> 
+> We don't need to describe the state machine because is done inside
+> the hardware block. We need to tell to the hardware on which edge(s)
+> it had to count and the number of lines, with that it will give you the
+> counter value and the direction.
+Agreed, we don't need the state machine, but...
 
-I better see your point now. Regmap is already handling clock for
-register access. I'll try to re-arrange things a little, so it's easier
-to read and comment about enable/disable clock to PWM counter.
+We need it to be apparent to userspace that this is a quadrature
+channel.  We don't need to control that, but we need userspace to be aware
+in some fashion.  Only then does the question of counting up and down on
+particular edges make sense - because on a quadrature channel it will only
+do this under some circumstance.  Every rising A edge does not result in
+a count up for example - if we are going the other way, it would be a count
+down only on the falling edge.
+> 
+> >
+> > Now if we had some concept of composite signal lines, so a quadrature
+> > pair was treated as one entity then that might work - but we still aren't
+> > dealing with edges as such, but rather the state machine change
+> > they represent.
+> >
+> > Agreed the counter interface shouldn't be particularly tied to
+> > quadrature type signals, but those are one of the most common
+> > types so we do need to make sure we handle them cleanly.
+> >  
+> 
+> I do believe that describe active edges per lines is a good and generic
+> way to configure counters and quadrature encoders
+Configure perhaps but I'm not following how userspace or a user is supposed
+to know whether a channel is part of a quadrature pair rather than a
+single line where say a rising edge always means count up.
 
-> 
-> There is a somewhat tricky situation that could happen if the initial
-> clock reference count is not in sync. Consider the case where your
-> ->get_state() determines that the PWM is enabled. cstate.enabled would
-> be true, but the clock enable count would not be incremented. So you'd
-> have to make sure to add code to the ->get_state() implementation that
-> calls clk_enable() for each PWM that is enabled.
-> 
-> In my opinion that would be the cleanest option and easiest to follow,
-> but its more work to properly implement than I initially assumed, so
-> I'm fine with the version that you have, too.
+Counting on particular edges of particular lines can't give this information
+(as far as can see anyway - feel free to prove me wrong with examples!)
 
-Thanks for these hints, I'll try to follow your advise on this:
-- use get_state()
-- call clk_enable() if PWM is already enabled.
+Jonathan
+> 
+> > All the other common counter types are more straight forward.  
+> >> >
+> >> > Let me know what you think. I'm worried if this interface would be too
+> >> > generic or cumbersome to use -- but I'm also worried about the counter
+> >> > interface becoming too specific to quadrature signals and getting tied
+> >> > down such a specialized use case.  
+> >>
+> >> Define on which edges counter is active seems generic and no specifically
+> >> link to quadrature devices so it is not a problem for me.
+> >>  
+> >> >
+> >> > William Breathitt Gray
+> >> >  
+> >> >>> diff --git a/drivers/iio/counter/Kconfig b/drivers/iio/counter/Kconfig
+> >> >>> index b37e5fc..474e1ac 100644
+> >> >>> --- a/drivers/iio/counter/Kconfig
+> >> >>> +++ b/drivers/iio/counter/Kconfig
+> >> >>> @@ -21,4 +21,13 @@ config 104_QUAD_8
+> >> >>>        The base port addresses for the devices may be configured via the base
+> >> >>>        array module parameter.
+> >> >>>
+> >> >>> +config STM32_LPTIMER_CNT
+> >> >>> +    tristate "STM32 LP Timer encoder counter driver"
+> >> >>> +    depends on MFD_STM32_LPTIMER || COMPILE_TEST
+> >> >>> +    help
+> >> >>> +      Select this option to enable STM32 Low-Power Timer quadrature encoder
+> >> >>> +      and counter driver.
+> >> >>> +
+> >> >>> +      To compile this driver as a module, choose M here: the
+> >> >>> +      module will be called stm32-lptimer-cnt.
+> >> >>>  endmenu
+> >> >>> diff --git a/drivers/iio/counter/Makefile b/drivers/iio/counter/Makefile
+> >> >>> index 007e884..1b9a896 100644
+> >> >>> --- a/drivers/iio/counter/Makefile
+> >> >>> +++ b/drivers/iio/counter/Makefile
+> >> >>> @@ -5,3 +5,4 @@
+> >> >>>  # When adding new entries keep the list in alphabetical order
+> >> >>>
+> >> >>>  obj-$(CONFIG_104_QUAD_8)    += 104-quad-8.o
+> >> >>> +obj-$(CONFIG_STM32_LPTIMER_CNT)     += stm32-lptimer-cnt.o
+> >> >>> diff --git a/drivers/iio/counter/stm32-lptimer-cnt.c b/drivers/iio/counter/stm32-lptimer-cnt.c
+> >> >>> new file mode 100644
+> >> >>> index 0000000..1c5909b
+> >> >>> --- /dev/null
+> >> >>> +++ b/drivers/iio/counter/stm32-lptimer-cnt.c
+> >> >>> @@ -0,0 +1,383 @@
+> >> >>> +/*
+> >> >>> + * STM32 Low-Power Timer Encoder and Counter driver
+> >> >>> + *
+> >> >>> + * Copyright (C) STMicroelectronics 2017
+> >> >>> + *
+> >> >>> + * Author: Fabrice Gasnier <fabrice.gasnier@st.com>
+> >> >>> + *
+> >> >>> + * Inspired by 104-quad-8 and stm32-timer-trigger drivers.
+> >> >>> + *
+> >> >>> + * License terms:  GNU General Public License (GPL), version 2
+> >> >>> + */
+> >> >>> +
+> >> >>> +#include <linux/bitfield.h>
+> >> >>> +#include <linux/iio/iio.h>
+> >> >>> +#include <linux/mfd/stm32-lptimer.h>
+> >> >>> +#include <linux/module.h>
+> >> >>> +#include <linux/platform_device.h>
+> >> >>> +
+> >> >>> +struct stm32_lptim_cnt {
+> >> >>> +    struct device *dev;
+> >> >>> +    struct regmap *regmap;
+> >> >>> +    struct clk *clk;
+> >> >>> +    u32 preset;
+> >> >>> +    u32 polarity;
+> >> >>> +    u32 quadrature_mode;
+> >> >>> +};
+> >> >>> +
+> >> >>> +static int stm32_lptim_is_enabled(struct stm32_lptim_cnt *priv)
+> >> >>> +{
+> >> >>> +    u32 val;
+> >> >>> +    int ret;
+> >> >>> +
+> >> >>> +    ret = regmap_read(priv->regmap, STM32_LPTIM_CR, &val);
+> >> >>> +    if (ret)
+> >> >>> +            return ret;
+> >> >>> +
+> >> >>> +    return FIELD_GET(STM32_LPTIM_ENABLE, val);
+> >> >>> +}
+> >> >>> +
+> >> >>> +static int stm32_lptim_set_enable_state(struct stm32_lptim_cnt *priv,
+> >> >>> +                                    int enable)
+> >> >>> +{
+> >> >>> +    int ret;
+> >> >>> +    u32 val;
+> >> >>> +
+> >> >>> +    val = FIELD_PREP(STM32_LPTIM_ENABLE, enable);
+> >> >>> +    ret = regmap_write(priv->regmap, STM32_LPTIM_CR, val);
+> >> >>> +    if (ret)
+> >> >>> +            return ret;
+> >> >>> +
+> >> >>> +    if (!enable) {
+> >> >>> +            clk_disable(priv->clk);
+> >> >>> +            return 0;
+> >> >>> +    }
+> >> >>> +
+> >> >>> +    /* LP timer must be enabled before writing CMP & ARR */
+> >> >>> +    ret = regmap_write(priv->regmap, STM32_LPTIM_ARR, priv->preset);
+> >> >>> +    if (ret)
+> >> >>> +            return ret;
+> >> >>> +
+> >> >>> +    ret = regmap_write(priv->regmap, STM32_LPTIM_CMP, 0);
+> >> >>> +    if (ret)
+> >> >>> +            return ret;
+> >> >>> +
+> >> >>> +    /* ensure CMP & ARR registers are properly written */
+> >> >>> +    ret = regmap_read_poll_timeout(priv->regmap, STM32_LPTIM_ISR, val,
+> >> >>> +                                   (val & STM32_LPTIM_CMPOK_ARROK),
+> >> >>> +                                   100, 1000);
+> >> >>> +    if (ret)
+> >> >>> +            return ret;
+> >> >>> +
+> >> >>> +    ret = regmap_write(priv->regmap, STM32_LPTIM_ICR,
+> >> >>> +                       STM32_LPTIM_CMPOKCF_ARROKCF);
+> >> >>> +    if (ret)
+> >> >>> +            return ret;
+> >> >>> +
+> >> >>> +    ret = clk_enable(priv->clk);
+> >> >>> +    if (ret) {
+> >> >>> +            regmap_write(priv->regmap, STM32_LPTIM_CR, 0);
+> >> >>> +            return ret;
+> >> >>> +    }
+> >> >>> +
+> >> >>> +    /* Start LP timer in continuous mode */
+> >> >>> +    return regmap_update_bits(priv->regmap, STM32_LPTIM_CR,
+> >> >>> +                              STM32_LPTIM_CNTSTRT, STM32_LPTIM_CNTSTRT);
+> >> >>> +}
+> >> >>> +
+> >> >>> +static int stm32_lptim_setup(struct stm32_lptim_cnt *priv, int enable)
+> >> >>> +{
+> >> >>> +    u32 mask = STM32_LPTIM_ENC | STM32_LPTIM_COUNTMODE |
+> >> >>> +               STM32_LPTIM_CKPOL | STM32_LPTIM_PRESC;
+> >> >>> +    u32 val;
+> >> >>> +
+> >> >>> +    /* Setup LP timer encoder/counter and polarity, without prescaler */
+> >> >>> +    if (priv->quadrature_mode)
+> >> >>> +            val = enable ? STM32_LPTIM_ENC : 0;
+> >> >>> +    else
+> >> >>> +            val = enable ? STM32_LPTIM_COUNTMODE : 0;
+> >> >>> +    val |= FIELD_PREP(STM32_LPTIM_CKPOL, enable ? priv->polarity : 0);
+> >> >>> +
+> >> >>> +    return regmap_update_bits(priv->regmap, STM32_LPTIM_CFGR, mask, val);
+> >> >>> +}
+> >> >>> +
+> >> >>> +static int stm32_lptim_write_raw(struct iio_dev *indio_dev,
+> >> >>> +                             struct iio_chan_spec const *chan,
+> >> >>> +                             int val, int val2, long mask)
+> >> >>> +{
+> >> >>> +    struct stm32_lptim_cnt *priv = iio_priv(indio_dev);
+> >> >>> +    int ret;
+> >> >>> +
+> >> >>> +    switch (mask) {
+> >> >>> +    case IIO_CHAN_INFO_ENABLE:
+> >> >>> +            if (val < 0 || val > 1)
+> >> >>> +                    return -EINVAL;
+> >> >>> +
+> >> >>> +            /* Check nobody uses the timer, or already disabled/enabled */
+> >> >>> +            ret = stm32_lptim_is_enabled(priv);
+> >> >>> +            if ((ret < 0) || (!ret && !val))
+> >> >>> +                    return ret;
+> >> >>> +            if (val && ret)
+> >> >>> +                    return -EBUSY;
+> >> >>> +
+> >> >>> +            ret = stm32_lptim_setup(priv, val);
+> >> >>> +            if (ret)
+> >> >>> +                    return ret;
+> >> >>> +            return stm32_lptim_set_enable_state(priv, val);
+> >> >>> +
+> >> >>> +    default:
+> >> >>> +            return -EINVAL;
+> >> >>> +    }
+> >> >>> +}
+> >> >>> +
+> >> >>> +static int stm32_lptim_read_raw(struct iio_dev *indio_dev,
+> >> >>> +                            struct iio_chan_spec const *chan,
+> >> >>> +                            int *val, int *val2, long mask)
+> >> >>> +{
+> >> >>> +    struct stm32_lptim_cnt *priv = iio_priv(indio_dev);
+> >> >>> +    u32 dat;
+> >> >>> +    int ret;
+> >> >>> +
+> >> >>> +    switch (mask) {
+> >> >>> +    case IIO_CHAN_INFO_RAW:
+> >> >>> +            ret = regmap_read(priv->regmap, STM32_LPTIM_CNT, &dat);
+> >> >>> +            if (ret)
+> >> >>> +                    return ret;
+> >> >>> +            *val = dat;
+> >> >>> +            return IIO_VAL_INT;
+> >> >>> +
+> >> >>> +    case IIO_CHAN_INFO_ENABLE:
+> >> >>> +            ret = stm32_lptim_is_enabled(priv);
+> >> >>> +            if (ret < 0)
+> >> >>> +                    return ret;
+> >> >>> +            *val = ret;
+> >> >>> +            return IIO_VAL_INT;
+> >> >>> +
+> >> >>> +    case IIO_CHAN_INFO_SCALE:
+> >> >>> +            /* Non-quadrature mode: scale = 1 */  
+> >> >>Both edges case?  
+> >> >>> +            *val = 1;
+> >> >>> +            *val2 = 0;
+> >> >>> +            if (priv->quadrature_mode) {
+> >> >>> +                    /*
+> >> >>> +                     * Quadrature encoder mode:
+> >> >>> +                     * - both edges, quarter cycle, scale is 0.25
+> >> >>> +                     * - either rising/falling edge scale is 0.5
+> >> >>> +                     */
+> >> >>> +                    if (priv->polarity > 1)
+> >> >>> +                            *val2 = 2;
+> >> >>> +                    else
+> >> >>> +                            *val2 = 1;
+> >> >>> +            }
+> >> >>> +            return IIO_VAL_FRACTIONAL_LOG2;
+> >> >>> +
+> >> >>> +    default:
+> >> >>> +            return -EINVAL;
+> >> >>> +    }
+> >> >>> +}
+> >> >>> +
+> >> >>> +static const struct iio_info stm32_lptim_cnt_iio_info = {
+> >> >>> +    .read_raw = stm32_lptim_read_raw,
+> >> >>> +    .write_raw = stm32_lptim_write_raw,
+> >> >>> +    .driver_module = THIS_MODULE,
+> >> >>> +};
+> >> >>> +
+> >> >>> +static const char *const stm32_lptim_quadrature_modes[] = {
+> >> >>> +    "non-quadrature",
+> >> >>> +    "quadrature",
+> >> >>> +};
+> >> >>> +
+> >> >>> +static int stm32_lptim_get_quadrature_mode(struct iio_dev *indio_dev,
+> >> >>> +                                       const struct iio_chan_spec *chan)
+> >> >>> +{
+> >> >>> +    struct stm32_lptim_cnt *priv = iio_priv(indio_dev);
+> >> >>> +
+> >> >>> +    return priv->quadrature_mode;
+> >> >>> +}
+> >> >>> +
+> >> >>> +static int stm32_lptim_set_quadrature_mode(struct iio_dev *indio_dev,
+> >> >>> +                                       const struct iio_chan_spec *chan,
+> >> >>> +                                       unsigned int type)
+> >> >>> +{
+> >> >>> +    struct stm32_lptim_cnt *priv = iio_priv(indio_dev);
+> >> >>> +
+> >> >>> +    if (stm32_lptim_is_enabled(priv))
+> >> >>> +            return -EBUSY;
+> >> >>> +
+> >> >>> +    priv->quadrature_mode = type;
+> >> >>> +
+> >> >>> +    return 0;
+> >> >>> +}
+> >> >>> +
+> >> >>> +static const struct iio_enum stm32_lptim_quadrature_mode_en = {
+> >> >>> +    .items = stm32_lptim_quadrature_modes,
+> >> >>> +    .num_items = ARRAY_SIZE(stm32_lptim_quadrature_modes),
+> >> >>> +    .get = stm32_lptim_get_quadrature_mode,
+> >> >>> +    .set = stm32_lptim_set_quadrature_mode,
+> >> >>> +};
+> >> >>> +
+> >> >>> +static const char * const stm32_lptim_cnt_polarity[] = {
+> >> >>> +    "rising-edge", "falling-edge", "both-edges",
+> >> >>> +};
+> >> >>> +
+> >> >>> +static int stm32_lptim_cnt_get_polarity(struct iio_dev *indio_dev,
+> >> >>> +                                    const struct iio_chan_spec *chan)
+> >> >>> +{
+> >> >>> +    struct stm32_lptim_cnt *priv = iio_priv(indio_dev);
+> >> >>> +
+> >> >>> +    return priv->polarity;
+> >> >>> +}
+> >> >>> +
+> >> >>> +static int stm32_lptim_cnt_set_polarity(struct iio_dev *indio_dev,
+> >> >>> +                                    const struct iio_chan_spec *chan,
+> >> >>> +                                    unsigned int type)
+> >> >>> +{
+> >> >>> +    struct stm32_lptim_cnt *priv = iio_priv(indio_dev);
+> >> >>> +
+> >> >>> +    if (stm32_lptim_is_enabled(priv))
+> >> >>> +            return -EBUSY;
+> >> >>> +
+> >> >>> +    priv->polarity = type;
+> >> >>> +
+> >> >>> +    return 0;
+> >> >>> +}
+> >> >>> +
+> >> >>> +static const struct iio_enum stm32_lptim_cnt_polarity_en = {
+> >> >>> +    .items = stm32_lptim_cnt_polarity,
+> >> >>> +    .num_items = ARRAY_SIZE(stm32_lptim_cnt_polarity),
+> >> >>> +    .get = stm32_lptim_cnt_get_polarity,
+> >> >>> +    .set = stm32_lptim_cnt_set_polarity,
+> >> >>> +};
+> >> >>> +
+> >> >>> +static ssize_t stm32_lptim_cnt_get_preset(struct iio_dev *indio_dev,
+> >> >>> +                                      uintptr_t private,
+> >> >>> +                                      const struct iio_chan_spec *chan,
+> >> >>> +                                      char *buf)
+> >> >>> +{
+> >> >>> +    struct stm32_lptim_cnt *priv = iio_priv(indio_dev);
+> >> >>> +
+> >> >>> +    return snprintf(buf, PAGE_SIZE, "%u\n", priv->preset);
+> >> >>> +}
+> >> >>> +
+> >> >>> +static ssize_t stm32_lptim_cnt_set_preset(struct iio_dev *indio_dev,
+> >> >>> +                                      uintptr_t private,
+> >> >>> +                                      const struct iio_chan_spec *chan,
+> >> >>> +                                      const char *buf, size_t len)
+> >> >>> +{
+> >> >>> +    struct stm32_lptim_cnt *priv = iio_priv(indio_dev);
+> >> >>> +    int ret;
+> >> >>> +
+> >> >>> +    if (stm32_lptim_is_enabled(priv))
+> >> >>> +            return -EBUSY;
+> >> >>> +
+> >> >>> +    ret = kstrtouint(buf, 0, &priv->preset);
+> >> >>> +    if (ret)
+> >> >>> +            return ret;
+> >> >>> +
+> >> >>> +    if (priv->preset > STM32_LPTIM_MAX_ARR)
+> >> >>> +            return -EINVAL;
+> >> >>> +
+> >> >>> +    return len;
+> >> >>> +}
+> >> >>> +
+> >> >>> +/* LP timer with encoder */
+> >> >>> +static const struct iio_chan_spec_ext_info stm32_lptim_enc_ext_info[] = {
+> >> >>> +    {
+> >> >>> +            .name = "preset",
+> >> >>> +            .shared = IIO_SEPARATE,
+> >> >>> +            .read = stm32_lptim_cnt_get_preset,
+> >> >>> +            .write = stm32_lptim_cnt_set_preset,
+> >> >>> +    },
+> >> >>> +    IIO_ENUM("polarity", IIO_SEPARATE, &stm32_lptim_cnt_polarity_en),
+> >> >>> +    IIO_ENUM_AVAILABLE("polarity", &stm32_lptim_cnt_polarity_en),
+> >> >>> +    IIO_ENUM("quadrature_mode", IIO_SEPARATE,
+> >> >>> +             &stm32_lptim_quadrature_mode_en),
+> >> >>> +    IIO_ENUM_AVAILABLE("quadrature_mode", &stm32_lptim_quadrature_mode_en),
+> >> >>> +    {}
+> >> >>> +};
+> >> >>> +
+> >> >>> +static const struct iio_chan_spec stm32_lptim_enc_channels = {
+> >> >>> +    .type = IIO_COUNT,
+> >> >>> +    .channel = 0,
+> >> >>> +    .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> >> >>> +                          BIT(IIO_CHAN_INFO_ENABLE) |
+> >> >>> +                          BIT(IIO_CHAN_INFO_SCALE),
+> >> >>> +    .ext_info = stm32_lptim_enc_ext_info,
+> >> >>> +    .indexed = 1,
+> >> >>> +};
+> >> >>> +
+> >> >>> +/* LP timer without encoder (counter only) */
+> >> >>> +static const struct iio_chan_spec_ext_info stm32_lptim_cnt_ext_info[] = {
+> >> >>> +    {
+> >> >>> +            .name = "preset",
+> >> >>> +            .shared = IIO_SEPARATE,
+> >> >>> +            .read = stm32_lptim_cnt_get_preset,
+> >> >>> +            .write = stm32_lptim_cnt_set_preset,
+> >> >>> +    },
+> >> >>> +    IIO_ENUM("polarity", IIO_SEPARATE, &stm32_lptim_cnt_polarity_en),
+> >> >>> +    IIO_ENUM_AVAILABLE("polarity", &stm32_lptim_cnt_polarity_en),
+> >> >>> +    {}
+> >> >>> +};
+> >> >>> +
+> >> >>> +static const struct iio_chan_spec stm32_lptim_cnt_channels = {
+> >> >>> +    .type = IIO_COUNT,
+> >> >>> +    .channel = 0,
+> >> >>> +    .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> >> >>> +                          BIT(IIO_CHAN_INFO_ENABLE) |
+> >> >>> +                          BIT(IIO_CHAN_INFO_SCALE),
+> >> >>> +    .ext_info = stm32_lptim_cnt_ext_info,
+> >> >>> +    .indexed = 1,
+> >> >>> +};
+> >> >>> +
+> >> >>> +static int stm32_lptim_cnt_probe(struct platform_device *pdev)
+> >> >>> +{
+> >> >>> +    struct stm32_lptimer *ddata = dev_get_drvdata(pdev->dev.parent);
+> >> >>> +    struct stm32_lptim_cnt *priv;
+> >> >>> +    struct iio_dev *indio_dev;
+> >> >>> +
+> >> >>> +    if (IS_ERR_OR_NULL(ddata))
+> >> >>> +            return -EINVAL;
+> >> >>> +
+> >> >>> +    indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*priv));
+> >> >>> +    if (!indio_dev)
+> >> >>> +            return -ENOMEM;
+> >> >>> +
+> >> >>> +    priv = iio_priv(indio_dev);
+> >> >>> +    priv->dev = &pdev->dev;
+> >> >>> +    priv->regmap = ddata->regmap;
+> >> >>> +    priv->clk = ddata->clk;
+> >> >>> +    priv->preset = STM32_LPTIM_MAX_ARR;
+> >> >>> +
+> >> >>> +    indio_dev->name = dev_name(&pdev->dev);
+> >> >>> +    indio_dev->dev.parent = &pdev->dev;
+> >> >>> +    indio_dev->dev.of_node = pdev->dev.of_node;
+> >> >>> +    indio_dev->info = &stm32_lptim_cnt_iio_info;
+> >> >>> +    if (ddata->has_encoder)
+> >> >>> +            indio_dev->channels = &stm32_lptim_enc_channels;
+> >> >>> +    else
+> >> >>> +            indio_dev->channels = &stm32_lptim_cnt_channels;
+> >> >>> +    indio_dev->num_channels = 1;
+> >> >>> +
+> >> >>> +    platform_set_drvdata(pdev, priv);
+> >> >>> +
+> >> >>> +    return devm_iio_device_register(&pdev->dev, indio_dev);
+> >> >>> +}
+> >> >>> +
+> >> >>> +static const struct of_device_id stm32_lptim_cnt_of_match[] = {
+> >> >>> +    { .compatible = "st,stm32-lptimer-counter", },
+> >> >>> +    {},
+> >> >>> +};
+> >> >>> +MODULE_DEVICE_TABLE(of, stm32_lptim_cnt_of_match);
+> >> >>> +
+> >> >>> +static struct platform_driver stm32_lptim_cnt_driver = {
+> >> >>> +    .probe = stm32_lptim_cnt_probe,
+> >> >>> +    .driver = {
+> >> >>> +            .name = "stm32-lptimer-counter",
+> >> >>> +            .of_match_table = stm32_lptim_cnt_of_match,
+> >> >>> +    },
+> >> >>> +};
+> >> >>> +module_platform_driver(stm32_lptim_cnt_driver);
+> >> >>> +
+> >> >>> +MODULE_AUTHOR("Fabrice Gasnier <fabrice.gasnier@st.com>");
+> >> >>> +MODULE_ALIAS("platform:stm32-lptimer-counter");
+> >> >>> +MODULE_DESCRIPTION("STMicroelectronics STM32 LPTIM counter driver");
+> >> >>> +MODULE_LICENSE("GPL v2");  
+> >> >>  
+> >>
+> >>
+> >>  
+> >  
+> 
+> 
+> 
 
-> 
->>> Speaking of which, I don't see a clk_prepare() anywhere. Doesn't the clk
->>> core warn about clk_enable() being called on a clock that's not been
->>> prepared?
->>
->> clk_get() and clk_prepare() happens in regmap layer, when probing mfd part:
->> -> stm32_lptimer_probe()
->>   -> devm_regmap_init_mmio_clk()
->>     -> __devm_regmap_init_mmio_clk()
->>       -> regmap_mmio_gen_context()
-> 
-> Okay, looks like we don't need it here, then.
-> 
->>>> +	    (presc != FIELD_GET(STM32_LPTIM_PRESC, cfgr))) {
->>>> +		val = FIELD_PREP(STM32_LPTIM_PRESC, presc) | wavpol;
->>>> +		mask = STM32_LPTIM_PRESC | STM32_LPTIM_WAVPOL;
->>>> +
->>>> +		/* Must disable LP timer to modify CFGR */
->>>> +		ret = regmap_write(priv->regmap, STM32_LPTIM_CR, 0);
->>>> +		if (ret)
->>>> +			goto err;
->>>> +		reenable = true;
->>>
->>> The placement of this is somewhat odd. It suggests that it is somehow
->>> related to the disabling of the LP timer, whereas it really isn't.
->>
->> In case of prescaler or polarity change, CFGR register needs to be
->> updated. CFGR register must be modified only when LP timer HW is disabled.
->> - Initial choice is to use this flag, to temporarily disable HW, update
->> cfgr, then re-enable it. More thinking about this...
-> 
-> What I find odd about the placement is that it is between the
-> regmap_write() and the regmap_update_bits(). But it could just as well
-> be after the regmap_update_bits() (or before regmap_write() for that
-> matter). So the confusing thing is why it "breaks" the sequence of
-> register accesses.
-
-Ok, I'll move it before or after register accesses sequence.
-
-> 
->> - Another choice could be to refuse such a 'live' change and report
->> (busy?) error ? Then user would have to explicitly disable it, configure
->> new setting and re-enable it.
->>
->> Please let me know your opinion.
-> 
-> The PWM subsystem doesn't give a guarantee that a live change is
-> possible. Drivers always have to assume that the PWM may get disabled
-> and reenabled as part of the sequence.
-> 
-> That said, something like this could be added in the future if users
-> come along that required this guarantee.
-> 
-> For your driver, I think it's fine to keep this as-is.
-Got it.
-
-> 
->>>> +static int stm32_pwm_lp_probe(struct platform_device *pdev)
->>>> +{
->>>> +	struct stm32_lptimer *ddata = dev_get_drvdata(pdev->dev.parent);
->>>> +	struct stm32_pwm_lp *priv;
->>>> +	int ret;
->>>> +
->>>> +	if (IS_ERR_OR_NULL(ddata))
->>>> +		return -EINVAL;
->>>
->>> It seems to me like this can never happen. How would you trigger this
->>> condition?
->>
->> Bad dt configuration can trigger this error: thinking of a
->> 'st,stm32-pwm-lp' dt node without proper mfd parent. Do you want me to
->> drop this ?
->> (or add comment about it ?)
-> 
-> In my opinion we should trust DTB in this type of situation. If the DT
-> binding says that the PWM node needs to be a child of an MFD, then the
-> author of the DTB needs to make sure it is.
-> 
-> For things that can be easily checked I think it makes sense to validate
-> the DTB, but this check here is not enough for all situations, right?
-> What if somebody added the device node as child to some unrelated node.
-> ddata could be a valid pointer, but pointing at something that's not a
-> struct stm32_lptimer at all. That's still pretty bad, and completely
-> undetectable.
-
-You're right. I'll remove this as well.
-
-Thanks again,
-Best Regards,
-Fabrice
-
-> 
-> Thierry
-> 
