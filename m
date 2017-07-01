@@ -1,45 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:45408 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:45214 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751802AbdGAMPb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 1 Jul 2017 08:15:31 -0400
-Date: Sat, 1 Jul 2017 13:15:26 +0100
+        id S1751805AbdGAMLR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 1 Jul 2017 08:11:17 -0400
+Date: Sat, 1 Jul 2017 13:11:12 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+Cc: Matthias Kaehlcke <mka@chromium.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi@st.com>
-Subject: Re: [PATCH v3 4/4] iio: pressure: st_pressure_spi: add OF
- capability to st_pressure_spi
-Message-ID: <20170701131526.71a63afa@kernel.org>
-In-Reply-To: <CACRpkdaEVNz+0rrq1B9PkNFxoyAMvpeiTiv3qUyT_F-ct0PLiA@mail.gmail.com>
-References: <20170626225346.12019-1-lorenzo.bianconi@st.com>
-        <20170626225346.12019-5-lorenzo.bianconi@st.com>
-        <CACRpkdaEVNz+0rrq1B9PkNFxoyAMvpeiTiv3qUyT_F-ct0PLiA@mail.gmail.com>
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Doug Anderson <dianders@chromium.org>
+Subject: Re: [PATCH] iio: magnetometer: Only declare ACPI table when ACPI is
+ enable
+Message-ID: <20170701131112.7dbfa118@kernel.org>
+In-Reply-To: <CACRpkdZGUDryau4SMHwa3QDG-vrDrB9bkB9iKrxAcs-R2YDLQw@mail.gmail.com>
+References: <20170627002533.97293-1-mka@chromium.org>
+        <CACRpkdZGUDryau4SMHwa3QDG-vrDrB9bkB9iKrxAcs-R2YDLQw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 29 Jun 2017 14:51:07 +0200
+On Thu, 29 Jun 2017 14:51:56 +0200
 Linus Walleij <linus.walleij@linaro.org> wrote:
 
-> On Tue, Jun 27, 2017 at 12:53 AM, Lorenzo Bianconi
-> <lorenzo.bianconi83@gmail.com> wrote:
+> On Tue, Jun 27, 2017 at 2:25 AM, Matthias Kaehlcke <mka@chromium.org> wrote:
 > 
-> > Add device tree support for LPS22HB, LPS25H, LPS331AP, LPS001WP
-> > pressure sensors
+> > Don't inflate the kernel size with data that isn't used. The conditional
+> > declaration also fixes the following warning when building with clang:
 > >
-> > Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>  
+> > drivers/iio/magnetometer/ak8975.c:704:36: error: variable 'ak_acpi_match'
+> >   is not needed and will not be emitted
+> >   [-Werror,-Wunneeded-internal-declaration]
+> >
+> > Signed-off-by: Matthias Kaehlcke <mka@chromium.org>  
 > 
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Applied.
-
-Thanks,
-
-Jonathan
+> Acked-by: Linus Walleij <linus.walleij@linaro.org>
 > 
 > Yours,
 > Linus Walleij
+Applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to play with it.
 
+I'm curious though... Can the compiler not optimize this away? 
+I'd always assumed the main reason for these warnings was that the
+presence of unused data might represent a bug rather than it actually
+making any difference to the size...
