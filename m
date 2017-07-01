@@ -1,76 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:45166 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:35558 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751793AbdGAMHA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 1 Jul 2017 08:07:00 -0400
-Date: Sat, 1 Jul 2017 13:06:56 +0100
+        id S1751389AbdGARkc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 1 Jul 2017 13:40:32 -0400
+Date: Sat, 1 Jul 2017 18:40:28 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Reno Farnesi <nfarnesi4@gmail.com>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: sca3000: Remove trailing whitespace
-Message-ID: <20170701130656.6e42f672@kernel.org>
-In-Reply-To: <1498527922.31066.3.camel@gmail.com>
-References: <1498527922.31066.3.camel@gmail.com>
+To: Gaurav Gupta <gauragup@cisco.com>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-iio@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH] iio: core: Fix mapping of iio channels to entry numbers
+Message-ID: <20170701184028.0a2f9511@kernel.org>
+In-Reply-To: <20170627164601.GA30866@sjc-ads-988.cisco.com>
+References: <20170627164601.GA30866@sjc-ads-988.cisco.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 26 Jun 2017 21:45:22 -0400
-Reno Farnesi <nfarnesi4@gmail.com> wrote:
+On Tue, 27 Jun 2017 09:46:01 -0700
+Gaurav Gupta <gauragup@cisco.com> wrote:
 
-> Removes trailing whitespace to fix checkpatch errors
+> When adding maps to the list, they were added using list_add, which adds
+> them in LIFO order. When parsing using iio_channel_get_all(), these
+> elements are hence returned in reverse order. As a result, the iio_hwmon
+> mapping maps the first entry to the last channel and so on.
 > 
-> Signed-off-by: Reno Farnesi <nfarnesi4@gmail.com>
-Hi Reno,
+> Signed-off-by: Gaurav Gupta <gauragup@cisco.com>
+Gah.  This is one of those nasty cases where I clearly messed up a
+long time ago, but unfortunately it's become user space ABI.
 
-Your patch doesn't apply as your email client as line wrapped it.
-Please see the hints in Documentation/process/email-clients.rst
+So looking for general opinions on whether we can fix this one
+or not.  I can't immediately think of a clean way to tidy this up.
 
-Actual change is good though and description is fine - so just
-the email client bit needs sorting.
-
-I've fixed it up and applied the patch to the togreg branch of
-iio.git which is initially pushed out as testing for the autobuilders
-to play with it.
-
-Thanks,
+So do we think people will notice if we fix this?
 
 Jonathan
 > ---
->  drivers/iio/accel/sca3000.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+>  drivers/iio/inkern.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/accel/sca3000.c b/drivers/iio/accel/sca3000.c
-> index cb1d83fa19a0..39ab210c44f6 100644
-> --- a/drivers/iio/accel/sca3000.c
-> +++ b/drivers/iio/accel/sca3000.c
-> @@ -36,7 +36,7 @@
->  #define   SCA3000_LOCKED				BIT(5)
->  #define   SCA3000_EEPROM_CS_ERROR			BIT(1)
->  #define   SCA3000_SPI_FRAME_ERROR			BIT(0)
-> - 
-> +
->  /* All reads done using register decrement so no need to 
-> directly access LSBs */
->  #define SCA3000_REG_X_MSB_ADDR				0x05
->  #define SCA3000_REG_Y_MSB_ADDR				0x07
-> @@ -74,7 +74,7 @@
->  #define SCA3000_REG_INT_STATUS_ADDR			0x16
->  #define   SCA3000_REG_INT_STATUS_THREE_QUARTERS		BIT(7)
->  #define   SCA3000_REG_INT_STATUS_HALF			BIT(6)
-> -	
-> +
->  #define SCA3000_INT_STATUS_FREE_FALL			BIT(3)
->  #define SCA3000_INT_STATUS_Y_TRIGGER			BIT(2)
->  #define SCA3000_INT_STATUS_X_TRIGGER			BIT(1)
-> @@ -124,7 +124,7 @@
->  
->  #define SCA3000_REG_INT_MASK_ADDR			0x21
->  #define   SCA3000_REG_INT_MASK_PROT_MASK		0x1C
-> - 
-> +
->  #define   SCA3000_REG_INT_MASK_RING_THREE_QUARTER	BIT(7)
->  #define   SCA3000_REG_INT_MASK_RING_HALF		BIT(6)
->  
+> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> index 7a13535..9b0715c 100644
+> --- a/drivers/iio/inkern.c
+> +++ b/drivers/iio/inkern.c
+> @@ -44,7 +44,7 @@ int iio_map_array_register(struct iio_dev *indio_dev, struct iio_map *maps)
+>  		}
+>  		mapi->map = &maps[i];
+>  		mapi->indio_dev = indio_dev;
+> -		list_add(&mapi->l, &iio_map_list);
+> +		list_add_tail(&mapi->l, &iio_map_list);
+>  		i++;
+>  	}
+>  error_ret:
 
