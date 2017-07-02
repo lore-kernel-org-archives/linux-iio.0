@@ -1,41 +1,33 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:37798 "EHLO mail.kernel.org"
+Received: from ns.pmeerw.net ([84.19.176.117]:59574 "EHLO vps.pmeerw.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751452AbdGAJal (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 1 Jul 2017 05:30:41 -0400
-Date: Sat, 1 Jul 2017 10:30:36 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+        id S1751664AbdGBI3i (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 2 Jul 2017 04:29:38 -0400
+Date: Sun, 2 Jul 2017 10:29:35 +0200 (CEST)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 To: Mike Looijmans <mike.looijmans@topic.nl>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lars@metafoo.de, linux@roeck-us.net
+cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jic23@kernel.org, lars@metafoo.de, linux@roeck-us.net
 Subject: Re: [PATCH] iio: Add LTC2471/LTC2473 driver
-Message-ID: <20170701103036.5addded6@kernel.org>
 In-Reply-To: <1498807267-946-1-git-send-email-mike.looijmans@topic.nl>
+Message-ID: <alpine.DEB.2.20.1706301614130.29944@vps.pmeerw.net>
 References: <1498807267-946-1-git-send-email-mike.looijmans@topic.nl>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 30 Jun 2017 09:21:07 +0200
-Mike Looijmans <mike.looijmans@topic.nl> wrote:
 
 > The LTC2741 and LTC2473 are single voltage ADC chips. The LTC2473
 > is similar to the LTC2471 but outputs a signed differential value.
-> 
+
+comments below
+ 
 > Datasheet:
 >   http://cds.linear.com/docs/en/datasheet/24713fb.pdf
 > 
 > Signed-off-by: Mike Looijmans <mike.looijmans@topic.nl>
 > ---
-Looks good to me. I'll clean up Lars' points whilst applying.
-
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
-
-Thanks,
-
-Jonathan
 > Note: Moved from "hwmon" subsystem to "iio" as discussed per e-mail,
 > see also: https://patchwork.kernel.org/patch/9816607/
 > Only tested the LTC2741 in real life.
@@ -103,8 +95,14 @@ Jonathan
 > +#include <linux/iio/sysfs.h>
 > +
 > +enum chips {
+
+ltc2471_ prefix please
+
 > +	ltc2471,
 > +	ltc2473
+
+end last line with a comma, so additions can be done with a one-line patch
+
 > +};
 > +
 > +struct ltc2471_data {
@@ -121,9 +119,15 @@ Jonathan
 > +	__be16 buf;
 > +
 > +	ret = i2c_master_recv(client, (char *)&buf, 2);
+
+sizeof(buf) probably
+
 > +	if (ret < 0)
 > +		return ret;
 > +	if (ret != 2)
+
+sizeof(buf) probably
+
 > +		return -EIO;
 > +
 > +	/* MSB first */
@@ -160,6 +164,10 @@ Jonathan
 > +			*val = -LTC2471_VREF;
 > +		else
 > +			*val = 0;
+
+the non-differential (single ended) chip has no offset channel anyway 
+according to iio_chan_spec...
+
 > +		return IIO_VAL_INT;
 > +
 > +	default:
@@ -173,6 +181,9 @@ Jonathan
 > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
 > +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
 > +		.differential = 0,
+
+.differential = 0 not needed
+
 > +	},
 > +};
 > +static const struct iio_chan_spec ltc2473_channel[] = {
@@ -246,6 +257,14 @@ Jonathan
 > +module_i2c_driver(ltc2471_i2c_driver);
 > +
 > +MODULE_DESCRIPTION("LTC2471/LTC2473 Sensor Driver");
+
+maybe "ADC driver"
+
 > +MODULE_AUTHOR("Topic Embedded Products");
 > +MODULE_LICENSE("GPL v2");
+> 
 
+-- 
+
+Peter Meerwald-Stadler
+Mobile: +43 664 24 44 418
