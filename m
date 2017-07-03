@@ -1,43 +1,111 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx42-out3.antispamcloud.com ([138.201.61.179]:37614 "EHLO
-        mx42-out3.antispamcloud.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1751608AbdGBLoa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Jul 2017 07:44:30 -0400
-Subject: Re: [PATCH] iio: Add LTC2471/LTC2473 driver
-To: Jonathan Cameron <jic23@kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lars@metafoo.de>, <linux@roeck-us.net>
-References: <1498807267-946-1-git-send-email-mike.looijmans@topic.nl>
- <alpine.DEB.2.20.1706301614130.29944@vps.pmeerw.net>
- <20170702102539.51b430c1@kernel.org>
+Return-Path: <prvs=03571e9363=mike.looijmans@topicproducts.com>
+Subject: Re: "Generic" MMIO ADC
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Rob Herring
+	<robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+	<devicetree@vger.kernel.org>, Linus Walleij <linus.walleij@linaro.org>
+References: <b60def9a-45dc-bf97-e059-abbe105648b2@topic.nl>
+ <20170630145319.20ec3696@jic23.retrosnub.co.uk>
 From: Mike Looijmans <mike.looijmans@topic.nl>
-Message-ID: <6117ac7a-b216-2886-de7b-95d7c3a2e8ea@topic.nl>
-Date: Sun, 2 Jul 2017 13:24:50 +0200
+Message-ID: <b9dc2313-53da-1566-c0e8-ac18599f59da@topic.nl>
+Date: Mon, 3 Jul 2017 14:37:35 +0200
 MIME-Version: 1.0
-In-Reply-To: <20170702102539.51b430c1@kernel.org>
+In-Reply-To: <20170630145319.20ec3696@jic23.retrosnub.co.uk>
 Content-Type: text/plain; charset="utf-8"; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-﻿On 02-07-17 11:25, Jonathan Cameron wrote:
-> On Sun, 2 Jul 2017 10:29:35 +0200 (CEST)
-> Peter Meerwald-Stadler <pmeerw@pmeerw.net> wrote:
-> 
->>> The LTC2741 and LTC2473 are single voltage ADC chips. The LTC2473
->>> is similar to the LTC2471 but outputs a signed differential value.
+=EF=BB=BFOn 30-06-17 15:53, Jonathan Cameron wrote:
+> On Fri, 30 Jun 2017 10:44:42 +0200
+> Mike Looijmans <mike.looijmans@topic.nl> wrote:
+>=20
+>> =EF=BB=BFI'm writing an IIO driver for a custom IP, which is pretty simp=
+le:
 >>
->> comments below
->>   
->>> Datasheet:
->>>    http://cds.linear.com/docs/en/datasheet/24713fb.pdf
->>>
->>> Signed-off-by: Mike Looijmans <mike.looijmans@topic.nl>
-> Enough here that I've dropped the patch for now and look forward
-> to a v2 incorporating both Peter and Lars' comments.
-> 
+>> - Map the registers to memory and register IRQ routine
+>> - To start acquisition, write a value to the config register
+>> - On interrupt, read data register, push it into queue
+>> - To stop, write another value to config.
+>>
+>> Would it be useful to provide this as a generic driver in Linux, so that=
+ you
+>> can provide the config register and data register offsets and values in =
+the
+>> devicetree? That would make it work on a lot of similar project without
+>> everyone coding the same thing.
+>=20
+> Hi Mike,
+>=20
+> I've brought in the devicetree bindings maintainers and list as well on t=
+his
+> discussion because in many ways it's more about the strategy on bindings
+> than the actual driver...  Also Linus Walleij for any experience handing
+> the gpio-mmio driver which strikes me as fairly similar in aim.
+>=20
+> To the driver question, yes absolutely this would be a good thing to have=
+.
+> The majority of ADCs out there are irritatingly more complex than what
+> you have.  Everyone seems to feel obliged to put in their own 'special
+> sauce'.
+>=20
+> As for bindings, there are two options, either we
+>=20
+> 1) As you suggest push all differences between different parts into the
+> bindings.  Note we'll still need a compatible list in the driver.
+> So this is something like gpio-mmio.c
+>=20
+> 2) Do something similar to the irq generic_chip (CONFIG_GENERIC_IRQ)
+> infrastructure and actually have very slim wrapper drivers around a
+> library.   That allows those elements that are constrained by the
+> hardware to not need specifying in device tree bindings.
+>=20
+>>
+>> And a related question: Is there a driver that's close to this?
+> I can't immediately think of one, but it's possible that one
+> of the SoC ADC drivers is simple enough to describe this way.
+>=20
+> So Mark / Rob.  You guys have experience with how the bindings
+> worked out for each approach.  Which do you prefer?
+> Either approach is fine with me.
+>=20
+> Mike, perhaps you have an initial cut of some bindings that might
+> help the discussion to move along?
 
-I'll create and send a v2 probably tomorrow.
+I was thinking along these lines:
+
+... {
+    compatible =3D "iio-adc-generic-mmio";
+    reg =3D <0x43210000 4096>;
+    interrupt =3D <&gic 42 0>;
+    iio,start-sequence =3D <0x0 0x3> <0x4 0xff>;
+    iio,stop-sequence =3D <0x0 0x0>;
+    iio,data-register =3D <0x10>;
+};
+
+Required:
+   compatible: must be "iio-adc-generic-mmio";
+   reg: Memory address and range of IP platform device
+   interrupt: Data-ready interrupt binding
+
+Optional:
+   iio,data-register: Offset where to read data. Defaults to <0>.
+   iio,start-sequence: Array of <offset value> pairs. On start of acquisiti=
+on
+                       the driver writes each value to each offset in order=
+.
+   iio,stop-sequence: Array of <offset value> pairs to stop acquisition.
+
+
+And we could make up more properties as we go, like the number of valid dat=
+a=20
+bits and shift, interrupt rate and fifo buffer properties...
+
+We could add normal clock and power supply bindings as well, so it would=20
+enable them on starting data acquisition.
+
+
+For now the bad news is that the project was put on hold, so I'm not allowe=
+d=20
+to spend serious development time now.
 
 
 Kind regards,
@@ -53,6 +121,3 @@ E-mail: mike.looijmans@topicproducts.com
 Website: www.topicproducts.com
 
 Please consider the environment before printing this e-mail
-
-
-
