@@ -1,63 +1,78 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:35982 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751960AbdGDTsA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 4 Jul 2017 15:48:00 -0400
-Date: Tue, 4 Jul 2017 20:47:55 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Mikko Koivunen <mikko.koivunen@fi.rohmeurope.com>
-Cc: pmeerw@pmeerw.net, knaack.h@gmx.de, lars@metafoo.de,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH v7 10/10] iio: light: rpr0521 iio_device_register to
- devm_
-Message-ID: <20170704204755.404abac0@kernel.org>
-In-Reply-To: <1499086214-1811-3-git-send-email-mikko.koivunen@fi.rohmeurope.com>
-References: <1499086214-1811-1-git-send-email-mikko.koivunen@fi.rohmeurope.com>
-        <1499086214-1811-3-git-send-email-mikko.koivunen@fi.rohmeurope.com>
+Received: from mail.free-electrons.com ([62.4.15.54]:45721 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752229AbdGCNJw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Jul 2017 09:09:52 -0400
+From: Quentin Schulz <quentin.schulz@free-electrons.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, maxime.ripard@free-electrons.com, wens@csie.org
+Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
+        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, thomas.petazzoni@free-electrons.com
+Subject: [PATCH] iio: adc: sun4i-gpadc-iio: fix unbalanced irq enable/disable
+Date: Mon,  3 Jul 2017 15:09:26 +0200
+Message-Id: <20170703130926.32315-1-quentin.schulz@free-electrons.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon,  3 Jul 2017 15:50:14 +0300
-Mikko Koivunen <mikko.koivunen@fi.rohmeurope.com> wrote:
+When initializing interrupts, the devm_request_any_context_irq will
+enable them right away. An atomic flag was set in sun4i_irq_init and read
+in the interrupt handler to make sure no unwanted interrupts were
+handled. If an unwanted interrupt occurred, the handler would disable
+the irq and return IRQ_HANDLED. However, at the end of sun4i_irq_init,
+the irq would be disabled as well, resulting in an unbalanced enable
+(since there are more disables than enables, the code enabling the
+interrupt would never be called).
 
-> Change iio_device_register to devm_
-> 
-> --
-> 
->  drivers/iio/light/rpr0521.c |    4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/light/rpr0521.c b/drivers/iio/light/rpr0521.c
-> index a6efa126..4c090d0 100644
-> --- a/drivers/iio/light/rpr0521.c
-> +++ b/drivers/iio/light/rpr0521.c
-> @@ -1029,7 +1029,7 @@ static int rpr0521_probe(struct i2c_client *client,
->  		}
->  	}
->  
-> -	ret = iio_device_register(indio_dev);
-> +	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
->  	if (ret)
->  		goto err_pm_disable;
->  
-> @@ -1049,8 +1049,6 @@ static int rpr0521_remove(struct i2c_client *client)
->  {
->  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->  
-> -	iio_device_unregister(indio_dev);
-> -
-Given this now means you turn the power off before you remove the userspace
-interfaces (and in kernel ones) this is a very bad idea.  
+When reading the ADC or the temperature, the respective irq would be
+enabled in the read function and disabled in the irq handler. In the
+read function, we would wait for a completion (with a timeout) that will
+be set in the irq handler. However, if the completion is never set or if
+the wait for completion times out, the irq would not be disabled in the
+read function resulting in an unbalanced enable once the read function
+is called again (since there are 2+ enables for no disable).
 
-So dropping this patch.
+Moving disable_irq from the irq handler to the read function get rid of
+these two cases of unbalanced enable.
 
-Thanks,
+Fixes: d1caa9905538 ("iio: adc: add support for Allwinner SoCs ADC")
 
-Jonathan
->  	pm_runtime_disable(&client->dev);
->  	pm_runtime_set_suspended(&client->dev);
->  	pm_runtime_put_noidle(&client->dev);
+Reported-by: Andreas Färber <afaerber@suse.de>
+Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+---
+ drivers/iio/adc/sun4i-gpadc-iio.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
+index 81d4c39e414a..137f577d9432 100644
+--- a/drivers/iio/adc/sun4i-gpadc-iio.c
++++ b/drivers/iio/adc/sun4i-gpadc-iio.c
+@@ -256,6 +256,7 @@ static int sun4i_gpadc_read(struct iio_dev *indio_dev, int channel, int *val,
+ 
+ err:
+ 	pm_runtime_put_autosuspend(indio_dev->dev.parent);
++	disable_irq(irq);
+ 	mutex_unlock(&info->mutex);
+ 
+ 	return ret;
+@@ -365,7 +366,6 @@ static irqreturn_t sun4i_gpadc_temp_data_irq_handler(int irq, void *dev_id)
+ 		complete(&info->completion);
+ 
+ out:
+-	disable_irq_nosync(info->temp_data_irq);
+ 	return IRQ_HANDLED;
+ }
+ 
+@@ -380,7 +380,6 @@ static irqreturn_t sun4i_gpadc_fifo_data_irq_handler(int irq, void *dev_id)
+ 		complete(&info->completion);
+ 
+ out:
+-	disable_irq_nosync(info->fifo_data_irq);
+ 	return IRQ_HANDLED;
+ }
+ 
+-- 
+2.11.0
 
