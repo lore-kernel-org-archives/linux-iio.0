@@ -1,133 +1,134 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:36358 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751346AbdGWMOR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 23 Jul 2017 08:14:17 -0400
-Date: Sun, 23 Jul 2017 13:14:13 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Eugen Hristev <eugen.hristev@microchip.com>
-Cc: "lars@metafoo.de" <lars@metafoo.de>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Nicolas Ferre - M43238 <Nicolas.Ferre@microchip.com>
-Subject: Re: DMA support for at91-sama5d2 ADC driver
-Message-ID: <20170723131413.4a7129c9@kernel.org>
-In-Reply-To: <bbcae099-6a22-bbf1-c7d4-a8ff7e339c4f@microchip.com>
-References: <EA573BDD7CF69549972F7393812B404A558EA7@CHN-SV-EXMX03.mchp-main.com>
-        <E01FD574-0ED8-4207-B589-065806ADC592@kernel.org>
-        <bbcae099-6a22-bbf1-c7d4-a8ff7e339c4f@microchip.com>
+Received: from mail-io0-f195.google.com ([209.85.223.195]:34364 "EHLO
+        mail-io0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752268AbdGDKkf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 4 Jul 2017 06:40:35 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <1494751435-14189-1-git-send-email-der.herr@hofr.at>
+References: <1494751435-14189-1-git-send-email-der.herr@hofr.at>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 4 Jul 2017 12:40:33 +0200
+Message-ID: <CAMuHMdXdcY1fsZsdgUe7=gNUaKannGe==4BvQTwren898QXPfw@mail.gmail.com>
+Subject: Re: [PATCH RFC] iio: pressure: zpa2326: report interrupted case as failure
+To: Nicholas Mc Guire <der.herr@hofr.at>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        simran singhal <singhalsimran0@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Gregor Boirie <gregor.boirie@parrot.com>,
+        linux-iio@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 19 Jul 2017 10:25:33 +0300
-Eugen Hristev <eugen.hristev@microchip.com> wrote:
+Hi Nicholas,
 
-> Hello Lars, Jonathan,
-> 
-Lars is definitely a better person to reply to this
-than me, but I'll have a go!
-> After I had a deeper look into the DMA support in IIO,
-> it looks to me like there are few distinct options to
-> achieve this:
-> 
-> 1) Have a regular triggered kfifo buffer.
-> Prepare dma transaction on buffer post-enable.
-> Configure dma slave at probe.
-> Trigger is already setup on buffer enable, so we have to just do
-> trigger_poll on dma complete. Check the residues and push to iio_buffer
-> all at once from the dma coherent buffer.
-> Have a hwfifo in sysfs for the buffer. Use it to configure dma
-> enable/disable and the dma buffer size for chunk conversions.
-> With hwfifo disabled, just use regular kfifo triggered buffer with
-> IRQ for each conversion.
-When using the trigger infrastructure to do dma triggering not
-it breaks with the 'standard' meaning of the individual
-triggers.  As such it become necessary to restrict the
-use of the trigger to just this one device (then no one cares
-that the frequency is wrong).
+On Sun, May 14, 2017 at 10:43 AM, Nicholas Mc Guire <der.herr@hofr.at> wrot=
+e:
+> If the timeout-case prints a warning message then probably the interrupte=
+d
+> case should also. Further, wait_for_completion_interruptible_timeout()
+> returns long not int.
+>
+> Fixes: commit 03b262f2bbf4 ("iio:pressure: initial zpa2326 barometer supp=
+ort")
+> Signed-off-by: Nicholas Mc Guire <der.herr@hofr.at>
+> ---
+>
+> The original control-flow was technically not wrong just confusing and a =
+bit
+> complicated. Not clear if reporting the interrupted case actually is usef=
+ul,
+> but given that the timeout is relatively long (200ms) it is not that unli=
+kely
+> so differentiating the cases seems helpful.
+>
+> Patch was compile-tested with: x86_64_defconfig + CONFIG_IIO=3Dm, CONFIG_=
+ZPA2326=3Dm
+>
+> Patch is against v4.11 (localversion-next is next-20170512)
+>
+>  drivers/iio/pressure/zpa2326.c | 17 ++++++++++-------
+>  1 file changed, 10 insertions(+), 7 deletions(-)
+>
+> diff --git a/drivers/iio/pressure/zpa2326.c b/drivers/iio/pressure/zpa232=
+6.c
+> index e58a0ad..617926f 100644
+> --- a/drivers/iio/pressure/zpa2326.c
+> +++ b/drivers/iio/pressure/zpa2326.c
+> @@ -867,12 +867,13 @@ static int zpa2326_wait_oneshot_completion(const st=
+ruct iio_dev   *indio_dev,
+>  {
+>         int          ret;
+>         unsigned int val;
+> +       long     timeout;
+>
+>         zpa2326_dbg(indio_dev, "waiting for one shot completion interrupt=
+");
+>
+> -       ret =3D wait_for_completion_interruptible_timeout(
+> +       timeout =3D wait_for_completion_interruptible_timeout(
+>                 &private->data_ready, ZPA2326_CONVERSION_JIFFIES);
+> -       if (ret > 0)
+> +       if (timeout > 0)
 
-Timestamps can also become really complicated to generate
-with any accuracy.  Anyhow, this is all stuff other drivers
-are handling so copy them.
-> 
-> 2) Here is the tricky part with the usage of the DMA-buffer.
-> We can try to use this approach, and have the block size considering
-> the hwfifo sysfs attribute.
-> But this means we have to ditch the kfifo buffer. We can try to use a
-> regular trigger on submit callback such that no DMA is involved. Then
-> get the IRQ for each conversion and call the block done callback once
-> the IRQ is received.
-> If we have the hwfifo enabled, just prepare a DMA transaction and be
-> done with it.
-Triggers really have very little meaning once you are using the
-dma-buffer infrastructure.  Lars is working on some more complex
-handling for this, but I have no idea what stage that work is at.
+Check for strict positive timeout.
 
-You are right that it is an either kfifo or dma buffer choice.
-Mostly the dma-buffer stuff is for very fast devices where the
-overheads of the kfifo handling really matter and hence the
-kfifo doesn't make any sense at all.
-> 
-> 3) Use the DMAengine buffer. Is this possible ? It looks like this
-> option is the least configurable and cannot use both DMA and non-DMA
-> transactions.
-> 
-> As it looks to me, we either start from a kfifo and add DMA support
-> to it, or we start from a DMAbuffer and add non-dma to it.
-> I am not sure which way is best to go, but, it is required that we can 
-> enable or disable the hwfifo (DMA) from sysfs, so the buffer must be
-> able to support both ways. However we can only expose one type of
-> buffer to the iio device.
-Explicitly disable it or do it using the hints of the
-watershed for example to work out whether low latency is required or
-not.
+>                 /*
+>                  * Interrupt handler completed before timeout: return ope=
+ration
+>                  * status.
+> @@ -882,13 +883,15 @@ static int zpa2326_wait_oneshot_completion(const st=
+ruct iio_dev   *indio_dev,
+>         /* Clear all interrupts just to be sure. */
+>         regmap_read(private->regmap, ZPA2326_INT_SOURCE_REG, &val);
+>
+> -       if (!ret)
+> +       if (!timeout) {
 
-My gut feeling here is that for SoC ADCs in general the kfifo
-fed by dma is the best compromise.  Only real question is
-whether we can cope with 1MSPS using that approach.
+Check for zero timeout.
 
-Jonathan
-> 
-> Any opinion is appreciated,
-> Thanks,
-> Eugen
-> 
-> On 04.05.2017 19:21, Jonathan Cameron wrote:
-> > 
-> > 
-> > On 4 May 2017 14:07:19 BST, Eugen.Hristev@microchip.com wrote:  
-> >> Hello,
-> >>
-> >> I am making a proof of concept for DMA functionality for the
-> >> at91-sama5d2 ADC driver.
-> >> I would like to ask if it's better to implement in an old fashion way
-> >> (request dma channel, allocate memory, start transfer), or try to
-> >> integrate with the DMA-buffer in the iio subsystem ?
-> >> Is there any driver using that system in the current kernel ?  
-> > Lars?
-> >   
-> >>
-> >> Also, is there a way to enable/disable DMA coming from the subsystem to
-> >> the driver ? (I mean from sysfs, to have or create an option for the
-> >> buffer to use DMA or not).
-> >> Using DMA has the advantage of less interrupts coming, but much less
-> >> granularity on the incoming triggered conversions. So I thought a way
-> >> for the user to enable or disable it might be convenient.  
-> > Use the fifo watermark stuff perhaps?
-> > If set high enough use DMA, if lower then don't.
-> > 
-> > Complexity around triggering however. Generally DMA pushed to kfifo is done without triggers as
-> > there is no per scan interrupt to hang other devices off.  Also no timestamps...  
-> >>
-> >>
-> >> Thanks for all the inputs,
-> >>
-> >> Eugen Hristev
-> >>
-> >> --
-> >> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> >> the body of a message to majordomo@vger.kernel.org
-> >> More majordomo info at  http://vger.kernel.org/majordomo-info.html  
-> >   
+>                 /* Timed out. */
+> +               zpa2326_warn(indio_dev, "no one shot interrupt occurred (=
+%ld)",
+> +                            timeout);
+>                 ret =3D -ETIME;
+> -
+> -       if (ret !=3D -ERESTARTSYS)
+> -               zpa2326_warn(indio_dev, "no one shot interrupt occurred (=
+%d)",
+> -                            ret);
+> +       } else if (timeout < 0) {
 
+So if we get here, timeout is always strict negative, so the check can
+be removed.
+
+> +               zpa2326_warn(indio_dev, "wait for one shot interrupt canc=
+eled");
+> +               ret =3D -ERESTARTSYS;
+> +       }
+>
+>         return ret;
+
+But gcc-4.1.2 is not smart enough:
+
+drivers/iio/pressure/zpa2326.c:868: warning: =E2=80=98ret=E2=80=99 may be u=
+sed
+uninitialized in this function
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
+
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
