@@ -1,31 +1,75 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from szxga01-in.huawei.com ([45.249.212.187]:9275 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750891AbdGDNJw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 4 Jul 2017 09:09:52 -0400
-Date: Tue, 4 Jul 2017 21:09:44 +0800
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To: <linux-iio@vger.kernel.org>
-Subject: New employment - Same person ;)
-Message-ID: <20170704210944.00001f33@huawei.com>
+Received: from andre.telenet-ops.be ([195.130.132.53]:33306 "EHLO
+        andre.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751925AbdGEIPD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 5 Jul 2017 04:15:03 -0400
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Nicholas Mc Guire <der.herr@hofr.at>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH] iio: pressure: zpa2326: Remove always-true check which confuses gcc
+Date: Wed,  5 Jul 2017 10:14:59 +0200
+Message-Id: <1499242499-18860-1-git-send-email-geert@linux-m68k.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi All,
+With gcc 4.1.2:
 
-Just a quick note to let you all know I'm now actually doing a day job
-in linux kernel development here at Huawei.  It's tangential
-enough to IIO that there should be no possibility of conflicts of
-interest.
+    drivers/iio/pressure/zpa2326.c: In function ‘zpa2326_wait_oneshot_completion’:
+    drivers/iio/pressure/zpa2326.c:868: warning: ‘ret’ may be used uninitialized in this function
 
-Hopefully the only change IIO people should see is that I might get back
-to your emails a little faster!  Will be figuring out practical bits
-and bobs like where I do pull requests from etc over the coming months,
-but chances are not much will change.
+When testing for "timeout < 0", timeout is already guaranteed to be
+strict negative, so the branch is always taken, and ret is thus always
+initialized.  But (some version of) gcc is not smart enough to notice.
 
-Cheers,
+Remove the check to fix this.
+As there is no other code in between assigning the error codes and
+returning them, the error codes can be returned immediately, and the
+intermediate variable can be dropped.
+Drop the "else" to please checkpatch.
 
-Jonathan
+Fixes: e7215fe4d51e69c9 ("iio: pressure: zpa2326: report interrupted case as failure")
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+---
+ drivers/iio/pressure/zpa2326.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/iio/pressure/zpa2326.c b/drivers/iio/pressure/zpa2326.c
+index c92a95f9f52c2141..531b88ce336184d4 100644
+--- a/drivers/iio/pressure/zpa2326.c
++++ b/drivers/iio/pressure/zpa2326.c
+@@ -865,7 +865,6 @@ static irqreturn_t zpa2326_handle_threaded_irq(int irq, void *data)
+ static int zpa2326_wait_oneshot_completion(const struct iio_dev   *indio_dev,
+ 					   struct zpa2326_private *private)
+ {
+-	int          ret;
+ 	unsigned int val;
+ 	long     timeout;
+ 
+@@ -887,14 +886,11 @@ static int zpa2326_wait_oneshot_completion(const struct iio_dev   *indio_dev,
+ 		/* Timed out. */
+ 		zpa2326_warn(indio_dev, "no one shot interrupt occurred (%ld)",
+ 			     timeout);
+-		ret = -ETIME;
+-	} else if (timeout < 0) {
+-		zpa2326_warn(indio_dev,
+-			     "wait for one shot interrupt cancelled");
+-		ret = -ERESTARTSYS;
++		return -ETIME;
+ 	}
+ 
+-	return ret;
++	zpa2326_warn(indio_dev, "wait for one shot interrupt cancelled");
++	return -ERESTARTSYS;
+ }
+ 
+ static int zpa2326_init_managed_irq(struct device          *parent,
+-- 
+2.7.4
 
