@@ -1,157 +1,118 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:41418 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751753AbdGAK14 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 1 Jul 2017 06:27:56 -0400
-Date: Sat, 1 Jul 2017 11:27:51 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Gaurav Gupta <gauragup@cisco.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org
+Received: from rcdn-iport-9.cisco.com ([173.37.86.80]:8497 "EHLO
+        rcdn-iport-9.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752046AbdGERUm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 5 Jul 2017 13:20:42 -0400
+From: "Gaurav Gupta (gauragup)" <gauragup@cisco.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: "lars@metafoo.de" <lars@metafoo.de>,
+        "Michael.Hennerich@analog.com" <Michael.Hennerich@analog.com>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 Subject: Re: [PATCH] iio/adc/ltc2497: Add IIO to HWMON hooks
-Message-ID: <20170701112751.014bd733@kernel.org>
-In-Reply-To: <20170627185956.GA13580@sjc-ads-988.cisco.com>
+Date: Wed, 5 Jul 2017 17:20:40 +0000
+Message-ID: <1FE51D42-1B04-48D7-8436-8A8199C4E60E@cisco.com>
 References: <20170627185956.GA13580@sjc-ads-988.cisco.com>
+ <20170701112751.014bd733@kernel.org>
+In-Reply-To: <20170701112751.014bd733@kernel.org>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 27 Jun 2017 11:59:56 -0700
-Gaurav Gupta <gauragup@cisco.com> wrote:
-
-> Add missing hooks in the LTC2497 IIO driver to allow hwmon mapping.
-Technically this adds the handling needed for any
-consumer driver. I'll modify the title and description to
-reflect that.   It'll certainly work for hwmon though.
-
-Applied to the togreg branch of iio.git and initially pushed out
-as testing for the autobuilders to play with it.
-
-Thanks,
-
-Jonathan
-> 
-> Signed-off-by: Gaurav Gupta <gauragup@cisco.com>
-> ---
->  drivers/iio/adc/ltc2497.c | 54 ++++++++++++++++++++++++++++++-----------------
->  1 file changed, 35 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ltc2497.c b/drivers/iio/adc/ltc2497.c
-> index 2691b10..5bf8011 100644
-> --- a/drivers/iio/adc/ltc2497.c
-> +++ b/drivers/iio/adc/ltc2497.c
-> @@ -11,6 +11,7 @@
->  #include <linux/delay.h>
->  #include <linux/i2c.h>
->  #include <linux/iio/iio.h>
-> +#include <linux/iio/driver.h>
->  #include <linux/iio/sysfs.h>
->  #include <linux/module.h>
->  #include <linux/of.h>
-> @@ -127,13 +128,14 @@ static int ltc2497_read_raw(struct iio_dev *indio_dev,
->  	}
->  }
->  
-> -#define LTC2497_CHAN(_chan, _addr) { \
-> +#define LTC2497_CHAN(_chan, _addr, _ds_name) { \
->  	.type = IIO_VOLTAGE, \
->  	.indexed = 1, \
->  	.channel = (_chan), \
->  	.address = (_addr | (_chan / 2) | ((_chan & 1) ? LTC2497_SIGN : 0)), \
->  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
->  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
-> +	.datasheet_name = (_ds_name), \
->  }
->  
->  #define LTC2497_CHAN_DIFF(_chan, _addr) { \
-> @@ -148,22 +150,22 @@ static int ltc2497_read_raw(struct iio_dev *indio_dev,
->  }
->  
->  static const struct iio_chan_spec ltc2497_channel[] = {
-> -	LTC2497_CHAN(0, LTC2497_SGL),
-> -	LTC2497_CHAN(1, LTC2497_SGL),
-> -	LTC2497_CHAN(2, LTC2497_SGL),
-> -	LTC2497_CHAN(3, LTC2497_SGL),
-> -	LTC2497_CHAN(4, LTC2497_SGL),
-> -	LTC2497_CHAN(5, LTC2497_SGL),
-> -	LTC2497_CHAN(6, LTC2497_SGL),
-> -	LTC2497_CHAN(7, LTC2497_SGL),
-> -	LTC2497_CHAN(8, LTC2497_SGL),
-> -	LTC2497_CHAN(9, LTC2497_SGL),
-> -	LTC2497_CHAN(10, LTC2497_SGL),
-> -	LTC2497_CHAN(11, LTC2497_SGL),
-> -	LTC2497_CHAN(12, LTC2497_SGL),
-> -	LTC2497_CHAN(13, LTC2497_SGL),
-> -	LTC2497_CHAN(14, LTC2497_SGL),
-> -	LTC2497_CHAN(15, LTC2497_SGL),
-> +	LTC2497_CHAN(0, LTC2497_SGL, "CH0"),
-> +	LTC2497_CHAN(1, LTC2497_SGL, "CH1"),
-> +	LTC2497_CHAN(2, LTC2497_SGL, "CH2"),
-> +	LTC2497_CHAN(3, LTC2497_SGL, "CH3"),
-> +	LTC2497_CHAN(4, LTC2497_SGL, "CH4"),
-> +	LTC2497_CHAN(5, LTC2497_SGL, "CH5"),
-> +	LTC2497_CHAN(6, LTC2497_SGL, "CH6"),
-> +	LTC2497_CHAN(7, LTC2497_SGL, "CH7"),
-> +	LTC2497_CHAN(8, LTC2497_SGL, "CH8"),
-> +	LTC2497_CHAN(9, LTC2497_SGL, "CH9"),
-> +	LTC2497_CHAN(10, LTC2497_SGL, "CH10"),
-> +	LTC2497_CHAN(11, LTC2497_SGL, "CH11"),
-> +	LTC2497_CHAN(12, LTC2497_SGL, "CH12"),
-> +	LTC2497_CHAN(13, LTC2497_SGL, "CH13"),
-> +	LTC2497_CHAN(14, LTC2497_SGL, "CH14"),
-> +	LTC2497_CHAN(15, LTC2497_SGL, "CH15"),
->  	LTC2497_CHAN_DIFF(0, LTC2497_DIFF),
->  	LTC2497_CHAN_DIFF(1, LTC2497_DIFF),
->  	LTC2497_CHAN_DIFF(2, LTC2497_DIFF),
-> @@ -192,6 +194,7 @@ static int ltc2497_probe(struct i2c_client *client,
->  {
->  	struct iio_dev *indio_dev;
->  	struct ltc2497_st *st;
-> +	struct iio_map *plat_data;
->  	int ret;
->  
->  	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C |
-> @@ -221,19 +224,31 @@ static int ltc2497_probe(struct i2c_client *client,
->  	if (ret < 0)
->  		return ret;
->  
-> +	if (client->dev.platform_data) {
-> +		plat_data = ((struct iio_map *)client->dev.platform_data);
-> +		ret = iio_map_array_register(indio_dev, plat_data);
-> +		if (ret) {
-> +			dev_err(&indio_dev->dev, "iio map err: %d\n", ret);
-> +			goto err_regulator_disable;
-> +		}
-> +	}
-> +
->  	ret = i2c_smbus_write_byte(st->client, LTC2497_CONFIG_DEFAULT);
->  	if (ret < 0)
-> -		goto err_regulator_disable;
-> +		goto err_array_unregister;
->  
->  	st->addr_prev = LTC2497_CONFIG_DEFAULT;
->  	st->time_prev = ktime_get();
->  
->  	ret = iio_device_register(indio_dev);
->  	if (ret < 0)
-> -		goto err_regulator_disable;
-> +		goto err_array_unregister;
->  
->  	return 0;
->  
-> +err_array_unregister:
-> +	iio_map_array_unregister(indio_dev);
-> +
->  err_regulator_disable:
->  	regulator_disable(st->ref);
->  
-> @@ -245,6 +260,7 @@ static int ltc2497_remove(struct i2c_client *client)
->  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->  	struct ltc2497_st *st = iio_priv(indio_dev);
->  
-> +	iio_map_array_unregister(indio_dev);
->  	iio_device_unregister(indio_dev);
->  	regulator_disable(st->ref);
->  
-
+VGhhbmtzIEpvbmF0aGFuIGZvciBmaXhpbmcgdGhlIHRpdGxlIGFuZCBwdXNoaW5nIGl0Lg0KDQpS
+ZWdhcmRzLA0KR2F1cmF2DQoNCk9uIDcvMS8xNywgMzoyNyBBTSwgIkpvbmF0aGFuIENhbWVyb24i
+IDxqaWMyM0BrZXJuZWwub3JnPiB3cm90ZToNCg0KICAgIE9uIFR1ZSwgMjcgSnVuIDIwMTcgMTE6
+NTk6NTYgLTA3MDANCiAgICBHYXVyYXYgR3VwdGEgPGdhdXJhZ3VwQGNpc2NvLmNvbT4gd3JvdGU6
+DQogICAgDQogICAgPiBBZGQgbWlzc2luZyBob29rcyBpbiB0aGUgTFRDMjQ5NyBJSU8gZHJpdmVy
+IHRvIGFsbG93IGh3bW9uIG1hcHBpbmcuDQogICAgVGVjaG5pY2FsbHkgdGhpcyBhZGRzIHRoZSBo
+YW5kbGluZyBuZWVkZWQgZm9yIGFueQ0KICAgIGNvbnN1bWVyIGRyaXZlci4gSSdsbCBtb2RpZnkg
+dGhlIHRpdGxlIGFuZCBkZXNjcmlwdGlvbiB0bw0KICAgIHJlZmxlY3QgdGhhdC4gICBJdCdsbCBj
+ZXJ0YWlubHkgd29yayBmb3IgaHdtb24gdGhvdWdoLg0KICAgIA0KICAgIEFwcGxpZWQgdG8gdGhl
+IHRvZ3JlZyBicmFuY2ggb2YgaWlvLmdpdCBhbmQgaW5pdGlhbGx5IHB1c2hlZCBvdXQNCiAgICBh
+cyB0ZXN0aW5nIGZvciB0aGUgYXV0b2J1aWxkZXJzIHRvIHBsYXkgd2l0aCBpdC4NCiAgICANCiAg
+ICBUaGFua3MsDQogICAgDQogICAgSm9uYXRoYW4NCiAgICA+IA0KICAgID4gU2lnbmVkLW9mZi1i
+eTogR2F1cmF2IEd1cHRhIDxnYXVyYWd1cEBjaXNjby5jb20+DQogICAgPiAtLS0NCiAgICA+ICBk
+cml2ZXJzL2lpby9hZGMvbHRjMjQ5Ny5jIHwgNTQgKysrKysrKysrKysrKysrKysrKysrKysrKysr
+KysrLS0tLS0tLS0tLS0tLS0tLS0NCiAgICA+ICAxIGZpbGUgY2hhbmdlZCwgMzUgaW5zZXJ0aW9u
+cygrKSwgMTkgZGVsZXRpb25zKC0pDQogICAgPiANCiAgICA+IGRpZmYgLS1naXQgYS9kcml2ZXJz
+L2lpby9hZGMvbHRjMjQ5Ny5jIGIvZHJpdmVycy9paW8vYWRjL2x0YzI0OTcuYw0KICAgID4gaW5k
+ZXggMjY5MWIxMC4uNWJmODAxMSAxMDA2NDQNCiAgICA+IC0tLSBhL2RyaXZlcnMvaWlvL2FkYy9s
+dGMyNDk3LmMNCiAgICA+ICsrKyBiL2RyaXZlcnMvaWlvL2FkYy9sdGMyNDk3LmMNCiAgICA+IEBA
+IC0xMSw2ICsxMSw3IEBADQogICAgPiAgI2luY2x1ZGUgPGxpbnV4L2RlbGF5Lmg+DQogICAgPiAg
+I2luY2x1ZGUgPGxpbnV4L2kyYy5oPg0KICAgID4gICNpbmNsdWRlIDxsaW51eC9paW8vaWlvLmg+
+DQogICAgPiArI2luY2x1ZGUgPGxpbnV4L2lpby9kcml2ZXIuaD4NCiAgICA+ICAjaW5jbHVkZSA8
+bGludXgvaWlvL3N5c2ZzLmg+DQogICAgPiAgI2luY2x1ZGUgPGxpbnV4L21vZHVsZS5oPg0KICAg
+ID4gICNpbmNsdWRlIDxsaW51eC9vZi5oPg0KICAgID4gQEAgLTEyNywxMyArMTI4LDE0IEBAIHN0
+YXRpYyBpbnQgbHRjMjQ5N19yZWFkX3JhdyhzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2LA0KICAg
+ID4gIAl9DQogICAgPiAgfQ0KICAgID4gIA0KICAgID4gLSNkZWZpbmUgTFRDMjQ5N19DSEFOKF9j
+aGFuLCBfYWRkcikgeyBcDQogICAgPiArI2RlZmluZSBMVEMyNDk3X0NIQU4oX2NoYW4sIF9hZGRy
+LCBfZHNfbmFtZSkgeyBcDQogICAgPiAgCS50eXBlID0gSUlPX1ZPTFRBR0UsIFwNCiAgICA+ICAJ
+LmluZGV4ZWQgPSAxLCBcDQogICAgPiAgCS5jaGFubmVsID0gKF9jaGFuKSwgXA0KICAgID4gIAku
+YWRkcmVzcyA9IChfYWRkciB8IChfY2hhbiAvIDIpIHwgKChfY2hhbiAmIDEpID8gTFRDMjQ5N19T
+SUdOIDogMCkpLCBcDQogICAgPiAgCS5pbmZvX21hc2tfc2VwYXJhdGUgPSBCSVQoSUlPX0NIQU5f
+SU5GT19SQVcpLCBcDQogICAgPiAgCS5pbmZvX21hc2tfc2hhcmVkX2J5X3R5cGUgPSBCSVQoSUlP
+X0NIQU5fSU5GT19TQ0FMRSksIFwNCiAgICA+ICsJLmRhdGFzaGVldF9uYW1lID0gKF9kc19uYW1l
+KSwgXA0KICAgID4gIH0NCiAgICA+ICANCiAgICA+ICAjZGVmaW5lIExUQzI0OTdfQ0hBTl9ESUZG
+KF9jaGFuLCBfYWRkcikgeyBcDQogICAgPiBAQCAtMTQ4LDIyICsxNTAsMjIgQEAgc3RhdGljIGlu
+dCBsdGMyNDk3X3JlYWRfcmF3KHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYsDQogICAgPiAgfQ0K
+ICAgID4gIA0KICAgID4gIHN0YXRpYyBjb25zdCBzdHJ1Y3QgaWlvX2NoYW5fc3BlYyBsdGMyNDk3
+X2NoYW5uZWxbXSA9IHsNCiAgICA+IC0JTFRDMjQ5N19DSEFOKDAsIExUQzI0OTdfU0dMKSwNCiAg
+ICA+IC0JTFRDMjQ5N19DSEFOKDEsIExUQzI0OTdfU0dMKSwNCiAgICA+IC0JTFRDMjQ5N19DSEFO
+KDIsIExUQzI0OTdfU0dMKSwNCiAgICA+IC0JTFRDMjQ5N19DSEFOKDMsIExUQzI0OTdfU0dMKSwN
+CiAgICA+IC0JTFRDMjQ5N19DSEFOKDQsIExUQzI0OTdfU0dMKSwNCiAgICA+IC0JTFRDMjQ5N19D
+SEFOKDUsIExUQzI0OTdfU0dMKSwNCiAgICA+IC0JTFRDMjQ5N19DSEFOKDYsIExUQzI0OTdfU0dM
+KSwNCiAgICA+IC0JTFRDMjQ5N19DSEFOKDcsIExUQzI0OTdfU0dMKSwNCiAgICA+IC0JTFRDMjQ5
+N19DSEFOKDgsIExUQzI0OTdfU0dMKSwNCiAgICA+IC0JTFRDMjQ5N19DSEFOKDksIExUQzI0OTdf
+U0dMKSwNCiAgICA+IC0JTFRDMjQ5N19DSEFOKDEwLCBMVEMyNDk3X1NHTCksDQogICAgPiAtCUxU
+QzI0OTdfQ0hBTigxMSwgTFRDMjQ5N19TR0wpLA0KICAgID4gLQlMVEMyNDk3X0NIQU4oMTIsIExU
+QzI0OTdfU0dMKSwNCiAgICA+IC0JTFRDMjQ5N19DSEFOKDEzLCBMVEMyNDk3X1NHTCksDQogICAg
+PiAtCUxUQzI0OTdfQ0hBTigxNCwgTFRDMjQ5N19TR0wpLA0KICAgID4gLQlMVEMyNDk3X0NIQU4o
+MTUsIExUQzI0OTdfU0dMKSwNCiAgICA+ICsJTFRDMjQ5N19DSEFOKDAsIExUQzI0OTdfU0dMLCAi
+Q0gwIiksDQogICAgPiArCUxUQzI0OTdfQ0hBTigxLCBMVEMyNDk3X1NHTCwgIkNIMSIpLA0KICAg
+ID4gKwlMVEMyNDk3X0NIQU4oMiwgTFRDMjQ5N19TR0wsICJDSDIiKSwNCiAgICA+ICsJTFRDMjQ5
+N19DSEFOKDMsIExUQzI0OTdfU0dMLCAiQ0gzIiksDQogICAgPiArCUxUQzI0OTdfQ0hBTig0LCBM
+VEMyNDk3X1NHTCwgIkNINCIpLA0KICAgID4gKwlMVEMyNDk3X0NIQU4oNSwgTFRDMjQ5N19TR0ws
+ICJDSDUiKSwNCiAgICA+ICsJTFRDMjQ5N19DSEFOKDYsIExUQzI0OTdfU0dMLCAiQ0g2IiksDQog
+ICAgPiArCUxUQzI0OTdfQ0hBTig3LCBMVEMyNDk3X1NHTCwgIkNINyIpLA0KICAgID4gKwlMVEMy
+NDk3X0NIQU4oOCwgTFRDMjQ5N19TR0wsICJDSDgiKSwNCiAgICA+ICsJTFRDMjQ5N19DSEFOKDks
+IExUQzI0OTdfU0dMLCAiQ0g5IiksDQogICAgPiArCUxUQzI0OTdfQ0hBTigxMCwgTFRDMjQ5N19T
+R0wsICJDSDEwIiksDQogICAgPiArCUxUQzI0OTdfQ0hBTigxMSwgTFRDMjQ5N19TR0wsICJDSDEx
+IiksDQogICAgPiArCUxUQzI0OTdfQ0hBTigxMiwgTFRDMjQ5N19TR0wsICJDSDEyIiksDQogICAg
+PiArCUxUQzI0OTdfQ0hBTigxMywgTFRDMjQ5N19TR0wsICJDSDEzIiksDQogICAgPiArCUxUQzI0
+OTdfQ0hBTigxNCwgTFRDMjQ5N19TR0wsICJDSDE0IiksDQogICAgPiArCUxUQzI0OTdfQ0hBTigx
+NSwgTFRDMjQ5N19TR0wsICJDSDE1IiksDQogICAgPiAgCUxUQzI0OTdfQ0hBTl9ESUZGKDAsIExU
+QzI0OTdfRElGRiksDQogICAgPiAgCUxUQzI0OTdfQ0hBTl9ESUZGKDEsIExUQzI0OTdfRElGRiks
+DQogICAgPiAgCUxUQzI0OTdfQ0hBTl9ESUZGKDIsIExUQzI0OTdfRElGRiksDQogICAgPiBAQCAt
+MTkyLDYgKzE5NCw3IEBAIHN0YXRpYyBpbnQgbHRjMjQ5N19wcm9iZShzdHJ1Y3QgaTJjX2NsaWVu
+dCAqY2xpZW50LA0KICAgID4gIHsNCiAgICA+ICAJc3RydWN0IGlpb19kZXYgKmluZGlvX2RldjsN
+CiAgICA+ICAJc3RydWN0IGx0YzI0OTdfc3QgKnN0Ow0KICAgID4gKwlzdHJ1Y3QgaWlvX21hcCAq
+cGxhdF9kYXRhOw0KICAgID4gIAlpbnQgcmV0Ow0KICAgID4gIA0KICAgID4gIAlpZiAoIWkyY19j
+aGVja19mdW5jdGlvbmFsaXR5KGNsaWVudC0+YWRhcHRlciwgSTJDX0ZVTkNfSTJDIHwNCiAgICA+
+IEBAIC0yMjEsMTkgKzIyNCwzMSBAQCBzdGF0aWMgaW50IGx0YzI0OTdfcHJvYmUoc3RydWN0IGky
+Y19jbGllbnQgKmNsaWVudCwNCiAgICA+ICAJaWYgKHJldCA8IDApDQogICAgPiAgCQlyZXR1cm4g
+cmV0Ow0KICAgID4gIA0KICAgID4gKwlpZiAoY2xpZW50LT5kZXYucGxhdGZvcm1fZGF0YSkgew0K
+ICAgID4gKwkJcGxhdF9kYXRhID0gKChzdHJ1Y3QgaWlvX21hcCAqKWNsaWVudC0+ZGV2LnBsYXRm
+b3JtX2RhdGEpOw0KICAgID4gKwkJcmV0ID0gaWlvX21hcF9hcnJheV9yZWdpc3RlcihpbmRpb19k
+ZXYsIHBsYXRfZGF0YSk7DQogICAgPiArCQlpZiAocmV0KSB7DQogICAgPiArCQkJZGV2X2Vycigm
+aW5kaW9fZGV2LT5kZXYsICJpaW8gbWFwIGVycjogJWRcbiIsIHJldCk7DQogICAgPiArCQkJZ290
+byBlcnJfcmVndWxhdG9yX2Rpc2FibGU7DQogICAgPiArCQl9DQogICAgPiArCX0NCiAgICA+ICsN
+CiAgICA+ICAJcmV0ID0gaTJjX3NtYnVzX3dyaXRlX2J5dGUoc3QtPmNsaWVudCwgTFRDMjQ5N19D
+T05GSUdfREVGQVVMVCk7DQogICAgPiAgCWlmIChyZXQgPCAwKQ0KICAgID4gLQkJZ290byBlcnJf
+cmVndWxhdG9yX2Rpc2FibGU7DQogICAgPiArCQlnb3RvIGVycl9hcnJheV91bnJlZ2lzdGVyOw0K
+ICAgID4gIA0KICAgID4gIAlzdC0+YWRkcl9wcmV2ID0gTFRDMjQ5N19DT05GSUdfREVGQVVMVDsN
+CiAgICA+ICAJc3QtPnRpbWVfcHJldiA9IGt0aW1lX2dldCgpOw0KICAgID4gIA0KICAgID4gIAly
+ZXQgPSBpaW9fZGV2aWNlX3JlZ2lzdGVyKGluZGlvX2Rldik7DQogICAgPiAgCWlmIChyZXQgPCAw
+KQ0KICAgID4gLQkJZ290byBlcnJfcmVndWxhdG9yX2Rpc2FibGU7DQogICAgPiArCQlnb3RvIGVy
+cl9hcnJheV91bnJlZ2lzdGVyOw0KICAgID4gIA0KICAgID4gIAlyZXR1cm4gMDsNCiAgICA+ICAN
+CiAgICA+ICtlcnJfYXJyYXlfdW5yZWdpc3RlcjoNCiAgICA+ICsJaWlvX21hcF9hcnJheV91bnJl
+Z2lzdGVyKGluZGlvX2Rldik7DQogICAgPiArDQogICAgPiAgZXJyX3JlZ3VsYXRvcl9kaXNhYmxl
+Og0KICAgID4gIAlyZWd1bGF0b3JfZGlzYWJsZShzdC0+cmVmKTsNCiAgICA+ICANCiAgICA+IEBA
+IC0yNDUsNiArMjYwLDcgQEAgc3RhdGljIGludCBsdGMyNDk3X3JlbW92ZShzdHJ1Y3QgaTJjX2Ns
+aWVudCAqY2xpZW50KQ0KICAgID4gIAlzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2ID0gaTJjX2dl
+dF9jbGllbnRkYXRhKGNsaWVudCk7DQogICAgPiAgCXN0cnVjdCBsdGMyNDk3X3N0ICpzdCA9IGlp
+b19wcml2KGluZGlvX2Rldik7DQogICAgPiAgDQogICAgPiArCWlpb19tYXBfYXJyYXlfdW5yZWdp
+c3RlcihpbmRpb19kZXYpOw0KICAgID4gIAlpaW9fZGV2aWNlX3VucmVnaXN0ZXIoaW5kaW9fZGV2
+KTsNCiAgICA+ICAJcmVndWxhdG9yX2Rpc2FibGUoc3QtPnJlZik7DQogICAgPiAgDQogICAgDQog
+ICAgDQoNCg0K
