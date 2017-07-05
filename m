@@ -1,75 +1,358 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from andre.telenet-ops.be ([195.130.132.53]:33306 "EHLO
-        andre.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751925AbdGEIPD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 5 Jul 2017 04:15:03 -0400
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-To: Jonathan Cameron <jic23@kernel.org>,
-        Nicholas Mc Guire <der.herr@hofr.at>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH] iio: pressure: zpa2326: Remove always-true check which confuses gcc
-Date: Wed,  5 Jul 2017 10:14:59 +0200
-Message-Id: <1499242499-18860-1-git-send-email-geert@linux-m68k.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=qnJT=6I=gmail.com=narcisaanamaria12@kernel.org>
+From: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
+To: narcisaanamaria12@gmail.com,
+	daniel.baluta@gmail.com,
+	amsfield22@gmail.com,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org
+Subject: [PATCH] iio: chemical: ccs811: Add support for AMS CCS811 VOC sensor
+Date: Wed,  5 Jul 2017 12:44:47 +0300
+Message-Id: <1499247887-5154-1-git-send-email-narcisaanamaria12@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-With gcc 4.1.2:
+Add support for CCS811 VOC sensor. This patch adds support
+for reading current and voltage across the sensor and TVOC
+and equivalent CO2 processed values.
 
-    drivers/iio/pressure/zpa2326.c: In function ‘zpa2326_wait_oneshot_completion’:
-    drivers/iio/pressure/zpa2326.c:868: warning: ‘ret’ may be used uninitialized in this function
-
-When testing for "timeout < 0", timeout is already guaranteed to be
-strict negative, so the branch is always taken, and ret is thus always
-initialized.  But (some version of) gcc is not smart enough to notice.
-
-Remove the check to fix this.
-As there is no other code in between assigning the error codes and
-returning them, the error codes can be returned immediately, and the
-intermediate variable can be dropped.
-Drop the "else" to please checkpatch.
-
-Fixes: e7215fe4d51e69c9 ("iio: pressure: zpa2326: report interrupted case as failure")
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
 ---
- drivers/iio/pressure/zpa2326.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+This patch introduces a probe function and adds support for readings
+from CCS811 sensor. In probe function, ccs811_setup() function is called
+to perform initial setup of the sensor:
+    * ccs811_switch_to_application_mode() assures transition from boot mode
+    to application mode, by first checking for a valid application and then
+    selecting the APP_START register in order to start running the loaded app.
 
-diff --git a/drivers/iio/pressure/zpa2326.c b/drivers/iio/pressure/zpa2326.c
-index c92a95f9f52c2141..531b88ce336184d4 100644
---- a/drivers/iio/pressure/zpa2326.c
-+++ b/drivers/iio/pressure/zpa2326.c
-@@ -865,7 +865,6 @@ static irqreturn_t zpa2326_handle_threaded_irq(int irq, void *data)
- static int zpa2326_wait_oneshot_completion(const struct iio_dev   *indio_dev,
- 					   struct zpa2326_private *private)
- {
--	int          ret;
- 	unsigned int val;
- 	long     timeout;
- 
-@@ -887,14 +886,11 @@ static int zpa2326_wait_oneshot_completion(const struct iio_dev   *indio_dev,
- 		/* Timed out. */
- 		zpa2326_warn(indio_dev, "no one shot interrupt occurred (%ld)",
- 			     timeout);
--		ret = -ETIME;
--	} else if (timeout < 0) {
--		zpa2326_warn(indio_dev,
--			     "wait for one shot interrupt cancelled");
--		ret = -ERESTARTSYS;
-+		return -ETIME;
- 	}
- 
--	return ret;
-+	zpa2326_warn(indio_dev, "wait for one shot interrupt cancelled");
-+	return -ERESTARTSYS;
- }
- 
- static int zpa2326_init_managed_irq(struct device          *parent,
--- 
-2.7.4
+    * ccs811_set_drive_mode configures the sensor in the desired operating mode.
 
+ccs811_read_raw performs readings from the 4 defined channels:
+    - current and voltage are read from the 2-byte RAW_DATA register.
+        6 bits represent the current and the lower 10 bits represent
+        the voltage across the sensor.
+
+    - eCO2 and TVOC are read from the 8-byte ALG_RESULT_DATA register.
+        Only 5 bytes are read here: first 2 bytes represent equivalent CO2,
+        which ranges from 400 ppm to 8192 ppm; next 2 bytes represent TVOC,
+        varying from 0 ppb to 1187 ppb. Last byte is the status register,
+        which is read in order to check for errors.
+
+ drivers/iio/chemical/Kconfig  |   7 ++
+ drivers/iio/chemical/Makefile |   1 +
+ drivers/iio/chemical/ccs811.c | 274 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 282 insertions(+)
+ create mode 100644 drivers/iio/chemical/ccs811.c
+
+diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
+index cea7f98..4d799b5 100644
+--- a/drivers/iio/chemical/Kconfig
++++ b/drivers/iio/chemical/Kconfig
+@@ -21,6 +21,13 @@ config ATLAS_PH_SENSOR
+ 	 To compile this driver as module, choose M here: the
+ 	 module will be called atlas-ph-sensor.
+
++config CCS811
++	tristate "AMS CCS811 VOC sensor"
++	depends on I2C
++	help
++	  Say Y here to build I2C interface support for the AMS
++	  CCS811 VOC (Volatile Organic Compounds) sensor
++
+ config IAQCORE
+ 	tristate "AMS iAQ-Core VOC sensors"
+ 	depends on I2C
+diff --git a/drivers/iio/chemical/Makefile b/drivers/iio/chemical/Makefile
+index b02202b..a629b29 100644
+--- a/drivers/iio/chemical/Makefile
++++ b/drivers/iio/chemical/Makefile
+@@ -4,5 +4,6 @@
+
+ # When adding new entries keep the list in alphabetical order
+ obj-$(CONFIG_ATLAS_PH_SENSOR)	+= atlas-ph-sensor.o
++obj-$(CONFIG_CCS811)		+= ccs811.o
+ obj-$(CONFIG_IAQCORE)		+= ams-iaq-core.o
+ obj-$(CONFIG_VZ89X)		+= vz89x.o
+diff --git a/drivers/iio/chemical/ccs811.c b/drivers/iio/chemical/ccs811.c
+new file mode 100644
+index 0000000..2d736d4
+--- /dev/null
++++ b/drivers/iio/chemical/ccs811.c
+@@ -0,0 +1,274 @@
++/*
++ * ccs811.c - Support for AMS CCS811 VOC Sensor
++ *
++ * Copyright (C) 2017 Narcisa Vasile <narcisaanamaria12@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * IIO driver for AMS CCS811 (I2C address 0x5A/0x5B set by ADDR Low/High)
++ *
++ */
++
++#include <linux/i2c.h>
++#include <linux/iio/iio.h>
++#include <linux/module.h>
++
++#define CCS811_STATUS		0x00
++#define CCS811_MEAS_MODE	0x01
++#define CCS811_ALG_RESULT_DATA	0x02
++#define CCS811_RAW_DATA		0x03
++#define CCS811_HW_ID		0x20
++#define CCS811_ERR		0xE0
++#define CCS811_APP_START	0xF4
++
++#define CCS811_VOLTAGE_MASK	0x3FF
++
++#define STATUS_DATA_READY	BIT(3)
++#define STATUS_APP_VALID	BIT(4)
++#define STATUS_FW_MODE		BIT(7)
++
++enum operation_mode {
++	CCS811_MODE_IDLE = 0,
++	CCS811_MODE_IAQ_SEC_1 = 1,
++	CCS811_MODE_IAQ_SEC_10 = 2,
++	CCS811_MODE_IAQ_SEC_60 = 3,
++	CCS811_MODE_RAW_DATA = 4
++};
++
++struct ccs811_data {
++	struct i2c_client *client;
++	u8 buffer[8];
++};
++
++static const struct iio_chan_spec ccs811_channels[] = {
++	{
++		.type = IIO_CURRENT,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)
++	},
++	{
++		.type = IIO_VOLTAGE,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)
++	},
++	{
++		.type = IIO_CONCENTRATION,
++		.channel2 = IIO_MOD_CO2,
++		.modified = 1,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
++	},
++	{
++		.type = IIO_CONCENTRATION,
++		.channel2 = IIO_MOD_VOC,
++		.modified = 1,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
++	},
++};
++
++static int ccs811_data_ready(struct i2c_client *client)
++{
++	int status;
++
++	status = i2c_smbus_read_byte_data(client, CCS811_STATUS);
++	if (status < 0)
++		return status;
++
++	if (!(status & STATUS_DATA_READY))
++		return -EAGAIN;
++
++	return 0;
++}
++
++static int ccs811_set_drive_mode(struct i2c_client *client, int mode)
++{
++	int ret, status, meas_mode = 0;
++
++	if (mode < 0 || mode > 4)
++		return -EINVAL;
++
++	meas_mode = mode << 4;
++
++	ret = i2c_smbus_write_byte_data(client, CCS811_MEAS_MODE, meas_mode);
++	if (ret < 0)
++		return ret;
++
++	/* Check status for errors */
++	status = i2c_smbus_read_byte_data(client, CCS811_STATUS);
++	if (status < 0)
++		return status;
++
++	/* First bit of status is set to 1, if an error occurred */
++	if (status & 1)
++		return -EIO;
++
++	return 0;
++}
++
++static int ccs811_switch_to_application_mode(struct i2c_client *client)
++{
++	int status, ret;
++
++	status = i2c_smbus_read_byte_data(client, CCS811_STATUS);
++	if (status < 0)
++		return status;
++
++	if (!(status & STATUS_APP_VALID))
++		return -EIO;
++
++	ret = i2c_smbus_read_byte_data(client, CCS811_APP_START);
++	if (ret < 0)
++		return ret;
++
++	status = i2c_smbus_read_byte_data(client, CCS811_STATUS);
++	if (status < 0)
++		return status;
++
++	if (!(status & STATUS_FW_MODE))
++		return -EIO;
++
++	return 0;
++}
++
++static int ccs811_setup(struct i2c_client *client)
++{
++	int ret;
++
++	ret = ccs811_switch_to_application_mode(client);
++	if (ret < 0)
++		return ret;
++
++	ret = ccs811_set_drive_mode(client, CCS811_MODE_IAQ_SEC_1);
++	if (ret < 0)
++		return ret;
++
++	return 0;
++}
++
++static int ccs811_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val, int *val2, long mask)
++{
++	struct ccs811_data *data = iio_priv(indio_dev);
++	int ret;
++
++	ret = ccs811_data_ready(data->client);
++	if (ret < 0)
++		return ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ret = i2c_smbus_read_word_swapped(data->client,
++						  CCS811_RAW_DATA);
++		if (ret < 0)
++			return ret;
++
++		switch (chan->type) {
++		case IIO_VOLTAGE:
++			*val = ret & CCS811_VOLTAGE_MASK;
++			return IIO_VAL_INT;
++		case IIO_CURRENT:
++			*val = ret >> 10;
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
++		break;
++	case IIO_CHAN_INFO_PROCESSED:
++		if (chan->type != IIO_CONCENTRATION)
++			return -EINVAL;
++
++		ret = i2c_smbus_read_i2c_block_data(data->client,
++						    CCS811_ALG_RESULT_DATA,
++						    5, data->buffer);
++		if (ret < 0)
++			return ret;
++
++		/* If the number of bytes read is different than what was
++		 * requested or status error bit was set
++		 */
++		if (ret != 5 || (data->buffer[4] & 1))
++			return -EIO;
++
++		switch (chan->channel2) {
++		case IIO_MOD_CO2:
++			*val = data->buffer[0] * 256 + data->buffer[1];
++			return IIO_VAL_INT;
++		case IIO_MOD_VOC:
++			*val = data->buffer[2] * 256 + data->buffer[3];
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
++		break;
++	default:
++		return -EINVAL;
++	}
++	return -EINVAL;
++}
++
++static const struct iio_info ccs811_info = {
++	.read_raw = ccs811_read_raw,
++};
++
++static int ccs811_probe(struct i2c_client *client,
++			const struct i2c_device_id *id)
++{
++	struct iio_dev *indio_dev;
++	struct ccs811_data *data;
++	int hwid, ret;
++
++	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA
++				     | I2C_FUNC_SMBUS_WORD_DATA
++				     | I2C_FUNC_SMBUS_READ_I2C_BLOCK))
++		return -EOPNOTSUPP;
++
++	/* Check hardware id (should be 0x81 for this family of devices) */
++	hwid = i2c_smbus_read_byte_data(client, CCS811_HW_ID);
++	if (hwid < 0)
++		return hwid;
++
++	if (hwid != 0x81) {
++		dev_err(&client->dev, "no CCS811 sensor\n");
++		return -ENODEV;
++	}
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	ret = ccs811_setup(client);
++	if (ret < 0)
++		return ret;
++
++	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->name = id->name;
++	indio_dev->info = &ccs811_info;
++
++	indio_dev->channels = ccs811_channels;
++	indio_dev->num_channels = ARRAY_SIZE(ccs811_channels);
++
++	return devm_iio_device_register(&client->dev, indio_dev);
++}
++
++static const struct i2c_device_id ccs811_id[] = {
++	{"ccs811", 0},
++	{	}
++};
++MODULE_DEVICE_TABLE(i2c, ccs811_id);
++
++static struct i2c_driver ccs811_driver = {
++	.driver = {
++		.name = "ccs811",
++	},
++	.probe = ccs811_probe,
++	.id_table = ccs811_id,
++};
++module_i2c_driver(ccs811_driver);
++
++MODULE_AUTHOR("Narcisa Vasile <narcisaanamaria12@gmail.com>");
++MODULE_DESCRIPTION("CCS811 VOC SENSOR");
++MODULE_LICENSE("GPL v2");
+--
+1.9.1
