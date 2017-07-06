@@ -1,185 +1,841 @@
-Return-Path: <SRS0=6miq=6J=gmail.com=jackoalan@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59444 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751865AbdGFLhp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 6 Jul 2017 07:37:45 -0400
+Date: Thu, 06 Jul 2017 12:37:38 +0100
+In-Reply-To: <1499289168-14392-1-git-send-email-jackoalan@gmail.com>
+References: <b5ede0cc2cb36695b86edf44c0dddbc4736a6420> <1499289168-14392-1-git-send-email-jackoalan@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20170706070913.qh2ztrvbvi7gy5co@dell>
-References: <1499289168-14392-1-git-send-email-jackoalan@gmail.com>
- <1499289168-14392-3-git-send-email-jackoalan@gmail.com> <CAPHBK3bnoUNXHdOwswGRDkiwHZSh6K1fRdJaTHDzaQwL_kP=Bw@mail.gmail.com>
- <20170706070913.qh2ztrvbvi7gy5co@dell>
-From: Jack Andersen <jackoalan@gmail.com>
-Date: Thu, 6 Jul 2017 11:01:54 -1000
-Message-ID: <CAPHBK3bruRbdXEO-+R_913LxiaOwNTR2-65T8WD+TAi23OcAFg@mail.gmail.com>
-Subject: Re: [PATCH v5 3/3] mfd: dln2: Send restart command if HW init fails
-To: Lee Jones <lee.jones@linaro.org>
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Content-Type: multipart/mixed; boundary="001a113cdd32391a450553ac6d89"
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain;
+ charset=utf-8
+Subject: Re: [PATCH v5 1/3] iio: adc: Add support for DLN2 ADC
+To: Jack Andersen <jackoalan@gmail.com>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+CC: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Lee Jones <lee.jones@linaro.org>
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Message-ID: <C9879700-04BB-44B3-A60A-AD4F6B19F8EC@jic23.retrosnub.co.uk>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
---001a113cdd32391a450553ac6d89
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-The restart command doesn't behave like other commands. It doesn't
-return an error code (which indicates a failed transfer in the dln2
-module so the probe fails). Attached is a system log snippet to give
-you a better idea.
 
-I'm able to consistently reproduce this behavior on 4.12 by
-registering an ADC event on the DLN2 then restarting the host without
-powering off. Without the dln2_restart patch, it ends on the `dln2:
-probe of 1-2:1.0 failed with error -110' line. Shortly after issuing
-the restart, the kernel indicates a device disconnect, and it
-reconnects about 400ms later, with a usable device state.
-
-On 5 July 2017 at 21:09, Lee Jones <lee.jones@linaro.org> wrote:
-> On Wed, 05 Jul 2017, Jack Andersen wrote:
+On 5 July 2017 22:12:46 BST, Jack Andersen <jackoalan@gmail.com> wrote:
+>This patch adds support for Diolan DLN2 ADC via IIO's ADC interface.
+>ADC is the fourth and final component of the DLN2 for the kernel.
 >
->> I have mixed feelings about making this patch. The device appears to
->> lose its ability to send command responses when the driver
->> unexpectedly goes offline (probably overflowing an internal send
->> buffer).
->>
->> The restart command is a send-only way to recover the device.
->> What concerns me is if there's another issue causing init to fail and
->> a restart doesn't fix, this will trigger an endless probe loop. I'm
->> not sure if there's a better way to discern this condition.
->
-> Why does dln2_restart() cause an unbind/bind?
->
->> On 5 July 2017 at 11:12, Jack Andersen <jackoalan@gmail.com> wrote:
->> > There's an issue with reinitializing DLN2 hardware if ADC channel even=
-t
->> > configurations aren't reset before suspending the driver. A physical r=
-econnect
->> > of the device solves the problem, but restarting the machine without a=
- power
->> > cycle leaves the device state inconsistent.
->> >
->> > This patch transmits a restart command in the event of a failed init.
->> > To the kernel's perspective, this is the rough equivalent of a disconn=
-ect and
->> > reconnect, so another probe occurs shortly afterwards.
->> >
->> > Signed-off-by: Jack Andersen <jackoalan@gmail.com>
->> > ---
->> >  drivers/mfd/dln2.c | 11 ++++++++++-
->> >  1 file changed, 10 insertions(+), 1 deletion(-)
->> >
->> > diff --git a/drivers/mfd/dln2.c b/drivers/mfd/dln2.c
->> > index a22ab8c..1eb0056 100644
->> > --- a/drivers/mfd/dln2.c
->> > +++ b/drivers/mfd/dln2.c
->> > @@ -40,6 +40,7 @@ struct dln2_response {
->> >  #define DLN2_GENERIC_CMD(cmd)          DLN2_CMD(cmd, DLN2_GENERIC_MOD=
-ULE_ID)
->> >  #define CMD_GET_DEVICE_VER             DLN2_GENERIC_CMD(0x30)
->> >  #define CMD_GET_DEVICE_SN              DLN2_GENERIC_CMD(0x31)
->> > +#define CMD_RESTART                    DLN2_GENERIC_CMD(0x43)
->> >
->> >  #define DLN2_HW_ID                     0x200
->> >  #define DLN2_USB_TIMEOUT               200     /* in ms */
->> > @@ -531,6 +532,12 @@ int dln2_transfer(struct platform_device *pdev, u=
-16 cmd,
->> >  }
->> >  EXPORT_SYMBOL(dln2_transfer);
->> >
->> > +static int dln2_restart(struct dln2_dev *dln2)
->> > +{
->> > +       return _dln2_transfer(dln2, DLN2_HANDLE_CTRL, CMD_RESTART,
->> > +                             NULL, 0, NULL, NULL);
->> > +}
->> > +
->> >  static int dln2_check_hw(struct dln2_dev *dln2)
->> >  {
->> >         int ret;
->> > @@ -782,7 +789,9 @@ static int dln2_probe(struct usb_interface *interf=
-ace,
->> >
->> >         ret =3D dln2_hw_init(dln2);
->> >         if (ret < 0) {
->> > -               dev_err(dev, "failed to initialize hardware\n");
->> > +               dev_err(dev,
->> > +                       "failed to initialize hardware; attempting res=
-tart\n");
->> > +               dln2_restart(dln2);
->> >                 goto out_stop_rx;
->> >         }
->> >
->> >
->
-> --
-> Lee Jones
-> Linaro STMicroelectronics Landing Team Lead
-> Linaro.org =E2=94=82 Open source software for ARM SoCs
-> Follow Linaro: Facebook | Twitter | Blog
+>Signed-off-by: Jack Andersen <jackoalan@gmail.com>
 
---001a113cdd32391a450553ac6d89
-Content-Type: text/plain; charset="US-ASCII"; name="dln2-log.txt"
-Content-Disposition: attachment; filename="dln2-log.txt"
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_j4swkn8i0
+The remove order differs from opposite of probe due to use of devm after an non managed call.
 
-WyAgICAxLjMxNjI4NV0gdXNiIDEtMjogTmV3IFVTQiBkZXZpY2UgZm91bmQsIGlkVmVuZG9yPWEy
-NTcsIGlkUHJvZHVjdD0yMDEzClsgICAgMS4zMTYyODZdIHVzYiAxLTI6IE5ldyBVU0IgZGV2aWNl
-IHN0cmluZ3M6IE1mcj0xLCBQcm9kdWN0PTIsIFNlcmlhbE51bWJlcj0wClsgICAgMS4zMTYyODdd
-IHVzYiAxLTI6IFByb2R1Y3Q6IERpb2xhbiBETE4yClsgICAgMS4zMTYyODhdIHVzYiAxLTI6IE1h
-bnVmYWN0dXJlcjogRGlvbGFuClsgICAgMi4yNjQyNDhdIGRsbjI6IGxvYWRpbmcgb3V0LW9mLXRy
-ZWUgbW9kdWxlIHRhaW50cyBrZXJuZWwuClsgICAgMi4yNjQyODJdIGRsbjI6IG1vZHVsZSB2ZXJp
-ZmljYXRpb24gZmFpbGVkOiBzaWduYXR1cmUgYW5kL29yIHJlcXVpcmVkIGtleSBtaXNzaW5nIC0g
-dGFpbnRpbmcga2VybmVsClsgICAgMi40Njk5NTFdIGRsbjIgMS0yOjEuMDogZmFpbGVkIHRvIGlu
-aXRpYWxpemUgaGFyZHdhcmU7IGF0dGVtcHRpbmcgcmVzdGFydApbICAgIDIuNjAyNzI5XSBkbG4y
-IDEtMjoxLjA6IG5vbnplcm8gdXJiIHN0YXR1cyByZWNlaXZlZCAtNzEKWyAgICAyLjYwMjc2MV0g
-ZGxuMiAxLTI6MS4wOiBub256ZXJvIHVyYiBzdGF0dXMgcmVjZWl2ZWQgLTcxClsgICAgMi42MDI4
-NDFdIGRsbjIgMS0yOjEuMDogbm9uemVybyB1cmIgc3RhdHVzIHJlY2VpdmVkIC03MQpbICAgIDIu
-NjAyOTU3XSBkbG4yIDEtMjoxLjA6IG5vbnplcm8gdXJiIHN0YXR1cyByZWNlaXZlZCAtNzEKWyAg
-ICAyLjYwMzAzOF0gZGxuMiAxLTI6MS4wOiBub256ZXJvIHVyYiBzdGF0dXMgcmVjZWl2ZWQgLTcx
-ClsgICAgMi42MDMxMTddIGRsbjIgMS0yOjEuMDogbm9uemVybyB1cmIgc3RhdHVzIHJlY2VpdmVk
-IC03MQpbICAgIDIuNjAzMjAxXSBkbG4yIDEtMjoxLjA6IG5vbnplcm8gdXJiIHN0YXR1cyByZWNl
-aXZlZCAtNzEKWyAgICAyLjYwMzI3N10gZGxuMiAxLTI6MS4wOiBub256ZXJvIHVyYiBzdGF0dXMg
-cmVjZWl2ZWQgLTcxClsgICAgMi42MDMzMjhdIGRsbjIgMS0yOjEuMDogbm9uemVybyB1cmIgc3Rh
-dHVzIHJlY2VpdmVkIC03MQpbICAgIDIuNjAzMzQ1XSB1c2IgMS0yOiBVU0IgZGlzY29ubmVjdCwg
-ZGV2aWNlIG51bWJlciAyClsgICAgMi42MDMzOThdIGRsbjIgMS0yOjEuMDogbm9uemVybyB1cmIg
-c3RhdHVzIHJlY2VpdmVkIC03MQpbICAgIDIuNjAzMzk4XSBkbG4yIDEtMjoxLjA6IGZhaWxlZCB0
-byByZXN1Ym1pdCBSWCBVUkI6IC0xOQpbICAgIDIuNjAzNDM3XSBkbG4yIDEtMjoxLjA6IG5vbnpl
-cm8gdXJiIHN0YXR1cyByZWNlaXZlZCAtNzEKWyAgICAyLjYwMzQzOF0gZGxuMiAxLTI6MS4wOiBm
-YWlsZWQgdG8gcmVzdWJtaXQgUlggVVJCOiAtMTkKWyAgICAyLjYwMzQ3N10gZGxuMiAxLTI6MS4w
-OiBub256ZXJvIHVyYiBzdGF0dXMgcmVjZWl2ZWQgLTcxClsgICAgMi42MDM0NzhdIGRsbjIgMS0y
-OjEuMDogZmFpbGVkIHRvIHJlc3VibWl0IFJYIFVSQjogLTE5ClsgICAgMi42MDM1MTddIGRsbjIg
-MS0yOjEuMDogbm9uemVybyB1cmIgc3RhdHVzIHJlY2VpdmVkIC03MQpbICAgIDIuNjAzNTE4XSBk
-bG4yIDEtMjoxLjA6IGZhaWxlZCB0byByZXN1Ym1pdCBSWCBVUkI6IC0xOQpbICAgIDIuNjAzNTYx
-XSBkbG4yIDEtMjoxLjA6IG5vbnplcm8gdXJiIHN0YXR1cyByZWNlaXZlZCAtNzEKWyAgICAyLjYw
-MzU2MV0gZGxuMiAxLTI6MS4wOiBmYWlsZWQgdG8gcmVzdWJtaXQgUlggVVJCOiAtMTkKWyAgICAy
-LjYwMzU5N10gZGxuMiAxLTI6MS4wOiBub256ZXJvIHVyYiBzdGF0dXMgcmVjZWl2ZWQgLTcxClsg
-ICAgMi42MDM1OThdIGRsbjIgMS0yOjEuMDogZmFpbGVkIHRvIHJlc3VibWl0IFJYIFVSQjogLTE5
-ClsgICAgMi42MDM2MzddIGRsbjIgMS0yOjEuMDogbm9uemVybyB1cmIgc3RhdHVzIHJlY2VpdmVk
-IC03MQpbICAgIDIuNjAzNjM4XSBkbG4yIDEtMjoxLjA6IGZhaWxlZCB0byByZXN1Ym1pdCBSWCBV
-UkI6IC0xOQpbICAgIDIuNjAzNjc3XSBkbG4yIDEtMjoxLjA6IG5vbnplcm8gdXJiIHN0YXR1cyBy
-ZWNlaXZlZCAtNzEKWyAgICAyLjYwMzY3OF0gZGxuMiAxLTI6MS4wOiBmYWlsZWQgdG8gcmVzdWJt
-aXQgUlggVVJCOiAtMTkKWyAgICAyLjYwMzcxN10gZGxuMiAxLTI6MS4wOiBub256ZXJvIHVyYiBz
-dGF0dXMgcmVjZWl2ZWQgLTcxClsgICAgMi42MDM3MThdIGRsbjIgMS0yOjEuMDogZmFpbGVkIHRv
-IHJlc3VibWl0IFJYIFVSQjogLTE5ClsgICAgMi42MDM3NTddIGRsbjIgMS0yOjEuMDogbm9uemVy
-byB1cmIgc3RhdHVzIHJlY2VpdmVkIC03MQpbICAgIDIuNjAzNzU4XSBkbG4yIDEtMjoxLjA6IGZh
-aWxlZCB0byByZXN1Ym1pdCBSWCBVUkI6IC0xOQpbICAgIDIuNjAzNzk3XSBkbG4yIDEtMjoxLjA6
-IG5vbnplcm8gdXJiIHN0YXR1cyByZWNlaXZlZCAtNzEKWyAgICAyLjYwMzc5OF0gZGxuMiAxLTI6
-MS4wOiBmYWlsZWQgdG8gcmVzdWJtaXQgUlggVVJCOiAtMTkKWyAgICAyLjYwMzg0MV0gZGxuMiAx
-LTI6MS4wOiBub256ZXJvIHVyYiBzdGF0dXMgcmVjZWl2ZWQgLTcxClsgICAgMi42MDM4NDJdIGRs
-bjIgMS0yOjEuMDogZmFpbGVkIHRvIHJlc3VibWl0IFJYIFVSQjogLTE5ClsgICAgMi42MDM4ODBd
-IGRsbjIgMS0yOjEuMDogbm9uemVybyB1cmIgc3RhdHVzIHJlY2VpdmVkIC03MQpbICAgIDIuNjAz
-ODgxXSBkbG4yIDEtMjoxLjA6IGZhaWxlZCB0byByZXN1Ym1pdCBSWCBVUkI6IC0xOQpbICAgIDIu
-NjAzOTE3XSBkbG4yIDEtMjoxLjA6IG5vbnplcm8gdXJiIHN0YXR1cyByZWNlaXZlZCAtNzEKWyAg
-ICAyLjYwMzkxOF0gZGxuMiAxLTI6MS4wOiBmYWlsZWQgdG8gcmVzdWJtaXQgUlggVVJCOiAtMTkK
-WyAgICAyLjYwMzk1N10gZGxuMiAxLTI6MS4wOiBub256ZXJvIHVyYiBzdGF0dXMgcmVjZWl2ZWQg
-LTcxClsgICAgMi42MDM5NThdIGRsbjIgMS0yOjEuMDogZmFpbGVkIHRvIHJlc3VibWl0IFJYIFVS
-QjogLTE5ClsgICAgMi42MDM5OTddIGRsbjIgMS0yOjEuMDogbm9uemVybyB1cmIgc3RhdHVzIHJl
-Y2VpdmVkIC03MQpbICAgIDIuNjAzOTk4XSBkbG4yIDEtMjoxLjA6IGZhaWxlZCB0byByZXN1Ym1p
-dCBSWCBVUkI6IC0xOQpbICAgIDIuNjc0MDIyXSBkbG4yOiBwcm9iZSBvZiAxLTI6MS4wIGZhaWxl
-ZCB3aXRoIGVycm9yIC0xMTAKWyAgICAyLjY3NDA1N10gdXNiY29yZTogcmVnaXN0ZXJlZCBuZXcg
-aW50ZXJmYWNlIGRyaXZlciBkbG4yClsgICAgMi45Nzc5NTldIHVzYiAxLTI6IG5ldyBmdWxsLXNw
-ZWVkIFVTQiBkZXZpY2UgbnVtYmVyIDcgdXNpbmcgeGhjaV9oY2QKWyAgICAzLjExOTEwOF0gdXNi
-IDEtMjogTmV3IFVTQiBkZXZpY2UgZm91bmQsIGlkVmVuZG9yPWEyNTcsIGlkUHJvZHVjdD0yMDEz
-ClsgICAgMy4xMTkxMDldIHVzYiAxLTI6IE5ldyBVU0IgZGV2aWNlIHN0cmluZ3M6IE1mcj0xLCBQ
-cm9kdWN0PTIsIFNlcmlhbE51bWJlcj0wClsgICAgMy4xMTkxMTBdIHVzYiAxLTI6IFByb2R1Y3Q6
-IERpb2xhbiBETE4yClsgICAgMy4xMTkxMTFdIHVzYiAxLTI6IE1hbnVmYWN0dXJlcjogRGlvbGFu
-ClsgICAgMy4xMTk3NzRdIGRsbjIgMS0yOjEuMDogRGlvbGFuIERMTjIgc2VyaWFsIDMzNjI4ODQ0
-Cgo=
---001a113cdd32391a450553ac6d89--
+Result doesn't pass the obviously correct test of the lazy maintainer :)
+>---
+>Changes in v2:
+>- Address Peter's remarks; bringing consistency to C99 syntax, dev_dbg
+>usage,
+>  and error handling.
+>- Remove probe/remove logging.
+>- Utilize stack-allocated buffer for pushing into IIO.
+>- Add timestamp channel to IIO spec.
+>
+>Suggested-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+>---
+>Changes in v3:
+>- Remove lazy channel enabling; integrating with update_channel_mode
+>instead.
+>- Implement memcpy demux table similar to subsystem core.
+>- Use iio_triggered_buffer_setup to create buffer.
+>
+>Suggested-by: Jonathan Cameron <jic23@kernel.org>
+>---
+>Changes in v4:
+>- Remove unrelated, erronous change to lsgpio.c
+>---
+>Changes in v5:
+>- Use of devm functions wherever possible.
+>- Use iio_device_claim_direct_mode.
+>- Variable declaration more consistent with C style.
+>- MFD modifications in separate patch.
+>Suggested-by: Jonathan Cameron <jic23@kernel.org>
+>---
+> drivers/iio/adc/Kconfig    |   9 +
+> drivers/iio/adc/Makefile   |   1 +
+>drivers/iio/adc/dln2-adc.c | 719
+>+++++++++++++++++++++++++++++++++++++++++++++
+> 3 files changed, 729 insertions(+)
+> create mode 100644 drivers/iio/adc/dln2-adc.c
+>
+>diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>index 614fa41..196d2ce 100644
+>--- a/drivers/iio/adc/Kconfig
+>+++ b/drivers/iio/adc/Kconfig
+>@@ -239,6 +239,15 @@ config DA9150_GPADC
+>	  To compile this driver as a module, choose M here: the module will
+>be
+> 	  called berlin2-adc.
+> 
+>+config DLN2_ADC
+>+	tristate "Diolan DLN-2 ADC driver support"
+>+	depends on MFD_DLN2
+>+	help
+>+	  Say yes here to build support for Diolan DLN-2 ADC.
+>+
+>+	  This driver can also be built as a module. If so, the module will
+>be
+>+	  called adc_dln2.
+>+
+> config ENVELOPE_DETECTOR
+> 	tristate "Envelope detector using a DAC and a comparator"
+> 	depends on OF
+>diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+>index b546736a..7ea0bf3 100644
+>--- a/drivers/iio/adc/Makefile
+>+++ b/drivers/iio/adc/Makefile
+>@@ -24,6 +24,7 @@ obj-$(CONFIG_BERLIN2_ADC) += berlin2-adc.o
+> obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
+> obj-$(CONFIG_CPCAP_ADC) += cpcap-adc.o
+> obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
+>+obj-$(CONFIG_DLN2_ADC) += dln2-adc.o
+> obj-$(CONFIG_ENVELOPE_DETECTOR) += envelope-detector.o
+> obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+> obj-$(CONFIG_FSL_MX25_ADC) += fsl-imx25-gcq.o
+>diff --git a/drivers/iio/adc/dln2-adc.c b/drivers/iio/adc/dln2-adc.c
+>new file mode 100644
+>index 0000000..649bbef9b
+>--- /dev/null
+>+++ b/drivers/iio/adc/dln2-adc.c
+>@@ -0,0 +1,719 @@
+>+/*
+>+ * Driver for the Diolan DLN-2 USB-ADC adapter
+>+ *
+>+ * Copyright (c) 2017 Jack Andersen
+>+ *
+>+ * This program is free software; you can redistribute it and/or
+>+ * modify it under the terms of the GNU General Public License as
+>+ * published by the Free Software Foundation, version 2.
+>+ */
+>+
+>+#include <linux/kernel.h>
+>+#include <linux/module.h>
+>+#include <linux/types.h>
+>+#include <linux/platform_device.h>
+>+#include <linux/mfd/dln2.h>
+>+
+>+#include <linux/iio/iio.h>
+>+#include <linux/iio/sysfs.h>
+>+#include <linux/iio/trigger.h>
+>+#include <linux/iio/trigger_consumer.h>
+>+#include <linux/iio/triggered_buffer.h>
+>+#include <linux/iio/buffer.h>
+>+#include <linux/iio/kfifo_buf.h>
+>+
+>+#define DLN2_ADC_MOD_NAME "dln2-adc"
+>+
+>+#define DLN2_ADC_ID             0x06
+>+
+>+#define DLN2_ADC_GET_CHANNEL_COUNT	DLN2_CMD(0x01, DLN2_ADC_ID)
+>+#define DLN2_ADC_ENABLE			DLN2_CMD(0x02, DLN2_ADC_ID)
+>+#define DLN2_ADC_DISABLE		DLN2_CMD(0x03, DLN2_ADC_ID)
+>+#define DLN2_ADC_CHANNEL_ENABLE		DLN2_CMD(0x05, DLN2_ADC_ID)
+>+#define DLN2_ADC_CHANNEL_DISABLE	DLN2_CMD(0x06, DLN2_ADC_ID)
+>+#define DLN2_ADC_SET_RESOLUTION		DLN2_CMD(0x08, DLN2_ADC_ID)
+>+#define DLN2_ADC_CHANNEL_GET_VAL	DLN2_CMD(0x0A, DLN2_ADC_ID)
+>+#define DLN2_ADC_CHANNEL_GET_ALL_VAL	DLN2_CMD(0x0B, DLN2_ADC_ID)
+>+#define DLN2_ADC_CHANNEL_SET_CFG	DLN2_CMD(0x0C, DLN2_ADC_ID)
+>+#define DLN2_ADC_CHANNEL_GET_CFG	DLN2_CMD(0x0D, DLN2_ADC_ID)
+>+#define DLN2_ADC_CONDITION_MET_EV	DLN2_CMD(0x10, DLN2_ADC_ID)
+>+
+>+#define DLN2_ADC_EVENT_NONE		0
+>+#define DLN2_ADC_EVENT_BELOW		1
+>+#define DLN2_ADC_EVENT_LEVEL_ABOVE	2
+>+#define DLN2_ADC_EVENT_OUTSIDE		3
+>+#define DLN2_ADC_EVENT_INSIDE		4
+>+#define DLN2_ADC_EVENT_ALWAYS		5
+>+
+>+#define DLN2_ADC_MAX_CHANNELS 8
+>+#define DLN2_ADC_DATA_BITS 10
+>+
+>+/*
+>+ * Plays similar role to iio_demux_table in subsystem core; except
+>allocated
+>+ * in a fixed 8-element array.
+>+ */
+>+struct dln2_adc_demux_table {
+>+	unsigned int from;
+>+	unsigned int to;
+>+	unsigned int length;
+>+};
+>+
+>+struct dln2_adc {
+>+	struct platform_device *pdev;
+>+	struct iio_chan_spec iio_channels[DLN2_ADC_MAX_CHANNELS + 1];
+>+	int port, trigger_chan;
+>+	struct iio_trigger *trig;
+>+	struct mutex mutex;
+>+	/* Cached sample period in milliseconds */
+>+	unsigned int sample_period;
+>+	/* Demux table */
+>+	unsigned int demux_count;
+>+	struct dln2_adc_demux_table demux[DLN2_ADC_MAX_CHANNELS];
+>+	/* Precomputed timestamp padding offset and length */
+>+	unsigned int ts_pad_offset, ts_pad_length;
+>+};
+>+
+>+struct dln2_adc_port_chan {
+>+	u8 port;
+>+	u8 chan;
+>+};
+>+
+>+struct dln2_adc_get_all_vals {
+>+	__le16 channel_mask;
+>+	__le16 values[DLN2_ADC_MAX_CHANNELS];
+>+};
+>+
+>+static void dln2_adc_add_demux(struct dln2_adc *dln2,
+>+	unsigned int in_loc, unsigned int out_loc,
+>+	unsigned int length)
+>+{
+>+	struct dln2_adc_demux_table *p = dln2->demux_count ?
+>+		&dln2->demux[dln2->demux_count - 1] : NULL;
+>+
+>+	if (p && p->from + p->length == in_loc &&
+>+		p->to + p->length == out_loc) {
+>+		p->length += length;
+>+	} else if (dln2->demux_count < DLN2_ADC_MAX_CHANNELS) {
+>+		p = &dln2->demux[dln2->demux_count++];
+>+		p->from = in_loc;
+>+		p->to = out_loc;
+>+		p->length = length;
+>+	}
+>+}
+>+
+>+static void dln2_adc_update_demux(struct dln2_adc *dln2)
+>+{
+>+	int in_ind = -1, out_ind;
+>+	unsigned int in_loc = 0, out_loc = 0;
+>+	struct iio_dev *indio_dev = platform_get_drvdata(dln2->pdev);
+>+
+>+	/* Clear out any old demux */
+>+	dln2->demux_count = 0;
+>+
+>+	/* Optimize all 8-channels case */
+>+	if (indio_dev->masklength &&
+>+	    (*indio_dev->active_scan_mask & 0xff) == 0xff) {
+>+		dln2_adc_add_demux(dln2, 0, 0, 16);
+>+		dln2->ts_pad_offset = 0;
+>+		dln2->ts_pad_length = 0;
+>+		return;
+>+	}
+>+
+>+	/* Build demux table from fixed 8-channels to active_scan_mask */
+>+	for_each_set_bit(out_ind,
+>+			 indio_dev->active_scan_mask,
+>+			 indio_dev->masklength) {
+>+		/* Handle timestamp separately */
+>+		if (out_ind == DLN2_ADC_MAX_CHANNELS)
+>+			break;
+>+		for (++in_ind; in_ind != out_ind; ++in_ind)
+>+			in_loc += 2;
+>+		dln2_adc_add_demux(dln2, in_loc, out_loc, 2);
+>+		out_loc += 2;
+>+		in_loc += 2;
+>+	}
+>+
+>+	if (indio_dev->scan_timestamp) {
+>+		size_t ts_offset = indio_dev->scan_bytes / sizeof(int64_t) - 1;
+>+
+>+		dln2->ts_pad_offset = out_loc;
+>+		dln2->ts_pad_length = ts_offset * sizeof(int64_t) - out_loc;
+>+	} else {
+>+		dln2->ts_pad_offset = 0;
+>+		dln2->ts_pad_length = 0;
+>+	}
+>+}
+>+
+>+static int dln2_adc_get_chan_count(struct dln2_adc *dln2)
+>+{
+>+	int ret;
+>+	u8 port = dln2->port;
+>+	u8 count;
+>+	int olen = sizeof(count);
+>+
+>+	ret = dln2_transfer(dln2->pdev, DLN2_ADC_GET_CHANNEL_COUNT,
+>+			    &port, sizeof(port), &count, &olen);
+>+	if (ret < 0) {
+>+		dev_dbg(&dln2->pdev->dev, "Problem in %s\n", __func__);
+>+		return ret;
+>+	}
+>+	if (olen < sizeof(count))
+>+		return -EPROTO;
+>+
+>+	return count;
+>+}
+>+
+>+static int dln2_adc_set_port_resolution(struct dln2_adc *dln2)
+>+{
+>+	int ret;
+>+	struct dln2_adc_port_chan port_chan = {
+>+		.port = dln2->port,
+>+		.chan = DLN2_ADC_DATA_BITS,
+>+	};
+>+
+>+	ret = dln2_transfer_tx(dln2->pdev, DLN2_ADC_SET_RESOLUTION,
+>+			       &port_chan, sizeof(port_chan));
+>+	if (ret < 0)
+>+		dev_dbg(&dln2->pdev->dev, "Problem in %s\n", __func__);
+>+
+>+	return ret;
+>+}
+>+
+>+static int dln2_adc_set_chan_enabled(struct dln2_adc *dln2,
+>+				     int channel, bool enable)
+>+{
+>+	int ret;
+>+	struct dln2_adc_port_chan port_chan = {
+>+		.port = dln2->port,
+>+		.chan = channel,
+>+	};
+>+	u16 cmd = enable ? DLN2_ADC_CHANNEL_ENABLE :
+>DLN2_ADC_CHANNEL_DISABLE;
+>+
+>+	ret = dln2_transfer_tx(dln2->pdev, cmd, &port_chan,
+>sizeof(port_chan));
+>+	if (ret < 0)
+>+		dev_dbg(&dln2->pdev->dev, "Problem in %s\n", __func__);
+>+
+>+	return ret;
+>+}
+>+
+>+static int dln2_adc_set_port_enabled(struct dln2_adc *dln2, bool
+>enable,
+>+				     u16 *conflict_out)
+>+{
+>+	int ret;
+>+	u8 port = dln2->port;
+>+	__le16 conflict;
+>+	int olen = sizeof(conflict);
+>+	u16 cmd = enable ? DLN2_ADC_ENABLE : DLN2_ADC_DISABLE;
+>+
+>+	if (conflict_out)
+>+		*conflict_out = 0;
+>+
+>+	ret = dln2_transfer(dln2->pdev, cmd, &port, sizeof(port),
+>+			    &conflict, &olen);
+>+	if (ret < 0) {
+>+		dev_dbg(&dln2->pdev->dev, "Problem in %s(%d)\n",
+>+			__func__, (int)enable);
+>+		if (conflict_out && enable && olen >= sizeof(conflict))
+>+			*conflict_out = le16_to_cpu(conflict);
+>+		return ret;
+>+	}
+>+	if (enable && olen < sizeof(conflict))
+>+		return -EPROTO;
+>+
+>+	return ret;
+>+}
+>+
+>+static int dln2_adc_set_chan_period(struct dln2_adc *dln2,
+>+	unsigned int channel, unsigned int period)
+>+{
+>+	int ret;
+>+	struct {
+>+		struct dln2_adc_port_chan port_chan;
+>+		__u8 type;
+>+		__le16 period;
+>+		__le16 low;
+>+		__le16 high;
+>+	} __packed set_cfg = {
+>+		.port_chan.port = dln2->port,
+>+		.port_chan.chan = channel,
+>+		.type = period ? DLN2_ADC_EVENT_ALWAYS : DLN2_ADC_EVENT_NONE,
+>+		.period = cpu_to_le16(period)
+>+	};
+>+
+>+	ret = dln2_transfer_tx(dln2->pdev, DLN2_ADC_CHANNEL_SET_CFG,
+>+			       &set_cfg, sizeof(set_cfg));
+>+	if (ret < 0)
+>+		dev_dbg(&dln2->pdev->dev, "Problem in %s\n", __func__);
+>+
+>+	return ret;
+>+}
+>+
+>+static int dln2_adc_read(struct dln2_adc *dln2, unsigned int channel)
+>+{
+>+	int ret, i;
+>+	struct iio_dev *indio_dev = platform_get_drvdata(dln2->pdev);
+>+	u16 conflict;
+>+	__le16 value;
+>+	int olen = sizeof(value);
+>+	struct dln2_adc_port_chan port_chan = {
+>+		.port = dln2->port,
+>+		.chan = channel,
+>+	};
+>+
+>+	ret = iio_device_claim_direct_mode(indio_dev);
+>+	if (ret < 0)
+>+		return ret;
+>+
+>+	ret = dln2_adc_set_chan_enabled(dln2, channel, true);
+>+	if (ret < 0)
+>+		goto release_direct;
+>+
+>+	ret = dln2_adc_set_port_enabled(dln2, true, &conflict);
+>+	if (ret < 0) {
+>+		if (conflict) {
+>+			dev_err(&dln2->pdev->dev,
+>+				"ADC pins conflict with mask %04X\n",
+>+				(int)conflict);
+>+			ret = -EBUSY;
+>+		}
+>+		goto disable_chan;
+>+	}
+>+
+>+	/*
+>+	 * Call GET_VAL twice due to initial zero-return immediately after
+>+	 * enabling channel.
+>+	 */
+>+	for (i = 0; i < 2; ++i) {
+>+		ret = dln2_transfer(dln2->pdev, DLN2_ADC_CHANNEL_GET_VAL,
+>+				    &port_chan, sizeof(port_chan),
+>+				    &value, &olen);
+>+		if (ret < 0) {
+>+			dev_dbg(&dln2->pdev->dev, "Problem in %s\n", __func__);
+>+			goto disable_port;
+>+		}
+>+		if (olen < sizeof(value)) {
+>+			ret = -EPROTO;
+>+			goto disable_port;
+>+		}
+>+	}
+>+
+>+	ret = le16_to_cpu(value);
+>+
+>+disable_port:
+>+	dln2_adc_set_port_enabled(dln2, false, NULL);
+>+disable_chan:
+>+	dln2_adc_set_chan_enabled(dln2, channel, false);
+>+release_direct:
+>+	iio_device_release_direct_mode(indio_dev);
+>+
+>+	return ret;
+>+}
+>+
+>+static int dln2_adc_read_all(struct dln2_adc *dln2,
+>+			     struct dln2_adc_get_all_vals *get_all_vals)
+>+{
+>+	int ret;
+>+	__u8 port = dln2->port;
+>+	int olen = sizeof(*get_all_vals);
+>+
+>+	ret = dln2_transfer(dln2->pdev, DLN2_ADC_CHANNEL_GET_ALL_VAL,
+>+			    &port, sizeof(port), get_all_vals, &olen);
+>+	if (ret < 0) {
+>+		dev_dbg(&dln2->pdev->dev, "Problem in %s\n", __func__);
+>+		return ret;
+>+	}
+>+	if (olen < sizeof(*get_all_vals))
+>+		return -EPROTO;
+>+
+>+	return ret;
+>+}
+>+
+>+static int dln2_adc_read_raw(struct iio_dev *indio_dev,
+>+			     struct iio_chan_spec const *chan,
+>+			     int *val,
+>+			     int *val2,
+>+			     long mask)
+>+{
+>+	int ret;
+>+	unsigned int microhertz;
+>+	struct dln2_adc *dln2 = iio_priv(indio_dev);
+>+
+>+	switch (mask) {
+>+	case IIO_CHAN_INFO_RAW:
+>+		mutex_lock(&dln2->mutex);
+>+		ret = dln2_adc_read(dln2, chan->channel);
+>+		mutex_unlock(&dln2->mutex);
+>+
+>+		if (ret < 0)
+>+			return ret;
+>+
+>+		*val = ret;
+>+		return IIO_VAL_INT;
+>+
+>+	case IIO_CHAN_INFO_SCALE:
+>+		/*
+>+		 * Voltage reference is fixed at 3.3v
+>+		 *  3.3 / (1 << 10) * 1000000000
+>+		 */
+>+		*val = 0;
+>+		*val2 = 3222656;
+>+		return IIO_VAL_INT_PLUS_NANO;
+>+
+>+	case IIO_CHAN_INFO_SAMP_FREQ:
+>+		if (dln2->sample_period) {
+>+			microhertz = 1000000000 / dln2->sample_period;
+>+			*val = microhertz / 1000000;
+>+			*val2 = microhertz % 1000000;
+>+		} else {
+>+			*val = 0;
+>+			*val2 = 0;
+>+		}
+>+
+>+		return IIO_VAL_INT_PLUS_MICRO;
+>+
+>+	default:
+>+		return -EINVAL;
+>+	}
+>+}
+>+
+>+static int dln2_adc_write_raw(struct iio_dev *indio_dev,
+>+			      struct iio_chan_spec const *chan,
+>+			      int val,
+>+			      int val2,
+>+			      long mask)
+>+{
+>+	int ret;
+>+	unsigned int microhertz;
+>+	struct dln2_adc *dln2 = iio_priv(indio_dev);
+>+
+>+	switch (mask) {
+>+	case IIO_CHAN_INFO_SAMP_FREQ:
+>+		microhertz = 1000000 * val + val2;
+>+
+>+		mutex_lock(&dln2->mutex);
+>+
+>+		dln2->sample_period =
+>+			microhertz ? 1000000000 / microhertz : UINT_MAX;
+>+		if (dln2->sample_period > 65535) {
+>+			dln2->sample_period = 65535;
+>+			dev_warn(&dln2->pdev->dev,
+>+				 "clamping period to 65535ms\n");
+>+		}
+>+
+>+		/*
+>+		 * The first requested channel is arbitrated as a shared
+>+		 * trigger source, so only one event is registered with the
+>+		 * DLN. The event handler will then read all enabled channel
+>+		 * values using DLN2_ADC_CHANNEL_GET_ALL_VAL to maintain
+>+		 * synchronization between ADC readings.
+>+		 */
+>+		if (dln2->trigger_chan != -1)
+>+			ret = dln2_adc_set_chan_period(dln2,
+>+				dln2->trigger_chan, dln2->sample_period);
+>+		else
+>+			ret = 0;
+>+
+>+		mutex_unlock(&dln2->mutex);
+>+
+>+		return ret;
+>+
+>+	default:
+>+		return -EINVAL;
+>+	}
+>+}
+>+
+>+static int dln2_update_scan_mode(struct iio_dev *indio_dev,
+>+				 const unsigned long *scan_mask)
+>+{
+>+	struct dln2_adc *dln2 = iio_priv(indio_dev);
+>+	int chan_count = indio_dev->num_channels - 1;
+>+	int ret, i, j;
+>+
+>+	mutex_lock(&dln2->mutex);
+>+
+>+	for (i = 0; i < chan_count; ++i) {
+>+		ret = dln2_adc_set_chan_enabled(dln2, i,
+>+						test_bit(i, scan_mask));
+>+		if (ret < 0) {
+>+			for (j = 0; j < i; ++j)
+>+				dln2_adc_set_chan_enabled(dln2, j, false);
+>+			mutex_unlock(&dln2->mutex);
+>+			dev_err(&dln2->pdev->dev,
+>+				"Unable to enable ADC channel %d\n", i);
+>+			return -EBUSY;
+>+		}
+>+	}
+>+
+>+	dln2_adc_update_demux(dln2);
+>+
+>+	mutex_unlock(&dln2->mutex);
+>+
+>+	return 0;
+>+}
+>+
+>+#define DLN2_ADC_CHAN(lval, idx) {					\
+>+	lval.type = IIO_VOLTAGE;					\
+>+	lval.channel = idx;						\
+>+	lval.indexed = 1;						\
+>+	lval.info_mask_separate = BIT(IIO_CHAN_INFO_RAW);		\
+>+	lval.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SCALE) |	\
+>+				       BIT(IIO_CHAN_INFO_SAMP_FREQ);	\
+>+	lval.scan_index = idx;						\
+>+	lval.scan_type.sign = 'u';					\
+>+	lval.scan_type.realbits = DLN2_ADC_DATA_BITS;			\
+>+	lval.scan_type.storagebits = 16;				\
+>+	lval.scan_type.endianness = IIO_LE;				\
+>+}
+>+
+>+/* Assignment version of IIO_CHAN_SOFT_TIMESTAMP */
+>+#define IIO_CHAN_SOFT_TIMESTAMP_ASSIGN(lval, _si) {	\
+>+	lval.type = IIO_TIMESTAMP;			\
+>+	lval.channel = -1;				\
+>+	lval.scan_index = _si;				\
+>+	lval.scan_type.sign = 's';			\
+>+	lval.scan_type.realbits = 64;			\
+>+	lval.scan_type.storagebits = 64;		\
+>+}
+>+
+>+static const struct iio_info dln2_adc_info = {
+>+	.read_raw = dln2_adc_read_raw,
+>+	.write_raw = dln2_adc_write_raw,
+>+	.update_scan_mode = dln2_update_scan_mode,
+>+	.driver_module = THIS_MODULE,
+>+};
+>+
+>+static irqreturn_t dln2_adc_trigger_h(int irq, void *p)
+>+{
+>+	struct iio_poll_func *pf = p;
+>+	struct iio_dev *indio_dev = pf->indio_dev;
+>+	struct {
+>+		__le16 values[DLN2_ADC_MAX_CHANNELS];
+>+		int64_t timestamp_space;
+>+	} data;
+>+	struct dln2_adc_get_all_vals dev_data;
+>+	struct dln2_adc *dln2 = iio_priv(indio_dev);
+>+	const struct dln2_adc_demux_table *t;
+>+	int ret, i;
+>+
+>+	mutex_lock(&dln2->mutex);
+>+	ret = dln2_adc_read_all(dln2, &dev_data);
+>+	mutex_unlock(&dln2->mutex);
+>+	if (ret < 0)
+>+		goto done;
+>+
+>+	/* Demux operation */
+>+	for (i = 0; i < dln2->demux_count; ++i) {
+>+		t = &dln2->demux[i];
+>+		memcpy((void *)data.values + t->to,
+>+		       (void *)dev_data.values + t->from, t->length);
+>+	}
+>+
+>+	/* Zero padding space between values and timestamp */
+>+	if (dln2->ts_pad_length)
+>+		memset((void *)data.values + dln2->ts_pad_offset,
+>+		       0, dln2->ts_pad_length);
+>+
+>+	iio_push_to_buffers_with_timestamp(indio_dev, &data,
+>+					   iio_get_time_ns(indio_dev));
+>+
+>+done:
+>+	iio_trigger_notify_done(indio_dev->trig);
+>+	return IRQ_HANDLED;
+>+}
+>+
+>+static int dln2_adc_triggered_buffer_postenable(struct iio_dev
+>*indio_dev)
+>+{
+>+	int ret;
+>+	struct dln2_adc *dln2 = iio_priv(indio_dev);
+>+	u16 conflict;
+>+	unsigned int trigger_chan;
+>+
+>+	mutex_lock(&dln2->mutex);
+>+
+>+	/* Enable ADC */
+>+	ret = dln2_adc_set_port_enabled(dln2, true, &conflict);
+>+	if (ret < 0) {
+>+		mutex_unlock(&dln2->mutex);
+>+		dev_dbg(&dln2->pdev->dev, "Problem in %s\n", __func__);
+>+		if (conflict) {
+>+			dev_err(&dln2->pdev->dev,
+>+				"ADC pins conflict with mask %04X\n",
+>+				(int)conflict);
+>+			ret = -EBUSY;
+>+		}
+>+		return ret;
+>+	}
+>+
+>+	/* Assign trigger channel based on first enabled channel */
+>+	trigger_chan = find_first_bit(indio_dev->active_scan_mask,
+>+				      indio_dev->masklength);
+>+	if (trigger_chan < DLN2_ADC_MAX_CHANNELS) {
+>+		dln2->trigger_chan = trigger_chan;
+>+		ret = dln2_adc_set_chan_period(dln2, dln2->trigger_chan,
+>+					       dln2->sample_period);
+>+		mutex_unlock(&dln2->mutex);
+>+		if (ret < 0) {
+>+			dev_dbg(&dln2->pdev->dev, "Problem in %s\n", __func__);
+>+			return ret;
+>+		}
+>+	} else {
+>+		dln2->trigger_chan = -1;
+>+		mutex_unlock(&dln2->mutex);
+>+	}
+>+
+>+	return iio_triggered_buffer_postenable(indio_dev);
+>+}
+>+
+>+static int dln2_adc_triggered_buffer_predisable(struct iio_dev
+>*indio_dev)
+>+{
+>+	int ret;
+>+	struct dln2_adc *dln2 = iio_priv(indio_dev);
+>+
+>+	mutex_lock(&dln2->mutex);
+>+
+>+	/* Disable trigger channel */
+>+	if (dln2->trigger_chan != -1) {
+>+		dln2_adc_set_chan_period(dln2, dln2->trigger_chan, 0);
+>+		dln2->trigger_chan = -1;
+>+	}
+>+
+>+	/* Disable ADC */
+>+	ret = dln2_adc_set_port_enabled(dln2, false, NULL);
+>+
+>+	mutex_unlock(&dln2->mutex);
+>+	if (ret < 0) {
+>+		dev_dbg(&dln2->pdev->dev, "Problem in %s\n", __func__);
+>+		return ret;
+>+	}
+>+
+>+	return iio_triggered_buffer_predisable(indio_dev);
+>+}
+>+
+>+static const struct iio_buffer_setup_ops dln2_adc_buffer_setup_ops = {
+>+	.postenable = dln2_adc_triggered_buffer_postenable,
+>+	.predisable = dln2_adc_triggered_buffer_predisable,
+>+};
+>+
+>+static void dln2_adc_event(struct platform_device *pdev, u16 echo,
+>+			   const void *data, int len)
+>+{
+>+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+>+	struct dln2_adc *dln2 = iio_priv(indio_dev);
+>+
+>+	/* Called via URB completion handler */
+>+	iio_trigger_poll(dln2->trig);
+>+}
+>+
+>+static const struct iio_trigger_ops dln2_adc_trigger_ops = {
+>+	.owner = THIS_MODULE,
+>+};
+>+
+>+static int dln2_adc_probe(struct platform_device *pdev)
+>+{
+>+	struct device *dev = &pdev->dev;
+>+	struct dln2_adc *dln2;
+>+	struct dln2_platform_data *pdata = dev_get_platdata(&pdev->dev);
+>+	struct iio_dev *indio_dev;
+>+	int i, ret, chans;
+>+
+>+	indio_dev = devm_iio_device_alloc(dev, sizeof(*dln2));
+>+	if (!indio_dev) {
+>+		dev_err(dev, "failed allocating iio device\n");
+>+		return -ENOMEM;
+>+	}
+>+
+>+	dln2 = iio_priv(indio_dev);
+>+	dln2->pdev = pdev;
+>+	dln2->port = pdata->port;
+>+	dln2->trigger_chan = -1;
+>+	mutex_init(&dln2->mutex);
+>+
+>+	platform_set_drvdata(pdev, indio_dev);
+>+
+>+	ret = dln2_adc_set_port_resolution(dln2);
+>+	if (ret < 0) {
+>+		dev_err(dev, "failed to set ADC resolution to 10 bits\n");
+>+		return ret;
+>+	}
+>+
+>+	chans = dln2_adc_get_chan_count(dln2);
+>+	if (chans < 0) {
+>+		dev_err(dev, "failed to get channel count: %d\n", chans);
+>+		return chans;
+>+	}
+>+	if (chans > DLN2_ADC_MAX_CHANNELS) {
+>+		chans = DLN2_ADC_MAX_CHANNELS;
+>+		dev_warn(dev, "clamping channels to %d\n",
+>+			 DLN2_ADC_MAX_CHANNELS);
+>+	}
+>+
+>+	for (i = 0; i < chans; ++i)
+>+		DLN2_ADC_CHAN(dln2->iio_channels[i], i)
+>+	IIO_CHAN_SOFT_TIMESTAMP_ASSIGN(dln2->iio_channels[i], i);
+>+
+>+	indio_dev->name = DLN2_ADC_MOD_NAME;
+>+	indio_dev->dev.parent = dev;
+>+	indio_dev->info = &dln2_adc_info;
+>+	indio_dev->modes = INDIO_DIRECT_MODE;
+>+	indio_dev->channels = dln2->iio_channels;
+>+	indio_dev->num_channels = chans + 1;
+>+	indio_dev->setup_ops = &dln2_adc_buffer_setup_ops;
+>+
+>+	dln2->trig = devm_iio_trigger_alloc(dev, "%s-dev%d",
+>+					    indio_dev->name, indio_dev->id);
+>+	if (!dln2->trig) {
+>+		dev_err(dev, "failed to allocate trigger\n");
+>+		return -ENOMEM;
+>+	}
+>+	dln2->trig->ops = &dln2_adc_trigger_ops;
+>+	iio_trigger_set_drvdata(dln2->trig, dln2);
+>+	devm_iio_trigger_register(dev, dln2->trig);
+>+	iio_trigger_set_immutable(indio_dev, dln2->trig);
+>+
+>+	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
+>+					      dln2_adc_trigger_h,
+>+					      &dln2_adc_buffer_setup_ops);
+>+	if (ret) {
+>+		dev_err(dev, "failed to allocate triggered buffer: %d\n", ret);
+>+		return ret;
+>+	}
+>+
+>+	ret = dln2_register_event_cb(pdev, DLN2_ADC_CONDITION_MET_EV,
+>+				     dln2_adc_event);
+>+	if (ret) {
+>+		dev_err(dev, "failed to setup DLN2 periodic event: %d\n", ret);
+>+		return ret;
+>+	}
+>+
+>+	ret = devm_iio_device_register(dev, indio_dev);
+>+	if (ret) {
+>+		dev_err(dev, "failed to register iio device: %d\n", ret);
+>+		goto unregister_event;
+>+	}
+>+
+>+	return ret;
+>+
+>+unregister_event:
+>+	dln2_unregister_event_cb(pdev, DLN2_ADC_CONDITION_MET_EV);
+>+
+>+	return ret;
+>+}
+>+
+>+static int dln2_adc_remove(struct platform_device *pdev)
+>+{
+>+	dln2_unregister_event_cb(pdev, DLN2_ADC_CONDITION_MET_EV);
+Potential race here as iio_device_register will be unwound after this...  Use non devm form 
+to keep ordering.
+>+	return 0;
+>+}
+>+
+>+static struct platform_driver dln2_adc_driver = {
+>+	.driver.name	= DLN2_ADC_MOD_NAME,
+>+	.probe		= dln2_adc_probe,
+>+	.remove		= dln2_adc_remove,
+>+};
+>+
+>+module_platform_driver(dln2_adc_driver);
+>+
+>+MODULE_AUTHOR("Jack Andersen <jackoalan@gmail.com");
+>+MODULE_DESCRIPTION("Driver for the Diolan DLN2 ADC interface");
+>+MODULE_LICENSE("GPL v2");
+>+MODULE_ALIAS("platform:dln2-adc");
+
+-- 
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
