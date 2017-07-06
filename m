@@ -1,592 +1,364 @@
-Return-Path: <SRS0=7xta=6G=fi.rohmeurope.com=prvs=0357eb217f=Mikko.Koivunen@kernel.org>
-From: "Koivunen, Mikko" <Mikko.Koivunen@fi.rohmeurope.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>, "knaack.h@gmx.de"
-	<knaack.h@gmx.de>, "lars@metafoo.de" <lars@metafoo.de>, Daniel Baluta
-	<daniel.baluta@nxp.com>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v6 09/10] iio: light: rpr0521 triggered buffer
-Date: Mon, 3 Jul 2017 12:54:01 +0000
-Message-ID: <E223F49C7E3E1C4E8F3928A8EC9CF0F8F8343EEB@WILL-MAIL001.REu.RohmEu.com>
-References: <1497516865-6652-1-git-send-email-mikko.koivunen@fi.rohmeurope.com>
- <1497516865-6652-2-git-send-email-mikko.koivunen@fi.rohmeurope.com>
- <20170620180831.5f60aee4@kernel.org>
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <SRS0=w6xg=6J=gmail.com=thierry.reding@kernel.org>
+Date: Thu, 6 Jul 2017 09:43:20 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Fabrice Gasnier <fabrice.gasnier@st.com>
+Cc: lee.jones@linaro.org, benjamin.gaignard@linaro.org, jic23@kernel.org,
+	robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com,
+	mcoquelin.stm32@gmail.com, benjamin.gaignard@st.com,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-pwm@vger.kernel.org
+Subject: Re: [PATCH v2 4/8] pwm: Add STM32 LPTimer PWM driver
+Message-ID: <20170706074320.GK16144@ulmo.fritz.box>
+References: <1498055415-31513-1-git-send-email-fabrice.gasnier@st.com>
+ <1498055415-31513-5-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="IA03tywDYuoVKXrw"
+In-Reply-To: <1498055415-31513-5-git-send-email-fabrice.gasnier@st.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 20.6.2017 20:08, Jonathan Cameron wrote:=0A=
-> On Thu, 15 Jun 2017 11:54:24 +0300=0A=
-> Mikko Koivunen <mikko.koivunen@fi.rohmeurope.com> wrote:=0A=
->=0A=
->> Set up trigger producer and triggered buffer if there is irq defined for=
- =0A=
->> device in device tree. Trigger producer triggers from rpr0521 drdy =0A=
->> interrupt line. Trigger consumer reads rpr0521 data to scan buffer.=0A=
->> Depends on previous commits of _scale and _offset.=0A=
->>=0A=
->> Signed-off-by: Mikko Koivunen <mikko.koivunen@fi.rohmeurope.com>=0A=
-> One more issue inline.  Sorry, failed to notice this before I guess.=0A=
-=0A=
-No you didn't, it wasn't there before last change.=0A=
-=0A=
-> You can't call iio_trigger_poll in an interrupt thread.  It 'kind'=0A=
-> of works, but will sometimes cause issues. A bug we've had to fix=0A=
-> a few times in the past when it hasn't been picked up in review.=0A=
-Ack.=0A=
-Sending v7.=0A=
-=0A=
-> Jonathan=0A=
->> ---=0A=
->> Patch v2->v3 changes:=0A=
->> .shift =3D 0 removed=0A=
->> reordered functions to remove forward declarations=0A=
->> whitespace changes=0A=
->> refactored some update_bits->write, no "err =3D err || *"-pattern=0A=
->> refactored trigger_consumer_handler=0A=
->> reordered _probe() and _remove()=0A=
->> added int clear on poweroff()=0A=
->> checkpatch.pl OK=0A=
->> Tested on LeMaker HiKey with AOSP7.1 kernel 4.4.=0A=
->> Builds ok with torvalds/linux feb 27.=0A=
->>=0A=
->> Patch v3->v4 changes:=0A=
->> Moved sensor on/off commands to buffer preenable and postdisable=0A=
->>  - Since drdy happens only on measurement data ready and register writes=
-=0A=
->>    are cached, the trigger producer doesn't care of suspend/resume state=
-.=0A=
->> available_scan_masks added=0A=
->> indent fix=0A=
->> checkpatch.pl OK=0A=
->> Lightly re-tested on LeMaker HiKey with AOSP7.1 kernel 4.4.=0A=
->> Builds ok with torvalds/linux feb 27.=0A=
->>=0A=
->> Patch v5->v6 changes:=0A=
->> Changed base from kernel 4.4 to 4.9=0A=
->>  - Using iio_device_claim_direct_mode()=0A=
->>  - Using iio_trigger_using_own()=0A=
->>  - Changed trigger/buffer to devm_=0A=
->> Added shared irq support=0A=
->>  - divided trigger producer to h/thread=0A=
->>  - divided trigger consumer to h/thread=0A=
->>  - Using irq_timestamp when available=0A=
->> Removed default trigger=0A=
->> checkpatch.pl OK=0A=
->> Lightly re-tested on LeMaker HiKey with AOSP7.1 kernel 4.9.29=0A=
->> Builds ok with torvalds/linux feb 27.=0A=
->>=0A=
->>  drivers/iio/light/rpr0521.c |  332 ++++++++++++++++++++++++++++++++++++=
-++++++-=0A=
->>  1 file changed, 325 insertions(+), 7 deletions(-)=0A=
->>=0A=
->> diff --git a/drivers/iio/light/rpr0521.c b/drivers/iio/light/rpr0521.c=
-=0A=
->> index 9d0c2e8..ce576be 100644=0A=
->> --- a/drivers/iio/light/rpr0521.c=0A=
->> +++ b/drivers/iio/light/rpr0521.c=0A=
->> @@ -9,7 +9,7 @@=0A=
->>   *=0A=
->>   * IIO driver for RPR-0521RS (7-bit I2C slave address 0x38).=0A=
->>   *=0A=
->> - * TODO: illuminance channel, buffer=0A=
->> + * TODO: illuminance channel=0A=
->>   */=0A=
->>  =0A=
->>  #include <linux/module.h>=0A=
->> @@ -20,6 +20,10 @@=0A=
->>  #include <linux/acpi.h>=0A=
->>  =0A=
->>  #include <linux/iio/iio.h>=0A=
->> +#include <linux/iio/buffer.h>=0A=
->> +#include <linux/iio/trigger.h>=0A=
->> +#include <linux/iio/trigger_consumer.h>=0A=
->> +#include <linux/iio/triggered_buffer.h>=0A=
->>  #include <linux/iio/sysfs.h>=0A=
->>  #include <linux/pm_runtime.h>=0A=
->>  =0A=
->> @@ -30,6 +34,7 @@=0A=
->>  #define RPR0521_REG_PXS_DATA		0x44 /* 16-bit, little endian */=0A=
->>  #define RPR0521_REG_ALS_DATA0		0x46 /* 16-bit, little endian */=0A=
->>  #define RPR0521_REG_ALS_DATA1		0x48 /* 16-bit, little endian */=0A=
->> +#define RPR0521_REG_INTERRUPT		0x4A=0A=
->>  #define RPR0521_REG_PS_OFFSET_LSB	0x53=0A=
->>  #define RPR0521_REG_ID			0x92=0A=
->>  =0A=
->> @@ -42,16 +47,31 @@=0A=
->>  #define RPR0521_ALS_DATA1_GAIN_SHIFT	2=0A=
->>  #define RPR0521_PXS_GAIN_MASK		GENMASK(5, 4)=0A=
->>  #define RPR0521_PXS_GAIN_SHIFT		4=0A=
->> +#define RPR0521_PXS_PERSISTENCE_MASK	GENMASK(3, 0)=0A=
->> +#define RPR0521_INTERRUPT_INT_TRIG_PS_MASK	BIT(0)=0A=
->> +#define RPR0521_INTERRUPT_INT_TRIG_ALS_MASK	BIT(1)=0A=
->> +#define RPR0521_INTERRUPT_INT_REASSERT_MASK	BIT(3)=0A=
->> +#define RPR0521_INTERRUPT_ALS_INT_STATUS_MASK	BIT(6)=0A=
->> +#define RPR0521_INTERRUPT_PS_INT_STATUS_MASK	BIT(7)=0A=
->>  =0A=
->>  #define RPR0521_MODE_ALS_ENABLE		BIT(7)=0A=
->>  #define RPR0521_MODE_ALS_DISABLE	0x00=0A=
->>  #define RPR0521_MODE_PXS_ENABLE		BIT(6)=0A=
->>  #define RPR0521_MODE_PXS_DISABLE	0x00=0A=
->> +#define RPR0521_PXS_PERSISTENCE_DRDY	0x00=0A=
->> +=0A=
->> +#define RPR0521_INTERRUPT_INT_TRIG_PS_ENABLE	BIT(0)=0A=
->> +#define RPR0521_INTERRUPT_INT_TRIG_PS_DISABLE	0x00=0A=
->> +#define RPR0521_INTERRUPT_INT_TRIG_ALS_ENABLE	BIT(1)=0A=
->> +#define RPR0521_INTERRUPT_INT_TRIG_ALS_DISABLE	0x00=0A=
->> +#define RPR0521_INTERRUPT_INT_REASSERT_ENABLE	BIT(3)=0A=
->> +#define RPR0521_INTERRUPT_INT_REASSERT_DISABLE	0x00=0A=
->>  =0A=
->>  #define RPR0521_MANUFACT_ID		0xE0=0A=
->>  #define RPR0521_DEFAULT_MEAS_TIME	0x06 /* ALS - 100ms, PXS - 100ms */=
-=0A=
->>  =0A=
->>  #define RPR0521_DRV_NAME		"RPR0521"=0A=
->> +#define RPR0521_IRQ_NAME		"rpr0521_event"=0A=
->>  #define RPR0521_REGMAP_NAME		"rpr0521_regmap"=0A=
->>  =0A=
->>  #define RPR0521_SLEEP_DELAY_MS	2000=0A=
->> @@ -167,6 +187,9 @@ struct rpr0521_data {=0A=
->>  	bool als_dev_en;=0A=
->>  	bool pxs_dev_en;=0A=
->>  =0A=
->> +	struct iio_trigger *drdy_trigger0;=0A=
->> +	s64 irq_timestamp;=0A=
->> +=0A=
->>  	/* optimize runtime pm ops - enable/disable device only if needed */=
-=0A=
->>  	bool als_ps_need_en;=0A=
->>  	bool pxs_ps_need_en;=0A=
->> @@ -196,6 +219,19 @@ static const struct attribute_group rpr0521_attribu=
-te_group =3D {=0A=
->>  	.attrs =3D rpr0521_attributes,=0A=
->>  };=0A=
->>  =0A=
->> +/* Order of the channel data in buffer */=0A=
->> +enum rpr0521_scan_index_order {=0A=
->> +	RPR0521_CHAN_INDEX_PXS,=0A=
->> +	RPR0521_CHAN_INDEX_BOTH,=0A=
->> +	RPR0521_CHAN_INDEX_IR,=0A=
->> +};=0A=
->> +=0A=
->> +static const unsigned long rpr0521_available_scan_masks[] =3D {=0A=
->> +	BIT(RPR0521_CHAN_INDEX_PXS) | BIT(RPR0521_CHAN_INDEX_BOTH) |=0A=
->> +	BIT(RPR0521_CHAN_INDEX_IR),=0A=
->> +	0=0A=
->> +};=0A=
->> +=0A=
->>  static const struct iio_chan_spec rpr0521_channels[] =3D {=0A=
->>  	{=0A=
->>  		.type =3D IIO_PROXIMITY,=0A=
->> @@ -204,6 +240,13 @@ static const struct iio_chan_spec rpr0521_channels[=
-] =3D {=0A=
->>  			BIT(IIO_CHAN_INFO_OFFSET) |=0A=
->>  			BIT(IIO_CHAN_INFO_SCALE),=0A=
->>  		.info_mask_shared_by_all =3D BIT(IIO_CHAN_INFO_SAMP_FREQ),=0A=
->> +		.scan_index =3D RPR0521_CHAN_INDEX_PXS,=0A=
->> +		.scan_type =3D {=0A=
->> +			.sign =3D 'u',=0A=
->> +			.realbits =3D 16,=0A=
->> +			.storagebits =3D 16,=0A=
->> +			.endianness =3D IIO_LE,=0A=
->> +		},=0A=
->>  	},=0A=
->>  	{=0A=
->>  		.type =3D IIO_INTENSITY,=0A=
->> @@ -213,6 +256,13 @@ static const struct iio_chan_spec rpr0521_channels[=
-] =3D {=0A=
->>  		.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |=0A=
->>  			BIT(IIO_CHAN_INFO_SCALE),=0A=
->>  		.info_mask_shared_by_all =3D BIT(IIO_CHAN_INFO_SAMP_FREQ),=0A=
->> +		.scan_index =3D RPR0521_CHAN_INDEX_BOTH,=0A=
->> +		.scan_type =3D {=0A=
->> +			.sign =3D 'u',=0A=
->> +			.realbits =3D 16,=0A=
->> +			.storagebits =3D 16,=0A=
->> +			.endianness =3D IIO_LE,=0A=
->> +		},=0A=
->>  	},=0A=
->>  	{=0A=
->>  		.type =3D IIO_INTENSITY,=0A=
->> @@ -222,6 +272,13 @@ static const struct iio_chan_spec rpr0521_channels[=
-] =3D {=0A=
->>  		.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |=0A=
->>  			BIT(IIO_CHAN_INFO_SCALE),=0A=
->>  		.info_mask_shared_by_all =3D BIT(IIO_CHAN_INFO_SAMP_FREQ),=0A=
->> +		.scan_index =3D RPR0521_CHAN_INDEX_IR,=0A=
->> +		.scan_type =3D {=0A=
->> +			.sign =3D 'u',=0A=
->> +			.realbits =3D 16,=0A=
->> +			.storagebits =3D 16,=0A=
->> +			.endianness =3D IIO_LE,=0A=
->> +		},=0A=
->>  	},=0A=
->>  };=0A=
->>  =0A=
->> @@ -330,6 +387,194 @@ static int rpr0521_set_power_state(struct rpr0521_=
-data *data, bool on,=0A=
->>  	return 0;=0A=
->>  }=0A=
->>  =0A=
->> +/* Interrupt register tells if this sensor caused the interrupt or not.=
- */=0A=
->> +static inline bool rpr0521_is_triggered(struct rpr0521_data *data)=0A=
->> +{=0A=
->> +	int ret;=0A=
->> +	int reg;=0A=
->> +=0A=
->> +	ret =3D regmap_read(data->regmap, RPR0521_REG_INTERRUPT, &reg);=0A=
->> +	if (ret < 0)=0A=
->> +		return false;   /* Reg read failed. */=0A=
->> +	if (reg &=0A=
->> +	    (RPR0521_INTERRUPT_ALS_INT_STATUS_MASK |=0A=
->> +	    RPR0521_INTERRUPT_PS_INT_STATUS_MASK))=0A=
->> +		return true;=0A=
->> +	else=0A=
->> +		return false;   /* Int not from this sensor. */=0A=
->> +}=0A=
->> +=0A=
->> +/* IRQ to trigger handler */=0A=
->> +static irqreturn_t rpr0521_drdy_irq_handler(int irq, void *private)=0A=
->> +{=0A=
->> +	struct iio_dev *indio_dev =3D private;=0A=
->> +	struct rpr0521_data *data =3D iio_priv(indio_dev);=0A=
->> +=0A=
->> +	data->irq_timestamp =3D iio_get_time_ns(indio_dev);=0A=
->> +	/*=0A=
->> +	 * We need to wake the thread to read the interrupt reg. It=0A=
->> +	 * is not possible to do that here because regmap_read takes a=0A=
->> +	 * mutex.=0A=
->> +	 */=0A=
->> +=0A=
->> +	return IRQ_WAKE_THREAD;=0A=
->> +}=0A=
->> +=0A=
->> +static irqreturn_t rpr0521_drdy_irq_thread(int irq, void *private)=0A=
->> +{=0A=
->> +	struct iio_dev *indio_dev =3D private;=0A=
->> +	struct rpr0521_data *data =3D iio_priv(indio_dev);=0A=
->> +=0A=
->> +	if (rpr0521_is_triggered(data)) {=0A=
->> +		iio_trigger_poll(data->drdy_trigger0);=0A=
-> When called from a thread, you need to use (the rather missnamed)=0A=
-> iio_trigger_poll_chained=0A=
->=0A=
-> Note it won't then call the top half handler at all, but it's the=0A=
-> best we can do without a really nasty and expensive dance to get=0A=
-> back into interrupt context.=0A=
-=0A=
-Ack.=0A=
-=0A=
->> +		return IRQ_HANDLED;=0A=
->> +	}=0A=
->> +	data->irq_timestamp =3D 0;=0A=
->> +=0A=
->> +	return IRQ_NONE;=0A=
->> +}=0A=
->> +=0A=
->> +static irqreturn_t rpr0521_trigger_consumer_store_time(int irq, void *p=
-)=0A=
->> +{=0A=
->> +	struct iio_poll_func *pf =3D p;=0A=
->> +	struct iio_dev *indio_dev =3D pf->indio_dev;=0A=
->> +	struct rpr0521_data *data =3D iio_priv(indio_dev);=0A=
->> +=0A=
->> +	/* Store time if not already stored. */=0A=
->> +	if (iio_trigger_using_own(indio_dev) && data->irq_timestamp) {=0A=
-> This won't be called if we are calling from the threaded call.=0A=
-=0A=
-Ack -> changed timestamp logic for v7.=0A=
->> +		pf->timestamp =3D data->irq_timestamp;=0A=
->> +		data->irq_timestamp =3D 0;=0A=
->> +	} else {=0A=
->> +		pf->timestamp =3D iio_get_time_ns(indio_dev);=0A=
->> +	}=0A=
->> +=0A=
->> +	return IRQ_WAKE_THREAD;=0A=
->> +}=0A=
->> +=0A=
->> +static irqreturn_t rpr0521_trigger_consumer_handler(int irq, void *p)=
-=0A=
->> +{=0A=
->> +	struct iio_poll_func *pf =3D p;=0A=
->> +	struct iio_dev *indio_dev =3D pf->indio_dev;=0A=
->> +	struct rpr0521_data *data =3D iio_priv(indio_dev);=0A=
->> +	int err;=0A=
->> +=0A=
->> +	u8 buffer[16]; /* 3 16-bit channels + padding + ts */=0A=
->> +=0A=
->> +	err =3D regmap_bulk_read(data->regmap, RPR0521_REG_PXS_DATA,=0A=
->> +		&buffer,=0A=
->> +		(3 * 2) + 1);	/* 3 * 16-bit + (discarded) int clear reg. */=0A=
->> +	if (!err)=0A=
->> +		iio_push_to_buffers_with_timestamp(indio_dev,=0A=
->> +						   buffer, pf->timestamp);=0A=
->> +	else=0A=
->> +		dev_err(&data->client->dev,=0A=
->> +			"Trigger consumer can't read from sensor.\n");=0A=
->> +=0A=
->> +	iio_trigger_notify_done(indio_dev->trig);=0A=
->> +=0A=
->> +	return IRQ_HANDLED;=0A=
->> +}=0A=
->> +=0A=
->> +static int rpr0521_write_int_enable(struct rpr0521_data *data)=0A=
->> +{=0A=
->> +	int err;=0A=
->> +=0A=
->> +	/* Interrupt after each measurement */=0A=
->> +	err =3D regmap_update_bits(data->regmap, RPR0521_REG_PXS_CTRL,=0A=
->> +		RPR0521_PXS_PERSISTENCE_MASK,=0A=
->> +		RPR0521_PXS_PERSISTENCE_DRDY);=0A=
->> +	if (err) {=0A=
->> +		dev_err(&data->client->dev, "PS control reg write fail.\n");=0A=
->> +		return -EBUSY;=0A=
->> +		}=0A=
->> +=0A=
->> +	/* Ignore latch and mode because of drdy */=0A=
->> +	err =3D regmap_write(data->regmap, RPR0521_REG_INTERRUPT,=0A=
->> +		RPR0521_INTERRUPT_INT_REASSERT_DISABLE |=0A=
->> +		RPR0521_INTERRUPT_INT_TRIG_ALS_DISABLE |=0A=
->> +		RPR0521_INTERRUPT_INT_TRIG_PS_ENABLE=0A=
->> +		);=0A=
->> +	if (err) {=0A=
->> +		dev_err(&data->client->dev, "Interrupt setup write fail.\n");=0A=
->> +		return -EBUSY;=0A=
->> +		}=0A=
->> +=0A=
->> +	return 0;=0A=
->> +}=0A=
->> +=0A=
->> +static int rpr0521_write_int_disable(struct rpr0521_data *data)=0A=
->> +{=0A=
->> +	/* Don't care of clearing mode, assert and latch. */=0A=
->> +	return regmap_write(data->regmap, RPR0521_REG_INTERRUPT,=0A=
->> +				RPR0521_INTERRUPT_INT_TRIG_ALS_DISABLE |=0A=
->> +				RPR0521_INTERRUPT_INT_TRIG_PS_DISABLE=0A=
->> +				);=0A=
->> +}=0A=
->> +=0A=
->> +/*=0A=
->> + * Trigger producer enable / disable. Note that there will be trigs onl=
-y when=0A=
->> + * measurement data is ready to be read.=0A=
->> + */=0A=
->> +static int rpr0521_pxs_drdy_set_state(struct iio_trigger *trigger,=0A=
->> +	bool enable_drdy)=0A=
->> +{=0A=
->> +	struct iio_dev *indio_dev =3D iio_trigger_get_drvdata(trigger);=0A=
->> +	struct rpr0521_data *data =3D iio_priv(indio_dev);=0A=
->> +	int err;=0A=
->> +=0A=
->> +	if (enable_drdy)=0A=
->> +		err =3D rpr0521_write_int_enable(data);=0A=
->> +	else=0A=
->> +		err =3D rpr0521_write_int_disable(data);=0A=
->> +	if (err)=0A=
->> +		dev_err(&data->client->dev, "rpr0521_pxs_drdy_set_state failed\n");=
-=0A=
->> +=0A=
->> +	return err;=0A=
->> +}=0A=
->> +=0A=
->> +static const struct iio_trigger_ops rpr0521_trigger_ops =3D {=0A=
->> +	.set_trigger_state =3D rpr0521_pxs_drdy_set_state,=0A=
->> +	.owner =3D THIS_MODULE,=0A=
->> +	};=0A=
->> +=0A=
->> +=0A=
->> +static int rpr0521_buffer_preenable(struct iio_dev *indio_dev)=0A=
->> +{=0A=
->> +	int err;=0A=
->> +	struct rpr0521_data *data =3D iio_priv(indio_dev);=0A=
->> +=0A=
->> +	mutex_lock(&data->lock);=0A=
->> +	err =3D rpr0521_set_power_state(data, true,=0A=
->> +		(RPR0521_MODE_PXS_MASK | RPR0521_MODE_ALS_MASK));=0A=
->> +	mutex_unlock(&data->lock);=0A=
->> +	if (err)=0A=
->> +		dev_err(&data->client->dev, "_buffer_preenable fail\n");=0A=
->> +=0A=
->> +	return err;=0A=
->> +}=0A=
->> +=0A=
->> +static int rpr0521_buffer_postdisable(struct iio_dev *indio_dev)=0A=
->> +{=0A=
->> +	int err;=0A=
->> +	struct rpr0521_data *data =3D iio_priv(indio_dev);=0A=
->> +=0A=
->> +	mutex_lock(&data->lock);=0A=
->> +	err =3D rpr0521_set_power_state(data, false,=0A=
->> +		(RPR0521_MODE_PXS_MASK | RPR0521_MODE_ALS_MASK));=0A=
->> +	mutex_unlock(&data->lock);=0A=
->> +	if (err)=0A=
->> +		dev_err(&data->client->dev, "_buffer_postdisable fail\n");=0A=
->> +=0A=
->> +	return err;=0A=
->> +}=0A=
->> +=0A=
->> +static const struct iio_buffer_setup_ops rpr0521_buffer_setup_ops =3D {=
-=0A=
->> +	.preenable =3D rpr0521_buffer_preenable,=0A=
->> +	.postenable =3D iio_triggered_buffer_postenable,=0A=
->> +	.predisable =3D iio_triggered_buffer_predisable,=0A=
->> +	.postdisable =3D rpr0521_buffer_postdisable,=0A=
->> +};=0A=
->> +=0A=
->>  static int rpr0521_get_gain(struct rpr0521_data *data, int chan,=0A=
->>  			    int *val, int *val2)=0A=
->>  {=0A=
->> @@ -473,34 +718,39 @@ static int rpr0521_read_raw(struct iio_dev *indio_=
-dev,=0A=
->>  {=0A=
->>  	struct rpr0521_data *data =3D iio_priv(indio_dev);=0A=
->>  	int ret;=0A=
->> +	int busy;=0A=
->>  	u8 device_mask;=0A=
->>  	__le16 raw_data;=0A=
->>  =0A=
->>  	switch (mask) {=0A=
->> +=0A=
-> Shouldn't be seeing whitespace changes in here...=0A=
-True, ack.=0A=
->>  	case IIO_CHAN_INFO_RAW:=0A=
->>  		if (chan->type !=3D IIO_INTENSITY && chan->type !=3D IIO_PROXIMITY)=
-=0A=
->>  			return -EINVAL;=0A=
->>  =0A=
->> +		busy =3D iio_device_claim_direct_mode(indio_dev);=0A=
->> +		if (busy)=0A=
->> +			return -EBUSY;=0A=
->>  		device_mask =3D rpr0521_data_reg[chan->address].device_mask;=0A=
->>  =0A=
->>  		mutex_lock(&data->lock);=0A=
->>  		ret =3D rpr0521_set_power_state(data, true, device_mask);=0A=
->> -		if (ret < 0) {=0A=
->> -			mutex_unlock(&data->lock);=0A=
->> -			return ret;=0A=
->> -		}=0A=
->> +		if (ret < 0)=0A=
->> +			goto rpr0521_read_raw_out;=0A=
->>  =0A=
->>  		ret =3D regmap_bulk_read(data->regmap,=0A=
->>  				       rpr0521_data_reg[chan->address].address,=0A=
->>  				       &raw_data, sizeof(raw_data));=0A=
->>  		if (ret < 0) {=0A=
->>  			rpr0521_set_power_state(data, false, device_mask);=0A=
->> -			mutex_unlock(&data->lock);=0A=
->> -			return ret;=0A=
->> +			goto rpr0521_read_raw_out;=0A=
->>  		}=0A=
->>  =0A=
->>  		ret =3D rpr0521_set_power_state(data, false, device_mask);=0A=
->> +=0A=
->> +rpr0521_read_raw_out:=0A=
->>  		mutex_unlock(&data->lock);=0A=
->> +		iio_device_release_direct_mode(indio_dev);=0A=
->>  		if (ret < 0)=0A=
->>  			return ret;=0A=
->>  =0A=
->> @@ -617,12 +867,15 @@ static int rpr0521_init(struct rpr0521_data *data)=
-=0A=
->>  		return ret;=0A=
->>  #endif=0A=
->>  =0A=
->> +	data->irq_timestamp =3D 0;=0A=
->> +=0A=
->>  	return 0;=0A=
->>  }=0A=
->>  =0A=
->>  static int rpr0521_poweroff(struct rpr0521_data *data)=0A=
->>  {=0A=
->>  	int ret;=0A=
->> +	int tmp;=0A=
->>  =0A=
->>  	ret =3D regmap_update_bits(data->regmap, RPR0521_REG_MODE_CTRL,=0A=
->>  				 RPR0521_MODE_ALS_MASK |=0A=
->> @@ -635,6 +888,16 @@ static int rpr0521_poweroff(struct rpr0521_data *da=
-ta)=0A=
->>  	data->als_dev_en =3D false;=0A=
->>  	data->pxs_dev_en =3D false;=0A=
->>  =0A=
->> +	/*=0A=
->> +	 * Int pin keeps state after power off. Set pin to high impedance=0A=
->> +	 * mode to prevent power drain.=0A=
->> +	 */=0A=
->> +	ret =3D regmap_read(data->regmap, RPR0521_REG_INTERRUPT, &tmp);=0A=
->> +	if (ret) {=0A=
->> +		dev_err(&data->client->dev, "Failed to reset int pin.\n");=0A=
->> +		return ret;=0A=
->> +	}=0A=
->> +=0A=
->>  	return 0;=0A=
->>  }=0A=
->>  =0A=
->> @@ -707,6 +970,61 @@ static int rpr0521_probe(struct i2c_client *client,=
-=0A=
->>  	pm_runtime_set_autosuspend_delay(&client->dev, RPR0521_SLEEP_DELAY_MS)=
-;=0A=
->>  	pm_runtime_use_autosuspend(&client->dev);=0A=
->>  =0A=
->> +	/*=0A=
->> +	 * If sensor write/read  is needed in _probe after _use_autosuspend,=
-=0A=
->> +	 * sensor needs to be _resumed first using rpr0521_set_power_state().=
-=0A=
->> +	 */=0A=
->> +=0A=
->> +	/* IRQ to trigger setup */=0A=
->> +	if (client->irq) {=0A=
->> +		/* Trigger0 producer setup */=0A=
->> +		data->drdy_trigger0 =3D devm_iio_trigger_alloc(=0A=
->> +			indio_dev->dev.parent,=0A=
->> +			"%s-dev%d", indio_dev->name, indio_dev->id);=0A=
->> +		if (!data->drdy_trigger0) {=0A=
->> +			ret =3D -ENOMEM;=0A=
->> +			goto err_pm_disable;=0A=
->> +		}=0A=
->> +		data->drdy_trigger0->dev.parent =3D indio_dev->dev.parent;=0A=
->> +		data->drdy_trigger0->ops =3D &rpr0521_trigger_ops;=0A=
->> +		indio_dev->available_scan_masks =3D rpr0521_available_scan_masks;=0A=
->> +		iio_trigger_set_drvdata(data->drdy_trigger0, indio_dev);=0A=
->> +=0A=
->> +		/* Ties irq to trigger producer handler. */=0A=
->> +		ret =3D devm_request_threaded_irq(&client->dev, client->irq,=0A=
->> +			rpr0521_drdy_irq_handler, rpr0521_drdy_irq_thread,=0A=
->> +			IRQF_TRIGGER_FALLING | IRQF_ONESHOT,=0A=
->> +			RPR0521_IRQ_NAME, indio_dev);=0A=
->> +		if (ret < 0) {=0A=
->> +			dev_err(&client->dev, "request irq %d for trigger0 failed\n",=0A=
->> +				client->irq);=0A=
->> +			goto err_pm_disable;=0A=
->> +			}=0A=
->> +=0A=
->> +		ret =3D devm_iio_trigger_register(indio_dev->dev.parent,=0A=
->> +						data->drdy_trigger0);=0A=
->> +		if (ret) {=0A=
->> +			dev_err(&client->dev, "iio trigger register failed\n");=0A=
->> +			goto err_pm_disable;=0A=
->> +		}=0A=
->> +=0A=
->> +		/*=0A=
->> +		 * Now whole pipe from physical interrupt (irq defined by=0A=
->> +		 * devicetree to device) to trigger0 output is set up.=0A=
->> +		 */=0A=
->> +=0A=
->> +		/* Trigger consumer setup */=0A=
->> +		ret =3D devm_iio_triggered_buffer_setup(indio_dev->dev.parent,=0A=
->> +			indio_dev,=0A=
->> +			rpr0521_trigger_consumer_store_time,=0A=
->> +			rpr0521_trigger_consumer_handler,=0A=
->> +			&rpr0521_buffer_setup_ops);=0A=
->> +		if (ret < 0) {=0A=
->> +			dev_err(&client->dev, "iio triggered buffer setup failed\n");=0A=
->> +			goto err_pm_disable;=0A=
->> +		}=0A=
->> +	}=0A=
->> +=0A=
->>  	ret =3D iio_device_register(indio_dev);=0A=
->>  	if (ret)=0A=
->>  		goto err_pm_disable;=0A=
->=0A=
-=0A=
+
+--IA03tywDYuoVKXrw
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Wed, Jun 21, 2017 at 04:30:11PM +0200, Fabrice Gasnier wrote:
+> Add support for single PWM channel on Low-Power Timer, that can be
+> found on some STM32 platforms.
+>=20
+> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+> ---
+> Changes in v2:
+> - s/Low Power/Low-Power
+> - update few comment lines
+> ---
+>  drivers/pwm/Kconfig        |  10 +++
+>  drivers/pwm/Makefile       |   1 +
+>  drivers/pwm/pwm-stm32-lp.c | 216 +++++++++++++++++++++++++++++++++++++++=
+++++++
+>  3 files changed, 227 insertions(+)
+>  create mode 100644 drivers/pwm/pwm-stm32-lp.c
+>=20
+> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> index 313c107..7cb982b 100644
+> --- a/drivers/pwm/Kconfig
+> +++ b/drivers/pwm/Kconfig
+> @@ -417,6 +417,16 @@ config PWM_STM32
+>  	  To compile this driver as a module, choose M here: the module
+>  	  will be called pwm-stm32.
+> =20
+> +config PWM_STM32_LP
+> +	tristate "STMicroelectronics STM32 PWM LP"
+> +	depends on MFD_STM32_LPTIMER || COMPILE_TEST
+> +	help
+> +	  Generic PWM framework driver for STMicroelectronics STM32 SoCs
+> +	  with Low-Power Timer (LPTIM).
+> +
+> +	  To compile this driver as a module, choose M here: the module
+> +	  will be called pwm-stm32-lp.
+> +
+>  config PWM_STMPE
+>  	bool "STMPE expander PWM export"
+>  	depends on MFD_STMPE
+> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+> index 93da1f7..a3a4bee 100644
+> --- a/drivers/pwm/Makefile
+> +++ b/drivers/pwm/Makefile
+> @@ -40,6 +40,7 @@ obj-$(CONFIG_PWM_SAMSUNG)	+=3D pwm-samsung.o
+>  obj-$(CONFIG_PWM_SPEAR)		+=3D pwm-spear.o
+>  obj-$(CONFIG_PWM_STI)		+=3D pwm-sti.o
+>  obj-$(CONFIG_PWM_STM32)		+=3D pwm-stm32.o
+> +obj-$(CONFIG_PWM_STM32_LP)	+=3D pwm-stm32-lp.o
+>  obj-$(CONFIG_PWM_STMPE)		+=3D pwm-stmpe.o
+>  obj-$(CONFIG_PWM_SUN4I)		+=3D pwm-sun4i.o
+>  obj-$(CONFIG_PWM_TEGRA)		+=3D pwm-tegra.o
+> diff --git a/drivers/pwm/pwm-stm32-lp.c b/drivers/pwm/pwm-stm32-lp.c
+> new file mode 100644
+> index 0000000..eb997a8
+> --- /dev/null
+> +++ b/drivers/pwm/pwm-stm32-lp.c
+> @@ -0,0 +1,216 @@
+> +/*
+> + * STM32 Low-Power Timer PWM driver
+> + *
+> + * Copyright (C) STMicroelectronics 2017
+> + *
+> + * Author: Gerald Baeza <gerald.baeza@st.com>
+> + *
+> + * License terms: GNU General Public License (GPL), version 2
+> + *
+> + * Inspired by Gerald Baeza's pwm-stm32 driver
+> + */
+> +
+> +#include <linux/bitfield.h>
+> +#include <linux/mfd/stm32-lptimer.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/pwm.h>
+> +
+> +struct stm32_pwm_lp {
+> +	struct pwm_chip chip;
+> +	struct clk *clk;
+> +	struct regmap *regmap;
+> +};
+> +
+> +static inline struct stm32_pwm_lp *to_stm32_pwm_lp(struct pwm_chip *chip)
+> +{
+> +	return container_of(chip, struct stm32_pwm_lp, chip);
+> +}
+> +
+> +static const u8 prescalers[] =3D {1, 2, 4, 8, 16, 32, 64, 128};
+> +
+> +static int stm32_pwm_lp_apply(struct pwm_chip *chip, struct pwm_device *=
+pwm,
+> +			      struct pwm_state *state)
+> +{
+> +	struct stm32_pwm_lp *priv =3D to_stm32_pwm_lp(chip);
+> +	unsigned long long prd, div, dty;
+> +	struct pwm_state cstate;
+> +	u32 val, mask, cfgr, wavpol, presc =3D 0;
+> +	bool reenable =3D false;
+> +	int ret;
+> +
+> +	pwm_get_state(pwm, &cstate);
+> +
+> +	if (!state->enabled) {
+> +		if (cstate.enabled) {
+> +			/* Disable LP timer */
+> +			ret =3D regmap_write(priv->regmap, STM32_LPTIM_CR, 0);
+> +			if (ret)
+> +				return ret;
+> +			clk_disable(priv->clk);
+> +		}
+> +		return 0;
+> +	}
+> +
+> +	/* Calculate the period and prescaler value */
+> +	div =3D (unsigned long long)clk_get_rate(priv->clk) * state->period;
+> +	do_div(div, NSEC_PER_SEC);
+> +	prd =3D div;
+> +	while (div > STM32_LPTIM_MAX_ARR) {
+> +		presc++;
+> +		if (presc >=3D ARRAY_SIZE(prescalers)) {
+> +			dev_err(priv->chip.dev, "max prescaler exceeded\n");
+> +			return -EINVAL;
+> +		}
+> +		div =3D prd;
+> +		do_div(div, prescalers[presc]);
+> +	}
+> +	prd =3D div;
+> +
+> +	/* Calculate the duty cycle */
+> +	dty =3D prd * state->duty_cycle;
+> +	do_div(dty, state->period);
+> +
+> +	wavpol =3D FIELD_PREP(STM32_LPTIM_WAVPOL, state->polarity);
+> +
+> +	if (!cstate.enabled) {
+> +		ret =3D clk_enable(priv->clk);
+> +		if (ret)
+> +			return ret;
+> +	}
+
+Why do you need the checks here? Clock enabled are reference counted, so
+you could do the clk_enable() unconditionally.
+
+Speaking of which, I don't see a clk_prepare() anywhere. Doesn't the clk
+core warn about clk_enable() being called on a clock that's not been
+prepared?
+
+> +
+> +	ret =3D regmap_read(priv->regmap, STM32_LPTIM_CFGR, &cfgr);
+> +	if (ret)
+> +		goto err;
+> +
+> +	if ((wavpol !=3D FIELD_GET(STM32_LPTIM_WAVPOL, cfgr)) ||
+
+This looks wrong to me. Looking at the macro definitions, FIELD_PREP()
+will store the shifted value in wavpol, but FIELD_GET() will shift the
+value before returning, so you will compare an in-register value with
+a field value. I don't see how those could ever match (unless they're
+0 or the field is at position 0, which isn't the case for WAVPOL).
+
+> +	    (presc !=3D FIELD_GET(STM32_LPTIM_PRESC, cfgr))) {
+> +		val =3D FIELD_PREP(STM32_LPTIM_PRESC, presc) | wavpol;
+> +		mask =3D STM32_LPTIM_PRESC | STM32_LPTIM_WAVPOL;
+> +
+> +		/* Must disable LP timer to modify CFGR */
+> +		ret =3D regmap_write(priv->regmap, STM32_LPTIM_CR, 0);
+> +		if (ret)
+> +			goto err;
+> +		reenable =3D true;
+
+The placement of this is somewhat odd. It suggests that it is somehow
+related to the disabling of the LP timer, whereas it really isn't.
+
+> +		ret =3D regmap_update_bits(priv->regmap, STM32_LPTIM_CFGR, mask,
+> +					 val);
+> +		if (ret)
+> +			goto err;
+> +	}
+> +
+> +	if (!cstate.enabled || reenable) {
+
+You have this condition in a couple of places and it's rather difficult
+to parse. Maybe this could be simplified a little:
+
+	bool reenable =3D !cstate.enabled;
+	...
+	if (...) {
+		...
+		reenable =3D true;
+		...
+	}
+	...
+	if (reenable) {
+		...
+	}
+
+> +		/* Must enable LP timer to modify CMP & ARR */
+> +		ret =3D regmap_write(priv->regmap, STM32_LPTIM_CR,
+> +				   STM32_LPTIM_ENABLE);
+> +		if (ret)
+> +			goto err;
+> +	}
+> +
+> +	ret =3D regmap_write(priv->regmap, STM32_LPTIM_ARR, prd - 1);
+> +	if (ret)
+> +		goto err;
+> +
+> +	ret =3D regmap_write(priv->regmap, STM32_LPTIM_CMP, prd - (1 + dty));
+> +	if (ret)
+> +		goto err;
+> +
+> +	/* ensure CMP & ARR registers are properly written */
+> +	ret =3D regmap_read_poll_timeout(priv->regmap, STM32_LPTIM_ISR, val,
+> +				       (val & STM32_LPTIM_CMPOK_ARROK),
+> +				       100, 1000);
+> +	if (ret) {
+> +		dev_err(priv->chip.dev, "ARR/CMP registers write issue\n");
+> +		goto err;
+> +	}
+> +	ret =3D regmap_write(priv->regmap, STM32_LPTIM_ICR,
+> +			   STM32_LPTIM_CMPOKCF_ARROKCF);
+> +	if (ret)
+> +		goto err;
+> +
+> +	if (!cstate.enabled || reenable) {
+> +		/* Start LP timer in continuous mode */
+> +		ret =3D regmap_update_bits(priv->regmap, STM32_LPTIM_CR,
+> +					 STM32_LPTIM_CNTSTRT,
+> +					 STM32_LPTIM_CNTSTRT);
+> +		if (ret) {
+> +			regmap_write(priv->regmap, STM32_LPTIM_CR, 0);
+> +			goto err;
+> +		}
+> +	}
+> +
+> +	return 0;
+> +err:
+> +	if (!cstate.enabled)
+> +		clk_disable(priv->clk);
+
+I think you can drop the clk_disable() here as well.
+
+> +
+> +	return ret;
+> +}
+> +
+> +static const struct pwm_ops stm32_pwm_lp_ops =3D {
+> +	.owner =3D THIS_MODULE,
+> +	.apply =3D stm32_pwm_lp_apply,
+> +};
+
+You should implement the .get_state() callback as well, otherwise the
+atomic PWM support will be somewhat handicapped.
+
+> +
+> +static int stm32_pwm_lp_probe(struct platform_device *pdev)
+> +{
+> +	struct stm32_lptimer *ddata =3D dev_get_drvdata(pdev->dev.parent);
+> +	struct stm32_pwm_lp *priv;
+> +	int ret;
+> +
+> +	if (IS_ERR_OR_NULL(ddata))
+> +		return -EINVAL;
+
+It seems to me like this can never happen. How would you trigger this
+condition?
+
+> +
+> +	priv =3D devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+> +	if (!priv)
+> +		return -ENOMEM;
+> +
+> +	priv->regmap =3D ddata->regmap;
+> +	priv->clk =3D ddata->clk;
+> +	if (!priv->regmap || !priv->clk)
+> +		return -EINVAL;
+
+Likewise for these. the stm32-lptimer driver already checks that these
+are valid, which do you need to do it again?
+
+Well, technically you check for !NULL here, whereas stm32-lptimer does
+check for IS_ERR(), but neither regmap nor clk looks as though they're
+optional, and you won't ever get here if they can't be requested by
+stm32-lptimer in the first place.
+
+> +
+> +	priv->chip.base =3D -1;
+> +	priv->chip.dev =3D &pdev->dev;
+> +	priv->chip.ops =3D &stm32_pwm_lp_ops;
+> +	priv->chip.npwm =3D 1;
+> +
+> +	ret =3D pwmchip_add(&priv->chip);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	platform_set_drvdata(pdev, priv);
+> +
+> +	return 0;
+> +}
+> +
+> +static int stm32_pwm_lp_remove(struct platform_device *pdev)
+> +{
+> +	struct stm32_pwm_lp *priv =3D platform_get_drvdata(pdev);
+> +
+> +	if (pwm_is_enabled(priv->chip.pwms))
+> +		pwm_disable(priv->chip.pwms);
+
+It'd be better to use the more idiomatic variant for this:
+
+	for (i =3D 0; i < priv->chip.npwm; i++)
+		if (pwm_is_enabled(priv->chip.npwm))
+			pwm_disable(&priv->chip.pwms[i]);
+
+That makes it easier to discern the common pattern and extract a helper,
+or move this to the core.
+
+Thierry
+
+--IA03tywDYuoVKXrw
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlld6hUACgkQ3SOs138+
+s6FLpw/+OgdoeLDgCv4b/cyYbN+ec3FIm/nbJctGlBDeI1rJB2wyaK5CZl0ArM5a
+ut6pHaxqyu9a2ZkkyBnkt6mlIZVKocehJiA4TVYLQeOikMuTnxzZaJEdMgULuLSU
+Lo6CLsXhSCMgf8nBhm+D1Q+hNjVOXUFBSwehzhAIW7WnSf+5pDMK4cKdsVXZdNIn
+jbdHdOj84B5QsrVU1M69FGwod8UK7mVnIUDXYabFoZi87itdY8MnOJr/A/61mtxn
+P7PHEbIb96cBQ7sAJCeYHJZSQEw0Q6ta70yL4U4u2hCVc4adKYh1GQxBlXqsXnbI
+BLJS0wWoBnkCoRJYIqEXRSOf+Xjg9uifLAjUsPT51UL+ePgnhDqaw/KGu/vt0Fz4
+KlkeQJcHOYt/yXfLywiLRZzqsf84jp86MZn641KQByEQhha9q+hY6KnAVmnPIg+9
+HGCDeORCCWWRBGYgZ3qVhvgje30AuJEfu8yXWh2twWiq2qVhv+9szEV51HmdfaDq
+NYIT5L4KxfYsg3xNKaqTjaXGamh7aTPyJk0XXYhTXMMTHUTdmicGFdRmVhKitlgf
+ZdavgFztpXLK5Xb+oIOSlCg7dxgaXw8BJB4BYsKrkSX78JX8XyiUxsZkfYJbOghW
+sxmBjAhR+0VHyeFa0LnE1+6JqNr83n0ANraKdI4OoxQZWpUv5o4=
+=NCxH
+-----END PGP SIGNATURE-----
+
+--IA03tywDYuoVKXrw--
