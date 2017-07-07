@@ -1,62 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:49834 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752351AbdGFSlE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 6 Jul 2017 14:41:04 -0400
-Date: Thu, 6 Jul 2017 19:41:01 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        singhalsimran0@gmail.com, linux-iio@vger.kernel.org,
-        Fugang Duan <B38611@freescale.com>
-Subject: Re: [PATCH] iio: adc: vf610_adc: Fix VALT selection value for
- REFSEL bits
-Message-ID: <20170706194101.428c49a1@kernel.org>
-In-Reply-To: <1499332001-8486-1-git-send-email-stefan-gabriel.mirea@nxp.com>
+Received: from mail-eopbgr00056.outbound.protection.outlook.com ([40.107.0.56]:35119
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1751833AbdGGIzA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 7 Jul 2017 04:55:00 -0400
+From: Stefan-gabriel Mirea <stefan-gabriel.mirea@nxp.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "singhalsimran0@gmail.com" <singhalsimran0@gmail.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "b38611@freescale.com" <b38611@freescale.com>,
+        Andy Duan <fugang.duan@nxp.com>
+Subject: RE: [PATCH] iio: adc: vf610_adc: Fix VALT selection value for REFSEL
+ bits
+Date: Fri, 7 Jul 2017 08:54:56 +0000
+Message-ID: <VI1PR04MB1021E1AAED7C72C7FCB78564DFAA0@VI1PR04MB1021.eurprd04.prod.outlook.com>
 References: <1499332001-8486-1-git-send-email-stefan-gabriel.mirea@nxp.com>
+ <20170706194101.428c49a1@kernel.org>
+In-Reply-To: <20170706194101.428c49a1@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu,  6 Jul 2017 10:06:41 +0100
-Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com> wrote:
+Jonathan Cameron <jic23@kernel.org> writes:
+> Looks good.
+>=20
+> Applied to the fixes to greg branch of iio.git.
 
-> In order to select the alternate voltage reference pair (VALTH/VALTL), the
-> right value for the REFSEL field in the ADCx_CFG register is "01", leading
-> to 0x800 as register mask. See section 8.2.6.4 in the reference manual[1].
-> 
-> [1] http://www.nxp.com/docs/en/reference-manual/VFXXXRM.pdf
-> 
-> Fixes: a775427632fd ("iio:adc:imx: add Freescale Vybrid vf610 adc driver")
-> Signed-off-by: Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
-Looks good.
+Thank you.
 
-Applied to the fixes to greg branch of iio.git.  
+> Cc'd Fugang as the original author.
+>=20
+> Btw if you know the author is no longer available, adding a note below th=
+e
+>   --- saves on me trying to get hold of them!
 
-Cc'd Fugang as the original author.
+I only took maintainers from the get_maintainer.pl output. Now I Cc'd Andy
+Duan on his new address as well.
 
-Btw if you know the author is no longer available, adding a note below the
-  --- saves on me trying to get hold of them!
-
-Thanks,
-
-Jonathan
-> ---
->  drivers/iio/adc/vf610_adc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
-> index 01fc76f7d660..c168e0db329a 100644
-> --- a/drivers/iio/adc/vf610_adc.c
-> +++ b/drivers/iio/adc/vf610_adc.c
-> @@ -77,7 +77,7 @@
->  #define VF610_ADC_ADSTS_MASK		0x300
->  #define VF610_ADC_ADLPC_EN		0x80
->  #define VF610_ADC_ADHSC_EN		0x400
-> -#define VF610_ADC_REFSEL_VALT		0x100
-> +#define VF610_ADC_REFSEL_VALT		0x800
->  #define VF610_ADC_REFSEL_VBG		0x1000
->  #define VF610_ADC_ADTRG_HARD		0x2000
->  #define VF610_ADC_AVGS_8		0x4000
-
+Stefan
