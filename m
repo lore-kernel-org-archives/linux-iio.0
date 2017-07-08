@@ -5,23 +5,51 @@ Cc: linux-iio@vger.kernel.org,
 	lorenzo.bianconi@st.com,
 	linus.walleij@linaro.org,
 	tiberiu.a.breana@intel.com
-Subject: [PATCH 0/3] fix/add accel devices to st framework
-Date: Sat,  8 Jul 2017 13:00:15 +0200
-Message-Id: <20170708110018.12772-1-lorenzo.bianconi@st.com>
+Subject: [PATCH 1/3] iio: accel: st_accel_i2c: fix i2c_device_id table
+Date: Sat,  8 Jul 2017 13:00:16 +0200
+Message-Id: <20170708110018.12772-2-lorenzo.bianconi@st.com>
+In-Reply-To: <20170708110018.12772-1-lorenzo.bianconi@st.com>
+References: <20170708110018.12772-1-lorenzo.bianconi@st.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Lorenzo Bianconi (3):
-  iio: accel: st_accel_i2c: fix i2c_device_id table
-  iio: accel: st_accel_spi: add support to H3LIS331DL, LIS331DL,
-    LIS3LV02DL
-  iio: accel: st_accel: rename H3LIS331DL_DRIVER_NAME in
-    H3LIS331DL_ACCEL_DEV_NAME
+Add H3LIS331DL, LIS331DL and LIS3LV02DL entries in st_accel_id_table
 
- drivers/iio/accel/st_accel.h      |  5 ++++-
- drivers/iio/accel/st_accel_core.c |  2 +-
- drivers/iio/accel/st_accel_i2c.c  |  5 ++++-
- drivers/iio/accel/st_accel_spi.c  | 15 +++++++++++++++
- 4 files changed, 24 insertions(+), 3 deletions(-)
+Fixes: 1e52fefc9b0c (iio: accel: Add support for the h3lis331dl accel)
+Fixes: bbf5f037fad4 (iio: st_accel: support the LIS331DL sensor)
+Fixes: 3acddf74f807 (iio: st-sensors: add support for lis3lv02d accel)
+Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+---
+ drivers/iio/accel/st_accel.h     | 3 +++
+ drivers/iio/accel/st_accel_i2c.c | 3 +++
+ 2 files changed, 6 insertions(+)
 
+diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
+index 3ad44ce7ae82..fe3864f0f146 100644
+--- a/drivers/iio/accel/st_accel.h
++++ b/drivers/iio/accel/st_accel.h
+@@ -29,6 +29,9 @@ enum st_accel_type {
+ 	LIS2DH12,
+ 	LIS3L02DQ,
+ 	LNG2DM,
++	H3LIS331DL,
++	LIS331DL,
++	LIS3LV02DL,
+ 	ST_ACCEL_MAX,
+ };
+ 
+diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
+index ac67826135be..1b22c5714e89 100644
+--- a/drivers/iio/accel/st_accel_i2c.c
++++ b/drivers/iio/accel/st_accel_i2c.c
+@@ -126,6 +126,9 @@ static const struct i2c_device_id st_accel_id_table[] = {
+ 	{ LIS2DH12_ACCEL_DEV_NAME, LIS2DH12 },
+ 	{ LIS3L02DQ_ACCEL_DEV_NAME, LIS3L02DQ },
+ 	{ LNG2DM_ACCEL_DEV_NAME, LNG2DM },
++	{ H3LIS331DL_DRIVER_NAME, H3LIS331DL },
++	{ LIS331DL_ACCEL_DEV_NAME, LIS331DL },
++	{ LIS3LV02DL_ACCEL_DEV_NAME, LIS3LV02DL },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(i2c, st_accel_id_table);
 -- 
 2.13.1
