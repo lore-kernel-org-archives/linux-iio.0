@@ -1,94 +1,108 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from szxga03-in.huawei.com ([45.249.212.189]:8929 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751279AbdGQLuN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Jul 2017 07:50:13 -0400
-Date: Mon, 17 Jul 2017 19:49:54 +0800
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-CC: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-        Rob Herring <robh@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Lorenzo BIANCONI <lorenzo.bianconi@st.com>
-Subject: Re: [PATCH 8/9] dt-bindings: iio: humidity: hts221: support open
- drain mode
-Message-ID: <20170717194954.00004b62@huawei.com>
-In-Reply-To: <CAA2SeN+2T2-G1khRNpNzccesX=cip0ConT11RJRV-HB8Ojk0pA@mail.gmail.com>
+Received: from mail-wr0-f196.google.com ([209.85.128.196]:35269 "EHLO
+        mail-wr0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752451AbdGIQ5V (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 9 Jul 2017 12:57:21 -0400
+From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        lorenzo.bianconi@st.com
+Subject: [PATCH 9/9] iio: humidity: hts221: move drdy enable logic in hts221_trig_set_state()
+Date: Sun,  9 Jul 2017 18:57:04 +0200
+Message-Id: <20170709165704.26311-10-lorenzo.bianconi@st.com>
+In-Reply-To: <20170709165704.26311-1-lorenzo.bianconi@st.com>
 References: <20170709165704.26311-1-lorenzo.bianconi@st.com>
-        <20170709165704.26311-9-lorenzo.bianconi@st.com>
-        <20170711025158.vpt6bcznkhi3bslm@rob-hp-laptop>
-        <20170711192656.7fd08a1c@kernel.org>
-        <CAL_JsqJa7JeofpG=66AnVrTP4XtVrp9B4-QoLTyK08GzF4L5uQ@mail.gmail.com>
-        <0462CB71-6762-48F2-99B3-EA62FF81C280@jic23.retrosnub.co.uk>
-        <CAA2SeN+2T2-G1khRNpNzccesX=cip0ConT11RJRV-HB8Ojk0pA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, 15 Jul 2017 16:32:35 +0200
-Lorenzo Bianconi <lorenzo.bianconi83@gmail.com> wrote:
+Move data-ready configuration in hts221_buffer.c since it is only related
+to trigger logic
 
-> >
-> >
-> > On 11 July 2017 19:42:54 BST, Rob Herring <robh@kernel.org> wrote:  
-> >>On Tue, Jul 11, 2017 at 1:26 PM, Jonathan Cameron <jic23@kernel.org>
-> >>wrote:  
-> >>> On Mon, 10 Jul 2017 21:51:58 -0500
-> >>> Rob Herring <robh@kernel.org> wrote:
-> >>>  
-> >>>> On Sun, Jul 09, 2017 at 06:57:03PM +0200, Lorenzo Bianconi wrote:  
-> >>>> > Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
-> >>>> > ---
-> >>>> >  Documentation/devicetree/bindings/iio/humidity/hts221.txt | 8  
-> >>++++++++  
-> >>>> >  1 file changed, 8 insertions(+)
-> >>>> >
-> >>>> > diff --git  
-> >>a/Documentation/devicetree/bindings/iio/humidity/hts221.txt
-> >>b/Documentation/devicetree/bindings/iio/humidity/hts221.txt  
-> >>>> > index fca263e13400..732b83c06c08 100644
-> >>>> > --- a/Documentation/devicetree/bindings/iio/humidity/hts221.txt
-> >>>> > +++ b/Documentation/devicetree/bindings/iio/humidity/hts221.txt
-> >>>> > @@ -5,6 +5,14 @@ Required properties:
-> >>>> >  - reg: i2c address of the sensor / spi cs line
-> >>>> >
-> >>>> >  Optional properties:
-> >>>> > +- drive-open-drain: the interrupt/data ready line will be  
-> >>configured  
-> >>>>
-> >>>> Needs a vendor prefix and "drdy-open-drain" would be more specific.  
-> >>> This is straight out of the pinctrl bindings and has been used in a  
-> >>few  
-> >>> other places as well.  I can see it should really be more obviously
-> >>> associated with the drdy pin though.  A few IIO drivers already
-> >>> use this binding (st sensors and the lsm6dsx).  If we are going
-> >>> to decide it's a bad idea we should deprecate those bindings and
-> >>> add whatever we do here as well.  
-> >>
-> >>Ah, okay. Then the description should have a  "see pinctrl.txt" for
-> >>the description.  
-> > Agreed.  
-> 
-> This property has been defined in pinctrl/pinctrl-bindings.txt. Is it
-> fine to refer to that file?
-> Regards,
-> Lorenzo
-Yes, that's what Rob was effectively suggesting.
-> 
-> >>
-> >>Rob
-> >>--
-> >>To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> >>the body of a message to majordomo@vger.kernel.org
-> >>More majordomo info at  http://vger.kernel.org/majordomo-info.html  
-> >
-> > --
-> > Sent from my Android device with K-9 Mail. Please excuse my brevity.  
-> 
-> 
-> 
+Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+---
+ drivers/iio/humidity/hts221.h        |  1 -
+ drivers/iio/humidity/hts221_buffer.c |  8 +++++++-
+ drivers/iio/humidity/hts221_core.c   | 14 --------------
+ 3 files changed, 7 insertions(+), 16 deletions(-)
 
+diff --git a/drivers/iio/humidity/hts221.h b/drivers/iio/humidity/hts221.h
+index 0fbc89fe213d..2b4e5246447a 100644
+--- a/drivers/iio/humidity/hts221.h
++++ b/drivers/iio/humidity/hts221.h
+@@ -66,7 +66,6 @@ struct hts221_hw {
+ 
+ extern const struct dev_pm_ops hts221_pm_ops;
+ 
+-int hts221_config_drdy(struct hts221_hw *hw, bool enable);
+ int hts221_write_with_mask(struct hts221_hw *hw, u8 addr, u8 mask, u8 val);
+ int hts221_probe(struct iio_dev *iio_dev);
+ int hts221_set_enable(struct hts221_hw *hw, bool enable);
+diff --git a/drivers/iio/humidity/hts221_buffer.c b/drivers/iio/humidity/hts221_buffer.c
+index f29f01a22375..9690dfe9a844 100644
+--- a/drivers/iio/humidity/hts221_buffer.c
++++ b/drivers/iio/humidity/hts221_buffer.c
+@@ -28,6 +28,8 @@
+ #define HTS221_REG_DRDY_HL_MASK		BIT(7)
+ #define HTS221_REG_DRDY_PP_OD_ADDR	0x22
+ #define HTS221_REG_DRDY_PP_OD_MASK	BIT(6)
++#define HTS221_REG_DRDY_EN_ADDR		0x22
++#define HTS221_REG_DRDY_EN_MASK		BIT(2)
+ #define HTS221_REG_STATUS_ADDR		0x27
+ #define HTS221_RH_DRDY_MASK		BIT(1)
+ #define HTS221_TEMP_DRDY_MASK		BIT(0)
+@@ -36,8 +38,12 @@ static int hts221_trig_set_state(struct iio_trigger *trig, bool state)
+ {
+ 	struct iio_dev *iio_dev = iio_trigger_get_drvdata(trig);
+ 	struct hts221_hw *hw = iio_priv(iio_dev);
++	int err;
++
++	err = hts221_write_with_mask(hw, HTS221_REG_DRDY_EN_ADDR,
++				     HTS221_REG_DRDY_EN_MASK, state);
+ 
+-	return hts221_config_drdy(hw, state);
++	return err < 0 ? err : 0;
+ }
+ 
+ static const struct iio_trigger_ops hts221_trigger_ops = {
+diff --git a/drivers/iio/humidity/hts221_core.c b/drivers/iio/humidity/hts221_core.c
+index dfacf64a6f2e..12c2bc5954e4 100644
+--- a/drivers/iio/humidity/hts221_core.c
++++ b/drivers/iio/humidity/hts221_core.c
+@@ -23,7 +23,6 @@
+ 
+ #define HTS221_REG_CNTRL1_ADDR		0x20
+ #define HTS221_REG_CNTRL2_ADDR		0x21
+-#define HTS221_REG_CNTRL3_ADDR		0x22
+ 
+ #define HTS221_REG_AVG_ADDR		0x10
+ #define HTS221_REG_H_OUT_L		0x28
+@@ -36,9 +35,6 @@
+ #define HTS221_BDU_MASK			BIT(2)
+ #define HTS221_ENABLE_MASK		BIT(7)
+ 
+-#define HTS221_DRDY_MASK		BIT(2)
+-
+-
+ /* calibration registers */
+ #define HTS221_REG_0RH_CAL_X_H		0x36
+ #define HTS221_REG_1RH_CAL_X_H		0x3a
+@@ -180,16 +176,6 @@ static int hts221_check_whoami(struct hts221_hw *hw)
+ 	return 0;
+ }
+ 
+-int hts221_config_drdy(struct hts221_hw *hw, bool enable)
+-{
+-	int err;
+-
+-	err = hts221_write_with_mask(hw, HTS221_REG_CNTRL3_ADDR,
+-				     HTS221_DRDY_MASK, enable);
+-
+-	return err < 0 ? err : 0;
+-}
+-
+ static int hts221_update_odr(struct hts221_hw *hw, u8 odr)
+ {
+ 	int i, err;
+-- 
+2.13.1
 
