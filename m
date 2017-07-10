@@ -1,78 +1,50 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:8539 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1751497AbdG0Ha7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Jul 2017 03:30:59 -0400
-Subject: Re: [PATCH 4/4] ARM: dts: stm32: Add DAC support on stm32f429
-To: Fabrice Gasnier <fabrice.gasnier@st.com>, <jic23@kernel.org>,
-        <robh+dt@kernel.org>
-CC: <linux@armlinux.org.uk>, <mark.rutland@arm.com>,
-        <mcoquelin.stm32@gmail.com>, <lars@metafoo.de>, <knaack.h@gmx.de>,
-        <pmeerw@pmeerw.net>, <benjamin.gaignard@linaro.org>,
-        <benjamin.gaignard@st.com>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-References: <1499693040-12994-1-git-send-email-fabrice.gasnier@st.com>
- <1499693040-12994-5-git-send-email-fabrice.gasnier@st.com>
-From: Alexandre Torgue <alexandre.torgue@st.com>
-Message-ID: <5b66624c-3a4c-a3af-72b2-d867cf880722@st.com>
-Date: Thu, 27 Jul 2017 09:29:55 +0200
+Return-Path: <SRS0=axc1=6N=canonical.com=colin.king@kernel.org>
+From: Colin King <colin.king@canonical.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org
+Cc: kernel-janitors@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iio:adc:at91-sama5d2: make array startup_lookup static
+Date: Mon, 10 Jul 2017 17:56:16 +0100
+Message-Id: <20170710165616.16734-1-colin.king@canonical.com>
 MIME-Version: 1.0
-In-Reply-To: <1499693040-12994-5-git-send-email-fabrice.gasnier@st.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi,
+From: Colin Ian King <colin.king@canonical.com>
 
-On 07/10/2017 03:24 PM, Fabrice Gasnier wrote:
-> Add support for DAC (Digital to Analog Converter) to STM32F429.
-> STM32F429 DAC has two output channels.
-> 
-> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-> ---
->   arch/arm/boot/dts/stm32f429.dtsi | 25 +++++++++++++++++++++++++
->   1 file changed, 25 insertions(+)
-> 
-> diff --git a/arch/arm/boot/dts/stm32f429.dtsi b/arch/arm/boot/dts/stm32f429.dtsi
-> index b2a2b5c..f15f633 100644
-> --- a/arch/arm/boot/dts/stm32f429.dtsi
-> +++ b/arch/arm/boot/dts/stm32f429.dtsi
-> @@ -354,6 +354,31 @@
->   			status = "disabled";
->   		};
->   
-> +		dac: dac@40007400 {
-> +			compatible = "st,stm32f4-dac-core";
-> +			reg = <0x40007400 0x400>;
-> +			resets = <&rcc STM32F4_APB1_RESET(DAC)>;
-> +			clocks = <&rcc 0 STM32F4_APB1_CLOCK(DAC)>;
-> +			clock-names = "pclk";
-> +			#address-cells = <1>;
-> +			#size-cells = <0>;
-> +			status = "disabled";
-> +
-> +			dac1: dac@1 {
-> +				compatible = "st,stm32-dac";
-> +				#io-channels-cells = <1>;
-> +				reg = <1>;
-> +				status = "disabled";
-> +			};
-> +
-> +			dac2: dac@2 {
-> +				compatible = "st,stm32-dac";
-> +				#io-channels-cells = <1>;
-> +				reg = <2>;
-> +				status = "disabled";
-> +			};
-> +		};
-> +
->   		usart7: serial@40007800 {
->   			compatible = "st,stm32-usart", "st,stm32-uart";
->   			reg = <0x40007800 0x400>;
-> 
-Applied on stm32-dt-for-v4.14 branch.
+Don't populate array startup_lookup on the stack but instead make
+it static.  Makes the object code smaller.  Also add in missing 'int' type
+specifier to clean up a checkpatch warning.
 
-Thanks
-Alex
+Before:
+   text	   data	    bss	    dec	    hex	filename
+  10297	   2800	    128	  13225	   33a9	drivers/iio/adc/at91-sama5d2_adc.o
+
+After:
+   text	   data	    bss	    dec	    hex	filename
+  10140	   2888	    128	  13156	   3364	drivers/iio/adc/at91-sama5d2_adc.o
+
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/iio/adc/at91-sama5d2_adc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
+index e10dca3ed74b..509988a6817a 100644
+--- a/drivers/iio/adc/at91-sama5d2_adc.c
++++ b/drivers/iio/adc/at91-sama5d2_adc.c
+@@ -231,7 +231,7 @@ static const struct iio_chan_spec at91_adc_channels[] = {
+ static unsigned at91_adc_startup_time(unsigned startup_time_min,
+ 				      unsigned adc_clk_khz)
+ {
+-	const unsigned startup_lookup[] = {
++	static const unsigned int startup_lookup[] = {
+ 		  0,   8,  16,  24,
+ 		 64,  80,  96, 112,
+ 		512, 576, 640, 704,
+-- 
+2.11.0
