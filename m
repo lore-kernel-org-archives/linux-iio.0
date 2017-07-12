@@ -1,85 +1,68 @@
-Return-Path: <SRS0=Fy6E=6X=gmail.com=eballetbo@kernel.org>
-MIME-Version: 1.0
-In-Reply-To: <20170718091906.trvcaacdfrizjfks@dell>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:47130 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1755279AbdGLKN2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Jul 2017 06:13:28 -0400
+From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>, bleung@chromium.org
+Cc: martinez.javier@gmail.com, Guenter Roeck <groeck@chromium.org>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        rtc-linux@googlegroups.com, Stephen Barber <smbarber@chromium.org>
+Subject: [PATCH v3 2/4] mfd: cros_ec: Introduce RTC commands and events definitions.
+Date: Wed, 12 Jul 2017 12:13:07 +0200
+Message-Id: <20170712101309.6045-3-enric.balletbo@collabora.com>
+In-Reply-To: <20170712101309.6045-1-enric.balletbo@collabora.com>
 References: <20170712101309.6045-1-enric.balletbo@collabora.com>
- <20170712101309.6045-2-enric.balletbo@collabora.com> <CAMHSBOUT2hpcXrSuvRrZfnEXWtN9QfNLqHvM4TCvHPKiokP0Ag@mail.gmail.com>
- <CAFqH_53O8UDPnhCq7BwS7tZ9814HD5GLXWGfbeYJ2PFFk06Uzg@mail.gmail.com> <20170718091906.trvcaacdfrizjfks@dell>
-From: Enric Balletbo Serra <eballetbo@gmail.com>
-Date: Thu, 20 Jul 2017 08:31:18 +0200
-Message-ID: <CAFqH_52FwqJudZ9mYPotaX=GvA11JrpaYEKmZWwJJYWe=DZwMQ@mail.gmail.com>
-Subject: Re: [PATCH v3 1/4] mfd: cros_ec: Get rid of cros_ec_check_features
- from cros_ec_dev.
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Gwendal Grignou <gwendal@chromium.org>,
-	Enric Balletbo i Serra <enric.balletbo@collabora.com>, Jonathan Cameron <jic23@kernel.org>,
-	Benson Leung <bleung@chromium.org>, Javier Martinez Canillas <martinez.javier@gmail.com>,
-	Guenter Roeck <groeck@chromium.org>, Linux Kernel <linux-kernel@vger.kernel.org>,
-	linux-iio@vger.kernel.org, rtc-linux@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Lee,
+From: Stephen Barber <smbarber@chromium.org>
 
-2017-07-18 11:19 GMT+02:00 Lee Jones <lee.jones@linaro.org>:
-> On Mon, 17 Jul 2017, Enric Balletbo Serra wrote:
->
->> Hi Gwendal,
->>
->> 2017-07-13 22:33 GMT+02:00 Gwendal Grignou <gwendal@chromium.org>:
->> > On Wed, Jul 12, 2017 at 3:13 AM, Enric Balletbo i Serra
->> > <enric.balletbo@collabora.com> wrote:
->> >> The cros_ec_dev driver should be used only to expose the Chrome OS Em=
-bedded
->> >> Controller to user-space and should not be used to add MFD devices by
->> >> calling mfd_add_devices. This patch moves this logic to the MFD cros_=
-ec
->> >> driver and removes the MFD bits from the character device driver. Als=
-o
->> >> makes independent the IIO driver from the character device as also ha=
-s no
->> >> sense.
->> >
->> > cros_ec_dev serves another purpose: it allows to represent an EC that
->> > does not have a cros_ec structure. It happens when there are several
->> > EC in a chromebook, and one EC is connected through another EC.
->> > One example is Samus (Pixel 2): where we have:
->> >
->> > (main SOC, Application Processor) AP --> (main Embedded Controller) EC
->> > ---> (Power Delivery [PD}) EC
->> >
->> > We  access to the PD EC via pass-through commands through the main EC.
->> > Each EC has a cros_ec_dev structure, but only the main EC as a
->> > cros_ec_device structure (I will forever regret the structure names).
->> >
->> > Now form the AP point of view, both ECs use the same protocol. That
->> > why the sensors and other devcies that are registered by looking at
->> > the feature fields are registered with cros_ec_dev as their parent.
->> > Other devices that are registered from the device tree, predating the
->> > feature field support, are registered with cros_ec_device as their
->> > parent.
->> >
->>
->> Interesting I didn't know that. So are you saying that this patch will
->> break support for devices like Pixel 2? I tested the patches on
->> various devices but not on Pixel 2 so could be.
->
-> Does this affect the rest of the series?
->
+The EC can function as a simple RT, this patch adds the RTC related
+definitions needed by the rtc-cros-ec driver.
 
-Yes, because this patch moves cros_ec_check_features from char dev driver..=
-.
+Signed-off-by: Stephen Barber <smbarber@chromium.org>
+Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Acked-by: Lee Jones <lee.jones@linaro.org>
+---
+ include/linux/mfd/cros_ec_commands.h | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-> Or should I review/apply as usual?
->
+diff --git a/include/linux/mfd/cros_ec_commands.h b/include/linux/mfd/cros_ec_commands.h
+index 190c8f4..26ef492 100644
+--- a/include/linux/mfd/cros_ec_commands.h
++++ b/include/linux/mfd/cros_ec_commands.h
+@@ -286,6 +286,9 @@ enum host_event_code {
+ 	/* Hang detect logic detected a hang and warm rebooted the AP */
+ 	EC_HOST_EVENT_HANG_REBOOT = 21,
+ 
++	/* EC RTC event occurred */
++	EC_HOST_EVENT_RTC = 26,
++
+ 	/*
+ 	 * The high bit of the event mask is not used as a host event code.  If
+ 	 * it reads back as set, then the entire event mask should be
+@@ -794,6 +797,8 @@ enum ec_feature_code {
+ 	EC_FEATURE_USB_MUX = 23,
+ 	/* Motion Sensor code has an internal software FIFO */
+ 	EC_FEATURE_MOTION_SENSE_FIFO = 24,
++	/* EC has RTC feature that can be controlled by host commands */
++	EC_FEATURE_RTC = 27,
+ };
+ 
+ #define EC_FEATURE_MASK_0(event_code) (1UL << (event_code % 32))
+@@ -1704,6 +1709,9 @@ struct ec_response_rtc {
+ #define EC_CMD_RTC_SET_VALUE 0x46
+ #define EC_CMD_RTC_SET_ALARM 0x47
+ 
++/* Pass as param to SET_ALARM to clear the current alarm */
++#define EC_RTC_ALARM_CLEAR 0
++
+ /*****************************************************************************/
+ /* Port80 log access */
+ 
+-- 
+2.9.3
 
-Please, hold on while I figure out what's exactly the problem with
-Samus. Sorry for the noise.
-
-Cheers,
- Enric
-
-> --
-> Lee Jones
-> Linaro STMicroelectronics Landing Team Lead
-> Linaro.org =E2=94=82 Open source software for ARM SoCs
-> Follow Linaro: Facebook | Twitter | Blog
