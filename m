@@ -1,105 +1,74 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg0-f54.google.com ([74.125.83.54]:35757 "EHLO
-        mail-pg0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752847AbdGMUbi (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 13 Jul 2017 16:31:38 -0400
-Received: by mail-pg0-f54.google.com with SMTP id j186so34848495pge.2
-        for <linux-iio@vger.kernel.org>; Thu, 13 Jul 2017 13:31:38 -0700 (PDT)
-Subject: Re: [PATCH v3 3/4] rtc: cros-ec: add cros-ec-rtc driver.
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>, bleung@chromium.org
-Cc: martinez.javier@gmail.com, Guenter Roeck <groeck@chromium.org>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        rtc-linux@googlegroups.com, Stephen Barber <smbarber@chromium.org>,
-        'Benson Leung' <bleung@chromium.org>
+Return-Path: <SRS0=E0rE=6P=collabora.com=enric.balletbo@kernel.org>
+From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Lee Jones <lee.jones@linaro.org>,
+	bleung@chromium.org
+Cc: martinez.javier@gmail.com,
+	Guenter Roeck <groeck@chromium.org>,
+	Gwendal Grignou <gwendal@chromium.org>,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	rtc-linux@googlegroups.com,
+	Stephen Barber <smbarber@chromium.org>
+Subject: [PATCH v3 4/4] mfd: cros_ec: add RTC as mfd subdevice
+Date: Wed, 12 Jul 2017 12:13:09 +0200
+Message-Id: <20170712101309.6045-5-enric.balletbo@collabora.com>
+In-Reply-To: <20170712101309.6045-1-enric.balletbo@collabora.com>
 References: <20170712101309.6045-1-enric.balletbo@collabora.com>
- <20170712101309.6045-4-enric.balletbo@collabora.com>
-From: Benson Leung <bleung@google.com>
-Message-ID: <7a2bc3c7-9177-6820-d4a8-38315ad9aace@google.com>
-Date: Thu, 13 Jul 2017 13:31:34 -0700
-MIME-Version: 1.0
-In-Reply-To: <20170712101309.6045-4-enric.balletbo@collabora.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="CpuwfwiKqjR3soLJHKexfxksNrRLgIsTe"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---CpuwfwiKqjR3soLJHKexfxksNrRLgIsTe
-Content-Type: multipart/mixed; boundary="qFc2NpHn9DWsn5ipg6TajnVMXel1mBdVd";
- protected-headers="v1"
-From: Benson Leung <bleung@google.com>
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
- Jonathan Cameron <jic23@kernel.org>, Lee Jones <lee.jones@linaro.org>,
- bleung@chromium.org
-Cc: martinez.javier@gmail.com, Guenter Roeck <groeck@chromium.org>,
- Gwendal Grignou <gwendal@chromium.org>, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, rtc-linux@googlegroups.com,
- Stephen Barber <smbarber@chromium.org>, 'Benson Leung' <bleung@chromium.org>
-Message-ID: <7a2bc3c7-9177-6820-d4a8-38315ad9aace@google.com>
-Subject: Re: [PATCH v3 3/4] rtc: cros-ec: add cros-ec-rtc driver.
-References: <20170712101309.6045-1-enric.balletbo@collabora.com>
- <20170712101309.6045-4-enric.balletbo@collabora.com>
-In-Reply-To: <20170712101309.6045-4-enric.balletbo@collabora.com>
+From: Stephen Barber <smbarber@chromium.org>
 
---qFc2NpHn9DWsn5ipg6TajnVMXel1mBdVd
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
+If the EC supports RTC host commands, expose an RTC device.
 
-Hi Enric,
+Signed-off-by: Stephen Barber <smbarber@chromium.org>
+Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+---
+ drivers/mfd/cros_ec.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-On 07/12/2017 03:13 AM, Enric Balletbo i Serra wrote:
-> From: Stephen Barber <smbarber@chromium.org>
->=20
-> On platforms with a Chrome OS EC, the EC can function as a simple RTC.
-> Add a basic driver with this functionality.
->=20
-> Signed-off-by: Stephen Barber <smbarber@chromium.org>
-> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-> Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-
-Acked-by: Benson Leung <bleung@chromium.org>
-
-Thanks!
-Benson
-
---=20
-Benson Leung
-Staff Software Engineer
-Chrome OS Kernel
-Google Inc.
-bleung@google.com
-Chromium OS Project
-bleung@chromium.org
-
-
---qFc2NpHn9DWsn5ipg6TajnVMXel1mBdVd--
-
---CpuwfwiKqjR3soLJHKexfxksNrRLgIsTe
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJZZ9imAAoJEB8J9XsKL+ZY2eAQAJUGfSz4d/+tXzyf7QsQcu9Z
-CqtH6UrHvM03LboZBvHaOKxPSK3CiJFj3boDVVPwdpBGKPqsp7kStSw+A/OqkULH
-HhJNivgQs3UE+52POrrH9FxbINPZGoccLyAbaNmVEQmPNzRtavcb2VcU4eElM4Qv
-rjojM3Cyp15X6xp2HldGCMw1mJk3r+xK3Ydjr7a6qS+2cXfY1Iw+u+go7uJz+1G8
-PB/+QrhMuETz/pHzIQi6NJGvQX6cKDQH+wNkcOL7oPx8ySt7mQdECzTrr2cL8iTp
-sV23I14YDCVu+JHeoBv9iKDy5iBYSDRt5IPOWSvyVF5VwsY4/H0Ecjh5vtu9ZQrQ
-9E2fHI3Yte2f3OUovk2LUrkv1JJTmPxg7WfM77Zj7mRgG5D1/CgckOleFb3FhlWZ
-YovvWGu3OIGe+B/yNmsGxCA7aVU0YquMKcetmgrxfef+6zbZTV44Lk41rTARkBEz
-MWUbwOdJgEQ9pJwmNOZ89XCTGfGBKdfFFLFYxX+rBFTTh75izU1aIfQuiNdbmdLH
-zpprhlMYnHjnp935faGEJ8un7P9bX0LqqHRRQvmitlyuAwGK1bZ9LxZw9mBw0F4O
-O0j+a1sFlzVB+faj6gA7BG1vrmBvFf38tDcbaikc9rKeHfkydBZZre+ux+qSNvKV
-ZarUXvcPISNKm2QhekB7
-=ohJX
------END PGP SIGNATURE-----
-
---CpuwfwiKqjR3soLJHKexfxksNrRLgIsTe--
+diff --git a/drivers/mfd/cros_ec.c b/drivers/mfd/cros_ec.c
+index 75a27a6..ff972fb 100644
+--- a/drivers/mfd/cros_ec.c
++++ b/drivers/mfd/cros_ec.c
+@@ -51,6 +51,10 @@ static const struct mfd_cell ec_pd_cell = {
+ 	.pdata_size = sizeof(pd_p),
+ };
+ 
++static const struct mfd_cell ec_rtc_cell = {
++	.name = "cros-ec-rtc",
++};
++
+ static irqreturn_t ec_irq_thread(int irq, void *data)
+ {
+ 	struct cros_ec_device *ec_dev = data;
+@@ -245,6 +249,16 @@ static void cros_ec_sensors_register(struct cros_ec_device *ec_dev)
+ 	kfree(msg);
+ }
+ 
++static void cros_ec_rtc_register(struct cros_ec_device *ec_dev)
++{
++	int ret;
++
++	ret = mfd_add_devices(ec_dev->dev, PLATFORM_DEVID_AUTO, &ec_rtc_cell,
++			      1, NULL, 0, NULL);
++	if (ret)
++		dev_err(ec_dev->dev, "failed to add EC RTC\n");
++}
++
+ int cros_ec_register(struct cros_ec_device *ec_dev)
+ {
+ 	struct device *dev = ec_dev->dev;
+@@ -294,6 +308,10 @@ int cros_ec_register(struct cros_ec_device *ec_dev)
+ 	if (cros_ec_check_features(ec_dev, EC_FEATURE_MOTION_SENSE))
+ 		cros_ec_sensors_register(ec_dev);
+ 
++	/* Check whether this EC has RTC support */
++	if (cros_ec_check_features(ec_dev, EC_FEATURE_RTC))
++		cros_ec_rtc_register(ec_dev);
++
+ 	if (ec_dev->max_passthru) {
+ 		/*
+ 		 * Register a PD device as well on top of this device.
+-- 
+2.9.3
