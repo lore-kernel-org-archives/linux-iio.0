@@ -1,205 +1,452 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:53208 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751172AbdGOL4z (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 15 Jul 2017 07:56:55 -0400
-Date: Sat, 15 Jul 2017 12:56:54 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Jean-Baptiste Maneyrol <JManeyrol@invensense.com>
-Cc: linux-iio <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 3/5] iio: imu: inv_mpu6050: use devm_* at init and
- delete remove functions
-Message-ID: <20170715125654.62c5f634@kernel.org>
-In-Reply-To: <CY4PR1201MB0184A0905790DCD20C76249AC4AC0@CY4PR1201MB0184.namprd12.prod.outlook.com>
-References: <CY4PR1201MB0184A0905790DCD20C76249AC4AC0@CY4PR1201MB0184.namprd12.prod.outlook.com>
+Received: from mail-cys01nam02on0053.outbound.protection.outlook.com ([104.47.37.53]:20200
+        "EHLO NAM02-CY1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1752012AbdGMNeV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 13 Jul 2017 09:34:21 -0400
+From: Jean-Baptiste Maneyrol <JManeyrol@invensense.com>
+To: linux-iio <linux-iio@vger.kernel.org>
+Subject: [PATCH 4/5] iio: imu: inv_mpu6050: whitespaces and formatting cleanup
+Date: Thu, 13 Jul 2017 13:34:19 +0000
+Message-ID: <CY4PR1201MB018490CFD19C5A1E9D61AA02C4AC0@CY4PR1201MB0184.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 13 Jul 2017 13:33:01 +0000
-Jean-Baptiste Maneyrol <JManeyrol@invensense.com> wrote:
+No code change only formatting.
 
-> Use devm_* for iio_triggered_buffer_setup, iio_device_register,
-> iio_trigger_register. Delete unneeded inv_mpu6050_remove_trigger,
-> inv_mpu_core_remove, and inv_mpu_remove for spi driver.
-> 
-> Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-Looks good to me.  Will pickup when the other patches are sorted.
+Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |  42 ++++------
+ drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c  |   5 +-
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  | 118 ++++++++++++++-----------=
+----
+ drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c |   6 +-
+ drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c  |   2 -
+ 5 files changed, 79 insertions(+), 94 deletions(-)
 
-J
-> ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    | 32 ++++++---------------------
->  drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c     | 12 ++++------
->  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h     |  2 --
->  drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c     |  6 -----
->  drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c |  7 +-----
->  5 files changed, 12 insertions(+), 47 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index 6f36878..3af5877 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -956,10 +956,10 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
->  	indio_dev->info = &mpu_info;
->  	indio_dev->modes = INDIO_BUFFER_TRIGGERED;
->  
-> -	result = iio_triggered_buffer_setup(indio_dev,
-> -					    inv_mpu6050_irq_handler,
-> -					    inv_mpu6050_read_fifo,
-> -					    NULL);
-> +	result = devm_iio_triggered_buffer_setup(dev, indio_dev,
-> +						 inv_mpu6050_irq_handler,
-> +						 inv_mpu6050_read_fifo,
-> +						 NULL);
->  	if (result) {
->  		dev_err(dev, "configure buffer fail %d\n", result);
->  		return result;
-> @@ -967,39 +967,21 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
->  	result = inv_mpu6050_probe_trigger(indio_dev);
->  	if (result) {
->  		dev_err(dev, "trigger probe fail %d\n", result);
-> -		goto out_unreg_ring;
-> +		return result;
->  	}
->  
->  	INIT_KFIFO(st->timestamps);
->  	spin_lock_init(&st->time_stamp_lock);
-> -	result = iio_device_register(indio_dev);
-> +	result = devm_iio_device_register(dev, indio_dev);
->  	if (result) {
->  		dev_err(dev, "IIO register fail %d\n", result);
-> -		goto out_remove_trigger;
-> +		return result;
->  	}
->  
->  	return 0;
-> -
-> -out_remove_trigger:
-> -	inv_mpu6050_remove_trigger(st);
-> -out_unreg_ring:
-> -	iio_triggered_buffer_cleanup(indio_dev);
-> -	return result;
->  }
->  EXPORT_SYMBOL_GPL(inv_mpu_core_probe);
->  
-> -int inv_mpu_core_remove(struct device  *dev)
-> -{
-> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> -
-> -	iio_device_unregister(indio_dev);
-> -	inv_mpu6050_remove_trigger(iio_priv(indio_dev));
-> -	iio_triggered_buffer_cleanup(indio_dev);
-> -
-> -	return 0;
-> -}
-> -EXPORT_SYMBOL_GPL(inv_mpu_core_remove);
-> -
->  #ifdef CONFIG_PM_SLEEP
->  
->  static int inv_mpu_resume(struct device *dev)
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> index 6ac5375..d18604b 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> @@ -125,14 +125,12 @@ static int inv_mpu_probe(struct i2c_client *client,
->  				 1, 0, I2C_MUX_LOCKED | I2C_MUX_GATE,
->  				 inv_mpu6050_select_bypass,
->  				 inv_mpu6050_deselect_bypass);
-> -	if (!st->muxc) {
-> -		result = -ENOMEM;
-> -		goto out_unreg_device;
-> -	}
-> +	if (!st->muxc)
-> +		return -ENOMEM;
->  	st->muxc->priv = dev_get_drvdata(&client->dev);
->  	result = i2c_mux_add_adapter(st->muxc, 0, 0, 0);
->  	if (result)
-> -		goto out_unreg_device;
-> +		return result;
->  
->  	result = inv_mpu_acpi_create_mux_client(client);
->  	if (result)
-> @@ -142,8 +140,6 @@ static int inv_mpu_probe(struct i2c_client *client,
->  
->  out_del_mux:
->  	i2c_mux_del_adapters(st->muxc);
-> -out_unreg_device:
-> -	inv_mpu_core_remove(&client->dev);
->  	return result;
->  }
->  
-> @@ -155,7 +151,7 @@ static int inv_mpu_remove(struct i2c_client *client)
->  	inv_mpu_acpi_delete_mux_client(client);
->  	i2c_mux_del_adapters(st->muxc);
->  
-> -	return inv_mpu_core_remove(&client->dev);
-> +	return 0;
->  }
->  
->  /*
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> index c3d6225..f680d00 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> @@ -288,7 +288,6 @@ enum inv_mpu6050_clock_sel_e {
->  irqreturn_t inv_mpu6050_irq_handler(int irq, void *p);
->  irqreturn_t inv_mpu6050_read_fifo(int irq, void *p);
->  int inv_mpu6050_probe_trigger(struct iio_dev *indio_dev);
-> -void inv_mpu6050_remove_trigger(struct inv_mpu6050_state *st);
->  int inv_reset_fifo(struct iio_dev *indio_dev);
->  int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask);
->  int inv_mpu6050_write_reg(struct inv_mpu6050_state *st, int reg, u8 val);
-> @@ -297,5 +296,4 @@ enum inv_mpu6050_clock_sel_e {
->  void inv_mpu_acpi_delete_mux_client(struct i2c_client *client);
->  int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
->  		int (*inv_mpu_bus_setup)(struct iio_dev *), int chip_type);
-> -int inv_mpu_core_remove(struct device *dev);
->  extern const struct dev_pm_ops inv_mpu_pmops;
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-> index 74506e5..93fdd17 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-> @@ -69,11 +69,6 @@ static int inv_mpu_probe(struct spi_device *spi)
->  				  inv_mpu_i2c_disable, chip_type);
->  }
->  
-> -static int inv_mpu_remove(struct spi_device *spi)
-> -{
-> -	return inv_mpu_core_remove(&spi->dev);
-> -}
-> -
->  /*
->   * device id table is used to identify what device can be
->   * supported by this driver
-> @@ -97,7 +92,6 @@ static int inv_mpu_remove(struct spi_device *spi)
->  
->  static struct spi_driver inv_mpu_driver = {
->  	.probe		=	inv_mpu_probe,
-> -	.remove		=	inv_mpu_remove,
->  	.id_table	=	inv_mpu_id,
->  	.driver = {
->  		.acpi_match_table = ACPI_PTR(inv_acpi_match),
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-> index 85c2732..6444850 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-> @@ -149,7 +149,7 @@ int inv_mpu6050_probe_trigger(struct iio_dev *indio_dev)
->  	st->trig->ops = &inv_mpu_trigger_ops;
->  	iio_trigger_set_drvdata(st->trig, indio_dev);
->  
-> -	ret = iio_trigger_register(st->trig);
-> +	ret = devm_iio_trigger_register(&indio_dev->dev, st->trig);
->  	if (ret)
->  		return ret;
->  
-> @@ -157,8 +157,3 @@ int inv_mpu6050_probe_trigger(struct iio_dev *indio_dev)
->  
->  	return 0;
->  }
-> -
-> -void inv_mpu6050_remove_trigger(struct inv_mpu6050_state *st)
-> -{
-> -	iio_trigger_unregister(st->trig);
-> -}
-
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/i=
+nv_mpu6050/inv_mpu_core.c
+index 3af5877..5290e59 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -272,6 +272,7 @@ static int inv_mpu6050_init_config(struct iio_dev *indi=
+o_dev)
+ 	result =3D inv_mpu6050_set_power_itg(st, true);
+ 	if (result)
+ 		return result;
++
+ 	d =3D (INV_MPU6050_FSR_2000DPS << INV_MPU6050_GYRO_CONFIG_FSR_SHIFT);
+ 	result =3D regmap_write(st->map, st->reg->gyro_config, d);
+ 	if (result)
+@@ -331,12 +332,11 @@ static int inv_mpu6050_sensor_show(struct inv_mpu6050=
+_state  *st, int reg,
+ 	return IIO_VAL_INT;
+ }
+=20
+-static int
+-inv_mpu6050_read_raw(struct iio_dev *indio_dev,
+-		     struct iio_chan_spec const *chan,
+-		     int *val, int *val2, long mask)
++static int inv_mpu6050_read_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				int *val, int *val2, long mask)
+ {
+-	struct inv_mpu6050_state  *st =3D iio_priv(indio_dev);
++	struct inv_mpu6050_state *st =3D iio_priv(indio_dev);
+ 	int ret =3D 0;
+=20
+ 	switch (mask) {
+@@ -405,19 +405,16 @@ static int inv_mpu6050_sensor_show(struct inv_mpu6050=
+_state  *st, int reg,
+ 			*val  =3D 0;
+ 			*val2 =3D gyro_scale_6050[st->chip_config.fsr];
+ 			mutex_unlock(&st->lock);
+-
+ 			return IIO_VAL_INT_PLUS_NANO;
+ 		case IIO_ACCEL:
+ 			mutex_lock(&st->lock);
+ 			*val =3D 0;
+ 			*val2 =3D accel_scale[st->chip_config.accl_fs];
+ 			mutex_unlock(&st->lock);
+-
+ 			return IIO_VAL_INT_PLUS_MICRO;
+ 		case IIO_TEMP:
+ 			*val =3D 0;
+ 			*val2 =3D INV_MPU6050_TEMP_SCALE;
+-
+ 			return IIO_VAL_INT_PLUS_MICRO;
+ 		default:
+ 			return -EINVAL;
+@@ -426,7 +423,6 @@ static int inv_mpu6050_sensor_show(struct inv_mpu6050_s=
+tate  *st, int reg,
+ 		switch (chan->type) {
+ 		case IIO_TEMP:
+ 			*val =3D INV_MPU6050_TEMP_OFFSET;
+-
+ 			return IIO_VAL_INT;
+ 		default:
+ 			return -EINVAL;
+@@ -445,7 +441,6 @@ static int inv_mpu6050_sensor_show(struct inv_mpu6050_s=
+tate  *st, int reg,
+ 						chan->channel2, val);
+ 			mutex_unlock(&st->lock);
+ 			return IIO_VAL_INT;
+-
+ 		default:
+ 			return -EINVAL;
+ 		}
+@@ -465,7 +460,6 @@ static int inv_mpu6050_write_gyro_scale(struct inv_mpu6=
+050_state *st, int val)
+ 			result =3D regmap_write(st->map, st->reg->gyro_config, d);
+ 			if (result)
+ 				return result;
+-
+ 			st->chip_config.fsr =3D i;
+ 			return 0;
+ 		}
+@@ -503,7 +497,6 @@ static int inv_mpu6050_write_accel_scale(struct inv_mpu=
+6050_state *st, int val)
+ 			result =3D regmap_write(st->map, st->reg->accl_config, d);
+ 			if (result)
+ 				return result;
+-
+ 			st->chip_config.accl_fs =3D i;
+ 			return 0;
+ 		}
+@@ -610,9 +603,9 @@ static int inv_mpu6050_set_lpf(struct inv_mpu6050_state=
+ *st, int rate)
+ /**
+  * inv_mpu6050_fifo_rate_store() - Set fifo rate.
+  */
+-static ssize_t
+-inv_mpu6050_fifo_rate_store(struct device *dev, struct device_attribute *a=
+ttr,
+-			    const char *buf, size_t count)
++static ssize_t inv_mpu6050_fifo_rate_store(struct device *dev,
++					   struct device_attribute *attr,
++					   const char *buf, size_t count)
+ {
+ 	s32 fifo_rate;
+ 	u8 d;
+@@ -663,9 +656,8 @@ static int inv_mpu6050_set_lpf(struct inv_mpu6050_state=
+ *st, int rate)
+ /**
+  * inv_fifo_rate_show() - Get the current sampling rate.
+  */
+-static ssize_t
+-inv_fifo_rate_show(struct device *dev, struct device_attribute *attr,
+-		   char *buf)
++static ssize_t inv_fifo_rate_show(struct device *dev,
++				  struct device_attribute *attr, char *buf)
+ {
+ 	struct inv_mpu6050_state *st =3D iio_priv(dev_to_iio_dev(dev));
+ 	unsigned fifo_rate;
+@@ -700,7 +692,6 @@ static ssize_t inv_attr_show(struct device *dev, struct=
+ device_attribute *attr,
+ 	case ATTR_GYRO_MATRIX:
+ 	case ATTR_ACCL_MATRIX:
+ 		m =3D st->plat_data.orientation;
+-
+ 		return scnprintf(buf, PAGE_SIZE,
+ 			"%d, %d, %d; %d, %d, %d; %d, %d, %d\n",
+ 			m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8]);
+@@ -785,17 +776,17 @@ static int inv_mpu6050_validate_trigger(struct iio_de=
+v *indio_dev,
+ /* constant IIO attribute */
+ static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("10 20 50 100 200 500");
+ static IIO_CONST_ATTR(in_anglvel_scale_available,
+-					  "0.000133090 0.000266181 0.000532362 0.001064724");
++		      "0.000133090 0.000266181 0.000532362 0.001064724");
+ static IIO_CONST_ATTR(in_accel_scale_available,
+-					  "0.000598 0.001196 0.002392 0.004785");
++		      "0.000598 0.001196 0.002392 0.004785");
+ static IIO_DEV_ATTR_SAMP_FREQ(S_IRUGO | S_IWUSR, inv_fifo_rate_show,
+-	inv_mpu6050_fifo_rate_store);
++			      inv_mpu6050_fifo_rate_store);
+=20
+ /* Deprecated: kept for userspace backward compatibility. */
+ static IIO_DEVICE_ATTR(in_gyro_matrix, S_IRUGO, inv_attr_show, NULL,
+-	ATTR_GYRO_MATRIX);
++		       ATTR_GYRO_MATRIX);
+ static IIO_DEVICE_ATTR(in_accel_matrix, S_IRUGO, inv_attr_show, NULL,
+-	ATTR_ACCL_MATRIX);
++		       ATTR_ACCL_MATRIX);
+=20
+ static struct attribute *inv_attributes[] =3D {
+ 	&iio_dev_attr_in_gyro_matrix.dev_attr.attr,  /* deprecated */
+@@ -829,7 +820,7 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_=
+state *st)
+ 	unsigned int regval;
+ 	int i;
+=20
+-	st->hw  =3D &hw_info[st->chip_type];
++	st->hw =3D &hw_info[st->chip_type];
+ 	st->reg =3D hw_info[st->chip_type].reg;
+=20
+ 	/* check chip self-identification */
+@@ -983,7 +974,6 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, =
+const char *name,
+ EXPORT_SYMBOL_GPL(inv_mpu_core_probe);
+=20
+ #ifdef CONFIG_PM_SLEEP
+-
+ static int inv_mpu_resume(struct device *dev)
+ {
+ 	struct inv_mpu6050_state *st =3D iio_priv(dev_get_drvdata(dev));
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/in=
+v_mpu6050/inv_mpu_i2c.c
+index d18604b..bbb1cdf 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+@@ -50,7 +50,7 @@ static int inv_mpu6050_deselect_bypass(struct i2c_mux_cor=
+e *muxc, u32 chan_id)
+ 	struct inv_mpu6050_state *st =3D iio_priv(indio_dev);
+=20
+ 	mutex_lock(&st->lock);
+-	/* It doesn't really mattter, if any of the calls fails */
++	/* It doesn't really matter, if any of the calls fails */
+ 	regmap_write(st->map, st->reg->int_pin_cfg, INV_MPU6050_INT_PIN_CFG);
+ 	inv_mpu6050_set_power_itg(st, false);
+ 	mutex_unlock(&st->lock);
+@@ -166,7 +166,6 @@ static int inv_mpu_remove(struct i2c_client *client)
+ 	{"icm20608", INV_ICM20608},
+ 	{}
+ };
+-
+ MODULE_DEVICE_TABLE(i2c, inv_mpu_id);
+=20
+ static const struct of_device_id inv_of_match[] =3D {
+@@ -198,7 +197,6 @@ static int inv_mpu_remove(struct i2c_client *client)
+ 	{"INVN6500", INV_MPU6500},
+ 	{ },
+ };
+-
+ MODULE_DEVICE_TABLE(acpi, inv_acpi_match);
+=20
+ static struct i2c_driver inv_mpu_driver =3D {
+@@ -212,7 +210,6 @@ static int inv_mpu_remove(struct i2c_client *client)
+ 		.pm     =3D       &inv_mpu_pmops,
+ 	},
+ };
+-
+ module_i2c_driver(inv_mpu_driver);
+=20
+ MODULE_AUTHOR("Invensense Corporation");
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/in=
+v_mpu6050/inv_mpu_iio.h
+index f680d00..b677172 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+@@ -129,11 +129,11 @@ struct inv_mpu6050_hw {
+ struct inv_mpu6050_state {
+ #define TIMESTAMP_FIFO_SIZE 16
+ 	struct mutex lock;
+-	struct iio_trigger  *trig;
++	struct iio_trigger *trig;
+ 	struct inv_mpu6050_chip_config chip_config;
+ 	const struct inv_mpu6050_reg_map *reg;
+ 	const struct inv_mpu6050_hw *hw;
+-	enum   inv_devices chip_type;
++	enum inv_devices chip_type;
+ 	spinlock_t time_stamp_lock;
+ 	struct i2c_mux_core *muxc;
+ 	struct i2c_client *mux_client;
+@@ -146,84 +146,84 @@ struct inv_mpu6050_state {
+ };
+=20
+ /*register and associated bit definition*/
+-#define INV_MPU6050_REG_ACCEL_OFFSET        0x06
+-#define INV_MPU6050_REG_GYRO_OFFSET         0x13
++#define INV_MPU6050_REG_ACCEL_OFFSET		0x06
++#define INV_MPU6050_REG_GYRO_OFFSET		0x13
+=20
+-#define INV_MPU6050_REG_SAMPLE_RATE_DIV     0x19
+-#define INV_MPU6050_REG_CONFIG              0x1A
+-#define INV_MPU6050_REG_GYRO_CONFIG         0x1B
+-#define INV_MPU6050_REG_ACCEL_CONFIG        0x1C
++#define INV_MPU6050_REG_SAMPLE_RATE_DIV		0x19
++#define INV_MPU6050_REG_CONFIG			0x1A
++#define INV_MPU6050_REG_GYRO_CONFIG		0x1B
++#define INV_MPU6050_REG_ACCEL_CONFIG		0x1C
+=20
+-#define INV_MPU6050_REG_FIFO_EN             0x23
+-#define INV_MPU6050_BIT_ACCEL_OUT           0x08
+-#define INV_MPU6050_BITS_GYRO_OUT           0x70
++#define INV_MPU6050_REG_FIFO_EN			0x23
++#define INV_MPU6050_BIT_ACCEL_OUT		0x08
++#define INV_MPU6050_BITS_GYRO_OUT		0x70
+=20
+-#define INV_MPU6050_REG_INT_ENABLE          0x38
+-#define INV_MPU6050_BIT_DATA_RDY_EN         0x01
+-#define INV_MPU6050_BIT_DMP_INT_EN          0x02
++#define INV_MPU6050_REG_INT_ENABLE		0x38
++#define INV_MPU6050_BIT_DATA_RDY_EN		0x01
++#define INV_MPU6050_BIT_DMP_INT_EN		0x02
+=20
+-#define INV_MPU6050_REG_RAW_ACCEL           0x3B
+-#define INV_MPU6050_REG_TEMPERATURE         0x41
+-#define INV_MPU6050_REG_RAW_GYRO            0x43
++#define INV_MPU6050_REG_RAW_ACCEL		0x3B
++#define INV_MPU6050_REG_TEMPERATURE		0x41
++#define INV_MPU6050_REG_RAW_GYRO		0x43
+=20
+-#define INV_MPU6050_REG_USER_CTRL           0x6A
+-#define INV_MPU6050_BIT_FIFO_RST            0x04
+-#define INV_MPU6050_BIT_DMP_RST             0x08
+-#define INV_MPU6050_BIT_I2C_MST_EN          0x20
+-#define INV_MPU6050_BIT_FIFO_EN             0x40
+-#define INV_MPU6050_BIT_DMP_EN              0x80
+-#define INV_MPU6050_BIT_I2C_IF_DIS          0x10
++#define INV_MPU6050_REG_USER_CTRL		0x6A
++#define INV_MPU6050_BIT_FIFO_RST		0x04
++#define INV_MPU6050_BIT_DMP_RST			0x08
++#define INV_MPU6050_BIT_I2C_MST_EN		0x20
++#define INV_MPU6050_BIT_FIFO_EN			0x40
++#define INV_MPU6050_BIT_DMP_EN			0x80
++#define INV_MPU6050_BIT_I2C_IF_DIS		0x10
+=20
+-#define INV_MPU6050_REG_PWR_MGMT_1          0x6B
+-#define INV_MPU6050_BIT_H_RESET             0x80
+-#define INV_MPU6050_BIT_SLEEP               0x40
+-#define INV_MPU6050_BIT_CLK_MASK            0x7
++#define INV_MPU6050_REG_PWR_MGMT_1		0x6B
++#define INV_MPU6050_BIT_H_RESET			0x80
++#define INV_MPU6050_BIT_SLEEP			0x40
++#define INV_MPU6050_BIT_CLK_MASK		0x7
+=20
+-#define INV_MPU6050_REG_PWR_MGMT_2          0x6C
+-#define INV_MPU6050_BIT_PWR_ACCL_STBY       0x38
+-#define INV_MPU6050_BIT_PWR_GYRO_STBY       0x07
++#define INV_MPU6050_REG_PWR_MGMT_2		0x6C
++#define INV_MPU6050_BIT_PWR_ACCL_STBY		0x38
++#define INV_MPU6050_BIT_PWR_GYRO_STBY		0x07
+=20
+-#define INV_MPU6050_REG_FIFO_COUNT_H        0x72
+-#define INV_MPU6050_REG_FIFO_R_W            0x74
++#define INV_MPU6050_REG_FIFO_COUNT_H		0x72
++#define INV_MPU6050_REG_FIFO_R_W		0x74
+=20
+-#define INV_MPU6050_BYTES_PER_3AXIS_SENSOR   6
+-#define INV_MPU6050_FIFO_COUNT_BYTE          2
+-#define INV_MPU6050_FIFO_THRESHOLD           500
++#define INV_MPU6050_BYTES_PER_3AXIS_SENSOR	6
++#define INV_MPU6050_FIFO_COUNT_BYTE		2
++#define INV_MPU6050_FIFO_THRESHOLD		500
+=20
+ /* mpu6500 registers */
+-#define INV_MPU6500_REG_ACCEL_CONFIG_2      0x1D
+-#define INV_MPU6500_REG_ACCEL_OFFSET        0x77
++#define INV_MPU6500_REG_ACCEL_CONFIG_2		0x1D
++#define INV_MPU6500_REG_ACCEL_OFFSET		0x77
+=20
+ /* delay time in milliseconds */
+-#define INV_MPU6050_POWER_UP_TIME            100
+-#define INV_MPU6050_TEMP_UP_TIME             100
+-#define INV_MPU6050_SENSOR_UP_TIME           30
++#define INV_MPU6050_POWER_UP_TIME		100
++#define INV_MPU6050_TEMP_UP_TIME		100
++#define INV_MPU6050_SENSOR_UP_TIME		30
+=20
+ /* delay time in microseconds */
+-#define INV_MPU6050_REG_UP_TIME_MIN          5000
+-#define INV_MPU6050_REG_UP_TIME_MAX          10000
++#define INV_MPU6050_REG_UP_TIME_MIN		5000
++#define INV_MPU6050_REG_UP_TIME_MAX		10000
+=20
+-#define INV_MPU6050_TEMP_OFFSET	             12421
+-#define INV_MPU6050_TEMP_SCALE               2941
+-#define INV_MPU6050_MAX_GYRO_FS_PARAM        3
+-#define INV_MPU6050_MAX_ACCL_FS_PARAM        3
+-#define INV_MPU6050_THREE_AXIS               3
+-#define INV_MPU6050_GYRO_CONFIG_FSR_SHIFT    3
+-#define INV_MPU6050_ACCL_CONFIG_FSR_SHIFT    3
++#define INV_MPU6050_TEMP_OFFSET			12421
++#define INV_MPU6050_TEMP_SCALE			2941
++#define INV_MPU6050_MAX_GYRO_FS_PARAM		3
++#define INV_MPU6050_MAX_ACCL_FS_PARAM		3
++#define INV_MPU6050_THREE_AXIS			3
++#define INV_MPU6050_GYRO_CONFIG_FSR_SHIFT	3
++#define INV_MPU6050_ACCL_CONFIG_FSR_SHIFT	3
+=20
+ /* 6 + 6 round up and plus 8 */
+-#define INV_MPU6050_OUTPUT_DATA_SIZE         24
++#define INV_MPU6050_OUTPUT_DATA_SIZE		24
+=20
+-#define INV_MPU6050_REG_INT_PIN_CFG	0x37
+-#define INV_MPU6050_BIT_BYPASS_EN	0x2
+-#define INV_MPU6050_INT_PIN_CFG		0
++#define INV_MPU6050_REG_INT_PIN_CFG		0x37
++#define INV_MPU6050_BIT_BYPASS_EN		0x2
++#define INV_MPU6050_INT_PIN_CFG			0
+=20
+ /* init parameters */
+-#define INV_MPU6050_INIT_FIFO_RATE           50
+-#define INV_MPU6050_TIME_STAMP_TOR           5
+-#define INV_MPU6050_MAX_FIFO_RATE            1000
+-#define INV_MPU6050_MIN_FIFO_RATE            4
+-#define INV_MPU6050_ONE_K_HZ                 1000
++#define INV_MPU6050_INIT_FIFO_RATE		50
++#define INV_MPU6050_TIME_STAMP_TOR		5
++#define INV_MPU6050_MAX_FIFO_RATE		1000
++#define INV_MPU6050_MIN_FIFO_RATE		4
++#define INV_MPU6050_ONE_K_HZ			1000
+=20
+ #define INV_MPU6050_REG_WHOAMI			117
+=20
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/i=
+nv_mpu6050/inv_mpu_ring.c
+index ff81c6a..f5c2e07 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+@@ -55,7 +55,7 @@ int inv_reset_fifo(struct iio_dev *indio_dev)
+ 	if (result)
+ 		goto reset_fifo_fail;
+=20
+-	/* reset FIFO*/
++	/* reset FIFO */
+ 	result =3D regmap_write(st->map, st->reg->user_ctrl,
+ 			      INV_MPU6050_BIT_FIFO_RST);
+ 	if (result)
+@@ -72,7 +72,7 @@ int inv_reset_fifo(struct iio_dev *indio_dev)
+ 		if (result)
+ 			return result;
+ 	}
+-	/* enable FIFO reading and I2C master interface*/
++	/* enable FIFO reading and I2C master interface */
+ 	result =3D regmap_write(st->map, st->reg->user_ctrl,
+ 			      INV_MPU6050_BIT_FIFO_EN);
+ 	if (result)
+@@ -150,7 +150,7 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
+ 	fifo_count =3D be16_to_cpup((__be16 *)(&data[0]));
+ 	if (fifo_count < bytes_per_datum)
+ 		goto end_session;
+-	/* fifo count can't be odd number, if it is odd, reset fifo*/
++	/* fifo count can't be odd number, if it is odd, reset fifo */
+ 	if (fifo_count & 1)
+ 		goto flush_fifo;
+ 	if (fifo_count >  INV_MPU6050_FIFO_THRESHOLD)
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c b/drivers/iio/imu/in=
+v_mpu6050/inv_mpu_spi.c
+index 93fdd17..cc43cb1 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+@@ -81,7 +81,6 @@ static int inv_mpu_probe(struct spi_device *spi)
+ 	{"icm20608", INV_ICM20608},
+ 	{}
+ };
+-
+ MODULE_DEVICE_TABLE(spi, inv_mpu_id);
+=20
+ static const struct acpi_device_id inv_acpi_match[] =3D {
+@@ -99,7 +98,6 @@ static int inv_mpu_probe(struct spi_device *spi)
+ 		.pm     =3D       &inv_mpu_pmops,
+ 	},
+ };
+-
+ module_spi_driver(inv_mpu_driver);
+=20
+ MODULE_AUTHOR("Adriana Reus <adriana.reus@intel.com>");
+--=20
+1.9.1
