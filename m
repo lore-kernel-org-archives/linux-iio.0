@@ -1,108 +1,138 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:50100 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751317AbdGQUl2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 17 Jul 2017 16:41:28 -0400
-Date: Mon, 17 Jul 2017 21:41:24 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: Hans de Goede <hdegoede@redhat.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: accel: bmc150: Always restore device to normal
- mode after suspend-resume
-Message-ID: <20170717214124.05d14865@kernel.org>
-In-Reply-To: <1500321055.21514.26.camel@linux.intel.com>
-References: <20170713131341.7585-1-hdegoede@redhat.com>
-        <20170715123942.5d9186a0@kernel.org>
-        <1500321055.21514.26.camel@linux.intel.com>
+Received: from mail-by2nam01on0065.outbound.protection.outlook.com ([104.47.34.65]:33983
+        "EHLO NAM01-BY2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1751334AbdGMNaH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 13 Jul 2017 09:30:07 -0400
+From: Jean-Baptiste Maneyrol <JManeyrol@invensense.com>
+To: linux-iio <linux-iio@vger.kernel.org>
+Subject: [PATCH 1/5] iio: imu: inv_mpu6050: fix error path not turning chip
+ back off
+Date: Thu, 13 Jul 2017 13:30:04 +0000
+Message-ID: <CY4PR1201MB01846D4381783299959BFB64C4AC0@CY4PR1201MB0184.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 17 Jul 2017 12:50:55 -0700
-Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
+Some functions are turning the chip on and not back off in error
+path. With set_power function using a reference counter this is
+keeping the chip on forever.
 
-> On Sat, 2017-07-15 at 12:39 +0100, Jonathan Cameron wrote:
-> > On Thu, 13 Jul 2017 15:13:41 +0200
-> > Hans de Goede <hdegoede@redhat.com> wrote:
-> >   
-> > > 
-> > > After probe we would put the device in normal mode, after a runtime
-> > > suspend-resume we would put it back in normal mode. But for a
-> > > regular
-> > > suspend-resume we would only put it back in normal mode if triggers
-> > > or events have been requested.  This is not consistent and breaks
-> > > reading raw values after a suspend-resume.
-> > > 
-> > > This commit changes the regular resume path to also unconditionally
-> > > put
-> > > the device back in normal mode, fixing reading of raw values not
-> > > working
-> > > after a regular suspend-resume cycle.
-> > > 
-> > > Signed-off-by: Hans de Goede <hdegoede@redhat.com>  
-> Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-This bit of code goes back a long way.  I've taken the view
-that it should be relevant as long as it applies (so back to
-the i2c / spi split)   Hence I've not added a fixes tag but
-just marked it for stable.
+Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    | 12 ++++++++----
+ drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c | 23 +++++++++++++++--------
+ 2 files changed, 23 insertions(+), 12 deletions(-)
 
-Applied to the fixes-togreg branch of iio.git.
-
-Thanks,
-
-Jonathan
-> 
-> > Looks right to me, but I'd like to send this for stable so would
-> > like a second opinion, say from Srinivas as the original author.
-> > Other comments obviously welcome as well!  
-> > > 
-> > > ---
-> > >  drivers/iio/accel/bmc150-accel-core.c | 9 +--------
-> > >  1 file changed, 1 insertion(+), 8 deletions(-)
-> > > 
-> > > diff --git a/drivers/iio/accel/bmc150-accel-core.c
-> > > b/drivers/iio/accel/bmc150-accel-core.c
-> > > index 6b5d3be283c4..807299dd45eb 100644
-> > > --- a/drivers/iio/accel/bmc150-accel-core.c
-> > > +++ b/drivers/iio/accel/bmc150-accel-core.c
-> > > @@ -193,7 +193,6 @@ struct bmc150_accel_data {
-> > >  	struct regmap *regmap;
-> > >  	int irq;
-> > >  	struct bmc150_accel_interrupt
-> > > interrupts[BMC150_ACCEL_INTERRUPTS];
-> > > -	atomic_t active_intr;
-> > >  	struct bmc150_accel_trigger
-> > > triggers[BMC150_ACCEL_TRIGGERS];
-> > >  	struct mutex mutex;
-> > >  	u8 fifo_mode, watermark;
-> > > @@ -493,11 +492,6 @@ static int bmc150_accel_set_interrupt(struct
-> > > bmc150_accel_data *data, int i,
-> > >  		goto out_fix_power_state;
-> > >  	}
-> > >  
-> > > -	if (state)
-> > > -		atomic_inc(&data->active_intr);
-> > > -	else
-> > > -		atomic_dec(&data->active_intr);
-> > > -
-> > >  	return 0;
-> > >  
-> > >  out_fix_power_state:
-> > > @@ -1710,8 +1704,7 @@ static int bmc150_accel_resume(struct device
-> > > *dev)
-> > >  	struct bmc150_accel_data *data = iio_priv(indio_dev);
-> > >  
-> > >  	mutex_lock(&data->mutex);
-> > > -	if (atomic_read(&data->active_intr))
-> > > -		bmc150_accel_set_mode(data,
-> > > BMC150_ACCEL_SLEEP_MODE_NORMAL, 0);
-> > > +	bmc150_accel_set_mode(data,
-> > > BMC150_ACCEL_SLEEP_MODE_NORMAL, 0);
-> > >  	bmc150_accel_fifo_set_mode(data);
-> > >  	mutex_unlock(&data->mutex);
-> > >    
-
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/i=
+nv_mpu6050/inv_mpu_core.c
+index 44830bc..b1a8159 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -262,27 +262,31 @@ static int inv_mpu6050_init_config(struct iio_dev *in=
+dio_dev)
+ 	d =3D (INV_MPU6050_FSR_2000DPS << INV_MPU6050_GYRO_CONFIG_FSR_SHIFT);
+ 	result =3D regmap_write(st->map, st->reg->gyro_config, d);
+ 	if (result)
+-		return result;
++		goto error_power_off;
+=20
+ 	result =3D inv_mpu6050_set_lpf_regs(st, INV_MPU6050_FILTER_20HZ);
+ 	if (result)
+-		return result;
++		goto error_power_off;
+=20
+ 	d =3D INV_MPU6050_ONE_K_HZ / INV_MPU6050_INIT_FIFO_RATE - 1;
+ 	result =3D regmap_write(st->map, st->reg->sample_rate_div, d);
+ 	if (result)
+-		return result;
++		goto error_power_off;
+=20
+ 	d =3D (INV_MPU6050_FS_02G << INV_MPU6050_ACCL_CONFIG_FSR_SHIFT);
+ 	result =3D regmap_write(st->map, st->reg->accl_config, d);
+ 	if (result)
+-		return result;
++		goto error_power_off;
+=20
+ 	memcpy(&st->chip_config, hw_info[st->chip_type].config,
+ 	       sizeof(struct inv_mpu6050_chip_config));
+ 	result =3D inv_mpu6050_set_power_itg(st, false);
+=20
+ 	return result;
++
++error_power_off:
++	inv_mpu6050_set_power_itg(st, false);
++	return result;
+ }
+=20
+ static int inv_mpu6050_sensor_set(struct inv_mpu6050_state  *st, int reg,
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/iio/im=
+u/inv_mpu6050/inv_mpu_trigger.c
+index 540070f..85c2732 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+@@ -53,45 +53,52 @@ static int inv_mpu6050_set_enable(struct iio_dev *indio=
+_dev, bool enable)
+ 			result =3D inv_mpu6050_switch_engine(st, true,
+ 					INV_MPU6050_BIT_PWR_GYRO_STBY);
+ 			if (result)
+-				return result;
++				goto error_power_off;
+ 		}
+ 		if (st->chip_config.accl_fifo_enable) {
+ 			result =3D inv_mpu6050_switch_engine(st, true,
+ 					INV_MPU6050_BIT_PWR_ACCL_STBY);
+ 			if (result)
+-				return result;
++				goto error_power_off;
+ 		}
+ 		result =3D inv_reset_fifo(indio_dev);
+ 		if (result)
+-			return result;
++			goto error_power_off;
+ 	} else {
+ 		result =3D regmap_write(st->map, st->reg->fifo_en, 0);
+ 		if (result)
+-			return result;
++			goto error_power_off;
+=20
+ 		result =3D regmap_write(st->map, st->reg->int_enable, 0);
+ 		if (result)
+-			return result;
++			goto error_power_off;
+=20
+ 		result =3D regmap_write(st->map, st->reg->user_ctrl, 0);
+ 		if (result)
+-			return result;
++			goto error_power_off;
+=20
+ 		result =3D inv_mpu6050_switch_engine(st, false,
+ 					INV_MPU6050_BIT_PWR_GYRO_STBY);
+ 		if (result)
+-			return result;
++			goto error_power_off;
++		st->chip_config.gyro_fifo_enable =3D false;
+=20
+ 		result =3D inv_mpu6050_switch_engine(st, false,
+ 					INV_MPU6050_BIT_PWR_ACCL_STBY);
+ 		if (result)
+-			return result;
++			goto error_power_off;
++		st->chip_config.accl_fifo_enable =3D false;
++
+ 		result =3D inv_mpu6050_set_power_itg(st, false);
+ 		if (result)
+ 			return result;
+ 	}
+=20
+ 	return 0;
++
++error_power_off:
++	inv_mpu6050_set_power_itg(st, false);
++	return result;
+ }
+=20
+ /**
+--=20
+1.9.1
