@@ -1,68 +1,103 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:47130 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755279AbdGLKN2 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Jul 2017 06:13:28 -0400
-From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-To: Jonathan Cameron <jic23@kernel.org>,
+Received: from mail-pf0-f173.google.com ([209.85.192.173]:33456 "EHLO
+        mail-pf0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752745AbdGMUPK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 13 Jul 2017 16:15:10 -0400
+Received: by mail-pf0-f173.google.com with SMTP id e7so34557459pfk.0
+        for <linux-iio@vger.kernel.org>; Thu, 13 Jul 2017 13:15:09 -0700 (PDT)
+Subject: Re: [PATCH v3 2/4] mfd: cros_ec: Introduce RTC commands and events
+ definitions.
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Lee Jones <lee.jones@linaro.org>, bleung@chromium.org
 Cc: martinez.javier@gmail.com, Guenter Roeck <groeck@chromium.org>,
         Gwendal Grignou <gwendal@chromium.org>,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         rtc-linux@googlegroups.com, Stephen Barber <smbarber@chromium.org>
-Subject: [PATCH v3 2/4] mfd: cros_ec: Introduce RTC commands and events definitions.
-Date: Wed, 12 Jul 2017 12:13:07 +0200
-Message-Id: <20170712101309.6045-3-enric.balletbo@collabora.com>
-In-Reply-To: <20170712101309.6045-1-enric.balletbo@collabora.com>
 References: <20170712101309.6045-1-enric.balletbo@collabora.com>
+ <20170712101309.6045-3-enric.balletbo@collabora.com>
+From: Benson Leung <bleung@google.com>
+Message-ID: <9f82780d-47a0-da3f-40ae-8a5ffe9470f2@google.com>
+Date: Thu, 13 Jul 2017 13:15:04 -0700
+MIME-Version: 1.0
+In-Reply-To: <20170712101309.6045-3-enric.balletbo@collabora.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="gX3mn3NuoeV2chtOB4KgwTRTtBdBFGn27"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Stephen Barber <smbarber@chromium.org>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--gX3mn3NuoeV2chtOB4KgwTRTtBdBFGn27
+Content-Type: multipart/mixed; boundary="bWwNRAcdFTtjl8ld3f9CVoU8bRaLpGINp";
+ protected-headers="v1"
+From: Benson Leung <bleung@google.com>
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+ Jonathan Cameron <jic23@kernel.org>, Lee Jones <lee.jones@linaro.org>,
+ bleung@chromium.org
+Cc: martinez.javier@gmail.com, Guenter Roeck <groeck@chromium.org>,
+ Gwendal Grignou <gwendal@chromium.org>, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, rtc-linux@googlegroups.com,
+ Stephen Barber <smbarber@chromium.org>
+Message-ID: <9f82780d-47a0-da3f-40ae-8a5ffe9470f2@google.com>
+Subject: Re: [PATCH v3 2/4] mfd: cros_ec: Introduce RTC commands and events
+ definitions.
+References: <20170712101309.6045-1-enric.balletbo@collabora.com>
+ <20170712101309.6045-3-enric.balletbo@collabora.com>
+In-Reply-To: <20170712101309.6045-3-enric.balletbo@collabora.com>
 
-The EC can function as a simple RT, this patch adds the RTC related
-definitions needed by the rtc-cros-ec driver.
+--bWwNRAcdFTtjl8ld3f9CVoU8bRaLpGINp
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Stephen Barber <smbarber@chromium.org>
-Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Acked-by: Lee Jones <lee.jones@linaro.org>
----
- include/linux/mfd/cros_ec_commands.h | 8 ++++++++
- 1 file changed, 8 insertions(+)
+Hi Enric,
 
-diff --git a/include/linux/mfd/cros_ec_commands.h b/include/linux/mfd/cros_ec_commands.h
-index 190c8f4..26ef492 100644
---- a/include/linux/mfd/cros_ec_commands.h
-+++ b/include/linux/mfd/cros_ec_commands.h
-@@ -286,6 +286,9 @@ enum host_event_code {
- 	/* Hang detect logic detected a hang and warm rebooted the AP */
- 	EC_HOST_EVENT_HANG_REBOOT = 21,
- 
-+	/* EC RTC event occurred */
-+	EC_HOST_EVENT_RTC = 26,
-+
- 	/*
- 	 * The high bit of the event mask is not used as a host event code.  If
- 	 * it reads back as set, then the entire event mask should be
-@@ -794,6 +797,8 @@ enum ec_feature_code {
- 	EC_FEATURE_USB_MUX = 23,
- 	/* Motion Sensor code has an internal software FIFO */
- 	EC_FEATURE_MOTION_SENSE_FIFO = 24,
-+	/* EC has RTC feature that can be controlled by host commands */
-+	EC_FEATURE_RTC = 27,
- };
- 
- #define EC_FEATURE_MASK_0(event_code) (1UL << (event_code % 32))
-@@ -1704,6 +1709,9 @@ struct ec_response_rtc {
- #define EC_CMD_RTC_SET_VALUE 0x46
- #define EC_CMD_RTC_SET_ALARM 0x47
- 
-+/* Pass as param to SET_ALARM to clear the current alarm */
-+#define EC_RTC_ALARM_CLEAR 0
-+
- /*****************************************************************************/
- /* Port80 log access */
- 
--- 
-2.9.3
+On 07/12/2017 03:13 AM, Enric Balletbo i Serra wrote:
+> From: Stephen Barber <smbarber@chromium.org>
+>=20
+> The EC can function as a simple RT, this patch adds the RTC related
+> definitions needed by the rtc-cros-ec driver.
+>=20
+> Signed-off-by: Stephen Barber <smbarber@chromium.org>
+> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> Acked-by: Lee Jones <lee.jones@linaro.org>
 
+Acked-by: Benson Leung <bleung@chromium.org>
+
+--=20
+Benson Leung
+Staff Software Engineer
+Chrome OS Kernel
+Google Inc.
+bleung@google.com
+Chromium OS Project
+bleung@chromium.org
+
+
+--bWwNRAcdFTtjl8ld3f9CVoU8bRaLpGINp--
+
+--gX3mn3NuoeV2chtOB4KgwTRTtBdBFGn27
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJZZ9TJAAoJEB8J9XsKL+ZYT+gP/iE/nSTdk8SuMjd1VNH1JVkS
+47YPe66vRCWA6oILyxoQSblB1wG/1UM8aR8uTWIbQMm3Sl+VQGtJ0KLyCNVNYktK
+tQXWUxOy7zHtc31pfeLBr1eZRcKifduzl+35cPZ5kHjMpsL0aLPzo2Ue47FCRFXi
+rEQvqYisjrsuX5ul9sBjmDEFY74L64yNW32TI9BhD5v0ovI/96Bnac/onVFN77OQ
+QNWqmzFjZtkNwLvDKffOEg1MN5JUARMsHO9/IWZ2r+WLnMv01LjSkpkYrtcpbKkv
+FjQI8+vQiEkMIxnKwl5Bk4zZWbPud0vJgX8o6/f2yOuI/ZoMP7rfE0WUup9AbHvS
+uXwLhHEQdnEfAiMTXxefPD58FvBijeTzaL0WY8pJcPkNs4SMjQL2PvAchLSkUp7+
+f33uXDRa423aIOfNyA+NFN6RwOC1B53DBsug90weLHUUEsXXlJGDRRTWhBcMswT5
+K6/12Uw0A5QZ23ILCzefa1KmFHdi8piXFitbmz7fjHNaNOdlBnYwc0OGp2RhV+BW
+rsp51JhyqFuS5xY8xYdjyi31EUEq/ashPARj5qSdwKLLvZRbl9lNN14iML2idyar
+zFBrrwoUgABw4gwDzxVyzSECB40q0xP69vVNYOArDTBlpMlGk8AXH7OWf968LXK/
+ZkuUUb00Qmili12rzfiU
+=YaGE
+-----END PGP SIGNATURE-----
+
+--gX3mn3NuoeV2chtOB4KgwTRTtBdBFGn27--
