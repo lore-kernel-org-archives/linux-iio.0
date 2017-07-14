@@ -1,230 +1,244 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:36313 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751426AbdGNJkw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 14 Jul 2017 05:40:52 -0400
+Received: from esa3.microchip.iphmx.com ([68.232.153.233]:12165 "EHLO
+        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753472AbdGNKbn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 14 Jul 2017 06:31:43 -0400
 Subject: Re: New Driver for electrical energy measurement
-To: Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Christian Gromm <christian.gromm@microchip.com>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+CC: Greg KH <gregkh@linuxfoundation.org>, <linux-iio@vger.kernel.org>,
+        <driverdev-devel@linuxdriverproject.org>,
+        Bogdan Bolocan - M91369 <Bogdan.Bolocan@microchip.com>
 References: <20170712141854.018293e7@xps13> <20170712125101.GA27567@kroah.com>
  <20170712151940.76d415b1@xps13> <20170714160733.00004819@huawei.com>
  <ef422a05-893e-51a9-d421-1fe2c3425c9c@roeck-us.net>
-Cc: Greg KH <gregkh@linuxfoundation.org>, linux-iio@vger.kernel.org,
-        driverdev-devel@linuxdriverproject.org
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <f54f4306-e78d-973a-ef18-0168ee5a7506@metafoo.de>
-Date: Fri, 14 Jul 2017 11:40:39 +0200
+ <f54f4306-e78d-973a-ef18-0168ee5a7506@metafoo.de>
+From: Christian Gromm <christian.gromm@microchip.com>
+Message-ID: <0be19d17-8523-a418-3d5f-775dd8e31b42@microchip.com>
+Date: Fri, 14 Jul 2017 12:33:02 +0200
 MIME-Version: 1.0
-In-Reply-To: <ef422a05-893e-51a9-d421-1fe2c3425c9c@roeck-us.net>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <f54f4306-e78d-973a-ef18-0168ee5a7506@metafoo.de>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/14/2017 11:00 AM, Guenter Roeck wrote:
-> On 07/14/2017 01:07 AM, Jonathan Cameron wrote:
->> On Wed, 12 Jul 2017 15:19:40 +0200
->> Christian Gromm <christian.gromm@microchip.com> wrote:
->>
->>> On Wed, 12 Jul 2017 14:51:01 +0200
->>> Greg KH <gregkh@linuxfoundation.org> wrote:
+On 14.07.2017 11:40, Lars-Peter Clausen wrote:
+> On 07/14/2017 11:00 AM, Guenter Roeck wrote:
+>> On 07/14/2017 01:07 AM, Jonathan Cameron wrote:
+>>> On Wed, 12 Jul 2017 15:19:40 +0200
+>>> Christian Gromm <christian.gromm@microchip.com> wrote:
 >>>
->>>> On Wed, Jul 12, 2017 at 02:18:54PM +0200, Christian Gromm wrote:
->>>>>
->>>>> Hi,
->>>>>
->>>>> Microchip is planning to introduce a driver for a new companion
->>>>> chip series capable of electical energy measurement. However, we
->>>>> are not sure which location in the source tree is the most
->>>>> suitable. First thought was to put it into /drivers/powercap. But
->>>>> now we are in discussions whether it would make even more sense to
->>>>> introduce a new driver for electrical energy measuring or
->>>>> monitoring.
+>>>> On Wed, 12 Jul 2017 14:51:01 +0200
+>>>> Greg KH <gregkh@linuxfoundation.org> wrote:
 >>>>
->>>> Why not just have it be an IIO device, I think they have energy
->>>> sensors already (adding the iio mailing list to find out...)
->>>
->>> We thought about hwmon, but not IIO.
->>>
->>>>   
+>>>>> On Wed, Jul 12, 2017 at 02:18:54PM +0200, Christian Gromm wrote:
+>>>>>>
+>>>>>> Hi,
+>>>>>>
+>>>>>> Microchip is planning to introduce a driver for a new companion
+>>>>>> chip series capable of electical energy measurement. However, we
+>>>>>> are not sure which location in the source tree is the most
+>>>>>> suitable. First thought was to put it into /drivers/powercap. But
+>>>>>> now we are in discussions whether it would make even more sense to
+>>>>>> introduce a new driver for electrical energy measuring or
+>>>>>> monitoring.
 >>>>>
->>>>> Following is a rough overview of the part we want the driver for.
->>>>> Any input on this will be appreciated.
->>>>>
->>>>> thanks,
->>>>> Chris
->>>>>
->>>>> === Introduction
->>>>>
->>>>> Following the recent focus on low-power systems, Microchip has
->>>>> designed a companion chip series capable of measuring the
->>>>> electrical energy flow of an electrical system.  The series in
->>>>> question, EM Chip  is capable of measuring the energy flow (in or
->>>>> out) of an electrical system by monitoring one or more power
->>>>> rails.  The 1st chip of the series, EM Chip is able to measure the
->>>>> net energy flow over 4 different power rails.  The chip itself is a
->>>>> small QFN16 (4mm x 4mm x 0.5mm) or WLCSP16 (2.25mm x 2.2mm) package.
->>>>>
->>>>> === Theory of Operation
->>>>>
->>>>> In order to measure the amount of energy entering/exiting a system,
->>>>> a small shunt resistor is interleaved on a power rail. By measuring
->>>>> the small voltage drop across the shunt resistor (a known value),
->>>>> the electrical current is measured.
->>>>>
->>>>>     I = U/R
->>>>>
->>>>> Depending on whether the system is consuming or producing energy,
->>>>> the measured current value can be either a positive or negative
->>>>> number.
->>>>>
->>>>> To get the instantaneous power figure we will have to measure the
->>>>> power rail’s voltage and multiply it with the measured value for
->>>>> the current
->>>>>
->>>>>     P = V * I = V * U_shunt/R
->>>>>
->>>>> Knowing the instantaneous power and by making a high enough sample
->>>>> rate (for measuring the current and the power rail voltage), we can
->>>>> assume the measured value for power is equal to the average power
->>>>> figure for the amount of time between 2 sampling moments.
->>>>>
->>>>> Now that we also know the average power for a given time interval
->>>>> (dt_x = time between 2 sampling moments; sampling speed is known),
->>>>> we can measure the energy amount entering or exiting the system
->>>>> between 2 sampling moments
->>>>>
->>>>>     E_partial_x = P * dt_x
->>>>>
->>>>> Having the energy information available, we can continue to add the
->>>>> subsequent energy values for as long as the system is active. The
->>>>> amount of energy is the sum of all the partial energy values
->>>>> measured for each time interval E = Sum (E_partial_x), where x can
->>>>> take values from 0 till infinite.
->>>>>
->>>>>
->>>>> === Chip Operation
->>>>>
->>>>> The EM Chip chip uses the same principles of operation as presented
->>>>> in the “Theory of Operation” and it does so for a number of 4
->>>>> channels. 4 independent power rails can be energy monitored in the
->>>>> same time.  The chip is controlled over I2C/SMBus by an I2C/SMBus
->>>>> master.
->>>>>
->>>>> In order to reduce the amount of information traffic between the EM
->>>>> Chip and the entity asking for its information, the chip features
->>>>> large accumulator energy registers for the accumulated energy
->>>>> values. It can accumulate up to 2^24 power values. Depending on the
->>>>> selected chip’s sampling speed, such a number of samples are
->>>>> produced in about 4.5 hours (fastest sampling speed) up to 582.5
->>>>> hours or more than 24 days (lowest sampling speed).
->>>>>
->>>>> EM Chip measures the power as a 28-bits number. The 28-bits number
->>>>> is the multiplication result of the 16-bits number used to measure
->>>>> the power rail voltage and the 12-bits number used for measuring
->>>>> the voltage drop across the power rail shunt resistor.
->>>>>
->>>>> If bidirectional energy flow is required, the power is measured as a
->>>>> 27-bits number and 1 bit for the sign. When no bidirectional flow is
->>>>> needed, the power value is measured as an unsigned 28-bits number.
->>>>>
->>>>> Due to the relatively large size of the accumulated energy
->>>>> registers inside the chip (48 bits), in the worst case scenario
->>>>> (power values are full scale numbers), a number of 2^20 full-scale
->>>>> power values can be measured before energy register’s overflow.
->>>>> Using the fastest sampling speed, the accumulated energy registers
->>>>> overflows only after a bit over 17 minutes, while at the lowest
->>>>> sampling speed, it would overflow in over 36 hours.
->>>>>
->>>>> Thus, the chip requires infrequent reads of the accumulated energy
->>>>> registers. Even in the worst case scenario, the time between 2
->>>>> consecutive energy accumulator reads can be over 17 minutes !
->>>>>
->>>>> In order to keep a longer history of energy measurements, an
->>>>> I2C/SMBus master (e.g. SoC) would read the accumulated energy
->>>>> register values and then use larger “soft” accumulated energy
->>>>> registers to extend the maximum overflow period.
->>>>>
->>>>> The EM Chip chip can monitor rails up to 32V. It can monitor the
->>>>> energy amounts used by various sub-components of a system (e.g.
->>>>> CPU, GPU, memory, hard-drives, USB ports, backlight, wireless
->>>>> adapters, cameras, displays, …)
->>>>>
->>>>> EM Chip is able to start operating immediately after power-up with
->>>>> no CPU intervention at all. Such a feature is useful, because it
->>>>> can show the amount of energy consumed by a system before the
->>>>> latter finished booting its operating system.
->>>>>
->>>>> The chip’s own current draw is around 20uA (in low-power mode,
->>>>> lowest sampling speed - 8 samples/sec) to 675uA (for the highest
->>>>> sampling speed - 1024 samples/sec)
->>>>>
->>>>> When operated in low-power mode, it can be used to monitor the
->>>>> stand-by energy draw of the system. As an example, such a mode is
->>>>> useful when a system is suspended to RAM or to measure the energy
->>>>> usage from the power on till the booting process is finished.
->>>>>
->>>>> === Linux Driver
->>>>>
->>>>> While the chip is due to be publicly released in Q3 2017, a
->>>>> selected number of PC OEM manufacturers will include one or more EM
->>>>> Chip chips on their systems.  We would like to include a driver for
->>>>> EM Chip chip and its follow-up products, such that Linux Kernel
->>>>> will be able to provide the energy information as soon as computing
->>>>> systems using this series of chips will become available.
->>>>>
->>>>> By providing accurate energy measurements, the computing systems
->>>>> along with their operating systems will be able to run more
->>>>> efficiently.
+>>>>> Why not just have it be an IIO device, I think they have energy
+>>>>> sensors already (adding the iio mailing list to find out...)
 >>>>
+>>>> We thought about hwmon, but not IIO.
 >>>>
->>>> Do you have any kernel code already to show how this will get hooked
->>>> up to the device?  Do you need device tree bindings for the sensors,
->>>> or are they on a discoverable bus?
+>>>>>    
+>>>>>>
+>>>>>> Following is a rough overview of the part we want the driver for.
+>>>>>> Any input on this will be appreciated.
+>>>>>>
+>>>>>> thanks,
+>>>>>> Chris
+>>>>>>
+>>>>>> === Introduction
+>>>>>>
+>>>>>> Following the recent focus on low-power systems, Microchip has
+>>>>>> designed a companion chip series capable of measuring the
+>>>>>> electrical energy flow of an electrical system.  The series in
+>>>>>> question, EM Chip  is capable of measuring the energy flow (in or
+>>>>>> out) of an electrical system by monitoring one or more power
+>>>>>> rails.  The 1st chip of the series, EM Chip is able to measure the
+>>>>>> net energy flow over 4 different power rails.  The chip itself is a
+>>>>>> small QFN16 (4mm x 4mm x 0.5mm) or WLCSP16 (2.25mm x 2.2mm) package.
+>>>>>>
+>>>>>> === Theory of Operation
+>>>>>>
+>>>>>> In order to measure the amount of energy entering/exiting a system,
+>>>>>> a small shunt resistor is interleaved on a power rail. By measuring
+>>>>>> the small voltage drop across the shunt resistor (a known value),
+>>>>>> the electrical current is measured.
+>>>>>>
+>>>>>>      I = U/R
+>>>>>>
+>>>>>> Depending on whether the system is consuming or producing energy,
+>>>>>> the measured current value can be either a positive or negative
+>>>>>> number.
+>>>>>>
+>>>>>> To get the instantaneous power figure we will have to measure the
+>>>>>> power rail’s voltage and multiply it with the measured value for
+>>>>>> the current
+>>>>>>
+>>>>>>      P = V * I = V * U_shunt/R
+>>>>>>
+>>>>>> Knowing the instantaneous power and by making a high enough sample
+>>>>>> rate (for measuring the current and the power rail voltage), we can
+>>>>>> assume the measured value for power is equal to the average power
+>>>>>> figure for the amount of time between 2 sampling moments.
+>>>>>>
+>>>>>> Now that we also know the average power for a given time interval
+>>>>>> (dt_x = time between 2 sampling moments; sampling speed is known),
+>>>>>> we can measure the energy amount entering or exiting the system
+>>>>>> between 2 sampling moments
+>>>>>>
+>>>>>>      E_partial_x = P * dt_x
+>>>>>>
+>>>>>> Having the energy information available, we can continue to add the
+>>>>>> subsequent energy values for as long as the system is active. The
+>>>>>> amount of energy is the sum of all the partial energy values
+>>>>>> measured for each time interval E = Sum (E_partial_x), where x can
+>>>>>> take values from 0 till infinite.
+>>>>>>
+>>>>>>
+>>>>>> === Chip Operation
+>>>>>>
+>>>>>> The EM Chip chip uses the same principles of operation as presented
+>>>>>> in the “Theory of Operation” and it does so for a number of 4
+>>>>>> channels. 4 independent power rails can be energy monitored in the
+>>>>>> same time.  The chip is controlled over I2C/SMBus by an I2C/SMBus
+>>>>>> master.
+>>>>>>
+>>>>>> In order to reduce the amount of information traffic between the EM
+>>>>>> Chip and the entity asking for its information, the chip features
+>>>>>> large accumulator energy registers for the accumulated energy
+>>>>>> values. It can accumulate up to 2^24 power values. Depending on the
+>>>>>> selected chip’s sampling speed, such a number of samples are
+>>>>>> produced in about 4.5 hours (fastest sampling speed) up to 582.5
+>>>>>> hours or more than 24 days (lowest sampling speed).
+>>>>>>
+>>>>>> EM Chip measures the power as a 28-bits number. The 28-bits number
+>>>>>> is the multiplication result of the 16-bits number used to measure
+>>>>>> the power rail voltage and the 12-bits number used for measuring
+>>>>>> the voltage drop across the power rail shunt resistor.
+>>>>>>
+>>>>>> If bidirectional energy flow is required, the power is measured as a
+>>>>>> 27-bits number and 1 bit for the sign. When no bidirectional flow is
+>>>>>> needed, the power value is measured as an unsigned 28-bits number.
+>>>>>>
+>>>>>> Due to the relatively large size of the accumulated energy
+>>>>>> registers inside the chip (48 bits), in the worst case scenario
+>>>>>> (power values are full scale numbers), a number of 2^20 full-scale
+>>>>>> power values can be measured before energy register’s overflow.
+>>>>>> Using the fastest sampling speed, the accumulated energy registers
+>>>>>> overflows only after a bit over 17 minutes, while at the lowest
+>>>>>> sampling speed, it would overflow in over 36 hours.
+>>>>>>
+>>>>>> Thus, the chip requires infrequent reads of the accumulated energy
+>>>>>> registers. Even in the worst case scenario, the time between 2
+>>>>>> consecutive energy accumulator reads can be over 17 minutes !
+>>>>>>
+>>>>>> In order to keep a longer history of energy measurements, an
+>>>>>> I2C/SMBus master (e.g. SoC) would read the accumulated energy
+>>>>>> register values and then use larger “soft” accumulated energy
+>>>>>> registers to extend the maximum overflow period.
+>>>>>>
+>>>>>> The EM Chip chip can monitor rails up to 32V. It can monitor the
+>>>>>> energy amounts used by various sub-components of a system (e.g.
+>>>>>> CPU, GPU, memory, hard-drives, USB ports, backlight, wireless
+>>>>>> adapters, cameras, displays, …)
+>>>>>>
+>>>>>> EM Chip is able to start operating immediately after power-up with
+>>>>>> no CPU intervention at all. Such a feature is useful, because it
+>>>>>> can show the amount of energy consumed by a system before the
+>>>>>> latter finished booting its operating system.
+>>>>>>
+>>>>>> The chip’s own current draw is around 20uA (in low-power mode,
+>>>>>> lowest sampling speed - 8 samples/sec) to 675uA (for the highest
+>>>>>> sampling speed - 1024 samples/sec)
+>>>>>>
+>>>>>> When operated in low-power mode, it can be used to monitor the
+>>>>>> stand-by energy draw of the system. As an example, such a mode is
+>>>>>> useful when a system is suspended to RAM or to measure the energy
+>>>>>> usage from the power on till the booting process is finished.
+>>>>>>
+>>>>>> === Linux Driver
+>>>>>>
+>>>>>> While the chip is due to be publicly released in Q3 2017, a
+>>>>>> selected number of PC OEM manufacturers will include one or more EM
+>>>>>> Chip chips on their systems.  We would like to include a driver for
+>>>>>> EM Chip chip and its follow-up products, such that Linux Kernel
+>>>>>> will be able to provide the energy information as soon as computing
+>>>>>> systems using this series of chips will become available.
+>>>>>>
+>>>>>> By providing accurate energy measurements, the computing systems
+>>>>>> along with their operating systems will be able to run more
+>>>>>> efficiently.
+>>>>>
+>>>>>
+>>>>> Do you have any kernel code already to show how this will get hooked
+>>>>> up to the device?  Do you need device tree bindings for the sensors,
+>>>>> or are they on a discoverable bus?
+>>>>
+>>>> No, I don't. I wanted to bring this up on the mailing list first,
+>>>> before I get started.
+>>>> Sensors are attached via I2C.
 >>>
->>> No, I don't. I wanted to bring this up on the mailing list first,
->>> before I get started.
->>> Sensors are attached via I2C.
+>>> Sure, I don't blame you having myself gone through several subsystems with
+>>> a driver in the past!
+>>>
+>>> As Greg mentioned there are existing IIO drivers doing similar power
+>>> measurements.  So yes, a driver for such a part would be welcome.
+>>>
+>>> I can see we may be 'straining' some of the interfaces a bit for those
+>>> 48 bit values, but we can probably do something simple using the
+>>> two 32 bit values available from a raw read in IIO.
+>>>
+>>> Going to get awkward the first time we get a 65+ bit device though.
+>>> There goes my assumptions again :(
+>>>
+>>> Anyhow, nice sounding part so looking forward to seeing some code when
+>>> you are ready.
+>>>
+>>> Note we do have additional energy drivers still in staging (dating back
+>>> to the early days of IIO) but those are 3 phase units so not so relevant
+>>> (and their interfaces need some work which is why they are still in
+>>> staging).
+>>>
+>>> The adc/ina2xx_adc.c driver is probably a better place to start.
+>>>
+>>> Hmm. The only thing that makes me doubt IIO as the obvious place is
+>>> that the focus is clearly on PC energy monitoring.  Now you can bridge
+>>> IIO to hwmon but I'd like a bit of input from Guenter on
+>>> whether that is a sensible approach here.
+>>>
 >>
->> Sure, I don't blame you having myself gone through several subsystems with
->> a driver in the past!
->>
->> As Greg mentioned there are existing IIO drivers doing similar power
->> measurements.  So yes, a driver for such a part would be welcome.
->>
->> I can see we may be 'straining' some of the interfaces a bit for those
->> 48 bit values, but we can probably do something simple using the
->> two 32 bit values available from a raw read in IIO.
->>
->> Going to get awkward the first time we get a 65+ bit device though.
->> There goes my assumptions again :(
->>
->> Anyhow, nice sounding part so looking forward to seeing some code when
->> you are ready.
->>
->> Note we do have additional energy drivers still in staging (dating back
->> to the early days of IIO) but those are 3 phase units so not so relevant
->> (and their interfaces need some work which is why they are still in
->> staging).
->>
->> The adc/ina2xx_adc.c driver is probably a better place to start.
->>
->> Hmm. The only thing that makes me doubt IIO as the obvious place is
->> that the focus is clearly on PC energy monitoring.  Now you can bridge
->> IIO to hwmon but I'd like a bit of input from Guenter on
->> whether that is a sensible approach here.
->>
+>> I don't think I have enough information for a sensible answer. What
+>> else besides raw energy measurement do the chips support ? Do they have
+>> limits / alarms ? Do they measure voltage and current as well ?
+>> If not, iio would be the better place. If the chips support PMBus
+>> (which would make sense, but it doesn't sound like it), hwmon would
+>> obviously be better, since it already has the necessary infrastructure.
 > 
-> I don't think I have enough information for a sensible answer. What
-> else besides raw energy measurement do the chips support ? Do they have
-> limits / alarms ? Do they measure voltage and current as well ?
-> If not, iio would be the better place. If the chips support PMBus
-> (which would make sense, but it doesn't sound like it), hwmon would
-> obviously be better, since it already has the necessary infrastructure.
+> There is also some precedence for these kinds of devices in the power-supply
+> framework. E.g. the LTC2941 and similar work in a similar way to whats
+> described above
+> (https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/power/supply/ltc2941-battery-gauge.c
+> http://cds.linear.com/docs/en/datasheet/2941fb.pdf). Isn't it lovely to have
+> so much choice?
+> 
 
-There is also some precedence for these kinds of devices in the power-supply
-framework. E.g. the LTC2941 and similar work in a similar way to whats
-described above
-(https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/power/supply/ltc2941-battery-gauge.c
-http://cds.linear.com/docs/en/datasheet/2941fb.pdf). Isn't it lovely to have
-so much choice?
+We already know from customers that USB-C net energy measurement
+(in and out) is also an aimed target of operation for the chip.
+
+So, we really don't know where it fits best.
+And yes it is lovely to have so much choice and he who has a
+choice, has the doldrums.
+
+thanks,
+Chris
