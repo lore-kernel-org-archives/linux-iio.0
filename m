@@ -1,93 +1,39 @@
-Return-Path: <SRS0=ZMnd=6U=linux.intel.com=srinivas.pandruvada@kernel.org>
-Message-ID: <1500321494.21514.29.camel@linux.intel.com>
-Subject: Re: [PATCH] HID: Add quirk for Lenovo Yoga 910 with ITE Chips
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Patrick Pedersen <ctx.xda@gmail.com>, jikos@kernel.org
-Cc: benjamin.tissoires@redhat.com, jic23@kernel.org,
-	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Date: Mon, 17 Jul 2017 12:58:14 -0700
-In-Reply-To: <20170715122721.6908-1-ctx.xda@gmail.com>
-References: <20170715122721.6908-1-ctx.xda@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail3-relais-sop.national.inria.fr ([192.134.164.104]:2451 "EHLO
+        mail3-relais-sop.national.inria.fr" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1751184AbdGOUct (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 15 Jul 2017 16:32:49 -0400
+From: Julia Lawall <Julia.Lawall@lip6.fr>
+To: linux-arm-kernel@lists.infradead.org
+Cc: keescook@chromium.org, kernel-janitors@vger.kernel.org,
+        linux-ide@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, linux-omap@vger.kernel.org,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-input@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: [PATCH 00/11] Drop unnecessary static
+Date: Sat, 15 Jul 2017 22:07:35 +0200
+Message-Id: <1500149266-32357-1-git-send-email-Julia.Lawall@lip6.fr>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, 2017-07-15 at 14:27 +0200, Patrick Pedersen wrote:
-> As with previous generations of this device (see https://patchwork.ke
-> rnel.org/patch/7887361/), the ITE
-> HID Sensor Hub, responsible for the accelerometer and als sensor,
-> requires a quirk entry.
+These patches fix cases where there is a static on a local variable, but
+the variable is initialized before any possible use.  Thus, the static has
+no benefit.
 
-I want to get rid of these quirks as this is now the defacto standard.
-Can you try with this change without any quirk.
+---
 
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-index 16ade0a..1fb407f 100644
---- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-@@ -110,6 +110,9 @@ static int _hid_sensor_power_state(struct
-hid_sensor_common *st, bool state)
-        int report_val;
-        s32 poll_value = 0;
- 
-+       st->power_state.logical_minimum = 1;
-+       st->report_state.logical_minimum = 1;
-+
-        if (state) {
-                if (!atomic_read(&st->user_requested_state))
-                        return 0;
-
-
-Thanks,
-Srinivas
-
-> 
-> Without the entry, the Sensor Hub can't be accessed and the kernel
-> fails to report any movements. As a result
-> iio-sensor-proxy receives no new data.
-> 
-> It shall additionally be noted that the i2c-hid 'sleep' bug (present
-> since kernel ver. 4.3)
-> still affects the driver. This means that the sensor hub will not
-> report any movement, until
-> the device is suspended and resumed.
-> 
-> Signed-off-by: Patrick Pedersen <ctx.xda@gmail.com>
-> ---
->  drivers/hid/hid-ids.h        | 1 +
->  drivers/hid/hid-sensor-hub.c | 3 +++
->  2 files changed, 4 insertions(+)
-> 
-> diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
-> index 4f9a3938189a..b427a0bcfbe8 100644
-> --- a/drivers/hid/hid-ids.h
-> +++ b/drivers/hid/hid-ids.h
-> @@ -565,6 +565,7 @@
->  #define USB_DEVICE_ID_ITE_LENOVO_YOGA   0x8386
->  #define USB_DEVICE_ID_ITE_LENOVO_YOGA2  0x8350
->  #define USB_DEVICE_ID_ITE_LENOVO_YOGA900	0x8396
-> +#define USB_DEVICE_ID_ITE_LENOVO_YOGA910	0x8186
->  
->  #define USB_VENDOR_ID_JABRA		0x0b0e
->  #define USB_DEVICE_ID_JABRA_SPEAK_410	0x0412
-> diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-
-> hub.c
-> index 4ef73374a8f9..85b8425483bd 100644
-> --- a/drivers/hid/hid-sensor-hub.c
-> +++ b/drivers/hid/hid-sensor-hub.c
-> @@ -820,6 +820,9 @@ static const struct hid_device_id
-> sensor_hub_devices[] = {
->  	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB,
-> USB_VENDOR_ID_ITE,
->  			USB_DEVICE_ID_ITE_LENOVO_YOGA900),
->  			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
-> +	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB,
-> USB_VENDOR_ID_ITE,
-> +			USB_DEVICE_ID_ITE_LENOVO_YOGA910),
-> +			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
->  	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB,
-> USB_VENDOR_ID_INTEL_0,
->  			0x22D8),
->  			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+ drivers/ata/sata_gemini.c                     |    2 +-
+ drivers/clk/clk-moxart.c                      |    4 ++--
+ drivers/clk/mmp/clk.c                         |    2 +-
+ drivers/iio/orientation/hid-sensor-rotation.c |    2 +-
+ drivers/irqchip/irq-digicolor.c               |    2 +-
+ drivers/irqchip/irq-gic-realview.c            |    2 +-
+ drivers/irqchip/irq-mips-cpu.c                |    2 +-
+ drivers/mfd/max8925-i2c.c                     |    2 +-
+ drivers/mfd/twl4030-irq.c                     |    2 +-
+ drivers/mtd/maps/physmap_of_versatile.c       |    2 +-
+ drivers/video/fbdev/da8xx-fb.c                |    2 +-
+ 11 files changed, 12 insertions(+), 12 deletions(-)
