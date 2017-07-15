@@ -1,39 +1,69 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail3-relais-sop.national.inria.fr ([192.134.164.104]:2451 "EHLO
-        mail3-relais-sop.national.inria.fr" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1751184AbdGOUct (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 15 Jul 2017 16:32:49 -0400
+Return-Path: <SRS0=T2JG=6S=lip6.fr=Julia.Lawall@kernel.org>
 From: Julia Lawall <Julia.Lawall@lip6.fr>
-To: linux-arm-kernel@lists.infradead.org
-Cc: keescook@chromium.org, kernel-janitors@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, linux-omap@vger.kernel.org,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-input@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: [PATCH 00/11] Drop unnecessary static
-Date: Sat, 15 Jul 2017 22:07:35 +0200
-Message-Id: <1500149266-32357-1-git-send-email-Julia.Lawall@lip6.fr>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Jiri Kosina <jikos@kernel.org>
+Cc: keescook@chromium.org,
+	kernel-janitors@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 09/11] iio: orientation: hid-sensor-rotation: Drop unnecessary static
+Date: Sat, 15 Jul 2017 22:07:44 +0200
+Message-Id: <1500149266-32357-10-git-send-email-Julia.Lawall@lip6.fr>
+In-Reply-To: <1500149266-32357-1-git-send-email-Julia.Lawall@lip6.fr>
+References: <1500149266-32357-1-git-send-email-Julia.Lawall@lip6.fr>
+List-ID: <linux-iio@vger.kernel.org>
 
-These patches fix cases where there is a static on a local variable, but
-the variable is initialized before any possible use.  Thus, the static has
-no benefit.
+Drop static on a local variable, when the variable is initialized before
+any possible use.  Thus, the static has no benefit.
+
+The semantic patch that fixes this problem is as follows:
+(http://coccinelle.lip6.fr/)
+
+// <smpl>
+@bad exists@
+position p;
+identifier x;
+type T;
+@@
+static T x@p;
+...
+x = <+...x...+>
+
+@@
+identifier x;
+expression e;
+type T;
+position p != bad.p;
+@@
+-static
+ T x@p;
+ ... when != x
+     when strict
+?x = e;
+// </smpl>
+
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
 ---
+These patches are all independent of each other.
 
- drivers/ata/sata_gemini.c                     |    2 +-
- drivers/clk/clk-moxart.c                      |    4 ++--
- drivers/clk/mmp/clk.c                         |    2 +-
  drivers/iio/orientation/hid-sensor-rotation.c |    2 +-
- drivers/irqchip/irq-digicolor.c               |    2 +-
- drivers/irqchip/irq-gic-realview.c            |    2 +-
- drivers/irqchip/irq-mips-cpu.c                |    2 +-
- drivers/mfd/max8925-i2c.c                     |    2 +-
- drivers/mfd/twl4030-irq.c                     |    2 +-
- drivers/mtd/maps/physmap_of_versatile.c       |    2 +-
- drivers/video/fbdev/da8xx-fb.c                |    2 +-
- 11 files changed, 12 insertions(+), 12 deletions(-)
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff -u -p a/drivers/iio/orientation/hid-sensor-rotation.c b/drivers/iio/orientation/hid-sensor-rotation.c
+--- a/drivers/iio/orientation/hid-sensor-rotation.c
++++ b/drivers/iio/orientation/hid-sensor-rotation.c
+@@ -238,7 +238,7 @@ static int dev_rot_parse_report(struct p
+ static int hid_dev_rot_probe(struct platform_device *pdev)
+ {
+ 	int ret;
+-	static char *name;
++	char *name;
+ 	struct iio_dev *indio_dev;
+ 	struct dev_rot_state *rot_state;
+ 	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
