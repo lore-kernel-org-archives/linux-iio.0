@@ -1,87 +1,33 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:50248 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751318AbdGQUph (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 17 Jul 2017 16:45:37 -0400
-Date: Mon, 17 Jul 2017 21:45:31 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Julia Lawall <Julia.Lawall@lip6.fr>
-Cc: Jiri Kosina <jikos@kernel.org>, keescook@chromium.org,
-        kernel-janitors@vger.kernel.org,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+Received: from smtprelay0121.hostedemail.com ([216.40.44.121]:45898 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1751180AbdGOUiE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 15 Jul 2017 16:38:04 -0400
+Message-ID: <1500151079.4457.80.camel@perches.com>
+Subject: Re: [PATCH 00/11] Drop unnecessary static
+From: Joe Perches <joe@perches.com>
+To: Julia Lawall <Julia.Lawall@lip6.fr>,
+        linux-arm-kernel@lists.infradead.org
+Cc: keescook@chromium.org, kernel-janitors@vger.kernel.org,
+        linux-ide@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, linux-omap@vger.kernel.org,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 09/11] iio: orientation: hid-sensor-rotation: Drop
- unnecessary static
-Message-ID: <20170717214531.6fbc6cfa@kernel.org>
-In-Reply-To: <1500149266-32357-10-git-send-email-Julia.Lawall@lip6.fr>
+        linux-input@vger.kernel.org, linux-iio@vger.kernel.org
+Date: Sat, 15 Jul 2017 13:37:59 -0700
+In-Reply-To: <1500149266-32357-1-git-send-email-Julia.Lawall@lip6.fr>
 References: <1500149266-32357-1-git-send-email-Julia.Lawall@lip6.fr>
-        <1500149266-32357-10-git-send-email-Julia.Lawall@lip6.fr>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="ISO-8859-1"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, 15 Jul 2017 22:07:44 +0200
-Julia Lawall <Julia.Lawall@lip6.fr> wrote:
+On Sat, 2017-07-15 at 22:07 +0200, Julia Lawall wrote:
+> These patches fix cases where there is a static on a local variable, but
+> the variable is initialized before any possible use.  Thus, the static has
+> no benefit.
 
-> Drop static on a local variable, when the variable is initialized before
-> any possible use.  Thus, the static has no benefit.
-> 
-> The semantic patch that fixes this problem is as follows:
-> (http://coccinelle.lip6.fr/)
-> 
-> // <smpl>
-> @bad exists@
-> position p;
-> identifier x;
-> type T;
-> @@
-> static T x@p;
-> ...
-> x = <+...x...+>
-> 
-> @@
-> identifier x;
-> expression e;
-> type T;
-> position p != bad.p;
-> @@
-> -static
->  T x@p;
->  ... when != x
->      when strict
-> ?x = e;
-> // </smpl>
-> 
-> Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-Applied to the togreg branch of iio.git and pushed out
-as testing for the autobuilders to play with it.
-
-Thanks,
-
-Jonathan
-> 
-> ---
-> These patches are all independent of each other.
-> 
->  drivers/iio/orientation/hid-sensor-rotation.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff -u -p a/drivers/iio/orientation/hid-sensor-rotation.c b/drivers/iio/orientation/hid-sensor-rotation.c
-> --- a/drivers/iio/orientation/hid-sensor-rotation.c
-> +++ b/drivers/iio/orientation/hid-sensor-rotation.c
-> @@ -238,7 +238,7 @@ static int dev_rot_parse_report(struct p
->  static int hid_dev_rot_probe(struct platform_device *pdev)
->  {
->  	int ret;
-> -	static char *name;
-> +	char *name;
->  	struct iio_dev *indio_dev;
->  	struct dev_rot_state *rot_state;
->  	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
-> 
+Nice one.
 
