@@ -1,108 +1,133 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx1.redhat.com ([209.132.183.28]:43024 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751912AbdF3Rm6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 30 Jun 2017 13:42:58 -0400
-From: Hans de Goede <hdegoede@redhat.com>
+Received: from mail-out-1.itc.rwth-aachen.de ([134.130.5.46]:45485 "EHLO
+        mail-out-1.itc.rwth-aachen.de" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1751200AbdGPWIg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 16 Jul 2017 18:08:36 -0400
+From: Stefan Bruens <stefan.bruens@rwth-aachen.de>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hans de Goede <hdegoede@redhat.com>,
+CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "Hartmut Knaack" <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, stable@vger.kernel.org
-Subject: [PATCH] iio: adc: Revert "axp288: Drop bogus AXP288_ADC_TS_PIN_CTRL register modifications"
-Date: Fri, 30 Jun 2017 19:42:54 +0200
-Message-Id: <20170630174254.12056-1-hdegoede@redhat.com>
+        "Peter Meerwald-Stadler" <pmeerw@pmeerw.net>,
+        Marc Titinger <mtitinger@baylibre.com>
+Subject: Re: [PATCH 2/2] iio: adc: Allow setting Shunt Voltage PGA gain and Bus Voltage range
+Date: Mon, 17 Jul 2017 00:08:32 +0200
+Message-ID: <4260957.ARbqtWlM7H@pebbles.site>
+In-Reply-To: <5b4eb76f-494d-138e-ec72-1fe7bbd20403@kernel.org>
+References: <20170412030140.9328-1-stefan.bruens@rwth-aachen.de> <9342701.uSTzCLhmiO@pebbles.site> <5b4eb76f-494d-138e-ec72-1fe7bbd20403@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Inheriting the ADC BIAS current settings from the BIOS instead of
-hardcoding then causes the AXP288 to disable charging (I think it
-mis-detects an overheated battery) on at least one model tablet.
+On Sonntag, 30. April 2017 18:19:39 CEST Jonathan Cameron wrote:
+> On 29/04/17 21:37, Stefan Bruens wrote:
+> > On Mittwoch, 26. April 2017 08:59:47 CEST Jonathan Cameron wrote:
+> >> On 26/04/17 07:19, Jonathan Cameron wrote:
+> >>> On 17/04/17 23:08, Stefan Bruens wrote:
+> >>>> On Freitag, 14. April 2017 17:12:03 CEST Jonathan Cameron wrote:
+> > [...]
+> > 
+> >>>> 4. Any user of the gain settings had to be made aware of the
+> >>>> possibility
+> >>>> to
+> >>>> change it, no matter how it is exposed. Making it part of the scale,
+> >>>> and
+> >>>> thus changing the meaning of the raw values, would be breaking the
+> >>>> existing ABI.>
+> >>> 
+> >>> The raw values should indeed not change.  That was a missunderstanding
+> >>> on
+> >>> my part.  Usually when a device has a PGA it is not compensated for in
+> >>> the output. So normally it's up to the driver to 'apply' the effective
+> >>> gain to the incoming reading.  When that isn't the case, it can be
+> >>> considered some sort of internal trim - hence the use of calibscale for
+> >>> this case.
+> >> 
+> >> Mulling this over, calibscale might not work either in this case. The
+> >> datasheet helpfully sometimes uses ranges and sometimes uses scale
+> >> factors.
+> >> There is also obviously the calibration register kicking around which
+> >> would
+> >> also be handled with calibscale if exposed to userspace (currently it
+> >> isn't)
+> >> 
+> >> I'm out of time tonight so will think it bit more about this and get back
+> >> to you in the next few days...
+> > 
+> > hardwaregain may be a viable option. For the shunt voltage, available
+> > values would be [0.125, 0.25, 0.5, 1.0], for the bus range we would have
+> > either [0.5, 1.0] or [1.0, 2.0] for bus ranges [32V, 16V].
+> > 
+> > Does hardwaregain have the right semantics for shunt voltage gain and/or
+> > bus range?
+> 
+> Description we currently have in
+> Documentation/ABI/testing/sysfs-bus-iio is:
+> 		Hardware applied gain factor. If shared across all channels,
+> 		<type>_hardwaregain is used.
+> 
+> Just thinking about the use cases, it is mostly used for cases where the
+> gain is not of the measurement being acquired, but rather of something
+> related (like the gain on time of flight sensors or pulse counters).
+> 
+> It also gets used for output devices and amplifiers though so kind of
+> similar as in those cases we felt calibrationscale was a bit of a stretch!
+> 
+> So yes, I can see that working.  Whether it is a better choice than
+> simply allowing the range attributes (documented for this narrow
+> case to say they should only be used when the range is independent of
+> the scale) is an open question.  Given we have always preferred scales
+> to ranges if you think you can make hardwaregain fit well then lets
+> go with that, perhaps updating the docs to make this usecase explicit.
+> 
+> Looking back at the original emails we were actually thinking of
+> transistioning calibscale to hardwaregain in general as it covered
+> describing both uses, but it never happened...
 
-So lets go back to hard coding the values, this reverts
-commit fa2849e9649b ("iio: adc: axp288: Drop bogus
-AXP288_ADC_TS_PIN_CTRL register modifications"), fixing charging not
-working on the model tablet in question.
+Hi John,
 
-Cc: stable@vger.kernel.org
-Reported-by: Umberto Ixxo <sfumato1977@gmail.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
----
- drivers/iio/adc/axp288_adc.c | 32 +++++++++++++++++++++++++++++++-
- 1 file changed, 31 insertions(+), 1 deletion(-)
+as all other patches for INA2xx went into or on their way into mainline, its 
+time to revisit the INA219/220 bus range and shunt voltage gain again.
 
-diff --git a/drivers/iio/adc/axp288_adc.c b/drivers/iio/adc/axp288_adc.c
-index 64799ad7ebad..7fd24949c0c1 100644
---- a/drivers/iio/adc/axp288_adc.c
-+++ b/drivers/iio/adc/axp288_adc.c
-@@ -28,6 +28,8 @@
- #include <linux/iio/driver.h>
- 
- #define AXP288_ADC_EN_MASK		0xF1
-+#define AXP288_ADC_TS_PIN_GPADC		0xF2
-+#define AXP288_ADC_TS_PIN_ON		0xF3
- 
- enum axp288_adc_id {
- 	AXP288_ADC_TS,
-@@ -121,6 +123,16 @@ static int axp288_adc_read_channel(int *val, unsigned long address,
- 	return IIO_VAL_INT;
- }
- 
-+static int axp288_adc_set_ts(struct regmap *regmap, unsigned int mode,
-+				unsigned long address)
-+{
-+	/* channels other than GPADC do not need to switch TS pin */
-+	if (address != AXP288_GP_ADC_H)
-+		return 0;
-+
-+	return regmap_write(regmap, AXP288_ADC_TS_PIN_CTRL, mode);
-+}
-+
- static int axp288_adc_read_raw(struct iio_dev *indio_dev,
- 			struct iio_chan_spec const *chan,
- 			int *val, int *val2, long mask)
-@@ -131,7 +143,16 @@ static int axp288_adc_read_raw(struct iio_dev *indio_dev,
- 	mutex_lock(&indio_dev->mlock);
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
-+		if (axp288_adc_set_ts(info->regmap, AXP288_ADC_TS_PIN_GPADC,
-+					chan->address)) {
-+			dev_err(&indio_dev->dev, "GPADC mode\n");
-+			ret = -EINVAL;
-+			break;
-+		}
- 		ret = axp288_adc_read_channel(val, chan->address, info->regmap);
-+		if (axp288_adc_set_ts(info->regmap, AXP288_ADC_TS_PIN_ON,
-+						chan->address))
-+			dev_err(&indio_dev->dev, "TS pin restore\n");
- 		break;
- 	default:
- 		ret = -EINVAL;
-@@ -141,6 +162,15 @@ static int axp288_adc_read_raw(struct iio_dev *indio_dev,
- 	return ret;
- }
- 
-+static int axp288_adc_set_state(struct regmap *regmap)
-+{
-+	/* ADC should be always enabled for internal FG to function */
-+	if (regmap_write(regmap, AXP288_ADC_TS_PIN_CTRL, AXP288_ADC_TS_PIN_ON))
-+		return -EIO;
-+
-+	return regmap_write(regmap, AXP20X_ADC_EN1, AXP288_ADC_EN_MASK);
-+}
-+
- static const struct iio_info axp288_adc_iio_info = {
- 	.read_raw = &axp288_adc_read_raw,
- 	.driver_module = THIS_MODULE,
-@@ -169,7 +199,7 @@ static int axp288_adc_probe(struct platform_device *pdev)
- 	 * Set ADC to enabled state at all time, including system suspend.
- 	 * otherwise internal fuel gauge functionality may be affected.
- 	 */
--	ret = regmap_write(info->regmap, AXP20X_ADC_EN1, AXP288_ADC_EN_MASK);
-+	ret = axp288_adc_set_state(axp20x->regmap);
- 	if (ret) {
- 		dev_err(&pdev->dev, "unable to enable ADC device\n");
- 		return ret;
+TLDR: Using HARDWAREGAIN fits existing uses/semantics.
+
+I had a look at current users of IIO_CHAN_INFO_HARDWAREGAIN:
+
+amplifiers/ad8366.c: Variable gain amplifier without ADC or DAC, so no SCALE 
+attribute
+
+light/vl6180.c: ToF sensor with ambient light sensor. The ALS sensor has two 
+settings affecting the RAW sensor readout, HARDWAREGAIN and INTegration_TIME. 
+Baseline settings are gain=1 and integration time=0.1(seconds), with a 
+corresponding raw reading of 1 ^= 0.32 lux.
+The SCALE value is correct for the baseline setting, but although modifying 
+HARDWAREGAIN and/or INT_TIME affects the RAW readout, this is not reflected in 
+the SCALE attribute, i.e. to get the correct physical value, one has to use:
+Light[lux] = raw_value * SCALE * (0.1s/INT_TIME) / HARDWAREGAIN
+
+light/adjd_s311.c: HARDWAREGAIN affects the RAW readout, but as there is no 
+given fixed relationship between RAW values and irradiance, there is no SCALE 
+attribute.
+
+adc/stx104.c: The ADC has a software controllable HARDWAREGAIN and a hardware 
+controlled (jumper) offset and single ended/differential setting with software 
+readback. HARDWAREGAIN and offset/differential are reflected in the SCALE and 
+OFFSET attributes, i.e. the physical value can be determined by:
+U[V] = (raw_value * SCALE) + OFFSET
+
+So we have two users of HARDWAREGAIN with contradicting behaviour regarding 
+SCALE. IMHO, the stx104 behaviour is the correct one.
+
+For the INA2xx, neither INT_TIME nor AVERAGE affect the RAW <-> physical value 
+relationship, i.e. the SCALE is fixed. The same is true for the INA219/220 bus 
+range/shunt voltage gain. So using HARDWAREGAIN for both shunt voltage gain 
+and bus voltage range does match existing semantics.
+
+Kind regards,
+
+Stefan
+
 -- 
-2.13.0
-
+Stefan Brüns  /  Bergstraße 21  /  52062 Aachen
+home: +49 241 53809034     mobile: +49 151 50412019
