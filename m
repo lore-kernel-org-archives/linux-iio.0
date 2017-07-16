@@ -1,63 +1,33 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:50456 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751324AbdGQUsE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 17 Jul 2017 16:48:04 -0400
-Date: Mon, 17 Jul 2017 21:48:00 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Fabio Estevam <festevam@gmail.com>
-Cc: lars@metafoo.de, linux-iio@vger.kernel.org,
-        Fabio Estevam <fabio.estevam@nxp.com>
-Subject: Re: [PATCH] iio: adc: ad7766: Remove unneeded gpiod NULL check
-Message-ID: <20170717214800.15ce31b1@kernel.org>
-In-Reply-To: <1500240363-16396-1-git-send-email-festevam@gmail.com>
-References: <1500240363-16396-1-git-send-email-festevam@gmail.com>
+Return-Path: <SRS0=D05P=6T=rwth-aachen.de=Stefan.Bruens@kernel.org>
+From: =?UTF-8?q?Stefan=20Br=C3=BCns?= <stefan.bruens@rwth-aachen.de>
+To: <linux-iio@vger.kernel.org>
+CC: <linux-kernel@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter
+ Meerwald-Stadler <pmeerw@pmeerw.net>, =?UTF-8?q?Stefan=20Br=C3=BCns?=
+	<stefan.bruens@rwth-aachen.de>
+Subject: [PATCH 0/2] iio: Documentation enhancements
+Date: Mon, 17 Jul 2017 01:34:08 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Message-ID: <3164b0ebc2d743daa852526fae3ac15f@rwthex-w2-b.rwth-ad.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, 16 Jul 2017 18:26:03 -0300
-Fabio Estevam <festevam@gmail.com> wrote:
+Add some documentation missing for the INA2xx power sensor. The power
+attribute is generic and matches the implementation of the MAX9611 and
+the INA2xx IIO drivers (the only drivers with IIO_POWER type channels).
 
-> From: Fabio Estevam <fabio.estevam@nxp.com>
-> 
-> The gpiod API checks for NULL descriptors, so there is no need to
-> duplicate the check in the driver.
-> 
-> Signed-off-by: Fabio Estevam <fabio.estevam@nxp.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+The INA2xx shunt resistor value is specified in microohms, contrary
+to the common use of ohms for resistance in IIO, thus is added as
+ina2xx specific documentation.
 
-Thanks,
+Stefan Brüns (2):
+  iio: Documentation: Add missing documentation for power attribute
+  iio: Documentation: Add ina2xx shunt_resistor attribute documentation
 
-Jonathan
-> ---
->  drivers/iio/adc/ad7766.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ad7766.c b/drivers/iio/adc/ad7766.c
-> index 75cca42..ce45037 100644
-> --- a/drivers/iio/adc/ad7766.c
-> +++ b/drivers/iio/adc/ad7766.c
-> @@ -103,8 +103,7 @@ static int ad7766_preenable(struct iio_dev *indio_dev)
->  		return ret;
->  	}
->  
-> -	if (ad7766->pd_gpio)
-> -		gpiod_set_value(ad7766->pd_gpio, 0);
-> +	gpiod_set_value(ad7766->pd_gpio, 0);
->  
->  	return 0;
->  }
-> @@ -113,8 +112,7 @@ static int ad7766_postdisable(struct iio_dev *indio_dev)
->  {
->  	struct ad7766 *ad7766 = iio_priv(indio_dev);
->  
-> -	if (ad7766->pd_gpio)
-> -		gpiod_set_value(ad7766->pd_gpio, 1);
-> +	gpiod_set_value(ad7766->pd_gpio, 1);
->  
->  	/*
->  	 * The PD pin is synchronous to the clock, so give it some time to
+ Documentation/ABI/testing/sysfs-bus-iio                | 9 +++++++++
+ Documentation/ABI/testing/sysfs-bus-iio-adc-ina2xx-adc | 7 +++++++
+ 2 files changed, 16 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-adc-ina2xx-adc
 
+-- 
+2.13.2
