@@ -1,41 +1,47 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail2-relais-roc.national.inria.fr ([192.134.164.83]:59739 "EHLO
-        mail2-relais-roc.national.inria.fr" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1751182AbdGOVAj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 15 Jul 2017 17:00:39 -0400
-Date: Sat, 15 Jul 2017 23:00:36 +0200 (CEST)
-From: Julia Lawall <julia.lawall@lip6.fr>
-To: Joe Perches <joe@perches.com>
-cc: Julia Lawall <Julia.Lawall@lip6.fr>,
-        linux-arm-kernel@lists.infradead.org, keescook@chromium.org,
-        kernel-janitors@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        linux-omap@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-input@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 00/11] Drop unnecessary static
-In-Reply-To: <1500151079.4457.80.camel@perches.com>
-Message-ID: <alpine.DEB.2.20.1707152300030.5105@hadrien>
-References: <1500149266-32357-1-git-send-email-Julia.Lawall@lip6.fr> <1500151079.4457.80.camel@perches.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=bJn/=6T=gmail.com=festevam@kernel.org>
+From: Fabio Estevam <festevam@gmail.com>
+To: jic23@kernel.org
+Cc: lars@metafoo.de,
+	linux-iio@vger.kernel.org,
+	Fabio Estevam <fabio.estevam@nxp.com>
+Subject: [PATCH] iio: adc: ad7766: Remove unneeded gpiod NULL check
+Date: Sun, 16 Jul 2017 18:26:03 -0300
+Message-Id: <1500240363-16396-1-git-send-email-festevam@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
+From: Fabio Estevam <fabio.estevam@nxp.com>
 
+The gpiod API checks for NULL descriptors, so there is no need to
+duplicate the check in the driver.
 
-On Sat, 15 Jul 2017, Joe Perches wrote:
+Signed-off-by: Fabio Estevam <fabio.estevam@nxp.com>
+---
+ drivers/iio/adc/ad7766.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-> On Sat, 2017-07-15 at 22:07 +0200, Julia Lawall wrote:
-> > These patches fix cases where there is a static on a local variable, but
-> > the variable is initialized before any possible use.  Thus, the static has
-> > no benefit.
->
-> Nice one.
-
-Thanks.  It was suggested by Kees Cook a while ago.  There seem to be many
-opportunities.
-
-julia
+diff --git a/drivers/iio/adc/ad7766.c b/drivers/iio/adc/ad7766.c
+index 75cca42..ce45037 100644
+--- a/drivers/iio/adc/ad7766.c
++++ b/drivers/iio/adc/ad7766.c
+@@ -103,8 +103,7 @@ static int ad7766_preenable(struct iio_dev *indio_dev)
+ 		return ret;
+ 	}
+ 
+-	if (ad7766->pd_gpio)
+-		gpiod_set_value(ad7766->pd_gpio, 0);
++	gpiod_set_value(ad7766->pd_gpio, 0);
+ 
+ 	return 0;
+ }
+@@ -113,8 +112,7 @@ static int ad7766_postdisable(struct iio_dev *indio_dev)
+ {
+ 	struct ad7766 *ad7766 = iio_priv(indio_dev);
+ 
+-	if (ad7766->pd_gpio)
+-		gpiod_set_value(ad7766->pd_gpio, 1);
++	gpiod_set_value(ad7766->pd_gpio, 1);
+ 
+ 	/*
+ 	 * The PD pin is synchronous to the clock, so give it some time to
+-- 
+2.7.4
