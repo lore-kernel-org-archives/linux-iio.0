@@ -1,123 +1,103 @@
-Return-Path: <SRS0=+kYT=6V=huawei.com=jonathan.cameron@kernel.org>
-Date: Tue, 18 Jul 2017 18:20:03 +0800
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To: "=?ISO-8859-1?Q?Br=FCns,?= Stefan" <Stefan.Bruens@rwth-aachen.de>
-CC: Jonathan Cameron <jic23@kernel.org>,
-        "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        "Lars-Peter Clausen" <lars@metafoo.de>,
-        Peter Meerwald-Stadler
-	<pmeerw@pmeerw.net>
-Subject: Re: [PATCH 2/2] iio: Documentation: Add ina2xx shunt_resistor
- attribute documentation
-Message-ID: <20170718182003.00004555@huawei.com>
-In-Reply-To: <10350930.kllyJhgabW@sbruens-linux>
-References: <20170716233410.22880-1-stefan.bruens@rwth-aachen.de>
-	<2351a045a0564f5bb2af6c652d1fa5e3@rwthex-w2-b.rwth-ad.de>
-	<20170717215357.6452f0f5@kernel.org>
-	<10350930.kllyJhgabW@sbruens-linux>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:38477 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1751257AbdGQJRW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Jul 2017 05:17:22 -0400
+From: Mykola Kostenok <c_mykolak@mellanox.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: Mykola Kostenok <c_mykolak@mellanox.com>,
+        Rick Altherr <raltherr@google.com>, openbmc@lists.ozlabs.org,
+        Vadim Pasternak <vadimp@mellanox.com>,
+        Ohad Oz <ohado@mellanox.com>
+Subject: [patch v2] iio: aspeed-adc: wait for initial sequence.
+Date: Mon, 17 Jul 2017 12:00:35 +0300
+Message-Id: <20170717090035.11691-1-c_mykolak@mellanox.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, 17 Jul 2017 21:44:19 +0000
-"Br=FCns, Stefan" <Stefan.Bruens@rwth-aachen.de> wrote:
+This patch enables adc engine at initialization time and waits
+for the initial sequence completion before enabling adc channels.
 
-> On Montag, 17. Juli 2017 22:53:57 CEST Jonathan Cameron wrote:
-> > On Mon, 17 Jul 2017 01:34:10 +0200
-> >=20
-> > Stefan Br=FCns <stefan.bruens@rwth-aachen.de> wrote: =20
-> > > The ina2xx driver appeared in the Linux kernel version 4.5, but provi=
-ded
-> > > no documentation. Contrary to other uses of resistance in IIO, ina2xx=
- uses
-> > > microohms instead of ohms in the sysfs attribute.
-> > >=20
-> > > Signed-off-by: Stefan Br=FCns <stefan.bruens@rwth-aachen.de> =20
-> >=20
-> > This has me confused.  The documentation is already
-> > there and lists it as being in ohms. =20
->=20
-> Which obviously, from reading the source code, is wrong - it uses microoh=
-ms.
-Hmm. Not good
->=20
-> Also, the current Description contains IMHO irrelevant stuff:
-> "The value of the shunt resistor may be known only at runtime fom an
->  eeprom content read by a client application."
->=20
-> > Ah, subtle filename difference.  Docs in are
-> > Documentation/ABI/testing/sysfs-bus-iio-ina2xx-adc =20
->=20
-> Well spotted ...
->=20
-> > This attribute effectively exists for other parts
-> > as well now. =20
->=20
-> My grep foo failed me here, the only parts I could find are the MAX9611 (=
-which=20
-> specifies and uses ohms) and the INA2xx.
->=20
-> adc/qcom-spmi-iadc.c allows to read the RSENSE value from device tree=20
-> (specified in microohms), but does not expose it via sysfs.
->=20
-> Can you point me to other devices?
-You found it - just the one other part be it with several different shunt
-related entries.
+Without this code adc channels are not functional and shows
+zeros for all connected channels.
 
-Now this is a problem as the ABI has to be consistent.  So one of these
-drivers is buggy, and right now I'm thinking it is this one given the docs
-are consistent.  The whole 'micro/milli' units was an ill  judged
-attempt to try and be consistent with hwmon (we rapidly ran into issues
-generalizing but by then were were stuck with a few odd units).
+Tested on mellanox msn platform.
 
-Recent policy has been the basic SI units if at all possible.
->=20
-> Slightly off-topic: Some attributes in iio are read from device-tree (e.g=
-.=20
-> shunt resistor values), should the iio documentation point to the dt bind=
-ings?=20
-> Currently, only mount_matrix in sysfs-bus-iio vaguely mentions device-tre=
-e.
->=20
-The ABI docs probably shouldn't as it's an implementation detail.
-However, if it's particularly useful for some reason I don't see any
-real problem with doing so.
+v1 -> v2:
+Pointed by Rick Altherr:
+ - Wait init sequence code enabled by bool
+from OF match table.
 
-Jonathan
+Reviewed-by: Rick Altherr <raltherr@google.com>
 
-> Kind regards,
->=20
-> Stefan
->=20
-> > > ---
-> > >=20
-> > >  Documentation/ABI/testing/sysfs-bus-iio-adc-ina2xx-adc | 7 +++++++
-> > >  1 file changed, 7 insertions(+)
-> > >  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-adc-ina2x=
-x-adc
-> > >=20
-> > > diff --git a/Documentation/ABI/testing/sysfs-bus-iio-adc-ina2xx-adc
-> > > b/Documentation/ABI/testing/sysfs-bus-iio-adc-ina2xx-adc new file mode
-> > > 100644
-> > > index 000000000000..9525098f6822
-> > > --- /dev/null
-> > > +++ b/Documentation/ABI/testing/sysfs-bus-iio-adc-ina2xx-adc
-> > > @@ -0,0 +1,7 @@
-> > > +What:		/sys/bus/iio/devices/iio:deviceX/in_shunt_resistor
-> > > +Date:		December 2015
-> > > +KernelVersion:	4.5
-> > > +Contact:	linux-iio@vger.kernel.org
-> > > +Description: 	The value of the shunt resistor connected to the V_IN+=
-  =20
-> and
-> > > V_IN- +		inputs, used to compute the current flowing through the shunt
-> > > and +		the corresponding power. In microohms. =20
->=20
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Signed-off-by: Mykola Kostenok <c_mykolak@mellanox.com>
+---
+ drivers/iio/adc/aspeed_adc.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+
+diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
+index 2283ed2..cfa7ee1 100644
+--- a/drivers/iio/adc/aspeed_adc.c
++++ b/drivers/iio/adc/aspeed_adc.c
+@@ -22,6 +22,7 @@
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/driver.h>
++#include <linux/iopoll.h>
+ 
+ #define ASPEED_RESOLUTION_BITS		10
+ #define ASPEED_CLOCKS_PER_SAMPLE	12
+@@ -38,11 +39,17 @@
+ 
+ #define ASPEED_ENGINE_ENABLE		BIT(0)
+ 
++#define ASPEED_ADC_CTRL_INIT_RDY	BIT(8)
++
++#define ASPEED_ADC_INIT_POLLING_TIME	500
++#define ASPEED_ADC_INIT_TIMEOUT		500000
++
+ struct aspeed_adc_model_data {
+ 	const char *model_name;
+ 	unsigned int min_sampling_rate;	// Hz
+ 	unsigned int max_sampling_rate;	// Hz
+ 	unsigned int vref_voltage;	// mV
++	bool wait_init_sequence;
+ };
+ 
+ struct aspeed_adc_data {
+@@ -210,6 +217,24 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+ 		goto scaler_error;
+ 	}
+ 
++	model_data = of_device_get_match_data(&pdev->dev);
++
++	if (model_data->wait_init_sequence) {
++		/* Enable engine in normal mode. */
++		writel(ASPEED_OPERATION_MODE_NORMAL | ASPEED_ENGINE_ENABLE,
++		       data->base + ASPEED_REG_ENGINE_CONTROL);
++
++		/* Wait for initial sequence complete. */
++		ret = readl_poll_timeout(data->base + ASPEED_REG_ENGINE_CONTROL,
++					 adc_engine_control_reg_val,
++					 adc_engine_control_reg_val &
++					 ASPEED_ADC_CTRL_INIT_RDY,
++					 ASPEED_ADC_INIT_POLLING_TIME,
++					 ASPEED_ADC_INIT_TIMEOUT);
++		if (ret)
++			goto scaler_error;
++	}
++
+ 	/* Start all channels in normal mode. */
+ 	clk_prepare_enable(data->clk_scaler->clk);
+ 	adc_engine_control_reg_val = GENMASK(31, 16) |
+@@ -269,6 +294,7 @@ static const struct aspeed_adc_model_data ast2500_model_data = {
+ 	.vref_voltage = 1800, // mV
+ 	.min_sampling_rate = 1,
+ 	.max_sampling_rate = 1000000,
++	.wait_init_sequence = true,
+ };
+ 
+ static const struct of_device_id aspeed_adc_matches[] = {
+-- 
+2.8.4
+
