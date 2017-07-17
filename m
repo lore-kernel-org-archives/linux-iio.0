@@ -1,72 +1,93 @@
-Return-Path: <SRS0=lVyB=6U=gmail.com=arek.burdach@kernel.org>
+Return-Path: <SRS0=ZMnd=6U=linux.intel.com=srinivas.pandruvada@kernel.org>
+Message-ID: <1500321494.21514.29.camel@linux.intel.com>
 Subject: Re: [PATCH] HID: Add quirk for Lenovo Yoga 910 with ITE Chips
-To: Brian Masney <masneyb@onstation.org>
-Cc: Patrick Pedersen <ctx.xda@gmail.com>, jikos@kernel.org,
- benjamin.tissoires@redhat.com, jic23@kernel.org,
- srinivas.pandruvada@linux.intel.com, linux-input@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: Patrick Pedersen <ctx.xda@gmail.com>, jikos@kernel.org
+Cc: benjamin.tissoires@redhat.com, jic23@kernel.org,
+	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Date: Mon, 17 Jul 2017 12:58:14 -0700
+In-Reply-To: <20170715122721.6908-1-ctx.xda@gmail.com>
 References: <20170715122721.6908-1-ctx.xda@gmail.com>
- <af21ea47-29df-443d-0a3d-5fc36d8cf119@gmail.com>
- <20170716102343.6p6blg2yzamdxeaw@basecamp>
-From: Arek Burdach <arek.burdach@gmail.com>
-Message-ID: <5c0d5b49-509e-a24d-a45e-3435d71f9561@gmail.com>
-Date: Mon, 17 Jul 2017 08:26:37 +0200
-MIME-Version: 1.0
-In-Reply-To: <20170716102343.6p6blg2yzamdxeaw@basecamp>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
+On Sat, 2017-07-15 at 14:27 +0200, Patrick Pedersen wrote:
+> As with previous generations of this device (see https://patchwork.ke
+> rnel.org/patch/7887361/), the ITE
+> HID Sensor Hub, responsible for the accelerometer and als sensor,
+> requires a quirk entry.
+
+I want to get rid of these quirks as this is now the defacto standard.
+Can you try with this change without any quirk.
+
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+index 16ade0a..1fb407f 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+@@ -110,6 +110,9 @@ static int _hid_sensor_power_state(struct
+hid_sensor_common *st, bool state)
+        int report_val;
+        s32 poll_value = 0;
+ 
++       st->power_state.logical_minimum = 1;
++       st->report_state.logical_minimum = 1;
++
+        if (state) {
+                if (!atomic_read(&st->user_requested_state))
+                        return 0;
 
 
-On 16.07.2017 12:23, Brian Masney wrote:
-> On Sun, Jul 16, 2017 at 09:39:19AM +0200, Arek Burdach wrote:
->> Hi Patrick,
->>
->> On 15.07.2017 14:27, Patrick Pedersen wrote:
->>> It shall additionally be noted that the i2c-hid 'sleep' bug (present since kernel ver. 4.3)
->>> still affects the driver. This means that the sensor hub will not report any movement, until
->>> the device is suspended and resumed.
->>>
->> Do you have workaround for that? In my case suspending and resuming doesn't
->> help. Sensor reporting is backing to work in unpredictable way. What I've
->> tested:
->>
->> - kernel v4.13-rc1 with your patch applied
->> - watch -n1 cat /sys/bus/iio/devices/iio\:device*/*_raw <- value not
->> changing
->> - suspend
->> - resume
->> - watch -n1 cat /sys/bus/iio/devices/iio\:device*/*_raw <- still not
->> changing
->>
->> If you have some workaround scenario please add it to bug reported be me:
->> https://bugzilla.kernel.org/show_bug.cgi?id=195681
-> I have a Lenovo Yoga 910-13IKB
-So do I
->   and verified that the patch works
-> correctly for me on an upstream 4.12 kernel. The ALS sensor and
-> accelerometer function correctly without suspending the laptop with
-> this patch. The difference may be due the following kernel boot options
-> that I use:
->
-> 	i915.enable_rc6=0 pci=noaer intel_pstate=disable
->
-> I have to disable power management for the CPU/GPU (i915.enable_rc6=0)
-> since I can only suspend and resume once on this laptop. Suspending a
-> second time will cause the laptop to hang before the suspend finishes.
->
-> The pci=noaer is likely not needed for UEFI firmware revisions 2JCN36WW
-> and newer. I'm stuck on UEFI firmware revision 2JCN28WW, which is what
-> came preinstalled on the system. Lenovo's UEFI update tool requires
-> Windows, which I no longer have.
->
-> I need to get on the latest UEFI revision and go through
-> basic-pm-debugging.txt if the power management issues are still present.
-I have installed 2JCN36WW and: pci=noaer intel_pstate=disable flags are 
-never need - suspending works ok every time.
+Thanks,
+Srinivas
 
-I investigated that having iio-sensor-proxy installed may cause sensors 
-stopping to work. Looks like only one option can work in the same time - 
-either iio-sensor-proxy service or sensor reporting of raw data.
-
-Arek
+> 
+> Without the entry, the Sensor Hub can't be accessed and the kernel
+> fails to report any movements. As a result
+> iio-sensor-proxy receives no new data.
+> 
+> It shall additionally be noted that the i2c-hid 'sleep' bug (present
+> since kernel ver. 4.3)
+> still affects the driver. This means that the sensor hub will not
+> report any movement, until
+> the device is suspended and resumed.
+> 
+> Signed-off-by: Patrick Pedersen <ctx.xda@gmail.com>
+> ---
+>  drivers/hid/hid-ids.h        | 1 +
+>  drivers/hid/hid-sensor-hub.c | 3 +++
+>  2 files changed, 4 insertions(+)
+> 
+> diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
+> index 4f9a3938189a..b427a0bcfbe8 100644
+> --- a/drivers/hid/hid-ids.h
+> +++ b/drivers/hid/hid-ids.h
+> @@ -565,6 +565,7 @@
+>  #define USB_DEVICE_ID_ITE_LENOVO_YOGA   0x8386
+>  #define USB_DEVICE_ID_ITE_LENOVO_YOGA2  0x8350
+>  #define USB_DEVICE_ID_ITE_LENOVO_YOGA900	0x8396
+> +#define USB_DEVICE_ID_ITE_LENOVO_YOGA910	0x8186
+>  
+>  #define USB_VENDOR_ID_JABRA		0x0b0e
+>  #define USB_DEVICE_ID_JABRA_SPEAK_410	0x0412
+> diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-
+> hub.c
+> index 4ef73374a8f9..85b8425483bd 100644
+> --- a/drivers/hid/hid-sensor-hub.c
+> +++ b/drivers/hid/hid-sensor-hub.c
+> @@ -820,6 +820,9 @@ static const struct hid_device_id
+> sensor_hub_devices[] = {
+>  	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB,
+> USB_VENDOR_ID_ITE,
+>  			USB_DEVICE_ID_ITE_LENOVO_YOGA900),
+>  			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+> +	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB,
+> USB_VENDOR_ID_ITE,
+> +			USB_DEVICE_ID_ITE_LENOVO_YOGA910),
+> +			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+>  	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB,
+> USB_VENDOR_ID_INTEL_0,
+>  			0x22D8),
+>  			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
