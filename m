@@ -2,7 +2,6 @@ Return-Path: <SRS0=mhKp=6U=gmail.com=gehariprasath@kernel.org>
 From: Hari Prasath <gehariprasath@gmail.com>
 To: lars@metafoo.de
 Cc: gehariprasath@gmail.com,
-	Hari Prasath <hgujulan@visteon.com>,
 	Michael Hennerich <Michael.Hennerich@analog.com>,
 	Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
@@ -11,17 +10,18 @@ Cc: gehariprasath@gmail.com,
 	linux-iio@vger.kernel.org,
 	devel@driverdev.osuosl.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH] staging: iio: adc: add missing of_node references to iio_dev
-Date: Mon, 17 Jul 2017 17:43:29 +0530
-Message-Id: <20170717121329.24163-1-gehariprasath@gmail.com>
+Subject: [PATCH v2] staging: iio: adc: add missing of_node references to iio_dev
+Date: Mon, 17 Jul 2017 17:49:23 +0530
+Message-Id: <20170717121923.24546-1-gehariprasath@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
-
-From: Hari Prasath <hgujulan@visteon.com>
 
 Adding missing indio_dev->dev.of_node references to allow iio consumers
 to access the device channels.
 
 Signed-off-by: Hari Prasath <gehariprasath@gmail.com>
+---
+	v2: Wrong from email ID in first version of patch
+
 ---
  drivers/staging/iio/adc/ad7192.c | 1 +
  drivers/staging/iio/adc/ad7780.c | 1 +
