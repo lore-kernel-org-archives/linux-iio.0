@@ -1,111 +1,96 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f48.google.com ([209.85.215.48]:35955 "EHLO
-        mail-lf0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753297AbdGSJm1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Jul 2017 05:42:27 -0400
-Received: by mail-lf0-f48.google.com with SMTP id d78so26099747lfg.3
-        for <linux-iio@vger.kernel.org>; Wed, 19 Jul 2017 02:42:26 -0700 (PDT)
-Date: Wed, 19 Jul 2017 11:42:24 +0200
-From: Niklas =?iso-8859-1?Q?S=F6derlund?=
-        <niklas.soderlund@ragnatech.se>
-To: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc: linux-i2c@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-iio@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 4/4] i2c: rcar: check for DMA-capable buffers
-Message-ID: <20170719094224.GO28538@bigcity.dyn.berto.se>
-References: <20170718102339.28726-1-wsa+renesas@sang-engineering.com>
- <20170718102339.28726-5-wsa+renesas@sang-engineering.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-In-Reply-To: <20170718102339.28726-5-wsa+renesas@sang-engineering.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=r+Hi=6V=gmail.com=rjdurga@kernel.org>
+From: Jaya Durga <rjdurga@gmail.com>
+To: gregkh@linuxfoundation.org
+Cc: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org,
+	Jaya Durga <rjdurga@gmail.com>
+Subject: [PATCH v2 3/3] Staging: iio: adc: ad7280a.c: Fixed Macro argument reuse
+Date: Tue, 18 Jul 2017 16:45:04 +0530
+Message-Id: <1500376504-22779-3-git-send-email-rjdurga@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Wolfram,
+CHECK: Macro argument reuse 'addr' - possible side-effects?
 
-On 2017-07-18 12:23:39 +0200, Wolfram Sang wrote:
-> Handling this is special for this driver. Because the hardware needs to
-> initialize the next message in interrupt context, we cannot use the
-> i2c_check_msg_for_dma() directly. This helper only works reliably in
-> process context. So, we need to check during initial preparation of the
-> whole transfer and need to disable DMA completely for the whole transfer
-> once a message with a not-DMA-capable buffer is found.
-> 
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> ---
->  drivers/i2c/busses/i2c-rcar.c | 18 +++++++++++++-----
->  1 file changed, 13 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/i2c/busses/i2c-rcar.c b/drivers/i2c/busses/i2c-rcar.c
-> index 93c1a54981df08..5d0e820d708853 100644
-> --- a/drivers/i2c/busses/i2c-rcar.c
-> +++ b/drivers/i2c/busses/i2c-rcar.c
-> @@ -111,8 +111,11 @@
->  #define ID_ARBLOST	(1 << 3)
->  #define ID_NACK		(1 << 4)
->  /* persistent flags */
-> +#define ID_P_NODMA	(1 << 30)
->  #define ID_P_PM_BLOCKED	(1 << 31)
-> -#define ID_P_MASK	ID_P_PM_BLOCKED
-> +#define ID_P_MASK	(ID_P_PM_BLOCKED | ID_P_NODMA)
-> +
-> +#define RCAR_DMA_THRESHOLD 8
->  
->  enum rcar_i2c_type {
->  	I2C_RCAR_GEN1,
-> @@ -358,8 +361,7 @@ static void rcar_i2c_dma(struct rcar_i2c_priv *priv)
->  	unsigned char *buf;
->  	int len;
->  
-> -	/* Do not use DMA if it's not available or for messages < 8 bytes */
-> -	if (IS_ERR(chan) || msg->len < 8)
-> +	if (IS_ERR(chan) || msg->len < RCAR_DMA_THRESHOLD || priv->flags & ID_P_NODMA)
->  		return;
->  
->  	if (read) {
-> @@ -657,11 +659,15 @@ static void rcar_i2c_request_dma(struct rcar_i2c_priv *priv,
->  				 struct i2c_msg *msg)
->  {
->  	struct device *dev = rcar_i2c_priv_to_dev(priv);
-> -	bool read;
-> +	bool read = msg->flags & I2C_M_RD;
->  	struct dma_chan *chan;
->  	enum dma_transfer_direction dir;
->  
-> -	read = msg->flags & I2C_M_RD;
-> +	/* we need to check here because we need the 'current' context */
+convert AD7280A_DEVADDR to ad7280a_devaddr static function
+to fix checkpath check
 
-Maybe extend the comment here explaining that the check is primary here 
-to make sure the msg->buf is valid for DMA and that the bounce buffer 
-can't be used due to the special hardware feature? Else someone might be 
-tempted to try and enable the bounce buffer feature in the future?
+Signed-off-by: Jaya Durga <rjdurga@gmail.com>
+---
+ drivers/staging/iio/adc/ad7280a.c | 21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
-Nitpicking aside:
-
-Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
-
-> +	if (i2c_check_msg_for_dma(msg, RCAR_DMA_THRESHOLD, NULL) == -EFAULT) {
-> +		dev_dbg(dev, "skipping DMA for this whole transfer\n");
-> +		priv->flags |= ID_P_NODMA;
-> +	}
->  
->  	chan = read ? priv->dma_rx : priv->dma_tx;
->  	if (PTR_ERR(chan) != -EPROBE_DEFER)
-> @@ -740,6 +746,8 @@ static int rcar_i2c_master_xfer(struct i2c_adapter *adap,
->  	if (ret < 0 && ret != -ENXIO)
->  		dev_err(dev, "error %d : %x\n", ret, priv->flags);
->  
-> +	priv->flags &= ~ID_P_NODMA;
-> +
->  	return ret;
->  }
->  
-> -- 
-> 2.11.0
-> 
-
+diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
+index d5ab83f..f543b42 100644
+--- a/drivers/staging/iio/adc/ad7280a.c
++++ b/drivers/staging/iio/adc/ad7280a.c
+@@ -99,9 +99,14 @@
+ #define AD7280A_DEVADDR_MASTER		0
+ #define AD7280A_DEVADDR_ALL		0x1F
+ /* 5-bit device address is sent LSB first */
+-#define AD7280A_DEVADDR(addr)	(((addr & 0x1) << 4) | ((addr & 0x2) << 3) | \
+-				(addr & 0x4) | ((addr & 0x8) >> 3) | \
+-				((addr & 0x10) >> 4))
++static unsigned int ad7280a_devaddr(unsigned int addr)
++{
++	return ((addr & 0x1) << 4) |
++		((addr & 0x2) << 3) |
++		(addr & 0x4)       |
++		((addr & 0x8) >> 3) |
++		((addr & 0x10) >> 4);
++}
+ 
+ /* During a read a valid write is mandatory.
+  * So writing to the highest available address (Address 0x1F)
+@@ -372,7 +377,7 @@ static int ad7280_chain_setup(struct ad7280_state *st)
+ 		if (ad7280_check_crc(st, val))
+ 			return -EIO;
+ 
+-		if (n != AD7280A_DEVADDR(val >> 27))
++		if (n != ad7280a_devaddr(val >> 27))
+ 			return -EIO;
+ 	}
+ 
+@@ -511,7 +516,7 @@ static int ad7280_channel_init(struct ad7280_state *st)
+ 			st->channels[cnt].info_mask_shared_by_type =
+ 				BIT(IIO_CHAN_INFO_SCALE);
+ 			st->channels[cnt].address =
+-				AD7280A_DEVADDR(dev) << 8 | ch;
++				ad7280a_devaddr(dev) << 8 | ch;
+ 			st->channels[cnt].scan_index = cnt;
+ 			st->channels[cnt].scan_type.sign = 'u';
+ 			st->channels[cnt].scan_type.realbits = 12;
+@@ -558,7 +563,7 @@ static int ad7280_attr_init(struct ad7280_state *st)
+ 		for (ch = AD7280A_CELL_VOLTAGE_1; ch <= AD7280A_CELL_VOLTAGE_6;
+ 			ch++, cnt++) {
+ 			st->iio_attr[cnt].address =
+-				AD7280A_DEVADDR(dev) << 8 | ch;
++				ad7280a_devaddr(dev) << 8 | ch;
+ 			st->iio_attr[cnt].dev_attr.attr.mode =
+ 				0644;
+ 			st->iio_attr[cnt].dev_attr.show =
+@@ -574,7 +579,7 @@ static int ad7280_attr_init(struct ad7280_state *st)
+ 				&st->iio_attr[cnt].dev_attr.attr;
+ 			cnt++;
+ 			st->iio_attr[cnt].address =
+-				AD7280A_DEVADDR(dev) << 8 |
++				ad7280a_devaddr(dev) << 8 |
+ 				(AD7280A_CB1_TIMER + ch);
+ 			st->iio_attr[cnt].dev_attr.attr.mode =
+ 				0644;
+@@ -918,7 +923,7 @@ static int ad7280_probe(struct spi_device *spi)
+ 		if (ret)
+ 			goto error_unregister;
+ 
+-		ret = ad7280_write(st, AD7280A_DEVADDR(st->slave_num),
++		ret = ad7280_write(st, ad7280a_devaddr(st->slave_num),
+ 				   AD7280A_ALERT, 0,
+ 				   AD7280A_ALERT_GEN_STATIC_HIGH |
+ 				   (pdata->chain_last_alert_ignore & 0xF));
 -- 
-Regards,
-Niklas Söderlund
+1.9.1
