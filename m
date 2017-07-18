@@ -1,43 +1,34 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:51762 "EHLO
-        mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753436AbdGSLvC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Jul 2017 07:51:02 -0400
-Date: Wed, 19 Jul 2017 13:50:56 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jaya Durga <rjdurga@gmail.com>
-Cc: devel@driverdev.osuosl.org, lars@metafoo.de,
-        Michael.Hennerich@analog.com, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, pmeerw@pmeerw.net, knaack.h@gmx.de,
-        jic23@kernel.org
-Subject: Re: [PATCH v3 3/3] Staging: iio: adc: ad7280a.c: Fixed Macro
- argument reuse
-Message-ID: <20170719115056.GA16281@kroah.com>
-References: <1500380584-27074-4-git-send-email-rjdurga@gmail.com>
+Return-Path: <SRS0=YqtP=6V=st.com=fabrice.gasnier@kernel.org>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+To: <jic23@kernel.org>, <robh+dt@kernel.org>
+CC: <linux@armlinux.org.uk>, <mark.rutland@arm.com>,
+        <mcoquelin.stm32@gmail.com>, <alexandre.torgue@st.com>,
+        <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
+        <fabrice.gasnier@st.com>, <benjamin.gaignard@linaro.org>,
+        <benjamin.gaignard@st.com>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH 0/3] Allow to tune sampling time on STM32 ADC
+Date: Tue, 18 Jul 2017 14:35:29 +0200
+Message-ID: <1500381332-17086-1-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1500380584-27074-4-git-send-email-rjdurga@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, Jul 18, 2017 at 05:53:04PM +0530, Jaya Durga wrote:
-> CHECK: Macro argument reuse 'addr' - possible side-effects?
-> 
-> convert AD7280A_DEVADDR to ad7280a_devaddr static function
-> to fix checkpath check
-> 
-> v3: small style changes
-> 
-> Signed-off-by: Jaya Durga <rjdurga@gmail.com>
-> ---
->  drivers/staging/iio/adc/ad7280a.c | 21 +++++++++++++--------
->  1 file changed, 13 insertions(+), 8 deletions(-)
+STM32 ADC allows each channel to be sampled with a different sampling
+time. This series fixes common clock rate and adds optional device
+tree property, so minimum sampling time can be tuned. This is done via
+device tree as it's tightly coupled with hardware (analog source).
 
-Where are patches 1-2 of this series?
+Fabrice Gasnier (3):
+  iio: adc: stm32: fix common clock rate
+  dt-bindings: iio: adc: stm32: add optional min-sample-time
+  iio: adc: stm32: add optional min-sample-time
 
-Always resend the whole series, otherwise maintainers get _very_
-confused...
+ .../devicetree/bindings/iio/adc/st,stm32-adc.txt   |   5 +
+ drivers/iio/adc/stm32-adc-core.c                   |  10 +-
+ drivers/iio/adc/stm32-adc.c                        | 134 ++++++++++++++++++++-
+ 3 files changed, 140 insertions(+), 9 deletions(-)
 
-thanks,
-
-greg k-h
+-- 
+1.9.1
