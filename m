@@ -4,72 +4,84 @@ To: linux-iio@vger.kernel.org
 Cc: Akinobu Mita <akinobu.mita@gmail.com>,
 	Daniel Baluta <daniel.baluta@gmail.com>,
 	Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH v2 07/11] iio: adc: ti-ads1015: remove unnecessary config register update
-Date: Fri, 21 Jul 2017 00:24:23 +0900
-Message-Id: <1500564267-8613-8-git-send-email-akinobu.mita@gmail.com>
+Subject: [PATCH v2 08/11] iio: adc: ti-ads1015: add helper to set conversion mode
+Date: Fri, 21 Jul 2017 00:24:24 +0900
+Message-Id: <1500564267-8613-9-git-send-email-akinobu.mita@gmail.com>
 In-Reply-To: <1500564267-8613-1-git-send-email-akinobu.mita@gmail.com>
 References: <1500564267-8613-1-git-send-email-akinobu.mita@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-The ti-ads1015 driver has eight iio voltage channels and each iio channel
-can hold own scale information.
-
-The ADS1015 device only have a single config register which contains an
-input multiplexer selection, PGA and data rate settings.  So the driver
-should load the correct settings when the input multiplexer selection is
-changed.
-
-However, regardless of which channlel is currently selected, changing any
-iio channel's scale information immediately overwrites the current PGA
-setting in the config register.
-
-It is harmless because the correct PGA settings are reloaded just before
-getting adc result anyway.  But it is unnecessary register update and
-should be removed.
+This adds a helper function to set conversion mode as there are a fair
+number of users.
 
 Cc: Daniel Baluta <daniel.baluta@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>
 Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
 ---
- drivers/iio/adc/ti-ads1015.c | 18 ++++--------------
- 1 file changed, 4 insertions(+), 14 deletions(-)
+ drivers/iio/adc/ti-ads1015.c | 23 +++++++++++------------
+ 1 file changed, 11 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
-index 9c501e5..e83cebc 100644
+index e83cebc..9f3f0c9 100644
 --- a/drivers/iio/adc/ti-ads1015.c
 +++ b/drivers/iio/adc/ti-ads1015.c
-@@ -312,28 +312,18 @@ static int ads1015_set_scale(struct ads1015_data *data,
- 			     struct iio_chan_spec const *chan,
- 			     int scale, int uscale)
- {
--	int i, ret, rindex = -1;
-+	int i;
- 	int fullscale = div_s64((scale * 1000000LL + uscale) <<
- 				(chan->scan_type.realbits - 1), 1000000);
- 
- 	for (i = 0; i < ARRAY_SIZE(ads1015_fullscale_range); i++) {
- 		if (ads1015_fullscale_range[i] == fullscale) {
--			rindex = i;
--			break;
-+			data->channel_data[chan->address].pga = i;
-+			return 0;
- 		}
+@@ -570,6 +570,13 @@ static void ads1015_get_channels_config(struct i2c_client *client)
  	}
--	if (rindex < 0)
--		return -EINVAL;
--
--	ret = regmap_update_bits(data->regmap, ADS1015_CFG_REG,
--				 ADS1015_CFG_PGA_MASK,
--				 rindex << ADS1015_CFG_PGA_SHIFT);
--	if (ret < 0)
--		return ret;
--
--	data->channel_data[chan->address].pga = rindex;
- 
--	return 0;
-+	return -EINVAL;
  }
  
- static int ads1015_set_data_rate(struct ads1015_data *data, int chan, int rate)
++static int ads1015_set_conv_mode(struct ads1015_data *data, int mode)
++{
++	return regmap_update_bits(data->regmap, ADS1015_CFG_REG,
++				  ADS1015_CFG_MOD_MASK,
++				  mode << ADS1015_CFG_MOD_SHIFT);
++}
++
+ static int ads1015_probe(struct i2c_client *client,
+ 			 const struct i2c_device_id *id)
+ {
+@@ -628,9 +635,7 @@ static int ads1015_probe(struct i2c_client *client,
+ 		return ret;
+ 	}
+ 
+-	ret = regmap_update_bits(data->regmap, ADS1015_CFG_REG,
+-				ADS1015_CFG_MOD_MASK,
+-				ADS1015_CONTINUOUS << ADS1015_CFG_MOD_SHIFT);
++	ret = ads1015_set_conv_mode(data, ADS1015_CONTINUOUS);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -671,9 +676,7 @@ static int ads1015_remove(struct i2c_client *client)
+ 	iio_triggered_buffer_cleanup(indio_dev);
+ 
+ 	/* power down single shot mode */
+-	return regmap_update_bits(data->regmap, ADS1015_CFG_REG,
+-				  ADS1015_CFG_MOD_MASK,
+-				  ADS1015_SINGLESHOT << ADS1015_CFG_MOD_SHIFT);
++	return ads1015_set_conv_mode(data, ADS1015_SINGLESHOT);
+ }
+ 
+ #ifdef CONFIG_PM
+@@ -682,9 +685,7 @@ static int ads1015_runtime_suspend(struct device *dev)
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+ 	struct ads1015_data *data = iio_priv(indio_dev);
+ 
+-	return regmap_update_bits(data->regmap, ADS1015_CFG_REG,
+-				  ADS1015_CFG_MOD_MASK,
+-				  ADS1015_SINGLESHOT << ADS1015_CFG_MOD_SHIFT);
++	return ads1015_set_conv_mode(data, ADS1015_SINGLESHOT);
+ }
+ 
+ static int ads1015_runtime_resume(struct device *dev)
+@@ -693,9 +694,7 @@ static int ads1015_runtime_resume(struct device *dev)
+ 	struct ads1015_data *data = iio_priv(indio_dev);
+ 	int ret;
+ 
+-	ret = regmap_update_bits(data->regmap, ADS1015_CFG_REG,
+-				  ADS1015_CFG_MOD_MASK,
+-				  ADS1015_CONTINUOUS << ADS1015_CFG_MOD_SHIFT);
++	ret = ads1015_set_conv_mode(data, ADS1015_CONTINUOUS);
+ 	if (!ret)
+ 		data->conv_invalid = true;
+ 
 -- 
 2.7.4
