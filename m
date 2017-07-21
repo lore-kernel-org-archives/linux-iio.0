@@ -1,92 +1,55 @@
-Return-Path: <SRS0=AjrS=6J=linaro.org=lee.jones@kernel.org>
-Date: Thu, 6 Jul 2017 08:03:52 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Wolfram Sang <wsa@the-dreams.de>, linux-i2c@vger.kernel.org,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Alexandre Courbot <gnurou@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Kishon Vijay Abraham I <kishon@ti.com>,
-	Sebastian Reichel <sre@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>,
-	Alessandro Zummo <a.zummo@towertech.it>,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	Felipe Balbi <balbi@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Daniel Thompson <daniel.thompson@linaro.org>,
-	Jingoo Han <jingoohan1@gmail.com>,
-	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-	Wim Van Sebroeck <wim@iguana.be>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Peter Ujfalusi <peter.ujfalusi@ti.com>,
-	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-	linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	linux-pm@vger.kernel.org, linux-pwm@vger.kernel.org,
-	rtc-linux@googlegroups.com, linux-usb@vger.kernel.org,
-	linux-fbdev@vger.kernel.org, linux-watchdog@vger.kernel.org,
-	alsa-devel@alsa-project.org
-Subject: Re: [PATCH 3/3] mfd: twl: move header file out of I2C realm
-Message-ID: <20170706070352.xdecvsnremwqed72@dell>
-References: <20170521220212.1404-1-wsa@the-dreams.de>
- <20170521220212.1404-4-wsa@the-dreams.de>
- <20170706064453.GH16144@ulmo.fritz.box>
+Return-Path: <SRS0=Jyqn=6Y=gmail.com=arndbergmann@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <20170706064453.GH16144@ulmo.fritz.box>
+Sender: arndbergmann@gmail.com
+In-Reply-To: <20170611151837.35fc64a4@kernel.org>
+References: <20170603232652.21401-1-alexander.sverdlin@gmail.com> <20170611151837.35fc64a4@kernel.org>
+From: Arnd Bergmann <arnd@arndb.de>
+Date: Fri, 21 Jul 2017 09:50:10 +0200
+Message-ID: <CAK8P3a0OvkRJOgxyEqr+imGxf2bCrbFLNFndRJc4fvTLyYjLXQ@mail.gmail.com>
+Subject: Re: [PATCH v5 0/5] iio: ADC driver for EP93xx SoC
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Alexander Sverdlin <alexander.sverdlin@gmail.com>, Lars-Peter Clausen <lars@metafoo.de>,
+	Ryan Mallon <rmallon@gmail.com>, linux-iio@vger.kernel.org,
+	Hartley Sweeten <hsweeten@visionengravers.com>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>, Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 06 Jul 2017, Thierry Reding wrote:
+On Sun, Jun 11, 2017 at 4:18 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On Sun,  4 Jun 2017 01:26:47 +0200
+> Alexander Sverdlin <alexander.sverdlin@gmail.com> wrote:
+>
+>> This series prepares the necessary infrastructure for ADC platform device on
+>> Cirrus Logic EP93xx family of SoCs and adds the driver for ADC device using
+>> IIO subsystem.
+> The reason these have been reposted is because the EP93xx don't
+> have an actual tree as such.  They are typically handled
+> directly through the arm-soc tree.
+>
+> As such I'm looking for a route to get this applied.
+> The dependencies are such that the whole series should go through
+> either arm-soc or iio.  I don't really mind which.
+> Either I need Acks for applying the patches that touch
+> the arch bits (we have Ryan's but I'd like a more general
+> arm-soc one given this will be in your area), or
+> I will probably ack the driver in a minute so the log can
+> go through arm-soc.
+>
+> Anyhow, don't really mind but let's get this moving!
 
-> On Mon, May 22, 2017 at 12:02:10AM +0200, Wolfram Sang wrote:
-> > include/linux/i2c is not for client devices. Move the header file to a
-> > more appropriate location.
-> > 
-> > Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
-> > ---
-> >  arch/arm/mach-omap2/common.h            | 2 +-
-> >  arch/arm/mach-omap2/omap_twl.c          | 2 +-
-> >  drivers/gpio/gpio-twl4030.c             | 2 +-
-> >  drivers/iio/adc/twl4030-madc.c          | 2 +-
-> >  drivers/iio/adc/twl6030-gpadc.c         | 2 +-
-> >  drivers/input/keyboard/twl4030_keypad.c | 2 +-
-> >  drivers/input/misc/twl4030-pwrbutton.c  | 2 +-
-> >  drivers/input/misc/twl4030-vibra.c      | 2 +-
-> >  drivers/mfd/twl-core.c                  | 6 +++---
-> >  drivers/mfd/twl4030-audio.c             | 2 +-
-> >  drivers/mfd/twl4030-irq.c               | 2 +-
-> >  drivers/mfd/twl4030-power.c             | 2 +-
-> >  drivers/mfd/twl6030-irq.c               | 2 +-
-> >  drivers/phy/phy-twl4030-usb.c           | 2 +-
-> >  drivers/power/supply/twl4030_charger.c  | 2 +-
-> >  drivers/pwm/pwm-twl-led.c               | 2 +-
-> >  drivers/pwm/pwm-twl.c                   | 2 +-
-> >  drivers/regulator/twl-regulator.c       | 2 +-
-> >  drivers/regulator/twl6030-regulator.c   | 2 +-
-> >  drivers/rtc/rtc-twl.c                   | 2 +-
-> >  drivers/usb/phy/phy-twl6030-usb.c       | 2 +-
-> >  drivers/video/backlight/pandora_bl.c    | 2 +-
-> >  drivers/watchdog/twl4030_wdt.c          | 2 +-
-> >  include/linux/{i2c => mfd}/twl.h        | 0
-> >  sound/soc/codecs/twl4030.c              | 2 +-
-> >  25 files changed, 26 insertions(+), 26 deletions(-)
-> >  rename include/linux/{i2c => mfd}/twl.h (100%)
-> 
-> I didn't see this get applied yet, so just in case anyone was waiting
-> for me (this is trivial, so I don't think there's a need):
+Alexander just pointed me to the series, I had missed it earlier.
 
-You're not the last. :)
+The patches for arch/arm/mach-ep93xx look reasonable to me,
+with one minor complaint: please use "ARM:" as the subject prefix.
 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Alexander, can you send a pull request for the first four patches
+to arm@kernel.org, or a set of patches if that is easier for you?
+
+I think the adc driver can just get merged through the iio tree,
+as there is no strict build-time dependency. I realize the driver
+will fail to link when built on ep93xx or another platform that lacks
+the clk_get_parent() implementation, but I think that's ok since
+we have an old bug in several platforms concerning this, and
+I have proposed a fix for it already.
+
+       Arnd
