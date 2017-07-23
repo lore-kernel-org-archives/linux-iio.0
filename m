@@ -4,9 +4,9 @@ To: linux-iio@vger.kernel.org
 Cc: Lars-Peter Clausen <lars@metafoo.de>,
 	Jonathan Cameron <jic23@kernel.org>,
 	Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 08/45] iio:chemical: drop assign iio_info.driver_module and iio_trigger_ops.owner
-Date: Sun, 23 Jul 2017 17:25:50 +0100
-Message-Id: <20170723162627.22534-9-Jonathan.Cameron@huawei.com>
+Subject: [PATCH 09/45] iio:common: drop assign iio_info.driver_module and iio_trigger_ops.owner
+Date: Sun, 23 Jul 2017 17:25:51 +0100
+Message-Id: <20170723162627.22534-10-Jonathan.Cameron@huawei.com>
 In-Reply-To: <20170723162627.22534-1-Jonathan.Cameron@huawei.com>
 References: <20170723162627.22534-1-Jonathan.Cameron@huawei.com>
 List-ID: <linux-iio@vger.kernel.org>
@@ -17,69 +17,39 @@ The equivalent of both of these are now done via macro magic when
 the relevant register calls are made.  The actual structure
 elements will shortly go away.
 
+Clearly this set jumps across multiple areas, but inherently it
+can't be grouped like the other sets in this series so I've done
+all the stuff in the common directory together.
+
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/chemical/ams-iaq-core.c    | 1 -
- drivers/iio/chemical/atlas-ph-sensor.c | 2 --
- drivers/iio/chemical/ccs811.c          | 1 -
- drivers/iio/chemical/vz89x.c           | 1 -
- 4 files changed, 5 deletions(-)
+ drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c | 1 -
+ drivers/iio/common/hid-sensors/hid-sensor-trigger.c  | 1 -
+ 2 files changed, 2 deletions(-)
 
-diff --git a/drivers/iio/chemical/ams-iaq-core.c b/drivers/iio/chemical/ams-iaq-core.c
-index c948ad2ee9ad..d9e5950ad24a 100644
---- a/drivers/iio/chemical/ams-iaq-core.c
-+++ b/drivers/iio/chemical/ams-iaq-core.c
-@@ -141,7 +141,6 @@ static int ams_iaqcore_read_raw(struct iio_dev *indio_dev,
- 
- static const struct iio_info ams_iaqcore_info = {
- 	.read_raw	= ams_iaqcore_read_raw,
--	.driver_module	= THIS_MODULE,
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+index 38e8783e4b05..ed8063f2da99 100644
+--- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+@@ -185,7 +185,6 @@ static int cros_ec_sensors_write(struct iio_dev *indio_dev,
+ static const struct iio_info ec_sensors_info = {
+ 	.read_raw = &cros_ec_sensors_read,
+ 	.write_raw = &cros_ec_sensors_write,
+-	.driver_module = THIS_MODULE,
  };
  
- static int ams_iaqcore_probe(struct i2c_client *client,
-diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
-index ef761a508630..8c4e05580091 100644
---- a/drivers/iio/chemical/atlas-ph-sensor.c
-+++ b/drivers/iio/chemical/atlas-ph-sensor.c
-@@ -344,7 +344,6 @@ static int atlas_buffer_predisable(struct iio_dev *indio_dev)
- }
+ static int cros_ec_sensors_probe(struct platform_device *pdev)
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+index 16ade0a0327b..1f967cce2714 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+@@ -241,7 +241,6 @@ void hid_sensor_remove_trigger(struct hid_sensor_common *attrb)
+ EXPORT_SYMBOL(hid_sensor_remove_trigger);
  
- static const struct iio_trigger_ops atlas_interrupt_trigger_ops = {
+ static const struct iio_trigger_ops hid_sensor_trigger_ops = {
 -	.owner = THIS_MODULE,
+ 	.set_trigger_state = &hid_sensor_data_rdy_trigger_set_state,
  };
  
- static const struct iio_buffer_setup_ops atlas_buffer_setup_ops = {
-@@ -499,7 +498,6 @@ static int atlas_write_raw(struct iio_dev *indio_dev,
- }
- 
- static const struct iio_info atlas_info = {
--	.driver_module = THIS_MODULE,
- 	.read_raw = atlas_read_raw,
- 	.write_raw = atlas_write_raw,
- };
-diff --git a/drivers/iio/chemical/ccs811.c b/drivers/iio/chemical/ccs811.c
-index 8dbb5eddeb1f..5b6ab71e8451 100644
---- a/drivers/iio/chemical/ccs811.c
-+++ b/drivers/iio/chemical/ccs811.c
-@@ -250,7 +250,6 @@ static int ccs811_read_raw(struct iio_dev *indio_dev,
- 
- static const struct iio_info ccs811_info = {
- 	.read_raw = ccs811_read_raw,
--	.driver_module = THIS_MODULE,
- };
- 
- static int ccs811_probe(struct i2c_client *client,
-diff --git a/drivers/iio/chemical/vz89x.c b/drivers/iio/chemical/vz89x.c
-index f75eea6822f2..9c9095ba4227 100644
---- a/drivers/iio/chemical/vz89x.c
-+++ b/drivers/iio/chemical/vz89x.c
-@@ -326,7 +326,6 @@ static int vz89x_read_raw(struct iio_dev *indio_dev,
- static const struct iio_info vz89x_info = {
- 	.attrs		= &vz89x_attrs_group,
- 	.read_raw	= vz89x_read_raw,
--	.driver_module	= THIS_MODULE,
- };
- 
- static const struct vz89x_chip_data vz89x_chips[] = {
 -- 
 2.13.3
