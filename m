@@ -4,9 +4,9 @@ To: linux-iio@vger.kernel.org
 Cc: Lars-Peter Clausen <lars@metafoo.de>,
 	Jonathan Cameron <jic23@kernel.org>,
 	Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 16/45] iio:humidity: drop assign iio_info.driver_module and iio_trigger_ops.owner
-Date: Sun, 23 Jul 2017 17:25:58 +0100
-Message-Id: <20170723162627.22534-17-Jonathan.Cameron@huawei.com>
+Subject: [PATCH 17/45] iio:imu: drop assign iio_info.driver_module and iio_trigger_ops.owner
+Date: Sun, 23 Jul 2017 17:25:59 +0100
+Message-Id: <20170723162627.22534-18-Jonathan.Cameron@huawei.com>
 In-Reply-To: <20170723162627.22534-1-Jonathan.Cameron@huawei.com>
 References: <20170723162627.22534-1-Jonathan.Cameron@huawei.com>
 List-ID: <linux-iio@vger.kernel.org>
@@ -19,124 +19,135 @@ elements will shortly go away.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/humidity/am2315.c              | 1 -
- drivers/iio/humidity/dht11.c               | 1 -
- drivers/iio/humidity/hdc100x.c             | 1 -
- drivers/iio/humidity/hid-sensor-humidity.c | 1 -
- drivers/iio/humidity/hts221_buffer.c       | 1 -
- drivers/iio/humidity/hts221_core.c         | 1 -
- drivers/iio/humidity/htu21.c               | 1 -
- drivers/iio/humidity/si7005.c              | 1 -
- drivers/iio/humidity/si7020.c              | 1 -
- 9 files changed, 9 deletions(-)
+ drivers/iio/imu/adis16400_core.c              | 1 -
+ drivers/iio/imu/adis16480.c                   | 1 -
+ drivers/iio/imu/adis_trigger.c                | 1 -
+ drivers/iio/imu/bmi160/bmi160_core.c          | 1 -
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    | 1 -
+ drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c | 1 -
+ drivers/iio/imu/kmx61.c                       | 3 ---
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c  | 2 --
+ 8 files changed, 11 deletions(-)
 
-diff --git a/drivers/iio/humidity/am2315.c b/drivers/iio/humidity/am2315.c
-index ff96b6d0fdae..7d8669dc6547 100644
---- a/drivers/iio/humidity/am2315.c
-+++ b/drivers/iio/humidity/am2315.c
-@@ -215,7 +215,6 @@ static int am2315_read_raw(struct iio_dev *indio_dev,
- }
- 
- static const struct iio_info am2315_info = {
--	.driver_module		= THIS_MODULE,
- 	.read_raw		= am2315_read_raw,
+diff --git a/drivers/iio/imu/adis16400_core.c b/drivers/iio/imu/adis16400_core.c
+index 9b697d35dbef..46a569005a13 100644
+--- a/drivers/iio/imu/adis16400_core.c
++++ b/drivers/iio/imu/adis16400_core.c
+@@ -833,7 +833,6 @@ static struct adis16400_chip_info adis16400_chips[] = {
  };
  
-diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
-index 2a22ad920333..df6bab40d6fa 100644
---- a/drivers/iio/humidity/dht11.c
-+++ b/drivers/iio/humidity/dht11.c
-@@ -284,7 +284,6 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
- }
- 
- static const struct iio_info dht11_iio_info = {
--	.driver_module		= THIS_MODULE,
- 	.read_raw		= dht11_read_raw,
- };
- 
-diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
-index 7851bd90ef64..d8438310b6d4 100644
---- a/drivers/iio/humidity/hdc100x.c
-+++ b/drivers/iio/humidity/hdc100x.c
-@@ -357,7 +357,6 @@ static const struct iio_info hdc100x_info = {
- 	.read_raw = hdc100x_read_raw,
- 	.write_raw = hdc100x_write_raw,
- 	.attrs = &hdc100x_attribute_group,
+ static const struct iio_info adis16400_info = {
+-	.driver_module = THIS_MODULE,
+ 	.read_raw = &adis16400_read_raw,
+ 	.write_raw = &adis16400_write_raw,
+ 	.update_scan_mode = adis16400_update_scan_mode,
+diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
+index 8cf84d3488b2..440c1580160c 100644
+--- a/drivers/iio/imu/adis16480.c
++++ b/drivers/iio/imu/adis16480.c
+@@ -720,7 +720,6 @@ static const struct iio_info adis16480_info = {
+ 	.read_raw = &adis16480_read_raw,
+ 	.write_raw = &adis16480_write_raw,
+ 	.update_scan_mode = adis_update_scan_mode,
 -	.driver_module = THIS_MODULE,
  };
  
- static int hdc100x_probe(struct i2c_client *client,
-diff --git a/drivers/iio/humidity/hid-sensor-humidity.c b/drivers/iio/humidity/hid-sensor-humidity.c
-index 6e09c1acfe51..beab6d6fd6e1 100644
---- a/drivers/iio/humidity/hid-sensor-humidity.c
-+++ b/drivers/iio/humidity/hid-sensor-humidity.c
-@@ -125,7 +125,6 @@ static int humidity_write_raw(struct iio_dev *indio_dev,
+ static int adis16480_stop_device(struct iio_dev *indio_dev)
+diff --git a/drivers/iio/imu/adis_trigger.c b/drivers/iio/imu/adis_trigger.c
+index f53e9a803a0e..0dd5a381be64 100644
+--- a/drivers/iio/imu/adis_trigger.c
++++ b/drivers/iio/imu/adis_trigger.c
+@@ -25,7 +25,6 @@ static int adis_data_rdy_trigger_set_state(struct iio_trigger *trig,
  }
  
- static const struct iio_info humidity_info = {
--	.driver_module = THIS_MODULE,
- 	.read_raw = &humidity_read_raw,
- 	.write_raw = &humidity_write_raw,
- };
-diff --git a/drivers/iio/humidity/hts221_buffer.c b/drivers/iio/humidity/hts221_buffer.c
-index ad5222295b2c..dbec5c535e64 100644
---- a/drivers/iio/humidity/hts221_buffer.c
-+++ b/drivers/iio/humidity/hts221_buffer.c
-@@ -37,7 +37,6 @@ static int hts221_trig_set_state(struct iio_trigger *trig, bool state)
- }
- 
- static const struct iio_trigger_ops hts221_trigger_ops = {
+ static const struct iio_trigger_ops adis_trigger_ops = {
 -	.owner = THIS_MODULE,
- 	.set_trigger_state = hts221_trig_set_state,
+ 	.set_trigger_state = &adis_data_rdy_trigger_set_state,
  };
  
-diff --git a/drivers/iio/humidity/hts221_core.c b/drivers/iio/humidity/hts221_core.c
-index 25fcb9993998..26a12bcd384c 100644
---- a/drivers/iio/humidity/hts221_core.c
-+++ b/drivers/iio/humidity/hts221_core.c
-@@ -587,7 +587,6 @@ static const struct attribute_group hts221_attribute_group = {
+diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
+index cfd225ed1c8d..c85659ca9507 100644
+--- a/drivers/iio/imu/bmi160/bmi160_core.c
++++ b/drivers/iio/imu/bmi160/bmi160_core.c
+@@ -482,7 +482,6 @@ static const struct attribute_group bmi160_attrs_group = {
  };
  
- static const struct iio_info hts221_info = {
+ static const struct iio_info bmi160_info = {
 -	.driver_module = THIS_MODULE,
- 	.attrs = &hts221_attribute_group,
- 	.read_raw = hts221_read_raw,
- 	.write_raw = hts221_write_raw,
-diff --git a/drivers/iio/humidity/htu21.c b/drivers/iio/humidity/htu21.c
-index 2c4b9be85a05..f5a2701ba6dd 100644
---- a/drivers/iio/humidity/htu21.c
-+++ b/drivers/iio/humidity/htu21.c
-@@ -175,7 +175,6 @@ static const struct iio_info htu21_info = {
- 	.read_raw = htu21_read_raw,
- 	.write_raw = htu21_write_raw,
- 	.attrs = &htu21_attribute_group,
--	.driver_module = THIS_MODULE,
+ 	.read_raw = bmi160_read_raw,
+ 	.write_raw = bmi160_write_raw,
+ 	.attrs = &bmi160_attrs_group,
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index 44830bce13df..db578e0faaab 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -795,7 +795,6 @@ static const struct attribute_group inv_attribute_group = {
  };
  
- static int htu21_probe(struct i2c_client *client,
-diff --git a/drivers/iio/humidity/si7005.c b/drivers/iio/humidity/si7005.c
-index 6297766e93d0..1fd19f035a5d 100644
---- a/drivers/iio/humidity/si7005.c
-+++ b/drivers/iio/humidity/si7005.c
-@@ -124,7 +124,6 @@ static const struct iio_chan_spec si7005_channels[] = {
- 
- static const struct iio_info si7005_info = {
- 	.read_raw = si7005_read_raw,
+ static const struct iio_info mpu_info = {
 -	.driver_module = THIS_MODULE,
+ 	.read_raw = &inv_mpu6050_read_raw,
+ 	.write_raw = &inv_mpu6050_write_raw,
+ 	.write_raw_get_fmt = &inv_write_raw_get_fmt,
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+index 540070f0a230..f963f9fc98c0 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+@@ -114,7 +114,6 @@ static int inv_mpu_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ }
+ 
+ static const struct iio_trigger_ops inv_mpu_trigger_ops = {
+-	.owner = THIS_MODULE,
+ 	.set_trigger_state = &inv_mpu_data_rdy_trigger_set_state,
  };
  
- static int si7005_probe(struct i2c_client *client,
-diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
-index 345a7656c5ef..1b2ec8df1a72 100644
---- a/drivers/iio/humidity/si7020.c
-+++ b/drivers/iio/humidity/si7020.c
-@@ -108,7 +108,6 @@ static const struct iio_chan_spec si7020_channels[] = {
+diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
+index 2e7dd5754a56..44b3f5397343 100644
+--- a/drivers/iio/imu/kmx61.c
++++ b/drivers/iio/imu/kmx61.c
+@@ -1003,7 +1003,6 @@ static int kmx61_mag_validate_trigger(struct iio_dev *indio_dev,
+ }
  
- static const struct iio_info si7020_info = {
- 	.read_raw = si7020_read_raw,
--	.driver_module = THIS_MODULE,
+ static const struct iio_info kmx61_acc_info = {
+-	.driver_module		= THIS_MODULE,
+ 	.read_raw		= kmx61_read_raw,
+ 	.write_raw		= kmx61_write_raw,
+ 	.attrs			= &kmx61_acc_attribute_group,
+@@ -1015,7 +1014,6 @@ static const struct iio_info kmx61_acc_info = {
  };
  
- static int si7020_probe(struct i2c_client *client,
+ static const struct iio_info kmx61_mag_info = {
+-	.driver_module		= THIS_MODULE,
+ 	.read_raw		= kmx61_read_raw,
+ 	.write_raw		= kmx61_write_raw,
+ 	.attrs			= &kmx61_mag_attribute_group,
+@@ -1087,7 +1085,6 @@ static int kmx61_trig_try_reenable(struct iio_trigger *trig)
+ static const struct iio_trigger_ops kmx61_trigger_ops = {
+ 	.set_trigger_state = kmx61_data_rdy_trigger_set_state,
+ 	.try_reenable = kmx61_trig_try_reenable,
+-	.owner = THIS_MODULE,
+ };
+ 
+ static irqreturn_t kmx61_event_handler(int irq, void *private)
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+index b485540da89e..d45d714acdd3 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+@@ -530,7 +530,6 @@ static const struct attribute_group st_lsm6dsx_acc_attribute_group = {
+ };
+ 
+ static const struct iio_info st_lsm6dsx_acc_info = {
+-	.driver_module = THIS_MODULE,
+ 	.attrs = &st_lsm6dsx_acc_attribute_group,
+ 	.read_raw = st_lsm6dsx_read_raw,
+ 	.write_raw = st_lsm6dsx_write_raw,
+@@ -548,7 +547,6 @@ static const struct attribute_group st_lsm6dsx_gyro_attribute_group = {
+ };
+ 
+ static const struct iio_info st_lsm6dsx_gyro_info = {
+-	.driver_module = THIS_MODULE,
+ 	.attrs = &st_lsm6dsx_gyro_attribute_group,
+ 	.read_raw = st_lsm6dsx_read_raw,
+ 	.write_raw = st_lsm6dsx_write_raw,
 -- 
 2.13.3
