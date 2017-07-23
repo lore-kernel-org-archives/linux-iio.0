@@ -4,52 +4,35 @@ To: linux-iio@vger.kernel.org
 Cc: Lars-Peter Clausen <lars@metafoo.de>,
 	Jonathan Cameron <jic23@kernel.org>,
 	Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 09/45] iio:common: drop assign iio_info.driver_module and iio_trigger_ops.owner
-Date: Sun, 23 Jul 2017 17:25:51 +0100
-Message-Id: <20170723162627.22534-10-Jonathan.Cameron@huawei.com>
+Subject: [PATCH 10/45] iio:counter:104-quad-8 drop assign iio_info.driver_module
+Date: Sun, 23 Jul 2017 17:25:52 +0100
+Message-Id: <20170723162627.22534-11-Jonathan.Cameron@huawei.com>
 In-Reply-To: <20170723162627.22534-1-Jonathan.Cameron@huawei.com>
 References: <20170723162627.22534-1-Jonathan.Cameron@huawei.com>
 List-ID: <linux-iio@vger.kernel.org>
 
 From: Jonathan Cameron <jic23@kernel.org>
 
-The equivalent of both of these are now done via macro magic when
+The equivalent is now done via macro magic when
 the relevant register calls are made.  The actual structure
 elements will shortly go away.
 
-Clearly this set jumps across multiple areas, but inherently it
-can't be grouped like the other sets in this series so I've done
-all the stuff in the common directory together.
-
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c | 1 -
- drivers/iio/common/hid-sensors/hid-sensor-trigger.c  | 1 -
- 2 files changed, 2 deletions(-)
+ drivers/iio/counter/104-quad-8.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-index 38e8783e4b05..ed8063f2da99 100644
---- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-+++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-@@ -185,7 +185,6 @@ static int cros_ec_sensors_write(struct iio_dev *indio_dev,
- static const struct iio_info ec_sensors_info = {
- 	.read_raw = &cros_ec_sensors_read,
- 	.write_raw = &cros_ec_sensors_write,
+diff --git a/drivers/iio/counter/104-quad-8.c b/drivers/iio/counter/104-quad-8.c
+index ba3d9030cd51..b56985078d8c 100644
+--- a/drivers/iio/counter/104-quad-8.c
++++ b/drivers/iio/counter/104-quad-8.c
+@@ -185,7 +185,6 @@ static int quad8_write_raw(struct iio_dev *indio_dev,
+ }
+ 
+ static const struct iio_info quad8_info = {
 -	.driver_module = THIS_MODULE,
+ 	.read_raw = quad8_read_raw,
+ 	.write_raw = quad8_write_raw
  };
- 
- static int cros_ec_sensors_probe(struct platform_device *pdev)
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-index 16ade0a0327b..1f967cce2714 100644
---- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-@@ -241,7 +241,6 @@ void hid_sensor_remove_trigger(struct hid_sensor_common *attrb)
- EXPORT_SYMBOL(hid_sensor_remove_trigger);
- 
- static const struct iio_trigger_ops hid_sensor_trigger_ops = {
--	.owner = THIS_MODULE,
- 	.set_trigger_state = &hid_sensor_data_rdy_trigger_set_state,
- };
- 
 -- 
 2.13.3
