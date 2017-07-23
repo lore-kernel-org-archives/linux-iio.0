@@ -1,20 +1,20 @@
-Return-Path: <SRS0=4nKA=6X=gmail.com=dmitry.torokhov@kernel.org>
+Return-Path: <SRS0=4T+O=62=linaro.org=linus.walleij@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <1500555312.2354.75.camel@pengutronix.de>
+In-Reply-To: <CAKdAkRTx8jd8UToz5_EgMmdW3V47i2uo++YvVB_yzytqSA=P1Q@mail.gmail.com>
 References: <20170719152646.25903-1-p.zabel@pengutronix.de>
  <20170719211515.46a1196c@windsurf> <1500543415.2354.37.camel@pengutronix.de>
- <20170720123640.43c2ce01@windsurf> <1500555312.2354.75.camel@pengutronix.de>
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Date: Thu, 20 Jul 2017 13:46:17 -0700
-Message-ID: <CAKdAkRTx8jd8UToz5_EgMmdW3V47i2uo++YvVB_yzytqSA=P1Q@mail.gmail.com>
+ <20170720123640.43c2ce01@windsurf> <1500555312.2354.75.camel@pengutronix.de> <CAKdAkRTx8jd8UToz5_EgMmdW3V47i2uo++YvVB_yzytqSA=P1Q@mail.gmail.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Sun, 23 Jul 2017 20:41:48 +0200
+Message-ID: <CACRpkdaXOv7mX+b-q1K34CB5w0SWPXCKa21wHaxL7qjf91PJXQ@mail.gmail.com>
 Subject: Re: [PATCH 000/102] Convert drivers to explicit reset API
-To: Philipp Zabel <p.zabel@pengutronix.de>
-Cc: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
-	lkml <linux-kernel@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-	Prashant Gaikwad <pgaikwad@nvidia.com>, Heiko Stuebner <heiko@sntech.de>, Peter Chen <Peter.Chen@nxp.com>,
-	Linus Walleij <linus.walleij@linaro.org>, DRI <dri-devel@lists.freedesktop.org>,
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Philipp Zabel <p.zabel@pengutronix.de>,
+	Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, lkml <linux-kernel@vger.kernel.org>,
+	Andrew Lunn <andrew@lunn.ch>, Prashant Gaikwad <pgaikwad@nvidia.com>, Heiko Stuebner <heiko@sntech.de>,
+	Peter Chen <Peter.Chen@nxp.com>, DRI <dri-devel@lists.freedesktop.org>,
 	Marc Dietrich <marvin24@gmx.de>, Rakesh Iyer <riyer@nvidia.com>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-clk@vger.kernel.org,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-clk <linux-clk@vger.kernel.org>,
 	Wim Van Sebroeck <wim@iguana.be>, Wolfram Sang <wsa@the-dreams.de>,
 	Xinliang Liu <z.liuxinliang@hisilicon.com>, Chanwoo Choi <cw00.choi@samsung.com>,
 	Alan Stern <stern@rowland.harvard.edu>, Jiri Slaby <jslaby@suse.com>,
@@ -23,8 +23,9 @@ Cc: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
 	Thomas Gleixner <tglx@linutronix.de>, Vincent Abriou <vincent.abriou@st.com>, Bin Liu <b-liu@ti.com>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, USB list <linux-usb@vger.kernel.org>,
 	linux-wireless <linux-wireless@vger.kernel.org>, Ralf Baechle <ralf@linux-mips.org>,
-	linux-spi <linux-spi@vger.kernel.org>, linux-crypto@vger.kernel.org,
-	Tejun Heo <tj@kernel.org>, "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+	linux-spi <linux-spi@vger.kernel.org>,
+	"linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, Tejun Heo <tj@kernel.org>,
+	"alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
 	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, David Airlie <airlied@linux.ie>,
 	nouveau@lists.freedesktop.org, Philippe Cornu <philippe.cornu@st.com>,
 	Kalle Valo <kvalo@qca.qualcomm.com>, Laxman Dewangan <ldewangan@nvidia.com>,
@@ -46,9 +47,10 @@ Cc: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
 	Patrice Chotard <patrice.chotard@st.com>, Stanimir Varbanov <svarbanov@mm-sol.com>,
 	Kyungmin Park <kyungmin.park@samsung.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>,
 	Hartmut Knaack <knaack.h@gmx.de>, Jonathan Cameron <jic23@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>,
-	linux-iio@vger.kernel.org, Linux PCI <linux-pci@vger.kernel.org>,
-	Shawn Lin <shawn.lin@rock-chips.com>, linux-tegra@vger.kernel.org,
-	linux-mtd@lists.infradead.org,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Linux PCI <linux-pci@vger.kernel.org>,
+	Shawn Lin <shawn.lin@rock-chips.com>,
+	"linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+	"linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>,
 	Benjamin Gaignard <benjamin.gaignard@linaro.org>, Florian Fainelli <f.fainelli@gmail.com>,
 	Jonathan Corbet <corbet@lwn.net>, Xinwei Kong <kong.kongxinwei@hisilicon.com>,
 	ath10k@lists.infradead.org, Kishon Vijay Abraham I <kishon@ti.com>, Chen-Yu Tsai <wens@csie.org>,
@@ -64,14 +66,15 @@ Cc: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
 	linux-remoteproc@vger.kernel.org,
 	Bjorn Andersson <bjorn.andersson@linaro.org>,
 	"linux-ide@vger.kernel.org" <linux-ide@vger.kernel.org>, Lee Jones <lee.jones@linaro.org>,
-	devel@driverdev.osuosl.org, Yannick Fertre <yannick.fertre@st.com>,
+	"devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>, Yannick Fertre <yannick.fertre@st.com>,
 	Ryder Lee <ryder.lee@mediatek.com>, Herbert Xu <herbert@gondor.apana.org.au>,
 	Richard Weinberger <richard@nod.at>, Jaehoon Chung <jh80.chung@samsung.com>,
 	Marek Vasut <marek.vasut@gmail.com>, linux-serial <linux-serial@vger.kernel.org>,
 	Zhang Rui <rui.zhang@intel.com>, Alan Tull <atull@kernel.org>,
 	John Youn <johnyoun@synopsys.com>, Eduardo Valentin <edubezval@gmail.com>, dmaengine@vger.kernel.org,
-	linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>,
-	Mark Yao <mark.yao@rock-chips.com>, Moritz Fischer <moritz.fischer@ettus.com>,
+	"moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>,
+	Matthias Brugger <matthias.bgg@gmail.com>, Mark Yao <mark.yao@rock-chips.com>,
+	Moritz Fischer <moritz.fischer@ettus.com>,
 	Vivien Didelot <vivien.didelot@savoirfairelinux.com>, netdev <netdev@vger.kernel.org>,
 	Peter De Schrijver <pdeschrijver@nvidia.com>, Stephen Boyd <sboyd@codeaurora.org>,
 	Adrian Hunter <adrian.hunter@intel.com>, Vinod Koul <vinod.koul@intel.com>,
@@ -80,57 +83,39 @@ Cc: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
 Content-Type: text/plain; charset="UTF-8"
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, Jul 20, 2017 at 5:55 AM, Philipp Zabel <p.zabel@pengutronix.de> wrote:
-> Hi Thomas,
->
-> On Thu, 2017-07-20 at 12:36 +0200, Thomas Petazzoni wrote:
->> Hello,
->>
->> On Thu, 20 Jul 2017 11:36:55 +0200, Philipp Zabel wrote:
->>
->> > > I don't know if it has been discussed in the past, so forgive me if it
->> > > has been. Have you considered adding a "int flags" argument to the
->> > > existing reset_control_get_*() functions, rather than introducing
->> > > separate exclusive variants ?
->> > >
->> > > Indeed, with a "int flags" argument you could in the future add more
->> > > variants/behaviors without actually multiplying the number of
->> > > functions. Something like the "flags" argument for request_irq() for
->> > > example.
->> >
->> > I can't find the discussion right now, but I remember we had talked
->> > about this in the past.
->> > Behind the scenes, all the inline API functions already call common
->> > entry points with flags (well, currently separate bool parameters for
->> > shared and optional).
->> > One reason against exposing those as an int flags in the user facing API
->> > is the possibility to accidentally provide a wrong value.
->>
->> This is a quite strange argument. You could also accidentally use the
->> wrong variant of the function, just like you could use the wrong flag.
->
-> You can't accidentally use no flag at all or a completely bogus value
-> with the "plethora of inline functions" variant.
->
->> Once again, the next time you have another parameter for those reset
->> functions, beyond the exclusive/shared variant, you will multiply again
->> by two the number of functions ? You already have the  exclusive/shared
->> and optional/mandatory variants, so 4 variants. When you'll add a new
->> parameter, you'll have 8 variants. Doesn't seem really good.
->
-> I'd rather avoid adding more variants, if possible. The complexity
-> increases regardless of whether the API is expressed as a bunch of
-> functions or as a single function with a bunch of flags.
->
->> What about reset_control_get(struct device *, const char *, int flags)
->> to replace all those variants ?
->
-> While I like how this looks, unfortunately (devm_)reset_control_get
-> already exists without the flags, so we can't change to that with a
-> gentle transition.
+On Thu, Jul 20, 2017 at 10:46 PM, Dmitry Torokhov
+<dmitry.torokhov@gmail.com> wrote:
+> On Thu, Jul 20, 2017 at 5:55 AM, Philipp Zabel <p.zabel@pengutronix.de> wrote:
 
-This was done for gpiod_get() and its flags argument with horrifying
-#define-ry, which thankfully was completely hidden from users.
+>>> What about reset_control_get(struct device *, const char *, int flags)
+>>> to replace all those variants ?
+>>
+>> While I like how this looks, unfortunately (devm_)reset_control_get
+>> already exists without the flags, so we can't change to that with a
+>> gentle transition.
+>
+> This was done for gpiod_get() and its flags argument with horrifying
+> #define-ry, which thankfully was completely hidden from users.
 
--- 
-Dmitry
+For your reference:
+
+commit bae48da237fcedd7ad09569025483b988635efb7
+"gpiolib: add gpiod_get() and gpiod_put() functions"
+
+commit 39b2bbe3d715cf5013b5c48695ccdd25bd3bf120
+"gpio: add flags argument to gpiod_get*() functions"
+
+commit 0dbc8b7afef6e4fddcfebcbacbeb269a0a3b06d5
+"gpio: move varargs hack outside #ifdef GPIOLIB"
+
+commit b17d1bf16cc72a374a48d748940f700009d40ff4
+"gpio: make flags mandatory for gpiod_get functions"
+
+Retrospectively ... was that really a good idea... it was a LOT
+of trouble to add a flag, maybe it had been better to try and
+just slam all users in a single go.
+
+But it worked.
+
+Yours,
+Linus Walleij
