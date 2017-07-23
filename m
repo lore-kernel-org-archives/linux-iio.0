@@ -1,30 +1,42 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:47308 "EHLO
-        mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751000AbdGXEE1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 24 Jul 2017 00:04:27 -0400
-Date: Sun, 23 Jul 2017 21:04:21 -0700
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: [PULL] First round of fixes for IIO in the 4.13 cycle
-Message-ID: <20170724040421.GA10076@kroah.com>
-References: <20170723132746.7cfe718a@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20170723132746.7cfe718a@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=tGfR=62=aosc.io=icenowy@kernel.org>
+From: Icenowy Zheng <icenowy@aosc.io>
+To: Lee Jones <lee.jones@linaro.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	Chen-Yu Tsai <wens@csie.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Quentin Schulz <quentin.schulz@free-electrons.com>
+Cc: devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-sunxi@googlegroups.com,
+	Icenowy Zheng <icenowy@aosc.io>
+Subject: [PATCH v3 0/5] IIO-based thermal sensor driver for Allwinner H3 SoC
+Date: Sun, 23 Jul 2017 22:13:49 +0800
+Message-Id: <20170723141354.42646-1-icenowy@aosc.io>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, Jul 23, 2017 at 01:27:46PM +0100, Jonathan Cameron wrote:
-> The following changes since commit 41f1830f5a7af77cf5c86359aba3cbd706687e52:
-> 
->   Linux 4.12-rc6 (2017-06-19 22:19:37 +0800)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.13a
+Allwiner H3 SoC has a thermal sensor, which is a large refactored version of
+the old Allwinner "GPADC" (although it have already only thermal part left
+in A33).
 
-Pulled and pushed out, thanks,
+This patch tried to add support for the sensor in H3 based on the A33 thermal
+sensor driver by Quentin Schulz, which is already merged.
 
-greg k-h
+Icenowy Zheng (5):
+  dt-bindings: update the Allwinner GPADC device tree binding for H3
+  iio: adc: sun4i-gpadc-iio: rename A23/A33-specified registers to
+    contain A23
+  iio: adc: sun4i-gpadc-iio: add support for H3 thermal sensor
+  ARM: sun8i: h3: add support for the thermal sensor in H3
+  ARM: sun8i: h3: add partial CPU thermal zone
+
+ .../devicetree/bindings/mfd/sun4i-gpadc.txt        |  25 ++-
+ arch/arm/boot/dts/sun8i-h3.dtsi                    |  26 +++
+ drivers/iio/adc/sun4i-gpadc-iio.c                  | 228 +++++++++++++++++----
+ include/linux/mfd/sun4i-gpadc.h                    |  33 ++-
+ 4 files changed, 267 insertions(+), 45 deletions(-)
+
+-- 
+2.13.0
