@@ -1,39 +1,41 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f47.google.com ([209.85.215.47]:33871 "EHLO
-        mail-lf0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753436AbdGSJ2E (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Jul 2017 05:28:04 -0400
-Received: by mail-lf0-f47.google.com with SMTP id t72so30311380lff.1
-        for <linux-iio@vger.kernel.org>; Wed, 19 Jul 2017 02:28:02 -0700 (PDT)
-Date: Wed, 19 Jul 2017 11:28:00 +0200
-From: Niklas =?iso-8859-1?Q?S=F6derlund?=
-        <niklas.soderlund@ragnatech.se>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53114 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751367AbdGWLWv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 23 Jul 2017 07:22:51 -0400
+Date: Sun, 23 Jul 2017 12:22:42 +0100
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 To: Wolfram Sang <wsa+renesas@sang-engineering.com>
 Cc: linux-i2c@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
         linux-media@vger.kernel.org, linux-input@vger.kernel.org,
         linux-iio@vger.kernel.org, alsa-devel@alsa-project.org,
         linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v3 1/4] i2c: add helpers to ease DMA handling
-Message-ID: <20170719092800.GL28538@bigcity.dyn.berto.se>
-References: <20170718102339.28726-1-wsa+renesas@sang-engineering.com>
- <20170718102339.28726-2-wsa+renesas@sang-engineering.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Message-ID: <20170723122242.7fd0edf4@jic23.retrosnub.co.uk>
 In-Reply-To: <20170718102339.28726-2-wsa+renesas@sang-engineering.com>
+References: <20170718102339.28726-1-wsa+renesas@sang-engineering.com>
+        <20170718102339.28726-2-wsa+renesas@sang-engineering.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Wolfram,
+On Tue, 18 Jul 2017 12:23:36 +0200
+Wolfram Sang <wsa+renesas@sang-engineering.com> wrote:
 
-On 2017-07-18 12:23:36 +0200, Wolfram Sang wrote:
 > One helper checks if DMA is suitable and optionally creates a bounce
 > buffer, if not. The other function returns the bounce buffer and makes
 > sure the data is properly copied back to the message.
 > 
 > Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+My knowledge of the exact requirements for dma on all platforms isn't
+all that good.  Mostly it's based around the assumption that if one
+forces a heap allocation and makes sure nothing else is in the
+cacheline all is good.
 
-Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
+I like the basic idea of this patch set a lot btw!
 
+Jonathan
 > ---
 > Changes since v2:
 > 
@@ -113,6 +115,22 @@ Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
 > +			return -EFAULT;
 > +		}
 > +	}
+I'm trying to get my head around whether this is a sufficient set of conditions
+for a dma safe buffer and I'm not sure it is.
+
+We go to a lot of effort with SPI buffers to ensure they are in their own cache
+lines.  Do we not need to do the same here?  The issue would be the
+classic case of embedding a buffer inside a larger structure which is on
+the stack.  Need the magic of __cacheline_aligned to force it into it's
+own line for devices with dma-incoherent caches.
+DMA-API-HOWTO.txt (not read that for a while at it is a rather good
+at describing this stuff these days!)
+
+So that one is easy enough to check by checking if it is cache line aligned,
+but what do you do to know there is nothing much after it?
+
+Not sure there is a way around this short of auditing i2c drivers to
+change any that do this.
 > +
 > +	return 0;
 > +}
@@ -155,10 +173,4 @@ Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
 >  int i2c_handle_smbus_host_notify(struct i2c_adapter *adap, unsigned short addr);
 >  /**
 >   * module_i2c_driver() - Helper macro for registering a modular I2C driver
-> -- 
-> 2.11.0
-> 
 
--- 
-Regards,
-Niklas Söderlund
