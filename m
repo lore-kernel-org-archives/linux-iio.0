@@ -3,34 +3,36 @@ From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 To: linux-iio@vger.kernel.org
 Cc: Lars-Peter Clausen <lars@metafoo.de>,
 	Jonathan Cameron <jic23@kernel.org>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 40/45] iio:adc:max9611: Drop explicit setting of the i2c module owner.
-Date: Sun, 23 Jul 2017 17:26:22 +0100
-Message-Id: <20170723162627.22534-41-Jonathan.Cameron@huawei.com>
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+Subject: [PATCH 41/45] iio:adc:ti-ads8688: Drop manual setting of the driver owner field.
+Date: Sun, 23 Jul 2017 17:26:23 +0100
+Message-Id: <20170723162627.22534-42-Jonathan.Cameron@huawei.com>
 In-Reply-To: <20170723162627.22534-1-Jonathan.Cameron@huawei.com>
 References: <20170723162627.22534-1-Jonathan.Cameron@huawei.com>
 List-ID: <linux-iio@vger.kernel.org>
 
 From: Jonathan Cameron <jic23@kernel.org>
 
-This has been handled by the i2c core for some time.
+This has been handled by the spi core for some time now.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
 ---
- drivers/iio/adc/max9611.c | 1 -
+ drivers/iio/adc/ti-ads8688.c | 1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/drivers/iio/adc/max9611.c b/drivers/iio/adc/max9611.c
-index 9edfbabf4e4d..0538ff8c4ac1 100644
---- a/drivers/iio/adc/max9611.c
-+++ b/drivers/iio/adc/max9611.c
-@@ -572,7 +572,6 @@ static int max9611_probe(struct i2c_client *client,
- static struct i2c_driver max9611_driver = {
+diff --git a/drivers/iio/adc/ti-ads8688.c b/drivers/iio/adc/ti-ads8688.c
+index ff4756352ac1..079f133144b0 100644
+--- a/drivers/iio/adc/ti-ads8688.c
++++ b/drivers/iio/adc/ti-ads8688.c
+@@ -473,7 +473,6 @@ MODULE_DEVICE_TABLE(of, ads8688_of_match);
+ static struct spi_driver ads8688_driver = {
  	.driver = {
- 		   .name = DRIVER_NAME,
--		   .owner = THIS_MODULE,
- 		   .of_match_table = max9611_of_table,
+ 		.name	= "ads8688",
+-		.owner	= THIS_MODULE,
  	},
- 	.probe = max9611_probe,
+ 	.probe		= ads8688_probe,
+ 	.remove		= ads8688_remove,
 -- 
 2.13.3
