@@ -12,31 +12,75 @@ Cc: devicetree@vger.kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-sunxi@googlegroups.com,
 	Icenowy Zheng <icenowy@aosc.io>
-Subject: [PATCH v3 0/5] IIO-based thermal sensor driver for Allwinner H3 SoC
-Date: Sun, 23 Jul 2017 22:13:49 +0800
-Message-Id: <20170723141354.42646-1-icenowy@aosc.io>
+Subject: [PATCH v3 1/5] dt-bindings: update the Allwinner GPADC device tree binding for H3
+Date: Sun, 23 Jul 2017 22:13:50 +0800
+Message-Id: <20170723141354.42646-2-icenowy@aosc.io>
+In-Reply-To: <20170723141354.42646-1-icenowy@aosc.io>
+References: <20170723141354.42646-1-icenowy@aosc.io>
 List-ID: <linux-iio@vger.kernel.org>
 
-Allwiner H3 SoC has a thermal sensor, which is a large refactored version of
-the old Allwinner "GPADC" (although it have already only thermal part left
-in A33).
+Allwinner H3 features a thermal sensor like the one in A33, but has its
+register re-arranged, the clock divider moved to CCU (originally the
+clock divider is in ADC) and added a pair of bus clock and reset.
 
-This patch tried to add support for the sensor in H3 based on the A33 thermal
-sensor driver by Quentin Schulz, which is already merged.
+Update the binding document to cover H3.
 
-Icenowy Zheng (5):
-  dt-bindings: update the Allwinner GPADC device tree binding for H3
-  iio: adc: sun4i-gpadc-iio: rename A23/A33-specified registers to
-    contain A23
-  iio: adc: sun4i-gpadc-iio: add support for H3 thermal sensor
-  ARM: sun8i: h3: add support for the thermal sensor in H3
-  ARM: sun8i: h3: add partial CPU thermal zone
+Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+---
+Changes in v3:
+- Clock name changes.
+- Example node name changes.
+- Add interupts (not yet used by the driver).
 
- .../devicetree/bindings/mfd/sun4i-gpadc.txt        |  25 ++-
- arch/arm/boot/dts/sun8i-h3.dtsi                    |  26 +++
- drivers/iio/adc/sun4i-gpadc-iio.c                  | 228 +++++++++++++++++----
- include/linux/mfd/sun4i-gpadc.h                    |  33 ++-
- 4 files changed, 267 insertions(+), 45 deletions(-)
+ .../devicetree/bindings/mfd/sun4i-gpadc.txt        | 25 ++++++++++++++++++++--
+ 1 file changed, 23 insertions(+), 2 deletions(-)
 
+diff --git a/Documentation/devicetree/bindings/mfd/sun4i-gpadc.txt b/Documentation/devicetree/bindings/mfd/sun4i-gpadc.txt
+index badff3611a98..986265c59b2a 100644
+--- a/Documentation/devicetree/bindings/mfd/sun4i-gpadc.txt
++++ b/Documentation/devicetree/bindings/mfd/sun4i-gpadc.txt
+@@ -4,12 +4,21 @@ The Allwinner SoCs all have an ADC that can also act as a thermal sensor
+ and sometimes as a touchscreen controller.
+ 
+ Required properties:
+-  - compatible: "allwinner,sun8i-a33-ths",
++  - compatible: must contain one of the following compatibles:
++		- "allwinner,sun8i-a33-ths"
++		- "allwinner,sun8i-h3-ths"
+   - reg: mmio address range of the chip,
+   - #thermal-sensor-cells: shall be 0,
+   - #io-channel-cells: shall be 0,
+ 
+-Example:
++Required properties for the following compatibles:
++		- "allwinner,sun8i-h3-ths"
++  - clocks: the bus clock and the input clock of the ADC,
++  - clock-names: should be "bus" and "mod",
++  - resets: the bus reset of the ADC,
++  - interrupts: the sampling interrupt of the ADC,
++
++Example for A33:
+ 	ths: ths@01c25000 {
+ 		compatible = "allwinner,sun8i-a33-ths";
+ 		reg = <0x01c25000 0x100>;
+@@ -17,6 +26,18 @@ Example:
+ 		#io-channel-cells = <0>;
+ 	};
+ 
++Example for H3:
++	ths: thermal-sensor@1c25000 {
++		compatible = "allwinner,sun8i-h3-ths";
++		reg = <0x01c25000 0x400>;
++		clocks = <&ccu CLK_BUS_THS>, <&ccu CLK_THS>;
++		clock-names = "bus", "mod";
++		resets = <&ccu RST_BUS_THS>;
++		interrupts = <GIC_SPI 31 IRQ_TYPE_LEVEL_HIGH>;
++		#thermal-sensor-cells = <0>;
++		#io-channel-cells = <0>;
++	};
++
+ sun4i, sun5i and sun6i SoCs are also supported via the older binding:
+ 
+ sun4i resistive touchscreen controller
 -- 
 2.13.0
