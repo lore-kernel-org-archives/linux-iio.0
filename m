@@ -1,39 +1,38 @@
-Return-Path: <SRS0=UbNB=62=huawei.com=Jonathan.Cameron@kernel.org>
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To: linux-iio@vger.kernel.org
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 45/45] staging:iio:docs: drop setting of THIS_MODULE from staging docs.
-Date: Sun, 23 Jul 2017 17:26:27 +0100
-Message-Id: <20170723162627.22534-46-Jonathan.Cameron@huawei.com>
-In-Reply-To: <20170723162627.22534-1-Jonathan.Cameron@huawei.com>
-References: <20170723162627.22534-1-Jonathan.Cameron@huawei.com>
+Return-Path: <SRS0=bqw6=63=st.com=fabrice.gasnier@kernel.org>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+To: <jic23@kernel.org>, <robh+dt@kernel.org>
+CC: <linux@armlinux.org.uk>, <mark.rutland@arm.com>,
+        <mcoquelin.stm32@gmail.com>, <alexandre.torgue@st.com>,
+        <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
+        <fabrice.gasnier@st.com>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 0/3] Allow to tune sampling time on STM32 ADC
+Date: Mon, 24 Jul 2017 18:10:37 +0200
+Message-ID: <1500912640-23927-1-git-send-email-fabrice.gasnier@st.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-From: Jonathan Cameron <jic23@kernel.org>
-
-These docs need to be cleaned up properly, but for now lets drop
-this entry as it is definitely no longer true.
-
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+STM32 ADC allows each channel to be sampled with a different sampling
+time. This series fixes common clock rate and adds optional device
+tree property, so minimum sampling time can be tuned. This is done via
+device tree as it's tightly coupled with hardware (analog source).
 ---
- drivers/staging/iio/Documentation/device.txt | 3 ---
- 1 file changed, 3 deletions(-)
+Changes in v2:
+- Better describe fix patch
+- Use 'st,min-sample-time-nsecs' instead of 'min-sample-time'.
+- Add a comment on of_property_read_u32_index() use.
 
-diff --git a/drivers/staging/iio/Documentation/device.txt b/drivers/staging/iio/Documentation/device.txt
-index 54ef0deed28f..ec42544a46aa 100644
---- a/drivers/staging/iio/Documentation/device.txt
-+++ b/drivers/staging/iio/Documentation/device.txt
-@@ -26,9 +26,6 @@ Then fill in the following:
- 	pointer to a structure with elements that tend to be fixed for
- 	large sets of different parts supported by a given driver.
- 	This contains:
--	* info->driver_module:
--		Set to THIS_MODULE. Used to ensure correct ownership
--		of various resources allocate by the core.
- 	* info->event_attrs:
- 		Attributes used to enable / disable hardware events.
- 	* info->attrs:
+Fabrice Gasnier (3):
+  iio: adc: stm32: fix common clock rate
+  dt-bindings: iio: adc: stm32: add optional st,min-sample-time-nsecs
+  iio: adc: stm32: add optional st,min-sample-time-nsecs
+
+ .../devicetree/bindings/iio/adc/st,stm32-adc.txt   |   5 +
+ drivers/iio/adc/stm32-adc-core.c                   |  10 +-
+ drivers/iio/adc/stm32-adc.c                        | 140 ++++++++++++++++++++-
+ 3 files changed, 146 insertions(+), 9 deletions(-)
+
 -- 
-2.13.3
+1.9.1
