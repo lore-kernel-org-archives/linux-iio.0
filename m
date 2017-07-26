@@ -6,124 +6,61 @@ To: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <david@lechnology.com>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/2] iio: adc: ti-ads7951: Allow to use on ACPI platforms
-Date: Wed, 26 Jul 2017 18:59:08 +0300
-Message-Id: <20170726155909.14497-1-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 2/2] iio: adc: ti-ads7950: Add OF device ID table
+Date: Wed, 26 Jul 2017 18:59:09 +0300
+Message-Id: <20170726155909.14497-2-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20170726155909.14497-1-andriy.shevchenko@linux.intel.com>
+References: <20170726155909.14497-1-andriy.shevchenko@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-ACPI enabled platforms do not have a mean of regulators. Instead we use
-hard coded voltage value for reference pin. When value is 0 (default) we
-fall back to request a regulator.
+The driver doesn't have a struct of_device_id table but supported devices
+are registered via Device Trees. This is working on the assumption that a
+SPI device registered via OF will always match a legacy SPI device ID and
+that the MODALIAS reported will always be of the form spi:<device>.
+
+There is an ACPI method to enumerate such devices via specific ACPI ID
+and use of compatible strings. It will not work for the drivers which
+have no OF match ID table present.
+
+Besides this could change in the future so the correct approach is to
+have an OF device ID table if the devices are registered via OF.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/iio/adc/ti-ads7950.c | 51 ++++++++++++++++++++++++++++++--------------
- 1 file changed, 35 insertions(+), 16 deletions(-)
+ drivers/iio/adc/ti-ads7950.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
 diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
-index 16a06633332c..44d2a3692614 100644
+index 44d2a3692614..c67f2725c2bb 100644
 --- a/drivers/iio/adc/ti-ads7950.c
 +++ b/drivers/iio/adc/ti-ads7950.c
-@@ -21,6 +21,7 @@
-  * GNU General Public License for more details.
-  */
+@@ -494,9 +494,27 @@ static const struct spi_device_id ti_ads7950_id[] = {
+ };
+ MODULE_DEVICE_TABLE(spi, ti_ads7950_id);
  
-+#include <linux/acpi.h>
- #include <linux/bitops.h>
- #include <linux/device.h>
- #include <linux/err.h>
-@@ -37,6 +38,12 @@
- #include <linux/iio/trigger_consumer.h>
- #include <linux/iio/triggered_buffer.h>
- 
-+/*
-+ * In case of ACPI, we use the 5000 mV as default for the reference pin.
-+ * Device tree users encode that via the vref-supply regulator.
-+ */
-+#define TI_ADS7950_VA_MV_ACPI_DEFAULT	5000
++static const struct of_device_id ads7950_of_table[] = {
++	{ .compatible = "ti,ads7950", .data = &ti_ads7950_chip_info[TI_ADS7950] },
++	{ .compatible = "ti,ads7951", .data = &ti_ads7950_chip_info[TI_ADS7951] },
++	{ .compatible = "ti,ads7952", .data = &ti_ads7950_chip_info[TI_ADS7952] },
++	{ .compatible = "ti,ads7953", .data = &ti_ads7950_chip_info[TI_ADS7953] },
++	{ .compatible = "ti,ads7954", .data = &ti_ads7950_chip_info[TI_ADS7954] },
++	{ .compatible = "ti,ads7955", .data = &ti_ads7950_chip_info[TI_ADS7955] },
++	{ .compatible = "ti,ads7956", .data = &ti_ads7950_chip_info[TI_ADS7956] },
++	{ .compatible = "ti,ads7957", .data = &ti_ads7950_chip_info[TI_ADS7957] },
++	{ .compatible = "ti,ads7958", .data = &ti_ads7950_chip_info[TI_ADS7958] },
++	{ .compatible = "ti,ads7959", .data = &ti_ads7950_chip_info[TI_ADS7959] },
++	{ .compatible = "ti,ads7960", .data = &ti_ads7950_chip_info[TI_ADS7960] },
++	{ .compatible = "ti,ads7961", .data = &ti_ads7950_chip_info[TI_ADS7961] },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, ads7950_of_table);
 +
- #define TI_ADS7950_CR_MANUAL	BIT(12)
- #define TI_ADS7950_CR_WRITE	BIT(11)
- #define TI_ADS7950_CR_CHAN(ch)	((ch) << 7)
-@@ -58,6 +65,7 @@ struct ti_ads7950_state {
- 	struct spi_message	scan_single_msg;
- 
- 	struct regulator	*reg;
-+	unsigned int		vref_mv;
- 
- 	unsigned int		settings;
- 
-@@ -305,11 +313,15 @@ static int ti_ads7950_get_range(struct ti_ads7950_state *st)
- {
- 	int vref;
- 
--	vref = regulator_get_voltage(st->reg);
--	if (vref < 0)
--		return vref;
-+	if (st->vref_mv) {
-+		vref = st->vref_mv;
-+	} else {
-+		vref = regulator_get_voltage(st->reg);
-+		if (vref < 0)
-+			return vref;
- 
--	vref /= 1000;
-+		vref /= 1000;
-+	}
- 
- 	if (st->settings & TI_ADS7950_CR_RANGE_5V)
- 		vref *= 2;
-@@ -411,16 +423,20 @@ static int ti_ads7950_probe(struct spi_device *spi)
- 	spi_message_init_with_transfers(&st->scan_single_msg,
- 					st->scan_single_xfer, 3);
- 
--	st->reg = devm_regulator_get(&spi->dev, "vref");
--	if (IS_ERR(st->reg)) {
--		dev_err(&spi->dev, "Failed get get regulator \"vref\"\n");
--		return PTR_ERR(st->reg);
--	}
--
--	ret = regulator_enable(st->reg);
--	if (ret) {
--		dev_err(&spi->dev, "Failed to enable regulator \"vref\"\n");
--		return ret;
-+	if (ACPI_COMPANION(&spi->dev)) {
-+		st->vref_mv = TI_ADS7950_VA_MV_ACPI_DEFAULT;
-+	} else {
-+		st->reg = devm_regulator_get(&spi->dev, "vref");
-+		if (IS_ERR(st->reg)) {
-+			dev_err(&spi->dev, "Failed get get regulator \"vref\"\n");
-+			return PTR_ERR(st->reg);
-+		}
-+
-+		ret = regulator_enable(st->reg);
-+		if (ret) {
-+			dev_err(&spi->dev, "Failed to enable regulator \"vref\"\n");
-+			return ret;
-+		}
- 	}
- 
- 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-@@ -441,7 +457,8 @@ static int ti_ads7950_probe(struct spi_device *spi)
- error_cleanup_ring:
- 	iio_triggered_buffer_cleanup(indio_dev);
- error_disable_reg:
--	regulator_disable(st->reg);
-+	if (!st->vref_mv)
-+		regulator_disable(st->reg);
- 
- 	return ret;
- }
-@@ -453,7 +470,9 @@ static int ti_ads7950_remove(struct spi_device *spi)
- 
- 	iio_device_unregister(indio_dev);
- 	iio_triggered_buffer_cleanup(indio_dev);
--	regulator_disable(st->reg);
-+
-+	if (!st->vref_mv)
-+		regulator_disable(st->reg);
- 
- 	return 0;
- }
+ static struct spi_driver ti_ads7950_driver = {
+ 	.driver = {
+ 		.name	= "ads7950",
++		.of_match_table = ads7950_of_table,
+ 	},
+ 	.probe		= ti_ads7950_probe,
+ 	.remove		= ti_ads7950_remove,
 -- 
 2.13.2
