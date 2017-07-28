@@ -1,117 +1,67 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:37922 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750817AbdG3NcC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 30 Jul 2017 09:32:02 -0400
-Date: Sun, 30 Jul 2017 14:31:58 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <david@lechnology.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] iio: adc: ti-ads7950: Allow to use on ACPI
- platforms
-Message-ID: <20170730143158.3b907e8f@kernel.org>
-In-Reply-To: <9d74cad7-be8e-9893-58bd-9fdd50298723@lechnology.com>
+Return-Path: <SRS0=Bg67=67=linux.intel.com=andriy.shevchenko@kernel.org>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	linux-iio@vger.kernel.org,
+	David Lechner <david@lechnology.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 2/2] iio: adc: ti-ads7950: Add OF device ID table
+Date: Sat, 29 Jul 2017 01:20:15 +0300
+Message-Id: <20170728222015.43574-3-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20170728222015.43574-1-andriy.shevchenko@linux.intel.com>
 References: <20170728222015.43574-1-andriy.shevchenko@linux.intel.com>
-        <20170728222015.43574-2-andriy.shevchenko@linux.intel.com>
-        <9d74cad7-be8e-9893-58bd-9fdd50298723@lechnology.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, 29 Jul 2017 20:27:13 -0500
-David Lechner <david@lechnology.com> wrote:
+The driver doesn't have a struct of_device_id table but supported devices
+are registered via Device Trees. This is working on the assumption that a
+SPI device registered via OF will always match a legacy SPI device ID and
+that the MODALIAS reported will always be of the form spi:<device>.
 
-> On 07/28/2017 05:20 PM, Andy Shevchenko wrote:
-> > ACPI enabled platforms do not have a mean of regulators. Instead we use
-> > hard coded voltage value for reference pin. When value is 0 (default) we
-> > fall back to request a regulator.
-> > 
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > ---
-> >   drivers/iio/adc/ti-ads7950.c | 24 ++++++++++++++++++++----
-> >   1 file changed, 20 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
-> > index 16a06633332c..ab669af291b7 100644
-> > --- a/drivers/iio/adc/ti-ads7950.c
-> > +++ b/drivers/iio/adc/ti-ads7950.c
-> > @@ -21,6 +21,7 @@
-> >    * GNU General Public License for more details.
-> >    */
-> >   
-> > +#include <linux/acpi.h>
-> >   #include <linux/bitops.h>
-> >   #include <linux/device.h>
-> >   #include <linux/err.h>
-> > @@ -37,6 +38,12 @@
-> >   #include <linux/iio/trigger_consumer.h>
-> >   #include <linux/iio/triggered_buffer.h>
-> >   
-> > +/*
-> > + * In case of ACPI, we use the 5000 mV as default for the reference pin.
-> > + * Device tree users encode that via the vref-supply regulator.
-> > + */
-> > +#define TI_ADS7950_VA_MV_ACPI_DEFAULT	5000  
-> 
-> Now that I've thought about it a bit, you don't need to call this the 
-> ACPI default, just call it the default. Then it will be obvious that 
-> this is used when you don't have a regulator.
-> 
-> > +
-> >   #define TI_ADS7950_CR_MANUAL	BIT(12)
-> >   #define TI_ADS7950_CR_WRITE	BIT(11)
-> >   #define TI_ADS7950_CR_CHAN(ch)	((ch) << 7)
-> > @@ -58,6 +65,7 @@ struct ti_ads7950_state {
-> >   	struct spi_message	scan_single_msg;
-> >   
-> >   	struct regulator	*reg;
-> > +	unsigned int		vref_mv;
-> >   
-> >   	unsigned int		settings;
-> >   
-> > @@ -305,11 +313,15 @@ static int ti_ads7950_get_range(struct ti_ads7950_state *st)
-> >   {
-> >   	int vref;
-> >   
-> > -	vref = regulator_get_voltage(st->reg);
-> > -	if (vref < 0)
-> > -		return vref;
-> > +	if (st->vref_mv) {
-> > +		vref = st->vref_mv;
-> > +	} else {
-> > +		vref = regulator_get_voltage(st->reg);
-> > +		if (vref < 0)
-> > +			return vref;
-> >   
-> > -	vref /= 1000;
-> > +		vref /= 1000;
-> > +	}
-> >   
-> >   	if (st->settings & TI_ADS7950_CR_RANGE_5V)
-> >   		vref *= 2;
-> > @@ -411,6 +423,10 @@ static int ti_ads7950_probe(struct spi_device *spi)
-> >   	spi_message_init_with_transfers(&st->scan_single_msg,
-> >   					st->scan_single_xfer, 3);
-> >   
-> > +	/* Use hard coded value for reference voltage in ACPI case */
-> > +	if (ACPI_COMPANION(&spi->dev))
-> > +		st->vref_mv = TI_ADS7950_VA_MV_ACPI_DEFAULT;  
-> 
-> Instead of checking or ACPI, you could just say "if we have a dummy 
-> regulator, then use the default value".
-> 
-Agreed. Sounds sensible to me.  Hopefully in DT people will
-provide the right regulator, but chances are this won't
-always happen.
+There is an ACPI method to enumerate such devices via specific ACPI ID
+and use of compatible strings. It will not work for the drivers which
+have no OF match ID table present.
 
-Jonathan
-> > +
-> >   	st->reg = devm_regulator_get(&spi->dev, "vref");
-> >   	if (IS_ERR(st->reg)) {
-> >   		dev_err(&spi->dev, "Failed get get regulator \"vref\"\n");
-> >   
-> 
+Besides this could change in the future so the correct approach is to
+have an OF device ID table if the devices are registered via OF.
 
+Tested-by: David Lechner <david@lechnology.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/iio/adc/ti-ads7950.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
+index ab669af291b7..a376190914ad 100644
+--- a/drivers/iio/adc/ti-ads7950.c
++++ b/drivers/iio/adc/ti-ads7950.c
+@@ -491,9 +491,27 @@ static const struct spi_device_id ti_ads7950_id[] = {
+ };
+ MODULE_DEVICE_TABLE(spi, ti_ads7950_id);
+ 
++static const struct of_device_id ads7950_of_table[] = {
++	{ .compatible = "ti,ads7950", .data = &ti_ads7950_chip_info[TI_ADS7950] },
++	{ .compatible = "ti,ads7951", .data = &ti_ads7950_chip_info[TI_ADS7951] },
++	{ .compatible = "ti,ads7952", .data = &ti_ads7950_chip_info[TI_ADS7952] },
++	{ .compatible = "ti,ads7953", .data = &ti_ads7950_chip_info[TI_ADS7953] },
++	{ .compatible = "ti,ads7954", .data = &ti_ads7950_chip_info[TI_ADS7954] },
++	{ .compatible = "ti,ads7955", .data = &ti_ads7950_chip_info[TI_ADS7955] },
++	{ .compatible = "ti,ads7956", .data = &ti_ads7950_chip_info[TI_ADS7956] },
++	{ .compatible = "ti,ads7957", .data = &ti_ads7950_chip_info[TI_ADS7957] },
++	{ .compatible = "ti,ads7958", .data = &ti_ads7950_chip_info[TI_ADS7958] },
++	{ .compatible = "ti,ads7959", .data = &ti_ads7950_chip_info[TI_ADS7959] },
++	{ .compatible = "ti,ads7960", .data = &ti_ads7950_chip_info[TI_ADS7960] },
++	{ .compatible = "ti,ads7961", .data = &ti_ads7950_chip_info[TI_ADS7961] },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, ads7950_of_table);
++
+ static struct spi_driver ti_ads7950_driver = {
+ 	.driver = {
+ 		.name	= "ads7950",
++		.of_match_table = ads7950_of_table,
+ 	},
+ 	.probe		= ti_ads7950_probe,
+ 	.remove		= ti_ads7950_remove,
+-- 
+2.13.2
