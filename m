@@ -1,51 +1,35 @@
-Return-Path: <SRS0=QWKi=67=linaro.org=benjamin.gaignard@kernel.org>
-MIME-Version: 1.0
-In-Reply-To: <1501172340-8448-1-git-send-email-fabrice.gasnier@st.com>
-References: <1501172340-8448-1-git-send-email-fabrice.gasnier@st.com>
-From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Date: Fri, 28 Jul 2017 10:14:06 +0200
-Message-ID: <CA+M3ks5c98rc2RavW5Eon+MXqnMEpSxcFDaQeL=t4rGbjhR3Xg@mail.gmail.com>
-Subject: Re: [PATCH 0/4] iio: trigger: stm32-timer fixes
-To: Fabrice Gasnier <fabrice.gasnier@st.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-arm-kernel@lists.infradead.org,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@st.com>, Benjamin GAIGNARD <benjamin.gaignard@st.com>,
-	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Content-Type: text/plain; charset="UTF-8"
+Return-Path: <SRS0=Bg67=67=linux.intel.com=andriy.shevchenko@kernel.org>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	linux-iio@vger.kernel.org,
+	David Lechner <david@lechnology.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 0/2] iio: ti-ads7950: Make it working on ACPI platforms
+Date: Sat, 29 Jul 2017 01:20:13 +0300
+Message-Id: <20170728222015.43574-1-andriy.shevchenko@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-2017-07-27 18:18 GMT+02:00 Fabrice Gasnier <fabrice.gasnier@st.com>:
-> Miscellaneous fixes for stm32-timer-trigger driver.
-> Last patch adds enable attribute, which unlocks use of
-> encoder mode.
->
-> Fabrice Gasnier (4):
->   iio: trigger: stm32-timer: fix quadrature mode get routine
->   iio: trigger: stm32-timer: fix write_raw return value
->   iio: trigger: stm32-timer: fix get/set down count direction
->   iio: trigger: stm32-timer: add enable attribute
->
+ACPI has no regulators, thus we need to provide a reference voltage
+value for ACPI platforms for now. I leave regulator request in place
+because for ACPI we will get dummy regulator. This is done in patch 1.
 
-For the series:
+Since we have no dedicated ACPI ID we may use compatible string, so,
+patch 2 adds them.
 
-Acked-by: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+In v2:
+- correct subject in patch 1
+- add tag for patch 2
+- change patch 1 to leave a regulator request in place
+- do not add tag for patch 1 because of above
 
->  drivers/iio/trigger/stm32-timer-trigger.c | 80 ++++++++++++++++++++++---=
-------
->  1 file changed, 58 insertions(+), 22 deletions(-)
->
-> --
-> 1.9.1
->
+Andy Shevchenko (2):
+  iio: adc: ti-ads7950: Allow to use on ACPI platforms
+  iio: adc: ti-ads7950: Add OF device ID table
 
+ drivers/iio/adc/ti-ads7950.c | 42 ++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 38 insertions(+), 4 deletions(-)
 
-
---=20
-Benjamin Gaignard
-
-Graphic Study Group
-
-Linaro.org =E2=94=82 Open source software for ARM SoCs
-
-Follow Linaro: Facebook | Twitter | Blog
+-- 
+2.13.2
