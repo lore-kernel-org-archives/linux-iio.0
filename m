@@ -1,67 +1,119 @@
-Return-Path: <SRS0=Bg67=67=linux.intel.com=andriy.shevchenko@kernel.org>
+Return-Path: <SRS0=8JD8=7A=linux.intel.com=andriy.shevchenko@kernel.org>
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	eter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	linux-iio@vger.kernel.org,
 	David Lechner <david@lechnology.com>
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v2 2/2] iio: adc: ti-ads7950: Add OF device ID table
-Date: Sat, 29 Jul 2017 01:20:15 +0300
-Message-Id: <20170728222015.43574-3-andriy.shevchenko@linux.intel.com>
-In-Reply-To: <20170728222015.43574-1-andriy.shevchenko@linux.intel.com>
-References: <20170728222015.43574-1-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/2] iio: tools: move to tools buildsystem
+Date: Sat, 29 Jul 2017 03:36:04 +0300
+Message-Id: <20170729003605.73790-1-andriy.shevchenko@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-The driver doesn't have a struct of_device_id table but supported devices
-are registered via Device Trees. This is working on the assumption that a
-SPI device registered via OF will always match a legacy SPI device ID and
-that the MODALIAS reported will always be of the form spi:<device>.
+There is a nice buildsystem dedicated for userspace tools in Linux kernel tree.
+Switch iio target to be built by it.
 
-There is an ACPI method to enumerate such devices via specific ACPI ID
-and use of compatible strings. It will not work for the drivers which
-have no OF match ID table present.
-
-Besides this could change in the future so the correct approach is to
-have an OF device ID table if the devices are registered via OF.
-
-Tested-by: David Lechner <david@lechnology.com>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/iio/adc/ti-ads7950.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ tools/iio/Build    |  3 +++
+ tools/iio/Makefile | 68 ++++++++++++++++++++++++++++++++++++++----------------
+ 2 files changed, 51 insertions(+), 20 deletions(-)
+ create mode 100644 tools/iio/Build
 
-diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
-index ab669af291b7..a376190914ad 100644
---- a/drivers/iio/adc/ti-ads7950.c
-+++ b/drivers/iio/adc/ti-ads7950.c
-@@ -491,9 +491,27 @@ static const struct spi_device_id ti_ads7950_id[] = {
- };
- MODULE_DEVICE_TABLE(spi, ti_ads7950_id);
- 
-+static const struct of_device_id ads7950_of_table[] = {
-+	{ .compatible = "ti,ads7950", .data = &ti_ads7950_chip_info[TI_ADS7950] },
-+	{ .compatible = "ti,ads7951", .data = &ti_ads7950_chip_info[TI_ADS7951] },
-+	{ .compatible = "ti,ads7952", .data = &ti_ads7950_chip_info[TI_ADS7952] },
-+	{ .compatible = "ti,ads7953", .data = &ti_ads7950_chip_info[TI_ADS7953] },
-+	{ .compatible = "ti,ads7954", .data = &ti_ads7950_chip_info[TI_ADS7954] },
-+	{ .compatible = "ti,ads7955", .data = &ti_ads7950_chip_info[TI_ADS7955] },
-+	{ .compatible = "ti,ads7956", .data = &ti_ads7950_chip_info[TI_ADS7956] },
-+	{ .compatible = "ti,ads7957", .data = &ti_ads7950_chip_info[TI_ADS7957] },
-+	{ .compatible = "ti,ads7958", .data = &ti_ads7950_chip_info[TI_ADS7958] },
-+	{ .compatible = "ti,ads7959", .data = &ti_ads7950_chip_info[TI_ADS7959] },
-+	{ .compatible = "ti,ads7960", .data = &ti_ads7950_chip_info[TI_ADS7960] },
-+	{ .compatible = "ti,ads7961", .data = &ti_ads7950_chip_info[TI_ADS7961] },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, ads7950_of_table);
+diff --git a/tools/iio/Build b/tools/iio/Build
+new file mode 100644
+index 000000000000..f74cbda64710
+--- /dev/null
++++ b/tools/iio/Build
+@@ -0,0 +1,3 @@
++lsiio-y += lsiio.o iio_utils.o
++iio_event_monitor-y += iio_event_monitor.o iio_utils.o
++iio_generic_buffer-y += iio_generic_buffer.o iio_utils.o
+diff --git a/tools/iio/Makefile b/tools/iio/Makefile
+index 8f08e03a9a5e..5581c062421a 100644
+--- a/tools/iio/Makefile
++++ b/tools/iio/Makefile
+@@ -1,31 +1,59 @@
++include ../scripts/Makefile.include
 +
- static struct spi_driver ti_ads7950_driver = {
- 	.driver = {
- 		.name	= "ads7950",
-+		.of_match_table = ads7950_of_table,
- 	},
- 	.probe		= ti_ads7950_probe,
- 	.remove		= ti_ads7950_remove,
++ifeq ($(srctree),)
++srctree := $(patsubst %/,%,$(dir $(CURDIR)))
++srctree := $(patsubst %/,%,$(dir $(srctree)))
++endif
++
++# Do not use make's built-in rules
++# (this improves performance and avoids hard-to-debug behaviour);
++MAKEFLAGS += -r
++
+ CC = $(CROSS_COMPILE)gcc
+-CFLAGS += -Wall -g -D_GNU_SOURCE -D__EXPORTED_HEADERS__ -I../../include/uapi -I../../include
++LD = $(CROSS_COMPILE)ld
++CFLAGS += -O2 -Wall -g -D_GNU_SOURCE -I$(OUTPUT)include
+ 
+-BINDIR=usr/bin
+-INSTALL_PROGRAM=install -m 755 -p
+-DEL_FILE=rm -f
++ALL_TARGETS := iio_event_monitor lsiio iio_generic_buffer
++ALL_PROGRAMS := $(patsubst %,$(OUTPUT)%,$(ALL_TARGETS))
+ 
+-all: iio_event_monitor lsiio iio_generic_buffer
++all: $(ALL_PROGRAMS)
+ 
+-iio_event_monitor: iio_event_monitor.o iio_utils.o
++export srctree OUTPUT CC LD CFLAGS
++include $(srctree)/tools/build/Makefile.include
+ 
+-lsiio: lsiio.o iio_utils.o
++#
++# We need the following to be outside of kernel tree
++#
++$(OUTPUT)include/linux/iio: ../../include/uapi/linux/iio
++	mkdir -p $(OUTPUT)include/linux/iio 2>&1 || true
++	ln -sf $(CURDIR)/../../include/uapi/linux/iio/events.h $@
++	ln -sf $(CURDIR)/../../include/uapi/linux/iio/types.h $@
+ 
+-iio_generic_buffer: iio_generic_buffer.o iio_utils.o
++prepare: $(OUTPUT)include/linux/iio
+ 
+-%.o: %.c iio_utils.h
++LSIIO_IN := $(OUTPUT)lsiio-in.o
++$(LSIIO_IN): prepare FORCE
++	$(Q)$(MAKE) $(build)=lsiio
++$(OUTPUT)lsiio: $(LSIIO_IN)
++	$(QUIET_LINK)$(CC) $(CFLAGS) $(LDFLAGS) $< -o $@
+ 
+-install:
+-	- mkdir -p $(INSTALL_ROOT)/$(BINDIR)
+-	- $(INSTALL_PROGRAM) "iio_event_monitor" "$(INSTALL_ROOT)/$(BINDIR)/iio_event_monitor"
+-	- $(INSTALL_PROGRAM) "lsiio" "$(INSTALL_ROOT)/$(BINDIR)/lsiio"
+-	- $(INSTALL_PROGRAM) "iio_generic_buffer" "$(INSTALL_ROOT)/$(BINDIR)/iio_generic_buffer"
++IIO_EVENT_MONITOR_IN := $(OUTPUT)iio_event_monitor-in.o
++$(IIO_EVENT_MONITOR_IN): prepare FORCE
++	$(Q)$(MAKE) $(build)=iio_event_monitor
++$(OUTPUT)iio_event_monitor: $(IIO_EVENT_MONITOR_IN)
++	$(QUIET_LINK)$(CC) $(CFLAGS) $(LDFLAGS) $< -o $@
+ 
+-uninstall:
+-	$(DEL_FILE) "$(INSTALL_ROOT)/$(BINDIR)/iio_event_monitor"
+-	$(DEL_FILE) "$(INSTALL_ROOT)/$(BINDIR)/lsiio"
+-	$(DEL_FILE) "$(INSTALL_ROOT)/$(BINDIR)/iio_generic_buffer"
++IIO_GENERIC_BUFFER_IN := $(OUTPUT)iio_generic_buffer-in.o
++$(IIO_GENERIC_BUFFER_IN): prepare FORCE
++	$(Q)$(MAKE) $(build)=iio_generic_buffer
++$(OUTPUT)iio_generic_buffer: $(IIO_GENERIC_BUFFER_IN)
++	$(QUIET_LINK)$(CC) $(CFLAGS) $(LDFLAGS) $< -o $@
+ 
+-.PHONY: clean
+ clean:
+-	rm -f *.o iio_event_monitor lsiio iio_generic_buffer
++	rm -f $(ALL_PROGRAMS)
++	rm -rf $(OUTPUT)include/linux/iio
++	find $(if $(OUTPUT),$(OUTPUT),.) -name '*.o' -delete -o -name '\.*.d' -delete
++
++FORCE:
++
++.PHONY: all clean FORCE prepare
 -- 
 2.13.2
