@@ -1,115 +1,153 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:41726 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1754169AbdG3Q5q (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 30 Jul 2017 12:57:46 -0400
-Date: Sun, 30 Jul 2017 17:57:42 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Akinobu Mita <akinobu.mita@gmail.com>
-Cc: linux-iio@vger.kernel.org, Daniel Baluta <daniel.baluta@gmail.com>
-Subject: Re: [PATCH v3 01/11] iio: adc: ti-ads1015: fix incorrect data rate
- setting update
-Message-ID: <20170730175742.03c240fd@kernel.org>
-In-Reply-To: <1501427575-31045-2-git-send-email-akinobu.mita@gmail.com>
+Received: from mail-pg0-f66.google.com ([74.125.83.66]:34282 "EHLO
+        mail-pg0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751711AbdG3PNP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Jul 2017 11:13:15 -0400
+Received: by mail-pg0-f66.google.com with SMTP id v190so28215930pgv.1
+        for <linux-iio@vger.kernel.org>; Sun, 30 Jul 2017 08:13:14 -0700 (PDT)
+From: Akinobu Mita <akinobu.mita@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: Akinobu Mita <akinobu.mita@gmail.com>,
+        Daniel Baluta <daniel.baluta@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH v3 02/11] iio: adc: ti-ads1015: fix scale information for ADS1115
+Date: Mon, 31 Jul 2017 00:12:46 +0900
+Message-Id: <1501427575-31045-3-git-send-email-akinobu.mita@gmail.com>
+In-Reply-To: <1501427575-31045-1-git-send-email-akinobu.mita@gmail.com>
 References: <1501427575-31045-1-git-send-email-akinobu.mita@gmail.com>
-        <1501427575-31045-2-git-send-email-akinobu.mita@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 31 Jul 2017 00:12:45 +0900
-Akinobu Mita <akinobu.mita@gmail.com> wrote:
+The ti-ads1015 driver supports ADS1015 and ADS1115 devices.  The same
+scale information is used for both devices in this driver, however they
+have actually different values and the ADS1115's one is not correct.
 
-> The ti-ads1015 driver has eight iio voltage channels and each iio channel
-> can hold own sampling frequency information.
-> 
-> The ADS1015 device only have a single config register which contains an
-> input multiplexer selection, PGA and data rate settings.  So the driver
-> should load the correct settings when the input multiplexer selection is
-> changed.
-> 
-> However, regardless of which channlel is currently selected, changing any
-> iio channel's sampling frequency information immediately overwrites the
-> current data rate setting in the config register.
-> 
-> It breaks the current data rate setting if the different channel's sampling
-> frequency information is changed because the data rate setting is not
-> reloaded when the input multiplexer is switched.
-> 
-> This removes the unexpected config register update and correctly load the
-> data rate setting before getting adc result.
-> 
-> Cc: Daniel Baluta <daniel.baluta@gmail.com>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
-Applied to the fixes-togreg branch of iio.git and marked
-for stable.
+These devices have the same full-scale input voltage range for each PGA
+selection.  So instead of adding another hardcoded scale information,
+compute a correct scale on demand from each device's resolution.
 
-The only minor thing that you could have done to make
-this series even better would be to have figured out
-appropriate Fixes: tags to make the job of the stable
-maintainers a little easier. 
+Cc: Daniel Baluta <daniel.baluta@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+---
+ drivers/iio/adc/ti-ads1015.c | 48 ++++++++++++++++++++++----------------------
+ 1 file changed, 24 insertions(+), 24 deletions(-)
 
-Mostly I think it is a case of 'if it will apply
-then it should' here though so I haven't dug into it
-enough to tag them all.
-
-Thanks,
-
-Jonathan
-> ---
->  drivers/iio/adc/ti-ads1015.c | 27 ++++++++++-----------------
->  1 file changed, 10 insertions(+), 17 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
-> index 884b8e46..443444c 100644
-> --- a/drivers/iio/adc/ti-ads1015.c
-> +++ b/drivers/iio/adc/ti-ads1015.c
-> @@ -252,9 +252,11 @@ int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *val)
->  
->  	ret = regmap_update_bits_check(data->regmap, ADS1015_CFG_REG,
->  				       ADS1015_CFG_MUX_MASK |
-> -				       ADS1015_CFG_PGA_MASK,
-> +				       ADS1015_CFG_PGA_MASK |
-> +				       ADS1015_CFG_DR_MASK,
->  				       chan << ADS1015_CFG_MUX_SHIFT |
-> -				       pga << ADS1015_CFG_PGA_SHIFT,
-> +				       pga << ADS1015_CFG_PGA_SHIFT |
-> +				       dr << ADS1015_CFG_DR_SHIFT,
->  				       &change);
->  	if (ret < 0)
->  		return ret;
-> @@ -325,25 +327,16 @@ static int ads1015_set_scale(struct ads1015_data *data, int chan,
->  
->  static int ads1015_set_data_rate(struct ads1015_data *data, int chan, int rate)
->  {
-> -	int i, ret, rindex = -1;
-> +	int i;
->  
-> -	for (i = 0; i < ARRAY_SIZE(ads1015_data_rate); i++)
-> +	for (i = 0; i < ARRAY_SIZE(ads1015_data_rate); i++) {
->  		if (data->data_rate[i] == rate) {
-> -			rindex = i;
-> -			break;
-> +			data->channel_data[chan].data_rate = i;
-> +			return 0;
->  		}
-> -	if (rindex < 0)
-> -		return -EINVAL;
-> -
-> -	ret = regmap_update_bits(data->regmap, ADS1015_CFG_REG,
-> -				 ADS1015_CFG_DR_MASK,
-> -				 rindex << ADS1015_CFG_DR_SHIFT);
-> -	if (ret < 0)
-> -		return ret;
-> -
-> -	data->channel_data[chan].data_rate = rindex;
-> +	}
->  
-> -	return 0;
-> +	return -EINVAL;
->  }
->  
->  static int ads1015_read_raw(struct iio_dev *indio_dev,
+diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
+index 443444c..f32d046 100644
+--- a/drivers/iio/adc/ti-ads1015.c
++++ b/drivers/iio/adc/ti-ads1015.c
+@@ -81,18 +81,12 @@ static const unsigned int ads1115_data_rate[] = {
+ 	8, 16, 32, 64, 128, 250, 475, 860
+ };
+ 
+-static const struct {
+-	int scale;
+-	int uscale;
+-} ads1015_scale[] = {
+-	{3, 0},
+-	{2, 0},
+-	{1, 0},
+-	{0, 500000},
+-	{0, 250000},
+-	{0, 125000},
+-	{0, 125000},
+-	{0, 125000},
++/*
++ * Translation from PGA bits to full-scale positive and negative input voltage
++ * range in mV
++ */
++static int ads1015_fullscale_range[] = {
++	6144, 4096, 2048, 1024, 512, 256, 256, 256
+ };
+ 
+ #define ADS1015_V_CHAN(_chan, _addr) {				\
+@@ -300,17 +294,20 @@ static irqreturn_t ads1015_trigger_handler(int irq, void *p)
+ 	return IRQ_HANDLED;
+ }
+ 
+-static int ads1015_set_scale(struct ads1015_data *data, int chan,
++static int ads1015_set_scale(struct ads1015_data *data,
++			     struct iio_chan_spec const *chan,
+ 			     int scale, int uscale)
+ {
+ 	int i, ret, rindex = -1;
++	int fullscale = div_s64((scale * 1000000LL + uscale) <<
++				(chan->scan_type.realbits - 1), 1000000);
+ 
+-	for (i = 0; i < ARRAY_SIZE(ads1015_scale); i++)
+-		if (ads1015_scale[i].scale == scale &&
+-		    ads1015_scale[i].uscale == uscale) {
++	for (i = 0; i < ARRAY_SIZE(ads1015_fullscale_range); i++) {
++		if (ads1015_fullscale_range[i] == fullscale) {
+ 			rindex = i;
+ 			break;
+ 		}
++	}
+ 	if (rindex < 0)
+ 		return -EINVAL;
+ 
+@@ -320,7 +317,7 @@ static int ads1015_set_scale(struct ads1015_data *data, int chan,
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	data->channel_data[chan].pga = rindex;
++	data->channel_data[chan->address].pga = rindex;
+ 
+ 	return 0;
+ }
+@@ -378,9 +375,9 @@ static int ads1015_read_raw(struct iio_dev *indio_dev,
+ 	}
+ 	case IIO_CHAN_INFO_SCALE:
+ 		idx = data->channel_data[chan->address].pga;
+-		*val = ads1015_scale[idx].scale;
+-		*val2 = ads1015_scale[idx].uscale;
+-		ret = IIO_VAL_INT_PLUS_MICRO;
++		*val = ads1015_fullscale_range[idx];
++		*val2 = chan->scan_type.realbits - 1;
++		ret = IIO_VAL_FRACTIONAL_LOG2;
+ 		break;
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+ 		idx = data->channel_data[chan->address].data_rate;
+@@ -407,7 +404,7 @@ static int ads1015_write_raw(struct iio_dev *indio_dev,
+ 	mutex_lock(&data->lock);
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_SCALE:
+-		ret = ads1015_set_scale(data, chan->address, val, val2);
++		ret = ads1015_set_scale(data, chan, val, val2);
+ 		break;
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+ 		ret = ads1015_set_data_rate(data, chan->address, val);
+@@ -439,7 +436,10 @@ static const struct iio_buffer_setup_ops ads1015_buffer_setup_ops = {
+ 	.validate_scan_mask = &iio_validate_scan_mask_onehot,
+ };
+ 
+-static IIO_CONST_ATTR(scale_available, "3 2 1 0.5 0.25 0.125");
++static IIO_CONST_ATTR_NAMED(ads1015_scale_available, scale_available,
++	"3 2 1 0.5 0.25 0.125");
++static IIO_CONST_ATTR_NAMED(ads1115_scale_available, scale_available,
++	"0.1875 0.125 0.0625 0.03125 0.015625 0.007813");
+ 
+ static IIO_CONST_ATTR_NAMED(ads1015_sampling_frequency_available,
+ 	sampling_frequency_available, "128 250 490 920 1600 2400 3300");
+@@ -447,7 +447,7 @@ static IIO_CONST_ATTR_NAMED(ads1115_sampling_frequency_available,
+ 	sampling_frequency_available, "8 16 32 64 128 250 475 860");
+ 
+ static struct attribute *ads1015_attributes[] = {
+-	&iio_const_attr_scale_available.dev_attr.attr,
++	&iio_const_attr_ads1015_scale_available.dev_attr.attr,
+ 	&iio_const_attr_ads1015_sampling_frequency_available.dev_attr.attr,
+ 	NULL,
+ };
+@@ -457,7 +457,7 @@ static const struct attribute_group ads1015_attribute_group = {
+ };
+ 
+ static struct attribute *ads1115_attributes[] = {
+-	&iio_const_attr_scale_available.dev_attr.attr,
++	&iio_const_attr_ads1115_scale_available.dev_attr.attr,
+ 	&iio_const_attr_ads1115_sampling_frequency_available.dev_attr.attr,
+ 	NULL,
+ };
+-- 
+2.7.4
 
