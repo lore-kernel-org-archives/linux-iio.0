@@ -4,48 +4,88 @@ To: linux-iio@vger.kernel.org
 Cc: Akinobu Mita <akinobu.mita@gmail.com>,
 	Daniel Baluta <daniel.baluta@gmail.com>,
 	Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH v3 00/11] iio: adc: ti-ads1015: fixes, cleanups, and threshold event support
-Date: Mon, 31 Jul 2017 00:12:44 +0900
-Message-Id: <1501427575-31045-1-git-send-email-akinobu.mita@gmail.com>
+Subject: [PATCH v3 01/11] iio: adc: ti-ads1015: fix incorrect data rate setting update
+Date: Mon, 31 Jul 2017 00:12:45 +0900
+Message-Id: <1501427575-31045-2-git-send-email-akinobu.mita@gmail.com>
+In-Reply-To: <1501427575-31045-1-git-send-email-akinobu.mita@gmail.com>
+References: <1501427575-31045-1-git-send-email-akinobu.mita@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-This series contains some fixes and cleanups, and a threshold event support
-for ti-ads1015 driver.
+The ti-ads1015 driver has eight iio voltage channels and each iio channel
+can hold own sampling frequency information.
 
-The first six patches are bug fixes, next four are cleanups, and the last
-one adds support threshold event.
+The ADS1015 device only have a single config register which contains an
+input multiplexer selection, PGA and data rate settings.  So the driver
+should load the correct settings when the input multiplexer selection is
+changed.
 
-Changes from v2 (All changes are done in the last patch)
-- Add an error checking for conv register read in interrupt handler
-- Fix comparator polarity field setting in config register
+However, regardless of which channlel is currently selected, changing any
+iio channel's sampling frequency information immediately overwrites the
+current data rate setting in the config register.
 
-Changes from v1
-- Split the patch "enable conversion when CONFIG_PM is not set" into a pure
-  fix and a cleanup
-- Add new patch "don't return invalid value from buffer setup callbacks"
-- Add new patch "add adequate wait time to get correct conversion"
-- Support traditional comparator mode in addition to window comparator mode,
-  add a comment for default threshold settings, and allow setting the state
-  that has already been set in threshold event support patch
+It breaks the current data rate setting if the different channel's sampling
+frequency information is changed because the data rate setting is not
+reloaded when the input multiplexer is switched.
 
-Akinobu Mita (11):
-  iio: adc: ti-ads1015: fix incorrect data rate setting update
-  iio: adc: ti-ads1015: fix scale information for ADS1115
-  iio: adc: ti-ads1015: enable conversion when CONFIG_PM is not set
-  iio: adc: ti-ads1015: avoid getting stale result after runtime resume
-  iio: adc: ti-ads1015: don't return invalid value from buffer setup
-    callbacks
-  iio: adc: ti-ads1015: add adequate wait time to get correct conversion
-  iio: adc: ti-ads1015: remove unnecessary config register update
-  iio: adc: ti-ads1015: add helper to set conversion mode
-  iio: adc: ti-ads1015: use devm_iio_triggered_buffer_setup
-  iio: adc: ti-ads1015: use iio_device_claim_direct_mode()
-  iio: adc: ti-ads1015: add threshold event support
-
- drivers/iio/adc/ti-ads1015.c | 594 ++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 500 insertions(+), 94 deletions(-)
+This removes the unexpected config register update and correctly load the
+data rate setting before getting adc result.
 
 Cc: Daniel Baluta <daniel.baluta@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+---
+ drivers/iio/adc/ti-ads1015.c | 27 ++++++++++-----------------
+ 1 file changed, 10 insertions(+), 17 deletions(-)
+
+diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
+index 884b8e46..443444c 100644
+--- a/drivers/iio/adc/ti-ads1015.c
++++ b/drivers/iio/adc/ti-ads1015.c
+@@ -252,9 +252,11 @@ int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *val)
+ 
+ 	ret = regmap_update_bits_check(data->regmap, ADS1015_CFG_REG,
+ 				       ADS1015_CFG_MUX_MASK |
+-				       ADS1015_CFG_PGA_MASK,
++				       ADS1015_CFG_PGA_MASK |
++				       ADS1015_CFG_DR_MASK,
+ 				       chan << ADS1015_CFG_MUX_SHIFT |
+-				       pga << ADS1015_CFG_PGA_SHIFT,
++				       pga << ADS1015_CFG_PGA_SHIFT |
++				       dr << ADS1015_CFG_DR_SHIFT,
+ 				       &change);
+ 	if (ret < 0)
+ 		return ret;
+@@ -325,25 +327,16 @@ static int ads1015_set_scale(struct ads1015_data *data, int chan,
+ 
+ static int ads1015_set_data_rate(struct ads1015_data *data, int chan, int rate)
+ {
+-	int i, ret, rindex = -1;
++	int i;
+ 
+-	for (i = 0; i < ARRAY_SIZE(ads1015_data_rate); i++)
++	for (i = 0; i < ARRAY_SIZE(ads1015_data_rate); i++) {
+ 		if (data->data_rate[i] == rate) {
+-			rindex = i;
+-			break;
++			data->channel_data[chan].data_rate = i;
++			return 0;
+ 		}
+-	if (rindex < 0)
+-		return -EINVAL;
+-
+-	ret = regmap_update_bits(data->regmap, ADS1015_CFG_REG,
+-				 ADS1015_CFG_DR_MASK,
+-				 rindex << ADS1015_CFG_DR_SHIFT);
+-	if (ret < 0)
+-		return ret;
+-
+-	data->channel_data[chan].data_rate = rindex;
++	}
+ 
+-	return 0;
++	return -EINVAL;
+ }
+ 
+ static int ads1015_read_raw(struct iio_dev *indio_dev,
 -- 
 2.7.4
