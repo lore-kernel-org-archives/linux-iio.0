@@ -1,667 +1,230 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout02.posteo.de ([185.67.36.66]:48880 "EHLO mout02.posteo.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751075AbdGaPHy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 31 Jul 2017 11:07:54 -0400
-Received: from submission (posteo.de [89.146.220.130])
-        by mout02.posteo.de (Postfix) with ESMTPS id C9C6A20D04
-        for <linux-iio@vger.kernel.org>; Mon, 31 Jul 2017 17:07:52 +0200 (CEST)
-Date: Mon, 31 Jul 2017 17:07:48 +0200
-In-Reply-To: <1501499858-4476-1-git-send-email-harinath922@gmail.com>
-References: <1501499858-4476-1-git-send-email-harinath922@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Subject: Re: [PATCH] iio: accel: Bugfix to enbale and allow different events to work parallely.
-To: Harinath Nampally <harinath922@gmail.com>, jic23@kernel.org
-CC: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, amsfield22@gmail.com
-From: Martin Kepplinger <martink@posteo.de>
-Message-ID: <653B8888-D699-4B8B-93C2-6FF3308932AF@posteo.de>
+Received: from mail-yw0-f195.google.com ([209.85.161.195]:36226 "EHLO
+        mail-yw0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752350AbdGaQC6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 31 Jul 2017 12:02:58 -0400
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, benjamin.gaignard@linaro.org
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH 0/3] iio: Introduce the generic counter interface
+Date: Mon, 31 Jul 2017 12:02:45 -0400
+Message-Id: <cover.1501516678.git.vilhelm.gray@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Summary
+=======
 
+Counter devices are prevalent within a diverse spectrum of industries.
+The ubiquitous presence of these devices necessitates a common interface
+and standard of interaction and exposure. This patchset attempts to
+resolve the issue of duplicate code found among existing counter device
+drivers by introducing a generic counter interface for consumption. The
+generic counter interface enables drivers to support and expose a common
+set of components and functionality present in counter devices.
 
-Am 31. Juli 2017 13:17:38 MESZ schrieb Harinath Nampally <harinath922@gmail.com>:
->This driver supports multiple devices like mma8653, mma8652, mma8452,
->mma8453 and
->fxls8471. Almost all these devices have more than one event. Current
->driver design
->hardcodes the event specific information, so only one event can be
->supported by this
->driver and current design doesn't have the flexibility to add more
->events.
->
->This patch fixes by detaching the event related information from
->chip_info struct,
->and based on channel type and event direction the corresponding event
->configuration registers
->are picked dynamically. Hence multiple events can be handled in
->read/write callbacks.
->
->Changes are thoroughly tested on fxls8471 device on imx6UL Eval board
->using iio_event_monitor user space program.
->
->After this fix both Freefall and Transient events are handled by the
->driver without any conflicts.
+Theory
+======
 
-Thanks for doing that work. I have had it on my list for a long time and you seem to fix it. Although I'd happily review and possibly test it, unfortunately I can't do so before the week of August 21st.
+Counter devices can vary greatly in design, but regardless of whether
+some devices are quadrature encoder counters or pedometers, all counter
+devices consist of a core set of components. This core set of
+components, shared by all counter devices, is what forms the essence of
+the generic counter interface.
 
-If this might go in quick, nothing will stop me from reviewing either, so, whatever. Thanks again!
+There are three core components to a counter:
 
->
->Signed-off-by: Harinath Nampally <harinath922@gmail.com>
->---
->drivers/iio/accel/mma8452.c | 348
->++++++++++++++++++++++----------------------
-> 1 file changed, 175 insertions(+), 173 deletions(-)
->
->diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
->index eb6e3dc..114b0e3 100644
->--- a/drivers/iio/accel/mma8452.c
->+++ b/drivers/iio/accel/mma8452.c
->@@ -59,7 +59,9 @@
-> #define MMA8452_FF_MT_THS			0x17
-> #define  MMA8452_FF_MT_THS_MASK			0x7f
-> #define MMA8452_FF_MT_COUNT			0x18
->+#define MMA8452_FF_MT_CHAN_SHIFT	3
-> #define MMA8452_TRANSIENT_CFG			0x1d
->+#define  MMA8452_TRANSIENT_CFG_CHAN(chan)	BIT(chan + 1)
-> #define  MMA8452_TRANSIENT_CFG_HPF_BYP		BIT(0)
-> #define  MMA8452_TRANSIENT_CFG_ELE		BIT(4)
-> #define MMA8452_TRANSIENT_SRC			0x1e
->@@ -69,6 +71,7 @@
-> #define MMA8452_TRANSIENT_THS			0x1f
-> #define  MMA8452_TRANSIENT_THS_MASK		GENMASK(6, 0)
-> #define MMA8452_TRANSIENT_COUNT			0x20
->+#define MMA8452_TRANSIENT_CHAN_SHIFT 1
-> #define MMA8452_CTRL_REG1			0x2a
-> #define  MMA8452_CTRL_ACTIVE			BIT(0)
-> #define  MMA8452_CTRL_DR_MASK			GENMASK(5, 3)
->@@ -107,6 +110,40 @@ struct mma8452_data {
-> 	const struct mma_chip_info *chip_info;
-> };
-> 
->+ /**
->+  * struct mma8452_event_regs - chip specific data related to events
->+  * @ev_cfg:			event config register address
->+  * @ev_cfg_ele:			latch bit in event config register
->+  * @ev_cfg_chan_shift:		number of the bit to enable events in X
->+  *				direction; in event config register
->+  * @ev_src:			event source register address
->+  * @ev_src_xe:			bit in event source register that indicates
->+  *				an event in X direction
->+  * @ev_src_ye:			bit in event source register that indicates
->+  *				an event in Y direction
->+  * @ev_src_ze:			bit in event source register that indicates
->+  *				an event in Z direction
->+  * @ev_ths:			event threshold register address
->+  * @ev_ths_mask:		mask for the threshold value
->+  * @ev_count:			event count (period) register address
->+  *
->+  * Since not all chips supported by the driver support comparing high
->pass
->+  * filtered data for events (interrupts), different interrupt sources
->are
->+  * used for different chips and the relevant registers are included
->here.
->+  */
->+struct mma8452_event_regs {
->+		u8 ev_cfg;
->+		u8 ev_cfg_ele;
->+		u8 ev_cfg_chan_shift;
->+		u8 ev_src;
->+		u8 ev_src_xe;
->+		u8 ev_src_ye;
->+		u8 ev_src_ze;
->+		u8 ev_ths;
->+		u8 ev_ths_mask;
->+		u8 ev_count;
->+};
->+
-> /**
->  * struct mma_chip_info - chip specific data
->  * @chip_id:			WHO_AM_I register's value
->@@ -116,40 +153,12 @@ struct mma8452_data {
->  * @mma_scales:			scale factors for converting register values
->  *				to m/s^2; 3 modes: 2g, 4g, 8g; 2 integers
->  *				per mode: m/s^2 and micro m/s^2
->- * @ev_cfg:			event config register address
->- * @ev_cfg_ele:			latch bit in event config register
->- * @ev_cfg_chan_shift:		number of the bit to enable events in X
->- *				direction; in event config register
->- * @ev_src:			event source register address
->- * @ev_src_xe:			bit in event source register that indicates
->- *				an event in X direction
->- * @ev_src_ye:			bit in event source register that indicates
->- *				an event in Y direction
->- * @ev_src_ze:			bit in event source register that indicates
->- *				an event in Z direction
->- * @ev_ths:			event threshold register address
->- * @ev_ths_mask:		mask for the threshold value
->- * @ev_count:			event count (period) register address
->- *
->- * Since not all chips supported by the driver support comparing high
->pass
->- * filtered data for events (interrupts), different interrupt sources
->are
->- * used for different chips and the relevant registers are included
->here.
->  */
-> struct mma_chip_info {
-> 	u8 chip_id;
-> 	const struct iio_chan_spec *channels;
-> 	int num_channels;
-> 	const int mma_scales[3][2];
->-	u8 ev_cfg;
->-	u8 ev_cfg_ele;
->-	u8 ev_cfg_chan_shift;
->-	u8 ev_src;
->-	u8 ev_src_xe;
->-	u8 ev_src_ye;
->-	u8 ev_src_ze;
->-	u8 ev_ths;
->-	u8 ev_ths_mask;
->-	u8 ev_count;
-> };
-> 
-> enum {
->@@ -394,11 +403,11 @@ static ssize_t mma8452_show_os_ratio_avail(struct
->device *dev,
-> }
-> 
-> static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(mma8452_show_samp_freq_avail);
->-static IIO_DEVICE_ATTR(in_accel_scale_available, S_IRUGO,
->+static IIO_DEVICE_ATTR(in_accel_scale_available, 0444,
-> 		       mma8452_show_scale_avail, NULL, 0);
->static
->IIO_DEVICE_ATTR(in_accel_filter_high_pass_3db_frequency_available,
->-		       S_IRUGO, mma8452_show_hp_cutoff_avail, NULL, 0);
->-static IIO_DEVICE_ATTR(in_accel_oversampling_ratio_available, S_IRUGO,
->+		       0444, mma8452_show_hp_cutoff_avail, NULL, 0);
->+static IIO_DEVICE_ATTR(in_accel_oversampling_ratio_available, 0444,
-> 		       mma8452_show_os_ratio_avail, NULL, 0);
-> 
-> static int mma8452_get_samp_freq_index(struct mma8452_data *data,
->@@ -602,9 +611,8 @@ static int mma8452_set_power_mode(struct
->mma8452_data *data, u8 mode)
-> static int mma8452_freefall_mode_enabled(struct mma8452_data *data)
-> {
-> 	int val;
->-	const struct mma_chip_info *chip = data->chip_info;
-> 
->-	val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
->+	val = i2c_smbus_read_byte_data(data->client, MMA8452_FF_MT_CFG);
-> 	if (val < 0)
-> 		return val;
-> 
->@@ -614,29 +622,28 @@ static int mma8452_freefall_mode_enabled(struct
->mma8452_data *data)
->static int mma8452_set_freefall_mode(struct mma8452_data *data, bool
->state)
-> {
-> 	int val;
->-	const struct mma_chip_info *chip = data->chip_info;
-> 
-> 	if ((state && mma8452_freefall_mode_enabled(data)) ||
-> 	    (!state && !(mma8452_freefall_mode_enabled(data))))
-> 		return 0;
-> 
->-	val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
->+	val = i2c_smbus_read_byte_data(data->client, MMA8452_FF_MT_CFG);
-> 	if (val < 0)
-> 		return val;
-> 
-> 	if (state) {
->-		val |= BIT(idx_x + chip->ev_cfg_chan_shift);
->-		val |= BIT(idx_y + chip->ev_cfg_chan_shift);
->-		val |= BIT(idx_z + chip->ev_cfg_chan_shift);
->+		val |= BIT(idx_x + MMA8452_FF_MT_CHAN_SHIFT);
->+		val |= BIT(idx_y + MMA8452_FF_MT_CHAN_SHIFT);
->+		val |= BIT(idx_z + MMA8452_FF_MT_CHAN_SHIFT);
-> 		val &= ~MMA8452_FF_MT_CFG_OAE;
-> 	} else {
->-		val &= ~BIT(idx_x + chip->ev_cfg_chan_shift);
->-		val &= ~BIT(idx_y + chip->ev_cfg_chan_shift);
->-		val &= ~BIT(idx_z + chip->ev_cfg_chan_shift);
->+		val &= ~BIT(idx_x + MMA8452_FF_MT_CHAN_SHIFT);
->+		val &= ~BIT(idx_y + MMA8452_FF_MT_CHAN_SHIFT);
->+		val &= ~BIT(idx_z + MMA8452_FF_MT_CHAN_SHIFT);
-> 		val |= MMA8452_FF_MT_CFG_OAE;
-> 	}
-> 
->-	return mma8452_change_config(data, chip->ev_cfg, val);
->+	return mma8452_change_config(data, MMA8452_FF_MT_CFG, val);
-> }
-> 
-> static int mma8452_set_hp_filter_frequency(struct mma8452_data *data,
->@@ -740,6 +747,50 @@ static int mma8452_write_raw(struct iio_dev
->*indio_dev,
-> 	return ret;
-> }
-> 
->+static int mma8452_get_event_regs(const struct iio_chan_spec *chan,
->+	       enum iio_event_direction dir,
->+		   struct mma8452_event_regs *ev_regs
->+	       )
->+{
->+	if (!chan)
->+		return -EINVAL;
->+	switch (chan->type) {
->+	case IIO_ACCEL:
->+		switch (dir) {
->+		case IIO_EV_DIR_FALLING:
->+			ev_regs->ev_cfg = MMA8452_FF_MT_CFG;
->+			ev_regs->ev_cfg_ele = MMA8452_FF_MT_CFG_ELE;
->+			ev_regs->ev_cfg_chan_shift = MMA8452_FF_MT_CHAN_SHIFT;
->+			ev_regs->ev_src = MMA8452_FF_MT_SRC;
->+			ev_regs->ev_src_xe = MMA8452_FF_MT_SRC_XHE;
->+			ev_regs->ev_src_ye = MMA8452_FF_MT_SRC_YHE;
->+			ev_regs->ev_src_ze = MMA8452_FF_MT_SRC_ZHE;
->+			ev_regs->ev_ths = MMA8452_FF_MT_THS;
->+			ev_regs->ev_ths_mask = MMA8452_FF_MT_THS_MASK;
->+			ev_regs->ev_count = MMA8452_FF_MT_COUNT;
->+			break;
->+		case IIO_EV_DIR_RISING:
->+			ev_regs->ev_cfg = MMA8452_TRANSIENT_CFG;
->+			ev_regs->ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE;
->+			ev_regs->ev_cfg_chan_shift = MMA8452_TRANSIENT_CHAN_SHIFT;
->+			ev_regs->ev_src = MMA8452_TRANSIENT_SRC;
->+			ev_regs->ev_src_xe = MMA8452_TRANSIENT_SRC_XTRANSE;
->+			ev_regs->ev_src_ye = MMA8452_TRANSIENT_SRC_YTRANSE;
->+			ev_regs->ev_src_ze = MMA8452_TRANSIENT_SRC_ZTRANSE;
->+			ev_regs->ev_ths = MMA8452_TRANSIENT_THS;
->+			ev_regs->ev_ths_mask = MMA8452_TRANSIENT_THS_MASK;
->+			ev_regs->ev_count = MMA8452_TRANSIENT_COUNT;
->+			break;
->+		default:
->+			return -EINVAL;
->+		}
->+	break;
->+	default:
->+		return -EINVAL;
->+	}
->+	return 0;
->+}
->+
-> static int mma8452_read_thresh(struct iio_dev *indio_dev,
-> 			       const struct iio_chan_spec *chan,
-> 			       enum iio_event_type type,
->@@ -749,21 +800,24 @@ static int mma8452_read_thresh(struct iio_dev
->*indio_dev,
-> {
-> 	struct mma8452_data *data = iio_priv(indio_dev);
-> 	int ret, us, power_mode;
->+	struct mma8452_event_regs ev_regs;
-> 
->+	ret = mma8452_get_event_regs(chan, dir, &ev_regs);
->+	if (ret)
->+		return ret;
-> 	switch (info) {
-> 	case IIO_EV_INFO_VALUE:
->-		ret = i2c_smbus_read_byte_data(data->client,
->-					       data->chip_info->ev_ths);
->+		ret = i2c_smbus_read_byte_data(data->client, ev_regs.ev_ths);
-> 		if (ret < 0)
-> 			return ret;
-> 
->-		*val = ret & data->chip_info->ev_ths_mask;
->+		*val = ret & ev_regs.ev_ths_mask;
-> 
-> 		return IIO_VAL_INT;
-> 
-> 	case IIO_EV_INFO_PERIOD:
-> 		ret = i2c_smbus_read_byte_data(data->client,
->-					       data->chip_info->ev_count);
->+									ev_regs.ev_count);
-> 		if (ret < 0)
-> 			return ret;
-> 
->@@ -809,14 +863,18 @@ static int mma8452_write_thresh(struct iio_dev
->*indio_dev,
-> {
-> 	struct mma8452_data *data = iio_priv(indio_dev);
-> 	int ret, reg, steps;
->+	struct mma8452_event_regs ev_regs;
->+
->+	ret = mma8452_get_event_regs(chan, dir, &ev_regs);
->+	if (ret)
->+		return ret;
-> 
-> 	switch (info) {
-> 	case IIO_EV_INFO_VALUE:
->-		if (val < 0 || val > MMA8452_TRANSIENT_THS_MASK)
->+		if (val < 0 || val > ev_regs.ev_ths_mask)
-> 			return -EINVAL;
-> 
->-		return mma8452_change_config(data, data->chip_info->ev_ths,
->-					     val);
->+		return mma8452_change_config(data, ev_regs.ev_ths, val);
-> 
-> 	case IIO_EV_INFO_PERIOD:
-> 		ret = mma8452_get_power_mode(data);
->@@ -830,8 +888,7 @@ static int mma8452_write_thresh(struct iio_dev
->*indio_dev,
-> 		if (steps < 0 || steps > 0xff)
-> 			return -EINVAL;
-> 
->-		return mma8452_change_config(data, data->chip_info->ev_count,
->-					     steps);
->+		return mma8452_change_config(data, ev_regs.ev_count, steps);
-> 
-> 	case IIO_EV_INFO_HIGH_PASS_FILTER_3DB:
-> 		reg = i2c_smbus_read_byte_data(data->client,
->@@ -861,26 +918,29 @@ static int mma8452_read_event_config(struct
->iio_dev *indio_dev,
-> 				     enum iio_event_direction dir)
-> {
-> 	struct mma8452_data *data = iio_priv(indio_dev);
->-	const struct mma_chip_info *chip = data->chip_info;
-> 	int ret;
-> 
->-	switch (dir) {
->-	case IIO_EV_DIR_FALLING:
->-		return mma8452_freefall_mode_enabled(data);
->-	case IIO_EV_DIR_RISING:
->-		if (mma8452_freefall_mode_enabled(data))
->-			return 0;
->+	switch (chan->type) {
->+	case IIO_ACCEL:
->+		switch (dir) {
->+		case IIO_EV_DIR_FALLING:
->+			return mma8452_freefall_mode_enabled(data);
->+		case IIO_EV_DIR_RISING:
->+			ret = i2c_smbus_read_byte_data(data->client,
->+										MMA8452_TRANSIENT_CFG);
->+			if (ret < 0)
->+				return ret;
-> 
->-		ret = i2c_smbus_read_byte_data(data->client,
->-					       data->chip_info->ev_cfg);
->-		if (ret < 0)
->-			return ret;
->+			return ret & MMA8452_TRANSIENT_CFG_CHAN(chan->scan_index) ? 1 : 0;
-> 
->-		return !!(ret & BIT(chan->scan_index +
->-				    chip->ev_cfg_chan_shift));
->+		default:
->+			return -EINVAL;
->+		}
->+	break;
-> 	default:
-> 		return -EINVAL;
-> 	}
->+	return 0;
-> }
-> 
-> static int mma8452_write_event_config(struct iio_dev *indio_dev,
->@@ -890,39 +950,36 @@ static int mma8452_write_event_config(struct
->iio_dev *indio_dev,
-> 				      int state)
-> {
-> 	struct mma8452_data *data = iio_priv(indio_dev);
->-	const struct mma_chip_info *chip = data->chip_info;
-> 	int val, ret;
-> 
-> 	ret = mma8452_set_runtime_pm_state(data->client, state);
->+
-> 	if (ret)
-> 		return ret;
-> 
->-	switch (dir) {
->-	case IIO_EV_DIR_FALLING:
->-		return mma8452_set_freefall_mode(data, state);
->-	case IIO_EV_DIR_RISING:
->-		val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
->-		if (val < 0)
->-			return val;
->-
->-		if (state) {
->-			if (mma8452_freefall_mode_enabled(data)) {
->-				val &= ~BIT(idx_x + chip->ev_cfg_chan_shift);
->-				val &= ~BIT(idx_y + chip->ev_cfg_chan_shift);
->-				val &= ~BIT(idx_z + chip->ev_cfg_chan_shift);
->-				val |= MMA8452_FF_MT_CFG_OAE;
->-			}
->-			val |= BIT(chan->scan_index + chip->ev_cfg_chan_shift);
->-		} else {
->-			if (mma8452_freefall_mode_enabled(data))
->-				return 0;
->-
->-			val &= ~BIT(chan->scan_index + chip->ev_cfg_chan_shift);
->+	switch (chan->type) {
->+	case IIO_ACCEL:
->+		switch (dir) {
->+		case IIO_EV_DIR_FALLING:
->+			return mma8452_set_freefall_mode(data, state);
->+		case IIO_EV_DIR_RISING:
->+			val = i2c_smbus_read_byte_data(data->client,
->+											MMA8452_TRANSIENT_CFG);
->+			if (val < 0)
->+				return val;
->+
->+			if (state)
->+				val |= MMA8452_TRANSIENT_CFG_CHAN(chan->scan_index);
->+			else
->+				val &= ~MMA8452_TRANSIENT_CFG_CHAN(chan->scan_index);
->+
->+			val |= MMA8452_TRANSIENT_CFG_ELE;
->+
->+			return mma8452_change_config(data, MMA8452_TRANSIENT_CFG, val);
->+		default:
->+			return -EINVAL;
-> 		}
->-
->-		val |= chip->ev_cfg_ele;
->-
->-		return mma8452_change_config(data, chip->ev_cfg, val);
->+	break;
-> 	default:
-> 		return -EINVAL;
-> 	}
->@@ -934,35 +991,25 @@ static void mma8452_transient_interrupt(struct
->iio_dev *indio_dev)
-> 	s64 ts = iio_get_time_ns(indio_dev);
-> 	int src;
-> 
->-	src = i2c_smbus_read_byte_data(data->client,
->data->chip_info->ev_src);
->+	src = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_SRC);
-> 	if (src < 0)
-> 		return;
-> 
->-	if (mma8452_freefall_mode_enabled(data)) {
->-		iio_push_event(indio_dev,
->-			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0,
->-						  IIO_MOD_X_AND_Y_AND_Z,
->-						  IIO_EV_TYPE_MAG,
->-						  IIO_EV_DIR_FALLING),
->-			       ts);
->-		return;
->-	}
->-
->-	if (src & data->chip_info->ev_src_xe)
->+	if (src & MMA8452_TRANSIENT_SRC_XTRANSE)
-> 		iio_push_event(indio_dev,
-> 			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_X,
-> 						  IIO_EV_TYPE_MAG,
-> 						  IIO_EV_DIR_RISING),
-> 			       ts);
-> 
->-	if (src & data->chip_info->ev_src_ye)
->+	if (src & MMA8452_TRANSIENT_SRC_YTRANSE)
-> 		iio_push_event(indio_dev,
-> 			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_Y,
-> 						  IIO_EV_TYPE_MAG,
-> 						  IIO_EV_DIR_RISING),
-> 			       ts);
-> 
->-	if (src & data->chip_info->ev_src_ze)
->+	if (src & MMA8452_TRANSIENT_SRC_ZTRANSE)
-> 		iio_push_event(indio_dev,
-> 			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_Z,
-> 						  IIO_EV_TYPE_MAG,
->@@ -974,23 +1021,38 @@ static irqreturn_t mma8452_interrupt(int irq,
->void *p)
-> {
-> 	struct iio_dev *indio_dev = p;
-> 	struct mma8452_data *data = iio_priv(indio_dev);
->-	const struct mma_chip_info *chip = data->chip_info;
-> 	int ret = IRQ_NONE;
->-	int src;
->+	int src, enabled_interrupts;
-> 
-> 	src = i2c_smbus_read_byte_data(data->client, MMA8452_INT_SRC);
-> 	if (src < 0)
-> 		return IRQ_NONE;
-> 
->-	if (src & MMA8452_INT_DRDY) {
->+	enabled_interrupts = i2c_smbus_read_byte_data(data->client,
->+					MMA8452_CTRL_REG4);
->+	if (enabled_interrupts < 0)
->+		return enabled_interrupts;
->+
->+	if ((src & MMA8452_INT_DRDY) && (src & enabled_interrupts)) {
-> 		iio_trigger_poll_chained(indio_dev->trig);
-> 		ret = IRQ_HANDLED;
-> 	}
-> 
->-	if ((src & MMA8452_INT_TRANS &&
->-	     chip->ev_src == MMA8452_TRANSIENT_SRC) ||
->-	    (src & MMA8452_INT_FF_MT &&
->-	     chip->ev_src == MMA8452_FF_MT_SRC)) {
->+	if ((src & MMA8452_INT_FF_MT) && (src & enabled_interrupts)) {
->+		if (mma8452_freefall_mode_enabled(data)) {
->+			s64 ts = iio_get_time_ns(indio_dev);
->+
->+			iio_push_event(indio_dev,
->+				       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0,
->+							  IIO_MOD_X_AND_Y_AND_Z,
->+							  IIO_EV_TYPE_MAG,
->+							  IIO_EV_DIR_FALLING),
->+				       ts);
->+		}
->+		ret = IRQ_HANDLED;
->+	}
->+
->+	if ((src & MMA8452_INT_TRANS) && (src & enabled_interrupts)) {
-> 		mma8452_transient_interrupt(indio_dev);
-> 		ret = IRQ_HANDLED;
-> 	}
->@@ -1020,8 +1082,8 @@ static irqreturn_t mma8452_trigger_handler(int
->irq, void *p)
-> }
-> 
-> static int mma8452_reg_access_dbg(struct iio_dev *indio_dev,
->-				  unsigned reg, unsigned writeval,
->-				  unsigned *readval)
->+				  unsigned int reg, unsigned int writeval,
->+				  unsigned int *readval)
-> {
-> 	int ret;
-> 	struct mma8452_data *data = iio_priv(indio_dev);
->@@ -1222,96 +1284,36 @@ static const struct mma_chip_info
->mma_chip_info_table[] = {
-> 		 *	g * N * 1000000 / 2048 for N = 2, 4, 8 and g=9.80665
-> 		 */
-> 		.mma_scales = { {0, 2394}, {0, 4788}, {0, 9577} },
->-		.ev_cfg = MMA8452_TRANSIENT_CFG,
->-		.ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE,
->-		.ev_cfg_chan_shift = 1,
->-		.ev_src = MMA8452_TRANSIENT_SRC,
->-		.ev_src_xe = MMA8452_TRANSIENT_SRC_XTRANSE,
->-		.ev_src_ye = MMA8452_TRANSIENT_SRC_YTRANSE,
->-		.ev_src_ze = MMA8452_TRANSIENT_SRC_ZTRANSE,
->-		.ev_ths = MMA8452_TRANSIENT_THS,
->-		.ev_ths_mask = MMA8452_TRANSIENT_THS_MASK,
->-		.ev_count = MMA8452_TRANSIENT_COUNT,
-> 	},
-> 	[mma8452] = {
-> 		.chip_id = MMA8452_DEVICE_ID,
-> 		.channels = mma8452_channels,
-> 		.num_channels = ARRAY_SIZE(mma8452_channels),
-> 		.mma_scales = { {0, 9577}, {0, 19154}, {0, 38307} },
->-		.ev_cfg = MMA8452_TRANSIENT_CFG,
->-		.ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE,
->-		.ev_cfg_chan_shift = 1,
->-		.ev_src = MMA8452_TRANSIENT_SRC,
->-		.ev_src_xe = MMA8452_TRANSIENT_SRC_XTRANSE,
->-		.ev_src_ye = MMA8452_TRANSIENT_SRC_YTRANSE,
->-		.ev_src_ze = MMA8452_TRANSIENT_SRC_ZTRANSE,
->-		.ev_ths = MMA8452_TRANSIENT_THS,
->-		.ev_ths_mask = MMA8452_TRANSIENT_THS_MASK,
->-		.ev_count = MMA8452_TRANSIENT_COUNT,
-> 	},
-> 	[mma8453] = {
-> 		.chip_id = MMA8453_DEVICE_ID,
-> 		.channels = mma8453_channels,
-> 		.num_channels = ARRAY_SIZE(mma8453_channels),
-> 		.mma_scales = { {0, 38307}, {0, 76614}, {0, 153228} },
->-		.ev_cfg = MMA8452_TRANSIENT_CFG,
->-		.ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE,
->-		.ev_cfg_chan_shift = 1,
->-		.ev_src = MMA8452_TRANSIENT_SRC,
->-		.ev_src_xe = MMA8452_TRANSIENT_SRC_XTRANSE,
->-		.ev_src_ye = MMA8452_TRANSIENT_SRC_YTRANSE,
->-		.ev_src_ze = MMA8452_TRANSIENT_SRC_ZTRANSE,
->-		.ev_ths = MMA8452_TRANSIENT_THS,
->-		.ev_ths_mask = MMA8452_TRANSIENT_THS_MASK,
->-		.ev_count = MMA8452_TRANSIENT_COUNT,
-> 	},
-> 	[mma8652] = {
-> 		.chip_id = MMA8652_DEVICE_ID,
-> 		.channels = mma8652_channels,
-> 		.num_channels = ARRAY_SIZE(mma8652_channels),
-> 		.mma_scales = { {0, 9577}, {0, 19154}, {0, 38307} },
->-		.ev_cfg = MMA8452_FF_MT_CFG,
->-		.ev_cfg_ele = MMA8452_FF_MT_CFG_ELE,
->-		.ev_cfg_chan_shift = 3,
->-		.ev_src = MMA8452_FF_MT_SRC,
->-		.ev_src_xe = MMA8452_FF_MT_SRC_XHE,
->-		.ev_src_ye = MMA8452_FF_MT_SRC_YHE,
->-		.ev_src_ze = MMA8452_FF_MT_SRC_ZHE,
->-		.ev_ths = MMA8452_FF_MT_THS,
->-		.ev_ths_mask = MMA8452_FF_MT_THS_MASK,
->-		.ev_count = MMA8452_FF_MT_COUNT,
-> 	},
-> 	[mma8653] = {
-> 		.chip_id = MMA8653_DEVICE_ID,
-> 		.channels = mma8653_channels,
-> 		.num_channels = ARRAY_SIZE(mma8653_channels),
-> 		.mma_scales = { {0, 38307}, {0, 76614}, {0, 153228} },
->-		.ev_cfg = MMA8452_FF_MT_CFG,
->-		.ev_cfg_ele = MMA8452_FF_MT_CFG_ELE,
->-		.ev_cfg_chan_shift = 3,
->-		.ev_src = MMA8452_FF_MT_SRC,
->-		.ev_src_xe = MMA8452_FF_MT_SRC_XHE,
->-		.ev_src_ye = MMA8452_FF_MT_SRC_YHE,
->-		.ev_src_ze = MMA8452_FF_MT_SRC_ZHE,
->-		.ev_ths = MMA8452_FF_MT_THS,
->-		.ev_ths_mask = MMA8452_FF_MT_THS_MASK,
->-		.ev_count = MMA8452_FF_MT_COUNT,
-> 	},
-> 	[fxls8471] = {
-> 		.chip_id = FXLS8471_DEVICE_ID,
-> 		.channels = mma8451_channels,
-> 		.num_channels = ARRAY_SIZE(mma8451_channels),
-> 		.mma_scales = { {0, 2394}, {0, 4788}, {0, 9577} },
->-		.ev_cfg = MMA8452_TRANSIENT_CFG,
->-		.ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE,
->-		.ev_cfg_chan_shift = 1,
->-		.ev_src = MMA8452_TRANSIENT_SRC,
->-		.ev_src_xe = MMA8452_TRANSIENT_SRC_XTRANSE,
->-		.ev_src_ye = MMA8452_TRANSIENT_SRC_YTRANSE,
->-		.ev_src_ze = MMA8452_TRANSIENT_SRC_ZTRANSE,
->-		.ev_ths = MMA8452_TRANSIENT_THS,
->-		.ev_ths_mask = MMA8452_TRANSIENT_THS_MASK,
->-		.ev_count = MMA8452_TRANSIENT_COUNT,
-> 	},
-> };
-> 
+        VALUE
+        -----
+        A Value represents the count data for a set of Signals. A Value
+        has a count function mode (e.g. "increment" or "quadrature x4")
+        which respresents the update behavior for the count data. A
+        Value also has a set of one or more associated Signals.
+
+        SIGNAL
+        ------
+        A Signal represents a count input line. A Signal may be
+	associated to one or more Values.
+
+        TRIGGER
+	-------
+        A Trigger represents a Value's count function trigger condition
+        mode (e.g. "rising edge" or "double pulse") for an associated
+        Signal.	If a Signal is associated with a Value, a respective
+        Trigger	instance for that association exists -- albeit perhaps
+        with a trigger condition mode of "none."
+
+A counter is defined as a set of input signals associated to count data
+that are generated by the evaluation of the state of the associated
+input signals as defined by the respective count functions. Within the
+context of the generic counter interface, a counter consists of Values
+each associated to a set of Signals, whose respective Trigger instances
+represent the count function update conditions for the associated
+Values.
+
+Implementation
+==============
+
+The IIO generic counter interface piggybacks off of the IIO core. This
+is primarily used to leverage the existing sysfs setup: the IIO_COUNT
+channel attributes represent the "counter value," while the IIO_SIGNAL
+channel attributes represent the "counter signal;" auxilary IIO_COUNT
+attributes represent the "counter signal" connections and their
+respective state change configurations which trigger an associated
+"counter function" evaluation.
+
+The iio_counter_ops structure serves as a container for driver callbacks
+to communicate with the device; function callbacks are provided to read
+and write various "counter signals" and "counter values," and set and
+get the "trigger mode" and "function mode" for various "counter signals"
+and "counter values" respectively.
+
+To support a counter device, a driver must first allocate the available
+"counter signals" via iio_counter_signal structures. These "counter
+signals" should be stored as an array and set to the init_signals member
+of an allocated iio_counter structure before the counter is registered.
+
+"Counter values" may be allocated via iio_counter_value structures, and
+respective "counter signal" associations made via iio_counter_trigger
+structures. Initial associated iio_counter_trigger structures may be
+stored as an array and set to the the init_triggers member of the
+respective iio_counter_value structure. These iio_counter_value
+structures may be set to the init_values member of an allocated
+iio_counter structure before the counter is registered if so desired.
+
+A counter device is registered to the system by passing the respective
+initialized iio_counter structure to the iio_counter_register function;
+similarly, the iio_counter_unregister function unregisters the
+respective counter.
+
+Userspace Interface
+===================
+
+Several sysfs attributes are generated by the generic counter interface,
+and reside under the /sys/bus/iio/devices/iio:deviceX directory.
+
+Each counter has a respective set of countX-Y and signalX-Y prefixed
+attributes, where X is the id set in the counter structure, and Y is the
+id of the respective Value or Signal.
+
+The generic counter interface sysfs attributes are as follows:
+
+        countX-Y_function: count function mode
+        countX-Y_function_available: available count function modes
+        countX-Y_name: Value name
+        countX-Y_raw: Value data
+        countX-Y_triggers: Value's associated Signals
+        countX-Y_trigger_signalX-Z: Value Y trigger mode for Signal Z
+        countX-Y_trigger_signalX-Z_available: available Value Y trigger
+                                              modes for Signal Z
+        signalX-Y_name: Signal name
+        signalX-Y_raw: Signal data
+
+Future Development
+==================
+
+This patchset is focused on providing the core functionality required to
+introduce a usable generic counter interface. Unfortunately, that means
+nice features were left out for the sake of simplicity. It's probably
+useful to include support for common counter functionality and
+configurations such as preset values, min/max boundaries, and such in
+future patches.
+
+Take into consideration however that it is my intention for this generic
+counter interface to serve as a base level of code to support counter
+devices; that is to say: a feature should only be added to the generic
+counter interface is it is pervasive to counter devices in general. If a
+feature is specific to a subset of counter devices, then that feature
+should be added to the respective subset counter interface; for example,
+a "quadrature pair" atribute should be introduced to the quadrature
+counter interface instead of the generic counter interface.
+
+Managed memory functions such as devm_iio_counter_register should be
+introduced in a future patch to provide support that aligns with the
+current design of code in the kernel. This should help prevent memory
+leaks and reduce a lot of boiler plate code in drivers.
+
+I would like to see a character device node interface similar to the one
+provided by the GPIO subsystem. I designed the generic counter interface
+to allow for dynamic reconfiguration of the Value-Signal associations,
+where a user may decide to attached or remove Signals to/from Values at
+will; I don't believe a sysfs attribute system lends itself well to
+these kinds of interactions.
+
+Current Patchset Concerns
+=========================
+
+I'm piggybacking off the IIO core with this patchset, but I'm not sure
+if its appropriate for the longterm. A lot of IIO core is ignored, and
+I feel that I'm essentially just leveraging it for its sysfs code.
+However, utilizing iio_device_register within iio_counter_register does
+allow driver authors to pass in their own IIO channels to support
+attributes and features not provide by the IIO generic counter interface
+code -- so I'm a bit undecided whether to part completely either.
+
+For what its worth, I'd like the generic counter interface to stay
+piggybacked at least until the quadrature counter interface is release;
+that should allow the driver authors to start making use of the
+quadrature counter interface while the generic counter interface is
+improved under the hood.
+
+You may have noticed that Signals do not have associated
+iio_counter_signal_register/iio_counter_signal_unregister functions.
+This is because I encountered a deadlock scenario where unregistering a
+Signal dynamically requires a search of all Values' Triggers to
+determine is the Signal is associated to any Values and subsequently
+remove that association; a lock of the counter structure
+signal_list_lock is required at the iio_counter_signal_unregister call,
+and then once more when performing the search through the Triggers
+(in order to prevent a trigger structure signal member pointer being
+dereferenced after the respective Signal is freed).
+
+Since Signals are likely to be static for the lifetime of a driver
+(since Signals typically represent physical lines on the device), I
+decided to prevent drivers from dynamically registering and
+unregistering Signals for the time being. I'm not sure whether this
+design should stay however; I don't want to restrict a clever driver
+or future interface that wants to dynamically register/unregister
+Signals.
+
+I put a dependency on CONFIG_IIO_COUNTER for the Kconfig IIO Counter
+menu. Is this appropriate; should this menu simply select IIO_COUNTER
+instead of a hard depends; or should drivers individually depend on
+CONFIG_IIO_COUNTER?
+
+This is more of a style nitpick: should I prefix static symbols with __?
+I took on this coding convention when writing the generic counter
+interface code, but I'm not sure if it is appropriate in this manner.
+
+Finally, I'd like to actively encourage symbol renaming suggestions. I'm
+afraid names such as "Value" and "Trigger" may be too easily confused
+for other unrelated subsystem conventions (e.g. IIO Triggers). I mainly
+stuck with the names and symbols used in this patchset so that I could
+focus on developing the interface code. However, if the chance of
+confusion is small, we can stick with the existing naming convention as
+well.
+
+William Breathitt Gray (3):
+  iio: Implement counter channel specification and IIO_SIGNAL constant
+  iio: Introduce the generic counter interface
+  iio: 104-quad-8: Add IIO generic counter interface support
+
+ MAINTAINERS                        |    7 +
+ drivers/iio/Kconfig                |    8 +
+ drivers/iio/Makefile               |    1 +
+ drivers/iio/counter/104-quad-8.c   |  306 +++++++++-
+ drivers/iio/counter/Kconfig        |    1 +
+ drivers/iio/industrialio-core.c    |   14 +-
+ drivers/iio/industrialio-counter.c | 1157 ++++++++++++++++++++++++++++++++++++
+ include/linux/iio/counter.h        |  221 +++++++
+ include/linux/iio/iio.h            |    2 +
+ include/uapi/linux/iio/types.h     |    1 +
+ 10 files changed, 1700 insertions(+), 18 deletions(-)
+ create mode 100644 drivers/iio/industrialio-counter.c
+ create mode 100644 include/linux/iio/counter.h
 
 -- 
-Martin Kepplinger
-http://martinkepplinger.com
-sent from mobile
+2.13.3
+
