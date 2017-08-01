@@ -1,34 +1,42 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eddie.linux-mips.org ([148.251.95.138]:54314 "EHLO
-        cvs.linux-mips.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751101AbdHAIZY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 1 Aug 2017 04:25:24 -0400
-Received: (from localhost user: 'ladis' uid#1021 fake: STDIN
-        (ladis@eddie.linux-mips.org)) by eddie.linux-mips.org
-        id S23993302AbdHAIZWmMay6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 1 Aug 2017 10:25:22 +0200
-Date: Tue, 1 Aug 2017 10:25:21 +0200
+Return-Path: <SRS0=7Css=7D=linux-mips.org=ladis@kernel.org>
+Date: Tue, 1 Aug 2017 10:26:05 +0200
+Sender: Ladislav Michl <ladis@linux-mips.org>
 From: Ladislav Michl <ladis@linux-mips.org>
 To: linux-iio@vger.kernel.org
 Cc: Daniel Baluta <daniel.baluta@intel.com>,
         Matt Ranostay <matt.ranostay@intel.com>,
         Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 0/2] iio: adc: ti-ads1015: fix channel crosstalk
-Message-ID: <20170801082521.namcrs4wyufwqyuh@lenoch>
+Subject: [PATCH 1/2] iio: adc: ti-ads1015: fix conversion time
+Message-ID: <20170801082605.kxzqtnrbt6glplmu@lenoch>
+References: <20170801082521.namcrs4wyufwqyuh@lenoch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <20170801082521.namcrs4wyufwqyuh@lenoch>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi,
+When reading diffrent channel value than device is currently processing
+wait time of conversion period is applied, which is not enough as device
+might be already in the middle of conversion and therefore previously
+converted value is returned - the one belonging to another channel.
+Fix it by waiting for two sampling periods.
 
-first patch of this serie fixes reading diffrent channel value than device
-is currently processing, while second one is purely optional, making
-drivers generate attributes from values it is actually working with.
+Signed-off-by: Ladislav Michl <ladis@linux-mips.org>
+---
+ drivers/iio/adc/ti-ads1015.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Ladislav Michl (2):
-  iio: adc: ti-ads1015: fix conversion time
-  iio: adc: ti-ads1015: use dynamically generated attributes
-
- drivers/iio/adc/ti-ads1015.c | 107 ++++++++++++++++++++++++-------------------
- 1 file changed, 61 insertions(+), 46 deletions(-)
+diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
+index 884b8e461b17..86fd2753869d 100644
+--- a/drivers/iio/adc/ti-ads1015.c
++++ b/drivers/iio/adc/ti-ads1015.c
+@@ -260,7 +260,7 @@ int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *val)
+ 		return ret;
+ 
+ 	if (change) {
+-		conv_time = DIV_ROUND_UP(USEC_PER_SEC, data->data_rate[dr]);
++		conv_time = 2 * DIV_ROUND_UP(USEC_PER_SEC, data->data_rate[dr]);
+ 		usleep_range(conv_time, conv_time + 1);
+ 	}
+ 
+-- 
+2.11.0
