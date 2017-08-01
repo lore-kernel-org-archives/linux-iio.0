@@ -1,73 +1,54 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:41336 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752432AbdHINfZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 9 Aug 2017 09:35:25 -0400
-Date: Wed, 9 Aug 2017 14:35:16 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Jonathan Corbet <corbet@lwn.net>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: PATCH] iio: Fix some documentation warnings
-Message-ID: <20170809143516.70912657@archlinux>
-In-Reply-To: <20170730161442.0fc96691@lwn.net>
-References: <20170730161442.0fc96691@lwn.net>
+Return-Path: <SRS0=tbsy=7D=gmail.com=harinath922@kernel.org>
+Subject: Re: [PATCH] iio: accel: Bugfix to enbale and allow different events
+ to work parallely.
+From: Harinath Nampally <harinath922@gmail.com>
+To: Martin Kepplinger <martink@posteo.de>
+Cc: Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de, lars@metafoo.de,
+ Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+ Greg KH <gregkh@linuxfoundation.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Alison Schofield <amsfield22@gmail.com>
+References: <1501499858-4476-1-git-send-email-harinath922@gmail.com>
+ <653B8888-D699-4B8B-93C2-6FF3308932AF@posteo.de>
+ <CAAGUq_oD443x-Uq0FAZGQ8ietk9BO_Fjs7MYSNXrnR9Ogb+5tA@mail.gmail.com>
+Message-ID: <a5831c2d-58de-0ce8-67f3-95886063694b@gmail.com>
+Date: Mon, 31 Jul 2017 23:08:21 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <CAAGUq_oD443x-Uq0FAZGQ8ietk9BO_Fjs7MYSNXrnR9Ogb+5tA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, 30 Jul 2017 16:14:42 -0600
-Jonathan Corbet <corbet@lwn.net> wrote:
+> Thanks for doing that work. I have had it on my list for a long time and you seem to fix it. Although I'd happily review and possibly test it, unfortunately I can't do so before the week of August 21st.
+>
+> If this might go in quick, nothing will stop me from reviewing either, so, whatever. Thanks again!
+   Sure no problem, looking forward to your review comments.
+   Actually I am planning to add Orientation events for FXLS8471Q, for 
+that is it good idea to overload existing
+   IIO_ROT channel type? Also thinking of adding 4 channel modifiers i.e 
+portrait up/down, landscape left/right.
+   Any suggestions are welcome. Thank you.
 
-> The kerneldoc description for the trig_readonly field of struct iio_dev
-> lacked a colon, leading to this doc build warning:
-> 
->   ./include/linux/iio/iio.h:603: warning: No description found for parameter 'trig_readonly'
-> 
-> A similar issue for iio_trigger_set_immutable() in trigger.h yielded:
-> 
->   ./include/linux/iio/trigger.h:151: warning: No description found for parameter 'indio_dev'
->   ./include/linux/iio/trigger.h:151: warning: No description found for parameter 'trig'
-> 
-> Fix the formatting and silence the warnings.
-> 
-> Signed-off-by: Jonathan Corbet <corbet@lwn.net>
-Applied to the fixes-togreg branch of iio.git.
-
-Thanks,
-
-Jonathan
-> ---
->  include/linux/iio/iio.h     | 2 +-
->  include/linux/iio/trigger.h | 4 ++--
->  2 files changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> index d68bec297a45..c380daa40c0e 100644
-> --- a/include/linux/iio/iio.h
-> +++ b/include/linux/iio/iio.h
-> @@ -535,7 +535,7 @@ struct iio_buffer_setup_ops {
->   * @scan_timestamp:	[INTERN] set if any buffers have requested timestamp
->   * @scan_index_timestamp:[INTERN] cache of the index to the timestamp
->   * @trig:		[INTERN] current device trigger (buffer modes)
-> - * @trig_readonly	[INTERN] mark the current trigger immutable
-> + * @trig_readonly:	[INTERN] mark the current trigger immutable
->   * @pollfunc:		[DRIVER] function run on trigger being received
->   * @pollfunc_event:	[DRIVER] function run on events trigger being received
->   * @channels:		[DRIVER] channel specification structure table
-> diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
-> index ea08302f2d7b..7142d8d6e470 100644
-> --- a/include/linux/iio/trigger.h
-> +++ b/include/linux/iio/trigger.h
-> @@ -144,8 +144,8 @@ void devm_iio_trigger_unregister(struct device *dev,
->  /**
->   * iio_trigger_set_immutable() - set an immutable trigger on destination
->   *
-> - * @indio_dev - IIO device structure containing the device
-> - * @trig - trigger to assign to device
-> + * @indio_dev: IIO device structure containing the device
-> + * @trig: trigger to assign to device
->   *
->   **/
->  int iio_trigger_set_immutable(struct iio_dev *indio_dev, struct iio_trigger *trig);
-
+On 07/31/2017 10:17 PM, harinath Nampally wrote:
+>> This driver supports multiple devices like mma8653, mma8652, mma8452,
+>> mma8453 and
+>> fxls8471. Almost all these devices have more than one event. Current
+>> driver design
+>> hardcodes the event specific information, so only one event can be
+>> supported by this
+>> driver and current design doesn't have the flexibility to add more
+>> events.
+>>
+>> This patch fixes by detaching the event related information from
+>> chip_info struct,
+>> and based on channel type and event direction the corresponding event
+>> configuration registers
+>> are picked dynamically. Hence multiple events can be handled in
+>> read/write callbacks.
+>>
+>> Changes are thoroughly tested on fxls8471 device on imx6UL Eval board
+>> using iio_event_monitor user space program.
+>>
+>> After this fix both Freefall and Transient events are handled by the
+>> driver without any conflicts.
+> Thanks for doing that work. I have had it on my list for a long time and you seem to fix it. Although I'd happily review and possibly test it, unfortunately I can't do so before the week of August 21st.
+>
+> If this might go in quick, nothing will stop me from reviewing either, so, whatever. Thanks again!
