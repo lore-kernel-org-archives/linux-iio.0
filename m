@@ -1,178 +1,77 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:45094 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1753211AbdHIOcd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 9 Aug 2017 10:32:33 -0400
-Date: Wed, 9 Aug 2017 15:30:35 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        daniel.baluta@gmail.com, amsfield22@gmail.com,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: chemical: ccs811: Add triggered buffer support
-Message-ID: <20170809153019.5afa6852@archlinux>
-In-Reply-To: <1501587518-12665-1-git-send-email-narcisaanamaria12@gmail.com>
-References: <1501587518-12665-1-git-send-email-narcisaanamaria12@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from regular1.263xmail.com ([211.150.99.134]:34611 "EHLO
+        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751066AbdHBIZd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 2 Aug 2017 04:25:33 -0400
+From: Andy Yan <andy.yan@rock-chips.com>
+To: heiko@sntech.de
+Cc: linus.walleij@linaro.org, linux-pwm@vger.kernel.org,
+        robh+dt@kernel.org, david.wu@rock-chips.com,
+        shawn.lin@rock-chips.com, linux-i2c@vger.kernel.org,
+        zhangqing@rock-chips.com, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, mturquette@baylibre.com,
+        sboyd@codeaurora.org, wsa@the-dreams.de,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        broonie@kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-spi@vger.kernel.org,
+        Andy Yan <andy.yan@rock-chips.com>
+Subject: [PATCH v2 00/23] Support more devices on rockchip rv1108
+Date: Wed,  2 Aug 2017 16:25:03 +0800
+Message-Id: <1501662303-11687-1-git-send-email-andy.yan@rock-chips.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue,  1 Aug 2017 14:38:38 +0300
-Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com> wrote:
 
-> A software trigger such as hrtimer can be used to capture the data
-> that will be stored in the buffer.
-> 
-> Cc: Daniel Baluta <daniel.baluta@gmail.com>
-> Cc: Alison Schofield <amsfield22@gmail.com>
-> Signed-off-by: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
-Sorry for the slow response. I'm over in China and running rather behind
-with everything.
+This series try to support i2c/spi/pwm/saradc/pmic/watchdog and
+the full clk tree on rockchip rv1108 soc.
 
-A few points inline.
+Changes in v2:
+- split the rename and intentation fix part from id patch
+- split the new added clks and rename.
+- add compatible string "rockchip,rv1108-pwm"
+- add compatible string "rockchip,rv1108-saradc"
 
-Jonathan
-> ---
->  drivers/iio/chemical/Kconfig  |  2 ++
->  drivers/iio/chemical/ccs811.c | 61 ++++++++++++++++++++++++++++++++++++++++---
->  2 files changed, 59 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
-> index 4d799b5..5cb5be7 100644
-> --- a/drivers/iio/chemical/Kconfig
-> +++ b/drivers/iio/chemical/Kconfig
-> @@ -24,6 +24,8 @@ config ATLAS_PH_SENSOR
->  config CCS811
->  	tristate "AMS CCS811 VOC sensor"
->  	depends on I2C
-> +    select IIO_BUFFER
-> +    select IIO_TRIGGERED_BUFFER
->  	help
->  	  Say Y here to build I2C interface support for the AMS
->  	  CCS811 VOC (Volatile Organic Compounds) sensor
-> diff --git a/drivers/iio/chemical/ccs811.c b/drivers/iio/chemical/ccs811.c
-> index cba2180..d5f989f 100644
-> --- a/drivers/iio/chemical/ccs811.c
-> +++ b/drivers/iio/chemical/ccs811.c
-> @@ -22,6 +22,9 @@
->  #include <linux/delay.h>
->  #include <linux/i2c.h>
->  #include <linux/iio/iio.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +#include <linux/iio/trigger_consumer.h>
->  #include <linux/module.h>
-> 
->  #define CCS811_STATUS		0x00
-> @@ -77,25 +80,44 @@ struct ccs811_data {
->  	{
->  		.type = IIO_CURRENT,
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> -				      BIT(IIO_CHAN_INFO_SCALE)
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +		.scan_index = -1,
->  	}, {
->  		.type = IIO_VOLTAGE,
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> -				      BIT(IIO_CHAN_INFO_SCALE)
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +		.scan_index = -1,
->  	}, {
->  		.type = IIO_CONCENTRATION,
->  		.channel2 = IIO_MOD_CO2,
->  		.modified = 1,
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->  				      BIT(IIO_CHAN_INFO_OFFSET) |
-> -				      BIT(IIO_CHAN_INFO_SCALE)
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +		.scan_index = 0,
-> +		.scan_type = {
-> +			.sign = 'u',
-> +			.realbits = 16,
-> +			.storagebits = 16,
-> +			.shift = 0,
-> +			.endianness = IIO_BE,
-> +		},
->  	}, {
->  		.type = IIO_CONCENTRATION,
->  		.channel2 = IIO_MOD_VOC,
->  		.modified = 1,
->  		.info_mask_separate =  BIT(IIO_CHAN_INFO_RAW) |
-> -				       BIT(IIO_CHAN_INFO_SCALE)
-> +				       BIT(IIO_CHAN_INFO_SCALE),
-> +		.scan_index = 1,
-> +		.scan_type = {
-> +			.sign = 'u',
-> +			.realbits = 16,
-> +			.storagebits = 16,
-> +			.shift = 0,
-No need to state a shift of 0.  It's the obvious default and
-will be true anyway due to the c specification which states un
-specified fields in a structure that uses this type of assignment
-must be zeroed.
-> +			.endianness = IIO_BE,
-> +		},
->  	},
-> +	IIO_CHAN_SOFT_TIMESTAMP(2),
->  };
-> 
->  /*
-> @@ -254,6 +276,29 @@ static int ccs811_read_raw(struct iio_dev *indio_dev,
->  	.driver_module = THIS_MODULE,
->  };
-> 
-> +static irqreturn_t ccs811_trigger_handler(int irq, void *p)
-> +{
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct ccs811_data *data = iio_priv(indio_dev);
-> +	s16 buf[8]; /* s16 eCO2 + s16 TVOC + padding + 8 byte timestamp */
-> +	int ret;
-> +
-> +	mutex_lock(&data->lock);
-> +	ret = i2c_smbus_read_i2c_block_data(data->client,
-> +					    CCS811_ALG_RESULT_DATA, 4,
-> +					    (u8 *)&buf);
-Why do you need to take the lock?  I'm not certainly what you are protecting
-here. buf is local and the i2c side of things is serialized.
-> +	if (ret == 4)
-> +		iio_push_to_buffers_with_timestamp(indio_dev, buf,
-> +						   iio_get_time_ns(indio_dev));
-> +
-> +	mutex_unlock(&data->lock);
-> +
-> +	iio_trigger_notify_done(indio_dev->trig);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
->  static int ccs811_probe(struct i2c_client *client,
->  			const struct i2c_device_id *id)
->  {
-> @@ -306,6 +351,14 @@ static int ccs811_probe(struct i2c_client *client,
->  	indio_dev->channels = ccs811_channels;
->  	indio_dev->num_channels = ARRAY_SIZE(ccs811_channels);
-> 
-> +	ret = devm_iio_triggered_buffer_setup(indio_dev->dev.parent, indio_dev,
-> +					      NULL, ccs811_trigger_handler,
-> +					      NULL);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "triggered buffer setup failed\n");
-> +		return ret;
-> +	}
-This results in the remove order not being the opposite of probe.
-If you can safely move this before the setup call then it would
-be fine like this.  If not you should use the non devm version.
+Andy Yan (14):
+  pinctrl: rockchip: add schmitt input mode support for rv1108
+  dt-bindings: i2c: rk3x: add support for rv1108
+  i2c: rk3x: add support for rv1108
+  ARM: dts: rockchip: add i2c dt node for rv1108
+  spi: rockchip: add compatible string for rv1108 spi
+  ARM: dts: rockchip: add spi dt node for rv1108
+  dt-bindings: pwm: add description for rv1108 pwm
+  ARM: dts: rockchip: add pwm dt node for rv1108
+  ARM: dts: rockchip: add watchdog dt node for rv1108
+  dt-bindings: adc: add description for rv1108 saradc
+  ARM: dts: rockchip: add saradc support for rv1108
+  ARM: dts: rockchip: add pwm backlight for rv1108 evb
+  ARM: dts: rockchip: add pmic rk805 dt node for rv1108 evb
+  ARM: dts: rockchip: add accelerometer bma250e dt node for rv1108 evb
 
-Thanks,
+Elaine Zhang (9):
+  clk: rockchip: add more clk ids for rv1108
+  clk: rockchip: rename the clk id for HCLK_I2S1_2CH
+  clk: rockchip: fix up the indentation stuff for RV1108 SoC
+  clk: rockchip: support more rates for cpuclk
+  clk: rockchip: fix up the pll clks error for rv1108 SoC
+  clk: rockchip: support more clks for rv1108
+  clk: rockchip: fix up some clks describe error for rv1108 SoC
+  clk: rockchip: rename some of clks for rv1108 SoC
+  clk: rockchip: add some critical clocks for rv1108 SoC
 
-Jonathan
-> +
->  	return iio_device_register(indio_dev);
->  }
-> 
-> --
-> 1.9.1
-> 
+ Documentation/devicetree/bindings/i2c/i2c-rk3x.txt |   1 +
+ .../bindings/iio/adc/rockchip-saradc.txt           |   1 +
+ .../devicetree/bindings/pwm/pwm-rockchip.txt       |   2 +-
+ .../devicetree/bindings/spi/spi-rockchip.txt       |   1 +
+ arch/arm/boot/dts/rv1108-evb.dts                   | 158 +++++++
+ arch/arm/boot/dts/rv1108.dtsi                      | 249 ++++++++++
+ drivers/clk/rockchip/clk-rv1108.c                  | 514 ++++++++++++++++-----
+ drivers/i2c/busses/i2c-rk3x.c                      |   9 +
+ drivers/pinctrl/pinctrl-rockchip.c                 |  31 ++
+ drivers/spi/spi-rockchip.c                         |   1 +
+ include/dt-bindings/clock/rv1108-cru.h             | 123 ++++-
+ 11 files changed, 964 insertions(+), 126 deletions(-)
+
+-- 
+2.7.4
+
 
