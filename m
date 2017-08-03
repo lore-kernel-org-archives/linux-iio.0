@@ -1,41 +1,37 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f193.google.com ([209.85.192.193]:36469 "EHLO
-        mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752154AbdHCL2x (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 3 Aug 2017 07:28:53 -0400
-From: Arvind Yadav <arvind.yadav.cs@gmail.com>
-To: jikos@kernel.org, benjamin.tissoires@redhat.com, jic23@kernel.org,
-        srinivas.pandruvada@linux.intel.com
-Cc: linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-iio@vger.kernel.org
-Subject: [PATCH 2/4] HID: sensor: constify attribute_group structures.
-Date: Thu,  3 Aug 2017 16:58:35 +0530
-Message-Id: <1501759715-18206-1-git-send-email-arvind.yadav.cs@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=YGnt=7G=analog.com=Dragos.Bogdan@kernel.org>
+From: Dragos Bogdan <dragos.bogdan@analog.com>
+To: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
+	<Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>
+CC: Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald-Stadler
+	<pmeerw@pmeerw.net>, <linux-iio@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, Dragos Bogdan <dragos.bogdan@analog.com>
+Subject: [PATCH] iio: imu: adis16480: Fix acceleration scale factor for adis16480
+Date: Fri, 4 Aug 2017 01:37:27 +0300
+Message-ID: <20170803223727.14472-1-dragos.bogdan@analog.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-attribute_group are not supposed to change at runtime. All functions
-working with attribute_group provided by <linux/sysfs.h> work with
-const attribute_group. So mark the non-const structs as const.
+According to the datasheet, the range of the acceleration is [-10 g, + 10 g],
+so the scale factor should be 10 instead of 5.
 
-Signed-off-by: Arvind Yadav <arvind.yadav.cs@gmail.com>
+Signed-off-by: Dragos Bogdan <dragos.bogdan@analog.com>
 ---
- drivers/hid/hid-sensor-custom.c | 2 +-
+ drivers/iio/imu/adis16480.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/hid/hid-sensor-custom.c b/drivers/hid/hid-sensor-custom.c
-index 3a84aaf..fb86f86 100644
---- a/drivers/hid/hid-sensor-custom.c
-+++ b/drivers/hid/hid-sensor-custom.c
-@@ -276,7 +276,7 @@ static ssize_t enable_sensor_store(struct device *dev,
- 	NULL,
- };
- 
--static struct attribute_group enable_sensor_attr_group = {
-+static const struct attribute_group enable_sensor_attr_group = {
- 	.attrs = enable_sensor_attrs,
- };
- 
+diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
+index 8cf84d3488b2..12898424d838 100644
+--- a/drivers/iio/imu/adis16480.c
++++ b/drivers/iio/imu/adis16480.c
+@@ -696,7 +696,7 @@ static const struct adis16480_chip_info adis16480_chip_info[] = {
+ 		.gyro_max_val = IIO_RAD_TO_DEGREE(22500),
+ 		.gyro_max_scale = 450,
+ 		.accel_max_val = IIO_M_S_2_TO_G(12500),
+-		.accel_max_scale = 5,
++		.accel_max_scale = 10,
+ 	},
+ 	[ADIS16485] = {
+ 		.channels = adis16485_channels,
 -- 
-1.9.1
-
+2.11.0
