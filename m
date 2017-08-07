@@ -1,62 +1,173 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:45356 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752901AbdHIOir (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 9 Aug 2017 10:38:47 -0400
-Date: Wed, 9 Aug 2017 15:38:34 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Dragos Bogdan <dragos.bogdan@analog.com>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: imu: adis16480: Fix acceleration scale factor for
- adis16480
-Message-ID: <20170809153834.7f9cf637@archlinux>
-In-Reply-To: <e34f87db-694c-e83e-5ee8-ff93d4f63e39@metafoo.de>
-References: <20170803223727.14472-1-dragos.bogdan@analog.com>
-        <e34f87db-694c-e83e-5ee8-ff93d4f63e39@metafoo.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=Lycr=7J=linux.intel.com=srinivas.pandruvada@kernel.org>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jikos@kernel.org,
+	jic23@kernel.org
+Cc: linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH] hid-sensor-hub: Force logical minimum to 1 for power and report state
+Date: Sun,  6 Aug 2017 21:52:01 -0700
+Message-Id: <20170807045201.3286-1-srinivas.pandruvada@linux.intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, 4 Aug 2017 05:49:32 +0200
-Lars-Peter Clausen <lars@metafoo.de> wrote:
+In the reference HID sensor hub firmware all Named array enums were
+0-based. There is no description of the default base of enums in HID
+sensor hub specification as logical minimum should have set this base
+value.
 
-> On 08/04/2017 12:37 AM, Dragos Bogdan wrote:
-> > According to the datasheet, the range of the acceleration is [-10 g, + 10 g],
-> > so the scale factor should be 10 instead of 5.
-> > 
-> > Signed-off-by: Dragos Bogdan <dragos.bogdan@analog.com>  
-> 
-> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
-> 
-> Thanks.
-Applied to the fixes-togreg branch of iio.git and marked for stable.
+Every sensor hub implemented enum as 1-based, without explicitly setting
+logical minimum to 1, because of the implementation by one of the major
+OS vendor. In Linux we used logical minimum to decide the enum base.
 
-Thanks,
+Some sensor hub FWs already changed logical minimum from 0 to 1. We hoped
+that every other vendor will follow. But that didn't happen and we had to
+fix the report header for every sensor hub to change logical minimum to 1
+by using .report_fixup() callback. So for every new sensor hub we had to
+modify source code by adding this quirk based on the vendor and device id.
+This is becoming a maintenance burden.
 
-Jonathan
-> 
-> > ---
-> >  drivers/iio/imu/adis16480.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
-> > index 8cf84d3488b2..12898424d838 100644
-> > --- a/drivers/iio/imu/adis16480.c
-> > +++ b/drivers/iio/imu/adis16480.c
-> > @@ -696,7 +696,7 @@ static const struct adis16480_chip_info adis16480_chip_info[] = {
-> >  		.gyro_max_val = IIO_RAD_TO_DEGREE(22500),
-> >  		.gyro_max_scale = 450,
-> >  		.accel_max_val = IIO_M_S_2_TO_G(12500),
-> > -		.accel_max_scale = 5,
-> > +		.accel_max_scale = 10,
-> >  	},
-> >  	[ADIS16485] = {
-> >  		.channels = adis16485_channels,
-> >   
-> 
+This patch hardcodes the logical minimum of power and report state
+attributes to 1. In this way we can remove the existing quirks and also
+we don't have to add more quirks.
 
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/hid/hid-sensor-hub.c                       | 94 ----------------------
+ .../iio/common/hid-sensors/hid-sensor-attributes.c |  3 +
+ 2 files changed, 3 insertions(+), 94 deletions(-)
+
+diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
+index 4ef7337..25363fc 100644
+--- a/drivers/hid/hid-sensor-hub.c
++++ b/drivers/hid/hid-sensor-hub.c
+@@ -579,54 +579,6 @@ void sensor_hub_device_close(struct hid_sensor_hub_device *hsdev)
+ }
+ EXPORT_SYMBOL_GPL(sensor_hub_device_close);
+ 
+-static __u8 *sensor_hub_report_fixup(struct hid_device *hdev, __u8 *rdesc,
+-		unsigned int *rsize)
+-{
+-	int index;
+-	struct sensor_hub_data *sd =  hid_get_drvdata(hdev);
+-	unsigned char report_block[] = {
+-				0x0a,  0x16, 0x03, 0x15, 0x00, 0x25, 0x05};
+-	unsigned char power_block[] = {
+-				0x0a,  0x19, 0x03, 0x15, 0x00, 0x25, 0x05};
+-
+-	if (!(sd->quirks & HID_SENSOR_HUB_ENUM_QUIRK)) {
+-		hid_dbg(hdev, "No Enum quirks\n");
+-		return rdesc;
+-	}
+-
+-	/* Looks for power and report state usage id and force to 1 */
+-	for (index = 0; index < *rsize; ++index) {
+-		if (((*rsize - index) > sizeof(report_block)) &&
+-			!memcmp(&rdesc[index], report_block,
+-						sizeof(report_block))) {
+-			rdesc[index + 4] = 0x01;
+-			index += sizeof(report_block);
+-		}
+-		if (((*rsize - index) > sizeof(power_block)) &&
+-			!memcmp(&rdesc[index], power_block,
+-						sizeof(power_block))) {
+-			rdesc[index + 4] = 0x01;
+-			index += sizeof(power_block);
+-		}
+-	}
+-
+-	/* Checks if the report descriptor of Thinkpad Helix 2 has a logical
+-	 * minimum for magnetic flux axis greater than the maximum */
+-	if (hdev->product == USB_DEVICE_ID_TEXAS_INSTRUMENTS_LENOVO_YOGA &&
+-		*rsize == 2558 && rdesc[913] == 0x17 && rdesc[914] == 0x40 &&
+-		rdesc[915] == 0x81 && rdesc[916] == 0x08 &&
+-		rdesc[917] == 0x00 && rdesc[918] == 0x27 &&
+-		rdesc[921] == 0x07 && rdesc[922] == 0x00) {
+-		/* Sets negative logical minimum for mag x, y and z */
+-		rdesc[914] = rdesc[935] = rdesc[956] = 0xc0;
+-		rdesc[915] = rdesc[936] = rdesc[957] = 0x7e;
+-		rdesc[916] = rdesc[937] = rdesc[958] = 0xf7;
+-		rdesc[917] = rdesc[938] = rdesc[959] = 0xff;
+-	}
+-
+-	return rdesc;
+-}
+-
+ static int sensor_hub_probe(struct hid_device *hdev,
+ 				const struct hid_device_id *id)
+ {
+@@ -778,51 +730,6 @@ static void sensor_hub_remove(struct hid_device *hdev)
+ }
+ 
+ static const struct hid_device_id sensor_hub_devices[] = {
+-	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_INTEL_0,
+-			USB_DEVICE_ID_INTEL_HID_SENSOR_0),
+-			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+-	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_INTEL_1,
+-			USB_DEVICE_ID_INTEL_HID_SENSOR_0),
+-			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+-	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_INTEL_1,
+-			USB_DEVICE_ID_INTEL_HID_SENSOR_1),
+-			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+-	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_MICROSOFT,
+-			USB_DEVICE_ID_MS_SURFACE_PRO_2),
+-			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+-	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_MICROSOFT,
+-			USB_DEVICE_ID_MS_TOUCH_COVER_2),
+-			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+-	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_MICROSOFT,
+-			USB_DEVICE_ID_MS_TYPE_COVER_2),
+-			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+-	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_MICROSOFT,
+-			0x07bd), /* Microsoft Surface 3 */
+-			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+-	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_MICROCHIP,
+-			0x0f01), /* MM7150 */
+-			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+-	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_STM_0,
+-			USB_DEVICE_ID_STM_HID_SENSOR),
+-			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+-	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_STM_0,
+-			USB_DEVICE_ID_STM_HID_SENSOR_1),
+-			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+-	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_TEXAS_INSTRUMENTS,
+-			USB_DEVICE_ID_TEXAS_INSTRUMENTS_LENOVO_YOGA),
+-			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+-	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_ITE,
+-			USB_DEVICE_ID_ITE_LENOVO_YOGA),
+-			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+-	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_ITE,
+-			USB_DEVICE_ID_ITE_LENOVO_YOGA2),
+-			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+-	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_ITE,
+-			USB_DEVICE_ID_ITE_LENOVO_YOGA900),
+-			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+-	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, USB_VENDOR_ID_INTEL_0,
+-			0x22D8),
+-			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+ 	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB, HID_ANY_ID,
+ 		     HID_ANY_ID) },
+ 	{ }
+@@ -835,7 +742,6 @@ static struct hid_driver sensor_hub_driver = {
+ 	.probe = sensor_hub_probe,
+ 	.remove = sensor_hub_remove,
+ 	.raw_event = sensor_hub_raw_event,
+-	.report_fixup = sensor_hub_report_fixup,
+ #ifdef CONFIG_PM
+ 	.suspend = sensor_hub_suspend,
+ 	.resume = sensor_hub_resume,
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+index 1c0874c..f8460c7 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+@@ -425,6 +425,9 @@ int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
+ 					HID_USAGE_SENSOR_PROY_POWER_STATE,
+ 					&st->power_state);
+ 
++	st->power_state.logical_minimum = 1;
++	st->report_state.logical_minimum = 1;
++
+ 	sensor_hub_input_get_attribute_info(hsdev,
+ 			HID_FEATURE_REPORT, usage_id,
+ 			HID_USAGE_SENSOR_PROP_SENSITIVITY_ABS,
+-- 
+2.9.3
