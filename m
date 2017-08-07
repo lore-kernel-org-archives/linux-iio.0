@@ -1,137 +1,58 @@
-Return-Path: <SRS0=VHTk=7D=gmail.com=s.abhisit@kernel.org>
-From: s.abhisit@gmail.com
-To: linus.walleij@linaro.org,
-	robh+dt@kernel.org,
-	mark.rutland@arm.com,
-	jic23@kernel.org,
-	knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net
-Cc: linux-gpio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	Abhisit Sangjan <s.abhisit@gmail.com>
-Subject: [PATCH 5/5] Documentation: bindings: Add ti,lmp92001
-Date: Tue,  1 Aug 2017 16:17:53 +0700
-Message-Id: <1501579073-4764-1-git-send-email-s.abhisit@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-io0-f177.google.com ([209.85.223.177]:33533 "EHLO
+        mail-io0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752675AbdHGJXn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Aug 2017 05:23:43 -0400
+Received: by mail-io0-f177.google.com with SMTP id j32so820111iod.0
+        for <linux-iio@vger.kernel.org>; Mon, 07 Aug 2017 02:23:43 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <1501579073-4764-1-git-send-email-s.abhisit@gmail.com>
+References: <1501579073-4764-1-git-send-email-s.abhisit@gmail.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Mon, 7 Aug 2017 11:23:42 +0200
+Message-ID: <CACRpkda7XC8QnTLhFv21eR5X=LHiBJisx2jXgnVE7JC7rb9Ebg@mail.gmail.com>
+Subject: Re: [PATCH 5/5] Documentation: bindings: Add ti,lmp92001
+To: s.abhisit@gmail.com
+Cc: Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-From: Abhisit Sangjan <s.abhisit@gmail.com>
+On Tue, Aug 1, 2017 at 11:17 AM,  <s.abhisit@gmail.com> wrote:
 
----
- .../devicetree/bindings/gpio/gpio-lmp92001.txt     | 29 ++++++++++++++++++
- .../bindings/iio/adc/ti-lmp92001-adc.txt           | 21 +++++++++++++
- .../bindings/iio/dac/ti-lmp92001-dac.txt           | 35 ++++++++++++++++++++++
- 3 files changed, 85 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/gpio/gpio-lmp92001.txt
- create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-lmp92001-adc.txt
- create mode 100644 Documentation/devicetree/bindings/iio/dac/ti-lmp92001-dac.txt
 
-diff --git a/Documentation/devicetree/bindings/gpio/gpio-lmp92001.txt b/Documentation/devicetree/bindings/gpio/gpio-lmp92001.txt
-new file mode 100644
-index 0000000..62267ff
---- /dev/null
-+++ b/Documentation/devicetree/bindings/gpio/gpio-lmp92001.txt
-@@ -0,0 +1,29 @@
-+* Texas Instruments' LMP92001 GPIOs
-+
-+Required properties:
-+ - compatible: Must be set to "ti,lmp92001-gpio".
-+ - reg: i2c chip address for the device.
-+ - gpio-controller: Marks the device node as a gpio controller.
-+ - #gpio-cells : Should be two.  The first cell is the pin number and the
-+  second cell is used to specify the gpio polarity:
-+        0 = Active high
-+        1 = Active low
-+- ti,lmp92001-gpio-dir: bit mask for direction and drive logic default. Since
-+  the direction and the internal pull-down are shared register and similar to
-+  open-collector drive:
-+        0 = [O]utput and also meaning drive it to low
-+        1 = [I]nput and also meaning open, to drive it to high is required to
-+        have an external resistor
-+
-+Example:
-+lmp92001@20 {
-+        compatible = "ti,lmp92001";
-+        reg = <0x20>;
-+
-+        lmp92001_gpio: lmp92001-gpio {
-+                compatible = "ti,lmp92001-gpio";
-+                gpio-controller;
-+                #gpio-cells = <2>;
-+                ti,lmp92001-gpio-dir = /bits/ 8 <0xff>;
-+        };
-+};
-\ No newline at end of file
-diff --git a/Documentation/devicetree/bindings/iio/adc/ti-lmp92001-adc.txt b/Documentation/devicetree/bindings/iio/adc/ti-lmp92001-adc.txt
-new file mode 100644
-index 0000000..34d7809
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/ti-lmp92001-adc.txt
-@@ -0,0 +1,21 @@
-+* Texas Instruments' LMP92001 ADCs
-+
-+Required properties:
-+ - compatible: Must be set to "ti,lmp92001-adc".
-+ - reg: i2c chip address for the device.
-+ - ti,lmp92001-adc-mode: adc operation, either continuous or single-shot.
-+ - ti,lmp92001-adc-mask: bit mask for which channel is enable.
-+        0 = Off
-+        1 = On
-+
-+Example:
-+lmp92001@20 {
-+        compatible = "ti,lmp92001";
-+        reg = <0x20>;
-+
-+        lmp92001-adc {
-+                compatible = "ti,lmp92001-adc";
-+                ti,lmp92001-adc-mode = "continuous";
-+                ti,lmp92001-adc-mask = <0x00000079>;
-+        };
-+};
-\ No newline at end of file
-diff --git a/Documentation/devicetree/bindings/iio/dac/ti-lmp92001-dac.txt b/Documentation/devicetree/bindings/iio/dac/ti-lmp92001-dac.txt
-new file mode 100644
-index 0000000..f058cc0
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/dac/ti-lmp92001-dac.txt
-@@ -0,0 +1,35 @@
-+* Texas Instruments' LMP92001 DACs
-+
-+Required properties:
-+ - compatible: Must be set to "ti,lmp92001-dac".
-+ - reg: i2c chip address for the device.
-+ - ti,lmp92001-dac-hiz: hi-impedance control,
-+        1 = Forces all OUT[1:12] outputs to hi-z, 0 = normal
-+ - ti,lmp92001-dac-outx: 
-+        Cy = 0, 1 = will force associated OUTx outputs to VDD
-+        Cy = 0, 0 = will force associated OUTx outputs to GND
-+ - ti,lmp92001-dac-gang: What group of Cy is governed to.
-+        -----------------------------------------
-+        |  Cy   | CDAC:GANG = 0 | CDAC:GANG = 1 |
-+        -----------------------------------------
-+        |  C1   |   OUT[1:4]    |    OUT[1:3]   |
-+        -----------------------------------------
-+        |  C2   |   OUT[5:6]    |    OUT[4:6]   |
-+        -----------------------------------------
-+        |  C3   |   OUT[7:8]    |    OUT[7:9]   |
-+        -----------------------------------------
-+        |  C4   |   OUT[9:12]   |    OUT[10:12] |
-+        ----------------------------------------- 
-+
-+Example:
-+lmp92001@20 {
-+        compatible = "ti,lmp92001";
-+        reg = <0x20>;
-+
-+        lmp92001-dac {
-+                compatible = "ti,lmp92001-dac";
-+                ti,lmp92001-dac-hiz  = /bits/ 8 <0>;
-+                ti,lmp92001-dac-outx = /bits/ 8 <0>;
-+                ti,lmp92001-dac-gang = /bits/ 8 <0>;
-+        };
-+};
--- 
-2.7.4
+> + - #gpio-cells : Should be two.  The first cell is the pin number and the
+> +  second cell is used to specify the gpio polarity:
+> +        0 = Active high
+> +        1 = Active low
+
+Just reference the standard bindings?
+
+> +- ti,lmp92001-gpio-dir: bit mask for direction and drive logic default. Since
+> +  the direction and the internal pull-down are shared register and similar to
+> +  open-collector drive:
+> +        0 = [O]utput and also meaning drive it to low
+> +        1 = [I]nput and also meaning open, to drive it to high is required to
+> +        have an external resistor
+
+NACK this is totally wrong.
+
+When using GPIO descriptors, consumers specify open drain/collector, not
+producers. The same applies to this: the consumers should specify it not
+the producer.
+
+You need to either add a pin control interface/driver or extend the GPIO
+bindings for consumers to do this, I thin pin control is the right thing here.
+It's gonna be complicated but much better.
+
+Yours,
+Linus Walleij
