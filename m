@@ -1,55 +1,46 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f47.google.com ([74.125.82.47]:37653 "EHLO
-        mail-wm0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751927AbdHHKvY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Aug 2017 06:51:24 -0400
-Received: by mail-wm0-f47.google.com with SMTP id t201so3885844wmt.0
-        for <linux-iio@vger.kernel.org>; Tue, 08 Aug 2017 03:51:24 -0700 (PDT)
-Date: Tue, 8 Aug 2017 11:51:20 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Icenowy Zheng <icenowy@aosc.io>
-Cc: Rob Herring <robh+dt@kernel.org>,
-        Maxime Ripard <maxime.ripard@free-electrons.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Quentin Schulz <quentin.schulz@free-electrons.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-sunxi@googlegroups.com
-Subject: Re: [PATCH v3 1/5] dt-bindings: update the Allwinner GPADC device
- tree binding for H3
-Message-ID: <20170808105120.b7lzbxk5n3rf326r@dell>
-References: <20170723141354.42646-1-icenowy@aosc.io>
- <20170723141354.42646-2-icenowy@aosc.io>
+Return-Path: <SRS0=XeGl=7K=gmail.com=vincent.legoll@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
 In-Reply-To: <20170723141354.42646-2-icenowy@aosc.io>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+References: <20170723141354.42646-1-icenowy@aosc.io> <20170723141354.42646-2-icenowy@aosc.io>
+From: Vincent Legoll <vincent.legoll@gmail.com>
+Date: Tue, 8 Aug 2017 13:56:05 +0200
+Message-ID: <CAEwRq=oJDmUBhb5n5=X-M5NL7855yW0t2J=TOJf0WSmBQuKyVQ@mail.gmail.com>
+Subject: Re: [linux-sunxi] [PATCH v3 1/5] dt-bindings: update the Allwinner
+ GPADC device tree binding for H3
+To: icenowy@aosc.io
+Cc: Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>, Chen-Yu Tsai <wens@csie.org>,
+	Jonathan Cameron <jic23@kernel.org>, Quentin Schulz <quentin.schulz@free-electrons.com>,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Linux Kernel ML <linux-kernel@vger.kernel.org>, linux-iio@vger.kernel.org,
+	linux-sunxi@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, 23 Jul 2017, Icenowy Zheng wrote:
+Hello,
 
-> Allwinner H3 features a thermal sensor like the one in A33, but has its
-> register re-arranged, the clock divider moved to CCU (originally the
-> clock divider is in ADC) and added a pair of bus clock and reset.
-> 
-> Update the binding document to cover H3.
-> 
-> Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
-> ---
-> Changes in v3:
-> - Clock name changes.
-> - Example node name changes.
-> - Add interupts (not yet used by the driver).
-> 
->  .../devicetree/bindings/mfd/sun4i-gpadc.txt        | 25 ++++++++++++++++++++--
->  1 file changed, 23 insertions(+), 2 deletions(-)
+Sorry for the very-clueless question
 
-For my own reference:
-  Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+On Sun, Jul 23, 2017 at 4:13 PM, Icenowy Zheng <icenowy@aosc.io> wrote:
+> +  - clock-names: should be "bus" and "mod",
+
+When I first read that, I wondered what value clock-names should
+eally be given.
+
+Then...
+
+> +               clock-names = "bus", "mod";
+
+OK, now this is clearer, but still the documentation is less documenting
+than the code itself, sigh...
+
+I cannot think of a better wording, though, as a non-native-english
+speaker. Maybe just add a "(See example below)" would be
+sufficient...
+
+Or decide that this documentation is for clueful ones.
+
+WDYT ?
 
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Vincent Legoll
