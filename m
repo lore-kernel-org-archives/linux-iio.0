@@ -1,58 +1,39 @@
-Return-Path: <SRS0=/l9A=72=free-electrons.com=alexandre.belloni@kernel.org>
-Date: Thu, 24 Aug 2017 13:54:06 +0200
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-To: Rob Herring <robh@kernel.org>
-Cc: Eugen Hristev <eugen.hristev@microchip.com>,
-	nicolas.ferre@microchip.com, ludovic.desroches@microchip.com,
-	linux-iio@vger.kernel.org, jic23@kernel.org,
-	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, lars@metafoo.de
-Subject: Re: [PATCH 1/3] Documentation: dt: iio: at91-sama5d2_adc: add
- optional dma property
-Message-ID: <20170824115406.wououixl3zrj2dni@piout.net>
+Return-Path: <SRS0=acV6=7M=microchip.com=Eugen.Hristev@kernel.org>
+From: Eugen Hristev <eugen.hristev@microchip.com>
+To: <nicolas.ferre@microchip.com>, <ludovic.desroches@microchip.com>,
+	<linux-iio@vger.kernel.org>, <jic23@kernel.org>,
+	<alexandre.belloni@free-electrons.com>,
+	<linux-arm-kernel@lists.infradead.org>, <devicetree@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <lars@metafoo.de>
+CC: <eugen.hristev@microchip.com>
+Subject: [PATCH 2/3] ARM: dts: at91: sama5d2: added dma property for ADC device
+Date: Thu, 10 Aug 2017 15:34:58 +0300
+Message-ID: <1502368499-6739-3-git-send-email-eugen.hristev@microchip.com>
+In-Reply-To: <1502368499-6739-1-git-send-email-eugen.hristev@microchip.com>
 References: <1502368499-6739-1-git-send-email-eugen.hristev@microchip.com>
- <1502368499-6739-2-git-send-email-eugen.hristev@microchip.com>
- <20170817151059.ptnzqsrzray26zlr@rob-hp-laptop>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20170817151059.ptnzqsrzray26zlr@rob-hp-laptop>
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-On 17/08/2017 at 10:10:59 -0500, Rob Herring wrote:
-> On Thu, Aug 10, 2017 at 03:34:57PM +0300, Eugen Hristev wrote:
-> > Added property for DMA configuration of the device.
-> 
-> "dt-bindings: iio: ..." is preferred for subject.
-> 
-> > 
-> > Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-> > ---
-> >  Documentation/devicetree/bindings/iio/adc/at91-sama5d2_adc.txt | 7 +++++++
-> >  1 file changed, 7 insertions(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/adc/at91-sama5d2_adc.txt b/Documentation/devicetree/bindings/iio/adc/at91-sama5d2_adc.txt
-> > index 552e7a8..5f94d47 100644
-> > --- a/Documentation/devicetree/bindings/iio/adc/at91-sama5d2_adc.txt
-> > +++ b/Documentation/devicetree/bindings/iio/adc/at91-sama5d2_adc.txt
-> > @@ -17,6 +17,11 @@ Required properties:
-> >    This property uses the IRQ edge types values: IRQ_TYPE_EDGE_RISING ,
-> >    IRQ_TYPE_EDGE_FALLING or IRQ_TYPE_EDGE_BOTH
-> >  
-> > +Optional properties:
-> > +  - dmas: Phandle to dma channel for the ADC.
-> > +  See ../../dma/dma.txt for details.
-> > +  - dma-names: Must be "rx" when dmas property is being used.
-> 
-> *-names is pointless when there's only one.
-> 
+Added DMA property for ADC device
 
-Hypothetical question: what if at some point we have multiple dmas? Then
-we would have the choice between breaking the backward compatibility or
-handling the absence of dma-names in the driver which is less than
-ideal.
+Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+---
+ arch/arm/boot/dts/sama5d2.dtsi | 2 ++
+ 1 file changed, 2 insertions(+)
 
-
+diff --git a/arch/arm/boot/dts/sama5d2.dtsi b/arch/arm/boot/dts/sama5d2.dtsi
+index 8067c71..2f1dc77 100644
+--- a/arch/arm/boot/dts/sama5d2.dtsi
++++ b/arch/arm/boot/dts/sama5d2.dtsi
+@@ -1267,6 +1267,8 @@
+ 				atmel,min-sample-rate-hz = <200000>;
+ 				atmel,max-sample-rate-hz = <20000000>;
+ 				atmel,startup-time-ms = <4>;
++				dmas = <&dma0 (AT91_XDMAC_DT_MEM_IF(0) | AT91_XDMAC_DT_PER_IF(1) | AT91_XDMAC_DT_PERID(25))>;
++				dma-names = "rx";
+ 				status = "disabled";
+ 			};
+ 
 -- 
-Alexandre Belloni, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+2.7.4
