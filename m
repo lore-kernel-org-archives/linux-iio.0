@@ -1,65 +1,125 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:48150 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751731AbdHLMge (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 12 Aug 2017 08:36:34 -0400
-Date: Sat, 12 Aug 2017 13:08:54 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:38256 "EHLO
+        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750841AbdHJGa0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Aug 2017 02:30:26 -0400
+Received: by mail-wm0-f66.google.com with SMTP id y206so1813296wmd.5
+        for <linux-iio@vger.kernel.org>; Wed, 09 Aug 2017 23:30:25 -0700 (PDT)
+From: Michal Simek <michal.simek@xilinx.com>
+To: linux-kernel@vger.kernel.org, monstr@monstr.eu
+Cc: Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>,
+        =?UTF-8?q?S=C3=B6ren=20Brinkmann?= <soren.brinkmann@xilinx.com>,
+        linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: adc: fix error return code in
- ad7606_par_probe()
-Message-ID: <20170812130854.2a87e2f4@archlinux>
-In-Reply-To: <20170809153856.GA22134@embeddedgus>
-References: <20170809153856.GA22134@embeddedgus>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Jonathan Cameron <jic23@kernel.org>,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v2] iio: adc: Fix coding style violations
+Date: Thu, 10 Aug 2017 08:30:20 +0200
+Message-Id: <4d8fa659c811106d57122b24ae8e9c075dc8843a.1502346616.git.michal.simek@xilinx.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 9 Aug 2017 10:38:56 -0500
-"Gustavo A. R. Silva" <gustavo@embeddedor.com> wrote:
+From: Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
 
-> platform_get_irq() returns an error code, but the ad7606_par driver
-> ignores it and always returns -ENODEV. This is not correct and,
-> prevents -EPROBE_DEFER from being propagated properly.
-> 
-> Print and propagate the return value of platform_get_irq on failure.
-> 
-> This issue was detected with the help of Coccinelle.
-> 
-> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
-Applied to the togreg branch of iio.git.
+This patch fix following checkpatch warnings in xadc driver
+1. prefer 'unsigned int' to bare use of 'unsigned'.
+2. else is not generally useful after a break or return.
+3. fill all function definition arguments with identifier name
 
-As we have no reports of anyone actually finding this a problem I'm
-taking it the slow way and it will wait for the next merge window.
+Signed-off-by: Sai Krishna Potthuri <lakshmis@xilinx.com>
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+---
 
-Thanks,
+Changes in v2:
+- Fix all functions definition arguments in header with identifier name
+- Change commit message to reflect v2 changes
+  both reported by: Joe Perches
 
-Jonathan
-> ---
->  drivers/staging/iio/adc/ad7606_par.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/staging/iio/adc/ad7606_par.c
-> index cd6c410c..3eb6f8f 100644
-> --- a/drivers/staging/iio/adc/ad7606_par.c
-> +++ b/drivers/staging/iio/adc/ad7606_par.c
-> @@ -57,8 +57,8 @@ static int ad7606_par_probe(struct platform_device *pdev)
->  
->  	irq = platform_get_irq(pdev, 0);
->  	if (irq < 0) {
-> -		dev_err(&pdev->dev, "no irq\n");
-> -		return -ENODEV;
-> +		dev_err(&pdev->dev, "no irq: %d\n", irq);
-> +		return irq;
->  	}
->  
->  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ drivers/iio/adc/xilinx-xadc-events.c | 38 +++++++++++++++++-------------------
+ drivers/iio/adc/xilinx-xadc.h        | 10 +++++-----
+ 2 files changed, 23 insertions(+), 25 deletions(-)
+
+diff --git a/drivers/iio/adc/xilinx-xadc-events.c b/drivers/iio/adc/xilinx-xadc-events.c
+index 6d5c2a6f4e6e..dc0670308253 100644
+--- a/drivers/iio/adc/xilinx-xadc-events.c
++++ b/drivers/iio/adc/xilinx-xadc-events.c
+@@ -68,7 +68,7 @@ void xadc_handle_events(struct iio_dev *indio_dev, unsigned long events)
+ 		xadc_handle_event(indio_dev, i);
+ }
+ 
+-static unsigned xadc_get_threshold_offset(const struct iio_chan_spec *chan,
++static unsigned int xadc_get_threshold_offset(const struct iio_chan_spec *chan,
+ 	enum iio_event_direction dir)
+ {
+ 	unsigned int offset;
+@@ -90,26 +90,24 @@ static unsigned xadc_get_threshold_offset(const struct iio_chan_spec *chan,
+ 
+ static unsigned int xadc_get_alarm_mask(const struct iio_chan_spec *chan)
+ {
+-	if (chan->type == IIO_TEMP) {
++	if (chan->type == IIO_TEMP)
+ 		return XADC_ALARM_OT_MASK;
+-	} else {
+-		switch (chan->channel) {
+-		case 0:
+-			return XADC_ALARM_VCCINT_MASK;
+-		case 1:
+-			return XADC_ALARM_VCCAUX_MASK;
+-		case 2:
+-			return XADC_ALARM_VCCBRAM_MASK;
+-		case 3:
+-			return XADC_ALARM_VCCPINT_MASK;
+-		case 4:
+-			return XADC_ALARM_VCCPAUX_MASK;
+-		case 5:
+-			return XADC_ALARM_VCCODDR_MASK;
+-		default:
+-			/* We will never get here */
+-			return 0;
+-		}
++	switch (chan->channel) {
++	case 0:
++		return XADC_ALARM_VCCINT_MASK;
++	case 1:
++		return XADC_ALARM_VCCAUX_MASK;
++	case 2:
++		return XADC_ALARM_VCCBRAM_MASK;
++	case 3:
++		return XADC_ALARM_VCCPINT_MASK;
++	case 4:
++		return XADC_ALARM_VCCPAUX_MASK;
++	case 5:
++		return XADC_ALARM_VCCODDR_MASK;
++	default:
++		/* We will never get here */
++		return 0;
+ 	}
+ }
+ 
+diff --git a/drivers/iio/adc/xilinx-xadc.h b/drivers/iio/adc/xilinx-xadc.h
+index f6f081965647..62edbdae1244 100644
+--- a/drivers/iio/adc/xilinx-xadc.h
++++ b/drivers/iio/adc/xilinx-xadc.h
+@@ -71,13 +71,13 @@ struct xadc {
+ };
+ 
+ struct xadc_ops {
+-	int (*read)(struct xadc *, unsigned int, uint16_t *);
+-	int (*write)(struct xadc *, unsigned int, uint16_t);
++	int (*read)(struct xadc *xadc, unsigned int reg, uint16_t *val);
++	int (*write)(struct xadc *xadc, unsigned int reg, uint16_t val);
+ 	int (*setup)(struct platform_device *pdev, struct iio_dev *indio_dev,
+ 			int irq);
+-	void (*update_alarm)(struct xadc *, unsigned int);
+-	unsigned long (*get_dclk_rate)(struct xadc *);
+-	irqreturn_t (*interrupt_handler)(int, void *);
++	void (*update_alarm)(struct xadc *xadc, unsigned int alarm);
++	unsigned long (*get_dclk_rate)(struct xadc *xadc);
++	irqreturn_t (*interrupt_handler)(int irq, void *devid);
+ 
+ 	unsigned int flags;
+ };
+-- 
+1.9.1
 
