@@ -1,137 +1,59 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:48208 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751731AbdHLMgk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 12 Aug 2017 08:36:40 -0400
-Date: Sat, 12 Aug 2017 13:11:35 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Michal Simek <michal.simek@xilinx.com>
-Cc: linux-kernel@vger.kernel.org, monstr@monstr.eu,
-        Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>,
-        =?UTF-8?B?U8O2cmVu?= Brinkmann <soren.brinkmann@xilinx.com>,
-        linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v2] iio: adc: Fix coding style violations
-Message-ID: <20170812131135.02d90fce@archlinux>
-In-Reply-To: <4d8fa659c811106d57122b24ae8e9c075dc8843a.1502346616.git.michal.simek@xilinx.com>
-References: <4d8fa659c811106d57122b24ae8e9c075dc8843a.1502346616.git.michal.simek@xilinx.com>
+Return-Path: <SRS0=acV6=7M=microchip.com=Eugen.Hristev@kernel.org>
+From: Eugen Hristev <eugen.hristev@microchip.com>
+To: <nicolas.ferre@microchip.com>, <ludovic.desroches@microchip.com>,
+	<linux-iio@vger.kernel.org>, <jic23@kernel.org>,
+	<alexandre.belloni@free-electrons.com>,
+	<linux-arm-kernel@lists.infradead.org>, <devicetree@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <lars@metafoo.de>
+CC: <eugen.hristev@microchip.com>
+Subject: [PATCH 0/3] iio: adc: at91-sama5d2_adc: add DMA support
+Date: Thu, 10 Aug 2017 15:34:56 +0300
+Message-ID: <1502368499-6739-1-git-send-email-eugen.hristev@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 10 Aug 2017 08:30:20 +0200
-Michal Simek <michal.simek@xilinx.com> wrote:
+This patch implements the DMA support for the ADC in sam5d2 SOC.
+After discussing on the mailing list, this approach is based on triggered
+kfifo buffer, with DMA support added on top of it.
+Thus, the trigger is enabled by the buffer. The ADC itself will not have
+an IRQ enabled if using DMA. With DMA, the channels are enabled, and DMA
+controller is configured to read from the data ready registers.
+When DMA starts, the trigger will start the conversion (external trigger
+configured), then the registers will have the conversion data ready, trigger
+the DMA controller to read from the registers, the DMA will copy the data into
+the software buffer, and trigger the DMA IRQ. In the bottom half, the
+trigger polled and the data from the DMA buffer is pushed to buffer.
 
-> From: Sai Krishna Potthuri <lakshmi.sai.krishna.potthuri@xilinx.com>
-> 
-> This patch fix following checkpatch warnings in xadc driver
-> 1. prefer 'unsigned int' to bare use of 'unsigned'.
-> 2. else is not generally useful after a break or return.
-> 3. fill all function definition arguments with identifier name
-> 
-> Signed-off-by: Sai Krishna Potthuri <lakshmis@xilinx.com>
-> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-I've added the driver name to the title. Would have preferred it
-as 3 patches fixing one issue each, but this is fine...
+The DMA will use a cyclic buffer to write to one half, and the software can
+read from the other half. The DMA operation doesn't stop until the buffer is
+disabled.
+The DMA coherent area is allocated when DMA is initially started, and
+deallocated only if the watermark is changed to 1 (no more DMA usage). The
+coherent area is large enough to cope with maximum fifo size for all possible
+channels enabled.
+The fifo size is set to 128 conversions by default in the driver.
 
-Applied to the togreg branch of iio.git and pushed out as
-testing for the autobuilders to play with it.
+The implementation uses the user watermark  to decide whether DMA will be
+used or not. For watermark 1, DMA will not be used. If watermark is greater,
+DMA will be used.
+Sysfs attributes are created to indicate whether the DMA is used,
+with hwfifo_enabled, and the current DMA watermark is readable
+in hwfifo_watermark. Minimum and maximum values are in hwfifo_watermark_min
+and hwfifo_watermark_max.
 
-Thanks,
+Devicetree binding added for dma as well.
+Modified devicetree for sama5d2 SoC to add connected DMA channel.
 
-Jonathan
-> ---
-> 
-> Changes in v2:
-> - Fix all functions definition arguments in header with identifier name
-> - Change commit message to reflect v2 changes
->   both reported by: Joe Perches
-> 
->  drivers/iio/adc/xilinx-xadc-events.c | 38 +++++++++++++++++-------------------
->  drivers/iio/adc/xilinx-xadc.h        | 10 +++++-----
->  2 files changed, 23 insertions(+), 25 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/xilinx-xadc-events.c b/drivers/iio/adc/xilinx-xadc-events.c
-> index 6d5c2a6f4e6e..dc0670308253 100644
-> --- a/drivers/iio/adc/xilinx-xadc-events.c
-> +++ b/drivers/iio/adc/xilinx-xadc-events.c
-> @@ -68,7 +68,7 @@ void xadc_handle_events(struct iio_dev *indio_dev, unsigned long events)
->  		xadc_handle_event(indio_dev, i);
->  }
->  
-> -static unsigned xadc_get_threshold_offset(const struct iio_chan_spec *chan,
-> +static unsigned int xadc_get_threshold_offset(const struct iio_chan_spec *chan,
->  	enum iio_event_direction dir)
->  {
->  	unsigned int offset;
-> @@ -90,26 +90,24 @@ static unsigned xadc_get_threshold_offset(const struct iio_chan_spec *chan,
->  
->  static unsigned int xadc_get_alarm_mask(const struct iio_chan_spec *chan)
->  {
-> -	if (chan->type == IIO_TEMP) {
-> +	if (chan->type == IIO_TEMP)
->  		return XADC_ALARM_OT_MASK;
-> -	} else {
-> -		switch (chan->channel) {
-> -		case 0:
-> -			return XADC_ALARM_VCCINT_MASK;
-> -		case 1:
-> -			return XADC_ALARM_VCCAUX_MASK;
-> -		case 2:
-> -			return XADC_ALARM_VCCBRAM_MASK;
-> -		case 3:
-> -			return XADC_ALARM_VCCPINT_MASK;
-> -		case 4:
-> -			return XADC_ALARM_VCCPAUX_MASK;
-> -		case 5:
-> -			return XADC_ALARM_VCCODDR_MASK;
-> -		default:
-> -			/* We will never get here */
-> -			return 0;
-> -		}
-> +	switch (chan->channel) {
-> +	case 0:
-> +		return XADC_ALARM_VCCINT_MASK;
-> +	case 1:
-> +		return XADC_ALARM_VCCAUX_MASK;
-> +	case 2:
-> +		return XADC_ALARM_VCCBRAM_MASK;
-> +	case 3:
-> +		return XADC_ALARM_VCCPINT_MASK;
-> +	case 4:
-> +		return XADC_ALARM_VCCPAUX_MASK;
-> +	case 5:
-> +		return XADC_ALARM_VCCODDR_MASK;
-> +	default:
-> +		/* We will never get here */
-> +		return 0;
->  	}
->  }
->  
-> diff --git a/drivers/iio/adc/xilinx-xadc.h b/drivers/iio/adc/xilinx-xadc.h
-> index f6f081965647..62edbdae1244 100644
-> --- a/drivers/iio/adc/xilinx-xadc.h
-> +++ b/drivers/iio/adc/xilinx-xadc.h
-> @@ -71,13 +71,13 @@ struct xadc {
->  };
->  
->  struct xadc_ops {
-> -	int (*read)(struct xadc *, unsigned int, uint16_t *);
-> -	int (*write)(struct xadc *, unsigned int, uint16_t);
-> +	int (*read)(struct xadc *xadc, unsigned int reg, uint16_t *val);
-> +	int (*write)(struct xadc *xadc, unsigned int reg, uint16_t val);
->  	int (*setup)(struct platform_device *pdev, struct iio_dev *indio_dev,
->  			int irq);
-> -	void (*update_alarm)(struct xadc *, unsigned int);
-> -	unsigned long (*get_dclk_rate)(struct xadc *);
-> -	irqreturn_t (*interrupt_handler)(int, void *);
-> +	void (*update_alarm)(struct xadc *xadc, unsigned int alarm);
-> +	unsigned long (*get_dclk_rate)(struct xadc *xadc);
-> +	irqreturn_t (*interrupt_handler)(int irq, void *devid);
->  
->  	unsigned int flags;
->  };
+Eugen Hristev (3):
+  Documentation: dt: iio: at91-sama5d2_adc: add optional dma property
+  ARM: dts: at91: sama5d2: added dma property for ADC device
+  iio: adc: at91-sama5d2_adc: add support for DMA
 
+ .../bindings/iio/adc/at91-sama5d2_adc.txt          |   7 +
+ arch/arm/boot/dts/sama5d2.dtsi                     |   2 +
+ drivers/iio/adc/at91-sama5d2_adc.c                 | 366 ++++++++++++++++++++-
+ 3 files changed, 359 insertions(+), 16 deletions(-)
+
+-- 
+2.7.4
