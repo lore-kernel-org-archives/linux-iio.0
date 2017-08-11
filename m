@@ -1,55 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53238 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750975AbdHLMt1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Aug 2017 08:49:27 -0400
-Date: Sat, 12 Aug 2017 13:39:13 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Andy Yan <andy.yan@rock-chips.com>
-Cc: heiko@sntech.de, robh+dt@kernel.org, devicetree@vger.kernel.org,
+Received: from regular1.263xmail.com ([211.150.99.141]:42706 "EHLO
+        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751550AbdHKDrJ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Aug 2017 23:47:09 -0400
+From: Andy Yan <andy.yan@rock-chips.com>
+To: heiko@sntech.de
+Cc: robh+dt@kernel.org, devicetree@vger.kernel.org,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v3 09/13] dt-bindings: adc: add description for rv1108
- saradc
-Message-ID: <20170812133913.5311a274@archlinux>
-In-Reply-To: <1502423180-31154-1-git-send-email-andy.yan@rock-chips.com>
+        linux-arm-kernel@lists.infradead.org,
+        Andy Yan <andy.yan@rock-chips.com>
+Subject: [PATCH v3 10/13] ARM: dts: rockchip: add saradc support for rv1108
+Date: Fri, 11 Aug 2017 11:46:51 +0800
+Message-Id: <1502423211-31216-1-git-send-email-andy.yan@rock-chips.com>
+In-Reply-To: <1502422578-30611-1-git-send-email-andy.yan@rock-chips.com>
 References: <1502422578-30611-1-git-send-email-andy.yan@rock-chips.com>
-        <1502423180-31154-1-git-send-email-andy.yan@rock-chips.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 11 Aug 2017 11:46:20 +0800
-Andy Yan <andy.yan@rock-chips.com> wrote:
+Add saradc device tree node for rv1108 soc
 
-> Add device tree bindings document for saradc on
-> rockchip rv1108 soc.
-> 
-> Signed-off-by: Andy Yan <andy.yan@rock-chips.com>
-> Acked-by: Rob Herring <robh@kernel.org>
-I've already applied.  This please drop it from the next version of the
-series.
+Signed-off-by: Andy Yan <andy.yan@rock-chips.com>
 
-Jonathan
-> ---
-> 
-> Changes in v3: None
-> Changes in v2: None
-> 
->  Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-> index e0a9b9d..c2c50b5 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-> +++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-> @@ -6,6 +6,7 @@ Required properties:
->     - "rockchip,rk3066-tsadc": for rk3036
->     - "rockchip,rk3328-saradc", "rockchip,rk3399-saradc": for rk3328
->     - "rockchip,rk3399-saradc": for rk3399
-> +   - "rockchip,rv1108-saradc", "rockchip,rk3399-saradc": for rv1108
->  
->  - reg: physical base address of the controller and length of memory mapped
->         region.
+---
+
+Changes in v3: None
+Changes in v2:
+- add compatible string "rockchip,rv1108-saradc"
+
+ arch/arm/boot/dts/rv1108.dtsi | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/arch/arm/boot/dts/rv1108.dtsi b/arch/arm/boot/dts/rv1108.dtsi
+index 75a0b1e..92b6005 100644
+--- a/arch/arm/boot/dts/rv1108.dtsi
++++ b/arch/arm/boot/dts/rv1108.dtsi
+@@ -275,6 +275,18 @@
+ 		status = "disabled";
+ 	};
+ 
++	adc: adc@1038c000 {
++		compatible = "rockchip,rv1108-saradc", "rockchip,rk3399-saradc";
++		reg = <0x1038c000 0x100>;
++		interrupts = <GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>;
++		#io-channel-cells = <1>;
++		io-channel-ranges;
++		clock-frequency = <1000000>;
++		clocks = <&cru SCLK_SARADC>, <&cru PCLK_SARADC>;
++		clock-names = "saradc", "apb_pclk";
++		status = "disabled";
++	};
++
+ 	i2c0: i2c@20000000 {
+ 		compatible = "rockchip,rv1108-i2c";
+ 		reg = <0x20000000 0x1000>;
+-- 
+2.7.4
+
 
