@@ -1,53 +1,70 @@
-Return-Path: <SRS0=3CDu=7N=hadess.net=hadess@kernel.org>
-Message-ID: <1502460270.2588.8.camel@hadess.net>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.99]:48246 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1752174AbdHLMgp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 12 Aug 2017 08:36:45 -0400
+Date: Sat, 12 Aug 2017 13:16:11 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Bastien Nocera <hadess@hadess.net>
+Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: [RFT][PATCH] iio: hid-sensor-trigger: Fix the race with user
  space powering up sensors
-From: Bastien Nocera <hadess@hadess.net>
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	jic23@kernel.org, Hans de Goede <hdegoede@redhat.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Date: Fri, 11 Aug 2017 16:04:30 +0200
-In-Reply-To: <1502407444-1078-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: 
-	<1502407444-1078-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Message-ID: <20170812131611.63667d25@archlinux>
+In-Reply-To: <1502460270.2588.8.camel@hadess.net>
+References: <1502407444-1078-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+        <1502460270.2588.8.camel@hadess.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Woot!
+On Fri, 11 Aug 2017 16:04:30 +0200
+Bastien Nocera <hadess@hadess.net> wrote:
 
-On Thu, 2017-08-10 at 16:24 -0700, Srinivas Pandruvada wrote:
-> It has been reported for a while that with iio-sensor-proxy service the
-> rotation only works after one suspend/resume cycle. This required a wait
-> in the systemd unit file to avoid race. I found a Yoga 900 where I could
-> reproduce this.
+> Woot!
 > 
-> The problem scenerio is:
-> - During sensor driver init, enable run time PM and also set a
->   auto-suspend for 3 seconds.
-> 	This result in one runtime resume. But there is a check to avoid
-> a powerup in this sequence, but rpm is active
-> - User space iio-sensor-proxy tries to power up the sensor. Since rpm is
->   active it will simply return. But sensors were not actually
-> powered up in the prior sequence, so actaully the sensors will not work
-> - After 3 seconds the auto suspend kicks
+> On Thu, 2017-08-10 at 16:24 -0700, Srinivas Pandruvada wrote:
+> > It has been reported for a while that with iio-sensor-proxy service the
+> > rotation only works after one suspend/resume cycle. This required a wait
+> > in the systemd unit file to avoid race. I found a Yoga 900 where I could
+> > reproduce this.
+> > 
+> > The problem scenerio is:
+> > - During sensor driver init, enable run time PM and also set a
+> >   auto-suspend for 3 seconds.
+> > 	This result in one runtime resume. But there is a check to avoid
+> > a powerup in this sequence, but rpm is active
+> > - User space iio-sensor-proxy tries to power up the sensor. Since rpm is
+> >   active it will simply return. But sensors were not actually
+> > powered up in the prior sequence, so actaully the sensors will not work
+> > - After 3 seconds the auto suspend kicks
+> > 
+> > If we add a wait in systemd service file to fire iio-sensor-proxy after
+> > 3 seconds, then now everything will work as the runtime resume will
+> > actually powerup the sensor as this is a user request.
+> > 
+> > To avoid this:
+> > - Remove the check to match user requested state, this will cause a
+> >   brief powerup, but if the iio-sensor-proxy starts immediately it will
+> > still work as the sensors are ON.
+> > - Also move the autosuspend delay to place when user requested turn off
+> >   of sensors, like after user finished raw read or buffer disable
+> > 
+> > Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>  
 > 
-> If we add a wait in systemd service file to fire iio-sensor-proxy after
-> 3 seconds, then now everything will work as the runtime resume will
-> actually powerup the sensor as this is a user request.
+> Tested-by: Bastien Nocera <hadess@hadess.net>
 > 
-> To avoid this:
-> - Remove the check to match user requested state, this will cause a
->   brief powerup, but if the iio-sensor-proxy starts immediately it will
-> still work as the sensors are ON.
-> - Also move the autosuspend delay to place when user requested turn off
->   of sensors, like after user finished raw read or buffer disable
+> I'm still chasing a couple of bugs in the user-space side of things
+> caused by the removal of the timeout.
 > 
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> Thanks!
+Is it worth me sitting on this for a week or so to see if it deals with
+all the reported issues around this?
 
-Tested-by: Bastien Nocera <hadess@hadess.net>
+Or are you happy that the test set you have is sufficient to verify it?
 
-I'm still chasing a couple of bugs in the user-space side of things
-caused by the removal of the timeout.
+Definitely good to put this one to bed finally! 
 
-Thanks!
+Jonathan
