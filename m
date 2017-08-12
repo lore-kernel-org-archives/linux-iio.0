@@ -1,64 +1,94 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:48806 "EHLO mail.kernel.org"
+Received: from mga14.intel.com ([192.55.52.115]:31326 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750941AbdHLMs6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 12 Aug 2017 08:48:58 -0400
-Date: Sat, 12 Aug 2017 13:48:30 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-Cc: linux-iio@vger.kernel.org, gregor.boirie@parrot.com,
-        denis.ciocca@st.com, lorenzo.bianconi@st.com
-Subject: Re: [PATCH 2/2] iio: accel: st_accel: fix data-ready line
- configuration
-Message-ID: <20170812134830.54721902@archlinux>
-In-Reply-To: <20170811194414.20741-3-lorenzo.bianconi@st.com>
-References: <20170811194414.20741-1-lorenzo.bianconi@st.com>
-        <20170811194414.20741-3-lorenzo.bianconi@st.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S1750851AbdHLQJY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 12 Aug 2017 12:09:24 -0400
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: hadess@hadess.net, jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH] iio: hid-sensor-trigger: Fix the race with user space powering up sensors
+Date: Sat, 12 Aug 2017 09:09:21 -0700
+Message-Id: <1502554161-9300-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 11 Aug 2017 21:44:14 +0200
-Lorenzo Bianconi <lorenzo.bianconi83@gmail.com> wrote:
+It has been reported for a while that with iio-sensor-proxy service the
+rotation only works after one suspend/resume cycle. This required a wait
+in the systemd unit file to avoid race. I found a Yoga 900 where I could
+reproduce this.
 
-> Remove int2 configuration parameter for LIS3DH, LSM303DLHC, LSM330D,
-> LSM330DL, LSM330DLC, LSM303AGR, LIS2DH12 and LNG2DM since these devices
-> export just int1 as data-ready line
-> 
-> Fixes: 23cde4d65cc7 (iio: Added platform data to select the DRDY pin)
-> Fixes: dcdb0a78cab3 (iio: accel: st_accel: add support to lng2dm)
-> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+The problem scenerio is:
+- During sensor driver init, enable run time PM and also set a
+  auto-suspend for 3 seconds.
+	This result in one runtime resume. But there is a check to avoid
+a powerup in this sequence, but rpm is active
+- User space iio-sensor-proxy tries to power up the sensor. Since rpm is
+  active it will simply return. But sensors were not actually
+powered up in the prior sequence, so actaully the sensors will not work
+- After 3 seconds the auto suspend kicks
 
-Thanks,
+If we add a wait in systemd service file to fire iio-sensor-proxy after
+3 seconds, then now everything will work as the runtime resume will
+actually powerup the sensor as this is a user request.
 
-Jonathan
-> ---
->  drivers/iio/accel/st_accel_core.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-> index 1e0eea110fa9..752856b3a849 100644
-> --- a/drivers/iio/accel/st_accel_core.c
-> +++ b/drivers/iio/accel/st_accel_core.c
-> @@ -161,7 +161,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
->  		.drdy_irq = {
->  			.addr = 0x22,
->  			.mask_int1 = 0x10,
-> -			.mask_int2 = 0x08,
-> +			.mask_int2 = 0x00,
->  			.addr_ihl = 0x25,
->  			.mask_ihl = 0x02,
->  			.addr_stat_drdy = ST_SENSORS_DEFAULT_STAT_ADDR,
-> @@ -637,7 +637,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
->  		.drdy_irq = {
->  			.addr = 0x22,
->  			.mask_int1 = 0x10,
-> -			.mask_int2 = 0x08,
-> +			.mask_int2 = 0x00,
->  			.addr_ihl = 0x25,
->  			.mask_ihl = 0x02,
->  			.addr_stat_drdy = ST_SENSORS_DEFAULT_STAT_ADDR,
+To avoid this:
+- Remove the check to match user requested state, this will cause a
+  brief powerup, but if the iio-sensor-proxy starts immediately it will
+still work as the sensors are ON.
+- Also move the autosuspend delay to place when user requested turn off
+  of sensors, like after user finished raw read or buffer disable
+
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Tested-by: Bastien Nocera <hadess@hadess.net>
+
+---
+Changes:
+Removed RFT and added Tested-by tag.
+
+ drivers/iio/common/hid-sensors/hid-sensor-trigger.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+index 16ade0a..0e4b379 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+@@ -111,8 +111,6 @@ static int _hid_sensor_power_state(struct hid_sensor_common *st, bool state)
+ 	s32 poll_value = 0;
+ 
+ 	if (state) {
+-		if (!atomic_read(&st->user_requested_state))
+-			return 0;
+ 		if (sensor_hub_device_open(st->hsdev))
+ 			return -EIO;
+ 
+@@ -161,6 +159,9 @@ static int _hid_sensor_power_state(struct hid_sensor_common *st, bool state)
+ 				       &report_val);
+ 	}
+ 
++	pr_debug("HID_SENSOR %s set power_state %d report_state %d\n",
++		 st->pdev->name, state_val, report_val);
++
+ 	sensor_hub_get_feature(st->hsdev, st->power_state.report_id,
+ 			       st->power_state.index,
+ 			       sizeof(state_val), &state_val);
+@@ -182,6 +183,7 @@ int hid_sensor_power_state(struct hid_sensor_common *st, bool state)
+ 		ret = pm_runtime_get_sync(&st->pdev->dev);
+ 	else {
+ 		pm_runtime_mark_last_busy(&st->pdev->dev);
++		pm_runtime_use_autosuspend(&st->pdev->dev);
+ 		ret = pm_runtime_put_autosuspend(&st->pdev->dev);
+ 	}
+ 	if (ret < 0) {
+@@ -285,8 +287,6 @@ int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
+ 	/* Default to 3 seconds, but can be changed from sysfs */
+ 	pm_runtime_set_autosuspend_delay(&attrb->pdev->dev,
+ 					 3000);
+-	pm_runtime_use_autosuspend(&attrb->pdev->dev);
+-
+ 	return ret;
+ error_unreg_trigger:
+ 	iio_trigger_unregister(trig);
+-- 
+2.5.5
 
