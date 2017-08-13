@@ -1,105 +1,38 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:57324 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751420AbdHMMMx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 13 Aug 2017 08:12:53 -0400
-Date: Sun, 13 Aug 2017 13:12:46 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: hadess@hadess.net, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: hid-sensor-trigger: Fix the race with user space
- powering up sensors
-Message-ID: <20170813131246.5d97a020@archlinux>
-In-Reply-To: <1502554161-9300-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: <1502554161-9300-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=rqCY=7P=gmail.com=arvind.yadav.cs@kernel.org>
+From: Arvind Yadav <arvind.yadav.cs@gmail.com>
+To: jikos@kernel.org,
+	jic23@kernel.org,
+	srinivas.pandruvada@linux.intel.com
+Cc: linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org
+Subject: [PATCH] HID: sensor: constify platform_device_id
+Date: Sun, 13 Aug 2017 15:15:32 +0530
+Message-Id: <2ae0f9137a673466f09a9d5169c9ef13bbe66a30.1502617403.git.arvind.yadav.cs@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, 12 Aug 2017 09:09:21 -0700
-Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
+platform_device_id are not supposed to change at runtime. All functions
+working with platform_device_id provided by <linux/platform_device.h>
+work with const platform_device_id. So mark the non-const structs as
+const.
 
-> It has been reported for a while that with iio-sensor-proxy service the
-> rotation only works after one suspend/resume cycle. This required a wait
-> in the systemd unit file to avoid race. I found a Yoga 900 where I could
-> reproduce this.
-> 
-> The problem scenerio is:
-> - During sensor driver init, enable run time PM and also set a
->   auto-suspend for 3 seconds.
-> 	This result in one runtime resume. But there is a check to avoid
-> a powerup in this sequence, but rpm is active
-> - User space iio-sensor-proxy tries to power up the sensor. Since rpm is
->   active it will simply return. But sensors were not actually
-> powered up in the prior sequence, so actaully the sensors will not work
-> - After 3 seconds the auto suspend kicks
-> 
-> If we add a wait in systemd service file to fire iio-sensor-proxy after
-> 3 seconds, then now everything will work as the runtime resume will
-> actually powerup the sensor as this is a user request.
-> 
-> To avoid this:
-> - Remove the check to match user requested state, this will cause a
->   brief powerup, but if the iio-sensor-proxy starts immediately it will
-> still work as the sensors are ON.
-> - Also move the autosuspend delay to place when user requested turn off
->   of sensors, like after user finished raw read or buffer disable
-> 
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> Tested-by: Bastien Nocera <hadess@hadess.net>
-> 
-Applied to the fixes-togreg branch of iio.git and marked for stable.
+Signed-off-by: Arvind Yadav <arvind.yadav.cs@gmail.com>
+---
+ drivers/hid/hid-sensor-custom.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
-
-Jonathan
-> ---
-> Changes:
-> Removed RFT and added Tested-by tag.
-> 
->  drivers/iio/common/hid-sensors/hid-sensor-trigger.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> index 16ade0a..0e4b379 100644
-> --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> @@ -111,8 +111,6 @@ static int _hid_sensor_power_state(struct hid_sensor_common *st, bool state)
->  	s32 poll_value = 0;
->  
->  	if (state) {
-> -		if (!atomic_read(&st->user_requested_state))
-> -			return 0;
->  		if (sensor_hub_device_open(st->hsdev))
->  			return -EIO;
->  
-> @@ -161,6 +159,9 @@ static int _hid_sensor_power_state(struct hid_sensor_common *st, bool state)
->  				       &report_val);
->  	}
->  
-> +	pr_debug("HID_SENSOR %s set power_state %d report_state %d\n",
-> +		 st->pdev->name, state_val, report_val);
-> +
->  	sensor_hub_get_feature(st->hsdev, st->power_state.report_id,
->  			       st->power_state.index,
->  			       sizeof(state_val), &state_val);
-> @@ -182,6 +183,7 @@ int hid_sensor_power_state(struct hid_sensor_common *st, bool state)
->  		ret = pm_runtime_get_sync(&st->pdev->dev);
->  	else {
->  		pm_runtime_mark_last_busy(&st->pdev->dev);
-> +		pm_runtime_use_autosuspend(&st->pdev->dev);
->  		ret = pm_runtime_put_autosuspend(&st->pdev->dev);
->  	}
->  	if (ret < 0) {
-> @@ -285,8 +287,6 @@ int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
->  	/* Default to 3 seconds, but can be changed from sysfs */
->  	pm_runtime_set_autosuspend_delay(&attrb->pdev->dev,
->  					 3000);
-> -	pm_runtime_use_autosuspend(&attrb->pdev->dev);
-> -
->  	return ret;
->  error_unreg_trigger:
->  	iio_trigger_unregister(trig);
-
+diff --git a/drivers/hid/hid-sensor-custom.c b/drivers/hid/hid-sensor-custom.c
+index 3a84aaf..5ad39fd 100644
+--- a/drivers/hid/hid-sensor-custom.c
++++ b/drivers/hid/hid-sensor-custom.c
+@@ -823,7 +823,7 @@ static int hid_sensor_custom_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-static struct platform_device_id hid_sensor_custom_ids[] = {
++static const struct platform_device_id hid_sensor_custom_ids[] = {
+ 	{
+ 		.name = "HID-SENSOR-2000e1",
+ 	},
+-- 
+2.7.4
