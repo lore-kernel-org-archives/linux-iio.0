@@ -1,231 +1,558 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.117]:39070 "EHLO vps.pmeerw.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751588AbdHPNZI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 16 Aug 2017 09:25:08 -0400
-Date: Wed, 16 Aug 2017 15:25:06 +0200 (CEST)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Andreas Klinger <ak@it-klinger.de>
-cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        linux-iio@vger.kernel.org, wsa@the-dreams.de, robh+dt@kernel.org,
-        mark.rutland@arm.com, linux-i2c@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 5/5] iio: srf08: add support for srf02 in i2c mode
-In-Reply-To: <20170814090209.GA9929@arbeit>
-Message-ID: <alpine.DEB.2.20.1708161513360.27224@vps.pmeerw.net>
-References: <20170814090209.GA9929@arbeit>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=jncT=7Q=gmail.com=harinath922@kernel.org>
+From: Harinath Nampally <harinath922@gmail.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	amsfield22@gmail.com,
+	martink@posteo.de
+Subject: [PATCH] iio: accel: mma8452: Bugfix to enbale and allow different events to work parallely.
+Date: Mon, 14 Aug 2017 18:44:04 -0400
+Message-Id: <1502750644-8854-1-git-send-email-harinath922@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
+This driver supports multiple devices like mma8653, mma8652, mma8452, mma8453 and
+fxls8471. Almost all these devices have more than one event. Current driver design
+hardcodes the event specific information, so only one event can be supported by this
+driver and current design doesn't have the flexibility to add more events.
 
-> srf02 added with support for i2c interface
-> 
-> Attributes for setting max range or sensitivity are omitted for the case of
-> srf02 type sensor, because they are not supported by the hardware.
+This patch fixes by detaching the event related information from chip_info struct,
+and based on channel type and event direction the corresponding event configuration registers
+are picked dynamically. Hence multiple events can be handled in read/write callbacks.
 
-comments below
+Changes are thoroughly tested on fxls8471 device on imx6UL Eval board using iio_event_monitor user space program.
+
+After this fix both Freefall and Transient events are handled by the driver without any conflicts.
+
+Signed-off-by: Harinath Nampally <harinath922@gmail.com>
+---
+ drivers/iio/accel/mma8452.c | 309 ++++++++++++++++++++------------------------
+ 1 file changed, 141 insertions(+), 168 deletions(-)
+
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index eb6e3dc..1b83e52 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -59,7 +59,9 @@
+ #define MMA8452_FF_MT_THS			0x17
+ #define  MMA8452_FF_MT_THS_MASK			0x7f
+ #define MMA8452_FF_MT_COUNT			0x18
++#define MMA8452_FF_MT_CHAN_SHIFT	3
+ #define MMA8452_TRANSIENT_CFG			0x1d
++#define  MMA8452_TRANSIENT_CFG_CHAN(chan)	BIT(chan + 1)
+ #define  MMA8452_TRANSIENT_CFG_HPF_BYP		BIT(0)
+ #define  MMA8452_TRANSIENT_CFG_ELE		BIT(4)
+ #define MMA8452_TRANSIENT_SRC			0x1e
+@@ -69,6 +71,7 @@
+ #define MMA8452_TRANSIENT_THS			0x1f
+ #define  MMA8452_TRANSIENT_THS_MASK		GENMASK(6, 0)
+ #define MMA8452_TRANSIENT_COUNT			0x20
++#define MMA8452_TRANSIENT_CHAN_SHIFT 1
+ #define MMA8452_CTRL_REG1			0x2a
+ #define  MMA8452_CTRL_ACTIVE			BIT(0)
+ #define  MMA8452_CTRL_DR_MASK			GENMASK(5, 3)
+@@ -107,6 +110,26 @@ struct mma8452_data {
+ 	const struct mma_chip_info *chip_info;
+ };
  
-> Signed-off-by: Andreas Klinger <ak@it-klinger.de>
-> ---
->  drivers/iio/proximity/Kconfig |  8 ++---
->  drivers/iio/proximity/srf08.c | 77 ++++++++++++++++++++++++++++++++-----------
->  2 files changed, 62 insertions(+), 23 deletions(-)
-> 
-> diff --git a/drivers/iio/proximity/Kconfig b/drivers/iio/proximity/Kconfig
-> index df33ccc0d035..ae070950f920 100644
-> --- a/drivers/iio/proximity/Kconfig
-> +++ b/drivers/iio/proximity/Kconfig
-> @@ -57,12 +57,12 @@ config SX9500
->  	  module will be called sx9500.
->  
->  config SRF08
-> -	tristate "Devantech SRF08/SRF10 ultrasonic ranger sensor"
-> +	tristate "Devantech SRF02/SRF08/SRF10 ultrasonic ranger sensor"
->  	depends on I2C
->  	help
-> -	  Say Y here to build a driver for Devantech SRF08/SRF10 ultrasonic
-> -	  ranger sensor. This driver can be used to measure the distance
-> -	  of objects.
-> +	  Say Y here to build a driver for Devantech SRF02/SRF08/SRF10
-> +	  ultrasonic ranger sensors with i2c interface.
-> +	  This driver can be used to measure the distance of objects.
->  
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called srf08.
-> diff --git a/drivers/iio/proximity/srf08.c b/drivers/iio/proximity/srf08.c
-> index 52573b013313..6ccf8f9fd703 100644
-> --- a/drivers/iio/proximity/srf08.c
-> +++ b/drivers/iio/proximity/srf08.c
-> @@ -1,15 +1,17 @@
->  /*
-> - * srf08.c - Support for Devantech SRF08 ultrasonic ranger
-> + * srf08.c - Support for Devantech SRF02/SRF08/SRF10 ultrasonic ranger
-> + *           with I2C-Interface
->   *
-> - * Copyright (c) 2016 Andreas Klinger <ak@it-klinger.de>
-> + * Copyright (c) 2016, 2017 Andreas Klinger <ak@it-klinger.de>
->   *
->   * This file is subject to the terms and conditions of version 2 of
-> - * the GNU General Public License.  See the file COPYING in the main
-> + * the GNU General Public License. See the file COPYING in the main
->   * directory of this archive for more details.
->   *
->   * For details about the device see:
->   * http://www.robot-electronics.co.uk/htm/srf08tech.html
->   * http://www.robot-electronics.co.uk/htm/srf10tech.htm
-> + * http://www.robot-electronics.co.uk/htm/srf02tech.htm
->   */
->  
->  #include <linux/err.h>
-> @@ -34,11 +36,10 @@
->  
->  #define SRF08_CMD_RANGING_CM	0x51	/* Ranging Mode - Result in cm */
->  
-> -#define SRF08_DEFAULT_RANGE	6020	/* default value of Range in mm */
-> -
->  #define SRF08_MAX_SENSITIVITY	32	/* number of Gain Register values */
->  
->  enum srf08_sensor_type {
-> +	SRF02,
->  	SRF08,
->  	SRF10,
->  	SRF_MAX_TYPE
-> @@ -75,6 +76,8 @@ struct srf08_data {
->   * is called "Sensitivity" here.
->   */
->  static const int srf08_sensitivity[SRF_MAX_TYPE][SRF08_MAX_SENSITIVITY] = {
-> +	[SRF02] = {
-> +	},
->  	[SRF08] = {
->  	 94,  97, 100, 103, 107, 110, 114, 118,
->  	123, 128, 133, 139, 145, 152, 159, 168,
-> @@ -93,6 +96,11 @@ static const int srf08_default_sensitivity[SRF_MAX_TYPE] = {
->  	[SRF10] = 700,
->  };
->  
-> +static const int srf08_default_range[SRF_MAX_TYPE] = {
-
-the information regarding range unit (mm) is lost, maybe add a comment?
-
-> +	[SRF08] = 6020,
-> +	[SRF10] = 6020,
-> +};
-> +
->  static int srf08_read_ranging(struct srf08_data *data)
->  {
->  	struct i2c_client *client = data->client;
-> @@ -409,6 +417,15 @@ static const struct iio_info srf08_info = {
->  	.driver_module = THIS_MODULE,
->  };
->  
-> +/*
-> + * srf02 don't have an adjustable range or sensitivity,
-> + * so we don't need attributes at all
-> + */
-> +static const struct iio_info srf02_info = {
-> +	.read_raw = srf08_read_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
->  static int srf08_probe(struct i2c_client *client,
->  					 const struct i2c_device_id *id)
->  {
-> @@ -434,7 +451,13 @@ static int srf08_probe(struct i2c_client *client,
->  	indio_dev->name = id->name;
->  	indio_dev->dev.parent = &client->dev;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
-> -	indio_dev->info = &srf08_info;
-> +
-> +	/* srf02 is not using sensitivity nor max_range */
-> +	if (id->driver_data == SRF02)
-> +		indio_dev->info = &srf02_info;
-> +	else
-> +		indio_dev->info = &srf08_info;
-> +
->  	indio_dev->channels = srf08_channels;
->  	indio_dev->num_channels = ARRAY_SIZE(srf08_channels);
->  
-> @@ -447,24 +470,39 @@ static int srf08_probe(struct i2c_client *client,
->  		return ret;
->  	}
->  
-> -	/*
-> -	 * set default values of device here
-> -	 * these register values cannot be read from the hardware
-> -	 * therefore set driver specific default values
-> -	 */
-> -	ret = srf08_write_range_mm(data, SRF08_DEFAULT_RANGE);
-> -	if (ret < 0)
-> -		return ret;
-> +	if (srf08_default_range[id->driver_data]) {
-
-
-it would be nice to have a chip_info struct with chip-specific 
-information, so we can point to the relevant struct once instead of 
-picking the correct entry from srf08_default_sensitivity and 
-srf08_default_range separately
-
-so far, we have only two defaults tables... no big deal
-
-> +		/*
-> +		 * set default range of device here
-> +		 * these register values cannot be read from he hardware
-> +		 * therefore set driver specific default values
-> +		 *
-> +		 * srf02 don't have a default value so it'll be omitted
-> +		 */
-> +		ret = srf08_write_range_mm(data,
-> +					srf08_default_range[id->driver_data]);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
->  
-> -	ret = srf08_write_sensitivity(data,
-> -			srf08_default_sensitivity[id->driver_data]);
-> -	if (ret < 0)
-> -		return ret;
-> +	if (srf08_default_sensitivity[id->driver_data]) {
-> +		/*
-> +		 * set default sensitivity of device here
-> +		 * these register values cannot be read from the hardware
-> +		 * therefore set driver specific default values
-> +		 *
-> +		 * srf02 don't have a default value so it'll be omitted
-> +		 */
-> +		ret = srf08_write_sensitivity(data,
-> +				srf08_default_sensitivity[id->driver_data]);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
->  
->  	return devm_iio_device_register(&client->dev, indio_dev);
->  }
->  
->  static const struct of_device_id of_srf08_match[] = {
-> +	{ .compatible = "devantech,srf02", (void *)SRF02},
->  	{ .compatible = "devantech,srf08", (void *)SRF08},
->  	{ .compatible = "devantech,srf10", (void *)SRF10},
->  	{},
-> @@ -473,6 +511,7 @@ static const struct of_device_id of_srf08_match[] = {
->  MODULE_DEVICE_TABLE(of, of_srf08_match);
->  
->  static const struct i2c_device_id srf08_id[] = {
-> +	{ "srf02", SRF02 },
->  	{ "srf08", SRF08 },
->  	{ "srf10", SRF10 },
->  	{ }
-> @@ -490,5 +529,5 @@ static struct i2c_driver srf08_driver = {
->  module_i2c_driver(srf08_driver);
->  
->  MODULE_AUTHOR("Andreas Klinger <ak@it-klinger.de>");
-> -MODULE_DESCRIPTION("Devantech SRF08/SRF10 ultrasonic ranger driver");
-> +MODULE_DESCRIPTION("Devantech SRF02/SRF08/SRF10 i2c ultrasonic ranger driver");
->  MODULE_LICENSE("GPL");
-> 
-
++ /**
++  * struct mma8452_event_regs - chip specific data related to events
++  * @ev_cfg:			event config register address
++  * @ev_src:			event source register address
++  * @ev_ths:			event threshold register address
++  * @ev_ths_mask:		mask for the threshold value
++  * @ev_count:			event count (period) register address
++  *
++  * Since not all chips supported by the driver support comparing high pass
++  * filtered data for events (interrupts), different interrupt sources are
++  * used for different chips and the relevant registers are included here.
++  */
++struct mma8452_event_regs {
++		u8 ev_cfg;
++		u8 ev_src;
++		u8 ev_ths;
++		u8 ev_ths_mask;
++		u8 ev_count;
++};
++
+ /**
+  * struct mma_chip_info - chip specific data
+  * @chip_id:			WHO_AM_I register's value
+@@ -116,40 +139,12 @@ struct mma8452_data {
+  * @mma_scales:			scale factors for converting register values
+  *				to m/s^2; 3 modes: 2g, 4g, 8g; 2 integers
+  *				per mode: m/s^2 and micro m/s^2
+- * @ev_cfg:			event config register address
+- * @ev_cfg_ele:			latch bit in event config register
+- * @ev_cfg_chan_shift:		number of the bit to enable events in X
+- *				direction; in event config register
+- * @ev_src:			event source register address
+- * @ev_src_xe:			bit in event source register that indicates
+- *				an event in X direction
+- * @ev_src_ye:			bit in event source register that indicates
+- *				an event in Y direction
+- * @ev_src_ze:			bit in event source register that indicates
+- *				an event in Z direction
+- * @ev_ths:			event threshold register address
+- * @ev_ths_mask:		mask for the threshold value
+- * @ev_count:			event count (period) register address
+- *
+- * Since not all chips supported by the driver support comparing high pass
+- * filtered data for events (interrupts), different interrupt sources are
+- * used for different chips and the relevant registers are included here.
+  */
+ struct mma_chip_info {
+ 	u8 chip_id;
+ 	const struct iio_chan_spec *channels;
+ 	int num_channels;
+ 	const int mma_scales[3][2];
+-	u8 ev_cfg;
+-	u8 ev_cfg_ele;
+-	u8 ev_cfg_chan_shift;
+-	u8 ev_src;
+-	u8 ev_src_xe;
+-	u8 ev_src_ye;
+-	u8 ev_src_ze;
+-	u8 ev_ths;
+-	u8 ev_ths_mask;
+-	u8 ev_count;
+ };
+ 
+ enum {
+@@ -602,9 +597,8 @@ static int mma8452_set_power_mode(struct mma8452_data *data, u8 mode)
+ static int mma8452_freefall_mode_enabled(struct mma8452_data *data)
+ {
+ 	int val;
+-	const struct mma_chip_info *chip = data->chip_info;
+ 
+-	val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
++	val = i2c_smbus_read_byte_data(data->client, MMA8452_FF_MT_CFG);
+ 	if (val < 0)
+ 		return val;
+ 
+@@ -614,29 +608,28 @@ static int mma8452_freefall_mode_enabled(struct mma8452_data *data)
+ static int mma8452_set_freefall_mode(struct mma8452_data *data, bool state)
+ {
+ 	int val;
+-	const struct mma_chip_info *chip = data->chip_info;
+ 
+ 	if ((state && mma8452_freefall_mode_enabled(data)) ||
+ 	    (!state && !(mma8452_freefall_mode_enabled(data))))
+ 		return 0;
+ 
+-	val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
++	val = i2c_smbus_read_byte_data(data->client, MMA8452_FF_MT_CFG);
+ 	if (val < 0)
+ 		return val;
+ 
+ 	if (state) {
+-		val |= BIT(idx_x + chip->ev_cfg_chan_shift);
+-		val |= BIT(idx_y + chip->ev_cfg_chan_shift);
+-		val |= BIT(idx_z + chip->ev_cfg_chan_shift);
++		val |= BIT(idx_x + MMA8452_FF_MT_CHAN_SHIFT);
++		val |= BIT(idx_y + MMA8452_FF_MT_CHAN_SHIFT);
++		val |= BIT(idx_z + MMA8452_FF_MT_CHAN_SHIFT);
+ 		val &= ~MMA8452_FF_MT_CFG_OAE;
+ 	} else {
+-		val &= ~BIT(idx_x + chip->ev_cfg_chan_shift);
+-		val &= ~BIT(idx_y + chip->ev_cfg_chan_shift);
+-		val &= ~BIT(idx_z + chip->ev_cfg_chan_shift);
++		val &= ~BIT(idx_x + MMA8452_FF_MT_CHAN_SHIFT);
++		val &= ~BIT(idx_y + MMA8452_FF_MT_CHAN_SHIFT);
++		val &= ~BIT(idx_z + MMA8452_FF_MT_CHAN_SHIFT);
+ 		val |= MMA8452_FF_MT_CFG_OAE;
+ 	}
+ 
+-	return mma8452_change_config(data, chip->ev_cfg, val);
++	return mma8452_change_config(data, MMA8452_FF_MT_CFG, val);
+ }
+ 
+ static int mma8452_set_hp_filter_frequency(struct mma8452_data *data,
+@@ -740,6 +733,39 @@ static int mma8452_write_raw(struct iio_dev *indio_dev,
+ 	return ret;
+ }
+ 
++static int mma8452_get_event_regs(const struct iio_chan_spec *chan,
++	       enum iio_event_direction dir,
++		   struct mma8452_event_regs *ev_regs
++	       )
++{
++	if (!chan)
++		return -EINVAL;
++	switch (chan->type) {
++	case IIO_ACCEL:
++		switch (dir) {
++		case IIO_EV_DIR_FALLING:
++			ev_regs->ev_cfg = MMA8452_FF_MT_CFG;
++			ev_regs->ev_src = MMA8452_FF_MT_SRC;
++			ev_regs->ev_ths = MMA8452_FF_MT_THS;
++			ev_regs->ev_ths_mask = MMA8452_FF_MT_THS_MASK;
++			ev_regs->ev_count = MMA8452_FF_MT_COUNT;
++			break;
++		case IIO_EV_DIR_RISING:
++			ev_regs->ev_cfg = MMA8452_TRANSIENT_CFG;
++			ev_regs->ev_src = MMA8452_TRANSIENT_SRC;
++			ev_regs->ev_ths = MMA8452_TRANSIENT_THS;
++			ev_regs->ev_count = MMA8452_TRANSIENT_COUNT;
++			break;
++		default:
++			return -EINVAL;
++		}
++		break;
++	default:
++		return -EINVAL;
++	}
++	return 0;
++}
++
+ static int mma8452_read_thresh(struct iio_dev *indio_dev,
+ 			       const struct iio_chan_spec *chan,
+ 			       enum iio_event_type type,
+@@ -749,21 +775,23 @@ static int mma8452_read_thresh(struct iio_dev *indio_dev,
+ {
+ 	struct mma8452_data *data = iio_priv(indio_dev);
+ 	int ret, us, power_mode;
++	struct mma8452_event_regs ev_regs;
+ 
++	ret = mma8452_get_event_regs(chan, dir, &ev_regs);
++	if (ret)
++		return ret;
+ 	switch (info) {
+ 	case IIO_EV_INFO_VALUE:
+-		ret = i2c_smbus_read_byte_data(data->client,
+-					       data->chip_info->ev_ths);
++		ret = i2c_smbus_read_byte_data(data->client, ev_regs.ev_ths);
+ 		if (ret < 0)
+ 			return ret;
+ 
+-		*val = ret & data->chip_info->ev_ths_mask;
++		*val = ret & ev_regs.ev_ths_mask;
+ 
+ 		return IIO_VAL_INT;
+ 
+ 	case IIO_EV_INFO_PERIOD:
+-		ret = i2c_smbus_read_byte_data(data->client,
+-					       data->chip_info->ev_count);
++		ret = i2c_smbus_read_byte_data(data->client, ev_regs.ev_count);
+ 		if (ret < 0)
+ 			return ret;
+ 
+@@ -809,14 +837,18 @@ static int mma8452_write_thresh(struct iio_dev *indio_dev,
+ {
+ 	struct mma8452_data *data = iio_priv(indio_dev);
+ 	int ret, reg, steps;
++	struct mma8452_event_regs ev_regs;
++
++	ret = mma8452_get_event_regs(chan, dir, &ev_regs);
++	if (ret)
++		return ret;
+ 
+ 	switch (info) {
+ 	case IIO_EV_INFO_VALUE:
+-		if (val < 0 || val > MMA8452_TRANSIENT_THS_MASK)
++		if (val < 0 || val > ev_regs.ev_ths_mask)
+ 			return -EINVAL;
+ 
+-		return mma8452_change_config(data, data->chip_info->ev_ths,
+-					     val);
++		return mma8452_change_config(data, ev_regs.ev_ths, val);
+ 
+ 	case IIO_EV_INFO_PERIOD:
+ 		ret = mma8452_get_power_mode(data);
+@@ -830,8 +862,7 @@ static int mma8452_write_thresh(struct iio_dev *indio_dev,
+ 		if (steps < 0 || steps > 0xff)
+ 			return -EINVAL;
+ 
+-		return mma8452_change_config(data, data->chip_info->ev_count,
+-					     steps);
++		return mma8452_change_config(data, ev_regs.ev_count, steps);
+ 
+ 	case IIO_EV_INFO_HIGH_PASS_FILTER_3DB:
+ 		reg = i2c_smbus_read_byte_data(data->client,
+@@ -861,23 +892,23 @@ static int mma8452_read_event_config(struct iio_dev *indio_dev,
+ 				     enum iio_event_direction dir)
+ {
+ 	struct mma8452_data *data = iio_priv(indio_dev);
+-	const struct mma_chip_info *chip = data->chip_info;
+ 	int ret;
+ 
+-	switch (dir) {
+-	case IIO_EV_DIR_FALLING:
+-		return mma8452_freefall_mode_enabled(data);
+-	case IIO_EV_DIR_RISING:
+-		if (mma8452_freefall_mode_enabled(data))
+-			return 0;
++	switch (chan->type) {
++	case IIO_ACCEL:
++		switch (dir) {
++		case IIO_EV_DIR_FALLING:
++			return mma8452_freefall_mode_enabled(data);
++		case IIO_EV_DIR_RISING:
++			ret = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_CFG);
++			if (ret < 0)
++				return ret;
+ 
+-		ret = i2c_smbus_read_byte_data(data->client,
+-					       data->chip_info->ev_cfg);
+-		if (ret < 0)
+-			return ret;
++			return !!(ret & MMA8452_TRANSIENT_CFG_CHAN(chan->scan_index));
+ 
+-		return !!(ret & BIT(chan->scan_index +
+-				    chip->ev_cfg_chan_shift));
++		default:
++			return -EINVAL;
++		}
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -890,39 +921,33 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
+ 				      int state)
+ {
+ 	struct mma8452_data *data = iio_priv(indio_dev);
+-	const struct mma_chip_info *chip = data->chip_info;
+ 	int val, ret;
+ 
+ 	ret = mma8452_set_runtime_pm_state(data->client, state);
+ 	if (ret)
+ 		return ret;
+ 
+-	switch (dir) {
+-	case IIO_EV_DIR_FALLING:
+-		return mma8452_set_freefall_mode(data, state);
+-	case IIO_EV_DIR_RISING:
+-		val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
+-		if (val < 0)
+-			return val;
+-
+-		if (state) {
+-			if (mma8452_freefall_mode_enabled(data)) {
+-				val &= ~BIT(idx_x + chip->ev_cfg_chan_shift);
+-				val &= ~BIT(idx_y + chip->ev_cfg_chan_shift);
+-				val &= ~BIT(idx_z + chip->ev_cfg_chan_shift);
+-				val |= MMA8452_FF_MT_CFG_OAE;
+-			}
+-			val |= BIT(chan->scan_index + chip->ev_cfg_chan_shift);
+-		} else {
+-			if (mma8452_freefall_mode_enabled(data))
+-				return 0;
+-
+-			val &= ~BIT(chan->scan_index + chip->ev_cfg_chan_shift);
++	switch (chan->type) {
++	case IIO_ACCEL:
++		switch (dir) {
++		case IIO_EV_DIR_FALLING:
++			return mma8452_set_freefall_mode(data, state);
++		case IIO_EV_DIR_RISING:
++			val = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_CFG);
++			if (val < 0)
++				return val;
++
++			if (state)
++				val |= MMA8452_TRANSIENT_CFG_CHAN(chan->scan_index);
++			else
++				val &= ~MMA8452_TRANSIENT_CFG_CHAN(chan->scan_index);
++
++			val |= MMA8452_TRANSIENT_CFG_ELE;
++
++			return mma8452_change_config(data, MMA8452_TRANSIENT_CFG, val);
++		default:
++			return -EINVAL;
+ 		}
+-
+-		val |= chip->ev_cfg_ele;
+-
+-		return mma8452_change_config(data, chip->ev_cfg, val);
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -934,35 +959,25 @@ static void mma8452_transient_interrupt(struct iio_dev *indio_dev)
+ 	s64 ts = iio_get_time_ns(indio_dev);
+ 	int src;
+ 
+-	src = i2c_smbus_read_byte_data(data->client, data->chip_info->ev_src);
++	src = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_SRC);
+ 	if (src < 0)
+ 		return;
+ 
+-	if (mma8452_freefall_mode_enabled(data)) {
+-		iio_push_event(indio_dev,
+-			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0,
+-						  IIO_MOD_X_AND_Y_AND_Z,
+-						  IIO_EV_TYPE_MAG,
+-						  IIO_EV_DIR_FALLING),
+-			       ts);
+-		return;
+-	}
+-
+-	if (src & data->chip_info->ev_src_xe)
++	if (src & MMA8452_TRANSIENT_SRC_XTRANSE)
+ 		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_X,
+ 						  IIO_EV_TYPE_MAG,
+ 						  IIO_EV_DIR_RISING),
+ 			       ts);
+ 
+-	if (src & data->chip_info->ev_src_ye)
++	if (src & MMA8452_TRANSIENT_SRC_YTRANSE)
+ 		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_Y,
+ 						  IIO_EV_TYPE_MAG,
+ 						  IIO_EV_DIR_RISING),
+ 			       ts);
+ 
+-	if (src & data->chip_info->ev_src_ze)
++	if (src & MMA8452_TRANSIENT_SRC_ZTRANSE)
+ 		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_Z,
+ 						  IIO_EV_TYPE_MAG,
+@@ -974,23 +989,41 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
+ {
+ 	struct iio_dev *indio_dev = p;
+ 	struct mma8452_data *data = iio_priv(indio_dev);
+-	const struct mma_chip_info *chip = data->chip_info;
+ 	int ret = IRQ_NONE;
+-	int src;
++	int src, enabled_interrupts;
+ 
+ 	src = i2c_smbus_read_byte_data(data->client, MMA8452_INT_SRC);
+ 	if (src < 0)
+ 		return IRQ_NONE;
+ 
++	enabled_interrupts = i2c_smbus_read_byte_data(data->client,
++					MMA8452_CTRL_REG4);
++	if (enabled_interrupts < 0)
++		return enabled_interrupts;
++
++	if (!(src & enabled_interrupts))
++		return IRQ_NONE;
++
+ 	if (src & MMA8452_INT_DRDY) {
+ 		iio_trigger_poll_chained(indio_dev->trig);
+ 		ret = IRQ_HANDLED;
+ 	}
+ 
+-	if ((src & MMA8452_INT_TRANS &&
+-	     chip->ev_src == MMA8452_TRANSIENT_SRC) ||
+-	    (src & MMA8452_INT_FF_MT &&
+-	     chip->ev_src == MMA8452_FF_MT_SRC)) {
++	if (src & MMA8452_INT_FF_MT) {
++		if (mma8452_freefall_mode_enabled(data)) {
++			s64 ts = iio_get_time_ns(indio_dev);
++
++			iio_push_event(indio_dev,
++				       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0,
++							  IIO_MOD_X_AND_Y_AND_Z,
++							  IIO_EV_TYPE_MAG,
++							  IIO_EV_DIR_FALLING),
++				       ts);
++		}
++		ret = IRQ_HANDLED;
++	}
++
++	if (src & MMA8452_INT_TRANS) {
+ 		mma8452_transient_interrupt(indio_dev);
+ 		ret = IRQ_HANDLED;
+ 	}
+@@ -1222,96 +1255,36 @@ static const struct mma_chip_info mma_chip_info_table[] = {
+ 		 *	g * N * 1000000 / 2048 for N = 2, 4, 8 and g=9.80665
+ 		 */
+ 		.mma_scales = { {0, 2394}, {0, 4788}, {0, 9577} },
+-		.ev_cfg = MMA8452_TRANSIENT_CFG,
+-		.ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE,
+-		.ev_cfg_chan_shift = 1,
+-		.ev_src = MMA8452_TRANSIENT_SRC,
+-		.ev_src_xe = MMA8452_TRANSIENT_SRC_XTRANSE,
+-		.ev_src_ye = MMA8452_TRANSIENT_SRC_YTRANSE,
+-		.ev_src_ze = MMA8452_TRANSIENT_SRC_ZTRANSE,
+-		.ev_ths = MMA8452_TRANSIENT_THS,
+-		.ev_ths_mask = MMA8452_TRANSIENT_THS_MASK,
+-		.ev_count = MMA8452_TRANSIENT_COUNT,
+ 	},
+ 	[mma8452] = {
+ 		.chip_id = MMA8452_DEVICE_ID,
+ 		.channels = mma8452_channels,
+ 		.num_channels = ARRAY_SIZE(mma8452_channels),
+ 		.mma_scales = { {0, 9577}, {0, 19154}, {0, 38307} },
+-		.ev_cfg = MMA8452_TRANSIENT_CFG,
+-		.ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE,
+-		.ev_cfg_chan_shift = 1,
+-		.ev_src = MMA8452_TRANSIENT_SRC,
+-		.ev_src_xe = MMA8452_TRANSIENT_SRC_XTRANSE,
+-		.ev_src_ye = MMA8452_TRANSIENT_SRC_YTRANSE,
+-		.ev_src_ze = MMA8452_TRANSIENT_SRC_ZTRANSE,
+-		.ev_ths = MMA8452_TRANSIENT_THS,
+-		.ev_ths_mask = MMA8452_TRANSIENT_THS_MASK,
+-		.ev_count = MMA8452_TRANSIENT_COUNT,
+ 	},
+ 	[mma8453] = {
+ 		.chip_id = MMA8453_DEVICE_ID,
+ 		.channels = mma8453_channels,
+ 		.num_channels = ARRAY_SIZE(mma8453_channels),
+ 		.mma_scales = { {0, 38307}, {0, 76614}, {0, 153228} },
+-		.ev_cfg = MMA8452_TRANSIENT_CFG,
+-		.ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE,
+-		.ev_cfg_chan_shift = 1,
+-		.ev_src = MMA8452_TRANSIENT_SRC,
+-		.ev_src_xe = MMA8452_TRANSIENT_SRC_XTRANSE,
+-		.ev_src_ye = MMA8452_TRANSIENT_SRC_YTRANSE,
+-		.ev_src_ze = MMA8452_TRANSIENT_SRC_ZTRANSE,
+-		.ev_ths = MMA8452_TRANSIENT_THS,
+-		.ev_ths_mask = MMA8452_TRANSIENT_THS_MASK,
+-		.ev_count = MMA8452_TRANSIENT_COUNT,
+ 	},
+ 	[mma8652] = {
+ 		.chip_id = MMA8652_DEVICE_ID,
+ 		.channels = mma8652_channels,
+ 		.num_channels = ARRAY_SIZE(mma8652_channels),
+ 		.mma_scales = { {0, 9577}, {0, 19154}, {0, 38307} },
+-		.ev_cfg = MMA8452_FF_MT_CFG,
+-		.ev_cfg_ele = MMA8452_FF_MT_CFG_ELE,
+-		.ev_cfg_chan_shift = 3,
+-		.ev_src = MMA8452_FF_MT_SRC,
+-		.ev_src_xe = MMA8452_FF_MT_SRC_XHE,
+-		.ev_src_ye = MMA8452_FF_MT_SRC_YHE,
+-		.ev_src_ze = MMA8452_FF_MT_SRC_ZHE,
+-		.ev_ths = MMA8452_FF_MT_THS,
+-		.ev_ths_mask = MMA8452_FF_MT_THS_MASK,
+-		.ev_count = MMA8452_FF_MT_COUNT,
+ 	},
+ 	[mma8653] = {
+ 		.chip_id = MMA8653_DEVICE_ID,
+ 		.channels = mma8653_channels,
+ 		.num_channels = ARRAY_SIZE(mma8653_channels),
+ 		.mma_scales = { {0, 38307}, {0, 76614}, {0, 153228} },
+-		.ev_cfg = MMA8452_FF_MT_CFG,
+-		.ev_cfg_ele = MMA8452_FF_MT_CFG_ELE,
+-		.ev_cfg_chan_shift = 3,
+-		.ev_src = MMA8452_FF_MT_SRC,
+-		.ev_src_xe = MMA8452_FF_MT_SRC_XHE,
+-		.ev_src_ye = MMA8452_FF_MT_SRC_YHE,
+-		.ev_src_ze = MMA8452_FF_MT_SRC_ZHE,
+-		.ev_ths = MMA8452_FF_MT_THS,
+-		.ev_ths_mask = MMA8452_FF_MT_THS_MASK,
+-		.ev_count = MMA8452_FF_MT_COUNT,
+ 	},
+ 	[fxls8471] = {
+ 		.chip_id = FXLS8471_DEVICE_ID,
+ 		.channels = mma8451_channels,
+ 		.num_channels = ARRAY_SIZE(mma8451_channels),
+ 		.mma_scales = { {0, 2394}, {0, 4788}, {0, 9577} },
+-		.ev_cfg = MMA8452_TRANSIENT_CFG,
+-		.ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE,
+-		.ev_cfg_chan_shift = 1,
+-		.ev_src = MMA8452_TRANSIENT_SRC,
+-		.ev_src_xe = MMA8452_TRANSIENT_SRC_XTRANSE,
+-		.ev_src_ye = MMA8452_TRANSIENT_SRC_YTRANSE,
+-		.ev_src_ze = MMA8452_TRANSIENT_SRC_ZTRANSE,
+-		.ev_ths = MMA8452_TRANSIENT_THS,
+-		.ev_ths_mask = MMA8452_TRANSIENT_THS_MASK,
+-		.ev_count = MMA8452_TRANSIENT_COUNT,
+ 	},
+ };
+ 
 -- 
-
-Peter Meerwald-Stadler
-Mobile: +43 664 24 44 418
+2.7.4
