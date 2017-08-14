@@ -1,54 +1,44 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.17.13]:49802 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752499AbdHNI6t (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Aug 2017 04:58:49 -0400
-Date: Mon, 14 Aug 2017 10:59:00 +0200
+Return-Path: <SRS0=L3dC=7Q=it-klinger.de=ak@kernel.org>
+Date: Mon, 14 Aug 2017 10:59:41 +0200
 From: Andreas Klinger <ak@it-klinger.de>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org
 Cc: wsa@the-dreams.de, robh+dt@kernel.org, mark.rutland@arm.com,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/5] iio: srf08: add support for similar devices and
- triggered buffers
-Message-ID: <20170814085900.GA9722@arbeit>
+	linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/5] iio: srf08: add device tree binding for srf02 and
+ srf10
+Message-ID: <20170814085941.GA9759@arbeit>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+List-ID: <linux-iio@vger.kernel.org>
 
-This patch series adds support for:
-- triggered buffer
-- ultrasonic devices srf02 and srf10
+add trivial device tree binding "devantech,srf02" and "devantech,srf10"
 
-Thanks to Jonathan for his review which lined out improvements throughout
-the patches.
+Signed-off-by: Andreas Klinger <ak@it-klinger.de>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+---
+ Documentation/devicetree/bindings/i2c/trivial-devices.txt | 2 ++
+ 1 file changed, 2 insertions(+)
 
-I'm not sure, if the cc of [PATCH v2 1/5] is correct now.
-
-Changes in v2:
-- removed unnecessary patch "[PATCH 6/7] iio: srf08: add buffered to device
-  mode"
-- incorporated patch "[PATCH 7/7] iio: srf08: change text in Kconfig" where
-  suitable
-- changed order of patches to improve logical flow of changes
-- improved distinction of sensor types
-
-Andreas Klinger (5):
-  iio: srf08: add device tree binding for srf02 and srf10
-  iio: srf08: add device tree table
-  iio: srf08: add triggered buffer support
-  iio: srf08: add sensor type srf10
-  iio: srf08: add support for srf02 in i2c mode
-
- .../devicetree/bindings/i2c/trivial-devices.txt    |   2 +
- drivers/iio/proximity/Kconfig                      |   8 +-
- drivers/iio/proximity/srf08.c                      | 191 ++++++++++++++++++---
- 3 files changed, 169 insertions(+), 32 deletions(-)
-
--- 
+diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Do=
+cumentation/devicetree/bindings/i2c/trivial-devices.txt
+index ad10fbe61562..0e5fb016e912 100644
+--- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
++++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+@@ -36,7 +36,9 @@ dallas,ds1775		Tiny Digital Thermometer and Thermostat
+ dallas,ds3232		Extremely Accurate I=C2=B2C RTC with Integrated Crystal and=
+ SRAM
+ dallas,ds4510		CPU Supervisor with Nonvolatile Memory and Programmable I/O
+ dallas,ds75		Digital Thermometer and Thermostat
++devantech,srf02		Devantech SRF02 ultrasonic ranger in I2C mode
+ devantech,srf08		Devantech SRF08 ultrasonic ranger
++devantech,srf10		Devantech SRF10 ultrasonic ranger
+ dlg,da9053		DA9053: flexible system level PMIC with multicore support
+ dlg,da9063		DA9063: system PMIC for quad-core application processors
+ domintech,dmard09	DMARD09: 3-axis Accelerometer
+--=20
 2.1.4
 
 
--- 
+--=20
