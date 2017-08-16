@@ -1,58 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:43832 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1753104AbdHQOzg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 17 Aug 2017 10:55:36 -0400
-Date: Thu, 17 Aug 2017 15:55:28 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+Received: from mail-pg0-f68.google.com ([74.125.83.68]:35537 "EHLO
+        mail-pg0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751635AbdHPSwI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 16 Aug 2017 14:52:08 -0400
+Received: by mail-pg0-f68.google.com with SMTP id l64so5949245pge.2
+        for <linux-iio@vger.kernel.org>; Wed, 16 Aug 2017 11:52:07 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <20170816170253.8382-1-lorenzo.bianconi@st.com>
+References: <20170816170253.8382-1-lorenzo.bianconi@st.com>
+From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+Date: Wed, 16 Aug 2017 20:52:06 +0200
+Message-ID: <CAA2SeNLqz-yxqD-SP975kzyDp1x02=80d+n9-QK7RudKZ6BSdQ@mail.gmail.com>
+Subject: Re: [PATCH 0/4] Add support to LIS2MDL magnetometer sensor
+To: Jonathan Cameron <jic23@kernel.org>
 Cc: linux-iio@vger.kernel.org,
         Linus Walleij <linus.walleij@linaro.org>,
-        Lorenzo BIANCONI <lorenzo.bianconi@st.com>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH 4/4] dt-bindings: iio: magn: add LIS2MDL sensor device
- binding
-Message-ID: <20170817155528.68354457@archlinux>
-In-Reply-To: <CAA2SeN+iPatt4h1B+qkez0HuVd1ZiojjgXkvu5hYLL_xOU5O2g@mail.gmail.com>
-References: <20170816170253.8382-1-lorenzo.bianconi@st.com>
-        <20170816170253.8382-5-lorenzo.bianconi@st.com>
-        <CAA2SeN+iPatt4h1B+qkez0HuVd1ZiojjgXkvu5hYLL_xOU5O2g@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Lorenzo BIANCONI <lorenzo.bianconi@st.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 17 Aug 2017 09:01:22 +0200
-Lorenzo Bianconi <lorenzo.bianconi83@gmail.com> wrote:
+Jonathan I forgot to add in cc device tree ML. Should I resend?
 
-> Added devicetree ml in cc
-> 
-> > Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
-I've applied this as it is about as trivial as you can get.
-If one of the devicetree maintainers really wants to reply then feel free ;)
+Regards,
+Lorenzo
 
-Applied to the togreg branch of iio.git and pushed out as testing.
+On Wed, Aug 16, 2017 at 7:02 PM, Lorenzo Bianconi
+<lorenzo.bianconi83@gmail.com> wrote:
+> Fix two interrupt issues for LSM303AGR magn sensor
+>
+> Lorenzo Bianconi (4):
+>   iio: magnetometer: st_magn: fix status register address for LSM303AGR
+>   iio: magnetometer: st_magn: remove ihl property for LSM303AGR
+>   iio: magnetometer: add support to LIS2MDL
+>   dt-bindings: iio: magn: add LIS2MDL sensor device binding
+>
+>  Documentation/devicetree/bindings/iio/st-sensors.txt | 1 +
+>  drivers/iio/magnetometer/st_magn.h                   | 1 +
+>  drivers/iio/magnetometer/st_magn_core.c              | 5 ++---
+>  drivers/iio/magnetometer/st_magn_i2c.c               | 5 +++++
+>  drivers/iio/magnetometer/st_magn_spi.c               | 5 +++++
+>  5 files changed, 14 insertions(+), 3 deletions(-)
+>
+> --
+> 2.14.0
+>
 
-Thanks,
 
-Jonathan
-> > ---
-> >  Documentation/devicetree/bindings/iio/st-sensors.txt | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
-> > index 1e305f61f3df..9ec6f5ce54fc 100644
-> > --- a/Documentation/devicetree/bindings/iio/st-sensors.txt
-> > +++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
-> > @@ -64,6 +64,7 @@ Magnetometers:
-> >  - st,lsm303dlhc-magn
-> >  - st,lsm303dlm-magn
-> >  - st,lis3mdl-magn
-> > +- st,lis2mdl
-> >
-> >  Pressure sensors:
-> >  - st,lps001wp-press
-> > --
-> > 2.14.0
-> >  
 
+-- 
+UNIX is Sexy: who | grep -i blonde | talk; cd ~; wine; talk; touch;
+unzip; touch; strip; gasp; finger; gasp; mount; fsck; more; yes; gasp;
+umount; make clean; sleep
