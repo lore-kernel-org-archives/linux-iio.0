@@ -1,214 +1,326 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:49448 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751019AbdHTKDB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 20 Aug 2017 06:03:01 -0400
-Date: Sun, 20 Aug 2017 11:02:57 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/6] iio: accel: kxcjk1003: refactor ODR setting
-Message-ID: <20170820104804.592ca508@archlinux>
-In-Reply-To: <a7838c0a0de7fce879c58ddc87a450895f5bc101.1502979014.git.mirq-linux@rere.qmqm.pl>
+Return-Path: <SRS0=wvzB=7T=rere.qmqm.pl=mirq-linux@kernel.org>
+Date: Thu, 17 Aug 2017 16:21:36 +0200
+Message-Id: <97ed7c895e7eec28b66d4e591c30d40b00322820.1502979014.git.mirq-linux@rere.qmqm.pl>
+In-Reply-To: <cover.1502979014.git.mirq-linux@rere.qmqm.pl>
 References: <cover.1502979014.git.mirq-linux@rere.qmqm.pl>
- <a7838c0a0de7fce879c58ddc87a450895f5bc101.1502979014.git.mirq-linux@rere.qmqm.pl>
+From: =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>
+Subject: [PATCH 3/6] iio: accel: kxcjk1013: rename registers for KXTF9
+ compatibility
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 17 Aug 2017 16:21:35 +0200
-Michał Mirosław <mirq-linux@rere.qmqm.pl> wrote:
+Rename some registers that are shared between KXTF9 and KXCJK.
 
-> Refactor ODR/WUF setting code in preparation of KXTF9 support.
-> 
-> Signed-off-by: Michał Mirosław <mirq-linux@rere.qmqm.pl>
-Looks good.  However I haven't applied it as it will just
-cause confusion as I want you to rework the rest of the
-series to remove the register renames.
+Signed-off-by: Michał Mirosław <mirq-linux@rere.qmqm.pl>
+---
+ drivers/iio/accel/kxcjk-1013.c | 123 ++++++++++++++++++++++-------------------
+ 1 file changed, 65 insertions(+), 58 deletions(-)
 
-Thanks,
-
-Jonathan
-> ---
->  drivers/iio/accel/kxcjk-1013.c | 102 ++++++++++++++++++-----------------------
->  1 file changed, 45 insertions(+), 57 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-> index 3f968c46e667..33e4b98f39fc 100644
-> --- a/drivers/iio/accel/kxcjk-1013.c
-> +++ b/drivers/iio/accel/kxcjk-1013.c
-> @@ -128,15 +128,27 @@ enum kxcjk1013_range {
->  	KXCJK1013_RANGE_8G,
->  };
->  
-> -static const struct {
-> +struct kx_odr_map {
->  	int val;
->  	int val2;
->  	int odr_bits;
-> -} samp_freq_table[] = { {0, 781000, 0x08}, {1, 563000, 0x09},
-> -			{3, 125000, 0x0A}, {6, 250000, 0x0B}, {12, 500000, 0},
-> -			{25, 0, 0x01}, {50, 0, 0x02}, {100, 0, 0x03},
-> -			{200, 0, 0x04}, {400, 0, 0x05}, {800, 0, 0x06},
-> -			{1600, 0, 0x07} };
-> +	int wuf_bits;
-> +};
-> +
-> +static const struct kx_odr_map samp_freq_table[] = {
-> +	{ 0, 781000, 0x08, 0x00 },
-> +	{ 1, 563000, 0x09, 0x01 },
-> +	{ 3, 125000, 0x0A, 0x02 },
-> +	{ 6, 250000, 0x0B, 0x03 },
-> +	{ 12, 500000, 0x00, 0x04 },
-> +	{ 25, 0, 0x01, 0x05 },
-> +	{ 50, 0, 0x02, 0x06 },
-> +	{ 100, 0, 0x03, 0x06 },
-> +	{ 200, 0, 0x04, 0x06 },
-> +	{ 400, 0, 0x05, 0x06 },
-> +	{ 800, 0, 0x06, 0x06 },
-> +	{ 1600, 0, 0x07, 0x06 },
-> +};
->  
->  /* Refer to section 4 of the specification */
->  static const struct {
-> @@ -198,23 +210,6 @@ static const struct {
->  			      {19163, 1, 0},
->  			      {38326, 0, 1} };
->  
-> -static const struct {
-> -	int val;
-> -	int val2;
-> -	int odr_bits;
-> -} wake_odr_data_rate_table[] = { {0, 781000, 0x00},
-> -				 {1, 563000, 0x01},
-> -				 {3, 125000, 0x02},
-> -				 {6, 250000, 0x03},
-> -				 {12, 500000, 0x04},
-> -				 {25, 0, 0x05},
-> -				 {50, 0, 0x06},
-> -				 {100, 0, 0x06},
-> -				 {200, 0, 0x06},
-> -				 {400, 0, 0x06},
-> -				 {800, 0, 0x06},
-> -				 {1600, 0, 0x06} };
-> -
->  static int kxcjk1013_set_mode(struct kxcjk1013_data *data,
->  			      enum kxcjk1013_mode mode)
->  {
-> @@ -547,28 +542,30 @@ static int kxcjk1013_setup_new_data_interrupt(struct kxcjk1013_data *data,
->  	return 0;
->  }
->  
-> -static int kxcjk1013_convert_freq_to_bit(int val, int val2)
-> +static const struct kx_odr_map *kxcjk1013_find_odr_value(
-> +	const struct kx_odr_map *map, size_t map_size, int val, int val2)
->  {
->  	int i;
->  
-> -	for (i = 0; i < ARRAY_SIZE(samp_freq_table); ++i) {
-> -		if (samp_freq_table[i].val == val &&
-> -			samp_freq_table[i].val2 == val2) {
-> -			return samp_freq_table[i].odr_bits;
-> -		}
-> +	for (i = 0; i < map_size; ++i) {
-> +		if (map[i].val == val && map[i].val2 == val2)
-> +			return &map[i];
->  	}
->  
-> -	return -EINVAL;
-> +	return ERR_PTR(-EINVAL);
->  }
->  
-> -static int kxcjk1013_convert_wake_odr_to_bit(int val, int val2)
-> +static int kxcjk1013_convert_odr_value(const struct kx_odr_map *map,
-> +				       size_t map_size, int odr_bits,
-> +				       int *val, int *val2)
->  {
->  	int i;
->  
-> -	for (i = 0; i < ARRAY_SIZE(wake_odr_data_rate_table); ++i) {
-> -		if (wake_odr_data_rate_table[i].val == val &&
-> -			wake_odr_data_rate_table[i].val2 == val2) {
-> -			return wake_odr_data_rate_table[i].odr_bits;
-> +	for (i = 0; i < map_size; ++i) {
-> +		if (map[i].odr_bits == odr_bits) {
-> +			*val = map[i].val;
-> +			*val2 = map[i].val2;
-> +			return IIO_VAL_INT_PLUS_MICRO;
->  		}
->  	}
->  
-> @@ -578,16 +575,19 @@ static int kxcjk1013_convert_wake_odr_to_bit(int val, int val2)
->  static int kxcjk1013_set_odr(struct kxcjk1013_data *data, int val, int val2)
->  {
->  	int ret;
-> -	int odr_bits;
->  	enum kxcjk1013_mode store_mode;
-> +	const struct kx_odr_map *odr_setting;
->  
->  	ret = kxcjk1013_get_mode(data, &store_mode);
->  	if (ret < 0)
->  		return ret;
->  
-> -	odr_bits = kxcjk1013_convert_freq_to_bit(val, val2);
-> -	if (odr_bits < 0)
-> -		return odr_bits;
-> +	odr_setting = kxcjk1013_find_odr_value(samp_freq_table,
-> +					       ARRAY_SIZE(samp_freq_table),
-> +					       val, val2);
-> +
-> +	if (IS_ERR(odr_setting))
-> +		return PTR_ERR(odr_setting);
->  
->  	/* To change ODR, the chip must be set to STANDBY as per spec */
->  	ret = kxcjk1013_set_mode(data, STANDBY);
-> @@ -595,20 +595,16 @@ static int kxcjk1013_set_odr(struct kxcjk1013_data *data, int val, int val2)
->  		return ret;
->  
->  	ret = i2c_smbus_write_byte_data(data->client, KXCJK1013_REG_DATA_CTRL,
-> -					odr_bits);
-> +					odr_setting->odr_bits);
->  	if (ret < 0) {
->  		dev_err(&data->client->dev, "Error writing data_ctrl\n");
->  		return ret;
->  	}
->  
-> -	data->odr_bits = odr_bits;
-> -
-> -	odr_bits = kxcjk1013_convert_wake_odr_to_bit(val, val2);
-> -	if (odr_bits < 0)
-> -		return odr_bits;
-> +	data->odr_bits = odr_setting->odr_bits;
->  
->  	ret = i2c_smbus_write_byte_data(data->client, KXCJK1013_REG_CTRL2,
-> -					odr_bits);
-> +					odr_setting->wuf_bits);
->  	if (ret < 0) {
->  		dev_err(&data->client->dev, "Error writing reg_ctrl2\n");
->  		return ret;
-> @@ -625,17 +621,9 @@ static int kxcjk1013_set_odr(struct kxcjk1013_data *data, int val, int val2)
->  
->  static int kxcjk1013_get_odr(struct kxcjk1013_data *data, int *val, int *val2)
->  {
-> -	int i;
-> -
-> -	for (i = 0; i < ARRAY_SIZE(samp_freq_table); ++i) {
-> -		if (samp_freq_table[i].odr_bits == data->odr_bits) {
-> -			*val = samp_freq_table[i].val;
-> -			*val2 = samp_freq_table[i].val2;
-> -			return IIO_VAL_INT_PLUS_MICRO;
-> -		}
-> -	}
-> -
-> -	return -EINVAL;
-> +	return kxcjk1013_convert_odr_value(samp_freq_table,
-> +					   ARRAY_SIZE(samp_freq_table),
-> +					   data->odr_bits, val, val2);
->  }
->  
->  static int kxcjk1013_get_acc_reg(struct kxcjk1013_data *data, int axis)
-
+diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+index 80a6508d6370..27147b687471 100644
+--- a/drivers/iio/accel/kxcjk-1013.c
++++ b/drivers/iio/accel/kxcjk-1013.c
+@@ -48,39 +48,48 @@
+ 
+ #define KXCJK1013_REG_DCST_RESP		0x0C
+ #define KXCJK1013_REG_WHO_AM_I		0x0F
+-#define KXCJK1013_REG_INT_SRC1		0x16
++#define KXREG_INT_SRC_DATA		0x16
+ #define KXCJK1013_REG_INT_SRC2		0x17
+ #define KXCJK1013_REG_STATUS_REG	0x18
+ #define KXCJK1013_REG_INT_REL		0x1A
+-#define KXCJK1013_REG_CTRL1		0x1B
+-#define KXCJK1013_REG_CTRL2		0x1D
+-#define KXCJK1013_REG_INT_CTRL1		0x1E
+-#define KXCJK1013_REG_INT_CTRL2		0x1F
++#define KXREG_CTRL1			0x1B
++#define KXREG_CTRL3			0x1D
++#define KXREG_INT_CTRL1			0x1E
++#define KXREG_INT_CTRL2			0x1F
+ #define KXCJK1013_REG_DATA_CTRL		0x21
+ #define KXCJK1013_REG_WAKE_TIMER	0x29
+ #define KXCJK1013_REG_SELF_TEST		0x3A
+ #define KXCJK1013_REG_WAKE_THRES	0x6A
+ 
+-#define KXCJK1013_REG_CTRL1_BIT_PC1	BIT(7)
+-#define KXCJK1013_REG_CTRL1_BIT_RES	BIT(6)
+-#define KXCJK1013_REG_CTRL1_BIT_DRDY	BIT(5)
+-#define KXCJK1013_REG_CTRL1_BIT_GSEL1	BIT(4)
+-#define KXCJK1013_REG_CTRL1_BIT_GSEL0	BIT(3)
+-#define KXCJK1013_REG_CTRL1_BIT_WUFE	BIT(1)
+-#define KXCJK1013_REG_INT_REG1_BIT_IEA	BIT(4)
+-#define KXCJK1013_REG_INT_REG1_BIT_IEN	BIT(5)
++#define KXREG_CTRL1_BIT_PC1	BIT(7)
++#define KXREG_CTRL1_BIT_RES	BIT(6)
++#define KXREG_CTRL1_BIT_DRDY	BIT(5)
++#define KXREG_CTRL1_BIT_GSEL1	BIT(4)
++#define KXREG_CTRL1_BIT_GSEL0	BIT(3)
++#define KXREG_CTRL1_BIT_TDTE	BIT(2)
++#define KXREG_CTRL1_BIT_WUFE	BIT(1)
++#define KXREG_CTRL1_BIT_TPE	BIT(0)
++
++#define KXREG_INT_CTRL1_BIT_IEL	BIT(3)
++#define KXREG_INT_CTRL1_BIT_IEA	BIT(4)
++#define KXREG_INT_CTRL1_BIT_IEN	BIT(5)
+ 
+ #define KXCJK1013_DATA_MASK_12_BIT	0x0FFF
+ #define KXCJK1013_MAX_STARTUP_TIME_US	100000
+ 
+ #define KXCJK1013_SLEEP_DELAY_MS	2000
+ 
+-#define KXCJK1013_REG_INT_SRC2_BIT_ZP	BIT(0)
+-#define KXCJK1013_REG_INT_SRC2_BIT_ZN	BIT(1)
+-#define KXCJK1013_REG_INT_SRC2_BIT_YP	BIT(2)
+-#define KXCJK1013_REG_INT_SRC2_BIT_YN	BIT(3)
+-#define KXCJK1013_REG_INT_SRC2_BIT_XP	BIT(4)
+-#define KXCJK1013_REG_INT_SRC2_BIT_XN	BIT(5)
++/* KXCJK: INT_SOURCE1 */
++#define KXREG_INT_BIT_WUFS	BIT(1)
++#define KXREG_INT_BIT_DRDY	BIT(4)
++
++/* KXCJK: INT_SOURCE2: motion detect */
++#define KXREG_MOTION_INT_BIT_ZP	BIT(0)
++#define KXREG_MOTION_INT_BIT_ZN	BIT(1)
++#define KXREG_MOTION_INT_BIT_YP	BIT(2)
++#define KXREG_MOTION_INT_BIT_YN	BIT(3)
++#define KXREG_MOTION_INT_BIT_XP	BIT(4)
++#define KXREG_MOTION_INT_BIT_XN	BIT(5)
+ 
+ #define KXCJK1013_DEFAULT_WAKE_THRES	1
+ 
+@@ -215,19 +224,19 @@ static int kxcjk1013_set_mode(struct kxcjk1013_data *data,
+ {
+ 	int ret;
+ 
+-	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_CTRL1);
++	ret = i2c_smbus_read_byte_data(data->client, KXREG_CTRL1);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error reading reg_ctrl1\n");
+ 		return ret;
+ 	}
+ 
+ 	if (mode == STANDBY)
+-		ret &= ~KXCJK1013_REG_CTRL1_BIT_PC1;
++		ret &= ~KXREG_CTRL1_BIT_PC1;
+ 	else
+-		ret |= KXCJK1013_REG_CTRL1_BIT_PC1;
++		ret |= KXREG_CTRL1_BIT_PC1;
+ 
+ 	ret = i2c_smbus_write_byte_data(data->client,
+-					KXCJK1013_REG_CTRL1, ret);
++					KXREG_CTRL1, ret);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error writing reg_ctrl1\n");
+ 		return ret;
+@@ -241,13 +250,13 @@ static int kxcjk1013_get_mode(struct kxcjk1013_data *data,
+ {
+ 	int ret;
+ 
+-	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_CTRL1);
++	ret = i2c_smbus_read_byte_data(data->client, KXREG_CTRL1);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error reading reg_ctrl1\n");
+ 		return ret;
+ 	}
+ 
+-	if (ret & KXCJK1013_REG_CTRL1_BIT_PC1)
++	if (ret & KXREG_CTRL1_BIT_PC1)
+ 		*mode = OPERATION;
+ 	else
+ 		*mode = STANDBY;
+@@ -259,19 +268,19 @@ static int kxcjk1013_set_range(struct kxcjk1013_data *data, int range_index)
+ {
+ 	int ret;
+ 
+-	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_CTRL1);
++	ret = i2c_smbus_read_byte_data(data->client, KXREG_CTRL1);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error reading reg_ctrl1\n");
+ 		return ret;
+ 	}
+ 
+-	ret &= ~(KXCJK1013_REG_CTRL1_BIT_GSEL0 |
+-		 KXCJK1013_REG_CTRL1_BIT_GSEL1);
++	ret &= ~(KXREG_CTRL1_BIT_GSEL0 |
++		 KXREG_CTRL1_BIT_GSEL1);
+ 	ret |= (KXCJK1013_scale_table[range_index].gsel_0 << 3);
+ 	ret |= (KXCJK1013_scale_table[range_index].gsel_1 << 4);
+ 
+ 	ret = i2c_smbus_write_byte_data(data->client,
+-					KXCJK1013_REG_CTRL1,
++					KXREG_CTRL1,
+ 					ret);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error writing reg_ctrl1\n");
+@@ -299,16 +308,16 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_CTRL1);
++	ret = i2c_smbus_read_byte_data(data->client, KXREG_CTRL1);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error reading reg_ctrl1\n");
+ 		return ret;
+ 	}
+ 
+ 	/* Set 12 bit mode */
+-	ret |= KXCJK1013_REG_CTRL1_BIT_RES;
++	ret |= KXREG_CTRL1_BIT_RES;
+ 
+-	ret = i2c_smbus_write_byte_data(data->client, KXCJK1013_REG_CTRL1,
++	ret = i2c_smbus_write_byte_data(data->client, KXREG_CTRL1,
+ 					ret);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error reading reg_ctrl\n");
+@@ -329,18 +338,18 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
+ 	data->odr_bits = ret;
+ 
+ 	/* Set up INT polarity */
+-	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_INT_CTRL1);
++	ret = i2c_smbus_read_byte_data(data->client, KXREG_INT_CTRL1);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error reading reg_int_ctrl1\n");
+ 		return ret;
+ 	}
+ 
+ 	if (data->active_high_intr)
+-		ret |= KXCJK1013_REG_INT_REG1_BIT_IEA;
++		ret |= KXREG_INT_CTRL1_BIT_IEA;
+ 	else
+-		ret &= ~KXCJK1013_REG_INT_REG1_BIT_IEA;
++		ret &= ~KXREG_INT_CTRL1_BIT_IEA;
+ 
+-	ret = i2c_smbus_write_byte_data(data->client, KXCJK1013_REG_INT_CTRL1,
++	ret = i2c_smbus_write_byte_data(data->client, KXREG_INT_CTRL1,
+ 					ret);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error writing reg_int_ctrl1\n");
+@@ -437,37 +446,37 @@ static int kxcjk1013_setup_any_motion_interrupt(struct kxcjk1013_data *data,
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_INT_CTRL1);
++	ret = i2c_smbus_read_byte_data(data->client, KXREG_INT_CTRL1);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error reading reg_int_ctrl1\n");
+ 		return ret;
+ 	}
+ 
+ 	if (status)
+-		ret |= KXCJK1013_REG_INT_REG1_BIT_IEN;
++		ret |= KXREG_INT_CTRL1_BIT_IEN;
+ 	else
+-		ret &= ~KXCJK1013_REG_INT_REG1_BIT_IEN;
++		ret &= ~KXREG_INT_CTRL1_BIT_IEN;
+ 
+-	ret = i2c_smbus_write_byte_data(data->client, KXCJK1013_REG_INT_CTRL1,
++	ret = i2c_smbus_write_byte_data(data->client, KXREG_INT_CTRL1,
+ 					ret);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error writing reg_int_ctrl1\n");
+ 		return ret;
+ 	}
+ 
+-	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_CTRL1);
++	ret = i2c_smbus_read_byte_data(data->client, KXREG_CTRL1);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error reading reg_ctrl1\n");
+ 		return ret;
+ 	}
+ 
+ 	if (status)
+-		ret |= KXCJK1013_REG_CTRL1_BIT_WUFE;
++		ret |= KXREG_CTRL1_BIT_WUFE;
+ 	else
+-		ret &= ~KXCJK1013_REG_CTRL1_BIT_WUFE;
++		ret &= ~KXREG_CTRL1_BIT_WUFE;
+ 
+ 	ret = i2c_smbus_write_byte_data(data->client,
+-					KXCJK1013_REG_CTRL1, ret);
++					KXREG_CTRL1, ret);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error writing reg_ctrl1\n");
+ 		return ret;
+@@ -497,37 +506,35 @@ static int kxcjk1013_setup_new_data_interrupt(struct kxcjk1013_data *data,
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_INT_CTRL1);
++	ret = i2c_smbus_read_byte_data(data->client, KXREG_INT_CTRL1);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error reading reg_int_ctrl1\n");
+ 		return ret;
+ 	}
+ 
+ 	if (status)
+-		ret |= KXCJK1013_REG_INT_REG1_BIT_IEN;
++		ret |= KXREG_INT_CTRL1_BIT_IEN;
+ 	else
+-		ret &= ~KXCJK1013_REG_INT_REG1_BIT_IEN;
++		ret &= ~KXREG_INT_CTRL1_BIT_IEN;
+ 
+-	ret = i2c_smbus_write_byte_data(data->client, KXCJK1013_REG_INT_CTRL1,
+-					ret);
++	ret = i2c_smbus_write_byte_data(data->client, KXREG_INT_CTRL1, ret);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error writing reg_int_ctrl1\n");
+ 		return ret;
+ 	}
+ 
+-	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_CTRL1);
++	ret = i2c_smbus_read_byte_data(data->client, KXREG_CTRL1);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error reading reg_ctrl1\n");
+ 		return ret;
+ 	}
+ 
+ 	if (status)
+-		ret |= KXCJK1013_REG_CTRL1_BIT_DRDY;
++		ret |= KXREG_CTRL1_BIT_DRDY;
+ 	else
+-		ret &= ~KXCJK1013_REG_CTRL1_BIT_DRDY;
++		ret &= ~KXREG_CTRL1_BIT_DRDY;
+ 
+-	ret = i2c_smbus_write_byte_data(data->client,
+-					KXCJK1013_REG_CTRL1, ret);
++	ret = i2c_smbus_write_byte_data(data->client, KXREG_CTRL1, ret);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error writing reg_ctrl1\n");
+ 		return ret;
+@@ -603,10 +610,10 @@ static int kxcjk1013_set_odr(struct kxcjk1013_data *data, int val, int val2)
+ 
+ 	data->odr_bits = odr_setting->odr_bits;
+ 
+-	ret = i2c_smbus_write_byte_data(data->client, KXCJK1013_REG_CTRL2,
++	ret = i2c_smbus_write_byte_data(data->client, KXREG_CTRL3,
+ 					odr_setting->wuf_bits);
+ 	if (ret < 0) {
+-		dev_err(&data->client->dev, "Error writing reg_ctrl2\n");
++		dev_err(&data->client->dev, "Error writing reg_ctrl3\n");
+ 		return ret;
+ 	}
+ 
+@@ -1097,13 +1104,13 @@ static irqreturn_t kxcjk1013_event_handler(int irq, void *private)
+ 	struct kxcjk1013_data *data = iio_priv(indio_dev);
+ 	int ret;
+ 
+-	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_INT_SRC1);
++	ret = i2c_smbus_read_byte_data(data->client, KXREG_INT_SRC_DATA);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error reading reg_int_src1\n");
+ 		goto ack_intr;
+ 	}
+ 
+-	if (ret & 0x02) {
++	if (ret & KXREG_INT_BIT_WUFS) {
+ 		kxcjk1013_report_motion_event(indio_dev);
+ 	}
+ 
+-- 
+2.11.0
