@@ -1,137 +1,157 @@
-Return-Path: <SRS0=FVSF=7S=it-klinger.de=ak@kernel.org>
-Date: Wed, 16 Aug 2017 21:34:06 +0200
-From: Andreas Klinger <ak@it-klinger.de>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org
-Cc: wsa@the-dreams.de, robh+dt@kernel.org, mark.rutland@arm.com,
-	linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v3 3/5] iio: srf08: add triggered buffer support
-Message-ID: <20170816193406.GA24427@arbeit>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.99]:40828 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751267AbdHRG6Y (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 18 Aug 2017 02:58:24 -0400
+Date: Fri, 18 Aug 2017 07:56:05 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Andreas Klinger <ak@it-klinger.de>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-iio@vger.kernel.org, wsa@the-dreams.de, robh+dt@kernel.org,
+        mark.rutland@arm.com, linux-i2c@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 3/5] iio: srf08: add triggered buffer support
+Message-ID: <20170818075552.225551a2@archlinux>
+In-Reply-To: <20170816193406.GA24427@arbeit>
+References: <20170816193406.GA24427@arbeit>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Add support for triggered buffers.
+On Wed, 16 Aug 2017 21:34:06 +0200
+Andreas Klinger <ak@it-klinger.de> wrote:
 
-Data format is quite simple:
-  distance     16 Bit
-  alignment    48 Bit
-  timestamp    64 Bit
+> Add support for triggered buffers.
+> 
+> Data format is quite simple:
+>   distance     16 Bit
+>   alignment    48 Bit
+>   timestamp    64 Bit
+> 
+> Signed-off-by: Andreas Klinger <ak@it-klinger.de>
 
-Signed-off-by: Andreas Klinger <ak@it-klinger.de>
----
- drivers/iio/proximity/srf08.c | 60 ++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 57 insertions(+), 3 deletions(-)
+One little improvement I noticed inline that an additional unlocked
+reading function would tidy up.
 
-diff --git a/drivers/iio/proximity/srf08.c b/drivers/iio/proximity/srf08.c
-index 3f19536f215f..de699d67310a 100644
---- a/drivers/iio/proximity/srf08.c
-+++ b/drivers/iio/proximity/srf08.c
-@@ -18,6 +18,9 @@
- #include <linux/bitops.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
- 
- /* registers of SRF08 device */
- #define SRF08_WRITE_COMMAND	0x00	/* Command Register */
-@@ -35,9 +38,22 @@
- 
- struct srf08_data {
- 	struct i2c_client	*client;
--	int			sensitivity;		/* Gain */
--	int			range_mm;		/* max. Range in mm */
-+
-+	/*
-+	 * Gain in the datasheet is called sensitivity here to distinct it
-+	 * from the gain used with amplifiers of adc's
-+	 */
-+	int			sensitivity;
-+
-+	/* max. Range in mm */
-+	int			range_mm;
- 	struct mutex		lock;
-+
-+	/*
-+	 * triggered buffer
-+	 * 1x16-bit channel + 3x16 padding + 4x16 timestamp
-+	 */
-+	s16			buffer[8];
- };
- 
- /*
-@@ -110,6 +126,29 @@ static int srf08_read_ranging(struct srf08_data *data)
- 	return ret;
- }
- 
-+static irqreturn_t srf08_trigger_handler(int irq, void *p)
-+{
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct srf08_data *data = iio_priv(indio_dev);
-+	s16 sensor_data;
-+
-+	sensor_data = srf08_read_ranging(data);
-+	if (sensor_data < 0)
-+		goto err;
-+
-+	mutex_lock(&data->lock);
-+
-+	data->buffer[0] = sensor_data;
-+	iio_push_to_buffers_with_timestamp(indio_dev,
-+						data->buffer, pf->timestamp);
-+
-+	mutex_unlock(&data->lock);
-+err:
-+	iio_trigger_notify_done(indio_dev->trig);
-+	return IRQ_HANDLED;
-+}
-+
- static int srf08_read_raw(struct iio_dev *indio_dev,
- 			    struct iio_chan_spec const *channel, int *val,
- 			    int *val2, long mask)
-@@ -323,7 +362,15 @@ static const struct iio_chan_spec srf08_channels[] = {
- 		.info_mask_separate =
- 				BIT(IIO_CHAN_INFO_RAW) |
- 				BIT(IIO_CHAN_INFO_SCALE),
-+		.scan_index = 0,
-+		.scan_type = {
-+			.sign = 's',
-+			.realbits = 16,
-+			.storagebits = 16,
-+			.endianness = IIO_CPU,
-+		},
- 	},
-+	IIO_CHAN_SOFT_TIMESTAMP(1),
- };
- 
- static const struct iio_info srf08_info = {
-@@ -362,6 +409,13 @@ static int srf08_probe(struct i2c_client *client,
- 
- 	mutex_init(&data->lock);
- 
-+	ret = devm_iio_triggered_buffer_setup(&client->dev, indio_dev,
-+			iio_pollfunc_store_time, srf08_trigger_handler, NULL);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "setup of iio triggered buffer failed\n");
-+		return ret;
-+	}
-+
- 	/*
- 	 * set default values of device here
- 	 * these register values cannot be read from the hardware
-@@ -402,5 +456,5 @@ static struct i2c_driver srf08_driver = {
- module_i2c_driver(srf08_driver);
- 
- MODULE_AUTHOR("Andreas Klinger <ak@it-klinger.de>");
--MODULE_DESCRIPTION("Devantech SRF08 ultrasonic ranger driver");
-+MODULE_DESCRIPTION("Devantech SRF08/SRF10 ultrasonic ranger driver");
- MODULE_LICENSE("GPL");
--- 
-2.1.4
+Thanks,
 
+Jonathan
+> ---
+>  drivers/iio/proximity/srf08.c | 60 ++++++++++++++++++++++++++++++++++++++++---
+>  1 file changed, 57 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/proximity/srf08.c b/drivers/iio/proximity/srf08.c
+> index 3f19536f215f..de699d67310a 100644
+> --- a/drivers/iio/proximity/srf08.c
+> +++ b/drivers/iio/proximity/srf08.c
+> @@ -18,6 +18,9 @@
+>  #include <linux/bitops.h>
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/sysfs.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/triggered_buffer.h>
+>  
+>  /* registers of SRF08 device */
+>  #define SRF08_WRITE_COMMAND	0x00	/* Command Register */
+> @@ -35,9 +38,22 @@
+>  
+>  struct srf08_data {
+>  	struct i2c_client	*client;
+> -	int			sensitivity;		/* Gain */
+> -	int			range_mm;		/* max. Range in mm */
+> +
+> +	/*
+> +	 * Gain in the datasheet is called sensitivity here to distinct it
+> +	 * from the gain used with amplifiers of adc's
+> +	 */
+> +	int			sensitivity;
+> +
+> +	/* max. Range in mm */
+> +	int			range_mm;
+>  	struct mutex		lock;
+> +
+> +	/*
+> +	 * triggered buffer
+> +	 * 1x16-bit channel + 3x16 padding + 4x16 timestamp
+> +	 */
+> +	s16			buffer[8];
+>  };
+>  
+>  /*
+> @@ -110,6 +126,29 @@ static int srf08_read_ranging(struct srf08_data *data)
+>  	return ret;
+>  }
+>  
+> +static irqreturn_t srf08_trigger_handler(int irq, void *p)
+> +{
+> +	struct iio_poll_func *pf = p;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +	struct srf08_data *data = iio_priv(indio_dev);
+> +	s16 sensor_data;
+> +
 
--- 
+There is a bit of lock bouncing going on here where you take the lock
+inside srf08_read_ranging drop it at the end and immediately
+retake it.  
+
+Introduce an unlocked version of read_ranging and hold the lock over
+the whole cycle.
+> +	sensor_data = srf08_read_ranging(data);
+> +	if (sensor_data < 0)
+> +		goto err;
+> +
+> +	mutex_lock(&data->lock);
+> +
+> +	data->buffer[0] = sensor_data;
+> +	iio_push_to_buffers_with_timestamp(indio_dev,
+> +						data->buffer, pf->timestamp);
+> +
+> +	mutex_unlock(&data->lock);
+> +err:
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +	return IRQ_HANDLED;
+> +}
+> +
+>  static int srf08_read_raw(struct iio_dev *indio_dev,
+>  			    struct iio_chan_spec const *channel, int *val,
+>  			    int *val2, long mask)
+> @@ -323,7 +362,15 @@ static const struct iio_chan_spec srf08_channels[] = {
+>  		.info_mask_separate =
+>  				BIT(IIO_CHAN_INFO_RAW) |
+>  				BIT(IIO_CHAN_INFO_SCALE),
+> +		.scan_index = 0,
+> +		.scan_type = {
+> +			.sign = 's',
+> +			.realbits = 16,
+> +			.storagebits = 16,
+> +			.endianness = IIO_CPU,
+> +		},
+>  	},
+> +	IIO_CHAN_SOFT_TIMESTAMP(1),
+>  };
+>  
+>  static const struct iio_info srf08_info = {
+> @@ -362,6 +409,13 @@ static int srf08_probe(struct i2c_client *client,
+>  
+>  	mutex_init(&data->lock);
+>  
+> +	ret = devm_iio_triggered_buffer_setup(&client->dev, indio_dev,
+> +			iio_pollfunc_store_time, srf08_trigger_handler, NULL);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "setup of iio triggered buffer failed\n");
+> +		return ret;
+> +	}
+> +
+>  	/*
+>  	 * set default values of device here
+>  	 * these register values cannot be read from the hardware
+> @@ -402,5 +456,5 @@ static struct i2c_driver srf08_driver = {
+>  module_i2c_driver(srf08_driver);
+>  
+>  MODULE_AUTHOR("Andreas Klinger <ak@it-klinger.de>");
+> -MODULE_DESCRIPTION("Devantech SRF08 ultrasonic ranger driver");
+> +MODULE_DESCRIPTION("Devantech SRF08/SRF10 ultrasonic ranger driver");
+>  MODULE_LICENSE("GPL");
+
