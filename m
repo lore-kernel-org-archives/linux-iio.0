@@ -1,52 +1,32 @@
-Return-Path: <SRS0=cuBr=7V=metafoo.de=lars@kernel.org>
-Subject: Re: Possible race in xilinx-xadc.ko
-To: Anton Volkov <avolkov@ispras.ru>
-Cc: jic23@kernel.org, knaack.h@gmx.de, pmeerw@pmeerw.net,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- ldv-project@linuxtesting.org, Alexey Khoroshilov <khoroshilov@ispras.ru>
-References: <2545fc9f-f223-e3d9-8639-cab081ed995e@ispras.ru>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <e4315825-6adc-272c-dcd3-374f341135c8@metafoo.de>
-Date: Sat, 19 Aug 2017 09:26:22 +0200
-MIME-Version: 1.0
-In-Reply-To: <2545fc9f-f223-e3d9-8639-cab081ed995e@ispras.ru>
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pf0-f196.google.com ([209.85.192.196]:37017 "EHLO
+        mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751003AbdHSSrr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 19 Aug 2017 14:47:47 -0400
+From: Arvind Yadav <arvind.yadav.cs@gmail.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: [PATCH 0/3] constify iio i2c_device_id
+Date: Sun, 20 Aug 2017 00:17:35 +0530
+Message-Id: <1503168458-17676-1-git-send-email-arvind.yadav.cs@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 08/18/2017 05:10 PM, Anton Volkov wrote:
-> Hello.
-> 
-> While searching for races in the Linux kernel I've come across
-> "drivers/iio/adc/xilinx-xadc.ko" module. Here is a question that I came up
-> with while analyzing results. Lines are given using the info from Linux v4.12.
-> 
-> Consider the following case:
-> 
-> Thread 1:                    Thread 2:
-> xadc_probe
->   iio_triggered_buffer_setup
->                              xadc_trigger_handler
->                              ->xadc_read_adc_reg
->                                ->_xadc_read_adc_reg
->                                  ->xadc_zynq_read_adc_reg
-> ->xadc_zynq_setup                  ->xadc_zynq_update_intmsk
->    xadc->zynq_intmask = ~0            xadc->zynq_intmask &= ~mask
->    (xilinx-xadc-core.c: line 340)     (xilinx-xadc-core.c: line 152)
->    xadc_write_reg(xadc->zynq_intmask) xadc_write_reg(xadc->zynq_intmask)
-> 
-> Judging by the comments to iio_triggered_buffer_setup() the best practice is
-> to call it after the indio_dev structure had been fully initialized. In the
-> suggested case xadc_trigger_handler() interferes in the initialization
-> process. Both xadc_zynq_setup() and xadc_zynq_update_intmsk() will write the
-> same xadc->zynq_intmask though it should probably be different. Is this race
-> feasible from your point of view?
+i2c_device_id are not supposed to change at runtime. All functions
+working with i2c_device_id provided by <linux/i2c.h> work with
+const i2c_device_id. So mark the non-const structs as const.
 
-Hi,
+Arvind Yadav (3):
+  [PATCH 1/3] iio: accel: bma180: constify i2c_device_id
+  [PATCH 2/3] iio: light: apds9300: constify i2c_device_id
+  [PATCH 3/3] iio: light: tsl2583: constify i2c_device_id
 
-Thanks for the report. I don't think there is an issue here. All
-iio_triggered_buffer_setup() does is store the pointer to the callback
-function in the iio_poll_func structure of the device. The callback is not
-live until iio_trigger_attach_poll_func() has been invoked, which can only
-happen after iio_device_register() has completed.
+ drivers/iio/accel/bma180.c   | 2 +-
+ drivers/iio/light/apds9300.c | 2 +-
+ drivers/iio/light/tsl2583.c  | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-- Lars
+-- 
+2.7.4
+
