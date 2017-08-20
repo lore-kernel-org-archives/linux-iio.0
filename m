@@ -1,120 +1,134 @@
-Return-Path: <SRS0=Yt+1=7Q=pengutronix.de=p.zabel@kernel.org>
-Message-ID: <1502696198.2287.7.camel@pengutronix.de>
-Subject: Re: [PATCH 000/102] Convert drivers to explicit reset API
-From: Philipp Zabel <p.zabel@pengutronix.de>
-To: Wolfram Sang <wsa@the-dreams.de>
-Cc: Linus Walleij <linus.walleij@linaro.org>, Dmitry Torokhov
- <dmitry.torokhov@gmail.com>, Thomas Petazzoni
- <thomas.petazzoni@free-electrons.com>, lkml <linux-kernel@vger.kernel.org>,
-  Andrew Lunn <andrew@lunn.ch>, Prashant Gaikwad <pgaikwad@nvidia.com>,
- Heiko Stuebner <heiko@sntech.de>,  Peter Chen <Peter.Chen@nxp.com>, DRI
- <dri-devel@lists.freedesktop.org>, Marc Dietrich <marvin24@gmx.de>,  Rakesh
- Iyer <riyer@nvidia.com>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
- linux-clk <linux-clk@vger.kernel.org>, Wim Van Sebroeck <wim@iguana.be>,
- Xinliang Liu <z.liuxinliang@hisilicon.com>, Chanwoo Choi
- <cw00.choi@samsung.com>, Alan Stern <stern@rowland.harvard.edu>, Jiri Slaby
- <jslaby@suse.com>, Michael Turquette <mturquette@baylibre.com>, Guenter
- Roeck <linux@roeck-us.net>, Ohad Ben-Cohen <ohad@wizery.com>,
- "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,  Thomas Gleixner
- <tglx@linutronix.de>, Vincent Abriou <vincent.abriou@st.com>, Bin Liu
- <b-liu@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, USB list
- <linux-usb@vger.kernel.org>, linux-wireless
- <linux-wireless@vger.kernel.org>, Ralf Baechle <ralf@linux-mips.org>,
- linux-spi <linux-spi@vger.kernel.org>, "linux-crypto@vger.kernel.org"
- <linux-crypto@vger.kernel.org>, Tejun Heo <tj@kernel.org>,
- "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
- "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, David Airlie
- <airlied@linux.ie>,  nouveau@lists.freedesktop.org, Philippe Cornu
- <philippe.cornu@st.com>, Kalle Valo <kvalo@qca.qualcomm.com>, Laxman
- Dewangan <ldewangan@nvidia.com>, Corentin Labbe
- <clabbe.montjoie@gmail.com>, Linux I2C <linux-i2c@vger.kernel.org>,
- LINUXWATCHDOG <linux-watchdog@vger.kernel.org>, Boris Brezillon
- <boris.brezillon@free-electrons.com>,  Lars-Peter Clausen
- <lars@metafoo.de>, Emilio =?ISO-8859-1?Q?L=F3pez?= <emilio@elopez.com.ar>,
- Daniel Lezcano <daniel.lezcano@linaro.org>, Jon Hunter
- <jonathanh@nvidia.com>, "open list:ARM/Rockchip SoC..."
- <linux-rockchip@lists.infradead.org>, MyungJoo Ham
- <myungjoo.ham@samsung.com>,  Ben Skeggs <bskeggs@redhat.com>, Yisen Zhuang
- <yisen.zhuang@huawei.com>, "linux-media@vger.kernel.org"
- <linux-media@vger.kernel.org>, Richard Zhu <hongxing.zhu@nxp.com>,
- Alexandre Torgue <alexandre.torgue@st.com>, Mathias Nyman
- <mathias.nyman@intel.com>,  "linux-arm-msm@vger.kernel.org"
- <linux-arm-msm@vger.kernel.org>, Joachim Eastwood <manabian@gmail.com>,
- "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
- "linux-mips@linux-mips.org" <linux-mips@linux-mips.org>, Bjorn Helgaas
- <bhelgaas@google.com>, Giuseppe Cavallaro <peppe.cavallaro@st.com>,
- "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>, Patrice Chotard
- <patrice.chotard@st.com>,  Stanimir Varbanov <svarbanov@mm-sol.com>,
- Kyungmin Park <kyungmin.park@samsung.com>, Maxime Coquelin
- <mcoquelin.stm32@gmail.com>, Hartmut Knaack <knaack.h@gmx.de>, Jonathan
- Cameron <jic23@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Linux PCI
- <linux-pci@vger.kernel.org>, Shawn Lin <shawn.lin@rock-chips.com>,
- "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
- "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>, Benjamin
- Gaignard <benjamin.gaignard@linaro.org>, Florian Fainelli
- <f.fainelli@gmail.com>,  Jonathan Corbet <corbet@lwn.net>, Xinwei Kong
- <kong.kongxinwei@hisilicon.com>,  ath10k@lists.infradead.org, Kishon Vijay
- Abraham I <kishon@ti.com>, Chen-Yu Tsai <wens@csie.org>,
- "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
- "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Chen Feng
- <puck.chen@hisilicon.com>, Mark Brown <broonie@kernel.org>, Dan Williams
- <dan.j.williams@intel.com>, Felipe Balbi <balbi@kernel.org>, Salil Mehta
- <salil.mehta@huawei.com>, linux-mmc <linux-mmc@vger.kernel.org>, Liam
- Girdwood <lgirdwood@gmail.com>, Thierry Reding <thierry.reding@gmail.com>,
- Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Srinivas Kandagatla
- <srinivas.kandagatla@linaro.org>, Maxime Ripard
- <maxime.ripard@free-electrons.com>, Brian Norris
- <computersforpeace@gmail.com>, "David S. Miller" <davem@davemloft.net>,
- linux-remoteproc@vger.kernel.org, Bjorn Andersson
- <bjorn.andersson@linaro.org>,  "linux-ide@vger.kernel.org"
- <linux-ide@vger.kernel.org>, Lee Jones <lee.jones@linaro.org>,
- "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>, Yannick Fertre
- <yannick.fertre@st.com>, Ryder Lee <ryder.lee@mediatek.com>, Herbert Xu
- <herbert@gondor.apana.org.au>, Richard Weinberger <richard@nod.at>, Jaehoon
- Chung <jh80.chung@samsung.com>, Marek Vasut <marek.vasut@gmail.com>,
- linux-serial <linux-serial@vger.kernel.org>, Zhang Rui
- <rui.zhang@intel.com>, Alan Tull <atull@kernel.org>,  John Youn
- <johnyoun@synopsys.com>, Eduardo Valentin <edubezval@gmail.com>,
- dmaengine@vger.kernel.org,  "moderated list:ARM/Mediatek SoC support"
- <linux-mediatek@lists.infradead.org>, Matthias Brugger
- <matthias.bgg@gmail.com>,  Mark Yao <mark.yao@rock-chips.com>, Moritz
- Fischer <moritz.fischer@ettus.com>, Vivien Didelot
- <vivien.didelot@savoirfairelinux.com>, netdev <netdev@vger.kernel.org>,
- Peter De Schrijver <pdeschrijver@nvidia.com>, Stephen Boyd
- <sboyd@codeaurora.org>, Adrian Hunter <adrian.hunter@intel.com>,  Vinod
- Koul <vinod.koul@intel.com>, Rongrong Zou <zourongrong@gmail.com>,
- linux-fpga@vger.kernel.org,  David Woodhouse <dwmw2@infradead.org>, Lucas
- Stach <l.stach@pengutronix.de>
-Date: Mon, 14 Aug 2017 09:36:38 +0200
-In-Reply-To: <20170812114357.v4ru75dw5hq7wemx@ninjato>
-References: <20170719152646.25903-1-p.zabel@pengutronix.de>
-	 <20170719211515.46a1196c@windsurf>
-	 <1500543415.2354.37.camel@pengutronix.de>
-	 <20170720123640.43c2ce01@windsurf>
-	 <1500555312.2354.75.camel@pengutronix.de>
-	 <CAKdAkRTx8jd8UToz5_EgMmdW3V47i2uo++YvVB_yzytqSA=P1Q@mail.gmail.com>
-	 <CACRpkdaXOv7mX+b-q1K34CB5w0SWPXCKa21wHaxL7qjf91PJXQ@mail.gmail.com>
-	 <1500885221.2391.50.camel@pengutronix.de>
-	 <20170812114357.v4ru75dw5hq7wemx@ninjato>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40116 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752524AbdHTLFW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 20 Aug 2017 07:05:22 -0400
+Date: Sun, 20 Aug 2017 11:51:58 +0100
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+To: Akinobu Mita <akinobu.mita@gmail.com>
+Cc: linux-iio@vger.kernel.org, Daniel Baluta <daniel.baluta@gmail.com>
+Subject: Re: [PATCH v2 01/11] iio: adc: ti-ads1015: fix incorrect data rate
+ setting update
+Message-ID: <20170820115158.082dd28a@archlinux>
+In-Reply-To: <20170723123239.7f05094a@kernel.org>
+References: <1500564267-8613-1-git-send-email-akinobu.mita@gmail.com>
+        <1500564267-8613-2-git-send-email-akinobu.mita@gmail.com>
+        <20170723123239.7f05094a@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, 2017-08-12 at 13:43 +0200, Wolfram Sang wrote:
-> > Thanks for the hint and the references. It seems this turned out
-> > okay,
-> > but I wouldn't dare to introduce such macro horror^Wmagic.
-> > I'd rather have all users converted to the _exclusive/_shared
-> > function
-> > calls and maybe then replace the internal __reset_control_get with
-> > Thomas' suggestion.
+On Sun, 23 Jul 2017 12:32:39 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
+
+> On Fri, 21 Jul 2017 00:24:17 +0900
+> Akinobu Mita <akinobu.mita@gmail.com> wrote:
 > 
-> I didn't follow the discussion closely. Shall I still apply the i2c
-> patches?
+> > The ti-ads1015 driver has eight iio voltage channels and each iio channel
+> > can hold own sampling frequency information.
+> > 
+> > The ADS1015 device only have a single config register which contains an
+> > input multiplexer selection, PGA and data rate settings.  So the driver
+> > should load the correct settings when the input multiplexer selection is
+> > changed.
+> > 
+> > However, regardless of which channlel is currently selected, changing any
+> > iio channel's sampling frequency information immediately overwrites the
+> > current data rate setting in the config register.
+> > 
+> > It breaks the current data rate setting if the different channel's sampling
+> > frequency information is changed because the data rate setting is not
+> > reloaded when the input multiplexer is switched.
+> > 
+> > This removes the unexpected config register update and correctly load the
+> > data rate setting before getting adc result.
+> > 
+> > Cc: Daniel Baluta <daniel.baluta@gmail.com>
+> > Cc: Jonathan Cameron <jic23@kernel.org>
+> > Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>  
+> Looks good to me - ideally would have a fixes tag.
+> 
+> However, I'm a little nervous about this series in general
+> so would like to leave a little more time for Daniel to
+> have a chance to look.
+> 
+> Daniel, feel free to say you are too busy if you are and
+> I'll go with my own judgement.
 
-Yes, please.
+Guessing Daniel is busy.
 
-regards
-Philipp
+I'm going to take these via the togreg branch of iio.git given the late
+point we are now in the cycle, but mark the fixes for stable so they'll
+get picked up after the merge window.
+
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to play with it.
+
+Thanks,
+
+Jonathan
+> 
+> Thanks,
+> 
+> Jonathan
+> > ---
+> >  drivers/iio/adc/ti-ads1015.c | 27 ++++++++++-----------------
+> >  1 file changed, 10 insertions(+), 17 deletions(-)
+> > 
+> > diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
+> > index 884b8e46..443444c 100644
+> > --- a/drivers/iio/adc/ti-ads1015.c
+> > +++ b/drivers/iio/adc/ti-ads1015.c
+> > @@ -252,9 +252,11 @@ int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *val)
+> >  
+> >  	ret = regmap_update_bits_check(data->regmap, ADS1015_CFG_REG,
+> >  				       ADS1015_CFG_MUX_MASK |
+> > -				       ADS1015_CFG_PGA_MASK,
+> > +				       ADS1015_CFG_PGA_MASK |
+> > +				       ADS1015_CFG_DR_MASK,
+> >  				       chan << ADS1015_CFG_MUX_SHIFT |
+> > -				       pga << ADS1015_CFG_PGA_SHIFT,
+> > +				       pga << ADS1015_CFG_PGA_SHIFT |
+> > +				       dr << ADS1015_CFG_DR_SHIFT,
+> >  				       &change);
+> >  	if (ret < 0)
+> >  		return ret;
+> > @@ -325,25 +327,16 @@ static int ads1015_set_scale(struct ads1015_data *data, int chan,
+> >  
+> >  static int ads1015_set_data_rate(struct ads1015_data *data, int chan, int rate)
+> >  {
+> > -	int i, ret, rindex = -1;
+> > +	int i;
+> >  
+> > -	for (i = 0; i < ARRAY_SIZE(ads1015_data_rate); i++)
+> > +	for (i = 0; i < ARRAY_SIZE(ads1015_data_rate); i++) {
+> >  		if (data->data_rate[i] == rate) {
+> > -			rindex = i;
+> > -			break;
+> > +			data->channel_data[chan].data_rate = i;
+> > +			return 0;
+> >  		}
+> > -	if (rindex < 0)
+> > -		return -EINVAL;
+> > -
+> > -	ret = regmap_update_bits(data->regmap, ADS1015_CFG_REG,
+> > -				 ADS1015_CFG_DR_MASK,
+> > -				 rindex << ADS1015_CFG_DR_SHIFT);
+> > -	if (ret < 0)
+> > -		return ret;
+> > -
+> > -	data->channel_data[chan].data_rate = rindex;
+> > +	}
+> >  
+> > -	return 0;
+> > +	return -EINVAL;
+> >  }
+> >  
+> >  static int ads1015_read_raw(struct iio_dev *indio_dev,  
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
