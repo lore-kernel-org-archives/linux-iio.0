@@ -1,64 +1,101 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:51932 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:51940 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752612AbdHTLFa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 20 Aug 2017 07:05:30 -0400
-Date: Sun, 20 Aug 2017 11:54:28 +0100
+        id S1752612AbdHTLFc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 20 Aug 2017 07:05:32 -0400
+Date: Sun, 20 Aug 2017 11:55:24 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Akinobu Mita <akinobu.mita@gmail.com>
 Cc: linux-iio@vger.kernel.org, Daniel Baluta <daniel.baluta@gmail.com>
-Subject: Re: [PATCH v2 03/11] iio: adc: ti-ads1015: enable conversion when
- CONFIG_PM is not set
-Message-ID: <20170820115428.35d5c0c2@archlinux>
-In-Reply-To: <1500564267-8613-4-git-send-email-akinobu.mita@gmail.com>
+Subject: Re: [PATCH v2 04/11] iio: adc: ti-ads1015: avoid getting stale
+ result after runtime resume
+Message-ID: <20170820115524.50fb63b3@archlinux>
+In-Reply-To: <1500564267-8613-5-git-send-email-akinobu.mita@gmail.com>
 References: <1500564267-8613-1-git-send-email-akinobu.mita@gmail.com>
-        <1500564267-8613-4-git-send-email-akinobu.mita@gmail.com>
+        <1500564267-8613-5-git-send-email-akinobu.mita@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 21 Jul 2017 00:24:19 +0900
+On Fri, 21 Jul 2017 00:24:20 +0900
 Akinobu Mita <akinobu.mita@gmail.com> wrote:
 
-> The ADS1015 device have two operating modes, continuous conversion mode
-> and single-shot mode.  This driver assumes that the continuous conversion
-> mode is selected by runtime resume callback when the ADC result is
-> requested.
+> This driver assumes that the device is operating in the continuous
+> conversion mode which performs the conversion continuously.  So this driver
+> doesn't insert a wait time before reading the conversion register if the
+> configuration is not changed from a previous request.
 > 
-> If CONFIG_PM is disabled, the device is always in the default single-shot
-> mode and no one begins a single conversion.  So the conversion register
-> doesn't contain valid ADC result.  Fix it by changing the continuous mode
-> in probe function.
+> This assumption is broken if the device is runtime suspended and entered
+> a power-down state.  The forthcoming request causes reading a stale result
+> from the conversion register as the device is runtime resumed just before.
+> 
+> Fix it by adding a flag to detect that condition and insert a necessary
+> wait time.
 > 
 > Cc: Daniel Baluta <daniel.baluta@gmail.com>
 > Cc: Jonathan Cameron <jic23@kernel.org>
 > Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
-Applied to the togreg branch of iio.git and marked for stable.
-
-Thanks,
+Applied and marked for stable.
 
 Jonathan
 > ---
->  drivers/iio/adc/ti-ads1015.c | 7 +++++++
->  1 file changed, 7 insertions(+)
+>  drivers/iio/adc/ti-ads1015.c | 18 ++++++++++++++++--
+>  1 file changed, 16 insertions(+), 2 deletions(-)
 > 
 > diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
-> index f32d046..fcfa570 100644
+> index fcfa570..8905f0d 100644
 > --- a/drivers/iio/adc/ti-ads1015.c
 > +++ b/drivers/iio/adc/ti-ads1015.c
-> @@ -623,6 +623,13 @@ static int ads1015_probe(struct i2c_client *client,
->  		dev_err(&client->dev, "iio triggered buffer setup failed\n");
+> @@ -177,6 +177,12 @@ struct ads1015_data {
+>  	struct ads1015_channel_data channel_data[ADS1015_CHANNELS];
+>  
+>  	unsigned int *data_rate;
+> +	/*
+> +	 * Set to true when the ADC is switched to the continuous-conversion
+> +	 * mode and exits from a power-down state.  This flag is used to avoid
+> +	 * getting the stale result from the conversion register.
+> +	 */
+> +	bool conv_invalid;
+>  };
+>  
+>  static bool ads1015_is_writeable_reg(struct device *dev, unsigned int reg)
+> @@ -255,9 +261,10 @@ int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *val)
+>  	if (ret < 0)
 >  		return ret;
+>  
+> -	if (change) {
+> +	if (change || data->conv_invalid) {
+>  		conv_time = DIV_ROUND_UP(USEC_PER_SEC, data->data_rate[dr]);
+>  		usleep_range(conv_time, conv_time + 1);
+> +		data->conv_invalid = false;
 >  	}
-> +
-> +	ret = regmap_update_bits(data->regmap, ADS1015_CFG_REG,
-> +				ADS1015_CFG_MOD_MASK,
-> +				ADS1015_CONTINUOUS << ADS1015_CFG_MOD_SHIFT);
-> +	if (ret)
-> +		return ret;
+>  
+>  	return regmap_read(data->regmap, ADS1015_CONV_REG, val);
+> @@ -630,6 +637,8 @@ static int ads1015_probe(struct i2c_client *client,
+>  	if (ret)
+>  		return ret;
+>  
+> +	data->conv_invalid = true;
 > +
 >  	ret = pm_runtime_set_active(&client->dev);
 >  	if (ret)
 >  		goto err_buffer_cleanup;
+> @@ -685,10 +694,15 @@ static int ads1015_runtime_resume(struct device *dev)
+>  {
+>  	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+>  	struct ads1015_data *data = iio_priv(indio_dev);
+> +	int ret;
+>  
+> -	return regmap_update_bits(data->regmap, ADS1015_CFG_REG,
+> +	ret = regmap_update_bits(data->regmap, ADS1015_CFG_REG,
+>  				  ADS1015_CFG_MOD_MASK,
+>  				  ADS1015_CONTINUOUS << ADS1015_CFG_MOD_SHIFT);
+> +	if (!ret)
+> +		data->conv_invalid = true;
+> +
+> +	return ret;
+>  }
+>  #endif
+>  
 
