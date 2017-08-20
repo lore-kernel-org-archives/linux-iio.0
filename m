@@ -1,1101 +1,1561 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:43109 "EHLO mga09.intel.com"
+Received: from mail.kernel.org ([198.145.29.99]:38824 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751106AbdGaXPc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 31 Jul 2017 19:15:32 -0400
-Date: Tue, 1 Aug 2017 07:15:23 +0800
-From: kbuild test robot <lkp@intel.com>
+        id S1752055AbdHVVTj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 22 Aug 2017 17:19:39 -0400
+Date: Sun, 20 Aug 2017 12:40:02 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 To: William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc: kbuild-all@01.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, benjamin.gaignard@linaro.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        benjamin.gaignard@linaro.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org
 Subject: Re: [PATCH 2/3] iio: Introduce the generic counter interface
-Message-ID: <201708010741.4qmVf3C3%fengguang.wu@intel.com>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="FCuugMFkClbJLl1L"
+Message-ID: <20170820124002.2b70b196@archlinux>
 In-Reply-To: <e7ca230a62f6b850fd89205b38819bd7d5309693.1501516678.git.vilhelm.gray@gmail.com>
+References: <cover.1501516678.git.vilhelm.gray@gmail.com>
+        <e7ca230a62f6b850fd89205b38819bd7d5309693.1501516678.git.vilhelm.gray@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On Mon, 31 Jul 2017 12:03:23 -0400
+William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
 
---FCuugMFkClbJLl1L
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> This patch introduces the IIO generic counter interface for supporting
+> counter devices. The generic counter interface serves as a catch-all to
+> enable rudimentary support for devices that qualify as counters. More
+> specific and apt counter interfaces may be developed on top of the
+> generic counter interface, and those interfaces should be used by
+> drivers when possible rather than the generic counter interface.
+> 
+> In the context of the IIO generic counter interface, a counter is
+> defined as a device that reports one or more "counter values" based on
+> the state changes of one or more "counter signals" as evaluated by a
+> defined "counter function."
+> 
+> The IIO generic counter interface piggybacks off of the IIO core. This
+> is primarily used to leverage the existing sysfs setup: the IIO_COUNT
+> channel attributes represent the "counter value," while the IIO_SIGNAL
+> channel attributes represent the "counter signal;" auxilary IIO_COUNT
+> attributes represent the "counter signal" connections and their
+> respective state change configurations which trigger an associated
+> "counter function" evaluation.
+> 
+> The iio_counter_ops structure serves as a container for driver callbacks
+> to communicate with the device; function callbacks are provided to read
+> and write various "counter signals" and "counter values," and set and
+> get the "trigger mode" and "function mode" for various "counter signals"
+> and "counter values" respectively.
+> 
+> To support a counter device, a driver must first allocate the available
+> "counter signals" via iio_counter_signal structures. These "counter
+> signals" should be stored as an array and set to the init_signals member
+> of an allocated iio_counter structure before the counter is registered.
+> 
+> "Counter values" may be allocated via iio_counter_value structures, and
+> respective "counter signal" associations made via iio_counter_trigger
+> structures. Initial associated iio_counter_trigger structures may be
+> stored as an array and set to the the init_triggers member of the
+> respective iio_counter_value structure. These iio_counter_value
+> structures may be set to the init_values member of an allocated
+> iio_counter structure before the counter is registered if so desired.
+> 
+> A counter device is registered to the system by passing the respective
+> initialized iio_counter structure to the iio_counter_register function;
+> similarly, the iio_counter_unregister function unregisters the
+> respective counter.
+> 
+> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 
 Hi William,
 
-[auto build test WARNING on iio/togreg]
-[cannot apply to v4.13-rc3 next-20170731]
-[if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
+A few minor points inline as a starting point.  I'm going to want to dig
+into this in a lot more detail but don't have the time today (or possibly
+for a few more weeks - sorry about that!)
 
-url:    https://github.com/0day-ci/linux/commits/William-Breathitt-Gray/iio-Introduce-the-generic-counter-interface/20170801-050943
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-config: xtensa-allmodconfig (attached as .config)
-compiler: xtensa-linux-gcc (GCC) 4.9.0
-reproduce:
-        wget https://raw.githubusercontent.com/01org/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # save the attached .config to linux build tree
-        make.cross ARCH=xtensa 
+Thanks,
 
-All warnings (new ones prefixed by >>):
+Jonathan
+> ---
+>  MAINTAINERS                        |    7 +
+>  drivers/iio/Kconfig                |    8 +
+>  drivers/iio/Makefile               |    1 +
+>  drivers/iio/counter/Kconfig        |    1 +
+>  drivers/iio/industrialio-counter.c | 1157 ++++++++++++++++++++++++++++++++++++
+>  include/linux/iio/counter.h        |  221 +++++++
+>  6 files changed, 1395 insertions(+)
+>  create mode 100644 drivers/iio/industrialio-counter.c
+>  create mode 100644 include/linux/iio/counter.h
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index f6ef3f3e5000..44345ef25066 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -6480,6 +6480,13 @@ F:	Documentation/ABI/testing/sysfs-bus-iio-adc-envelope-detector
+>  F:	Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
+>  F:	drivers/iio/adc/envelope-detector.c
+>  
+> +IIO GENERIC COUNTER INTERFACE
+> +M:	William Breathitt Gray <vilhelm.gray@gmail.com>
+> +L:	linux-iio@vger.kernel.org
+> +S:	Maintained
+> +F:	drivers/iio/industrialio-counter.c
+> +F:	include/linux/iio/counter.h
+> +
+>  IIO SUBSYSTEM AND DRIVERS
+>  M:	Jonathan Cameron <jic23@kernel.org>
+>  R:	Hartmut Knaack <knaack.h@gmx.de>
+> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+> index a918270d6f54..5ab8ed9ab7fc 100644
+> --- a/drivers/iio/Kconfig
+> +++ b/drivers/iio/Kconfig
+> @@ -30,6 +30,14 @@ config IIO_CONFIGFS
+>  	  (e.g. software triggers). For more info see
+>  	  Documentation/iio/iio_configfs.txt.
+>  
+> +config IIO_COUNTER
+> +	bool "Enable IIO counter support"
+> +	help
+> +	  Provides IIO core support for counters. This API provides
+> +	  a generic interface that serves as the building blocks to
+> +	  create more complex counter interfaces. Rudimentary support
+> +	  for counters is enabled.
+> +
+>  config IIO_TRIGGER
+>  	bool "Enable triggered sampling support"
+>  	help
+> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+> index 33fa4026f92c..ca79f3860d1c 100644
+> --- a/drivers/iio/Makefile
+> +++ b/drivers/iio/Makefile
+> @@ -5,6 +5,7 @@
+>  obj-$(CONFIG_IIO) += industrialio.o
+>  industrialio-y := industrialio-core.o industrialio-event.o inkern.o
+>  industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
+> +industrialio-$(CONFIG_IIO_COUNTER) += industrialio-counter.o
+>  industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
+>  
+>  obj-$(CONFIG_IIO_CONFIGFS) += industrialio-configfs.o
+> diff --git a/drivers/iio/counter/Kconfig b/drivers/iio/counter/Kconfig
+> index b37e5fc03149..3d46a790d8db 100644
+> --- a/drivers/iio/counter/Kconfig
+> +++ b/drivers/iio/counter/Kconfig
+> @@ -4,6 +4,7 @@
+>  # When adding new entries keep the list in alphabetical order
+>  
+>  menu "Counters"
+> +	depends on IIO_COUNTER
+>  
+>  config 104_QUAD_8
+>  	tristate "ACCES 104-QUAD-8 driver"
+> diff --git a/drivers/iio/industrialio-counter.c b/drivers/iio/industrialio-counter.c
+> new file mode 100644
+> index 000000000000..27c20919af62
+> --- /dev/null
+> +++ b/drivers/iio/industrialio-counter.c
+> @@ -0,0 +1,1157 @@
+> +/*
+> + * Industrial I/O counter interface functions
+> + * Copyright (C) 2017 William Breathitt Gray
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License, version 2, as
+> + * published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful, but
+> + * WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+> + * General Public License for more details.
+> + */
+> +#include <linux/err.h>
+> +#include <linux/export.h>
+> +#include <linux/gfp.h>
+> +#include <linux/kernel.h>
+> +#include <linux/list.h>
+> +#include <linux/mutex.h>
+> +#include <linux/printk.h>
+> +#include <linux/slab.h>
+> +#include <linux/string.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/types.h>
+> +
+> +#include <linux/iio/counter.h>
+> +
+> +static struct iio_counter_signal *__iio_counter_signal_find_by_id(
+> +	const struct iio_counter *const counter, const int id)
+> +{
+> +	struct iio_counter_signal *iter;
+> +
+> +	list_for_each_entry(iter, &counter->signal_list, list)
+> +		if (iter->id == id)
+> +			return iter;
+> +
+> +	return NULL;
+> +}
+> +
+> +static struct iio_counter_trigger *__iio_counter_trigger_find_by_id(
+> +	const struct iio_counter_value *const value, const int id)
+> +{
+> +	struct iio_counter_trigger *iter;
+> +
+> +	list_for_each_entry(iter, &value->trigger_list, list)
+> +		if (iter->signal->id == id)
+> +			return iter;
+> +
+> +	return NULL;
+> +}
+> +
+> +static struct iio_counter_value *__iio_counter_value_find_by_id(
+> +	const struct iio_counter *const counter, const int id)
+> +{
+> +	struct iio_counter_value *iter;
+> +
+> +	list_for_each_entry(iter, &counter->value_list, list)
+> +		if (iter->id == id)
+> +			return iter;
+> +
+> +	return NULL;
+> +}
+> +
+> +static void __iio_counter_trigger_unregister_all(
+> +	struct iio_counter_value *const value)
+> +{
+> +	struct iio_counter_trigger *iter, *tmp_iter;
+> +
+> +	mutex_lock(&value->trigger_list_lock);
+> +	list_for_each_entry_safe(iter, tmp_iter, &value->trigger_list, list)
+> +		list_del(&iter->list);
+> +	mutex_unlock(&value->trigger_list_lock);
+> +}
+> +
+> +static void __iio_counter_signal_unregister_all(
+> +	struct iio_counter *const counter)
+> +{
+> +	struct iio_counter_signal *iter, *tmp_iter;
+> +
+> +	mutex_lock(&counter->signal_list_lock);
+> +	list_for_each_entry_safe(iter, tmp_iter, &counter->signal_list, list)
+> +		list_del(&iter->list);
+> +	mutex_unlock(&counter->signal_list_lock);
+> +}
+> +
+> +static void __iio_counter_value_unregister_all(
+> +	struct iio_counter *const counter)
+> +{
+> +	struct iio_counter_value *iter, *tmp_iter;
+> +
+> +	mutex_lock(&counter->value_list_lock);
+> +	list_for_each_entry_safe(iter, tmp_iter, &counter->value_list, list) {
+> +		__iio_counter_trigger_unregister_all(iter);
+> +
+> +		list_del(&iter->list);
+> +	}
+> +	mutex_unlock(&counter->value_list_lock);
+> +}
+> +
+> +static ssize_t __iio_counter_signal_name_read(struct iio_dev *indio_dev,
+> +	uintptr_t priv, const struct iio_chan_spec *chan, char *buf)
+> +{
+> +	struct iio_counter *const counter = iio_priv(indio_dev);
+> +	const struct iio_counter_signal *signal;
+> +
+> +	mutex_lock(&counter->signal_list_lock);
+> +	signal = __iio_counter_signal_find_by_id(counter, chan->channel2);
+> +	mutex_unlock(&counter->signal_list_lock);
+> +	if (!signal)
+> +		return -EINVAL;
+> +
+> +	return scnprintf(buf, PAGE_SIZE, "%s\n", signal->name);
+> +}
+> +
+> +static ssize_t __iio_counter_value_name_read(struct iio_dev *indio_dev,
+> +	uintptr_t priv, const struct iio_chan_spec *chan, char *buf)
+> +{
+> +	struct iio_counter *const counter = iio_priv(indio_dev);
+> +	const struct iio_counter_value *value;
+> +
+> +	mutex_lock(&counter->value_list_lock);
+> +	value = __iio_counter_value_find_by_id(counter, chan->channel2);
+> +	mutex_unlock(&counter->value_list_lock);
+> +	if (!value)
+> +		return -EINVAL;
+> +
+> +	return scnprintf(buf, PAGE_SIZE, "%s\n", value->name);
+> +}
+> +
+> +static ssize_t __iio_counter_value_triggers_read(struct iio_dev *indio_dev,
+> +	uintptr_t priv, const struct iio_chan_spec *chan, char *buf)
+> +{
+> +	struct iio_counter *const counter = iio_priv(indio_dev);
+> +	struct iio_counter_value *value;
+> +	const struct iio_counter_trigger *trigger;
+> +	ssize_t len = 0;
+> +
+> +	mutex_lock(&counter->value_list_lock);
+> +	value = __iio_counter_value_find_by_id(counter, chan->channel2);
+> +	if (!value) {
+> +		len = -EINVAL;
+> +		goto err_find_value;
+> +	}
+> +
+> +	mutex_lock(&value->trigger_list_lock);
+> +	list_for_each_entry(trigger, &value->trigger_list, list) {
+> +		len += snprintf(buf + len, PAGE_SIZE - len, "%d\t%s\t%s\n",
+> +			trigger->signal->id, trigger->signal->name,
+> +			trigger->trigger_modes[trigger->mode]);
+> +		if (len >= PAGE_SIZE) {
+> +			len = -ENOMEM;
+> +			goto err_no_buffer_space;
+> +		}
+> +	}
+> +err_no_buffer_space:
+> +	mutex_unlock(&value->trigger_list_lock);
+> +
+> +err_find_value:
+> +	mutex_unlock(&counter->value_list_lock);
+> +
+> +	return len;
+> +}
+> +
+> +static ssize_t __iio_counter_trigger_mode_read(struct iio_dev *indio_dev,
+> +	uintptr_t priv, const struct iio_chan_spec *chan, char *buf)
+> +{
+> +	struct iio_counter *const counter = iio_priv(indio_dev);
+> +	struct iio_counter_value *value;
+> +	ssize_t ret;
+> +	struct iio_counter_trigger *trigger;
+> +	const int signal_id = *((int *)priv);
+> +	int mode;
+> +
+> +	if (!counter->ops->trigger_mode_get)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&counter->value_list_lock);
+> +
+> +	value = __iio_counter_value_find_by_id(counter, chan->channel2);
+> +	if (!value) {
+> +		ret = -EINVAL;
+> +		goto err_value;
+> +	}
+> +
+> +	mutex_lock(&value->trigger_list_lock);
+> +
+> +	trigger = __iio_counter_trigger_find_by_id(value, signal_id);
+> +	if (!trigger) {
+> +		ret = -EINVAL;
+> +		goto err_trigger;
+> +	}
+> +
+> +	mode = counter->ops->trigger_mode_get(counter, value, trigger);
+> +
+> +	if (mode < 0) {
+> +		ret = mode;
+> +		goto err_trigger;
+> +	} else if (mode >= trigger->num_trigger_modes) {
+> +		ret = -EINVAL;
+> +		goto err_trigger;
+> +	}
+> +
+> +	trigger->mode = mode;
+> +
+> +	ret = scnprintf(buf, PAGE_SIZE, "%s\n", trigger->trigger_modes[mode]);
+> +
+> +	mutex_unlock(&value->trigger_list_lock);
+> +
+> +	mutex_unlock(&counter->value_list_lock);
+> +
+> +	return ret;
+> +
+> +err_trigger:
+> +	mutex_unlock(&value->trigger_list_lock);
+> +err_value:
+> +	mutex_unlock(&counter->value_list_lock);
+> +	return ret;
+> +}
+> +
+> +static ssize_t __iio_counter_trigger_mode_write(struct iio_dev *indio_dev,
+> +	uintptr_t priv, const struct iio_chan_spec *chan, const char *buf,
+> +	size_t len)
+> +{
+> +	struct iio_counter *const counter = iio_priv(indio_dev);
+> +	struct iio_counter_value *value;
+> +	ssize_t err;
+> +	struct iio_counter_trigger *trigger;
+> +	const int signal_id = *(int *)((void *)priv);
+Given you don't go through the void * cast in _read I'm thinking it's not
+needed here either.
 
-   drivers/iio/industrialio-counter.c: In function '__iio_counter_value_ext_info_alloc':
->> drivers/iio/industrialio-counter.c:466:23: warning: assignment makes integer from pointer without a cast
-      ext_info[i].private = (void *)&trigger_pos->signal->id;
-                          ^
-   drivers/iio/industrialio-counter.c:476:23: warning: assignment makes integer from pointer without a cast
-      ext_info[i].private = (void *)&trigger_pos->signal->id;
-                          ^
+> +	unsigned int mode;
+> +
+> +	if (!counter->ops->trigger_mode_set)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&counter->value_list_lock);
+> +
+> +	value = __iio_counter_value_find_by_id(counter, chan->channel2);
+> +	if (!value) {
+> +		err = -EINVAL;
+> +		goto err_value;
+> +	}
+> +
+> +	mutex_lock(&value->trigger_list_lock);
+> +
+> +	trigger = __iio_counter_trigger_find_by_id(value, signal_id);
+> +	if (!trigger) {
+> +		err = -EINVAL;
+> +		goto err_trigger;
+> +	}
+> +
+> +	for (mode = 0; mode < trigger->num_trigger_modes; mode++)
+> +		if (sysfs_streq(buf, trigger->trigger_modes[mode]))
+> +			break;
+> +
+> +	if (mode >= trigger->num_trigger_modes) {
+> +		err = -EINVAL;
+> +		goto err_trigger;
+> +	}
+> +
+> +	err = counter->ops->trigger_mode_set(counter, value, trigger, mode);
+> +	if (err)
+> +		goto err_trigger;
+> +
+> +	trigger->mode = mode;
+> +
+> +	mutex_unlock(&value->trigger_list_lock);
+> +
+> +	mutex_unlock(&counter->value_list_lock);
+> +
+> +	return len;
+> +
+> +err_trigger:
+> +	mutex_unlock(&value->trigger_list_lock);
+> +err_value:
+> +	mutex_unlock(&counter->value_list_lock);
+> +	return err;
+> +}
+> +
+> +static ssize_t __iio_counter_trigger_mode_available_read(
+> +	struct iio_dev *indio_dev, uintptr_t priv,
+> +	const struct iio_chan_spec *chan, char *buf)
+> +{
+> +	struct iio_counter *const counter = iio_priv(indio_dev);
+> +	struct iio_counter_value *value;
+> +	ssize_t len = 0;
+> +	struct iio_counter_trigger *trigger;
+> +	const int signal_id = *(int *)((void *)priv);
+> +	unsigned int i;
+> +
+> +	mutex_lock(&counter->value_list_lock);
+> +
+> +	value = __iio_counter_value_find_by_id(counter, chan->channel2);
+> +	if (!value) {
+> +		len = -EINVAL;
+> +		goto err_no_value;
+> +	}
+> +
+> +	mutex_lock(&value->trigger_list_lock);
+> +
+> +	trigger = __iio_counter_trigger_find_by_id(value, signal_id);
+> +	if (!trigger) {
+> +		len = -EINVAL;
+> +		goto err_no_trigger;
+> +	}
+> +
+> +	for (i = 0; i < trigger->num_trigger_modes; i++)
+> +		len += scnprintf(buf + len, PAGE_SIZE - len, "%s ",
+> +			trigger->trigger_modes[i]);
+> +
+> +	mutex_unlock(&value->trigger_list_lock);
+> +
+> +	mutex_unlock(&counter->value_list_lock);
+> +
+> +	buf[len - 1] = '\n';
+> +
+> +	return len;
+> +
+> +err_no_trigger:
+> +	mutex_unlock(&value->trigger_list_lock);
+> +err_no_value:
+> +	mutex_unlock(&counter->value_list_lock);
+> +	return len;
+> +}
+> +
+> +static int __iio_counter_value_function_set(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, unsigned int mode)
+> +{
+> +	struct iio_counter *const counter = iio_priv(indio_dev);
+> +	struct iio_counter_value *value;
+> +	int err;
+> +
+> +	if (!counter->ops->trigger_mode_get)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&counter->value_list_lock);
+> +
+> +	value = __iio_counter_value_find_by_id(counter, chan->channel2);
+> +	if (!value) {
+> +		err = -EINVAL;
+> +		goto err_value;
+> +	}
+> +
+> +	err = counter->ops->value_function_set(counter, value, mode);
+> +	if (err)
+> +		goto err_value;
+> +
+> +	value->mode = mode;
+> +
+> +err_value:
+> +	mutex_unlock(&counter->value_list_lock);
+> +
+> +	return err;
+> +}
+> +
+> +static int __iio_counter_value_function_get(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan)
+> +{
+> +	struct iio_counter *const counter = iio_priv(indio_dev);
+> +	struct iio_counter_value *value;
+> +	int retval;
+> +
+> +	if (!counter->ops->trigger_mode_get)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&counter->value_list_lock);
+> +
+> +	value = __iio_counter_value_find_by_id(counter, chan->channel2);
+> +	if (!value) {
+> +		retval = -EINVAL;
+> +		goto err_value;
+> +	}
+> +
+> +	retval = counter->ops->value_function_get(counter, value);
+> +	if (retval < 0)
+> +		goto err_value;
+> +	else if (retval >= value->num_function_modes) {
+> +		retval = -EINVAL;
+> +		goto err_value;
+> +	}
+> +
+> +	value->mode = retval;
+> +
+> +err_value:
+> +	mutex_unlock(&counter->value_list_lock);
+> +
+> +	return retval;
+> +}
+> +
+> +static int __iio_counter_value_ext_info_alloc(struct iio_chan_spec *const chan,
+> +	struct iio_counter_value *const value)
+> +{
+> +	const struct iio_chan_spec_ext_info ext_info_default[] = {
+> +		{
+> +			.name = "name",
+> +			.shared = IIO_SEPARATE,
+> +			.read = __iio_counter_value_name_read
+> +		},
+> +		IIO_ENUM("function", IIO_SEPARATE, &value->function_enum),
+> +		{
+> +			.name = "function_available",
+> +			.shared = IIO_SEPARATE,
+> +			.read = iio_enum_available_read,
+> +			.private = (uintptr_t)((void *)&value->function_enum)
+> +		},
+> +		{
+> +			.name = "triggers",
+> +			.shared = IIO_SEPARATE,
+> +			.read = __iio_counter_value_triggers_read
+> +		}
+> +	};
+> +	const size_t num_default = ARRAY_SIZE(ext_info_default);
+> +	const struct iio_chan_spec_ext_info ext_info_trigger[] = {
+> +		{
+> +			.shared = IIO_SEPARATE,
+> +			.read = __iio_counter_trigger_mode_read,
+> +			.write = __iio_counter_trigger_mode_write
+> +		},
+> +		{
+> +			.shared = IIO_SEPARATE,
+> +			.read = __iio_counter_trigger_mode_available_read
+> +		}
+> +	};
+> +	const size_t num_ext_info_trigger = ARRAY_SIZE(ext_info_trigger);
+> +	const struct list_head *pos;
+> +	size_t num_triggers = 0;
+> +	size_t num_triggers_ext_info;
+> +	size_t num_ext_info;
+> +	int err;
+> +	struct iio_chan_spec_ext_info *ext_info;
+> +	const struct iio_counter_trigger *trigger_pos;
+> +	size_t i;
+> +
+> +	value->function_enum.items = value->function_modes;
+> +	value->function_enum.num_items = value->num_function_modes;
+> +	value->function_enum.set = __iio_counter_value_function_set;
+> +	value->function_enum.get = __iio_counter_value_function_get;
+> +
+> +	mutex_lock(&value->trigger_list_lock);
+> +
+> +	list_for_each(pos, &value->trigger_list)
+> +		num_triggers++;
+> +
+> +	num_triggers_ext_info = num_ext_info_trigger * num_triggers;
+> +	num_ext_info = num_default + num_triggers_ext_info + 1;
+> +
+> +	ext_info = kmalloc_array(num_ext_info, sizeof(*ext_info), GFP_KERNEL);
+> +	if (!ext_info) {
+> +		err = -ENOMEM;
+> +		goto err_ext_info_alloc;
+> +	}
+> +	ext_info[num_ext_info - 1].name = NULL;
+> +
+> +	memcpy(ext_info, ext_info_default, sizeof(ext_info_default));
+> +	for (i = 0; i < num_triggers_ext_info; i += num_ext_info_trigger)
+> +		memcpy(ext_info + num_default + i, ext_info_trigger,
+> +			sizeof(ext_info_trigger));
+> +
+> +	i = num_default;
+> +	list_for_each_entry(trigger_pos, &value->trigger_list, list) {
+> +		ext_info[i].name = kasprintf(GFP_KERNEL, "trigger_signal%d-%d",
+> +			chan->channel, trigger_pos->signal->id);
+> +		if (!ext_info[i].name) {
+> +			err = -ENOMEM;
+> +			goto err_name_alloc;
+> +		}
+> +		ext_info[i].private = (void *)&trigger_pos->signal->id;
+> +		i++;
+> +
+> +		ext_info[i].name = kasprintf(GFP_KERNEL,
+> +			"trigger_signal%d-%d_available",
+> +			chan->channel, trigger_pos->signal->id);
+> +		if (!ext_info[i].name) {
+> +			err = -ENOMEM;
+> +			goto err_name_alloc;
+> +		}
+> +		ext_info[i].private = (void *)&trigger_pos->signal->id;
+> +		i++;
+> +	}
+> +
+> +	chan->ext_info = ext_info;
+> +
+> +	mutex_unlock(&value->trigger_list_lock);
+> +
+> +	return 0;
+> +
+> +err_name_alloc:
+> +	while (i-- > num_default)
+> +		kfree(ext_info[i].name);
+> +	kfree(ext_info);
+> +err_ext_info_alloc:
+> +	mutex_unlock(&value->trigger_list_lock);
+> +	return err;
+> +}
+> +
+> +static void __iio_counter_value_ext_info_free(
+> +	const struct iio_chan_spec *const channel)
+> +{
+> +	size_t i;
+> +	const char *const prefix = "trigger_signal";
+> +	const size_t prefix_len = strlen(prefix);
+> +
+> +	for (i = 0; channel->ext_info[i].name; i++)
+> +		if (!strncmp(channel->ext_info[i].name, prefix, prefix_len))
+> +			kfree(channel->ext_info[i].name);
+> +	kfree(channel->ext_info);
+> +}
+> +
+> +static const struct iio_chan_spec_ext_info __iio_counter_signal_ext_info[] = {
+> +	{
+> +		.name = "name",
+> +		.shared = IIO_SEPARATE,
+> +		.read = __iio_counter_signal_name_read
+> +	},
+> +	{}
+> +};
+> +
+> +static int __iio_counter_channels_alloc(struct iio_counter *const counter)
+> +{
+> +	const struct list_head *pos;
+> +	size_t num_channels = 0;
+> +	int err;
+> +	struct iio_chan_spec *channels;
+> +	struct iio_counter_value *value_pos;
+> +	size_t i = counter->num_channels;
+> +	const struct iio_counter_signal *signal_pos;
+> +
+> +	mutex_lock(&counter->signal_list_lock);
+> +
+> +	list_for_each(pos, &counter->signal_list)
+> +		num_channels++;
+> +
+> +	if (!num_channels) {
+> +		err = -EINVAL;
+> +		goto err_no_signals;
+> +	}
+> +
+> +	mutex_lock(&counter->value_list_lock);
+> +
+> +	list_for_each(pos, &counter->value_list)
+> +		num_channels++;
+> +
+> +	num_channels += counter->num_channels;
+> +
+> +	channels = kcalloc(num_channels, sizeof(*channels), GFP_KERNEL);
+> +	if (!channels) {
+> +		err = -ENOMEM;
+> +		goto err_channels_alloc;
+> +	}
+> +
+> +	memcpy(channels, counter->channels,
+> +		counter->num_channels * sizeof(*counter->channels));
+> +
+> +	list_for_each_entry(value_pos, &counter->value_list, list) {
+> +		channels[i].type = IIO_COUNT;
+> +		channels[i].channel = counter->id;
+> +		channels[i].channel2 = value_pos->id;
+> +		channels[i].info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
+> +		channels[i].indexed = 1;
+> +		channels[i].counter = 1;
+> +
+> +		err = __iio_counter_value_ext_info_alloc(channels + i,
+> +			value_pos);
+> +		if (err)
+> +			goto err_value_ext_info_alloc;
+> +
+> +		i++;
+> +	}
+> +
+> +	mutex_unlock(&counter->value_list_lock);
+> +
+> +	list_for_each_entry(signal_pos, &counter->signal_list, list) {
+> +		channels[i].type = IIO_SIGNAL;
+> +		channels[i].channel = counter->id;
+> +		channels[i].channel2 = signal_pos->id;
+> +		channels[i].info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
+> +		channels[i].indexed = 1;
+> +		channels[i].counter = 1;
+> +		channels[i].ext_info = __iio_counter_signal_ext_info;
+> +
+> +		i++;
+> +	}
+> +
+> +	mutex_unlock(&counter->signal_list_lock);
+> +
+> +	counter->indio_dev->num_channels = num_channels;
+> +	counter->indio_dev->channels = channels;
+> +
+> +	return 0;
+> +
+> +err_value_ext_info_alloc:
+> +	while (i-- > counter->num_channels)
+> +		__iio_counter_value_ext_info_free(channels + i);
+> +	kfree(channels);
+> +err_channels_alloc:
+> +	mutex_unlock(&counter->value_list_lock);
+> +err_no_signals:
+> +	mutex_unlock(&counter->signal_list_lock);
+> +	return err;
+> +}
+> +
+> +static void __iio_counter_channels_free(const struct iio_counter *const counter)
+> +{
+> +	size_t i = counter->num_channels + counter->indio_dev->num_channels;
+> +	const struct iio_chan_spec *const chans = counter->indio_dev->channels;
+> +
+> +	while (i-- > counter->num_channels)
+> +		if (chans[i].type == IIO_COUNT)
+> +			__iio_counter_value_ext_info_free(chans + i);
+> +
+> +	kfree(chans);
+> +}
+> +
+> +static int __iio_counter_read_raw(struct iio_dev *indio_dev,
+> +	struct iio_chan_spec const *chan, int *val, int *val2, long mask)
+> +{
+> +	struct iio_counter *const counter = iio_priv(indio_dev);
+> +	struct iio_counter_signal *signal;
+> +	int retval;
+> +	struct iio_counter_value *value;
+> +
+> +	if (mask != IIO_CHAN_INFO_RAW)
+> +		return -EINVAL;
+> +
+> +	switch (chan->type) {
+> +	case IIO_SIGNAL:
+> +		if (!counter->ops->signal_read)
+> +			return -EINVAL;
+> +
+> +		mutex_lock(&counter->signal_list_lock);
+> +		signal = __iio_counter_signal_find_by_id(counter,
+> +			chan->channel2);
+> +		if (!signal) {
+> +			mutex_unlock(&counter->signal_list_lock);
+> +			return -EINVAL;
+> +		}
+> +
+> +		retval = counter->ops->signal_read(counter, signal, val, val2);
+> +		mutex_unlock(&counter->signal_list_lock);
+> +
+> +		return retval;
+> +	case IIO_COUNT:
+> +		if (!counter->ops->value_read)
+> +			return -EINVAL;
+> +
+> +		mutex_lock(&counter->value_list_lock);
+> +		value = __iio_counter_value_find_by_id(counter, chan->channel2);
+> +		if (!value) {
+> +			mutex_unlock(&counter->value_list_lock);
+> +			return -EINVAL;
+> +		}
+> +
+> +		retval = counter->ops->value_read(counter, value, val, val2);
+> +		mutex_unlock(&counter->value_list_lock);
+> +
+> +		return retval;
+> +	default:
+> +		if (counter->info && counter->info->read_raw)
+> +			return counter->info->read_raw(indio_dev, chan, val,
+> +				val2, mask);
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static int __iio_counter_write_raw(struct iio_dev *indio_dev,
+> +	struct iio_chan_spec const *chan, int val, int val2, long mask)
+> +{
+> +	struct iio_counter *const counter = iio_priv(indio_dev);
+> +	struct iio_counter_signal *signal;
+> +	int retval;
+> +	struct iio_counter_value *value;
+> +
+> +	if (mask != IIO_CHAN_INFO_RAW)
+> +		return -EINVAL;
+> +
+> +	switch (chan->type) {
+> +	case IIO_SIGNAL:
+> +		if (!counter->ops->signal_write)
+> +			return -EINVAL;
+> +
+> +		mutex_lock(&counter->signal_list_lock);
+> +		signal = __iio_counter_signal_find_by_id(counter,
+> +			chan->channel2);
+> +		if (!signal) {
+> +			mutex_unlock(&counter->signal_list_lock);
+> +			return -EINVAL;
+> +		}
+> +
+> +		retval = counter->ops->signal_write(counter, signal, val, val2);
+> +		mutex_unlock(&counter->signal_list_lock);
+> +
+> +		return retval;
+> +	case IIO_COUNT:
+> +		if (!counter->ops->value_write)
+> +			return -EINVAL;
+> +
+> +		mutex_lock(&counter->value_list_lock);
+> +		value = __iio_counter_value_find_by_id(counter, chan->channel2);
+> +		if (!value) {
+> +			mutex_unlock(&counter->value_list_lock);
+> +			return -EINVAL;
+> +		}
+> +
+> +		retval = counter->ops->value_write(counter, value, val, val2);
+> +		mutex_unlock(&counter->value_list_lock);
+> +
+> +		return retval;
+> +	default:
 
-vim +466 drivers/iio/industrialio-counter.c
+This case definitely needs a comment!
+I think you overwrite any write_raw callbacks passed in and hence this
+is a infinite recursion...
+Could be wrong though ;)
 
-   388	
-   389	static int __iio_counter_value_ext_info_alloc(struct iio_chan_spec *const chan,
-   390		struct iio_counter_value *const value)
-   391	{
-   392		const struct iio_chan_spec_ext_info ext_info_default[] = {
-   393			{
-   394				.name = "name",
-   395				.shared = IIO_SEPARATE,
-   396				.read = __iio_counter_value_name_read
-   397			},
-   398			IIO_ENUM("function", IIO_SEPARATE, &value->function_enum),
-   399			{
-   400				.name = "function_available",
-   401				.shared = IIO_SEPARATE,
-   402				.read = iio_enum_available_read,
-   403				.private = (uintptr_t)((void *)&value->function_enum)
-   404			},
-   405			{
-   406				.name = "triggers",
-   407				.shared = IIO_SEPARATE,
-   408				.read = __iio_counter_value_triggers_read
-   409			}
-   410		};
-   411		const size_t num_default = ARRAY_SIZE(ext_info_default);
-   412		const struct iio_chan_spec_ext_info ext_info_trigger[] = {
-   413			{
-   414				.shared = IIO_SEPARATE,
-   415				.read = __iio_counter_trigger_mode_read,
-   416				.write = __iio_counter_trigger_mode_write
-   417			},
-   418			{
-   419				.shared = IIO_SEPARATE,
-   420				.read = __iio_counter_trigger_mode_available_read
-   421			}
-   422		};
-   423		const size_t num_ext_info_trigger = ARRAY_SIZE(ext_info_trigger);
-   424		const struct list_head *pos;
-   425		size_t num_triggers = 0;
-   426		size_t num_triggers_ext_info;
-   427		size_t num_ext_info;
-   428		int err;
-   429		struct iio_chan_spec_ext_info *ext_info;
-   430		const struct iio_counter_trigger *trigger_pos;
-   431		size_t i;
-   432	
-   433		value->function_enum.items = value->function_modes;
-   434		value->function_enum.num_items = value->num_function_modes;
-   435		value->function_enum.set = __iio_counter_value_function_set;
-   436		value->function_enum.get = __iio_counter_value_function_get;
-   437	
-   438		mutex_lock(&value->trigger_list_lock);
-   439	
-   440		list_for_each(pos, &value->trigger_list)
-   441			num_triggers++;
-   442	
-   443		num_triggers_ext_info = num_ext_info_trigger * num_triggers;
-   444		num_ext_info = num_default + num_triggers_ext_info + 1;
-   445	
-   446		ext_info = kmalloc_array(num_ext_info, sizeof(*ext_info), GFP_KERNEL);
-   447		if (!ext_info) {
-   448			err = -ENOMEM;
-   449			goto err_ext_info_alloc;
-   450		}
-   451		ext_info[num_ext_info - 1].name = NULL;
-   452	
-   453		memcpy(ext_info, ext_info_default, sizeof(ext_info_default));
-   454		for (i = 0; i < num_triggers_ext_info; i += num_ext_info_trigger)
-   455			memcpy(ext_info + num_default + i, ext_info_trigger,
-   456				sizeof(ext_info_trigger));
-   457	
-   458		i = num_default;
-   459		list_for_each_entry(trigger_pos, &value->trigger_list, list) {
-   460			ext_info[i].name = kasprintf(GFP_KERNEL, "trigger_signal%d-%d",
-   461				chan->channel, trigger_pos->signal->id);
-   462			if (!ext_info[i].name) {
-   463				err = -ENOMEM;
-   464				goto err_name_alloc;
-   465			}
- > 466			ext_info[i].private = (void *)&trigger_pos->signal->id;
-   467			i++;
-   468	
-   469			ext_info[i].name = kasprintf(GFP_KERNEL,
-   470				"trigger_signal%d-%d_available",
-   471				chan->channel, trigger_pos->signal->id);
-   472			if (!ext_info[i].name) {
-   473				err = -ENOMEM;
-   474				goto err_name_alloc;
-   475			}
-   476			ext_info[i].private = (void *)&trigger_pos->signal->id;
-   477			i++;
-   478		}
-   479	
-   480		chan->ext_info = ext_info;
-   481	
-   482		mutex_unlock(&value->trigger_list_lock);
-   483	
-   484		return 0;
-   485	
-   486	err_name_alloc:
-   487		while (i-- > num_default)
-   488			kfree(ext_info[i].name);
-   489		kfree(ext_info);
-   490	err_ext_info_alloc:
-   491		mutex_unlock(&value->trigger_list_lock);
-   492		return err;
-   493	}
-   494	
 
----
-0-DAY kernel test infrastructure                Open Source Technology Center
-https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+> +		if (counter->info && counter->info->write_raw)
+> +			return counter->info->write_raw(indio_dev, chan, val,
+> +				val2, mask);
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static int __iio_counter_signal_register(struct iio_counter *const counter,
+> +	struct iio_counter_signal *const signal)
+> +{
+> +	int err;
+> +
+> +	if (!counter || !signal)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&counter->signal_list_lock);
+> +	if (__iio_counter_signal_find_by_id(counter, signal->id)) {
+> +		pr_err("Duplicate counter signal ID '%d'\n", signal->id);
+> +		err = -EEXIST;
+> +		goto err_duplicate_id;
+> +	}
+> +	list_add_tail(&signal->list, &counter->signal_list);
+> +	mutex_unlock(&counter->signal_list_lock);
+> +
+> +	return 0;
+> +
+> +err_duplicate_id:
+> +	mutex_unlock(&counter->signal_list_lock);
+> +	return err;
+> +}
+> +
+> +static void __iio_counter_signal_unregister(struct iio_counter *const counter,
+> +	struct iio_counter_signal *const signal)
+> +{
+> +	if (!counter || !signal)
+> +		return;
+> +
+> +	mutex_lock(&counter->signal_list_lock);
+> +	list_del(&signal->list);
+> +	mutex_unlock(&counter->signal_list_lock);
+> +}
+> +
+> +static int __iio_counter_signals_register(struct iio_counter *const counter,
+> +	struct iio_counter_signal *const signals, const size_t num_signals)
+> +{
+> +	size_t i;
+> +	int err;
+> +
+> +	if (!counter || !signals)
+> +		return -EINVAL;
+> +
+> +	for (i = 0; i < num_signals; i++) {
+> +		err = __iio_counter_signal_register(counter, signals + i);
+> +		if (err)
+> +			goto err_signal_register;
+> +	}
+> +
+> +	return 0;
+> +
+> +err_signal_register:
+> +	while (i--)
+> +		__iio_counter_signal_unregister(counter, signals + i);
+> +	return err;
+> +}
+> +
+> +static void __iio_counter_signals_unregister(struct iio_counter *const counter,
+> +	struct iio_counter_signal *signals, size_t num_signals)
+> +{
+> +	if (!counter || !signals)
+> +		return;
+> +
+> +	while (num_signals--) {
+> +		__iio_counter_signal_unregister(counter, signals);
+> +		signals++;
+> +	}
+> +}
+> +
+> +/**
+> + * iio_counter_trigger_register - register Trigger to Value
+> + * @value: pointer to IIO Counter Value for association
+> + * @trigger: pointer to IIO Counter Trigger to register
+> + *
+> + * The Trigger is added to the Value's trigger_list. A check is first performed
+> + * to verify that the respective Signal is not already linked to the Value; if
+> + * the respective Signal is already linked to the Value, the Trigger is not
+> + * added to the Value's trigger_list.
+> + *
+> + * NOTE: This function will acquire and release the Value's trigger_list_lock
+> + * during execution.
+> + */
+> +int iio_counter_trigger_register(struct iio_counter_value *const value,
+> +	struct iio_counter_trigger *const trigger)
+> +{
+> +	if (!value || !trigger || !trigger->signal)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&value->trigger_list_lock);
+> +	if (__iio_counter_trigger_find_by_id(value, trigger->signal->id)) {
+> +		pr_err("Signal%d is already linked to counter value%d\n",
+> +			trigger->signal->id, value->id);
+> +		return -EEXIST;
+> +	}
+> +	list_add_tail(&trigger->list, &value->trigger_list);
+> +	mutex_unlock(&value->trigger_list_lock);
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(iio_counter_trigger_register);
+> +
+> +/**
+> + * iio_counter_trigger_unregister - unregister Trigger from Value
+> + * @value: pointer to IIO Counter Value of association
+> + * @trigger: pointer to IIO Counter Trigger to unregister
+> + *
+> + * The Trigger is removed from the Value's trigger_list.
+> + *
+> + * NOTE: This function will acquire and release the Value's trigger_list_lock
+> + * during execution.
+> + */
+> +void iio_counter_trigger_unregister(struct iio_counter_value *const value,
+> +	struct iio_counter_trigger *const trigger)
+> +{
+> +	if (!value || !trigger || !trigger->signal)
+> +		return;
+> +
+> +	mutex_lock(&value->trigger_list_lock);
+> +	list_del(&trigger->list);
+> +	mutex_unlock(&value->trigger_list_lock);
+> +}
+> +EXPORT_SYMBOL(iio_counter_trigger_unregister);
+> +
+> +/**
+> + * iio_counter_triggers_register - register an array of Triggers to Value
+> + * @value: pointer to IIO Counter Value for association
+> + * @triggers: array of pointers to IIO Counter Triggers to register
+> + *
+> + * The iio_counter_trigger_register function is called for each Trigger in the
+> + * array. The @triggers array is traversed for the first @num_triggers Triggers.
+> + *
+> + * NOTE: @num_triggers must not be greater than the size of the @triggers array.
+> + */
+> +int iio_counter_triggers_register(struct iio_counter_value *const value,
+> +	struct iio_counter_trigger *const triggers, const size_t num_triggers)
+> +{
+> +	size_t i;
+> +	int err;
+> +
+> +	if (!value || !triggers)
+> +		return -EINVAL;
+> +
+> +	for (i = 0; i < num_triggers; i++) {
+> +		err = iio_counter_trigger_register(value, triggers + i);
+> +		if (err)
+> +			goto err_trigger_register;
+> +	}
+> +
+> +	return 0;
+> +
+> +err_trigger_register:
+> +	while (i--)
+> +		iio_counter_trigger_unregister(value, triggers + i);
+> +	return err;
+> +}
+> +EXPORT_SYMBOL(iio_counter_triggers_register);
+> +
+> +/**
+> + * iio_counter_triggers_unregister - unregister Triggers from Value
+> + * @value: pointer to IIO Counter Value of association
+> + * @triggers: array of pointers to IIO Counter Triggers to unregister
+> + *
+> + * The iio_counter_trigger_unregister function is called for each Trigger in the
+> + * array. The @triggers array is traversed for the first @num_triggers Triggers.
+> + *
+> + * NOTE: @num_triggers must not be greater than the size of the @triggers array.
+> + */
+> +void iio_counter_triggers_unregister(struct iio_counter_value *const value,
+> +	struct iio_counter_trigger *triggers, size_t num_triggers)
+> +{
+> +	if (!value || !triggers)
+> +		return;
+> +
+> +	while (num_triggers--) {
+> +		iio_counter_trigger_unregister(value, triggers);
+> +		triggers++;
+> +	}
+> +}
+> +EXPORT_SYMBOL(iio_counter_triggers_unregister);
+> +
+> +/**
+> + * iio_counter_value_register - register Value to Counter
+> + * @counter: pointer to IIO Counter for association
+> + * @value: pointer to IIO Counter Value to register
+> + *
+> + * The registration process occurs in two major steps. First, the Value is
+> + * initialized: trigger_list_lock is initialized, trigger_list is initialized,
+> + * and init_triggers if not NULL is passed to iio_counter_triggers_register.
+> + * Second, the Value is added to the Counter's value_list. A check is first
+> + * performed to verify that the Value is not already associated to the Counter
+> + * (via the Value's unique ID); if the Value is already associated to the
+> + * Counter, the Value is not added to the Counter's value_list and all of the
+> + * Value's Triggers are unregistered.
+> + *
+> + * NOTE: This function will acquire and release the Counter's value_list_lock
+> + * during execution.
+> + */
+> +int iio_counter_value_register(struct iio_counter *const counter,
+> +	struct iio_counter_value *const value)
+> +{
+> +	int err;
+> +
+> +	if (!counter || !value)
+> +		return -EINVAL;
+> +
+> +	mutex_init(&value->trigger_list_lock);
+> +	INIT_LIST_HEAD(&value->trigger_list);
+> +
+> +	if (value->init_triggers) {
+> +		err = iio_counter_triggers_register(value,
+> +			value->init_triggers, value->num_init_triggers);
+> +		if (err)
+> +			return err;
+> +	}
+> +
+> +	mutex_lock(&counter->value_list_lock);
+> +	if (__iio_counter_value_find_by_id(counter, value->id)) {
+> +		pr_err("Duplicate counter value ID '%d'\n", value->id);
+> +		err = -EEXIST;
+> +		goto err_duplicate_id;
+> +	}
+> +	list_add_tail(&value->list, &counter->value_list);
+> +	mutex_unlock(&counter->value_list_lock);
+> +
+> +	return 0;
+> +
+> +err_duplicate_id:
+> +	mutex_unlock(&counter->value_list_lock);
+> +	__iio_counter_trigger_unregister_all(value);
+> +	return err;
+> +}
+> +EXPORT_SYMBOL(iio_counter_value_register);
+> +
+> +/**
+> + * iio_counter_value_unregister - unregister Value from Counter
+> + * @counter: pointer to IIO Counter of association
+> + * @value: pointer to IIO Counter Value to unregister
+> + *
+> + * The Value is removed from the Counter's value_list and all of the Value's
+> + * Triggers are unregistered.
+> + *
+> + * NOTE: This function will acquire and release the Counter's value_list_lock
+> + * during execution.
+> + */
+> +void iio_counter_value_unregister(struct iio_counter *const counter,
+> +	struct iio_counter_value *const value)
+> +{
+> +	if (!counter || !value)
+> +		return;
+> +
+> +	mutex_lock(&counter->value_list_lock);
+> +	list_del(&value->list);
+> +	mutex_unlock(&counter->value_list_lock);
+> +
+> +	__iio_counter_trigger_unregister_all(value);
+> +}
+> +EXPORT_SYMBOL(iio_counter_value_unregister);
+> +
+> +/**
+> + * iio_counter_values_register - register an array of Values to Counter
+> + * @counter: pointer to IIO Counter for association
+> + * @values: array of pointers to IIO Counter Values to register
+> + *
+> + * The iio_counter_value_register function is called for each Value in the
+> + * array. The @values array is traversed for the first @num_values Values.
+> + *
+> + * NOTE: @num_values must not be greater than the size of the @values array.
+> + */
+> +int iio_counter_values_register(struct iio_counter *const counter,
+> +	struct iio_counter_value *const values, const size_t num_values)
+> +{
+> +	size_t i;
+> +	int err;
+> +
+> +	if (!counter || !values)
+> +		return -EINVAL;
+> +
+> +	for (i = 0; i < num_values; i++) {
+> +		err = iio_counter_value_register(counter, values + i);
+> +		if (err)
+> +			goto err_values_register;
+> +	}
+> +
+> +	return 0;
+> +
+> +err_values_register:
+> +	while (i--)
+> +		iio_counter_value_unregister(counter, values + i);
+> +	return err;
+> +}
+> +EXPORT_SYMBOL(iio_counter_values_register);
+> +
+> +/**
+> + * iio_counter_values_unregister - unregister Values from Counter
+> + * @counter: pointer to IIO Counter of association
+> + * @values: array of pointers to IIO Counter Values to unregister
+> + *
+> + * The iio_counter_value_unregister function is called for each Value in the
+> + * array. The @values array is traversed for the first @num_values Values.
+> + *
+> + * NOTE: @num_values must not be greater than the size of the @values array.
+> + */
+> +void iio_counter_values_unregister(struct iio_counter *const counter,
+> +	struct iio_counter_value *values, size_t num_values)
+> +{
+> +	if (!counter || !values)
+> +		return;
+> +
+> +	while (num_values--) {
+> +		iio_counter_value_unregister(counter, values);
+> +		values++;
+> +	}
+> +}
+> +EXPORT_SYMBOL(iio_counter_values_unregister);
+> +
+> +/**
+> + * iio_counter_register - register Counter to the system
+> + * @counter: pointer to IIO Counter to register
+> + *
+> + * This function piggybacks off of iio_device_register. First, the relevant
+> + * Counter members are initialized; if init_signals is not NULL it is passed to
+> + * iio_counter_signals_register, and similarly if init_values is not NULL it is
+> + * passed to iio_counter_values_register. Next, a struct iio_dev is allocated by
+> + * a call to iio_device_alloc and initialized for the Counter, IIO channels are
+> + * allocated, the Counter is copied as the private data, and finally
+> + * iio_device_register is called.
+> + */
+> +int iio_counter_register(struct iio_counter *const counter)
+> +{
+> +	const struct iio_info info_default = {
+> +		.driver_module = THIS_MODULE,
+> +		.read_raw = __iio_counter_read_raw,
+> +		.write_raw = __iio_counter_write_raw
+> +	};
+> +	int err;
+> +	struct iio_info *info;
+> +	struct iio_counter *priv;
+> +
+> +	if (!counter)
+> +		return -EINVAL;
+> +
+> +	mutex_init(&counter->signal_list_lock);
+> +	INIT_LIST_HEAD(&counter->signal_list);
+> +
+> +	if (counter->init_signals) {
+> +		err = __iio_counter_signals_register(counter,
+> +			counter->init_signals, counter->num_init_signals);
+> +		if (err)
+> +			return err;
+> +	}
+> +
+> +	mutex_init(&counter->value_list_lock);
+> +	INIT_LIST_HEAD(&counter->value_list);
+> +
+> +	if (counter->init_values) {
+> +		err = iio_counter_values_register(counter,
+> +			counter->init_values, counter->num_init_values);
+> +		if (err)
+> +			goto err_values_register;
+> +	}
+> +
+> +	counter->indio_dev = iio_device_alloc(sizeof(*counter));
 
---FCuugMFkClbJLl1L
-Content-Type: application/gzip
-Content-Disposition: attachment; filename=".config.gz"
-Content-Transfer-Encoding: base64
+This is all getting a bit nasty and recursive.  You have a
+counter containing an iio_dev containing a copy of the counter.
 
-H4sICJqnf1kAAy5jb25maWcAlFxbc+O2kn7Pr1BN9mG36iRjyxNlslt+AElQxBFJ0AQo2X5h
-aWzNjCu25JI0Sebfbzd4w430nJdk+HXj1mj0DZB//unnGfl2Prxsz08P2+fn77Mvu/3uuD3v
-Hmefn553/zeL+CznckYjJn8F5vRp/+2f9/+cd/vTdvbh18v5rxe/HB8Ws9XuuN89z8LD/vPT
-l2/QwdNh/9PPP4U8j9myvuc5raOMXH/vkFtJc6F9lxtBs/o2TJYkimqSLnnJZJINDEua05KF
-dbKhbJlIIPw8a0mkDJM6IaJmKV/O6+pqPns6zfaH8+y0O4+zLT542XJeM17wUtYZKXSOlp7c
-X19eXHRfEY3bf6VMyOt375+fPr1/OTx+e96d3v9XlZOM1iVNKRH0/a8PSjrvurbwPyHLKpS8
-FMNCWXlTb3i5GpCgYmkkGfREbyUJUloLmB7QQcA/z5Zqw55xit9eB5EHJV/RvOZ5LbJC6z1n
-sqb5GqSBU86YvL6a9xMquRAwraxgKb1+p01UIbWkQg5dpTwk6ZqWgvFcYwaJkCqVdcKFxOVf
-v/vv/WG/+5+eQWyINiFxJ9asCB0A/x/KdMALLthtnd1UtKJ+1GnSrCejGS/vaiIlCZOBGCck
-j1Ktq0rQlAXDN6lA5zspw67MTt8+nb6fzruXQcqdVuKmiYRvXH1FSpiwwtzgiGeE5S53JhjS
-fcwg2KBauk1C2IcVXdNcim6y8ulldzz55itZuAKdoDBXbSdB5ZN73OWM5/rBArCAMXjEQs9B
-aFoxQ4YKGz4TOKqg/qJG7S37+YVF9V5uT3/OzjDR2Xb/ODudt+fTbPvwcPi2Pz/tv1gzhgY1
-CUNe5ZLlS1M66mD4iIGI6qLkIQUdALocp9Trq4EoiVgJSaQwIRB/Su6sjhTh1oMxbk5JLbsM
-q5nw7Ul+VwNNM4ZhBUcdRK91KwyOMCVCwOabqJq62xWsJk0924u0nNKoFnQZBmi/vAZRlpQq
-XlmSkHoUAWkrmZSUoFgZv+6to7JcdcDyuXbA2ar5x/WLjahN0Q0M9hDDwWKxvL78vT/zJcvl
-qhYkpjbPlX06RJjAAtUZ0aS3LHlVaBtckCWt1XbRckDBcIRL69OyXgMGRhVNc6RpWbpqRxow
-dYa9lOa73oDbowFxZ9usRDNfhJW1lxLGog7Atm1YJDV7Bw7Nz96gBYuEA5aGz27BGPThXpcT
-nE5B9fOC24gdthSnh4iuWUh1VWwJwI+HyaNj3SxpGTvdBYWLWcZS8HDVk4jUF5XQcFVw0Cg0
-VOCKdWsG7ksUoPTa2iop6lx31+Cq9G9YcGkAKAf9O6fS+G40lFSSWxoB3gx2MqJFSUMi9S2z
-KfV6ru0z2ilTC0HeyvGXWh/qm2TQj+BVGeruvozq5b3usQAIAJgbSHqv6wYAt/cWnVvfHzSp
-hzUvwHKze1rHvFT7ysuM5JZaWGwC/uFRDtvvkxzCHpbzSN84Q0ts65pBxMJw6zQhL6nM0JZj
-72BAbfH7YJiFizchSu8BW3QFPOIu8yB107oXwoAHgqeVpCgtOCkeQfSsAcSbShMkW+vRkrKc
-emSpnRGaxmADdf1XvcSVvpgYxr/V2hTcEAFb5iSNNTVTy9YBFanoAOyLR5YJWFZtQ5mmSyRa
-M0G7NtbRU7Gn3n0RsvqmYuVKY4S+A1KWTN9ugGgU6acsIWsl6rjuo6uuTwRhtHqdwQx0l1WE
-lxcfOn/f5kTF7vj5cHzZ7h92M/rXbg+BDoGQJ8RQB8K0IRDwjtV4jPER11nTpHNfumVJq8Ax
-hIi1XkupMdeiUIzziYTUYaXrn0hJ4Dt00JPJxv1sJFAuA+OLugS/xLWNhTlIyPvQJNeQSrCY
-gUFj+pzAl8QsNQI7FYcok60tljeMdIgq1P71sB7WImHxIYBMiKSgsWh+QwwGfdke8oIXxGRN
-smXFK2FpSJiuLATZScFs0StasgHxUtJ4HE2nMTfdENhG9CcFKXGr29TKtIcQzIG/KrmkmDeO
-zXgyMM54VKUQlKM+4aFHO6EJfNnkmCmoFZyuudEvvQWhNaGeI9Euv068USQTBMyNQMH43HuK
-FQKMezakVIHIsGaI/SGtoDHoBkNFj2PhHWGYBBySohHUeCEA/QoHY1WvaJnTtC43t/8Rc5fn
-TpcaIL9nkF/8yBgae7NBNnuT7Yd8/cun7Wn3OPuzMS+vx8Pnp2cjZ0KmdsxrX51E0duDgd7G
-syGKRblkqWKTiKLC6b3pHFe1v5ai83yofx/fti5cb05aQkvY6BFjwvJYDyxAWuiSDE+Pbkug
-oRwykVbn7UOAkwsxiyCRQ6pyL9y06In9OoDcnli/erbNIWNr2UYk3/Ex58Qi1gzvpRgOVMNF
-Qi6tiWqk+dy/dRbXb4sf4Lr6+CN9/XY5n1y2siHX705ft5fvLCo6KIjS3W3sCF3gag/d02/v
-R8cWTaabcr7Sw/DAzB3TICKxToUAMRQMjOhNZZTHusA7EEsvaNSahihd0iWkgJ4AHmuokQuD
-MeZSmg7SpcGqNiY9zCIg0MbXlCZtE0gHqMWNi2U39qAYrMTCkg84WF6QtIuLiu3x/IQF4pn8
-/rrTAyBSSibV0YjWmAto6yUQmuYDxyihDitII8g4nVLBb8fJLBTjRBLFE9SCbyCpoOE4R8lE
-yPTBITHwLImL2LvSjC2JlyBJyXyEjIReWERc+AhYGIuYWIGZpboxgWTxthZV4GkCKQkMDgfr
-48LXYwUtwaVTX7dplPmaIGxHrUvv8sD9ln4JisqrKysCrshHoLF3AKxFLz76KNrxcYQIKp/d
-YOLhYGsG3Lw7B4zPxMPXHd4V6GkA401JIOdcrxq3aAShF46sVc9aShjfDCB8tOWelqxnFE2B
-3uy/Qzv2d/vD4XWwvzcTE9CIq7sAjIkztUCfWjA+NSLyS0N3ciVkUbBceVzdEDtlKCRHFAK/
-qii4UTrFSFAlDS6tgSFcjlOyFC49yyrdnaxB11WUjvX+DZOhP9hVMU1zxVUvC8bNG6nGCB4P
-D7vT6XCcncEIqiL45932/O2oG8S2i27UWMT6ZCxqFM6v5oF3Ph7Oq/BHOMNKSJ55XKbF11z0
-fD59fmcxVHmXYpnVFfDGNCtQCXMjN+vwNU8hbSHlnXeWLZdnXl17lfVoB78JwDFmAyMeqRji
-4p/Hi4uLq4vhMm+tcirIiSHFoBIYLiyGdlErQZVmGHU3vOswihYxgYS3rVI4950GEfQb/lvS
-JaTIRgbfjgdMLCiJhDjGWhfIlJFU3SRyleQq3Qq+nWaHV/SwunPV7RF8UFT0wEhnuSzSqimZ
-IIPJToztA6CmYRk6PBDC/BszhRcDF0VmcQJiW3kNV7bI0IuOppysgPPlVwyDDY/zDzEP1Uef
-SuFai8wSRx0V1uLrQpqLxNs8aw3dBV97p+cfzSMXUA5V92lvGVRKZjIIWQWG0GvjCgsBxtcm
-UJTMAohgkVch/FoSjlJEAuJ5adQx2p2evuw32+NuBqRZeIB/iG+vr4cjbEZrDQH/ejidZw+H
-/fl4eAaPOHs8Pv3VOMaehe4fXw9P+7Oh1SCTyCqn6GjdYLElDFrEzX32y9D96e+n88NX/xx0
-UW9a24+xXtf8eXvGKp977tozXKREopLVTAiPEe/Jt3IOBmfKNmuscbEkvuS9uxru7UZkXgp0
-0UvAeeqg1+9AAKfD8+76fP4uLv4FWR1M6Hg4nK/fP+7+en/cvvRWHktIXE+HKpZKvKuWgXah
-0OUjgmUYBmqhgElorXZfcgKfLE2TCkCNdX0sYeL7DKu6hoVdM0rIOS7S7KV9EMAwdJVWhU11
-07aosdSghvOVIoqUSTjyKW/up8X1B6v/AE+sERg2QFNmDa140oNBuF86EyySO6FcWC2bGqZn
-bgGIUS8SYNhZS14b1h79V84li40y+EpogupiwgzraZAEqHGvP1z8sejFi9fHYD5VlW6lNQ1T
-CuaUQHinR2w8l+b9aWjcL0Jsbpm+HtKPL4KQUhBx3V8J35vd3heGYt8HVTQo3f1VzFP9W7Q1
-9cF6tiVQWHZhJNYdK4aUmrnBNxDNHTKGkyujSVziE6AmstBQVUTKyK1K63kZwR5cXg5GJiRl
-pFvzLGTE/m6imZDpkoFmzSa3Nu2Xh+3xcfbp+PT4RY8r7yjEVkN/6rPmWjDTIGBDeGKDktkI
-WJtaVjl1OLlIWKCXlqPF7/M/tPTg4/zij7m+LlwAxoQoXxYaet9ZPVUl7zWTZk5kTf/ZPXw7
-bz8979QTtpm6fDlrq8cSYiax9K0lgGls3n3hVx1VWdGPhaXyBJIfI0Jr+xJhyQr0JVY1mlfe
-89k0ypjQlA4HxPH6zTv8DQ7oZbvfftm97PZnT0SnhxtuNJX1VRSbFBUoRnBgER9B1eUBTP76
-cn6hdciLwhjAuPuA776Mq6IbTUybmzYiG8r4Q5A32t5wLbn+kAAv0eGYmbVABGmHKRnmu/Pf
-h+OfT/svHunBSaV6nKq+64gR7WUKli/ML4vhNi61XcAvzB7MwrFC8Umj2azJiExIVAEIKmXh
-ndW88QXUQtUxEdKoWSkCK9ChDJ2jaFb0zgHcfkWm6SR8WOtlxjawork5D4kw0V7zIM833tQA
-LWYB2EmIl61XVl1nBb40RPtr0lRPLQfRH7b0tDUtAy6oh9I8l4oMSpEX9ncdJaELYjTgoiUp
-C0sfC2ZJnBVLNCI0q25tAhpMvJ5x+X1dBCUolCPkTC3OA03KsWCZyOr1pQ/UPIC4w0CFrxgV
-9jLX4AKMSVaRfz0xrxxgWLs+LSSSxFSzmorCRfrjZVJshVegOgr2xBTFCzYHDaNLcOO5UIWg
-UY7pDgJK7bbuOaplWPhgFKcHLsnGByMEOiZkyTWjgV3DP5eeSnpPCph21Hs0rPz4BobYcB55
-SAn8yweLEfwuSIkHX9MlxHQunq89IFZOULk9pNQ36Jrm3APfUV3tepilkAlx5ptNFPpXFUZL
-DxoEmonvIokS5+JE2V2b63fH3f7wTu8qi34z7gPhDC40NYCv1tBi/Ss2+VoTaF6bKkLztArd
-Rx2RyDyNC+c4LtzzuBg/kAv3ROKQGSvsiTNdF5qmo+d2MYK+eXIXbxzdxeTZ1alKmu2jtCY5
-M5djGEeFCCZdpF4Yj/EQzSEFDlW6Ke8KahGdSSNoeAuFGBa3Q/yNJ3wETrEK8DbUhl2X04Nv
-dOh6mGYculzU6aadoYfWXAH4KElGQsM1WddLgODvKIAZEkb99xRoNQtZtFFBfOc2gSRbRcAQ
-oWRmBggcMUuNkKaH7DB7ILhGOChZBPni0F1bR1LFMQhbIXM5Q/g/8nuaoWdfENySUCIs16ot
-Dql5zT5Bb35sMcGQcs3o5fh+MM9VDmyg+Ei7fX5uw9BRRNf+Pmpr23SSu6k6FZNqMULDx8nx
-GNF+fWcQu5xonKr0ZYSutNPqWuJsJAefEhZ+ihkQagQRypEmED6kTD+kxjRIRvKIjAg8lsUI
-JbmaX42QWBmOUIaw1U+HzQ8YV++p/Qwiz8YmVBSjcxUkp2MkNtZIOmuXnhOkw70+jJATmhZ6
-gueenmVaQW5iKlROzA5zrHhSarxMbeER3RlIPk0YqI4GIcmjHgjbwkHM3nfEbPki5kgWwZJG
-rKR+6wOpB8zw9s5o1DoVF2pSUg/umhaJP6BLotLEMiqJiZTS/M6rbElzEwstHoERuvKZLq4e
-NDlowCRWsM1e29+gGKBlZGX7uz1zEUTcWItACVvrIFYrHvwb40UDs22+grgjImre8g2Ysx+y
-fVdsYq5MYhY4gLu5UVV4d3YMjzeRi/eqdturlfK+t6pseJo9HF4+Pe13j7P2l5w+z3srG//k
-7VUZlgmyoNIe87w9ftmdx4aSpFxijqx+k+jvs2VRP2gRVfYGVxf7THNNr0Lj6vzxNOMbU49E
-WExzJOkb9LcngcV69auEaTb8Kdc0g3EqPQwTUzEPoqdtTi3b4OOJ35xCHo9GcBoTtyM2DxMW
-Cal4Y9ZTRn3gkvSNCUnb+vt48N3ONMsPqSRk15kQb/JAwodvswv70L5szw9fJ+yDDBN1aaYy
-Ov8gDRP+OmmK3v5ccJIlrYQcVeuWB6JwiHDf4Mnz4E7SMakMXE3C9SaX5a38XBNbNTBNKWrL
-VVSTdBUtTTLQ9duinjBUDQMN82m6mG6P3vFtuY1HmAPL9P547glclpLky2nthaR8WlvSuZwe
-JaX5UibTLG/KAwsC0/Q3dKwpYRjVIw9XHo/lzT0LF9PHmW/yNzauvQWaZEnuxGhc0/Gs5Ju2
-xw7vXI5p69/yUJKOBR0dR/iW7VE5ySQDN2/tfCwSL7Te4lB1zze4Siz9TLFMeo+WBUKNSYbq
-SrsBZ0UbGhrf+FDgev7bwkKbBKJmhcPfU4wTYRKtImnRZyq+DlvcPEAmbao/pI33itTcs+p+
-UHcNijRKgM4m+5wiTNHGlwhEFhsRSUtVv3q0t1Q3luqzKeh/NzGrmtiAkK/gBorry3n7iBxM
-7+x83O5P+J4Ofw12PjwcnmfPh+3j7NP2ebt/wOvvU//ezuiuqQRI69azJ1TRCIE0LsxLGyWQ
-xI+3hYhhOafuVbw93bK0BbdxoTR0mFwo5jbC17HTU+A2RMwZMkpsRLiInlA0UH7TxZNq2SIZ
-XznoWL/1H7U229fX56cHVR6efd09v7otjepLO24cSmcraFu8afv+3x+oQsd4d1USVZT/YGTp
-4VAdtEmNBXfxrppj4ZjQ4l+/aW+xHGpXdHAIWBBwUVVTGBkab/TtUoPDi0VrmxExh3FkYk3p
-bGSRPpoCsbxT0ZJEPhEg0SsZyMb83WFdFX8mydwKnr/srCh2xRVBsy4MqgQ4K+xiXYO36VDi
-x42QWSeURX9F4qFKmdoEP3ufo5qFK4PoVh4bspGvGy2GjRlhsDN5azJ2wtwtLV+mYz22eR4b
-69QjyC6RdWVVko0NQd5cqZ8gWjhovX9fydgOAWFYSmtX/lr8p5ZlYSidYVlM0mBZTHywLItr
-z6HrLcvCPj/dAbYIrV2w0NaymEP7WMc67syICbYmwTtzH81jLqy2nblwltuaC+OCfjF2oBdj
-J1oj0IotPozQcHdHSFhsGSEl6QgB5908zhxhyMYm6VNenSwdgqcW2VJGeho1PTrVZ3sWfmOw
-8JzcxdjRXXgMmD6u34LpHHnRF6sjGu535x84wcCYqwIkuBISVCnB58+eQ9ncg5ua2N6Nu/cy
-LcG9e2j+DJjVVXfFHtc0sPW3pQEBLykr6TZDknQ21CAaQtUoHy/m9ZWXQjKuZ5Q6RQ8pNJyN
-wQsvbtVINIqZumkEp0Kg0YT0D79OST62jJIW6Z2XGI0JDOdW+0muh9SnN9ahURjXcKtkDl7K
-rAc2D+rC4Vleo/QAzMKQRacxbW87qpFp7knceuLVCDzWRsZlWBt/KcCgdK2GabZ/cyjZPvxp
-/EmQrpk7jllywa86CpZ4NRgavzRUhPapWvMwVL3Awbdp+jv9UT78MxTenzWNtsDfhvp+eYP8
-7gzGqO2fv9B3uBnReEqJf3RG/2j+9J2BGM/+ELBkKVmhv5vEP+STgfaSWt8+DTaSayK12hl8
-QJSnH/0OUX+dNszMhnVqPHhA5P8Zu7bmxm0l/VdUedg6qTqz0cWyra3KAwiSEmKCpAlKovPC
-8k48iSsee2rsOSezv37RAEl1NyDnpCpx9HUT90uj0ejWdSUokjTLy+uLGGYHATdpoupa+DW9
-wqEodpzpAMW/y7BWl6wnW7Lm6XABDKaw2tpji4F369TdhafCojQs2ITsXmK4iY0f4I7AZwbY
-jQlSlDpgdZRYGo6QnaVYaVUVzGBsIt7KM1/p9iZOsLXcrOao3V297Z6zQAYAJ6zfHrChOiJo
-QvAb9imFYQPn9vsF1ojYH0R32ZEfzplJQ91UFDc4h0Mv6rrIKKzqNK3Zzz4rJX7f1S3XqBSi
-xi9fdxWpx2VRHWu8Ww1A+KxsJJQ7GXJb0BlZxykgzNJ7NUzdVXWcQIVtTNFVogoiyGEqdApR
-TWPiPo3ktrWErLMya9rEi7N970tYcWIlxanGGwdzUIk/xsEkMZVlGQzV9UUM68ti+B/nzFFB
-+wtsQnri5JcGiBQMD7tl8Dz9luEdVbid9vbbw7cHu73+NLjvIDvtwN3L5DZIot+1SQTMjQxR
-siOMoHOvG6Du2iqSW8NsGBxo8kgRTB75vM1uiwia5CG4jWaVmuDGzeH2bxapXNo0kbrdxuss
-d9VNFsK3sYrIKuVPUwDOb89TIr20i9S7VpEyjDa5IXex30aqHXo7GKWh/DYqMZ2EJVv6dznG
-Kr7LZGg2jGqFg7xy/irCJwtDFX7+4cunx08v/af717cfBjvmp/vX18dPg2qazg5ZsCdFFgi0
-kQPcSlWmWRcS3FpxEeL5McTIFdsAcFfCAxpairvMzKGOFMGil5ESgK+tAI0YcPh6M8OPKQl2
-P+xwp5IAP2+EkjmYvYOcbjrlDfLwj0iSvw8ccGf7EaWQZkQ4O6ifCK1d2KMEKUqVRimqNux6
-11VcSPb4U4C5M1yRs6ICvhX4vLgV3jI6CRPQqgnWLcCN0HURSdg/8WUgt+XyRcu4nZ5PWPFG
-d+hNEmeX3IzPofTwPaLBOHIJxAxrxjx1Fam6yiP19q8zwgekltklFOQwEMKVeyCcndUWpt3k
-VmOFny6lEvVkWhpw211BHAp0XLB7p3BO5GLY+L/IGQomYl+oCE/xg3+ElzIKa/paEyfE5U5O
-O1GqOisP3tXIqSIIpNc0mHDoyCAh32RldkCfHbx0hLYr76Xs7wnhm47Brp0ere1cYus9IP3W
-VJQnFGsdaicde760M1xOcDUDUxiSTbEC5aZ/mINIt02LvodfvdFsKpTSYMc2xwS7tvDOy4DN
-DfAYIXhw7M5SHXjguOupz+zkdnKMODxXn709vL4FMmV901IjdDgTNlVtzwqlItrVndCNSE9+
-5ur7j38+vM2a+98eXyYDAWSzKMhxCn7Z0a4FeFvFzsNthk2F1qMG3loPKjLR/fdyPXseyv/b
-w78ePz6EznP0jcJi0WVNrPmS+jZrd3Qe39khBk6u+jztovgugtciTCOr0cJ7J1A1JJ4o9gdV
-rAOQSMreb49jve2vWeprm/LaAuchSP3QBZApAoiYdQEgRSHh9h/eHWLlBtCKjIRugLWk3SxY
-kZsgj19E+as92olyxYqzLy8UhTrwwE0LXvttnJXyDDR574jSJMtNyqureQQCH9IxOJ64yhX8
-zVMK67CIdSZunAcvzmt+EYv5fB4Fw8KMhHhxMm0CPy4nXEVLFHKPRT1TAUmHwc1BwBwJ+Ysu
-BE2V09UXgVYSwSPegA9vcF7/6f7jAxvxO7VaLDrW5rJerh04JbE3ydkkoEksnbWTAReCyZIN
-6wjnUOsAd60UoNeghgpQLRMRot69rY9eQiJ2uRdT/oL7aypia6xqyIasGmpn1sBWin+nwnk3
-FZNdFKQb+DBxfM7LUl+AQ8HCYC2ZozpHg03DUHJxoJ4/fb3/+vDbB2dBFizejseo5uyybqWC
-9s7KttMj1vTl+fenh9DmLK3cTeZUlMyoETttP7JV5s4EeJvdNEKHcKX0amkPbpwAD9+8MMII
-WlzaScrRrWoSVYTMduQuliF7BWGNsuIGXJ2FFVjO52FS4BYK3NIGuEnFr78WWYSwWW9OqGvZ
-/J1usMN1HIoDYtTWnqqs5J7jl2CDWyYKHgrbFwTR0lAgwXdtcG+apdhvtB1lOR3FE9S3xKG1
-/bbMapqYBWyOPb+IGEneKilClbqlKe1UygBDPsDjz/4M9H+OJaXfmKzIaew7BPaZTHdxCom8
-Bxegk+jv3XQ+fXt4e3l5++Nsl8JNb9li2RcaRLI2bikdrhRIA0iVtGQtQ6BL7XuM0OCIOiPB
-pPhE59G9aNoYBvIZEbwRaXcRhcvqRgWFd5REmjr6iWh3q5sopQjK7+DVUTVZlOKbOkaJNJLD
-ye0NLtT2suuiFN0cwmaVejlfdUH/1FaeCNE80pVpWyzC7l3JACv2GXUtN/V4pBMPOywjJEPh
-OdAHY8J3CUaOir6jdqO00uTYJXJ7QGrwFeqIMOvoE+w8zfZFhf0fTFR2lm66G+zjxLLd4Hlk
-2iYTevSGP8Fg1NXQwBEwfAricmFE4B4DoZl7BorHmoNojDsHmfouYFJo4sh8C3cSqIv93cfC
-eTAFtyQhL4gpWVGBb8ajaErYfCJMMmvaKehOX5X7GFOT2R9ZUewLYQ9cNOwOYYJAMp27om6i
-BRoUyrHPQyePI8XfIgrnHzlNYnUAgSZw3D2Rj6RXCAw3R+SjQiWsoUfE5nJX24GM9y1Gk0Sj
-yojtjYoR2SAdLp9Q/iPi4rZgd8sToZHgmhPGb/E+td+1f8NwOMcxuVt8N6PxIuOHz4/Pr29f
-H576P95+CBh1ZnaR7+mmO8HBuMDpmNHlJg1vRL61fOU+Qiwr7llmIg1+5M51Tq8LfZ5o2sCJ
-6akP27OkSgahuiaaSkxgbDIR6/MkXRfv0OwqfZ66O+rAVoj0IJgrBmss5ZDmfEs4hneK3qbF
-eaLv1zDeGemD4YVQ52IGnuIAHRW8pfpMfg4JuoBXP19PG0Z+o/BNi//NxukAqrLGfmEGFDz/
-U33dpua/x5AQHKbmRwPIneMKhXT+8CvGAR8zdZLK2dk2q3fOyixAwJ+YFd55siMV3D8TFfxJ
-WZiTpwXgRnKr4H6egCUWMAYAvOGHIJVPAN3xb80uLeRJlXr/dZY/PjxBoL3Pn789j49k/mFZ
-fxwEbvxu2ybQNvnV5mouWLJKUwC2jAXWCgGY41PHAPRqyRqhLtcXFxEoyrlaRSDacSc4SEAr
-2VQuTlscjnxBpLsRCTP0aNAfDo4mGvaoaZcL+5e39ICGqZg2HCoeO8cbGUVdHRlvHoykssqP
-TbmOgrE8N2tsHlDHbhDJ1Vro8mxEaKDS1FaHudHeNpUTx9ilip3jVMjW4s5P0IkweONn6upT
-FPnHjwM8q7imae+DTA4vzr9H4d75ZcWR4A+trvHmPSK9ZmEsWvA6VFQliVXq085Vo10EIRdM
-+kTPj84BNpXWB1ZVnsLfDTQr7jVi4kClnNLxoXt5DaPkPhdFQaM0D26pD9iP83jWKIrqeIZ2
-DnWKRnsIwEWZ1I9NZjjq9A3+A7sa6wpf3Dia8Bu254DrcBiMJxvcO9Pv7mzNDsrQqJKnWH5j
-UIF6P6pAY7HAsy1xy+9/90JurtBW6kEyjQYMpi3/2NRaBYxa46u3McUGBSSDWIJmZzs7hQjh
-OWlJS8qzUmaDHxFC8D7ph7ny6f7bk49K8fj7t5dvr7PPD59fvn6f3X99uJ+9Pv7fw/8g3TVk
-CKGKtXefsbgMKMbO74GKQ1xiMgT3BVO2bTxoCU2KhhA5wyS6SEc5J/oQmsfZLV6fAscEW+Ot
-uz9LFHYOrGB5A4/dJKSA/VN6R/enRahNyQ83GA2FbA+Bj2UXS+sMyT8CcFEVXHyHD4uzCbiQ
-Q5aJhswO2WATrMrijvLguF6sLFUeQ0VzFYMTqS9XXTeRXPPuX+3Sqr1LKRcDuIV3209eMCnu
-v9PLUkiluLFTjSftWiCE+gaJkXlL9nL+q29QOEBF6U2e0s+NyVPiFJySXdtUNSulC8hAkClU
-mp2Q/l5+nGaN0D81lf4pf7p//WP28Y/HL5G7Y+icXNEkf8nSTI6LGcLtWtVHYPu9M7Pw4VwN
-63lLLKshjsQpfuRASez+Y6etq1Y8xuXAWJxhZGzbrNJZ27DRB2tYIsobey5J7fFs8S51+S71
-4l3q9fv5Xr5LXi3DllOLCBbju4hgrDTE3frEBMpZYk829ai2QlIa4laoECG6bxUbuw22BnBA
-xQCRGG/c7Uarvv/yBVwqDEMU4kv4MXv/ESK6sSFbwUrZjaFE2JgDDy46mCceHL3mxT6AujUQ
-oOx67v6JsRRZ+XOUAD3pOvIUaAeTqzxeHLv8QeBa0Sp8hcI4thnEiqRkI9fLuUxZLa3I6ghs
-dzDr9Zxh5KbaA/Ri/IT1oqzKO02CdLv1wJ7EffAa8pEbU/2hsfOeUeAOPxgXxeTOaxwK5uHp
-0wcQDu6dt0DLdN72BVLVcr1esJwc1oOWC0cGRSSuBrEUiJeeF8SDIoH7Y6N8QATi3pjyBNNM
-L9f1NWt8Yw9lazZhTBE0Tb0LIPsvx+ACt61aUXilDA4kNFCzxsVuBupieY2Tc1vc0osTXjZ7
-fP3zQ/X8QcLUO2eD42pcyS1+jul9iVmRWP+8uAjRFgVygnFqTyZ9JiUbvQPqwmV855QIbyJ3
-Z1JIsOmua14dGNZNH6QZxFM8SwjnCiambYQ2KKnIPuYIlVsrwDUdnLvObGWO04cJCpO2hzoc
-8+RUHGVuqlLuFF8SKNHv4BHf2e/xDqEd/54VwjW+n2SStG4axbjskLqIFF6KPIvA8B+iRpoo
-oa3Qqf27UpgIfsgvF3OqX5todlbnheTCmSPtlFHreazQ8NKMCnNlFo7iARzWlD7SMiPHcFCM
-fx4sOiNh2UHHbGHJGKTCora9Ofsv/3c5syv8ePiKLq6OjWZ66wK4RQRBe8oM13zdXi/++ivE
-B2anS7lwnschSCg6DFm6MDVEQqPBc2owQEvdMfN2L1KikQJiboo4AfqqNzlLC3RV9i+XgfdJ
-CPTHAoJ/Z2YHkc7YOusYkiwZHosv55wGJkPkED8SwF91LDcWcy9t0ZqIQzhZAWFfqpaaUlgQ
-YqCmbWIICLH+nDtlDGaiKe7ipPSuFFpJmvCwHkQwGtTS4kR3UDm1OfmtyTU3HAZZAi7EJkvE
-5pQ1Bzjw4ACEngAac4JVdm6RMI32xDS4HDuFQfNQvzUyFjx0oIru+vpqg96mjAS7qV4E6YMH
-2B5HMx3CMgZAX+5tTyVFJIIjWB8aA5NI1atl1+Ey/2ondSwKGkShr28hgp3psdmSA4y0c6AV
-OBDGmFcq5OZyHpZhr92rsinfEZfVcdhRz5QCmIoKP4vEqIt86CNTXnO6u9yt4t+mTYLWUPjV
-DyG2nd1CEDPcNTD+ZIqO2V2HIJGtEDiU9KR7wrRA7MLEVCD5U6YNWFLftDI9YKtYDA9qNXNq
-Fko+MsW1gCCDoH4kb8KHRwVkVJ0wNw7Cdmpi7dSYDj8pOejM218EjECKoyw7B+UiaZQ0LGV2
-QecYJQO8/5QoyMYbpkRSHihnMrD4kJo/nz6+fgy1ePYEayC2daHMqjjMl9jyJl0v112f1lUb
-BamiFhPIzpXutb5zK+Bp2dmJssWnaX/i0spKPjhOjtlCdGKJpJNW5Zr1noOuug4doGy3bFZL
-czFHGISMtQcM/KTWbsFFZfYN6EMbb7w70XZ1rwq0sDttp6xUCVcsKNU6NZvr+VIU2DWRKZab
-+XzFEXyqHdu9tRR7tg0JyW5BzN1H3OW4wQZgOy0vV2tkAZ2axeX1ErcQrI1X6wWJqQmOYnFs
-aDDuG94C5UZsLvCRDzZW2z72YFKvhsDJqGReOBtbxIs8RS172TYFzhEFX27Js3C5HPYzH6gz
-s6KZDs2EPW47cokGxAlcB2CRbQX2lTvAWnSX11ch+2Ylu8sI2nUXIazStr/e7OrMYKP25MrK
-4HR4eozflJ9A22BmryfNo2uB9uGv+9eZAmuZbxDj83X2+gdYYiOHnk+Pzw+z3+yUfvwC/3tq
-pRY0XOGwgflN5yWh+Kns3+yA/6b7mYsh/enx6+d/Q4Du317+/exch/rIB+iREJjeClA81cWY
-gnp+e3iaWaHLXRz4w/dkMC5VHoEPVR1BTwntIAj4OaKEYLaRbM7yv3z5+gI6uZevM/N2//Yw
-06dwqv+QldE/8ntQKN+U3Lgb7SqwoSePIzK5I8dm2RXwhPnMnY0linw/3r5VtQmC1sK+M+qO
-ggnhZCHyXLMRdgkFIRitRm7rIr/gOgudUwAZnugxVN+G4VgdAYwV+5PFsivlULzZ2/cvD7N/
-2KH55z9nb/dfHv45k+kHO2V+RPbLowSDRYhd47E2xCqD0enrJoZBRL8Ux1SeEt5GMsPqF1ez
-aU9guHTBh4mNo8OLarslZmYONe61FVytkiZqx+n7yjrRnRXDbrM7eBRW7r8xihHmLF6oxIj4
-B3w4AOpGNzFV96SmjuZQVEdvKXW6P/KyOnGk5SB322buTM7TkN02WXmmCOUiSknKbnmW0NkW
-rLBMly0Z6zhwVse+s/+4GcQS2tX4SZeDLPemw1LliIYNLKhhtceEjOQjlLwiiQ4AXD4aF03d
-36+jd/sjB5wnwczAHhN7bX5eI93/yOI3m6x0wTG/x6lamJufgy/BhNfbe4H9ccnXAmDb8GJv
-/rbYm78v9ubdYm/eKfbmPyr25oIVGwC+VfshoPykYD2mD2ewaCKe0trCFhkvjT7sdbBK1yBi
-V3yUgN7TTh4ON1LjBdEvZjbDJVZbWYHIbRFldoRHw98DAn6ncwKFKpKqi1C4hDURIu1St6so
-uoRWcRaZW6Ldx1+9R19GFjUtmra+5Q26z81O8lnnQaohHwl9epR2AYsT3VeBnjb4NM6xA4GP
-Wn7jU5z7iRcu+stXssTK1Aka5kTON6pUd6vFZsGrn+9bOAD5yOp8m6mDjadUxCp1BAUxfPRl
-aTO+Ppo7vV7JazvHlmcpYGkzqOLggal7xLA4xztGyBVbbFXDuGDoOI7Li3McxGZoqDqfSxbh
-VkETTq20HHxrBQPbGXa88oa5LQQ5sbdSA7YkSz8Co2sJJMJ2stsspb9yLIj6PbrOY+pBPz7k
-arP+i68q0ESbqwsGl6Ze8S48pleLDe9xX3SK1Tq2+dX6eo6P634Lz2lTOZBbRnv5YJcVRlWx
-eTIKJuP98EnNOdwN78RivUQlH/Ccz4kBL1X5i2BS9UDynR7AfqStgymC3wcOQN+kglfYorva
-Hs1DONMRXlHsubhSmdRPXepud6LtC94dgKZu23TnRD4HHZkOS+Gc/UzjDZR6pZeZUysARUYd
-cIxPKrKmwSK7AVqtp+gP8uX57evL0xOYVfz78e0Pm9TzB5Pns+f7N3smO70YR2I1JCGIMfgE
-RRZlByvdMURmB8GgDu6xGHZbNdjPmsvItrdcXOJx5fMHcTBWMKMKrNdwUJ5Pxwdb2Y+8FT5+
-e317+TyzS2asBerUHh6IztDlc2voGHAZdSznRKcna0dgiRfAsSFdAPSaUrzKdicMEfdUmp5D
-Rwpf70b8ECPAfS1YrrAc9IEBJQdAi6NMxtBGiqBxsGHQgBiOHI4M2Re8gw+Kd8VBtXabmx5x
-1/9pO9duIOEMPIKfTXqkEQbcYeQB3mLhw2Ot7bkQrK8vrzqGWsH+8iIAzZqY7UzgKgpecvCu
-ps7xHGo3+IZBVnJaXfKvAQyKCWC3LGPoKgrS8egIqr1eLji3A3luv7gnFDw3K4geiMLYoWXW
-yggKGwveVz1qrq8uFmuG2tlDZ5pHrVRJZrxD7UKwnC+D5oH1oSr4kAEPQeR04VFs6OkQIxfL
-Oe9Zok7xCFxzNhA8nSdpp9XldZCA4myDVwKONiovMl4jMsMcclRlUpWTbVCtqg8vz0/f+Sxj
-U8uN7zmV+n1vRtrc9w+vSEXuMXx7M/M0DwY7kf88P0dpfh1cz5DnGZ/un57+9/7jn7OfZk8P
-v99/jNhCwMeBCYZLMjjE4Xj0g3oELy3anvtUmeGZqVOnOJkHyCJEQqaL9SXBfLg9gW8D9XBJ
-SooZhrZM/NUi+813lAEdFH3BYX26qNXOxqlVkQvZFPWL5YspSi3MEnYJ5lh2HXkGS20tSrHN
-mh5+EKUi43PuG8MXrpC+AsOW/2fsS7Ycx5Fsf8WX3Ys6JZIaqEUtIJKSEM7JCUqi+4YnMsK7
-Mk7HkCeGV5l//2AASJkBRs9eZIbrXhDzYAAMZlLhiUjDbdHpodXDu5lcYKuMmjN31QRRtWjV
-uaFgf5ZGefoqtZxdk0NviITW+4TonfgTQYuOJg6mFrE4oiHw2QBvalRLHKdphm4bNPBSdLQy
-mZ6D0REbriWE6r1GAYULjNgXTaSuj6Ugpg81BFpQPQeNR2yECerYM9/nCm70pxSB4W70RKOd
-HSyTe1C9ZZTeIwDAjrIscJ8DrKXbF4CgytHaAzfHB9PLvMtqEyV2f+Y0MmgojNrDWyT7HNog
-/PGiiOKD/U0vrByGE5+C4RMghzEnRo4hinAOI1aYJmw+2rf3R0VRPETJfv3wX8dP319v+r//
-Du9kjrIrjCWRLz4yNkTon2FdHTEDE0NQd7RR1NhmYHWqkpIE8GxNwHJIBy9cz99/Fk8XLVm+
-+FZmj6j3St9SdF+IKkTM2Q24URG5MXq5EKBrLnXeNQdZL4bQW8hmMQEwDHUtoKv6ZnTvYeCl
-3kGUoC+K1g+RUZOpAPTUJxcNoH8T3rOm6VvQPGETRDpyVVBDxvov1XivQR0Waq0ZN5PYdI2x
-/agRuJnqO/0HeWbdH4L33f0F5ZWUQzPj1XSVrlGKmEK6cjo5pGvWpW/rc7x2aMOhLvWpqOAx
-wB0THXUqYH+PWqKMQnC1CUFii9FhGS7ShDXVfvXnn0s4nhanmKWeRbnwWtrF2xuPoMKiT2It
-IXCwYS98sXUaAOlABIjcnTmPHkJSqKhDIDybsbBuaHgv22E9y4kz8NgPY7S9vcGmb5Hrt8h4
-kezeTLR7K9HurUS7MFGYSK1NH1ppL4GjlRfTJmE91jKDVzY0sAONLrDu8JL9xLAy73c73adp
-CIPGWIcHo1w2Zq7LrqAou8DyGRLVQSgl8sYrxh3nkjw3nXzBYx2BbBY9VzMysPthWkQvT3qU
-eI5qJtQUILgyIyF6uOqDJ3P3GwDC2zRXJNNeaudioaL0XNwgE5fyiDRwgh2WMaDRYznNIHC3
-b03mMvhzTWxzaviMBTODzAfe0/uWn98//fbr5+vHB/WfTz8//P4gvn/4/dPP1w8/f31nXhjV
-zklMdU3TYrvCGrITddAynTqi3nfYJOSHyax7d05w0H7mCXgmwhGqE4eAoHkkNyEBNZ7KRi/m
-MV0KIchTJtLH8EtPpXKKr9+Ro6kJV5XKZmc6b7KevQcuBFUON2aMif445c3aabRXxkSvHcFN
-RZJt8FXMHU33aI1uOnLz1j+35yZYoW0qIhdtjzcmDjDvCI9EisVf6S0qttbZR0k08CFLkcGG
-Bj9lUqXMGt8Lxhy+L/AuQG8AySWn/T02ldQrijzpaQePV6uJ1quFXFfiBcdNKGwBrsrTKIqo
-MnIL6zk5mnN3QVVGRED98ag3O0WIOPv09/uRCTduqIqMu5eDLHrXDTM0XmO+mFp+r3sp+IJi
-S2H6B3hXyLxt5ASjbguBOr2vpE+zcLzQsRsiz5RkLSsj+qugP3ETlwtd6dI1HSqV/T3WhzRd
-eaPYPa5Bo0xkaMcCv6i4hpKx2xU89g7YMo/+YfRYxaVvVFEW2P2E46A23+LxMVQFLYk12+oB
-GzImfd/098T/PZ5vFXkwAEpPNEK9De5kg19tnEjzmp+QGeFjjO7Cs+qLivq712l4v4IEASP+
-GWiNQ4Ph0MJvz3IocqH7Pck3iiMTV3mp2OjdxTBWB7Q3xT22hD5jY3RigiZM0DWH0VIi3NxL
-MwR2Lj+hxOIWLopUGSoInRqzQU8i2OVIXvsOU1w0eUG3lXpXAD4F74dTRRyt8PWOA/TqVt7F
-KPvRF/JzrG6oezuI6FZYrBZtEA4w3ZlHPbXLk6CvYPJiPaALEHeoP6ZrNPDzah+t0ODRkW7i
-bXirPxib2nzFUA3YvIzxreKlzun5wYR4RUQRFtUFLinuPbuI6XA3v/0hjCN4MVPuvcnN77Fu
-lTsqBiMtY7HU0sUg8KV6jGWN64AdKcKvyWIQ6LjQHQWK8tgVhdIDEnVmeK54rMj5mUbaJ0+4
-AdCMYA8/SVGTWz6c2uWd7BUy0zipZlTXd1HKLxSgqgciBqrRsxw25zwe6fxhdPqOhYe1qzVd
-+s+18nKsEUprse9IkcUmOaPWPLeRv3S5UJ7F4YKEK6jvAfMTe8c7HcgPv3tpCE86ciDhqfAi
-rYTiRYDEGQyRWNckS+uV/4FGcPhjFa0e+apI4w22mfyu4sW76aL1vuhft2uwtEMas7rSpqzg
-2AvUHSYNU49hQmKoxSe37SCibeo5Nn3Eowx+BdoNgIEYAFefCH3G+lX6l/8dLrout6gbbCWi
-HHQvxkebFqCNYEAq/BnINyxRDpswmIVGokSK0CAlx8i2kZRQtzByh/k9DzEgcFbYraPlqJ0D
-A5FNmoXs3QteZTGORTCHt1qQ67DPLYoHhVWwjtWyEiXfV2VGjOU+qjRdo1ThNz70tL91xCXG
-XvRHw6Iga7QRvNWjzuL0Hd7/T4i9dvLNgmh2iNea5iep6rnDFl30r2iFe/uxEGXNz9G10Lu0
-Cj+odMA9sEqTNOYTNg6H6qbCPoiOxMxmYBIVfZ0m+1WoAzh4E3bsuVNx4dpsaWKvrzLHuy4t
-N2dFTiYDFLp5lDgP55FMu/qrxhN0wSUSeMOrT8Q28VnvanUj38M+F2BU8OhfprhknX7i/PlT
-KRJy2PJU0k2H/e3L8w4lvd5h3oh9Kk90uh701EBTwI72nuDhID7ZAcBPXNcq/ULSx7kAUXEb
-18BFlMYbxT14JnZkQbV27Za2Gl0B5wxITEyjZI+P6eF33zQBMLZYSpxAcyLf36QiDiwmNo3i
-PUWN2lznXk7cqS6NtvuF/NbwCgAtLWe6RHXiym83QOfnnsB2teZHIxwM4Ly731xQJSq4DUJ5
-MaLE0iBRRfHENqIW8ATqZCrbx6sk4uMgq6pUe6KEK1W050ulmlJ0x1Lggy5qeQOM2PY5Yccq
-y+FBXk1RrwPPAcOnY2AfGPpnTdOxGE0O57VSqKVUle2jcN9jYF1RaJZpZUbV9nU8e+uk6a42
-7jA4FjqP56Z55Kx7mlDrhela9WYtQjnsK9gGeB7gK/7EIb8BDuqfT42i31gq0GmysGyf0hXe
-/1m4bDO9cQjgqqAaMwb0LO1YMDwHs7hqMngxG8BYDWyCKnyS6MBLPciwOhYWdx0arwFt+1wV
-WNawd67ocAC8DuJ7wlpe2Ij74nzp8d7c/maD4mByzFot9AjiginwR+q+vOJ1Uv8Yu7PEZ5wz
-5O2sAQffFRnRhUER3+QLOV23v8fbhnTzGU0MOnd1hx8uypkVZd/solCyDsOFoUT9zOfIM0V9
-L4Y7ovBlFIDjlj84V89104La5v30Qo+YoaQ73jtGe9Yxxy9H8uJIBgj89J/IPGJ5S48GYp23
-EXkHJqvRInDHxhI0f8yraay0Yq6R7DPBLwSEqylpfKOE+AVE7ICQ/UEQb6EG1S1RXQYeXU7E
-8dRiP6GgYrrCT475gDtuMIR3wt+en8kBoLqB6sRcU6WWbvpOnkBN0BLWuIeUD/rnoplBuG6g
-KhjunsBD+3SVDBTTlWOegfpgumPAMXs+1bpqAtwIsV7RpsN2GjqTmci9fOVCdw0/YN7qPcI6
-ZcDtjoJHORRe+WXWln4+rRWS4SaeKQ4+0Io+WkVR5hFDTwF3CuGBsLiMp8GHzS4wxBprjS6A
-YYNE4dqckwovjqcwoBNaKWguKinSF9EKvwGACzXdcDLzKso9XKCgdQY6nnRXjLsTUUNzRdX7
-2P1+Q/TTySFy29If40FB9/BAPSFpKaGgoO8CDrCqbb1QRt+TnvJquCG6HwCQz3qaflPGHuIe
-+hPIWFUnugCKFFWV54xyxq4rPIHAJg0NYV6zephRa4O/ttMMABYy/vHj08dX40NzMsYAS9Pr
-68fXj8YcLTCTM2Hx8f0fP1+/hxqMYAfGXGY7JaUvmMhEn1HkUdyIVAZYW5yEunifdn2ZRtjS
-zR2MKagFhx0R0gDU/5G995RNsGkW7YYlYj9Gu1SEbJZnnldhxIwFlp4wUWcMcb7oOpDLPBDV
-QTJMXu23WOdtwlW3361WLJ6yuB7Lu41fZROzZ5lTuY1XTM3UMNWlTCIwYR5CuMrULk2Y8J2W
-j6wZCb5K1OWgzJkGPXkNg1AOTJZWmy22Nm3gOt7FK4pZV5xeuK7SM8BloGjR6jk6TtOUwo9Z
-HO29SCFvL+LS+f3b5HlI4yRajcGIAPJRlJVkKvxJT9e3GxaWgTljP+hTUL1CbaLB6zBQUe25
-CUaHbM9BPpQsuk6MQdhrueX6VXbek1c+N7Lxnh3c3bDvIwhzVzCpyGGJ/p0SP2age+9btSUR
-9Eh1hHFNBZC5sTJmpRQlwAKEU6S1XjoAOP8fwoH7O2OiimzPddDNI8n65pHJz8a+zMCrkUXJ
-5b8LCC44srMABy80U/vH8XwjiWnErymMMjnRXH5Uoa80Sx36rCmG0EOeYf00/LxrSJwPQWp8
-Sqq3fgTNvwrECT9EP+z3XNadH0K8JDpSNxe2LWrRW3PzIeeuy0NdlRvdaeIHcCptg+1yuubA
-K98MLZX5fOuoP/au3EfUfblFAjftDg49H07Mrc0Y1EtQ52L7WJIM69+eU04HkmndYWFvAjR4
-cuRw8MFoX8vfmW6ziZHixE3q9SZaBcAoVQd3OnhasQSXGLkmtL891WuL+Z0TsLBIM+q1H+AL
-qS91y1tWJ1u8zDogjJ9Ob1VBVXcLz2JeANn7CoqKfrfNNquBtiROiNNrwiqe68RqAGF6VOpA
-Ab3pLZQJOBqz0oqotNEQ7OnJPYgCR++h1VXNL+tXJX+jX5XY7v2XXyp69G7iCYDz83gKoTqE
-yjbEzl42PE/R68QfnQD5rw7Xif8Qc4beqpN7iLdqxoUKMubwMHuOWMokfSqNsuFV7D206THg
-b8H5pcV9AoUCdqnr3NMIgk2BuqyinjwAUVTfTSNHFnHuxA8ZvvnwyEqdDpcjQ3tdb4IvZAzN
-cWWyoHA43wCaH078xOHpggkJzt8UP/Y9bRLZ3mJyIOoAuLiQPZ6IJ8LrBADHfgTxUgRAwKPy
-psemwyfGWmHILsQ1x0Q+NQzoZaaUB82gIxnzO8jyzR9bGlnvtxsCJPs1AGY7/ek/n+Hnwz/h
-Lwj5kL/+9uvf/wYPL4EXvCn6pWTDRUAzN2Ky3QHeCNVofq1IqMr7bb5qWnMgoP8HzpiDZODF
-s+rdIQnpZFMA6JB6M97OVvbfLq35JizsHWbK6s53w47u99UOLG7crzcaRR6r2d93j31/LRBj
-fSV2aR3dYv3iCcMChMPwYAJdkyL4bd5Z4wQsat89H28jaKfr8YCOmsohiKqv8gCrQYO/DGBY
-A0LMiAMLcKi30ujWb7KGygntZh3sLAALAlGNCA2QGwwHzFa5rKFcVHzN095tKnCz5metQKFL
-j2wtduEbuQmhOZ3RjAtKBeA7jEsyo+FcY3Hqq3qG4Yk8dD8mpolajHIOQMpSwcDBrzkc4BVj
-Qs2yEqBejCV+I0NqvMilINv1SsuVq+jCB+8EPUnt+njAq4L+vV6tSJ/R0CaAtpEfJg0/s5D+
-K0mwNiBhNkvMZvmbGJ/u2OyR6ur6XeIB8DUPLWTPMUz2JmaX8AyXcccsxHapH+vmVvsU1Sm/
-Y/Ze7wttwrcJv2Um3K+SgUl1ChtO3oi0vhNYynOyfSeCNcdx3mgj3ddX5DFH0SnpwADsAiDI
-Rgm78Fx5Afcxvsx0kAqh3IN2cSJC6OB/mKZFGJcPpXHkxwX5uhCICiIO8NvZgl4js3LAlEiw
-priScLg9i5L4pBhCD8NwCZERHLwr4saTNCxWBtM/RqIO0ylGQgGQzqiALG6m8fPp7EbtINnf
-NjiNkjB4ucFRY62KWxnFWA3U/va/tRhJCUByFFFSnZdbSTVu7W8/YovRiM3l2aylY23JsI3w
-8pxjpTOYml5y+r4ffkdRdwsRv0c5caYTz1ko5GixfYOj1durdKWj0XtaxV252FuJm1VOMaLu
-7RO4wgV7Hp9ff/x4OHz/9v7jb++/fgydZdwkWBWRsK5VuFbuqNdpMGOfV1gb2bNJkhs+T9d5
-MmswkjTBdT35RU0fTIj3ZAFQu0Ok2LHzAHLjapAB+1HQc4DusuoZH86LeiDnUclqRdQdj6Kj
-16G5yrAHD3j/qbF4u4ljLxCkR19Ez/BIbBbojGKFFf0LzL3ca7UU7cG73dPlgntatHUqigI6
-ipZKg5tOxB3FY1EeWEr06bY7xvjqi2OZDdE9VKWDrN+t+SiyLCYm9UjspKNhJj/uYqxNjiMU
-KTmCDagwr9cKVKOJK5McPwbRv0a5Lilv+tVfPjJe33lgRYJx9/jzt4EqgGHEhZy6GAwMfh+x
-zyKDQr+eDPno3w//8/rePJf/8es369ICb3Dhg7zznT9Z2HQV2cyzB6Dr8tPXX38+/P7++0fr
-LYM6j2jf//gBZko/aJ5L5iyVGKb48n98+P3916+vnx/++P7t57cP3z5PeUWfmi/G4oLVKsEW
-ToPGjg1TN2DANbf+ZrFrvpkuS+6jx+K5FblPRH23DQJjH78WglnPikTOgfj5k3r/56Rq8PrR
-rwkX+XZM/JjU6oAftljw2Mn+hdxIWVxcq1FEgZ1fV1mlCrBcFudSt2hAqCIvD+KCe+JU2Cx7
-9sHDo0533QeRZL3x44cbyTIn8YJP5Cx42273sQ+eQX84qIBpfUR1awttKvbhx+t3owUWdGyv
-cPSQY64lBnY1GxLgfNnttElD/+bGwGIe+s06jfzYdGnJtDaja5UGSZteAGtDW/uDNBNYlIFf
-vunuOZj5H5lkZ6aSeV4WdJ9Cv9ODl/vQUZN146mhAObmCJxNXdFeYhCRRg/ReKAbZY69rt/8
-mhqg9AJAG+MG9uj+zdTxCm8KUtAnmNPcKYIEABsPnSTjGVHtMgX/p02NSLjIlznPwU1lz5Tl
-JE+C6Js4wHYodGcx4XrlYy8rJt7YdCpL5qZiCgHOgcL0KrAQxKFRiHrC8vkZFugv5OeU/0lE
-liRIZcuvWh8qo0bO7uO+mGVzufvaT/RYpW/wJtSo3jE4PZyyi/q1MmPbx41jsaMYfBwOzuqi
-CUpkJ1QP1MLMO9zCLoqWqOVaTOFXyTa/RByv8VjVP4JHZxrqupZ+MbbWo6FzSfXHr5+L7p1k
-3V7QomJ+2rOHLxQ7HsGPaEnMJ1sGDMQRI3AWVq0W0otH4mLeMpXoOzk4xuTxoleTz7Abmk2M
-//CyOIJj9YJJZsLHVgmscOWxKuuKQkto/4pW8frtMM//2m1TGuRd88wkXVxZ0HojQHW/5CDc
-fqCFoEMD7nvmrE+IFrNRuyK03WzSdJHZc0z/iL1WzvhTH62wwggi4mjLEVnZql2ETztmqnzk
-E6GK6gQ2nafgPuozsV1HW55J1xFXftuxuJxVaYL1RAiRcISWLnfJhqvKCq9fd7TtojhiiLq4
-9XjamImmLWo4/uBimx6xMZXWlPlRwvs6MBXLfts3N3HDlmURBX+D3zCOvNR88+nEzFdshBVW
-f76XTY/tNdd0VTz2zSU7E5u2Mz0s9FJQTB8LLgN6zdF9kWvyQ0Zcf84DHa1Q8FNPG3j6nqBR
-6G7OBB0PzzkHw5tX/S/eat5J9VyLlmqkMeSoqsOFDTKZrWcokDgfjVoixxalqKlhLJRuATf2
-+KEuitU0kWTjPDYZnGkvRMoVAWQk/HDMoqKFvSIk5DO65TbEHYyFs2fRCh+EEnqv7wluuL8W
-ODa3VzUMgwgS8h7b2ILNTcfk4E7SQ5RpPQEVRXQxMCGjqIXuTPcP7kSScyiWPmc0aw7YBvaM
-n47Y3Mwd7vCzAQKPFctcpJ62K2y9e+bM7brIOErJvLjJOsdnZjPZV3i1u0dnHrkvElT3xSdj
-rMA9k3q31cmGy0MlTsbOBZd3sBTedIcl6iCw5YQ7B+q9fHlvMtc/GOblXNTnC9d++WHPtYao
-iqzhMt1f9Obw1InjwHUdtVlhNemZAGnnwrb7AMc1PDwej0xVG4ZeZaFmKB91T9HyB5eJVplv
-yX0BQ5Jk7eDqQdUfzV32t9XLz4oMlwBTsoWbOo469fiQGxFnUd/IM0DEPR70D5YJHq44zs6T
-ulqypkKznysUzJRWQEUlu4Og5NSCxig20415katdin0MU3KX7nZvcPu3ODr9MTxpRMJ3WhyP
-3vje+NOusO03lh77ZLdQ7AsYRRgy2fFRHC6x3vAmPAmP5Jq6GGVWpwmWOEmg5zTrq1OEz7wp
-3/eq9e3ohwEWK8Hxi5Voed/KDhfib5JYL6eRi/0Kv6AiHKx02EcCJs+iatVZLuWsKPqFFPUg
-KfE2POQCwQIHmax6seSpaXK5ELcspe4RSyR9v0vivNQvS4V87I9xFC+Mr4KsN5RZqFQzRYw3
-6swuDLDY3HpzE0Xp0sd6g7MhxkoIWakoWi9wRXmEgy/ZLgXw5D1StdWwvZRjrxbyLOtikAv1
-UT3uooXOqTdZWh6rFyaQIu/HY78ZVgvzYiVPzcLEYf7u5Om8ELX5+yYXmrYHt4dJshmWC3zJ
-DtF6qRnemtJueW+eTS82/01veqOFHn6r9rvhDQ4bFfe5KH6DS3jOvC1rqrZRsl8YPtWgxrIj
-ZyGUxrfJtCNHyS5dmNvNgzw7xyxmrBX1O7wL8vmkWuZk/wZZGMFsmbeTySKdVxn0m2j1RvKd
-HWvLAXJfNynIBBg90QLJ30R0asDP2yL9Tihi/TmoivKNeihiuUy+PIOJLvlW3L2WDLL1huwR
-/EB2XlmOQ6jnN2rA/C37eEmE6NU6XRrEugnNGrYwq2k6Xq2GN9Z1G2JhsrXkwtCw5MKK5MhR
-LtVLS9xgYKarRnwohSkly4LI3oRTy9OV6qM4WZjevQMoQl3q9YJsoS7deqFNNHXUu4RkWRRS
-Q7rdLNV5q7ab1W5h/nwp+m0cL3SUF2+fS8SzppSHTo7X42Yh211zrqwsi+N3x14Sm26yWJqC
-L9xhbGpyEmdJLbVH2DYvRmkzEYbUmGOM3wYB5oPM+ZdPG/lddyZPLrDsoRLkKb87X0+GlS5p
-Tw5V3UVEle7X0djeOqZQmgQDI1ddkdRB7XQnMex2233ishrQdimBuPm0q0qk6zC3pzYWIQam
-XYqiLYJcGKqXZR+ciyM+15v9PPw2g1G5nEGhRY4OjmyK2KfgdFcvdY4O2KF/t2dBl8npsRWt
-7uYGxjPD6J4Lq9Lt576KVkEqXXG6lNBaC63S6XV0ucRmMMZR+kadDG2sB0FbBNm52Hsxvw9l
-egBuE90NqgvDpcRzgoNv1Vtt3TW96J7BCibXpHbXxQ9S4LYJz1kBb2RGSBbexol8KBNuuBuY
-H++WYga8rJROJKicrBIJ2VIQmEtDNZkb5XoS6URY/O4ab3XbLcwsht5u3qZ3S7Qxo2R6MKnc
-rpL+LttAJPsGITVjkergIccVVsh3iC8PGDzOjX9s/OjNho+iAIl9JFkFyNpHNiEyK7Kdp8t4
-+c/mAe6O0QWml1nzE/5PbfdbuBUdudxxaCbJBYxF9WrHoEQp1ULOHQcTWEOgDRB80GVcaNFy
-CTZlm2kK6yy4IoJoQeO5eHUBZ7K0GiZkrNVmkzJ4uWbAorpEq8eIYY6V3cFbtZ/f339//wFM
-7QT6xGAg6K5pibXKnRu4vhO1Ko31BKyT2U8BkNrHLcSuPYLHg7Se/+5K2bUc9noK7rHduOmN
-7QKoY4Mde7zZ4mrXOxHk6x11WLAF2tO6zp6zUuT4ajV7foGbCTSEqmYQ9tlqSa92BmGtIZGu
-/VxnsGzhU/EJG0/YWm/z0lREIQjb3/OVO8aTQreU1ip+11yIu1mLKrJm5sW1wsYj9O9HC1hn
-6q/fP73/HKrPuGosRFc+Z8SCqCXSGEswCNQJtB24fihy43WY9BQc7ggV+shz1BE7IogyDyaM
-bwGWwXM2xutuvOimU/9ac2ynu5WsireCFENf1Dkxj4XYStS6hzZdv1B8dYZHobJ7WqiBQm+F
-+2W+Uws1dMiqOE02AhsXJBHfeBweYaUDH2dgpRSTeti2Z1ks1D5caREDyzRetdA4lcwXCD3m
-Aoa6pzb9uv729R/wASifQgc31scClSb3vWf2AqPhLEbYFj/NJ4yeS0UfcKFKjCP0piKh1m8x
-HoaXVYhBXy3J2ZhH3Pt85IVQ51ExQ8vC989inueGK3XzisDFGn2HJ7gpgSyrh5aBo61UcHJJ
-ZSyffuNDctsfsArrJzpWzweHosuJUVlH6UG3TZjknNDxrhcnqMAl/u846AV2KvEnIhzoIC55
-B9uoKNrEq5XfYY7DdtiGHQysvbPpw1mqYBlnWbFVCx+CeofJ0VJLzyHCsdOFUwUIYroH2grw
-O27XxsEHGrt32cTvs+D4pWzZnOtfeh0Bp+TyJLOmbMJJTek9jQrzWMGxTJRsmPDEuvIU/Foc
-LnwNWGqx5rK+K62GiU+BWuKB3BVr8ajt9CqLpAHzG8/VZRum1bZEWfF8zSYHiXdRznrezXyX
-wbKtJNx15yXZogLaCjDI77ktR4zqPVMQQDkbDSbTR+J/3dBYYrKAkkcPuok+O+dYT8YmCnu2
-5ohCC6PQOx56G+BQ4adut8Dt8wzBxAASfVWw7OwuM/yuZT/wusyd8KyCIwI3cZfst2h7AMpT
-0rqYso9/3MOM5V3ALKxiyQmez2iRZlyTvfkdxYekKutickrQTpb5UC7FLfC6Cc90DF5cFRbp
-++w0WlMgGJAqcDhv0ADwzmcdCFpdntkqTIVK3JitL9em90kmtqvONqhbDM9MrvokeWnj9TLj
-nXP7LCmWrjNqNk9P0uUzmQ8mxDPLMMPNceojOl1G/ZucvOhKMMqTup7wgzf7zLrFko/BtLBL
-FaA1aO1fW3PRvz7//PTH59c/dX+ExLPfP/3B5kAvBgd7HKajLMuixv48XKSeAt6Eln22TvDt
-7US0mdhv1tES8WdIEAPbE1iVQ9aWOSXORdkWnbGCRWvEKhSSsKI8NQfZh6DOB26Z+Zjl8OsH
-qiQ3uh90zBr//duPnw8fvn39+f3b588wygONchO5jDZ40ZrBbcKAgw9W+W6zDTBwV+rVgnV4
-RkFJtAoMosjJvkZaKYc1hWpz+eHFpaTabPabANySx7AW22MvDIBdySMkC1gllftg+OvHz9cv
-D7/pinUV+fBfX3QNf/7r4fXLb68fwaDxP12of+idxwfdf//bq+th8NNhzLwbGEyE9QcKTk5E
-KQjDNuzteaHkqTZGh+gM6ZGhdws/AHlhpbniSJYmA53ilddni6q4eqHCTMrq5AN6jLbBLPPu
-Zb1LvVZ8LKpgpOk9KlZYNaOSrpcG6rfE+DBgjadabzpeJnD1zA+pDDeA4yXJPKICtpPSK0H3
-mHgp6m1TpYd6Wfids+oL72MjDBy9MaAu9VZLMPHNa55wK47R8eh186JTog9yYaV7DyvbvV9t
-XWZOXMwYKf7UksRXvc3WxD/tBPTe2fNmJ55cNqBZffEbOy9rr+O0wjsiRuBYUp0ak6vm0PTH
-y8vL2FBRUHO9gLcBV6+/97J+9hSvzRzQwmtJOD50ZWx+/m5XJ1dANBnQwrknCOBLqcYCgW3O
-i5eQdcX+VwBN9qq8sQk2G+jW+o7DWsHhRHWd7mzbwFwKQJVw/p/sEWErH6r3P6Axs/uCEjxR
-gg/tdhRJgoB1FfhPSIgBcUNQeclAgzT/Or9ihHMHWyxIT7ss7m3I7+B4VkR0ctT4FKK+7w4D
-XnrYjJTPFA4maAOGxz2mxqcZ1sM9h4EOq2TunbA4nJhEMiAZPqYi231QDXYDHBSWTtGA6Cla
-/3uUPurF9847g9FQWYEh4bL10DZN19HYYcPFc4aIjxEHBnkEMA9Q69BC/3X0IvZne5MJcDPy
-pDeKXtjGzgQeWAktaftR9JLpKxB0jFbYHrCBO0ncZ2molVkSM9Conrw49UoT+4lbLOwooSMo
-gwb5VEm2DUqksijV0tLKyxasU0o2Rx8NQp3DZHqo4rUHUj0bB209qC9OnSCaozMar0Z1LIWf
-g5mj6gKG0tJzKY9HOOfymGHYU2Qwnvgo5C2GBvP7NdwDKKH/oR63gHp5rp+qdjy5/jLPp+1k
-S8NOrN40qv8juyXTb5umPYjM2mj3SlIW23ggs2sl6S/djnojCgblBX6XcsYHKPoH2dPZO10l
-0TZiNiFi4M+fXr/iO16IAHZ6U0HbVoWbuBa7jNI/qPEI+MTFy36qZ1QJPqYfzZkLjchRZS7x
-2EZMIEsgzs1+cyb+/fr19fv7n9++h1usvtVZ/Pbhf5kM9noK2KSpjlSPRpQOwUMX0+AkaLte
-Uf813kek/0JuS+y4tjl6h4IuBFwgUa+rViQIA4/qWWFDOwabnNlR1Dx4Xd03769fvn3/6+HL
-+z/+0NsgCBHKRea73Xry3EUKEkgNFjSncT7Yn/H7EouBZo4Pwnr+2NTCy3mwtbJHCcEqbZWn
-bqL1g+IjPgv0nRiCeqO3kQY69vDPCivi4ipmNmOW7ui6bECJzQAZJLihsw11SLdqN/jNV9Qv
-5ImBRXUnu/jRVm0GqnBeBE7y9zpPhtc5q50G07L3ra/kasDrkG42HubPvBYs/Ry+DNPUAft0
-0/le//zj/dePYfcLHsM7tA5Kbfq3n0mDxn6OzBlREqKg4eWjvV7m4zTyI9ZVYt2A2tF0zP+m
-GFZR0u+s3qsbCxJ50EDvRP0y9n3pwf6O2nWqZI+t8jsw3QXltbq1Xkvfr8s8wmi+ptugdqwO
-HgfvI78cwZMHg/rPFSZwv1/Pk7veub9dv/4Jlm39Uo+6c9DMIaIFZPCiF/nF63It4kXzpAlC
-wJvZ0JNlhM/xUc8M8pYlSZr6ddFK1agOp/ft+98Pkipr40St0uk7cNH15gdko+yIG7YSGcEt
-0TRIo3/855M7uQwkHx3SbjyNcYZmIHE4JlfxGrvIpUwac0w1ZPwH0a3iCCwKuPyqz+//3yvN
-qt2kG7/vJBKLK3IZNMOQSaxnT4l0kQDrsPmBeJghIfCTAvrpdoGIl75IoiVi8YtkzLpsIWfJ
-QqF229UCkS4SCzlLC/yuYWYOTzF1pG1u/EZxxRa/DeQ5r0agERioHOGzIE6w5KmoZI3uGflA
-RA7zGfizJ5fEOIQ5HGfuMXGYss/i/SbmI3gzdtD07hvs3B2zbr1/g/ubgnf+ASgmX7CB3OLQ
-NL1VHL9vaWwSLGcjAjdS5bOftkUDe67g3hN4NIM6qUzk2XgQcOCDJHOnMw3jEUtMDvZiMi61
-PMzFOIqsT/frjQgZf4RgPF3CowU8DvGyOGkp9ZqEjDrgW98zeMftKDiFhAE2YJnTI+iN4Zwj
-T1CZktA4ecKBwhN8Cm8V8pk69fBJcZ+2AKCwtbKRBfjxUpTjSVzw7eKUALyI3ZH7bo9hCje9
-BgiZjOrZT7BULUQVEjqNdL9iIgK5DAv1E063D/doanHCCh0o/mi92TERWY3ExgXZ4os/9LF5
-GRMyT/DIWFWHQ0jp3rKONsMCsWeaHoh4w2QRiB0+IkbEJuWi0llK1kxMThjdhY1seoWdV9fM
-gJuMLoVM129WXA/oej0FoDyfbxXV8gBnelesD2khdxdgN/dW5/H9TzDryujywosABY+vEnKs
-dsfXi3jK4RXYYlgiNkvEdonYLxAJn8Y+JtomM9HvhmiBSJaI9TLBJq6JbbxA7Jai2nFVorLd
-lq1E7+BjxvuhZYLnahsz6Wrplo3dvRMiT6QnTm4e9e7nEBLHXZSuNkeeSOPjiWM2yW6jQmJ6
-Hsfm4NhrCfzSi75gvjyVmyilOqIzEa9YQq+hgoWZJrSnNNjAwsSc5XkbJUwly0MlCiZdjbfY
-S8qMg991OrxnqseeHSb0XbZmcqrXsi6KuVYvZV2IU8EQZr5iuqEh9lxUfaanZaYHARFHfFTr
-OGbya4iFxNfxdiHxeMskbsxRcCMTiO1qyyRimIiZYgyxZeY3IPZMaxhd7B1XQs1stwmfxnbL
-taEhNkzRDbGcOtdUes+esPNxn5Hnx3P4oj7G0aHKljqjHpsD033LCqsF3VFu3tMoH5brBtWO
-Ka9GmbYpq5RNLWVTS9nUuJFWVuwgqPZcf672bGp6o5Uw1W2INTeSDMFksc3SXcKNCyDWMZP9
-us/sWYRUPdVadnzW667O5BqIHdcomtA7Dab0QOxXTDlrJRJuUjKHoXtU/pbqvs3heBgkgZjv
-NrEWqhmhwsxpbOexxP2xMFainoMkKTe7uQmGG05iiFc7bqqEIbtec8IKiPHblMmiFjzXegvB
-1Psly/erFRMXEDFHvJTbiMPhoTG70KlzzxVdw9zsouHkTxbOuNC+it4skVRFtEuYPl1oUWG9
-YvqsJuJogdjeiFOXOfVKZetd9QbDDXTLHRJuOlbZebM1D1Aqdg41PDdUDZEw3Vb1vWK7kaqq
-Lbey6Wk6itM85WV0Fa24xjTG3WL+i1264wRSXasp1wFkLcjNG8a59UPjScyvUztmXPXnKuNW
-yL5qI25iMjjTKwzODbWqXXN9BXAul1cptumWkSevfRRzMsm1T2NuC3NLtQQcMSI+EPtFIl4i
-mDIbnGl9i8Poh4ck4fSn+XKXbnpmHrbUtmaEfU3prn5mNgiWKVjKNy0Fyxex0WYBUCfVG+Ua
-Hvy6I0W99y3F81ipf638wFai+cuHm2OI3TppzCmOfSexBd+JnxxHnpqrHptFO96kIp6CuYBH
-ITv7tpM1xM99Au/BrWHQ//Mn7ii7LJsMljFGFXX6iuYpLKRfOIYGFTjzP56+Z5/nvbyiIyej
-1zA1O36gfOyKp5C494eLfYKOXpuDFYagA4FGcQA+NZ18CmG96RZdCE9aVQyTseEB1Z01CalH
-2T3emiYPmbyZbpIw6vQmw9BgzSNGuDn7EVkrH2TdJ+vV8ACaql+4V91V/+h/aNyLffj2Zfkj
-p2MZ5gSULGrlR9i//vn+x4P8+uPn919fjCLPYsy9NMY7wpEvw9YH/bqEh9c8vGH6Vid2mxjh
-9m70/Zcfv77+ezmfxfBcN4rJpx4UDdPFzGEnaF31RdXqri+IWge6WvCq7unX+8+6Kd5oCxN1
-D1PoPcKXId5vd2E25odvf/mIp0E8w3VzE88NdvIwU5N2kPVQ9/7nh98/fvv3orsC1Rx75uEd
-gce2K0CLi6TnjqfCTw2xWSC2yRLBRWWVAgL4visOOdPQA0O4O5+QcG9kQ+JFyg6uJ0NGKL3b
-3K44pt9HXbU37hpZUolqzyWmcbHJ1wzj1JW5b5JM71a5lPIbA1oNY4YwCrFcs1xlnXHPMrt6
-02+jlMvSpR64L0DtJIGbpq7nWq2+ZHu2yqwSEkvsYrYwcCrDF9PeecRcbHr9icHEJioiWKFi
-4mgGeC5NgirZHWFy5EoN6l5c7kHfisHNpEEitxrTp+FwYAcCkBxu/TFzjTq9l2Y4p5rG9txS
-qB3XE/QUqYSieXbPc7lokli0O7B/SD8oZbXTmyCvXrMNNBaG5DZZrQp1oKhVifLazyrxUFAv
-g2uwGeCDZtH0QaOVuIz6V9Oa262S1MtvdWr14kFbtIVy2YLd7dZct+thu/Lbvh5F7NXKpSpx
-zU6aUv/47f2P14/3+T6jfvLAJFPGTIp5b9XTJw2iv4lGhyDR0DWm/f7689OX12+/fj6cvull
-5us3ojQUriYgdWIxnQuChem6aVpGgv67z8yrdWalpBkxsYdrsh/Ki0yBRdlGKXkoZ3dt6tvX
-Tx9+PKhPnz99+Pb14fD+w//+8fn911e06uJHTBCFoh7vATqA0E2sByjjQ/vcGDWFOcmQ9eJZ
-J0bZ7dDJ/BR8AE/M34xxCkBx8O77xmcT7aGyJCYFALMvyyGDxuIIHx0NxHJUPUcPRhE0yyw/
-//jj9cOn//n04UFUB0GkZ0HGugjbwKC24Jlkckt4DlbY0aaB74XzCPd+gg19qkQ2ZlW9wIaV
-QXT3zSPu//n19cPPT7p/Oi9i4RbkmHviJyChJgyg1njaqSV3hSa4MbFzLIshw0/k7tS5zPxv
-jK+YFT6XMsE9dZE75nlqOTK+hRC4GJo+YjJPMJwKDKkAJ/iS13kTjm8rZywJMKImYzCi/guI
-28iUrcC2GICBa9nBrxwH0iJgIig0Y4DbwrHejakAP8vtWi9FUCsBsdkMHnHu4emnkhkqO0hC
-EqvhAkDekUN0Rus5qxriPRwIX+8ZMGvwdsWBG69YgbKMQ7VEiPWb7+g+CdB0v/Ij6LfkyNlg
-0+4ESd4vg7XSSTqMp1AEEKeiCzhIoxQJ9ZRmO6ak7WaUahc5pWzv1bkZyf+fsqtrbhtXsn9F
-T1uZ2tkKP0SKergPFElJjEmRIShazgvLYysTVzl2ynbuneyvXzRAUmh00zP7kNg+hwRAoAE0
-gEa3crlCmvliFG2CrbDut2kUm89MT+KIjYBeReZ2r4L00sIqU75chbYHKUWUOIL7CFkjoMKv
-biIpAkY3izenYKwC/OhgI68n87Z8uHt5Pj+e795ehokd+EU+RjVkFtXwAB0hbFNMwFDMANLr
-bLv+4Y3C9FQLBlCuY5plabN9FLqEuLBWKRHz/glFBlVjrtZ9AuPhiEHRTQATpWPRxJDh67pw
-vZXPtHxR+oEtZMjt16RUKqbMK0ZxVF0O32hRs8pwb+MXA9LCjwQpeyKWq8Jb4mSuywCORAhm
-3jbSWLRerxgsIhjszTMYlb/pegWS9etlZPdr5cpAO0syHQHRs9iLL2drNXQhtvlJrgW7qmiR
-ucvlAfC6dNQuvcQRXRW8PAM712rj+t2nyHRwoUBricyTOUxhhcbg0sBfRyxziFtzuWAwgzwU
-aeW+x8shFoyc2UcsVefCUNXowlnzidE2liEvZsJ5xp9hPJetZMWw37yND4EfBGz944nJ8A6u
-NI4ZJgjYKshFsfYdNhtJhd7KZZtZDiahzyYIA/CKLYRi2KpT9r0zqeERFDN89YCZAwr/iqlw
-FXIU1XcwF0Rzr0Xhks1MUSHb7kQ1sihe9hS1YkWM6mU2t55/D5nCGNygCFuuvhGP4spgKlrz
-qUoFkBd5YDw+OUtpvDD1Jo+5Abef69lUCzS47fFL5vLDYd1FkcM3pqKieWrNU+YFrQs8na9w
-pKX9GYStAxqUpVteGKrfGZye5PquLBNujpL6R+CGPvsuVa8w5/l8PWrlipcAqo7ZHC/7inPn
-y4nVNsKxNaq55XxZkB5nTNvKLIEhbGsBxCD9I8kSqzsCcqjafJubNx7Udra6EaR9Alz2ML6f
-7x9uF3fPL0wQdP1WEpfgdnV82UpTx2Xt227uAdgub8Gj7OwTcgmtnMezpEib2feSOQYq4R3K
-vMA3oNWhbSBqB6mzC9OnnXH7rcvTDGKOGJ4rNNQtC6mFHzfgojQ29ccLbb8Sp52t/WlCa35l
-foB+Gx92ZhBL/QTsoYmrDEIGH+xk2+PB1PJUwcqs9OQ/q+DAqK0yiEnaJwXaMVGJbY5bOMxl
-0BT22XYM0ZXKDmLmFajXnHsNapmgniXlF1x+TFUzpfXezcWbL503+0UeLpv8wyoVIAcUYhXO
-BohzK3gM3H/GaVy3sD5wQ5OCuJGwc6aa3WhwxWXgfVFkCZiE9EUlBITYnjYlVV8mu5CNPUZI
-oESzYTIGzzHjDuSme+K8UUAPT2H4kE1vI7xJghk8ZPFPHZ+OqA43PBEfbrioP9r8p2aZUq5/
-rjYpy51K5h1VNeCW16iZJjGiBqEkqO9HqTUji0ldBuyBrSHO+xrs5RZqLQN31z7+TBRnBubo
-JovLLyiUjcx/VzV1cdzZeea7Y2x6VpBQ28qHcqu5TqaVpvqenf23CkHyy8L2FDqYAe8GTDY7
-waDJKQiNSlEQAoJK2WOwEDXh6GMIfYx2kZJjATBdEEE1wwE9RqyAqxOkY4iUeduaEwvQZhZ6
-ooGgepc5Sx8Lnv+4u/1OnRbDo3qIt4ZqixhDg3Uw2v8yH9oJ7WfVgMoAucRSxWk7JzRXyurV
-IjLVtSm1fpMdPnN4Ao7GWaLOY5cj0jYRSEe9UHKeKwVHgAfjOmfz+ZSBfconliogFuAmSTny
-SiZpxms3GIivGHNMGTds8cpmDffy2HcO15HDFrzqAvMuDyLMyxcW0bPv1HHimStMxKx8u+0N
-ymUbSWTIoNggDmuZk2l1bXPsx8pOn582swzbfPBf4LDSqCm+gIoK5qlwnuK/CqhwNi83mKmM
-z+uZUgCRzDD+TPW1V47LyoRkXOSt36RkB4/4+jse5KzByrJcWbJ9s61QuGuTOOIg8gbVRYHP
-il6XOMgDkcHIvldyxClvtC/3nO21XxLfHszq64QAtio+wuxgOoy2ciSzPuJL42PXg3pAvbrO
-NqT0wvPMnSudpiTablyqxU+3j89/LtpO+aghE8KwFugayZLVxQDbPs8wyaxtJgqqA9xNWvw+
-lU8wpe5ykdPFiJLC0CFXSBBrw7tqhaKxmig+C0NMUcVIibNfUxXu9Mjjra7hj/cPfz683T7+
-TU3HRwddKzFRvcL7xVINqcTk5Mml/slOaoDnX+jjQsRzb9ElVN+WIbpPZaJsWgOlk1I1lP5N
-1cD6BLXJANj9aYLzDUQ5NE95RypGZxDGC0pR4bIYqV7ZLN2wuaknmNwk5ay4DI9l26NDwJFI
-TuyHgtXqiUt/l7cdxbt65Zg3Ik3cY9LZ1VEtrih+qDo5kPa474+k0ukZPG1bqfocKVHVWWOq
-ZVObbNcobDLGyWpopOuk7ZaBxzDptYeuNk2VK9WuZnfTt2yppUrENdW2yc0zkKlwX6RSu2Jq
-JUv2h1zEc7XWMRh8qDtTAT6HH25Exnx3fAxDTqigrA5T1iQLPZ95Pktc80L3JCVSP2earygz
-L+CyLU+F67piS5mmLbzodGJkRP4UVzcU/5K6yGMb4EoA+80x3WUtx6D9BFEKnUFj9ZeNl3iD
-DVRNRxmb5YacWGhpM1ZWv8NY9uEWjfy/vTfuZ6UX0cFao+zO3kBxA+xAMWP1wKjtl8Ea8uub
-CoJxf/768HS+X7zc3j888wVVkpQ3ojaaB7C9XOo2W4yVIveCizdGSG+flvkiyZLRpb2Vcn0s
-RBbBJipOqYnzg1ygp9U15vTSVm1S4qWt3qq6k3n85HaeB62gKqoQuTkZ5qbrIDIvJ49oSKZk
-wELSYF+qJiYqiAL7NPFJdpoBhc6hKoomN8cvc+nR4mumKAtziUuoZu7FuBNhdqOchtCq/Hg7
-aYozlZp3LdmzBsyMZZlXSVsQXVE9xYnydsOmus9O+bEcfMPNkJbLcM2VJ9In0tZ3lY48+8kf
-v/364+Xh/p0vT04uERDAZnWpyHSpMBx36Bh0Cfke+XyALg4jeCaLiClPNFceSWwK2Ys3uWnb
-ZrDMUKLw7KBufna175gRjY0nBop7uawzeyu837TR0pp5JEQHRhHHK9cn6Q4w+5kjRxXfkWG+
-cqT45YJi6XCRVJu4aLFEGdo/uE6NyRioJpJu5bpOnzfW/KJgXCvDo5VI8bN6NmROD7hpcnw4
-Z+HYnig1XIPt/TuTZE2Ss1huCq2LY1tZmlFayi+0tJ+6dW3AtDODoAR2PDN9JnJAIc0A21c1
-ihGvjljgVqFVinSwzUeoKHMc/ms4oDnWECcGC9KymLxSDzbgZPxL4m3WJ0luHxpN17y6Ot9K
-bV/IhG7efSaJ6/ZIzrNkXYbLZSizSGkWpR8ELCP2fVcdbbT0PbCTsmEIqLD6iyThQ8yl0gwh
-A7ex9MEvh/UiieWIkjSm/ZZBU//eU1m1K0ypJZAii7gUx8N4AXXZ5/apnsHMbSMEdb/NS1pH
-EpeykPeJmE8VXnw301ofKQ5tZ6/wy6W/kkpgvSXNanv3NtG+rcnwOjBdS75D3biWcmTj+h4A
-CgWACTJdtRDEpcDyP50Nz4h/lZLhGm6dd2lF8On63Cdm+pjIrqZyO3JlWs+/Z51CjvR4tK0i
-aBYogiYWMZCHnUdmUZPmCm7y5ZYW4ORJ3b2M64YUHct2v6MtJWSLbGDs4Ih9RydKDethmu7r
-AZ1mRcu+p4i+VJ849x4JWHkZbWjXHe8wbtOaaEAj94k29vRaQr56pDpBU2xhFCVtq1HejkJx
-aUk3uSAaDNc1ECq7hnJsO9MvOmbA6fIuJ+KlQLU+IikAASYBKhpouCQZeJb5wPxUBfYtfzeR
-mXKc0I6kREuuAwdOL0G1Si3XnmWZfITLacwKEVbvQOHluzbvmYwdfmG8zeJghWzDtDVQvlw5
-J7wJP2DTkzqMHMYub9tnFDY2VZJNjMma2CXZ0NrSL5vIPoBKxaaxX5WNm6vfSJr7uLliQetA
-4SpDWo9edcOu28E6cynjtbkHY1SzqQQPGUndeOWEe/r4Vi6cPQIzUcE1o28Z/GvWLQbw0V+L
-bTmYpyw+iHahbsoaoSMvSUUnKnjbh5fzNTio/5BnWbZw/fXytxkVfZs3WWpvuQ6gPsehZl6g
-T/RVDYY1k+8H8E8B1/t0kZ9/wGU/sikEK8WlS+b3trPtfpIbucAWAgpS4oBotgL+jmrOjm9q
-ibMMSUfWcN+Z4ZWgj+bxQYokqqELbi69LujMPKNMx7QOY6yjbp/uHh4fb19+XSKIvv18kj9/
-X7yen16f4ZcH707+9ePh98XXl+ent/PT/ashCqPB4kYOJSqirMgKOIy3rQ/bNk72ZKOiGe6Y
-TLFSsqe753uV//15/G0oiSzs/eJZxTv8dn78IX9AQNMp+FP8E7baLm/9eHm+O79OL35/+AtJ
-39j28RH19QFO49XSJ5uEEl5HS7rLlcXh0g3o/AS4Rx4vRe0v6RFPInzfodsMIvCX5MgR0ML3
-6DRZdL7nxHni+WTtfUxjufQm33RdRsjT4gU1PYcOMlR7K1HWdPsALL827bbXnGqOJhVTY5Dt
-wjgOdcwb9Wj3cH9+nn04Tjtw9EsUZgWTfTmAQ4fsIQwwN6cDFdF6GWDujU0buaRuJBiQfi3B
-kIBXwkGBjgapKKJQljEkRJwGERUiNWLQjUcN0yEO7lWslqS22q4O3CUzIko4oHIO510O7RXX
-XkRrvL1eI4/wBkpqpKtPvvYcbMgDdNpb1KcZMVq5K+5INtC91Ejt/PROGrQ1FByRbqGEbsXL
-Iu1EAPu00hW8ZuHAJTr0APOSu/ajNeno8VUUMSKwF5F3OUJIbr+fX26HoXX29FxOsgfYJChI
-/ZR5XNccU3VeSIdIQAPSZ6ouCOngplDSIpXsHFy6q5C2R9WtQyq+nQhDj8hp2a5Lhw71ALu0
-NSRcIwfwE9w6Dgd3DptIx2QpGsd3auZY41BVB8dlqTIoq4LshIjgKozpghJQInYSXWbJjo7p
-wVWwibd8w9to1kbZFZm7RJCs/HLSNbePt6/fZkVNLkjDgHYK4YfovqKG4UYsPeGBq21KtzL6
-/cN3qQf8+wy67aQu4GmxTqVc+S7JQxPRVHylX3zUqUp188eLVC7ApQSbKsxwq8DbX85+Hl7v
-zo/gGeX556utv9gddeXTkbMMPO1mWyvbg0r0EzzYyEK8Pt/1d7pLa0Vu1IoMYuzr1C3atB2Y
-lycHOT29UKqfIMekmMP+zxHX4pAJmHPNKzeY6xyP59QIMUdZDsxNaoXuKiJqjQYXTK1mqOZT
-sDzwXwbznHtprTp/t8l3wg2ROw2lMo+3QvR4/fP17fn7w/+e4chDq+i2Dq6eh3DttbnqMzmp
-v0aeeamNkOjaPCZdybqz7Doy/ZcjUi1o595U5MybpciRxCGu9bDXFIsLZ75Scf4s55nqmsW5
-/kxZPrcuMj4yuZNlYYu5AJl6YW45y5WnQr5ohrGg7KqdYZPlUkTOXA3EJ88NyVmqKQPuzMds
-EwdNdYTj5VtzM8UZcpx5M5uvoW0iVcC52ouiRoDJ3EwNtcd4PSt2IvfcYEZc83bt+jMi2Ujd
-a65FToXvuKbFB5Kt0k1dWUXLySJmGAlez4u02yy245J8HPDVXcHXN6k9377cLz683r7Jaefh
-7fzbZfWOt2BEu3GitaGbDWBIzLfACHnt/EXAUC5ELFRWcip87fiaK9bd7R+P58V/L97OL3Ie
-fXt5AHuemQKmzcmypRtHo8RLU6s0OZZfVZZDFC1XHgdOxZPQ/4h/UltycbEkp8cKNK+/qhxa
-37Uy/VLIOjWdrF9Au/6DvYu2Dsb696KItpTDtZRH21S1FNemDqnfyIl8WukOuqw7PurZZmxd
-JtzT2n5/6CSpS4qrKV21NFeZ/sl+PqbSqV8POXDFNZddEVJyTnY+Qg7e1nNSrEn5IaJxbGet
-60tNmZOItYsP/0TiRS1nU7t8gJ3Ih3jEHlaDHiNPvm0R0Jys7lPIhVdkmwWq71haWR9OLRU7
-KfIBI/J+YDXqaFC84eGEwBAys2TRmqBrKl76C6yOo6xErYJlCTvo+SGRoNSTI3rDoEvXtoJQ
-1pm2XagGPRaEq9TMsGaXH8wk+621Oa0NO+H6aWW1rTZK1i9MApkMQ/GsKEJXjuw+oCvUYwXF
-Hgb1ULSaVlGtkHkenl/evi1iuSx5uLt9+nj1/HK+fVq0l67xMVETRNp2syWTEug5thV31QQ4
-6sEIunZdbxK5hrRHw2KXtr5vJzqgAYuaoRc07KH7EVPvc6zhOD5GgedxWE9ORAa8WxZMwu40
-xOQi/edjzNpuP9l3In5o8xyBssAz5X/9v/JtE3DQM2kz410F41W5nn38NaxxPtZFgd9HW06X
-yQOuBjj2mGlQxtI5S+T6/ent5flx3IxYfJXrYqUCEM3DX59uPlktfNjsPVsYDpvark+FWQ0M
-nnmWtiQp0H5bg1ZnguWb3b9qzxZAEe0KIqwStKe3uN1IPc0emWQ3lktoS5/LT17gBJZUKk3a
-IyKjzOytUu6r5ih8q6vEIqla+8LBPiv08ak+n3x+fnxdvMEe8L/Pj88/Fk/n/8zqiceyvDHG
-t93L7Y9v4MOOWpnu4j5uzHtUGlAn+7v6iC76m8ZR8g9tnpQKw18EoGktO+lJhc9E184Up2Ji
-lmUvsmILBgo4watSwFdj67kB325GCqW4VU4rmJATF7LqskY7TpCDsknDnaterjDSy/Emer1t
-rQ/eZWWvfLoyBYEyznFdOZ7OwsHesAEP4d75rRB4BU70k72c10NcBH3SXyDj0BE/nGq1AbGO
-Tphs4jQzLc8umPKxVrdWeeMy3ZmmLxest1t7gJP8isXfSb7fgU/1yxntGCZj8UGfXybP9Xhu
-+Zv84+nrw58/X27hOBvXlEytl6/hLA7Vscti4xMGYDiLDlh4dB/9L59JSoWTLvLdvrXadpdZ
-UnJMC6vqbDkvd/EORQQDMMkbOTL0n7PSqnllQZdeK/sWzHw+WTltqmQvMASO9vKqJ+1Zx4ds
-irCRPrz+eLz9tahvn86PliSqB/uiSwWTANlkuzCf0rwvWjkTlZmDd3eMtwerniJdo4jNRr6S
-3C0D02PYhZT/x3DTOum77uQ6W8dfHt7PSISZvzfvvbKPRHHMp6KcdBSfXcdtXHFC14bsh4Sz
-9Fu3yGYeytsGrohLpXC1itad1Yyj027UOBfXo5uXh/s/z1Y7aa9GMsn4cFohy3Y18h7LjRrc
-0zjBDLRsnx0sJyJKTLNdDMF1IPRZWp/Aj9ou6zdR4HR+v73GD8PgU7cHfxmSqoOhpq9FFHpW
-xcuBTP7LIxQhVxP5Gt8nhOG4Evt8Ew9HuGghAmzet9sahQsex0VynmgRvbZ8+MXScv7GUxjX
-EQewj/eb3jKjMOncExzdJdZgHjdJvbP6qwqhJL+/tJqvPAlcQAlsN3bdHG7Q7D0Awwy+yTnG
-kQuwz9bAVYBE3FizZLq1pxvX3OcdBjx7VLIAEXfIU6jKLQd7sUNaTdPn9uX2+3nxx8+vX+Ws
-mdrnZ+ZnjzO6mt8vBZZaRFKmEIYXYcr72A2CUmW2PvmTlcimqlpYBU5+xRjfspD+Fuy2iqJB
-jjgGIqnqG1mqmBB5KT9/UygvAGamwDVSianzU1aAd5R+c9NmfM7iRvA5A8HmDMRcznVTwZlM
-D1cz5J/HQxnXdQaeb7OYz39bNVm+O8jBJM3jA6rNTdXuLziqVflDE2x0NfmELFpbZMxD1pcj
-n1rQgtk2axp1NQyVRchhUIqW9bllDP7HM8FnwEz+8I58YVD4BCLavFBVKnvTjpXdb7cv9/p6
-pH0GCW2uNAH0LXXp2X/Lpt5WcHVDogdkZwZJFLXA5i8A3myyBq9STFSJvJnIEYQdPVvVMFE0
-GS6ccFPLOT10KSk8ecxAys7tF4UtK8ELwdd9k3c4dQBI2gqkKSuYTzdHZ5xKMORUfWIgOUYW
-coWWH0ssFAN5I/6PsatbchRX0q9SL3B2DRgbn425kAHbGvPXCGzcN0TNtPecjqjpmq3uid1+
-+1VKgKVUqmpuusvfJ4R+UqlMSaQ6/qnPKe5IgVaIaSMfdjFj2EHhkTW/QG7tNexpQE26jcO6
-m6XAF8iTkSRx4jF1kiz3qhVp5nKDA9HvEpEteZEjtHgiWSCndSaYpWle2ARH8s3FGK1WOM0Y
-BbEtr3ktdSm3u/F8MwPMSCCy5ssJIEqhYFzmS11ntRlhGrBOGlB2u3TSgIRLV6xuMc9sKxVi
-PyO9jJJXOYXBvXzlmF/UlXyL0rTItBddXdLKE+Kw28Ur4XQ91Bg1vB3YXyEi7VF7Wf4VjNi9
-9MyHbh0jxXasi+zAxcluLB133B5pORjjdWnXHdb7QqTUJkx9bHhEgjdzuMv2bc0yccpz1B19
-PZ6D3Wog0RWJorYRsMK9Re21NbfalkEEo84NLwqgjrqmAwY+HgSmWB9Wq3AdduYeuSJKIW3D
-48FcvVN4d4ni1aeLjfKC70LTlp9B6zJyALusDteljV2Ox3AdhWxtw+7XeqqCm3wTlShX7FsC
-Jl29aLM7HM3VlalmUgLPB1zj05BE5mb3o13p5nvwk9YjuwRdZvBgrLjKDxhHdDceKJPdOhiv
-RZ5RNA7O+2BY1iRWbDxEbUnKDUBt1WoTmUHjELUjmSaxYrs/GDfA84Nzgx8b7W7FlzfedInD
-1bZoKG6fbYIVmZt0yIa0Mr9hPDLRsQ5/0UUbhMpfnKzA9PXb99cXafdNTv30nQa5MCv/FLV5
-z5QE5V/6mk6RQohfFQ3yA17OVZ9z8wstOhWUmYtOThvz1/f727Ii9vD41NKyUzILlv8XfVmJ
-X5IVzbf1VfwSLotwBzmBSCvkcICt7ynnP94hZak6afBKD0X6Lq3pthFp27pDK8NFfaztX9LF
-qHppasF3SRQhWyzYkExa9F1o3vYh6r4y7wGHnyPEvEV3mFk43DYnFQk374KzcqkyfS+HDTVp
-6QBjXmRWLgrkebqLExvPSpZXR5jAnXxO1yxvbKhl11Ja4zaY1qX+PKg+HGAx3WZ/tWRzRqaY
-dNbWAHAil8ZyleI6SlgLjw3LloM1fzuLUvrILVBuq/hAiA8g20C4Tabbmy6iys6iTi3RP1D2
-iXAHkuoCT9hkVRk2gIWViV+i0MpUT+KjNG7sWN2q4G2djgeU0wUulxK5Iv0crzrUW8gzWKD5
-IbfNhrZ3HAr1llJqS9yak0RBK6G+bYpIrf1oZrE3J249c+R6gWqiPbvmOIXBS8kJVufAfXPZ
-9OtVMPas7egi2ehlcDGW7rY44rRqOfxZqwJdwWaFdR+leg1v3aFXdo0ZRkNDwtwV0hKoQvr2
-wSa2jgIvdUWDQgpWyapwWBOV0vfES6cJdTwiF0lf2dKBJJVlQWLeb6LrDieKMMbjdYzKKRU6
-HxoKU0sySJuxPkkCnK3EQgKLMHYNEfC5iyLTOwZw31kHkhZIbT2mcJukXfmUrQLT9FSYCvyB
-xG64SfvRFTKNo+fFOkwCB7NiIT8w6atex0w0qFwijqMYrVArohsOqGwZawuGm1CqUgcr2M1N
-qJ9eE0+vqacRWNZmFHCt+hGQp6c6OtoYrzJ+rCkM11ej2a902oFOjOBJy5AgTlqJINquKBA/
-L4JdlLjYhsTwd8MGoz/stphDmWCFoKD5e3dYAEcz7ikTaBgCgsaf9IwCyytdQNyvEASjSIYV
-jaJsz3V7DEKcb1EXSBKKYbPerHM0/0vjR0ivP6JRquGkdeHMC1UZxmgcN+lwQnZAy5tOegcI
-LPModKDdhoBilE5teV74HtfJWfXRswdLQqwEJpDSlmqBpBZoQFyGMESluJUH4xbpU/YPtW1v
-fEyjpIFh8WC6P11YG50/MSwtYwW4jDYk9zn11INTdfwlwAlUsKk56q7zuJrA5ashdNrZLaqm
-9YarjxX8WDKyopq/YI31oOz9RZvDewOIhbj1DIuAwcuJB0+FNotlErPupGGkUMf1/Q1iB2yb
-WWeFZOmiD2wKnXWbu0/KMnq7Nh9wELPlfdDfcrLG/rIactjSZt02SsMA6Y8ZHTvWwr7Znnct
-rBKs4TihmRDCgf5EAN4anuGeBVgvqxirjLNPHpjSX0BuIKCE+8yJH6zIQ8qASTN7q2hODJun
-Gxdu6owETwTcSTGdbnVCzIVJgxUpKyjzlbfI7JxR1zrKOK5LPZinFdScItTWgvueuj2j0bXP
-9/WeLpEKk2ydvLXYjgkrbrpFlrV5ue9Muf2g72JH/tTQSJsyR+VvMiVA6cGGRZ06gDba9z3y
-R4CZt2ns5QEn2ez6uwzDrsoEjmxQJyD8pGgy7hZ+OeCFRhpECXPqtsCyNbyUEO/SVtAl98n3
-aUztAs2wcncMVzqahOPNzM/DVWkr7HuZWQzxBzmo5ejM3yYlVrT7tAyTKFY02Tnp7VjhCSdv
-dhFcO45bP1fXUGF0DiNIvsIky5RhczLL5UCt1EEO99EHp0V0CjycTgFQ4Cjz4e1+//7788v9
-KW365cuwVMfIeSSdwuQQj/zTNmiEWl8pRiZaYlQBIxgh/ooQPoIWe6ByMjeIYAfLLY4kzqTU
-A2WPvZRy7jDUTNPSM6r71/8oh6ffXp/fvlBNAJmBsG4cy1RzuUgcJ3nmxLErYmdmWVh/YzD9
-VXGLxBsOVZ34JoT4plhEfv283q5Xrkg+8PeeGT/xsdhvUEnPvD1f65pQrCYzsrZkGZNe3Zjt
-qaoeXc0JVz5BbXhFPqC4uu9oEo7ZFYUc6N4Uqmm9mWvWnz0XELaI18p8b6Xpa58kVB7SIOjZ
-RhHebofrQl20aGBjLW16H+VuAdo8bz4lq83goxnQwcalRUdmOqUfxZ6oYCunYzgp6Wdo5bqw
-HrFf+JINO/sWVidJ29khRJYEZzkUk+l8IuGyTGmi3W48tr2zgTG3ij4di4jpyKyzgbCcpSWq
-NVFkeyzPldkZFIz16fKSqJR++KcPHvY0qGjym3B8cWC6ep+3Zd3eXGqfFwVR2KK+FoxqK31g
-DU4HEQWo6quL1llbcyIn1lYQuU71bQQRuVP431/1rgzne+Xf1fPirz/vbydXr4vTWqpaYsqB
-M+jEa3lLtbFEKV/G5kbXAVgS9NgM0OOSKJe6s36uK3t5+d+v377d39xao6r21ZpTq/SSSD4i
-6EGkcnRlWsEeWezyY0tM4ArWo5kQfs2CERhH77BWwCmb7VpeisLxkR4JtJQRM7um/aroUXLz
-CnKb9U8DQ3dojsxuw8+OQfB5cFJ0GaGu1fntKpsunNRWH/QeEfRlHmtFoTuY8lBa/tlZc9YW
-+3jq98QTkmDO4qjKCs7Pr0gZm/0yH5cFSURMWBLfRcQ8p3H7yk3EWWcOTY7SuyzbRtbFeg+C
-9WPfcUpJAhdEW0IaFbPFKxsPZvAym3cYX5Um1tMYwOLNE5N5L9fkvVx31EiYmfef87/TDj1n
-MJcEr0U8CLp2l4RSFFJygwDvaCnivA6wgzrhcUTYHoDjNb8J3+C1sxlfUyUFnKqzxPEWicbj
-KKGGCqi2kHqxT+ft4YwMMZGln1arXXQheigVUVxQWWmCeLkmiGbSBNGusNlXUA2iCLxdahC0
-UGnSmx3RkIqgRjUQG0+J8Q7XgnvKu32nuFvPqANuGAjXcyK8OUbrHYlvC7xLpQkIO0rVZwhX
-a6pnJrfSo9sLoikztg3xYv2C+9ITNVc4UTmJW7dVPvDdKia6UBptYRBShLOqBKgOx01XNxf2
-JSsPnF430DjddxNHSsMRrgQkpOskfVdim0UZDkoWqPHLK4g0fI5W1CTMBQM3gTCqinK9W1PG
-mjakEqK6fhNrYohOUEwUbwkjRVPUKFNMTGl0xWyIyUsRO0oMJoZonInx5YaPpjzeTxFCWrfS
-D7/CMV6PO2umUTcZMsITk05rsKEmfSC2O2JgTAQthjNJyqEko9WK6GkgZCmITpsZ79s063td
-HKxCOtc4CP/PS3jfpkjyZW0hZ1SiGSUerSlxbLuQmpslvCNaSLoTcUAIqMY9RZIuCLW0o91o
-GqecLe+SisSpSVbhhKYFnJJlhROaQeGe91KTqM/l0jjdRn5HDF8Z8MCPJe3TzAwtPQvb5vIP
-8vFlUcAzX/hWc0QZxtSUB8SGMpInwtMkE0nXQpTrmFKIomPkNAo4pdkkHoeEkMD66m67IVck
-+SgY4Vx1TIQxZbdJIl5RgwyILT5+tBD4lJYiDmyXbInyGhHW3yXp5jQTkJ3xSEBVYybti4hd
-2jnK6NAfFE8leb+AlO+tSWllUPZ+JyIWhlvCVtCR6Yn8FEE55cslFhiHELVU+jKAe6TzC6G+
-rqW74z/hIY3bF9taOCGVy8qkgyexD6eEy7cwDKti1PoE4JTxoXBCe1BbrAvuyYfyWtUqnaec
-lEGoLiDwpN8SowDwhGznJKFsOo3TAj9xpKSr9US6XOQ6I7WNPePUNAs45XCoHUZPemoNyLcj
-CThl/SrcU84tLRe7xFPfxFN+yrwHnDLuFe4p587z3p2n/JSLoHBajnY7Wq53lEl2LXcrynAG
-nK7Xbrsiy7NzzoUuOFFf6UklsceJ2OITsIsTQRlGZRpEW6oryyLcBJTDX0HgOUp4K+p4+UL4
-skooB6pr2CaIVgw3iQqxo3a+yVXWB00SIu0RuRz+mc9u8szdJzmZ+1Hyx7hnXZe3N2mNtHl1
-7IwbbCTbsuvjd+88+zjjpzel/rz/DuHt4MXOejykZ2u47dzOg6Vp39W9C7fmUYcFGg8Hq4Qj
-a6xARQvEWwQK87iLQno4GYhaIy/O5la6xrq6gfdaaHrKW3NXUWNc/sJg3QqGS9O0dcbP+Q0V
-CR+1VFgTWiHkFabvb7JB2VvHumq5sOKtzJjTcDlEX0OVgpuNzF17jdUI+CwLjgWhtO8CVuCh
-RVmdavvgrf7tlOzYbZIINZh8JSEl5xvq+j6FYEmpDV5Z0Zlf36h33Fr9/aCF8pRlKMfuyqsT
-q3BpKsHlaMHPF6k63YrAPMNAVV9Qo0Kx3cExo6P5zYJFyB/mbRULbrYpgG1f7ou8YVnoUEc5
-ezvg9ZRDYBrcNSoQQln3ArVSyW6HgglU/JKnbQ0fpCK4hrMmWIbKvug40ceVuUGsgZYfbahu
-bbmCEcaqTg7RojbF0gCdqjV5JStWobI2eceKW4VUUSPHOQS8oECIV/STwonQFyZtBdCwiDwT
-NJOaNz8ropAVhAhkKdIN6ptaVIm2TlOGqis1ldOSzhkRBVp6Tt2PhRtUNHkOMZlwdh1Ilpw3
-clRG+ZKmwEq6LVHvH9s8r5gwteQCuUWAMyW/1jc7XxN1Huk4HppSd4gcj+HuJMd/ibG2F930
-UeTCmKjzth6m2LEx459ojeWo4SvnZd2hYTdwKbM29Dlva7u6M+K8/PNNerIt1mFC6ra6hf1v
-EtcRQaZfaEItmsX46MWeNkD0wXRn6BiyP6XQnxJbme1fX388NW+vP15/h9i22MRQd1PujazV
-HZSTslridJKlgnMFVqng0fqUcjtMlV1IJ/CGOqiProNWXwC0oKmZGE+pXU87mfU1pXquqqRG
-SnP9WZ8KRrGE1LTv24EWci6FVDeA6k8s5jAAdv6+D5VV5bujA4zXk1QPhZMPUPtCqTfRKclx
-6IMo7cqCVoNDK8ejHBYSsM8N6Z5DzXh1WuyqWty6xcmCl6+WH2L0+v0HRGuA6MgvEG2OEqJ0
-sx1WK9VbVr4DCASNWh95PlDnMONCld2ZQi+ywARuH9QCOCfLotAWItrJXhg71E+K7ToQJyHt
-14xgnXrM7/HUpR76MFidGrcoXDRBsBloItqELnGQggLnfR1CTl3ROgxcoiYboV6KjCuzMEJg
-GX2/mj35oh6+nHJQUSQBUdYFlg1QI0WiKHPOVnfqJhCnWvp0TlbzldTy75Nw6StZ2NOVEWCq
-vhVgLirwWANQXT6tvrz76S2POQPoWI5P6cvz9++0vmYpamkVsiBHwn7NUKquXLzOSs6K/3xS
-zdjV0t3Jn77c/4Tg2XBtmEgFf/rtrx9P++IMGnQU2dMfzz/nLwaeX76/Pv12f/p2v3+5f/mv
-p+/3u5XT6f7ypzpZ+cfr2/3p67f/frVLP6VDHa1BHDHBpJxPECdA3S/blPRDGevYge3plx2k
-DWTZDCbJRWat9Jqc/Jt1NCWyrDWD+mPOXNwzuV/7shGn2pMrK1ifMZqrqxx5ACZ7hsP3NDVf
-aCybKPW0kJTRsd9vwhg1RM8skeV/PP/r67d/udf4KUWUpc4d28rJsTpTorxBXyNq7EKNzAeu
-Ds+KXxKCrKRFJhVEYFOnWnROXr35DZTGCFEsux6MziXCxoypPMkYHEuKI8uOORUmdUmR9ayQ
-01CRu+8ky6L0S9amToEU8W6B4J/3C6QsHaNAqqubl+cfcmD/8XR8+ev+VDz/VDcK4sc6+c/G
-2nB55CgaQcD9EDsCovRcGUUxhM/nRTaLW6lUZMmkdvlyNy67U2qQ13I0FDdksF1TdJc8IGNf
-qO9YrYZRxLtNp1K823QqxQdNpw2o+XJ0ZHzC87W1ObzA+XCrakEQsCoGX5ISVH1wApMvHBoI
-AIZYnABz2kRfpfD85V/3H/+Z/fX88o83COQFXfL0dv+fv76+3bV5rZMs5+1/qInj/g2ucfky
-HUS2XyRNbt6c4JICf/OGvqGic8D2i37CHUAKd+L3LEzXQoSmkguRg+d+EEQaHQMIylxnPEU+
-zYlLDy1HundGZbd4CKf8C9NnnldolUZTk5gjU3K7QeNtAh1nayKC6eVWhy3PyLer3vCOmjml
-HjhOWiKlM4BAmpQMkRZRL4S1Y6/mMBXwh8KWNfifBEcNloliXLoUex/ZniPrpjGDwyvkBpWe
-InO/1GCU33jKHUNDs3CWS8cNzV0vcM67kZ7BQFPT3F8mJJ2XTX4kmUMHcarM71kM8sKt9Q2D
-4Y35gb5J0OlzKSjees3k2HG6jEkQmqcWbSqO6CY5qhiuntJfabzvSRzUccMq+Az9Pf7dZ8um
-JeVz5nvBwuTjFMPfSML+Rpr9R2mC3YcpPi5MsLt+nOTT30nDP0qz/vhVMklBK4lzIWjRO9d7
-uMghpQW3TLux94mmCr1LM7XYetSb5oIYvnl119WMNMna8/zQe8dZxS6lR0qbIrSuozaouuOb
-JKb1yqeU9fTo+yQVPiwDkqRo0iYZsOc0cexAK2QgZLNkGV6zWRR93rYMAlAU1ragmeRW7mt6
-CvGoHhVBXkV7pNhBTiCOvzlp+6unpevG3nIzqbLiVU73HTyWep4bYCFaOhZ0Qbg47R1Tcm4Q
-0QeOUzx1YEeLdd9k2+Sw2kb0Y9owM3xJe42WnO3zkm/QyyQUormXZX3nCttF4IlNGm+O+1Hk
-x7qzdyUVjJeC5mk0vW3TTYQ52DZDvc0ztBEIoJpT8wILgNqSz6RFVLAbqgYX8r/LEc8uMwzB
-j2yZL1DBpXVbpfmF71vW4Smb11fWylZBsH1HmWr0k5DWnFrfOvCh65HvPkWWOaC58ybToW7J
-P6tmGFCnwnKs/D+MgwGvqwmewh9RjJXQzKw35rEr1QS8OkMMPXXBOK5KemK1sLboVQ90eLDC
-9hyx2pIOcNACrZHk7FjkThZDD4tHpSnyzb9/fv/6+/OLdqlpmW9Ohls7u3sLs7yhqhv9ljTn
-RkzM2ZOuYaezgBQOJ7OxccgGQkePl725M9ax06W2Uy6QdgWoWMmzbR+tkLFbilJtm1gghEEY
-kyHY2JVTrSr9GWln5ld3ttPeBaqA9jgI929iSAfQfAqukcnFezxNQquN6jBQSLDzAlvVl6OO
-0iyMdMtsssSWfsjK/e3rn/++v0lpeezI2KJygIGBNdq8T4AXusZj62LzKjpCrRV096EHjcZk
-M7Bwi4Z8eXFzACzCOwAVsSo4llA8pC32WTplaa+4kKsskNjxtFmZxXG0ccol59gw3IYkqCLP
-/HSIBDX/sT4j9ZAfrcvfDdkYuFRVqLl00HBnK6Lge4g+VQve4TnF3SU4yOl7LNAIn2UNozlM
-Xs7zRNLDWO+xPj+Mlfvy3IWaU+3YLzJh7ha83/8/Z1fT3DiOZP+Ko0/dEds7IilR0mEOFEhJ
-HAkUTVCyXBeGx6V2O7r8EbZ7u72/fpEASWUCSXliL1XWewAIJL6BRKbyA1ZFmisXlGDRhL1j
-WEJXdZB9IgIGCz3sILwPEUPEFvOuw5f83cyyqV1p2D/dHHZoJ/pPlkyEHGBM3fBUMRgpu8R0
-dcEHsFUyEDkbSrZtBzxJKpQPstTNulFD3116QzSiTAO4QIaDpKn/IXLtKmfgVA/uOd6Z61rL
-EF+7VQOKKrTJANKsi9IscqhqBDVE0g43vgR033fGqnrN1SzAXqWu/L5vP+R1vn0hYGszjJuM
-fA5wTH4Qy57wDQ8NrSisqUqHYkc9Y66dXXDwHV6k1k4gM1LDom2TJy6o+7ReHLmoUfhjQU4g
-HSXck+OVP1KtmnSxgksHcnJr0dYm/sCZbRuGG6FWzU22sIYfzyuYl7+Mx8IfsMr9vLp7/n5V
-f76efmXskdS3ZeaMu3pHZDRg6HfMqpAsU/c3C/IDrvIpADf+FMmD8WyEpmmJHUzqH+4ysryp
-wK9BRsK1oEpn09nUh53TZUh1Yayi+1CnYjTzmYVRcUJm0+DBILXVD4HbfY69OJPiHyr9B4T8
-WqEHIquUCKiHmtZhlVJE/+nMl2403RF3ayNNLvS2XkruMzu9hKkShXfFlKzxA5EzBerIhcg4
-Si9ED9EQEXLEEv7HRxdIDOBEghJwbddgr8OmEvKlnjRTCvoOuWzCVlTCSUIspoGTh0Oe6OB+
-C71xf3MC1qh7ldjCm8iP77UCU5f4EarJ0J5uOgDbq7VwkXSdx3oP6oTsdDn8ttMSZMNpxNq6
-wPVitGY8KUg0x851eMwKfEYmM6nqnHTGFqFKcfL09PL2qT4e7//wB60+yr4wR5BVpvYS9VWp
-dMPxOr3qEe8LX/fW7oumqeFJo2f+ZTQuiibC/tB7tiKbqTPMVorLkpoBpUuqe210Fo0t1nOo
-M9Y4GvCGWVRwblTAwdr6Bo5mipU5wzWS0SF8mdtoQsbEZMYZnbioKAW+YTeYcUI24sDIB4kN
-HgPKWn/dDak/M59EbtAWtZ65qKSosy77tTKaj8cMOHHT3ZaTyfHoqdP2XBhwoFc6DcZ+0jPi
-kLADiWGKc+GwB7MejSMXtd7Y4L13vXfbh+virQVFEI7VCL8xtOljP3EGqbLVfktPN22DSPXu
-3CteHU3mriC8p3FW/1Yk8QT7RrPoVkzm5AW2TSI5TqexlzK0qsnfDriricKZjZ8VyzAgnq4N
-vqnTMJ67pchVFCy3UTB3s9ES1vmB042Mrt6/fzw+//Fz8ItZoVWrheH1cu/P5++gqOI/Urv6
-+azR/4vbEeGo1a2OvTJr4v7j9dvjw4PfiVvtZncA6ZSeHddShNN7SKpBR1i9ON4MJCrrdIBZ
-Z3pNtSB38IQ/P0/hebDZyqfM9PM+p636uenCRl6Prx+gMvN+9WGFdq6Z4vTx2+OPD/3X/cvz
-b48PVz+DbD/u3h5OH2619DKskkLlxDsGzXSiZZwMkGVS4G2VXQjmi3yb1+iAOgmCWz2MJ+AV
-2PeQl+t/Cz13Y4OhZ8y0FN1xLpD2qxci400pIo2PXwl/lcnK+qP2AyVp2sroC/p8ZMOFk/Va
-JGwWDePuJRAvjit8guoyX8QcszHz8SjHS8MtWHtgqkETk6/qp8h40Wv8Qt52oiJGuhF1sO7p
-y8NgiLzcYdcGLtMIvr4tOZwnxBtNYTaQqkr2yxqv+SwpPEQ5BIoCpW2qY8aGXRTHusHH3lUt
-jH+HTwzYdRWB1kKvjG95sHPO+tPbx/3oJxxAwYXSWtBYLTgciyyKNXD1+KyHot/uiA4wBMyL
-egnJLZ18Gdzso3yYuEXEaLPPs4a6PDSZqQ5kwwvvliBP3mKxCzyblZJYieyIZLGYfMvw+7Iz
-c2RjpIq6H6a4XsVKfCHrsEIPxXvsuxPz2CgDxZubtGbjxPiqosPXt3I2iZki6RVKTExaIGI2
-5wpl1zTYpE7HVJsZtuzVw2oiIi5TudoGIRfDEiET5ajxiQ+XYkkNpBBixBXcMIPEjBPVOKhn
-nKQMztfH4joKN34UpXcVc+wauCOWMgoi5huVbngBj0+wAQocPmQElcloFDKVWh1mxP5pn9FJ
-f3inyvxyhwI5zAfkNh9oxyOmjg3O5B3wMZO+wQd635xv2fE84NrvnBjhPctyPCDjOGDrBNr7
-mGnWtq8xJdZNLgy45itFOZ07omDsOUPVwEHql2NeqiKif0YzwLYLXUVzwUSxTD+20UvXLzIR
-hNzwofFJwMgZ8Alf7/Fs0iwTmW9vh2istUyYOauujIJMw9nkyzDj/yDMjIbBIWwJjK9avV91
-ZseWNfMmR3dZYLtQOB5xXc7ZVGOcGwtVvQmmdcK15fGs5ioR8IjpvIBjg4A9rmQcckVYXI9n
-XF+pyongeik0R6Yzug7f+5KVGX4eijqC48+9Y4q9YOfJb7fFtSy7nvjy/Kve9F1u/4mS8zBm
-kmo9ADFEvgLzBTsmwyoSPmi9EjEyqsYBhyd1FCbldMSuhup5UOkMc2UHDpwx+Yznyq7PQj2b
-cEmpfRHnfgPX8JERiDwwmbFuZmZMGVaZ1AtrHxe79XwURBHTnFQtS655JAwKB0VHTq7W0rGP
-b0sRjrkImohCjtBLVfYLjueEPvfFQTH53FG/nT1ex9GcGfyPUItMD5xGXAfsHFC4Mm5l1ttX
-Uqfn95e3y10EGU+AI59zqnrPdH7U72HuXg8xB7JZgRdkqftaMVG3hWjqY5MV8MzDnDwX4C/s
-Jq/FmqTaWIdwFDP+Qs2bDhOP5hBe/JzPR445YKh7tC0xmNFIbgPqsJmD0QdjxvdYEgRHJ5Tt
-Yz3U+i4jGkzG1RbdhssVvOFsnL15rQWTawz72d5ENJSUJThaQ8kDUlNEN7MdUngoFuWyFc85
-oRLM+RAXX9DWaM71QAh9ysq1R03/AMW3hMTXjWrROIgRERjfUYsEZUgTGfmQ6RU08rcj/W0U
-GNcgnkausKL1mUA1c2Py7Ki5tagfjNzGrNWefrnTwqOiMdLLmkVCXNVbFMUVSeV8FCn1OYza
-t7/7/iR+PJ6eP7j+RDKTgi9YrH977k5NleQp6qKL/dK30GESBaVMVJIbg6L+tT92itM9pntl
-Re0PpWPakaClJ0rkOVX0XtdBvMErgjIpsDNb87N/gDFy4Gpn8jqhsL3UamSmFFFrsuwCjFF0
-3E/9kcuePLsCE8H4EhaAsp168+qaEqnMJEskRMFCAyqrxA6ffZh0Re7P6EAUWX10glZ78ppC
-Q3IZY+N/MEzqQT4/kGN+QE35TOUfHt90tfvzgw1F+8AZA739RNy6iep2v93u8I1Yi1vXsC4q
-JZYzAhshwTZT5puVuX97eX/57eNq/fl6evv1cPXw5+n9A1nM6bcF69syg1lbiRJsJfi7AlU7
-J9NllSsZ0ltWPYhkWPnQ/nYnvx611wm6Mxl3vs1m8c9wNJ5dCKb3qTjkyAkqc/D96VZgSy52
-+Ni4BWmHb8Gux7i4VSQKiWeXjlJ6LVyUHp6rZDBDpdgSU7gIxq0SwzEL42OZMzwL/GwamE1k
-hk1097CMuKwkstxaVxOjEZRwIIBeSkbxZT6OWF43bGKZAcN+odJEsKjepEpfvBofzdivmhgc
-yuUFAg/g8ZjLTh0S/z4IZtqAgX3BG3jCw1MWxkbPO1jqFUrit+7ldsK0mASG4nwXhI3fPoDL
-82rXMGLLjbpVONoIjxLxEbaNO4+QpYi55pZeB6E3yDSFZupGL6Emfi20nP8JQ0jm2x0RxP4g
-obltsigF22p0J0n8KBpNE7YDSu7rGt5zAgElyevIw9WEHQnyfqhxuVk4mdC5qZet/ucm0buI
-FDvpwGwCCQejiGkbZ3rCdAVMMy0E0zFX6z0dH/1WfKbDy1mjZtE9OgrCi/SE6bSIPrJZ24Ks
-Y3KBQLnpMRqMpwdoThqGmwfMYHHmuO/B0UAeEDU9l2Ml0HF+6ztzXD5bLh5Ms0mZlk6mFLah
-oinlIq+nlEt8Hg5OaEAyU6kAA6diMOd2PuE+mdbRiJshbgujHBiMmLaz0guYdcksofRS9ehn
-PBelq3ndZ+t6sUuqNOSy8K+KF9IGdCL2VEm8k4KxaGhmt2FuiEn9YdMycjiS5GLJbMyVR4I9
-rWsP1uN2PAn9idHgjPABj0c8PuVxOy9wsizMiMy1GMtw00BVpxOmM6qYGe4l0dc/J633BHru
-4WYYkSeDE4SWuVn+EA1f0sIZojDNrJmCq8xBFvr0eIC30uM5s63xmet9Ym0oJ9clx5vzgIFC
-pvWcWxQXJlbMjfQaT/d+xVt4mTB7B0sZdzoed5CbGdfp9ezsdyqYsvl5nFmEbOz/29xfJuGR
-9dKoylf7YK0NNL0zXNV6TzEP9wQhGbS/G1HdlrWua0GPtTFXb/JB7iYrvY9mFNGTGHb/Ws2m
-AcmX3vvMMgTALz2/O7YRq1ovu7BEDnUc4zoyv0GOVssj3129f7Tm5/rTAusD+f7+9OP09vJ0
-+iBnCEma6y4Y4nbYQZEPzT1o3HuUTp7vfrw8gFmr748Pjx93P0ALT2fB/Z6epmOcDPxu8mUi
-st5X/QBNnJBohpxX6d9km6l/B1gnVP+2D1FxZruc/vvx1++Pb6d7OF0byHY9jWjyBnDzZEHr
-ScUeddy93t3rbzzfn/4D0ZB9hflNSzAd93Wdmvzq/2yC6vP54/fT+yNJbz6LSHz9e3yObyM+
-fL69vN+/vJ6u3s1VhNc2RnEvteL08dfL2x9Gep//e3r7r6v86fX03RROsCWazM1ZoVV0fXz4
-/cP/Sq224d/Tv/ua0ZXwP2AX7fT28Hllmis051zgZLMpcZRjgbELzFxgToGZG0UD1AtOByLt
-gur0/vIDNIW/rM1QzUlthiog46FFzi7ZOyXgq1+hEz9/1y30GVn1Wy4aJYnfII0cV2e1h9fT
-3R9/vkJm3sEA3fvr6XT/OzoqLrNks8du1iwAp8X1uklEUeNR3mfxAOyw5W6LnTw47D4t62qI
-XRRqiEozUW83F9jsWF9gh/ObXkh2k90OR9xeiEjdFDhcudntB9n6WFbDBYHH7oi0R6INzH9Y
-RTO0b31GWNMmPYAxDr0cn6OGv80r4R+sGvRbbr1mtiPk97eXx+/4AmNNVYmxFp/+YTQkMwlq
-4iUlRFIdMl1+jlrviw2Hy8RBu4KbHQbKeJ01q1TqfSFa4yzzKgNbRt5r1eVNXd/CiW5T72qw
-3GTMpcZjnzdedSwd9bYoZG0UjQqruBzO8asvRO2KNM8yga5gtuRlP/wyHymT2+0uSf8ZjMCB
-UUx4lW2X9KTYwNBUGryiSVcFaq4r1SzLVQJ3JmS1JEGm201z3BZH+OPmG/ZqoQeSGjde+7tJ
-VjII4/GmWW49bpHG4MZz7BHro55kRouCJ6beVw0+iQZwJrxecc4DrJ6D8CgcDeATHh8PhMdm
-CBE+ng3hsYeXItVThy+gKpnNpn52VJyOwsRPXuNBEDL4OghG/leVSoNwNmdxokdIcD4dTmoG
-j5jsAD5h8Ho6jSYVi8/mBw+v8+KWXDh2+FbNwpEvzb0I4sD/rIaJ9mIHl6kOPmXSuTFerHY1
-7QXLLbbm0QZdLuDfVg+8J2/yrQjIQUGHmAfJHIyXjj26vml2uwXoFKBrd0nMNMMvej+e5LIR
-oCNOED1e3OyqDQXVbo/vpAA6jLfYPVQq9dZNOghZFgFA7uA2akoUcldVdkteoLdAk6nQB11T
-DC0Mg1iFLcR1hB7ezSMJnyEP+TvQeZPUw/jw+QzuygWxWNcxjl+mDgabRh7omxLry1Tl6SpL
-qSmnjqTPoDqUSL7PzQ0jF8WKkTSzDqTP43sU12lfO5VYI1HrVYYuX5rtaAtsHxo3B7HOrwfg
-zt8JPEnSy5oSX03rBP3Hyu12G545CFFl+OwJfuqGUCrkROX/bVWhqUWJ5Nlj+IjNgtacFD7P
-WesmmvVOH/CNa7UDGzFG1YJ0zY7YkhONFiz1GISeweqpGkqvmyUs3Xt4nRwyM5+XVVZCT8D3
-vO1c3wlEvDw96V2t+PFy/8fV8u3u6QR7uLME0OrAVQ9FFBxuJTVRNAFYleDjkPk68zACkc7b
-CMSs85i8l0WUEmXOE/mETD2Ucu40ETMdsYxIRTYd8RkHjji5x5yCg+9GlPz3QlmqgM8lqHjp
-/1cZWjUBfr2rdGfipGuVETkGWT/vFS0QXRxLRtECBbAjCxe1PCasdjcOAo6RL6e/OxaJYnN+
-EBNafBhqYlDd/XTRza5I2DRy+n6qCy9uV8Ve+XihSg4M2bTXuW5lsThEI77dGH4+RIGj94FU
-p/OZOLhHpahDhCGKWmVgZ3KdqxzvjfYLNjDuj7BhBC8TLFmHsFwaphopyTs6P0AuV1+EOOg9
-+RdB1vnyixBZvf4ixCIth0PE0/n0AnWxmCbAxWKaEJeLaYNkxYUgM72QHqSm0Zky+pOrVAk2
-NLBonVdeNyshGj3ujikqpQfnbeDxCLfnvE8iPlJ066FgydKEjfGlbI+SB0dn1A279dHUhp3H
-WCcF0K2P6hRs4byE7efw7hUFdmEbeM6jMZvEnJ89OkeIfXVZwzOgrB+P6dTtBNinYFgXJhms
-uWe0fIMRG9Ny4TA3jngO3hjo9dWegfS+4MDBywprGZ/xlR5wOFzujzyMraSe8XJNVXV7ouDy
-3YC5BR4uWZwN7YSdjPImgTpy5DLxRRXrkFHgwTMNhxELRyy8ZtFDpDx4rtOYjbjQFQVRU6xB
-N6LcbumMuy/ycp0bk3v2hcLd2/e/7t5OV+r18dksIJ1rJbuqVC9/vt2f/MW1TlJVgij7t5Ce
-pheZhxo9pR7s9g7WzAWGzfzv4v2zII+40ePcwkWXdS0rvWl1cZmpXRG7qBbnOGdAXf9r5cD2
-UY8buLXE1dS1cKn2CZQXwwolXYBHIC0xIXFVbks1DYKjl1a9TdTUK5R56+KhR+VCxs1r6KJ6
-mQSnqQ4Kzx5WZp8LF5dfZ74xLgM1A6advAaRqzrRm8Sdx+iWCq+GXbgold9+Srx0S6pW0orD
-mni8yGvMSMvAnmY0JsRhKs3pdm4y3i98k1qCUnvOeT+yHDY62eaxnQPMOps8NFnW0hWiWSs3
-VelVk6w3AwL/F2zLIU/kaYMtmJAcKus9Elr3xmGnaskErnEbzHqJ1bmXEX7DaKoa+9hYzyLo
-K7KaMZheJbhgufclWput9Fk4Sb5d7NAM023OG7nGV/C6GYJnoEaSwGDHq0os+OQk6ahuw0hU
-psIJm+tBdu+eSqzgPvPx/sqQV+Xdw8kYsfHtMdvYoMG/qo17nc8hRhc6+Yo+3yIMhzPtW30Z
-ACfVXoQ+vXycXt9e7pmXaxm4Gm5tAtrQr0/vD0zAUip0DGd+mhOTLp7aiauf1ef7x+npavd8
-JX5/fP0FrjbvH3/T4vSsv8EbzEbHac5PZxZvL3ff71+e9Cwl3Onr8b/l0cE7KcjjtCllk+50
-3WPrN9D18gJWPMsVRZWgG4++ga2qJYNyiUPOhxaJJHw/BtkVi6oSyb2f2MFod07J+JY7iweF
-+oYXat+O4TzmSw9YdlhW2XUn3vbn1epFC/CZ3Oy3VLPaHVpbn3A1ZmwOofsrFKjMKuinCbFY
-SQLAIaxKDgM02DtSZTIYO1EqP/S+nLuc+41IDxWt0I3d+rbAT74QmuwApqM+3a8ZuEuj2OEj
-ITZIWUo0MmXHWpzNCGR/f9y/PHeeUL3M2sB6MafHfnJw3RFV/g1OSzz8WIazmQfTM+gWlMkx
-GE+mU46IIqyPdMYdS28tYbasqpT23YxHV7XefkV+ZpWcTPCpawt3XhnQQK0HHmw9ppttsbnV
-VuYK7hbOox5OJYdnUsYRAQnQYg12EArwZpkvDUnh1kqYXvK0aRHW/ontPVt0T01eo4QoqP8E
-U5p6IVMaM2Y2SIiDqBvvlqqFu+AD+bWt+umy5thCJgFWwNK//6+ya2tuW9fVfyXTp71n9lr1
-PfZDH2hJttXoFlF2nLxoslKvNrNWkk4uZ7fn1x+A1AUAqayemU4dfYAoiiJBEASByYRdB+P5
-yKZl86N8a4NR2KZFqFgKgRCWV8SOGqaqDKm51gIrAdDtKXKg2j6Obj+bJqpagjrGeoCGPhfv
-0eEdJP3iqMOVuOTvaiHWMBfH4PPFeDSm0WiD6YQH4lXns/ncAXhBLcgeiCA30qRqOaN+ZwCs
-5nNY0bINnwaVAK3kMZiN6JYzAAvmYaoDxd3VdXWxnFJ3WQTWav7/djKsjTcsdP+kItIEfQAX
-3EdwshqLa+Y1dj475/zn4v5zcf/5ivmlnS9p3Gu4Xk04fUXDUyqTUgdlOcGMRqNSNQ8nggIS
-fHR0seWSY6imGrs4hwOz3zwWIMYn4FCoVjgutwVHk0xUJ8oOUZIXeCC0igK2+9lasSg7Lj6T
-EqctBuNKKD1O5hzdxcsZ3RjcHdkpxjhTk6NoCVTgRFPCKmG8lHxNkAkBVsFkdj4WAIuzigAN
-E4FzJAsmhcCYJQizyJIDU+rKAsCKuTOkQTGd0GMACMxoLLDWro+2ZZii8bQ3b+coq2/Gsk8Y
-Kwd0q5Khmdqfs9OOZro+KBuvn4XR7SfymBXR4weGmwgzvA42bIEtnEqWDieQMb+ILmhMWMFo
-OfZg1O+1xWZ6RP1oLDyejKdLBxwt9XjkFDGeLDULGNTAizE/LWFgKIAaoy12vqL+mxZbLpai
-AjYHlXzXKglmc+qXdNgsTCgHwnaIC0zhhL5rDLdZdOqmZ1hJ+vD9b1hDCbm5nC46D+Pg2+nB
-ZOLSjmMwGpnqYtdMolSmaHa0NFaX/NsebpZU4BlFptn5tmVp0Rk8HG39dvdf2vAp6Phu97n7
-SpJJ3upLvAMLslcjSnVXK+LSrXXRPlc+08z/uiDvgg+VCkLHsNsLTVJX4oF+GpvABa1pvmbr
-/+3xlSx3W59vmD5v7UTqnz3nowXzjJ5PFyN+zT3v57PJmF/PFuKauV7P56tJaQNwSFQAUwGM
-eL0Wk1nJWwPl8oJ7vc+ZFwJcn1MdBK8XY3HNnyLn+Ck/GrFkh6zDIq/weLg77TAwXUymtJog
-+edjPnvMlxM+E8zOqecBAqsJ05VMGBjliNjQiadiRUfYhyzBAfTl7eHhZ2MJ4V3aJtyKDsxB
-wfQ7u6oXPsqSYtcTmq9fGEO32DKV2WDa9NPj3c/uVMP/olt8GOqPRZLwrQdjWLt9fXr+GN6/
-vD7f//GGZzjYIQgbCtOG5Pt2+3L6LYEbT1/Okqen72f/ghL/ffZn98QX8kRaygb0j04L/fWz
-E3ycIMQCWrbQQkITPuCOpZ7N2dpqO14413I9ZTA2OojQ216XOVv3pMV+OqIPaQCvJLJ3exc/
-hjS8NjJkz9IorrZT6wNhhfvp9u/Xb2TqadHn17Py9vV0lj493r/yJt9EsxkbmgaYsUE1HUmV
-DJFJ99i3h/sv968/PR80nUzphB7uKjrT7VBroIoaaerdHjMkVWSE7Co9oYPbXgsnS4vx71ft
-6W06PmcLLLyedE0Yw8h4xUj1D6fbl7fn08Pp8fXsDVrN6aazkdMnZ3xpH4vuFnu6W+x0t4v0
-uGBq+gE71cJ0KmZvoQTW2wjBN+klOl2E+jiEe7tuS3PKwxev2WlBigoZNXCYSYWf4bMz+4RK
-QNDT6LaqCPWKOREZhDkprHdjdtQHr+kXCUCuj6kzOgIsJgEokewcfQpz+JxfL+jynSpaxmMW
-92hJy26LiSqgd6nRiNi5Om1FJ5PViK5tOIVmIjHImE5l1B6TaC/OK/NZK1DcaXy9ohyxjB7t
-452UJVXJDt2CAJjx8915gWfoCUsBz5qMOKbj8XhGR151MZ1SE1MV6OmMuh4agMZ9bmuI599Y
-6GUDLDkwm1Of+72ej5cTIrsPQZbwtzhEabIYUQ/HQ7IY9wcg09uvj6dXa9TzdOML7gZjrqnS
-dDFarWgnb4x3qdpmXtBr6jMEboxS2+l4wFKH3FGVp1EVlXziSoPpfEJPcjQj3ZTvn4XaOr1H
-9kxS7TfbpcF8SaMvCwJ/XUkkpwnjx7u/7x+HPgNdo2QBLOE8b094rLG3LvNKNWnSf+VcIb7y
-rmy2d32rIJPBr9wXlZ9sdcx37q9QmqBj/cD9JqJvT2Ia1venV5i17h3jc4iRkLjhZM4O51iA
-KtSgLo+nQqFmo6oqEqoKyCpA29GZM0mLVXPew6qWz6cXnGU9g2ldjBajdEv7fzHh8yteyzFi
-MGeWamX0WtFcl0xSsnQgu4K1U5GMmY+cuRZmYovxgVkkU36jnnNDlbkWBVmMFwTY9Fz2IFlp
-inoncUthJVdzpvztisloQW68KRRMkAsH4MW3IBmiZqZ/xDPI7pfV05UxSzY94OnH/QMqj3jg
-4Mv9iz317dyVxKEq4f8qqmmePV1uqK6qjysW4AjJy25Inx6+47LH29+g68dpjSmL0zzI9yzF
-Ig0lG9HgB2lyXI0WbMJKixHdVjHX5MtVMHDplGiu6aSUVWt2URdxti3ybMvRKs8TwReVG8GD
-KWZ4fLxDGpkkl40+Bpdn6+f7L189W6TIGqjVODjS0NqIVhrTXHJsoy46A4op9en2+Yuv0Bi5
-QSubU+6hbVrk3bNcKIgUcU5qxFyC4EImCUHI+hXtEsyhyg4BIbGz9HO49RUTqBUkHGwckTi4
-i9eHikMxFWcImLxsU46hUwRGHhVo64jOUJMSjRrYEcQYrAJp3JPQD4gRRLzlBioi0aBoRybC
-pLxEVwzuBLaNA3M4Nys/jTt903hVKZrsqdKwRBrVLIZodJMVGgsgpo5CYYpSehbO2mcrE6qO
-DnCb5j4u8qCiZ5atwz9cVGWeJHQb2FJUtTtfSXAdlaAuSBT3RCTWWKckbDYIJOhx0rMEnQd4
-7NiBzUeRoAli3rdjjN08wM3/iKU1t9ydR6rArY+KLBvDzzvuru2JielCBAijxIXdu+5TFhjc
-ODjW6yL1HZrZ0ER0cGEkBzvphSAoNgd+Bh3AqxKlf4QeUimn9KfF7Jyyuz7Tb3+8GAeoXpo0
-4WfNMcK+g++um/Mr6BhBBwMjUAOJDRJ/Pkc8SPYalUunzGb3Lo1BHzYH9XjJrXkTnTHyasuJ
-xVHVk2UGMkTTaLmMxCtr0sY2vZ0fkyR1CQtZk84rGEtz77MfmB9wRLz1D2nq0H3+/lkzjJeN
-ZO/ZJ8J3HE9+hW8+mbvluW8I0iHin6FzHIuzLPd84d6xDG/1k0QOadMCld2bA914hN9YtlxP
-n3npIiy+vSXezUbnbmubzcFLqnb0qPtCBsdeRZMIC4LsVBXATUwV2vlL6B1aUVcAhO2pME97
-ZXriQY1IXK5l06NLWkAjVaTUPyi1keU4YE9+2gF+esYcMUZTfLAmTRIquRVG9MRctdtnIe7y
-Jb2LjhOrIwvLnPr4NUC9jvFemGSCQVobz/nDH/eYVfE/3/5r//gwXFY9nTBf6lCR+SQ7YNiQ
-B3aJMxGo8l4YdNaqkIRWyEiRyameG9HNQJSIakm02dPNJ9sFN7zsbtQIZlswChxvVe3eiiBp
-qlPBhRvWxZzML4M+Q6SP5knBSagbUJOZs5fJS1DtXIR3yQ7denm1FwW56Su38pXLsk2gooDR
-ov68//oGSxiMuOV4QRtl4oFeYcqfmO7fGjDdQv8LoplYJ3e0Vi8ZpNSKyoqO2uyX+wtFJcNX
-Q3u2n8yu1pO8wCEi9t8ckvFR7+nN8wscjXYJ11lGNjp2BQSAZCEWdesX+FO6PG/uMTaU0Sde
-aAHo902lWHSsJjV1T2yA+qgqGpqihYtcx8daBYlL0lGwL1lKVKBMZeHT4VKmg6XMZCmz4VJm
-75QSZSbWAItp1N4ySBMh5j+vQzIv4JXkgMLSdaBYPIUywkyYQKEv0oHASg/LdLhx54qzTe6h
-ud+IkjxtQ8lu+3wWdfvsL+Tz4M2ymZARLZR4nobMa0fxHLy+3Oc0EenR/2iEy4pfi4duN5r3
-5gao8TAShpUKE7L2Btkg2Fukzid0du/gzvO8btRoDw++tJYPsflWU6UvMB6Jl0hNAOtKdpUW
-8TVMRzPdqDmwxb5Px1Hu0R0sA6I55OI8UrSnBZU2SVz7qT5OZMNtJqK+BsCmYO/VsMmO28Ke
-d2tJbp8zFPvGvkf4hrOhGS8gnEDFLSYTRJx9jgJxk+aKzpDgQbsVrUiL1GvsfHVOD7JhepS2
-T9ITTVmI5+yuB+j8rfqm1llexRvSNKEEYgtY01RfnpJ8LdJkm0YTXRprHef0cIgYreYSgxBh
-BnS7i7BhzVuUADZsV6rM2DtZWHQ7C1YsFMzlJq3qw1gC1IsR7woq8lHUvso3mk8eqOQxIGBa
-X36IykRdc6nQYSBDw7iEHlLDT6vpBLd3305skhWyvwGkZGjhHYjIfFuq1CU5E4uF8zX20jqJ
-2cFDJGHHoe/WYU6ilJ5Cn29fKPwNNOSP4SE0aoSjRcQ6Xy0WIz5d5EkckdrcABMdDftww/jx
-Oks6u26Y648bVX3MKv8jN1aQ9Mq9hjsYcpAseN0meAnyMMLkM59m03MfPc7RIIN2qQ/3L0/L
-5Xz12/iDj3FfbcgJxqwSUs8AoqUNVl61b1q8nN6+PJ396XtLM90zUzACF0ap5Bja0mhPNyC+
-YZ3mIN3zUpBggZOEZUTE2kVUZvRRwghdpYVz6ZN7ltDK8z7nz34LAmFdD2T8sT+28Xrxhyl2
-TJc0ESbpHFpi5ijR1ir0A7atW2wjmCIjP/1Qk36KyaeduB+ui2Q/hHlnZ1lxA8iJVlbT0cbk
-jNsiTUkjBzfGR3m8qadiziOQa0z8W6qGNasqHdidtjvcqye26pBHWUQSLMXN7h6GAc3NjKYl
-yw3L/W6x5CaXkNnUdsD92hjGux7ZPBUDb9dZnvl6JWWBSStvqu0tAnNFeU2AlGmjDrBkhyp7
-Hgb1E9+4RTCbBZ6NDG0bERnaMrBG6FDeXBZW2DbklLK8x6cldUT30wUwS9Aq68u90jsfYlUY
-OxHSc6yMbOdS34nWlg3XxWkBrZ1tE39BDYdJVeH9IF5O1GwwZ+07jxadvcN5M3dwcjPzorkH
-Pd54wNkF2uTWJmbZTeRhiNJ1FIZR6CFtSrVN8aBpo2hgAdNuZpRLLswLe/QidQYd5hBBtwhj
-RbpEnkoxWAjgMjvOXGjhh4TwK53iLYIRGvFY5bVVoennlwxpFfpTUsuC8mrny0tt2EASrXnU
-igI0I2rQsdemC3QCjFarocNX78j+fYKWb+bl41xBYykUtarNmXoJbsTapoFRu+vH6LU+cMkj
-JZEd/2YGIXLB/XLRMZcTl0EEG2vDJlypf6bPpEIF11THN9dTec2nHoPNOI++okYvy1GPHYTs
-YhZZK6VA9WdRvQ3FdhSOYRhZ7x3t82rjDI8D1Xhu1XHYHL3/9OGv0/Pj6e/fn56/fnDuSmOM
-v8JkdENrJTQmzogS2Yyt9CUgLn5swkhYJIp2l3rrRofsFUL4Ek5Lh/g5JODjmgmgYNqngUyb
-Nm3HKTrQsZfQNrmX+H4DhcNL/m1p0lSAdpSTJsDayUv5Xvjm3XTLvn9zMKmX3fusZBHozXW9
-pf5RDYbiq8mvLO8XHRsQeGMspL4o13OnJPGJG9QEGy9ZSt0gKnZ8lWwB0aUa1KcABjG7PXYt
-Yz02EeBVpDBCZb2D2U2Q9kWgEvEYOVUbzFRJYE4FnVVxh8kqhUPP1ula8gKEruEcdIdjUHBR
-F5glFk5VFZ5r5nYSS4V1apW4hiFL1FWZuyj2PTbSDZqDjuqiOoX3g4W1U0biQNGxKnmAz1Dx
-1ZhcnbmtrXzNsuKtYi59LL4+Zwmu2ppRb3O4aJfzvtU+kltzQT2jPoyMcj5MoR7UjLKkrv6C
-MhmkDJc2VIPlYvA59JyGoAzWgDqtC8pskDJYa3qwXlBWA5TVdOie1WCLrqZD77OaDT1neS7e
-J9Y59g6an5TdMJ4MPh9IoqlNlm1/+WM/PPHDUz88UPe5H1744XM/vBqo90BVxgN1GYvKXOTx
-si492J5jmAIeVHSVuXAQwWou8OFZFe2p73RHKXNQprxlXZdxkvhK26rIj5cR9XBs4RhqxaIf
-dYRsH1cD7+atUrUvL2K94wRjhOwQ3NKiF3wb/sLolWffbu/+un/82u4Of3++f3z9yzowP5xe
-vroZ543R3kafo0LerEQwpn4SHaKkk6OdUbVJ4O5ydLlXTJ73pvQwYtnqMX1lGgf8BYKnh+/3
-f59+e71/OJ3dfTvd/fVi6n1n8We36lFm4pnhVgMUBYurQFV01dzQ072u5MYrrKNTe+en8WjS
-1Rlm1rjA+I2wdKKrlTJSoY2dponxfp+Blh0i6zqnE6eRC/lVxoJWOlt/OygTw/2ImllGbTVV
-NJWmmFmXqHKCYl8/zxLSvhjiH/Csat6zyM1ujZbv3+BOLXP0PrG6GYZHojH6UoX+tLCcKy+9
-YGdAt43/afRj7ONqEvmIB6Op2qi+9kjT6eHp+edZePrj7etX26dpA4NiEmWaqfO2FKSCekPj
-hgtC2zPaPsu/HLSKzrlSxvE6y5u91UGOm6jMfY+HnrSRuN3k0QOwJ+Qfp29w92yAJsNlcqpJ
-JjJAK4O96aFDdGtWc+NbcS7Rzl1X0Ml+3bLSpRLCYvFgUiM03SON0gR6pdNt/gGvI1Um1yiq
-rMFsNhoNMPJ4kILY9ux843xCdKO+gDU37jwJ0iF1EfinhKrbkcq1Byy2m0RtnQ9po6PBZBM7
-vWMXb3l6r6aiu7jsQ/3hyDrD0/Nv362s3d0+fqUnW2D9sS/6AEBdYSjbMbljarKkNWwFDIng
-V3jqg0r2Ud8bbPn1Dh13K6XZd7RN3pFMj0YDwHgych/Usw3WRbDIqlxd9pnMydhGTty+YHv7
-DJYFWWJb266uNmSuXJ0bkHv/GEwMBctn+1qUhf6ZAx95EUWFlV/2xBMGVujE6Nm/Xprgzy//
-OXt4ez39OMEfp9e733///d802COWhsld9lV0jJy+h8nRuA216ZN+9qsrS4Exnl8VqtpJBuM7
-IcR2UeYHj3uEMchEBQeM3PAVyjgtrKoc1Q+dRC6tdSBSRdyJXi0eBWMB9LVIiIv+FZ1Ub8ZW
-i2dLxDA231IYchupY0XoAAzTCIgk7dzFHQWaaSf2wtSkbBHjERJ75ougjELQsmPVb+PD9OCd
-mM0HK2mM8g6COhcRKmhUU9EF7sYbsqOM+FvZsEblxgMP30AppgfigUMuNt9laxTY6fvMv1Lg
-r5cWwBfOaJKgd9l8ZeIEDT0sSTo5NBmzwnjHQyi6dIw3zfi9bNTCUiiElmxdn0Alw60tap5t
-+lQdlaU59dyaYHuDeupnIl45G+g675XHthwwvdI/cA17gKk40Ylac8QqbkI0GUKqLlCju9wz
-9cyQzDlp2+jinjQYuGWDwoNirJaeFYTk6KUJ7mewsZTAwMuC6yqnmyPmBDdwEz6jbW32mS1Q
-Uu21zbfJ+459qggFX5r8nsIxwcbJRX4m0+Gnwu6jr2Jc1Mgnk6LMl7gS9nCnvPZEle8VsCxn
-p1zupw02AkhxUGg2Dm5nZ6dBr6DphxpSZ6rQu7waJLTrL/G261Jl0EggWs0uFHo5fKKbkw2u
-sgxDB+CGqLkhGtijbNlBUPgY6VzlvAluY+OQI86WtOB11ASL8p23a1u4qUApP4Zn6dMSKgVy
-sKg5se9arYC81mjI16J9zUxTr2FA7FJV+jssIT/4yP4a2GdH2T6t8djbhoXLb7uebRAb6Lid
-Tt8ejdmjOr28sgk1uQjpSRPzVjibg05N953s2zJo3ckCbEU5J67R51KAZvoFNbb20JrlHget
-GrWYeRQepa8zkHMqDhfiJlPVXXQ0CQPFC1SmhXdRUkSlFsQLoFY0ZoxBjX1pI8B1XOHRBw7u
-9zSXpIFK3HayUflF9RS1xNkH4dlKMm2FqTIqopgs7Qe6kJ8M3XFBxBXXsqaFrLubC9MWYKf3
-3o8jSkXPsw2oKpB5mDKOdASzyK5DVSk8moKBP+yk1zvOKNyt9guHzpSk6/1aqwxtH9k+SbyO
-Tlox7yJkV0m8zVIWVL0pZ5849h90JJSGlSTER4K+S12z9XQSjONapjDQp7u3ZwzY4JgKTZP8
-JL1ZwyBCaQEE7HRMRKDDfyhasfGfavGfpOA63NU5FKmEb1u3JR2mkTYnkKF/U5Xe3b/qbkGP
-DGM62eX5hafMje85bX7YQUp93JSph8zXY4nJewXiK40xDn1YflrM59Mum7VREcyp5gxaA3s2
-dmyrHylmJXCY3iEZJQtWA9QaZHszcqCTnRUL/0C2r/Lh48sf948f315Ozw9PX06/fTv9/Z0c
-eOzeG/pPnLHcVYLSGw5+hUfaABzOMNY8B4jLEZmgy+9wqEMgTWQOjzEMgJKJyUebSo1c5lQF
-vr5icDz8lm333ooYOvQoqWMKDlUUaKTADW6V+GoLs0d+nQ8SjJqJxxMKNCZX5fWnyWi2fJd5
-H8LiCs/dMJu+4IQ5qyLnezBhu/ctoP4g8/P3SL/w6TtW7uLgp7sGaZdP2o78DM1RHl+zC8Zm
-I8fHiU1T0KgTktLYd0MPx7VKydERz0mlDrI9BFe1PiIoEmkaoeAUgrdnIQK7ZGsAUgr2DEJg
-dYOZPI2UxmV1EcBqMTxC/6FUFIjlPomYByASMOQOrqw8kyGS0dLYcMg7dbz9p7tb22dXxIf7
-h9vfHnu3Mcpkeo/eqbF8kGSYzBfeed7HOx/7gx84vFeFYB1g/PTh5dvtmL2AjZxR5EkcXPNv
-gntuXgJ0YFAsqfHLfIvBXgDEdpa355ys103jJ7oHKQY9GcaDRiNDyBzi8d51AtLM6NzeonEo
-1Mf5aMVhRNrJ6PR69/Gv08+Xjz8QhK/4Oz1+T1+prRi3JEV0DwEuavSCqjfaqLSMYJx1Gvlr
-fKU0p3sqi/BwZU//88Aq235NzxTadQ+XB+vj7UkOq5XRv8bbCrJf4w5V4Omhkg166Onv+8e3
-H90bH1HMo11Dy9WNOAJuMNDLA6rlW/RIY6pbqLj0L5bQ0sVyi2PG9Fa/DZ5/fn99Ort7ej6d
-PT2fWbWGpGe06dVVsoWVCTGtUHji4rjL9+ABXVZY7AdxsWNp6gTFvUn49vWgy1oyi1CHeRm7
-udKp+mBN1FDtL4rC5QbQLQGduD3V0crBQveloyDcOdWFVaXaeurU4O7DeNQxzt1qmPLMb8O1
-3Ywny3SfOLebxZgPdB+P64jLfbSPHIr5cbtSOoCrfbWDVZWDc3NB23TZNs66MAjq7fUbxnC8
-u309fTmLHu9wXGDgif/ev347Uy8vT3f3hhTevt464yMIUqf8rQcLdgr+TUYwB12PpyzYrmXQ
-0WXsjFX4yjsF8rsL+bQ2cc1xHfLiVmUduM1YuZ8X3QPc56wdLCmvHKzAh0jw6CkQprer0thN
-mlyxL9+Gqp0qt8hdqtyXOfoefkj7QPXh/dfTy6v7hDKYTtw7DexDq/EojDduh+eWnLZFhj5o
-Gs482NwdmzF84yjBX4e/TMMxjY5MYBaurINBI/PB04nL3Sh4DohFeOD52G0rgKfukNuW45XL
-a9S69kMF99+/8WTA7UzhyhnAaho4poWz/Tp2+50qA7fZYcq92sSej9cSnAQgbWdQaZQksfIQ
-0A1s6CZdud0BUffbhJH7Chvz646onbrxTK4a1sPK83lbgeMRNJGnlKgsbFo3KT/dd6+ucm9j
-NnjfLJ0nHka/ZYkXurffmMWII3no+bcGW87cPoWn5zzYrk8sevv45enhLHt7+OP03KaD8NVE
-ZTqug6Kk8UfbSpZrkyhp76d4JZWl+HQVQwkqd4pGgvOEz3FVRSUaLJi5l0zeaDceJNReidVR
-davCDHL42qMjenU9s4Tj3ict5cp95+hQ7+JNVp+v5kfP2CDURp3rVHLCg2FJA6XS7lsaS7r2
-aejkriIO8mMQeVQVpDaB9rz9Ach6XnhxG4B1SBkhHJ5h31Mrn1ToySB1vdTLwB1JZjct3VZR
-4O8LSHdjrhJisIsSTdMxENohLitK4uYVE0+w/+SEWOzXScOj92vOZlaPQVTinjt64NbGp4MG
-JrgI9HnnMeyn2j2eiIZQs0vhIrKH88wRdiw/7lOpBpgQ40+jBr6c/YmR9u6/PtooysaBmG2l
-pXm4T8wK2zznwx3c/PIR7wC2Gpa8v38/PfQ2YnNgcdiq4NL1pw/ybrscJ03j3O9wtB6Kq87e
-3pkl/rEy71gqHA4z6I1fUF/rdZzhY5o9tS4xxh/Pt88/z56f3l7vH6kyaBesdCG7jqsywkTh
-zN5lNgzMPlJP9x3NNZ+WOgW3e/gZxo2tYmpE7gKmBrEMdNaSaFRbDB1cN7lTiUSDNXwA4pqO
-lGDMZvygdjVLKLra1/yuKVsowaVnT7TBYRxF6+sll4yEMvPaMxoWVV4Ji6HgWHuz1wONHPhI
-4rWrXwc0T6YxpDcNSStqCeZb4kpYdUze75mFeUpbomshUAz6U9UPFLVH9zluDmHD/JSwAWTQ
-Vhvp967IgWyOkpIJPvPUw6gjftxbyvEGYXldH5cLBzPBRQuXN1aLmQMqulfXY9Vun64dAjrS
-ueWug88OJn2c2xeqtzcx84bsCGsgTLyU5IZa0gmBBj5g/PkAPnMHsGdHscR0qjpPcqbEUxQ3
-apf+G/CB75DG5HOtAzLvrk1vz6wTgKLHQtBjSUc4HHxYfcE9HDp8nXrhjSa4cdDgWxmdbwad
-oXUexDaUgypLxXZYTQhI6gJuIXR7qpnERDw0H7I3n+L2Bab4yAuf6w6SUZXgwc5sjDbPdk54
-SaV6kq/5lUdWZgk/6dv1icblhIzhcl+LMFxBclNX1IsvyMuQLtVxT7tv2vISLQKkhmkR89Af
-7hsBfRMSiYbxczGiqa7o9sEmzyr3kDiiWjAtfywdhHZIAy1+0MPGBjr/MZ4JCIM7J54CFbRC
-5sExJEg9++F52EhA49GPsbxb7zNPTQEdT35MiNDQ6Oub0F0NjbGW84RNLzgMsDdq7Ewqzobc
-0MKooF5zuvH46XVK4a0DKk0a1RkITutY9H8zaVrByBYDAA==
+I'd just put a pointer to the outer counter in there instead.
 
---FCuugMFkClbJLl1L--
+
+> +	if (!counter->indio_dev) {
+> +		err = -ENOMEM;
+> +		goto err_iio_device_alloc;
+> +	}
+> +
+> +	info = kmalloc(sizeof(*info), GFP_KERNEL);
+> +	if (!info) {
+> +		err = -ENOMEM;
+> +		goto err_info_alloc;
+> +	}
+> +	if (counter->info) {
+> +		memcpy(info, counter->info, sizeof(*counter->info));
+> +		info->read_raw = __iio_counter_read_raw;
+> +		info->write_raw = __iio_counter_write_raw;
+> +	} else {
+> +		memcpy(info, &info_default, sizeof(info_default));
+> +	}
+> +
+> +	counter->indio_dev->info = info;
+> +	counter->indio_dev->modes = INDIO_DIRECT_MODE;
+> +	counter->indio_dev->name = counter->name;
+> +	counter->indio_dev->dev.parent = counter->dev;
+> +
+> +	err = __iio_counter_channels_alloc(counter);
+> +	if (err)
+> +		goto err_channels_alloc;
+> +
+> +	priv = iio_priv(counter->indio_dev);
+> +	memcpy(priv, counter, sizeof(*priv));
+> +
+> +	err = iio_device_register(priv->indio_dev);
+> +	if (err)
+> +		goto err_iio_device_register;
+> +
+> +	return 0;
+> +
+> +err_iio_device_register:
+> +	__iio_counter_channels_free(counter);
+> +err_channels_alloc:
+> +	kfree(info);
+> +err_info_alloc:
+> +	iio_device_free(counter->indio_dev);
+> +err_iio_device_alloc:
+> +	iio_counter_values_unregister(counter, counter->init_values,
+> +		counter->num_init_values);
+> +err_values_register:
+> +	__iio_counter_signals_unregister(counter, counter->init_signals,
+> +		counter->num_init_signals);
+> +	return err;
+> +}
+> +EXPORT_SYMBOL(iio_counter_register);
+> +
+> +/**
+> + * iio_counter_unregister - unregister Counter from the system
+> + * @counter: pointer to IIO Counter to unregister
+> + *
+> + * The Counter is unregistered from the system. The indio_dev is unregistered,
+> + * allocated memory is freed, and all associated Values and Signals are
+> + * unregistered.
+> + */
+> +void iio_counter_unregister(struct iio_counter *const counter)
+> +{
+> +	const struct iio_info *const info = counter->indio_dev->info;
+> +
+> +	if (!counter)
+> +		return;
+> +
+> +	iio_device_unregister(counter->indio_dev);
+> +
+> +	__iio_counter_channels_free(counter);
+> +
+> +	kfree(info);
+> +	iio_device_free(counter->indio_dev);
+> +
+> +	__iio_counter_value_unregister_all(counter);
+> +	__iio_counter_signal_unregister_all(counter);
+> +}
+> +EXPORT_SYMBOL(iio_counter_unregister);
+> diff --git a/include/linux/iio/counter.h b/include/linux/iio/counter.h
+> new file mode 100644
+> index 000000000000..9a67c2a7cc46
+> --- /dev/null
+> +++ b/include/linux/iio/counter.h
+> @@ -0,0 +1,221 @@
+> +/*
+> + * Industrial I/O counter interface
+> + * Copyright (C) 2017 William Breathitt Gray
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License, version 2, as
+> + * published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful, but
+> + * WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+> + * General Public License for more details.
+> + */
+> +#ifndef _IIO_COUNTER_H_
+> +#define _IIO_COUNTER_H_
+> +
+> +#ifdef CONFIG_IIO_COUNTER
+> +
+> +#include <linux/device.h>
+> +#include <linux/mutex.h>
+> +#include <linux/types.h>
+> +
+> +#include <linux/iio/iio.h>
+> +
+> +/**
+> + * struct iio_counter_signal - IIO Counter Signal node
+> + * @id:		[DRIVER] unique ID used to identify signal
+> + * @name:	[DRIVER] device-specific signal name
+> + * @list:	[INTERN] list of all signals currently registered to counter
+> + */
+> +struct iio_counter_signal {
+> +	int		id;
+> +	const char	*name;
+> +
+> +	struct list_head	list;
+> +};
+> +
+> +/**
+> + * struct iio_counter_trigger - IIO Counter Trigger node
+> + * @mode:		[DRIVER] current trigger mode state
+> + * @trigger_modes:	[DRIVER] available trigger modes
+> + * @num_trigger_modes:	[DRIVER] number of modes specified in @trigger_modes
+> + * @signal:		[DRIVER] pointer to associated signal
+> + * @list:		[INTERN] list of all triggers currently registered to
+> + *			value
+> + */
+> +struct iio_counter_trigger {
+> +	unsigned int			mode;
+> +	const char *const		*trigger_modes;
+> +	unsigned int			num_trigger_modes;
+> +	struct iio_counter_signal	*signal;
+> +
+> +	struct list_head		list;
+> +};
+> +
+> +/**
+> + * struct iio_counter_value - IIO Counter Value node
+> + * @id:			[DRIVER] unique ID used to identify value
+> + * @name:		[DRIVER] device-specific value name
+> + * @mode:		[DRIVER] current function mode state
+> + * @function_modes:	[DRIVER] available function modes
+> + * @num_function_modes:	[DRIVER] number of modes specified in @function_modes
+> + * @init_triggers:	[DRIVER] array of triggers for initialization
+> + * @num_init_triggers:	[DRIVER] number of triggers specified in @init_triggers
+> + * @function_enum:	[INTERN] used internally to generate function attributes
+> + * @trigger_list_lock:	[INTERN] lock for accessing @trigger_list
+> + * @trigger_list:	[INTERN] list of all triggers currently registered to
+> + *			value
+> + * @list:		[INTERN] list of all values currently registered to
+> + *			counter
+> + */
+> +struct iio_counter_value {
+> +	int			id;
+> +	const char		*name;
+> +	unsigned int		mode;
+> +	const char *const	*function_modes;
+> +	unsigned int		num_function_modes;
+> +
+> +	struct iio_counter_trigger	*init_triggers;
+> +	size_t				num_init_triggers;
+> +
+> +	struct iio_enum		function_enum;
+> +	struct mutex		trigger_list_lock;
+> +	struct list_head	trigger_list;
+> +
+> +	struct list_head	list;
+> +};
+> +
+> +struct iio_counter;
+> +
+> +/**
+> + * struct iio_counter_ops - IIO Counter related callbacks
+> + * @signal_read:	function to request a signal value from the device.
+> + *			Return value will specify the type of value returned by
+> + *			the device. val and val2 will contain the elements
+> + *			making up the returned value. Note that the counter
+> + *			signal_list_lock is acquired before this function is
+> + *			called, and released after this function returns.
+> + * @signal_write:	function to write a signal value to the device.
+> + *			Parameters and locking behavior are the same as
+> + *			signal_read.
+> + * @trigger_mode_set:	function to set the trigger mode. mode is the index of
+> + *			the requested mode from the value trigger_modes array.
+> + *			Note that the counter value_list_lock and value
+> + *			trigger_list_lock are acquired before this function is
+> + *			called, and released after this function returns.
+> + * @trigger_mode_get:	function to get the current trigger mode. Return value
+> + *			will specify the index of the current mode from the
+> + *			value trigger_modes array. Locking behavior is the same
+> + *			as trigger_mode_set.
+> + * @value_read:		function to request a value value from the device.
+> + *			Return value will specify the type of value returned by
+> + *			the device. val and val2 will contain the elements
+> + *			making up the returned value. Note that the counter
+> + *			value_list_lock is acquired before this function is
+> + *			called, and released after this function returns.
+> + * @value_write:	function to write a value value to the device.
+> + *			Parameters and locking behavior are the same as
+> + *			value_read.
+> + * @value_function_set: function to set the value function mode. mode is the
+> + *			index of the requested mode from the value
+> + *			function_modes array. Note that the counter
+> + *			value_list_lock is acquired before this function is
+> + *			called, and released after this function returns.
+> + * @value_function_get: function to get the current value function mode. Return
+> + *			value will specify the index of the current mode from
+> + *			the value function_modes array. Locking behavior is the
+> + *			same as value_function_get.
+> + */
+> +struct iio_counter_ops {
+> +	int (*signal_read)(struct iio_counter *counter,
+> +		struct iio_counter_signal *signal, int *val, int *val2);
+> +	int (*signal_write)(struct iio_counter *counter,
+> +		struct iio_counter_signal *signal, int val, int val2);
+> +	int (*trigger_mode_set)(struct iio_counter *counter,
+> +		struct iio_counter_value *value,
+> +		struct iio_counter_trigger *trigger, unsigned int mode);
+> +	int (*trigger_mode_get)(struct iio_counter *counter,
+> +		struct iio_counter_value *value,
+> +		struct iio_counter_trigger *trigger);
+> +	int (*value_read)(struct iio_counter *counter,
+> +		struct iio_counter_value *value, int *val, int *val2);
+> +	int (*value_write)(struct iio_counter *counter,
+> +		struct iio_counter_value *value, int val, int val2);
+> +	int (*value_function_set)(struct iio_counter *counter,
+> +		struct iio_counter_value *value, unsigned int mode);
+> +	int (*value_function_get)(struct iio_counter *counter,
+> +		struct iio_counter_value *value);
+> +};
+> +
+> +/**
+> + * struct iio_counter - IIO Counter data structure
+> + * @id:			[DRIVER] unique ID used to identify counter
+> + * @name:		[DRIVER] name of the device
+> + * @dev:		[DRIVER] device structure, should be assigned a parent
+> + *			and owner
+> + * @ops:		[DRIVER] callbacks for from driver
+> + * @init_signals:	[DRIVER] array of signals for initialization
+> + * @num_init_signals:	[DRIVER] number of signals specified in @init_signals
+> + * @init_values:	[DRIVER] array of values for initialization
+> + * @num_init_values:	[DRIVER] number of values specified in @init_values
+> + * @signal_list_lock:	[INTERN] lock for accessing @signal_list
+> + * @signal_list:	[INTERN] list of all signals currently registered to
+> + *			counter
+> + * @value_list_lock:	[INTERN] lock for accessing @value_list
+> + * @value_list:		[INTERN] list of all values currently registered to
+> + *			counter
+> + * @channels:		[DRIVER] channel specification structure table
+> + * @num_channels:	[DRIVER] number of channels specified in @channels
+> + * @info:		[DRIVER] callbacks and constant info from driver
+> + * @indio_dev:		[INTERN] industrial I/O device structure
+> + * @driver_data:	[DRIVER] driver data
+> + */
+> +struct iio_counter {
+> +	int				id;
+> +	const char			*name;
+> +	struct device			*dev;
+> +	const struct iio_counter_ops	*ops;
+> +
+> +	struct iio_counter_signal	*init_signals;
+> +	size_t				num_init_signals;
+I'm missing if there is any chance of signals or values being
+registered later?  If not then drop the init_.
+> +	struct iio_counter_value	*init_values;
+> +	size_t				num_init_values;
+> +
+> +	struct mutex		signal_list_lock;
+> +	struct list_head	signal_list;
+> +	struct mutex		value_list_lock;
+> +	struct list_head	value_list;
+> +
+> +	const struct iio_chan_spec	*channels;
+> +	size_t				num_channels;
+> +	const struct iio_info		*info;
+> +
+> +	struct iio_dev	*indio_dev;
+> +	void		*driver_data;
+> +};
+> +
+> +int iio_counter_trigger_register(struct iio_counter_value *const value,
+> +	struct iio_counter_trigger *const trigger);
+> +void iio_counter_trigger_unregister(struct iio_counter_value *const value,
+> +	struct iio_counter_trigger *const trigger);
+> +int iio_counter_triggers_register(struct iio_counter_value *const value,
+> +	struct iio_counter_trigger *const triggers, const size_t num_triggers);
+> +void iio_counter_triggers_unregister(struct iio_counter_value *const value,
+> +	struct iio_counter_trigger *triggers, size_t num_triggers);
+> +
+> +int iio_counter_value_register(struct iio_counter *const counter,
+> +	struct iio_counter_value *const value);
+> +void iio_counter_value_unregister(struct iio_counter *const counter,
+> +	struct iio_counter_value *const value);
+> +int iio_counter_values_register(struct iio_counter *const counter,
+> +	struct iio_counter_value *const values, const size_t num_values);
+> +void iio_counter_values_unregister(struct iio_counter *const counter,
+> +	struct iio_counter_value *values, size_t num_values);
+> +
+> +int iio_counter_register(struct iio_counter *const counter);
+> +void iio_counter_unregister(struct iio_counter *const counter);
+> +
+> +#endif /* CONFIG_IIO_COUNTER */
+> +
+> +#endif /* _IIO_COUNTER_H_ */
+
