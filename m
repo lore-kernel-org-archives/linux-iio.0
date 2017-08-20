@@ -1,80 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:50636 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751753AbdHTK0H (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 20 Aug 2017 06:26:07 -0400
-Date: Sun, 20 Aug 2017 11:22:42 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>
-Cc: Linus Walleij <linus.walleij@linaro.org>,
+Received: from mail-oi0-f50.google.com ([209.85.218.50]:35430 "EHLO
+        mail-oi0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752612AbdHTLK7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 20 Aug 2017 07:10:59 -0400
+Received: by mail-oi0-f50.google.com with SMTP id e124so132156762oig.2
+        for <linux-iio@vger.kernel.org>; Sun, 20 Aug 2017 04:10:59 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <20170820112242.3008c3f8@archlinux>
+References: <cover.1502977929.git.mirq-linux@rere.qmqm.pl> <a90b0e9c8886114903498890a0ae2c66cb19b5f3.1502977929.git.mirq-linux@rere.qmqm.pl>
+ <20170820112242.3008c3f8@archlinux>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Sun, 20 Aug 2017 13:10:58 +0200
+Message-ID: <CACRpkdZECwAscLNs7irNzu73Rm7A4SYViRcmcwpuvHLpx11bKQ@mail.gmail.com>
+Subject: Re: [PATCH 2/4] iio: magnetometer: ak8974: add_device_randomness(fw + serial)
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/4] iio: magnetometer: ak8974: add_device_randomness(fw
- + serial)
-Message-ID: <20170820112242.3008c3f8@archlinux>
-In-Reply-To: <a90b0e9c8886114903498890a0ae2c66cb19b5f3.1502977929.git.mirq-linux@rere.qmqm.pl>
-References: <cover.1502977929.git.mirq-linux@rere.qmqm.pl>
-        <a90b0e9c8886114903498890a0ae2c66cb19b5f3.1502977929.git.mirq-linux@rere.qmqm.pl>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 17 Aug 2017 15:56:11 +0200
-Michał Mirosław <mirq-linux@rere.qmqm.pl> wrote:
+On Sun, Aug 20, 2017 at 12:22 PM, Jonathan Cameron <jic23@kernel.org> wrote=
+:
+> On Thu, 17 Aug 2017 15:56:11 +0200
+> Micha=C5=82 Miros=C5=82aw <mirq-linux@rere.qmqm.pl> wrote:
+>> Signed-off-by: Micha=C5=82 Miros=C5=82aw <mirq-linux@rere.qmqm.pl>
+>
+> Hmm. I wondered about the firmware version as a source of randomness, but
+> will leave it in here.
+(...)
+>> +             add_device_randomness(&fw, sizeof(fw));
+>
+> The firmware version seems rather to guessable to really count as randomn=
+ess.
+> presumably it would constant for a particular batch of chips.
 
-> Mix device-specific data into randomness pool.
-> 
-> Signed-off-by: Michał Mirosław <mirq-linux@rere.qmqm.pl>
+That is true, this should go, not for security reasons but because it doesn=
+'t
+add much device-unique randomness.
 
-Hmm. I wondered about the firmware version as a source of randomness, but
-will leave it in here.
+Nothing we add with add_device_randomness() actually affects the entropy
+pool trust, it is just icing making it - maybe - even more random, so addin=
+g
+256 zeroes is fine for the trust, just pointless and taking time for no goo=
+d.
 
-Applied to the togreg branch of iio.git and pushed out as testing.
-
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/iio/magnetometer/ak8974.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/iio/magnetometer/ak8974.c b/drivers/iio/magnetometer/ak8974.c
-> index 76091da20a0c..ab204f8560e3 100644
-> --- a/drivers/iio/magnetometer/ak8974.c
-> +++ b/drivers/iio/magnetometer/ak8974.c
-> @@ -20,6 +20,7 @@
->  #include <linux/mutex.h>
->  #include <linux/delay.h>
->  #include <linux/bitops.h>
-> +#include <linux/random.h>
->  #include <linux/regmap.h>
->  #include <linux/regulator/consumer.h>
->  #include <linux/pm_runtime.h>
-> @@ -466,10 +467,12 @@ static int ak8974_detect(struct ak8974 *ak8974)
->  		ret = regmap_read(ak8974->map, AMI305_VER, &fw);
->  		if (ret)
->  			return ret;
-> +		add_device_randomness(&fw, sizeof(fw));
-
-The firmware version seems rather to guessable to really count as randomness.
-presumably it would constant for a particular batch of chips.
-
-
->  		fw &= 0x7f; /* only bits 0 thru 6 valid */
->  		ret = ak8974_get_u16_val(ak8974, AMI305_SN, &sn);
->  		if (ret)
->  			return ret;
-> +		add_device_randomness(&sn, sizeof(sn));
-
-This is better.  The serial number should be hard to guess on a particular
-part.
-
-Jonathan
->  		dev_info(&ak8974->i2c->dev,
->  			 "detected %s, FW ver %02x, S/N: %04x\n",
->  			 name, fw, sn);
-
+Yours,
+Linus Walleij
