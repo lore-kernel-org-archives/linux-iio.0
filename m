@@ -1,28 +1,29 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:52030 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:52018 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752612AbdHTLJP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 20 Aug 2017 07:09:15 -0400
-Date: Sun, 20 Aug 2017 12:09:02 +0100
+        id S1752612AbdHTLJN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 20 Aug 2017 07:09:13 -0400
+Date: Sun, 20 Aug 2017 12:07:04 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Philipp Zabel <p.zabel@pengutronix.de>
 Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Heiko Stuebner <heiko@sntech.de>, linux-iio@vger.kernel.org,
-        linux-rockchip@lists.infradead.org
-Subject: Re: [PATCH 031/102] iio: adc: rockchip_saradc: explicitly request
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH 032/102] iio: dac: stm32-dac-core: explicitly request
  exclusive reset control
-Message-ID: <20170820120902.72557043@archlinux>
-In-Reply-To: <20170719152646.25903-32-p.zabel@pengutronix.de>
+Message-ID: <20170820120704.25a35236@archlinux>
+In-Reply-To: <20170719152646.25903-33-p.zabel@pengutronix.de>
 References: <20170719152646.25903-1-p.zabel@pengutronix.de>
-        <20170719152646.25903-32-p.zabel@pengutronix.de>
+        <20170719152646.25903-33-p.zabel@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 19 Jul 2017 17:25:35 +0200
+On Wed, 19 Jul 2017 17:25:36 +0200
 Philipp Zabel <p.zabel@pengutronix.de> wrote:
 
 > Commit a53e35db70d1 ("reset: Ensure drivers are explicit when requesting
@@ -37,32 +38,32 @@ Philipp Zabel <p.zabel@pengutronix.de> wrote:
 > Cc: Hartmut Knaack <knaack.h@gmx.de>
 > Cc: Lars-Peter Clausen <lars@metafoo.de>
 > Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-> Cc: Heiko Stuebner <heiko@sntech.de>
+> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+> Cc: Alexandre Torgue <alexandre.torgue@st.com>
 > Cc: linux-iio@vger.kernel.org
-> Cc: linux-rockchip@lists.infradead.org
 > Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+Applied to the togreg branch of iio.git and pushed out as testing for the
+autobuilders to play with it.
 
 Thanks,
 
 Jonathan
+
 > ---
->  drivers/iio/adc/rockchip_saradc.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+>  drivers/iio/dac/stm32-dac-core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
-> index ae6d3324f5183..1d9300ba07c00 100644
-> --- a/drivers/iio/adc/rockchip_saradc.c
-> +++ b/drivers/iio/adc/rockchip_saradc.c
-> @@ -235,7 +235,8 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
->  	 * The reset should be an optional property, as it should work
->  	 * with old devicetrees as well
->  	 */
-> -	info->reset = devm_reset_control_get(&pdev->dev, "saradc-apb");
-> +	info->reset = devm_reset_control_get_exclusive(&pdev->dev,
-> +						       "saradc-apb");
->  	if (IS_ERR(info->reset)) {
->  		ret = PTR_ERR(info->reset);
->  		if (ret != -ENOENT)
+> diff --git a/drivers/iio/dac/stm32-dac-core.c b/drivers/iio/dac/stm32-dac-core.c
+> index 75e48788c7ead..f1eeb1549f689 100644
+> --- a/drivers/iio/dac/stm32-dac-core.c
+> +++ b/drivers/iio/dac/stm32-dac-core.c
+> @@ -114,7 +114,7 @@ static int stm32_dac_probe(struct platform_device *pdev)
+>  		goto err_vref;
+>  	}
+>  
+> -	priv->rst = devm_reset_control_get(dev, NULL);
+> +	priv->rst = devm_reset_control_get_exclusive(dev, NULL);
+>  	if (!IS_ERR(priv->rst)) {
+>  		reset_control_assert(priv->rst);
+>  		udelay(2);
 
