@@ -1,83 +1,77 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-eopbgr00093.outbound.protection.outlook.com ([40.107.0.93]:44400
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1750737AbdHZGJv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 26 Aug 2017 02:09:51 -0400
-Subject: Re: [PATCH] iio: multiplexer: add NULL check on devm_kzalloc() and
- devm_kmemdup() return values
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "Gustavo A. R. Silva" <garsilva@embeddedor.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-References: <20170707045311.GA4535@embeddedgus>
- <df6ae9c6-8ac7-368b-a1c2-4403387df02b@axentia.se>
- <0ba9b76f-41f8-3171-2eb7-d9abbe106674@axentia.se>
- <20170709181023.54458b6c@kernel.org>
-From: Peter Rosin <peda@axentia.se>
-Message-ID: <aaff7b8f-5fc3-e811-b334-42d323dfbf2e@axentia.se>
-Date: Sat, 26 Aug 2017 08:09:43 +0200
+Return-Path: <SRS0=/4Xl=7X=gmail.com=thierry.reding@kernel.org>
+Date: Mon, 21 Aug 2017 09:01:52 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Fabrice Gasnier <fabrice.gasnier@st.com>
+Cc: lee.jones@linaro.org, benjamin.gaignard@linaro.org, jic23@kernel.org,
+	robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com,
+	mcoquelin.stm32@gmail.com, benjamin.gaignard@st.com,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-pwm@vger.kernel.org
+Subject: Re: [PATCH v3 4/9] pwm: Add STM32 LPTimer PWM driver
+Message-ID: <20170821070152.GJ18996@ulmo>
+References: <1499445068-7037-1-git-send-email-fabrice.gasnier@st.com>
+ <1499445068-7037-5-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
-In-Reply-To: <20170709181023.54458b6c@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="yr/DzoowOgTDcSCF"
+In-Reply-To: <1499445068-7037-5-git-send-email-fabrice.gasnier@st.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 2017-07-09 19:10, Jonathan Cameron wrote:
-> On Fri, 7 Jul 2017 11:26:35 +0200
-> Peter Rosin <peda@axentia.se> wrote:
-> 
->> On 2017-07-07 06:57, Peter Rosin wrote:
->>> On 2017-07-07 06:53, Gustavo A. R. Silva wrote:  
->>>> Check return values from call to devm_kzalloc() and devm_kmemup()  
->>>
->>> If someone cares enough: s/devm_kmemup/evm_kmemdup/  
->>
->> Strange, there seems to be some inherent shortage of 'd' characters...
->>
->> Cheers,
->> pea :-)
->>
->>>   
->>>> in order to prevent a NULL pointer dereference.
->>>>
->>>> This issue was detected using Coccinelle and the following semantic patch:
->>>>
->>>> @@
->>>> expression x;
->>>> identifier fld;
->>>> @@
->>>>
->>>> * x = devm_kzalloc(...);
->>>>    ... when != x == NULL
->>>>    x->fld
->>>>
->>>> Cc: Peter Rosin <peda@axentia.se>
->>>> Signed-off-by: Gustavo A. R. Silva <garsilva@embeddedor.com>  
->>>
->>> Either way,
->>>
->>> Reviewed-by: Peter Rosin <peda@axentia.se>
->>>
->>> Thanks!
->>>
-> The relevant patch adding the file in questions hasn't yet worked it's
-> way back to the iio tree so I can't apply this until it does.
-> 
-> That is likely to be a few weeks away yet.  Please give me a poke if
-> I seem to have forgotten it!
 
-Hi Jonathan!
+--yr/DzoowOgTDcSCF
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I saw a patch from Christophe JAILLET [1] and it seemed familiar so I
-did a bit of digging. Now, I did go back and check this a couple of
-weeks after you request, but iio-mux.c still wasn't in the iio tree,
-and then I did forgot about it. Sorry. But here's the poke...
+On Fri, Jul 07, 2017 at 06:31:03PM +0200, Fabrice Gasnier wrote:
+> Add support for single PWM channel on Low-Power Timer, that can be
+> found on some STM32 platforms.
+>=20
+> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+> ---
+> Changes in v3:
+> - remove prescalers[] array, use power-of-2 presc directly
+> - Update following Thierry's comments:
+> - fix issue using FIELD_GET() macro
+> - Add get_state() callback
+> - remove some checks in probe
+> - slight rework 'reenable' flag
+> - use more common method to disable pwm in remove()
+>=20
+> Changes in v2:
+> - s/Low Power/Low-Power
+> - update few comment lines
+> ---
+>  drivers/pwm/Kconfig        |  10 ++
+>  drivers/pwm/Makefile       |   1 +
+>  drivers/pwm/pwm-stm32-lp.c | 246 +++++++++++++++++++++++++++++++++++++++=
+++++++
+>  3 files changed, 257 insertions(+)
+>  create mode 100644 drivers/pwm/pwm-stm32-lp.c
 
-Cheers,
-Peter
+Sorry, this fell through the cracks: changes in v3 look good to me:
 
-[1] https://lkml.org/lkml/2017/8/26/3
+Acked-by: Thierry Reding <thierry.reding@gmail.com>
+
+--yr/DzoowOgTDcSCF
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlmahWAACgkQ3SOs138+
+s6FpSA/+M1LOfcDighjGNT30Mg2BweHOjofGflgkNv2iFm2fP2ywvZW8+2GqwBII
++X0DK4YnzywZANeyO3QtH+p5PoNB4PZsFVfkgoLFYR2Rry16EllckT1SuFQHvcb9
+sj7msnrir26TEK3r8uAFpm+4K30RldFiGkrNfND+Ai1IUIjwCW2TJ27x164vVT1Z
+a8J8tkyLoLpevUem6p7nOvPjLhauG38y4ldQl5WuWBF2y/fGNuVHWongYGmdJJwY
+jpxXyMqNg/H4tHrcFqVOiSblBfRr+DA6xB3KJqrds/iPCAyHDTdpGq3QLxmZljf+
+RAH+Z0Qav69lH4T7xuzcBbZmp5Jihs44xvJx9RVgRxYnMlx3hrX6MNbwoPsl3Gjj
+7uYB3IWuGpKWLG/dMmCRBn2ejp6+bMBhDc5x0Bs88V8sE3r99j30DBOWa5uoOKQ4
+1j2ggJ6KEd1GE5Als55XbpUylAr3Y76xkncQH9YQRKeex8JAqcIsoAjB3LBCy1Az
+dauV34lZZ81CbNU0l82NlE7DCJOuCdr6dzsnhe47mOaipxpffwdWGkjxHPJatYr0
+aDWY85wubH0TALSj9XlYFapLKtn3q8dOLtbwvkwU5QWe85hR2OQCyoI1BYfGIxTc
+96Xiyj49I2QGa6V9cNz2ZCuyPHL2qCrcdlU0+vL9Byj9fdCqnh4=
+=xq8L
+-----END PGP SIGNATURE-----
+
+--yr/DzoowOgTDcSCF--
