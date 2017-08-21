@@ -1,196 +1,94 @@
 Return-Path: <SRS0=C9z+=7X=rere.qmqm.pl=mirq-linux@kernel.org>
 Date: Tue, 22 Aug 2017 00:03:30 +0200
-Message-Id: <b9e0859f8717aee7fbb0784bfe82b65759ba095a.1503352742.git.mirq-linux@rere.qmqm.pl>
+Message-Id: <e4809bae1406bc2e5dfc90644085352d5a5a9d61.1503352742.git.mirq-linux@rere.qmqm.pl>
 In-Reply-To: <cover.1503352742.git.mirq-linux@rere.qmqm.pl>
 References: <cover.1503352742.git.mirq-linux@rere.qmqm.pl>
 From: =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>
-Subject: [PATCH v2 1/7] iio: accel: kxcjk1003: refactor ODR setting
+Subject: [PATCH v2 2/7] iio: accel: kxcjk1013: fix INT_CTRL/INT_SRC1 bit names
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 Cc: linux-iio@vger.kernel.org
 List-ID: <linux-iio@vger.kernel.org>
 
-Refactor ODR/WUF setting code in preparation of KXTF9 support.
+Fix INT_CTRL1 bit names to match register name and add names
+for INT_SRC1 bits.
 
 Signed-off-by: Michał Mirosław <mirq-linux@rere.qmqm.pl>
 ---
- drivers/iio/accel/kxcjk-1013.c | 102 ++++++++++++++++++-----------------------
- 1 file changed, 45 insertions(+), 57 deletions(-)
+ drivers/iio/accel/kxcjk-1013.c | 23 ++++++++++++++---------
+ 1 file changed, 14 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-index 3f968c46e667..33e4b98f39fc 100644
+index 33e4b98f39fc..7828570d87d2 100644
 --- a/drivers/iio/accel/kxcjk-1013.c
 +++ b/drivers/iio/accel/kxcjk-1013.c
-@@ -128,15 +128,27 @@ enum kxcjk1013_range {
- 	KXCJK1013_RANGE_8G,
- };
- 
--static const struct {
-+struct kx_odr_map {
- 	int val;
- 	int val2;
- 	int odr_bits;
--} samp_freq_table[] = { {0, 781000, 0x08}, {1, 563000, 0x09},
--			{3, 125000, 0x0A}, {6, 250000, 0x0B}, {12, 500000, 0},
--			{25, 0, 0x01}, {50, 0, 0x02}, {100, 0, 0x03},
--			{200, 0, 0x04}, {400, 0, 0x05}, {800, 0, 0x06},
--			{1600, 0, 0x07} };
-+	int wuf_bits;
-+};
+@@ -67,14 +67,19 @@
+ #define KXCJK1013_REG_CTRL1_BIT_GSEL1	BIT(4)
+ #define KXCJK1013_REG_CTRL1_BIT_GSEL0	BIT(3)
+ #define KXCJK1013_REG_CTRL1_BIT_WUFE	BIT(1)
+-#define KXCJK1013_REG_INT_REG1_BIT_IEA	BIT(4)
+-#define KXCJK1013_REG_INT_REG1_BIT_IEN	BIT(5)
 +
-+static const struct kx_odr_map samp_freq_table[] = {
-+	{ 0, 781000, 0x08, 0x00 },
-+	{ 1, 563000, 0x09, 0x01 },
-+	{ 3, 125000, 0x0A, 0x02 },
-+	{ 6, 250000, 0x0B, 0x03 },
-+	{ 12, 500000, 0x00, 0x04 },
-+	{ 25, 0, 0x01, 0x05 },
-+	{ 50, 0, 0x02, 0x06 },
-+	{ 100, 0, 0x03, 0x06 },
-+	{ 200, 0, 0x04, 0x06 },
-+	{ 400, 0, 0x05, 0x06 },
-+	{ 800, 0, 0x06, 0x06 },
-+	{ 1600, 0, 0x07, 0x06 },
-+};
++#define KXCJK1013_REG_INT_CTRL1_BIT_IEL	BIT(3)
++#define KXCJK1013_REG_INT_CTRL1_BIT_IEA	BIT(4)
++#define KXCJK1013_REG_INT_CTRL1_BIT_IEN	BIT(5)
  
- /* Refer to section 4 of the specification */
- static const struct {
-@@ -198,23 +210,6 @@ static const struct {
- 			      {19163, 1, 0},
- 			      {38326, 0, 1} };
+ #define KXCJK1013_DATA_MASK_12_BIT	0x0FFF
+ #define KXCJK1013_MAX_STARTUP_TIME_US	100000
  
--static const struct {
--	int val;
--	int val2;
--	int odr_bits;
--} wake_odr_data_rate_table[] = { {0, 781000, 0x00},
--				 {1, 563000, 0x01},
--				 {3, 125000, 0x02},
--				 {6, 250000, 0x03},
--				 {12, 500000, 0x04},
--				 {25, 0, 0x05},
--				 {50, 0, 0x06},
--				 {100, 0, 0x06},
--				 {200, 0, 0x06},
--				 {400, 0, 0x06},
--				 {800, 0, 0x06},
--				 {1600, 0, 0x06} };
--
- static int kxcjk1013_set_mode(struct kxcjk1013_data *data,
- 			      enum kxcjk1013_mode mode)
- {
-@@ -547,28 +542,30 @@ static int kxcjk1013_setup_new_data_interrupt(struct kxcjk1013_data *data,
- 	return 0;
- }
+ #define KXCJK1013_SLEEP_DELAY_MS	2000
  
--static int kxcjk1013_convert_freq_to_bit(int val, int val2)
-+static const struct kx_odr_map *kxcjk1013_find_odr_value(
-+	const struct kx_odr_map *map, size_t map_size, int val, int val2)
- {
- 	int i;
- 
--	for (i = 0; i < ARRAY_SIZE(samp_freq_table); ++i) {
--		if (samp_freq_table[i].val == val &&
--			samp_freq_table[i].val2 == val2) {
--			return samp_freq_table[i].odr_bits;
--		}
-+	for (i = 0; i < map_size; ++i) {
-+		if (map[i].val == val && map[i].val2 == val2)
-+			return &map[i];
- 	}
- 
--	return -EINVAL;
-+	return ERR_PTR(-EINVAL);
- }
- 
--static int kxcjk1013_convert_wake_odr_to_bit(int val, int val2)
-+static int kxcjk1013_convert_odr_value(const struct kx_odr_map *map,
-+				       size_t map_size, int odr_bits,
-+				       int *val, int *val2)
- {
- 	int i;
- 
--	for (i = 0; i < ARRAY_SIZE(wake_odr_data_rate_table); ++i) {
--		if (wake_odr_data_rate_table[i].val == val &&
--			wake_odr_data_rate_table[i].val2 == val2) {
--			return wake_odr_data_rate_table[i].odr_bits;
-+	for (i = 0; i < map_size; ++i) {
-+		if (map[i].odr_bits == odr_bits) {
-+			*val = map[i].val;
-+			*val2 = map[i].val2;
-+			return IIO_VAL_INT_PLUS_MICRO;
- 		}
- 	}
- 
-@@ -578,16 +575,19 @@ static int kxcjk1013_convert_wake_odr_to_bit(int val, int val2)
- static int kxcjk1013_set_odr(struct kxcjk1013_data *data, int val, int val2)
- {
- 	int ret;
--	int odr_bits;
- 	enum kxcjk1013_mode store_mode;
-+	const struct kx_odr_map *odr_setting;
- 
- 	ret = kxcjk1013_get_mode(data, &store_mode);
- 	if (ret < 0)
- 		return ret;
- 
--	odr_bits = kxcjk1013_convert_freq_to_bit(val, val2);
--	if (odr_bits < 0)
--		return odr_bits;
-+	odr_setting = kxcjk1013_find_odr_value(samp_freq_table,
-+					       ARRAY_SIZE(samp_freq_table),
-+					       val, val2);
++#define KXCJK1013_REG_INT_SRC1_BIT_WUFS	BIT(1)
++#define KXCJK1013_REG_INT_SRC1_BIT_DRDY	BIT(4)
 +
-+	if (IS_ERR(odr_setting))
-+		return PTR_ERR(odr_setting);
- 
- 	/* To change ODR, the chip must be set to STANDBY as per spec */
- 	ret = kxcjk1013_set_mode(data, STANDBY);
-@@ -595,20 +595,16 @@ static int kxcjk1013_set_odr(struct kxcjk1013_data *data, int val, int val2)
- 		return ret;
- 
- 	ret = i2c_smbus_write_byte_data(data->client, KXCJK1013_REG_DATA_CTRL,
--					odr_bits);
-+					odr_setting->odr_bits);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error writing data_ctrl\n");
- 		return ret;
+ #define KXCJK1013_REG_INT_SRC2_BIT_ZP	BIT(0)
+ #define KXCJK1013_REG_INT_SRC2_BIT_ZN	BIT(1)
+ #define KXCJK1013_REG_INT_SRC2_BIT_YP	BIT(2)
+@@ -336,9 +341,9 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
  	}
  
--	data->odr_bits = odr_bits;
--
--	odr_bits = kxcjk1013_convert_wake_odr_to_bit(val, val2);
--	if (odr_bits < 0)
--		return odr_bits;
-+	data->odr_bits = odr_setting->odr_bits;
+ 	if (data->active_high_intr)
+-		ret |= KXCJK1013_REG_INT_REG1_BIT_IEA;
++		ret |= KXCJK1013_REG_INT_CTRL1_BIT_IEA;
+ 	else
+-		ret &= ~KXCJK1013_REG_INT_REG1_BIT_IEA;
++		ret &= ~KXCJK1013_REG_INT_CTRL1_BIT_IEA;
  
- 	ret = i2c_smbus_write_byte_data(data->client, KXCJK1013_REG_CTRL2,
--					odr_bits);
-+					odr_setting->wuf_bits);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev, "Error writing reg_ctrl2\n");
- 		return ret;
-@@ -625,17 +621,9 @@ static int kxcjk1013_set_odr(struct kxcjk1013_data *data, int val, int val2)
+ 	ret = i2c_smbus_write_byte_data(data->client, KXCJK1013_REG_INT_CTRL1,
+ 					ret);
+@@ -444,9 +449,9 @@ static int kxcjk1013_setup_any_motion_interrupt(struct kxcjk1013_data *data,
+ 	}
  
- static int kxcjk1013_get_odr(struct kxcjk1013_data *data, int *val, int *val2)
- {
--	int i;
--
--	for (i = 0; i < ARRAY_SIZE(samp_freq_table); ++i) {
--		if (samp_freq_table[i].odr_bits == data->odr_bits) {
--			*val = samp_freq_table[i].val;
--			*val2 = samp_freq_table[i].val2;
--			return IIO_VAL_INT_PLUS_MICRO;
--		}
--	}
--
--	return -EINVAL;
-+	return kxcjk1013_convert_odr_value(samp_freq_table,
-+					   ARRAY_SIZE(samp_freq_table),
-+					   data->odr_bits, val, val2);
- }
+ 	if (status)
+-		ret |= KXCJK1013_REG_INT_REG1_BIT_IEN;
++		ret |= KXCJK1013_REG_INT_CTRL1_BIT_IEN;
+ 	else
+-		ret &= ~KXCJK1013_REG_INT_REG1_BIT_IEN;
++		ret &= ~KXCJK1013_REG_INT_CTRL1_BIT_IEN;
  
- static int kxcjk1013_get_acc_reg(struct kxcjk1013_data *data, int axis)
+ 	ret = i2c_smbus_write_byte_data(data->client, KXCJK1013_REG_INT_CTRL1,
+ 					ret);
+@@ -504,9 +509,9 @@ static int kxcjk1013_setup_new_data_interrupt(struct kxcjk1013_data *data,
+ 	}
+ 
+ 	if (status)
+-		ret |= KXCJK1013_REG_INT_REG1_BIT_IEN;
++		ret |= KXCJK1013_REG_INT_CTRL1_BIT_IEN;
+ 	else
+-		ret &= ~KXCJK1013_REG_INT_REG1_BIT_IEN;
++		ret &= ~KXCJK1013_REG_INT_CTRL1_BIT_IEN;
+ 
+ 	ret = i2c_smbus_write_byte_data(data->client, KXCJK1013_REG_INT_CTRL1,
+ 					ret);
+@@ -1039,7 +1044,7 @@ static irqreturn_t kxcjk1013_event_handler(int irq, void *private)
+ 		goto ack_intr;
+ 	}
+ 
+-	if (ret & 0x02) {
++	if (ret & KXCJK1013_REG_INT_SRC1_BIT_WUFS) {
+ 		ret = i2c_smbus_read_byte_data(data->client,
+ 					       KXCJK1013_REG_INT_SRC2);
+ 		if (ret < 0) {
 -- 
 2.11.0
