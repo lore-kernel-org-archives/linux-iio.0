@@ -1,77 +1,41 @@
-Return-Path: <SRS0=9oGh=7X=oracle.com=dan.carpenter@kernel.org>
-Date: Mon, 21 Aug 2017 13:11:03 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH] iio staging: tsl2x7x: clean up limit checks
-Message-ID: <20170821101103.sysrgce7qgzn2ltx@mwanda>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pg0-f68.google.com ([74.125.83.68]:37333 "EHLO
+        mail-pg0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754033AbdHUQoB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 21 Aug 2017 12:44:01 -0400
+From: Arvind Yadav <arvind.yadav.cs@gmail.com>
+To: arnd@arndb.de, gregkh@linuxfoundation.org, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, lars@metafoo.de
+Cc: linux-kernel@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-iio@vger.kernel.org
+Subject: [PATCH 4/4] staging: iio: tsl2x7x: constify i2c_device_id
+Date: Mon, 21 Aug 2017 22:13:51 +0530
+Message-Id: <1503333831-26300-1-git-send-email-arvind.yadav.cs@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-The second part of this patch is probably the most interesting.  We
-use "TSL2X7X_MAX_LUX_TABLE_SIZE * 3" as the limit instead of just
-"TSL2X7X_MAX_LUX_TABLE_SIZE".  It creates a static checker warning that
-we are going of of bounds, but in real life we always hit the break
-statement on the last element so it's fine.
+i2c_device_id are not supposed to change at runtime. All functions
+working with i2c_device_id provided by <linux/i2c.h> work with
+const i2c_device_id. So mark the non-const structs as const.
 
-The situation is that we normally have arrays with 3 elements of struct
-tsl2x7x_lux which has 3 unsigned integers.  If we load the table with
-sysfs then we're allow to have 9 elements instead.
+Signed-off-by: Arvind Yadav <arvind.yadav.cs@gmail.com>
+---
+ drivers/staging/iio/light/tsl2x7x.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-So the size of the default table in bytes is sizeof(int) times 3 struct
-members times 3 elements.  The original code wrote it as sizeof(int)
-times the number of elements in the bigger table (9).  It happens that
-9 is the same thing as 3 * 3 but expressing it that way is misleading.
-
-For the second part of the patch, the original code just had an extra
-"multiply by three" and now that is removed.  The last element in the
-array is always zeroed memory whether this uses the default tables or it
-gets loaded with sysfs so we always hit the break statement anyway.
-
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-
-diff --git a/drivers/staging/iio/light/tsl2x7x.h b/drivers/staging/iio/light/tsl2x7x.h
-index ecae92211216..1beb8d2eb848 100644
---- a/drivers/staging/iio/light/tsl2x7x.h
-+++ b/drivers/staging/iio/light/tsl2x7x.h
-@@ -23,10 +23,6 @@
- #define __TSL2X7X_H
- #include <linux/pm.h>
- 
--/* Max number of segments allowable in LUX table */
--#define TSL2X7X_MAX_LUX_TABLE_SIZE		9
--#define MAX_DEFAULT_TABLE_BYTES (sizeof(int) * TSL2X7X_MAX_LUX_TABLE_SIZE)
--
- struct iio_dev;
- 
- struct tsl2x7x_lux {
-@@ -35,6 +31,11 @@ struct tsl2x7x_lux {
- 	unsigned int ch1;
- };
- 
-+/* Max number of segments allowable in LUX table */
-+#define TSL2X7X_MAX_LUX_TABLE_SIZE		9
-+/* The default tables are all 3 elements */
-+#define MAX_DEFAULT_TABLE_BYTES (sizeof(struct tsl2x7x_lux) * 3)
-+
- /**
-  * struct tsl2x7x_default_settings - power on defaults unless
-  *                                   overridden by platform data.
 diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
-index 786e93f16ce9..2db1715ff659 100644
+index 1467199..9b4425d 100644
 --- a/drivers/staging/iio/light/tsl2x7x.c
 +++ b/drivers/staging/iio/light/tsl2x7x.c
-@@ -1113,7 +1113,7 @@ static ssize_t in_illuminance0_lux_table_show(struct device *dev,
- 	int i = 0;
- 	int offset = 0;
+@@ -2010,7 +2010,7 @@ static int tsl2x7x_remove(struct i2c_client *client)
+ 	return 0;
+ }
  
--	while (i < (TSL2X7X_MAX_LUX_TABLE_SIZE * 3)) {
-+	while (i < TSL2X7X_MAX_LUX_TABLE_SIZE) {
- 		offset += snprintf(buf + offset, PAGE_SIZE, "%u,%u,%u,",
- 			chip->tsl2x7x_device_lux[i].ratio,
- 			chip->tsl2x7x_device_lux[i].ch0,
+-static struct i2c_device_id tsl2x7x_idtable[] = {
++static const struct i2c_device_id tsl2x7x_idtable[] = {
+ 	{ "tsl2571", tsl2571 },
+ 	{ "tsl2671", tsl2671 },
+ 	{ "tmd2671", tmd2671 },
+-- 
+2.7.4
+
