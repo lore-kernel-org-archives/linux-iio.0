@@ -1,21 +1,27 @@
-Return-Path: <jonathan.cameron@huawei.com>
-Date: Tue, 22 Aug 2017 13:35:53 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from szxga05-in.huawei.com ([45.249.212.191]:4537 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932609AbdHVMij (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Aug 2017 08:38:39 -0400
+Date: Tue, 22 Aug 2017 13:38:18 +0100
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 To: Akinobu Mita <akinobu.mita@gmail.com>
 CC: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-        <linux-iio@vger.kernel.org>, Daniel Baluta <daniel.baluta@gmail.com>
+        <linux-iio@vger.kernel.org>,
+        Daniel Baluta <daniel.baluta@gmail.com>
 Subject: Re: [PATCH v2 11/11] iio: adc: ti-ads1015: add threshold event
  support
-Message-ID: <20170822133553.00006666@huawei.com>
+Message-ID: <20170822133818.00006183@huawei.com>
 In-Reply-To: <CAC5umyjpakK1Lqac0i-fnO_CSU4vGu4UqDKjTRowSD+Fpyw9bw@mail.gmail.com>
 References: <1500564267-8613-1-git-send-email-akinobu.mita@gmail.com>
-	<1500564267-8613-12-git-send-email-akinobu.mita@gmail.com>
-	<20170723130143.474dbe6d@kernel.org>
-	<20170820120512.31c8e98a@archlinux>
-	<CAC5umyjpakK1Lqac0i-fnO_CSU4vGu4UqDKjTRowSD+Fpyw9bw@mail.gmail.com>
+ <1500564267-8613-12-git-send-email-akinobu.mita@gmail.com>
+ <20170723130143.474dbe6d@kernel.org>
+ <20170820120512.31c8e98a@archlinux>
+ <CAC5umyjpakK1Lqac0i-fnO_CSU4vGu4UqDKjTRowSD+Fpyw9bw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="US-ASCII"
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 On Tue, 22 Aug 2017 19:20:20 +0900
 Akinobu Mita <akinobu.mita@gmail.com> wrote:
@@ -53,7 +59,7 @@ Akinobu Mita <akinobu.mita@gmail.com> wrote:
 > I have sent version 3 of this series on 2017-07-31 that included
 > a fix for the comparator polarity field setting in config register.
 
-Sorry, I missed that for some reason when picking these up.
+Sorry, I missed that for some reason when picking these 
 
 > 
 > Should I send a incremental patch for the missing part to the togreg
@@ -645,3 +651,4 @@ Jonathan
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
