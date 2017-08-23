@@ -1,313 +1,357 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eddie.linux-mips.org ([148.251.95.138]:36776 "EHLO
-        cvs.linux-mips.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932995AbdHVOgP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Aug 2017 10:36:15 -0400
-Received: (from localhost user: 'ladis' uid#1021 fake: STDIN
-        (ladis@eddie.linux-mips.org)) by eddie.linux-mips.org
-        id S23993195AbdHVOgNIBFVz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 22 Aug 2017 16:36:13 +0200
-Date: Tue, 22 Aug 2017 16:36:02 +0200
-From: Ladislav Michl <ladis@linux-mips.org>
-To: Akinobu Mita <akinobu.mita@gmail.com>
-Cc: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-        linux-iio@vger.kernel.org, Daniel Baluta <daniel.baluta@gmail.com>
+Return-Path: <akinobu.mita@gmail.com>
+MIME-Version: 1.0
+In-Reply-To: <20170822143602.fknflnomr6ng7min@lenoch>
+References: <1500564267-8613-1-git-send-email-akinobu.mita@gmail.com>
+ <1500564267-8613-7-git-send-email-akinobu.mita@gmail.com> <20170723123618.3895caea@kernel.org>
+ <20170820115730.61d0d3bc@archlinux> <20170821210044.q2czi5gpkwx2ex5u@lenoch>
+ <CAC5umygwstJv0aeWELWz5OL04zdS3T=zRZkVjPYxZ2iTerU=Ww@mail.gmail.com> <20170822143602.fknflnomr6ng7min@lenoch>
+From: Akinobu Mita <akinobu.mita@gmail.com>
+Date: Wed, 23 Aug 2017 22:57:14 +0900
+Message-ID: <CAC5umygnP1OqZL96MqhH4OLBxHaqPGQ8wi2tdhyXQMdCyK6K-A@mail.gmail.com>
 Subject: Re: [PATCH v2 06/11] iio: adc: ti-ads1015: add adequate wait time to
  get correct conversion
-Message-ID: <20170822143602.fknflnomr6ng7min@lenoch>
-References: <1500564267-8613-1-git-send-email-akinobu.mita@gmail.com>
- <1500564267-8613-7-git-send-email-akinobu.mita@gmail.com>
- <20170723123618.3895caea@kernel.org>
- <20170820115730.61d0d3bc@archlinux>
- <20170821210044.q2czi5gpkwx2ex5u@lenoch>
- <CAC5umygwstJv0aeWELWz5OL04zdS3T=zRZkVjPYxZ2iTerU=Ww@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-In-Reply-To: <CAC5umygwstJv0aeWELWz5OL04zdS3T=zRZkVjPYxZ2iTerU=Ww@mail.gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Ladislav Michl <ladis@linux-mips.org>
+Cc: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>, linux-iio@vger.kernel.org,
+	Daniel Baluta <daniel.baluta@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, Aug 22, 2017 at 07:03:12PM +0900, Akinobu Mita wrote:
-> 2017-08-22 6:00 GMT+09:00 Ladislav Michl <ladis@linux-mips.org>:
-> > On Sun, Aug 20, 2017 at 11:57:30AM +0100, Jonathan Cameron wrote:
-> >> On Sun, 23 Jul 2017 12:36:18 +0100
-> >> Jonathan Cameron <jic23@kernel.org> wrote:
-> >>
-> >> > On Fri, 21 Jul 2017 00:24:22 +0900
-> >> > Akinobu Mita <akinobu.mita@gmail.com> wrote:
-> >> >
-> >> > > This driver assumes that the device is operating in the continuous
-> >> > > conversion mode which performs the conversion continuously.  So this driver
-> >> > > inserts a wait time before reading the conversion register if the
-> >> > > configuration is changed from a previous request.
-> >> > >
-> >> > > Currently, the wait time is only the period required for a single
-> >> > > conversion that is calculated as the reciprocal of the sampling frequency.
-> >> > > However we also need to wait for the the previous conversion to complete.
-> >> > > Otherwise we probably get the conversion result for the previous
-> >> > > configuration when the sampling frequency is lower.
-> >> > >
-> >> > > Cc: Daniel Baluta <daniel.baluta@gmail.com>
-> >> > > Cc: Jonathan Cameron <jic23@kernel.org>
-> >> > > Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
-> >> > Assuming Daniel is happy with these, I propose to take these
-> >> > first 6 through the fixes-togreg branch and mark them all for stable.
-> >>
-> >> I changed my mind on this given the late staging in the cycle and
-> >> am pushing them all through the togreg branch.  The fixes can then
-> >> be picked up by stable post merge window which may be the quickest
-> >> route at the moment!
-> >
-> > Tested this patch serie and something is still odd, see bellow...
-> > Once sorted out, proper patches will be generated.
-> >
-> >>
-> >> Thanks,
-> >>
-> >> Jonathan
-> >> >
-> >> > The rest may well have to wait on those patches coming back
-> >> > around and into the togreg branch of iio.git.
-> >> >
-> >> > Hence it may be at least a few weeks.
-> >> >
-> >> > Jonathan
-> >> > > ---
-> >> > >  drivers/iio/adc/ti-ads1015.c | 31 +++++++++++++++++++------------
-> >> > >  1 file changed, 19 insertions(+), 12 deletions(-)
-> >> > >
-> >> > > diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
-> >> > > index 1c475e2..9c501e5 100644
-> >> > > --- a/drivers/iio/adc/ti-ads1015.c
-> >> > > +++ b/drivers/iio/adc/ti-ads1015.c
-> >> > > @@ -242,27 +242,34 @@ static
-> >> > >  int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *val)
-> >> > >  {
-> >> > >   int ret, pga, dr, conv_time;
-> >> > > - bool change;
-> >> > > + unsigned int old, mask, cfg;
-> >> > >
-> >> > >   if (chan < 0 || chan >= ADS1015_CHANNELS)
-> >> > >           return -EINVAL;
-> >> > >
-> >> > > + ret = regmap_read(data->regmap, ADS1015_CFG_REG, &old);
-> >> > > + if (ret)
-> >> > > +         return ret;
-> >> > > +
-> >> > >   pga = data->channel_data[chan].pga;
-> >> > >   dr = data->channel_data[chan].data_rate;
-> >> > > + mask = ADS1015_CFG_MUX_MASK | ADS1015_CFG_PGA_MASK |
-> >> > > +         ADS1015_CFG_DR_MASK;
-> >> > > + cfg = chan << ADS1015_CFG_MUX_SHIFT | pga << ADS1015_CFG_PGA_SHIFT |
-> >> > > +         dr << ADS1015_CFG_DR_SHIFT;
-> >> > >
-> >> > > - ret = regmap_update_bits_check(data->regmap, ADS1015_CFG_REG,
-> >> > > -                                ADS1015_CFG_MUX_MASK |
-> >> > > -                                ADS1015_CFG_PGA_MASK |
-> >> > > -                                ADS1015_CFG_DR_MASK,
-> >> > > -                                chan << ADS1015_CFG_MUX_SHIFT |
-> >> > > -                                pga << ADS1015_CFG_PGA_SHIFT |
-> >> > > -                                dr << ADS1015_CFG_DR_SHIFT,
-> >> > > -                                &change);
-> >> > > - if (ret < 0)
-> >> > > + cfg = (old & ~mask) | (cfg & mask);
-> >> > > +
-> >> > > + ret = regmap_write(data->regmap, ADS1015_CFG_REG, cfg);
-> >> > > + if (ret)
-> >> > >           return ret;
-> >> > >
-> >> > > - if (change || data->conv_invalid) {
-> >> > > -         conv_time = DIV_ROUND_UP(USEC_PER_SEC, data->data_rate[dr]);
-> >> > > + if (old != cfg || data->conv_invalid) {
-> >> > > +         int dr_old = (old & ADS1015_CFG_DR_MASK) >>
-> >> > > +                         ADS1015_CFG_DR_SHIFT;
-> >> > > +
-> >> > > +         conv_time = DIV_ROUND_UP(USEC_PER_SEC, data->data_rate[dr_old]);
-> >> > > +         conv_time += DIV_ROUND_UP(USEC_PER_SEC, data->data_rate[dr]);
-> >> > >           usleep_range(conv_time, conv_time + 1);
-> >> > >           data->conv_invalid = false;
-> >> > >   }
-> >
-> > Btw, this could be optimized futher this way:
-> > --- a/drivers/iio/adc/ti-ads1015.c
-> > +++ b/drivers/iio/adc/ti-ads1015.c
-> > @@ -240,7 +240,7 @@ static int ads1015_set_power_state(struct ads1015_data *data, bool on)
-> >  static
-> >  int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *val)
-> >  {
-> > -       int ret, pga, dr, conv_time;
-> > +       int ret, pga, dr, dr_old, conv_time;
-> >         unsigned int old, mask, cfg;
-> >
-> >         if (chan < 0 || chan >= ADS1015_CHANNELS)
-> > @@ -256,17 +256,14 @@ int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *val)
-> >                 ADS1015_CFG_DR_MASK;
-> >         cfg = chan << ADS1015_CFG_MUX_SHIFT | pga << ADS1015_CFG_PGA_SHIFT |
-> >                 dr << ADS1015_CFG_DR_SHIFT;
-> > -
-> >         cfg = (old & ~mask) | (cfg & mask);
-> >
-> > -       ret = regmap_write(data->regmap, ADS1015_CFG_REG, cfg);
-> > -       if (ret)
-> > -               return ret;
-> > -
-> >         if (old != cfg || data->conv_invalid) {
-> > -               int dr_old = (old & ADS1015_CFG_DR_MASK) >>
-> > -                               ADS1015_CFG_DR_SHIFT;
-> > +               ret = regmap_write(data->regmap, ADS1015_CFG_REG, cfg);
-> > +               if (ret)
-> > +                       return ret;
-> 
-> You can also skip config register write in the case old == cfg &&
-> data->conv_invalid.
-
-Yes, something like this:
---- a/drivers/iio/adc/ti-ads1015.c
-+++ b/drivers/iio/adc/ti-ads1015.c
-@@ -240,7 +240,7 @@ static int ads1015_set_power_state(struct ads1015_data *data, bool on)
- static
- int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *val)
- {
--	int ret, pga, dr, conv_time;
-+	int ret, pga, dr, dr_old, conv_time;
- 	unsigned int old, mask, cfg;
- 
- 	if (chan < 0 || chan >= ADS1015_CHANNELS)
-@@ -256,17 +256,16 @@ int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *val)
- 		ADS1015_CFG_DR_MASK;
- 	cfg = chan << ADS1015_CFG_MUX_SHIFT | pga << ADS1015_CFG_PGA_SHIFT |
- 		dr << ADS1015_CFG_DR_SHIFT;
+2017-08-22 23:36 GMT+09:00 Ladislav Michl <ladis@linux-mips.org>:
+> On Tue, Aug 22, 2017 at 07:03:12PM +0900, Akinobu Mita wrote:
+>> 2017-08-22 6:00 GMT+09:00 Ladislav Michl <ladis@linux-mips.org>:
+>> > On Sun, Aug 20, 2017 at 11:57:30AM +0100, Jonathan Cameron wrote:
+>> >> On Sun, 23 Jul 2017 12:36:18 +0100
+>> >> Jonathan Cameron <jic23@kernel.org> wrote:
+>> >>
+>> >> > On Fri, 21 Jul 2017 00:24:22 +0900
+>> >> > Akinobu Mita <akinobu.mita@gmail.com> wrote:
+>> >> >
+>> >> > > This driver assumes that the device is operating in the continuou=
+s
+>> >> > > conversion mode which performs the conversion continuously.  So t=
+his driver
+>> >> > > inserts a wait time before reading the conversion register if the
+>> >> > > configuration is changed from a previous request.
+>> >> > >
+>> >> > > Currently, the wait time is only the period required for a single
+>> >> > > conversion that is calculated as the reciprocal of the sampling f=
+requency.
+>> >> > > However we also need to wait for the the previous conversion to c=
+omplete.
+>> >> > > Otherwise we probably get the conversion result for the previous
+>> >> > > configuration when the sampling frequency is lower.
+>> >> > >
+>> >> > > Cc: Daniel Baluta <daniel.baluta@gmail.com>
+>> >> > > Cc: Jonathan Cameron <jic23@kernel.org>
+>> >> > > Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+>> >> > Assuming Daniel is happy with these, I propose to take these
+>> >> > first 6 through the fixes-togreg branch and mark them all for stabl=
+e.
+>> >>
+>> >> I changed my mind on this given the late staging in the cycle and
+>> >> am pushing them all through the togreg branch.  The fixes can then
+>> >> be picked up by stable post merge window which may be the quickest
+>> >> route at the moment!
+>> >
+>> > Tested this patch serie and something is still odd, see bellow...
+>> > Once sorted out, proper patches will be generated.
+>> >
+>> >>
+>> >> Thanks,
+>> >>
+>> >> Jonathan
+>> >> >
+>> >> > The rest may well have to wait on those patches coming back
+>> >> > around and into the togreg branch of iio.git.
+>> >> >
+>> >> > Hence it may be at least a few weeks.
+>> >> >
+>> >> > Jonathan
+>> >> > > ---
+>> >> > >  drivers/iio/adc/ti-ads1015.c | 31 +++++++++++++++++++-----------=
 -
- 	cfg = (old & ~mask) | (cfg & mask);
- 
--	ret = regmap_write(data->regmap, ADS1015_CFG_REG, cfg);
--	if (ret)
--		return ret;
--
--	if (old != cfg || data->conv_invalid) {
--		int dr_old = (old & ADS1015_CFG_DR_MASK) >>
--				ADS1015_CFG_DR_SHIFT;
--
-+	if (old != cfg) {
-+		ret = regmap_write(data->regmap, ADS1015_CFG_REG, cfg);
-+		if (ret)
-+			return ret;
-+		data->conv_invalid = true;
-+	}
-+	if (data->conv_invalid) {
-+		dr_old = (old & ADS1015_CFG_DR_MASK) >> ADS1015_CFG_DR_SHIFT;
- 		conv_time = DIV_ROUND_UP(USEC_PER_SEC, data->data_rate[dr_old]);
- 		conv_time += DIV_ROUND_UP(USEC_PER_SEC, data->data_rate[dr]);
- 		usleep_range(conv_time, conv_time + 1);
+>> >> > >  1 file changed, 19 insertions(+), 12 deletions(-)
+>> >> > >
+>> >> > > diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ad=
+s1015.c
+>> >> > > index 1c475e2..9c501e5 100644
+>> >> > > --- a/drivers/iio/adc/ti-ads1015.c
+>> >> > > +++ b/drivers/iio/adc/ti-ads1015.c
+>> >> > > @@ -242,27 +242,34 @@ static
+>> >> > >  int ads1015_get_adc_result(struct ads1015_data *data, int chan, =
+int *val)
+>> >> > >  {
+>> >> > >   int ret, pga, dr, conv_time;
+>> >> > > - bool change;
+>> >> > > + unsigned int old, mask, cfg;
+>> >> > >
+>> >> > >   if (chan < 0 || chan >=3D ADS1015_CHANNELS)
+>> >> > >           return -EINVAL;
+>> >> > >
+>> >> > > + ret =3D regmap_read(data->regmap, ADS1015_CFG_REG, &old);
+>> >> > > + if (ret)
+>> >> > > +         return ret;
+>> >> > > +
+>> >> > >   pga =3D data->channel_data[chan].pga;
+>> >> > >   dr =3D data->channel_data[chan].data_rate;
+>> >> > > + mask =3D ADS1015_CFG_MUX_MASK | ADS1015_CFG_PGA_MASK |
+>> >> > > +         ADS1015_CFG_DR_MASK;
+>> >> > > + cfg =3D chan << ADS1015_CFG_MUX_SHIFT | pga << ADS1015_CFG_PGA_=
+SHIFT |
+>> >> > > +         dr << ADS1015_CFG_DR_SHIFT;
+>> >> > >
+>> >> > > - ret =3D regmap_update_bits_check(data->regmap, ADS1015_CFG_REG,
+>> >> > > -                                ADS1015_CFG_MUX_MASK |
+>> >> > > -                                ADS1015_CFG_PGA_MASK |
+>> >> > > -                                ADS1015_CFG_DR_MASK,
+>> >> > > -                                chan << ADS1015_CFG_MUX_SHIFT |
+>> >> > > -                                pga << ADS1015_CFG_PGA_SHIFT |
+>> >> > > -                                dr << ADS1015_CFG_DR_SHIFT,
+>> >> > > -                                &change);
+>> >> > > - if (ret < 0)
+>> >> > > + cfg =3D (old & ~mask) | (cfg & mask);
+>> >> > > +
+>> >> > > + ret =3D regmap_write(data->regmap, ADS1015_CFG_REG, cfg);
+>> >> > > + if (ret)
+>> >> > >           return ret;
+>> >> > >
+>> >> > > - if (change || data->conv_invalid) {
+>> >> > > -         conv_time =3D DIV_ROUND_UP(USEC_PER_SEC, data->data_rat=
+e[dr]);
+>> >> > > + if (old !=3D cfg || data->conv_invalid) {
+>> >> > > +         int dr_old =3D (old & ADS1015_CFG_DR_MASK) >>
+>> >> > > +                         ADS1015_CFG_DR_SHIFT;
+>> >> > > +
+>> >> > > +         conv_time =3D DIV_ROUND_UP(USEC_PER_SEC, data->data_rat=
+e[dr_old]);
+>> >> > > +         conv_time +=3D DIV_ROUND_UP(USEC_PER_SEC, data->data_ra=
+te[dr]);
+>> >> > >           usleep_range(conv_time, conv_time + 1);
+>> >> > >           data->conv_invalid =3D false;
+>> >> > >   }
+>> >
+>> > Btw, this could be optimized futher this way:
+>> > --- a/drivers/iio/adc/ti-ads1015.c
+>> > +++ b/drivers/iio/adc/ti-ads1015.c
+>> > @@ -240,7 +240,7 @@ static int ads1015_set_power_state(struct ads1015_=
+data *data, bool on)
+>> >  static
+>> >  int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *=
+val)
+>> >  {
+>> > -       int ret, pga, dr, conv_time;
+>> > +       int ret, pga, dr, dr_old, conv_time;
+>> >         unsigned int old, mask, cfg;
+>> >
+>> >         if (chan < 0 || chan >=3D ADS1015_CHANNELS)
+>> > @@ -256,17 +256,14 @@ int ads1015_get_adc_result(struct ads1015_data *=
+data, int chan, int *val)
+>> >                 ADS1015_CFG_DR_MASK;
+>> >         cfg =3D chan << ADS1015_CFG_MUX_SHIFT | pga << ADS1015_CFG_PGA=
+_SHIFT |
+>> >                 dr << ADS1015_CFG_DR_SHIFT;
+>> > -
+>> >         cfg =3D (old & ~mask) | (cfg & mask);
+>> >
+>> > -       ret =3D regmap_write(data->regmap, ADS1015_CFG_REG, cfg);
+>> > -       if (ret)
+>> > -               return ret;
+>> > -
+>> >         if (old !=3D cfg || data->conv_invalid) {
+>> > -               int dr_old =3D (old & ADS1015_CFG_DR_MASK) >>
+>> > -                               ADS1015_CFG_DR_SHIFT;
+>> > +               ret =3D regmap_write(data->regmap, ADS1015_CFG_REG, cf=
+g);
+>> > +               if (ret)
+>> > +                       return ret;
+>>
+>> You can also skip config register write in the case old =3D=3D cfg &&
+>> data->conv_invalid.
+>
+> Yes, something like this:
+> --- a/drivers/iio/adc/ti-ads1015.c
+> +++ b/drivers/iio/adc/ti-ads1015.c
+> @@ -240,7 +240,7 @@ static int ads1015_set_power_state(struct ads1015_dat=
+a *data, bool on)
+>  static
+>  int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *val=
+)
+>  {
+> -       int ret, pga, dr, conv_time;
+> +       int ret, pga, dr, dr_old, conv_time;
+>         unsigned int old, mask, cfg;
+>
+>         if (chan < 0 || chan >=3D ADS1015_CHANNELS)
+> @@ -256,17 +256,16 @@ int ads1015_get_adc_result(struct ads1015_data *dat=
+a, int chan, int *val)
+>                 ADS1015_CFG_DR_MASK;
+>         cfg =3D chan << ADS1015_CFG_MUX_SHIFT | pga << ADS1015_CFG_PGA_SH=
+IFT |
+>                 dr << ADS1015_CFG_DR_SHIFT;
+> -
+>         cfg =3D (old & ~mask) | (cfg & mask);
+>
+> -       ret =3D regmap_write(data->regmap, ADS1015_CFG_REG, cfg);
+> -       if (ret)
+> -               return ret;
+> -
+> -       if (old !=3D cfg || data->conv_invalid) {
+> -               int dr_old =3D (old & ADS1015_CFG_DR_MASK) >>
+> -                               ADS1015_CFG_DR_SHIFT;
+> -
+> +       if (old !=3D cfg) {
+> +               ret =3D regmap_write(data->regmap, ADS1015_CFG_REG, cfg);
+> +               if (ret)
+> +                       return ret;
+> +               data->conv_invalid =3D true;
+> +       }
+> +       if (data->conv_invalid) {
+> +               dr_old =3D (old & ADS1015_CFG_DR_MASK) >> ADS1015_CFG_DR_=
+SHIFT;
+>                 conv_time =3D DIV_ROUND_UP(USEC_PER_SEC, data->data_rate[=
+dr_old]);
+>                 conv_time +=3D DIV_ROUND_UP(USEC_PER_SEC, data->data_rate=
+[dr]);
+>                 usleep_range(conv_time, conv_time + 1);
+>
+> I was temped to use goto, but compiler will probably optimize anyway.
 
-I was temped to use goto, but compiler will probably optimize anyway.
+Looks good to me.
 
-> > +               dr_old = (old & ADS1015_CFG_DR_MASK) >> ADS1015_CFG_DR_SHIFT;
-> >                 conv_time = DIV_ROUND_UP(USEC_PER_SEC, data->data_rate[dr_old]);
-> >                 conv_time += DIV_ROUND_UP(USEC_PER_SEC, data->data_rate[dr]);
-> >                 usleep_range(conv_time, conv_time + 1);
-> >
-> >
-> > Now that conv_time is too picky, at first "ADS1015EVM, ADS1115EVM,
-> > ADS1015EVM-PDK, ADS1115EVM-PDK User Guide (Rev. B)" [*] states at page 16:
-> > "Note that both the ADS1115 and ADS1015 have internal clocks with a ±10%
-> > accuracy. If performing FFT tests, frequencies may appear to be incorrect
-> > as a result of this tolerance range.", so we should add at least those 10%
-> > and at second conv_time + 1 is too precise, increasing number of undesired
-> > interrupts, so adding min(dr_period, dr_old_period) instead of 1 should do
-> > the trick.
-> 
-> Can we just simply do like below?
-> 
->         conv_time = conv_time * 11 / 10
-> 
-> or
-> 
->         conv_time += conv_time / 10;
+>> > +               dr_old =3D (old & ADS1015_CFG_DR_MASK) >> ADS1015_CFG_=
+DR_SHIFT;
+>> >                 conv_time =3D DIV_ROUND_UP(USEC_PER_SEC, data->data_ra=
+te[dr_old]);
+>> >                 conv_time +=3D DIV_ROUND_UP(USEC_PER_SEC, data->data_r=
+ate[dr]);
+>> >                 usleep_range(conv_time, conv_time + 1);
+>> >
+>> >
+>> > Now that conv_time is too picky, at first "ADS1015EVM, ADS1115EVM,
+>> > ADS1015EVM-PDK, ADS1115EVM-PDK User Guide (Rev. B)" [*] states at page=
+ 16:
+>> > "Note that both the ADS1115 and ADS1015 have internal clocks with a =
+=C2=B110%
+>> > accuracy. If performing FFT tests, frequencies may appear to be incorr=
+ect
+>> > as a result of this tolerance range.", so we should add at least those=
+ 10%
+>> > and at second conv_time + 1 is too precise, increasing number of undes=
+ired
+>> > interrupts, so adding min(dr_period, dr_old_period) instead of 1 shoul=
+d do
+>> > the trick.
+>>
+>> Can we just simply do like below?
+>>
+>>         conv_time =3D conv_time * 11 / 10
+>>
+>> or
+>>
+>>         conv_time +=3D conv_time / 10;
+>
+> That's definitely enough. Question is whenever we should care about uslee=
+p_range
+> being only 1us wide. See Documentation/timers/timers-howto.txt
 
-That's definitely enough. Question is whenever we should care about usleep_range
-being only 1us wide. See Documentation/timers/timers-howto.txt
+I have no particular opinion on how large range we should choose for
+the usleep_range call.  The range has been 1us since this driver has
+been committed at first time.
 
-> > But the real showstopper is increasing probability of reading stale result
-> > with lowering sample frequency, to debug this following dirty modification
-> > was made to driver:
-> > --- a/drivers/iio/adc/ti-ads1015.c
-> > +++ b/drivers/iio/adc/ti-ads1015.c
-> > @@ -269,6 +269,11 @@ int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *val)
-> >
-> >                 conv_time = DIV_ROUND_UP(USEC_PER_SEC, data->data_rate[dr_old]);
-> >                 conv_time += DIV_ROUND_UP(USEC_PER_SEC, data->data_rate[dr]);
-> > +               for (ret = 0; ret < 20; ret++) {
-> > +                       regmap_read(data->regmap, ADS1015_CONV_REG, val);
-> > +                       printk("%d -> %d\n", ret, *val);
-> > +                       usleep_range(conv_time, conv_time + 1);
-> > +               }
-> >                 usleep_range(conv_time, conv_time + 1);
-> >                 data->conv_invalid = false;
-> >         }
-> >
-> > With ADS1015 and sampling frequency set to 128 SPS this leads to:
-> > $ cat in_voltage0_raw && cat in_voltage1_raw
-> > [285276.998382] mode 0
-> > [285277.005096] cfg 4003
-> > [285277.015380] 0 -> 13713
-> > [285277.037109] 1 -> 13713
-> > [285277.058898] 2 -> 13713
-> > [285277.080291] 3 -> 13713
-> > [285277.101715] 4 -> 13713
-> > [285277.123291] 5 -> 13713
-> > [285277.144836] 6 -> 13704
-> > [285277.166503] 7 -> 13704
-> > [285277.188262] 8 -> 13704
-> > [285277.210083] 9 -> 13704
-> > [285277.231811] 10 -> 13704
-> > [285277.253570] 11 -> 13704
-> > [285277.275390] 12 -> 3083
-> > [285277.296936] 13 -> 3083
-> > [285277.318023] 14 -> 3083
-> > [285277.339172] 15 -> 3083
-> > [285277.360076] 16 -> 3083
-> > [285277.381164] 17 -> 3083
-> > [285277.402252] 18 -> 3076
-> > [285277.423339] 19 -> 3076
-> > 192
-> > [285277.463623] cfg 5003
-> > [285277.468933] 0 -> 3076
-> > [285277.489746] 1 -> 3076
-> > [285277.510955] 2 -> 3074
-> > [285277.531585] 3 -> 3074
-> > [285277.552612] 4 -> 3074
-> > [285277.573272] 5 -> 3074
-> > [285277.594207] 6 -> 3074
-> > [285277.615173] 7 -> 3074
-> > [285277.636016] 8 -> 13702
-> > [285277.657073] 9 -> 13702
-> > [285277.678131] 10 -> 13702
-> > [285277.699493] 11 -> 13702
-> > [285277.721374] 12 -> 13702
-> > [285277.742492] 13 -> 13702
-> > [285277.763702] 14 -> 13701
-> > [285277.784820] 15 -> 13701
-> > [285277.806030] 16 -> 13701
-> > [285277.827178] 17 -> 13701
-> > [285277.848480] 18 -> 13701
-> > [285277.869689] 19 -> 13701
-> > 856
-> >
-> > As you can see, it took way longer to switch channel than sampling preriod.
-> > Anyone has a clue what is going on here?
-> 
-> Looks like your device is ADS1115 but you use it as ADS1015.
+If there is a reasonable range other than 1us, it should be prepared as
+a separate patch.  Because it is separate issue from increasing the
+minimum conv_time by 10%.
 
-Package mark reads 03 BOGI, which is indeed ADS1115. That's a shame and I
-have no excuse for it. Previous samples come with BRPI and I didn't check
-this time. Sorry for the noise.
+>> > But the real showstopper is increasing probability of reading stale re=
+sult
+>> > with lowering sample frequency, to debug this following dirty modifica=
+tion
+>> > was made to driver:
+>> > --- a/drivers/iio/adc/ti-ads1015.c
+>> > +++ b/drivers/iio/adc/ti-ads1015.c
+>> > @@ -269,6 +269,11 @@ int ads1015_get_adc_result(struct ads1015_data *d=
+ata, int chan, int *val)
+>> >
+>> >                 conv_time =3D DIV_ROUND_UP(USEC_PER_SEC, data->data_ra=
+te[dr_old]);
+>> >                 conv_time +=3D DIV_ROUND_UP(USEC_PER_SEC, data->data_r=
+ate[dr]);
+>> > +               for (ret =3D 0; ret < 20; ret++) {
+>> > +                       regmap_read(data->regmap, ADS1015_CONV_REG, va=
+l);
+>> > +                       printk("%d -> %d\n", ret, *val);
+>> > +                       usleep_range(conv_time, conv_time + 1);
+>> > +               }
+>> >                 usleep_range(conv_time, conv_time + 1);
+>> >                 data->conv_invalid =3D false;
+>> >         }
+>> >
+>> > With ADS1015 and sampling frequency set to 128 SPS this leads to:
+>> > $ cat in_voltage0_raw && cat in_voltage1_raw
+>> > [285276.998382] mode 0
+>> > [285277.005096] cfg 4003
+>> > [285277.015380] 0 -> 13713
+>> > [285277.037109] 1 -> 13713
+>> > [285277.058898] 2 -> 13713
+>> > [285277.080291] 3 -> 13713
+>> > [285277.101715] 4 -> 13713
+>> > [285277.123291] 5 -> 13713
+>> > [285277.144836] 6 -> 13704
+>> > [285277.166503] 7 -> 13704
+>> > [285277.188262] 8 -> 13704
+>> > [285277.210083] 9 -> 13704
+>> > [285277.231811] 10 -> 13704
+>> > [285277.253570] 11 -> 13704
+>> > [285277.275390] 12 -> 3083
+>> > [285277.296936] 13 -> 3083
+>> > [285277.318023] 14 -> 3083
+>> > [285277.339172] 15 -> 3083
+>> > [285277.360076] 16 -> 3083
+>> > [285277.381164] 17 -> 3083
+>> > [285277.402252] 18 -> 3076
+>> > [285277.423339] 19 -> 3076
+>> > 192
+>> > [285277.463623] cfg 5003
+>> > [285277.468933] 0 -> 3076
+>> > [285277.489746] 1 -> 3076
+>> > [285277.510955] 2 -> 3074
+>> > [285277.531585] 3 -> 3074
+>> > [285277.552612] 4 -> 3074
+>> > [285277.573272] 5 -> 3074
+>> > [285277.594207] 6 -> 3074
+>> > [285277.615173] 7 -> 3074
+>> > [285277.636016] 8 -> 13702
+>> > [285277.657073] 9 -> 13702
+>> > [285277.678131] 10 -> 13702
+>> > [285277.699493] 11 -> 13702
+>> > [285277.721374] 12 -> 13702
+>> > [285277.742492] 13 -> 13702
+>> > [285277.763702] 14 -> 13701
+>> > [285277.784820] 15 -> 13701
+>> > [285277.806030] 16 -> 13701
+>> > [285277.827178] 17 -> 13701
+>> > [285277.848480] 18 -> 13701
+>> > [285277.869689] 19 -> 13701
+>> > 856
+>> >
+>> > As you can see, it took way longer to switch channel than sampling pre=
+riod.
+>> > Anyone has a clue what is going on here?
+>>
+>> Looks like your device is ADS1115 but you use it as ADS1015.
+>
+> Package mark reads 03 BOGI, which is indeed ADS1115. That's a shame and I
+> have no excuse for it. Previous samples come with BRPI and I didn't check
+> this time. Sorry for the noise.
 
-> The slowest sampling rate is 128 SPS for ads1015 and 8 SPS for ads1115
-> when DR field in config register is set to zero.  According to the kernel
-> debug log message that you have added, the device is working with 8 SPS.
-> 
-> > Thank you,
-> >         ladis
-> >
-> > [*] http://www.ti.com/lit/ug/sbau157b/sbau157b.pdf
+No problem. Thanks for testing.
+
+>> The slowest sampling rate is 128 SPS for ads1015 and 8 SPS for ads1115
+>> when DR field in config register is set to zero.  According to the kerne=
+l
+>> debug log message that you have added, the device is working with 8 SPS.
+>>
+>> > Thank you,
+>> >         ladis
+>> >
+>> > [*] http://www.ti.com/lit/ug/sbau157b/sbau157b.pdf
