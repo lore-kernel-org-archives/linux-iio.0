@@ -1,53 +1,67 @@
-Return-Path: <SRS0=Fitd=72=gmail.com=akinobu.mita@kernel.org>
-From: Akinobu Mita <akinobu.mita@gmail.com>
+Return-Path: <SRS0=x3+E=72=linux-mips.org=ladis@kernel.org>
+Date: Thu, 24 Aug 2017 10:25:51 +0200
+Sender: Ladislav Michl <ladis@linux-mips.org>
+From: Ladislav Michl <ladis@linux-mips.org>
 To: linux-iio@vger.kernel.org
-Cc: Akinobu Mita <akinobu.mita@gmail.com>,
-	Daniel Baluta <daniel.baluta@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH] iio: adc: ti-ads1015: fix comparator polarity setting
-Date: Thu, 24 Aug 2017 09:22:57 +0900
-Message-Id: <1503534177-3840-1-git-send-email-akinobu.mita@gmail.com>
+Cc: Daniel Baluta <daniel.baluta@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Akinobu Mita <akinobu.mita@gmail.com>
+Subject: [PATCH 1/2] iio: adc: ti-ads1015: write config register only on
+ change
+Message-ID: <20170824082551.ciqar4kw2oexnnvn@lenoch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 List-ID: <linux-iio@vger.kernel.org>
 
-The comparator polarity field in config register is not correctly
-initialized as per the interrupt trigger setting.  Because the bitfield
-definision is wrong and bit shifting is missed.
+There is no point writing ADS1015_CFG_REG when configuration
+didn't change. Avoid that.
 
-Fixes: d9f39babd8ba ("iio: adc: ti-ads1015: add threshold event support")
 Cc: Daniel Baluta <daniel.baluta@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+Cc: Akinobu Mita <akinobu.mita@gmail.com>
+Signed-off-by: Ladislav Michl <ladis@linux-mips.org>
 ---
- drivers/iio/adc/ti-ads1015.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/iio/adc/ti-ads1015.c | 19 +++++++++----------
+ 1 file changed, 9 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
-index 36078bfc..1dad9f0 100644
+index 7838e39c790c..034e48566ab5 100644
 --- a/drivers/iio/adc/ti-ads1015.c
 +++ b/drivers/iio/adc/ti-ads1015.c
-@@ -52,7 +52,7 @@
+@@ -240,7 +240,7 @@ static int ads1015_set_power_state(struct ads1015_data *data, bool on)
+ static
+ int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *val)
+ {
+-	int ret, pga, dr, conv_time;
++	int ret, pga, dr, dr_old, conv_time;
+ 	unsigned int old, mask, cfg;
  
- #define ADS1015_CFG_COMP_QUE_MASK	GENMASK(1, 0)
- #define ADS1015_CFG_COMP_LAT_MASK	BIT(2)
--#define ADS1015_CFG_COMP_POL_MASK	BIT(2)
-+#define ADS1015_CFG_COMP_POL_MASK	BIT(3)
- #define ADS1015_CFG_COMP_MODE_MASK	BIT(4)
- #define ADS1015_CFG_DR_MASK	GENMASK(7, 5)
- #define ADS1015_CFG_MOD_MASK	BIT(8)
-@@ -1017,10 +1017,12 @@ static int ads1015_probe(struct i2c_client *client,
+ 	if (chan < 0 || chan >= ADS1015_CHANNELS)
+@@ -256,17 +256,16 @@ int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *val)
+ 		ADS1015_CFG_DR_MASK;
+ 	cfg = chan << ADS1015_CFG_MUX_SHIFT | pga << ADS1015_CFG_PGA_SHIFT |
+ 		dr << ADS1015_CFG_DR_SHIFT;
+-
+ 	cfg = (old & ~mask) | (cfg & mask);
  
- 		switch (irq_trig) {
- 		case IRQF_TRIGGER_LOW:
--			cfg_comp |= ADS1015_CFG_COMP_POL_LOW;
-+			cfg_comp |= ADS1015_CFG_COMP_POL_LOW <<
-+					ADS1015_CFG_COMP_POL_SHIFT;
- 			break;
- 		case IRQF_TRIGGER_HIGH:
--			cfg_comp |= ADS1015_CFG_COMP_POL_HIGH;
-+			cfg_comp |= ADS1015_CFG_COMP_POL_HIGH <<
-+					ADS1015_CFG_COMP_POL_SHIFT;
- 			break;
- 		default:
- 			return -EINVAL;
+-	ret = regmap_write(data->regmap, ADS1015_CFG_REG, cfg);
+-	if (ret)
+-		return ret;
+-
+-	if (old != cfg || data->conv_invalid) {
+-		int dr_old = (old & ADS1015_CFG_DR_MASK) >>
+-				ADS1015_CFG_DR_SHIFT;
+-
++	if (old != cfg) {
++		ret = regmap_write(data->regmap, ADS1015_CFG_REG, cfg);
++		if (ret)
++			return ret;
++		data->conv_invalid = true;
++	}
++	if (data->conv_invalid) {
++		dr_old = (old & ADS1015_CFG_DR_MASK) >> ADS1015_CFG_DR_SHIFT;
+ 		conv_time = DIV_ROUND_UP(USEC_PER_SEC, data->data_rate[dr_old]);
+ 		conv_time += DIV_ROUND_UP(USEC_PER_SEC, data->data_rate[dr]);
+ 		usleep_range(conv_time, conv_time + 1);
 -- 
-2.7.4
+2.11.0
