@@ -1,59 +1,53 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.117]:43274 "EHLO vps.pmeerw.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752291AbdHWGlo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 23 Aug 2017 02:41:44 -0400
-Date: Wed, 23 Aug 2017 08:41:43 +0200 (CEST)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-cc: Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: imu: inv_mpu6050: fix missing break in switch
-In-Reply-To: <20170822191324.GA15477@embeddedgus>
-Message-ID: <alpine.DEB.2.20.1708230841050.6913@vps.pmeerw.net>
-References: <20170822191324.GA15477@embeddedgus>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=Fitd=72=gmail.com=akinobu.mita@kernel.org>
+From: Akinobu Mita <akinobu.mita@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: Akinobu Mita <akinobu.mita@gmail.com>,
+	Daniel Baluta <daniel.baluta@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH] iio: adc: ti-ads1015: fix comparator polarity setting
+Date: Thu, 24 Aug 2017 09:22:57 +0900
+Message-Id: <1503534177-3840-1-git-send-email-akinobu.mita@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
+The comparator polarity field in config register is not correctly
+initialized as per the interrupt trigger setting.  Because the bitfield
+definision is wrong and bit shifting is missed.
 
-> Add missing break statement to prevent the code for case
-> IIO_CHAN_INFO_CALIBBIAS falling through to the default case.
-> 
-> Also, add a break to the default case for the switch within
-> case IIO_CHAN_INFO_CALIBBIAS.
+Fixes: d9f39babd8ba ("iio: adc: ti-ads1015: add threshold event support")
+Cc: Daniel Baluta <daniel.baluta@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+---
+ drivers/iio/adc/ti-ads1015.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-fix seems to be cosmetic only...
-
-> Addresses-Coverity-ID: 1357377
-> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
-> ---
-> This issue was reported by Coverity and it was tested by compilation only.
-> Please, verify if this is an actual bug.
-> 
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index 44830bc..6d2268a 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -542,7 +542,9 @@ static int inv_mpu6050_write_raw(struct iio_dev *indio_dev,
->  			break;
->  		default:
->  			result = -EINVAL;
-> +			break;
->  		}
-> +		break;
->  	default:
->  		result = -EINVAL;
->  		break;
-> 
-
+diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
+index 36078bfc..1dad9f0 100644
+--- a/drivers/iio/adc/ti-ads1015.c
++++ b/drivers/iio/adc/ti-ads1015.c
+@@ -52,7 +52,7 @@
+ 
+ #define ADS1015_CFG_COMP_QUE_MASK	GENMASK(1, 0)
+ #define ADS1015_CFG_COMP_LAT_MASK	BIT(2)
+-#define ADS1015_CFG_COMP_POL_MASK	BIT(2)
++#define ADS1015_CFG_COMP_POL_MASK	BIT(3)
+ #define ADS1015_CFG_COMP_MODE_MASK	BIT(4)
+ #define ADS1015_CFG_DR_MASK	GENMASK(7, 5)
+ #define ADS1015_CFG_MOD_MASK	BIT(8)
+@@ -1017,10 +1017,12 @@ static int ads1015_probe(struct i2c_client *client,
+ 
+ 		switch (irq_trig) {
+ 		case IRQF_TRIGGER_LOW:
+-			cfg_comp |= ADS1015_CFG_COMP_POL_LOW;
++			cfg_comp |= ADS1015_CFG_COMP_POL_LOW <<
++					ADS1015_CFG_COMP_POL_SHIFT;
+ 			break;
+ 		case IRQF_TRIGGER_HIGH:
+-			cfg_comp |= ADS1015_CFG_COMP_POL_HIGH;
++			cfg_comp |= ADS1015_CFG_COMP_POL_HIGH <<
++					ADS1015_CFG_COMP_POL_SHIFT;
+ 			break;
+ 		default:
+ 			return -EINVAL;
 -- 
-
-Peter Meerwald-Stadler
-Mobile: +43 664 24 44 418
+2.7.4
