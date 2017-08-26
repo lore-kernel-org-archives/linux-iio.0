@@ -1,29 +1,52 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:58626 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755900AbdHYOhH (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 25 Aug 2017 10:37:07 -0400
-Subject: Re: Offline (more or less) until 3rd September.
-To: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        linux-iio@vger.kernel.org
-References: <20170825092748.00005100@huawei.com>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <c6a426ab-82bb-aa94-c762-e44867688e33@metafoo.de>
-Date: Fri, 25 Aug 2017 16:37:05 +0200
-MIME-Version: 1.0
-In-Reply-To: <20170825092748.00005100@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=giCJ=74=wanadoo.fr=christophe.jaillet@kernel.org>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To: peda@axentia.se,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	kernel-janitors@vger.kernel.org,
+	Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] iio: multiplexer: check memory allocation failure
+Date: Sat, 26 Aug 2017 07:49:52 +0200
+Message-Id: <20170826054952.1449-1-christophe.jaillet@wanadoo.fr>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 08/25/2017 10:27 AM, Jonathan Cameron wrote:
-> Hi All,
-> 
-> I'm going to be in the back end of beyond for a week. This means there won't be
-> a further pull request before the merge window.  It's a bit late anyway but
-> I might have tried to sneak one in if I was at home.
-> 
-> Anyhow, normal service resumes the week after next.
+Check memory allocation failures and return -ENOMEM in such cases, as
+already done few lines above for another memory allocation.
 
-Thanks for all your hard and good work.
+This avoids NULL pointers dereference.
 
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/iio/multiplexer/iio-mux.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/iio/multiplexer/iio-mux.c b/drivers/iio/multiplexer/iio-mux.c
+index 37ba007f8dca..74831fcd0313 100644
+--- a/drivers/iio/multiplexer/iio-mux.c
++++ b/drivers/iio/multiplexer/iio-mux.c
+@@ -285,6 +285,9 @@ static int mux_configure_channel(struct device *dev, struct mux *mux,
+ 	child->ext_info_cache = devm_kzalloc(dev,
+ 					     sizeof(*child->ext_info_cache) *
+ 					     num_ext_info, GFP_KERNEL);
++	if (!child->ext_info_cache)
++		return -ENOMEM;
++
+ 	for (i = 0; i < num_ext_info; ++i) {
+ 		child->ext_info_cache[i].size = -1;
+ 
+@@ -309,6 +312,9 @@ static int mux_configure_channel(struct device *dev, struct mux *mux,
+ 
+ 		child->ext_info_cache[i].data = devm_kmemdup(dev, page, ret + 1,
+ 							     GFP_KERNEL);
++		if (!child->ext_info_cache[i].data)
++			return -ENOMEM;
++
+ 		child->ext_info_cache[i].data[ret] = 0;
+ 		child->ext_info_cache[i].size = ret;
+ 	}
+-- 
+2.11.0
