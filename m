@@ -1,88 +1,83 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from sauhun.de ([88.99.104.3]:49987 "EHLO pokefinder.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751538AbdHNQcZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 14 Aug 2017 12:32:25 -0400
-Date: Mon, 14 Aug 2017 18:32:21 +0200
-From: Wolfram Sang <wsa@the-dreams.de>
-To: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Tony Lindgren <tony@atomide.com>, Lee Jones <lee.jones@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-i2c@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alexandre Courbot <gnurou@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
+Received: from mail-eopbgr00093.outbound.protection.outlook.com ([40.107.0.93]:44400
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1750737AbdHZGJv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 26 Aug 2017 02:09:51 -0400
+Subject: Re: [PATCH] iio: multiplexer: add NULL check on devm_kzalloc() and
+ devm_kmemdup() return values
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "Gustavo A. R. Silva" <garsilva@embeddedor.com>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-        Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Wim Van Sebroeck <wim@iguana.be>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Peter Ujfalusi <peter.ujfalusi@ti.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, linux-omap@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-pwm@vger.kernel.org, rtc-linux@googlegroups.com,
-        linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, alsa-devel@alsa-project.org
-Subject: Re: [PATCH 3/3] mfd: twl: move header file out of I2C realm
-Message-ID: <20170814163221.ef6rxfvtehmpq7qf@ninjato>
-References: <20170521220212.1404-1-wsa@the-dreams.de>
- <20170521220212.1404-4-wsa@the-dreams.de>
- <20170706064453.GH16144@ulmo.fritz.box>
- <20170706070352.xdecvsnremwqed72@dell>
- <20170813133700.tv4ka7anvbzcplr7@ninjato>
- <20170814064247.qvggx4ito4vgjqvs@dell>
- <20170814084340.65morabelapfegph@ninjato>
- <20170814162219.GX8569@atomide.com>
- <c5e65e34-f308-f601-ba0b-d96792591727@linaro.org>
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+References: <20170707045311.GA4535@embeddedgus>
+ <df6ae9c6-8ac7-368b-a1c2-4403387df02b@axentia.se>
+ <0ba9b76f-41f8-3171-2eb7-d9abbe106674@axentia.se>
+ <20170709181023.54458b6c@kernel.org>
+From: Peter Rosin <peda@axentia.se>
+Message-ID: <aaff7b8f-5fc3-e811-b334-42d323dfbf2e@axentia.se>
+Date: Sat, 26 Aug 2017 08:09:43 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="r5bnhd66xto22335"
-In-Reply-To: <c5e65e34-f308-f601-ba0b-d96792591727@linaro.org>
+In-Reply-To: <20170709181023.54458b6c@kernel.org>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On 2017-07-09 19:10, Jonathan Cameron wrote:
+> On Fri, 7 Jul 2017 11:26:35 +0200
+> Peter Rosin <peda@axentia.se> wrote:
+> 
+>> On 2017-07-07 06:57, Peter Rosin wrote:
+>>> On 2017-07-07 06:53, Gustavo A. R. Silva wrote:  
+>>>> Check return values from call to devm_kzalloc() and devm_kmemup()  
+>>>
+>>> If someone cares enough: s/devm_kmemup/evm_kmemdup/  
+>>
+>> Strange, there seems to be some inherent shortage of 'd' characters...
+>>
+>> Cheers,
+>> pea :-)
+>>
+>>>   
+>>>> in order to prevent a NULL pointer dereference.
+>>>>
+>>>> This issue was detected using Coccinelle and the following semantic patch:
+>>>>
+>>>> @@
+>>>> expression x;
+>>>> identifier fld;
+>>>> @@
+>>>>
+>>>> * x = devm_kzalloc(...);
+>>>>    ... when != x == NULL
+>>>>    x->fld
+>>>>
+>>>> Cc: Peter Rosin <peda@axentia.se>
+>>>> Signed-off-by: Gustavo A. R. Silva <garsilva@embeddedor.com>  
+>>>
+>>> Either way,
+>>>
+>>> Reviewed-by: Peter Rosin <peda@axentia.se>
+>>>
+>>> Thanks!
+>>>
+> The relevant patch adding the file in questions hasn't yet worked it's
+> way back to the iio tree so I can't apply this until it does.
+> 
+> That is likely to be a few weeks away yet.  Please give me a poke if
+> I seem to have forgotten it!
 
---r5bnhd66xto22335
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Hi Jonathan!
 
-> Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
+I saw a patch from Christophe JAILLET [1] and it seemed familiar so I
+did a bit of digging. Now, I did go back and check this a couple of
+weeks after you request, but iio-mux.c still wasn't in the iio tree,
+and then I did forgot about it. Sorry. But here's the poke...
 
-Added, thanks!
+Cheers,
+Peter
 
-
---r5bnhd66xto22335
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAlmR0JUACgkQFA3kzBSg
-Kbb3UBAAgndBbA09/crNsM5iaqnA/DYgD6njMNag0No8CkC8WzDc8c1dZ3mD3+/b
-85cDD+WHMumbLsRhoqoiCMIk9izQTouKfop/DZZAA2pN0gEAcDJNyjL+4NuH/k2G
-suO6XQnuKEuNzUOcXQIrY6W3GEvO8W9WVBD2thjcu8Uf3UYFELAtAMgexqlB7JPa
-bvTGlLeCEhx8XcDz7utEjeiqJ/Ip1LjBXovQto0j/vioZ5BRaJWlfPJHDJquB9Uz
-fxJm0G4VfmT1OszuWMSZv5gTlazDKNOAadsw7swrp5jmuf3qNjCKkmztcq6rVnkm
-W5A8qOJcxjzPk9V/OmuLk/hlQAMrTHv9xmH4AuW/xnwP0OOrDb3lt9DnSGzW+pCi
-NAZfPEe5DzVlqvQ+RYWG1aM4f2lgJdGrX3EzwcPymVpN9qi+PtB+3oYgqky6CSew
-+X5sULm/xrwoh2zdgiVWTRKrdfthPtk/XfNSTpXOGtGf0ZZsUTMYrSuckTd6zmxW
-TxuuZn4fPEx18Zfpy6uxof6nnrZbEZ6jGAF+s/nWHHAPCfn+aPPFOoIF6XsTkwyE
-q6iUSzT7QIaKQ3G5p9zYzCdaWDWq5ks3mhsa9nivBKKM15V9OMBgrKAMJtl2HmYY
-YQv+A1FOXchHAzSyKL/vhyCeu0gOValLeFdtzTIJZRjyYTvhtTk=
-=ltAb
------END PGP SIGNATURE-----
-
---r5bnhd66xto22335--
+[1] https://lkml.org/lkml/2017/8/26/3
