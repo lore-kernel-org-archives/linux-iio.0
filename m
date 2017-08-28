@@ -1,85 +1,49 @@
-Return-Path: <SRS0=QuPf=76=st.com=fabrice.gasnier@kernel.org>
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-To: <lee.jones@linaro.org>, <benjamin.gaignard@linaro.org>, <jic23@kernel.org>,
-        <thierry.reding@gmail.com>, <robh+dt@kernel.org>
-CC: <mark.rutland@arm.com>, <alexandre.torgue@st.com>,
-        <mcoquelin.stm32@gmail.com>, <fabrice.gasnier@st.com>,
-        <benjamin.gaignard@st.com>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
-        <vilhelm.gray@gmail.com>
-Subject: [RESEND PATCH v3 9/9] iio: adc: stm32: add support for lptimer triggers
-Date: Mon, 28 Aug 2017 12:04:14 +0200
-Message-ID: <1503914654-19963-10-git-send-email-fabrice.gasnier@st.com>
-In-Reply-To: <1503914654-19963-1-git-send-email-fabrice.gasnier@st.com>
-References: <1503914654-19963-1-git-send-email-fabrice.gasnier@st.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Return-Path: <SRS0=wcSp=76=aclimalabs.com=colin.parker@kernel.org>
+Sender: Colin Parker <colin.parker@aclimalabs.com>
+From: Colin Parker <colin.foeparker@aclima.io>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	ak@it-klinger.de,
+	foeparker.colin@gmail.com,
+	Colin Parker <colin.parker@aclima.io>
+Subject: [PATCH] IIO: BME280: Updates to Humidity readings need ctrl_reg write!
+Date: Mon, 28 Aug 2017 16:21:39 -0700
+Message-Id: <1503962499-11417-1-git-send-email-colin.parker@aclimalabs.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-STM32 ADC supports hardware triggers like STM32 Low-Power Timer.
-For instance, STM32H7 ADC may be triggered by instances 1, 2 or 3.
-Add hardware triggered mode so Low-Power Timer Trigger driver can
-validate device.
+From: Colin Parker <colin.parker@aclima.io>
 
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
+The ctrl_reg register needs to be written after any write to
+the humidity registers. The value written to the ctrl_reg register
+does not necessarily need to change, but a write operation must
+occur.
+
+The regmap_update_bits functions will not write to a register
+if the register value matches the value to be written. This saves
+unnecessary bus operations.  The change in this patch forces a bus
+write during the chip_config operation by switching to
+regmap_write_bits.
+
+This will fix issues where the Humidity Sensor Oversampling bits
+are not updated after initialization.
+
+Signed-off-by: Colin Parker <colin.parker@aclima.io>
 ---
- drivers/iio/adc/stm32-adc.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ drivers/iio/pressure/bmp280-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
-index 5bfcc1f..1147d7e 100644
---- a/drivers/iio/adc/stm32-adc.c
-+++ b/drivers/iio/adc/stm32-adc.c
-@@ -25,6 +25,7 @@
- #include <linux/dmaengine.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/buffer.h>
-+#include <linux/iio/timer/stm32-lptim-trigger.h>
- #include <linux/iio/timer/stm32-timer-trigger.h>
- #include <linux/iio/trigger.h>
- #include <linux/iio/trigger_consumer.h>
-@@ -182,6 +183,11 @@ enum stm32_adc_extsel {
- 	STM32_EXT13,
- 	STM32_EXT14,
- 	STM32_EXT15,
-+	STM32_EXT16,
-+	STM32_EXT17,
-+	STM32_EXT18,
-+	STM32_EXT19,
-+	STM32_EXT20,
- };
+diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
+index 0d2ea3e..8f26428 100644
+--- a/drivers/iio/pressure/bmp280-core.c
++++ b/drivers/iio/pressure/bmp280-core.c
+@@ -573,7 +573,7 @@ static int bmp280_chip_config(struct bmp280_data *data)
+ 	u8 osrs = BMP280_OSRS_TEMP_X(data->oversampling_temp + 1) |
+ 		  BMP280_OSRS_PRESS_X(data->oversampling_press + 1);
  
- /**
-@@ -480,6 +486,9 @@ struct stm32_adc_info {
- 	{ TIM4_TRGO, STM32_EXT12 },
- 	{ TIM6_TRGO, STM32_EXT13 },
- 	{ TIM3_CH4, STM32_EXT15 },
-+	{ LPTIM1_OUT, STM32_EXT18 },
-+	{ LPTIM2_OUT, STM32_EXT19 },
-+	{ LPTIM3_OUT, STM32_EXT20 },
- 	{},
- };
- 
-@@ -995,7 +1004,8 @@ static int stm32_adc_get_trig_extsel(struct iio_dev *indio_dev,
- 		 * Checking both stm32 timer trigger type and trig name
- 		 * should be safe against arbitrary trigger names.
- 		 */
--		if (is_stm32_timer_trigger(trig) &&
-+		if ((is_stm32_timer_trigger(trig) ||
-+		     is_stm32_lptim_trigger(trig)) &&
- 		    !strcmp(adc->cfg->trigs[i].name, trig->name)) {
- 			return adc->cfg->trigs[i].extsel;
- 		}
-@@ -1634,7 +1644,7 @@ static int stm32_adc_probe(struct platform_device *pdev)
- 	indio_dev->dev.parent = &pdev->dev;
- 	indio_dev->dev.of_node = pdev->dev.of_node;
- 	indio_dev->info = &stm32_adc_iio_info;
--	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_HARDWARE_TRIGGERED;
- 
- 	platform_set_drvdata(pdev, adc);
- 
+-	ret = regmap_update_bits(data->regmap, BMP280_REG_CTRL_MEAS,
++	ret = regmap_write_bits(data->regmap, BMP280_REG_CTRL_MEAS,
+ 				 BMP280_OSRS_TEMP_MASK |
+ 				 BMP280_OSRS_PRESS_MASK |
+ 				 BMP280_MODE_MASK,
 -- 
-1.9.1
+2.1.4
