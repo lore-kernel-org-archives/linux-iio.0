@@ -1,49 +1,67 @@
-Return-Path: <SRS0=wcSp=76=aclimalabs.com=colin.parker@kernel.org>
-Sender: Colin Parker <colin.parker@aclimalabs.com>
-From: Colin Parker <colin.foeparker@aclima.io>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	ak@it-klinger.de,
-	foeparker.colin@gmail.com,
-	Colin Parker <colin.parker@aclima.io>
-Subject: [PATCH] IIO: BME280: Updates to Humidity readings need ctrl_reg write!
-Date: Mon, 28 Aug 2017 16:21:39 -0700
-Message-Id: <1503962499-11417-1-git-send-email-colin.parker@aclimalabs.com>
+Return-Path: <SRS0=wrTi=77=gmail.com=lorenzo.bianconi83@kernel.org>
+From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	linus.walleij@linaro.org,
+	lorenzo.bianconi@st.com
+Subject: [PATCH] iio: magnetometer: st_magn: fix drdy line configuration for LIS3MDL
+Date: Tue, 29 Aug 2017 13:45:11 +0200
+Message-Id: <20170829114511.14756-1-lorenzo.bianconi@st.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-From: Colin Parker <colin.parker@aclima.io>
+Data-ready line in LIS3MDL is routed to drdy pin and it is not possible
+to select a different INT pin. st_sensors_set_dataready_irq() assumes
+that if drdy int address is not exported in register map, irq trigger
+is not supported by the sensor and hw_irq_trigger is always false.
+Based on this configuration st_sensors_irq_thread does not consume
+generated interrupt causing an unhandled irq.
+Fix this taking into account status register address in
+st_sensors_set_dataready_irq()
 
-The ctrl_reg register needs to be written after any write to
-the humidity registers. The value written to the ctrl_reg register
-does not necessarily need to change, but a write operation must
-occur.
-
-The regmap_update_bits functions will not write to a register
-if the register value matches the value to be written. This saves
-unnecessary bus operations.  The change in this patch forces a bus
-write during the chip_config operation by switching to
-regmap_write_bits.
-
-This will fix issues where the Humidity Sensor Oversampling bits
-are not updated after initialization.
-
-Signed-off-by: Colin Parker <colin.parker@aclima.io>
+Fixes: 90efe0556292 (iio: st_sensors: harden interrupt handling)
+Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
 ---
- drivers/iio/pressure/bmp280-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/common/st_sensors/st_sensors_core.c | 11 ++++++++++-
+ drivers/iio/magnetometer/st_magn_core.c         |  4 ++++
+ 2 files changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
-index 0d2ea3e..8f26428 100644
---- a/drivers/iio/pressure/bmp280-core.c
-+++ b/drivers/iio/pressure/bmp280-core.c
-@@ -573,7 +573,7 @@ static int bmp280_chip_config(struct bmp280_data *data)
- 	u8 osrs = BMP280_OSRS_TEMP_X(data->oversampling_temp + 1) |
- 		  BMP280_OSRS_PRESS_X(data->oversampling_press + 1);
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+index d99bb1460fe2..02e833b14db0 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_core.c
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -463,8 +463,17 @@ int st_sensors_set_dataready_irq(struct iio_dev *indio_dev, bool enable)
+ 	u8 drdy_mask;
+ 	struct st_sensor_data *sdata = iio_priv(indio_dev);
  
--	ret = regmap_update_bits(data->regmap, BMP280_REG_CTRL_MEAS,
-+	ret = regmap_write_bits(data->regmap, BMP280_REG_CTRL_MEAS,
- 				 BMP280_OSRS_TEMP_MASK |
- 				 BMP280_OSRS_PRESS_MASK |
- 				 BMP280_MODE_MASK,
+-	if (!sdata->sensor_settings->drdy_irq.addr)
++	if (!sdata->sensor_settings->drdy_irq.addr) {
++		/*
++		 * there are some devices (e.g. LIS3MDL) where drdy line is
++		 * routed to a given pin and it is not possible to select a
++		 * different one. Take into account irq status register
++		 * to understand if irq trigger can be properly supported
++		 */
++		if (sdata->sensor_settings->drdy_irq.addr_stat_drdy)
++			sdata->hw_irq_trigger = enable;
+ 		return 0;
++	}
+ 
+ 	/* Enable/Disable the interrupt generator 1. */
+ 	if (sdata->sensor_settings->drdy_irq.ig1.en_addr > 0) {
+diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
+index 83fdd7230917..f7388d265eb0 100644
+--- a/drivers/iio/magnetometer/st_magn_core.c
++++ b/drivers/iio/magnetometer/st_magn_core.c
+@@ -315,6 +315,10 @@ static const struct st_sensor_settings st_magn_sensors_settings[] = {
+ 				},
+ 			},
+ 		},
++		.drdy_irq = {
++			/* drdy line is routed drdy pin */
++			.addr_stat_drdy = ST_SENSORS_DEFAULT_STAT_ADDR,
++		},
+ 		.multi_read_bit = true,
+ 		.bootime = 2,
+ 	},
 -- 
-2.1.4
+2.14.1
