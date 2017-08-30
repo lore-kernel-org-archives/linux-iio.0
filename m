@@ -5,42 +5,180 @@ Cc: linux-iio@vger.kernel.org,
 	linus.walleij@linaro.org,
 	lorenzo.bianconi@st.com,
 	devicetree@vger.kernel.org
-Subject: [PATCH v3 3/5] iio: st_sensors: do not always write enable_axis register
-Date: Wed, 30 Aug 2017 13:50:41 +0200
-Message-Id: <20170830115043.3738-4-lorenzo.bianconi@st.com>
+Subject: [PATCH v3 4/5] iio: accel: add support to LIS2DW12
+Date: Wed, 30 Aug 2017 13:50:42 +0200
+Message-Id: <20170830115043.3738-5-lorenzo.bianconi@st.com>
 In-Reply-To: <20170830115043.3738-1-lorenzo.bianconi@st.com>
 References: <20170830115043.3738-1-lorenzo.bianconi@st.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-New devices (e.g. LIS2DW12) enable all axis by default and do not export
-that capability in register map. Check if the enable_axis register
-address has been declared in st_sensor_settings map in order to verify if
-the driver needs to enable all sensor axis
+add support to STMicroelectronics LIS2DW12 accelerometer in
+st_accel framework
 
+http://www.st.com/resource/en/datasheet/lis2dw12.pdf
 Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
 ---
- drivers/iio/common/st_sensors/st_sensors_core.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/iio/accel/st_accel.h      |  2 +
+ drivers/iio/accel/st_accel_core.c | 79 +++++++++++++++++++++++++++++++++++++++
+ drivers/iio/accel/st_accel_i2c.c  |  5 +++
+ drivers/iio/accel/st_accel_spi.c  |  5 +++
+ 4 files changed, 91 insertions(+)
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index af702fa8fa84..6657160b5a73 100644
---- a/drivers/iio/common/st_sensors/st_sensors_core.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-@@ -221,11 +221,14 @@ EXPORT_SYMBOL(st_sensors_set_enable);
- int st_sensors_set_axis_enable(struct iio_dev *indio_dev, u8 axis_enable)
- {
- 	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+	int err = 0;
+diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
+index 0fe521609a3a..2ed0f60418c0 100644
+--- a/drivers/iio/accel/st_accel.h
++++ b/drivers/iio/accel/st_accel.h
+@@ -32,6 +32,7 @@ enum st_accel_type {
+ 	H3LIS331DL,
+ 	LIS331DL,
+ 	LIS3LV02DL,
++	LIS2DW12,
+ 	ST_ACCEL_MAX,
+ };
  
--	return st_sensors_write_data_with_mask(indio_dev,
-+	if (sdata->sensor_settings->enable_axis.addr)
-+		err = st_sensors_write_data_with_mask(indio_dev,
- 				sdata->sensor_settings->enable_axis.addr,
- 				sdata->sensor_settings->enable_axis.mask,
- 				axis_enable);
-+	return err;
- }
- EXPORT_SYMBOL(st_sensors_set_axis_enable);
+@@ -52,6 +53,7 @@ enum st_accel_type {
+ #define LIS2DH12_ACCEL_DEV_NAME		"lis2dh12_accel"
+ #define LIS3L02DQ_ACCEL_DEV_NAME	"lis3l02dq"
+ #define LNG2DM_ACCEL_DEV_NAME		"lng2dm"
++#define LIS2DW12_ACCEL_DEV_NAME		"lis2dw12"
  
+ /**
+ * struct st_sensors_platform_data - default accel platform data
+diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+index a6eac959dfe8..731ec3a4c82b 100644
+--- a/drivers/iio/accel/st_accel_core.c
++++ b/drivers/iio/accel/st_accel_core.c
+@@ -692,6 +692,85 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+ 		.multi_read_bit = true,
+ 		.bootime = 2,
+ 	},
++	{
++		.wai = 0x44,
++		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
++		.sensors_supported = {
++			[0] = LIS2DW12_ACCEL_DEV_NAME,
++		},
++		.ch = (struct iio_chan_spec *)st_accel_12bit_channels,
++		.odr = {
++			.addr = 0x20,
++			.mask = 0xf0,
++			.odr_avl = {
++				{ .hz = 1, .value = 0x01, },
++				{ .hz = 12, .value = 0x02, },
++				{ .hz = 25, .value = 0x03, },
++				{ .hz = 50, .value = 0x04, },
++				{ .hz = 100, .value = 0x05, },
++				{ .hz = 200, .value = 0x06, },
++			},
++		},
++		.pw = {
++			.addr = 0x20,
++			.mask = 0xf0,
++			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
++		},
++		.fs = {
++			.addr = 0x25,
++			.mask = 0x30,
++			.fs_avl = {
++				[0] = {
++					.num = ST_ACCEL_FS_AVL_2G,
++					.value = 0x00,
++					.gain = IIO_G_TO_M_S_2(976),
++				},
++				[1] = {
++					.num = ST_ACCEL_FS_AVL_4G,
++					.value = 0x01,
++					.gain = IIO_G_TO_M_S_2(1952),
++				},
++				[2] = {
++					.num = ST_ACCEL_FS_AVL_8G,
++					.value = 0x02,
++					.gain = IIO_G_TO_M_S_2(3904),
++				},
++				[3] = {
++					.num = ST_ACCEL_FS_AVL_16G,
++					.value = 0x03,
++					.gain = IIO_G_TO_M_S_2(7808),
++				},
++			},
++		},
++		.bdu = {
++			.addr = 0x21,
++			.mask = 0x08,
++		},
++		.drdy_irq = {
++			.int1 = {
++				.addr = 0x23,
++				.mask = 0x01,
++			},
++			.int2 = {
++				.addr = 0x24,
++				.mask = 0x01,
++			},
++			.addr_ihl = 0x22,
++			.mask_ihl = 0x08,
++			.addr_od = 0x22,
++			.mask_od = 0x20,
++			.stat_drdy = {
++				.addr = ST_SENSORS_DEFAULT_STAT_ADDR,
++				.mask = 0x01,
++			},
++		},
++		.sim = {
++			.addr = 0x21,
++			.value = BIT(0),
++		},
++		.multi_read_bit = false,
++		.bootime = 2,
++	},
+ };
+ 
+ static int st_accel_read_raw(struct iio_dev *indio_dev,
+diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
+index 18cafb9f2468..363429b5686c 100644
+--- a/drivers/iio/accel/st_accel_i2c.c
++++ b/drivers/iio/accel/st_accel_i2c.c
+@@ -94,6 +94,10 @@ static const struct of_device_id st_accel_of_match[] = {
+ 		.compatible = "st,lng2dm-accel",
+ 		.data = LNG2DM_ACCEL_DEV_NAME,
+ 	},
++	{
++		.compatible = "st,lis2dw12",
++		.data = LIS2DW12_ACCEL_DEV_NAME,
++	},
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, st_accel_of_match);
+@@ -129,6 +133,7 @@ static const struct i2c_device_id st_accel_id_table[] = {
+ 	{ H3LIS331DL_ACCEL_DEV_NAME, H3LIS331DL },
+ 	{ LIS331DL_ACCEL_DEV_NAME, LIS331DL },
+ 	{ LIS3LV02DL_ACCEL_DEV_NAME, LIS3LV02DL },
++	{ LIS2DW12_ACCEL_DEV_NAME, LIS2DW12 },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(i2c, st_accel_id_table);
+diff --git a/drivers/iio/accel/st_accel_spi.c b/drivers/iio/accel/st_accel_spi.c
+index 915fa49085f7..7692da49e59f 100644
+--- a/drivers/iio/accel/st_accel_spi.c
++++ b/drivers/iio/accel/st_accel_spi.c
+@@ -82,6 +82,10 @@ static const struct of_device_id st_accel_of_match[] = {
+ 		.compatible = "st,lis331dl-accel",
+ 		.data = LIS331DL_ACCEL_DEV_NAME,
+ 	},
++	{
++		.compatible = "st,lis2dw12",
++		.data = LIS2DW12_ACCEL_DEV_NAME,
++	},
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, st_accel_of_match);
+@@ -133,6 +137,7 @@ static const struct spi_device_id st_accel_id_table[] = {
+ 	{ H3LIS331DL_ACCEL_DEV_NAME },
+ 	{ LIS331DL_ACCEL_DEV_NAME },
+ 	{ LIS3LV02DL_ACCEL_DEV_NAME },
++	{ LIS2DW12_ACCEL_DEV_NAME },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(spi, st_accel_id_table);
 -- 
 2.14.1
