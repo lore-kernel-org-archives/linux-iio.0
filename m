@@ -1,67 +1,58 @@
-Return-Path: <SRS0=wrTi=77=gmail.com=lorenzo.bianconi83@kernel.org>
-From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	linus.walleij@linaro.org,
-	lorenzo.bianconi@st.com
-Subject: [PATCH] iio: magnetometer: st_magn: fix drdy line configuration for LIS3MDL
-Date: Tue, 29 Aug 2017 13:45:11 +0200
-Message-Id: <20170829114511.14756-1-lorenzo.bianconi@st.com>
+Return-Path: <SRS0=75rx=AA=canonical.com=colin.king@kernel.org>
+From: Colin King <colin.king@canonical.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Jean-Baptiste Maneyrol <JManeyrol@invensense.com>,
+	linux-iio@vger.kernel.org
+Cc: kernel-janitors@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: imu: inv_mpu6050: make arrays hz and d static
+Date: Wed, 30 Aug 2017 12:16:16 +0100
+Message-Id: <20170830111616.27559-1-colin.king@canonical.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 List-ID: <linux-iio@vger.kernel.org>
 
-Data-ready line in LIS3MDL is routed to drdy pin and it is not possible
-to select a different INT pin. st_sensors_set_dataready_irq() assumes
-that if drdy int address is not exported in register map, irq trigger
-is not supported by the sensor and hw_irq_trigger is always false.
-Based on this configuration st_sensors_irq_thread does not consume
-generated interrupt causing an unhandled irq.
-Fix this taking into account status register address in
-st_sensors_set_dataready_irq()
+From: Colin Ian King <colin.king@canonical.com>
 
-Fixes: 90efe0556292 (iio: st_sensors: harden interrupt handling)
-Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+Don't populate the arrays on the stack, instead make them static.
+Makes the object code smaller by 135 bytes:
+
+Before:
+   text	   data	    bss	    dec	    hex	filename
+  15135	   4240	    128	  19503	   4c2f	inv_mpu_core.o
+
+After:
+   text	   data	    bss	    dec	    hex	filename
+  14840	   4400	    128	  19368	   4ba8	inv_mpu_core.o
+
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
 ---
- drivers/iio/common/st_sensors/st_sensors_core.c | 11 ++++++++++-
- drivers/iio/magnetometer/st_magn_core.c         |  4 ++++
- 2 files changed, 14 insertions(+), 1 deletion(-)
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index d99bb1460fe2..02e833b14db0 100644
---- a/drivers/iio/common/st_sensors/st_sensors_core.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-@@ -463,8 +463,17 @@ int st_sensors_set_dataready_irq(struct iio_dev *indio_dev, bool enable)
- 	u8 drdy_mask;
- 	struct st_sensor_data *sdata = iio_priv(indio_dev);
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index 44830bce13df..6692f5e08dc8 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -570,10 +570,12 @@ static int inv_mpu6050_write_raw(struct iio_dev *indio_dev,
+  */
+ static int inv_mpu6050_set_lpf(struct inv_mpu6050_state *st, int rate)
+ {
+-	const int hz[] = {188, 98, 42, 20, 10, 5};
+-	const int d[] = {INV_MPU6050_FILTER_188HZ, INV_MPU6050_FILTER_98HZ,
+-			INV_MPU6050_FILTER_42HZ, INV_MPU6050_FILTER_20HZ,
+-			INV_MPU6050_FILTER_10HZ, INV_MPU6050_FILTER_5HZ};
++	static const int hz[] = {188, 98, 42, 20, 10, 5};
++	static const int d[] = {
++		INV_MPU6050_FILTER_188HZ, INV_MPU6050_FILTER_98HZ,
++		INV_MPU6050_FILTER_42HZ, INV_MPU6050_FILTER_20HZ,
++		INV_MPU6050_FILTER_10HZ, INV_MPU6050_FILTER_5HZ
++	};
+ 	int i, h, result;
+ 	u8 data;
  
--	if (!sdata->sensor_settings->drdy_irq.addr)
-+	if (!sdata->sensor_settings->drdy_irq.addr) {
-+		/*
-+		 * there are some devices (e.g. LIS3MDL) where drdy line is
-+		 * routed to a given pin and it is not possible to select a
-+		 * different one. Take into account irq status register
-+		 * to understand if irq trigger can be properly supported
-+		 */
-+		if (sdata->sensor_settings->drdy_irq.addr_stat_drdy)
-+			sdata->hw_irq_trigger = enable;
- 		return 0;
-+	}
- 
- 	/* Enable/Disable the interrupt generator 1. */
- 	if (sdata->sensor_settings->drdy_irq.ig1.en_addr > 0) {
-diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-index 83fdd7230917..f7388d265eb0 100644
---- a/drivers/iio/magnetometer/st_magn_core.c
-+++ b/drivers/iio/magnetometer/st_magn_core.c
-@@ -315,6 +315,10 @@ static const struct st_sensor_settings st_magn_sensors_settings[] = {
- 				},
- 			},
- 		},
-+		.drdy_irq = {
-+			/* drdy line is routed drdy pin */
-+			.addr_stat_drdy = ST_SENSORS_DEFAULT_STAT_ADDR,
-+		},
- 		.multi_read_bit = true,
- 		.bootime = 2,
- 	},
 -- 
 2.14.1
