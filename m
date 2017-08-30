@@ -1,17 +1,22 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg0-f68.google.com ([74.125.83.68]:33028 "EHLO
-        mail-pg0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752086AbdH3SRY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Aug 2017 14:17:24 -0400
+Received: from mail-pg0-f67.google.com ([74.125.83.67]:36978 "EHLO
+        mail-pg0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751536AbdH3SZj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Aug 2017 14:25:39 -0400
 From: s.abhisit@gmail.com
-To: pmeerw@pmeerw.net
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        fabrice.gasnier@st.com, mike.looijmans@topic.nl, peda@axentia.se,
-        jeff.dagenais@gmail.com, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, Abhisit Sangjan <s.abhisit@gmail.com>
-Subject: [PATCH 3/5] lmp92001: mfd: iio: dac: Add support LMP92001
-Date: Thu, 31 Aug 2017 01:17:15 +0700
-Message-Id: <20170830181715.9092-1-s.abhisit@gmail.com>
+To: linus.walleij@linaro.org
+Cc: robh@kernel.org, lee.jones@linaro.org, Jonathan.Cameron@huawei.com,
+        pmeerw@pmeerw.net, jacopo@jmondi.org, linux-kernel@vger.kernel.org,
+        knaack.h@gmx.de, lars@metafoo.de, fabrice.gasnier@st.com,
+        akinobu.mita@gmail.com, marek.vasut+renesas@gmail.com,
+        jacopo+renesas@jmondi.org, mike.looijmans@topic.nl,
+        peda@axentia.se, jeff.dagenais@gmail.com,
+        linux-iio@vger.kernel.org, linux-gpio@vger.kernel.org,
+        mark.rutland@arm.com, devicetree@vger.kernel.org, lukas@wunner.de,
+        adi.reus@gmail.com, Abhisit Sangjan <s.abhisit@gmail.com>
+Subject: [PATCH 5/5] lmp92001: mfd: doc: Add support LMP92001
+Date: Thu, 31 Aug 2017 01:25:28 +0700
+Message-Id: <20170830182528.9479-1-s.abhisit@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
@@ -35,387 +40,182 @@ ADC's referance voltage selectable for Internal/External.
 
 Signed-off-by: Abhisit Sangjan <s.abhisit@gmail.com>
 ---
- drivers/iio/dac/Kconfig        |   9 ++
- drivers/iio/dac/Makefile       |   1 +
- drivers/iio/dac/lmp92001-dac.c | 337 +++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 347 insertions(+)
- create mode 100644 drivers/iio/dac/lmp92001-dac.c
+ Documentation/ABI/testing/sysfs-bus-iio-lmp920001  | 65 ++++++++++++++++++++++
+ .../devicetree/bindings/gpio/gpio-lmp92001.txt     | 22 ++++++++
+ .../bindings/iio/adc/ti-lmp92001-adc.txt           | 20 +++++++
+ .../bindings/iio/dac/ti-lmp92001-dac.txt           | 35 ++++++++++++
+ 4 files changed, 142 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-lmp920001
+ create mode 100644 Documentation/devicetree/bindings/gpio/gpio-lmp92001.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-lmp92001-adc.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/dac/ti-lmp92001-dac.txt
 
-diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-index 25bed2d7d2b9..3e0d81606927 100644
---- a/drivers/iio/dac/Kconfig
-+++ b/drivers/iio/dac/Kconfig
-@@ -221,6 +221,15 @@ config DPOT_DAC
- 	  To compile this driver as a module, choose M here: the module will be
- 	  called dpot-dac.
- 
-+config LMP92001_DAC
-+        tristate "TI LMP92001 DAC Driver"
-+        depends on MFD_LMP92001
-+        help
-+          If you say yes here you get support for TI LMP92001 DACs.
-+
-+          This driver can also be built as a module. If so, the module will
-+          be called lmp92001_dac.
-+
- config LPC18XX_DAC
- 	tristate "NXP LPC18xx DAC driver"
- 	depends on ARCH_LPC18XX || COMPILE_TEST
-diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
-index 603587cc2f07..516d2beced7b 100644
---- a/drivers/iio/dac/Makefile
-+++ b/drivers/iio/dac/Makefile
-@@ -23,6 +23,7 @@ obj-$(CONFIG_AD7303) += ad7303.o
- obj-$(CONFIG_AD8801) += ad8801.o
- obj-$(CONFIG_CIO_DAC) += cio-dac.o
- obj-$(CONFIG_DPOT_DAC) += dpot-dac.o
-+obj-$(CONFIG_LMP92001_DAC) += lmp92001-dac.o
- obj-$(CONFIG_LPC18XX_DAC) += lpc18xx_dac.o
- obj-$(CONFIG_LTC2632) += ltc2632.o
- obj-$(CONFIG_M62332) += m62332.o
-diff --git a/drivers/iio/dac/lmp92001-dac.c b/drivers/iio/dac/lmp92001-dac.c
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-lmp920001 b/Documentation/ABI/testing/sysfs-bus-iio-lmp920001
 new file mode 100644
-index 000000000000..072026e9895c
+index 000000000000..f0965e7d823f
 --- /dev/null
-+++ b/drivers/iio/dac/lmp92001-dac.c
-@@ -0,0 +1,337 @@
-+/*
-+ * lmp92001-dac.c - Support for TI LMP92001 DACs
-+ *
-+ * Copyright 2016-2017 Celestica Ltd.
-+ *
-+ * Author: Abhisit Sangjan <s.abhisit@gmail.com>
-+ *
-+ * Inspired by wm831x driver.
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ */
++++ b/Documentation/ABI/testing/sysfs-bus-iio-lmp920001
+@@ -0,0 +1,65 @@
++What:           /sys/bus/iio/devices/iio:deviceX/gang
++Date:           August 2016
++KernelVersion:  4.12
++Contact:        Abhisit Sangjan <s.abhisit@gmail.com>
++Description:
++                Controls the association of analog output channels OUTx with
++                asynchronous control inputs Cy for DAC.
++                Can be either:
++                - "0"
++                - "1"
 +
-+#include <linux/iio/iio.h>
-+#include <linux/kernel.h>
-+#include <linux/mfd/core.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
++                        Cy to OUTx Assignment
++                ----------------------------------
++                | Cy | CDAC:GANG=0 | CDAC:GANG=1 |
++                ----------------------------------
++                | C1 | OUT[1:4]    | OUT[1:3]    |
++                ----------------------------------
++                | C2 | OUT[5:6]    | OUT[4:6]    |
++                ----------------------------------
++                | C3 | OUT[7:8]    | OUT[7:9]    |
++                ----------------------------------
++                | C4 | OUT[9:12]   | OUT[10:12]  |
++                ----------------------------------
 +
-+#include <linux/mfd/lmp92001/core.h>
++What:           /sys/bus/iio/devices/iio:deviceX/outx
++Date:           August 2016
++KernelVersion:  4.12
++Contact:        Abhisit Sangjan <s.abhisit@gmail.com>
++Description:
++                The pin output mode for DAC.
++                Can be either:
++                - "hiz" = High impedance state.
++                - "dac" = DAC output.
++                - "0" = Drive it to low.
++                - "1" = Drive it to high.
 +
-+static int lmp92001_read_raw(struct iio_dev *indio_dev,
-+	struct iio_chan_spec const *channel, int *val, int *val2, long mask)
-+{
-+	struct lmp92001 *lmp92001 = iio_device_get_drvdata(indio_dev);
-+	int ret;
++What:           /sys/bus/iio/devices/iio:deviceX/vref
++Date:           August 2016
++KernelVersion:  4.12
++Contact:        Abhisit Sangjan <s.abhisit@gmail.com>
++Description:
++                This is voltage reference source for DACs.
++                Can be either:
++                - "external"
++                - "internal"
 +
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		switch (channel->type) {
-+		case IIO_VOLTAGE:
-+			mutex_lock(&lmp92001->dac_lock);
++What:           /sys/devices/.../iio:deviceX/en
++Date:           August 2016
++KernelVersion:  4.12
++Contact:        Abhisit Sangjan <s.abhisit@gmail.com>
++Description:
++                This is ADC Conversion Enable for each channel.
++                Can be either:
++                - "enable"
++                - "disable"
 +
-+			ret = regmap_read(lmp92001->regmap,
-+					0x7F + channel->channel, val);
++What:           /sys/devices/.../iio:deviceX/vref
++Date:           August 2016
++KernelVersion:  4.12
++Contact:        Abhisit Sangjan <s.abhisit@gmail.com>
++Description:
++                This is voltage reference source for ADCs.
++                Can be either:
++                - "external"
++                - "internal"
+diff --git a/Documentation/devicetree/bindings/gpio/gpio-lmp92001.txt b/Documentation/devicetree/bindings/gpio/gpio-lmp92001.txt
+new file mode 100644
+index 000000000000..f9a18c492145
+--- /dev/null
++++ b/Documentation/devicetree/bindings/gpio/gpio-lmp92001.txt
+@@ -0,0 +1,22 @@
++* Texas Instruments' LMP92001 GPIOs
 +
-+			mutex_unlock(&lmp92001->dac_lock);
++Required properties:
++ - compatible: Must be set to "ti,lmp92001-gpio".
++ - reg: i2c chip address for the device.
++ - gpio-controller: Marks the device node as a gpio controller.
++ - #gpio-cells : Should be two.  The first cell is the pin number and the
++  second cell is used to specify the gpio polarity:
++        0 = Active high
++        1 = Active low
 +
-+			if (ret < 0)
-+				return ret;
++Example:
++lmp92001@20 {
++        compatible = "ti,lmp92001";
++        reg = <0x20>;
 +
-+			return IIO_VAL_INT;
-+		default:
-+			return -EINVAL;
-+		}
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int lmp92001_write_raw(struct iio_dev *indio_dev,
-+	struct iio_chan_spec const *channel, int val, int val2, long mask)
-+{
-+	struct lmp92001 *lmp92001 = iio_device_get_drvdata(indio_dev);
-+	int ret;
-+
-+	if (val < 0 || val > 4095)
-+		return -EINVAL;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		switch (channel->type) {
-+		case IIO_VOLTAGE:
-+			mutex_lock(&lmp92001->dac_lock);
-+
-+			ret = regmap_write(lmp92001->regmap,
-+					0x7F + channel->channel, val);
-+
-+			mutex_unlock(&lmp92001->dac_lock);
-+
-+			if (ret < 0)
-+				return ret;
-+
-+			return 0;
-+		default:
-+			return -EINVAL;
-+		}
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static const struct iio_info lmp92001_info = {
-+	.read_raw = lmp92001_read_raw,
-+	.write_raw = lmp92001_write_raw,
-+	.driver_module = THIS_MODULE,
++        gpio-controller {
++                compatible = "ti,lmp92001-gpio";
++                gpio-controller;
++                #gpio-cells = <2>;
++        };
 +};
+diff --git a/Documentation/devicetree/bindings/iio/adc/ti-lmp92001-adc.txt b/Documentation/devicetree/bindings/iio/adc/ti-lmp92001-adc.txt
+new file mode 100644
+index 000000000000..4565961bf511
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/ti-lmp92001-adc.txt
+@@ -0,0 +1,20 @@
++* Texas Instruments' LMP92001 ADCs
 +
-+static ssize_t lmp92001_dvref_read(struct iio_dev *indio_dev,
-+	uintptr_t private, struct iio_chan_spec const *channel, char *buf)
-+{
-+	struct lmp92001 *lmp92001 = iio_device_get_drvdata(indio_dev);
-+	unsigned int cref;
-+	int ret;
++Required properties:
++ - compatible: Must be set to "ti,lmp92001-adc".
++ - reg: i2c chip address for the device.
++ - ti,lmp92001-adc-mask: bit mask for which channel is enable.
++        0 = Off
++        1 = On
 +
-+	ret = regmap_read(lmp92001->regmap, LMP92001_CREF, &cref);
-+	if (ret < 0)
-+		return ret;
++Example:
++lmp92001@20 {
++        compatible = "ti,lmp92001";
++        reg = <0x20>;
 +
-+	return sprintf(buf, "%s\n", cref & CREF_DEXT ? "external" : "internal");
-+}
-+
-+static ssize_t lmp92001_dvref_write(struct iio_dev *indio_dev,
-+	uintptr_t private, struct iio_chan_spec const *channel, const char *buf,
-+	size_t len)
-+{
-+	struct lmp92001 *lmp92001 = iio_device_get_drvdata(indio_dev);
-+	unsigned int cref;
-+	int ret;
-+
-+	if (strncmp("external", buf, 8) == 0)
-+		cref = 1;
-+	else if (strncmp("internal", buf, 8) == 0)
-+		cref = 0;
-+	else
-+		return -EINVAL;
-+
-+	ret = regmap_update_bits(lmp92001->regmap, LMP92001_CREF, CREF_DEXT,
-+					cref);
-+	if (ret < 0)
-+		return ret;
-+
-+	return len;
-+}
-+
-+static ssize_t lmp92001_outx_read(struct iio_dev *indio_dev,
-+	uintptr_t private, struct iio_chan_spec const *channel, char *buf)
-+{
-+	struct lmp92001 *lmp92001 = iio_device_get_drvdata(indio_dev);
-+	unsigned int cdac;
-+	const char *outx;
-+	int ret;
-+
-+	ret = regmap_read(lmp92001->regmap, LMP92001_CDAC, &cdac);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (cdac & CDAC_OFF)
-+		outx = "hiz";
-+	else {
-+		if (cdac & CDAC_OLVL)
-+			outx = "1 or dac";
-+		else
-+			outx = "0 or dac";
-+	}
-+
-+	return sprintf(buf, "%s\n", outx);
-+}
-+
-+static ssize_t lmp92001_outx_write(struct iio_dev *indio_dev,
-+	uintptr_t private, struct iio_chan_spec const *channel,
-+	const char *buf, size_t len)
-+{
-+	struct lmp92001 *lmp92001 = iio_device_get_drvdata(indio_dev);
-+	unsigned int cdac, mask;
-+	int ret;
-+
-+	if (strncmp("hiz", buf, 3) == 0) {
-+		cdac = CDAC_OFF;
-+		mask = CDAC_OFF;
-+	} else if (strncmp("dac", buf, 3) == 0) {
-+		cdac = ~CDAC_OFF;
-+		mask = CDAC_OFF;
-+	} else if (strncmp("0", buf, 1) == 0) {
-+		cdac = ~(CDAC_OLVL | CDAC_OFF);
-+		mask = CDAC_OLVL | CDAC_OFF;
-+	} else if (strncmp("1", buf, 1) == 0) {
-+		cdac = CDAC_OLVL;
-+		mask = CDAC_OLVL | CDAC_OFF;
-+	} else
-+		return -EINVAL;
-+
-+	ret = regmap_update_bits(lmp92001->regmap, LMP92001_CDAC, mask, cdac);
-+	if (ret < 0)
-+		return ret;
-+
-+	return len;
-+}
-+
-+static ssize_t lmp92001_gang_read(struct iio_dev *indio_dev,
-+	uintptr_t private, struct iio_chan_spec const *channel, char *buf)
-+{
-+	struct lmp92001 *lmp92001 = iio_device_get_drvdata(indio_dev);
-+	unsigned int cdac;
-+	int ret;
-+
-+	ret = regmap_read(lmp92001->regmap, LMP92001_CDAC, &cdac);
-+	if (ret < 0)
-+		return ret;
-+
-+	return sprintf(buf, "%s\n", cdac & CDAC_GANG ? "1" : "0");
-+}
-+
-+static ssize_t lmp92001_gang_write(struct iio_dev *indio_dev,
-+	uintptr_t private, struct iio_chan_spec const *channel,
-+	const char *buf, size_t len)
-+{
-+	struct lmp92001 *lmp92001 = iio_device_get_drvdata(indio_dev);
-+	unsigned int cdac = 0;
-+	int ret;
-+
-+	if (strncmp("0", buf, 1) == 0)
-+		cdac = ~CDAC_GANG;
-+	else if (strncmp("1", buf, 1) == 0)
-+		cdac = CDAC_GANG;
-+	else
-+		return -EINVAL;
-+
-+	ret = regmap_update_bits(lmp92001->regmap, LMP92001_CDAC, CDAC_GANG,
-+					cdac);
-+	if (ret < 0)
-+		return ret;
-+
-+	return len;
-+}
-+
-+static const struct iio_chan_spec_ext_info lmp92001_ext_info[] = {
-+	{
-+		.name = "vref",
-+		.read = lmp92001_dvref_read,
-+		.write = lmp92001_dvref_write,
-+		.shared = IIO_SHARED_BY_ALL,
-+	}, {
-+		.name = "outx",
-+		.read = lmp92001_outx_read,
-+		.write = lmp92001_outx_write,
-+		.shared = IIO_SHARED_BY_ALL,
-+	}, {
-+		.name = "gang",
-+		.read = lmp92001_gang_read,
-+		.write = lmp92001_gang_write,
-+		.shared = IIO_SHARED_BY_ALL,
-+	}, { },
++        lmp92001-adc {
++                compatible = "ti,lmp92001-adc";
++                ti,lmp92001-adc-mode = "continuous";
++                ti,lmp92001-adc-mask = <0x00000079>;
++        };
 +};
+diff --git a/Documentation/devicetree/bindings/iio/dac/ti-lmp92001-dac.txt b/Documentation/devicetree/bindings/iio/dac/ti-lmp92001-dac.txt
+new file mode 100644
+index 000000000000..882db9ca92f5
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/dac/ti-lmp92001-dac.txt
+@@ -0,0 +1,35 @@
++* Texas Instruments' LMP92001 DACs
 +
-+#define LMP92001_CHAN_SPEC(_ch) \
-+{ \
-+	.channel = _ch, \
-+	.type = IIO_VOLTAGE, \
-+	.indexed = 1, \
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
-+		BIT(IIO_CHAN_INFO_SCALE), \
-+	.ext_info = lmp92001_ext_info, \
-+	.output = 1, \
-+}
++Required properties:
++ - compatible: Must be set to "ti,lmp92001-dac".
++ - reg: i2c chip address for the device.
++ - ti,lmp92001-dac-hiz: hi-impedance control,
++        1 = Forces all OUT[1:12] outputs to hi-z, 0 = normal
++ - ti,lmp92001-dac-outx:
++        Cy = 0, 1 = will force associated OUTx outputs to VDD
++        Cy = 0, 0 = will force associated OUTx outputs to GND
++ - ti,lmp92001-dac-gang: What group of Cy is governed to.
++        -----------------------------------------
++        |  Cy   | CDAC:GANG = 0 | CDAC:GANG = 1 |
++        -----------------------------------------
++        |  C1   |   OUT[1:4]    |    OUT[1:3]   |
++        -----------------------------------------
++        |  C2   |   OUT[5:6]    |    OUT[4:6]   |
++        -----------------------------------------
++        |  C3   |   OUT[7:8]    |    OUT[7:9]   |
++        -----------------------------------------
++        |  C4   |   OUT[9:12]   |    OUT[10:12] |
++        -----------------------------------------
 +
-+static const struct iio_chan_spec lmp92001_dac_channels[] = {
-+	LMP92001_CHAN_SPEC(1),
-+	LMP92001_CHAN_SPEC(2),
-+	LMP92001_CHAN_SPEC(3),
-+	LMP92001_CHAN_SPEC(4),
-+	LMP92001_CHAN_SPEC(5),
-+	LMP92001_CHAN_SPEC(6),
-+	LMP92001_CHAN_SPEC(7),
-+	LMP92001_CHAN_SPEC(8),
-+	LMP92001_CHAN_SPEC(9),
-+	LMP92001_CHAN_SPEC(10),
-+	LMP92001_CHAN_SPEC(11),
-+	LMP92001_CHAN_SPEC(12),
++Example:
++lmp92001@20 {
++        compatible = "ti,lmp92001";
++        reg = <0x20>;
++
++        lmp92001-dac {
++                compatible = "ti,lmp92001-dac";
++                ti,lmp92001-dac-hiz  = /bits/ 8 <0>;
++                ti,lmp92001-dac-outx = /bits/ 8 <0>;
++                ti,lmp92001-dac-gang = /bits/ 8 <0>;
++        };
 +};
-+
-+static int lmp92001_dac_probe(struct platform_device *pdev)
-+{
-+	struct lmp92001 *lmp92001 = dev_get_drvdata(pdev->dev.parent);
-+	struct iio_dev *indio_dev;
-+	struct device_node *np = pdev->dev.of_node;
-+	u8 gang = 0, outx = 0, hiz = 0;
-+	unsigned int cdac = 0;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&pdev->dev, 0);
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	iio_device_set_drvdata(indio_dev, lmp92001);
-+
-+	mutex_init(&lmp92001->dac_lock);
-+
-+	indio_dev->name = pdev->name;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->info = &lmp92001_info;
-+	indio_dev->channels = lmp92001_dac_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(lmp92001_dac_channels);
-+
-+	of_property_read_u8(np, "ti,lmp92001-dac-hiz", &hiz);
-+	cdac = hiz;
-+
-+	of_property_read_u8(np, "ti,lmp92001-dac-outx", &outx);
-+	cdac |= outx << 1;
-+
-+	of_property_read_u8(np, "ti,lmp92001-dac-gang", &gang);
-+	cdac |= gang << 2;
-+
-+	ret = regmap_update_bits(lmp92001->regmap, LMP92001_CDAC,
-+					CDAC_GANG | CDAC_OLVL | CDAC_OFF, cdac);
-+	if (ret < 0)
-+		return ret;
-+
-+	return devm_iio_device_register(&pdev->dev, indio_dev);
-+}
-+
-+static int lmp92001_dac_remove(struct platform_device *pdev)
-+{
-+	return 0;
-+}
-+
-+static struct platform_driver lmp92001_dac_driver = {
-+	.driver.name	= "lmp92001-dac",
-+	.probe		= lmp92001_dac_probe,
-+	.remove		= lmp92001_dac_remove,
-+};
-+
-+static int __init lmp92001_dac_init(void)
-+{
-+	return platform_driver_register(&lmp92001_dac_driver);
-+}
-+subsys_initcall(lmp92001_dac_init);
-+
-+static void __exit lmp92001_dac_exit(void)
-+{
-+	platform_driver_unregister(&lmp92001_dac_driver);
-+}
-+module_exit(lmp92001_dac_exit);
-+
-+MODULE_AUTHOR("Abhisit Sangjan <s.abhisit@gmail.com>");
-+MODULE_DESCRIPTION("IIO DAC interface for TI LMP92001");
-+MODULE_LICENSE("GPL");
-+MODULE_ALIAS("platform:lmp92001-dac");
 -- 
 2.13.0
 
