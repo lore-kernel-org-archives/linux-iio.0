@@ -1,61 +1,60 @@
-Return-Path: <SRS0=VjWx=AT=oracle.com=dan.carpenter@kernel.org>
-Date: Mon, 18 Sep 2017 12:58:36 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: Paolo Cretaro <melko@frugalware.org>
-Cc: Jonathan Cameron <jic23@kernel.org>, Brian Masney <masneyb@onstation.org>,
-        Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        simran singhal <singhalsimran0@gmail.com>,
-        Eva Rachel Retuya <eraretuya@gmail.com>,
-        Enric Balletbo i Serra <eballetbo@gmail.com>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH v2] staging: iio: tsl2x7x: clean up limit checks
-Message-ID: <20170918095836.juv6k3q23njgxk4a@mwanda>
-References: <20170908105343.tk3j36sgxd7xm222@mwanda>
- <e9f6e0a4-ad54-1fd4-d02c-39b5c3fd128f@frugalware.org>
- <20170916113759.3kp2kw2ev3f6ju27@mwanda>
- <48e90a50-7fa1-8bef-368b-cffc0a6fcfd3@frugalware.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45150 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752334AbdICLhm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 Sep 2017 07:37:42 -0400
+Date: Sun, 3 Sep 2017 12:37:34 +0100
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+To: Arvind Yadav <arvind.yadav.cs@gmail.com>
+Cc: Dan Carpenter <dan.carpenter@oracle.com>, arnd@arndb.de,
+        gregkh@linuxfoundation.org, knaack.h@gmx.de, pmeerw@pmeerw.net,
+        lars@metafoo.de, devel@driverdev.osuosl.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 4/4] staging: iio: tsl2x7x: constify i2c_device_id
+Message-ID: <20170903123734.232932e7@archlinux>
+In-Reply-To: <b84769c2-5fce-46ec-f272-408bd6bfe394@gmail.com>
+References: <1503333831-26300-1-git-send-email-arvind.yadav.cs@gmail.com>
+        <20170821193109.kf45g2ndv3nngewp@mwanda>
+        <b84769c2-5fce-46ec-f272-408bd6bfe394@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <48e90a50-7fa1-8bef-368b-cffc0a6fcfd3@frugalware.org>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, Sep 16, 2017 at 02:18:52PM +0200, Paolo Cretaro wrote:
-> On 16/09/2017 13:37, Dan Carpenter wrote:
-> > On Sat, Sep 16, 2017 at 01:11:29PM +0200, Paolo Cretaro wrote:
-> >> Hi Dan,
-> >> just minor nitpicking on the commit message:
-> >>
-> >> On 08/09/2017 12:53, Dan Carpenter wrote:
-> >>> The background of this code is that we can either use the default
-> >>> tables or load our own table with sysfs.  The default tables are three
-> >>> element arrays of struct tsl2x7x_lux.  If we load the table with sysfs
-> >>> then we can have as many as nine elements.  Which ever way we do it, the
-> >>> last element is always zeroed out.
-> >>>
-> >>> The most interesting part of this patch is in the
-> >>> in_illuminance0_lux_table_show() function.  We were using the wrong
-> >>> limit, "TSL2X7X_MAX_LUX_TABLE_SIZE * 3", when it should have been just
-> >>> "TSL2X7X_MAX_LUX_TABLE_SIZE".  This creates a static checker warning
-> >>> that we are going of of bounds.  However, since the last element is
-> >> out of bounds
-> >>
-> >> Regards,
-> >> P.
-> >>
-> >>> always zeroed out, that means we hit the break statement and the code
-> >>> works correctly despite the wrong limit check.
-> > 
-> > What?  No no.  I meant it how I wrote it.  The last element is
-> > always zeroed out meaning it's just a series of zeroes.
+On Tue, 22 Aug 2017 10:51:37 +0530
+Arvind Yadav <arvind.yadav.cs@gmail.com> wrote:
+
+> Hi
 > 
-> Sorry, I meant the previous sentence "This creates a static checker warning
-> that we are going of of bounds".
 > 
+> On Tuesday 22 August 2017 01:50 AM, Dan Carpenter wrote:
+> > Don't say "[PATCH 4/4]".  It's not a patchset or a part of an email
+> > thread.  
+> Yes, It's part of these patchset.
+>    [PATCH 1/4] misc: apds9802als: constify i2c_device_id
+>    [PATCH 2/4] misc: hmc6352: constify i2c_device_id
+>    [PATCH 3/4] misc: isl29020: constify i2c_device_id
+>    [PATCH 4/4] staging: iio: tsl2x7x: constify i2c_device_id
+For a series like this that is jumping around the kernel
+it would have been better to have broken it up on a subsystem
+basis.  It is always confusing when people only see a small
+part of a bigger series and need to go looking to find out
+if they have missed something in the other patches.
 
-Ah.  Of course.  Thanks Jonathan for fixing this.
+Anyhow, applied to the togreg branch of iio.git which will
+be pushed out as testing for the autobuilders to play with it.
 
-regards,
-dan carpenter
+Thanks,
+
+Jonathan
+> 
+> >
+> > regards,
+> > dan carpenter
+> >  
+> ~arvind
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
