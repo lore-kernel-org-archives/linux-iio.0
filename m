@@ -1,262 +1,99 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:39528 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:37056 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752907AbdICRF4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 3 Sep 2017 13:05:56 -0400
-Date: Sun, 3 Sep 2017 18:05:52 +0100
+        id S1753076AbdICQYm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 3 Sep 2017 12:24:42 -0400
+Date: Sun, 3 Sep 2017 17:24:37 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        daniel.baluta@gmail.com, amsfield22@gmail.com,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2] iio: chemical: ccs811: Add support for data ready
- trigger
-Message-ID: <20170903180552.42c7f498@archlinux>
-In-Reply-To: <1503591282-22321-1-git-send-email-narcisaanamaria12@gmail.com>
-References: <1503591282-22321-1-git-send-email-narcisaanamaria12@gmail.com>
+To: harinath Nampally <harinath922@gmail.com>
+Cc: Martin Kepplinger <martink@posteo.de>, knaack.h@gmx.de,
+        lars@metafoo.de, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alison Schofield <amsfield22@gmail.com>
+Subject: Re: [PATCH v5] iio: accel: mma8452: improvements to handle multiple
+ events
+Message-ID: <20170903172437.0aaec34d@archlinux>
+In-Reply-To: <CAAGUq_rMONY=upVapudHC+fpM2PQC-zUWnm9yJ4YCt4FQ_HjxQ@mail.gmail.com>
+References: <1503879782-11945-1-git-send-email-harinath922@gmail.com>
+        <1699ec2db96b498478b95a3cbcfe73ca@posteo.de>
+        <CAAGUq_ryozztz1B_-zuQ4SgR5Yh7Lznk=mrk7pd4YtDuScLyJw@mail.gmail.com>
+        <CAAGUq_rMONY=upVapudHC+fpM2PQC-zUWnm9yJ4YCt4FQ_HjxQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 24 Aug 2017 19:14:42 +0300
-Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com> wrote:
+On Tue, 29 Aug 2017 23:01:16 -0400
+harinath Nampally <harinath922@gmail.com> wrote:
 
-> Add data ready trigger for hardware interrupts that signal
-> new, available measurement samples.
+> > We should never say "transient is for rising
+> > direction" or "ff_mt is for falling direction". any combination is fine.  
 > 
-> Cc: Daniel Baluta <daniel.baluta@gmail.com>
-> Cc: Alison Schofield <amsfield22@gmail.com>
-> Signed-off-by: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
+> Ok I agree that there is no hard and fast rule that "transient is for rising
+> direction" or "ff_mt is for falling direction".
+> But in our case, datasheet for these chips define these events based on
+> acceleration magnitude rising or falling below a set threshold value.
+> 
+> For quick reference, below excerpts are from fxls8471 datasheet:
+> Motion Event: "When the acceleration exceeds a set threshold for a set
+> amount of time,
+> the motion interrupt is asserted."
+> 
+> Freefall event: "The detection of “Freefall” involves the monitoring
+> of the X, Y, and Z axes
+> for the condition where the acceleration magnitude is below a
+> user-specified threshold
+> for a user-definable amount of time"
+> 
+> Transient event: "When the high-pass filter is bypassed, the
+> functionality becomes
+> similar to the motion-detection function; in this mode, acceleration
+> greater than
+> a programmable threshold is detected (along an axis)."
+> 
+> Therefore I think in this driver freefall event is defined as
+> 'falling' event type and
+> motion event is defined as 'rising' event type and Transient is also defined as
+> 'rising' event type.
+>  As you might already know that mma8562 and mma8563 doesn't have
+> transient event support
+> but they do have freefall and motion event support which are defined
+> as 'fall' and 'rise'
+> event types respectively. Please note in this driver, motion event is
+> enabled/configured only
+> for mma8652 and mma8653.
+> Therefore if I read/write sysfs node for 'rise' it should use the
+> FF_MT registers for mma8652 and mma853, but for all others like
+> mma8451, mma8452 and
+> mma8453 which has transient event support it picks the Transient
+> registers if enabled. Also please
+> note transient event is enabled(but not motion event) for mma8451,
+> mma8452 and mma8453.
+> The problem seems like we have two different events(motion and
+> transient) that are defined
+> as same event type 'rising' but in fact both motion and transient are
+> pretty much similar as they
+> both raise interrupt flag when the acceleration magnitude rises above
+> the threshold.
+> Only difference is transient event has its own event config registers
+> with High pass filter.
+> If HPF bypassed using config register transient event acts like motion
+> detection event.
 
-One little point inline I missed in V1.
+> 
+> That was my understanding but please correct me if I am wrong.
 
-Sorry about that!
-
-We are well past the end of the merge window for IIO now anyway so
-there is plenty of time to clean this up.
-
-The driver is coming together nicely.
-
-Jonathan
-
-> ---
-> Changes in v2:
->     - Define top half handler for interrupts which calls iio_trigger_poll
->     - Remove bottom half interrupt handler
->     - Add bool variable to store the state of the data ready trigger
->     - Remove threshold related macros and checks, as driver doesn't support
->       threshold interrupts yet
->     - Protect direct/buffered modes, by claiming direct mode in raw readings.
->       Reading the data from ALG_RESULT_DATA will clear the data ready bit and
->       will stop the nINT signal from being driven low. Therefore, disallow
->       raw readings while hardware interrupts are active.
->     - Rephrase commit message
-> Note:
->     It may not be necessary to protect direct mode when performing raw readings,
->     in that the data read may not be corrupted, but raw readings may "clear" the
->     interrupt(clear the data-ready bit and nINT signal) before the handler deals
->     with the interrupt, which doesn't seem like expected/acceptable behaviour.
->     Thoughts on this?
-
-Do exactly what you have done here.  Better to be safe than sorry!
-This is often the reason we prevent direct reads during buffered use. A direct
-read results in a dropped reading 'sometimes' which is less than ideal.
+I agree with your understanding.  It's a rising threshold, just that the input
+will only reflect high frequency changes in the signal.
 
 > 
->  drivers/iio/chemical/ccs811.c | 87 ++++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 86 insertions(+), 1 deletion(-)
+> > Only freefall mode needs one fix: remembering to which set of registers to fall back when
+> > disabling it.  
 > 
-> diff --git a/drivers/iio/chemical/ccs811.c b/drivers/iio/chemical/ccs811.c
-> index b59994d..c8ca1b9 100644
-> --- a/drivers/iio/chemical/ccs811.c
-> +++ b/drivers/iio/chemical/ccs811.c
-> @@ -23,6 +23,7 @@
->  #include <linux/i2c.h>
->  #include <linux/iio/iio.h>
->  #include <linux/iio/buffer.h>
-> +#include <linux/iio/trigger.h>
->  #include <linux/iio/triggered_buffer.h>
->  #include <linux/iio/trigger_consumer.h>
->  #include <linux/module.h>
-> @@ -60,8 +61,12 @@
->  #define CCS811_MODE_IAQ_60SEC	0x30
->  #define CCS811_MODE_RAW_DATA	0x40
+> I don't quite understand what you mean by 'to fall back when disabling
+> it'. Please elaborate. I would
+> appreciate if you could suggest your logic in the form of pseudo-code.
+> Thanks for your time
 > 
-> +#define CCS811_MEAS_MODE_INTERRUPT	BIT(3)
-> +
->  #define CCS811_VOLTAGE_MASK	0x3FF
-> 
-> +#define CCS811_IRQ_NAME "ccs811_irq"
-
-Only used in once place, I'd just put in in directly
-there rather than having the define.  Still easy to
-grep for either way.
-> +
->  struct ccs811_reading {
->  	__be16 co2;
->  	__be16 voc;
-> @@ -74,6 +79,8 @@ struct ccs811_data {
->  	struct i2c_client *client;
->  	struct mutex lock; /* Protect readings */
->  	struct ccs811_reading buffer;
-> +	struct iio_trigger *drdy_trig;
-> +	bool drdy_trig_on;
->  };
-> 
->  static const struct iio_chan_spec ccs811_channels[] = {
-> @@ -194,10 +201,14 @@ static int ccs811_read_raw(struct iio_dev *indio_dev,
-> 
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
-> +		ret = iio_device_claim_direct_mode(indio_dev);
-> +		if (ret)
-> +			return ret;
->  		mutex_lock(&data->lock);
->  		ret = ccs811_get_measurement(data);
->  		if (ret < 0) {
->  			mutex_unlock(&data->lock);
-> +			iio_device_release_direct_mode(indio_dev);
->  			return ret;
->  		}
-> 
-> @@ -229,6 +240,7 @@ static int ccs811_read_raw(struct iio_dev *indio_dev,
->  			ret = -EINVAL;
->  		}
->  		mutex_unlock(&data->lock);
-> +		iio_device_release_direct_mode(indio_dev);
-> 
->  		return ret;
-> 
-> @@ -274,6 +286,32 @@ static int ccs811_read_raw(struct iio_dev *indio_dev,
->  	.driver_module = THIS_MODULE,
->  };
-> 
-> +static int ccs811_set_trigger_state(struct iio_trigger *trig,
-> +				    bool state)
-> +{
-> +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
-> +	struct ccs811_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	ret = i2c_smbus_read_byte_data(data->client, CCS811_MEAS_MODE);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	if (state)
-> +		ret |= CCS811_MEAS_MODE_INTERRUPT;
-> +	else
-> +		ret &= ~CCS811_MEAS_MODE_INTERRUPT;
-> +
-> +	data->drdy_trig_on = state;
-> +
-> +	return i2c_smbus_write_byte_data(data->client, CCS811_MEAS_MODE, ret);
-> +}
-> +
-> +static const struct iio_trigger_ops ccs811_trigger_ops = {
-> +	.set_trigger_state = ccs811_set_trigger_state,
-> +	.owner = THIS_MODULE,
-> +};
-> +
->  static irqreturn_t ccs811_trigger_handler(int irq, void *p)
->  {
->  	struct iio_poll_func *pf = p;
-> @@ -299,6 +337,17 @@ static irqreturn_t ccs811_trigger_handler(int irq, void *p)
->  	return IRQ_HANDLED;
->  }
-> 
-> +static irqreturn_t ccs811_data_rdy_trigger_poll(int irq, void *private)
-> +{
-> +	struct iio_dev *indio_dev = private;
-> +	struct ccs811_data *data = iio_priv(indio_dev);
-> +
-> +	if (data->drdy_trig_on)
-> +		iio_trigger_poll(data->drdy_trig);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
->  static int ccs811_probe(struct i2c_client *client,
->  			const struct i2c_device_id *id)
->  {
-> @@ -347,16 +396,48 @@ static int ccs811_probe(struct i2c_client *client,
->  	indio_dev->dev.parent = &client->dev;
->  	indio_dev->name = id->name;
->  	indio_dev->info = &ccs811_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> 
->  	indio_dev->channels = ccs811_channels;
->  	indio_dev->num_channels = ARRAY_SIZE(ccs811_channels);
-> 
-> +	if (client->irq > 0) {
-> +		ret = devm_request_threaded_irq(&client->dev, client->irq,
-> +						ccs811_data_rdy_trigger_poll,
-> +						NULL,
-> +						IRQF_TRIGGER_FALLING |
-> +						IRQF_ONESHOT,
-> +						CCS811_IRQ_NAME, indio_dev);
-> +		if (ret) {
-> +			dev_err(&client->dev, "irq request error %d\n", -ret);
-> +			goto err_poweroff;
-> +		}
-> +
-> +		data->drdy_trig = devm_iio_trigger_alloc(&client->dev,
-> +							 "%s-dev%d",
-> +							 indio_dev->name,
-> +							 indio_dev->id);
-> +		if (!data->drdy_trig) {
-> +			ret = -ENOMEM;
-> +			goto err_poweroff;
-> +		}
-> +
-> +		data->drdy_trig->dev.parent = &client->dev;
-> +		data->drdy_trig->ops = &ccs811_trigger_ops;
-> +		iio_trigger_set_drvdata(data->drdy_trig, indio_dev);
-> +		indio_dev->trig = data->drdy_trig;
-> +		iio_trigger_get(indio_dev->trig);
-> +		ret = iio_trigger_register(data->drdy_trig);
-> +		if (ret)
-> +			goto err_poweroff;
-> +	}
-> +
->  	ret = iio_triggered_buffer_setup(indio_dev, NULL,
->  					 ccs811_trigger_handler, NULL);
-> 
->  	if (ret < 0) {
->  		dev_err(&client->dev, "triggered buffer setup failed\n");
-> -		goto err_poweroff;
-> +		goto err_trigger_unregister;
->  	}
-> 
->  	ret = iio_device_register(indio_dev);
-> @@ -368,6 +449,8 @@ static int ccs811_probe(struct i2c_client *client,
-> 
->  err_buffer_cleanup:
->  	iio_triggered_buffer_cleanup(indio_dev);
-> +err_trigger_unregister:
-> +	iio_trigger_unregister(data->drdy_trig);
-
-I missed this on the first pass.  Given the trigger is optional, it may still
-be null.  There is no protection in iio_trigger_unregister for this
-(it could be easily added though).  Hence you should be checking before
-attempting to unregister.
-
->  err_poweroff:
->  	i2c_smbus_write_byte_data(client, CCS811_MEAS_MODE, CCS811_MODE_IDLE);
-> 
-> @@ -377,9 +460,11 @@ static int ccs811_probe(struct i2c_client *client,
->  static int ccs811_remove(struct i2c_client *client)
->  {
->  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +	struct ccs811_data *data = iio_priv(indio_dev);
-> 
->  	iio_device_unregister(indio_dev);
->  	iio_triggered_buffer_cleanup(indio_dev);
-> +	iio_trigger_unregister(data->drdy_trig);
-> 
->  	return i2c_smbus_write_byte_data(client, CCS811_MEAS_MODE,
->  					 CCS811_MODE_IDLE);
-> --
-> 1.9.1
-> 
-
+...
