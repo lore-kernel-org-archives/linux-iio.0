@@ -1,104 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44996 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751576AbdICLXT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 Sep 2017 07:23:19 -0400
-Date: Sun, 3 Sep 2017 12:23:14 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, <linux-iio@vger.kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        "Peter Meerwald-Stadler" <pmeerw@pmeerw.net>,
-        Peter Rosin <peda@axentia.se>
+Received: from mail-eopbgr10122.outbound.protection.outlook.com ([40.107.1.122]:47424
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1752806AbdICNgB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 3 Sep 2017 09:36:01 -0400
 Subject: Re: [PATCH V2 00/45] IIO: Drop manual assignment of THIS_MODULE
-Message-ID: <20170903122314.324d286f@archlinux>
-In-Reply-To: <20170822221929.0ce921ce@archlinux>
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 References: <20170723162627.22534-1-Jonathan.Cameron@huawei.com>
-        <20170820161301.1d4570db@archlinux>
-        <b018b734-bda5-8a9f-0c0b-eb379ec2c2df@metafoo.de>
-        <20170821133822.0000053f@huawei.com>
-        <20170822221929.0ce921ce@archlinux>
+ <20170820161301.1d4570db@archlinux>
+ <b018b734-bda5-8a9f-0c0b-eb379ec2c2df@metafoo.de>
+ <20170821133822.0000053f@huawei.com> <20170822221929.0ce921ce@archlinux>
+ <20170903122314.324d286f@archlinux>
+From: Peter Rosin <peda@axentia.se>
+Message-ID: <0b9a2569-e7f9-9420-c2d1-732049efae5f@axentia.se>
+Date: Sun, 3 Sep 2017 15:35:52 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20170903122314.324d286f@archlinux>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 22 Aug 2017 22:19:29 +0100
-Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
-
-> On Mon, 21 Aug 2017 13:38:22 +0100
-> Jonathan Cameron <Jonathan.Cameron@huawei.com> wrote:
+On 2017-09-03 13:23, Jonathan Cameron wrote:
+> On Tue, 22 Aug 2017 22:19:29 +0100
+> Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
+>> Series minus the coccinelle script applied to the togreg branch of iio.git
+>> and pushed out as testing.
+>>
 > 
-> > On Mon, 21 Aug 2017 09:42:01 +0200
-> > Lars-Peter Clausen <lars@metafoo.de> wrote:
-> >   
-> > > On 08/20/2017 05:13 PM, Jonathan Cameron wrote:    
-> > > > 
-> > > > Hi All,
-> > > > 
-> > > > If anyone has time to look over this set that would be great.
-> > > > 
-> > > > The ancient problem for maintainers, who is the reviewer of last
-> > > > resort? Oh me... That doesn't work for my patches :)
-> > > > 
-> > > > No actual rush though - don't mind if these sit until next cycle -
-> > > > would just get irritating if they sit until the one after and I have
-> > > > to rebase them again...      
-> > > 
-> > > Sorry, for the delay. Whole series
-> > > 
-> > > Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
-> > > 
-> > > (I didn't actually review each of the individual '-.driver_module =
-> > > THIS_MODULE', but I assume coccinelle did the right thing based on the
-> > > spatch script).    
-> > 
-> > I did a couple of the new ones by hand but they look the same so should
-> > be fine!
-> > 
-> > Thanks for review.
-> > 
-> > I'll drop the coccinelle patch I think as the field will have gone away
-> > so it won't be possible to set it wrong in future.
-> >   
-> Series minus the coccinelle script applied to the togreg branch of iio.git
-> and pushed out as testing.
+> Testing picked up on the fact we have have an iio_dev in 
+> the mux subsystem that I'd forgotten about.
 > 
-
-Testing picked up on the fact we have have an iio_dev in 
-the mux subsystem that I'd forgotten about.
-
-Peter, do you mind if I just pop in an additional patch such as:
-
-diff --git a/drivers/iio/multiplexer/iio-mux.c b/drivers/iio/multiplexer/iio-mux.c
-index 37ba007f8dca..92495d309193 100644
---- a/drivers/iio/multiplexer/iio-mux.c
-+++ b/drivers/iio/multiplexer/iio-mux.c
-@@ -173,7 +173,6 @@ static const struct iio_info mux_info = {
-        .read_raw = mux_read_raw,
-        .read_avail = mux_read_avail,
-        .write_raw = mux_write_raw,
--       .driver_module = THIS_MODULE,
- };
-
-Towards the end of this series?
-
-Thanks,
-
-Jonthan
-> Thanks,
+> Peter, do you mind if I just pop in an additional patch such as:
 > 
-> Jonathan
+> diff --git a/drivers/iio/multiplexer/iio-mux.c b/drivers/iio/multiplexer/iio-mux.c
+> index 37ba007f8dca..92495d309193 100644
+> --- a/drivers/iio/multiplexer/iio-mux.c
+> +++ b/drivers/iio/multiplexer/iio-mux.c
+> @@ -173,7 +173,6 @@ static const struct iio_info mux_info = {
+>         .read_raw = mux_read_raw,
+>         .read_avail = mux_read_avail,
+>         .write_raw = mux_write_raw,
+> -       .driver_module = THIS_MODULE,
+>  };
 > 
-> > Jonathan  
-> > > --
-> > > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> > > the body of a message to majordomo@vger.kernel.org
-> > > More majordomo info at  http://vger.kernel.org/majordomo-info.html    
-> >   
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Towards the end of this series?
 
+No problem, just go ahead.
+
+Cheers,
+Peter
