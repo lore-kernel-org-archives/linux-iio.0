@@ -1,87 +1,72 @@
-Return-Path: <SRS0=kBuR=AF=linaro.org=lee.jones@kernel.org>
-Date: Mon, 4 Sep 2017 14:51:39 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Fabrice Gasnier <fabrice.gasnier@st.com>
-Cc: benjamin.gaignard@linaro.org, jic23@kernel.org,
-	thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com,
-	alexandre.torgue@st.com, mcoquelin.stm32@gmail.com,
-	benjamin.gaignard@st.com, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
-	vilhelm.gray@gmail.com
-Subject: [GIT PULL] Immutable branch between MFD, IIO and PWM due for the
- v4.14 merge window
-Message-ID: <20170904135139.mfsoh5k4kifrhldq@dell>
-References: <1503914654-19963-1-git-send-email-fabrice.gasnier@st.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.99]:37544 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1753105AbdICQeU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 3 Sep 2017 12:34:20 -0400
+Date: Sun, 3 Sep 2017 17:34:15 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Colin Parker <colin.foeparker@aclima.io>
+Cc: linux-iio@vger.kernel.org, ak@it-klinger.de,
+        foeparker.colin@gmail.com, Colin Parker <colin.parker@aclima.io>
+Subject: Re: [PATCH] IIO: BME280: Updates to Humidity readings need ctrl_reg
+ write!
+Message-ID: <20170903173415.6a86f166@archlinux>
+In-Reply-To: <1503962499-11417-1-git-send-email-colin.parker@aclimalabs.com>
+References: <1503962499-11417-1-git-send-email-colin.parker@aclimalabs.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1503914654-19963-1-git-send-email-fabrice.gasnier@st.com>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Enjoy!
+On Mon, 28 Aug 2017 16:21:39 -0700
+Colin Parker <colin.foeparker@aclima.io> wrote:
 
-The following changes since commit 569dbb88e80deb68974ef6fdd6a13edb9d686261:
+> From: Colin Parker <colin.parker@aclima.io>
+> 
+> The ctrl_reg register needs to be written after any write to
+> the humidity registers. The value written to the ctrl_reg register
+> does not necessarily need to change, but a write operation must
+> occur.
 
-  Linux 4.13 (2017-09-03 13:56:17 -0700)
+That's nasty.
 
-are available in the git repository at:
+> 
+> The regmap_update_bits functions will not write to a register
+> if the register value matches the value to be written. This saves
+> unnecessary bus operations.  The change in this patch forces a bus
+> write during the chip_config operation by switching to
+> regmap_write_bits.
+> 
+> This will fix issues where the Humidity Sensor Oversampling bits
+> are not updated after initialization.
+> 
+> Signed-off-by: Colin Parker <colin.parker@aclima.io>
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git ib-mfd-iio-pwm-v4.14
+I'd just like to leave a little more time for Andreas to respond to
+this before I apply it.
 
-for you to fetch changes up to f0b638a7f6dba2eb6bf99fc648eab77f7ad5e59f:
+Give me a bump if it looks like I have forgotten about it after next
+weekend.
 
-  iio: adc: stm32: add support for lptimer triggers (2017-09-04 14:49:34 +0100)
+Thanks,
 
-----------------------------------------------------------------
-Immutable branch between MFD, IIO and PWM due for the v4.14 merge window
+Jonathan
 
-----------------------------------------------------------------
-Fabrice Gasnier (9):
-      dt-bindings: mfd: Add STM32 LPTimer binding
-      mfd: Add STM32 LPTimer driver
-      pwm: Add STM32 LPTimer PWM driver
-      dt-bindings: pwm: Add STM32 LPTimer PWM binding
-      dt-bindings: iio: Add STM32 LPTimer trigger binding
-      iio: trigger: Add STM32 LPTimer trigger driver
-      dt-bindings: iio: Add STM32 LPTimer quadrature encoder and counter
-      iio: counter: Add support for STM32 LPTimer
-      iio: adc: stm32: add support for lptimer triggers
+> ---
+>  drivers/iio/pressure/bmp280-core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
+> index 0d2ea3e..8f26428 100644
+> --- a/drivers/iio/pressure/bmp280-core.c
+> +++ b/drivers/iio/pressure/bmp280-core.c
+> @@ -573,7 +573,7 @@ static int bmp280_chip_config(struct bmp280_data *data)
+>  	u8 osrs = BMP280_OSRS_TEMP_X(data->oversampling_temp + 1) |
+>  		  BMP280_OSRS_PRESS_X(data->oversampling_press + 1);
+>  
+> -	ret = regmap_update_bits(data->regmap, BMP280_REG_CTRL_MEAS,
+> +	ret = regmap_write_bits(data->regmap, BMP280_REG_CTRL_MEAS,
+>  				 BMP280_OSRS_TEMP_MASK |
+>  				 BMP280_OSRS_PRESS_MASK |
+>  				 BMP280_MODE_MASK,
 
- .../ABI/testing/sysfs-bus-iio-lptimer-stm32        |  57 +++
- .../bindings/iio/counter/stm32-lptimer-cnt.txt     |  27 ++
- .../bindings/iio/timer/stm32-lptimer-trigger.txt   |  23 ++
- .../devicetree/bindings/mfd/stm32-lptimer.txt      |  48 +++
- .../devicetree/bindings/pwm/pwm-stm32-lp.txt       |  24 ++
- drivers/iio/adc/stm32-adc.c                        |  14 +-
- drivers/iio/counter/Kconfig                        |   9 +
- drivers/iio/counter/Makefile                       |   1 +
- drivers/iio/counter/stm32-lptimer-cnt.c            | 383 +++++++++++++++++++++
- drivers/iio/trigger/Kconfig                        |  11 +
- drivers/iio/trigger/Makefile                       |   1 +
- drivers/iio/trigger/stm32-lptimer-trigger.c        | 118 +++++++
- drivers/mfd/Kconfig                                |  14 +
- drivers/mfd/Makefile                               |   1 +
- drivers/mfd/stm32-lptimer.c                        | 107 ++++++
- drivers/pwm/Kconfig                                |  10 +
- drivers/pwm/Makefile                               |   1 +
- drivers/pwm/pwm-stm32-lp.c                         | 246 +++++++++++++
- include/linux/iio/timer/stm32-lptim-trigger.h      |  27 ++
- include/linux/mfd/stm32-lptimer.h                  |  62 ++++
- 20 files changed, 1182 insertions(+), 2 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32
- create mode 100644 Documentation/devicetree/bindings/iio/counter/stm32-lptimer-cnt.txt
- create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-lptimer-trigger.txt
- create mode 100644 Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt
- create mode 100644 drivers/iio/counter/stm32-lptimer-cnt.c
- create mode 100644 drivers/iio/trigger/stm32-lptimer-trigger.c
- create mode 100644 drivers/mfd/stm32-lptimer.c
- create mode 100644 drivers/pwm/pwm-stm32-lp.c
- create mode 100644 include/linux/iio/timer/stm32-lptim-trigger.h
- create mode 100644 include/linux/mfd/stm32-lptimer.h
- 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
