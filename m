@@ -1,9 +1,9 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:60776 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:60054 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751765AbdICN7V (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 3 Sep 2017 09:59:21 -0400
-Date: Sun, 3 Sep 2017 14:59:16 +0100
+        id S1752828AbdICNlo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 3 Sep 2017 09:41:44 -0400
+Date: Sun, 3 Sep 2017 14:41:39 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Lukas Wunner <lukas@wunner.de>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
@@ -18,12 +18,11 @@ Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Michael Welling <mwelling@ieee.org>,
         Soeren Andersen <san@rosetechnology.dk>,
         linux-iio@vger.kernel.org
-Subject: Re: [PATCH 4/6] iio: adc: mcp320x: Drop unnecessary of_device_id
- attributes
-Message-ID: <20170903145916.47efa30e@archlinux>
-In-Reply-To: <f61c85ca59a45800672d8879f7ea715f134dbd51.1503407738.git.lukas@wunner.de>
+Subject: Re: [PATCH 1/6] iio: adc: mcp320x: Fix oops on module unload
+Message-ID: <20170903144139.51ae5ac1@archlinux>
+In-Reply-To: <c3942be5a25903744b90a014103a50f252d7ff43.1503407738.git.lukas@wunner.de>
 References: <cover.1503407738.git.lukas@wunner.de>
-        <f61c85ca59a45800672d8879f7ea715f134dbd51.1503407738.git.lukas@wunner.de>
+        <c3942be5a25903744b90a014103a50f252d7ff43.1503407738.git.lukas@wunner.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
@@ -32,108 +31,49 @@ List-Id: linux-iio@vger.kernel.org
 On Tue, 22 Aug 2017 15:33:00 +0200
 Lukas Wunner <lukas@wunner.de> wrote:
 
-> The driver sets a .data pointer for each .compatible string but never
-> calls of_device_get_match_data().  Instead, ADC properties are looked up
-> with spi_get_device_id().  The .data pointer is therefore unnecessary,
-> so drop it.
+> The driver calls spi_get_drvdata() in its ->remove hook even though it
+> has never called spi_set_drvdata().  Stack trace for posterity:
 > 
+> Unable to handle kernel NULL pointer dereference at virtual address 00000220
+> Internal error: Oops: 5 [#1] SMP ARM
+> [<8072f564>] (mutex_lock) from [<7f1400d0>] (iio_device_unregister+0x24/0x7c [industrialio])
+> [<7f1400d0>] (iio_device_unregister [industrialio]) from [<7f15e020>] (mcp320x_remove+0x20/0x30 [mcp320x])
+> [<7f15e020>] (mcp320x_remove [mcp320x]) from [<8055a8cc>] (spi_drv_remove+0x2c/0x44)
+> [<8055a8cc>] (spi_drv_remove) from [<805087bc>] (__device_release_driver+0x98/0x134)
+> [<805087bc>] (__device_release_driver) from [<80509180>] (driver_detach+0xdc/0xe0)
+> [<80509180>] (driver_detach) from [<8050823c>] (bus_remove_driver+0x5c/0xb0)
+> [<8050823c>] (bus_remove_driver) from [<80509ab0>] (driver_unregister+0x38/0x58)
+> [<80509ab0>] (driver_unregister) from [<7f15e69c>] (mcp320x_driver_exit+0x14/0x1c [mcp320x])
+> [<7f15e69c>] (mcp320x_driver_exit [mcp320x]) from [<801a78d0>] (SyS_delete_module+0x184/0x1d0)
+> [<801a78d0>] (SyS_delete_module) from [<80108100>] (ret_fast_syscall+0x0/0x1c)
+> 
+> Fixes: f5ce4a7a9291 ("iio: adc: add driver for MCP3204/08 12-bit ADC")
+> Cc: Oskar Andero <oskar.andero@gmail.com>
 > Signed-off-by: Lukas Wunner <lukas@wunner.de>
 
-Hmm. The use of spi_get_device_id strikes me as fragile but I may be missing
-something.  Seems to be a match on the name from devicetree against the older
-table.
+Applied to the fixes-togreg branch of iio.git and marked for stable.
 
-Can't disagree that your patch removes currently unused code though.
+This won't now hit until after the merge window, but it should be fairly
+soon after that.
+
+Thanks,
 
 Jonathan
+
 > ---
->  drivers/iio/adc/mcp320x.c | 75 ++++++++++++-----------------------------------
->  1 file changed, 19 insertions(+), 56 deletions(-)
+>  drivers/iio/adc/mcp320x.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
 > diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
-> index 790d3e857c80..6e10fa934aca 100644
+> index 634717ae12f3..45d043c9a888 100644
 > --- a/drivers/iio/adc/mcp320x.c
 > +++ b/drivers/iio/adc/mcp320x.c
-> @@ -365,62 +365,25 @@ static int mcp320x_remove(struct spi_device *spi)
->  #if defined(CONFIG_OF)
->  static const struct of_device_id mcp320x_dt_ids[] = {
->  	/* NOTE: The use of compatibles with no vendor prefix is deprecated. */
-> -	{
-> -		.compatible = "mcp3001",
-> -		.data = &mcp320x_chip_infos[mcp3001],
-> -	}, {
-> -		.compatible = "mcp3002",
-> -		.data = &mcp320x_chip_infos[mcp3002],
-> -	}, {
-> -		.compatible = "mcp3004",
-> -		.data = &mcp320x_chip_infos[mcp3004],
-> -	}, {
-> -		.compatible = "mcp3008",
-> -		.data = &mcp320x_chip_infos[mcp3008],
-> -	}, {
-> -		.compatible = "mcp3201",
-> -		.data = &mcp320x_chip_infos[mcp3201],
-> -	}, {
-> -		.compatible = "mcp3202",
-> -		.data = &mcp320x_chip_infos[mcp3202],
-> -	}, {
-> -		.compatible = "mcp3204",
-> -		.data = &mcp320x_chip_infos[mcp3204],
-> -	}, {
-> -		.compatible = "mcp3208",
-> -		.data = &mcp320x_chip_infos[mcp3208],
-> -	}, {
-> -		.compatible = "mcp3301",
-> -		.data = &mcp320x_chip_infos[mcp3301],
-> -	}, {
-> -		.compatible = "microchip,mcp3001",
-> -		.data = &mcp320x_chip_infos[mcp3001],
-> -	}, {
-> -		.compatible = "microchip,mcp3002",
-> -		.data = &mcp320x_chip_infos[mcp3002],
-> -	}, {
-> -		.compatible = "microchip,mcp3004",
-> -		.data = &mcp320x_chip_infos[mcp3004],
-> -	}, {
-> -		.compatible = "microchip,mcp3008",
-> -		.data = &mcp320x_chip_infos[mcp3008],
-> -	}, {
-> -		.compatible = "microchip,mcp3201",
-> -		.data = &mcp320x_chip_infos[mcp3201],
-> -	}, {
-> -		.compatible = "microchip,mcp3202",
-> -		.data = &mcp320x_chip_infos[mcp3202],
-> -	}, {
-> -		.compatible = "microchip,mcp3204",
-> -		.data = &mcp320x_chip_infos[mcp3204],
-> -	}, {
-> -		.compatible = "microchip,mcp3208",
-> -		.data = &mcp320x_chip_infos[mcp3208],
-> -	}, {
-> -		.compatible = "microchip,mcp3301",
-> -		.data = &mcp320x_chip_infos[mcp3301],
-> -	}, {
-> -	}
-> +	{ .compatible = "mcp3001" },
-> +	{ .compatible = "mcp3002" },
-> +	{ .compatible = "mcp3004" },
-> +	{ .compatible = "mcp3008" },
-> +	{ .compatible = "mcp3201" },
-> +	{ .compatible = "mcp3202" },
-> +	{ .compatible = "mcp3204" },
-> +	{ .compatible = "mcp3208" },
-> +	{ .compatible = "mcp3301" },
-> +	{ .compatible = "microchip,mcp3001" },
-> +	{ .compatible = "microchip,mcp3002" },
-> +	{ .compatible = "microchip,mcp3004" },
-> +	{ .compatible = "microchip,mcp3008" },
-> +	{ .compatible = "microchip,mcp3201" },
-> +	{ .compatible = "microchip,mcp3202" },
-> +	{ .compatible = "microchip,mcp3204" },
-> +	{ .compatible = "microchip,mcp3208" },
-> +	{ .compatible = "microchip,mcp3301" },
-> +	{ }
->  };
->  MODULE_DEVICE_TABLE(of, mcp320x_dt_ids);
->  #endif
+> @@ -312,6 +312,7 @@ static int mcp320x_probe(struct spi_device *spi)
+>  	indio_dev->name = spi_get_device_id(spi)->name;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  	indio_dev->info = &mcp320x_info;
+> +	spi_set_drvdata(spi, indio_dev);
+>  
+>  	chip_info = &mcp320x_chip_infos[spi_get_device_id(spi)->driver_data];
+>  	indio_dev->channels = chip_info->channels;
 
