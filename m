@@ -1,61 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:55966 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:55660 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751649AbdICL7x (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 3 Sep 2017 07:59:53 -0400
-Date: Sun, 3 Sep 2017 12:59:49 +0100
+        id S1751580AbdICLnj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 3 Sep 2017 07:43:39 -0400
+Date: Sun, 3 Sep 2017 12:43:35 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 6/7] iio: accel: kxcjk1013: make
- sampling_frequency_avail per-type
-Message-ID: <20170903125949.71dd98e6@archlinux>
-In-Reply-To: <2bf4d07d81f11add906b449d76efcd04c267d1fd.1503352742.git.mirq-linux@rere.qmqm.pl>
+        linux-iio@vger.kernel.org,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: Re: [PATCH v2 0/7] iio: accel: kxcjk1003: support Kionix KXTF9
+Message-ID: <20170903124335.19dcb386@archlinux>
+In-Reply-To: <cover.1503352742.git.mirq-linux@rere.qmqm.pl>
 References: <cover.1503352742.git.mirq-linux@rere.qmqm.pl>
-        <2bf4d07d81f11add906b449d76efcd04c267d1fd.1503352742.git.mirq-linux@rere.qmqm.pl>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 22 Aug 2017 00:03:32 +0200
+On Tue, 22 Aug 2017 00:03:29 +0200
 Michał Mirosław <mirq-linux@rere.qmqm.pl> wrote:
 
-> Make sampling_frequency_avail per-type - like sampling_frequency is.
+> This series adds support for KXTF9 accelerometer. It is mostly compatible
+> to KXCJK, but replaces motion direction interrupt with tap detection
+> (not supported in this implementation, yet).
 > 
-> Signed-off-by: Michał Mirosław <mirq-linux@rere.qmqm.pl>
+> First 5 patches are refactorings with no outside-visible effects.
+> Patch 6 fixes sysfs attribute name of sampling_frequency_avail
+> to match sampling_frequency attribute it describes.
+> Patch 7 finally adds support for KXTF9 accelerometers.
 
-Hmm. This is obviously ABI change.  However, it's pretty obscure so I very
-much doubt anyone will notice.  I'd like this 'fixed' anyway so lets
-go with it and deal with the fall out should there be any problems.
+Cc'd Srinivas (original author of this driver - should really have been cc'd
+from the start).
+
+Michał: I'm assuming you don't have the parts already supported by the driver?
+
+Srinivas: Are you likely to get time to take a quick look at this series any
+time in the next few weeks?
+
+Even better if you still have test hardware to check nothing broke on the
+original supported parts (not to worry if not!)
+
+We are past the point where these are going to make the coming merge window
+anyway so have plenty of time.
+
+Thanks,
 
 Jonathan
 
-> ---
->  drivers/iio/accel/kxcjk-1013.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
+p.s. If anyone else has the parts already supported by this driver and
+can give the changes a quick check that would be great!
 > 
-> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-> index 11bf9afbd248..48b9a97e8a58 100644
-> --- a/drivers/iio/accel/kxcjk-1013.c
-> +++ b/drivers/iio/accel/kxcjk-1013.c
-> @@ -889,12 +889,13 @@ static ssize_t kxcjk1013_get_samp_freq_avail(struct device *dev,
->  	return sprintf(buf, "%s\n", samp_freq_avail);
->  }
->  
-> -static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(kxcjk1013_get_samp_freq_avail);
-> +static IIO_DEVICE_ATTR(in_accel_sampling_frequency_available, S_IRUGO,
-> +		       kxcjk1013_get_samp_freq_avail, NULL, 0);
->  
->  static IIO_CONST_ATTR(in_accel_scale_available, "0.009582 0.019163 0.038326");
->  
->  static struct attribute *kxcjk1013_attributes[] = {
-> -	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
-> +	&iio_dev_attr_in_accel_sampling_frequency_available.dev_attr.attr,
->  	&iio_const_attr_in_accel_scale_available.dev_attr.attr,
->  	NULL,
->  };
+> Michał Mirosław (7):
+>   iio: accel: kxcjk1003: refactor ODR setting
+>   iio: accel: kxcjk1013: fix INT_CTRL/INT_SRC1 bit names
+>   iio: accel: kxcjk1013: extract report_motion_event() from interrupt
+>     handler
+>   iio: accel: kxcjk1013: rename motion direction bits
+>   iio: accel: kxcjk1013: make sysfs/sampling_frequency_avail dynamic
+>   iio: accel: kxcjk1013: make sampling_frequency_avail per-type
+>   iio: accel: kxcjk1013: add support for KXTF9
+> 
+>  drivers/iio/accel/Kconfig      |   4 +-
+>  drivers/iio/accel/kxcjk-1013.c | 366 ++++++++++++++++++++++++++---------------
+>  2 files changed, 235 insertions(+), 135 deletions(-)
+> 
 
