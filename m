@@ -1,229 +1,124 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:40356 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:60194 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752614AbdIEUyC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 5 Sep 2017 16:54:02 -0400
-MIME-Version: 1.0
-In-Reply-To: <CAMV_pUaXQxcD_nrJ32wi0w=sBseL1ioAhYvDt1O-HTX=0QY0aw@mail.gmail.com>
-References: <1503383171-15515-1-git-send-email-s.abhisit@gmail.com>
- <20170825183520.doacpiit7mxgsk7v@rob-hp-laptop> <CAMV_pUaXQxcD_nrJ32wi0w=sBseL1ioAhYvDt1O-HTX=0QY0aw@mail.gmail.com>
-From: Rob Herring <robh@kernel.org>
-Date: Tue, 5 Sep 2017 15:53:40 -0500
-Message-ID: <CAL_JsqK5qoBwb=07ocPyYs-4ZwJPFiAvAYVHu_KWGrzv3nOmAQ@mail.gmail.com>
-Subject: Re: [PATCH] mfd: Add support for TI LMP92001
-To: Abhisit Sangjan <s.abhisit@gmail.com>
-Cc: Lee Jones <lee.jones@linaro.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        jmondi <jacopo@jmondi.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
+        id S1752828AbdICNoL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 3 Sep 2017 09:44:11 -0400
+Date: Sun, 3 Sep 2017 14:44:06 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Lukas Wunner <lukas@wunner.de>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Fabrice Gasnier <fabrice.gasnier@st.com>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Mathias Duckeck <m.duckeck@kunbus.de>,
+        Phil Elwell <phil@raspberrypi.org>,
+        Oskar Andero <oskar.andero@gmail.com>,
+        Andrea Galbusera <gizero@gmail.com>,
         Akinobu Mita <akinobu.mita@gmail.com>,
-        Marek Vasut <marek.vasut+renesas@gmail.com>,
-        Jacopo Mondi <jacopo+renesas@jmondi.org>,
-        Mike Looijmans <mike.looijmans@topic.nl>,
-        Peter Rosin <peda@axentia.se>,
-        =?UTF-8?Q?Jean=2DFran=C3=A7ois_Dagenais?= <jeff.dagenais@gmail.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Lukas Wunner <lukas@wunner.de>,
-        Adriana Reus <adi.reus@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        Manfred Schlaegl <manfred.schlaegl@gmx.at>,
+        Michael Welling <mwelling@ieee.org>,
+        Soeren Andersen <san@rosetechnology.dk>,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/6] iio: adc: mcp320x: Fix readout of negative voltages
+Message-ID: <20170903144406.4619cb60@archlinux>
+In-Reply-To: <a47443b08deb1a159ec0b2943465907b681b5863.1503407738.git.lukas@wunner.de>
+References: <cover.1503407738.git.lukas@wunner.de>
+        <a47443b08deb1a159ec0b2943465907b681b5863.1503407738.git.lukas@wunner.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Aug 30, 2017 at 2:58 AM, Abhisit Sangjan <s.abhisit@gmail.com> wrote:
-> Hi Rob,
->
-> On Sat, Aug 26, 2017 at 1:35 AM, Rob Herring <robh@kernel.org> wrote:
->>
->> On Tue, Aug 22, 2017 at 01:26:11PM +0700, s.abhisit@gmail.com wrote:
->> > From: Abhisit Sangjan <s.abhisit@gmail.com>
->> >
->> > TI LMP92001 Analog System Monitor and Controller
->> >
->> > 8-bit GPIOs.
->> > 12 DACs with 12-bit resolution.
->> > The GPIOs and DACs are shared port function with Cy function pin to
->> > take control the pin suddenly from external hardware.
->> > DAC's referance voltage selectable for Internal/External.
->> >
->> > 16 + 1 ADCs with 12-bit resolution.
->> > Built-in internal Temperature Sensor on channel 17.
->> > Windows Comparator Function is supported on channel 1-3 and 9-11 for
->> > monitoring with interrupt signal (pending to implement for interrupt).
->> > ADC's referance voltage selectable for Internal/External.
->> >
->> > Signed-off-by: Abhisit Sangjan <s.abhisit@gmail.com>
->> > ---
->> >  Documentation/ABI/testing/sysfs-bus-iio-lmp920001  |  92 ++++
->> >  .../devicetree/bindings/gpio/gpio-lmp92001.txt     |  22 +
->> >  .../bindings/iio/adc/ti-lmp92001-adc.txt           |  21 +
->> >  .../bindings/iio/dac/ti-lmp92001-dac.txt           |  35 ++
->>
->>
->> > diff --git a/Documentation/devicetree/bindings/gpio/gpio-lmp92001.txt
->> > b/Documentation/devicetree/bindings/gpio/gpio-lmp92001.txt
->> > new file mode 100644
->> > index 0000000..c68784e
->> > --- /dev/null
->> > +++ b/Documentation/devicetree/bindings/gpio/gpio-lmp92001.txt
->> > @@ -0,0 +1,22 @@
->> > +* Texas Instruments' LMP92001 GPIOs
->> > +
->> > +Required properties:
->> > + - compatible: Must be set to "ti,lmp92001-gpio".
->> > + - reg: i2c chip address for the device.
->>
->> No, you show this in the parent which needs to be described in
->> bindings/mtd/...
->>
->> You could have reg here too if all the registers for each sub-block are
->> in a well defined range.
->
->
-> I am sorry, I do not understand.
->
->>
->>
->> > + - gpio-controller: Marks the device node as a gpio controller.
->> > + - #gpio-cells : Should be two.  The first cell is the pin number and
->> > the
->> > +  second cell is used to specify the gpio polarity:
->> > +        0 = Active high
->> > +        1 = Active low
->> > +
->> > +Example:
->> > +lmp92001@20 {
->> > +        compatible = "ti,lmp92001";
->> > +        reg = <0x20>;
->> > +
->> > +        lmp92001_gpio: lmp92001-gpio {
->>
->> gpio-controller {
->
->
-> I am sorry, I do not understand. I took this idea from some things like
+On Tue, 22 Aug 2017 15:33:00 +0200
+Lukas Wunner <lukas@wunner.de> wrote:
 
-Read the section of the DT specification on generic node names.
+> Commit f686a36b4b79 ("iio: adc: mcp320x: Add support for mcp3301")
+> returns a signed voltage from mcp320x_adc_conversion() but neglects that
+> the caller interprets a negative return value as failure.  Only mcp3301
+> (and the upcoming mcp3550/1/3) is affected as the other chips are
+> incapable of measuring negative voltages.
+> 
+> Fix and while at it, add mcp3301 to the list of supported chips at the
+> top of the file.
+> 
+> Fixes: f686a36b4b79 ("iio: adc: mcp320x: Add support for mcp3301")
+> Cc: Andrea Galbusera <gizero@gmail.com>
+> Signed-off-by: Lukas Wunner <lukas@wunner.de>
 
-And actually, it should be just "gpio". I never can remember offhand.
+Applied to the fixes-togreg branch of iio.git and marked for stable.
 
-> Documentation/devicetree/bindings/gpio/gpio-lp3943.txt
-> ------------------------------------------------------------------------------------------------------------------------------
->
-> TI/National Semiconductor LP3943 GPIO controller
->
-> Required properties:
->   - compatible: "ti,lp3943-gpio"
->   - gpio-controller: Marks the device node as a GPIO controller.
->   - #gpio-cells: Should be 2. See gpio.txt in this directory for a
->                  description of the cells format.
->
-> Example:
-> Simple LED controls with LP3943 GPIO controller
->
-> &i2c4 {
->         lp3943@60 {
->                 compatible = "ti,lp3943";
->                 reg = <0x60>;
->
->                 gpioex: gpio {
+Thanks,
 
-As you see here, the node name for the gpio block is just "gpio".
+Jonathan
 
->                         compatible = "ti,lp3943-gpio";
->                         gpio-controller;
->                         #gpio-cells = <2>;
->                 };
->         };
-> };
->
-> leds {
->         compatible = "gpio-leds";
->         indicator1 {
->                 label = "indi1";
->                 gpios = <&gpioex 9 GPIO_ACTIVE_LOW>;
->         };
->
->         indicator2 {
->                 label = "indi2";
->                 gpios = <&gpioex 10 GPIO_ACTIVE_LOW>;
->                 default-state = "off";
->         };
-> };
->
->>
->>
->> > +                compatible = "ti,lmp92001-gpio";
->> > +                gpio-controller;
->> > +                #gpio-cells = <2>;
->> > +        };
->> > +};
->> > diff --git
->> > a/Documentation/devicetree/bindings/iio/adc/ti-lmp92001-adc.txt
->> > b/Documentation/devicetree/bindings/iio/adc/ti-lmp92001-adc.txt
->> > new file mode 100644
->> > index 0000000..34d7809
->> > --- /dev/null
->> > +++ b/Documentation/devicetree/bindings/iio/adc/ti-lmp92001-adc.txt
->> > @@ -0,0 +1,21 @@
->> > +* Texas Instruments' LMP92001 ADCs
->> > +
->> > +Required properties:
->> > + - compatible: Must be set to "ti,lmp92001-adc".
->> > + - reg: i2c chip address for the device.
->>
->> Same comment here.
->>
->> > + - ti,lmp92001-adc-mode: adc operation, either continuous or
->> > single-shot.
->>
->> No standard property for this?
->
->
-> I am removed this, regrading to Lukas Wunner (cc) and Adriana Reus discussed
-> (cc)
-> "it would be fine also as a sysfs property instead".
+> ---
+>  drivers/iio/adc/mcp320x.c | 24 +++++++++++++++---------
+>  1 file changed, 15 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
+> index 45d043c9a888..071dd23a33d9 100644
+> --- a/drivers/iio/adc/mcp320x.c
+> +++ b/drivers/iio/adc/mcp320x.c
+> @@ -17,6 +17,8 @@
+>   * MCP3204
+>   * MCP3208
+>   * ------------
+> + * 13 bit converter
+> + * MCP3301
+>   *
+>   * Datasheet can be found here:
+>   * http://ww1.microchip.com/downloads/en/DeviceDoc/21293C.pdf  mcp3001
+> @@ -96,7 +98,7 @@ static int mcp320x_channel_to_tx_data(int device_index,
+>  }
+>  
+>  static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
+> -				  bool differential, int device_index)
+> +				  bool differential, int device_index, int *val)
+>  {
+>  	int ret;
+>  
+> @@ -117,19 +119,25 @@ static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
+>  
+>  	switch (device_index) {
+>  	case mcp3001:
+> -		return (adc->rx_buf[0] << 5 | adc->rx_buf[1] >> 3);
+> +		*val = (adc->rx_buf[0] << 5 | adc->rx_buf[1] >> 3);
+> +		return 0;
+>  	case mcp3002:
+>  	case mcp3004:
+>  	case mcp3008:
+> -		return (adc->rx_buf[0] << 2 | adc->rx_buf[1] >> 6);
+> +		*val = (adc->rx_buf[0] << 2 | adc->rx_buf[1] >> 6);
+> +		return 0;
+>  	case mcp3201:
+> -		return (adc->rx_buf[0] << 7 | adc->rx_buf[1] >> 1);
+> +		*val = (adc->rx_buf[0] << 7 | adc->rx_buf[1] >> 1);
+> +		return 0;
+>  	case mcp3202:
+>  	case mcp3204:
+>  	case mcp3208:
+> -		return (adc->rx_buf[0] << 4 | adc->rx_buf[1] >> 4);
+> +		*val = (adc->rx_buf[0] << 4 | adc->rx_buf[1] >> 4);
+> +		return 0;
+>  	case mcp3301:
+> -		return sign_extend32((adc->rx_buf[0] & 0x1f) << 8 | adc->rx_buf[1], 12);
+> +		*val = sign_extend32((adc->rx_buf[0] & 0x1f) << 8
+> +				    | adc->rx_buf[1], 12);
+> +		return 0;
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -150,12 +158,10 @@ static int mcp320x_read_raw(struct iio_dev *indio_dev,
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_RAW:
+>  		ret = mcp320x_adc_conversion(adc, channel->address,
+> -			channel->differential, device_index);
+> -
+> +			channel->differential, device_index, val);
+>  		if (ret < 0)
+>  			goto out;
+>  
+> -		*val = ret;
+>  		ret = IIO_VAL_INT;
+>  		break;
+>  
 
-Depends on who would want to change this. If an end-user would at
-run-time, then yes sysfs makes sense. If the h/w design dictates what
-mode makes sense, then DT is fine.
-
-
->> > +Required properties:
->> > + - compatible: Must be set to "ti,lmp92001-dac".
->> > + - reg: i2c chip address for the device.
->> > + - ti,lmp92001-dac-hiz: hi-impedance control,
->> > +        1 = Forces all OUT[1:12] outputs to hi-z, 0 = normal
->>
->> Just make this a boolean (i.e. no value).
->
->
-> Hi-Z will be or to cdac and it is unsigned int, u8 would be safe and work
-> fine for this.
->
-> lmp92001_dac_probe()
-> ...
-> u8 gang = 0, outx = 0, hiz = 0;
-> unsigned int cdac = 0;
-> ...
-> of_property_read_u8(np, "ti,lmp92001-dac-hiz", &hiz);
-> cdac = hiz;
-
-Make it bool and just do this:
-
-unsigned int cdac = of_property_read_bool(...);
-
-or:
-
-unsigned int cdac = of_property_read_bool(...) > 0 ? 1 : 0;
-
-The DT property and kernel types don't have to match types.
-
-Rob
