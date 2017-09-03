@@ -1,87 +1,97 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:40544 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:56866 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S934254AbdIYUju (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 25 Sep 2017 16:39:50 -0400
-Date: Mon, 25 Sep 2017 21:39:46 +0100
+        id S1751611AbdICMNd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 3 Sep 2017 08:13:33 -0400
+Date: Sun, 3 Sep 2017 13:13:28 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Nicholas Mc Guire <der.herr@hofr.at>,
+To: Peter Rosin <peda@axentia.se>
+Cc: "Gustavo A. R. Silva" <garsilva@embeddedor.com>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: pressure: zpa2326: Remove always-true check which
- confuses gcc
-Message-ID: <20170925213946.1d2c9824@archlinux>
-In-Reply-To: <1499242499-18860-1-git-send-email-geert@linux-m68k.org>
-References: <1499242499-18860-1-git-send-email-geert@linux-m68k.org>
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: Re: [PATCH] iio: multiplexer: add NULL check on devm_kzalloc() and
+ devm_kmemdup() return values
+Message-ID: <20170903131328.78a5d08a@archlinux>
+In-Reply-To: <aaff7b8f-5fc3-e811-b334-42d323dfbf2e@axentia.se>
+References: <20170707045311.GA4535@embeddedgus>
+        <df6ae9c6-8ac7-368b-a1c2-4403387df02b@axentia.se>
+        <0ba9b76f-41f8-3171-2eb7-d9abbe106674@axentia.se>
+        <20170709181023.54458b6c@kernel.org>
+        <aaff7b8f-5fc3-e811-b334-42d323dfbf2e@axentia.se>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed,  5 Jul 2017 10:14:59 +0200
-Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+On Sat, 26 Aug 2017 08:09:43 +0200
+Peter Rosin <peda@axentia.se> wrote:
 
-> With gcc 4.1.2:
+> On 2017-07-09 19:10, Jonathan Cameron wrote:
+> > On Fri, 7 Jul 2017 11:26:35 +0200
+> > Peter Rosin <peda@axentia.se> wrote:
+> >   
+> >> On 2017-07-07 06:57, Peter Rosin wrote:  
+> >>> On 2017-07-07 06:53, Gustavo A. R. Silva wrote:    
+> >>>> Check return values from call to devm_kzalloc() and devm_kmemup()    
+> >>>
+> >>> If someone cares enough: s/devm_kmemup/evm_kmemdup/    
+> >>
+> >> Strange, there seems to be some inherent shortage of 'd' characters...
+> >>
+> >> Cheers,
+> >> pea :-)
+> >>  
+> >>>     
+> >>>> in order to prevent a NULL pointer dereference.
+> >>>>
+> >>>> This issue was detected using Coccinelle and the following semantic patch:
+> >>>>
+> >>>> @@
+> >>>> expression x;
+> >>>> identifier fld;
+> >>>> @@
+> >>>>
+> >>>> * x = devm_kzalloc(...);
+> >>>>    ... when != x == NULL
+> >>>>    x->fld
+> >>>>
+> >>>> Cc: Peter Rosin <peda@axentia.se>
+> >>>> Signed-off-by: Gustavo A. R. Silva <garsilva@embeddedor.com>    
+> >>>
+> >>> Either way,
+> >>>
+> >>> Reviewed-by: Peter Rosin <peda@axentia.se>
+> >>>
+> >>> Thanks!
+> >>>  
+> > The relevant patch adding the file in questions hasn't yet worked it's
+> > way back to the iio tree so I can't apply this until it does.
+> > 
+> > That is likely to be a few weeks away yet.  Please give me a poke if
+> > I seem to have forgotten it!  
 > 
->     drivers/iio/pressure/zpa2326.c: In function ‘zpa2326_wait_oneshot_completion’:
->     drivers/iio/pressure/zpa2326.c:868: warning: ‘ret’ may be used uninitialized in this function
+> Hi Jonathan!
 > 
-> When testing for "timeout < 0", timeout is already guaranteed to be
-> strict negative, so the branch is always taken, and ret is thus always
-> initialized.  But (some version of) gcc is not smart enough to notice.
+> I saw a patch from Christophe JAILLET [1] and it seemed familiar so I
+> did a bit of digging. Now, I did go back and check this a couple of
+> weeks after you request, but iio-mux.c still wasn't in the iio tree,
+> and then I did forgot about it. Sorry. But here's the poke...
 > 
-> Remove the check to fix this.
-> As there is no other code in between assigning the error codes and
-> returning them, the error codes can be returned immediately, and the
-> intermediate variable can be dropped.
-> Drop the "else" to please checkpatch.
-> 
-> Fixes: e7215fe4d51e69c9 ("iio: pressure: zpa2326: report interrupted case as failure")
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Sorry - this one got missed originally.  Not quite sure why!
 
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
-
-Thanks,
+Applied.  Thanks - this one had completely dropped off the back of my
+patch queue. Oops.
 
 Jonathan
 
-> ---
->  drivers/iio/pressure/zpa2326.c | 10 +++-------
->  1 file changed, 3 insertions(+), 7 deletions(-)
+> Cheers,
+> Peter
 > 
-> diff --git a/drivers/iio/pressure/zpa2326.c b/drivers/iio/pressure/zpa2326.c
-> index c92a95f9f52c2141..531b88ce336184d4 100644
-> --- a/drivers/iio/pressure/zpa2326.c
-> +++ b/drivers/iio/pressure/zpa2326.c
-> @@ -865,7 +865,6 @@ static irqreturn_t zpa2326_handle_threaded_irq(int irq, void *data)
->  static int zpa2326_wait_oneshot_completion(const struct iio_dev   *indio_dev,
->  					   struct zpa2326_private *private)
->  {
-> -	int          ret;
->  	unsigned int val;
->  	long     timeout;
->  
-> @@ -887,14 +886,11 @@ static int zpa2326_wait_oneshot_completion(const struct iio_dev   *indio_dev,
->  		/* Timed out. */
->  		zpa2326_warn(indio_dev, "no one shot interrupt occurred (%ld)",
->  			     timeout);
-> -		ret = -ETIME;
-> -	} else if (timeout < 0) {
-> -		zpa2326_warn(indio_dev,
-> -			     "wait for one shot interrupt cancelled");
-> -		ret = -ERESTARTSYS;
-> +		return -ETIME;
->  	}
->  
-> -	return ret;
-> +	zpa2326_warn(indio_dev, "wait for one shot interrupt cancelled");
-> +	return -ERESTARTSYS;
->  }
->  
->  static int zpa2326_init_managed_irq(struct device          *parent,
+> [1] https://lkml.org/lkml/2017/8/26/3
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
