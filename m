@@ -1,23 +1,48 @@
-Return-Path: <SRS0=hvNL=AN=gmail.com=robherring2@kernel.org>
-Date: Tue, 12 Sep 2017 11:49:04 -0500
-From: Rob Herring <robh@kernel.org>
-To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-Cc: jic23@kernel.org, linux-iio@vger.kernel.org, lorenzo.bianconi@st.com,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH 2/2] dt-bindings: iio: pressure: add LPS33HW and LPS35HW
- device bindings
-Message-ID: <20170912164904.hev7gxu5xzw54uft@rob-hp-laptop>
-References: <20170902173915.17341-1-lorenzo.bianconi@st.com>
- <20170902173915.17341-3-lorenzo.bianconi@st.com>
+Return-Path: <SRS0=DCin=AF=analog.com=Dragos.Bogdan@kernel.org>
+From: Dragos Bogdan <dragos.bogdan@analog.com>
+To: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
+	<Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>
+CC: Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald-Stadler
+	<pmeerw@pmeerw.net>, <linux-iio@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, Dragos Bogdan <dragos.bogdan@analog.com>
+Subject: [PATCH] iio:ad7793: Fix the serial interface reset
+Date: Mon, 4 Sep 2017 18:00:48 +0300
+Message-ID: <20170904150048.12420-1-dragos.bogdan@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20170902173915.17341-3-lorenzo.bianconi@st.com>
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, Sep 02, 2017 at 07:39:15PM +0200, Lorenzo Bianconi wrote:
-> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
-> ---
->  Documentation/devicetree/bindings/iio/st-sensors.txt | 2 ++
->  1 file changed, 2 insertions(+)
+The serial interface can be reset by writing 32 consecutive 1s to the device.
+The value of 'ret' is overwritten when ad7793_check_platform_data() is called,
+so it should be initialized to -1 only before doing the spi_write().
 
-Acked-by: Rob Herring <robh@kernel.org>
+Fixes: commit 2edb769d246e ("iio:ad7793: Add support for the ad7798 and ad7799")
+
+Signed-off-by: Dragos Bogdan <dragos.bogdan@analog.com>
+---
+ drivers/iio/adc/ad7793.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/adc/ad7793.c b/drivers/iio/adc/ad7793.c
+index e6706a09e100..8680abf72dd2 100644
+--- a/drivers/iio/adc/ad7793.c
++++ b/drivers/iio/adc/ad7793.c
+@@ -257,7 +257,7 @@ static int ad7793_setup(struct iio_dev *indio_dev,
+ 	unsigned int vref_mv)
+ {
+ 	struct ad7793_state *st = iio_priv(indio_dev);
+-	int i, ret = -1;
++	int i, ret;
+ 	unsigned long long scale_uv;
+ 	u32 id;
+ 
+@@ -266,6 +266,7 @@ static int ad7793_setup(struct iio_dev *indio_dev,
+ 		return ret;
+ 
+ 	/* reset the serial interface */
++	ret = -1;
+ 	ret = spi_write(st->sd.spi, (u8 *)&ret, sizeof(ret));
+ 	if (ret < 0)
+ 		goto out;
+-- 
+2.11.0
