@@ -1,70 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:55660 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751580AbdICLnj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 3 Sep 2017 07:43:39 -0400
-Date: Sun, 3 Sep 2017 12:43:35 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>
+Received: from 78-11-180-123.static.ip.netia.com.pl ([78.11.180.123]:33188
+        "EHLO rere.qmqm.pl" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1751329AbdIDVEE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 4 Sep 2017 17:04:04 -0400
+Date: Mon, 4 Sep 2017 23:04:01 +0200
+From: =?iso-8859-2?Q?Micha=B3_Miros=B3aw?= <mirq-linux@rere.qmqm.pl>
+To: Jonathan Cameron <jic23@kernel.org>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org,
         Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 Subject: Re: [PATCH v2 0/7] iio: accel: kxcjk1003: support Kionix KXTF9
-Message-ID: <20170903124335.19dcb386@archlinux>
-In-Reply-To: <cover.1503352742.git.mirq-linux@rere.qmqm.pl>
+Message-ID: <20170904210400.qbeatyxhif4rewjv@qmqm.qmqm.pl>
 References: <cover.1503352742.git.mirq-linux@rere.qmqm.pl>
+ <20170903124335.19dcb386@archlinux>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-2
+In-Reply-To: <20170903124335.19dcb386@archlinux>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 22 Aug 2017 00:03:29 +0200
-Micha≈Ç Miros≈Çaw <mirq-linux@rere.qmqm.pl> wrote:
-
-> This series adds support for KXTF9 accelerometer. It is mostly compatible
-> to KXCJK, but replaces motion direction interrupt with tap detection
-> (not supported in this implementation, yet).
+On Sun, Sep 03, 2017 at 12:43:35PM +0100, Jonathan Cameron wrote:
+> On Tue, 22 Aug 2017 00:03:29 +0200
+> Micha≥ Miros≥aw <mirq-linux@rere.qmqm.pl> wrote:
+> > This series adds support for KXTF9 accelerometer. It is mostly compatible
+> > to KXCJK, but replaces motion direction interrupt with tap detection
+> > (not supported in this implementation, yet).
+> > 
+> > First 5 patches are refactorings with no outside-visible effects.
+> > Patch 6 fixes sysfs attribute name of sampling_frequency_avail
+> > to match sampling_frequency attribute it describes.
+> > Patch 7 finally adds support for KXTF9 accelerometers.
+> Cc'd Srinivas (original author of this driver - should really have been cc'd
+> from the start).
 > 
-> First 5 patches are refactorings with no outside-visible effects.
-> Patch 6 fixes sysfs attribute name of sampling_frequency_avail
-> to match sampling_frequency attribute it describes.
-> Patch 7 finally adds support for KXTF9 accelerometers.
+> Micha≥: I'm assuming you don't have the parts already supported by the driver?
 
-Cc'd Srinivas (original author of this driver - should really have been cc'd
-from the start).
+No. The only one I have is inside my Asus TF300T I'm trying to
+get working fully under Debian.
 
-Micha≈Ç: I'm assuming you don't have the parts already supported by the driver?
+> We are past the point where these are going to make the coming merge window
+> anyway so have plenty of time.
 
-Srinivas: Are you likely to get time to take a quick look at this series any
-time in the next few weeks?
+I'll rebase the series after v4.14-rc1 comes out, then. I can add
+the global renaming cleanup on top (removing '1013' from driver and
+register names) if you're willing to accept it.
 
-Even better if you still have test hardware to check nothing broke on the
-original supported parts (not to worry if not!)
+Thanks for reviewing!
 
-We are past the point where these are going to make the coming merge window
-anyway so have plenty of time.
-
-Thanks,
-
-Jonathan
-
-p.s. If anyone else has the parts already supported by this driver and
-can give the changes a quick check that would be great!
-> 
-> Micha≈Ç Miros≈Çaw (7):
->   iio: accel: kxcjk1003: refactor ODR setting
->   iio: accel: kxcjk1013: fix INT_CTRL/INT_SRC1 bit names
->   iio: accel: kxcjk1013: extract report_motion_event() from interrupt
->     handler
->   iio: accel: kxcjk1013: rename motion direction bits
->   iio: accel: kxcjk1013: make sysfs/sampling_frequency_avail dynamic
->   iio: accel: kxcjk1013: make sampling_frequency_avail per-type
->   iio: accel: kxcjk1013: add support for KXTF9
-> 
->  drivers/iio/accel/Kconfig      |   4 +-
->  drivers/iio/accel/kxcjk-1013.c | 366 ++++++++++++++++++++++++++---------------
->  2 files changed, 235 insertions(+), 135 deletions(-)
-> 
-
+Best Regards,
+Micha≥ Miros≥aw
