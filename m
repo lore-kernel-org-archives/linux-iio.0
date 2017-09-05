@@ -1,32 +1,61 @@
-Return-Path: <SRS0=hvNL=AN=gmail.com=robherring2@kernel.org>
-Date: Tue, 12 Sep 2017 16:51:43 -0500
-From: Rob Herring <robh@kernel.org>
-To: Lukas Wunner <lukas@wunner.de>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Mathias Duckeck <m.duckeck@kunbus.de>,
-	Phil Elwell <phil@raspberrypi.org>, "Andrew F. Davis" <afd@ti.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [PATCH 1/2] dt-bindings: iio: dac: ti-dac082s085: Document new
- driver
-Message-ID: <20170912215143.j3igltuldvqbo7hi@rob-hp-laptop>
-References: <cceeb1a985343d36dc90d2708371f3e1a73264f6.1504602350.git.lukas@wunner.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <cceeb1a985343d36dc90d2708371f3e1a73264f6.1504602350.git.lukas@wunner.de>
+Return-Path: <SRS0=UNdp=AG=wunner.de=lukas@kernel.org>
+Message-Id: <be82f31ef2f0f39c7893b42dfe46c7235ea6144a.1504604178.git.lukas@wunner.de>
+From: Lukas Wunner <lukas@wunner.de>
+Date: Tue, 5 Sep 2017 11:44:00 +0200
+Subject: [PATCH 1/2] iio: dac: ad5446: Add IDs of compatible Texas Instruments
+ chips
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, "Andrew F. Davis" <afd@ti.com>, Michael Hennerich <Michael.Hennerich@analog.com>, Daniel Mack <daniel@zonque.org>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-iio@vger.kernel.org
 List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, Sep 05, 2017 at 11:27:00AM +0200, Lukas Wunner wrote:
-> Add device tree bindings for Texas Instruments 8/10/12-bit 2/4-channel
-> DAC driver.
-> 
-> Cc: Mathias Duckeck <m.duckeck@kunbus.de>
-> Signed-off-by: Lukas Wunner <lukas@wunner.de>
-> ---
->  .../devicetree/bindings/iio/dac/ti-dac082s085.txt  | 34 ++++++++++++++++++++++
->  1 file changed, 34 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/dac/ti-dac082s085.txt
+The Texas Instruments DAC081S101, DAC101S101 and DAC121S101 have the
+exact same pinout, programming interface and power-down modes as the
+AD5300, AD5310 and AD5320, respectively, and their datasheets declare
+them "a direct replacement" for the Analog Devices chips.  This may
+not be immediately obvious to a casual observer, so add them to the
+supported modalias strings.
 
-Acked-by: Rob Herring <robh@kernel.org> 
+Datasheets:
+http://www.ti.com/lit/ds/symlink/dac081s101.pdf
+http://www.ti.com/lit/ds/symlink/dac101s101.pdf
+http://www.ti.com/lit/ds/symlink/dac121s101.pdf
+http://www.analog.com/media/en/technical-documentation/data-sheets/AD5300.pdf
+http://www.analog.com/media/en/technical-documentation/data-sheets/AD5310.pdf
+http://www.analog.com/media/en/technical-documentation/data-sheets/AD5320.pdf
+
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+---
+ drivers/iio/dac/Kconfig  | 3 ++-
+ drivers/iio/dac/ad5446.c | 3 +++
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+index 716fcb1610dd..a411b2d59510 100644
+--- a/drivers/iio/dac/Kconfig
++++ b/drivers/iio/dac/Kconfig
+@@ -60,7 +60,8 @@ config AD5446
+ 	  Say yes here to build support for Analog Devices AD5300, AD5301, AD5310,
+ 	  AD5311, AD5320, AD5321, AD5444, AD5446, AD5450, AD5451, AD5452, AD5453,
+ 	  AD5512A, AD5541A, AD5542A, AD5543, AD5553, AD5601, AD5602, AD5611, AD5612,
+-	  AD5620, AD5621, AD5622, AD5640, AD5641, AD5660, AD5662 DACs.
++	  AD5620, AD5621, AD5622, AD5640, AD5641, AD5660, AD5662 DACs
++	  as well as Texas Instruments DAC081S101, DAC101S101, DAC121S101.
+ 
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad5446.
+diff --git a/drivers/iio/dac/ad5446.c b/drivers/iio/dac/ad5446.c
+index c6c22f3520eb..3f6465de39de 100644
+--- a/drivers/iio/dac/ad5446.c
++++ b/drivers/iio/dac/ad5446.c
+@@ -460,6 +460,9 @@ static const struct spi_device_id ad5446_spi_ids[] = {
+ 	{"ad5660-2500", ID_AD5660_2500},
+ 	{"ad5660-1250", ID_AD5660_1250},
+ 	{"ad5662", ID_AD5662},
++	{"dac081s101", ID_AD5300}, /* compatible Texas Instruments chips */
++	{"dac101s101", ID_AD5310},
++	{"dac121s101", ID_AD5320},
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(spi, ad5446_spi_ids);
+-- 
+2.11.0
