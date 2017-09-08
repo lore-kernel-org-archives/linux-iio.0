@@ -1,68 +1,77 @@
-Return-Path: <SRS0=S94w=AJ=huawei.com=jonathan.cameron@kernel.org>
-Date: Fri, 8 Sep 2017 10:32:57 +0100
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-CC: Himanshi Jain <himshijain.hj@gmail.com>,
-        <outreachy-kernel@googlegroups.com>, <lars@metafoo.de>,
-        <Michael.Hennerich@analog.com>, <jic23@kernel.org>, <knaack.h@gmx.de>,
-        <pmeerw@pmeerw.net>, <gregkh@linuxfoundation.org>,
-        <linux-iio@vger.kernel.org>, <devel@driverdev.osuosl.org>,
-        <linux-kernel@vger.kernel.org>
+Return-Path: <lars@metafoo.de>
 Subject: Re: [PATCH] Staging: iio: adc: Added Space around binary op.
-Message-ID: <20170908103257.00002165@huawei.com>
-In-Reply-To: <DEB4AC67-43D5-40F9-9495-DB4966A07661@jic23.retrosnub.co.uk>
+To: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+ Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Cc: Himanshi Jain <himshijain.hj@gmail.com>,
+ outreachy-kernel@googlegroups.com, Michael.Hennerich@analog.com,
+ jic23@kernel.org, knaack.h@gmx.de, pmeerw@pmeerw.net,
+ gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
+ devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
 References: <20170908044752.GA6199@himanshi-Inspiron-5558>
-	<DEB4AC67-43D5-40F9-9495-DB4966A07661@jic23.retrosnub.co.uk>
+ <DEB4AC67-43D5-40F9-9495-DB4966A07661@jic23.retrosnub.co.uk>
+ <20170908103257.00002165@huawei.com>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <2e3476f0-9e7e-2701-220a-5fb178d68d2e@metafoo.de>
+Date: Fri, 8 Sep 2017 11:37:56 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
+In-Reply-To: <20170908103257.00002165@huawei.com>
+Content-Type: text/plain; charset=utf-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, 8 Sep 2017 07:29:06 +0100
-Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
-
-> On 8 September 2017 05:47:52 BST, Himanshi Jain <himshijain.hj@gmail.com> wrote:
-> >Added space around(one on each side of) binary
-> >operator(-) as preferred according to kernel
-> >coding style.
-> >
-> >Signed-off-by: Himanshi Jain <himshijain.hj@gmail.com>  
+On 09/08/2017 11:32 AM, Jonathan Cameron wrote:
+> On Fri, 8 Sep 2017 07:29:06 +0100
+> Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
 > 
-> Take a closer look at that macro. It isn't doing what you think...  
-> To give a hint, changing this breaks userspace.
-
-Ok, I'm bored of this particular one coming up. When you have
-worked out what is going on Himanshi, would you mind putting
-together a patch adding a comment describing why it is a bad
-idea to 'fix' this?  That would be a very useful patch as
-far as I'm concerned :)
-
-There aren't that many cases of this in IIO so adding a comment
-on each of them is probably reasonable just to avoid wasting
-people's time on fixing them! (I think we have had more than
-5 such goes this year so far...)
-
-Jonathan
-
+>> On 8 September 2017 05:47:52 BST, Himanshi Jain <himshijain.hj@gmail.com> wrote:
+>>> Added space around(one on each side of) binary
+>>> operator(-) as preferred according to kernel
+>>> coding style.
+>>>
+>>> Signed-off-by: Himanshi Jain <himshijain.hj@gmail.com>  
+>>
+>> Take a closer look at that macro. It isn't doing what you think...  
+>> To give a hint, changing this breaks userspace.
 > 
+> Ok, I'm bored of this particular one coming up. When you have
+> worked out what is going on Himanshi, would you mind putting
+> together a patch adding a comment describing why it is a bad
+> idea to 'fix' this?  That would be a very useful patch as
+> far as I'm concerned :)
+> 
+> There aren't that many cases of this in IIO so adding a comment
+> on each of them is probably reasonable just to avoid wasting
+> people's time on fixing them! (I think we have had more than
+> 5 such goes this year so far...)
+> 
+
+I'd much rather fix this API so that you have to put "" around the name so
+that it is clear that it is a string, rather than doing the implicit
+conversion to string using preprocessor magic. Better to have a
+self-documenting API then having to add a comment to each user of the API.
+
 > Jonathan
 > 
-> 
-> >---
-> > drivers/staging/iio/adc/ad7192.c | 2 +-
-> > 1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> >diff --git a/drivers/staging/iio/adc/ad7192.c
-> >b/drivers/staging/iio/adc/ad7192.c
-> >index d11c6de..1aee662 100644
-> >--- a/drivers/staging/iio/adc/ad7192.c
-> >+++ b/drivers/staging/iio/adc/ad7192.c
-> >@@ -341,7 +341,7 @@ static int ad7192_setup(struct ad7192_state *st,
-> > }
-> > 
-> > static IIO_DEVICE_ATTR_NAMED(in_v_m_v_scale_available,
-> >-			     in_voltage-voltage_scale_available,
-> >+			     in_voltage - voltage_scale_available,
-> > 			     0444, ad7192_show_scale_available, NULL, 0);
-> > 
-> > static IIO_DEVICE_ATTR(in_voltage_scale_available, 0444,  
+>>
+>> Jonathan
+>>
+>>
+>>> ---
+>>> drivers/staging/iio/adc/ad7192.c | 2 +-
+>>> 1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/staging/iio/adc/ad7192.c
+>>> b/drivers/staging/iio/adc/ad7192.c
+>>> index d11c6de..1aee662 100644
+>>> --- a/drivers/staging/iio/adc/ad7192.c
+>>> +++ b/drivers/staging/iio/adc/ad7192.c
+>>> @@ -341,7 +341,7 @@ static int ad7192_setup(struct ad7192_state *st,
+>>> }
+>>>
+>>> static IIO_DEVICE_ATTR_NAMED(in_v_m_v_scale_available,
+>>> -			     in_voltage-voltage_scale_available,
+>>> +			     in_voltage - voltage_scale_available,
+>>> 			     0444, ad7192_show_scale_available, NULL, 0);
+>>>
+>>> static IIO_DEVICE_ATTR(in_voltage_scale_available, 0444,  
+>>
 > 
