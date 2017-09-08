@@ -1,75 +1,96 @@
-Return-Path: <SRS0=IYIf=AP=microchip.com=Nicolas.Ferre@kernel.org>
-Subject: Re: [PATCH v1 03/10] clk: at91: pmc: Support backup for programmable
- clocks
-To: romain izard <romain.izard@mobile-devices.fr>, Alexandre Belloni
-	<alexandre.belloni@free-electrons.com>
-CC: Boris Brezillon <boris.brezillon@free-electrons.com>, Michael Turquette
-	<mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Ludovic
- Desroches <ludovic.desroches@microchip.com>, Jonathan Cameron
-	<jic23@kernel.org>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu
-	<rainyfeeling@outlook.com>, David Woodhouse <dwmw2@infradead.org>, Brian
- Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>,
-	Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding
-	<thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern
-	<stern@rowland.harvard.edu>, <linux-clk@vger.kernel.org>, LKML
-	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>, linux-mtd
-	<linux-mtd@lists.infradead.org>, <linux-pwm@vger.kernel.org>,
-	<linux-serial@vger.kernel.org>, <linux-usb@vger.kernel.org>, linux-arm-kernel
-	<linux-arm-kernel@lists.infradead.org>
+Return-Path: <SRS0=b/d7=AJ=gmail.com=romain.izard.pro@kernel.org>
+From: Romain Izard <romain.izard.pro@gmail.com>
+To: Nicolas Ferre <nicolas.ferre@microchip.com>,
+	Boris Brezillon <boris.brezillon@free-electrons.com>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@codeaurora.org>,
+	Ludovic Desroches <ludovic.desroches@microchip.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Wenyou Yang <wenyou.yang@atmel.com>,
+	Josh Wu <rainyfeeling@outlook.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Brian Norris <computersforpeace@gmail.com>,
+	Marek Vasut <marek.vasut@gmail.com>,
+	Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Richard Genoud <richard.genoud@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Alan Stern <stern@rowland.harvard.edu>
+Cc: linux-clk@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-mtd@lists.infradead.org,
+	linux-pwm@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-usb@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	Romain Izard <romain.izard.pro@gmail.com>
+Subject: [PATCH v1 04/10] mtd: nand: atmel: Avoid ECC errors when leaving backup mode
+Date: Fri,  8 Sep 2017 17:35:58 +0200
+Message-Id: <20170908153604.28383-5-romain.izard.pro@gmail.com>
+In-Reply-To: <20170908153604.28383-1-romain.izard.pro@gmail.com>
 References: <20170908153604.28383-1-romain.izard.pro@gmail.com>
- <20170908153604.28383-4-romain.izard.pro@gmail.com>
- <b0c7e816-4a7c-609d-2bc7-281fc6ca751d@microchip.com>
- <20170913170310.grfv7j5xvh7chjdo@piout.net>
- <CAGkQfmOZBi4tzUSEAD7J+w_v+pZ_yFgPRBaYaLnW-ptFZO0rvg@mail.gmail.com>
-From: Nicolas Ferre <nicolas.ferre@microchip.com>
-Message-ID: <dc318434-cf3e-6cb9-2072-7b8ec45aed97@microchip.com>
-Date: Thu, 14 Sep 2017 11:38:45 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAGkQfmOZBi4tzUSEAD7J+w_v+pZ_yFgPRBaYaLnW-ptFZO0rvg@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
 List-ID: <linux-iio@vger.kernel.org>
 
-On 14/09/2017 at 09:41, romain izard wrote:
-> 2017-09-13 19:03 GMT+02:00 Alexandre Belloni
-> <alexandre.belloni@free-electrons.com>:
->> On 13/09/2017 at 14:29:35 +0200, Nicolas Ferre wrote:
->>> On 08/09/2017 at 17:35, Romain Izard wrote:
->>>> From: Romain Izard <romain.izard@mobile-devices.fr>
->>>>
->>>> Save and restore the System Clock and Programmable Clock register for
->>>> the backup use case.
->>>
->>> "System Clock" seems to be handled in another patch.
->>>
->>>> Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
->>>> ---
->>>>  drivers/clk/at91/pmc.c | 5 +++++
->>>>  1 file changed, 5 insertions(+)
->>>>
->>>> diff --git a/drivers/clk/at91/pmc.c b/drivers/clk/at91/pmc.c
->>>> index 07dc2861ad3f..5421b03553ec 100644
->>>> --- a/drivers/clk/at91/pmc.c
->>>> +++ b/drivers/clk/at91/pmc.c
->>>> @@ -66,6 +66,7 @@ static struct
->>>>     u32 pcr[PMC_MAX_IDS];
->>>>     u32 audio_pll0;
->>>>     u32 audio_pll1;
->>>> +   u32 pckr[3];
->>>
->>> Some products have different numbers of PCK (only 2 on at91sam9x5 for
->>> instance)...
->>>
->>
->> My opinion is that it will be time to change that when multiple SoCs will
->> need to save their registers.
->>
-> For the next version, I'll add a #define. But as this code requires a
-> device tree node with the compatible string "atmel,sama5d2-pmc", I believe
-> that we can ignore other chips for now.
+During backup mode, the contents of all registers will be cleared as the
+SoC will be completely powered down. For a product that boots on NAND
+Flash memory, the bootloader will obviously use the related controller
+to read the Flash and correct any detected error in the memory, before
+handling back control to the kernel's resuming entry point.
 
-Fair enough, let's go for this.
+In normal devices, it is up to the driver's suspend/resume code to
+restore the registers in a valid state. But the PMECC is not a regular
+device in the driver model when used with the legacy device tree binding
+for the Atmel NAND controller, and suspend/resume code is not called.
 
-Bye,
+As in my case the bootloader leaves the PMECC controller in a programmed
+state, and the controller is only reset at boot or after a NAND access,
+the first NAND Flash access with the Atmel controller will report
+uncorrectable ECC errors.
+
+To avoid this, systematically reset the PMECC controller before using
+it.
+
+Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
+---
+ drivers/mtd/nand/atmel/pmecc.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/mtd/nand/atmel/pmecc.c b/drivers/mtd/nand/atmel/pmecc.c
+index 8c210a5776bc..8d1208f38025 100644
+--- a/drivers/mtd/nand/atmel/pmecc.c
++++ b/drivers/mtd/nand/atmel/pmecc.c
+@@ -777,6 +777,9 @@ int atmel_pmecc_enable(struct atmel_pmecc_user *user, int op)
+ 
+ 	mutex_lock(&user->pmecc->lock);
+ 
++	writel(PMECC_CTRL_RST, pmecc->regs.base + ATMEL_PMECC_CTRL);
++	writel(PMECC_CTRL_DISABLE, pmecc->regs.base + ATMEL_PMECC_CTRL);
++
+ 	cfg = user->cache.cfg;
+ 	if (op == NAND_ECC_WRITE)
+ 		cfg |= PMECC_CFG_WRITE_OP;
+@@ -797,10 +800,6 @@ EXPORT_SYMBOL_GPL(atmel_pmecc_enable);
+ 
+ void atmel_pmecc_disable(struct atmel_pmecc_user *user)
+ {
+-	struct atmel_pmecc *pmecc = user->pmecc;
+-
+-	writel(PMECC_CTRL_RST, pmecc->regs.base + ATMEL_PMECC_CTRL);
+-	writel(PMECC_CTRL_DISABLE, pmecc->regs.base + ATMEL_PMECC_CTRL);
+ 	mutex_unlock(&user->pmecc->lock);
+ }
+ EXPORT_SYMBOL_GPL(atmel_pmecc_disable);
+@@ -856,10 +855,6 @@ static struct atmel_pmecc *atmel_pmecc_create(struct platform_device *pdev,
+ 	/* Disable all interrupts before registering the PMECC handler. */
+ 	writel(0xffffffff, pmecc->regs.base + ATMEL_PMECC_IDR);
+ 
+-	/* Reset the ECC engine */
+-	writel(PMECC_CTRL_RST, pmecc->regs.base + ATMEL_PMECC_CTRL);
+-	writel(PMECC_CTRL_DISABLE, pmecc->regs.base + ATMEL_PMECC_CTRL);
+-
+ 	return pmecc;
+ }
+ 
 -- 
-Nicolas Ferre
+2.11.0
