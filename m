@@ -1,86 +1,141 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f180.google.com ([209.85.192.180]:36141 "EHLO
-        mail-pf0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750782AbdIKTmF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Sep 2017 15:42:05 -0400
-Received: by mail-pf0-f180.google.com with SMTP id e199so15386038pfh.3
-        for <linux-iio@vger.kernel.org>; Mon, 11 Sep 2017 12:42:05 -0700 (PDT)
-Date: Mon, 11 Sep 2017 12:42:01 -0700
-From: Benson Leung <bleung@google.com>
-To: Thierry Escande <thierry.escande@collabora.com>
-Cc: Benson Leung <bleung@chromium.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Joseph Lo <josephl@nvidia.com>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Daniel Hung-yu Wu <hywu@google.com>,
-        Vincent Palatin <vpalatin@chromium.org>,
-        Wei-Ning Huang <wnhuang@google.com>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 8/8] platform/chrome: cros_ec: sysfs: Modify error
- handling
-Message-ID: <20170911194201.GB40388@decatoncale.mtv.corp.google.com>
-References: <1502461385-27564-1-git-send-email-thierry.escande@collabora.com>
- <1502461385-27564-9-git-send-email-thierry.escande@collabora.com>
+Received: from sauhun.de ([88.99.104.3]:52405 "EHLO pokefinder.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1754751AbdIHI4o (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 8 Sep 2017 04:56:44 -0400
+Date: Fri, 8 Sep 2017 10:56:40 +0200
+From: Wolfram Sang <wsa@the-dreams.de>
+To: Mauro Carvalho Chehab <mchehab@s-opensource.com>
+Cc: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        linux-i2c@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
+        dri-devel@lists.freedesktop.org
+Subject: Re: [RFC PATCH v4 3/6] i2c: add docs to clarify DMA handling
+Message-ID: <20170908085640.42wzzgd2s2roikyd@ninjato>
+References: <20170817141449.23958-1-wsa+renesas@sang-engineering.com>
+ <20170817141449.23958-4-wsa+renesas@sang-engineering.com>
+ <20170827083748.248e2430@vento.lan>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ZoaI/ZTpAVc4A5k6"
-In-Reply-To: <1502461385-27564-9-git-send-email-thierry.escande@collabora.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="pyvw5k7cs3klgvb6"
+In-Reply-To: <20170827083748.248e2430@vento.lan>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
---ZoaI/ZTpAVc4A5k6
+--pyvw5k7cs3klgvb6
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Hi Thierry,
+Hi Mauro,
 
-On Fri, Aug 11, 2017 at 04:23:05PM +0200, Thierry Escande wrote:
-> From: Gwendal Grignou <gwendal@chromium.org>
+thanks for your comments. Much appreciated!
+
+> There are also a couple of things here that Sphinx would complain.
+> So, it could be worth to rename it to *.rst, while you're writing
+> it, and see what:
+> 	make htmldocs
+> will complain and how it will look in html.
+
+OK, I'll check that.
+
+> > +Given that I2C is a low-speed bus where largely small messages are tra=
+nsferred,
+> > +it is not considered a prime user of DMA access. At this time of writi=
+ng, only
+> > +10% of I2C bus master drivers have DMA support implemented.
 >=20
-> When accessing a sysfs attribute, if the EC command fails, -EPROTO is
-> now returned instead of an error message as it is unlikely an app is
-> parsing the error message to do something meaningful.
-> Also, this patch makes use of cros_ec_cmd_xfer_status() instead of
-> cros_ec_cmd_xfer() so an error message is printed in the syslog.
+> Are you sure about that? I'd say that, on media, at least half of the
+> drivers use DMA for I2C bus access, as the I2C bus is on a remote
+> board that talks with CPU via USB, using DMA, and all communication
+> with USB should be DMA-safe.
+
+Well, the DMA-safe requirement comes then from the USB subsystem,
+doesn't it? Or do you really use DMA on the remote board to transfer
+data via I2C to an I2C client?
+
+> I guess what you really wanted to say on most of this section is
+> about SoC (and other CPUs) where the I2C bus master is is at the
+> mainboard, and not on some peripheral.
+
+I might be biased to that, yes. So, it is good talking about it.
+
+> > And the vast
+> > +majority of transactions are so small that setting up DMA for it will =
+likely
+> > +add more overhead than a plain PIO transfer.
+> > +
+> > +Therefore, it is *not* mandatory that the buffer of an I2C message is =
+DMA safe.
 >=20
-> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
-> Signed-off-by: Thierry Escande <thierry.escande@collabora.com>
+> Again, that may not be true on media boards. The code that implements the
+> I2C transfers there, on most boards, have to be DMA safe, as it won't
+> otherwise send/receive commands from the chips that are after the USB
+> bridge.
 
-Looks good. Applied.
+That still sounds to me like the DMA-safe requirement comes from USB
+(which is fine, of course.). In any case, a sentence like "Other
+subsystem you might use for bridging I2C might impose other DMA
+requirements" sounds like to nice to have.
 
---=20
-Benson Leung
-Staff Software Engineer
-Chrome OS Kernel
-Google Inc.
-bleung@google.com
-Chromium OS Project
-bleung@chromium.org
+> > +Drivers wishing to implement DMA can use helper functions from the I2C=
+ core.
+> > +One gives you a DMA-safe buffer for a given i2c_msg as long as a certa=
+in
+> > +threshold is met.
+> > +
+> > +	dma_buf =3D i2c_get_dma_safe_msg_buf(msg, threshold_in_byte);
+>=20
+> I'm concerned about the new bits added by this call. Right now,
+> USB drivers just use kalloc() for transfer buffers used to send and
+> receive URB control messages for both setting the main device and
+> for I2C messages. Before this changeset, buffers allocated this
+> way are DMA save and have been working for years.
 
---ZoaI/ZTpAVc4A5k6
+Can you give me a pointer to a driver doing this? I glimpsed around in
+drivers/media/usb and found that most drivers are having their i2c_msg
+buffers on the stack. Which is clearly not DMA-safe.
+
+> When you add some flags that would make the I2C subsystem aware
+> that a buffer is now DMA safe, I guess you could be breaking
+> those drivers, as a DMA safe buffer will now be considered as
+> DMA-unsafe.
+
+Well, this flag is only relevant for i2c master drivers wishing to do
+DMA. So, grepping in the above directory
+
+	grep dma $(grep -rl i2c_add_adapter *)
+
+only gives one driver which is irrelevant because the i2c master it
+registers is not doing any DMA?
+
+Am I missing something? We are clearly not aligned yet...
+
+Regards,
+
+   Wolfram
+
+
+--pyvw5k7cs3klgvb6
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
 
-iQIcBAEBCgAGBQJZtucJAAoJEB8J9XsKL+ZYmYEP/0qYAyo+vdwUSk9ttzbYb4MD
-yLvWiF3JDHjZMcK6sxfhkezoy1S1G+w+mYyTEggle6dWeqKnOfVlN2E3nbikxc11
-wwlqcUL0LybiRV/DkMQVpW89aDRWsK+Ibvm0sdDvefmOtNEAOFyLDQfPv1OoWd+p
-qETz/JIA05wQTMwL+zUPncYORW2DQiVKWs8yLTRK+wblLqr38a4HfouHQ9ZBYnjB
-AZor1QiRaz1Mj9X7E5zVHTBckAIUD0wJRbKY9gCimYBLPFwha1HdmdApdiR8EKpc
-nUx/MNMZjUBFKWtQbPbyTPJd8o/sbIIBci4o/r7fccwTnm8qxDR0LroBy/REdl1B
-jFHo2T7pGPzbAtsp7D8knPU1MLLXQVr1ZUbyT+Subc5K3uBuSNtEN4+2hXqQU32f
-mxpGJfA2ilXfqR+PtZ298NFLDCrCqjtbRxMwtACXyp73VC7FdfjUsV+uhLgd4qmV
-6bWQf8Qy6+4lRP7lLx68iSItQDZI6yISykMLW30AZ47I08mgT6HXy/h2Oyodc6Wq
-2vmeicxw+wjoxZofmtMO9WttKGhj+Ikt7AA/DDEDg7XzjrBrFs9+CtO3S0jfQzeB
-OHfsjVXlybZ039Z5oKR+1fneG3J/cTz2xW/b5XmJkx51KV01YchZTq3kGCPwPj0r
-j7nZ3h4tWEFQEHzavT7t
-=xzJs
+iQIzBAABCAAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAlmyW0QACgkQFA3kzBSg
+KbYZNg/9EnabaEpCNVqzi+wqs6ncXDgpJtRDPBdRcXGFqjA56pjIUzsIcVUoNYzT
+jXhwBFxrUoSrgf0lefnyXhR5kRW6IIi2y+xz+GQFUlx/wETiaJ5k+U7Xq17QF9WM
+/BGszke18iiaySHzA5wrv0oTt3wVH5i5zU0Ly5XD1lL0Hxy2UIUXiJLSKPighX0V
+6ChQ++Jly8iC+zV4W95AQ5sTydm9+buNiaoy6EapUmIjls4Kt0xbdjk30S1dquew
+vf0130vnX6bJf2FLo8gTOuy3LZVPJ6R7hdHe9ffxfcGg5lL77Xx8Xn5hdDLfk/zU
+4Gi9dhoKkhMZJ23MOVmnTCgIRvrKwCzmvKSl2lTdvuAGr4CA5FtjmeRJrx2FN5cC
+Va9jfcE7RUIlLkP/N7pA7m7Shbxdkm0AnbLTo8Ppud7swfLatvyICCBTlm9qPTya
+YkMuRuprP4UtER+q9vglcsnNKmxjAPfVWY2cuLVRFnM4e/HbHErSPh/T6hbiJ939
+Gv2zrX+ZgXxtw96KJbfjszqzkuZOEqHSKfzE5c5a+xqy0m167bVb+gxJBjPs1kzP
+nctGfp02cr7x9UAJa23ePhi6O9NWeXcMj3YKxrOzQhuOqpgIYZKc86JLQKi+PC9N
+KF9ZU5x4TOG3fTIn1iFba0ykHvJgI025Y3v4sptw5Zt6gLT4h4o=
+=EPyl
 -----END PGP SIGNATURE-----
 
---ZoaI/ZTpAVc4A5k6--
+--pyvw5k7cs3klgvb6--
