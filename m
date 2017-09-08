@@ -1,75 +1,67 @@
-Return-Path: <SRS0=uqYq=AJ=lip6.fr=julia.lawall@kernel.org>
-Date: Fri, 8 Sep 2017 12:32:57 +0200 (CEST)
-From: Julia Lawall <julia.lawall@lip6.fr>
-To: Lars-Peter Clausen <lars@metafoo.de>
-cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-    Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-    Himanshi Jain <himshijain.hj@gmail.com>, outreachy-kernel@googlegroups.com,
-    Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
-    pmeerw@pmeerw.net, gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
-    devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: Re: [Outreachy kernel] Re: [PATCH] Staging: iio: adc: Added Space
- around binary op.
-In-Reply-To: <9590dab0-5bd8-c4d0-1f34-934d3835fade@metafoo.de>
-Message-ID: <alpine.DEB.2.20.1709081232370.3165@hadrien>
-References: <20170908044752.GA6199@himanshi-Inspiron-5558> <DEB4AC67-43D5-40F9-9495-DB4966A07661@jic23.retrosnub.co.uk> <20170908103257.00002165@huawei.com> <2e3476f0-9e7e-2701-220a-5fb178d68d2e@metafoo.de> <alpine.DEB.2.20.1709081157590.3165@hadrien>
- <9590dab0-5bd8-c4d0-1f34-934d3835fade@metafoo.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Return-Path: <SRS0=b/d7=AJ=gmail.com=romain.izard.pro@kernel.org>
+From: Romain Izard <romain.izard.pro@gmail.com>
+To: Nicolas Ferre <nicolas.ferre@microchip.com>,
+	Boris Brezillon <boris.brezillon@free-electrons.com>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@codeaurora.org>,
+	Ludovic Desroches <ludovic.desroches@microchip.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Wenyou Yang <wenyou.yang@atmel.com>,
+	Josh Wu <rainyfeeling@outlook.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Brian Norris <computersforpeace@gmail.com>,
+	Marek Vasut <marek.vasut@gmail.com>,
+	Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Richard Genoud <richard.genoud@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Alan Stern <stern@rowland.harvard.edu>
+Cc: linux-clk@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-mtd@lists.infradead.org,
+	linux-pwm@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-usb@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	Romain Izard <romain.izard.pro@gmail.com>
+Subject: [PATCH v1 00/10] Various patches for SAMA5D2 backup mode
+Date: Fri,  8 Sep 2017 17:35:54 +0200
+Message-Id: <20170908153604.28383-1-romain.izard.pro@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
+While the core of the backup mode for SAMA5D2 has been integrated in
+v4.13, it is far from complete. Individual controllers in the chip have
+drivers that do not support the reset of the registers during suspend,
+and they need to be adapted to handle it.
 
+The first patch uses the clock wakeup code from the prototype backup
+mode instead of the version integrated in the mainline, as the mainline
+version is not stable. During a test loop with two-second backup
+suspend, the mainline version will hang in less than one day, whereas
+the prototype version has been running the same test for more than a
+week without hanging.
 
-On Fri, 8 Sep 2017, Lars-Peter Clausen wrote:
+Romain Izard (10):
+  clk: at91: pmc: Wait for clocks when resuming
+  clk: at91: pmc: Save SCSR during suspend
+  clk: at91: pmc: Support backup for programmable clocks
+  mtd: nand: atmel: Avoid ECC errors when leaving backup mode
+  mtd: nand: atmel: Report PMECC failures as errors
+  ehci-atmel: Power down during suspend is normal
+  iio:adc:at91-sama5d2: Support backup mode
+  pwm: atmel-tcb: Support backup mode
+  atmel_flexcom: Support backup mode
+  tty/serial: atmel: Prevent a warning on suspend
 
-> On 09/08/2017 11:59 AM, Julia Lawall wrote:
-> >
-> >
-> > On Fri, 8 Sep 2017, Lars-Peter Clausen wrote:
-> >
-> >> On 09/08/2017 11:32 AM, Jonathan Cameron wrote:
-> >>> On Fri, 8 Sep 2017 07:29:06 +0100
-> >>> Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
-> >>>
-> >>>> On 8 September 2017 05:47:52 BST, Himanshi Jain <himshijain.hj@gmail.com> wrote:
-> >>>>> Added space around(one on each side of) binary
-> >>>>> operator(-) as preferred according to kernel
-> >>>>> coding style.
-> >>>>>
-> >>>>> Signed-off-by: Himanshi Jain <himshijain.hj@gmail.com>
-> >>>>
-> >>>> Take a closer look at that macro. It isn't doing what you think...
-> >>>> To give a hint, changing this breaks userspace.
-> >>>
-> >>> Ok, I'm bored of this particular one coming up. When you have
-> >>> worked out what is going on Himanshi, would you mind putting
-> >>> together a patch adding a comment describing why it is a bad
-> >>> idea to 'fix' this?  That would be a very useful patch as
-> >>> far as I'm concerned :)
-> >>>
-> >>> There aren't that many cases of this in IIO so adding a comment
-> >>> on each of them is probably reasonable just to avoid wasting
-> >>> people's time on fixing them! (I think we have had more than
-> >>> 5 such goes this year so far...)
-> >>>
-> >>
-> >> I'd much rather fix this API so that you have to put "" around the name so
-> >> that it is clear that it is a string, rather than doing the implicit
-> >> conversion to string using preprocessor magic. Better to have a
-> >> self-documenting API then having to add a comment to each user of the API.
-> >
-> > All the DEVICE_ATTR macros use the same strategy.  And the non-IIO ones,
-> > eg DEVICE_ATTR_RW, also use the provided name to construct the names of
-> > the show and store functions, so I don't think a string would be
-> > appropriate.
->
-> I'm only suggesting to use a string for the _NAMED macros where the name is
-> not used to construct the identifiers.
->
-> In the case where the name is used to construct the identifiers we don't
-> have the issue with false positives since the name must be a valid
-> identifier on its own.
+ drivers/clk/at91/pmc.c             | 33 ++++++++++++------
+ drivers/iio/adc/at91-sama5d2_adc.c | 71 ++++++++++++++++++++++++++++++++------
+ drivers/mfd/atmel-flexcom.c        | 65 ++++++++++++++++++++++++++--------
+ drivers/mtd/nand/atmel/pmecc.c     | 15 ++++----
+ drivers/pwm/pwm-atmel-tcb.c        | 63 +++++++++++++++++++++++++++++++--
+ drivers/tty/serial/atmel_serial.c  | 13 +++++++
+ drivers/usb/host/ehci-atmel.c      |  3 +-
+ 7 files changed, 216 insertions(+), 47 deletions(-)
 
-OK, it looks like a good project :)
-
-julia
+-- 
+2.11.0
