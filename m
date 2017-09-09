@@ -1,146 +1,75 @@
-Return-Path: <SRS0=vvJx=AM=mobile-devices.fr=romain.izard@kernel.org>
-MIME-Version: 1.0
-Sender: romain.izard@mobile-devices.fr
-In-Reply-To: <20170908153604.28383-11-romain.izard.pro@gmail.com>
-References: <20170908153604.28383-1-romain.izard.pro@gmail.com> <20170908153604.28383-11-romain.izard.pro@gmail.com>
-From: Romain Izard <romain.izard.pro@gmail.com>
-Date: Mon, 11 Sep 2017 11:52:12 +0200
-Message-ID: <CAGkQfmOBNYeYTrbzAZBZ6cC5==Pfm6pZnho-9P8ggPjMZXX4nA@mail.gmail.com>
-Subject: Re: [PATCH v1 10/10] tty/serial: atmel: Prevent a warning on suspend
-To: Nicolas Ferre <nicolas.ferre@microchip.com>,
-	Boris Brezillon <boris.brezillon@free-electrons.com>,
-	Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>,
-	Ludovic Desroches <ludovic.desroches@microchip.com>, Jonathan Cameron <jic23@kernel.org>,
-	Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>,
-	David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>,
-	Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>,
-	Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>
-Cc: linux-clk@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-	linux-iio@vger.kernel.org, linux-mtd <linux-mtd@lists.infradead.org>,
-	linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-usb@vger.kernel.org,
-	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-	Romain Izard <romain.izard.pro@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mailout1.hostsharing.net ([83.223.95.204]:47147 "EHLO
+        mailout1.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751166AbdIIScq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 9 Sep 2017 14:32:46 -0400
+Message-Id: <cover.1504807204.git.lukas@wunner.de>
+From: Lukas Wunner <lukas@wunner.de>
+Date: Sat, 9 Sep 2017 20:32:41 +0200
+Subject: [PATCH v2 0/6] IIO driver for MCP3550/1/3
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Mathias Duckeck <m.duckeck@kunbus.de>,
+        Phil Elwell <phil@raspberrypi.org>,
+        Oskar Andero <oskar.andero@gmail.com>,
+        Andrea Galbusera <gizero@gmail.com>,
+        Akinobu Mita <akinobu.mita@gmail.com>,
+        Manfred Schlaegl <manfred.schlaegl@gmx.at>,
+        Michael Welling <mwelling@ieee.org>,
+        Soeren Andersen <san@rosetechnology.dk>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-2017-09-08 17:36 GMT+02:00 Romain Izard <romain.izard.pro@gmail.com>:
-> The atmel serial port driver reported the following warning on suspend:
-> atmel_usart f8020000.serial: ttyS1: Unable to drain transmitter
->
-> As the ATMEL_US_TXEMPTY status bit in ATMEL_US_CSR is always cleared
-> when the transmitter is disabled, we need to know the transmitter's
-> state to return the real fifo state. And as ATMEL_US_CR is write-only,
-> it is necessary to save the state of the transmitter in a local
-> variable, and update the variable when TXEN and TXDIS is written in
-> ATMEL_US_CR.
->
-> After those changes, atmel_tx_empty can return "empty" on suspend, the
-> warning in uart_suspend_port disappears, and suspending is 20ms shorter
-> for each enabled Atmel serial port.
->
-> Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
-> ---
->  drivers/tty/serial/atmel_serial.c | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
->
-> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-> index 7551cab438ff..195c0d1b594e 100644
-> --- a/drivers/tty/serial/atmel_serial.c
-> +++ b/drivers/tty/serial/atmel_serial.c
-> @@ -171,6 +171,7 @@ struct atmel_uart_port {
->         bool                    has_hw_timer;
->         struct timer_list       uart_timer;
->
-> +       bool                    tx_stopped;
->         bool                    suspended;
->         unsigned int            pending;
->         unsigned int            pending_status;
-> @@ -380,6 +381,10 @@ static int atmel_config_rs485(struct uart_port *port,
->   */
->  static u_int atmel_tx_empty(struct uart_port *port)
->  {
-> +       struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-> +
-> +       if (atmel_port->tx_stopped)
-> +               return TIOCSER_TEMT;
->         return (atmel_uart_readl(port, ATMEL_US_CSR) & ATMEL_US_TXEMPTY) ?
->                 TIOCSER_TEMT :
->                 0;
-> @@ -485,6 +490,7 @@ static void atmel_stop_tx(struct uart_port *port)
->          * is fully transmitted.
->          */
->         atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXDIS);
-> +       atmel_port->tx_stopped = true;
->
->         /* Disable interrupts */
->         atmel_uart_writel(port, ATMEL_US_IDR, atmel_port->tx_done_mask);
-> @@ -492,6 +498,7 @@ static void atmel_stop_tx(struct uart_port *port)
->         if ((port->rs485.flags & SER_RS485_ENABLED) &&
->             !(port->rs485.flags & SER_RS485_RX_DURING_TX))
->                 atmel_start_rx(port);
-> +
->  }
->
->  /*
-> @@ -521,6 +528,7 @@ static void atmel_start_tx(struct uart_port *port)
->
->         /* re-enable the transmitter */
->         atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN);
-> +       atmel_port->tx_stopped = false;
->  }
->
->  /*
-> @@ -1866,6 +1874,7 @@ static int atmel_startup(struct uart_port *port)
->         atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA | ATMEL_US_RSTRX);
->         /* enable xmit & rcvr */
->         atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN | ATMEL_US_RXEN);
-> +       atmel_port->tx_stopped = false;
->
->         setup_timer(&atmel_port->uart_timer,
->                         atmel_uart_timer_callback,
-> @@ -2122,6 +2131,7 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
->
->         /* disable receiver and transmitter */
->         atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXDIS | ATMEL_US_RXDIS);
-> +       atmel_port->tx_stopped = true;
->
->         /* mode */
->         if (port->rs485.flags & SER_RS485_ENABLED) {
-> @@ -2207,6 +2217,7 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
->         atmel_uart_writel(port, ATMEL_US_BRGR, quot);
->         atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA | ATMEL_US_RSTRX);
->         atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN | ATMEL_US_RXEN);
-> +       atmel_port->tx_stopped = false;
->
->         /* restore interrupts */
->         atmel_uart_writel(port, ATMEL_US_IER, imr);
-> @@ -2450,6 +2461,7 @@ static void atmel_console_write(struct console *co, const char *s, u_int count)
->
->         /* Make sure that tx path is actually able to send characters */
->         atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN);
-> +       atmel_port->tx_stopped = false;
->
->         uart_console_write(port, s, count, atmel_console_putchar);
->
-> @@ -2528,6 +2540,7 @@ static int __init atmel_console_setup(struct console *co, char *options)
->         atmel_uart_writel(port, ATMEL_US_IDR, -1);
->         atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA | ATMEL_US_RSTRX);
->         atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN | ATMEL_US_RXEN);
-> +       atmel_port->tx_stopped = false;
->
->         if (options)
->                 uart_parse_options(options, &baud, &parity, &bits, &flow);
-> --
-> 2.11.0
->
+One speedup, one cleanup, one kerneldoc patch for mcp320x.c
+plus support for the MCP3550/1/3 used by the "Revolution Pi"
+family of open source PLCs (https://revolution.kunbus.com/).
 
-Unfortunately this patch was broken when I reported it from my branch to
-the v4.13, as it does not build because of the missing declaration of
-'atmel_port' in 'atmel_console_setup'.
+Changes since v1:
+- Drop two patches which are now queued. (Jonathan)
 
-I'll send a corrected version for v2.
+- Move kerneldoc to separate patch. (Jonathan)
+
+- Move support for continuous conversion mode to separate patch
+  which is marked informational / not for merging.  Rename device
+  property to "continuous" for consistency with the existing
+  similar property of drivers/iio/light/us5182d.c. (Rob, Jonathan)
+
+- Rework calculation of raw value in patch [5/6]:  Instead of
+  byte-wise mangling, convert the big endian value clocked out
+  by the chip to host byte order and mangle the resulting 32-bit
+  value.  Reduces the amount of code and improves readability as
+  the bit numbers referenced in the code comment and datasheet
+  are used verbatim in the code.
+
+- Use switch/case-statement instead of if-clause when applying
+  chip-specific quirks in mcp320x_probe(). (Jonathan)
+
+- Expand code comment explaining the two consecutive conversions
+  in mcp320x_probe(). (Jonathan)
+
+Thanks,
+
+Lukas
+
+
+Lukas Wunner (6):
+  iio: adc: mcp320x: Speed up readout of single-channel ADCs
+  iio: adc: mcp320x: Drop unnecessary of_device_id attributes
+  iio: adc: mcp320x: Document struct mcp320x
+  dt-bindings: iio: adc: mcp320x: Update for mcp3550/1/3
+  iio: adc: mcp320x: Add support for mcp3550/1/3
+  iio: adc: mcp320x: Support continuous conversion mode
+
+ .../devicetree/bindings/iio/adc/mcp320x.txt        |  23 ++
+ drivers/iio/adc/Kconfig                            |   5 +-
+ drivers/iio/adc/mcp320x.c                          | 240 ++++++++++++++-------
+ 3 files changed, 188 insertions(+), 80 deletions(-)
 
 -- 
-Romain Izard
+2.11.0
+
