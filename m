@@ -1,196 +1,141 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ec2-52-27-115-49.us-west-2.compute.amazonaws.com ([52.27.115.49]:54493
-        "EHLO osg.samsung.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1751654AbdIHLIS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 8 Sep 2017 07:08:18 -0400
-Date: Fri, 8 Sep 2017 08:08:06 -0300
-From: Mauro Carvalho Chehab <mchehab@s-opensource.com>
-To: Wolfram Sang <wsa@the-dreams.de>
+Received: from sauhun.de ([88.99.104.3]:56624 "EHLO pokefinder.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1753686AbdIIP1J (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 9 Sep 2017 11:27:09 -0400
+Date: Sat, 9 Sep 2017 17:27:06 +0200
+From: Wolfram Sang <wsa@the-dreams.de>
+To: Mauro Carvalho Chehab <mchehab@s-opensource.com>
 Cc: Wolfram Sang <wsa+renesas@sang-engineering.com>,
         linux-i2c@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         linux-input@vger.kernel.org, linux-media@vger.kernel.org,
         dri-devel@lists.freedesktop.org
 Subject: Re: [RFC PATCH v4 3/6] i2c: add docs to clarify DMA handling
-Message-ID: <20170908080756.7d8d81d7@vento.lan>
-In-Reply-To: <20170908085640.42wzzgd2s2roikyd@ninjato>
+Message-ID: <20170909152705.tmnenengi4aqy3tc@ninjato>
 References: <20170817141449.23958-1-wsa+renesas@sang-engineering.com>
-        <20170817141449.23958-4-wsa+renesas@sang-engineering.com>
-        <20170827083748.248e2430@vento.lan>
-        <20170908085640.42wzzgd2s2roikyd@ninjato>
+ <20170817141449.23958-4-wsa+renesas@sang-engineering.com>
+ <20170827083748.248e2430@vento.lan>
+ <20170908085640.42wzzgd2s2roikyd@ninjato>
+ <20170908080756.7d8d81d7@vento.lan>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="dbaktt5fhjqvv3l6"
+In-Reply-To: <20170908080756.7d8d81d7@vento.lan>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Em Fri, 8 Sep 2017 10:56:40 +0200
-Wolfram Sang <wsa@the-dreams.de> escreveu:
 
-> Hi Mauro,
-> 
-> thanks for your comments. Much appreciated!
-> 
-> > There are also a couple of things here that Sphinx would complain.
-> > So, it could be worth to rename it to *.rst, while you're writing
-> > it, and see what:
-> > 	make htmldocs
-> > will complain and how it will look in html.  
-> 
-> OK, I'll check that.
-
-Ok.
-
-> > > +Given that I2C is a low-speed bus where largely small messages are transferred,
-> > > +it is not considered a prime user of DMA access. At this time of writing, only
-> > > +10% of I2C bus master drivers have DMA support implemented.  
-> > 
-> > Are you sure about that? I'd say that, on media, at least half of the
-> > drivers use DMA for I2C bus access, as the I2C bus is on a remote
-> > board that talks with CPU via USB, using DMA, and all communication
-> > with USB should be DMA-safe.  
-> 
-> Well, the DMA-safe requirement comes then from the USB subsystem,
-> doesn't it?
-
-Yes, but the statistics that 10% of I2C bus master drivers
-are DMA-safe is not true, if you take those into account ;-)
-
-Perhaps you could write it as (or something similar):
-
-	At this time of writing, only +10% of I2C bus master
-	drivers for non-remote boards have DMA support implemented.  
+--dbaktt5fhjqvv3l6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
 
-> Or do you really use DMA on the remote board to transfer
-> data via I2C to an I2C client?
-> 
-> > I guess what you really wanted to say on most of this section is
-> > about SoC (and other CPUs) where the I2C bus master is is at the
-> > mainboard, and not on some peripheral.  
-> 
-> I might be biased to that, yes. So, it is good talking about it.
-> 
-> > > And the vast
-> > > +majority of transactions are so small that setting up DMA for it will likely
-> > > +add more overhead than a plain PIO transfer.
-> > > +
-> > > +Therefore, it is *not* mandatory that the buffer of an I2C message is DMA safe.  
-> > 
-> > Again, that may not be true on media boards. The code that implements the
-> > I2C transfers there, on most boards, have to be DMA safe, as it won't
-> > otherwise send/receive commands from the chips that are after the USB
-> > bridge.  
-> 
-> That still sounds to me like the DMA-safe requirement comes from USB
-> (which is fine, of course.). In any case, a sentence like "Other
-> subsystem you might use for bridging I2C might impose other DMA
-> requirements" sounds like to nice to have.
+> Yes, but the statistics that 10% of I2C bus master drivers
+> are DMA-safe is not true, if you take those into account ;-)
+>=20
+> Perhaps you could write it as (or something similar):
+>=20
+> 	At this time of writing, only +10% of I2C bus master
+> 	drivers for non-remote boards have DMA support implemented. =20
 
-Agreed.
+No, this is confusing IMO. Being remote has nothing to with DMA. What
+has to do with DMA is that these are using USB as communication channel.
+And USB clearly needs DMA-safe buffers. The encapsulation needs DMA-safe
+buffers. So, I think the new sentence "other subsystems might impose"
+mentions that.
 
-> 
-> > > +Drivers wishing to implement DMA can use helper functions from the I2C core.
-> > > +One gives you a DMA-safe buffer for a given i2c_msg as long as a certain
-> > > +threshold is met.
-> > > +
-> > > +	dma_buf = i2c_get_dma_safe_msg_buf(msg, threshold_in_byte);  
-> > 
-> > I'm concerned about the new bits added by this call. Right now,
-> > USB drivers just use kalloc() for transfer buffers used to send and
-> > receive URB control messages for both setting the main device and
-> > for I2C messages. Before this changeset, buffers allocated this
-> > way are DMA save and have been working for years.  
-> 
-> Can you give me a pointer to a driver doing this? I glimpsed around in
-> drivers/media/usb and found that most drivers are having their i2c_msg
-> buffers on the stack. Which is clearly not DMA-safe.
+Let me recap what this series is for:
 
-The way it is implemented depends on the driver, and usually envolves
-double-buffering, e. g., on some place of the driver, a buffer that
-may not be DMA-save is copied into a DMA safe buffer. 
+a) It makes clear that I2C subsystem does not require DMA-safety because
+for the reasons given in the textfile.
 
-On most cases, like on this driver:
-	drivers/media/usb/dvb-usb-v2/az6007.c
+If I2C is encapsulated over USB, then DMA-safety is of course required,
+but this comes from USB. So, those USB-I2C master drivers need to do
+something to make sure DMA-safety is guaranteed because i2c_msg buffers
+don't need to be DMA safe because of a). They could use the newly
+introduced features, but they don't have to.
 
-The i2c_xfer logic (or the read/write functions) is the one responsible
-for double-buffering.
+b) a flag for DMA safe i2c_msgs is added
 
-In this specific example, the DVB usbv2 core allocates the device's "state"
-struct using kmalloc (it uses .size_of_priv field to know the size of
-the "state" buffer).
+So, for messages we know to be DMA safe, we can flag that. Drivers
+could check that and use a bounce buffer if the flag is not set.
+However, this is all optional. Your drivers can still choose to not
+check the flag and everything will stay as before. Check patch 5 for a
+use case.
 
-On struct az6007_device_state, there is a "data" buffer with 4096 bytes.
+c) helper functions for bounce buffers are added
 
-At the i2c transfer function, it retrieves and use it:
-
-	struct az6007_device_state *st = d_to_priv(d)
-...
-	ret = __az6007_read(d->udev, req, value, index, st->data, length);
-...
-	ret =  __az6007_write(d->udev, req, value, index, st->data, length);
+These are *helper* functions for drivers wishing to do DMA. A super
+simple bounce buffer support. Check patch 4 for a use case. Again, this
+is optional. Drivers can implement their own bounce buffer support. Or,
+as in your case, if you know that your buffers are good, then don't use
+any of this and things will keep going.
 
 
-In the past, on lots of drivers, the i2c_xfer logic just used to assume
-that the I2C client driver allocated a DMA-safe buffer, as it just used to
-pass whatever buffer it receives directly to USB core. We did an effort to
-change it, as it can be messy, but I'm not sure if this is solved everywhere.
+This all is to allow bus master drivers to opt-in for DMA safety if they
+want to do DMA directly. Because currently, with a lot of i2c_msgs on
+stack, this is more or less working accidently.
 
-The __az6007_read() and __az6007_write() indirectly do DMA (for most USB
-host drivers), when they call usb_control_msg().
+And, yes, I know I have to add this new flag to a few central places in
+client drivers. Otherwise, master drivers checking for DMA safety will
+initially have a performance regression. This is scheduled for V5 and
+mentioned in this series.
 
-> 
-> > When you add some flags that would make the I2C subsystem aware
-> > that a buffer is now DMA safe, I guess you could be breaking
-> > those drivers, as a DMA safe buffer will now be considered as
-> > DMA-unsafe.  
-> 
-> Well, this flag is only relevant for i2c master drivers wishing to do
-> DMA. So, grepping in the above directory
-> 
-> 	grep dma $(grep -rl i2c_add_adapter *)
+> In the past, on lots of drivers, the i2c_xfer logic just used to assume
+> that the I2C client driver allocated a DMA-safe buffer, as it just used to
+> pass whatever buffer it receives directly to USB core. We did an effort to
+> change it, as it can be messy, but I'm not sure if this is solved everywh=
+ere.
 
-The usage of I2C at the media subsystem predates the I2C subsystem.
-at V4L2 drivers, a great effort was done to port it to fully use the
-I2C subsystem when it was added upstream, but there were some problems
-a the initial implementation of the i2c subsystem that prevented its
-usage for the DVB drivers. By the time such restrictions got removed,
-it was too late, as there were already a large amount of drivers relying
-on i2c "low level" functions.
+Good, I can imagine this being some effort. But again, this is because
+USB needs the DMA-safety, not I2C. AFAICS, most i2c_msgs are register
+accesses and thus, small messages.
 
-So, almost all DVB drivers don't use i2c_add_adapter(). Instead, the
-I2C clients just call directly the I2C transfer functions:
+> The usage of I2C at the media subsystem predates the I2C subsystem.
+> at V4L2 drivers, a great effort was done to port it to fully use the
+> I2C subsystem when it was added upstream, but there were some problems
+> a the initial implementation of the i2c subsystem that prevented its
+> usage for the DVB drivers. By the time such restrictions got removed,
+> it was too late, as there were already a large amount of drivers relying
+> on i2c "low level" functions.
 
-	drivers/media/dvb-frontends/au8522_common.c:    ret = i2c_transfer(state->i2c, msg, 2);
+Didn't know that, but this is good to know! Thanks.
 
-> only gives one driver which is irrelevant because the i2c master it
-> registers is not doing any DMA?
+> Even on the drivers that use i2c_add_adapter(), the usage of DMA can't
+> be get by the above grep, as the DMA usage is actually at drivers/usb.
 
-Even on the drivers that use i2c_add_adapter(), the usage of DMA can't
-be get by the above grep, as the DMA usage is actually at drivers/usb.
+Ok. But as said before, what works now will continue to work. This
+series is about clarifying that i2c_msg buffers need not to be DMA safe
+and offering some helpers for those bus master drivers wanting to opt-in
+to be sure.
 
-For example, the em28xx driver uses i2c_add_adapter():
+Clearer now?
 
-$ git grep i2c_add_adapter drivers/media/usb/em28xx/
-drivers/media/usb/em28xx/em28xx-i2c.c:  retval = i2c_add_adapter(&dev->i2c_adap[bus]);
-drivers/media/usb/em28xx/em28xx-i2c.c:                  "%s: i2c_add_adapter failed! retval [%d]\n",
+Regards,
 
-And the actual data transfer happens via usb_control_msg():
+   Wolfram
 
-$ git grep usb_control_msg drivers/media/usb/em28xx/
-drivers/media/usb/em28xx/em28xx-core.c: ret = usb_control_msg(udev, pipe, req,
-drivers/media/usb/em28xx/em28xx-core.c: ret = usb_control_msg(udev, pipe, req,
 
-If you modify your grep function, you'll see that usb_control_msg()
-is DMA-dependent. Try:
+--dbaktt5fhjqvv3l6
+Content-Type: application/pgp-signature; name="signature.asc"
 
-	$ grep dma $(grep -rl usb_control_msg) drivers/usb/core/
+-----BEGIN PGP SIGNATURE-----
 
-> Am I missing something? We are clearly not aligned yet...
-> 
-> Regards,
-> 
->    Wolfram
-> 
+iQIzBAABCAAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAlm0CEUACgkQFA3kzBSg
+KbYFMxAAsnFi1g6FqVXiH4/+euK/bEZtFnKEOOqrrzOJY0y4STGEr7veeSLX2nWf
+gipTl6Pk2Q/za8OHvSJgKi9JxAi3g3FZ0aEO496ohL5lIS4xgxnQP8qtQZ8DcHhK
+pyuCmDLDTl6Yp3TQ2CfYdxrE31MwyZb4pNsTeE/ohamm5IQ5lwoQjjce7wVspDNR
+N1Qic2Dk2vxwYnta2mjV4ICT3N1OpVQd8Pg+BE3L5fWeEeaCUo8onj3gfGeEQ4PV
+2zYuXEELDCPldigUYJo4uF59hgM7CsCcceCFNk08Dj/NXk6gcigkITMzcKYBscQm
+pfAEhOMGL3luuJfKMhDgChjACO0gzNjn1XE4Ym9sA1Px6ib+461RksO7S7r3QisR
+VeKHpEaXjeIaj3WIwqpeLTLzzrRynhpHriAg4EMywSwaBeZEzdXmjPdtAU7vSbTB
+OBBbrQnmxCuYDzS6fbiKCrPO+9rVh0KpQcVD8P8YSmaGin/9eTp2gmQItus/Vy3m
+7MQlfn5Wb9ahhq9ggAAsVkZBV/5Bd/VkWIP5OaZvQ+GxWyJdGPfo3YoOtjnw1RFe
+LwmUcjOvvDwL9BmUG8PXkNEEioKind51HYBGhYMIo1Qul//DAqWS24d5vuBqrNvA
+s2/Lf5HUh11cVM+mPNF26DHOQmNPwfYprjfJZogDHrZrDW2kUsQ=
+=xQe4
+-----END PGP SIGNATURE-----
 
-Thanks,
-Mauro
+--dbaktt5fhjqvv3l6--
