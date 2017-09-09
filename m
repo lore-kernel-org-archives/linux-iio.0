@@ -1,123 +1,703 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout3.hostsharing.net ([176.9.242.54]:44959 "EHLO
-        mailout3.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753031AbdIISfO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 9 Sep 2017 14:35:14 -0400
-Message-Id: <c5a93c6dd0859cb8ed093e222970cdca3a61aa9a.1504807204.git.lukas@wunner.de>
-In-Reply-To: <cover.1504807204.git.lukas@wunner.de>
-References: <cover.1504807204.git.lukas@wunner.de>
-From: Lukas Wunner <lukas@wunner.de>
-Date: Sat, 9 Sep 2017 20:32:41 +0200
-Subject: [PATCH v2 6/6 INFORMATIONAL/RFT] iio: adc: mcp320x: Support continuous conversion mode
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Mathias Duckeck <m.duckeck@kunbus.de>,
-        Phil Elwell <phil@raspberrypi.org>,
-        Oskar Andero <oskar.andero@gmail.com>,
-        Andrea Galbusera <gizero@gmail.com>,
-        Akinobu Mita <akinobu.mita@gmail.com>,
-        Manfred Schlaegl <manfred.schlaegl@gmx.at>,
-        Michael Welling <mwelling@ieee.org>,
-        Soeren Andersen <san@rosetechnology.dk>,
-        linux-iio@vger.kernel.org
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=KqJ3=AK=gmail.com=harinath922@kernel.org>
+From: Harinath Nampally <harinath922@gmail.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	amsfield22@gmail.com,
+	martink@posteo.de
+Subject: [PATCH v6]     iio: accel: mma8452: improvements to handle multiple events
+Date: Sat,  9 Sep 2017 15:56:58 -0400
+Message-Id: <1504987018-8934-1-git-send-email-harinath922@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-The MCP3550/1/3 can be run in "continuous conversion mode", allowing
-conversions to be fetched at any time without observing a delay,
-at the expense of higher energy consumption.
+    This driver supports multiple devices like mma8653,
+    mma8652, mma8452, mma8453 and fxls8471. Almost all
+    these devices have more than one event.
 
-The mode is enabled by permanently driving CS low, e.g. by wiring it to
-ground.  This requires either exclusive bus usage by the chip or that
-CLK and MISO are AND-gated with the CS signal coming from the master.
+    Current driver design hardcodes the event specific
+    information, so only one event can be supported by this
+    driver at any given time.
+    Also current design doesn't have the flexibility to
+    add more events.
 
-I only have boards available which use the chip in single conversion
-mode, so cannot test its behaviour in continuous conversion mode.
-I am putting this commit out there as a basis for others to work on.
-It introduces a device property to indicate that continuous conversion
-mode is enabled permanently.
+    This patch improves by detaching the event related
+    information from chip_info struct,and based on channel
+    type and event direction the corresponding event
+    configuration registers are picked dynamically.
+    Hence both transient and freefall events can be
+    handled in read/write callbacks.
 
-In theory it may also be possible to enter the mode temporarily, e.g. as
-long as the chardev is opened:  Setting the cs_change bit of transfer[1]
-in struct mcp320x should enter the mode, clearing the bit should exit it.
-However as can be seen in mcp320x_probe(), a magic sequence of two
-consecutive conversions is sometimes necessary to switch from continuous
-to single conversion mode lest the chip remains stuck in shutdown.
+    Changes are thoroughly tested on fxls8471 device on imx6UL
+    Eval board using iio_event_monitor user space program.
 
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
+    After this fix both Freefall and Transient events are
+    handled by the driver without any conflicts.
+
+    Changes since v5 -> v6
+    -Rename supported_events to all_events(short name)
+    -Use get_event_regs function in read/write event
+     config callbacks to pick appropriate config registers
+    -Add ev_cfg_ele and ev_cfg_chan_shift in event_regs struct
+     which are needed in read/write event callbacks
+
+    Changes since v4 -> v5
+    -Add supported_events and enabled_events
+     in chip_info structure so that devices(mma865x)
+     which has no support for transient event will
+     fallback to freefall event. Hence this patch changes
+     won't break for devices that can't support
+     transient events
+
+    Changes since v3 -> v4
+    -Add 'const struct ev_regs_accel_falling'
+    -Add 'const struct ev_regs_accel_rising'
+    -Refactor mma8452_get_event_regs function to
+     remove the fill in the struct and return above structs
+    -Condense the commit's subject message
+
+    Changes since v2 -> v3
+    -Fix typo in commit message
+    -Replace word 'Bugfix' with 'Improvements'
+    -Describe more accurate commit message
+    -Replace breaks with returns
+    -Initialise transient event threshold mask
+    -Remove unrelated change of IIO_ACCEL channel type
+     check in read/write event callbacks
+
+    Changes since v1 -> v2
+    -Fix indentations
+    -Remove unused fields in mma8452_event_regs struct
+    -Remove redundant return statement
+    -Remove unrelated changes like checkpatch.pl warning fixes
+
+Signed-off-by: Harinath Nampally <harinath922@gmail.com>
 ---
-Changes since v1:
-- Move support for continuous conversion mode to separate patch
-  which is marked informational / not for merging.  Rename device
-  property to "continuous" for consistency with the existing
-  similar property of drivers/iio/light/us5182d.c. (Rob, Jonathan)
+ drivers/iio/accel/mma8452.c | 363 +++++++++++++++++++++++++-------------------
+ 1 file changed, 206 insertions(+), 157 deletions(-)
 
- Documentation/devicetree/bindings/iio/adc/mcp320x.txt | 9 +++++++++
- drivers/iio/adc/mcp320x.c                             | 8 +++++++-
- 2 files changed, 16 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/devicetree/bindings/iio/adc/mcp320x.txt b/Documentation/devicetree/bindings/iio/adc/mcp320x.txt
-index 7d64753df949..cf28af9ec0ac 100644
---- a/Documentation/devicetree/bindings/iio/adc/mcp320x.txt
-+++ b/Documentation/devicetree/bindings/iio/adc/mcp320x.txt
-@@ -46,6 +46,15 @@ Required properties:
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index eb6e3dc..678e2f7 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -59,7 +59,9 @@
+ #define MMA8452_FF_MT_THS			0x17
+ #define  MMA8452_FF_MT_THS_MASK			0x7f
+ #define MMA8452_FF_MT_COUNT			0x18
++#define MMA8452_FF_MT_CHAN_SHIFT	3
+ #define MMA8452_TRANSIENT_CFG			0x1d
++#define  MMA8452_TRANSIENT_CFG_CHAN(chan)	BIT(chan + 1)
+ #define  MMA8452_TRANSIENT_CFG_HPF_BYP		BIT(0)
+ #define  MMA8452_TRANSIENT_CFG_ELE		BIT(4)
+ #define MMA8452_TRANSIENT_SRC			0x1e
+@@ -69,6 +71,7 @@
+ #define MMA8452_TRANSIENT_THS			0x1f
+ #define  MMA8452_TRANSIENT_THS_MASK		GENMASK(6, 0)
+ #define MMA8452_TRANSIENT_COUNT			0x20
++#define MMA8452_TRANSIENT_CHAN_SHIFT 1
+ #define MMA8452_CTRL_REG1			0x2a
+ #define  MMA8452_CTRL_ACTIVE			BIT(0)
+ #define  MMA8452_CTRL_DR_MASK			GENMASK(5, 3)
+@@ -107,6 +110,51 @@ struct mma8452_data {
+ 	const struct mma_chip_info *chip_info;
+ };
  
- 	- vref-supply:	Phandle to the external reference voltage supply.
- 
-+Optional properties:
-+	- microchip,continuous (boolean):
-+			Only applicable to MCP3550/1/3:  These ADCs have long
-+			conversion times and therefore support "continuous
-+			conversion mode" to allow retrieval of conversions
-+			at any time without observing a delay.  The mode is
-+			enabled by permanently driving CS low, e.g. by wiring
-+			it to ground.
++ /**
++  * struct mma8452_event_regs - chip specific data related to events
++  * @ev_cfg:			event config register address
++  * @ev_cfg_ele:			latch bit in event config register
++  * @ev_cfg_chan_shift:		number of the bit to enable events in X
++  *				direction; in event config register
++  * @ev_src:			event source register address
++  * @ev_ths:			event threshold register address
++  * @ev_ths_mask:		mask for the threshold value
++  * @ev_count:			event count (period) register address
++  *
++  * Since not all chips supported by the driver support comparing high pass
++  * filtered data for events (interrupts), different interrupt sources are
++  * used for different chips and the relevant registers are included here.
++  */
++struct mma8452_event_regs {
++		u8 ev_cfg;
++		u8 ev_cfg_ele;
++		u8 ev_cfg_chan_shift;
++		u8 ev_src;
++		u8 ev_ths;
++		u8 ev_ths_mask;
++		u8 ev_count;
++};
 +
- Examples:
- spi_controller {
- 	mcp3x0x@0 {
-diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
-index a04856d8afdb..446700ea6110 100644
---- a/drivers/iio/adc/mcp320x.c
-+++ b/drivers/iio/adc/mcp320x.c
-@@ -77,6 +77,9 @@ struct mcp320x_chip_info {
-  * @transfer: SPI transfers used by @msg
-  * @start_conv_msg: SPI message to start a conversion by briefly asserting CS
-  * @start_conv_transfer: SPI transfer used by @start_conv_msg
-+ * @continuous_conv: whether CS is permanently driven low such that conversions
-+ *	take place continuously, obviating the need to explicitly start them
-+ *	and wait for them to finish
-  * @reg: regulator generating Vref
-  * @lock: protects read sequences
-  * @chip_info: ADC properties
-@@ -89,6 +92,7 @@ struct mcp320x {
- 	struct spi_transfer transfer[2];
- 	struct spi_message start_conv_msg;
- 	struct spi_transfer start_conv_transfer;
-+	bool continuous_conv;
++static const struct mma8452_event_regs ev_regs_accel_falling = {
++		.ev_cfg = MMA8452_FF_MT_CFG,
++		.ev_cfg_ele = MMA8452_FF_MT_CFG_ELE,
++		.ev_cfg_chan_shift = MMA8452_FF_MT_CHAN_SHIFT,
++		.ev_src = MMA8452_FF_MT_SRC,
++		.ev_ths = MMA8452_FF_MT_THS,
++		.ev_ths_mask = MMA8452_FF_MT_THS_MASK,
++		.ev_count = MMA8452_FF_MT_COUNT
++};
++
++static const struct mma8452_event_regs ev_regs_accel_rising = {
++		.ev_cfg = MMA8452_TRANSIENT_CFG,
++		.ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE,
++		.ev_cfg_chan_shift = MMA8452_TRANSIENT_CHAN_SHIFT,
++		.ev_src = MMA8452_TRANSIENT_SRC,
++		.ev_ths = MMA8452_TRANSIENT_THS,
++		.ev_ths_mask = MMA8452_TRANSIENT_THS_MASK,
++		.ev_count = MMA8452_TRANSIENT_COUNT,
++};
++
+ /**
+  * struct mma_chip_info - chip specific data
+  * @chip_id:			WHO_AM_I register's value
+@@ -116,40 +164,16 @@ struct mma8452_data {
+  * @mma_scales:			scale factors for converting register values
+  *				to m/s^2; 3 modes: 2g, 4g, 8g; 2 integers
+  *				per mode: m/s^2 and micro m/s^2
+- * @ev_cfg:			event config register address
+- * @ev_cfg_ele:			latch bit in event config register
+- * @ev_cfg_chan_shift:		number of the bit to enable events in X
+- *				direction; in event config register
+- * @ev_src:			event source register address
+- * @ev_src_xe:			bit in event source register that indicates
+- *				an event in X direction
+- * @ev_src_ye:			bit in event source register that indicates
+- *				an event in Y direction
+- * @ev_src_ze:			bit in event source register that indicates
+- *				an event in Z direction
+- * @ev_ths:			event threshold register address
+- * @ev_ths_mask:		mask for the threshold value
+- * @ev_count:			event count (period) register address
+- *
+- * Since not all chips supported by the driver support comparing high pass
+- * filtered data for events (interrupts), different interrupt sources are
+- * used for different chips and the relevant registers are included here.
++ * @all_events:			all events supported by this chip
++ * @enabled_events:		event flags enabled and handled by this driver
+  */
+ struct mma_chip_info {
+ 	u8 chip_id;
+ 	const struct iio_chan_spec *channels;
+ 	int num_channels;
+ 	const int mma_scales[3][2];
+-	u8 ev_cfg;
+-	u8 ev_cfg_ele;
+-	u8 ev_cfg_chan_shift;
+-	u8 ev_src;
+-	u8 ev_src_xe;
+-	u8 ev_src_ye;
+-	u8 ev_src_ze;
+-	u8 ev_ths;
+-	u8 ev_ths_mask;
+-	u8 ev_count;
++	int all_events;
++	int enabled_events;
+ };
  
- 	struct regulator *reg;
- 	struct mutex lock;
-@@ -124,7 +128,7 @@ static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
+ enum {
+@@ -602,9 +626,8 @@ static int mma8452_set_power_mode(struct mma8452_data *data, u8 mode)
+ static int mma8452_freefall_mode_enabled(struct mma8452_data *data)
  {
- 	int ret;
+ 	int val;
+-	const struct mma_chip_info *chip = data->chip_info;
  
--	if (adc->chip_info->conv_time) {
-+	if (adc->chip_info->conv_time && !adc->continuous_conv) {
- 		ret = spi_sync(adc->spi, &adc->start_conv_msg);
+-	val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
++	val = i2c_smbus_read_byte_data(data->client, MMA8452_FF_MT_CFG);
+ 	if (val < 0)
+ 		return val;
+ 
+@@ -614,29 +637,28 @@ static int mma8452_freefall_mode_enabled(struct mma8452_data *data)
+ static int mma8452_set_freefall_mode(struct mma8452_data *data, bool state)
+ {
+ 	int val;
+-	const struct mma_chip_info *chip = data->chip_info;
+ 
+ 	if ((state && mma8452_freefall_mode_enabled(data)) ||
+ 	    (!state && !(mma8452_freefall_mode_enabled(data))))
+ 		return 0;
+ 
+-	val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
++	val = i2c_smbus_read_byte_data(data->client, MMA8452_FF_MT_CFG);
+ 	if (val < 0)
+ 		return val;
+ 
+ 	if (state) {
+-		val |= BIT(idx_x + chip->ev_cfg_chan_shift);
+-		val |= BIT(idx_y + chip->ev_cfg_chan_shift);
+-		val |= BIT(idx_z + chip->ev_cfg_chan_shift);
++		val |= BIT(idx_x + MMA8452_FF_MT_CHAN_SHIFT);
++		val |= BIT(idx_y + MMA8452_FF_MT_CHAN_SHIFT);
++		val |= BIT(idx_z + MMA8452_FF_MT_CHAN_SHIFT);
+ 		val &= ~MMA8452_FF_MT_CFG_OAE;
+ 	} else {
+-		val &= ~BIT(idx_x + chip->ev_cfg_chan_shift);
+-		val &= ~BIT(idx_y + chip->ev_cfg_chan_shift);
+-		val &= ~BIT(idx_z + chip->ev_cfg_chan_shift);
++		val &= ~BIT(idx_x + MMA8452_FF_MT_CHAN_SHIFT);
++		val &= ~BIT(idx_y + MMA8452_FF_MT_CHAN_SHIFT);
++		val &= ~BIT(idx_z + MMA8452_FF_MT_CHAN_SHIFT);
+ 		val |= MMA8452_FF_MT_CFG_OAE;
+ 	}
+ 
+-	return mma8452_change_config(data, chip->ev_cfg, val);
++	return mma8452_change_config(data, MMA8452_FF_MT_CFG, val);
+ }
+ 
+ static int mma8452_set_hp_filter_frequency(struct mma8452_data *data,
+@@ -740,6 +762,36 @@ static int mma8452_write_raw(struct iio_dev *indio_dev,
+ 	return ret;
+ }
+ 
++static int mma8452_get_event_regs(struct mma8452_data *data,
++		const struct iio_chan_spec *chan, enum iio_event_direction dir,
++		const struct mma8452_event_regs **ev_reg)
++{
++	if (!chan)
++		return -EINVAL;
++
++	switch (chan->type) {
++	case IIO_ACCEL:
++		switch (dir) {
++		case IIO_EV_DIR_RISING:
++			if ((data->chip_info->all_events
++					& MMA8452_INT_TRANS) &&
++				(data->chip_info->enabled_events
++					& MMA8452_INT_TRANS))
++				*ev_reg = &ev_regs_accel_rising;
++			else
++				*ev_reg = &ev_regs_accel_falling;
++			return 0;
++		case IIO_EV_DIR_FALLING:
++			*ev_reg = &ev_regs_accel_falling;
++			return 0;
++		default:
++			return -EINVAL;
++		}
++	default:
++		return -EINVAL;
++	}
++}
++
+ static int mma8452_read_thresh(struct iio_dev *indio_dev,
+ 			       const struct iio_chan_spec *chan,
+ 			       enum iio_event_type type,
+@@ -749,21 +801,24 @@ static int mma8452_read_thresh(struct iio_dev *indio_dev,
+ {
+ 	struct mma8452_data *data = iio_priv(indio_dev);
+ 	int ret, us, power_mode;
++	const struct mma8452_event_regs *ev_regs;
++
++	ret = mma8452_get_event_regs(data, chan, dir, &ev_regs);
++	if (ret)
++		return ret;
+ 
+ 	switch (info) {
+ 	case IIO_EV_INFO_VALUE:
+-		ret = i2c_smbus_read_byte_data(data->client,
+-					       data->chip_info->ev_ths);
++		ret = i2c_smbus_read_byte_data(data->client, ev_regs->ev_ths);
  		if (ret < 0)
  			return ret;
-@@ -427,6 +431,8 @@ static int mcp320x_probe(struct spi_device *spi)
- 		adc->start_conv_transfer.delay_usecs = 8;
- 		spi_message_init_with_transfers(&adc->start_conv_msg,
- 						&adc->start_conv_transfer, 1);
-+		adc->continuous_conv = device_property_read_bool(&spi->dev,
-+						      "microchip,continuous");
  
- 		/*
- 		 * If CS was previously kept low (continuous conversion mode)
+-		*val = ret & data->chip_info->ev_ths_mask;
++		*val = ret & ev_regs->ev_ths_mask;
+ 
+ 		return IIO_VAL_INT;
+ 
+ 	case IIO_EV_INFO_PERIOD:
+-		ret = i2c_smbus_read_byte_data(data->client,
+-					       data->chip_info->ev_count);
++		ret = i2c_smbus_read_byte_data(data->client, ev_regs->ev_count);
+ 		if (ret < 0)
+ 			return ret;
+ 
+@@ -809,14 +864,18 @@ static int mma8452_write_thresh(struct iio_dev *indio_dev,
+ {
+ 	struct mma8452_data *data = iio_priv(indio_dev);
+ 	int ret, reg, steps;
++	const struct mma8452_event_regs *ev_regs;
++
++	ret = mma8452_get_event_regs(data, chan, dir, &ev_regs);
++	if (ret)
++		return ret;
+ 
+ 	switch (info) {
+ 	case IIO_EV_INFO_VALUE:
+-		if (val < 0 || val > MMA8452_TRANSIENT_THS_MASK)
++		if (val < 0 || val > ev_regs->ev_ths_mask)
+ 			return -EINVAL;
+ 
+-		return mma8452_change_config(data, data->chip_info->ev_ths,
+-					     val);
++		return mma8452_change_config(data, ev_regs->ev_ths, val);
+ 
+ 	case IIO_EV_INFO_PERIOD:
+ 		ret = mma8452_get_power_mode(data);
+@@ -830,8 +889,7 @@ static int mma8452_write_thresh(struct iio_dev *indio_dev,
+ 		if (steps < 0 || steps > 0xff)
+ 			return -EINVAL;
+ 
+-		return mma8452_change_config(data, data->chip_info->ev_count,
+-					     steps);
++		return mma8452_change_config(data, ev_regs->ev_count, steps);
+ 
+ 	case IIO_EV_INFO_HIGH_PASS_FILTER_3DB:
+ 		reg = i2c_smbus_read_byte_data(data->client,
+@@ -861,23 +919,24 @@ static int mma8452_read_event_config(struct iio_dev *indio_dev,
+ 				     enum iio_event_direction dir)
+ {
+ 	struct mma8452_data *data = iio_priv(indio_dev);
+-	const struct mma_chip_info *chip = data->chip_info;
+ 	int ret;
++	const struct mma8452_event_regs *ev_regs;
++
++	ret = mma8452_get_event_regs(data, chan, dir, &ev_regs);
++	if (ret)
++		return ret;
+ 
+ 	switch (dir) {
+ 	case IIO_EV_DIR_FALLING:
+ 		return mma8452_freefall_mode_enabled(data);
+ 	case IIO_EV_DIR_RISING:
+-		if (mma8452_freefall_mode_enabled(data))
+-			return 0;
+-
+ 		ret = i2c_smbus_read_byte_data(data->client,
+-					       data->chip_info->ev_cfg);
++				ev_regs->ev_cfg);
+ 		if (ret < 0)
+ 			return ret;
+ 
+ 		return !!(ret & BIT(chan->scan_index +
+-				    chip->ev_cfg_chan_shift));
++				ev_regs->ev_cfg_chan_shift));
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -890,8 +949,12 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
+ 				      int state)
+ {
+ 	struct mma8452_data *data = iio_priv(indio_dev);
+-	const struct mma_chip_info *chip = data->chip_info;
+ 	int val, ret;
++	const struct mma8452_event_regs *ev_regs;
++
++	ret = mma8452_get_event_regs(data, chan, dir, &ev_regs);
++	if (ret)
++		return ret;
+ 
+ 	ret = mma8452_set_runtime_pm_state(data->client, state);
+ 	if (ret)
+@@ -901,28 +964,30 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
+ 	case IIO_EV_DIR_FALLING:
+ 		return mma8452_set_freefall_mode(data, state);
+ 	case IIO_EV_DIR_RISING:
+-		val = i2c_smbus_read_byte_data(data->client, chip->ev_cfg);
++		val = i2c_smbus_read_byte_data(data->client, ev_regs->ev_cfg);
+ 		if (val < 0)
+ 			return val;
+ 
+ 		if (state) {
+ 			if (mma8452_freefall_mode_enabled(data)) {
+-				val &= ~BIT(idx_x + chip->ev_cfg_chan_shift);
+-				val &= ~BIT(idx_y + chip->ev_cfg_chan_shift);
+-				val &= ~BIT(idx_z + chip->ev_cfg_chan_shift);
++				val &= ~BIT(idx_x + ev_regs->ev_cfg_chan_shift);
++				val &= ~BIT(idx_y + ev_regs->ev_cfg_chan_shift);
++				val &= ~BIT(idx_z + ev_regs->ev_cfg_chan_shift);
+ 				val |= MMA8452_FF_MT_CFG_OAE;
+ 			}
+-			val |= BIT(chan->scan_index + chip->ev_cfg_chan_shift);
++			val |= BIT(chan->scan_index +
++					ev_regs->ev_cfg_chan_shift);
+ 		} else {
+ 			if (mma8452_freefall_mode_enabled(data))
+ 				return 0;
+ 
+-			val &= ~BIT(chan->scan_index + chip->ev_cfg_chan_shift);
++			val &= ~BIT(chan->scan_index +
++					ev_regs->ev_cfg_chan_shift);
+ 		}
+ 
+-		val |= chip->ev_cfg_ele;
++		val |= ev_regs->ev_cfg_ele;
+ 
+-		return mma8452_change_config(data, chip->ev_cfg, val);
++		return mma8452_change_config(data, ev_regs->ev_cfg, val);
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -934,35 +999,25 @@ static void mma8452_transient_interrupt(struct iio_dev *indio_dev)
+ 	s64 ts = iio_get_time_ns(indio_dev);
+ 	int src;
+ 
+-	src = i2c_smbus_read_byte_data(data->client, data->chip_info->ev_src);
++	src = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_SRC);
+ 	if (src < 0)
+ 		return;
+ 
+-	if (mma8452_freefall_mode_enabled(data)) {
+-		iio_push_event(indio_dev,
+-			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0,
+-						  IIO_MOD_X_AND_Y_AND_Z,
+-						  IIO_EV_TYPE_MAG,
+-						  IIO_EV_DIR_FALLING),
+-			       ts);
+-		return;
+-	}
+-
+-	if (src & data->chip_info->ev_src_xe)
++	if (src & MMA8452_TRANSIENT_SRC_XTRANSE)
+ 		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_X,
+ 						  IIO_EV_TYPE_MAG,
+ 						  IIO_EV_DIR_RISING),
+ 			       ts);
+ 
+-	if (src & data->chip_info->ev_src_ye)
++	if (src & MMA8452_TRANSIENT_SRC_YTRANSE)
+ 		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_Y,
+ 						  IIO_EV_TYPE_MAG,
+ 						  IIO_EV_DIR_RISING),
+ 			       ts);
+ 
+-	if (src & data->chip_info->ev_src_ze)
++	if (src & MMA8452_TRANSIENT_SRC_ZTRANSE)
+ 		iio_push_event(indio_dev,
+ 			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_Z,
+ 						  IIO_EV_TYPE_MAG,
+@@ -974,7 +1029,6 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
+ {
+ 	struct iio_dev *indio_dev = p;
+ 	struct mma8452_data *data = iio_priv(indio_dev);
+-	const struct mma_chip_info *chip = data->chip_info;
+ 	int ret = IRQ_NONE;
+ 	int src;
+ 
+@@ -982,15 +1036,29 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
+ 	if (src < 0)
+ 		return IRQ_NONE;
+ 
++	if (!(src & data->chip_info->enabled_events))
++		return IRQ_NONE;
++
+ 	if (src & MMA8452_INT_DRDY) {
+ 		iio_trigger_poll_chained(indio_dev->trig);
+ 		ret = IRQ_HANDLED;
+ 	}
+ 
+-	if ((src & MMA8452_INT_TRANS &&
+-	     chip->ev_src == MMA8452_TRANSIENT_SRC) ||
+-	    (src & MMA8452_INT_FF_MT &&
+-	     chip->ev_src == MMA8452_FF_MT_SRC)) {
++	if (src & MMA8452_INT_FF_MT) {
++		if (mma8452_freefall_mode_enabled(data)) {
++			s64 ts = iio_get_time_ns(indio_dev);
++
++			iio_push_event(indio_dev,
++				       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0,
++							  IIO_MOD_X_AND_Y_AND_Z,
++							  IIO_EV_TYPE_MAG,
++							  IIO_EV_DIR_FALLING),
++					ts);
++		}
++		ret = IRQ_HANDLED;
++	}
++
++	if (src & MMA8452_INT_TRANS) {
+ 		mma8452_transient_interrupt(indio_dev);
+ 		ret = IRQ_HANDLED;
+ 	}
+@@ -1222,96 +1290,87 @@ static const struct mma_chip_info mma_chip_info_table[] = {
+ 		 *	g * N * 1000000 / 2048 for N = 2, 4, 8 and g=9.80665
+ 		 */
+ 		.mma_scales = { {0, 2394}, {0, 4788}, {0, 9577} },
+-		.ev_cfg = MMA8452_TRANSIENT_CFG,
+-		.ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE,
+-		.ev_cfg_chan_shift = 1,
+-		.ev_src = MMA8452_TRANSIENT_SRC,
+-		.ev_src_xe = MMA8452_TRANSIENT_SRC_XTRANSE,
+-		.ev_src_ye = MMA8452_TRANSIENT_SRC_YTRANSE,
+-		.ev_src_ze = MMA8452_TRANSIENT_SRC_ZTRANSE,
+-		.ev_ths = MMA8452_TRANSIENT_THS,
+-		.ev_ths_mask = MMA8452_TRANSIENT_THS_MASK,
+-		.ev_count = MMA8452_TRANSIENT_COUNT,
++		/*
++		 * Although we enable the interrupt sources once and for
++		 * all here the event detection itself is not enabled until
++		 * userspace asks for it by mma8452_write_event_config()
++		 */
++		.all_events = MMA8452_INT_DRDY |
++					MMA8452_INT_TRANS |
++					MMA8452_INT_FF_MT,
++		.enabled_events = MMA8452_INT_TRANS |
++					MMA8452_INT_FF_MT,
+ 	},
+ 	[mma8452] = {
+ 		.chip_id = MMA8452_DEVICE_ID,
+ 		.channels = mma8452_channels,
+ 		.num_channels = ARRAY_SIZE(mma8452_channels),
+ 		.mma_scales = { {0, 9577}, {0, 19154}, {0, 38307} },
+-		.ev_cfg = MMA8452_TRANSIENT_CFG,
+-		.ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE,
+-		.ev_cfg_chan_shift = 1,
+-		.ev_src = MMA8452_TRANSIENT_SRC,
+-		.ev_src_xe = MMA8452_TRANSIENT_SRC_XTRANSE,
+-		.ev_src_ye = MMA8452_TRANSIENT_SRC_YTRANSE,
+-		.ev_src_ze = MMA8452_TRANSIENT_SRC_ZTRANSE,
+-		.ev_ths = MMA8452_TRANSIENT_THS,
+-		.ev_ths_mask = MMA8452_TRANSIENT_THS_MASK,
+-		.ev_count = MMA8452_TRANSIENT_COUNT,
++		/*
++		 * Although we enable the interrupt sources once and for
++		 * all here the event detection itself is not enabled until
++		 * userspace asks for it by mma8452_write_event_config()
++		 */
++		.all_events = MMA8452_INT_DRDY |
++					MMA8452_INT_TRANS |
++					MMA8452_INT_FF_MT,
++		.enabled_events = MMA8452_INT_TRANS |
++					MMA8452_INT_FF_MT,
+ 	},
+ 	[mma8453] = {
+ 		.chip_id = MMA8453_DEVICE_ID,
+ 		.channels = mma8453_channels,
+ 		.num_channels = ARRAY_SIZE(mma8453_channels),
+ 		.mma_scales = { {0, 38307}, {0, 76614}, {0, 153228} },
+-		.ev_cfg = MMA8452_TRANSIENT_CFG,
+-		.ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE,
+-		.ev_cfg_chan_shift = 1,
+-		.ev_src = MMA8452_TRANSIENT_SRC,
+-		.ev_src_xe = MMA8452_TRANSIENT_SRC_XTRANSE,
+-		.ev_src_ye = MMA8452_TRANSIENT_SRC_YTRANSE,
+-		.ev_src_ze = MMA8452_TRANSIENT_SRC_ZTRANSE,
+-		.ev_ths = MMA8452_TRANSIENT_THS,
+-		.ev_ths_mask = MMA8452_TRANSIENT_THS_MASK,
+-		.ev_count = MMA8452_TRANSIENT_COUNT,
++		/*
++		 * Although we enable the interrupt sources once and for
++		 * all here the event detection itself is not enabled until
++		 * userspace asks for it by mma8452_write_event_config()
++		 */
++		.all_events = MMA8452_INT_DRDY |
++					MMA8452_INT_TRANS |
++					MMA8452_INT_FF_MT,
++		.enabled_events = MMA8452_INT_TRANS |
++					MMA8452_INT_FF_MT,
+ 	},
+ 	[mma8652] = {
+ 		.chip_id = MMA8652_DEVICE_ID,
+ 		.channels = mma8652_channels,
+ 		.num_channels = ARRAY_SIZE(mma8652_channels),
+ 		.mma_scales = { {0, 9577}, {0, 19154}, {0, 38307} },
+-		.ev_cfg = MMA8452_FF_MT_CFG,
+-		.ev_cfg_ele = MMA8452_FF_MT_CFG_ELE,
+-		.ev_cfg_chan_shift = 3,
+-		.ev_src = MMA8452_FF_MT_SRC,
+-		.ev_src_xe = MMA8452_FF_MT_SRC_XHE,
+-		.ev_src_ye = MMA8452_FF_MT_SRC_YHE,
+-		.ev_src_ze = MMA8452_FF_MT_SRC_ZHE,
+-		.ev_ths = MMA8452_FF_MT_THS,
+-		.ev_ths_mask = MMA8452_FF_MT_THS_MASK,
+-		.ev_count = MMA8452_FF_MT_COUNT,
++		.all_events = MMA8452_INT_DRDY |
++					MMA8452_INT_FF_MT,
++		.enabled_events = MMA8452_INT_FF_MT,
+ 	},
+ 	[mma8653] = {
+ 		.chip_id = MMA8653_DEVICE_ID,
+ 		.channels = mma8653_channels,
+ 		.num_channels = ARRAY_SIZE(mma8653_channels),
+ 		.mma_scales = { {0, 38307}, {0, 76614}, {0, 153228} },
+-		.ev_cfg = MMA8452_FF_MT_CFG,
+-		.ev_cfg_ele = MMA8452_FF_MT_CFG_ELE,
+-		.ev_cfg_chan_shift = 3,
+-		.ev_src = MMA8452_FF_MT_SRC,
+-		.ev_src_xe = MMA8452_FF_MT_SRC_XHE,
+-		.ev_src_ye = MMA8452_FF_MT_SRC_YHE,
+-		.ev_src_ze = MMA8452_FF_MT_SRC_ZHE,
+-		.ev_ths = MMA8452_FF_MT_THS,
+-		.ev_ths_mask = MMA8452_FF_MT_THS_MASK,
+-		.ev_count = MMA8452_FF_MT_COUNT,
++		/*
++		 * Although we enable the interrupt sources once and for
++		 * all here the event detection itself is not enabled until
++		 * userspace asks for it by mma8452_write_event_config()
++		 */
++		.all_events = MMA8452_INT_DRDY |
++					MMA8452_INT_FF_MT,
++		.enabled_events = MMA8452_INT_FF_MT,
+ 	},
+ 	[fxls8471] = {
+ 		.chip_id = FXLS8471_DEVICE_ID,
+ 		.channels = mma8451_channels,
+ 		.num_channels = ARRAY_SIZE(mma8451_channels),
+ 		.mma_scales = { {0, 2394}, {0, 4788}, {0, 9577} },
+-		.ev_cfg = MMA8452_TRANSIENT_CFG,
+-		.ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE,
+-		.ev_cfg_chan_shift = 1,
+-		.ev_src = MMA8452_TRANSIENT_SRC,
+-		.ev_src_xe = MMA8452_TRANSIENT_SRC_XTRANSE,
+-		.ev_src_ye = MMA8452_TRANSIENT_SRC_YTRANSE,
+-		.ev_src_ze = MMA8452_TRANSIENT_SRC_ZTRANSE,
+-		.ev_ths = MMA8452_TRANSIENT_THS,
+-		.ev_ths_mask = MMA8452_TRANSIENT_THS_MASK,
+-		.ev_count = MMA8452_TRANSIENT_COUNT,
++		/*
++		 * Although we enable the interrupt sources once and for
++		 * all here the event detection itself is not enabled until
++		 * userspace asks for it by mma8452_write_event_config()
++		 */
++		.all_events = MMA8452_INT_DRDY |
++					MMA8452_INT_TRANS |
++					MMA8452_INT_FF_MT,
++		.enabled_events = MMA8452_INT_TRANS |
++					MMA8452_INT_FF_MT,
+ 	},
+ };
+ 
+@@ -1509,16 +1568,6 @@ static int mma8452_probe(struct i2c_client *client,
+ 		return ret;
+ 
+ 	if (client->irq) {
+-		/*
+-		 * Although we enable the interrupt sources once and for
+-		 * all here the event detection itself is not enabled until
+-		 * userspace asks for it by mma8452_write_event_config()
+-		 */
+-		int supported_interrupts = MMA8452_INT_DRDY |
+-					   MMA8452_INT_TRANS |
+-					   MMA8452_INT_FF_MT;
+-		int enabled_interrupts = MMA8452_INT_TRANS |
+-					 MMA8452_INT_FF_MT;
+ 		int irq2;
+ 
+ 		irq2 = of_irq_get_byname(client->dev.of_node, "INT2");
+@@ -1527,8 +1576,8 @@ static int mma8452_probe(struct i2c_client *client,
+ 			dev_dbg(&client->dev, "using interrupt line INT2\n");
+ 		} else {
+ 			ret = i2c_smbus_write_byte_data(client,
+-							MMA8452_CTRL_REG5,
+-							supported_interrupts);
++						MMA8452_CTRL_REG5,
++						data->chip_info->all_events);
+ 			if (ret < 0)
+ 				return ret;
+ 
+@@ -1536,8 +1585,8 @@ static int mma8452_probe(struct i2c_client *client,
+ 		}
+ 
+ 		ret = i2c_smbus_write_byte_data(client,
+-						MMA8452_CTRL_REG4,
+-						enabled_interrupts);
++					MMA8452_CTRL_REG4,
++					data->chip_info->enabled_events);
+ 		if (ret < 0)
+ 			return ret;
+ 
 -- 
-2.11.0
-
+2.7.4
