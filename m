@@ -1,89 +1,126 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:59390 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751043AbdIMQwg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 13 Sep 2017 12:52:36 -0400
-Date: Wed, 13 Sep 2017 17:52:32 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Martin Kepplinger <martink@posteo.de>
-Cc: kbuild test robot <lkp@intel.com>, kbuild-all@01.org,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: dln2-adc: initialize local struct before
- using it
-Message-ID: <20170913175232.599fc822@archlinux>
-In-Reply-To: <1ddf9c2d45a9a93cd21e4ba597a3004f@posteo.de>
-References: <201709120955.os6Hccx2%fengguang.wu@intel.com>
-        <1ddf9c2d45a9a93cd21e4ba597a3004f@posteo.de>
+Received: from mail-pg0-f65.google.com ([74.125.83.65]:35322 "EHLO
+        mail-pg0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750926AbdIKWnx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Sep 2017 18:43:53 -0400
+Date: Tue, 12 Sep 2017 04:13:48 +0530
+From: Himanshi Jain <himshijain.hj@gmail.com>
+To: outreachy-kernel@googlegroups.com, lars@metafoo.de,
+        Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, nick.desaulniers@gmail.com
+Subject: [PATCH] Fixed IIO_DEVICE_ATTR_NAMED API to take name as a string and
+ added "" around names
+Message-ID: <20170911224348.GA13259@himanshi-Inspiron-5558>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 12 Sep 2017 09:01:27 +0200
-Martin Kepplinger <martink@posteo.de> wrote:
+Fixed IIO_DEVICE_ATTR_NAMED API to take name as a
+string instead of implicit conversion to string using
+preprocessors. Added double quotes around names in
+existing usage of IIO_DEVICE_ATTR_NAMED.
 
-> Am 12.09.2017 03:32 schrieb kbuild test robot:
-> > Hi Martin,
-> > 
-> > [auto build test WARNING on iio/togreg]
-> > [also build test WARNING on next-20170911]
-> > [cannot apply to v4.13]
-> > [if your patch is applied to the wrong git tree, please drop us a note
-> > to help improve the system]
-> > 
-> > url:
-> > https://github.com/0day-ci/linux/commits/Martin-Kepplinger/iio-adc-dln2-adc-initialize-local-struct-before-using-it/20170912-064250
-> > base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git 
-> > togreg
-> > config: tile-allyesconfig (attached as .config)
-> > compiler: tilegx-linux-gcc (GCC) 4.6.2
-> > reproduce:
-> >         wget
-> > https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross
-> > -O ~/bin/make.cross
-> >         chmod +x ~/bin/make.cross
-> >         # save the attached .config to linux build tree
-> >         make.cross ARCH=tile
-> > 
-> > All warnings (new ones prefixed by >>):
-> > 
-> >    drivers/iio/adc/dln2-adc.c: In function 'dln2_adc_trigger_h':  
-> >>> drivers/iio/adc/dln2-adc.c:492:2: warning: missing braces around 
-> >>> initializer [-Wmissing-braces]  
-> >    drivers/iio/adc/dln2-adc.c:492:2: warning: (near initialization for
-> > 'data.values') [-Wmissing-braces]
-> > 
-> > vim +492 drivers/iio/adc/dln2-adc.c
-> > 
-> >    484
-> >    485	static irqreturn_t dln2_adc_trigger_h(int irq, void *p)
-> >    486	{
-> >    487		struct iio_poll_func *pf = p;
-> >    488		struct iio_dev *indio_dev = pf->indio_dev;
-> >    489		struct {
-> >    490			__le16 values[DLN2_ADC_MAX_CHANNELS];
-> >    491			int64_t timestamp_space;  
-> >  > 492		} data = { 0 };  
-> 
-> 
-> ok :) I guess
-> 
->     } data = {{ 0 }};
-> 
-> would be ok for gcc in this case. How far has this patch gone? Do you 
-> want a fix
-> on top or the patch re-done? Or do you just do it yourself?
->
-I'm  unconvinced the patch is necessary as I think all elements of
-that structure are initialized anyway before they are used.
+Signed-off-by: Himanshi Jain <himshijain.hj@gmail.com>
+---
+ drivers/iio/adc/ad7793.c          | 2 +-
+ drivers/staging/iio/adc/ad7192.c  | 2 +-
+ drivers/staging/iio/adc/ad7280a.c | 4 ++--
+ include/linux/iio/sysfs.h         | 6 +++++-
+ include/linux/sysfs.h             | 7 +++++++
+ 5 files changed, 16 insertions(+), 5 deletions(-)
 
-I might be missing a code path where that isn't true though so
-feel free to point one out!
-
-Jonathan
+diff --git a/drivers/iio/adc/ad7793.c b/drivers/iio/adc/ad7793.c
+index e6706a0..d74e324 100644
+--- a/drivers/iio/adc/ad7793.c
++++ b/drivers/iio/adc/ad7793.c
+@@ -420,7 +420,7 @@ static ssize_t ad7793_show_scale_available(struct device *dev,
+ }
  
-> thanks,
-> 
->                    martin
+ static IIO_DEVICE_ATTR_NAMED(in_m_in_scale_available,
+-		in_voltage-voltage_scale_available, S_IRUGO,
++		"in_voltage-voltage_scale_available", S_IRUGO,
+ 		ad7793_show_scale_available, NULL, 0);
+ 
+ static struct attribute *ad7793_attributes[] = {
+diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+index d11c6de..daff38c 100644
+--- a/drivers/staging/iio/adc/ad7192.c
++++ b/drivers/staging/iio/adc/ad7192.c
+@@ -341,7 +341,7 @@ static int ad7192_setup(struct ad7192_state *st,
+ }
+ 
+ static IIO_DEVICE_ATTR_NAMED(in_v_m_v_scale_available,
+-			     in_voltage-voltage_scale_available,
++			     "in_voltage-voltage_scale_available",
+ 			     0444, ad7192_show_scale_available, NULL, 0);
+ 
+ static IIO_DEVICE_ATTR(in_voltage_scale_available, 0444,
+diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
+index f85dde9..fd32e9a 100644
+--- a/drivers/staging/iio/adc/ad7280a.c
++++ b/drivers/staging/iio/adc/ad7280a.c
+@@ -750,14 +750,14 @@ static irqreturn_t ad7280_event_handler(int irq, void *private)
+ }
+ 
+ static IIO_DEVICE_ATTR_NAMED(in_thresh_low_value,
+-		in_voltage-voltage_thresh_low_value,
++		"in_voltage-voltage_thresh_low_value",
+ 		0644,
+ 		ad7280_read_channel_config,
+ 		ad7280_write_channel_config,
+ 		AD7280A_CELL_UNDERVOLTAGE);
+ 
+ static IIO_DEVICE_ATTR_NAMED(in_thresh_high_value,
+-		in_voltage-voltage_thresh_high_value,
++		"in_voltage-voltage_thresh_high_value",
+ 		0644,
+ 		ad7280_read_channel_config,
+ 		ad7280_write_channel_config,
+diff --git a/include/linux/iio/sysfs.h b/include/linux/iio/sysfs.h
+index ce9426c..49c81a4 100644
+--- a/include/linux/iio/sysfs.h
++++ b/include/linux/iio/sysfs.h
+@@ -55,6 +55,10 @@ struct iio_const_attr {
+ 	{ .dev_attr = __ATTR(_name, _mode, _show, _store),	\
+ 	  .address = _addr }
+ 
++#define IIO_ATTR_NAMED(_name, _mode, _show, _store, _addr)		\
++	{ .dev_attr = __ATTR_NAMED(_name, _mode, _show, _store),	\
++	  .address = _addr }
++
+ #define IIO_ATTR_RO(_name, _addr)       \
+ 	{ .dev_attr = __ATTR_RO(_name), \
+ 	  .address = _addr }
+@@ -85,7 +89,7 @@ struct iio_const_attr {
+ 
+ #define IIO_DEVICE_ATTR_NAMED(_vname, _name, _mode, _show, _store, _addr) \
+ 	struct iio_dev_attr iio_dev_attr_##_vname			\
+-	= IIO_ATTR(_name, _mode, _show, _store, _addr)
++	= IIO_ATTR_NAMED(_name, _mode, _show, _store, _addr)
+ 
+ #define IIO_CONST_ATTR(_name, _string)					\
+ 	struct iio_const_attr iio_const_attr_##_name			\
+diff --git a/include/linux/sysfs.h b/include/linux/sysfs.h
+index aa02c32..20321cf 100644
+--- a/include/linux/sysfs.h
++++ b/include/linux/sysfs.h
+@@ -104,6 +104,13 @@ struct attribute_group {
+ 	.store	= _store,						\
+ }
+ 
++#define __ATTR_NAMED(_name, _mode, _show, _store) {			\
++	.attr = {.name = _name,						\
++		 .mode = VERIFY_OCTAL_PERMISSIONS(_mode) },		\
++	.show = _show,							\
++	.store = _store,						\
++}
++
+ #define __ATTR_PREALLOC(_name, _mode, _show, _store) {			\
+ 	.attr = {.name = __stringify(_name),				\
+ 		 .mode = SYSFS_PREALLOC | VERIFY_OCTAL_PERMISSIONS(_mode) },\
+-- 
+1.9.1
 
