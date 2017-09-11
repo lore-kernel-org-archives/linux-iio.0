@@ -1,410 +1,87 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:40374 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1753061AbdICRoS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 3 Sep 2017 13:44:18 -0400
-Date: Sun, 3 Sep 2017 18:44:14 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        benjamin.gaignard@linaro.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH 0/3] iio: Introduce the generic counter interface
-Message-ID: <20170903184414.0468954d@archlinux>
-In-Reply-To: <20170828141633.GA16755@sophia>
-References: <cover.1501516678.git.vilhelm.gray@gmail.com>
-        <20170820130016.38e896c4@archlinux>
-        <20170828141633.GA16755@sophia>
+Received: from mail-pg0-f45.google.com ([74.125.83.45]:34253 "EHLO
+        mail-pg0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751052AbdIKTjk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Sep 2017 15:39:40 -0400
+Received: by mail-pg0-f45.google.com with SMTP id j16so6799781pga.1
+        for <linux-iio@vger.kernel.org>; Mon, 11 Sep 2017 12:39:40 -0700 (PDT)
+Date: Mon, 11 Sep 2017 12:39:36 -0700
+From: Benson Leung <bleung@google.com>
+To: Thierry Escande <thierry.escande@collabora.com>
+Cc: Benson Leung <bleung@chromium.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Joseph Lo <josephl@nvidia.com>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Daniel Hung-yu Wu <hywu@google.com>,
+        Vincent Palatin <vpalatin@chromium.org>,
+        Wei-Ning Huang <wnhuang@google.com>,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 7/8] platform/chrome: cros_ec: Add sysfs entry to set
+ keyboard wake lid angle
+Message-ID: <20170911193936.GA40388@decatoncale.mtv.corp.google.com>
+References: <1502461385-27564-1-git-send-email-thierry.escande@collabora.com>
+ <1502461385-27564-8-git-send-email-thierry.escande@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="jI8keyz6grp/JLjh"
+In-Reply-To: <1502461385-27564-8-git-send-email-thierry.escande@collabora.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 28 Aug 2017 10:16:33 -0400
-William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
 
-> On Sun, Aug 20, 2017 at 01:00:16PM +0100, Jonathan Cameron wrote:
-> >On Mon, 31 Jul 2017 12:02:45 -0400
-> >William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
-> >  
-> >> Summary
-> >> =======  
-> >
-> >I'd like to see some of this brought out as proper documentation files
-> >in future sets.  In particular the sysfs interface needs full docs.  
-> 
-> I'll write up some proper documentation for the interface and
-> implementation for version 2 of this patchset; it should help elucidate
-> some of the concepts here a bit better.
-> 
-> >> 
-> >> Counter devices are prevalent within a diverse spectrum of industries.
-> >> The ubiquitous presence of these devices necessitates a common interface
-> >> and standard of interaction and exposure. This patchset attempts to
-> >> resolve the issue of duplicate code found among existing counter device
-> >> drivers by introducing a generic counter interface for consumption. The
-> >> generic counter interface enables drivers to support and expose a common
-> >> set of components and functionality present in counter devices.
-> >> 
-> >> Theory
-> >> ======
-> >> 
-> >> Counter devices can vary greatly in design, but regardless of whether
-> >> some devices are quadrature encoder counters or pedometers, all counter
-> >> devices consist of a core set of components. This core set of
-> >> components, shared by all counter devices, is what forms the essence of
-> >> the generic counter interface.
-> >> 
-> >> There are three core components to a counter:
-> >> 
-> >>         VALUE
-> >>         -----
-> >>         A Value represents the count data for a set of Signals. A Value
-> >>         has a count function mode (e.g. "increment" or "quadrature x4")
-> >>         which respresents the update behavior for the count data. A
-> >>         Value also has a set of one or more associated Signals.
-> >> 
-> >>         SIGNAL
-> >>         ------
-> >>         A Signal represents a count input line. A Signal may be
-> >> 	associated to one or more Values.
-> >> 
-> >>         TRIGGER
-> >> 	-------
-> >>         A Trigger represents a Value's count function trigger condition
-> >>         mode (e.g. "rising edge" or "double pulse") for an associated
-> >>         Signal.	If a Signal is associated with a Value, a respective
-> >>         Trigger	instance for that association exists -- albeit perhaps
-> >>         with a trigger condition mode of "none."
-> >> 
-> >> A counter is defined as a set of input signals associated to count data
-> >> that are generated by the evaluation of the state of the associated
-> >> input signals as defined by the respective count functions. Within the
-> >> context of the generic counter interface, a counter consists of Values
-> >> each associated to a set of Signals, whose respective Trigger instances
-> >> represent the count function update conditions for the associated
-> >> Values.
-> >> 
-> >> Implementation
-> >> ==============
-> >> 
-> >> The IIO generic counter interface piggybacks off of the IIO core. This
-> >> is primarily used to leverage the existing sysfs setup: the IIO_COUNT
-> >> channel attributes represent the "counter value," while the IIO_SIGNAL
-> >> channel attributes represent the "counter signal;" auxilary IIO_COUNT
-> >> attributes represent the "counter signal" connections and their
-> >> respective state change configurations which trigger an associated
-> >> "counter function" evaluation.
-> >> 
-> >> The iio_counter_ops structure serves as a container for driver callbacks
-> >> to communicate with the device; function callbacks are provided to read
-> >> and write various "counter signals" and "counter values," and set and
-> >> get the "trigger mode" and "function mode" for various "counter signals"
-> >> and "counter values" respectively.
-> >> 
-> >> To support a counter device, a driver must first allocate the available
-> >> "counter signals" via iio_counter_signal structures. These "counter
-> >> signals" should be stored as an array and set to the init_signals member
-> >> of an allocated iio_counter structure before the counter is registered.
-> >> 
-> >> "Counter values" may be allocated via iio_counter_value structures, and
-> >> respective "counter signal" associations made via iio_counter_trigger
-> >> structures. Initial associated iio_counter_trigger structures may be
-> >> stored as an array and set to the the init_triggers member of the
-> >> respective iio_counter_value structure. These iio_counter_value
-> >> structures may be set to the init_values member of an allocated
-> >> iio_counter structure before the counter is registered if so desired.
-> >> 
-> >> A counter device is registered to the system by passing the respective
-> >> initialized iio_counter structure to the iio_counter_register function;
-> >> similarly, the iio_counter_unregister function unregisters the
-> >> respective counter.
-> >> 
-> >> Userspace Interface
-> >> ===================
-> >> 
-> >> Several sysfs attributes are generated by the generic counter interface,
-> >> and reside under the /sys/bus/iio/devices/iio:deviceX directory.
-> >> 
-> >> Each counter has a respective set of countX-Y and signalX-Y prefixed
-> >> attributes, where X is the id set in the counter structure, and Y is the
-> >> id of the respective Value or Signal.
-> >> 
-> >> The generic counter interface sysfs attributes are as follows:
-> >> 
-> >>         countX-Y_function: count function mode
-> >>         countX-Y_function_available: available count function modes
-> >>         countX-Y_name: Value name
-> >>         countX-Y_raw: Value data
-> >>         countX-Y_triggers: Value's associated Signals
-> >>         countX-Y_trigger_signalX-Z: Value Y trigger mode for Signal Z
-> >>         countX-Y_trigger_signalX-Z_available: available Value Y trigger
-> >>                                               modes for Signal Z
-> >>         signalX-Y_name: Signal name
-> >>         signalX-Y_raw: Signal data
-> >> 
-> >> Future Development
-> >> ==================
-> >> 
-> >> This patchset is focused on providing the core functionality required to
-> >> introduce a usable generic counter interface. Unfortunately, that means
-> >> nice features were left out for the sake of simplicity. It's probably
-> >> useful to include support for common counter functionality and
-> >> configurations such as preset values, min/max boundaries, and such in
-> >> future patches.
-> >> 
-> >> Take into consideration however that it is my intention for this generic
-> >> counter interface to serve as a base level of code to support counter
-> >> devices; that is to say: a feature should only be added to the generic
-> >> counter interface is it is pervasive to counter devices in general. If a
-> >> feature is specific to a subset of counter devices, then that feature
-> >> should be added to the respective subset counter interface; for example,
-> >> a "quadrature pair" atribute should be introduced to the quadrature
-> >> counter interface instead of the generic counter interface.
-> >> 
-> >> Managed memory functions such as devm_iio_counter_register should be
-> >> introduced in a future patch to provide support that aligns with the
-> >> current design of code in the kernel. This should help prevent memory
-> >> leaks and reduce a lot of boiler plate code in drivers.
-> >> 
-> >> I would like to see a character device node interface similar to the one
-> >> provided by the GPIO subsystem. I designed the generic counter interface
-> >> to allow for dynamic reconfiguration of the Value-Signal associations,
-> >> where a user may decide to attached or remove Signals to/from Values at
-> >> will; I don't believe a sysfs attribute system lends itself well to
-> >> these kinds of interactions.  
-> >
-> >I am unconvinced by this at the moment.  A character device
-> >for anything beyond trivial cases results in a nasty mess where you have
-> >to have a supporting userspace library.  It becomes impossible to do
-> >things with simple scripts.  We aren't talking about cases where
-> >we need the ioctls to ensure complex thing happen simultaneously.
-> >It may be that there is an argument here for it but as I say I'm
-> >not yet convinced.
-> >
-> >It may be that configfs is actually a better fit for this sort
-> >of dynamic reconfiguration.   A big question to my mind is whether
-> >there is actually hardware out there that really supports the level
-> >of flexibility you are describing.  There may well be!  
-> 
-> I believe you are correct and I am likely jumping the gun somewhat on
-> this idea. Unwarranted complexity often leads to inefficencies and
-> errors, so I would like to avoid feature creep when possible. Focusing
-> on the sysfs interface should be a good plan at least while we see how
-> real hardware ends up using this interface.
-> 
-> >> 
-> >> Current Patchset Concerns
-> >> =========================
-> >> 
-> >> I'm piggybacking off the IIO core with this patchset, but I'm not sure
-> >> if its appropriate for the longterm. A lot of IIO core is ignored, and
-> >> I feel that I'm essentially just leveraging it for its sysfs code.
-> >> However, utilizing iio_device_register within iio_counter_register does
-> >> allow driver authors to pass in their own IIO channels to support
-> >> attributes and features not provide by the IIO generic counter interface
-> >> code -- so I'm a bit undecided whether to part completely either.  
-> >
-> >This is a big question for me.  Do we often have these counter interfaces
-> >within devices supporting other types of IIO channel and if so is there
-> >a need to synchronize the two.  I.e. will we end up using triggered buffered
-> >capture with these devices.  
-> 
-> What brought on this worry for me is how this generic counter interface
-> adds a certain level of abstraction from the hardware itself. For
-> example, a generic counter "Signal" does not necessarily represent a
-> physical pin in hardware; e.g. a single "Signal" could be a pair of
-> physical differential lines. Since the generic counter interface by
-> itself does not describe that level of hardware, leveraging IIO core
-> does enable us to expose physical hardware without having to duplicate
-> code specifically for the generic counter interface.
-> 
-> As you pointed out, this all depends on the extent to which real
-> hardware shares these other types with a counter (if the overlap in
-> functionality is minimum, then it may be better to keep the generic
-> counter interface separate afterall). I'll have to mull over this and
-> consider how real hardware is used.
-> 
-> >  
-> >> 
-> >> For what its worth, I'd like the generic counter interface to stay
-> >> piggybacked at least until the quadrature counter interface is release;
-> >> that should allow the driver authors to start making use of the
-> >> quadrature counter interface while the generic counter interface is
-> >> improved under the hood.
-> >>   
-> >
-> >The nasty bit is that you are committing to a userspace ABI that puts
-> >these under the relevant IIO namings.  Once you've done that you are
-> >stuck and will have to support that going forward.
-> >
-> >So this decision needs to be made asap.
-> >
-> >Now I have no problem with having a new top level type alongside
-> >triggers and devices that support counters.  That may give you the
-> >flexibility you want. It would be grouped under IIO but not obliged to
-> >use any of the infrastructure (except the trivial registration bits
-> >and pieces to put it in the right directory).  
-> 
-> Polluting userspace with a new ABI that is immediatedly deprecated on
-> the subsequent kernel release is exactly what I wish to avoid. You make
-> a excellent point that a hasty introduction would result in an ABI we
-> must thus forward support. I want to be confident that the path we
-> commit is prudent, so I will put some thought into this for the next
-> version.
-> 
-> >
-> >  
-> >> You may have noticed that Signals do not have associated
-> >> iio_counter_signal_register/iio_counter_signal_unregister functions.
-> >> This is because I encountered a deadlock scenario where unregistering a
-> >> Signal dynamically requires a search of all Values' Triggers to
-> >> determine is the Signal is associated to any Values and subsequently
-> >> remove that association; a lock of the counter structure
-> >> signal_list_lock is required at the iio_counter_signal_unregister call,
-> >> and then once more when performing the search through the Triggers
-> >> (in order to prevent a trigger structure signal member pointer being
-> >> dereferenced after the respective Signal is freed).
-> >> 
-> >> Since Signals are likely to be static for the lifetime of a driver
-> >> (since Signals typically represent physical lines on the device), I
-> >> decided to prevent drivers from dynamically registering and
-> >> unregistering Signals for the time being. I'm not sure whether this
-> >> design should stay however; I don't want to restrict a clever driver
-> >> or future interface that wants to dynamically register/unregister
-> >> Signals.
-> >>   
-> >
-> >I think this is a sensible design decision.  Might change eventually
-> >but for now it makes sense.
-> >
-> >  
-> >> I put a dependency on CONFIG_IIO_COUNTER for the Kconfig IIO Counter
-> >> menu. Is this appropriate; should this menu simply select IIO_COUNTER
-> >> instead of a hard depends; or should drivers individually depend on
-> >> CONFIG_IIO_COUNTER?  
-> >
-> >This is fine.
-> >  
-> >> 
-> >> This is more of a style nitpick: should I prefix static symbols with __?
-> >> I took on this coding convention when writing the generic counter
-> >> interface code, but I'm not sure if it is appropriate in this manner.  
-> >
-> >I wouldn't bother.  I know I did it in various places in IIO, but I wasn't
-> >all that consistent with it.  The usual reason is to indicate that a lock
-> >must be held rather than that they are static.
-> >  
-> >> 
-> >> Finally, I'd like to actively encourage symbol renaming suggestions. I'm
-> >> afraid names such as "Value" and "Trigger" may be too easily confused
-> >> for other unrelated subsystem conventions (e.g. IIO Triggers). I mainly
-> >> stuck with the names and symbols used in this patchset so that I could
-> >> focus on developing the interface code. However, if the chance of
-> >> confusion is small, we can stick with the existing naming convention as
-> >> well.
-> >>   
-> >
-> >This is certainly an interesting direction.   I'm not really clear
-> >enough in my head yet on exactly what the interface looks like and also
-> >the question of whether you have actually designed in too much flexibility
-> >at the cost of complexity internally.   There are a lot of list lookups
-> >which could get very expensive on devices with a lot of channels. It
-> >feels like at least some of those could be avoided if the flexibility
-> >was reduced slightly or at the least the burden of time could be moved
-> >(so vectors rather than lists perhaps).  
-> 
-> I believe the flexibility in this case is warranted, though I realize
-> that the documentation for my rationale is lacking. Regardless, I agree
-> that the implementation itself suffers from complexity which can be
-> improved (vectors are a good idea which I overlooked). I'll try to
-> simplify the code a bit for version 2 and hopefully it'll make it both
-> easier to follow and less expensive.
-> 
-> >
-> >I'd like to get feedback from others on this.  In particular I think you
-> >need to work on the documentation of the various interfaces and how they
-> >fit together.  The basics are here in this cover letter, but we it's the
-> >details we'll probably trip up on.  
-> 
-> By far I agree that proper documentation is a necessity. I intend to
-> write up more in-depth documentation about both the userspace interface
-> as well as the implementation and rationale. These documentation files
-> should also serve as decent entry points for discussions of the
-> interface itself. I would like to give as much opportunity for
-> individuals to criticize the architecture and theory of the generic
-> counter interface before actual code is committed.
-> 
-> I'm going to research some more counter devices to get a better idea of
-> the kind of hardware functionality commonly exposed together with these
-> counters, and have that aid in the decision of how to integrate with IIO
-> core. I suspect it'll be couple weeks however before I submit version 2
-> with the more in-depth documentation.
+--jI8keyz6grp/JLjh
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Cool.  Whenever you are ready.  The only real push on this is that we don't
-want to hold up other counter drivers indefinitely whilst we get everything
-perfect.  As long as we get the userspace interface right, remember we can
-always change internal details whenever we like.
+Hi Thierry,
 
-One interesting thing I'm going to try to keep in mind is whether it makes
-sense to push some elements down into the IIO core as they are more
-generally useful.
+On Fri, Aug 11, 2017 at 04:23:04PM +0200, Thierry Escande wrote:
+> From: Gwendal Grignou <gwendal@chromium.org>
+>=20
+> This adds a sysfs attribute (/sys/class/chromeos/cros_ec/kb_wake_angle)
+> used to set and get the keyboard wake lid angle. This attribute is
+> present only if 2 accelerometers are controlled by the EC.
+>=20
+> This patch also moves the cros_ec features check before the device is
+> added so the features map obtained from the EC is ready on time.
+>=20
+> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+> Signed-off-by: Thierry Escande <thierry.escande@collabora.com>
 
-In particular, there have been other cases where it would have been really
-neat to be able to group a number of different channels into a single 
-'compound' channel.  It might be we can share that element of the functionality
-with those other use cases.
+V2 Looks good. Applied. Thanks!
 
-* light sensor drivers in which it is common to use various separate sensors
-with different optical filters to obtain readings that ultimately lead to
-an illuminance measure.
-* Some of the health sensors use a myriad of different measurements to head
-towards a single ultimate output (pulse rate for example)
-* Concepts might work for things like power meters as well in which we have
-no clean way of indicating the power is made up of a voltage and a current
-channel.
+--=20
+Benson Leung
+Staff Software Engineer
+Chrome OS Kernel
+Google Inc.
+bleung@google.com
+Chromium OS Project
+bleung@chromium.org
 
-Anyhow, unless you have way to much time on your hands - leave these alone
-for now.  Making this compound channel stuff available more generally is
-an internal implementation detail when we just consider counters so can
-form a later phase of the project.
+--jI8keyz6grp/JLjh
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
-Fun stuff.  Problem is there are always too many fun things to do!
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-Jonathan
+iQIcBAEBCgAGBQJZtuZ4AAoJEB8J9XsKL+ZY5SkP/j/RBdiol6H+8x8Qf8kSRpV+
+VRXoHAthOHRTlJsiYfKt+QMva6YbG+IYty+QgB184p2JprGalsskncopPspKYrXa
+ymrttLbysjxC29JYtOHmwwfwdMfSaH8b4ccbZqC03xKGZx3ySMq5DO3b6HRDZzwc
+Ey3W95g7QjvrtyYQmF/nIGLrl/90ICvux4hhMQtCE4XKoWsRPHNP6IKTNvfkgjc5
+rgmHE8SpczfsBl1rnDEtt9t1FDU92fG4CPeFKb9aeX+yhIClzSwVeKvi/gB2xtsc
+K6M8QCwIPCPHozFXnpTrtjfiFDcpDYlnQiJ/r1DEEQ/GLXbOo6ThhgDHil88t3CE
+g6HQO08rQRlt2KXzvwi98nQIbnDzwpq2vVzDO4udDPOM19PcHfh43+kAhsWszxEh
+9sediSqsWqYWDDKxQILKY4QJJhmqlTKNmup9tUgGnYQl+AvRCHTdZrj4IBtu2nY3
+/e+/BAnsjj9u5lEoppI86aZO7z9/P2Rv6/Aq+16ESkl2gxu0cDy/wCcZWElS4qBj
+nIEkqTZS1bsMc9NZYJzHYyggT0hAT/ur1tQdOqPgj96+Qa8cycEEUO8Vm2Tqo5PC
+aHCZfh161nlSj7v5JJuE1xrGWxVV/LdUbgvEM9eiM9fFidrC81e99icSTYNl/DWJ
+B8CVJnapJpie0eGaFNBb
+=+b86
+-----END PGP SIGNATURE-----
 
-> 
-> Sincerely,
-> 
-> William Breathitt Gray
-> 
-> >
-> >Thanks,
-> >
-> >Jonathan
-> >  
-> >> William Breathitt Gray (3):
-> >>   iio: Implement counter channel specification and IIO_SIGNAL constant
-> >>   iio: Introduce the generic counter interface
-> >>   iio: 104-quad-8: Add IIO generic counter interface support
-> >> 
-> >>  MAINTAINERS                        |    7 +
-> >>  drivers/iio/Kconfig                |    8 +
-> >>  drivers/iio/Makefile               |    1 +
-> >>  drivers/iio/counter/104-quad-8.c   |  306 +++++++++-
-> >>  drivers/iio/counter/Kconfig        |    1 +
-> >>  drivers/iio/industrialio-core.c    |   14 +-
-> >>  drivers/iio/industrialio-counter.c | 1157 ++++++++++++++++++++++++++++++++++++
-> >>  include/linux/iio/counter.h        |  221 +++++++
-> >>  include/linux/iio/iio.h            |    2 +
-> >>  include/uapi/linux/iio/types.h     |    1 +
-> >>  10 files changed, 1700 insertions(+), 18 deletions(-)
-> >>  create mode 100644 drivers/iio/industrialio-counter.c
-> >>  create mode 100644 include/linux/iio/counter.h
-> >>   
-> >  
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
+--jI8keyz6grp/JLjh--
