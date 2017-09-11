@@ -1,11 +1,11 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg0-f45.google.com ([74.125.83.45]:34253 "EHLO
-        mail-pg0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751052AbdIKTjk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Sep 2017 15:39:40 -0400
-Received: by mail-pg0-f45.google.com with SMTP id j16so6799781pga.1
-        for <linux-iio@vger.kernel.org>; Mon, 11 Sep 2017 12:39:40 -0700 (PDT)
-Date: Mon, 11 Sep 2017 12:39:36 -0700
+Received: from mail-pf0-f180.google.com ([209.85.192.180]:36141 "EHLO
+        mail-pf0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750782AbdIKTmF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Sep 2017 15:42:05 -0400
+Received: by mail-pf0-f180.google.com with SMTP id e199so15386038pfh.3
+        for <linux-iio@vger.kernel.org>; Mon, 11 Sep 2017 12:42:05 -0700 (PDT)
+Date: Mon, 11 Sep 2017 12:42:01 -0700
 From: Benson Leung <bleung@google.com>
 To: Thierry Escande <thierry.escande@collabora.com>
 Cc: Benson Leung <bleung@chromium.org>,
@@ -18,40 +18,39 @@ Cc: Benson Leung <bleung@chromium.org>,
         Vincent Palatin <vpalatin@chromium.org>,
         Wei-Ning Huang <wnhuang@google.com>,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 7/8] platform/chrome: cros_ec: Add sysfs entry to set
- keyboard wake lid angle
-Message-ID: <20170911193936.GA40388@decatoncale.mtv.corp.google.com>
+Subject: Re: [PATCH v2 8/8] platform/chrome: cros_ec: sysfs: Modify error
+ handling
+Message-ID: <20170911194201.GB40388@decatoncale.mtv.corp.google.com>
 References: <1502461385-27564-1-git-send-email-thierry.escande@collabora.com>
- <1502461385-27564-8-git-send-email-thierry.escande@collabora.com>
+ <1502461385-27564-9-git-send-email-thierry.escande@collabora.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="jI8keyz6grp/JLjh"
-In-Reply-To: <1502461385-27564-8-git-send-email-thierry.escande@collabora.com>
+        protocol="application/pgp-signature"; boundary="ZoaI/ZTpAVc4A5k6"
+In-Reply-To: <1502461385-27564-9-git-send-email-thierry.escande@collabora.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
---jI8keyz6grp/JLjh
+--ZoaI/ZTpAVc4A5k6
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
 Hi Thierry,
 
-On Fri, Aug 11, 2017 at 04:23:04PM +0200, Thierry Escande wrote:
+On Fri, Aug 11, 2017 at 04:23:05PM +0200, Thierry Escande wrote:
 > From: Gwendal Grignou <gwendal@chromium.org>
 >=20
-> This adds a sysfs attribute (/sys/class/chromeos/cros_ec/kb_wake_angle)
-> used to set and get the keyboard wake lid angle. This attribute is
-> present only if 2 accelerometers are controlled by the EC.
->=20
-> This patch also moves the cros_ec features check before the device is
-> added so the features map obtained from the EC is ready on time.
+> When accessing a sysfs attribute, if the EC command fails, -EPROTO is
+> now returned instead of an error message as it is unlikely an app is
+> parsing the error message to do something meaningful.
+> Also, this patch makes use of cros_ec_cmd_xfer_status() instead of
+> cros_ec_cmd_xfer() so an error message is printed in the syslog.
 >=20
 > Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
 > Signed-off-by: Thierry Escande <thierry.escande@collabora.com>
 
-V2 Looks good. Applied. Thanks!
+Looks good. Applied.
 
 --=20
 Benson Leung
@@ -62,26 +61,26 @@ bleung@google.com
 Chromium OS Project
 bleung@chromium.org
 
---jI8keyz6grp/JLjh
+--ZoaI/ZTpAVc4A5k6
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQIcBAEBCgAGBQJZtuZ4AAoJEB8J9XsKL+ZY5SkP/j/RBdiol6H+8x8Qf8kSRpV+
-VRXoHAthOHRTlJsiYfKt+QMva6YbG+IYty+QgB184p2JprGalsskncopPspKYrXa
-ymrttLbysjxC29JYtOHmwwfwdMfSaH8b4ccbZqC03xKGZx3ySMq5DO3b6HRDZzwc
-Ey3W95g7QjvrtyYQmF/nIGLrl/90ICvux4hhMQtCE4XKoWsRPHNP6IKTNvfkgjc5
-rgmHE8SpczfsBl1rnDEtt9t1FDU92fG4CPeFKb9aeX+yhIClzSwVeKvi/gB2xtsc
-K6M8QCwIPCPHozFXnpTrtjfiFDcpDYlnQiJ/r1DEEQ/GLXbOo6ThhgDHil88t3CE
-g6HQO08rQRlt2KXzvwi98nQIbnDzwpq2vVzDO4udDPOM19PcHfh43+kAhsWszxEh
-9sediSqsWqYWDDKxQILKY4QJJhmqlTKNmup9tUgGnYQl+AvRCHTdZrj4IBtu2nY3
-/e+/BAnsjj9u5lEoppI86aZO7z9/P2Rv6/Aq+16ESkl2gxu0cDy/wCcZWElS4qBj
-nIEkqTZS1bsMc9NZYJzHYyggT0hAT/ur1tQdOqPgj96+Qa8cycEEUO8Vm2Tqo5PC
-aHCZfh161nlSj7v5JJuE1xrGWxVV/LdUbgvEM9eiM9fFidrC81e99icSTYNl/DWJ
-B8CVJnapJpie0eGaFNBb
-=+b86
+iQIcBAEBCgAGBQJZtucJAAoJEB8J9XsKL+ZYmYEP/0qYAyo+vdwUSk9ttzbYb4MD
+yLvWiF3JDHjZMcK6sxfhkezoy1S1G+w+mYyTEggle6dWeqKnOfVlN2E3nbikxc11
+wwlqcUL0LybiRV/DkMQVpW89aDRWsK+Ibvm0sdDvefmOtNEAOFyLDQfPv1OoWd+p
+qETz/JIA05wQTMwL+zUPncYORW2DQiVKWs8yLTRK+wblLqr38a4HfouHQ9ZBYnjB
+AZor1QiRaz1Mj9X7E5zVHTBckAIUD0wJRbKY9gCimYBLPFwha1HdmdApdiR8EKpc
+nUx/MNMZjUBFKWtQbPbyTPJd8o/sbIIBci4o/r7fccwTnm8qxDR0LroBy/REdl1B
+jFHo2T7pGPzbAtsp7D8knPU1MLLXQVr1ZUbyT+Subc5K3uBuSNtEN4+2hXqQU32f
+mxpGJfA2ilXfqR+PtZ298NFLDCrCqjtbRxMwtACXyp73VC7FdfjUsV+uhLgd4qmV
+6bWQf8Qy6+4lRP7lLx68iSItQDZI6yISykMLW30AZ47I08mgT6HXy/h2Oyodc6Wq
+2vmeicxw+wjoxZofmtMO9WttKGhj+Ikt7AA/DDEDg7XzjrBrFs9+CtO3S0jfQzeB
+OHfsjVXlybZ039Z5oKR+1fneG3J/cTz2xW/b5XmJkx51KV01YchZTq3kGCPwPj0r
+j7nZ3h4tWEFQEHzavT7t
+=xzJs
 -----END PGP SIGNATURE-----
 
---jI8keyz6grp/JLjh--
+--ZoaI/ZTpAVc4A5k6--
