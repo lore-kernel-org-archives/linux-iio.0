@@ -1,221 +1,299 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg0-f67.google.com ([74.125.83.67]:36978 "EHLO
-        mail-pg0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751536AbdH3SZj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Aug 2017 14:25:39 -0400
-From: s.abhisit@gmail.com
-To: linus.walleij@linaro.org
-Cc: robh@kernel.org, lee.jones@linaro.org, Jonathan.Cameron@huawei.com,
-        pmeerw@pmeerw.net, jacopo@jmondi.org, linux-kernel@vger.kernel.org,
-        knaack.h@gmx.de, lars@metafoo.de, fabrice.gasnier@st.com,
-        akinobu.mita@gmail.com, marek.vasut+renesas@gmail.com,
-        jacopo+renesas@jmondi.org, mike.looijmans@topic.nl,
-        peda@axentia.se, jeff.dagenais@gmail.com,
-        linux-iio@vger.kernel.org, linux-gpio@vger.kernel.org,
-        mark.rutland@arm.com, devicetree@vger.kernel.org, lukas@wunner.de,
-        adi.reus@gmail.com, Abhisit Sangjan <s.abhisit@gmail.com>
-Subject: [PATCH 5/5] lmp92001: mfd: doc: Add support LMP92001
-Date: Thu, 31 Aug 2017 01:25:28 +0700
-Message-Id: <20170830182528.9479-1-s.abhisit@gmail.com>
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:39476 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1751038AbdIKJDU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Sep 2017 05:03:20 -0400
+Subject: Re: [PATCH v3 01/11] iio: Add hardware consumer support
+From: Arnaud Pouliquen <arnaud.pouliquen@st.com>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+        Mark Brown <broonie@kernel.org>
+CC: Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org"
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre TORGUE <alexandre.torgue@st.com>,
+        Olivier MOYSAN <olivier.moysan@st.com>,
+        Benjamin GAIGNARD <benjamin.gaignard@st.com>
+References: <1489759704-30217-1-git-send-email-arnaud.pouliquen@st.com>
+ <1489759704-30217-2-git-send-email-arnaud.pouliquen@st.com>
+ <2f1ea8dc-ff6b-3526-bc9e-50dde1ae9a66@st.com>
+Message-ID: <eea6504a-314f-3d30-ec5a-e42e8a2e24f6@st.com>
+Date: Mon, 11 Sep 2017 11:01:34 +0200
+MIME-Version: 1.0
+In-Reply-To: <2f1ea8dc-ff6b-3526-bc9e-50dde1ae9a66@st.com>
+Content-Type: text/plain; charset="utf-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Abhisit Sangjan <s.abhisit@gmail.com>
+Hello Lars,
 
-TI LMP92001 Analog System Monitor and Controller
+New gentlemen Reminder.
 
-8-bit GPIOs.
-12 DACs with 12-bit resolution.
+I suppose that you have to treat a lot of subjects with more priority
+than this one, but on my side I'm starting to have a lot of pressure
+from project, as STM32 DFSDM upstream is blocked since close to 6 months.
 
-The GPIOs and DACs are shared port function with Cy function pin to
-take control the pin suddenly from external hardware.
-DAC's referance voltage selectable for Internal/External.
+As you proposed the interface, I would be fair you could push it for
+upstream this month.
 
-16 + 1 ADCs with 12-bit resolution.
+If you don't have time for this, another solution could be that I push
+it for you.
+Please tell me your preference.
 
-Built-in internal Temperature Sensor on channel 17.
-Window Comparator Function is supported on channel 1-3 and 9-11 for
-monitoring with interrupt signal (pending to implement for interrupt).
-ADC's referance voltage selectable for Internal/External.
+Regards,
+Arnaud
 
-Signed-off-by: Abhisit Sangjan <s.abhisit@gmail.com>
----
- Documentation/ABI/testing/sysfs-bus-iio-lmp920001  | 65 ++++++++++++++++++++++
- .../devicetree/bindings/gpio/gpio-lmp92001.txt     | 22 ++++++++
- .../bindings/iio/adc/ti-lmp92001-adc.txt           | 20 +++++++
- .../bindings/iio/dac/ti-lmp92001-dac.txt           | 35 ++++++++++++
- 4 files changed, 142 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-lmp920001
- create mode 100644 Documentation/devicetree/bindings/gpio/gpio-lmp92001.txt
- create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-lmp92001-adc.txt
- create mode 100644 Documentation/devicetree/bindings/iio/dac/ti-lmp92001-dac.txt
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-lmp920001 b/Documentation/ABI/testing/sysfs-bus-iio-lmp920001
-new file mode 100644
-index 000000000000..f0965e7d823f
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-lmp920001
-@@ -0,0 +1,65 @@
-+What:           /sys/bus/iio/devices/iio:deviceX/gang
-+Date:           August 2016
-+KernelVersion:  4.12
-+Contact:        Abhisit Sangjan <s.abhisit@gmail.com>
-+Description:
-+                Controls the association of analog output channels OUTx with
-+                asynchronous control inputs Cy for DAC.
-+                Can be either:
-+                - "0"
-+                - "1"
-+
-+                        Cy to OUTx Assignment
-+                ----------------------------------
-+                | Cy | CDAC:GANG=0 | CDAC:GANG=1 |
-+                ----------------------------------
-+                | C1 | OUT[1:4]    | OUT[1:3]    |
-+                ----------------------------------
-+                | C2 | OUT[5:6]    | OUT[4:6]    |
-+                ----------------------------------
-+                | C3 | OUT[7:8]    | OUT[7:9]    |
-+                ----------------------------------
-+                | C4 | OUT[9:12]   | OUT[10:12]  |
-+                ----------------------------------
-+
-+What:           /sys/bus/iio/devices/iio:deviceX/outx
-+Date:           August 2016
-+KernelVersion:  4.12
-+Contact:        Abhisit Sangjan <s.abhisit@gmail.com>
-+Description:
-+                The pin output mode for DAC.
-+                Can be either:
-+                - "hiz" = High impedance state.
-+                - "dac" = DAC output.
-+                - "0" = Drive it to low.
-+                - "1" = Drive it to high.
-+
-+What:           /sys/bus/iio/devices/iio:deviceX/vref
-+Date:           August 2016
-+KernelVersion:  4.12
-+Contact:        Abhisit Sangjan <s.abhisit@gmail.com>
-+Description:
-+                This is voltage reference source for DACs.
-+                Can be either:
-+                - "external"
-+                - "internal"
-+
-+What:           /sys/devices/.../iio:deviceX/en
-+Date:           August 2016
-+KernelVersion:  4.12
-+Contact:        Abhisit Sangjan <s.abhisit@gmail.com>
-+Description:
-+                This is ADC Conversion Enable for each channel.
-+                Can be either:
-+                - "enable"
-+                - "disable"
-+
-+What:           /sys/devices/.../iio:deviceX/vref
-+Date:           August 2016
-+KernelVersion:  4.12
-+Contact:        Abhisit Sangjan <s.abhisit@gmail.com>
-+Description:
-+                This is voltage reference source for ADCs.
-+                Can be either:
-+                - "external"
-+                - "internal"
-diff --git a/Documentation/devicetree/bindings/gpio/gpio-lmp92001.txt b/Documentation/devicetree/bindings/gpio/gpio-lmp92001.txt
-new file mode 100644
-index 000000000000..f9a18c492145
---- /dev/null
-+++ b/Documentation/devicetree/bindings/gpio/gpio-lmp92001.txt
-@@ -0,0 +1,22 @@
-+* Texas Instruments' LMP92001 GPIOs
-+
-+Required properties:
-+ - compatible: Must be set to "ti,lmp92001-gpio".
-+ - reg: i2c chip address for the device.
-+ - gpio-controller: Marks the device node as a gpio controller.
-+ - #gpio-cells : Should be two.  The first cell is the pin number and the
-+  second cell is used to specify the gpio polarity:
-+        0 = Active high
-+        1 = Active low
-+
-+Example:
-+lmp92001@20 {
-+        compatible = "ti,lmp92001";
-+        reg = <0x20>;
-+
-+        gpio-controller {
-+                compatible = "ti,lmp92001-gpio";
-+                gpio-controller;
-+                #gpio-cells = <2>;
-+        };
-+};
-diff --git a/Documentation/devicetree/bindings/iio/adc/ti-lmp92001-adc.txt b/Documentation/devicetree/bindings/iio/adc/ti-lmp92001-adc.txt
-new file mode 100644
-index 000000000000..4565961bf511
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/ti-lmp92001-adc.txt
-@@ -0,0 +1,20 @@
-+* Texas Instruments' LMP92001 ADCs
-+
-+Required properties:
-+ - compatible: Must be set to "ti,lmp92001-adc".
-+ - reg: i2c chip address for the device.
-+ - ti,lmp92001-adc-mask: bit mask for which channel is enable.
-+        0 = Off
-+        1 = On
-+
-+Example:
-+lmp92001@20 {
-+        compatible = "ti,lmp92001";
-+        reg = <0x20>;
-+
-+        lmp92001-adc {
-+                compatible = "ti,lmp92001-adc";
-+                ti,lmp92001-adc-mode = "continuous";
-+                ti,lmp92001-adc-mask = <0x00000079>;
-+        };
-+};
-diff --git a/Documentation/devicetree/bindings/iio/dac/ti-lmp92001-dac.txt b/Documentation/devicetree/bindings/iio/dac/ti-lmp92001-dac.txt
-new file mode 100644
-index 000000000000..882db9ca92f5
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/dac/ti-lmp92001-dac.txt
-@@ -0,0 +1,35 @@
-+* Texas Instruments' LMP92001 DACs
-+
-+Required properties:
-+ - compatible: Must be set to "ti,lmp92001-dac".
-+ - reg: i2c chip address for the device.
-+ - ti,lmp92001-dac-hiz: hi-impedance control,
-+        1 = Forces all OUT[1:12] outputs to hi-z, 0 = normal
-+ - ti,lmp92001-dac-outx:
-+        Cy = 0, 1 = will force associated OUTx outputs to VDD
-+        Cy = 0, 0 = will force associated OUTx outputs to GND
-+ - ti,lmp92001-dac-gang: What group of Cy is governed to.
-+        -----------------------------------------
-+        |  Cy   | CDAC:GANG = 0 | CDAC:GANG = 1 |
-+        -----------------------------------------
-+        |  C1   |   OUT[1:4]    |    OUT[1:3]   |
-+        -----------------------------------------
-+        |  C2   |   OUT[5:6]    |    OUT[4:6]   |
-+        -----------------------------------------
-+        |  C3   |   OUT[7:8]    |    OUT[7:9]   |
-+        -----------------------------------------
-+        |  C4   |   OUT[9:12]   |    OUT[10:12] |
-+        -----------------------------------------
-+
-+Example:
-+lmp92001@20 {
-+        compatible = "ti,lmp92001";
-+        reg = <0x20>;
-+
-+        lmp92001-dac {
-+                compatible = "ti,lmp92001-dac";
-+                ti,lmp92001-dac-hiz  = /bits/ 8 <0>;
-+                ti,lmp92001-dac-outx = /bits/ 8 <0>;
-+                ti,lmp92001-dac-gang = /bits/ 8 <0>;
-+        };
-+};
--- 
-2.13.0
-
+On 06/06/2017 12:15 PM, Arnaud Pouliquen wrote:
+> Hello Lars,
+> 
+> Any news on the upstream of your HW consumer interface, prerequisite for
+> my STM32 DFSDM upstream?
+> Don't hesitate if i can help...
+> 
+> Regards
+> Arnaud
+> 
+> 
+> On 03/17/2017 03:08 PM, Arnaud POULIQUEN wrote:
+>> From: Lars-Peter Clausen <lars@metafoo.de>
+>>
+>> Hardware consumer's can be used when one IIO device has a direct connection
+>> to another device in hardware.
+>>
+>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+>> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@st.com>
+>> ---
+>> V2 -> V3:
+>> 	 Just Adding sign off.  No update but Jonathan comment.
+>>          Need to be taken into account (in agreement with Lars)
+>>          when transforming rfc in patch.
+>> ---
+>>  drivers/iio/Kconfig             |   6 ++
+>>  drivers/iio/Makefile            |   1 +
+>>  drivers/iio/hw_consumer.c       | 156 ++++++++++++++++++++++++++++++++++++++++
+>>  include/linux/iio/hw_consumer.h |  12 ++++
+>>  4 files changed, 175 insertions(+)
+>>  create mode 100644 drivers/iio/hw_consumer.c
+>>  create mode 100644 include/linux/iio/hw_consumer.h
+>>
+>> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+>> index 6743b18..956dd18 100644
+>> --- a/drivers/iio/Kconfig
+>> +++ b/drivers/iio/Kconfig
+>> @@ -30,6 +30,12 @@ config IIO_CONFIGFS
+>>  	  (e.g. software triggers). For more info see
+>>  	  Documentation/iio/iio_configfs.txt.
+>>  
+>> +config IIO_HW_CONSUMER
+>> +	tristate
+>> +	help
+>> +	  Hardware consumer buffer
+>> +
+>> +
+>>  config IIO_TRIGGER
+>>  	bool "Enable triggered sampling support"
+>>  	help
+>> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+>> index 87e4c43..8472b97 100644
+>> --- a/drivers/iio/Makefile
+>> +++ b/drivers/iio/Makefile
+>> @@ -6,6 +6,7 @@ obj-$(CONFIG_IIO) += industrialio.o
+>>  industrialio-y := industrialio-core.o industrialio-event.o inkern.o
+>>  industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
+>>  industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
+>> +obj-$(CONFIG_IIO_HW_CONSUMER) += hw_consumer.o
+>>  
+>>  obj-$(CONFIG_IIO_CONFIGFS) += industrialio-configfs.o
+>>  obj-$(CONFIG_IIO_SW_DEVICE) += industrialio-sw-device.o
+>> diff --git a/drivers/iio/hw_consumer.c b/drivers/iio/hw_consumer.c
+>> new file mode 100644
+>> index 0000000..66f0732
+>> --- /dev/null
+>> +++ b/drivers/iio/hw_consumer.c
+>> @@ -0,0 +1,156 @@
+>> +#include <linux/err.h>
+>> +#include <linux/export.h>
+>> +#include <linux/slab.h>
+>> +#include <linux/mutex.h>
+>> +#include <linux/of.h>
+>> +
+>> +#include <linux/iio/iio.h>
+>> +#include "iio_core.h"
+>> +#include <linux/iio/machine.h>
+>> +#include <linux/iio/driver.h>
+>> +#include <linux/iio/consumer.h>
+>> +#include <linux/iio/hw_consumer.h>
+>> +#include <linux/iio/buffer.h>
+>> +
+>> +struct iio_hw_consumer {
+>> +	struct list_head buffers;
+>> +	struct iio_channel *channels;
+>> +};
+>> +
+>> +struct hw_consumer_buffer {
+>> +	struct list_head head;
+>> +	struct iio_dev *indio_dev;
+>> +	struct iio_buffer buffer;
+>> +};
+>> +
+>> +static struct hw_consumer_buffer *iio_buffer_to_hw_consumer_buffer(
+>> +	struct iio_buffer *buffer)
+>> +{
+>> +	return container_of(buffer, struct hw_consumer_buffer, buffer);
+>> +}
+>> +
+>> +static void iio_hw_buf_release(struct iio_buffer *buffer)
+>> +{
+>> +	struct hw_consumer_buffer *hw_buf =
+>> +		iio_buffer_to_hw_consumer_buffer(buffer);
+>> +	kfree(hw_buf->buffer.scan_mask);
+>> +	kfree(hw_buf);
+>> +}
+>> +
+>> +static const struct iio_buffer_access_funcs iio_hw_buf_access = {
+>> +	.release = &iio_hw_buf_release,
+>> +	.modes = INDIO_BUFFER_HARDWARE,
+>> +};
+>> +
+>> +static struct hw_consumer_buffer *iio_hw_consumer_get_buffer(
+>> +	struct iio_hw_consumer *hwc, struct iio_dev *indio_dev)
+>> +{
+>> +	struct hw_consumer_buffer *buf;
+>> +
+>> +	list_for_each_entry(buf, &hwc->buffers, head) {
+>> +		if (buf->indio_dev == indio_dev)
+>> +			return buf;
+>> +	}
+>> +
+>> +	buf = kzalloc(sizeof(*buf), GFP_KERNEL);
+>> +	if (!buf)
+>> +		return NULL;
+>> +
+>> +	buf->buffer.access = &iio_hw_buf_access;
+>> +	buf->indio_dev = indio_dev;
+>> +	buf->buffer.scan_mask = kcalloc(BITS_TO_LONGS(indio_dev->masklength),
+>> +		sizeof(long), GFP_KERNEL);
+>> +	if (!buf->buffer.scan_mask)
+>> +		goto err_free_buf;
+>> +
+>> +	iio_buffer_init(&buf->buffer);
+>> +	list_add_tail(&buf->head, &hwc->buffers);
+>> +
+>> +	return buf;
+>> +
+>> +err_free_buf:
+>> +	kfree(buf);
+>> +	return NULL;
+>> +}
+>> +
+>> +struct iio_hw_consumer *iio_hw_consumer_alloc(struct device *dev)
+>> +{
+>> +	struct hw_consumer_buffer *buf;
+>> +	struct iio_hw_consumer *hwc;
+>> +	struct iio_channel *chan;
+>> +	int ret;
+>> +
+>> +	hwc = kzalloc(sizeof(*hwc), GFP_KERNEL);
+>> +	if (!hwc)
+>> +		return ERR_PTR(-ENOMEM);
+>> +
+>> +	INIT_LIST_HEAD(&hwc->buffers);
+>> +
+>> +	hwc->channels = iio_channel_get_all(dev);
+>> +	if (IS_ERR(hwc->channels)) {
+>> +		ret = PTR_ERR(hwc->channels);
+>> +		goto err_free_hwc;
+>> +	}
+>> +
+>> +	chan = &hwc->channels[0];
+>> +	while (chan->indio_dev) {
+>> +		buf = iio_hw_consumer_get_buffer(hwc, chan->indio_dev);
+>> +		if (buf == NULL) {
+>> +			ret = -ENOMEM;
+>> +			goto err_put_buffers;
+>> +		}
+>> +		set_bit(chan->channel->scan_index, buf->buffer.scan_mask);
+>> +		chan++;
+>> +	}
+>> +
+>> +	return hwc;
+>> +
+>> +err_put_buffers:
+>> +	list_for_each_entry(buf, &hwc->buffers, head)
+>> +		iio_buffer_put(&buf->buffer);
+>> +	iio_channel_release_all(hwc->channels);
+>> +err_free_hwc:
+>> +	kfree(hwc);
+>> +	return ERR_PTR(ret);
+>> +}
+>> +EXPORT_SYMBOL_GPL(iio_hw_consumer_alloc);
+>> +
+>> +void iio_hw_consumer_free(struct iio_hw_consumer *hwc)
+>> +{
+>> +	struct hw_consumer_buffer *buf;
+>> +
+>> +	iio_channel_release_all(hwc->channels);
+>> +	list_for_each_entry(buf, &hwc->buffers, head)
+>> +		iio_buffer_put(&buf->buffer);
+>> +	kfree(hwc);
+>> +}
+>> +EXPORT_SYMBOL_GPL(iio_hw_consumer_free);
+>> +
+>> +int iio_hw_consumer_enable(struct iio_hw_consumer *hwc)
+>> +{
+>> +	struct hw_consumer_buffer *buf;
+>> +	int ret;
+>> +
+>> +	list_for_each_entry(buf, &hwc->buffers, head) {
+>> +		ret = iio_update_buffers(buf->indio_dev, &buf->buffer, NULL);
+>> +		if (ret)
+>> +			goto err_disable_buffers;
+>> +	}
+>> +
+>> +	return 0;
+>> +
+>> +err_disable_buffers:
+>> +	list_for_each_entry_continue_reverse(buf, &hwc->buffers, head)
+>> +		iio_update_buffers(buf->indio_dev, NULL, &buf->buffer);
+>> +	return ret;
+>> +}
+>> +EXPORT_SYMBOL_GPL(iio_hw_consumer_enable);
+>> +
+>> +void iio_hw_consumer_disable(struct iio_hw_consumer *hwc)
+>> +{
+>> +	struct hw_consumer_buffer *buf;
+>> +
+>> +	list_for_each_entry(buf, &hwc->buffers, head)
+>> +		iio_update_buffers(buf->indio_dev, NULL, &buf->buffer);
+>> +}
+>> +EXPORT_SYMBOL_GPL(iio_hw_consumer_disable);
+>> diff --git a/include/linux/iio/hw_consumer.h b/include/linux/iio/hw_consumer.h
+>> new file mode 100644
+>> index 0000000..f12653d
+>> --- /dev/null
+>> +++ b/include/linux/iio/hw_consumer.h
+>> @@ -0,0 +1,12 @@
+>> +#ifndef LINUX_IIO_HW_CONSUMER_BUFFER_H
+>> +#define LINUX_IIO_HW_CONSUMER_BUFFER_H
+>> +
+>> +struct device;
+>> +struct iio_hw_consumer;
+>> +
+>> +struct iio_hw_consumer *iio_hw_consumer_alloc(struct device *dev);
+>> +void iio_hw_consumer_free(struct iio_hw_consumer *hwc);
+>> +int iio_hw_consumer_enable(struct iio_hw_consumer *hwc);
+>> +void iio_hw_consumer_disable(struct iio_hw_consumer *hwc);
+>> +
+>> +#endif
+>>
