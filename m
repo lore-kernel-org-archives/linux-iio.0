@@ -1,62 +1,66 @@
-Return-Path: <SRS0=PN4k=AN=lip6.fr=julia.lawall@kernel.org>
-Date: Tue, 12 Sep 2017 09:55:44 +0200 (CEST)
-From: Julia Lawall <julia.lawall@lip6.fr>
+Return-Path: <SRS0=mGUp=AN=gmail.com=himshijain.hj@kernel.org>
+Date: Tue, 12 Sep 2017 23:31:32 +0530
+From: himanshi <himshijain.hj@gmail.com>
 To: Daniel Baluta <daniel.baluta@gmail.com>
-cc: Himanshi Jain <himshijain.hj@gmail.com>,
-    outreachy-kernel <outreachy-kernel@googlegroups.com>,
-    Lars-Peter Clausen <lars@metafoo.de>,
-    "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-    Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-    Peter Meerwald <pmeerw@pmeerw.net>,
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-    "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-    driverdev <devel@driverdev.osuosl.org>,
-    Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-    nick.desaulniers@gmail.com
+Cc: outreachy-kernel <outreachy-kernel@googlegroups.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	driverdev <devel@driverdev.osuosl.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	nick.desaulniers@gmail.com
 Subject: Re: [Outreachy kernel] [PATCH] Fixed IIO_DEVICE_ATTR_NAMED API to
  take name as a string and added "" around names
-In-Reply-To: <CAEnQRZDgXj85OTQAoEpij_3bSUnmcx1owNyeg10WCmiBGURURg@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1709120954590.4575@hadrien>
-References: <20170911224348.GA13259@himanshi-Inspiron-5558> <CAEnQRZDgXj85OTQAoEpij_3bSUnmcx1owNyeg10WCmiBGURURg@mail.gmail.com>
+Message-ID: <20170912180132.GB4607@himanshi-Inspiron-5558>
+References: <20170911224348.GA13259@himanshi-Inspiron-5558>
+ <CAEnQRZDgXj85OTQAoEpij_3bSUnmcx1owNyeg10WCmiBGURURg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <CAEnQRZDgXj85OTQAoEpij_3bSUnmcx1owNyeg10WCmiBGURURg@mail.gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
+Thanks for the review Daniel! I will change the imperative mood for the commit 
+message once the other changes are finalised too and as suggested by Julia,
+would try to make the description specific than general.
 
+I tried to think of adding subsystem to the commit subject but could not 
+conclude any because of the files involved.
+I like the idea of splitting the patch into 2 as you suggested but I
+have a doubt that adding the new MACROS to different sysfs files can be put into 1
+patch with the subsystem you mentioned but changing the existing
+IIO_DEVICE_ATTR_NAMED to use IIO_ATTR_NAMED (sysfs file again) would be included
+in the second patch if I am not wrong. So would it be fine to keep the
+subsystem as iio for the second patch?
 
-On Tue, 12 Sep 2017, Daniel Baluta wrote:
-
+On Tue, Sep 12, 2017 at 10:53:26AM +0300, Daniel Baluta wrote:
 > Hi Himanshi,
->
+> 
 > On Tue, Sep 12, 2017 at 1:43 AM, Himanshi Jain <himshijain.hj@gmail.com> wrote:
 > > Fixed IIO_DEVICE_ATTR_NAMED API to take name as a
 > > string instead of implicit conversion to string using
 > > preprocessors. Added double quotes around names in
 > > existing usage of IIO_DEVICE_ATTR_NAMED.
->
+> 
 > Always use imperative mood in commit subject (Fix instead of Fixed).
-
-I haven't had a chance to look at the patch in detail, but try also for
-something more descriptive than "fix".  Rewrite could be good in this
-case.
-
-julia
-
->
+> 
 > The subject should contain a tag, which describes the subsytem/files affected.
->
+> 
 > I would split this patch into:
->
+> 
 > 1) sysfs: iio: Introduce *_ATTR_NAMED
->
+> 
 > and explain here why do we need  __ATTR_NAMED and IIO_ATTR_NAMED
->
+> 
 > 2) iio: Use new IIO_DEVICE_ATTR_NAMED API
->
+> 
 > But of course, lets wait to see Lars and Jonathan's opinions.
 > thanks,
 > Daniel.
->
+> 
 > >
 > > Signed-off-by: Himanshi Jain <himshijain.hj@gmail.com>
 > > ---
@@ -165,11 +169,3 @@ julia
 > > To post to this group, send email to outreachy-kernel@googlegroups.com.
 > > To view this discussion on the web visit https://groups.google.com/d/msgid/outreachy-kernel/20170911224348.GA13259%40himanshi-Inspiron-5558.
 > > For more options, visit https://groups.google.com/d/optout.
->
-> --
-> You received this message because you are subscribed to the Google Groups "outreachy-kernel" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to outreachy-kernel+unsubscribe@googlegroups.com.
-> To post to this group, send email to outreachy-kernel@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/outreachy-kernel/CAEnQRZDgXj85OTQAoEpij_3bSUnmcx1owNyeg10WCmiBGURURg%40mail.gmail.com.
-> For more options, visit https://groups.google.com/d/optout.
->
