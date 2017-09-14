@@ -1,44 +1,49 @@
-Return-Path: <SRS0=6vnB=AQ=linaro.org=linus.walleij@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:37641 "EHLO
+        mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751693AbdINVTz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 Sep 2017 17:19:55 -0400
+From: Paolo Cretaro <paolocretaro@gmail.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, gwendal@chromium.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Paolo Cretaro <paolocretaro@gmail.com>
+Subject: [PATCH] iio: cros_ec: Remove unused variable
+Date: Thu, 14 Sep 2017 23:19:22 +0200
+Message-Id: <20170914211922.29097-1-paolocretaro@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20170914202449.31283-1-Ismail.Kose@maximintegrated.com>
-References: <20170914202449.31283-1-Ismail.Kose@maximintegrated.com>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Fri, 15 Sep 2017 09:11:31 +0200
-Message-ID: <CACRpkdYDV-kS-VgvvssU4s6Hrg-5MQ5Xh3v3NNxZWMhAwDXxxQ@mail.gmail.com>
-Subject: Re: [PATCH] iio: dac: ds4422/ds4424 dac driver
-To: Ismail Kose <Ismail.Kose@maximintegrated.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>, Rob Herring <robh+dt@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>, William Breathitt Gray <vilhelm.gray@gmail.com>,
-	Jean-Francois Dagenais <jeff.dagenais@gmail.com>, Fabrice Gasnier <fabrice.gasnier@st.com>,
-	gwenhael.goavec-merou@trabucayre.com, Peter Rosin <peda@axentia.se>,
-	=?UTF-8?Q?Maxime_Roussin=2DB=C3=A9langer?= <maxime.roussinbelanger@gmail.com>,
-	Mike Looijmans <mike.looijmans@topic.nl>, "Ismail H. KOSE" <ihkose@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, Sep 14, 2017 at 10:24 PM, Ismail Kose
-<Ismail.Kose@maximintegrated.com> wrote:
+Fix gcc warning:
+cros_ec_baro.c:130:25: warning: variable ‘ec_device’ set but not used
 
-> +struct ds4424_pdata {
-> +       const char *vcc_supply_name;
+Signed-off-by: Paolo Cretaro <paolocretaro@gmail.com>
+---
+ drivers/iio/pressure/cros_ec_baro.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-Should not be needed at all, get the supply directly from the device tree.
+diff --git a/drivers/iio/pressure/cros_ec_baro.c b/drivers/iio/pressure/cros_ec_baro.c
+index 48b2a30f57ae..5fd32ad6c64d 100644
+--- a/drivers/iio/pressure/cros_ec_baro.c
++++ b/drivers/iio/pressure/cros_ec_baro.c
+@@ -127,7 +127,6 @@ static int cros_ec_baro_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+ 	struct cros_ec_dev *ec_dev = dev_get_drvdata(dev->parent);
+-	struct cros_ec_device *ec_device;
+ 	struct iio_dev *indio_dev;
+ 	struct cros_ec_baro_state *state;
+ 	struct iio_chan_spec *channel;
+@@ -137,7 +136,6 @@ static int cros_ec_baro_probe(struct platform_device *pdev)
+ 		dev_warn(dev, "No CROS EC device found.\n");
+ 		return -EINVAL;
+ 	}
+-	ec_device = ec_dev->ec_dev;
+ 
+ 	indio_dev = devm_iio_device_alloc(dev, sizeof(*state));
+ 	if (!indio_dev)
+-- 
+2.14.1
 
-> +       uint32_t rfs_res[DS4424_MAX_DAC_CHANNELS];
-> +       struct iio_map *dac_iio_map;
-> +};
-
-Drop this entire platform data file and move all these fields
-you still need into struct ds4424_data.
-
-If you have legacy kernels still using platform data, that's too
-bad, we will not maintain them upstream and not merge new
-board files using platform data normally, use device tree or ACPI
-DSTD only please.
-
-Yours,
-Linus Walleij
