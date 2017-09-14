@@ -1,68 +1,196 @@
-Return-Path: <SRS0=YtUh=AT=free-electrons.com=maxime.ripard@kernel.org>
-Date: Mon, 18 Sep 2017 09:36:01 +0200
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-To: Icenowy Zheng <icenowy@aosc.io>
-Cc: Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
-	Chen-Yu Tsai <wens@csie.org>, Jonathan Cameron <jic23@kernel.org>,
-	Quentin Schulz <quentin.schulz@free-electrons.com>,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-sunxi@googlegroups.com
-Subject: Re: [PATCH v4 3/6] iio: adc: sun4i-gpadc-iio: rework code for
- supporting newer THS variants
-Message-ID: <20170918073601.oiqshnhhl7yb6fv2@flea.lan>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from hermes.aosc.io ([199.195.250.187]:60910 "EHLO hermes.aosc.io"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751497AbdINOx5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 14 Sep 2017 10:53:57 -0400
+From: Icenowy Zheng <icenowy@aosc.io>
+To: Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <maxime.ripard@free-electrons.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Quentin Schulz <quentin.schulz@free-electrons.com>
+Cc: devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-sunxi@googlegroups.com, Icenowy Zheng <icenowy@aosc.io>
+Subject: [PATCH v4 4/6] iio: adc: sun4i-gpadc-iio: add support for H3 thermal sensor
+Date: Thu, 14 Sep 2017 22:52:49 +0800
+Message-Id: <20170914145251.21784-5-icenowy@aosc.io>
+In-Reply-To: <20170914145251.21784-1-icenowy@aosc.io>
 References: <20170914145251.21784-1-icenowy@aosc.io>
- <20170914145251.21784-4-icenowy@aosc.io>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="k6i73kubcroskaqa"
-In-Reply-To: <20170914145251.21784-4-icenowy@aosc.io>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+This adds support for the Allwinner H3 thermal sensor.
 
---k6i73kubcroskaqa
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Allwinner H3 has a thermal sensor like the one in A33, but have its
+registers nearly all re-arranged, sample clock moved to CCU and a pair
+of bus clock and reset added. It's also the base of newer SoCs' thermal
+sensors.
 
-On Thu, Sep 14, 2017 at 10:52:48PM +0800, Icenowy Zheng wrote:
-> The SoCs after H3 has newer thermal sensor ADCs, which have two clock
-> inputs (bus clock and sampling clock) and a reset. The registers are
-> also re-arranged.
->=20
-> This commit reworks the code, adds the process of the clocks and
-> resets, and allows the sampling start/end code and the position of value
-> readout register to be altered.
->=20
-> Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+The thermal sensors on A64 and H5 is like the one on H3, but with of
+course different formula factors.
 
-Please split that into separate commits.
+Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+---
+Changes in v4:
+- Splitted out some code refactors.
+- Code sequence changed back. (The gpadc_data went back to the start of
+  the source file)
 
-Maxime
+ drivers/iio/adc/sun4i-gpadc-iio.c | 48 +++++++++++++++++++++++++++++++++++++++
+ include/linux/mfd/sun4i-gpadc.h   | 27 ++++++++++++++++++++++
+ 2 files changed, 75 insertions(+)
 
---=20
-Maxime Ripard, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
+index 97845982d050..f7e4df6bd17a 100644
+--- a/drivers/iio/adc/sun4i-gpadc-iio.c
++++ b/drivers/iio/adc/sun4i-gpadc-iio.c
+@@ -59,6 +59,8 @@ struct sun4i_gpadc_iio;
+  */
+ static int sun4i_gpadc_sample_start(struct sun4i_gpadc_iio *info);
+ static int sun4i_gpadc_sample_end(struct sun4i_gpadc_iio *info);
++static int sun8i_h3_gpadc_sample_start(struct sun4i_gpadc_iio *info);
++static int sun8i_h3_gpadc_sample_end(struct sun4i_gpadc_iio *info);
+ 
+ struct gpadc_data {
+ 	int		temp_offset;
+@@ -120,6 +122,24 @@ static const struct gpadc_data sun8i_a33_gpadc_data = {
+ 	.sample_end = sun4i_gpadc_sample_end,
+ };
+ 
++static const struct gpadc_data sun8i_h3_gpadc_data = {
++	/*
++	 * The original formula on the datasheet seems to be wrong.
++	 * These factors are calculated based on the formula in the BSP
++	 * kernel, which is originally Tem = 217 - (T / 8.253), in which Tem
++	 * is the temperature in Celsius degree and T is the raw value
++	 * from the sensor.
++	 */
++	.temp_offset = -1791,
++	.temp_scale = -121,
++	.temp_data = SUN8I_H3_GPADC_TEMP_DATA,
++	.sample_start = sun8i_h3_gpadc_sample_start,
++	.sample_end = sun8i_h3_gpadc_sample_end,
++	.has_bus_clk = true,
++	.has_bus_rst = true,
++	.has_mod_clk = true,
++};
++
+ struct sun4i_gpadc_iio {
+ 	struct iio_dev			*indio_dev;
+ 	struct completion		completion;
+@@ -425,6 +445,14 @@ static int sun4i_gpadc_sample_end(struct sun4i_gpadc_iio *info)
+ 	return 0;
+ }
+ 
++static int sun8i_h3_gpadc_sample_end(struct sun4i_gpadc_iio *info)
++{
++	/* Disable temperature sensor */
++	regmap_write(info->regmap, SUN8I_H3_GPADC_CTRL2, 0);
++
++	return 0;
++}
++
+ static int sun4i_gpadc_runtime_suspend(struct device *dev)
+ {
+ 	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(dev));
+@@ -451,6 +479,22 @@ static int sun4i_gpadc_sample_start(struct sun4i_gpadc_iio *info)
+ 	return 0;
+ }
+ 
++static int sun8i_h3_gpadc_sample_start(struct sun4i_gpadc_iio *info)
++{
++	regmap_write(info->regmap, SUN8I_H3_GPADC_CTRL2,
++		     SUN8I_H3_GPADC_CTRL2_TEMP_SENSE_EN |
++		     SUN8I_H3_GPADC_CTRL2_T_ACQ1(31));
++	regmap_write(info->regmap, SUN4I_GPADC_CTRL0,
++		     SUN4I_GPADC_CTRL0_T_ACQ(31));
++	regmap_write(info->regmap, SUN8I_H3_GPADC_CTRL3,
++		     SUN4I_GPADC_CTRL3_FILTER_EN |
++		     SUN4I_GPADC_CTRL3_FILTER_TYPE(1));
++	regmap_write(info->regmap, SUN8I_H3_GPADC_INTC,
++		     SUN8I_H3_GPADC_INTC_TEMP_PERIOD(800));
++
++	return 0;
++}
++
+ static int sun4i_gpadc_runtime_resume(struct device *dev)
+ {
+ 	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(dev));
+@@ -537,6 +581,10 @@ static const struct of_device_id sun4i_gpadc_of_id[] = {
+ 		.compatible = "allwinner,sun8i-a33-ths",
+ 		.data = &sun8i_a33_gpadc_data,
+ 	},
++	{
++		.compatible = "allwinner,sun8i-h3-ths",
++		.data = &sun8i_h3_gpadc_data,
++	},
+ 	{ /* sentinel */ }
+ };
+ 
+diff --git a/include/linux/mfd/sun4i-gpadc.h b/include/linux/mfd/sun4i-gpadc.h
+index 78d31984a222..5c2a12101052 100644
+--- a/include/linux/mfd/sun4i-gpadc.h
++++ b/include/linux/mfd/sun4i-gpadc.h
+@@ -42,6 +42,9 @@
+ #define SUN8I_A33_GPADC_CTRL1_CHOP_TEMP_EN		BIT(8)
+ #define SUN8I_A33_GPADC_CTRL1_GPADC_CALI_EN		BIT(7)
+ 
++/* TP_CTRL1 bits for SoCs after H3 */
++#define SUN8I_H3_GPADC_CTRL1_GPADC_CALI_EN		BIT(17)
++
+ #define SUN4I_GPADC_CTRL2				0x08
+ 
+ #define SUN4I_GPADC_CTRL2_TP_SENSITIVE_ADJUST(x)	((GENMASK(3, 0) & (x)) << 28)
+@@ -49,7 +52,17 @@
+ #define SUN4I_GPADC_CTRL2_PRE_MEA_EN			BIT(24)
+ #define SUN4I_GPADC_CTRL2_PRE_MEA_THRE_CNT(x)		(GENMASK(23, 0) & (x))
+ 
++#define SUN8I_H3_GPADC_CTRL2				0x40
++
++#define SUN8I_H3_GPADC_CTRL2_TEMP_SENSE_EN		BIT(0)
++#define SUN8I_H3_GPADC_CTRL2_T_ACQ1(x)			((GENMASK(15, 0) * (x)) << 16)
++
+ #define SUN4I_GPADC_CTRL3				0x0c
++/*
++ * This register is named "Average filter Control Register" in H3 Datasheet,
++ * but the register's definition is the same as the old CTRL3 register.
++ */
++#define SUN8I_H3_GPADC_CTRL3				0x70
+ 
+ #define SUN4I_GPADC_CTRL3_FILTER_EN			BIT(2)
+ #define SUN4I_GPADC_CTRL3_FILTER_TYPE(x)		(GENMASK(1, 0) & (x))
+@@ -71,6 +84,13 @@
+ #define SUN4I_GPADC_INT_FIFOC_TP_UP_IRQ_EN		BIT(1)
+ #define SUN4I_GPADC_INT_FIFOC_TP_DOWN_IRQ_EN		BIT(0)
+ 
++#define SUN8I_H3_GPADC_INTC				0x44
++
++#define SUN8I_H3_GPADC_INTC_TEMP_PERIOD(x)		((GENMASK(19, 0) & (x)) << 12)
++#define SUN8I_H3_GPADC_INTC_TEMP_DATA			BIT(8)
++#define SUN8I_H3_GPADC_INTC_TEMP_SHUT			BIT(4)
++#define SUN8I_H3_GPADC_INTC_TEMP_ALARM			BIT(0)
++
+ #define SUN4I_GPADC_INT_FIFOS				0x14
+ 
+ #define SUN4I_GPADC_INT_FIFOS_TEMP_DATA_PENDING		BIT(18)
+@@ -80,9 +100,16 @@
+ #define SUN4I_GPADC_INT_FIFOS_TP_UP_PENDING		BIT(1)
+ #define SUN4I_GPADC_INT_FIFOS_TP_DOWN_PENDING		BIT(0)
+ 
++#define SUN8I_H3_GPADC_INTS				0x44
++
++#define SUN8I_H3_GPADC_INTS_TEMP_DATA			BIT(8)
++#define SUN8I_H3_GPADC_INTS_TEMP_SHUT			BIT(4)
++#define SUN8I_H3_GPADC_INTS_TEMP_ALARM			BIT(0)
++
+ #define SUN4I_GPADC_CDAT				0x1c
+ #define SUN4I_GPADC_TEMP_DATA				0x20
+ #define SUN4I_GPADC_DATA				0x24
++#define SUN8I_H3_GPADC_TEMP_DATA			0x80
+ 
+ #define SUN4I_GPADC_IRQ_FIFO_DATA			0
+ #define SUN4I_GPADC_IRQ_TEMP_DATA			1
+-- 
+2.13.5
 
---k6i73kubcroskaqa
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIcBAEBAgAGBQJZv3dhAAoJEBx+YmzsjxAghGYQAKSCmBG//hWKCq+3bvDpF9o4
-Cky+KRpV5SnFUbMO9cOXDcen64zm8mjkPeXGxcDsS6QVSsoqYm+5mxJ6ckR0OPT8
-2TNzxEY5qoYlOGEbEcrg38XqjiOhQHAZYYNLQq9iMzl14u8ObKjMya2eTM6nemHR
-bAPQ3ZsY3P0wyxMzoYJsylF7pcA4J8tELmbwPa3HDHSY0l0lWloiiXeIt2iev5NR
-4nURX8JN+6j9V75ii4YRpeTLox8H8vDbbLsBrg4tb83BGzP1rZH/0o9PqSuw3cw5
-i4hGsSGyGIvhMiWjXNb5p+I/16dypTV2n2dBzWpQOpjl9P6Sc0gSNURsHUeN6vIl
-IAqja1PScGEs+1qDKQhAr/qo5NJcZaS/6aJzVVpvREewMViqF6YLqfr+SwZ0keBr
-6OAFb5iLChFPa/QRBrOd0biHOIhjKKOeEf/nAh4drFkOhQGNqZNFHkgPwCyl+p/L
-av0D1C3m8etq3jc05iKw8yJJVacIUJ2iqOQSv5Ees0Ms6XFrXhl7Jn1qs3IGoiDR
-SvPl+SCXaPG9V9ohADJ1KWm+BmI6Hf/7WAV03oY1EHHlE8Ww/+/ft6wQ02lG43yS
-kTp3YI+r2W7ns891tSNfd5kx8josEs48N1365KWUSCV53tthowEAer8LbtaUDutx
-JMPRzaCmQeotldLje2AP
-=s+J3
------END PGP SIGNATURE-----
-
---k6i73kubcroskaqa--
