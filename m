@@ -1,53 +1,77 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:48604 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752148AbdIXNJY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 24 Sep 2017 09:09:24 -0400
-Date: Sun, 24 Sep 2017 14:09:19 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Fabrice Gasnier <fabrice.gasnier@st.com>
-Cc: <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <mcoquelin.stm32@gmail.com>,
-        <alexandre.torgue@st.com>, <benjamin.gaignard@st.com>,
-        <benjamin.gaignard@linaro.org>, <linux-iio@vger.kernel.org>,
-        <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>
-Subject: Re: [PATCH] iio: adc: stm32: fix bad error check on max_channels
-Message-ID: <20170924140919.669c9cca@archlinux>
-In-Reply-To: <1505751855-15490-1-git-send-email-fabrice.gasnier@st.com>
-References: <1505751855-15490-1-git-send-email-fabrice.gasnier@st.com>
+Received: from mail-ua0-f173.google.com ([209.85.217.173]:44925 "EHLO
+        mail-ua0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750948AbdISO3E (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 19 Sep 2017 10:29:04 -0400
+Received: by mail-ua0-f173.google.com with SMTP id s15so102791uag.1
+        for <linux-iio@vger.kernel.org>; Tue, 19 Sep 2017 07:29:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <CACPK8XfHL0+H0-XqgD3VrkB=6xPFk=gWmR4kkxE=ym97AzfL6A@mail.gmail.com>
+References: <CAO=notxZP-vOxPnbkB5Wu3yoyncy5-MdxvYxmSNRRcs==4ck7Q@mail.gmail.com>
+ <CACPK8XfHL0+H0-XqgD3VrkB=6xPFk=gWmR4kkxE=ym97AzfL6A@mail.gmail.com>
+From: Patrick Venture <venture@google.com>
+Date: Tue, 19 Sep 2017 07:28:42 -0700
+Message-ID: <CAO=notztVut511sG-M0h6+KscSMHduivewGX3beYmnQw8uSKNA@mail.gmail.com>
+Subject: Re: GPIO Configuration for IIO-HWMON Channel
+To: Joel Stanley <joel@jms.id.au>
+Cc: Rick Altherr <raltherr@google.com>,
+        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 18 Sep 2017 18:24:15 +0200
-Fabrice Gasnier <fabrice.gasnier@st.com> wrote:
++linux-iio
 
-> Fix a bad error check when counting 'st,adc-channels' array elements.
-> This is seen when all channels are in use simultaneously.
-> 
-> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+On Mon, Sep 18, 2017 at 10:45 PM, Joel Stanley <joel@jms.id.au> wrote:
+>
+> Hey Patrick,
+>
+> On Tue, Sep 19, 2017 at 2:55 AM, Patrick Venture <venture@google.com> wrote:
+> > I have a system where there is a GPIO gating whether a line to the ADC is
+> > active. I'm routing the ADC channels through iio-hwmon.
+> >
+> > I'm considering that it might be prudent to tell iio-hwmon that it needs to
+> > set the GPIO and wait some configurable amount of time before trying to read
+> > that channel.
+> >
+> > https://github.com/torvalds/linux/blob/master/drivers/hwmon/iio_hwmon.c#L43
+> >
+> > I'm curious if there are strong thoughts about whether that kind of thing
+> > belongs in that level or whether it should be pushed to the aspeed_adc
+> > driver.
+>
+> That's a tricky one.
+>
+> I'd suggest the code to flip the GPIO should go in the aspeed_adc.c,
+> and failing that in the iio subsystem, not in the hwmon bridge.
 
-Applied to fixes-togreg-post-rc1, fixes tag added and marked for
-stable.
+Ok, so I can extend the properties of the aspeed_adc to support
+specifying a GPIO per channel, and then add the logic to handle this
+possible per channel configuration.  I had to ask, but I assume
+there's some standard to how these things are specifying in the
+device-tree.  For instance, each fan has its own configuration under
+the aspeed-pwm-tacho driver, so arguably it could be channel@{index}
+to specify for whichever have such a requirement.
 
-Jonathan
+>
+> I assume this GPIO needs to be switched at runtime (ie, it's not
+> something that is muxed one way or the other at boottime and left
+> static)?
 
-> ---
->  drivers/iio/adc/stm32-adc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
-> index e3c15f8..4df32cf 100644
-> --- a/drivers/iio/adc/stm32-adc.c
-> +++ b/drivers/iio/adc/stm32-adc.c
-> @@ -1666,7 +1666,7 @@ static int stm32_adc_chan_of_init(struct iio_dev *indio_dev)
->  
->  	num_channels = of_property_count_u32_elems(node, "st,adc-channels");
->  	if (num_channels < 0 ||
-> -	    num_channels >= adc_info->max_channels) {
-> +	    num_channels > adc_info->max_channels) {
->  		dev_err(&indio_dev->dev, "Bad st,adc-channels?\n");
->  		return num_channels < 0 ? num_channels : -EINVAL;
->  	}
+Correct.
 
+>
+> Is it a case that the GPIO should be asserted while the ADC is
+> sampling, and then deasserted afterwards?
+
+That is also correct.
+
+>
+> > Also, please let me know if I'm not reaching the correct people for this
+> > particular discussion.
+>
+> You could instead go to the iio list.
+>
+> Cheers,
+>
+> Joel
