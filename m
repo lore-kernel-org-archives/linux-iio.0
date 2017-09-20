@@ -1,104 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:35420 "EHLO
-        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933513AbdIYI66 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 25 Sep 2017 04:58:58 -0400
-Subject: Re: [RFC PATCH 4/7] power: supply: axp20x-battery: support AXP803
-To: Icenowy Zheng <icenowy@aosc.io>, Chen-Yu Tsai <wens@csie.org>,
+Received: from hermes.aosc.io ([199.195.250.187]:41713 "EHLO hermes.aosc.io"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751921AbdITPTP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 20 Sep 2017 11:19:15 -0400
+From: Icenowy Zheng <icenowy@aosc.io>
+To: Chen-Yu Tsai <wens@csie.org>,
         Maxime Ripard <maxime.ripard@free-electrons.com>,
         Jonathan Cameron <jic23@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>
+        Lee Jones <lee.jones@linaro.org>,
+        Quentin Schulz <quentin.schulz@free-electrons.com>
 Cc: linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-iio@vger.kernel.org, linux-sunxi@googlegroups.com
+        linux-iio@vger.kernel.org, linux-sunxi@googlegroups.com,
+        Icenowy Zheng <icenowy@aosc.io>
+Subject: [RFC PATCH 5/7] mfd: axp20x: add cells for AXP803 ADC/AC Power/Battery
+Date: Wed, 20 Sep 2017 23:18:12 +0800
+Message-Id: <20170920151814.22461-6-icenowy@aosc.io>
+In-Reply-To: <20170920151814.22461-1-icenowy@aosc.io>
 References: <20170920151814.22461-1-icenowy@aosc.io>
- <20170920151814.22461-5-icenowy@aosc.io>
-From: Quentin Schulz <quentin.schulz@free-electrons.com>
-Message-ID: <9b72b982-85b2-22e0-076a-15c066619006@free-electrons.com>
-Date: Mon, 25 Sep 2017 10:58:46 +0200
-MIME-Version: 1.0
-In-Reply-To: <20170920151814.22461-5-icenowy@aosc.io>
-Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Icenowy,
+As we have now support for AXP803 ADC/Battery, and the AC Power part of
+AXP803 is the same as AXP22x, add MFD cells for these drivers.
 
-On 20/09/2017 17:18, Icenowy Zheng wrote:
-> The AXP803 PMIC has battery support like other AXP PMICs, but with
-> different definition of max target charging voltage and constant
-> charging current.
-> 
-> Add support for AXP803 battery in axp20x-battery driver.
-> 
-> Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
-> ---
->  drivers/power/supply/axp20x_battery.c | 88 +++++++++++++++++++++++++++++++----
->  1 file changed, 78 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
-> index 7494f0f0eadb..c9a9fb320c92 100644
-> --- a/drivers/power/supply/axp20x_battery.c
-> +++ b/drivers/power/supply/axp20x_battery.c
-> @@ -49,6 +49,8 @@
-[...]
->  static void constant_charge_current_to_raw(struct axp20x_batt_ps *axp, int *val)
->  {
-> -	if (axp->axp_id == AXP209_ID)
-> +	switch (axp->axp_id) {
-> +	case AXP209_ID:
->  		*val = (*val - 300000) / 100000;
-> -	else
-> +		break;
-> +	case AXP221_ID:
->  		*val = (*val - 300000) / 150000;
-> +		break;
-> +	case AXP803_ID:
-> +		*val = (*val - 200000) / 200000;
-> +		/*
-> +		 * The maximum charge current on AXP803 is 2.8A, and the
-> +		 * datasheet says "1110-1111 reserved" in this part.
-> +		 * So we return an invalid value -1 in this situation,
-> +		 * which will be dealed by the caller of this function,
-> +		 */
+Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+---
+ drivers/mfd/axp20x.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-Good, we could do that for the two others compatible as well. They are
-not explicitly marked as reserved but it stops at 1100 for AXP223/AXP221
-for example.
-
-> +		if (*val > 13)
-> +			*val = -1;
-> +		break;
-> +	}
->  }
->  
->  static int axp20x_get_constant_charge_current(struct axp20x_batt_ps *axp,
-> @@ -269,9 +322,13 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
->  		if (ret)
->  			return ret;
->  
-> -		if (axp20x_batt->axp_id == AXP221_ID &&
-> -		    !(reg & AXP22X_FG_VALID))
-> -			return -EINVAL;
-> +		switch (axp20x_batt->axp_id) {
-> +		case AXP221_ID:
-> +		case AXP803_ID:
-> +			if (!(reg & AXP22X_FG_VALID))
-> +				return -EINVAL;
-> +			break;
-> +		};
-
-Looks weird to me.
-
-if (axp20x_batt->axp_id != AXP209_ID && !(reg & AXP22X_FG_VALID))
-
-would be a better match?
-[...]
-
-Thanks,
-Quentin
-
+diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
+index 336de66ca408..91be5fe1c5de 100644
+--- a/drivers/mfd/axp20x.c
++++ b/drivers/mfd/axp20x.c
+@@ -850,7 +850,18 @@ static struct mfd_cell axp803_cells[] = {
+ 		.num_resources		= ARRAY_SIZE(axp803_pek_resources),
+ 		.resources		= axp803_pek_resources,
+ 	},
++	{	.name			= "axp803-adc" },
+ 	{	.name			= "axp20x-regulator" },
++	{
++		.name		= "axp20x-ac-power-supply",
++		.of_compatible	= "x-powers,axp221-ac-power-supply",
++		.num_resources	= ARRAY_SIZE(axp20x_ac_power_supply_resources),
++		.resources	= axp20x_ac_power_supply_resources,
++	},
++	{
++		.name		= "axp20x-battery-power-supply",
++		.of_compatible	= "x-powers,axp803-battery-power-supply",
++	},
+ };
+ 
+ static struct mfd_cell axp806_cells[] = {
 -- 
-Quentin Schulz, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+2.13.5
+
