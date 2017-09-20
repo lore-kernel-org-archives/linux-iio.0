@@ -1,67 +1,92 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from szxga05-in.huawei.com ([45.249.212.191]:6537 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751929AbdIUOgu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Sep 2017 10:36:50 -0400
-Date: Thu, 21 Sep 2017 15:36:29 +0100
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To: Wolfram Sang <wsa@the-dreams.de>
-CC: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        <linux-i2c@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-renesas-soc@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-input@vger.kernel.org>, <linux-media@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>
-Subject: Re: [RFC PATCH v5 2/6] i2c: add helpers to ease DMA handling
-Message-ID: <20170921153629.00001aae@huawei.com>
-In-Reply-To: <20170921141528.xre53zpxwk355uih@ninjato>
+Received: from sauhun.de ([88.99.104.3]:38838 "EHLO pokefinder.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751485AbdITTAF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 20 Sep 2017 15:00:05 -0400
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+To: linux-i2c@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>
+Subject: [RFC PATCH v5 3/6] i2c: add docs to clarify DMA handling
+Date: Wed, 20 Sep 2017 20:59:53 +0200
+Message-Id: <20170920185956.13874-4-wsa+renesas@sang-engineering.com>
+In-Reply-To: <20170920185956.13874-1-wsa+renesas@sang-engineering.com>
 References: <20170920185956.13874-1-wsa+renesas@sang-engineering.com>
-        <20170920185956.13874-3-wsa+renesas@sang-engineering.com>
-        <20170921145922.000017b5@huawei.com>
-        <20170921150554.0000273b@huawei.com>
-        <20170921141528.xre53zpxwk355uih@ninjato>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 21 Sep 2017 16:15:28 +0200
-Wolfram Sang <wsa@the-dreams.de> wrote:
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+---
+ Documentation/i2c/DMA-considerations | 58 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 58 insertions(+)
+ create mode 100644 Documentation/i2c/DMA-considerations
 
-> > > > +/**
-> > > > + * i2c_release_dma_safe_msg_buf - release DMA safe buffer and sync with i2c_msg
-> > > > + * @msg: the message to be synced with
-> > > > + * @buf: the buffer obtained from i2c_get_dma_safe_msg_buf(). May be NULL.
-> > > > + */
-> > > > +void i2c_release_dma_safe_msg_buf(struct i2c_msg *msg, u8 *buf)
-> > > > +{
-> > > > +	if (!buf || buf == msg->buf)
-> > > > +		return;
-> > > > +
-> > > > +	if (msg->flags & I2C_M_RD)
-> > > > +		memcpy(msg->buf, buf, msg->len);
-> > > > +
-> > > > +	kfree(buf);  
-> > 
-> > Only free when you actually allocated it.  Seems to me like you need
-> > to check if (!(msg->flags & I2C_M_DMA_SAFE)) before kfree.
-> > 
-> > Otherwise the logic to do this will be needed in every driver
-> > which will get irritating fast.  
-> 
-> Well, I return early if (buf == msg->buf) which is only true for
-> I2C_M_DMA_SAFE. If not, I allocated the buffer. Am I missing something?
-> It would be very strange to call this function if the caller allocated
-> the buffer manually.
-> 
-> Thanks for the review!
-
-Doh missed that check and my comment was bonkers even if it hadn't been there.
-I come back to the claim of insufficient caffeine.
-
-You are quite correct.  Please ignore previous comment - the code is
-fine as is. 
-
-Jonathan
-> 
-> 
+diff --git a/Documentation/i2c/DMA-considerations b/Documentation/i2c/DMA-considerations
+new file mode 100644
+index 00000000000000..5a63355c6a9b6f
+--- /dev/null
++++ b/Documentation/i2c/DMA-considerations
+@@ -0,0 +1,58 @@
++=================
++Linux I2C and DMA
++=================
++
++Given that I2C is a low-speed bus where largely small messages are transferred,
++it is not considered a prime user of DMA access. At this time of writing, only
++10% of I2C bus master drivers have DMA support implemented. And the vast
++majority of transactions are so small that setting up DMA for it will likely
++add more overhead than a plain PIO transfer.
++
++Therefore, it is *not* mandatory that the buffer of an I2C message is DMA safe.
++It does not seem reasonable to apply additional burdens when the feature is so
++rarely used. However, it is recommended to use a DMA-safe buffer if your
++message size is likely applicable for DMA. Most drivers have this threshold
++around 8 bytes (as of today, this is mostly an educated guess, however). For
++any message of 16 byte or larger, it is probably a really good idea. Please
++note that other subsystems you use might add requirements. E.g., if your
++I2C bus master driver is using USB as a bridge, then you need to have DMA
++safe buffers always, because USB requires it.
++
++For clients, if you use a DMA safe buffer in i2c_msg, set the I2C_M_DMA_SAFE
++flag with it. Then, the I2C core and drivers know they can safely operate DMA
++on it. Note that using this flag is optional. I2C host drivers which are not
++updated to use this flag will work like before. And like before, they risk
++using an unsafe DMA buffer. To improve this situation, using I2C_M_DMA_SAFE in
++more and more clients and host drivers is the planned way forward. Note also
++that setting this flag makes only sense in kernel space. User space data is
++copied into kernel space anyhow. The I2C core makes sure the destination
++buffers in kernel space are always DMA capable.
++
++FIXME: Need to implement i2c_master_{send|receive}_dma and proper buffers for i2c_smbus_xfer_emulated.
++
++Drivers wishing to implement safe DMA can use helper functions from the I2C
++core. One gives you a DMA-safe buffer for a given i2c_msg as long as a certain
++threshold is met::
++
++	dma_buf = i2c_get_dma_safe_msg_buf(msg, threshold_in_byte);
++
++If a buffer is returned, it is either msg->buf for the I2C_M_DMA_SAFE case or a
++bounce buffer. But you don't need to care about that detail, just use the
++returned buffer. If NULL is returned, the threshold was not met or a bounce
++buffer could not be allocated. Fall back to PIO in that case.
++
++In any case, a buffer obtained from above needs to be released. It ensures data
++is copied back to the message and a potentially used bounce buffer is freed::
++
++	i2c_release_dma_safe_msg_buf(msg, dma_buf);
++
++The bounce buffer handling from the core is generic and simple. It will always
++allocate a new bounce buffer. If you want a more sophisticated handling (e.g.
++reusing pre-allocated buffers), you are free to implement your own.
++
++Please also check the in-kernel documentation for details. The i2c-sh_mobile
++driver can be used as a reference example how to use the above helpers.
++
++Final note: If you plan to use DMA with I2C (or with anything else, actually)
++make sure you have CONFIG_DMA_API_DEBUG enabled during development. It can help
++you find various issues which can be complex to debug otherwise.
+-- 
+2.11.0
 
