@@ -1,66 +1,53 @@
-Return-Path: <SRS0=len+=A2=free-electrons.com=quentin.schulz@kernel.org>
-Subject: Re: [RFC PATCH 1/7] dt-bindings: add compatibles for AXP803
- Battery/USB power supplies
-To: Icenowy Zheng <icenowy@aosc.io>, Chen-Yu Tsai <wens@csie.org>,
- Maxime Ripard <maxime.ripard@free-electrons.com>,
- Jonathan Cameron <jic23@kernel.org>, Lee Jones <lee.jones@linaro.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from hermes.aosc.io ([199.195.250.187]:41635 "EHLO hermes.aosc.io"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751818AbdITPSs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 20 Sep 2017 11:18:48 -0400
+From: Icenowy Zheng <icenowy@aosc.io>
+To: Chen-Yu Tsai <wens@csie.org>,
+        Maxime Ripard <maxime.ripard@free-electrons.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Quentin Schulz <quentin.schulz@free-electrons.com>
 Cc: linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-iio@vger.kernel.org, linux-sunxi@googlegroups.com
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-iio@vger.kernel.org, linux-sunxi@googlegroups.com,
+        Icenowy Zheng <icenowy@aosc.io>
+Subject: [RFC PATCH 2/7] iio: adc: axp20x-adc: allow to skip ADC rate setup now
+Date: Wed, 20 Sep 2017 23:18:09 +0800
+Message-Id: <20170920151814.22461-3-icenowy@aosc.io>
+In-Reply-To: <20170920151814.22461-1-icenowy@aosc.io>
 References: <20170920151814.22461-1-icenowy@aosc.io>
- <20170920151814.22461-2-icenowy@aosc.io>
-From: Quentin Schulz <quentin.schulz@free-electrons.com>
-Message-ID: <8cf69d3d-0004-b5dc-16e0-ce1a4f8c313b@free-electrons.com>
-Date: Mon, 25 Sep 2017 11:14:42 +0200
-MIME-Version: 1.0
-In-Reply-To: <20170920151814.22461-2-icenowy@aosc.io>
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Icenowy,
+The ADC rate setup on AXP803 is more complex than AXP20x/22x.
 
-On 20/09/2017 17:18, Icenowy Zheng wrote:
-> The AXP803 PMIC has different Battery and USB power supplies than the
-> AXP series PMICs already supported by the kernel, but the AC power
-> supply is the same as AXP22x (as it can only detect the present/online
-> state of the AC power supply on both AXP22x and AXP803).
-> 
-> Add compatible strings for the AXP803 Battery/USB power supplies. For AC
-> power supply the one on AXP803 is compatible with the one on AXP22x.
-> 
-> Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
-> ---
->  Documentation/devicetree/bindings/power/supply/axp20x_battery.txt   | 1 +
->  Documentation/devicetree/bindings/power/supply/axp20x_usb_power.txt | 1 +
->  2 files changed, 2 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/power/supply/axp20x_battery.txt b/Documentation/devicetree/bindings/power/supply/axp20x_battery.txt
-> index c24886676a60..091e5471a8c6 100644
-> --- a/Documentation/devicetree/bindings/power/supply/axp20x_battery.txt
-> +++ b/Documentation/devicetree/bindings/power/supply/axp20x_battery.txt
-> @@ -4,6 +4,7 @@ Required Properties:
->   - compatible, one of:
->  			"x-powers,axp209-battery-power-supply"
->  			"x-powers,axp221-battery-power-supply"
-> +			"x-powers,axp803-battery-power-supply"
->  
->  This node is a subnode of the axp20x/axp22x PMIC.
->  
-> diff --git a/Documentation/devicetree/bindings/power/supply/axp20x_usb_power.txt b/Documentation/devicetree/bindings/power/supply/axp20x_usb_power.txt
-> index ba8d35f66cbe..f30e3bf8d23f 100644
-> --- a/Documentation/devicetree/bindings/power/supply/axp20x_usb_power.txt
-> +++ b/Documentation/devicetree/bindings/power/supply/axp20x_usb_power.txt
-> @@ -4,6 +4,7 @@ Required Properties:
->  -compatible: One of: "x-powers,axp202-usb-power-supply"
->                       "x-powers,axp221-usb-power-supply"
->                       "x-powers,axp223-usb-power-supply"
-> +                     "x-powers,axp803-usb-power-supply"
+As it's not a necessary setup, allow it to be skipped, to allow simpler
+AXP803 support now.
 
-No. You are adding support for AC and battery power supply in this
-patchset, not for USB.
+Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+---
+ drivers/iio/adc/axp20x_adc.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-Quentin
+diff --git a/drivers/iio/adc/axp20x_adc.c b/drivers/iio/adc/axp20x_adc.c
+index 11e177180ea0..93dd6b80059e 100644
+--- a/drivers/iio/adc/axp20x_adc.c
++++ b/drivers/iio/adc/axp20x_adc.c
+@@ -556,8 +556,10 @@ static int axp20x_probe(struct platform_device *pdev)
+ 				   AXP20X_ADC_EN2_MASK, AXP20X_ADC_EN2_MASK);
+ 
+ 	/* Configure ADCs rate */
+-	regmap_update_bits(info->regmap, AXP20X_ADC_RATE, AXP20X_ADC_RATE_MASK,
+-			   info->data->adc_rate(100));
++	if (info->data->adc_rate)
++		regmap_update_bits(info->regmap, AXP20X_ADC_RATE,
++				   AXP20X_ADC_RATE_MASK,
++				   info->data->adc_rate(100));
+ 
+ 	ret = iio_map_array_register(indio_dev, info->data->maps);
+ 	if (ret < 0) {
 -- 
-Quentin Schulz, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+2.13.5
+
