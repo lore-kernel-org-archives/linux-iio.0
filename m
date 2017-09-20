@@ -1,53 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:39418 "EHLO mail.kernel.org"
+Received: from hermes.aosc.io ([199.195.250.187]:41583 "EHLO hermes.aosc.io"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752474AbdIXPkv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 24 Sep 2017 11:40:51 -0400
-Date: Sun, 24 Sep 2017 16:40:47 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Stefan =?UTF-8?B?QnLDvG5z?= <stefan.bruens@rwth-aachen.de>
-Cc: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: [PATCH 0/4] iio: light: vl6180: Several fixes and enhancements
-Message-ID: <20170924164047.5f4869f5@archlinux>
-In-Reply-To: <20170919031144.4968-1-stefan.bruens@rwth-aachen.de>
-References: <20170919031144.4968-1-stefan.bruens@rwth-aachen.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        id S1751783AbdITPSd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 20 Sep 2017 11:18:33 -0400
+From: Icenowy Zheng <icenowy@aosc.io>
+To: Chen-Yu Tsai <wens@csie.org>,
+        Maxime Ripard <maxime.ripard@free-electrons.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Quentin Schulz <quentin.schulz@free-electrons.com>
+Cc: linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-iio@vger.kernel.org, linux-sunxi@googlegroups.com,
+        Icenowy Zheng <icenowy@aosc.io>
+Subject: [RFC PATCH 0/7] AXP803 AC/Battery support
+Date: Wed, 20 Sep 2017 23:18:07 +0800
+Message-Id: <20170920151814.22461-1-icenowy@aosc.io>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 19 Sep 2017 05:11:40 +0200
-Stefan Brüns <stefan.bruens@rwth-aachen.de> wrote:
+The AXP803 PMIC, used by most Allwinner A64 boards, features 3 power inputs:
+AC, USB and Battery.
 
-> Currently, the vl6180 driver reports bogus in_illuminance_scale values
-> when the integration time or hardware gain are changed from its default
-> value, i.e. it always reports a fixed value.
-> 
-> To avoid readback of the register values in case integration time, gain
-> or scale is queried, save the register values. Use the saved values
-> to report the correct scale value.
+This patchset adds support for the AC and Battery supplies, which is useful
+for the boards from Pine64 (Pine64, SoPine w/ baseboard model A, Pinebook).
 
-Hmm. I think unfortunately that this set is too large and invasive
-to send as a fix.  Hence once the little corners are tidied up I'll
-take it via the slow path ready for the next merge window.
+The USB supply is not yet supported in this patchset because it's not
+present on Pine series boards.
 
-Thanks,
+In order to enable battery monitoring the ADC for battery is also enabled
+for AXs.
 
-Jonathan
+In order to enable battery monitoring the ADC for battery is also enabled
+for AXP803.
 
-> 
-> Stefan Brüns (4):
->   iio: light: vl6180: Move range check to integration time setter,
->     cleanup
->   iio: light: vl6180: Avoid readback of integration time register
->   iio: light: vl6180: Cleanup als_gain lookup, avoid register readback
->   iio: light: vl6180: Correct ALS scale for non-default gain/integration
->     time
-> 
->  drivers/iio/light/vl6180.c | 125 +++++++++++++++++++++++++--------------------
->  1 file changed, 69 insertions(+), 56 deletions(-)
-> 
+Icenowy Zheng (7):
+  dt-bindings: add compatibles for AXP803 Battery/USB power supplies
+  iio: adc: axp20x-adc: allow to skip ADC rate setup now
+  iio: adc: axp20x-adc: add support for AXP803
+  power: supply: axp20x-battery: support AXP803
+  mfd: axp20x: add cells for AXP803 ADC/AC Power/Battery
+  arm64: allwinner: a64: add power supply nodes in AXP803 DTSI
+  arm64: allwinner: a64: enable AC and Battery for Pine64
+
+ .../bindings/power/supply/axp20x_battery.txt       |   1 +
+ .../bindings/power/supply/axp20x_usb_power.txt     |   1 +
+ arch/arm64/boot/dts/allwinner/axp803.dtsi          |  15 +++
+ .../arm64/boot/dts/allwinner/sun50i-a64-pine64.dts |   8 ++
+ drivers/iio/adc/axp20x_adc.c                       | 114 ++++++++++++++++++++-
+ drivers/mfd/axp20x.c                               |  11 ++
+ drivers/power/supply/axp20x_battery.c              |  88 ++++++++++++++--
+ 7 files changed, 226 insertions(+), 12 deletions(-)
+
+-- 
+2.13.5
 
