@@ -1,117 +1,93 @@
-Return-Path: <SRS0=len+=A2=free-electrons.com=quentin.schulz@kernel.org>
-Subject: Re: [RFC PATCH 0/7] AXP803 AC/Battery support
-To: Jonathan Cameron <jic23@kernel.org>, Icenowy Zheng <icenowy@aosc.io>
-Cc: devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-sunxi@googlegroups.com, Jonathan Cameron
- <Jonathan.Cameron@huawei.com>,
- Maxime Ripard <maxime.ripard@free-electrons.com>,
- Chen-Yu Tsai <wens@csie.org>, Lee Jones <lee.jones@linaro.org>,
- linux-arm-kernel@lists.infradead.org
-References: <20170920151814.22461-1-icenowy@aosc.io>
- <20170921154621.0000328d@huawei.com>
- <CF74A2A9-B9F4-4413-975B-A0F4B24686A3@aosc.io>
- <20170924153647.1d82e83c@archlinux>
-From: Quentin Schulz <quentin.schulz@free-electrons.com>
-Message-ID: <b23aafe5-411f-1b83-48f0-6f67b25666cc@free-electrons.com>
-Date: Mon, 25 Sep 2017 11:22:16 +0200
-MIME-Version: 1.0
-In-Reply-To: <20170924153647.1d82e83c@archlinux>
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from sauhun.de ([88.99.104.3]:38831 "EHLO pokefinder.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751361AbdITTAD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 20 Sep 2017 15:00:03 -0400
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+To: linux-i2c@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>
+Subject: [RFC PATCH v5 0/6] i2c: document DMA handling and add helpers for it
+Date: Wed, 20 Sep 2017 20:59:50 +0200
+Message-Id: <20170920185956.13874-1-wsa+renesas@sang-engineering.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Icenowy,
+So, after revisiting old mail threads, taking part in a similar discussion on
+the USB list, and implementing a not-convincing solution before, here is what I
+cooked up to document and ease DMA handling for I2C within Linux. Please have a
+look at the documentation introduced in patch 3 for details. And to make it
+clear again: The stuff below is opt-in. If host drivers are not updated, they
+will continue to work like before.
 
-On 24/09/2017 16:36, Jonathan Cameron wrote:
-> On Thu, 21 Sep 2017 23:20:11 +0800
-> Icenowy Zheng <icenowy@aosc.io> wrote:
-> 
->> 于 2017年9月21日 GMT+08:00 下午10:46:21, Jonathan Cameron <Jonathan.Cameron@huawei.com> 写到:
->>> On Wed, 20 Sep 2017 23:18:07 +0800
->>> Icenowy Zheng <icenowy@aosc.io> wrote:
->>>  
->>>> The AXP803 PMIC, used by most Allwinner A64 boards, features 3 power  
->>> inputs:  
->>>> AC, USB and Battery.
->>>>
->>>> This patchset adds support for the AC and Battery supplies, which is  
->>> useful  
->>>> for the boards from Pine64 (Pine64, SoPine w/ baseboard model A,  
->>> Pinebook).  
->>>>
->>>> The USB supply is not yet supported in this patchset because it's not
->>>> present on Pine series boards.
->>>>
->>>> In order to enable battery monitoring the ADC for battery is also  
->>> enabled  
->>>> for AXs.
->>>>
->>>> In order to enable battery monitoring the ADC for battery is also  
->>> enabled  
->>>> for AXP803.  
->>>
->>> I'll go with the obvious question...
->>>
->>> Why an RFC rather than a standard patch submission? I'm not immediately
->>> seeing what is controversial!  
->>
->> Oh I am just not confident about this patchset,
->> especially the IIO part.
-> 
-> It all looks fine to me.  I would imagine that, once everyone is
-> happy, this will go through the mfd tree, but Lee may have other ideas!
-> 
+While the previous versions tried to magically apply bounce buffers when
+needed, it became clear that detecting DMA safe buffers is too fragile. This
+approach is now opt-in, a DMA_SAFE flag needs to be set on an i2c_msg. The
+outcome so far is very convincing IMO. The core additions are simple and easy
+to understand (makes me even think of inlining them again?). The driver changes
+for the Renesas IP cores became easier to understand, too. While only a tad for
+the i2c-sh_mobile driver, the situation became a LOT better for the i2c-rcar
+driver. No more DMA disabling for the whole transfer in case of unsafe buffers,
+we are back to per-msg handling. And the code fix is now an easy to understand
+one line change. Yay!
 
-Small modifications to make but I definitely agree with Jonathan that
-you did not need to send an RFC.
+Of course, we must now whitelist DMA safe buffers. An example for I2C_RDWR case
+is in this series. It makes the i2ctransfer utility have DMA_SAFE buffers,
+which is nice for testing as i2cdump will (currently) not use DMA_SAFE buffers.
+My plan is to add two new calls: i2c_master_{send|receive}_dma_safe which can
+be used if DMA_SAFE buffers are provided. So, drivers can simply switch to
+them. Also, the buffers used within i2c_smbus_xfer_emulated() need to be
+converted to be DMA_SAFE which will cover a huge bunch of use cases. The rest
+is then updating drivers which can be done when needed.
 
-Quentin
+As these conversions are not done yet, this patch series has RFC status. But I
+already would like to get opinions on this approach, so I'll cc mailing lists
+of the heavier I2C users. Please let me know what you think.
 
-> Jonathan
->>
->>>
->>> Jonathan
->>>  
->>>>
->>>> Icenowy Zheng (7):
->>>>   dt-bindings: add compatibles for AXP803 Battery/USB power supplies
->>>>   iio: adc: axp20x-adc: allow to skip ADC rate setup now
->>>>   iio: adc: axp20x-adc: add support for AXP803
->>>>   power: supply: axp20x-battery: support AXP803
->>>>   mfd: axp20x: add cells for AXP803 ADC/AC Power/Battery
->>>>   arm64: allwinner: a64: add power supply nodes in AXP803 DTSI
->>>>   arm64: allwinner: a64: enable AC and Battery for Pine64
->>>>
->>>>  .../bindings/power/supply/axp20x_battery.txt       |   1 +
->>>>  .../bindings/power/supply/axp20x_usb_power.txt     |   1 +
->>>>  arch/arm64/boot/dts/allwinner/axp803.dtsi          |  15 +++
->>>>  .../arm64/boot/dts/allwinner/sun50i-a64-pine64.dts |   8 ++
->>>>  drivers/iio/adc/axp20x_adc.c                       | 114  
->>> ++++++++++++++++++++-  
->>>>  drivers/mfd/axp20x.c                               |  11 ++
->>>>  drivers/power/supply/axp20x_battery.c              |  88  
->>> ++++++++++++++--  
->>>>  7 files changed, 226 insertions(+), 12 deletions(-)
->>>>   
->>>
->>>
->>> _______________________________________________
->>> linux-arm-kernel mailing list
->>> linux-arm-kernel@lists.infradead.org
->>> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel  
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> 
+All patches have been tested with a Renesas Salvator-X board (r8a7796/M3-W).
+
+The branch can be found here:
+
+git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git renesas/topic/i2c-core-dma-rfc-v5
+
+And big kudos to Renesas Electronics for funding this work, thank you very much!
+
+Regards,
+
+   Wolfram
+
+Changes since v4:
+	* rebased to v4.14-rc1
+	* (hopefully) improved the docs to be more clear
+	* added basic RST syntax to the docs
+
+This is mainly an update to agree on the docs. Missing code is still missing
+and will be added in v6.
+
+Changes since v3:
+	* completely redesigned
+
+
+Wolfram Sang (6):
+  i2c: add a message flag for DMA safe buffers
+  i2c: add helpers to ease DMA handling
+  i2c: add docs to clarify DMA handling
+  i2c: sh_mobile: use helper to decide if DMA is useful
+  i2c: rcar: skip DMA if buffer is not safe
+  i2c: dev: mark RDWR buffers as DMA_SAFE
+
+ Documentation/i2c/DMA-considerations | 58 ++++++++++++++++++++++++++++++++++++
+ drivers/i2c/busses/i2c-rcar.c        |  2 +-
+ drivers/i2c/busses/i2c-sh_mobile.c   |  8 +++--
+ drivers/i2c/i2c-core-base.c          | 45 ++++++++++++++++++++++++++++
+ drivers/i2c/i2c-dev.c                |  2 ++
+ include/linux/i2c.h                  |  3 ++
+ include/uapi/linux/i2c.h             |  3 ++
+ 7 files changed, 118 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/i2c/DMA-considerations
 
 -- 
-Quentin Schulz, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+2.11.0
+
