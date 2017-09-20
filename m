@@ -1,128 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ec2-52-27-115-49.us-west-2.compute.amazonaws.com ([52.27.115.49]:49912
-        "EHLO osg.samsung.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1751283AbdITSWh (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Sep 2017 14:22:37 -0400
-Date: Wed, 20 Sep 2017 15:22:20 -0300
-From: Mauro Carvalho Chehab <mchehab@s-opensource.com>
-To: Wolfram Sang <wsa@the-dreams.de>
+Received: from sauhun.de ([88.99.104.3]:38794 "EHLO pokefinder.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751741AbdITSpy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 20 Sep 2017 14:45:54 -0400
+Date: Wed, 20 Sep 2017 20:45:51 +0200
+From: Wolfram Sang <wsa@the-dreams.de>
+To: Mauro Carvalho Chehab <mchehab@s-opensource.com>
 Cc: Wolfram Sang <wsa+renesas@sang-engineering.com>,
         linux-i2c@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         linux-input@vger.kernel.org, linux-media@vger.kernel.org,
         dri-devel@lists.freedesktop.org
 Subject: Re: [RFC PATCH v4 3/6] i2c: add docs to clarify DMA handling
-Message-ID: <20170920152220.74bd43c3@recife.lan>
-In-Reply-To: <20170920171840.nrzyiasezxisvg5m@ninjato>
+Message-ID: <20170920184551.wtlmlicflek6qz6n@ninjato>
 References: <20170817141449.23958-1-wsa+renesas@sang-engineering.com>
-        <20170817141449.23958-4-wsa+renesas@sang-engineering.com>
-        <20170827083748.248e2430@vento.lan>
-        <20170920171840.nrzyiasezxisvg5m@ninjato>
+ <20170817141449.23958-4-wsa+renesas@sang-engineering.com>
+ <20170827083748.248e2430@vento.lan>
+ <20170920171840.nrzyiasezxisvg5m@ninjato>
+ <20170920152220.74bd43c3@recife.lan>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
- boundary="Sig_/pOBv1e7Rx6bBc5uaBC2oVJl"; protocol="application/pgp-signature"
+        protocol="application/pgp-signature"; boundary="qfh5wvgqzbsmj2zd"
+In-Reply-To: <20170920152220.74bd43c3@recife.lan>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
---Sig_/pOBv1e7Rx6bBc5uaBC2oVJl
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
 
-Em Wed, 20 Sep 2017 19:18:40 +0200
-Wolfram Sang <wsa@the-dreams.de> escreveu:
+--qfh5wvgqzbsmj2zd
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> Hi Mauro,
->=20
-> > > +Linux I2C and DMA
-> > > +----------------- =20
-> >=20
-> > I would use, instead:
-> >=20
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > Linux I2C and DMA
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> >=20
-> > As this is the way we're starting document titles, after converted to
-> > ReST. So, better to have it already using the right format, as one day =
-=20
->=20
-> I did this.
->=20
-> > There are also a couple of things here that Sphinx would complain. =20
->=20
-> The only complaint I got was
->=20
-> 	WARNING: document isn't included in any toctree
->=20
-> which makes sense because I renamed it only temporarily to *.rst
 
-Yeah, that is expected.
+> In order to avoid that, and to place them into a box using monotonic fonts,
+> I usually add "::" at the preceding line, e. g.:
 
-> > So, it could be worth to rename it to *.rst, while you're writing
-> > it, and see what:
-> > 	make htmldocs
-> > will complain and how it will look in html. =20
->=20
-> So, no complaints from Sphinx and the HTML output looks good IMO. Was
-> there anything specific you had in mind when saying that Sphinx would
-> complain?
+Just in time: I added the '::' and will resubmit the new version in a
+minute.
 
-Perhaps my comments weren't clear enough. Sorry! I didn't actually=20
-tried to parse it with Sphinx. Just wanted to hint you about that,
-as testing the docs with Sphinx could be useful when writing
-documentation.=20
+Thanks for the pointers!
 
-Usually, things like function declarations produce warnings if they
-contain pointers, e. g. something like:
 
-	foo(void *bar);
-
-as asterisks mean italics. It would complain about the lack of
-an end asterisk.
-
-In order to avoid that, and to place them into a box using monotonic fonts,
-I usually add "::" at the preceding line, e. g.:
-
-	::
-
-		foo(void *bar);
-
-or:
-
-	some description::
-
-		foo(void *bar)
-
-on all functions (even the ones that don't use asterisks, as the
-html output looks nicer.
-
-I double-checked this patch: it doesn't contain anything that would
-cause warnings or parse errors. Still, I would prefer to use
-**not** instead of *not*, and would add the "::", but that's my
-personal taste.
-
-Thanks,
-Mauro
-
---Sig_/pOBv1e7Rx6bBc5uaBC2oVJl
-Content-Type: application/pgp-signature
-Content-Description: Assinatura digital OpenPGP
+--qfh5wvgqzbsmj2zd
+Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEE+QmuaPwR3wnBdVwACF8+vY7k4RUFAlnCsdwACgkQCF8+vY7k
-4RXVfg/9HoQdB8G9uvYeRVJKHyQurXleRUdtMgXMSbbCjAkcdnAvcygkRyNHArYL
-B7lx6hi9yk4+bHmHTtqfuZo02381L1l8fcFBpGWyAsnW9C4L14SwogqpcJIHDLNf
-KOvMpfQtfZCXRzl05yNXnNCLTX82LiHbBk1f/VAmx9/RD6HY/nN3xNMQtA+aASRu
-6Q+EY+znWc4VuW2XxF5eq9bU7/YaOwRs0TplIObNcfGeEWlZdM1inyKzH45MhtCn
-Gb5UTCTyrsSAFkc5KdWrsxcTWR9V9pzaxsr7WIu7qfMyikenVrboMAouIEOfOEqx
-2HA/aXj0vm8SyxmH/KMReUAWjKHLHHRGsvwbde6edwRGTZ4v7R4L41Lw/Ne+3RSk
-KSYg/6Ww/AscugZ8rOg5WwmF5V4BymRM68PzIYzBsoAVmCfL5uvj2XCxHbIifFbH
-aorIASFsE8PX+Qi2ZtV41CMOhej9h7WbuxUwLqVyYeyJUIggOlE6YTX3U7+tuogo
-ByERwLharq5VAnK55kQFqHLy08ti/hKvyOvN83BOsHpPFzusY/WPLqFibToz9mKn
-joB/kDCxwYEwf1+yg8/csUYOFDWr4d/ldB6X9hPZP86Pu3qJ6Yoej03zrShfzMYp
-6CZYeMzTzllJCYigHcAtUH5ssbu3vECRrxnbmLB9dTBWmEc3hZM=
-=yepP
+iQIzBAABCAAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAlnCt1sACgkQFA3kzBSg
+KbaMhhAAsRuvzOlErYt8w0T3iytK/Mw8eMUj6X6GeNyy6DVXeiPbTPgt0p2GNMeE
+/2VDuvMobxKqd0WapZWtrDct0YEgblGT+abpzVQNsqwoQUYiMR45gi9PPAB/gsOT
+rL4Ck3sGa/1/3xgiOJjuIbB83o8k1tbfIe2a1T63P+HjSY9sr+/P6+/+vlgpA93A
+l1Dt6NICWPTg5p07bssoK8nhnNQjKAgeh3Lu1K03RW2o3J+TOyobV8piXXMCwt/E
+0ecNE3O1KrnB/huGfTZffudl7se/XcMuKZmuk93GKCA8CQX5JbTcAAFMtWEhQUE3
+ETH+Sb5qEgUUcLYWD3BDE1nUNEl1kLK0KdA3utzL3ynZpQaqNKgHuZQG+ftcpFxr
+n9darzx/kmAMINcr0jgrGlrZNuTPUfWwOzdtBKP1OPmQSgjDqliuYnnYeLN8QOlr
+f9duGqYxFlvyDEB5B1ULhzpjYRY9G1rR6ybKzwAvpOZB/pIRK7lIVU0iIYqqjp/y
+5RvAw4ZcC3Tugo+itrPqRkCCYukFMr82MP77ORhsd201e5paUSnkJAGr8HDQlNZV
+gKtosRpBc+SvaWC0nNg3WnlWfi3jQHUvBSZSNra/lCEFmkZjwdlcUuTC46VYSq0z
+fz5EErD5Jbd2l2JsGivmMiaOHESo3JThu3mEXXY3RWDvk6hIGh8=
+=/uf5
 -----END PGP SIGNATURE-----
 
---Sig_/pOBv1e7Rx6bBc5uaBC2oVJl--
+--qfh5wvgqzbsmj2zd--
