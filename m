@@ -1,87 +1,57 @@
-Return-Path: <SRS0=len+=A2=free-electrons.com=quentin.schulz@kernel.org>
-Subject: Re: [RFC PATCH 6/7] arm64: allwinner: a64: add power supply nodes in
- AXP803 DTSI
-To: Icenowy Zheng <icenowy@aosc.io>, Chen-Yu Tsai <wens@csie.org>,
- Maxime Ripard <maxime.ripard@free-electrons.com>,
- Jonathan Cameron <jic23@kernel.org>, Lee Jones <lee.jones@linaro.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from hermes.aosc.io ([199.195.250.187]:41772 "EHLO hermes.aosc.io"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751570AbdITPT6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 20 Sep 2017 11:19:58 -0400
+From: Icenowy Zheng <icenowy@aosc.io>
+To: Chen-Yu Tsai <wens@csie.org>,
+        Maxime Ripard <maxime.ripard@free-electrons.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Quentin Schulz <quentin.schulz@free-electrons.com>
 Cc: linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-iio@vger.kernel.org, linux-sunxi@googlegroups.com
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-iio@vger.kernel.org, linux-sunxi@googlegroups.com,
+        Icenowy Zheng <icenowy@aosc.io>
+Subject: [RFC PATCH 7/7] arm64: allwinner: a64: enable AC and Battery for Pine64
+Date: Wed, 20 Sep 2017 23:18:14 +0800
+Message-Id: <20170920151814.22461-8-icenowy@aosc.io>
+In-Reply-To: <20170920151814.22461-1-icenowy@aosc.io>
 References: <20170920151814.22461-1-icenowy@aosc.io>
- <20170920151814.22461-7-icenowy@aosc.io>
- <7ce5c53e-70ba-456e-ecf7-5132ef2c2c64@free-electrons.com>
- <D7CAB179-F2AF-434F-82F7-07F146842FCF@aosc.io>
-From: Quentin Schulz <quentin.schulz@free-electrons.com>
-Message-ID: <39833379-66a4-4657-3d12-26bc51c88815@free-electrons.com>
-Date: Mon, 25 Sep 2017 11:24:43 +0200
-MIME-Version: 1.0
-In-Reply-To: <D7CAB179-F2AF-434F-82F7-07F146842FCF@aosc.io>
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Icenowy,
+The Pine64 boards (including the Plus variant) have a Micro-USB jack
+with it's 5V connected to the ACIN of the AXP803 PMIC and a battery
+connector connected to the battery pins of the AXP803 PMIC.
 
-On 25/09/2017 11:14, Icenowy Zheng wrote:
-> 
-> 
-> 于 2017年9月25日 GMT+08:00 下午5:11:57, Quentin Schulz <quentin.schulz@free-electrons.com> 写到:
->> Hi Icenowy,
->>
->> On 20/09/2017 17:18, Icenowy Zheng wrote:
->>> AXP803 PMIC features AC/USB/Battery power supplies.
->>>
->>> As we have now the device tree bindings for them, add device tree
->>> nodes for them.
->>>
->>> Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
->>> ---
->>>  arch/arm64/boot/dts/allwinner/axp803.dtsi | 15 +++++++++++++++
->>>  1 file changed, 15 insertions(+)
->>>
->>> diff --git a/arch/arm64/boot/dts/allwinner/axp803.dtsi
->> b/arch/arm64/boot/dts/allwinner/axp803.dtsi
->>> index ff8af52743ff..3a8615231b7c 100644
->>> --- a/arch/arm64/boot/dts/allwinner/axp803.dtsi
->>> +++ b/arch/arm64/boot/dts/allwinner/axp803.dtsi
->>> @@ -49,6 +49,16 @@
->>>  	interrupt-controller;
->>>  	#interrupt-cells = <1>;
->>>  
->>> +	ac_power_supply: ac-power-supply {
->>> +		compatible = "x-powers,axp221-ac-power-supply";
->>> +		status = "disabled";
->>> +	};
->>> +
->>> +	battery_power_supply: battery-power-supply {
->>> +		compatible = "x-powers,axp803-battery-power-supply";
->>> +		status = "disabled";
->>> +	};
->>> +
->>>  	regulators {
->>>  		/* Default work frequency for buck regulators */
->>>  		x-powers,dcdc-freq = <3000>;
->>> @@ -147,4 +157,9 @@
->>>  			regulator-name = "rtc-ldo";
->>>  		};
->>>  	};
->>> +
->>> +	usb_power_supply: usb_power_supply {
->>> +		compatible = "x-powers,axp803-usb-power-supply";
->>> +		status = "disabled";
->>> +	};
->>
->> No. You have added support for the AC and battery power supply drivers
->> in this patchset, not for USB.
-> 
-> But I added its device tree binding.
+Enable AC and Battery power supplies for Pine64, in order to monitor
+them in the system.
 
-Yes and that is wrong. That would mislead users into thinking the usb
-power supply is supported (since the dt binding is here) while it's not.
+Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+---
+ arch/arm64/boot/dts/allwinner/sun50i-a64-pine64.dts | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-I would add the dt binding and the DT node only once it is supported.
-
-Quentin
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pine64.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-pine64.dts
+index d06e34b5d192..955f392af6a2 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pine64.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pine64.dts
+@@ -113,6 +113,14 @@
+ 
+ #include "axp803.dtsi"
+ 
++&ac_power_supply {
++	status = "okay";
++};
++
++&battery_power_supply {
++	status = "okay";
++};
++
+ &reg_aldo2 {
+ 	regulator-always-on;
+ 	regulator-min-microvolt = <1800000>;
 -- 
-Quentin Schulz, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+2.13.5
+
