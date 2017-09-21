@@ -1,57 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from hermes.aosc.io ([199.195.250.187]:41772 "EHLO hermes.aosc.io"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751570AbdITPT6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 20 Sep 2017 11:19:58 -0400
-From: Icenowy Zheng <icenowy@aosc.io>
-To: Chen-Yu Tsai <wens@csie.org>,
+Received: from szxga05-in.huawei.com ([45.249.212.191]:6538 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751387AbdIUOqy (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Sep 2017 10:46:54 -0400
+Date: Thu, 21 Sep 2017 15:46:21 +0100
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To: Icenowy Zheng <icenowy@aosc.io>
+CC: Chen-Yu Tsai <wens@csie.org>,
         Maxime Ripard <maxime.ripard@free-electrons.com>,
         Jonathan Cameron <jic23@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-iio@vger.kernel.org, linux-sunxi@googlegroups.com,
-        Icenowy Zheng <icenowy@aosc.io>
-Subject: [RFC PATCH 7/7] arm64: allwinner: a64: enable AC and Battery for Pine64
-Date: Wed, 20 Sep 2017 23:18:14 +0800
-Message-Id: <20170920151814.22461-8-icenowy@aosc.io>
+        "Lee Jones" <lee.jones@linaro.org>,
+        Quentin Schulz <quentin.schulz@free-electrons.com>,
+        <devicetree@vger.kernel.org>, <linux-pm@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-sunxi@googlegroups.com>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [RFC PATCH 0/7] AXP803 AC/Battery support
+Message-ID: <20170921154621.0000328d@huawei.com>
 In-Reply-To: <20170920151814.22461-1-icenowy@aosc.io>
 References: <20170920151814.22461-1-icenowy@aosc.io>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="US-ASCII"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The Pine64 boards (including the Plus variant) have a Micro-USB jack
-with it's 5V connected to the ACIN of the AXP803 PMIC and a battery
-connector connected to the battery pins of the AXP803 PMIC.
+On Wed, 20 Sep 2017 23:18:07 +0800
+Icenowy Zheng <icenowy@aosc.io> wrote:
 
-Enable AC and Battery power supplies for Pine64, in order to monitor
-them in the system.
+> The AXP803 PMIC, used by most Allwinner A64 boards, features 3 power inputs:
+> AC, USB and Battery.
+> 
+> This patchset adds support for the AC and Battery supplies, which is useful
+> for the boards from Pine64 (Pine64, SoPine w/ baseboard model A, Pinebook).
+> 
+> The USB supply is not yet supported in this patchset because it's not
+> present on Pine series boards.
+> 
+> In order to enable battery monitoring the ADC for battery is also enabled
+> for AXs.
+> 
+> In order to enable battery monitoring the ADC for battery is also enabled
+> for AXP803.
 
-Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
----
- arch/arm64/boot/dts/allwinner/sun50i-a64-pine64.dts | 8 ++++++++
- 1 file changed, 8 insertions(+)
+I'll go with the obvious question...
 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pine64.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-pine64.dts
-index d06e34b5d192..955f392af6a2 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pine64.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pine64.dts
-@@ -113,6 +113,14 @@
- 
- #include "axp803.dtsi"
- 
-+&ac_power_supply {
-+	status = "okay";
-+};
-+
-+&battery_power_supply {
-+	status = "okay";
-+};
-+
- &reg_aldo2 {
- 	regulator-always-on;
- 	regulator-min-microvolt = <1800000>;
--- 
-2.13.5
+Why an RFC rather than a standard patch submission? I'm not immediately
+seeing what is controversial!
+
+Jonathan
+
+> 
+> Icenowy Zheng (7):
+>   dt-bindings: add compatibles for AXP803 Battery/USB power supplies
+>   iio: adc: axp20x-adc: allow to skip ADC rate setup now
+>   iio: adc: axp20x-adc: add support for AXP803
+>   power: supply: axp20x-battery: support AXP803
+>   mfd: axp20x: add cells for AXP803 ADC/AC Power/Battery
+>   arm64: allwinner: a64: add power supply nodes in AXP803 DTSI
+>   arm64: allwinner: a64: enable AC and Battery for Pine64
+> 
+>  .../bindings/power/supply/axp20x_battery.txt       |   1 +
+>  .../bindings/power/supply/axp20x_usb_power.txt     |   1 +
+>  arch/arm64/boot/dts/allwinner/axp803.dtsi          |  15 +++
+>  .../arm64/boot/dts/allwinner/sun50i-a64-pine64.dts |   8 ++
+>  drivers/iio/adc/axp20x_adc.c                       | 114 ++++++++++++++++++++-
+>  drivers/mfd/axp20x.c                               |  11 ++
+>  drivers/power/supply/axp20x_battery.c              |  88 ++++++++++++++--
+>  7 files changed, 226 insertions(+), 12 deletions(-)
+> 
 
