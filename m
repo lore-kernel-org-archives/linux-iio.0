@@ -4,75 +4,69 @@ To: <linux-iio@vger.kernel.org>
 CC: <linux-kernel@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter
  Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: [PATCH v2 1/4] iio: light: vl6180: Move range check to integration time setter, cleanup
-Date: Sun, 24 Sep 2017 00:58:21 +0200
-Message-ID: <20170923225824.8435-2-stefan.bruens@rwth-aachen.de>
+Subject: [PATCH v2 2/4] iio: light: vl6180: Avoid readback of integration time register
+Date: Sun, 24 Sep 2017 00:58:22 +0200
+Message-ID: <20170923225824.8435-3-stefan.bruens@rwth-aachen.de>
 In-Reply-To: <20170923225824.8435-1-stefan.bruens@rwth-aachen.de>
 References: <20170923225824.8435-1-stefan.bruens@rwth-aachen.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 List-ID: <linux-iio@vger.kernel.org>
 
-This improves code uniformity (range checks for als_gain are also done
-in the setter). Also unmangle rounding and calculation of register value.
-
-The calculated integration time it_ms is required in the next patch of
-the series.
+Instead of reading the value from the register on each query, store the
+set value.
 
 Signed-off-by: Stefan Brüns <stefan.bruens@rwth-aachen.de>
 ---
-v2: removed redundant parenthesis
-
- drivers/iio/light/vl6180.c | 18 +++++++++++-------
- 1 file changed, 11 insertions(+), 7 deletions(-)
+ drivers/iio/light/vl6180.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iio/light/vl6180.c b/drivers/iio/light/vl6180.c
-index 6e25b724d941..68b9babfd298 100644
+index 68b9babfd298..e6466cc81766 100644
 --- a/drivers/iio/light/vl6180.c
 +++ b/drivers/iio/light/vl6180.c
-@@ -386,16 +386,21 @@ static int vl6180_set_als_gain(struct vl6180_data *data, int val, int val2)
- 	return -EINVAL;
- }
+@@ -86,6 +86,7 @@
+ struct vl6180_data {
+ 	struct i2c_client *client;
+ 	struct mutex lock;
++	unsigned int als_it_ms;
+ };
  
--static int vl6180_set_it(struct vl6180_data *data, int val2)
-+static int vl6180_set_it(struct vl6180_data *data, int val, int val2)
- {
--	int ret;
-+	int ret, it_ms;
-+
-+	it_ms = (val2 + 500) / 1000; /* round to ms */
-+	if (val != 0 || it_ms < 1 || it_ms > 512)
-+		return -EINVAL;
+ enum { VL6180_ALS, VL6180_RANGE, VL6180_PROX };
+@@ -306,13 +307,11 @@ static int vl6180_read_raw(struct iio_dev *indio_dev,
  
- 	mutex_lock(&data->lock);
- 	ret = vl6180_hold(data, true);
- 	if (ret < 0)
- 		goto fail;
--	ret = vl6180_write_word(data->client, VL6180_ALS_IT,
--		(val2 - 500) / 1000); /* write value in ms */
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_INT_TIME:
+-		ret = vl6180_read_word(data->client, VL6180_ALS_IT);
+-		if (ret < 0)
+-			return ret;
+-		*val = 0; /* 1 count = 1ms (0 = 1ms) */
+-		*val2 = (ret + 1) * 1000; /* convert to seconds */
++		*val = 0;
++		*val2 = data->als_it_ms * 1000;
+ 
+ 		return IIO_VAL_INT_PLUS_MICRO;
 +
-+	ret = vl6180_write_word(data->client, VL6180_ALS_IT, it_ms - 1);
+ 	case IIO_CHAN_INFO_SCALE:
+ 		switch (chan->type) {
+ 		case IIO_LIGHT:
+@@ -401,6 +400,9 @@ static int vl6180_set_it(struct vl6180_data *data, int val, int val2)
+ 
+ 	ret = vl6180_write_word(data->client, VL6180_ALS_IT, it_ms - 1);
+ 
++	if (ret >= 0)
++		data->als_it_ms = it_ms;
 +
  fail:
  	vl6180_hold(data, false);
  	mutex_unlock(&data->lock);
-@@ -411,15 +416,14 @@ static int vl6180_write_raw(struct iio_dev *indio_dev,
+@@ -472,6 +474,7 @@ static int vl6180_init(struct vl6180_data *data)
+ 		return ret;
  
- 	switch (mask) {
- 	case IIO_CHAN_INFO_INT_TIME:
--		if (val != 0 || val2 < 500 || val2 >= 512500)
--			return -EINVAL;
-+		return vl6180_set_it(data, val, val2);
- 
--		return vl6180_set_it(data, val2);
- 	case IIO_CHAN_INFO_HARDWAREGAIN:
- 		if (chan->type != IIO_LIGHT)
- 			return -EINVAL;
- 
- 		return vl6180_set_als_gain(data, val, val2);
-+
- 	default:
- 		return -EINVAL;
- 	}
+ 	/* ALS integration time: 100ms */
++	data->als_it_ms = 100;
+ 	ret = vl6180_write_word(client, VL6180_ALS_IT, VL6180_ALS_IT_100);
+ 	if (ret < 0)
+ 		return ret;
 -- 
 2.14.1
