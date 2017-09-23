@@ -1,49 +1,56 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp02.smtpout.orange.fr ([80.12.242.124]:20649 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750766AbdIWGIh (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 23 Sep 2017 02:08:37 -0400
+Return-Path: <SRS0=MmtQ=AY=wanadoo.fr=christophe.jaillet@kernel.org>
 From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, sre@kernel.org, wsa@the-dreams.de, kishon@ti.com
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH 1/3] iio: adc: twl4030: Fix an error handling path in 'twl4030_madc_probe()'
-Date: Sat, 23 Sep 2017 08:06:18 +0200
-Message-Id: <4bcd315895de7135369e6e0d2402fc2794f2ee99.1506146101.git.christophe.jaillet@wanadoo.fr>
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	sre@kernel.org,
+	wsa@the-dreams.de,
+	kishon@ti.com
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	kernel-janitors@vger.kernel.org,
+	Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH 2/3] iio: adc: twl4030: Disable the vusb3v1 rugulator in the error handling path of 'twl4030_madc_probe()'
+Date: Sat, 23 Sep 2017 08:06:19 +0200
+Message-Id: <6bb9b8b3cba56c9cd201d4f025831ef776fbfef1.1506146101.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <4bcd315895de7135369e6e0d2402fc2794f2ee99.1506146101.git.christophe.jaillet@wanadoo.fr>
+References: <4bcd315895de7135369e6e0d2402fc2794f2ee99.1506146101.git.christophe.jaillet@wanadoo.fr>
 In-Reply-To: <cover.1506146101.git.christophe.jaillet@wanadoo.fr>
 References: <cover.1506146101.git.christophe.jaillet@wanadoo.fr>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-If 'devm_regulator_get()' fails, we should go through the existing error
-handling path instead of returning directly, as done is all the other
-error handling paths in this function.
+Commit 7cc97d77ee8a has introduced a call to 'regulator_disable()' in the
+.remove function.
+So we should also have such a call in the .probe function in case of
+error after a successful 'regulator_enable()' call.
+
+Add a new label for that and use it.
 
 Fixes: 7cc97d77ee8a ("iio: adc: twl4030: Fix ADC[3:6] readings")
 Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 ---
- drivers/iio/adc/twl4030-madc.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/iio/adc/twl4030-madc.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/adc/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
-index 1edd99f0c5e5..80ab2ed70b85 100644
+index 80ab2ed70b85..32db23d9a483 100644
 --- a/drivers/iio/adc/twl4030-madc.c
 +++ b/drivers/iio/adc/twl4030-madc.c
-@@ -887,8 +887,10 @@ static int twl4030_madc_probe(struct platform_device *pdev)
+@@ -899,11 +899,13 @@ static int twl4030_madc_probe(struct platform_device *pdev)
+ 	ret = iio_device_register(iio_dev);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "could not register iio device\n");
+-		goto err_i2c;
++		goto err_usb3v1;
+ 	}
  
- 	/* Enable 3v1 bias regulator for MADC[3:6] */
- 	madc->usb3v1 = devm_regulator_get(madc->dev, "vusb3v1");
--	if (IS_ERR(madc->usb3v1))
--		return -ENODEV;
-+	if (IS_ERR(madc->usb3v1)) {
-+		ret = -ENODEV;
-+		goto err_i2c;
-+	}
+ 	return 0;
  
- 	ret = regulator_enable(madc->usb3v1);
- 	if (ret)
++err_usb3v1:
++	regulator_disable(madc->usb3v1);
+ err_i2c:
+ 	twl4030_madc_set_current_generator(madc, 0, 0);
+ err_current_generator:
 -- 
 2.11.0
-
