@@ -1,49 +1,53 @@
-Return-Path: <SRS0=gvug=AU=rwth-aachen.de=Stefan.Bruens@kernel.org>
-From: =?UTF-8?q?Stefan=20Br=C3=BCns?= <stefan.bruens@rwth-aachen.de>
-To: <linux-iio@vger.kernel.org>
-CC: <linux-kernel@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter
- Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: [PATCH 4/4] iio: light: vl6180: Correct ALS scale for non-default gain/integration time
-Date: Tue, 19 Sep 2017 05:11:44 +0200
-Message-ID: <20170919031144.4968-5-stefan.bruens@rwth-aachen.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.99]:39418 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1752474AbdIXPkv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 24 Sep 2017 11:40:51 -0400
+Date: Sun, 24 Sep 2017 16:40:47 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Stefan =?UTF-8?B?QnLDvG5z?= <stefan.bruens@rwth-aachen.de>
+Cc: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: Re: [PATCH 0/4] iio: light: vl6180: Several fixes and enhancements
+Message-ID: <20170924164047.5f4869f5@archlinux>
 In-Reply-To: <20170919031144.4968-1-stefan.bruens@rwth-aachen.de>
 References: <20170919031144.4968-1-stefan.bruens@rwth-aachen.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-The reported scale was only correct for the default settings of 100 ms
-integration time and gain 1.
+On Tue, 19 Sep 2017 05:11:40 +0200
+Stefan Brüns <stefan.bruens@rwth-aachen.de> wrote:
 
-This aligns the reported scale with the behaviour of any other IIO driver
-and the documented ABI, but may require userspace changes if someone uses
-non-default settings.
+> Currently, the vl6180 driver reports bogus in_illuminance_scale values
+> when the integration time or hardware gain are changed from its default
+> value, i.e. it always reports a fixed value.
+> 
+> To avoid readback of the register values in case integration time, gain
+> or scale is queried, save the register values. Use the saved values
+> to report the correct scale value.
 
-Signed-off-by: Stefan Brüns <stefan.bruens@rwth-aachen.de>
----
- drivers/iio/light/vl6180.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+Hmm. I think unfortunately that this set is too large and invasive
+to send as a fix.  Hence once the little corners are tidied up I'll
+take it via the slow path ready for the next merge window.
 
-diff --git a/drivers/iio/light/vl6180.c b/drivers/iio/light/vl6180.c
-index fcd8ef511bdc..4f7c36d3df5f 100644
---- a/drivers/iio/light/vl6180.c
-+++ b/drivers/iio/light/vl6180.c
-@@ -315,9 +315,12 @@ static int vl6180_read_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_SCALE:
- 		switch (chan->type) {
- 		case IIO_LIGHT:
--			*val = 0; /* one ALS count is 0.32 Lux */
--			*val2 = 320000;
--			break;
-+			/* one ALS count is 0.32 Lux @ gain 1, IT 100 ms */
-+			*val = 32000; /* 0.32 * 1000 * 100 */
-+			*val2 = data->als_gain_milli * data->als_it_ms;
-+
-+			return IIO_VAL_FRACTIONAL;
-+
- 		case IIO_DISTANCE:
- 			*val = 0; /* sensor reports mm, scale to meter */
- 			*val2 = 1000;
--- 
-2.14.1
+Thanks,
+
+Jonathan
+
+> 
+> Stefan Brüns (4):
+>   iio: light: vl6180: Move range check to integration time setter,
+>     cleanup
+>   iio: light: vl6180: Avoid readback of integration time register
+>   iio: light: vl6180: Cleanup als_gain lookup, avoid register readback
+>   iio: light: vl6180: Correct ALS scale for non-default gain/integration
+>     time
+> 
+>  drivers/iio/light/vl6180.c | 125 +++++++++++++++++++++++++--------------------
+>  1 file changed, 69 insertions(+), 56 deletions(-)
+> 
+
