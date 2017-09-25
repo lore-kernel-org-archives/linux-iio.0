@@ -9,50 +9,57 @@ Cc: knaack.h@gmx.de,
 	linux-kernel@vger.kernel.org,
 	amsfield22@gmail.com,
 	martink@posteo.de
-Subject: [PATCH 1/3] iio: accel: mma8452: Rename time step look up struct to generic name as the values are same for all the events.
-Date: Sun, 24 Sep 2017 23:15:31 -0400
-Message-Id: <1506309333-1970-2-git-send-email-harinath922@gmail.com>
+Subject: [PATCH 2/3] iio: accel: mma8452: Rename read/write event value callbacks to generic function name.
+Date: Sun, 24 Sep 2017 23:15:32 -0400
+Message-Id: <1506309333-1970-3-git-send-email-harinath922@gmail.com>
 In-Reply-To: <1506309333-1970-1-git-send-email-harinath922@gmail.com>
 References: <1506309333-1970-1-git-send-email-harinath922@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
+
+'mma8452_read_thresh' and 'mma8452_write_thresh' functions
+does more than just read/write threshold values.
+They also handle  IIO_EV_INFO_HIGH_PASS_FILTER_3DB and
+IIO_EV_INFO_PERIOD therefore renaming to generic names.
 
 Improves code readability, no impact on functionality.
 
 Signed-off-by: Harinath Nampally <harinath922@gmail.com>
 ---
- drivers/iio/accel/mma8452.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iio/accel/mma8452.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 3472e7e..74b6221 100644
+index 74b6221..43c3a6b 100644
 --- a/drivers/iio/accel/mma8452.c
 +++ b/drivers/iio/accel/mma8452.c
-@@ -284,7 +284,7 @@ static const int mma8452_samp_freq[8][2] = {
- };
+@@ -792,7 +792,7 @@ static int mma8452_get_event_regs(struct mma8452_data *data,
+ 	}
+ }
  
- /* Datasheet table: step time "Relationship with the ODR" (sample frequency) */
--static const unsigned int mma8452_transient_time_step_us[4][8] = {
-+static const unsigned int mma8452_time_step_us[4][8] = {
- 	{ 1250, 2500, 5000, 10000, 20000, 20000, 20000, 20000 },  /* normal */
- 	{ 1250, 2500, 5000, 10000, 20000, 80000, 80000, 80000 },  /* l p l n */
- 	{ 1250, 2500, 2500, 2500, 2500, 2500, 2500, 2500 },	  /* high res*/
-@@ -826,7 +826,7 @@ static int mma8452_read_thresh(struct iio_dev *indio_dev,
- 		if (power_mode < 0)
- 			return power_mode;
+-static int mma8452_read_thresh(struct iio_dev *indio_dev,
++static int mma8452_read_event_value(struct iio_dev *indio_dev,
+ 			       const struct iio_chan_spec *chan,
+ 			       enum iio_event_type type,
+ 			       enum iio_event_direction dir,
+@@ -855,7 +855,7 @@ static int mma8452_read_thresh(struct iio_dev *indio_dev,
+ 	}
+ }
  
--		us = ret * mma8452_transient_time_step_us[power_mode][
-+		us = ret * mma8452_time_step_us[power_mode][
- 				mma8452_get_odr_index(data)];
- 		*val = us / USEC_PER_SEC;
- 		*val2 = us % USEC_PER_SEC;
-@@ -883,7 +883,7 @@ static int mma8452_write_thresh(struct iio_dev *indio_dev,
- 			return ret;
- 
- 		steps = (val * USEC_PER_SEC + val2) /
--				mma8452_transient_time_step_us[ret][
-+				mma8452_time_step_us[ret][
- 					mma8452_get_odr_index(data)];
- 
- 		if (steps < 0 || steps > 0xff)
+-static int mma8452_write_thresh(struct iio_dev *indio_dev,
++static int mma8452_write_event_value(struct iio_dev *indio_dev,
+ 				const struct iio_chan_spec *chan,
+ 				enum iio_event_type type,
+ 				enum iio_event_direction dir,
+@@ -1391,8 +1391,8 @@ static const struct iio_info mma8452_info = {
+ 	.read_raw = &mma8452_read_raw,
+ 	.write_raw = &mma8452_write_raw,
+ 	.event_attrs = &mma8452_event_attribute_group,
+-	.read_event_value = &mma8452_read_thresh,
+-	.write_event_value = &mma8452_write_thresh,
++	.read_event_value = &mma8452_read_event_value,
++	.write_event_value = &mma8452_write_event_value,
+ 	.read_event_config = &mma8452_read_event_config,
+ 	.write_event_config = &mma8452_write_event_config,
+ 	.debugfs_reg_access = &mma8452_reg_access_dbg,
 -- 
 2.7.4
