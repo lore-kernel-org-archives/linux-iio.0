@@ -9,9 +9,9 @@ Cc: knaack.h@gmx.de,
 	linux-kernel@vger.kernel.org,
 	amsfield22@gmail.com,
 	martink@posteo.de
-Subject: [PATCH 1/3] iio: accel: mma8452: Rename structs holding event configuration registers to more appropriate names.
-Date: Mon, 25 Sep 2017 06:07:42 -0400
-Message-Id: <1506334065-2891-2-git-send-email-harinath922@gmail.com>
+Subject: [PATCH 2/3] iio: accel: mma8452: Rename time step look up struct to generic name as the values are same for all the events.
+Date: Mon, 25 Sep 2017 06:07:43 -0400
+Message-Id: <1506334065-2891-3-git-send-email-harinath922@gmail.com>
 In-Reply-To: <1506334065-2891-1-git-send-email-harinath922@gmail.com>
 References: <1506334065-2891-1-git-send-email-harinath922@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
@@ -20,46 +20,39 @@ Improves code readability, no impact on functionality.
 
 Signed-off-by: Harinath Nampally <harinath922@gmail.com>
 ---
- drivers/iio/accel/mma8452.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/iio/accel/mma8452.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 6194169..3472e7e 100644
+index 3472e7e..74b6221 100644
 --- a/drivers/iio/accel/mma8452.c
 +++ b/drivers/iio/accel/mma8452.c
-@@ -135,7 +135,7 @@ struct mma8452_event_regs {
- 		u8 ev_count;
+@@ -284,7 +284,7 @@ static const int mma8452_samp_freq[8][2] = {
  };
  
--static const struct mma8452_event_regs ev_regs_accel_falling = {
-+static const struct mma8452_event_regs ff_mt_ev_regs = {
- 		.ev_cfg = MMA8452_FF_MT_CFG,
- 		.ev_cfg_ele = MMA8452_FF_MT_CFG_ELE,
- 		.ev_cfg_chan_shift = MMA8452_FF_MT_CHAN_SHIFT,
-@@ -145,7 +145,7 @@ static const struct mma8452_event_regs ev_regs_accel_falling = {
- 		.ev_count = MMA8452_FF_MT_COUNT
- };
+ /* Datasheet table: step time "Relationship with the ODR" (sample frequency) */
+-static const unsigned int mma8452_transient_time_step_us[4][8] = {
++static const unsigned int mma8452_time_step_us[4][8] = {
+ 	{ 1250, 2500, 5000, 10000, 20000, 20000, 20000, 20000 },  /* normal */
+ 	{ 1250, 2500, 5000, 10000, 20000, 80000, 80000, 80000 },  /* l p l n */
+ 	{ 1250, 2500, 2500, 2500, 2500, 2500, 2500, 2500 },	  /* high res*/
+@@ -826,7 +826,7 @@ static int mma8452_read_thresh(struct iio_dev *indio_dev,
+ 		if (power_mode < 0)
+ 			return power_mode;
  
--static const struct mma8452_event_regs ev_regs_accel_rising = {
-+static const struct mma8452_event_regs trans_ev_regs = {
- 		.ev_cfg = MMA8452_TRANSIENT_CFG,
- 		.ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE,
- 		.ev_cfg_chan_shift = MMA8452_TRANSIENT_CHAN_SHIFT,
-@@ -777,12 +777,12 @@ static int mma8452_get_event_regs(struct mma8452_data *data,
- 					& MMA8452_INT_TRANS) &&
- 				(data->chip_info->enabled_events
- 					& MMA8452_INT_TRANS))
--				*ev_reg = &ev_regs_accel_rising;
-+				*ev_reg = &trans_ev_regs;
- 			else
--				*ev_reg = &ev_regs_accel_falling;
-+				*ev_reg = &ff_mt_ev_regs;
- 			return 0;
- 		case IIO_EV_DIR_FALLING:
--			*ev_reg = &ev_regs_accel_falling;
-+			*ev_reg = &ff_mt_ev_regs;
- 			return 0;
- 		default:
- 			return -EINVAL;
+-		us = ret * mma8452_transient_time_step_us[power_mode][
++		us = ret * mma8452_time_step_us[power_mode][
+ 				mma8452_get_odr_index(data)];
+ 		*val = us / USEC_PER_SEC;
+ 		*val2 = us % USEC_PER_SEC;
+@@ -883,7 +883,7 @@ static int mma8452_write_thresh(struct iio_dev *indio_dev,
+ 			return ret;
+ 
+ 		steps = (val * USEC_PER_SEC + val2) /
+-				mma8452_transient_time_step_us[ret][
++				mma8452_time_step_us[ret][
+ 					mma8452_get_odr_index(data)];
+ 
+ 		if (steps < 0 || steps > 0xff)
 -- 
 2.7.4
