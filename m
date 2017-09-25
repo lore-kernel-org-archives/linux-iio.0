@@ -1,414 +1,446 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f194.google.com ([209.85.161.194]:38347 "EHLO
-        mail-yw0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S934898AbdIYSJo (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 25 Sep 2017 14:09:44 -0400
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: benjamin.gaignard@linaro.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v2 5/5] iio: 104-quad-8: Add IIO generic counter interface support
-Date: Mon, 25 Sep 2017 14:09:36 -0400
-Message-Id: <0f221a6306fc743b25ad2cdf1ff75f17f1a0f1a1.1506353914.git.vilhelm.gray@gmail.com>
-In-Reply-To: <cover.1506353914.git.vilhelm.gray@gmail.com>
-References: <cover.1506353914.git.vilhelm.gray@gmail.com>
+Received: from mail-by2nam01on0093.outbound.protection.outlook.com ([104.47.34.93]:41504
+        "EHLO NAM01-BY2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S934555AbdIYTOo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 25 Sep 2017 15:14:44 -0400
+From: "Ismail H. Kose" <Ismail.Kose@maximintegrated.com>
+Cc: ihkose@gmail.com, Ismail.Kose@maximintegrated.com,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Peter Rosin <peda@axentia.se>,
+        Jean-Francois Dagenais <jeff.dagenais@gmail.com>,
+        Fabrice Gasnier <fabrice.gasnier@st.com>,
+        Maxime Roussin-Belanger <maxime.roussinbelanger@gmail.com>,
+        Mike Looijmans <mike.looijmans@topic.nl>,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: [PATCH v7 1/2] iio: dac: ds4422/ds4424 dac driver
+Date: Mon, 25 Sep 2017 12:14:11 -0700
+Message-Id: <20170925191425.1684-1-Ismail.Kose@maximintegrated.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+To: unlisted-recipients:; (no To-header on input)
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds support for the IIO generic counter interface to the
-104-QUAD-8 driver. The existing 104-QUAD-8 device interface should not
-be affected by this patch; all changes are intended as supplemental
-additions as perceived by the user.
+This patch provides an iio device driver for DS4422/DS4424 chips that support
+two/four channel 7-bit Sink/Source Current DAC.
 
-IIO Counter Signals are defined for all quadrature input pairs
-(A and B), as well as index input lines. However, IIO Counter Triggers
-are not created for the index input Signals. IIO Counter Values are
-created for the eight quadrature channel counts, and their respective
-Signals are associated via IIO Counter Triggers.
-
-The new generic counter interface sysfs attributes expose the same
-functionality and data available via the existing 104-QUAD-8 device
-interface. Four IIO Counter Value function modes are available,
-correlating to the four possible quadrature mode configurations:
-"non-quadrature," "quadrature x1," "quadrature x2," and "quadrature x4."
-
-A quad8_remove function is defined to call iio_counter_unregister. This
-function can be eliminated once a devm_iio_counter_register function is
-defined.
-
-Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+Signed-off-by: Ismail H. Kose <Ismail.Kose@maximintegrated.com>
+Signed-off-by: Ismail H. Kose <ihkose@gmail.com>
 ---
- drivers/iio/counter/104-quad-8.c | 306 ++++++++++++++++++++++++++++++++++++---
- 1 file changed, 289 insertions(+), 17 deletions(-)
+v7:
+	* Revised function exits and fixed error code 
+v6:
+	* Removed reference resistor parsing
+v5:
+	* Removed unused variable
+v4:
+	* Removed unnecessary code and space optimization
+	* Alphabetic order in Kconfig and Makefile
+v3:
+	* Removed iio-map and platform file support
+	* Removed ds4424.h file
+	* Fixed ADC value read bug
+	* Removed confused comments
+	* Added device tree binding file
+	* Fixed bugs in probe and read function
+v2:
+	* Fixed coding style and removed unncessary code
+	* Removed min/max rfs, ifs-scale, etc values from device tree
+	* Removed unused code, definitions and some comments
+	* Removed regulator control and made standard structure
+	* Removed data processing and channel scale
+	* Removed device tree binding file
 
-diff --git a/drivers/iio/counter/104-quad-8.c b/drivers/iio/counter/104-quad-8.c
-index b56985078d8c..625b49fe91cf 100644
---- a/drivers/iio/counter/104-quad-8.c
-+++ b/drivers/iio/counter/104-quad-8.c
-@@ -16,6 +16,7 @@
- #include <linux/bitops.h>
- #include <linux/device.h>
- #include <linux/errno.h>
-+#include <linux/iio/counter.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/types.h>
- #include <linux/io.h>
-@@ -24,6 +25,7 @@
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/moduleparam.h>
-+#include <linux/string.h>
- #include <linux/types.h>
+
+ drivers/iio/dac/Kconfig  |   9 ++
+ drivers/iio/dac/Makefile |   1 +
+ drivers/iio/dac/ds4424.c | 341 +++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 351 insertions(+)
+ create mode 100644 drivers/iio/dac/ds4424.c
+
+diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+index 25bed2d7d2b9..57c179830981 100644
+--- a/drivers/iio/dac/Kconfig
++++ b/drivers/iio/dac/Kconfig
+@@ -211,6 +211,15 @@ config AD8801
+ 	  To compile this driver as a module choose M here: the module will be called
+ 	  ad8801.
  
- #define QUAD8_EXTENT 32
-@@ -37,6 +39,7 @@ MODULE_PARM_DESC(base, "ACCES 104-QUAD-8 base addresses");
- 
- /**
-  * struct quad8_iio - IIO device private data structure
-+ * @counter:		instance of the iio_counter
-  * @preset:		array of preset values
-  * @count_mode:		array of count mode configurations
-  * @quadrature_mode:	array of quadrature mode configurations
-@@ -48,6 +51,7 @@ MODULE_PARM_DESC(base, "ACCES 104-QUAD-8 base addresses");
-  * @base:		base port address of the IIO device
-  */
- struct quad8_iio {
-+	struct iio_counter counter;
- 	unsigned int preset[QUAD8_NUM_COUNTERS];
- 	unsigned int count_mode[QUAD8_NUM_COUNTERS];
- 	unsigned int quadrature_mode[QUAD8_NUM_COUNTERS];
-@@ -527,33 +531,289 @@ static const struct iio_chan_spec quad8_channels[] = {
- 	QUAD8_COUNT_CHAN(7), QUAD8_INDEX_CHAN(7)
- };
- 
-+static int quad8_signal_read(struct iio_counter *counter,
-+	struct iio_counter_signal *signal, int *val, int *val2)
-+{
-+	struct quad8_iio *const priv = counter->driver_data;
++config DS4424
++	tristate "Maxim Integrated DS4422/DS4424 DAC driver"
++	depends on I2C
++	help
++	  If you say yes here you get support for Maxim chips DS4422, DS4424.
 +
-+	if (signal->id < 16)
++	  This driver can also be built as a module.  If so, the module
++	  will be called ds4424.
++
+ config DPOT_DAC
+ 	tristate "DAC emulation using a DPOT"
+ 	depends on OF
+diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+index 603587cc2f07..abf5c3094454 100644
+--- a/drivers/iio/dac/Makefile
++++ b/drivers/iio/dac/Makefile
+@@ -22,6 +22,7 @@ obj-$(CONFIG_AD5686) += ad5686.o
+ obj-$(CONFIG_AD7303) += ad7303.o
+ obj-$(CONFIG_AD8801) += ad8801.o
+ obj-$(CONFIG_CIO_DAC) += cio-dac.o
++obj-$(CONFIG_DS4424) += ds4424.o
+ obj-$(CONFIG_DPOT_DAC) += dpot-dac.o
+ obj-$(CONFIG_LPC18XX_DAC) += lpc18xx_dac.o
+ obj-$(CONFIG_LTC2632) += ltc2632.o
+diff --git a/drivers/iio/dac/ds4424.c b/drivers/iio/dac/ds4424.c
+new file mode 100644
+index 000000000000..c94afd02da50
+--- /dev/null
++++ b/drivers/iio/dac/ds4424.c
+@@ -0,0 +1,341 @@
++/*
++ * Maxim Integrated
++ * 7-bit, Multi-Channel Sink/Source Current DAC Driver
++ * Copyright (C) 2017 Maxim Integrated
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/i2c.h>
++#include <linux/regulator/consumer.h>
++#include <linux/err.h>
++#include <linux/delay.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/driver.h>
++#include <linux/iio/machine.h>
++#include <linux/iio/consumer.h>
++
++#define DS4422_MAX_DAC_CHANNELS		2
++#define DS4424_MAX_DAC_CHANNELS		4
++
++#define DS4424_DAC_ADDR(chan)   ((chan) + 0xf8)
++#define DS4424_SOURCE_I		1
++#define DS4424_SINK_I		0
++
++#define DS4424_CHANNEL(chan) { \
++	.type = IIO_CURRENT, \
++	.indexed = 1, \
++	.output = 1, \
++	.channel = chan, \
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
++}
++
++/*
++ * DS4424 DAC control register 8 bits
++ * [7]		0: to sink; 1: to source
++ * [6:0]	steps to sink/source
++ * bit[7] looks like a sign bit, but the value of the register is
++ * not a two's complement code considering the bit[6:0] is a absolute
++ * distance from the zero point.
++ */
++union ds4424_raw_data {
++	struct {
++		u8 dx:7;
++		u8 source_bit:1;
++	};
++	u8 bits;
++};
++
++enum ds4424_device_ids {
++	ID_DS4422,
++	ID_DS4424,
++};
++
++struct ds4424_data {
++	struct i2c_client *client;
++	struct mutex lock;
++	__maybe_unused uint8_t save[DS4424_MAX_DAC_CHANNELS];
++	struct regulator *vcc_reg;
++	uint8_t raw[DS4424_MAX_DAC_CHANNELS];
++};
++
++static const struct iio_chan_spec ds4424_channels[] = {
++	DS4424_CHANNEL(0),
++	DS4424_CHANNEL(1),
++	DS4424_CHANNEL(2),
++	DS4424_CHANNEL(3),
++};
++
++static int ds4424_get_value(struct iio_dev *indio_dev,
++			     int *val, int channel)
++{
++	struct ds4424_data *data = iio_priv(indio_dev);
++	int ret;
++
++	mutex_lock(&data->lock);
++	ret = i2c_smbus_read_byte_data(data->client, DS4424_DAC_ADDR(channel));
++	if (ret < 0)
++		goto fail;
++
++	*val = ret;
++
++fail:
++	mutex_unlock(&data->lock);
++	return ret;
++}
++
++static int ds4424_set_value(struct iio_dev *indio_dev,
++			     int val, struct iio_chan_spec const *chan)
++{
++	struct ds4424_data *data = iio_priv(indio_dev);
++	int ret;
++
++	mutex_lock(&data->lock);
++	ret = i2c_smbus_write_byte_data(data->client,
++			DS4424_DAC_ADDR(chan->channel), val);
++	if (ret < 0)
++		goto fail;
++
++	data->raw[chan->channel] = val;
++
++fail:
++	mutex_unlock(&data->lock);
++	return ret;
++}
++
++static int ds4424_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val, int *val2, long mask)
++{
++	union ds4424_raw_data raw;
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ret = ds4424_get_value(indio_dev, val, chan->channel);
++		if (ret < 0) {
++			pr_err("%s : ds4424_get_value returned %d\n",
++							__func__, ret);
++			return ret;
++		}
++		raw.bits = *val;
++		*val = raw.dx;
++		if (raw.source_bit == DS4424_SINK_I)
++			*val = -*val;
++		return IIO_VAL_INT;
++
++	default:
++		return -EINVAL;
++	}
++}
++
++static int ds4424_write_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int val, int val2, long mask)
++{
++	union ds4424_raw_data raw;
++
++	if (val2 != 0)
 +		return -EINVAL;
 +
-+	*val = !!(inb(priv->base + 0x16) & BIT(signal->id - 16));
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		if (val < S8_MIN || val > S8_MAX)
++			return -EINVAL;
 +
-+	return IIO_VAL_INT;
-+}
-+
-+static int quad8_trigger_mode_get(struct iio_counter *counter,
-+	struct iio_counter_value *value, struct iio_counter_trigger *trigger)
-+{
-+	struct quad8_iio *const priv = counter->driver_data;
-+	const unsigned int mode = priv->quadrature_mode[value->id];
-+	const unsigned int scale = priv->quadrature_scale[value->id];
-+	unsigned int direction;
-+	const unsigned int flag_addr = priv->base + 2 * value->id + 1;
-+	const int signal_id = trigger->signal->id % 2;
-+
-+	if (mode)
-+		switch (scale) {
-+		case 0:
-+			/* U/D flag: 1 = up, 0 = down */
-+			/* direction: 0 = up, 1 = down */
-+			direction = !(inb(flag_addr) & BIT(5));
-+			if (!signal_id)
-+				return direction + 1;
-+			break;
-+		case 1:
-+			if (!signal_id)
-+				return 3;
-+			break;
-+		case 2:
-+			return 3;
++		if (val > 0) {
++			raw.source_bit = DS4424_SOURCE_I;
++			raw.dx = val;
++		} else {
++			raw.source_bit = DS4424_SINK_I;
++			raw.dx = -val;
 +		}
-+	else
-+		if (!signal_id)
-+			return 1;
 +
-+	return 0;
-+}
++		return ds4424_set_value(indio_dev, raw.bits, chan);
 +
-+static int quad8_value_read(struct iio_counter *counter,
-+	struct iio_counter_value *value, int *val, int *val2)
-+{
-+	struct quad8_iio *const priv = counter->driver_data;
-+	const int base_offset = priv->base + 2 * value->id;
-+	unsigned int flags;
-+	unsigned int borrow;
-+	unsigned int carry;
-+	int i;
-+
-+	flags = inb(base_offset + 1);
-+	borrow = flags & BIT(0);
-+	carry = !!(flags & BIT(1));
-+
-+	/* Borrow XOR Carry effectively doubles count range */
-+	*val = (borrow ^ carry) << 24;
-+
-+	/* Reset Byte Pointer; transfer Counter to Output Latch */
-+	outb(0x11, base_offset + 1);
-+
-+	for (i = 0; i < 3; i++)
-+		*val |= (unsigned int)inb(base_offset) << (8 * i);
-+
-+	return IIO_VAL_INT;
-+}
-+
-+static int quad8_value_write(struct iio_counter *counter,
-+	struct iio_counter_value *value, int val, int val2)
-+{
-+	struct quad8_iio *const priv = counter->driver_data;
-+	const int base_offset = priv->base + 2 * value->id;
-+	int i;
-+
-+	/* Only 24-bit values are supported */
-+	if ((unsigned int)val > 0xFFFFFF)
++	default:
 +		return -EINVAL;
-+
-+	/* Reset Byte Pointer */
-+	outb(0x01, base_offset + 1);
-+
-+	/* Counter can only be set via Preset Register */
-+	for (i = 0; i < 3; i++)
-+		outb(val >> (8 * i), base_offset);
-+
-+	/* Transfer Preset Register to Counter */
-+	outb(0x08, base_offset + 1);
-+
-+	/* Reset Byte Pointer */
-+	outb(0x01, base_offset + 1);
-+
-+	/* Set Preset Register back to original value */
-+	val = priv->preset[value->id];
-+	for (i = 0; i < 3; i++)
-+		outb(val >> (8 * i), base_offset);
-+
-+	/* Reset Borrow, Carry, Compare, and Sign flags */
-+	outb(0x02, base_offset + 1);
-+	/* Reset Error flag */
-+	outb(0x06, base_offset + 1);
-+
-+	return 0;
++	}
 +}
 +
-+static int quad8_value_function_set(struct iio_counter *counter,
-+	struct iio_counter_value *value, unsigned int mode)
++static int ds4424_verify_chip(struct iio_dev *indio_dev)
 +{
-+	struct quad8_iio *const priv = counter->driver_data;
-+	const unsigned int mode_cfg = mode << 3 |
-+		priv->count_mode[value->id] << 1;
-+	const unsigned int idr_cfg = priv->index_polarity[value->id] << 1;
-+	const int base_offset = priv->base + 2 * value->id + 1;
++	int ret, val;
 +
-+	if (mode)
-+		priv->quadrature_scale[value->id] = mode - 1;
-+	else {
-+		/* Quadrature scaling only available in quadrature mode */
-+		priv->quadrature_scale[value->id] = 0;
++	ret = ds4424_get_value(indio_dev, &val, DS4424_DAC_ADDR(0));
++	if (ret < 0)
++		dev_err(&indio_dev->dev,
++				"%s failed. ret: %d\n", __func__, ret);
 +
-+		/* Synchronous function not supported in non-quadrature mode */
-+		if (priv->synchronous_mode[value->id]) {
-+			priv->synchronous_mode[value->id] = 0;
-+			outb(0x60 | idr_cfg, base_offset);
-+		}
++	return ret;
++}
++
++static int __maybe_unused ds4424_suspend(struct device *dev)
++{
++	struct i2c_client *client = to_i2c_client(dev);
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct ds4424_data *data = iio_priv(indio_dev);
++	int ret = 0;
++	int i;
++
++	for (i = 0; i < indio_dev->num_channels; i++) {
++		data->save[i] = data->raw[i];
++		ret = ds4424_set_value(indio_dev, 0,
++				&indio_dev->channels[i]);
++		if (ret < 0)
++			return ret;
++	}
++	return ret;
++}
++
++static int __maybe_unused ds4424_resume(struct device *dev)
++{
++	struct i2c_client *client = to_i2c_client(dev);
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct ds4424_data *data = iio_priv(indio_dev);
++	int ret = 0;
++	int i;
++
++	for (i = 0; i < indio_dev->num_channels; i++) {
++		ret = ds4424_set_value(indio_dev, data->save[i],
++				&indio_dev->channels[i]);
++		if (ret < 0)
++			return ret;
++	}
++	return ret;
++}
++
++static SIMPLE_DEV_PM_OPS(ds4424_pm_ops, ds4424_suspend, ds4424_resume);
++
++static const struct iio_info ds4424_info = {
++	.read_raw = ds4424_read_raw,
++	.write_raw = ds4424_write_raw,
++};
++
++static int ds4424_probe(struct i2c_client *client,
++			const struct i2c_device_id *id)
++{
++	struct ds4424_data *data;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev) {
++		dev_err(&client->dev, "iio dev alloc failed.\n");
++		return -ENOMEM;
 +	}
 +
-+	priv->quadrature_mode[value->id] = !!mode;
++	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
++	indio_dev->name = id->name;
++	indio_dev->dev.of_node = client->dev.of_node;
++	indio_dev->dev.parent = &client->dev;
 +
-+	/* Load mode configuration to Counter Mode Register */
-+	outb(0x20 | mode_cfg, base_offset);
-+
-+	return 0;
-+}
-+
-+static int quad8_value_function_get(struct iio_counter *counter,
-+	struct iio_counter_value *value)
-+{
-+	struct quad8_iio *const priv = counter->driver_data;
-+	unsigned int quadrature_mode = priv->quadrature_mode[value->id];
-+
-+	return (quadrature_mode) ? priv->quadrature_scale[value->id] + 1 : 0;
-+}
-+
-+static const struct iio_counter_ops quad8_ops = {
-+	.signal_read = quad8_signal_read,
-+	.trigger_mode_get = quad8_trigger_mode_get,
-+	.value_read = quad8_value_read,
-+	.value_write = quad8_value_write,
-+	.value_function_set = quad8_value_function_set,
-+	.value_function_get = quad8_value_function_get
-+};
-+
-+static const char *const quad8_function_modes[] = {
-+	"non-quadrature",
-+	"quadrature x1",
-+	"quadrature x2",
-+	"quadrature x4"
-+};
-+
-+#define QUAD8_SIGNAL(_id, _name) {	\
-+	.id = _id,			\
-+	.name = _name			\
-+}
-+
-+static const struct iio_counter_signal quad8_signals[] = {
-+	QUAD8_SIGNAL(0, "Channel 1 Quadrature A"),
-+	QUAD8_SIGNAL(1, "Channel 1 Quadrature B"),
-+	QUAD8_SIGNAL(2, "Channel 2 Quadrature A"),
-+	QUAD8_SIGNAL(3, "Channel 2 Quadrature B"),
-+	QUAD8_SIGNAL(4, "Channel 3 Quadrature A"),
-+	QUAD8_SIGNAL(5, "Channel 3 Quadrature B"),
-+	QUAD8_SIGNAL(6, "Channel 4 Quadrature A"),
-+	QUAD8_SIGNAL(7, "Channel 4 Quadrature B"),
-+	QUAD8_SIGNAL(8, "Channel 5 Quadrature A"),
-+	QUAD8_SIGNAL(9, "Channel 5 Quadrature B"),
-+	QUAD8_SIGNAL(10, "Channel 6 Quadrature A"),
-+	QUAD8_SIGNAL(11, "Channel 6 Quadrature B"),
-+	QUAD8_SIGNAL(12, "Channel 7 Quadrature A"),
-+	QUAD8_SIGNAL(13, "Channel 7 Quadrature B"),
-+	QUAD8_SIGNAL(14, "Channel 8 Quadrature A"),
-+	QUAD8_SIGNAL(15, "Channel 8 Quadrature B"),
-+	QUAD8_SIGNAL(16, "Channel 1 Index"),
-+	QUAD8_SIGNAL(17, "Channel 2 Index"),
-+	QUAD8_SIGNAL(18, "Channel 3 Index"),
-+	QUAD8_SIGNAL(19, "Channel 4 Index"),
-+	QUAD8_SIGNAL(20, "Channel 5 Index"),
-+	QUAD8_SIGNAL(21, "Channel 6 Index"),
-+	QUAD8_SIGNAL(22, "Channel 7 Index"),
-+	QUAD8_SIGNAL(23, "Channel 8 Index")
-+};
-+
-+#define QUAD8_VALUE(_id, _name) {					\
-+	.id = _id,							\
-+	.name = _name,							\
-+	.mode = 0,							\
-+	.function_modes = quad8_function_modes,				\
-+	.num_function_modes = ARRAY_SIZE(quad8_function_modes)		\
-+}
-+
-+static const struct iio_counter_value quad8_values[] = {
-+	QUAD8_VALUE(0, "Channel 1 Count"), QUAD8_VALUE(1, "Channel 2 Count"),
-+	QUAD8_VALUE(2, "Channel 3 Count"), QUAD8_VALUE(3, "Channel 4 Count"),
-+	QUAD8_VALUE(4, "Channel 5 Count"), QUAD8_VALUE(5, "Channel 6 Count"),
-+	QUAD8_VALUE(6, "Channel 7 Count"), QUAD8_VALUE(7, "Channel 8 Count")
-+};
-+
-+static const char *const quad8_trigger_modes[] = {
-+	"none",
-+	"rising edge",
-+	"falling edge",
-+	"both edges"
-+};
-+
- static int quad8_probe(struct device *dev, unsigned int id)
- {
--	struct iio_dev *indio_dev;
--	struct quad8_iio *priv;
-+	struct iio_counter_signal *init_signals;
-+	const size_t num_init_signals = ARRAY_SIZE(quad8_signals);
-+	struct iio_counter_value *init_values;
-+	const size_t num_init_values = ARRAY_SIZE(quad8_values);
-+	struct iio_counter_trigger *triggers;
-+	struct quad8_iio *quad8iio;
- 	int i, j;
- 	unsigned int base_offset;
- 
--	indio_dev = devm_iio_device_alloc(dev, sizeof(*priv));
--	if (!indio_dev)
--		return -ENOMEM;
--
--	if (!devm_request_region(dev, base[id], QUAD8_EXTENT,
--		dev_name(dev))) {
-+	if (!devm_request_region(dev, base[id], QUAD8_EXTENT, dev_name(dev))) {
- 		dev_err(dev, "Unable to lock port addresses (0x%X-0x%X)\n",
- 			base[id], base[id] + QUAD8_EXTENT);
- 		return -EBUSY;
- 	}
- 
--	indio_dev->info = &quad8_info;
--	indio_dev->modes = INDIO_DIRECT_MODE;
--	indio_dev->num_channels = ARRAY_SIZE(quad8_channels);
--	indio_dev->channels = quad8_channels;
--	indio_dev->name = dev_name(dev);
--	indio_dev->dev.parent = dev;
-+	init_signals = devm_kmalloc(dev, sizeof(quad8_signals), GFP_KERNEL);
-+	if (!init_signals)
-+		return -ENOMEM;
-+
-+	memcpy(init_signals, quad8_signals, sizeof(quad8_signals));
-+
-+	init_values = devm_kmalloc(dev, sizeof(quad8_values), GFP_KERNEL);
-+	if (!init_values)
-+		return -ENOMEM;
-+
-+	memcpy(init_values, quad8_values, sizeof(quad8_values));
-+
-+	/* Associate values with their respective signals */
-+	for (i = 0; i < num_init_values; i++) {
-+		triggers = devm_kmalloc(dev, 2 * sizeof(*triggers), GFP_KERNEL);
-+		if (!triggers)
-+			return -ENOMEM;
-+
-+		/* Starts up in non-quadrature mode */
-+		triggers[0].mode = 1;
-+		triggers[0].trigger_modes = quad8_trigger_modes;
-+		triggers[0].num_trigger_modes = ARRAY_SIZE(quad8_trigger_modes);
-+		triggers[0].signal = &init_signals[2 * i];
-+		triggers[1].mode = 0;
-+		triggers[1].trigger_modes = quad8_trigger_modes;
-+		triggers[1].num_trigger_modes = ARRAY_SIZE(quad8_trigger_modes);
-+		triggers[1].signal = &init_signals[2 * i + 1];
-+
-+		init_values[i].init_triggers = triggers;
-+		init_values[i].num_init_triggers = 2;
++	if (!client->dev.of_node) {
++		dev_err(&client->dev,
++				"Not found DT.\n");
++		return -ENODEV;
 +	}
 +
-+	quad8iio = devm_kzalloc(dev, sizeof(*quad8iio), GFP_KERNEL);
-+	if (!quad8iio)
-+		return -ENOMEM;
- 
--	priv = iio_priv(indio_dev);
--	priv->base = base[id];
-+	quad8iio->counter.name = dev_name(dev);
-+	quad8iio->counter.dev = dev;
-+	quad8iio->counter.ops = &quad8_ops;
-+	quad8iio->counter.init_signals = init_signals;
-+	quad8iio->counter.num_init_signals = num_init_signals;
-+	quad8iio->counter.init_values = init_values;
-+	quad8iio->counter.num_init_values = num_init_values;
-+	quad8iio->counter.channels = quad8_channels;
-+	quad8iio->counter.num_channels = ARRAY_SIZE(quad8_channels);
-+	quad8iio->counter.info = &quad8_info;
-+	quad8iio->counter.driver_data = quad8iio;
-+	quad8iio->base = base[id];
- 
- 	/* Reset all counters and disable interrupt function */
- 	outb(0x01, base[id] + 0x11);
-@@ -579,11 +839,23 @@ static int quad8_probe(struct device *dev, unsigned int id)
- 	/* Enable all counters */
- 	outb(0x00, base[id] + 0x11);
- 
--	return devm_iio_device_register(dev, indio_dev);
-+	dev_set_drvdata(dev, &quad8iio->counter);
++	data->vcc_reg = devm_regulator_get(&client->dev, "vcc");
++	if (IS_ERR(data->vcc_reg)) {
++		dev_err(&client->dev,
++			"Failed to get vcc-supply regulator. err: %ld\n",
++				PTR_ERR(data->vcc_reg));
++		return PTR_ERR(data->vcc_reg);
++	}
 +
-+	return iio_counter_register(&quad8iio->counter);
++	mutex_init(&data->lock);
++	ret = regulator_enable(data->vcc_reg);
++	if (ret < 0) {
++		dev_err(&client->dev,
++				"Unable to enable the regulator.\n");
++		return ret;
++	}
++
++	usleep_range(1000, 1200);
++	ret = ds4424_verify_chip(indio_dev);
++	if (ret < 0)
++		goto fail;
++
++	switch (id->driver_data) {
++	case ID_DS4422:
++		indio_dev->num_channels = DS4422_MAX_DAC_CHANNELS;
++		break;
++	case ID_DS4424:
++		indio_dev->num_channels = DS4424_MAX_DAC_CHANNELS;
++		break;
++	default:
++		dev_err(&client->dev,
++				"ds4424: Invalid chip id.\n");
++		ret = -ENXIO;
++		goto fail;
++	}
++
++	indio_dev->channels = ds4424_channels;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->info = &ds4424_info;
++
++	ret = iio_device_register(indio_dev);
++	if (ret < 0) {
++		dev_err(&client->dev,
++				"iio_device_register failed. ret: %d\n", ret);
++		goto fail;
++	}
++
++	return ret;
++
++fail:
++	regulator_disable(data->vcc_reg);
++	return ret;
 +}
 +
-+static int quad8_remove(struct device *dev, unsigned int id)
++static int ds4424_remove(struct i2c_client *client)
 +{
-+	struct iio_counter *counter = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct ds4424_data *data = iio_priv(indio_dev);
 +
-+	iio_counter_unregister(counter);
++	iio_device_unregister(indio_dev);
++	regulator_disable(data->vcc_reg);
 +
 +	return 0;
- }
- 
- static struct isa_driver quad8_driver = {
- 	.probe = quad8_probe,
-+	.remove = quad8_remove,
- 	.driver = {
- 		.name = "104-quad-8"
- 	}
++}
++
++static const struct i2c_device_id ds4424_id[] = {
++	{ "ds4422", ID_DS4422 },
++	{ "ds4424", ID_DS4424 },
++	{ }
++};
++
++MODULE_DEVICE_TABLE(i2c, ds4424_id);
++
++static const struct of_device_id ds4424_of_match[] = {
++	{ .compatible = "maxim,ds4422" },
++	{ .compatible = "maxim,ds4424" },
++	{ },
++};
++
++MODULE_DEVICE_TABLE(of, ds4424_of_match);
++
++static struct i2c_driver ds4424_driver = {
++	.driver = {
++		.name	= "ds4424",
++		.of_match_table = ds4424_of_match,
++		.pm     = &ds4424_pm_ops,
++	},
++	.probe		= ds4424_probe,
++	.remove		= ds4424_remove,
++	.id_table	= ds4424_id,
++};
++module_i2c_driver(ds4424_driver);
++
++MODULE_DESCRIPTION("Maxim DS4424 DAC Driver");
++MODULE_AUTHOR("Ismail H. Kose <ismail.kose@maximintegrated.com>");
++MODULE_AUTHOR("Vishal Sood <vishal.sood@maximintegrated.com>");
++MODULE_AUTHOR("David Jung <david.jung@maximintegrated.com>");
++MODULE_LICENSE("GPL v2");
 -- 
-2.14.1
+2.11.0
 
