@@ -1,31 +1,30 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:33548 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752421AbdIXOel (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 24 Sep 2017 10:34:41 -0400
-Date: Sun, 24 Sep 2017 15:34:36 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Icenowy Zheng <icenowy@aosc.io>
-Cc: Chen-Yu Tsai <wens@csie.org>,
+Received: from mail.free-electrons.com ([62.4.15.54]:35420 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933513AbdIYI66 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 25 Sep 2017 04:58:58 -0400
+Subject: Re: [RFC PATCH 4/7] power: supply: axp20x-battery: support AXP803
+To: Icenowy Zheng <icenowy@aosc.io>, Chen-Yu Tsai <wens@csie.org>,
         Maxime Ripard <maxime.ripard@free-electrons.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Quentin Schulz <quentin.schulz@free-electrons.com>,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>
+Cc: linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-iio@vger.kernel.org, linux-sunxi@googlegroups.com
-Subject: Re: [RFC PATCH 4/7] power: supply: axp20x-battery: support AXP803
-Message-ID: <20170924153436.570b60ea@archlinux>
-In-Reply-To: <20170920151814.22461-5-icenowy@aosc.io>
 References: <20170920151814.22461-1-icenowy@aosc.io>
-        <20170920151814.22461-5-icenowy@aosc.io>
+ <20170920151814.22461-5-icenowy@aosc.io>
+From: Quentin Schulz <quentin.schulz@free-electrons.com>
+Message-ID: <9b72b982-85b2-22e0-076a-15c066619006@free-electrons.com>
+Date: Mon, 25 Sep 2017 10:58:46 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20170920151814.22461-5-icenowy@aosc.io>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 20 Sep 2017 23:18:11 +0800
-Icenowy Zheng <icenowy@aosc.io> wrote:
+Hi Icenowy,
 
+On 20/09/2017 17:18, Icenowy Zheng wrote:
 > The AXP803 PMIC has battery support like other AXP PMICs, but with
 > different definition of max target charging voltage and constant
 > charging current.
@@ -33,12 +32,6 @@ Icenowy Zheng <icenowy@aosc.io> wrote:
 > Add support for AXP803 battery in axp20x-battery driver.
 > 
 > Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
-
-This looks fine to me, but I haven't dived into the precise values
-etc.
-
-Jonathan
-
 > ---
 >  drivers/power/supply/axp20x_battery.c | 88 +++++++++++++++++++++++++++++++----
 >  1 file changed, 78 insertions(+), 10 deletions(-)
@@ -48,64 +41,7 @@ Jonathan
 > --- a/drivers/power/supply/axp20x_battery.c
 > +++ b/drivers/power/supply/axp20x_battery.c
 > @@ -49,6 +49,8 @@
->  #define AXP22X_CHRG_CTRL1_TGT_4_22V	(1 << 5)
->  #define AXP22X_CHRG_CTRL1_TGT_4_24V	(3 << 5)
->  
-> +#define AXP803_CHRG_CTRL1_TGT_4_35V	(3 << 5)
-> +
->  #define AXP20X_CHRG_CTRL1_TGT_CURR	GENMASK(3, 0)
->  
->  #define AXP20X_V_OFF_MASK		GENMASK(2, 0)
-> @@ -123,20 +125,71 @@ static int axp22x_battery_get_max_voltage(struct axp20x_batt_ps *axp20x_batt,
->  	return 0;
->  }
->  
-> +static int axp803_battery_get_max_voltage(struct axp20x_batt_ps *axp20x_batt,
-> +					  int *val)
-> +{
-> +	int ret, reg;
-> +
-> +	ret = regmap_read(axp20x_batt->regmap, AXP20X_CHRG_CTRL1, &reg);
-> +	if (ret)
-> +		return ret;
-> +
-> +	switch (reg & AXP20X_CHRG_CTRL1_TGT_VOLT) {
-> +	case AXP20X_CHRG_CTRL1_TGT_4_1V:
-> +		*val = 4100000;
-> +		break;
-> +	case AXP20X_CHRG_CTRL1_TGT_4_15V:
-> +		*val = 4150000;
-> +		break;
-> +	case AXP20X_CHRG_CTRL1_TGT_4_2V:
-> +		*val = 4200000;
-> +		break;
-> +	case AXP803_CHRG_CTRL1_TGT_4_35V:
-> +		*val = 4350000;
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  static void raw_to_constant_charge_current(struct axp20x_batt_ps *axp, int *val)
->  {
-> -	if (axp->axp_id == AXP209_ID)
-> +	switch (axp->axp_id) {
-> +	case AXP209_ID:
->  		*val = *val * 100000 + 300000;
-> -	else
-> +		break;
-> +	case AXP221_ID:
->  		*val = *val * 150000 + 300000;
-> +		break;
-> +	case AXP803_ID:
-> +		*val = *val * 200000 + 200000;
-> +		break;
-> +	}
->  }
->  
+[...]
 >  static void constant_charge_current_to_raw(struct axp20x_batt_ps *axp, int *val)
 >  {
 > -	if (axp->axp_id == AXP209_ID)
@@ -125,6 +61,11 @@ Jonathan
 > +		 * So we return an invalid value -1 in this situation,
 > +		 * which will be dealed by the caller of this function,
 > +		 */
+
+Good, we could do that for the two others compatible as well. They are
+not explicitly marked as reserved but it stops at 1100 for AXP223/AXP221
+for example.
+
 > +		if (*val > 13)
 > +			*val = -1;
 > +		break;
@@ -146,40 +87,18 @@ Jonathan
 > +				return -EINVAL;
 > +			break;
 > +		};
->  
->  		/*
->  		 * Fuel Gauge data takes 7 bits but the stored value seems to be
-> @@ -281,11 +338,19 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
->  		break;
->  
->  	case POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN:
-> -		if (axp20x_batt->axp_id == AXP209_ID)
-> +		switch (axp20x_batt->axp_id) {
-> +		case AXP209_ID:
->  			return axp20x_battery_get_max_voltage(axp20x_batt,
->  							      &val->intval);
-> -		return axp22x_battery_get_max_voltage(axp20x_batt,
-> -						      &val->intval);
-> +		case AXP221_ID:
-> +			return axp22x_battery_get_max_voltage(axp20x_batt,
-> +							      &val->intval);
-> +		case AXP803_ID:
-> +			return axp803_battery_get_max_voltage(axp20x_batt,
-> +							      &val->intval);
-> +		default:
-> +			return -EINVAL;
-> +		}
->  
->  	case POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN:
->  		ret = regmap_read(axp20x_batt->regmap, AXP20X_V_OFF, &reg);
-> @@ -467,6 +532,9 @@ static const struct of_device_id axp20x_battery_ps_id[] = {
->  	}, {
->  		.compatible = "x-powers,axp221-battery-power-supply",
->  		.data = (void *)AXP221_ID,
-> +	}, {
-> +		.compatible = "x-powers,axp803-battery-power-supply",
-> +		.data = (void *)AXP803_ID,
->  	}, { /* sentinel */ },
->  };
->  MODULE_DEVICE_TABLE(of, axp20x_battery_ps_id);
 
+Looks weird to me.
+
+if (axp20x_batt->axp_id != AXP209_ID && !(reg & AXP22X_FG_VALID))
+
+would be a better match?
+[...]
+
+Thanks,
+Quentin
+
+-- 
+Quentin Schulz, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
