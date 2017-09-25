@@ -1,95 +1,167 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:56866 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751611AbdICMNd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 3 Sep 2017 08:13:33 -0400
-Date: Sun, 3 Sep 2017 13:13:28 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Peter Rosin <peda@axentia.se>
-Cc: "Gustavo A. R. Silva" <garsilva@embeddedor.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: Re: [PATCH] iio: multiplexer: add NULL check on devm_kzalloc() and
- devm_kmemdup() return values
-Message-ID: <20170903131328.78a5d08a@archlinux>
-In-Reply-To: <aaff7b8f-5fc3-e811-b334-42d323dfbf2e@axentia.se>
-References: <20170707045311.GA4535@embeddedgus>
-        <df6ae9c6-8ac7-368b-a1c2-4403387df02b@axentia.se>
-        <0ba9b76f-41f8-3171-2eb7-d9abbe106674@axentia.se>
-        <20170709181023.54458b6c@kernel.org>
-        <aaff7b8f-5fc3-e811-b334-42d323dfbf2e@axentia.se>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58108 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933306AbdIYTBN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 25 Sep 2017 15:01:13 -0400
+Date: Mon, 25 Sep 2017 20:01:10 +0100
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+To: Jean-Baptiste Maneyrol <JManeyrol@invensense.com>
+Cc: linux-iio <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH 1/5] iio: imu: inv_mpu6050: fix error path not turning
+ chip back off
+Message-ID: <20170925200110.0d1b3143@archlinux>
+In-Reply-To: <20170715124447.3dd65c7e@jic23.retrosnub.co.uk>
+References: <CY4PR1201MB01846D4381783299959BFB64C4AC0@CY4PR1201MB0184.namprd12.prod.outlook.com>
+        <20170715124447.3dd65c7e@jic23.retrosnub.co.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, 26 Aug 2017 08:09:43 +0200
-Peter Rosin <peda@axentia.se> wrote:
+On Sat, 15 Jul 2017 12:44:47 +0100
+Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
 
-> On 2017-07-09 19:10, Jonathan Cameron wrote:
-> > On Fri, 7 Jul 2017 11:26:35 +0200
-> > Peter Rosin <peda@axentia.se> wrote:
-> >   
-> >> On 2017-07-07 06:57, Peter Rosin wrote:  
-> >>> On 2017-07-07 06:53, Gustavo A. R. Silva wrote:    
-> >>>> Check return values from call to devm_kzalloc() and devm_kmemup()    
-> >>>
-> >>> If someone cares enough: s/devm_kmemup/evm_kmemdup/    
-> >>
-> >> Strange, there seems to be some inherent shortage of 'd' characters...
-> >>
-> >> Cheers,
-> >> pea :-)
-> >>  
-> >>>     
-> >>>> in order to prevent a NULL pointer dereference.
-> >>>>
-> >>>> This issue was detected using Coccinelle and the following semantic patch:
-> >>>>
-> >>>> @@
-> >>>> expression x;
-> >>>> identifier fld;
-> >>>> @@
-> >>>>
-> >>>> * x = devm_kzalloc(...);
-> >>>>    ... when != x == NULL
-> >>>>    x->fld
-> >>>>
-> >>>> Cc: Peter Rosin <peda@axentia.se>
-> >>>> Signed-off-by: Gustavo A. R. Silva <garsilva@embeddedor.com>    
-> >>>
-> >>> Either way,
-> >>>
-> >>> Reviewed-by: Peter Rosin <peda@axentia.se>
-> >>>
-> >>> Thanks!
-> >>>  
-> > The relevant patch adding the file in questions hasn't yet worked it's
-> > way back to the iio tree so I can't apply this until it does.
+> On Thu, 13 Jul 2017 13:30:04 +0000
+> Jean-Baptiste Maneyrol <JManeyrol@invensense.com> wrote:
+> 
+> > Some functions are turning the chip on and not back off in error
+> > path. With set_power function using a reference counter this is
+> > keeping the chip on forever.
 > > 
-> > That is likely to be a few weeks away yet.  Please give me a poke if
-> > I seem to have forgotten it!  
-> 
-> Hi Jonathan!
-> 
-> I saw a patch from Christophe JAILLET [1] and it seemed familiar so I
-> did a bit of digging. Now, I did go back and check this a couple of
-> weeks after you request, but iio-mux.c still wasn't in the iio tree,
-> and then I did forgot about it. Sorry. But here's the poke...
-> 
+> > Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>  
+> Good fix in general, but there is one line that seems to be doing
+> something else (marking the fifo disabled in a non error path).
+> May well be a good change, but it wants explaining and probably
+> to be in a separate patch.
 
-Applied.  Thanks - this one had completely dropped off the back of my
-patch queue. Oops.
+Hi,
+
+I see that a new version of this series is still to come.
+Any idea when/if you will get to it?
+
+Thanks,
 
 Jonathan
-
-> Cheers,
-> Peter
 > 
-> [1] https://lkml.org/lkml/2017/8/26/3
+> Thanks,
+> 
+> Jonathan
+> > ---
+> >  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    | 12 ++++++++----
+> >  drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c | 23 +++++++++++++++--------
+> >  2 files changed, 23 insertions(+), 12 deletions(-)
+> > 
+> > diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> > index 44830bc..b1a8159 100644
+> > --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> > +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> > @@ -262,27 +262,31 @@ static int inv_mpu6050_init_config(struct iio_dev *indio_dev)
+> >  	d = (INV_MPU6050_FSR_2000DPS << INV_MPU6050_GYRO_CONFIG_FSR_SHIFT);
+> >  	result = regmap_write(st->map, st->reg->gyro_config, d);
+> >  	if (result)
+> > -		return result;
+> > +		goto error_power_off;
+> >  
+> >  	result = inv_mpu6050_set_lpf_regs(st, INV_MPU6050_FILTER_20HZ);
+> >  	if (result)
+> > -		return result;
+> > +		goto error_power_off;
+> >  
+> >  	d = INV_MPU6050_ONE_K_HZ / INV_MPU6050_INIT_FIFO_RATE - 1;
+> >  	result = regmap_write(st->map, st->reg->sample_rate_div, d);
+> >  	if (result)
+> > -		return result;
+> > +		goto error_power_off;
+> >  
+> >  	d = (INV_MPU6050_FS_02G << INV_MPU6050_ACCL_CONFIG_FSR_SHIFT);
+> >  	result = regmap_write(st->map, st->reg->accl_config, d);
+> >  	if (result)
+> > -		return result;
+> > +		goto error_power_off;
+> >  
+> >  	memcpy(&st->chip_config, hw_info[st->chip_type].config,
+> >  	       sizeof(struct inv_mpu6050_chip_config));
+> >  	result = inv_mpu6050_set_power_itg(st, false);
+> >  
+> >  	return result;
+> > +
+> > +error_power_off:
+> > +	inv_mpu6050_set_power_itg(st, false);
+> > +	return result;
+> >  }
+> >  
+> >  static int inv_mpu6050_sensor_set(struct inv_mpu6050_state  *st, int reg,
+> > diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+> > index 540070f..85c2732 100644
+> > --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+> > +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+> > @@ -53,45 +53,52 @@ static int inv_mpu6050_set_enable(struct iio_dev *indio_dev, bool enable)
+> >  			result = inv_mpu6050_switch_engine(st, true,
+> >  					INV_MPU6050_BIT_PWR_GYRO_STBY);
+> >  			if (result)
+> > -				return result;
+> > +				goto error_power_off;
+> >  		}
+> >  		if (st->chip_config.accl_fifo_enable) {
+> >  			result = inv_mpu6050_switch_engine(st, true,
+> >  					INV_MPU6050_BIT_PWR_ACCL_STBY);
+> >  			if (result)
+> > -				return result;
+> > +				goto error_power_off;
+> >  		}
+> >  		result = inv_reset_fifo(indio_dev);
+> >  		if (result)
+> > -			return result;
+> > +			goto error_power_off;
+> >  	} else {
+> >  		result = regmap_write(st->map, st->reg->fifo_en, 0);
+> >  		if (result)
+> > -			return result;
+> > +			goto error_power_off;
+> >  
+> >  		result = regmap_write(st->map, st->reg->int_enable, 0);
+> >  		if (result)
+> > -			return result;
+> > +			goto error_power_off;
+> >  
+> >  		result = regmap_write(st->map, st->reg->user_ctrl, 0);
+> >  		if (result)
+> > -			return result;
+> > +			goto error_power_off;
+> >  
+> >  		result = inv_mpu6050_switch_engine(st, false,
+> >  					INV_MPU6050_BIT_PWR_GYRO_STBY);
+> >  		if (result)
+> > -			return result;
+> > +			goto error_power_off;
+> > +		st->chip_config.gyro_fifo_enable = false;
+> >  
+> >  		result = inv_mpu6050_switch_engine(st, false,
+> >  					INV_MPU6050_BIT_PWR_ACCL_STBY);
+> >  		if (result)
+> > -			return result;
+> > +			goto error_power_off;
+> > +		st->chip_config.accl_fifo_enable = false;  
+> This one line doesn't fit with what the the patch is described
+> as doing.  Looks like an independent change.
+> 
+> Could you explain why it is here please?
+> 
+> > +
+> >  		result = inv_mpu6050_set_power_itg(st, false);
+> >  		if (result)
+> >  			return result;
+> >  	}
+> >  
+> >  	return 0;
+> > +
+> > +error_power_off:
+> > +	inv_mpu6050_set_power_itg(st, false);
+> > +	return result;
+> >  }
+> >  
+> >  /**  
+> 
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
