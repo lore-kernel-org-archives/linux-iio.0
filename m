@@ -9,23 +9,50 @@ Cc: knaack.h@gmx.de,
 	linux-kernel@vger.kernel.org,
 	amsfield22@gmail.com,
 	martink@posteo.de
-Subject: [PATCH 0/3] This patchset refactors event related functions 
-Date: Sun, 24 Sep 2017 23:15:30 -0400
-Message-Id: <1506309333-1970-1-git-send-email-harinath922@gmail.com>
+Subject: [PATCH 1/3] iio: accel: mma8452: Rename time step look up struct to generic name as the values are same for all the events.
+Date: Sun, 24 Sep 2017 23:15:31 -0400
+Message-Id: <1506309333-1970-2-git-send-email-harinath922@gmail.com>
+In-Reply-To: <1506309333-1970-1-git-send-email-harinath922@gmail.com>
+References: <1506309333-1970-1-git-send-email-harinath922@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Harinath Nampally (3):
-Following 2 patches are for refactor:
-  iio: accel: mma8452: Rename time step look up struct     to generic
-    name as the values are same for all the events.
-  iio: accel: mma8452: Rename read/write event value     callbacks to
-    generic function name.
-Following patch adds new feature:
-  iio: accel: mma8452: Add single pulse/tap event detection     feature
-    for fxls8471.
+Improves code readability, no impact on functionality.
 
- drivers/iio/accel/mma8452.c | 170 ++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 158 insertions(+), 12 deletions(-)
+Signed-off-by: Harinath Nampally <harinath922@gmail.com>
+---
+ drivers/iio/accel/mma8452.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index 3472e7e..74b6221 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -284,7 +284,7 @@ static const int mma8452_samp_freq[8][2] = {
+ };
+ 
+ /* Datasheet table: step time "Relationship with the ODR" (sample frequency) */
+-static const unsigned int mma8452_transient_time_step_us[4][8] = {
++static const unsigned int mma8452_time_step_us[4][8] = {
+ 	{ 1250, 2500, 5000, 10000, 20000, 20000, 20000, 20000 },  /* normal */
+ 	{ 1250, 2500, 5000, 10000, 20000, 80000, 80000, 80000 },  /* l p l n */
+ 	{ 1250, 2500, 2500, 2500, 2500, 2500, 2500, 2500 },	  /* high res*/
+@@ -826,7 +826,7 @@ static int mma8452_read_thresh(struct iio_dev *indio_dev,
+ 		if (power_mode < 0)
+ 			return power_mode;
+ 
+-		us = ret * mma8452_transient_time_step_us[power_mode][
++		us = ret * mma8452_time_step_us[power_mode][
+ 				mma8452_get_odr_index(data)];
+ 		*val = us / USEC_PER_SEC;
+ 		*val2 = us % USEC_PER_SEC;
+@@ -883,7 +883,7 @@ static int mma8452_write_thresh(struct iio_dev *indio_dev,
+ 			return ret;
+ 
+ 		steps = (val * USEC_PER_SEC + val2) /
+-				mma8452_transient_time_step_us[ret][
++				mma8452_time_step_us[ret][
+ 					mma8452_get_odr_index(data)];
+ 
+ 		if (steps < 0 || steps > 0xff)
 -- 
 2.7.4
