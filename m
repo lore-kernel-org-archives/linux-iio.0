@@ -1,465 +1,83 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:58410 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:48234 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751469AbdI3RVQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 30 Sep 2017 13:21:16 -0400
-Date: Sat, 30 Sep 2017 18:21:11 +0100
+        id S965786AbdIZHFM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 26 Sep 2017 03:05:12 -0400
+Date: Tue, 26 Sep 2017 08:05:08 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: "Ismail H. Kose" <Ismail.Kose@maximintegrated.com>
-Cc: ihkose@gmail.com, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Peter Rosin <peda@axentia.se>,
-        Jean-Francois Dagenais <jeff.dagenais@gmail.com>,
-        Fabrice Gasnier <fabrice.gasnier@st.com>,
-        Maxime Roussin-Belanger <maxime.roussinbelanger@gmail.com>,
-        Mike Looijmans <mike.looijmans@topic.nl>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v7 1/2] iio: dac: ds4422/ds4424 dac driver
-Message-ID: <20170930182055.6047992f@archlinux>
-In-Reply-To: <20170925191425.1684-1-Ismail.Kose@maximintegrated.com>
-References: <20170925191425.1684-1-Ismail.Kose@maximintegrated.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org
+Cc: Stephen Rothwell <sfr@canb.auug.org.au>
+Subject: [PATCH] iio:stm32-lp-timer and ep93xx: drop assign
+ iio_info.driver_module and iio_trigger_ops.owner
+Message-ID: <20170926080508.740a6158@archlinux>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 25 Sep 2017 12:14:11 -0700
-"Ismail H. Kose" <Ismail.Kose@maximintegrated.com> wrote:
 
-> This patch provides an iio device driver for DS4422/DS4424 chips that support
-> two/four channel 7-bit Sink/Source Current DAC.
-> 
-> Signed-off-by: Ismail H. Kose <Ismail.Kose@maximintegrated.com>
-> Signed-off-by: Ismail H. Kose <ihkose@gmail.com>
-The double sign of is a bit unusual.  What was the reasoning
-behind it?  I don't care enough to hold the patch for this though
-as the sign offs are both perfectly valid.
+The equivalent of both of these are now done via macro magic when
+the relevant register calls are made.  The actual structure
+elements have gone away.
 
-Other than trivial points I've fixed up to do with ordering
-in the Makefile / Kconfig this is good.
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+---
+Greg, please take this one directly for staging-next.  This should fix
+the build failures Stephen is seeing with linux-next.  Thanks!
 
-Applied to the togreg branch of iio.git and pushed out as
-testing for the autobuilders to play with it.
+Sorry about this one. I somehow completely failed to realise that the
+two drivers that went into mainline via other trees last cycle, were
+not yet in my local branch when I last tested this set.
 
-Thanks,
+Hindsight shows I should have done this in two goes with the change
+in pull request 1 and the actual removal a while later.
 
-Jonathan
-> ---
-> v7:
-> 	* Revised function exits and fixed error code 
-> v6:
-> 	* Removed reference resistor parsing
-> v5:
-> 	* Removed unused variable
-> v4:
-> 	* Removed unnecessary code and space optimization
-> 	* Alphabetic order in Kconfig and Makefile
-> v3:
-> 	* Removed iio-map and platform file support
-> 	* Removed ds4424.h file
-> 	* Fixed ADC value read bug
-> 	* Removed confused comments
-> 	* Added device tree binding file
-> 	* Fixed bugs in probe and read function
-> v2:
-> 	* Fixed coding style and removed unncessary code
-> 	* Removed min/max rfs, ifs-scale, etc values from device tree
-> 	* Removed unused code, definitions and some comments
-> 	* Removed regulator control and made standard structure
-> 	* Removed data processing and channel scale
-> 	* Removed device tree binding file
-> 
-> 
->  drivers/iio/dac/Kconfig  |   9 ++
->  drivers/iio/dac/Makefile |   1 +
->  drivers/iio/dac/ds4424.c | 341 +++++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 351 insertions(+)
->  create mode 100644 drivers/iio/dac/ds4424.c
-> 
-> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> index 25bed2d7d2b9..57c179830981 100644
-> --- a/drivers/iio/dac/Kconfig
-> +++ b/drivers/iio/dac/Kconfig
-> @@ -211,6 +211,15 @@ config AD8801
->  	  To compile this driver as a module choose M here: the module will be called
->  	  ad8801.
->  
-> +config DS4424
-> +	tristate "Maxim Integrated DS4422/DS4424 DAC driver"
-> +	depends on I2C
-> +	help
-> +	  If you say yes here you get support for Maxim chips DS4422, DS4424.
-> +
-> +	  This driver can also be built as a module.  If so, the module
-> +	  will be called ds4424.
-> +
+Sorry for the waste of time.  Obviously this will cause bisection issues
+but hopefully not that many people will try bisect anything with these two
+obscure drivers.
 
-Alphabetical order...
+ drivers/iio/adc/ep93xx_adc.c                | 1 -
+ drivers/iio/counter/stm32-lptimer-cnt.c     | 1 -
+ drivers/iio/trigger/stm32-lptimer-trigger.c | 1 -
+ 3 files changed, 3 deletions(-)
 
->  config DPOT_DAC
->  	tristate "DAC emulation using a DPOT"
->  	depends on OF
-> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
-> index 603587cc2f07..abf5c3094454 100644
-> --- a/drivers/iio/dac/Makefile
-> +++ b/drivers/iio/dac/Makefile
-> @@ -22,6 +22,7 @@ obj-$(CONFIG_AD5686) += ad5686.o
->  obj-$(CONFIG_AD7303) += ad7303.o
->  obj-$(CONFIG_AD8801) += ad8801.o
->  obj-$(CONFIG_CIO_DAC) += cio-dac.o
-> +obj-$(CONFIG_DS4424) += ds4424.o
-
-Alphabetical order...
-
->  obj-$(CONFIG_DPOT_DAC) += dpot-dac.o
->  obj-$(CONFIG_LPC18XX_DAC) += lpc18xx_dac.o
->  obj-$(CONFIG_LTC2632) += ltc2632.o
-> diff --git a/drivers/iio/dac/ds4424.c b/drivers/iio/dac/ds4424.c
-> new file mode 100644
-> index 000000000000..c94afd02da50
-> --- /dev/null
-> +++ b/drivers/iio/dac/ds4424.c
-> @@ -0,0 +1,341 @@
-> +/*
-> + * Maxim Integrated
-> + * 7-bit, Multi-Channel Sink/Source Current DAC Driver
-> + * Copyright (C) 2017 Maxim Integrated
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + */
-> +
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/i2c.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/err.h>
-> +#include <linux/delay.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/driver.h>
-> +#include <linux/iio/machine.h>
-> +#include <linux/iio/consumer.h>
-> +
-> +#define DS4422_MAX_DAC_CHANNELS		2
-> +#define DS4424_MAX_DAC_CHANNELS		4
-> +
-> +#define DS4424_DAC_ADDR(chan)   ((chan) + 0xf8)
-> +#define DS4424_SOURCE_I		1
-> +#define DS4424_SINK_I		0
-> +
-> +#define DS4424_CHANNEL(chan) { \
-> +	.type = IIO_CURRENT, \
-> +	.indexed = 1, \
-> +	.output = 1, \
-> +	.channel = chan, \
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
-> +}
-> +
-> +/*
-> + * DS4424 DAC control register 8 bits
-> + * [7]		0: to sink; 1: to source
-> + * [6:0]	steps to sink/source
-> + * bit[7] looks like a sign bit, but the value of the register is
-> + * not a two's complement code considering the bit[6:0] is a absolute
-> + * distance from the zero point.
-> + */
-> +union ds4424_raw_data {
-> +	struct {
-> +		u8 dx:7;
-> +		u8 source_bit:1;
-> +	};
-> +	u8 bits;
-> +};
-> +
-> +enum ds4424_device_ids {
-> +	ID_DS4422,
-> +	ID_DS4424,
-> +};
-> +
-> +struct ds4424_data {
-> +	struct i2c_client *client;
-> +	struct mutex lock;
-> +	__maybe_unused uint8_t save[DS4424_MAX_DAC_CHANNELS];
-> +	struct regulator *vcc_reg;
-> +	uint8_t raw[DS4424_MAX_DAC_CHANNELS];
-> +};
-> +
-> +static const struct iio_chan_spec ds4424_channels[] = {
-> +	DS4424_CHANNEL(0),
-> +	DS4424_CHANNEL(1),
-> +	DS4424_CHANNEL(2),
-> +	DS4424_CHANNEL(3),
-> +};
-> +
-> +static int ds4424_get_value(struct iio_dev *indio_dev,
-> +			     int *val, int channel)
-> +{
-> +	struct ds4424_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	mutex_lock(&data->lock);
-> +	ret = i2c_smbus_read_byte_data(data->client, DS4424_DAC_ADDR(channel));
-> +	if (ret < 0)
-> +		goto fail;
-> +
-> +	*val = ret;
-> +
-> +fail:
-> +	mutex_unlock(&data->lock);
-> +	return ret;
-> +}
-> +
-> +static int ds4424_set_value(struct iio_dev *indio_dev,
-> +			     int val, struct iio_chan_spec const *chan)
-> +{
-> +	struct ds4424_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	mutex_lock(&data->lock);
-> +	ret = i2c_smbus_write_byte_data(data->client,
-> +			DS4424_DAC_ADDR(chan->channel), val);
-> +	if (ret < 0)
-> +		goto fail;
-> +
-> +	data->raw[chan->channel] = val;
-> +
-> +fail:
-> +	mutex_unlock(&data->lock);
-> +	return ret;
-> +}
-> +
-> +static int ds4424_read_raw(struct iio_dev *indio_dev,
-> +			   struct iio_chan_spec const *chan,
-> +			   int *val, int *val2, long mask)
-> +{
-> +	union ds4424_raw_data raw;
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = ds4424_get_value(indio_dev, val, chan->channel);
-> +		if (ret < 0) {
-> +			pr_err("%s : ds4424_get_value returned %d\n",
-> +							__func__, ret);
-> +			return ret;
-> +		}
-> +		raw.bits = *val;
-> +		*val = raw.dx;
-> +		if (raw.source_bit == DS4424_SINK_I)
-> +			*val = -*val;
-> +		return IIO_VAL_INT;
-> +
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int ds4424_write_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan,
-> +			     int val, int val2, long mask)
-> +{
-> +	union ds4424_raw_data raw;
-> +
-> +	if (val2 != 0)
-> +		return -EINVAL;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		if (val < S8_MIN || val > S8_MAX)
-> +			return -EINVAL;
-> +
-> +		if (val > 0) {
-> +			raw.source_bit = DS4424_SOURCE_I;
-> +			raw.dx = val;
-> +		} else {
-> +			raw.source_bit = DS4424_SINK_I;
-> +			raw.dx = -val;
-> +		}
-> +
-> +		return ds4424_set_value(indio_dev, raw.bits, chan);
-> +
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int ds4424_verify_chip(struct iio_dev *indio_dev)
-> +{
-> +	int ret, val;
-> +
-> +	ret = ds4424_get_value(indio_dev, &val, DS4424_DAC_ADDR(0));
-> +	if (ret < 0)
-> +		dev_err(&indio_dev->dev,
-> +				"%s failed. ret: %d\n", __func__, ret);
-> +
-> +	return ret;
-> +}
-> +
-> +static int __maybe_unused ds4424_suspend(struct device *dev)
-> +{
-> +	struct i2c_client *client = to_i2c_client(dev);
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +	struct ds4424_data *data = iio_priv(indio_dev);
-> +	int ret = 0;
-> +	int i;
-> +
-> +	for (i = 0; i < indio_dev->num_channels; i++) {
-> +		data->save[i] = data->raw[i];
-> +		ret = ds4424_set_value(indio_dev, 0,
-> +				&indio_dev->channels[i]);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-> +	return ret;
-> +}
-> +
-> +static int __maybe_unused ds4424_resume(struct device *dev)
-> +{
-> +	struct i2c_client *client = to_i2c_client(dev);
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +	struct ds4424_data *data = iio_priv(indio_dev);
-> +	int ret = 0;
-> +	int i;
-> +
-> +	for (i = 0; i < indio_dev->num_channels; i++) {
-> +		ret = ds4424_set_value(indio_dev, data->save[i],
-> +				&indio_dev->channels[i]);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-> +	return ret;
-> +}
-> +
-> +static SIMPLE_DEV_PM_OPS(ds4424_pm_ops, ds4424_suspend, ds4424_resume);
-> +
-> +static const struct iio_info ds4424_info = {
-> +	.read_raw = ds4424_read_raw,
-> +	.write_raw = ds4424_write_raw,
-> +};
-> +
-> +static int ds4424_probe(struct i2c_client *client,
-> +			const struct i2c_device_id *id)
-> +{
-> +	struct ds4424_data *data;
-> +	struct iio_dev *indio_dev;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev) {
-> +		dev_err(&client->dev, "iio dev alloc failed.\n");
-> +		return -ENOMEM;
-> +	}
-> +
-> +	data = iio_priv(indio_dev);
-> +	i2c_set_clientdata(client, indio_dev);
-> +	data->client = client;
-> +	indio_dev->name = id->name;
-> +	indio_dev->dev.of_node = client->dev.of_node;
-> +	indio_dev->dev.parent = &client->dev;
-> +
-> +	if (!client->dev.of_node) {
-> +		dev_err(&client->dev,
-> +				"Not found DT.\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	data->vcc_reg = devm_regulator_get(&client->dev, "vcc");
-> +	if (IS_ERR(data->vcc_reg)) {
-> +		dev_err(&client->dev,
-> +			"Failed to get vcc-supply regulator. err: %ld\n",
-> +				PTR_ERR(data->vcc_reg));
-> +		return PTR_ERR(data->vcc_reg);
-> +	}
-> +
-> +	mutex_init(&data->lock);
-> +	ret = regulator_enable(data->vcc_reg);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev,
-> +				"Unable to enable the regulator.\n");
-> +		return ret;
-> +	}
-> +
-> +	usleep_range(1000, 1200);
-> +	ret = ds4424_verify_chip(indio_dev);
-> +	if (ret < 0)
-> +		goto fail;
-> +
-> +	switch (id->driver_data) {
-> +	case ID_DS4422:
-> +		indio_dev->num_channels = DS4422_MAX_DAC_CHANNELS;
-> +		break;
-> +	case ID_DS4424:
-> +		indio_dev->num_channels = DS4424_MAX_DAC_CHANNELS;
-> +		break;
-> +	default:
-> +		dev_err(&client->dev,
-> +				"ds4424: Invalid chip id.\n");
-> +		ret = -ENXIO;
-> +		goto fail;
-> +	}
-> +
-> +	indio_dev->channels = ds4424_channels;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->info = &ds4424_info;
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev,
-> +				"iio_device_register failed. ret: %d\n", ret);
-> +		goto fail;
-> +	}
-> +
-> +	return ret;
-> +
-> +fail:
-> +	regulator_disable(data->vcc_reg);
-> +	return ret;
-> +}
-> +
-> +static int ds4424_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +	struct ds4424_data *data = iio_priv(indio_dev);
-> +
-> +	iio_device_unregister(indio_dev);
-> +	regulator_disable(data->vcc_reg);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct i2c_device_id ds4424_id[] = {
-> +	{ "ds4422", ID_DS4422 },
-> +	{ "ds4424", ID_DS4424 },
-> +	{ }
-> +};
-> +
-> +MODULE_DEVICE_TABLE(i2c, ds4424_id);
-> +
-> +static const struct of_device_id ds4424_of_match[] = {
-> +	{ .compatible = "maxim,ds4422" },
-> +	{ .compatible = "maxim,ds4424" },
-> +	{ },
-> +};
-> +
-> +MODULE_DEVICE_TABLE(of, ds4424_of_match);
-> +
-> +static struct i2c_driver ds4424_driver = {
-> +	.driver = {
-> +		.name	= "ds4424",
-> +		.of_match_table = ds4424_of_match,
-> +		.pm     = &ds4424_pm_ops,
-> +	},
-> +	.probe		= ds4424_probe,
-> +	.remove		= ds4424_remove,
-> +	.id_table	= ds4424_id,
-> +};
-> +module_i2c_driver(ds4424_driver);
-> +
-> +MODULE_DESCRIPTION("Maxim DS4424 DAC Driver");
-> +MODULE_AUTHOR("Ismail H. Kose <ismail.kose@maximintegrated.com>");
-> +MODULE_AUTHOR("Vishal Sood <vishal.sood@maximintegrated.com>");
-> +MODULE_AUTHOR("David Jung <david.jung@maximintegrated.com>");
-> +MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/adc/ep93xx_adc.c b/drivers/iio/adc/ep93xx_adc.c
+index a179ac476c6d..81c901507ad2 100644
+--- a/drivers/iio/adc/ep93xx_adc.c
++++ b/drivers/iio/adc/ep93xx_adc.c
+@@ -150,7 +150,6 @@ static int ep93xx_read_raw(struct iio_dev *iiodev,
+ }
+ 
+ static const struct iio_info ep93xx_adc_info = {
+-	.driver_module = THIS_MODULE,
+ 	.read_raw = ep93xx_read_raw,
+ };
+ 
+diff --git a/drivers/iio/counter/stm32-lptimer-cnt.c b/drivers/iio/counter/stm32-lptimer-cnt.c
+index 1c5909bb1605..81ae5f74216d 100644
+--- a/drivers/iio/counter/stm32-lptimer-cnt.c
++++ b/drivers/iio/counter/stm32-lptimer-cnt.c
+@@ -178,7 +178,6 @@ static int stm32_lptim_read_raw(struct iio_dev *indio_dev,
+ static const struct iio_info stm32_lptim_cnt_iio_info = {
+ 	.read_raw = stm32_lptim_read_raw,
+ 	.write_raw = stm32_lptim_write_raw,
+-	.driver_module = THIS_MODULE,
+ };
+ 
+ static const char *const stm32_lptim_quadrature_modes[] = {
+diff --git a/drivers/iio/trigger/stm32-lptimer-trigger.c b/drivers/iio/trigger/stm32-lptimer-trigger.c
+index 241eae6a4306..de361d879929 100644
+--- a/drivers/iio/trigger/stm32-lptimer-trigger.c
++++ b/drivers/iio/trigger/stm32-lptimer-trigger.c
+@@ -37,7 +37,6 @@ static int stm32_lptim_validate_device(struct iio_trigger *trig,
+ }
+ 
+ static const struct iio_trigger_ops stm32_lptim_trigger_ops = {
+-	.owner = THIS_MODULE,
+ 	.validate_device = stm32_lptim_validate_device,
+ };
+ 
+-- 
+2.14.1
 
