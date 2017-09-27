@@ -1,95 +1,101 @@
-Return-Path: <SRS0=jnrf=A4=infradead.org=rdunlap@kernel.org>
-Subject: Re: [PATCH v2 3/4] platform/chrome: Add cros_ec_accel_legacy driver
-To: Thierry Escande <thierry.escande@collabora.com>,
- Benson Leung <bleung@chromium.org>, Jonathan Cameron <jic23@kernel.org>
+Return-Path: <SRS0=ZkVi=A4=collabora.com=thierry.escande@kernel.org>
+From: Thierry Escande <thierry.escande@collabora.com>
+To: Benson Leung <bleung@chromium.org>,
+	Jonathan Cameron <jic23@kernel.org>
 Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
- Gwendal Grignou <gwendal@chromium.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
+	Gwendal Grignou <gwendal@chromium.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v2 4/4] platform/chrome: Register cros_ec_accel_legacy driver
+Date: Wed, 27 Sep 2017 18:22:59 +0200
+Message-Id: <1506529379-8941-5-git-send-email-thierry.escande@collabora.com>
+In-Reply-To: <1506529379-8941-1-git-send-email-thierry.escande@collabora.com>
 References: <1506529379-8941-1-git-send-email-thierry.escande@collabora.com>
- <1506529379-8941-4-git-send-email-thierry.escande@collabora.com>
-From: Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <52bc724f-a615-f334-2359-47e040cef0fb@infradead.org>
-Date: Wed, 27 Sep 2017 09:30:32 -0700
 MIME-Version: 1.0
-In-Reply-To: <1506529379-8941-4-git-send-email-thierry.escande@collabora.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset = "utf-8"
 List-ID: <linux-iio@vger.kernel.org>
 
-On 09/27/17 09:22, Thierry Escande wrote:
-> From: Gwendal Grignou <gwendal@chromium.org>
-> 
-> diff --git a/drivers/iio/accel/cros_ec_accel_legacy.c b/drivers/iio/accel/cros_ec_accel_legacy.c
-> new file mode 100644
-> index 0000000..3fc8185
-> --- /dev/null
-> +++ b/drivers/iio/accel/cros_ec_accel_legacy.c
+With this patch, the cros_ec_ctl driver will register the legacy
+accelerometer driver (named cros_ec_accel_legacy) if it fails to
+register sensors through the usual path cros_ec_sensors_register().
+This legacy device is present on Chromebook devices with older EC
+firmware only supporting deprecated EC commands (Glimmer based devices).
 
-Please use proper kernel-doc notation (or don't use /** to indicate kernel-doc).
+Signed-off-by: Thierry Escande <thierry.escande@collabora.com>
+---
+ drivers/platform/chrome/cros_ec_dev.c | 53 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 53 insertions(+)
 
-> +/**
-> + * read_ec_until_not_busy - read from EC status byte until it reads not busy.
-> + *
-> + * @st Pointer to state information for device.
-> + * @return 8-bit status if ok, -ve on error
-> + */
-> +static int read_ec_until_not_busy(struct cros_ec_accel_legacy_state *st)
-> +{
-...
-> +}
-
-> +/**
-> + * read_ec_accel_data_unsafe - read acceleration data from EC shared memory.
-> + *
-> + * @st Pointer to state information for device.
-> + * @scan_mask Bitmap of the sensor indices to scan.
-> + * @data Location to store data.
-> + *
-> + * Note this is the unsafe function for reading the EC data. It does not
-> + * guarantee that the EC will not modify the data as it is being read in.
-> + */
-> +static void read_ec_accel_data_unsafe(struct cros_ec_accel_legacy_state *st,
-> +				      unsigned long scan_mask, s16 *data)
-> +{
-...
-> +}
-> +
-
-> +/**
-> + * read_ec_accel_data - read acceleration data from EC shared memory.
-> + *
-> + * @st Pointer to state information for device.
-> + * @scan_mask Bitmap of the sensor indices to scan.
-> + * @data Location to store data.
-> + * @return 0 if ok, -ve on error
-> + *
-> + * Note: this is the safe function for reading the EC data. It guarantees
-> + * that the data sampled was not modified by the EC while being read.
-> + */
-> +static int read_ec_accel_data(struct cros_ec_accel_legacy_state *st,
-> +			      unsigned long scan_mask, s16 *data)
-> +{
-...
-> +}
-
-> +
-> +/**
-> + * accel_capture - the trigger handler function
-> + *
-
-This one is closer, but the function name is shortened.
-
-> + * @irq: the interrupt number
-> + * @p: private data - always a pointer to the poll func.
-> + *
-> + * On a trigger event occurring, if the pollfunc is attached then this
-> + * handler is called as a threaded interrupt (and hence may sleep). It
-> + * is responsible for grabbing data from the device and pushing it into
-> + * the associated buffer.
-> + */
-> +static irqreturn_t cros_ec_accel_legacy_capture(int irq, void *p)
-> +{
-
-
-Thanks.
+diff --git a/drivers/platform/chrome/cros_ec_dev.c b/drivers/platform/chrome/cros_ec_dev.c
+index cf6c4f0..d64bf05 100644
+--- a/drivers/platform/chrome/cros_ec_dev.c
++++ b/drivers/platform/chrome/cros_ec_dev.c
+@@ -388,6 +388,56 @@ static void cros_ec_sensors_register(struct cros_ec_dev *ec)
+ 	kfree(msg);
+ }
+ 
++#define CROS_EC_SENSOR_LEGACY_NUM 2
++static struct mfd_cell cros_ec_accel_legacy_cells[CROS_EC_SENSOR_LEGACY_NUM];
++
++static void cros_ec_accel_legacy_register(struct cros_ec_dev *ec)
++{
++	struct cros_ec_device *ec_dev = ec->ec_dev;
++	u8 status;
++	int i, ret;
++	struct cros_ec_sensor_platform
++		sensor_platforms[CROS_EC_SENSOR_LEGACY_NUM];
++
++	/*
++	 * Check if EC supports direct memory reads and if EC has
++	 * accelerometers.
++	 */
++	if (!ec_dev->cmd_readmem)
++		return;
++
++	ret = ec_dev->cmd_readmem(ec_dev, EC_MEMMAP_ACC_STATUS, 1, &status);
++	if (ret < 0) {
++		dev_warn(ec->dev, "EC does not support direct reads.\n");
++		return;
++	}
++
++	/* Check if EC has accelerometers. */
++	if (!(status & EC_MEMMAP_ACC_STATUS_PRESENCE_BIT)) {
++		dev_info(ec->dev, "EC does not have accelerometers.\n");
++		return;
++	}
++
++	/*
++	 * Register 2 accelerometers
++	 */
++	for (i = 0; i < CROS_EC_SENSOR_LEGACY_NUM; i++) {
++		cros_ec_accel_legacy_cells[i].name = "cros-ec-accel-legacy";
++		sensor_platforms[i].sensor_num = i;
++		cros_ec_accel_legacy_cells[i].id = i;
++		cros_ec_accel_legacy_cells[i].platform_data =
++			&sensor_platforms[i];
++		cros_ec_accel_legacy_cells[i].pdata_size =
++			sizeof(struct cros_ec_sensor_platform);
++	}
++	ret = mfd_add_devices(ec->dev, PLATFORM_DEVID_AUTO,
++			      cros_ec_accel_legacy_cells,
++			      CROS_EC_SENSOR_LEGACY_NUM,
++			      NULL, 0, NULL);
++	if (ret)
++		dev_err(ec_dev->dev, "failed to add EC sensors\n");
++}
++
+ static int ec_device_probe(struct platform_device *pdev)
+ {
+ 	int retval = -ENOMEM;
+@@ -435,6 +485,9 @@ static int ec_device_probe(struct platform_device *pdev)
+ 	/* check whether this EC is a sensor hub. */
+ 	if (cros_ec_check_features(ec, EC_FEATURE_MOTION_SENSE))
+ 		cros_ec_sensors_register(ec);
++	else
++		/* Workaroud for older EC firmware */
++		cros_ec_accel_legacy_register(ec);
+ 
+ 	/* Take control of the lightbar from the EC. */
+ 	lb_manual_suspend_ctrl(ec, 1);
 -- 
-~Randy
+2.7.4
