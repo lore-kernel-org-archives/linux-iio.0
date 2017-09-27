@@ -1,113 +1,85 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:39940 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751099AbdI3UlL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 30 Sep 2017 16:41:11 -0400
-Date: Sat, 30 Sep 2017 21:41:06 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Harsha Sharma <harshasharmaiitr@gmail.com>
-Cc: gregkh@linuxfoundation.org, lars@metafoo.de, knaack.h@gmx.de,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, outreachy-kernel@googlegroups.com
-Subject: Re: [PATCH] staging: iio: trigger: Move header file content to
- source file
-Message-ID: <20170930214107.55e03f96@archlinux>
-In-Reply-To: <1506450375-15538-1-git-send-email-harshasharmaiitr@gmail.com>
-References: <1506450375-15538-1-git-send-email-harshasharmaiitr@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=lvsy=A4=gmail.com=aastha.gupta4104@kernel.org>
+From: Aastha Gupta <aastha.gupta4104@gmail.com>
+To: outreachy-kernel@googlegroups.com,
+	hennerich@blackfin.uclinux.org,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org
+Cc: Aastha Gupta <aastha.gupta4104@gmail.com>
+Subject: [PATCH v3] staging: iio: adc: ad7192: use driver private lock to protect hardware changes
+Date: Wed, 27 Sep 2017 07:47:52 +0530
+Message-Id: <1506478672-5937-1-git-send-email-aastha.gupta4104@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, 26 Sep 2017 23:56:15 +0530
-Harsha Sharma <harshasharmaiitr@gmail.com> wrote:
+The IIO subsystem is redefining iio_dev->mlock to be used by
+the IIO core only for protecting device operating mode changes.
+ie. Changes between INDIO_DIRECT_MODE, INDIO_BUFFER_* modes.
 
-> The contents of the header file are used only by this single source file.
-> Moved content into iio-trig-bfin-timer.c and removed iio-trig-bfin-timer.h
-> 
-> Signed-off-by: Harsha Sharma <harshasharmaiitr@gmail.com>
+In this driver, mlock was being used to protect hardware state
+changes.  Replace it with a lock in the devices global data.
 
-Hmm. This one again.  Sometimes you need to not just consider whether a
-structure is in use elsewhere in the kernel, but rather what it is for.
+Also, private driver lock is being used to protect hardware
+state changes as here state variables are being changed.
 
-If you had done this here you would have discovered the delights of board
-files - the means we used to use to describe individual hardware configurations
-on ARM before we had device tree (there are still some under arch/arm/mach-pxa
-for example). 
+Signed-off-by: Aastha Gupta <aastha.gupta4104@gmail.com>
+---
+changes in v3:
+	- combined patch 1 and patch 2 into one patch
 
-The upshot is that if this driver ever moved out of staging and we still
-had it configured with platform data - this file would go in
-include/linux/platform_data/
+ drivers/staging/iio/adc/ad7192.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-Whilst a driver is in staging - all it's code must not be outside
-staging which leads to these files being in an unusual location.
-
-Jonathan
-> ---
->  drivers/staging/iio/trigger/iio-trig-bfin-timer.c | 20 ++++++++++++++++++-
->  drivers/staging/iio/trigger/iio-trig-bfin-timer.h | 24 -----------------------
->  2 files changed, 19 insertions(+), 25 deletions(-)
->  delete mode 100644 drivers/staging/iio/trigger/iio-trig-bfin-timer.h
-> 
-> diff --git a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
-> index d80dcf8..2cedcaf 100644
-> --- a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
-> +++ b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
-> @@ -19,7 +19,25 @@
->  #include <linux/iio/iio.h>
->  #include <linux/iio/trigger.h>
->  
-> -#include "iio-trig-bfin-timer.h"
-> +/**
-> + * struct iio_bfin_timer_trigger_pdata - timer trigger platform data
-> + * @output_enable: Enable external trigger pulse generation.
-> + * @active_low: Whether the trigger pulse is active low.
-> + * @duty_ns: Length of the trigger pulse in nanoseconds.
-> + *
-> + * This struct is used to configure the output pulse generation of the blackfin
-> + * timer trigger. If output_enable is set to true an external trigger signal
-> + * will generated on the pin corresponding to the timer. This is useful for
-> + * converters which needs an external signal to start conversion. active_low and
-> + * duty_ns are used to configure the type of the trigger pulse. If output_enable
-> + * is set to false no external trigger pulse will be generated and active_low
-> + * and duty_ns are ignored.
-> + **/
-> +struct iio_bfin_timer_trigger_pdata {
-> +	 bool output_enable;
-> +	 bool active_low;
-> +	 unsigned int duty_ns;
-> +};
->  
->  struct bfin_timer {
->  	unsigned short id, bit;
-> diff --git a/drivers/staging/iio/trigger/iio-trig-bfin-timer.h b/drivers/staging/iio/trigger/iio-trig-bfin-timer.h
-> deleted file mode 100644
-> index c07321f..0000000
-> --- a/drivers/staging/iio/trigger/iio-trig-bfin-timer.h
-> +++ /dev/null
-> @@ -1,24 +0,0 @@
-> -#ifndef __IIO_BFIN_TIMER_TRIGGER_H__
-> -#define __IIO_BFIN_TIMER_TRIGGER_H__
-> -
-> -/**
-> - * struct iio_bfin_timer_trigger_pdata - timer trigger platform data
-> - * @output_enable: Enable external trigger pulse generation.
-> - * @active_low: Whether the trigger pulse is active low.
-> - * @duty_ns: Length of the trigger pulse in nanoseconds.
-> - *
-> - * This struct is used to configure the output pulse generation of the blackfin
-> - * timer trigger. If output_enable is set to true an external trigger signal
-> - * will generated on the pin corresponding to the timer. This is useful for
-> - * converters which needs an external signal to start conversion. active_low and
-> - * duty_ns are used to configure the type of the trigger pulse. If output_enable
-> - * is set to false no external trigger pulse will be generated and active_low
-> - * and duty_ns are ignored.
-> - **/
-> -struct iio_bfin_timer_trigger_pdata {
-> -	bool output_enable;
-> -	bool active_low;
-> -	unsigned int duty_ns;
-> -};
-> -
-> -#endif
-
+diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+index d11c6de..609a649 100644
+--- a/drivers/staging/iio/adc/ad7192.c
++++ b/drivers/staging/iio/adc/ad7192.c
+@@ -162,6 +162,7 @@ struct ad7192_state {
+ 	u32				scale_avail[8][2];
+ 	u8				gpocon;
+ 	u8				devid;
++	struct mutex			lock;
+ 
+ 	struct ad_sigma_delta		sd;
+ };
+@@ -463,10 +464,10 @@ static int ad7192_read_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_SCALE:
+ 		switch (chan->type) {
+ 		case IIO_VOLTAGE:
+-			mutex_lock(&indio_dev->mlock);
++			mutex_lock(&st->lock);
+ 			*val = st->scale_avail[AD7192_CONF_GAIN(st->conf)][0];
+ 			*val2 = st->scale_avail[AD7192_CONF_GAIN(st->conf)][1];
+-			mutex_unlock(&indio_dev->mlock);
++			mutex_unlock(&st->lock);
+ 			return IIO_VAL_INT_PLUS_NANO;
+ 		case IIO_TEMP:
+ 			*val = 0;
+@@ -510,6 +511,7 @@ static int ad7192_write_raw(struct iio_dev *indio_dev,
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_SCALE:
+ 		ret = -EINVAL;
++		mutex_lock(&st->lock);
+ 		for (i = 0; i < ARRAY_SIZE(st->scale_avail); i++)
+ 			if (val2 == st->scale_avail[i][1]) {
+ 				ret = 0;
+@@ -523,6 +525,7 @@ static int ad7192_write_raw(struct iio_dev *indio_dev,
+ 				ad7192_calibrate_all(st);
+ 				break;
+ 			}
++		mutex_unlock(&st->lock);
+ 		break;
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+ 		if (!val) {
+@@ -634,6 +637,8 @@ static int ad7192_probe(struct spi_device *spi)
+ 
+ 	st = iio_priv(indio_dev);
+ 
++	mutex_init(&st->lock);
++
+ 	st->avdd = devm_regulator_get(&spi->dev, "avdd");
+ 	if (IS_ERR(st->avdd))
+ 		return PTR_ERR(st->avdd);
+-- 
+2.7.4
