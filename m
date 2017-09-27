@@ -1,82 +1,195 @@
-Return-Path: <SRS0=PE8Z=A4=gmail.com=lorenzo.bianconi83@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wr0-f195.google.com ([209.85.128.195]:35311 "EHLO
+        mail-wr0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751073AbdI0T3g (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 27 Sep 2017 15:29:36 -0400
+Received: by mail-wr0-f195.google.com with SMTP id n64so6171124wrb.2
+        for <linux-iio@vger.kernel.org>; Wed, 27 Sep 2017 12:29:35 -0700 (PDT)
 From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
 To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	lorenzo.bianconi@st.com
-Subject: [PATCH 2/4] iio: imu: st_lsm6dsx: split fifo mode and fifo odr configuration
-Date: Wed, 27 Sep 2017 21:29:26 +0200
-Message-Id: <20170927192928.16160-3-lorenzo.bianconi@st.com>
+Cc: linux-iio@vger.kernel.org, lorenzo.bianconi@st.com
+Subject: [PATCH 3/4] iio: imu: st_lsm6dsx: move decimator info in st_lsm6dsx_sensor_settings
+Date: Wed, 27 Sep 2017 21:29:27 +0200
+Message-Id: <20170927192928.16160-4-lorenzo.bianconi@st.com>
 In-Reply-To: <20170927192928.16160-1-lorenzo.bianconi@st.com>
 References: <20170927192928.16160-1-lorenzo.bianconi@st.com>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Separate fifo mode and max fifo sample rate configuration.
-That change will be necessary to reuse st_lsm6dsx_set_fifo_mode()
-routine and to support more devices in st_lsm6dsx driver
+Move FIFO decimator info in st_lsm6dsx_sensor_settings list since
+decimator registers are exported in register map just in
+lsm6ds3/lsm6ds3h/lsm6dsl/lsm6dsm sensors and not in other compliant
+devices
 
 Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
 ---
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 32 ++++++++++++++------------
- 1 file changed, 17 insertions(+), 15 deletions(-)
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h        | 10 ++++++--
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 17 +++++++------
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c   | 34 +++++++++++++++++++++++---
+ 3 files changed, 47 insertions(+), 14 deletions(-)
 
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+index 46352c7bff43..052db1fbb46e 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+@@ -52,10 +52,18 @@ struct st_lsm6dsx_reg {
+ 	u8 mask;
+ };
+ 
++/**
++ * struct st_lsm6dsx_settings - ST IMU sensor settings
++ * @wai: Sensor WhoAmI default value.
++ * @max_fifo_size: Sensor max fifo length in FIFO words.
++ * @id: List of hw id supported by the driver configuration.
++ * @decimator: List of decimator register info (addr + mask).
++ */
+ struct st_lsm6dsx_settings {
+ 	u8 wai;
+ 	u16 max_fifo_size;
+ 	enum st_lsm6dsx_hw_id id[ST_LSM6DSX_MAX_ID];
++	struct st_lsm6dsx_reg decimator[ST_LSM6DSX_MAX_ID];
+ };
+ 
+ enum st_lsm6dsx_sensor_id {
+@@ -79,7 +87,6 @@ enum st_lsm6dsx_fifo_mode {
+  * @watermark: Sensor watermark level.
+  * @sip: Number of samples in a given pattern.
+  * @decimator: FIFO decimation factor.
+- * @decimator_mask: Sensor mask for decimation register.
+  * @delta_ts: Delta time between two consecutive interrupts.
+  * @ts: Latest timestamp from the interrupt handler.
+  */
+@@ -94,7 +101,6 @@ struct st_lsm6dsx_sensor {
+ 	u16 watermark;
+ 	u8 sip;
+ 	u8 decimator;
+-	u8 decimator_mask;
+ 
+ 	s64 delta_ts;
+ 	s64 ts;
 diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-index e2737dc71b67..26fb970aed15 100644
+index 26fb970aed15..cb4f8558a98f 100644
 --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
 +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-@@ -139,23 +139,10 @@ static int st_lsm6dsx_update_decimators(struct st_lsm6dsx_hw *hw)
- int st_lsm6dsx_set_fifo_mode(struct st_lsm6dsx_hw *hw,
- 			     enum st_lsm6dsx_fifo_mode fifo_mode)
- {
--	u8 data;
- 	int err;
+@@ -38,7 +38,6 @@
+ #define ST_LSM6DSX_REG_FIFO_THL_ADDR		0x06
+ #define ST_LSM6DSX_REG_FIFO_THH_ADDR		0x07
+ #define ST_LSM6DSX_FIFO_TH_MASK			GENMASK(11, 0)
+-#define ST_LSM6DSX_REG_FIFO_DEC_GXL_ADDR	0x08
+ #define ST_LSM6DSX_REG_HLACTIVE_ADDR		0x12
+ #define ST_LSM6DSX_REG_HLACTIVE_MASK		BIT(5)
+ #define ST_LSM6DSX_REG_PP_OD_ADDR		0x12
+@@ -110,8 +109,9 @@ static int st_lsm6dsx_update_decimators(struct st_lsm6dsx_hw *hw)
+ 	st_lsm6dsx_get_max_min_odr(hw, &max_odr, &min_odr);
  
--	switch (fifo_mode) {
--	case ST_LSM6DSX_FIFO_BYPASS:
--		data = fifo_mode;
--		break;
--	case ST_LSM6DSX_FIFO_CONT:
--		data = (ST_LSM6DSX_MAX_FIFO_ODR_VAL <<
--			__ffs(ST_LSM6DSX_FIFO_ODR_MASK)) | fifo_mode;
--		break;
--	default:
--		return -EINVAL;
--	}
+ 	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++) {
+-		sensor = iio_priv(hw->iio_devs[i]);
++		const struct st_lsm6dsx_reg *dec_reg;
+ 
++		sensor = iio_priv(hw->iio_devs[i]);
+ 		/* update fifo decimators and sample in pattern */
+ 		if (hw->enable_mask & BIT(sensor->id)) {
+ 			sensor->sip = sensor->odr / min_odr;
+@@ -123,12 +123,13 @@ static int st_lsm6dsx_update_decimators(struct st_lsm6dsx_hw *hw)
+ 			data = 0;
+ 		}
+ 
+-		err = st_lsm6dsx_write_with_mask(hw,
+-					ST_LSM6DSX_REG_FIFO_DEC_GXL_ADDR,
+-					sensor->decimator_mask, data);
+-		if (err < 0)
+-			return err;
 -
--	err = hw->tf->write(hw->dev, ST_LSM6DSX_REG_FIFO_MODE_ADDR,
--			    sizeof(data), &data);
-+	err = st_lsm6dsx_write_with_mask(hw, ST_LSM6DSX_REG_FIFO_MODE_ADDR,
-+					 ST_LSM6DSX_FIFO_MODE_MASK, fifo_mode);
- 	if (err < 0)
- 		return err;
- 
-@@ -164,6 +151,17 @@ int st_lsm6dsx_set_fifo_mode(struct st_lsm6dsx_hw *hw,
- 	return 0;
- }
- 
-+static int st_lsm6dsx_set_fifo_odr(struct st_lsm6dsx_sensor *sensor,
-+				   bool enable)
-+{
-+	struct st_lsm6dsx_hw *hw = sensor->hw;
-+	u8 data;
-+
-+	data = hw->enable_mask ? ST_LSM6DSX_MAX_FIFO_ODR_VAL : 0;
-+	return st_lsm6dsx_write_with_mask(hw, ST_LSM6DSX_REG_FIFO_MODE_ADDR,
-+					  ST_LSM6DSX_FIFO_ODR_MASK, data);
-+}
-+
- int st_lsm6dsx_update_watermark(struct st_lsm6dsx_sensor *sensor, u16 watermark)
- {
- 	u16 fifo_watermark = ~0, cur_watermark, sip = 0;
-@@ -345,6 +343,10 @@ static int st_lsm6dsx_update_fifo(struct iio_dev *iio_dev, bool enable)
- 			return err;
++		dec_reg = &hw->settings->decimator[sensor->id];
++		if (dec_reg->addr) {
++			err = st_lsm6dsx_write_with_mask(hw, dec_reg->addr,
++							 dec_reg->mask, data);
++			if (err < 0)
++				return err;
++		}
+ 		sip += sensor->sip;
  	}
+ 	hw->sip = sip;
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+index e6e0363cd1c2..4532671df1be 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+@@ -42,8 +42,6 @@
  
-+	err = st_lsm6dsx_set_fifo_odr(sensor, enable);
-+	if (err < 0)
-+		return err;
-+
- 	err = st_lsm6dsx_update_decimators(hw);
- 	if (err < 0)
- 		return err;
+ #include "st_lsm6dsx.h"
+ 
+-#define ST_LSM6DSX_REG_ACC_DEC_MASK		GENMASK(2, 0)
+-#define ST_LSM6DSX_REG_GYRO_DEC_MASK		GENMASK(5, 3)
+ #define ST_LSM6DSX_REG_INT1_ADDR		0x0d
+ #define ST_LSM6DSX_REG_INT2_ADDR		0x0e
+ #define ST_LSM6DSX_REG_FIFO_FTH_IRQ_MASK	BIT(3)
+@@ -160,6 +158,16 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
+ 		.id = {
+ 			[0] = ST_LSM6DS3_ID,
+ 		},
++		.decimator = {
++			[ST_LSM6DSX_ID_ACC] = {
++				.addr = 0x08,
++				.mask = GENMASK(2, 0),
++			},
++			[ST_LSM6DSX_ID_GYRO] = {
++				.addr = 0x08,
++				.mask = GENMASK(5, 3),
++			},
++		},
+ 	},
+ 	{
+ 		.wai = 0x69,
+@@ -167,6 +175,16 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
+ 		.id = {
+ 			[0] = ST_LSM6DS3H_ID,
+ 		},
++		.decimator = {
++			[ST_LSM6DSX_ID_ACC] = {
++				.addr = 0x08,
++				.mask = GENMASK(2, 0),
++			},
++			[ST_LSM6DSX_ID_GYRO] = {
++				.addr = 0x08,
++				.mask = GENMASK(5, 3),
++			},
++		},
+ 	},
+ 	{
+ 		.wai = 0x6a,
+@@ -175,6 +193,16 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
+ 			[0] = ST_LSM6DSL_ID,
+ 			[1] = ST_LSM6DSM_ID,
+ 		},
++		.decimator = {
++			[ST_LSM6DSX_ID_ACC] = {
++				.addr = 0x08,
++				.mask = GENMASK(2, 0),
++			},
++			[ST_LSM6DSX_ID_GYRO] = {
++				.addr = 0x08,
++				.mask = GENMASK(5, 3),
++			},
++		},
+ 	},
+ };
+ 
+@@ -645,7 +673,6 @@ static struct iio_dev *st_lsm6dsx_alloc_iiodev(struct st_lsm6dsx_hw *hw,
+ 		iio_dev->num_channels = ARRAY_SIZE(st_lsm6dsx_acc_channels);
+ 		iio_dev->info = &st_lsm6dsx_acc_info;
+ 
+-		sensor->decimator_mask = ST_LSM6DSX_REG_ACC_DEC_MASK;
+ 		scnprintf(sensor->name, sizeof(sensor->name), "%s_accel",
+ 			  name);
+ 		break;
+@@ -654,7 +681,6 @@ static struct iio_dev *st_lsm6dsx_alloc_iiodev(struct st_lsm6dsx_hw *hw,
+ 		iio_dev->num_channels = ARRAY_SIZE(st_lsm6dsx_gyro_channels);
+ 		iio_dev->info = &st_lsm6dsx_gyro_info;
+ 
+-		sensor->decimator_mask = ST_LSM6DSX_REG_GYRO_DEC_MASK;
+ 		scnprintf(sensor->name, sizeof(sensor->name), "%s_gyro",
+ 			  name);
+ 		break;
 -- 
 2.14.1
+
