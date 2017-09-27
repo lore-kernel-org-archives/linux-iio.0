@@ -1,7 +1,7 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:52618 "EHLO
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:52624 "EHLO
         bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752008AbdI0QXK (ORCPT
+        with ESMTP id S1752011AbdI0QXK (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Wed, 27 Sep 2017 12:23:10 -0400
 From: Thierry Escande <thierry.escande@collabora.com>
 To: Benson Leung <bleung@chromium.org>,
@@ -9,64 +9,98 @@ To: Benson Leung <bleung@chromium.org>,
 Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
         Gwendal Grignou <gwendal@chromium.org>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/4] platform/chrome: Support for cros_ec_accel_legacy driver
-Date: Wed, 27 Sep 2017 18:22:55 +0200
-Message-Id: <1506529379-8941-1-git-send-email-thierry.escande@collabora.com>
+Subject: [PATCH v2 1/4] platform/chrome: cros_ec_lpc: Register the driver if ACPI entry is missing.
+Date: Wed, 27 Sep 2017 18:22:56 +0200
+Message-Id: <1506529379-8941-2-git-send-email-thierry.escande@collabora.com>
+In-Reply-To: <1506529379-8941-1-git-send-email-thierry.escande@collabora.com>
+References: <1506529379-8941-1-git-send-email-thierry.escande@collabora.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset = "utf-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 
-This series enables a driver for a legacy accelerometer driver used on
-Chromebook devices with older EC firmware.
+Commit 12278dc7c572 ("platform/chrome: cros_ec_lpc: Add support for
+GOOG004 ACPI device") added support when the firmware reports the ACPI
+device, there are some firmwares though that doesn't report this device
+but have it. In such cases we need to instantiate the driver explicitly
+if it is not instantiated through ACPI.
 
-In addition to the cros_ec_accel_legacy driver, this series contains a
-fix that registers the cros_ec_lpc driver on Chromebook devices that
-does not have the GOOG0004 ACPI entry. In such case, the driver register
-the device itself. This series also adds support to the cros_ec_lpc
-driver for Glimmer based devices (Lenovo Yoga 11e).
+Fixes: 12278dc7c572 ("platform/chrome: cros_ec_lpc: Add support for GOOG004 ACPI device")
+Signed-off-by: Guenter Roeck <groeck@chromium.org>
+Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Signed-off-by: Thierry Escande <thierry.escande@collabora.com>
+---
+ drivers/platform/chrome/cros_ec_lpc.c | 34 +++++++++++++++++++++++++++++++++-
+ 1 file changed, 33 insertions(+), 1 deletion(-)
 
-The last patch is the code used to register this driver if the usual way
-of registering the croc_ec sensors hub fails. In this case, the 2
-accelerometers (base and lid) are registered using mfd_add_devices().
-As there is work in progress to remove calls to mfd_add_devices() from
-cros_ec_dev.c, this code is in a separate patch with the idea to make
-that easier.
-
-Changes in v2:
-- Reorganize code to avoid forward declarations
-- Simplify capture buffer declaration (also helps to remove forward
-  declarations)
-- Make use of iio_push_to_buffers_with_timestamp() and let the
-  framework hamdle timestamp copy into capture buffer
-- Added missing sysfs attribute documentation
-- Few cosmetic changes here and there
-
-Regards,
- Thierry
-
-Enric Balletbo i Serra (1):
-  platform/chrome: cros_ec_lpc: Register the driver if ACPI entry is
-    missing.
-
-Gwendal Grignou (1):
-  platform/chrome: Add cros_ec_accel_legacy driver
-
-Thierry Escande (2):
-  platform/chrome: cros_ec_lpc: Add support for Google Glimmer
-  platform/chrome: Register cros_ec_accel_legacy driver
-
- Documentation/ABI/testing/sysfs-bus-iio-cros-ec |   8 +
- drivers/iio/accel/Kconfig                       |  11 +
- drivers/iio/accel/Makefile                      |   2 +
- drivers/iio/accel/cros_ec_accel_legacy.c        | 415 ++++++++++++++++++++++++
- drivers/platform/chrome/cros_ec_dev.c           |  53 +++
- drivers/platform/chrome/cros_ec_lpc.c           |  41 ++-
- 6 files changed, 529 insertions(+), 1 deletion(-)
- create mode 100644 drivers/iio/accel/cros_ec_accel_legacy.c
-
+diff --git a/drivers/platform/chrome/cros_ec_lpc.c b/drivers/platform/chrome/cros_ec_lpc.c
+index 1baf720..0b26a09 100644
+--- a/drivers/platform/chrome/cros_ec_lpc.c
++++ b/drivers/platform/chrome/cros_ec_lpc.c
+@@ -35,6 +35,9 @@
+ #define DRV_NAME "cros_ec_lpcs"
+ #define ACPI_DRV_NAME "GOOG0004"
+ 
++/* True if ACPI device is present */
++static bool cros_ec_lpc_acpi_device_found;
++
+ static int ec_response_timed_out(void)
+ {
+ 	unsigned long one_second = jiffies + HZ;
+@@ -396,9 +399,21 @@ static struct platform_driver cros_ec_lpc_driver = {
+ 	.remove = cros_ec_lpc_remove,
+ };
+ 
++static struct platform_device cros_ec_lpc_device = {
++	.name = DRV_NAME
++};
++
++static acpi_status cros_ec_lpc_parse_device(acpi_handle handle, u32 level,
++					    void *context, void **retval)
++{
++	*(bool *)context = true;
++	return AE_CTRL_TERMINATE;
++}
++
+ static int __init cros_ec_lpc_init(void)
+ {
+ 	int ret;
++	acpi_status status;
+ 
+ 	if (!dmi_check_system(cros_ec_lpc_dmi_table)) {
+ 		pr_err(DRV_NAME ": unsupported system.\n");
+@@ -415,11 +430,28 @@ static int __init cros_ec_lpc_init(void)
+ 		return ret;
+ 	}
+ 
+-	return 0;
++	status = acpi_get_devices(ACPI_DRV_NAME, cros_ec_lpc_parse_device,
++				  &cros_ec_lpc_acpi_device_found, NULL);
++	if (ACPI_FAILURE(status))
++		pr_warn(DRV_NAME ": Looking for %s failed\n", ACPI_DRV_NAME);
++
++	if (!cros_ec_lpc_acpi_device_found) {
++		/* Register the device, and it'll get hooked up automatically */
++		ret = platform_device_register(&cros_ec_lpc_device);
++		if (ret) {
++			pr_err(DRV_NAME ": can't register device: %d\n", ret);
++			platform_driver_unregister(&cros_ec_lpc_driver);
++			cros_ec_lpc_reg_destroy();
++		}
++	}
++
++	return ret;
+ }
+ 
+ static void __exit cros_ec_lpc_exit(void)
+ {
++	if (!cros_ec_lpc_acpi_device_found)
++		platform_device_unregister(&cros_ec_lpc_device);
+ 	platform_driver_unregister(&cros_ec_lpc_driver);
+ 	cros_ec_lpc_reg_destroy();
+ }
 -- 
 2.7.4
 
