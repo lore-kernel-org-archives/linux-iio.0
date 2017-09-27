@@ -1,101 +1,27 @@
-Return-Path: <SRS0=ZkVi=A4=collabora.com=thierry.escande@kernel.org>
-From: Thierry Escande <thierry.escande@collabora.com>
-To: Benson Leung <bleung@chromium.org>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-	Gwendal Grignou <gwendal@chromium.org>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 4/4] platform/chrome: Register cros_ec_accel_legacy driver
-Date: Wed, 27 Sep 2017 18:22:59 +0200
-Message-Id: <1506529379-8941-5-git-send-email-thierry.escande@collabora.com>
-In-Reply-To: <1506529379-8941-1-git-send-email-thierry.escande@collabora.com>
-References: <1506529379-8941-1-git-send-email-thierry.escande@collabora.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset = "utf-8"
+Return-Path: <SRS0=PE8Z=A4=gmail.com=lorenzo.bianconi83@kernel.org>
+From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	lorenzo.bianconi@st.com
+Subject: [PATCH 0/4] rework st_lsm6dsx driver to support more devices
+Date: Wed, 27 Sep 2017 21:29:24 +0200
+Message-Id: <20170927192928.16160-1-lorenzo.bianconi@st.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-With this patch, the cros_ec_ctl driver will register the legacy
-accelerometer driver (named cros_ec_accel_legacy) if it fails to
-register sensors through the usual path cros_ec_sensors_register().
-This legacy device is present on Chromebook devices with older EC
-firmware only supporting deprecated EC commands (Glimmer based devices).
+This is the first patchset that reworks st_lsm6dsx driver to properly
+support more devices
 
-Signed-off-by: Thierry Escande <thierry.escande@collabora.com>
----
- drivers/platform/chrome/cros_ec_dev.c | 53 +++++++++++++++++++++++++++++++++++
- 1 file changed, 53 insertions(+)
+Lorenzo Bianconi (4):
+  iio: imu: st_lsm6dsx: convert max_fifo_size in fifo words
+  iio: imu: st_lsm6dsx: split fifo mode and fifo odr configuration
+  iio: imu: st_lsm6dsx: move decimator info in
+    st_lsm6dsx_sensor_settings
+  iio: imu: st_lsm6dsx: add FIFO ops data structure
 
-diff --git a/drivers/platform/chrome/cros_ec_dev.c b/drivers/platform/chrome/cros_ec_dev.c
-index cf6c4f0..d64bf05 100644
---- a/drivers/platform/chrome/cros_ec_dev.c
-+++ b/drivers/platform/chrome/cros_ec_dev.c
-@@ -388,6 +388,56 @@ static void cros_ec_sensors_register(struct cros_ec_dev *ec)
- 	kfree(msg);
- }
- 
-+#define CROS_EC_SENSOR_LEGACY_NUM 2
-+static struct mfd_cell cros_ec_accel_legacy_cells[CROS_EC_SENSOR_LEGACY_NUM];
-+
-+static void cros_ec_accel_legacy_register(struct cros_ec_dev *ec)
-+{
-+	struct cros_ec_device *ec_dev = ec->ec_dev;
-+	u8 status;
-+	int i, ret;
-+	struct cros_ec_sensor_platform
-+		sensor_platforms[CROS_EC_SENSOR_LEGACY_NUM];
-+
-+	/*
-+	 * Check if EC supports direct memory reads and if EC has
-+	 * accelerometers.
-+	 */
-+	if (!ec_dev->cmd_readmem)
-+		return;
-+
-+	ret = ec_dev->cmd_readmem(ec_dev, EC_MEMMAP_ACC_STATUS, 1, &status);
-+	if (ret < 0) {
-+		dev_warn(ec->dev, "EC does not support direct reads.\n");
-+		return;
-+	}
-+
-+	/* Check if EC has accelerometers. */
-+	if (!(status & EC_MEMMAP_ACC_STATUS_PRESENCE_BIT)) {
-+		dev_info(ec->dev, "EC does not have accelerometers.\n");
-+		return;
-+	}
-+
-+	/*
-+	 * Register 2 accelerometers
-+	 */
-+	for (i = 0; i < CROS_EC_SENSOR_LEGACY_NUM; i++) {
-+		cros_ec_accel_legacy_cells[i].name = "cros-ec-accel-legacy";
-+		sensor_platforms[i].sensor_num = i;
-+		cros_ec_accel_legacy_cells[i].id = i;
-+		cros_ec_accel_legacy_cells[i].platform_data =
-+			&sensor_platforms[i];
-+		cros_ec_accel_legacy_cells[i].pdata_size =
-+			sizeof(struct cros_ec_sensor_platform);
-+	}
-+	ret = mfd_add_devices(ec->dev, PLATFORM_DEVID_AUTO,
-+			      cros_ec_accel_legacy_cells,
-+			      CROS_EC_SENSOR_LEGACY_NUM,
-+			      NULL, 0, NULL);
-+	if (ret)
-+		dev_err(ec_dev->dev, "failed to add EC sensors\n");
-+}
-+
- static int ec_device_probe(struct platform_device *pdev)
- {
- 	int retval = -ENOMEM;
-@@ -435,6 +485,9 @@ static int ec_device_probe(struct platform_device *pdev)
- 	/* check whether this EC is a sensor hub. */
- 	if (cros_ec_check_features(ec, EC_FEATURE_MOTION_SENSE))
- 		cros_ec_sensors_register(ec);
-+	else
-+		/* Workaroud for older EC firmware */
-+		cros_ec_accel_legacy_register(ec);
- 
- 	/* Take control of the lightbar from the EC. */
- 	lb_manual_suspend_ctrl(ec, 1);
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h        | 33 +++++++++--
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 72 ++++++++++++------------
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c   | 78 ++++++++++++++++++++++----
+ 3 files changed, 133 insertions(+), 50 deletions(-)
+
 -- 
-2.7.4
+2.14.1
