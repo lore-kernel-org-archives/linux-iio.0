@@ -1,220 +1,209 @@
-Return-Path: <SRS0=PE8Z=A4=gmail.com=lorenzo.bianconi83@kernel.org>
-From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-To: jic23@kernel.org
+Return-Path: <SRS0=l99W=A5=bgdev.pl=brgl@kernel.org>
+From: Bartosz Golaszewski <brgl@bgdev.pl>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 Cc: linux-iio@vger.kernel.org,
-	lorenzo.bianconi@st.com
-Subject: [PATCH 4/4] iio: imu: st_lsm6dsx: add FIFO ops data structure
-Date: Wed, 27 Sep 2017 21:29:28 +0200
-Message-Id: <20170927192928.16160-5-lorenzo.bianconi@st.com>
-In-Reply-To: <20170927192928.16160-1-lorenzo.bianconi@st.com>
-References: <20170927192928.16160-1-lorenzo.bianconi@st.com>
+	linux-kernel@vger.kernel.org,
+	Bartosz Golaszewski <brgl@bgdev.pl>
+Subject: [PATCH v2] iio: dummy: evgen: use irq_sim
+Date: Thu, 28 Sep 2017 12:56:41 +0200
+Message-Id: <20170928105641.11793-1-brgl@bgdev.pl>
 List-ID: <linux-iio@vger.kernel.org>
 
-Introduce FIFO ops data structure to contain FIFO related parameter
-in order to properly support more devices in st_lsm6dsx driver
+Switch to using the recently added interrupt simulator for dummy irqs.
 
-Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 ---
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h        | 23 ++++++++++++++++--
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 23 ++++++++----------
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c   | 33 ++++++++++++++++++++++++++
- 3 files changed, 64 insertions(+), 15 deletions(-)
+bloat-o-meter output:
+add/remove: 0/3 grow/shrink: 1/5 up/down: 12/-540 (-528)
+function                                     old     new   delta
+iio_dummy_evgen_get_irq                      136     148     +12
+iio_evgen_release                             40      36      -4
+iio_dummy_evgen_get_regs                      32      28      -4
+iio_dummy_work_handler                        20       -     -20
+iio_dummy_event_irqunmask                     32       -     -32
+iio_dummy_event_irqmask                       32       -     -32
+iio_evgen_poke                               140     100     -40
+init_module                                  376     172    -204
+iio_dummy_evgen_init                         376     172    -204
+Total: Before=2804, After=2276, chg -18.83%
 
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-index 052db1fbb46e..57c7e8e1f915 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-@@ -29,8 +29,6 @@ enum st_lsm6dsx_hw_id {
+v1 -> v2:
+- added a missing kfree()
+
+ drivers/iio/dummy/Kconfig           |  2 +-
+ drivers/iio/dummy/iio_dummy_evgen.c | 89 ++++++++-----------------------------
+ 2 files changed, 20 insertions(+), 71 deletions(-)
+
+diff --git a/drivers/iio/dummy/Kconfig b/drivers/iio/dummy/Kconfig
+index aa5824d96a43..5a29fbd3c531 100644
+--- a/drivers/iio/dummy/Kconfig
++++ b/drivers/iio/dummy/Kconfig
+@@ -5,7 +5,7 @@ menu "IIO dummy driver"
+ 	depends on IIO
  
- #define ST_LSM6DSX_CHAN_SIZE		2
- #define ST_LSM6DSX_SAMPLE_SIZE		6
--#define ST_LSM6DSX_SAMPLE_DEPTH		(ST_LSM6DSX_SAMPLE_SIZE / \
--					 ST_LSM6DSX_CHAN_SIZE)
+ config IIO_DUMMY_EVGEN
+-	select IRQ_WORK
++	select IRQ_SIM
+ 	tristate
  
- #if defined(CONFIG_SPI_MASTER)
- #define ST_LSM6DSX_RX_MAX_LENGTH	256
-@@ -52,18 +50,39 @@ struct st_lsm6dsx_reg {
- 	u8 mask;
- };
+ config IIO_SIMPLE_DUMMY
+diff --git a/drivers/iio/dummy/iio_dummy_evgen.c b/drivers/iio/dummy/iio_dummy_evgen.c
+index 9e83f348df51..fe8884543da0 100644
+--- a/drivers/iio/dummy/iio_dummy_evgen.c
++++ b/drivers/iio/dummy/iio_dummy_evgen.c
+@@ -24,97 +24,46 @@
+ #include "iio_dummy_evgen.h"
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+-#include <linux/irq_work.h>
++#include <linux/irq_sim.h>
  
-+/**
-+ * struct st_lsm6dsx_fifo_ops - ST IMU FIFO settings
-+ * @fifo_th: FIFO threshold register info (addr + mask).
-+ * @fifo_diff: FIFO diff status register info (addr + mask).
-+ * @th_wl: FIFO threshold word length.
-+ *
-+ */
-+struct st_lsm6dsx_fifo_ops {
-+	struct {
-+		u8 addr;
-+		u16 mask;
-+	} fifo_th;
-+	struct {
-+		u8 addr;
-+		u16 mask;
-+	} fifo_diff;
-+	u8 th_wl;
-+};
-+
+ /* Fiddly bit of faking and irq without hardware */
+ #define IIO_EVENTGEN_NO 10
+ 
  /**
-  * struct st_lsm6dsx_settings - ST IMU sensor settings
-  * @wai: Sensor WhoAmI default value.
-  * @max_fifo_size: Sensor max fifo length in FIFO words.
-  * @id: List of hw id supported by the driver configuration.
-  * @decimator: List of decimator register info (addr + mask).
-+ * @fifo_ops: Sensor hw FIFO parameters.
+- * struct iio_dummy_handle_irq - helper struct to simulate interrupt generation
+- * @work: irq_work used to run handlers from hardirq context
+- * @irq: fake irq line number to trigger an interrupt
+- */
+-struct iio_dummy_handle_irq {
+-	struct irq_work work;
+-	int irq;
+-};
+-
+-/**
+- * struct iio_dummy_evgen - evgen state
+- * @chip: irq chip we are faking
+- * @base: base of irq range
+- * @enabled: mask of which irqs are enabled
+- * @inuse: mask of which irqs are connected
+  * @regs: irq regs we are faking
+  * @lock: protect the evgen state
+- * @handler: helper for a 'hardware-like' interrupt simulation
++ * @inuse: mask of which irqs are connected
++ * @irq_sim: interrupt simulator
++ * @base: base of irq range
   */
- struct st_lsm6dsx_settings {
- 	u8 wai;
- 	u16 max_fifo_size;
- 	enum st_lsm6dsx_hw_id id[ST_LSM6DSX_MAX_ID];
- 	struct st_lsm6dsx_reg decimator[ST_LSM6DSX_MAX_ID];
-+	struct st_lsm6dsx_fifo_ops fifo_ops;
+ struct iio_dummy_eventgen {
+-	struct irq_chip chip;
+-	int base;
+-	bool enabled[IIO_EVENTGEN_NO];
+-	bool inuse[IIO_EVENTGEN_NO];
+ 	struct iio_dummy_regs regs[IIO_EVENTGEN_NO];
+ 	struct mutex lock;
+-	struct iio_dummy_handle_irq handler;
++	bool inuse[IIO_EVENTGEN_NO];
++	struct irq_sim irq_sim;
++	int base;
  };
  
- enum st_lsm6dsx_sensor_id {
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-index cb4f8558a98f..755c472e8a05 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-@@ -35,9 +35,6 @@
+ /* We can only ever have one instance of this 'device' */
+ static struct iio_dummy_eventgen *iio_evgen;
+-static const char *iio_evgen_name = "iio_dummy_evgen";
+-
+-static void iio_dummy_event_irqmask(struct irq_data *d)
+-{
+-	struct irq_chip *chip = irq_data_get_irq_chip(d);
+-	struct iio_dummy_eventgen *evgen =
+-		container_of(chip, struct iio_dummy_eventgen, chip);
+-
+-	evgen->enabled[d->irq - evgen->base] = false;
+-}
+-
+-static void iio_dummy_event_irqunmask(struct irq_data *d)
+-{
+-	struct irq_chip *chip = irq_data_get_irq_chip(d);
+-	struct iio_dummy_eventgen *evgen =
+-		container_of(chip, struct iio_dummy_eventgen, chip);
+-
+-	evgen->enabled[d->irq - evgen->base] = true;
+-}
+-
+-static void iio_dummy_work_handler(struct irq_work *work)
+-{
+-	struct iio_dummy_handle_irq *irq_handler;
+-
+-	irq_handler = container_of(work, struct iio_dummy_handle_irq, work);
+-	handle_simple_irq(irq_to_desc(irq_handler->irq));
+-}
  
- #include "st_lsm6dsx.h"
- 
--#define ST_LSM6DSX_REG_FIFO_THL_ADDR		0x06
--#define ST_LSM6DSX_REG_FIFO_THH_ADDR		0x07
--#define ST_LSM6DSX_FIFO_TH_MASK			GENMASK(11, 0)
- #define ST_LSM6DSX_REG_HLACTIVE_ADDR		0x12
- #define ST_LSM6DSX_REG_HLACTIVE_MASK		BIT(5)
- #define ST_LSM6DSX_REG_PP_OD_ADDR		0x12
-@@ -45,8 +42,6 @@
- #define ST_LSM6DSX_REG_FIFO_MODE_ADDR		0x0a
- #define ST_LSM6DSX_FIFO_MODE_MASK		GENMASK(2, 0)
- #define ST_LSM6DSX_FIFO_ODR_MASK		GENMASK(6, 3)
--#define ST_LSM6DSX_REG_FIFO_DIFFL_ADDR		0x3a
--#define ST_LSM6DSX_FIFO_DIFF_MASK		GENMASK(11, 0)
- #define ST_LSM6DSX_FIFO_EMPTY_MASK		BIT(12)
- #define ST_LSM6DSX_REG_FIFO_OUTL_ADDR		0x3e
- 
-@@ -165,7 +160,7 @@ static int st_lsm6dsx_set_fifo_odr(struct st_lsm6dsx_sensor *sensor,
- 
- int st_lsm6dsx_update_watermark(struct st_lsm6dsx_sensor *sensor, u16 watermark)
+ static int iio_dummy_evgen_create(void)
  {
--	u16 fifo_watermark = ~0, cur_watermark, sip = 0;
-+	u16 fifo_watermark = ~0, cur_watermark, sip = 0, fifo_th_mask;
- 	struct st_lsm6dsx_hw *hw = sensor->hw;
- 	struct st_lsm6dsx_sensor *cur_sensor;
- 	__le16 wdata;
-@@ -190,20 +185,21 @@ int st_lsm6dsx_update_watermark(struct st_lsm6dsx_sensor *sensor, u16 watermark)
+-	int ret, i;
++	int ret;
  
- 	fifo_watermark = max_t(u16, fifo_watermark, sip);
- 	fifo_watermark = (fifo_watermark / sip) * sip;
--	fifo_watermark = fifo_watermark * ST_LSM6DSX_SAMPLE_DEPTH;
-+	fifo_watermark = fifo_watermark * hw->settings->fifo_ops.th_wl;
+ 	iio_evgen = kzalloc(sizeof(*iio_evgen), GFP_KERNEL);
+ 	if (!iio_evgen)
+ 		return -ENOMEM;
  
- 	mutex_lock(&hw->lock);
+-	iio_evgen->base = irq_alloc_descs(-1, 0, IIO_EVENTGEN_NO, 0);
+-	if (iio_evgen->base < 0) {
+-		ret = iio_evgen->base;
++	ret = irq_sim_init(&iio_evgen->irq_sim, IIO_EVENTGEN_NO);
++	if (ret) {
+ 		kfree(iio_evgen);
+ 		return ret;
+ 	}
+-	iio_evgen->chip.name = iio_evgen_name;
+-	iio_evgen->chip.irq_mask = &iio_dummy_event_irqmask;
+-	iio_evgen->chip.irq_unmask = &iio_dummy_event_irqunmask;
+-	for (i = 0; i < IIO_EVENTGEN_NO; i++) {
+-		irq_set_chip(iio_evgen->base + i, &iio_evgen->chip);
+-		irq_set_handler(iio_evgen->base + i, &handle_simple_irq);
+-		irq_modify_status(iio_evgen->base + i,
+-				  IRQ_NOREQUEST | IRQ_NOAUTOEN,
+-				  IRQ_NOPROBE);
+-	}
+-	init_irq_work(&iio_evgen->handler.work, iio_dummy_work_handler);
++
++	iio_evgen->base = irq_sim_irqnum(&iio_evgen->irq_sim, 0);
+ 	mutex_init(&iio_evgen->lock);
++
+ 	return 0;
+ }
  
--	err = hw->tf->read(hw->dev, ST_LSM6DSX_REG_FIFO_THH_ADDR,
-+	err = hw->tf->read(hw->dev, hw->settings->fifo_ops.fifo_th.addr + 1,
- 			   sizeof(data), &data);
- 	if (err < 0)
- 		goto out;
+@@ -132,15 +81,17 @@ int iio_dummy_evgen_get_irq(void)
+ 		return -ENODEV;
  
--	fifo_watermark = ((data << 8) & ~ST_LSM6DSX_FIFO_TH_MASK) |
--			 (fifo_watermark & ST_LSM6DSX_FIFO_TH_MASK);
-+	fifo_th_mask = hw->settings->fifo_ops.fifo_th.mask;
-+	fifo_watermark = ((data << 8) & ~fifo_th_mask) |
-+			 (fifo_watermark & fifo_th_mask);
+ 	mutex_lock(&iio_evgen->lock);
+-	for (i = 0; i < IIO_EVENTGEN_NO; i++)
++	for (i = 0; i < IIO_EVENTGEN_NO; i++) {
+ 		if (!iio_evgen->inuse[i]) {
+-			ret = iio_evgen->base + i;
++			ret = irq_sim_irqnum(&iio_evgen->irq_sim, i);
+ 			iio_evgen->inuse[i] = true;
+ 			break;
+ 		}
++	}
+ 	mutex_unlock(&iio_evgen->lock);
+ 	if (i == IIO_EVENTGEN_NO)
+ 		return -ENOMEM;
++
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(iio_dummy_evgen_get_irq);
+@@ -167,7 +118,7 @@ EXPORT_SYMBOL_GPL(iio_dummy_evgen_get_regs);
  
- 	wdata = cpu_to_le16(fifo_watermark);
--	err = hw->tf->write(hw->dev, ST_LSM6DSX_REG_FIFO_THL_ADDR,
-+	err = hw->tf->write(hw->dev, hw->settings->fifo_ops.fifo_th.addr,
- 			    sizeof(wdata), (u8 *)&wdata);
- out:
- 	mutex_unlock(&hw->lock);
-@@ -222,6 +218,7 @@ int st_lsm6dsx_update_watermark(struct st_lsm6dsx_sensor *sensor, u16 watermark)
- static int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
+ static void iio_dummy_evgen_free(void)
  {
- 	u16 fifo_len, pattern_len = hw->sip * ST_LSM6DSX_SAMPLE_SIZE;
-+	u16 fifo_diff_mask = hw->settings->fifo_ops.fifo_diff.mask;
- 	int err, acc_sip, gyro_sip, read_len, samples, offset;
- 	struct st_lsm6dsx_sensor *acc_sensor, *gyro_sensor;
- 	s64 acc_ts, acc_delta_ts, gyro_ts, gyro_delta_ts;
-@@ -229,7 +226,7 @@ static int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
- 	u8 buff[pattern_len];
- 	__le16 fifo_status;
+-	irq_free_descs(iio_evgen->base, IIO_EVENTGEN_NO);
++	irq_sim_fini(&iio_evgen->irq_sim);
+ 	kfree(iio_evgen);
+ }
  
--	err = hw->tf->read(hw->dev, ST_LSM6DSX_REG_FIFO_DIFFL_ADDR,
-+	err = hw->tf->read(hw->dev, hw->settings->fifo_ops.fifo_diff.addr,
- 			   sizeof(fifo_status), (u8 *)&fifo_status);
- 	if (err < 0)
- 		return err;
-@@ -237,7 +234,7 @@ static int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
- 	if (fifo_status & cpu_to_le16(ST_LSM6DSX_FIFO_EMPTY_MASK))
- 		return 0;
+@@ -192,9 +143,7 @@ static ssize_t iio_evgen_poke(struct device *dev,
+ 	iio_evgen->regs[this_attr->address].reg_id   = this_attr->address;
+ 	iio_evgen->regs[this_attr->address].reg_data = event;
  
--	fifo_len = (le16_to_cpu(fifo_status) & ST_LSM6DSX_FIFO_DIFF_MASK) *
-+	fifo_len = (le16_to_cpu(fifo_status) & fifo_diff_mask) *
- 		   ST_LSM6DSX_CHAN_SIZE;
- 	samples = fifo_len / ST_LSM6DSX_SAMPLE_SIZE;
- 	fifo_len = (fifo_len / pattern_len) * pattern_len;
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-index 4532671df1be..239c735242be 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-@@ -168,6 +168,17 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 				.mask = GENMASK(5, 3),
- 			},
- 		},
-+		.fifo_ops = {
-+			.fifo_th = {
-+				.addr = 0x06,
-+				.mask = GENMASK(11, 0),
-+			},
-+			.fifo_diff = {
-+				.addr = 0x3a,
-+				.mask = GENMASK(11, 0),
-+			},
-+			.th_wl = 3, /* 1LSB = 2B */
-+		},
- 	},
- 	{
- 		.wai = 0x69,
-@@ -185,6 +196,17 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 				.mask = GENMASK(5, 3),
- 			},
- 		},
-+		.fifo_ops = {
-+			.fifo_th = {
-+				.addr = 0x06,
-+				.mask = GENMASK(11, 0),
-+			},
-+			.fifo_diff = {
-+				.addr = 0x3a,
-+				.mask = GENMASK(11, 0),
-+			},
-+			.th_wl = 3, /* 1LSB = 2B */
-+		},
- 	},
- 	{
- 		.wai = 0x6a,
-@@ -203,6 +225,17 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 				.mask = GENMASK(5, 3),
- 			},
- 		},
-+		.fifo_ops = {
-+			.fifo_th = {
-+				.addr = 0x06,
-+				.mask = GENMASK(11, 0),
-+			},
-+			.fifo_diff = {
-+				.addr = 0x3a,
-+				.mask = GENMASK(11, 0),
-+			},
-+			.th_wl = 3, /* 1LSB = 2B */
-+		},
- 	},
- };
+-	iio_evgen->handler.irq = iio_evgen->base + this_attr->address;
+-	if (iio_evgen->enabled[this_attr->address])
+-		irq_work_queue(&iio_evgen->handler.work);
++	irq_sim_fire(&iio_evgen->irq_sim, this_attr->address);
  
+ 	return len;
+ }
 -- 
-2.14.1
+2.13.2
