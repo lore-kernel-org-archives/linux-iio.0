@@ -1,69 +1,42 @@
-Return-Path: <SRS0=2XkP=A5=samsung.com=m.purski@kernel.org>
-From: Maciej Purski <m.purski@samsung.com>
-To: devicetree@vger.kernel.org, linux-hwmon@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org, linux-iio@vger.kernel.org
-Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
-	Guenter Roeck <linux@roeck-us.net>, Jean Delvare <jdelvare@suse.com>,
-	Jonathan Corbet <corbet@lwn.net>, Russell King <linux@armlinux.org.uk>,
-	Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler
-	<pmeerw@pmeerw.net>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, Maciej Purski
-	<m.purski@samsung.com>
-Subject: [PATCH 4/4] ARM: dts: Add max-expected-current properties for
- ina231 in Odroid XU3
-Date: Thu, 28 Sep 2017 14:50:15 +0200
-Message-id: <1506603015-27202-5-git-send-email-m.purski@samsung.com>
-In-reply-to: <1506603015-27202-1-git-send-email-m.purski@samsung.com>
-References: <1506603015-27202-1-git-send-email-m.purski@samsung.com>
-	<CGME20170928125109eucas1p1287998eb55b09d5eba9dc929f7dcb284@eucas1p1.samsung.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from www381.your-server.de ([78.46.137.84]:54357 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750877AbdI2NYL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 29 Sep 2017 09:24:11 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] iio: dummy: events: Add missing break
+Date: Fri, 29 Sep 2017 15:24:05 +0200
+Message-Id: <20170929132405.28104-1-lars@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Set max-expected-current to values required by the documentation,
-in order to achieve desired precision.
+Add missing break in iio_simple_dummy_write_event_config() for the voltage
+threshold event enable attribute. Without this writing to the
+in_voltage0_thresh_rising_en always returns -EINVAL even though the change
+was correctly applied.
 
-Signed-off-by: Maciej Purski <m.purski@samsung.com>
+Fixes: 3e34e650db197 ("iio: dummy: Demonstrate the usage of new channel types")
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- arch/arm/boot/dts/exynos5422-odroidxu3.dts | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/iio/dummy/iio_simple_dummy_events.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/boot/dts/exynos5422-odroidxu3.dts b/arch/arm/boot/dts/exynos5422-odroidxu3.dts
-index 9ed6564..aa19374 100644
---- a/arch/arm/boot/dts/exynos5422-odroidxu3.dts
-+++ b/arch/arm/boot/dts/exynos5422-odroidxu3.dts
-@@ -28,6 +28,7 @@
- 		compatible = "ti,ina231";
- 		reg = <0x40>;
- 		shunt-resistor = <10000>;
-+		max-expected-current = <9000>;
- 	};
- 
- 	/* memory: VDD_MEM */
-@@ -35,6 +36,7 @@
- 		compatible = "ti,ina231";
- 		reg = <0x41>;
- 		shunt-resistor = <10000>;
-+		max-expected-current = <3000>;
- 	};
- 
- 	/* GPU: VDD_G3D */
-@@ -42,6 +44,7 @@
- 		compatible = "ti,ina231";
- 		reg = <0x44>;
- 		shunt-resistor = <10000>;
-+		max-expected-current = <5000>;
- 	};
- 
- 	/* A7 cluster: VDD_KFC */
-@@ -49,6 +52,7 @@
- 		compatible = "ti,ina231";
- 		reg = <0x45>;
- 		shunt-resistor = <10000>;
-+		max-expected-current = <2000>;
- 	};
- };
- 
+diff --git a/drivers/iio/dummy/iio_simple_dummy_events.c b/drivers/iio/dummy/iio_simple_dummy_events.c
+index ed63ffd849f8..7ec2a0bb0807 100644
+--- a/drivers/iio/dummy/iio_simple_dummy_events.c
++++ b/drivers/iio/dummy/iio_simple_dummy_events.c
+@@ -72,6 +72,7 @@ int iio_simple_dummy_write_event_config(struct iio_dev *indio_dev,
+ 				st->event_en = state;
+ 			else
+ 				return -EINVAL;
++			break;
+ 		default:
+ 			return -EINVAL;
+ 		}
 -- 
-2.7.4
+2.11.0
+
