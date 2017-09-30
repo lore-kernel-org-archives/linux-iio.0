@@ -1,42 +1,71 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:54357 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750877AbdI2NYL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 29 Sep 2017 09:24:11 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH] iio: dummy: events: Add missing break
-Date: Fri, 29 Sep 2017 15:24:05 +0200
-Message-Id: <20170929132405.28104-1-lars@metafoo.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=jbKP=A7=onstation.org=masneyb@kernel.org>
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org,
+	linux-iio@vger.kernel.org
+Cc: gregkh@linuxfoundation.org,
+	devel@driverdev.osuosl.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	linux-kernel@vger.kernel.org,
+	Jon.Brenner@ams.com
+Subject: [PATCH 0/3] staging: iio: tsl2x7x: staging cleanups
+Date: Fri, 29 Sep 2017 21:09:18 -0400
+Message-Id: <20170930010921.15447-1-masneyb@onstation.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-Add missing break in iio_simple_dummy_write_event_config() for the voltage
-threshold event enable attribute. Without this writing to the
-in_voltage0_thresh_rising_en always returns -EINVAL even though the change
-was correctly applied.
+This patch set converts several sysfs attributes from directly being
+created by the driver to be created by iio_chan_spec and iio_event_spec.
+There is also a patch to shorten the length of a variable to fix an
+issue that I encountered with some lines that were over 80 characters
+with this refactoring.
 
-Fixes: 3e34e650db197 ("iio: dummy: Demonstrate the usage of new channel types")
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/dummy/iio_simple_dummy_events.c | 1 +
- 1 file changed, 1 insertion(+)
+Driver tested using a TSL2771 hooked up to a Raspberry Pi 2.
 
-diff --git a/drivers/iio/dummy/iio_simple_dummy_events.c b/drivers/iio/dummy/iio_simple_dummy_events.c
-index ed63ffd849f8..7ec2a0bb0807 100644
---- a/drivers/iio/dummy/iio_simple_dummy_events.c
-+++ b/drivers/iio/dummy/iio_simple_dummy_events.c
-@@ -72,6 +72,7 @@ int iio_simple_dummy_write_event_config(struct iio_dev *indio_dev,
- 				st->event_en = state;
- 			else
- 				return -EINVAL;
-+			break;
- 		default:
- 			return -EINVAL;
- 		}
+List of sysfs attributes before and after my changes:
+
+raspberrypi:/sys/bus/iio/devices/iio:device0$ find . -type f | sort
+./dev
+./events/in_intensity0_thresh_falling_en
+./events/in_intensity0_thresh_falling_value
+./events/in_intensity0_thresh_period
+./events/in_intensity0_thresh_rising_en
+./events/in_intensity0_thresh_rising_value
+./events/in_proximity0_thresh_falling_en
+./events/in_proximity0_thresh_falling_value
+./events/in_proximity0_thresh_period
+./events/in_proximity0_thresh_rising_en
+./events/in_proximity0_thresh_rising_value
+./in_illuminance0_calibrate
+./in_illuminance0_calibscale_available
+./in_illuminance0_input
+./in_illuminance0_integration_time
+./in_illuminance0_integration_time_available
+./in_illuminance0_lux_table
+./in_illuminance0_target_input
+./in_intensity0_calibbias
+./in_intensity0_calibscale
+./in_intensity0_raw
+./in_intensity1_raw
+./in_proximity0_calibrate
+./in_proximity0_raw
+./name
+./power/autosuspend_delay_ms
+./power/control
+./power/runtime_active_time
+./power/runtime_status
+./power/runtime_suspended_time
+./uevent
+
+Brian Masney (3):
+  staging: iio: tsl2x7x: rename tsl2x7x_settings variable to settings
+  staging: iio: tsl2x7x: migrate in_illuminance0_integration_time sysfs
+    attribute to iio_chan_spec
+  staging: iio: tsl2x7x: migrate *_thresh_period sysfs attributes to
+    iio_event_spec
+
+ drivers/staging/iio/light/tsl2x7x.c | 418 ++++++++++++------------------------
+ 1 file changed, 141 insertions(+), 277 deletions(-)
+
 -- 
-2.11.0
-
+2.13.5
