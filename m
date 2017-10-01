@@ -1,130 +1,112 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:57038 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751556AbdJHJ6C (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 8 Oct 2017 05:58:02 -0400
-Date: Sun, 8 Oct 2017 10:57:57 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Stefan =?UTF-8?B?QnLDvG5z?= <stefan.bruens@rwth-aachen.de>
-Cc: <linux-iio@vger.kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+Received: from mail-out-1.itc.rwth-aachen.de ([134.130.5.46]:31185 "EHLO
+        mail-out-1.itc.rwth-aachen.de" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1751761AbdJATsh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 1 Oct 2017 15:48:37 -0400
+From: =?UTF-8?q?Stefan=20Br=C3=BCns?= <stefan.bruens@rwth-aachen.de>
+To: <linux-iio@vger.kernel.org>
+CC: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        =?UTF-8?q?Stefan=20Br=C3=BCns?= <stefan.bruens@rwth-aachen.de>,
         <linux-kernel@vger.kernel.org>, "Andrew F . Davis" <afd@ti.com>,
         "Javier Martinez Canillas" <javier@osg.samsung.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
+        Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>
-Subject: Re: [PATCH 1/3] iio: adc: ina2xx: Mask flag bits in bus voltage
- register
-Message-ID: <20171008105757.1465d322@archlinux>
-In-Reply-To: <adb12c57-0653-4343-b551-9427d292c5fd@rwthex-w2-a.rwth-ad.de>
+Subject: [PATCH 2/3] iio: adc: ina2xx: Adhere to documented ABI, use Ohm instead of uOhm
+Date: Sun, 1 Oct 2017 21:48:17 +0200
+In-Reply-To: <20171001194818.26017-1-stefan.bruens@rwth-aachen.de>
 References: <20171001194818.26017-1-stefan.bruens@rwth-aachen.de>
-        <adb12c57-0653-4343-b551-9427d292c5fd@rwthex-w2-a.rwth-ad.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="UTF-8"
+Message-ID: <7ee955b2-a58f-45e0-985d-1f7508d41ae7@rwthex-w2-a.rwth-ad.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, 1 Oct 2017 21:48:16 +0200
-Stefan Brüns <stefan.bruens@rwth-aachen.de> wrote:
+According to the ABI documentation, the shunt resistor value should be
+specificied in Ohm. As this is also used/documented for the MAX9611,
+use the same for the INA2xx driver.
 
-> Lower bits of the INA219/220 bus voltage register are conversion
-> status flags, properly mask the value.
-> 
-> Signed-off-by: Stefan Brüns <stefan.bruens@rwth-aachen.de>
+This poses an ABI break for anyone actually altering the shunt value
+through the sysfs interface, it does not alter the default value nor
+a value set from the devicetree.
 
-Hi, good to find this issue, but the 'right' fix is perhaps a little
-more complex than present here.
+Minor change: Fix comment, 1mA is 10^-3A.
 
-Jonathan
+Signed-off-by: Stefan Brüns <stefan.bruens@rwth-aachen.de>
+---
 
-> ---
-> 
->  drivers/iio/adc/ina2xx-adc.c | 14 +++++++++++++-
->  1 file changed, 13 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
-> index f387b972e4f4..361fb4e459d5 100644
-> --- a/drivers/iio/adc/ina2xx-adc.c
-> +++ b/drivers/iio/adc/ina2xx-adc.c
-> @@ -44,7 +44,6 @@
->  
->  #define INA226_MASK_ENABLE		0x06
->  #define INA226_CVRF			BIT(3)
-> -#define INA219_CNVR			BIT(1)
->  
->  #define INA2XX_MAX_REGISTERS            8
->  
-> @@ -79,6 +78,11 @@
->  #define INA226_ITS_MASK		GENMASK(5, 3)
->  #define INA226_SHIFT_ITS(val)	((val) << 3)
->  
-> +/* INA219 Bus voltage register, low bits are flags */
-> +#define INA219_OVF		BIT(0)
-> +#define INA219_CNVR		BIT(1)
-> +#define INA219_BUS_VOLTAGE_MASK	GENMASK(16, 3)
-> +
->  /* Cosmetic macro giving the sampling period for a full P=UxI cycle */
->  #define SAMPLING_PERIOD(c)	((c->int_time_vbus + c->int_time_vshunt) \
->  				 * c->avg)
-> @@ -170,6 +174,10 @@ static int ina2xx_read_raw(struct iio_dev *indio_dev,
->  		else
->  			*val  = regval;
->  
-> +		if ((chip->config->chip_id == ina219) &&
-> +		    (chan->address == INA2XX_SHUNT_VOLTAGE))
-> +			*val &= INA219_BUS_VOLTAGE_MASK;
-> +
+ drivers/iio/adc/ina2xx-adc.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-This first case is fine - up to the fact that it should really be
-shifting it appropriately to not give a false impression of precision.
-Also correctly unwinding the case below may require some changes here
-as well as the scale will change.
-
->  		return IIO_VAL_INT;
->  
->  	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-> @@ -639,6 +647,10 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
->  		if (ret < 0)
->  			return ret;
->  
-> +		if ((chip->config->chip_id == ina219) &&
-> +		    (INA2XX_SHUNT_VOLTAGE + bit == INA2XX_BUS_VOLTAGE))
-> +			val &= INA219_BUS_VOLTAGE_MASK;
-> +
-
-For this I'm not sure this is the correct fix.   The driver should not be lying
-about the available data when describing the channel. Right now the
-channel description is:
-
-#define INA219_CHAN_VOLTAGE(_index, _address) { \
-	.type = IIO_VOLTAGE, \
-	.address = (_address), \
-	.indexed = 1, \
-	.channel = (_index), \
-	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
-			      BIT(IIO_CHAN_INFO_SCALE) | \
-			      BIT(IIO_CHAN_INFO_INT_TIME), \
-	.info_mask_shared_by_dir = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
-	.scan_index = (_index), \
-	.scan_type = { \
-		.sign = 'u', \
-		.realbits = 16, \
-		.storagebits = 16, \
-		.endianness = IIO_LE, \
-	} \
-}
-Reading the datasheet this should be
-.realbits = 13,
-.shift = 3,
-I think
-
-Userspace is then responsible for masking and shifting the
-data to not give a false impression of it's precision.
-
-Clearly this with probably have some knock on effects that
-will also need fixing.
-
-
->  		data[i++] = val;
->  
->  		if (INA2XX_SHUNT_VOLTAGE + bit == INA2XX_POWER)
+diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
+index 361fb4e459d5..1930f853e8c5 100644
+--- a/drivers/iio/adc/ina2xx-adc.c
++++ b/drivers/iio/adc/ina2xx-adc.c
+@@ -127,7 +127,7 @@ struct ina2xx_chip_info {
+ 	struct task_struct *task;
+ 	const struct ina2xx_config *config;
+ 	struct mutex state_lock;
+-	unsigned int shunt_resistor;
++	unsigned int shunt_resistor_uohm;
+ 	int avg;
+ 	int int_time_vbus; /* Bus voltage integration time uS */
+ 	int int_time_vshunt; /* Shunt voltage integration time uS */
+@@ -444,7 +444,7 @@ static ssize_t ina2xx_allow_async_readout_store(struct device *dev,
+ /*
+  * Set current LSB to 1mA, shunt is in uOhms
+  * (equation 13 in datasheet). We hardcode a Current_LSB
+- * of 1.0 x10-6. The only remaining parameter is RShunt.
++ * of 1.0 x10-3. The only remaining parameter is RShunt.
+  * There is no need to expose the CALIBRATION register
+  * to the user for now. But we need to reset this register
+  * if the user updates RShunt after driver init, e.g upon
+@@ -453,7 +453,7 @@ static ssize_t ina2xx_allow_async_readout_store(struct device *dev,
+ static int ina2xx_set_calibration(struct ina2xx_chip_info *chip)
+ {
+ 	u16 regval = DIV_ROUND_CLOSEST(chip->config->calibration_factor,
+-				   chip->shunt_resistor);
++				   chip->shunt_resistor_uohm);
+ 
+ 	return regmap_write(chip->regmap, INA2XX_CALIBRATION, regval);
+ }
+@@ -463,7 +463,7 @@ static int set_shunt_resistor(struct ina2xx_chip_info *chip, unsigned int val)
+ 	if (val <= 0 || val > chip->config->calibration_factor)
+ 		return -EINVAL;
+ 
+-	chip->shunt_resistor = val;
++	chip->shunt_resistor_uohm = val;
+ 
+ 	return 0;
+ }
+@@ -473,8 +473,9 @@ static ssize_t ina2xx_shunt_resistor_show(struct device *dev,
+ 					  char *buf)
+ {
+ 	struct ina2xx_chip_info *chip = iio_priv(dev_to_iio_dev(dev));
++	int vals[2] = { chip->shunt_resistor_uohm, 1000000 };
+ 
+-	return sprintf(buf, "%d\n", chip->shunt_resistor);
++	return iio_format_value(buf, IIO_VAL_FRACTIONAL, 1, vals);
+ }
+ 
+ static ssize_t ina2xx_shunt_resistor_store(struct device *dev,
+@@ -482,14 +483,13 @@ static ssize_t ina2xx_shunt_resistor_store(struct device *dev,
+ 					   const char *buf, size_t len)
+ {
+ 	struct ina2xx_chip_info *chip = iio_priv(dev_to_iio_dev(dev));
+-	unsigned long val;
+-	int ret;
++	int val, val_fract, ret;
+ 
+-	ret = kstrtoul((const char *) buf, 10, &val);
++	ret = iio_str_to_fixpoint(buf, 100000, &val, &val_fract);
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = set_shunt_resistor(chip, val);
++	ret = set_shunt_resistor(chip, val * 1000000 + val_fract);
+ 	if (ret)
+ 		return ret;
+ 
+-- 
+2.14.1
 
