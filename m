@@ -1,51 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi0-f66.google.com ([209.85.218.66]:38721 "EHLO
-        mail-oi0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750779AbdJDU0B (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 4 Oct 2017 16:26:01 -0400
-Date: Wed, 4 Oct 2017 15:25:59 -0500
-From: Rob Herring <robh@kernel.org>
+Received: from mout02.posteo.de ([185.67.36.66]:35493 "EHLO mout02.posteo.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1750947AbdJASKy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 1 Oct 2017 14:10:54 -0400
+Received: from submission (posteo.de [89.146.220.130])
+        by mout02.posteo.de (Postfix) with ESMTPS id A2FA920C61
+        for <linux-iio@vger.kernel.org>; Sun,  1 Oct 2017 20:10:52 +0200 (CEST)
+Subject: Re: [PATCH v3 1/3] iio: accel: mma8452: Rename structs holding event
+ configuration registers to more appropriate names.
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: "Ismail H. Kose" <Ismail.Kose@maximintegrated.com>,
-        ihkose@gmail.com, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Maxime Roussin-Belanger <maxime.roussinbelanger@gmail.com>,
-        Fabrice Gasnier <fabrice.gasnier@st.com>,
-        Mike Looijmans <mike.looijmans@topic.nl>,
-        Peter Rosin <peda@axentia.se>,
-        Jean-Francois Dagenais <jeff.dagenais@gmail.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 2/2] iio:dac: Add DT binding documentation for ds4424
-Message-ID: <20171004202559.dza4ztwmq6smnuvv@rob-hp-laptop>
-References: <20170922201226.23721-1-Ismail.Kose@maximintegrated.com>
- <20170922201226.23721-2-Ismail.Kose@maximintegrated.com>
- <20170930181841.63b07a12@archlinux>
+Cc: Harinath Nampally <harinath922@gmail.com>, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        amsfield22@gmail.com
+References: <1506336008-4480-1-git-send-email-harinath922@gmail.com>
+ <1506336008-4480-2-git-send-email-harinath922@gmail.com>
+ <768af6828fe70f4a0bd7ef402073d9f3@posteo.de>
+ <20170930185913.4a2c85e3@archlinux>
+From: Martin Kepplinger <martink@posteo.de>
+Message-ID: <3dac943e-5c50-363c-2e5b-77b2921e9e91@posteo.de>
+Date: Sun, 1 Oct 2017 20:10:49 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20170930181841.63b07a12@archlinux>
+In-Reply-To: <20170930185913.4a2c85e3@archlinux>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Sep 30, 2017 at 06:18:41PM +0100, Jonathan Cameron wrote:
-> On Fri, 22 Sep 2017 13:12:09 -0700
-> "Ismail H. Kose" <Ismail.Kose@maximintegrated.com> wrote:
+On 2017-09-30 19:59, Jonathan Cameron wrote:
+> On Wed, 27 Sep 2017 08:52:54 +0200
+> Martin Kepplinger <martink@posteo.de> wrote:
 > 
-> > Signed-off-by: Ismail H. Kose <ihkose@gmail.com>
-> > Signed-off-by: Ismail H. Kose <Ismail.Kose@maximintegrated.com>
+>> Am 25.09.2017 12:40 schrieb Harinath Nampally:
+>>> Improves code readability, no impact on functionality.
+>>>
+>>> Signed-off-by: Harinath Nampally <harinath922@gmail.com>
+>>> ---  
+>>
+>> I'd prefer a shorter subject line here too, see patch 2/3
 > 
-> Direct at Rob Herring...
+> Agreed.  I'm unconvinced the change helps.  Perhaps that is
+> because I don't fully understand why you are making the change?
 > 
-> Rob, this is now a very standard binding so I'm going to
-> take it into my testing tree.  If you have a chance to take a last
-> look at it though that would be great.
 
-No problem. I don't mind you taking things before I get to them because 
-I know you actually look at them and will wait if there's something 
-non-standard unlike some maintainers.
+It's understandable for me. It simply uses "transient" and "ff_mt" in
+order to describe sets of device-registers instead of "rising" and
+"falling". That's more appropriate. I'd apply this if possible.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Even though it should be clear after reading the data sheet, this
+particular issue sometimes gets confusing for people. Maybe a short
+descriptive comment, pointing to the data sheet, would make sense?
 
-Rob
+                      martin
