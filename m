@@ -1,46 +1,45 @@
-Return-Path: <SRS0=0fI7=BA=onstation.org=masneyb@kernel.org>
-Date: Sun, 1 Oct 2017 06:58:17 -0400
-From: Brian Masney <masneyb@onstation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-	devel@driverdev.osuosl.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, linux-kernel@vger.kernel.org,
-	Jon.Brenner@ams.com
-Subject: Re: [PATCH 3/3] staging: iio: tsl2x7x: migrate *_thresh_period sysfs
- attributes to iio_event_spec
-Message-ID: <20171001105817.salu4ymwgg4jrvqu@073846331c0b>
-References: <20170930010921.15447-1-masneyb@onstation.org>
- <20170930010921.15447-4-masneyb@onstation.org>
- <20171001111446.75f3d7cf@archlinux>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-out-1.itc.rwth-aachen.de ([134.130.5.46]:51883 "EHLO
+        mail-out-1.itc.rwth-aachen.de" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1751761AbdJATsc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 1 Oct 2017 15:48:32 -0400
+From: =?UTF-8?q?Stefan=20Br=C3=BCns?= <stefan.bruens@rwth-aachen.de>
+To: <linux-iio@vger.kernel.org>
+CC: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        =?UTF-8?q?Stefan=20Br=C3=BCns?= <stefan.bruens@rwth-aachen.de>,
+        <linux-kernel@vger.kernel.org>, "Andrew F . Davis" <afd@ti.com>,
+        "Javier Martinez Canillas" <javier@osg.samsung.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>
+Subject: [PATCH 0/3] iio: adc: ina2xx: Fixes and extensions
+Date: Sun, 1 Oct 2017 21:48:15 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20171001111446.75f3d7cf@archlinux>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Message-ID: <54bbda3c-412b-462a-92ff-659dab103f67@rwthex-w2-a.rwth-ad.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sun, Oct 01, 2017 at 11:14:46AM +0100, Jonathan Cameron wrote:
-> On Fri, 29 Sep 2017 21:09:21 -0400
-> Brian Masney <masneyb@onstation.org> wrote:
-> 
-> > The sysfs attributes in_intensity0_thresh_period and
-> > in_proximity0_thresh_period are currently directly created by the driver.
-> > This patch migrates the creation of these sysfs attributes from the driver
-> > to using the IIO core via iio_event_spec.
-> > 
-> > Signed-off-by: Brian Masney <masneyb@onstation.org>
-> 
-> One question down the end about whether we should be using IIO_EV_DIR_EITHER
-> rather than IIO_EV_DIR_NONE
-> 
-> NONE is only really for thing where a direction makes not sense rather
-> than to remove the direction be specified for a particular element.
-> 
-> Otherwise looks good.  I'd just have changed this, but wasn't sure if
-> there was deeper logic behind your choice that I was missing!
+The first patch fixes an issue with the conversion-ready status flag showing
+up in the bus voltage raw value.
 
-There wasn't any deeper logic to this. :) I'll test it with
-IIO_EV_DIR_EITHER and send v2 with my next batch of cleanups unless you
-change it before then.
+The second patch changes the the shunt resistor value attribute to
+ohms (instead of microohms), to match both ABI documentation and other shunt
+resistor users, i.e. the MAX9611 IIO driver.
 
-Thanks,
+The third patch adds support for the INA219/220 specific bus voltage range
+and shunt voltage PGA.
 
-Brian
+
+Stefan Brüns (3):
+  iio: adc: ina2xx: Mask flag bits in bus voltage register
+  iio: adc: ina2xx: Adhere to documented ABI, use Ohm instead of uOhm
+  iio: adc: ina2xx: Allow setting Shunt Voltage PGA gain and Bus Voltage
+    range
+
+ drivers/iio/adc/ina2xx-adc.c | 143 +++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 130 insertions(+), 13 deletions(-)
+
+-- 
+2.14.1
+
