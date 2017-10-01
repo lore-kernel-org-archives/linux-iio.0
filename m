@@ -1,192 +1,346 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:43838 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:43862 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750967AbdJAKO6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 1 Oct 2017 06:14:58 -0400
-Date: Sun, 1 Oct 2017 11:10:54 +0100
+        id S1751063AbdJAKPB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 1 Oct 2017 06:15:01 -0400
+Date: Sun, 1 Oct 2017 11:14:46 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Brian Masney <masneyb@onstation.org>
 Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
         devel@driverdev.osuosl.org, knaack.h@gmx.de, lars@metafoo.de,
         pmeerw@pmeerw.net, linux-kernel@vger.kernel.org,
         Jon.Brenner@ams.com
-Subject: Re: [PATCH 2/3] staging: iio: tsl2x7x: migrate
- in_illuminance0_integration_time sysfs attribute to iio_chan_spec
-Message-ID: <20171001111054.5eff7239@archlinux>
-In-Reply-To: <20170930010921.15447-3-masneyb@onstation.org>
+Subject: Re: [PATCH 3/3] staging: iio: tsl2x7x: migrate *_thresh_period
+ sysfs attributes to iio_event_spec
+Message-ID: <20171001111446.75f3d7cf@archlinux>
+In-Reply-To: <20170930010921.15447-4-masneyb@onstation.org>
 References: <20170930010921.15447-1-masneyb@onstation.org>
-        <20170930010921.15447-3-masneyb@onstation.org>
+        <20170930010921.15447-4-masneyb@onstation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 29 Sep 2017 21:09:20 -0400
+On Fri, 29 Sep 2017 21:09:21 -0400
 Brian Masney <masneyb@onstation.org> wrote:
 
-> The driver explicitly creates the in_illuminance0_integration_time sysfs
-> attribute outside the IIO core. This attribute is available in the IIO
-> core so this patches migrates the attribute to be created by
-> the iio_chan_spec.
+> The sysfs attributes in_intensity0_thresh_period and
+> in_proximity0_thresh_period are currently directly created by the driver.
+> This patch migrates the creation of these sysfs attributes from the driver
+> to using the IIO core via iio_event_spec.
 > 
 > Signed-off-by: Brian Masney <masneyb@onstation.org>
 
-One comment inline, but a general observation rather than about this
-patch so applied to the togreg branch of iio.git and pushed out as
-testing.
+One question down the end about whether we should be using IIO_EV_DIR_EITHER
+rather than IIO_EV_DIR_NONE
 
-Thanks,
+NONE is only really for thing where a direction makes not sense rather
+than to remove the direction be specified for a particular element.
+
+Otherwise looks good.  I'd just have changed this, but wasn't sure if
+there was deeper logic behind your choice that I was missing!
 
 Jonathan
+
 > ---
-> Changes since v1 (Jul 9 2017):
-> - Use MIN_ITIME instead of hardcoded 3 in tsl2x7x_write_raw()
-> 
->  drivers/staging/iio/light/tsl2x7x.c | 65 ++++++++++---------------------------
->  1 file changed, 17 insertions(+), 48 deletions(-)
+>  drivers/staging/iio/light/tsl2x7x.c | 196 ++++++++++--------------------------
+>  1 file changed, 52 insertions(+), 144 deletions(-)
 > 
 > diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
-> index e340ea624e5c..e6a71f5fc9cb 100644
+> index e6a71f5fc9cb..be2806593e59 100644
 > --- a/drivers/staging/iio/light/tsl2x7x.c
 > +++ b/drivers/staging/iio/light/tsl2x7x.c
-> @@ -898,45 +898,6 @@ static ssize_t in_proximity0_calibscale_available_show(struct device *dev,
->  		return snprintf(buf, PAGE_SIZE, "%s\n", "1 2 4 8");
+> @@ -932,108 +932,6 @@ static ssize_t in_illuminance0_target_input_store(struct device *dev,
+>  	return len;
 >  }
 >  
-> -static ssize_t in_illuminance0_integration_time_show(struct device *dev,
-> -				     struct device_attribute *attr,
-> -				     char *buf)
+> -/* persistence settings */
+> -static ssize_t in_intensity0_thresh_period_show(struct device *dev,
+> -					    struct device_attribute *attr,
+> -					    char *buf)
 > -{
 > -	struct tsl2X7X_chip *chip = iio_priv(dev_to_iio_dev(dev));
-> -	int y, z;
+> -	int y, z, filter_delay;
 > -
+> -	/* Determine integration time */
 > -	y = (TSL2X7X_MAX_TIMER_CNT - (u8)chip->settings.als_time) + 1;
 > -	z = y * TSL2X7X_MIN_ITIME;
-> -	y /= 1000;
-> -	z %= 1000;
+> -	filter_delay = z * (chip->settings.persistence & 0x0F);
+> -	y = filter_delay / 1000;
+> -	z = filter_delay % 1000;
 > -
 > -	return snprintf(buf, PAGE_SIZE, "%d.%03d\n", y, z);
 > -}
 > -
-> -static ssize_t in_illuminance0_integration_time_store(struct device *dev,
-> -				      struct device_attribute *attr,
-> -				      const char *buf, size_t len)
+> -static ssize_t in_intensity0_thresh_period_store(struct device *dev,
+> -					     struct device_attribute *attr,
+> -					     const char *buf, size_t len)
 > -{
 > -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
 > -	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
 > -	struct tsl2x7x_parse_result result;
+> -	int y, z, filter_delay;
 > -	int ret;
 > -
 > -	ret = iio_str_to_fixpoint(buf, 100, &result.integer, &result.fract);
 > -	if (ret)
 > -		return ret;
 > -
-> -	result.fract /= 3;
-> -	chip->settings.als_time = TSL2X7X_MAX_TIMER_CNT - (u8)result.fract;
+> -	y = (TSL2X7X_MAX_TIMER_CNT - (u8)chip->settings.als_time) + 1;
+> -	z = y * TSL2X7X_MIN_ITIME;
 > -
-> -	dev_info(&chip->client->dev, "%s: als time = %d",
-> -		 __func__, chip->settings.als_time);
+> -	filter_delay =
+> -		DIV_ROUND_UP((result.integer * 1000) + result.fract, z);
 > -
-> -	tsl2x7x_invoke_change(indio_dev);
+> -	chip->settings.persistence &= 0xF0;
+> -	chip->settings.persistence |= (filter_delay & 0x0F);
+> -
+> -	dev_info(&chip->client->dev, "%s: als persistence = %d",
+> -		 __func__, filter_delay);
+> -
+> -	ret = tsl2x7x_invoke_change(indio_dev);
+> -	if (ret < 0)
+> -		return ret;
 > -
 > -	return IIO_VAL_INT_PLUS_MICRO;
 > -}
 > -
->  static IIO_CONST_ATTR(in_illuminance0_integration_time_available,
->  		".00272 - .696");
->  
-> @@ -1377,7 +1338,11 @@ static int tsl2x7x_read_raw(struct iio_dev *indio_dev,
->  		*val = chip->settings.als_gain_trim;
->  		ret = IIO_VAL_INT;
->  		break;
+> -static ssize_t in_proximity0_thresh_period_show(struct device *dev,
+> -					     struct device_attribute *attr,
+> -					     char *buf)
+> -{
+> -	struct tsl2X7X_chip *chip = iio_priv(dev_to_iio_dev(dev));
+> -	int y, z, filter_delay;
 > -
-> +	case IIO_CHAN_INFO_INT_TIME:
-> +		*val = (TSL2X7X_MAX_TIMER_CNT - chip->settings.als_time) + 1;
-> +		*val2 = ((*val * TSL2X7X_MIN_ITIME) % 1000) / 1000;
+> -	/* Determine integration time */
+> -	y = (TSL2X7X_MAX_TIMER_CNT - (u8)chip->settings.prx_time) + 1;
+> -	z = y * TSL2X7X_MIN_ITIME;
+> -	filter_delay = z * ((chip->settings.persistence & 0xF0) >> 4);
+> -	y = filter_delay / 1000;
+> -	z = filter_delay % 1000;
+> -
+> -	return snprintf(buf, PAGE_SIZE, "%d.%03d\n", y, z);
+> -}
+> -
+> -static ssize_t in_proximity0_thresh_period_store(struct device *dev,
+> -					      struct device_attribute *attr,
+> -					      const char *buf, size_t len)
+> -{
+> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> -	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
+> -	struct tsl2x7x_parse_result result;
+> -	int y, z, filter_delay;
+> -	int ret;
+> -
+> -	ret = iio_str_to_fixpoint(buf, 100, &result.integer, &result.fract);
+> -	if (ret)
+> -		return ret;
+> -
+> -	y = (TSL2X7X_MAX_TIMER_CNT - (u8)chip->settings.prx_time) + 1;
+> -	z = y * TSL2X7X_MIN_ITIME;
+> -
+> -	filter_delay =
+> -		DIV_ROUND_UP((result.integer * 1000) + result.fract, z);
+> -
+> -	chip->settings.persistence &= 0x0F;
+> -	chip->settings.persistence |= ((filter_delay << 4) & 0xF0);
+> -
+> -	dev_info(&chip->client->dev, "%s: prox persistence = %d",
+> -		 __func__, filter_delay);
+> -
+> -	ret = tsl2x7x_invoke_change(indio_dev);
+> -	if (ret < 0)
+> -		return ret;
+> -
+> -
+> -	return IIO_VAL_INT_PLUS_MICRO;
+> -}
+> -
+>  static ssize_t in_illuminance0_calibrate_store(struct device *dev,
+>  				    struct device_attribute *attr,
+>  				    const char *buf, size_t len)
+> @@ -1198,7 +1096,8 @@ static int tsl2x7x_write_event_value(struct iio_dev *indio_dev,
+>  				     int val, int val2)
+>  {
+>  	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
+> -	int ret = -EINVAL;
+> +	int ret = -EINVAL, y, z, filter_delay;
+> +	u8 time;
+>  
+>  	switch (info) {
+>  	case IIO_EV_INFO_VALUE:
+> @@ -1230,6 +1129,33 @@ static int tsl2x7x_write_event_value(struct iio_dev *indio_dev,
+>  			}
+>  		}
+>  		break;
+> +	case IIO_EV_INFO_PERIOD:
+> +		if (chan->type == IIO_INTENSITY)
+> +			time = chip->settings.als_time;
+> +		else
+> +			time = chip->settings.prx_time;
+> +
+> +		y = (TSL2X7X_MAX_TIMER_CNT - time) + 1;
+> +		z = y * TSL2X7X_MIN_ITIME;
+> +
+> +		filter_delay = DIV_ROUND_UP((val * 1000) + val2, z);
+> +
+> +		if (chan->type == IIO_INTENSITY) {
+> +			chip->settings.persistence &= 0xF0;
+> +			chip->settings.persistence |=
+> +				(filter_delay & 0x0F);
+> +			dev_info(&chip->client->dev, "%s: ALS persistence = %d",
+> +				 __func__, filter_delay);
+> +		} else {
+> +			chip->settings.persistence &= 0x0F;
+> +			chip->settings.persistence |=
+> +				((filter_delay << 4) & 0xF0);
+> +			dev_info(&chip->client->dev,
+> +				 "%s: Proximity persistence = %d",
+> +				 __func__, filter_delay);
+> +		}
+> +		ret = 0;
+> +		break;
+>  	default:
+>  		break;
+>  	}
+> @@ -1248,7 +1174,8 @@ static int tsl2x7x_read_event_value(struct iio_dev *indio_dev,
+>  				    int *val, int *val2)
+>  {
+>  	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
+> -	int ret = -EINVAL;
+> +	int ret = -EINVAL, filter_delay, mult;
+> +	u8 time;
+>  
+>  	switch (info) {
+>  	case IIO_EV_INFO_VALUE:
+> @@ -1280,6 +1207,23 @@ static int tsl2x7x_read_event_value(struct iio_dev *indio_dev,
+>  			}
+>  		}
+>  		break;
+> +	case IIO_EV_INFO_PERIOD:
+> +		if (chan->type == IIO_INTENSITY) {
+> +			time = chip->settings.als_time;
+> +			mult = chip->settings.persistence & 0x0F;
+> +		} else {
+> +			time = chip->settings.prx_time;
+> +			mult = (chip->settings.persistence & 0xF0) >> 4;
+> +		}
+> +
+> +		/* Determine integration time */
+> +		*val = (TSL2X7X_MAX_TIMER_CNT - time) + 1;
+> +		*val2 = *val * TSL2X7X_MIN_ITIME;
+> +		filter_delay = *val2 * mult;
+> +		*val = filter_delay / 1000;
+> +		*val2 = filter_delay % 1000;
 > +		ret = IIO_VAL_INT_PLUS_MICRO;
 > +		break;
 >  	default:
->  		ret = -EINVAL;
->  	}
-> @@ -1453,7 +1418,13 @@ static int tsl2x7x_write_raw(struct iio_dev *indio_dev,
->  	case IIO_CHAN_INFO_CALIBBIAS:
->  		chip->settings.als_gain_trim = val;
 >  		break;
-> +	case IIO_CHAN_INFO_INT_TIME:
-> +		chip->settings.als_time =
-> +			TSL2X7X_MAX_TIMER_CNT - (val2 / TSL2X7X_MIN_ITIME);
->  
-> +		dev_info(&chip->client->dev, "%s: als time = %d",
-> +			 __func__, chip->settings.als_time);
-> +		break;
-
-I'm not sure this dev_info is terribly useful for anything - however
-not an issue with this patch as you have simply moved it..
-
->  	default:
->  		return -EINVAL;
 >  	}
-> @@ -1465,8 +1436,6 @@ static DEVICE_ATTR_RO(in_proximity0_calibscale_available);
+> @@ -1444,10 +1388,6 @@ static DEVICE_ATTR_WO(in_proximity0_calibrate);
 >  
->  static DEVICE_ATTR_RO(in_illuminance0_calibscale_available);
+>  static DEVICE_ATTR_RW(in_illuminance0_lux_table);
 >  
-> -static DEVICE_ATTR_RW(in_illuminance0_integration_time);
+> -static DEVICE_ATTR_RW(in_intensity0_thresh_period);
 > -
->  static DEVICE_ATTR_RW(in_illuminance0_target_input);
+> -static DEVICE_ATTR_RW(in_proximity0_thresh_period);
+> -
+>  /* Use the default register values to identify the Taos device */
+>  static int tsl2x7x_device_id(int *id, int target)
+>  {
+> @@ -1554,22 +1494,6 @@ static struct attribute *tsl2x7x_ALSPRX2_device_attrs[] = {
+>  	NULL
+>  };
 >  
->  static DEVICE_ATTR_WO(in_illuminance0_calibrate);
-> @@ -1546,7 +1515,6 @@ static irqreturn_t tsl2x7x_event_handler(int irq, void *private)
+> -static struct attribute *tsl2X7X_ALS_event_attrs[] = {
+> -	&dev_attr_in_intensity0_thresh_period.attr,
+> -	NULL,
+> -};
+> -
+> -static struct attribute *tsl2X7X_PRX_event_attrs[] = {
+> -	&dev_attr_in_proximity0_thresh_period.attr,
+> -	NULL,
+> -};
+> -
+> -static struct attribute *tsl2X7X_ALSPRX_event_attrs[] = {
+> -	&dev_attr_in_intensity0_thresh_period.attr,
+> -	&dev_attr_in_proximity0_thresh_period.attr,
+> -	NULL,
+> -};
+> -
+>  static const struct attribute_group tsl2X7X_device_attr_group_tbl[] = {
+>  	[ALS] = {
+>  		.attrs = tsl2x7x_ALS_device_attrs,
+> @@ -1588,25 +1512,9 @@ static const struct attribute_group tsl2X7X_device_attr_group_tbl[] = {
+>  	},
+>  };
 >  
->  static struct attribute *tsl2x7x_ALS_device_attrs[] = {
->  	&dev_attr_in_illuminance0_calibscale_available.attr,
-> -	&dev_attr_in_illuminance0_integration_time.attr,
->  	&iio_const_attr_in_illuminance0_integration_time_available.dev_attr.attr,
->  	&dev_attr_in_illuminance0_target_input.attr,
->  	&dev_attr_in_illuminance0_calibrate.attr,
-> @@ -1561,7 +1529,6 @@ static struct attribute *tsl2x7x_PRX_device_attrs[] = {
+> -static const struct attribute_group tsl2X7X_event_attr_group_tbl[] = {
+> -	[ALS] = {
+> -		.attrs = tsl2X7X_ALS_event_attrs,
+> -		.name = "events",
+> -	},
+> -	[PRX] = {
+> -		.attrs = tsl2X7X_PRX_event_attrs,
+> -		.name = "events",
+> -	},
+> -	[ALSPRX] = {
+> -		.attrs = tsl2X7X_ALSPRX_event_attrs,
+> -		.name = "events",
+> -	},
+> -};
+> -
+>  static const struct iio_info tsl2X7X_device_info[] = {
+>  	[ALS] = {
+>  		.attrs = &tsl2X7X_device_attr_group_tbl[ALS],
+> -		.event_attrs = &tsl2X7X_event_attr_group_tbl[ALS],
+>  		.read_raw = &tsl2x7x_read_raw,
+>  		.write_raw = &tsl2x7x_write_raw,
+>  		.read_event_value = &tsl2x7x_read_event_value,
+> @@ -1616,7 +1524,6 @@ static const struct iio_info tsl2X7X_device_info[] = {
+>  	},
+>  	[PRX] = {
+>  		.attrs = &tsl2X7X_device_attr_group_tbl[PRX],
+> -		.event_attrs = &tsl2X7X_event_attr_group_tbl[PRX],
+>  		.read_raw = &tsl2x7x_read_raw,
+>  		.write_raw = &tsl2x7x_write_raw,
+>  		.read_event_value = &tsl2x7x_read_event_value,
+> @@ -1626,7 +1533,6 @@ static const struct iio_info tsl2X7X_device_info[] = {
+>  	},
+>  	[ALSPRX] = {
+>  		.attrs = &tsl2X7X_device_attr_group_tbl[ALSPRX],
+> -		.event_attrs = &tsl2X7X_event_attr_group_tbl[ALSPRX],
+>  		.read_raw = &tsl2x7x_read_raw,
+>  		.write_raw = &tsl2x7x_write_raw,
+>  		.read_event_value = &tsl2x7x_read_event_value,
+> @@ -1636,7 +1542,6 @@ static const struct iio_info tsl2X7X_device_info[] = {
+>  	},
+>  	[PRX2] = {
+>  		.attrs = &tsl2X7X_device_attr_group_tbl[PRX2],
+> -		.event_attrs = &tsl2X7X_event_attr_group_tbl[PRX],
+>  		.read_raw = &tsl2x7x_read_raw,
+>  		.write_raw = &tsl2x7x_write_raw,
+>  		.read_event_value = &tsl2x7x_read_event_value,
+> @@ -1646,7 +1551,6 @@ static const struct iio_info tsl2X7X_device_info[] = {
+>  	},
+>  	[ALSPRX2] = {
+>  		.attrs = &tsl2X7X_device_attr_group_tbl[ALSPRX2],
+> -		.event_attrs = &tsl2X7X_event_attr_group_tbl[ALSPRX],
+>  		.read_raw = &tsl2x7x_read_raw,
+>  		.write_raw = &tsl2x7x_write_raw,
+>  		.read_event_value = &tsl2x7x_read_event_value,
+> @@ -1667,6 +1571,10 @@ static const struct iio_event_spec tsl2x7x_events[] = {
+>  		.dir = IIO_EV_DIR_FALLING,
+>  		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
+>  			BIT(IIO_EV_INFO_ENABLE),
+> +	}, {
+> +		.type = IIO_EV_TYPE_THRESH,
+> +		.dir = IIO_EV_DIR_NONE,
+
+Hmm.  Should this not be _EITHER rather than _NONE?
+
+> +		.mask_separate = BIT(IIO_EV_INFO_PERIOD),
+>  	},
+>  };
 >  
->  static struct attribute *tsl2x7x_ALSPRX_device_attrs[] = {
->  	&dev_attr_in_illuminance0_calibscale_available.attr,
-> -	&dev_attr_in_illuminance0_integration_time.attr,
->  	&iio_const_attr_in_illuminance0_integration_time_available.dev_attr.attr,
->  	&dev_attr_in_illuminance0_target_input.attr,
->  	&dev_attr_in_illuminance0_calibrate.attr,
-> @@ -1578,7 +1545,6 @@ static struct attribute *tsl2x7x_PRX2_device_attrs[] = {
->  
->  static struct attribute *tsl2x7x_ALSPRX2_device_attrs[] = {
->  	&dev_attr_in_illuminance0_calibscale_available.attr,
-> -	&dev_attr_in_illuminance0_integration_time.attr,
->  	&iio_const_attr_in_illuminance0_integration_time_available.dev_attr.attr,
->  	&dev_attr_in_illuminance0_target_input.attr,
->  	&dev_attr_in_illuminance0_calibrate.attr,
-> @@ -1711,7 +1677,8 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
->  			.type = IIO_LIGHT,
->  			.indexed = 1,
->  			.channel = 0,
-> -			.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> +			.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-> +					      BIT(IIO_CHAN_INFO_INT_TIME),
->  			}, {
->  			.type = IIO_INTENSITY,
->  			.indexed = 1,
-> @@ -1750,7 +1717,8 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
->  			.type = IIO_LIGHT,
->  			.indexed = 1,
->  			.channel = 0,
-> -			.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED)
-> +			.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-> +					      BIT(IIO_CHAN_INFO_INT_TIME),
->  			}, {
->  			.type = IIO_INTENSITY,
->  			.indexed = 1,
-> @@ -1798,7 +1766,8 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
->  			.type = IIO_LIGHT,
->  			.indexed = 1,
->  			.channel = 0,
-> -			.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> +			.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-> +					      BIT(IIO_CHAN_INFO_INT_TIME),
->  			}, {
->  			.type = IIO_INTENSITY,
->  			.indexed = 1,
 
