@@ -1,99 +1,224 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out-2.itc.rwth-aachen.de ([134.130.5.47]:8645 "EHLO
-        mail-out-2.itc.rwth-aachen.de" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1750907AbdJNS1F (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 14 Oct 2017 14:27:05 -0400
-From: Stefan Bruens <stefan.bruens@rwth-aachen.de>
-To: Maciej Purski <m.purski@samsung.com>
-CC: <linux-iio@vger.kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        <linux-kernel@vger.kernel.org>, "Andrew F . Davis" <afd@ti.com>,
-        "Javier Martinez Canillas" <javier@osg.samsung.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>
-Subject: Re: [2/3] iio: adc: ina2xx: Adhere to documented ABI, use Ohm instead of uOhm
-Date: Sat, 14 Oct 2017 20:27:01 +0200
-Message-ID: <2075928.pSFUuclJ1z@pebbles.site>
-In-Reply-To: <6144c719-5310-7358-bd57-f778ab481788@samsung.com>
-References: <7ee955b2-a58f-45e0-985d-1f7508d41ae7@rwthex-w2-a.rwth-ad.de> <CGME20171009092944eucas1p18b2e66a4a07db309551a7e945c2611ec@eucas1p1.samsung.com> <6144c719-5310-7358-bd57-f778ab481788@samsung.com>
+Return-Path: <SRS0=6ZmJ=BA=rwth-aachen.de=Stefan.Bruens@kernel.org>
+From: =?UTF-8?q?Stefan=20Br=C3=BCns?= <stefan.bruens@rwth-aachen.de>
+To: <linux-iio@vger.kernel.org>
+CC: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	=?UTF-8?q?Stefan=20Br=C3=BCns?= <stefan.bruens@rwth-aachen.de>,
+	<linux-kernel@vger.kernel.org>, "Andrew F . Davis" <afd@ti.com>, "Javier
+ Martinez Canillas" <javier@osg.samsung.com>, Lars-Peter Clausen
+	<lars@metafoo.de>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack
+	<knaack.h@gmx.de>
+Subject: [PATCH 3/3] iio: adc: ina2xx: Allow setting Shunt Voltage PGA gain and Bus Voltage range
+Date: Sun, 1 Oct 2017 21:48:18 +0200
+In-Reply-To: <20171001194818.26017-1-stefan.bruens@rwth-aachen.de>
+References: <20171001194818.26017-1-stefan.bruens@rwth-aachen.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Message-ID: <18deb1c0-05f7-4ca9-947e-09da4d2e10a6@rwthex-w2-a.rwth-ad.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Montag, 9. Oktober 2017 11:29:43 CEST Maciej Purski wrote:
-> On 10/01/2017 09:48 PM, Stefan Brüns wrote:
-> > According to the ABI documentation, the shunt resistor value should be
-> > specificied in Ohm. As this is also used/documented for the MAX9611,
-> > use the same for the INA2xx driver.
-> > 
-> > This poses an ABI break for anyone actually altering the shunt value
-> > through the sysfs interface, it does not alter the default value nor
-> > a value set from the devicetree.
-> > 
-> > Minor change: Fix comment, 1mA is 10^-3A.
-> 
-> I have just a minor issue. There could be an inconsistency with units as in
-> my patch I make current_lsb adjustable and I need it to be in uA (it used
-> to be hardcoded as 1 mA so to achieve better precision we need smaller
-> units). So in order to keep calibration register properly scaled, I convert
-> uOhms to mOhms on each set_calibration(). So if both my changes and your
-> changes were applied, on each shunt_resistore_store we would be performing
-> multiplication by 10^6 and then in set_calibration() division by 10^3 which
-> seems odd to me.
-> 
-> I guess we could keep it as shunt_resistor_ohms instead of
-> shunt_resistor_uohm. We could avoid performing division on each
-> shunt_resistor_show() and perform multiplication by 10^3 only once in
-> set_calibration() on each
-> shunt_resistore_store(). We could then change the default value and perform
-> division only on probing, when reading the shunt_resistance from device
-> tree.
-> 
-> There are many other options. It's not a major issue so maybe we could leave
-> it as it is or you could suggest some changes in my patch.
+Reducing shunt and bus voltage range improves the accuracy, so allow
+altering the default settings.
+
+Both settings are exposed as gain values. While for the shunt voltage
+this is straightforward, the bus range settings of 32V (default) and 16V
+are mapped to gain values of 1 resp. 2, to provide a uniform API to
+userspace.
+
+As the gain settings are incorporated into the raw values by the sensor
+itself, adjusting of the scale attributes is not necessary.
+
+Signed-off-by: Stefan BrÃ¼ns <stefan.bruens@rwth-aachen.de>
+
+---
+
+ drivers/iio/adc/ina2xx-adc.c | 111 +++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 108 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
+index 1930f853e8c5..7e9ce43ad15d 100644
+--- a/drivers/iio/adc/ina2xx-adc.c
++++ b/drivers/iio/adc/ina2xx-adc.c
+@@ -48,8 +48,10 @@
+ #define INA2XX_MAX_REGISTERS            8
  
-Sorry it took me so long to answer ...
-
-The current fixed current_lsb of 1mA is indeed a bad choice for everything but 
-a shunt resistor value of 10mOhm, as it truncates the current value. So what 
-is a *good* choice?
-
-One important point is the current register is merely more than a convenience 
-register. At least for the INA219/220, it provides nothing not achievable in 
-software, and for the INA226 family it only has added value if the current is 
-varying faster than the readout frequency and the averaging is used.
-
-The precision of the current register is limited by the precision of the shunt 
-voltage register, and may be reduced by the applied scaling/calibration 
-factor.
-
-The precision of the shunt voltage register is fixed at 10uV (INA219) resp. 
-2.5uV (INA226). Changing conversion time (both) and PGA (219) affects the 
-noise and offset, but the lsb value is still fixed.
-
-If one wants to carry over the shunt voltage register precision into the 
-current register, its important no (or hardly any) truncation happens. The 
-terms therefor are given in the manual, formulas 8.5.1 (4) resp 7.5.1 (3):
-
-INA219: current = shunt_voltage * cal_register / 4096
-INA226: current = shunt_voltage * cal_register / 2048
-
-So any cal value smaller than 4096 (2048) will introduce truncation errors, 
-larger values may introduce overflows, if the full input range is used. Now, 
-would it not be wise to always use 4096 (2048) for the calibration value?
-
-The raw values from the IIO subsystem are meaningless without their 
-accompanying scale factor. Instead of changing the calibration value, why not 
-just change the reported scale factor?
-
-More opinions are very welcome.
-
-Kind regards,
-
-Stefan
-
+ /* settings - depend on use case */
+-#define INA219_CONFIG_DEFAULT           0x399F	/* PGA=8 */
++#define INA219_CONFIG_DEFAULT           0x399F	/* PGA=1/8, BRNG=32V */
+ #define INA219_DEFAULT_IT		532
++#define INA219_DEFAULT_BRNG             1   /* 32V */
++#define INA219_DEFAULT_PGA              125 /* 1000/8 */
+ #define INA226_CONFIG_DEFAULT           0x4327
+ #define INA226_DEFAULT_AVG              4
+ #define INA226_DEFAULT_IT		1110
+@@ -62,6 +64,14 @@
+  */
+ #define INA2XX_MODE_MASK	GENMASK(3, 0)
+ 
++/* Gain for VShunt: 1/8 (default), 1/4, 1/2, 1 */
++#define INA219_PGA_MASK		GENMASK(12, 11)
++#define INA219_SHIFT_PGA(val)	((val) << 11)
++
++/* VBus range: 32V (default), 16V */
++#define INA219_BRNG_MASK	BIT(13)
++#define INA219_SHIFT_BRNG(val)	((val) << 13)
++
+ /* Averaging for VBus/VShunt/Power */
+ #define INA226_AVG_MASK		GENMASK(11, 9)
+ #define INA226_SHIFT_AVG(val)	((val) << 9)
+@@ -131,6 +141,8 @@ struct ina2xx_chip_info {
+ 	int avg;
+ 	int int_time_vbus; /* Bus voltage integration time uS */
+ 	int int_time_vshunt; /* Shunt voltage integration time uS */
++	int range_vbus; /* Bus voltage maximum in V */
++	int pga_gain_vshunt; /* Shunt voltage PGA gain */
+ 	bool allow_async_readout;
+ };
+ 
+@@ -227,6 +239,18 @@ static int ina2xx_read_raw(struct iio_dev *indio_dev,
+ 			*val = 1;
+ 			return IIO_VAL_INT;
+ 		}
++
++	case IIO_CHAN_INFO_HARDWAREGAIN:
++		switch (chan->address) {
++		case INA2XX_SHUNT_VOLTAGE:
++			*val = chip->pga_gain_vshunt;
++			*val2 = 1000;
++			return IIO_VAL_FRACTIONAL;
++
++		case INA2XX_BUS_VOLTAGE:
++			*val = chip->range_vbus == 32 ? 1 : 2;
++			return IIO_VAL_INT;
++		}
+ 	}
+ 
+ 	return -EINVAL;
+@@ -361,6 +385,74 @@ static int ina219_set_int_time_vshunt(struct ina2xx_chip_info *chip,
+ 	return 0;
+ }
+ 
++static const int ina219_vbus_range_tab[] = { 1, 2 };
++static int ina219_set_vbus_range_denom(struct ina2xx_chip_info *chip,
++				       unsigned int range,
++				       unsigned int *config)
++{
++	if (range == 1)
++		chip->range_vbus = 32;
++	else if (range == 2)
++		chip->range_vbus = 16;
++	else
++		return -EINVAL;
++
++	*config &= ~INA219_BRNG_MASK;
++	*config |= INA219_SHIFT_BRNG(range == 1 ? 1 : 0) & INA219_BRNG_MASK;
++
++	return 0;
++}
++
++static const int ina219_vshunt_gain_tab[] = { 125, 250, 500, 1000 };
++static const int ina219_vshunt_gain_frac[] = {
++	125, 1000, 250, 1000, 500, 1000, 1000, 1000 };
++
++static int ina219_set_vshunt_pga_gain(struct ina2xx_chip_info *chip,
++				      unsigned int gain,
++				      unsigned int *config)
++{
++	int bits;
++
++	if (gain < 125 || gain > 1000)
++		return -EINVAL;
++
++	bits = find_closest(gain, ina219_vshunt_gain_tab,
++			    ARRAY_SIZE(ina219_vshunt_gain_tab));
++
++	chip->pga_gain_vshunt = ina219_vshunt_gain_tab[bits];
++	bits = 3 - bits;
++
++	*config &= ~INA219_PGA_MASK;
++	*config |= INA219_SHIFT_PGA(bits) & INA219_PGA_MASK;
++
++	return 0;
++}
++
++static int ina2xx_read_avail(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     const int **vals, int *type, int *length,
++			     long mask)
++{
++	switch (mask) {
++	case IIO_CHAN_INFO_HARDWAREGAIN:
++		switch (chan->address) {
++		case INA2XX_SHUNT_VOLTAGE:
++			*type = IIO_VAL_FRACTIONAL;
++			*length = sizeof(ina219_vshunt_gain_frac) / sizeof(int);
++			*vals = ina219_vshunt_gain_frac;
++			return IIO_AVAIL_LIST;
++
++		case INA2XX_BUS_VOLTAGE:
++			*type = IIO_VAL_INT;
++			*length = sizeof(ina219_vbus_range_tab) / sizeof(int);
++			*vals = ina219_vbus_range_tab;
++			return IIO_AVAIL_LIST;
++		}
++	}
++
++	return -EINVAL;
++}
++
+ static int ina2xx_write_raw(struct iio_dev *indio_dev,
+ 			    struct iio_chan_spec const *chan,
+ 			    int val, int val2, long mask)
+@@ -403,6 +495,14 @@ static int ina2xx_write_raw(struct iio_dev *indio_dev,
+ 		}
+ 		break;
+ 
++	case IIO_CHAN_INFO_HARDWAREGAIN:
++		if (chan->address == INA2XX_SHUNT_VOLTAGE)
++			ret = ina219_set_vshunt_pga_gain(chip, val * 1000000 +
++							 val2, &tmp);
++		else
++			ret = ina219_set_vbus_range_denom(chip, val, &tmp);
++		break;
++
+ 	default:
+ 		ret = -EINVAL;
+ 	}
+@@ -547,7 +647,10 @@ static ssize_t ina2xx_shunt_resistor_store(struct device *dev,
+ 	.channel = (_index), \
+ 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
+ 			      BIT(IIO_CHAN_INFO_SCALE) | \
+-			      BIT(IIO_CHAN_INFO_INT_TIME), \
++			      BIT(IIO_CHAN_INFO_INT_TIME) | \
++			      BIT(IIO_CHAN_INFO_HARDWAREGAIN), \
++	.info_mask_separate_available = \
++			      BIT(IIO_CHAN_INFO_HARDWAREGAIN), \
+ 	.info_mask_shared_by_dir = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
+ 	.scan_index = (_index), \
+ 	.scan_type = { \
+@@ -758,7 +861,6 @@ static IIO_CONST_ATTR_NAMED(ina226_integration_time_available,
+ 			    integration_time_available,
+ 			    "0.000140 0.000204 0.000332 0.000588 0.001100 0.002116 0.004156 0.008244");
+ 
+-
+ static IIO_DEVICE_ATTR(in_allow_async_readout, S_IRUGO | S_IWUSR,
+ 		       ina2xx_allow_async_readout_show,
+ 		       ina2xx_allow_async_readout_store, 0);
+@@ -793,6 +895,7 @@ static const struct iio_info ina219_info = {
+ 	.driver_module = THIS_MODULE,
+ 	.attrs = &ina219_attribute_group,
+ 	.read_raw = ina2xx_read_raw,
++	.read_avail = ina2xx_read_avail,
+ 	.write_raw = ina2xx_write_raw,
+ 	.debugfs_reg_access = ina2xx_debug_reg,
+ };
+@@ -874,6 +977,8 @@ static int ina2xx_probe(struct i2c_client *client,
+ 		chip->avg = 1;
+ 		ina219_set_int_time_vbus(chip, INA219_DEFAULT_IT, &val);
+ 		ina219_set_int_time_vshunt(chip, INA219_DEFAULT_IT, &val);
++		ina219_set_vbus_range_denom(chip, INA219_DEFAULT_BRNG, &val);
++		ina219_set_vshunt_pga_gain(chip, INA219_DEFAULT_PGA, &val);
+ 	}
+ 
+ 	ret = ina2xx_init(chip, val);
 -- 
-Stefan Brüns  /  Bergstraße 21  /  52062 Aachen
-home: +49 241 53809034     mobile: +49 151 50412019
+2.14.1
