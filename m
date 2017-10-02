@@ -1,82 +1,82 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:37450 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750998AbdJGLWw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 7 Oct 2017 07:22:52 -0400
-Date: Sat, 7 Oct 2017 12:22:48 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-Cc: linux-iio@vger.kernel.org, lorenzo.bianconi@st.com
-Subject: Re: [PATCH v2 1/4] iio: imu: st_lsm6dsx: convert max_fifo_size in
- FIFO sample size
-Message-ID: <20171007122248.5868ef00@archlinux>
-In-Reply-To: <20171002163740.13780-2-lorenzo.bianconi@st.com>
+Return-Path: <SRS0=O0fK=BB=gmail.com=lorenzo.bianconi83@kernel.org>
+From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	lorenzo.bianconi@st.com
+Subject: [PATCH v2 2/4] iio: imu: st_lsm6dsx: split fifo mode and fifo odr configuration
+Date: Mon,  2 Oct 2017 18:37:38 +0200
+Message-Id: <20171002163740.13780-3-lorenzo.bianconi@st.com>
+In-Reply-To: <20171002163740.13780-1-lorenzo.bianconi@st.com>
 References: <20171002163740.13780-1-lorenzo.bianconi@st.com>
-        <20171002163740.13780-2-lorenzo.bianconi@st.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon,  2 Oct 2017 18:37:37 +0200
-Lorenzo Bianconi <lorenzo.bianconi83@gmail.com> wrote:
+Separate fifo mode and max fifo sample rate configuration.
+That change will be necessary to reuse st_lsm6dsx_set_fifo_mode()
+routine and to support more devices in st_lsm6dsx driver
 
-> Express max fifo depth in ST_LSM6DSX_SAMPLE_SIZE instead of in bytes.
-> That change will be necessary to properly support more devices
-> in st_lsm6dsx driver
-> 
-> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+---
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 32 ++++++++++++++------------
+ 1 file changed, 17 insertions(+), 15 deletions(-)
 
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 11 +++++------
->  1 file changed, 5 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> index debf4064f474..e6e0363cd1c2 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> @@ -156,21 +156,21 @@ static const struct st_lsm6dsx_fs_table_entry st_lsm6dsx_fs_table[] = {
->  static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
->  	{
->  		.wai = 0x69,
-> -		.max_fifo_size = 8192,
-> +		.max_fifo_size = 1365,
->  		.id = {
->  			[0] = ST_LSM6DS3_ID,
->  		},
->  	},
->  	{
->  		.wai = 0x69,
-> -		.max_fifo_size = 4096,
-> +		.max_fifo_size = 682,
->  		.id = {
->  			[0] = ST_LSM6DS3H_ID,
->  		},
->  	},
->  	{
->  		.wai = 0x6a,
-> -		.max_fifo_size = 4096,
-> +		.max_fifo_size = 682,
->  		.id = {
->  			[0] = ST_LSM6DSL_ID,
->  			[1] = ST_LSM6DSM_ID,
-> @@ -462,10 +462,9 @@ static int st_lsm6dsx_set_watermark(struct iio_dev *iio_dev, unsigned int val)
->  {
->  	struct st_lsm6dsx_sensor *sensor = iio_priv(iio_dev);
->  	struct st_lsm6dsx_hw *hw = sensor->hw;
-> -	int err, max_fifo_len;
-> +	int err;
->  
-> -	max_fifo_len = hw->settings->max_fifo_size / ST_LSM6DSX_SAMPLE_SIZE;
-> -	if (val < 1 || val > max_fifo_len)
-> +	if (val < 1 || val > hw->settings->max_fifo_size)
->  		return -EINVAL;
->  
->  	err = st_lsm6dsx_update_watermark(sensor, val);
-
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+index e2737dc71b67..26fb970aed15 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+@@ -139,23 +139,10 @@ static int st_lsm6dsx_update_decimators(struct st_lsm6dsx_hw *hw)
+ int st_lsm6dsx_set_fifo_mode(struct st_lsm6dsx_hw *hw,
+ 			     enum st_lsm6dsx_fifo_mode fifo_mode)
+ {
+-	u8 data;
+ 	int err;
+ 
+-	switch (fifo_mode) {
+-	case ST_LSM6DSX_FIFO_BYPASS:
+-		data = fifo_mode;
+-		break;
+-	case ST_LSM6DSX_FIFO_CONT:
+-		data = (ST_LSM6DSX_MAX_FIFO_ODR_VAL <<
+-			__ffs(ST_LSM6DSX_FIFO_ODR_MASK)) | fifo_mode;
+-		break;
+-	default:
+-		return -EINVAL;
+-	}
+-
+-	err = hw->tf->write(hw->dev, ST_LSM6DSX_REG_FIFO_MODE_ADDR,
+-			    sizeof(data), &data);
++	err = st_lsm6dsx_write_with_mask(hw, ST_LSM6DSX_REG_FIFO_MODE_ADDR,
++					 ST_LSM6DSX_FIFO_MODE_MASK, fifo_mode);
+ 	if (err < 0)
+ 		return err;
+ 
+@@ -164,6 +151,17 @@ int st_lsm6dsx_set_fifo_mode(struct st_lsm6dsx_hw *hw,
+ 	return 0;
+ }
+ 
++static int st_lsm6dsx_set_fifo_odr(struct st_lsm6dsx_sensor *sensor,
++				   bool enable)
++{
++	struct st_lsm6dsx_hw *hw = sensor->hw;
++	u8 data;
++
++	data = hw->enable_mask ? ST_LSM6DSX_MAX_FIFO_ODR_VAL : 0;
++	return st_lsm6dsx_write_with_mask(hw, ST_LSM6DSX_REG_FIFO_MODE_ADDR,
++					  ST_LSM6DSX_FIFO_ODR_MASK, data);
++}
++
+ int st_lsm6dsx_update_watermark(struct st_lsm6dsx_sensor *sensor, u16 watermark)
+ {
+ 	u16 fifo_watermark = ~0, cur_watermark, sip = 0;
+@@ -345,6 +343,10 @@ static int st_lsm6dsx_update_fifo(struct iio_dev *iio_dev, bool enable)
+ 			return err;
+ 	}
+ 
++	err = st_lsm6dsx_set_fifo_odr(sensor, enable);
++	if (err < 0)
++		return err;
++
+ 	err = st_lsm6dsx_update_decimators(hw);
+ 	if (err < 0)
+ 		return err;
+-- 
+2.14.1
