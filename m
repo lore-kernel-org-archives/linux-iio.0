@@ -1,256 +1,38 @@
-Return-Path: <SRS0=hq1g=BI=samsung.com=m.purski@kernel.org>
-MIME-version: 1.0
-Content-type: text/plain; charset="utf-8"; format="flowed"
-Subject: Re: [PATCH 3/3] iio: adc: ina2xx: Allow setting Shunt Voltage PGA
- gain and Bus Voltage range
-To: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Stefan_Br=c3=bcns?=
-	<stefan.bruens@rwth-aachen.de>
-Cc: linux-iio@vger.kernel.org, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-kernel@vger.kernel.org, "Andrew F . Davis" <afd@ti.com>, Javier
-	Martinez Canillas <javier@osg.samsung.com>, Lars-Peter Clausen
-	<lars@metafoo.de>, Hartmut Knaack <knaack.h@gmx.de>
-From: Maciej Purski <m.purski@samsung.com>
-Message-id: <987bc8e8-c1a6-1bfe-f963-92f4aaa40411@samsung.com>
-Date: Mon, 09 Oct 2017 10:36:16 +0200
-In-reply-to: <20171008110756.6eb9cab7@archlinux>
-References: <20171001194818.26017-1-stefan.bruens@rwth-aachen.de>
-	<18deb1c0-05f7-4ca9-947e-09da4d2e10a6@rwthex-w2-a.rwth-ad.de>
-	<CGME20171008100804epcas1p3d852423023b6516d064c7276d2f0fc1f@epcas1p3.samsung.com>
-	<20171008110756.6eb9cab7@archlinux>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:57098 "EHLO
+        mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751174AbdJBQho (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 Oct 2017 12:37:44 -0400
+Received: by mail-wm0-f67.google.com with SMTP id e195so8041726wma.5
+        for <linux-iio@vger.kernel.org>; Mon, 02 Oct 2017 09:37:44 -0700 (PDT)
+From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, lorenzo.bianconi@st.com
+Subject: [PATCH v2 0/4] rework st_lsm6dsx driver to support more devices
+Date: Mon,  2 Oct 2017 18:37:36 +0200
+Message-Id: <20171002163740.13780-1-lorenzo.bianconi@st.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+This is the first patchset that reworks st_lsm6dsx driver to properly
+support more devices
 
+Changes since v1:
+- drop a blank line in st_lsm6dsx_fifo_ops description
+- improve commit log in patch 1
 
-On 10/08/2017 12:07 PM, Jonathan Cameron wrote:
-> On Sun, 1 Oct 2017 21:48:18 +0200
-> Stefan Brüns <stefan.bruens@rwth-aachen.de> wrote:
-> 
->> Reducing shunt and bus voltage range improves the accuracy, so allow
->> altering the default settings.
->>
->> Both settings are exposed as gain values. While for the shunt voltage
->> this is straightforward, the bus range settings of 32V (default) and 16V
->> are mapped to gain values of 1 resp. 2, to provide a uniform API to
->> userspace.
->>
->> As the gain settings are incorporated into the raw values by the sensor
->> itself, adjusting of the scale attributes is not necessary.
->>
->> Signed-off-by: Stefan Brüns <stefan.bruens@rwth-aachen.de>
-> 
-> cc'd Maciej Purski who is working to improve the current calibration
-> elements - I'd like you both to review each others patches if possible
-> as the ABI is getting complex in here!
-> 
-> I think what you have here won't interfere with Maciej's work, but
-> would like you two to confirm that.  Note that patch set probably
-> needs a revision as I've suggested a rather different approach.
-> 
-> Thanks,
-> 
-> Jonathan
->   
+Lorenzo Bianconi (4):
+  iio: imu: st_lsm6dsx: convert max_fifo_size in FIFO sample size
+  iio: imu: st_lsm6dsx: split fifo mode and fifo odr configuration
+  iio: imu: st_lsm6dsx: move decimator info in
+    st_lsm6dsx_sensor_settings
+  iio: imu: st_lsm6dsx: add FIFO ops data structure
 
-Hi,
-it looks fine to me. The patches shouldn't interfere with each other.
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h        | 32 +++++++++--
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 72 ++++++++++++------------
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c   | 78 ++++++++++++++++++++++----
+ 3 files changed, 132 insertions(+), 50 deletions(-)
 
-Regards,
+-- 
+2.14.1
 
-Maciej
-
->>
->> ---
->>
->>   drivers/iio/adc/ina2xx-adc.c | 111 +++++++++++++++++++++++++++++++++++++++++--
->>   1 file changed, 108 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
->> index 1930f853e8c5..7e9ce43ad15d 100644
->> --- a/drivers/iio/adc/ina2xx-adc.c
->> +++ b/drivers/iio/adc/ina2xx-adc.c
->> @@ -48,8 +48,10 @@
->>   #define INA2XX_MAX_REGISTERS            8
->>   
->>   /* settings - depend on use case */
->> -#define INA219_CONFIG_DEFAULT           0x399F	/* PGA=8 */
->> +#define INA219_CONFIG_DEFAULT           0x399F	/* PGA=1/8, BRNG=32V */
->>   #define INA219_DEFAULT_IT		532
->> +#define INA219_DEFAULT_BRNG             1   /* 32V */
->> +#define INA219_DEFAULT_PGA              125 /* 1000/8 */
->>   #define INA226_CONFIG_DEFAULT           0x4327
->>   #define INA226_DEFAULT_AVG              4
->>   #define INA226_DEFAULT_IT		1110
->> @@ -62,6 +64,14 @@
->>    */
->>   #define INA2XX_MODE_MASK	GENMASK(3, 0)
->>   
->> +/* Gain for VShunt: 1/8 (default), 1/4, 1/2, 1 */
->> +#define INA219_PGA_MASK		GENMASK(12, 11)
->> +#define INA219_SHIFT_PGA(val)	((val) << 11)
->> +
->> +/* VBus range: 32V (default), 16V */
->> +#define INA219_BRNG_MASK	BIT(13)
->> +#define INA219_SHIFT_BRNG(val)	((val) << 13)
->> +
->>   /* Averaging for VBus/VShunt/Power */
->>   #define INA226_AVG_MASK		GENMASK(11, 9)
->>   #define INA226_SHIFT_AVG(val)	((val) << 9)
->> @@ -131,6 +141,8 @@ struct ina2xx_chip_info {
->>   	int avg;
->>   	int int_time_vbus; /* Bus voltage integration time uS */
->>   	int int_time_vshunt; /* Shunt voltage integration time uS */
->> +	int range_vbus; /* Bus voltage maximum in V */
->> +	int pga_gain_vshunt; /* Shunt voltage PGA gain */
->>   	bool allow_async_readout;
->>   };
->>   
->> @@ -227,6 +239,18 @@ static int ina2xx_read_raw(struct iio_dev *indio_dev,
->>   			*val = 1;
->>   			return IIO_VAL_INT;
->>   		}
->> +
->> +	case IIO_CHAN_INFO_HARDWAREGAIN:
->> +		switch (chan->address) {
->> +		case INA2XX_SHUNT_VOLTAGE:
->> +			*val = chip->pga_gain_vshunt;
->> +			*val2 = 1000;
->> +			return IIO_VAL_FRACTIONAL;
->> +
->> +		case INA2XX_BUS_VOLTAGE:
->> +			*val = chip->range_vbus == 32 ? 1 : 2;
->> +			return IIO_VAL_INT;
->> +		}
->>   	}
->>   
->>   	return -EINVAL;
->> @@ -361,6 +385,74 @@ static int ina219_set_int_time_vshunt(struct ina2xx_chip_info *chip,
->>   	return 0;
->>   }
->>   
->> +static const int ina219_vbus_range_tab[] = { 1, 2 };
->> +static int ina219_set_vbus_range_denom(struct ina2xx_chip_info *chip,
->> +				       unsigned int range,
->> +				       unsigned int *config)
->> +{
->> +	if (range == 1)
->> +		chip->range_vbus = 32;
->> +	else if (range == 2)
->> +		chip->range_vbus = 16;
->> +	else
->> +		return -EINVAL;
->> +
->> +	*config &= ~INA219_BRNG_MASK;
->> +	*config |= INA219_SHIFT_BRNG(range == 1 ? 1 : 0) & INA219_BRNG_MASK;
->> +
->> +	return 0;
->> +}
->> +
->> +static const int ina219_vshunt_gain_tab[] = { 125, 250, 500, 1000 };
->> +static const int ina219_vshunt_gain_frac[] = {
->> +	125, 1000, 250, 1000, 500, 1000, 1000, 1000 };
->> +
->> +static int ina219_set_vshunt_pga_gain(struct ina2xx_chip_info *chip,
->> +				      unsigned int gain,
->> +				      unsigned int *config)
->> +{
->> +	int bits;
->> +
->> +	if (gain < 125 || gain > 1000)
->> +		return -EINVAL;
->> +
->> +	bits = find_closest(gain, ina219_vshunt_gain_tab,
->> +			    ARRAY_SIZE(ina219_vshunt_gain_tab));
->> +
->> +	chip->pga_gain_vshunt = ina219_vshunt_gain_tab[bits];
->> +	bits = 3 - bits;
->> +
->> +	*config &= ~INA219_PGA_MASK;
->> +	*config |= INA219_SHIFT_PGA(bits) & INA219_PGA_MASK;
->> +
->> +	return 0;
->> +}
->> +
->> +static int ina2xx_read_avail(struct iio_dev *indio_dev,
->> +			     struct iio_chan_spec const *chan,
->> +			     const int **vals, int *type, int *length,
->> +			     long mask)
->> +{
->> +	switch (mask) {
->> +	case IIO_CHAN_INFO_HARDWAREGAIN:
->> +		switch (chan->address) {
->> +		case INA2XX_SHUNT_VOLTAGE:
->> +			*type = IIO_VAL_FRACTIONAL;
->> +			*length = sizeof(ina219_vshunt_gain_frac) / sizeof(int);
->> +			*vals = ina219_vshunt_gain_frac;
->> +			return IIO_AVAIL_LIST;
->> +
->> +		case INA2XX_BUS_VOLTAGE:
->> +			*type = IIO_VAL_INT;
->> +			*length = sizeof(ina219_vbus_range_tab) / sizeof(int);
->> +			*vals = ina219_vbus_range_tab;
->> +			return IIO_AVAIL_LIST;
->> +		}
->> +	}
->> +
->> +	return -EINVAL;
->> +}
->> +
->>   static int ina2xx_write_raw(struct iio_dev *indio_dev,
->>   			    struct iio_chan_spec const *chan,
->>   			    int val, int val2, long mask)
->> @@ -403,6 +495,14 @@ static int ina2xx_write_raw(struct iio_dev *indio_dev,
->>   		}
->>   		break;
->>   
->> +	case IIO_CHAN_INFO_HARDWAREGAIN:
->> +		if (chan->address == INA2XX_SHUNT_VOLTAGE)
->> +			ret = ina219_set_vshunt_pga_gain(chip, val * 1000000 +
->> +							 val2, &tmp);
->> +		else
->> +			ret = ina219_set_vbus_range_denom(chip, val, &tmp);
->> +		break;
->> +
->>   	default:
->>   		ret = -EINVAL;
->>   	}
->> @@ -547,7 +647,10 @@ static ssize_t ina2xx_shunt_resistor_store(struct device *dev,
->>   	.channel = (_index), \
->>   	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
->>   			      BIT(IIO_CHAN_INFO_SCALE) | \
->> -			      BIT(IIO_CHAN_INFO_INT_TIME), \
->> +			      BIT(IIO_CHAN_INFO_INT_TIME) | \
->> +			      BIT(IIO_CHAN_INFO_HARDWAREGAIN), \
->> +	.info_mask_separate_available = \
->> +			      BIT(IIO_CHAN_INFO_HARDWAREGAIN), \
->>   	.info_mask_shared_by_dir = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
->>   	.scan_index = (_index), \
->>   	.scan_type = { \
->> @@ -758,7 +861,6 @@ static IIO_CONST_ATTR_NAMED(ina226_integration_time_available,
->>   			    integration_time_available,
->>   			    "0.000140 0.000204 0.000332 0.000588 0.001100 0.002116 0.004156 0.008244");
->>   
->> -
->>   static IIO_DEVICE_ATTR(in_allow_async_readout, S_IRUGO | S_IWUSR,
->>   		       ina2xx_allow_async_readout_show,
->>   		       ina2xx_allow_async_readout_store, 0);
->> @@ -793,6 +895,7 @@ static const struct iio_info ina219_info = {
->>   	.driver_module = THIS_MODULE,
->>   	.attrs = &ina219_attribute_group,
->>   	.read_raw = ina2xx_read_raw,
->> +	.read_avail = ina2xx_read_avail,
->>   	.write_raw = ina2xx_write_raw,
->>   	.debugfs_reg_access = ina2xx_debug_reg,
->>   };
->> @@ -874,6 +977,8 @@ static int ina2xx_probe(struct i2c_client *client,
->>   		chip->avg = 1;
->>   		ina219_set_int_time_vbus(chip, INA219_DEFAULT_IT, &val);
->>   		ina219_set_int_time_vshunt(chip, INA219_DEFAULT_IT, &val);
->> +		ina219_set_vbus_range_denom(chip, INA219_DEFAULT_BRNG, &val);
->> +		ina219_set_vshunt_pga_gain(chip, INA219_DEFAULT_PGA, &val);
->>   	}
->>   
->>   	ret = ina2xx_init(chip, val);
-> 
-> 
-> 
-> 
