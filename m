@@ -1,109 +1,65 @@
-Return-Path: <SRS0=F73h=A7=gmail.com=himshijain.hj@kernel.org>
-Date: Sun, 1 Oct 2017 01:35:21 +0530
-From: Himanshi Jain <himshijain.hj@gmail.com>
-To: outreachy-kernel@googlegroups.com, jic23@kernel.org, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-	daniel.baluta@gmail.com, amsfield22@gmail.com,
-	Michael.Hennerich@analog.com, gregkh@linuxfoundation.org
-Subject: [PATCH] staging: iio: ade7753: expanding buffer lock to cover both
- buffer and state protection
-Message-ID: <20170930200521.GA19705@himanshi-Inspiron-5558>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pg0-f67.google.com ([74.125.83.67]:36751 "EHLO
+        mail-pg0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751062AbdJBNad (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 Oct 2017 09:30:33 -0400
+Received: by mail-pg0-f67.google.com with SMTP id 124so1433528pgi.3
+        for <linux-iio@vger.kernel.org>; Mon, 02 Oct 2017 06:30:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20170930183235.24bf30c5@archlinux>
+References: <1501427575-31045-1-git-send-email-akinobu.mita@gmail.com>
+ <1501427575-31045-12-git-send-email-akinobu.mita@gmail.com>
+ <20170730175806.0f2bc39a@kernel.org> <20170930183235.24bf30c5@archlinux>
+From: Akinobu Mita <akinobu.mita@gmail.com>
+Date: Mon, 2 Oct 2017 22:30:12 +0900
+Message-ID: <CAC5umyigoKSJC8vehFRfc1_21G4PWnroDrQa48yYeGw9U1D=JQ@mail.gmail.com>
+Subject: Re: [PATCH v3 11/11] iio: adc: ti-ads1015: add threshold event support
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Cc: linux-iio@vger.kernel.org, Daniel Baluta <daniel.baluta@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Dropping the extra lock (used for protecting the write frequency) by
-expanding the buffer lock to cover both buffer and state protection.
+2017-10-01 2:32 GMT+09:00 Jonathan Cameron <jic23@jic23.retrosnub.co.uk>:
+> On Sun, 30 Jul 2017 17:58:06 +0100
+> Jonathan Cameron <jic23@kernel.org> wrote:
+>
+>> On Mon, 31 Jul 2017 00:12:55 +0900
+>> Akinobu Mita <akinobu.mita@gmail.com> wrote:
+>>
+>> > The ADS1015 device provides programmable comparator that can issue an
+>> > interrupt on the ALERT pin.  This change adds the iio threshold event
+>> > support for that feature.
+>> >
+>> > The ADS1015 device only have a single config register which contains an
+>> > input multiplexer selection, comparator settings, and etc.  So only a
+>> > single event channel can be enabled at a time.  Also enabling both buffer
+>> > and event are prohibited for simplicity.
+>> >
+>> > Cc: Daniel Baluta <daniel.baluta@gmail.com>
+>> > Cc: Jonathan Cameron <jic23@kernel.org>
+>> > Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+>> Very nice.  I pretty much assumed there would be a locking problem in here
+>> but as far as I can see you got it spot on!
+>>
+>> This will obviously be waiting on the fixes to work their way through the
+>> fixes tree.
+>>
+>> I'm also happy with the rest of the series before this.
+>>
+>> Please give me a bump if it looks like I've lost this
+>> somehow (it's been known to happen if the cycle of getting
+>> changes back from the fixes tree takes too long)
+>
+> I've just been revisiting my patches to apply set and discovered I actually
+> took v2 of many if not all of these patches a week before this set was posted.
+> Could you sanity check the results currently in tree?
 
-Doing this by introducing a new function (__ade7753_spi_write_reg_16)
-making buffer changes without locking the state, to avoid nested locks
-while making device frequency changes.
+I've already realized and sent an patch that was not included in v2.
+You have already added it to the fixes-togreg-post-rc1 branch of iio.git :)
+Please take a look at the email thread "[PATCH v2 11/11] iio: adc:
+ti-ads1015: add threshold event support".
 
-Signed-off-by: Himanshi Jain <himshijain.hj@gmail.com>
----
- drivers/staging/iio/meter/ade7753.c | 29 ++++++++++++++++++-----------
- 1 file changed, 18 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/staging/iio/meter/ade7753.c b/drivers/staging/iio/meter/ade7753.c
-index b704b24..c44eb57 100644
---- a/drivers/staging/iio/meter/ade7753.c
-+++ b/drivers/staging/iio/meter/ade7753.c
-@@ -80,13 +80,11 @@
-  * @us:         actual spi_device
-  * @tx:         transmit buffer
-  * @rx:         receive buffer
-- * @buf_lock:       mutex to protect tx and rx
-- * @lock:	protect sensor data
-+ * @buf_lock:       mutex to protect tx, rx and write frequency
-  **/
- struct ade7753_state {
- 	struct spi_device   *us;
- 	struct mutex        buf_lock;
--	struct mutex	    lock; /* protect sensor data */
- 	u8          tx[ADE7753_MAX_TX] ____cacheline_aligned;
- 	u8          rx[ADE7753_MAX_RX];
- };
-@@ -109,6 +107,19 @@ static int ade7753_spi_write_reg_8(struct device *dev,
- 	return ret;
- }
- 
-+static int __ade7753_spi_write_reg_16(struct device *dev, u8 reg_address,
-+				      u16 value)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct ade7753_state *st = iio_priv(indio_dev);
-+
-+	st->tx[0] = ADE7753_WRITE_REG(reg_address);
-+	st->tx[1] = (value >> 8) & 0xFF;
-+	st->tx[2] = value & 0xFF;
-+
-+	return spi_write(st->us, st->tx, 3);
-+}
-+
- static int ade7753_spi_write_reg_16(struct device *dev, u8 reg_address,
- 				    u16 value)
- {
-@@ -117,10 +128,7 @@ static int ade7753_spi_write_reg_16(struct device *dev, u8 reg_address,
- 	struct ade7753_state *st = iio_priv(indio_dev);
- 
- 	mutex_lock(&st->buf_lock);
--	st->tx[0] = ADE7753_WRITE_REG(reg_address);
--	st->tx[1] = (value >> 8) & 0xFF;
--	st->tx[2] = value & 0xFF;
--	ret = spi_write(st->us, st->tx, 3);
-+	ret = __ade7753_spi_write_reg_16(dev, reg_address, value);
- 	mutex_unlock(&st->buf_lock);
- 
- 	return ret;
-@@ -485,7 +493,7 @@ static ssize_t ade7753_write_frequency(struct device *dev,
- 	if (!val)
- 		return -EINVAL;
- 
--	mutex_lock(&st->lock);
-+	mutex_lock(&st->buf_lock);
- 
- 	t = 27900 / val;
- 	if (t > 0)
-@@ -503,10 +511,10 @@ static ssize_t ade7753_write_frequency(struct device *dev,
- 	reg &= ~(3 << 11);
- 	reg |= t << 11;
- 
--	ret = ade7753_spi_write_reg_16(dev, ADE7753_MODE, reg);
-+	ret = __ade7753_spi_write_reg_16(dev, ADE7753_MODE, reg);
- 
- out:
--	mutex_unlock(&st->lock);
-+	mutex_unlock(&st->buf_lock);
- 
- 	return ret ? ret : len;
- }
-@@ -581,7 +589,6 @@ static int ade7753_probe(struct spi_device *spi)
- 	st = iio_priv(indio_dev);
- 	st->us = spi;
- 	mutex_init(&st->buf_lock);
--	mutex_init(&st->lock);
- 
- 	indio_dev->name = spi->dev.driver->name;
- 	indio_dev->dev.parent = &spi->dev;
--- 
-1.9.1
+The patch "iio: adc: ti-ads1015: fix comparator polarity setting" is
+now added to Greg's staging-linus branch.  So if the patch will be merged,
+everything will be fine.
