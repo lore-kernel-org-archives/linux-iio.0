@@ -1,57 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f65.google.com ([74.125.82.65]:49075 "EHLO
-        mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753312AbdJPPJS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 16 Oct 2017 11:09:18 -0400
-Subject: Re: [PATCH 3/3] arm64: dts: mt2712: Add auxadc device node.
-From: Matthias Brugger <matthias.bgg@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-        Zhiyong Tao <zhiyong.tao@mediatek.com>
-Cc: robh+dt@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, srv_heupstream@mediatek.com,
-        liguo.zhang@mediatek.com, yingjoe.chen@mediatek.com,
-        sean.wang@mediatek.com, yt.shen@mediatek.com,
-        s.hauer@pengutronix.de, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-iio@vger.kernel.org, linux-mediatek@lists.infradead.org
-References: <1505957212-13402-1-git-send-email-zhiyong.tao@mediatek.com>
- <1505957212-13402-4-git-send-email-zhiyong.tao@mediatek.com>
- <20170924164705.78cbb856@archlinux>
- <0e1bac27-18ca-121c-f1d7-8063af177a8b@gmail.com>
-Message-ID: <6680d15a-625a-cc16-830f-9831f5f52ad3@gmail.com>
-Date: Mon, 16 Oct 2017 17:09:14 +0200
+Received: from mail-oi0-f66.google.com ([209.85.218.66]:38721 "EHLO
+        mail-oi0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750779AbdJDU0B (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 4 Oct 2017 16:26:01 -0400
+Date: Wed, 4 Oct 2017 15:25:59 -0500
+From: Rob Herring <robh@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "Ismail H. Kose" <Ismail.Kose@maximintegrated.com>,
+        ihkose@gmail.com, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Maxime Roussin-Belanger <maxime.roussinbelanger@gmail.com>,
+        Fabrice Gasnier <fabrice.gasnier@st.com>,
+        Mike Looijmans <mike.looijmans@topic.nl>,
+        Peter Rosin <peda@axentia.se>,
+        Jean-Francois Dagenais <jeff.dagenais@gmail.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 2/2] iio:dac: Add DT binding documentation for ds4424
+Message-ID: <20171004202559.dza4ztwmq6smnuvv@rob-hp-laptop>
+References: <20170922201226.23721-1-Ismail.Kose@maximintegrated.com>
+ <20170922201226.23721-2-Ismail.Kose@maximintegrated.com>
+ <20170930181841.63b07a12@archlinux>
 MIME-Version: 1.0
-In-Reply-To: <0e1bac27-18ca-121c-f1d7-8063af177a8b@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20170930181841.63b07a12@archlinux>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
-
-On 10/13/2017 05:11 PM, Matthias Brugger wrote:
+On Sat, Sep 30, 2017 at 06:18:41PM +0100, Jonathan Cameron wrote:
+> On Fri, 22 Sep 2017 13:12:09 -0700
+> "Ismail H. Kose" <Ismail.Kose@maximintegrated.com> wrote:
 > 
+> > Signed-off-by: Ismail H. Kose <ihkose@gmail.com>
+> > Signed-off-by: Ismail H. Kose <Ismail.Kose@maximintegrated.com>
 > 
-> On 09/24/2017 05:47 PM, Jonathan Cameron wrote:
->> On Thu, 21 Sep 2017 09:26:52 +0800
->> Zhiyong Tao <zhiyong.tao@mediatek.com> wrote:
->>
->>> Add auxadc device node for MT2712.
->>>
->>> Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
->>
->> I've applied the IIO patches to make this work, so assume this will get
->> picked up in due course.
->>
+> Direct at Rob Herring...
 > 
-> pushed now to v4.14-next/dts64
-> Thanks.
-> 
+> Rob, this is now a very standard binding so I'm going to
+> take it into my testing tree.  If you have a chance to take a last
+> look at it though that would be great.
 
-I realized that this needs the mt2712 clock patches to actually work.
-Dropped for now. Please resubmit as soon as mt2712 clock patches got [1] 
-accepted upstream.
+No problem. I don't mind you taking things before I get to them because 
+I know you actually look at them and will wait if there's something 
+non-standard unlike some maintainers.
 
-Thanks,
-Matthias
+Acked-by: Rob Herring <robh@kernel.org>
 
-[1] https://lkml.org/lkml/2017/9/19/9
+Rob
