@@ -1,55 +1,40 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:37242 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750948AbdJGLRj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 7 Oct 2017 07:17:39 -0400
-Date: Sat, 7 Oct 2017 12:17:34 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Simon Horman <horms@verge.net.au>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marek Vasut <marek.vasut+renesas@gmail.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH 1/3] iio: adc: rcar-gyroadc: Cast pointer to uintptr_t
- to fix warning on 64-bit
-Message-ID: <20171007121734.0328cf9d@archlinux>
-In-Reply-To: <20171005091150.GI26369@verge.net.au>
+Return-Path: <SRS0=+naZ=BD=linux-m68k.org=geert@kernel.org>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Marek Vasut <marek.vasut+renesas@gmail.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH 2/3] iio: adc: rcar-gyroadc: Enable compile-testing on non-ARM
+Date: Wed,  4 Oct 2017 14:08:25 +0200
+Message-Id: <1507118906-8946-3-git-send-email-geert+renesas@glider.be>
+In-Reply-To: <1507118906-8946-1-git-send-email-geert+renesas@glider.be>
 References: <1507118906-8946-1-git-send-email-geert+renesas@glider.be>
-        <1507118906-8946-2-git-send-email-geert+renesas@glider.be>
-        <20171005091150.GI26369@verge.net.au>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 5 Oct 2017 11:11:51 +0200
-Simon Horman <horms@verge.net.au> wrote:
+The rcar-gyroadc driver compiles fine on other platforms, hence increase
+compile coverage.
 
-> On Wed, Oct 04, 2017 at 02:08:24PM +0200, Geert Uytterhoeven wrote:
-> > On 64-bit:
-> > 
-> >     drivers/iio/adc/rcar-gyroadc.c: In function 'rcar_gyroadc_parse_subdevs':
-> >     drivers/iio/adc/rcar-gyroadc.c:352:15: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
-> >        childmode = (unsigned int)of_id->data;
-> > 		   ^
-> > 
-> > Cast the pointer to uintptr_t instead of unsigned int to fix this.
-> > 
-> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>  
-> 
-> Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ drivers/iio/adc/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Applied to the togreg branch of iio.git and pushed out as testing for the
-autobuilders to play with it.
-
-Thanks,
-
-Jonathan
-
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 57625653fcb6da69..383400b678c8c692 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -593,7 +593,7 @@ config QCOM_SPMI_VADC
+ 
+ config RCAR_GYRO_ADC
+ 	tristate "Renesas R-Car GyroADC driver"
+-	depends on ARCH_RCAR_GEN2 || (ARM && COMPILE_TEST)
++	depends on ARCH_RCAR_GEN2 || COMPILE_TEST
+ 	help
+ 	  Say yes here to build support for the GyroADC found in Renesas
+ 	  R-Car Gen2 SoCs. This block is a simple SPI offload engine for
+-- 
+2.7.4
