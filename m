@@ -1,43 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:37328 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750931AbdJGLTP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 7 Oct 2017 07:19:15 -0400
-Date: Sat, 7 Oct 2017 12:19:10 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Simon Horman <horms@verge.net.au>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marek Vasut <marek.vasut+renesas@gmail.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
+Received: from baptiste.telenet-ops.be ([195.130.132.51]:54754 "EHLO
+        baptiste.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751910AbdJDMIc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 4 Oct 2017 08:08:32 -0400
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Marek Vasut <marek.vasut+renesas@gmail.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH 2/3] iio: adc: rcar-gyroadc: Enable compile-testing on
- non-ARM
-Message-ID: <20171007121910.02be4ecb@archlinux>
-In-Reply-To: <20171005091219.GJ26369@verge.net.au>
+        linux-iio@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH 3/3] iio: adc: rcar-gyroadc: Use of_device_get_match_data() helper
+Date: Wed,  4 Oct 2017 14:08:26 +0200
+Message-Id: <1507118906-8946-4-git-send-email-geert+renesas@glider.be>
+In-Reply-To: <1507118906-8946-1-git-send-email-geert+renesas@glider.be>
 References: <1507118906-8946-1-git-send-email-geert+renesas@glider.be>
-        <1507118906-8946-3-git-send-email-geert+renesas@glider.be>
-        <20171005091219.GJ26369@verge.net.au>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 5 Oct 2017 11:12:21 +0200
-Simon Horman <horms@verge.net.au> wrote:
+Use the of_device_get_match_data() helper instead of open coding.
+Note that the rcar-gyroadc driver is used with DT only, so there's
+always a valid match.
 
-> On Wed, Oct 04, 2017 at 02:08:25PM +0200, Geert Uytterhoeven wrote:
-> > The rcar-gyroadc driver compiles fine on other platforms, hence increase
-> > compile coverage.
-> > 
-> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>  
-> 
-> Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
-> 
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ drivers/iio/adc/rcar-gyroadc.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-Thanks,
+diff --git a/drivers/iio/adc/rcar-gyroadc.c b/drivers/iio/adc/rcar-gyroadc.c
+index 0098c66a19572400..dcb50172186f49ab 100644
+--- a/drivers/iio/adc/rcar-gyroadc.c
++++ b/drivers/iio/adc/rcar-gyroadc.c
+@@ -487,8 +487,6 @@ static int rcar_gyroadc_init_supplies(struct iio_dev *indio_dev)
+ 
+ static int rcar_gyroadc_probe(struct platform_device *pdev)
+ {
+-	const struct of_device_id *of_id =
+-		of_match_device(rcar_gyroadc_match, &pdev->dev);
+ 	struct device *dev = &pdev->dev;
+ 	struct rcar_gyroadc *priv;
+ 	struct iio_dev *indio_dev;
+@@ -525,7 +523,8 @@ static int rcar_gyroadc_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
+-	priv->model = (enum rcar_gyroadc_model)of_id->data;
++	priv->model = (enum rcar_gyroadc_model)
++		of_device_get_match_data(&pdev->dev);
+ 
+ 	platform_set_drvdata(pdev, indio_dev);
+ 
+-- 
+2.7.4
 
-Jonathan
