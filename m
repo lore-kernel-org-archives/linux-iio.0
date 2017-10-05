@@ -1,66 +1,75 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from anchovy1.45ru.net.au ([203.30.46.145]:37752 "EHLO
-        anchovy.45ru.net.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1751922AbdJYDnk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 24 Oct 2017 23:43:40 -0400
-Subject: Re: [PATCH 1/1] iio: inkern: add helper to enable a channel
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        linux-iio@vger.kernel.org
-References: <1507171066-83517-1-git-send-email-preid@electromag.com.au>
- <20171008114115.7002f440@archlinux>
- <10792f6e-76d0-5804-8306-e893d8b8f23c@electromag.com.au>
- <20171021173920.31a90145@archlinux>
-From: Phil Reid <preid@electromag.com.au>
-Message-ID: <0a23ecfa-f682-4182-bf21-b86c86bdcfce@electromag.com.au>
-Date: Wed, 25 Oct 2017 11:43:33 +0800
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:60670 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751144AbdJEQCo (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 Oct 2017 12:02:44 -0400
+From: Thierry Escande <thierry.escande@collabora.com>
+To: Benson Leung <bleung@chromium.org>,
+        Jonathan Cameron <jic23@kernel.org>
+Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 0/4] platform/chrome: Support for cros_ec_accel_legacy driver
+Date: Thu,  5 Oct 2017 18:02:33 +0200
+Message-Id: <1507219357-5722-1-git-send-email-thierry.escande@collabora.com>
 MIME-Version: 1.0
-In-Reply-To: <20171021173920.31a90145@archlinux>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset = "utf-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22/10/2017 00:39, Jonathan Cameron wrote:
-> On Mon, 16 Oct 2017 09:50:34 +0800
-> Phil Reid <preid@electromag.com.au> wrote:
-> 
->> On 8/10/2017 18:41, Jonathan Cameron wrote:
->>> On Thu,  5 Oct 2017 10:37:46 +0800
->>> Phil Reid <preid@electromag.com.au> wrote:
->>>    
->>>> This is done by calling a generic write attribute helper similar
->>>> to the existing read attribute helper. Update write raw helper
->>>> to use new write attribute function.
->>>>
->>>> Signed-off-by: Phil Reid <preid@electromag.com.au>
->>>
->>> Hi Phil,
->>>
->>> In principle this is fine but there are a few subtle details that need
->>> tidying up...
->>>
->>> Also - normally a core ABI patch like this would only be applied as
->>> part of a series that is using the change.  Is such a series on its
->>> way?  We would want to see a usecase to evaluate the additional
->>> interface.
->>
->> G'day Jonathan,
->>
->> Not really. The hardware for the driver is custom fpga core and external hardware device.
->> No reason it can't be up-streamed but I doubt it'd be of use to anyone else and I haven't
->> made much effort to write the driver to meet the kernel coding standards.
->>
->> Driver is basically a posix clock using an OCXO that is tuned using a DAC.
->> Don't know if there's any interest in such a thing.
-> Yeah - that one is a little random ;)
-> 
-> Hohum.  Lets make an exception - with the tidy ups below I'll take this
-> even though we don't have an in kernel user for now...
-> 
+Hi,
 
-Thanks, I'll send v2 soon.
+This series enables a driver for a legacy accelerometer driver used on
+Chromebook devices with older EC firmware.
+
+In addition to the cros_ec_accel_legacy driver, this series contains a
+fix that registers the cros_ec_lpc driver on Chromebook devices that
+does not have the GOOG0004 ACPI entry. In such case, the driver register
+the device itself. This series also adds support to the cros_ec_lpc
+driver for Glimmer based devices (Lenovo Yoga 11e).
+
+The last patch is the code used to register this driver if the usual way
+of registering the croc_ec sensors hub fails. In this case, the 2
+accelerometers (base and lid) are registered using mfd_add_devices().
+As there is work in progress to remove calls to mfd_add_devices() from
+cros_ec_dev.c, this code is in a separate patch with the idea to make
+that easier.
+
+Changes in v3:
+- Use kernel-doc notation for function headers
+- Add more comment to sensor ID sysfs attribute documentation
+- Restore accidentaly deleted comment for IIO_CHAN_INFO_CALIBBIAS handling in
+  iio_info write_raw() callback
+
+Changes in v2:
+- Reorganize code to avoid forward declarations
+- Simplify capture buffer declaration (also helps to remove forward
+  declarations)
+- Make use of iio_push_to_buffers_with_timestamp() and let the
+  framework hamdle timestamp copy into capture buffer
+- Added missing sysfs attribute documentation
+- Few cosmetic changes here and there
+
+Enric Balletbo i Serra (1):
+  platform/chrome: cros_ec_lpc: Register the driver if ACPI entry is
+    missing.
+
+Gwendal Grignou (1):
+  platform/chrome: Add cros_ec_accel_legacy driver
+
+Thierry Escande (2):
+  platform/chrome: cros_ec_lpc: Add support for Google Glimmer
+  platform/chrome: Register cros_ec_accel_legacy driver
+
+ Documentation/ABI/testing/sysfs-bus-iio-cros-ec |  10 +
+ drivers/iio/accel/Kconfig                       |  11 +
+ drivers/iio/accel/Makefile                      |   2 +
+ drivers/iio/accel/cros_ec_accel_legacy.c        | 420 ++++++++++++++++++++++++
+ drivers/platform/chrome/cros_ec_dev.c           |  53 +++
+ drivers/platform/chrome/cros_ec_lpc.c           |  41 ++-
+ 6 files changed, 536 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/iio/accel/cros_ec_accel_legacy.c
 
 -- 
-Regards
-Phil Reid
+2.7.4
 
