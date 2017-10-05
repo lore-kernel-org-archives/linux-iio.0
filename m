@@ -1,679 +1,376 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:39158 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751639AbdJHOif (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 8 Oct 2017 10:38:35 -0400
-Date: Sun, 8 Oct 2017 14:19:29 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc: benjamin.gaignard@linaro.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 4/6] docs: Add IIO Generic Counter Interface
- documentation
-Message-ID: <20171008141929.188ae2d4@archlinux>
-In-Reply-To: <5deaba40edb5e7e1f3f490b421f95f2631d5c8fc.1507220144.git.vilhelm.gray@gmail.com>
+Received: from mail-qt0-f196.google.com ([209.85.216.196]:36998 "EHLO
+        mail-qt0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751486AbdJESOp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 Oct 2017 14:14:45 -0400
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: jic23@kernel.org, benjamin.gaignard@linaro.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH v3 5/6] iio: Add dummy counter driver
+Date: Thu,  5 Oct 2017 14:14:38 -0400
+Message-Id: <699d043348fdb4053ed7f6f7dafb8512c7d73589.1507220144.git.vilhelm.gray@gmail.com>
+In-Reply-To: <cover.1507220144.git.vilhelm.gray@gmail.com>
 References: <cover.1507220144.git.vilhelm.gray@gmail.com>
-        <5deaba40edb5e7e1f3f490b421f95f2631d5c8fc.1507220144.git.vilhelm.gray@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu,  5 Oct 2017 14:14:24 -0400
-William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
+This patch introduces the dummy counter driver. The dummy counter driver
+serves as a reference implementation of a driver that utilizes the
+Generic Counter interface.
 
-> This patch adds high-level documentation about the IIO Generic Counter
-> Interface.
-> 
-> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+Writing individual '1' and '0' characters to the Signal attributes
+allows a user to simulate a typical Counter Signal input stream for
+evaluation; the Counter will evaluate the Signal data based on the
+respective trigger mode for the associated Signal, and trigger the
+associated counter function specified by the respective function mode.
+The current Value value may be read, and the Value value preset by a
+write.
 
-Put it into the relevant index.rst to get and make it an rst file so it
-gets built as part of the sphinx docs.
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+---
+ drivers/iio/counter/Kconfig         |  15 ++
+ drivers/iio/counter/Makefile        |   1 +
+ drivers/iio/counter/dummy-counter.c | 293 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 309 insertions(+)
+ create mode 100644 drivers/iio/counter/dummy-counter.c
 
-> ---
->  Documentation/driver-api/iio/generic-counter.txt | 526 +++++++++++++++++++++++
->  1 file changed, 526 insertions(+)
->  create mode 100644 Documentation/driver-api/iio/generic-counter.txt
-> 
-> diff --git a/Documentation/driver-api/iio/generic-counter.txt b/Documentation/driver-api/iio/generic-counter.txt
-> new file mode 100644
-> index 000000000000..0ce43b71e1c7
-> --- /dev/null
-> +++ b/Documentation/driver-api/iio/generic-counter.txt
-> @@ -0,0 +1,526 @@
-> +=========================
-> +Generic Counter Interface
-> +=========================
-> +
-> +Introduction
-> +============
-> +
-> +Counter devices are prevalent within a diverse spectrum of industries.
-> +The ubiquitous presence of these devices necessitates a common interface
-> +and standard of interaction and exposure. This driver API attempts to
-> +resolve the issue of duplicate code found among existing counter device
-> +drivers by introducing a generic counter interface for consumption. The
-> +generic counter interface enables drivers to support and expose a common
-> +set of components and functionality present in counter devices.
-> +
-> +Theory
-> +======
-> +
-> +Counter devices can vary greatly in design, but regardless of whether
-> +some devices are quadrature encoder counters or pedometers, all counter
-> +devices consist of a core set of components. This core set of
-> +components, shared by all counter devices, is what forms the essence of
-> +the generic counter interface.
+diff --git a/drivers/iio/counter/Kconfig b/drivers/iio/counter/Kconfig
+index c8becfe78e28..494aed40e9c9 100644
+--- a/drivers/iio/counter/Kconfig
++++ b/drivers/iio/counter/Kconfig
+@@ -22,6 +22,21 @@ config 104_QUAD_8
+ 	  The base port addresses for the devices may be configured via the base
+ 	  array module parameter.
+ 
++config DUMMY_COUNTER
++	tristate "Dummy counter driver"
++	help
++	  Select this option to enable the dummy counter driver. The dummy
++	  counter driver serves as a reference implementation of a driver that
++	  utilizes the Generic Counter interface.
++
++	  Writing individual '1' and '0' characters to the Signal attributes
++	  allows a user to simulate a typical Counter Signal input stream for
++	  evaluation; the Counter will evaluate the Signal data based on the
++	  respective trigger mode for the associated Signal, and trigger the
++	  associated counter function specified by the respective function mode.
++	  The current Value value may be read, and the Value value preset by a
++	  write.
++
+ config STM32_LPTIMER_CNT
+ 	tristate "STM32 LP Timer encoder counter driver"
+ 	depends on MFD_STM32_LPTIMER || COMPILE_TEST
+diff --git a/drivers/iio/counter/Makefile b/drivers/iio/counter/Makefile
+index 1b9a896eb488..8c2ef0115426 100644
+--- a/drivers/iio/counter/Makefile
++++ b/drivers/iio/counter/Makefile
+@@ -5,4 +5,5 @@
+ # When adding new entries keep the list in alphabetical order
+ 
+ obj-$(CONFIG_104_QUAD_8)	+= 104-quad-8.o
++obj-$(CONFIG_DUMMY_COUNTER)	+= dummy-counter.o
+ obj-$(CONFIG_STM32_LPTIMER_CNT)	+= stm32-lptimer-cnt.o
+diff --git a/drivers/iio/counter/dummy-counter.c b/drivers/iio/counter/dummy-counter.c
+new file mode 100644
+index 000000000000..6ecc9854894f
+--- /dev/null
++++ b/drivers/iio/counter/dummy-counter.c
+@@ -0,0 +1,293 @@
++/*
++ * Dummy counter driver
++ * Copyright (C) 2017 William Breathitt Gray
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License, version 2, as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ */
++#include <linux/device.h>
++#include <linux/errno.h>
++#include <linux/iio/counter.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/types.h>
++
++#define DUMCNT_NUM_COUNTERS 2
++/**
++ * struct dumcnt - private data structure
++ * @counter:	instance of the iio_counter
++ * @counts:	array of accumulation values
++ * @states:	array of input line states
++ */
++struct dumcnt {
++	struct iio_counter counter;
++	unsigned int counts[DUMCNT_NUM_COUNTERS];
++	unsigned int states[DUMCNT_NUM_COUNTERS];
++};
++
++static int dumcnt_signal_read(struct iio_counter *counter,
++	struct iio_counter_signal *signal, int *val, int *val2)
++{
++	struct dumcnt *const priv = counter->driver_data;
++	*val = priv->states[signal->id];
++
++	return IIO_VAL_INT;
++}
++
++static int dumcnt_signal_write(struct iio_counter *counter,
++	struct iio_counter_signal *signal, int val, int val2)
++{
++	struct dumcnt *const priv = counter->driver_data;
++	const unsigned int id = signal->id;
++	const unsigned int prev_state = priv->states[id];
++	struct iio_counter_value *const value = counter->values + id;
++	const unsigned int function_mode = value->mode;
++	const unsigned int trigger_mode = value->triggers[0].mode;
++	unsigned int triggered = 0;
++
++	if (val && val != 1)
++		return -EINVAL;
++
++	/* If no state change then just exit */
++	if (prev_state == val)
++		return 0;
++
++	priv->states[id] = val;
++
++	switch (trigger_mode) {
++	/* "none" case */
++	case 0:
++		return 0;
++	/* "rising edge" case */
++	case 1:
++		if (!prev_state)
++			triggered = 1;
++		break;
++	/* "falling edge" case */
++	case 2:
++		if (prev_state)
++			triggered = 1;
++		break;
++	/* "both edges" case */
++	case 3:
++		triggered = 1;
++		break;
++	}
++
++	/* If counter function triggered */
++	if (triggered)
++		/* "increase" case */
++		if (function_mode)
++			priv->counts[id]++;
++		/* "decrease" case */
++		else
++			priv->counts[id]--;
++
++	return 0;
++}
++
++static int dumcnt_trigger_mode_set(struct iio_counter *counter,
++	struct iio_counter_value *value, struct iio_counter_trigger *trigger,
++	unsigned int mode)
++{
++	if (mode >= trigger->num_trigger_modes)
++		return -EINVAL;
++
++	trigger->mode = mode;
++
++	return 0;
++}
++
++static int dumcnt_trigger_mode_get(struct iio_counter *counter,
++	struct iio_counter_value *value, struct iio_counter_trigger *trigger)
++{
++	return trigger->mode;
++}
++
++static int dumcnt_value_read(struct iio_counter *counter,
++	struct iio_counter_value *value, int *val, int *val2)
++{
++	struct dumcnt *const priv = counter->driver_data;
++
++	*val = priv->counts[value->id];
++
++	return IIO_VAL_INT;
++}
++
++static int dumcnt_value_write(struct iio_counter *counter,
++	struct iio_counter_value *value, int val, int val2)
++{
++	struct dumcnt *const priv = counter->driver_data;
++
++	priv->counts[value->id] = val;
++
++	return 0;
++}
++
++static int dumcnt_value_function_set(struct iio_counter *counter,
++	struct iio_counter_value *value, unsigned int mode)
++{
++	if (mode >= value->num_function_modes)
++		return -EINVAL;
++
++	value->mode = mode;
++
++	return 0;
++}
++
++static int dumcnt_value_function_get(struct iio_counter *counter,
++	struct iio_counter_value *value)
++{
++	return value->mode;
++}
++
++static const struct iio_counter_ops dumcnt_ops = {
++	.signal_read = dumcnt_signal_read,
++	.signal_write = dumcnt_signal_write,
++	.trigger_mode_get = dumcnt_trigger_mode_get,
++	.trigger_mode_set = dumcnt_trigger_mode_set,
++	.value_read = dumcnt_value_read,
++	.value_write = dumcnt_value_write,
++	.value_function_set = dumcnt_value_function_set,
++	.value_function_get = dumcnt_value_function_get
++};
++
++static const char *const dumcnt_function_modes[] = {
++	"decrease",
++	"increase"
++};
++
++#define DUMCNT_SIGNAL(_id, _name) {	\
++	.id = _id,			\
++	.name = _name			\
++}
++
++static const struct iio_counter_signal dumcnt_signals[] = {
++	DUMCNT_SIGNAL(0, "Signal A"), DUMCNT_SIGNAL(1, "Signal B")
++};
++
++#define DUMCNT_VALUE(_id, _name) {					\
++	.id = _id,							\
++	.name = _name,							\
++	.mode = 0,							\
++	.function_modes = dumcnt_function_modes,			\
++	.num_function_modes = ARRAY_SIZE(dumcnt_function_modes)		\
++}
++
++static const struct iio_counter_value dumcnt_values[] = {
++	DUMCNT_VALUE(0, "Count A"), DUMCNT_VALUE(1, "Count B")
++};
++
++static const char *const dumcnt_trigger_modes[] = {
++	"none",
++	"rising edge",
++	"falling edge",
++	"both edges"
++};
++
++static int dumcnt_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct iio_counter_signal *signals;
++	const size_t num_signals = ARRAY_SIZE(dumcnt_signals);
++	struct iio_counter_value *values;
++	const size_t num_values = ARRAY_SIZE(dumcnt_values);
++	struct iio_counter_trigger *triggers;
++	int i;
++	struct dumcnt *dumcnt;
++
++	signals = devm_kmalloc(dev, sizeof(dumcnt_signals), GFP_KERNEL);
++	if (!signals)
++		return -ENOMEM;
++
++	memcpy(signals, dumcnt_signals, sizeof(dumcnt_signals));
++
++	values = devm_kmalloc(dev, sizeof(dumcnt_values), GFP_KERNEL);
++	if (!values)
++		return -ENOMEM;
++
++	memcpy(values, dumcnt_values, sizeof(dumcnt_values));
++
++	/* Associate values with their respective signals */
++	for (i = 0; i < num_values; i++) {
++		triggers = devm_kmalloc(dev, sizeof(*triggers), GFP_KERNEL);
++		if (!triggers)
++			return -ENOMEM;
++
++		triggers->mode = 0;
++		triggers->trigger_modes = dumcnt_trigger_modes;
++		triggers->num_trigger_modes = ARRAY_SIZE(dumcnt_trigger_modes);
++		triggers->signal = &signals[i];
++
++		values[i].triggers = triggers;
++		values[i].num_triggers = 1;
++	}
++
++	dumcnt = devm_kzalloc(dev, sizeof(*dumcnt), GFP_KERNEL);
++	if (!dumcnt)
++		return -ENOMEM;
++
++	dumcnt->counter.name = dev_name(dev);
++	dumcnt->counter.dev = dev;
++	dumcnt->counter.ops = &dumcnt_ops;
++	dumcnt->counter.signals = signals;
++	dumcnt->counter.num_signals = num_signals;
++	dumcnt->counter.values = values;
++	dumcnt->counter.num_values = num_values;
++	dumcnt->counter.driver_data = dumcnt;
++
++	return devm_iio_counter_register(dev, &dumcnt->counter);
++}
++
++static struct platform_device *dumcnt_device;
++
++static struct platform_driver dumcnt_driver = {
++	.driver = {
++		.name = "104-quad-8"
++	}
++};
++
++static void __exit dumcnt_exit(void)
++{
++	platform_device_unregister(dumcnt_device);
++	platform_driver_unregister(&dumcnt_driver);
++}
++
++static int __init dumcnt_init(void)
++{
++	int err;
++
++	dumcnt_device = platform_device_alloc(dumcnt_driver.driver.name, -1);
++	if (!dumcnt_device)
++		return -ENOMEM;
++
++	err = platform_device_add(dumcnt_device);
++	if (err)
++		goto err_platform_device;
++
++	err = platform_driver_probe(&dumcnt_driver, dumcnt_probe);
++	if (err)
++		goto err_platform_driver;
++
++	return 0;
++
++err_platform_driver:
++	platform_device_del(dumcnt_device);
++err_platform_device:
++	platform_device_put(dumcnt_device);
++	return err;
++}
++
++module_init(dumcnt_init);
++module_exit(dumcnt_exit);
++
++MODULE_AUTHOR("William Breathitt Gray <vilhelm.gray@gmail.com>");
++MODULE_DESCRIPTION("Dummy counter driver");
++MODULE_LICENSE("GPL v2");
+-- 
+2.14.1
 
-Hmm. Whether it makes sense to move over pedometers is a bit of an open 
-question... They tend to be fairly opaque wrt to where their data is
-coming from.  We'll see, but I'd kind of prefer we keep it out of the
-docs until that case has been fully analysed!
-
-> +
-> +There are three core components to a counter:
-> +
-> +        VALUE
-> +        -----
-> +        A Value represents the count data for a set of Signals. A Value
-> +        has a count function mode (e.g. "increment" or "quadrature x4")
-> +        which respresents the update behavior for the count data. A
-> +        Value also has a set of one or more associated Signals.
-
-The whole set of valid function modes needs to be documented somewhere.
-I don't think it currently is (but I may have missed it and haven't
-read all the patches yet!)
-
-Interesting terminology - this Value is what most people would think
-of as a counter.  Can we just call it that?  The issue is that we
-are thinking from the hardware point of view that says a 'counter block'
-can have multiple counters so value is just one of them. I'm not sure
-we want to present that terminology to userspace.
-
-
-> +
-> +        SIGNAL
-> +        ------
-> +        A Signal represents a count input line. A Signal may be
-> +	associated to one or more Values.
-> +
-> +        TRIGGER
-> +	-------
-> +        A Trigger represents a Value's count function trigger condition
-> +        mode (e.g. "rising edge" or "double pulse") for an associated
-> +        Signal.	If a Signal is associated with a Value, a respective
-> +        Trigger	instance for that association exists -- albeit perhaps
-> +        with a trigger condition mode of "none."
-
-Again, we need to enumerate the full acceptable list.  Enforcing it can
-be by review, but we need a list that people can refer to or we will get
-multiple drivers doing subtly different variants.
-
-> +
-> +A counter is defined as a set of input signals associated to count data
-> +that are generated by the evaluation of the state of the associated
-> +input signals as defined by the respective count functions. Within the
-> +context of the generic counter interface, a counter consists of Values
-> +each associated to a set of Signals, whose respective Trigger instances
-> +represent the count function update conditions for the associated
-> +Values.
-
-Could we call this a 'counter group' or 'counter device' or something to
-free the term counter up for a single instance of what is currently
-called value.
-
-> +
-> +Paradigm
-> +========
-> +
-> +The most basic counter device may be expressed as a single Value
-> +associated with a single Signal via a single Trigger. Take for example
-> +a hypothetical counter device which simply accumulates a count of rising
-> +edges on a source input line.
-
-Drop hypothetical - this is a perfectly real example. Plenty of hardware
-out there does this!
-
-> +
-> +        Value                Trigger        Signal
-> +        -----                -------        ------
-> ++---------------------+
-> +| Data: Count         |    Rising Edge     ________
-> +| Function: Increment |  <-------------   / Source \
-> +|                     |                  ____________
-> ++---------------------+
-> +
-> +In this example, the Signal is a source input line with a pulsing
-> +voltage, while the Value is a persistent count which increments. The
-> +Signal is associated with the Value via a respective Trigger. The
-> +increment function is triggered by the condition specified by the
-> +Triggered -- in this case a rising edge condition. In summary, the
-> +counter device existence and behavior is aptly represented by respective
-> +Value, Signal, and Trigger components: a rising edge condition triggers
-> +an incrementation function on an accumulating count datum.
-> +
-> +A counter device is not limited to a single Signal; in fact, in theory
-> +an unlimited number of Signals may be associated with a Value.
-Change that that to many signals.  Otherwise someone pedantic will say
-it's limited by the implementation to 2^32 or similar..
-> For
-> +example, a quadrature encoder counter device can keep track of position
-> +based on the states of two input lines.
-> +
-> +           Value                 Trigger      Signal
-> +           -----                 -------      ------
-> ++-------------------------+
-> +| Data: Position          |    Both Edges      ___
-> +| Function: Quadrature x4 |  <-------------   / A \
-> +|                         |                  _______
-> +|                         |
-> +|                         |    Both Edges      ___
-> +|                         |  <-------------   / B \
-> +|                         |                  _______
-> ++-------------------------+
-> +
-> +In this example, two Signals (quadrature encoder lines A and B) are
-> +associated to a single Value: a rising or falling edge on either A or B
-> +triggers the "Quadrature x4" function which determines the direction of
-> +movement and updates the respective position data. The "Quadrature x4"
-> +function is likely implemented in the hardware of the quadrature encoder
-> +counter device; the Value, Triggers, and Signals simply represent this
-> +hardware behavior and functionality.
-
-Interesting that there is a relationship between valid trigger settings
-and valid Value:Function settings.
-
-> +
-> +Signal associated to the same Value can have differing trigger
-> +conditions. For example, a quadrature encoder counter device operating
-> +in a non-quadrature mode could have one input line dedicated for
-> +movement and a second input line dedicated for direction.
-> +
-> +           Value                  Trigger      Signal
-> +           -----                  -------      ------
-> ++------------------------- +
-> +| Data: Position           |    Rising Edge     ___
-> +| Function: Non-quadrature |  <-------------   / A \ (Movement)
-> +|                          |                  _______
-> +|                          |
-> +|                          |       None         ___
-> +|                          |  <-------------   / B \ (Direction)
-> +|                          |                  _______
-> ++--------------------------+
-
-Non-quadrature is a pretty odd way of defining it!  I'd suggest
-something more positive - pulse-direction would be the standard
-terminology.
-
-> +
-> +Only Signal A triggers the "Non-quadrature" update function, but the
-> +state of Signal B is still required in order to know the direction in
-> +order to properly update the position data. So in the end, both Signals
-> +are associated to the same Value via two respective Triggers, but only
-> +one Trigger has an active trigger condition while the other is left in a
-> +"None" condition mode to indicate its respective Signal's availability
-> +for state evaluation despite its non-triggering mode.
-
-Interesting - there sill be some confusion around the quadrature cases
-though as the 'value' will only change on say rising edge A, but the
-internal state machine is tracking the previous changes of edge B.  I'd
-suggest we add a note about that somewhere here.
-
-> +
-> +Although the examples thus far have been representations of physical
-> +devices, this is not a necessity. A counter simply represent the
-> +evaluation (Value) of input data (Signals) triggered by specific
-> +conditions (Triggers). A counter can be the representation of more
-> +abstract components.
-> +
-> +For example, suppose a counter representation is desired for a DNA
-> +sequence analysizer which detects possible genetic diseases.
-> +
-> +        Value                     Trigger           Signal
-> +        -----                     -------           ------
-> ++---------------------+
-> +| Data: Diseases      |    Gene Transcript (EST)     _____
-> +| Function: Cancers   |  <-----------------------   / DNA \ (GAAGTGC...)
-> +|                     |                            _________
-> ++---------------------+
-> +
-> +In this scenario, the Signal is a stream of DNA nucleotide bases (As,
-> +Ts, Cs, and Gs), the Trigger is expressed sequence tags (ESTs), and the
-> +Value is a list of diseases discovered (in this case the function is
-> +evaluating for possible cancers). Note how the Signal in this example
-> +does not represent a physical voltage line, nor does the Trigger
-> +represent a physical voltage line state change, nor does the Value
-> +represent a strictly decimal data value.
-> +
-> +The DNA sequence analysizer example is contrived to illustrate the
-> +flexibility of the generic counter paradigm by demonstrating its
-> +capability of representing abstract concepts; however, physical devices
-> +are likely to be more fitting for such a representation.
-> +
-> +The key concept is that the Signal, Trigger, and Value are abstract
-> +representations which do not need to be closely married to their
-> +respective physical sources. This allows the user of a counter to
-> +divorce themselves from the nuances of physical components (such as
-> +whether an input line is differential or single-ended) and focus on the
-> +core idea of what the data and process represent (an accumulated count
-> +of rising edges).
-> +
-> +Userspace Interface
-> +===================
-> +
-> +Several sysfs attributes are generated by the generic counter interface,
-> +and reside under the /sys/bus/iio/devices/iio:deviceX directory.
-> +
-> +Each counter has a respective set of countX-Y and signalX-Y prefixed
-> +attributes, where X is the id set in the counter structure, and Y is the
-> +id of the respective Value or Signal.
-> +
-> +The generic counter interface sysfs attributes are as follows:
-> +
-> +        countX-Y_function: count function mode
-> +        countX-Y_function_available: available count function modes
-> +        countX-Y_name: Value name
-> +        countX-Y_raw: Value data
-> +        countX-Y_triggers: Value's associated Signals
-> +        countX-Y_trigger_signalX-Z: Value Y trigger mode for Signal Z
-> +        countX-Y_trigger_signalX-Z_available: available Value Y trigger
-> +                                              modes for Signal Z
-> +        signalX-Y_name: Signal name
-I mentioned this in one of the other patches - This naming stuff feels
-like, if we want to do it we should do it throughout IIO.
-
-Possibly it maps to the data_sheet_name.. Higher level information beyond
-this device would to my mind require explicit representation of devices
-beyond this - i.e. what is attached to the wires that is generating
-things to count.
-
-> +        signalX-Y_raw: Signal data
-> +
-> +Through these sysfs attributes, programs and scripts may interact with
-> +the generic counter paradigm Values, Triggers, and Signals of respective
-> +counter devices.
-> +
-> +Driver API
-> +==========
-> +
-> +Driver authors may utilize the generic counter interface in their code
-> +by including the include/linux/iio/counter.h header file. This header
-> +file provides several core data structures and function prototypes for
-> +defining a generic counter.
-> +
-> +struct iio_counter_signal
-> +-------------------------
-> +
-> +This structure defines a generic counter paradigm Signal component;
-> +typically this will correlate with an input channel on a physical
-> +counter device. This structure is the simplest to define with only two
-> +structure members which require explicit configuration:
-> +
-> +        id:     Unique ID used to identify the Signal
-> +
-> +        name:   Device-specific Signal name (typically the device input
-> +                channel name)
-> +
-> +struct iio_counter_trigger
-> +--------------------------
-> +
-> +This structure defines a generic counter paradigm Trigger component. To
-> +properly utilize this structure, trigger modes and an associated Signal
-> +must be defined:
-> +
-> +        mode:                   Index of the current trigger mode state
-> +
-> +        trigger_modes:          Array of trigger modes each represented
-> +	                        by a character string
-
-As mentioned before these have to be explicitly listed somewhere.  They
-form userspace ABI.  We must not leave this empty.  Defining these
-cleanly and generically may be one of the hardest aspects to agree
-on.
-
-> +
-> +        num_trigger_modes:      Number of trigger modes provided in
-> +	                        trigger_modes array
-> +
-> +        signal:                 Pointer to associated Signal
-> +
-> +struct iio_counter_value
-> +------------------------
-> +
-> +This structure defines a generic counter paradigm Value component;
-> +typically this will correlate with the read data (the "count" value)
-> +provided by a physical counter device. This structure requires the
-> +explicit configuration of an ID, name, function modes (the function
-> +triggered on a Trigger condition), and optionally a set of initial
-> +associated Triggers:
-> +
-> +        id:                     Unique ID used to identify the Signal
-> +
-> +        name:                   Device-specific Value name (typically
-> +	                        the device read channel name)
-> +
-> +        mode:                   Index of the current function mode state
-> +
-> +        function_modes:         Array of function modes each represented
-> +	                        by a character string
-> +
-> +        num_function_modes:     Number of function modes provided in
-> +	                        function_modes array
-> +
-> +        triggers:               Array of associated Triggers
-> +
-> +        num_triggers:           Number of Triggers provided in triggers
-> +	                        array
-
-It might also be convenient to have a flag in here to say if the triggers
-are fixed or not.
-
-> +
-> +struct iio_counter_ops
-> +----------------------
-
-I'd suggest you push these details down in to kernel-doc in the code
-and pull it back in here using the relevant bits of markup.
-That stuff is a bit clunky but any docs in here of actual elements
-etc will probably rot unedited if stuff changes.
-
-> +
-> +This structure defines callbacks to interact with the Value, Trigger,
-> +and Signal components:
-> +
-> +        signal_read:            Function to request a signal value from
-> +	                        the device. Return value will specify
-> +				the type of value returned by the
-> +				device. val and val2 will contain the
-> +				elements making up the returned value.
-
-Mention IIO_VAL_INT type return values as well.
-
-> +
-> +	signal_write:           Function to write a signal value to the
-> +	                        device. Parameters are interpreted the
-> +				same as signal_read.
-> +
-> +        trigger_mode_set:       Function to set the trigger mode. mode
-> +	                        is the index of the requested mode from
-> +				the value trigger_modes array.
-> +
-> +        trigger_mode_get:       Function to get the current trigger
-> +	                        mode. Return value will specify the
-> +				index of the current mode from the value
-> +				trigger_modes array.
-> +
-> +        value_read:             Function to request a value value from
-> +	                        the device. Return value will specify
-> +				the type of value returned by the
-> +				device. val and val2 will contain the
-> +				elements making up the returned value.
-
-This is the counter I think?  Value is rather vague, counter_read
-will be less so.
-
-> +
-> +        value_write:            Function to write a value value to the
-> +	                        device. Parameters are interpreted the
-> +				same as value_read.
-> +
-> +        value_function_set:     Function to set the value function mode.
-> +	                        mode is the index of the requested mode
-> +				from the value function_modes array.
-> +
-> +        value_function_get:     Function to get the current value
-> +	                        function mode. Return value will specify
-> +				the index of the current mode from the
-> +				value function_modes array.
-> +
-> +struct iio_counter
-> +------------------
-> +
-> +This is the main data structure for a counter device; access to all
-> +respective Values, Triggers, and Signals is possible from this
-> +structure. This structure allows the configuration of an ID, name,
-> +function callbacks, initial Signals and initial Values, auxiliary IIO
-> +core channels and callbacks, and driver-specific data:
-> +
-> +        id:                     Unique ID used to identify the counter
-> +
-> +        name:                   Name of the counter device
-> +
-> +        dev:                    Device structure, which should be
-> +				assigned a parent and owner
-> +
-> +        ops:                    Function callbacks for counter
-> +	                        components (Signal, Trigger, Value)
-> +
-> +        signals:                Array of Signals
-> +
-> +        num_signals:            Number of Signals specified in signals
-> +	                        array
-> +
-> +        values:                 Array of Values
-> +
-> +        num_values:             Number of Values specified in values
-> +	                        array
-> +
-> +        channels:               Optional IIO core channels specification
-> +	                        structure table
-> +
-> +        num_channels:           Number of channels specified in channels
-> +
-> +        info:                   IIO core function callbacks and constant
-> +	                        info from driver
-> +
-> +        driver_data:            Driver-specific data
-> +
-> +Registration functions
-> +----------------------
-> +
-> +Counters may be registered to the system via the iio_counter_register
-> +function and subsequently unregistered via the iio_counter_unregister
-> +function. The devm_iio_counter_register and devm_iio_counter_unregister
-> +functions serve as device memory-managed versions of the
-> +iio_counter_register and iio_counter_unregister functions.
-> +
-> +An initialized iio_counter structure, which defines the Counter, is
-> +required to be passed in for registration; the Signals, Values, and
-> +Triggers for the Counter passed in via the signals and values arrays as
-> +part of the iio_counter structure. If auxiliary IIO core channels and
-> +functionality are required, IIO core channels and callbacks may be
-> +passed in via the channels and info members of the passed-in iio_counter
-> +structure.
-> +
-> +Implementation
-> +==============
-> +
-> +The IIO generic counter interface piggybacks off of the IIO core. This
-> +is primarily used to leverage the existing sysfs setup: the IIO_COUNT
-> +channel attributes represent the Counter Value, while the IIO_SIGNAL
-> +channel attributes represent the Counter Signal; auxilary IIO_COUNT
-> +attributes represent the Counter Signal connections (Triggers) and their
-> +respective state change configurations which trigger an associated
-> +"counter function" evaluation.
-
-If it makes more sense I wouldn't mind changing the form of that setup
-code to be more generic so you can use it without jumping through so many
-hoops.
-
-> +
-> +The iio_counter_ops structure serves as a container for driver callbacks
-> +to communicate with the device; function callbacks are provided to read
-> +and write various Signals and Values, and set and get the "trigger mode"
-> +and "function mode" for various Triggers and Values respectively.
-> +
-> +To support a counter device, a driver must first allocate the available
-> +Counter Signals via iio_counter_signal structures. These Signals should
-> +be stored as an array and set to the signals array member of an
-> +allocated iio_counter structure before the Counter is registered to the
-> +system.
-> +
-> +Counter Values may be allocated via iio_counter_value structures, and
-> +respective Counter Signal associations (Triggers) made via
-> +iio_counter_trigger structures. Associated iio_counter_trigger
-> +structures are stored as an array and set to the the triggers array
-> +member of the respective iio_counter_value structure. These
-> +iio_counter_value structures are set to the values array member of an
-> +allocated iio_counter structure before the Counter is registered to the
-> +system.
-> +
-> +A counter device is registered to the system by passing the respective
-> +initialized iio_counter structure to the iio_counter_register function;
-> +similarly, the iio_counter_unregister function unregisters the
-> +respective counter.
-> +
-> +Architecture
-> +============
-> +
-> +Although the IIO Generic Counter Interface utilizes IIO core under the
-> +hood, driver authors are not necessarily required to interact with IIO
-> +core data structures and functions directly -- in theory, such details
-> +of the system are abstracted away. Driver authors only need to concern
-> +themselves with the Generic Counter specific data structures and
-> +functions found in the include/linux/iio/counter.h header file.
-> +
-> +In other words, the driver API is intended to expose itself sufficiently
-> +upon the principles and concepts of the generic counter paradigm (i.e.
-> +Values, Triggers, Signals, etc.) such that it may be indepedent from its
-> +underlying implementation; theoretically, the IIO core code in the
-> +implementation could be replaced away in its entirely by an alternative
-> +implementation all without the need to update existing drivers utilizing
-> +the Generic Counter Interface driver API.
-
-Good.  I hope it's not just in theory ;)  May well make sense in the future
-as in particular IIO may get based on some new core infrastructure itself.
-
-> +
-> +This paradigm separation however does result in some mapping concerns
-> +between Generic Counter functions to IIO core functions; in particular,
-> +parameters for the IIO core functions expect IIO core data structures
-> +(e.g. iio_dev and iio_chan_spec) which are not provided directly by the
-> +parameters for the respective Generic Counter functions. This results in
-> +a somewhat opaque pathway from a iio_counter structure to its associated
-> +iio_dev in order to support the required IIO core calls.
-> +
-> +The following call graphs should help illustrate some of the main IIO
-> +core dependencies:
-> +
-> ++----------------------+
-> +| iio_counter_register |
-> ++----------------------+
-> +  |  |  |
-> +  |  |  +-----------------------------+
-> +  |  +------------------+             |
-> +  |                     |             |
-> +  V                     V             V
-> ++------------------+  +----------+  +---------------------+
-> +| iio_device_alloc |  | iio_priv |  | iio_device_register |
-> ++------------------+  +----------+  +---------------------+
-> +
-> +The iio_counter_register function allocates and initializes a new
-> +iio_dev structure which will serve as the respective Counter's gateway
-> +to IIO core support. The address of the parent iio_counter structure is
-> +stored with the iio_dev structure via iio_priv in order to allow access
-> +back to the Counter from within the IIO core functions. Finally, the
-> +iio_dev structure is registered via iio_device_register.
-> +
-> ++-----------------------+   +----------------------+
-> +| iio_read_channel_info |-->| iio_counter_read_raw |
-> ++-----------------------+   +----------------------+
-> +                              |  |  |
-> +  +---------------------------+  |  |
-> +  |                +-------------+  |
-> +  |                |               ++
-> +  |                |               |
-> +  V                V               V
-> +  IIO_SIGNAL       IIO_COUNT       IIO_*
-> ++-------------+  +------------+  +----------+
-> +| signal_read |  | value_read |  | read_raw |
-> ++-------------+  +------------+  +----------+
-> +
-> ++------------------------+   +-----------------------+
-> +| iio_write_channel_info |-->| iio_counter_write_raw |
-> ++------------------------+   +-----------------------+
-> +                               |  |  |
-> +  +----------------------------+  |  |
-> +  |                 +-------------+  |
-> +  |                 |                |
-> +  |                 |                |
-> +  V                 V                V
-> +  IIO_SIGNAL        IIO_COUNT        IIO_*
-> ++--------------+  +-------------+  +-----------+
-> +| signal_write |  | value_write |  | write_raw |
-> ++--------------+  +-------------+  +-----------+
-> +
-> +Normally, the IIO core iio_read_channel_info and iio_write_channel_info
-> +functions respectiveluy call the driver-supplied read_raw and write_raw
-> +callbacks directly. Since the generic counter interface serves as an
-> +abstraction above IIO core, drive authors do not generally directly
-> +configure a read_raw/write_raw callback.
-> +
-> +Instead, the IIO Generic Counter Interface hooks on to the
-> +iio_read_channel_info and iio_write_channel_info expected read_raw and
-> +write_raw callbacks respectively via iio_counter_read_raw and
-> +iio_counter_write_raw. The iio_counter_read_raw and
-> +iio_counter_write_raw functions then call the respective driver-supplied
-> +signal_read/value_read and signal_write/value_write callbacks
-> +respectively for the appropriate IIO_SIGNAL OR IIO_COUNT. If an IIO core
-> +channel that was not part of the generic counter paradigm was supplied
-> +via the channels member of the iio_counter structure, then the
-> +respective driver-supplied (via the iio_counter structure info member)
-> +read_raw and write_raw are called.
-> +
-> ++---------------------------+        +----------------------------+
-> +| iio_read_channel_ext_info |        | iio_write_channel_ext_info |
-> ++---------------------------+        +----------------------------+
-> +  |                                    |
-> +  V                                    V
-> ++-------------------------------+    +--------------------------------+
-> +| iio_counter_trigger_mode_read |    | iio_counter_trigger_mode_write |
-> ++-------------------------------+    +--------------------------------+
-> +  |                                    |
-> +  V                                    V
-> ++------------------+                 +------------------+
-> +| trigger_mode_get |                 | trigger_mode_set |
-> ++------------------+                 +------------------+
-> +
-> ++---------------+                     +----------------+
-> +| iio_enum_read |                     | iio_enum_write |
-> ++---------------+                     +----------------+
-> +  |                                     |
-> +  V                                     V
-> ++--------------------------------+    +--------------------------------+
-> +| iio_counter_value_function_get |    | iio_counter_value_function_set |
-> ++--------------------------------+    +--------------------------------+
-> +  |                                     |
-> +  V                                     V
-> ++--------------------+                +--------------------+
-> +| value_function_get |                | value_function_set |
-> ++--------------------+                +--------------------+
-> +
-> +The driver-supplied trigger_mode_get and trigger_mode_set callbacks hook
-> +on to the iio_read_channel_ext_info and iio_write_channel_ext_info
-> +functions respectively via the iio_counter_trigger_mode_read and
-> +iio_counter_trigger_mode_write functions. Similarly, the driver-supplied
-> +value_function_get and value_function set callbacks hook on to the
-> +iio_enum_read and iio_enum_write functions respectively via the
-> +iio_counter_value_function_get and iio_counter_value_function set
-> +functions.
-
-I'm inclined to agree with you when you suggest that separating things
-out more may well make sense.
-
-This all seems way to involved just to share a relatively small amount
-of code.
-
-The question is whether we loose anything particularly useful if
-we drop most of the complexity.  If it makes sense for a counter
-to sit on the IIO bus in sysfs that's easily done (triggers in IIO
-for example do that already).
-
-The main advantage then becomes one of grouping 'somewhat' related
-subsystems together...  Can also share some utility code given
-the overall structures are somewhat similar of course.
-
-Not sure...
-
-Jonathan
