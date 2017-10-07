@@ -1,15 +1,15 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:37518 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:37544 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751004AbdJGLXa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 7 Oct 2017 07:23:30 -0400
-Date: Sat, 7 Oct 2017 12:23:26 +0100
+        id S1751210AbdJGLYZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 7 Oct 2017 07:24:25 -0400
+Date: Sat, 7 Oct 2017 12:24:21 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
 Cc: linux-iio@vger.kernel.org, lorenzo.bianconi@st.com
 Subject: Re: [PATCH v2 2/4] iio: imu: st_lsm6dsx: split fifo mode and fifo
  odr configuration
-Message-ID: <20171007122326.35565ad3@archlinux>
+Message-ID: <20171007122421.0e1b2048@archlinux>
 In-Reply-To: <20171002163740.13780-3-lorenzo.bianconi@st.com>
 References: <20171002163740.13780-1-lorenzo.bianconi@st.com>
         <20171002163740.13780-3-lorenzo.bianconi@st.com>
@@ -26,13 +26,9 @@ Lorenzo Bianconi <lorenzo.bianconi83@gmail.com> wrote:
 > routine and to support more devices in st_lsm6dsx driver
 > 
 > Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
-
-Thanks,
+Applied etc etc.
 
 Jonathan
-
 > ---
 >  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 32 ++++++++++++++------------
 >  1 file changed, 17 insertions(+), 15 deletions(-)
