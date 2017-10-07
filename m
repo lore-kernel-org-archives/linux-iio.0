@@ -1,99 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg0-f65.google.com ([74.125.83.65]:37242 "EHLO
-        mail-pg0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750957AbdJBKhe (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 Oct 2017 06:37:34 -0400
+Received: from bmailout1.hostsharing.net ([83.223.95.100]:35997 "EHLO
+        bmailout1.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750864AbdJGJNO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 7 Oct 2017 05:13:14 -0400
+Date: Sat, 7 Oct 2017 11:13:12 +0200
+From: Lukas Wunner <lukas@wunner.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Mathias Duckeck <m.duckeck@kunbus.de>,
+        Phil Elwell <phil@raspberrypi.org>,
+        "Andrew F. Davis" <afd@ti.com>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH 2/2] iio: dac: Add Texas Instruments 8/10/12-bit
+ 2/4-channel DAC driver
+Message-ID: <20171007091312.GA6890@wunner.de>
+References: <cceeb1a985343d36dc90d2708371f3e1a73264f6.1504602350.git.lukas@wunner.de>
+ <5d861035569248ac4ae971638ce7fd1e50947232.1504602350.git.lukas@wunner.de>
+ <20170910161108.2ecc34d3@archlinux>
 MIME-Version: 1.0
-In-Reply-To: <20171002113312.00000064@huawei.com>
-References: <20170830115043.3738-1-lorenzo.bianconi@st.com>
- <20170903175210.231b90a8@archlinux> <CAA2SeNKaUhLvLV6iUoirotMtz+nitW5LzLS0una3=BH9v7=0qA@mail.gmail.com>
- <20171002113312.00000064@huawei.com>
-From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-Date: Mon, 2 Oct 2017 12:37:33 +0200
-Message-ID: <CAA2SeNKrJuFyLiM2FTLJLuCEcAZ17O_YRi0_0mgfc8fpojd6Xg@mail.gmail.com>
-Subject: Re: [PATCH v3 0/5] Add support to LIS2DW12 accel sensor
-To: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Lorenzo BIANCONI <lorenzo.bianconi@st.com>,
-        devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20170910161108.2ecc34d3@archlinux>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-> On Sun, 1 Oct 2017 15:15:26 +0200
-> Lorenzo Bianconi <lorenzo.bianconi83@gmail.com> wrote:
->
->> > On Wed, 30 Aug 2017 13:50:38 +0200
->> > Lorenzo Bianconi <lorenzo.bianconi83@gmail.com> wrote:
->> >
->> >> Modify management of drdy line and status register in order to support
->> >> LIS2DW12 device
->> >>
->> >> Changes since v2:
->> >> - swap status register patch (3rd in v2) with irq{1,2} definition one
->> >>   (1st in v2)
->> >> - patchset rebased onto 'fix drdy line configuration for LIS3MDL' patch
->> >> Changes since v1:
->> >> - remove drdy_irq parameter from LPS001WP settings since the sensor
->> >> does not support data-ready interrupts
->> >>
->> >> Lorenzo Bianconi (5):
->> >>   iio: st_sensors: add register mask for status register
->> >>   iio: st_sensors: decouple irq1 configuration parameters from the irq2
->> >>     ones
->> >>   iio: st_sensors: do not always write enable_axis register
->> >>   iio: accel: add support to LIS2DW12
->> >>   dt-bindings: iio: accel: add LIS2DW12 sensor device binding
->> >>
->> >>  .../devicetree/bindings/iio/st-sensors.txt         |   1 +
->> >>  drivers/iio/accel/st_accel.h                       |   2 +
->> >>  drivers/iio/accel/st_accel_core.c                  | 180 +++++++++++++++++----
->> >>  drivers/iio/accel/st_accel_i2c.c                   |   5 +
->> >>  drivers/iio/accel/st_accel_spi.c                   |   5 +
->> >>  drivers/iio/common/st_sensors/st_sensors_core.c    |  35 ++--
->> >>  drivers/iio/common/st_sensors/st_sensors_trigger.c |  16 +-
->> >>  drivers/iio/gyro/st_gyro_core.c                    |  33 ++--
->> >>  drivers/iio/magnetometer/st_magn_core.c            |  16 +-
->> >>  drivers/iio/pressure/st_pressure_core.c            |  46 ++++--
->> >>  include/linux/iio/common/st_sensors.h              |  23 ++-
->> >>  11 files changed, 270 insertions(+), 92 deletions(-)
->> >>
->> >
->> > I'm happy with the whole series, however it doesn't currently apply
->> > due to various fixes working their way through the fixes branches
->> > of the iio git tree.  I'll try to pick it up once those have unwound.
->> > There is too much going on with this code at the moment to do this
->> > cleanly now.
->> >
->> > Give me a bump if I look like I have forgotten it once it will
->> > apply cleanly to the togreg branch of iio.git.
->> >
->> > If I was being really fussy  this should have had a dependency list
->> > for everything it was dependant on that wasn't currently in mainline.
->> >
->> > Jonathan
->>
->> Hi Jonathan,
->>
->> what about that patchset?
->> Regards,
->>
->> Lorenzo
->>
->
-> I think I'm still waiting for the fixes to get back round via mainline
-> to our upstream tree...   Will check again later this week.
->
-> Jonathan
+On Sun, Sep 10, 2017 at 04:11:08PM +0100, Jonathan Cameron wrote:
+> On Tue, 5 Sep 2017 11:27:00 +0200 Lukas Wunner <lukas@wunner.de> wrote:
+> > The DACrrcS085 (rr = 08/10/12, c = 2/4) family of SPI DACs was
+> > inherited by TI when they acquired National Semiconductor in 2011.
+> 
+> Very nice.  A few really minor comments inline.
 
-Fine, thanks. A couple of series queued waiting for that one :)
-
-Regards,
-Lorenzo
+D'accord on all your comments except this one:
 
 
--- 
-UNIX is Sexy: who | grep -i blonde | talk; cd ~; wine; talk; touch;
-unzip; touch; strip; gasp; finger; gasp; mount; fsck; more; yes; gasp;
-umount; make clean; sleep
+> > +	ret = sscanf(spi->modalias, "dac%2hhu%1d",
+> > +		     &ti_dac->resolution, &indio_dev->num_channels);
+> > +	WARN_ON(ret != 2);
+> 
+> Whilst this seems nice and clear now, it may not work if this driver
+> had additional parts added in future. 
+> 
+> I would prefer an explicit table with this information in it and
+> use an enum to reference into it.
+> 
+> This is a bit 'too clever' :)
+
+Hm, I looked at the other SPI DACs available from TI and their programming
+interface is sufficiently different that they don't lend themselves all
+too well for integration into this driver.  There might be DACs from other
+vendors with a similar programming interface.
+
+What I *could* do is encode the resolution and number of channels in the
+driver_data field of the spi MODULE_DEVICE_TABLE like this:
+
+static const struct spi_device_id ti_dac_spi_id[] = {
+	{ "dac082s085",  8 << 8 + 2 },
+	{ "dac102s085", 10 << 8 + 2 },
+	...
+
+Then instead of reading the information from the modalias I'd read them
+from driver_data.  However it looks a bit redundant and silly to me.
+Can we add this extra complexity when the need for it actually arises?
+
+Thanks,
+
+Lukas
