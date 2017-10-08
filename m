@@ -1,15 +1,15 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:39228 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:59374 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1753523AbdJHOij (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 8 Oct 2017 10:38:39 -0400
-Date: Sun, 8 Oct 2017 11:36:46 +0100
+        id S1751483AbdJHKlT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 8 Oct 2017 06:41:19 -0400
+Date: Sun, 8 Oct 2017 11:41:15 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Phil Reid <preid@electromag.com.au>
 Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
         linux-iio@vger.kernel.org
 Subject: Re: [PATCH 1/1] iio: inkern: add helper to enable a channel
-Message-ID: <20171008113646.2243a76c@archlinux>
+Message-ID: <20171008114115.7002f440@archlinux>
 In-Reply-To: <1507171066-83517-1-git-send-email-preid@electromag.com.au>
 References: <1507171066-83517-1-git-send-email-preid@electromag.com.au>
 MIME-Version: 1.0
@@ -25,6 +25,20 @@ Phil Reid <preid@electromag.com.au> wrote:
 > to use new write attribute function.
 > 
 > Signed-off-by: Phil Reid <preid@electromag.com.au>
+
+Hi Phil,
+
+In principle this is fine but there are a few subtle details that need
+tidying up...
+
+Also - normally a core ABI patch like this would only be applied as
+part of a series that is using the change.  Is such a series on its
+way?  We would want to see a usecase to evaluate the additional
+interface.
+
+Thanks,
+
+Jonathan
 > ---
 >  drivers/iio/inkern.c         | 17 +++++++++++++++--
 >  include/linux/iio/consumer.h |  9 +++++++++
@@ -42,6 +56,15 @@ Phil Reid <preid@electromag.com.au> wrote:
 > +static int iio_write_channel_attribute(struct iio_channel *chan,
 > +				       int val, int val2,
 > +				       enum iio_chan_info_enum attribute)
+
+Hmm. Val2 only has meaning if we know the type of the write value
+- i.e. how the driver is going to interpret val and val2. I would
+suggest that we also need a function to allow the consumer driver to access
+that information.
+
+In this patch you aren't actually using val2 anyway so I'm not sure why
+this is here.
+
 >  {
 >  	int ret;
 >  
