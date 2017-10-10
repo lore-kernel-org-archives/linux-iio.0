@@ -1,146 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:59472 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:59664 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1756206AbdJJTmb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 10 Oct 2017 15:42:31 -0400
-Date: Tue, 10 Oct 2017 20:40:50 +0100
+        id S1753878AbdJJTnR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 10 Oct 2017 15:43:17 -0400
+Date: Tue, 10 Oct 2017 20:43:13 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-Cc: linux-iio@vger.kernel.org, lorenzo.bianconi@st.com,
+To: Rob Herring <robh@kernel.org>
+Cc: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        linux-iio@vger.kernel.org, lorenzo.bianconi@st.com,
         devicetree@vger.kernel.org
-Subject: Re: [PATCH 3/4] iio: accel: add support to LIS3DHH
-Message-ID: <20171010204050.2f850632@archlinux>
-In-Reply-To: <20170917161712.14645-4-lorenzo.bianconi@st.com>
+Subject: Re: [PATCH 4/4] dt-bindings: iio: accel: add LIS3DHH device
+ bindings
+Message-ID: <20171010204313.34733c98@archlinux>
+In-Reply-To: <20170920142055.tmhvpxs5uvimxnmy@rob-hp-laptop>
 References: <20170917161712.14645-1-lorenzo.bianconi@st.com>
-        <20170917161712.14645-4-lorenzo.bianconi@st.com>
+        <20170917161712.14645-5-lorenzo.bianconi@st.com>
+        <20170920142055.tmhvpxs5uvimxnmy@rob-hp-laptop>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, 17 Sep 2017 18:17:11 +0200
-Lorenzo Bianconi <lorenzo.bianconi83@gmail.com> wrote:
+On Wed, 20 Sep 2017 15:53:07 -0500
+Rob Herring <robh@kernel.org> wrote:
 
-> add support to STMicroelectronics LIS3DHH accel sensor
+> On Sun, Sep 17, 2017 at 06:17:12PM +0200, Lorenzo Bianconi wrote:
+> > Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+> > ---
+> >  Documentation/devicetree/bindings/iio/st-sensors.txt | 1 +
+> >  1 file changed, 1 insertion(+)  
 > 
-> http://www.st.com/resource/en/datasheet/lis3dhh.pdf
-> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+> Acked-by: Rob Herring <robh@kernel.org>
+Applied to the togreg branch of iio.git and pushed out as testing.
 
 Thanks,
 
 Jonathan
-> ---
->  drivers/iio/accel/st_accel.h      |  2 ++
->  drivers/iio/accel/st_accel_core.c | 52 +++++++++++++++++++++++++++++++++++++++
->  drivers/iio/accel/st_accel_spi.c  |  5 ++++
->  3 files changed, 59 insertions(+)
-> 
-> diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
-> index 2ed0f60418c0..2f931e4837e5 100644
-> --- a/drivers/iio/accel/st_accel.h
-> +++ b/drivers/iio/accel/st_accel.h
-> @@ -33,6 +33,7 @@ enum st_accel_type {
->  	LIS331DL,
->  	LIS3LV02DL,
->  	LIS2DW12,
-> +	LIS3DHH,
->  	ST_ACCEL_MAX,
->  };
->  
-> @@ -54,6 +55,7 @@ enum st_accel_type {
->  #define LIS3L02DQ_ACCEL_DEV_NAME	"lis3l02dq"
->  #define LNG2DM_ACCEL_DEV_NAME		"lng2dm"
->  #define LIS2DW12_ACCEL_DEV_NAME		"lis2dw12"
-> +#define LIS3DHH_ACCEL_DEV_NAME		"lis3dhh"
->  
->  /**
->  * struct st_sensors_platform_data - default accel platform data
-> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-> index c88db25a1aff..460aa58e0159 100644
-> --- a/drivers/iio/accel/st_accel_core.c
-> +++ b/drivers/iio/accel/st_accel_core.c
-> @@ -777,6 +777,58 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
->  		.multi_read_bit = false,
->  		.bootime = 2,
->  	},
-> +	{
-> +		.wai = 0x11,
-> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
-> +		.sensors_supported = {
-> +			[0] = LIS3DHH_ACCEL_DEV_NAME,
-> +		},
-> +		.ch = (struct iio_chan_spec *)st_accel_16bit_channels,
-> +		.odr = {
-> +			/* just ODR = 1100Hz available */
-> +			.odr_avl = {
-> +				{ .hz = 1100, .value = 0x00, },
-> +			},
-> +		},
-> +		.pw = {
-> +			.addr = 0x20,
-> +			.mask = 0x80,
-> +			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
-> +			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
-> +		},
-> +		.fs = {
-> +			.fs_avl = {
-> +				[0] = {
-> +					.num = ST_ACCEL_FS_AVL_2G,
-> +					.gain = IIO_G_TO_M_S_2(76),
-> +				},
-> +			},
-> +		},
-> +		.bdu = {
-> +			.addr = 0x20,
-> +			.mask = 0x01,
-> +		},
-> +		.drdy_irq = {
-> +			.int1 = {
-> +				.addr = 0x21,
-> +				.mask = 0x80,
-> +				.addr_od = 0x23,
-> +				.mask_od = 0x04,
-> +			},
-> +			.int2 = {
-> +				.addr = 0x22,
-> +				.mask = 0x80,
-> +				.addr_od = 0x23,
-> +				.mask_od = 0x08,
-> +			},
-> +			.stat_drdy = {
-> +				.addr = ST_SENSORS_DEFAULT_STAT_ADDR,
-> +				.mask = 0x07,
-> +			},
-> +		},
-> +		.multi_read_bit = false,
-> +		.bootime = 2,
-> +	},
->  };
->  
->  static int st_accel_read_raw(struct iio_dev *indio_dev,
-> diff --git a/drivers/iio/accel/st_accel_spi.c b/drivers/iio/accel/st_accel_spi.c
-> index 7692da49e59f..dcc9bd243a52 100644
-> --- a/drivers/iio/accel/st_accel_spi.c
-> +++ b/drivers/iio/accel/st_accel_spi.c
-> @@ -86,6 +86,10 @@ static const struct of_device_id st_accel_of_match[] = {
->  		.compatible = "st,lis2dw12",
->  		.data = LIS2DW12_ACCEL_DEV_NAME,
->  	},
-> +	{
-> +		.compatible = "st,lis3dhh",
-> +		.data = LIS3DHH_ACCEL_DEV_NAME,
-> +	},
->  	{}
->  };
->  MODULE_DEVICE_TABLE(of, st_accel_of_match);
-> @@ -138,6 +142,7 @@ static const struct spi_device_id st_accel_id_table[] = {
->  	{ LIS331DL_ACCEL_DEV_NAME },
->  	{ LIS3LV02DL_ACCEL_DEV_NAME },
->  	{ LIS2DW12_ACCEL_DEV_NAME },
-> +	{ LIS3DHH_ACCEL_DEV_NAME },
->  	{},
->  };
->  MODULE_DEVICE_TABLE(spi, st_accel_id_table);
+
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
