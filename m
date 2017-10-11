@@ -6,39 +6,36 @@ To: <nicolas.ferre@microchip.com>, <alexandre.belloni@free-electrons.com>,
 	<linux-kernel@vger.kernel.org>, <ludovic.desroches@microchip.com>,
 	<jic23@kernel.org>
 CC: <eugen.hristev@microchip.com>
-Subject: [PATCH v2 4/5] iio: adc: at91-sama5d2_adc: ack DRDY irq in direct mode
-Date: Wed, 11 Oct 2017 09:35:31 +0300
-Message-ID: <1507703732-29175-5-git-send-email-eugen.hristev@microchip.com>
+Subject: [PATCH v2 5/5] iio: adc: at91-sama5d2_adc: use max sample rate
+Date: Wed, 11 Oct 2017 09:35:32 +0300
+Message-ID: <1507703732-29175-6-git-send-email-eugen.hristev@microchip.com>
 In-Reply-To: <1507703732-29175-1-git-send-email-eugen.hristev@microchip.com>
 References: <1507703732-29175-1-git-send-email-eugen.hristev@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-Need to acknowledge DRDY irq in direct mode/ software
-triggered mode. Otherwise, on the next conversion, overrun
-flag will be raised, which is not a correct state.
-This doesn't affect the functionality, but will generate
-possible incorrect overrun reports.
+Change driver settings to use maximum sample rate clock.
+This is useful to achieve best possible sampling rate
+if we use DMA.
 
 Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
 ---
- drivers/iio/adc/at91-sama5d2_adc.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iio/adc/at91-sama5d2_adc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
-index 7a9305a..7e51ecb 100644
+index 7e51ecb..b76f88f 100644
 --- a/drivers/iio/adc/at91-sama5d2_adc.c
 +++ b/drivers/iio/adc/at91-sama5d2_adc.c
-@@ -773,6 +773,9 @@ static int at91_adc_read_raw(struct iio_dev *indio_dev,
- 		at91_adc_writel(st, AT91_SAMA5D2_IDR, BIT(chan->channel));
- 		at91_adc_writel(st, AT91_SAMA5D2_CHDR, BIT(chan->channel));
+@@ -934,7 +934,7 @@ static void at91_adc_hw_init(struct at91_adc_state *st)
+ 	at91_adc_writel(st, AT91_SAMA5D2_MR,
+ 			AT91_SAMA5D2_MR_TRANSFER(2) | AT91_SAMA5D2_MR_ANACH);
  
-+		/* Needed to ACK the DRDY interruption */
-+		at91_adc_readl(st, AT91_SAMA5D2_LCDR);
-+
- 		mutex_unlock(&st->lock);
+-	at91_adc_setup_samp_freq(st, st->soc_info.min_sample_rate);
++	at91_adc_setup_samp_freq(st, st->soc_info.max_sample_rate);
+ }
  
- 		iio_device_release_direct_mode(indio_dev);
+ static ssize_t at91_adc_get_fifo_state(struct device *dev,
 -- 
 2.7.4
