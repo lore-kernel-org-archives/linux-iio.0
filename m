@@ -1,134 +1,42 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:41744 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751105AbdJNSbX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 14 Oct 2017 14:31:23 -0400
-Date: Sat, 14 Oct 2017 19:31:19 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: jikos@kernel.org, linux-iio@vger.kernel.org, hadess@hadess.net
-Subject: Re: [PATCH] iio: hid-sensor-trigger: Don't touch sensors unless
- user space requests
-Message-ID: <20171014193119.17ac3a9b@archlinux>
-In-Reply-To: <1507739701-42151-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: <1507739701-42151-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=WrMm=BK=gmail.com=bhumirks@kernel.org>
+From: Bhumika Goyal <bhumirks@gmail.com>
+To: julia.lawall@lip6.fr,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: Bhumika Goyal <bhumirks@gmail.com>
+Subject: [PATCH] iio: sw_trigger: make the function argument as const
+Date: Wed, 11 Oct 2017 18:51:35 +0200
+Message-Id: <1507740695-3053-1-git-send-email-bhumirks@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, 11 Oct 2017 09:35:01 -0700
-Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
+This is a follow-up patch for:
+https://patchwork.kernel.org/patch/9999649/
 
-> One of the user complained that on his system Thinkpad Yoga S1, with
-> commit f1664eaacec3 ("iio: hid-sensor-trigger: Fix the race with user
-> space powering up sensors") causes the system to resume immediately
-> on suspend (S3 operation). On this system the sensor hub is on USB
-> and is a wake up device from S3. So if any sensor sends data on
-> motion, the system will wake up. This can be a legitimate use case
-> to wake up device motion, but that needs proper user space support
-> to set right thresholds.
-> 
-> In fact the above commit didn't cause this regression, but any operation
-> which cause sensors to wake up would have caused the same issue. So if
-> user reads the raw sensor data, same issue occurs, with or without this
-> commit. Only difference is that the above commit by default will trigger
-> a power up and power down of sensors as part of runtime pm enable
-> (runtime enable will cause a runtime resume callback followed by
-> runtime_suspend callback). Previously user has to do some action on
-> sensors.
-> 
-> On investigation it was observed that the current driver correctly
-> changing the state of all sensors to power off but then also some sensor
-> will still send some data. Only option is to never power up any sensor.
+Make the argument of the function iio_swt_group_init_type_name const as
+it is only passed to the function config_group_init_type_name having the
+argument as const.
 
-Oh goody - broken hardware or at least hardware that behaves rather oddly.
+Signed-off-by: Bhumika Goyal <bhumirks@gmail.com>
+---
+ include/linux/iio/sw_trigger.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> 
-> Only good option is to:
-> - Using sysfs interface disable USB as a wakeup device (This will not
-> need any driver change)
-> 
-> Since some user don't care about sensors. So for those users this change
-> brings back old functionality. As long as they don't cause any operation
-> to power up sensors (like raw read or start iio-sensor-proxy service),
-> the sensors will not be to touched. This is done by delaying run time
-> enable till user space does some operation with sensors.
-> 
-> Link: https://bugzilla.kernel.org/show_bug.cgi?id=196853
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
-
-Thanks,
-
-Jonathan
-
-> ---
-> 
-> Since only one user has seen issue, so it may be isolated case.
-> So I  prefer to go through regular release cycle. If there are more
-> complains then we can then submit for stable tree.
-> 
->  drivers/iio/common/hid-sensors/hid-sensor-trigger.c | 12 +++++++++---
->  include/linux/hid-sensor-hub.h                      |  1 +
->  2 files changed, 10 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> index 0e4b379..2c25ff3 100644
-> --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> @@ -179,6 +179,10 @@ int hid_sensor_power_state(struct hid_sensor_common *st, bool state)
->  	int ret;
->  
->  	atomic_set(&st->user_requested_state, state);
-> +
-> +	if (atomic_add_unless(&st->runtime_pm_enable, 1, 1))
-> +		pm_runtime_enable(&st->pdev->dev);
-> +
->  	if (state)
->  		ret = pm_runtime_get_sync(&st->pdev->dev);
->  	else {
-> @@ -221,7 +225,8 @@ static void hid_sensor_set_power_work(struct work_struct *work)
->  	if (attrb->latency_ms > 0)
->  		hid_sensor_set_report_latency(attrb, attrb->latency_ms);
->  
-> -	_hid_sensor_power_state(attrb, true);
-> +	if (atomic_read(&attrb->user_requested_state))
-> +		_hid_sensor_power_state(attrb, true);
->  }
->  
->  static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
-> @@ -232,7 +237,9 @@ static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
->  
->  void hid_sensor_remove_trigger(struct hid_sensor_common *attrb)
->  {
-> -	pm_runtime_disable(&attrb->pdev->dev);
-> +	if (atomic_read(&attrb->runtime_pm_enable))
-> +		pm_runtime_disable(&attrb->pdev->dev);
-> +
->  	pm_runtime_set_suspended(&attrb->pdev->dev);
->  	pm_runtime_put_noidle(&attrb->pdev->dev);
->  
-> @@ -283,7 +290,6 @@ int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
->  	INIT_WORK(&attrb->work, hid_sensor_set_power_work);
->  
->  	pm_suspend_ignore_children(&attrb->pdev->dev, true);
-> -	pm_runtime_enable(&attrb->pdev->dev);
->  	/* Default to 3 seconds, but can be changed from sysfs */
->  	pm_runtime_set_autosuspend_delay(&attrb->pdev->dev,
->  					 3000);
-> diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
-> index fc7aae6..331dc37 100644
-> --- a/include/linux/hid-sensor-hub.h
-> +++ b/include/linux/hid-sensor-hub.h
-> @@ -231,6 +231,7 @@ struct hid_sensor_common {
->  	unsigned usage_id;
->  	atomic_t data_ready;
->  	atomic_t user_requested_state;
-> +	atomic_t runtime_pm_enable;
->  	int poll_interval;
->  	int raw_hystersis;
->  	int latency_ms;
-
+diff --git a/include/linux/iio/sw_trigger.h b/include/linux/iio/sw_trigger.h
+index c97eab6..0c43738 100644
+--- a/include/linux/iio/sw_trigger.h
++++ b/include/linux/iio/sw_trigger.h
+@@ -60,7 +60,7 @@ struct iio_sw_trigger *to_iio_sw_trigger(struct config_item *item)
+ static inline
+ void iio_swt_group_init_type_name(struct iio_sw_trigger *t,
+ 				  const char *name,
+-				  struct config_item_type *type)
++				  const struct config_item_type *type)
+ {
+ #if IS_ENABLED(CONFIG_CONFIGFS_FS)
+ 	config_group_init_type_name(&t->group, name, type);
+-- 
+1.9.1
