@@ -1,45 +1,139 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:41392 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750907AbdJNSXU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 14 Oct 2017 14:23:20 -0400
-Date: Sat, 14 Oct 2017 19:23:16 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Rob Herring <robh@kernel.org>
-Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: iio: health: Fix max30100 I2C chip
- address in example
-Message-ID: <20171014192316.34460c76@archlinux>
-In-Reply-To: <20171013215438.fqb3qvevxmwb6i2z@rob-hp-laptop>
-References: <1507712948-29300-1-git-send-email-pmeerw@pmeerw.net>
-        <20171013215438.fqb3qvevxmwb6i2z@rob-hp-laptop>
+Return-Path: <SRS0=EPV4=BK=microchip.com=Eugen.Hristev@kernel.org>
+From: Eugen Hristev <eugen.hristev@microchip.com>
+To: <nicolas.ferre@microchip.com>, <linux-iio@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <ludovic.desroches@microchip.com>,
+	<jic23@kernel.org>
+CC: <eugen.hristev@microchip.com>
+Subject: [PATCH] iio: adc: at91-sama5d2_adc: fix probe error on missing trigger property
+Date: Wed, 11 Oct 2017 14:21:14 +0300
+Message-ID: <1507720874-12526-1-git-send-email-eugen.hristev@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, 13 Oct 2017 16:54:38 -0500
-Rob Herring <robh@kernel.org> wrote:
+This fix allows platforms to probe correctly even if the
+trigger edge property is missing. The hardware trigger
+will no longer be registered in the sybsystem
+Preserves backwards compatibility with the support that
+was in the driver before the hardware trigger.
 
-> On Wed, Oct 11, 2017 at 11:09:07AM +0200, Peter Meerwald-Stadler wrote:
-> > Should be in hex, not decimal or even octal
-> > 
-> > Signed-off-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-> > ---
-> >  Documentation/devicetree/bindings/iio/health/max30100.txt | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)  
-> 
-> Acked-by: Rob Herring <robh@kernel.org>
-Applied to the togreg branch of iio.git and pushed out as testing.
+Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+---
+Hello Jonathan,
+The trigger feature is new and it prevents
+current platforms from probing correctly.
+Here is a link with the failure from kernelci.org
+https://storage.kernelci.org/mainline/master/v4.14-rc2-255-g74d83ec2b734/arm/sama5_defconfig/lab-free-electrons/boot-at91-sama5d2_xplained.txt
+This would need to go to 4.14-final, if it's not too late.
 
-Thanks,
 
-Jonathan
+ drivers/iio/adc/at91-sama5d2_adc.c | 45 ++++++++++++++++++++++++--------------
+ 1 file changed, 29 insertions(+), 16 deletions(-)
 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
+diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
+index 318601b..755a493 100644
+--- a/drivers/iio/adc/at91-sama5d2_adc.c
++++ b/drivers/iio/adc/at91-sama5d2_adc.c
+@@ -225,6 +225,7 @@ struct at91_adc_trigger {
+ 	char				*name;
+ 	unsigned int			trgmod_value;
+ 	unsigned int			edge_type;
++	bool				hw_trig;
+ };
+ 
+ struct at91_adc_state {
+@@ -254,16 +255,25 @@ static const struct at91_adc_trigger at91_adc_trigger_list[] = {
+ 		.name = "external_rising",
+ 		.trgmod_value = AT91_SAMA5D2_TRGR_TRGMOD_EXT_TRIG_RISE,
+ 		.edge_type = IRQ_TYPE_EDGE_RISING,
++		.hw_trig = true,
+ 	},
+ 	{
+ 		.name = "external_falling",
+ 		.trgmod_value = AT91_SAMA5D2_TRGR_TRGMOD_EXT_TRIG_FALL,
+ 		.edge_type = IRQ_TYPE_EDGE_FALLING,
++		.hw_trig = true,
+ 	},
+ 	{
+ 		.name = "external_any",
+ 		.trgmod_value = AT91_SAMA5D2_TRGR_TRGMOD_EXT_TRIG_ANY,
+ 		.edge_type = IRQ_TYPE_EDGE_BOTH,
++		.hw_trig = true,
++	},
++	{
++		.name = "software",
++		.trgmod_value = AT91_SAMA5D2_TRGR_TRGMOD_NO_TRIGGER,
++		.edge_type = IRQ_TYPE_NONE,
++		.hw_trig = false,
+ 	},
+ };
+ 
+@@ -595,7 +605,7 @@ static int at91_adc_probe(struct platform_device *pdev)
+ 	struct at91_adc_state *st;
+ 	struct resource	*res;
+ 	int ret, i;
+-	u32 edge_type;
++	u32 edge_type = IRQ_TYPE_NONE;
+ 
+ 	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*st));
+ 	if (!indio_dev)
+@@ -639,14 +649,14 @@ static int at91_adc_probe(struct platform_device *pdev)
+ 	ret = of_property_read_u32(pdev->dev.of_node,
+ 				   "atmel,trigger-edge-type", &edge_type);
+ 	if (ret) {
+-		dev_err(&pdev->dev,
+-			"invalid or missing value for atmel,trigger-edge-type\n");
+-		return ret;
++		dev_dbg(&pdev->dev,
++			"atmel,trigger-edge-type not specified, only software trigger available\n");
+ 	}
+ 
+ 	st->selected_trig = NULL;
+ 
+-	for (i = 0; i < AT91_SAMA5D2_HW_TRIG_CNT; i++)
++	/* find the right trigger, or no trigger at all */
++	for (i = 0; i < AT91_SAMA5D2_HW_TRIG_CNT + 1; i++)
+ 		if (at91_adc_trigger_list[i].edge_type == edge_type) {
+ 			st->selected_trig = &at91_adc_trigger_list[i];
+ 			break;
+@@ -715,24 +725,27 @@ static int at91_adc_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, indio_dev);
+ 
+-	ret = at91_adc_buffer_init(indio_dev);
+-	if (ret < 0) {
+-		dev_err(&pdev->dev, "couldn't initialize the buffer.\n");
+-		goto per_clk_disable_unprepare;
+-	}
++	if (st->selected_trig->hw_trig) {
++		ret = at91_adc_buffer_init(indio_dev);
++		if (ret < 0) {
++			dev_err(&pdev->dev, "couldn't initialize the buffer.\n");
++			goto per_clk_disable_unprepare;
++		}
+ 
+-	ret = at91_adc_trigger_init(indio_dev);
+-	if (ret < 0) {
+-		dev_err(&pdev->dev, "couldn't setup the triggers.\n");
+-		goto per_clk_disable_unprepare;
++		ret = at91_adc_trigger_init(indio_dev);
++		if (ret < 0) {
++			dev_err(&pdev->dev, "couldn't setup the triggers.\n");
++			goto per_clk_disable_unprepare;
++		}
+ 	}
+ 
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret < 0)
+ 		goto per_clk_disable_unprepare;
+ 
+-	dev_info(&pdev->dev, "setting up trigger as %s\n",
+-		 st->selected_trig->name);
++	if (st->selected_trig->hw_trig)
++		dev_info(&pdev->dev, "setting up trigger as %s\n",
++			 st->selected_trig->name);
+ 
+ 	dev_info(&pdev->dev, "version: %x\n",
+ 		 readl_relaxed(st->base + AT91_SAMA5D2_VERSION));
+-- 
+2.7.4
