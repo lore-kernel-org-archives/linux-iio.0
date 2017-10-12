@@ -12,236 +12,57 @@ Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
 	<pmeerw@pmeerw.net>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
 	Marek Szyprowski <m.szyprowski@samsung.com>, Maciej Purski
 	<m.purski@samsung.com>
-Subject: [PATCH v3 2/4] hwmon: (ina2xx) Make max expected current
- configurable
-Date: Thu, 12 Oct 2017 15:18:00 +0200
-Message-id: <1507814282-1486-3-git-send-email-m.purski@samsung.com>
+Subject: [PATCH v3 3/4] dt-bindings: hwmon: Add
+ ti-max-expected-current-milliamp property to ina2xx
+Date: Thu, 12 Oct 2017 15:18:01 +0200
+Message-id: <1507814282-1486-4-git-send-email-m.purski@samsung.com>
 In-reply-to: <1507814282-1486-1-git-send-email-m.purski@samsung.com>
 References: <1507814282-1486-1-git-send-email-m.purski@samsung.com>
-	<CGME20171012131815eucas1p22e1d5859c59f11f73d8ccd0a74514c16@eucas1p2.samsung.com>
+	<CGME20171012131816eucas1p292bc0e20f141cfd21fe27c40700d82fb@eucas1p2.samsung.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Max expected current is used for calculating calibration register value,
-Current LSB and Power LSB according to equations found in ina datasheet:
-current_lsb = max_expected_current / 2^15
-calibration_register = 0.00512 / (current_lsb * r_shunt)
-power_lsb = 25 * current_lsb (for ina231, 230, 226)
-power_lsb = 20 * current_lsb (for older ones)
-
-Max expected current is now implicitly set to default value,
-which is 2^15, thanks to which Current LSB is equal to 1 mA and
-Power LSB is equal to 20000 uW or 25000 uW depending on ina model, but
-users have no impact on the precision of the device.
-
-Make max expected current configurable from device tree or platform_data.
-Allow changing it from sysfs as currX_max attribute. Update calibration
-register and power_lsb value on each currX_max change.
+Add optional max expected current property which allows calibrating
+the ina sensor in order to achieve requested measure scale. Document
+the changes in Documentation/hwmon/ina2xx.
 
 Signed-off-by: Maciej Purski <m.purski@samsung.com>
 ---
- drivers/hwmon/ina2xx.c | 107 +++++++++++++++++++++++++++++++++++++++++++------
- 1 file changed, 95 insertions(+), 12 deletions(-)
+ Documentation/devicetree/bindings/hwmon/ina2xx.txt | 4 +++-
+ Documentation/hwmon/ina2xx                         | 3 +++
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/hwmon/ina2xx.c b/drivers/hwmon/ina2xx.c
-index 62e38fa..04648f6 100644
---- a/drivers/hwmon/ina2xx.c
-+++ b/drivers/hwmon/ina2xx.c
-@@ -80,6 +80,8 @@
- /* common attrs, ina226 attrs and NULL */
- #define INA2XX_MAX_ATTRIBUTE_GROUPS	3
+diff --git a/Documentation/devicetree/bindings/hwmon/ina2xx.txt b/Documentation/devicetree/bindings/hwmon/ina2xx.txt
+index 02af0d9..9268595 100644
+--- a/Documentation/devicetree/bindings/hwmon/ina2xx.txt
++++ b/Documentation/devicetree/bindings/hwmon/ina2xx.txt
+@@ -14,11 +14,13 @@ Optional properties:
  
-+#define INA2XX_MAX_EXPECTED_MA_DEFAULT  BIT(15)       /* current_lsb = 1 mA */
-+
- /*
-  * Both bus voltage and shunt voltage conversion times for ina226 are set
-  * to 0b0100 on POR, which translates to 2200 microseconds in total.
-@@ -100,13 +102,16 @@ struct ina2xx_config {
- 	int shunt_div;
- 	int bus_voltage_shift;
- 	int bus_voltage_lsb;	/* uV */
--	int power_lsb;		/* uW */
-+	int power_lsb_factor;
+ - shunt-resistor
+ 	Shunt resistor value in micro-Ohm
+-
++- ti-max-expected-current-milliamp
++	Max expected current value in mA
+ Example:
+ 
+ ina220@44 {
+ 	compatible = "ti,ina220";
+ 	reg = <0x44>;
+ 	shunt-resistor = <1000>;
++	ti-max-expected-current-milliamp = <3000>;
  };
+diff --git a/Documentation/hwmon/ina2xx b/Documentation/hwmon/ina2xx
+index cfd31d9..30620e8 100644
+--- a/Documentation/hwmon/ina2xx
++++ b/Documentation/hwmon/ina2xx
+@@ -55,6 +55,9 @@ The shunt value in micro-ohms can be set via platform data or device tree at
+ compile-time or via the shunt_resistor attribute in sysfs at run-time. Please
+ refer to the Documentation/devicetree/bindings/i2c/ina2xx.txt for bindings
+ if the device tree is used.
++The max expected current value in miliamp can be set via platform data
++or device tree at compile-time or via currX_max attribute in sysfs
++at run-time.
  
- struct ina2xx_data {
- 	const struct ina2xx_config *config;
- 
--	long rshunt;
-+	long rshunt;				/* uOhms */
-+	unsigned int max_expected_current;	/* mA */
-+	int current_lsb;			/* uA */
-+	int power_lsb;				/* uW */
- 	struct mutex config_lock;
- 	struct regmap *regmap;
- 
-@@ -121,7 +126,7 @@ static const struct ina2xx_config ina2xx_config[] = {
- 		.shunt_div = 100,
- 		.bus_voltage_shift = 3,
- 		.bus_voltage_lsb = 4000,
--		.power_lsb = 20000,
-+		.power_lsb_factor = 20,
- 	},
- 	[ina226] = {
- 		.config_default = INA226_CONFIG_DEFAULT,
-@@ -130,7 +135,7 @@ static const struct ina2xx_config ina2xx_config[] = {
- 		.shunt_div = 400,
- 		.bus_voltage_shift = 0,
- 		.bus_voltage_lsb = 1250,
--		.power_lsb = 25000,
-+		.power_lsb_factor = 25,
- 	},
- };
- 
-@@ -169,10 +174,17 @@ static u16 ina226_interval_to_reg(int interval)
- 	return INA226_SHIFT_AVG(avg_bits);
- }
- 
-+/*
-+ * Calculate calibration value according to equation 1 in ina226 datasheet
-+ * http://www.ti.com/lit/ds/symlink/ina226.pdf.
-+ * Current LSB is in uA and RShunt is in uOhms, so in order to keep
-+ * calibration value scaled RShunt must be converted to mOhms.
-+ */
- static int ina2xx_calibrate(struct ina2xx_data *data)
- {
-+	int r_shunt = DIV_ROUND_CLOSEST(data->rshunt, 1000);
- 	u16 val = DIV_ROUND_CLOSEST(data->config->calibration_factor,
--				    data->rshunt);
-+				    data->current_lsb * r_shunt);
- 
- 	return regmap_write(data->regmap, INA2XX_CALIBRATION, val);
- }
-@@ -187,13 +199,29 @@ static int ina2xx_init(struct ina2xx_data *data)
- 	if (ret < 0)
- 		return ret;
- 
--	/*
--	 * Set current LSB to 1mA, shunt is in uOhms
--	 * (equation 13 in datasheet).
--	 */
- 	return ina2xx_calibrate(data);
- }
- 
-+/*
-+ * Set max_expected_current (mA) and calculate current_lsb (uA),
-+ * according to equation 2 in ina226 datasheet. Power LSB is calculated
-+ * by multiplying Current LSB by a given factor, which may vary depending
-+ * on ina version.
-+ */
-+static int ina2xx_set_max_expected_current(struct ina2xx_data *data,
-+					   unsigned int val)
-+{
-+	if (val <= 0 || val > data->config->calibration_factor)
-+		return -EINVAL;
-+
-+	data->max_expected_current = val;
-+	data->current_lsb = DIV_ROUND_CLOSEST(data->max_expected_current * 1000,
-+					      1 << 15);
-+	data->power_lsb = data->current_lsb * data->config->power_lsb_factor;
-+
-+	return 0;
-+}
-+
- static int ina2xx_read_reg(struct device *dev, int reg, unsigned int *regval)
- {
- 	struct ina2xx_data *data = dev_get_drvdata(dev);
-@@ -268,11 +296,11 @@ static int ina2xx_get_value(struct ina2xx_data *data, u8 reg,
- 		val = DIV_ROUND_CLOSEST(val, 1000);
- 		break;
- 	case INA2XX_POWER:
--		val = regval * data->config->power_lsb;
-+		val = regval * data->power_lsb;
- 		break;
- 	case INA2XX_CURRENT:
--		/* signed register, LSB=1mA (selected), in mA */
--		val = (s16)regval;
-+		val = (s16)regval * data->current_lsb;
-+		val = DIV_ROUND_CLOSEST(val, 1000);
- 		break;
- 	case INA2XX_CALIBRATION:
- 		val = DIV_ROUND_CLOSEST(data->config->calibration_factor,
-@@ -369,6 +397,39 @@ static ssize_t ina226_show_interval(struct device *dev,
- 	return snprintf(buf, PAGE_SIZE, "%d\n", ina226_reg_to_interval(regval));
- }
- 
-+static ssize_t ina2xx_max_current_show(struct device *dev,
-+				       struct device_attribute *attr,
-+				       char *buf)
-+{
-+	struct ina2xx_data *data = dev_get_drvdata(dev);
-+
-+	return sprintf(buf, "%d\n", data->max_expected_current);
-+}
-+
-+static ssize_t ina2xx_max_current_store(struct device *dev,
-+					struct device_attribute *attr,
-+					const char *buf, size_t len)
-+{
-+	struct ina2xx_data *data = dev_get_drvdata(dev);
-+	unsigned long val;
-+	int ret;
-+
-+	ret = kstrtoul(buf, 10, &val);
-+	if (ret)
-+		return ret;
-+
-+	ret = ina2xx_set_max_expected_current(data, val);
-+	if (ret)
-+		return ret;
-+
-+	/* Update the Calibration register */
-+	ret = ina2xx_calibrate(data);
-+	if (ret)
-+		return ret;
-+
-+	return len;
-+}
-+
- /* shunt voltage */
- static SENSOR_DEVICE_ATTR(in0_input, S_IRUGO, ina2xx_show_value, NULL,
- 			  INA2XX_SHUNT_VOLTAGE);
-@@ -390,6 +451,11 @@ static SENSOR_DEVICE_ATTR(shunt_resistor, S_IRUGO | S_IWUSR,
- 			  ina2xx_show_value, ina2xx_set_shunt,
- 			  INA2XX_CALIBRATION);
- 
-+/* max expected current */
-+static SENSOR_DEVICE_ATTR(curr1_max, S_IRUGO | S_IWUSR,
-+			  ina2xx_max_current_show,
-+			  ina2xx_max_current_store, 0);
-+
- /* update interval (ina226 only) */
- static SENSOR_DEVICE_ATTR(update_interval, S_IRUGO | S_IWUSR,
- 			  ina226_show_interval, ina226_set_interval, 0);
-@@ -401,6 +467,7 @@ static struct attribute *ina2xx_attrs[] = {
- 	&sensor_dev_attr_curr1_input.dev_attr.attr,
- 	&sensor_dev_attr_power1_input.dev_attr.attr,
- 	&sensor_dev_attr_shunt_resistor.dev_attr.attr,
-+	&sensor_dev_attr_curr1_max.dev_attr.attr,
- 	NULL,
- };
- 
-@@ -453,6 +520,22 @@ static int ina2xx_probe(struct i2c_client *client,
- 
- 	data->rshunt = val;
- 
-+	if (of_property_read_u32(dev->of_node,
-+				 "ti-max-expected-current-milliamp",
-+				 &val) < 0) {
-+		struct ina2xx_platform_data *pdata =
-+		    dev_get_platdata(&client->dev);
-+
-+		if (pdata && pdata->max_mA != 0)
-+			val = pdata->max_mA;
-+		else
-+			val = INA2XX_MAX_EXPECTED_MA_DEFAULT;
-+	}
-+
-+	ret = ina2xx_set_max_expected_current(data, val);
-+	if (ret < 0)
-+		return ret;
-+
- 	ina2xx_regmap_config.max_register = data->config->registers;
- 
- 	data->regmap = devm_regmap_init_i2c(client, &ina2xx_regmap_config);
+ Additionally ina226 supports update_interval attribute as described in
+ Documentation/hwmon/sysfs-interface. Internally the interval is the sum of
 -- 
 2.7.4
