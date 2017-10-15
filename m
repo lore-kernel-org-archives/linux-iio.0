@@ -1,60 +1,77 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41206 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751835AbdJMQ3A (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 13 Oct 2017 12:29:00 -0400
-Date: Fri, 13 Oct 2017 17:28:56 +0100
-In-Reply-To: <CALieaef=jiHBJKrOY9KAr_PMHbrJhrjc9YQ=q+ukir+Ujg+opw@mail.gmail.com>
-References: <CALieaef=jiHBJKrOY9KAr_PMHbrJhrjc9YQ=q+ukir+Ujg+opw@mail.gmail.com>
+Received: from mail.kernel.org ([198.145.29.99]:59716 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1750722AbdJOKvW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 15 Oct 2017 06:51:22 -0400
+Date: Sun, 15 Oct 2017 11:51:18 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org
+Subject: [PULL] Second set of IIO fixes for the 4.14 cycle.
+Message-ID: <20171015115118.0090f5c9@archlinux>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Subject: Re: max1363 driver not working with iio_generic_buffer tool
-To: Dmitry Mastykin <mastichi@gmail.com>, linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Message-ID: <D13C741F-47D0-481A-9CFA-4929ED6D2192@jic23.retrosnub.co.uk>
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+The following changes since commit b2e312061c5e9f533c44487862dc405094bf250a:
 
+  Merge tag 'iio-fixes-for-4.14a' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-linus (2017-09-25 10:58:22 +0200)
 
-On 13 October 2017 14:49:37 BST, Dmitry Mastykin <mastichi@gmail.com> wrote:
->Hello,
->(I'm sorry, the question may be too simple for this mailing list)
->I'm working with max1136 via max1363 driver.
->I can read raw values via sysfs.
->But I cannot use it with iio_generic_buffer.
->
->I enable a channel:
->  echo 1 | sudo tee
->/sys/bus/iio/devices/iio\:device0/scan_elements/in_voltage0_en
->
->and then:
->  sudo ./iio_generic_buffer -g -n max1136
+are available in the git repository at:
 
-No trigger on that device as I don't think it has an internal clock.  If a device provides its own
- trigger and you don't specify one, the demo code will figure it out.  Actually for extra confusion that ti part is an
- oddity. Because of the block nature of its dma transfers it doesn't use a trigger at all.
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.14b
 
-So you need to provide one from somewhere else. Various options but without hardware
- easiest would be a sysfs trigger or hrtimer trigger.
+for you to fetch changes up to ca4c302398963c0cae29bc168e44cf91e40ff0d3:
 
->From phone not sure I can write a set of instructions for creating one though. 
+  iio: adc: at91-sama5d2_adc: fix probe error on missing trigger property (2017-10-14 19:52:07 +0100)
 
-J
->
->returns:
->  Failed to enable buffer: Invalid argument
->
->whilst with TI-am335x-adc driver I can read values.
->Please suggest me what to try, or may be INDIO_DIRECT_MODE doesn't
->suppose work with the buffer?
->Thank you very much,
->Dmitry Mastykin
->--
->To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
+----------------------------------------------------------------
+Second set of IIO fixes for the 4.14 cycle.
 
--- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+* ade7759
+  - Fix a signed extension bug.
+* as3935
+  - The default noise and watch dog settings were such that the device
+    was unusuable in most applications.  Add device tree parameters to
+    allow it to be configured to something that will actually work.
+* at91-sama5d2 adc
+  - Fix handling of legacy device trees that don't provide the new
+    trigger edge property.
+* dln2-adc
+  - Fix a missing Kconfig dependency on IIO_TRIGGERED_BUFFER.
+* dummy driver
+  - Add a missing break so that writing in_voltage0_thresh_rising_en
+    doesn't always result in an error.
+* zpa2326
+  - Drop a test for an always true condition so that gcc won't spit out
+    and unused variable warning.
+
+----------------------------------------------------------------
+Colin Ian King (1):
+      staging: iio: ade7759: fix signed extension bug on shift of a u8
+
+Eugen Hristev (1):
+      iio: adc: at91-sama5d2_adc: fix probe error on missing trigger property
+
+Geert Uytterhoeven (1):
+      iio: pressure: zpa2326: Remove always-true check which confuses gcc
+
+Lars-Peter Clausen (1):
+      iio: dummy: events: Add missing break
+
+Matt Ranostay (1):
+      iio: proximity: as3935: noise detection + threshold changes
+
+Randy Dunlap (1):
+      iio: adc: dln2-adc: fix build error
+
+ .../ABI/testing/sysfs-bus-iio-proximity-as3935     |  8 ++++
+ .../devicetree/bindings/iio/proximity/as3935.txt   |  5 +++
+ drivers/iio/adc/Kconfig                            |  2 +
+ drivers/iio/adc/at91-sama5d2_adc.c                 | 45 ++++++++++++++--------
+ drivers/iio/dummy/iio_simple_dummy_events.c        |  1 +
+ drivers/iio/pressure/zpa2326.c                     | 10 ++---
+ drivers/iio/proximity/as3935.c                     | 43 +++++++++++++++++++--
+ drivers/staging/iio/meter/ade7759.c                |  2 +-
+ 8 files changed, 89 insertions(+), 27 deletions(-)
