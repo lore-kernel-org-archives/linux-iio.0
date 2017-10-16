@@ -1,11 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from cloudserver094114.home.net.pl ([79.96.170.134]:43669 "EHLO
-        cloudserver094114.home.net.pl" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S933105AbdJQAUe (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 16 Oct 2017 20:20:34 -0400
-From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To: Bhumika Goyal <bhumirks@gmail.com>
-Cc: julia.lawall@lip6.fr, lenb@kernel.org,
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:52449 "EHLO
+        mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753774AbdJPPTg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 16 Oct 2017 11:19:36 -0400
+From: Bhumika Goyal <bhumirks@gmail.com>
+To: julia.lawall@lip6.fr, rjw@rjwysocki.net, lenb@kernel.org,
         alexander.shishkin@linux.intel.com, jic23@kernel.org,
         knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
         dledford@redhat.com, sean.hefty@intel.com,
@@ -21,61 +20,51 @@ Cc: julia.lawall@lip6.fr, lenb@kernel.org,
         target-devel@vger.kernel.org, linux-usb@vger.kernel.org,
         cluster-devel@redhat.com, ocfs2-devel@oss.oracle.com,
         linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH v2 09/15] ACPI: configfs: make config_item_type const
-Date: Tue, 17 Oct 2017 02:10:57 +0200
-Message-ID: <3026721.pYNdH8r6C9@aspire.rjw.lan>
-In-Reply-To: <1508167134-6243-10-git-send-email-bhumirks@gmail.com>
-References: <1508167134-6243-1-git-send-email-bhumirks@gmail.com> <1508167134-6243-10-git-send-email-bhumirks@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Cc: Bhumika Goyal <bhumirks@gmail.com>
+Subject: [PATCH v2 10/15] nullb: make config_item_type const
+Date: Mon, 16 Oct 2017 17:18:49 +0200
+Message-Id: <1508167134-6243-11-git-send-email-bhumirks@gmail.com>
+In-Reply-To: <1508167134-6243-1-git-send-email-bhumirks@gmail.com>
+References: <1508167134-6243-1-git-send-email-bhumirks@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Monday, October 16, 2017 5:18:48 PM CEST Bhumika Goyal wrote:
-> Make these structures const as they are either passed to the functions
-> having the argument as const or stored as a reference in the "ci_type"
-> const field of a config_item structure.
-> 
-> Done using Coccienlle.
-> 
-> Signed-off-by: Bhumika Goyal <bhumirks@gmail.com>
-> ---
-> * Changes in v2- Combine all the followup patches and the constification
-> patches into a series.
-> 
->  drivers/acpi/acpi_configfs.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/acpi/acpi_configfs.c b/drivers/acpi/acpi_configfs.c
-> index 853bc7f..b588503 100644
-> --- a/drivers/acpi/acpi_configfs.c
-> +++ b/drivers/acpi/acpi_configfs.c
-> @@ -204,7 +204,7 @@ struct configfs_attribute *acpi_table_attrs[] = {
->  	NULL,
->  };
->  
-> -static struct config_item_type acpi_table_type = {
-> +static const struct config_item_type acpi_table_type = {
->  	.ct_owner = THIS_MODULE,
->  	.ct_bin_attrs = acpi_table_bin_attrs,
->  	.ct_attrs = acpi_table_attrs,
-> @@ -237,12 +237,12 @@ struct configfs_group_operations acpi_table_group_ops = {
->  	.drop_item = acpi_table_drop_item,
->  };
->  
-> -static struct config_item_type acpi_tables_type = {
-> +static const struct config_item_type acpi_tables_type = {
->  	.ct_owner = THIS_MODULE,
->  	.ct_group_ops = &acpi_table_group_ops,
->  };
->  
-> -static struct config_item_type acpi_root_group_type = {
-> +static const struct config_item_type acpi_root_group_type = {
->  	.ct_owner = THIS_MODULE,
->  };
->  
-> 
+Make these structures const as they are either passed to the functions
+having the argument as const or stored as a reference in the "ci_type"
+const field of a config_item structure.
 
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Done using Coccienlle.
 
+Signed-off-by: Bhumika Goyal <bhumirks@gmail.com>
+---
+* Changes in v2- Combine all the followup patches and the constification
+patches into a series.
+
+ drivers/block/null_blk.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/block/null_blk.c b/drivers/block/null_blk.c
+index bf2c8ca..46b6008 100644
+--- a/drivers/block/null_blk.c
++++ b/drivers/block/null_blk.c
+@@ -480,7 +480,7 @@ static void nullb_device_release(struct config_item *item)
+ 	.release	= nullb_device_release,
+ };
+ 
+-static struct config_item_type nullb_device_type = {
++static const struct config_item_type nullb_device_type = {
+ 	.ct_item_ops	= &nullb_device_ops,
+ 	.ct_attrs	= nullb_device_attrs,
+ 	.ct_owner	= THIS_MODULE,
+@@ -532,7 +532,7 @@ static ssize_t memb_group_features_show(struct config_item *item, char *page)
+ 	.drop_item	= nullb_group_drop_item,
+ };
+ 
+-static struct config_item_type nullb_group_type = {
++static const struct config_item_type nullb_group_type = {
+ 	.ct_group_ops	= &nullb_group_ops,
+ 	.ct_attrs	= nullb_group_attrs,
+ 	.ct_owner	= THIS_MODULE,
+-- 
+1.9.1
 
