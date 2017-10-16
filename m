@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f68.google.com ([74.125.82.68]:46559 "EHLO
-        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753618AbdJPPTJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 16 Oct 2017 11:19:09 -0400
+Received: from mail-wm0-f65.google.com ([74.125.82.65]:51942 "EHLO
+        mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753622AbdJPPTL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 16 Oct 2017 11:19:11 -0400
 From: Bhumika Goyal <bhumirks@gmail.com>
 To: julia.lawall@lip6.fr, rjw@rjwysocki.net, lenb@kernel.org,
         alexander.shishkin@linux.intel.com, jic23@kernel.org,
@@ -21,87 +21,181 @@ To: julia.lawall@lip6.fr, rjw@rjwysocki.net, lenb@kernel.org,
         cluster-devel@redhat.com, ocfs2-devel@oss.oracle.com,
         linux-fsdevel@vger.kernel.org
 Cc: Bhumika Goyal <bhumirks@gmail.com>
-Subject: [PATCH v2 00/15] make structure field, function arguments and structures const
-Date: Mon, 16 Oct 2017 17:18:39 +0200
-Message-Id: <1508167134-6243-1-git-send-email-bhumirks@gmail.com>
+Subject: [PATCH v2 01/15] configfs: make ci_type field, some pointers and function arguments const
+Date: Mon, 16 Oct 2017 17:18:40 +0200
+Message-Id: <1508167134-6243-2-git-send-email-bhumirks@gmail.com>
+In-Reply-To: <1508167134-6243-1-git-send-email-bhumirks@gmail.com>
+References: <1508167134-6243-1-git-send-email-bhumirks@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Make the ci_type field and some function arguments as const. After this
-change, make config_item_type structures as const.
+The ci_type field of the config_item structure do not modify the fields
+of the config_item_type structure it points to. And the other pointers
+initialized with ci_type do not modify the fields as well.
+So, make the ci_type field and the pointers initialized with ci_type
+as const.
 
+Make the struct config_item_type *type function argument of functions
+config_{item/group}_init_type_name const as the argument in both the
+functions is only stored in the ci_type field of a config_item structure
+which is now made const.
+Make the argument of configfs_register_default_group const as it is
+only passed to the argument of the function config_group_init_type_name
+which is now const.
+
+Signed-off-by: Bhumika Goyal <bhumirks@gmail.com>
+---
 * Changes in v2- Combine all the followup patches and the constification
 patches into a series.
 
-Bhumika Goyal (15):
-  configfs: make ci_type field, some pointers and function arguments
-    const
-  usb: gadget: make config_item_type structures const
-  target: make config_item_type const
-  iio: make function argument and some structures const
-  ocfs2/cluster: make config_item_type const
-  PCI: endpoint: make config_item_type const
-  usb: gadget: configfs: make config_item_type const
-  nvmet: make config_item_type const
-  ACPI: configfs: make config_item_type const
-  nullb: make config_item_type const
-  stm class: make config_item_type const
-  RDMA/cma: make config_item_type const
-  netconsole: make config_item_type const
-  dlm: make config_item_type const
-  configfs: make config_item_type const
+ fs/configfs/dir.c        | 10 +++++-----
+ fs/configfs/item.c       |  6 +++---
+ fs/configfs/symlink.c    |  4 ++--
+ include/linux/configfs.h |  8 ++++----
+ 4 files changed, 14 insertions(+), 14 deletions(-)
 
- drivers/acpi/acpi_configfs.c                 |  6 ++--
- drivers/block/null_blk.c                     |  4 +--
- drivers/hwtracing/stm/policy.c               | 10 +++---
- drivers/iio/dummy/iio_simple_dummy.c         |  2 +-
- drivers/iio/industrialio-configfs.c          |  2 +-
- drivers/iio/industrialio-sw-device.c         |  6 ++--
- drivers/iio/industrialio-sw-trigger.c        |  6 ++--
- drivers/iio/trigger/iio-trig-hrtimer.c       |  2 +-
- drivers/iio/trigger/iio-trig-loop.c          |  2 +-
- drivers/infiniband/core/cma_configfs.c       |  8 ++---
- drivers/net/netconsole.c                     |  4 +--
- drivers/nvme/target/configfs.c               | 30 ++++++++---------
- drivers/pci/endpoint/pci-ep-cfs.c            | 12 +++----
- drivers/target/iscsi/iscsi_target_stat.c     | 12 +++----
- drivers/target/target_core_configfs.c        | 14 ++++----
- drivers/target/target_core_stat.c            | 16 ++++-----
- drivers/usb/gadget/configfs.c                | 10 +++---
- drivers/usb/gadget/function/f_acm.c          |  2 +-
- drivers/usb/gadget/function/f_ecm.c          |  2 +-
- drivers/usb/gadget/function/f_eem.c          |  2 +-
- drivers/usb/gadget/function/f_fs.c           |  2 +-
- drivers/usb/gadget/function/f_hid.c          |  2 +-
- drivers/usb/gadget/function/f_loopback.c     |  2 +-
- drivers/usb/gadget/function/f_mass_storage.c |  4 +--
- drivers/usb/gadget/function/f_midi.c         |  2 +-
- drivers/usb/gadget/function/f_ncm.c          |  2 +-
- drivers/usb/gadget/function/f_obex.c         |  2 +-
- drivers/usb/gadget/function/f_phonet.c       |  2 +-
- drivers/usb/gadget/function/f_printer.c      |  2 +-
- drivers/usb/gadget/function/f_rndis.c        |  2 +-
- drivers/usb/gadget/function/f_serial.c       |  2 +-
- drivers/usb/gadget/function/f_sourcesink.c   |  2 +-
- drivers/usb/gadget/function/f_subset.c       |  2 +-
- drivers/usb/gadget/function/f_tcm.c          |  2 +-
- drivers/usb/gadget/function/f_uac1.c         |  2 +-
- drivers/usb/gadget/function/f_uac1_legacy.c  |  2 +-
- drivers/usb/gadget/function/f_uac2.c         |  2 +-
- drivers/usb/gadget/function/uvc_configfs.c   | 50 ++++++++++++++--------------
- fs/configfs/dir.c                            | 10 +++---
- fs/configfs/item.c                           |  6 ++--
- fs/configfs/symlink.c                        |  4 +--
- fs/dlm/config.c                              | 16 ++++-----
- fs/ocfs2/cluster/heartbeat.c                 |  4 +--
- fs/ocfs2/cluster/nodemanager.c               |  8 ++---
- include/linux/configfs.h                     |  8 ++---
- include/linux/iio/sw_device.h                |  2 +-
- include/linux/iio/sw_trigger.h               |  2 +-
- include/target/iscsi/iscsi_target_stat.h     | 12 +++----
- samples/configfs/configfs_sample.c           |  8 ++---
- 49 files changed, 159 insertions(+), 159 deletions(-)
-
+diff --git a/fs/configfs/dir.c b/fs/configfs/dir.c
+index 56fb261..577cff2 100644
+--- a/fs/configfs/dir.c
++++ b/fs/configfs/dir.c
+@@ -584,7 +584,7 @@ static void detach_attrs(struct config_item * item)
+ 
+ static int populate_attrs(struct config_item *item)
+ {
+-	struct config_item_type *t = item->ci_type;
++	const struct config_item_type *t = item->ci_type;
+ 	struct configfs_attribute *attr;
+ 	struct configfs_bin_attribute *bin_attr;
+ 	int error = 0;
+@@ -901,7 +901,7 @@ static void configfs_detach_group(struct config_item *item)
+ static void client_disconnect_notify(struct config_item *parent_item,
+ 				     struct config_item *item)
+ {
+-	struct config_item_type *type;
++	const struct config_item_type *type;
+ 
+ 	type = parent_item->ci_type;
+ 	BUG_ON(!type);
+@@ -920,7 +920,7 @@ static void client_disconnect_notify(struct config_item *parent_item,
+ static void client_drop_item(struct config_item *parent_item,
+ 			     struct config_item *item)
+ {
+-	struct config_item_type *type;
++	const struct config_item_type *type;
+ 
+ 	type = parent_item->ci_type;
+ 	BUG_ON(!type);
+@@ -1260,7 +1260,7 @@ static int configfs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode
+ 	struct config_item *parent_item;
+ 	struct configfs_subsystem *subsys;
+ 	struct configfs_dirent *sd;
+-	struct config_item_type *type;
++	const struct config_item_type *type;
+ 	struct module *subsys_owner = NULL, *new_item_owner = NULL;
+ 	char *name;
+ 
+@@ -1810,7 +1810,7 @@ void configfs_unregister_group(struct config_group *group)
+ struct config_group *
+ configfs_register_default_group(struct config_group *parent_group,
+ 				const char *name,
+-				struct config_item_type *item_type)
++				const struct config_item_type *item_type)
+ {
+ 	int ret;
+ 	struct config_group *group;
+diff --git a/fs/configfs/item.c b/fs/configfs/item.c
+index a66f662..88f266e 100644
+--- a/fs/configfs/item.c
++++ b/fs/configfs/item.c
+@@ -113,7 +113,7 @@ int config_item_set_name(struct config_item *item, const char *fmt, ...)
+ 
+ void config_item_init_type_name(struct config_item *item,
+ 				const char *name,
+-				struct config_item_type *type)
++				const struct config_item_type *type)
+ {
+ 	config_item_set_name(item, "%s", name);
+ 	item->ci_type = type;
+@@ -122,7 +122,7 @@ void config_item_init_type_name(struct config_item *item,
+ EXPORT_SYMBOL(config_item_init_type_name);
+ 
+ void config_group_init_type_name(struct config_group *group, const char *name,
+-			 struct config_item_type *type)
++			 const struct config_item_type *type)
+ {
+ 	config_item_set_name(&group->cg_item, "%s", name);
+ 	group->cg_item.ci_type = type;
+@@ -148,7 +148,7 @@ struct config_item *config_item_get_unless_zero(struct config_item *item)
+ 
+ static void config_item_cleanup(struct config_item *item)
+ {
+-	struct config_item_type *t = item->ci_type;
++	const struct config_item_type *t = item->ci_type;
+ 	struct config_group *s = item->ci_group;
+ 	struct config_item *parent = item->ci_parent;
+ 
+diff --git a/fs/configfs/symlink.c b/fs/configfs/symlink.c
+index c8aabba..78ffc26 100644
+--- a/fs/configfs/symlink.c
++++ b/fs/configfs/symlink.c
+@@ -138,7 +138,7 @@ int configfs_symlink(struct inode *dir, struct dentry *dentry, const char *symna
+ 	struct configfs_dirent *sd;
+ 	struct config_item *parent_item;
+ 	struct config_item *target_item = NULL;
+-	struct config_item_type *type;
++	const struct config_item_type *type;
+ 
+ 	sd = dentry->d_parent->d_fsdata;
+ 	/*
+@@ -186,7 +186,7 @@ int configfs_unlink(struct inode *dir, struct dentry *dentry)
+ 	struct configfs_dirent *sd = dentry->d_fsdata;
+ 	struct configfs_symlink *sl;
+ 	struct config_item *parent_item;
+-	struct config_item_type *type;
++	const struct config_item_type *type;
+ 	int ret;
+ 
+ 	ret = -EPERM;  /* What lack-of-symlink returns */
+diff --git a/include/linux/configfs.h b/include/linux/configfs.h
+index c967090..90b90f8 100644
+--- a/include/linux/configfs.h
++++ b/include/linux/configfs.h
+@@ -58,7 +58,7 @@ struct config_item {
+ 	struct list_head	ci_entry;
+ 	struct config_item	*ci_parent;
+ 	struct config_group	*ci_group;
+-	struct config_item_type	*ci_type;
++	const struct config_item_type	*ci_type;
+ 	struct dentry		*ci_dentry;
+ };
+ 
+@@ -72,7 +72,7 @@ static inline char *config_item_name(struct config_item * item)
+ 
+ extern void config_item_init_type_name(struct config_item *item,
+ 				       const char *name,
+-				       struct config_item_type *type);
++				       const struct config_item_type *type);
+ 
+ extern struct config_item *config_item_get(struct config_item *);
+ extern struct config_item *config_item_get_unless_zero(struct config_item *);
+@@ -101,7 +101,7 @@ struct config_group {
+ extern void config_group_init(struct config_group *group);
+ extern void config_group_init_type_name(struct config_group *group,
+ 					const char *name,
+-					struct config_item_type *type);
++					const struct config_item_type *type);
+ 
+ static inline struct config_group *to_config_group(struct config_item *item)
+ {
+@@ -261,7 +261,7 @@ int configfs_register_group(struct config_group *parent_group,
+ struct config_group *
+ configfs_register_default_group(struct config_group *parent_group,
+ 				const char *name,
+-				struct config_item_type *item_type);
++				const struct config_item_type *item_type);
+ void configfs_unregister_default_group(struct config_group *group);
+ 
+ /* These functions can sleep and can alloc with GFP_KERNEL */
 -- 
 1.9.1
 
