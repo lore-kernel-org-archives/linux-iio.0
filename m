@@ -1,53 +1,179 @@
-Return-Path: <SRS0=xSca=BQ=linux.intel.com=felipe.balbi@kernel.org>
-From: Felipe Balbi <balbi@kernel.org>
-To: Bhumika Goyal <bhumirks@gmail.com>, julia.lawall@lip6.fr, rjw@rjwysocki.net, lenb@kernel.org, alexander.shishkin@linux.intel.com, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, dledford@redhat.com, sean.hefty@intel.com, hal.rosenstock@gmail.com, hch@lst.de, sagi@grimberg.me, kishon@ti.com, bhelgaas@google.com, nab@linux-iscsi.org, gregkh@linuxfoundation.org, laurent.pinchart@ideasonboard.com, jlbec@evilplan.org, ccaulfie@redhat.com, teigland@redhat.com, mfasheh@versity.com, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, linux-rdma@vger.kernel.org, netdev@vger.kernel.org, linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org, linux-scsi@vger.kernel.org, target-devel@vger.kernel.org, linux-usb@vger.kernel.org, cluster-devel@redhat.com, ocfs2-devel@oss.oracle.com, linux-fsdevel@vger.kernel.org
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f68.google.com ([74.125.82.68]:49042 "EHLO
+        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753821AbdJPPTb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 16 Oct 2017 11:19:31 -0400
+From: Bhumika Goyal <bhumirks@gmail.com>
+To: julia.lawall@lip6.fr, rjw@rjwysocki.net, lenb@kernel.org,
+        alexander.shishkin@linux.intel.com, jic23@kernel.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        dledford@redhat.com, sean.hefty@intel.com,
+        hal.rosenstock@gmail.com, hch@lst.de, sagi@grimberg.me,
+        kishon@ti.com, bhelgaas@google.com, nab@linux-iscsi.org,
+        balbi@kernel.org, gregkh@linuxfoundation.org,
+        laurent.pinchart@ideasonboard.com, jlbec@evilplan.org,
+        ccaulfie@redhat.com, teigland@redhat.com, mfasheh@versity.com,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-pci@vger.kernel.org, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org, linux-usb@vger.kernel.org,
+        cluster-devel@redhat.com, ocfs2-devel@oss.oracle.com,
+        linux-fsdevel@vger.kernel.org
 Cc: Bhumika Goyal <bhumirks@gmail.com>
-Subject: Re: [PATCH v2 07/15] usb: gadget: configfs: make config_item_type const
-In-Reply-To: <1508167134-6243-8-git-send-email-bhumirks@gmail.com>
-References: <1508167134-6243-1-git-send-email-bhumirks@gmail.com> <1508167134-6243-8-git-send-email-bhumirks@gmail.com>
-Date: Tue, 17 Oct 2017 11:31:17 +0300
-Message-ID: <87o9p6jhuy.fsf@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-	micalg=pgp-sha512; protocol="application/pgp-signature"
-List-ID: <linux-iio@vger.kernel.org>
+Subject: [PATCH v2 08/15] nvmet: make config_item_type const
+Date: Mon, 16 Oct 2017 17:18:47 +0200
+Message-Id: <1508167134-6243-9-git-send-email-bhumirks@gmail.com>
+In-Reply-To: <1508167134-6243-1-git-send-email-bhumirks@gmail.com>
+References: <1508167134-6243-1-git-send-email-bhumirks@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
+Make config_item_type structures const as they are either passed to a
+function having the argument as const or used inside an if statement or
+stored in the const "ci_type" field of a config_item structure.
 
-Bhumika Goyal <bhumirks@gmail.com> writes:
+Done using Coccinelle
 
-> Make config_item_type structures const as they are either passed to a
-> function having the argument as const or stored in the const "ci_type"
-> field of a config_item structure.
->
-> Done using Coccinelle.
->
-> Signed-off-by: Bhumika Goyal <bhumirks@gmail.com>
+Signed-off-by: Bhumika Goyal <bhumirks@gmail.com>
+---
+* Changes in v2- Combine all the followup patches and the constification
+patches into a series.
 
-Acked-by: Felipe Balbi <felipe.balbi@linux.intel.com>
+ drivers/nvme/target/configfs.c | 30 +++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
 
-=2D-=20
-balbi
+diff --git a/drivers/nvme/target/configfs.c b/drivers/nvme/target/configfs.c
+index b6aeb1d..e6b2d2a 100644
+--- a/drivers/nvme/target/configfs.c
++++ b/drivers/nvme/target/configfs.c
+@@ -20,8 +20,8 @@
+ 
+ #include "nvmet.h"
+ 
+-static struct config_item_type nvmet_host_type;
+-static struct config_item_type nvmet_subsys_type;
++static const struct config_item_type nvmet_host_type;
++static const struct config_item_type nvmet_subsys_type;
+ 
+ /*
+  * nvmet_port Generic ConfigFS definitions.
+@@ -425,7 +425,7 @@ static void nvmet_ns_release(struct config_item *item)
+ 	.release		= nvmet_ns_release,
+ };
+ 
+-static struct config_item_type nvmet_ns_type = {
++static const struct config_item_type nvmet_ns_type = {
+ 	.ct_item_ops		= &nvmet_ns_item_ops,
+ 	.ct_attrs		= nvmet_ns_attrs,
+ 	.ct_owner		= THIS_MODULE,
+@@ -464,7 +464,7 @@ static struct config_group *nvmet_ns_make(struct config_group *group,
+ 	.make_group		= nvmet_ns_make,
+ };
+ 
+-static struct config_item_type nvmet_namespaces_type = {
++static const struct config_item_type nvmet_namespaces_type = {
+ 	.ct_group_ops		= &nvmet_namespaces_group_ops,
+ 	.ct_owner		= THIS_MODULE,
+ };
+@@ -540,7 +540,7 @@ static void nvmet_port_subsys_drop_link(struct config_item *parent,
+ 	.drop_link		= nvmet_port_subsys_drop_link,
+ };
+ 
+-static struct config_item_type nvmet_port_subsys_type = {
++static const struct config_item_type nvmet_port_subsys_type = {
+ 	.ct_item_ops		= &nvmet_port_subsys_item_ops,
+ 	.ct_owner		= THIS_MODULE,
+ };
+@@ -613,7 +613,7 @@ static void nvmet_allowed_hosts_drop_link(struct config_item *parent,
+ 	.drop_link		= nvmet_allowed_hosts_drop_link,
+ };
+ 
+-static struct config_item_type nvmet_allowed_hosts_type = {
++static const struct config_item_type nvmet_allowed_hosts_type = {
+ 	.ct_item_ops		= &nvmet_allowed_hosts_item_ops,
+ 	.ct_owner		= THIS_MODULE,
+ };
+@@ -729,7 +729,7 @@ static void nvmet_subsys_release(struct config_item *item)
+ 	.release		= nvmet_subsys_release,
+ };
+ 
+-static struct config_item_type nvmet_subsys_type = {
++static const struct config_item_type nvmet_subsys_type = {
+ 	.ct_item_ops		= &nvmet_subsys_item_ops,
+ 	.ct_attrs		= nvmet_subsys_attrs,
+ 	.ct_owner		= THIS_MODULE,
+@@ -767,7 +767,7 @@ static struct config_group *nvmet_subsys_make(struct config_group *group,
+ 	.make_group		= nvmet_subsys_make,
+ };
+ 
+-static struct config_item_type nvmet_subsystems_type = {
++static const struct config_item_type nvmet_subsystems_type = {
+ 	.ct_group_ops		= &nvmet_subsystems_group_ops,
+ 	.ct_owner		= THIS_MODULE,
+ };
+@@ -827,7 +827,7 @@ static void nvmet_referral_release(struct config_item *item)
+ 	.release	= nvmet_referral_release,
+ };
+ 
+-static struct config_item_type nvmet_referral_type = {
++static const struct config_item_type nvmet_referral_type = {
+ 	.ct_owner	= THIS_MODULE,
+ 	.ct_attrs	= nvmet_referral_attrs,
+ 	.ct_item_ops	= &nvmet_referral_item_ops,
+@@ -852,7 +852,7 @@ static struct config_group *nvmet_referral_make(
+ 	.make_group		= nvmet_referral_make,
+ };
+ 
+-static struct config_item_type nvmet_referrals_type = {
++static const struct config_item_type nvmet_referrals_type = {
+ 	.ct_owner	= THIS_MODULE,
+ 	.ct_group_ops	= &nvmet_referral_group_ops,
+ };
+@@ -880,7 +880,7 @@ static void nvmet_port_release(struct config_item *item)
+ 	.release		= nvmet_port_release,
+ };
+ 
+-static struct config_item_type nvmet_port_type = {
++static const struct config_item_type nvmet_port_type = {
+ 	.ct_attrs		= nvmet_port_attrs,
+ 	.ct_item_ops		= &nvmet_port_item_ops,
+ 	.ct_owner		= THIS_MODULE,
+@@ -921,7 +921,7 @@ static struct config_group *nvmet_ports_make(struct config_group *group,
+ 	.make_group		= nvmet_ports_make,
+ };
+ 
+-static struct config_item_type nvmet_ports_type = {
++static const struct config_item_type nvmet_ports_type = {
+ 	.ct_group_ops		= &nvmet_ports_group_ops,
+ 	.ct_owner		= THIS_MODULE,
+ };
+@@ -940,7 +940,7 @@ static void nvmet_host_release(struct config_item *item)
+ 	.release		= nvmet_host_release,
+ };
+ 
+-static struct config_item_type nvmet_host_type = {
++static const struct config_item_type nvmet_host_type = {
+ 	.ct_item_ops		= &nvmet_host_item_ops,
+ 	.ct_owner		= THIS_MODULE,
+ };
+@@ -963,14 +963,14 @@ static struct config_group *nvmet_hosts_make_group(struct config_group *group,
+ 	.make_group		= nvmet_hosts_make_group,
+ };
+ 
+-static struct config_item_type nvmet_hosts_type = {
++static const struct config_item_type nvmet_hosts_type = {
+ 	.ct_group_ops		= &nvmet_hosts_group_ops,
+ 	.ct_owner		= THIS_MODULE,
+ };
+ 
+ static struct config_group nvmet_hosts_group;
+ 
+-static struct config_item_type nvmet_root_type = {
++static const struct config_item_type nvmet_root_type = {
+ 	.ct_owner		= THIS_MODULE,
+ };
+ 
+-- 
+1.9.1
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEElLzh7wn96CXwjh2IzL64meEamQYFAlnlv9UACgkQzL64meEa
-mQZQhg//Us3sJZUbfVmsAmf2IlBuez8wGH2V7mJtJCLYzgENwMbLQvD7E1nHjCTt
-JkiH+zAtEB0xnD7/ZvUqxQTaZdiRQfw059PEzq7fntUcNiO6KhqiSuIpLKO/YyQq
-dMrn13XN17iEC+ubTVquSnoi1h2s4UsUL5jlvFlYGIpuq3SW3rSqJkJDe6McTpgJ
-nlNCRxF09UctuKVczbjurXyaJ7UmzXDxSyLJHBADq+jpByqpOBfcYEho3oEfsroc
-7dd80z4cywzRJQ/Udho/AZ72qj18yWZvekBpHS9bUzLOUx8yDN7V20XTdmyeVtcg
-0vxqraf7VNWQy82o32ptA2EfvfQ2j4GV5Kz3eYzapMF85qmarjAqlUwhtyKE2oiX
-C6Udsm7h44322k7dmLQB8ZS8K/iVfYcgeOnr5koGw5ze7h2ajaAW8kADreVfeM52
-NR+nBkC20gYUROtDe99YyJ3FnOwKrh5l4L6fT8qXBiaXN0QPotY98QROMAX3i3zl
-62kOmbAnCjuxei/y5cApsuo874PSEz6lCOMa0hkvothqbS+kpq9dQQuI5EfSsAKu
-jR46aG1rpMGlZNPWVzF+DaNaGat5CmbO4Y8LkbN4sU7qSunNkSbd4YgBB0pj9Dg6
-52MwP7kUgqLasgz5fVvn9YXCIcqcEXWXsUADJh8+DrQkjXnOs+g=
-=nx9P
------END PGP SIGNATURE-----
---=-=-=--
