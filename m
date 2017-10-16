@@ -1,34 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wr0-f195.google.com ([209.85.128.195]:49865 "EHLO
-        mail-wr0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755183AbdJQKSg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Oct 2017 06:18:36 -0400
-Subject: Re: [PATCH v2 08/15] nvmet: make config_item_type const
-To: Bhumika Goyal <bhumirks@gmail.com>, julia.lawall@lip6.fr,
-        rjw@rjwysocki.net, lenb@kernel.org,
+Received: from mail-wm0-f65.google.com ([74.125.82.65]:49629 "EHLO
+        mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753856AbdJPPTd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 16 Oct 2017 11:19:33 -0400
+From: Bhumika Goyal <bhumirks@gmail.com>
+To: julia.lawall@lip6.fr, rjw@rjwysocki.net, lenb@kernel.org,
         alexander.shishkin@linux.intel.com, jic23@kernel.org,
         knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
         dledford@redhat.com, sean.hefty@intel.com,
-        hal.rosenstock@gmail.com, hch@lst.de, kishon@ti.com,
-        bhelgaas@google.com, nab@linux-iscsi.org, balbi@kernel.org,
-        gregkh@linuxfoundation.org, laurent.pinchart@ideasonboard.com,
-        jlbec@evilplan.org, ccaulfie@redhat.com, teigland@redhat.com,
-        mfasheh@versity.com, linux-acpi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-usb@vger.kernel.org, cluster-devel@redhat.com,
-        ocfs2-devel@oss.oracle.com, linux-fsdevel@vger.kernel.org
+        hal.rosenstock@gmail.com, hch@lst.de, sagi@grimberg.me,
+        kishon@ti.com, bhelgaas@google.com, nab@linux-iscsi.org,
+        balbi@kernel.org, gregkh@linuxfoundation.org,
+        laurent.pinchart@ideasonboard.com, jlbec@evilplan.org,
+        ccaulfie@redhat.com, teigland@redhat.com, mfasheh@versity.com,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-pci@vger.kernel.org, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org, linux-usb@vger.kernel.org,
+        cluster-devel@redhat.com, ocfs2-devel@oss.oracle.com,
+        linux-fsdevel@vger.kernel.org
+Cc: Bhumika Goyal <bhumirks@gmail.com>
+Subject: [PATCH v2 09/15] ACPI: configfs: make config_item_type const
+Date: Mon, 16 Oct 2017 17:18:48 +0200
+Message-Id: <1508167134-6243-10-git-send-email-bhumirks@gmail.com>
+In-Reply-To: <1508167134-6243-1-git-send-email-bhumirks@gmail.com>
 References: <1508167134-6243-1-git-send-email-bhumirks@gmail.com>
- <1508167134-6243-9-git-send-email-bhumirks@gmail.com>
-From: Sagi Grimberg <sagi@grimberg.me>
-Message-ID: <3f8d2ef6-1f7b-7183-1789-47fa3197f3f8@grimberg.me>
-Date: Tue, 17 Oct 2017 13:18:27 +0300
-MIME-Version: 1.0
-In-Reply-To: <1508167134-6243-9-git-send-email-bhumirks@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Acked-by: Sagi Grimberg <sagi@grimberg.me>
+Make these structures const as they are either passed to the functions
+having the argument as const or stored as a reference in the "ci_type"
+const field of a config_item structure.
+
+Done using Coccienlle.
+
+Signed-off-by: Bhumika Goyal <bhumirks@gmail.com>
+---
+* Changes in v2- Combine all the followup patches and the constification
+patches into a series.
+
+ drivers/acpi/acpi_configfs.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/acpi/acpi_configfs.c b/drivers/acpi/acpi_configfs.c
+index 853bc7f..b588503 100644
+--- a/drivers/acpi/acpi_configfs.c
++++ b/drivers/acpi/acpi_configfs.c
+@@ -204,7 +204,7 @@ struct configfs_attribute *acpi_table_attrs[] = {
+ 	NULL,
+ };
+ 
+-static struct config_item_type acpi_table_type = {
++static const struct config_item_type acpi_table_type = {
+ 	.ct_owner = THIS_MODULE,
+ 	.ct_bin_attrs = acpi_table_bin_attrs,
+ 	.ct_attrs = acpi_table_attrs,
+@@ -237,12 +237,12 @@ struct configfs_group_operations acpi_table_group_ops = {
+ 	.drop_item = acpi_table_drop_item,
+ };
+ 
+-static struct config_item_type acpi_tables_type = {
++static const struct config_item_type acpi_tables_type = {
+ 	.ct_owner = THIS_MODULE,
+ 	.ct_group_ops = &acpi_table_group_ops,
+ };
+ 
+-static struct config_item_type acpi_root_group_type = {
++static const struct config_item_type acpi_root_group_type = {
+ 	.ct_owner = THIS_MODULE,
+ };
+ 
+-- 
+1.9.1
+
