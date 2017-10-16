@@ -1,59 +1,293 @@
-Return-Path: <SRS0=1o5X=BT=gmail.com=bhumirks@kernel.org>
-MIME-Version: 1.0
-In-Reply-To: <6348630.r2z9ev4yl2@avalon>
-References: <1508167134-6243-1-git-send-email-bhumirks@gmail.com>
- <1985905.z83BJQzMUS@avalon> <20171019140657.GA22233@lst.de> <6348630.r2z9ev4yl2@avalon>
+Return-Path: <SRS0=uTsY=BP=gmail.com=bhumirks@kernel.org>
 From: Bhumika Goyal <bhumirks@gmail.com>
-Date: Fri, 20 Oct 2017 10:13:11 +0200
-Message-ID: <CAOH+1jFxhiF8j6MM9txfcs1SHOAuYihq=GZWmVb+wUR5aUCsnQ@mail.gmail.com>
-Subject: Re: [PATCH v2 02/15] usb: gadget: make config_item_type structures const
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Christoph Hellwig <hch@lst.de>, Julia Lawall <julia.lawall@lip6.fr>,
-	"Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>,
-	Alexander Shishkin <alexander.shishkin@linux.intel.com>, Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, dledford@redhat.com,
-	sean.hefty@intel.com, Hal Rosenstock <hal.rosenstock@gmail.com>, sagi@grimberg.me,
-	kishon@ti.com, Bjorn Helgaas <bhelgaas@google.com>, nab@linux-iscsi.org, balbi@kernel.org,
-	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, Joel Becker <jlbec@evilplan.org>, ccaulfie@redhat.com,
-	teigland@redhat.com, mfasheh@versity.com,
-	ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-iio@vger.kernel.org,
-	linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
-	linux-usb@vger.kernel.org, cluster-devel@redhat.com,
-	ocfs2-devel@oss.oracle.com, linux-fsdevel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+To: julia.lawall@lip6.fr,
+	rjw@rjwysocki.net,
+	lenb@kernel.org,
+	alexander.shishkin@linux.intel.com,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	dledford@redhat.com,
+	sean.hefty@intel.com,
+	hal.rosenstock@gmail.com,
+	hch@lst.de,
+	sagi@grimberg.me,
+	kishon@ti.com,
+	bhelgaas@google.com,
+	nab@linux-iscsi.org,
+	balbi@kernel.org,
+	gregkh@linuxfoundation.org,
+	laurent.pinchart@ideasonboard.com,
+	jlbec@evilplan.org,
+	ccaulfie@redhat.com,
+	teigland@redhat.com,
+	mfasheh@versity.com,
+	linux-acpi@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-rdma@vger.kernel.org,
+	netdev@vger.kernel.org,
+	linux-nvme@lists.infradead.org,
+	linux-pci@vger.kernel.org,
+	linux-scsi@vger.kernel.org,
+	target-devel@vger.kernel.org,
+	linux-usb@vger.kernel.org,
+	cluster-devel@redhat.com,
+	ocfs2-devel@oss.oracle.com,
+	linux-fsdevel@vger.kernel.org
+Cc: Bhumika Goyal <bhumirks@gmail.com>
+Subject: [PATCH v2 03/15] target: make config_item_type const
+Date: Mon, 16 Oct 2017 17:18:42 +0200
+Message-Id: <1508167134-6243-4-git-send-email-bhumirks@gmail.com>
+In-Reply-To: <1508167134-6243-1-git-send-email-bhumirks@gmail.com>
+References: <1508167134-6243-1-git-send-email-bhumirks@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, Oct 19, 2017 at 5:05 PM, Laurent Pinchart
-<laurent.pinchart@ideasonboard.com> wrote:
-> Hi Christoph,
->
-> On Thursday, 19 October 2017 17:06:57 EEST Christoph Hellwig wrote:
->> > Now we have 9 const instances of the config_item_type structure that are
->> > identical, with only the .ct_owner field set. Should they be all merged
->> > into a single structure ?
->>
->> I think that's a good idea.
->>
->> But I'm about to slurp up this whole series into my tree, how about making
->> that an incremental patch?
->
-> I'm fine with that.
->
-> Bhumika, would you like to submit an incremental patch, or should I do it ?
->
+Make these structures const as they are either passed to the functions
+having the argument as const or stored as a reference in the "ci_type"
+const field of a config_item structure.
 
-I will submit a patch for merging these structures.
-But should I make a separate patch for this particular change or send
-a v3 for the whole series?
+Done using Coccinelle.
 
-Thanks,
-Bhumika
+Signed-off-by: Bhumika Goyal <bhumirks@gmail.com>
+---
+* Changes in v2- Combine all the followup patches and the constification
+patches into a series.
 
-> --
-> Regards,
->
-> Laurent Pinchart
->
+ drivers/target/iscsi/iscsi_target_stat.c | 12 ++++++------
+ drivers/target/target_core_configfs.c    | 14 +++++++-------
+ drivers/target/target_core_stat.c        | 16 ++++++++--------
+ include/target/iscsi/iscsi_target_stat.h | 12 ++++++------
+ 4 files changed, 27 insertions(+), 27 deletions(-)
+
+diff --git a/drivers/target/iscsi/iscsi_target_stat.c b/drivers/target/iscsi/iscsi_target_stat.c
+index 411cb26..df0a398 100644
+--- a/drivers/target/iscsi/iscsi_target_stat.c
++++ b/drivers/target/iscsi/iscsi_target_stat.c
+@@ -187,7 +187,7 @@ static ssize_t iscsi_stat_instance_version_show(struct config_item *item,
+ 	NULL,
+ };
+ 
+-struct config_item_type iscsi_stat_instance_cit = {
++const struct config_item_type iscsi_stat_instance_cit = {
+ 	.ct_attrs		= iscsi_stat_instance_attrs,
+ 	.ct_owner		= THIS_MODULE,
+ };
+@@ -249,7 +249,7 @@ static ssize_t iscsi_stat_sess_err_format_errors_show(struct config_item *item,
+ 	NULL,
+ };
+ 
+-struct config_item_type iscsi_stat_sess_err_cit = {
++const struct config_item_type iscsi_stat_sess_err_cit = {
+ 	.ct_attrs		= iscsi_stat_sess_err_attrs,
+ 	.ct_owner		= THIS_MODULE,
+ };
+@@ -390,7 +390,7 @@ static ssize_t iscsi_stat_tgt_attr_fail_intr_addr_show(struct config_item *item,
+ 	NULL,
+ };
+ 
+-struct config_item_type iscsi_stat_tgt_attr_cit = {
++const struct config_item_type iscsi_stat_tgt_attr_cit = {
+ 	.ct_attrs		= iscsi_stat_tgt_attr_attrs,
+ 	.ct_owner		= THIS_MODULE,
+ };
+@@ -522,7 +522,7 @@ static ssize_t iscsi_stat_login_negotiate_fails_show(struct config_item *item,
+ 	NULL,
+ };
+ 
+-struct config_item_type iscsi_stat_login_cit = {
++const struct config_item_type iscsi_stat_login_cit = {
+ 	.ct_attrs		= iscsi_stat_login_stats_attrs,
+ 	.ct_owner		= THIS_MODULE,
+ };
+@@ -579,7 +579,7 @@ static ssize_t iscsi_stat_logout_abnormal_logouts_show(struct config_item *item,
+ 	NULL,
+ };
+ 
+-struct config_item_type iscsi_stat_logout_cit = {
++const struct config_item_type iscsi_stat_logout_cit = {
+ 	.ct_attrs		= iscsi_stat_logout_stats_attrs,
+ 	.ct_owner		= THIS_MODULE,
+ };
+@@ -801,7 +801,7 @@ static ssize_t iscsi_stat_sess_conn_timeout_errors_show(
+ 	NULL,
+ };
+ 
+-struct config_item_type iscsi_stat_sess_cit = {
++const struct config_item_type iscsi_stat_sess_cit = {
+ 	.ct_attrs		= iscsi_stat_sess_stats_attrs,
+ 	.ct_owner		= THIS_MODULE,
+ };
+diff --git a/drivers/target/target_core_configfs.c b/drivers/target/target_core_configfs.c
+index 7e87d95..bd87cc2 100644
+--- a/drivers/target/target_core_configfs.c
++++ b/drivers/target/target_core_configfs.c
+@@ -307,7 +307,7 @@ static void target_core_deregister_fabric(
+ /*
+  * Provides Fabrics Groups and Item Attributes for /sys/kernel/config/target/
+  */
+-static struct config_item_type target_core_fabrics_item = {
++static const struct config_item_type target_core_fabrics_item = {
+ 	.ct_group_ops	= &target_core_fabric_group_ops,
+ 	.ct_attrs	= target_core_fabric_item_attrs,
+ 	.ct_owner	= THIS_MODULE,
+@@ -2376,7 +2376,7 @@ static void target_core_alua_lu_gp_release(struct config_item *item)
+ 	.release		= target_core_alua_lu_gp_release,
+ };
+ 
+-static struct config_item_type target_core_alua_lu_gp_cit = {
++static const struct config_item_type target_core_alua_lu_gp_cit = {
+ 	.ct_item_ops		= &target_core_alua_lu_gp_ops,
+ 	.ct_attrs		= target_core_alua_lu_gp_attrs,
+ 	.ct_owner		= THIS_MODULE,
+@@ -2434,7 +2434,7 @@ static void target_core_alua_drop_lu_gp(
+ 	.drop_item		= &target_core_alua_drop_lu_gp,
+ };
+ 
+-static struct config_item_type target_core_alua_lu_gps_cit = {
++static const struct config_item_type target_core_alua_lu_gps_cit = {
+ 	.ct_item_ops		= NULL,
+ 	.ct_group_ops		= &target_core_alua_lu_gps_group_ops,
+ 	.ct_owner		= THIS_MODULE,
+@@ -2813,7 +2813,7 @@ static void target_core_alua_tg_pt_gp_release(struct config_item *item)
+ 	.release		= target_core_alua_tg_pt_gp_release,
+ };
+ 
+-static struct config_item_type target_core_alua_tg_pt_gp_cit = {
++static const struct config_item_type target_core_alua_tg_pt_gp_cit = {
+ 	.ct_item_ops		= &target_core_alua_tg_pt_gp_ops,
+ 	.ct_attrs		= target_core_alua_tg_pt_gp_attrs,
+ 	.ct_owner		= THIS_MODULE,
+@@ -2884,7 +2884,7 @@ static void target_core_alua_drop_tg_pt_gp(
+  * core/alua/lu_gps and core/alua/tg_pt_gps that are attached to
+  * target_core_alua_cit in target_core_init_configfs() below.
+  */
+-static struct config_item_type target_core_alua_cit = {
++static const struct config_item_type target_core_alua_cit = {
+ 	.ct_item_ops		= NULL,
+ 	.ct_attrs		= NULL,
+ 	.ct_owner		= THIS_MODULE,
+@@ -3105,7 +3105,7 @@ static void target_core_hba_release(struct config_item *item)
+ 	.release		= target_core_hba_release,
+ };
+ 
+-static struct config_item_type target_core_hba_cit = {
++static const struct config_item_type target_core_hba_cit = {
+ 	.ct_item_ops		= &target_core_hba_item_ops,
+ 	.ct_group_ops		= &target_core_hba_group_ops,
+ 	.ct_attrs		= target_core_hba_attrs,
+@@ -3188,7 +3188,7 @@ static void target_core_call_delhbafromtarget(
+ 	.drop_item	= target_core_call_delhbafromtarget,
+ };
+ 
+-static struct config_item_type target_core_cit = {
++static const struct config_item_type target_core_cit = {
+ 	.ct_item_ops	= NULL,
+ 	.ct_group_ops	= &target_core_group_ops,
+ 	.ct_attrs	= NULL,
+diff --git a/drivers/target/target_core_stat.c b/drivers/target/target_core_stat.c
+index 8038255..f0db91e 100644
+--- a/drivers/target/target_core_stat.c
++++ b/drivers/target/target_core_stat.c
+@@ -96,7 +96,7 @@ static ssize_t target_stat_ports_show(struct config_item *item, char *page)
+ 	NULL,
+ };
+ 
+-static struct config_item_type target_stat_scsi_dev_cit = {
++static const struct config_item_type target_stat_scsi_dev_cit = {
+ 	.ct_attrs		= target_stat_scsi_dev_attrs,
+ 	.ct_owner		= THIS_MODULE,
+ };
+@@ -193,7 +193,7 @@ static ssize_t target_stat_tgt_aborts_no_task_show(struct config_item *item,
+ 	NULL,
+ };
+ 
+-static struct config_item_type target_stat_scsi_tgt_dev_cit = {
++static const struct config_item_type target_stat_scsi_tgt_dev_cit = {
+ 	.ct_attrs		= target_stat_scsi_tgt_dev_attrs,
+ 	.ct_owner		= THIS_MODULE,
+ };
+@@ -414,7 +414,7 @@ static ssize_t target_stat_lu_creation_time_show(struct config_item *item,
+ 	NULL,
+ };
+ 
+-static struct config_item_type target_stat_scsi_lu_cit = {
++static const struct config_item_type target_stat_scsi_lu_cit = {
+ 	.ct_attrs		= target_stat_scsi_lu_attrs,
+ 	.ct_owner		= THIS_MODULE,
+ };
+@@ -540,7 +540,7 @@ static ssize_t target_stat_port_busy_count_show(struct config_item *item,
+ 	NULL,
+ };
+ 
+-static struct config_item_type target_stat_scsi_port_cit = {
++static const struct config_item_type target_stat_scsi_port_cit = {
+ 	.ct_attrs		= target_stat_scsi_port_attrs,
+ 	.ct_owner		= THIS_MODULE,
+ };
+@@ -724,7 +724,7 @@ static ssize_t target_stat_tgt_port_hs_in_cmds_show(struct config_item *item,
+ 	NULL,
+ };
+ 
+-static struct config_item_type target_stat_scsi_tgt_port_cit = {
++static const struct config_item_type target_stat_scsi_tgt_port_cit = {
+ 	.ct_attrs		= target_stat_scsi_tgt_port_attrs,
+ 	.ct_owner		= THIS_MODULE,
+ };
+@@ -844,7 +844,7 @@ static ssize_t target_stat_transport_proto_id_show(struct config_item *item,
+ 	NULL,
+ };
+ 
+-static struct config_item_type target_stat_scsi_transport_cit = {
++static const struct config_item_type target_stat_scsi_transport_cit = {
+ 	.ct_attrs		= target_stat_scsi_transport_attrs,
+ 	.ct_owner		= THIS_MODULE,
+ };
+@@ -1206,7 +1206,7 @@ static ssize_t target_stat_auth_row_status_show(struct config_item *item,
+ 	NULL,
+ };
+ 
+-static struct config_item_type target_stat_scsi_auth_intr_cit = {
++static const struct config_item_type target_stat_scsi_auth_intr_cit = {
+ 	.ct_attrs		= target_stat_scsi_auth_intr_attrs,
+ 	.ct_owner		= THIS_MODULE,
+ };
+@@ -1378,7 +1378,7 @@ static ssize_t target_stat_iport_port_ident_show(struct config_item *item,
+ 	NULL,
+ };
+ 
+-static struct config_item_type target_stat_scsi_att_intr_port_cit = {
++static const struct config_item_type target_stat_scsi_att_intr_port_cit = {
+ 	.ct_attrs		= target_stat_scsi_ath_intr_port_attrs,
+ 	.ct_owner		= THIS_MODULE,
+ };
+diff --git a/include/target/iscsi/iscsi_target_stat.h b/include/target/iscsi/iscsi_target_stat.h
+index c27dd47..36e9c9a 100644
+--- a/include/target/iscsi/iscsi_target_stat.h
++++ b/include/target/iscsi/iscsi_target_stat.h
+@@ -8,16 +8,16 @@
+ /*
+  * For struct iscsi_tiqn->tiqn_wwn default groups
+  */
+-extern struct config_item_type iscsi_stat_instance_cit;
+-extern struct config_item_type iscsi_stat_sess_err_cit;
+-extern struct config_item_type iscsi_stat_tgt_attr_cit;
+-extern struct config_item_type iscsi_stat_login_cit;
+-extern struct config_item_type iscsi_stat_logout_cit;
++extern const struct config_item_type iscsi_stat_instance_cit;
++extern const struct config_item_type iscsi_stat_sess_err_cit;
++extern const struct config_item_type iscsi_stat_tgt_attr_cit;
++extern const struct config_item_type iscsi_stat_login_cit;
++extern const struct config_item_type iscsi_stat_logout_cit;
+ 
+ /*
+  * For struct iscsi_session->se_sess default groups
+  */
+-extern struct config_item_type iscsi_stat_sess_cit;
++extern const struct config_item_type iscsi_stat_sess_cit;
+ 
+ /* iSCSI session error types */
+ #define ISCSI_SESS_ERR_UNKNOWN		0
+-- 
+1.9.1
