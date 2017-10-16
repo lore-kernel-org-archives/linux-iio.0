@@ -1,143 +1,107 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:36906 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S932136AbdJUQsa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 21 Oct 2017 12:48:30 -0400
-Date: Sat, 21 Oct 2017 17:48:25 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Georgiana Chelu <georgiana.chelu93@gmail.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-        Daniel Baluta <danielbaluta@gmail.com>,
-        Alison Schofield <amsfield22@gmail.com>
-Subject: Re: [PATCH] Staging: iio: meter: Replace mlock with driver private
- lock
-Message-ID: <20171021174825.366ffb75@archlinux>
-In-Reply-To: <CALta04zSczT-ukvKBUdV8NOde=94rZ21+T7WmqN_LBY47YVjRQ@mail.gmail.com>
-References: <20171015181054.15094-1-georgiana.chelu93@gmail.com>
-        <CALta04zSczT-ukvKBUdV8NOde=94rZ21+T7WmqN_LBY47YVjRQ@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from mail-wm0-f68.google.com ([74.125.82.68]:46559 "EHLO
+        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753618AbdJPPTJ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 16 Oct 2017 11:19:09 -0400
+From: Bhumika Goyal <bhumirks@gmail.com>
+To: julia.lawall@lip6.fr, rjw@rjwysocki.net, lenb@kernel.org,
+        alexander.shishkin@linux.intel.com, jic23@kernel.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        dledford@redhat.com, sean.hefty@intel.com,
+        hal.rosenstock@gmail.com, hch@lst.de, sagi@grimberg.me,
+        kishon@ti.com, bhelgaas@google.com, nab@linux-iscsi.org,
+        balbi@kernel.org, gregkh@linuxfoundation.org,
+        laurent.pinchart@ideasonboard.com, jlbec@evilplan.org,
+        ccaulfie@redhat.com, teigland@redhat.com, mfasheh@versity.com,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-pci@vger.kernel.org, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org, linux-usb@vger.kernel.org,
+        cluster-devel@redhat.com, ocfs2-devel@oss.oracle.com,
+        linux-fsdevel@vger.kernel.org
+Cc: Bhumika Goyal <bhumirks@gmail.com>
+Subject: [PATCH v2 00/15] make structure field, function arguments and structures const
+Date: Mon, 16 Oct 2017 17:18:39 +0200
+Message-Id: <1508167134-6243-1-git-send-email-bhumirks@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 16 Oct 2017 15:28:57 +0300
-Georgiana Chelu <georgiana.chelu93@gmail.com> wrote:
+Make the ci_type field and some function arguments as const. After this
+change, make config_item_type structures as const.
 
-> The IIO subsystem is redefining iio_dev->mlock to be used by
-> the IIO core only for protecting device operating mode changes.
-> ie. Changes between INDIO_DIRECT_MODE, INDIO_BUFFER_* modes.
-> 
-> In this driver, mlock was being used to protect hardware state
-> changes.  Replace it with a lock in the devices global data.
-> 
-> Signed-off-by: Georgiana Chelu <georgiana.chelu93@gmail.com>
+* Changes in v2- Combine all the followup patches and the constification
+patches into a series.
 
-Hmm. The naming as rw_lock made me wonder what was actually
-being protected in this driver as there is no need to explicitly
-protect read and write operations.  The spi bus is has all
-the protections needed to ensure nothing clashes.
+Bhumika Goyal (15):
+  configfs: make ci_type field, some pointers and function arguments
+    const
+  usb: gadget: make config_item_type structures const
+  target: make config_item_type const
+  iio: make function argument and some structures const
+  ocfs2/cluster: make config_item_type const
+  PCI: endpoint: make config_item_type const
+  usb: gadget: configfs: make config_item_type const
+  nvmet: make config_item_type const
+  ACPI: configfs: make config_item_type const
+  nullb: make config_item_type const
+  stm class: make config_item_type const
+  RDMA/cma: make config_item_type const
+  netconsole: make config_item_type const
+  dlm: make config_item_type const
+  configfs: make config_item_type const
 
-Upshot is the bit that needs protecting is that we have
-a read modify write cycle going on in write_samp_frequency
+ drivers/acpi/acpi_configfs.c                 |  6 ++--
+ drivers/block/null_blk.c                     |  4 +--
+ drivers/hwtracing/stm/policy.c               | 10 +++---
+ drivers/iio/dummy/iio_simple_dummy.c         |  2 +-
+ drivers/iio/industrialio-configfs.c          |  2 +-
+ drivers/iio/industrialio-sw-device.c         |  6 ++--
+ drivers/iio/industrialio-sw-trigger.c        |  6 ++--
+ drivers/iio/trigger/iio-trig-hrtimer.c       |  2 +-
+ drivers/iio/trigger/iio-trig-loop.c          |  2 +-
+ drivers/infiniband/core/cma_configfs.c       |  8 ++---
+ drivers/net/netconsole.c                     |  4 +--
+ drivers/nvme/target/configfs.c               | 30 ++++++++---------
+ drivers/pci/endpoint/pci-ep-cfs.c            | 12 +++----
+ drivers/target/iscsi/iscsi_target_stat.c     | 12 +++----
+ drivers/target/target_core_configfs.c        | 14 ++++----
+ drivers/target/target_core_stat.c            | 16 ++++-----
+ drivers/usb/gadget/configfs.c                | 10 +++---
+ drivers/usb/gadget/function/f_acm.c          |  2 +-
+ drivers/usb/gadget/function/f_ecm.c          |  2 +-
+ drivers/usb/gadget/function/f_eem.c          |  2 +-
+ drivers/usb/gadget/function/f_fs.c           |  2 +-
+ drivers/usb/gadget/function/f_hid.c          |  2 +-
+ drivers/usb/gadget/function/f_loopback.c     |  2 +-
+ drivers/usb/gadget/function/f_mass_storage.c |  4 +--
+ drivers/usb/gadget/function/f_midi.c         |  2 +-
+ drivers/usb/gadget/function/f_ncm.c          |  2 +-
+ drivers/usb/gadget/function/f_obex.c         |  2 +-
+ drivers/usb/gadget/function/f_phonet.c       |  2 +-
+ drivers/usb/gadget/function/f_printer.c      |  2 +-
+ drivers/usb/gadget/function/f_rndis.c        |  2 +-
+ drivers/usb/gadget/function/f_serial.c       |  2 +-
+ drivers/usb/gadget/function/f_sourcesink.c   |  2 +-
+ drivers/usb/gadget/function/f_subset.c       |  2 +-
+ drivers/usb/gadget/function/f_tcm.c          |  2 +-
+ drivers/usb/gadget/function/f_uac1.c         |  2 +-
+ drivers/usb/gadget/function/f_uac1_legacy.c  |  2 +-
+ drivers/usb/gadget/function/f_uac2.c         |  2 +-
+ drivers/usb/gadget/function/uvc_configfs.c   | 50 ++++++++++++++--------------
+ fs/configfs/dir.c                            | 10 +++---
+ fs/configfs/item.c                           |  6 ++--
+ fs/configfs/symlink.c                        |  4 +--
+ fs/dlm/config.c                              | 16 ++++-----
+ fs/ocfs2/cluster/heartbeat.c                 |  4 +--
+ fs/ocfs2/cluster/nodemanager.c               |  8 ++---
+ include/linux/configfs.h                     |  8 ++---
+ include/linux/iio/sw_device.h                |  2 +-
+ include/linux/iio/sw_trigger.h               |  2 +-
+ include/target/iscsi/iscsi_target_stat.h     | 12 +++----
+ samples/configfs/configfs_sample.c           |  8 ++---
+ 49 files changed, 159 insertions(+), 159 deletions(-)
 
-Now, each element of this is protected by the buffer lock
-but it is dropped between them.  A nicer approach
-than you have hear would be to add some unlocked
-read and write helpers thus allowing you to take
-buflock around this whole modify and avoid any necessity for
-an additional lock.
-
-This is similar to what has been done in other drivers
-when unwinding the missuse of mlock. 
-
-I have no idea why we would ever need to take the lock
-in the read cases.  We might if we were aiming to have
-some sort of caching that needed to be in sync with the
-current state - but there is none of that as far as
-I can see.  So in those paths I think we would be
-fine not to bother taking any additional lock at all.
-
-Jonathan
-
-> ---
->  drivers/staging/iio/meter/ade7758.h      |  2 ++
->  drivers/staging/iio/meter/ade7758_core.c | 11 +++++++----
->  2 files changed, 9 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/meter/ade7758.h
-> b/drivers/staging/iio/meter/ade7758.h
-> index 6ae78d8aa24f..728424a6648b 100644
-> --- a/drivers/staging/iio/meter/ade7758.h
-> +++ b/drivers/staging/iio/meter/ade7758.h
-> @@ -112,6 +112,7 @@
->   * @tx:                        transmit buffer
->   * @rx:                        receive buffer
->   * @buf_lock:          mutex to protect tx and rx
-> + * @lock:              mutex to protect raw read and write
->   **/
->  struct ade7758_state {
->         struct spi_device       *us;
-> @@ -119,6 +120,7 @@ struct ade7758_state {
->         u8                      *tx;
->         u8                      *rx;
->         struct mutex            buf_lock;
-> +       struct mutex            rw_lock; /* protect raw read/write */
->         struct spi_transfer     ring_xfer[4];
->         struct spi_message      ring_msg;
->         /*
-> diff --git a/drivers/staging/iio/meter/ade7758_core.c
-> b/drivers/staging/iio/meter/ade7758_core.c
-> index 7b7ffe5ed186..6b153dd6d40d 100644
-> --- a/drivers/staging/iio/meter/ade7758_core.c
-> +++ b/drivers/staging/iio/meter/ade7758_core.c
-> @@ -523,12 +523,13 @@ static int ade7758_read_raw(struct iio_dev *indio_dev,
->                             long mask)
->  {
->         int ret;
-> +       struct ade7758_state *st = iio_priv(indio_dev);
-> 
->         switch (mask) {
->         case IIO_CHAN_INFO_SAMP_FREQ:
-> -               mutex_lock(&indio_dev->mlock);
-> +               mutex_lock(&st->rw_lock);
->                 ret = ade7758_read_samp_freq(&indio_dev->dev, val);
-> -               mutex_unlock(&indio_dev->mlock);
-> +               mutex_unlock(&st->rw_lock);
->                 return ret;
->         default:
->                 return -EINVAL;
-> @@ -542,14 +543,15 @@ static int ade7758_write_raw(struct iio_dev *indio_dev,
->                              int val, int val2, long mask)
->  {
->         int ret;
-> +       struct ade7758_state *st = iio_priv(indio_dev);
-> 
->         switch (mask) {
->         case IIO_CHAN_INFO_SAMP_FREQ:
->                 if (val2)
->                         return -EINVAL;
-> -               mutex_lock(&indio_dev->mlock);
-> +               mutex_lock(&st->rw_lock);
->                 ret = ade7758_write_samp_freq(&indio_dev->dev, val);
-> -               mutex_unlock(&indio_dev->mlock);
-> +               mutex_unlock(&st->rw_lock);
->                 return ret;
->         default:
->                 return -EINVAL;
-> @@ -854,6 +856,7 @@ static int ade7758_probe(struct spi_device *spi)
->         }
->         st->us = spi;
->         mutex_init(&st->buf_lock);
-> +       mutex_init(&st->rw_lock);
-> 
->         indio_dev->name = spi->dev.driver->name;
->         indio_dev->dev.parent = &spi->dev;
-> --
-> 2.11.0
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+-- 
+1.9.1
 
