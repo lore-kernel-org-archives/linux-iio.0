@@ -1,293 +1,185 @@
-Return-Path: <SRS0=uTsY=BP=gmail.com=bhumirks@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:50407 "EHLO
+        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753717AbdJPPTU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 16 Oct 2017 11:19:20 -0400
 From: Bhumika Goyal <bhumirks@gmail.com>
-To: julia.lawall@lip6.fr,
-	rjw@rjwysocki.net,
-	lenb@kernel.org,
-	alexander.shishkin@linux.intel.com,
-	jic23@kernel.org,
-	knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	dledford@redhat.com,
-	sean.hefty@intel.com,
-	hal.rosenstock@gmail.com,
-	hch@lst.de,
-	sagi@grimberg.me,
-	kishon@ti.com,
-	bhelgaas@google.com,
-	nab@linux-iscsi.org,
-	balbi@kernel.org,
-	gregkh@linuxfoundation.org,
-	laurent.pinchart@ideasonboard.com,
-	jlbec@evilplan.org,
-	ccaulfie@redhat.com,
-	teigland@redhat.com,
-	mfasheh@versity.com,
-	linux-acpi@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-rdma@vger.kernel.org,
-	netdev@vger.kernel.org,
-	linux-nvme@lists.infradead.org,
-	linux-pci@vger.kernel.org,
-	linux-scsi@vger.kernel.org,
-	target-devel@vger.kernel.org,
-	linux-usb@vger.kernel.org,
-	cluster-devel@redhat.com,
-	ocfs2-devel@oss.oracle.com,
-	linux-fsdevel@vger.kernel.org
+To: julia.lawall@lip6.fr, rjw@rjwysocki.net, lenb@kernel.org,
+        alexander.shishkin@linux.intel.com, jic23@kernel.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        dledford@redhat.com, sean.hefty@intel.com,
+        hal.rosenstock@gmail.com, hch@lst.de, sagi@grimberg.me,
+        kishon@ti.com, bhelgaas@google.com, nab@linux-iscsi.org,
+        balbi@kernel.org, gregkh@linuxfoundation.org,
+        laurent.pinchart@ideasonboard.com, jlbec@evilplan.org,
+        ccaulfie@redhat.com, teigland@redhat.com, mfasheh@versity.com,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-pci@vger.kernel.org, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org, linux-usb@vger.kernel.org,
+        cluster-devel@redhat.com, ocfs2-devel@oss.oracle.com,
+        linux-fsdevel@vger.kernel.org
 Cc: Bhumika Goyal <bhumirks@gmail.com>
-Subject: [PATCH v2 03/15] target: make config_item_type const
-Date: Mon, 16 Oct 2017 17:18:42 +0200
-Message-Id: <1508167134-6243-4-git-send-email-bhumirks@gmail.com>
+Subject: [PATCH v2 04/15] iio: make function argument and some structures const
+Date: Mon, 16 Oct 2017 17:18:43 +0200
+Message-Id: <1508167134-6243-5-git-send-email-bhumirks@gmail.com>
 In-Reply-To: <1508167134-6243-1-git-send-email-bhumirks@gmail.com>
 References: <1508167134-6243-1-git-send-email-bhumirks@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Make these structures const as they are either passed to the functions
-having the argument as const or stored as a reference in the "ci_type"
-const field of a config_item structure.
+Make the argument of the functions iio_sw{d/t}_group_init_type_name const
+as they are only passed to the function config_group_init_type_name having
+the argument as const.
 
-Done using Coccinelle.
+Make the config_item_type structures const as they are either passed to
+the functions having the argument as const or they are
+stored in the const "ci_type" field of a config_item structure.
 
 Signed-off-by: Bhumika Goyal <bhumirks@gmail.com>
 ---
 * Changes in v2- Combine all the followup patches and the constification
 patches into a series.
 
- drivers/target/iscsi/iscsi_target_stat.c | 12 ++++++------
- drivers/target/target_core_configfs.c    | 14 +++++++-------
- drivers/target/target_core_stat.c        | 16 ++++++++--------
- include/target/iscsi/iscsi_target_stat.h | 12 ++++++------
- 4 files changed, 27 insertions(+), 27 deletions(-)
+ drivers/iio/dummy/iio_simple_dummy.c   | 2 +-
+ drivers/iio/industrialio-configfs.c    | 2 +-
+ drivers/iio/industrialio-sw-device.c   | 6 +++---
+ drivers/iio/industrialio-sw-trigger.c  | 6 +++---
+ drivers/iio/trigger/iio-trig-hrtimer.c | 2 +-
+ drivers/iio/trigger/iio-trig-loop.c    | 2 +-
+ include/linux/iio/sw_device.h          | 2 +-
+ include/linux/iio/sw_trigger.h         | 2 +-
+ 8 files changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/target/iscsi/iscsi_target_stat.c b/drivers/target/iscsi/iscsi_target_stat.c
-index 411cb26..df0a398 100644
---- a/drivers/target/iscsi/iscsi_target_stat.c
-+++ b/drivers/target/iscsi/iscsi_target_stat.c
-@@ -187,7 +187,7 @@ static ssize_t iscsi_stat_instance_version_show(struct config_item *item,
- 	NULL,
+diff --git a/drivers/iio/dummy/iio_simple_dummy.c b/drivers/iio/dummy/iio_simple_dummy.c
+index a45d01e..6205247 100644
+--- a/drivers/iio/dummy/iio_simple_dummy.c
++++ b/drivers/iio/dummy/iio_simple_dummy.c
+@@ -26,7 +26,7 @@
+ #include <linux/iio/sw_device.h>
+ #include "iio_simple_dummy.h"
+ 
+-static struct config_item_type iio_dummy_type = {
++static const struct config_item_type iio_dummy_type = {
+ 	.ct_owner = THIS_MODULE,
  };
  
--struct config_item_type iscsi_stat_instance_cit = {
-+const struct config_item_type iscsi_stat_instance_cit = {
- 	.ct_attrs		= iscsi_stat_instance_attrs,
- 	.ct_owner		= THIS_MODULE,
- };
-@@ -249,7 +249,7 @@ static ssize_t iscsi_stat_sess_err_format_errors_show(struct config_item *item,
- 	NULL,
+diff --git a/drivers/iio/industrialio-configfs.c b/drivers/iio/industrialio-configfs.c
+index 45ce2bc..5a0aae1 100644
+--- a/drivers/iio/industrialio-configfs.c
++++ b/drivers/iio/industrialio-configfs.c
+@@ -17,7 +17,7 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/configfs.h>
+ 
+-static struct config_item_type iio_root_group_type = {
++static const struct config_item_type iio_root_group_type = {
+ 	.ct_owner       = THIS_MODULE,
  };
  
--struct config_item_type iscsi_stat_sess_err_cit = {
-+const struct config_item_type iscsi_stat_sess_err_cit = {
- 	.ct_attrs		= iscsi_stat_sess_err_attrs,
- 	.ct_owner		= THIS_MODULE,
- };
-@@ -390,7 +390,7 @@ static ssize_t iscsi_stat_tgt_attr_fail_intr_addr_show(struct config_item *item,
- 	NULL,
+diff --git a/drivers/iio/industrialio-sw-device.c b/drivers/iio/industrialio-sw-device.c
+index 81b49cf..90df97c 100644
+--- a/drivers/iio/industrialio-sw-device.c
++++ b/drivers/iio/industrialio-sw-device.c
+@@ -19,9 +19,9 @@
+ #include <linux/configfs.h>
+ 
+ static struct config_group *iio_devices_group;
+-static struct config_item_type iio_device_type_group_type;
++static const struct config_item_type iio_device_type_group_type;
+ 
+-static struct config_item_type iio_devices_group_type = {
++static const struct config_item_type iio_devices_group_type = {
+ 	.ct_owner = THIS_MODULE,
  };
  
--struct config_item_type iscsi_stat_tgt_attr_cit = {
-+const struct config_item_type iscsi_stat_tgt_attr_cit = {
- 	.ct_attrs		= iscsi_stat_tgt_attr_attrs,
- 	.ct_owner		= THIS_MODULE,
- };
-@@ -522,7 +522,7 @@ static ssize_t iscsi_stat_login_negotiate_fails_show(struct config_item *item,
- 	NULL,
+@@ -156,7 +156,7 @@ static void device_drop_group(struct config_group *group,
+ 	.drop_item	= &device_drop_group,
  };
  
--struct config_item_type iscsi_stat_login_cit = {
-+const struct config_item_type iscsi_stat_login_cit = {
- 	.ct_attrs		= iscsi_stat_login_stats_attrs,
- 	.ct_owner		= THIS_MODULE,
+-static struct config_item_type iio_device_type_group_type = {
++static const struct config_item_type iio_device_type_group_type = {
+ 	.ct_group_ops = &device_ops,
+ 	.ct_owner       = THIS_MODULE,
  };
-@@ -579,7 +579,7 @@ static ssize_t iscsi_stat_logout_abnormal_logouts_show(struct config_item *item,
- 	NULL,
+diff --git a/drivers/iio/industrialio-sw-trigger.c b/drivers/iio/industrialio-sw-trigger.c
+index 8d24fb1..bc6b7fb 100644
+--- a/drivers/iio/industrialio-sw-trigger.c
++++ b/drivers/iio/industrialio-sw-trigger.c
+@@ -19,9 +19,9 @@
+ #include <linux/configfs.h>
+ 
+ static struct config_group *iio_triggers_group;
+-static struct config_item_type iio_trigger_type_group_type;
++static const struct config_item_type iio_trigger_type_group_type;
+ 
+-static struct config_item_type iio_triggers_group_type = {
++static const struct config_item_type iio_triggers_group_type = {
+ 	.ct_owner = THIS_MODULE,
  };
  
--struct config_item_type iscsi_stat_logout_cit = {
-+const struct config_item_type iscsi_stat_logout_cit = {
- 	.ct_attrs		= iscsi_stat_logout_stats_attrs,
- 	.ct_owner		= THIS_MODULE,
- };
-@@ -801,7 +801,7 @@ static ssize_t iscsi_stat_sess_conn_timeout_errors_show(
- 	NULL,
+@@ -156,7 +156,7 @@ static void trigger_drop_group(struct config_group *group,
+ 	.drop_item	= &trigger_drop_group,
  };
  
--struct config_item_type iscsi_stat_sess_cit = {
-+const struct config_item_type iscsi_stat_sess_cit = {
- 	.ct_attrs		= iscsi_stat_sess_stats_attrs,
- 	.ct_owner		= THIS_MODULE,
+-static struct config_item_type iio_trigger_type_group_type = {
++static const struct config_item_type iio_trigger_type_group_type = {
+ 	.ct_group_ops = &trigger_ops,
+ 	.ct_owner       = THIS_MODULE,
  };
-diff --git a/drivers/target/target_core_configfs.c b/drivers/target/target_core_configfs.c
-index 7e87d95..bd87cc2 100644
---- a/drivers/target/target_core_configfs.c
-+++ b/drivers/target/target_core_configfs.c
-@@ -307,7 +307,7 @@ static void target_core_deregister_fabric(
- /*
-  * Provides Fabrics Groups and Item Attributes for /sys/kernel/config/target/
-  */
--static struct config_item_type target_core_fabrics_item = {
-+static const struct config_item_type target_core_fabrics_item = {
- 	.ct_group_ops	= &target_core_fabric_group_ops,
- 	.ct_attrs	= target_core_fabric_item_attrs,
- 	.ct_owner	= THIS_MODULE,
-@@ -2376,7 +2376,7 @@ static void target_core_alua_lu_gp_release(struct config_item *item)
- 	.release		= target_core_alua_lu_gp_release,
+diff --git a/drivers/iio/trigger/iio-trig-hrtimer.c b/drivers/iio/trigger/iio-trig-hrtimer.c
+index 3ee9216..7accd01 100644
+--- a/drivers/iio/trigger/iio-trig-hrtimer.c
++++ b/drivers/iio/trigger/iio-trig-hrtimer.c
+@@ -30,7 +30,7 @@ struct iio_hrtimer_info {
+ 	ktime_t period;
  };
  
--static struct config_item_type target_core_alua_lu_gp_cit = {
-+static const struct config_item_type target_core_alua_lu_gp_cit = {
- 	.ct_item_ops		= &target_core_alua_lu_gp_ops,
- 	.ct_attrs		= target_core_alua_lu_gp_attrs,
- 	.ct_owner		= THIS_MODULE,
-@@ -2434,7 +2434,7 @@ static void target_core_alua_drop_lu_gp(
- 	.drop_item		= &target_core_alua_drop_lu_gp,
+-static struct config_item_type iio_hrtimer_type = {
++static const struct config_item_type iio_hrtimer_type = {
+ 	.ct_owner = THIS_MODULE,
  };
  
--static struct config_item_type target_core_alua_lu_gps_cit = {
-+static const struct config_item_type target_core_alua_lu_gps_cit = {
- 	.ct_item_ops		= NULL,
- 	.ct_group_ops		= &target_core_alua_lu_gps_group_ops,
- 	.ct_owner		= THIS_MODULE,
-@@ -2813,7 +2813,7 @@ static void target_core_alua_tg_pt_gp_release(struct config_item *item)
- 	.release		= target_core_alua_tg_pt_gp_release,
+diff --git a/drivers/iio/trigger/iio-trig-loop.c b/drivers/iio/trigger/iio-trig-loop.c
+index b4b02db..94a90e0 100644
+--- a/drivers/iio/trigger/iio-trig-loop.c
++++ b/drivers/iio/trigger/iio-trig-loop.c
+@@ -36,7 +36,7 @@ struct iio_loop_info {
+ 	struct task_struct *task;
  };
  
--static struct config_item_type target_core_alua_tg_pt_gp_cit = {
-+static const struct config_item_type target_core_alua_tg_pt_gp_cit = {
- 	.ct_item_ops		= &target_core_alua_tg_pt_gp_ops,
- 	.ct_attrs		= target_core_alua_tg_pt_gp_attrs,
- 	.ct_owner		= THIS_MODULE,
-@@ -2884,7 +2884,7 @@ static void target_core_alua_drop_tg_pt_gp(
-  * core/alua/lu_gps and core/alua/tg_pt_gps that are attached to
-  * target_core_alua_cit in target_core_init_configfs() below.
-  */
--static struct config_item_type target_core_alua_cit = {
-+static const struct config_item_type target_core_alua_cit = {
- 	.ct_item_ops		= NULL,
- 	.ct_attrs		= NULL,
- 	.ct_owner		= THIS_MODULE,
-@@ -3105,7 +3105,7 @@ static void target_core_hba_release(struct config_item *item)
- 	.release		= target_core_hba_release,
+-static struct config_item_type iio_loop_type = {
++static const struct config_item_type iio_loop_type = {
+ 	.ct_owner = THIS_MODULE,
  };
  
--static struct config_item_type target_core_hba_cit = {
-+static const struct config_item_type target_core_hba_cit = {
- 	.ct_item_ops		= &target_core_hba_item_ops,
- 	.ct_group_ops		= &target_core_hba_group_ops,
- 	.ct_attrs		= target_core_hba_attrs,
-@@ -3188,7 +3188,7 @@ static void target_core_call_delhbafromtarget(
- 	.drop_item	= target_core_call_delhbafromtarget,
- };
- 
--static struct config_item_type target_core_cit = {
-+static const struct config_item_type target_core_cit = {
- 	.ct_item_ops	= NULL,
- 	.ct_group_ops	= &target_core_group_ops,
- 	.ct_attrs	= NULL,
-diff --git a/drivers/target/target_core_stat.c b/drivers/target/target_core_stat.c
-index 8038255..f0db91e 100644
---- a/drivers/target/target_core_stat.c
-+++ b/drivers/target/target_core_stat.c
-@@ -96,7 +96,7 @@ static ssize_t target_stat_ports_show(struct config_item *item, char *page)
- 	NULL,
- };
- 
--static struct config_item_type target_stat_scsi_dev_cit = {
-+static const struct config_item_type target_stat_scsi_dev_cit = {
- 	.ct_attrs		= target_stat_scsi_dev_attrs,
- 	.ct_owner		= THIS_MODULE,
- };
-@@ -193,7 +193,7 @@ static ssize_t target_stat_tgt_aborts_no_task_show(struct config_item *item,
- 	NULL,
- };
- 
--static struct config_item_type target_stat_scsi_tgt_dev_cit = {
-+static const struct config_item_type target_stat_scsi_tgt_dev_cit = {
- 	.ct_attrs		= target_stat_scsi_tgt_dev_attrs,
- 	.ct_owner		= THIS_MODULE,
- };
-@@ -414,7 +414,7 @@ static ssize_t target_stat_lu_creation_time_show(struct config_item *item,
- 	NULL,
- };
- 
--static struct config_item_type target_stat_scsi_lu_cit = {
-+static const struct config_item_type target_stat_scsi_lu_cit = {
- 	.ct_attrs		= target_stat_scsi_lu_attrs,
- 	.ct_owner		= THIS_MODULE,
- };
-@@ -540,7 +540,7 @@ static ssize_t target_stat_port_busy_count_show(struct config_item *item,
- 	NULL,
- };
- 
--static struct config_item_type target_stat_scsi_port_cit = {
-+static const struct config_item_type target_stat_scsi_port_cit = {
- 	.ct_attrs		= target_stat_scsi_port_attrs,
- 	.ct_owner		= THIS_MODULE,
- };
-@@ -724,7 +724,7 @@ static ssize_t target_stat_tgt_port_hs_in_cmds_show(struct config_item *item,
- 	NULL,
- };
- 
--static struct config_item_type target_stat_scsi_tgt_port_cit = {
-+static const struct config_item_type target_stat_scsi_tgt_port_cit = {
- 	.ct_attrs		= target_stat_scsi_tgt_port_attrs,
- 	.ct_owner		= THIS_MODULE,
- };
-@@ -844,7 +844,7 @@ static ssize_t target_stat_transport_proto_id_show(struct config_item *item,
- 	NULL,
- };
- 
--static struct config_item_type target_stat_scsi_transport_cit = {
-+static const struct config_item_type target_stat_scsi_transport_cit = {
- 	.ct_attrs		= target_stat_scsi_transport_attrs,
- 	.ct_owner		= THIS_MODULE,
- };
-@@ -1206,7 +1206,7 @@ static ssize_t target_stat_auth_row_status_show(struct config_item *item,
- 	NULL,
- };
- 
--static struct config_item_type target_stat_scsi_auth_intr_cit = {
-+static const struct config_item_type target_stat_scsi_auth_intr_cit = {
- 	.ct_attrs		= target_stat_scsi_auth_intr_attrs,
- 	.ct_owner		= THIS_MODULE,
- };
-@@ -1378,7 +1378,7 @@ static ssize_t target_stat_iport_port_ident_show(struct config_item *item,
- 	NULL,
- };
- 
--static struct config_item_type target_stat_scsi_att_intr_port_cit = {
-+static const struct config_item_type target_stat_scsi_att_intr_port_cit = {
- 	.ct_attrs		= target_stat_scsi_ath_intr_port_attrs,
- 	.ct_owner		= THIS_MODULE,
- };
-diff --git a/include/target/iscsi/iscsi_target_stat.h b/include/target/iscsi/iscsi_target_stat.h
-index c27dd47..36e9c9a 100644
---- a/include/target/iscsi/iscsi_target_stat.h
-+++ b/include/target/iscsi/iscsi_target_stat.h
-@@ -8,16 +8,16 @@
- /*
-  * For struct iscsi_tiqn->tiqn_wwn default groups
-  */
--extern struct config_item_type iscsi_stat_instance_cit;
--extern struct config_item_type iscsi_stat_sess_err_cit;
--extern struct config_item_type iscsi_stat_tgt_attr_cit;
--extern struct config_item_type iscsi_stat_login_cit;
--extern struct config_item_type iscsi_stat_logout_cit;
-+extern const struct config_item_type iscsi_stat_instance_cit;
-+extern const struct config_item_type iscsi_stat_sess_err_cit;
-+extern const struct config_item_type iscsi_stat_tgt_attr_cit;
-+extern const struct config_item_type iscsi_stat_login_cit;
-+extern const struct config_item_type iscsi_stat_logout_cit;
- 
- /*
-  * For struct iscsi_session->se_sess default groups
-  */
--extern struct config_item_type iscsi_stat_sess_cit;
-+extern const struct config_item_type iscsi_stat_sess_cit;
- 
- /* iSCSI session error types */
- #define ISCSI_SESS_ERR_UNKNOWN		0
+diff --git a/include/linux/iio/sw_device.h b/include/linux/iio/sw_device.h
+index fa79319..8642b91 100644
+--- a/include/linux/iio/sw_device.h
++++ b/include/linux/iio/sw_device.h
+@@ -60,7 +60,7 @@ struct iio_sw_device *to_iio_sw_device(struct config_item *item)
+ static inline
+ void iio_swd_group_init_type_name(struct iio_sw_device *d,
+ 				  const char *name,
+-				  struct config_item_type *type)
++				  const struct config_item_type *type)
+ {
+ #if IS_ENABLED(CONFIG_CONFIGFS_FS)
+ 	config_group_init_type_name(&d->group, name, type);
+diff --git a/include/linux/iio/sw_trigger.h b/include/linux/iio/sw_trigger.h
+index c97eab6..0c43738 100644
+--- a/include/linux/iio/sw_trigger.h
++++ b/include/linux/iio/sw_trigger.h
+@@ -60,7 +60,7 @@ struct iio_sw_trigger *to_iio_sw_trigger(struct config_item *item)
+ static inline
+ void iio_swt_group_init_type_name(struct iio_sw_trigger *t,
+ 				  const char *name,
+-				  struct config_item_type *type)
++				  const struct config_item_type *type)
+ {
+ #if IS_ENABLED(CONFIG_CONFIGFS_FS)
+ 	config_group_init_type_name(&t->group, name, type);
 -- 
 1.9.1
+
