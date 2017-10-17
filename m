@@ -1,53 +1,53 @@
-Return-Path: <SRS0=yzck=BQ=lip6.fr=julia.lawall@kernel.org>
-Date: Tue, 17 Oct 2017 12:16:18 +0200 (CEST)
-From: Julia Lawall <julia.lawall@lip6.fr>
-To: Greg KH <gregkh@linuxfoundation.org>
-cc: Bhumika Goyal <bhumirks@gmail.com>, julia.lawall@lip6.fr,
-    rjw@rjwysocki.net, lenb@kernel.org, alexander.shishkin@linux.intel.com,
-    jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-    dledford@redhat.com, sean.hefty@intel.com, hal.rosenstock@gmail.com,
-    hch@lst.de, sagi@grimberg.me, kishon@ti.com, bhelgaas@google.com,
-    nab@linux-iscsi.org, balbi@kernel.org, laurent.pinchart@ideasonboard.com,
-    jlbec@evilplan.org, ccaulfie@redhat.com, teigland@redhat.com,
-    mfasheh@versity.com, linux-acpi@vger.kernel.org,
-    linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-    linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-    linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-    linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
-    linux-usb@vger.kernel.org, cluster-devel@redhat.com,
-    ocfs2-devel@oss.oracle.com, linux-fsdevel@vger.kernel.org
+Return-Path: <SRS0=HMit=BQ=linuxfoundation.org=gregkh@kernel.org>
+Date: Tue, 17 Oct 2017 12:23:50 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Julia Lawall <julia.lawall@lip6.fr>
+Cc: Bhumika Goyal <bhumirks@gmail.com>, rjw@rjwysocki.net, lenb@kernel.org,
+	alexander.shishkin@linux.intel.com, jic23@kernel.org,
+	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	dledford@redhat.com, sean.hefty@intel.com, hal.rosenstock@gmail.com,
+	hch@lst.de, sagi@grimberg.me, kishon@ti.com, bhelgaas@google.com,
+	nab@linux-iscsi.org, balbi@kernel.org,
+	laurent.pinchart@ideasonboard.com, jlbec@evilplan.org,
+	ccaulfie@redhat.com, teigland@redhat.com, mfasheh@versity.com,
+	linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-rdma@vger.kernel.org,
+	netdev@vger.kernel.org, linux-nvme@lists.infradead.org,
+	linux-pci@vger.kernel.org, linux-scsi@vger.kernel.org,
+	target-devel@vger.kernel.org, linux-usb@vger.kernel.org,
+	cluster-devel@redhat.com, ocfs2-devel@oss.oracle.com,
+	linux-fsdevel@vger.kernel.org
 Subject: Re: [PATCH v2 00/15] make structure field, function arguments and
  structures const
-In-Reply-To: <20171017101245.GA4646@kroah.com>
-Message-ID: <alpine.DEB.2.20.1710171216060.5035@hadrien>
-References: <1508167134-6243-1-git-send-email-bhumirks@gmail.com> <20171017101245.GA4646@kroah.com>
+Message-ID: <20171017102350.GA25786@kroah.com>
+References: <1508167134-6243-1-git-send-email-bhumirks@gmail.com>
+ <20171017101245.GA4646@kroah.com>
+ <alpine.DEB.2.20.1710171216060.5035@hadrien>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <alpine.DEB.2.20.1710171216060.5035@hadrien>
 List-ID: <linux-iio@vger.kernel.org>
 
-
-
-On Tue, 17 Oct 2017, Greg KH wrote:
-
-> On Mon, Oct 16, 2017 at 05:18:39PM +0200, Bhumika Goyal wrote:
-> > Make the ci_type field and some function arguments as const. After this
-> > change, make config_item_type structures as const.
+On Tue, Oct 17, 2017 at 12:16:18PM +0200, Julia Lawall wrote:
+> 
+> 
+> On Tue, 17 Oct 2017, Greg KH wrote:
+> 
+> > On Mon, Oct 16, 2017 at 05:18:39PM +0200, Bhumika Goyal wrote:
+> > > Make the ci_type field and some function arguments as const. After this
+> > > change, make config_item_type structures as const.
+> > >
+> > > * Changes in v2- Combine all the followup patches and the constification
+> > > patches into a series.
 > >
-> > * Changes in v2- Combine all the followup patches and the constification
-> > patches into a series.
->
-> Who do you want to take these patches?  If you want, I can take them
-> through my driver-core tree, which has done other configfs stuff like
-> this in the past.
+> > Who do you want to take these patches?  If you want, I can take them
+> > through my driver-core tree, which has done other configfs stuff like
+> > this in the past.
+> 
+> Christoph Hellwig proposed to take care of it.
 
-Christoph Hellwig proposed to take care of it.
+Great!  I'll go ack the individual ones that I might need to...
 
-julia
+thanks,
 
-
-
->
-> thanks,
->
-> greg k-h
->
+greg k-h
