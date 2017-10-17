@@ -1,120 +1,33 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:45244 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S932159AbdJUTiN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 21 Oct 2017 15:38:13 -0400
-Date: Sat, 21 Oct 2017 20:38:05 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Lukas Wunner <lukas@wunner.de>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Mathias Duckeck <m.duckeck@kunbus.de>,
-        Phil Elwell <phil@raspberrypi.org>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 3/3] iio: dac: ti-dac082s085: Read chip spec from
- device table
-Message-ID: <20171021203805.1418d51a@archlinux>
-In-Reply-To: <43bd5525f1db09764a40f4e225a772b30603c3f5.1508232186.git.lukas@wunner.de>
-References: <cover.1508232186.git.lukas@wunner.de>
-        <43bd5525f1db09764a40f4e225a772b30603c3f5.1508232186.git.lukas@wunner.de>
+Return-Path: <SRS0=DOsN=BQ=st.com=fabrice.gasnier@kernel.org>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+To: <jic23@kernel.org>, <robh+dt@kernel.org>
+CC: <linux@armlinux.org.uk>, <mark.rutland@arm.com>,
+        <mcoquelin.stm32@gmail.com>, <alexandre.torgue@st.com>,
+        <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
+        <fabrice.gasnier@st.com>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <benjamin.gaignard@linaro.org>,
+        <benjamin.gaignard@st.com>
+Subject: [PATCH 0/3] iio: adc: stm32: Add support for differential channels 
+Date: Tue, 17 Oct 2017 15:15:42 +0200
+Message-ID: <1508246145-19417-1-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, 17 Oct 2017 12:42:00 +0200
-Lukas Wunner <lukas@wunner.de> wrote:
+Add support for differential channels that can be found on STM32H7 ADC:
+- Introduce new DT property 'st,adc-diff-channels'.
+- Slightly rework single-ended channels definition in stm32-adc driver.
+- Add support for differential channels to stm32-adc driver.
 
-> The two properties unique to each supported chip, resolution and number
-> of channels, are currently gleaned from the chip's name.
-> E.g. dac102s085 is a dual channel 10-bit DAC.
->         ^^^
-> This was deemed unmaintainable by the subsystem maintainer once the
-> driver is extended to support further chips, hence it was requested
-> to add an explicit table for chip-specific information and use an
-> enum to reference into it.
-> 
-> This adds 17 LoC without any immediate gain, so make the change in a
-> separate commit which can be reverted if we determine in 10 years that
-> it was unnecessary.
-> 
-Good luck with that ;) 
-> Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+Fabrice Gasnier (3):
+  dt-bindings: iio: adc: stm32: add support for diff channels
+  iio: adc: stm32: remove const channel names definition
+  iio: adc: stm32: add support for differential channels
 
-Thanks,
+ .../devicetree/bindings/iio/adc/st,stm32-adc.txt   |   6 +
+ drivers/iio/adc/stm32-adc.c                        | 181 +++++++++++++--------
+ 2 files changed, 119 insertions(+), 68 deletions(-)
 
-Jonathan
-> ---
->  drivers/iio/dac/ti-dac082s085.c | 35 ++++++++++++++++++++++++++---------
->  1 file changed, 26 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/iio/dac/ti-dac082s085.c b/drivers/iio/dac/ti-dac082s085.c
-> index 0fefb110be69..2c1556f32574 100644
-> --- a/drivers/iio/dac/ti-dac082s085.c
-> +++ b/drivers/iio/dac/ti-dac082s085.c
-> @@ -20,6 +20,22 @@
->  #include <linux/regulator/consumer.h>
->  #include <linux/spi/spi.h>
->  
-> +enum { dual_8bit, dual_10bit, dual_12bit, quad_8bit, quad_10bit, quad_12bit };
-> +
-> +struct ti_dac_spec {
-> +	u8 num_channels;
-> +	u8 resolution;
-> +};
-> +
-> +static const struct ti_dac_spec ti_dac_spec[] = {
-> +	[dual_8bit]  = { .num_channels = 2, .resolution = 8  },
-> +	[dual_10bit] = { .num_channels = 2, .resolution = 10 },
-> +	[dual_12bit] = { .num_channels = 2, .resolution = 12 },
-> +	[quad_8bit]  = { .num_channels = 4, .resolution = 8  },
-> +	[quad_10bit] = { .num_channels = 4, .resolution = 10 },
-> +	[quad_12bit] = { .num_channels = 4, .resolution = 12 },
-> +};
-> +
->  /**
->   * struct ti_dac_chip - TI DAC chip
->   * @lock: protects write sequences
-> @@ -246,6 +262,7 @@ static const struct iio_info ti_dac_info = {
->  static int ti_dac_probe(struct spi_device *spi)
->  {
->  	struct device *dev = &spi->dev;
-> +	const struct ti_dac_spec *spec;
->  	struct ti_dac_chip *ti_dac;
->  	struct iio_dev *indio_dev;
->  	int ret;
-> @@ -267,9 +284,9 @@ static int ti_dac_probe(struct spi_device *spi)
->  	spi_message_init_with_transfers(&ti_dac->mesg, &ti_dac->xfer, 1);
->  	ti_dac->mesg.spi = spi;
->  
-> -	ret = sscanf(spi->modalias, "dac%2hhu%1d",
-> -		     &ti_dac->resolution, &indio_dev->num_channels);
-> -	WARN_ON(ret != 2);
-> +	spec = &ti_dac_spec[spi_get_device_id(spi)->driver_data];
-> +	indio_dev->num_channels = spec->num_channels;
-> +	ti_dac->resolution = spec->resolution;
->  
->  	ti_dac->vref = devm_regulator_get(dev, "vref");
->  	if (IS_ERR(ti_dac->vref))
-> @@ -325,12 +342,12 @@ MODULE_DEVICE_TABLE(of, ti_dac_of_id);
->  #endif
->  
->  static const struct spi_device_id ti_dac_spi_id[] = {
-> -	{ "dac082s085" },
-> -	{ "dac102s085" },
-> -	{ "dac122s085" },
-> -	{ "dac084s085" },
-> -	{ "dac104s085" },
-> -	{ "dac124s085" },
-> +	{ "dac082s085", dual_8bit  },
-> +	{ "dac102s085", dual_10bit },
-> +	{ "dac122s085", dual_12bit },
-> +	{ "dac084s085", quad_8bit  },
-> +	{ "dac104s085", quad_10bit },
-> +	{ "dac124s085", quad_12bit },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(spi, ti_dac_spi_id);
-
+-- 
+1.9.1
