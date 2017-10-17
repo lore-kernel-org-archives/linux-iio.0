@@ -1,53 +1,46 @@
-Return-Path: <SRS0=HMit=BQ=linuxfoundation.org=gregkh@kernel.org>
-Date: Tue, 17 Oct 2017 12:23:50 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Julia Lawall <julia.lawall@lip6.fr>
-Cc: Bhumika Goyal <bhumirks@gmail.com>, rjw@rjwysocki.net, lenb@kernel.org,
-	alexander.shishkin@linux.intel.com, jic23@kernel.org,
-	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	dledford@redhat.com, sean.hefty@intel.com, hal.rosenstock@gmail.com,
-	hch@lst.de, sagi@grimberg.me, kishon@ti.com, bhelgaas@google.com,
-	nab@linux-iscsi.org, balbi@kernel.org,
-	laurent.pinchart@ideasonboard.com, jlbec@evilplan.org,
-	ccaulfie@redhat.com, teigland@redhat.com, mfasheh@versity.com,
-	linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-rdma@vger.kernel.org,
-	netdev@vger.kernel.org, linux-nvme@lists.infradead.org,
-	linux-pci@vger.kernel.org, linux-scsi@vger.kernel.org,
-	target-devel@vger.kernel.org, linux-usb@vger.kernel.org,
-	cluster-devel@redhat.com, ocfs2-devel@oss.oracle.com,
-	linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH v2 00/15] make structure field, function arguments and
- structures const
-Message-ID: <20171017102350.GA25786@kroah.com>
-References: <1508167134-6243-1-git-send-email-bhumirks@gmail.com>
- <20171017101245.GA4646@kroah.com>
- <alpine.DEB.2.20.1710171216060.5035@hadrien>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <alpine.DEB.2.20.1710171216060.5035@hadrien>
+Return-Path: <SRS0=HRyn=BQ=wunner.de=lukas@kernel.org>
+Message-Id: <cover.1508232186.git.lukas@wunner.de>
+From: Lukas Wunner <lukas@wunner.de>
+Date: Tue, 17 Oct 2017 12:42:00 +0200
+Subject: [PATCH v2 0/3] Texas Instruments 8/10/12-bit 2/4-channel DAC driver
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Mathias Duckeck <m.duckeck@kunbus.de>, Phil Elwell <phil@raspberrypi.org>, linux-iio@vger.kernel.org
 List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, Oct 17, 2017 at 12:16:18PM +0200, Julia Lawall wrote:
-> 
-> 
-> On Tue, 17 Oct 2017, Greg KH wrote:
-> 
-> > On Mon, Oct 16, 2017 at 05:18:39PM +0200, Bhumika Goyal wrote:
-> > > Make the ci_type field and some function arguments as const. After this
-> > > change, make config_item_type structures as const.
-> > >
-> > > * Changes in v2- Combine all the followup patches and the constification
-> > > patches into a series.
-> >
-> > Who do you want to take these patches?  If you want, I can take them
-> > through my driver-core tree, which has done other configfs stuff like
-> > this in the past.
-> 
-> Christoph Hellwig proposed to take care of it.
+Changes v1 -> v2:
 
-Great!  I'll go ack the individual ones that I might need to...
+Patch [1/3] was acked by Rob Herring.
 
-thanks,
+Patch [2/3]:
+- Enable vref regulator before initializing outputs to 0 in ti_dac_probe().
+- Add channel datasheet names "A", "B", "C", "D".
+- Use goto in ti_dac_set_powerdown_mode(). (Jonathan)
+- Return -EBUSY instead of -ESHUTDOWN in ti_dac_write_raw(). (Jonathan)
 
-greg k-h
+Patch [3/3]:
+- Look up chip properties in table indexed by the modalias instead of
+  gleaning them from the modalias directly. (Jonathan)
+  Separate patch for opinionatedness. ;-)
+
+
+Link to v1:
+
+https://www.spinics.net/lists/linux-iio/msg34885.html
+
+
+Lukas Wunner (3):
+  dt-bindings: iio: dac: ti-dac082s085: Document new driver
+  iio: dac: Add Texas Instruments 8/10/12-bit 2/4-channel DAC driver
+  iio: dac: ti-dac082s085: Read chip spec from device table
+
+ Documentation/ABI/testing/sysfs-bus-iio            |   1 +
+ .../devicetree/bindings/iio/dac/ti-dac082s085.txt  |  34 ++
+ drivers/iio/dac/Kconfig                            |  10 +
+ drivers/iio/dac/Makefile                           |   1 +
+ drivers/iio/dac/ti-dac082s085.c                    | 368 +++++++++++++++++++++
+ 5 files changed, 414 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/dac/ti-dac082s085.txt
+ create mode 100644 drivers/iio/dac/ti-dac082s085.c
+
+-- 
+2.11.0
