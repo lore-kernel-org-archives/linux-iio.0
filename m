@@ -1,19 +1,18 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from verein.lst.de ([213.95.11.211]:43173 "EHLO newverein.lst.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1754457AbdJSOHA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 19 Oct 2017 10:07:00 -0400
-Date: Thu, 19 Oct 2017 16:06:57 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Received: from galahad.ideasonboard.com ([185.26.127.97]:50413 "EHLO
+        galahad.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753916AbdJSPFJ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 19 Oct 2017 11:05:09 -0400
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To: Christoph Hellwig <hch@lst.de>
 Cc: Bhumika Goyal <bhumirks@gmail.com>, julia.lawall@lip6.fr,
         rjw@rjwysocki.net, lenb@kernel.org,
         alexander.shishkin@linux.intel.com, jic23@kernel.org,
         knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
         dledford@redhat.com, sean.hefty@intel.com,
-        hal.rosenstock@gmail.com, hch@lst.de, sagi@grimberg.me,
-        kishon@ti.com, bhelgaas@google.com, nab@linux-iscsi.org,
-        balbi@kernel.org, gregkh@linuxfoundation.org, jlbec@evilplan.org,
+        hal.rosenstock@gmail.com, sagi@grimberg.me, kishon@ti.com,
+        bhelgaas@google.com, nab@linux-iscsi.org, balbi@kernel.org,
+        gregkh@linuxfoundation.org, jlbec@evilplan.org,
         ccaulfie@redhat.com, teigland@redhat.com, mfasheh@versity.com,
         linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-iio@vger.kernel.org, linux-rdma@vger.kernel.org,
@@ -22,22 +21,34 @@ Cc: Bhumika Goyal <bhumirks@gmail.com>, julia.lawall@lip6.fr,
         target-devel@vger.kernel.org, linux-usb@vger.kernel.org,
         cluster-devel@redhat.com, ocfs2-devel@oss.oracle.com,
         linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH v2 02/15] usb: gadget: make config_item_type structures
-        const
-Message-ID: <20171019140657.GA22233@lst.de>
-References: <1508167134-6243-1-git-send-email-bhumirks@gmail.com> <1508167134-6243-3-git-send-email-bhumirks@gmail.com> <1985905.z83BJQzMUS@avalon>
+Subject: Re: [PATCH v2 02/15] usb: gadget: make config_item_type structures const
+Date: Thu, 19 Oct 2017 18:05:29 +0300
+Message-ID: <6348630.r2z9ev4yl2@avalon>
+In-Reply-To: <20171019140657.GA22233@lst.de>
+References: <1508167134-6243-1-git-send-email-bhumirks@gmail.com> <1985905.z83BJQzMUS@avalon> <20171019140657.GA22233@lst.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1985905.z83BJQzMUS@avalon>
+Content-Type: text/plain; charset="us-ascii"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Hi Christoph,
+
+On Thursday, 19 October 2017 17:06:57 EEST Christoph Hellwig wrote:
+> > Now we have 9 const instances of the config_item_type structure that are
+> > identical, with only the .ct_owner field set. Should they be all merged
+> > into a single structure ?
 > 
-> Now we have 9 const instances of the config_item_type structure that are 
-> identical, with only the .ct_owner field set. Should they be all merged into a 
-> single structure ?
+> I think that's a good idea.
+> 
+> But I'm about to slurp up this whole series into my tree, how about making
+> that an incremental patch?
 
-I think that's a good idea.
+I'm fine with that.
 
-But I'm about to slurp up this whole series into my tree, how about making
-that an incremental patch?  
+Bhumika, would you like to submit an incremental patch, or should I do it ?
+
+-- 
+Regards,
+
+Laurent Pinchart
+
