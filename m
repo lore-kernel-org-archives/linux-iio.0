@@ -1,96 +1,82 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:39256 "EHLO mail.kernel.org"
+Received: from onstation.org ([52.200.56.107]:54130 "EHLO onstation.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S932132AbdJURi2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 21 Oct 2017 13:38:28 -0400
-Date: Sat, 21 Oct 2017 18:38:23 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Brian Masney <masneyb@onstation.org>
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-        devel@driverdev.osuosl.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-kernel@vger.kernel.org,
-        Jon.Brenner@ams.com
-Subject: Re: [PATCH 07/13] staging: iio: tsl2x7x: remove unnecessary
- parentheses
-Message-ID: <20171021183823.3fb96b21@archlinux>
-In-Reply-To: <20171019200632.25820-8-masneyb@onstation.org>
+        id S1750902AbdJSUGj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 19 Oct 2017 16:06:39 -0400
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
+Subject: [PATCH 08/13] staging: iio: tsl2x7x: correct alignment of parenthesis
+Date: Thu, 19 Oct 2017 16:06:27 -0400
+Message-Id: <20171019200632.25820-9-masneyb@onstation.org>
+In-Reply-To: <20171019200632.25820-1-masneyb@onstation.org>
 References: <20171019200632.25820-1-masneyb@onstation.org>
-        <20171019200632.25820-8-masneyb@onstation.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 19 Oct 2017 16:06:26 -0400
-Brian Masney <masneyb@onstation.org> wrote:
+Correct error from checkpatch.pl to improve code readibility: Alignment
+should match open parenthesis. This involved shortening the name of
+tsl2x7x_als_gainadj and tsl2x7x_prx_gainadj to tsl2x7x_als_gain and
+tsl2x7x_prx_gain respectively. This also required removing the
+ch0lux and ch1lux local variables in order to get the line short
+enough.
 
-> This patch fixes the error 'Unnecessary parentheses around 'XXX' from
-> checkpatch.pl. It also fixes several other places with unnecessary
-> parentheses that checkpatch.pl did not detect.
-> 
-> Signed-off-by: Brian Masney <masneyb@onstation.org>
-Some of these are completely pointless, others can be argued either
-way (from a readability point of view).  I don't care much on those though so
-Applied to the togreg branch of iio.git
+Signed-off-by: Brian Masney <masneyb@onstation.org>
+---
+ drivers/staging/iio/light/tsl2x7x.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
-Thanks,
-
-Jonathan
-> ---
->  drivers/staging/iio/light/tsl2x7x.c | 16 ++++++++--------
->  1 file changed, 8 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
-> index 80968dd456a0..6cc89cd6505e 100644
-> --- a/drivers/staging/iio/light/tsl2x7x.c
-> +++ b/drivers/staging/iio/light/tsl2x7x.c
-> @@ -348,9 +348,9 @@ static int tsl2x7x_get_lux(struct iio_dev *indio_dev)
->  
->  	/* clear any existing interrupt status */
->  	ret = i2c_smbus_write_byte(chip->client,
-> -				   (TSL2X7X_CMD_REG |
-> +				   TSL2X7X_CMD_REG |
->  				   TSL2X7X_CMD_SPL_FN |
-> -				   TSL2X7X_CMD_ALS_INT_CLR));
-> +				   TSL2X7X_CMD_ALS_INT_CLR);
->  	if (ret < 0) {
->  		dev_err(&chip->client->dev,
->  			"i2c_write_command failed - err = %d\n", ret);
-> @@ -364,7 +364,7 @@ static int tsl2x7x_get_lux(struct iio_dev *indio_dev)
->  	chip->als_cur_info.als_ch0 = ch0;
->  	chip->als_cur_info.als_ch1 = ch1;
->  
-> -	if ((ch0 >= chip->als_saturation) || (ch1 >= chip->als_saturation)) {
-> +	if (ch0 >= chip->als_saturation || ch1 >= chip->als_saturation) {
->  		lux = TSL2X7X_LUX_CALC_OVER_FLOW;
->  		goto return_max;
->  	}
-> @@ -697,14 +697,14 @@ static int tsl2x7x_chip_on(struct iio_dev *indio_dev)
->  		dev_info(&chip->client->dev, "Setting Up Interrupt(s)\n");
->  
->  		reg_val = TSL2X7X_CNTL_PWR_ON | TSL2X7X_CNTL_ADC_ENBL;
-> -		if ((chip->settings.interrupts_en == 0x20) ||
-> -		    (chip->settings.interrupts_en == 0x30))
-> +		if (chip->settings.interrupts_en == 0x20 ||
-> +		    chip->settings.interrupts_en == 0x30)
->  			reg_val |= TSL2X7X_CNTL_PROX_DET_ENBL;
->  
->  		reg_val |= chip->settings.interrupts_en;
->  		ret = i2c_smbus_write_byte_data(chip->client,
-> -						(TSL2X7X_CMD_REG |
-> -						TSL2X7X_CNTRL), reg_val);
-> +						TSL2X7X_CMD_REG | TSL2X7X_CNTRL,
-> +						reg_val);
->  		if (ret < 0)
->  			dev_err(&chip->client->dev,
->  				"%s: failed in tsl2x7x_IOCTL_INT_SET.\n",
-> @@ -1721,7 +1721,7 @@ static int tsl2x7x_probe(struct i2c_client *clientp,
->  		return -EINVAL;
->  	}
->  
-> -	ret = i2c_smbus_write_byte(clientp, (TSL2X7X_CMD_REG | TSL2X7X_CNTRL));
-> +	ret = i2c_smbus_write_byte(clientp, TSL2X7X_CMD_REG | TSL2X7X_CNTRL);
->  	if (ret < 0) {
->  		dev_err(&clientp->dev, "write to cmd reg failed. err = %d\n",
->  			ret);
+diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
+index 6cc89cd6505e..886be9aa3c0f 100644
+--- a/drivers/staging/iio/light/tsl2x7x.c
++++ b/drivers/staging/iio/light/tsl2x7x.c
+@@ -243,14 +243,14 @@ static const struct tsl2x7x_settings tsl2x7x_default_settings = {
+ 	.prox_pulse_count = 8
+ };
+ 
+-static const s16 tsl2X7X_als_gainadj[] = {
++static const s16 tsl2x7x_als_gain[] = {
+ 	1,
+ 	8,
+ 	16,
+ 	120
+ };
+ 
+-static const s16 tsl2X7X_prx_gainadj[] = {
++static const s16 tsl2x7x_prx_gain[] = {
+ 	1,
+ 	2,
+ 	4,
+@@ -384,11 +384,10 @@ static int tsl2x7x_get_lux(struct iio_dev *indio_dev)
+ 	if (p->ratio == 0) {
+ 		lux = 0;
+ 	} else {
+-		ch0lux = DIV_ROUND_UP(ch0 * p->ch0,
+-			tsl2X7X_als_gainadj[chip->settings.als_gain]);
+-		ch1lux = DIV_ROUND_UP(ch1 * p->ch1,
+-			tsl2X7X_als_gainadj[chip->settings.als_gain]);
+-		lux = ch0lux - ch1lux;
++		lux = DIV_ROUND_UP(ch0 * p->ch0,
++				   tsl2x7x_als_gain[chip->settings.als_gain]) -
++		      DIV_ROUND_UP(ch1 * p->ch1,
++				   tsl2x7x_als_gain[chip->settings.als_gain]);
+ 	}
+ 
+ 	/* note: lux is 31 bit max at this point */
+@@ -1263,9 +1262,9 @@ static int tsl2x7x_read_raw(struct iio_dev *indio_dev,
+ 		break;
+ 	case IIO_CHAN_INFO_CALIBSCALE:
+ 		if (chan->type == IIO_LIGHT)
+-			*val = tsl2X7X_als_gainadj[chip->settings.als_gain];
++			*val = tsl2x7x_als_gain[chip->settings.als_gain];
+ 		else
+-			*val = tsl2X7X_prx_gainadj[chip->settings.prox_gain];
++			*val = tsl2x7x_prx_gain[chip->settings.prox_gain];
+ 		ret = IIO_VAL_INT;
+ 		break;
+ 	case IIO_CHAN_INFO_CALIBBIAS:
+-- 
+2.13.6
 
