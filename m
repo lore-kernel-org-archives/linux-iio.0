@@ -1,140 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:39470 "EHLO mail.kernel.org"
+Received: from onstation.org ([52.200.56.107]:54068 "EHLO onstation.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S932179AbdJURln (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 21 Oct 2017 13:41:43 -0400
-Date: Sat, 21 Oct 2017 18:41:38 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Brian Masney <masneyb@onstation.org>
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-        devel@driverdev.osuosl.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-kernel@vger.kernel.org,
-        Jon.Brenner@ams.com
-Subject: Re: [PATCH 09/13] staging: iio: tsl2x7x: correct alignment of
- parenthesis
-Message-ID: <20171021184138.4719ddad@archlinux>
-In-Reply-To: <20171019200632.25820-10-masneyb@onstation.org>
+        id S1752706AbdJSUGk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 19 Oct 2017 16:06:40 -0400
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
+Subject: [PATCH 10/13] staging: iio: tsl2x7x: rename power defines to improve code readability
+Date: Thu, 19 Oct 2017 16:06:29 -0400
+Message-Id: <20171019200632.25820-11-masneyb@onstation.org>
+In-Reply-To: <20171019200632.25820-1-masneyb@onstation.org>
 References: <20171019200632.25820-1-masneyb@onstation.org>
-        <20171019200632.25820-10-masneyb@onstation.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 19 Oct 2017 16:06:28 -0400
-Brian Masney <masneyb@onstation.org> wrote:
+The LED power defines are named like TSL2X7X_mAXXX. Rename these values
+to TSL2X7X_XXX_mA to improve code readability.
 
-> Correct error from checkpatch.pl to improve code readibility: Alignment
-> should match open parenthesis. An unnecessary cast to 'struct
-> tsl2x7x_lux *' was removed and the return value of static definition of
-> in_illuminance0_calibscale_available_show() was put on its own line
-> due to the length of that sysfs attribute.
-> 
-> Signed-off-by: Brian Masney <masneyb@onstation.org>
-Not sure I'd have bothered to take it quite this far!
+Signed-off-by: Brian Masney <masneyb@onstation.org>
+---
+ drivers/staging/iio/light/tsl2x7x.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-Anyhow, applied to the togreg branch of iio.git and pushed out as testing.
-
-Thanks,
-
-Jonathan
-> ---
->  drivers/staging/iio/light/tsl2x7x.c | 35 ++++++++++++++++++-----------------
->  1 file changed, 18 insertions(+), 17 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
-> index 886be9aa3c0f..70007117d985 100644
-> --- a/drivers/staging/iio/light/tsl2x7x.c
-> +++ b/drivers/staging/iio/light/tsl2x7x.c
-> @@ -521,8 +521,8 @@ static void tsl2x7x_defaults(struct tsl2X7X_chip *chip)
->  		       sizeof(chip->pdata->platform_lux_table));
->  	else
->  		memcpy(chip->tsl2x7x_device_lux,
-> -		(struct tsl2x7x_lux *)tsl2x7x_default_lux_table_group[chip->id],
-> -				TSL2X7X_DEFAULT_TABLE_BYTES);
-> +		       tsl2x7x_default_lux_table_group[chip->id],
-> +		       TSL2X7X_DEFAULT_TABLE_BYTES);
->  }
->  
->  /**
-> @@ -867,9 +867,10 @@ static void tsl2x7x_prox_cal(struct iio_dev *indio_dev)
->  		tsl2x7x_chip_on(indio_dev);
->  }
->  
-> -static ssize_t in_illuminance0_calibscale_available_show(struct device *dev,
-> -					   struct device_attribute *attr,
-> -					   char *buf)
-> +static ssize_t
-> +in_illuminance0_calibscale_available_show(struct device *dev,
-> +					  struct device_attribute *attr,
-> +					  char *buf)
->  {
->  	struct tsl2X7X_chip *chip = iio_priv(dev_to_iio_dev(dev));
->  
-> @@ -891,8 +892,8 @@ static IIO_CONST_ATTR(in_illuminance0_integration_time_available,
->  		".00272 - .696");
->  
->  static ssize_t in_illuminance0_target_input_show(struct device *dev,
-> -					   struct device_attribute *attr,
-> -					   char *buf)
-> +						 struct device_attribute *attr,
-> +						 char *buf)
->  {
->  	struct tsl2X7X_chip *chip = iio_priv(dev_to_iio_dev(dev));
->  
-> @@ -900,8 +901,8 @@ static ssize_t in_illuminance0_target_input_show(struct device *dev,
->  }
->  
->  static ssize_t in_illuminance0_target_input_store(struct device *dev,
-> -					    struct device_attribute *attr,
-> -					    const char *buf, size_t len)
-> +						  struct device_attribute *attr,
-> +						  const char *buf, size_t len)
->  {
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
-> @@ -922,8 +923,8 @@ static ssize_t in_illuminance0_target_input_store(struct device *dev,
->  }
->  
->  static ssize_t in_illuminance0_calibrate_store(struct device *dev,
-> -				    struct device_attribute *attr,
-> -				    const char *buf, size_t len)
-> +					       struct device_attribute *attr,
-> +					       const char *buf, size_t len)
->  {
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	bool value;
-> @@ -943,8 +944,8 @@ static ssize_t in_illuminance0_calibrate_store(struct device *dev,
->  }
->  
->  static ssize_t in_illuminance0_lux_table_show(struct device *dev,
-> -				     struct device_attribute *attr,
-> -				     char *buf)
-> +					      struct device_attribute *attr,
-> +					      char *buf)
->  {
->  	struct tsl2X7X_chip *chip = iio_priv(dev_to_iio_dev(dev));
->  	int i = 0;
-> @@ -971,8 +972,8 @@ static ssize_t in_illuminance0_lux_table_show(struct device *dev,
->  }
->  
->  static ssize_t in_illuminance0_lux_table_store(struct device *dev,
-> -				      struct device_attribute *attr,
-> -				      const char *buf, size_t len)
-> +					       struct device_attribute *attr,
-> +					       const char *buf, size_t len)
->  {
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
-> @@ -1013,8 +1014,8 @@ static ssize_t in_illuminance0_lux_table_store(struct device *dev,
->  }
->  
->  static ssize_t in_proximity0_calibrate_store(struct device *dev,
-> -					 struct device_attribute *attr,
-> -					 const char *buf, size_t len)
-> +					     struct device_attribute *attr,
-> +					     const char *buf, size_t len)
->  {
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	bool value;
+diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
+index 70007117d985..bb9fb60509cf 100644
+--- a/drivers/staging/iio/light/tsl2x7x.c
++++ b/drivers/staging/iio/light/tsl2x7x.c
+@@ -114,10 +114,10 @@
+ #define TSL2X7X_DIODE_BOTH		0x30
+ 
+ /* LED Power */
+-#define TSL2X7X_mA100			0x00
+-#define TSL2X7X_mA50			0x40
+-#define TSL2X7X_mA25			0x80
+-#define TSL2X7X_mA13			0xD0
++#define TSL2X7X_100_mA			0x00
++#define TSL2X7X_50_mA			0x40
++#define TSL2X7X_25_mA			0x80
++#define TSL2X7X_13_mA			0xD0
+ #define TSL2X7X_MAX_TIMER_CNT		0xFF
+ 
+ #define TSL2X7X_MIN_ITIME		3
+@@ -636,7 +636,7 @@ static int tsl2x7x_chip_on(struct iio_dev *indio_dev)
+ 	/* Set the gain based on tsl2x7x_settings struct */
+ 	chip->tsl2x7x_config[TSL2X7X_GAIN] =
+ 		chip->settings.als_gain |
+-			(TSL2X7X_mA100 | TSL2X7X_DIODE1) |
++			(TSL2X7X_100_mA | TSL2X7X_DIODE1) |
+ 			(chip->settings.prox_gain << 2);
+ 
+ 	/* set chip struct re scaling and saturation */
+-- 
+2.13.6
 
