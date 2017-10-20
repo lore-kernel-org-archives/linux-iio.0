@@ -1,58 +1,53 @@
-Return-Path: <SRS0=sL3g=BW=oracle.com=dan.carpenter@kernel.org>
-Date: Mon, 23 Oct 2017 12:06:43 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: Brian Masney <masneyb@onstation.org>
-Cc: jic23@kernel.org, linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        lars@metafoo.de, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com, pmeerw@pmeerw.net,
-        knaack.h@gmx.de
-Subject: Re: [PATCH 13/13] staging: iio: tsl2x7x: add goto for
- TSL2X7X_LUX_CALC_OVER_FLOW
-Message-ID: <20171023090642.26cp22adk6olktr6@mwanda>
-References: <20171019200632.25820-1-masneyb@onstation.org>
- <20171019200632.25820-14-masneyb@onstation.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20171019200632.25820-14-masneyb@onstation.org>
+Return-Path: <SRS0=oUj+=BT=gmail.com=clabbe.montjoie@kernel.org>
+From: Corentin Labbe <clabbe.montjoie@gmail.com>
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	maxime.ripard@free-electrons.com,
+	wens@csie.org,
+	pmeerw@pmeerw.net,
+	quentin.schulz@free-electrons.com
+Cc: linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Corentin Labbe <clabbe.montjoie@gmail.com>
+Subject: [PATCH] iio: adc: sun4i-gpadc: use of_device_get_match_data
+Date: Fri, 20 Oct 2017 07:37:29 +0200
+Message-Id: <20171020053729.23248-1-clabbe.montjoie@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, Oct 19, 2017 at 04:06:32PM -0400, Brian Masney wrote:
-> This patch adds a return_max label for the two cases that need to set
-> the lux to TSL2X7X_LUX_CALC_OVER_FLOW and return.
-> 
-> Signed-off-by: Brian Masney <masneyb@onstation.org>
-> ---
->  drivers/staging/iio/light/tsl2x7x.c | 9 ++++-----
->  1 file changed, 4 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
-> index 42ed9c015aaf..898304d65f64 100644
-> --- a/drivers/staging/iio/light/tsl2x7x.c
-> +++ b/drivers/staging/iio/light/tsl2x7x.c
-> @@ -364,10 +364,8 @@ static int tsl2x7x_get_lux(struct iio_dev *indio_dev)
->  	chip->als_cur_info.als_ch0 = ch0;
->  	chip->als_cur_info.als_ch1 = ch1;
->  
-> -	if (ch0 >= chip->als_saturation || ch1 >= chip->als_saturation) {
-> -		lux = TSL2X7X_LUX_CALC_OVER_FLOW;
-> +	if (ch0 >= chip->als_saturation || ch1 >= chip->als_saturation)
->  		goto return_max;
-> -	}
->  
->  	if (!ch0) {
->  		/* have no data, so return LAST VALUE */
-> @@ -418,11 +416,12 @@ static int tsl2x7x_get_lux(struct iio_dev *indio_dev)
->  	lux = lux64;
->  	lux = (lux + 500) / 1000;
->  
-> -	if (lux > TSL2X7X_LUX_CALC_OVER_FLOW) /* check for overflow */
-> +	if (lux > TSL2X7X_LUX_CALC_OVER_FLOW) { /* check for overflow */
-> +return_max:
->  		lux = TSL2X7X_LUX_CALC_OVER_FLOW;
-> +	}
+The usage of of_device_get_match_data reduce the code size a bit.
+Furthermore, it prevents an improbable dereference when
+of_match_device() return NULL.
 
-Ugh...  Wow.  No.  This terrible anti-pattern is spreading.  Don't do
-this.
+Signed-off-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+---
+ drivers/iio/adc/sun4i-gpadc-iio.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-regards,
-dan carpenter
+diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
+index c4e70f1cad79..04d7147e0110 100644
+--- a/drivers/iio/adc/sun4i-gpadc-iio.c
++++ b/drivers/iio/adc/sun4i-gpadc-iio.c
+@@ -501,17 +501,15 @@ static int sun4i_gpadc_probe_dt(struct platform_device *pdev,
+ 				struct iio_dev *indio_dev)
+ {
+ 	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
+-	const struct of_device_id *of_dev;
+ 	struct resource *mem;
+ 	void __iomem *base;
+ 	int ret;
+ 
+-	of_dev = of_match_device(sun4i_gpadc_of_id, &pdev->dev);
+-	if (!of_dev)
++	info->data = of_device_get_match_data(&pdev->dev);
++	if (!info->data)
+ 		return -ENODEV;
+ 
+ 	info->no_irq = true;
+-	info->data = (struct gpadc_data *)of_dev->data;
+ 	indio_dev->num_channels = ARRAY_SIZE(sun8i_a33_gpadc_channels);
+ 	indio_dev->channels = sun8i_a33_gpadc_channels;
+ 
+-- 
+2.13.6
