@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:40230 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S932221AbdJURzv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 21 Oct 2017 13:55:51 -0400
-Date: Sat, 21 Oct 2017 18:55:45 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43552 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932159AbdJUTXf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 21 Oct 2017 15:23:35 -0400
+Date: Sat, 21 Oct 2017 20:23:27 +0100
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 To: Fabrice Gasnier <fabrice.gasnier@st.com>
 Cc: <robh+dt@kernel.org>, <linux@armlinux.org.uk>,
         <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
@@ -13,11 +13,10 @@ Cc: <robh+dt@kernel.org>, <linux@armlinux.org.uk>,
         <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>, <benjamin.gaignard@linaro.org>,
-        <benjamin.gaignard@st.com>, Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>
+        <benjamin.gaignard@st.com>
 Subject: Re: [PATCH 1/3] dt-bindings: iio: adc: stm32: add support for diff
  channels
-Message-ID: <20171021185545.538303c6@archlinux>
+Message-ID: <20171021202327.51dd2855@archlinux>
 In-Reply-To: <20171021185401.529f2eb2@archlinux>
 References: <1508246145-19417-1-git-send-email-fabrice.gasnier@st.com>
         <1508246145-19417-2-git-send-email-fabrice.gasnier@st.com>
@@ -39,16 +38,23 @@ Jonathan Cameron <jic23@kernel.org> wrote:
 > > Differential channels are defined as a pair of positive and negative
 > > inputs: vinp & vinn.
 > > 
-> > Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+> > Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>  
 > Hmm. Fair enough.  Sometimes we support both types of channels
 > and leave it to userspace, but in many cases that makes little sense
 > - particularly if like I think is going on here, we aren't combining channels
 > that can be separately read but rather the negative pin is simply unused
 > when we are in single channel mode... (did I understand that right?)
-> 
-Forgot to say - I would ideally like a devicetree maintainer review on this
-one as it's a bit unusual!
+I clearly didn't understand.  This is same as other devices
+in that we are picking a pair from the channels that can otherwise be
+used as single end channels. (I think). 
 
+For this binding I think I'd like to see an example added showing how
+this works...
+
+Thanks,
+
+Jonathan
+> 
 > Jonathan
 > 
 > > ---
@@ -71,6 +77,10 @@ one as it's a bit unusual!
 > > +  Note: At least one of "st,adc-channels" or "st,adc-diff-channels" is required.
 > >  - #io-channel-cells = <1>: See the IIO bindings section "IIO consumers" in
 > >    Documentation/devicetree/bindings/iio/iio-bindings.txt
-> >  
+> >    
 > 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
