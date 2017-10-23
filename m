@@ -1,39 +1,26 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:39752 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S932179AbdJURqv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 21 Oct 2017 13:46:51 -0400
-Date: Sat, 21 Oct 2017 18:46:46 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <SRS0=sL3g=BW=oracle.com=dan.carpenter@kernel.org>
+Date: Mon, 23 Oct 2017 12:06:43 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
 To: Brian Masney <masneyb@onstation.org>
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-        devel@driverdev.osuosl.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-kernel@vger.kernel.org,
-        Jon.Brenner@ams.com
+Cc: jic23@kernel.org, linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        lars@metafoo.de, gregkh@linuxfoundation.org,
+        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com, pmeerw@pmeerw.net,
+        knaack.h@gmx.de
 Subject: Re: [PATCH 13/13] staging: iio: tsl2x7x: add goto for
  TSL2X7X_LUX_CALC_OVER_FLOW
-Message-ID: <20171021184646.07ca61b7@archlinux>
-In-Reply-To: <20171019200632.25820-14-masneyb@onstation.org>
+Message-ID: <20171023090642.26cp22adk6olktr6@mwanda>
 References: <20171019200632.25820-1-masneyb@onstation.org>
-        <20171019200632.25820-14-masneyb@onstation.org>
+ <20171019200632.25820-14-masneyb@onstation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20171019200632.25820-14-masneyb@onstation.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 19 Oct 2017 16:06:32 -0400
-Brian Masney <masneyb@onstation.org> wrote:
-
+On Thu, Oct 19, 2017 at 04:06:32PM -0400, Brian Masney wrote:
 > This patch adds a return_max label for the two cases that need to set
 > the lux to TSL2X7X_LUX_CALC_OVER_FLOW and return.
 > 
 > Signed-off-by: Brian Masney <masneyb@onstation.org>
-Sorry - don't like this last one.  I think it hurts readability.  Leave
-this as it was.
-
-Thanks
-
-Jonathan
 > ---
 >  drivers/staging/iio/light/tsl2x7x.c | 9 ++++-----
 >  1 file changed, 4 insertions(+), 5 deletions(-)
@@ -63,10 +50,9 @@ Jonathan
 > +return_max:
 >  		lux = TSL2X7X_LUX_CALC_OVER_FLOW;
 > +	}
->  
->  	/* Update the structure with the latest lux. */
-> -return_max:
->  	chip->als_cur_info.lux = lux;
->  	ret = lux;
->  
 
+Ugh...  Wow.  No.  This terrible anti-pattern is spreading.  Don't do
+this.
+
+regards,
+dan carpenter
