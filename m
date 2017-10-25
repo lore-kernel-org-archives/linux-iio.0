@@ -1,47 +1,70 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.web.de ([212.227.17.11]:59283 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S932127AbdJZRJb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 26 Oct 2017 13:09:31 -0400
-Subject: Re: iio/accel/stk8ba50: Use common error handling code in
- stk8ba50_probe()
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Tiberiu Breana <tiberiu.a.breana@intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org
-References: <5ab7e200-2dea-63e2-06db-0e185f563d16@users.sourceforge.net>
- <0f26a13b-7bbf-525b-a864-8aa8e13c3aef@users.sourceforge.net>
- <20171026174200.5c00b06d@archlinux>
+Return-Path: <SRS0=aVu3=BY=users.sourceforge.net=elfring@kernel.org>
+Subject: [PATCH 2/2] iio/accel/stk8ba50: Improve unlocking of a mutex in
+ stk8ba50_read_raw()
 From: SF Markus Elfring <elfring@users.sourceforge.net>
-Message-ID: <c7ee7221-3feb-1e6c-5e57-abec8c350330@users.sourceforge.net>
-Date: Thu, 26 Oct 2017 19:09:09 +0200
+To: linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+ Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+ Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+ Tiberiu Breana <tiberiu.a.breana@intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
+References: <5ab7e200-2dea-63e2-06db-0e185f563d16@users.sourceforge.net>
+Message-ID: <8e9436af-440e-b4a8-5024-1f2a51c41b6b@users.sourceforge.net>
+Date: Wed, 25 Oct 2017 22:17:29 +0200
 MIME-Version: 1.0
-In-Reply-To: <20171026174200.5c00b06d@archlinux>
+In-Reply-To: <5ab7e200-2dea-63e2-06db-0e185f563d16@users.sourceforge.net>
 Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-> Again, a general kernel development rule is to float only one
-> patch of a given type until you have had feedback on it.
+From: Markus Elfring <elfring@users.sourceforge.net>
+Date: Wed, 25 Oct 2017 22:00:42 +0200
 
-Some update suggestions according also to this general source code
-transformation pattern were already integrated in other software areas.
+Adjust jump targets so that a call of the function "mutex_unlock" is stored
+only once in a case branch of this function implementation.
+Replace two calls by goto statements.
 
+This issue was detected by using the Coccinelle software.
 
-> These backwards goto cases are sufficiently different from your earlier
-> patch that got reviews that,
+Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+---
+ drivers/iio/accel/stk8ba50.c | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
-They are required if you would ever like to support software refactorings
-in directions which I propose occasionally.
-
-
-> at most, you should have sent one to the list and then given time
-> for it to be properly reviewed (up to a week on IIO list typically).
-
-Did I present my ideas a bit too quick in this case?
-
-Regards,
-Markus
+diff --git a/drivers/iio/accel/stk8ba50.c b/drivers/iio/accel/stk8ba50.c
+index afe90567ad37..ffc26b5d1fad 100644
+--- a/drivers/iio/accel/stk8ba50.c
++++ b/drivers/iio/accel/stk8ba50.c
+@@ -221,20 +221,24 @@ static int stk8ba50_read_raw(struct iio_dev *indio_dev,
+ 			return -EBUSY;
+ 		mutex_lock(&data->lock);
+ 		ret = stk8ba50_set_power(data, STK8BA50_MODE_NORMAL);
+-		if (ret < 0) {
+-			mutex_unlock(&data->lock);
+-			return -EINVAL;
+-		}
++		if (ret < 0)
++			goto e_inval;
++
+ 		ret = stk8ba50_read_accel(data, chan->address);
+ 		if (ret < 0) {
+ 			stk8ba50_set_power(data, STK8BA50_MODE_SUSPEND);
+-			mutex_unlock(&data->lock);
+-			return -EINVAL;
++e_inval:
++			ret = -EINVAL;
++			goto unlock;
+ 		}
+ 		*val = sign_extend32(ret >> STK8BA50_DATA_SHIFT, 9);
+-		stk8ba50_set_power(data, STK8BA50_MODE_SUSPEND);
++		ret = stk8ba50_set_power(data, STK8BA50_MODE_SUSPEND);
++unlock:
+ 		mutex_unlock(&data->lock);
+-		return IIO_VAL_INT;
++		if (ret >= 0)
++			ret = IIO_VAL_INT;
++
++		return ret;
+ 	case IIO_CHAN_INFO_SCALE:
+ 		*val = 0;
+ 		*val2 = stk8ba50_scale_table[data->range].scale_val;
+-- 
+2.14.3
