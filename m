@@ -1,110 +1,123 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:57572 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:57590 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S932400AbdJZPwG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 26 Oct 2017 11:52:06 -0400
-Date: Thu, 26 Oct 2017 16:46:32 +0100
+        id S932343AbdJZPwJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 26 Oct 2017 11:52:09 -0400
+Date: Thu, 26 Oct 2017 16:51:13 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: SF Markus Elfring <elfring@users.sourceforge.net>
-Cc: Hans de Goede <hdegoede@redhat.com>, linux-iio@vger.kernel.org,
-        Hartmut Knaack <knaack.h@gmx.de>,
+To: Hans de Goede <hdegoede@redhat.com>
+Cc: SF Markus Elfring <elfring@users.sourceforge.net>,
+        linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
         LKML <linux-kernel@vger.kernel.org>,
         kernel-janitors@vger.kernel.org
-Subject: Re: iio/accel/bmc150: Improve unlocking of a mutex in two functions
-Message-ID: <20171026164632.4d577d95@archlinux>
-In-Reply-To: <12013256-ad6a-86ed-9bc1-e5d868189914@users.sourceforge.net>
+Subject: Re: [PATCH] iio/accel/bmc150: Improve unlocking of a mutex in two
+ functions
+Message-ID: <20171026165113.271dc1e1@archlinux>
+In-Reply-To: <6a2c614a-4d0d-f2d2-1689-4c67a2fc3eea@redhat.com>
 References: <66d582a4-a77e-cd78-4215-49587ec2259e@users.sourceforge.net>
         <fb223eb2-ddab-396e-372e-e9496be8bf0f@redhat.com>
         <c32ea2ea-5961-6589-6b51-1184d9565a38@users.sourceforge.net>
         <6a2c614a-4d0d-f2d2-1689-4c67a2fc3eea@redhat.com>
-        <7a76d804-797c-8a7f-a755-9e42f9157287@users.sourceforge.net>
-        <26467a3c-00e7-7358-5087-bf35469feb06@redhat.com>
-        <12013256-ad6a-86ed-9bc1-e5d868189914@users.sourceforge.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 25 Oct 2017 20:07:48 +0200
-SF Markus Elfring <elfring@users.sourceforge.net> wrote:
+On Wed, 25 Oct 2017 18:22:02 +0200
+Hans de Goede <hdegoede@redhat.com> wrote:
 
-> > What you are suggesting breaks this pattern  
+> Hi,
 > 
-> I might be looking for an other balance between involved implementation
-> details after your constructive feedback for my first approach
-> in this software module.
-> 
-> 
-> > (not using a goto in the last if (err) case)  
-> 
-> I would find it nice when a bit more code reduction is feasible.
-> 
-> 
-> > which makes the code harder to read and makes things harder
-> > (and potentially leads to introducing bugs) when
-> > a step4() gets added.  
-> 
-> There is a choice between conservative adjustments and progressive
-> software refactoring where both directions can lead to similar
-> development risks.
-> 
-> 
-> >>> because that way the error handling is consistent between all steps
-> >>> and if another step is later added at the end, the last step will
-> >>> not require modification.  
-> 
-> Such a view might express a change resistance.
-> 
-> 
-> >> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/drivers/iio/accel/kxcjk-1013.c?id=1540d0106bcbc4e52013d759a0a0752ae7b4a09d#n760  
+> On 25-10-17 18:15, SF Markus Elfring wrote:
+> >> IMHO, if you do this, you should rework the function so that there is a single unlock call
+> >> at the end, not a separate one in in error label.  
 > > 
-> > So I just checked this one,  
+> > Thanks for your update suggestion.
+> > 
+> > Does it indicate that I may propose similar source code adjustments
+> > in this software area?
+> > 
+> >   
+> >> Could e.g. change this:
+> >>
+> >>          ret = bmc150_accel_set_power_state(data, false);
+> >>          mutex_unlock(&data->mutex);
+> >>          if (ret < 0)
+> >>                  return ret;
+> >>
+> >>          return IIO_VAL_INT;
+> >> }
+> >>
+> >> To:
+> >>
+> >>          ret = bmc150_accel_set_power_state(data, false);
+> >>          if (ret < 0)
+> >>                  goto unlock;
+> >>
+> >>      ret = IIO_VAL_INT;  
 > 
-> Thanks for your interest.
+> If that is the only unlock in the function, then it is probably
+> best to keep things as is. In general gotos are considered
+> better then multiple unlocks, but not having either is even
+> better.
 > 
 > 
-> > this one is tricky because the lock is taking inside
-> > a switch-case and doing gotos inside the case is not pretty.  
+> > How do you think about to use the following code variant then?
+> > 
+> > 	if (!ret)
+> > 		ret = IIO_VAL_INT;  
 > 
-> I imagine that I would like to use scoped lock objects
-> in affected source files. (Other programming languages support
-> such synchronisation constructs directly.)
+> 
+> I believe the goto unlock variant and setting ret = IIO_VAL_INT;
+> directly above the unlock label variant is better, because that
+> way the error handling is consistent between all steps and if
+> another step is later added at the end, the last step will
+> not require modification.
+I agree, setting ret = IIO_VAL_INT in the good path unconditionally
+is good.
 
-I'd keep it simple for now. Also, I'd actually take a different
-approach to tidy up this case we are talking about here.
+However, it is not just the unlocking that would be nice to
+unify here.  The call to:
 
-Factor out the whole case IIO_CHAN_INFO_RAW block as a 
-utility function.  Then nice clean and simple lock handling
-can be done in the error paths without the readability problems
-that you get doing it deeply nested.
+bmc150_accel_set_power_state(data, false);
 
-Btw. There is another issue in that code that needs fixing
-which is that it will race with the buffer being enabled.
-It should be using the iio_claim_direct infrastructure to
-prevent that cleanly. 
+occurs in both the final two error paths and the good path.  An
+additional label and appropriate gotos would clean that up
+as well.
 
-That example is definitely more ugly that it needs to be
-so would be nice to clean it up if you have time.
-
-Thanks,
+This driver also suffers from issues with racing against
+the buffer enable check and buffers being enabled like
+I mentioned in the other email.   Clearly more cases of
+that around than I realised!  Patches welcome or I'll suggest
+it as an outreachy cleanup task.
 
 Jonathan
+
 > 
+> >> unlock:
+> >>          mutex_unlock(&data->mutex);
+> >>
+> >>          return ret;
+> >> }
+> >>
+> >> And also use the unlock label in the other cases, this is actually
+> >> quite a normal pattern. I see little use in a patch like this if there
+> >> are still 2 unlock paths after the patch.  
+> > 
+> > How long should I wait for corresponding feedback before another small
+> > source code adjustment will be appropriate?  
 > 
-> > Basically I believe there is no one-size fits all solution
-> > here and refactoring like this may introduce bugs, so one
-> > needs to weight the amount of work + regression risk vs
-> > the benefits of the code being cleaner going forward.  
-> 
-> It seems that our software development discussion can be
-> continued in a constructive way then.
+> That is hard to say. I usually just do a new version when I've time,
+> seldomly someone complains I should have waited longer for feedback
+> (when I'm quite quick) but usually sending out a new version as soon
+> as you've time to work on a new version is best, since if you wait
+> you may then not have time for the entire next week or so, at least
+> that is my experience :)  There is really no clear rule here.
 > 
 > Regards,
-> Markus
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+> Hans
+> 
 
