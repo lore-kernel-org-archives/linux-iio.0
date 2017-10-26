@@ -1,28 +1,25 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:35162 "EHLO mail.kernel.org"
+Received: from ns.pmeerw.net ([84.19.176.117]:47914 "EHLO vps.pmeerw.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S932137AbdJZRAm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 26 Oct 2017 13:00:42 -0400
-Date: Thu, 26 Oct 2017 18:00:25 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+        id S932275AbdJZTFX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 26 Oct 2017 15:05:23 -0400
+Date: Thu, 26 Oct 2017 21:05:21 +0200 (CEST)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 To: Marc CAPDEVILLE <m.capdeville@no-log.org>
-Cc: Kevin Tsai <ktsai@capellamicro.com>,
+cc: Kevin Tsai <ktsai@capellamicro.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Wolfram Sang <wsa@the-dreams.de>
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v2] iio : Add cm3218 smbus ara and acpi support
-Message-ID: <20171026180025.34d5cba6@archlinux>
 In-Reply-To: <20171025145515.GA9033@azrael>
+Message-ID: <alpine.DEB.2.20.1710262057440.1176@vps.pmeerw.net>
 References: <20171025145515.GA9033@azrael>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 25 Oct 2017 16:55:15 +0200
-Marc CAPDEVILLE <m.capdeville@no-log.org> wrote:
 
 > On asus T100, Capella cm3218 chip is implemented as ambiant light
 > sensor. This chip expose an smbus ARA protocol device on standard
@@ -37,24 +34,10 @@ Marc CAPDEVILLE <m.capdeville@no-log.org> wrote:
 > the ACPI resource list and change it in the client structure.
 > if an interrupt resource is given, and only for cm3218 chip,
 > we declare an smbus_alert device.
-> 
+
+comments below; some are unrelated cleanups if you care...
+ 
 > Signed-off-by: Marc CAPDEVILLE <m.capdeville@no-log.org>
-Hi Marc,
-
-The ACPI resource filtering is not being used as that infrastructure
-is intended.  What you have here may be shorter, but it is non
-standard so both fragile and harder to review.
-
-I will also be needed an ack from Kevin and please cc wolfram as
-the smbus usage is relatively unusual.
-
-We have probably missed the upcoming merge window now (unless it
-is delayed for some reason).  I am travelling for the next
-two weeks so any response may be delayed (or quicker depending
-on how much time I spend using airport wifi :)
-
-Jonathan
-
 > ---
 > v2 : 
 >    - cm3218 support always build
@@ -77,10 +60,16 @@ Jonathan
 > +#include <linux/of_device.h>
 >  
 >  /* Registers Address */
+
+maybe better 'Register Addresses'
+
 >  #define CM32181_REG_ADDR_CMD		0x00
 > @@ -47,6 +50,11 @@
 >  #define CM32181_CALIBSCALE_RESOLUTION	1000
 >  #define MLUX_PER_LUX			1000
+
+CM32181_ prefix?
+
 >  
 > +#define CM32181_ID			0x81
 > +#define CM3218_ID			0x18
@@ -91,6 +80,9 @@ Jonathan
 >  	CM32181_REG_ADDR_CMD,
 >  };
 > @@ -57,6 +65,8 @@ static const int als_it_value[] = {25000, 50000, 100000, 200000, 400000,
+
+cm32181_ prefix?
+
 >  
 >  struct cm32181_chip {
 >  	struct i2c_client *client;
@@ -114,16 +106,19 @@ Jonathan
 >  
 > +#if defined(CONFIG_ACPI)
 > +/* Parse acpi resources for a second i2c address on same adapter
+
+could be a single line comment :)
+
+the function does more than parse; I suggest to use strut i2c_client * as 
+the type for the second argument
+
+please describe that the i2c address is put into data
+
+the return type could be bool, 1 vs -1 is unusual and not clear, -1 on 
+success?
+
 > + */
-Please use kernel style comment syntax with correct single and multiple
-line comments.
-
 > +static int cm3218_get_i2c_address(struct acpi_resource *ares, void *data)
-
-Read http://elixir.free-electrons.com/linux/latest/source/drivers/acpi/resource.c#L600
-help text and make this function do the actions described rrather than what it
-is doing currently.
-
 > +{
 > +	struct i2c_client *client = data;
 > +	struct acpi_resource_i2c_serialbus *sb;
@@ -158,8 +153,10 @@ is doing currently.
 > +}
 > +
 > +/* Walk through acpi resources to find second i2c connection
+
+single line comment?
+
 > + */
-Single line comment syntax please.
 > +static int cm3218_acpi_get_address(struct i2c_client *client)
 > +{
 > +	int ret;
@@ -177,27 +174,14 @@ Single line comment syntax please.
 > +	acpi_dev_free_resource_list(&ares);
 > +	if (ret < 0)
 > +		return -ENODEV;
-Firstly, acpi_dev_get_resources returns meaningful error so
-don't replace them.
-
-Secondly this does not look like the intended use of this functionality.
-You re getting the address effectively as a side effect rather than
-explicitly doing so.  Then intent is you convert the returned resources
-into a form that can be added to the resource list and then get your
-answer from there...
-
-The idea of the data element is that it is used as part of a filter,
-not that you should be setting stuff in it.
-
-So, filter the resources and put the resulting i2c serial bus resource
-in the list.  Then in this function you can use that to do the
-configuration.
-
 > +
 > +	return 0;
 > +}
 > +#else
 > +static inline int cm3218_acpi_get_address(struct i2c_client *client)
+
+why inline?
+
 > +{
 > +	return -ENODEV;
 > +}
@@ -243,9 +227,6 @@ configuration.
 > +	if (cm32181->chip_id == CM3218_ID) {
 > +		if (client->addr == CM3218_ARA_ADDR) {
 > +			/* In case first address is the ARA device
-/*
- * In case..
-
 > +			 * lookup for a second one in acpi resources if
 > +			 * this client is enumerated on acpi
 > +			 */
@@ -257,6 +238,9 @@ configuration.
 > +#ifdef CONFIG_I2C_SMBUS
 > +		if (client->irq > 0) {
 > +			/* setup smb alert device
+
+single line comment
+
 > +			 */
 > +			ara_setup.irq = client->irq;
 > +			ara_setup.alert_edge_triggered = 0;
@@ -345,4 +329,9 @@ configuration.
 >  };
 >  
 >  module_i2c_driver(cm32181_driver);
+> 
 
+-- 
+
+Peter Meerwald-Stadler
+Mobile: +43 664 24 44 418
