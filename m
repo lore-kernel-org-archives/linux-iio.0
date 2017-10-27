@@ -1,52 +1,58 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.117]:45392 "EHLO vps.pmeerw.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750998AbdJ0T37 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 27 Oct 2017 15:29:59 -0400
+Return-Path: <SRS0=wbiz=B2=pmeerw.net=pmeerw@kernel.org>
 From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org
-Subject: [PATCH 00/13] iio: health: Add MAX30105 support to max30102 driver
-Date: Fri, 27 Oct 2017 21:29:35 +0200
-Message-Id: <1509132593-1815-1-git-send-email-pmeerw@pmeerw.net>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Matt Ranostay <matt@ranostay.consulting>
+Subject: [PATCH 01/13] iio: health: max30102: Fix mode config values
+Date: Fri, 27 Oct 2017 21:29:36 +0200
+Message-Id: <1509132593-1815-2-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1509132593-1815-1-git-send-email-pmeerw@pmeerw.net>
+References: <1509132593-1815-1-git-send-email-pmeerw@pmeerw.net>
+List-ID: <linux-iio@vger.kernel.org>
 
-This patch series reworks the max30102 driver to add support for the MAX30105
-part (which add a third LED)
+Table 4 of the datasheet specifies the mode control, these are not
+individual bits; add multi LED mode
 
-patches 1 to 3 are bugfix
+Add multi-LED mode and fix MODE_MASK (3 bits wide, not 2)
 
-patches 4 to 6 add minor features and cleanup
+Signed-off-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Matt Ranostay <matt@ranostay.consulting>
+---
+ drivers/iio/health/max30102.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-patch 8 allows to read the temperature without currently measuring other channels
-
-patches 9 to 11 prepare for adding another LED, more flexibility
-
-patch 12 adds support for the MAX30105 part
-
-patch 13 updates devicetree documentation for the MAX30105 part
-
-Peter Meerwald-Stadler (13):
-  iio: health: max30102: Temperature should be in milli Celsius
-  iio: health: max30102: Fix missing newline in dev_err
-  iio: health: max30102: Remove inconsistent full stop in error message
-  iio: health: max30102: Fix mode config values
-  iio: health: max30102: Check retval of powermode function
-  iio: health: max30102: Add check for part ID
-  iio: health: max30102: Introduce intensity channel macro
-  iio: health: max30102: Add power enable parameter to get_temp function
-  iio: health: max30102: Introduce indices for LED channels
-  iio: health: max30102: Move mode setting to buffer_postenable
-  iio: health: max30102: Prepare for copying varying number of
-    measurements
-  iio: health: max30102: Add MAX30105 support
-  dt-bindings: iio: health: Add MAX30105 support to max30102.txt
-
- .../devicetree/bindings/iio/health/max30102.txt    |   8 +-
- drivers/iio/health/max30102.c                      | 310 ++++++++++++++++-----
- 2 files changed, 241 insertions(+), 77 deletions(-)
-
+diff --git a/drivers/iio/health/max30102.c b/drivers/iio/health/max30102.c
+index 203ffb9..7635bef 100644
+--- a/drivers/iio/health/max30102.c
++++ b/drivers/iio/health/max30102.c
+@@ -60,9 +60,10 @@
+ #define MAX30102_REG_FIFO_CONFIG_AFULL		BIT(0)
+ 
+ #define MAX30102_REG_MODE_CONFIG		0x09
+-#define MAX30102_REG_MODE_CONFIG_MODE_SPO2_EN	BIT(0)
+-#define MAX30102_REG_MODE_CONFIG_MODE_HR_EN	BIT(1)
+-#define MAX30102_REG_MODE_CONFIG_MODE_MASK	0x03
++#define MAX30102_REG_MODE_CONFIG_MODE_HR	0x02 /* red LED */
++#define MAX30102_REG_MODE_CONFIG_MODE_HR_SPO2	0x03 /* red + IR LED */
++#define MAX30102_REG_MODE_CONFIG_MODE_MULTI	0x07 /* multi-LED mode */
++#define MAX30102_REG_MODE_CONFIG_MODE_MASK	GENMASK(2, 0)
+ #define MAX30102_REG_MODE_CONFIG_PWR		BIT(7)
+ 
+ #define MAX30102_REG_SPO2_CONFIG		0x0a
+@@ -287,11 +288,10 @@ static int max30102_chip_init(struct max30102_data *data)
+ 	if (ret)
+ 		return ret;
+ 
+-	/* enable SPO2 mode */
++	/* enable HR + SPO2 mode */
+ 	ret = regmap_update_bits(data->regmap, MAX30102_REG_MODE_CONFIG,
+ 				 MAX30102_REG_MODE_CONFIG_MODE_MASK,
+-				 MAX30102_REG_MODE_CONFIG_MODE_HR_EN |
+-				 MAX30102_REG_MODE_CONFIG_MODE_SPO2_EN);
++				 MAX30102_REG_MODE_CONFIG_MODE_HR_SPO2);
+ 	if (ret)
+ 		return ret;
+ 
 -- 
 2.7.4
-
