@@ -1,51 +1,37 @@
 Return-Path: <SRS0=wbiz=B2=pmeerw.net=pmeerw@kernel.org>
 From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org
-Subject: [PATCH v2 00/13] iio: health: Add MAX30105 support to max30102 driver
-Date: Fri, 27 Oct 2017 21:45:30 +0200
-Message-Id: <1509133543-4597-1-git-send-email-pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Matt Ranostay <matt.ranostay@konsulko.com>
+Subject: [PATCH v2 01/13] iio: health: max30102: Temperature should be in milli Celsius
+Date: Fri, 27 Oct 2017 21:45:31 +0200
+Message-Id: <1509133543-4597-2-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1509133543-4597-1-git-send-email-pmeerw@pmeerw.net>
+References: <1509133543-4597-1-git-send-email-pmeerw@pmeerw.net>
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch series reworks the max30102 driver to add support for the MAX30105
-part (which add a third LED)
+As per ABI temperature should be in milli Celsius after scaling,
+not Celsius
 
-v2:
-* send correct patches, sorry for the mess
-* fix Matt Ranostay's email address
+Signed-off-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Matt Ranostay <matt.ranostay@konsulko.com>
+---
+ drivers/iio/health/max30102.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
-patches 1 to 3 are bugfix
-
-patches 4 to 6 add minor features and cleanup
-
-patch 8 allows to read the temperature without currently measuring other channels
-
-patches 9 to 11 prepare for adding another LED, more flexibility
-
-patch 12 adds support for the MAX30105 part
-
-patch 13 updates devicetree documentation for the MAX30105 part
-
-Peter Meerwald-Stadler (13):
-  iio: health: max30102: Temperature should be in milli Celsius
-  iio: health: max30102: Fix missing newline in dev_err
-  iio: health: max30102: Remove inconsistent full stop in error message
-  iio: health: max30102: Fix mode config values
-  iio: health: max30102: Check retval of powermode function
-  iio: health: max30102: Add check for part ID
-  iio: health: max30102: Introduce intensity channel macro
-  iio: health: max30102: Add power enable parameter to get_temp function
-  iio: health: max30102: Introduce indices for LED channels
-  iio: health: max30102: Move mode setting to buffer_postenable
-  iio: health: max30102: Prepare for copying varying number of
-    measurements
-  iio: health: max30102: Add MAX30105 support
-  dt-bindings: iio: health: Add MAX30105 support to max30102.txt
-
- .../devicetree/bindings/iio/health/max30102.txt    |   8 +-
- drivers/iio/health/max30102.c                      | 310 ++++++++++++++++-----
- 2 files changed, 241 insertions(+), 77 deletions(-)
-
+diff --git a/drivers/iio/health/max30102.c b/drivers/iio/health/max30102.c
+index 203ffb9..147a8c1 100644
+--- a/drivers/iio/health/max30102.c
++++ b/drivers/iio/health/max30102.c
+@@ -371,7 +371,7 @@ static int max30102_read_raw(struct iio_dev *indio_dev,
+ 		mutex_unlock(&indio_dev->mlock);
+ 		break;
+ 	case IIO_CHAN_INFO_SCALE:
+-		*val = 1;  /* 0.0625 */
++		*val = 1000;  /* 62.5 */
+ 		*val2 = 16;
+ 		ret = IIO_VAL_FRACTIONAL;
+ 		break;
 -- 
 2.7.4
