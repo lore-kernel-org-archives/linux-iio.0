@@ -4,146 +4,64 @@ To: Jonathan Cameron <jic23@kernel.org>
 Cc: linux-iio@vger.kernel.org,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	Matt Ranostay <matt.ranostay@konsulko.com>
-Subject: [PATCH v2 10/13] iio: health: max30102: Move mode setting to buffer_postenable
-Date: Fri, 27 Oct 2017 21:45:40 +0200
-Message-Id: <1509133543-4597-11-git-send-email-pmeerw@pmeerw.net>
+Subject: [PATCH v2 11/13] iio: health: max30102: Prepare for copying varying number of measurements
+Date: Fri, 27 Oct 2017 21:45:41 +0200
+Message-Id: <1509133543-4597-12-git-send-email-pmeerw@pmeerw.net>
 In-Reply-To: <1509133543-4597-1-git-send-email-pmeerw@pmeerw.net>
 References: <1509133543-4597-1-git-send-email-pmeerw@pmeerw.net>
 List-ID: <linux-iio@vger.kernel.org>
 
-Move the programming of the mode setting from init() to
-buffer_postenable()
-
-Split out a separate function to
-only update the power/shutdown bit
-
-This changes permits to more easily implement different
-modes of measurements in further patches
+Current code assumes always 2 measurements (6 bytes) have to be copied,
+prepare for more flexibility
 
 Signed-off-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 Cc: Matt Ranostay <matt.ranostay@konsulko.com>
 ---
- drivers/iio/health/max30102.c | 44 +++++++++++++++++++++++++++----------------
- 1 file changed, 28 insertions(+), 16 deletions(-)
+ drivers/iio/health/max30102.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iio/health/max30102.c b/drivers/iio/health/max30102.c
-index 37176c2..1c7fe63 100644
+index 1c7fe63..86058f0 100644
 --- a/drivers/iio/health/max30102.c
 +++ b/drivers/iio/health/max30102.c
-@@ -66,6 +66,7 @@ enum max3012_led_idx {
- #define MAX30102_REG_FIFO_CONFIG_AFULL		BIT(0)
+@@ -58,7 +58,7 @@ enum max3012_led_idx {
+ #define MAX30102_REG_FIFO_OVR_CTR		0x05
+ #define MAX30102_REG_FIFO_RD_PTR		0x06
+ #define MAX30102_REG_FIFO_DATA			0x07
+-#define MAX30102_REG_FIFO_DATA_ENTRY_LEN	6
++#define MAX30102_REG_FIFO_DATA_BYTES		3
  
- #define MAX30102_REG_MODE_CONFIG		0x09
-+#define MAX30102_REG_MODE_CONFIG_MODE_NONE	0x00
- #define MAX30102_REG_MODE_CONFIG_MODE_HR	0x02 /* red LED */
- #define MAX30102_REG_MODE_CONFIG_MODE_HR_SPO2	0x03 /* red + IR LED */
- #define MAX30102_REG_MODE_CONFIG_MODE_MULTI	0x07 /* multi-LED mode */
-@@ -139,25 +140,41 @@ static const struct iio_chan_spec max30102_channels[] = {
- 	},
- };
- 
--static int max30102_set_powermode(struct max30102_data *data, bool state)
-+static int max30102_set_power(struct max30102_data *data, bool en)
- {
- 	return regmap_update_bits(data->regmap, MAX30102_REG_MODE_CONFIG,
- 				  MAX30102_REG_MODE_CONFIG_PWR,
--				  state ? 0 : MAX30102_REG_MODE_CONFIG_PWR);
-+				  en ? 0 : MAX30102_REG_MODE_CONFIG_PWR);
-+}
-+
-+static int max30102_set_powermode(struct max30102_data *data, u8 mode, bool en)
-+{
-+	u8 reg = mode;
-+
-+	if (!en)
-+		reg |= MAX30102_REG_MODE_CONFIG_PWR;
-+
-+	return regmap_update_bits(data->regmap, MAX30102_REG_MODE_CONFIG,
-+				  MAX30102_REG_MODE_CONFIG_PWR |
-+				  MAX30102_REG_MODE_CONFIG_MODE_MASK, reg);
- }
- 
- static int max30102_buffer_postenable(struct iio_dev *indio_dev)
- {
- 	struct max30102_data *data = iio_priv(indio_dev);
-+	u8 reg;
-+
-+	reg = MAX30102_REG_MODE_CONFIG_MODE_HR_SPO2;
- 
--	return max30102_set_powermode(data, true);
-+	return max30102_set_powermode(data, reg, true);
- }
- 
- static int max30102_buffer_predisable(struct iio_dev *indio_dev)
- {
- 	struct max30102_data *data = iio_priv(indio_dev);
- 
--	return max30102_set_powermode(data, false);
-+	return max30102_set_powermode(data, MAX30102_REG_MODE_CONFIG_MODE_NONE,
-+				      false);
- }
- 
- static const struct iio_buffer_setup_ops max30102_buffer_setup_ops = {
-@@ -278,7 +295,7 @@ static int max30102_chip_init(struct max30102_data *data)
- 	if (ret)
- 		return ret;
- 
--	/* enable 18-bit HR + SPO2 readings at 400Hz */
-+	/* configure 18-bit HR + SpO2 readings at 400Hz */
- 	ret = regmap_write(data->regmap, MAX30102_REG_SPO2_CONFIG,
- 				(MAX30102_REG_SPO2_CONFIG_ADC_4096_STEPS
- 				 << MAX30102_REG_SPO2_CONFIG_ADC_MASK_SHIFT) |
-@@ -288,13 +305,6 @@ static int max30102_chip_init(struct max30102_data *data)
- 	if (ret)
- 		return ret;
- 
--	/* enable HR + SPO2 mode */
--	ret = regmap_update_bits(data->regmap, MAX30102_REG_MODE_CONFIG,
--				 MAX30102_REG_MODE_CONFIG_MODE_MASK,
--				 MAX30102_REG_MODE_CONFIG_MODE_HR_SPO2);
--	if (ret)
--		return ret;
--
- 	/* average 4 samples + generate FIFO interrupt */
- 	ret = regmap_write(data->regmap, MAX30102_REG_FIFO_CONFIG,
- 				(MAX30102_REG_FIFO_CONFIG_AVG_4SAMPLES
-@@ -334,7 +344,7 @@ static int max30102_get_temp(struct max30102_data *data, int *val, bool en)
- 	int ret;
- 
- 	if (en) {
--		ret = max30102_set_powermode(data, true);
-+		ret = max30102_set_power(data, true);
- 		if (ret)
- 			return ret;
- 	}
-@@ -351,7 +361,7 @@ static int max30102_get_temp(struct max30102_data *data, int *val, bool en)
- 
- out:
- 	if (en)
--		max30102_set_powermode(data, false);
-+		max30102_set_power(data, false);
- 
- 	return ret;
- }
-@@ -448,7 +458,9 @@ static int max30102_probe(struct i2c_client *client,
- 		return ret;
- 	dev_dbg(&client->dev, "max3010x revision %02x\n", reg);
- 
--	ret = max30102_set_powermode(data, false);
-+	/* clear mode setting, chip shutdown */
-+	ret = max30102_set_powermode(data, MAX30102_REG_MODE_CONFIG_MODE_NONE,
-+				     false);
- 	if (ret)
- 		return ret;
- 
-@@ -479,7 +491,7 @@ static int max30102_remove(struct i2c_client *client)
- 	struct max30102_data *data = iio_priv(indio_dev);
- 
- 	iio_device_unregister(indio_dev);
--	max30102_set_powermode(data, false);
-+	max30102_set_power(data, false);
- 
+ #define MAX30102_REG_FIFO_CONFIG		0x08
+ #define MAX30102_REG_FIFO_CONFIG_AVG_4SAMPLES	BIT(1)
+@@ -198,6 +198,11 @@ static inline int max30102_fifo_count(struct max30102_data *data)
  	return 0;
  }
+ 
++#define MAX30102_COPY_DATA(i) \
++	memcpy(&data->processed_buffer[(i)], \
++	       &buffer[(i) * MAX30102_REG_FIFO_DATA_BYTES], \
++	       MAX30102_REG_FIFO_DATA_BYTES)
++
+ static int max30102_read_measurement(struct max30102_data *data)
+ {
+ 	int ret;
+@@ -205,13 +210,13 @@ static int max30102_read_measurement(struct max30102_data *data)
+ 
+ 	ret = i2c_smbus_read_i2c_block_data(data->client,
+ 					    MAX30102_REG_FIFO_DATA,
+-					    MAX30102_REG_FIFO_DATA_ENTRY_LEN,
++					    2 * MAX30102_REG_FIFO_DATA_BYTES,
+ 					    buffer);
+ 
+-	memcpy(&data->processed_buffer[0], &buffer[0], 3);
+-	memcpy(&data->processed_buffer[1], &buffer[3], 3);
++	MAX30102_COPY_DATA(0);
++	MAX30102_COPY_DATA(1);
+ 
+-	return (ret == MAX30102_REG_FIFO_DATA_ENTRY_LEN) ? 0 : -EINVAL;
++	return (ret == 2 * MAX30102_REG_FIFO_DATA_BYTES) ? 0 : -EINVAL;
+ }
+ 
+ static irqreturn_t max30102_interrupt_handler(int irq, void *private)
 -- 
 2.7.4
