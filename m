@@ -1,40 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.117]:46718 "EHLO vps.pmeerw.net"
+Received: from ns.pmeerw.net ([84.19.176.117]:46808 "EHLO vps.pmeerw.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S932417AbdJ0Tpt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 27 Oct 2017 15:45:49 -0400
+        id S932417AbdJ0Tpv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 27 Oct 2017 15:45:51 -0400
 From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: linux-iio@vger.kernel.org,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Matt Ranostay <matt.ranostay@konsulko.com>
-Subject: [PATCH v2 03/13] iio: health: max30102: Remove inconsistent full stop in error message
-Date: Fri, 27 Oct 2017 21:45:33 +0200
-Message-Id: <1509133543-4597-4-git-send-email-pmeerw@pmeerw.net>
+Subject: [PATCH v2 04/13] iio: health: max30102: Fix mode config values
+Date: Fri, 27 Oct 2017 21:45:34 +0200
+Message-Id: <1509133543-4597-5-git-send-email-pmeerw@pmeerw.net>
 In-Reply-To: <1509133543-4597-1-git-send-email-pmeerw@pmeerw.net>
 References: <1509133543-4597-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Table 4 of the datasheet specifies the mode control, these are not
+individual bits; add multi LED mode
+
+Add multi-LED mode and fix MODE_MASK (3 bits wide, not 2)
+
 Signed-off-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 Cc: Matt Ranostay <matt.ranostay@konsulko.com>
 ---
- drivers/iio/health/max30102.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/health/max30102.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iio/health/max30102.c b/drivers/iio/health/max30102.c
-index 62b1b35..6ca6182 100644
+index 6ca6182..13d5312 100644
 --- a/drivers/iio/health/max30102.c
 +++ b/drivers/iio/health/max30102.c
-@@ -420,7 +420,7 @@ static int max30102_probe(struct i2c_client *client,
+@@ -60,9 +60,10 @@
+ #define MAX30102_REG_FIFO_CONFIG_AFULL		BIT(0)
  
- 	data->regmap = devm_regmap_init_i2c(client, &max30102_regmap_config);
- 	if (IS_ERR(data->regmap)) {
--		dev_err(&client->dev, "regmap initialization failed.\n");
-+		dev_err(&client->dev, "regmap initialization failed\n");
- 		return PTR_ERR(data->regmap);
- 	}
- 	max30102_set_powermode(data, false);
+ #define MAX30102_REG_MODE_CONFIG		0x09
+-#define MAX30102_REG_MODE_CONFIG_MODE_SPO2_EN	BIT(0)
+-#define MAX30102_REG_MODE_CONFIG_MODE_HR_EN	BIT(1)
+-#define MAX30102_REG_MODE_CONFIG_MODE_MASK	0x03
++#define MAX30102_REG_MODE_CONFIG_MODE_HR	0x02 /* red LED */
++#define MAX30102_REG_MODE_CONFIG_MODE_HR_SPO2	0x03 /* red + IR LED */
++#define MAX30102_REG_MODE_CONFIG_MODE_MULTI	0x07 /* multi-LED mode */
++#define MAX30102_REG_MODE_CONFIG_MODE_MASK	GENMASK(2, 0)
+ #define MAX30102_REG_MODE_CONFIG_PWR		BIT(7)
+ 
+ #define MAX30102_REG_SPO2_CONFIG		0x0a
+@@ -287,11 +288,10 @@ static int max30102_chip_init(struct max30102_data *data)
+ 	if (ret)
+ 		return ret;
+ 
+-	/* enable SPO2 mode */
++	/* enable HR + SPO2 mode */
+ 	ret = regmap_update_bits(data->regmap, MAX30102_REG_MODE_CONFIG,
+ 				 MAX30102_REG_MODE_CONFIG_MODE_MASK,
+-				 MAX30102_REG_MODE_CONFIG_MODE_HR_EN |
+-				 MAX30102_REG_MODE_CONFIG_MODE_SPO2_EN);
++				 MAX30102_REG_MODE_CONFIG_MODE_HR_SPO2);
+ 	if (ret)
+ 		return ret;
+ 
 -- 
 2.7.4
 
