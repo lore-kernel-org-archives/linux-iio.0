@@ -1,93 +1,55 @@
-Return-Path: <SRS0=p4YK=B5=metafoo.de=lars@kernel.org>
+Return-Path: <SRS0=Otvk=B5=the-dreams.de=wsa@kernel.org>
+Date: Mon, 30 Oct 2017 14:25:27 +0100
+From: Wolfram Sang <wsa@the-dreams.de>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Marc CAPDEVILLE <m.capdeville@no-log.org>,
+	Kevin Tsai <ktsai@capellamicro.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v3] iio : Add cm3218 smbus ara and acpi support
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Marc CAPDEVILLE <m.capdeville@no-log.org>,
- Kevin Tsai <ktsai@capellamicro.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Wolfram Sang
- <wsa@the-dreams.de>, Hartmut Knaack <knaack.h@gmx.de>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-ID: <20171030132527.tly4gbpm5wlqio2o@ninjato>
 References: <20171027132051.sw5m5iboowlsrxxb@azrael>
  <6ac0c8cf-3ee8-ccc0-75c6-ec87f127857a@metafoo.de>
-Message-ID: <2c52a855-2bf7-d682-e20e-c4fbd01341e6@metafoo.de>
-Date: Mon, 30 Oct 2017 13:53:06 +0100
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="2mywfakmfmugtnow"
 In-Reply-To: <6ac0c8cf-3ee8-ccc0-75c6-ec87f127857a@metafoo.de>
-Content-Type: text/plain; charset=utf-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On 10/30/2017 11:54 AM, Lars-Peter Clausen wrote:
-> On 10/27/2017 03:20 PM, Marc CAPDEVILLE wrote:
->> On asus T100, Capella cm3218 chip is implemented as ambiant light
->> sensor. This chip expose an smbus ARA protocol device on standard
->> address 0x0c. The chip is not functional before all alerts are
->> acknowledged.
->> On asus T100, this device is enumerated on ACPI bus and the description
->> give tow I2C connection. The first is the connection to the ARA device
-> 
-> two
-> 
->> and the second gives the real address of the device.
-> 
+
+--2mywfakmfmugtnow
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+
 > Is there a document somewhere describing what this ARA stuff is and how it
 > works? Is this "Project ARA"?
 
-Found it: "Address Response Alert". Given that the ARA address 0x0c is an
-reserved address and should not be used for normal I2C devices I wonder if
-the I2C core shouldn't ignore it and get the correct address on its own when
-instantiating the I2C slave device? I'd assume that this issue is not
-specific to this particular device.
+Check the SMBus specs for "Alert Response Address".
 
-> 
->>
->> So, on device probe,If the i2c address is the ARA address and the
->> device is enumerated via acpi, we lookup for the real address in
->> the ACPI resource list and change it in the client structure.
->> if an interrupt resource is given, and only for cm3218 chip,
->> we declare an smbus_alert device.
->>
->> Signed-off-by: Marc CAPDEVILLE <m.capdeville@no-log.org>
-> [...]
->> +/* Get the real i2c address from acpi resources */
->> +static int cm3218_acpi_get_address(struct i2c_client *client)
->> +{
->> +	int ret;
->> +	struct acpi_device *adev;
->> +	LIST_HEAD(res_list);
->> +	struct resource_entry *res_entry;
->> +	struct acpi_resource *ares;
->> +	struct acpi_resource_i2c_serialbus *sb;
->> +
->> +	adev = ACPI_COMPANION(&client->dev);
->> +	if (!adev)
->> +		return -ENODEV;
->> +
->> +	ret = acpi_dev_get_resources(adev,
->> +				     &res_list,
->> +				     cm3218_filter_i2c_address,
->> +				     client);
->> +	if (ret < 0)
->> +		return ret;
->> +
->> +	/* get first resource */
->> +	res_entry = list_entry(&res_list, struct resource_entry, node);
->> +	ares = (struct acpi_resource *)res_entry->res;
->> +	sb = &ares->data.i2c_serial_bus;
->> +
->> +	/* set i2c address */
->> +	client->addr = sb->slave_address;
->> +	client->flags &= ~I2C_CLIENT_TEN;
-> 
-> I'm not convinced overwriting the address and flags is legal. Those are
-> owned by the I2C core and should be read-only in the client driver. Maybe
-> use i2c_new_dummy() to create a device for the new address?
-> 
->> +	if (sb->access_mode == ACPI_I2C_10BIT_MODE)
->> +		client->flags |= I2C_CLIENT_TEN;
->> +
->> +	acpi_dev_free_resource_list(&res_list);
->> +
->> +	return 0;
->> +}
-> [...]
-> 
+Note: This is general info, I haven't checked this driver at all.
+
+
+--2mywfakmfmugtnow
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAln3KEYACgkQFA3kzBSg
+KbYU/w//SdXtZEHvA4tvSiSPGibsY7zCFH774CwcSxJ3Uv86dln4cXL4wd1/phP5
+ShqqXLs0sAOtrnFBNf56qjYXx0/ejF1anlOQ45ULFEN0/KBQlSgTepVKDwwmOvvz
+Jd7V5VMAMmyEt5GMwL9CttEA4VQxwTD6rOmjb8g348XCQxBgYGTqmqYpRFhbi9C5
+y1R1JM02b16hQX26/14ihX/7xVdj9bmUO4xT6bdMmvF4QuYbT0/zrDK+NqFOoyFS
+qmRqcq0T8Rgvjj6d7AnHMjfO4xj44M6L6pNA7me/9bECKh8SzzVIo+0KqnLfL13T
+zN8r9Gg7MmT5fxIxfpeWvWgexqc/tw/5iiT81luDJP2nuD2A/OPTZ5r6y5BYsGd9
+fbh4OTPb63dGKeexh6szWhxoAz3mPPXE4jm4H/O/edcwLfjQAXer1bJEe5nxno0N
+EbJLwbO26xQW0dNuOnihMnURdvqCHsMY8QAaP4IvurRy0LLFlH3WW9l06/BqsyZu
+XXnQST+MGbWx+0+1geR4G+D6OSeK4I95R38D9idHnnXUKcRFUaIIe9gzc5LACeaK
+mTEnyONbQmIj/K8i858qQkzX1FxyBMlpMzqcwMgLqYFtnYio4JZ8b+vn3EDkWK0H
+6ImcazNl6hV2O9vHrNRDAl531FseSStwS5jgvcBb1R/bzfiBaMw=
+=8phP
+-----END PGP SIGNATURE-----
+
+--2mywfakmfmugtnow--
