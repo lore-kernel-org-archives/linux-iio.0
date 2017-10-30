@@ -1,53 +1,117 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from merlin.infradead.org ([205.233.59.134]:51460 "EHLO
-        merlin.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751408AbdJ3AGD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 29 Oct 2017 20:06:03 -0400
-To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-Cc: LKML <linux-kernel@vger.kernel.org>
-From: Randy Dunlap <rdunlap@infradead.org>
-Subject: [PATCH] iio: fix kernel-doc build errors
-Message-ID: <613cdb24-5be8-6436-6263-87fa8d9cf4df@infradead.org>
-Date: Sun, 29 Oct 2017 17:06:01 -0700
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Received: from mail-pf0-f196.google.com ([209.85.192.196]:48961 "EHLO
+        mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751451AbdJ3HWi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 30 Oct 2017 03:22:38 -0400
+From: Joel Stanley <joel@jms.id.au>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Rick Altherr <raltherr@google.com>,
+        Rob Herring <robh+dt@kernel.org>
+Cc: Philipp Zabel <philipp.zabel@gmail.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: adc: aspeed: Deassert reset in probe
+Date: Mon, 30 Oct 2017 17:52:18 +1030
+Message-Id: <20171030072218.2094-1-joel@jms.id.au>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+The ASPEED SoC must deassert a reset in order to use the ADC peripheral.
 
-Fix build errors in kernel-doc notation. Symbols that end in '_'
-have a special meaning, but adding a '*' makes them OK.
+The device tree bindings are updated to document the resets phandle, and
+the example is updated to match what is expected for both the reset and
+clock phandle.
 
-../drivers/iio/industrialio-core.c:635: ERROR: Unknown target name: "iio_val".
-../drivers/iio/industrialio-core.c:642: ERROR: Unknown target name: "iio_val".
-
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc:	Jonathan Cameron <jic23@kernel.org>
-Cc:	linux-iio@vger.kernel.org
+Signed-off-by: Joel Stanley <joel@jms.id.au>
 ---
- drivers/iio/industrialio-core.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ .../devicetree/bindings/iio/adc/aspeed_adc.txt      |  4 +++-
+ drivers/iio/adc/aspeed_adc.c                        | 21 ++++++++++++++++-----
+ 2 files changed, 19 insertions(+), 6 deletions(-)
 
---- lnx-414-rc7.orig/drivers/iio/industrialio-core.c
-+++ lnx-414-rc7/drivers/iio/industrialio-core.c
-@@ -631,7 +631,7 @@ static ssize_t __iio_format_value(char *
-  * iio_format_value() - Formats a IIO value into its string representation
-  * @buf:	The buffer to which the formatted value gets written
-  *		which is assumed to be big enough (i.e. PAGE_SIZE).
-- * @type:	One of the IIO_VAL_... constants. This decides how the val
-+ * @type:	One of the IIO_VAL_* constants. This decides how the val
-  *		and val2 parameters are formatted.
-  * @size:	Number of IIO value entries contained in vals
-  * @vals:	Pointer to the values, exact meaning depends on the
-@@ -639,7 +639,7 @@ static ssize_t __iio_format_value(char *
-  *
-  * Return: 0 by default, a negative number on failure or the
-  *	   total number of characters written for a type that belongs
-- *	   to the IIO_VAL_... constant.
-+ *	   to the IIO_VAL_* constant.
-  */
- ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals)
- {
-
+diff --git a/Documentation/devicetree/bindings/iio/adc/aspeed_adc.txt b/Documentation/devicetree/bindings/iio/adc/aspeed_adc.txt
+index 674e133b7cd7..034fc2ba100e 100644
+--- a/Documentation/devicetree/bindings/iio/adc/aspeed_adc.txt
++++ b/Documentation/devicetree/bindings/iio/adc/aspeed_adc.txt
+@@ -8,6 +8,7 @@ Required properties:
+ - reg: memory window mapping address and length
+ - clocks: Input clock used to derive the sample clock. Expected to be the
+           SoC's APB clock.
++- resets: Reset controller phandle
+ - #io-channel-cells: Must be set to <1> to indicate channels are selected
+                      by index.
+ 
+@@ -15,6 +16,7 @@ Example:
+ 	adc@1e6e9000 {
+ 		compatible = "aspeed,ast2400-adc";
+ 		reg = <0x1e6e9000 0xb0>;
+-		clocks = <&clk_apb>;
++		clocks = <&syscon ASPEED_CLK_APB>;
++		resets = <&syscon ASPEED_RESET_ADC>;
+ 		#io-channel-cells = <1>;
+ 	};
+diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
+index 8a958d5f1905..0fc9712cdde4 100644
+--- a/drivers/iio/adc/aspeed_adc.c
++++ b/drivers/iio/adc/aspeed_adc.c
+@@ -17,6 +17,7 @@
+ #include <linux/module.h>
+ #include <linux/of_platform.h>
+ #include <linux/platform_device.h>
++#include <linux/reset.h>
+ #include <linux/spinlock.h>
+ #include <linux/types.h>
+ 
+@@ -53,11 +54,12 @@ struct aspeed_adc_model_data {
+ };
+ 
+ struct aspeed_adc_data {
+-	struct device	*dev;
+-	void __iomem	*base;
+-	spinlock_t	clk_lock;
+-	struct clk_hw	*clk_prescaler;
+-	struct clk_hw	*clk_scaler;
++	struct device		*dev;
++	void __iomem		*base;
++	spinlock_t		clk_lock;
++	struct clk_hw		*clk_prescaler;
++	struct clk_hw		*clk_scaler;
++	struct reset_control	*rst;
+ };
+ 
+ #define ASPEED_CHAN(_idx, _data_reg_addr) {			\
+@@ -217,6 +219,13 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+ 		goto scaler_error;
+ 	}
+ 
++	data->rst = devm_reset_control_get_optional_exclusive(&pdev->dev, NULL);
++	if (IS_ERR(data->rst)) {
++		dev_err(&pdev->dev, "invalid reset controller in device tree");
++		data->rst = NULL;
++	} else
++		reset_control_deassert(data->rst);
++
+ 	model_data = of_device_get_match_data(&pdev->dev);
+ 
+ 	if (model_data->wait_init_sequence) {
+@@ -268,6 +277,7 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+ 
+ scaler_error:
+ 	clk_hw_unregister_divider(data->clk_prescaler);
++	reset_control_assert(data->rst);
+ 	return ret;
+ }
+ 
+@@ -282,6 +292,7 @@ static int aspeed_adc_remove(struct platform_device *pdev)
+ 	clk_disable_unprepare(data->clk_scaler->clk);
+ 	clk_hw_unregister_divider(data->clk_scaler);
+ 	clk_hw_unregister_divider(data->clk_prescaler);
++	reset_control_assert(data->rst);
+ 
+ 	return 0;
+ }
+-- 
+2.14.1
 
