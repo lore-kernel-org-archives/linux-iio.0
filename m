@@ -7,42 +7,129 @@ To: linux-iio@vger.kernel.org,
 	pmeerw@pmeerw.net
 Cc: linux-amlogic@lists.infradead.org,
 	Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH 1/5] iio: adc: meson-saradc: fix the bit_idx of the adc_en clock
-Date: Tue, 31 Oct 2017 21:01:43 +0100
-Message-Id: <20171031200147.14660-2-martin.blumenstingl@googlemail.com>
+Subject: [PATCH 2/5] iio: adc: meson-saradc: initialize the bandgap correctly on older SoCs
+Date: Tue, 31 Oct 2017 21:01:44 +0100
+Message-Id: <20171031200147.14660-3-martin.blumenstingl@googlemail.com>
 In-Reply-To: <20171031200147.14660-1-martin.blumenstingl@googlemail.com>
 References: <20171031200147.14660-1-martin.blumenstingl@googlemail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Meson8 and Meson8b SoCs use the the SAR ADC gate clock provided by the
-MESON_SAR_ADC_REG3 register within the SAR ADC register area.
-According to the datasheet (and the existing MESON_SAR_ADC_REG3_CLK_EN
-definition) the gate is on bit 30.
-The fls() function returns the last set bit, which is "bit index + 1"
-(fls(MESON_SAR_ADC_REG3_CLK_EN) returns 31). Fix this by switching to
-__ffs() which returns the first set bit, which is bit 30 in our case.
+Meson8 and Meson8b do not have the MESON_SAR_ADC_REG11 register. The
+bandgap setting for these SoCs is configured in the
+MESON_SAR_ADC_DELTA_10 register instead.
+Make the driver aware of this difference and use the correct bandgap
+register depending on the SoC.
+This has worked fine on Meson8 and Meson8b because the bootloader is
+already initializing the bandgap setting.
 
-This off by one error results in the ADC not being usable on devices
-where the bootloader did not enable the clock.
-
-Fixes: 3adbf3427330 ("iio: adc: add a driver for the SAR ADC found in Amlogic Meson SoCs")
+Fixes: 6c76ed31cd05 ("iio: adc: meson-saradc: add Meson8b SoC compatibility")
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 ---
- drivers/iio/adc/meson_saradc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/meson_saradc.c | 33 ++++++++++++++++++++++++++-------
+ 1 file changed, 26 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
-index 2e8dbb89c8c9..55611244c799 100644
+index 55611244c799..abe9df879b2a 100644
 --- a/drivers/iio/adc/meson_saradc.c
 +++ b/drivers/iio/adc/meson_saradc.c
-@@ -600,7 +600,7 @@ static int meson_sar_adc_clk_init(struct iio_dev *indio_dev,
- 	init.num_parents = 1;
+@@ -221,6 +221,7 @@ enum meson_sar_adc_chan7_mux_sel {
  
- 	priv->clk_gate.reg = base + MESON_SAR_ADC_REG3;
--	priv->clk_gate.bit_idx = fls(MESON_SAR_ADC_REG3_CLK_EN);
-+	priv->clk_gate.bit_idx = __ffs(MESON_SAR_ADC_REG3_CLK_EN);
- 	priv->clk_gate.hw.init = &init;
+ struct meson_sar_adc_data {
+ 	bool					has_bl30_integration;
++	u32					bandgap_reg;
+ 	unsigned int				resolution;
+ 	const char				*name;
+ };
+@@ -685,6 +686,20 @@ static int meson_sar_adc_init(struct iio_dev *indio_dev)
+ 	return 0;
+ }
  
- 	priv->adc_clk = devm_clk_register(&indio_dev->dev, &priv->clk_gate.hw);
++static void meson_sar_adc_set_bandgap(struct iio_dev *indio_dev, bool on_off)
++{
++	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
++	u32 enable_mask;
++
++	if (priv->data->bandgap_reg == MESON_SAR_ADC_REG11)
++		enable_mask = MESON_SAR_ADC_REG11_BANDGAP_EN;
++	else
++		enable_mask = MESON_SAR_ADC_DELTA_10_TS_VBG_EN;
++
++	regmap_update_bits(priv->regmap, priv->data->bandgap_reg, enable_mask,
++			   on_off ? enable_mask : 0);
++}
++
+ static int meson_sar_adc_hw_enable(struct iio_dev *indio_dev)
+ {
+ 	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
+@@ -717,9 +732,9 @@ static int meson_sar_adc_hw_enable(struct iio_dev *indio_dev)
+ 	regval = FIELD_PREP(MESON_SAR_ADC_REG0_FIFO_CNT_IRQ_MASK, 1);
+ 	regmap_update_bits(priv->regmap, MESON_SAR_ADC_REG0,
+ 			   MESON_SAR_ADC_REG0_FIFO_CNT_IRQ_MASK, regval);
+-	regmap_update_bits(priv->regmap, MESON_SAR_ADC_REG11,
+-			   MESON_SAR_ADC_REG11_BANDGAP_EN,
+-			   MESON_SAR_ADC_REG11_BANDGAP_EN);
++
++	meson_sar_adc_set_bandgap(indio_dev, true);
++
+ 	regmap_update_bits(priv->regmap, MESON_SAR_ADC_REG3,
+ 			   MESON_SAR_ADC_REG3_ADC_EN,
+ 			   MESON_SAR_ADC_REG3_ADC_EN);
+@@ -739,8 +754,7 @@ static int meson_sar_adc_hw_enable(struct iio_dev *indio_dev)
+ err_adc_clk:
+ 	regmap_update_bits(priv->regmap, MESON_SAR_ADC_REG3,
+ 			   MESON_SAR_ADC_REG3_ADC_EN, 0);
+-	regmap_update_bits(priv->regmap, MESON_SAR_ADC_REG11,
+-			   MESON_SAR_ADC_REG11_BANDGAP_EN, 0);
++	meson_sar_adc_set_bandgap(indio_dev, false);
+ 	clk_disable_unprepare(priv->sana_clk);
+ err_sana_clk:
+ 	clk_disable_unprepare(priv->core_clk);
+@@ -765,8 +779,8 @@ static int meson_sar_adc_hw_disable(struct iio_dev *indio_dev)
+ 
+ 	regmap_update_bits(priv->regmap, MESON_SAR_ADC_REG3,
+ 			   MESON_SAR_ADC_REG3_ADC_EN, 0);
+-	regmap_update_bits(priv->regmap, MESON_SAR_ADC_REG11,
+-			   MESON_SAR_ADC_REG11_BANDGAP_EN, 0);
++
++	meson_sar_adc_set_bandgap(indio_dev, false);
+ 
+ 	clk_disable_unprepare(priv->sana_clk);
+ 	clk_disable_unprepare(priv->core_clk);
+@@ -845,30 +859,35 @@ static const struct iio_info meson_sar_adc_iio_info = {
+ 
+ static const struct meson_sar_adc_data meson_sar_adc_meson8_data = {
+ 	.has_bl30_integration = false,
++	.bandgap_reg = MESON_SAR_ADC_DELTA_10,
+ 	.resolution = 10,
+ 	.name = "meson-meson8-saradc",
+ };
+ 
+ static const struct meson_sar_adc_data meson_sar_adc_meson8b_data = {
+ 	.has_bl30_integration = false,
++	.bandgap_reg = MESON_SAR_ADC_DELTA_10,
+ 	.resolution = 10,
+ 	.name = "meson-meson8b-saradc",
+ };
+ 
+ static const struct meson_sar_adc_data meson_sar_adc_gxbb_data = {
+ 	.has_bl30_integration = true,
++	.bandgap_reg = MESON_SAR_ADC_REG11,
+ 	.resolution = 10,
+ 	.name = "meson-gxbb-saradc",
+ };
+ 
+ static const struct meson_sar_adc_data meson_sar_adc_gxl_data = {
+ 	.has_bl30_integration = true,
++	.bandgap_reg = MESON_SAR_ADC_REG11,
+ 	.resolution = 12,
+ 	.name = "meson-gxl-saradc",
+ };
+ 
+ static const struct meson_sar_adc_data meson_sar_adc_gxm_data = {
+ 	.has_bl30_integration = true,
++	.bandgap_reg = MESON_SAR_ADC_REG11,
+ 	.resolution = 12,
+ 	.name = "meson-gxm-saradc",
+ };
 -- 
 2.15.0
