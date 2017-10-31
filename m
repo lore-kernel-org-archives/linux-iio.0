@@ -1,46 +1,57 @@
-Return-Path: <SRS0=LfGY=B6=linux.intel.com=andriy.shevchenko@kernel.org>
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: linux-i2c@vger.kernel.org,
-	Wolfram Sang <wsa@the-dreams.de>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org
-Subject: [PATCH v1 13/15] iio: imu: inv_mpu6050: Remove duplicate NULL check
-Date: Tue, 31 Oct 2017 16:21:47 +0200
-Message-Id: <20171031142149.32512-13-andriy.shevchenko@linux.intel.com>
-In-Reply-To: <20171031142149.32512-1-andriy.shevchenko@linux.intel.com>
-References: <20171031142149.32512-1-andriy.shevchenko@linux.intel.com>
+Return-Path: <SRS0=q78n=B6=googlemail.com=martin.blumenstingl@kernel.org>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To: linux-iio@vger.kernel.org,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net
+Cc: linux-amlogic@lists.infradead.org,
+	Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH 0/5] meson_saradc fixes and minor improvements
+Date: Tue, 31 Oct 2017 21:01:42 +0100
+Message-Id: <20171031200147.14660-1-martin.blumenstingl@googlemail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Since i2c_unregister_device() became NULL-aware we may remove duplicate
-NULL check.
+Meson8 and Meson8b require that the driver initializes the registers
+correctly, while on GXBB and newer this is done by the firmware.
+Thus the changes from this series are only relevant for Meson8 and
+Meson8b.
 
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: linux-iio@vger.kernel.org
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+The first two patches are bugfixes:
+- the first patch fixes an issue where the SAR ADC would not work at
+  all
+- the second patch initializes the bandgrap register on Meson8 and
+  Meson8b (which is required for the SAR ADC to operate)
 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-index dd6fc6d21f9d..d78a10403bac 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-@@ -196,8 +196,7 @@ void inv_mpu_acpi_delete_mux_client(struct i2c_client *client)
- {
- 	struct inv_mpu6050_state *st = iio_priv(dev_get_drvdata(&client->dev));
- 
--	if (st->mux_client)
--		i2c_unregister_device(st->mux_client);
-+	i2c_unregister_device(st->mux_client);
- }
- #else
- 
+The third patch is mainly a cosmetic fix because we don't want to
+read/write registers that are not documented.
+
+Patch four is purely cosmetic so the mainline driver uses the same
+settings as Amlogic's vendor kernel driver.
+
+The last patch initializes the channel muxes. There are sane defaults
+for these in the hardware itself. However, some bootloaders are
+setting strange values - the result is that reading the ADC gives
+garbage values.
+I did not tag this as "fix" since in my opinion it's a feature for
+fixing broken bootloaders.
+
+Tested on:
+- a Meson8m2 board (compatible with Meson8)
+- a Meson8b EC-100
+- on a Khadas VIM to ensure that the newer SoCs are still working
+
+
+Martin Blumenstingl (5):
+  iio: adc: meson-saradc: fix the bit_idx of the adc_en clock
+  iio: adc: meson-saradc: initialize the bandgap correctly on older SoCs
+  iio: adc: meson-saradc: Meson8 and Meson8b do not have REG11 and REG13
+  iio: adc: meson-saradc: fix the clock frequency on Meson8 and Meson8b
+  iio: adc: meson-saradc: program the channel muxes during
+    initialization
+
+ drivers/iio/adc/meson_saradc.c | 92 +++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 78 insertions(+), 14 deletions(-)
+
 -- 
-2.14.2
+2.15.0
