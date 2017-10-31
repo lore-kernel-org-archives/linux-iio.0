@@ -1,46 +1,46 @@
-Return-Path: <SRS0=JiSV=B6=gmail.com=joel.stan@kernel.org>
-MIME-Version: 1.0
-Sender: joel.stan@gmail.com
-In-Reply-To: <CA+gwMcdVpq1P5kWAWzkg2A+Ah-fKyTk0adhGdg4465gkOY3EKA@mail.gmail.com>
-References: <20171031021203.18248-1-joel@jms.id.au> <CA+gwMcdVpq1P5kWAWzkg2A+Ah-fKyTk0adhGdg4465gkOY3EKA@mail.gmail.com>
-From: Joel Stanley <joel@jms.id.au>
-Date: Wed, 1 Nov 2017 10:15:32 +1030
-Message-ID: <CACPK8Xc1d89MXBjSJw7Jz0oqkCcoxKbymaVDmJq-kHFK6qG0Sw@mail.gmail.com>
-Subject: Re: [PATCH v2] iio: adc: aspeed: Deassert reset in probe
-To: Philipp Zabel <philipp.zabel@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Rick Altherr <raltherr@google.com>,
-	Rob Herring <robh+dt@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	devicetree <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Return-Path: <SRS0=LfGY=B6=linux.intel.com=andriy.shevchenko@kernel.org>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: linux-i2c@vger.kernel.org,
+	Wolfram Sang <wsa@the-dreams.de>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org
+Subject: [PATCH v1 13/15] iio: imu: inv_mpu6050: Remove duplicate NULL check
+Date: Tue, 31 Oct 2017 16:21:47 +0200
+Message-Id: <20171031142149.32512-13-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20171031142149.32512-1-andriy.shevchenko@linux.intel.com>
+References: <20171031142149.32512-1-andriy.shevchenko@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, Oct 31, 2017 at 10:28 PM, Philipp Zabel <philipp.zabel@gmail.com> wrote:
-> On Tue, Oct 31, 2017 at 3:12 AM, Joel Stanley <joel@jms.id.au> wrote:
->> The ASPEED SoC must deassert a reset in order to use the ADC peripheral.
->>
->> The device tree bindings are updated to document the resets phandle, and
->> the example is updated to match what is expected for both the reset and
->> clock phandle. Note that the bindings should have always had the reset
->> controller, as the hardware is unusable without it.
->>
->> Signed-off-by: Joel Stanley <joel@jms.id.au>
->
-> It is unfortunate that this has to break DT (theoretical) backwards
-> compatibility, but given that the old bindings never worked,
-> this is better than to pretend a required reset is optional.
->
-> Reviewed-by: Philipp Zabel <philipp.zabel@gmail.com>
+Since i2c_unregister_device() became NULL-aware we may remove duplicate
+NULL check.
 
-Thanks. I agree that it's unfortunate; this has been my first time
-working on an ARM SoC and there were few things we could have done
-better in hindsight.
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-I've got similar patches for the ASPEED hwmon pwm/tach driver, and the
-i2c driver that I'll send out now.
-
-Thanks for the review.
-
-Cheers,
-
-Joel
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
+index dd6fc6d21f9d..d78a10403bac 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
+@@ -196,8 +196,7 @@ void inv_mpu_acpi_delete_mux_client(struct i2c_client *client)
+ {
+ 	struct inv_mpu6050_state *st = iio_priv(dev_get_drvdata(&client->dev));
+ 
+-	if (st->mux_client)
+-		i2c_unregister_device(st->mux_client);
++	i2c_unregister_device(st->mux_client);
+ }
+ #else
+ 
+-- 
+2.14.2
