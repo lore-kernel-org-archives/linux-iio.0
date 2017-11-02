@@ -1,69 +1,101 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:38554 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750895AbdKSQGx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 19 Nov 2017 11:06:53 -0500
-Date: Sun, 19 Nov 2017 16:06:49 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Randy Dunlap <rdunlap@infradead.org>
-Cc: linux-iio@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: fix kernel-doc build errors
-Message-ID: <20171119160649.7b885f80@archlinux>
-In-Reply-To: <613cdb24-5be8-6436-6263-87fa8d9cf4df@infradead.org>
-References: <613cdb24-5be8-6436-6263-87fa8d9cf4df@infradead.org>
+Return-Path: <SRS0=FDpG=CA=huawei.com=jonathan.cameron@kernel.org>
+Date: Thu, 2 Nov 2017 15:01:37 +0000
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To: Peter Rosin <peda@axentia.se>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        Sebastian Reichel
+	<sre@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: Re: Battery temperature
+Message-ID: <20171102150137.00004eb0@huawei.com>
+In-Reply-To: <fd2a5fff-de60-fd71-cc91-198ff2565d4b@axentia.se>
+References: <fd2a5fff-de60-fd71-cc91-198ff2565d4b@axentia.se>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="US-ASCII"
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, 29 Oct 2017 17:06:01 -0700
-Randy Dunlap <rdunlap@infradead.org> wrote:
+On Mon, 30 Oct 2017 09:26:33 +0100
+Peter Rosin <peda@axentia.se> wrote:
 
-> From: Randy Dunlap <rdunlap@infradead.org>
+> Hi!
 > 
-> Fix build errors in kernel-doc notation. Symbols that end in '_'
-> have a special meaning, but adding a '*' makes them OK.
+> We have a device with a series of rechargeable batteries.
 > 
-> ../drivers/iio/industrialio-core.c:635: ERROR: Unknown target name: "iio_val".
-> ../drivers/iio/industrialio-core.c:642: ERROR: Unknown target name: "iio_val".
+> The chargers are bq24725 and the batteries have a thermistor
+> for temperature monitoring. This thermistor is connected to
+> a standard adc component (ads1015).
+
+Immediate thought is that we need to represent this device explicitly.
+So for this we have the existing drivers/hwmon/ntc_thermistor driver.
+
+> This means that the value
+> the kernel knows for the temperature is in volts (from the
+> iio driver). We can also monitor the charging current and the
+> battery voltage for each battery/charger (also with that very
+> same adc). A gpio pin indicates if external AC power is present.
+
+A little nasty but not really in IIO scope. I presume there are
+other devices with AC connection monitoring as a gpio that is polled?
+
+Would probably expect that to be a extcon driver perhaps?
+
+
+> This gpio pin has to be polled, i.e. it is not possible to hook
+> up interrupts for it.
 > 
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc:	Jonathan Cameron <jic23@kernel.org>
-> Cc:	linux-iio@vger.kernel.org
+> We currently have this "working" without the concept of neither
+> battery nor charger manager in the kernel. It is all handled
+> from user space by writing to
+> 
+>     /sys/class/power_supply/bq24735@<i2c-bus-and-addr>/status
+> 
+> to en-/disable charging and by monitoring the adc voltages
+> and doing the unit conversion to degrees Celsius in user space.
+> 
+> IIUC, ideally there should be in-kernel charger-managers and
+> battery objects for each charger/battery.
 
-Applied to the fixes-togreg branch of iio.git and marked for stable.
+Potentially a generic charger manager might work well.
 
-Thanks,
+> 
+> I wonder if there is any existing way to do the non-linear
+> conversion from the iio-adc volt-reading of the thermistor to
+> the desired unit of degrees-celsius, or if I need to write
+> something myself?
+
+Table and interpolation based in the above mentioned driver.
+
+> 
+> I do see the generic-adc-battery driver, which sounds about
+> right, but it has no DT binding and it also has its
+> cal_charge() callback which is presumably difficult to handle
+> from DT? We have no way to get at the battery charge level,
+> short of inaccurate guesses based on the battery voltage. The
+> driver also appears to have no concept of battery temperature,
+> but I suppose it could be extended with that? Not sure if it's
+> even applicable, I'm fumbling...
+
+Potentially you could probably make it work.  There will need to
+be some sort of platform specific glue driver to pull it all together
+
+That glue driver could then register an instance of generic adc battery
+and provide the necessary platform data.
+
+How that connects everything together could be handled via dt bindings.
+
+> 
+> I may have completely misunderstood how this is supposed to be
+> hooked up in an ideal world.
+
+Nope, just at tricky problem to solve neatly ;)
 
 Jonathan
-> ---
->  drivers/iio/industrialio-core.c |    4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> --- lnx-414-rc7.orig/drivers/iio/industrialio-core.c
-> +++ lnx-414-rc7/drivers/iio/industrialio-core.c
-> @@ -631,7 +631,7 @@ static ssize_t __iio_format_value(char *
->   * iio_format_value() - Formats a IIO value into its string representation
->   * @buf:	The buffer to which the formatted value gets written
->   *		which is assumed to be big enough (i.e. PAGE_SIZE).
-> - * @type:	One of the IIO_VAL_... constants. This decides how the val
-> + * @type:	One of the IIO_VAL_* constants. This decides how the val
->   *		and val2 parameters are formatted.
->   * @size:	Number of IIO value entries contained in vals
->   * @vals:	Pointer to the values, exact meaning depends on the
-> @@ -639,7 +639,7 @@ static ssize_t __iio_format_value(char *
->   *
->   * Return: 0 by default, a negative number on failure or the
->   *	   total number of characters written for a type that belongs
-> - *	   to the IIO_VAL_... constant.
-> + *	   to the IIO_VAL_* constant.
->   */
->  ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals)
->  {
-> 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
+> 
+> Cheers,
+> Peter
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio"
+> in the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
