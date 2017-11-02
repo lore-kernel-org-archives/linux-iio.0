@@ -1,152 +1,121 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:24639 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1751141AbdK0JK0 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Nov 2017 04:10:26 -0500
-Subject: Re: [PATCH] iio: stm32: fix adc/trigger link error
-To: Jonathan Cameron <jic23@kernel.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-CC: Alexandre Torgue <alexandre.torgue@st.com>,
-        Arnd Bergmann <arnd@arndb.de>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-References: <20170906125722.2522781-1-arnd@arndb.de>
- <50ec54e0-85f7-8c32-475c-9b27a4e6ebd3@st.com>
- <20170910170040.7eb1f768@archlinux>
- <6b5ff28a-859d-973c-2da5-60a8bf50c378@st.com>
- <20170925111604.00000c02@huawei.com> <20170925182617.18bf5ce8@archlinux>
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Message-ID: <da83af87-6c70-8b00-b602-342a9274f81f@st.com>
-Date: Mon, 27 Nov 2017 10:09:47 +0100
-MIME-Version: 1.0
-In-Reply-To: <20170925182617.18bf5ce8@archlinux>
-Content-Type: text/plain; charset="utf-8"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=u5uj=CA=samsung.com=m.purski@kernel.org>
+MIME-version: 1.0
+Content-type: text/plain; charset="utf-8"; format="flowed"
+From: Maciej Purski <m.purski@samsung.com>
+Subject: Re: [2/3] iio: adc: ina2xx: Adhere to documented ABI, use Ohm
+ instead of uOhm
+To: Stefan Bruens <stefan.bruens@rwth-aachen.de>
+Cc: linux-iio@vger.kernel.org, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-kernel@vger.kernel.org, "Andrew F . Davis" <afd@ti.com>, Javier
+	Martinez Canillas <javier@osg.samsung.com>, Lars-Peter Clausen
+	<lars@metafoo.de>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack
+	<knaack.h@gmx.de>
+Message-id: <678f7605-3fc8-cc28-cb16-45381d75bad7@samsung.com>
+Date: Thu, 02 Nov 2017 10:04:01 +0100
+In-reply-to: <2075928.pSFUuclJ1z@pebbles.site>
+References: <7ee955b2-a58f-45e0-985d-1f7508d41ae7@rwthex-w2-a.rwth-ad.de>
+	<CGME20171009092944eucas1p18b2e66a4a07db309551a7e945c2611ec@eucas1p1.samsung.com>
+	<6144c719-5310-7358-bd57-f778ab481788@samsung.com>
+	<2075928.pSFUuclJ1z@pebbles.site>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 09/25/2017 07:26 PM, Jonathan Cameron wrote:
-> On Mon, 25 Sep 2017 11:16:04 +0100
-> Jonathan Cameron <Jonathan.Cameron@huawei.com> wrote:
-> 
->> On Mon, 25 Sep 2017 11:54:06 +0200
->> Fabrice Gasnier <fabrice.gasnier@st.com> wrote:
->>
->>> On 09/10/2017 06:00 PM, Jonathan Cameron wrote:  
->>>> On Wed, 6 Sep 2017 18:16:33 +0200
->>>> Fabrice Gasnier <fabrice.gasnier@st.com> wrote:
->>>>     
->>>>> On 09/06/2017 02:56 PM, Arnd Bergmann wrote:    
->>>>>> The ADC driver can trigger on either the timer or the lptim
->>>>>> trigger, but it only uses a Kconfig 'select' statement
->>>>>> to ensure that the first of the two is present. When the lptim
->>>>>> trigger is enabled as a loadable module, and the adc driver
->>>>>> is built-in, we now get a link error:
->>>>>>
->>>>>> drivers/iio/adc/stm32-adc.o: In function `stm32_adc_get_trig_extsel':
->>>>>> stm32-adc.c:(.text+0x4e0): undefined reference to `is_stm32_lptim_trigger'
->>>>>>
->>>>>> We could use a second 'select' statement and always have both
->>>>>> trigger drivers enabled when the adc driver is, but it seems that
->>>>>> the lptimer trigger was intentionally left optional, so it seems
->>>>>> better to keep it that way.      
->>>>> Hi Arnd,
->>>>>
->>>>> This is correct, not all stm32 have this hardware.    
->>>>>>
->>>>>> This adds a hack to use 'IS_REACHABLE()' rather than 'IS_ENABLED()',
->>>>>> which avoids the link error, but instead leads to the lptimer trigger
->>>>>> not being used in the broken configuration. I've added a runtime
->>>>>> warning for this case to help users figure out what they did wrong
->>>>>> if this should ever be done by accident.
->>>>>>
->>>>>> Fixes: f0b638a7f6db ("iio: adc: stm32: add support for lptimer triggers")
->>>>>> Signed-off-by: Arnd Bergmann <arnd@arndb.de>      
->>>>> Tested-by: Fabrice Gasnier <fabrice.gasnier@st.com>    
->>>>
->>>> This may take me a few weeks to pick up.  I don't want to
->>>> pull the mfd immutable branch in just to have this fix, so this will
->>>> get sorted after rc1 is out.
->>>>
->>>> As ever, poke me if it looks like I've forgotten about it.    
->>>
->>> Hi Jonathan,
->>>
->>> Di you apply this one?  
->>
->> I think I still need to rebase my branch. Greg took my fixes pull this morning
->> so I can fast forward that branch next time I'm on the right PC and then pick
->> this up.
->>
->> Thanks for the reminder.
-> 
-> Applied to the fixes-togreg branch of iio.git.
 
-Hi Jonathan,
 
-Sorry to raise this again. Maybe I missed something, but I can't find
-this fix on recent tag (4.15-rc1). Do you know if this patch from Arnd
-is on its way in ?
+On 10/14/2017 08:27 PM, Stefan Bruens wrote:
+> On Montag, 9. Oktober 2017 11:29:43 CEST Maciej Purski wrote:
+>> On 10/01/2017 09:48 PM, Stefan Brüns wrote:
+>>> According to the ABI documentation, the shunt resistor value should be
+>>> specificied in Ohm. As this is also used/documented for the MAX9611,
+>>> use the same for the INA2xx driver.
+>>>
+>>> This poses an ABI break for anyone actually altering the shunt value
+>>> through the sysfs interface, it does not alter the default value nor
+>>> a value set from the devicetree.
+>>>
+>>> Minor change: Fix comment, 1mA is 10^-3A.
+>>
+>> I have just a minor issue. There could be an inconsistency with units as in
+>> my patch I make current_lsb adjustable and I need it to be in uA (it used
+>> to be hardcoded as 1 mA so to achieve better precision we need smaller
+>> units). So in order to keep calibration register properly scaled, I convert
+>> uOhms to mOhms on each set_calibration(). So if both my changes and your
+>> changes were applied, on each shunt_resistore_store we would be performing
+>> multiplication by 10^6 and then in set_calibration() division by 10^3 which
+>> seems odd to me.
+>>
+>> I guess we could keep it as shunt_resistor_ohms instead of
+>> shunt_resistor_uohm. We could avoid performing division on each
+>> shunt_resistor_show() and perform multiplication by 10^3 only once in
+>> set_calibration() on each
+>> shunt_resistore_store(). We could then change the default value and perform
+>> division only on probing, when reading the shunt_resistance from device
+>> tree.
+>>
+>> There are many other options. It's not a major issue so maybe we could leave
+>> it as it is or you could suggest some changes in my patch.
+>   
+> Sorry it took me so long to answer ...
+> 
+> The current fixed current_lsb of 1mA is indeed a bad choice for everything but
+> a shunt resistor value of 10mOhm, as it truncates the current value. So what
+> is a *good* choice?
+> 
+> One important point is the current register is merely more than a convenience
+> register. At least for the INA219/220, it provides nothing not achievable in
+> software, and for the INA226 family it only has added value if the current is
+> varying faster than the readout frequency and the averaging is used.
+> 
+> The precision of the current register is limited by the precision of the shunt
+> voltage register, and may be reduced by the applied scaling/calibration
+> factor.
+> 
+> The precision of the shunt voltage register is fixed at 10uV (INA219) resp.
+> 2.5uV (INA226). Changing conversion time (both) and PGA (219) affects the
+> noise and offset, but the lsb value is still fixed.
+> 
+> If one wants to carry over the shunt voltage register precision into the
+> current register, its important no (or hardly any) truncation happens. The
+> terms therefor are given in the manual, formulas 8.5.1 (4) resp 7.5.1 (3):
+> 
+> INA219: current = shunt_voltage * cal_register / 4096
+> INA226: current = shunt_voltage * cal_register / 2048
+> 
+> So any cal value smaller than 4096 (2048) will introduce truncation errors,
+> larger values may introduce overflows, if the full input range is used. Now,
+> would it not be wise to always use 4096 (2048) for the calibration value?
+> 
+> The raw values from the IIO subsystem are meaningless without their
+> accompanying scale factor. Instead of changing the calibration value, why not
+> just change the reported scale factor?
+> 
+> More opinions are very welcome.
+> 
+> Kind regards,
+> 
+> Stefan
+> 
 
-Please kindly let me know.
-BR,
-Fabrice
-> 
-> Thanks,
-> 
-> Jonathan
->>
->> Jonathan
->>
->>>
->>> Thanks,
->>> Best Regards,
->>> Fabrice  
->>>> Sorry for the delay!
->>>>
->>>> Jonathan
->>>>     
->>>>>
->>>>> Many thanks for the fix,
->>>>> Best Regards,
->>>>> Fabrice    
->>>>>> ---
->>>>>>  include/linux/iio/timer/stm32-lptim-trigger.h | 5 ++++-
->>>>>>  1 file changed, 4 insertions(+), 1 deletion(-)
->>>>>>
->>>>>> diff --git a/include/linux/iio/timer/stm32-lptim-trigger.h b/include/linux/iio/timer/stm32-lptim-trigger.h
->>>>>> index 34d59bfdce2d..464458d20b16 100644
->>>>>> --- a/include/linux/iio/timer/stm32-lptim-trigger.h
->>>>>> +++ b/include/linux/iio/timer/stm32-lptim-trigger.h
->>>>>> @@ -16,11 +16,14 @@
->>>>>>  #define LPTIM2_OUT	"lptim2_out"
->>>>>>  #define LPTIM3_OUT	"lptim3_out"
->>>>>>  
->>>>>> -#if IS_ENABLED(CONFIG_IIO_STM32_LPTIMER_TRIGGER)
->>>>>> +#if IS_REACHABLE(CONFIG_IIO_STM32_LPTIMER_TRIGGER)
->>>>>>  bool is_stm32_lptim_trigger(struct iio_trigger *trig);
->>>>>>  #else
->>>>>>  static inline bool is_stm32_lptim_trigger(struct iio_trigger *trig)
->>>>>>  {
->>>>>> +#if IS_ENABLED(CONFIG_IIO_STM32_LPTIMER_TRIGGER)
->>>>>> +	pr_warn_once("stm32 lptim_trigger not linked in\n");
->>>>>> +#endif
->>>>>>  	return false;
->>>>>>  }
->>>>>>  #endif
->>>>>>       
->>>>> --
->>>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>>>> the body of a message to majordomo@vger.kernel.org
->>>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html    
->>>>     
->>>
->>> _______________________________________________
->>> linux-arm-kernel mailing list
->>> linux-arm-kernel@lists.infradead.org
->>> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel  
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Thanks for the reply.
+
+I agree that cal_register set to 4096 (2048) allows us to eliminate truncaction 
+error. However according to your suggestion, if we made cal_reg a fixed value, 
+then current_lsb and r_shunt should be also a fixed value, as they are related 
+according to formula 8.5 (1)
+
+cal_register = 0.00512 / (current_lsb * r_shunt)
+
+Therefore, changing the scale value wouldn't affect the calib_reg value, so it 
+wouldn't give the user any information on the actual current_lsb of the device.
+The real value is calculated like this by the user:
+
+processed_value = raw_value * scale
+
+I think that even after changing the scale value processed_value is expected to 
+be approximately the same.
+
+Maybe I'm wrong or I didn't precisely understand what you have suggested. I hope
+that someone will also comment on that.
+
+Best regards,
+
+Maciej
