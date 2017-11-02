@@ -1,101 +1,81 @@
-Return-Path: <SRS0=FDpG=CA=huawei.com=jonathan.cameron@kernel.org>
-Date: Thu, 2 Nov 2017 15:01:37 +0000
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from szxga05-in.huawei.com ([45.249.212.191]:10004 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933612AbdKBOty (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Nov 2017 10:49:54 -0400
+Date: Thu, 2 Nov 2017 14:49:32 +0000
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To: Peter Rosin <peda@axentia.se>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        Sebastian Reichel
-	<sre@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>
-Subject: Re: Battery temperature
-Message-ID: <20171102150137.00004eb0@huawei.com>
-In-Reply-To: <fd2a5fff-de60-fd71-cc91-198ff2565d4b@axentia.se>
-References: <fd2a5fff-de60-fd71-cc91-198ff2565d4b@axentia.se>
+To: Joel Stanley <joel@jms.id.au>
+CC: Philipp Zabel <philipp.zabel@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Rick Altherr <raltherr@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] iio: adc: aspeed: Deassert reset in probe
+Message-ID: <20171102144932.00001e17@huawei.com>
+In-Reply-To: <CACPK8Xc1d89MXBjSJw7Jz0oqkCcoxKbymaVDmJq-kHFK6qG0Sw@mail.gmail.com>
+References: <20171031021203.18248-1-joel@jms.id.au>
+        <CA+gwMcdVpq1P5kWAWzkg2A+Ah-fKyTk0adhGdg4465gkOY3EKA@mail.gmail.com>
+        <CACPK8Xc1d89MXBjSJw7Jz0oqkCcoxKbymaVDmJq-kHFK6qG0Sw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="US-ASCII"
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, 30 Oct 2017 09:26:33 +0100
-Peter Rosin <peda@axentia.se> wrote:
+On Wed, 1 Nov 2017 10:15:32 +1030
+Joel Stanley <joel@jms.id.au> wrote:
 
-> Hi!
+> On Tue, Oct 31, 2017 at 10:28 PM, Philipp Zabel
+> <philipp.zabel@gmail.com> wrote:
+> > On Tue, Oct 31, 2017 at 3:12 AM, Joel Stanley <joel@jms.id.au>
+> > wrote:  
+> >> The ASPEED SoC must deassert a reset in order to use the ADC
+> >> peripheral.
+> >>
+> >> The device tree bindings are updated to document the resets
+> >> phandle, and the example is updated to match what is expected for
+> >> both the reset and clock phandle. Note that the bindings should
+> >> have always had the reset controller, as the hardware is unusable
+> >> without it.
+> >>
+> >> Signed-off-by: Joel Stanley <joel@jms.id.au>  
+> >
+> > It is unfortunate that this has to break DT (theoretical) backwards
+> > compatibility, but given that the old bindings never worked,
+> > this is better than to pretend a required reset is optional.
+> >
+> > Reviewed-by: Philipp Zabel <philipp.zabel@gmail.com>  
 > 
-> We have a device with a series of rechargeable batteries.
+> Thanks. I agree that it's unfortunate; this has been my first time
+> working on an ARM SoC and there were few things we could have done
+> better in hindsight.
 > 
-> The chargers are bq24725 and the batteries have a thermistor
-> for temperature monitoring. This thermistor is connected to
-> a standard adc component (ads1015).
-
-Immediate thought is that we need to represent this device explicitly.
-So for this we have the existing drivers/hwmon/ntc_thermistor driver.
-
-> This means that the value
-> the kernel knows for the temperature is in volts (from the
-> iio driver). We can also monitor the charging current and the
-> battery voltage for each battery/charger (also with that very
-> same adc). A gpio pin indicates if external AC power is present.
-
-A little nasty but not really in IIO scope. I presume there are
-other devices with AC connection monitoring as a gpio that is polled?
-
-Would probably expect that to be a extcon driver perhaps?
-
-
-> This gpio pin has to be polled, i.e. it is not possible to hook
-> up interrupts for it.
+> I've got similar patches for the ASPEED hwmon pwm/tach driver, and the
+> i2c driver that I'll send out now.
 > 
-> We currently have this "working" without the concept of neither
-> battery nor charger manager in the kernel. It is all handled
-> from user space by writing to
-> 
->     /sys/class/power_supply/bq24735@<i2c-bus-and-addr>/status
-> 
-> to en-/disable charging and by monitoring the adc voltages
-> and doing the unit conversion to degrees Celsius in user space.
-> 
-> IIUC, ideally there should be in-kernel charger-managers and
-> battery objects for each charger/battery.
-
-Potentially a generic charger manager might work well.
-
-> 
-> I wonder if there is any existing way to do the non-linear
-> conversion from the iio-adc volt-reading of the thermistor to
-> the desired unit of degrees-celsius, or if I need to write
-> something myself?
-
-Table and interpolation based in the above mentioned driver.
-
-> 
-> I do see the generic-adc-battery driver, which sounds about
-> right, but it has no DT binding and it also has its
-> cal_charge() callback which is presumably difficult to handle
-> from DT? We have no way to get at the battery charge level,
-> short of inaccurate guesses based on the battery voltage. The
-> driver also appears to have no concept of battery temperature,
-> but I suppose it could be extended with that? Not sure if it's
-> even applicable, I'm fumbling...
-
-Potentially you could probably make it work.  There will need to
-be some sort of platform specific glue driver to pull it all together
-
-That glue driver could then register an instance of generic adc battery
-and provide the necessary platform data.
-
-How that connects everything together could be handled via dt bindings.
-
-> 
-> I may have completely misunderstood how this is supposed to be
-> hooked up in an ideal world.
-
-Nope, just at tricky problem to solve neatly ;)
-
-Jonathan
-
+> Thanks for the review.
 > 
 > Cheers,
-> Peter
+> 
+> Joel
+Hi Joel,
+
+IIO is closed for this cycle anyway now.
+Otherwise, series looks good.
+
+Will pick up when back with my main PC as traveling for this week and
+next.
+
+Thanks,
+
+Jonathan
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio"
 > in the body of a message to majordomo@vger.kernel.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
