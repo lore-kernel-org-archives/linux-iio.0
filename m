@@ -1,38 +1,53 @@
-Return-Path: <andriy.shevchenko@linux.intel.com>
-Message-ID: <1511795292.25007.454.camel@linux.intel.com>
-Subject: Re: [PATCH v3 2/5] iio: proximity: sx9500: Add GPIO ACPI mapping
- table
+Return-Path: <SRS0=1Hpq=CB=linux.intel.com=andriy.shevchenko@kernel.org>
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>, Jonathan Cameron
-	 <Jonathan.Cameron@huawei.com>
-Cc: linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter
- Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
- Linus Walleij <linus.walleij@linaro.org>, linux-acpi@vger.kernel.org,
- linux-gpio@vger.kernel.org, Mika Westerberg
- <mika.westerberg@linux.intel.com>
-Date: Mon, 27 Nov 2017 17:08:12 +0200
-In-Reply-To: <20171125142425.31dd862c@archlinux>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 3/5] iio: proximity: sx9500: Set IRQ pin to direction-input if necessary
+Date: Fri,  3 Nov 2017 15:03:38 +0200
+Message-Id: <20171103130340.42459-3-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20171103130340.42459-1-andriy.shevchenko@linux.intel.com>
 References: <20171103130340.42459-1-andriy.shevchenko@linux.intel.com>
-	 <20171103130340.42459-2-andriy.shevchenko@linux.intel.com>
-	 <20171104031403.000073b0@huawei.com> <20171119152934.66a481c0@archlinux>
-	 <20171125142425.31dd862c@archlinux>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, 2017-11-25 at 14:24 +0000, Jonathan Cameron wrote:
-> On Sun, 19 Nov 2017 15:29:34 +0000
-> Jonathan Cameron <jic23@kernel.org> wrote:
+With the new more strict ACPI gpio code the DSDT's IoRestriction flags
+are honored on gpiod_get(), but in some DSDT's it is wrong, so explicitly
+call gpiod_direction_input() on the IRQ GPIO if necessary.
 
-> Hi Andy, any updates on the above?   I probably won't be sending
-> a fixes pull until next weekend, but would be good to know if this
-> should be in there or not by then!
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/iio/proximity/sx9500.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-Yes, as you suggested I tried to add quirks to the core, so, this patch
-will be definitely changed.
-
-Thus, let's postpone.
-
+diff --git a/drivers/iio/proximity/sx9500.c b/drivers/iio/proximity/sx9500.c
+index eb687b3dd442..3cf054155779 100644
+--- a/drivers/iio/proximity/sx9500.c
++++ b/drivers/iio/proximity/sx9500.c
+@@ -17,6 +17,7 @@
+ #include <linux/irq.h>
+ #include <linux/acpi.h>
+ #include <linux/gpio/consumer.h>
++#include <linux/gpio.h>
+ #include <linux/regmap.h>
+ #include <linux/pm.h>
+ #include <linux/delay.h>
+@@ -892,8 +893,13 @@ static void sx9500_gpio_probe(struct i2c_client *client,
+ 		gpiod_int = devm_gpiod_get(dev, "interrupt", GPIOD_IN);
+ 		if (IS_ERR(gpiod_int))
+ 			dev_err(dev, "gpio get irq failed\n");
+-		else
++		else {
++			if (gpiod_get_direction(gpiod_int) != GPIOF_DIR_IN) {
++				dev_warn(dev, FW_BUG "IRQ GPIO not in input mode, fixing\n");
++				gpiod_direction_input(gpiod_int);
++			}
+ 			client->irq = gpiod_to_irq(gpiod_int);
++		}
+ 	}
+ 
+ 	data->gpiod_rst = devm_gpiod_get(dev, "reset", GPIOD_OUT_HIGH);
 -- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+2.14.2
