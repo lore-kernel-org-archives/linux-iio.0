@@ -1,89 +1,62 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:35920 "EHLO mail.kernel.org"
+Received: from mga14.intel.com ([192.55.52.115]:63608 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750931AbdKSPhe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 19 Nov 2017 10:37:34 -0500
-Date: Sun, 19 Nov 2017 15:37:30 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: SF Markus Elfring <elfring@users.sourceforge.net>
-Cc: devel@driverdev.osuosl.org, linux-iio@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        id S1751736AbdKCNES (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 3 Nov 2017 09:04:18 -0400
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: ad7746: Improve unlocking of a mutex in
- ad7746_start_calib()
-Message-ID: <20171119153730.3f04b953@archlinux>
-In-Reply-To: <57f5d20b-cc13-07b2-51cf-53704327df27@users.sourceforge.net>
-References: <57f5d20b-cc13-07b2-51cf-53704327df27@users.sourceforge.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 1/5] iio: proximity: sx9500: Assign interrupt from GpioIo()
+Date: Fri,  3 Nov 2017 15:03:36 +0200
+Message-Id: <20171103130340.42459-1-andriy.shevchenko@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 3 Nov 2017 09:33:57 +0100
-SF Markus Elfring <elfring@users.sourceforge.net> wrote:
+The commit 0f0796509c07
 
-> From: Markus Elfring <elfring@users.sourceforge.net>
-> Date: Fri, 3 Nov 2017 09:26:28 +0100
-> 
-> * Add a jump target so that a call of the function "mutex_unlock" is stored
->   only twice in this function implementation.
-> 
-> * Replace two calls by goto statements.
-> 
-> This issue was detected by using the Coccinelle software.
-> 
-> Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
-Again, a reasonable little tidy up. Applied to the togreg branch
-of iio.git and pushed out as testing for the autobuilders to check
-we haven't missed anything.
+("iio: remove gpio interrupt probing from drivers that use a single interrupt")
 
-Thanks,
+removed custom IRQ assignment for the drivers which are enumerated via
+ACPI or OF. Unfortunately, some ACPI tables have IRQ line defined as
+GpioIo() resource and thus automatic IRQ allocation will fail.
 
-Jonathan
-> ---
->  drivers/staging/iio/cdc/ad7746.c | 17 +++++++++--------
->  1 file changed, 9 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
-> index a124853a05f0..c4a864725376 100644
-> --- a/drivers/staging/iio/cdc/ad7746.c
-> +++ b/drivers/staging/iio/cdc/ad7746.c
-> @@ -302,23 +302,24 @@ static inline ssize_t ad7746_start_calib(struct device *dev,
->  	mutex_lock(&chip->lock);
->  	regval |= chip->config;
->  	ret = i2c_smbus_write_byte_data(chip->client, AD7746_REG_CFG, regval);
-> -	if (ret < 0) {
-> -		mutex_unlock(&chip->lock);
-> -		return ret;
-> -	}
-> +	if (ret < 0)
-> +		goto unlock;
->  
->  	do {
->  		msleep(20);
->  		ret = i2c_smbus_read_byte_data(chip->client, AD7746_REG_CFG);
-> -		if (ret < 0) {
-> -			mutex_unlock(&chip->lock);
-> -			return ret;
-> -		}
-> +		if (ret < 0)
-> +			goto unlock;
-> +
->  	} while ((ret == regval) && timeout--);
->  
->  	mutex_unlock(&chip->lock);
->  
->  	return len;
-> +
-> +unlock:
-> +	mutex_unlock(&chip->lock);
-> +	return ret;
->  }
->  
->  static ssize_t ad7746_start_offset_calib(struct device *dev,
+Partially revert the commit 0f0796509c07 to restore original behaviour.
+
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/iio/proximity/sx9500.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/drivers/iio/proximity/sx9500.c b/drivers/iio/proximity/sx9500.c
+index 53c5d653e780..df23dbcc030a 100644
+--- a/drivers/iio/proximity/sx9500.c
++++ b/drivers/iio/proximity/sx9500.c
+@@ -869,6 +869,7 @@ static int sx9500_init_device(struct iio_dev *indio_dev)
+ static void sx9500_gpio_probe(struct i2c_client *client,
+ 			      struct sx9500_data *data)
+ {
++	struct gpio_desc *gpiod_int;
+ 	struct device *dev;
+ 
+ 	if (!client)
+@@ -876,6 +877,14 @@ static void sx9500_gpio_probe(struct i2c_client *client,
+ 
+ 	dev = &client->dev;
+ 
++	if (client->irq <= 0) {
++		gpiod_int = devm_gpiod_get(dev, SX9500_GPIO_INT, GPIOD_IN);
++		if (IS_ERR(gpiod_int))
++			dev_err(dev, "gpio get irq failed\n");
++		else
++			client->irq = gpiod_to_irq(gpiod_int);
++	}
++
+ 	data->gpiod_rst = devm_gpiod_get(dev, SX9500_GPIO_RESET, GPIOD_OUT_HIGH);
+ 	if (IS_ERR(data->gpiod_rst)) {
+ 		dev_warn(dev, "gpio get reset pin failed\n");
+-- 
+2.14.2
 
