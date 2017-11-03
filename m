@@ -1,60 +1,41 @@
-Return-Path: <SRS0=50oW=CI=linux.intel.com=andriy.shevchenko@kernel.org>
-Message-ID: <1510337603.25007.139.camel@linux.intel.com>
-Subject: Re: [PATCH v3 3/5] iio: proximity: sx9500: Set IRQ pin to
- direction-input if necessary
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga07.intel.com ([134.134.136.100]:27284 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1755667AbdKCNDs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 3 Nov 2017 09:03:48 -0400
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Linus Walleij <linus.walleij@linaro.org>, Mika Westerberg
-	 <mika.westerberg@linux.intel.com>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, Jonathan Cameron
- <jic23@kernel.org>, "linux-iio@vger.kernel.org"
- <linux-iio@vger.kernel.org>,  Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter
- Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Date: Fri, 10 Nov 2017 20:13:23 +0200
-In-Reply-To: <CACRpkdZkopuQ2KwNxQyj-KfDawjrhgFVt_2L0-EjJMrMHCXdDw@mail.gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 4/5] iio: proximity: sx9500: Add another ACPI ID
+Date: Fri,  3 Nov 2017 15:03:39 +0200
+Message-Id: <20171103130340.42459-4-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20171103130340.42459-1-andriy.shevchenko@linux.intel.com>
 References: <20171103130340.42459-1-andriy.shevchenko@linux.intel.com>
-	 <20171103130340.42459-3-andriy.shevchenko@linux.intel.com>
-	 <20171104032059.0000049a@huawei.com>
-	 <1510158946.25007.112.camel@linux.intel.com>
-	 <20171108170357.GN18997@lahna.fi.intel.com>
-	 <CACRpkdZkopuQ2KwNxQyj-KfDawjrhgFVt_2L0-EjJMrMHCXdDw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, 2017-11-08 at 21:45 +0100, Linus Walleij wrote:
-> On Wed, Nov 8, 2017 at 6:03 PM, Mika Westerberg
-> <mika.westerberg@linux.intel.com> wrote:
-> > On Wed, Nov 08, 2017 at 06:35:46PM +0200, Andy Shevchenko wrote:
-> > > +Cc: Mika
+Add new ACPI ID for sx9500 as had been found on prototype board.
 
-> > One idea is to allow this strict mode to be relaxed by drivers
-> > perhaps
-> > by passing quirks through struct acpi_gpio_mapping:
-> > 
-> > static const struct acpi_gpio_mapping acpi_foo_gpios[] = {
-> >         /*
-> >          * This platform has a bug in ACPI GPIO description making
-> > IRQ
-> >          * GPIO to be output only. Ask the GPIO core to ignore this
-> >          * limit.
-> >          */
-> >         { "foobar-gpios", &foobar_gpios, 1,
-> > ACPI_QUIRK_IGNORE_IO_RESTRICTION },
-> >         {},
-> > };
-> > 
-> > or something like that. Not sure if I missed something obvious,
-> > though.
-> 
-> This looks like an elegant solution to me.
-> 
-> Can it be done?
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/iio/proximity/sx9500.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-I have sent today a series against GPIO ACPI library to support quirks
-in general.
-
-P.S. Just realized I forgot to put Suggested-by tag there.
-
+diff --git a/drivers/iio/proximity/sx9500.c b/drivers/iio/proximity/sx9500.c
+index 3cf054155779..640ea08cd3b2 100644
+--- a/drivers/iio/proximity/sx9500.c
++++ b/drivers/iio/proximity/sx9500.c
+@@ -1048,6 +1048,7 @@ static const struct dev_pm_ops sx9500_pm_ops = {
+ 
+ static const struct acpi_device_id sx9500_acpi_match[] = {
+ 	{"SSX9500", 0},
++	{"SASX9500", 0},
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(acpi, sx9500_acpi_match);
 -- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+2.14.2
+
