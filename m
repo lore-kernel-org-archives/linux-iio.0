@@ -1,69 +1,93 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:33216 "EHLO mail.kernel.org"
+Received: from sauhun.de ([88.99.104.3]:44782 "EHLO pokefinder.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752435AbdKSPFm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 19 Nov 2017 10:05:42 -0500
-Date: Sun, 19 Nov 2017 15:05:38 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v1] iio: magnetometer: ak8975: Remove wrong ACPI ID
-Message-ID: <20171119150538.2683f77c@archlinux>
-In-Reply-To: <1510159119.25007.116.camel@linux.intel.com>
-References: <20171103175640.33403-1-andriy.shevchenko@linux.intel.com>
-        <1509732504.10233.205.camel@linux.intel.com>
-        <1509732895.10233.209.camel@linux.intel.com>
-        <1509734767.7135.67.camel@linux.intel.com>
-        <1509885742.10233.229.camel@linux.intel.com>
-        <1509933795.27882.0.camel@linux.intel.com>
-        <1510159119.25007.116.camel@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S1751474AbdKDUUY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 4 Nov 2017 16:20:24 -0400
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+To: linux-i2c@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-media@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>
+Subject: [PATCH v6 0/9] i2c: document DMA handling and add helpers for it
+Date: Sat,  4 Nov 2017 21:20:00 +0100
+Message-Id: <20171104202009.3818-1-wsa+renesas@sang-engineering.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 08 Nov 2017 18:38:39 +0200
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+So, after revisiting old mail threads, taking part in a similar discussion on
+the USB list, and implementing a not-convincing solution before, here is what I
+cooked up to document and ease DMA handling for I2C within Linux. Please have a
+look at the documentation introduced in patch 7 for details. And to make it
+clear again: The stuff below is opt-in. If host drivers are not updated, they
+will continue to work like before.
 
-> On Sun, 2017-11-05 at 18:03 -0800, Srinivas Pandruvada wrote:
-> > On Sun, 2017-11-05 at 14:42 +0200, Andy Shevchenko wrote:  
-> > > On Fri, 2017-11-03 at 11:46 -0700, Srinivas Pandruvada wrote:  
-> 
-> > > > The AK8963 is using INVN6500. The reason is that this INVN 6500
-> > > > has
-> > > > another master mode where a secondary sensor can be connected to
-> > > > it
-> > > > as
-> > > > an i2c slave.
-> > > > So Windows config uses this mode and hence added in the same
-> > > > package.
-> > > > 
-> > > > But Linux INVN driver is not capable of this master mode. We use
-> > > > something called "bypass" mode. In this the second sensor will
-> > > > also
-> > > > be
-> > > > directly connected to host i2c. We have another driver handling
-> > > > this
-> > > > sensor (ak8975), so we have to add this id.  
-> > > 
-> > > But ak8975 is enumerated. See above log. So, I think the INVN6500 ID
-> > > in
-> > > ak 8975 driver is simple not required.  
-> > 
-> > This is not true in all platforms. So this is required.  
-> 
-> Thanks for clarification. though it would be interesting to test a
-> behaviour w/o this patch on platform I have and the one that has wrong
-> data under CNF0 resources.
-> 
-As this discussion seems to have concluded the patch is a bad
-idea I'm dropping it.
+While previous versions until v3 tried to magically apply bounce buffers when
+needed, it became clear that detecting DMA safe buffers is too fragile. This
+approach is now opt-in, a DMA_SAFE flag needs to be set on an i2c_msg. The
+outcome so far is very convincing IMO. The core additions are simple and easy
+to understand. The driver changes for the Renesas IP cores became easy to
+understand, too.
 
-I'll add though that it would be possible to instantiate the ak8975 from
-the mpu6050 driver if we wanted to avoid this nasty 'hack'.
+Of course, we must now whitelist DMA safe buffers. This series implements it
+for core functionality:
 
-Jonathan
+a) for the I2C_RDWR when messages come from userspace
+b) for i2c_smbus_xfer_emulated(), DMA safe buffers are now allocated for
+   block transfers
+c) i2c_master_{send|recv} have now a *_dmasafe variant
+
+I am still not sure how we can teach regmap this new flag. regmap is a heavy
+user of I2C, so broonie's opinion here would be great to have. The rest should
+mostly be updating individual drivers which can be done when needed.
+
+All patches have been tested with a Renesas Salvator-X board (r8a7796/M3-W) and
+Renesas Lager board (r8a7790/H2). But more testing is really really welcome.
+
+The branch can be found here:
+
+git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git renesas/topic/i2c-core-dma-v6
+
+It is planned to land upstream in v4.16 and I want to push it to linux-next
+early after v4.15 to get lots of testing for the core changes.
+
+Big kudos to Renesas Electronics for funding this work, thank you very much!
+
+Regards,
+
+   Wolfram
+
+Change since V5:
+* i2c_master_{send|recv} have now a *_dmasafe variant
+* for i2c_smbus_xfer_emulated(), DMA safe buffers are now allocated for
+  block transfers
+* updated the documentation
+* merged some rewording suggestions from Jonathan Cameron (thanks!)
+* rebased the patches v4.14-rc6+i2c/for-next, reordered patches
+
+
+Wolfram Sang (9):
+  i2c: add a message flag for DMA safe buffers
+  i2c: add helpers to ease DMA handling
+  i2c: dev: mark RDWR buffers as DMA_SAFE
+  i2c: refactor i2c_master_{send_recv}
+  i2c: add i2c_master_{send|recv}_dmasafe
+  i2c: smbus: use DMA safe buffers for emulated SMBus transactions
+  i2c: add docs to clarify DMA handling
+  i2c: sh_mobile: use core helper to decide when to use DMA
+  i2c: rcar: skip DMA if buffer is not safe
+
+ Documentation/i2c/DMA-considerations |  67 +++++++++++++++++++++
+ drivers/i2c/busses/i2c-rcar.c        |   2 +-
+ drivers/i2c/busses/i2c-sh_mobile.c   |   8 ++-
+ drivers/i2c/i2c-core-base.c          | 110 ++++++++++++++++++++---------------
+ drivers/i2c/i2c-core-smbus.c         |  45 ++++++++++++--
+ drivers/i2c/i2c-dev.c                |   2 +
+ include/linux/i2c.h                  |  68 ++++++++++++++++++++--
+ include/uapi/linux/i2c.h             |   3 +
+ 8 files changed, 246 insertions(+), 59 deletions(-)
+ create mode 100644 Documentation/i2c/DMA-considerations
+
+-- 
+2.11.0
 
