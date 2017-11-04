@@ -1,73 +1,41 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from heliosphere.sirena.org.uk ([172.104.155.198]:37994 "EHLO
-        heliosphere.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753799AbdK1Peu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Nov 2017 10:34:50 -0500
-Date: Tue, 28 Nov 2017 15:34:46 +0000
-From: Mark Brown <broonie@kernel.org>
-To: Wolfram Sang <wsa@the-dreams.de>
-Cc: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-media@vger.kernel.org
-Subject: Re: [PATCH v6 0/9] i2c: document DMA handling and add helpers for it
-Message-ID: <20171128153446.6pyqtkcvuepil5gi@sirena.org.uk>
-References: <20171104202009.3818-1-wsa+renesas@sang-engineering.com>
- <20171108225037.i4dx5iu5zxc542oq@sirena.co.uk>
- <20171127185116.j2vmkhbik33vk4f7@ninjato>
+Return-Path: <info@metux.net>
+Subject: Re: getting started w/ iio driver
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+ Jonathan Cameron <jonathan.cameron@huawei.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+References: <4d347c06-b53a-de3d-f8f1-8e05684a4ebd@metux.net>
+ <20171103071702.00005355@huawei.com>
+ <d470edd4-a67f-7e1f-91b6-41ae22aea762@metux.net>
+ <53418B0A3A5CEF439F1108674285B0A9014D15CC@lhreml523-mbs.china.huawei.com>
+ <be9b39c0-01c1-7c57-3103-b04727dff857@metux.net>
+ <38963561-8108-40CE-9B45-76672A860F0B@jic23.retrosnub.co.uk>
+From: "Enrico Weigelt, metux IT consult" <info@metux.net>
+Message-ID: <788bbd7f-28da-00b0-4008-a087373147b6@metux.net>
+Date: Sat, 4 Nov 2017 21:51:34 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="g4qm2fugrwbwjqft"
-In-Reply-To: <20171127185116.j2vmkhbik33vk4f7@ninjato>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <38963561-8108-40CE-9B45-76672A860F0B@jic23.retrosnub.co.uk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
+
+On 04.11.2017 21:38, Jonathan Cameron wrote:
+
+>> How should I implement the sampling rate setting w/ separate devices ?
+>> Maybe some master-slave concept where settings on the master
+>> automatically affect the slaves ?
+> 
+> Yes it will be a bit ugly. Probably do it as a set of peers where writing any will change them all.
+
+Ok. By the way: how to set the sampling-rate via iio ?
+Is there a callback or device field for that ?
+
+where should i tell the adc to start capture w/ ?
+in pre- or post-enable buffer ops ?
 
 
---g4qm2fugrwbwjqft
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+--mtx
 
-On Mon, Nov 27, 2017 at 07:51:16PM +0100, Wolfram Sang wrote:
-> On Wed, Nov 08, 2017 at 10:50:37PM +0000, Mark Brown wrote:
 
-> > We pretty much assume everything is DMA safe already, the majority of
-> > transfers go to/from kmalloc()ed scratch buffers so actually are DMA
-> > safe but for bulk transfers we use the caller buffer and there might be
-> > some problem users.
-
-> So, pretty much the situation I2C was in before this patch set: we
-> pretty much assume DMA safety but there might be problem users.
-
-It's a bit different in that it's much more likely that a SPI controller
-will actually do DMA than an I2C one since the speeds are higher and
-there's frequent applications that do large transfers so it's more
-likely that people will do the right thing as issues would tend to come
-up if they don't.
-
-> > I can't really think of a particularly good way of
-> > handling it off the top of my head, obviously not setting the flag is
-> > easy but doesn't get the benefit while always using a bounce buffer
-> > would involve lots of unneeded memcpy().  Doing _dmasafe() isn't
-> > particularly appealing either but might be what we end up with.
-
-> Okay. That sounds you are fine with the approach taken here, in general?
-
-It's hard to summon enthusiasm but yes, without changes to the DMA stuff
-it's probably as good as we can do.
-
---g4qm2fugrwbwjqft
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAlodghYACgkQJNaLcl1U
-h9DF7Qf/RFs7DXkOGZIsos7EWmLKM4MQxypTYejz8u46jh7yQ9XNHHZMhhr8at6D
-J4bSqVSfTI4wQHzUwWK9tfzM3v1BT1ZnEFU8zvTTLMwVyZO9tVIPqjunnGR3vHvf
-/N+bbI1NKK6zWlp5vaV8OaVL0Utzm0DEY+2mpWVn3I5Q9OI5JkJ0KlZV+xOE5kLk
-5alC3IStVFb+3TiaSXJY9WEiLe21Xau6/xA51iQOdenUgIHfeg2TnLuJiMyvPIRq
-6VH1Hm9AQoNx+SuF4fWIVfzsMtz41iU7GBuJRFtdM6Jp+OftlBCIaUaO19GyqipF
-EOuxWHDGqOCs0wINJJ9EhR07XVDQZA==
-=RZ/Y
------END PGP SIGNATURE-----
-
---g4qm2fugrwbwjqft--
+-- 
+Enrico Weigelt, metux IT consult
+Free software and Linux embedded engineering
+info@metux.net -- +49-151-27565287
