@@ -1,33 +1,36 @@
-Return-Path: <SRS0=nuQv=CI=gmail.com=robherring2@kernel.org>
-Date: Fri, 10 Nov 2017 15:21:39 -0600
-From: Rob Herring <robh@kernel.org>
-To: Yixun Lan <yixun.lan@amlogic.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, Kevin Hilman <khilman@baylibre.com>,
-	Neil Armstrong <narmstrong@baylibre.com>,
-	Jerome Brunet <jbrunet@baylibre.com>,
-	Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-	Carlo Caione <carlo@caione.org>,
-	Xingyu Chen <xingyu.chen@amlogic.com>,
-	linux-amlogic@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 3/4] dt-bindings: iio: adc: update the doc for SAR ADC
-Message-ID: <20171110212139.ssh5kts3xo35hqeu@rob-hp-laptop>
-References: <20171107141020.30419-1-yixun.lan@amlogic.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20171107141020.30419-1-yixun.lan@amlogic.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wr0-f193.google.com ([209.85.128.193]:47220 "EHLO
+        mail-wr0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751925AbdKGPgv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Nov 2017 10:36:51 -0500
+From: Christoph Fritz <chf.fritz@googlemail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH 0/3] iio: add Intersil isl76683 light sensor support
+Date: Tue,  7 Nov 2017 16:36:20 +0100
+Message-Id: <1510068983-25769-1-git-send-email-chf.fritz@googlemail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Nov 07, 2017 at 10:10:20PM +0800, Yixun Lan wrote:
-> From: Xingyu Chen <xingyu.chen@amlogic.com>
-> 
-> Update the doc as the SAR ADC modules doesn't require "sana" clock.
-> 
-> Singed-off-by: Xingyu Chen <xingyu.chen@amlogic.com>
-> Signed-off-by: Yixun Lan <yixun.lan@amlogic.com>
-> ---
->  Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt | 1 -
->  1 file changed, 1 deletion(-)
+This patchset adds initial support for isl76683 light sensor.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Christoph Fritz (3):
+  iio: light: add support for Intersil isl76683 sensor
+  dt-bindings: iio: add Intersil isl76683 light sensor bindings
+  iio: light: isl76683 add way to adjust irq threshold
+
+ .../ABI/testing/sysfs-bus-iio-light-isl76683       |  17 +
+ .../devicetree/bindings/iio/light/isl76683.txt     |  26 +
+ drivers/iio/light/Kconfig                          |  12 +
+ drivers/iio/light/Makefile                         |   1 +
+ drivers/iio/light/isl76683.c                       | 743 +++++++++++++++++++++
+ 5 files changed, 799 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-light-isl76683
+ create mode 100644 Documentation/devicetree/bindings/iio/light/isl76683.txt
+ create mode 100644 drivers/iio/light/isl76683.c
+
+-- 
+2.1.4
+
