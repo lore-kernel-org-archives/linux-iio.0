@@ -1,72 +1,84 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-sn1nam02on0050.outbound.protection.outlook.com ([104.47.36.50]:5312
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1751763AbdKHQhW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 8 Nov 2017 11:37:22 -0500
-From: David Frey <DFrey@sierrawireless.com>
-To: Daniel Baluta <daniel.baluta@gmail.com>,
-        "contact@bosch-sensortec.com" <contact@bosch-sensortec.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: RE: bmi160 drivers
-Date: Wed, 8 Nov 2017 16:37:19 +0000
-Message-ID: <CY1PR02MB2091BCB66938008EBADA6B55C7560@CY1PR02MB2091.namprd02.prod.outlook.com>
-References: <CY1PR02MB2091620DAA142CD469AE357BC7510@CY1PR02MB2091.namprd02.prod.outlook.com>
- <CAEnQRZATAMfWiErKeG5ENR0os85fvmxd0OftPkQtZELAZvKdxQ@mail.gmail.com>
-In-Reply-To: <CAEnQRZATAMfWiErKeG5ENR0os85fvmxd0OftPkQtZELAZvKdxQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <SRS0=j25b=CF=amlogic.com=Yixun.Lan@kernel.org>
+From: Yixun Lan <yixun.lan@amlogic.com>
+To: Neil Armstrong <narmstrong@baylibre.com>, Jerome Brunet
+	<jbrunet@baylibre.com>, <devicetree@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>, Michael Turquette
+	<mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Martin
+ Blumenstingl <martin.blumenstingl@googlemail.com>, Carlo Caione
+	<carlo@caione.org>, Kevin Hilman <khilman@baylibre.com>, Yixun Lan
+	<yixun.lan@amlogic.com>, Xingyu Chen <xingyu.chen@amlogic.com>,
+	<linux-amlogic@lists.infradead.org>, <linux-iio@vger.kernel.org>,
+	<linux-clk@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-kernel@vger.kernel.org>
+Subject: [PATCH v4 0/4] fix the clock setting for SAR ADC
+Date: Tue, 7 Nov 2017 22:09:42 +0800
+Message-ID: <20171107140942.29243-1-yixun.lan@amlogic.com>
 MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-SGkgRGFuaWVsLA0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IERhbmll
-bCBCYWx1dGEgW21haWx0bzpkYW5pZWwuYmFsdXRhQGdtYWlsLmNvbV0NCj4gU2VudDogV2VkbmVz
-ZGF5LCBOb3ZlbWJlciA4LCAyMDE3IDEyOjMwIEFNDQo+IFRvOiBEYXZpZCBGcmV5IDxERnJleUBz
-aWVycmF3aXJlbGVzcy5jb20+OyBjb250YWN0QGJvc2NoLXNlbnNvcnRlYy5jb20NCj4gQ2M6IGxp
-bnV4LWlpb0B2Z2VyLmtlcm5lbC5vcmcNCj4gU3ViamVjdDogUmU6IGJtaTE2MCBkcml2ZXJzDQo+
-IA0KPiBIaSBEYXZpZCwNCj4gDQo+ICsgY29udGFjdEBib3NjaC1zZW5zb3J0ZWMuY29tDQo+IA0K
-PiBPbiBUdWUsIE5vdiA3LCAyMDE3IGF0IDg6NDkgQU0sIERhdmlkIEZyZXkgPERGcmV5QHNpZXJy
-YXdpcmVsZXNzLmNvbT4NCj4gd3JvdGU6DQo+ID4gSGksDQo+ID4NCj4gPiBJIHdhcyB3b3JraW5n
-IHdpdGggYSB2ZW5kb3Iga2VybmVsIGJhc2VkIG9uIGFuIG9sZGVyIHZlcnNpb24gb2YgTGludXgN
-Cj4gPiAoMy4xNCkgYW5kIEkgYmFja3BvcnRlZCB0aGUgYm1pMTYwIGRyaXZlciB0aGF0IEkgZm91
-bmQgaW4gYSByZWNlbnQNCj4gPiBzdGFibGUgdmVyc2lvbiBvZiBMaW51eC4gIFRoYXQgd29ya2Vk
-IGZpbmUuICBNb3JlIHJlY2VudGx5LCBJIHBpY2tlZA0KPiA+IHVwIGFub3RoZXIgc2xpZ2h0bHkg
-bmV3ZXIgdmVuZG9yIGtlcm5lbCAoMy4xOCkgZm9yIGEgc2xpZ2h0bHkNCj4gPiBkaWZmZXJlbnQg
-cHJvZHVjdCBhbmQgSSBub3RpY2VkIHRoYXQgaXQgYWxyZWFkeSBpbmNsdWRlZCBhIGJtaTE2MA0K
-PiA+IGRyaXZlci4gIEkgd2FzIHN1cnByaXNlZCB0byBkaXNjb3ZlciB0aGF0IGl0IHdhcyBhIHRv
-dGFsbHkgZGlmZmVyZW50DQo+ID4gZHJpdmVyLiAgVGhlIGRyaXZlciBhcHBlYXJzIHRvIGhhdmUg
-YmVlbiB3cml0dGVuIGJ5IEJvc2NoU2Vuc29ydGVjDQo+ID4gKHdobyBtYWtlcyB0aGUgYm1pMTYw
-IGhhcmR3YXJlKSBhbmQgaXMgYXZhaWxhYmxlIG9uIGdpdGh1YiBoZXJlOg0KPiA+IGh0dHBzOi8v
-Z2l0aHViLmNvbS9Cb3NjaFNlbnNvcnRlYy9kcml2ZXJzDQo+ID4NCj4gPiBUaGUgZHJpdmVyIGlu
-IHRoZSByZWd1bGFyIGxpbnV4IGtlcm5lbCAob3JpZ2luYWxseSB3cml0dGVuIGJ5IERhbmllbCBC
-YWx1dGEgYW5kDQo+IHN1Ym1pdHRlZCB0byB0aGlzIG1haWxpbmcgbGlzdCkgaXMgYXJvdW5kIDgw
-MCBsaW5lcyBvZiAuYyBhbmQgLmggZmlsZXMuICBUaGUgQm9zY2gNCj4gZHJpdmVyIGlzIGFyb3Vu
-ZCAzNzAwMCBsaW5lcyBvZiAuYyBhbmQgLmggZmlsZXMuICBJJ20gbm90IHN1cmUgaG93IHRoZSBk
-cml2ZXJzDQo+IGNvbXBhcmUgaW4gdGVybXMgb2YgZmVhdHVyZXMuICBJdCBzZWVtcyB0aGF0IHRo
-ZSBCb3NjaCBkcml2ZXIgaXMgYSBiaXQgb2xkZXINCj4gKGJhc2VkIG9uIHRoZSBjb21taXQgbG9n
-cyBvbiBnaXRodWIpLiAgU28gSSdtIHdvbmRlcmluZzoNCj4gPg0KPiA+IFdoeSB3ZXJlIHR3byBk
-cml2ZXJzIHdyaXR0ZW4/DQo+IA0KPiBCZWNhdXNlIGF0IHRoZSBtb21lbnQgSSB3cm90ZSB0aGUg
-ZHJpdmVyIGFuZCBzZW50IGl0IHVwc3RyZWFtIHRoZXJlIHdhcyBubw0KPiBkcml2ZXIgZnJvbSBC
-b3NoU2Vuc29ydGVjLg0KDQpBaGggb2ssIEkgZ3Vlc3MgbXkgaW50ZXJwcmV0YXRpb24gb2YgdGhl
-IHRpbWluZyBvZiB0aGUgdHdvIGRyaXZlcnMgd2FzIG9mZi4NCg0KIA0KPiBJIHRoaW5rIHRoZSBk
-cml2ZXIgd3JvdGUgYnkgQm9zY2hTZW5zb3J0ZWMgc3VwcG9ydHMgYWxsIHRoZSBmZWF0dXJlcyBv
-ZiB0aGUNCj4gY2hpcCAoaW5jbHVkaW5nIGhhcmR3YXJlIGZpZm8pLCBidXQgaXQgYWxzbyBoYXMg
-YSBsb3Qgb2Ygbm9uIHN0YW5kYXJkIGF0dHJpYnV0ZXMNCj4gKHNvIG5vdCBlYXN5IGFjY2VwdGFi
-bGUgdXBzdHJlYW0pLg0KPiANCj4gSSB3YXMgcGxhbm5pbmcgYXQgc29tZSBwb2ludCB0byBpbXBs
-ZW1lbnQgaHcgZmlmbyBzdXBwb3J0IGJ1dCBnb3QgZGVyYWlsZWQNCj4gd2l0aCBvdGhlciB0aGlu
-Z3MuDQo+IA0KPiA+IFdhcyB0aGVyZSBhIGRpc2N1c3Npb24gYWJvdXQgd2hpY2ggZHJpdmVyIHRv
-IGluY2x1ZGUgaW4gdGhlIExpbnV4DQo+ID4ga2VybmVsPyAgKEkgY291bGRuJ3QgZmluZCBhbnkg
-ZGlzY3Vzc2lvbiBvbiB0aGlzIG1haWxpbmcgbGlzdCkNCj4gDQo+IE5vLCBBRkFJSy4gQm9zaFNl
-bnNvcnRlYyBuZXZlciBzZW50IGEgcmVxdWVzdCBmb3IgdGhlaXIgZHJpdmVyIHRvIGJlIG1lcmdl
-ZA0KPiB1cHN0cmVhbS4NCj4gDQo+IEkgYW0gbm90IHN1cmUgYWJvdXQgdGhlaXIgY29kZSBsaWNl
-bnNlPw0KPiANCj4gaHR0cHM6Ly9naXRodWIuY29tL0Jvc2NoU2Vuc29ydGVjL2RyaXZlcnMvY29t
-bWl0LzA5MmNhYjQ4ODM2Y2YwY2E5YWQzDQo+IGJiNjdjZjg2ZjViN2FhMjM5ZDk1I2RpZmYtYTg3
-ZTRlMTZmM2Y4OTUwYWFmZWRmMGI3YjMyYzYxM2YNCg0KSXQgc2VlbXMgdGhhdCB0aGV5IHVwZGF0
-ZWQgdGhlaXIgcmVwb3NpdG9yeSB0byBpbmRpY2F0ZSB0aGF0IGl0IGlzIEdQTDIgbGljZW5zZWQu
-DQoNCiANCj4gYnV0IHBlcmhhcHMgaXQgd29ydGhzIHNvbWVvbmUgbG9va2luZyBhdCBlbmhhbmNp
-bmcgdGhlIHVwc3RyZWFtIGRyaXZlci4gSQ0KPiB3aWxsIHRyeSB0byBzZWUgaW4gdGhlIG5leHQg
-ZmV3IHdlZWtzIGlmIHdlIGNhbiB3b3JrIHdpdGggQm9zY2hTZW5zb3J0ZWMgZm9yDQo+IHRoZW0g
-dG8gdXBzdHJlYW0gdGhlaXIgbWlzc2luZyBwYXJ0cyBmcm9tIHVwc3RyZWFtLg0KDQpUaGFua3Mg
-Zm9yIHlvdXIgd29yayBvbiB0aGlzIGRyaXZlciEgIEhvcGVmdWxseSBCb3NjaCB3aWxsIHNlZSB0
-aGUgdmFsdWUgaW4gdXBzdHJlYW1pbmcgdGhlaXIgd29yay4NCg0KPiANCj4gSG9wZSB0aGlzIGhl
-bHBzLg0KPiANCj4gRGFuaWVsDQo=
+patch [1/4]:
+  Fix wrong SARADC/SANA clock gate bit in Meson-GXBB/GXL,
+the published datasheets[4] also has wrong description about this.
+  This patch should be explicitly merged *before* other patches.
+
+patch [2-4/4]:
+  Drop the "sana" clock from SAR ADC module,
+
+  From the hardware perspective, the SAR ADC module doesn't
+require "sana" clock to wrok. This should apply to all SoC,
+including meson6,8, GXBB, GXL..
+
+Note: the whole patchset series has been tested at GXL-P212 board,
+we haven't got any meson6,8 board to test, so I would appreciate
+if someone (Martin?) could help to confirm it works there.
+
+Changes since v3 at [3] :
+  - fix the missing iio maintainers for patch[2/4]
+  - add warning about the dependency, the patch[1/4] should go first
+  - update comments
+
+Changes since v2 at [2] :
+  - explicitly point out 'sana' clock is not required for saradc, and drop them
+  - update comments, as the published datasheet is wrong
+ 
+Changes since v1 at [1] :
+  - correct SAR ADC/SANA clock gate bit
+
+[1] http://lists.infradead.org/pipermail/linux-amlogic/2017-November/005221.html
+
+[2] http://lists.infradead.org/pipermail/linux-amlogic/2017-November/005242.html
+
+[3] http://lists.infradead.org/pipermail/linux-amlogic/2017-November/005252.html
+    http://lists.infradead.org/pipermail/linux-amlogic/2017-November/005257.html
+    http://lists.infradead.org/pipermail/linux-amlogic/2017-November/005253.html
+    http://lists.infradead.org/pipermail/linux-amlogic/2017-November/005254.html
+    http://lists.infradead.org/pipermail/linux-amlogic/2017-November/005255.html
+
+
+[4] GXBB v1.1.4, page 57
+      http://dn.odroid.com/S905/DataSheet/S905_Public_Datasheet_V1.1.4.pdf
+    GXL v0.3_20170314
+      http://www.mediafire.com/file/5bpt054va5ut7v9/S905X_Datasheet_V0.3_20170314publicversion-Wesion.pdf
+
+
+Xingyu Chen (3):
+  iio: adc: meson-saradc: remove irrelevant clock "sana"
+  dt-bindings: iio: adc: update the doc for SAR ADC
+  ARM64: dts: meson: drop "sana" clock from SAR ADC
+
+Yixun Lan (1):
+  clk: meson: gxbb: fix wrong clock for SARADC/SANA
+
+ .../bindings/iio/adc/amlogic,meson-saradc.txt        |  1 -
+ arch/arm/boot/dts/meson8.dtsi                        |  5 ++---
+ arch/arm/boot/dts/meson8b.dtsi                       |  5 ++---
+ arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi          |  3 +--
+ arch/arm64/boot/dts/amlogic/meson-gxl.dtsi           |  3 +--
+ drivers/clk/meson/gxbb.c                             |  4 ++--
+ drivers/iio/adc/meson_saradc.c                       | 20 --------------------
+ 7 files changed, 8 insertions(+), 33 deletions(-)
+
+-- 
+2.14.1
