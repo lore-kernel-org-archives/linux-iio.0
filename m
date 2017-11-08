@@ -1,75 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f47.google.com ([74.125.82.47]:43466 "EHLO
-        mail-wm0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751035AbdKHIaC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 8 Nov 2017 03:30:02 -0500
-Received: by mail-wm0-f47.google.com with SMTP id r68so15734194wmr.0
-        for <linux-iio@vger.kernel.org>; Wed, 08 Nov 2017 00:30:01 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <CY1PR02MB2091620DAA142CD469AE357BC7510@CY1PR02MB2091.namprd02.prod.outlook.com>
+Received: from mail-sn1nam02on0050.outbound.protection.outlook.com ([104.47.36.50]:5312
+        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1751763AbdKHQhW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 8 Nov 2017 11:37:22 -0500
+From: David Frey <DFrey@sierrawireless.com>
+To: Daniel Baluta <daniel.baluta@gmail.com>,
+        "contact@bosch-sensortec.com" <contact@bosch-sensortec.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: RE: bmi160 drivers
+Date: Wed, 8 Nov 2017 16:37:19 +0000
+Message-ID: <CY1PR02MB2091BCB66938008EBADA6B55C7560@CY1PR02MB2091.namprd02.prod.outlook.com>
 References: <CY1PR02MB2091620DAA142CD469AE357BC7510@CY1PR02MB2091.namprd02.prod.outlook.com>
-From: Daniel Baluta <daniel.baluta@gmail.com>
-Date: Wed, 8 Nov 2017 10:30:00 +0200
-Message-ID: <CAEnQRZATAMfWiErKeG5ENR0os85fvmxd0OftPkQtZELAZvKdxQ@mail.gmail.com>
-Subject: Re: bmi160 drivers
-To: David Frey <DFrey@sierrawireless.com>, contact@bosch-sensortec.com
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+ <CAEnQRZATAMfWiErKeG5ENR0os85fvmxd0OftPkQtZELAZvKdxQ@mail.gmail.com>
+In-Reply-To: <CAEnQRZATAMfWiErKeG5ENR0os85fvmxd0OftPkQtZELAZvKdxQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi David,
-
-+ contact@bosch-sensortec.com
-
-On Tue, Nov 7, 2017 at 8:49 AM, David Frey <DFrey@sierrawireless.com> wrote=
-:
-> Hi,
->
-> I was working with a vendor kernel based on an older version of Linux (3.=
-14) and I backported the bmi160 driver that I found in a recent stable vers=
-ion of Linux.  That worked fine.  More recently, I picked up another slight=
-ly newer vendor kernel (3.18) for a slightly different product and I notice=
-d that it already included a bmi160 driver.  I was surprised to discover th=
-at it was a totally different driver.  The driver appears to have been writ=
-ten by BoschSensortec (who makes the bmi160 hardware) and is available on g=
-ithub here: https://github.com/BoschSensortec/drivers
->
-> The driver in the regular linux kernel (originally written by Daniel Balu=
-ta and submitted to this mailing list) is around 800 lines of .c and .h fil=
-es.  The Bosch driver is around 37000 lines of .c and .h files.  I'm not su=
-re how the drivers compare in terms of features.  It seems that the Bosch d=
-river is a bit older (based on the commit logs on github).  So I'm wonderin=
-g:
->
-> Why were two drivers written?
-
-Because at the moment I wrote the driver and sent it upstream there
-was no driver from BoshSensortec.
-
-I think the driver wrote by BoschSensortec supports all the features
-of the chip (including hardware fifo), but it also
-has a lot of non standard attributes (so not easy acceptable upstream).
-
-I was planning at some point to implement hw fifo support but got
-derailed with other things.
-
-> Was there a discussion about which driver to include in the Linux kernel?=
-  (I couldn't find any discussion on this mailing list)
-
-No, AFAIK. BoshSensortec never sent a request for their driver to be
-merged upstream.
-
-I am not sure about their code license?
-
-https://github.com/BoschSensortec/drivers/commit/092cab48836cf0ca9ad3bb67cf=
-86f5b7aa239d95#diff-a87e4e16f3f8950aafedf0b7b32c613f
-
-but perhaps it worths someone looking at enhancing the upstream
-driver. I will try to see in the next few weeks if we can work with
-BoschSensortec
-for them to upstream their missing parts from upstream.
-
-Hope this helps.
-
-Daniel
+SGkgRGFuaWVsLA0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IERhbmll
+bCBCYWx1dGEgW21haWx0bzpkYW5pZWwuYmFsdXRhQGdtYWlsLmNvbV0NCj4gU2VudDogV2VkbmVz
+ZGF5LCBOb3ZlbWJlciA4LCAyMDE3IDEyOjMwIEFNDQo+IFRvOiBEYXZpZCBGcmV5IDxERnJleUBz
+aWVycmF3aXJlbGVzcy5jb20+OyBjb250YWN0QGJvc2NoLXNlbnNvcnRlYy5jb20NCj4gQ2M6IGxp
+bnV4LWlpb0B2Z2VyLmtlcm5lbC5vcmcNCj4gU3ViamVjdDogUmU6IGJtaTE2MCBkcml2ZXJzDQo+
+IA0KPiBIaSBEYXZpZCwNCj4gDQo+ICsgY29udGFjdEBib3NjaC1zZW5zb3J0ZWMuY29tDQo+IA0K
+PiBPbiBUdWUsIE5vdiA3LCAyMDE3IGF0IDg6NDkgQU0sIERhdmlkIEZyZXkgPERGcmV5QHNpZXJy
+YXdpcmVsZXNzLmNvbT4NCj4gd3JvdGU6DQo+ID4gSGksDQo+ID4NCj4gPiBJIHdhcyB3b3JraW5n
+IHdpdGggYSB2ZW5kb3Iga2VybmVsIGJhc2VkIG9uIGFuIG9sZGVyIHZlcnNpb24gb2YgTGludXgN
+Cj4gPiAoMy4xNCkgYW5kIEkgYmFja3BvcnRlZCB0aGUgYm1pMTYwIGRyaXZlciB0aGF0IEkgZm91
+bmQgaW4gYSByZWNlbnQNCj4gPiBzdGFibGUgdmVyc2lvbiBvZiBMaW51eC4gIFRoYXQgd29ya2Vk
+IGZpbmUuICBNb3JlIHJlY2VudGx5LCBJIHBpY2tlZA0KPiA+IHVwIGFub3RoZXIgc2xpZ2h0bHkg
+bmV3ZXIgdmVuZG9yIGtlcm5lbCAoMy4xOCkgZm9yIGEgc2xpZ2h0bHkNCj4gPiBkaWZmZXJlbnQg
+cHJvZHVjdCBhbmQgSSBub3RpY2VkIHRoYXQgaXQgYWxyZWFkeSBpbmNsdWRlZCBhIGJtaTE2MA0K
+PiA+IGRyaXZlci4gIEkgd2FzIHN1cnByaXNlZCB0byBkaXNjb3ZlciB0aGF0IGl0IHdhcyBhIHRv
+dGFsbHkgZGlmZmVyZW50DQo+ID4gZHJpdmVyLiAgVGhlIGRyaXZlciBhcHBlYXJzIHRvIGhhdmUg
+YmVlbiB3cml0dGVuIGJ5IEJvc2NoU2Vuc29ydGVjDQo+ID4gKHdobyBtYWtlcyB0aGUgYm1pMTYw
+IGhhcmR3YXJlKSBhbmQgaXMgYXZhaWxhYmxlIG9uIGdpdGh1YiBoZXJlOg0KPiA+IGh0dHBzOi8v
+Z2l0aHViLmNvbS9Cb3NjaFNlbnNvcnRlYy9kcml2ZXJzDQo+ID4NCj4gPiBUaGUgZHJpdmVyIGlu
+IHRoZSByZWd1bGFyIGxpbnV4IGtlcm5lbCAob3JpZ2luYWxseSB3cml0dGVuIGJ5IERhbmllbCBC
+YWx1dGEgYW5kDQo+IHN1Ym1pdHRlZCB0byB0aGlzIG1haWxpbmcgbGlzdCkgaXMgYXJvdW5kIDgw
+MCBsaW5lcyBvZiAuYyBhbmQgLmggZmlsZXMuICBUaGUgQm9zY2gNCj4gZHJpdmVyIGlzIGFyb3Vu
+ZCAzNzAwMCBsaW5lcyBvZiAuYyBhbmQgLmggZmlsZXMuICBJJ20gbm90IHN1cmUgaG93IHRoZSBk
+cml2ZXJzDQo+IGNvbXBhcmUgaW4gdGVybXMgb2YgZmVhdHVyZXMuICBJdCBzZWVtcyB0aGF0IHRo
+ZSBCb3NjaCBkcml2ZXIgaXMgYSBiaXQgb2xkZXINCj4gKGJhc2VkIG9uIHRoZSBjb21taXQgbG9n
+cyBvbiBnaXRodWIpLiAgU28gSSdtIHdvbmRlcmluZzoNCj4gPg0KPiA+IFdoeSB3ZXJlIHR3byBk
+cml2ZXJzIHdyaXR0ZW4/DQo+IA0KPiBCZWNhdXNlIGF0IHRoZSBtb21lbnQgSSB3cm90ZSB0aGUg
+ZHJpdmVyIGFuZCBzZW50IGl0IHVwc3RyZWFtIHRoZXJlIHdhcyBubw0KPiBkcml2ZXIgZnJvbSBC
+b3NoU2Vuc29ydGVjLg0KDQpBaGggb2ssIEkgZ3Vlc3MgbXkgaW50ZXJwcmV0YXRpb24gb2YgdGhl
+IHRpbWluZyBvZiB0aGUgdHdvIGRyaXZlcnMgd2FzIG9mZi4NCg0KIA0KPiBJIHRoaW5rIHRoZSBk
+cml2ZXIgd3JvdGUgYnkgQm9zY2hTZW5zb3J0ZWMgc3VwcG9ydHMgYWxsIHRoZSBmZWF0dXJlcyBv
+ZiB0aGUNCj4gY2hpcCAoaW5jbHVkaW5nIGhhcmR3YXJlIGZpZm8pLCBidXQgaXQgYWxzbyBoYXMg
+YSBsb3Qgb2Ygbm9uIHN0YW5kYXJkIGF0dHJpYnV0ZXMNCj4gKHNvIG5vdCBlYXN5IGFjY2VwdGFi
+bGUgdXBzdHJlYW0pLg0KPiANCj4gSSB3YXMgcGxhbm5pbmcgYXQgc29tZSBwb2ludCB0byBpbXBs
+ZW1lbnQgaHcgZmlmbyBzdXBwb3J0IGJ1dCBnb3QgZGVyYWlsZWQNCj4gd2l0aCBvdGhlciB0aGlu
+Z3MuDQo+IA0KPiA+IFdhcyB0aGVyZSBhIGRpc2N1c3Npb24gYWJvdXQgd2hpY2ggZHJpdmVyIHRv
+IGluY2x1ZGUgaW4gdGhlIExpbnV4DQo+ID4ga2VybmVsPyAgKEkgY291bGRuJ3QgZmluZCBhbnkg
+ZGlzY3Vzc2lvbiBvbiB0aGlzIG1haWxpbmcgbGlzdCkNCj4gDQo+IE5vLCBBRkFJSy4gQm9zaFNl
+bnNvcnRlYyBuZXZlciBzZW50IGEgcmVxdWVzdCBmb3IgdGhlaXIgZHJpdmVyIHRvIGJlIG1lcmdl
+ZA0KPiB1cHN0cmVhbS4NCj4gDQo+IEkgYW0gbm90IHN1cmUgYWJvdXQgdGhlaXIgY29kZSBsaWNl
+bnNlPw0KPiANCj4gaHR0cHM6Ly9naXRodWIuY29tL0Jvc2NoU2Vuc29ydGVjL2RyaXZlcnMvY29t
+bWl0LzA5MmNhYjQ4ODM2Y2YwY2E5YWQzDQo+IGJiNjdjZjg2ZjViN2FhMjM5ZDk1I2RpZmYtYTg3
+ZTRlMTZmM2Y4OTUwYWFmZWRmMGI3YjMyYzYxM2YNCg0KSXQgc2VlbXMgdGhhdCB0aGV5IHVwZGF0
+ZWQgdGhlaXIgcmVwb3NpdG9yeSB0byBpbmRpY2F0ZSB0aGF0IGl0IGlzIEdQTDIgbGljZW5zZWQu
+DQoNCiANCj4gYnV0IHBlcmhhcHMgaXQgd29ydGhzIHNvbWVvbmUgbG9va2luZyBhdCBlbmhhbmNp
+bmcgdGhlIHVwc3RyZWFtIGRyaXZlci4gSQ0KPiB3aWxsIHRyeSB0byBzZWUgaW4gdGhlIG5leHQg
+ZmV3IHdlZWtzIGlmIHdlIGNhbiB3b3JrIHdpdGggQm9zY2hTZW5zb3J0ZWMgZm9yDQo+IHRoZW0g
+dG8gdXBzdHJlYW0gdGhlaXIgbWlzc2luZyBwYXJ0cyBmcm9tIHVwc3RyZWFtLg0KDQpUaGFua3Mg
+Zm9yIHlvdXIgd29yayBvbiB0aGlzIGRyaXZlciEgIEhvcGVmdWxseSBCb3NjaCB3aWxsIHNlZSB0
+aGUgdmFsdWUgaW4gdXBzdHJlYW1pbmcgdGhlaXIgd29yay4NCg0KPiANCj4gSG9wZSB0aGlzIGhl
+bHBzLg0KPiANCj4gRGFuaWVsDQo=
