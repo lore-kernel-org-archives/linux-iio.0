@@ -1,62 +1,79 @@
-Return-Path: <SRS0=KP4v=CG=linux.intel.com=mika.westerberg@kernel.org>
-Date: Wed, 8 Nov 2017 19:03:57 +0200
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v3 3/5] iio: proximity: sx9500: Set IRQ pin to
- direction-input if necessary
-Message-ID: <20171108170357.GN18997@lahna.fi.intel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-io0-f179.google.com ([209.85.223.179]:44734 "EHLO
+        mail-io0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751728AbdKHUpw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 8 Nov 2017 15:45:52 -0500
+Received: by mail-io0-f179.google.com with SMTP id m16so7421357iod.1
+        for <linux-iio@vger.kernel.org>; Wed, 08 Nov 2017 12:45:52 -0800 (PST)
+MIME-Version: 1.0
+In-Reply-To: <20171108170357.GN18997@lahna.fi.intel.com>
 References: <20171103130340.42459-1-andriy.shevchenko@linux.intel.com>
  <20171103130340.42459-3-andriy.shevchenko@linux.intel.com>
- <20171104032059.0000049a@huawei.com>
- <1510158946.25007.112.camel@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1510158946.25007.112.camel@linux.intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+ <20171104032059.0000049a@huawei.com> <1510158946.25007.112.camel@linux.intel.com>
+ <20171108170357.GN18997@lahna.fi.intel.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Wed, 8 Nov 2017 21:45:51 +0100
+Message-ID: <CACRpkdZkopuQ2KwNxQyj-KfDawjrhgFVt_2L0-EjJMrMHCXdDw@mail.gmail.com>
+Subject: Re: [PATCH v3 3/5] iio: proximity: sx9500: Set IRQ pin to
+ direction-input if necessary
+To: Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Content-Type: text/plain; charset="UTF-8"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, Nov 08, 2017 at 06:35:46PM +0200, Andy Shevchenko wrote:
-> +Cc: Mika
-> 
-> On Sat, 2017-11-04 at 03:20 +0000, Jonathan Cameron wrote:
-> > On Fri, 3 Nov 2017 15:03:38 +0200
-> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> > 
-> > > With the new more strict ACPI gpio code the DSDT's IoRestriction
-> > > flags
-> > > are honored on gpiod_get(), but in some DSDT's it is wrong, so
-> > > explicitly call gpiod_direction_input() on the IRQ GPIO if
-> > > necessary.
-> > > 
-> > > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > 
-> > Again, I really really don't like filling driver code with fixes
-> > for broken firmware.  I appreciate we have to cope with this, but
-> > it does rather seem like this should be moved into the core code
-> > for say gpiod_get_irq.
-> 
-> I would love to fix in general, though it looks not so trivial:
-> 
-> - gpiod_get() doesn't know if GPIO is going to be used as IRQ
-> - gpiod_to_irq() doesn't know if descriptor in question comes from
-> GpioIo() ACPI resource
+On Wed, Nov 8, 2017 at 6:03 PM, Mika Westerberg
+<mika.westerberg@linux.intel.com> wrote:
+> On Wed, Nov 08, 2017 at 06:35:46PM +0200, Andy Shevchenko wrote:
+>> +Cc: Mika
+>>
+>> On Sat, 2017-11-04 at 03:20 +0000, Jonathan Cameron wrote:
+>> > On Fri, 3 Nov 2017 15:03:38 +0200
+>> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+>> >
+>> > > With the new more strict ACPI gpio code the DSDT's IoRestriction
+>> > > flags
+>> > > are honored on gpiod_get(), but in some DSDT's it is wrong, so
+>> > > explicitly call gpiod_direction_input() on the IRQ GPIO if
+>> > > necessary.
+>> > >
+>> > > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+>> >
+>> > Again, I really really don't like filling driver code with fixes
+>> > for broken firmware.  I appreciate we have to cope with this, but
+>> > it does rather seem like this should be moved into the core code
+>> > for say gpiod_get_irq.
+>>
+>> I would love to fix in general, though it looks not so trivial:
+>>
+>> - gpiod_get() doesn't know if GPIO is going to be used as IRQ
+>> - gpiod_to_irq() doesn't know if descriptor in question comes from
+>> GpioIo() ACPI resource
+>
+> One idea is to allow this strict mode to be relaxed by drivers perhaps
+> by passing quirks through struct acpi_gpio_mapping:
+>
+> static const struct acpi_gpio_mapping acpi_foo_gpios[] = {
+>         /*
+>          * This platform has a bug in ACPI GPIO description making IRQ
+>          * GPIO to be output only. Ask the GPIO core to ignore this
+>          * limit.
+>          */
+>         { "foobar-gpios", &foobar_gpios, 1, ACPI_QUIRK_IGNORE_IO_RESTRICTION },
+>         {},
+> };
+>
+> or something like that. Not sure if I missed something obvious, though.
 
-One idea is to allow this strict mode to be relaxed by drivers perhaps
-by passing quirks through struct acpi_gpio_mapping:
+This looks like an elegant solution to me.
 
-static const struct acpi_gpio_mapping acpi_foo_gpios[] = {
-	/*
-	 * This platform has a bug in ACPI GPIO description making IRQ
-	 * GPIO to be output only. Ask the GPIO core to ignore this
-	 * limit.
-	 */
-	{ "foobar-gpios", &foobar_gpios, 1, ACPI_QUIRK_IGNORE_IO_RESTRICTION },
-	{},
-};
+Can it be done?
 
-or something like that. Not sure if I missed something obvious, though.
+Yours,
+Linus Walleij
