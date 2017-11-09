@@ -1,392 +1,174 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:42774 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751621AbdKYObm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 25 Nov 2017 09:31:42 -0500
-Date: Sat, 25 Nov 2017 14:31:38 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: harinath Nampally <harinath922@gmail.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de,
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:41036 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1754025AbdKIKN6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 9 Nov 2017 05:13:58 -0500
+From: Arnaud Pouliquen <arnaud.pouliquen@st.com>
+To: Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        Alison Schofield <amsfield22@gmail.com>,
-        Martin Kepplinger <martink@posteo.de>
-Subject: Re: [PATCH] iio: accel: mma8452: Add single pulse/tap event
- detection
-Message-ID: <20171125143138.43311b8d@archlinux>
-In-Reply-To: <CAAGUq_pvq3SGotMMNwiA_K0A7TT2NRcrXdNWOsOctH0nbf-qXg@mail.gmail.com>
-References: <1510197177-9434-1-git-send-email-harinath922@gmail.com>
-        <20171119144709.38b52103@archlinux>
-        <CAAGUq_pvq3SGotMMNwiA_K0A7TT2NRcrXdNWOsOctH0nbf-qXg@mail.gmail.com>
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+CC: <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-iio@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        <arnaud.pouliquen@st.com>
+Subject: [PATCH v4 00/12] Add STM32 DFSDM support
+Date: Thu, 9 Nov 2017 11:12:22 +0100
+Message-ID: <1510222354-15290-1-git-send-email-arnaud.pouliquen@st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, 19 Nov 2017 20:48:21 -0500
-harinath Nampally <harinath922@gmail.com> wrote:
+Hello,
+Here is a new version of the DFSDM proposed.
 
-> > > This patch adds following related changes:
-> > > - defines pulse event related registers
-> > > - enables and handles single pulse interrupt for fxls8471
-> > > - handles IIO_EV_DIR_EITHER in read/write callbacks (because
-> > >   event direction for pulse is either rising or falling)
-> > > - configures read/write event value for pulse latency register
-> > >   using IIO_EV_INFO_HYSTERESIS
-> > > - adds multiple events like pulse and tranient event spec
-> > >   as elements of event_spec array named 'mma8452_accel_events'
-> > >
-> > > Except mma8653 chip all other chips like mma845x and
-> > > fxls8471 have single tap detection feature.
-> > > Tested thoroughly using iio_event_monitor application on
-> > > imx6ul-evk board which has fxls8471.
-> > >
-> > > Signed-off-by: Harinath Nampally <harinath922@gmail.com>  
-> >
-> > The use of an either direction magnitude event is misleading.
-> > Tap detection requires a timed sequence of events - a rapid
-> > increase in acceleration followed by a rapid decrease.  
-> Yes I agree.
-> 
-> > So.. I'd propose (and I want as much feedback on this as possible)
-> >
-> > IIO_EV_TYPE_TAP
-> >
-> > Then abuse iio_event_direction to specify single or double (the concept
-> > of direction doesn't really apply to these in that sense so we'd always
-> > have them set to none).  
-> Sure, I think this would be very useful as there are lot of modern
-> accelerometers
-> with tap event support.
+Context reminder:
+-----------------
 
-It's been true since the start of IIO but we just kept kicking this
-question into the long grass as we didn't really have the surrounding
-support that would be ideally needed.  They are only really useful
-in the general sense if we finally do something with the iio-input
-bridge and put together the in kernel event consumer interface we
-have never actually written...  It's been on the todo list for
-at least 5 years... oops :(
+DFSDM peripheral is a peripheral that allows to connect some sigma delta ADCs
+or PDM microphones via a SPI or Manchester bus.
+DFSDM integrates digital filters to offer up to 24 bits final resolution.
 
-> 
-> Thanks,
-> Harinath
-> 
-> On Sun, Nov 19, 2017 at 9:47 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-> > On Wed,  8 Nov 2017 22:12:57 -0500
-> > Harinath Nampally <harinath922@gmail.com> wrote:
-> >  
-> >> This patch adds following related changes:
-> >> - defines pulse event related registers
-> >> - enables and handles single pulse interrupt for fxls8471
-> >> - handles IIO_EV_DIR_EITHER in read/write callbacks (because
-> >>   event direction for pulse is either rising or falling)
-> >> - configures read/write event value for pulse latency register
-> >>   using IIO_EV_INFO_HYSTERESIS
-> >> - adds multiple events like pulse and tranient event spec
-> >>   as elements of event_spec array named 'mma8452_accel_events'
-> >>
-> >> Except mma8653 chip all other chips like mma845x and
-> >> fxls8471 have single tap detection feature.
-> >> Tested thoroughly using iio_event_monitor application on
-> >> imx6ul-evk board which has fxls8471.
-> >>
-> >> Signed-off-by: Harinath Nampally <harinath922@gmail.com>  
-> >
-> > The use of an either direction magnitude event is misleading.
-> > Tap detection requires a timed sequence of events - a rapid
-> > increase in acceleration followed by a rapid decrease.
-> >
-> > I don't think we can fit tap detection into the existing
-> > event types (which is annoying but there we are).
-> >
-> > So.. I'd propose (and I want as much feedback on this as possible)
-> >
-> > IIO_EV_TYPE_TAP
-> >
-> > Then abuse iio_event_direction to specify single or double (the concept
-> > of direction doesn't really apply to these in that sense so we'd always
-> > have them set to none).
-> >
-> > The alternative would be to full out for an abstract representation of
-> > these events (like step detection) and define a channel type
-> > IIO_TAP then detect a change in the number of taps (IIO_DIR_NONE), but
-> > given we have directional taps we would need the modifier for that.
-> > Hence no means of describing whether it is a single or double tap
-> > short of burning channel taps.  I'm also not sure we want to
-> > remove the association with a particular sensor channel.
-> >
-> > Hence I think I prefer option 1 but would like other's input on this...
-> >
-> > Jonathan
-> >  
-> >> ---
-> >>  drivers/iio/accel/mma8452.c | 156 ++++++++++++++++++++++++++++++++++++++++++--
-> >>  1 file changed, 151 insertions(+), 5 deletions(-)
-> >>
-> >> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> >> index 43c3a6b..36f1b56 100644
-> >> --- a/drivers/iio/accel/mma8452.c
-> >> +++ b/drivers/iio/accel/mma8452.c
-> >> @@ -72,6 +72,19 @@
-> >>  #define  MMA8452_TRANSIENT_THS_MASK          GENMASK(6, 0)
-> >>  #define MMA8452_TRANSIENT_COUNT                      0x20
-> >>  #define MMA8452_TRANSIENT_CHAN_SHIFT 1
-> >> +#define MMA8452_PULSE_CFG                    0x21
-> >> +#define MMA8452_PULSE_CFG_CHAN(chan)         BIT(chan * 2)
-> >> +#define MMA8452_PULSE_CFG_ELE                        BIT(6)
-> >> +#define MMA8452_PULSE_SRC                    0x22
-> >> +#define MMA8452_PULSE_SRC_XPULSE             BIT(4)
-> >> +#define MMA8452_PULSE_SRC_YPULSE             BIT(5)
-> >> +#define MMA8452_PULSE_SRC_ZPULSE             BIT(6)
-> >> +#define MMA8452_PULSE_THS                    0x23
-> >> +#define MMA8452_PULSE_THS_MASK                       GENMASK(6, 0)
-> >> +#define MMA8452_PULSE_COUNT                  0x26
-> >> +#define MMA8452_PULSE_CHAN_SHIFT             2
-> >> +#define MMA8452_PULSE_LTCY                   0x27
-> >> +
-> >>  #define MMA8452_CTRL_REG1                    0x2a
-> >>  #define  MMA8452_CTRL_ACTIVE                 BIT(0)
-> >>  #define  MMA8452_CTRL_DR_MASK                        GENMASK(5, 3)
-> >> @@ -91,6 +104,7 @@
-> >>
-> >>  #define  MMA8452_INT_DRDY                    BIT(0)
-> >>  #define  MMA8452_INT_FF_MT                   BIT(2)
-> >> +#define  MMA8452_INT_PULSE                   BIT(3)
-> >>  #define  MMA8452_INT_TRANS                   BIT(5)
-> >>
-> >>  #define MMA8451_DEVICE_ID                    0x1a
-> >> @@ -155,6 +169,16 @@ static const struct mma8452_event_regs trans_ev_regs = {
-> >>               .ev_count = MMA8452_TRANSIENT_COUNT,
-> >>  };
-> >>
-> >> +static const struct mma8452_event_regs pulse_ev_regs = {
-> >> +             .ev_cfg = MMA8452_PULSE_CFG,
-> >> +             .ev_cfg_ele = MMA8452_PULSE_CFG_ELE,
-> >> +             .ev_cfg_chan_shift = MMA8452_PULSE_CHAN_SHIFT,
-> >> +             .ev_src = MMA8452_PULSE_SRC,
-> >> +             .ev_ths = MMA8452_PULSE_THS,
-> >> +             .ev_ths_mask = MMA8452_PULSE_THS_MASK,
-> >> +             .ev_count = MMA8452_PULSE_COUNT,
-> >> +};
-> >> +
-> >>  /**
-> >>   * struct mma_chip_info - chip specific data
-> >>   * @chip_id:                 WHO_AM_I register's value
-> >> @@ -784,6 +808,14 @@ static int mma8452_get_event_regs(struct mma8452_data *data,
-> >>               case IIO_EV_DIR_FALLING:
-> >>                       *ev_reg = &ff_mt_ev_regs;
-> >>                       return 0;
-> >> +             case IIO_EV_DIR_EITHER:
-> >> +                     if (!(data->chip_info->all_events
-> >> +                                     & MMA8452_INT_PULSE) ||
-> >> +                             !(data->chip_info->enabled_events
-> >> +                                     & MMA8452_INT_PULSE))
-> >> +                             return -EINVAL;
-> >> +                     *ev_reg = &pulse_ev_regs;
-> >> +                     return 0;
-> >>               default:
-> >>                       return -EINVAL;
-> >>               }
-> >> @@ -848,6 +880,25 @@ static int mma8452_read_event_value(struct iio_dev *indio_dev,
-> >>                               return ret;
-> >>               }
-> >>
-> >> +     case IIO_EV_INFO_HYSTERESIS:
-> >> +             if (!(data->chip_info->all_events & MMA8452_INT_PULSE) ||
-> >> +                     !(data->chip_info->enabled_events & MMA8452_INT_PULSE))
-> >> +                     return -EINVAL;
-> >> +
-> >> +             ret = i2c_smbus_read_byte_data(data->client,
-> >> +                                             MMA8452_PULSE_LTCY);
-> >> +             if (ret < 0)
-> >> +                     return ret;
-> >> +
-> >> +             power_mode = mma8452_get_power_mode(data);
-> >> +             if (power_mode < 0)
-> >> +                     return power_mode;
-> >> +
-> >> +             us = ret * mma8452_time_step_us[power_mode][
-> >> +                             mma8452_get_odr_index(data)];
-> >> +             *val = us / USEC_PER_SEC;
-> >> +             *val2 = us % USEC_PER_SEC;
-> >> +
-> >>               return IIO_VAL_INT_PLUS_MICRO;
-> >>
-> >>       default:
-> >> @@ -908,6 +959,24 @@ static int mma8452_write_event_value(struct iio_dev *indio_dev,
-> >>
-> >>               return mma8452_change_config(data, MMA8452_TRANSIENT_CFG, reg);
-> >>
-> >> +     case IIO_EV_INFO_HYSTERESIS:
-> >> +             if (!(data->chip_info->all_events & MMA8452_INT_PULSE) ||
-> >> +                     !(data->chip_info->enabled_events & MMA8452_INT_PULSE))
-> >> +                     return -EINVAL;
-> >> +
-> >> +             ret = mma8452_get_power_mode(data);
-> >> +             if (ret < 0)
-> >> +                     return ret;
-> >> +
-> >> +             steps = (val * USEC_PER_SEC + val2) /
-> >> +                             mma8452_time_step_us[ret][
-> >> +                                     mma8452_get_odr_index(data)];
-> >> +
-> >> +             if (steps < 0 || steps > 0xff)
-> >> +                     return -EINVAL;
-> >> +
-> >> +             return mma8452_change_config(data, MMA8452_PULSE_LTCY, steps);
-> >> +
-> >>       default:
-> >>               return -EINVAL;
-> >>       }
-> >> @@ -937,6 +1006,14 @@ static int mma8452_read_event_config(struct iio_dev *indio_dev,
-> >>
-> >>               return !!(ret & BIT(chan->scan_index +
-> >>                               ev_regs->ev_cfg_chan_shift));
-> >> +     case IIO_EV_DIR_EITHER:
-> >> +             ret = i2c_smbus_read_byte_data(data->client,
-> >> +                             ev_regs->ev_cfg);
-> >> +             if (ret < 0)
-> >> +                     return ret;
-> >> +
-> >> +             return !!(ret & BIT(chan->scan_index *
-> >> +                             ev_regs->ev_cfg_chan_shift));
-> >>       default:
-> >>               return -EINVAL;
-> >>       }
-> >> @@ -988,6 +1065,25 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
-> >>               val |= ev_regs->ev_cfg_ele;
-> >>
-> >>               return mma8452_change_config(data, ev_regs->ev_cfg, val);
-> >> +
-> >> +     case IIO_EV_DIR_EITHER:
-> >> +             val = i2c_smbus_read_byte_data(data->client, ev_regs->ev_cfg);
-> >> +             if (val < 0)
-> >> +                     return val;
-> >> +
-> >> +             if (state) {
-> >> +                     val &= ~BIT(chan->scan_index *
-> >> +                                     ev_regs->ev_cfg_chan_shift);
-> >> +                     val |= BIT(chan->scan_index *
-> >> +                                     ev_regs->ev_cfg_chan_shift);
-> >> +             } else {
-> >> +                     val &= ~BIT(chan->scan_index *
-> >> +                                     ev_regs->ev_cfg_chan_shift);
-> >> +             }
-> >> +
-> >> +             val |= ev_regs->ev_cfg_ele;
-> >> +
-> >> +             return mma8452_change_config(data, ev_regs->ev_cfg, val);
-> >>       default:
-> >>               return -EINVAL;
-> >>       }
-> >> @@ -1025,6 +1121,38 @@ static void mma8452_transient_interrupt(struct iio_dev *indio_dev)
-> >>                              ts);
-> >>  }
-> >>
-> >> +static void mma8452_pulse_interrupt(struct iio_dev *indio_dev)
-> >> +{
-> >> +     struct mma8452_data *data = iio_priv(indio_dev);
-> >> +     s64 ts = iio_get_time_ns(indio_dev);
-> >> +     int src;
-> >> +
-> >> +     src = i2c_smbus_read_byte_data(data->client, MMA8452_PULSE_SRC);
-> >> +     if (src < 0)
-> >> +             return;
-> >> +
-> >> +     if (src & MMA8452_PULSE_SRC_XPULSE)
-> >> +             iio_push_event(indio_dev,
-> >> +                            IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_X,
-> >> +                                               IIO_EV_TYPE_MAG,
-> >> +                                               IIO_EV_DIR_EITHER),
-> >> +                            ts);
-> >> +
-> >> +     if (src & MMA8452_PULSE_SRC_YPULSE)
-> >> +             iio_push_event(indio_dev,
-> >> +                            IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_Y,
-> >> +                                               IIO_EV_TYPE_MAG,
-> >> +                                               IIO_EV_DIR_EITHER),
-> >> +                            ts);
-> >> +
-> >> +     if (src & MMA8452_PULSE_SRC_ZPULSE)
-> >> +             iio_push_event(indio_dev,
-> >> +                            IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_Z,
-> >> +                                               IIO_EV_TYPE_MAG,
-> >> +                                               IIO_EV_DIR_EITHER),
-> >> +                            ts);
-> >> +}
-> >> +
-> >>  static irqreturn_t mma8452_interrupt(int irq, void *p)
-> >>  {
-> >>       struct iio_dev *indio_dev = p;
-> >> @@ -1063,6 +1191,11 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
-> >>               ret = IRQ_HANDLED;
-> >>       }
-> >>
-> >> +     if (src & MMA8452_INT_PULSE) {
-> >> +             mma8452_pulse_interrupt(indio_dev);
-> >> +             ret = IRQ_HANDLED;
-> >> +     }
-> >> +
-> >>       return ret;
-> >>  }
-> >>
-> >> @@ -1130,8 +1263,10 @@ static const struct iio_event_spec mma8652_freefall_event[] = {
-> >>       },
-> >>  };
-> >>
-> >> -static const struct iio_event_spec mma8452_transient_event[] = {
-> >> +
-> >> +static const struct iio_event_spec mma8452_accel_events[] = {
-> >>       {
-> >> +             //trasient event
-> >>               .type = IIO_EV_TYPE_MAG,
-> >>               .dir = IIO_EV_DIR_RISING,
-> >>               .mask_separate = BIT(IIO_EV_INFO_ENABLE),
-> >> @@ -1139,6 +1274,15 @@ static const struct iio_event_spec mma8452_transient_event[] = {
-> >>                                       BIT(IIO_EV_INFO_PERIOD) |
-> >>                                       BIT(IIO_EV_INFO_HIGH_PASS_FILTER_3DB)
-> >>       },
-> >> +     {
-> >> +             //pulse event
-> >> +             .type = IIO_EV_TYPE_MAG,
-> >> +             .dir = IIO_EV_DIR_EITHER,
-> >> +             .mask_separate = BIT(IIO_EV_INFO_ENABLE),
-> >> +             .mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
-> >> +                                     BIT(IIO_EV_INFO_PERIOD) |
-> >> +                                     BIT(IIO_EV_INFO_HYSTERESIS)
-> >> +     },
-> >>  };
-> >>
-> >>  static const struct iio_event_spec mma8452_motion_event[] = {
-> >> @@ -1202,8 +1346,8 @@ static struct attribute_group mma8452_event_attribute_group = {
-> >>               .shift = 16 - (bits), \
-> >>               .endianness = IIO_BE, \
-> >>       }, \
-> >> -     .event_spec = mma8452_transient_event, \
-> >> -     .num_event_specs = ARRAY_SIZE(mma8452_transient_event), \
-> >> +     .event_spec = mma8452_accel_events, \
-> >> +     .num_event_specs = ARRAY_SIZE(mma8452_accel_events), \
-> >>  }
-> >>
-> >>  #define MMA8652_CHANNEL(axis, idx, bits) { \
-> >> @@ -1368,9 +1512,11 @@ static const struct mma_chip_info mma_chip_info_table[] = {
-> >>                */
-> >>               .all_events = MMA8452_INT_DRDY |
-> >>                                       MMA8452_INT_TRANS |
-> >> -                                     MMA8452_INT_FF_MT,
-> >> +                                     MMA8452_INT_FF_MT |
-> >> +                                     MMA8452_INT_PULSE,
-> >>               .enabled_events = MMA8452_INT_TRANS |
-> >> -                                     MMA8452_INT_FF_MT,
-> >> +                                     MMA8452_INT_FF_MT |
-> >> +                                     MMA8452_INT_PULSE,
-> >>       },
-> >>  };
-> >>  
-> >  
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+In term of SW architecture. 2 use-cases have to be supported:
+
+1) Sigma delta ADC conversion through IIO framework.
+Sigma delta ADC is handled by generic sigma delta modulator driver. 
+DFSDM peripheral is binded to a SD modulator ADC using the IIO HW consumer interface. 
+Please notice that IIO HW consumer interface has be proposed by Lars, but is
+part of this patchset with Lars's agreement.
+User interface is IIO one.
+Notice that this patch-set propose only a raw conversion, to simplify review.
+Buffer and trigger management will be added in next patch-sets.
+
+2) PDM microphone record through ALSA framework.
+PDM microphone is handled by ASOC Generic DMIC codec driver.
+ADFSDM ASOC DAI driver is binded to IIO driver using the IIO consumer interface
+ADFSDM ASOC DAI driver is binded to a PDM microphone ASOC component using ASOC Of_graph.
+User interface is ALSA one.
+As IIO DMA management is not adapted to an audio realtime stream. A specific DMA 
+management has been implemented in IIO driver for audio purposes.
+
+ 
+History of the versions:
+-----------------------
+V3:
+Implementation with DMA support in IIO instead of handling it in ASOC.
+
+	- New patches to support ASoC DMA codec in DT 
+  		- ASoC: Add Bindins for DMIC codec driver.
+  		- ASoC: codec: add DT support in dmic codec.
+        - New patches to allow in-kernel set of IIO buffer size and watermark   
+  		- IIO: consumer: allow to set buffer sizes.
+	- IIO DFSDM drivers
+        	- Split audio and ADC support in 2 drivers.
+                - Implement DMA cyclic mode.
+                - Add SPI bus Trigger for buffer management.
+                
+	- IIO sigma delta adc drivers
+        	-  Suppress "simple and rename driver.
+         
+         - ASoC driver
+         	- Suppress DMA engine.
+                - Suppress copy ops.
+                - Use IIO consmumer interface to enable/Disable DFSDM.        
+
+V2:
+
+Patch-set associated to this RFC proposes an implementation of the
+DFSDM features shared between ASoC and IIO frameworks.
+
+Patch-set is only a Skeleton of the drivers, so a base to discuss and validate a design. 
+It contains minimum code to allow probing (with DT) and to expose the ASoC and IIO ABI.
+Hope that is sufficent in a first step to allow to focus on APIs.
+
+In this patch-set there are two new APIs used:
+	- IIO in-kern API: based on hw_customer API proposed by Lars
+ 	- ASOC <-> IIO API inspired by API defined for hdmi-codec for ASoC/DRM interconnect. 
+   	  API is dedicated to DFSDM only.
+
+Notice also that this design is based on following assumption:
+	- Audio stream ABI interface is ASoC, no access to data through IIO ABI for PDM. 
+	- ASoC DMA should be used for audio transfer as designed for real time stream.
+	- Need some runtime parameters exchange between ASoC and IIO
+	  due to the correlation between the sample frequency, the DFSDM decimation 
+          factor and the associated scaling.
+
+- "ASoC: dmaengine_pcm: add copy support" patch:
+ I added a patch in ASoC that allows to implement a copy function to process data 
+ after DMA transfer. Requested, as DFSDM samples captured contain channel ID 
+ on 8-LSB bits and need also a potential rescale to present DAT on 24-bits.  	
+
+- "IIO: ADC: add sigma delta modulator support" patch:
+Simple dummy driver created to support external Sigma delta modulator. 
+It is binded to DFSDM driver through hw_customer API.
+
+
+Regards,
+Arnaud
+
+
+Arnaud Pouliquen (11):
+  docs: driver-api: add iio hw consumer section
+  IIO: hw_consumer: add devm_iio_hw_consumer_alloc
+  IIO: Add DT bindings for sigma delta adc modulator
+  IIO: ADC: add sigma delta modulator support
+  IIO: add DT bindings for stm32 DFSDM filter
+  IIO: ADC: add stm32 DFSDM core support
+  IIO: ADC: add STM32 DFSDM sigma delta ADC support
+  IIO: ADC: add stm32 DFSDM support for PDM microphone
+  IIO: consumer: allow to set buffer sizes
+  ASoC: add bindings for stm32 DFSDM filter
+  ASoC: stm32: add DFSDM DAI support
+
+Lars-Peter Clausen (1):
+  iio: Add hardware consumer buffer support
+
+ .../ABI/testing/sysfs-bus-iio-dfsdm-adc-stm32      |   22 +
+ .../bindings/iio/adc/sigma-delta-modulator.txt     |   13 +
+ .../bindings/iio/adc/st,stm32-dfsdm-adc.txt        |  127 ++
+ .../devicetree/bindings/sound/st,stm32-adfsdm.txt  |   63 +
+ Documentation/driver-api/iio/hw-consumer.rst       |   50 +
+ Documentation/driver-api/iio/index.rst             |    1 +
+ drivers/iio/adc/Kconfig                            |   37 +
+ drivers/iio/adc/Makefile                           |    3 +
+ drivers/iio/adc/sd_adc_modulator.c                 |   82 ++
+ drivers/iio/adc/stm32-dfsdm-adc.c                  | 1250 ++++++++++++++++++++
+ drivers/iio/adc/stm32-dfsdm-core.c                 |  318 +++++
+ drivers/iio/adc/stm32-dfsdm.h                      |  319 +++++
+ drivers/iio/buffer/Kconfig                         |   10 +
+ drivers/iio/buffer/Makefile                        |    1 +
+ drivers/iio/buffer/industrialio-buffer-cb.c        |   11 +
+ drivers/iio/buffer/industrialio-hw-consumer.c      |  248 ++++
+ include/linux/iio/adc/stm32-dfsdm-adc.h            |   27 +
+ include/linux/iio/consumer.h                       |   11 +
+ include/linux/iio/hw-consumer.h                    |   22 +
+ sound/soc/stm/Kconfig                              |   11 +
+ sound/soc/stm/Makefile                             |    3 +
+ sound/soc/stm/stm32_adfsdm.c                       |  388 ++++++
+ 22 files changed, 3017 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-dfsdm-adc-stm32
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/sigma-delta-modulator.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.txt
+ create mode 100644 Documentation/devicetree/bindings/sound/st,stm32-adfsdm.txt
+ create mode 100644 Documentation/driver-api/iio/hw-consumer.rst
+ create mode 100644 drivers/iio/adc/sd_adc_modulator.c
+ create mode 100644 drivers/iio/adc/stm32-dfsdm-adc.c
+ create mode 100644 drivers/iio/adc/stm32-dfsdm-core.c
+ create mode 100644 drivers/iio/adc/stm32-dfsdm.h
+ create mode 100644 drivers/iio/buffer/industrialio-hw-consumer.c
+ create mode 100644 include/linux/iio/adc/stm32-dfsdm-adc.h
+ create mode 100644 include/linux/iio/hw-consumer.h
+ create mode 100644 sound/soc/stm/stm32_adfsdm.c
+
+-- 
+2.7.4
 
