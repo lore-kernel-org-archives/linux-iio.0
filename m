@@ -1,39 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-io0-f193.google.com ([209.85.223.193]:52833 "EHLO
-        mail-io0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751391AbdKMKWh (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Nov 2017 05:22:37 -0500
-Received: by mail-io0-f193.google.com with SMTP id u42so2053929ioi.9
-        for <linux-iio@vger.kernel.org>; Mon, 13 Nov 2017 02:22:37 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <a21be947-5c1f-eb71-83ad-63222b46c499@infradead.org>
-References: <623dca4f-3029-f207-b17a-a0fba0600b8e@infradead.org> <a21be947-5c1f-eb71-83ad-63222b46c499@infradead.org>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Mon, 13 Nov 2017 11:22:36 +0100
-Message-ID: <CACRpkdb_101_guBu2dC5c+avJHFnFSw4fc7Ug7+B8tAuqz=UeQ@mail.gmail.com>
-Subject: Re: iio/accel/kxsd9_i2c: no license, taints kernel
-To: Randy Dunlap <rdunlap@infradead.org>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Received: from m12-13.163.com ([220.181.12.13]:43365 "EHLO m12-13.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751249AbdKLQCD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 12 Nov 2017 11:02:03 -0500
+From: Pan Bian <bianpan2016@163.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Tony Lindgren <tony@atomide.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Rob Herring <robh@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pan Bian <bianpan2016@163.com>
+Subject: [PATCH] iio: adc: cpcap: fix incorrect validation
+Date: Mon, 13 Nov 2017 00:01:20 +0800
+Message-Id: <1510502480-27117-1-git-send-email-bianpan2016@163.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Nov 11, 2017 at 8:21 PM, Randy Dunlap <rdunlap@infradead.org> wrote:
-> On 11/11/17 10:53, Randy Dunlap wrote:
->> [44583.951806] kxsd9_i2c: module license 'unspecified' taints kernel.
->> [44583.951931] kxsd9_i2c: Unknown symbol __devm_regmap_init_i2c (err 0)
->>
->> __devm_regmap_i2c() is EXPORT_SYMBOL_GPL(), so a non-compatible license
->> cannot use it.
->>
->
->
-> and iio/adc/qcom-vadc-common.c:
->
-> qcom_vadc_common: module license 'unspecified' taints kernel.
+Function platform_get_irq_byname() returns a negative error code on
+failure, and a zero or positive number on success. However, in function
+cpcap_adc_probe(), positive IRQ numbers are also taken as error cases.
+Use "if (ddata->irq < 0)" instead of "if (!ddata->irq)" to validate the
+return value of platform_get_irq_byname().
 
-I wrote these, I will send a patch.
+Signed-off-by: Pan Bian <bianpan2016@163.com>
+---
+ drivers/iio/adc/cpcap-adc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Yours,
-Linus Walleij
+diff --git a/drivers/iio/adc/cpcap-adc.c b/drivers/iio/adc/cpcap-adc.c
+index 6e419d5..f153e026 100644
+--- a/drivers/iio/adc/cpcap-adc.c
++++ b/drivers/iio/adc/cpcap-adc.c
+@@ -1012,7 +1012,7 @@ static int cpcap_adc_probe(struct platform_device *pdev)
+ 	platform_set_drvdata(pdev, indio_dev);
+ 
+ 	ddata->irq = platform_get_irq_byname(pdev, "adcdone");
+-	if (!ddata->irq)
++	if (ddata->irq < 0)
+ 		return -ENODEV;
+ 
+ 	error = devm_request_threaded_irq(&pdev->dev, ddata->irq, NULL,
+-- 
+1.9.1
+
+
