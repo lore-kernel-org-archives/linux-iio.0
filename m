@@ -1,50 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:43100 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750806AbdKSLeV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 19 Nov 2017 06:34:21 -0500
-Date: Sun, 19 Nov 2017 11:34:16 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Tony Lindgren <tony@atomide.com>
-Cc: Sebastian Reichel <sre@kernel.org>, Pan Bian <bianpan2016@163.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh@kernel.org>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: cpcap: fix incorrect validation
-Message-ID: <20171119113416.377957d0@archlinux>
-In-Reply-To: <20171113184903.GX28152@atomide.com>
-References: <1510502480-27117-1-git-send-email-bianpan2016@163.com>
-        <20171112182848.li5chdcsrhjv3du6@earth>
-        <20171113184903.GX28152@atomide.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from mail-lf0-f68.google.com ([209.85.215.68]:53149 "EHLO
+        mail-lf0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752116AbdKMKcB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Nov 2017 05:32:01 -0500
+Received: by mail-lf0-f68.google.com with SMTP id m1so1732453lfj.9
+        for <linux-iio@vger.kernel.org>; Mon, 13 Nov 2017 02:32:00 -0800 (PST)
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+        Randy Dunlap <rdunlap@infradead.org>
+Subject: [PATCH] iio: adc/accel: Fix up module licenses
+Date: Mon, 13 Nov 2017 11:29:55 +0100
+Message-Id: <20171113102955.5257-1-linus.walleij@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 13 Nov 2017 10:49:03 -0800
-Tony Lindgren <tony@atomide.com> wrote:
+The module license checker complains about these two so just fix
+it up. They are both GPLv2, both written by me or using code
+I extracted while refactoring from the GPLv2 drivers.
 
-> * Sebastian Reichel <sre@kernel.org> [171112 18:30]:
-> > Hi,
-> > 
-> > On Mon, Nov 13, 2017 at 12:01:20AM +0800, Pan Bian wrote:  
-> > > Function platform_get_irq_byname() returns a negative error code on
-> > > failure, and a zero or positive number on success. However, in function
-> > > cpcap_adc_probe(), positive IRQ numbers are also taken as error cases.
-> > > Use "if (ddata->irq < 0)" instead of "if (!ddata->irq)" to validate the
-> > > return value of platform_get_irq_byname().
-> > > 
-> > > Signed-off-by: Pan Bian <bianpan2016@163.com>
-> > > ---  
-> > 
-> > Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>  
-> 
-> Acked-by: Tony Lindgren <tony@atomide.com>
+Cc: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ drivers/iio/accel/kxsd9-i2c.c      | 3 +++
+ drivers/iio/adc/qcom-vadc-common.c | 3 +++
+ 2 files changed, 6 insertions(+)
 
-Applied to the fixes-togreg branch of iio.git.
+diff --git a/drivers/iio/accel/kxsd9-i2c.c b/drivers/iio/accel/kxsd9-i2c.c
+index 98fbb628d5bd..38411e1c155b 100644
+--- a/drivers/iio/accel/kxsd9-i2c.c
++++ b/drivers/iio/accel/kxsd9-i2c.c
+@@ -63,3 +63,6 @@ static struct i2c_driver kxsd9_i2c_driver = {
+ 	.id_table	= kxsd9_i2c_id,
+ };
+ module_i2c_driver(kxsd9_i2c_driver);
++
++MODULE_LICENSE("GPL v2");
++MODULE_DESCRIPTION("KXSD9 accelerometer I2C interface");
+diff --git a/drivers/iio/adc/qcom-vadc-common.c b/drivers/iio/adc/qcom-vadc-common.c
+index 47d24ae5462f..d249ce643e48 100644
+--- a/drivers/iio/adc/qcom-vadc-common.c
++++ b/drivers/iio/adc/qcom-vadc-common.c
+@@ -229,3 +229,6 @@ int qcom_vadc_decimation_from_dt(u32 value)
+ 	return __ffs64(value / VADC_DECIMATION_MIN);
+ }
+ EXPORT_SYMBOL(qcom_vadc_decimation_from_dt);
++
++MODULE_LICENSE("GPL v2");
++MODULE_DESCRIPTION("Qualcomm ADC common functionality");
+-- 
+2.13.6
 
-Thanks,
-
-Jonathan
