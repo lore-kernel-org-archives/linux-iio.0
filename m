@@ -1,77 +1,47 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:33930 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S964938AbdKRPxX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 18 Nov 2017 10:53:23 -0500
-Date: Sat, 18 Nov 2017 15:53:18 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Martin Kepplinger <martink@posteo.de>
-Cc: harinath922@gmail.com, pmeerw@pmeerw.net, lars@metafoo.de,
-        knaack.h@gmx.de, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: mma8452: replace license description with SPDX
- specifier
-Message-ID: <20171118155318.6a1f3b3f@archlinux>
-In-Reply-To: <20171118091011.9061-1-martink@posteo.de>
-References: <20171118091011.9061-1-martink@posteo.de>
+Return-Path: <SRS0=JiqY=CQ=nexb.com=pombredanne@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <20171118155318.6a1f3b3f@archlinux>
+References: <20171118091011.9061-1-martink@posteo.de> <20171118155318.6a1f3b3f@archlinux>
+From: Philippe Ombredanne <pombredanne@nexb.com>
+Date: Sat, 18 Nov 2017 17:29:07 +0100
+Message-ID: <CAOFm3uE0GsBn1g054rD9iym-kjC2bdsCOVO8WPBe7zZQ0a+Vvg@mail.gmail.com>
+Subject: Re: [PATCH v2] iio: mma8452: replace license description with SPDX specifier
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Martin Kepplinger <martink@posteo.de>, harinath922@gmail.com, pmeerw@pmeerw.net,
+	lars@metafoo.de, knaack.h@gmx.de, linux-iio@vger.kernel.org,
+	LKML <linux-kernel@vger.kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thomas Gleixner <tglx@linutronix.de>
+Content-Type: text/plain; charset="UTF-8"
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, 18 Nov 2017 10:10:11 +0100
-Martin Kepplinger <martink@posteo.de> wrote:
+On Sat, Nov 18, 2017 at 4:53 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On Sat, 18 Nov 2017 10:10:11 +0100
+> Martin Kepplinger <martink@posteo.de> wrote:
+>
+>> This replaces the custom license information text with the appropriate
+>> SPDX identifier. While the information here stays the same, it is easier
+>> to read.
+>>
+>> Signed-off-by: Martin Kepplinger <martink@posteo.de>
+>> Acked-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+>
+> I'm not 100% sure the intent of the SPDX work is to remove
+> existing licence text.  So far the big sets have only been
+> adding tags to files missing their licenses entirely...
+>
+> Anyone found any specific guidance on this?
 
-> This replaces the custom license information text with the appropriate
-> SPDX identifier. While the information here stays the same, it is easier
-> to read.
-> 
-> Signed-off-by: Martin Kepplinger <martink@posteo.de>
-> Acked-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Jonathan:
+you might want to check the doc patches from tglx [1] as well as
+several related patches from greg k-h such as these  [2] and his
+initial pull [3]
 
-I'm not 100% sure the intent of the SPDX work is to remove
-existing licence text.  So far the big sets have only been
-adding tags to files missing their licenses entirely...
+To get a lot of details you can check all the recent SPDX-related posts too [4]
 
-Anyone found any specific guidance on this?
-
-Jonathan
-> ---
-> 
-> Sorry I had forgotten to add the mailing lists and got Peter's Ack
-> privately. -.-  But thanks Peter for the quick response!
-> 
-> Again, an Acked-by from Harinath would be good here too.
-> 
-> thanks
-> 
->                              martin
-> 
-> revision history
-> ----------------
-> v2: adds Peter's Acked-by and adds all mailing lists to CC
-> 
-> 
->  drivers/iio/accel/mma8452.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> index bfd4bc806fc2..62c0d4646c16 100644
-> --- a/drivers/iio/accel/mma8452.c
-> +++ b/drivers/iio/accel/mma8452.c
-> @@ -1,3 +1,4 @@
-> +// SPDX-License-Identifier: GPL-2.0
->  /*
->   * mma8452.c - Support for following Freescale / NXP 3-axis accelerometers:
->   *
-> @@ -13,9 +14,6 @@
->   * Copyright 2015 Martin Kepplinger <martink@posteo.de>
->   * Copyright 2014 Peter Meerwald <pmeerw@pmeerw.net>
->   *
-> - * This file is subject to the terms and conditions of version 2 of
-> - * the GNU General Public License.  See the file COPYING in the main
-> - * directory of this archive for more details.
->   *
->   * TODO: orientation events
->   */
-
+[1] https://marc.info/?l=linux-kernel&m=151051532322831&w=2
+[2] https://marc.info/?l=linux-kernel&m=151068111802610&w=2
+[3] https://marc.info/?l=linux-kernel&m=150963579219623&w=2
+[4] https://marc.info/?l=linux-kernel&w=2&r=1&s=spdx&q=b
+-- 
+Cordially
+Philippe Ombredanne
