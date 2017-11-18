@@ -1,57 +1,45 @@
-Return-Path: <SRS0=kTOX=CR=gmail.com=harinath922@kernel.org>
-MIME-Version: 1.0
-In-Reply-To: <CAOFm3uE0GsBn1g054rD9iym-kjC2bdsCOVO8WPBe7zZQ0a+Vvg@mail.gmail.com>
-References: <20171118091011.9061-1-martink@posteo.de> <20171118155318.6a1f3b3f@archlinux>
- <CAOFm3uE0GsBn1g054rD9iym-kjC2bdsCOVO8WPBe7zZQ0a+Vvg@mail.gmail.com>
-From: harinath Nampally <harinath922@gmail.com>
-Date: Sat, 18 Nov 2017 23:23:57 -0500
-Message-ID: <CAAGUq_pXNMSMAsvtMomHQiCjXhrZ5Yx5agowXAVhWt8Gkb=2ug@mail.gmail.com>
-Subject: Re: [PATCH v2] iio: mma8452: replace license description with SPDX specifier
-To: Philippe Ombredanne <pombredanne@nexb.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Martin Kepplinger <martink@posteo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, lars@metafoo.de, knaack.h@gmx.de,
-	linux-iio@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thomas Gleixner <tglx@linutronix.de>
-Content-Type: text/plain; charset="UTF-8"
+Return-Path: <SRS0=PzOY=CQ=googlemail.com=chf.fritz@kernel.org>
+From: Christoph Fritz <chf.fritz@googlemail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Rob Herring <robh+dt@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: [PATCH v2 0/3] iio: Add Intersil isl76683 light sensor support
+Date: Sun, 19 Nov 2017 00:20:27 +0100
+Message-Id: <1511047230-7021-1-git-send-email-chf.fritz@googlemail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-> This replaces the custom license information text with the appropriate
-> SPDX identifier. While the information here stays the same, it is easier
-> to read.
-> Signed-off-by: Martin Kepplinger <martink@posteo.de>
-> Acked-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Acked-by: Harinath Nampally <harinath922@gmail.com>
+This patchset adds initial support for isl76683 light sensor.
 
-On Sat, Nov 18, 2017 at 11:29 AM, Philippe Ombredanne
-<pombredanne@nexb.com> wrote:
-> On Sat, Nov 18, 2017 at 4:53 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->> On Sat, 18 Nov 2017 10:10:11 +0100
->> Martin Kepplinger <martink@posteo.de> wrote:
->>
->>> This replaces the custom license information text with the appropriate
->>> SPDX identifier. While the information here stays the same, it is easier
->>> to read.
->>>
->>> Signed-off-by: Martin Kepplinger <martink@posteo.de>
->>> Acked-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
->>
->> I'm not 100% sure the intent of the SPDX work is to remove
->> existing licence text.  So far the big sets have only been
->> adding tags to files missing their licenses entirely...
->>
->> Anyone found any specific guidance on this?
->
-> Jonathan:
-> you might want to check the doc patches from tglx [1] as well as
-> several related patches from greg k-h such as these  [2] and his
-> initial pull [3]
->
-> To get a lot of details you can check all the recent SPDX-related posts too [4]
->
-> [1] https://marc.info/?l=linux-kernel&m=151051532322831&w=2
-> [2] https://marc.info/?l=linux-kernel&m=151068111802610&w=2
-> [3] https://marc.info/?l=linux-kernel&m=150963579219623&w=2
-> [4] https://marc.info/?l=linux-kernel&w=2&r=1&s=spdx&q=b
-> --
-> Cordially
-> Philippe Ombredanne
+Changes since v1:
+ - introduce dt property suffix -kilo-ohms
+ - rename optinal dt property to isil,external-resistor-kilo-ohms
+ - purge dynamic buffer in favour of simple static 16 byte IIO_LE
+ - use iio_device_claim/release_direct_mode() instead of flag variable
+ - return with IRQ_HANDLED in all cases in isl76683_trigger_handler()
+ - simplify return in isl76683_set_config
+ - rename isl76683_read_lux() to isl76683_get_sensordata()
+ - use IIO_CHAN_INFO_SCALE instead of IIO_CHAN_INFO_HARDWAREGAIN
+ - rename macro ISL76683_REG_SENSOR_L/M to ISL76683_REG_SENSOR_LSB/MSB
+ - rename marcro ISL76683_CHANNEL_2 to ISL76683_CHANNEL
+ - use GENMASK for ISL76683_PHOTOD_MASK
+
+Christoph Fritz (3):
+  iio: light: Add support for Intersil isl76683 sensor
+  dt-bindings: iio: add Intersil isl76683 light sensor bindings
+  iio: light: isl76683 add way to adjust irq threshold
+
+ .../ABI/testing/sysfs-bus-iio-light-isl76683       |  17 +
+ .../devicetree/bindings/iio/light/isl76683.txt     |  26 +
+ .../devicetree/bindings/property-units.txt         |   1 +
+ drivers/iio/light/Kconfig                          |  12 +
+ drivers/iio/light/Makefile                         |   1 +
+ drivers/iio/light/isl76683.c                       | 714 +++++++++++++++++++++
+ 6 files changed, 771 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-light-isl76683
+ create mode 100644 Documentation/devicetree/bindings/iio/light/isl76683.txt
+ create mode 100644 drivers/iio/light/isl76683.c
+
+-- 
+2.1.4
