@@ -1,41 +1,58 @@
-Return-Path: <SRS0=KyTF=B7=gmail.com=robherring2@kernel.org>
-Date: Wed, 1 Nov 2017 16:54:04 -0500
-From: Rob Herring <robh@kernel.org>
-To: Joel Stanley <joel@jms.id.au>
-Cc: Jonathan Cameron <jic23@kernel.org>, Rick Altherr <raltherr@google.com>,
-	Philipp Zabel <philipp.zabel@gmail.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: adc: aspeed: Deassert reset in probe
-Message-ID: <20171101215404.njw5zch55dxwmkgl@rob-hp-laptop>
-References: <20171031021203.18248-1-joel@jms.id.au>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.99]:38162 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751002AbdKSQEl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 19 Nov 2017 11:04:41 -0500
+Date: Sun, 19 Nov 2017 16:04:37 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux-i2c@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH v1 13/15] iio: imu: inv_mpu6050: Remove duplicate NULL
+ check
+Message-ID: <20171119160437.6c2742d9@archlinux>
+In-Reply-To: <20171031142149.32512-13-andriy.shevchenko@linux.intel.com>
+References: <20171031142149.32512-1-andriy.shevchenko@linux.intel.com>
+        <20171031142149.32512-13-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20171031021203.18248-1-joel@jms.id.au>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Oct 31, 2017 at 12:42:03PM +1030, Joel Stanley wrote:
-> The ASPEED SoC must deassert a reset in order to use the ADC peripheral.
+On Tue, 31 Oct 2017 16:21:47 +0200
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+
+> Since i2c_unregister_device() became NULL-aware we may remove duplicate
+> NULL check.
 > 
-> The device tree bindings are updated to document the resets phandle, and
-> the example is updated to match what is expected for both the reset and
-> clock phandle. Note that the bindings should have always had the reset
-> controller, as the hardware is unusable without it.
-> 
-> Signed-off-by: Joel Stanley <joel@jms.id.au>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Hartmut Knaack <knaack.h@gmx.de>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+> Cc: linux-iio@vger.kernel.org
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Applied to the togreg branch of iio.git.  Thanks,
+
+Jonathan
 > ---
-> v2:
->  - Ensure disabling path unwinds in opposite order as the enable path
->  - Note that the bindings were incorrect without the reset phandle,
->  and for the system to be usable we must update them. No one was
->  (successfully) using these bindings/driver before without out of tree
->  hacks in mach-aspeed, as it would not have worked.
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 > 
->  .../devicetree/bindings/iio/adc/aspeed_adc.txt     |  4 +++-
->  drivers/iio/adc/aspeed_adc.c                       | 25 ++++++++++++++++------
->  2 files changed, 22 insertions(+), 7 deletions(-)
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
+> index dd6fc6d21f9d..d78a10403bac 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
+> @@ -196,8 +196,7 @@ void inv_mpu_acpi_delete_mux_client(struct i2c_client *client)
+>  {
+>  	struct inv_mpu6050_state *st = iio_priv(dev_get_drvdata(&client->dev));
+>  
+> -	if (st->mux_client)
+> -		i2c_unregister_device(st->mux_client);
+> +	i2c_unregister_device(st->mux_client);
+>  }
+>  #else
+>  
 
-Acked-by: Rob Herring <robh@kernel.org>
