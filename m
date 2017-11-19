@@ -1,58 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:38162 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:36528 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751002AbdKSQEl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 19 Nov 2017 11:04:41 -0500
-Date: Sun, 19 Nov 2017 16:04:37 +0000
+        id S1750847AbdKSPn7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 19 Nov 2017 10:43:59 -0500
+Date: Sun, 19 Nov 2017 15:43:55 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-i2c@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH v1 13/15] iio: imu: inv_mpu6050: Remove duplicate NULL
- check
-Message-ID: <20171119160437.6c2742d9@archlinux>
-In-Reply-To: <20171031142149.32512-13-andriy.shevchenko@linux.intel.com>
-References: <20171031142149.32512-1-andriy.shevchenko@linux.intel.com>
-        <20171031142149.32512-13-andriy.shevchenko@linux.intel.com>
+To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc: linux-iio@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, linux-amlogic@lists.infradead.org
+Subject: Re: [PATCH 1/5] iio: adc: meson-saradc: fix the bit_idx of the
+ adc_en clock
+Message-ID: <20171119154355.5809ed79@archlinux>
+In-Reply-To: <20171031200147.14660-2-martin.blumenstingl@googlemail.com>
+References: <20171031200147.14660-1-martin.blumenstingl@googlemail.com>
+        <20171031200147.14660-2-martin.blumenstingl@googlemail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 31 Oct 2017 16:21:47 +0200
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On Tue, 31 Oct 2017 21:01:43 +0100
+Martin Blumenstingl <martin.blumenstingl@googlemail.com> wrote:
 
-> Since i2c_unregister_device() became NULL-aware we may remove duplicate
-> NULL check.
+> Meson8 and Meson8b SoCs use the the SAR ADC gate clock provided by the
+> MESON_SAR_ADC_REG3 register within the SAR ADC register area.
+> According to the datasheet (and the existing MESON_SAR_ADC_REG3_CLK_EN
+> definition) the gate is on bit 30.
+> The fls() function returns the last set bit, which is "bit index + 1"
+> (fls(MESON_SAR_ADC_REG3_CLK_EN) returns 31). Fix this by switching to
+> __ffs() which returns the first set bit, which is bit 30 in our case.
 > 
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Hartmut Knaack <knaack.h@gmx.de>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-> Cc: linux-iio@vger.kernel.org
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Applied to the togreg branch of iio.git.  Thanks,
+> This off by one error results in the ADC not being usable on devices
+> where the bootloader did not enable the clock.
+> 
+> Fixes: 3adbf3427330 ("iio: adc: add a driver for the SAR ADC found in Amlogic Meson SoCs")
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Applied to the fixes-togreg branch of iio.git and marked for stable.
+
+Thanks,
 
 Jonathan
 > ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+>  drivers/iio/adc/meson_saradc.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-> index dd6fc6d21f9d..d78a10403bac 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-> @@ -196,8 +196,7 @@ void inv_mpu_acpi_delete_mux_client(struct i2c_client *client)
->  {
->  	struct inv_mpu6050_state *st = iio_priv(dev_get_drvdata(&client->dev));
+> diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
+> index 2e8dbb89c8c9..55611244c799 100644
+> --- a/drivers/iio/adc/meson_saradc.c
+> +++ b/drivers/iio/adc/meson_saradc.c
+> @@ -600,7 +600,7 @@ static int meson_sar_adc_clk_init(struct iio_dev *indio_dev,
+>  	init.num_parents = 1;
 >  
-> -	if (st->mux_client)
-> -		i2c_unregister_device(st->mux_client);
-> +	i2c_unregister_device(st->mux_client);
->  }
->  #else
+>  	priv->clk_gate.reg = base + MESON_SAR_ADC_REG3;
+> -	priv->clk_gate.bit_idx = fls(MESON_SAR_ADC_REG3_CLK_EN);
+> +	priv->clk_gate.bit_idx = __ffs(MESON_SAR_ADC_REG3_CLK_EN);
+>  	priv->clk_gate.hw.init = &init;
 >  
+>  	priv->adc_clk = devm_clk_register(&indio_dev->dev, &priv->clk_gate.hw);
 
