@@ -1,74 +1,148 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from szxga06-in.huawei.com ([45.249.212.32]:37754 "EHLO huawei.com"
-        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S933398AbdKBOpG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 2 Nov 2017 10:45:06 -0400
-Date: Thu, 2 Nov 2017 14:44:24 +0000
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-CC: Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
-        "Matt Ranostay" <matt.ranostay@konsulko.com>
-Subject: Re: [PATCH v2 00/13] iio: health: Add MAX30105 support to max30102
- driver
-Message-ID: <20171102144424.00004629@huawei.com>
-In-Reply-To: <1509133543-4597-1-git-send-email-pmeerw@pmeerw.net>
-References: <1509133543-4597-1-git-send-email-pmeerw@pmeerw.net>
+Received: from mail.kernel.org ([198.145.29.99]:42594 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751132AbdKSQtY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 19 Nov 2017 11:49:24 -0500
+Date: Sun, 19 Nov 2017 16:13:39 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Stefan =?UTF-8?B?QnLDvG5z?= <stefan.bruens@rwth-aachen.de>
+Cc: <linux-iio@vger.kernel.org>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        <linux-kernel@vger.kernel.org>, "Andrew F . Davis" <afd@ti.com>,
+        "Lars-Peter Clausen" <lars@metafoo.de>,
+        "Hartmut Knaack" <knaack.h@gmx.de>,
+        Javier Martinez Canillas <javier@osg.samsung.com>
+Subject: Re: [PATCH v2 1/3] iio: adc: ina2xx: Shift bus voltage register to
+ mask flag bits
+Message-ID: <20171119161339.14fb9685@archlinux>
+In-Reply-To: <875c664a-9000-4121-acf5-e3ab254cf061@rwthex-w2-a.rwth-ad.de>
+References: <20171028211249.24148-1-stefan.bruens@rwth-aachen.de>
+ <875c664a-9000-4121-acf5-e3ab254cf061@rwthex-w2-a.rwth-ad.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 27 Oct 2017 21:45:30 +0200
-Peter Meerwald-Stadler <pmeerw@pmeerw.net> wrote:
+On Sat, 28 Oct 2017 23:12:46 +0200
+Stefan Brüns <stefan.bruens@rwth-aachen.de> wrote:
 
-> This patch series reworks the max30102 driver to add support for the
-> MAX30105 part (which add a third LED)
+> Lower bits of the INA219/220 bus voltage register are conversion
+> status flags, properly shift the value.
 > 
-> v2:
-> * send correct patches, sorry for the mess
-> * fix Matt Ranostay's email address
+> When reading via IIO buffer, the value is passed on unaltered,
+> shifting is the responsibility of the user.
 > 
-Series looks good to me.
+> Signed-off-by: Stefan Brüns <stefan.bruens@rwth-aachen.de>
+> 
+I thought about sending this as a fix, but as you haven't marked
+it as such and the effect is very minor I haven't done so.
 
-Ideally I'd like Matt to have a look and given where we are in the cycle
-(i.e. this one is over for IIO) we have plenty of time.
+Applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to play with it.
 
 Thanks,
-
 Jonathan
+> ---
 > 
-> patches 1 to 3 are bugfix
+> Changes in v2:
+> - Apply to the shunt voltage, not bus voltage register
+> - Shift instead of masking the LSBs
 > 
-> patches 4 to 6 add minor features and cleanup
+>  drivers/iio/adc/ina2xx-adc.c | 26 +++++++++++++++++---------
+>  1 file changed, 17 insertions(+), 9 deletions(-)
 > 
-> patch 8 allows to read the temperature without currently measuring
-> other channels
-> 
-> patches 9 to 11 prepare for adding another LED, more flexibility
-> 
-> patch 12 adds support for the MAX30105 part
-> 
-> patch 13 updates devicetree documentation for the MAX30105 part
-> 
-> Peter Meerwald-Stadler (13):
->   iio: health: max30102: Temperature should be in milli Celsius
->   iio: health: max30102: Fix missing newline in dev_err
->   iio: health: max30102: Remove inconsistent full stop in error
-> message iio: health: max30102: Fix mode config values
->   iio: health: max30102: Check retval of powermode function
->   iio: health: max30102: Add check for part ID
->   iio: health: max30102: Introduce intensity channel macro
->   iio: health: max30102: Add power enable parameter to get_temp
-> function iio: health: max30102: Introduce indices for LED channels
->   iio: health: max30102: Move mode setting to buffer_postenable
->   iio: health: max30102: Prepare for copying varying number of
->     measurements
->   iio: health: max30102: Add MAX30105 support
->   dt-bindings: iio: health: Add MAX30105 support to max30102.txt
-> 
->  .../devicetree/bindings/iio/health/max30102.txt    |   8 +-
->  drivers/iio/health/max30102.c                      | 310
-> ++++++++++++++++----- 2 files changed, 241 insertions(+), 77
-> deletions(-)
-> 
+> diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
+> index 3aff9556678f..84094235ff7e 100644
+> --- a/drivers/iio/adc/ina2xx-adc.c
+> +++ b/drivers/iio/adc/ina2xx-adc.c
+> @@ -44,7 +44,6 @@
+>  
+>  #define INA226_MASK_ENABLE		0x06
+>  #define INA226_CVRF			BIT(3)
+> -#define INA219_CNVR			BIT(1)
+>  
+>  #define INA2XX_MAX_REGISTERS            8
+>  
+> @@ -79,6 +78,11 @@
+>  #define INA226_ITS_MASK		GENMASK(5, 3)
+>  #define INA226_SHIFT_ITS(val)	((val) << 3)
+>  
+> +/* INA219 Bus voltage register, low bits are flags */
+> +#define INA219_OVF		BIT(0)
+> +#define INA219_CNVR		BIT(1)
+> +#define INA219_BUS_VOLTAGE_SHIFT	3
+> +
+>  /* Cosmetic macro giving the sampling period for a full P=UxI cycle */
+>  #define SAMPLING_PERIOD(c)	((c->int_time_vbus + c->int_time_vshunt) \
+>  				 * c->avg)
+> @@ -112,7 +116,7 @@ struct ina2xx_config {
+>  	u16 config_default;
+>  	int calibration_factor;
+>  	int shunt_div;
+> -	int bus_voltage_shift;
+> +	int bus_voltage_shift;	/* position of lsb */
+>  	int bus_voltage_lsb;	/* uV */
+>  	int power_lsb;		/* uW */
+>  	enum ina2xx_ids chip_id;
+> @@ -135,7 +139,7 @@ static const struct ina2xx_config ina2xx_config[] = {
+>  		.config_default = INA219_CONFIG_DEFAULT,
+>  		.calibration_factor = 40960000,
+>  		.shunt_div = 100,
+> -		.bus_voltage_shift = 3,
+> +		.bus_voltage_shift = INA219_BUS_VOLTAGE_SHIFT,
+>  		.bus_voltage_lsb = 4000,
+>  		.power_lsb = 20000,
+>  		.chip_id = ina219,
+> @@ -170,6 +174,9 @@ static int ina2xx_read_raw(struct iio_dev *indio_dev,
+>  		else
+>  			*val  = regval;
+>  
+> +		if (chan->address == INA2XX_BUS_VOLTAGE)
+> +			*val >>= chip->config->bus_voltage_shift;
+> +
+>  		return IIO_VAL_INT;
+>  
+>  	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+> @@ -203,9 +210,9 @@ static int ina2xx_read_raw(struct iio_dev *indio_dev,
+>  			return IIO_VAL_FRACTIONAL;
+>  
+>  		case INA2XX_BUS_VOLTAGE:
+> -			/* processed (mV) = raw*lsb (uV) / (1000 << shift) */
+> +			/* processed (mV) = raw * lsb (uV) / 1000 */
+>  			*val = chip->config->bus_voltage_lsb;
+> -			*val2 = 1000 << chip->config->bus_voltage_shift;
+> +			*val2 = 1000;
+>  			return IIO_VAL_FRACTIONAL;
+>  
+>  		case INA2XX_POWER:
+> @@ -532,7 +539,7 @@ static ssize_t ina2xx_shunt_resistor_store(struct device *dev,
+>   * Sampling Freq is a consequence of the integration times of
+>   * the Voltage channels.
+>   */
+> -#define INA219_CHAN_VOLTAGE(_index, _address) { \
+> +#define INA219_CHAN_VOLTAGE(_index, _address, _shift) { \
+>  	.type = IIO_VOLTAGE, \
+>  	.address = (_address), \
+>  	.indexed = 1, \
+> @@ -544,7 +551,8 @@ static ssize_t ina2xx_shunt_resistor_store(struct device *dev,
+>  	.scan_index = (_index), \
+>  	.scan_type = { \
+>  		.sign = 'u', \
+> -		.realbits = 16, \
+> +		.shift = _shift, \
+> +		.realbits = 16 - _shift, \
+>  		.storagebits = 16, \
+>  		.endianness = IIO_LE, \
+>  	} \
+> @@ -579,8 +587,8 @@ static const struct iio_chan_spec ina226_channels[] = {
+>  };
+>  
+>  static const struct iio_chan_spec ina219_channels[] = {
+> -	INA219_CHAN_VOLTAGE(0, INA2XX_SHUNT_VOLTAGE),
+> -	INA219_CHAN_VOLTAGE(1, INA2XX_BUS_VOLTAGE),
+> +	INA219_CHAN_VOLTAGE(0, INA2XX_SHUNT_VOLTAGE, 0),
+> +	INA219_CHAN_VOLTAGE(1, INA2XX_BUS_VOLTAGE, INA219_BUS_VOLTAGE_SHIFT),
+>  	INA219_CHAN(IIO_POWER, 2, INA2XX_POWER),
+>  	INA219_CHAN(IIO_CURRENT, 3, INA2XX_CURRENT),
+>  	IIO_CHAN_SOFT_TIMESTAMP(4),
 
