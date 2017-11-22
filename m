@@ -1,39 +1,44 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from relay4-d.mail.gandi.net ([217.70.183.196]:33943 "EHLO
-        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751448AbdKVPZy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Nov 2017 10:25:54 -0500
-Message-ID: <1511364352.16347.59.camel@hadess.net>
-Subject: hid-sensor-hub stopped working *again*
-From: Bastien Nocera <hadess@hadess.net>
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Cc: linux-input@vger.kernel.org
-Date: Wed, 22 Nov 2017 16:25:52 +0100
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=EHnK=CU=samsung.com=m.purski@kernel.org>
+MIME-version: 1.0
+Content-type: text/plain; charset="UTF-8"
+From: Maciej Purski <m.purski@samsung.com>
+To: Jonathan Cameron <jic23@kernel.org>, Stefan Bruens
+	<stefan.bruens@rwth-aachen.de>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-hwmon@vger.kernel.org, Javier Martinez Canillas
+	<javier@osg.samsung.com>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Lars-Peter Clausen <lars@metafoo.de>, Hartmut Knaack <knaack.h@gmx.de>, Jean
+	Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Marek
+	Szyprowski <m.szyprowski@samsung.com>, Bartlomiej Zolnierkiewicz
+	<b.zolnierkie@samsung.com>, Maciej Purski <m.purski@samsung.com>
+Subject: [PATCH 0/2] Make calibration register value fixed for ina2xx
+ drivers
+Date: Wed, 22 Nov 2017 16:32:13 +0100
+Message-id: <1511364735-16818-1-git-send-email-m.purski@samsung.com>
+References: <CGME20171122153241eucas1p26b8796ba5427a64c2e742a728666e4b2@eucas1p2.samsung.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hey,
+Hi all,
 
-Some time between:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f1664eaacec31035450132c46ed2915fd2b2049a
-and the current linus kernels (commit 37cb8e1f8e10), the hid-sensor-hub 
-driver broke again.
+this patchset contains work based on discussion with Stefan Brüns <stefan.bruens@rwth-aachen.de> and Jonathan Cameron <jic23@kernel.org>:
+https://lkml.org/lkml/2017/10/14/198
 
-This time, all the values available in sysfs are "0".
+on my previous patchset:
+https://www.spinics.net/lists/devicetree/msg196452.html
 
-I tried reverting:
-iio: hid-sensor-trigger: Don't touch sensors unless user space requests
-but to no avail.
+The same changes are applied for both iio and hwmon ina2xx drivers.
 
-Using a ColorHugALS with the above "hid-sensor-trigger" patch reverted
-I get:
-$ cat /sys/devices/pci0000:00/0000:00:14.0/usb3/3-9/3-9:1.0/0003:273F:1008.0029/HID-SENSOR-200041.2.auto/iio:device0/in_illuminance_raw
-0
-$ cat /sys/devices/pci0000:00/0000:00:14.0/usb3/3-9/3-9:1.0/0003:273F:1008.0029/HID-SENSOR-200041.2.auto/iio:device0/in_intensity_both_raw
-0
+Best regards,
 
-Ideas, before I start hooking up a test rig to git bisect this?
+Maciej Purski
 
-Cheers
+Maciej Purski (2):
+  iio: adc: ina2xx: Make calibration register value fixed
+  hwmon: (ina2xx) Make calibration register value fixed
+
+ drivers/hwmon/ina2xx.c       | 87 +++++++++++++++++++++++++-------------------
+ drivers/iio/adc/ina2xx-adc.c | 59 ++++++++++++++++--------------
+ 2 files changed, 82 insertions(+), 64 deletions(-)
+
+-- 
+2.7.4
