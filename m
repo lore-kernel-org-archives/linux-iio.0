@@ -1,69 +1,39 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:50992 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751277AbdKYQoX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 25 Nov 2017 11:44:23 -0500
-Date: Sat, 25 Nov 2017 16:44:19 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Colin King <colin.king@canonical.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: accel: remove redundant pointer pdata
-Message-ID: <20171125164419.65e41413@archlinux>
-In-Reply-To: <20171122143211.30651-1-colin.king@canonical.com>
-References: <20171122143211.30651-1-colin.king@canonical.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from relay4-d.mail.gandi.net ([217.70.183.196]:33943 "EHLO
+        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751448AbdKVPZy (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Nov 2017 10:25:54 -0500
+Message-ID: <1511364352.16347.59.camel@hadess.net>
+Subject: hid-sensor-hub stopped working *again*
+From: Bastien Nocera <hadess@hadess.net>
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Cc: linux-input@vger.kernel.org
+Date: Wed, 22 Nov 2017 16:25:52 +0100
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 22 Nov 2017 14:32:11 +0000
-Colin King <colin.king@canonical.com> wrote:
+Hey,
 
-> From: Colin Ian King <colin.king@canonical.com>
-> 
-> Pointer pdata is being assigned but it is never being used, hence
-> it is redundant and can be removed. Cleans up clang warning:
-> 
-> drivers/iio/accel/st_accel_core.c:952:3: warning: Value stored to 'pdata'
-> is never read
-> 
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-Applied to the togreg branch of iio.git and pushed out as testing.
+Some time between:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f1664eaacec31035450132c46ed2915fd2b2049a
+and the current linus kernels (commit 37cb8e1f8e10), the hid-sensor-hub 
+driver broke again.
 
-Thanks,
+This time, all the values available in sysfs are "0".
 
-Jonathan
+I tried reverting:
+iio: hid-sensor-trigger: Don't touch sensors unless user space requests
+but to no avail.
 
-> ---
->  drivers/iio/accel/st_accel_core.c | 5 -----
->  1 file changed, 5 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-> index 460aa58e0159..6fe995cf16a6 100644
-> --- a/drivers/iio/accel/st_accel_core.c
-> +++ b/drivers/iio/accel/st_accel_core.c
-> @@ -920,8 +920,6 @@ static const struct iio_trigger_ops st_accel_trigger_ops = {
->  int st_accel_common_probe(struct iio_dev *indio_dev)
->  {
->  	struct st_sensor_data *adata = iio_priv(indio_dev);
-> -	struct st_sensors_platform_data *pdata =
-> -		(struct st_sensors_platform_data *)adata->dev->platform_data;
->  	int irq = adata->get_irq_data_ready(indio_dev);
->  	int err;
->  
-> @@ -948,9 +946,6 @@ int st_accel_common_probe(struct iio_dev *indio_dev)
->  					&adata->sensor_settings->fs.fs_avl[0];
->  	adata->odr = adata->sensor_settings->odr.odr_avl[0].hz;
->  
-> -	if (!pdata)
-> -		pdata = (struct st_sensors_platform_data *)&default_accel_pdata;
-> -
->  	err = st_sensors_init_sensor(indio_dev, adata->dev->platform_data);
->  	if (err < 0)
->  		goto st_accel_power_off;
+Using a ColorHugALS with the above "hid-sensor-trigger" patch reverted
+I get:
+$ cat /sys/devices/pci0000:00/0000:00:14.0/usb3/3-9/3-9:1.0/0003:273F:1008.0029/HID-SENSOR-200041.2.auto/iio:device0/in_illuminance_raw
+0
+$ cat /sys/devices/pci0000:00/0000:00:14.0/usb3/3-9/3-9:1.0/0003:273F:1008.0029/HID-SENSOR-200041.2.auto/iio:device0/in_intensity_both_raw
+0
 
+Ideas, before I start hooking up a test rig to git bisect this?
+
+Cheers
