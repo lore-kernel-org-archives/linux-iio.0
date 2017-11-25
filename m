@@ -1,61 +1,89 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:46960 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751674AbdKYQLa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 25 Nov 2017 11:11:30 -0500
-Date: Sat, 25 Nov 2017 16:11:26 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] dt-bindings: iio: light: add UVIS25 device
- bindings
-Message-ID: <20171125161126.5ac74773@archlinux>
-In-Reply-To: <20171123225906.31838-3-lorenzo.bianconi83@gmail.com>
-References: <20171123225906.31838-1-lorenzo.bianconi83@gmail.com>
-        <20171123225906.31838-3-lorenzo.bianconi83@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=LWwp=CX=wunner.de=lukas@kernel.org>
+Message-Id: <2f78166e4b54d5c0d139121c00a69ee033918da6.1511598241.git.lukas@wunner.de>
+From: Lukas Wunner <lukas@wunner.de>
+Date: Sat, 25 Nov 2017 09:38:17 +0100
+Subject: [PATCH] iio: Add macro to populate struct iio_map array
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Mathias Duckeck <m.duckeck@kunbus.de>, linux-iio@vger.kernel.org, Chen-Yu Tsai <wens@csie.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 23 Nov 2017 23:59:06 +0100
-Lorenzo Bianconi <lorenzo.bianconi83@gmail.com> wrote:
+The GPIO core provides a handy GPIO_LOOKUP() macro to populate a struct
+gpiod_lookup array without having to spell out attribute names (but
+still avoid breakage when attributes within the struct are rearranged
+or added).
 
-> Acked-by: Rob Herring <robh@kernel.org>
-> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-Applied
-> ---
->  .../devicetree/bindings/iio/light/uvis25.txt       | 23 ++++++++++++++++++++++
->  1 file changed, 23 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/light/uvis25.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/light/uvis25.txt b/Documentation/devicetree/bindings/iio/light/uvis25.txt
-> new file mode 100644
-> index 000000000000..3041207e3f3c
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/light/uvis25.txt
-> @@ -0,0 +1,23 @@
-> +* ST UVIS25 uv sensor
-> +
-> +Required properties:
-> +- compatible: should be "st,uvis25"
-> +- reg: i2c address of the sensor / spi cs line
-> +
-> +Optional properties:
-> +- interrupt-parent: should be the phandle for the interrupt controller
-> +- interrupts: interrupt mapping for IRQ. It should be configured with
-> +  flags IRQ_TYPE_LEVEL_HIGH, IRQ_TYPE_EDGE_RISING, IRQ_TYPE_LEVEL_LOW or
-> +  IRQ_TYPE_EDGE_FALLING.
-> +
-> +  Refer to interrupt-controller/interrupts.txt for generic interrupt
-> +  client node bindings.
-> +
-> +Example:
-> +
-> +uvis25@47 {
-> +	compatible = "st,uvis25";
-> +	reg = <0x47>;
-> +	interrupt-parent = <&gpio0>;
-> +	interrupts = <0 IRQ_TYPE_EDGE_RISING>;
-> +};
+The axp288_adc.c driver uses a similar macro to populate a struct
+iio_map array.  Make it available to others.
 
+Cc: Chen-Yu Tsai <wens@csie.org>
+Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+---
+The motivation for this change is that we're using it in a module which
+is currently out-of-tree.  I'm only converting axp288_adc.c here as it
+already has such a macro, and not all the other drivers which declare
+iio_map arrays because such trivial refactoring is not always welcome.
+I could convert these other drivers as well if desired.  If so, please
+let me know if this should all be put in a single patch or split per
+driver.
+
+Note that I've replaced _adc_channel_label with _provider_channel,
+which is more apt in my opinion.  Please shout if you disagree.
+
+Thanks!
+
+ drivers/iio/adc/axp288_adc.c | 20 ++++++--------------
+ include/linux/iio/machine.h  |  7 +++++++
+ 2 files changed, 13 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/iio/adc/axp288_adc.c b/drivers/iio/adc/axp288_adc.c
+index 60c9e853dd81..031d568b4972 100644
+--- a/drivers/iio/adc/axp288_adc.c
++++ b/drivers/iio/adc/axp288_adc.c
+@@ -92,22 +92,14 @@ static const struct iio_chan_spec axp288_adc_channels[] = {
+ 	},
+ };
+ 
+-#define AXP288_ADC_MAP(_adc_channel_label, _consumer_dev_name,	\
+-		_consumer_channel)				\
+-	{							\
+-		.adc_channel_label = _adc_channel_label,	\
+-		.consumer_dev_name = _consumer_dev_name,	\
+-		.consumer_channel = _consumer_channel,		\
+-	}
+-
+ /* for consumer drivers */
+ static struct iio_map axp288_adc_default_maps[] = {
+-	AXP288_ADC_MAP("TS_PIN", "axp288-batt", "axp288-batt-temp"),
+-	AXP288_ADC_MAP("PMIC_TEMP", "axp288-pmic", "axp288-pmic-temp"),
+-	AXP288_ADC_MAP("GPADC", "axp288-gpadc", "axp288-system-temp"),
+-	AXP288_ADC_MAP("BATT_CHG_I", "axp288-chrg", "axp288-chrg-curr"),
+-	AXP288_ADC_MAP("BATT_DISCHRG_I", "axp288-chrg", "axp288-chrg-d-curr"),
+-	AXP288_ADC_MAP("BATT_V", "axp288-batt", "axp288-batt-volt"),
++	IIO_MAP("TS_PIN", "axp288-batt", "axp288-batt-temp"),
++	IIO_MAP("PMIC_TEMP", "axp288-pmic", "axp288-pmic-temp"),
++	IIO_MAP("GPADC", "axp288-gpadc", "axp288-system-temp"),
++	IIO_MAP("BATT_CHG_I", "axp288-chrg", "axp288-chrg-curr"),
++	IIO_MAP("BATT_DISCHRG_I", "axp288-chrg", "axp288-chrg-d-curr"),
++	IIO_MAP("BATT_V", "axp288-batt", "axp288-batt-volt"),
+ 	{},
+ };
+ 
+diff --git a/include/linux/iio/machine.h b/include/linux/iio/machine.h
+index 1601a2a63a72..5e1cfa75f652 100644
+--- a/include/linux/iio/machine.h
++++ b/include/linux/iio/machine.h
+@@ -28,4 +28,11 @@ struct iio_map {
+ 	void *consumer_data;
+ };
+ 
++#define IIO_MAP(_provider_channel, _consumer_dev_name, _consumer_channel) \
++{									  \
++	.adc_channel_label = _provider_channel,				  \
++	.consumer_dev_name = _consumer_dev_name,			  \
++	.consumer_channel  = _consumer_channel,				  \
++}
++
+ #endif
+-- 
+2.11.0
