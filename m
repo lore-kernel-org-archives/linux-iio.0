@@ -1,78 +1,91 @@
-Return-Path: <SRS0=kLlw=CR=konsulko.com=matt.ranostay@kernel.org>
-MIME-Version: 1.0
-In-Reply-To: <1509133543-4597-7-git-send-email-pmeerw@pmeerw.net>
-References: <1509133543-4597-1-git-send-email-pmeerw@pmeerw.net> <1509133543-4597-7-git-send-email-pmeerw@pmeerw.net>
-From: Matt Ranostay <matt.ranostay@konsulko.com>
-Date: Sun, 19 Nov 2017 12:38:50 -0800
-Message-ID: <CAJCx=gkjKUXHcMkzRmf4C_7qnPUnN_Q+zQeMUKrgBLXM9bQWVg@mail.gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.99]:42342 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751674AbdKYOVO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 25 Nov 2017 09:21:14 -0500
+Date: Sat, 25 Nov 2017 14:11:12 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Matt Ranostay <matt.ranostay@konsulko.com>
+Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org
 Subject: Re: [PATCH v2 06/13] iio: health: max30102: Add check for part ID
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-List-ID: <linux-iio@vger.kernel.org>
+Message-ID: <20171125141112.446cf06a@archlinux>
+In-Reply-To: <CAJCx=gkjKUXHcMkzRmf4C_7qnPUnN_Q+zQeMUKrgBLXM9bQWVg@mail.gmail.com>
+References: <1509133543-4597-1-git-send-email-pmeerw@pmeerw.net>
+        <1509133543-4597-7-git-send-email-pmeerw@pmeerw.net>
+        <CAJCx=gkjKUXHcMkzRmf4C_7qnPUnN_Q+zQeMUKrgBLXM9bQWVg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Fri, Oct 27, 2017 at 12:45 PM, Peter Meerwald-Stadler
-<pmeerw@pmeerw.net> wrote:
-> Signed-off-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-> Cc: Matt Ranostay <matt.ranostay@konsulko.com>
+On Sun, 19 Nov 2017 12:38:50 -0800
+Matt Ranostay <matt.ranostay@konsulko.com> wrote:
 
+> On Fri, Oct 27, 2017 at 12:45 PM, Peter Meerwald-Stadler
+> <pmeerw@pmeerw.net> wrote:
+> > Signed-off-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+> > Cc: Matt Ranostay <matt.ranostay@konsulko.com>  
+> 
+> 
+> Acked-by: Matt Ranostay <matt.ranostay@konsulko.com>
+> 
+Applied.
+> > ---
+> >  drivers/iio/health/max30102.c | 18 ++++++++++++++++++
+> >  1 file changed, 18 insertions(+)
+> >
+> > diff --git a/drivers/iio/health/max30102.c b/drivers/iio/health/max30102.c
+> > index 389a483..c43957e 100644
+> > --- a/drivers/iio/health/max30102.c
+> > +++ b/drivers/iio/health/max30102.c
+> > @@ -32,6 +32,7 @@
+> >
+> >  #define MAX30102_REGMAP_NAME   "max30102_regmap"
+> >  #define MAX30102_DRV_NAME      "max30102"
+> > +#define MAX30102_PART_NUMBER   0x15
+> >
+> >  #define MAX30102_REG_INT_STATUS                        0x00
+> >  #define MAX30102_REG_INT_STATUS_PWR_RDY                BIT(0)
+> > @@ -83,6 +84,9 @@
+> >  #define MAX30102_REG_TEMP_INTEGER              0x1f
+> >  #define MAX30102_REG_TEMP_FRACTION             0x20
+> >
+> > +#define MAX30102_REG_REV_ID                    0xfe
+> > +#define MAX30102_REG_PART_ID                   0xff
+> > +
+> >  struct max30102_data {
+> >         struct i2c_client *client;
+> >         struct iio_dev *indio_dev;
+> > @@ -391,6 +395,7 @@ static int max30102_probe(struct i2c_client *client,
+> >         struct iio_buffer *buffer;
+> >         struct iio_dev *indio_dev;
+> >         int ret;
+> > +       unsigned int reg;
+> >
+> >         indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> >         if (!indio_dev)
+> > @@ -424,6 +429,19 @@ static int max30102_probe(struct i2c_client *client,
+> >                 return PTR_ERR(data->regmap);
+> >         }
+> >
+> > +       /* check part ID */
+> > +       ret = regmap_read(data->regmap, MAX30102_REG_PART_ID, &reg);
+> > +       if (ret)
+> > +               return ret;
+> > +       if (reg != MAX30102_PART_NUMBER)
+> > +               return -ENODEV;
+> > +
+> > +       /* show revision ID */
+> > +       ret = regmap_read(data->regmap, MAX30102_REG_REV_ID, &reg);
+> > +       if (ret)
+> > +               return ret;
+> > +       dev_dbg(&client->dev, "max3010x revision %02x\n", reg);
+> > +
+> >         ret = max30102_set_powermode(data, false);
+> >         if (ret)
+> >                 return ret;
+> > --
+> > 2.7.4
+> >  
 
-Acked-by: Matt Ranostay <matt.ranostay@konsulko.com>
-
-> ---
->  drivers/iio/health/max30102.c | 18 ++++++++++++++++++
->  1 file changed, 18 insertions(+)
->
-> diff --git a/drivers/iio/health/max30102.c b/drivers/iio/health/max30102.c
-> index 389a483..c43957e 100644
-> --- a/drivers/iio/health/max30102.c
-> +++ b/drivers/iio/health/max30102.c
-> @@ -32,6 +32,7 @@
->
->  #define MAX30102_REGMAP_NAME   "max30102_regmap"
->  #define MAX30102_DRV_NAME      "max30102"
-> +#define MAX30102_PART_NUMBER   0x15
->
->  #define MAX30102_REG_INT_STATUS                        0x00
->  #define MAX30102_REG_INT_STATUS_PWR_RDY                BIT(0)
-> @@ -83,6 +84,9 @@
->  #define MAX30102_REG_TEMP_INTEGER              0x1f
->  #define MAX30102_REG_TEMP_FRACTION             0x20
->
-> +#define MAX30102_REG_REV_ID                    0xfe
-> +#define MAX30102_REG_PART_ID                   0xff
-> +
->  struct max30102_data {
->         struct i2c_client *client;
->         struct iio_dev *indio_dev;
-> @@ -391,6 +395,7 @@ static int max30102_probe(struct i2c_client *client,
->         struct iio_buffer *buffer;
->         struct iio_dev *indio_dev;
->         int ret;
-> +       unsigned int reg;
->
->         indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->         if (!indio_dev)
-> @@ -424,6 +429,19 @@ static int max30102_probe(struct i2c_client *client,
->                 return PTR_ERR(data->regmap);
->         }
->
-> +       /* check part ID */
-> +       ret = regmap_read(data->regmap, MAX30102_REG_PART_ID, &reg);
-> +       if (ret)
-> +               return ret;
-> +       if (reg != MAX30102_PART_NUMBER)
-> +               return -ENODEV;
-> +
-> +       /* show revision ID */
-> +       ret = regmap_read(data->regmap, MAX30102_REG_REV_ID, &reg);
-> +       if (ret)
-> +               return ret;
-> +       dev_dbg(&client->dev, "max3010x revision %02x\n", reg);
-> +
->         ret = max30102_set_powermode(data, false);
->         if (ret)
->                 return ret;
-> --
-> 2.7.4
->
