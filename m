@@ -1,100 +1,152 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wr0-f195.google.com ([209.85.128.195]:56823 "EHLO
-        mail-wr0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753874AbdJaUCa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 Oct 2017 16:02:30 -0400
-Received: by mail-wr0-f195.google.com with SMTP id r79so119323wrb.13
-        for <linux-iio@vger.kernel.org>; Tue, 31 Oct 2017 13:02:30 -0700 (PDT)
-From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To: linux-iio@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net
-Cc: linux-amlogic@lists.infradead.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH 5/5] iio: adc: meson-saradc: program the channel muxes during initialization
-Date: Tue, 31 Oct 2017 21:01:47 +0100
-Message-Id: <20171031200147.14660-6-martin.blumenstingl@googlemail.com>
-In-Reply-To: <20171031200147.14660-1-martin.blumenstingl@googlemail.com>
-References: <20171031200147.14660-1-martin.blumenstingl@googlemail.com>
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:24639 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1751141AbdK0JK0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Nov 2017 04:10:26 -0500
+Subject: Re: [PATCH] iio: stm32: fix adc/trigger link error
+To: Jonathan Cameron <jic23@kernel.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+CC: Alexandre Torgue <alexandre.torgue@st.com>,
+        Arnd Bergmann <arnd@arndb.de>, <linux-iio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+References: <20170906125722.2522781-1-arnd@arndb.de>
+ <50ec54e0-85f7-8c32-475c-9b27a4e6ebd3@st.com>
+ <20170910170040.7eb1f768@archlinux>
+ <6b5ff28a-859d-973c-2da5-60a8bf50c378@st.com>
+ <20170925111604.00000c02@huawei.com> <20170925182617.18bf5ce8@archlinux>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+Message-ID: <da83af87-6c70-8b00-b602-342a9274f81f@st.com>
+Date: Mon, 27 Nov 2017 10:09:47 +0100
+MIME-Version: 1.0
+In-Reply-To: <20170925182617.18bf5ce8@archlinux>
+Content-Type: text/plain; charset="utf-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On some Meson8 devices the channel muxes are not programmed. This
-results in garbage values when trying to read channels that are not set
-up.
-Fix this by initializing the channel 0 and 1 muxes in
-MESON_SAR_ADC_CHAN_10_SW as well as the muxes for all other channels in
-MESON_SAR_ADC_AUX_SW based on what the vendor driver does (which is
-simply a 1:1 mapping of channel number and channel mux).
-This only showed up on Meson8 devices, because for GXBB and newer BL30
-is taking care of initializing the channel muxes.
+On 09/25/2017 07:26 PM, Jonathan Cameron wrote:
+> On Mon, 25 Sep 2017 11:16:04 +0100
+> Jonathan Cameron <Jonathan.Cameron@huawei.com> wrote:
+> 
+>> On Mon, 25 Sep 2017 11:54:06 +0200
+>> Fabrice Gasnier <fabrice.gasnier@st.com> wrote:
+>>
+>>> On 09/10/2017 06:00 PM, Jonathan Cameron wrote:  
+>>>> On Wed, 6 Sep 2017 18:16:33 +0200
+>>>> Fabrice Gasnier <fabrice.gasnier@st.com> wrote:
+>>>>     
+>>>>> On 09/06/2017 02:56 PM, Arnd Bergmann wrote:    
+>>>>>> The ADC driver can trigger on either the timer or the lptim
+>>>>>> trigger, but it only uses a Kconfig 'select' statement
+>>>>>> to ensure that the first of the two is present. When the lptim
+>>>>>> trigger is enabled as a loadable module, and the adc driver
+>>>>>> is built-in, we now get a link error:
+>>>>>>
+>>>>>> drivers/iio/adc/stm32-adc.o: In function `stm32_adc_get_trig_extsel':
+>>>>>> stm32-adc.c:(.text+0x4e0): undefined reference to `is_stm32_lptim_trigger'
+>>>>>>
+>>>>>> We could use a second 'select' statement and always have both
+>>>>>> trigger drivers enabled when the adc driver is, but it seems that
+>>>>>> the lptimer trigger was intentionally left optional, so it seems
+>>>>>> better to keep it that way.      
+>>>>> Hi Arnd,
+>>>>>
+>>>>> This is correct, not all stm32 have this hardware.    
+>>>>>>
+>>>>>> This adds a hack to use 'IS_REACHABLE()' rather than 'IS_ENABLED()',
+>>>>>> which avoids the link error, but instead leads to the lptimer trigger
+>>>>>> not being used in the broken configuration. I've added a runtime
+>>>>>> warning for this case to help users figure out what they did wrong
+>>>>>> if this should ever be done by accident.
+>>>>>>
+>>>>>> Fixes: f0b638a7f6db ("iio: adc: stm32: add support for lptimer triggers")
+>>>>>> Signed-off-by: Arnd Bergmann <arnd@arndb.de>      
+>>>>> Tested-by: Fabrice Gasnier <fabrice.gasnier@st.com>    
+>>>>
+>>>> This may take me a few weeks to pick up.  I don't want to
+>>>> pull the mfd immutable branch in just to have this fix, so this will
+>>>> get sorted after rc1 is out.
+>>>>
+>>>> As ever, poke me if it looks like I've forgotten about it.    
+>>>
+>>> Hi Jonathan,
+>>>
+>>> Di you apply this one?  
+>>
+>> I think I still need to rebase my branch. Greg took my fixes pull this morning
+>> so I can fast forward that branch next time I'm on the right PC and then pick
+>> this up.
+>>
+>> Thanks for the reminder.
+> 
+> Applied to the fixes-togreg branch of iio.git.
 
-This additionally fixes a typo in the
-MESON_SAR_ADC_AUX_SW_MUX_SEL_CHAN_MASK macro because the old definition
-assumed that the register fields were 2 bit wide, while they are
-actually 3 bit wide.
+Hi Jonathan,
 
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
----
- drivers/iio/adc/meson_saradc.c | 32 +++++++++++++++++++++++++++++---
- 1 file changed, 29 insertions(+), 3 deletions(-)
+Sorry to raise this again. Maybe I missed something, but I can't find
+this fix on recent tag (4.15-rc1). Do you know if this patch from Arnd
+is on its way in ?
 
-diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
-index fa3c1378c2c9..48fb1b642a5e 100644
---- a/drivers/iio/adc/meson_saradc.c
-+++ b/drivers/iio/adc/meson_saradc.c
-@@ -96,8 +96,8 @@
- 	#define MESON_SAR_ADC_FIFO_RD_SAMPLE_VALUE_MASK		GENMASK(11, 0)
- 
- #define MESON_SAR_ADC_AUX_SW					0x1c
--	#define MESON_SAR_ADC_AUX_SW_MUX_SEL_CHAN_MASK(_chan)	\
--					(GENMASK(10, 8) << (((_chan) - 2) * 2))
-+	#define MESON_SAR_ADC_AUX_SW_MUX_SEL_CHAN_SHIFT(_chan)	\
-+					(8 + (((_chan) - 2) * 3))
- 	#define MESON_SAR_ADC_AUX_SW_VREF_P_MUX			BIT(6)
- 	#define MESON_SAR_ADC_AUX_SW_VREF_N_MUX			BIT(5)
- 	#define MESON_SAR_ADC_AUX_SW_MODE_SEL			BIT(4)
-@@ -623,7 +623,7 @@ static int meson_sar_adc_clk_init(struct iio_dev *indio_dev,
- static int meson_sar_adc_init(struct iio_dev *indio_dev)
- {
- 	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
--	int regval, ret;
-+	int regval, i, ret;
- 
- 	/*
- 	 * make sure we start at CH7 input since the other muxes are only used
-@@ -678,6 +678,32 @@ static int meson_sar_adc_init(struct iio_dev *indio_dev)
- 			   FIELD_PREP(MESON_SAR_ADC_DELAY_INPUT_DLY_SEL_MASK,
- 				      1));
- 
-+	/*
-+	 * set up the input channel muxes in MESON_SAR_ADC_CHAN_10_SW
-+	 * (0 = SAR_ADC_CH0, 1 = SAR_ADC_CH1)
-+	 */
-+	regval = FIELD_PREP(MESON_SAR_ADC_CHAN_10_SW_CHAN0_MUX_SEL_MASK, 0);
-+	regmap_update_bits(priv->regmap, MESON_SAR_ADC_CHAN_10_SW,
-+			   MESON_SAR_ADC_CHAN_10_SW_CHAN0_MUX_SEL_MASK,
-+			   regval);
-+	regval = FIELD_PREP(MESON_SAR_ADC_CHAN_10_SW_CHAN1_MUX_SEL_MASK, 1);
-+	regmap_update_bits(priv->regmap, MESON_SAR_ADC_CHAN_10_SW,
-+			   MESON_SAR_ADC_CHAN_10_SW_CHAN1_MUX_SEL_MASK,
-+			   regval);
-+
-+	/*
-+	 * set up the input channel muxes in MESON_SAR_ADC_AUX_SW
-+	 * (2 = SAR_ADC_CH2, 3 = SAR_ADC_CH3, ...) and enable
-+	 * MESON_SAR_ADC_AUX_SW_YP_DRIVE_SW and
-+	 * MESON_SAR_ADC_AUX_SW_XP_DRIVE_SW like the vendor driver.
-+	 */
-+	regval = 0;
-+	for (i = 2; i <= 7; i++)
-+		regval |= i << MESON_SAR_ADC_AUX_SW_MUX_SEL_CHAN_SHIFT(i);
-+	regval |= MESON_SAR_ADC_AUX_SW_YP_DRIVE_SW;
-+	regval |= MESON_SAR_ADC_AUX_SW_XP_DRIVE_SW;
-+	regmap_write(priv->regmap, MESON_SAR_ADC_AUX_SW, regval);
-+
- 	ret = clk_set_parent(priv->adc_sel_clk, priv->clkin);
- 	if (ret) {
- 		dev_err(indio_dev->dev.parent,
--- 
-2.15.0
-
+Please kindly let me know.
+BR,
+Fabrice
+> 
+> Thanks,
+> 
+> Jonathan
+>>
+>> Jonathan
+>>
+>>>
+>>> Thanks,
+>>> Best Regards,
+>>> Fabrice  
+>>>> Sorry for the delay!
+>>>>
+>>>> Jonathan
+>>>>     
+>>>>>
+>>>>> Many thanks for the fix,
+>>>>> Best Regards,
+>>>>> Fabrice    
+>>>>>> ---
+>>>>>>  include/linux/iio/timer/stm32-lptim-trigger.h | 5 ++++-
+>>>>>>  1 file changed, 4 insertions(+), 1 deletion(-)
+>>>>>>
+>>>>>> diff --git a/include/linux/iio/timer/stm32-lptim-trigger.h b/include/linux/iio/timer/stm32-lptim-trigger.h
+>>>>>> index 34d59bfdce2d..464458d20b16 100644
+>>>>>> --- a/include/linux/iio/timer/stm32-lptim-trigger.h
+>>>>>> +++ b/include/linux/iio/timer/stm32-lptim-trigger.h
+>>>>>> @@ -16,11 +16,14 @@
+>>>>>>  #define LPTIM2_OUT	"lptim2_out"
+>>>>>>  #define LPTIM3_OUT	"lptim3_out"
+>>>>>>  
+>>>>>> -#if IS_ENABLED(CONFIG_IIO_STM32_LPTIMER_TRIGGER)
+>>>>>> +#if IS_REACHABLE(CONFIG_IIO_STM32_LPTIMER_TRIGGER)
+>>>>>>  bool is_stm32_lptim_trigger(struct iio_trigger *trig);
+>>>>>>  #else
+>>>>>>  static inline bool is_stm32_lptim_trigger(struct iio_trigger *trig)
+>>>>>>  {
+>>>>>> +#if IS_ENABLED(CONFIG_IIO_STM32_LPTIMER_TRIGGER)
+>>>>>> +	pr_warn_once("stm32 lptim_trigger not linked in\n");
+>>>>>> +#endif
+>>>>>>  	return false;
+>>>>>>  }
+>>>>>>  #endif
+>>>>>>       
+>>>>> --
+>>>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>>>> the body of a message to majordomo@vger.kernel.org
+>>>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html    
+>>>>     
+>>>
+>>> _______________________________________________
+>>> linux-arm-kernel mailing list
+>>> linux-arm-kernel@lists.infradead.org
+>>> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel  
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
