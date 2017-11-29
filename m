@@ -1,7 +1,7 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from a8-242.smtp-out.amazonses.com ([54.240.8.242]:41640 "EHLO
+Received: from a8-242.smtp-out.amazonses.com ([54.240.8.242]:41646 "EHLO
         a8-242.smtp-out.amazonses.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1752218AbdK2WbN (ORCPT
+        by vger.kernel.org with ESMTP id S1752349AbdK2WbN (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Nov 2017 17:31:13 -0500
 From: Jeremy Cline <jeremy@jcline.org>
 To: Jonathan Cameron <jic23@kernel.org>,
@@ -13,92 +13,136 @@ Cc: Hans de Goede <hdegoede@redhat.com>,
         Steven Presser <steve@pressers.name>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jeremy Cline <jeremy@jcline.org>
-Subject: [PATCH 2/2] iio: accel: bmc150: Check for a second ACPI device for BOSC0200
+Subject: [PATCH 1/2] iio: accel: bmc150: Move struct definitions into the header
 Date: Wed, 29 Nov 2017 22:31:12 +0000
-Message-ID: <0100016009e7c30a-407c2980-d8d5-4506-ab47-d0fb2fed481d-000000@email.amazonses.com>
+Message-ID: <0100016009e7c593-065f58b2-ae0f-4d6d-a1ff-769e86d992d8-000000@email.amazonses.com>
 In-Reply-To: <20171129223016.17848-1-jeremy@jcline.org>
 References: <20171129223016.17848-1-jeremy@jcline.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Some BOSC0200 acpi_device-s describe two accelerometers in a single ACPI
-device. Check for a companion device and handle a second i2c_client
-if it is present.
+The I2C driver needs to access the bmc150_accel_data struct defined in
+bcm150-accel-core.c, so move it and the structs it requires into the
+header file.
 
 Signed-off-by: Jeremy Cline <jeremy@jcline.org>
 ---
- drivers/iio/accel/bmc150-accel-i2c.c | 33 ++++++++++++++++++++++++++++++++-
- drivers/iio/accel/bmc150-accel.h     |  1 +
- 2 files changed, 33 insertions(+), 1 deletion(-)
+ drivers/iio/accel/bmc150-accel-core.c | 43 --------------------------------
+ drivers/iio/accel/bmc150-accel.h      | 47 +++++++++++++++++++++++++++++++++++
+ 2 files changed, 47 insertions(+), 43 deletions(-)
 
-diff --git a/drivers/iio/accel/bmc150-accel-i2c.c b/drivers/iio/accel/bmc150-accel-i2c.c
-index f85014fbaa12..c4557e18123c 100644
---- a/drivers/iio/accel/bmc150-accel-i2c.c
-+++ b/drivers/iio/accel/bmc150-accel-i2c.c
-@@ -31,6 +31,10 @@
- static int bmc150_accel_probe(struct i2c_client *client,
- 			      const struct i2c_device_id *id)
- {
-+	int ret;
-+	struct acpi_device *adev;
-+	struct i2c_board_info board_info;
-+	struct bmc150_accel_data *data;
- 	struct regmap *regmap;
- 	const char *name = NULL;
- 	bool block_supported =
-@@ -47,12 +51,39 @@ static int bmc150_accel_probe(struct i2c_client *client,
- 	if (id)
- 		name = id->name;
- 
--	return bmc150_accel_core_probe(&client->dev, regmap, client->irq, name,
-+	ret = bmc150_accel_core_probe(&client->dev, regmap, client->irq, name,
- 				       block_supported);
-+	if (ret)
-+		return ret;
-+
-+	/*
-+	 * Some BOSC0200 acpi_devices describe 2 accelerometers in a single ACPI
-+	 * device, try instantiating a second i2c_client for an I2cSerialBusV2
-+	 * ACPI resource with index 1.
-+	 */
-+	adev = ACPI_COMPANION(&client->dev);
-+	if (adev && strcmp(acpi_device_hid(adev), "BOSC0200") == 0) {
-+		data = i2c_get_clientdata(client);
-+		memset(&board_info, 0, sizeof(board_info));
-+		strlcpy(board_info.type, "bma250e", I2C_NAME_SIZE);
-+		data->driver_priv = i2c_acpi_new_device(&client->dev,
-+							1, &board_info);
-+		/*
-+		 * Don't check for bosc0200 == NULL since most BOSC0200 ACPI
-+		 * devices describe only one i2c_client
-+		 */
-+	}
-+
-+	return ret;
- }
- 
- static int bmc150_accel_remove(struct i2c_client *client)
- {
-+	struct bmc150_accel_data *data = i2c_get_clientdata(client);
-+
-+	if (data->driver_priv)
-+		i2c_unregister_device(data->driver_priv);
-+
- 	return bmc150_accel_core_remove(&client->dev);
- }
- 
-diff --git a/drivers/iio/accel/bmc150-accel.h b/drivers/iio/accel/bmc150-accel.h
-index c38754452883..7f49a09b136f 100644
---- a/drivers/iio/accel/bmc150-accel.h
-+++ b/drivers/iio/accel/bmc150-accel.h
-@@ -47,6 +47,7 @@ struct bmc150_accel_data {
- 	int ev_enable_state;
- 	int64_t timestamp, old_timestamp; /* Only used in hw fifo mode. */
- 	const struct bmc150_accel_chip_info *chip_info;
-+	void *driver_priv;
+diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+index 870f92ef61c2..340914677322 100644
+--- a/drivers/iio/accel/bmc150-accel-core.c
++++ b/drivers/iio/accel/bmc150-accel-core.c
+@@ -163,49 +163,6 @@ struct bmc150_accel_chip_info {
+ 	const struct bmc150_scale_info scale_table[4];
  };
  
+-struct bmc150_accel_interrupt {
+-	const struct bmc150_accel_interrupt_info *info;
+-	atomic_t users;
+-};
+-
+-struct bmc150_accel_trigger {
+-	struct bmc150_accel_data *data;
+-	struct iio_trigger *indio_trig;
+-	int (*setup)(struct bmc150_accel_trigger *t, bool state);
+-	int intr;
+-	bool enabled;
+-};
+-
+-enum bmc150_accel_interrupt_id {
+-	BMC150_ACCEL_INT_DATA_READY,
+-	BMC150_ACCEL_INT_ANY_MOTION,
+-	BMC150_ACCEL_INT_WATERMARK,
+-	BMC150_ACCEL_INTERRUPTS,
+-};
+-
+-enum bmc150_accel_trigger_id {
+-	BMC150_ACCEL_TRIGGER_DATA_READY,
+-	BMC150_ACCEL_TRIGGER_ANY_MOTION,
+-	BMC150_ACCEL_TRIGGERS,
+-};
+-
+-struct bmc150_accel_data {
+-	struct regmap *regmap;
+-	int irq;
+-	struct bmc150_accel_interrupt interrupts[BMC150_ACCEL_INTERRUPTS];
+-	struct bmc150_accel_trigger triggers[BMC150_ACCEL_TRIGGERS];
+-	struct mutex mutex;
+-	u8 fifo_mode, watermark;
+-	s16 buffer[8];
+-	u8 bw_bits;
+-	u32 slope_dur;
+-	u32 slope_thres;
+-	u32 range;
+-	int ev_enable_state;
+-	int64_t timestamp, old_timestamp; /* Only used in hw fifo mode. */
+-	const struct bmc150_accel_chip_info *chip_info;
+-};
+-
+ static const struct {
+ 	int val;
+ 	int val2;
+diff --git a/drivers/iio/accel/bmc150-accel.h b/drivers/iio/accel/bmc150-accel.h
+index ae6118ae11b1..c38754452883 100644
+--- a/drivers/iio/accel/bmc150-accel.h
++++ b/drivers/iio/accel/bmc150-accel.h
+@@ -2,6 +2,53 @@
+ #ifndef _BMC150_ACCEL_H_
+ #define _BMC150_ACCEL_H_
+ 
++struct bmc150_accel_chip_info;
++struct bmc150_accel_data;
++struct bmc150_accel_interrupt_info;
++
++struct bmc150_accel_interrupt {
++	const struct bmc150_accel_interrupt_info *info;
++	atomic_t users;
++};
++
++struct bmc150_accel_trigger {
++	struct bmc150_accel_data *data;
++	struct iio_trigger *indio_trig;
++	int (*setup)(struct bmc150_accel_trigger *t, bool state);
++	int intr;
++	bool enabled;
++};
++
++enum bmc150_accel_interrupt_id {
++	BMC150_ACCEL_INT_DATA_READY,
++	BMC150_ACCEL_INT_ANY_MOTION,
++	BMC150_ACCEL_INT_WATERMARK,
++	BMC150_ACCEL_INTERRUPTS,
++};
++
++enum bmc150_accel_trigger_id {
++	BMC150_ACCEL_TRIGGER_DATA_READY,
++	BMC150_ACCEL_TRIGGER_ANY_MOTION,
++	BMC150_ACCEL_TRIGGERS,
++};
++
++struct bmc150_accel_data {
++	struct regmap *regmap;
++	int irq;
++	struct bmc150_accel_interrupt interrupts[BMC150_ACCEL_INTERRUPTS];
++	struct bmc150_accel_trigger triggers[BMC150_ACCEL_TRIGGERS];
++	struct mutex mutex;
++	u8 fifo_mode, watermark;
++	s16 buffer[8];
++	u8 bw_bits;
++	u32 slope_dur;
++	u32 slope_thres;
++	u32 range;
++	int ev_enable_state;
++	int64_t timestamp, old_timestamp; /* Only used in hw fifo mode. */
++	const struct bmc150_accel_chip_info *chip_info;
++};
++
  struct regmap;
+ 
+ enum {
 -- 
 2.14.3
 
