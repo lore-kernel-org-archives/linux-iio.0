@@ -1,54 +1,41 @@
-Return-Path: <SRS0=0yTT=C3=linaro.org=linus.walleij@kernel.org>
-MIME-Version: 1.0
-In-Reply-To: <87shcxw5n3.fsf@linux.intel.com>
-References: <87ineapo5w.fsf@linux.intel.com> <CACRpkdY+72nz9gK=kSESoNdM+xicx-rnpKNz-UbYZ+TFLUXpbA@mail.gmail.com>
- <87shcxw5n3.fsf@linux.intel.com>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Wed, 29 Nov 2017 23:54:32 +0100
-Message-ID: <CACRpkdabNMHgs_ywzrgSg-AgQL1wtQN8SaxuZtCruiXnfrXGQw@mail.gmail.com>
-Subject: Re: [RFC] Periodic Output, Timestamped Input
-To: Felipe Balbi <felipe.balbi@linux.intel.com>,
-	=?UTF-8?Q?Bartosz_Go=C5=82aszewski?= <bartekgola@gmail.com>
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-	"thierry.reding@gmail.com" <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>, linux-gpio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f65.google.com ([74.125.82.65]:34044 "EHLO
+        mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752466AbdK2WHo (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Nov 2017 17:07:44 -0500
+Received: by mail-wm0-f65.google.com with SMTP id y82so38102136wmg.1
+        for <linux-iio@vger.kernel.org>; Wed, 29 Nov 2017 14:07:43 -0800 (PST)
+From: Crt Mori <cmo@melexis.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Crt Mori <cmo@melexis.com>
+Subject: [PATCH 0/2] iio: temperataure: MLX90632
+Date: Wed, 29 Nov 2017 23:07:18 +0100
+Message-Id: <20171129220718.11234-1-cmo@melexis.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, Nov 29, 2017 at 2:56 PM, Felipe Balbi
-<felipe.balbi@linux.intel.com> wrote:
-> Me:
->> For the other thing: timestamping of GPIO events, we already
->> support timestamps for userspace GPIOs, but all it does is use
->> the kernel time, see gpiolib.c:
->>
->> static irqreturn_t lineevent_irq_thread(int irq, void *p)
->> {
->>         struct lineevent_state *le = p;
->>         struct gpioevent_data ge;
->>         int ret, level;
->>
->>         ge.timestamp = ktime_get_real_ns();
->>         level = gpiod_get_value_cansleep(le->desc);
->
-> this is running as a thread with interrupts enabled, AFAICT. This means
-> this thread can be preempted at least on PREEMPT_RT kernels, so your
-> timestamp can be wrong, right?
+Hi everybody,
 
-Yes, it can be off. What we should do to get i better is
-something like what I did in:
-drivers/iio/gyro/mpu3050-core.c
+With the sensor now available to broad public, it is time to also
+share the driver with the community. MLX90632 is just 3x3mm in size,
+but with factory calibration offers instant usage in every project.
 
-Here I have both a hard and a soft IRQ handler (fast/slow if
-you like) and take the timestamp in the hard IRQ, then use
-it in the thread.
+Driver currently provides basic functionality, but I might add
+some more fancy features after a while.
 
-This should be done identically in gpiolib to increase precision
-in the general case.
+Crt Mori (2):
+  iio: temperature: Adding support for MLX90632
+  dt-bindings: iio: temperature: add MLX90632 device bindings
 
-I was thinking about it already when implementing it but it fell
-out of my mind. I'm putting in on my TODO. (CC to bartosz
-who might be interested, he's using these ABIs quite a bit.)
+ .../bindings/iio/temperature/mlx90632.txt          |  28 +
+ MAINTAINERS                                        |   7 +
+ drivers/iio/temperature/Kconfig                    |  12 +
+ drivers/iio/temperature/Makefile                   |   1 +
+ drivers/iio/temperature/mlx90632.c                 | 802 +++++++++++++++++++++
+ 5 files changed, 850 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/temperature/mlx90632.txt
+ create mode 100644 drivers/iio/temperature/mlx90632.c
 
-Yours,
-Linus Walleij
+-- 
+2.15.0
+
