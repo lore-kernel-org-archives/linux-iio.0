@@ -1,61 +1,157 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from heliosphere.sirena.org.uk ([172.104.155.198]:60964 "EHLO
-        heliosphere.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933165AbdK2Pij (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Nov 2017 10:38:39 -0500
-Date: Wed, 29 Nov 2017 15:37:48 +0000
-From: Mark Brown <broonie@kernel.org>
-To: Arnaud Pouliquen <arnaud.pouliquen@st.com>
-Cc: Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-iio@vger.kernel.org, alsa-devel@alsa-project.org,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>
-Subject: Re: [PATCH v5 13/13] ASoC: stm32: add DFSDM DAI support
-Message-ID: <20171129153748.awllz4aoziaxpk2c@sirena.org.uk>
-References: <1511881557-28596-1-git-send-email-arnaud.pouliquen@st.com>
- <1511881557-28596-14-git-send-email-arnaud.pouliquen@st.com>
+Return-Path: <SRS0=0yTT=C3=linaro.org=linus.walleij@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ubr6w2kr5kkkan2b"
-In-Reply-To: <1511881557-28596-14-git-send-email-arnaud.pouliquen@st.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <87ineapo5w.fsf@linux.intel.com>
+References: <87ineapo5w.fsf@linux.intel.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Wed, 29 Nov 2017 14:31:26 +0100
+Message-ID: <CACRpkdY+72nz9gK=kSESoNdM+xicx-rnpKNz-UbYZ+TFLUXpbA@mail.gmail.com>
+Subject: Re: [RFC] Periodic Output, Timestamped Input
+To: Felipe Balbi <felipe.balbi@linux.intel.com>, linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Cc: linux-gpio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+List-ID: <linux-iio@vger.kernel.org>
 
+Hi Felipe,
 
---ubr6w2kr5kkkan2b
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+this is nice and interesting technology!
 
-On Tue, Nov 28, 2017 at 04:05:57PM +0100, Arnaud Pouliquen wrote:
-> Add driver to handle DAI interface for PDM microphones connected
-> to Digital Filter for Sigma Delta Modulators IP.
+I am quoting the whole mail over to linux-pwm and Thierry
+as well as  linux-iio and Jon Cameron for consideration. My comments
+at the end.
 
-This is basically fine, if someone could send me a pull request and the
-relevant patches when the IIO stuff is sorted out I'll give it a final
-check and apply then.
+On Thu, Nov 16, 2017 at 10:29 AM, Felipe Balbi
+<felipe.balbi@linux.intel.com> wrote:
+>
+> Hi Linus,
+>
+> Before I put a lot of code down, I wanted to get a feeling from you as
+> to how you'd like two new features to be implemented.
+>
+> In a future platform we may have two new features in our GPIO
+> controller which allows for periodic assertion of GPIO Output
+> (controlled by HW, we just program the interval) and Timestamping of
+> GPIO Input events.
+>
+> I was thinking that we could use pin config for that. Something along
+> the lines of:
+>
+> @@ -700,6 +700,12 @@ static int intel_config_set_debounce(struct intel_pinctrl *pctrl, unsigned pin,
+>         return ret;
+>  }
+>
+> +static int intel_config_set_output_periodic(struct intel_pinctrl *pctrl,
+> +                                           unsigned pin, unsigned period_ms)
+> +{
+> +       return 0;
+> +}
+> +
+>  static int intel_config_set(struct pinctrl_dev *pctldev, unsigned pin,
+>                           unsigned long *configs, unsigned nconfigs)
+>  {
+> @@ -726,6 +732,13 @@ static int intel_config_set(struct pinctrl_dev *pctldev, unsigned pin,
+>                                 return ret;
+>                         break;
+>
+> +               case PIN_CONFIG_OUTPUT_PERIODIC:
+> +                       ret = intel_config_set_output_periodic(pctrl, pin,
+> +                               pinconf_to_config_argument(configs[i]));
+> +                       if (ret)
+> +                               return ret;
+> +                       break;
+> +
+>                 default:
+>                         return -ENOTSUPP;
+>                 }
+> modified   include/linux/pinctrl/pinconf-generic.h
+> @@ -90,6 +90,9 @@
+>   * @PIN_CONFIG_SLEW_RATE: if the pin can select slew rate, the argument to
+>   *     this parameter (on a custom format) tells the driver which alternative
+>   *     slew rate to use.
+> + * @PIN_CONFIG_OUTPUT_PERIODIC: this will configure the pin as an
+> + *     output periodic toggle. The argument is period in
+> + *     microseconds.
+>   * @PIN_CONFIG_END: this is the last enumerator for pin configurations, if
+>   *     you need to pass in custom configurations to the pin controller, use
+>   *     PIN_CONFIG_END+1 as the base offset.
+> @@ -117,6 +120,7 @@ enum pin_config_param {
+>         PIN_CONFIG_POWER_SOURCE,
+>         PIN_CONFIG_SLEEP_HARDWARE_STATE,
+>         PIN_CONFIG_SLEW_RATE,
+> +       PIN_CONFIG_OUTPUT_PERIODIC,
+>         PIN_CONFIG_END = 0x7F,
+>         PIN_CONFIG_MAX = 0xFF,
+>  };
+>
+> As for timestamp of input, we would likely request the input as an IRQ
+> and use the IRQ to read whatever register, wherever it may be.
+>
+> Do you have any comments about this? Should I go ahead with current
+> assumptions?
 
---ubr6w2kr5kkkan2b
-Content-Type: application/pgp-signature; name="signature.asc"
+So the first thing: periodic assetion of a GPIO, sounds awfully lot
+like PWM does it not? I guess the output is a square wave?
 
------BEGIN PGP SIGNATURE-----
+While it is possible to model things like this as pin config, have you
+considered just adding a PWM interface and present it to the kernel
+as a PWM (possibly with a separate resource, in DT we use &phandle
+but in ACPI I guess you Intel people have something else for PWM)?
+If need be we can ask the ACPI people.
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAloe1EsACgkQJNaLcl1U
-h9BVlAf9GgCBlhd0NGfdwnmtmo4I9hpicJhKkSm5CoRoPoSVZrjSoO+hSxQim9ea
-mslKawzNOUb5yJkXpmiYIXq2AKDsZqTNTPH5s1MsUeeGvOsVynPjFD9AdQvwFY0u
-kCz3DrTRH9eijZ4/3yUhzNZE6xE810JKKfMh8/GVO8JU/WzWLqfQW/hJNB43JS3w
-47beIOvNyHWeqoYOPqHasndk2Z7vKX3StMJqXBm2aND4V2S/sDbPr5Ibxm+pxKBn
-bK8i6+fP+8nbW00narB67Or4n1NUbE6o0wDFwyDP+Hqk/VLVZiDOGFgMpD+IBWw4
-lF0HSawOKJHYRKjx6uwUc893stEjQQ==
-=9NM4
------END PGP SIGNATURE-----
+For the other thing: timestamping of GPIO events, we already
+support timestamps for userspace GPIOs, but all it does is use
+the kernel time, see gpiolib.c:
 
---ubr6w2kr5kkkan2b--
+static irqreturn_t lineevent_irq_thread(int irq, void *p)
+{
+        struct lineevent_state *le = p;
+        struct gpioevent_data ge;
+        int ret, level;
+
+        ge.timestamp = ktime_get_real_ns();
+        level = gpiod_get_value_cansleep(le->desc);
+
+        if (le->eflags & GPIOEVENT_REQUEST_RISING_EDGE
+            && le->eflags & GPIOEVENT_REQUEST_FALLING_EDGE) {
+                if (level)
+                        /* Emit low-to-high event */
+                        ge.id = GPIOEVENT_EVENT_RISING_EDGE;
+                else
+                        /* Emit high-to-low event */
+                        ge.id = GPIOEVENT_EVENT_FALLING_EDGE;
+        } else if (le->eflags & GPIOEVENT_REQUEST_RISING_EDGE && level) {
+                /* Emit low-to-high event */
+                ge.id = GPIOEVENT_EVENT_RISING_EDGE;
+        } else if (le->eflags & GPIOEVENT_REQUEST_FALLING_EDGE && !level) {
+                /* Emit high-to-low event */
+                ge.id = GPIOEVENT_EVENT_FALLING_EDGE;
+        } else {
+                return IRQ_NONE;
+        }
+
+        ret = kfifo_put(&le->events, ge);
+        if (ret != 0)
+                wake_up_poll(&le->wait, POLLIN);
+
+        return IRQ_HANDLED;
+}
+
+IIO already has a variety of timestamps to use, see
+drivers/iio/industrialio-event.c.
+
+What is on my TODO is to unify GPIO event timestamping with that
+of IIO.
+
+If there is further a *hardware* timestamp, that would be yet another
+alternative timestamp, so we should first extend to use the different
+timestamps supported by IIO and then add "hardware-native"
+timestamping to the mix IMO. Unless there are other ideas.
+
+Lars-Peter Clausen may have a better idea of what to do here, he
+has run a few complex use cases like GNUradio (IIRC) using
+timestamping. Also I think sensorfusion-type scenarios use these
+timestamps quite a lot.
+
+Yours,
+Linus Walleij
