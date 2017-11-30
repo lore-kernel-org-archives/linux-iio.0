@@ -1,41 +1,39 @@
-Return-Path: <SRS0=axIo=C4=gmail.com=arvind.yadav.cs@kernel.org>
-From: Arvind Yadav <arvind.yadav.cs@gmail.com>
-To: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org,
-	knaack.h@gmx.de,
-	pmeerw@pmeerw.net,
-	gregkh@linuxfoundation.org,
-	samuel@sortiz.org
-Cc: linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org,
-	netdev@vger.kernel.org
-Subject: [PATCH 3/3] staging: irda: Remove unnecessary 'err' initialization.
-Date: Thu, 30 Nov 2017 21:13:36 +0530
-Message-Id: <1512056616-21065-4-git-send-email-arvind.yadav.cs@gmail.com>
-In-Reply-To: <1512056616-21065-1-git-send-email-arvind.yadav.cs@gmail.com>
-References: <1512056616-21065-1-git-send-email-arvind.yadav.cs@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mout.kundenserver.de ([217.72.192.73]:52225 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750708AbdK3VnK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 30 Nov 2017 16:43:10 -0500
+Date: Thu, 30 Nov 2017 22:42:56 +0100
+From: Andreas Klinger <ak@it-klinger.de>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, singhalsimran0@gmail.com,
+        linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/2] iio: hx711: add buffered trigger support
+Message-ID: <20171130214256.GA27300@arbeit>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Here, variable 'err' is already initialised. So no need to reinitialize.
+changes in v2:
+- in Kconfig it's needed to select IIO_BUFFER and IIO_TRIGGERED_BUFFER to
+  compile cleanly with buffered triggers
 
-Signed-off-by: Arvind Yadav <arvind.yadav.cs@gmail.com>
----
- drivers/staging/irda/drivers/pxaficp_ir.c | 1 -
- 1 file changed, 1 deletion(-)
+This small patch series adds:
+- support for buffered triggers
+- fixes a bug in the reset functionality
 
-diff --git a/drivers/staging/irda/drivers/pxaficp_ir.c b/drivers/staging/irda/drivers/pxaficp_ir.c
-index a97ce04..6c77370 100644
---- a/drivers/staging/irda/drivers/pxaficp_ir.c
-+++ b/drivers/staging/irda/drivers/pxaficp_ir.c
-@@ -807,7 +807,6 @@ static int pxa_irda_start(struct net_device *dev)
- 	 * Open a new IrLAP layer instance.
- 	 */
- 	si->irlap = irlap_open(dev, &si->qos, "pxa");
--	err = -ENOMEM;
- 	if (!si->irlap)
- 		goto err_irlap;
- 
+Andreas Klinger (2):
+  iio: hx711: add triggered buffer support
+  iio: hx711: fix bug in reset functionality
+
+ drivers/iio/adc/Kconfig |   2 +
+ drivers/iio/adc/hx711.c | 119 ++++++++++++++++++++++++++++++++++++++----------
+ 2 files changed, 96 insertions(+), 25 deletions(-)
+
 -- 
-2.7.4
+2.1.4
+
+
+-- 
