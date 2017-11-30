@@ -1,37 +1,41 @@
 Return-Path: <SRS0=axIo=C4=gmail.com=arvind.yadav.cs@kernel.org>
-Subject: Re: [PATCH 2/3] staging: irda: Handle return value of
- platform_get_irq
-To: Greg KH <gregkh@linuxfoundation.org>
+From: Arvind Yadav <arvind.yadav.cs@gmail.com>
+To: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	pmeerw@pmeerw.net,
+	gregkh@linuxfoundation.org,
+	samuel@sortiz.org
+Cc: linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	netdev@vger.kernel.org
+Subject: [PATCH 3/3] staging: irda: Remove unnecessary 'err' initialization.
+Date: Thu, 30 Nov 2017 21:13:36 +0530
+Message-Id: <1512056616-21065-4-git-send-email-arvind.yadav.cs@gmail.com>
+In-Reply-To: <1512056616-21065-1-git-send-email-arvind.yadav.cs@gmail.com>
 References: <1512056616-21065-1-git-send-email-arvind.yadav.cs@gmail.com>
- <1512056616-21065-3-git-send-email-arvind.yadav.cs@gmail.com>
- <20171130164124.GB17869@kroah.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
- knaack.h@gmx.de, pmeerw@pmeerw.net, samuel@sortiz.org,
- linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
- linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-From: arvindY <arvind.yadav.cs@gmail.com>
-Message-ID: <5A20359F.10508@gmail.com>
-Date: Thu, 30 Nov 2017 22:15:19 +0530
-MIME-Version: 1.0
-In-Reply-To: <20171130164124.GB17869@kroah.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi Greg,
+Here, variable 'err' is already initialised. So no need to reinitialize.
 
-On Thursday 30 November 2017 10:11 PM, Greg KH wrote:
-> On Thu, Nov 30, 2017 at 09:13:35PM +0530, Arvind Yadav wrote:
->> platform_get_irq() can fail here and we must check its return value.
->>
->> Signed-off-by: Arvind Yadav <arvind.yadav.cs@gmail.com>
->> ---
->>   drivers/staging/irda/drivers/pxaficp_ir.c | 10 ++++++++++
->>   1 file changed, 10 insertions(+)
-> Did you read drivers/staging/irda/TODO?
-Sorry, Now I have read it. :(
->
-> thanks,
->
-> greg k-h
-Thanks,
-~arvind
+Signed-off-by: Arvind Yadav <arvind.yadav.cs@gmail.com>
+---
+ drivers/staging/irda/drivers/pxaficp_ir.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/staging/irda/drivers/pxaficp_ir.c b/drivers/staging/irda/drivers/pxaficp_ir.c
+index a97ce04..6c77370 100644
+--- a/drivers/staging/irda/drivers/pxaficp_ir.c
++++ b/drivers/staging/irda/drivers/pxaficp_ir.c
+@@ -807,7 +807,6 @@ static int pxa_irda_start(struct net_device *dev)
+ 	 * Open a new IrLAP layer instance.
+ 	 */
+ 	si->irlap = irlap_open(dev, &si->qos, "pxa");
+-	err = -ENOMEM;
+ 	if (!si->irlap)
+ 		goto err_irlap;
+ 
+-- 
+2.7.4
