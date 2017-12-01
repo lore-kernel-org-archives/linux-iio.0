@@ -1,67 +1,75 @@
-Return-Path: <SRS0=xFK7=DA=sirena.org.uk=broonie@kernel.org>
-Date: Mon, 4 Dec 2017 16:58:54 +0000
-From: Mark Brown <broonie@kernel.org>
-To: Arnaud Pouliquen <arnaud.pouliquen@st.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre TORGUE <alexandre.torgue@st.com>
-Subject: Re: [PATCH v6 13/13] ASoC: stm32: add DFSDM DAI support
-Message-ID: <20171204165854.m75tpfauxxwz6bi4@sirena.org.uk>
-References: <1512150020-20335-1-git-send-email-arnaud.pouliquen@st.com>
- <1512150020-20335-14-git-send-email-arnaud.pouliquen@st.com>
- <20171202150952.1b5f3bfd@archlinux>
- <bd2ba77f-2d91-efb7-d89a-3f8cdeb941f7@st.com>
+Return-Path: <SRS0=TWgh=C5=mathworks.com=Matt.Fornero@kernel.org>
+From: Matthew Fornero <mfornero@mathworks.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: <linux-iio@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+	"Hartmut Knaack" <knaack.h@gmx.de>, Peter Meerwald-Stadler
+	<pmeerw@pmeerw.net>, "Matt Fornero" <matt.fornero@mathworks.com>
+Subject: [PATCH] iio: buffer-dma: Expose data available
+Date: Fri, 1 Dec 2017 14:43:03 -0500
+Message-ID: <1512157383-4520-1-git-send-email-mfornero@mathworks.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="rlh6d4dswgtajyfg"
-In-Reply-To: <bd2ba77f-2d91-efb7-d89a-3f8cdeb941f7@st.com>
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
+From: Matt Fornero <matt.fornero@mathworks.com>
 
---rlh6d4dswgtajyfg
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Add a sysfs attribute that exposes the buffer data available to
+userspace. This attribute can be checked at runtime to determine the
+overall buffer fill level (across all allocated DMA buffers).
 
-On Mon, Dec 04, 2017 at 09:58:42AM +0100, Arnaud Pouliquen wrote:
-> On 12/02/2017 04:09 PM, Jonathan Cameron wrote:
+Signed-off-by: Matt Fornero <matt.fornero@mathworks.com>
+---
+ drivers/iio/buffer/industrialio-buffer-dma.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-> > Mark, given this set is moderately invasive on the IIO side and
-> > should just drop in cleanly on the sound side of things, either
-> > I could take it via IIO or one of us can do an immutable branch
-> > and we take it through both trees.
-
-> Don't know if you saw the reply from Mark on V5:
-> "This is basically fine, if someone could send me a pull request and the
-> relevant patches when the IIO stuff is sorted out I'll give it a final
-> check and apply then."
-
-Yup, I figure that a shared branch with the IIO changes in will be the
-easiest thing (Morimoto-san is donig a bunch of subsystem wide ASoC
-cleanups ATM).
-
---rlh6d4dswgtajyfg
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAlolfs4ACgkQJNaLcl1U
-h9AI6Qf+Ns7UxHco/nllDt1X0901uEorPHxMn67VgUYAh587jmNIHugMSZh5zTA/
-2OXe/FU0JWus7baKx76e8CqWE23p1qsEviwlR/IGRvjAM8Rd9VF1TUJJE3bjkWFS
-sXJJlK4XNrSzLijRO4+pa43ovu777eigHgfAUlt4+vyOCnb16pc33Mix5uKRsHrE
-W7XKf122/kCvMS1DOp7EOgzpQRonOy+x4h0cnaTheOSS/ayzN80qVImW7e+70bAs
-MmwBK/gMyGdyeGmhgUxonO5tf3gxYGXcM7LzCyG1Sm8wLELLduEo/JCTaEamqvCp
-yewbRgeW50AJjWbkHLmDkompA7FYmg==
-=Bx4K
------END PGP SIGNATURE-----
-
---rlh6d4dswgtajyfg--
+diff --git a/drivers/iio/buffer/industrialio-buffer-dma.c b/drivers/iio/buffer/industrialio-buffer-dma.c
+index ff03324..8739a41 100644
+--- a/drivers/iio/buffer/industrialio-buffer-dma.c
++++ b/drivers/iio/buffer/industrialio-buffer-dma.c
+@@ -16,6 +16,7 @@
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/buffer_impl.h>
+ #include <linux/iio/buffer-dma.h>
++#include <linux/iio/sysfs.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/sizes.h>
+ 
+@@ -599,6 +600,28 @@ int iio_dma_buffer_set_length(struct iio_buffer *buffer, int length)
+ }
+ EXPORT_SYMBOL_GPL(iio_dma_buffer_set_length);
+ 
++
++static ssize_t iio_dma_get_data_available(struct device *dev,
++					       struct device_attribute *attr,
++					       char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	size_t bytes;
++
++	bytes = iio_dma_buffer_data_available(indio_dev->buffer);
++
++	return sprintf(buf, "%llu\n", (unsigned long long)bytes);
++}
++
++static IIO_DEVICE_ATTR(data_available, S_IRUGO,
++		       iio_dma_get_data_available, NULL, 0);
++
++static const struct attribute *iio_dma_buffer_attributes[] = {
++	&iio_dev_attr_data_available.dev_attr.attr,
++	NULL,
++};
++
++
+ /**
+  * iio_dma_buffer_init() - Initialize DMA buffer queue
+  * @queue: Buffer to initialize
+@@ -615,6 +638,7 @@ int iio_dma_buffer_init(struct iio_dma_buffer_queue *queue,
+ 	iio_buffer_init(&queue->buffer);
+ 	queue->buffer.length = PAGE_SIZE;
+ 	queue->buffer.watermark = queue->buffer.length / 2;
++	queue->buffer.attrs = iio_dma_buffer_attributes;
+ 	queue->dev = dev;
+ 	queue->ops = ops;
+ 
+-- 
+2.1.4
