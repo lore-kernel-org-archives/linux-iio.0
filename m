@@ -1,55 +1,60 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pl0-f66.google.com ([209.85.160.66]:34666 "EHLO
-        mail-pl0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751874AbdLBM76 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 2 Dec 2017 07:59:58 -0500
-Received: by mail-pl0-f66.google.com with SMTP id d21so7819778pll.1
-        for <linux-iio@vger.kernel.org>; Sat, 02 Dec 2017 04:59:58 -0800 (PST)
-From: Daniel Axtens <dja@axtens.net>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, trivial@kernel.org
-Subject: Re: [PATCH] iio: accel: kxsd9: add MODULE_LICENSE
-In-Reply-To: <20171202115840.7593e943@archlinux>
-References: <20171201022131.26456-1-dja@axtens.net> <20171202115840.7593e943@archlinux>
-Date: Sat, 02 Dec 2017 23:59:54 +1100
-Message-ID: <87shctffp1.fsf@linkitivity.dja.id.au>
-MIME-Version: 1.0
-Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=zYSb=C5=redhat.com=javierm@kernel.org>
+From: Javier Martinez Canillas <javierm@redhat.com>
+To: linux-kernel@vger.kernel.org
+Cc: Javier Martinez Canillas <javierm@redhat.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Hans de Goede <hdegoede@redhat.com>,
+	linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: [PATCH] iio: accel: bmc150: Add OF device ID table
+Date: Fri,  1 Dec 2017 12:10:58 +0100
+Message-Id: <20171201111058.13483-1-javierm@redhat.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Jonathan,
+The driver doesn't have a struct of_device_id table but supported devices
+are registered via Device Trees. This is working on the assumption that a
+I2C device registered via OF will always match a legacy I2C device ID and
+that the MODALIAS reported will always be of the form i2c:<device>.
 
-> On Fri,  1 Dec 2017 13:21:31 +1100
-> Daniel Axtens <dja@axtens.net> wrote:
->
->> This fixes the following warning in an allmodconfig build:
->> WARNING: modpost: missing MODULE_LICENSE() in drivers/iio/accel/kxsd9-i2c.o
->> 
->> Signed-off-by: Daniel Axtens <dja@axtens.net>
-> I clearly need to be a bit sharper with sending pull requests upstream.
->
-> This is patch 3 for the same issue.
+But this could change in the future so the correct approach is to have an
+OF device ID table if the devices are registered via OF.
 
-My apologies for the noise then - I was running my builds on linux-next
-and the patch musn't have filtered though to there yet.
+The I2C device ID table entries have the .driver_data field set, but they
+are not used in the driver so weren't set in the OF device table entries.
 
-Regards,
-Daniel
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+---
 
->
-> Jonathan
->> ---
->>  drivers/iio/accel/kxsd9-i2c.c | 2 ++
->>  1 file changed, 2 insertions(+)
->> 
->> diff --git a/drivers/iio/accel/kxsd9-i2c.c b/drivers/iio/accel/kxsd9-i2c.c
->> index 98fbb628d5bd..5e14262248b8 100644
->> --- a/drivers/iio/accel/kxsd9-i2c.c
->> +++ b/drivers/iio/accel/kxsd9-i2c.c
->> @@ -63,3 +63,5 @@ static struct i2c_driver kxsd9_i2c_driver = {
->>  	.id_table	= kxsd9_i2c_id,
->>  };
->>  module_i2c_driver(kxsd9_i2c_driver);
->> +
->> +MODULE_LICENSE("GPL v2");
+ drivers/iio/accel/bmc150-accel-i2c.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/drivers/iio/accel/bmc150-accel-i2c.c b/drivers/iio/accel/bmc150-accel-i2c.c
+index f85014fbaa12..8ffc308d5fd0 100644
+--- a/drivers/iio/accel/bmc150-accel-i2c.c
++++ b/drivers/iio/accel/bmc150-accel-i2c.c
+@@ -81,9 +81,21 @@ static const struct i2c_device_id bmc150_accel_id[] = {
+ 
+ MODULE_DEVICE_TABLE(i2c, bmc150_accel_id);
+ 
++static const struct of_device_id bmc150_accel_of_match[] = {
++	{ .compatible = "bosch,bmc150_accel" },
++	{ .compatible = "bosch,bmi055_accel" },
++	{ .compatible = "bosch,bma255" },
++	{ .compatible = "bosch,bma250e" },
++	{ .compatible = "bosch,bma222e" },
++	{ .compatible = "bosch,bma280" },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, bmc150_accel_of_match);
++
+ static struct i2c_driver bmc150_accel_driver = {
+ 	.driver = {
+ 		.name	= "bmc150_accel_i2c",
++		.of_match_table = bmc150_accel_of_match,
+ 		.acpi_match_table = ACPI_PTR(bmc150_accel_acpi_match),
+ 		.pm	= &bmc150_accel_pm_ops,
+ 	},
+-- 
+2.14.3
