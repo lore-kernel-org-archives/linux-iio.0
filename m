@@ -1,15 +1,18 @@
-Return-Path: <SRS0=TWgh=C5=mathworks.com=Matt.Fornero@kernel.org>
-From: Matthew Fornero <mfornero@mathworks.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: <linux-iio@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
-	"Hartmut Knaack" <knaack.h@gmx.de>, Peter Meerwald-Stadler
-	<pmeerw@pmeerw.net>, "Matt Fornero" <matt.fornero@mathworks.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-qk0-f196.google.com ([209.85.220.196]:34431 "EHLO
+        mail-qk0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750881AbdLAUq3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 1 Dec 2017 15:46:29 -0500
+Received: by mail-qk0-f196.google.com with SMTP id d66so14835603qkg.1
+        for <linux-iio@vger.kernel.org>; Fri, 01 Dec 2017 12:46:28 -0800 (PST)
+From: mfornero@gmail.com
+To: linux-iio@vger.kernel.org
+Cc: Matt Fornero <matt.fornero@mathworks.com>
 Subject: [PATCH] iio: buffer-dma: Expose data available
-Date: Fri, 1 Dec 2017 14:43:03 -0500
-Message-ID: <1512157383-4520-1-git-send-email-mfornero@mathworks.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Date: Fri,  1 Dec 2017 15:46:20 -0500
+Message-Id: <1512161180-30116-1-git-send-email-mfornero@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 From: Matt Fornero <matt.fornero@mathworks.com>
 
@@ -73,3 +76,4 @@ index ff03324..8739a41 100644
  
 -- 
 2.1.4
+
