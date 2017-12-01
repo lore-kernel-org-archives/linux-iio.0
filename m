@@ -1,120 +1,132 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:55480 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751743AbdLJQM2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 10 Dec 2017 11:12:28 -0500
-Date: Sun, 10 Dec 2017 16:12:23 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Javier Martinez Canillas <javierm@redhat.com>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:47241 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1751712AbdLARli (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 1 Dec 2017 12:41:38 -0500
+From: Arnaud Pouliquen <arnaud.pouliquen@st.com>
+To: Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        devicetree@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>
-Subject: Re: [PATCH] iio: accel: bmc150: Add OF device ID table
-Message-ID: <20171210161223.3a68c61c@archlinux>
-In-Reply-To: <337e54d5-7248-9eb2-e0c0-3a8b5443723d@redhat.com>
-References: <20171201111058.13483-1-javierm@redhat.com>
-        <313108f3-2815-b030-4fa6-614efc31a8a9@redhat.com>
-        <20171204092259.00006250@huawei.com>
-        <337e54d5-7248-9eb2-e0c0-3a8b5443723d@redhat.com>
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+CC: <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-iio@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        <arnaud.pouliquen@st.com>
+Subject: [PATCH v6 00/13] Add STM32 DFSDM support
+Date: Fri, 1 Dec 2017 18:40:07 +0100
+Message-ID: <1512150020-20335-1-git-send-email-arnaud.pouliquen@st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 4 Dec 2017 11:24:40 +0100
-Javier Martinez Canillas <javierm@redhat.com> wrote:
+Hello,
 
-> Hello Jonathan,
-> 
-> On 12/04/2017 10:44 AM, Jonathan Cameron wrote:
-> > On Mon, 4 Dec 2017 09:29:38 +0100
-> > Hans de Goede <hdegoede@redhat.com> wrote:
-> >   
-> >> Hi,
-> >>
-> >> On 01-12-17 12:10, Javier Martinez Canillas wrote:  
-> >>> The driver doesn't have a struct of_device_id table but supported devices
-> >>> are registered via Device Trees. This is working on the assumption that a
-> >>> I2C device registered via OF will always match a legacy I2C device ID and
-> >>> that the MODALIAS reported will always be of the form i2c:<device>.
-> >>>
-> >>> But this could change in the future so the correct approach is to have an
-> >>> OF device ID table if the devices are registered via OF.
-> >>>
-> >>> The I2C device ID table entries have the .driver_data field set, but they
-> >>> are not used in the driver so weren't set in the OF device table entries.
-> >>>
-> >>> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-> >>> ---
-> >>>
-> >>>   drivers/iio/accel/bmc150-accel-i2c.c | 12 ++++++++++++
-> >>>   1 file changed, 12 insertions(+)
-> >>>
-> >>> diff --git a/drivers/iio/accel/bmc150-accel-i2c.c b/drivers/iio/accel/bmc150-accel-i2c.c
-> >>> index f85014fbaa12..8ffc308d5fd0 100644
-> >>> --- a/drivers/iio/accel/bmc150-accel-i2c.c
-> >>> +++ b/drivers/iio/accel/bmc150-accel-i2c.c
-> >>> @@ -81,9 +81,21 @@ static const struct i2c_device_id bmc150_accel_id[] = {
-> >>>   
-> >>>   MODULE_DEVICE_TABLE(i2c, bmc150_accel_id);
-> >>>   
-> >>> +static const struct of_device_id bmc150_accel_of_match[] = {
-> >>> +	{ .compatible = "bosch,bmc150_accel" },
-> >>> +	{ .compatible = "bosch,bmi055_accel" },    
-> >>
-> >> These look a bit weird, there is no reason to mirror the i2c_device_ids  
-> > 
-> > There has been a steady move for a long time to add these IDs with the plan
-> > that we would stop automatically matching against the manufacturer free
-> > i2c IDs. Mostly on the basis that was a hack that brought a lot  
-> 
-> Matching using OF IDs have been working for some time (since v4.10 AFAICT)
-> after the following commit:
-> 
-> da10c06a044b ("i2c: Make I2C ID tables non-mandatory for DT'ed devices").
-> 
-> The only remaining problem is with module auto-loading.
-> 
-> > of effectively unreviewed device tree bindings. As I understand it the
-> > eventual plan is to be able to get rid of that old path entirely...
-> > +CC Wolfram to see what his view is on this.
-> >  
-> 
-> I don't think we can get rid of the old path entirely since are valid use cases
-> for it. For example when the I2C devices are registered with the i2c_new_device
-> interface where the bus and address are declared in a struct i2c_board_info (ie:
-> old platforms that still use board files or devices with an embedded I2C chip).
+Here is a new version to fix kbuild test warnings
 
-Agreed. I only meant the use of that path when matching device tree IDs.
-There are still reasons to use it otherwise - including the ones you mention
-and indeed manually adding the device - commonly done with various sensors
-supported by lm-sensors on x86 boards.   These are often not described in
-any way at all.
+Main deltas V6 vs V5:
+- Fix warning reported by kbuild test in :
+   include/linux/iio/consumer.h
+   sound/soc/stm/stm32_adfsdm.c
 
-> 
-> What I think though is that drivers should only be required to define the device
-> table for the firmware interface used to instantiate them. For example, a driver
-> for a device that's DT-only should only have an OF device ID table just like a
-> driver for an ACPI-only device only requires to have an ACPI ID table.
-> 
-> Conversely, a driver for a device that's only instantiated using platform data
-> should only have an I2C device ID table.
-> 
+Main deltas V5 vs V4:
+- Integrate ASOC DAI as a subnode of the DFSDM.
+- Add in kernel consumer interface to allow to manipulate attribute.
 
-A lot of drivers are used on both ACPI and DT platforms.  For newer cases we
-perhaps don't need the i2c table.
+Context reminder:
+-----------------
+
+DFSDM peripheral is a peripheral that allows to connect some sigma delta ADCs
+or PDM microphones via a SPI or Manchester bus.
+DFSDM integrates digital filters to offer up to 24 bits final resolution.
+
+In term of SW architecture. 2 use-cases have to be supported:
+
+1) Sigma delta ADC conversion through IIO framework.
+Sigma delta ADC is handled by generic sigma delta modulator driver. 
+DFSDM peripheral is binded to a SD modulator ADC using the IIO HW consumer interface. 
+Please notice that IIO HW consumer interface has be proposed by Lars, but is
+part of this patchset with Lars's agreement.
+User interface is IIO one.
+Notice that this patch-set propose only a raw conversion, to simplify review.
+Buffer and trigger management will be added in next patch-sets.
+
+2) PDM microphone record through ALSA framework.
+PDM microphone is handled by ASOC Generic DMIC codec driver.
+ADFSDM ASOC DAI driver is binded to IIO driver using the IIO consumer interface
+ADFSDM ASOC DAI driver is binded to a PDM microphone ASOC component using ASOC Of_graph.
+User interface is ALSA one.
+As IIO DMA management is not adapted to an audio realtime stream. A specific DMA 
+management has been implemented in IIO driver for audio purposes.
+
+Regards,
+Arnaud
 
 
-> If a driver supports both DT and legacy platforms, then it's OK to have both ID
-> tables defined. What is not correct is to require OF-only drivers to have an I2C
-> device ID table just as a workaround to have their modules auto-loading working.
 
-Absolutely agree.
+Arnaud Pouliquen (12):
+  docs: driver-api: add iio hw consumer section
+  IIO: hw_consumer: add devm_iio_hw_consumer_alloc
+  IIO: inkern: API for manipulating channel attributes
+  IIO: Add DT bindings for sigma delta adc modulator
+  IIO: ADC: add sigma delta modulator support
+  IIO: add DT bindings for stm32 DFSDM filter
+  IIO: ADC: add stm32 DFSDM core support
+  IIO: ADC: add STM32 DFSDM sigma delta ADC support
+  IIO: ADC: add stm32 DFSDM support for PDM microphone
+  IIO: consumer: allow to set buffer sizes
+  ASoC: add bindings for stm32 DFSDM filter
+  ASoC: stm32: add DFSDM DAI support
 
-Jonathan
-> 
-> Best regards,
+Lars-Peter Clausen (1):
+  iio: Add hardware consumer buffer support
+
+ .../ABI/testing/sysfs-bus-iio-dfsdm-adc-stm32      |   16 +
+ .../bindings/iio/adc/sigma-delta-modulator.txt     |   13 +
+ .../bindings/iio/adc/st,stm32-dfsdm-adc.txt        |  127 ++
+ .../devicetree/bindings/sound/st,stm32-adfsdm.txt  |   62 +
+ Documentation/driver-api/iio/hw-consumer.rst       |   51 +
+ Documentation/driver-api/iio/index.rst             |    1 +
+ drivers/iio/adc/Kconfig                            |   37 +
+ drivers/iio/adc/Makefile                           |    3 +
+ drivers/iio/adc/sd_adc_modulator.c                 |   81 ++
+ drivers/iio/adc/stm32-dfsdm-adc.c                  | 1232 ++++++++++++++++++++
+ drivers/iio/adc/stm32-dfsdm-core.c                 |  318 +++++
+ drivers/iio/adc/stm32-dfsdm.h                      |  319 +++++
+ drivers/iio/buffer/Kconfig                         |   10 +
+ drivers/iio/buffer/Makefile                        |    1 +
+ drivers/iio/buffer/industrialio-buffer-cb.c        |   11 +
+ drivers/iio/buffer/industrialio-hw-consumer.c      |  248 ++++
+ drivers/iio/inkern.c                               |   18 +-
+ include/linux/iio/adc/stm32-dfsdm-adc.h            |   28 +
+ include/linux/iio/consumer.h                       |   39 +-
+ include/linux/iio/hw-consumer.h                    |   22 +
+ sound/soc/stm/Kconfig                              |   11 +
+ sound/soc/stm/Makefile                             |    3 +
+ sound/soc/stm/stm32_adfsdm.c                       |  386 ++++++
+ 23 files changed, 3031 insertions(+), 6 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-dfsdm-adc-stm32
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/sigma-delta-modulator.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.txt
+ create mode 100644 Documentation/devicetree/bindings/sound/st,stm32-adfsdm.txt
+ create mode 100644 Documentation/driver-api/iio/hw-consumer.rst
+ create mode 100644 drivers/iio/adc/sd_adc_modulator.c
+ create mode 100644 drivers/iio/adc/stm32-dfsdm-adc.c
+ create mode 100644 drivers/iio/adc/stm32-dfsdm-core.c
+ create mode 100644 drivers/iio/adc/stm32-dfsdm.h
+ create mode 100644 drivers/iio/buffer/industrialio-hw-consumer.c
+ create mode 100644 include/linux/iio/adc/stm32-dfsdm-adc.h
+ create mode 100644 include/linux/iio/hw-consumer.h
+ create mode 100644 sound/soc/stm/stm32_adfsdm.c
+
+-- 
+2.7.4
 
