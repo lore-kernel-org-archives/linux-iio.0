@@ -1,56 +1,125 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f46.google.com ([74.125.82.46]:38179 "EHLO
-        mail-wm0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752218AbdLJTAx (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 10 Dec 2017 14:00:53 -0500
-Received: by mail-wm0-f46.google.com with SMTP id 64so10536782wme.3
-        for <linux-iio@vger.kernel.org>; Sun, 10 Dec 2017 11:00:53 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <20171210150845.51e14aad@archlinux>
-References: <20171118091011.9061-1-martink@posteo.de> <20171118155318.6a1f3b3f@archlinux>
- <CAOFm3uE0GsBn1g054rD9iym-kjC2bdsCOVO8WPBe7zZQ0a+Vvg@mail.gmail.com>
- <CAAGUq_pXNMSMAsvtMomHQiCjXhrZ5Yx5agowXAVhWt8Gkb=2ug@mail.gmail.com> <20171210150845.51e14aad@archlinux>
-From: Philippe Ombredanne <pombredanne@nexb.com>
-Date: Sun, 10 Dec 2017 20:00:11 +0100
-Message-ID: <CAOFm3uH_61C1k3HTL7xmm92omLXriKo2JhjGqNJxwiMU4hBPPg@mail.gmail.com>
-Subject: Re: [PATCH v2] iio: mma8452: replace license description with SPDX specifier
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: harinath Nampally <harinath922@gmail.com>,
-        Martin Kepplinger <martink@posteo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44052 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751686AbdLBN3I (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 2 Dec 2017 08:29:08 -0500
+Date: Sat, 2 Dec 2017 13:29:04 +0000
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+To: Lukas Wunner <lukas@wunner.de>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Content-Type: text/plain; charset="UTF-8"
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Mathias Duckeck <m.duckeck@kunbus.de>,
+        linux-iio@vger.kernel.org, Chen-Yu Tsai <wens@csie.org>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH] iio: Add macro to populate struct iio_map array
+Message-ID: <20171202132904.3892f4af@archlinux>
+In-Reply-To: <20171125155010.39c750b6@archlinux>
+References: <2f78166e4b54d5c0d139121c00a69ee033918da6.1511598241.git.lukas@wunner.de>
+        <20171125155010.39c750b6@archlinux>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Dec 10, 2017 at 4:08 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On Sat, 18 Nov 2017 23:23:57 -0500
-> harinath Nampally <harinath922@gmail.com> wrote:
->
->> > This replaces the custom license information text with the appropriate
->> > SPDX identifier. While the information here stays the same, it is easier
->> > to read.
->> > Signed-off-by: Martin Kepplinger <martink@posteo.de>
->> > Acked-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
->> Acked-by: Harinath Nampally <harinath922@gmail.com>
->
-> Applied.  I still not totally sure that the intent of introducing SPDX
-> specifiers was to replace rather than supplement the license text.
-> It's been pointed out for instance that some of the BSD licenses have
-> explicit names in the text relevant to a particular file.  For GPL v2
-> that isn't the case though so I suppose this one does no harm.
+On Sat, 25 Nov 2017 15:50:10 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-Thanks!
-There might be indeed a few corner cases that would require some
-discussions and the best way would be to have a proper sign off of the
-authors when possible in these cases (or all cases)
-But to me at least, reducing the boilerplate to the max (such as
-replacing 50 lines of legalese with a single SPDX id line) is a big
-boost of content/noise ratio that we should thrive for.
--- 
-Cordially
-Philippe Ombredanne
+> On Sat, 25 Nov 2017 09:38:17 +0100
+> Lukas Wunner <lukas@wunner.de> wrote:
+> 
+> > The GPIO core provides a handy GPIO_LOOKUP() macro to populate a struct
+> > gpiod_lookup array without having to spell out attribute names (but
+> > still avoid breakage when attributes within the struct are rearranged
+> > or added).
+> > 
+> > The axp288_adc.c driver uses a similar macro to populate a struct
+> > iio_map array.  Make it available to others.
+> > 
+> > Cc: Chen-Yu Tsai <wens@csie.org>
+> > Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Signed-off-by: Lukas Wunner <lukas@wunner.de>  
+> Seems reasonable to me but I'll let it sit for a few days in case
+> anyone wants to comment.
+> 
+> Jonathan
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to play with it.
+
+Thanks,
+
+Jonathan
+> 
+> > ---
+> > The motivation for this change is that we're using it in a module which
+> > is currently out-of-tree.  I'm only converting axp288_adc.c here as it
+> > already has such a macro, and not all the other drivers which declare
+> > iio_map arrays because such trivial refactoring is not always welcome.
+> > I could convert these other drivers as well if desired.  If so, please
+> > let me know if this should all be put in a single patch or split per
+> > driver.
+> > 
+> > Note that I've replaced _adc_channel_label with _provider_channel,
+> > which is more apt in my opinion.  Please shout if you disagree.
+> > 
+> > Thanks!
+> > 
+> >  drivers/iio/adc/axp288_adc.c | 20 ++++++--------------
+> >  include/linux/iio/machine.h  |  7 +++++++
+> >  2 files changed, 13 insertions(+), 14 deletions(-)
+> > 
+> > diff --git a/drivers/iio/adc/axp288_adc.c b/drivers/iio/adc/axp288_adc.c
+> > index 60c9e853dd81..031d568b4972 100644
+> > --- a/drivers/iio/adc/axp288_adc.c
+> > +++ b/drivers/iio/adc/axp288_adc.c
+> > @@ -92,22 +92,14 @@ static const struct iio_chan_spec axp288_adc_channels[] = {
+> >  	},
+> >  };
+> >  
+> > -#define AXP288_ADC_MAP(_adc_channel_label, _consumer_dev_name,	\
+> > -		_consumer_channel)				\
+> > -	{							\
+> > -		.adc_channel_label = _adc_channel_label,	\
+> > -		.consumer_dev_name = _consumer_dev_name,	\
+> > -		.consumer_channel = _consumer_channel,		\
+> > -	}
+> > -
+> >  /* for consumer drivers */
+> >  static struct iio_map axp288_adc_default_maps[] = {
+> > -	AXP288_ADC_MAP("TS_PIN", "axp288-batt", "axp288-batt-temp"),
+> > -	AXP288_ADC_MAP("PMIC_TEMP", "axp288-pmic", "axp288-pmic-temp"),
+> > -	AXP288_ADC_MAP("GPADC", "axp288-gpadc", "axp288-system-temp"),
+> > -	AXP288_ADC_MAP("BATT_CHG_I", "axp288-chrg", "axp288-chrg-curr"),
+> > -	AXP288_ADC_MAP("BATT_DISCHRG_I", "axp288-chrg", "axp288-chrg-d-curr"),
+> > -	AXP288_ADC_MAP("BATT_V", "axp288-batt", "axp288-batt-volt"),
+> > +	IIO_MAP("TS_PIN", "axp288-batt", "axp288-batt-temp"),
+> > +	IIO_MAP("PMIC_TEMP", "axp288-pmic", "axp288-pmic-temp"),
+> > +	IIO_MAP("GPADC", "axp288-gpadc", "axp288-system-temp"),
+> > +	IIO_MAP("BATT_CHG_I", "axp288-chrg", "axp288-chrg-curr"),
+> > +	IIO_MAP("BATT_DISCHRG_I", "axp288-chrg", "axp288-chrg-d-curr"),
+> > +	IIO_MAP("BATT_V", "axp288-batt", "axp288-batt-volt"),
+> >  	{},
+> >  };
+> >  
+> > diff --git a/include/linux/iio/machine.h b/include/linux/iio/machine.h
+> > index 1601a2a63a72..5e1cfa75f652 100644
+> > --- a/include/linux/iio/machine.h
+> > +++ b/include/linux/iio/machine.h
+> > @@ -28,4 +28,11 @@ struct iio_map {
+> >  	void *consumer_data;
+> >  };
+> >  
+> > +#define IIO_MAP(_provider_channel, _consumer_dev_name, _consumer_channel) \
+> > +{									  \
+> > +	.adc_channel_label = _provider_channel,				  \
+> > +	.consumer_dev_name = _consumer_dev_name,			  \
+> > +	.consumer_channel  = _consumer_channel,				  \
+> > +}
+> > +
+> >  #endif  
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
