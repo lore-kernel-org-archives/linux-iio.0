@@ -1,82 +1,79 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:56738 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751746AbdLJQXG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 10 Dec 2017 11:23:06 -0500
-Date: Sun, 10 Dec 2017 16:23:02 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Colin King <colin.king@canonical.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][next] iio: light: make a couple of config structures
- static
-Message-ID: <20171210162302.13236b42@archlinux>
-In-Reply-To: <20171204120406.4364-1-colin.king@canonical.com>
-References: <20171204120406.4364-1-colin.king@canonical.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=JY12=DA=free-electrons.com=quentin.schulz@kernel.org>
+From: Quentin Schulz <quentin.schulz@free-electrons.com>
+To: sre@kernel.org,
+	robh+dt@kernel.org,
+	mark.rutland@arm.com,
+	wens@csie.org,
+	linux@armlinux.org.uk,
+	maxime.ripard@free-electrons.com,
+	jic23@kernel.org,
+	lee.jones@linaro.org
+Cc: knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	linux-pm@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org,
+	icenowy@aosc.io,
+	linux-sunxi@googlegroups.com,
+	thomas.petazzoni@free-electrons.com,
+	Quentin Schulz <quentin.schulz@free-electrons.com>
+Subject: [PATCH 0/8] add support for AXP813 ADC and battery power supply
+Date: Mon,  4 Dec 2017 15:12:46 +0100
+Message-Id: <cover.4052f8c517c42db26a3cabe078cad333243d371c.1512396054.git-series.quentin.schulz@free-electrons.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon,  4 Dec 2017 12:04:06 +0000
-Colin King <colin.king@canonical.com> wrote:
+The AXP813 PMIC is relatively close to the already supported AXP20X and
+AXP22X. It provides three different power outputs: battery, AC and USB, and
+measures a few different things: temperature, power supply status, current
+current and voltage supplied, maximum current limit, battery capacity, min
+and max voltage limits.
 
-> From: Colin Ian King <colin.king@canonical.com>
-> 
-> Structures st_uvis25_i2c_regmap_config and st_uvis25_spi_regmap_config are
-> local to the source and do not need to be in global scope, so make them
-> both static.
-> 
-> Cleans up sparse warnings:
-> warning: symbol 'st_uvis25_i2c_regmap_config' was not declared. Should
-> it be static?
-> warning: symbol 'st_uvis25_spi_regmap_config' was not declared. Should
-> it be static?
-> 
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-Thanks Colin,
+One of its two GPIOs can be used as an ADC.
 
-Not sure why I missed these when running build tests and they got past
-0-day.  Ah well..  Applied to the togreg branch of iio.git and pushed
-out as testing for the autobuilders to play with them.
+There are a few differences with AXP20X/AXP22X PMICs though:
+  - a different constant charge current formula,
+  - battery temperature, GPIO0 and battery voltages are the only voltages
+  measurable,
+  - all data are stored on 12 bits (AXP20X/AXP22X had one type of data that
+  was stored on 13 bits),
+  - different scales and offsets,
+  - a different ADC rate formula and register,
+
+This patch series adds support for the PMIC's ADC and battery power supply
+in the existing drivers.
+
+Make the axp20x MFD automatically probe the ADC driver, add the battery
+power supply node in axp81x node and enable it for the TBS A711 since it
+has a soldered battery.
+
+Q: The BananaPi M3 has two solder balls for battery, should the battery
+power supply node be enabled for this board as well?
 
 Thanks,
+Quentin
 
-Jonathan
+Quentin Schulz (8):
+  iio: adc: axp20x_adc: put ADC rate setting in a per-variant function
+  iio: adc: axp20x_adc: add support for AXP813 ADC
+  mfd: axp20x: probe axp20x_adc driver for AXP813
+  dt-bindings: power: supply: axp20x: add AXP813 battery DT binding
+  power: supply: axp20x_battery: add support for AXP813
+  mfd: axp20x: add battery power supply cell for AXP813
+  ARM: dtsi: axp81x: add battery power supply subnode
+  ARM: dtsi: sun8i: a711: enable battery power supply subnode
 
-> ---
->  drivers/iio/light/st_uvis25_i2c.c | 2 +-
->  drivers/iio/light/st_uvis25_spi.c | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/light/st_uvis25_i2c.c b/drivers/iio/light/st_uvis25_i2c.c
-> index c939c0b0ff10..afd6eb01a202 100644
-> --- a/drivers/iio/light/st_uvis25_i2c.c
-> +++ b/drivers/iio/light/st_uvis25_i2c.c
-> @@ -19,7 +19,7 @@
->  
->  #define UVIS25_I2C_AUTO_INCREMENT	BIT(7)
->  
-> -const struct regmap_config st_uvis25_i2c_regmap_config = {
-> +static const struct regmap_config st_uvis25_i2c_regmap_config = {
->  	.reg_bits = 8,
->  	.val_bits = 8,
->  	.write_flag_mask = UVIS25_I2C_AUTO_INCREMENT,
-> diff --git a/drivers/iio/light/st_uvis25_spi.c b/drivers/iio/light/st_uvis25_spi.c
-> index e697e14e7952..cdfee5e84d5e 100644
-> --- a/drivers/iio/light/st_uvis25_spi.c
-> +++ b/drivers/iio/light/st_uvis25_spi.c
-> @@ -19,7 +19,7 @@
->  #define UVIS25_SENSORS_SPI_READ		BIT(7)
->  #define UVIS25_SPI_AUTO_INCREMENT	BIT(6)
->  
-> -const struct regmap_config st_uvis25_spi_regmap_config = {
-> +static const struct regmap_config st_uvis25_spi_regmap_config = {
->  	.reg_bits = 8,
->  	.val_bits = 8,
->  	.read_flag_mask = UVIS25_SENSORS_SPI_READ | UVIS25_SPI_AUTO_INCREMENT,
+ Documentation/devicetree/bindings/power/supply/axp20x_battery.txt |   8 ++--
+ arch/arm/boot/dts/axp81x.dtsi                                     |   5 +++-
+ arch/arm/boot/dts/sun8i-a83t-tbs-a711.dts                         |   4 ++-
+ drivers/iio/adc/axp20x_adc.c                                      | 139 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++----
+ drivers/mfd/axp20x.c                                              |   7 +++-
+ drivers/power/supply/axp20x_battery.c                             |  44 ++++++++++++++++++++++-
+ include/linux/mfd/axp20x.h                                        |   2 +-
+ 7 files changed, 196 insertions(+), 13 deletions(-)
 
+base-commit: 7cc61a0a562c7005d2a34f97e94cf26689a2f57c
+-- 
+git-series 0.9.1
