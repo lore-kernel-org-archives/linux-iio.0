@@ -1,56 +1,49 @@
-Return-Path: <SRS0=JY12=DA=free-electrons.com=quentin.schulz@kernel.org>
-From: Quentin Schulz <quentin.schulz@free-electrons.com>
-To: sre@kernel.org,
-	robh+dt@kernel.org,
-	mark.rutland@arm.com,
-	wens@csie.org,
-	linux@armlinux.org.uk,
-	maxime.ripard@free-electrons.com,
-	jic23@kernel.org,
-	lee.jones@linaro.org
-Cc: knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	linux-pm@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-iio@vger.kernel.org,
-	icenowy@aosc.io,
-	linux-sunxi@googlegroups.com,
-	thomas.petazzoni@free-electrons.com,
-	Quentin Schulz <quentin.schulz@free-electrons.com>
-Subject: [PATCH 8/8] ARM: dtsi: sun8i: a711: enable battery power supply subnode
-Date: Mon,  4 Dec 2017 15:12:54 +0100
-Message-Id: <2af471ef9bee675a2cf411b9d2dd602eb4aa448b.1512396054.git-series.quentin.schulz@free-electrons.com>
-In-Reply-To: <cover.4052f8c517c42db26a3cabe078cad333243d371c.1512396054.git-series.quentin.schulz@free-electrons.com>
-References: <cover.4052f8c517c42db26a3cabe078cad333243d371c.1512396054.git-series.quentin.schulz@free-electrons.com>
-In-Reply-To: <cover.4052f8c517c42db26a3cabe078cad333243d371c.1512396054.git-series.quentin.schulz@free-electrons.com>
-References: <cover.4052f8c517c42db26a3cabe078cad333243d371c.1512396054.git-series.quentin.schulz@free-electrons.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:42279 "EHLO
+        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751033AbdLDPaS (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 4 Dec 2017 10:30:18 -0500
+Received: by mail-wm0-f66.google.com with SMTP id l141so6534768wmg.1
+        for <linux-iio@vger.kernel.org>; Mon, 04 Dec 2017 07:30:17 -0800 (PST)
+From: Crt Mori <cmo@melexis.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Crt Mori <cmo@melexis.com>
+Subject: [PATCH v2 0/3] iio: temperataure: MLX90632
+Date: Mon,  4 Dec 2017 16:29:55 +0100
+Message-Id: <20171204152955.25950-1-cmo@melexis.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-The TBS A711 has an AXP813 PMIC and a soldered battery, thus, we enable
-the battery power supply subnode in its Device Tree.
+Hi everybody,
 
-Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
----
- arch/arm/boot/dts/sun8i-a83t-tbs-a711.dts | 4 ++++
- 1 file changed, 4 insertions(+)
+With the sensor now available to broad public, it is time to also
+share the driver with the community. MLX90632 is just 3x3mm in size,
+but with factory calibration offers instant usage in every project.
 
-diff --git a/arch/arm/boot/dts/sun8i-a83t-tbs-a711.dts b/arch/arm/boot/dts/sun8i-a83t-tbs-a711.dts
-index 9871553..806cb17 100644
---- a/arch/arm/boot/dts/sun8i-a83t-tbs-a711.dts
-+++ b/arch/arm/boot/dts/sun8i-a83t-tbs-a711.dts
-@@ -181,6 +181,10 @@
- 
- #include "axp81x.dtsi"
- 
-+&battery_power_supply {
-+	status = "okay";
-+};
-+
- &reg_aldo1 {
- 	regulator-min-microvolt = <1800000>;
- 	regulator-max-microvolt = <1800000>;
+Driver currently provides basic functionality, but I might add
+some more fancy features after a while.
+
+v2 includes comments from Rob Herring (dt-bindings) and Jonathan
+Cameron (iio), as well as proposal to split out int_sqrt64 function
+into the linux/kernel.h
+
+Crt Mori (3):
+  iio: temperature: Adding support for MLX90632
+  dt-bindings: iio: temperature: add MLX90632 device bindings
+  lib: Add strongly typed 64bit int_sqrt
+
+ .../bindings/iio/temperature/mlx90632.txt          |  28 +
+ MAINTAINERS                                        |   7 +
+ drivers/iio/temperature/Kconfig                    |  12 +
+ drivers/iio/temperature/Makefile                   |   1 +
+ drivers/iio/temperature/mlx90632.c                 | 793 +++++++++++++++++++++
+ include/linux/kernel.h                             |   1 +
+ lib/int_sqrt.c                                     |  27 +
+ 7 files changed, 869 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/temperature/mlx90632.txt
+ create mode 100644 drivers/iio/temperature/mlx90632.c
+
 -- 
-git-series 0.9.1
+2.15.0
+
