@@ -1,18 +1,12 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f67.google.com ([74.125.82.67]:45334 "EHLO
-        mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751436AbdLDPad (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 4 Dec 2017 10:30:33 -0500
-Received: by mail-wm0-f67.google.com with SMTP id 9so6524890wme.4
-        for <linux-iio@vger.kernel.org>; Mon, 04 Dec 2017 07:30:32 -0800 (PST)
+Return-Path: <SRS0=o8mi=DA=melexis.com=cmo@kernel.org>
 From: Crt Mori <cmo@melexis.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, Crt Mori <cmo@melexis.com>
-Subject: [PATCH 1/3] iio: temperature: Adding support for MLX90632
-Date: Mon,  4 Dec 2017 16:30:24 +0100
-Message-Id: <20171204153024.26019-1-cmo@melexis.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Crt Mori <cmo@melexis.com>
+Subject: [PATCH v2 1/3] iio: temperature: Adding support for MLX90632
+Date: Mon,  4 Dec 2017 16:31:32 +0100
+Message-Id: <20171204153132.26145-1-cmo@melexis.com>
+List-ID: <linux-iio@vger.kernel.org>
 
 Melexis has just released Infra Red temperature sensor MLX90632 used
 for contact-less temperature measurement. Driver provides basic
@@ -882,4 +876,3 @@ index 000000000000..3bf3572bb81b
 +MODULE_LICENSE("GPL v2");
 -- 
 2.15.0
-
