@@ -1,38 +1,56 @@
-Return-Path: <SRS0=GcUj=DB=linaro.org=lee.jones@kernel.org>
-Date: Tue, 5 Dec 2017 08:24:14 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: sre@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com, wens@csie.org,
-	linux@armlinux.org.uk, maxime.ripard@free-electrons.com,
-	jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, linux-pm@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-	icenowy@aosc.io, linux-sunxi@googlegroups.com,
-	thomas.petazzoni@free-electrons.com
-Subject: Re: [PATCH 6/8] mfd: axp20x: add battery power supply cell for AXP813
-Message-ID: <20171205082414.ayv5s4ehafwy5xfa@dell>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.free-electrons.com ([62.4.15.54]:54206 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751390AbdLDOPM (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 4 Dec 2017 09:15:12 -0500
+From: Quentin Schulz <quentin.schulz@free-electrons.com>
+To: sre@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com,
+        wens@csie.org, linux@armlinux.org.uk,
+        maxime.ripard@free-electrons.com, jic23@kernel.org,
+        lee.jones@linaro.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-iio@vger.kernel.org, icenowy@aosc.io,
+        linux-sunxi@googlegroups.com, thomas.petazzoni@free-electrons.com,
+        Quentin Schulz <quentin.schulz@free-electrons.com>
+Subject: [PATCH 7/8] ARM: dtsi: axp81x: add battery power supply subnode
+Date: Mon,  4 Dec 2017 15:12:53 +0100
+Message-Id: <2c07b03783932463186237ed8487d664d4743ee8.1512396054.git-series.quentin.schulz@free-electrons.com>
+In-Reply-To: <cover.4052f8c517c42db26a3cabe078cad333243d371c.1512396054.git-series.quentin.schulz@free-electrons.com>
 References: <cover.4052f8c517c42db26a3cabe078cad333243d371c.1512396054.git-series.quentin.schulz@free-electrons.com>
- <9b5e9ed623165d0586f086343a7c67bc5c18bbb5.1512396054.git-series.quentin.schulz@free-electrons.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <9b5e9ed623165d0586f086343a7c67bc5c18bbb5.1512396054.git-series.quentin.schulz@free-electrons.com>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <cover.4052f8c517c42db26a3cabe078cad333243d371c.1512396054.git-series.quentin.schulz@free-electrons.com>
+References: <cover.4052f8c517c42db26a3cabe078cad333243d371c.1512396054.git-series.quentin.schulz@free-electrons.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, 04 Dec 2017, Quentin Schulz wrote:
+The X-Powers AXP81X PMIC exposes battery supply various data such as
+the battery status (charging, discharging, full, dead), current max
+limit, current current, battery capacity (in percentage), voltage max
+and min limits, current voltage, and battery capacity (in Ah).
 
-> As axp20x-battery-power-supply now supports AXP813, add a cell for it.
-> 
-> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
-> ---
->  drivers/mfd/axp20x.c | 3 +++
->  1 file changed, 3 insertions(+)
+This adds the battery power supply subnode for AXP81X PMIC.
 
-For my own reference:
-  Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+---
+ arch/arm/boot/dts/axp81x.dtsi | 5 +++++
+ 1 file changed, 5 insertions(+)
 
+diff --git a/arch/arm/boot/dts/axp81x.dtsi b/arch/arm/boot/dts/axp81x.dtsi
+index 73b761f..f7401c3 100644
+--- a/arch/arm/boot/dts/axp81x.dtsi
++++ b/arch/arm/boot/dts/axp81x.dtsi
+@@ -48,6 +48,11 @@
+ 	interrupt-controller;
+ 	#interrupt-cells = <1>;
+ 
++	battery_power_supply: battery-power-supply {
++		compatible = "x-powers,axp813-battery-power-supply";
++		status = "disabled";
++	};
++
+ 	regulators {
+ 		/* Default work frequency for buck regulators */
+ 		x-powers,dcdc-freq = <3000>;
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+git-series 0.9.1
