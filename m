@@ -1,144 +1,143 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:44964 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752577AbdLLT6q (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 12 Dec 2017 14:58:46 -0500
-Date: Tue, 12 Dec 2017 19:58:43 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Matt Ranostay <mranostay@gmail.com>
-Cc: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>,
+Received: from a8-53.smtp-out.amazonses.com ([54.240.8.53]:46506 "EHLO
+        a8-53.smtp-out.amazonses.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1752182AbdLFRwg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 Dec 2017 12:52:36 -0500
+From: Jeremy Cline <jeremy@jcline.org>
+To: Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Daniel Baluta <daniel.baluta@gmail.com>
-Subject: Re: [PATCH] iio: chemical: ccs811: Fix output of IIO_CONCENTRATION
- channels
-Message-ID: <20171212195843.0442e4aa@archlinux>
-In-Reply-To: <CAKzfze8q7ZVmmwJSNSKiT5_i=kv-bzP=W9+WYy7=ymNfzb0V=A@mail.gmail.com>
-References: <1512579478-24601-1-git-send-email-narcisaanamaria12@gmail.com>
-        <20171210182441.5882c372@archlinux>
-        <CAKzfze8q7ZVmmwJSNSKiT5_i=kv-bzP=W9+WYy7=ymNfzb0V=A@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Hans de Goede <hdegoede@redhat.com>,
+        Lars Kellogg-Stedman <lars@oddbit.com>,
+        Steven Presser <steve@pressers.name>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Wolfram Sang <wsa@the-dreams.de>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jeremy Cline <jeremy@jcline.org>
+Subject: [PATCH v2] iio: accel: bmc150: Check for a second ACPI device for BOSC0200
+Date: Wed, 6 Dec 2017 17:52:34 +0000
+Message-ID: <010001602cf53153-39ad69f1-1b39-4e6d-a748-9455a16c2fbd-000000@email.amazonses.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, 10 Dec 2017 13:11:51 -0800
-Matt Ranostay <mranostay@gmail.com> wrote:
+Some BOSC0200 acpi_device-s describe two accelerometers in a single ACPI
+device. Check for a companion device and handle a second i2c_client
+if it is present.
 
-> On Sun, Dec 10, 2017 at 10:24 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-> > On Wed,  6 Dec 2017 18:57:58 +0200
-> > Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com> wrote:
-> > +CC Matt  
-> >> in_concentration_raw should report, according to sysfs-bus-iio documentation,
-> >> a "Raw (unscaled no offset etc.) percentage reading of a substance."
-> >>
-> >> Modify scale to convert from ppm/ppb to percentage:
-> >> 1 ppm = 0.0001%
-> >> 1 ppb = 0.0000001%
-> >>
-> >> There is no offset needed to convert the ppm/ppb to percentage,
-> >> so remove offset from IIO_CONCENTRATION (IIO_MOD_CO2) channel.
-> >>
-> >> Signed-off-by: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>  
-> 
-> Reviewed-by: Matt Ranostay <matt.ranostay@konsulko.com>
-Applied to the fixes-togreg branch of iio.git and marked for stable
-so hopefully we can avoid too much userspace breakage...
+Signed-off-by: Jeremy Cline <jeremy@jcline.org>
+---
+Changes in v2:
+  - Rather than exposing the bmc150_accel_data struct, use get and set
+    functions.
 
-Thanks,
+ drivers/iio/accel/bmc150-accel-core.c | 20 ++++++++++++++++++++
+ drivers/iio/accel/bmc150-accel-i2c.c  | 29 ++++++++++++++++++++++++++++-
+ drivers/iio/accel/bmc150-accel.h      |  2 ++
+ 3 files changed, 50 insertions(+), 1 deletion(-)
 
-Jonathan
-> 
-> >> ---
-> >> Details:
-> >> The sensors reports data in parts per million for CO2 and parts per
-> >> billion for VOC. The current scaling and offset values were meant to
-> >> convert the ppm/ppb value into a percentage value with respect to
-> >> the sensor's measurement range:
-> >> For example:
-> >>     For eCO2, possible raw values range from 400ppm to 8192ppm.
-> >>     If the value reported is, let's say 500ppm, then, after scaling and
-> >>     offset are applied, the percentage, with reference to the interval
-> >>     [400, 8192] is 1.28%, using this interval mapping formula:
-> >>     (500 - 400) * (100 - 0) / (8192 - 400) + 0. Instead, the value should
-> >>     be 500 * 0.0001 = 0.05% (from ppm to percentage).
-> >>
-> >> Note:
-> >> In the docs, the in_concentration_raw value is said to be a
-> >> "raw percentage reading of a substance". The raw value from the sensor
-> >> is a ppm/ppb value, not a percentage value. It becomes a percentage value
-> >> after applying a scale. Is this the correct behaviour (after applying scale,
-> >> a percentage value is obtained) or did I misunderstood the docs?  
-> >
-> > I 'think' you are right on this, but would like some input from
-> > someone more familiar with chemical sensors in general.
-> >
-> > Matt, any comment on this?
-> >  
-> 
-> Yes the IIO_CONCENTRATION is suppose to be in ppm/ppb units that are
-> converted to percent with the scaling value.
-> Basically since someday we may have a sensor that actually with a
-> digit on the other the decimal point, but hopefully not really 1.28%
-> CO2 since that is well into toxic zone :)
-> 
-> - Matt
-> 
-> > Thanks,
-> >
-> > Jonathan  
-> >>
-> >>  drivers/iio/chemical/ccs811.c | 13 +++----------
-> >>  1 file changed, 3 insertions(+), 10 deletions(-)
-> >>
-> >> diff --git a/drivers/iio/chemical/ccs811.c b/drivers/iio/chemical/ccs811.c
-> >> index 97bce83..fbe2431 100644
-> >> --- a/drivers/iio/chemical/ccs811.c
-> >> +++ b/drivers/iio/chemical/ccs811.c
-> >> @@ -96,7 +96,6 @@ struct ccs811_data {
-> >>               .channel2 = IIO_MOD_CO2,
-> >>               .modified = 1,
-> >>               .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> >> -                                   BIT(IIO_CHAN_INFO_OFFSET) |
-> >>                                     BIT(IIO_CHAN_INFO_SCALE),
-> >>               .scan_index = 0,
-> >>               .scan_type = {
-> >> @@ -255,24 +254,18 @@ static int ccs811_read_raw(struct iio_dev *indio_dev,
-> >>                       switch (chan->channel2) {
-> >>                       case IIO_MOD_CO2:
-> >>                               *val = 0;
-> >> -                             *val2 = 12834;
-> >> +                             *val2 = 100;
-> >>                               return IIO_VAL_INT_PLUS_MICRO;
-> >>                       case IIO_MOD_VOC:
-> >>                               *val = 0;
-> >> -                             *val2 = 84246;
-> >> -                             return IIO_VAL_INT_PLUS_MICRO;
-> >> +                             *val2 = 100;
-> >> +                             return IIO_VAL_INT_PLUS_NANO;
-> >>                       default:
-> >>                               return -EINVAL;
-> >>                       }
-> >>               default:
-> >>                       return -EINVAL;
-> >>               }
-> >> -     case IIO_CHAN_INFO_OFFSET:
-> >> -             if (!(chan->type == IIO_CONCENTRATION &&
-> >> -                   chan->channel2 == IIO_MOD_CO2))
-> >> -                     return -EINVAL;
-> >> -             *val = -400;
-> >> -             return IIO_VAL_INT;
-> >>       default:
-> >>               return -EINVAL;
-> >>       }
-> >> --
-> >> 1.9.1
-> >>  
-> >  
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+index 870f92ef61c2..7496c5121a8c 100644
+--- a/drivers/iio/accel/bmc150-accel-core.c
++++ b/drivers/iio/accel/bmc150-accel-core.c
+@@ -204,6 +204,7 @@ struct bmc150_accel_data {
+ 	int ev_enable_state;
+ 	int64_t timestamp, old_timestamp; /* Only used in hw fifo mode. */
+ 	const struct bmc150_accel_chip_info *chip_info;
++	struct i2c_client *second_device;
+ };
+ 
+ static const struct {
+@@ -1659,6 +1660,25 @@ int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
+ }
+ EXPORT_SYMBOL_GPL(bmc150_accel_core_probe);
+ 
++struct i2c_client *bmc150_get_second_device(struct i2c_client *client)
++{
++	struct bmc150_accel_data *data = i2c_get_clientdata(client);
++
++	if (!data)
++		return NULL;
++
++	return data->second_device;
++}
++EXPORT_SYMBOL_GPL(bmc150_get_second_device);
++
++void bmc150_set_second_device(struct i2c_client *client)
++{
++	struct bmc150_accel_data *data = i2c_get_clientdata(client);
++	if (data)
++		data->second_device = client;
++}
++EXPORT_SYMBOL_GPL(bmc150_set_second_device);
++
+ int bmc150_accel_core_remove(struct device *dev)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+diff --git a/drivers/iio/accel/bmc150-accel-i2c.c b/drivers/iio/accel/bmc150-accel-i2c.c
+index f85014fbaa12..c7341df086e2 100644
+--- a/drivers/iio/accel/bmc150-accel-i2c.c
++++ b/drivers/iio/accel/bmc150-accel-i2c.c
+@@ -31,6 +31,10 @@
+ static int bmc150_accel_probe(struct i2c_client *client,
+ 			      const struct i2c_device_id *id)
+ {
++	int ret;
++	struct acpi_device *adev;
++	struct i2c_board_info board_info;
++	struct i2c_client *second_dev;
+ 	struct regmap *regmap;
+ 	const char *name = NULL;
+ 	bool block_supported =
+@@ -47,12 +51,35 @@ static int bmc150_accel_probe(struct i2c_client *client,
+ 	if (id)
+ 		name = id->name;
+ 
+-	return bmc150_accel_core_probe(&client->dev, regmap, client->irq, name,
++	ret = bmc150_accel_core_probe(&client->dev, regmap, client->irq, name,
+ 				       block_supported);
++	if (ret)
++		return ret;
++
++	/*
++	 * Some BOSC0200 acpi_devices describe 2 accelerometers in a single ACPI
++	 * device, try instantiating a second i2c_client for an I2cSerialBusV2
++	 * ACPI resource with index 1.
++	 */
++	adev = ACPI_COMPANION(&client->dev);
++	if (adev && strcmp(acpi_device_hid(adev), "BOSC0200") == 0) {
++		memset(&board_info, 0, sizeof(board_info));
++		strlcpy(board_info.type, "bma250e", I2C_NAME_SIZE);
++		second_dev = i2c_acpi_new_device(&client->dev, 1, &board_info);
++		if (second_dev)
++			bmc150_set_second_device(second_dev);
++	}
++
++	return ret;
+ }
+ 
+ static int bmc150_accel_remove(struct i2c_client *client)
+ {
++	struct i2c_client *second_dev = bmc150_get_second_device(client);
++
++	if (second_dev)
++		i2c_unregister_device(second_dev);
++
+ 	return bmc150_accel_core_remove(&client->dev);
+ }
+ 
+diff --git a/drivers/iio/accel/bmc150-accel.h b/drivers/iio/accel/bmc150-accel.h
+index ae6118ae11b1..6e965a3ca322 100644
+--- a/drivers/iio/accel/bmc150-accel.h
++++ b/drivers/iio/accel/bmc150-accel.h
+@@ -16,6 +16,8 @@ enum {
+ int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
+ 			    const char *name, bool block_supported);
+ int bmc150_accel_core_remove(struct device *dev);
++struct i2c_client *bmc150_get_second_device(struct i2c_client *second_device);
++void bmc150_set_second_device(struct i2c_client *second_device);
+ extern const struct dev_pm_ops bmc150_accel_pm_ops;
+ extern const struct regmap_config bmc150_regmap_conf;
+ 
+-- 
+2.14.3
 
