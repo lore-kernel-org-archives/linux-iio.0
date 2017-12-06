@@ -1,81 +1,91 @@
-Return-Path: <SRS0=m7Dp=DC=melexis.com=cmo@kernel.org>
-From: Crt Mori <cmo@melexis.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Ingo Molnar <mingo@kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Kees Cook <keescook@chromium.org>,
-	Rusty Russell <rusty@rustcorp.com.au>,
-	Ian Abbott <abbotti@mev.co.uk>,
-	Larry Finger <Larry.Finger@lwfinger.net>,
-	Niklas Soderlund <niklas.soderlund+renesas@ragnatech.se>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Masahiro Yamada <yamada.masahiro@socionext.com>,
-	linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	Crt Mori <cmo@melexis.com>
-Subject: [PATCH v3 3/3] lib: Add strongly typed 64bit int_sqrt
-Date: Wed,  6 Dec 2017 10:56:04 +0100
-Message-Id: <20171206095604.8285-1-cmo@melexis.com>
+Return-Path: <SRS0=qYzE=DC=gmail.com=narcisaanamaria12@kernel.org>
+From: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org,
+	daniel.baluta@gmail.com,
+	Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
+Subject: [PATCH] iio: chemical: ccs811: Fix output of IIO_CONCENTRATION channels
+Date: Wed,  6 Dec 2017 18:57:58 +0200
+Message-Id: <1512579478-24601-1-git-send-email-narcisaanamaria12@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-There is no option to perform 64bit integer sqrt on 32bit platform.
-Added stronger typed int_sqrt64 enables the 64bit calculations to
-be performed on 32bit platforms. Although int_sqrt() is a rough
-approximation, the same algorithm is used in int_sqrt64() as good
-enough on 32bit platform.
+in_concentration_raw should report, according to sysfs-bus-iio documentation,
+a "Raw (unscaled no offset etc.) percentage reading of a substance."
 
-Signed-off-by: Crt Mori <cmo@melexis.com>
+Modify scale to convert from ppm/ppb to percentage:
+1 ppm = 0.0001%
+1 ppb = 0.0000001%
+
+There is no offset needed to convert the ppm/ppb to percentage,
+so remove offset from IIO_CONCENTRATION (IIO_MOD_CO2) channel.
+
+Signed-off-by: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
 ---
- include/linux/kernel.h |  1 +
- lib/int_sqrt.c         | 26 ++++++++++++++++++++++++++
- 2 files changed, 27 insertions(+)
+Details:
+The sensors reports data in parts per million for CO2 and parts per
+billion for VOC. The current scaling and offset values were meant to
+convert the ppm/ppb value into a percentage value with respect to
+the sensor's measurement range:
+For example:
+    For eCO2, possible raw values range from 400ppm to 8192ppm.
+    If the value reported is, let's say 500ppm, then, after scaling and
+    offset are applied, the percentage, with reference to the interval
+    [400, 8192] is 1.28%, using this interval mapping formula:
+    (500 - 400) * (100 - 0) / (8192 - 400) + 0. Instead, the value should
+    be 500 * 0.0001 = 0.05% (from ppm to percentage).
 
-diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 0ad4c3044cf9..09f53063f2c9 100644
---- a/include/linux/kernel.h
-+++ b/include/linux/kernel.h
-@@ -459,6 +459,7 @@ extern int kernel_text_address(unsigned long addr);
- extern int func_ptr_is_kernel_text(void *ptr);
- 
- unsigned long int_sqrt(unsigned long);
-+u64 int_sqrt64(u64 x);
- 
- extern void bust_spinlocks(int yes);
- extern int oops_in_progress;		/* If set, an oops, panic(), BUG() or die() is in progress */
-diff --git a/lib/int_sqrt.c b/lib/int_sqrt.c
-index 1ef4cc344977..de5836448ea3 100644
---- a/lib/int_sqrt.c
-+++ b/lib/int_sqrt.c
-@@ -36,3 +36,29 @@ unsigned long int_sqrt(unsigned long x)
- 	return y;
- }
- EXPORT_SYMBOL(int_sqrt);
-+
-+/**
-+ * int_sqrt64 - strongly typed int_sqrt function
-+ * @x: 64bit integer of which to calculate the sqrt
-+ */
-+u64 int_sqrt64(u64 x)
-+{
-+	u64 b, m, y = 0;
-+
-+	if (x <= 1)
-+		return x;
-+
-+	m = 1ULL << (64 - 2);
-+	while (m != 0) {
-+		b = y + m;
-+		y >>= 1;
-+
-+		if (x >= b) {
-+			x -= b;
-+			y += m;
-+		}
-+		m >>= 2;
-+	}
-+	return y;
-+}
-+EXPORT_SYMBOL(int_sqrt64);
--- 
-2.15.0
+Note:
+In the docs, the in_concentration_raw value is said to be a
+"raw percentage reading of a substance". The raw value from the sensor
+is a ppm/ppb value, not a percentage value. It becomes a percentage value
+after applying a scale. Is this the correct behaviour (after applying scale,
+a percentage value is obtained) or did I misunderstood the docs?
+
+ drivers/iio/chemical/ccs811.c | 13 +++----------
+ 1 file changed, 3 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/iio/chemical/ccs811.c b/drivers/iio/chemical/ccs811.c
+index 97bce83..fbe2431 100644
+--- a/drivers/iio/chemical/ccs811.c
++++ b/drivers/iio/chemical/ccs811.c
+@@ -96,7 +96,6 @@ struct ccs811_data {
+ 		.channel2 = IIO_MOD_CO2,
+ 		.modified = 1,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+-				      BIT(IIO_CHAN_INFO_OFFSET) |
+ 				      BIT(IIO_CHAN_INFO_SCALE),
+ 		.scan_index = 0,
+ 		.scan_type = {
+@@ -255,24 +254,18 @@ static int ccs811_read_raw(struct iio_dev *indio_dev,
+ 			switch (chan->channel2) {
+ 			case IIO_MOD_CO2:
+ 				*val = 0;
+-				*val2 = 12834;
++				*val2 = 100;
+ 				return IIO_VAL_INT_PLUS_MICRO;
+ 			case IIO_MOD_VOC:
+ 				*val = 0;
+-				*val2 = 84246;
+-				return IIO_VAL_INT_PLUS_MICRO;
++				*val2 = 100;
++				return IIO_VAL_INT_PLUS_NANO;
+ 			default:
+ 				return -EINVAL;
+ 			}
+ 		default:
+ 			return -EINVAL;
+ 		}
+-	case IIO_CHAN_INFO_OFFSET:
+-		if (!(chan->type == IIO_CONCENTRATION &&
+-		      chan->channel2 == IIO_MOD_CO2))
+-			return -EINVAL;
+-		*val = -400;
+-		return IIO_VAL_INT;
+ 	default:
+ 		return -EINVAL;
+ 	}
+--
+1.9.1
