@@ -1,52 +1,39 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:59166 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752553AbdLJScb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 10 Dec 2017 13:32:31 -0500
-Date: Sun, 10 Dec 2017 18:32:27 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: "Andrew F. Davis" <afd@ti.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] iio: dac: mcp4725: Remove unneeded conversions to bool
-Message-ID: <20171210183227.0ea17cef@archlinux>
-In-Reply-To: <20171205191201.21572-1-afd@ti.com>
-References: <20171205191201.21572-1-afd@ti.com>
+Return-Path: <SRS0=0tfs=DC=it-klinger.de=ak@kernel.org>
+Date: Wed, 6 Dec 2017 09:51:26 +0100
+From: Andreas Klinger <ak@it-klinger.de>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	singhalsimran0@gmail.com, linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Subject: [PATCH v3 0/2] iio: hx711: add buffered trigger support
+Message-ID: <20171206084709.GA14698@arbeit>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, 5 Dec 2017 13:12:01 -0600
-"Andrew F. Davis" <afd@ti.com> wrote:
+changes in v3:
+thanks to the review of Jonathan, some issues were fixed:
+- locking in hx711_reset_read()
+- data positioning in trigger handler
 
-> Found with scripts/coccinelle/misc/boolconv.cocci.
-> 
-> Signed-off-by: Andrew F. Davis <afd@ti.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+changes in v2:
+- in Kconfig it's needed to select IIO_BUFFER and IIO_TRIGGERED_BUFFER to
+  compile cleanly with buffered triggers
 
-Thanks,
+This small patch series adds:
+- support for buffered triggers
+- fixes a bug in the reset functionality
 
-Jonathan
 
-> ---
->  drivers/iio/dac/mcp4725.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
-> index afa856d10c26..8b5aad4c32d9 100644
-> --- a/drivers/iio/dac/mcp4725.c
-> +++ b/drivers/iio/dac/mcp4725.c
-> @@ -476,7 +476,7 @@ static int mcp4725_probe(struct i2c_client *client,
->  		goto err_disable_vref_reg;
->  	}
->  	pd = (inbuf[0] >> 1) & 0x3;
-> -	data->powerdown = pd > 0 ? true : false;
-> +	data->powerdown = pd > 0;
->  	data->powerdown_mode = pd ? pd - 1 : 2; /* largest resistor to gnd */
->  	data->dac_value = (inbuf[1] << 4) | (inbuf[2] >> 4);
->  	if (data->id == MCP4726)
+Andreas Klinger (2):
+  iio: hx711: add triggered buffer support
+  iio: hx711: fix bug in reset functionality
 
+ drivers/iio/adc/Kconfig |   2 +
+ drivers/iio/adc/hx711.c | 117 +++++++++++++++++++++++++++++++++++++-----------
+ 2 files changed, 94 insertions(+), 25 deletions(-)
+
+-- 
+2.1.4
+
+
+-- 
