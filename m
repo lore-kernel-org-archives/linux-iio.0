@@ -1,83 +1,47 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:58622 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752199AbdLJS2i (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 10 Dec 2017 13:28:38 -0500
-Date: Sun, 10 Dec 2017 18:28:34 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Andreas Klinger <ak@it-klinger.de>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        singhalsimran0@gmail.com, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] iio: hx711: fix bug in reset functionality
-Message-ID: <20171210182834.7ecdb9fe@archlinux>
-In-Reply-To: <20171206085220.GA15428@arbeit>
-References: <20171206085220.GA15428@arbeit>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=m7Dp=DC=melexis.com=cmo@kernel.org>
+From: Crt Mori <cmo@melexis.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Crt Mori <cmo@melexis.com>
+Subject: [PATCH v3 0/3] iio: temperataure: MLX90632
+Date: Wed,  6 Dec 2017 10:54:30 +0100
+Message-Id: <20171206095430.8041-1-cmo@melexis.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, 6 Dec 2017 09:52:20 +0100
-Andreas Klinger <ak@it-klinger.de> wrote:
+Hi everybody,
 
-> Return value in hx711_reset() should indicate status of dout otherwise the
-> calling function is reporting an error as false positive
-> 
-> If there are two reads too close to each other, then the second one will
-> never succeed. This happens especially when using buffered mode with both
-> channels enabled.
-> 
-> When changing the channel on every trigger event the former 100 ms are not
-> enough for waiting until the device indicates normal mode.
-> 
-> Wait up to 1 second until the device turns into normal mode.
-> 
-> Signed-off-by: Andreas Klinger <ak@it-klinger.de>
-This looks fine to me. I'll pick it up once patch 1 is ready.
+With the sensor now available to broad public, it is time to also
+share the driver with the community. MLX90632 is just 3x3mm in size,
+but with factory calibration offers instant usage in every project.
 
-Thanks,
+Driver currently provides basic functionality, but I might add
+some more fancy features after a while.
 
-Jonathan
+v2 includes comments from Rob Herring (dt-bindings) and Jonathan
+Cameron (iio), as well as proposal to split out int_sqrt64 function
+into the linux/kernel.h
 
-> ---
->  drivers/iio/adc/hx711.c | 13 ++++++-------
->  1 file changed, 6 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/hx711.c b/drivers/iio/adc/hx711.c
-> index 37982b93a227..0a2d0b6cd38a 100644
-> --- a/drivers/iio/adc/hx711.c
-> +++ b/drivers/iio/adc/hx711.c
-> @@ -153,15 +153,16 @@ static int hx711_wait_for_ready(struct hx711_data *hx711_data)
->  	int i, val;
->  
->  	/*
-> -	 * a maximum reset cycle time of 56 ms was measured.
-> -	 * we round it up to 100 ms
-> +	 * in some rare cases the reset takes quite a long time
-> +	 * especially when the channel is changed.
-> +	 * Allow up to one second for it
->  	 */
->  	for (i = 0; i < 100; i++) {
->  		val = gpiod_get_value(hx711_data->gpiod_dout);
->  		if (!val)
->  			break;
-> -		/* sleep at least 1 ms */
-> -		msleep(1);
-> +		/* sleep at least 10 ms */
-> +		msleep(10);
->  	}
->  	if (val)
->  		return -EIO;
-> @@ -203,9 +204,7 @@ static int hx711_reset(struct hx711_data *hx711_data)
->  		 * after a dummy read we need to wait vor readiness
->  		 * for not mixing gain pulses with the clock
->  		 */
-> -		ret = hx711_wait_for_ready(hx711_data);
-> -		if (ret)
-> -			return ret;
-> +		val = hx711_wait_for_ready(hx711_data);
->  	}
->  
->  	return val;
+v3 comments were added to some parts of mlx90632.c and TENTO defines
+replaced by values. Fixes were done to emissivity read/write and
+changed to INT_PLUS_MICRO instead. Empty line in int_sqrt.c was
+removed as it generated a warning when applying.
 
+Crt Mori (3):
+  iio: temperature: Adding support for MLX90632
+  dt-bindings: iio: temperature: add MLX90632 device bindings
+  lib: Add strongly typed 64bit int_sqrt
+
+ .../bindings/iio/temperature/mlx90632.txt          |  28 +
+ MAINTAINERS                                        |   7 +
+ drivers/iio/temperature/Kconfig                    |  12 +
+ drivers/iio/temperature/Makefile                   |   1 +
+ drivers/iio/temperature/mlx90632.c                 | 787 +++++++++++++++++++++
+ include/linux/kernel.h                             |   1 +
+ lib/int_sqrt.c                                     |  26 +
+ 7 files changed, 862 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/temperature/mlx90632.txt
+ create mode 100644 drivers/iio/temperature/mlx90632.c
+
+-- 
+2.15.0
