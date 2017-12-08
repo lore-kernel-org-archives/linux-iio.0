@@ -1,58 +1,72 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:51904 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750990AbdLQJos (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 17 Dec 2017 04:44:48 -0500
-Date: Sun, 17 Dec 2017 09:44:30 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Stefan =?UTF-8?B?QnLDvG5z?= <stefan.bruens@rwth-aachen.de>
-Cc: <linux-iio@vger.kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Maciej Purski <m.purski@samsung.com>,
-        <linux-kernel@vger.kernel.org>, "Andrew F . Davis" <afd@ti.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        "Javier Martinez Canillas" <javier@osg.samsung.com>
-Subject: Re: [PATCH v1 2/7] iio: adc: ina2xx: Clarify size requirement for
- data buffer
-Message-ID: <20171217094430.4e4908ca@archlinux>
-In-Reply-To: <bbf3bcc5-a23c-4f2d-a6be-a349fea93252@rwthex-w2-a.rwth-ad.de>
+Return-Path: <SRS0=G+O7=DE=rwth-aachen.de=Stefan.Bruens@kernel.org>
+From: =?UTF-8?q?Stefan=20Br=C3=BCns?= <stefan.bruens@rwth-aachen.de>
+To: <linux-iio@vger.kernel.org>
+CC: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	=?UTF-8?q?Stefan=20Br=C3=BCns?= <stefan.bruens@rwth-aachen.de>, Maciej Purski
+	<m.purski@samsung.com>, <linux-kernel@vger.kernel.org>, "Andrew F . Davis"
+	<afd@ti.com>, Lars-Peter Clausen <lars@metafoo.de>, Jonathan Cameron
+	<jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, "Javier Martinez
+ Canillas" <javier@osg.samsung.com>
+Subject: [PATCH v1 3/7] iio: adc: ina2xx: Remove unneeded dummy read to clear CNVR flag
+Date: Fri, 8 Dec 2017 18:41:48 +0100
+In-Reply-To: <20171208174152.30341-1-stefan.bruens@rwth-aachen.de>
 References: <20171208174152.30341-1-stefan.bruens@rwth-aachen.de>
-        <bbf3bcc5-a23c-4f2d-a6be-a349fea93252@rwthex-w2-a.rwth-ad.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Message-ID: <ed9716c7-5e15-461a-985c-eea93257928c@rwthex-w2-a.rwth-ad.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, 8 Dec 2017 18:41:47 +0100
-Stefan Brüns <stefan.bruens@rwth-aachen.de> wrote:
+Although the datasheet states the CNVR flag is cleared by reading the
+BUS_VOLTAGE register, it is actually cleared by reading any of the
+voltage/current/power registers.
 
-> The timestamp is inserted into the buffer after the sample data by
-> iio_push_to_buffers_with_timestamp, document the space requirement for
-> the timestamp.
-> 
-> Signed-off-by: Stefan Brüns <stefan.bruens@rwth-aachen.de>
-Applied and pushed out as testing for the autobuilders to play with it.
-Thanks,
+The behaviour has been confirmed by TI support:
+http://e2e.ti.com/support/amplifiers/current-shunt-monitors/f/931/p/647053/2378282
 
-Jonathan
-> ---
-> 
->  drivers/iio/adc/ina2xx-adc.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
-> index 3195f8754c3b..8c8120406f52 100644
-> --- a/drivers/iio/adc/ina2xx-adc.c
-> +++ b/drivers/iio/adc/ina2xx-adc.c
-> @@ -700,7 +700,8 @@ static const struct iio_chan_spec ina219_channels[] = {
->  static int ina2xx_work_buffer(struct iio_dev *indio_dev)
->  {
->  	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
-> -	unsigned short data[8];
-> +	/* data buffer needs space for channel data and timestap */
-> +	unsigned short data[4 + sizeof(s64)/sizeof(short)];
->  	int bit, ret, i = 0;
->  	s64 time_a, time_b;
->  	unsigned int alert;
+Signed-off-by: Stefan Brüns <stefan.bruens@rwth-aachen.de>
+---
 
+ drivers/iio/adc/ina2xx-adc.c | 14 --------------
+ 1 file changed, 14 deletions(-)
+
+diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
+index 8c8120406f52..b027d485398b 100644
+--- a/drivers/iio/adc/ina2xx-adc.c
++++ b/drivers/iio/adc/ina2xx-adc.c
+@@ -705,7 +705,6 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
+ 	int bit, ret, i = 0;
+ 	s64 time_a, time_b;
+ 	unsigned int alert;
+-	int cnvr_need_clear = 0;
+ 
+ 	time_a = iio_get_time_ns(indio_dev);
+ 
+@@ -730,7 +729,6 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
+ 				ret = regmap_read(chip->regmap,
+ 						  INA2XX_BUS_VOLTAGE, &alert);
+ 				alert &= INA219_CNVR;
+-				cnvr_need_clear = alert;
+ 			}
+ 
+ 			if (ret < 0)
+@@ -752,18 +750,6 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
+ 			return ret;
+ 
+ 		data[i++] = val;
+-
+-		if (INA2XX_SHUNT_VOLTAGE + bit == INA2XX_POWER)
+-			cnvr_need_clear = 0;
+-	}
+-
+-	/* Dummy read on INA219 power register to clear CNVR flag */
+-	if (cnvr_need_clear && chip->config->chip_id == ina219) {
+-		unsigned int val;
+-
+-		ret = regmap_read(chip->regmap, INA2XX_POWER, &val);
+-		if (ret < 0)
+-			return ret;
+ 	}
+ 
+ 	time_b = iio_get_time_ns(indio_dev);
+-- 
+2.15.1
