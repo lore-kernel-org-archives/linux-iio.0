@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:36710 "EHLO
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:5229 "EHLO
         mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1753956AbdLHOwc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 8 Dec 2017 09:52:32 -0500
+        by vger.kernel.org with ESMTP id S1753675AbdLHOwd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 8 Dec 2017 09:52:33 -0500
 From: Arnaud Pouliquen <arnaud.pouliquen@st.com>
 To: Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
@@ -20,94 +20,116 @@ CC: <devicetree@vger.kernel.org>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         Alexandre Torgue <alexandre.torgue@st.com>,
         <arnaud.pouliquen@st.com>
-Subject: [PATCH v7 02/13] docs: driver-api: add iio hw consumer section
-Date: Fri, 8 Dec 2017 15:49:15 +0100
-Message-ID: <1512744566-13233-3-git-send-email-arnaud.pouliquen@st.com>
+Subject: [PATCH v7 03/13] IIO: hw_consumer: add devm_iio_hw_consumer_alloc
+Date: Fri, 8 Dec 2017 15:49:16 +0100
+Message-ID: <1512744566-13233-4-git-send-email-arnaud.pouliquen@st.com>
 In-Reply-To: <1512744566-13233-1-git-send-email-arnaud.pouliquen@st.com>
 References: <1512744566-13233-1-git-send-email-arnaud.pouliquen@st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This adds a section about the Hardware consumer
-API of the IIO subsystem to the driver API
-documentation.
+Add devm_iio_hw_consumer_alloc function that calls iio_hw_consumer_free
+when the device is unbound from the bus.
 
 Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@st.com>
 Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- Documentation/driver-api/iio/hw-consumer.rst | 51 ++++++++++++++++++++++++++++
- Documentation/driver-api/iio/index.rst       |  1 +
- 2 files changed, 52 insertions(+)
- create mode 100644 Documentation/driver-api/iio/hw-consumer.rst
+ drivers/iio/buffer/industrialio-hw-consumer.c | 66 +++++++++++++++++++++++++++
+ include/linux/iio/hw-consumer.h               |  2 +
+ 2 files changed, 68 insertions(+)
 
-diff --git a/Documentation/driver-api/iio/hw-consumer.rst b/Documentation/driver-api/iio/hw-consumer.rst
-new file mode 100644
-index 0000000..8facce6
---- /dev/null
-+++ b/Documentation/driver-api/iio/hw-consumer.rst
-@@ -0,0 +1,51 @@
-+===========
-+HW consumer
-+===========
-+An IIO device can be directly connected to another device in hardware. in this
-+case the buffers between IIO provider and IIO consumer are handled by hardware.
-+The Industrial I/O HW consumer offers a way to bond these IIO devices without
-+software buffer for data. The implementation can be found under
-+:file:`drivers/iio/buffer/hw-consumer.c`
+diff --git a/drivers/iio/buffer/industrialio-hw-consumer.c b/drivers/iio/buffer/industrialio-hw-consumer.c
+index 993ecdc..9516569 100644
+--- a/drivers/iio/buffer/industrialio-hw-consumer.c
++++ b/drivers/iio/buffer/industrialio-hw-consumer.c
+@@ -137,6 +137,72 @@ void iio_hw_consumer_free(struct iio_hw_consumer *hwc)
+ }
+ EXPORT_SYMBOL_GPL(iio_hw_consumer_free);
+ 
++static void devm_iio_hw_consumer_release(struct device *dev, void *res)
++{
++	iio_hw_consumer_free(*(struct iio_hw_consumer **)res);
++}
 +
++static int devm_iio_hw_consumer_match(struct device *dev, void *res, void *data)
++{
++	struct iio_hw_consumer **r = res;
 +
-+* struct :c:type:`iio_hw_consumer` — Hardware consumer structure
-+* :c:func:`iio_hw_consumer_alloc` — Allocate IIO hardware consumer
-+* :c:func:`iio_hw_consumer_free` — Free IIO hardware consumer
-+* :c:func:`iio_hw_consumer_enable` — Enable IIO hardware consumer
-+* :c:func:`iio_hw_consumer_disable` — Disable IIO hardware consumer
++	if (!r || !*r) {
++		WARN_ON(!r || !*r);
++		return 0;
++	}
++	return *r == data;
++}
 +
++/**
++ * devm_iio_hw_consumer_alloc - Resource-managed iio_hw_consumer_alloc()
++ * @dev: Pointer to consumer device.
++ *
++ * Managed iio_hw_consumer_alloc. iio_hw_consumer allocated with this function
++ * is automatically freed on driver detach.
++ *
++ * If an iio_hw_consumer allocated with this function needs to be freed
++ * separately, devm_iio_hw_consumer_free() must be used.
++ *
++ * returns pointer to allocated iio_hw_consumer on success, NULL on failure.
++ */
++struct iio_hw_consumer *devm_iio_hw_consumer_alloc(struct device *dev)
++{
++	struct iio_hw_consumer **ptr, *iio_hwc;
 +
-+HW consumer setup
-+=================
++	ptr = devres_alloc(devm_iio_hw_consumer_release, sizeof(*ptr),
++			   GFP_KERNEL);
++	if (!ptr)
++		return NULL;
 +
-+As standard IIO device the implementation is based on IIO provider/consumer.
-+A typical IIO HW consumer setup looks like this::
-+
-+	static struct iio_hw_consumer *hwc;
-+
-+	static const struct iio_info adc_info = {
-+		.read_raw = adc_read_raw,
-+	};
-+
-+	static int adc_read_raw(struct iio_dev *indio_dev,
-+				struct iio_chan_spec const *chan, int *val,
-+				int *val2, long mask)
-+	{
-+		ret = iio_hw_consumer_enable(hwc);
-+
-+		/* Acquire data */
-+
-+		ret = iio_hw_consumer_disable(hwc);
++	iio_hwc = iio_hw_consumer_alloc(dev);
++	if (IS_ERR(iio_hwc)) {
++		devres_free(ptr);
++	} else {
++		*ptr = iio_hwc;
++		devres_add(dev, ptr);
 +	}
 +
-+	static int adc_probe(struct platform_device *pdev)
-+	{
-+		hwc = devm_iio_hw_consumer_alloc(&iio->dev);
-+	}
++	return iio_hwc;
++}
++EXPORT_SYMBOL_GPL(devm_iio_hw_consumer_alloc);
 +
-+More details
-+============
-+.. kernel-doc:: include/linux/iio/hw-consumer.h
-+.. kernel-doc:: drivers/iio/buffer/industrialio-hw-consumer.c
-+   :export:
++/**
++ * devm_iio_hw_consumer_free - Resource-managed iio_hw_consumer_free()
++ * @dev: Pointer to consumer device.
++ * @hwc: iio_hw_consumer to free.
++ *
++ * Free iio_hw_consumer allocated with devm_iio_hw_consumer_alloc().
++ */
++void devm_iio_hw_consumer_free(struct device *dev, struct iio_hw_consumer *hwc)
++{
++	int rc;
 +
-diff --git a/Documentation/driver-api/iio/index.rst b/Documentation/driver-api/iio/index.rst
-index e5c3922..7fba341 100644
---- a/Documentation/driver-api/iio/index.rst
-+++ b/Documentation/driver-api/iio/index.rst
-@@ -15,3 +15,4 @@ Contents:
-    buffers
-    triggers
-    triggered-buffers
-+   hw-consumer
++	rc = devres_release(dev, devm_iio_hw_consumer_release,
++			    devm_iio_hw_consumer_match, hwc);
++	WARN_ON(rc);
++}
++EXPORT_SYMBOL_GPL(devm_iio_hw_consumer_free);
++
+ /**
+  * iio_hw_consumer_enable() - Enable IIO hardware consumer
+  * @hwc: iio_hw_consumer to enable.
+diff --git a/include/linux/iio/hw-consumer.h b/include/linux/iio/hw-consumer.h
+index db8c00b..44d48bb 100644
+--- a/include/linux/iio/hw-consumer.h
++++ b/include/linux/iio/hw-consumer.h
+@@ -13,6 +13,8 @@ struct iio_hw_consumer;
+ 
+ struct iio_hw_consumer *iio_hw_consumer_alloc(struct device *dev);
+ void iio_hw_consumer_free(struct iio_hw_consumer *hwc);
++struct iio_hw_consumer *devm_iio_hw_consumer_alloc(struct device *dev);
++void devm_iio_hw_consumer_free(struct device *dev, struct iio_hw_consumer *hwc);
+ int iio_hw_consumer_enable(struct iio_hw_consumer *hwc);
+ void iio_hw_consumer_disable(struct iio_hw_consumer *hwc);
+ 
 -- 
 2.7.4
 
