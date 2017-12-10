@@ -1,73 +1,129 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:43408 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751994AbdLJTp5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 10 Dec 2017 14:45:57 -0500
-Date: Sun, 10 Dec 2017 19:45:52 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: SF Markus Elfring <elfring@users.sourceforge.net>
-Cc: linux-iio@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org,
-        Hans de Goede <hdegoede@redhat.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: =?UTF-8?B?aWlvL+KApjo=?= Use common error handling code
-Message-ID: <20171210194552.28aa4a9c@archlinux>
-In-Reply-To: <f8289b08-389a-a6d6-21f6-ca1ba20c2c85@users.sourceforge.net>
-References: <5ab7e200-2dea-63e2-06db-0e185f563d16@users.sourceforge.net>
-        <0f26a13b-7bbf-525b-a864-8aa8e13c3aef@users.sourceforge.net>
-        <20171026174200.5c00b06d@archlinux>
-        <e7292cc3-e4e2-0943-7cf9-4852cf37ef36@users.sourceforge.net>
-        <20171210160829.16128419@archlinux>
-        <f8289b08-389a-a6d6-21f6-ca1ba20c2c85@users.sourceforge.net>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50314 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751994AbdLJTsA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 10 Dec 2017 14:48:00 -0500
+Date: Sun, 10 Dec 2017 19:47:57 +0000
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc: linux-iio@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, linux-amlogic@lists.infradead.org
+Subject: Re: [PATCH 4/5] iio: adc: meson-saradc: fix the clock frequency on
+ Meson8 and Meson8b
+Message-ID: <20171210194757.08f2ba29@archlinux>
+In-Reply-To: <20171119155548.41cf4f6f@archlinux>
+References: <20171031200147.14660-1-martin.blumenstingl@googlemail.com>
+        <20171031200147.14660-5-martin.blumenstingl@googlemail.com>
+        <20171119155548.41cf4f6f@archlinux>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, 10 Dec 2017 17:43:34 +0100
-SF Markus Elfring <elfring@users.sourceforge.net> wrote:
+On Sun, 19 Nov 2017 15:55:48 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-> > Hi Markus, I've accepted the ones that I think made an improvement
-> > outweighing the inherent small costs of making any change.  
+> On Tue, 31 Oct 2017 21:01:46 +0100
+> Martin Blumenstingl <martin.blumenstingl@googlemail.com> wrote:
 > 
-> Does such a kind of feedback mean that you reconsidered any places
-> where you expressed a rejection initially?
-No.  Once I have expressed strong reservations about a patch it
-would require some change in the facts to make me reevaluate.
+> > GX SoCs use a 1.2 MHz ADC clock, while the older SoCs use a 1.14 MHz
+> > clock.
+> > 
+> > A comment in the driver from Amlogic's GPL kernel says that it's
+> > running at 1.28 MHz. However, it's actually programming a divider of
+> > 20 + 1. With a XTAL clock of 24 MHz this results in a frequency of
+> > 1.14 MHz. (their calculation might be based on a 27 MHz XTAL clock,
+> > but this is not what we have on the Meson8 and Meson8b SoCs).
+> > 
+> > The ADC was still working with the 1.2MHz clock. In my own tests I did
+> > not see a difference between 1.2 and 1.14 MHz (regardless of the clock
+> > frequency used, the ADC results were identical).
+> > 
+> > Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>  
 > 
-> 
-> > We also need to avoid code constructs that are unusual in error handling
-> > such as backwards gotos.  
-> 
-> Why would you like to exclude this approach if anything useful could be achieved
-> in the shown software design direction?
-Yes - exclude this. It trades of ease of review against briefness of code.
-Ease of review and hence verification of correctness is more important in these
-cases.
+> Hmm. This will have to wait until the other patches have gotten into
+> mainline and back to my upstream.  Let me know if I seem to have lost
+> it. 
+Applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to play with it.
 
-> 
-> 
-> > Note however that most of the changes made so far are only minor improvements.  
-> 
-> I agree that corresponding effects are small just because the discussed
-> source code adjustments affected specific function implementations.
-> 
-> 
-> > I am not saying I don't appreciate them,  
-> 
-> Thanks.
-> 
-> 
-> > but rather than that they are of of low importance.  
-> 
-> A lot of details are competing also for our software development attention.
->
-Exactly.
+Thanks,
 
 Jonathan
- 
-> Regards,
-> Markus
+> 
+> Thanks,
+> 
+>  
+> Jonathan
+> 
+> > ---
+> >  drivers/iio/adc/meson_saradc.c | 8 +++++++-
+> >  1 file changed, 7 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
+> > index 7dc7d297a0fc..fa3c1378c2c9 100644
+> > --- a/drivers/iio/adc/meson_saradc.c
+> > +++ b/drivers/iio/adc/meson_saradc.c
+> > @@ -221,6 +221,7 @@ enum meson_sar_adc_chan7_mux_sel {
+> >  
+> >  struct meson_sar_adc_data {
+> >  	bool					has_bl30_integration;
+> > +	unsigned long				clock_rate;
+> >  	u32					bandgap_reg;
+> >  	unsigned int				resolution;
+> >  	const char				*name;
+> > @@ -684,7 +685,7 @@ static int meson_sar_adc_init(struct iio_dev *indio_dev)
+> >  		return ret;
+> >  	}
+> >  
+> > -	ret = clk_set_rate(priv->adc_clk, 1200000);
+> > +	ret = clk_set_rate(priv->adc_clk, priv->data->clock_rate);
+> >  	if (ret) {
+> >  		dev_err(indio_dev->dev.parent,
+> >  			"failed to set adc clock rate\n");
+> > @@ -867,6 +868,7 @@ static const struct iio_info meson_sar_adc_iio_info = {
+> >  
+> >  static const struct meson_sar_adc_data meson_sar_adc_meson8_data = {
+> >  	.has_bl30_integration = false,
+> > +	.clock_rate = 1150000,
+> >  	.bandgap_reg = MESON_SAR_ADC_DELTA_10,
+> >  	.regmap_config = &meson_sar_adc_regmap_config_meson8,
+> >  	.resolution = 10,
+> > @@ -875,6 +877,7 @@ static const struct meson_sar_adc_data meson_sar_adc_meson8_data = {
+> >  
+> >  static const struct meson_sar_adc_data meson_sar_adc_meson8b_data = {
+> >  	.has_bl30_integration = false,
+> > +	.clock_rate = 1150000,
+> >  	.bandgap_reg = MESON_SAR_ADC_DELTA_10,
+> >  	.regmap_config = &meson_sar_adc_regmap_config_meson8,
+> >  	.resolution = 10,
+> > @@ -883,6 +886,7 @@ static const struct meson_sar_adc_data meson_sar_adc_meson8b_data = {
+> >  
+> >  static const struct meson_sar_adc_data meson_sar_adc_gxbb_data = {
+> >  	.has_bl30_integration = true,
+> > +	.clock_rate = 1200000,
+> >  	.bandgap_reg = MESON_SAR_ADC_REG11,
+> >  	.regmap_config = &meson_sar_adc_regmap_config_gxbb,
+> >  	.resolution = 10,
+> > @@ -891,6 +895,7 @@ static const struct meson_sar_adc_data meson_sar_adc_gxbb_data = {
+> >  
+> >  static const struct meson_sar_adc_data meson_sar_adc_gxl_data = {
+> >  	.has_bl30_integration = true,
+> > +	.clock_rate = 1200000,
+> >  	.bandgap_reg = MESON_SAR_ADC_REG11,
+> >  	.regmap_config = &meson_sar_adc_regmap_config_gxbb,
+> >  	.resolution = 12,
+> > @@ -899,6 +904,7 @@ static const struct meson_sar_adc_data meson_sar_adc_gxl_data = {
+> >  
+> >  static const struct meson_sar_adc_data meson_sar_adc_gxm_data = {
+> >  	.has_bl30_integration = true,
+> > +	.clock_rate = 1200000,
+> >  	.bandgap_reg = MESON_SAR_ADC_REG11,
+> >  	.regmap_config = &meson_sar_adc_regmap_config_gxbb,
+> >  	.resolution = 12,  
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
