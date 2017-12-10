@@ -1,126 +1,125 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50314 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50338 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751994AbdLJTsA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 10 Dec 2017 14:48:00 -0500
-Date: Sun, 10 Dec 2017 19:47:57 +0000
+        with ESMTP id S1751994AbdLJTtN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 10 Dec 2017 14:49:13 -0500
+Date: Sun, 10 Dec 2017 19:49:10 +0000
 From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 Cc: linux-iio@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de,
         pmeerw@pmeerw.net, linux-amlogic@lists.infradead.org
-Subject: Re: [PATCH 4/5] iio: adc: meson-saradc: fix the clock frequency on
- Meson8 and Meson8b
-Message-ID: <20171210194757.08f2ba29@archlinux>
-In-Reply-To: <20171119155548.41cf4f6f@archlinux>
+Subject: Re: [PATCH 5/5] iio: adc: meson-saradc: program the channel muxes
+ during initialization
+Message-ID: <20171210194910.73582108@archlinux>
+In-Reply-To: <20171119155701.551b4cd1@archlinux>
 References: <20171031200147.14660-1-martin.blumenstingl@googlemail.com>
-        <20171031200147.14660-5-martin.blumenstingl@googlemail.com>
-        <20171119155548.41cf4f6f@archlinux>
+        <20171031200147.14660-6-martin.blumenstingl@googlemail.com>
+        <20171119155701.551b4cd1@archlinux>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, 19 Nov 2017 15:55:48 +0000
+On Sun, 19 Nov 2017 15:57:01 +0000
 Jonathan Cameron <jic23@kernel.org> wrote:
 
-> On Tue, 31 Oct 2017 21:01:46 +0100
+> On Tue, 31 Oct 2017 21:01:47 +0100
 > Martin Blumenstingl <martin.blumenstingl@googlemail.com> wrote:
 > 
-> > GX SoCs use a 1.2 MHz ADC clock, while the older SoCs use a 1.14 MHz
-> > clock.
+> > On some Meson8 devices the channel muxes are not programmed. This
+> > results in garbage values when trying to read channels that are not set
+> > up.
+> > Fix this by initializing the channel 0 and 1 muxes in
+> > MESON_SAR_ADC_CHAN_10_SW as well as the muxes for all other channels in
+> > MESON_SAR_ADC_AUX_SW based on what the vendor driver does (which is
+> > simply a 1:1 mapping of channel number and channel mux).
+> > This only showed up on Meson8 devices, because for GXBB and newer BL30
+> > is taking care of initializing the channel muxes.
 > > 
-> > A comment in the driver from Amlogic's GPL kernel says that it's
-> > running at 1.28 MHz. However, it's actually programming a divider of
-> > 20 + 1. With a XTAL clock of 24 MHz this results in a frequency of
-> > 1.14 MHz. (their calculation might be based on a 27 MHz XTAL clock,
-> > but this is not what we have on the Meson8 and Meson8b SoCs).
-> > 
-> > The ADC was still working with the 1.2MHz clock. In my own tests I did
-> > not see a difference between 1.2 and 1.14 MHz (regardless of the clock
-> > frequency used, the ADC results were identical).
+> > This additionally fixes a typo in the
+> > MESON_SAR_ADC_AUX_SW_MUX_SEL_CHAN_MASK macro because the old definition
+> > assumed that the register fields were 2 bit wide, while they are
+> > actually 3 bit wide.
 > > 
 > > Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>  
 > 
-> Hmm. This will have to wait until the other patches have gotten into
-> mainline and back to my upstream.  Let me know if I seem to have lost
-> it. 
+> I'll go with your opinion on this.   We can always request that it is
+> added to stable after it has gone in during the next merge window.
+> 
+> Let me know if I seem to have forgotten this once the fixes have
+> come back round the loop to my togreg branch.
 Applied to the togreg branch of iio.git and pushed out as testing
 for the autobuilders to play with it.
 
 Thanks,
 
-Jonathan
+Jonathan 
+
 > 
 > Thanks,
 > 
->  
 > Jonathan
-> 
 > > ---
-> >  drivers/iio/adc/meson_saradc.c | 8 +++++++-
-> >  1 file changed, 7 insertions(+), 1 deletion(-)
+> >  drivers/iio/adc/meson_saradc.c | 32 +++++++++++++++++++++++++++++---
+> >  1 file changed, 29 insertions(+), 3 deletions(-)
 > > 
 > > diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
-> > index 7dc7d297a0fc..fa3c1378c2c9 100644
+> > index fa3c1378c2c9..48fb1b642a5e 100644
 > > --- a/drivers/iio/adc/meson_saradc.c
 > > +++ b/drivers/iio/adc/meson_saradc.c
-> > @@ -221,6 +221,7 @@ enum meson_sar_adc_chan7_mux_sel {
+> > @@ -96,8 +96,8 @@
+> >  	#define MESON_SAR_ADC_FIFO_RD_SAMPLE_VALUE_MASK		GENMASK(11, 0)
 > >  
-> >  struct meson_sar_adc_data {
-> >  	bool					has_bl30_integration;
-> > +	unsigned long				clock_rate;
-> >  	u32					bandgap_reg;
-> >  	unsigned int				resolution;
-> >  	const char				*name;
-> > @@ -684,7 +685,7 @@ static int meson_sar_adc_init(struct iio_dev *indio_dev)
-> >  		return ret;
-> >  	}
+> >  #define MESON_SAR_ADC_AUX_SW					0x1c
+> > -	#define MESON_SAR_ADC_AUX_SW_MUX_SEL_CHAN_MASK(_chan)	\
+> > -					(GENMASK(10, 8) << (((_chan) - 2) * 2))
+> > +	#define MESON_SAR_ADC_AUX_SW_MUX_SEL_CHAN_SHIFT(_chan)	\
+> > +					(8 + (((_chan) - 2) * 3))
+> >  	#define MESON_SAR_ADC_AUX_SW_VREF_P_MUX			BIT(6)
+> >  	#define MESON_SAR_ADC_AUX_SW_VREF_N_MUX			BIT(5)
+> >  	#define MESON_SAR_ADC_AUX_SW_MODE_SEL			BIT(4)
+> > @@ -623,7 +623,7 @@ static int meson_sar_adc_clk_init(struct iio_dev *indio_dev,
+> >  static int meson_sar_adc_init(struct iio_dev *indio_dev)
+> >  {
+> >  	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
+> > -	int regval, ret;
+> > +	int regval, i, ret;
 > >  
-> > -	ret = clk_set_rate(priv->adc_clk, 1200000);
-> > +	ret = clk_set_rate(priv->adc_clk, priv->data->clock_rate);
+> >  	/*
+> >  	 * make sure we start at CH7 input since the other muxes are only used
+> > @@ -678,6 +678,32 @@ static int meson_sar_adc_init(struct iio_dev *indio_dev)
+> >  			   FIELD_PREP(MESON_SAR_ADC_DELAY_INPUT_DLY_SEL_MASK,
+> >  				      1));
+> >  
+> > +	/*
+> > +	 * set up the input channel muxes in MESON_SAR_ADC_CHAN_10_SW
+> > +	 * (0 = SAR_ADC_CH0, 1 = SAR_ADC_CH1)
+> > +	 */
+> > +	regval = FIELD_PREP(MESON_SAR_ADC_CHAN_10_SW_CHAN0_MUX_SEL_MASK, 0);
+> > +	regmap_update_bits(priv->regmap, MESON_SAR_ADC_CHAN_10_SW,
+> > +			   MESON_SAR_ADC_CHAN_10_SW_CHAN0_MUX_SEL_MASK,
+> > +			   regval);
+> > +	regval = FIELD_PREP(MESON_SAR_ADC_CHAN_10_SW_CHAN1_MUX_SEL_MASK, 1);
+> > +	regmap_update_bits(priv->regmap, MESON_SAR_ADC_CHAN_10_SW,
+> > +			   MESON_SAR_ADC_CHAN_10_SW_CHAN1_MUX_SEL_MASK,
+> > +			   regval);
+> > +
+> > +	/*
+> > +	 * set up the input channel muxes in MESON_SAR_ADC_AUX_SW
+> > +	 * (2 = SAR_ADC_CH2, 3 = SAR_ADC_CH3, ...) and enable
+> > +	 * MESON_SAR_ADC_AUX_SW_YP_DRIVE_SW and
+> > +	 * MESON_SAR_ADC_AUX_SW_XP_DRIVE_SW like the vendor driver.
+> > +	 */
+> > +	regval = 0;
+> > +	for (i = 2; i <= 7; i++)
+> > +		regval |= i << MESON_SAR_ADC_AUX_SW_MUX_SEL_CHAN_SHIFT(i);
+> > +	regval |= MESON_SAR_ADC_AUX_SW_YP_DRIVE_SW;
+> > +	regval |= MESON_SAR_ADC_AUX_SW_XP_DRIVE_SW;
+> > +	regmap_write(priv->regmap, MESON_SAR_ADC_AUX_SW, regval);
+> > +
+> >  	ret = clk_set_parent(priv->adc_sel_clk, priv->clkin);
 > >  	if (ret) {
-> >  		dev_err(indio_dev->dev.parent,
-> >  			"failed to set adc clock rate\n");
-> > @@ -867,6 +868,7 @@ static const struct iio_info meson_sar_adc_iio_info = {
-> >  
-> >  static const struct meson_sar_adc_data meson_sar_adc_meson8_data = {
-> >  	.has_bl30_integration = false,
-> > +	.clock_rate = 1150000,
-> >  	.bandgap_reg = MESON_SAR_ADC_DELTA_10,
-> >  	.regmap_config = &meson_sar_adc_regmap_config_meson8,
-> >  	.resolution = 10,
-> > @@ -875,6 +877,7 @@ static const struct meson_sar_adc_data meson_sar_adc_meson8_data = {
-> >  
-> >  static const struct meson_sar_adc_data meson_sar_adc_meson8b_data = {
-> >  	.has_bl30_integration = false,
-> > +	.clock_rate = 1150000,
-> >  	.bandgap_reg = MESON_SAR_ADC_DELTA_10,
-> >  	.regmap_config = &meson_sar_adc_regmap_config_meson8,
-> >  	.resolution = 10,
-> > @@ -883,6 +886,7 @@ static const struct meson_sar_adc_data meson_sar_adc_meson8b_data = {
-> >  
-> >  static const struct meson_sar_adc_data meson_sar_adc_gxbb_data = {
-> >  	.has_bl30_integration = true,
-> > +	.clock_rate = 1200000,
-> >  	.bandgap_reg = MESON_SAR_ADC_REG11,
-> >  	.regmap_config = &meson_sar_adc_regmap_config_gxbb,
-> >  	.resolution = 10,
-> > @@ -891,6 +895,7 @@ static const struct meson_sar_adc_data meson_sar_adc_gxbb_data = {
-> >  
-> >  static const struct meson_sar_adc_data meson_sar_adc_gxl_data = {
-> >  	.has_bl30_integration = true,
-> > +	.clock_rate = 1200000,
-> >  	.bandgap_reg = MESON_SAR_ADC_REG11,
-> >  	.regmap_config = &meson_sar_adc_regmap_config_gxbb,
-> >  	.resolution = 12,
-> > @@ -899,6 +904,7 @@ static const struct meson_sar_adc_data meson_sar_adc_gxl_data = {
-> >  
-> >  static const struct meson_sar_adc_data meson_sar_adc_gxm_data = {
-> >  	.has_bl30_integration = true,
-> > +	.clock_rate = 1200000,
-> >  	.bandgap_reg = MESON_SAR_ADC_REG11,
-> >  	.regmap_config = &meson_sar_adc_regmap_config_gxbb,
-> >  	.resolution = 12,  
+> >  		dev_err(indio_dev->dev.parent,  
 > 
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
