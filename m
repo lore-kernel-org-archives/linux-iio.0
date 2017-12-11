@@ -1,54 +1,88 @@
-Return-Path: <SRS0=vBk5=DH=melexis.com=cmo@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f65.google.com ([74.125.82.65]:36353 "EHLO
+        mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752259AbdLKJTY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Dec 2017 04:19:24 -0500
+Received: by mail-wm0-f65.google.com with SMTP id b76so12772671wmg.1
+        for <linux-iio@vger.kernel.org>; Mon, 11 Dec 2017 01:19:23 -0800 (PST)
 From: Crt Mori <cmo@melexis.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Crt Mori <cmo@melexis.com>
-Subject: [PATCH v4 0/3] iio: temperataure: MLX90632
-Date: Mon, 11 Dec 2017 10:18:54 +0100
-Message-Id: <20171211091854.8354-1-cmo@melexis.com>
-List-ID: <linux-iio@vger.kernel.org>
+Cc: Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Rusty Russell <rusty@rustcorp.com.au>,
+        Ian Abbott <abbotti@mev.co.uk>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Niklas Soderlund <niklas.soderlund+renesas@ragnatech.se>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        Crt Mori <cmo@melexis.com>
+Subject: [PATCH v4 1/3] lib: Add strongly typed 64bit int_sqrt
+Date: Mon, 11 Dec 2017 10:19:15 +0100
+Message-Id: <20171211091915.8482-1-cmo@melexis.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi everybody,
+There is no option to perform 64bit integer sqrt on 32bit platform.
+Added stronger typed int_sqrt64 enables the 64bit calculations to
+be performed on 32bit platforms. Although int_sqrt() is a rough
+approximation, the same algorithm is used in int_sqrt64() as good
+enough on 32bit platform.
 
-With the sensor now available to broad public, it is time to also
-share the driver with the community. MLX90632 is just 3x3mm in size,
-but with factory calibration offers instant usage in every project.
+Signed-off-by: Crt Mori <cmo@melexis.com>
+---
+ include/linux/kernel.h |  1 +
+ lib/int_sqrt.c         | 26 ++++++++++++++++++++++++++
+ 2 files changed, 27 insertions(+)
 
-Driver currently provides basic functionality, but I might add
-some more fancy features after a while.
-
-v2 includes comments from Rob Herring (dt-bindings) and Jonathan
-Cameron (iio), as well as proposal to split out int_sqrt64 function
-into the linux/kernel.h
-
-v3 comments were added to some parts of mlx90632.c and TENTO defines
-replaced by values. Fixes were done to emissivity read/write and
-changed to INT_PLUS_MICRO instead. Empty line in int_sqrt.c was
-removed as it generated a warning when applying.
-
-v4 CONFIG_PM replaced by __maybe_unused, some cleanup in suspend,
-EEPROM_VERSION identifier is grouped together in one single number
-instead of assembled on fly. Replaced license on top with SPDX.
-Most importantly - reordered patches so that lib is added before
-the driver itself (which uses it).
-
-
-Crt Mori (3):
-  lib: Add strongly typed 64bit int_sqrt
-  iio: temperature: Adding support for MLX90632
-  dt-bindings: iio: temperature: add MLX90632 device bindings
-
- .../bindings/iio/temperature/mlx90632.txt          |  28 +
- MAINTAINERS                                        |   7 +
- drivers/iio/temperature/Kconfig                    |  12 +
- drivers/iio/temperature/Makefile                   |   1 +
- drivers/iio/temperature/mlx90632.c                 | 774 +++++++++++++++++++++
- include/linux/kernel.h                             |   1 +
- lib/int_sqrt.c                                     |  26 +
- 7 files changed, 849 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/temperature/mlx90632.txt
- create mode 100644 drivers/iio/temperature/mlx90632.c
-
+diff --git a/include/linux/kernel.h b/include/linux/kernel.h
+index 0ad4c3044cf9..09f53063f2c9 100644
+--- a/include/linux/kernel.h
++++ b/include/linux/kernel.h
+@@ -459,6 +459,7 @@ extern int kernel_text_address(unsigned long addr);
+ extern int func_ptr_is_kernel_text(void *ptr);
+ 
+ unsigned long int_sqrt(unsigned long);
++u64 int_sqrt64(u64 x);
+ 
+ extern void bust_spinlocks(int yes);
+ extern int oops_in_progress;		/* If set, an oops, panic(), BUG() or die() is in progress */
+diff --git a/lib/int_sqrt.c b/lib/int_sqrt.c
+index 1ef4cc344977..de5836448ea3 100644
+--- a/lib/int_sqrt.c
++++ b/lib/int_sqrt.c
+@@ -36,3 +36,29 @@ unsigned long int_sqrt(unsigned long x)
+ 	return y;
+ }
+ EXPORT_SYMBOL(int_sqrt);
++
++/**
++ * int_sqrt64 - strongly typed int_sqrt function
++ * @x: 64bit integer of which to calculate the sqrt
++ */
++u64 int_sqrt64(u64 x)
++{
++	u64 b, m, y = 0;
++
++	if (x <= 1)
++		return x;
++
++	m = 1ULL << (64 - 2);
++	while (m != 0) {
++		b = y + m;
++		y >>= 1;
++
++		if (x >= b) {
++			x -= b;
++			y += m;
++		}
++		m >>= 2;
++	}
++	return y;
++}
++EXPORT_SYMBOL(int_sqrt64);
 -- 
 2.15.0
+
