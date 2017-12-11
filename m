@@ -1,72 +1,109 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f65.google.com ([209.85.215.65]:38248 "EHLO
-        mail-lf0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751577AbdLLTTt (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 12 Dec 2017 14:19:49 -0500
-Received: by mail-lf0-f65.google.com with SMTP id e137so24427620lfg.5
-        for <linux-iio@vger.kernel.org>; Tue, 12 Dec 2017 11:19:48 -0800 (PST)
+Return-Path: <SRS0=578c=DH=st.com=arnaud.pouliquen@kernel.org>
+From: Arnaud Pouliquen <arnaud.pouliquen@st.com>
+To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+        Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler
+	<pmeerw@pmeerw.net>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai
+	<tiwai@suse.com>,
+        Liam Girdwood <lgirdwood@gmail.com>, Mark Brown
+	<broonie@kernel.org>
+CC: <devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-iio@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        Maxime Coquelin
+	<mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>, <arnaud.pouliquen@st.com>
+Subject: [PATCH v8 00/13] Add STM32 DFSDM support
+Date: Mon, 11 Dec 2017 11:18:31 +0100
+Message-ID: <1512987524-2901-1-git-send-email-arnaud.pouliquen@st.com>
 MIME-Version: 1.0
-In-Reply-To: <13b298c0-d618-e217-406d-63bac56106fc@suse.de>
-References: <20171211092002.8687-1-cmo@melexis.com> <13b298c0-d618-e217-406d-63bac56106fc@suse.de>
-From: Crt Mori <cmo@melexis.com>
-Date: Tue, 12 Dec 2017 20:19:07 +0100
-Message-ID: <CAKv63utbAiN3AdR1xRKbHjPeEN2fCGQ8ZocA=T2mKwciqYVfgw@mail.gmail.com>
-Subject: Re: [PATCH v4 3/3] dt-bindings: iio: temperature: add MLX90632 device bindings
-To: =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>
-Cc: Rob Herring <robh@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
-        Linux Iio <linux-iio@vger.kernel.org>,
-        devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On 12 December 2017 at 18:45, Andreas F=C3=A4rber <afaerber@suse.de> wrote:
-> Am 11.12.2017 um 10:20 schrieb Crt Mori:
->> Add device tree bindings for MLX90632 IR temperature sensor.
->>
->> Signed-off-by: Crt Mori <cmo@melexis.com>
->> Reviewed-by: Rob Herring <robh@kernel.org>
->> ---
->>  .../bindings/iio/temperature/mlx90632.txt          | 28 +++++++++++++++=
-+++++++
->>  1 file changed, 28 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/iio/temperature/ml=
-x90632.txt
->>
->> diff --git a/Documentation/devicetree/bindings/iio/temperature/mlx90632.=
-txt b/Documentation/devicetree/bindings/iio/temperature/mlx90632.txt
->> new file mode 100644
->> index 000000000000..0b05812001f8
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/temperature/mlx90632.txt
-> [...]
->> +Example:
->> +
->> +mlx90632@3a {
->
-> Shouldn't the node name be more general like temperature@3a?
->
+Hello
 
-None of the current temperature drivers have that, but it would be
-nice for portability. I can prepare a patch to fix them all (a quick
-check confirmed it is not consistent in pressure and light as well)
+New version based on minor comments from Jonathan.
 
->> +     compatible =3D "melexis,mlx90632";
->> +     reg =3D <0x3a>;
->> +};
->
-> Also generally the dt-bindings patch should go before the first use of
-> the compatible string.
->
+Main deltas V8 vs V7:
+- Few typos fixes.
+- Function return optimizations in sound/soc/stm/stm32_adfsdm.c.
 
-OK, will keep in mind in case of v5 to reorder the commits once again.
+Main deltas V7 vs V6:
+- Replaces the custom license information text with the appropriate 
+  SPDX identifier.
+- Few fixes in sound/soc/stm/stm32_adfsdm.c and stm32-dfsdm-core.c.
+- Add missing #interrupt-cells in binding examples.
+- Integrate last Jonathan's comments.
 
-Best regards,
-Crt
-> Regards,
-> Andreas
->
-> --
-> SUSE Linux GmbH, Maxfeldstr. 5, 90409 N=C3=BCrnberg, Germany
-> GF: Felix Imend=C3=B6rffer, Jane Smithard, Graham Norton
-> HRB 21284 (AG N=C3=BCrnberg)
+Main deltas V6 vs V5:
+- Fix warning reported by kbuild test in :
+   include/linux/iio/consumer.h
+   sound/soc/stm/stm32_adfsdm.c
+
+Main deltas V5 vs V4:
+- Integrate ASOC DAI as a subnode of the DFSDM.
+- Add in kernel consumer interface to allow to manipulate attribute.
+
+Thanks,
+Arnaud
+
+Arnaud Pouliquen (12):
+  docs: driver-api: add iio hw consumer section
+  IIO: hw_consumer: add devm_iio_hw_consumer_alloc
+  IIO: inkern: API for manipulating channel attributes
+  IIO: Add DT bindings for sigma delta adc modulator
+  IIO: ADC: add sigma delta modulator support
+  IIO: add DT bindings for stm32 DFSDM filter
+  IIO: ADC: add stm32 DFSDM core support
+  IIO: ADC: add STM32 DFSDM sigma delta ADC support
+  IIO: ADC: add stm32 DFSDM support for PDM microphone
+  IIO: consumer: allow to set buffer sizes
+  ASoC: add bindings for stm32 DFSDM filter
+  ASoC: stm32: add DFSDM DAI support
+
+Lars-Peter Clausen (1):
+  iio: Add hardware consumer buffer support
+
+ .../ABI/testing/sysfs-bus-iio-dfsdm-adc-stm32      |   16 +
+ .../bindings/iio/adc/sigma-delta-modulator.txt     |   13 +
+ .../bindings/iio/adc/st,stm32-dfsdm-adc.txt        |  128 ++
+ .../devicetree/bindings/sound/st,stm32-adfsdm.txt  |   63 +
+ Documentation/driver-api/iio/hw-consumer.rst       |   51 +
+ Documentation/driver-api/iio/index.rst             |    1 +
+ drivers/iio/adc/Kconfig                            |   37 +
+ drivers/iio/adc/Makefile                           |    3 +
+ drivers/iio/adc/sd_adc_modulator.c                 |   68 ++
+ drivers/iio/adc/stm32-dfsdm-adc.c                  | 1220 ++++++++++++++++++++
+ drivers/iio/adc/stm32-dfsdm-core.c                 |  309 +++++
+ drivers/iio/adc/stm32-dfsdm.h                      |  310 +++++
+ drivers/iio/buffer/Kconfig                         |   10 +
+ drivers/iio/buffer/Makefile                        |    1 +
+ drivers/iio/buffer/industrialio-buffer-cb.c        |   11 +
+ drivers/iio/buffer/industrialio-hw-consumer.c      |  247 ++++
+ drivers/iio/inkern.c                               |   17 +-
+ include/linux/iio/adc/stm32-dfsdm-adc.h            |   18 +
+ include/linux/iio/consumer.h                       |   37 +
+ include/linux/iio/hw-consumer.h                    |   21 +
+ include/linux/iio/iio.h                            |   28 -
+ include/linux/iio/types.h                          |   28 +
+ sound/soc/stm/Kconfig                              |   11 +
+ sound/soc/stm/Makefile                             |    3 +
+ sound/soc/stm/stm32_adfsdm.c                       |  347 ++++++
+ 25 files changed, 2965 insertions(+), 33 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-dfsdm-adc-stm32
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/sigma-delta-modulator.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.txt
+ create mode 100644 Documentation/devicetree/bindings/sound/st,stm32-adfsdm.txt
+ create mode 100644 Documentation/driver-api/iio/hw-consumer.rst
+ create mode 100644 drivers/iio/adc/sd_adc_modulator.c
+ create mode 100644 drivers/iio/adc/stm32-dfsdm-adc.c
+ create mode 100644 drivers/iio/adc/stm32-dfsdm-core.c
+ create mode 100644 drivers/iio/adc/stm32-dfsdm.h
+ create mode 100644 drivers/iio/buffer/industrialio-hw-consumer.c
+ create mode 100644 include/linux/iio/adc/stm32-dfsdm-adc.h
+ create mode 100644 include/linux/iio/hw-consumer.h
+ create mode 100644 sound/soc/stm/stm32_adfsdm.c
+
+-- 
+2.7.4
