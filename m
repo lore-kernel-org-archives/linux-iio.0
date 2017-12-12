@@ -1,426 +1,347 @@
-Return-Path: <SRS0=578c=DH=st.com=arnaud.pouliquen@kernel.org>
-From: Arnaud Pouliquen <arnaud.pouliquen@st.com>
-To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
-        Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler
-	<pmeerw@pmeerw.net>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai
-	<tiwai@suse.com>,
-        Liam Girdwood <lgirdwood@gmail.com>, Mark Brown
-	<broonie@kernel.org>
-CC: <devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-iio@vger.kernel.org>, <alsa-devel@alsa-project.org>,
-        Maxime Coquelin
-	<mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>, <arnaud.pouliquen@st.com>
-Subject: [PATCH v8 13/13] ASoC: stm32: add DFSDM DAI support
-Date: Mon, 11 Dec 2017 11:18:44 +0100
-Message-ID: <1512987524-2901-14-git-send-email-arnaud.pouliquen@st.com>
-In-Reply-To: <1512987524-2901-1-git-send-email-arnaud.pouliquen@st.com>
-References: <1512987524-2901-1-git-send-email-arnaud.pouliquen@st.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Return-Path: <SRS0=LOGo=DI=gmail.com=stefan.tatschner@kernel.org>
+From: Stefan Tatschner <stefan.tatschner@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org,
+	Stefan Tatschner <stefan.tatschner@gmail.com>
+Subject: [PATCH] iio/bmp280-core.c: Read calibration data in probe
+Date: Tue, 12 Dec 2017 15:34:35 +0100
+Message-Id: <20171212143435.29586-1-stefan.tatschner@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Add driver to handle DAI interface for PDM microphones connected
-to Digital Filter for Sigma Delta Modulators IP.
+This patch affects BME280 and BMP280. The readout of the calibration
+data is moved to the probe function. Each sensor data access triggered
+reading the full calibration data before this patch. According to the
+datasheet, Section 4.4.2., the calibration data is stored in non-volatile
+memory.
 
-Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@st.com>
+Since the calibration data does not change, and cannot be changed by the
+user, we can reduce bus traffic by reading the calibration data once.
+Additionally, proper organization of the data types enables removing
+some odd casts in the compensation formulas.
+
+Signed-off-by: Stefan Tatschner <stefan.tatschner@gmail.com>
 ---
-V7 to V8
-- Typo fix
-- Function return optimizations.
+ drivers/iio/pressure/bmp280-core.c | 205 ++++++++++++++++++++++++-------------
+ 1 file changed, 134 insertions(+), 71 deletions(-)
 
- sound/soc/stm/Kconfig        |  11 ++
- sound/soc/stm/Makefile       |   3 +
- sound/soc/stm/stm32_adfsdm.c | 347 +++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 361 insertions(+)
- create mode 100644 sound/soc/stm/stm32_adfsdm.c
-
-diff --git a/sound/soc/stm/Kconfig b/sound/soc/stm/Kconfig
-index 3398e6c..a78f770 100644
---- a/sound/soc/stm/Kconfig
-+++ b/sound/soc/stm/Kconfig
-@@ -28,4 +28,15 @@ config SND_SOC_STM32_SPDIFRX
- 	help
- 	  Say Y if you want to enable S/PDIF capture for STM32
+diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
+index fd1da26a62e4..0316d1003d7e 100644
+--- a/drivers/iio/pressure/bmp280-core.c
++++ b/drivers/iio/pressure/bmp280-core.c
+@@ -55,6 +55,28 @@ struct bmp180_calib {
+ 	s16 MD;
+ };
  
-+config SND_SOC_STM32_DFSDM
-+	tristate "SoC Audio support for STM32 DFSDM"
-+	depends on (ARCH_STM32 && OF && STM32_DFSDM_ADC) || COMPILE_TEST
-+	depends on SND_SOC
-+	select SND_SOC_GENERIC_DMAENGINE_PCM
-+	select SND_SOC_DMIC
-+	select IIO_BUFFER_CB
-+	help
-+	  Select this option to enable the STM32 Digital Filter
-+	  for Sigma Delta Modulators (DFSDM) driver used
-+	  in various STM32 series for digital microphone capture.
- endmenu
-diff --git a/sound/soc/stm/Makefile b/sound/soc/stm/Makefile
-index 4ed22e6..53e90e6 100644
---- a/sound/soc/stm/Makefile
-+++ b/sound/soc/stm/Makefile
-@@ -12,3 +12,6 @@ obj-$(CONFIG_SND_SOC_STM32_I2S) += snd-soc-stm32-i2s.o
- # SPDIFRX
- snd-soc-stm32-spdifrx-objs := stm32_spdifrx.o
- obj-$(CONFIG_SND_SOC_STM32_SPDIFRX) += snd-soc-stm32-spdifrx.o
-+
-+#DFSDM
-+obj-$(CONFIG_SND_SOC_STM32_DFSDM) += stm32_adfsdm.o
-diff --git a/sound/soc/stm/stm32_adfsdm.c b/sound/soc/stm/stm32_adfsdm.c
-new file mode 100644
-index 0000000..af50891
---- /dev/null
-+++ b/sound/soc/stm/stm32_adfsdm.c
-@@ -0,0 +1,347 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * This file is part of STM32 DFSDM ASoC DAI driver
-+ *
-+ * Copyright (C) 2017, STMicroelectronics - All Rights Reserved
-+ * Authors: Arnaud Pouliquen <arnaud.pouliquen@st.com>
-+ *          Olivier Moysan <olivier.moysan@st.com>
-+ */
-+
-+#include <linux/clk.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/slab.h>
-+
-+#include <linux/iio/iio.h>
-+#include <linux/iio/consumer.h>
-+#include <linux/iio/adc/stm32-dfsdm-adc.h>
-+
-+#include <sound/pcm.h>
-+#include <sound/soc.h>
-+
-+#define STM32_ADFSDM_DRV_NAME "stm32-adfsdm"
-+
-+#define DFSDM_MAX_PERIOD_SIZE	(PAGE_SIZE / 2)
-+#define DFSDM_MAX_PERIODS	6
-+
-+struct stm32_adfsdm_priv {
-+	struct snd_soc_dai_driver dai_drv;
-+	struct snd_pcm_substream *substream;
-+	struct device *dev;
-+
-+	/* IIO */
-+	struct iio_channel *iio_ch;
-+	struct iio_cb_buffer *iio_cb;
-+	bool iio_active;
-+
-+	/* PCM buffer */
-+	unsigned char *pcm_buff;
-+	unsigned int pos;
++/* See datasheet Section 4.2.2. */
++struct bmp280_calib {
++	u16 T1;
++	s16 T2;
++	s16 T3;
++	u16 P1;
++	s16 P2;
++	s16 P3;
++	s16 P4;
++	s16 P5;
++	s16 P6;
++	s16 P7;
++	s16 P8;
++	s16 P9;
++	u8  H1;
++	s16 H2;
++	u8  H3;
++	s16 H4;
++	s16 H5;
++	s8  H6;
 +};
 +
-+static const struct snd_pcm_hardware stm32_adfsdm_pcm_hw = {
-+	.info = SNDRV_PCM_INFO_INTERLEAVED | SNDRV_PCM_INFO_BLOCK_TRANSFER |
-+	    SNDRV_PCM_INFO_PAUSE,
-+	.formats = SNDRV_PCM_FMTBIT_S32_LE,
-+
-+	.rate_min = 8000,
-+	.rate_max = 32000,
-+
-+	.channels_min = 1,
-+	.channels_max = 1,
-+
-+	.periods_min = 2,
-+	.periods_max = DFSDM_MAX_PERIODS,
-+
-+	.period_bytes_max = DFSDM_MAX_PERIOD_SIZE,
-+	.buffer_bytes_max = DFSDM_MAX_PERIODS * DFSDM_MAX_PERIOD_SIZE
-+};
-+
-+static void stm32_adfsdm_shutdown(struct snd_pcm_substream *substream,
-+				  struct snd_soc_dai *dai)
-+{
-+	struct stm32_adfsdm_priv *priv = snd_soc_dai_get_drvdata(dai);
-+
-+	if (priv->iio_active) {
-+		iio_channel_stop_all_cb(priv->iio_cb);
-+		priv->iio_active = false;
-+	}
-+}
-+
-+static int stm32_adfsdm_dai_prepare(struct snd_pcm_substream *substream,
-+				    struct snd_soc_dai *dai)
-+{
-+	struct stm32_adfsdm_priv *priv = snd_soc_dai_get_drvdata(dai);
+ struct bmp280_data {
+ 	struct device *dev;
+ 	struct mutex lock;
+@@ -62,7 +84,10 @@ struct bmp280_data {
+ 	struct completion done;
+ 	bool use_eoc;
+ 	const struct bmp280_chip_info *chip_info;
+-	struct bmp180_calib calib;
++	union {
++		struct bmp180_calib bmp180;
++		struct bmp280_calib bmp280;
++	} calib;
+ 	struct regulator *vddd;
+ 	struct regulator *vdda;
+ 	unsigned int start_up_time; /* in microseconds */
+@@ -120,67 +145,123 @@ static const struct iio_chan_spec bmp280_channels[] = {
+ 	},
+ };
+ 
+-/*
+- * Returns humidity in percent, resolution is 0.01 percent. Output value of
+- * "47445" represents 47445/1024 = 46.333 %RH.
+- *
+- * Taken from BME280 datasheet, Section 4.2.3, "Compensation formula".
+- */
+-
+-static u32 bmp280_compensate_humidity(struct bmp280_data *data,
+-				      s32 adc_humidity)
++static int bmp280_read_calib(struct bmp280_data *data,
++			     struct bmp280_calib *calib,
++			     unsigned int chip)
+ {
 +	int ret;
++	unsigned int tmp;
+ 	struct device *dev = data->dev;
+-	unsigned int H1, H3, tmp;
+-	int H2, H4, H5, H6, ret, var;
++	__le16 t_buf[BMP280_COMP_TEMP_REG_COUNT / 2];
++	__le16 p_buf[BMP280_COMP_PRESS_REG_COUNT / 2];
 +
-+	ret = iio_write_channel_attribute(priv->iio_ch,
-+					  substream->runtime->rate, 0,
-+					  IIO_CHAN_INFO_SAMP_FREQ);
++	/* Read temperature calibration values. */
++	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_TEMP_START,
++			       t_buf, BMP280_COMP_TEMP_REG_COUNT);
 +	if (ret < 0) {
-+		dev_err(dai->dev, "%s: Failed to set %d sampling rate\n",
-+			__func__, substream->runtime->rate);
++		dev_err(data->dev,
++			"failed to read temperature calibration parameters\n");
 +		return ret;
 +	}
 +
-+	if (!priv->iio_active) {
-+		ret = iio_channel_start_all_cb(priv->iio_cb);
-+		if (!ret)
-+			priv->iio_active = true;
-+		else
-+			dev_err(dai->dev, "%s: IIO channel start failed (%d)\n",
-+				__func__, ret);
-+	}
-+
-+	return ret;
-+}
-+
-+static int stm32_adfsdm_set_sysclk(struct snd_soc_dai *dai, int clk_id,
-+				   unsigned int freq, int dir)
-+{
-+	struct stm32_adfsdm_priv *priv = snd_soc_dai_get_drvdata(dai);
-+	ssize_t size;
-+	char str_freq[10];
-+
-+	dev_dbg(dai->dev, "%s: Enter for freq %d\n", __func__, freq);
-+
-+	/* Set IIO frequency if CODEC is master as clock comes from SPI_IN */
-+
-+	snprintf(str_freq, sizeof(str_freq), "%d\n", freq);
-+	size = iio_write_channel_ext_info(priv->iio_ch, "spi_clk_freq",
-+					  str_freq, sizeof(str_freq));
-+	if (size != sizeof(str_freq)) {
-+		dev_err(dai->dev, "%s: Failed to set SPI clock\n",
-+			__func__);
-+		return -EINVAL;
-+	}
-+	return 0;
-+}
-+
-+static const struct snd_soc_dai_ops stm32_adfsdm_dai_ops = {
-+	.shutdown = stm32_adfsdm_shutdown,
-+	.prepare = stm32_adfsdm_dai_prepare,
-+	.set_sysclk = stm32_adfsdm_set_sysclk,
-+};
-+
-+static const struct snd_soc_dai_driver stm32_adfsdm_dai = {
-+	.capture = {
-+		    .channels_min = 1,
-+		    .channels_max = 1,
-+		    .formats = SNDRV_PCM_FMTBIT_S32_LE,
-+		    .rates = (SNDRV_PCM_RATE_8000 | SNDRV_PCM_RATE_16000 |
-+			      SNDRV_PCM_RATE_32000),
-+		    },
-+	.ops = &stm32_adfsdm_dai_ops,
-+};
-+
-+static const struct snd_soc_component_driver stm32_adfsdm_dai_component = {
-+	.name = "stm32_dfsdm_audio",
-+};
-+
-+static int stm32_afsdm_pcm_cb(const void *data, size_t size, void *private)
-+{
-+	struct stm32_adfsdm_priv *priv = private;
-+	struct snd_soc_pcm_runtime *rtd = priv->substream->private_data;
-+	u8 *pcm_buff = priv->pcm_buff;
-+	u8 *src_buff = (u8 *)data;
-+	unsigned int buff_size = snd_pcm_lib_buffer_bytes(priv->substream);
-+	unsigned int period_size = snd_pcm_lib_period_bytes(priv->substream);
-+	unsigned int old_pos = priv->pos;
-+	unsigned int cur_size = size;
-+
-+	dev_dbg(rtd->dev, "%s: buff_add :%p, pos = %d, size = %zu\n",
-+		__func__, &pcm_buff[priv->pos], priv->pos, size);
-+
-+	if ((priv->pos + size) > buff_size) {
-+		memcpy(&pcm_buff[priv->pos], src_buff, buff_size - priv->pos);
-+		cur_size -= buff_size - priv->pos;
-+		priv->pos = 0;
-+	}
-+
-+	memcpy(&pcm_buff[priv->pos], &src_buff[size - cur_size], cur_size);
-+	priv->pos = (priv->pos + cur_size) % buff_size;
-+
-+	if (cur_size != size || (old_pos && (old_pos % period_size < size)))
-+		snd_pcm_period_elapsed(priv->substream);
-+
-+	return 0;
-+}
-+
-+static int stm32_adfsdm_trigger(struct snd_pcm_substream *substream, int cmd)
-+{
-+	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-+	struct stm32_adfsdm_priv *priv =
-+		snd_soc_dai_get_drvdata(rtd->cpu_dai);
-+
-+	switch (cmd) {
-+	case SNDRV_PCM_TRIGGER_START:
-+	case SNDRV_PCM_TRIGGER_RESUME:
-+		priv->pos = 0;
-+		return stm32_dfsdm_get_buff_cb(priv->iio_ch->indio_dev,
-+					       stm32_afsdm_pcm_cb, priv);
-+	case SNDRV_PCM_TRIGGER_SUSPEND:
-+	case SNDRV_PCM_TRIGGER_STOP:
-+		return stm32_dfsdm_release_buff_cb(priv->iio_ch->indio_dev);
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static int stm32_adfsdm_pcm_open(struct snd_pcm_substream *substream)
-+{
-+	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-+	struct stm32_adfsdm_priv *priv = snd_soc_dai_get_drvdata(rtd->cpu_dai);
-+	int ret;
-+
-+	ret =  snd_soc_set_runtime_hwparams(substream, &stm32_adfsdm_pcm_hw);
-+	if (!ret)
-+		priv->substream = substream;
-+
-+	return ret;
-+}
-+
-+static int stm32_adfsdm_pcm_close(struct snd_pcm_substream *substream)
-+{
-+	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-+	struct stm32_adfsdm_priv *priv =
-+		snd_soc_dai_get_drvdata(rtd->cpu_dai);
-+
-+	snd_pcm_lib_free_pages(substream);
-+	priv->substream = NULL;
-+
-+	return 0;
-+}
-+
-+static snd_pcm_uframes_t stm32_adfsdm_pcm_pointer(
-+					    struct snd_pcm_substream *substream)
-+{
-+	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-+	struct stm32_adfsdm_priv *priv =
-+		snd_soc_dai_get_drvdata(rtd->cpu_dai);
-+
-+	return bytes_to_frames(substream->runtime, priv->pos);
-+}
-+
-+static int stm32_adfsdm_pcm_hw_params(struct snd_pcm_substream *substream,
-+				      struct snd_pcm_hw_params *params)
-+{
-+	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-+	struct stm32_adfsdm_priv *priv =
-+		snd_soc_dai_get_drvdata(rtd->cpu_dai);
-+	int ret;
-+
-+	ret =  snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(params));
-+	if (ret < 0)
++	calib->T1 = le16_to_cpu(t_buf[T1]);
++	calib->T2 = le16_to_cpu(t_buf[T2]);
++	calib->T3 = le16_to_cpu(t_buf[T3]);
+ 
+-	ret = regmap_read(data->regmap, BMP280_REG_COMP_H1, &H1);
++	/* Read pressure calibration values. */
++	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_PRESS_START,
++			       p_buf, BMP280_COMP_PRESS_REG_COUNT);
++	if (ret < 0) {
++		dev_err(data->dev,
++			"failed to read pressure calibration parameters\n");
 +		return ret;
-+	priv->pcm_buff = substream->runtime->dma_area;
++	}
 +
-+	return iio_channel_cb_set_buffer_watermark(priv->iio_cb,
-+						   params_period_size(params));
-+}
++	calib->P1 = le16_to_cpu(p_buf[P1]);
++	calib->P2 = le16_to_cpu(p_buf[P2]);
++	calib->P3 = le16_to_cpu(p_buf[P3]);
++	calib->P4 = le16_to_cpu(p_buf[P4]);
++	calib->P5 = le16_to_cpu(p_buf[P5]);
++	calib->P6 = le16_to_cpu(p_buf[P6]);
++	calib->P7 = le16_to_cpu(p_buf[P7]);
++	calib->P8 = le16_to_cpu(p_buf[P8]);
++	calib->P9 = le16_to_cpu(p_buf[P9]);
 +
-+static int stm32_adfsdm_pcm_hw_free(struct snd_pcm_substream *substream)
-+{
-+	snd_pcm_lib_free_pages(substream);
++	/* Read humidity calibration values.
++	 * Due to some odd register addressing we cannot just
++	 * do a big bulk read. Instead, we have to read each HX
++	 * value separately and sometimes do some bit shifting...
++	 * Humidity data is only available on BME280.
++	 */
++	if (chip != BME280_CHIP_ID)
++		return 0;
++
++	ret = regmap_read(data->regmap, BMP280_REG_COMP_H1, &tmp);
+ 	if (ret < 0) {
+ 		dev_err(dev, "failed to read H1 comp value\n");
+ 		return ret;
+ 	}
++	calib->H1 = tmp;
+ 
+ 	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_H2, &tmp, 2);
+ 	if (ret < 0) {
+ 		dev_err(dev, "failed to read H2 comp value\n");
+ 		return ret;
+ 	}
+-	H2 = sign_extend32(le16_to_cpu(tmp), 15);
++	calib->H2 = sign_extend32(le16_to_cpu(tmp), 15);
+ 
+-	ret = regmap_read(data->regmap, BMP280_REG_COMP_H3, &H3);
++	ret = regmap_read(data->regmap, BMP280_REG_COMP_H3, &tmp);
+ 	if (ret < 0) {
+ 		dev_err(dev, "failed to read H3 comp value\n");
+ 		return ret;
+ 	}
++	calib->H3 = tmp;
+ 
+ 	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_H4, &tmp, 2);
+ 	if (ret < 0) {
+ 		dev_err(dev, "failed to read H4 comp value\n");
+ 		return ret;
+ 	}
+-	H4 = sign_extend32(((be16_to_cpu(tmp) >> 4) & 0xff0) |
+-			  (be16_to_cpu(tmp) & 0xf), 11);
++	calib->H4 = sign_extend32(((be16_to_cpu(tmp) >> 4) & 0xff0) |
++				  (be16_to_cpu(tmp) & 0xf), 11);
+ 
+ 	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_H5, &tmp, 2);
+ 	if (ret < 0) {
+ 		dev_err(dev, "failed to read H5 comp value\n");
+ 		return ret;
+ 	}
+-	H5 = sign_extend32(((le16_to_cpu(tmp) >> 4) & 0xfff), 11);
++	calib->H5 = sign_extend32(((le16_to_cpu(tmp) >> 4) & 0xfff), 11);
+ 
+ 	ret = regmap_read(data->regmap, BMP280_REG_COMP_H6, &tmp);
+ 	if (ret < 0) {
+ 		dev_err(dev, "failed to read H6 comp value\n");
+ 		return ret;
+ 	}
+-	H6 = sign_extend32(tmp, 7);
++	calib->H6 = sign_extend32(tmp, 7);
++
++	/* Toss the calibration data into the entropy pool */
++	add_device_randomness(calib, sizeof(struct bmp280_calib));
 +
 +	return 0;
 +}
-+
-+static struct snd_pcm_ops stm32_adfsdm_pcm_ops = {
-+	.open		= stm32_adfsdm_pcm_open,
-+	.close		= stm32_adfsdm_pcm_close,
-+	.hw_params	= stm32_adfsdm_pcm_hw_params,
-+	.hw_free	= stm32_adfsdm_pcm_hw_free,
-+	.trigger	= stm32_adfsdm_trigger,
-+	.pointer	= stm32_adfsdm_pcm_pointer,
-+};
-+
-+static int stm32_adfsdm_pcm_new(struct snd_soc_pcm_runtime *rtd)
++/*
++ * Returns humidity in percent, resolution is 0.01 percent. Output value of
++ * "47445" represents 47445/1024 = 46.333 %RH.
++ *
++ * Taken from BME280 datasheet, Section 4.2.3, "Compensation formula".
++ */
++static u32 bmp280_compensate_humidity(struct bmp280_data *data,
++				      s32 adc_humidity)
 +{
-+	struct snd_pcm *pcm = rtd->pcm;
-+	struct stm32_adfsdm_priv *priv =
-+		snd_soc_dai_get_drvdata(rtd->cpu_dai);
-+	unsigned int size = DFSDM_MAX_PERIODS * DFSDM_MAX_PERIOD_SIZE;
-+
-+	return snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
-+						     priv->dev, size, size);
-+}
-+
-+static void stm32_adfsdm_pcm_free(struct snd_pcm *pcm)
-+{
-+	struct snd_pcm_substream *substream;
-+	struct snd_soc_pcm_runtime *rtd;
-+	struct stm32_adfsdm_priv *priv;
-+
-+	substream = pcm->streams[SNDRV_PCM_STREAM_CAPTURE].substream;
-+	if (substream) {
-+		rtd = substream->private_data;
-+		priv = snd_soc_dai_get_drvdata(rtd->cpu_dai);
-+
-+		snd_pcm_lib_preallocate_free_for_all(pcm);
-+	}
-+}
-+
-+static struct snd_soc_platform_driver stm32_adfsdm_soc_platform = {
-+	.ops		= &stm32_adfsdm_pcm_ops,
-+	.pcm_new	= stm32_adfsdm_pcm_new,
-+	.pcm_free	= stm32_adfsdm_pcm_free,
-+};
-+
-+static const struct of_device_id stm32_adfsdm_of_match[] = {
-+	{.compatible = "st,stm32h7-dfsdm-dai"},
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, stm32_adfsdm_of_match);
-+
-+static int stm32_adfsdm_probe(struct platform_device *pdev)
-+{
-+	struct stm32_adfsdm_priv *priv;
-+	int ret;
-+
-+	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	priv->dev = &pdev->dev;
-+	priv->dai_drv = stm32_adfsdm_dai;
-+
-+	dev_set_drvdata(&pdev->dev, priv);
-+
-+	ret = devm_snd_soc_register_component(&pdev->dev,
-+					      &stm32_adfsdm_dai_component,
-+					      &priv->dai_drv, 1);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* Associate iio channel */
-+	priv->iio_ch  = devm_iio_channel_get_all(&pdev->dev);
-+	if (IS_ERR(priv->iio_ch))
-+		return PTR_ERR(priv->iio_ch);
-+
-+	priv->iio_cb = iio_channel_get_all_cb(&pdev->dev, NULL, NULL);
-+	if (IS_ERR(priv->iio_cb))
-+		return PTR_ERR(priv->iio_ch);
-+
-+	ret = devm_snd_soc_register_platform(&pdev->dev,
-+					     &stm32_adfsdm_soc_platform);
-+	if (ret < 0)
-+		dev_err(&pdev->dev, "%s: Failed to register PCM platform\n",
-+			__func__);
-+
-+	return ret;
-+}
-+
-+static struct platform_driver stm32_adfsdm_driver = {
-+	.driver = {
-+		   .name = STM32_ADFSDM_DRV_NAME,
-+		   .of_match_table = stm32_adfsdm_of_match,
-+		   },
-+	.probe = stm32_adfsdm_probe,
-+};
-+
-+module_platform_driver(stm32_adfsdm_driver);
-+
-+MODULE_DESCRIPTION("stm32 DFSDM DAI driver");
-+MODULE_AUTHOR("Arnaud Pouliquen <arnaud.pouliquen@st.com>");
-+MODULE_LICENSE("GPL v2");
-+MODULE_ALIAS("platform:" STM32_ADFSDM_DRV_NAME);
++	s32 var;
++	struct bmp280_calib *calib = &data->calib.bmp280;
+ 
+ 	var = ((s32)data->t_fine) - (s32)76800;
+-	var = ((((adc_humidity << 14) - (H4 << 20) - (H5 * var))
+-		+ (s32)16384) >> 15) * (((((((var * H6) >> 10)
+-		* (((var * (s32)H3) >> 11) + (s32)32768)) >> 10)
+-		+ (s32)2097152) * H2 + 8192) >> 14);
+-	var -= ((((var >> 15) * (var >> 15)) >> 7) * (s32)H1) >> 4;
++	var = ((((adc_humidity << 14) - (calib->H4 << 20) - (calib->H5 * var))
++		+ (s32)16384) >> 15) * (((((((var * calib->H6) >> 10)
++		* (((var * calib->H3) >> 11) + 32768)) >> 10)
++		+ (s32)2097152) * calib->H2 + 8192) >> 14);
++	var -= ((((var >> 15) * (var >> 15)) >> 7) * calib->H1) >> 4;
+ 
+ 	return var >> 12;
+ };
+@@ -195,31 +276,14 @@ static u32 bmp280_compensate_humidity(struct bmp280_data *data,
+ static s32 bmp280_compensate_temp(struct bmp280_data *data,
+ 				  s32 adc_temp)
+ {
+-	int ret;
+ 	s32 var1, var2;
+-	__le16 buf[BMP280_COMP_TEMP_REG_COUNT / 2];
++	struct bmp280_calib *calib = &data->calib.bmp280;
+ 
+-	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_TEMP_START,
+-			       buf, BMP280_COMP_TEMP_REG_COUNT);
+-	if (ret < 0) {
+-		dev_err(data->dev,
+-			"failed to read temperature calibration parameters\n");
+-		return ret;
+-	}
+-
+-	/*
+-	 * The double casts are necessary because le16_to_cpu returns an
+-	 * unsigned 16-bit value.  Casting that value directly to a
+-	 * signed 32-bit will not do proper sign extension.
+-	 *
+-	 * Conversely, T1 and P1 are unsigned values, so they can be
+-	 * cast straight to the larger type.
+-	 */
+-	var1 = (((adc_temp >> 3) - ((s32)le16_to_cpu(buf[T1]) << 1)) *
+-		((s32)(s16)le16_to_cpu(buf[T2]))) >> 11;
+-	var2 = (((((adc_temp >> 4) - ((s32)le16_to_cpu(buf[T1]))) *
+-		  ((adc_temp >> 4) - ((s32)le16_to_cpu(buf[T1])))) >> 12) *
+-		((s32)(s16)le16_to_cpu(buf[T3]))) >> 14;
++	var1 = (((adc_temp >> 3) - ((s32)calib->T1 << 1)) *
++		((s32)calib->T2)) >> 11;
++	var2 = (((((adc_temp >> 4) - ((s32)calib->T1)) *
++		  ((adc_temp >> 4) - ((s32)calib->T1))) >> 12) *
++		((s32)calib->T3)) >> 14;
+ 	data->t_fine = var1 + var2;
+ 
+ 	return (data->t_fine * 5 + 128) >> 8;
+@@ -235,34 +299,25 @@ static s32 bmp280_compensate_temp(struct bmp280_data *data,
+ static u32 bmp280_compensate_press(struct bmp280_data *data,
+ 				   s32 adc_press)
+ {
+-	int ret;
+ 	s64 var1, var2, p;
+-	__le16 buf[BMP280_COMP_PRESS_REG_COUNT / 2];
+-
+-	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_PRESS_START,
+-			       buf, BMP280_COMP_PRESS_REG_COUNT);
+-	if (ret < 0) {
+-		dev_err(data->dev,
+-			"failed to read pressure calibration parameters\n");
+-		return ret;
+-	}
++	struct bmp280_calib *calib = &data->calib.bmp280;
+ 
+ 	var1 = ((s64)data->t_fine) - 128000;
+-	var2 = var1 * var1 * (s64)(s16)le16_to_cpu(buf[P6]);
+-	var2 += (var1 * (s64)(s16)le16_to_cpu(buf[P5])) << 17;
+-	var2 += ((s64)(s16)le16_to_cpu(buf[P4])) << 35;
+-	var1 = ((var1 * var1 * (s64)(s16)le16_to_cpu(buf[P3])) >> 8) +
+-		((var1 * (s64)(s16)le16_to_cpu(buf[P2])) << 12);
+-	var1 = ((((s64)1) << 47) + var1) * ((s64)le16_to_cpu(buf[P1])) >> 33;
++	var2 = var1 * var1 * (s64)calib->P6;
++	var2 += (var1 * (s64)calib->P5) << 17;
++	var2 += ((s64)calib->P4) << 35;
++	var1 = ((var1 * var1 * (s64)calib->P3) >> 8) +
++		((var1 * (s64)calib->P2) << 12);
++	var1 = ((((s64)1) << 47) + var1) * ((s64)calib->P1) >> 33;
+ 
+ 	if (var1 == 0)
+ 		return 0;
+ 
+ 	p = ((((s64)1048576 - adc_press) << 31) - var2) * 3125;
+ 	p = div64_s64(p, var1);
+-	var1 = (((s64)(s16)le16_to_cpu(buf[P9])) * (p >> 13) * (p >> 13)) >> 25;
+-	var2 = (((s64)(s16)le16_to_cpu(buf[P8])) * p) >> 19;
+-	p = ((p + var1 + var2) >> 8) + (((s64)(s16)le16_to_cpu(buf[P7])) << 4);
++	var1 = (((s64)calib->P9) * (p >> 13) * (p >> 13)) >> 25;
++	var2 = ((s64)(calib->P8) * p) >> 19;
++	p = ((p + var1 + var2) >> 8) + (((s64)calib->P7) << 4);
+ 
+ 	return (u32)p;
+ }
+@@ -752,7 +807,7 @@ static int bmp180_read_calib(struct bmp280_data *data,
+ static s32 bmp180_compensate_temp(struct bmp280_data *data, s32 adc_temp)
+ {
+ 	s32 x1, x2;
+-	struct bmp180_calib *calib = &data->calib;
++	struct bmp180_calib *calib = &data->calib.bmp180;
+ 
+ 	x1 = ((adc_temp - calib->AC6) * calib->AC5) >> 15;
+ 	x2 = (calib->MC << 11) / (x1 + calib->MD);
+@@ -814,7 +869,7 @@ static u32 bmp180_compensate_press(struct bmp280_data *data, s32 adc_press)
+ 	s32 b3, b6;
+ 	u32 b4, b7;
+ 	s32 oss = data->oversampling_press;
+-	struct bmp180_calib *calib = &data->calib;
++	struct bmp180_calib *calib = &data->calib.bmp180;
+ 
+ 	b6 = data->t_fine - 4000;
+ 	x1 = (calib->B2 * (b6 * b6 >> 12)) >> 11;
+@@ -1028,11 +1083,19 @@ int bmp280_common_probe(struct device *dev,
+ 	dev_set_drvdata(dev, indio_dev);
+ 
+ 	/*
+-	 * The BMP085 and BMP180 has calibration in an E2PROM, read it out
+-	 * at probe time. It will not change.
++	 * Some chips have calibration parameters "programmed into the devices'
++	 * non-volatile memory during production". Let's read them out at probe
++	 * time once. They will not change.
+ 	 */
+ 	if (chip_id  == BMP180_CHIP_ID) {
+-		ret = bmp180_read_calib(data, &data->calib);
++		ret = bmp180_read_calib(data, &data->calib.bmp180);
++		if (ret < 0) {
++			dev_err(data->dev,
++				"failed to read calibration coefficients\n");
++			goto out_disable_vdda;
++		}
++	} else if (chip_id == BMP280_CHIP_ID || chip_id == BME280_CHIP_ID) {
++		ret = bmp280_read_calib(data, &data->calib.bmp280, chip_id);
+ 		if (ret < 0) {
+ 			dev_err(data->dev,
+ 				"failed to read calibration coefficients\n");
 -- 
-2.7.4
+2.15.1
