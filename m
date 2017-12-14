@@ -1,441 +1,404 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:45254 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1753365AbdLQM7H (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 17 Dec 2017 07:59:07 -0500
-Date: Sun, 17 Dec 2017 12:59:01 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Arnaud Pouliquen <arnaud.pouliquen@st.com>
-Cc: Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-iio@vger.kernel.org>, <alsa-devel@alsa-project.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>
-Subject: Re: [PATCH v9 13/13] ASoC: stm32: add DFSDM DAI support
-Message-ID: <20171217125901.5afd65c6@archlinux>
-In-Reply-To: <1513241885-32079-14-git-send-email-arnaud.pouliquen@st.com>
-References: <1513241885-32079-1-git-send-email-arnaud.pouliquen@st.com>
-        <1513241885-32079-14-git-send-email-arnaud.pouliquen@st.com>
+Received: from mail-yb0-f172.google.com ([209.85.213.172]:42927 "EHLO
+        mail-yb0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752766AbdLNUui (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 Dec 2017 15:50:38 -0500
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net
+Cc: benjamin.gaignard@linaro.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH v4 00/11] Introduce the Counter subsystem
+Date: Thu, 14 Dec 2017 15:50:29 -0500
+Message-Id: <cover.1513266127.git.vilhelm.gray@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 14 Dec 2017 09:58:05 +0100
-Arnaud Pouliquen <arnaud.pouliquen@st.com> wrote:
+Introduction
+============
 
-> Add driver to handle DAI interface for PDM microphones connected
-> to Digital Filter for Sigma Delta Modulators IP.
-> 
-> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@st.com>
+Apologies for going silent these past couple months just to return with
+a patchset over 3000 lines larger than the last -- I should have been
+releasing intermediate versions along the way so shame on me! The
+Counter system has effectively been rewritten anew, so I believe very
+little of the code in the previous versions of this patchset remain.
+However, the Generic Counter paradigm has pretty much remained the same
+so the theory should be familar. Regardless, I realize I'm dropping off
+this patchset near the winter holidays so I don't expect a review until
+well into January -- I'm just releasing this now before I myself head
+off on an end of year sabbatical.
 
-For the IIO parts (I'm not knowledgeable enough about the sound side to
-offer a proper review!)
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+The most significant difference between this version and the previous,
+as well as part of the reason for the implementation code changes, is
+the complete separation of the Generic Counter system from IIO. I
+decided it was improper to build the Generic Counter system on top of
+IIO core: it was leading to ugly code, convulted hacks, and forced
+restrictions on the Generic Counter interface in order to appease the
+architecture of the IIO system. Most importantly, the IIO core code that
+was leveraged by the Generic Counter was so minor (essentially just the
+sysfs attribute support) that it did not justify the extensive
+hoop-jumping performed to make the code work.
 
-So Mark, over to you.  I'm happy if you want to do the immutable branch
-once any issue you find are fixed, or I can do it.  I'm just looking
-for acks or a pull request now.
+So this patchset introduces the Generic Counter interface without the
+dependence on IIO code. This now gives the Generic Counter system the
+freedom to aptly represent counter devices without implementation
+compatibility concerns regarding other high-level subsystems.
 
-Jonathan
+This also makes sense ontologically I believe because whereas the IIO
+system appears more focused on representing the industrial I/O of a
+device and their configuration directly, the Generic Counter system is
+more concerned with the abstract representation of that counter device
+and the relationships and configurations within which define its
+operation at a high-level; a counter driver could in theory separately
+support both the high-level Generic Counter representation of the device
+as a whole (what are we counting conceptually, how much are we counting,
+etc.), as well as the low-level IIO representation of the individual
+inputs and outputs on that device (are the signals differential, do
+certain signals have current requirements, etc.).
 
-> ---
->  sound/soc/stm/Kconfig        |  11 ++
->  sound/soc/stm/Makefile       |   3 +
->  sound/soc/stm/stm32_adfsdm.c | 347 +++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 361 insertions(+)
->  create mode 100644 sound/soc/stm/stm32_adfsdm.c
-> 
-> diff --git a/sound/soc/stm/Kconfig b/sound/soc/stm/Kconfig
-> index 3398e6c..a78f770 100644
-> --- a/sound/soc/stm/Kconfig
-> +++ b/sound/soc/stm/Kconfig
-> @@ -28,4 +28,15 @@ config SND_SOC_STM32_SPDIFRX
->  	help
->  	  Say Y if you want to enable S/PDIF capture for STM32
->  
-> +config SND_SOC_STM32_DFSDM
-> +	tristate "SoC Audio support for STM32 DFSDM"
-> +	depends on (ARCH_STM32 && OF && STM32_DFSDM_ADC) || COMPILE_TEST
-> +	depends on SND_SOC
-> +	select SND_SOC_GENERIC_DMAENGINE_PCM
-> +	select SND_SOC_DMIC
-> +	select IIO_BUFFER_CB
-> +	help
-> +	  Select this option to enable the STM32 Digital Filter
-> +	  for Sigma Delta Modulators (DFSDM) driver used
-> +	  in various STM32 series for digital microphone capture.
->  endmenu
-> diff --git a/sound/soc/stm/Makefile b/sound/soc/stm/Makefile
-> index 4ed22e6..53e90e6 100644
-> --- a/sound/soc/stm/Makefile
-> +++ b/sound/soc/stm/Makefile
-> @@ -12,3 +12,6 @@ obj-$(CONFIG_SND_SOC_STM32_I2S) += snd-soc-stm32-i2s.o
->  # SPDIFRX
->  snd-soc-stm32-spdifrx-objs := stm32_spdifrx.o
->  obj-$(CONFIG_SND_SOC_STM32_SPDIFRX) += snd-soc-stm32-spdifrx.o
-> +
-> +#DFSDM
-> +obj-$(CONFIG_SND_SOC_STM32_DFSDM) += stm32_adfsdm.o
-> diff --git a/sound/soc/stm/stm32_adfsdm.c b/sound/soc/stm/stm32_adfsdm.c
-> new file mode 100644
-> index 0000000..af50891
-> --- /dev/null
-> +++ b/sound/soc/stm/stm32_adfsdm.c
-> @@ -0,0 +1,347 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * This file is part of STM32 DFSDM ASoC DAI driver
-> + *
-> + * Copyright (C) 2017, STMicroelectronics - All Rights Reserved
-> + * Authors: Arnaud Pouliquen <arnaud.pouliquen@st.com>
-> + *          Olivier Moysan <olivier.moysan@st.com>
-> + */
-> +
-> +#include <linux/clk.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/slab.h>
-> +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/consumer.h>
-> +#include <linux/iio/adc/stm32-dfsdm-adc.h>
-> +
-> +#include <sound/pcm.h>
-> +#include <sound/soc.h>
-> +
-> +#define STM32_ADFSDM_DRV_NAME "stm32-adfsdm"
-> +
-> +#define DFSDM_MAX_PERIOD_SIZE	(PAGE_SIZE / 2)
-> +#define DFSDM_MAX_PERIODS	6
-> +
-> +struct stm32_adfsdm_priv {
-> +	struct snd_soc_dai_driver dai_drv;
-> +	struct snd_pcm_substream *substream;
-> +	struct device *dev;
-> +
-> +	/* IIO */
-> +	struct iio_channel *iio_ch;
-> +	struct iio_cb_buffer *iio_cb;
-> +	bool iio_active;
-> +
-> +	/* PCM buffer */
-> +	unsigned char *pcm_buff;
-> +	unsigned int pos;
-> +};
-> +
-> +static const struct snd_pcm_hardware stm32_adfsdm_pcm_hw = {
-> +	.info = SNDRV_PCM_INFO_INTERLEAVED | SNDRV_PCM_INFO_BLOCK_TRANSFER |
-> +	    SNDRV_PCM_INFO_PAUSE,
-> +	.formats = SNDRV_PCM_FMTBIT_S32_LE,
-> +
-> +	.rate_min = 8000,
-> +	.rate_max = 32000,
-> +
-> +	.channels_min = 1,
-> +	.channels_max = 1,
-> +
-> +	.periods_min = 2,
-> +	.periods_max = DFSDM_MAX_PERIODS,
-> +
-> +	.period_bytes_max = DFSDM_MAX_PERIOD_SIZE,
-> +	.buffer_bytes_max = DFSDM_MAX_PERIODS * DFSDM_MAX_PERIOD_SIZE
-> +};
-> +
-> +static void stm32_adfsdm_shutdown(struct snd_pcm_substream *substream,
-> +				  struct snd_soc_dai *dai)
-> +{
-> +	struct stm32_adfsdm_priv *priv = snd_soc_dai_get_drvdata(dai);
-> +
-> +	if (priv->iio_active) {
-> +		iio_channel_stop_all_cb(priv->iio_cb);
-> +		priv->iio_active = false;
-> +	}
-> +}
-> +
-> +static int stm32_adfsdm_dai_prepare(struct snd_pcm_substream *substream,
-> +				    struct snd_soc_dai *dai)
-> +{
-> +	struct stm32_adfsdm_priv *priv = snd_soc_dai_get_drvdata(dai);
-> +	int ret;
-> +
-> +	ret = iio_write_channel_attribute(priv->iio_ch,
-> +					  substream->runtime->rate, 0,
-> +					  IIO_CHAN_INFO_SAMP_FREQ);
-> +	if (ret < 0) {
-> +		dev_err(dai->dev, "%s: Failed to set %d sampling rate\n",
-> +			__func__, substream->runtime->rate);
-> +		return ret;
-> +	}
-> +
-> +	if (!priv->iio_active) {
-> +		ret = iio_channel_start_all_cb(priv->iio_cb);
-> +		if (!ret)
-> +			priv->iio_active = true;
-> +		else
-> +			dev_err(dai->dev, "%s: IIO channel start failed (%d)\n",
-> +				__func__, ret);
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static int stm32_adfsdm_set_sysclk(struct snd_soc_dai *dai, int clk_id,
-> +				   unsigned int freq, int dir)
-> +{
-> +	struct stm32_adfsdm_priv *priv = snd_soc_dai_get_drvdata(dai);
-> +	ssize_t size;
-> +	char str_freq[10];
-> +
-> +	dev_dbg(dai->dev, "%s: Enter for freq %d\n", __func__, freq);
-> +
-> +	/* Set IIO frequency if CODEC is master as clock comes from SPI_IN */
-> +
-> +	snprintf(str_freq, sizeof(str_freq), "%d\n", freq);
-> +	size = iio_write_channel_ext_info(priv->iio_ch, "spi_clk_freq",
-> +					  str_freq, sizeof(str_freq));
-> +	if (size != sizeof(str_freq)) {
-> +		dev_err(dai->dev, "%s: Failed to set SPI clock\n",
-> +			__func__);
-> +		return -EINVAL;
-> +	}
-> +	return 0;
-> +}
-> +
-> +static const struct snd_soc_dai_ops stm32_adfsdm_dai_ops = {
-> +	.shutdown = stm32_adfsdm_shutdown,
-> +	.prepare = stm32_adfsdm_dai_prepare,
-> +	.set_sysclk = stm32_adfsdm_set_sysclk,
-> +};
-> +
-> +static const struct snd_soc_dai_driver stm32_adfsdm_dai = {
-> +	.capture = {
-> +		    .channels_min = 1,
-> +		    .channels_max = 1,
-> +		    .formats = SNDRV_PCM_FMTBIT_S32_LE,
-> +		    .rates = (SNDRV_PCM_RATE_8000 | SNDRV_PCM_RATE_16000 |
-> +			      SNDRV_PCM_RATE_32000),
-> +		    },
-> +	.ops = &stm32_adfsdm_dai_ops,
-> +};
-> +
-> +static const struct snd_soc_component_driver stm32_adfsdm_dai_component = {
-> +	.name = "stm32_dfsdm_audio",
-> +};
-> +
-> +static int stm32_afsdm_pcm_cb(const void *data, size_t size, void *private)
-> +{
-> +	struct stm32_adfsdm_priv *priv = private;
-> +	struct snd_soc_pcm_runtime *rtd = priv->substream->private_data;
-> +	u8 *pcm_buff = priv->pcm_buff;
-> +	u8 *src_buff = (u8 *)data;
-> +	unsigned int buff_size = snd_pcm_lib_buffer_bytes(priv->substream);
-> +	unsigned int period_size = snd_pcm_lib_period_bytes(priv->substream);
-> +	unsigned int old_pos = priv->pos;
-> +	unsigned int cur_size = size;
-> +
-> +	dev_dbg(rtd->dev, "%s: buff_add :%p, pos = %d, size = %zu\n",
-> +		__func__, &pcm_buff[priv->pos], priv->pos, size);
-> +
-> +	if ((priv->pos + size) > buff_size) {
-> +		memcpy(&pcm_buff[priv->pos], src_buff, buff_size - priv->pos);
-> +		cur_size -= buff_size - priv->pos;
-> +		priv->pos = 0;
-> +	}
-> +
-> +	memcpy(&pcm_buff[priv->pos], &src_buff[size - cur_size], cur_size);
-> +	priv->pos = (priv->pos + cur_size) % buff_size;
-> +
-> +	if (cur_size != size || (old_pos && (old_pos % period_size < size)))
-> +		snd_pcm_period_elapsed(priv->substream);
-> +
-> +	return 0;
-> +}
-> +
-> +static int stm32_adfsdm_trigger(struct snd_pcm_substream *substream, int cmd)
-> +{
-> +	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-> +	struct stm32_adfsdm_priv *priv =
-> +		snd_soc_dai_get_drvdata(rtd->cpu_dai);
-> +
-> +	switch (cmd) {
-> +	case SNDRV_PCM_TRIGGER_START:
-> +	case SNDRV_PCM_TRIGGER_RESUME:
-> +		priv->pos = 0;
-> +		return stm32_dfsdm_get_buff_cb(priv->iio_ch->indio_dev,
-> +					       stm32_afsdm_pcm_cb, priv);
-> +	case SNDRV_PCM_TRIGGER_SUSPEND:
-> +	case SNDRV_PCM_TRIGGER_STOP:
-> +		return stm32_dfsdm_release_buff_cb(priv->iio_ch->indio_dev);
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static int stm32_adfsdm_pcm_open(struct snd_pcm_substream *substream)
-> +{
-> +	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-> +	struct stm32_adfsdm_priv *priv = snd_soc_dai_get_drvdata(rtd->cpu_dai);
-> +	int ret;
-> +
-> +	ret =  snd_soc_set_runtime_hwparams(substream, &stm32_adfsdm_pcm_hw);
-> +	if (!ret)
-> +		priv->substream = substream;
-> +
-> +	return ret;
-> +}
-> +
-> +static int stm32_adfsdm_pcm_close(struct snd_pcm_substream *substream)
-> +{
-> +	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-> +	struct stm32_adfsdm_priv *priv =
-> +		snd_soc_dai_get_drvdata(rtd->cpu_dai);
-> +
-> +	snd_pcm_lib_free_pages(substream);
-> +	priv->substream = NULL;
-> +
-> +	return 0;
-> +}
-> +
-> +static snd_pcm_uframes_t stm32_adfsdm_pcm_pointer(
-> +					    struct snd_pcm_substream *substream)
-> +{
-> +	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-> +	struct stm32_adfsdm_priv *priv =
-> +		snd_soc_dai_get_drvdata(rtd->cpu_dai);
-> +
-> +	return bytes_to_frames(substream->runtime, priv->pos);
-> +}
-> +
-> +static int stm32_adfsdm_pcm_hw_params(struct snd_pcm_substream *substream,
-> +				      struct snd_pcm_hw_params *params)
-> +{
-> +	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-> +	struct stm32_adfsdm_priv *priv =
-> +		snd_soc_dai_get_drvdata(rtd->cpu_dai);
-> +	int ret;
-> +
-> +	ret =  snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(params));
-> +	if (ret < 0)
-> +		return ret;
-> +	priv->pcm_buff = substream->runtime->dma_area;
-> +
-> +	return iio_channel_cb_set_buffer_watermark(priv->iio_cb,
-> +						   params_period_size(params));
-> +}
-> +
-> +static int stm32_adfsdm_pcm_hw_free(struct snd_pcm_substream *substream)
-> +{
-> +	snd_pcm_lib_free_pages(substream);
-> +
-> +	return 0;
-> +}
-> +
-> +static struct snd_pcm_ops stm32_adfsdm_pcm_ops = {
-> +	.open		= stm32_adfsdm_pcm_open,
-> +	.close		= stm32_adfsdm_pcm_close,
-> +	.hw_params	= stm32_adfsdm_pcm_hw_params,
-> +	.hw_free	= stm32_adfsdm_pcm_hw_free,
-> +	.trigger	= stm32_adfsdm_trigger,
-> +	.pointer	= stm32_adfsdm_pcm_pointer,
-> +};
-> +
-> +static int stm32_adfsdm_pcm_new(struct snd_soc_pcm_runtime *rtd)
-> +{
-> +	struct snd_pcm *pcm = rtd->pcm;
-> +	struct stm32_adfsdm_priv *priv =
-> +		snd_soc_dai_get_drvdata(rtd->cpu_dai);
-> +	unsigned int size = DFSDM_MAX_PERIODS * DFSDM_MAX_PERIOD_SIZE;
-> +
-> +	return snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
-> +						     priv->dev, size, size);
-> +}
-> +
-> +static void stm32_adfsdm_pcm_free(struct snd_pcm *pcm)
-> +{
-> +	struct snd_pcm_substream *substream;
-> +	struct snd_soc_pcm_runtime *rtd;
-> +	struct stm32_adfsdm_priv *priv;
-> +
-> +	substream = pcm->streams[SNDRV_PCM_STREAM_CAPTURE].substream;
-> +	if (substream) {
-> +		rtd = substream->private_data;
-> +		priv = snd_soc_dai_get_drvdata(rtd->cpu_dai);
-> +
-> +		snd_pcm_lib_preallocate_free_for_all(pcm);
-> +	}
-> +}
-> +
-> +static struct snd_soc_platform_driver stm32_adfsdm_soc_platform = {
-> +	.ops		= &stm32_adfsdm_pcm_ops,
-> +	.pcm_new	= stm32_adfsdm_pcm_new,
-> +	.pcm_free	= stm32_adfsdm_pcm_free,
-> +};
-> +
-> +static const struct of_device_id stm32_adfsdm_of_match[] = {
-> +	{.compatible = "st,stm32h7-dfsdm-dai"},
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(of, stm32_adfsdm_of_match);
-> +
-> +static int stm32_adfsdm_probe(struct platform_device *pdev)
-> +{
-> +	struct stm32_adfsdm_priv *priv;
-> +	int ret;
-> +
-> +	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
-> +	if (!priv)
-> +		return -ENOMEM;
-> +
-> +	priv->dev = &pdev->dev;
-> +	priv->dai_drv = stm32_adfsdm_dai;
-> +
-> +	dev_set_drvdata(&pdev->dev, priv);
-> +
-> +	ret = devm_snd_soc_register_component(&pdev->dev,
-> +					      &stm32_adfsdm_dai_component,
-> +					      &priv->dai_drv, 1);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* Associate iio channel */
-> +	priv->iio_ch  = devm_iio_channel_get_all(&pdev->dev);
-> +	if (IS_ERR(priv->iio_ch))
-> +		return PTR_ERR(priv->iio_ch);
-> +
-> +	priv->iio_cb = iio_channel_get_all_cb(&pdev->dev, NULL, NULL);
-> +	if (IS_ERR(priv->iio_cb))
-> +		return PTR_ERR(priv->iio_ch);
-> +
-> +	ret = devm_snd_soc_register_platform(&pdev->dev,
-> +					     &stm32_adfsdm_soc_platform);
-> +	if (ret < 0)
-> +		dev_err(&pdev->dev, "%s: Failed to register PCM platform\n",
-> +			__func__);
-> +
-> +	return ret;
-> +}
-> +
-> +static struct platform_driver stm32_adfsdm_driver = {
-> +	.driver = {
-> +		   .name = STM32_ADFSDM_DRV_NAME,
-> +		   .of_match_table = stm32_adfsdm_of_match,
-> +		   },
-> +	.probe = stm32_adfsdm_probe,
-> +};
-> +
-> +module_platform_driver(stm32_adfsdm_driver);
-> +
-> +MODULE_DESCRIPTION("stm32 DFSDM DAI driver");
-> +MODULE_AUTHOR("Arnaud Pouliquen <arnaud.pouliquen@st.com>");
-> +MODULE_LICENSE("GPL v2");
-> +MODULE_ALIAS("platform:" STM32_ADFSDM_DRV_NAME);
+Overview
+========
+
+This patchset may be divided into three main groups:
+
+        * Generic Counter
+        * Simple Counter
+        * Quadrature Counter
+
+Each group begins with a patch introducing the implementation of the
+interface system, followed afterwards by documentation patches. I
+recommend reading through the documentation patches first to familiarize
+your with the interface itself before jumping into the source code for
+the implementation.
+
+The Simple Counter and Quadrature Counter groups also have example
+driver code in the dummy-counter and 104-quad-8 patches respectively.
+The Simple Counter and Quadrature Counter systems themselves being
+subclasses of the Generic Counter may serve as example driver code for
+the Generic Counter interface -- though I may end up adding an explicit
+Generic Counter example in a later patch to the dummy-counter for easier
+reference.
+
+Since the Generic Counter system no longer depends on IIO, I moved all
+Counter related source code to the drivers/iio/counter/ directory to
+keep everything contained together. In addition, with the IIO Kconfig
+dependency removed, the COUNTER menu appear now appears at the same
+level as the IIO menu:
+
+        -> Device drivers
+          -> Counter Support (COUNTER [=m])
+
+I'm not sure if I should move driver/iio/counter/ to driver/counter/ in
+order to match the Kconfig heirarchy or to keep it where it is to match
+the legacy IIO counter location established when we first added the
+104-QUAD-8 driver.
+
+Paradigm updates
+================
+
+The Generic Counter paradigm has essentially remained the same from the
+previous patch, but I have made some minor updates. In particular, I've
+finally settled on a naming convention for the core components of a
+Counter:
+
+        COUNT
+        -----
+        A Count represents the count data for a set of Signals. A Count
+        has a count function mode (e.g. "increase" or "quadrature x4")
+        which represents the update behavior for the count data. A Count
+	also has a set of one or more associated Signals.
+
+This component was called "Value" in the previous patches. I believe
+"Count" is a more direct name for this data, and it also matches how
+datasheets and people commonly refer to this information in
+documentation.
+
+        SIGNAL
+        ------
+        A Signal represents a counter input data; this is the data that
+        is typically analyzed by the counter to determine the count
+        data. A Signal may be associated to one or more Counts.
+
+The naming for this component has not changed since the previous
+patches. I believe "Signal" is a fitting enough name for the input
+data, as well as matching the common nomenclature for existing counter
+devices.
+
+        SYNAPSE
+        -------
+        A Synapse represents the association of a Signal with a
+        respective Count. Signal data affects respective Count data, and
+        the Synapse represents this relationship. The Synapse action
+        mode (e.g. "rising edge" or "double pulse") specifies the Signal
+        data condition which triggers the respective Count's count
+        function evaluation to update the count data. It is possible for
+        the Synapse action mode to be "none" if a Signal is associated
+        with a Count but does not trigger the count function (e.g. the
+        direction signal line for a Pulse-Direction encoding counter).
+
+This component was called "Trigger" in the previous patches. I do not
+believe "Trigger" was a good name for two main reasons: it could easily
+be confused for the existing IIO trigger concept, and most importantly
+it does not convey the connection association aspect of the
+Count-Signal relationship.
+
+I settled on the "Synapse" name both due to etymology -- from Greek
+_sunapsis_ meaning "conjunction" -- as well as a biological analogy:
+just as neurons connect and fire communication over synapses, so does a
+Counter Signal connect and fire communication to a Counter Count over a
+Counter Synapse.
+
+Following the same naming convention and analogy, what was previously
+called trigger_mode is now known as action_mode, named in reference to
+action potential -- the condition in a neuron which triggers a fire
+communication over a synapse, just as a Counter Signal condition
+specified in the action_mode of a Counter Synapse triggers the count
+function evaluation for a Counter Count.
+
+Counter classes descriptions
+============================
+
+The Generic Counter interface is the most general interface for
+supporting counter devices; if it qualifies as a Counter, then it can be
+represented by the Generic Counter interface. Unfortunately, the
+flexibility of the interface does result in a more cumbersome
+integration for driver authors: much of the components must be manually
+configured by the author, which can be a tedious task for large and
+complex counter devices.
+
+To this end, two subclasses of the Generic Counter interface as
+introduced in this patchset: the Simple Counter interface, and the
+Quadrature Counter interface. Both of these interfaces inherit the
+Generic Counter paradigm, and may be seen as extensions to the interface
+which restrict the components to a respective specific class of counter
+devices in order to provide a more apt interface for such devices.
+
+        Simple Counter
+        --------------
+        Simple Counters are devices that count edge pulses on an input
+        line (e.g. tally counters).
+        
+        Since the relationship between Signals and Counts is known to be
+        one-to-one, a simple_counter_count structure already contains
+        the associated Signal member for the respective Count. A driver
+        author no longer needs to worry about allocating a separate
+        Signal and Synapse, nor about configuring the association
+        between the respective Count and Signal; the Simple Counter
+        interface abstracts away such details.
+
+        Furthermore, since the device type is known, component
+        properties may be further defined and restricted: Count data is
+        a signed integer, Signal data "low" and "high" state is set via
+        enumeration constants, and so are count function and action mode
+        restricted to well-defined "increase"/"decrease" and
+        "none"/"rising edge"/"falling edge"/"both edges" enumeration
+        constants respectively.
+
+        Quadrature Counter
+        ------------------
+        Quadrature Counters are devices that track position based on
+        quadrature pair signals (e.g. rotary encoder counters).
+
+        Since the relationship between Signals and Counts is known to be
+        a quadrature pair of Signals to each Count, a quad_counter_count
+        structure already contains the associated Signal members for the
+        respective Count. A driver author no longer needs to worry about
+        allocating separate Signals and Synapses for each quadrature
+        pair, nor about configuring the association between the
+        respective Count and Signals; the Quadrature Counter interface
+        abstracts away such details.
+
+        Furthermore, since the device type is known, component
+        properties may be further defined and restricted: Count data is
+        a signed integer, Signal data "low" and "high" state is set via
+        enumeration constants, and so is count function mode restricted
+        to well-defined enumeration constants to represent modes such as
+        "pulse-direction" and "quadrature x4" for example.
+
+Note how driver authors no longer need to interact with Synapses
+directly when utilizing the Simple Counter and Quadrature Counter
+interfaces. This should make it easier too for authors to add support
+since they don't need to fully understand the underlying Counter
+paradigm in order to take advantage of the interfaces -- just define the
+Counts and Signals, and they're ready to go.
+
+Even more so, the Quadrature Counter interface takes it a step further
+and doesn't require action_modes to be explicitly set -- rather they are
+implicitly determined internally by the system based on the direction
+and function mode. Abstractions like these should make the Counter
+interface system as a whole robust enough to handle the diverse classes
+of counter devices out in the real world.
+
+Compilation warnings
+====================
+
+There are three main compilation warnings which pop for this patchset.
+I've inspected these warnings and none are errors, however they do
+require some explanation.
+
+        * 104-quad-8: warning: enumeration value
+                ‘QUAD_COUNTER_FUNCTION_PULSE_DIRECTION’ not handled in
+                switch
+
+The first warning is rather simple to explain: the
+QUAD_COUNTER_FUNCTION_PULSE_DIRECTION state is handled by the parent if
+statement's else condition, so an explicit case condition is not
+necessary. I can add a default case line to pacify the compiler, but
+since it would be empty the effort seems frivolous. In some sense as
+well, a default case may make the switch logic less clear by implying
+the possibility of additional cases which are not possible in the
+context of that code path.
+
+        * simple-counter: warning: assignment discards ‘const’ qualifier
+                from pointer target type
+        * quad-counter: warning: assignment discards ‘const’ qualifier
+                from pointer target type
+
+The second warning comes from the mapping of
+simple_counter_device_ext/quad_counter_device_ext,
+simple_counter_count_ext/quad_counter_count_ext, and
+simple_counter_signal_ext/quad_counter_signal_ext to the internal
+Counter counter_device_ext, counter_count_ext, and counter_signal_ext
+structures respectively.
+
+The priv member of the counter_device_ext, counter_count_ext, or
+counter_signal_ext is leveraged to pass the respective
+simple_counter_device_ext/quad_counter_device_ext,
+simple_counter_count_ext/quad_counter_count_ext, or
+simple_counter_signal_ext/quad_counter_signal_ext structure to their
+respective read/write callback. The priv member is generic on purpose to
+allow any desired data to be passed; the supplied read/write callbacks
+should know the datatype of the passed-in priv argument so they cast it
+appropriately to access their expected data.
+
+As such, the 'const' qualifier of the structures are thus discarded but
+subsequently cast back when the respective registered callback functions
+are called. Since this is the intended use case of the priv member -- to
+generically pass driver data for later recast -- I don't believe this
+warning needs to be rectified.
+
+        * generic-counter: warning: passing argument 5 of
+                ‘counter_attribute_create’ discards ‘const’ qualifier
+                from pointer target type
+        * generic-counter: warning: passing argument 6 of
+                ‘counter_attribute_create’ discards ‘const’ qualifier
+                from pointer target type
+
+The third warnings comes from a similar situation to the second warning:
+a 'const' argument is passed generically via 'void *' for later recast.
+In this cast, I decided to create a generic function called
+counter_attribute_create in order to simplify the sysfs attribute
+registration code in the generic-counter.c file.
+
+The counter_attribute_create function takes in read and write callbacks,
+as well as two optional generic data arguments to be stored as 'void *'
+(the component and component_data parameters). Using this setup allows
+the counter_attribute_create function to be the sole function necessary
+to create a desired Generic Counter sysfs attribute: read and write
+callbacks are passed along with relevant Counter component and data
+generically, which can be cast back later inside those read and write
+functions to match the expected datatype.
+
+Using a generic counter_attribute_create function reduces duplicate
+code, but it does result in many superfluous compilation warnings. I can
+define new attribute_create functions specific to each type of sysfs
+attribute in order to pacify the warnings, but that seems to be such a
+waste to increase the amount of code with duplications that are
+unnecessary. What would you recommend; should I attempt to pacify these
+warnings or leave them be?
+
+Known TODO items
+================
+
+Although I've added the interface documentation files with rst file
+extensions, I still need to familiarize myself with Sphinx markup
+constructs to take advantage of the language. For example, I've copied
+verbatim several structure definitions into the documentation directly,
+but I believe this would be better left dynamically generated by using
+the relevant markup syntax. I'll try to clean up the documentation then
+once I've brushed up on Sphinx.
+
+As noted in a previous patchset version, the signal_write callback
+should be removed from the interface; there are few if any cases where
+it makese sense to have a signal_write callback since Signals are
+always considered inputs in the context of the Counter paradigm.
+
+I've retained the signal_write callback in this version since I'm unsure
+how to implement the dummy-counter Signal source. Benjamin Gaignard
+suggested implementing dummy-counter as a gpio-counter which could use
+gpio to provide a software quadratic counter. Is this the path I should
+take?
+
+Furthermore, the dummy-counter driver defines its own single
+platform_device which restricts it to loading only a single instance.
+I can fix this to allow multiple instances in the next patchset version
+-- as suggested, I'll check out industrialio-sw-device.c for reference.
+
+Right now the dummy-counter driver only has example code for the Simple
+Counter interface. It may be prudent to add example code for the Generic
+Counter and Quadrature Counter interfaces too. I think dummy-counter
+should serve as the reference driver implementation for all the Counter
+interfaces, so that driver authors have an example of how to integrate
+the particular interface they desire.
+
+Finally, I only added very basic support for the Quadrature Counter
+interface in the 104-QUAD-8 driver. It's possible to support all
+existing IIO Counter sysfs attributes in the 104-QUAD-8 driver via
+corresponding quad_counter_device_ext, quad_counter_count_ext, and
+quad_counter_signal_ext structures, such that only the
+/sys/bus/counter/devices/counterX/ directory needs to be accessed to
+interact with the 104-QUAD-8 device. I'll try to add support for those
+remaining sysfs attributes in the next patchset version.
+
+If I missed anything from the last patchset version review just remind
+me again and I'll add it to my TODO list. ;)
+
+William Breathitt Gray (11):
+  iio: Introduce the Generic Counter interface
+  counter: Documentation: Add Generic Counter sysfs documentation
+  docs: Add Generic Counter interface documentation
+  counter: Introduce the Simple Counter interface
+  counter: Documentation: Add Simple Counter sysfs documentation
+  docs: Add Simple Counter interface documentation
+  counter: Add dummy counter driver
+  counter: Introduce the Quadrature Counter interface
+  counter: Documentation: Add Quadrature Counter sysfs documentation
+  docs: Add Quadrature Counter interface documentation
+  counter: 104-quad-8: Add Quadrature Counter interface support
+
+ .../ABI/testing/sysfs-bus-counter-generic-sysfs    |  73 ++
+ .../ABI/testing/sysfs-bus-counter-quadrature-sysfs |  76 ++
+ .../ABI/testing/sysfs-bus-counter-simple-sysfs     |  61 ++
+ Documentation/driver-api/iio/generic-counter.rst   | 434 +++++++++
+ Documentation/driver-api/iio/index.rst             |   3 +
+ Documentation/driver-api/iio/quad-counter.rst      | 444 +++++++++
+ Documentation/driver-api/iio/simple-counter.rst    | 393 ++++++++
+ MAINTAINERS                                        |   9 +
+ drivers/iio/Kconfig                                |   3 +-
+ drivers/iio/counter/104-quad-8.c                   | 257 +++++-
+ drivers/iio/counter/Kconfig                        |  35 +-
+ drivers/iio/counter/Makefile                       |   6 +
+ drivers/iio/counter/dummy-counter.c                | 308 +++++++
+ drivers/iio/counter/generic-counter.c              | 992 +++++++++++++++++++++
+ drivers/iio/counter/quad-counter.c                 | 774 ++++++++++++++++
+ drivers/iio/counter/simple-counter.c               | 734 +++++++++++++++
+ include/linux/iio/counter.h                        | 629 +++++++++++++
+ 17 files changed, 5216 insertions(+), 15 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-counter-generic-sysfs
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-counter-quadrature-sysfs
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-counter-simple-sysfs
+ create mode 100644 Documentation/driver-api/iio/generic-counter.rst
+ create mode 100644 Documentation/driver-api/iio/quad-counter.rst
+ create mode 100644 Documentation/driver-api/iio/simple-counter.rst
+ create mode 100644 drivers/iio/counter/dummy-counter.c
+ create mode 100644 drivers/iio/counter/generic-counter.c
+ create mode 100644 drivers/iio/counter/quad-counter.c
+ create mode 100644 drivers/iio/counter/simple-counter.c
+ create mode 100644 include/linux/iio/counter.h
+
+-- 
+2.15.1
 
