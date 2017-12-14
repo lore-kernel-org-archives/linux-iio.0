@@ -1,123 +1,494 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yb0-f194.google.com ([209.85.213.194]:37243 "EHLO
-        mail-yb0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752433AbdLNUvI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 Dec 2017 15:51:08 -0500
+Received: from mail-yb0-f171.google.com ([209.85.213.171]:42986 "EHLO
+        mail-yb0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752403AbdLNUvY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 Dec 2017 15:51:24 -0500
 From: William Breathitt Gray <vilhelm.gray@gmail.com>
 To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
         pmeerw@pmeerw.net
 Cc: benjamin.gaignard@linaro.org, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v4 02/11] counter: Documentation: Add Generic Counter sysfs documentation
-Date: Thu, 14 Dec 2017 15:50:58 -0500
-Message-Id: <e1235f0c7151a69f838dfc8eb4f25bd4cb9fe415.1513266127.git.vilhelm.gray@gmail.com>
+Subject: [PATCH v4 03/11] docs: Add Generic Counter interface documentation
+Date: Thu, 14 Dec 2017 15:51:16 -0500
+Message-Id: <b7387aef452da0a3591d3c48e6e1f362a7713e9f.1513266127.git.vilhelm.gray@gmail.com>
 In-Reply-To: <cover.1513266127.git.vilhelm.gray@gmail.com>
 References: <cover.1513266127.git.vilhelm.gray@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds standard documentation for the userspace sysfs
-attributes of the Generic Counter interface.
+This patch adds high-level documentation about the Generic Counter
+interface.
 
 Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- .../ABI/testing/sysfs-bus-counter-generic-sysfs    | 73 ++++++++++++++++++++++
- MAINTAINERS                                        |  1 +
- 2 files changed, 74 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-counter-generic-sysfs
+ Documentation/driver-api/iio/generic-counter.rst | 434 +++++++++++++++++++++++
+ Documentation/driver-api/iio/index.rst           |   1 +
+ MAINTAINERS                                      |   1 +
+ 3 files changed, 436 insertions(+)
+ create mode 100644 Documentation/driver-api/iio/generic-counter.rst
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-counter-generic-sysfs b/Documentation/ABI/testing/sysfs-bus-counter-generic-sysfs
+diff --git a/Documentation/driver-api/iio/generic-counter.rst b/Documentation/driver-api/iio/generic-counter.rst
 new file mode 100644
-index 000000000000..3b1c3c4498d1
+index 000000000000..219c571e90ce
 --- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-counter-generic-sysfs
-@@ -0,0 +1,73 @@
-+What:		/sys/bus/counter/devices/counterX/countY
-+KernelVersion:	4.16
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Count data of Count Y. Typically, this is an accumulated count
-+		value.
++++ b/Documentation/driver-api/iio/generic-counter.rst
+@@ -0,0 +1,434 @@
++=========================
++Generic Counter Interface
++=========================
 +
-+What:		/sys/bus/counter/devices/counterX/countY_function
-+KernelVersion:	4.16
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Count function mode of Count Y; count function evaluation is
-+		triggered by conditions specified by the countY_signalZ_action
-+		attributes.
++Introduction
++============
 +
-+What:		/sys/bus/counter/devices/counterX/countY_function_available
-+KernelVersion:	4.16
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Discrete set of available count function modes for the
-+		configuration of the respective Count Y are listed in this file.
++Counter devices are prevalent within a diverse spectrum of industries.
++The ubiquitous presence of these devices necessitates a common interface
++and standard of interaction and exposure. This driver API attempts to
++resolve the issue of duplicate code found among existing counter device
++drivers by introducing a generic counter interface for consumption. The
++Generic Counter interface enables drivers to support and expose a common
++set of components and functionality present in counter devices.
 +
-+What:		/sys/bus/counter/devices/counterX/countY_name
-+KernelVersion:	4.16
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Read-only attribute that indicates the device-specific name of
-+		Count Y.
++Theory
++======
 +
-+What:		/sys/bus/counter/devices/counterX/countY_signalZ_action
-+KernelVersion:	4.16
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Action mode of Count Y for Signal Z. This attribute indicates
-+		the condition of Signal Z that triggers the count function
-+		evaluation for Count Y.
++Counter devices can vary greatly in design, but regardless of whether
++some devices are quadrature encoder counters or tally counters, all
++counter devices consist of a core set of components. This core set of
++components, shared by all counter devices, is what forms the essence of
++the Generic Counter interface.
 +
-+What:		/sys/bus/counter/devices/counterX/countY_signalZ_action_available
-+KernelVersion:	4.16
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Discrete set of available action modes are listed in this file
-+		for the configuration of the respective Synapse associating
-+		Signal Z to Count Y.
++There are three core components to a counter:
 +
-+What:		/sys/bus/counter/devices/counterX/counter_name
-+KernelVersion:	4.16
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Read-only attribute that indicates the device-specific name of
-+		the Counter.
++        COUNT
++        -----
++        A Count represents the count data for a set of Signals. A Count
++        has a count function mode (e.g. "increase" or "quadrature x4")
++        which represents the update behavior for the count data. A Count
++        also has a set of one or more associated Signals.
 +
-+What:		/sys/bus/counter/devices/counterX/signalY
-+KernelVersion:	4.16
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Signal data of Signal Y. Typically, this is an input line level
-+		state.
++        SIGNAL
++        ------
++        A Signal represents a counter input data; this is the data that
++        is typically analyzed by the counter to determine the count
++        data. A Signal may be associated to one or more Counts.
 +
-+What:		/sys/bus/counter/devices/counterX/signalY_name
-+KernelVersion:	4.16
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Read-only attribute that indicates the device-specific name of
-+		Signal Y.
++        SYNAPSE
++        -------
++        A Synapse represents the association of a Signal with a
++        respective Count. Signal data affects respective Count data, and
++        the Synapse represents this relationship. The Synapse action
++        mode (e.g. "rising edge" or "double pulse") specifies the Signal
++        data condition which triggers the respective Count's count
++        function evaluation to update the count data. It is possible for
++        the Synapse action mode to be "none" if a Signal is associated
++        with a Count but does not trigger the count function (e.g. the
++        direction signal line for a Pulse-Direction encoding counter).
 +
-+What:		/sys/bus/counter/devices/counterX/countY_synapses
-+KernelVersion:	4.16
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		List of Synapses associating Signals to Count Y. The columns
-+		represent the following in the respective order: Signal ID,
-+		Signal name, and current action mode.
++A counter is defined as a set of input signals associated to count data
++that are generated by the evaluation of the state of the associated
++input signals as defined by the respective count functions. Within the
++context of the Generic Counter interface, a counter consists of Counts
++each associated to a set of Signals, whose respective Synapse instances
++represent the count function update conditions for the associated
++Counts.
++
++Paradigm
++========
++
++The most basic counter device may be expressed as a single Count
++associated with a single Signal via a single Synapse. Take for example
++a counter device which simply accumulates a count of rising edges on a
++source input line.
++
++        Count                Synapse        Signal
++        -----                -------        ------
+++---------------------+
++| Data: Count         |    Rising Edge     ________
++| Function: Increase  |  <-------------   / Source \
++|                     |                  ____________
+++---------------------+
++
++In this example, the Signal is a source input line with a pulsing
++voltage, while the Count is a persistent count value which is repeatedly
++incremented. The Signal is associated with the respective Count via a
++Synapse. The increase function is triggered by the Signal data condition
++specified by the Synapse -- in this case a rising edge condition on the
++voltage input line. In summary, the counter device existence and
++behavior is aptly represented by respective Count, Signal, and Synapse
++components: a rising edge condition triggers an increase function on an
++accumulating count datum.
++
++A counter device is not limited to a single Signal; in fact, in theory
++many number of Signals may be associated with even a single Count. For
++example, a quadrature encoder counter device can keep track of position
++based on the states of two input lines.
++
++           Count                 Synapse     Signal
++           -----                 -------     ------
+++-------------------------+
++| Data: Position          |    Both Edges     ___
++| Function: Quadrature x4 |  <------------   / A \
++|                         |                 _______
++|                         |
++|                         |    Both Edges     ___
++|                         |  <------------   / B \
++|                         |                 _______
+++-------------------------+
++
++In this example, two Signals (quadrature encoder lines A and B) are
++associated to a single Count: a rising or falling edge on either A or B
++triggers the "Quadrature x4" function which determines the direction of
++movement and updates the respective position data. The "Quadrature x4"
++function is likely implemented in the hardware of the quadrature encoder
++counter device; the Count, Signals, and Synapses simply represent this
++hardware behavior and functionality.
++
++Signals associated to the same Count can have differing Synapse action
++mode conditions. For example, a quadrature encoder counter device
++operating in a non-quadrature Pulse-Direction mode could have one input
++line dedicated for movement and a second input line dedicated for
++direction.
++
++           Count                   Synapse      Signal
++           -----                   -------      ------
+++---------------------------+
++| Data: Position            |    Rising Edge     ___
++| Function: Pulse-Direction |  <-------------   / A \ (Movement)
++|                           |                  _______
++|                           |
++|                           |       None         ___
++|                           |  <-------------   / B \ (Direction)
++|                           |                  _______
+++---------------------------+
++
++Only Signal A triggers the "Pulse-Direction" update function, but the
++instantaneous state of Signal B is still required in order to know the
++direction so that the position data may be properly updated. Ultimately,
++both Signals are associated to the same Count via two respective
++Synapses, but only one Synapse has an active action mode condition which
++triggers the respective count function while the other is left with a
++"None" condition action mode to indicate its respective Signal's
++availability for state evaluation despite its non-triggering mode.
++
++The flexibility of Synapses allows for the representation of counters
++whose respective Count Signal relationships would be difficult to
++represent as isolated inputs. For example a tri-color LED color counter
++can easily be represented with three Synapses:
++
++           Count          Synapse      Signal
++           -----          -------      ------
+++------------------+
++| Data: Count      |    Both Edges     _______
++| Function: Purple |  <------------   /  Red  \
++|                  |                 ___________
++|                  |
++|                  |    Both Edges     _______
++|                  |  <------------   / Green \
++|                  |                 ___________
++|                  |
++|                  |    Both Edges     _______
++|                  |  <------------   / Blue  \
++|                  |                 ___________
+++------------------+
++
++This counter accumulates the number of times the tri-color LED has
++turned to purple. By utilizing the Synapses to associate the three color
++Signals to the single Count, the count function evaluation relationship
++becomes apparent: combined color is checked when an individual color is
++turned on or off, and if only Red and Blue are active then Count datum
++is incremented to indicate the color has now turned to Purple.
++
++Although the examples thus far have been representations of physical
++devices, this is not a necessity. A counter simply represent the
++evaluation (Count) of input data (Signals) triggered by specific
++conditions (Synapses). A counter can be the representation of more
++abstract components.
++
++For example, suppose a counter representation is desired for a DNA
++sequence analysizer which detects possible genetic diseases.
++
++        Count                     Synapse            Signal
++        -----                     -------            ------
+++---------------------+
++| Data: Diseases      |    Gene Transcript (EST)     _____
++| Function: Cancers   |  <-----------------------   / DNA \ (GAAGTGC...)
++|                     |                            _________
+++---------------------+
++
++In this scenario, the Signal is a stream of DNA nucleotide bases (As,
++Ts, Cs, and Gs), the Synapse action modes consist of the various
++expressed sequence tags (ESTs), and the Count is a list of diseases
++discovered (in this particular example the function is evaluating for
++possible cancers). Note how the Signal in this example does not
++represent a physical voltage line, nor does the Synapse action mode
++represent a physical voltage line state change, nor does the Count
++represent a strictly decimal data value.
++
++The DNA sequence analysizer example is contrived to illustrate the
++flexibility of the generic counter paradigm by demonstrating its
++capability of representing abstract concepts; however, physical devices
++are likely to be more fitting for such a representation.
++
++The key concept is that the Signal, Synapse, and Count are abstract
++representations which do not need to be closely married to their
++respective physical sources. This allows the user of a counter to
++divorce themselves from the nuances of physical components (such as
++whether an input line is differential or single-ended) and focus on the
++core idea of what the data and process represent (e.g. an accumulated
++count of rising edges).
++
++Userspace Interface
++===================
++
++Several sysfs attributes are generated by the Generic Counter interface,
++and reside under the /sys/bus/counter/devices/counterX directory, where
++counterX refers to the respective counter device. Please see
++Documentation/ABI/testing/sys-bus-counter-generic-sysfs for detailed
++information on each Generic Counter interface sysfs attribute.
++
++Through these sysfs attributes, programs and scripts may interact with
++the Generic Counter paradigm Counts, Signals, and Synapses of respective
++counter devices.
++
++Driver API
++==========
++
++Driver authors may utilize the Generic Counter interface in their code
++by including the include/linux/iio/counter.h header file. This header
++file provides several core data structures and function prototypes for
++defining a generic counter.
++
++
++struct counter_signal_ext
++-------------------------
++
++This structure defines a Generic Counter Signal extension attribute.
++These attributes expose auxiliary configuration and functionality
++specific to the respective Generic Counter Signal.
++
++        name:   Attribute name
++        read:   Read callback for this attribute; may be NULL
++        write:  Write callback for this attribute; may be NULL
++        priv:   Data private to the driver
++
++struct counter_signal
++---------------------
++
++This structure defines a Generic Counter Signal component. Typically,
++this will correlate with an input channel on a physical counter device.
++This structure is the simplest of the Generic Counter paradigm core
++components to define with only two structure members which require
++explicit configuration:
++
++        id:             unique ID used to identify signal
++        name:           device-specific signal name
++        ext:            optional array of Counter Signal extensions
++        num_ext:        number of Counter Signal extensions specified in
++                        ext
++        priv:           optional private data supplied by driver
++
++struct counter_synapse
++----------------------
++
++This structure defines a Generic Counter Synapse component. To properly
++utilize this structure, action modes and an associated Signal must be
++defined:
++
++        action:         current action mode
++        actions:        available action modes
++        num_actions:    number of action modes specified in actions
++        signal:         pointer to associated signal
++
++struct counter_count_ext
++------------------------
++
++This structure defines a Generic Counter Count extension attribute.
++These attributes expose auxiliary configuration and functionality
++specific to the respective Generic Counter Count.
++
++        name:   attribute name
++        read:   read callback for this attribute; may be NULL
++        write:  write callback for this attribute; may be NULL
++        priv:   data private to the driver
++
++struct counter_count
++--------------------
++
++This structure defines a Generic Counter Count component. Typically,
++this will correlate with the read data (the "count" value) provided by a
++physical counter device. This structure requires the explicit
++configuration of an ID, name, function modes (the function triggered on
++a Synapse action condition), and a set of Synapses for the associated
++Signals:
++
++        id:             unique ID used to identify Count
++        name:           device-specific Count name
++        function:       current function mode
++        functions:      available function modes
++        num_functions:  number of functions specified in @functions
++        synapses:       array of synapses for initialization
++        num_synapses:   number of synapses specified in @synapses
++        ext:            optional array of Counter Count extensions
++        num_ext:        number of Counter Count extensions specified in
++                        ext
++        priv:           optional private data supplied by driver
++
++struct counter_device_ext
++-------------------------
++
++This structure defines a Generic Counter extension attribute. These
++attributes expose auxiliary configuration and functionality specific to
++the respective Generic Counter.
++
++        name:   attribute name
++        read:   read callback for this attribute; may be NULL
++        write:  write callback for this attribute; may be NULL
++        priv:   data private to the driver
++
++struct counter_device
++---------------------
++
++This is the main data structure for a Generic Counter device. Access to
++all respective Counts, Signals, and Synapses is possible from this
++structure. This structure requires the configuration of a name, Generic
++Counter Signals, and Generic Counter Counts:
++
++name:           name of the device
++parent:         optional parent device providing the counters
++signal_read:    read callback for Signal attribute; may be NULL
++signal_write:   write callback for Signal attribute; may be NULL
++count_read:     read callback for Count attribute; may be NULL
++count_write:    write callback for Count attribute; may be NULL
++function_get:   function to get the current count function mode. Returns
++                0 on success and negative error code on error. The index
++                of the respective Count's returned function mode should
++                be passed back via the function parameter.
++function_set:   function to set the count function mode. function is the
++                index of the requested function mode from the respective
++                Count's functions array.
++action_get:     function to get the current action mode. Returns 0 on
++                success and negative error code on error. The index of
++                the respective Signal's returned action mode should be
++                passed back via the action parameter.
++action_set:     function to set the action mode. action is the index of
++                the requested action mode from the respective Synapse's
++                actions array.
++signals:        array of Signals
++num_signals:    number of Signals specified in @signals
++counts:         array of Counts
++num_counts:     number of Counts specified in @counts
++ext:            optional array of Counter device extensions
++num_ext:        number of Counter device extensions specified in ext
++priv:           optional private data supplied by driver
++
++Registration functions
++----------------------
++
++A counter device is registered to the system by passing the respective
++initialized counter_device structure to the counter_register function;
++similarly, the counter_unregister function unregisters the respective
++Counter. The devm_counter_register and devm_counter_unregister functions
++serve as device memory-managed versions of the counter_register and
++counter_unregister functions respectively.
++
++Implementation
++==============
++
++To support a counter device, a driver must first allocate the available
++Counter Signals via counter_signal structures. These Signals should
++be stored as an array and set to the signals array member of an
++allocated counter_device structure before the Counter is registered to
++the system.
++
++Counter Counts may be allocated via counter_count structures, and
++respective Counter Signal associations (Synapses) made via
++counter_synapse structures. Associated counter_synapse structures are
++stored as an array and set to the the synapses array member of the
++respective counter_count structure. These counter_count structures are
++set to the counts array member of an allocated counter_device structure
++before the Counter is registered to the system.
++
++Driver callbacks should be provided to the counter_device structure in
++order to communicate with the device: to read and write various Signals
++and Counts, and to set and get the "action mode" and "function mode" for
++various Synapses and Counts respectively.
++
++A defined counter_device structure may be registered to the system by
++passing it to the counter_register function, and unregistered by passing
++it to the counter_unregister function. Similarly, the
++devm_counter_register and devm_counter_unregister functions may be used
++if device memory-managed registration is desired.
++
++Extension sysfs attributes can be created for auxiliary functionality
++and data by passing in defined counter_device_ext, counter_count_ext,
++and counter_signal_ext structures. In these cases, the
++counter_device_ext structure is used for global configuration of the
++respective Counter device, while the counter_count_ext and
++counter_signal_ext structures allow for auxiliary exposure and
++configuration of a specific Count or Signal respectively.
++
++Architecture
++============
++
++The counter_init function is called when the generic-counter module is
++loaded on the system. At this point, a bus_type named "counter" is
++registered and a dedicated "counter" chrdev region is allocated; these
++are removed and cleaned-up in the counter_exit function called when the
++generic-counter module is unloaded from the system.
++
++Counter devices are registered to the system via the counter_register
++function, and later removed via the counter_unregister function. The
++counter_register function establishes a unique ID for the Counter device
++and creates an associated device node under /dev called counterX, where
++X is the mentioned unique ID. A respective sysfs directory is created
++for the Counter device with a similar naming scheme:
++
++    /sys/bus/counter/devices/counterX
++
++Sysfs attributes are created within the counterX directory to expose
++functionality, configurations, and data relating to the Counts, Signals,
++and Synapses of the Counter device, as well as options and information
++for the Counter device itself.
++
++For a more detailed breakdown of the available Generic Counter interface
++sysfs attributes, please refer to the
++Documentation/ABI/testing/sys-bus-counter-generic-sysfs file.
++
++The Signals and Counts associated with the Counter device are registered
++to the system as well by the counter_register function. The
++signal_read/signal_write driver callbacks are associated to their
++respective Signal attributes, while the count_read/count_write and
++function_get/function_set driver callbacks are associated to their
++respective Count attributes; similarly, the same is true for the
++action_get/action_set driver callbacks and their respective Synapse
++attributes. If a driver callback is left undefined, then the respective
++read/write permission is left disabled for the relevant attributes.
++
++Similarly, extension sysfs attributes are created for the defined
++counter_device_ext, counter_count_ext, and counter_signal_ext
++structures that are passed in.
+diff --git a/Documentation/driver-api/iio/index.rst b/Documentation/driver-api/iio/index.rst
+index e5c3922d1b6f..e6c5b75c2e03 100644
+--- a/Documentation/driver-api/iio/index.rst
++++ b/Documentation/driver-api/iio/index.rst
+@@ -15,3 +15,4 @@ Contents:
+    buffers
+    triggers
+    triggered-buffers
++   generic-counter
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 07dd7b933bfa..38da1bc615b3 100644
+index 38da1bc615b3..08eba78057e4 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
 @@ -3665,6 +3665,7 @@ COUNTER INTERFACE
  M:	William Breathitt Gray <vilhelm.gray@gmail.com>
  L:	linux-iio@vger.kernel.org
  S:	Maintained
-+F:	Documentation/ABI/testing/sysfs-bus-counter-*
++F:	Documentation/driver-api/counter/
+ F:	Documentation/ABI/testing/sysfs-bus-counter-*
  F:	drivers/iio/counter/
  F:	include/linux/iio/counter.h
- 
 -- 
 2.15.1
 
