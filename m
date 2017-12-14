@@ -1,440 +1,391 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yb0-f194.google.com ([209.85.213.194]:33363 "EHLO
-        mail-yb0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752377AbdLNUwD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 Dec 2017 15:52:03 -0500
+Return-Path: <SRS0=Dxs2=DK=gmail.com=vilhelm.gray@kernel.org>
 From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net
-Cc: benjamin.gaignard@linaro.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v4 06/11] docs: Add Simple Counter interface documentation
-Date: Thu, 14 Dec 2017 15:51:55 -0500
-Message-Id: <6a470b7e6576c6dcea7670d3b3f09e74368946e3.1513266127.git.vilhelm.gray@gmail.com>
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net
+Cc: benjamin.gaignard@linaro.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH v4 07/11] counter: Add dummy counter driver
+Date: Thu, 14 Dec 2017 15:52:08 -0500
+Message-Id: <efbcb4991cbde077f341c84ca8f892e526ef21e3.1513266127.git.vilhelm.gray@gmail.com>
 In-Reply-To: <cover.1513266127.git.vilhelm.gray@gmail.com>
 References: <cover.1513266127.git.vilhelm.gray@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-This patch adds high-level documentation about the Simple Counter
-interface.
+This patch introduces the dummy counter driver. The dummy counter driver
+serves as a reference implementation of a driver that utilizes the
+Simple Counter interface.
+
+Writing "low" and "high" to the Signal attributes allows a user to
+simulate a typical Simple Counter Signal input stream for evaluation;
+the Counter will evaluate the Signal data based on the respective action
+mode for the associated Signal, and trigger the associated count
+function specified by the respective Count's function mode. The current
+Count value may be read, and the Count value preset by a write.
+
+The Count max and min attributes serve to configure respective value
+ceiling and value floor for each desired Count.
 
 Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- Documentation/driver-api/iio/index.rst          |   1 +
- Documentation/driver-api/iio/simple-counter.rst | 393 ++++++++++++++++++++++++
- 2 files changed, 394 insertions(+)
- create mode 100644 Documentation/driver-api/iio/simple-counter.rst
+ drivers/iio/counter/Kconfig         |  15 ++
+ drivers/iio/counter/Makefile        |   1 +
+ drivers/iio/counter/dummy-counter.c | 308 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 324 insertions(+)
+ create mode 100644 drivers/iio/counter/dummy-counter.c
 
-diff --git a/Documentation/driver-api/iio/index.rst b/Documentation/driver-api/iio/index.rst
-index e6c5b75c2e03..60e17f16cfb8 100644
---- a/Documentation/driver-api/iio/index.rst
-+++ b/Documentation/driver-api/iio/index.rst
-@@ -16,3 +16,4 @@ Contents:
-    triggers
-    triggered-buffers
-    generic-counter
-+   simple-counter
-diff --git a/Documentation/driver-api/iio/simple-counter.rst b/Documentation/driver-api/iio/simple-counter.rst
+diff --git a/drivers/iio/counter/Kconfig b/drivers/iio/counter/Kconfig
+index 6b9a43180d2c..9d7dae137f9c 100644
+--- a/drivers/iio/counter/Kconfig
++++ b/drivers/iio/counter/Kconfig
+@@ -30,6 +30,21 @@ config 104_QUAD_8
+ 	  The base port addresses for the devices may be configured via the base
+ 	  array module parameter.
+ 
++config DUMMY_COUNTER
++	tristate "Dummy counter driver"
++	help
++	  Select this option to enable the dummy counter driver. The dummy
++	  counter driver serves as a reference implementation of a driver that
++	  utilizes the Generic Counter interface.
++
++	  Writing "low" and "high" to the Signal attributes allows a user to
++	  simulate a typical Simple Counter Signal input stream for evaluation;
++	  the Counter will evaluate the Signal data based on the respective
++	  trigger mode for the associated Signal, and trigger the associated
++	  counter function specified by the respective function mode. The
++	  current Value value may be read, and the Value value preset by a
++	  write.
++
+ config STM32_LPTIMER_CNT
+ 	tristate "STM32 LP Timer encoder counter driver"
+ 	depends on (MFD_STM32_LPTIMER || COMPILE_TEST) && IIO
+diff --git a/drivers/iio/counter/Makefile b/drivers/iio/counter/Makefile
+index 7450dee97446..febd2884b474 100644
+--- a/drivers/iio/counter/Makefile
++++ b/drivers/iio/counter/Makefile
+@@ -9,4 +9,5 @@ counter-$(CONFIG_COUNTER) += generic-counter.o
+ counter-$(CONFIG_COUNTER) += simple-counter.o
+ 
+ obj-$(CONFIG_104_QUAD_8)	+= 104-quad-8.o
++obj-$(CONFIG_DUMMY_COUNTER)	+= dummy-counter.o
+ obj-$(CONFIG_STM32_LPTIMER_CNT)	+= stm32-lptimer-cnt.o
+diff --git a/drivers/iio/counter/dummy-counter.c b/drivers/iio/counter/dummy-counter.c
 new file mode 100644
-index 000000000000..fa34f689e99f
+index 000000000000..31d7e3a7d8fa
 --- /dev/null
-+++ b/Documentation/driver-api/iio/simple-counter.rst
-@@ -0,0 +1,393 @@
-+========================
-+Simple Counter Interface
-+========================
-+
-+Introduction
-+============
-+
-+The most basic counter device may be expressed as a single Count
-+associated with a single Signal via a single Synapse. This is a popular
-+type of Counter implemented by hardware devices, and also what commonly
-+comes to mind when one thinks of a "counter device." This driver API
-+provides a basic Counter interface and standard of interaction and
-+exposure for these simple counter devices. The Simple Counter interface
-+enables drivers to support and expose simple counter devices in a more
-+apt and well-defined way, without the hassles and imprecisions of
-+utilizing a more generic interface.
-+
-+Theory
-+======
-+
-+The Simple Counter interface may be considered a subclass of the
-+Generic Counter interface; the same paradigm core components apply:
-+Counts, Signals, and Synapses. However, the Simple Counter interface
-+goes a bit further and defines aspects of those core components to
-+properly represent Simple Counter devices.
-+
-+The three core components of a Simple Counter:
-+
-+        COUNT
-+        -----
-+        A Count represents the count data for a set of Signals. The
-+        count data for a Simple Counter is a signed integer representing
-+        the accumulated count of Simple Signal action conditions.
-+
-+        A Count has a count function mode which represents the update
-+        behavior for the count data. The following two count function
-+        modes are possible for a Simple Count:
-+
-+                * Increase:
-+                        Accumulated count is incremented.
-+                * Decrease:
-+                        Accumulated count is decremented.
-+
-+        A Simple Count has one associated Simple Signal.
-+
-+        SIGNAL
-+        ------
-+        A Signal represents a counter input data; this is the data that
-+        is typically analyzed by the counter to determine the count
-+        data. A Simple Signal represents a counter input line with two
-+        possible states:
-+
-+                * Low
-+                * High
-+
-+        A Simple Signal is associated to a Simple Count.
-+
-+        SYNAPSE
-+        -------
-+        A Synapse represents the association of a Signal with a
-+        respective Count. Signal data affects respective Count data, and
-+        the Synapse represents this relationship.
-+
-+        The Synapse action mode specifies the Signal data condition
-+        which triggers the respective Count's count function evaluation
-+        to update the count data. There are four possible action modes
-+        for a Simple Counter:
-+
-+                * None:
-+                        Signal does not trigger the count function.
-+                * Rising Edge:
-+                        Low state transitions to High state.
-+                * Falling Edge:
-+                        High state transitions to Low state.
-+                * Both Edges:
-+                        Any state transition.
-+
-+Paradigm
-+========
-+
-+Simple Counter devices consist of a single Count associated with a
-+single Signal via a single Synapse. Take for example a counter device
-+which simply accumulates a count of rising edges on a source input line.
-+
-+        Count                Synapse        Signal
-+        -----                -------        ------
-++---------------------+
-+| Data: Count         |    Rising Edge     ________
-+| Function: Increase  |  <-------------   / Source \
-+|                     |                  ____________
-++---------------------+
-+
-+In this example, the Signal is a source input line with a pulsing
-+voltage, while the Count is a persistent count value which is repeatedly
-+incremented. The Signal is associated with the respective Count via a
-+Synapse. The increase function is triggered by the Signal data condition
-+specified by the Synapse -- in this case a rising edge condition on the
-+voltage input line.
-+
-+In summary, the simple counter device existence and behavior is aptly
-+represented by respective Count, Signal, and Synapse components: e.g. a
-+rising edge condition triggers an increase function on an accumulating
-+count datum.
-+
-+Userspace Interface
-+===================
-+
-+Several sysfs attributes are generated by the Simple Counter interface,
-+and reside under the /sys/bus/counter/devices/counterX directory, where
-+counterX refers to the respective counter device. Please see
-+Documentation/ABI/testing/sys-bus-counter-simple-sysfs for detailed
-+information on each Simple Counter interface sysfs attribute.
-+
-+In addition, several sysfs attributes are generated by the underlying
-+Generic Counter interface, and also reside under the
-+/sys/bus/counter/devices/counterX directory, where counterX refers to
-+the respective counter device. Please see
-+Documentation/ABI/testing/sys-bus-counter-generic-sysfs for detailed
-+information on each Generic Counter interface sysfs attribute.
-+
-+Through these sysfs attributes, programs and scripts may interact with
-+the Simple Counter paradigm Counts, Signals, and Synapses of respective
-+counter devices.
-+
-+Driver API
-+==========
-+
-+Driver authors may utilize the Simple Counter interface in their code
-+by including the include/linux/iio/counter.h header file. This header
-+file provides several core data structures and function prototypes for
-+defining a simple counter.
-+
-+
-+struct simple_counter_signal_ext
-+--------------------------------
-+
-+This structure defines a Simple Counter Signal extension attribute.
-+These attributes expose auxiliary configuration and functionality
-+specific to the respective Simple Counter Signal.
-+
-+        name:   attribute name
-+        read:   read callback for this attribute; may be NULL
-+        write:  write callback for this attribute; may be NULL
-+        priv:   data private to the driver
-+
-+struct simple_counter_signal
-+----------------------------
-+
-+This structure defines a Simple Counter Signal component. Typically,
-+this will correlate with an input channel on a physical counter device.
-+This structure is the simplest of the Simple Counter paradigm core
-+components to define with only two structure members which require
-+explicit configuration:
-+
-+        id:             unique ID used to identify signal
-+        name:           device-specific signal name
-+        ext:            optional array of Simple Counter Signal
-+                        extensions
-+        num_ext:        number of Simple Counter Signal extensions
-+                        specified in @ext
-+        priv:           optional private data supplied by driver
-+
-+enum simple_counter_signal_level
-+--------------------------------
-+
-+This enum defines enumeration constants to represent the possible Simple
-+Signal data level states.
-+
-+        SIMPLE_COUNTER_SIGNAL_LOW:      Low
-+        SIMPLE_COUNTER_SIGNAL_HIGH:     High
-+
-+enum simple_counter_function
-+----------------------------
-+
-+This enum defines enumeration constants to represent the possible Simple
-+Counter count function modes.
-+
-+        SIMPLE_COUNTER_FUNCTION_INCREASE:       Increase
-+        SIMPLE_COUNTER_FUNCTION_DECREASE:       Decrease
-+
-+enum simple_counter_action
-+--------------------------
-+
-+This enum defines enumeration constants to represent the possible Simple
-+Counter action modes.
-+
-+        SIMPLE_COUNTER_ACTION_NONE:             None
-+        SIMPLE_COUNTER_ACTION_RISING_EDGE:      Rising Edge
-+        SIMPLE_COUNTER_ACTION_FALLING_EDGE:     Falling Edge
-+        SIMPLE_COUNTER_ACTION_BOTH_EDGES:       Both Edges
-+
-+struct simple_counter_count_ext
-+-------------------------------
-+
-+This structure defines a Simple Counter Count extension attribute. These
-+attributes expose auxiliary configuration and functionality specific to
-+the respective Simple Counter Count.
-+
-+        name:   attribute name
-+        read:   read callback for this attribute; may be NULL
-+        write:  write callback for this attribute; may be NULL
-+        priv:   data private to the driver
-+
-+struct simple_counter_count
-+---------------------------
-+
-+This structure defines a Simple Counter Count component. Typically, this
-+will correlate with the read data (the "count" value) provided by a
-+physical counter device. This structure requires the explicit
-+configuration of an ID, name, and the Simple Signal associated with this
-+Simple Count.
-+
-+        id:             unique ID used to identify Count
-+        name:           device-specific Count name
-+        function:       current function mode
-+        action:         current action mode
-+        signal:         associated signal
-+        ext:            optional array of Simple Counter Count
-+                        extensions
-+        num_ext:        number of Simple Counter Count extensions
-+                        specified in @ext
-+        priv:           optional private data supplied by driver
-+
-+struct simple_counter_device_ext
-+--------------------------------
-+
-+This structure defines a Simple Counter extension attribute. These
-+attributes expose auxiliary configuration and functionality specific to
-+the respective Simple Counter.
-+
-+        name:   attribute name
-+        read:   read callback for this attribute; may be NULL
-+        write:  write callback for this attribute; may be NULL
-+        priv:   data private to the driver
-+
-+struct simple_counter_device
-+----------------------------
-+
-+This is the main data structure for a Simple Counter device. Access to
-+all respective Counts, Signals, and Synapses is possible from this
-+structure. This structure requires the configuration of a name and
-+Simple Counter Counts:
-+
-+        name:           name of the device
-+        parent:         optional parent device providing the counters
-+        signal_read:    read callback for Signal attribute; may be NULL.
-+                        Returns 0 on success and negative error code on
-+                        error. The respective Signal's returned level
-+                        should be passed back via the level parameter.
-+        signal_write:   write callback for Signal attribute; may be NULL
-+        count_read:     read callback for Count attribute; may be NULL.
-+                        Returns 0 on success and negative error code on
-+                        error. The respective Count's returned value
-+                        should be passed back via the val parameter.
-+        count_write:    write callback for Count attribute; may be NULL
-+        function_get:   function to get the current count function mode.
-+                        Returns 0 on success and negative error code on
-+                        error. The respective Count's returned function
-+                        mode should be passed back via the function
-+                        parameter.
-+        function_set:   function to set the count function mode
-+        action_get:     function to get the current action mode. Returns
-+                        0 on success and negative error code on error.
-+                        The respective Signal's returned action mode
-+                        should be passed back via the action parameter.
-+        action_set:     function to set the action mode
-+        counts:         array of Simple Counter Counts
-+        num_counts:     number of Simple Counter Counts specified in
-+                        @counts
-+        ext:            optional array of Simple Counter device
-+                        extensions
-+        num_ext:        number of Simple Counter device extensions
-+                        specified in @ext
-+        priv:           optional private data supplied by driver
-+
-+Registration functions
-+----------------------
-+
-+A simple counter device is registered to the system by passing the
-+respective initialized simple_counter_device structure to the
-+simple_counter_register function; similarly, the
-+simple_counter_unregister function unregisters the respective
-+Simple Counter. The devm_simple_counter_register and
-+devm_simple_counter_unregister functions serve as device memory-managed
-+versions of the simple_counter_register and simple_counter_unregister
-+functions respectively.
-+
-+Implementation
-+==============
-+
-+To use the Simple Counter interface, create an array of
-+simple_counter_count structures to represent the desired Counts and
-+Signals of the counter device. The simple_counter_count structure has a
-+Simple Signal member that represents the associated Signal, so only the
-+Simple Counts need to be explicited allocated -- the associated Simple
-+Signal members are simply populated with the respective desired
-+definitions. The defined simple_counter_count array may then be added
-+to a simple_counter_device structure for registration to the system.
-+
-+     Simple Count                    Count               Signal
-+     ------------                    -----               ------
-++---------------------+      +--------------------+
-+| Data: Count         | ---> | Data: Count        |
-+| Function: Increase  |      | Function: Increase |
-+|                     |      +--------------------+
-+|                     |
-++---------------------+                                 ________
-+| Signal: Source      | ---------------------------->  / Source \
-+|                     |                               ____________
-++---------------------+
-+
-+Driver callbacks should be provided to the simple_counter_device
-+structure in order to communicate with the device: to read and write
-+various Signals and Counts, and to set and get the "action mode" and
-+"function mode" for various Synapses and Counts respectively.
-+
-+A defined simple_counter_device structure may be registered to the
-+system by passing it to the simple_counter_register function, and
-+unregistered by passing it to the simple_counter_unregister function.
-+Similarly, the devm_simple_counter_register and
-+devm_simple_counter_unregister functions may be used if device
-+memory-managed registration is desired.
-+
-+Extension sysfs attributes can be created for auxiliary functionality
-+and data by passing in defined simple_counter_device_ext,
-+simple_counter_count_ext, and simple_counter_signal_ext structures. In
-+these cases, the simple_counter_device_ext structure is used for global
-+configuration of the respective Counter device, while the
-+simple_counter_count_ext and simple_counter_signal_ext structures allow
-+for auxiliary exposure and configuration of a specific Count or Signal
-+respectively.
-+
-+Architecture
-+============
-+
-+The Simple Counter interface is a subclass of the Generic Counter
-+interface, and the Simple Counter interface functions serve as mappings
-+onto the Generic Counter interface functions to simplify and aptly
-+define support for simple counter devices.
-+
-+In this vein, the Generic Counter interface functions are ultimately
-+called when the Simple Counter interface functions are utilized. For
-+more information on the architecture of the Generic Counter interface,
-+please refer to the Documentation/driver-api/iio/generic-counter.rst
-+file.
-+
-+Simple Counter devices are registered to the system via the
-+simple_counter_register function, and later removed via the
-+simple_counter_unregister function. The simple_counter_register function
-+will allocate a counter_device structure, populate it with the required
-+Generic Counter structures and data required to represent the Simple
-+Counter components, and register it to the system via a counter_register
-+call.
-+
-+  _______________________       +-------------------------+
-+ / simple_counter_device \  --> | simple_counter_register |
-+___________________________     +-------------------------+
-+                                  |
-+   +------------------------------+
-+   |
-+   V
-+  ________________       +------------------+
-+ / counter_device \  --> | counter_register |
-+____________________     +------------------+
-+
-+The signal_read/signal_write driver callbacks, the
-+count_read/count_write and function_get/function_set driver callbacks,
-+and the action_get/action_set driver callbacks are mapped to the
-+allocated internal counter_device structure via appropriate hook
-+functions.
-+
-+        Simple Counter  Remap Function                  Generic Counter
-+        --------------  --------------                  ---------------
-+
-+        signal_read     simple_counter_signal_read      signal_read
-+        signal_write    simple_counter_signal_write     signal_write
-+        count_read      simple_counter_count_read       count_read
-+        count_write     simple_counter_count_write      count_write
-+        function_get    simple_counter_function_get     function_get
-+        function_set    simple_counter_function_set     function_set
-+        action_get      simple_counter_action_get       action_get
-+        action_set      simple_counter_action_set       action_set
-+
-+This is how Generic Counter interface sysfs attributes are inherited and
-+extended by the Simple Counter interface. If a driver callback is left
-+undefined, then the respective read/write permission is left disabled
-+for the relevant attributes.
-+
-+Similarly, simple_counter_device_ext, simple_counter_count_ext, and
-+simple_counter_signal_ext structures are mapped to respective
-+counter_device_ext, counter_count_ext, and counter_signal_ext structures
-+via appropriate hook functions, and then added to the allocated internal
-+counter_device structure for registration.
++++ b/drivers/iio/counter/dummy-counter.c
+@@ -0,0 +1,308 @@
++/*
++ * Dummy counter driver
++ * Copyright (C) 2017 William Breathitt Gray
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License, version 2, as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ */
++#include <linux/device.h>
++#include <linux/errno.h>
++#include <linux/iio/counter.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/types.h>
++
++#define DUMCNT_NUM_COUNTERS 2
++/**
++ * struct dumcnt - private data structure
++ * @counter:	instance of the Simple Counter
++ * @counts:	array of accumulation counts
++ * @max:	array of value ceilings for each count
++ * @min:	array of value floors for each count
++ * @states:	array of input line states
++ */
++struct dumcnt {
++	struct simple_counter_device counter;
++	long counts[DUMCNT_NUM_COUNTERS];
++	long max[DUMCNT_NUM_COUNTERS];
++	long min[DUMCNT_NUM_COUNTERS];
++	enum simple_counter_signal_level states[DUMCNT_NUM_COUNTERS];
++};
++
++static int dumcnt_signal_read(struct simple_counter_device *counter,
++	struct simple_counter_signal *signal,
++	enum simple_counter_signal_level *level)
++{
++	struct dumcnt *const priv = counter->priv;
++
++	*level = priv->states[signal->id];
++
++	return 0;
++}
++
++static int dumcnt_signal_write(struct simple_counter_device *counter,
++	struct simple_counter_signal *signal,
++	enum simple_counter_signal_level level)
++{
++	struct dumcnt *const priv = counter->priv;
++	const int id = signal->id;
++	const enum simple_counter_signal_level prev_state = priv->states[id];
++	struct simple_counter_count *const count = counter->counts + id;
++	unsigned int triggered = 0;
++
++	/* If no state change then just exit */
++	if (prev_state == level)
++		return 0;
++
++	priv->states[id] = level;
++
++	/* Check if Count function was triggered */
++	switch (count->action) {
++	case SIMPLE_COUNTER_ACTION_NONE:
++		return 0;
++	case SIMPLE_COUNTER_ACTION_RISING_EDGE:
++		if (!prev_state)
++			triggered = 1;
++		break;
++	case SIMPLE_COUNTER_ACTION_FALLING_EDGE:
++		if (prev_state)
++			triggered = 1;
++		break;
++	case SIMPLE_COUNTER_ACTION_BOTH_EDGES:
++		triggered = 1;
++		break;
++	}
++
++	/* Exit early if Count function was not triggered */
++	if (!triggered)
++		return 0;
++
++	/* Execute Count function */
++	switch (count->function) {
++	case SIMPLE_COUNTER_FUNCTION_INCREASE:
++		if (priv->counts[id] < priv->max[id])
++			priv->counts[id]++;
++		break;
++	case SIMPLE_COUNTER_FUNCTION_DECREASE:
++		if (priv->counts[id] > priv->min[id])
++			priv->counts[id]--;
++		break;
++	}
++
++	return 0;
++}
++
++static int dumcnt_count_read(struct simple_counter_device *counter,
++	struct simple_counter_count *count, long *val)
++{
++	struct dumcnt *const priv = counter->priv;
++
++	*val = priv->counts[count->id];
++
++	return 0;
++}
++
++static int dumcnt_count_write(struct simple_counter_device *counter,
++	struct simple_counter_count *count, long val)
++{
++	struct dumcnt *const priv = counter->priv;
++	const int id = count->id;
++
++	/* Verify that value is within configured boundaries */
++	if (val > priv->max[id] || val < priv->min[id])
++		return -EINVAL;
++
++	priv->counts[id] = val;
++
++	return 0;
++}
++
++static int dumcnt_function_get(struct simple_counter_device *counter,
++	struct simple_counter_count *count,
++	enum simple_counter_function *function)
++{
++	*function = count->function;
++
++	return 0;
++}
++
++static int dumcnt_function_set(struct simple_counter_device *counter,
++	struct simple_counter_count *count,
++	enum simple_counter_function function)
++{
++	return 0;
++}
++
++static int dumcnt_action_get(struct simple_counter_device *counter,
++	struct simple_counter_count *count,
++	enum simple_counter_action *action)
++{
++	*action = count->action;
++
++	return 0;
++}
++
++static int dumcnt_action_set(struct simple_counter_device *counter,
++	struct simple_counter_count *count,
++	enum simple_counter_action action)
++{
++	return 0;
++}
++
++ssize_t dumcnt_count_max_read(struct simple_counter_device *counter,
++	struct simple_counter_count *count, void *priv,	char *buf)
++{
++	struct dumcnt *const drv_data = counter->priv;
++
++	return scnprintf(buf, PAGE_SIZE, "%ld\n", drv_data->max[count->id]);
++}
++
++ssize_t dumcnt_count_max_write(struct simple_counter_device *counter,
++	struct simple_counter_count *count, void *priv,	const char *buf,
++	size_t len)
++{
++	int err;
++	struct dumcnt *const drv_data = counter->priv;
++
++	err = kstrtol(buf, 0, drv_data->max + count->id);
++	if (err)
++		return err;
++
++	return len;
++}
++
++ssize_t dumcnt_count_min_read(struct simple_counter_device *counter,
++	struct simple_counter_count *count, void *priv,	char *buf)
++{
++	struct dumcnt *const drv_data = counter->priv;
++
++	return scnprintf(buf, PAGE_SIZE, "%ld\n", drv_data->min[count->id]);
++}
++
++ssize_t dumcnt_count_min_write(struct simple_counter_device *counter,
++	struct simple_counter_count *count, void *priv,	const char *buf,
++	size_t len)
++{
++	int err;
++	struct dumcnt *const drv_data = counter->priv;
++
++	err = kstrtol(buf, 0, drv_data->min + count->id);
++	if (err)
++		return err;
++
++	return len;
++}
++
++static const struct simple_counter_count_ext dumcnt_count_ext[] = {
++	{
++		.name = "max",
++		.read = dumcnt_count_max_read,
++		.write = dumcnt_count_max_write
++	},
++	{
++		.name = "min",
++		.read = dumcnt_count_min_read,
++		.write = dumcnt_count_min_write
++	}
++};
++
++#define DUMCNT_COUNT(_id, _cntname, _signame) {	\
++	.id = _id,				\
++	.name = _cntname,			\
++	.signal = {				\
++		.id = _id,			\
++		.name = _signame		\
++	},					\
++	.ext = dumcnt_count_ext,		\
++	.num_ext = ARRAY_SIZE(dumcnt_count_ext)	\
++}
++
++static const struct simple_counter_count dumcnt_counts[] = {
++	DUMCNT_COUNT(0, "Count A", "Signal A"),
++	DUMCNT_COUNT(1, "Count B", "Signal B")
++};
++
++static int dumcnt_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct simple_counter_count *counts;
++	struct dumcnt *dumcnt;
++
++	counts = devm_kmemdup(dev, dumcnt_counts, sizeof(dumcnt_counts),
++		GFP_KERNEL);
++	if (!counts)
++		return -ENOMEM;
++
++	dumcnt = devm_kzalloc(dev, sizeof(*dumcnt), GFP_KERNEL);
++	if (!dumcnt)
++		return -ENOMEM;
++
++	dumcnt->counter.name = dev_name(dev);
++	dumcnt->counter.parent = dev;
++	dumcnt->counter.signal_read = dumcnt_signal_read;
++	dumcnt->counter.signal_write = dumcnt_signal_write;
++	dumcnt->counter.count_read = dumcnt_count_read;
++	dumcnt->counter.count_write = dumcnt_count_write;
++	dumcnt->counter.function_get = dumcnt_function_get;
++	dumcnt->counter.function_set = dumcnt_function_set;
++	dumcnt->counter.action_get = dumcnt_action_get;
++	dumcnt->counter.action_set = dumcnt_action_set;
++	dumcnt->counter.counts = counts;
++	dumcnt->counter.num_counts = ARRAY_SIZE(dumcnt_counts);
++	dumcnt->counter.priv = dumcnt;
++
++	return devm_simple_counter_register(dev, &dumcnt->counter);
++}
++
++static struct platform_device *dumcnt_device;
++
++static struct platform_driver dumcnt_driver = {
++	.driver = {
++		.name = "dummy-counter"
++	}
++};
++
++static void __exit dumcnt_exit(void)
++{
++	platform_device_unregister(dumcnt_device);
++	platform_driver_unregister(&dumcnt_driver);
++}
++
++static int __init dumcnt_init(void)
++{
++	int err;
++
++	dumcnt_device = platform_device_alloc(dumcnt_driver.driver.name, -1);
++	if (!dumcnt_device)
++		return -ENOMEM;
++
++	err = platform_device_add(dumcnt_device);
++	if (err)
++		goto err_platform_device;
++
++	err = platform_driver_probe(&dumcnt_driver, dumcnt_probe);
++	if (err)
++		goto err_platform_driver;
++
++	return 0;
++
++err_platform_driver:
++	platform_device_del(dumcnt_device);
++err_platform_device:
++	platform_device_put(dumcnt_device);
++	return err;
++}
++
++module_init(dumcnt_init);
++module_exit(dumcnt_exit);
++
++MODULE_AUTHOR("William Breathitt Gray <vilhelm.gray@gmail.com>");
++MODULE_DESCRIPTION("Dummy counter driver");
++MODULE_LICENSE("GPL v2");
 -- 
 2.15.1
-
