@@ -1,47 +1,36 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx2.suse.de ([195.135.220.15]:49257 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751190AbdLIXZl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 9 Dec 2017 18:25:41 -0500
-From: =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>
-To: linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>,
+Received: from mail-ot0-f194.google.com ([74.125.82.194]:43861 "EHLO
+        mail-ot0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1755650AbdLOVmP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 15 Dec 2017 16:42:15 -0500
+Date: Fri, 15 Dec 2017 15:42:13 -0600
+From: Rob Herring <robh@kernel.org>
+To: Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         Marius Tarcatu <marius.tarcatu@infineon.com>,
-        Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS)
-Subject: [PATCH 1/2] dt-bindings: Add Infineon TLV493D-A1B6
-Date: Sun, 10 Dec 2017 00:25:06 +0100
-Message-Id: <20171209232507.18594-2-afaerber@suse.de>
-In-Reply-To: <20171209232507.18594-1-afaerber@suse.de>
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+        <devicetree@vger.kernel.org>
+Subject: Re: [PATCH 1/2] dt-bindings: Add Infineon TLV493D-A1B6
+Message-ID: <20171215214213.u6tqtpxfkgxtbsf2@rob-hp-laptop>
 References: <20171209232507.18594-1-afaerber@suse.de>
+ <20171209232507.18594-2-afaerber@suse.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+In-Reply-To: <20171209232507.18594-2-afaerber@suse.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The Infineon TLV493D-A1B6 is an I2C-based 3D Magnetic Sensor.
+On Sun, Dec 10, 2017 at 12:25:06AM +0100, Andreas Färber wrote:
+> The Infineon TLV493D-A1B6 is an I2C-based 3D Magnetic Sensor.
+> 
+> Cc: Marius Tarcatu <marius.tarcatu@infineon.com>
+> Signed-off-by: Andreas Färber <afaerber@suse.de>
+> ---
+>  Documentation/devicetree/bindings/trivial-devices.txt | 1 +
+>  1 file changed, 1 insertion(+)
 
-Cc: Marius Tarcatu <marius.tarcatu@infineon.com>
-Signed-off-by: Andreas FÃ¤rber <afaerber@suse.de>
----
- Documentation/devicetree/bindings/trivial-devices.txt | 1 +
- 1 file changed, 1 insertion(+)
+I take trivial-devices.txt changes to avoid any conflicts, so I've 
+applied.
 
-diff --git a/Documentation/devicetree/bindings/trivial-devices.txt b/Documentation/devicetree/bindings/trivial-devices.txt
-index 5f3143f97098..7ad1939cb0d6 100644
---- a/Documentation/devicetree/bindings/trivial-devices.txt
-+++ b/Documentation/devicetree/bindings/trivial-devices.txt
-@@ -63,6 +63,7 @@ fsl,sgtl5000		SGTL5000: Ultra Low-Power Audio Codec
- gmt,g751		G751: Digital Temperature Sensor and Thermal Watchdog with Two-Wire Interface
- infineon,slb9635tt	Infineon SLB9635 (Soft-) I2C TPM (old protocol, max 100khz)
- infineon,slb9645tt	Infineon SLB9645 I2C TPM (new protocol, max 400khz)
-+infineon,tlv493d-a1b6	Infineon TLV493D-A1B6 I2C 3D Magnetic Sensor
- isil,isl1208		Intersil ISL1208 Low Power RTC with Battery Backed SRAM
- isil,isl1218		Intersil ISL1218 Low Power RTC with Battery Backed SRAM
- isil,isl12022		Intersil ISL12022 Real-time Clock
--- 
-2.13.6
-
+Rob
