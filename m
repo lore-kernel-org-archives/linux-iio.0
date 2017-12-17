@@ -1,64 +1,46 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:42306 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1753315AbdLQMq4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 17 Dec 2017 07:46:56 -0500
-Date: Sun, 17 Dec 2017 12:46:52 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: venkat.prashanth2498@gmail.com
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] Drivers: iio:adc: fix brace coding style issue in
- at91_adc.c
-Message-ID: <20171217124652.5f557728@archlinux>
-In-Reply-To: <1513501668-13227-1-git-send-email-venkat.prashanth2498@gmail.com>
-References: <1513501668-13227-1-git-send-email-venkat.prashanth2498@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from mail-pf0-f193.google.com ([209.85.192.193]:40849 "EHLO
+        mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1757305AbdLQOIa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 17 Dec 2017 09:08:30 -0500
+Received: by mail-pf0-f193.google.com with SMTP id v26so8616626pfl.7
+        for <linux-iio@vger.kernel.org>; Sun, 17 Dec 2017 06:08:29 -0800 (PST)
+From: venkat.prashanth2498@gmail.com
+To: lars@metafoo.de, Michael.Hennerich@analog.com
+Cc: jic23@kernel.org, knaack.h@gmx.de, pmeerw@pmeerw.net,
+        linux-iio@vger.kernel.org,
+        Venkat Prashanth B U <venkat.prashanth2498@gmail.com>
+Subject: [PATCH 2/2] Drivers:iio:adc : fix quoted string split across lines issue in at91_adc.c
+Date: Sun, 17 Dec 2017 19:38:21 +0530
+Message-Id: <1513519701-3421-1-git-send-email-venkat.prashanth2498@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, 17 Dec 2017 14:37:48 +0530
-venkat.prashanth2498@gmail.com wrote:
+From: Venkat Prashanth B U <venkat.prashanth2498@gmail.com>
 
-> From: Venkat Prashanth B U <venkat.prashanth2498@gmail.com>
-> 
-> This is a patch to the at91_adc.c file that fixes up a brace
-> warning found by the checkpatch.pl tool
-> 
-> Signed-off-by: Venkat Prashanth B U <venkat.prashanth2498@gmail.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+This is a patch to the at91_adc.c file that fixes up a quoted string split
+across lines warning found by the checkpatch.pl tool
 
-Thanks,
+Signed-off-by: Venkat Prashanth B U <venkat.prashanth2498@gmail.com>
+---
+ drivers/iio/adc/at91_adc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Jonathan
+diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+index a4767d6..c3729f8 100644
+--- a/drivers/iio/adc/at91_adc.c
++++ b/drivers/iio/adc/at91_adc.c
+@@ -737,8 +737,8 @@ static int at91_adc_of_get_resolution(struct at91_adc_state *st,
 
-> ---
->  drivers/iio/adc/at91_adc.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-> index 7b40925..a4767d6 100644
-> --- a/drivers/iio/adc/at91_adc.c
-> +++ b/drivers/iio/adc/at91_adc.c
-> @@ -1165,9 +1165,9 @@ static int at91_adc_probe(struct platform_device *pdev)
->  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> 
->  	st->reg_base = devm_ioremap_resource(&pdev->dev, res);
-> -	if (IS_ERR(st->reg_base)) {
-> +	if (IS_ERR(st->reg_base))
->  		return PTR_ERR(st->reg_base);
-> -	}
-> +
-> 
->  	/*
->  	 * Disable all IRQs before setting up the handler
-> --
-> 1.9.1
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+ count = of_property_count_strings(np, "atmel,adc-res-names");
+ if (count < 2) {
+-dev_err(&idev->dev, "You must specified at least two resolution names for "
+-	"adc-res-names property in the DT\n");
++dev_err(&idev->dev, "You must specified at least two resolution names for
++	adc-res-names property in the DT\n");
+ 	return count;
+ }
+
+--
+1.9.1
 
