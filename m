@@ -1,106 +1,37 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtprelay0226.hostedemail.com ([216.40.44.226]:50787 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1751171AbdLSQJ7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 19 Dec 2017 11:09:59 -0500
-Message-ID: <1513699793.1234.41.camel@perches.com>
+Return-Path: <SRS0=kdEO=DP=infradead.org=peterz@kernel.org>
+Date: Tue, 19 Dec 2017 17:12:45 +0100
+From: Peter Zijlstra <peterz@infradead.org>
+To: Joe Perches <joe@perches.com>
+Cc: Crt Mori <cmo@melexis.com>, Jonathan Cameron <jic23@kernel.org>,
+	Ingo Molnar <mingo@kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Kees Cook <keescook@chromium.org>,
+	Rusty Russell <rusty@rustcorp.com.au>,
+	Ian Abbott <abbotti@mev.co.uk>,
+	Larry Finger <Larry.Finger@lwfinger.net>,
+	Niklas Soderlund <niklas.soderlund+renesas@ragnatech.se>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Masahiro Yamada <yamada.masahiro@socionext.com>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
 Subject: Re: [PATCH v7 1/3] lib: Add strongly typed 64bit int_sqrt
-From: Joe Perches <joe@perches.com>
-To: Crt Mori <cmo@melexis.com>, Jonathan Cameron <jic23@kernel.org>
-Cc: Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Rusty Russell <rusty@rustcorp.com.au>,
-        Ian Abbott <abbotti@mev.co.uk>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Niklas Soderlund <niklas.soderlund+renesas@ragnatech.se>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>
-Date: Tue, 19 Dec 2017 08:09:53 -0800
-In-Reply-To: <20171219155908.29528-1-cmo@melexis.com>
+Message-ID: <20171219161245.cbjmod7ak5scio7d@hirez.programming.kicks-ass.net>
 References: <20171219155908.29528-1-cmo@melexis.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-Mime-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+ <1513699793.1234.41.camel@perches.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1513699793.1234.41.camel@perches.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, 2017-12-19 at 16:59 +0100, Crt Mori wrote:
-> There is no option to perform 64bit integer sqrt on 32bit platform.
-> Added stronger typed int_sqrt64 enables the 64bit calculations to
-> be performed on 32bit platforms. Although int_sqrt() is a rough
-> approximation, the same algorithm is used in int_sqrt64() as good
-> enough on 32bit platform.
+On Tue, Dec 19, 2017 at 08:09:53AM -0800, Joe Perches wrote:
 > 
-> Signed-off-by: Crt Mori <cmo@melexis.com>
-> ---
->  include/linux/kernel.h |  6 ++++++
->  lib/int_sqrt.c         | 32 ++++++++++++++++++++++++++++++++
->  2 files changed, 38 insertions(+)
+> I suspect you need to define this as:
 > 
-> diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-> index 0ad4c3044cf9..f3bebd3a9213 100644
-> --- a/include/linux/kernel.h
-> +++ b/include/linux/kernel.h
-> @@ -459,6 +459,12 @@ extern int kernel_text_address(unsigned long addr);
->  extern int func_ptr_is_kernel_text(void *ptr);
->  
->  unsigned long int_sqrt(unsigned long);
-> +#if BITS_PER_LONG != 64
-> +#define int_sqrt64 _int_sqrt64
-> +u32 _int_sqrt64(u64 x);
-> +#else
-> +#define int_sqrt64 int_sqrt
-> +#endif
+> #define int_sqrt64(x) ((u32)int_sqrt(x))
 
-As you've changed the return type for the 64-bit function to u32,
-there is a unsigned long / u32 return mismatch on 64 bit platforms.
+What's wrong with using C ?
 
-I suspect you need to define this as:
-
-#define int_sqrt64(x) ((u32)int_sqrt(x))
- 
-
-> diff --git a/lib/int_sqrt.c b/lib/int_sqrt.c
-[]
-> @@ -36,3 +36,35 @@ unsigned long int_sqrt(unsigned long x)
->  	return y;
->  }
->  EXPORT_SYMBOL(int_sqrt);
-> +
-> +#if BITS_PER_LONG != 64
-> +/**
-> + *
-> + * int_sqrt64 - strongly typed int_sqrt function when minimum 64 bit input
-> + * is expected.
-> + * @x: 64bit integer of which to calculate the sqrt
-> + */
-> +u32 _int_sqrt64(u64 x)
-> +{
-> +	u64 b, m, y = 0;
-> +
-> +	if (x <= 1)
-> +		return x;
-> +
-> +	m = 1ULL << (64 - 2);
-
-Should probably use fls64 here.
-
-> +	while (m != 0) {
-> +		b = y + m;
-> +		y >>= 1;
-> +
-> +		if (x >= b) {
-> +			x -= b;
-> +			y += m;
-> +		}
-> +		m >>= 2;
-> +	}
-> +
-> +	return y;
-> +}
-> +EXPORT_SYMBOL(_int_sqrt64);
-> +#endif
-> +
+static inline u32 int_sqrt64(u64 x)
+{
+	return int_sqrt(x);
+}
