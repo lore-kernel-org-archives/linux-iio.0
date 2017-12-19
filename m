@@ -1,42 +1,68 @@
-Return-Path: <SRS0=bgF8=D2=tobin.cc=me@kernel.org>
-Date: Sat, 30 Dec 2017 20:58:12 +1100
-From: "Tobin C. Harding" <me@tobin.cc>
+Return-Path: <SRS0=aVgU=DP=melexis.com=cmo@kernel.org>
+From: Crt Mori <cmo@melexis.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: add kernel-doc '@owner'
-Message-ID: <20171230095812.GB6042@caerus>
-References: <1513664270-29523-1-git-send-email-me@tobin.cc>
- <20171229173640.5fd6e649@archlinux>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20171229173640.5fd6e649@archlinux>
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Crt Mori <cmo@melexis.com>
+Subject: [PATCH v7 0/3] iio: temperataure: MLX90632
+Date: Tue, 19 Dec 2017 16:57:51 +0100
+Message-Id: <20171219155751.29368-1-cmo@melexis.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, Dec 29, 2017 at 05:36:40PM +0000, Jonathan Cameron wrote:
-> On Tue, 19 Dec 2017 17:17:50 +1100
-> "Tobin C. Harding" <me@tobin.cc> wrote:
-> 
-> > When building kernel documentation sphinx emits the following warning
-> > 
-> > 	warning: No description found for parameter 'owner'
-> > 
-> > Add description for struct member 'owner'.
-> > 
-> > Signed-off-by: Tobin C. Harding <me@tobin.cc>
-> > ---
-> > 
-> > I couldn't work out what DRIVER/INTERN were for so I took a guess.
-> Try the other one ;)
-> 
-> They refer to whether the driver should be directly accessing the
-> field or not.  In the case of owner they shouldn't be so it is INTERN.
-> 
-> Were I writing the subsystem from scratch again I'd probably make the
-> separation of the two cleaner, but there we are.
+Hi everybody,
 
-Thanks, will re-spin after Christmas break.
+With the sensor now available to broad public, it is time to also
+share the driver with the community. MLX90632 is just 3x3mm in size,
+but with factory calibration offers instant usage in every project.
 
-	Tobin
-        
+Driver currently provides basic functionality, but I might add
+some more fancy features after a while.
+
+v2 includes comments from Rob Herring (dt-bindings) and Jonathan
+Cameron (iio), as well as proposal to split out int_sqrt64 function
+into the linux/kernel.h
+
+v3 comments were added to some parts of mlx90632.c and TENTO defines
+replaced by values. Fixes were done to emissivity read/write and
+changed to INT_PLUS_MICRO instead. Empty line in int_sqrt.c was
+removed as it generated a warning when applying.
+
+v4 CONFIG_PM replaced by __maybe_unused, some cleanup in suspend,
+EEPROM_VERSION identifier is grouped together in one single number
+instead of assembled on fly. Replaced license on top with SPDX.
+Most importantly - reordered patches so that lib is added before
+the driver itself (which uses it).
+
+v5 Re-ordered patches so that dt-bindings is before driver patch
+as per Andreas Farber remark. Using same function for Power
+Management during runtime and suspend, as the runtime state
+already puts device to lowest possible state (without power off)
+and that is why special state for suspend is not needed at the
+current moment. Added few more checks of current PM state and
+move marking regmap dirty to suspend instead of resume.
+
+v6 Adding usage of UNIVERSAL_DEV_PM_OPS macro for PM function
+mapping.
+
+v7 Rework usage of int_sqrt according to Joe Perches and fixing
+return size to u32 as per Peter Zijlstra suggestion, as sqrt of
+64bit number cannot be have more than 32bits.
+
+Crt Mori (3):
+  lib: Add strongly typed 64bit int_sqrt
+  dt-bindings: iio: temperature: add MLX90632 device bindings
+  iio: temperature: Adding support for MLX90632
+
+ .../bindings/iio/temperature/mlx90632.txt          |  28 +
+ MAINTAINERS                                        |   7 +
+ drivers/iio/temperature/Kconfig                    |  12 +
+ drivers/iio/temperature/Makefile                   |   1 +
+ drivers/iio/temperature/mlx90632.c                 | 759 +++++++++++++++++++++
+ include/linux/kernel.h                             |   6 +
+ lib/int_sqrt.c                                     |  32 +
+ 7 files changed, 845 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/temperature/mlx90632.txt
+ create mode 100644 drivers/iio/temperature/mlx90632.c
+
+-- 
+2.15.0
