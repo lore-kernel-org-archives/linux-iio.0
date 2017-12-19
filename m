@@ -1,39 +1,56 @@
-Return-Path: <SRS0=G/1T=DQ=melexis.com=cmo@kernel.org>
-MIME-Version: 1.0
-In-Reply-To: <1513700059.1234.42.camel@perches.com>
-References: <20171219155908.29528-1-cmo@melexis.com> <1513699793.1234.41.camel@perches.com>
- <20171219161245.cbjmod7ak5scio7d@hirez.programming.kicks-ass.net> <1513700059.1234.42.camel@perches.com>
+Return-Path: <SRS0=aVgU=DP=melexis.com=cmo@kernel.org>
 From: Crt Mori <cmo@melexis.com>
-Date: Wed, 20 Dec 2017 10:35:11 +0100
-Message-ID: <CAKv63us0V8i07FUXHZExuV3h-uV-btaTb5uCkDaCNiPX7GFfMQ@mail.gmail.com>
-Subject: Re: [PATCH v7 1/3] lib: Add strongly typed 64bit int_sqrt
-To: Joe Perches <joe@perches.com>
-Cc: Peter Zijlstra <peterz@infradead.org>, Jonathan Cameron <jic23@kernel.org>,
-	Ingo Molnar <mingo@kernel.org>, Andrew Morton <akpm@linux-foundation.org>,
-	Kees Cook <keescook@chromium.org>, Rusty Russell <rusty@rustcorp.com.au>,
-	Ian Abbott <abbotti@mev.co.uk>, Larry Finger <Larry.Finger@lwfinger.net>,
-	Niklas Soderlund <niklas.soderlund+renesas@ragnatech.se>,
-	Thomas Gleixner <tglx@linutronix.de>, Krzysztof Kozlowski <krzk@kernel.org>,
-	Masahiro Yamada <yamada.masahiro@socionext.com>, linux-kernel@vger.kernel.org,
-	Linux Iio <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Crt Mori <cmo@melexis.com>
+Subject: [PATCH v7 2/3] dt-bindings: iio: temperature: add MLX90632 device bindings
+Date: Tue, 19 Dec 2017 16:59:32 +0100
+Message-Id: <20171219155932.29592-1-cmo@melexis.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Thanks for suggestions and comments. Respinned v9 with them.
+Add device tree bindings for MLX90632 IR temperature sensor.
 
-On 19 December 2017 at 17:14, Joe Perches <joe@perches.com> wrote:
-> On Tue, 2017-12-19 at 17:12 +0100, Peter Zijlstra wrote:
->> On Tue, Dec 19, 2017 at 08:09:53AM -0800, Joe Perches wrote:
->> >
->> > I suspect you need to define this as:
->> >
->> > #define int_sqrt64(x) ((u32)int_sqrt(x))
->>
->> What's wrong with using C ?
->
-> Duh.  Nothing at all.
->
->> static inline u32 int_sqrt64(u64 x)
->> {
->>       return int_sqrt(x);
->> }
+Signed-off-by: Crt Mori <cmo@melexis.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+ .../bindings/iio/temperature/mlx90632.txt          | 28 ++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/temperature/mlx90632.txt
+
+diff --git a/Documentation/devicetree/bindings/iio/temperature/mlx90632.txt b/Documentation/devicetree/bindings/iio/temperature/mlx90632.txt
+new file mode 100644
+index 000000000000..0b05812001f8
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/temperature/mlx90632.txt
+@@ -0,0 +1,28 @@
++* Melexis MLX90632 contactless Infra Red temperature sensor
++
++Link to datasheet: https://www.melexis.com/en/documents/documentation/datasheets/datasheet-mlx90632
++
++There are various applications for the Infra Red contactless temperature sensor
++and MLX90632 is most suitable for consumer applications where measured object
++temperature is in range between -20 to 200 degrees Celsius with relative error
++of measurement below 1 degree Celsius in object temperature range for
++industrial applications. Since it can operate and measure ambient temperature
++in range of -20 to 85 degrees Celsius it is suitable also for outdoor use.
++
++Be aware that electronics surrounding the sensor can increase ambient
++temperature. MLX90632 can be calibrated to reduce the housing effect via
++already existing EEPROM parameters.
++
++Since measured object emissivity effects Infra Red energy emitted, emissivity
++should be set before requesting the object temperature.
++
++Required properties:
++  - compatible: should be "melexis,mlx90632"
++  - reg: the I2C address of the sensor (default 0x3a)
++
++Example:
++
++mlx90632@3a {
++	compatible = "melexis,mlx90632";
++	reg = <0x3a>;
++};
+-- 
+2.15.0
