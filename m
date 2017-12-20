@@ -1,59 +1,56 @@
-Return-Path: <SRS0=G0CD=DS=melexis.com=cmo@kernel.org>
-MIME-Version: 1.0
-In-Reply-To: <79658484b99a4f65bb3a1937b3d156ad@AcuMS.aculab.com>
-References: <20171220142001.18161-1-cmo@melexis.com> <1c1d0ffa8ee140bf9adbc78f1559b1e8@AcuMS.aculab.com>
- <20171220160001.manjff26gfbjccsw@hirez.programming.kicks-ass.net>
- <CAKv63uuL9+xzF7KruhYwSY68-M0=aJSvJOr5Y0vVBiX8ebqfeg@mail.gmail.com>
- <c3462afd27d14c8684ee33ef6623a31a@AcuMS.aculab.com> <CAKv63utKNW2--ZnkoJ0z++68764cX_S9xS9Gst_vj7eDsFAZrg@mail.gmail.com>
- <95b9b2b52554410a85a9f10c7f5e8b13@AcuMS.aculab.com> <CAKv63usT8GU-51AmMLJb3hD3CHxf1M5KTQvYhK+0UVMT13Nbag@mail.gmail.com>
- <b743750a1bd64ed2bf800cec9da9afff@AcuMS.aculab.com> <20171221141130.cdng2mysnjj6j4i6@hirez.programming.kicks-ass.net>
- <79658484b99a4f65bb3a1937b3d156ad@AcuMS.aculab.com>
+Return-Path: <SRS0=G/1T=DQ=melexis.com=cmo@kernel.org>
 From: Crt Mori <cmo@melexis.com>
-Date: Fri, 22 Dec 2017 14:44:35 +0100
-Message-ID: <CAKv63uuLKNZ5yJLp2LahDqE6NSi3UMRGaMsBrj2e03joU_cC1w@mail.gmail.com>
-Subject: Re: [PATCH v10 1/3] lib: Add strongly typed 64bit int_sqrt
-To: David Laight <David.Laight@aculab.com>
-Cc: Peter Zijlstra <peterz@infradead.org>, Jonathan Cameron <jic23@kernel.org>,
-	Ingo Molnar <mingo@kernel.org>, Andrew Morton <akpm@linux-foundation.org>,
-	Kees Cook <keescook@chromium.org>, Rusty Russell <rusty@rustcorp.com.au>,
-	Ian Abbott <abbotti@mev.co.uk>, Larry Finger <Larry.Finger@lwfinger.net>,
-	Niklas Soderlund <niklas.soderlund+renesas@ragnatech.se>,
-	Thomas Gleixner <tglx@linutronix.de>, Krzysztof Kozlowski <krzk@kernel.org>,
-	Masahiro Yamada <yamada.masahiro@socionext.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Joe Perches <joe@perches.com>
-Content-Type: text/plain; charset="UTF-8"
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Crt Mori <cmo@melexis.com>
+Subject: [PATCH v10 2/3] dt-bindings: iio: temperature: add MLX90632 device bindings
+Date: Wed, 20 Dec 2017 15:20:19 +0100
+Message-Id: <20171220142019.18227-1-cmo@melexis.com>
 List-ID: <linux-iio@vger.kernel.org>
 
->From simple strong typing of existing int_sqrt we came to something a
-bit more complex or better. Can we decide now which we want in, or I
-submit v12 and we decide then (although it is not a v12, but whole new
-thing)?
+Add device tree bindings for MLX90632 IR temperature sensor.
 
-On 21 December 2017 at 15:48, David Laight <David.Laight@aculab.com> wrote:
-> From: Peter Zijlstra
->> Sent: 21 December 2017 14:12
-> ...
->> > > This part above looks like FLS
->> > It also does the rest of the required shifts.
->>
->> Still, fls() + shift is way faster on hardware that has an fls
->> instruction.
->>
->> Writing out that binary search doesn't make sense.
->
-> If the hardware doesn't have an appropriate fls instruction
-> the soft fls()will be worse.
->
-> If you used fls() you'd still need quite a bit of code
-> to generate the correct shift and loop count adjustment.
-> Given the cost of the loop iterations the 3 tests are noise.
-> The open coded version is obviously correct...
->
-> I didn't add the 4th one because the code always does 2 iterations.
->
-> If you were really worried about performance there are faster
-> algorithms (even doing 2 or 4 bits a time is faster).
->
->         David
->
+Signed-off-by: Crt Mori <cmo@melexis.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+ .../bindings/iio/temperature/mlx90632.txt          | 28 ++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/temperature/mlx90632.txt
+
+diff --git a/Documentation/devicetree/bindings/iio/temperature/mlx90632.txt b/Documentation/devicetree/bindings/iio/temperature/mlx90632.txt
+new file mode 100644
+index 000000000000..0b05812001f8
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/temperature/mlx90632.txt
+@@ -0,0 +1,28 @@
++* Melexis MLX90632 contactless Infra Red temperature sensor
++
++Link to datasheet: https://www.melexis.com/en/documents/documentation/datasheets/datasheet-mlx90632
++
++There are various applications for the Infra Red contactless temperature sensor
++and MLX90632 is most suitable for consumer applications where measured object
++temperature is in range between -20 to 200 degrees Celsius with relative error
++of measurement below 1 degree Celsius in object temperature range for
++industrial applications. Since it can operate and measure ambient temperature
++in range of -20 to 85 degrees Celsius it is suitable also for outdoor use.
++
++Be aware that electronics surrounding the sensor can increase ambient
++temperature. MLX90632 can be calibrated to reduce the housing effect via
++already existing EEPROM parameters.
++
++Since measured object emissivity effects Infra Red energy emitted, emissivity
++should be set before requesting the object temperature.
++
++Required properties:
++  - compatible: should be "melexis,mlx90632"
++  - reg: the I2C address of the sensor (default 0x3a)
++
++Example:
++
++mlx90632@3a {
++	compatible = "melexis,mlx90632";
++	reg = <0x3a>;
++};
+-- 
+2.15.0
