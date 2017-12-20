@@ -1,87 +1,103 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f68.google.com ([74.125.82.68]:43420 "EHLO
-        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755389AbdLTPse (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Dec 2017 10:48:34 -0500
-Received: by mail-wm0-f68.google.com with SMTP id n138so10720109wmg.2
-        for <linux-iio@vger.kernel.org>; Wed, 20 Dec 2017 07:48:33 -0800 (PST)
+Return-Path: <SRS0=G/1T=DQ=melexis.com=cmo@kernel.org>
 From: Crt Mori <cmo@melexis.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Crt Mori <cmo@melexis.com>
-Subject: [PATCH v11 0/3] iio: temperataure: MLX90632
-Date: Wed, 20 Dec 2017 16:48:18 +0100
-Message-Id: <20171220154818.24013-1-cmo@melexis.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: Ingo Molnar <mingo@kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Kees Cook <keescook@chromium.org>,
+	Rusty Russell <rusty@rustcorp.com.au>,
+	Ian Abbott <abbotti@mev.co.uk>,
+	Larry Finger <Larry.Finger@lwfinger.net>,
+	Niklas Soderlund <niklas.soderlund+renesas@ragnatech.se>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Masahiro Yamada <yamada.masahiro@socionext.com>,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	Peter Zijlstra <peterz@infradead.org>,
+	Joe Perches <joe@perches.com>,
+	Crt Mori <cmo@melexis.com>
+Subject: [PATCH v11 1/3] lib: Add strongly typed 64bit int_sqrt
+Date: Wed, 20 Dec 2017 16:48:41 +0100
+Message-Id: <20171220154841.24089-1-cmo@melexis.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi everybody,
+There is no option to perform 64bit integer sqrt on 32bit platform.
+Added stronger typed int_sqrt64 enables the 64bit calculations to
+be performed on 32bit platforms. Using same algorithm as int_sqrt()
+with strong typing provides enough precision also on 32bit platforms,
+but it sacrifices some performance.
 
-With the sensor now available to broad public, it is time to also
-share the driver with the community. MLX90632 is just 3x3mm in size,
-but with factory calibration offers instant usage in every project.
+Signed-off-by: Crt Mori <cmo@melexis.com>
+---
+ include/linux/kernel.h |  9 +++++++++
+ lib/int_sqrt.c         | 31 +++++++++++++++++++++++++++++++
+ 2 files changed, 40 insertions(+)
 
-Driver currently provides basic functionality, but I might add
-some more fancy features after a while.
-
-v2 includes comments from Rob Herring (dt-bindings) and Jonathan
-Cameron (iio), as well as proposal to split out int_sqrt64 function
-into the linux/kernel.h
-
-v3 comments were added to some parts of mlx90632.c and TENTO defines
-replaced by values. Fixes were done to emissivity read/write and
-changed to INT_PLUS_MICRO instead. Empty line in int_sqrt.c was
-removed as it generated a warning when applying.
-
-v4 CONFIG_PM replaced by __maybe_unused, some cleanup in suspend,
-EEPROM_VERSION identifier is grouped together in one single number
-instead of assembled on fly. Replaced license on top with SPDX.
-Most importantly - reordered patches so that lib is added before
-the driver itself (which uses it).
-
-v5 Re-ordered patches so that dt-bindings is before driver patch
-as per Andreas Farber remark. Using same function for Power
-Management during runtime and suspend, as the runtime state
-already puts device to lowest possible state (without power off)
-and that is why special state for suspend is not needed at the
-current moment. Added few more checks of current PM state and
-move marking regmap dirty to suspend instead of resume.
-
-v6 Adding usage of UNIVERSAL_DEV_PM_OPS macro for PM function
-mapping.
-
-v7 Rework usage of int_sqrt according to Joe Perches and fixing
-return size to u32 as per Peter Zijlstra suggestion, as sqrt of
-64bit number cannot be have more than 32bits.
-
-v8 Small style fixup in the comment
-
-v9 Usage of fls64 as per Joe Perches suggestion with adjustment
-to int_sqrt changes from Peter Zijlstra for int_sqrt64 function.
-Also replaced the macro magic with a simple ifdef in source file.
-
-v10 Put defintion for int_sqrt64 for 64 bit machines into the
-header file as per suggestion of Joe Perches
-
-v11 Commit rewording as per David Laight suggestion, because we
-changed the function to newer int_sqrt in past versions.
-
-Crt Mori (3):
-  lib: Add strongly typed 64bit int_sqrt
-  dt-bindings: iio: temperature: add MLX90632 device bindings
-  iio: temperature: Adding support for MLX90632
-
- .../bindings/iio/temperature/mlx90632.txt          |  28 +
- MAINTAINERS                                        |   7 +
- drivers/iio/temperature/Kconfig                    |  12 +
- drivers/iio/temperature/Makefile                   |   1 +
- drivers/iio/temperature/mlx90632.c                 | 759 +++++++++++++++++++++
- include/linux/kernel.h                             |   9 +
- lib/int_sqrt.c                                     |  31 +
- 7 files changed, 847 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/temperature/mlx90632.txt
- create mode 100644 drivers/iio/temperature/mlx90632.c
-
+diff --git a/include/linux/kernel.h b/include/linux/kernel.h
+index 0ad4c3044cf9..e4a3dc64e650 100644
+--- a/include/linux/kernel.h
++++ b/include/linux/kernel.h
+@@ -460,6 +460,15 @@ extern int func_ptr_is_kernel_text(void *ptr);
+ 
+ unsigned long int_sqrt(unsigned long);
+ 
++#if BITS_PER_LONG < 64
++u32 int_sqrt64(u64 x);
++#else
++static inline u32 int_sqrt64(u64 x)
++{
++	return (u32)int_sqrt(x);
++}
++#endif
++
+ extern void bust_spinlocks(int yes);
+ extern int oops_in_progress;		/* If set, an oops, panic(), BUG() or die() is in progress */
+ extern int panic_timeout;
+diff --git a/lib/int_sqrt.c b/lib/int_sqrt.c
+index 1ef4cc344977..184da54677ec 100644
+--- a/lib/int_sqrt.c
++++ b/lib/int_sqrt.c
+@@ -7,6 +7,7 @@
+ 
+ #include <linux/kernel.h>
+ #include <linux/export.h>
++#include <linux/bitops.h>
+ 
+ /**
+  * int_sqrt - rough approximation to sqrt
+@@ -36,3 +37,33 @@ unsigned long int_sqrt(unsigned long x)
+ 	return y;
+ }
+ EXPORT_SYMBOL(int_sqrt);
++
++#if BITS_PER_LONG < 64
++/**
++ * int_sqrt64 - strongly typed int_sqrt function when minimum 64 bit input
++ * is expected.
++ * @x: 64bit integer of which to calculate the sqrt
++ */
++u32 int_sqrt64(u64 x)
++{
++	u64 b, m, y = 0;
++
++	if (x <= 1)
++		return x;
++
++	m = 1ULL << (fls64(x) & ~1ULL);
++	while (m != 0) {
++		b = y + m;
++		y >>= 1;
++
++		if (x >= b) {
++			x -= b;
++			y += m;
++		}
++		m >>= 2;
++	}
++
++	return y;
++}
++EXPORT_SYMBOL(int_sqrt64);
++#endif
 -- 
 2.15.0
-
