@@ -6,49 +6,109 @@ CC: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	<m.purski@samsung.com>, <linux-kernel@vger.kernel.org>, "Andrew F . Davis"
 	<afd@ti.com>, Lars-Peter Clausen <lars@metafoo.de>, Jonathan Cameron
 	<jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>
-Subject: [PATCH v2 4/7] iio: adc: ina2xx: Do not udelay for several seconds
-Date: Thu, 21 Dec 2017 19:31:35 +0100
+Subject: [PATCH v2 5/7] iio: adc: ina2xx: Use a monotonic clock for delay calculation
+Date: Thu, 21 Dec 2017 19:31:36 +0100
 In-Reply-To: <20171221183138.361-1-stefan.bruens@rwth-aachen.de>
 References: <20171221183138.361-1-stefan.bruens@rwth-aachen.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Message-ID: <3cf0575b-0b74-4c9e-b7be-a044b2245ff3@rwthex-w2-a.rwth-ad.de>
+Message-ID: <b91d1c8c-2467-44bc-b8bc-adc74dfb9bee@rwthex-w2-a.rwth-ad.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-The conversion time can be up to 16 seconds (8 ms per channel, 2 channels,
-1024 times averaging).
+The iio timestamp clock is user selectable and may be non-monotonic. Also,
+only part of the acquisition time is measured, thus the delay was longer
+than intended.
+
+Use a monotonic timestamp to track the time for the next poll iteration.
+The timestamp is advanced by the sampling interval each iteration. In case
+the conversion overrruns the register readout (i.e. fast sampling combined
+with a slow bus), one or multiple samples will be dropped.
 
 Signed-off-by: Stefan Brüns <stefan.bruens@rwth-aachen.de>
+
 ---
 
-Changes in v2: None
+Changes in v2:
+- add a comment mentioning skipping samples on overrun
 
- drivers/iio/adc/ina2xx-adc.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/iio/adc/ina2xx-adc.c | 41 +++++++++++++++++++++++++++--------------
+ 1 file changed, 27 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
-index b027d485398b..2621a34ee5c6 100644
+index 2621a34ee5c6..415e53b5c0a6 100644
 --- a/drivers/iio/adc/ina2xx-adc.c
 +++ b/drivers/iio/adc/ina2xx-adc.c
-@@ -764,7 +764,7 @@ static int ina2xx_capture_thread(void *data)
+@@ -703,10 +703,10 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
+ 	/* data buffer needs space for channel data and timestap */
+ 	unsigned short data[4 + sizeof(s64)/sizeof(short)];
+ 	int bit, ret, i = 0;
+-	s64 time_a, time_b;
++	s64 time;
+ 	unsigned int alert;
+ 
+-	time_a = iio_get_time_ns(indio_dev);
++	time = iio_get_time_ns(indio_dev);
+ 
+ 	/*
+ 	 * Because the timer thread and the chip conversion clock
+@@ -752,11 +752,9 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
+ 		data[i++] = val;
+ 	}
+ 
+-	time_b = iio_get_time_ns(indio_dev);
++	iio_push_to_buffers_with_timestamp(indio_dev, data, time);
+ 
+-	iio_push_to_buffers_with_timestamp(indio_dev, data, time_a);
+-
+-	return (unsigned long)(time_b - time_a) / 1000;
++	return 0;
+ };
+ 
+ static int ina2xx_capture_thread(void *data)
+@@ -764,7 +762,9 @@ static int ina2xx_capture_thread(void *data)
  	struct iio_dev *indio_dev = data;
  	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
  	int sampling_us = SAMPLING_PERIOD(chip);
--	int buffer_us;
-+	int buffer_us, delay_us;
+-	int buffer_us, delay_us;
++	int ret;
++	struct timespec64 next, now, delta;
++	s64 delay_us;
  
  	/*
  	 * Poll a bit faster than the chip internal Fs, in case
-@@ -778,8 +778,10 @@ static int ina2xx_capture_thread(void *data)
- 		if (buffer_us < 0)
- 			return buffer_us;
+@@ -773,15 +773,28 @@ static int ina2xx_capture_thread(void *data)
+ 	if (!chip->allow_async_readout)
+ 		sampling_us -= 200;
  
--		if (sampling_us > buffer_us)
--			udelay(sampling_us - buffer_us);
-+		if (sampling_us > buffer_us) {
-+			delay_us = sampling_us - buffer_us;
-+			usleep_range(delay_us, (delay_us * 3) >> 1);
-+		}
++	ktime_get_ts64(&next);
++
+ 	do {
+-		buffer_us = ina2xx_work_buffer(indio_dev);
+-		if (buffer_us < 0)
+-			return buffer_us;
++		ret = ina2xx_work_buffer(indio_dev);
++		if (ret < 0)
++			return ret;
+ 
+-		if (sampling_us > buffer_us) {
+-			delay_us = sampling_us - buffer_us;
+-			usleep_range(delay_us, (delay_us * 3) >> 1);
+-		}
++		ktime_get_ts64(&now);
++
++		/*
++		 * Advance the timestamp for the next poll by one sampling
++		 * interval, and sleep for the remainder (next - now).
++		 * In case "next" has already passed, the interval is added
++		 * multiple times, i.e. samples are dropped.
++		 */
++		do {
++			timespec64_add_ns(&next, 1000 * sampling_us);
++			delta = timespec64_sub(next, now);
++			delay_us = timespec64_to_ns(&delta) / 1000;
++		} while (delay_us <= 0);
++
++		usleep_range(delay_us, (delay_us * 3) >> 1);
  
  	} while (!kthread_should_stop());
  
