@@ -6,72 +6,39 @@ CC: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	<m.purski@samsung.com>, <linux-kernel@vger.kernel.org>, "Andrew F . Davis"
 	<afd@ti.com>, Lars-Peter Clausen <lars@metafoo.de>, Jonathan Cameron
 	<jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>
-Subject: [PATCH v2 0/7] iio: adc: ina2xx: Rework CNVR alignment, fix busy loops
-Date: Thu, 21 Dec 2017 19:31:31 +0100
+Subject: [PATCH v2 1/7] iio: adc: ina2xx: Remove bogus cast for data argument
+Date: Thu, 21 Dec 2017 19:31:32 +0100
+In-Reply-To: <20171221183138.361-1-stefan.bruens@rwth-aachen.de>
+References: <20171221183138.361-1-stefan.bruens@rwth-aachen.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Message-ID: <6decf59e-45bf-4690-bf66-1734e81913d9@rwthex-w2-a.rwth-ad.de>
+Message-ID: <b59a9f59-da42-41b6-926b-50fb5b7909c3@rwthex-w2-a.rwth-ad.de>
 List-ID: <linux-iio@vger.kernel.org>
 
+iio_push_to_buffers_with_timestamp expects a void pointer, so the cast
+is both unnecessary and misleading.
 
-Currently, the INA2xx driver may end up causing 100% load on a single core
-and fully loading the I2C bus, which is caused by two different issues:
+Signed-off-by: Stefan Brüns <stefan.bruens@rwth-aachen.de>
+---
 
-The code uses a udelay to bridge the gab between two subsequent samples.
-As the sampling interval may be up to 16 seconds, the CPU is busy
-waiting most of the time.
+Changes in v2: None
 
-The second issue manifests when using the (default) "synchronous" mode.
-The code polls for a set conversion ready flag, but fails to align the
-sampling interval to the raising flag. The polling interval is
-(rightfully) slighly shorter than the sampling interval, so after some
-samples the sampling thread is continously polling.
+ drivers/iio/adc/ina2xx-adc.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-The patch series fixes both issues:
-Patch 1 and 2 are just some small cosmetic changes.
-
-Patch 3 removes an unnecessary read. According to the datasheet, the
-CNVR flag is only cleared by reading the power register, but is cleared
-by reading any of the measurement registers, thus the dummy read can
-be skipped. This behaviour has been confirmed by TI technical support.
-
-Patch 4 replaces the udelay with usleep_range.
-
-Patch 5 reworks the delay logic. Previously the IIO timestamp clock was
-used to capture entry and exit times of the work function. The
-timestamp clock is user selectable and may be non-monotonic. Also,
-any time spent outside the work function is not accounted for.
-
-Patch 6 moves the timestap capture to the end of the conversion ready
-status poll.
-
-Patch 7 addresses the alignment issue. Every time an unset flag is seen
-on poll loop entry, the reference timestamp is readjusted.
-
-Both old and fixed behaviour has been verified using a logic analyzer.
-In synchrounous mode, every few samples a double read of the status
-register can be observed, showing the raising status flag, the other
-samples are evenly spaced at sampling intervals inbetween.
-
-Changes in v2:
-- add a comment mentioning skipping samples on overrun
-- Describe old behaviour in commit message more clearly
-
-No real code changes, but added a comment in patch 5, and clarified
-commit messages of patch 5 and 7.
-
-Stefan Brüns (7):
-  iio: adc: ina2xx: Remove bogus cast for data argument
-  iio: adc: ina2xx: Clarify size requirement for data buffer
-  iio: adc: ina2xx: Remove unneeded dummy read to clear CNVR flag
-  iio: adc: ina2xx: Do not udelay for several seconds
-  iio: adc: ina2xx: Use a monotonic clock for delay calculation
-  iio: adc: ina2xx: Align timestamp with conversion ready flag
-  iio: adc: ina2xx: Actually align the loop with the conversion ready
-    flag
-
- drivers/iio/adc/ina2xx-adc.c | 110 +++++++++++++++++++++++++------------------
- 1 file changed, 65 insertions(+), 45 deletions(-)
-
+diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
+index ddf878163bf9..3195f8754c3b 100644
+--- a/drivers/iio/adc/ina2xx-adc.c
++++ b/drivers/iio/adc/ina2xx-adc.c
+@@ -767,8 +767,7 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
+ 
+ 	time_b = iio_get_time_ns(indio_dev);
+ 
+-	iio_push_to_buffers_with_timestamp(indio_dev,
+-					   (unsigned int *)data, time_a);
++	iio_push_to_buffers_with_timestamp(indio_dev, data, time_a);
+ 
+ 	return (unsigned long)(time_b - time_a) / 1000;
+ };
 -- 
 2.15.1
