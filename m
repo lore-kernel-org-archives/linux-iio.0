@@ -6,68 +6,51 @@ CC: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	<m.purski@samsung.com>, <linux-kernel@vger.kernel.org>, "Andrew F . Davis"
 	<afd@ti.com>, Lars-Peter Clausen <lars@metafoo.de>, Jonathan Cameron
 	<jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>
-Subject: [PATCH v2 3/7] iio: adc: ina2xx: Remove unneeded dummy read to clear CNVR flag
-Date: Thu, 21 Dec 2017 19:31:34 +0100
+Subject: [PATCH v2 4/7] iio: adc: ina2xx: Do not udelay for several seconds
+Date: Thu, 21 Dec 2017 19:31:35 +0100
 In-Reply-To: <20171221183138.361-1-stefan.bruens@rwth-aachen.de>
 References: <20171221183138.361-1-stefan.bruens@rwth-aachen.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Message-ID: <a2462dde-0ef0-4e43-8342-6a7521b6f96f@rwthex-w2-a.rwth-ad.de>
+Message-ID: <3cf0575b-0b74-4c9e-b7be-a044b2245ff3@rwthex-w2-a.rwth-ad.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Although the datasheet states the CNVR flag is cleared by reading the
-BUS_VOLTAGE register, it is actually cleared by reading any of the
-voltage/current/power registers.
-
-The behaviour has been confirmed by TI support:
-http://e2e.ti.com/support/amplifiers/current-shunt-monitors/f/931/p/647053/2378282
+The conversion time can be up to 16 seconds (8 ms per channel, 2 channels,
+1024 times averaging).
 
 Signed-off-by: Stefan Brüns <stefan.bruens@rwth-aachen.de>
 ---
 
 Changes in v2: None
 
- drivers/iio/adc/ina2xx-adc.c | 14 --------------
- 1 file changed, 14 deletions(-)
+ drivers/iio/adc/ina2xx-adc.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
-index 8c8120406f52..b027d485398b 100644
+index b027d485398b..2621a34ee5c6 100644
 --- a/drivers/iio/adc/ina2xx-adc.c
 +++ b/drivers/iio/adc/ina2xx-adc.c
-@@ -705,7 +705,6 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
- 	int bit, ret, i = 0;
- 	s64 time_a, time_b;
- 	unsigned int alert;
--	int cnvr_need_clear = 0;
+@@ -764,7 +764,7 @@ static int ina2xx_capture_thread(void *data)
+ 	struct iio_dev *indio_dev = data;
+ 	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
+ 	int sampling_us = SAMPLING_PERIOD(chip);
+-	int buffer_us;
++	int buffer_us, delay_us;
  
- 	time_a = iio_get_time_ns(indio_dev);
+ 	/*
+ 	 * Poll a bit faster than the chip internal Fs, in case
+@@ -778,8 +778,10 @@ static int ina2xx_capture_thread(void *data)
+ 		if (buffer_us < 0)
+ 			return buffer_us;
  
-@@ -730,7 +729,6 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
- 				ret = regmap_read(chip->regmap,
- 						  INA2XX_BUS_VOLTAGE, &alert);
- 				alert &= INA219_CNVR;
--				cnvr_need_clear = alert;
- 			}
+-		if (sampling_us > buffer_us)
+-			udelay(sampling_us - buffer_us);
++		if (sampling_us > buffer_us) {
++			delay_us = sampling_us - buffer_us;
++			usleep_range(delay_us, (delay_us * 3) >> 1);
++		}
  
- 			if (ret < 0)
-@@ -752,18 +750,6 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
- 			return ret;
+ 	} while (!kthread_should_stop());
  
- 		data[i++] = val;
--
--		if (INA2XX_SHUNT_VOLTAGE + bit == INA2XX_POWER)
--			cnvr_need_clear = 0;
--	}
--
--	/* Dummy read on INA219 power register to clear CNVR flag */
--	if (cnvr_need_clear && chip->config->chip_id == ina219) {
--		unsigned int val;
--
--		ret = regmap_read(chip->regmap, INA2XX_POWER, &val);
--		if (ret < 0)
--			return ret;
- 	}
- 
- 	time_b = iio_get_time_ns(indio_dev);
 -- 
 2.15.1
