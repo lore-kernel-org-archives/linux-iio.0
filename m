@@ -1,4 +1,4 @@
-Return-Path: <SRS0=YATQ=D3=rwth-aachen.de=Stefan.Bruens@kernel.org>
+Return-Path: <SRS0=2qIu=DR=rwth-aachen.de=Stefan.Bruens@kernel.org>
 From: =?UTF-8?q?Stefan=20Br=C3=BCns?= <stefan.bruens@rwth-aachen.de>
 To: <linux-iio@vger.kernel.org>
 CC: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
@@ -6,114 +6,47 @@ CC: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	<m.purski@samsung.com>, <linux-kernel@vger.kernel.org>, "Andrew F . Davis"
 	<afd@ti.com>, Lars-Peter Clausen <lars@metafoo.de>, Jonathan Cameron
 	<jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>
-Subject: [PATCH v3 5/7] iio: adc: ina2xx: Use a monotonic clock for delay calculation
-Date: Sun, 31 Dec 2017 20:55:54 +0100
-In-Reply-To: <20171229174806.5a615b63@archlinux>
-References: <20171229174806.5a615b63@archlinux>
+Subject: [PATCH v2 6/7] iio: adc: ina2xx: Align timestamp with conversion ready flag
+Date: Thu, 21 Dec 2017 19:31:37 +0100
+In-Reply-To: <20171221183138.361-1-stefan.bruens@rwth-aachen.de>
+References: <20171221183138.361-1-stefan.bruens@rwth-aachen.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Message-ID: <25c605b5-4206-4ed5-843b-37eaca79832f@rwthex-w2-a.rwth-ad.de>
+Message-ID: <78c52a18-e747-4661-963c-d06e05631eda@rwthex-w2-a.rwth-ad.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-The iio timestamp clock is user selectable and may be non-monotonic. Also,
-only part of the acquisition time is measured, thus the delay was longer
-than intended.
-
-Use a monotonic timestamp to track the time for the next poll iteration.
-The timestamp is advanced by the sampling interval each iteration. In case
-the conversion overrruns the register readout (i.e. fast sampling combined
-with a slow bus), one or multiple samples will be dropped.
+As the timestamp is no longer (ab-)used to measure the function run time,
+it can be taken at the correct time, i.e. when the conversion has finished.
 
 Signed-off-by: Stefan Brüns <stefan.bruens@rwth-aachen.de>
-
 ---
 
-Changes in v3:
-- use s64_div for 64 bit integer division to fix compiles on 32 bit archs
+Changes in v2: None
 
-Changes in v2:
-- add a comment mentioning skipping samples on overrun
-
- drivers/iio/adc/ina2xx-adc.c | 41 +++++++++++++++++++++++++++--------------
- 1 file changed, 27 insertions(+), 14 deletions(-)
+ drivers/iio/adc/ina2xx-adc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
-index 2621a34ee5c6..64e9e8e1ad70 100644
+index 415e53b5c0a6..b7407ac91b59 100644
 --- a/drivers/iio/adc/ina2xx-adc.c
 +++ b/drivers/iio/adc/ina2xx-adc.c
-@@ -703,10 +703,10 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
- 	/* data buffer needs space for channel data and timestap */
- 	unsigned short data[4 + sizeof(s64)/sizeof(short)];
- 	int bit, ret, i = 0;
--	s64 time_a, time_b;
-+	s64 time;
+@@ -706,8 +706,6 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
+ 	s64 time;
  	unsigned int alert;
  
--	time_a = iio_get_time_ns(indio_dev);
-+	time = iio_get_time_ns(indio_dev);
- 
+-	time = iio_get_time_ns(indio_dev);
+-
  	/*
  	 * Because the timer thread and the chip conversion clock
-@@ -752,11 +752,9 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
- 		data[i++] = val;
- 	}
+ 	 * are asynchronous, the period difference will eventually
+@@ -736,6 +734,8 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
  
--	time_b = iio_get_time_ns(indio_dev);
-+	iio_push_to_buffers_with_timestamp(indio_dev, data, time);
+ 		} while (!alert);
  
--	iio_push_to_buffers_with_timestamp(indio_dev, data, time_a);
--
--	return (unsigned long)(time_b - time_a) / 1000;
-+	return 0;
- };
- 
- static int ina2xx_capture_thread(void *data)
-@@ -764,7 +762,9 @@ static int ina2xx_capture_thread(void *data)
- 	struct iio_dev *indio_dev = data;
- 	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
- 	int sampling_us = SAMPLING_PERIOD(chip);
--	int buffer_us, delay_us;
-+	int ret;
-+	struct timespec64 next, now, delta;
-+	s64 delay_us;
- 
++	time = iio_get_time_ns(indio_dev);
++
  	/*
- 	 * Poll a bit faster than the chip internal Fs, in case
-@@ -773,15 +773,28 @@ static int ina2xx_capture_thread(void *data)
- 	if (!chip->allow_async_readout)
- 		sampling_us -= 200;
- 
-+	ktime_get_ts64(&next);
-+
- 	do {
--		buffer_us = ina2xx_work_buffer(indio_dev);
--		if (buffer_us < 0)
--			return buffer_us;
-+		ret = ina2xx_work_buffer(indio_dev);
-+		if (ret < 0)
-+			return ret;
- 
--		if (sampling_us > buffer_us) {
--			delay_us = sampling_us - buffer_us;
--			usleep_range(delay_us, (delay_us * 3) >> 1);
--		}
-+		ktime_get_ts64(&now);
-+
-+		/*
-+		 * Advance the timestamp for the next poll by one sampling
-+		 * interval, and sleep for the remainder (next - now)
-+		 * In case "next" has already passed, the interval is added
-+		 * multiple times, i.e. samples are dropped.
-+		 */
-+		do {
-+			timespec64_add_ns(&next, 1000 * sampling_us);
-+			delta = timespec64_sub(next, now);
-+			delay_us = s64_div(timespec64_to_ns(&delta), 1000);
-+		} while (delay_us <= 0);
-+
-+		usleep_range(delay_us, (delay_us * 3) >> 1);
- 
- 	} while (!kthread_should_stop());
- 
+ 	 * Single register reads: bulk_read will not work with ina226/219
+ 	 * as there is no auto-increment of the register pointer.
 -- 
 2.15.1
