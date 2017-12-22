@@ -1,54 +1,299 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:55602 "EHLO
-        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756115AbdLVQK3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Dec 2017 11:10:29 -0500
-Date: Fri, 22 Dec 2017 17:10:16 +0100
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-To: Eugen Hristev <eugen.hristev@microchip.com>
-Cc: nicolas.ferre@microchip.com, ludovic.desroches@microchip.com,
-        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jic23@kernel.org, linux-input@vger.kernel.org,
-        dmitry.torokhov@gmail.com
-Subject: Re: [PATCH 14/14] ARM: dts: at91: sama5d2: Add resistive touch device
-Message-ID: <20171222161016.GI18255@piout.net>
-References: <1513955241-10985-1-git-send-email-eugen.hristev@microchip.com>
- <1513955241-10985-15-git-send-email-eugen.hristev@microchip.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1513955241-10985-15-git-send-email-eugen.hristev@microchip.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=lMER=DS=gmail.com=milan.o.stevanovic@kernel.org>
+From: Milan Stevanovic <milan.o.stevanovic@gmail.com>
+To: jic23@kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	milan.o.stevanovic@gmail.com
+Subject: [PATCH] iio: adc: add driver for ti adc081s/adc101s/adc121s
+Date: Sat, 23 Dec 2017 00:19:13 +0100
+Message-Id: <1513984753-3040-1-git-send-email-milan.o.stevanovic@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi,
+Signed-off-by: Milan Stevanovic <milan.o.stevanovic@gmail.com>
+---
+ drivers/iio/adc/Kconfig      |  10 ++
+ drivers/iio/adc/Makefile     |   1 +
+ drivers/iio/adc/ti-adc081s.c | 239 +++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 250 insertions(+)
+ create mode 100644 drivers/iio/adc/ti-adc081s.c
 
-On 22/12/2017 at 17:07:21 +0200, Eugen Hristev wrote:
-> Add the resistive touchscreen device, and the cell numbers to the
-> ADC device.
-> 
-> Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-> ---
->  arch/arm/boot/dts/sama5d2.dtsi | 12 +++++++++++-
->  1 file changed, 11 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/arm/boot/dts/sama5d2.dtsi b/arch/arm/boot/dts/sama5d2.dtsi
-> index b1a26b4..30b3797 100644
-> --- a/arch/arm/boot/dts/sama5d2.dtsi
-> +++ b/arch/arm/boot/dts/sama5d2.dtsi
-> @@ -402,7 +402,6 @@
->  					compatible = "atmel,hlcdc-display-controller";
->  					#address-cells = <1>;
->  					#size-cells = <0>;
-> -
-
-This is an unrelated change.
-
->  					port@0 {
->  						#address-cells = <1>;
->  						#size-cells = <0>;
-
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index ef86296..208238f 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -701,6 +701,16 @@ config TI_ADC081C
+ 	  This driver can also be built as a module. If so, the module will be
+ 	  called ti-adc081c.
+ 
++config TI_ADC081S
++	tristate "Texas Instruments ADC081S/ADC101S/ADC121S family"
++	depends on SPI
++	help
++	  If you say yes here you get support for Texas Instruments ADC081S,
++	  ADC chips.
++
++	  This driver can also be built as a module. If so, the module will be
++	  called ti-adc081s.
++
+ config TI_ADC0832
+ 	tristate "Texas Instruments ADC0831/ADC0832/ADC0834/ADC0838"
+ 	depends on SPI
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 9572c10..020fecf 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -65,6 +65,7 @@ obj-$(CONFIG_SUN4I_GPADC) += sun4i-gpadc-iio.o
+ obj-$(CONFIG_STM32_ADC_CORE) += stm32-adc-core.o
+ obj-$(CONFIG_STM32_ADC) += stm32-adc.o
+ obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
++obj-$(CONFIG_TI_ADC081S) += ti-adc081s.o
+ obj-$(CONFIG_TI_ADC0832) += ti-adc0832.o
+ obj-$(CONFIG_TI_ADC084S021) += ti-adc084s021.o
+ obj-$(CONFIG_TI_ADC12138) += ti-adc12138.o
+diff --git a/drivers/iio/adc/ti-adc081s.c b/drivers/iio/adc/ti-adc081s.c
+new file mode 100644
+index 0000000..be9cdb7
+--- /dev/null
++++ b/drivers/iio/adc/ti-adc081s.c
+@@ -0,0 +1,239 @@
++/*
++ * TI ADC081S/ADC101S/ADC121S 8/10/12-bit ADC driver
++ *
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * Datasheets:
++ *	http://www.ti.com/lit/ds/symlink/adc081s021.pdf
++ *	http://www.ti.com/lit/ds/symlink/adc101s021.pdf
++ *	http://www.ti.com/lit/ds/symlink/adc121s021.pdf
++ *
++ */
++
++#include <linux/err.h>
++#include <linux/spi/spi.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/acpi.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/buffer.h>
++#include <linux/regulator/consumer.h>
++
++struct adc081s {
++	struct spi_device *spi;
++	struct regulator *reg;
++	struct mutex lock;
++
++	/* 8, 10 or 12 */
++	int bits;
++};
++
++static int adc081s_read_raw(struct iio_dev *iio,
++			    struct iio_chan_spec const *channel, int *value,
++			    int *shift, long mask)
++{
++	struct adc081s *adc = iio_priv(iio);
++	int ret;
++	__be16 buf;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		mutex_lock(&adc->lock);
++		ret = spi_read(adc->spi, (void *) &buf, 2);
++		mutex_unlock(&adc->lock);
++		if (ret)
++			return ret;
++		*value = (be16_to_cpu(buf) & 0x0FFF) >> (12 - adc->bits);
++		*value = sign_extend32(*value, channel->scan_type.realbits - 1);
++
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_SCALE:
++		*value = regulator_get_voltage(adc->reg);
++		if (*value < 0)
++			return *value;
++
++		/* convert regulator output voltage to mV */
++		*value /= 1000;
++		*shift = adc->bits;
++
++		return IIO_VAL_FRACTIONAL_LOG2;
++
++	default:
++		break;
++	}
++
++	return -EINVAL;
++}
++
++#define ADCxx1S_CHAN(_bits) {					\
++	.type = IIO_VOLTAGE,					\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
++	.scan_type = {						\
++		.sign = 'u',					\
++		.realbits = (_bits),				\
++		.storagebits = 16,				\
++		.shift = 12 - (_bits),				\
++		.endianness = IIO_CPU,				\
++	},							\
++}
++
++#define DEFINE_ADCxx1S_CHANNELS(_name, _bits)				\
++	static const struct iio_chan_spec _name ## _channels[] = {	\
++		ADCxx1S_CHAN((_bits)),					\
++		IIO_CHAN_SOFT_TIMESTAMP(1),				\
++	};								\
++
++#define ADC081S_NUM_CHANNELS 2
++
++struct adcxx1s_model {
++	const struct iio_chan_spec *channels;
++	int bits;
++};
++
++#define ADCxx1S_MODEL(_name, _bits)					\
++	{								\
++		.channels = _name ## _channels,				\
++		.bits = (_bits),					\
++	}
++
++DEFINE_ADCxx1S_CHANNELS(adc081s,  8);
++DEFINE_ADCxx1S_CHANNELS(adc101s, 10);
++DEFINE_ADCxx1S_CHANNELS(adc121s, 12);
++
++/* Model ids are indexes in _models array */
++enum adcxx1s_model_id {
++	ADC081S = 0,
++	ADC101S = 1,
++	ADC121S = 2,
++};
++
++static struct adcxx1s_model adcxx1s_models[] = {
++	ADCxx1S_MODEL(adc081s,  8),
++	ADCxx1S_MODEL(adc101s, 10),
++	ADCxx1S_MODEL(adc121s, 12),
++};
++
++static const struct iio_info adc081s_info = {
++	.read_raw = adc081s_read_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static int adc081s_probe(struct spi_device *spi)
++{
++	struct iio_dev *iio;
++	struct adc081s *adc;
++	struct adcxx1s_model *model;
++	int err;
++
++	if (ACPI_COMPANION(&spi->dev)) {
++		const struct acpi_device_id *ad_id;
++
++		ad_id = acpi_match_device(spi->dev.driver->acpi_match_table,
++					  &spi->dev);
++		if (!ad_id)
++			return -ENODEV;
++		model = &adcxx1s_models[ad_id->driver_data];
++	} else {
++		model = &adcxx1s_models[spi_get_device_id(spi)->driver_data];
++	}
++
++	iio = devm_iio_device_alloc(&spi->dev, sizeof(*adc));
++	if (!iio)
++		return -ENOMEM;
++
++	adc = iio_priv(iio);
++	adc->spi = spi;
++	adc->bits = model->bits;
++	mutex_init(&adc->lock);
++
++	adc->reg = devm_regulator_get(&spi->dev, "vref");
++	if (IS_ERR(adc->reg))
++		return PTR_ERR(adc->reg);
++
++	err = regulator_enable(adc->reg);
++	if (err < 0)
++		return err;
++
++	iio->dev.parent = &spi->dev;
++	iio->dev.of_node = spi->dev.of_node;
++	iio->name = dev_name(&spi->dev);
++	iio->modes = INDIO_DIRECT_MODE;
++	iio->info = &adc081s_info;
++
++	iio->channels = model->channels;
++	iio->num_channels = ADC081S_NUM_CHANNELS;
++
++	err = iio_device_register(iio);
++	if (err < 0)
++		goto err_regulator_disable;
++
++	spi_set_drvdata(spi, iio);
++
++	return 0;
++
++err_regulator_disable:
++	regulator_disable(adc->reg);
++
++	return err;
++}
++
++static int adc081s_remove(struct spi_device *spi)
++{
++	struct iio_dev *iio = spi_get_drvdata(spi);
++	struct adc081s *adc = iio_priv(iio);
++
++	iio_device_unregister(iio);
++	regulator_disable(adc->reg);
++
++	return 0;
++}
++
++static const struct spi_device_id adc081s_id[] = {
++	{ "adc081s", ADC081S },
++	{ "adc101s", ADC101S },
++	{ "adc121s", ADC121S },
++	{ }
++};
++MODULE_DEVICE_TABLE(spi, adc081s_id);
++
++#ifdef CONFIG_OF
++static const struct of_device_id adc081s_of_match[] = {
++	{ .compatible = "ti,adc081s" },
++	{ .compatible = "ti,adc101s" },
++	{ .compatible = "ti,adc121s" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, adc081s_of_match);
++#endif
++
++#ifdef CONFIG_ACPI
++static const struct acpi_device_id adc081s_acpi_match[] = {
++	{ "ADC081S", ADC081S },
++	{ "ADC101S", ADC101S },
++	{ "ADC121S", ADC121S },
++	{ }
++};
++MODULE_DEVICE_TABLE(acpi, adc081s_acpi_match);
++#endif
++
++static struct spi_driver adc081s_driver = {
++	.driver = {
++		.name = "adc081s",
++		.of_match_table = of_match_ptr(adc081s_of_match),
++		.acpi_match_table = ACPI_PTR(adc081s_acpi_match),
++	},
++	.probe = adc081s_probe,
++	.remove = adc081s_remove,
++	.id_table = adc081s_id,
++};
++module_spi_driver(adc081s_driver);
++
++MODULE_AUTHOR("Milan Stevanovic <milan.o.stevanovic@gmail.com>");
++MODULE_DESCRIPTION("Texas Instruments ADC081S/ADC101S/ADC121S driver");
++MODULE_LICENSE("GPL v2");
 -- 
-Alexandre Belloni, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+2.7.4
