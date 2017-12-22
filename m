@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from esa1.microchip.iphmx.com ([68.232.147.91]:55121 "EHLO
+Received: from esa1.microchip.iphmx.com ([68.232.147.91]:56578 "EHLO
         esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756209AbdLVPJ7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Dec 2017 10:09:59 -0500
+        with ESMTP id S1756291AbdLVPKF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Dec 2017 10:10:05 -0500
 From: Eugen Hristev <eugen.hristev@microchip.com>
 To: <nicolas.ferre@microchip.com>, <ludovic.desroches@microchip.com>,
         <alexandre.belloni@free-electrons.com>,
@@ -12,9 +12,9 @@ To: <nicolas.ferre@microchip.com>, <ludovic.desroches@microchip.com>,
         <jic23@kernel.org>, <linux-input@vger.kernel.org>,
         <dmitry.torokhov@gmail.com>
 CC: Eugen Hristev <eugen.hristev@microchip.com>
-Subject: [PATCH 04/14] dt-bindings: input: touchscreen: sama5d2_rts: create bindings
-Date: Fri, 22 Dec 2017 17:07:11 +0200
-Message-ID: <1513955241-10985-5-git-send-email-eugen.hristev@microchip.com>
+Subject: [PATCH 05/14] iio: triggers: add helper function to retrieve trigger
+Date: Fri, 22 Dec 2017 17:07:12 +0200
+Message-ID: <1513955241-10985-6-git-send-email-eugen.hristev@microchip.com>
 In-Reply-To: <1513955241-10985-1-git-send-email-eugen.hristev@microchip.com>
 References: <1513955241-10985-1-git-send-email-eugen.hristev@microchip.com>
 MIME-Version: 1.0
@@ -22,51 +22,86 @@ Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Added bindings for Microchip SAMA5D2 resistive touchscreen.
+Add a helper function that will retrieve a trigger by index
+from a device. This is intended to be used in trigger consumer drivers.
 
 Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
 ---
- .../bindings/input/touchscreen/sama5d2_rts.txt     | 31 ++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/input/touchscreen/sama5d2_rts.txt
+ drivers/iio/iio_core_trigger.h     | 21 +++++++++++++++++++++
+ drivers/iio/industrialio-trigger.c | 23 +++++++++++++++++++++++
+ 2 files changed, 44 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/input/touchscreen/sama5d2_rts.txt b/Documentation/devicetree/bindings/input/touchscreen/sama5d2_rts.txt
-new file mode 100644
-index 0000000..ea52a5c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/input/touchscreen/sama5d2_rts.txt
-@@ -0,0 +1,31 @@
-+Microchip SAMA5D2 resistive touchscreen
+diff --git a/drivers/iio/iio_core_trigger.h b/drivers/iio/iio_core_trigger.h
+index 1fdb1e4..14c4253 100644
+--- a/drivers/iio/iio_core_trigger.h
++++ b/drivers/iio/iio_core_trigger.h
+@@ -21,6 +21,15 @@ void iio_device_register_trigger_consumer(struct iio_dev *indio_dev);
+  **/
+ void iio_device_unregister_trigger_consumer(struct iio_dev *indio_dev);
+ 
++/**
++ * iio_trigger_find_from_device() - get the trigger from the device having the
++ * index given.
++ * @indio_dev: iio_dev where to get the trigger from
++ * @index: the index of the trigger to retrieve
++ **/
++__maybe_unused struct iio_trigger *
++iio_trigger_find_from_device(struct iio_dev *indio_dev, u32 index);
 +
-+Required properties:
+ #else
+ 
+ /**
+@@ -40,4 +49,16 @@ static void iio_device_unregister_trigger_consumer(struct iio_dev *indio_dev)
+ {
+ }
+ 
++/**
++ * iio_trigger_find_from_device() - get the trigger from the device having the
++ * index given.
++ * @indio_dev: iio_dev where to get the trigger from
++ * @index: the index of the trigger to retrieve
++ **/
++static __maybe_unused struct iio_trigger *
++iio_trigger_find_from_device(struct iio_dev *indio_dev, u32 index)
++{
++	return NULL;
++}
 +
-+ - compatible: microchip,sama5d2-resistive-touch
+ #endif /* CONFIG_TRIGGER_CONSUMER */
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+index ce66699..cbaa079 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -134,6 +134,29 @@ int iio_trigger_set_immutable(struct iio_dev *indio_dev, struct iio_trigger *tri
+ }
+ EXPORT_SYMBOL(iio_trigger_set_immutable);
+ 
++/* Find the trigger from the given device corresponding to given index */
++struct __maybe_unused iio_trigger *
++iio_trigger_find_from_device(struct iio_dev *indio_dev, u32 index)
++{
++	struct iio_trigger *iter, *trig = NULL;
++	u32 i = 0;
 +
-+Optional properties:
++	mutex_lock(&iio_trigger_list_lock);
 +
-+The device must be connected to an IIO device that provides channels for
-+position and pressure measurement, and a trigger output that will periodically
-+trigger when the touch is pressed.
-+Refer to ../iio/iio-bindings.txt for details
++	list_for_each_entry(iter, &iio_trigger_list, list) {
++		if (!iio_trigger_validate_own_device(iter, indio_dev)) {
++			if (i == index) {
++				trig = iter;
++				break;
++			}
++			i++;
++		}
++	}
++	mutex_unlock(&iio_trigger_list_lock);
 +
-+ - io-channels: can have two or three channels connected to an IIO device.
-+These should correspond to the channels exposed by the IIO device and should
-+have the right index as the ADC registers them.
-+ - io-channel-names: must have the two or three channels' names :
-+"x", "y", or "x", "y" and "pressure"
-+ - io-triggers: can have a trigger input connected to an IIO device.
-+ - microchip,pressure-threshold: a pressure threshold for the touchscreen.
-+   Represented by an integer value.
++	return trig;
++}
 +
-+Example:
-+
-+	resistive_touch: resistive-touch {
-+		compatible = "microchip,sama5d2-resistive-touch";
-+		microchip,pressure-threshold = <3000>;
-+		io-channels = <&adc 19>, <&adc 20>, <&adc 21>;
-+		io-channel-names = "x", "y", "pressure";
-+		io-triggers = <&adc 1>;
-+	};
+ /* Search for trigger by name, assuming iio_trigger_list_lock held */
+ static struct iio_trigger *__iio_trigger_find_by_name(const char *name)
+ {
 -- 
 2.7.4
 
