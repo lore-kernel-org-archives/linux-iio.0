@@ -1,107 +1,83 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from esa1.microchip.iphmx.com ([68.232.147.91]:56578 "EHLO
-        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756291AbdLVPKF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Dec 2017 10:10:05 -0500
+Return-Path: <SRS0=jSTT=DS=microchip.com=Eugen.Hristev@kernel.org>
 From: Eugen Hristev <eugen.hristev@microchip.com>
 To: <nicolas.ferre@microchip.com>, <ludovic.desroches@microchip.com>,
-        <alexandre.belloni@free-electrons.com>,
-        <linux-iio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <jic23@kernel.org>, <linux-input@vger.kernel.org>,
-        <dmitry.torokhov@gmail.com>
+	<alexandre.belloni@free-electrons.com>, <linux-iio@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <devicetree@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <jic23@kernel.org>,
+	<linux-input@vger.kernel.org>, <dmitry.torokhov@gmail.com>
 CC: Eugen Hristev <eugen.hristev@microchip.com>
-Subject: [PATCH 05/14] iio: triggers: add helper function to retrieve trigger
-Date: Fri, 22 Dec 2017 17:07:12 +0200
-Message-ID: <1513955241-10985-6-git-send-email-eugen.hristev@microchip.com>
+Subject: [PATCH 06/14] iio: triggers: expose attach and detach helpers for pollfuncs
+Date: Fri, 22 Dec 2017 17:07:13 +0200
+Message-ID: <1513955241-10985-7-git-send-email-eugen.hristev@microchip.com>
 In-Reply-To: <1513955241-10985-1-git-send-email-eugen.hristev@microchip.com>
 References: <1513955241-10985-1-git-send-email-eugen.hristev@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-Add a helper function that will retrieve a trigger by index
-from a device. This is intended to be used in trigger consumer drivers.
+Make attach and detach functions for pollfuncs available as symbols.
+These functions are required in the trigger consumer drivers in order
+to register their own pollfunctions to iio devices.
 
 Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
 ---
- drivers/iio/iio_core_trigger.h     | 21 +++++++++++++++++++++
- drivers/iio/industrialio-trigger.c | 23 +++++++++++++++++++++++
- 2 files changed, 44 insertions(+)
+ drivers/iio/industrialio-trigger.c   | 10 ++++++----
+ include/linux/iio/trigger_consumer.h |  9 +++++++++
+ 2 files changed, 15 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/iio_core_trigger.h b/drivers/iio/iio_core_trigger.h
-index 1fdb1e4..14c4253 100644
---- a/drivers/iio/iio_core_trigger.h
-+++ b/drivers/iio/iio_core_trigger.h
-@@ -21,6 +21,15 @@ void iio_device_register_trigger_consumer(struct iio_dev *indio_dev);
-  **/
- void iio_device_unregister_trigger_consumer(struct iio_dev *indio_dev);
- 
-+/**
-+ * iio_trigger_find_from_device() - get the trigger from the device having the
-+ * index given.
-+ * @indio_dev: iio_dev where to get the trigger from
-+ * @index: the index of the trigger to retrieve
-+ **/
-+__maybe_unused struct iio_trigger *
-+iio_trigger_find_from_device(struct iio_dev *indio_dev, u32 index);
-+
- #else
- 
- /**
-@@ -40,4 +49,16 @@ static void iio_device_unregister_trigger_consumer(struct iio_dev *indio_dev)
- {
- }
- 
-+/**
-+ * iio_trigger_find_from_device() - get the trigger from the device having the
-+ * index given.
-+ * @indio_dev: iio_dev where to get the trigger from
-+ * @index: the index of the trigger to retrieve
-+ **/
-+static __maybe_unused struct iio_trigger *
-+iio_trigger_find_from_device(struct iio_dev *indio_dev, u32 index)
-+{
-+	return NULL;
-+}
-+
- #endif /* CONFIG_TRIGGER_CONSUMER */
 diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-index ce66699..cbaa079 100644
+index cbaa079..8565c92 100644
 --- a/drivers/iio/industrialio-trigger.c
 +++ b/drivers/iio/industrialio-trigger.c
-@@ -134,6 +134,29 @@ int iio_trigger_set_immutable(struct iio_dev *indio_dev, struct iio_trigger *tri
- }
- EXPORT_SYMBOL(iio_trigger_set_immutable);
- 
-+/* Find the trigger from the given device corresponding to given index */
-+struct __maybe_unused iio_trigger *
-+iio_trigger_find_from_device(struct iio_dev *indio_dev, u32 index)
-+{
-+	struct iio_trigger *iter, *trig = NULL;
-+	u32 i = 0;
-+
-+	mutex_lock(&iio_trigger_list_lock);
-+
-+	list_for_each_entry(iter, &iio_trigger_list, list) {
-+		if (!iio_trigger_validate_own_device(iter, indio_dev)) {
-+			if (i == index) {
-+				trig = iter;
-+				break;
-+			}
-+			i++;
-+		}
-+	}
-+	mutex_unlock(&iio_trigger_list_lock);
-+
-+	return trig;
-+}
-+
- /* Search for trigger by name, assuming iio_trigger_list_lock held */
- static struct iio_trigger *__iio_trigger_find_by_name(const char *name)
+@@ -265,8 +265,8 @@ static void iio_trigger_put_irq(struct iio_trigger *trig, int irq)
+  * the relevant function is in there may be the best option.
+  */
+ /* Worth protecting against double additions? */
+-static int iio_trigger_attach_poll_func(struct iio_trigger *trig,
+-					struct iio_poll_func *pf)
++int iio_trigger_attach_poll_func(struct iio_trigger *trig,
++				 struct iio_poll_func *pf)
  {
+ 	int ret = 0;
+ 	bool notinuse
+@@ -312,9 +312,10 @@ static int iio_trigger_attach_poll_func(struct iio_trigger *trig,
+ 	module_put(pf->indio_dev->driver_module);
+ 	return ret;
+ }
++EXPORT_SYMBOL(iio_trigger_attach_poll_func);
+ 
+-static int iio_trigger_detach_poll_func(struct iio_trigger *trig,
+-					 struct iio_poll_func *pf)
++int iio_trigger_detach_poll_func(struct iio_trigger *trig,
++				 struct iio_poll_func *pf)
+ {
+ 	int ret = 0;
+ 	bool no_other_users
+@@ -334,6 +335,7 @@ static int iio_trigger_detach_poll_func(struct iio_trigger *trig,
+ 
+ 	return ret;
+ }
++EXPORT_SYMBOL(iio_trigger_detach_poll_func);
+ 
+ irqreturn_t iio_pollfunc_store_time(int irq, void *p)
+ {
+diff --git a/include/linux/iio/trigger_consumer.h b/include/linux/iio/trigger_consumer.h
+index c4f8c74..aeefcdb 100644
+--- a/include/linux/iio/trigger_consumer.h
++++ b/include/linux/iio/trigger_consumer.h
+@@ -60,4 +60,13 @@ void iio_trigger_notify_done(struct iio_trigger *trig);
+ int iio_triggered_buffer_postenable(struct iio_dev *indio_dev);
+ int iio_triggered_buffer_predisable(struct iio_dev *indio_dev);
+ 
++/*
++ * Two functions for the uncommon case when we need to attach or detach
++ * a specific pollfunc to and from a trigger
++ */
++int iio_trigger_attach_poll_func(struct iio_trigger *trig,
++				 struct iio_poll_func *pf);
++
++int iio_trigger_detach_poll_func(struct iio_trigger *trig,
++				 struct iio_poll_func *pf);
+ #endif
 -- 
 2.7.4
-
