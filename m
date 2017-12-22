@@ -6,78 +6,58 @@ To: <nicolas.ferre@microchip.com>, <ludovic.desroches@microchip.com>,
 	<linux-kernel@vger.kernel.org>, <jic23@kernel.org>,
 	<linux-input@vger.kernel.org>, <dmitry.torokhov@gmail.com>
 CC: Eugen Hristev <eugen.hristev@microchip.com>
-Subject: [PATCH 06/14] iio: triggers: expose attach and detach helpers for pollfuncs
-Date: Fri, 22 Dec 2017 17:07:13 +0200
-Message-ID: <1513955241-10985-7-git-send-email-eugen.hristev@microchip.com>
+Subject: [PATCH 07/14] iio: triggers: on pollfunc attach, complete iio_dev if NULL
+Date: Fri, 22 Dec 2017 17:07:14 +0200
+Message-ID: <1513955241-10985-8-git-send-email-eugen.hristev@microchip.com>
 In-Reply-To: <1513955241-10985-1-git-send-email-eugen.hristev@microchip.com>
 References: <1513955241-10985-1-git-send-email-eugen.hristev@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-Make attach and detach functions for pollfuncs available as symbols.
-These functions are required in the trigger consumer drivers in order
-to register their own pollfunctions to iio devices.
+When attaching a pollfunc to a trigger, if the pollfunc does not
+have an associated iio_dev pointer, just use the private data
+iio_dev pointer from the trigger to fill in the poll func required
+iio_dev reference.
 
 Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
 ---
- drivers/iio/industrialio-trigger.c   | 10 ++++++----
- include/linux/iio/trigger_consumer.h |  9 +++++++++
- 2 files changed, 15 insertions(+), 4 deletions(-)
+ drivers/iio/industrialio-trigger.c   | 9 +++++++++
+ include/linux/iio/trigger_consumer.h | 2 ++
+ 2 files changed, 11 insertions(+)
 
 diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-index cbaa079..8565c92 100644
+index 8565c92..ab180bd 100644
 --- a/drivers/iio/industrialio-trigger.c
 +++ b/drivers/iio/industrialio-trigger.c
-@@ -265,8 +265,8 @@ static void iio_trigger_put_irq(struct iio_trigger *trig, int irq)
-  * the relevant function is in there may be the best option.
-  */
- /* Worth protecting against double additions? */
--static int iio_trigger_attach_poll_func(struct iio_trigger *trig,
--					struct iio_poll_func *pf)
-+int iio_trigger_attach_poll_func(struct iio_trigger *trig,
-+				 struct iio_poll_func *pf)
- {
- 	int ret = 0;
+@@ -272,6 +272,15 @@ int iio_trigger_attach_poll_func(struct iio_trigger *trig,
  	bool notinuse
-@@ -312,9 +312,10 @@ static int iio_trigger_attach_poll_func(struct iio_trigger *trig,
- 	module_put(pf->indio_dev->driver_module);
- 	return ret;
- }
-+EXPORT_SYMBOL(iio_trigger_attach_poll_func);
+ 		= bitmap_empty(trig->pool, CONFIG_IIO_CONSUMERS_PER_TRIGGER);
  
--static int iio_trigger_detach_poll_func(struct iio_trigger *trig,
--					 struct iio_poll_func *pf)
-+int iio_trigger_detach_poll_func(struct iio_trigger *trig,
-+				 struct iio_poll_func *pf)
- {
- 	int ret = 0;
- 	bool no_other_users
-@@ -334,6 +335,7 @@ static int iio_trigger_detach_poll_func(struct iio_trigger *trig,
++	/*
++	 * If we did not get a iio_dev in the poll func, attempt to
++	 * obtain the trigger's owner's device struct
++	 */
++	if (!pf->indio_dev)
++		pf->indio_dev = iio_trigger_get_drvdata(trig);
++	if (!pf->indio_dev)
++		return -EINVAL;
++
+ 	/* Prevent the module from being removed whilst attached to a trigger */
+ 	__module_get(pf->indio_dev->driver_module);
  
- 	return ret;
- }
-+EXPORT_SYMBOL(iio_trigger_detach_poll_func);
- 
- irqreturn_t iio_pollfunc_store_time(int irq, void *p)
- {
 diff --git a/include/linux/iio/trigger_consumer.h b/include/linux/iio/trigger_consumer.h
-index c4f8c74..aeefcdb 100644
+index aeefcdb..36e2a02 100644
 --- a/include/linux/iio/trigger_consumer.h
 +++ b/include/linux/iio/trigger_consumer.h
-@@ -60,4 +60,13 @@ void iio_trigger_notify_done(struct iio_trigger *trig);
- int iio_triggered_buffer_postenable(struct iio_dev *indio_dev);
- int iio_triggered_buffer_predisable(struct iio_dev *indio_dev);
- 
-+/*
-+ * Two functions for the uncommon case when we need to attach or detach
-+ * a specific pollfunc to and from a trigger
-+ */
-+int iio_trigger_attach_poll_func(struct iio_trigger *trig,
-+				 struct iio_poll_func *pf);
-+
-+int iio_trigger_detach_poll_func(struct iio_trigger *trig,
-+				 struct iio_poll_func *pf);
- #endif
+@@ -63,6 +63,8 @@ int iio_triggered_buffer_predisable(struct iio_dev *indio_dev);
+ /*
+  * Two functions for the uncommon case when we need to attach or detach
+  * a specific pollfunc to and from a trigger
++ * If the pollfunc has a NULL iio_dev pointer, it will be filled from the
++ * trigger struct.
+  */
+ int iio_trigger_attach_poll_func(struct iio_trigger *trig,
+ 				 struct iio_poll_func *pf);
 -- 
 2.7.4
