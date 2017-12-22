@@ -1,132 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:53264 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751569AbdL2RYG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 29 Dec 2017 12:24:06 -0500
-Date: Fri, 29 Dec 2017 17:24:01 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Rob Herring <robh@kernel.org>
-Cc: Eugen Hristev <eugen.hristev@microchip.com>,
-        nicolas.ferre@microchip.com, ludovic.desroches@microchip.com,
-        alexandre.belloni@free-electrons.com, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        dmitry.torokhov@gmail.com
-Subject: Re: [PATCH 03/14] dt-bindings: iio: add binding support for iio
- trigger provider/consumer
-Message-ID: <20171229172401.1f6bc823@archlinux>
-In-Reply-To: <20171226223500.dxbp26bsx2ojbicr@rob-hp-laptop>
+Received: from esa1.microchip.iphmx.com ([68.232.147.91]:55121 "EHLO
+        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1756209AbdLVPJ7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Dec 2017 10:09:59 -0500
+From: Eugen Hristev <eugen.hristev@microchip.com>
+To: <nicolas.ferre@microchip.com>, <ludovic.desroches@microchip.com>,
+        <alexandre.belloni@free-electrons.com>,
+        <linux-iio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <jic23@kernel.org>, <linux-input@vger.kernel.org>,
+        <dmitry.torokhov@gmail.com>
+CC: Eugen Hristev <eugen.hristev@microchip.com>
+Subject: [PATCH 04/14] dt-bindings: input: touchscreen: sama5d2_rts: create bindings
+Date: Fri, 22 Dec 2017 17:07:11 +0200
+Message-ID: <1513955241-10985-5-git-send-email-eugen.hristev@microchip.com>
+In-Reply-To: <1513955241-10985-1-git-send-email-eugen.hristev@microchip.com>
 References: <1513955241-10985-1-git-send-email-eugen.hristev@microchip.com>
-        <1513955241-10985-4-git-send-email-eugen.hristev@microchip.com>
-        <20171226223500.dxbp26bsx2ojbicr@rob-hp-laptop>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 26 Dec 2017 16:35:00 -0600
-Rob Herring <robh@kernel.org> wrote:
+Added bindings for Microchip SAMA5D2 resistive touchscreen.
 
-> On Fri, Dec 22, 2017 at 05:07:10PM +0200, Eugen Hristev wrote:
-> > Add bindings for producer/consumer for iio triggers.
-> > 
-> > Similar with iio channels, the iio triggers can be connected between drivers:
-> > one driver will be a producer by registering iio triggers, and another driver
-> > will connect as a consumer.
-> > 
-> > Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-In cases where the connectivity is entirely known to the various drivers
-(battery chargers integrated in SoCs that use ADC channels for example) we
-have always kept the map in driver.
+Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+---
+ .../bindings/input/touchscreen/sama5d2_rts.txt     | 31 ++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/input/touchscreen/sama5d2_rts.txt
 
-I'm not yet entirely clear if we can do this here.  Might make sense if
-we can...
-
-
-> > ---
-> >  .../devicetree/bindings/iio/iio-bindings.txt       | 52 +++++++++++++++++++++-
-> >  1 file changed, 51 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/iio-bindings.txt b/Documentation/devicetree/bindings/iio/iio-bindings.txt
-> > index 68d6f8c..d861f0df 100644
-> > --- a/Documentation/devicetree/bindings/iio/iio-bindings.txt
-> > +++ b/Documentation/devicetree/bindings/iio/iio-bindings.txt
-> > @@ -11,6 +11,10 @@ value of a #io-channel-cells property in the IIO provider node.
-> >  
-> >  [1] http://marc.info/?l=linux-iio&m=135902119507483&w=2
-> >  
-> > +Moreover, the provider can have a set of triggers that can be attached to
-> > +from the consumer drivers.
-> > +
-> > +
-> >  ==IIO providers==
-> >  
-> >  Required properties:
-> > @@ -18,6 +22,11 @@ Required properties:
-> >  		   with a single IIO output and 1 for nodes with multiple
-> >  		   IIO outputs.
-> >  
-> > +Optional properties:
-> > +#io-trigger-cells: Number of cells for the IIO trigger specifier. Typically 0
-> > +		   for nodes with a single IIO trigger and 1 for nodes with
-> > +		   multiple IIO triggers.
-> > +
-> >  Example for a simple configuration with no trigger:
-> >  
-> >  	adc: voltage-sensor@35 {
-> > @@ -26,7 +35,7 @@ Example for a simple configuration with no trigger:
-> >  		#io-channel-cells = <1>;
-> >  	};
-> >  
-> > -Example for a configuration with trigger:
-> > +Example for a configuration with channels provided by trigger:
-> >  
-> >  	adc@35 {
-> >  		compatible = "some-vendor,some-adc";
-> > @@ -42,6 +51,17 @@ Example for a configuration with trigger:
-> >  		};
-> >  	};
-> >  
-> > +Example for a configuration for a trigger provider:
-> > +
-> > +	adc: sensor-with-trigger@35 {
-> > +		compatible = "some-vendor,some-adc";
-> > +		reg = <0x35>;
-> > +		#io-channel-cells = <1>;
-> > +		#io-trigger-cells = <1>;
-> > +		/* other properties */
-> > +	};
-> > +
-> > +
-> >  ==IIO consumers==
-> >  
-> >  Required properties:
-> > @@ -61,16 +81,38 @@ io-channel-ranges:
-> >  		IIO channels from this node. Useful for bus nodes to provide
-> >  		and IIO channel to their children.
-> >  
-> > +io-triggers:	List of phandle and IIO specifier pairs, one pair
-> > +		for each trigger input to the device. Note: if the
-> > +		IIO trigger provider specifies '0' for #io-trigger-cells,
-> > +		then only the phandle portion of the pair will appear.
-> > +
-> > +io-trigger-names:
-> > +		List of IIO trigger input name strings sorted in the same
-> > +		order as the io-triggers property. Consumers drivers
-> > +		will use io-trigger-names to match IIO trigger input names
-> > +		with IIO specifiers.
-> > +
-> > +io-trigger-ranges:
-> > +		Empty property indicating that child nodes can inherit named
-> > +		IIO triggers from this node. Useful for bus nodes to provide
-> > +		IIO triggers to their children.  
-> 
-> I think it would be better to be explicit in the child nodes. What's the 
-> use you had in mind?
-> 
-> Rob
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/Documentation/devicetree/bindings/input/touchscreen/sama5d2_rts.txt b/Documentation/devicetree/bindings/input/touchscreen/sama5d2_rts.txt
+new file mode 100644
+index 0000000..ea52a5c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/input/touchscreen/sama5d2_rts.txt
+@@ -0,0 +1,31 @@
++Microchip SAMA5D2 resistive touchscreen
++
++Required properties:
++
++ - compatible: microchip,sama5d2-resistive-touch
++
++Optional properties:
++
++The device must be connected to an IIO device that provides channels for
++position and pressure measurement, and a trigger output that will periodically
++trigger when the touch is pressed.
++Refer to ../iio/iio-bindings.txt for details
++
++ - io-channels: can have two or three channels connected to an IIO device.
++These should correspond to the channels exposed by the IIO device and should
++have the right index as the ADC registers them.
++ - io-channel-names: must have the two or three channels' names :
++"x", "y", or "x", "y" and "pressure"
++ - io-triggers: can have a trigger input connected to an IIO device.
++ - microchip,pressure-threshold: a pressure threshold for the touchscreen.
++   Represented by an integer value.
++
++Example:
++
++	resistive_touch: resistive-touch {
++		compatible = "microchip,sama5d2-resistive-touch";
++		microchip,pressure-threshold = <3000>;
++		io-channels = <&adc 19>, <&adc 20>, <&adc 21>;
++		io-channel-names = "x", "y", "pressure";
++		io-triggers = <&adc 1>;
++	};
+-- 
+2.7.4
 
