@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
 Received: from esa1.microchip.iphmx.com ([68.232.147.91]:45056 "EHLO
         esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756149AbdLVPJu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Dec 2017 10:09:50 -0500
+        with ESMTP id S1755906AbdLVPJx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Dec 2017 10:09:53 -0500
 From: Eugen Hristev <eugen.hristev@microchip.com>
 To: <nicolas.ferre@microchip.com>, <ludovic.desroches@microchip.com>,
         <alexandre.belloni@free-electrons.com>,
@@ -12,9 +12,9 @@ To: <nicolas.ferre@microchip.com>, <ludovic.desroches@microchip.com>,
         <jic23@kernel.org>, <linux-input@vger.kernel.org>,
         <dmitry.torokhov@gmail.com>
 CC: Eugen Hristev <eugen.hristev@microchip.com>
-Subject: [PATCH 01/14] MAINTAINERS: add sama5d2 resistive touchscreen
-Date: Fri, 22 Dec 2017 17:07:08 +0200
-Message-ID: <1513955241-10985-2-git-send-email-eugen.hristev@microchip.com>
+Subject: [PATCH 02/14] iio: Add channel for Position
+Date: Fri, 22 Dec 2017 17:07:09 +0200
+Message-ID: <1513955241-10985-3-git-send-email-eugen.hristev@microchip.com>
 In-Reply-To: <1513955241-10985-1-git-send-email-eugen.hristev@microchip.com>
 References: <1513955241-10985-1-git-send-email-eugen.hristev@microchip.com>
 MIME-Version: 1.0
@@ -22,30 +22,89 @@ Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add MAINTAINERS entry for sama5d2 resistive touchscreen driver
+Add new channel type for position on a pad.
+
+These type of analog sensor represents the position of a pen
+on a touchpad, and is represented as a voltage, which can be
+converted to a position on X and Y axis on the pad.
+
+The channel can then be consumed by a touchscreen driver or
+read as-is for a raw indication of the touchpen on a touchpad.
 
 Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
 ---
- MAINTAINERS | 6 ++++++
- 1 file changed, 6 insertions(+)
+ Documentation/ABI/testing/sysfs-bus-iio | 11 +++++++++++
+ drivers/iio/industrialio-core.c         |  1 +
+ include/uapi/linux/iio/types.h          |  1 +
+ tools/iio/iio_event_monitor.c           |  2 ++
+ 4 files changed, 15 insertions(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 650aa0e..8beec28 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8957,6 +8957,12 @@ F:	drivers/media/platform/atmel/atmel-isc.c
- F:	drivers/media/platform/atmel/atmel-isc-regs.h
- F:	devicetree/bindings/media/atmel-isc.txt
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index a478740..d2b9e2f 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -190,6 +190,17 @@ Description:
+ 		but should match other such assignments on device).
+ 		Units after application of scale and offset are m/s^2.
  
-+MICROCHIP / ATMEL SAMA5D2 RESISTIVE TOUCHSCREEN DRIVER
-+M:	Eugen Hristev <eugen.hristev@microchip.com>
-+L:	linux-input@vger.kernel.org
-+S:	Maintained
-+F:	drivers/input/touchscreen/sama5d2_rts.c
++What:		/sys/bus/iio/devices/iio:deviceX/in_position_x_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_position_y_raw
++KernelVersion:	4.16
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Position in direction x or y on a pad (may be arbitrarily
++		assigned but should match other such assignments on device).
++		Units after application of scale and offset are millipercents
++		from the pad's size in both directions. Should be calibrated by
++		the consumer.
 +
- MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER
- M:	Woojung Huh <Woojung.Huh@microchip.com>
- M:	Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+ What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_x_raw
+ What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_y_raw
+ What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_z_raw
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 2e8e36f..a4fa49b 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -85,6 +85,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_COUNT] = "count",
+ 	[IIO_INDEX] = "index",
+ 	[IIO_GRAVITY]  = "gravity",
++	[IIO_POSITION]  = "position",
+ };
+ 
+ static const char * const iio_modifier_names[] = {
+diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+index 4213cdf..35e17da 100644
+--- a/include/uapi/linux/iio/types.h
++++ b/include/uapi/linux/iio/types.h
+@@ -44,6 +44,7 @@ enum iio_chan_type {
+ 	IIO_COUNT,
+ 	IIO_INDEX,
+ 	IIO_GRAVITY,
++	IIO_POSITION,
+ };
+ 
+ enum iio_modifier {
+diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+index b61245e..0c2b317 100644
+--- a/tools/iio/iio_event_monitor.c
++++ b/tools/iio/iio_event_monitor.c
+@@ -58,6 +58,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_PH] = "ph",
+ 	[IIO_UVINDEX] = "uvindex",
+ 	[IIO_GRAVITY] = "gravity",
++	[IIO_POSITION] = "position",
+ };
+ 
+ static const char * const iio_ev_type_text[] = {
+@@ -151,6 +152,7 @@ static bool event_is_known(struct iio_event_data *event)
+ 	case IIO_PH:
+ 	case IIO_UVINDEX:
+ 	case IIO_GRAVITY:
++	case IIO_POSITION:
+ 		break;
+ 	default:
+ 		return false;
 -- 
 2.7.4
 
