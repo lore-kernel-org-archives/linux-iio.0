@@ -2,125 +2,166 @@ Return-Path: <SRS0=BSDQ=DV=no-log.org=m.capdeville@kernel.org>
 From: Marc CAPDEVILLE <m.capdeville@no-log.org>
 To: Kevin Tsai <ktsai@capellamicro.com>
 Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Mika Westerberg <mika.westerberg@linux.intel.com>, Wolfram Sang <wsa@the-dreams.de>, linux-iio@vger.kernel.org, linux-i2c@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, Marc CAPDEVILLE <m.capdeville@no-log.org>
-Subject: [PATCH v6 1/4] i2c-core-acpi : Add i2c_acpi_set_connection
-Date: Mon, 25 Dec 2017 16:57:20 +0100
-Message-Id: <20171225155723.6338-1-m.capdeville@no-log.org>
+Subject: [PATCH v6 2/4] i2c-smbus : Add client discovered ARA support
+Date: Mon, 25 Dec 2017 16:57:21 +0100
+Message-Id: <20171225155723.6338-2-m.capdeville@no-log.org>
+In-Reply-To: <20171225155723.6338-1-m.capdeville@no-log.org>
+References: <20171225155723.6338-1-m.capdeville@no-log.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-Add a methode to allow clients to change their connection address on
-same adapter.
+This is from rfc by Alan Cox : https://patchwork.ozlabs.org/patch/381773
 
-On ACPI enumerated device, when a device support smbus alert protocol,
-there are two acpi serial bus connection description. The order in which
-connection is given is not well defined and devices may be enumerated
-with the wrong address (the first one). So let the driver detect the
-unsupported address and request i2c acpi core to choose the second one
-at probing time.
+The idea is as follows (extract from above rfc) :
+- If an adapter knows about its ARA and smbus alerts then the adapter
+  creates its own interrupt handler as before
 
+- If a client knows it needs smbus alerts it calls
+  i2c_require_smbus_alert(). This ensures that there is an ARA handler
+  registered and tells the client whether the adapter is handling it
+  anyway or not.
+
+- When the client learns that an ARA event has occurred it calls
+  i2c_smbus_alert_event() which uses the existing ARA mechanism to kick
+  things off.
+
+Suggested-by: Alan Cox <alan@linux.intel.com>
 Signed-off-by: Marc CAPDEVILLE <m.capdeville@no-log.org>
 ---
- drivers/i2c/i2c-core-acpi.c | 50 +++++++++++++++++++++++++++++++++++++++++++++
- include/linux/i2c.h         | 10 +++++++++
- 2 files changed, 60 insertions(+)
+ drivers/i2c/i2c-smbus.c   | 83 +++++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/i2c-smbus.h | 15 +++++++++
+ 2 files changed, 98 insertions(+)
 
-diff --git a/drivers/i2c/i2c-core-acpi.c b/drivers/i2c/i2c-core-acpi.c
-index a9126b3cda61..47bc0da12055 100644
---- a/drivers/i2c/i2c-core-acpi.c
-+++ b/drivers/i2c/i2c-core-acpi.c
-@@ -421,6 +421,56 @@ struct i2c_client *i2c_acpi_new_device(struct device *dev, int index,
- }
- EXPORT_SYMBOL_GPL(i2c_acpi_new_device);
+diff --git a/drivers/i2c/i2c-smbus.c b/drivers/i2c/i2c-smbus.c
+index 5a1dd7f13bac..e97fbafd10ef 100644
+--- a/drivers/i2c/i2c-smbus.c
++++ b/drivers/i2c/i2c-smbus.c
+@@ -161,6 +161,9 @@ static int smbalert_probe(struct i2c_client *ara,
+ 	}
  
-+int i2c_acpi_set_connection(struct i2c_client *client, int index)
-+{
-+	struct i2c_acpi_lookup lookup;
-+	struct i2c_adapter *adapter;
-+	struct acpi_device *adev;
-+	struct i2c_board_info info;
-+	LIST_HEAD(resource_list);
-+	int ret;
+ 	i2c_set_clientdata(ara, alert);
 +
-+	if (!client)
-+		return -ENODEV;
++	ara->adapter->smbus_ara = ara;
 +
-+	adev = ACPI_COMPANION(&client->dev);
-+	if (!adev)
-+		return -ENODEV;
-+
-+	memset(&info,  0, sizeof(info));
-+	memset(&lookup, 0, sizeof(lookup));
-+	lookup.info = &info;
-+	lookup.device_handle = acpi_device_handle(adev);
-+	lookup.index = index;
-+
-+	ret = acpi_dev_get_resources(adev, &resource_list,
-+				     i2c_acpi_fill_info, &lookup);
-+	acpi_dev_free_resource_list(&resource_list);
-+
-+	adapter = i2c_acpi_find_adapter_by_handle(lookup.adapter_handle);
-+
-+	if (ret < 0 || !info.addr)
-+		return -EINVAL;
-+
-+	/* Only accept connection on same adapter */
-+	if (adapter != client->adapter)
-+		return -EINVAL;
-+
-+	ret = i2c_check_addr_validity(info.addr, info.flags);
-+	if (ret) {
-+		dev_err(&client->dev, "Invalid %d-bit I2C address 0x%02hx\n",
-+			info.flags & I2C_CLIENT_TEN ? 10 : 7, info.addr);
-+		return -EINVAL;
-+	}
-+
-+	/* Set new address and flags */
-+	client->addr = info.addr;
-+	client->flags = info.flags;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(i2c_acpi_set_connection);
-+
- #ifdef CONFIG_ACPI_I2C_OPREGION
- static int acpi_gsb_i2c_read_bytes(struct i2c_client *client,
- 		u8 cmd, u8 *data, u8 data_len)
-diff --git a/include/linux/i2c.h b/include/linux/i2c.h
-index 0f774406fad0..618b453901da 100644
---- a/include/linux/i2c.h
-+++ b/include/linux/i2c.h
-@@ -595,6 +595,8 @@ struct i2c_adapter {
- 	const struct i2c_adapter_quirks *quirks;
+ 	dev_info(&adapter->dev, "supports SMBALERT#\n");
  
- 	struct irq_domain *host_notify_domain;
-+
-+	struct i2c_client *smbus_ara;	/* ARA for SMBUS if present */
- };
- #define to_i2c_adapter(d) container_of(d, struct i2c_adapter, dev)
+ 	return 0;
+@@ -172,6 +175,9 @@ static int smbalert_remove(struct i2c_client *ara)
+ 	struct i2c_smbus_alert *alert = i2c_get_clientdata(ara);
  
-@@ -839,16 +841,24 @@ static inline const struct of_device_id
- u32 i2c_acpi_find_bus_speed(struct device *dev);
- struct i2c_client *i2c_acpi_new_device(struct device *dev, int index,
- 				       struct i2c_board_info *info);
+ 	cancel_work_sync(&alert->alert);
 +
-+int i2c_acpi_set_connection(struct i2c_client *client, int index);
- #else
- static inline u32 i2c_acpi_find_bus_speed(struct device *dev)
- {
++	ara->adapter->smbus_ara = NULL;
++
  	return 0;
  }
-+
- static inline struct i2c_client *i2c_acpi_new_device(struct device *dev,
- 					int index, struct i2c_board_info *info)
- {
- 	return NULL;
- }
-+
-+static inline int i2c_acpi_set_connection(struct i2c_client *client, int index)
-+{
-+	return -EINVAL;
-+}
- #endif /* CONFIG_ACPI */
  
- #endif /* _LINUX_I2C_H */
+@@ -210,6 +216,83 @@ int i2c_handle_smbus_alert(struct i2c_client *ara)
+ }
+ EXPORT_SYMBOL_GPL(i2c_handle_smbus_alert);
+ 
++/*
++ * i2c_require_smbus_alert - Client discovered SMBus alert
++ * @c: client requiring ARA
++ *
++ * When a client needs an ARA it calls this method. If the bus adapter
++ * supports ARA and already knows how to do so then it will already have
++ * configured for ARA and this is a no-op. If not then we set up an ARA
++ * on the adapter.
++ *
++ * We *cannot* simply register a new IRQ handler for this because we might
++ * have multiple GPIO interrupts to devices all of which trigger an ARA.
++ *
++ * Return:
++ *	0 if ara support already registered
++ *	1 if call register a new smbus_alert device
++ *	<0 on error
++ */
++int i2c_require_smbus_alert(struct i2c_client *client)
++{
++	struct i2c_adapter *adapter = client->adapter;
++	struct i2c_smbus_alert_setup setup;
++	struct i2c_client *ara;
++
++	/* ARA is already known and handled by the adapter (ideal case)
++	 * or another client has specified ARA is needed
++	 */
++	if (adapter->smbus_ara)
++		return 0;
++
++	/* Client driven, do not set up a new IRQ handler */
++	setup.irq = 0;
++
++	ara = i2c_setup_smbus_alert(adapter, &setup);
++	if (!ara)
++		return -ENODEV;
++
++	return 1;
++}
++EXPORT_SYMBOL_GPL(i2c_require_smbus_alert);
++
++/*
++ * i2c_smbus_alert_event
++ * @client: the client who known of a probable ara event
++ * Context: can't sleep
++ *
++ * Helper function to be called from an I2C device driver's interrupt
++ * handler. It will schedule the alert work, in turn calling the
++ * corresponding I2C device driver's alert function.
++ *
++ * It is assumed that client is an i2c client who previously call
++ * i2c_require_smbus_alert().
++ */
++int i2c_smbus_alert_event(struct i2c_client *client)
++{
++	struct i2c_adapter *adapter;
++	struct i2c_client *ara;
++	struct i2c_smbus_alert *alert;
++
++	if (!client)
++		return -EINVAL;
++
++	adapter = client->adapter;
++	if (!adapter)
++		return -EINVAL;
++
++	ara = adapter->smbus_ara;
++	if (!ara)
++		return -EINVAL;
++
++	alert = i2c_get_clientdata(ara);
++	if (!alert)
++		return -EINVAL;
++
++	return schedule_work(&alert->alert);
++}
++EXPORT_SYMBOL_GPL(i2c_smbus_alert_event);
++
+ module_i2c_driver(smbalert_driver);
+ 
+ MODULE_AUTHOR("Jean Delvare <jdelvare@suse.de>");
+diff --git a/include/linux/i2c-smbus.h b/include/linux/i2c-smbus.h
+index fb0e040b1abb..49f362fa6ac5 100644
+--- a/include/linux/i2c-smbus.h
++++ b/include/linux/i2c-smbus.h
+@@ -58,4 +58,19 @@ static inline int of_i2c_setup_smbus_alert(struct i2c_adapter *adap)
+ }
+ #endif
+ 
++#if IS_ENABLED(CONFIG_I2C_SMBUS)
++int i2c_require_smbus_alert(struct i2c_client *client);
++int i2c_smbus_alert_event(struct i2c_client *client);
++#else
++static inline int i2c_require_smbus_alert(struct i2c_client *client)
++{
++	return NULL;
++}
++
++static inline int i2c_smbus_alert_event(struct i2c_client *client)
++{
++	return NULL;
++}
++#endif
++
+ #endif /* _LINUX_I2C_SMBUS_H */
 -- 
 2.11.0
