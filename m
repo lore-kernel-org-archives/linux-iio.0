@@ -1,159 +1,80 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from cloudserver094114.home.pl ([79.96.170.134]:59394 "EHLO
-        cloudserver094114.home.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752016AbdL1BFK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 27 Dec 2017 20:05:10 -0500
-From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To: Marc CAPDEVILLE <m.capdeville@no-log.org>
-Cc: Kevin Tsai <ktsai@capellamicro.com>,
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:43048 "EHLO
+        mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751028AbdL0Qmj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 27 Dec 2017 11:42:39 -0500
+Received: by mail-wm0-f67.google.com with SMTP id n138so40231661wmg.2
+        for <linux-iio@vger.kernel.org>; Wed, 27 Dec 2017 08:42:39 -0800 (PST)
+To: Bastien Nocera <bnocera@redhat.com>,
         Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Wolfram Sang <wsa@the-dreams.de>, linux-iio@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 1/4] i2c-core-acpi : Add i2c_acpi_set_connection
-Date: Thu, 28 Dec 2017 02:04:10 +0100
-Message-ID: <1676388.3jYexzovUo@aspire.rjw.lan>
-In-Reply-To: <20171225155723.6338-1-m.capdeville@no-log.org>
-References: <20171225155723.6338-1-m.capdeville@no-log.org>
+        linux-iio@vger.kernel.org
+Cc: Enaut Waldmeier <enaut.w@googlemail.com>
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: How to deal with accelerometers where the ACPI HID indicates the
+ location?
+Message-ID: <d939693c-640a-5dc7-2a5a-11845065cdf4@redhat.com>
+Date: Wed, 27 Dec 2017 17:42:36 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Monday, December 25, 2017 4:57:20 PM CET Marc CAPDEVILLE wrote:
-> Add a methode to allow clients to change their connection address on
-> same adapter.
-> 
-> On ACPI enumerated device, when a device support smbus alert protocol,
-> there are two acpi serial bus connection description. The order in which
-> connection is given is not well defined and devices may be enumerated
-> with the wrong address (the first one). So let the driver detect the
-> unsupported address and request i2c acpi core to choose the second one
-> at probing time.
+Hi All,
 
-By convention, the ordering of resources in _CRS is meaningful, but it is
-a contract between AML and an OS driver written to work with it.
+So I've been debugging some touchpad issues on a Tresktor Primebook C13,
+unfortunately I've been able to get the touchpad to work.
 
-> Signed-off-by: Marc CAPDEVILLE <m.capdeville@no-log.org>
-> ---
->  drivers/i2c/i2c-core-acpi.c | 50 +++++++++++++++++++++++++++++++++++++++++++++
->  include/linux/i2c.h         | 10 +++++++++
->  2 files changed, 60 insertions(+)
-> 
-> diff --git a/drivers/i2c/i2c-core-acpi.c b/drivers/i2c/i2c-core-acpi.c
-> index a9126b3cda61..47bc0da12055 100644
-> --- a/drivers/i2c/i2c-core-acpi.c
-> +++ b/drivers/i2c/i2c-core-acpi.c
-> @@ -421,6 +421,56 @@ struct i2c_client *i2c_acpi_new_device(struct device *dev, int index,
->  }
->  EXPORT_SYMBOL_GPL(i2c_acpi_new_device);
->  
+But I did notice the following in the ACPI tables, and there i2cdetect
+confirms there are i2c devices at the expected addresses:
 
-Please add a kerneldoc description of this function.
+                 Device (KXJ0)
+                 {
+                     Name (_ADR, Zero)  // _ADR: Address
+                     Name (_HID, "KIOX010A")  // _HID: Hardware ID
+                     Name (_CID, "KIOX010A")  // _CID: Compatible ID
+                     Name (_DDN, "Kionix KXCJ9 Accelerometer Display")  // _DDN:
 
-It is exported and needs to be documented properly.
+...
 
-> +int i2c_acpi_set_connection(struct i2c_client *client, int index)
-> +{
-> +	struct i2c_acpi_lookup lookup;
-> +	struct i2c_adapter *adapter;
-> +	struct acpi_device *adev;
-> +	struct i2c_board_info info;
-> +	LIST_HEAD(resource_list);
-> +	int ret;
-> +
-> +	if (!client)
-> +		return -ENODEV;
-> +
-> +	adev = ACPI_COMPANION(&client->dev);
-> +	if (!adev)
-> +		return -ENODEV;
-> +
-> +	memset(&info,  0, sizeof(info));
-> +	memset(&lookup, 0, sizeof(lookup));
-> +	lookup.info = &info;
-> +	lookup.device_handle = acpi_device_handle(adev);
-> +	lookup.index = index;
-> +
-> +	ret = acpi_dev_get_resources(adev, &resource_list,
-> +				     i2c_acpi_fill_info, &lookup);
-> +	acpi_dev_free_resource_list(&resource_list);
-> +
-> +	adapter = i2c_acpi_find_adapter_by_handle(lookup.adapter_handle);
-> +
-> +	if (ret < 0 || !info.addr)
-> +		return -EINVAL;
+                 Device (KXJ1)
+                 {
+                     Name (_ADR, Zero)  // _ADR: Address
+                     Name (_HID, "KIOX020A")  // _HID: Hardware ID
+                     Name (_CID, "KIOX020A")  // _CID: Compatible ID
+                     Name (_DDN, "Kionix KXCJ9 Accelerometer Keyboard")  // _DDN:
 
-Why do you make this check after calling i2c_acpi_find_adapter_by_handle()?
+...
 
-> +
-> +	/* Only accept connection on same adapter */
-> +	if (adapter != client->adapter)
-> +		return -EINVAL;
-> +
-> +	ret = i2c_check_addr_validity(info.addr, info.flags);
-> +	if (ret) {
-> +		dev_err(&client->dev, "Invalid %d-bit I2C address 0x%02hx\n",
-> +			info.flags & I2C_CLIENT_TEN ? 10 : 7, info.addr);
-> +		return -EINVAL;
-> +	}
-> +
-> +	/* Set new address and flags */
-> +	client->addr = info.addr;
-> +	client->flags = info.flags;
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(i2c_acpi_set_connection);
-> +
->  #ifdef CONFIG_ACPI_I2C_OPREGION
->  static int acpi_gsb_i2c_read_bytes(struct i2c_client *client,
->  		u8 cmd, u8 *data, u8 data_len)
-> diff --git a/include/linux/i2c.h b/include/linux/i2c.h
-> index 0f774406fad0..618b453901da 100644
-> --- a/include/linux/i2c.h
-> +++ b/include/linux/i2c.h
-> @@ -595,6 +595,8 @@ struct i2c_adapter {
->  	const struct i2c_adapter_quirks *quirks;
->  
->  	struct irq_domain *host_notify_domain;
-> +
-> +	struct i2c_client *smbus_ara;	/* ARA for SMBUS if present */
+Notice these accelerometers use KIOX010A / KIOX020A as HID rather then
+the normal KIOX000A and their DDN lists a location (display vs
+keyboard, this is a yoga style convertible).
 
-Not used in this patch and how is it related to the other changes here?
+I'm pretty sure from the kernel side these can be fixed by just adding:
 
->  };
->  #define to_i2c_adapter(d) container_of(d, struct i2c_adapter, dev)
->  
-> @@ -839,16 +841,24 @@ static inline const struct of_device_id
->  u32 i2c_acpi_find_bus_speed(struct device *dev);
->  struct i2c_client *i2c_acpi_new_device(struct device *dev, int index,
->  				       struct i2c_board_info *info);
-> +
-> +int i2c_acpi_set_connection(struct i2c_client *client, int index);
->  #else
->  static inline u32 i2c_acpi_find_bus_speed(struct device *dev)
->  {
->  	return 0;
->  }
-> +
->  static inline struct i2c_client *i2c_acpi_new_device(struct device *dev,
->  					int index, struct i2c_board_info *info)
->  {
->  	return NULL;
->  }
-> +
-> +static inline int i2c_acpi_set_connection(struct i2c_client *client, int index)
-> +{
-> +	return -EINVAL;
-> +}
->  #endif /* CONFIG_ACPI */
->  
->  #endif /* _LINUX_I2C_H */
-> 
+         {"KIOX010A", KXCJ91008},
+         {"KIOX020A", KXCJ91008},
 
+Entries to the drivers/iio/accel/kxcjk-1013.c driver. I believe the
+different HIDs are just there to allow Windows to determine the
+location based on the HID.
 
+But before submitting a patch to add these 2 HIDs to the driver I was
+wondering do we want to do anything wrt the location on the kernel side.
+
+I do believe there is a need for an ACCEL_LOCATION udev property on
+accelerometer iio-devs for use by iio-sensor-proxy, so that it can
+pick the one in the display to provide display rotation info.
+
+But since the HID ends up in the device name we can simply add an
+udev rule based on this, without the kernel needing to export any
+data AFAICT.
+
+Bastien, do you agree that we don't need the kernel to export this
+and that we can use a HID match in a udev rule to set an
+ACCEL_LOCATION udev property for this ?
+
+Regards,
+
+Hans
