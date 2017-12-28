@@ -1,81 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:55110 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1755405AbdL2MHN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 29 Dec 2017 07:07:13 -0500
-Date: Fri, 29 Dec 2017 12:07:08 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Julia Lawall <julia.lawall@lip6.fr>
-Cc: Ji-Hun Kim <jihuun.k@gmail.com>, lars@metafoo.de,
-        Michael.Hennerich@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net,
-        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
-        device-drivers-devel@blackfin.uclinux.org,
-        devel@driverdev.osuosl.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] staging: iio: add spaces around '-' operator
-Message-ID: <20171229120708.3f1b10b7@archlinux>
-In-Reply-To: <alpine.DEB.2.20.1712280706110.2220@hadrien>
-References: <20171228024927.GA3113@MacBook-Air>
-        <alpine.DEB.2.20.1712280706110.2220@hadrien>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from mail-yw0-f195.google.com ([209.85.161.195]:36780 "EHLO
+        mail-yw0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750765AbdL1QBs (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 28 Dec 2017 11:01:48 -0500
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: linus.walleij@linaro.org
+Cc: mail@maciej.szmigiero.name, linux-gpio@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH 0/3] Change ISA_BUS_API dependency to selection
+Date: Thu, 28 Dec 2017 11:01:27 -0500
+Message-Id: <cover.1514475654.git.vilhelm.gray@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 28 Dec 2017 07:07:17 +0100 (CET)
-Julia Lawall <julia.lawall@lip6.fr> wrote:
+The ISA_BUS_API Kconfig option enables the compilation of the ISA bus
+driver. The ISA bus driver does not perform any hardware interaction,
+and is instead just a thin layer of software abstraction to eliminate
+boilerplate code common to ISA-style device drivers. Since ISA_BUS_API
+has no dependencies and does not jeopardize the integrity of the system
+when enabled, drivers should select it when the ISA bus driver
+functionality is needed.
 
-> On Wed, 27 Dec 2017, Ji-Hun Kim wrote:
-> 
-> > Clean up checkpatch warning:
-> > CHECK: spaces preferred around that '-' (ctx:VxV)
-> >
-> > Signed-off-by: Ji-Hun Kim <jihuun.k@gmail.com>
-> > ---
-> >  drivers/staging/iio/adc/ad7192.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-> > index f015955..c4eff71 100644
-> > --- a/drivers/staging/iio/adc/ad7192.c
-> > +++ b/drivers/staging/iio/adc/ad7192.c
-> > @@ -340,7 +340,7 @@ ad7192_show_scale_available(struct device *dev,
-> >  }
-> >
-> >  static IIO_DEVICE_ATTR_NAMED(in_v_m_v_scale_available,
-> > -			     in_voltage-voltage_scale_available,
-> > +			     in_voltage - voltage_scale_available,  
-> 
-> I think this has been discussed at length before, and it is a hyphen not a
-> subtraction.  IIO_DEVICE_ATTR_NAMED is a macro, as indicated by the
-> capital letters, and you have to look and see what the code expands into.
+Originally, when the ISA_BUS_API Kconfig option was introduced, it
+served a dual-purpose of masking drivers ISA-style devices not commonly
+found for desktop systems, such as the PC/104 device drivers. This
+secondary semantic was inappropriate for the ISA_BUS_API option, and
+proper masking of these device drivers is now accomplished via dedicated
+Kconfig options such as CONFIG_PC104.
 
-Technically it is a subtraction, but the symbol rather than the c operator ;)
-It's indicating that this sysfs attribute is referring to any
-voltage channels minus other voltage channels (differential channels).
+Linus, please pickup this entire patchset through your GPIO subsystem
+tree; a recursive dependency error is present if these patches are
+cherry-picked (see https://lkml.org/lkml/2017/12/26/235), so they should
+be merged together in the same tree.
 
-Sometimes I wonder if we should leave this there for ever as a way of
-getting people to understand that they need to look really closely
-at what checkpatch is suggesting and not assume it is right.
+Maciej, this patchset resolves the recursive dependency issue you
+encountered, so now you should be able to submit your Winbond GPIO
+driver with the ISA_BUS_API selection as desired.
 
-Jonathan
+William Breathitt Gray (3):
+  iio: Change ISA_BUS_API dependency to selection
+  watchdog: Change ISA_BUS_API dependency to selection
+  gpio: Change ISA_BUS_API dependency to selection
 
-> 
-> julia
-> 
-> >  			     0444, ad7192_show_scale_available, NULL, 0);
-> >
-> >  static IIO_DEVICE_ATTR(in_voltage_scale_available, 0444,
-> > --
-> > 2.10.1 (Apple Git-78)
-> >
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe kernel-janitors" in
-> > the body of a message to majordomo@vger.kernel.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> >  
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+ drivers/gpio/Kconfig        | 14 +++++++++-----
+ drivers/iio/adc/Kconfig     |  3 ++-
+ drivers/iio/counter/Kconfig |  3 ++-
+ drivers/iio/dac/Kconfig     |  3 ++-
+ drivers/watchdog/Kconfig    |  3 ++-
+ 5 files changed, 17 insertions(+), 9 deletions(-)
+
+-- 
+2.15.1
 
