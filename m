@@ -1,12 +1,12 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:58936 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751073AbdL2M4Q (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 29 Dec 2017 07:56:16 -0500
-Date: Fri, 29 Dec 2017 12:56:10 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from cloudserver094114.home.pl ([79.96.170.134]:59394 "EHLO
+        cloudserver094114.home.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752016AbdL1BFK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 27 Dec 2017 20:05:10 -0500
+From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
 To: Marc CAPDEVILLE <m.capdeville@no-log.org>
 Cc: Kevin Tsai <ktsai@capellamicro.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
@@ -14,124 +14,146 @@ Cc: Kevin Tsai <ktsai@capellamicro.com>,
         Wolfram Sang <wsa@the-dreams.de>, linux-iio@vger.kernel.org,
         linux-i2c@vger.kernel.org, linux-acpi@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 4/4] iio : cm32181 : cosmetic cleanup
-Message-ID: <20171229125610.67b21757@archlinux>
-In-Reply-To: <20171225155723.6338-4-m.capdeville@no-log.org>
+Subject: Re: [PATCH v6 1/4] i2c-core-acpi : Add i2c_acpi_set_connection
+Date: Thu, 28 Dec 2017 02:04:10 +0100
+Message-ID: <1676388.3jYexzovUo@aspire.rjw.lan>
+In-Reply-To: <20171225155723.6338-1-m.capdeville@no-log.org>
 References: <20171225155723.6338-1-m.capdeville@no-log.org>
-        <20171225155723.6338-4-m.capdeville@no-log.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 25 Dec 2017 16:57:23 +0100
-Marc CAPDEVILLE <m.capdeville@no-log.org> wrote:
+On Monday, December 25, 2017 4:57:20 PM CET Marc CAPDEVILLE wrote:
+> Add a methode to allow clients to change their connection address on
+> same adapter.
+> 
+> On ACPI enumerated device, when a device support smbus alert protocol,
+> there are two acpi serial bus connection description. The order in which
+> connection is given is not well defined and devices may be enumerated
+> with the wrong address (the first one). So let the driver detect the
+> unsupported address and request i2c acpi core to choose the second one
+> at probing time.
 
-> Somme cosmetic cleanup suggested by Peter Meerwald-Stadler.
-> 
-> Macro name :
->    MLUX_PER_LUX => CM32181_MLUX_PER_LUX
-> 
-> Constante name :
->    als_it_bits => cm32181_als_it_bits
->    als_it_value => cm32181_als_it_value
-> 
-> Comment :
->    Registers Address => Register Addresses
-> 
-> Suggested-by:  Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+By convention, the ordering of resources in _CRS is meaningful, but it is
+a contract between AML and an OS driver written to work with it.
+
 > Signed-off-by: Marc CAPDEVILLE <m.capdeville@no-log.org>
-This is all fine. For my reference please add
-
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-
 > ---
->  drivers/iio/light/cm32181.c | 26 +++++++++++++-------------
->  1 file changed, 13 insertions(+), 13 deletions(-)
+>  drivers/i2c/i2c-core-acpi.c | 50 +++++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/i2c.h         | 10 +++++++++
+>  2 files changed, 60 insertions(+)
 > 
-> diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
-> index 96c08755e6e3..3e6b244d5cd1 100644
-> --- a/drivers/iio/light/cm32181.c
-> +++ b/drivers/iio/light/cm32181.c
-> @@ -22,7 +22,7 @@
->  #include <linux/acpi.h>
->  #include <linux/of_device.h>
->  
-> -/* Registers Address */
-> +/* Register Addresses */
->  #define CM32181_REG_ADDR_CMD		0x00
->  #define CM32181_REG_ADDR_ALS		0x04
->  #define CM32181_REG_ADDR_STATUS		0x06
-> @@ -48,7 +48,7 @@
->  #define CM32181_MLUX_PER_BIT_BASE_IT	800000	/* Based on IT=800ms */
->  #define	CM32181_CALIBSCALE_DEFAULT	1000
->  #define CM32181_CALIBSCALE_RESOLUTION	1000
-> -#define MLUX_PER_LUX			1000
-> +#define CM32181_MLUX_PER_LUX		1000
->  
->  #define CM32181_ID			0x81
->  #define CM3218_ID			0x18
-> @@ -59,8 +59,8 @@ static const u8 cm32181_reg[CM32181_CONF_REG_NUM] = {
->  	CM32181_REG_ADDR_CMD,
->  };
->  
-> -static const int als_it_bits[] = {12, 8, 0, 1, 2, 3};
-> -static const int als_it_value[] = {25000, 50000, 100000, 200000, 400000,
-> +static const int cm32181_als_it_bits[] = {12, 8, 0, 1, 2, 3};
-> +static const int cm32181_als_it_value[] = {25000, 50000, 100000, 200000, 400000,
->  	800000};
->  
->  struct cm32181_chip {
-> @@ -137,9 +137,9 @@ static int cm32181_read_als_it(struct cm32181_chip *cm32181, int *val2)
->  	als_it = cm32181->conf_regs[CM32181_REG_ADDR_CMD];
->  	als_it &= CM32181_CMD_ALS_IT_MASK;
->  	als_it >>= CM32181_CMD_ALS_IT_SHIFT;
-> -	for (i = 0; i < ARRAY_SIZE(als_it_bits); i++) {
-> -		if (als_it == als_it_bits[i]) {
-> -			*val2 = als_it_value[i];
-> +	for (i = 0; i < ARRAY_SIZE(cm32181_als_it_bits); i++) {
-> +		if (als_it == cm32181_als_it_bits[i]) {
-> +			*val2 = cm32181_als_it_value[i];
->  			return IIO_VAL_INT_PLUS_MICRO;
->  		}
->  	}
-> @@ -162,14 +162,14 @@ static int cm32181_write_als_it(struct cm32181_chip *cm32181, int val)
->  	u16 als_it;
->  	int ret, i, n;
->  
-> -	n = ARRAY_SIZE(als_it_value);
-> +	n = ARRAY_SIZE(cm32181_als_it_value);
->  	for (i = 0; i < n; i++)
-> -		if (val <= als_it_value[i])
-> +		if (val <= cm32181_als_it_value[i])
->  			break;
->  	if (i >= n)
->  		i = n - 1;
->  
-> -	als_it = als_it_bits[i];
-> +	als_it = cm32181_als_it_bits[i];
->  	als_it <<= CM32181_CMD_ALS_IT_SHIFT;
->  
->  	mutex_lock(&cm32181->lock);
-> @@ -215,7 +215,7 @@ static int cm32181_get_lux(struct cm32181_chip *cm32181)
->  	lux *= ret;
->  	lux *= cm32181->calibscale;
->  	lux /= CM32181_CALIBSCALE_RESOLUTION;
-> -	lux /= MLUX_PER_LUX;
-> +	lux /= CM32181_MLUX_PER_LUX;
->  
->  	if (lux > 0xFFFF)
->  		lux = 0xFFFF;
-> @@ -283,9 +283,9 @@ static ssize_t cm32181_get_it_available(struct device *dev,
->  {
->  	int i, n, len;
->  
-> -	n = ARRAY_SIZE(als_it_value);
-> +	n = ARRAY_SIZE(cm32181_als_it_value);
->  	for (i = 0, len = 0; i < n; i++)
-> -		len += sprintf(buf + len, "0.%06u ", als_it_value[i]);
-> +		len += sprintf(buf + len, "0.%06u ", cm32181_als_it_value[i]);
->  	return len + sprintf(buf + len, "\n");
+> diff --git a/drivers/i2c/i2c-core-acpi.c b/drivers/i2c/i2c-core-acpi.c
+> index a9126b3cda61..47bc0da12055 100644
+> --- a/drivers/i2c/i2c-core-acpi.c
+> +++ b/drivers/i2c/i2c-core-acpi.c
+> @@ -421,6 +421,56 @@ struct i2c_client *i2c_acpi_new_device(struct device *dev, int index,
 >  }
+>  EXPORT_SYMBOL_GPL(i2c_acpi_new_device);
 >  
+
+Please add a kerneldoc description of this function.
+
+It is exported and needs to be documented properly.
+
+> +int i2c_acpi_set_connection(struct i2c_client *client, int index)
+> +{
+> +	struct i2c_acpi_lookup lookup;
+> +	struct i2c_adapter *adapter;
+> +	struct acpi_device *adev;
+> +	struct i2c_board_info info;
+> +	LIST_HEAD(resource_list);
+> +	int ret;
+> +
+> +	if (!client)
+> +		return -ENODEV;
+> +
+> +	adev = ACPI_COMPANION(&client->dev);
+> +	if (!adev)
+> +		return -ENODEV;
+> +
+> +	memset(&info,  0, sizeof(info));
+> +	memset(&lookup, 0, sizeof(lookup));
+> +	lookup.info = &info;
+> +	lookup.device_handle = acpi_device_handle(adev);
+> +	lookup.index = index;
+> +
+> +	ret = acpi_dev_get_resources(adev, &resource_list,
+> +				     i2c_acpi_fill_info, &lookup);
+> +	acpi_dev_free_resource_list(&resource_list);
+> +
+> +	adapter = i2c_acpi_find_adapter_by_handle(lookup.adapter_handle);
+> +
+> +	if (ret < 0 || !info.addr)
+> +		return -EINVAL;
+
+Why do you make this check after calling i2c_acpi_find_adapter_by_handle()?
+
+> +
+> +	/* Only accept connection on same adapter */
+> +	if (adapter != client->adapter)
+> +		return -EINVAL;
+> +
+> +	ret = i2c_check_addr_validity(info.addr, info.flags);
+> +	if (ret) {
+> +		dev_err(&client->dev, "Invalid %d-bit I2C address 0x%02hx\n",
+> +			info.flags & I2C_CLIENT_TEN ? 10 : 7, info.addr);
+> +		return -EINVAL;
+> +	}
+> +
+> +	/* Set new address and flags */
+> +	client->addr = info.addr;
+> +	client->flags = info.flags;
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(i2c_acpi_set_connection);
+> +
+>  #ifdef CONFIG_ACPI_I2C_OPREGION
+>  static int acpi_gsb_i2c_read_bytes(struct i2c_client *client,
+>  		u8 cmd, u8 *data, u8 data_len)
+> diff --git a/include/linux/i2c.h b/include/linux/i2c.h
+> index 0f774406fad0..618b453901da 100644
+> --- a/include/linux/i2c.h
+> +++ b/include/linux/i2c.h
+> @@ -595,6 +595,8 @@ struct i2c_adapter {
+>  	const struct i2c_adapter_quirks *quirks;
+>  
+>  	struct irq_domain *host_notify_domain;
+> +
+> +	struct i2c_client *smbus_ara;	/* ARA for SMBUS if present */
+
+Not used in this patch and how is it related to the other changes here?
+
+>  };
+>  #define to_i2c_adapter(d) container_of(d, struct i2c_adapter, dev)
+>  
+> @@ -839,16 +841,24 @@ static inline const struct of_device_id
+>  u32 i2c_acpi_find_bus_speed(struct device *dev);
+>  struct i2c_client *i2c_acpi_new_device(struct device *dev, int index,
+>  				       struct i2c_board_info *info);
+> +
+> +int i2c_acpi_set_connection(struct i2c_client *client, int index);
+>  #else
+>  static inline u32 i2c_acpi_find_bus_speed(struct device *dev)
+>  {
+>  	return 0;
+>  }
+> +
+>  static inline struct i2c_client *i2c_acpi_new_device(struct device *dev,
+>  					int index, struct i2c_board_info *info)
+>  {
+>  	return NULL;
+>  }
+> +
+> +static inline int i2c_acpi_set_connection(struct i2c_client *client, int index)
+> +{
+> +	return -EINVAL;
+> +}
+>  #endif /* CONFIG_ACPI */
+>  
+>  #endif /* _LINUX_I2C_H */
+> 
+
 
