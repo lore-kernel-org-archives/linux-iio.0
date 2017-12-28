@@ -1,22 +1,23 @@
-Return-Path: <SRS0=Wgke=DY=gmail.com=vilhelm.gray@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-yw0-f193.google.com ([209.85.161.193]:33884 "EHLO
+        mail-yw0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751905AbdL1QCN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 28 Dec 2017 11:02:13 -0500
 From: William Breathitt Gray <vilhelm.gray@gmail.com>
 To: linus.walleij@linaro.org
-Cc: mail@maciej.szmigiero.name,
-	linux-gpio@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-watchdog@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	William Breathitt Gray <vilhelm.gray@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: [PATCH 1/3] iio: Change ISA_BUS_API dependency to selection
-Date: Thu, 28 Dec 2017 11:01:54 -0500
-Message-Id: <84517171cdb142f3f04b45de6ef8daf13442a866.1514475654.git.vilhelm.gray@gmail.com>
+Cc: mail@maciej.szmigiero.name, linux-gpio@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Wim Van Sebroeck <wim@iguana.be>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 2/3] watchdog: Change ISA_BUS_API dependency to selection
+Date: Thu, 28 Dec 2017 11:02:06 -0500
+Message-Id: <4035bdd9c6ff2b9686e69c27e5eb887fd8f9a2bf.1514475654.git.vilhelm.gray@gmail.com>
 In-Reply-To: <cover.1514475654.git.vilhelm.gray@gmail.com>
 References: <cover.1514475654.git.vilhelm.gray@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 The ISA_BUS_API Kconfig option enables the compilation of the ISA bus
 driver. The ISA bus driver does not perform any hardware interaction,
@@ -26,58 +27,27 @@ has no dependencies and does not jeopardize the integrity of the system
 when enabled, drivers should select it when the ISA bus driver
 functionality is needed.
 
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Wim Van Sebroeck <wim@iguana.be>
+Cc: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- drivers/iio/adc/Kconfig     | 3 ++-
- drivers/iio/counter/Kconfig | 3 ++-
- drivers/iio/dac/Kconfig     | 3 ++-
- 3 files changed, 6 insertions(+), 3 deletions(-)
+ drivers/watchdog/Kconfig | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index ef86296b8b0d..7c00e5858693 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -658,7 +658,8 @@ config STM32_ADC
+diff --git a/drivers/watchdog/Kconfig b/drivers/watchdog/Kconfig
+index ca200d1f310a..c05d5d20eebf 100644
+--- a/drivers/watchdog/Kconfig
++++ b/drivers/watchdog/Kconfig
+@@ -864,7 +864,8 @@ config ALIM7101_WDT
  
- config STX104
- 	tristate "Apex Embedded Systems STX104 driver"
--	depends on PC104 && X86 && ISA_BUS_API
-+	depends on PC104 && X86
-+	select ISA_BUS_API
- 	select GPIOLIB
- 	help
- 	  Say yes here to build support for the Apex Embedded Systems STX104
-diff --git a/drivers/iio/counter/Kconfig b/drivers/iio/counter/Kconfig
-index 474e1ac4e7c0..bf1e559ad7cd 100644
---- a/drivers/iio/counter/Kconfig
-+++ b/drivers/iio/counter/Kconfig
-@@ -7,7 +7,8 @@ menu "Counters"
- 
- config 104_QUAD_8
- 	tristate "ACCES 104-QUAD-8 driver"
--	depends on PC104 && X86 && ISA_BUS_API
-+	depends on PC104 && X86
-+	select ISA_BUS_API
- 	help
- 	  Say yes here to build support for the ACCES 104-QUAD-8 quadrature
- 	  encoder counter/interface device family (104-QUAD-8, 104-QUAD-4).
-diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-index 965d5c0d2468..76db0768e454 100644
---- a/drivers/iio/dac/Kconfig
-+++ b/drivers/iio/dac/Kconfig
-@@ -195,7 +195,8 @@ config AD7303
- 
- config CIO_DAC
- 	tristate "Measurement Computing CIO-DAC IIO driver"
+ config EBC_C384_WDT
+ 	tristate "WinSystems EBC-C384 Watchdog Timer"
 -	depends on X86 && ISA_BUS_API
-+	depends on X86 && (ISA_BUS || PC104)
++	depends on X86
 +	select ISA_BUS_API
+ 	select WATCHDOG_CORE
  	help
- 	  Say yes here to build support for the Measurement Computing CIO-DAC
- 	  analog output device family (CIO-DAC16, CIO-DAC08, PC104-DAC06). The
+ 	  Enables watchdog timer support for the watchdog timer on the
 -- 
 2.15.1
+
