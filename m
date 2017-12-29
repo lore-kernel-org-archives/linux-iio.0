@@ -1,21 +1,29 @@
-Return-Path: <SRS0=ZhcG=DY=it-klinger.de=ak@kernel.org>
-Date: Thu, 28 Dec 2017 17:50:14 +0100
-From: Andreas Klinger <ak@it-klinger.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.99]:44136 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751833AbdL2Ss7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 29 Dec 2017 13:48:59 -0500
+Date: Fri, 29 Dec 2017 18:48:55 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 To: Stefan Tatschner <stefan.tatschner@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org
+Cc: Andreas Klinger <ak@it-klinger.de>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org
 Subject: Re: [PATCH v2] iio/bmp280-core.c: Read calibration data in probe
-Message-ID: <20171228165014.GA16433@arbeit>
-References: <20171212180610.GF2590@arbeit>
- <20171212203537.8204-1-stefan.tatschner@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Message-ID: <20171229184855.2604fd55@archlinux>
 In-Reply-To: <20171212203537.8204-1-stefan.tatschner@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+References: <20171212180610.GF2590@arbeit>
+        <20171212203537.8204-1-stefan.tatschner@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Stefan Tatschner <stefan.tatschner@gmail.com> schrieb am Tue, 12. Dec 21:35:
+On Tue, 12 Dec 2017 21:35:37 +0100
+Stefan Tatschner <stefan.tatschner@gmail.com> wrote:
+
 > This patch affects BME280 and BMP280. The readout of the calibration
 > data is moved to the probe function. Each sensor data access triggered
 > reading the full calibration data before this patch. According to the
@@ -28,8 +36,20 @@ Stefan Tatschner <stefan.tatschner@gmail.com> schrieb am Tue, 12. Dec 21:35:
 > some odd casts in the compensation formulas.
 > 
 > Signed-off-by: Stefan Tatschner <stefan.tatschner@gmail.com>
+One minor inline. Will fix whilst applying as it's just comment syntax.
 
-Tested-by: Andreas Klinger <ak@it-klinger.de>
+This was headache inducing to check.  Glad you got to write it ;)
+
+I've also dropped the entropy add that was in here. It should be proposed
+as a separate patch rather than in here. Particularly as it isn't mentioned
+in the commit message.
+
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to play with it.
+
+Thanks,
+
+Jonathan
 
 > ---
 > 
@@ -144,6 +164,11 @@ Tested-by: Andreas Klinger <ak@it-klinger.de>
 > +	calib->P9 = le16_to_cpu(p_buf[P9]);
 > +
 > +	/* Read humidity calibration values.
+/*
+ * Read humidity
+
+If this is all I find I'll fix it whilst applying.
+
 > +	 * Due to some odd register addressing we cannot just
 > +	 * do a big bulk read. Instead, we have to read each Hx
 > +	 * value separately and sometimes do some bit shifting...
@@ -356,19 +381,4 @@ Tested-by: Andreas Klinger <ak@it-klinger.de>
 >  		if (ret < 0) {
 >  			dev_err(data->dev,
 >  				"failed to read calibration coefficients\n");
-> -- 
-> 2.15.1
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
--- 
-Andreas Klinger
-Grabenreith 27
-84508 Burgkirchen
-+49 8623 919966
-ak@it-klinger.de
-www.it-klinger.de
-www.grabenreith.de
