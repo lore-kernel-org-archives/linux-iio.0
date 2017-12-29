@@ -1,89 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yb0-f196.google.com ([209.85.213.196]:39070 "EHLO
-        mail-yb0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751842AbdL2UNx (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 29 Dec 2017 15:13:53 -0500
+Received: from mail-yw0-f194.google.com ([209.85.161.194]:41787 "EHLO
+        mail-yw0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751385AbdL2UOy (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 29 Dec 2017 15:14:54 -0500
 From: William Breathitt Gray <vilhelm.gray@gmail.com>
 To: linus.walleij@linaro.org
 Cc: mail@maciej.szmigiero.name, linux@roeck-us.net,
         linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
         linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
         William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v2 3/5] gpio: Change ISA_BUS_API dependency to selection
-Date: Fri, 29 Dec 2017 15:13:46 -0500
-Message-Id: <1534276cb63d1e9e6dd139b4edceedbe728f65f5.1514578085.git.vilhelm.gray@gmail.com>
+Subject: [PATCH v2 4/5] isa: Remove ISA_BUS_API selection for ISA_BUS
+Date: Fri, 29 Dec 2017 15:14:46 -0500
+Message-Id: <bc33320887f448b772004e7c5d97322abb8cae0b.1514578085.git.vilhelm.gray@gmail.com>
 In-Reply-To: <cover.1514578085.git.vilhelm.gray@gmail.com>
 References: <cover.1514578085.git.vilhelm.gray@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The ISA_BUS_API Kconfig option enables the compilation of the ISA bus
-driver. The ISA bus driver does not perform any hardware interaction,
-and is instead just a thin layer of software abstraction to eliminate
-boilerplate code common to ISA-style device drivers. Since ISA_BUS_API
-has no dependencies and does not jeopardize the integrity of the system
-when enabled, drivers should select it when the ISA bus driver
-functionality is needed.
+ISA_BUS_API is selected by drivers themselves when necessary. The
+ISA_BUS Kconfig option is now simply a mask for true ISA device drivers
+and relevant configuration. For now, the ISA_BUS Kconfig option is only
+available for X86, but may be added for other arch builds in the future
+if the need arises.
 
-Cc: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- drivers/gpio/Kconfig | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+ arch/x86/Kconfig | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
-index 395669bfcc26..36ad9ce3dc58 100644
---- a/drivers/gpio/Kconfig
-+++ b/drivers/gpio/Kconfig
-@@ -590,7 +590,8 @@ menu "Port-mapped I/O GPIO drivers"
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 8eed3f94bfc7..5478c5beb302 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -2608,11 +2608,13 @@ config PCI_CNB20LE_QUIRK
+ source "drivers/pci/Kconfig"
  
- config GPIO_104_DIO_48E
- 	tristate "ACCES 104-DIO-48E GPIO support"
--	depends on PC104 && ISA_BUS_API
-+	depends on PC104
-+	select ISA_BUS_API
- 	select GPIOLIB_IRQCHIP
+ config ISA_BUS
+-	bool "ISA-style bus support on modern systems" if EXPERT
+-	select ISA_BUS_API
++	bool "ISA bus support on modern systems" if EXPERT
  	help
- 	  Enables GPIO support for the ACCES 104-DIO-48E series (104-DIO-48E,
-@@ -600,7 +601,8 @@ config GPIO_104_DIO_48E
+-	  Enables ISA-style drivers on modern systems. This is necessary to
+-	  support PC/104 devices on X86_64 platforms.
++	  Expose ISA bus device drivers and options available for selection and
++	  configuration. Enable this option if your target machine has an ISA
++	  bus. ISA is an older system, displaced by PCI and newer bus
++	  architectures -- if your target machine is modern, it probably does
++	  not have an ISA bus.
  
- config GPIO_104_IDIO_16
- 	tristate "ACCES 104-IDIO-16 GPIO support"
--	depends on PC104 && ISA_BUS_API
-+	depends on PC104
-+	select ISA_BUS_API
- 	select GPIOLIB_IRQCHIP
- 	help
- 	  Enables GPIO support for the ACCES 104-IDIO-16 family (104-IDIO-16,
-@@ -611,7 +613,8 @@ config GPIO_104_IDIO_16
+ 	  If unsure, say N.
  
- config GPIO_104_IDI_48
- 	tristate "ACCES 104-IDI-48 GPIO support"
--	depends on PC104 && ISA_BUS_API
-+	depends on PC104
-+	select ISA_BUS_API
- 	select GPIOLIB_IRQCHIP
- 	help
- 	  Enables GPIO support for the ACCES 104-IDI-48 family (104-IDI-48A,
-@@ -631,7 +634,8 @@ config GPIO_F7188X
- 
- config GPIO_GPIO_MM
- 	tristate "Diamond Systems GPIO-MM GPIO support"
--	depends on PC104 && ISA_BUS_API
-+	depends on PC104
-+	select ISA_BUS_API
- 	help
- 	  Enables GPIO support for the Diamond Systems GPIO-MM and GPIO-MM-12.
- 
-@@ -700,7 +704,7 @@ config GPIO_TS5500
- 
- config GPIO_WS16C48
- 	tristate "WinSystems WS16C48 GPIO support"
--	depends on ISA_BUS_API
-+	select ISA_BUS_API
- 	select GPIOLIB_IRQCHIP
- 	help
- 	  Enables GPIO support for the WinSystems WS16C48. The base port
 -- 
 2.15.1
 
