@@ -1,60 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:35020 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751775AbdL2Rzw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 29 Dec 2017 12:55:52 -0500
-Date: Fri, 29 Dec 2017 17:55:47 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: venkat.prashanth2498@gmail.com
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 4/4] Drivers:iio:adc: else is not generally useful after
- a break or return
-Message-ID: <20171229175547.206795de@archlinux>
-In-Reply-To: <1514566389-3485-1-git-send-email-venkat.prashanth2498@gmail.com>
-References: <1514566389-3485-1-git-send-email-venkat.prashanth2498@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from mail-yw0-f196.google.com ([209.85.161.196]:46110 "EHLO
+        mail-yw0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751842AbdL2UNR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 29 Dec 2017 15:13:17 -0500
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: linus.walleij@linaro.org
+Cc: mail@maciej.szmigiero.name, linux@roeck-us.net,
+        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH v2 0/5] Change ISA_BUS_API dependency to selection
+Date: Fri, 29 Dec 2017 15:13:10 -0500
+Message-Id: <cover.1514578085.git.vilhelm.gray@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 29 Dec 2017 22:23:09 +0530
-venkat.prashanth2498@gmail.com wrote:
+Changes in v2:
+  - Remove select ISA_BUS_API line from ISA_BUS Kconfig option
+  - Update ISA_BUS help text to reflect updated use
+  - Add explicit EXPERT dependency for PC104 Kconfig option
 
-> From: Venkat Prashanth B U <venkat.prashanth2498@gmail.com>
-> 
-> Fixes checkpatch warnings:
-> WARNING: else is not generally useful after a break or return
-> 
-> Signed-off-by: Venkat Prashanth B U <venkat.prashanth2498@gmail.com>
+The ISA_BUS_API Kconfig option enables the compilation of the ISA bus
+driver. The ISA bus driver does not perform any hardware interaction,
+and is instead just a thin layer of software abstraction to eliminate
+boilerplate code common to ISA-style device drivers. Since ISA_BUS_API
+has no dependencies and does not jeopardize the integrity of the system
+when enabled, drivers should select it when the ISA bus driver
+functionality is needed.
 
-Please then run checkpatch on the result + ideally sparse / smatch.
+Originally, when the ISA_BUS_API Kconfig option was introduced, it
+served a dual-purpose of masking drivers ISA-style devices not commonly
+found for desktop systems, such as the PC/104 device drivers. This
+secondary semantic was inappropriate for the ISA_BUS_API option, and
+proper masking of these device drivers is now accomplished via dedicated
+Kconfig options such as CONFIG_PC104.
 
-The result of this is wrong indentation.
+Linus, please pickup this entire patchset through your GPIO subsystem
+tree; a recursive dependency error is present if these patches are
+cherry-picked (see https://lkml.org/lkml/2017/12/26/235), so they should
+be merged together in the same tree.
 
-Jonathan
+Maciej, this patchset resolves the recursive dependency issue you
+encountered, so now you should be able to submit your Winbond GPIO
+driver with the ISA_BUS_API selection as desired.
 
-> ---
->  drivers/iio/adc/at91_adc.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-> index 7b40925..da18c04 100644
-> --- a/drivers/iio/adc/at91_adc.c
-> +++ b/drivers/iio/adc/at91_adc.c
-> @@ -939,7 +939,6 @@ static int at91_adc_probe_dt(struct at91_adc_state *st,
->  	/* Check if touchscreen is supported. */
->  	if (st->caps->has_ts)
->  		return at91_adc_probe_dt_ts(node, st, &idev->dev);
-> -	else
->  		dev_info(&idev->dev, "not support touchscreen in the adc compatible string.\n");
-> 
->  	return 0;
-> --
-> 1.9.1
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+William Breathitt Gray (5):
+  iio: Change ISA_BUS_API dependency to selection
+  watchdog: Change ISA_BUS_API dependency to selection
+  gpio: Change ISA_BUS_API dependency to selection
+  isa: Remove ISA_BUS_API selection for ISA_BUS
+  pc104: Add EXPERT dependency for PC104 Kconfig option
+
+ arch/x86/Kconfig            | 10 ++++++----
+ drivers/gpio/Kconfig        | 14 +++++++++-----
+ drivers/iio/adc/Kconfig     |  3 ++-
+ drivers/iio/counter/Kconfig |  3 ++-
+ drivers/iio/dac/Kconfig     |  3 ++-
+ drivers/watchdog/Kconfig    |  3 ++-
+ init/Kconfig                |  2 +-
+ 7 files changed, 24 insertions(+), 14 deletions(-)
+
+-- 
+2.15.1
 
