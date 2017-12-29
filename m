@@ -1,51 +1,35 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f194.google.com ([209.85.161.194]:44831 "EHLO
-        mail-yw0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751304AbdL2UPI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 29 Dec 2017 15:15:08 -0500
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: linus.walleij@linaro.org
-Cc: mail@maciej.szmigiero.name, linux@roeck-us.net,
-        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
-        William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v2 5/5] pc104: Add EXPERT dependency for PC104 Kconfig option
-Date: Fri, 29 Dec 2017 15:14:59 -0500
-Message-Id: <5c573c758e07ee9539045c1b062b9bab1ad1669c.1514578085.git.vilhelm.gray@gmail.com>
-In-Reply-To: <cover.1514578085.git.vilhelm.gray@gmail.com>
-References: <cover.1514578085.git.vilhelm.gray@gmail.com>
+Received: from mail-wr0-f193.google.com ([209.85.128.193]:42569 "EHLO
+        mail-wr0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750971AbdL2XdR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 29 Dec 2017 18:33:17 -0500
+Received: by mail-wr0-f193.google.com with SMTP id w107so16861578wrb.9
+        for <linux-iio@vger.kernel.org>; Fri, 29 Dec 2017 15:33:16 -0800 (PST)
+From: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org
+Subject: [PATCH v2 0/2] add regmap API support to hts221 iio driver
+Date: Sat, 30 Dec 2017 00:33:03 +0100
+Message-Id: <cover.1514588903.git.lorenzo.bianconi@redhat.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-PC/104 device driver Kconfig options previously had an implicit EXPERT
-dependency by way of an explicit ISA_BUS_API dependency. Now that these
-driver Kconfig options select ISA_BUS_API rather than depend on it, the
-PC104 Kconfig option should have an explicit EXPERT dependency.
+Changes since v1:
+- add missing flag to read_flag_mask in hts221_spi_regmap_config
+- drop hts221_write_with_mask() and always use regmap_update_bits()
 
-The PC/104 form factor and bus architecture are common in embedded
-and specialized systems, but uncommon in typical desktop setups. For
-this reason, it is best to mask these devices and configurations via the
-EXPERT Kconfig option because the majority of users will never need to
-concern themselves with PC/104.
+Lorenzo Bianconi (2):
+  iio: humidity: hts221: move common code in hts221_core
+  iio: humidity: hts221: add regmap API support
 
-Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
----
- init/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/humidity/Kconfig         |   2 +
+ drivers/iio/humidity/hts221.h        |  22 +-----
+ drivers/iio/humidity/hts221_buffer.c |  37 +++++-----
+ drivers/iio/humidity/hts221_core.c   | 127 +++++++++++++++--------------------
+ drivers/iio/humidity/hts221_i2c.c    |  76 +++++----------------
+ drivers/iio/humidity/hts221_spi.c    |  93 +++++--------------------
+ 6 files changed, 115 insertions(+), 242 deletions(-)
 
-diff --git a/init/Kconfig b/init/Kconfig
-index 2934249fba46..227ca1300d1b 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -1420,7 +1420,7 @@ config PERF_USE_VMALLOC
- 	  See tools/perf/design.txt for details
- 
- config PC104
--	bool "PC/104 support"
-+	bool "PC/104 support" if EXPERT
- 	help
- 	  Expose PC/104 form factor device drivers and options available for
- 	  selection and configuration. Enable this option if your target
 -- 
-2.15.1
+2.13.6
 
