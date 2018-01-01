@@ -1,364 +1,532 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:45174 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:42496 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751060AbeANKro (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 14 Jan 2018 05:47:44 -0500
-Date: Sun, 14 Jan 2018 10:47:39 +0000
+        id S1751220AbeAAJhM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 1 Jan 2018 04:37:12 -0500
+Date: Mon, 1 Jan 2018 09:37:08 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Ludovic Desroches <ludovic.desroches@microchip.com>
-Cc: Eugen Hristev <eugen.hristev@microchip.com>,
-        <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@free-electrons.com>,
-        <linux-iio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-input@vger.kernel.org>, <dmitry.torokhov@gmail.com>
-Subject: Re: [PATCH 12/14] iio: adc: at91-sama5d2_adc: support for position
- and pressure channels
-Message-ID: <20180114104739.3f0b50c5@archlinux>
-In-Reply-To: <20180108141252.GC2425@rfolt0960.corp.atmel.com>
-References: <1513955241-10985-1-git-send-email-eugen.hristev@microchip.com>
-        <1513955241-10985-13-git-send-email-eugen.hristev@microchip.com>
-        <20171229170236.06bf6394@archlinux>
-        <25045512-f372-3f25-e84f-ed809db9dde3@microchip.com>
-        <20180106150537.684345f3@archlinux>
-        <20180108141252.GC2425@rfolt0960.corp.atmel.com>
+To: Milan Stevanovic <milan.o.stevanovic@gmail.com>
+Cc: Philippe Ombredanne <pombredanne@nexb.com>,
+        LKML <linux-kernel@vger.kernel.org>, linux-iio@vger.kernel.org,
+        Michael Hennerich <hennerich@blackfin.uclinux.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH] iio: adc: add driver for ti adc081s/adc101s/adc121s
+Message-ID: <20180101093708.133de629@archlinux>
+In-Reply-To: <daada0f7-53f3-005f-0dc1-52c13cf26bf9@gmail.com>
+References: <1513984753-3040-1-git-send-email-milan.o.stevanovic@gmail.com>
+        <CAOFm3uFn+z+ouTNM5HOw3FEgBhW3T4WiPRwtPuwapq_m4wHWKQ@mail.gmail.com>
+        <6ac417c6-b9d6-8aa6-c998-5a729a512434@gmail.com>
+        <CAOFm3uH+QCKMmkrRNYv0-8ibwPZ5Wobg9EK8dWW5ot0sU5j-7w@mail.gmail.com>
+        <019cfe3e-8d13-8200-393e-621df6c71375@gmail.com>
+        <20171229155811.0a1df324@archlinux>
+        <daada0f7-53f3-005f-0dc1-52c13cf26bf9@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 8 Jan 2018 15:12:52 +0100
-Ludovic Desroches <ludovic.desroches@microchip.com> wrote:
+On Sat, 30 Dec 2017 15:53:03 +0100
+Milan Stevanovic <milan.o.stevanovic@gmail.com> wrote:
 
-> Hi Jonathan, Eugen,
+> On 12/29/2017 04:58 PM, Jonathan Cameron wrote:
 > 
-> On Sat, Jan 06, 2018 at 03:05:37PM +0000, Jonathan Cameron wrote:
-> > On Thu, 4 Jan 2018 17:17:54 +0200
-> > Eugen Hristev <eugen.hristev@microchip.com> wrote:
-> >   
-> > > On 29.12.2017 19:02, Jonathan Cameron wrote:  
-> > > > On Fri, 22 Dec 2017 17:07:19 +0200
-> > > > Eugen Hristev <eugen.hristev@microchip.com> wrote:
-> > > >     
-> > > >> The ADC IP supports position and pressure measurements for a touchpad
-> > > >> connected on channels 0,1,2,3 for a 4-wire touchscreen with pressure
-> > > >> measurement support.
-> > > >> Using the inkern API, a driver can request a trigger and read the
-> > > >> channel values from the ADC.
-> > > >> The implementation provides a trigger named "touch" which can be
-> > > >> connected to a consumer driver.
-> > > >> Once a driver connects and attaches a pollfunc to this trigger, the
-> > > >> configure trigger callback is called, and then the ADC driver will
-> > > >> initialize pad measurement.
-> > > >> First step is to enable touchscreen 4wire support and enable
-> > > >> pen detect IRQ.
-> > > >> Once a pen is detected, a periodic trigger is setup to trigger every
-> > > >> 2 ms (e.g.) and sample the resistive touchscreen values. The trigger poll
-> > > >> is called, and the consumer driver is then woke up, and it can read the
-> > > >> respective channels for the values : X, and Y for position and pressure
-> > > >> channel.
-> > > >> Because only one trigger can be active in hardware in the same time,
-> > > >> while touching the pad, the ADC will block any attempt to use the
-> > > >> triggered buffer. Same, conversions using the software trigger are also
-> > > >> impossible (since the periodic trigger is setup).
-> > > >> If some driver wants to attach while the trigger is in use, it will
-> > > >> also fail.
-> > > >> Once the pen is not detected anymore, the trigger is free for use (hardware
-> > > >> or software trigger, with or without DMA).
-> > > >> Channels 0,1,2 and 3 are unavailable if a touchscreen is enabled.
-> > > >>
-> > > >> Some parts of this patch are based on initial original work by
-> > > >> Mohamed Jamsheeth Hajanajubudeen and Bandaru Venkateswara Swamy
-> > > >>    
-> > > > OK, so comments inline.
-> > > > 
-> > > > What I'm missing currently though is an explanation of why the slightly
-> > > > more standard arrangement of using a callback buffer doesn't work here.
-> > > > The only addition I think you need to do that is to allow a consumer to
-> > > > request a particular trigger.  I also think some of the other provisions
-> > > > could be handled using standard features and slightly reducing the flexibility.
-> > > > I don't know for example if it's useful to allow other channels to be
-> > > > read when touch is not in progress or not.
-> > > > 
-> > > > So restrictions:
-> > > > 
-> > > > 1. Touch screen channels can only be read when touch is enabled.
-> > > >   - use the available_scan_masks to control this. Or the callback that lets
-> > > >     you do the same dynamically.
-> > > > 2. You need to push these channels to your consumer driver.
-> > > >   - register a callback buffer rather than jumping through the hoops to
-> > > >     insert your own pollfunc.  That will call a function in your
-> > > >     consumer, providing the data from the 3 channels directly.
-> > > > 3. You need to make sure it is using the right driver.  For that you
-> > > >     will I think need a new interface.
-> > > > 
-> > > > Various other comments inline. I may well be missing something as this is
-> > > > a fair bit of complex code to read - if so then next version should have
-> > > > a clear cover letter describing why this more standard approach can't be
-> > > > used.    
-> > > 
-> > > Hello Jonathan and thanks for the review of my patch series,
-> > > 
-> > > before starting and working over the required modifications and 
-> > > suggestions that you sent me, I want to be a little more explicit about 
-> > > the design of my implementation.
-> > > Hope this will clarify some things, and maybe I can as well understand 
-> > > better what you have in mind to support this feature set.
-> > > 
-> > > Why have I picked a pollfunction: We discussed a while back on the 
-> > > mailing list that you do not have an inkern mechanism to expose the 
-> > > triggers to other drivers, and that it may be a good idea to have it for 
-> > > such kind of actually multi function device, instead of having a MFD 
-> > > driver, an ADC driver, and an Input driver, all sharing the same 
-> > > register map, the same IRQ , etc, with some kind of synchronization to 
-> > > avoid stepping on each other for the hardware resource.  
-> > 
-> > No disagreement with that principle.
-> >   
-> > > So I considered to expose the trigger by attaching and detaching 
-> > > pollfunctions to it. Which is the main thing what we use a trigger for.  
-> > 
-> > Hmm. It's definitely one approach. But we do already have other drivers
-> > where the trigger is controlled by a consumer and to my mind that
-> > is a cleaner approach as it doesn't short cut the equivalent of
-> > doing it from userspace.
-> > 
-> > drivers/iio/potentiostat/lmp91000.c does something similar though
-> > for a rather different use. You need your consumer interface
-> > to get the handle to the trigger in this case
-> > (the lmp91000 is actually providing the trigger rather than
-> > consuming it).
-> > 
-> >   
-> > > 
-> > > So, what I had in mind, was to create a consumer driver that will 
-> > > request triggers from the IIO device just like other drivers request 
-> > > channels (part which is already done in IIO).
-> > > In order to do this I had to somehow wake up the consumer driver when 
-> > > new data was available from the touchscreen. So, having the IRQ only in 
-> > > the ADC device, and then on Pen detect and No pen detect just start or 
-> > > stop the periodic trigger, which needs to be polled. The magic part is 
-> > > that the consumer driver has a poll function already attached to this 
-> > > trigger, so the poll function is just called every time we have new 
-> > > data. The poll function is attached as an irq handler, and then we can 
-> > > reuse all the read_raw data by using a scheduled work from the consumer 
-> > > driver, to read the channels.  
-> > 
-> > If you had done this via a callback buffer the only difference is that
-> > the pollfunc would have been a standard one pulling the relevant channels
-> > and passing them on down to the buffer interface which could then decide
-> > what to do with them.
-> >   
-> > > To do this, the ADC registers a special trigger named "touch trigger" 
-> > > which is never enabled by the ADC driver. Instead, when a pollfunc is 
-> > > attached to it, the attach function will also configure it with enabled 
-> > > state.  
-> > 
-> > Whilst it might not make sense to enable it in the touch screen driver
-> > I'm not sure there is strictly any reason to prevent it being so used.
-> >   
-> > > In the ADC, this means to start the touchscreen functionality. If 
-> > > the touch is requested, it will standby and wait for pen detect IRQ.
-> > > Once we have pen detect, we can use a periodic trigger to sample the 
-> > > touch data, and poll the "touch" trigger. The consumer driver will wake 
-> > > up and schedule a work , that will use the standard read raw interface 
-> > > (inkern) that will read three virtual channels (position + pressure). 
-> > > They are not actual hardware channels, as the touch information is being 
-> > > received on channels 0,1,2,3, but reading these virtual channels will 
-> > > read from different registers inside the ADC IP ( x position, y 
-> > > position, pressure), do some computations on the data, and feed the 
-> > > consumer with the values , hiding the behind the scenes hardware 
-> > > specific calculations.  
-> > 
-> > I wouldn't worry about whether they are real channels or not. This
-> > is really similar to a differential ADC (some of those do the differential
-> > digitally). Light sensors often have a number of 'real' channels used
-> > to derive (via hideous non linear calculations) the illuminance as
-> > it's hard to build a light sensor with the same sensitivity as the human
-> > eye.  We have worse 'non real' channels as well such as activity channels
-> > on some the accelerometers that report if it thinks you are walking /
-> > running etc.
-> >    
-> > > After trigger is polled , the ADC will resume normal functionality, and 
-> > > the consumer driver will continue to sleep.  
-> > 
-> > So this is where I'm unsure.  Do you actually have a usecase where it
-> > makes the sense to read from the ADC only when there is no touch?  Any
-> > system doing that has an obvious denial of service attack - touch the
-> > screen.
-> >   
+> My comments are inline. I did not change patch, I am waiting comments from Lars-Peter and Michael
 > 
-> You're right. We have an issue in this case due to the hardware. Using
-> touchscreen has side effects on other channels. We can use only one
-> trigger for all the channels. The situation would have been better with
-> a trigger dedicated to the touchscreen.
+> > On Mon, 25 Dec 2017 21:42:38 +0100
+> > Milan Stevanovic <milan.o.stevanovic@gmail.com> wrote:
+> >
+> > +CC Lars-Peter and Michael to take a look and see if supporting this
+> > in the AD7746 driver is viable.  
+> Are you sure for AD7746, this is I2C device... Do you think ad7476.c?
+> >> On 12/25/2017 03:21 PM, Philippe Ombredanne wrote:  
+> >>> On Sun, Dec 24, 2017 at 8:02 PM, Milan Stevanovic
+> >>> <milan.o.stevanovic@gmail.com> wrote:  
+> >>>> On 12/23/2017 03:13 PM, Philippe Ombredanne wrote:  
+> >>>>> Milan,
+> >>>>>
+> >>>>> On Sat, Dec 23, 2017 at 12:19 AM, Milan Stevanovic
+> >>>>> <milan.o.stevanovic@gmail.com> wrote:  
+> >>>>>> Signed-off-by: Milan Stevanovic <milan.o.stevanovic@gmail.com>  
+> >>>>> <snip>
+> >>>>>
+> >>>>> May be it is just me, but you may be missing a commit message?
+> >>>>>
+> >>>>> <snip>  
+> >>>> Yes... Sorry I missed this  
+> >>>>>> --- /dev/null
+> >>>>>> +++ b/drivers/iio/adc/ti-adc081s.c
+> >>>>>> @@ -0,0 +1,239 @@
+> >>>>>> +/*
+> >>>>>> + * TI ADC081S/ADC101S/ADC121S 8/10/12-bit ADC driver
+> >>>>>> + *
+> >>>>>> + *
+> >>>>>> + * This program is free software; you can redistribute it and/or modify
+> >>>>>> + * it under the terms of the GNU General Public License version 2 as
+> >>>>>> + * published by the Free Software Foundation.  
+> >>>>> Could you consider using an SPDX tag here as documented by Thomas in
+> >>>>> this patch set [1] ?
+> >>>>> This is the new thing for this end of of year and a must have for 2018!
+> >>>>>
+> >>>>> [1] https://lkml.org/lkml/2017/12/4/934  
+> >>>> Thanks for this... I added it...
+> >>>>
+> >>>> Best regards
+> >>>> Milan
+> >>>>
+> >>>>   From 039f53aa702bd524e53c61b0365d048e2624ef02 Mon Sep 17 00:00:00 2001
+> >>>> From: Milan Stevanovic <milan.o.stevanovic@gmail.com>
+> >>>> Date: Sat, 23 Dec 2017 00:06:32 +0100
+> >>>> Subject: [PATCH v2] iio: adc: add driver for ti adc081s/adc101s/adc121s
+> >>>>
+> >>>> Linux device driver for single-channel CMOS
+> >>>> 8/10/12-bit analog-to-digital converter with a
+> >>>> high-speed serial interface.
+> >>>>
+> >>>> Signed-off-by: Milan Stevanovic <milan.o.stevanovic@gmail.com>
+> >>>>
+> >>>> Changes in v2:
+> >>>>    - Add SPDX tag
+> >>>>    - Add correct git commit message  
+> >>> <snip>
+> >>>     
+> >>>> --- /dev/null
+> >>>> +++ b/drivers/iio/adc/ti-adc081s.c
+> >>>> @@ -0,0 +1,242 @@
+> >>>> +/*
+> >>>> + * Released under the GPLv2 only.
+> >>>> + * SPDX-License-Identifier: GPL-2.0
+> >>>> + *  
+> >>> The SPDX tag should be on the first line using a C++ style comment
+> >>> when in a .c file as explained in Thomas doc
+> >>> And when using an SPDx id, do no repeat a license notice: this would
+> >>> defeat the whole purpose of getting rid of boilerplate.
+> >>>     
+> >>>> +// SPDX-License-Identifier: GPL-2.0  
+> >> Thanks
+> >>
+> >> Best regards
+> >> Milan  
+> > Please don't do this - it makes the patch really hard to review (as it's
+> > not immediately obvious where the latest version is) and very tricky
+> > to apply.  New version, new email thread.  
 > 
-> At the moment, we have not really stated about the exclusive use or not
-> of the touchscreen. We suppose we can get some customers wanting to use
-> both touchscreen and ADC. Eugen tried to deal with this case but, as you
-> noticed, it can lead to DoS.
+> Yes, understand new patch version new email thread
+> 
+> 
+> >>   From 108841eb108275081958610f03d8c8b0da280666 Mon Sep 17 00:00:00 2001
+> >> From: Milan Stevanovic <milan.o.stevanovic@gmail.com>
+> >> Date: Sat, 23 Dec 2017 00:06:32 +0100
+> >> Subject: [PATCH v3] iio: adc: add driver for ti adc081s/adc101s/adc121s
+> >>
+> >> Linux device driver for single-channel CMOS
+> >> 8/10/12-bit analog-to-digital converter with a
+> >> high-speed serial interface.
+> >>
+> >> Signed-off-by: Milan Stevanovic <milan.o.stevanovic@gmail.com>
+> >>  
+> > Change log goes below the --- cut line.
+> >
+> > The point is that whilst this is interest during the review process it
+> > isn't typically of interest after the patch has been applied and text above
+> > the cut line ends up in the commit log for ever more.  
+> Ok... Clear...
+> 
+> > Hmm. You could probably easily add support for this to another simple
+> > spi 1 channel adc driver (ad7746 is probably best). There are a few
+> > things here that driver doesn't yet support, but should be easy to add
+> > them I think.
+> >
+> > Take a look at it and see what you think.  There are only so many
+> > ways to design a 'dumb' single channel SPI adc and I'd really like to avoid
+> > proliferating drivers just on the basis the devices are made by different
+> > companies.  (it took me a while to track down which was the simple
+> > SPI driver so I'm not surprised if you didn't see it!)  
+> I agree, it is confusing to find simple SPI driver for adc and there are 
+> for different companies.
+> ad7746 is I2C device. Do you think  ad7476.c?
 
-It's a restriction people aren't going to expect unfortunately...
+Doh.  There goes my short term memory :)
+ad7476 was indeed the one I meant.
 
-> 
-> > > We need to have a periodic trigger to sample the data because the actual 
-> > > analog to digital conversion inside the IP block needs to be triggered. 
-> > > The touchscreen data measurements cannot happen in hardware without 
-> > > being triggered. If I try with a hrtimer to get a periodic IRQ to just 
-> > > read the data, it will never be ready. The datasheet states that the 
-> > > touchscreen measurements "will be attached to the conversion sequence". 
-> > > So the periodic trigger is forcing a conversion sequence. This could be 
-> > > done with a software trigger as well, but why the hassle to start it 
-> > > every 2 milliseconds (or other time interval), if we can do it by 
-> > > periodic trigger ?  
-> > 
-> > Ah, one reason here would be to allow separate consumers to use the
-> > device. In that case you'd run with a periodic trigger all the time
-> > and have two buffers attached, the buffer_cb that is feeding your
-> > touchscreen and another buffer to deal with the other channels
-> > (presumably the standard one an IIO device has when using buffered
-> > interfaces).  
-> 
-> The issue is that we are sharing the periodic trigger so we have to use
-> the same period for both usage.
+> There are lot of spi adc on several places, inside 
+> drivers/staging/iio/adc and drivers/iio/adc
+> Most of the code in these different spi adc drivers are similar.
+> Maybe is possible to create one file with common code for all adc, if 
+> idea is good or if it possible.
 
-Whilst a somewhat irritating restriction, it's probably not disastrous for
-most ADC uses.
+Actually they aren't that similar.   Some are register based, some
+have no controls so you just read to get data.  There may be a few
+others that could be combined sensibly but it's not true of the vast
+majority. You can share a few lines here and there but not enough
+to overcome the fact that the drivers just became a lot less readable.
+
+We have looked at this in the past and it's not that easy to combine
+them.  So I'd start small and see if there are pairs which could
+be easily combined rather than going for a common spi ADC driver
+for everything.
 
 Jonathan
+
+> I did not update this patch, I am waiting to be  clear do we have new 
+> file or it will be part of some other driver.
+> Comments from Lars-Peter and Michael are more than welcome...
+> > Various comments inline.
+> >  
+> >> Changes in v2:
+> >>    - Add SPDX tag
+> >>    - Add correct git commit message
+> >>
+> >> Changes in v3:
+> >>    - C++ style comment for SPDX
+> >>    - update Kconfig file with name of devices
+> >>    - Add device tree txt file
+> >> ---
+> >>    .../devicetree/bindings/iio/adc/ti-adc081s.txt     |  18 ++
+> >>    drivers/iio/adc/Kconfig                            |  10 +
+> >>    drivers/iio/adc/Makefile                           |   1 +
+> >>    drivers/iio/adc/ti-adc081s.c                       | 238 +++++++++++++++++++++
+> >>    4 files changed, 267 insertions(+)
+> >>    create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc081s.txt
+> >>    create mode 100644 drivers/iio/adc/ti-adc081s.c
+> >>
+> >> diff --git a/Documentation/devicetree/bindings/iio/adc/ti-adc081s.txt b/Documentation/devicetree/bindings/iio/adc/ti-adc081s.txt
+> >> new file mode 100644
+> >> index 0000000..7d2a10d
+> >> --- /dev/null
+> >> +++ b/Documentation/devicetree/bindings/iio/adc/ti-adc081s.txt
+> >> @@ -0,0 +1,18 @@
+> >> +* Texas Instruments' ADC081S/ADC101S/ADC121S  
+> > As there is a new binding in here this needs to be cc'd to the
+> > device tree maintainers and the devicetree mailing list.
+> >
+> > It is simple enough that I can take it without their ack, but
+> > it is always good to give them the opportunity to comment!  
+> thanks, for next patch version I will add
+> >> +
+> >> +Required properties:
+> >> + - compatible: Should be one of
+> >> +	* "ti,adc081s"
+> >> +	* "ti,adc101s"
+> >> +	* "ti,adc121s"
+> >> + - reg: spi chip select number for the device
+> >> + - vref-supply: The regulator supply for ADC reference voltage
+> >> + - spi-max-frequency: Max SPI frequency to use (< 400000)
+> >> +
+> >> +Example:
+> >> +adc@0 {
+> >> +	compatible = "ti,adc081s";
+> >> +	reg = <0>;
+> >> +	vref-supply = <&vdd_supply>;
+> >> +	spi-max-frequency = <200000>;
+> >> +};
+> >> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> >> index ef86296..10366d6 100644
+> >> --- a/drivers/iio/adc/Kconfig
+> >> +++ b/drivers/iio/adc/Kconfig
+> >> @@ -701,6 +701,16 @@ config TI_ADC081C
+> >>    	  This driver can also be built as a module. If so, the module will be
+> >>    	  called ti-adc081c.
+> >>    
+> >> +config TI_ADC081S
+> >> +	tristate "Texas Instruments ADC081S/ADC101S/ADC121S family"
+> >> +	depends on SPI
+> >> +	help
+> >> +	  If you say yes here you get support for Texas Instruments
+> >> +	  ADC081S/ADC101S/ADC121S family ADC chips.
+> >> +
+> >> +	  This driver can also be built as a module. If so, the module will be
+> >> +	  called ti-adc081s.
+> >> +
+> >>    config TI_ADC0832
+> >>    	tristate "Texas Instruments ADC0831/ADC0832/ADC0834/ADC0838"
+> >>    	depends on SPI
+> >> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> >> index 9572c10..020fecf 100644
+> >> --- a/drivers/iio/adc/Makefile
+> >> +++ b/drivers/iio/adc/Makefile
+> >> @@ -65,6 +65,7 @@ obj-$(CONFIG_SUN4I_GPADC) += sun4i-gpadc-iio.o
+> >>    obj-$(CONFIG_STM32_ADC_CORE) += stm32-adc-core.o
+> >>    obj-$(CONFIG_STM32_ADC) += stm32-adc.o
+> >>    obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+> >> +obj-$(CONFIG_TI_ADC081S) += ti-adc081s.o
+> >>    obj-$(CONFIG_TI_ADC0832) += ti-adc0832.o
+> >>    obj-$(CONFIG_TI_ADC084S021) += ti-adc084s021.o
+> >>    obj-$(CONFIG_TI_ADC12138) += ti-adc12138.o
+> >> diff --git a/drivers/iio/adc/ti-adc081s.c b/drivers/iio/adc/ti-adc081s.c
+> >> new file mode 100644
+> >> index 0000000..e0db4fd
+> >> --- /dev/null
+> >> +++ b/drivers/iio/adc/ti-adc081s.c
+> >> @@ -0,0 +1,238 @@
+> >> +// SPDX-License-Identifier: GPL-2.0
+> >> +/*
+> >> + * TI ADC081S/ADC101S/ADC121S 8/10/12-bit ADC driver
+> >> + *
+> >> + * Linux device driver for single-channel CMOS
+> >> + * 8/10/12-bit analog-to-digital converter with a
+> >> + * high-speed serial interface.
+> >> + *
+> >> + * Datasheets:
+> >> + *	http://www.ti.com/lit/ds/symlink/adc081s021.pdf
+> >> + *	http://www.ti.com/lit/ds/symlink/adc101s021.pdf
+> >> + *	http://www.ti.com/lit/ds/symlink/adc121s021.pdf
+> >> + *
+> >> + */
+> >> +
+> >> +#include <linux/err.h>
+> >> +#include <linux/spi/spi.h>
+> >> +#include <linux/module.h>
+> >> +#include <linux/of.h>
+> >> +#include <linux/acpi.h>
+> >> +
+> >> +#include <linux/iio/iio.h>
+> >> +#include <linux/iio/buffer.h>  
+> > I don't think you are using anything from buffer.h yet.
+> >  
+> >> +#include <linux/regulator/consumer.h>
+> >> +
+> >> +struct adc081s {
+> >> +	struct spi_device *spi;
+> >> +	struct regulator *reg;
+> >> +	struct mutex lock;
+> >> +
+> >> +	/* 8, 10 or 12 */
+> >> +	int bits;
+> >> +};
+> >> +
+> >> +static int adc081s_read_raw(struct iio_dev *iio,
+> >> +			    struct iio_chan_spec const *channel, int *value,
+> >> +			    int *shift, long mask)
+> >> +{
+> >> +	struct adc081s *adc = iio_priv(iio);
+> >> +	int ret;
+> >> +	__be16 buf;
+> >> +
+> >> +	switch (mask) {
+> >> +	case IIO_CHAN_INFO_RAW:
+> >> +		mutex_lock(&adc->lock);
+> >> +		ret = spi_read(adc->spi, (void *) &buf, 2);  
+> > Unlikely many spi hosts will use DMA for such a small transfer but you never
+> > know.  spi_read passes the buf pointer straight through to the host driver
+> > which can then do dma.  As such, buf needs to be dma safe - that is it needs
+> > to be in in it's own cacheline.
+> >
+> > 2 ways fo doing this:
+> > 1) Locally allocate it on the heap and free it.  All stack allocations start
+> > on a new cacheline
+> > 2) Put it at the end of your adc801s structure and mark it __cacheline_aligned.
+> > The private data is very carefully padded on the end of struct iio_dev to ensure
+> > that any so marked fields will be at the start of a new cacheline.
+> >
+> > Option 2 preferred as it avoids lots of allocate and free cycles.
+> >  
+> >> +		mutex_unlock(&adc->lock);
+> >> +		if (ret)
+> >> +			return ret;
+> >> +		*value = (be16_to_cpu(buf) & 0x0FFF) >> (12 - adc->bits);
+> >> +		*value = sign_extend32(*value, channel->scan_type.realbits - 1);  
+> > It's not signed that I can see so why are we sign extending.
+> >  
+> >> +
+> >> +		return IIO_VAL_INT;
+> >> +
+> >> +	case IIO_CHAN_INFO_SCALE:
+> >> +		*value = regulator_get_voltage(adc->reg);
+> >> +		if (*value < 0)
+> >> +			return *value;
+> >> +
+> >> +		/* convert regulator output voltage to mV */
+> >> +		*value /= 1000;
+> >> +		*shift = adc->bits;
+> >> +
+> >> +		return IIO_VAL_FRACTIONAL_LOG2;
+> >> +
+> >> +	default:
+> >> +		break;
+> >> +	}
+> >> +
+> >> +	return -EINVAL;
+> >> +}
+> >> +
+> >> +#define ADCxx1S_CHAN(_bits) {					\
+> >> +	.type = IIO_VOLTAGE,					\
+> >> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+> >> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> >> +	.scan_type = {						\
+> >> +		.sign = 'u',					\
+> >> +		.realbits = (_bits),				\
+> >> +		.storagebits = 16,				\
+> >> +		.shift = 12 - (_bits),				\
+> >> +		.endianness = IIO_CPU,				\  
+> > These are only needed if you support buffered mode which your driver
+> > doesn't (yet).  For now just don't bother specifying them.
+> >  
+> >> +	},							\
+> >> +}
+> >> +
+> >> +#define DEFINE_ADCxx1S_CHANNELS(_name, _bits)				\
+> >> +	static const struct iio_chan_spec _name ## _channels[] = {	\
+> >> +		ADCxx1S_CHAN((_bits)),					\  
+> > Don't need the double brackets.
+> >  
+> >> +		IIO_CHAN_SOFT_TIMESTAMP(1),				\
+> >> +	}								\
+> >> +
+> >> +#define ADC081S_NUM_CHANNELS 2
+> >> +
+> >> +struct adcxx1s_model {
+> >> +	const struct iio_chan_spec *channels;
+> >> +	int bits;
+> >> +};
+> >> +
+> >> +#define ADCxx1S_MODEL(_name, _bits)					\
+> >> +	{								\
+> >> +		.channels = _name ## _channels,				\
+> >> +		.bits = (_bits),					\
+> >> +	}
+> >> +
+> >> +DEFINE_ADCxx1S_CHANNELS(adc081s,  8);  
+> > Usual convention is to have upper case XXs for wild
+> > cards.  Actually preferred to just use a part number.
+> > The chances of support being added to the driver for a part that does
+> > not work with these wild cards is very high.  As you have gone with
+> > ADC081S for the driver name, just that throughout.
+> >  
+> >> +DEFINE_ADCxx1S_CHANNELS(adc101s, 10);
+> >> +DEFINE_ADCxx1S_CHANNELS(adc121s, 12);
+> >> +
+> >> +/* Model ids are indexes in _models array */
+> >> +enum adcxx1s_model_id {
+> >> +	ADC081S = 0,
+> >> +	ADC101S = 1,
+> >> +	ADC121S = 2,
+> >> +};
+> >> +
+> >> +static struct adcxx1s_model adcxx1s_models[] = {
+> >> +	ADCxx1S_MODEL(adc081s,  8),
+> >> +	ADCxx1S_MODEL(adc101s, 10),
+> >> +	ADCxx1S_MODEL(adc121s, 12),
+> >> +};
+> >> +
+> >> +static const struct iio_info adc081s_info = {
+> >> +	.read_raw = adc081s_read_raw,
+> >> +};
+> >> +
+> >> +static int adc081s_probe(struct spi_device *spi)
+> >> +{
+> >> +	struct iio_dev *iio;
+> >> +	struct adc081s *adc;
+> >> +	struct adcxx1s_model *model;
+> >> +	int err;
+> >> +
+> >> +	if (ACPI_COMPANION(&spi->dev)) {
+> >> +		const struct acpi_device_id *ad_id;
+> >> +
+> >> +		ad_id = acpi_match_device(spi->dev.driver->acpi_match_table,
+> >> +					  &spi->dev);
+> >> +		if (!ad_id)
+> >> +			return -ENODEV;
+> >> +		model = &adcxx1s_models[ad_id->driver_data];
+> >> +	} else {
+> >> +		model = &adcxx1s_models[spi_get_device_id(spi)->driver_data];
+> >> +	}
+> >> +
+> >> +	iio = devm_iio_device_alloc(&spi->dev, sizeof(*adc));
+> >> +	if (!iio)
+> >> +		return -ENOMEM;
+> >> +
+> >> +	adc = iio_priv(iio);
+> >> +	adc->spi = spi;
+> >> +	adc->bits = model->bits;
+> >> +	mutex_init(&adc->lock);
+> >> +
+> >> +	adc->reg = devm_regulator_get(&spi->dev, "vref");
+> >> +	if (IS_ERR(adc->reg))
+> >> +		return PTR_ERR(adc->reg);
+> >> +
+> >> +	err = regulator_enable(adc->reg);
+> >> +	if (err < 0)
+> >> +		return err;
+> >> +
+> >> +	iio->dev.parent = &spi->dev;
+> >> +	iio->dev.of_node = spi->dev.of_node;
+> >> +	iio->name = dev_name(&spi->dev);
+> >> +	iio->modes = INDIO_DIRECT_MODE;
+> >> +	iio->info = &adc081s_info;
+> >> +
+> >> +	iio->channels = model->channels;
+> >> +	iio->num_channels = ADC081S_NUM_CHANNELS;
+> >> +
+> >> +	err = iio_device_register(iio);
+> >> +	if (err < 0)
+> >> +		goto err_regulator_disable;
+> >> +
+> >> +	spi_set_drvdata(spi, iio);
+> >> +
+> >> +	return 0;
+> >> +
+> >> +err_regulator_disable:
+> >> +	regulator_disable(adc->reg);
+> >> +
+> >> +	return err;
+> >> +}
+> >> +
+> >> +static int adc081s_remove(struct spi_device *spi)
+> >> +{
+> >> +	struct iio_dev *iio = spi_get_drvdata(spi);
+> >> +	struct adc081s *adc = iio_priv(iio);
+> >> +
+> >> +	iio_device_unregister(iio);
+> >> +	regulator_disable(adc->reg);
+> >> +
+> >> +	return 0;
+> >> +}
+> >> +
+> >> +static const struct spi_device_id adc081s_id[] = {
+> >> +	{ "adc081s", ADC081S },
+> >> +	{ "adc101s", ADC101S },
+> >> +	{ "adc121s", ADC121S },
+> >> +	{ }
+> >> +};
+> >> +MODULE_DEVICE_TABLE(spi, adc081s_id);
+> >> +
+> >> +#ifdef CONFIG_OF
+> >> +static const struct of_device_id adc081s_of_match[] = {
+> >> +	{ .compatible = "ti,adc081s" },
+> >> +	{ .compatible = "ti,adc101s" },
+> >> +	{ .compatible = "ti,adc121s" },
+> >> +	{ }
+> >> +};
+> >> +MODULE_DEVICE_TABLE(of, adc081s_of_match);
+> >> +#endif
+> >> +
+> >> +#ifdef CONFIG_ACPI
+> >> +static const struct acpi_device_id adc081s_acpi_match[] = {
+> >> +	{ "ADC081S", ADC081S },
+> >> +	{ "ADC101S", ADC101S },
+> >> +	{ "ADC121S", ADC121S },
+> >> +	{ }
+> >> +};
+> >> +MODULE_DEVICE_TABLE(acpi, adc081s_acpi_match);
+> >> +#endif
+> >> +
+> >> +static struct spi_driver adc081s_driver = {
+> >> +	.driver = {
+> >> +		.name = "adc081s",
+> >> +		.of_match_table = of_match_ptr(adc081s_of_match),
+> >> +		.acpi_match_table = ACPI_PTR(adc081s_acpi_match),
+> >> +	},
+> >> +	.probe = adc081s_probe,
+> >> +	.remove = adc081s_remove,
+> >> +	.id_table = adc081s_id,
+> >> +};
+> >> +module_spi_driver(adc081s_driver);
+> >> +
+> >> +MODULE_AUTHOR("Milan Stevanovic <milan.o.stevanovic@gmail.com>");
+> >> +MODULE_DESCRIPTION("Texas Instruments ADC081S/ADC101S/ADC121S driver");
+> >> +MODULE_LICENSE("GPL v2");  
 > 
-> Regards
 > 
-> Ludovic
-> 
-> > 
-> > The buffer demux would ensure the data from the right channels
-> > ends up in the right place.  It makes it look to the buffer
-> > consumer like it is the only thing using / controlling the data
-> > flow.
-> >   
-> > > Once we get the No pen IRQ, we stop the periodic trigger and it can be 
-> > > used in another purpose (software or external as of now in the driver, 
-> > > in the future we can add PWM trigger and Timer trigger)  
-> > 
-> > This case isn't really useful though as any other use is denied
-> > access when touch occurs.
-> > 
-> > I'll summarise what I think would work for this below.
-> >   
-> > > 
-> > > In short, the ADC in Sama5D2 also supports touchscreen, and in 
-> > > touchscreen mode , 4 of the channels are being used for this purpose. 
-> > > This however, doesn't stop the ADC to use the other channels . The 
-> > > hardware has 12 total single channels and they can be paired to have 6 
-> > > more differential channels. The only thing that is blocked is the 
-> > > trigger, but only if the pen is touching (when we start the periodic 
-> > > trigger to sample the touchscreen). If the pen is not touching, an 
-> > > external trigger or software trigger can be used without any issues (so 
-> > > why limit the functionality, if this is available from hardware ?). 
-> > > Because of the reason I discussed above (touchscreen sequence must be 
-> > > triggered), we cannot use another trigger in the same time.
-> > > 
-> > > 
-> > > I see your idea with the callback buffer and it's worth exploring. 
-> > > Mainly this series was to actually show you what I had in mind about 
-> > > supporting the resistive touchscreen, and to give you some actually 
-> > > working code/patch, so we can discuss based on real implementation, not 
-> > > just suppositions.  
-> > 
-> > That side of things is fine.
-> >   
-> > > 
-> > > You are right in many of the other comments that you said, and I will 
-> > > come up with a v2 to this series. For now, I need to know if this is a 
-> > > good or right direction in which I am going, or I should try to change 
-> > > all the mechanism to callback buffer ? Or maybe I am totally in a bad 
-> > > direction ?
-> > > The requirements are that the consumer driver needs to be somehow woke 
-> > > up for every new touch data available, and report to the input 
-> > > subsystem. As it was done before, the at91 old driver, just creates and 
-> > > registers an input device by itself, and then reports the position and 
-> > > touches. I was thinking that with this trigger consumer implementation, 
-> > > things can be better in terms of subsystem separation and support.
-> > > 
-> > > Thanks again and let me know of your thoughts,
-> > > 
-> > > Eugen  
-> > 
-> > So a couple of things come to mind on how I'd structure this.
-> > So what we have (very briefly)
-> > 
-> > No touch screen case:
-> > * Generic ADC using all sorts of different triggers
-> > 
-> > Touch screen only case:
-> > * Interrupt to indicate pen on / off
-> > * A need to do a periodic trigger of the device but only
-> > useful when touch is in progress.
-> > 
-> > Touch screen and other users:
-> > * Interrupt to indicate pen on / off
-> > * Periodic trigger needed for touchscreen when touch in progress.
-> > * Do not have denial of service on other channels.
-> > 
-> > First two cases are easy enough by having a magic trigger, third
-> > case is harder.
-> > If we have the touchscreen then I would drop support for direct access to
-> > to ADC channels whilst it's in use (so no sysfs - or emulate it if you
-> > really want it by stashing results from scans done when touch is in
-> > progress).
-> > 
-> > Have your touch screen channels just as normal additional channels,
-> > but only via the buffered interface (no _RAW attribute).
-> > If someone sets up to read them via buffered interface with
-> > a different trigger I think they'll get values - whether they
-> > are right is dependent (if I understand correctly) on whether
-> > there is a touch in progress.  So no harm done and it'll make
-> > the logic simpler.
-> > 
-> > The moment touch is opened and acquires the IIO channels
-> > fix the trigger (may need new interface) to the periodic one
-> > that you were enabling and disabling on touch.
-> > Things get dicey if there is an existing user so you may
-> > have to do it on driver probe rather than open of the input
-> > device if we effectively want touch to have the highest
-> > priority use of the ADC.
-> > 
-> > If other channels are enabled for buffered mode then note
-> > this in the driver and have the periodic trigger on all the
-> > time (to ensure they keep getting read)  This will pass
-> > garbage to your touch screen driver, but it'll remove it due
-> > to the pressure value being too low so no harm there.
-> > 
-> > Normal path will work for non touch channels (and in theory
-> > the touch ones if they are turned on) via IIO buffer
-> > interface.  It'll be restricted in form due to the needs of
-> > the touch driver, but better than nothing and should cover
-> > most usecases.
-> > 
-> > Now the interrupt on / off on touch bit becomes an optimization
-> > in the case of only the buffer_cb being attached.
-> > 
-> > I think that fits cleanly in the current IIO framework and
-> > looks more similar to our existing provider consumer approaches.
-> > 
-> > Still needs the hooks to get hold of the trigger though so
-> > as to be able to tell the ADC which one to use. So rather
-> > than being a trigger consumer interface, it's more of a trigger
-> > configuration interface..  Exact term doesn't matter though.
-> > 
-> > Jonathan
-> >   
-> > > 
-> > > 
-> > > 
-> > > [...]
-> > > --
-> > > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> > > the body of a message to majordomo@vger.kernel.org
-> > > More majordomo info at  http://vger.kernel.org/majordomo-info.html  
-> >   
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
