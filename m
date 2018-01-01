@@ -1,456 +1,1101 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:37310 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:38070 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751273AbeAAMmy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 1 Jan 2018 07:42:54 -0500
-Date: Mon, 1 Jan 2018 12:42:49 +0000
+        id S1751308AbeAAMsS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 1 Jan 2018 07:48:18 -0500
+Date: Mon, 1 Jan 2018 12:48:13 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: William Breathitt Gray <vilhelm.gray@gmail.com>
 Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
         benjamin.gaignard@linaro.org, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 06/11] docs: Add Simple Counter interface
- documentation
-Message-ID: <20180101124249.478a28bf@archlinux>
-In-Reply-To: <6a470b7e6576c6dcea7670d3b3f09e74368946e3.1513266127.git.vilhelm.gray@gmail.com>
+Subject: Re: [PATCH v4 08/11] counter: Introduce the Quadrature Counter
+ interface
+Message-ID: <20180101124813.662af396@archlinux>
+In-Reply-To: <1e181df0fa457813b2d5b97a63827c10da65eec3.1513266127.git.vilhelm.gray@gmail.com>
 References: <cover.1513266127.git.vilhelm.gray@gmail.com>
-        <6a470b7e6576c6dcea7670d3b3f09e74368946e3.1513266127.git.vilhelm.gray@gmail.com>
+        <1e181df0fa457813b2d5b97a63827c10da65eec3.1513266127.git.vilhelm.gray@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 14 Dec 2017 15:51:55 -0500
+On Thu, 14 Dec 2017 15:52:20 -0500
 William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
 
-> This patch adds high-level documentation about the Simple Counter
-> interface.
+> This patch introduces the Quadrature Counter interface. The Quadrature
+> Counter interface serves as an API to provide support for quadrature
+> encoder counter devices. The Quadrature Counter interface is built on
+> top of the Generic Counter interface.
+> 
+> A quadrature encoder counter device is a counter device that has a
+> quadrature pair of signals associated with each count value. Signals may
+> have a value of "low" or "high."
+> 
+> Signals may be represented by two possible states:
+> 
+>         QUAD_COUNTER_SIGNAL_LOW: "low"
+>         QUAD_COUNTER_SIGNAL_HIGH: "high"
+> 
+> With quadrature encoders, there types of encoding are typically used:
+> X1, X2, and X4; some quadrature encoders also offer a non-quadrature
+> mode (typically pulse-direction encoding).
+> 
+> The Quadrature Counter interface provides four count function modes:
+> 
+>         QUAD_COUNTER_FUNCTION_PULSE_DIRECTION: "pulse-direction"
+>         QUAD_COUNTER_FUNCTION_QUADRATURE_X1: "quadrature x1"
+>         QUAD_COUNTER_FUNCTION_QUADRATURE_X2: "quadrature x2"
+>         QUAD_COUNTER_FUNCTION_QUADRATURE_X4: "quadrature x4"
+> 
+> Since the Quadrature Counter interface utilizes the Generic Counter
+> interface underneath, all the expected functionality of the Generic
+> Counter interface such as sysfs attributes is exposed to userspace for
+> end user consumption. The Quadrature Counter interface serves as a
+> convenience API for supporting a common class of counter devices without
+> the need to manually configure the more cumbersome Generic Counter
+> interface for use.
+> 
+> In addition to the typical sysfs attributes of the Generic Counter
+> interface, the Quadrature Counter interface provides "direction"
+> attributes for each count value. These read-only attributes provide the
+> current direction of their respective quadrature encoding stream.
+> 
+> To use the Quadrature Counter interface, first create an array of
+> quad_counter_count structures to represent the desired counts and
+> signals of the counter device; the signal_a member of a
+> quad_counter_count structure should define the Channel A signal of the
+> respective quadrature pair, and similarly the signal_b member should
+> define Channel B. Next, allocate a quad_counter_device structure and
+> populate it with the desired driver callbacks and the quad_counter_count
+> array created earlier. Finally, register the counter by calling the
+> quad_counter_register function. The quad_counter_unregister function may
+> be used to unregistered a previously registered counter.
+> 
+> Memory-managed versions of quad_counter_register and
+> quad_counter_unregister functions are provided by the
+> devm_quad_counter_register and devm_quad_counter_unregister functions
+> respectively.
 > 
 > Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
-On small suggestion inline.
+
+Pretty much same few comments as for the simple counter so I haven't repeated
+here.
 
 Jonathan
 > ---
->  Documentation/driver-api/iio/index.rst          |   1 +
->  Documentation/driver-api/iio/simple-counter.rst | 393 ++++++++++++++++++++++++
->  2 files changed, 394 insertions(+)
->  create mode 100644 Documentation/driver-api/iio/simple-counter.rst
+>  drivers/iio/counter/Kconfig        |   4 +-
+>  drivers/iio/counter/Makefile       |   1 +
+>  drivers/iio/counter/quad-counter.c | 774 +++++++++++++++++++++++++++++++++++++
+>  include/linux/iio/counter.h        | 191 +++++++++
+>  4 files changed, 969 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/iio/counter/quad-counter.c
 > 
-> diff --git a/Documentation/driver-api/iio/index.rst b/Documentation/driver-api/iio/index.rst
-> index e6c5b75c2e03..60e17f16cfb8 100644
-> --- a/Documentation/driver-api/iio/index.rst
-> +++ b/Documentation/driver-api/iio/index.rst
-> @@ -16,3 +16,4 @@ Contents:
->     triggers
->     triggered-buffers
->     generic-counter
-> +   simple-counter
-> diff --git a/Documentation/driver-api/iio/simple-counter.rst b/Documentation/driver-api/iio/simple-counter.rst
+> diff --git a/drivers/iio/counter/Kconfig b/drivers/iio/counter/Kconfig
+> index 9d7dae137f9c..33fde25e5018 100644
+> --- a/drivers/iio/counter/Kconfig
+> +++ b/drivers/iio/counter/Kconfig
+> @@ -10,7 +10,9 @@ menuconfig COUNTER
+>  	  rudimentary support for counters and serves as building blocks to
+>  	  create more complex counter interfaces. The Simple Counter API
+>  	  provides support for simple hardware counter devices that have a
+> -	  one-to-one mapping between their Signals and Counts.
+> +	  one-to-one mapping between their Signals and Counts. The Quadrature
+> +	  Counter API provides support for quadrature counter devices that have
+> +	  Signals arranged as quadrature pairs associated to Counts.
+>  
+>  if COUNTER
+>  
+> diff --git a/drivers/iio/counter/Makefile b/drivers/iio/counter/Makefile
+> index febd2884b474..55f59e566d72 100644
+> --- a/drivers/iio/counter/Makefile
+> +++ b/drivers/iio/counter/Makefile
+> @@ -6,6 +6,7 @@
+>  
+>  obj-$(CONFIG_COUNTER) += counter.o
+>  counter-$(CONFIG_COUNTER) += generic-counter.o
+> +counter-$(CONFIG_COUNTER) += quad-counter.o
+>  counter-$(CONFIG_COUNTER) += simple-counter.o
+>  
+>  obj-$(CONFIG_104_QUAD_8)	+= 104-quad-8.o
+> diff --git a/drivers/iio/counter/quad-counter.c b/drivers/iio/counter/quad-counter.c
 > new file mode 100644
-> index 000000000000..fa34f689e99f
+> index 000000000000..74a738e4b515
 > --- /dev/null
-> +++ b/Documentation/driver-api/iio/simple-counter.rst
-> @@ -0,0 +1,393 @@
-> +========================
-> +Simple Counter Interface
-> +========================
-> +
-> +Introduction
-> +============
-> +
-> +The most basic counter device may be expressed as a single Count
-> +associated with a single Signal via a single Synapse. This is a popular
-> +type of Counter implemented by hardware devices, and also what commonly
-> +comes to mind when one thinks of a "counter device." This driver API
-> +provides a basic Counter interface and standard of interaction and
-> +exposure for these simple counter devices. The Simple Counter interface
-> +enables drivers to support and expose simple counter devices in a more
-> +apt and well-defined way, without the hassles and imprecisions of
-> +utilizing a more generic interface.
-> +
-> +Theory
-> +======
-> +
-> +The Simple Counter interface may be considered a subclass of the
-> +Generic Counter interface; the same paradigm core components apply:
-> +Counts, Signals, and Synapses. However, the Simple Counter interface
-> +goes a bit further and defines aspects of those core components to
-> +properly represent Simple Counter devices.
-> +
-> +The three core components of a Simple Counter:
-> +
-> +        COUNT
-> +        -----
-> +        A Count represents the count data for a set of Signals. The
-> +        count data for a Simple Counter is a signed integer representing
-> +        the accumulated count of Simple Signal action conditions.
-> +
-> +        A Count has a count function mode which represents the update
-> +        behavior for the count data. The following two count function
-> +        modes are possible for a Simple Count:
-> +
-> +                * Increase:
-> +                        Accumulated count is incremented.
-> +                * Decrease:
-> +                        Accumulated count is decremented.
-> +
-> +        A Simple Count has one associated Simple Signal.
-> +
-> +        SIGNAL
-> +        ------
-> +        A Signal represents a counter input data; this is the data that
-> +        is typically analyzed by the counter to determine the count
-> +        data. A Simple Signal represents a counter input line with two
-> +        possible states:
-> +
-> +                * Low
-> +                * High
-> +
-> +        A Simple Signal is associated to a Simple Count.
-
-Might be worth noting that there may be no visibility of this to software.
-
-> +
-> +        SYNAPSE
-> +        -------
-> +        A Synapse represents the association of a Signal with a
-> +        respective Count. Signal data affects respective Count data, and
-> +        the Synapse represents this relationship.
-> +
-> +        The Synapse action mode specifies the Signal data condition
-> +        which triggers the respective Count's count function evaluation
-> +        to update the count data. There are four possible action modes
-> +        for a Simple Counter:
-> +
-> +                * None:
-> +                        Signal does not trigger the count function.
-> +                * Rising Edge:
-> +                        Low state transitions to High state.
-> +                * Falling Edge:
-> +                        High state transitions to Low state.
-> +                * Both Edges:
-> +                        Any state transition.
-> +
-> +Paradigm
-> +========
-> +
-> +Simple Counter devices consist of a single Count associated with a
-> +single Signal via a single Synapse. Take for example a counter device
-> +which simply accumulates a count of rising edges on a source input line.
-> +
-> +        Count                Synapse        Signal
-> +        -----                -------        ------
-> ++---------------------+
-> +| Data: Count         |    Rising Edge     ________
-> +| Function: Increase  |  <-------------   / Source \
-> +|                     |                  ____________
-> ++---------------------+
-> +
-> +In this example, the Signal is a source input line with a pulsing
-> +voltage, while the Count is a persistent count value which is repeatedly
-> +incremented. The Signal is associated with the respective Count via a
-> +Synapse. The increase function is triggered by the Signal data condition
-> +specified by the Synapse -- in this case a rising edge condition on the
-> +voltage input line.
-> +
-> +In summary, the simple counter device existence and behavior is aptly
-> +represented by respective Count, Signal, and Synapse components: e.g. a
-> +rising edge condition triggers an increase function on an accumulating
-> +count datum.
-> +
-> +Userspace Interface
-> +===================
-> +
-> +Several sysfs attributes are generated by the Simple Counter interface,
-> +and reside under the /sys/bus/counter/devices/counterX directory, where
-> +counterX refers to the respective counter device. Please see
-> +Documentation/ABI/testing/sys-bus-counter-simple-sysfs for detailed
-> +information on each Simple Counter interface sysfs attribute.
-> +
-> +In addition, several sysfs attributes are generated by the underlying
-> +Generic Counter interface, and also reside under the
-> +/sys/bus/counter/devices/counterX directory, where counterX refers to
-> +the respective counter device. Please see
-> +Documentation/ABI/testing/sys-bus-counter-generic-sysfs for detailed
-> +information on each Generic Counter interface sysfs attribute.
-> +
-> +Through these sysfs attributes, programs and scripts may interact with
-> +the Simple Counter paradigm Counts, Signals, and Synapses of respective
-> +counter devices.
-> +
-> +Driver API
-> +==========
-> +
-> +Driver authors may utilize the Simple Counter interface in their code
-> +by including the include/linux/iio/counter.h header file. 
-
-I would have a separate header file for the simple counter that
-itself includes counter.h.  Thus devices not using simple counter don't
-get to see its functions etc.  You might not even build it for example.
-
-> This header
-> +file provides several core data structures and function prototypes for
-> +defining a simple counter.
-> +
-> +
-> +struct simple_counter_signal_ext
-> +--------------------------------
-> +
-> +This structure defines a Simple Counter Signal extension attribute.
-> +These attributes expose auxiliary configuration and functionality
-> +specific to the respective Simple Counter Signal.
-> +
-> +        name:   attribute name
-> +        read:   read callback for this attribute; may be NULL
-> +        write:  write callback for this attribute; may be NULL
-> +        priv:   data private to the driver
-> +
-> +struct simple_counter_signal
-> +----------------------------
-> +
-> +This structure defines a Simple Counter Signal component. Typically,
-> +this will correlate with an input channel on a physical counter device.
-> +This structure is the simplest of the Simple Counter paradigm core
-> +components to define with only two structure members which require
-> +explicit configuration:
-> +
-> +        id:             unique ID used to identify signal
-> +        name:           device-specific signal name
-> +        ext:            optional array of Simple Counter Signal
-> +                        extensions
-> +        num_ext:        number of Simple Counter Signal extensions
-> +                        specified in @ext
-> +        priv:           optional private data supplied by driver
-> +
-> +enum simple_counter_signal_level
-> +--------------------------------
-> +
-> +This enum defines enumeration constants to represent the possible Simple
-> +Signal data level states.
-> +
-> +        SIMPLE_COUNTER_SIGNAL_LOW:      Low
-> +        SIMPLE_COUNTER_SIGNAL_HIGH:     High
-> +
-> +enum simple_counter_function
-> +----------------------------
-> +
-> +This enum defines enumeration constants to represent the possible Simple
-> +Counter count function modes.
-> +
-> +        SIMPLE_COUNTER_FUNCTION_INCREASE:       Increase
-> +        SIMPLE_COUNTER_FUNCTION_DECREASE:       Decrease
-> +
-> +enum simple_counter_action
-> +--------------------------
-> +
-> +This enum defines enumeration constants to represent the possible Simple
-> +Counter action modes.
-> +
-> +        SIMPLE_COUNTER_ACTION_NONE:             None
-> +        SIMPLE_COUNTER_ACTION_RISING_EDGE:      Rising Edge
-> +        SIMPLE_COUNTER_ACTION_FALLING_EDGE:     Falling Edge
-> +        SIMPLE_COUNTER_ACTION_BOTH_EDGES:       Both Edges
-> +
-> +struct simple_counter_count_ext
-> +-------------------------------
-> +
-> +This structure defines a Simple Counter Count extension attribute. These
-> +attributes expose auxiliary configuration and functionality specific to
-> +the respective Simple Counter Count.
-> +
-> +        name:   attribute name
-> +        read:   read callback for this attribute; may be NULL
-> +        write:  write callback for this attribute; may be NULL
-> +        priv:   data private to the driver
-> +
-> +struct simple_counter_count
-> +---------------------------
-> +
-> +This structure defines a Simple Counter Count component. Typically, this
-> +will correlate with the read data (the "count" value) provided by a
-> +physical counter device. This structure requires the explicit
-> +configuration of an ID, name, and the Simple Signal associated with this
-> +Simple Count.
-> +
-> +        id:             unique ID used to identify Count
-> +        name:           device-specific Count name
-> +        function:       current function mode
-> +        action:         current action mode
-> +        signal:         associated signal
-> +        ext:            optional array of Simple Counter Count
-> +                        extensions
-> +        num_ext:        number of Simple Counter Count extensions
-> +                        specified in @ext
-> +        priv:           optional private data supplied by driver
-> +
-> +struct simple_counter_device_ext
-> +--------------------------------
-> +
-> +This structure defines a Simple Counter extension attribute. These
-> +attributes expose auxiliary configuration and functionality specific to
-> +the respective Simple Counter.
-> +
-> +        name:   attribute name
-> +        read:   read callback for this attribute; may be NULL
-> +        write:  write callback for this attribute; may be NULL
-> +        priv:   data private to the driver
-> +
-> +struct simple_counter_device
-> +----------------------------
-> +
-> +This is the main data structure for a Simple Counter device. Access to
-> +all respective Counts, Signals, and Synapses is possible from this
-> +structure. This structure requires the configuration of a name and
-> +Simple Counter Counts:
-> +
-> +        name:           name of the device
-> +        parent:         optional parent device providing the counters
-> +        signal_read:    read callback for Signal attribute; may be NULL.
-> +                        Returns 0 on success and negative error code on
-> +                        error. The respective Signal's returned level
-> +                        should be passed back via the level parameter.
-> +        signal_write:   write callback for Signal attribute; may be NULL
-> +        count_read:     read callback for Count attribute; may be NULL.
-> +                        Returns 0 on success and negative error code on
-> +                        error. The respective Count's returned value
-> +                        should be passed back via the val parameter.
-> +        count_write:    write callback for Count attribute; may be NULL
-> +        function_get:   function to get the current count function mode.
-> +                        Returns 0 on success and negative error code on
-> +                        error. The respective Count's returned function
-> +                        mode should be passed back via the function
-> +                        parameter.
-> +        function_set:   function to set the count function mode
-> +        action_get:     function to get the current action mode. Returns
-> +                        0 on success and negative error code on error.
-> +                        The respective Signal's returned action mode
-> +                        should be passed back via the action parameter.
-> +        action_set:     function to set the action mode
-> +        counts:         array of Simple Counter Counts
-> +        num_counts:     number of Simple Counter Counts specified in
-> +                        @counts
-> +        ext:            optional array of Simple Counter device
-> +                        extensions
-> +        num_ext:        number of Simple Counter device extensions
-> +                        specified in @ext
-> +        priv:           optional private data supplied by driver
-> +
-> +Registration functions
-> +----------------------
-> +
-> +A simple counter device is registered to the system by passing the
-> +respective initialized simple_counter_device structure to the
-> +simple_counter_register function; similarly, the
-> +simple_counter_unregister function unregisters the respective
-> +Simple Counter. The devm_simple_counter_register and
-> +devm_simple_counter_unregister functions serve as device memory-managed
-> +versions of the simple_counter_register and simple_counter_unregister
-> +functions respectively.
-> +
-> +Implementation
-> +==============
-> +
-> +To use the Simple Counter interface, create an array of
-> +simple_counter_count structures to represent the desired Counts and
-> +Signals of the counter device. The simple_counter_count structure has a
-> +Simple Signal member that represents the associated Signal, so only the
-> +Simple Counts need to be explicited allocated -- the associated Simple
-> +Signal members are simply populated with the respective desired
-> +definitions. The defined simple_counter_count array may then be added
-> +to a simple_counter_device structure for registration to the system.
-> +
-> +     Simple Count                    Count               Signal
-> +     ------------                    -----               ------
-> ++---------------------+      +--------------------+
-> +| Data: Count         | ---> | Data: Count        |
-> +| Function: Increase  |      | Function: Increase |
-> +|                     |      +--------------------+
-> +|                     |
-> ++---------------------+                                 ________
-> +| Signal: Source      | ---------------------------->  / Source \
-> +|                     |                               ____________
-> ++---------------------+
-> +
-> +Driver callbacks should be provided to the simple_counter_device
-> +structure in order to communicate with the device: to read and write
-> +various Signals and Counts, and to set and get the "action mode" and
-> +"function mode" for various Synapses and Counts respectively.
-> +
-> +A defined simple_counter_device structure may be registered to the
-> +system by passing it to the simple_counter_register function, and
-> +unregistered by passing it to the simple_counter_unregister function.
-> +Similarly, the devm_simple_counter_register and
-> +devm_simple_counter_unregister functions may be used if device
-> +memory-managed registration is desired.
-> +
-> +Extension sysfs attributes can be created for auxiliary functionality
-> +and data by passing in defined simple_counter_device_ext,
-> +simple_counter_count_ext, and simple_counter_signal_ext structures. In
-> +these cases, the simple_counter_device_ext structure is used for global
-> +configuration of the respective Counter device, while the
-> +simple_counter_count_ext and simple_counter_signal_ext structures allow
-> +for auxiliary exposure and configuration of a specific Count or Signal
-> +respectively.
-> +
-> +Architecture
-> +============
-> +
-> +The Simple Counter interface is a subclass of the Generic Counter
-> +interface, and the Simple Counter interface functions serve as mappings
-> +onto the Generic Counter interface functions to simplify and aptly
-> +define support for simple counter devices.
-> +
-> +In this vein, the Generic Counter interface functions are ultimately
-> +called when the Simple Counter interface functions are utilized. For
-> +more information on the architecture of the Generic Counter interface,
-> +please refer to the Documentation/driver-api/iio/generic-counter.rst
-> +file.
-> +
-> +Simple Counter devices are registered to the system via the
-> +simple_counter_register function, and later removed via the
-> +simple_counter_unregister function. The simple_counter_register function
-> +will allocate a counter_device structure, populate it with the required
-> +Generic Counter structures and data required to represent the Simple
-> +Counter components, and register it to the system via a counter_register
-> +call.
-> +
-> +  _______________________       +-------------------------+
-> + / simple_counter_device \  --> | simple_counter_register |
-> +___________________________     +-------------------------+
-> +                                  |
-> +   +------------------------------+
-> +   |
-> +   V
-> +  ________________       +------------------+
-> + / counter_device \  --> | counter_register |
-> +____________________     +------------------+
-> +
-> +The signal_read/signal_write driver callbacks, the
-> +count_read/count_write and function_get/function_set driver callbacks,
-> +and the action_get/action_set driver callbacks are mapped to the
-> +allocated internal counter_device structure via appropriate hook
-> +functions.
-> +
-> +        Simple Counter  Remap Function                  Generic Counter
-> +        --------------  --------------                  ---------------
-> +
-> +        signal_read     simple_counter_signal_read      signal_read
-> +        signal_write    simple_counter_signal_write     signal_write
-> +        count_read      simple_counter_count_read       count_read
-> +        count_write     simple_counter_count_write      count_write
-> +        function_get    simple_counter_function_get     function_get
-> +        function_set    simple_counter_function_set     function_set
-> +        action_get      simple_counter_action_get       action_get
-> +        action_set      simple_counter_action_set       action_set
-> +
-> +This is how Generic Counter interface sysfs attributes are inherited and
-> +extended by the Simple Counter interface. If a driver callback is left
-> +undefined, then the respective read/write permission is left disabled
-> +for the relevant attributes.
-> +
-> +Similarly, simple_counter_device_ext, simple_counter_count_ext, and
-> +simple_counter_signal_ext structures are mapped to respective
-> +counter_device_ext, counter_count_ext, and counter_signal_ext structures
-> +via appropriate hook functions, and then added to the allocated internal
-> +counter_device structure for registration.
+> +++ b/drivers/iio/counter/quad-counter.c
+> @@ -0,0 +1,774 @@
+> +/*
+> + * Quadrature Counter interface
+> + * Copyright (C) 2017 William Breathitt Gray
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License, version 2, as
+> + * published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful, but
+> + * WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+> + * General Public License for more details.
+> + */
+> +#include <linux/device.h>
+> +#include <linux/err.h>
+> +#include <linux/export.h>
+> +#include <linux/gfp.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/slab.h>
+> +#include <linux/string.h>
+> +#include <linux/types.h>
+> +
+> +#include <linux/iio/counter.h>
+> +
+> +static const char *const quad_counter_signal_level_names[] = {
+> +	[QUAD_COUNTER_SIGNAL_LOW] = "low",
+> +	[QUAD_COUNTER_SIGNAL_HIGH] = "high"
+> +};
+> +
+> +static ssize_t quad_counter_signal_read(struct counter_device *counter_dev,
+> +	struct counter_signal *counter_sig, char *buf)
+> +{
+> +	struct quad_counter_device *const counter = counter_dev->priv;
+> +	struct quad_counter_signal *const signal = counter_sig->priv;
+> +	int err;
+> +	enum quad_counter_signal_level level;
+> +
+> +	err = counter->signal_read(counter, signal, &level);
+> +	if (err)
+> +		return err;
+> +
+> +	return scnprintf(buf, PAGE_SIZE, "%s\n",
+> +		quad_counter_signal_level_names[level]);
+> +}
+> +
+> +static ssize_t quad_counter_count_read(struct counter_device *counter_dev,
+> +	struct counter_count *counter_cnt, char *buf)
+> +{
+> +	struct quad_counter_device *const counter = counter_dev->priv;
+> +	struct quad_counter_count *const count = counter_cnt->priv;
+> +	int err;
+> +	long val;
+> +
+> +	err = counter->count_read(counter, count, &val);
+> +	if (err)
+> +		return err;
+> +
+> +	return scnprintf(buf, PAGE_SIZE, "%ld\n", val);
+> +}
+> +
+> +static ssize_t quad_counter_count_write(struct counter_device *counter_dev,
+> +	struct counter_count *counter_cnt, const char *buf, size_t len)
+> +{
+> +	struct quad_counter_device *const counter = counter_dev->priv;
+> +	struct quad_counter_count *const count = counter_cnt->priv;
+> +	int err;
+> +	long val;
+> +
+> +	err = kstrtol(buf, 0, &val);
+> +	if (err)
+> +		return err;
+> +
+> +	err = counter->count_write(counter, count, val);
+> +	if (err)
+> +		return err;
+> +
+> +	return len;
+> +}
+> +
+> +static int quad_counter_function_get(struct counter_device *counter_dev,
+> +	struct counter_count *counter_cnt, size_t *counter_func)
+> +{
+> +	int err;
+> +	struct quad_counter_device *const counter = counter_dev->priv;
+> +	struct quad_counter_count *const count = counter_cnt->priv;
+> +	enum quad_counter_function function;
+> +
+> +	err = counter->function_get(counter, count, &function);
+> +	if (err)
+> +		return err;
+> +
+> +	count->function = function;
+> +
+> +	*counter_func = function;
+> +
+> +	return 0;
+> +}
+> +
+> +static int quad_counter_function_set(struct counter_device *counter_dev,
+> +	struct counter_count *counter_cnt, size_t function)
+> +{
+> +	struct quad_counter_device *const counter = counter_dev->priv;
+> +	struct quad_counter_count *const count = counter_cnt->priv;
+> +	int err;
+> +
+> +	err = counter->function_set(counter, count, function);
+> +	if (err)
+> +		return err;
+> +
+> +	count->function = function;
+> +
+> +	return 0;
+> +}
+> +
+> +enum quad_counter_action {
+> +	QUAD_COUNTER_ACTION_NONE = 0,
+> +	QUAD_COUNTER_ACTION_RISING_EDGE,
+> +	QUAD_COUNTER_ACTION_FALLING_EDGE,
+> +	QUAD_COUNTER_ACTION_BOTH_EDGES
+> +};
+> +
+> +static int quad_counter_action_get(struct counter_device *counter_dev,
+> +	struct counter_count *counter_cnt, struct counter_synapse *counter_syn,
+> +	size_t *counter_act)
+> +{
+> +	int err;
+> +	struct quad_counter_device *const counter = counter_dev->priv;
+> +	struct quad_counter_count *const count = counter_cnt->priv;
+> +	enum quad_counter_function function;
+> +	enum quad_counter_direction dir;
+> +
+> +	err = counter->function_get(counter, count, &function);
+> +	if (err)
+> +		return err;
+> +
+> +	/* Default action mode */
+> +	*counter_act = QUAD_COUNTER_ACTION_NONE;
+> +
+> +	/* Determine action mode based on current count function mode */
+> +	switch (function) {
+> +	case QUAD_COUNTER_FUNCTION_PULSE_DIRECTION:
+> +		if (count->signal_a.id == counter_syn->signal->id)
+> +			*counter_act = QUAD_COUNTER_ACTION_RISING_EDGE;
+> +		break;
+> +	case QUAD_COUNTER_FUNCTION_QUADRATURE_X1:
+> +		if (count->signal_a.id == counter_syn->signal->id) {
+> +			err = counter->direction_get(counter, count, &dir);
+> +			if (err)
+> +				return err;
+> +
+> +			if (dir == QUAD_COUNTER_DIRECTION_FORWARD)
+> +				*counter_act = QUAD_COUNTER_ACTION_RISING_EDGE;
+> +			else
+> +				*counter_act = QUAD_COUNTER_ACTION_FALLING_EDGE;
+> +		}
+> +		break;
+> +	case QUAD_COUNTER_FUNCTION_QUADRATURE_X2:
+> +		if (count->signal_a.id == counter_syn->signal->id)
+> +			*counter_act = QUAD_COUNTER_ACTION_BOTH_EDGES;
+> +		break;
+> +	case QUAD_COUNTER_FUNCTION_QUADRATURE_X4:
+> +		*counter_act = QUAD_COUNTER_ACTION_BOTH_EDGES;
+> +		break;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static ssize_t quad_counter_signal_ext_read(struct counter_device *dev,
+> +	struct counter_signal *signal, void *priv, char *buf)
+> +{
+> +	const struct quad_counter_signal_ext *const ext = priv;
+> +	struct quad_counter_device *const counter = dev->priv;
+> +	struct quad_counter_signal *const quad_signal = signal->priv;
+> +
+> +	return ext->read(counter, quad_signal, ext->priv, buf);
+> +}
+> +
+> +static ssize_t quad_counter_signal_ext_write(struct counter_device *dev,
+> +	struct counter_signal *signal, void *priv, const char *buf, size_t len)
+> +{
+> +	const struct quad_counter_signal_ext *const ext = priv;
+> +	struct quad_counter_device *const counter = dev->priv;
+> +	struct quad_counter_signal *const quad_signal = signal->priv;
+> +
+> +	return ext->write(counter, quad_signal, ext->priv, buf, len);
+> +}
+> +
+> +static int quad_counter_counter_signal_ext_register(
+> +	const struct quad_counter_signal *const quad_signal,
+> +	struct counter_signal *const signal)
+> +{
+> +	const struct quad_counter_signal_ext *const quad_ext = quad_signal->ext;
+> +	const size_t num_ext = quad_signal->num_ext;
+> +	struct counter_signal_ext *ext;
+> +	size_t i;
+> +
+> +	/* Exit early if no extensions */
+> +	if (!quad_ext || !num_ext)
+> +		return 0;
+> +
+> +	/* Allocate space for counter_signal_ext array */
+> +	ext = kmalloc_array(num_ext, sizeof(*ext), GFP_KERNEL);
+> +	if (!ext)
+> +		return -ENOMEM;
+> +
+> +	/* Register quad_counter_signal_ext via counter_signal_ext */
+> +	for (i = 0; i < num_ext; i++) {
+> +		ext[i].name = quad_ext[i].name;
+> +		ext[i].read = (quad_ext[i].read) ?
+> +			quad_counter_signal_ext_read : NULL;
+> +		ext[i].write = (quad_ext[i].write) ?
+> +			quad_counter_signal_ext_write : NULL;
+> +		ext[i].priv = quad_ext + i;
+> +	}
+> +
+> +	/* Register Counter Signal extensions */
+> +	signal->ext = ext;
+> +	signal->num_ext = num_ext;
+> +
+> +	return 0;
+> +}
+> +
+> +static int quad_counter_counter_signals_register(
+> +	const struct quad_counter_device *const counter)
+> +{
+> +	struct counter_signal *signals;
+> +	const size_t num_counts = counter->num_counts;
+> +	const size_t num_signals = 2 * num_counts;
+> +	size_t i;
+> +	struct counter_signal *signal;
+> +	struct quad_counter_signal *quad_signal;
+> +	struct quad_counter_count *const counts = counter->counts;
+> +	int err;
+> +	struct counter_device *const counter_dev = counter->counter_dev;
+> +
+> +	/* Allocate space for signals array */
+> +	signals = kcalloc(num_signals, sizeof(*signals), GFP_KERNEL);
+> +	if (!signals)
+> +		return -ENOMEM;
+> +
+> +	/* Configure Signals */
+> +	for (i = 0; i < num_signals; i++) {
+> +		signal = signals + i;
+> +		if (i % 2)
+> +			quad_signal = &counts[i / 2].signal_b;
+> +		else
+> +			quad_signal = &counts[i / 2].signal_a;
+> +
+> +		signal->id = quad_signal->id;
+> +		signal->name = quad_signal->name;
+> +		signal->priv = quad_signal;
+> +
+> +		/* Register Counter Signal extensions */
+> +		err = quad_counter_counter_signal_ext_register(quad_signal,
+> +			signal);
+> +		if (err)
+> +			goto err_free_signals;
+> +	}
+> +
+> +	/* Register Signals to Counter device container */
+> +	counter_dev->signals = signals;
+> +	counter_dev->num_signals = num_signals;
+> +
+> +	return 0;
+> +
+> +err_free_signals:
+> +	while (i--)
+> +		kfree(signals[i].ext);
+> +	kfree(signals);
+> +	return err;
+> +}
+> +
+> +static const char *const quad_counter_function_names[] = {
+> +	[QUAD_COUNTER_FUNCTION_PULSE_DIRECTION] = "pulse-direction",
+> +	[QUAD_COUNTER_FUNCTION_QUADRATURE_X1] = "quadrature x1",
+> +	[QUAD_COUNTER_FUNCTION_QUADRATURE_X2] = "quadrature x2",
+> +	[QUAD_COUNTER_FUNCTION_QUADRATURE_X4] = "quadrature x4"
+> +};
+> +
+> +static const char *const quad_counter_action_names[] = {
+> +	[QUAD_COUNTER_ACTION_NONE] = "none",
+> +	[QUAD_COUNTER_ACTION_RISING_EDGE] = "rising edge",
+> +	[QUAD_COUNTER_ACTION_FALLING_EDGE] = "falling edge",
+> +	[QUAD_COUNTER_ACTION_BOTH_EDGES] = "both edges"
+> +};
+> +
+> +static int quad_counter_counter_synapses_register(
+> +	struct counter_signal *const signals, struct counter_count *const count)
+> +{
+> +	struct counter_synapse *synapses;
+> +	const size_t num_synapses = 2;
+> +	size_t i;
+> +
+> +	/* Allocate space for Counter Synapses */
+> +	synapses = kcalloc(num_synapses, sizeof(*synapses), GFP_KERNEL);
+> +	if (!synapses)
+> +		return -ENOMEM;
+> +
+> +	/* Configure Synapses */
+> +	for (i = 0; i < num_synapses; i++) {
+> +		synapses[i].signal = signals + i;
+> +		synapses[i].actions = quad_counter_action_names;
+> +		synapses[i].num_actions = ARRAY_SIZE(quad_counter_action_names);
+> +	}
+> +
+> +	/* Register Counter Synapses */
+> +	count->synapses = synapses;
+> +	count->num_synapses = num_synapses;
+> +
+> +	return 0;
+> +}
+> +
+> +static const char *const quad_counter_direction_names[] = {
+> +	[QUAD_COUNTER_DIRECTION_FORWARD] = "forward",
+> +	[QUAD_COUNTER_DIRECTION_BACKWARD] = "backward"
+> +};
+> +
+> +static ssize_t quad_counter_direction_read(struct counter_device *dev,
+> +	struct counter_count *count, void *priv, char *buf)
+> +{
+> +	struct quad_counter_device *const counter = dev->priv;
+> +	struct quad_counter_count *const quad_count = count->priv;
+> +	int err;
+> +	enum quad_counter_direction direction;
+> +
+> +	err = counter->direction_get(counter, quad_count, &direction);
+> +	if (err)
+> +		return err;
+> +
+> +	return scnprintf(buf, PAGE_SIZE, "%s\n",
+> +		quad_counter_direction_names[direction]);
+> +}
+> +
+> +static ssize_t quad_counter_count_ext_read(struct counter_device *dev,
+> +	struct counter_count *count, void *priv, char *buf)
+> +{
+> +	const struct quad_counter_count_ext *const ext = priv;
+> +	struct quad_counter_device *const counter = dev->priv;
+> +	struct quad_counter_count *const quad_count = count->priv;
+> +
+> +	return ext->read(counter, quad_count, ext->priv, buf);
+> +}
+> +
+> +static ssize_t quad_counter_count_ext_write(struct counter_device *dev,
+> +	struct counter_count *count, void *priv, const char *buf, size_t len)
+> +{
+> +	const struct quad_counter_count_ext *const ext = priv;
+> +	struct quad_counter_device *const counter = dev->priv;
+> +	struct quad_counter_count *const quad_count = count->priv;
+> +
+> +	return ext->write(counter, quad_count, ext->priv, buf, len);
+> +}
+> +
+> +static int quad_counter_counter_count_ext_register(
+> +	const struct quad_counter_device *const counter,
+> +	const struct quad_counter_count *const quad_count,
+> +	struct counter_count *const count)
+> +{
+> +	size_t num_ext = 0;
+> +	const struct quad_counter_count_ext *const quad_ext = quad_count->ext;
+> +	const size_t quad_num_ext = quad_count->num_ext;
+> +	struct counter_count_ext *ext;
+> +	size_t ext_i = 0;
+> +	size_t i;
+> +
+> +	/* Count number of extensions */
+> +	if (counter->direction_get)
+> +		num_ext++;
+> +	if (quad_ext)
+> +		num_ext += quad_num_ext;
+> +
+> +	/* Return early if no extensions */
+> +	if (!num_ext)
+> +		return 0;
+> +
+> +	/* Allocate space for Counter Count extensions array */
+> +	ext = kcalloc(num_ext, sizeof(*ext), GFP_KERNEL);
+> +	if (!ext)
+> +		return -ENOMEM;
+> +
+> +	/* Register direction extension */
+> +	if (counter->direction_get) {
+> +		ext[ext_i].name = "direction";
+> +		ext[ext_i].read = quad_counter_direction_read;
+> +
+> +		ext_i++;
+> +	}
+> +
+> +	/* Register driver Quadrature Counter Count extensions */
+> +	for (i = 0; i < quad_num_ext; i++) {
+> +		ext[ext_i + i].name = quad_ext[i].name;
+> +		ext[ext_i + i].read = (quad_ext[i].read) ?
+> +			quad_counter_count_ext_read : NULL;
+> +		ext[ext_i + i].write = (quad_ext[i].write) ?
+> +			quad_counter_count_ext_write : NULL;
+> +		ext[ext_i + i].priv = quad_ext + i;
+> +	}
+> +	ext_i += quad_num_ext;
+> +
+> +	/* Register Counter Count extensions */
+> +	count->ext = ext;
+> +	count->num_ext = num_ext;
+> +
+> +	return 0;
+> +}
+> +
+> +static void quad_counter_counter_synapses_unregister(
+> +	const struct counter_count *const count)
+> +{
+> +	kfree(count->synapses);
+> +}
+> +
+> +static int quad_counter_counter_count_init(struct counter_count *const count,
+> +	struct quad_counter_count *const quad_count,
+> +	struct counter_signal *const signals,
+> +	const struct quad_counter_device *const counter)
+> +{
+> +	int err;
+> +
+> +	count->id = quad_count->id;
+> +	count->name = quad_count->name;
+> +	count->functions = quad_counter_function_names;
+> +	count->num_functions = ARRAY_SIZE(quad_counter_function_names);
+> +	count->priv = quad_count;
+> +
+> +	/* Register Counter Synapses */
+> +	err = quad_counter_counter_synapses_register(signals, count);
+> +	if (err)
+> +		return -ENOMEM;
+> +
+> +	/* Register Quadrature Counter Count extensions */
+> +	err = quad_counter_counter_count_ext_register(counter, quad_count,
+> +		count);
+> +	if (err)
+> +		goto err_unregister_synapses;
+> +
+> +	return 0;
+> +
+> +err_unregister_synapses:
+> +	quad_counter_counter_synapses_unregister(count);
+> +	return err;
+> +}
+> +
+> +static void quad_counter_counter_count_ext_unregister(
+> +	const struct counter_count *const count)
+> +{
+> +	kfree(count->ext);
+> +}
+> +
+> +static void quad_counter_counter_count_free(
+> +	const struct counter_count *const count)
+> +{
+> +	quad_counter_counter_count_ext_unregister(count);
+> +	quad_counter_counter_synapses_unregister(count);
+> +}
+> +
+> +static int quad_counter_counter_counts_register(
+> +	const struct quad_counter_device *const counter)
+> +{
+> +	struct counter_device *const counter_dev = counter->counter_dev;
+> +	struct counter_count *counts;
+> +	const size_t num_counts = counter->num_counts;
+> +	size_t i;
+> +	struct quad_counter_count *const quad_counts = counter->counts;
+> +	struct counter_signal *const signals = counter_dev->signals;
+> +	int err;
+> +
+> +	/* Allocate space for counts array */
+> +	counts = kcalloc(num_counts, sizeof(*counts), GFP_KERNEL);
+> +	if (!counts)
+> +		return -ENOMEM;
+> +
+> +	/* Initialize Counts */
+> +	for (i = 0; i < num_counts; i++) {
+> +		err = quad_counter_counter_count_init(counts + i,
+> +			quad_counts + i, signals + 2 * i, counter);
+> +		if (err)
+> +			goto err_free_counts;
+> +	}
+> +
+> +	/* Register Counts to Counter device container */
+> +	counter_dev->counts = counts;
+> +	counter_dev->num_counts = num_counts;
+> +
+> +	return 0;
+> +
+> +err_free_counts:
+> +	while (i--)
+> +		quad_counter_counter_count_free(counts + i);
+> +	kfree(counts);
+> +	return err;
+> +}
+> +
+> +static void quad_counter_counter_signals_unregister(
+> +	const struct counter_device *const counter_dev)
+> +{
+> +	const struct counter_signal *const signals = counter_dev->signals;
+> +	size_t num_signals = counter_dev->num_signals;
+> +
+> +	while (num_signals--)
+> +		kfree(signals[num_signals].ext);
+> +	kfree(signals);
+> +}
+> +
+> +static int quad_counter_counts_register(
+> +	struct quad_counter_device *const counter)
+> +{
+> +	const struct quad_counter_count *const quad_counts = counter->counts;
+> +	const size_t num_counts = counter->num_counts;
+> +	int err;
+> +
+> +	/* At least one Count must be defined */
+> +	if (!quad_counts || !num_counts) {
+> +		pr_err("quad-counter: Quadrature Counter Counts undefined\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	/* Allocate Counter Signals */
+> +	err = quad_counter_counter_signals_register(counter);
+> +	if (err)
+> +		return err;
+> +
+> +	/* Allocate Counter Counts */
+> +	err = quad_counter_counter_counts_register(counter);
+> +	if (err)
+> +		goto err_unregister_signals;
+> +
+> +	return 0;
+> +
+> +err_unregister_signals:
+> +	quad_counter_counter_signals_unregister(counter->counter_dev);
+> +	return err;
+> +}
+> +
+> +static ssize_t quad_counter_device_ext_read(struct counter_device *dev,
+> +	void *priv, char *buf)
+> +{
+> +	const struct quad_counter_device_ext *const ext = priv;
+> +	struct quad_counter_device *const counter = dev->priv;
+> +
+> +	return ext->read(counter, ext->priv, buf);
+> +}
+> +
+> +static ssize_t quad_counter_device_ext_write(struct counter_device *dev,
+> +	void *priv, const char *buf, size_t len)
+> +{
+> +	const struct quad_counter_device_ext *const ext = priv;
+> +	struct quad_counter_device *const counter = dev->priv;
+> +
+> +	return ext->write(counter, ext->priv, buf, len);
+> +}
+> +
+> +static int quad_counter_device_ext_register(
+> +	struct quad_counter_device *const counter)
+> +{
+> +	const struct quad_counter_device_ext *const quad_ext = counter->ext;
+> +	const size_t num_ext = counter->num_ext;
+> +	struct counter_device_ext *ext;
+> +	size_t i;
+> +	struct counter_device *const counter_dev = counter->counter_dev;
+> +
+> +	/* Return early if no extensions */
+> +	if (!quad_ext || !num_ext)
+> +		return 0;
+> +
+> +	/* Allocate space for counter_device_ext array */
+> +	ext = kmalloc_array(num_ext, sizeof(*ext), GFP_KERNEL);
+> +	if (!ext)
+> +		return -ENOMEM;
+> +
+> +	/* Register quad_counter_device_ext via counter_device_ext */
+> +	for (i = 0; i < num_ext; i++) {
+> +		ext[i].name = quad_ext[i].name;
+> +		ext[i].read = (quad_ext[i].read) ?
+> +			quad_counter_device_ext_read : NULL;
+> +		ext[i].write = (quad_ext[i].write) ?
+> +			quad_counter_device_ext_write : NULL;
+> +		ext[i].priv = quad_ext + i;
+> +	}
+> +
+> +	/* Register Counter device extensions */
+> +	counter_dev->ext = ext;
+> +	counter_dev->num_ext = num_ext;
+> +
+> +	return 0;
+> +}
+> +
+> +static void quad_counter_counter_counts_unregister(
+> +	const struct counter_device *const counter_dev)
+> +{
+> +	const struct counter_count *const counts = counter_dev->counts;
+> +	size_t num_counts = counter_dev->num_counts;
+> +
+> +	while (num_counts--)
+> +		quad_counter_counter_count_free(counts + num_counts);
+> +	kfree(counts);
+> +}
+> +
+> +static void quad_counter_counts_unregister(
+> +	const struct quad_counter_device *const counter)
+> +{
+> +	const struct counter_device *const counter_dev = counter->counter_dev;
+> +
+> +	quad_counter_counter_counts_unregister(counter_dev);
+> +	quad_counter_counter_signals_unregister(counter_dev);
+> +}
+> +
+> +/**
+> + * quad_counter_register - register Quadrature Counter to the system
+> + * @counter: pointer to Quadrature Counter to register
+> + *
+> + * This function registers a Quadrature Counter to the system. A sysfs "counter"
+> + * directory will be created and populated with sysfs attributes correlating
+> + * with the Quadrature Counter Signals, Synapses, and Counts respectively.
+> + */
+> +int quad_counter_register(struct quad_counter_device *const counter)
+> +{
+> +	struct counter_device *counter_dev;
+> +	int err;
+> +
+> +	if (!counter)
+> +		return -EINVAL;
+> +
+> +	/* Allocate internal Counter container */
+> +	counter_dev = kzalloc(sizeof(*counter_dev), GFP_KERNEL);
+> +	if (!counter)
+> +		return -ENOMEM;
+> +	counter->counter_dev = counter_dev;
+> +
+> +	/* Configure internal Counter */
+> +	counter_dev->name = counter->name;
+> +	counter_dev->parent = counter->parent;
+> +	counter_dev->signal_read = (counter->signal_read) ?
+> +		quad_counter_signal_read : NULL;
+> +	counter_dev->count_read = (counter->count_read) ?
+> +		quad_counter_count_read : NULL;
+> +	counter_dev->count_write = (counter->count_write) ?
+> +		quad_counter_count_write : NULL;
+> +	counter_dev->function_get = (counter->function_get) ?
+> +		quad_counter_function_get : NULL;
+> +	counter_dev->function_set = (counter->function_set) ?
+> +		quad_counter_function_set : NULL;
+> +	counter_dev->action_get = (counter->function_get &&
+> +		counter->direction_get) ? quad_counter_action_get : NULL;
+> +	counter_dev->priv = counter;
+> +
+> +	/* Register Quadrature Counter Counts */
+> +	err = quad_counter_counts_register(counter);
+> +	if (err)
+> +		goto err_free_counter_dev;
+> +
+> +	/* Register Quadrature Counter device extension attributes */
+> +	err = quad_counter_device_ext_register(counter);
+> +	if (err)
+> +		goto err_unregister_counts;
+> +
+> +	/* Register internal Counter to the system */
+> +	err = counter_register(counter_dev);
+> +	if (err)
+> +		goto err_free_ext;
+> +
+> +	return 0;
+> +
+> +err_free_ext:
+> +	kfree(counter_dev->ext);
+> +err_unregister_counts:
+> +	quad_counter_counts_unregister(counter);
+> +err_free_counter_dev:
+> +	kfree(counter_dev);
+> +	return err;
+> +}
+> +EXPORT_SYMBOL(quad_counter_register);
+> +
+> +/**
+> + * quad_counter_unregister - unregister Quadrature Counter from the system
+> + * @counter: pointer to Quadrature Counter to unregister
+> + *
+> + * The Quadrature Counter is unregistered from the system; all allocated memory
+> + * is freed.
+> + */
+> +void quad_counter_unregister(struct quad_counter_device *const counter)
+> +{
+> +	struct counter_device *counter_dev;
+> +
+> +	if (!counter)
+> +		return;
+> +
+> +	counter_dev = counter->counter_dev;
+> +
+> +	counter_unregister(counter_dev);
+> +
+> +	kfree(counter_dev->ext);
+> +	quad_counter_counts_unregister(counter);
+> +	kfree(counter_dev);
+> +}
+> +EXPORT_SYMBOL(quad_counter_unregister);
+> +
+> +static void devm_quad_counter_unreg(struct device *dev, void *res)
+> +{
+> +	quad_counter_unregister(*(struct quad_counter_device **)res);
+> +}
+> +
+> +/**
+> + * devm_quad_counter_register - Resource-managed quad_counter_register
+> + * @dev: device to allocate quad_counter_device for
+> + * @counter: pointer to Quadrature Counter to register
+> + *
+> + * Managed quad_counter_register. The Quadrature Counter registered with this
+> + * function is automatically unregistered on driver detach. This function calls
+> + * quad_counter_register internally. Refer to that function for more
+> + * information.
+> + *
+> + * If an Quadrature Counter registered with this function needs to be
+> + * unregistered separately, devm_quad_counter_unregister must be used.
+> + *
+> + * RETURNS:
+> + * 0 on success, negative error number on failure.
+> + */
+> +int devm_quad_counter_register(struct device *dev,
+> +	struct quad_counter_device *const counter)
+> +{
+> +	struct quad_counter_device **ptr;
+> +	int ret;
+> +
+> +	ptr = devres_alloc(devm_quad_counter_unreg, sizeof(*ptr), GFP_KERNEL);
+> +	if (!ptr)
+> +		return -ENOMEM;
+> +
+> +	ret = quad_counter_register(counter);
+> +	if (!ret) {
+> +		*ptr = counter;
+> +		devres_add(dev, ptr);
+> +	} else
+> +		devres_free(ptr);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL(devm_quad_counter_register);
+> +
+> +static int devm_quad_counter_match(struct device *dev, void *res, void *data)
+> +{
+> +	struct quad_counter_device **r = res;
+> +
+> +	if (!r || !*r) {
+> +		WARN_ON(!r || !*r);
+> +		return 0;
+> +	}
+> +
+> +	return *r == data;
+> +}
+> +
+> +/**
+> + * devm_quad_counter_unregister - Resource-managed quad_counter_unregister
+> + * @dev: device this quad_counter_device belongs to
+> + * @counter: the Quadrature Counter associated with the device
+> + *
+> + * Unregister Quadrature Counter registered with devm_quad_counter_register.
+> + */
+> +void devm_quad_counter_unregister(struct device *dev,
+> +	struct quad_counter_device *const counter)
+> +{
+> +	int rc;
+> +
+> +	rc = devres_release(dev, devm_quad_counter_unreg,
+> +		devm_quad_counter_match, counter);
+> +	WARN_ON(rc);
+> +}
+> +EXPORT_SYMBOL(devm_quad_counter_unregister);
+> +
+> +MODULE_AUTHOR("William Breathitt Gray <vilhelm.gray@gmail.com>");
+> +MODULE_DESCRIPTION("Quadrature Counter interface");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/include/linux/iio/counter.h b/include/linux/iio/counter.h
+> index 0967ea2a9bef..a6f0f9130377 100644
+> --- a/include/linux/iio/counter.h
+> +++ b/include/linux/iio/counter.h
+> @@ -435,4 +435,195 @@ extern int devm_simple_counter_register(struct device *dev,
+>  extern void devm_simple_counter_unregister(struct device *dev,
+>  	struct simple_counter_device *const counter);
+>  
+> +struct quad_counter_device;
+> +struct quad_counter_signal;
+> +
+> +/**
+> + * struct quad_counter_signal_ext - Quadrature Counter Signal extension
+> + * @name:	[DRIVER] attribute name
+> + * @read:	[DRIVER] read callback for this attribute; may be NULL
+> + * @write:	[DRIVER] write callback for this attribute; may be NULL
+> + * @priv:	[DRIVER] data private to the driver
+> + */
+> +struct quad_counter_signal_ext {
+> +	const char	*name;
+> +	ssize_t		(*read)(struct quad_counter_device *counter,
+> +				struct quad_counter_signal *signal, void *priv,
+> +				char *buf);
+> +	ssize_t		(*write)(struct quad_counter_device *counter,
+> +				struct quad_counter_signal *signal, void *priv,
+> +				const char *buf, size_t len);
+> +	void		*priv;
+> +};
+> +
+> +/**
+> + * struct quad_counter_signal - Quadrature Counter Signal node
+> + * @id:		[DRIVER] unique ID used to identify signal
+> + * @name:	[DRIVER] device-specific signal name
+> + * @ext:	[DRIVER] optional array of Quadrature Counter Signal extensions
+> + * @num_ext:	[DRIVER] number of Quadrature Counter Signal extensions
+> + *		specified in @ext
+> + * @priv:	[DRIVER] optional private data supplied by driver
+> + */
+> +struct quad_counter_signal {
+> +	int		id;
+> +	const char	*name;
+> +
+> +	const struct quad_counter_signal_ext	*ext;
+> +	size_t					num_ext;
+> +
+> +	void	*priv;
+> +};
+> +
+> +enum quad_counter_signal_level {
+> +	QUAD_COUNTER_SIGNAL_LOW = 0,
+> +	QUAD_COUNTER_SIGNAL_HIGH
+> +};
+> +
+> +struct quad_counter_count;
+> +
+> +enum quad_counter_function {
+> +	QUAD_COUNTER_FUNCTION_PULSE_DIRECTION = 0,
+> +	QUAD_COUNTER_FUNCTION_QUADRATURE_X1,
+> +	QUAD_COUNTER_FUNCTION_QUADRATURE_X2,
+> +	QUAD_COUNTER_FUNCTION_QUADRATURE_X4
+> +};
+> +
+> +enum quad_counter_direction {
+> +	QUAD_COUNTER_DIRECTION_FORWARD = 0,
+> +	QUAD_COUNTER_DIRECTION_BACKWARD
+> +};
+> +
+> +/**
+> + * struct quad_counter_count_ext - Quadrature Counter Count extension
+> + * @name:	[DRIVER] attribute name
+> + * @read:	[DRIVER] read callback for this attribute; may be NULL
+> + * @write:	[DRIVER] write callback for this attribute; may be NULL
+> + * @priv:	[DRIVER] data private to the driver
+> + */
+> +struct quad_counter_count_ext {
+> +	const char	*name;
+> +	ssize_t		(*read)(struct quad_counter_device *counter,
+> +				struct quad_counter_count *count, void *priv,
+> +				char *buf);
+> +	ssize_t		(*write)(struct quad_counter_device *counter,
+> +				struct quad_counter_count *count, void *priv,
+> +				const char *buf, size_t len);
+> +	void		*priv;
+> +};
+> +
+> +/**
+> + * struct quad_counter_count - Quadrature Counter Count node
+> + * @id:		[DRIVER] unique ID used to identify Count
+> + * @name:	[DRIVER] device-specific Count name
+> + * @function:	[DRIVER] current function mode
+> + * @direction:	[DRIVER] current direction state
+> + * @signal_a:	[DRIVER] associated quadrature A signal
+> + * @signal_b:	[DRIVER] associated quadrature B signal
+> + * @ext:	[DRIVER] optional array of Quadrature Counter Count extensions
+> + * @num_ext:	[DRIVER] number of Quadrature Counter Count extensions specified
+> + *		in @ext
+> + * @priv:	[DRIVER] optional private data supplied by driver
+> + */
+> +struct quad_counter_count {
+> +	int				id;
+> +	const char			*name;
+> +	enum quad_counter_function	function;
+> +	enum quad_counter_direction	direction;
+> +
+> +	struct quad_counter_signal	signal_a;
+> +	struct quad_counter_signal	signal_b;
+> +
+> +	const struct quad_counter_count_ext	*ext;
+> +	size_t					num_ext;
+> +
+> +	void	*priv;
+> +};
+> +
+> +/**
+> + * struct quad_counter_device_ext - Quadrature Counter device extension
+> + * @name:	[DRIVER] attribute name
+> + * @read:	[DRIVER] read callback for this attribute; may be NULL
+> + * @write:	[DRIVER] write callback for this attribute; may be NULL
+> + * @priv:	[DRIVER] data private to the driver
+> + */
+> +struct quad_counter_device_ext {
+> +	const char	*name;
+> +	ssize_t		(*read)(struct quad_counter_device *counter, void *priv,
+> +				char *buf);
+> +	ssize_t		(*write)(struct quad_counter_device *counter,
+> +				void *priv, const char *buf, size_t len);
+> +	void		*priv;
+> +};
+> +
+> +/**
+> + * struct quad_counter_device - Quadrature Counter data structure
+> + * @name:		[DRIVER] name of the device
+> + * @parent:		[DRIVER] optional parent device providing the counters
+> + * @counter_dev:	[INTERN] internal Counter container
+> + * @signal_read:	[DRIVER] read callback for Signal attribute; may be
+> + *			NULL. Returns 0 on success and negative error code on
+> + *			error. The respective Signal's returned	level should be
+> + *			passed back via the level parameter.
+> + * @count_read:		[DRIVER] read callback for Count attribute; may be NULL.
+> + *			Returns 0 on success and negative error code on error.
+> + *			The respective Count's returned value should be passed
+> + *			back via the val parameter.
+> + * @count_write:	[DRIVER] write callback for Count attribute; may be NULL
+> + * @function_get:	[DRIVER] function to get the current count function
+> + *			mode. Returns 0 on success and negative error code on
+> + *			error. The respective Count's returned function mode
+> + *			should be passed back via the function parameter.
+> + * @function_set:	[DRIVER] function to set the count function mode
+> + * @direction_get:	[DRIVER] function to get the current direction. Returns
+> + *			0 on success and negative error code on	error. The
+> + *			respective Count's returned direction should be passed
+> + *			back via the direction parameter.
+> + * @counts:		[DRIVER] array of Quadrature Counter Counts
+> + * @num_counts:		[DRIVER] number of Quadrature Counter Counts specified
+> + *			in @counts
+> + * @ext:		[DRIVER] optional array of Quadrature Counter device
+> + *			extensions
+> + * @num_ext:		[DRIVER] number of Quadrature Counter device extensions
+> + *			specified in @ext
+> + * @priv:		[DRIVER] optional private data supplied by driver
+> + */
+> +struct quad_counter_device {
+> +	const char		*name;
+> +	struct device		*parent;
+> +	struct counter_device	*counter_dev;
+> +
+> +	int	(*signal_read)(struct quad_counter_device *counter,
+> +			struct quad_counter_signal *signal,
+> +			enum quad_counter_signal_level *level);
+> +	int	(*count_read)(struct quad_counter_device *counter,
+> +			struct quad_counter_count *count, long *val);
+> +	int	(*count_write)(struct quad_counter_device *counter,
+> +			struct quad_counter_count *count, long val);
+> +	int	(*function_get)(struct quad_counter_device *counter,
+> +			struct quad_counter_count *count,
+> +			enum quad_counter_function *function);
+> +	int	(*function_set)(struct quad_counter_device *counter,
+> +			struct quad_counter_count *count,
+> +			enum quad_counter_function function);
+> +	int	(*direction_get)(struct quad_counter_device *counter,
+> +			struct quad_counter_count *count,
+> +			enum quad_counter_direction *direction);
+> +
+> +	struct quad_counter_count	*counts;
+> +	size_t				num_counts;
+> +
+> +	const struct quad_counter_device_ext	*ext;
+> +	size_t					num_ext;
+> +
+> +	void	*priv;
+> +};
+> +
+> +extern int quad_counter_register(struct quad_counter_device *const counter);
+> +extern void quad_counter_unregister(struct quad_counter_device *const counter);
+> +extern int devm_quad_counter_register(struct device *dev,
+> +	struct quad_counter_device *const counter);
+> +extern void devm_quad_counter_unregister(struct device *dev,
+> +	struct quad_counter_device *const counter);
+> +
+>  #endif /* _COUNTER_H_ */
 
