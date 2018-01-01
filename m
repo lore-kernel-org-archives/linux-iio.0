@@ -1,61 +1,90 @@
-Return-Path: <SRS0=mva0=EK=dowhile0.org=javier@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.99]:44226 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751059AbeAAJza (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 1 Jan 2018 04:55:30 -0500
+Date: Mon, 1 Jan 2018 09:55:25 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc: linus.walleij@linaro.org, mail@maciej.szmigiero.name,
+        linux@roeck-us.net, linux-gpio@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: Re: [PATCH v2 1/5] iio: Change ISA_BUS_API dependency to selection
+Message-ID: <20180101095525.0de5021a@archlinux>
+In-Reply-To: <84517171cdb142f3f04b45de6ef8daf13442a866.1514578085.git.vilhelm.gray@gmail.com>
+References: <cover.1514578085.git.vilhelm.gray@gmail.com>
+        <84517171cdb142f3f04b45de6ef8daf13442a866.1514578085.git.vilhelm.gray@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20180114105110.14ec8c8f@archlinux>
-References: <1514556006-23293-1-git-send-email-mastichi@gmail.com>
- <CAHp75VfqKaARX2fTJ7BRTU7JLPg-OGROH1NMc_CSh3JZyqPycQ@mail.gmail.com>
- <20171229175449.760e734d@archlinux> <CALieaeeZXZ-6WKYXSMgLiiTO6eTFvdJjazOY9wx4VFk7YcA4Lg@mail.gmail.com>
- <20180101095342.4d4d5325@archlinux> <CABxcv=kmnithguOYV03KASM2DF09yiRs7FPvnBM3fX=k9+soQw@mail.gmail.com>
- <20180114105110.14ec8c8f@archlinux>
-From: Javier Martinez Canillas <javier@dowhile0.org>
-Date: Mon, 15 Jan 2018 13:31:12 +0100
-Message-ID: <CABxcv=kSNZMKkL7Ge2WkvDqH1V-CVSJN-agPcMmU4qvdy9HRiQ@mail.gmail.com>
-Subject: Re: [PATCH v2] iio: adc: max9611: fix module auto-loading
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Dmitry Mastykin <mastichi@gmail.com>, Andy Shevchenko <andy.shevchenko@gmail.com>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Jacopo Mondi <jacopo+renesas@jmondi.org>,
-	Dan Carpenter <dan.carpenter@oracle.com>, Rob Herring <robh@kernel.org>,
-	linux-iio <linux-iio@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sun, Jan 14, 2018 at 11:51 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On Wed, 10 Jan 2018 12:01:07 +0100
-> Javier Martinez Canillas <javier@dowhile0.org> wrote:
->
->> Hello Jonathan,
->>
->> On Mon, Jan 1, 2018 at 10:53 AM, Jonathan Cameron <jic23@kernel.org> wrote:
->>
->> [snip]
->>
->> >
->> > I may well be missing some subtle detail of course having spent only a few
->> > minute looking at this!
->> >
->>
->> Your understanding is correct. This change has nothing to do with
->> module autoloading.
->>
->> The .probe_new callback is only used to avoid requiring an I2C device
->> ID table since the old .probe callback has a struct i2c_device_id as a
->> parameter and so requires a table even in OF (or ACPI) only drivers.
->
-> OK, then let us revisit this patch once we have an answer on your one
-> fixing the autoprobing more generally.  Until we then we don't know
-> whether we need to add the i2c table in or not whether this suffices.
->
+On Fri, 29 Dec 2017 15:13:19 -0500
+William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
 
-That's correct. If the driver is for a device that's OF-only (e.g:
-will never be used from a non-DT platform) then I don't think we
-should add a I2C table.
+> The ISA_BUS_API Kconfig option enables the compilation of the ISA bus
+> driver. The ISA bus driver does not perform any hardware interaction,
+> and is instead just a thin layer of software abstraction to eliminate
+> boilerplate code common to ISA-style device drivers. Since ISA_BUS_API
+> has no dependencies and does not jeopardize the integrity of the system
+> when enabled, drivers should select it when the ISA bus driver
+> functionality is needed.
+> 
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Hartmut Knaack <knaack.h@gmx.de>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> ---
+>  drivers/iio/adc/Kconfig     | 3 ++-
+>  drivers/iio/counter/Kconfig | 3 ++-
+>  drivers/iio/dac/Kconfig     | 3 ++-
+>  3 files changed, 6 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index ef86296b8b0d..7c00e5858693 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -658,7 +658,8 @@ config STM32_ADC
+>  
+>  config STX104
+>  	tristate "Apex Embedded Systems STX104 driver"
+> -	depends on PC104 && X86 && ISA_BUS_API
+> +	depends on PC104 && X86
+> +	select ISA_BUS_API
+>  	select GPIOLIB
+>  	help
+>  	  Say yes here to build support for the Apex Embedded Systems STX104
+> diff --git a/drivers/iio/counter/Kconfig b/drivers/iio/counter/Kconfig
+> index 474e1ac4e7c0..bf1e559ad7cd 100644
+> --- a/drivers/iio/counter/Kconfig
+> +++ b/drivers/iio/counter/Kconfig
+> @@ -7,7 +7,8 @@ menu "Counters"
+>  
+>  config 104_QUAD_8
+>  	tristate "ACCES 104-QUAD-8 driver"
+> -	depends on PC104 && X86 && ISA_BUS_API
+> +	depends on PC104 && X86
+> +	select ISA_BUS_API
+>  	help
+>  	  Say yes here to build support for the ACCES 104-QUAD-8 quadrature
+>  	  encoder counter/interface device family (104-QUAD-8, 104-QUAD-4).
+> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> index 965d5c0d2468..76db0768e454 100644
+> --- a/drivers/iio/dac/Kconfig
+> +++ b/drivers/iio/dac/Kconfig
+> @@ -195,7 +195,8 @@ config AD7303
+>  
+>  config CIO_DAC
+>  	tristate "Measurement Computing CIO-DAC IIO driver"
+> -	depends on X86 && ISA_BUS_API
+> +	depends on X86 && (ISA_BUS || PC104)
+> +	select ISA_BUS_API
+>  	help
+>  	  Say yes here to build support for the Measurement Computing CIO-DAC
+>  	  analog output device family (CIO-DAC16, CIO-DAC08, PC104-DAC06). The
 
-Now, if Wolfram nacks my patch then we should add it as a workaround
-to have auto-loading working.
-
-> Jonathan
->
-
-Best regards,
-Javier
