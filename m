@@ -1,536 +1,1089 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:34120 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:36754 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751565AbeAAMJe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 1 Jan 2018 07:09:34 -0500
-Date: Mon, 1 Jan 2018 11:45:02 +0000
+        id S1751212AbeAAMeE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 1 Jan 2018 07:34:04 -0500
+Date: Mon, 1 Jan 2018 12:33:59 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: William Breathitt Gray <vilhelm.gray@gmail.com>
 Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
         benjamin.gaignard@linaro.org, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 03/11] docs: Add Generic Counter interface
- documentation
-Message-ID: <20180101114502.433e575b@archlinux>
-In-Reply-To: <b7387aef452da0a3591d3c48e6e1f362a7713e9f.1513266127.git.vilhelm.gray@gmail.com>
+Subject: Re: [PATCH v4 04/11] counter: Introduce the Simple Counter
+ interface
+Message-ID: <20180101123359.7bfb6cf8@archlinux>
+In-Reply-To: <25bd5a9aa7c49cde0f56380bba830b73726be650.1513266127.git.vilhelm.gray@gmail.com>
 References: <cover.1513266127.git.vilhelm.gray@gmail.com>
-        <b7387aef452da0a3591d3c48e6e1f362a7713e9f.1513266127.git.vilhelm.gray@gmail.com>
+        <25bd5a9aa7c49cde0f56380bba830b73726be650.1513266127.git.vilhelm.gray@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 14 Dec 2017 15:51:16 -0500
+On Thu, 14 Dec 2017 15:51:30 -0500
 William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
 
-> This patch adds high-level documentation about the Generic Counter
-> interface.
+> This patch introduces the Simple Counter interface. The Simple Counter
+> interface serves as an API to provide support for simple hardware
+> counter devices. The Simple Counter interface is built on top of the
+> Generic Counter interface.
+> 
+> A simple hardware counter device is a counter device that has a single
+> signal associated with each count value; Signals may have a value of
+> "low" or "high," and edge trigger the count function which either
+> increases or decreases the respective count value.
+> 
+> The Simple Counter interface provides two count function modes:
+> 
+>         SIMPLE_COUNTER_FUNCTION_INCREASE: "increase"
+>         SIMPLE_COUNTER_FUNCTION_DECREASE: "decrease"
+> 
+> The Simple Counter interface provides four action modes:
+> 
+>         SIMPLE_COUNTER_ACTION_NONE: "none"
+
+How does this one make sense for a simple counter?
+Presumably really just means "off"
+
+>         SIMPLE_COUNTER_ACTION_RISING_EDGE: "rising edge"
+>         SIMPLE_COUNTER_ACTION_FALLING_EDGE: "falling edge"
+>         SIMPLE_COUNTER_ACTION_BOTH_EDGES: "both edges"
+> 
+> Signals may be represented by two possible states:
+> 
+>         SIMPLE_COUNTER_SIGNAL_LOW: "low"
+>         SIMPLE_COUNTER_SIGNAL_HIGH: "high"
+> 
+> Since the Simple Counter interface utilizes the Generic Counter
+> interface underneath, all the expected functionality of the Generic
+> Counter interface such as sysfs attributes is exposed to userspace for
+> end user consumption. The Simple Counter interface serves as a
+> convenience API for supporting a common class of counter devices without
+> the need to manually configure the more cumbersome Generic Counter
+> interface for use.
+> 
+> To use the Simple Counter interface, create an array of
+> simple_counter_count structures to represent the desired counts and
+> signals of the counter device, allocate a simple_counter_device
+> structure and populate it with respective driver callbacks and the
+> simple_counter_count array created earlier, then register the counter by
+> calling the simple_counter_register function. The
+> simple_counter_unregister function may be used to unregistered a
+> previously registered counter.
+> 
+> Memory-managed versions of simple_counter_register and
+> simple_counter_unregister functions are provided by the
+> devm_simple_counter_register and devm_simple_counter_unregister
+> functions respectively.
+A few little items inline.
+
+My main concern here is it's a lot of code for a relatively small amount
+of functionality.  I can't immediately see how to make a large difference
+on that though.
+
 > 
 > Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 > ---
->  Documentation/driver-api/iio/generic-counter.rst | 434 +++++++++++++++++++++++
->  Documentation/driver-api/iio/index.rst           |   1 +
->  MAINTAINERS                                      |   1 +
->  3 files changed, 436 insertions(+)
->  create mode 100644 Documentation/driver-api/iio/generic-counter.rst
+>  drivers/iio/counter/Kconfig          |   4 +-
+>  drivers/iio/counter/Makefile         |   1 +
+>  drivers/iio/counter/simple-counter.c | 734 +++++++++++++++++++++++++++++++++++
+>  include/linux/iio/counter.h          | 199 ++++++++++
+>  4 files changed, 937 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/iio/counter/simple-counter.c
 > 
-> diff --git a/Documentation/driver-api/iio/generic-counter.rst b/Documentation/driver-api/iio/generic-counter.rst
+> diff --git a/drivers/iio/counter/Kconfig b/drivers/iio/counter/Kconfig
+> index 4eaf4e53c5aa..6b9a43180d2c 100644
+> --- a/drivers/iio/counter/Kconfig
+> +++ b/drivers/iio/counter/Kconfig
+> @@ -8,7 +8,9 @@ menuconfig COUNTER
+>  	help
+>  	  Provides support for Counter devices. The Generic Counter API provides
+>  	  rudimentary support for counters and serves as building blocks to
+> -	  create more complex counter interfaces.
+> +	  create more complex counter interfaces. The Simple Counter API
+> +	  provides support for simple hardware counter devices that have a
+> +	  one-to-one mapping between their Signals and Counts.
+>  
+>  if COUNTER
+>  
+> diff --git a/drivers/iio/counter/Makefile b/drivers/iio/counter/Makefile
+> index 513c49d832d4..7450dee97446 100644
+> --- a/drivers/iio/counter/Makefile
+> +++ b/drivers/iio/counter/Makefile
+> @@ -6,6 +6,7 @@
+>  
+>  obj-$(CONFIG_COUNTER) += counter.o
+>  counter-$(CONFIG_COUNTER) += generic-counter.o
+> +counter-$(CONFIG_COUNTER) += simple-counter.o
+>  
+>  obj-$(CONFIG_104_QUAD_8)	+= 104-quad-8.o
+>  obj-$(CONFIG_STM32_LPTIMER_CNT)	+= stm32-lptimer-cnt.o
+> diff --git a/drivers/iio/counter/simple-counter.c b/drivers/iio/counter/simple-counter.c
 > new file mode 100644
-> index 000000000000..219c571e90ce
+> index 000000000000..e061db0860fd
 > --- /dev/null
-> +++ b/Documentation/driver-api/iio/generic-counter.rst
-> @@ -0,0 +1,434 @@
-> +=========================
-> +Generic Counter Interface
-> +=========================
+> +++ b/drivers/iio/counter/simple-counter.c
+> @@ -0,0 +1,734 @@
+> +/*
+> + * Simple Counter interface
+> + * Copyright (C) 2017 William Breathitt Gray
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License, version 2, as
+> + * published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful, but
+> + * WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+> + * General Public License for more details.
+> + */
+> +#include <linux/device.h>
+> +#include <linux/err.h>
+> +#include <linux/export.h>
+> +#include <linux/gfp.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/slab.h>
+> +#include <linux/string.h>
+> +#include <linux/types.h>
 > +
-> +Introduction
-> +============
+> +#include <linux/iio/counter.h>
 > +
-> +Counter devices are prevalent within a diverse spectrum of industries.
-> +The ubiquitous presence of these devices necessitates a common interface
-> +and standard of interaction and exposure. This driver API attempts to
-> +resolve the issue of duplicate code found among existing counter device
-> +drivers by introducing a generic counter interface for consumption. The
-> +Generic Counter interface enables drivers to support and expose a common
-> +set of components and functionality present in counter devices.
+> +static const char *const simple_counter_signal_level_names[] = {
+> +	[SIMPLE_COUNTER_SIGNAL_LOW] = "low",
+> +	[SIMPLE_COUNTER_SIGNAL_HIGH] = "high"
+> +};
 > +
-> +Theory
-> +======
+> +static ssize_t simple_counter_signal_read(struct counter_device *counter_dev,
+> +	struct counter_signal *counter_sig, char *buf)
+> +{
+> +	struct simple_counter_device *const counter = counter_dev->priv;
+> +	struct simple_counter_signal *const signal = counter_sig->priv;
+> +	int err;
+> +	enum simple_counter_signal_level level;
 > +
-> +Counter devices can vary greatly in design, but regardless of whether
-> +some devices are quadrature encoder counters or tally counters, all
-> +counter devices consist of a core set of components. This core set of
-> +components, shared by all counter devices, is what forms the essence of
-> +the Generic Counter interface.
+> +	err = counter->signal_read(counter, signal, &level);
+> +	if (err)
+> +		return err;
 > +
-> +There are three core components to a counter:
+> +	return scnprintf(buf, PAGE_SIZE, "%s\n",
+> +		simple_counter_signal_level_names[level]);
+> +}
 > +
-> +        COUNT
-> +        -----
-> +        A Count represents the count data for a set of Signals. A Count
-> +        has a count function mode (e.g. "increase" or "quadrature x4")
-> +        which represents the update behavior for the count data. A Count
-> +        also has a set of one or more associated Signals.
+> +static ssize_t simple_counter_signal_write(struct counter_device *counter_dev,
+> +	struct counter_signal *counter_sig, const char *buf, size_t len)
+> +{
+> +	struct simple_counter_device *const counter = counter_dev->priv;
+> +	struct simple_counter_signal *const signal = counter_sig->priv;
+> +	int level;
+> +	int err;
 > +
-> +        SIGNAL
-> +        ------
-> +        A Signal represents a counter input data; this is the data that
-> +        is typically analyzed by the counter to determine the count
-> +        data. A Signal may be associated to one or more Counts.
+> +	level = sysfs_match_string(simple_counter_signal_level_names, buf);
+> +	if (level < 0)
+> +		return level;
+> +
+> +	err = counter->signal_write(counter, signal, level);
+> +	if (err)
+> +		return err;
+> +
+> +	return len;
+> +}
+> +
+> +static ssize_t simple_counter_count_read(struct counter_device *counter_dev,
+> +	struct counter_count *counter_cnt, char *buf)
+> +{
+> +	struct simple_counter_device *const counter = counter_dev->priv;
+> +	struct simple_counter_count *const count = counter_cnt->priv;
+> +	int err;
+> +	long val;
+> +
+> +	err = counter->count_read(counter, count, &val);
+> +	if (err)
+> +		return err;
+> +
+> +	return scnprintf(buf, PAGE_SIZE, "%ld\n", val);
+> +}
+> +
+> +static ssize_t simple_counter_count_write(struct counter_device *counter_dev,
+> +	struct counter_count *counter_cnt, const char *buf, size_t len)
+> +{
+> +	struct simple_counter_device *const counter = counter_dev->priv;
+> +	struct simple_counter_count *const count = counter_cnt->priv;
+> +	int err;
+> +	long val;
+> +
+> +	err = kstrtol(buf, 0, &val);
+> +	if (err)
+> +		return err;
+> +
+> +	err = counter->count_write(counter, count, val);
+> +	if (err)
+> +		return err;
+> +
+> +	return len;
+> +}
+> +
+> +static int simple_counter_function_get(struct counter_device *counter_dev,
+> +	struct counter_count *counter_cnt, size_t *counter_func)
+> +{
+> +	int err;
+> +	struct simple_counter_device *const counter = counter_dev->priv;
+> +	struct simple_counter_count *const count = counter_cnt->priv;
+> +	enum simple_counter_function function;
+> +
+> +	err = counter->function_get(counter, count, &function);
+> +	if (err)
+> +		return err;
+> +
+> +	count->function = function;
+> +
+> +	*counter_func = function;
+> +
+> +	return 0;
+> +}
+> +
+> +static int simple_counter_function_set(struct counter_device *counter_dev,
+> +	struct counter_count *counter_cnt, size_t function)
+> +{
+> +	struct simple_counter_device *const counter = counter_dev->priv;
+> +	struct simple_counter_count *const count = counter_cnt->priv;
+> +	int err;
+> +
+> +	err = counter->function_set(counter, count, function);
+> +	if (err)
+> +		return err;
+> +
+> +	count->function = function;
+> +
+> +	return 0;
+> +}
+> +
+> +static int simple_counter_action_get(struct counter_device *counter_dev,
+> +	struct counter_count *counter_cnt, struct counter_synapse *counter_syn,
+> +	size_t *counter_act)
+> +{
+> +	int err;
+> +	struct simple_counter_device *const counter = counter_dev->priv;
+> +	struct simple_counter_count *const count = counter_cnt->priv;
+> +	enum simple_counter_action action;
+> +
+> +	err = counter->action_get(counter, count, &action);
+> +	if (err)
+> +		return err;
+> +
+> +	count->action = action;
+> +
+> +	*counter_act = action;
+> +
+> +	return 0;
+> +}
+> +
+> +static int simple_counter_action_set(struct counter_device *counter_dev,
+> +	struct counter_count *counter_cnt, struct counter_synapse *counter_syn,
+> +	size_t action)
+> +{
+> +	struct simple_counter_device *const counter = counter_dev->priv;
+> +	struct simple_counter_count *const count = counter_cnt->priv;
+> +	int err;
+> +
+> +	err = counter->action_set(counter, count, action);
+> +	if (err)
+> +		return err;
+> +
+> +	count->action = action;
+> +
+> +	return 0;
+> +}
+> +
+> +static ssize_t simple_counter_signal_ext_read(struct counter_device *dev,
+> +	struct counter_signal *signal, void *priv, char *buf)
+> +{
+> +	const struct simple_counter_signal_ext *const ext = priv;
+> +	struct simple_counter_device *const counter = dev->priv;
+> +	struct simple_counter_signal *const simple_signal = signal->priv;
+> +
+> +	return ext->read(counter, simple_signal, ext->priv, buf);
+> +}
+> +
+> +static ssize_t simple_counter_signal_ext_write(struct counter_device *dev,
+> +	struct counter_signal *signal, void *priv, const char *buf, size_t len)
+> +{
+> +	const struct simple_counter_signal_ext *const ext = priv;
+> +	struct simple_counter_device *const counter = dev->priv;
+> +	struct simple_counter_signal *const simple_signal = signal->priv;
+> +
+> +	return ext->write(counter, simple_signal, ext->priv, buf, len);
+> +}
+> +
+> +static int simple_counter_counter_signal_ext_register(
+> +	const struct simple_counter_signal *const simple_signal,
+> +	struct counter_signal *const signal)
+> +{
+> +	const struct simple_counter_signal_ext *const simple_ext =
+> +		simple_signal->ext;
+> +	const size_t num_ext = simple_signal->num_ext;
+> +	struct counter_signal_ext *ext;
+> +	size_t i;
+> +
+> +	/* Return early if no extensions */
+> +	if (!simple_ext || !num_ext)
+> +		return 0;
+> +
+> +	/* Allocate space for counter_signal_ext array */
+> +	ext = kmalloc_array(num_ext, sizeof(*ext), GFP_KERNEL);
+> +	if (!ext)
+> +		return -ENOMEM;
+> +
+> +	/* Register simple_counter_signal_ext via counter_signal_ext */
+> +	for (i = 0; i < num_ext; i++) {
+> +		ext[i].name = simple_ext[i].name;
+> +		ext[i].read = (simple_ext[i].read) ?
+> +			simple_counter_signal_ext_read : NULL;
+> +		ext[i].write = (simple_ext[i].write) ?
+> +			simple_counter_signal_ext_write : NULL;
+> +		ext[i].priv = simple_ext + i;
+> +	}
+> +
+> +	/* Register Counter Signal extensions */
+> +	signal->ext = ext;
+> +	signal->num_ext = num_ext;
+> +
+> +	return 0;
+> +}
+> +
+> +static int simple_counter_counter_signals_register(
+> +	const struct simple_counter_device *const counter)
+> +{
+> +	const size_t num_counts = counter->num_counts;
+> +	struct counter_signal *signals;
+> +	const size_t num_signals = num_counts;
+> +	struct simple_counter_count *const simple_counts = counter->counts;
+> +	size_t i;
+> +	struct counter_signal *signal;
+> +	struct simple_counter_signal *simple_signal;
+> +	int err;
+> +	struct counter_device *const counter_dev = counter->counter_dev;
+> +
+> +	/* Allocate space for signals array */
+> +	signals = kcalloc(num_signals, sizeof(*signals), GFP_KERNEL);
+> +	if (!signals)
+> +		return -ENOMEM;
+> +
+> +	/* Configure Signals */
+> +	for (i = 0; i < num_signals; i++) {
+> +		signal = signals + i;
+> +		simple_signal = &simple_counts[i].signal;
+> +
+> +		signal->id = simple_signal->id;
+> +		signal->name = simple_signal->name;
+> +		signal->priv = simple_signal;
+> +
+> +		/* Register Counter Signal extensions */
+> +		err = simple_counter_counter_signal_ext_register(simple_signal,
+> +			signal);
+> +		if (err)
+> +			goto err_free_signals;
+> +	}
+> +
+> +	/* Register Signals to Counter device container */
+> +	counter_dev->signals = signals;
+> +	counter_dev->num_signals = num_signals;
+> +
+> +	return 0;
+> +
+> +err_free_signals:
+> +	while (i--)
+> +		kfree(signals[i].ext);
+> +	kfree(signals);
+> +	return err;
+> +}
+> +
+> +static const char *const simple_counter_function_names[] = {
+> +	[SIMPLE_COUNTER_FUNCTION_INCREASE] = "increase",
+> +	[SIMPLE_COUNTER_FUNCTION_DECREASE] = "decrease"
+> +};
+> +
+> +static const char *const simple_counter_action_names[] = {
+> +	[SIMPLE_COUNTER_ACTION_NONE] = "none",
+> +	[SIMPLE_COUNTER_ACTION_RISING_EDGE] = "rising edge",
+> +	[SIMPLE_COUNTER_ACTION_FALLING_EDGE] = "falling edge",
+> +	[SIMPLE_COUNTER_ACTION_BOTH_EDGES] = "both edges"
+> +};
+> +
+> +static int simple_counter_counter_synapse_register(
+> +	struct counter_signal *const signal, struct counter_count *const count)
+> +{
+> +	struct counter_synapse *synapse;
+> +
+> +	/* Allocate space for Counter Synapse */
+> +	synapse = kzalloc(sizeof(*synapse), GFP_KERNEL);
+> +	if (!synapse)
+> +		return -ENOMEM;
+> +
+> +	/* Configure Synapse */
+> +	synapse->signal = signal;
+> +	synapse->actions = simple_counter_action_names;
+> +	synapse->num_actions = ARRAY_SIZE(simple_counter_action_names);
+> +
+> +	/* Register Counter Synapse */
+> +	count->synapses = synapse;
+> +	count->num_synapses = 1;
+> +
+> +	return 0;
+> +}
+> +
+> +static ssize_t simple_counter_count_ext_read(struct counter_device *dev,
+> +	struct counter_count *count, void *priv, char *buf)
+> +{
+> +	const struct simple_counter_count_ext *const ext = priv;
+> +	struct simple_counter_device *const counter = dev->priv;
+> +	struct simple_counter_count *const simple_count = count->priv;
+> +
+> +	return ext->read(counter, simple_count, ext->priv, buf);
+> +}
+> +
+> +static ssize_t simple_counter_count_ext_write(struct counter_device *dev,
+> +	struct counter_count *count, void *priv, const char *buf, size_t len)
+> +{
+> +	const struct simple_counter_count_ext *const ext = priv;
+> +	struct simple_counter_device *const counter = dev->priv;
+> +	struct simple_counter_count *const simple_count = count->priv;
+> +
+> +	return ext->write(counter, simple_count, ext->priv, buf, len);
+> +}
+> +
+> +static int simple_counter_counter_count_ext_register(
+> +	const struct simple_counter_count *const simple_count,
+> +	struct counter_count *const count)
+> +{
+> +	const struct simple_counter_count_ext *const simple_ext =
+> +		simple_count->ext;
+> +	const size_t num_ext = simple_count->num_ext;
+> +	struct counter_count_ext *ext;
+> +	size_t i;
+> +
+> +	/* Return early if no extensions */
+> +	if (!simple_ext || !num_ext)
+> +		return 0;
+> +
+> +	/* Allocate space for Counter Count extensions array */
+> +	ext = kmalloc_array(num_ext, sizeof(*ext), GFP_KERNEL);
+> +	if (!ext)
+> +		return -ENOMEM;
+> +
+> +	/* Register simple_counter_count_ext via counter_count_ext */
+> +	for (i = 0; i < num_ext; i++) {
+> +		ext[i].name = simple_ext[i].name;
+> +		ext[i].read = (simple_ext[i].read) ?
+> +			simple_counter_count_ext_read : NULL;
+> +		ext[i].write = (simple_ext[i].write) ?
+> +			simple_counter_count_ext_write : NULL;
+> +		ext[i].priv = simple_ext + i;
+> +	}
+> +
+> +	/* Register Counter Count extensions */
+> +	count->ext = ext;
+> +	count->num_ext = num_ext;
+> +
+> +	return 0;
+> +}
+> +
+> +static void simple_counter_counter_synapse_unregister(
+> +	const struct counter_count *const count)
+> +{
+> +	kfree(count->synapses);
+> +}
+> +
+> +static int simple_counter_counter_count_init(
+> +	struct counter_count *const count,
+> +	struct simple_counter_count *const simple_count,
+> +	struct counter_signal *const signal)
+> +{
+> +	int err;
+> +
+> +	count->id = simple_count->id;
+> +	count->name = simple_count->name;
+> +	count->functions = simple_counter_function_names;
+> +	count->num_functions = ARRAY_SIZE(simple_counter_function_names);
+> +	count->priv = simple_count;
+> +
+> +	/* Register Counter Synapse */
+> +	err = simple_counter_counter_synapse_register(signal, count);
+> +	if (err)
+> +		return err;
+> +
+> +	/* Register Counter Count extensions */
+> +	err = simple_counter_counter_count_ext_register(simple_count, count);
+> +	if (err)
+> +		goto err_unregister_synapse;
+> +
+> +	return 0;
+> +
+> +err_unregister_synapse:
+> +	simple_counter_counter_synapse_unregister(count);
+> +	return err;
+> +}
+> +
+> +static void simple_counter_counter_count_ext_unregister(
+> +	const struct counter_count *const count)
+> +{
+> +	kfree(count->ext);
+> +}
+> +
+> +static void simple_counter_counter_count_free(
+> +	const struct counter_count *const count)
+> +{
+> +	simple_counter_counter_count_ext_unregister(count);
+> +	simple_counter_counter_synapse_unregister(count);
+> +}
+> +
+> +static int simple_counter_counter_counts_register(
+> +	const struct simple_counter_device *const counter)
+> +{
+> +	struct counter_device *const counter_dev = counter->counter_dev;
+> +	struct counter_count *counts;
+> +	const size_t num_counts = counter->num_counts;
+> +	size_t i;
+> +	struct simple_counter_count *const simple_counts = counter->counts;
+> +	struct counter_signal *const signals = counter_dev->signals;
+> +	int err;
+> +
+> +	/* Allocate space for counts array */
+> +	counts = kcalloc(num_counts, sizeof(*counts), GFP_KERNEL);
+> +	if (!counts)
+> +		return -ENOMEM;
+> +
+> +	/* Initialize Counts */
+> +	for (i = 0; i < num_counts; i++) {
+> +		err = simple_counter_counter_count_init(counts + i,
+> +			simple_counts + i, signals + i);
+> +		if (err)
+> +			goto err_free_counts;
+> +	}
+> +
+> +	/* Register Counts to Counter device container */
+> +	counter_dev->counts = counts;
+> +	counter_dev->num_counts = num_counts;
+> +
+> +	return 0;
+> +
+> +err_free_counts:
+> +	while (i--)
+> +		simple_counter_counter_count_free(counts + i);
+> +	kfree(counts);
+> +	return err;
+> +}
+> +
+> +static void simple_counter_counter_signals_unregister(
+> +	const struct counter_device *const counter_dev)
+> +{
+> +	const struct counter_signal *const signals = counter_dev->signals;
+> +	size_t num_signals = counter_dev->num_signals;
+> +
+> +	while (num_signals--)
+> +		kfree(signals[num_signals].ext);
+> +	kfree(signals);
+> +}
+> +
+> +static int simple_counter_counts_register(
+> +	struct simple_counter_device *const counter)
+> +{
+> +	const struct simple_counter_count *const simple_counts =
+> +		counter->counts;
+> +	const size_t num_counts = counter->num_counts;
+> +	int err;
+> +
+> +	/* At least one Count must be defined */
+> +	if (!simple_counts || !num_counts) {
+> +		pr_err("simple-counter: Simple Counter Counts undefined\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	/* Register Counter Signals */
+> +	err = simple_counter_counter_signals_register(counter);
+> +	if (err)
+> +		return err;
+> +
+> +	/* Register Counter Counts */
+> +	err = simple_counter_counter_counts_register(counter);
+> +	if (err)
+> +		goto err_unregister_signals;
+> +
+> +	return 0;
+> +
+> +err_unregister_signals:
+> +	simple_counter_counter_signals_unregister(counter->counter_dev);
+> +	return err;
+> +}
+> +
+> +static ssize_t simple_counter_device_ext_read(struct counter_device *dev,
+> +	void *priv, char *buf)
+> +{
+> +	const struct simple_counter_device_ext *const ext = priv;
+> +	struct simple_counter_device *const counter = dev->priv;
+> +
+> +	return ext->read(counter, ext->priv, buf);
+> +}
+> +
+> +static ssize_t simple_counter_device_ext_write(struct counter_device *dev,
+> +	void *priv, const char *buf, size_t len)
+> +{
+> +	const struct simple_counter_device_ext *const ext = priv;
+> +	struct simple_counter_device *const counter = dev->priv;
+> +
+> +	return ext->write(counter, ext->priv, buf, len);
+> +}
+> +
+> +static int simple_counter_device_ext_register(
+> +	struct simple_counter_device *const counter)
+> +{
+> +	const struct simple_counter_device_ext *const simple_ext = counter->ext;
+> +	const size_t num_ext = counter->num_ext;
+> +	struct counter_device_ext *ext;
+> +	size_t i;
+> +	struct counter_device *const counter_dev = counter->counter_dev;
+> +
+> +	/* Return early if no extensions */
+> +	if (!simple_ext || !num_ext)
+> +		return 0;
+> +
+> +	/* Allocate space for Counter device extensions array */
+> +	ext = kmalloc_array(num_ext, sizeof(*ext), GFP_KERNEL);
+> +	if (!ext)
+> +		return -ENOMEM;
+> +
+> +	/* Register simple_counter_device_ext via counter_device_ext */
+> +	for (i = 0; i < num_ext; i++) {
+> +		ext[i].name = simple_ext[i].name;
+> +		ext[i].read = (simple_ext[i].read) ?
+> +			simple_counter_device_ext_read : NULL;
+> +		ext[i].write = (simple_ext[i].write) ?
+> +			simple_counter_device_ext_write : NULL;
+> +		ext[i].priv = simple_ext + i;
+> +	}
+> +
+> +	/* Register Counter device extensions */
+> +	counter_dev->ext = ext;
+> +	counter_dev->num_ext = num_ext;
+> +
+> +	return 0;
+> +}
+> +
+> +static void simple_counter_counter_counts_unregister(
+> +	const struct counter_device *const counter)
+> +{
+> +	const struct counter_count *const counts = counter->counts;
+> +	size_t num_counts = counter->num_counts;
+> +
+> +	while (num_counts--)
+> +		simple_counter_counter_count_free(counts + num_counts);
+> +	kfree(counts);
+> +}
+> +
+> +static void simple_counter_counts_unregister(
+> +	const struct simple_counter_device *const counter)
+> +{
+> +	const struct counter_device *const counter_dev = counter->counter_dev;
+> +
+> +	simple_counter_counter_counts_unregister(counter_dev);
+> +	simple_counter_counter_signals_unregister(counter_dev);
+> +}
+> +
+> +/**
+> + * simple_counter_register - register Simple Counter to the system
+> + * @counter: pointer to Simple Counter to register
+> + *
+> + * This function registers a Simple Counter to the system. A sysfs "counter"
+> + * directory will be created and populated with sysfs attributes correlating
+> + * with the Simple Counter Signals, Synapses, and Counts respectively.
+> + */
+> +int simple_counter_register(struct simple_counter_device *const counter)
+> +{
+> +	struct counter_device *counter_dev;
+> +	int err;
+> +
+> +	if (!counter)
+> +		return -EINVAL;
+> +
+> +	/* Allocate internal Counter container */
+> +	counter_dev = kzalloc(sizeof(*counter_dev), GFP_KERNEL);
+> +	if (!counter)
+> +		return -ENOMEM;
+> +	counter->counter_dev = counter_dev;
+> +
+> +	/* Configure internal Counter */
+> +	counter_dev->name = counter->name;
+> +	counter_dev->parent = counter->parent;
+> +	counter_dev->signal_read = (counter->signal_read) ?
+> +		simple_counter_signal_read : NULL;
 
-I would give and example - input wire from a rotary encoder (perhaps)
+Ah.  This will make my below comment on taking this const
+tricky (at least for the generic counter).
 
-> +
-> +        SYNAPSE
-> +        -------
-> +        A Synapse represents the association of a Signal with a
-> +        respective Count. Signal data affects respective Count data, and
-> +        the Synapse represents this relationship. The Synapse action
-> +        mode (e.g. "rising edge" or "double pulse") specifies the Signal
-> +        data condition which triggers the respective Count's count
-> +        function evaluation to update the count data. It is possible for
-> +        the Synapse action mode to be "none" if a Signal is associated
-> +        with a Count but does not trigger the count function (e.g. the
-> +        direction signal line for a Pulse-Direction encoding counter).
-> +
-> +A counter is defined as a set of input signals associated to count data
-> +that are generated by the evaluation of the state of the associated
-> +input signals as defined by the respective count functions. Within the
-> +context of the Generic Counter interface, a counter consists of Counts
-> +each associated to a set of Signals, whose respective Synapse instances
-> +represent the count function update conditions for the associated
-> +Counts.
-> +
-> +Paradigm
-> +========
-> +
-> +The most basic counter device may be expressed as a single Count
-> +associated with a single Signal via a single Synapse. Take for example
-> +a counter device which simply accumulates a count of rising edges on a
-> +source input line.
-> +
-> +        Count                Synapse        Signal
-> +        -----                -------        ------
-> ++---------------------+
-> +| Data: Count         |    Rising Edge     ________
-> +| Function: Increase  |  <-------------   / Source \
-> +|                     |                  ____________
-> ++---------------------+
-> +
-> +In this example, the Signal is a source input line with a pulsing
-> +voltage, while the Count is a persistent count value which is repeatedly
-> +incremented. The Signal is associated with the respective Count via a
-> +Synapse. The increase function is triggered by the Signal data condition
-> +specified by the Synapse -- in this case a rising edge condition on the
-> +voltage input line. In summary, the counter device existence and
-> +behavior is aptly represented by respective Count, Signal, and Synapse
-> +components: a rising edge condition triggers an increase function on an
-> +accumulating count datum.
-> +
-> +A counter device is not limited to a single Signal; in fact, in theory
-> +many number of Signals may be associated with even a single Count. For
+What do you loose if you take the null check into the simple_counter
+wrappers rather than here?
 
-many Signals
 
-> +example, a quadrature encoder counter device can keep track of position
-> +based on the states of two input lines.
+> +	counter_dev->signal_write = (counter->signal_write) ?
+> +		simple_counter_signal_write : NULL;
+> +	counter_dev->count_read = (counter->count_read) ?
+> +		simple_counter_count_read : NULL;
+> +	counter_dev->count_write = (counter->count_write) ?
+> +		simple_counter_count_write : NULL;
+> +	counter_dev->function_get = (counter->function_get) ?
+> +		simple_counter_function_get : NULL;
+> +	counter_dev->function_set = (counter->function_set) ?
+> +		simple_counter_function_set : NULL;
+> +	counter_dev->action_get = (counter->action_get) ?
+> +		simple_counter_action_get : NULL;
+> +	counter_dev->action_set = (counter->action_set) ?
+> +		simple_counter_action_set : NULL;
+> +	counter_dev->priv = counter;
 > +
-> +           Count                 Synapse     Signal
-> +           -----                 -------     ------
-> ++-------------------------+
-> +| Data: Position          |    Both Edges     ___
-> +| Function: Quadrature x4 |  <------------   / A \
-> +|                         |                 _______
-> +|                         |
-> +|                         |    Both Edges     ___
-> +|                         |  <------------   / B \
-> +|                         |                 _______
-> ++-------------------------+
+> +	/* Register Simple Counter Counts */
+> +	err = simple_counter_counts_register(counter);
+> +	if (err)
+> +		goto err_free_counter_dev;
+> +
+> +	/* Register Simple Counter device extension attributes */
+> +	err = simple_counter_device_ext_register(counter);
+> +	if (err)
+> +		goto err_unregister_counts;
+> +
+> +	/* Register internal Counter to the system */
+> +	err = counter_register(counter_dev);
+> +	if (err)
+> +		goto err_free_ext;
+> +
+> +	return 0;
+> +
+> +err_free_ext:
+> +	kfree(counter_dev->ext);
+> +err_unregister_counts:
+> +	simple_counter_counts_unregister(counter);
+> +err_free_counter_dev:
+> +	kfree(counter_dev);
+> +	return err;
+> +}
+> +EXPORT_SYMBOL(simple_counter_register);
+> +
+> +/**
+> + * simple_counter_unregister - unregister Simple Counter from the system
+> + * @counter: pointer to Simple Counter to unregister
+> + *
+> + * The Simple Counter is unregistered from the system; all allocated memory is
+> + * freed.
+> + */
+> +void simple_counter_unregister(struct simple_counter_device *const counter)
+> +{
+> +	struct counter_device *counter_dev;
+> +
+> +	if (!counter)
+> +		return;
+> +
+> +	counter_dev = counter->counter_dev;
+> +
+> +	counter_unregister(counter_dev);
+> +
+> +	kfree(counter_dev->ext);
+> +	simple_counter_counts_unregister(counter);
+> +	kfree(counter_dev);
+> +}
+> +EXPORT_SYMBOL(simple_counter_unregister);
+> +
+> +static void devm_simple_counter_unreg(struct device *dev, void *res)
+> +{
+> +	simple_counter_unregister(*(struct simple_counter_device **)res);
+> +}
+> +
+> +/**
+> + * devm_simple_counter_register - Resource-managed simple_counter_register
+> + * @dev: device to allocate simple_counter_device for
+> + * @counter: pointer to Simple Counter to register
+> + *
+> + * Managed simple_counter_register. The Simple Counter registered with this
+> + * function is automatically unregistered on driver detach. This function calls
+> + * simple_counter_register internally. Refer to that function for more
+> + * information.
+> + *
+> + * If an Simple Counter registered with this function needs to be unregistered
+> + * separately, devm_simple_counter_unregister must be used.
+> + *
+> + * RETURNS:
+> + * 0 on success, negative error number on failure.
+> + */
+> +int devm_simple_counter_register(struct device *dev,
+> +	struct simple_counter_device *const counter)
+> +{
+> +	struct simple_counter_device **ptr;
+> +	int ret;
+> +
+> +	ptr = devres_alloc(devm_simple_counter_unreg, sizeof(*ptr), GFP_KERNEL);
+> +	if (!ptr)
+> +		return -ENOMEM;
+> +
+> +	ret = simple_counter_register(counter);
+> +	if (!ret) {
+> +		*ptr = counter;
+> +		devres_add(dev, ptr);
+> +	} else
+> +		devres_free(ptr);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL(devm_simple_counter_register);
+> +
+> +static int devm_simple_counter_match(struct device *dev, void *res, void *data)
+> +{
+> +	struct simple_counter_device **r = res;
+> +
+> +	if (!r || !*r) {
+> +		WARN_ON(!r || !*r);
+> +		return 0;
+> +	}
+> +
+> +	return *r == data;
+> +}
+> +
+> +/**
+> + * devm_simple_counter_unregister - Resource-managed simple_counter_unregister
+> + * @dev: device this simple_counter_device belongs to
+> + * @counter: the Simple Counter associated with the device
+> + *
+> + * Unregister Simple Counter registered with devm_simple_counter_register.
+> + */
+> +void devm_simple_counter_unregister(struct device *dev,
+> +	struct simple_counter_device *const counter)
+> +{
+> +	int rc;
+> +
+> +	rc = devres_release(dev, devm_simple_counter_unreg,
+> +		devm_simple_counter_match, counter);
+> +	WARN_ON(rc);
+> +}
+> +EXPORT_SYMBOL(devm_simple_counter_unregister);
+> +
+> +MODULE_AUTHOR("William Breathitt Gray <vilhelm.gray@gmail.com>");
+> +MODULE_DESCRIPTION("Simple Counter interface");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/include/linux/iio/counter.h b/include/linux/iio/counter.h
+> index 070ed8fd53fb..0967ea2a9bef 100644
+> --- a/include/linux/iio/counter.h
+> +++ b/include/linux/iio/counter.h
+> @@ -236,4 +236,203 @@ extern int devm_counter_register(struct device *dev,
+>  extern void devm_counter_unregister(struct device *dev,
+>  	struct counter_device *const counter);
+>  
+> +struct simple_counter_device;
+> +struct simple_counter_signal;
+> +
+> +/**
+> + * struct simple_counter_signal_ext - Simple Counter Signal extension
+> + * @name:	[DRIVER] attribute name
+> + * @read:	[DRIVER] read callback for this attribute; may be NULL
+> + * @write:	[DRIVER] write callback for this attribute; may be NULL
+> + * @priv:	[DRIVER] data private to the driver
+> + */
+> +struct simple_counter_signal_ext {
+> +	const char	*name;
+> +	ssize_t		(*read)(struct simple_counter_device *counter,
+> +				struct simple_counter_signal *signal,
+> +				void *priv, char *buf);
+> +	ssize_t		(*write)(struct simple_counter_device *counter,
+> +				struct simple_counter_signal *signal,
+> +				void *priv, const char *buf, size_t len);
+> +	void		*priv;
+> +};
+> +
+> +/**
+> + * struct simple_counter_signal - Simple Counter Signal node
+> + * @id:		[DRIVER] unique ID used to identify signal
+> + * @name:	[DRIVER] device-specific signal name
+> + * @ext:	[DRIVER] optional array of Simple Counter Signal extensions
+> + * @num_ext:	[DRIVER] number of Simple Counter Signal extensions specified in
+> + *		@ext
+> + * @priv:	[DRIVER] optional private data supplied by driver
+> + */
+> +struct simple_counter_signal {
+> +	int		id;
+> +	const char	*name;
+> +
+> +	const struct simple_counter_signal_ext	*ext;
+> +	size_t					num_ext;
+> +
+> +	void	*priv;
+> +};
+> +
+> +enum simple_counter_signal_level {
+> +	SIMPLE_COUNTER_SIGNAL_LOW = 0,
+> +	SIMPLE_COUNTER_SIGNAL_HIGH
+> +};
+> +
+> +struct simple_counter_count;
+> +
+> +enum simple_counter_function {
+> +	SIMPLE_COUNTER_FUNCTION_INCREASE = 0,
+> +	SIMPLE_COUNTER_FUNCTION_DECREASE
+> +};
+> +
+> +enum simple_counter_action {
+> +	SIMPLE_COUNTER_ACTION_NONE = 0,
+> +	SIMPLE_COUNTER_ACTION_RISING_EDGE,
+> +	SIMPLE_COUNTER_ACTION_FALLING_EDGE,
+> +	SIMPLE_COUNTER_ACTION_BOTH_EDGES
+> +};
+> +
+> +/**
+> + * struct simple_counter_count_ext - Simple Counter Count extension
+> + * @name:	[DRIVER] attribute name
+> + * @read:	[DRIVER] read callback for this attribute; may be NULL
+> + * @write:	[DRIVER] write callback for this attribute; may be NULL
+> + * @priv:	[DRIVER] data private to the driver
+> + */
+> +struct simple_counter_count_ext {
+> +	const char	*name;
+> +	ssize_t		(*read)(struct simple_counter_device *counter,
+> +				struct simple_counter_count *count, void *priv,
+> +				char *buf);
+> +	ssize_t		(*write)(struct simple_counter_device *counter,
+> +				struct simple_counter_count *count, void *priv,
+> +				const char *buf, size_t len);
+> +	void		*priv;
+> +};
+> +
+> +/**
+> + * struct simple_counter_count - Simple Counter Count node
+> + * @id:		[DRIVER] unique ID used to identify Count
+> + * @name:	[DRIVER] device-specific Count name
+> + * @function:	[DRIVER] current function mode
+> + * @action:	[DRIVER] current action mode
+> + * @signal:	[DRIVER] associated signal
+> + * @ext:	[DRIVER] optional array of Simple Counter Count extensions
+> + * @num_ext:	[DRIVER] number of Simple Counter Count extensions specified in
+> + *		@ext
+> + * @priv:	[DRIVER] optional private data supplied by driver
+> + */
+> +struct simple_counter_count {
+> +	int				id;
+> +	const char			*name;
+> +	enum simple_counter_function	function;
+> +	enum simple_counter_action	action;
+> +
+> +	struct simple_counter_signal	signal;
+> +
+> +	const struct simple_counter_count_ext	*ext;
+> +	size_t					num_ext;
+> +
+> +	void	*priv;
+> +};
+> +
+> +/**
+> + * struct simple_counter_device_ext - Simple Counter device extension
+> + * @name:	[DRIVER] attribute name
+> + * @read:	[DRIVER] read callback for this attribute; may be NULL
+> + * @write:	[DRIVER] write callback for this attribute; may be NULL
+> + * @priv:	[DRIVER] data private to the driver
+> + */
+> +struct simple_counter_device_ext {
+> +	const char	*name;
+> +	ssize_t		(*read)(struct simple_counter_device *counter,
+> +				void *priv, char *buf);
+> +	ssize_t		(*write)(struct simple_counter_device *counter,
+> +				void *priv, const char *buf, size_t len);
+> +	void		*priv;
+> +};
+> +
+> +/**
+> + * struct simple_counter_device - Simple Counter data structure
+> + * @name:		[DRIVER] name of the device
+> + * @parent:		[DRIVER] optional parent device providing the counters
+> + * @counter_dev:	[INTERN] internal Counter container
 
-Perhaps add the external encoder itself to the asci art? Where are
-the signals coming from. It's not implausible down the line that you'll
-have to have explicit representation for that hardware.  Could be
-a resolve to encoder convertor for example with its own control registers.
+Same comment as before. Just mark the on the drive shouldn't play with.
 
+> + * @signal_read:	[DRIVER] read callback for Signal attribute; may be
+> + *			NULL. Returns 0 on success and negative error code on
+> + *			error. The respective Signal's returned	level should be
+> + *			passed back via the level parameter.
+> + * @signal_write:	[DRIVER] write callback for Signal attribute; may be
+> + *			NULL
+> + * @count_read:		[DRIVER] read callback for Count attribute; may be NULL.
+> + *			Returns 0 on success and negative error code on error.
+> + *			The respective Count's returned value should be passed
+> + *			back via the val parameter.
+> + * @count_write:	[DRIVER] write callback for Count attribute; may be NULL
+> + * @function_get:	[DRIVER] function to get the current count function
+> + *			mode. Returns 0 on success and negative error code on
+> + *			error. The respective Count's returned function mode
+> + *			should be passed back via the function parameter.
+> + * @function_set:	[DRIVER] function to set the count function mode
+> + * @action_get:		[DRIVER] function to get the current action mode.
+> + *			Returns 0 on success and negative error code on error.
+> + *			The respective Signal's returned action mode should be
+> + *			passed back via the action parameter.
+> + * @action_set:		[DRIVER] function to set the action mode
+> + * @counts:		[DRIVER] array of Simple Counter Counts
+> + * @num_counts:		[DRIVER] number of Simple Counter Counts specified in
+> + *			@counts
+> + * @ext:		[DRIVER] optional array of Simple Counter device
+> + *			extensions
+> + * @num_ext:		[DRIVER] number of Simple Counter device extensions
+> + *			specified in @ext
+> + * @priv:		[DRIVER] optional private data supplied by driver
+> + */
+> +struct simple_counter_device {
+> +	const char		*name;
+> +	struct device		*parent;
+> +	struct counter_device	*counter_dev;
 > +
-> +In this example, two Signals (quadrature encoder lines A and B) are
-> +associated to a single Count: a rising or falling edge on either A or B
-> +triggers the "Quadrature x4" function which determines the direction of
-> +movement and updates the respective position data. The "Quadrature x4"
-> +function is likely implemented in the hardware of the quadrature encoder
-> +counter device; the Count, Signals, and Synapses simply represent this
-> +hardware behavior and functionality.
-> +
-> +Signals associated to the same Count can have differing Synapse action
-> +mode conditions. For example, a quadrature encoder counter device
-> +operating in a non-quadrature Pulse-Direction mode could have one input
-> +line dedicated for movement and a second input line dedicated for
-> +direction.
-> +
-> +           Count                   Synapse      Signal
-> +           -----                   -------      ------
-> ++---------------------------+
-> +| Data: Position            |    Rising Edge     ___
-> +| Function: Pulse-Direction |  <-------------   / A \ (Movement)
-> +|                           |                  _______
-> +|                           |
-> +|                           |       None         ___
-> +|                           |  <-------------   / B \ (Direction)
-> +|                           |                  _______
-> ++---------------------------+
-> +
-> +Only Signal A triggers the "Pulse-Direction" update function, but the
-> +instantaneous state of Signal B is still required in order to know the
-> +direction so that the position data may be properly updated. Ultimately,
-> +both Signals are associated to the same Count via two respective
-> +Synapses, but only one Synapse has an active action mode condition which
-> +triggers the respective count function while the other is left with a
-> +"None" condition action mode to indicate its respective Signal's
-> +availability for state evaluation despite its non-triggering mode.
-> +
-> +The flexibility of Synapses allows for the representation of counters
-> +whose respective Count Signal relationships would be difficult to
-> +represent as isolated inputs. For example a tri-color LED color counter
-> +can easily be represented with three Synapses:
-> +
-> +           Count          Synapse      Signal
-> +           -----          -------      ------
-> ++------------------+
-> +| Data: Count      |    Both Edges     _______
-> +| Function: Purple |  <------------   /  Red  \
-> +|                  |                 ___________
-> +|                  |
-> +|                  |    Both Edges     _______
-> +|                  |  <------------   / Green \
-> +|                  |                 ___________
-> +|                  |
-> +|                  |    Both Edges     _______
-> +|                  |  <------------   / Blue  \
-> +|                  |                 ___________
-> ++------------------+
-> +
-> +This counter accumulates the number of times the tri-color LED has
-> +turned to purple. By utilizing the Synapses to associate the three color
-> +Signals to the single Count, the count function evaluation relationship
-> +becomes apparent: combined color is checked when an individual color is
-> +turned on or off, and if only Red and Blue are active then Count datum
-> +is incremented to indicate the color has now turned to Purple.
 
-This one has somewhat drifted away from common cases. I'm not sure it
-is necessary to understanding so I'd be tempted to drop it as the only
-potential this and the one below have right now is to distract from
-the code we are actually interested in getting reviewed.
+Not sure why I didn't notice before, but presumably all the below
+are effectively const function pointers?
+Lift them out to an ops structure as that'll let the order randomization
+stuff play with them safely (security measure).  Also lets
+us take a large block of this constant.
 
-> +
-> +Although the examples thus far have been representations of physical
-> +devices, this is not a necessity. A counter simply represent the
-> +evaluation (Count) of input data (Signals) triggered by specific
-> +conditions (Synapses). A counter can be the representation of more
-> +abstract components.
-> +
-> +For example, suppose a counter representation is desired for a DNA
-> +sequence analysizer which detects possible genetic diseases.
-> +
-> +        Count                     Synapse            Signal
-> +        -----                     -------            ------
-> ++---------------------+
-> +| Data: Diseases      |    Gene Transcript (EST)     _____
-> +| Function: Cancers   |  <-----------------------   / DNA \ (GAAGTGC...)
-> +|                     |                            _________
-> ++---------------------+
-> +
-> +In this scenario, the Signal is a stream of DNA nucleotide bases (As,
-> +Ts, Cs, and Gs), the Synapse action modes consist of the various
-> +expressed sequence tags (ESTs), and the Count is a list of diseases
-> +discovered (in this particular example the function is evaluating for
-> +possible cancers). Note how the Signal in this example does not
-> +represent a physical voltage line, nor does the Synapse action mode
-> +represent a physical voltage line state change, nor does the Count
-> +represent a strictly decimal data value.
-> +
-> +The DNA sequence analysizer example is contrived to illustrate the
-> +flexibility of the generic counter paradigm by demonstrating its
-> +capability of representing abstract concepts; however, physical devices
-> +are likely to be more fitting for such a representation.
-> +
-> +The key concept is that the Signal, Synapse, and Count are abstract
-> +representations which do not need to be closely married to their
-> +respective physical sources. This allows the user of a counter to
-> +divorce themselves from the nuances of physical components (such as
-> +whether an input line is differential or single-ended) and focus on the
-> +core idea of what the data and process represent (e.g. an accumulated
-> +count of rising edges).
-> +
-> +Userspace Interface
-> +===================
-> +
-> +Several sysfs attributes are generated by the Generic Counter interface,
-> +and reside under the /sys/bus/counter/devices/counterX directory, where
-> +counterX refers to the respective counter device. Please see
-> +Documentation/ABI/testing/sys-bus-counter-generic-sysfs for detailed
-> +information on each Generic Counter interface sysfs attribute.
+Adds a small level of indirection but worth it for the gains.
 
-I would loose the generic-sysfs off that filename.
-sys-bus-counter itself means it covers the generic stuff.
-
+> +	int	(*signal_read)(struct simple_counter_device *counter,
+> +			struct simple_counter_signal *signal,
+> +			enum simple_counter_signal_level *level);
+> +	int	(*signal_write)(struct simple_counter_device *counter,
+> +			struct simple_counter_signal *signal,
+> +			enum simple_counter_signal_level level);
+> +	int	(*count_read)(struct simple_counter_device *counter,
+> +			struct simple_counter_count *count, long *val);
+> +	int	(*count_write)(struct simple_counter_device *counter,
+> +			struct simple_counter_count *count, long val);
+> +	int	(*function_get)(struct simple_counter_device *counter,
+> +			struct simple_counter_count *count,
+> +			enum simple_counter_function *function);
+> +	int	(*function_set)(struct simple_counter_device *counter,
+> +			struct simple_counter_count *count,
+> +			enum simple_counter_function function);
+> +	int	(*action_get)(struct simple_counter_device *counter,
+> +			struct simple_counter_count *count,
+> +			enum simple_counter_action *action);
+> +	int	(*action_set)(struct simple_counter_device *counter,
+> +			struct simple_counter_count *count,
+> +			enum simple_counter_action action);
 > +
-> +Through these sysfs attributes, programs and scripts may interact with
-> +the Generic Counter paradigm Counts, Signals, and Synapses of respective
-> +counter devices.
+> +	struct simple_counter_count	*counts;
+> +	size_t				num_counts;
 > +
-> +Driver API
-> +==========
+> +	const struct simple_counter_device_ext	*ext;
+> +	size_t					num_ext;
 > +
-> +Driver authors may utilize the Generic Counter interface in their code
-> +by including the include/linux/iio/counter.h header file. This header
-> +file provides several core data structures and function prototypes for
-> +defining a generic counter.
+> +	void	*priv;
+> +};
 > +
+> +extern int simple_counter_register(struct simple_counter_device *const counter);
+> +extern void simple_counter_unregister(
+> +	struct simple_counter_device *const counter);
+> +extern int devm_simple_counter_register(struct device *dev,
+> +	struct simple_counter_device *const counter);
+> +extern void devm_simple_counter_unregister(struct device *dev,
+> +	struct simple_counter_device *const counter);
 > +
-> +struct counter_signal_ext
-> +-------------------------
-> +
-> +This structure defines a Generic Counter Signal extension attribute.
-> +These attributes expose auxiliary configuration and functionality
-> +specific to the respective Generic Counter Signal.
-> +
-> +        name:   Attribute name
-> +        read:   Read callback for this attribute; may be NULL
-> +        write:  Write callback for this attribute; may be NULL
-> +        priv:   Data private to the driver
-> +
-> +struct counter_signal
-> +---------------------
-> +
-> +This structure defines a Generic Counter Signal component. Typically,
-> +this will correlate with an input channel on a physical counter device.
-> +This structure is the simplest of the Generic Counter paradigm core
-> +components to define with only two structure members which require
-> +explicit configuration:
-> +
-> +        id:             unique ID used to identify signal
-> +        name:           device-specific signal name
-
-Again, guidance needed on what this actually should be. It's an important
-bit of the ABI so best to document what the form of these things should be.
-
-> +        ext:            optional array of Counter Signal extensions
-> +        num_ext:        number of Counter Signal extensions specified in
-> +                        ext
-> +        priv:           optional private data supplied by driver
-> +
-> +struct counter_synapse
-> +----------------------
-> +
-> +This structure defines a Generic Counter Synapse component. To properly
-> +utilize this structure, action modes and an associated Signal must be
-> +defined:
-> +
-> +        action:         current action mode
-> +        actions:        available action modes
-
-I would make the names more distinct as action vs actions will not be easy
-to read in the code.
-
-> +        num_actions:    number of action modes specified in actions
-> +        signal:         pointer to associated signal
-> +
-> +struct counter_count_ext
-> +------------------------
-> +
-> +This structure defines a Generic Counter Count extension attribute.
-> +These attributes expose auxiliary configuration and functionality
-> +specific to the respective Generic Counter Count.
-> +
-> +        name:   attribute name
-> +        read:   read callback for this attribute; may be NULL
-> +        write:  write callback for this attribute; may be NULL
-> +        priv:   data private to the driver
-> +
-> +struct counter_count
-> +--------------------
-> +
-> +This structure defines a Generic Counter Count component. Typically,
-> +this will correlate with the read data (the "count" value) provided by a
-> +physical counter device. This structure requires the explicit
-> +configuration of an ID, name, function modes (the function triggered on
-> +a Synapse action condition), and a set of Synapses for the associated
-> +Signals:
-> +
-> +        id:             unique ID used to identify Count
-> +        name:           device-specific Count name
-> +        function:       current function mode
-current_function or similar will make it more distinct from just the plural.
-> +        functions:      available function modes
-> +        num_functions:  number of functions specified in @functions
-> +        synapses:       array of synapses for initialization
-> +        num_synapses:   number of synapses specified in @synapses
-> +        ext:            optional array of Counter Count extensions
-> +        num_ext:        number of Counter Count extensions specified in
-> +                        ext
-> +        priv:           optional private data supplied by driver
-> +
-> +struct counter_device_ext
-> +-------------------------
-> +
-> +This structure defines a Generic Counter extension attribute. These
-> +attributes expose auxiliary configuration and functionality specific to
-> +the respective Generic Counter.
-> +
-> +        name:   attribute name
-> +        read:   read callback for this attribute; may be NULL
-> +        write:  write callback for this attribute; may be NULL
-> +        priv:   data private to the driver
-> +
-> +struct counter_device
-> +---------------------
-> +
-> +This is the main data structure for a Generic Counter device. Access to
-> +all respective Counts, Signals, and Synapses is possible from this
-> +structure. This structure requires the configuration of a name, Generic
-> +Counter Signals, and Generic Counter Counts:
-> +
-> +name:           name of the device
-> +parent:         optional parent device providing the counters
-> +signal_read:    read callback for Signal attribute; may be NULL
-> +signal_write:   write callback for Signal attribute; may be NULL
-> +count_read:     read callback for Count attribute; may be NULL
-> +count_write:    write callback for Count attribute; may be NULL
-> +function_get:   function to get the current count function mode. Returns
-> +                0 on success and negative error code on error. The index
-> +                of the respective Count's returned function mode should
-> +                be passed back via the function parameter.
-> +function_set:   function to set the count function mode. function is the
-> +                index of the requested function mode from the respective
-> +                Count's functions array.
-> +action_get:     function to get the current action mode. Returns 0 on
-> +                success and negative error code on error. The index of
-> +                the respective Signal's returned action mode should be
-> +                passed back via the action parameter.
-> +action_set:     function to set the action mode. action is the index of
-> +                the requested action mode from the respective Synapse's
-> +                actions array.
-> +signals:        array of Signals
-> +num_signals:    number of Signals specified in @signals
-> +counts:         array of Counts
-> +num_counts:     number of Counts specified in @counts
-> +ext:            optional array of Counter device extensions
-> +num_ext:        number of Counter device extensions specified in ext
-> +priv:           optional private data supplied by driver
-> +
-> +Registration functions
-> +----------------------
-> +
-> +A counter device is registered to the system by passing the respective
-> +initialized counter_device structure to the counter_register function;
-> +similarly, the counter_unregister function unregisters the respective
-> +Counter. The devm_counter_register and devm_counter_unregister functions
-> +serve as device memory-managed versions of the counter_register and
-> +counter_unregister functions respectively.
-> +
-> +Implementation
-> +==============
-> +
-> +To support a counter device, a driver must first allocate the available
-> +Counter Signals via counter_signal structures. These Signals should
-> +be stored as an array and set to the signals array member of an
-> +allocated counter_device structure before the Counter is registered to
-> +the system.
-> +
-> +Counter Counts may be allocated via counter_count structures, and
-> +respective Counter Signal associations (Synapses) made via
-> +counter_synapse structures. Associated counter_synapse structures are
-> +stored as an array and set to the the synapses array member of the
-> +respective counter_count structure. These counter_count structures are
-> +set to the counts array member of an allocated counter_device structure
-> +before the Counter is registered to the system.
-> +
-> +Driver callbacks should be provided to the counter_device structure in
-> +order to communicate with the device: to read and write various Signals
-> +and Counts, and to set and get the "action mode" and "function mode" for
-> +various Synapses and Counts respectively.
-> +
-> +A defined counter_device structure may be registered to the system by
-> +passing it to the counter_register function, and unregistered by passing
-> +it to the counter_unregister function. Similarly, the
-> +devm_counter_register and devm_counter_unregister functions may be used
-> +if device memory-managed registration is desired.
-> +
-> +Extension sysfs attributes can be created for auxiliary functionality
-> +and data by passing in defined counter_device_ext, counter_count_ext,
-> +and counter_signal_ext structures. In these cases, the
-> +counter_device_ext structure is used for global configuration of the
-> +respective Counter device, while the counter_count_ext and
-> +counter_signal_ext structures allow for auxiliary exposure and
-> +configuration of a specific Count or Signal respectively.
-> +
-> +Architecture
-> +============
-> +
-> +The counter_init function is called when the generic-counter module is
-> +loaded on the system. At this point, a bus_type named "counter" is
-> +registered and a dedicated "counter" chrdev region is allocated; these
-> +are removed and cleaned-up in the counter_exit function called when the
-> +generic-counter module is unloaded from the system.
-
-What's the chrdev for?
-
-> +
-> +Counter devices are registered to the system via the counter_register
-> +function, and later removed via the counter_unregister function. The
-> +counter_register function establishes a unique ID for the Counter device
-> +and creates an associated device node under /dev called counterX, where
-> +X is the mentioned unique ID. A respective sysfs directory is created
-> +for the Counter device with a similar naming scheme:
-> +
-> +    /sys/bus/counter/devices/counterX
-> +
-> +Sysfs attributes are created within the counterX directory to expose
-> +functionality, configurations, and data relating to the Counts, Signals,
-> +and Synapses of the Counter device, as well as options and information
-> +for the Counter device itself.
-> +
-> +For a more detailed breakdown of the available Generic Counter interface
-> +sysfs attributes, please refer to the
-> +Documentation/ABI/testing/sys-bus-counter-generic-sysfs file.
-> +
-> +The Signals and Counts associated with the Counter device are registered
-> +to the system as well by the counter_register function. The
-> +signal_read/signal_write driver callbacks are associated to their
-> +respective Signal attributes, while the count_read/count_write and
-> +function_get/function_set driver callbacks are associated to their
-> +respective Count attributes; similarly, the same is true for the
-> +action_get/action_set driver callbacks and their respective Synapse
-> +attributes. If a driver callback is left undefined, then the respective
-> +read/write permission is left disabled for the relevant attributes.
-> +
-> +Similarly, extension sysfs attributes are created for the defined
-> +counter_device_ext, counter_count_ext, and counter_signal_ext
-> +structures that are passed in.
-> diff --git a/Documentation/driver-api/iio/index.rst b/Documentation/driver-api/iio/index.rst
-> index e5c3922d1b6f..e6c5b75c2e03 100644
-> --- a/Documentation/driver-api/iio/index.rst
-> +++ b/Documentation/driver-api/iio/index.rst
-> @@ -15,3 +15,4 @@ Contents:
->     buffers
->     triggers
->     triggered-buffers
-> +   generic-counter
-
-I would give it a category to itself and not put it under
-the iio docs (unless you decide to host in IIO)
-
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 38da1bc615b3..08eba78057e4 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -3665,6 +3665,7 @@ COUNTER INTERFACE
->  M:	William Breathitt Gray <vilhelm.gray@gmail.com>
->  L:	linux-iio@vger.kernel.org
->  S:	Maintained
-> +F:	Documentation/driver-api/counter/
->  F:	Documentation/ABI/testing/sysfs-bus-counter-*
->  F:	drivers/iio/counter/
->  F:	include/linux/iio/counter.h
+>  #endif /* _COUNTER_H_ */
 
