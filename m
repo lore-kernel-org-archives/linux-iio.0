@@ -1,16 +1,17 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-io0-f196.google.com ([209.85.223.196]:32786 "EHLO
-        mail-io0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751981AbeABJSE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 2 Jan 2018 04:18:04 -0500
-Received: by mail-io0-f196.google.com with SMTP id t63so11286997iod.0
-        for <linux-iio@vger.kernel.org>; Tue, 02 Jan 2018 01:18:04 -0800 (PST)
+Received: from mail-it0-f68.google.com ([209.85.214.68]:35165 "EHLO
+        mail-it0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752173AbeABJTh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 2 Jan 2018 04:19:37 -0500
+Received: by mail-it0-f68.google.com with SMTP id f143so38830871itb.0
+        for <linux-iio@vger.kernel.org>; Tue, 02 Jan 2018 01:19:36 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <ff1871fe837aa3a520fefe2602f8f1e13e1db244.1514475654.git.vilhelm.gray@gmail.com>
+In-Reply-To: <CACRpkdbYiG7TOOvBa3kWtocae8NikXCdDQkR6LyPd6Umt=DHTA@mail.gmail.com>
 References: <cover.1514475654.git.vilhelm.gray@gmail.com> <ff1871fe837aa3a520fefe2602f8f1e13e1db244.1514475654.git.vilhelm.gray@gmail.com>
+ <CACRpkdbYiG7TOOvBa3kWtocae8NikXCdDQkR6LyPd6Umt=DHTA@mail.gmail.com>
 From: Linus Walleij <linus.walleij@linaro.org>
-Date: Tue, 2 Jan 2018 10:18:03 +0100
-Message-ID: <CACRpkdbYiG7TOOvBa3kWtocae8NikXCdDQkR6LyPd6Umt=DHTA@mail.gmail.com>
+Date: Tue, 2 Jan 2018 10:19:36 +0100
+Message-ID: <CACRpkdZ=kYMg==PEK3D==625+8zK_L+bM-WRSnJQDHVDkyQzsw@mail.gmail.com>
 Subject: Re: [PATCH 3/3] gpio: Change ISA_BUS_API dependency to selection
 To: William Breathitt Gray <vilhelm.gray@gmail.com>
 Cc: "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>,
@@ -21,21 +22,24 @@ Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Dec 28, 2017 at 5:02 PM, William Breathitt Gray
-<vilhelm.gray@gmail.com> wrote:
-
-> The ISA_BUS_API Kconfig option enables the compilation of the ISA bus
-> driver. The ISA bus driver does not perform any hardware interaction,
-> and is instead just a thin layer of software abstraction to eliminate
-> boilerplate code common to ISA-style device drivers. Since ISA_BUS_API
-> has no dependencies and does not jeopardize the integrity of the system
-> when enabled, drivers should select it when the ISA bus driver
-> functionality is needed.
+On Tue, Jan 2, 2018 at 10:18 AM, Linus Walleij <linus.walleij@linaro.org> wrote:
+> On Thu, Dec 28, 2017 at 5:02 PM, William Breathitt Gray
+> <vilhelm.gray@gmail.com> wrote:
 >
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+>> The ISA_BUS_API Kconfig option enables the compilation of the ISA bus
+>> driver. The ISA bus driver does not perform any hardware interaction,
+>> and is instead just a thin layer of software abstraction to eliminate
+>> boilerplate code common to ISA-style device drivers. Since ISA_BUS_API
+>> has no dependencies and does not jeopardize the integrity of the system
+>> when enabled, drivers should select it when the ISA bus driver
+>> functionality is needed.
+>>
+>> Cc: Linus Walleij <linus.walleij@linaro.org>
+>> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+>
+> Patch applied.
 
-Patch applied.
+Ooops there are newer patches, backed it out.
 
 Yours,
 Linus Walleij
