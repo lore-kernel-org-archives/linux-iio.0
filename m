@@ -1,125 +1,57 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail2-relais-roc.national.inria.fr ([192.134.164.83]:10905 "EHLO
-        mail2-relais-roc.national.inria.fr" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1752939AbeABN4s (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 2 Jan 2018 08:56:48 -0500
+Return-Path: <SRS0=Hf5a=D5=lip6.fr=Julia.Lawall@kernel.org>
 From: Julia Lawall <Julia.Lawall@lip6.fr>
-To: linux-iio@vger.kernel.org
+To: Jonathan Cameron <jic23@kernel.org>
 Cc: kernel-janitors@vger.kernel.org,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: [PATCH 00/12] account for const type of of_device_id.data
-Date: Tue,  2 Jan 2018 14:27:56 +0100
-Message-Id: <1514899688-27844-1-git-send-email-Julia.Lawall@lip6.fr>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 11/12] iio: common: ssp_sensors: account for const type of of_device_id.data
+Date: Tue,  2 Jan 2018 14:28:07 +0100
+Message-Id: <1514899688-27844-12-git-send-email-Julia.Lawall@lip6.fr>
+In-Reply-To: <1514899688-27844-1-git-send-email-Julia.Lawall@lip6.fr>
+References: <1514899688-27844-1-git-send-email-Julia.Lawall@lip6.fr>
+List-ID: <linux-iio@vger.kernel.org>
 
-Maintain const annotations when putting values into the data field of
-an of_device_id structure, and afterwards when extracting them from
-the data field of such a structure.
+This driver creates a number of const structures that it stores in the
+data field of an of_device_id array.
 
-This was done using the following semantic patch:
-(http://coccinelle.lip6.fr/)
+Add const to the declaration of the location that receives a value
+from the data field to ensure that the compiler will continue to check
+that the value is not modified and remove the const-dropping cast on
+the access to the data field.
 
-// <smpl>
-@r@
-identifier i,j;
-const struct j *m;
-struct i *y;
-type T;
-expression x,e;
-position p;
-@@
+Done using Coccinelle.
 
-(
-y =@p (T)(of_device_get_match_data(...));
-|
-x = of_match_node(...);
-... when != x = e
-(
-m = e;
-|
-y =@p (T)(x->data);
-)
-)
-
-@s@
-identifier r.i,j;
-@@
-
-const struct i j = { ... };
-
-@t depends on s disable optional_qualifier@
-expression e;
-identifier r.i,x,j,n;
-struct j *m;
-struct i *e1;
-position any r.p;
-type T;
-@@
-
-(
-+const
-struct i *x;
-<+...
-(
-x =@p 
--   (T)(e)
-+   e
-|
-x =@p e
-)
-...+>
-|
-m->@e1 n =@p 
--   (T)(e)
-+   e
-|
-m->@e1 n =@p e
-)
-
-@disable optional_qualifier@
-identifier t.j,t.n,r.i;
-@@
-
-struct j {
-  ...
-+ const
-  struct i *n;
-  ...
-}
-
-@@
-identifier x,s.j;
-type T;
-@@
-
-struct of_device_id x[] = { ...,
-  { .data =
--           (T)
-            &j, }, ...};
-
-// </smpl>
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
 ---
+ drivers/iio/common/ssp_sensors/ssp.h     |    2 +-
+ drivers/iio/common/ssp_sensors/ssp_dev.c |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
- drivers/i2c/busses/i2c-rk3x.c               |   16 ++++++++--------
- drivers/iio/common/ssp_sensors/ssp.h        |    2 +-
- drivers/iio/common/ssp_sensors/ssp_dev.c    |    2 +-
- drivers/mtd/spi-nor/fsl-quadspi.c           |    8 ++++----
- drivers/pci/dwc/pcie-qcom.c                 |    4 ++--
- drivers/pinctrl/mvebu/pinctrl-armada-37xx.c |    4 ++--
- drivers/pinctrl/pinctrl-at91-pio4.c         |    4 ++--
- drivers/pinctrl/pinctrl-axp209.c            |    2 +-
- drivers/power/avs/rockchip-io-domain.c      |   24 ++++++++++++------------
- drivers/power/reset/at91-sama5d2_shdwc.c    |    4 ++--
- drivers/power/supply/axp20x_ac_power.c      |    8 ++++----
- drivers/spi/spi-fsl-dspi.c                  |    7 +++----
- drivers/spi/spi-sirf.c                      |    4 ++--
- 13 files changed, 44 insertions(+), 44 deletions(-)
+diff -u -p a/drivers/iio/common/ssp_sensors/ssp.h b/drivers/iio/common/ssp_sensors/ssp.h
+--- a/drivers/iio/common/ssp_sensors/ssp.h
++++ b/drivers/iio/common/ssp_sensors/ssp.h
+@@ -188,7 +188,7 @@ struct ssp_sensorhub_info {
+  */
+ struct ssp_data {
+ 	struct spi_device *spi;
+-	struct ssp_sensorhub_info *sensorhub_info;
++	const struct ssp_sensorhub_info *sensorhub_info;
+ 	struct timer_list wdt_timer;
+ 	struct work_struct work_wdt;
+ 	struct delayed_work work_refresh;
+diff -u -p a/drivers/iio/common/ssp_sensors/ssp_dev.c b/drivers/iio/common/ssp_sensors/ssp_dev.c
+--- a/drivers/iio/common/ssp_sensors/ssp_dev.c
++++ b/drivers/iio/common/ssp_sensors/ssp_dev.c
+@@ -486,7 +486,7 @@ static struct ssp_data *ssp_parse_dt(str
+ 	if (!match)
+ 		goto err_mcu_reset_gpio;
+ 
+-	data->sensorhub_info = (struct ssp_sensorhub_info *)match->data;
++	data->sensorhub_info = match->data;
+ 
+ 	dev_set_drvdata(dev, data);
+ 
