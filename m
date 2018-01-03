@@ -1,64 +1,78 @@
-Return-Path: <SRS0=vJyU=D6=gmail.com=lorenzo.bianconi83@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mout.gmx.net ([212.227.15.15]:51499 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751428AbeACLtA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 3 Jan 2018 06:49:00 -0500
+To: linux-leds@vger.kernel.org, Sakari Ailus <sakari.ailus@iki.fi>,
+        linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
+        Paul Fertser <fercerpav@gmail.com>
+From: Oleksij Rempel <linux@rempel-privat.de>
+Subject: proper framework for meter sink?
+Message-ID: <649fa764-6598-8f05-90c0-e10a4d36b08f@rempel-privat.de>
+Date: Wed, 3 Jan 2018 12:48:36 +0100
 MIME-Version: 1.0
-In-Reply-To: <1514967127-127457-1-git-send-email-weiyongjun1@huawei.com>
-References: <1514967127-127457-1-git-send-email-weiyongjun1@huawei.com>
-From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-Date: Wed, 3 Jan 2018 11:44:53 +0100
-Message-ID: <CAA2SeNJpZsjWAxLg2eGFHsXDDCctAUyNsLk1cydh1TYArDDUug@mail.gmail.com>
-Subject: Re: [PATCH -next] iio: light: st_uvis25: make local symbols static
-To: Wei Yongjun <weiyongjun1@huawei.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="2VSFfMUdyK0OJWUMrMhKuov9fsqKowNdS"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-> Fixes the following sparse warning:
->
-> drivers/iio/light/st_uvis25_i2c.c:22:28: warning:
->  symbol 'st_uvis25_i2c_regmap_config' was not declared. Should it be static?
-> drivers/iio/light/st_uvis25_spi.c:22:28: warning:
->  symbol 'st_uvis25_spi_regmap_config' was not declared. Should it be static?
->
-> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-> ---
->  drivers/iio/light/st_uvis25_i2c.c | 2 +-
->  drivers/iio/light/st_uvis25_spi.c | 2 +-
->  2 file changed, 2 insertion(+), 2 deletion(-)
->
-> diff --git a/drivers/iio/light/st_uvis25_i2c.c b/drivers/iio/light/st_uvis25_i2c.c
-> index c939c0b..afd6eb0 100644
-> --- a/drivers/iio/light/st_uvis25_i2c.c
-> +++ b/drivers/iio/light/st_uvis25_i2c.c
-> @@ -19,7 +19,7 @@
->
->  #define UVIS25_I2C_AUTO_INCREMENT      BIT(7)
->
-> -const struct regmap_config st_uvis25_i2c_regmap_config = {
-> +static const struct regmap_config st_uvis25_i2c_regmap_config = {
->         .reg_bits = 8,
->         .val_bits = 8,
->         .write_flag_mask = UVIS25_I2C_AUTO_INCREMENT,
-> diff --git a/drivers/iio/light/st_uvis25_spi.c b/drivers/iio/light/st_uvis25_spi.c
-> index e697e14..cdfee5e 100644
-> --- a/drivers/iio/light/st_uvis25_spi.c
-> +++ b/drivers/iio/light/st_uvis25_spi.c
-> @@ -19,7 +19,7 @@
->  #define UVIS25_SENSORS_SPI_READ                BIT(7)
->  #define UVIS25_SPI_AUTO_INCREMENT      BIT(6)
->
-> -const struct regmap_config st_uvis25_spi_regmap_config = {
-> +static const struct regmap_config st_uvis25_spi_regmap_config = {
->         .reg_bits = 8,
->         .val_bits = 8,
->         .read_flag_mask = UVIS25_SENSORS_SPI_READ | UVIS25_SPI_AUTO_INCREMENT,
->
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--2VSFfMUdyK0OJWUMrMhKuov9fsqKowNdS
+Content-Type: multipart/mixed; boundary="5JXIsWezL3qkDygrxiIJimxXE5eMClgGC";
+ protected-headers="v1"
+From: Oleksij Rempel <linux@rempel-privat.de>
+To: linux-leds@vger.kernel.org, Sakari Ailus <sakari.ailus@iki.fi>,
+ linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
+ Paul Fertser <fercerpav@gmail.com>
+Message-ID: <649fa764-6598-8f05-90c0-e10a4d36b08f@rempel-privat.de>
+Subject: proper framework for meter sink?
 
-I guess it is already fixed in commit 75d06abbf30e3569035cfa0e7cf46797548bb829
+--5JXIsWezL3qkDygrxiIJimxXE5eMClgGC
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
 
+Hallo all,
+
+I wont to use existing LED triggers by setting multiple LEDs on trigger.
+The triggers should use brightness value by different trigger intensity
+and the driver should set different amount of LEDs depending on
+brightness value.
+With other words LED meter controller by kernel LED framework. It should
+be possible to configure LED arrays by Device Tree.
+Initially i was thinking about some kind of extended leds-gpio.c driver
+which will convert brightness value to LED position. But one my friend
+pointed me that metes exist in different configurations and it make no
+sense to bind it to LED framework.
+
+Do you have any ideas, suggestions, tips? I know there are lot of user
+space based variants. On other hand kernel already have almost every
+thing what I need.
+
+--=20
 Regards,
-Lorenzo
+Oleksij
 
--- 
-UNIX is Sexy: who | grep -i blonde | talk; cd ~; wine; talk; touch;
-unzip; touch; strip; gasp; finger; gasp; mount; fsck; more; yes; gasp;
-umount; make clean; sleep
+
+--5JXIsWezL3qkDygrxiIJimxXE5eMClgGC--
+
+--2VSFfMUdyK0OJWUMrMhKuov9fsqKowNdS
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF4EAREIAAYFAlpMwxQACgkQHwImuRkmbWnQXAD/TY+IhQq9eFM9bkRSLWXb4/rA
+tmeHUjVPtwJfH4H4PPoA/3kyNOJvzLo2u+fuUl2xa8bX6IR2n76FMe4DlAD2kzw0
+=QsCB
+-----END PGP SIGNATURE-----
+
+--2VSFfMUdyK0OJWUMrMhKuov9fsqKowNdS--
