@@ -1,43 +1,81 @@
-Return-Path: <SRS0=KCHU=D7=metafoo.de=lars@kernel.org>
-Subject: Re: [PATCH] Drivers:iio:dac: Remove unneeded conversion to bool
-To: venkat.prashanth2498@gmail.com, Michael.Hennerich@analog.com,
- jic23@kernel.org
-Cc: knaack.h@gmx.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org
-References: <1515067092-5219-1-git-send-email-venkat.prashanth2498@gmail.com>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <714f6cc7-0c14-c587-2db2-018ad6fca5e1@metafoo.de>
-Date: Thu, 4 Jan 2018 13:54:35 +0100
+Return-Path: <SRS0=B/GZ=D7=gmail.com=aishpant@kernel.org>
+Date: Thu, 4 Jan 2018 20:06:18 +0530
+From: Aishwarya Pant <aishpant@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Julia Lawall <julia.lawall@lip6.fr>, Joe Perches <joe@perches.com>
+Subject: [PATCH 0/5] iio: use permission specific variants of DEVICE_ATTR
+Message-ID: <cover.1515076155.git.aishpant@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <1515067092-5219-1-git-send-email-venkat.prashanth2498@gmail.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 List-ID: <linux-iio@vger.kernel.org>
 
-On 01/04/2018 12:58 PM, venkat.prashanth2498@gmail.com wrote:
-> From: Venkat Prashanth B U <venkat.prashanth2498@gmail.com>
-> 
-> This is a patch to the mcp4725.c file which
-> fixes the following coccinelle warning:
-> 
-> WARNING: conversion to bool not needed here
-> 
-> Signed-off-by: Venkat Prashanth B U <venkat.prashanth2498@gmail.com>
-> ---
->  drivers/iio/dac/mcp4725.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
-> index afa856d..8f8c529 100644
-> --- a/drivers/iio/dac/mcp4725.c
-> +++ b/drivers/iio/dac/mcp4725.c
-> @@ -476,7 +476,6 @@ static int mcp4725_probe(struct i2c_client *client,
->  		goto err_disable_vref_reg;
->  	}
->  	pd = (inbuf[0] >> 1) & 0x3;
-> -	data->powerdown = pd > 0 ? true : false;
+Series of clean-up patches which replace all DEVICE_ATTR macros with the
+permission specific variants DEVICE_ATTR_{RO/WO/RW}.
 
-You removed the complete statement. Not just the conversion to bool.
+Patches were created using coccinelle. The following script is for conversion to
+the DEVICE_ATTR_RO macro and the other conversions are similar. The script may
+require some manual intervention when multiple attributes share the show or
+store function.
 
->  	data->powerdown_mode = pd ? pd - 1 : 2; /* largest resistor to gnd */
->  	data->dac_value = (inbuf[1] << 4) | (inbuf[2] >> 4);
->  	if (data->id == MCP4726)
-> 
+@r@
+identifier attr, show_fn;
+declarer name DEVICE_ATTR;
+@@
+
+DEVICE_ATTR(attr, \(S_IRUGO\|0444\), show_fn, NULL);
+
+@script: python p@
+attr_show;
+attr << r.attr;
+@@
+
+// standardise the show fn name to {attr}_show
+coccinelle.attr_show = attr + "_show"
+
+@@
+identifier r.attr, r.show_fn;
+declarer name DEVICE_ATTR_RO;
+@@
+
+// change the attr declaration
+- DEVICE_ATTR(attr, \(S_IRUGO\|0444\), show_fn, NULL);
++ DEVICE_ATTR_RO(attr);
+
+@rr@
+identifier r.show_fn, p.attr_show;
+@@
+
+// rename the show function
+- show_fn
++ attr_show
+        (...) {
+        ...
+  }
+
+@depends on rr@
+identifier r.show_fn, p.attr_show;
+@@
+
+// rename fn usages
+- show_fun
++ attr_show
+
+Aishwarya Pant (5):
+  iio: buffer: use permission specific variants of DEVICE_ATTR
+  iio: core: use permission specific variants of DEVICE_ATTR
+  iio: trigger: use permission specific variants of DEVICE_ATTR
+  iio: hrtimer: use permission specific variants of DEVICE_ATTR
+  iio: trigger: sysfs: use permisssion specific variants of DEVICE_ATTR
+
+ drivers/iio/industrialio-buffer.c      | 25 +++++++++++--------------
+ drivers/iio/industrialio-core.c        | 11 +++++------
+ drivers/iio/industrialio-trigger.c     | 18 ++++++++----------
+ drivers/iio/trigger/iio-trig-hrtimer.c |  8 +++-----
+ drivers/iio/trigger/iio-trig-sysfs.c   |  4 ++--
+ 5 files changed, 29 insertions(+), 37 deletions(-)
+
+-- 
+2.15.1
