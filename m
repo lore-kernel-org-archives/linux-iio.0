@@ -1,137 +1,188 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:41438 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750785AbeAAJag (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 1 Jan 2018 04:30:36 -0500
-Date: Mon, 1 Jan 2018 09:30:31 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Stefan =?UTF-8?B?QnLDvG5z?= <stefan.bruens@rwth-aachen.de>
-Cc: <linux-iio@vger.kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Maciej Purski <m.purski@samsung.com>,
-        <linux-kernel@vger.kernel.org>, "Andrew F . Davis" <afd@ti.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Hartmut Knaack <knaack.h@gmx.de>
-Subject: Re: [PATCH v4 5/7] iio: adc: ina2xx: Use a monotonic clock for
- delay calculation
-Message-ID: <20180101093031.26e6e05b@archlinux>
-In-Reply-To: <3dfac802-d735-421b-9676-085e6def4cad@rwthex-w2-a.rwth-ad.de>
-References: <20171229174806.5a615b63@archlinux>
-        <3dfac802-d735-421b-9676-085e6def4cad@rwthex-w2-a.rwth-ad.de>
+Received: from esa3.microchip.iphmx.com ([68.232.153.233]:5424 "EHLO
+        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753237AbeADPUK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 4 Jan 2018 10:20:10 -0500
+Subject: Re: [PATCH 12/14] iio: adc: at91-sama5d2_adc: support for position
+ and pressure channels
+To: Jonathan Cameron <jic23@kernel.org>
+CC: <nicolas.ferre@microchip.com>, <ludovic.desroches@microchip.com>,
+        <alexandre.belloni@free-electrons.com>,
+        <linux-iio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-input@vger.kernel.org>, <dmitry.torokhov@gmail.com>
+References: <1513955241-10985-1-git-send-email-eugen.hristev@microchip.com>
+ <1513955241-10985-13-git-send-email-eugen.hristev@microchip.com>
+ <20171229170236.06bf6394@archlinux>
+From: Eugen Hristev <eugen.hristev@microchip.com>
+Message-ID: <25045512-f372-3f25-e84f-ed809db9dde3@microchip.com>
+Date: Thu, 4 Jan 2018 17:17:54 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <20171229170236.06bf6394@archlinux>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 1 Jan 2018 02:24:42 +0100
-Stefan Brüns <stefan.bruens@rwth-aachen.de> wrote:
 
-> The iio timestamp clock is user selectable and may be non-monotonic. Also,
-> only part of the acquisition time is measured, thus the delay was longer
-> than intended.
-> 
-> Use a monotonic timestamp to track the time for the next poll iteration.
-> The timestamp is advanced by the sampling interval each iteration. In case
-> the conversion overrruns the register readout (i.e. fast sampling combined
-> with a slow bus), one or multiple samples will be dropped.
-> 
-> Signed-off-by: Stefan Brüns <stefan.bruens@rwth-aachen.de>
-Replaced v3
 
-Thanks,
+On 29.12.2017 19:02, Jonathan Cameron wrote:
+> On Fri, 22 Dec 2017 17:07:19 +0200
+> Eugen Hristev <eugen.hristev@microchip.com> wrote:
+> 
+>> The ADC IP supports position and pressure measurements for a touchpad
+>> connected on channels 0,1,2,3 for a 4-wire touchscreen with pressure
+>> measurement support.
+>> Using the inkern API, a driver can request a trigger and read the
+>> channel values from the ADC.
+>> The implementation provides a trigger named "touch" which can be
+>> connected to a consumer driver.
+>> Once a driver connects and attaches a pollfunc to this trigger, the
+>> configure trigger callback is called, and then the ADC driver will
+>> initialize pad measurement.
+>> First step is to enable touchscreen 4wire support and enable
+>> pen detect IRQ.
+>> Once a pen is detected, a periodic trigger is setup to trigger every
+>> 2 ms (e.g.) and sample the resistive touchscreen values. The trigger poll
+>> is called, and the consumer driver is then woke up, and it can read the
+>> respective channels for the values : X, and Y for position and pressure
+>> channel.
+>> Because only one trigger can be active in hardware in the same time,
+>> while touching the pad, the ADC will block any attempt to use the
+>> triggered buffer. Same, conversions using the software trigger are also
+>> impossible (since the periodic trigger is setup).
+>> If some driver wants to attach while the trigger is in use, it will
+>> also fail.
+>> Once the pen is not detected anymore, the trigger is free for use (hardware
+>> or software trigger, with or without DMA).
+>> Channels 0,1,2 and 3 are unavailable if a touchscreen is enabled.
+>>
+>> Some parts of this patch are based on initial original work by
+>> Mohamed Jamsheeth Hajanajubudeen and Bandaru Venkateswara Swamy
+>>
+> OK, so comments inline.
+> 
+> What I'm missing currently though is an explanation of why the slightly
+> more standard arrangement of using a callback buffer doesn't work here.
+> The only addition I think you need to do that is to allow a consumer to
+> request a particular trigger.  I also think some of the other provisions
+> could be handled using standard features and slightly reducing the flexibility.
+> I don't know for example if it's useful to allow other channels to be
+> read when touch is not in progress or not.
+> 
+> So restrictions:
+> 
+> 1. Touch screen channels can only be read when touch is enabled.
+>   - use the available_scan_masks to control this. Or the callback that lets
+>     you do the same dynamically.
+> 2. You need to push these channels to your consumer driver.
+>   - register a callback buffer rather than jumping through the hoops to
+>     insert your own pollfunc.  That will call a function in your
+>     consumer, providing the data from the 3 channels directly.
+> 3. You need to make sure it is using the right driver.  For that you
+>     will I think need a new interface.
+> 
+> Various other comments inline. I may well be missing something as this is
+> a fair bit of complex code to read - if so then next version should have
+> a clear cover letter describing why this more standard approach can't be
+> used.
 
-Jonathan
-> 
-> ---
-> 
-> Changes in v4:
-> - Typo, div_s64, not s64_div
-> 
-> Changes in v3:
-> - use s64_div for 64 bit integer division to fix compiles on 32 bit archs
-> 
-> Changes in v2:
-> - add a comment mentioning skipping samples on overrun
-> 
->  drivers/iio/adc/ina2xx-adc.c | 41 +++++++++++++++++++++++++++--------------
->  1 file changed, 27 insertions(+), 14 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
-> index 2621a34ee5c6..b55b8bd1427b 100644
-> --- a/drivers/iio/adc/ina2xx-adc.c
-> +++ b/drivers/iio/adc/ina2xx-adc.c
-> @@ -703,10 +703,10 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
->  	/* data buffer needs space for channel data and timestap */
->  	unsigned short data[4 + sizeof(s64)/sizeof(short)];
->  	int bit, ret, i = 0;
-> -	s64 time_a, time_b;
-> +	s64 time;
->  	unsigned int alert;
->  
-> -	time_a = iio_get_time_ns(indio_dev);
-> +	time = iio_get_time_ns(indio_dev);
->  
->  	/*
->  	 * Because the timer thread and the chip conversion clock
-> @@ -752,11 +752,9 @@ static int ina2xx_work_buffer(struct iio_dev *indio_dev)
->  		data[i++] = val;
->  	}
->  
-> -	time_b = iio_get_time_ns(indio_dev);
-> +	iio_push_to_buffers_with_timestamp(indio_dev, data, time);
->  
-> -	iio_push_to_buffers_with_timestamp(indio_dev, data, time_a);
-> -
-> -	return (unsigned long)(time_b - time_a) / 1000;
-> +	return 0;
->  };
->  
->  static int ina2xx_capture_thread(void *data)
-> @@ -764,7 +762,9 @@ static int ina2xx_capture_thread(void *data)
->  	struct iio_dev *indio_dev = data;
->  	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
->  	int sampling_us = SAMPLING_PERIOD(chip);
-> -	int buffer_us, delay_us;
-> +	int ret;
-> +	struct timespec64 next, now, delta;
-> +	s64 delay_us;
->  
->  	/*
->  	 * Poll a bit faster than the chip internal Fs, in case
-> @@ -773,15 +773,28 @@ static int ina2xx_capture_thread(void *data)
->  	if (!chip->allow_async_readout)
->  		sampling_us -= 200;
->  
-> +	ktime_get_ts64(&next);
-> +
->  	do {
-> -		buffer_us = ina2xx_work_buffer(indio_dev);
-> -		if (buffer_us < 0)
-> -			return buffer_us;
-> +		ret = ina2xx_work_buffer(indio_dev);
-> +		if (ret < 0)
-> +			return ret;
->  
-> -		if (sampling_us > buffer_us) {
-> -			delay_us = sampling_us - buffer_us;
-> -			usleep_range(delay_us, (delay_us * 3) >> 1);
-> -		}
-> +		ktime_get_ts64(&now);
-> +
-> +		/*
-> +		 * Advance the timestamp for the next poll by one sampling
-> +		 * interval, and sleep for the remainder (next - now)
-> +		 * In case "next" has already passed, the interval is added
-> +		 * multiple times, i.e. samples are dropped.
-> +		 */
-> +		do {
-> +			timespec64_add_ns(&next, 1000 * sampling_us);
-> +			delta = timespec64_sub(next, now);
-> +			delay_us = div_s64(timespec64_to_ns(&delta), 1000);
-> +		} while (delay_us <= 0);
-> +
-> +		usleep_range(delay_us, (delay_us * 3) >> 1);
->  
->  	} while (!kthread_should_stop());
->  
+Hello Jonathan and thanks for the review of my patch series,
 
+before starting and working over the required modifications and 
+suggestions that you sent me, I want to be a little more explicit about 
+the design of my implementation.
+Hope this will clarify some things, and maybe I can as well understand 
+better what you have in mind to support this feature set.
+
+Why have I picked a pollfunction: We discussed a while back on the 
+mailing list that you do not have an inkern mechanism to expose the 
+triggers to other drivers, and that it may be a good idea to have it for 
+such kind of actually multi function device, instead of having a MFD 
+driver, an ADC driver, and an Input driver, all sharing the same 
+register map, the same IRQ , etc, with some kind of synchronization to 
+avoid stepping on each other for the hardware resource.
+So I considered to expose the trigger by attaching and detaching 
+pollfunctions to it. Which is the main thing what we use a trigger for.
+
+So, what I had in mind, was to create a consumer driver that will 
+request triggers from the IIO device just like other drivers request 
+channels (part which is already done in IIO).
+In order to do this I had to somehow wake up the consumer driver when 
+new data was available from the touchscreen. So, having the IRQ only in 
+the ADC device, and then on Pen detect and No pen detect just start or 
+stop the periodic trigger, which needs to be polled. The magic part is 
+that the consumer driver has a poll function already attached to this 
+trigger, so the poll function is just called every time we have new 
+data. The poll function is attached as an irq handler, and then we can 
+reuse all the read_raw data by using a scheduled work from the consumer 
+driver, to read the channels.
+To do this, the ADC registers a special trigger named "touch trigger" 
+which is never enabled by the ADC driver. Instead, when a pollfunc is 
+attached to it, the attach function will also configure it with enabled 
+state. In the ADC, this means to start the touchscreen functionality. If 
+the touch is requested, it will standby and wait for pen detect IRQ.
+Once we have pen detect, we can use a periodic trigger to sample the 
+touch data, and poll the "touch" trigger. The consumer driver will wake 
+up and schedule a work , that will use the standard read raw interface 
+(inkern) that will read three virtual channels (position + pressure). 
+They are not actual hardware channels, as the touch information is being 
+received on channels 0,1,2,3, but reading these virtual channels will 
+read from different registers inside the ADC IP ( x position, y 
+position, pressure), do some computations on the data, and feed the 
+consumer with the values , hiding the behind the scenes hardware 
+specific calculations.
+After trigger is polled , the ADC will resume normal functionality, and 
+the consumer driver will continue to sleep.
+We need to have a periodic trigger to sample the data because the actual 
+analog to digital conversion inside the IP block needs to be triggered. 
+The touchscreen data measurements cannot happen in hardware without 
+being triggered. If I try with a hrtimer to get a periodic IRQ to just 
+read the data, it will never be ready. The datasheet states that the 
+touchscreen measurements "will be attached to the conversion sequence". 
+So the periodic trigger is forcing a conversion sequence. This could be 
+done with a software trigger as well, but why the hassle to start it 
+every 2 milliseconds (or other time interval), if we can do it by 
+periodic trigger ?
+Once we get the No pen IRQ, we stop the periodic trigger and it can be 
+used in another purpose (software or external as of now in the driver, 
+in the future we can add PWM trigger and Timer trigger)
+
+In short, the ADC in Sama5D2 also supports touchscreen, and in 
+touchscreen mode , 4 of the channels are being used for this purpose. 
+This however, doesn't stop the ADC to use the other channels . The 
+hardware has 12 total single channels and they can be paired to have 6 
+more differential channels. The only thing that is blocked is the 
+trigger, but only if the pen is touching (when we start the periodic 
+trigger to sample the touchscreen). If the pen is not touching, an 
+external trigger or software trigger can be used without any issues (so 
+why limit the functionality, if this is available from hardware ?). 
+Because of the reason I discussed above (touchscreen sequence must be 
+triggered), we cannot use another trigger in the same time.
+
+
+I see your idea with the callback buffer and it's worth exploring. 
+Mainly this series was to actually show you what I had in mind about 
+supporting the resistive touchscreen, and to give you some actually 
+working code/patch, so we can discuss based on real implementation, not 
+just suppositions.
+
+You are right in many of the other comments that you said, and I will 
+come up with a v2 to this series. For now, I need to know if this is a 
+good or right direction in which I am going, or I should try to change 
+all the mechanism to callback buffer ? Or maybe I am totally in a bad 
+direction ?
+The requirements are that the consumer driver needs to be somehow woke 
+up for every new touch data available, and report to the input 
+subsystem. As it was done before, the at91 old driver, just creates and 
+registers an input device by itself, and then reports the position and 
+touches. I was thinking that with this trigger consumer implementation, 
+things can be better in terms of subsystem separation and support.
+
+Thanks again and let me know of your thoughts,
+
+Eugen
+
+
+
+[...]
