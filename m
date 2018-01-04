@@ -1,43 +1,46 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtprelay0185.hostedemail.com ([216.40.44.185]:59829 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1753199AbeADPQV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 4 Jan 2018 10:16:21 -0500
-Message-ID: <1515078975.13693.43.camel@perches.com>
-Subject: Re: [PATCH 0/5] iio: use permission specific variants of DEVICE_ATTR
-From: Joe Perches <joe@perches.com>
-To: Aishwarya Pant <aishpant@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Julia Lawall <julia.lawall@lip6.fr>
-Date: Thu, 04 Jan 2018 07:16:15 -0800
-In-Reply-To: <cover.1515076155.git.aishpant@gmail.com>
-References: <cover.1515076155.git.aishpant@gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-Mime-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=cr0b=D7=gmail.com=venkat.prashanth2498@kernel.org>
+From: venkat.prashanth2498@gmail.com
+To: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org
+Cc: knaack.h@gmx.de,
+	pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org,
+	Venkat Prashanth B U <venkat.prashanth2498@gmail.com>
+Subject: [PATCH v2] Drivers:iio:dac: Remove unneeded conversion to bool
+Date: Thu,  4 Jan 2018 21:49:07 +0530
+Message-Id: <1515082747-386-1-git-send-email-venkat.prashanth2498@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 2018-01-04 at 20:06 +0530, Aishwarya Pant wrote:
-> Series of clean-up patches which replace all DEVICE_ATTR macros with the
-> permission specific variants DEVICE_ATTR_{RO/WO/RW}.
-> 
-> Patches were created using coccinelle. The following script is for conversion to
-> the DEVICE_ATTR_RO macro and the other conversions are similar. The script may
-> require some manual intervention when multiple attributes share the show or
-> store function.
+From: Venkat Prashanth B U <venkat.prashanth2498@gmail.com>
 
-I do think the perl scripts are a bit better here
-as they can verify the show/store functions are
-static, used once, the new functions names are
-unused and so can be renamed without conflict.
+This is a patch to the mcp4725.c file which
+fixes the following coccinelle warning:
 
-Maybe the python bits can be extended to copy
-these perl checks and avoid the possible manual
-inspection and verification requirements.
+WARNING: conversion to bool not needed here
 
-https://lkml.org/lkml/2017/12/22/844
+Signed-off-by: Venkat Prashanth B U <venkat.prashanth2498@gmail.com>
 
+Changes since v1:
+-----------------
+Instead of inadvertent removal of complete statement, only the
+conversion to bool is removed.
+---
+ drivers/iio/dac/mcp4725.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
+index afa856d..8b5aad4 100644
+--- a/drivers/iio/dac/mcp4725.c
++++ b/drivers/iio/dac/mcp4725.c
+@@ -476,7 +476,7 @@ static int mcp4725_probe(struct i2c_client *client,
+ 		goto err_disable_vref_reg;
+ 	}
+ 	pd = (inbuf[0] >> 1) & 0x3;
+-	data->powerdown = pd > 0 ? true : false;
++	data->powerdown = pd > 0;
+ 	data->powerdown_mode = pd ? pd - 1 : 2; /* largest resistor to gnd */
+ 	data->dac_value = (inbuf[1] << 4) | (inbuf[2] >> 4);
+ 	if (data->id == MCP4726)
+-- 
+1.9.1
