@@ -1,19 +1,16 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:55463 "EHLO
-        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1753069AbeAFAzL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 5 Jan 2018 19:55:11 -0500
+Return-Path: <SRS0=fQ2w=EB=tobin.cc=me@kernel.org>
 From: "Tobin C. Harding" <me@tobin.cc>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: "Tobin C. Harding" <me@tobin.cc>, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 0/2] fix kernel-docs for struct iio_trigger
-Date: Sat,  6 Jan 2018 11:54:44 +1100
-Message-Id: <1515200086-4989-1-git-send-email-me@tobin.cc>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: "Tobin C. Harding" <me@tobin.cc>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2 RESEND] fix kernel-docs for struct iio_trigger
+Date: Sat,  6 Jan 2018 12:31:56 +1100
+Message-Id: <1515202318-17401-1-git-send-email-me@tobin.cc>
+List-ID: <linux-iio@vger.kernel.org>
 
 This set is a re-spin of
 
@@ -34,4 +31,3 @@ Tobin C. Harding (2):
 
 -- 
 2.7.4
-
