@@ -1,73 +1,63 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:57186 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1753013AbeAFNMf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 6 Jan 2018 08:12:35 -0500
-Date: Sat, 6 Jan 2018 13:12:31 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-Cc: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-input@vger.kernel.org
+Return-Path: <SRS0=sC5c=EB=intel.com=srinivas.pandruvada@kernel.org>
+From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+To: "gnomes@lxorguk.ukuu.org.uk" <gnomes@lxorguk.ukuu.org.uk>,
+	"jic23@kernel.org" <jic23@kernel.org>
+CC: "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 Subject: Re: [RFP] iio: Support of gesture sensor as a standard IIO sensor
-Message-ID: <20180106131231.078492c3@archlinux>
-In-Reply-To: <20180106002024.012f44c0@alans-desktop>
+Date: Sat, 6 Jan 2018 17:43:12 +0000
+Message-ID: <1515260592.23948.23.camel@intel.com>
 References: <1515197240.26317.65.camel@intel.com>
-        <20180106002024.012f44c0@alans-desktop>
+	 <20180106002024.012f44c0@alans-desktop> <20180106131231.078492c3@archlinux>
+In-Reply-To: <20180106131231.078492c3@archlinux>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, 6 Jan 2018 00:20:24 +0000
-Alan Cox <gnomes@lxorguk.ukuu.org.uk> wrote:
-
-> > >From an IIO sensor point of view A Gesture sensor:    
-> > Outputs
-> > 	A pre defined activity type
-> > 		WAKE
-> > 		TILT
-> > 		GLANCE
-> > 		PICK_UP
-> > 		 &
-> > 		 more
-> > 
-> > 	A user defined activity type as "string"
-> > 
-> > Inputs
-> > 	A raw binary cdev interface to download templates/patterns
-> > 
-> > 
-> > I want to gather more opinions before submitting a RFC patch.  
-> 
-> The only question I have is should it appear under IIO or should it be an
-> input event interface. It feels to me more like an input device in that in
-> this case while it's not keys or joystick it is still 'please do X'. That
-> might also make it much easier (in the non-Android space in particular)
-> to bind these activities to actions in things like web browsers.
-> 
-I agree that this may well be an option for many of the gestures specifically
-metioned (flicks etc and glyphs).
-
-However, there are other obvious uses of this technology such as step detection
-or activity classification (running, walking sitting) that so far have fallen
-in the scope of IIO as they aren't really things you expect the device to
-perform an an action in response to.  Another one of those messy corners
-that fall through the gaps!
-
-The drivers/iio/accel/mma9553.c does activity detection, but that isn't
-really 'events' in the same way as we have here...
-
-So right answer might be a hybrid of an underlying flexible IIO device
-and an input front end for when it makes sense.
-
-We probably need to get the in kernel use of IIO events sorted.  Non event
-stuff has been sorted for years, but this last corner was never of enough
-interest to anyone to actually implement it (it's fairly straight forward
-to do).
-
-> (+ linux-input)
-> 
-> Alan
-
+T24gU2F0LCAyMDE4LTAxLTA2IGF0IDEzOjEyICswMDAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
+Og0KPiBPbiBTYXQsIDYgSmFuIDIwMTggMDA6MjA6MjQgKzAwMDANCj4gQWxhbiBDb3ggPGdub21l
+c0BseG9yZ3VrLnVrdXUub3JnLnVrPiB3cm90ZToNCj4gDQo+ID4gDQo+ID4gPiANCj4gPiA+ID4g
+DQo+ID4gPiA+IEZyb20gYW4gSUlPIHNlbnNvciBwb2ludCBvZiB2aWV3IEEgR2VzdHVyZSBzZW5z
+b3I6wqDCoMKgwqANCj4gPiA+IE91dHB1dHMNCj4gPiA+IAlBIHByZSBkZWZpbmVkIGFjdGl2aXR5
+IHR5cGUNCj4gPiA+IAkJV0FLRQ0KPiA+ID4gCQlUSUxUDQo+ID4gPiAJCUdMQU5DRQ0KPiA+ID4g
+CQlQSUNLX1VQDQo+ID4gPiAJCcKgJg0KPiA+ID4gCQnCoG1vcmUNCj4gPiA+IA0KPiA+ID4gCUEg
+dXNlciBkZWZpbmVkIGFjdGl2aXR5IHR5cGUgYXMgInN0cmluZyINCj4gPiA+IA0KPiA+ID4gSW5w
+dXRzDQo+ID4gPiAJQSByYXcgYmluYXJ5IGNkZXYgaW50ZXJmYWNlIHRvIGRvd25sb2FkIHRlbXBs
+YXRlcy9wYXR0ZXJucw0KPiA+ID4gDQo+ID4gPiANCj4gPiA+IEkgd2FudCB0byBnYXRoZXIgbW9y
+ZSBvcGluaW9ucyBiZWZvcmUgc3VibWl0dGluZyBhIFJGQyBwYXRjaC7CoMKgDQo+ID4gVGhlIG9u
+bHkgcXVlc3Rpb24gSSBoYXZlIGlzIHNob3VsZCBpdCBhcHBlYXIgdW5kZXIgSUlPIG9yIHNob3Vs
+ZCBpdA0KPiA+IGJlIGFuDQo+ID4gaW5wdXQgZXZlbnQgaW50ZXJmYWNlLiBJdCBmZWVscyB0byBt
+ZSBtb3JlIGxpa2UgYW4gaW5wdXQgZGV2aWNlIGluDQo+ID4gdGhhdCBpbg0KPiA+IHRoaXMgY2Fz
+ZSB3aGlsZSBpdCdzIG5vdCBrZXlzIG9yIGpveXN0aWNrIGl0IGlzIHN0aWxsICdwbGVhc2UgZG8N
+Cj4gPiBYJy4gVGhhdA0KPiA+IG1pZ2h0IGFsc28gbWFrZSBpdCBtdWNoIGVhc2llciAoaW4gdGhl
+IG5vbi1BbmRyb2lkIHNwYWNlIGluDQo+ID4gcGFydGljdWxhcikNCj4gPiB0byBiaW5kIHRoZXNl
+IGFjdGl2aXRpZXMgdG8gYWN0aW9ucyBpbiB0aGluZ3MgbGlrZSB3ZWIgYnJvd3NlcnMuDQo+ID4g
+DQo+IEkgYWdyZWUgdGhhdCB0aGlzIG1heSB3ZWxsIGJlIGFuIG9wdGlvbiBmb3IgbWFueSBvZiB0
+aGUgZ2VzdHVyZXMNCj4gc3BlY2lmaWNhbGx5DQo+IG1ldGlvbmVkIChmbGlja3MgZXRjIGFuZCBn
+bHlwaHMpLg0KPiANCj4gSG93ZXZlciwgdGhlcmUgYXJlIG90aGVyIG9idmlvdXMgdXNlcyBvZiB0
+aGlzIHRlY2hub2xvZ3kgc3VjaCBhcyBzdGVwDQo+IGRldGVjdGlvbg0KPiBvciBhY3Rpdml0eSBj
+bGFzc2lmaWNhdGlvbiAocnVubmluZywgd2Fsa2luZyBzaXR0aW5nKSB0aGF0IHNvIGZhcg0KPiBo
+YXZlIGZhbGxlbg0KPiBpbiB0aGUgc2NvcGUgb2YgSUlPIGFzIHRoZXkgYXJlbid0IHJlYWxseSB0
+aGluZ3MgeW91IGV4cGVjdCB0aGUNCj4gZGV2aWNlIHRvDQo+IHBlcmZvcm0gYW4gYW4gYWN0aW9u
+IGluIHJlc3BvbnNlIHRvLsKgwqBBbm90aGVyIG9uZSBvZiB0aG9zZSBtZXNzeQ0KPiBjb3JuZXJz
+DQo+IHRoYXQgZmFsbCB0aHJvdWdoIHRoZSBnYXBzIQ0KPiANCj4gVGhlIGRyaXZlcnMvaWlvL2Fj
+Y2VsL21tYTk1NTMuYyBkb2VzIGFjdGl2aXR5IGRldGVjdGlvbiwgYnV0IHRoYXQNCj4gaXNuJ3QN
+Cj4gcmVhbGx5ICdldmVudHMnIGluIHRoZSBzYW1lIHdheSBhcyB3ZSBoYXZlIGhlcmUuLi4NCj4g
+DQo+IFNvIHJpZ2h0IGFuc3dlciBtaWdodCBiZSBhIGh5YnJpZCBvZiBhbiB1bmRlcmx5aW5nIGZs
+ZXhpYmxlIElJTw0KPiBkZXZpY2UNCj4gYW5kIGFuIGlucHV0IGZyb250IGVuZCBmb3Igd2hlbiBp
+dCBtYWtlcyBzZW5zZS4NCg0KV2hhdCBhYm91dCB3ZSBjYW4gYWxzbyBzZW5kIGFuIGlucHV0IGV2
+ZW50LCBpZiB0aGUgZXZlbnQgaXMgb25lIG9mIHRoZQ0KaW5wdXQgZXZlbnQgdHlwZSB3aGljaCBp
+cyBkZWZpbmVkIGluwqB1YXBpL2xpbnV4L2lucHV0LWV2ZW50LWNvZGVzLmg/DQoNCg0KPiANCj4g
+V2UgcHJvYmFibHkgbmVlZCB0byBnZXQgdGhlIGluIGtlcm5lbCB1c2Ugb2YgSUlPIGV2ZW50cyBz
+b3J0ZWQuwqDCoE5vbg0KPiBldmVudA0KPiBzdHVmZiBoYXMgYmVlbiBzb3J0ZWQgZm9yIHllYXJz
+LCBidXQgdGhpcyBsYXN0IGNvcm5lciB3YXMgbmV2ZXIgb2YNCj4gZW5vdWdoDQo+IGludGVyZXN0
+IHRvIGFueW9uZSB0byBhY3R1YWxseSBpbXBsZW1lbnQgaXQgKGl0J3MgZmFpcmx5IHN0cmFpZ2h0
+DQo+IGZvcndhcmQNCj4gdG8gZG8pLg0KQ3VycmVudGx5IGluIElJTyBldmVudCBpcyBhIHU2NCB2
+YWx1ZSBpbiBGaWZvLiBCdXQgaGVyZSB3ZSBuZWVkIHNvbWUNCnVzZXIgZGVmaW5lZCBldmVudHMg
+YWxzby4gU2luY2UgdGhpcyBBQkkgbWF5IGFscmVhZHkgbWF5IGJlIGluIHVzZSBzbw0KY2FuJ3Qg
+Y2hhbmdlIHU2NCB0byBhIHN0cnVjdHVyZSB3aXRoIGRhdGEgdHlwZSBkZWZpbml0aW9uIGFuZA0K
+YXNzb2NpYXRlZCBkYXRhLiBCdXQgd2UgY2FuIGRlZmluZSBhZGRpdGlvbmFsIHByZWRlZmluZWQg
+aWRzIGZvciBjdXN0b20NCmV2ZW50cyAoU2ltaWxhciB0byBISUQgc2Vuc29yIHVzYWdlIHNwZWMg
+YWRkZWQgQ1VTVE9NIHVzYWdlIGlkcykuDQoNClRoYW5rcywNClNyaW5pdmFzDQoNCj4gDQo+ID4g
+DQo+ID4gKCsgbGludXgtaW5wdXQpDQo+ID4gDQo+ID4gQWxhbg==
