@@ -7,27 +7,35 @@ Cc: "Tobin C. Harding" <me@tobin.cc>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 0/2 RESEND] fix kernel-docs for struct iio_trigger
-Date: Sat,  6 Jan 2018 12:31:56 +1100
-Message-Id: <1515202318-17401-1-git-send-email-me@tobin.cc>
+Subject: [PATCH 1/2 RESEND] iio: add kernel-doc for field @owner
+Date: Sat,  6 Jan 2018 12:31:57 +1100
+Message-Id: <1515202318-17401-2-git-send-email-me@tobin.cc>
+In-Reply-To: <1515202318-17401-1-git-send-email-me@tobin.cc>
+References: <1515202318-17401-1-git-send-email-me@tobin.cc>
 List-ID: <linux-iio@vger.kernel.org>
 
-This set is a re-spin of
+When building kernel documentation sphinx emits the following warning
 
-	[PATCH] iio: add kernel-doc '@owner'
+	warning: No description found for parameter 'owner'
 
-Patch 1 is the original patch. Adds a kernel-doc description for field
-@owner clearing a sphinx build warning when building kernel documentation.
+Add description for struct member 'owner'.
 
-Patch 2 adds field identifier for @use_count. Currently this field has a
-description but lacks a field identifier.
+Signed-off-by: Tobin C. Harding <me@tobin.cc>
+---
+ include/linux/iio/trigger.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-Tobin C. Harding (2):
-  iio: add kernel-doc for field @owner
-  iio: add field identifier for @use_count kernel-doc
-
- include/linux/iio/trigger.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
+diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
+index 7d5e44518379..390789d43369 100644
+--- a/include/linux/iio/trigger.h
++++ b/include/linux/iio/trigger.h
+@@ -43,6 +43,7 @@ struct iio_trigger_ops {
+ /**
+  * struct iio_trigger - industrial I/O trigger device
+  * @ops:		[DRIVER] operations structure
++ * @owner:		[INTERN] owner of this driver module
+  * @id:			[INTERN] unique id number
+  * @name:		[DRIVER] unique name
+  * @dev:		[DRIVER] associated device (if relevant)
 -- 
 2.7.4
