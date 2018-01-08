@@ -1,75 +1,35 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:47216 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751060AbeANLDY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 14 Jan 2018 06:03:24 -0500
-Date: Sun, 14 Jan 2018 11:03:19 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        raltherr@google.com, joel@jms.id.au, arvind.yadav.cs@gmail.com,
-        mykolak@mellanox.com, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: aspeed: Fix error handling path
-Message-ID: <20180114110319.3bffcb4d@archlinux>
-In-Reply-To: <20180108064736.15991-1-christophe.jaillet@wanadoo.fr>
-References: <20180108064736.15991-1-christophe.jaillet@wanadoo.fr>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=omKU=ED=redhat.com=lorenzo.bianconi@kernel.org>
+From: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org
+Subject: [PATCH v3 0/4] add regmap API support to hts221 iio driver
+Date: Mon,  8 Jan 2018 23:12:27 +0100
+Message-Id: <20180108221231.13283-1-lorenzo.bianconi@redhat.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon,  8 Jan 2018 07:47:36 +0100
-Christophe JAILLET <christophe.jaillet@wanadoo.fr> wrote:
+Changes since v2:
+- rebase ontop of 'hts221: move common code in hts221_core'
+- add a patch to the series in order to fix some sparse warnings in
+  hts221_parse_{temp,rh}_caldata()
 
-> The labels and branching order of the error path of 'aspeed_adc_probe()'
-> are broken.
-> Re-order the labels and goto statements.
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Changes since v1:
+- add missing flag to read_flag_mask in hts221_spi_regmap_config
+- drop hts221_write_with_mask() and always use regmap_update_bits()
 
-Applied to the fixes-togreg-post-rc1 branch of iio.git.
+Lorenzo Bianconi (4):
+  iio: humidity: hts221: remove warnings in
+    hts221_parse_{temp,rh}_caldata()
+  iio: humidity: hts221: remove trailing whitespace from a comment
+  iio: humidity: hts221: add regmap API support
+  iio: humidity: hts221: remove unnecessary get_unaligned_le16()
 
-The patch doesn't apply that far back so I'm going to assume
-you are right and that it was a merge conflict that went wrong.
+ drivers/iio/humidity/Kconfig         |   2 +
+ drivers/iio/humidity/hts221.h        |  21 +-----
+ drivers/iio/humidity/hts221_buffer.c |  39 ++++++-----
+ drivers/iio/humidity/hts221_core.c   | 132 ++++++++++++++---------------------
+ drivers/iio/humidity/hts221_i2c.c    |  64 +++++------------
+ drivers/iio/humidity/hts221_spi.c    |  81 +++++----------------
+ 6 files changed, 113 insertions(+), 226 deletions(-)
 
-Anyhow, will go in sometime after rc1.
-
-Thanks,
-
-Jonathan
-
-> ---
-> Not sure where it comes from.
-> Merge conflict incorrectly fixed?
-> ---
->  drivers/iio/adc/aspeed_adc.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
-> index 327a49ba1991..9515ca165dfd 100644
-> --- a/drivers/iio/adc/aspeed_adc.c
-> +++ b/drivers/iio/adc/aspeed_adc.c
-> @@ -243,7 +243,7 @@ static int aspeed_adc_probe(struct platform_device *pdev)
->  					 ASPEED_ADC_INIT_POLLING_TIME,
->  					 ASPEED_ADC_INIT_TIMEOUT);
->  		if (ret)
-> -			goto scaler_error;
-> +			goto poll_timeout_error;
->  	}
->  
->  	/* Start all channels in normal mode. */
-> @@ -274,9 +274,10 @@ static int aspeed_adc_probe(struct platform_device *pdev)
->  	writel(ASPEED_OPERATION_MODE_POWER_DOWN,
->  		data->base + ASPEED_REG_ENGINE_CONTROL);
->  	clk_disable_unprepare(data->clk_scaler->clk);
-> -reset_error:
-> -	reset_control_assert(data->rst);
->  clk_enable_error:
-> +poll_timeout_error:
-> +	reset_control_assert(data->rst);
-> +reset_error:
->  	clk_hw_unregister_divider(data->clk_scaler);
->  scaler_error:
->  	clk_hw_unregister_divider(data->clk_prescaler);
-
+-- 
+2.15.1
