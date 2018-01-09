@@ -19,52 +19,45 @@ Cc: linux-iio@vger.kernel.org,
 	thomas.petazzoni@free-electrons.com,
 	linux-sunxi@googlegroups.com,
 	Quentin Schulz <quentin.schulz@free-electrons.com>
-Subject: [PATCH v2 06/16] mfd: axp20x: make AXP209/22x cells probe their ADC via DT
-Date: Tue,  9 Jan 2018 10:33:37 +0100
-Message-Id: <3b801d1dada3d9604311f65033343a14260cc7ae.1515486346.git-series.quentin.schulz@free-electrons.com>
+Subject: [PATCH v2 07/16] dt-bindings: iio: adc: axp20x_adc: add AXP813 variant
+Date: Tue,  9 Jan 2018 10:33:38 +0100
+Message-Id: <64b538aadf075ba07e567d9a9db865b64c97fbfc.1515486346.git-series.quentin.schulz@free-electrons.com>
 In-Reply-To: <cover.1e46d70f7931be8154b450a2fcdf066450a1aa6f.1515486346.git-series.quentin.schulz@free-electrons.com>
 References: <cover.1e46d70f7931be8154b450a2fcdf066450a1aa6f.1515486346.git-series.quentin.schulz@free-electrons.com>
 In-Reply-To: <cover.1e46d70f7931be8154b450a2fcdf066450a1aa6f.1515486346.git-series.quentin.schulz@free-electrons.com>
 References: <cover.1e46d70f7931be8154b450a2fcdf066450a1aa6f.1515486346.git-series.quentin.schulz@free-electrons.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-This makes AXP209 and AXP22x ADCs probe first via DT and then by
-fallback via platform.
+AXP813 is now supported so add documentation for this compatible.
 
 Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
 ---
- drivers/mfd/axp20x.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/iio/adc/axp20x_adc.txt |  9 +++++++++-
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
-index d8c92fb..e0cbaea 100644
---- a/drivers/mfd/axp20x.c
-+++ b/drivers/mfd/axp20x.c
-@@ -659,6 +659,7 @@ static struct mfd_cell axp20x_cells[] = {
- 		.name		= "axp20x-regulator",
- 	}, {
- 		.name		= "axp20x-adc",
-+		.of_compatible	= "x-powers,axp20x-adc",
- 	}, {
- 		.name		= "axp20x-battery-power-supply",
- 		.of_compatible	= "x-powers,axp209-battery-power-supply",
-@@ -683,7 +684,8 @@ static struct mfd_cell axp221_cells[] = {
- 	}, {
- 		.name		= "axp20x-regulator",
- 	}, {
--		.name		= "axp22x-adc"
-+		.name		= "axp22x-adc",
-+		.of_compatible	= "x-powers,axp22x-adc",
- 	}, {
- 		.name		= "axp20x-ac-power-supply",
- 		.of_compatible	= "x-powers,axp221-ac-power-supply",
-@@ -707,6 +709,7 @@ static struct mfd_cell axp223_cells[] = {
- 		.resources		= axp22x_pek_resources,
- 	}, {
- 		.name		= "axp22x-adc",
-+		.of_compatible	= "x-powers,axp22x-adc",
- 	}, {
- 		.name		= "axp20x-battery-power-supply",
- 		.of_compatible	= "x-powers,axp221-battery-power-supply",
+diff --git a/Documentation/devicetree/bindings/iio/adc/axp20x_adc.txt b/Documentation/devicetree/bindings/iio/adc/axp20x_adc.txt
+index ed6d04e..3465f80 100644
+--- a/Documentation/devicetree/bindings/iio/adc/axp20x_adc.txt
++++ b/Documentation/devicetree/bindings/iio/adc/axp20x_adc.txt
+@@ -4,6 +4,7 @@ Required properties:
+   - compatible: should be one of:
+     - "x-powers,axp20x-adc",
+     - "x-powers,axp22x-adc",
++    - "x-powers,axp813-adc",
+   - #io-channel-cells: should be 1,
+ 
+ Example:
+@@ -37,3 +38,11 @@ AXP22x
+  1 | batt_v
+  2 | batt_chrg_i
+  3 | batt_dischrg_i
++
++AXP813
++------
++ 0 | pmic_temp
++ 1 | gpio0_v
++ 2 | batt_v
++ 3 | batt_chrg_i
++ 4 | batt_dischrg_i
 -- 
 git-series 0.9.1
