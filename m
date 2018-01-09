@@ -1,112 +1,82 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:43372 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751305AbeANN41 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 14 Jan 2018 08:56:27 -0500
-Date: Sun, 14 Jan 2018 13:56:21 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        robh+dt@kernel.org, mark.rutland@arm.com, wens@csie.org,
-        sre@kernel.org, linux@armlinux.org.uk,
-        maxime.ripard@free-electrons.com, lee.jones@linaro.org,
-        linux-iio@vger.kernel.org, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        thomas.petazzoni@free-electrons.com, linux-sunxi@googlegroups.com
-Subject: Re: [PATCH v2 00/16] add support for AXP813 ADC and battery power
- supply
-Message-ID: <20180114135621.6c83cb1d@archlinux>
-In-Reply-To: <cover.1e46d70f7931be8154b450a2fcdf066450a1aa6f.1515486346.git-series.quentin.schulz@free-electrons.com>
-References: <cover.1e46d70f7931be8154b450a2fcdf066450a1aa6f.1515486346.git-series.quentin.schulz@free-electrons.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=LA0V=EE=melexis.com=cmo@kernel.org>
+From: Crt Mori <cmo@melexis.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Crt Mori <cmo@melexis.com>
+Subject: [PATCH v12 0/3] iio: temperataure: MLX90632
+Date: Tue,  9 Jan 2018 16:18:31 +0100
+Message-Id: <20180109151831.30194-1-cmo@melexis.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue,  9 Jan 2018 10:33:31 +0100
-Quentin Schulz <quentin.schulz@free-electrons.com> wrote:
+Hi everybody,
 
-> The AXP813 PMIC is relatively close to the already supported AXP20X and
-> AXP22X. It provides three different power outputs: battery, AC and USB, and
-> measures a few different things: temperature, power supply status, current
-> current and voltage supplied, maximum current limit, battery capacity, min
-> and max voltage limits.
-> 
-> One of its two GPIOs can be used as an ADC.
-> 
-> There are a few differences with AXP20X/AXP22X PMICs though:
->   - a different constant charge current formula,
->   - battery temperature, GPIO0 and battery voltages are the only voltages
->   measurable,
->   - all data are stored on 12 bits (AXP20X/AXP22X had one type of data that
->   was stored on 13 bits),
->   - different scales and offsets,
->   - a different ADC rate formula and register,
-> 
-> This patch series adds support for the PMIC's ADC and battery power supply
-> in the existing drivers.
-> 
-> Make the axp20x MFD automatically probe the ADC driver, add the battery
-> power supply node in axp81x node and enable it for the TBS A711 since it
-> has a soldered battery.
-> 
-> v2:
->   - introduce data structure instead of ID for variant specific code in
->   battery driver,
->   - add DT binding for ADC driver,
->   - make mfd probe the ADC driver via DT as well so that its IIO channels
->   can be consumed by other drivers via DT mapping,
-Other than that minor comment on V1 about churn risk in the dt binding
-that Rob pointed out hadn't been addressed (I'd completely forgotten about it :)
+With the sensor now available to broad public, it is time to also
+share the driver with the community. MLX90632 is just 3x3mm in size,
+but with factory calibration offers instant usage in every project.
 
-I'm happy once the points others have raised have been addressed.
+Driver currently provides basic functionality, but I might add
+some more fancy features after a while.
 
-My assumption is that this will ultimately go through the IIO tree so
-I'll be needing a good selection of Acks to take it.
+v2 includes comments from Rob Herring (dt-bindings) and Jonathan
+Cameron (iio), as well as proposal to split out int_sqrt64 function
+into the linux/kernel.h
 
-The dts bits should be fine to go via normal paths though once the
-driver is in place.
+v3 comments were added to some parts of mlx90632.c and TENTO defines
+replaced by values. Fixes were done to emissivity read/write and
+changed to INT_PLUS_MICRO instead. Empty line in int_sqrt.c was
+removed as it generated a warning when applying.
 
-If it's going via mfd which might make sense in a 'logical' way rather
-than amount of code, let me know and I'll give tags for v3 iio parts.
+v4 CONFIG_PM replaced by __maybe_unused, some cleanup in suspend,
+EEPROM_VERSION identifier is grouped together in one single number
+instead of assembled on fly. Replaced license on top with SPDX.
+Most importantly - reordered patches so that lib is added before
+the driver itself (which uses it).
 
-Jonathan
+v5 Re-ordered patches so that dt-bindings is before driver patch
+as per Andreas Farber remark. Using same function for Power
+Management during runtime and suspend, as the runtime state
+already puts device to lowest possible state (without power off)
+and that is why special state for suspend is not needed at the
+current moment. Added few more checks of current PM state and
+move marking regmap dirty to suspend instead of resume.
 
-> 
-> Thanks,
-> Quentin
-> 
-> Quentin Schulz (16):
->   iio: adc: axp20x_adc: put ADC rate setting in a per-variant function
->   dt-bindings: iio: adc: add binding for X-Powers AXP PMICs ADC
->   iio: adc: axp20x_adc: make it possible to probe from DT
->   ARM: dtsi: axp209: add node for ADC
->   ARM: dtsi: axp22x: add node for ADC
->   mfd: axp20x: make AXP209/22x cells probe their ADC via DT
->   dt-bindings: iio: adc: axp20x_adc: add AXP813 variant
->   iio: adc: axp20x_adc: add support for AXP813 ADC
->   ARM: dtsi: axp81x: add node for ADC
->   mfd: axp20x: probe axp20x_adc driver for AXP813
->   power: supply: axp20x_battery: use data structure instead of ID for variant specific code
->   dt-bindings: power: supply: axp20x: add AXP813 battery DT binding
->   power: supply: axp20x_battery: add support for AXP813
->   mfd: axp20x: add battery power supply cell for AXP813
->   ARM: dtsi: axp81x: add battery power supply subnode
->   ARM: dtsi: sun8i: a711: enable battery power supply subnode
-> 
->  Documentation/devicetree/bindings/iio/adc/axp20x_adc.txt          |  48 ++++++++++++++++++++++-
->  Documentation/devicetree/bindings/power/supply/axp20x_battery.txt |   8 ++--
->  arch/arm/boot/dts/axp209.dtsi                                     |   5 ++-
->  arch/arm/boot/dts/axp22x.dtsi                                     |   5 ++-
->  arch/arm/boot/dts/axp81x.dtsi                                     |  10 +++++-
->  arch/arm/boot/dts/sun8i-a83t-tbs-a711.dts                         |   4 ++-
->  drivers/iio/adc/axp20x_adc.c                                      | 160 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++----
->  drivers/mfd/axp20x.c                                              |  13 +++++-
->  drivers/power/supply/axp20x_battery.c                             | 134 ++++++++++++++++++++++++++++++++++++++++++++++--------------
->  include/linux/mfd/axp20x.h                                        |   2 +-
->  10 files changed, 345 insertions(+), 44 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/axp20x_adc.txt
-> 
-> base-commit: 895c0dde398510a5b5ded60e5064c11b94bd30ca
+v6 Adding usage of UNIVERSAL_DEV_PM_OPS macro for PM function
+mapping.
 
+v7 Rework usage of int_sqrt according to Joe Perches and fixing
+return size to u32 as per Peter Zijlstra suggestion, as sqrt of
+64bit number cannot be have more than 32bits.
+
+v8 Small style fixup in the comment
+
+v9 Usage of fls64 as per Joe Perches suggestion with adjustment
+to int_sqrt changes from Peter Zijlstra for int_sqrt64 function.
+Also replaced the macro magic with a simple ifdef in source file.
+
+v10 Put defintion for int_sqrt64 for 64 bit machines into the
+header file as per suggestion of Joe Perches
+
+v11 Commit rewording as per David Laight suggestion, because we
+changed the function to newer int_sqrt in past versions.
+
+v12 Simplification of the mlx90632 PM flow
+
+Crt Mori (3):
+  lib: Add strongly typed 64bit int_sqrt
+  dt-bindings: iio: temperature: add MLX90632 device bindings
+  iio: temperature: Adding support for MLX90632
+
+ .../bindings/iio/temperature/mlx90632.txt          |  28 +
+ MAINTAINERS                                        |   7 +
+ drivers/iio/temperature/Kconfig                    |  12 +
+ drivers/iio/temperature/Makefile                   |   1 +
+ drivers/iio/temperature/mlx90632.c                 | 754 +++++++++++++++++++++
+ include/linux/kernel.h                             |   9 +
+ lib/int_sqrt.c                                     |  32 +
+ 7 files changed, 843 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/temperature/mlx90632.txt
+ create mode 100644 drivers/iio/temperature/mlx90632.c
+
+-- 
+2.15.0
