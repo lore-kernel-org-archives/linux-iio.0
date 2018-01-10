@@ -1,17 +1,17 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-cys01nam02on0078.outbound.protection.outlook.com ([104.47.37.78]:51936
-        "EHLO NAM02-CY1-obe.outbound.protection.outlook.com"
+Received: from mail-sn1nam02on0074.outbound.protection.outlook.com ([104.47.36.74]:54948
+        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1754831AbeAJLaj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 10 Jan 2018 06:30:39 -0500
+        id S932174AbeAJLal (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 10 Jan 2018 06:30:41 -0500
 From: <alexandru.ardelean@analog.com>
 To: <linux-iio@vger.kernel.org>, <michael.hennerich@analog.com>,
         <robh+dt@kernel.org>, <mark.rutland@arm.com>
 CC: <devicetree@vger.kernel.org>,
         Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH 2/3] staging: iio: adc: ad7192: add device-tree support to driver
-Date: Wed, 10 Jan 2018 13:29:55 +0200
-Message-ID: <20180110112956.23931-2-alexandru.ardelean@analog.com>
+Subject: [PATCH 3/3] staging: iio: docs: add ad7192 doc to detail dt usage
+Date: Wed, 10 Jan 2018 13:29:56 +0200
+Message-ID: <20180110112956.23931-3-alexandru.ardelean@analog.com>
 In-Reply-To: <20180110112956.23931-1-alexandru.ardelean@analog.com>
 References: <20180110112956.23931-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
@@ -21,106 +21,94 @@ List-Id: linux-iio@vger.kernel.org
 
 From: Alexandru Ardelean <alexandru.ardelean@analog.com>
 
-Adds device-tree support to the ad7192 driver.
-This change re-uses the "ad7192_platform_data" struct,
-and populates it with fields defined in the device-tree.
-
-Re-using the platform_data struct adds a minimal
-change to the driver, and keeps the possibility
-of defining a platform_data struct.
-
-A provided "ad7192_platform_data" struct is preferred
-over the device-tree to reduce impact for users when
-using the newer driver.
-
-This will add up to sizeof(struct ad7192_platform_data) bytes
-(~12 bytes) on the stack during the probing of the device.
-But it is a bit less error-proner than using alloc & free
-during the probe call.
+Document the device-tree bindings of the "ad7192" driver.
+Added datasheet references for supported devices,
+explanation for each property supported by the driver,
+and an example.
 
 Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
- drivers/staging/iio/adc/ad7192.c | 50 ++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 48 insertions(+), 2 deletions(-)
+ .../staging/iio/Documentation/adc/adi,ad7192.txt   | 71 ++++++++++++++++++++++
+ 1 file changed, 71 insertions(+)
+ create mode 100644 drivers/staging/iio/Documentation/adc/adi,ad7192.txt
 
-diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-index 7bc04101d133..d8cfdf18933b 100644
---- a/drivers/staging/iio/adc/ad7192.c
-+++ b/drivers/staging/iio/adc/ad7192.c
-@@ -625,18 +625,63 @@ static const struct iio_chan_spec ad7193_channels[] = {
- 	IIO_CHAN_SOFT_TIMESTAMP(14),
- };
- 
-+static int ad7192_parse_dt(struct device *dev, struct device_node *np,
-+			   struct ad7192_platform_data *pdata)
-+{
-+	int ret;
+diff --git a/drivers/staging/iio/Documentation/adc/adi,ad7192.txt b/drivers/staging/iio/Documentation/adc/adi,ad7192.txt
+new file mode 100644
+index 000000000000..1f8f769a003f
+--- /dev/null
++++ b/drivers/staging/iio/Documentation/adc/adi,ad7192.txt
+@@ -0,0 +1,71 @@
++Analog Devices AD719x ADC Driver
 +
-+	ret = of_property_read_u8(np, "adi,clock-source-select",
-+				  &pdata->clock_source_sel);
-+	if (ret < 0) {
-+		pdata->clock_source_sel = AD7192_CLK_INT;
-+		dev_info(dev, "No clock source specified. Using int clock\n");
-+	}
++Reference:
++[1] http://www.analog.com/en/products/analog-to-digital-converters/ad7190.html
++[2] http://www.analog.com/en/products/analog-to-digital-converters/ad7192.html
++[3] http://www.analog.com/en/products/analog-to-digital-converters/ad7193.html
++[4] http://www.analog.com/en/products/analog-to-digital-converters/ad7195.html
 +
-+	if (pdata->clock_source_sel == AD7192_CLK_EXT_MCLK2) {
-+		ret = of_property_read_u32(np, "adi,external-clock-Hz",
-+					   &pdata->ext_clk_hz);
-+		if (ret < 0 ||
-+		    !ad7192_valid_external_frequency(&pdata->ext_clk_hz)) {
-+			dev_err(dev, "Invalid or no freq for ext clock\n");
-+			return -EINVAL;
-+		}
-+	}
++Required properties:
++  - compatible: Should be "adi,ad7190", "adi,ad7192", "adi,ad7193"
++  or "adi,ad7195"
++  - reg: SPI chip select number for the device
++  - spi-cpol, spi-cpha: Controller support only mode 3, so both spi-cpol
++  and spi-cpha should be present
++  - spi-max-frequency: Definition as per
++  see: Documentation/devicetree/bindings/spi/spi-bus.txt
++  - interrupt-parent: phandle to the parent interrupt controller
++  see: Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
++  - interrupts: IRQ line for the ADC
++  see: Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
 +
-+	pdata->refin2_en = of_property_read_bool(np, "adi,refin2-pins-enable");
-+	pdata->sinc3_en = of_property_read_bool(np, "adi,sinc3-filter-enable");
-+	pdata->chop_en = of_property_read_bool(np, "adi,chop-enable");
-+	pdata->buf_en = of_property_read_bool(np, "adi,buffer-enable");
-+	pdata->unipolar_en = of_property_read_bool(np, "adi,unipolar-enable");
-+	pdata->rej60_en =
-+		of_property_read_bool(np, "adi,rejection-60-Hz-enable");
-+	pdata->burnout_curr_en =
-+		of_property_read_bool(np, "adi,burnout-currents-enable");
++Recommended properties:
++  - adi,clock-source-select: sets the clock source to be used; values are
++   * 0 - external crystal, connected from pin MCLK1 to MCLK2
++   * 1 - external clock, applied to MCLK2 pin
++   * 2 - internal 4.92 Mhz clock; pin MCLK2 is tristated (default)
++   * 3 - internal 4.92 Mhz clock; internal clock is available on MCLK2
++  - adi,external-clock-Hz: if "adi,clock-source-select" is value '1',
++  this value should be specified to the ADC
++  - avdd-supply: Analog Supply Voltage, 4.75V to 5.25V. AVDD is
++  independent of DVDD
++  - dvdd-supply: Digital Supply Voltage, 2.7V to 5.25V. DVDD
++  is independent of AVDD
 +
-+	return 0;
-+}
++Optional properties:
++  - adi,refin2-pins-enable: select external reference to be applied
++  to P1,REFIN2(+) & P0,REFIN2(-) pins instead of REFIN1(+) & REFIN1(-);
++  not available for "ad7195"
++  - adi,rejection-60-Hz-enable: enables simultaneous 50/60 Hz rejection
++  - adi,chop-enable: enable chop to minimize ADC offset and offset drift
++  - adi,buffer-enable: enables the buffer on the analog inputs
++  - adi,burnout-currents-enable: when selected, the 500 nA current sources
++  in the signal path are enabled; can be enabled only when buffer is active
++  and chop is disabled
++  - adi,sinc3-filter-enable: enables the SINC3 filter; if unset
++  the SINC4 digital filter is used after the modulator
++  - adi,unipolar-enable: when this is set voltage ranges must be unipolar
++  (e.g 0 to 5V) versus bipolar voltage ranges (e.g. -5V to 5V)
 +
- static int ad7192_probe(struct spi_device *spi)
- {
- 	const struct ad7192_platform_data *pdata = dev_get_platdata(&spi->dev);
-+	struct device_node *of_node = dev_of_node(&spi->dev);
-+	struct ad7192_platform_data lpdata;
- 	struct ad7192_state *st;
- 	struct iio_dev *indio_dev;
- 	int ret, voltage_uv = 0;
- 
--	if (!pdata) {
--		dev_err(&spi->dev, "no platform data?\n");
-+	if (!pdata && !of_node) {
-+		dev_err(&spi->dev, "no platform data or device tree config\n");
- 		return -ENODEV;
- 	}
- 
-+	if (!pdata) {
-+		memset(&lpdata, 0, sizeof(lpdata));
-+		ret = ad7192_parse_dt(&spi->dev, of_node, &lpdata);
-+		if (ret)
-+			return ret;
-+		pdata = &lpdata;
-+	}
++Example:
++ad7190@0 {
++	compatible = "adi,ad7190";
++	reg = <0>;
++	spi-max-frequency = <1000000>;
++	spi-cpol;
++	spi-cpha;
 +
- 	if (!spi->irq) {
- 		dev_err(&spi->dev, "no IRQ?\n");
- 		return -ENODEV;
-@@ -682,6 +727,7 @@ static int ad7192_probe(struct spi_device *spi)
- 	spi_set_drvdata(spi, indio_dev);
- 	st->devid = spi_get_device_id(spi)->driver_data;
- 	indio_dev->dev.parent = &spi->dev;
-+	indio_dev->dev.of_node = of_node;
- 	indio_dev->name = spi_get_device_id(spi)->name;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
++	#interrupt-cells = <2>;
++	interrupts = <25 0x2>;
++	interrupt-parent = <&gpio>;
++	avdd-supply = <&adc_avdd>;
++
++	adi,clock-source-select = /bits/ 8 <0>;
++
++	adi,refin2-pins-enable;
++	adi,rejection-60-Hz-enable;
++	adi,buffer-enable;
++	adi,burnout-currents-enable;
++	adi,sinc3-filter-enable;
++	adi,unipolar-enable;
++};
 -- 
 2.14.1
 
