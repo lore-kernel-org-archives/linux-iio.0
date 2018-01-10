@@ -1,16 +1,16 @@
 Return-Path: <SRS0=QH+w=EF=sirena.org.uk=broonie@kernel.org>
 From: Mark Brown <broonie@kernel.org>
 To: Arnaud Pouliquen <arnaud.pouliquen@st.com>
-Cc: Rob Herring <robh@kernel.org>, Jonathan Cameron <Jonathan.Cameron@huawei.com>, Mark Brown <broonie@kernel.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org, alsa-devel@alsa-project.org, Alexandre Torgue <alexandre.torgue@st.com>, linux-iio@vger.kernel.org, arnaud.pouliquen@st.com, Maxime Coquelin <mcoquelin.stm32@gmail.com>, linux-arm-kernel@lists.infradead.org, alsa-devel@alsa-project.org
-Subject: Applied "IIO: Add DT bindings for sigma delta adc modulator" to the asoc tree
-In-Reply-To: <1510222354-15290-5-git-send-email-arnaud.pouliquen@st.com>
-Message-Id: <E1eZEJu-00050O-Nk@debutante>
-Date: Wed, 10 Jan 2018 11:13:22 +0000
+Cc: Mark Brown <broonie@kernel.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org, alsa-devel@alsa-project.org, Alexandre Torgue <alexandre.torgue@st.com>, linux-iio@vger.kernel.org, arnaud.pouliquen@st.com, Maxime Coquelin <mcoquelin.stm32@gmail.com>, linux-arm-kernel@lists.infradead.org, alsa-devel@alsa-project.org
+Subject: Applied "docs: driver-api: add iio hw consumer section" to the asoc tree
+In-Reply-To: <1511881557-28596-3-git-send-email-arnaud.pouliquen@st.com>
+Message-Id: <E1eZEKB-00053k-9T@debutante>
+Date: Wed, 10 Jan 2018 11:13:39 +0000
 List-ID: <linux-iio@vger.kernel.org>
 
 The patch
 
-   IIO: Add DT bindings for sigma delta adc modulator
+   docs: driver-api: add iio hw consumer section
 
 has been applied to the asoc tree at
 
@@ -35,41 +35,89 @@ to this mail.
 Thanks,
 Mark
 
->From af11143757b7995f185e9365d8450ea9d63ea267 Mon Sep 17 00:00:00 2001
+>From 5b178943d64b85d78350ea9c86344c376d7bfe74 Mon Sep 17 00:00:00 2001
 From: Arnaud Pouliquen <arnaud.pouliquen@st.com>
-Date: Wed, 10 Jan 2018 11:13:07 +0100
-Subject: [PATCH] IIO: Add DT bindings for sigma delta adc modulator
+Date: Wed, 10 Jan 2018 11:13:04 +0100
+Subject: [PATCH] docs: driver-api: add iio hw consumer section
 
-Add documentation of device tree bindings to support
-sigma delta modulator in IIO framework.
+This adds a section about the Hardware consumer
+API of the IIO subsystem to the driver API
+documentation.
 
 Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@st.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Mark Brown <broonie@kernel.org>
 ---
- .../devicetree/bindings/iio/adc/sigma-delta-modulator.txt   | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/sigma-delta-modulator.txt
+ Documentation/driver-api/iio/hw-consumer.rst | 51 ++++++++++++++++++++++++++++
+ Documentation/driver-api/iio/index.rst       |  1 +
+ 2 files changed, 52 insertions(+)
+ create mode 100644 Documentation/driver-api/iio/hw-consumer.rst
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/sigma-delta-modulator.txt b/Documentation/devicetree/bindings/iio/adc/sigma-delta-modulator.txt
+diff --git a/Documentation/driver-api/iio/hw-consumer.rst b/Documentation/driver-api/iio/hw-consumer.rst
 new file mode 100644
-index 000000000000..e9ebb8a20e0d
+index 000000000000..8facce6a6733
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/sigma-delta-modulator.txt
-@@ -0,0 +1,13 @@
-+Device-Tree bindings for sigma delta modulator
++++ b/Documentation/driver-api/iio/hw-consumer.rst
+@@ -0,0 +1,51 @@
++===========
++HW consumer
++===========
++An IIO device can be directly connected to another device in hardware. in this
++case the buffers between IIO provider and IIO consumer are handled by hardware.
++The Industrial I/O HW consumer offers a way to bond these IIO devices without
++software buffer for data. The implementation can be found under
++:file:`drivers/iio/buffer/hw-consumer.c`
 +
-+Required properties:
-+- compatible: should be "ads1201", "sd-modulator". "sd-modulator" can be use
-+	as a generic SD modulator if modulator not specified in compatible list.
-+- #io-channel-cells = <1>: See the IIO bindings section "IIO consumers".
 +
-+Example node:
++* struct :c:type:`iio_hw_consumer` — Hardware consumer structure
++* :c:func:`iio_hw_consumer_alloc` — Allocate IIO hardware consumer
++* :c:func:`iio_hw_consumer_free` — Free IIO hardware consumer
++* :c:func:`iio_hw_consumer_enable` — Enable IIO hardware consumer
++* :c:func:`iio_hw_consumer_disable` — Disable IIO hardware consumer
 +
-+	ads1202: adc@0 {
-+		compatible = "sd-modulator";
-+		#io-channel-cells = <1>;
++
++HW consumer setup
++=================
++
++As standard IIO device the implementation is based on IIO provider/consumer.
++A typical IIO HW consumer setup looks like this::
++
++	static struct iio_hw_consumer *hwc;
++
++	static const struct iio_info adc_info = {
++		.read_raw = adc_read_raw,
 +	};
++
++	static int adc_read_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan, int *val,
++				int *val2, long mask)
++	{
++		ret = iio_hw_consumer_enable(hwc);
++
++		/* Acquire data */
++
++		ret = iio_hw_consumer_disable(hwc);
++	}
++
++	static int adc_probe(struct platform_device *pdev)
++	{
++		hwc = devm_iio_hw_consumer_alloc(&iio->dev);
++	}
++
++More details
++============
++.. kernel-doc:: include/linux/iio/hw-consumer.h
++.. kernel-doc:: drivers/iio/buffer/industrialio-hw-consumer.c
++   :export:
++
+diff --git a/Documentation/driver-api/iio/index.rst b/Documentation/driver-api/iio/index.rst
+index e5c3922d1b6f..7fba341bd8b2 100644
+--- a/Documentation/driver-api/iio/index.rst
++++ b/Documentation/driver-api/iio/index.rst
+@@ -15,3 +15,4 @@ Contents:
+    buffers
+    triggers
+    triggered-buffers
++   hw-consumer
 -- 
 2.15.1
