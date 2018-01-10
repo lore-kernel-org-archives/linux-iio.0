@@ -1,7 +1,7 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga03.intel.com ([134.134.136.65]:34260 "EHLO mga03.intel.com"
+Received: from mga04.intel.com ([192.55.52.120]:14190 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752444AbeAJPXo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S1751988AbeAJPXo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Wed, 10 Jan 2018 10:23:44 -0500
 Date: Wed, 10 Jan 2018 23:23:05 +0800
 From: kbuild test robot <fengguang.wu@intel.com>
@@ -15,32 +15,45 @@ Cc: kbuild-all@01.org, alsa-devel@alsa-project.org,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         Alexandre Torgue <alexandre.torgue@st.com>,
         linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [asoc:topic/iio 9/11] drivers/iio/adc/stm32-dfsdm-adc.c:241:6:
- sparse: symbol 'stm32_dfsdm_stop_filter' was not declared. Should it be
- static?
-Message-ID: <201801102320.fKoiIrHz%fengguang.wu@intel.com>
+Subject: [RFC PATCH asoc] IIO: ADC: stm32_dfsdm_stop_filter() can be static
+Message-ID: <20180110152305.GA83560@lkp-sb05>
+References: <201801102320.fKoiIrHz%fengguang.wu@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <201801102320.fKoiIrHz%fengguang.wu@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git topic/iio
-head:   16cbca06fa8288a4f58426fc898b141e12ee8008
-commit: e2e6771c646251657fafb2a78db566d5c2c70635 [9/11] IIO: ADC: add STM32 DFSDM sigma delta ADC support
-reproduce:
-        # apt-get install sparse
-        git checkout e2e6771c646251657fafb2a78db566d5c2c70635
-        make ARCH=x86_64 allmodconfig
-        make C=1 CF=-D__CHECK_ENDIAN__
 
-
-sparse warnings: (new ones prefixed by >>)
-
->> drivers/iio/adc/stm32-dfsdm-adc.c:241:6: sparse: symbol 'stm32_dfsdm_stop_filter' was not declared. Should it be
->> drivers/iio/adc/stm32-dfsdm-adc.c:283:5: sparse: symbol 'stm32_dfsdm_channel_parse_of' was not declared. Should it be
-
-Please review and possibly fold the followup patch.
-
+Fixes: e2e6771c6462 ("IIO: ADC: add STM32 DFSDM sigma delta ADC support")
+Signed-off-by: Fengguang Wu <fengguang.wu@intel.com>
 ---
-0-DAY kernel test infrastructure                Open Source Technology Center
-https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+ stm32-dfsdm-adc.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iio/adc/stm32-dfsdm-adc.c b/drivers/iio/adc/stm32-dfsdm-adc.c
+index b03ca3f..e628d04 100644
+--- a/drivers/iio/adc/stm32-dfsdm-adc.c
++++ b/drivers/iio/adc/stm32-dfsdm-adc.c
+@@ -254,7 +254,7 @@ static int stm32_dfsdm_start_filter(struct stm32_dfsdm *dfsdm,
+ 				  DFSDM_CR1_RSWSTART(1));
+ }
+ 
+-void stm32_dfsdm_stop_filter(struct stm32_dfsdm *dfsdm, unsigned int fl_id)
++static void stm32_dfsdm_stop_filter(struct stm32_dfsdm *dfsdm, unsigned int fl_id)
+ {
+ 	/* Disable conversion */
+ 	regmap_update_bits(dfsdm->regmap, DFSDM_CR1(fl_id),
+@@ -296,9 +296,9 @@ static int stm32_dfsdm_filter_configure(struct stm32_dfsdm *dfsdm,
+ 				  DFSDM_CR1_RSYNC(fl->sync_mode));
+ }
+ 
+-int stm32_dfsdm_channel_parse_of(struct stm32_dfsdm *dfsdm,
+-				 struct iio_dev *indio_dev,
+-				 struct iio_chan_spec *ch)
++static int stm32_dfsdm_channel_parse_of(struct stm32_dfsdm *dfsdm,
++					struct iio_dev *indio_dev,
++					struct iio_chan_spec *ch)
+ {
+ 	struct stm32_dfsdm_channel *df_ch;
+ 	const char *of_str;
