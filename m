@@ -1,113 +1,56 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wr0-f195.google.com ([209.85.128.195]:42724 "EHLO
-        mail-wr0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933125AbeAKKUF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 11 Jan 2018 05:20:05 -0500
-Received: by mail-wr0-f195.google.com with SMTP id e41so1329885wre.9
-        for <linux-iio@vger.kernel.org>; Thu, 11 Jan 2018 02:20:05 -0800 (PST)
+Return-Path: <SRS0=wjSC=EG=melexis.com=cmo@kernel.org>
 From: Crt Mori <cmo@melexis.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Rusty Russell <rusty@rustcorp.com.au>,
-        Ian Abbott <abbotti@mev.co.uk>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Niklas Soderlund <niklas.soderlund+renesas@ragnatech.se>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Joe Perches <joe@perches.com>,
-        David Laight <David.Laight@aculab.com>,
-        Crt Mori <cmo@melexis.com>
-Subject: [PATCH v13 1/3] lib: Add strongly typed 64bit int_sqrt
-Date: Thu, 11 Jan 2018 11:19:57 +0100
-Message-Id: <20180111101957.27290-1-cmo@melexis.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Crt Mori <cmo@melexis.com>
+Subject: [PATCH v13 2/3] dt-bindings: iio: temperature: add MLX90632 device bindings
+Date: Thu, 11 Jan 2018 11:20:10 +0100
+Message-Id: <20180111102010.27350-1-cmo@melexis.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-There is no option to perform 64bit integer sqrt on 32bit platform.
-Added stronger typed int_sqrt64 enables the 64bit calculations to
-be performed on 32bit platforms. Using same algorithm as int_sqrt()
-with strong typing provides enough precision also on 32bit platforms,
-but it sacrifices some performance. In case values are smaller than
-ULONG_MAX the standard int_sqrt is used for calculation to maximize the
-performance due to more native calculations.
+Add device tree bindings for MLX90632 IR temperature sensor.
 
 Signed-off-by: Crt Mori <cmo@melexis.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- include/linux/kernel.h |  9 +++++++++
- lib/int_sqrt.c         | 31 +++++++++++++++++++++++++++++++
- 2 files changed, 40 insertions(+)
+ .../bindings/iio/temperature/mlx90632.txt          | 28 ++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/temperature/mlx90632.txt
 
-diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 0ad4c3044cf9..e4a3dc64e650 100644
---- a/include/linux/kernel.h
-+++ b/include/linux/kernel.h
-@@ -460,6 +460,15 @@ extern int func_ptr_is_kernel_text(void *ptr);
- 
- unsigned long int_sqrt(unsigned long);
- 
-+#if BITS_PER_LONG < 64
-+u32 int_sqrt64(u64 x);
-+#else
-+static inline u32 int_sqrt64(u64 x)
-+{
-+	return (u32)int_sqrt(x);
-+}
-+#endif
+diff --git a/Documentation/devicetree/bindings/iio/temperature/mlx90632.txt b/Documentation/devicetree/bindings/iio/temperature/mlx90632.txt
+new file mode 100644
+index 000000000000..0b05812001f8
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/temperature/mlx90632.txt
+@@ -0,0 +1,28 @@
++* Melexis MLX90632 contactless Infra Red temperature sensor
 +
- extern void bust_spinlocks(int yes);
- extern int oops_in_progress;		/* If set, an oops, panic(), BUG() or die() is in progress */
- extern int panic_timeout;
-diff --git a/lib/int_sqrt.c b/lib/int_sqrt.c
-index 1ef4cc344977..77386bc611d0 100644
---- a/lib/int_sqrt.c
-+++ b/lib/int_sqrt.c
-@@ -7,6 +7,7 @@
- 
- #include <linux/kernel.h>
- #include <linux/export.h>
-+#include <linux/bitops.h>
- 
- /**
-  * int_sqrt - rough approximation to sqrt
-@@ -36,3 +37,33 @@ unsigned long int_sqrt(unsigned long x)
- 	return y;
- }
- EXPORT_SYMBOL(int_sqrt);
++Link to datasheet: https://www.melexis.com/en/documents/documentation/datasheets/datasheet-mlx90632
 +
-+#if BITS_PER_LONG < 64
-+/**
-+ * int_sqrt64 - strongly typed int_sqrt function when minimum 64 bit input
-+ * is expected.
-+ * @x: 64bit integer of which to calculate the sqrt
-+ */
-+u32 int_sqrt64(u64 x)
-+{
-+	u64 b, m, y = 0;
++There are various applications for the Infra Red contactless temperature sensor
++and MLX90632 is most suitable for consumer applications where measured object
++temperature is in range between -20 to 200 degrees Celsius with relative error
++of measurement below 1 degree Celsius in object temperature range for
++industrial applications. Since it can operate and measure ambient temperature
++in range of -20 to 85 degrees Celsius it is suitable also for outdoor use.
 +
-+	if (x <= ULONG_MAX)
-+		return int_sqrt((unsigned long) x);
++Be aware that electronics surrounding the sensor can increase ambient
++temperature. MLX90632 can be calibrated to reduce the housing effect via
++already existing EEPROM parameters.
 +
-+	m = 1ULL << (fls64(x) & ~1ULL);
-+	while (m != 0) {
-+		b = y + m;
-+		y >>= 1;
++Since measured object emissivity effects Infra Red energy emitted, emissivity
++should be set before requesting the object temperature.
 +
-+		if (x >= b) {
-+			x -= b;
-+			y += m;
-+		}
-+		m >>= 2;
-+	}
++Required properties:
++  - compatible: should be "melexis,mlx90632"
++  - reg: the I2C address of the sensor (default 0x3a)
 +
-+	return y;
-+}
-+EXPORT_SYMBOL(int_sqrt64);
-+#endif
++Example:
++
++mlx90632@3a {
++	compatible = "melexis,mlx90632";
++	reg = <0x3a>;
++};
 -- 
 2.15.0
-
