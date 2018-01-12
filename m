@@ -1,85 +1,52 @@
-Return-Path: <SRS0=o/kk=EH=st.com=arnaud.pouliquen@kernel.org>
-Subject: Re: [PATCH -next] IIO: ADC: fix return value check in
- stm32_dfsdm_adc_probe()
-To: "weiyongjun (A)" <weiyongjun1@huawei.com>,
-        Dan Carpenter
-	<dan.carpenter@oracle.com>
-CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler
-	<pmeerw@pmeerw.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre
- Torgue <alexandre.torgue@st.com>,
-        Mark Brown <broonie@kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>,
-        "kernel-janitors@vger.kernel.org"
-	<kernel-janitors@vger.kernel.org>
-References: <1515669161-125426-1-git-send-email-weiyongjun1@huawei.com>
- <20180111212837.minmnjkvhudstafs@mwanda>
- <6AADFAC011213A4C87B956458587ADB40132A0E3@dggemi507-mbx.china.huawei.com>
-From: Arnaud Pouliquen <arnaud.pouliquen@st.com>
-Message-ID: <bd342999-d205-51fc-6f3d-4a2e69bf6a6a@st.com>
-Date: Fri, 12 Jan 2018 10:37:32 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from szxga04-in.huawei.com ([45.249.212.190]:4171 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1750714AbeALHjk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 12 Jan 2018 02:39:40 -0500
+From: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+To: <lars@metafoo.de>, <pmeerw@pmeerw.net>, <linux-iio@vger.kernel.org>
+CC: <linux-kernel@vger.kernel.org>, <arnd@arndb.de>,
+        <wangxiongfeng2@huawei.com>
+Subject: [PATCH] iio: accel: use strlcpy() instead of strncpy()
+Date: Fri, 12 Jan 2018 15:45:38 +0800
+Message-ID: <1515743138-94480-1-git-send-email-wangxiongfeng2@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <6AADFAC011213A4C87B956458587ADB40132A0E3@dggemi507-mbx.china.huawei.com>
-Content-Type: text/plain; charset="windows-1252"
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+From: Xiongfeng Wang <xiongfeng.wang@linaro.org>
 
+gcc-8 reports
 
-On 01/12/2018 02:37 AM, weiyongjun (A) wrote:
->>
->> On Thu, Jan 11, 2018 at 11:12:41AM +0000, Wei Yongjun wrote:
->>> In case of error, the function devm_iio_device_alloc() returns NULL
->>> pointer not ERR_PTR(). The IS_ERR() test in the return value check
->>> should be replaced with NULL test.
->>>
->>> Fixes: e2e6771c6462 ("IIO: ADC: add STM32 DFSDM sigma delta ADC
->> support")
->>> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
->>> ---
->>>  drivers/iio/adc/stm32-dfsdm-adc.c | 4 ++--
->>>  1 file changed, 2 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/iio/adc/stm32-dfsdm-adc.c b/drivers/iio/adc/stm32-
->> dfsdm-adc.c
->>> index e628d04..5e87140 100644
->>> --- a/drivers/iio/adc/stm32-dfsdm-adc.c
->>> +++ b/drivers/iio/adc/stm32-dfsdm-adc.c
->>> @@ -1100,9 +1100,9 @@ static int stm32_dfsdm_adc_probe(struct
->> platform_device *pdev)
->>>  	dev_data = (const struct stm32_dfsdm_dev_data *)of_id->data;
->>>
->>>  	iio = devm_iio_device_alloc(dev, sizeof(*adc));
->>> -	if (IS_ERR(iio)) {
->>> +	if (!iio) {
->>>  		dev_err(dev, "%s: Failed to allocate IIO\n", __func__);
->>> -		return PTR_ERR(iio);
->>> +		return -ENOMEM;
->>>  	}
->>>
->>>  	adc = iio_priv(iio);
->>         ^^^^^^^^^^^^^^^^^^
->> This one doesn't return an error pointer either.  The check causes a
->> static check warning for me.  (It can't actually fail, though so maybe
->> it will return an error pointer in the future?)
-> 
-> It seems that we can simply remove the check since 'adc' can never
-> be an invalid address here.
+drivers/iio/accel/st_accel_i2c.c: In function 'st_accel_i2c_probe':
+./include/linux/string.h:245:9: warning: '__builtin_strncpy' specified
+bound 20 equals destination size [-Wstringop-truncation]
 
-Agree, i'm preparing patches for all issue you highlight,
+The compiler require that the length of the dest string is greater than
+the length we want to copy to make sure the dest string is
+nul-terminated. We can just use strlcpy() to avoid this warning.
 
-Thanks for all your remarks
-Arnaud
-> 
-> Regards,
-> Yongjun Wei
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Signed-off-by: Xiongfeng Wang <xiongfeng.wang@linaro.org>
+---
+ drivers/iio/accel/st_accel_i2c.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
+index 363429b..6bdec8c 100644
+--- a/drivers/iio/accel/st_accel_i2c.c
++++ b/drivers/iio/accel/st_accel_i2c.c
+@@ -159,9 +159,8 @@ static int st_accel_i2c_probe(struct i2c_client *client,
+ 		if ((ret < 0) || (ret >= ST_ACCEL_MAX))
+ 			return -ENODEV;
+ 
+-		strncpy(client->name, st_accel_id_table[ret].name,
++		strlcpy(client->name, st_accel_id_table[ret].name,
+ 				sizeof(client->name));
+-		client->name[sizeof(client->name) - 1] = '\0';
+ 	} else if (!id)
+ 		return -ENODEV;
+ 
+-- 
+1.8.3.1
+
