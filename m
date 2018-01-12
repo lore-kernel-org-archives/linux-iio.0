@@ -1,63 +1,94 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38114 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750979AbeANMCF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 14 Jan 2018 07:02:05 -0500
-Date: Sun, 14 Jan 2018 12:02:01 +0000
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Xiongfeng Wang <wangxiongfeng2@huawei.com>
-Cc: <lars@metafoo.de>, <pmeerw@pmeerw.net>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <arnd@arndb.de>
-Subject: Re: [PATCH] iio: accel: use strlcpy() instead of strncpy()
-Message-ID: <20180114120201.331b5983@archlinux>
-In-Reply-To: <1515743138-94480-1-git-send-email-wangxiongfeng2@huawei.com>
-References: <1515743138-94480-1-git-send-email-wangxiongfeng2@huawei.com>
+Return-Path: <SRS0=D/ng=EH=gmail.com=milan.o.stevanovic@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+ knaack.h@gmx.de, pmeerw@pmeerw.net, Michael.Hennerich@analog.com,
+ "lars@metafoo.de >> Lars-Peter Clausen" <lars@metafoo.de>
+From: Milan Stevanovic <milan.o.stevanovic@gmail.com>
+Subject: [PATCH] iio: adc: driver for ti adc081s/adc101s/adc121s
+Message-ID: <23df1de6-dd7e-5c45-9634-1a3ec2e9687b@gmail.com>
+Date: Fri, 12 Jan 2018 21:38:57 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, 12 Jan 2018 15:45:38 +0800
-Xiongfeng Wang <wangxiongfeng2@huawei.com> wrote:
+ From cb437dd49444fb12897f88ccf485369e6ed3184e Mon Sep 17 00:00:00 2001
+From: Milan Stevanovic <milan.o.stevanovic@gmail.com>
+Date: Sun, 7 Jan 2018 21:44:33 +0100
+Subject: [PATCH] iio: adc: driver for ti adc081s/adc101s/adc121s
 
-> From: Xiongfeng Wang <xiongfeng.wang@linaro.org>
-> 
-> gcc-8 reports
-> 
-> drivers/iio/accel/st_accel_i2c.c: In function 'st_accel_i2c_probe':
-> ./include/linux/string.h:245:9: warning: '__builtin_strncpy' specified
-> bound 20 equals destination size [-Wstringop-truncation]
-> 
-> The compiler require that the length of the dest string is greater than
-> the length we want to copy to make sure the dest string is
-> nul-terminated. We can just use strlcpy() to avoid this warning.
-> 
-> Signed-off-by: Xiongfeng Wang <xiongfeng.wang@linaro.org>
-Hmm. As this is just warning suppression I'm not taking it as a fix
-but rather via the slow path.
+     Add Linux device driver for TI single-channel CMOS
+     8/10/12-bit analog-to-digital converter with a
+     high-speed serial interface.
 
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+Signed-off-by: Milan Stevanovic <milan.o.stevanovic@gmail.com>
+---
+  drivers/iio/adc/ad7476.c | 26 +++++++++++++++++++++++---
+  1 file changed, 23 insertions(+), 3 deletions(-)
 
-Jonathan
-> ---
->  drivers/iio/accel/st_accel_i2c.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
-> index 363429b..6bdec8c 100644
-> --- a/drivers/iio/accel/st_accel_i2c.c
-> +++ b/drivers/iio/accel/st_accel_i2c.c
-> @@ -159,9 +159,8 @@ static int st_accel_i2c_probe(struct i2c_client *client,
->  		if ((ret < 0) || (ret >= ST_ACCEL_MAX))
->  			return -ENODEV;
->  
-> -		strncpy(client->name, st_accel_id_table[ret].name,
-> +		strlcpy(client->name, st_accel_id_table[ret].name,
->  				sizeof(client->name));
-> -		client->name[sizeof(client->name) - 1] = '\0';
->  	} else if (!id)
->  		return -ENODEV;
->  
-
+diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
+index b7706bf..e872081 100644
+--- a/drivers/iio/adc/ad7476.c
++++ b/drivers/iio/adc/ad7476.c
+@@ -1,9 +1,9 @@
++// SPDX-License-Identifier: GPL-2.0
+  /*
+- * AD7466/7/8 AD7476/5/7/8 (A) SPI ADC driver
+   *
+- * Copyright 2010 Analog Devices Inc.
++ * Analog Device AD7466/7/8 AD7476/5/7/8 (A) SPI ADC driver
++ * TI ADC081S/ADC101S/ADC121S 8/10/12-bit SPI ADC driver
+   *
+- * Licensed under the GPL-2 or later.
+   */
+  
+  #include <linux/device.h>
+@@ -56,6 +56,9 @@ enum ad7476_supported_device_ids {
+  	ID_AD7468,
+  	ID_AD7495,
+  	ID_AD7940,
++	ID_ADC081S,
++	ID_ADC101S,
++	ID_ADC121S,
+  };
+  
+  static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
+@@ -147,6 +150,8 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
+  	},							\
+  }
+  
++#define ADC081S_CHAN(bits) _AD7476_CHAN((bits), 12 - (bits), \
++		BIT(IIO_CHAN_INFO_RAW))
+  #define AD7476_CHAN(bits) _AD7476_CHAN((bits), 13 - (bits), \
+  		BIT(IIO_CHAN_INFO_RAW))
+  #define AD7940_CHAN(bits) _AD7476_CHAN((bits), 15 - (bits), \
+@@ -192,6 +197,18 @@ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
+  		.channel[0] = AD7940_CHAN(14),
+  		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+  	},
++	[ID_ADC081S] = {
++		.channel[0] = ADC081S_CHAN(8),
++		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
++	},
++	[ID_ADC101S] = {
++		.channel[0] = ADC081S_CHAN(10),
++		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
++	},
++	[ID_ADC121S] = {
++		.channel[0] = ADC081S_CHAN(12),
++		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
++	},
+  };
+  
+  static const struct iio_info ad7476_info = {
+@@ -294,6 +311,9 @@ static const struct spi_device_id ad7476_id[] = {
+  	{"ad7910", ID_AD7467},
+  	{"ad7920", ID_AD7466},
+  	{"ad7940", ID_AD7940},
++	{"adc081s", ID_ADC081S},
++	{"adc101s", ID_ADC101S},
++	{"adc121s", ID_ADC121S},
+  	{}
+  };
+  MODULE_DEVICE_TABLE(spi, ad7476_id);
+-- 
+2.7.4
