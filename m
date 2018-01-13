@@ -1,393 +1,542 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:52824 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752306AbeANLpc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 14 Jan 2018 06:45:32 -0500
-Date: Sun, 14 Jan 2018 11:45:26 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Marc CAPDEVILLE <m.capdeville@no-log.org>
-Cc: Kevin Tsai <ktsai@capellamicro.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Wolfram Sang <wsa@the-dreams.de>, linux-iio@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 1/4] i2c-smbus : Add client discovered ARA support
-Message-ID: <20180114114526.1ca2f5ff@archlinux>
-In-Reply-To: <20180113133705.25044-1-m.capdeville@no-log.org>
-References: <20180113133705.25044-1-m.capdeville@no-log.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from mail-wm0-f68.google.com ([74.125.82.68]:35156 "EHLO
+        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751349AbeAMR6H (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 13 Jan 2018 12:58:07 -0500
+Received: by mail-wm0-f68.google.com with SMTP id r78so17518671wme.0
+        for <linux-iio@vger.kernel.org>; Sat, 13 Jan 2018 09:58:06 -0800 (PST)
+From: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org
+Subject: [PATCH] iio: imu: st_lsm6dsx: add hw timestamp support
+Date: Sat, 13 Jan 2018 18:57:56 +0100
+Message-Id: <20180113175756.25600-1-lorenzo.bianconi@redhat.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, 13 Jan 2018 14:37:02 +0100
-Marc CAPDEVILLE <m.capdeville@no-log.org> wrote:
+Introduce hw timestamp support instead of compute sample timestamps
+according to interrupt rate and configured watermark. LSM6DSx based
+devices are able to queue in hw FIFO the time reference of data
+sampling
 
-> This is from rfc by Alan Cox : https://patchwork.ozlabs.org/patch/381773
-> 
-> The idea is as follows (extract from above rfc) :
-> - If an adapter knows about its ARA and smbus alerts then the adapter
->   creates its own interrupt handler as before
-> 
-> - If a client knows it needs smbus alerts it calls
->   i2c_require_smbus_alert(). This ensures that there is an ARA handler
->   registered and tells the client whether the adapter is handling it
->   anyway or not.
-> 
-> - When the client learns that an ARA event has occurred it calls
->   i2c_smbus_alert_event() which uses the existing ARA mechanism to kick
->   things off.
-> 
-> In addition, if a client have an irq line to trigger smbus alert, client
-> driver register its irq with i2c_smbus_alert_add_irq() to the smbus alert
-> driver to use the generic alert interrupt handler. On detach, the client
-> must unregister its irq from the smbus alert driver with
-> i2c_smbus_alert_free_irq().
+Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+---
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h        |  29 +++--
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 161 ++++++++++++++++---------
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c   | 104 +++++++++++++++-
+ 3 files changed, 224 insertions(+), 70 deletions(-)
 
-A trivial comment inline...
-
-Also, I think this whole thing could do with some documentation as it is
-a little 'unusual'  :)
-
-Perhaps put a cover letter explaining how whole series has changed as
-well.
-
-Jonathan
-
-> 
-> Signed-off-by: Marc CAPDEVILLE <m.capdeville@no-log.org>
-> ---
->  drivers/i2c/i2c-core-smbus.c |  42 +++++++++++
->  drivers/i2c/i2c-smbus.c      | 171 +++++++++++++++++++++++++++++++++++++++++--
->  include/linux/i2c-smbus.h    |  22 ++++++
->  include/linux/i2c.h          |   2 +
->  4 files changed, 232 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/i2c/i2c-core-smbus.c b/drivers/i2c/i2c-core-smbus.c
-> index 1238c94fe5a1..0d84ac9669e9 100644
-> --- a/drivers/i2c/i2c-core-smbus.c
-> +++ b/drivers/i2c/i2c-core-smbus.c
-> @@ -659,6 +659,48 @@ struct i2c_client *i2c_setup_smbus_alert(struct i2c_adapter *adapter,
->  }
->  EXPORT_SYMBOL_GPL(i2c_setup_smbus_alert);
->  
-> +/**
-> + * i2c_require_smbus_alert - Client discovered SMBus alert
-> + * @client: client requiring ARA support
-> + *
-> + * When a client needs an ARA it calls this method. If the bus adapter
-> + * supports ARA and already knows how to do so then it will already have
-> + * configured for ARA and this is a no-op. If not then we set up an ARA
-> + * on the adapter.
-> + *
-> + * Return:
-> + *	0 if ARA support already registered
-> + *	1 if call register a new smbus_alert device
-> + *	<0 on error
-> + */
-> +int i2c_require_smbus_alert(struct i2c_client *client)
-> +{
-> +	struct i2c_adapter *adapter = client->adapter;
-> +	struct i2c_smbus_alert_setup setup;
-> +	struct i2c_client *ara;
-> +	int ret;
-> +
-> +	if (adapter->smbus_ara) {
-> +		/*
-> +		 * ARA is already known and handled by the adapter (ideal case)
-> +		 * or another client has specified ARA is needed
-> +		 */
-> +		ret = 0;
-> +	} else {
-> +		/* First client requesting alert and no adapter has
-> +		 * has setup one
-> +		 */
-> +		setup.irq = 0;
-> +		ara = i2c_setup_smbus_alert(adapter, &setup);
-> +		if (!ara)
-> +			return -ENODEV;
-> +		ret = 1;
-> +	}
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(i2c_require_smbus_alert);
-> +
->  #if IS_ENABLED(CONFIG_I2C_SMBUS) && IS_ENABLED(CONFIG_OF)
->  int of_i2c_setup_smbus_alert(struct i2c_adapter *adapter)
->  {
-> diff --git a/drivers/i2c/i2c-smbus.c b/drivers/i2c/i2c-smbus.c
-> index 5a1dd7f13bac..1699333ac950 100644
-> --- a/drivers/i2c/i2c-smbus.c
-> +++ b/drivers/i2c/i2c-smbus.c
-> @@ -25,9 +25,16 @@
->  #include <linux/slab.h>
->  #include <linux/workqueue.h>
->  
-> +struct i2c_smbus_irq_usage {
-> +	struct list_head	list;
-> +	int			irq;
-> +	int			count;
-> +};
-> +
->  struct i2c_smbus_alert {
->  	struct work_struct	alert;
->  	struct i2c_client	*ara;		/* Alert response address */
-> +	struct list_head	irq_usage;	/* irq usage list */
->  };
->  
->  struct alert_data {
-> @@ -126,6 +133,124 @@ static void smbalert_work(struct work_struct *work)
->  
->  }
->  
-> +/**
-> + * i2c_smbus_alert_add_irq - Add a new irq handler to ARA client
-> + * @client: The client which want to add an smbus alert irq handler
-> + * @irq: The irq number to be added to the smbus alert device
-> + * return: 0 if irq handler already exist, 1 if a new handler has been
-> + *	   registered, <0 on error
-> + *
-> + * This is used by the smbalert_probe and by smbus client to check if an
-> + * irq handler already exist for that irq and if not register a new one
-> + * Clients must free their irq with i2c_smbus_alert_free_irq() on driver
-> + * detach.
-> + */
-> +int i2c_smbus_alert_add_irq(struct i2c_client *client, int irq)
-> +{
-> +	int res;
-> +	struct i2c_smbus_irq_usage *irq_usage;
-> +	struct i2c_client *ara;
-> +	struct i2c_smbus_alert *alert;
-> +
-> +	ara = client->adapter->smbus_ara;
-> +	if (!ara)
-> +		return -EINVAL;
-> +
-> +	alert = i2c_get_clientdata(client->adapter->smbus_ara);
-> +	if (!alert)
-> +		return -EINVAL;
-> +
-> +	if (!irq)
-> +		return 0;
-> +
-> +	/* Check if handler exist for that irq */
-> +	list_for_each_entry(irq_usage, &alert->irq_usage, list)
-> +		if (irq_usage->irq == irq)
-> +			break;
-> +
-> +	if (irq_usage->irq == irq) {
-> +		irq_usage->count++;
-> +	} else {
-> +		/* setup a new handler for that irq */
-> +		res = devm_request_threaded_irq(&ara->dev, irq,
-> +						NULL, smbus_alert,
-> +						IRQF_SHARED | IRQF_ONESHOT,
-> +						"smbus_alert", alert);
-> +		if (res)
-> +			return res;
-> +
-> +		/* Add adapter irq number to used irq list with a count of 1 */
-> +		irq_usage = devm_kmalloc(&ara->dev,
-> +					 sizeof(struct i2c_smbus_irq_usage),
-> +					 GFP_KERNEL);
-> +		INIT_LIST_HEAD(&irq_usage->list);
-> +		irq_usage->irq = irq;
-> +		irq_usage->count = 1;
-> +		list_add(&irq_usage->list, &alert->irq_usage);
-> +
-> +		return 0;
-> +	}
-> +
-> +	return 1;
-> +}
-> +EXPORT_SYMBOL_GPL(i2c_smbus_alert_add_irq);
-> +
-> +/**
-> + * i2c_smbus_alert_free_irq - free irq added with i2c_smbus_alert_add_irq()
-> + * @client: The client which want to free its smbus alert irq
-> + * @irq: The irq number to be freed
-> + * return: 0 if irq handler still exist for other client,
-> + *	   1 if client is the last one using this handler and handler have been
-> + *	     removed,
-> + *	   <0 on error.
-> + *
-> + * This is used by smbus clients to free their irq usage from smbus alert
-> + * device.
-> + */
-> +int i2c_smbus_alert_free_irq(struct i2c_client *client, int irq)
-> +{
-> +	struct i2c_smbus_irq_usage *irq_usage;
-> +	struct i2c_client *ara;
-> +	struct i2c_smbus_alert *alert;
-> +
-> +	ara = client->adapter->smbus_ara;
-> +	if (!ara)
-> +		return -EINVAL;
-> +
-> +	alert = i2c_get_clientdata(client->adapter->smbus_ara);
-> +	if (!alert)
-> +		return -EINVAL;
-> +
-> +	if (!irq)
-> +		return 0;
-> +
-> +	/* Check if handler exist for that irq */
-> +	list_for_each_entry(irq_usage, &alert->irq_usage, list)
-> +		if (irq_usage->irq == irq)
-> +			break;
-> +
-> +	if (irq_usage->irq == irq) {
-> +		irq_usage->count--;
-> +		if (!irq_usage->count) {
-/* 
- * usage
-> +			/* usage count goes to 0
-> +			 * so remove irq_usage from list
-> +			 */
-> +			list_del(&irq_usage->list);
-> +			devm_kfree(&ara->dev, irq_usage);
-> +
-> +			/* remove irq handler */
-> +			devm_free_irq(&ara->dev, irq, alert);
-> +
-> +			return 1;
-> +		}
-> +
-> +		return 0;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +EXPORT_SYMBOL_GPL(i2c_smbus_alert_free_irq);
-> +
->  /* Setup SMBALERT# infrastructure */
->  static int smbalert_probe(struct i2c_client *ara,
->  			  const struct i2c_device_id *id)
-> @@ -151,16 +276,18 @@ static int smbalert_probe(struct i2c_client *ara,
->  	INIT_WORK(&alert->alert, smbalert_work);
->  	alert->ara = ara;
->  
-> +	INIT_LIST_HEAD(&alert->irq_usage);
-> +
-> +	i2c_set_clientdata(ara, alert);
-> +
-> +	ara->adapter->smbus_ara = ara;
-> +
->  	if (irq > 0) {
-> -		res = devm_request_threaded_irq(&ara->dev, irq,
-> -						NULL, smbus_alert,
-> -						IRQF_SHARED | IRQF_ONESHOT,
-> -						"smbus_alert", alert);
-> +		res = i2c_smbus_alert_add_irq(ara, irq);
->  		if (res)
->  			return res;
->  	}
->  
-> -	i2c_set_clientdata(ara, alert);
->  	dev_info(&adapter->dev, "supports SMBALERT#\n");
->  
->  	return 0;
-> @@ -172,6 +299,9 @@ static int smbalert_remove(struct i2c_client *ara)
->  	struct i2c_smbus_alert *alert = i2c_get_clientdata(ara);
->  
->  	cancel_work_sync(&alert->alert);
-> +
-> +	ara->adapter->smbus_ara = NULL;
-> +
->  	return 0;
->  }
->  
-> @@ -210,6 +340,37 @@ int i2c_handle_smbus_alert(struct i2c_client *ara)
->  }
->  EXPORT_SYMBOL_GPL(i2c_handle_smbus_alert);
->  
-> +/**
-> + * i2c_smbus_alert_event
-> + * @client: the client who known of a probable ARA event
-> + * Context: can't sleep
-> + *
-> + * Helper function to be called from an I2C device driver's interrupt
-> + * handler. It will schedule the alert work, in turn calling the
-> + * corresponding I2C device driver's alert function.
-> + *
-> + * It is assumed that client is an i2c client who previously call
-> + * i2c_require_smbus_alert().
-> + *
-> + * return: <0 on error
-> + */
-> +int i2c_smbus_alert_event(struct i2c_client *client)
-> +{
-> +	struct i2c_client *ara;
-> +	struct i2c_smbus_alert *alert;
-> +
-> +	ara = client->adapter->smbus_ara;
-> +	if (!ara)
-> +		return -EINVAL;
-> +
-> +	alert = i2c_get_clientdata(ara);
-> +	if (!alert)
-> +		return -EINVAL;
-> +
-> +	return schedule_work(&alert->alert);
-> +}
-> +EXPORT_SYMBOL_GPL(i2c_smbus_alert_event);
-> +
->  module_i2c_driver(smbalert_driver);
->  
->  MODULE_AUTHOR("Jean Delvare <jdelvare@suse.de>");
-> diff --git a/include/linux/i2c-smbus.h b/include/linux/i2c-smbus.h
-> index fb0e040b1abb..cf777f29cc79 100644
-> --- a/include/linux/i2c-smbus.h
-> +++ b/include/linux/i2c-smbus.h
-> @@ -47,6 +47,7 @@ struct i2c_smbus_alert_setup {
->  
->  struct i2c_client *i2c_setup_smbus_alert(struct i2c_adapter *adapter,
->  					 struct i2c_smbus_alert_setup *setup);
-> +int i2c_require_smbus_alert(struct i2c_client *client);
->  int i2c_handle_smbus_alert(struct i2c_client *ara);
->  
->  #if IS_ENABLED(CONFIG_I2C_SMBUS) && IS_ENABLED(CONFIG_OF)
-> @@ -58,4 +59,25 @@ static inline int of_i2c_setup_smbus_alert(struct i2c_adapter *adap)
->  }
->  #endif
->  
-> +#if IS_ENABLED(CONFIG_I2C_SMBUS)
-> +int i2c_smbus_alert_add_irq(struct i2c_client *client, int irq);
-> +int i2c_smbus_alert_free_irq(struct i2c_client *client, int irq);
-> +int i2c_smbus_alert_event(struct i2c_client *client);
-> +#else
-> +static inline int i2c_smbus_alert_add_irq(struct i2c_client *client, int irq)
-> +{
-> +	return -EINVAL;
-> +}
-> +
-> +static inline int i2c_smbus_alert_free_irq(struct i2c_client *client, int irq)
-> +{
-> +	return -EINVAL;
-> +}
-> +
-> +static inline int i2c_smbus_alert_event(struct i2c_client *client)
-> +{
-> +	return -EINVAL;
-> +}
-> +#endif
-> +
->  #endif /* _LINUX_I2C_SMBUS_H */
-> diff --git a/include/linux/i2c.h b/include/linux/i2c.h
-> index 5d7f3c1853ae..7592dce12923 100644
-> --- a/include/linux/i2c.h
-> +++ b/include/linux/i2c.h
-> @@ -652,6 +652,8 @@ struct i2c_adapter {
->  	const struct i2c_adapter_quirks *quirks;
->  
->  	struct irq_domain *host_notify_domain;
-> +
-> +	struct i2c_client *smbus_ara;	/* ARA client address if any or NULL */
->  };
->  #define to_i2c_adapter(d) container_of(d, struct i2c_adapter, dev)
->  
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+index 8fdd723afa05..a3cc7cd97026 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+@@ -27,7 +27,7 @@ enum st_lsm6dsx_hw_id {
+ 	ST_LSM6DSX_MAX_ID,
+ };
+ 
+-#define ST_LSM6DSX_BUFF_SIZE		256
++#define ST_LSM6DSX_BUFF_SIZE		400
+ #define ST_LSM6DSX_CHAN_SIZE		2
+ #define ST_LSM6DSX_SAMPLE_SIZE		6
+ #define ST_LSM6DSX_MAX_WORD_LEN		((32 / ST_LSM6DSX_SAMPLE_SIZE) * \
+@@ -57,6 +57,20 @@ struct st_lsm6dsx_fifo_ops {
+ 	u8 th_wl;
+ };
+ 
++/**
++ * struct st_lsm6dsx_hw_ts_settings - ST IMU hw timer settings
++ * @timer_en: Hw timer enable register info (addr + mask).
++ * @hr_timer: Hw timer resolution register info (addr + mask).
++ * @fifo_en: Hw timer FIFO enable register info (addr + mask).
++ * @decimator: Hw timer FIFO decimator register info (addr + mask).
++ */
++struct st_lsm6dsx_hw_ts_settings {
++	struct st_lsm6dsx_reg timer_en;
++	struct st_lsm6dsx_reg hr_timer;
++	struct st_lsm6dsx_reg fifo_en;
++	struct st_lsm6dsx_reg decimator;
++};
++
+ /**
+  * struct st_lsm6dsx_settings - ST IMU sensor settings
+  * @wai: Sensor WhoAmI default value.
+@@ -64,6 +78,7 @@ struct st_lsm6dsx_fifo_ops {
+  * @id: List of hw id supported by the driver configuration.
+  * @decimator: List of decimator register info (addr + mask).
+  * @fifo_ops: Sensor hw FIFO parameters.
++ * @ts_settings: Hw timer related settings.
+  */
+ struct st_lsm6dsx_settings {
+ 	u8 wai;
+@@ -71,6 +86,7 @@ struct st_lsm6dsx_settings {
+ 	enum st_lsm6dsx_hw_id id[ST_LSM6DSX_MAX_ID];
+ 	struct st_lsm6dsx_reg decimator[ST_LSM6DSX_MAX_ID];
+ 	struct st_lsm6dsx_fifo_ops fifo_ops;
++	struct st_lsm6dsx_hw_ts_settings ts_settings;
+ };
+ 
+ enum st_lsm6dsx_sensor_id {
+@@ -94,8 +110,7 @@ enum st_lsm6dsx_fifo_mode {
+  * @watermark: Sensor watermark level.
+  * @sip: Number of samples in a given pattern.
+  * @decimator: FIFO decimation factor.
+- * @delta_ts: Delta time between two consecutive interrupts.
+- * @ts: Latest timestamp from the interrupt handler.
++ * @ts_ref: Sensor timestamp reference for hw one.
+  */
+ struct st_lsm6dsx_sensor {
+ 	char name[32];
+@@ -108,9 +123,7 @@ struct st_lsm6dsx_sensor {
+ 	u16 watermark;
+ 	u8 sip;
+ 	u8 decimator;
+-
+-	s64 delta_ts;
+-	s64 ts;
++	s64 ts_ref;
+ };
+ 
+ /**
+@@ -122,7 +135,8 @@ struct st_lsm6dsx_sensor {
+  * @conf_lock: Mutex to prevent concurrent FIFO configuration update.
+  * @fifo_mode: FIFO operating mode supported by the device.
+  * @enable_mask: Enabled sensor bitmask.
+- * @sip: Total number of samples (acc/gyro) in a given pattern.
++ * @ts_sip: Total number of timestamp samples in a given pattern.
++ * @sip: Total number of samples (acc/gyro/ts) in a given pattern.
+  * @buff: Device read buffer.
+  * @iio_devs: Pointers to acc/gyro iio_dev instances.
+  * @settings: Pointer to the specific sensor settings in use.
+@@ -137,6 +151,7 @@ struct st_lsm6dsx_hw {
+ 
+ 	enum st_lsm6dsx_fifo_mode fifo_mode;
+ 	u8 enable_mask;
++	u8 ts_sip;
+ 	u8 sip;
+ 
+ 	u8 *buff;
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+index 1d6aa9b1a4cf..1045e025e92b 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+@@ -46,9 +46,13 @@
+ #define ST_LSM6DSX_FIFO_ODR_MASK		GENMASK(6, 3)
+ #define ST_LSM6DSX_FIFO_EMPTY_MASK		BIT(12)
+ #define ST_LSM6DSX_REG_FIFO_OUTL_ADDR		0x3e
++#define ST_LSM6DSX_REG_TS_RESET_ADDR		0x42
+ 
+ #define ST_LSM6DSX_MAX_FIFO_ODR_VAL		0x08
+ 
++#define ST_LSM6DSX_TS_SENSITIVITY		25000UL /* 25us */
++#define ST_LSM6DSX_TS_RESET_VAL			0xaa
++
+ struct st_lsm6dsx_decimator_entry {
+ 	u8 decimator;
+ 	u8 val;
+@@ -98,9 +102,10 @@ static void st_lsm6dsx_get_max_min_odr(struct st_lsm6dsx_hw *hw,
+ 
+ static int st_lsm6dsx_update_decimators(struct st_lsm6dsx_hw *hw)
+ {
++	u16 max_odr, min_odr, sip = 0, ts_sip = 0;
++	const struct st_lsm6dsx_reg *ts_dec_reg;
+ 	struct st_lsm6dsx_sensor *sensor;
+-	u16 max_odr, min_odr, sip = 0;
+-	int err, i;
++	int err = 0, i;
+ 	u8 data;
+ 
+ 	st_lsm6dsx_get_max_min_odr(hw, &max_odr, &min_odr);
+@@ -119,6 +124,7 @@ static int st_lsm6dsx_update_decimators(struct st_lsm6dsx_hw *hw)
+ 			sensor->decimator = 0;
+ 			data = 0;
+ 		}
++		ts_sip = max_t(u16, ts_sip, sensor->sip);
+ 
+ 		dec_reg = &hw->settings->decimator[sensor->id];
+ 		if (dec_reg->addr) {
+@@ -131,9 +137,23 @@ static int st_lsm6dsx_update_decimators(struct st_lsm6dsx_hw *hw)
+ 		}
+ 		sip += sensor->sip;
+ 	}
+-	hw->sip = sip;
++	hw->sip = sip + ts_sip;
++	hw->ts_sip = ts_sip;
+ 
+-	return 0;
++	/*
++	 * update hw ts decimator if necessary. Decimator for hw timestamp
++	 * is always 1 or 0 in order to have a ts sample for each data
++	 * sample in FIFO
++	 */
++	ts_dec_reg = &hw->settings->ts_settings.decimator;
++	if (ts_dec_reg->addr) {
++		int val, ts_dec = !!hw->ts_sip;
++
++		val = ST_LSM6DSX_SHIFT_VAL(ts_dec, ts_dec_reg->mask);
++		err = regmap_update_bits(hw->regmap, ts_dec_reg->addr,
++					 ts_dec_reg->mask, val);
++	}
++	return err;
+ }
+ 
+ int st_lsm6dsx_set_fifo_mode(struct st_lsm6dsx_hw *hw,
+@@ -208,6 +228,28 @@ int st_lsm6dsx_update_watermark(struct st_lsm6dsx_sensor *sensor, u16 watermark)
+ 				 &wdata, sizeof(wdata));
+ }
+ 
++static int st_lsm6dsx_reset_hw_ts(struct st_lsm6dsx_hw *hw)
++{
++	struct st_lsm6dsx_sensor *sensor;
++	int i, err;
++
++	/* reset hw ts counter */
++	err = regmap_write(hw->regmap, ST_LSM6DSX_REG_TS_RESET_ADDR,
++			   ST_LSM6DSX_TS_RESET_VAL);
++	if (err < 0)
++		return err;
++
++	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++) {
++		sensor = iio_priv(hw->iio_devs[i]);
++		/*
++		 * store enable buffer timestamp as reference for
++		 * hw timestamp
++		 */
++		sensor->ts_ref = iio_get_time_ns(hw->iio_devs[i]);
++	}
++	return 0;
++}
++
+ /*
+  * Set max bulk read to ST_LSM6DSX_MAX_WORD_LEN in order to avoid
+  * a kmalloc for each bus access
+@@ -231,6 +273,8 @@ static inline int st_lsm6dsx_read_block(struct st_lsm6dsx_hw *hw, u8 *data,
+ 	return 0;
+ }
+ 
++#define ST_LSM6DSX_IIO_BUFF_SIZE	(ALIGN(ST_LSM6DSX_SAMPLE_SIZE, \
++					       sizeof(s64)) + sizeof(s64))
+ /**
+  * st_lsm6dsx_read_fifo() - LSM6DS3-LSM6DS3H-LSM6DSL-LSM6DSM read FIFO routine
+  * @hw: Pointer to instance of struct st_lsm6dsx_hw.
+@@ -243,11 +287,13 @@ static int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
+ {
+ 	u16 fifo_len, pattern_len = hw->sip * ST_LSM6DSX_SAMPLE_SIZE;
+ 	u16 fifo_diff_mask = hw->settings->fifo_ops.fifo_diff.mask;
+-	int err, acc_sip, gyro_sip, read_len, samples, offset;
++	int err, acc_sip, gyro_sip, ts_sip, read_len, offset;
+ 	struct st_lsm6dsx_sensor *acc_sensor, *gyro_sensor;
+-	s64 acc_ts, acc_delta_ts, gyro_ts, gyro_delta_ts;
+-	u8 iio_buff[ALIGN(ST_LSM6DSX_SAMPLE_SIZE, sizeof(s64)) + sizeof(s64)];
++	u8 gyro_buff[ST_LSM6DSX_IIO_BUFF_SIZE];
++	u8 acc_buff[ST_LSM6DSX_IIO_BUFF_SIZE];
++	bool reset_ts = false;
+ 	__le16 fifo_status;
++	s64 ts = 0;
+ 
+ 	err = regmap_bulk_read(hw->regmap,
+ 			       hw->settings->fifo_ops.fifo_diff.addr,
+@@ -260,23 +306,10 @@ static int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
+ 
+ 	fifo_len = (le16_to_cpu(fifo_status) & fifo_diff_mask) *
+ 		   ST_LSM6DSX_CHAN_SIZE;
+-	samples = fifo_len / ST_LSM6DSX_SAMPLE_SIZE;
+ 	fifo_len = (fifo_len / pattern_len) * pattern_len;
+ 
+-	/*
+-	 * compute delta timestamp between two consecutive samples
+-	 * in order to estimate queueing time of data generated
+-	 * by the sensor
+-	 */
+ 	acc_sensor = iio_priv(hw->iio_devs[ST_LSM6DSX_ID_ACC]);
+-	acc_ts = acc_sensor->ts - acc_sensor->delta_ts;
+-	acc_delta_ts = div_s64(acc_sensor->delta_ts * acc_sensor->decimator,
+-			       samples);
+-
+ 	gyro_sensor = iio_priv(hw->iio_devs[ST_LSM6DSX_ID_GYRO]);
+-	gyro_ts = gyro_sensor->ts - gyro_sensor->delta_ts;
+-	gyro_delta_ts = div_s64(gyro_sensor->delta_ts * gyro_sensor->decimator,
+-				samples);
+ 
+ 	for (read_len = 0; read_len < fifo_len; read_len += pattern_len) {
+ 		err = st_lsm6dsx_read_block(hw, hw->buff, pattern_len);
+@@ -287,7 +320,7 @@ static int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
+ 		 * Data are written to the FIFO with a specific pattern
+ 		 * depending on the configured ODRs. The first sequence of data
+ 		 * stored in FIFO contains the data of all enabled sensors
+-		 * (e.g. Gx, Gy, Gz, Ax, Ay, Az), then data are repeated
++		 * (e.g. Gx, Gy, Gz, Ax, Ay, Az, Ts), then data are repeated
+ 		 * depending on the value of the decimation factor set for each
+ 		 * sensor.
+ 		 *
+@@ -296,35 +329,65 @@ static int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
+ 		 *   - gyroscope ODR = 208Hz, accelerometer ODR = 104Hz
+ 		 * Since the gyroscope ODR is twice the accelerometer one, the
+ 		 * following pattern is repeated every 9 samples:
+-		 *   - Gx, Gy, Gz, Ax, Ay, Az, Gx, Gy, Gz
++		 *   - Gx, Gy, Gz, Ax, Ay, Az, Ts, Gx, Gy, Gz, Ts, Gx, ..
+ 		 */
+ 		gyro_sip = gyro_sensor->sip;
+ 		acc_sip = acc_sensor->sip;
++		ts_sip = hw->ts_sip;
+ 		offset = 0;
+ 
+ 		while (acc_sip > 0 || gyro_sip > 0) {
+-			if (gyro_sip-- > 0) {
+-				memcpy(iio_buff, &hw->buff[offset],
++			if (gyro_sip > 0) {
++				memcpy(gyro_buff, &hw->buff[offset],
+ 				       ST_LSM6DSX_SAMPLE_SIZE);
+-				iio_push_to_buffers_with_timestamp(
+-					hw->iio_devs[ST_LSM6DSX_ID_GYRO],
+-					iio_buff, gyro_ts);
+ 				offset += ST_LSM6DSX_SAMPLE_SIZE;
+-				gyro_ts += gyro_delta_ts;
+ 			}
+-
+-			if (acc_sip-- > 0) {
+-				memcpy(iio_buff, &hw->buff[offset],
++			if (acc_sip > 0) {
++				memcpy(acc_buff, &hw->buff[offset],
+ 				       ST_LSM6DSX_SAMPLE_SIZE);
+-				iio_push_to_buffers_with_timestamp(
+-					hw->iio_devs[ST_LSM6DSX_ID_ACC],
+-					iio_buff, acc_ts);
+ 				offset += ST_LSM6DSX_SAMPLE_SIZE;
+-				acc_ts += acc_delta_ts;
+ 			}
++
++			if (ts_sip-- > 0) {
++				u8 data[ST_LSM6DSX_SAMPLE_SIZE];
++
++				memcpy(data, &hw->buff[offset], sizeof(data));
++				/*
++				 * hw timestamp is 3B long and it is stored
++				 * in FIFO using 6B as 4th FIFO data set
++				 * according to this schema:
++				 * B0 = ts[15:8], B1 = ts[23:16], B3 = ts[7:0]
++				 */
++				ts = data[1] << 16 | data[0] << 8 | data[3];
++				/*
++				 * check if hw timestamp engine is going to
++				 * reset (the sensor generates an interrupt
++				 * to signal the hw timestamp will reset in
++				 * 1.638s)
++				 */
++				if (!reset_ts && ts >= 0xff0000)
++					reset_ts = true;
++				ts *= ST_LSM6DSX_TS_SENSITIVITY;
++
++				offset += ST_LSM6DSX_SAMPLE_SIZE;
++			}
++
++			if (gyro_sip-- > 0)
++				iio_push_to_buffers_with_timestamp(
++					hw->iio_devs[ST_LSM6DSX_ID_GYRO],
++					gyro_buff, gyro_sensor->ts_ref + ts);
++			if (acc_sip-- > 0)
++				iio_push_to_buffers_with_timestamp(
++					hw->iio_devs[ST_LSM6DSX_ID_ACC],
++					acc_buff, acc_sensor->ts_ref + ts);
+ 		}
+ 	}
+ 
++	if (unlikely(reset_ts)) {
++		err = st_lsm6dsx_reset_hw_ts(hw);
++		if (err < 0)
++			return err;
++	}
+ 	return read_len;
+ }
+ 
+@@ -379,15 +442,12 @@ static int st_lsm6dsx_update_fifo(struct iio_dev *iio_dev, bool enable)
+ 		goto out;
+ 
+ 	if (hw->enable_mask) {
+-		err = st_lsm6dsx_set_fifo_mode(hw, ST_LSM6DSX_FIFO_CONT);
++		/* reset hw ts counter */
++		err = st_lsm6dsx_reset_hw_ts(hw);
+ 		if (err < 0)
+ 			goto out;
+ 
+-		/*
+-		 * store enable buffer timestamp as reference to compute
+-		 * first delta timestamp
+-		 */
+-		sensor->ts = iio_get_time_ns(iio_dev);
++		err = st_lsm6dsx_set_fifo_mode(hw, ST_LSM6DSX_FIFO_CONT);
+ 	}
+ 
+ out:
+@@ -399,25 +459,8 @@ static int st_lsm6dsx_update_fifo(struct iio_dev *iio_dev, bool enable)
+ static irqreturn_t st_lsm6dsx_handler_irq(int irq, void *private)
+ {
+ 	struct st_lsm6dsx_hw *hw = private;
+-	struct st_lsm6dsx_sensor *sensor;
+-	int i;
+-
+-	if (!hw->sip)
+-		return IRQ_NONE;
+-
+-	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++) {
+-		sensor = iio_priv(hw->iio_devs[i]);
+-
+-		if (sensor->sip > 0) {
+-			s64 timestamp;
+-
+-			timestamp = iio_get_time_ns(hw->iio_devs[i]);
+-			sensor->delta_ts = timestamp - sensor->ts;
+-			sensor->ts = timestamp;
+-		}
+-	}
+ 
+-	return IRQ_WAKE_THREAD;
++	return hw->sip > 0 ? IRQ_WAKE_THREAD : IRQ_NONE;
+ }
+ 
+ static irqreturn_t st_lsm6dsx_handler_thread(int irq, void *private)
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+index c2fa3239b9c6..8656d72ef4ee 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+@@ -181,6 +181,24 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
+ 			},
+ 			.th_wl = 3, /* 1LSB = 2B */
+ 		},
++		.ts_settings = {
++			.timer_en = {
++				.addr = 0x58,
++				.mask = BIT(7),
++			},
++			.hr_timer = {
++				.addr = 0x5c,
++				.mask = BIT(4),
++			},
++			.fifo_en = {
++				.addr = 0x07,
++				.mask = BIT(7),
++			},
++			.decimator = {
++				.addr = 0x09,
++				.mask = GENMASK(5, 3),
++			},
++		},
+ 	},
+ 	{
+ 		.wai = 0x69,
+@@ -209,6 +227,24 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
+ 			},
+ 			.th_wl = 3, /* 1LSB = 2B */
+ 		},
++		.ts_settings = {
++			.timer_en = {
++				.addr = 0x58,
++				.mask = BIT(7),
++			},
++			.hr_timer = {
++				.addr = 0x5c,
++				.mask = BIT(4),
++			},
++			.fifo_en = {
++				.addr = 0x07,
++				.mask = BIT(7),
++			},
++			.decimator = {
++				.addr = 0x09,
++				.mask = GENMASK(5, 3),
++			},
++		},
+ 	},
+ 	{
+ 		.wai = 0x6a,
+@@ -238,6 +274,24 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
+ 			},
+ 			.th_wl = 3, /* 1LSB = 2B */
+ 		},
++		.ts_settings = {
++			.timer_en = {
++				.addr = 0x19,
++				.mask = BIT(5),
++			},
++			.hr_timer = {
++				.addr = 0x5c,
++				.mask = BIT(4),
++			},
++			.fifo_en = {
++				.addr = 0x07,
++				.mask = BIT(7),
++			},
++			.decimator = {
++				.addr = 0x09,
++				.mask = GENMASK(5, 3),
++			},
++		},
+ 	},
+ };
+ 
+@@ -630,6 +684,44 @@ static int st_lsm6dsx_get_drdy_reg(struct st_lsm6dsx_hw *hw, u8 *drdy_reg)
+ 	return err;
+ }
+ 
++static int st_lsm6dsx_init_hw_timer(struct st_lsm6dsx_hw *hw)
++{
++	const struct st_lsm6dsx_hw_ts_settings *ts_settings;
++	int err, val;
++
++	ts_settings = &hw->settings->ts_settings;
++	/* enable hw timestamp generation if necessary */
++	if (ts_settings->timer_en.addr) {
++		val = ST_LSM6DSX_SHIFT_VAL(1, ts_settings->timer_en.mask);
++		err = regmap_update_bits(hw->regmap,
++					 ts_settings->timer_en.addr,
++					 ts_settings->timer_en.mask, val);
++		if (err < 0)
++			return err;
++	}
++
++	/* enable high resolution for hw ts timer if necessary */
++	if (ts_settings->hr_timer.addr) {
++		val = ST_LSM6DSX_SHIFT_VAL(1, ts_settings->hr_timer.mask);
++		err = regmap_update_bits(hw->regmap,
++					 ts_settings->hr_timer.addr,
++					 ts_settings->hr_timer.mask, val);
++		if (err < 0)
++			return err;
++	}
++
++	/* enable ts queueing in FIFO if necessary */
++	if (ts_settings->fifo_en.addr) {
++		val = ST_LSM6DSX_SHIFT_VAL(1, ts_settings->fifo_en.mask);
++		err = regmap_update_bits(hw->regmap,
++					 ts_settings->fifo_en.addr,
++					 ts_settings->fifo_en.mask, val);
++		if (err < 0)
++			return err;
++	}
++	return 0;
++}
++
+ static int st_lsm6dsx_init_device(struct st_lsm6dsx_hw *hw)
+ {
+ 	u8 drdy_int_reg;
+@@ -654,10 +746,14 @@ static int st_lsm6dsx_init_device(struct st_lsm6dsx_hw *hw)
+ 	if (err < 0)
+ 		return err;
+ 
+-	return regmap_update_bits(hw->regmap, drdy_int_reg,
+-				  ST_LSM6DSX_REG_FIFO_FTH_IRQ_MASK,
+-				  FIELD_PREP(ST_LSM6DSX_REG_FIFO_FTH_IRQ_MASK,
+-					     1));
++	err = regmap_update_bits(hw->regmap, drdy_int_reg,
++				 ST_LSM6DSX_REG_FIFO_FTH_IRQ_MASK,
++				 FIELD_PREP(ST_LSM6DSX_REG_FIFO_FTH_IRQ_MASK,
++					    1));
++	if (err < 0)
++		return err;
++
++	return st_lsm6dsx_init_hw_timer(hw);
+ }
+ 
+ static struct iio_dev *st_lsm6dsx_alloc_iiodev(struct st_lsm6dsx_hw *hw,
+-- 
+2.15.1
 
