@@ -1,128 +1,101 @@
-Return-Path: <alexandru.Ardelean@analog.com>
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "jic23@jic23.retrosnub.co.uk" <jic23@jic23.retrosnub.co.uk>
-CC: "mark.rutland@arm.com" <mark.rutland@arm.com>, "lars@metafoo.de"
-	<lars@metafoo.de>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>, "robh+dt@kernel.org"
-	<robh+dt@kernel.org>, "devicetree@vger.kernel.org"
-	<devicetree@vger.kernel.org>
-Subject: Re: [PATCH 3/3] staging: iio: docs: add ad7192 doc to detail dt
- usage
-Date: Thu, 18 Jan 2018 13:16:37 +0000
-Message-ID: <1516281396.2928.5.camel@analog.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38554 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751015AbeANMhr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 14 Jan 2018 07:37:47 -0500
+Date: Sun, 14 Jan 2018 12:37:45 +0000
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+To: <alexandru.ardelean@analog.com>
+Cc: <linux-iio@vger.kernel.org>, <michael.hennerich@analog.com>,
+        <robh+dt@kernel.org>, <mark.rutland@arm.com>,
+        <devicetree@vger.kernel.org>
+Subject: Re: [PATCH 1/3] staging: iio: adc: ad7192: fix external frequency
+ setting
+Message-ID: <20180114123745.7a1180ca@archlinux>
+In-Reply-To: <20180110112956.23931-1-alexandru.ardelean@analog.com>
 References: <20180110112956.23931-1-alexandru.ardelean@analog.com>
-	 <20180110112956.23931-3-alexandru.ardelean@analog.com>
-	 <20180114125604.24a3876d@archlinux>
-In-Reply-To: <20180114125604.24a3876d@archlinux>
-Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-T24gU3VuLCAyMDE4LTAxLTE0IGF0IDEyOjU2ICswMDAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
-Og0KPiBPbiBXZWQsIDEwIEphbiAyMDE4IDEzOjI5OjU2ICswMjAwDQo+IDxhbGV4YW5kcnUuYXJk
-ZWxlYW5AYW5hbG9nLmNvbT4gd3JvdGU6DQo+IA0KPiA+IEZyb206IEFsZXhhbmRydSBBcmRlbGVh
-biA8YWxleGFuZHJ1LmFyZGVsZWFuQGFuYWxvZy5jb20+DQo+ID4gDQo+ID4gRG9jdW1lbnQgdGhl
-IGRldmljZS10cmVlIGJpbmRpbmdzIG9mIHRoZSAiYWQ3MTkyIiBkcml2ZXIuDQo+ID4gQWRkZWQg
-ZGF0YXNoZWV0IHJlZmVyZW5jZXMgZm9yIHN1cHBvcnRlZCBkZXZpY2VzLA0KPiA+IGV4cGxhbmF0
-aW9uIGZvciBlYWNoIHByb3BlcnR5IHN1cHBvcnRlZCBieSB0aGUgZHJpdmVyLA0KPiA+IGFuZCBh
-biBleGFtcGxlLg0KPiA+IA0KPiA+IFNpZ25lZC1vZmYtYnk6IEFsZXhhbmRydSBBcmRlbGVhbiA8
-YWxleGFuZHJ1LmFyZGVsZWFuQGFuYWxvZy5jb20+DQo+ID4gLS0tDQo+ID4gIC4uLi9zdGFnaW5n
-L2lpby9Eb2N1bWVudGF0aW9uL2FkYy9hZGksYWQ3MTkyLnR4dCAgIHwgNzENCj4gPiArKysrKysr
-KysrKysrKysrKysrKysrDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCA3MSBpbnNlcnRpb25zKCspDQo+
-ID4gIGNyZWF0ZSBtb2RlIDEwMDY0NA0KPiA+IGRyaXZlcnMvc3RhZ2luZy9paW8vRG9jdW1lbnRh
-dGlvbi9hZGMvYWRpLGFkNzE5Mi50eHQNCj4gPiANCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9z
-dGFnaW5nL2lpby9Eb2N1bWVudGF0aW9uL2FkYy9hZGksYWQ3MTkyLnR4dA0KPiA+IGIvZHJpdmVy
-cy9zdGFnaW5nL2lpby9Eb2N1bWVudGF0aW9uL2FkYy9hZGksYWQ3MTkyLnR4dA0KPiA+IG5ldyBm
-aWxlIG1vZGUgMTAwNjQ0DQo+ID4gaW5kZXggMDAwMDAwMDAwMDAwLi4xZjhmNzY5YTAwM2YNCj4g
-PiAtLS0gL2Rldi9udWxsDQo+ID4gKysrIGIvZHJpdmVycy9zdGFnaW5nL2lpby9Eb2N1bWVudGF0
-aW9uL2FkYy9hZGksYWQ3MTkyLnR4dA0KPiA+IEBAIC0wLDAgKzEsNzEgQEANCj4gPiArQW5hbG9n
-IERldmljZXMgQUQ3MTl4IEFEQyBEcml2ZXINCj4gPiArDQo+ID4gK1JlZmVyZW5jZToNCj4gPiAr
-WzFdIGh0dHA6Ly93d3cuYW5hbG9nLmNvbS9lbi9wcm9kdWN0cy9hbmFsb2ctdG8tZGlnaXRhbC1j
-b252ZXJ0ZXJzDQo+ID4gL2FkNzE5MC5odG1sDQo+ID4gK1syXSBodHRwOi8vd3d3LmFuYWxvZy5j
-b20vZW4vcHJvZHVjdHMvYW5hbG9nLXRvLWRpZ2l0YWwtY29udmVydGVycw0KPiA+IC9hZDcxOTIu
-aHRtbA0KPiA+ICtbM10gaHR0cDovL3d3dy5hbmFsb2cuY29tL2VuL3Byb2R1Y3RzL2FuYWxvZy10
-by1kaWdpdGFsLWNvbnZlcnRlcnMNCj4gPiAvYWQ3MTkzLmh0bWwNCj4gPiArWzRdIGh0dHA6Ly93
-d3cuYW5hbG9nLmNvbS9lbi9wcm9kdWN0cy9hbmFsb2ctdG8tZGlnaXRhbC1jb252ZXJ0ZXJzDQo+
-ID4gL2FkNzE5NS5odG1sDQo+ID4gKw0KPiA+ICtSZXF1aXJlZCBwcm9wZXJ0aWVzOg0KPiA+ICsg
-IC0gY29tcGF0aWJsZTogU2hvdWxkIGJlICJhZGksYWQ3MTkwIiwgImFkaSxhZDcxOTIiLCAiYWRp
-LGFkNzE5MyINCj4gPiArICBvciAiYWRpLGFkNzE5NSINCj4gPiArICAtIHJlZzogU1BJIGNoaXAg
-c2VsZWN0IG51bWJlciBmb3IgdGhlIGRldmljZQ0KPiA+ICsgIC0gc3BpLWNwb2wsIHNwaS1jcGhh
-OiBDb250cm9sbGVyIHN1cHBvcnQgb25seSBtb2RlIDMsIHNvIGJvdGgNCj4gPiBzcGktY3BvbA0K
-PiA+ICsgIGFuZCBzcGktY3BoYSBzaG91bGQgYmUgcHJlc2VudA0KPiA+ICsgIC0gc3BpLW1heC1m
-cmVxdWVuY3k6IERlZmluaXRpb24gYXMgcGVyDQo+ID4gKyAgc2VlOiBEb2N1bWVudGF0aW9uL2Rl
-dmljZXRyZWUvYmluZGluZ3Mvc3BpL3NwaS1idXMudHh0DQo+ID4gKyAgLSBpbnRlcnJ1cHQtcGFy
-ZW50OiBwaGFuZGxlIHRvIHRoZSBwYXJlbnQgaW50ZXJydXB0IGNvbnRyb2xsZXINCj4gPiArICBz
-ZWU6IERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9pbnRlcnJ1cHQtDQo+ID4gY29u
-dHJvbGxlci9pbnRlcnJ1cHRzLnR4dA0KPiA+ICsgIC0gaW50ZXJydXB0czogSVJRIGxpbmUgZm9y
-IHRoZSBBREMNCj4gPiArICBzZWU6IERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9p
-bnRlcnJ1cHQtDQo+ID4gY29udHJvbGxlci9pbnRlcnJ1cHRzLnR4dA0KPiA+ICsNCj4gPiArUmVj
-b21tZW5kZWQgcHJvcGVydGllczoNCj4gPiArICAtIGFkaSxjbG9jay1zb3VyY2Utc2VsZWN0OiBz
-ZXRzIHRoZSBjbG9jayBzb3VyY2UgdG8gYmUgdXNlZDsNCj4gPiB2YWx1ZXMgYXJlDQo+ID4gKyAg
-ICogMCAtIGV4dGVybmFsIGNyeXN0YWwsIGNvbm5lY3RlZCBmcm9tIHBpbiBNQ0xLMSB0byBNQ0xL
-Mg0KPiA+ICsgICAqIDEgLSBleHRlcm5hbCBjbG9jaywgYXBwbGllZCB0byBNQ0xLMiBwaW4NCj4g
-PiArICAgKiAyIC0gaW50ZXJuYWwgNC45MiBNaHogY2xvY2s7IHBpbiBNQ0xLMiBpcyB0cmlzdGF0
-ZWQgKGRlZmF1bHQpDQo+ID4gKyAgICogMyAtIGludGVybmFsIDQuOTIgTWh6IGNsb2NrOyBpbnRl
-cm5hbCBjbG9jayBpcyBhdmFpbGFibGUgb24NCj4gPiBNQ0xLMg0KPiANCj4gRm9yIHRoZSBleHRl
-cm5hbCBjbG9jayB0aGVyZSBhcmUgc3RhbmRhcmQgYmluZGluZ3MNCj4gRG9jdW1lbnRhdGlvbi9k
-ZXZpY2V0cmVlL2JpbmRpbmdzL2Nsb2NrL2Nsb2NrLWJpbmRpbmdzLnR4dA0KPiBJZiBvbmUgaXMg
-c3BlY2lmaWVkIGFzc3VtZSBpdCBzaG91bGQgYmUgdXNlZC4NCj4gDQo+IEZvciB0aGUgY3J5c3Rh
-bCBhIHF1aWNrIGdyZXAgc3VnZ2VzdHMgdGhhdCBjbG9ja25hbWVzIGFyZSB1c2VkIGluDQo+IHNv
-bWVjYXNlcw0KPiBhdCBsZWFzdCB0byBkaXN0aW5ndWlzaCBiZXR3ZWVuIG9zYyBhbmQgeHRhbC4N
-Cg0KYWNrDQp3aWxsIHVzZSBjbG9jayBiaW5kaW5ncw0KDQo+IA0KPiBGaW5hbCBwYWlyIHByb2Jh
-Ymx5IG5lZWQgYSBzcGVjaWZpYyBkZXZpY2V0cmVlIGJpbmRpbmcgbGlrZQ0KPiBhZGksY2xvY2tv
-dXQgb3Igc29tZXRoaW5nLi4uICAobm90IHRob3VnaHQgbXVjaCBvbiB0aGF0IG5hbWUhKQ0KPiAN
-Cj4gDQo+ID4gKyAgLSBhZGksZXh0ZXJuYWwtY2xvY2stSHo6IGlmICJhZGksY2xvY2stc291cmNl
-LXNlbGVjdCIgaXMgdmFsdWUNCj4gPiAnMScsDQo+ID4gKyAgdGhpcyB2YWx1ZSBzaG91bGQgYmUg
-c3BlY2lmaWVkIHRvIHRoZSBBREMNCj4gPiArICAtIGF2ZGQtc3VwcGx5OiBBbmFsb2cgU3VwcGx5
-IFZvbHRhZ2UsIDQuNzVWIHRvIDUuMjVWLiBBVkREIGlzDQo+ID4gKyAgaW5kZXBlbmRlbnQgb2Yg
-RFZERA0KPiA+ICsgIC0gZHZkZC1zdXBwbHk6IERpZ2l0YWwgU3VwcGx5IFZvbHRhZ2UsIDIuN1Yg
-dG8gNS4yNVYuIERWREQNCj4gPiArICBpcyBpbmRlcGVuZGVudCBvZiBBVkREDQo+IA0KPiBSZWd1
-bGF0b3JzIG5vdCB2YWx1ZXMgKyBhZGQgYSBjcm9zcyByZWZlcmVuY2UgdG8gdGhlIHJlZ3VsYXRv
-ciBkb2NzLg0KPiBJIHdvdWxkIG1ha2UgdGhpcyByZXF1aXJlZCByYXRoZXIgdGhhbiBvcHRpb25h
-bC4gIEVhc3kgdG8gc3VwcGx5DQo+IGZpeGVkIHJlZ3MgaW4gZGV2aWNldHJlZSBpZiBpdCBtYWtl
-cyBzZW5zZSBhbmQgd2lsbCBzaW1wbGlmeQ0KPiB0aGluZ3MgaW4gdGhlIGxvbmcgcnVuIGlmIHdl
-IGtub3cgdGhleSBhcmUgYXdsYXlzIHRoZXJlLg0KPiANCj4gDQoNCmFjaw0KDQo+ID4gKw0KPiA+
-ICtPcHRpb25hbCBwcm9wZXJ0aWVzOg0KPiA+ICsgIC0gYWRpLHJlZmluMi1waW5zLWVuYWJsZTog
-c2VsZWN0IGV4dGVybmFsIHJlZmVyZW5jZSB0byBiZQ0KPiA+IGFwcGxpZWQNCj4gPiArICB0byBQ
-MSxSRUZJTjIoKykgJiBQMCxSRUZJTjIoLSkgcGlucyBpbnN0ZWFkIG9mIFJFRklOMSgrKSAmDQo+
-ID4gUkVGSU4xKC0pOw0KPiA+ICsgIG5vdCBhdmFpbGFibGUgZm9yICJhZDcxOTUiDQo+ID4gKyAg
-LSBhZGkscmVqZWN0aW9uLTYwLUh6LWVuYWJsZTogZW5hYmxlcyBzaW11bHRhbmVvdXMgNTAvNjAg
-SHoNCj4gPiByZWplY3Rpb24NCj4gPiArICAtIGFkaSxjaG9wLWVuYWJsZTogZW5hYmxlIGNob3Ag
-dG8gbWluaW1pemUgQURDIG9mZnNldCBhbmQgb2Zmc2V0DQo+ID4gZHJpZnQNCj4gPiArICAtIGFk
-aSxidWZmZXItZW5hYmxlOiBlbmFibGVzIHRoZSBidWZmZXIgb24gdGhlIGFuYWxvZyBpbnB1dHMN
-Cj4gPiArICAtIGFkaSxidXJub3V0LWN1cnJlbnRzLWVuYWJsZTogd2hlbiBzZWxlY3RlZCwgdGhl
-IDUwMCBuQSBjdXJyZW50DQo+ID4gc291cmNlcw0KPiA+ICsgIGluIHRoZSBzaWduYWwgcGF0aCBh
-cmUgZW5hYmxlZDsgY2FuIGJlIGVuYWJsZWQgb25seSB3aGVuIGJ1ZmZlcg0KPiA+IGlzIGFjdGl2
-ZQ0KPiA+ICsgIGFuZCBjaG9wIGlzIGRpc2FibGVkDQo+IA0KPiBUaGVzZSBhcmUgYW4gb2RkaXR5
-LiAgSSdtIHVuY2xlYXIgb24gd2hldGhlciB5b3Ugd291bGQgZXZlciBoYXZlIHRoZW0NCj4gb24N
-Cj4gYWxsIHRoZSB0aW1lLiAgU291bmRzIGxpa2UgZGV0ZWN0aW9uIGhhcmR3YXJlIHRoYXQgeW91
-J2QgcnVuIGluIGFuDQo+IGluaXRpYWwNCj4gc2VsZiB0ZXN0IHRvIGNoZWNrIHlvdXIgdHJhbnNk
-dWNlciBpc24ndCBibG93bi4NCj4gDQoNCnRoZXkncmUgY2hpcC1zZXR0aW5ncyBkb25lIGF0IGlu
-aXQgdGltZQ0KdGhlIG5hbWVzIG1heSBuZWVkIHNvbWUgd29yaywgbWF5YmUgZXZlbiB0aGUgdHlw
-ZXMgOw0KaXQgY291bGQgYmUgdGhhdCB0aGVzZSBtYXkgZXZlbiB3b3JrIGF0IHJ1bnRpbWUsIGlu
-IHdoaWNoIGNhc2UsIGEgc3lzZnMNCmJpbmRpbmcgbWF5IGJlIG1vcmUgaW50ZXJlc3RpbmcNCmkn
-ZCBoYXZlIHRvIGludmVzdGlnYXRlIG1vcmUgaW4tZGVwdGgNCg0KPiANCj4gPiArICAtIGFkaSxz
-aW5jMy1maWx0ZXItZW5hYmxlOiBlbmFibGVzIHRoZSBTSU5DMyBmaWx0ZXI7IGlmIHVuc2V0DQo+
-ID4gKyAgdGhlIFNJTkM0IGRpZ2l0YWwgZmlsdGVyIGlzIHVzZWQgYWZ0ZXIgdGhlIG1vZHVsYXRv
-cg0KPiANCj4gc28gdGhpcyBpcyBhIHNlbGVjdGlvbiBiZXR3ZWVuIHR3byBmaWx0ZXJzLiAgR29v
-ZCBpZiB0aGUgbmFtaW5nDQo+IGltcGxpZXMgdGhpcy4uDQo+IA0KPiA+ICsgIC0gYWRpLHVuaXBv
-bGFyLWVuYWJsZTogd2hlbiB0aGlzIGlzIHNldCB2b2x0YWdlIHJhbmdlcyBtdXN0IGJlDQo+ID4g
-dW5pcG9sYXINCj4gPiArICAoZS5nIDAgdG8gNVYpIHZlcnN1cyBiaXBvbGFyIHZvbHRhZ2UgcmFu
-Z2VzIChlLmcuIC01ViB0byA1VikNCj4gDQo+IFRoYXQgaXNuJ3QgY2xvc2UgdG8gd2hhdCBJJ20g
-cmVhZGluZyBmcm9tIHRoZSBkYXRhc2hlZXQuDQo+IA0KPiAiQSBiaXBvbGFyIGlucHV0IHJhbmdl
-IGRvZXMgbm90DQo+IGltcGx5IHRoYXQgdGhlIHBhcnQgY2FuIHRvbGVyYXRlIG5lZ2F0aXZlIHZv
-bHRhZ2VzIHdpdGggcmVzcGVjdCB0bw0KPiBzeXN0ZW0gQUdORC4gIg0KPiANCj4gVGhpcyBpcyBh
-Ym91dCB1c2luZyBhIHNlY29uZCBpbnB1dCBhcyB0aGUgZGlmZmVyZW50aWFsIG5lZ2F0aXZlIHZz
-DQo+IHVzaW5nDQo+IHRoZSBjb21tb24gcmVmZXJlbmNlIGlucHV0Li4uDQoNCndpbGwgcmUtdmlz
-aXQNCmknbGwgYWRtaXQgdGhpcyBzdHVmZiBpcyBub3QgeWV0IG15IGZvcnRlLCBidXQgSSdsbCBt
-YWtlIGFuIGVmZm9ydCB0bw0KbGVhcm4NCg0KPiANCj4gPiArDQo+ID4gK0V4YW1wbGU6DQo+ID4g
-K2FkNzE5MEAwIHsNCj4gPiArCWNvbXBhdGlibGUgPSAiYWRpLGFkNzE5MCI7DQo+ID4gKwlyZWcg
-PSA8MD47DQo+ID4gKwlzcGktbWF4LWZyZXF1ZW5jeSA9IDwxMDAwMDAwPjsNCj4gPiArCXNwaS1j
-cG9sOw0KPiA+ICsJc3BpLWNwaGE7DQo+ID4gKw0KPiA+ICsJI2ludGVycnVwdC1jZWxscyA9IDwy
-PjsNCj4gPiArCWludGVycnVwdHMgPSA8MjUgMHgyPjsNCj4gPiArCWludGVycnVwdC1wYXJlbnQg
-PSA8JmdwaW8+Ow0KPiA+ICsJYXZkZC1zdXBwbHkgPSA8JmFkY19hdmRkPjsNCj4gPiArDQo+ID4g
-KwlhZGksY2xvY2stc291cmNlLXNlbGVjdCA9IC9iaXRzLyA4IDwwPjsNCj4gPiArDQo+ID4gKwlh
-ZGkscmVmaW4yLXBpbnMtZW5hYmxlOw0KPiA+ICsJYWRpLHJlamVjdGlvbi02MC1Iei1lbmFibGU7
-DQo+ID4gKwlhZGksYnVmZmVyLWVuYWJsZTsNCj4gPiArCWFkaSxidXJub3V0LWN1cnJlbnRzLWVu
-YWJsZTsNCj4gPiArCWFkaSxzaW5jMy1maWx0ZXItZW5hYmxlOw0KPiA+ICsJYWRpLHVuaXBvbGFy
-LWVuYWJsZTsNCj4gPiArfTsNCj4gDQo+IA==
+On Wed, 10 Jan 2018 13:29:54 +0200
+<alexandru.ardelean@analog.com> wrote:
+
+> From: Alexandru Ardelean <alexandru.ardelean@analog.com>
+> 
+> According to the datasheet:
+> * 0 - external crystal, connected from pin MCLK1 to MCLK2
+
+What frequency of crystal?  My quick read of the datasheet
+implies this may be flexible.  Possibly as flexible as
+the clock option...
+
+
+> * 1 - external clock, applied to MCLK2 pin
+> * 2 - internal 4.92 Mhz clock; pin MCLK2 is tristated
+> * 3 - internal 4.92 Mhz clock; internal clock is available on MCLK2
+> 
+> Which means that the external clock value only has sense
+> for value 1 (AD7192_CLK_EXT_MCLK2).
+> 
+> Also added range validation for the external frequency
+> setting, which the datasheet mentions that it's
+> between 2.4576 and 5.12 Mhz.
+> 
+> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+> ---
+>  drivers/staging/iio/adc/ad7192.c | 22 +++++++++++++++-------
+>  1 file changed, 15 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+> index 7f204013d6d4..7bc04101d133 100644
+> --- a/drivers/staging/iio/adc/ad7192.c
+> +++ b/drivers/staging/iio/adc/ad7192.c
+> @@ -141,6 +141,8 @@
+>  #define AD7192_GPOCON_P1DAT	BIT(1) /* P1 state */
+>  #define AD7192_GPOCON_P0DAT	BIT(0) /* P0 state */
+>  
+> +#define AD7192_EXT_FREQ_MHZ_MIN	2457600
+> +#define AD7192_EXT_FREQ_MHZ_MAX	5120000
+>  #define AD7192_INT_FREQ_MHZ	4915200
+>  
+>  /* NOTE:
+> @@ -217,6 +219,12 @@ static int ad7192_calibrate_all(struct ad7192_state *st)
+>  				ARRAY_SIZE(ad7192_calib_arr));
+>  }
+>  
+> +static inline bool ad7192_valid_external_frequency(u32 freq)
+> +{
+> +	return (freq >= AD7192_EXT_FREQ_MHZ_MIN &&
+> +		freq <= AD7192_EXT_FREQ_MHZ_MAX);
+> +}
+> +
+>  static int ad7192_setup(struct ad7192_state *st,
+>  			const struct ad7192_platform_data *pdata)
+>  {
+> @@ -245,16 +253,16 @@ static int ad7192_setup(struct ad7192_state *st,
+>  
+>  	switch (pdata->clock_source_sel) {
+>  	case AD7192_CLK_EXT_MCLK1_2:
+> -	case AD7192_CLK_EXT_MCLK2:
+> -		st->mclk = AD7192_INT_FREQ_MHZ;
+> -		break;
+>  	case AD7192_CLK_INT:
+>  	case AD7192_CLK_INT_CO:
+> -		if (pdata->ext_clk_hz)
+> -			st->mclk = pdata->ext_clk_hz;
+> -		else
+> -			st->mclk = AD7192_INT_FREQ_MHZ;
+> +		st->mclk = AD7192_INT_FREQ_MHZ;
+>  		break;
+> +	case AD7192_CLK_EXT_MCLK2:
+> +		if (ad7192_valid_external_frequency(pdata->clock_source_sel)) {
+> +			st->mclk = pdata->clock_source_sel;
+> +			break;
+> +		}
+> +		/* FALLTHROUGH */
+>  	default:
+>  		ret = -EINVAL;
+>  		goto out;
+
