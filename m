@@ -1,38 +1,55 @@
-Return-Path: <SRS0=nZls=ES=gmail.com=wens213@kernel.org>
-MIME-Version: 1.0
-In-Reply-To: <42b2e555083abbab43e48362175dc9c2eeeedf3c.1516012352.git-series.quentin.schulz@free-electrons.com>
+Return-Path: <SRS0=dCX1=EK=free-electrons.com=quentin.schulz@kernel.org>
+From: Quentin Schulz <quentin.schulz@free-electrons.com>
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	robh+dt@kernel.org,
+	mark.rutland@arm.com,
+	wens@csie.org,
+	sre@kernel.org,
+	linux@armlinux.org.uk,
+	maxime.ripard@free-electrons.com,
+	lee.jones@linaro.org
+Cc: linux-iio@vger.kernel.org,
+	linux-pm@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	thomas.petazzoni@free-electrons.com,
+	linux-sunxi@googlegroups.com,
+	julian.calaby@gmail.com,
+	Quentin Schulz <quentin.schulz@free-electrons.com>
+Subject: [PATCH v3 13/16] mfd: axp20x: add battery power supply cell for AXP813
+Date: Mon, 15 Jan 2018 11:33:47 +0100
+Message-Id: <76855b0d3b9eb75e00eb6a058db5b4a33b0558c6.1516012352.git-series.quentin.schulz@free-electrons.com>
+In-Reply-To: <cover.2e5329bf5475a5160e613a4eb1e1377c662ce56e.1516012352.git-series.quentin.schulz@free-electrons.com>
 References: <cover.2e5329bf5475a5160e613a4eb1e1377c662ce56e.1516012352.git-series.quentin.schulz@free-electrons.com>
- <42b2e555083abbab43e48362175dc9c2eeeedf3c.1516012352.git-series.quentin.schulz@free-electrons.com>
-From: Chen-Yu Tsai <wens@csie.org>
-Date: Tue, 23 Jan 2018 23:47:44 +0800
-Message-ID: <CAGb2v6419bjp2PX4Mn+ZNoy=1iOx+Z30672Jqs=geXVuihQkzQ@mail.gmail.com>
-Subject: Re: [linux-sunxi] [PATCH v3 12/16] power: supply: axp20x_battery: add
- support for AXP813
-To: Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Rob Herring <robh+dt@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>, Sebastian Reichel <sre@kernel.org>,
-	Russell King <linux@armlinux.org.uk>, Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Lee Jones <lee.jones@linaro.org>, linux-iio@vger.kernel.org,
-	"open list:THERMAL" <linux-pm@vger.kernel.org>, devicetree <devicetree@vger.kernel.org>,
-	linux-kernel <linux-kernel@vger.kernel.org>,
-	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-	Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
-	linux-sunxi <linux-sunxi@googlegroups.com>, Julian Calaby <julian.calaby@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <cover.2e5329bf5475a5160e613a4eb1e1377c662ce56e.1516012352.git-series.quentin.schulz@free-electrons.com>
+References: <cover.2e5329bf5475a5160e613a4eb1e1377c662ce56e.1516012352.git-series.quentin.schulz@free-electrons.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Jan 15, 2018 at 6:33 PM, Quentin Schulz
-<quentin.schulz@free-electrons.com> wrote:
-> The X-Powers AXP813 PMIC has got some slight differences from
-> AXP20X/AXP22X PMICs:
->  - the maximum voltage supplied by the PMIC is 4.35 instead of 4.36/4.24
->  for AXP20X/AXP22X,
->  - the constant charge current formula is different,
->
-> It also has a bit to tell whether the battery percentage returned by the
-> PMIC is valid.
->
-> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+As axp20x-battery-power-supply now supports AXP813, add a cell for it.
 
-Reviewed-by: Chen-Yu Tsai <wens@csie.org>
+Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+---
+ drivers/mfd/axp20x.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
+index e5516aa..aaf2acb 100644
+--- a/drivers/mfd/axp20x.c
++++ b/drivers/mfd/axp20x.c
+@@ -888,6 +888,9 @@ static struct mfd_cell axp813_cells[] = {
+ 	}, {
+ 		.name			= "axp813-adc",
+ 		.of_compatible		= "x-powers,axp813-adc",
++	}, {
++		.name		= "axp20x-battery-power-supply",
++		.of_compatible	= "x-powers,axp813-battery-power-supply",
+ 	},
+ };
+ 
+-- 
+git-series 0.9.1
