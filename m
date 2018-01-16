@@ -1,79 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from szxga04-in.huawei.com ([45.249.212.190]:4204 "EHLO huawei.com"
+Received: from mail-by2nam03on0048.outbound.protection.outlook.com ([104.47.42.48]:61072
+        "EHLO NAM03-BY2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1750802AbeAPKrP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 16 Jan 2018 05:47:15 -0500
-Date: Tue, 16 Jan 2018 10:46:47 +0000
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To: <alexandru.ardelean@analog.com>
-CC: <linux-iio@vger.kernel.org>, <michael.hennerich@analog.com>
+        id S1750995AbeAPLJU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 16 Jan 2018 06:09:20 -0500
+From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+To: "Jonathan.Cameron@huawei.com" <Jonathan.Cameron@huawei.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>
 Subject: Re: [PATCH][RESEND] staging: iio: adc: ad7192: disable burnout
  currents on misconfig
-Message-ID: <20180116104647.0000656e@huawei.com>
-In-Reply-To: <20180116100437.10220-1-alexandru.ardelean@analog.com>
+Date: Tue, 16 Jan 2018 11:09:14 +0000
+Message-ID: <1516100953.1861.0.camel@analog.com>
 References: <20180116100437.10220-1-alexandru.ardelean@analog.com>
+         <20180116104647.0000656e@huawei.com>
+In-Reply-To: <20180116104647.0000656e@huawei.com>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 16 Jan 2018 12:04:37 +0200
-<alexandru.ardelean@analog.com> wrote:
-
-> From: Alexandru Ardelean <alexandru.ardelean@analog.com>
-> 
-
-Firstly, even a change to a description makes this a V2 patch
-not a resend.  Resends should be identical and only occur if
-either:
-1) Someone asks you to resend for some reason (wrong cc's perhaps)
-2) It has been a long time since anyone responded and looks like
-your series has been forgotten.
-
-> According to the datasheet for all ad719x ADCs,
-> the burnout currents can be enabled only if buffer is enabled
-> and CHOP is disabled.
-> 
-> So, if neither of these conditions are met, then
-> we should disable the burnout currents in the driver as well,
-> and warn the user.
-> 
-> This change doesn't fix anything.
-> The burnout currents simply won't work if CHOP is enabled
-> or buffer is disabled.
-> The intent is to provide the user with some feedback
-> instead of silently not working inside the chip.
-> 
-> This is especially useful when considering device-tree
-> support (and/or device-tree overlays) at a later point,
-> which will allow for a quicker/simpler reconfiguration
-> of the chip settings.
-> 
-> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Thanks, much better description. I'll pick this up when I'm next
-on the correct PC (possibly not until the weekend).
-
-Jonathan
-
-> ---
->  drivers/staging/iio/adc/ad7192.c | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-> index d11c6de9c777..7f204013d6d4 100644
-> --- a/drivers/staging/iio/adc/ad7192.c
-> +++ b/drivers/staging/iio/adc/ad7192.c
-> @@ -266,6 +266,12 @@ static int ad7192_setup(struct ad7192_state *st,
->  
->  	st->conf = AD7192_CONF_GAIN(0);
->  
-> +	if (pdata->burnout_curr_en && (!pdata->buf_en || pdata->chop_en)) {
-> +		pdata->burnout_curr_en = false;
-> +		dev_warn(dev,
-> +			 "Can't enable burnout currents: see CHOP or buffer\n");
-> +	}
-> +
->  	if (pdata->rej60_en)
->  		st->mode |= AD7192_MODE_REJ60;
->  
-
+T24gVHVlLCAyMDE4LTAxLTE2IGF0IDEwOjQ2ICswMDAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
+Og0KPiBPbiBUdWUsIDE2IEphbiAyMDE4IDEyOjA0OjM3ICswMjAwDQo+IDxhbGV4YW5kcnUuYXJk
+ZWxlYW5AYW5hbG9nLmNvbT4gd3JvdGU6DQo+IA0KPiA+IEZyb206IEFsZXhhbmRydSBBcmRlbGVh
+biA8YWxleGFuZHJ1LmFyZGVsZWFuQGFuYWxvZy5jb20+DQo+ID4gDQo+IA0KPiBGaXJzdGx5LCBl
+dmVuIGEgY2hhbmdlIHRvIGEgZGVzY3JpcHRpb24gbWFrZXMgdGhpcyBhIFYyIHBhdGNoDQo+IG5v
+dCBhIHJlc2VuZC4gIFJlc2VuZHMgc2hvdWxkIGJlIGlkZW50aWNhbCBhbmQgb25seSBvY2N1ciBp
+Zg0KPiBlaXRoZXI6DQo+IDEpIFNvbWVvbmUgYXNrcyB5b3UgdG8gcmVzZW5kIGZvciBzb21lIHJl
+YXNvbiAod3JvbmcgY2MncyBwZXJoYXBzKQ0KPiAyKSBJdCBoYXMgYmVlbiBhIGxvbmcgdGltZSBz
+aW5jZSBhbnlvbmUgcmVzcG9uZGVkIGFuZCBsb29rcyBsaWtlDQo+IHlvdXIgc2VyaWVzIGhhcyBi
+ZWVuIGZvcmdvdHRlbi4NCg0KQWNrLg0KVGhhbmtzIGZvciB0aGUgY2xhcmlmaWNhdGlvbi4NCldp
+bGwgc2VuZCBpdCBhcyBWMi4NCg0KPiANCj4gPiBBY2NvcmRpbmcgdG8gdGhlIGRhdGFzaGVldCBm
+b3IgYWxsIGFkNzE5eCBBRENzLA0KPiA+IHRoZSBidXJub3V0IGN1cnJlbnRzIGNhbiBiZSBlbmFi
+bGVkIG9ubHkgaWYgYnVmZmVyIGlzIGVuYWJsZWQNCj4gPiBhbmQgQ0hPUCBpcyBkaXNhYmxlZC4N
+Cj4gPiANCj4gPiBTbywgaWYgbmVpdGhlciBvZiB0aGVzZSBjb25kaXRpb25zIGFyZSBtZXQsIHRo
+ZW4NCj4gPiB3ZSBzaG91bGQgZGlzYWJsZSB0aGUgYnVybm91dCBjdXJyZW50cyBpbiB0aGUgZHJp
+dmVyIGFzIHdlbGwsDQo+ID4gYW5kIHdhcm4gdGhlIHVzZXIuDQo+ID4gDQo+ID4gVGhpcyBjaGFu
+Z2UgZG9lc24ndCBmaXggYW55dGhpbmcuDQo+ID4gVGhlIGJ1cm5vdXQgY3VycmVudHMgc2ltcGx5
+IHdvbid0IHdvcmsgaWYgQ0hPUCBpcyBlbmFibGVkDQo+ID4gb3IgYnVmZmVyIGlzIGRpc2FibGVk
+Lg0KPiA+IFRoZSBpbnRlbnQgaXMgdG8gcHJvdmlkZSB0aGUgdXNlciB3aXRoIHNvbWUgZmVlZGJh
+Y2sNCj4gPiBpbnN0ZWFkIG9mIHNpbGVudGx5IG5vdCB3b3JraW5nIGluc2lkZSB0aGUgY2hpcC4N
+Cj4gPiANCj4gPiBUaGlzIGlzIGVzcGVjaWFsbHkgdXNlZnVsIHdoZW4gY29uc2lkZXJpbmcgZGV2
+aWNlLXRyZWUNCj4gPiBzdXBwb3J0IChhbmQvb3IgZGV2aWNlLXRyZWUgb3ZlcmxheXMpIGF0IGEg
+bGF0ZXIgcG9pbnQsDQo+ID4gd2hpY2ggd2lsbCBhbGxvdyBmb3IgYSBxdWlja2VyL3NpbXBsZXIg
+cmVjb25maWd1cmF0aW9uDQo+ID4gb2YgdGhlIGNoaXAgc2V0dGluZ3MuDQo+ID4gDQo+ID4gU2ln
+bmVkLW9mZi1ieTogQWxleGFuZHJ1IEFyZGVsZWFuIDxhbGV4YW5kcnUuYXJkZWxlYW5AYW5hbG9n
+LmNvbT4NCj4gDQo+IFRoYW5rcywgbXVjaCBiZXR0ZXIgZGVzY3JpcHRpb24uIEknbGwgcGljayB0
+aGlzIHVwIHdoZW4gSSdtIG5leHQNCj4gb24gdGhlIGNvcnJlY3QgUEMgKHBvc3NpYmx5IG5vdCB1
+bnRpbCB0aGUgd2Vla2VuZCkuDQo+IA0KPiBKb25hdGhhbg0KPiANCj4gPiAtLS0NCj4gPiAgZHJp
+dmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3MTkyLmMgfCA2ICsrKysrKw0KPiA+ICAxIGZpbGUgY2hh
+bmdlZCwgNiBpbnNlcnRpb25zKCspDQo+ID4gDQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvc3Rh
+Z2luZy9paW8vYWRjL2FkNzE5Mi5jDQo+ID4gYi9kcml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9hZDcx
+OTIuYw0KPiA+IGluZGV4IGQxMWM2ZGU5Yzc3Ny4uN2YyMDQwMTNkNmQ0IDEwMDY0NA0KPiA+IC0t
+LSBhL2RyaXZlcnMvc3RhZ2luZy9paW8vYWRjL2FkNzE5Mi5jDQo+ID4gKysrIGIvZHJpdmVycy9z
+dGFnaW5nL2lpby9hZGMvYWQ3MTkyLmMNCj4gPiBAQCAtMjY2LDYgKzI2NiwxMiBAQCBzdGF0aWMg
+aW50IGFkNzE5Ml9zZXR1cChzdHJ1Y3QgYWQ3MTkyX3N0YXRlDQo+ID4gKnN0LA0KPiA+ICANCj4g
+PiAgCXN0LT5jb25mID0gQUQ3MTkyX0NPTkZfR0FJTigwKTsNCj4gPiAgDQo+ID4gKwlpZiAocGRh
+dGEtPmJ1cm5vdXRfY3Vycl9lbiAmJiAoIXBkYXRhLT5idWZfZW4gfHwgcGRhdGEtDQo+ID4gPmNo
+b3BfZW4pKSB7DQo+ID4gKwkJcGRhdGEtPmJ1cm5vdXRfY3Vycl9lbiA9IGZhbHNlOw0KPiA+ICsJ
+CWRldl93YXJuKGRldiwNCj4gPiArCQkJICJDYW4ndCBlbmFibGUgYnVybm91dCBjdXJyZW50czog
+c2VlIENIT1ANCj4gPiBvciBidWZmZXJcbiIpOw0KPiA+ICsJfQ0KPiA+ICsNCj4gPiAgCWlmIChw
+ZGF0YS0+cmVqNjBfZW4pDQo+ID4gIAkJc3QtPm1vZGUgfD0gQUQ3MTkyX01PREVfUkVKNjA7DQo+
+ID4gIA0KPiANCj4g
