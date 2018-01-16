@@ -1,80 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from anchovy1.45ru.net.au ([203.30.46.145]:57473 "EHLO
-        anchovy.45ru.net.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1750771AbeA2COP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 28 Jan 2018 21:14:15 -0500
-Subject: Re: [PATCH v2 2/2] iio: ad5272: Add support for Analog Devices
- digital potentiometers
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, robh+dt@kernel.org, mark.rutland@arm.com,
-        Michael.Hennerich@analog.com, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, alexandru.ardelean@analog.com
-References: <1516096140-88161-1-git-send-email-preid@electromag.com.au>
- <1516096140-88161-3-git-send-email-preid@electromag.com.au>
- <da493367-8156-792f-5d3c-3cfd9a910271@metafoo.de>
- <c05bc74f-dd6e-39ec-a316-5aa3436f36cf@electromag.com.au>
- <20180121121119.234e7192@archlinux>
-From: Phil Reid <preid@electromag.com.au>
-Message-ID: <0ed10342-bd24-919a-e346-edc59f976a4d@electromag.com.au>
-Date: Mon, 29 Jan 2018 10:14:13 +0800
+Received: from mail-dm3nam03on0080.outbound.protection.outlook.com ([104.47.41.80]:27808
+        "EHLO NAM03-DM3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1750812AbeAPKFe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 16 Jan 2018 05:05:34 -0500
+Received: from NWD2HUBCAS9.ad.analog.com (nwd2hubcas9.ad.analog.com [10.64.69.109])
+        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id w0GA5VhB001420
+        (version=TLSv1/SSLv3 cipher=AES128-SHA bits=128 verify=FAIL)
+        for <linux-iio@vger.kernel.org>; Tue, 16 Jan 2018 02:05:31 -0800
+From: <alexandru.ardelean@analog.com>
+To: <linux-iio@vger.kernel.org>
+CC: <michael.hennerich@analog.com>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH][RESEND] staging: iio: adc: ad7192: disable burnout currents on misconfig
+Date: Tue, 16 Jan 2018 12:04:37 +0200
+Message-ID: <20180116100437.10220-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
-In-Reply-To: <20180121121119.234e7192@archlinux>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 21/01/2018 20:11, Jonathan Cameron wrote:
-> On Wed, 17 Jan 2018 09:46:23 +0800
-> Phil Reid <preid@electromag.com.au> wrote:
-> 
->> G'day Lars-Peter,
->>
->> On 17/01/2018 01:01, Lars-Peter Clausen wrote:
->>> On 01/16/2018 10:49 AM, Phil Reid wrote:
->>>> Add implementation for Analog Devices AD5272 and AD5274 digital
->>>> potentiometer devices.
->>>>
->>>> Signed-off-by: Phil Reid <preid@electromag.com.au>
->>>
->>> Hi,
->>>
->>> Thanks for the patch. Looks mostly good.
->>>    
->>>> diff --git a/drivers/iio/potentiometer/ad5272.c b/drivers/iio/potentiometer/ad5272.c
->>>> new file mode 100644
->>>> index 0000000..a04b018
->>>> --- /dev/null
->>>> +++ b/drivers/iio/potentiometer/ad5272.c
->>>> @@ -0,0 +1,227 @@
->>>> +/*
->>>> + * Analog Devices AD5372 digital potentiometer driver
->>>> + * Copyright (C) 2018 Phil Reid <preid@electromag.com.au>
->>>> + *
->>>> + * Datasheet: http://www.analog.com/media/en/technical-documentation/data-sheets/AD5272_5274.pdf
->>>> + *
->>>> + * DEVID	#Wipers	#Positions	Resistor Opts (kOhm)	i2c address
->>>> + * ad5272	1	1024		20, 50, 100		01011xx
->>>> + * ad5274	1	256		20, 100			01011xx
->>>> + *
->>>> + * SPDX-License-Identifier: GPL-2.0+
->>>
->>> People will probably complain about this, there are some weired rules where
->>> and how the SPDX identifier should be.
->>>    
->> Jonathan suggested this in his review of v1. Forgot to mention that in the change list.
-> Lars is referring to the 'where' element of using SPDX tags.  They go
-> on as a c++ style comment right at the top of the file.
-> 
-> Good think he noticed as I missed this when reviewing v3!
-> 
-fair enough.
+From: Alexandru Ardelean <alexandru.ardelean@analog.com>
 
-I did grep the kernel and found a mixture of placements so just picked the wrong one.
-I also didn't find anything in the Documentation folder about it.
-But my tree isn't at the bleeding edge.
+According to the datasheet for all ad719x ADCs,
+the burnout currents can be enabled only if buffer is enabled
+and CHOP is disabled.
 
+So, if neither of these conditions are met, then
+we should disable the burnout currents in the driver as well,
+and warn the user.
+
+This change doesn't fix anything.
+The burnout currents simply won't work if CHOP is enabled
+or buffer is disabled.
+The intent is to provide the user with some feedback
+instead of silently not working inside the chip.
+
+This is especially useful when considering device-tree
+support (and/or device-tree overlays) at a later point,
+which will allow for a quicker/simpler reconfiguration
+of the chip settings.
+
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+ drivers/staging/iio/adc/ad7192.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+index d11c6de9c777..7f204013d6d4 100644
+--- a/drivers/staging/iio/adc/ad7192.c
++++ b/drivers/staging/iio/adc/ad7192.c
+@@ -266,6 +266,12 @@ static int ad7192_setup(struct ad7192_state *st,
+ 
+ 	st->conf = AD7192_CONF_GAIN(0);
+ 
++	if (pdata->burnout_curr_en && (!pdata->buf_en || pdata->chop_en)) {
++		pdata->burnout_curr_en = false;
++		dev_warn(dev,
++			 "Can't enable burnout currents: see CHOP or buffer\n");
++	}
++
+ 	if (pdata->rej60_en)
+ 		st->mode |= AD7192_MODE_REJ60;
+ 
 -- 
-Regards
-Phil Reid
+2.14.1
 
