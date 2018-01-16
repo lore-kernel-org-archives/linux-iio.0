@@ -1,68 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-dm3nam03on0072.outbound.protection.outlook.com ([104.47.41.72]:52688
-        "EHLO NAM03-DM3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1750832AbeAPLK7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 16 Jan 2018 06:10:59 -0500
-Received: from NWD2HUBCAS8.ad.analog.com (nwd2hubcas8.ad.analog.com [10.64.69.108])
-        by nwd2mta4.analog.com (8.13.8/8.13.8) with ESMTP id w0GBAtWE018242
-        (version=TLSv1/SSLv3 cipher=AES128-SHA bits=128 verify=OK)
-        for <linux-iio@vger.kernel.org>; Tue, 16 Jan 2018 03:10:55 -0800
-From: <alexandru.ardelean@analog.com>
-To: <linux-iio@vger.kernel.org>
-CC: <michael.hennerich@analog.com>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH][V2] staging: iio: adc: ad7192: disable burnout currents on misconfig
-Date: Tue, 16 Jan 2018 13:10:47 +0200
-Message-ID: <20180116111047.3262-1-alexandru.ardelean@analog.com>
+Received: from userp2120.oracle.com ([156.151.31.85]:49132 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750790AbeAPLre (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 16 Jan 2018 06:47:34 -0500
+Date: Tue, 16 Jan 2018 14:43:01 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: arnaud.pouliquen@st.com
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
+        linux-iio@vger.kernel.org
+Subject: [bug report] IIO: ADC: add stm32 DFSDM support for PDM microphone
+Message-ID: <20180116114301.GA9506@mwanda>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Hello Arnaud Pouliquen,
 
-According to the datasheet for all ad719x ADCs,
-the burnout currents can be enabled only if buffer is enabled
-and CHOP is disabled.
+The patch eca949800d2d: "IIO: ADC: add stm32 DFSDM support for PDM
+microphone" from Jan 10, 2018, leads to the following static checker
+warning:
 
-So, if neither of these conditions are met, then
-we should disable the burnout currents in the driver as well,
-and warn the user.
+	drivers/iio/adc/stm32-dfsdm-adc.c:555 stm32_dfsdm_audio_dma_buffer_done()
+	warn: potential shift truncation.  '0xffffff00 (0,256-4294967040) << 8'
 
-This change doesn't fix anything.
-The burnout currents simply won't work if CHOP is enabled
-or buffer is disabled.
-The intent is to provide the user with some feedback
-instead of silently not working inside the chip.
+drivers/iio/adc/stm32-dfsdm-adc.c
+   551          while (available >= indio_dev->scan_bytes) {
+   552                  u32 *buffer = (u32 *)&adc->rx_buf[adc->bufi];
+   553  
+   554                  /* Mask 8 LSB that contains the channel ID */
+   555                  *buffer = (*buffer & 0xFFFFFF00) << 8;
 
-This is especially useful when considering device-tree
-support (and/or device-tree overlays) at a later point,
-which will allow for a quicker/simpler reconfiguration
-of the chip settings.
+Is this shift, correct?  The comment just mentions that we're masking
+out the low bits.
 
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
----
- drivers/staging/iio/adc/ad7192.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+   556                  available -= indio_dev->scan_bytes;
+   557                  adc->bufi += indio_dev->scan_bytes;
+   558                  if (adc->bufi >= adc->buf_sz) {
+   559                          if (adc->cb)
+   560                                  adc->cb(&adc->rx_buf[old_pos],
+   561                                           adc->buf_sz - old_pos, adc->cb_priv);
+   562                          adc->bufi = 0;
+   563                          old_pos = 0;
+   564                  }
+   565          }
+   566          if (adc->cb)
+   567                  adc->cb(&adc->rx_buf[old_pos], adc->bufi - old_pos,
+   568                          adc->cb_priv);
+   569  }
 
-diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-index d11c6de9c777..7f204013d6d4 100644
---- a/drivers/staging/iio/adc/ad7192.c
-+++ b/drivers/staging/iio/adc/ad7192.c
-@@ -266,6 +266,12 @@ static int ad7192_setup(struct ad7192_state *st,
- 
- 	st->conf = AD7192_CONF_GAIN(0);
- 
-+	if (pdata->burnout_curr_en && (!pdata->buf_en || pdata->chop_en)) {
-+		pdata->burnout_curr_en = false;
-+		dev_warn(dev,
-+			 "Can't enable burnout currents: see CHOP or buffer\n");
-+	}
-+
- 	if (pdata->rej60_en)
- 		st->mode |= AD7192_MODE_REJ60;
- 
--- 
-2.14.1
-
+regards,
+dan carpenter
