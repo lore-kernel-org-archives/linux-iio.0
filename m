@@ -1,64 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:46412 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1754913AbeATQnu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 20 Jan 2018 11:43:50 -0500
-Date: Sat, 20 Jan 2018 16:43:46 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Wei Yongjun <weiyongjun1@huawei.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+Received: from mout.kundenserver.de ([212.227.126.131]:50175 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753361AbeAQOrX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jan 2018 09:47:23 -0500
+From: Arnd Bergmann <arnd@arndb.de>
+To: Mark Brown <broonie@kernel.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
-        <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH -next] iio: ep93xx: remove redundant return value check
- of platform_get_resource()
-Message-ID: <20180120164346.4813b6ca@archlinux>
-In-Reply-To: <1516188600-170557-1-git-send-email-weiyongjun1@huawei.com>
-References: <1516188600-170557-1-git-send-email-weiyongjun1@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
+        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] IIO: ADC: stm32-dfsdm: remove unused variable
+Date: Wed, 17 Jan 2018 15:46:24 +0100
+Message-Id: <20180117144644.2302131-1-arnd@arndb.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 17 Jan 2018 11:30:00 +0000
-Wei Yongjun <weiyongjun1@huawei.com> wrote:
+A cleanup left one variable behind that is no longer needed and
+can be removed, as shown by the gcc warning:
 
-> Remove unneeded error handling on the result of a call
-> to platform_get_resource() when the value is passed to
-> devm_ioremap_resource().
-> 
-> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+drivers/iio/adc/stm32-dfsdm-core.c: In function 'stm32_dfsdm_probe':
+drivers/iio/adc/stm32-dfsdm-core.c:245:29: error: unused variable 'of_id' [-Werror=unused-variable]
 
-Thanks,
+Fixes: abaca806fd13 ("IIO: ADC: stm32-dfsdm: code optimization")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/iio/adc/stm32-dfsdm-core.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Jonathan
-
-> ---
->  drivers/iio/adc/ep93xx_adc.c | 4 ----
->  1 file changed, 4 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ep93xx_adc.c b/drivers/iio/adc/ep93xx_adc.c
-> index 81c9015..5036c392 100644
-> --- a/drivers/iio/adc/ep93xx_adc.c
-> +++ b/drivers/iio/adc/ep93xx_adc.c
-> @@ -167,10 +167,6 @@ static int ep93xx_adc_probe(struct platform_device *pdev)
->  	priv = iio_priv(iiodev);
->  
->  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> -	if (!res) {
-> -		dev_err(&pdev->dev, "Cannot obtain memory resource\n");
-> -		return -ENXIO;
-> -	}
->  	priv->base = devm_ioremap_resource(&pdev->dev, res);
->  	if (IS_ERR(priv->base)) {
->  		dev_err(&pdev->dev, "Cannot map memory resource\n");
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/iio/adc/stm32-dfsdm-core.c b/drivers/iio/adc/stm32-dfsdm-core.c
+index 84277bcc465f..6290332cfd3f 100644
+--- a/drivers/iio/adc/stm32-dfsdm-core.c
++++ b/drivers/iio/adc/stm32-dfsdm-core.c
+@@ -242,7 +242,6 @@ MODULE_DEVICE_TABLE(of, stm32_dfsdm_of_match);
+ static int stm32_dfsdm_probe(struct platform_device *pdev)
+ {
+ 	struct dfsdm_priv *priv;
+-	const struct of_device_id *of_id;
+ 	const struct stm32_dfsdm_dev_data *dev_data;
+ 	struct stm32_dfsdm *dfsdm;
+ 	int ret;
+-- 
+2.9.0
 
