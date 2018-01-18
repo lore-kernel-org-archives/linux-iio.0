@@ -1,108 +1,46 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48446 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751402AbeA1IRO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 28 Jan 2018 03:17:14 -0500
-Date: Sun, 28 Jan 2018 08:17:14 +0000
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: <alexandru.ardelean@analog.com>
-Cc: <linux-iio@vger.kernel.org>, <michael.hennerich@analog.com>
-Subject: Re: [PATCH v3] staging: iio: adc: ad7192: fix external frequency
- setting
-Message-ID: <20180128081714.4813b50c@archlinux>
-In-Reply-To: <20180122095312.1150-1-alexandru.ardelean@analog.com>
-References: <20180118144449.20115-1-alexandru.ardelean@analog.com>
-        <20180122095312.1150-1-alexandru.ardelean@analog.com>
+Return-Path: <SRS0=pDbV=EN=gentoo.org=chrisadr@kernel.org>
+From: =?UTF-8?q?Christopher=20D=C3=ADaz=20Riveros?= <chrisadr@gentoo.org>
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	broonie@kernel.org,
+	arnaud.pouliquen@st.com,
+	arnd@arndb.de
+Cc: =?UTF-8?q?Christopher=20D=C3=ADaz=20Riveros?= <chrisadr@gentoo.org>,
+	linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH-next] IIO: ADC: drop unused 'of_id' struct
+Date: Thu, 18 Jan 2018 18:44:15 -0500
+Message-Id: <20180118234415.32410-1-chrisadr@gentoo.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, 22 Jan 2018 11:53:12 +0200
-<alexandru.ardelean@analog.com> wrote:
+When CONFIG_STM32_DFSDM_CORE is enabled, stm32-dfsdm-core.o is compiled,
+which raises a next warning:
 
-> From: Alexandru Ardelean <alexandru.ardelean@analog.com>
-> 
-> The external clock frequency was set only when selecting
-> the internal clock, which is fixed at 4.9152 Mhz.
-> 
-> This is incorrect, since it should be set when any of
-> the external clock or crystal settings is selected.
-> 
-> Added range validation for the external (crystal/clock)
-> frequency setting.
-> Valid values are between 2.4576 and 5.12 Mhz.
-> 
-> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Applied to fixes-togreg-post-rc1 and marked for stable.
+drivers/iio/adc/stm32-dfsdm-core.c: In function ‘stm32_dfsdm_probe’:
+drivers/iio/adc/stm32-dfsdm-core.c:245:29: warning: unused variable ‘of_id’ [-Wunused-variable]
+  const struct of_device_id *of_id;
+                             ^~~~~
 
-Thanks,
+Signed-off-by: Christopher Díaz Riveros <chrisadr@gentoo.org>
+---
+ drivers/iio/adc/stm32-dfsdm-core.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Jonathan
-
-> ---
-> 
-> Changes v2 -> v3:
->  * changed fallthrough for AD7192_CLK_EXT_MCLK1_2 & AD7192_CLK_EXT_MCLK2
->    to `ret = -EINVAL` + `goto out`
->  * re-phrased commit comment; to make it more simple/direct
-> 
->  drivers/staging/iio/adc/ad7192.c | 27 +++++++++++++++++++--------
->  1 file changed, 19 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-> index 9287b50b7870..03aba22093a8 100644
-> --- a/drivers/staging/iio/adc/ad7192.c
-> +++ b/drivers/staging/iio/adc/ad7192.c
-> @@ -141,6 +141,8 @@
->  #define AD7192_GPOCON_P1DAT	BIT(1) /* P1 state */
->  #define AD7192_GPOCON_P0DAT	BIT(0) /* P0 state */
->  
-> +#define AD7192_EXT_FREQ_MHZ_MIN	2457600
-> +#define AD7192_EXT_FREQ_MHZ_MAX	5120000
->  #define AD7192_INT_FREQ_MHZ	4915200
->  
->  /* NOTE:
-> @@ -217,6 +219,12 @@ static int ad7192_calibrate_all(struct ad7192_state *st)
->  				ARRAY_SIZE(ad7192_calib_arr));
->  }
->  
-> +static inline bool ad7192_valid_external_frequency(u32 freq)
-> +{
-> +	return (freq >= AD7192_EXT_FREQ_MHZ_MIN &&
-> +		freq <= AD7192_EXT_FREQ_MHZ_MAX);
-> +}
-> +
->  static int ad7192_setup(struct ad7192_state *st,
->  			const struct ad7192_platform_data *pdata)
->  {
-> @@ -244,17 +252,20 @@ static int ad7192_setup(struct ad7192_state *st,
->  			 id);
->  
->  	switch (pdata->clock_source_sel) {
-> -	case AD7192_CLK_EXT_MCLK1_2:
-> -	case AD7192_CLK_EXT_MCLK2:
-> -		st->mclk = AD7192_INT_FREQ_MHZ;
-> -		break;
->  	case AD7192_CLK_INT:
->  	case AD7192_CLK_INT_CO:
-> -		if (pdata->ext_clk_hz)
-> -			st->mclk = pdata->ext_clk_hz;
-> -		else
-> -			st->mclk = AD7192_INT_FREQ_MHZ;
-> +		st->mclk = AD7192_INT_FREQ_MHZ;
->  		break;
-> +	case AD7192_CLK_EXT_MCLK1_2:
-> +	case AD7192_CLK_EXT_MCLK2:
-> +		if (ad7192_valid_external_frequency(pdata->ext_clk_hz)) {
-> +			st->mclk = pdata->ext_clk_hz;
-> +			break;
-> +		}
-> +		dev_err(&st->sd.spi->dev, "Invalid frequency setting %u\n",
-> +			pdata->ext_clk_hz);
-> +		ret = -EINVAL;
-> +		goto out;
->  	default:
->  		ret = -EINVAL;
->  		goto out;
-
+diff --git a/drivers/iio/adc/stm32-dfsdm-core.c b/drivers/iio/adc/stm32-dfsdm-core.c
+index 84277bcc465f..6290332cfd3f 100644
+--- a/drivers/iio/adc/stm32-dfsdm-core.c
++++ b/drivers/iio/adc/stm32-dfsdm-core.c
+@@ -242,7 +242,6 @@ MODULE_DEVICE_TABLE(of, stm32_dfsdm_of_match);
+ static int stm32_dfsdm_probe(struct platform_device *pdev)
+ {
+ 	struct dfsdm_priv *priv;
+-	const struct of_device_id *of_id;
+ 	const struct stm32_dfsdm_dev_data *dev_data;
+ 	struct stm32_dfsdm *dfsdm;
+ 	int ret;
+-- 
+2.15.1
