@@ -1,20 +1,20 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-bl2nam02on0088.outbound.protection.outlook.com ([104.47.38.88]:4368
-        "EHLO NAM02-BL2-obe.outbound.protection.outlook.com"
+Received: from mail-sn1nam02on0054.outbound.protection.outlook.com ([104.47.36.54]:6197
+        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S932601AbeAROi0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 18 Jan 2018 09:38:26 -0500
-Received: from NWD2HUBCAS8.ad.analog.com (nwd2hubcas8.ad.analog.com [10.64.69.108])
-        by nwd2mta4.analog.com (8.13.8/8.13.8) with ESMTP id w0IEcObO016248
+        id S1753527AbeARO5q (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 18 Jan 2018 09:57:46 -0500
+Received: from NWD2HUBCAS9.ad.analog.com (nwd2hubcas9.ad.analog.com [10.64.69.109])
+        by nwd2mta4.analog.com (8.13.8/8.13.8) with ESMTP id w0IEvi26022371
         (version=TLSv1/SSLv3 cipher=AES128-SHA bits=128 verify=OK)
-        for <linux-iio@vger.kernel.org>; Thu, 18 Jan 2018 06:38:24 -0800
+        for <linux-iio@vger.kernel.org>; Thu, 18 Jan 2018 06:57:44 -0800
 From: <alexandru.ardelean@analog.com>
 To: <linux-iio@vger.kernel.org>
 CC: <michael.hennerich@analog.com>,
         Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v3] staging: iio: adc: ad7192: disable burnout currents on misconfig
-Date: Thu, 18 Jan 2018 16:38:19 +0200
-Message-ID: <20180118143819.18999-1-alexandru.ardelean@analog.com>
+Subject: [PATCH v4] staging: iio: adc: ad7192: disable burnout currents on misconfig
+Date: Thu, 18 Jan 2018 16:57:40 +0200
+Message-ID: <20180118145740.5113-1-alexandru.ardelean@analog.com>
 In-Reply-To: <20180110111411.18505-1-alexandru.ardelean@analog.com>
 References: <20180110111411.18505-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
@@ -40,17 +40,15 @@ instead of silently not working inside the chip.
 Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
 
-Changes v2 -> v3:
-  * fixed "dev_warn(dev," ==> "dev_warn(&st->sd.spi->dev,"
-    `dev` does not exist
-  * moved the warning as part of an else case ; patch is
-    simpler and `pdata` is const which fails
+Changes v3 -> v4:
+ * need to check if `pdata->burnout_curr_en` is positive on the
+   else path, otherwise a false warning may be thrown
 
  drivers/staging/iio/adc/ad7192.c | 6 +++++-
  1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-index d11c6de9c777..aebbc3b58194 100644
+index d11c6de9c777..9287b50b7870 100644
 --- a/drivers/staging/iio/adc/ad7192.c
 +++ b/drivers/staging/iio/adc/ad7192.c
 @@ -291,8 +291,12 @@ static int ad7192_setup(struct ad7192_state *st,
@@ -60,7 +58,7 @@ index d11c6de9c777..aebbc3b58194 100644
 -	if (pdata->burnout_curr_en)
 +	if (pdata->burnout_curr_en && pdata->buf_en && !pdata->chop_en) {
  		st->conf |= AD7192_CONF_BURN;
-+	} else {
++	} else if (pdata->burnout_curr_en) {
 +		dev_warn(&st->sd.spi->dev,
 +			 "Can't enable burnout currents: see CHOP or buffer\n");
 +	}
