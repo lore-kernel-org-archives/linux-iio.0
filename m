@@ -1,63 +1,65 @@
-Return-Path: <SRS0=sC5c=EB=intel.com=srinivas.pandruvada@kernel.org>
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To: "gnomes@lxorguk.ukuu.org.uk" <gnomes@lxorguk.ukuu.org.uk>,
-	"jic23@kernel.org" <jic23@kernel.org>
-CC: "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Return-Path: <SRS0=Hs7h=EN=ucw.cz=pavel@kernel.org>
+Date: Thu, 18 Jan 2018 23:40:26 +0100
+From: Pavel Machek <pavel@ucw.cz>
+To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"jic23@kernel.org" <jic23@kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Subject: Re: [RFP] iio: Support of gesture sensor as a standard IIO sensor
-Date: Sat, 6 Jan 2018 17:43:12 +0000
-Message-ID: <1515260592.23948.23.camel@intel.com>
+Message-ID: <20180118224026.GE17196@amd>
 References: <1515197240.26317.65.camel@intel.com>
-	 <20180106002024.012f44c0@alans-desktop> <20180106131231.078492c3@archlinux>
-In-Reply-To: <20180106131231.078492c3@archlinux>
-Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="C94crkcyjafcjHxo"
+In-Reply-To: <1515197240.26317.65.camel@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-T24gU2F0LCAyMDE4LTAxLTA2IGF0IDEzOjEyICswMDAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
-Og0KPiBPbiBTYXQsIDYgSmFuIDIwMTggMDA6MjA6MjQgKzAwMDANCj4gQWxhbiBDb3ggPGdub21l
-c0BseG9yZ3VrLnVrdXUub3JnLnVrPiB3cm90ZToNCj4gDQo+ID4gDQo+ID4gPiANCj4gPiA+ID4g
-DQo+ID4gPiA+IEZyb20gYW4gSUlPIHNlbnNvciBwb2ludCBvZiB2aWV3IEEgR2VzdHVyZSBzZW5z
-b3I6wqDCoMKgwqANCj4gPiA+IE91dHB1dHMNCj4gPiA+IAlBIHByZSBkZWZpbmVkIGFjdGl2aXR5
-IHR5cGUNCj4gPiA+IAkJV0FLRQ0KPiA+ID4gCQlUSUxUDQo+ID4gPiAJCUdMQU5DRQ0KPiA+ID4g
-CQlQSUNLX1VQDQo+ID4gPiAJCcKgJg0KPiA+ID4gCQnCoG1vcmUNCj4gPiA+IA0KPiA+ID4gCUEg
-dXNlciBkZWZpbmVkIGFjdGl2aXR5IHR5cGUgYXMgInN0cmluZyINCj4gPiA+IA0KPiA+ID4gSW5w
-dXRzDQo+ID4gPiAJQSByYXcgYmluYXJ5IGNkZXYgaW50ZXJmYWNlIHRvIGRvd25sb2FkIHRlbXBs
-YXRlcy9wYXR0ZXJucw0KPiA+ID4gDQo+ID4gPiANCj4gPiA+IEkgd2FudCB0byBnYXRoZXIgbW9y
-ZSBvcGluaW9ucyBiZWZvcmUgc3VibWl0dGluZyBhIFJGQyBwYXRjaC7CoMKgDQo+ID4gVGhlIG9u
-bHkgcXVlc3Rpb24gSSBoYXZlIGlzIHNob3VsZCBpdCBhcHBlYXIgdW5kZXIgSUlPIG9yIHNob3Vs
-ZCBpdA0KPiA+IGJlIGFuDQo+ID4gaW5wdXQgZXZlbnQgaW50ZXJmYWNlLiBJdCBmZWVscyB0byBt
-ZSBtb3JlIGxpa2UgYW4gaW5wdXQgZGV2aWNlIGluDQo+ID4gdGhhdCBpbg0KPiA+IHRoaXMgY2Fz
-ZSB3aGlsZSBpdCdzIG5vdCBrZXlzIG9yIGpveXN0aWNrIGl0IGlzIHN0aWxsICdwbGVhc2UgZG8N
-Cj4gPiBYJy4gVGhhdA0KPiA+IG1pZ2h0IGFsc28gbWFrZSBpdCBtdWNoIGVhc2llciAoaW4gdGhl
-IG5vbi1BbmRyb2lkIHNwYWNlIGluDQo+ID4gcGFydGljdWxhcikNCj4gPiB0byBiaW5kIHRoZXNl
-IGFjdGl2aXRpZXMgdG8gYWN0aW9ucyBpbiB0aGluZ3MgbGlrZSB3ZWIgYnJvd3NlcnMuDQo+ID4g
-DQo+IEkgYWdyZWUgdGhhdCB0aGlzIG1heSB3ZWxsIGJlIGFuIG9wdGlvbiBmb3IgbWFueSBvZiB0
-aGUgZ2VzdHVyZXMNCj4gc3BlY2lmaWNhbGx5DQo+IG1ldGlvbmVkIChmbGlja3MgZXRjIGFuZCBn
-bHlwaHMpLg0KPiANCj4gSG93ZXZlciwgdGhlcmUgYXJlIG90aGVyIG9idmlvdXMgdXNlcyBvZiB0
-aGlzIHRlY2hub2xvZ3kgc3VjaCBhcyBzdGVwDQo+IGRldGVjdGlvbg0KPiBvciBhY3Rpdml0eSBj
-bGFzc2lmaWNhdGlvbiAocnVubmluZywgd2Fsa2luZyBzaXR0aW5nKSB0aGF0IHNvIGZhcg0KPiBo
-YXZlIGZhbGxlbg0KPiBpbiB0aGUgc2NvcGUgb2YgSUlPIGFzIHRoZXkgYXJlbid0IHJlYWxseSB0
-aGluZ3MgeW91IGV4cGVjdCB0aGUNCj4gZGV2aWNlIHRvDQo+IHBlcmZvcm0gYW4gYW4gYWN0aW9u
-IGluIHJlc3BvbnNlIHRvLsKgwqBBbm90aGVyIG9uZSBvZiB0aG9zZSBtZXNzeQ0KPiBjb3JuZXJz
-DQo+IHRoYXQgZmFsbCB0aHJvdWdoIHRoZSBnYXBzIQ0KPiANCj4gVGhlIGRyaXZlcnMvaWlvL2Fj
-Y2VsL21tYTk1NTMuYyBkb2VzIGFjdGl2aXR5IGRldGVjdGlvbiwgYnV0IHRoYXQNCj4gaXNuJ3QN
-Cj4gcmVhbGx5ICdldmVudHMnIGluIHRoZSBzYW1lIHdheSBhcyB3ZSBoYXZlIGhlcmUuLi4NCj4g
-DQo+IFNvIHJpZ2h0IGFuc3dlciBtaWdodCBiZSBhIGh5YnJpZCBvZiBhbiB1bmRlcmx5aW5nIGZs
-ZXhpYmxlIElJTw0KPiBkZXZpY2UNCj4gYW5kIGFuIGlucHV0IGZyb250IGVuZCBmb3Igd2hlbiBp
-dCBtYWtlcyBzZW5zZS4NCg0KV2hhdCBhYm91dCB3ZSBjYW4gYWxzbyBzZW5kIGFuIGlucHV0IGV2
-ZW50LCBpZiB0aGUgZXZlbnQgaXMgb25lIG9mIHRoZQ0KaW5wdXQgZXZlbnQgdHlwZSB3aGljaCBp
-cyBkZWZpbmVkIGluwqB1YXBpL2xpbnV4L2lucHV0LWV2ZW50LWNvZGVzLmg/DQoNCg0KPiANCj4g
-V2UgcHJvYmFibHkgbmVlZCB0byBnZXQgdGhlIGluIGtlcm5lbCB1c2Ugb2YgSUlPIGV2ZW50cyBz
-b3J0ZWQuwqDCoE5vbg0KPiBldmVudA0KPiBzdHVmZiBoYXMgYmVlbiBzb3J0ZWQgZm9yIHllYXJz
-LCBidXQgdGhpcyBsYXN0IGNvcm5lciB3YXMgbmV2ZXIgb2YNCj4gZW5vdWdoDQo+IGludGVyZXN0
-IHRvIGFueW9uZSB0byBhY3R1YWxseSBpbXBsZW1lbnQgaXQgKGl0J3MgZmFpcmx5IHN0cmFpZ2h0
-DQo+IGZvcndhcmQNCj4gdG8gZG8pLg0KQ3VycmVudGx5IGluIElJTyBldmVudCBpcyBhIHU2NCB2
-YWx1ZSBpbiBGaWZvLiBCdXQgaGVyZSB3ZSBuZWVkIHNvbWUNCnVzZXIgZGVmaW5lZCBldmVudHMg
-YWxzby4gU2luY2UgdGhpcyBBQkkgbWF5IGFscmVhZHkgbWF5IGJlIGluIHVzZSBzbw0KY2FuJ3Qg
-Y2hhbmdlIHU2NCB0byBhIHN0cnVjdHVyZSB3aXRoIGRhdGEgdHlwZSBkZWZpbml0aW9uIGFuZA0K
-YXNzb2NpYXRlZCBkYXRhLiBCdXQgd2UgY2FuIGRlZmluZSBhZGRpdGlvbmFsIHByZWRlZmluZWQg
-aWRzIGZvciBjdXN0b20NCmV2ZW50cyAoU2ltaWxhciB0byBISUQgc2Vuc29yIHVzYWdlIHNwZWMg
-YWRkZWQgQ1VTVE9NIHVzYWdlIGlkcykuDQoNClRoYW5rcywNClNyaW5pdmFzDQoNCj4gDQo+ID4g
-DQo+ID4gKCsgbGludXgtaW5wdXQpDQo+ID4gDQo+ID4gQWxhbg==
+
+--C94crkcyjafcjHxo
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hi!
+
+> From an IIO sensor point of view A Gesture sensor:
+> Outputs
+> 	A pre defined activity type
+> 		WAKE
+> 		TILT
+> 		GLANCE
+> 		PICK_UP
+> 		=A0&
+> 		=A0more
+>=20
+> 	A user defined activity type as "string"
+
+Pre-defined activities are easy.
+
+But what about user-defined activities? We'd really like common
+interface across different hardware...=20
+
+> Inputs
+> 	A raw binary cdev interface to download templates/patterns
+
+=2E...and "raw binary" will not work across different hardware :-(.
+
+									Pavel
+--=20
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
+g.html
+
+--C94crkcyjafcjHxo
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAlphIloACgkQMOfwapXb+vISjgCeMpuWTiIJ1DnhQ1jlOBc5YJsy
+IJ8AoLkEFFsIssbASQUVgJQ1hr/c745H
+=Cmp7
+-----END PGP SIGNATURE-----
+
+--C94crkcyjafcjHxo--
