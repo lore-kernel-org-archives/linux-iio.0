@@ -1,55 +1,50 @@
-Return-Path: <SRS0=2L+y=EN=sirena.org.uk=broonie@kernel.org>
-Date: Thu, 18 Jan 2018 10:39:50 +0000
-From: Mark Brown <broonie@kernel.org>
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Arnaud Pouliquen <arnaud.pouliquen@st.com>,
+Return-Path: <SRS0=ypsW=EN=arndb.de=arnd@kernel.org>
+From: Arnd Bergmann <arnd@arndb.de>
+To: Mark Brown <broonie@kernel.org>
+Cc: Arnd Bergmann <arnd@arndb.de>,
 	Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
 	Alexandre Torgue <alexandre.torgue@st.com>,
+	Arnaud Pouliquen <arnaud.pouliquen@st.com>,
 	linux-iio@vger.kernel.org,
-	Linux ARM <linux-arm-kernel@lists.infradead.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] IIO: ADC: stm32-dfsdm: remove unused variable
-Message-ID: <20180118103950.GA6747@sirena.org.uk>
-References: <20180117144644.2302131-1-arnd@arndb.de>
- <8dd30c35-011c-1d0f-7331-76df8fcd0c23@st.com>
- <CAK8P3a2_g+cPjZgv=_c=VunV+eCVPkFn7mYSxqKD_LqNdrLUBw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="VS++wcV0S1rZb1Fb"
-In-Reply-To: <CAK8P3a2_g+cPjZgv=_c=VunV+eCVPkFn7mYSxqKD_LqNdrLUBw@mail.gmail.com>
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] [v2] IIO: ADC: stm32-dfsdm: remove unused variable again
+Date: Thu, 18 Jan 2018 12:17:47 +0100
+Message-Id: <20180118111810.378441-1-arnd@arndb.de>
 List-ID: <linux-iio@vger.kernel.org>
 
+The merge between commit abaca806fd13 ("IIO: ADC: stm32-dfsdm: code
+optimization") and commit 2353758bc2d4 ("IIO: ADC: stm32-dfsdm: avoid
+unused-variable warning") left one variable behind that is no longer
+needed and can be removed, as shown by the gcc warning:
 
---VS++wcV0S1rZb1Fb
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+drivers/iio/adc/stm32-dfsdm-core.c: In function 'stm32_dfsdm_probe':
+drivers/iio/adc/stm32-dfsdm-core.c:245:29: error: unused variable 'of_id' [-Werror=unused-variable]
 
-On Wed, Jan 17, 2018 at 09:09:19PM +0100, Arnd Bergmann wrote:
+Fixes: d84b4c7c706f ("Merge branch 'topic/iio' of https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound into asoc-st-dfsdm")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+v2: update patch description to point to the merge rather than
+the correct commit before it.
+---
+ drivers/iio/adc/stm32-dfsdm-core.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-> Mark, not sure how you want to proceed from here: if this is a branch
-> that can get rebased, it might be best to do that merge again, or even
-> drop one of the two copies of my earlier patch. Otherwise I can send
-> a new version of the fix with an updated explanation.
-
-Please resend with the updated explanation.
-
---VS++wcV0S1rZb1Fb
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAlpgeXUACgkQJNaLcl1U
-h9AfMAf/Rrsm7cx2MDst2Eq7oWYRIDXg4G4xTw0oOYCxwXjZ7rM1Syk6ygGjGhCD
-WZE7KHIGFXjX8JXtNW9w11HGMaUg79J/lwi3FNS/6351om/LCUADyzAKdT8CAoBF
-/4/GLjZkcj7WTEe1fvPQgLysF92BzxGBOie9qCBHkLUnBu6ZPbSpWv73WjkwX16z
-bx//VeE+oAw/ucei+E6rx8J2NnPk8KSz7Hjon2nxdgRATQiCNwkbiQN9hC6+ak4J
-ShXg0G0gxAIYtqDoDLPTnOllnXJXmQWhtMccG6M4KrxW3xOlNC0al/dM93BFxPHG
-aIQHa92cp4UQfVaOnSSY3Io6urIePw==
-=05yi
------END PGP SIGNATURE-----
-
---VS++wcV0S1rZb1Fb--
+diff --git a/drivers/iio/adc/stm32-dfsdm-core.c b/drivers/iio/adc/stm32-dfsdm-core.c
+index 84277bcc465f..6290332cfd3f 100644
+--- a/drivers/iio/adc/stm32-dfsdm-core.c
++++ b/drivers/iio/adc/stm32-dfsdm-core.c
+@@ -242,7 +242,6 @@ MODULE_DEVICE_TABLE(of, stm32_dfsdm_of_match);
+ static int stm32_dfsdm_probe(struct platform_device *pdev)
+ {
+ 	struct dfsdm_priv *priv;
+-	const struct of_device_id *of_id;
+ 	const struct stm32_dfsdm_dev_data *dev_data;
+ 	struct stm32_dfsdm *dfsdm;
+ 	int ret;
+-- 
+2.9.0
