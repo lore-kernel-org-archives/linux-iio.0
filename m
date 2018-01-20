@@ -1,61 +1,42 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:34330 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751324AbeATPTH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 20 Jan 2018 10:19:07 -0500
-Date: Sat, 20 Jan 2018 15:19:08 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Pavel Machek <pavel@ucw.cz>
-Cc: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Return-Path: <SRS0=skAV=EP=intel.com=srinivas.pandruvada@kernel.org>
+From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+To: "pavel@ucw.cz" <pavel@ucw.cz>, "jic23@kernel.org" <jic23@kernel.org>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 Subject: Re: [RFP] iio: Support of gesture sensor as a standard IIO sensor
-Message-ID: <20180120151908.1d438aaf@archlinux>
-In-Reply-To: <20180118224026.GE17196@amd>
+Date: Sat, 20 Jan 2018 20:31:23 +0000
+Message-ID: <1516480282.15527.4.camel@intel.com>
 References: <1515197240.26317.65.camel@intel.com>
-        <20180118224026.GE17196@amd>
+	 <20180118224026.GE17196@amd> <20180120151908.1d438aaf@archlinux>
+In-Reply-To: <20180120151908.1d438aaf@archlinux>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 18 Jan 2018 23:40:26 +0100
-Pavel Machek <pavel@ucw.cz> wrote:
-
-> Hi!
-> 
-> > From an IIO sensor point of view A Gesture sensor:
-> > Outputs
-> > 	A pre defined activity type
-> > 		WAKE
-> > 		TILT
-> > 		GLANCE
-> > 		PICK_UP
-> > 		 &
-> > 		 more
-> > 
-> > 	A user defined activity type as "string"  
-> 
-> Pre-defined activities are easy.
-> 
-> But what about user-defined activities? We'd really like common
-> interface across different hardware... 
-
-Nasty to handle indeed.   It may be the best we can do initially
-at least is user_definedN or similar.  No way of constraining
-users from uploading something really odd that we can't define
-an interface for (hopping whilst holding a phone in
-their teeth?)
-> 
-> > Inputs
-> > 	A raw binary cdev interface to download templates/patterns  
-> 
-> ....and "raw binary" will not work across different hardware :-(.
-
-Sadly there probably isn't much we can do about the format being custom.
-Best bet would ultimately be if there was at least a standard tool
-to generate the files for different devices...
-
-> 
-> 									Pavel
-
+T24gU2F0LCAyMDE4LTAxLTIwIGF0IDE1OjE5ICswMDAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
+Og0KPiBPbiBUaHUsIDE4IEphbiAyMDE4IDIzOjQwOjI2ICswMTAwDQo+IFBhdmVsIE1hY2hlayA8
+cGF2ZWxAdWN3LmN6PiB3cm90ZToNCj4gDQo+ID4gDQo+ID4gSGkhDQo+ID4gDQo+ID4gPiANCj4g
+PiA+IEZyb20gYW4gSUlPIHNlbnNvciBwb2ludCBvZiB2aWV3IEEgR2VzdHVyZSBzZW5zb3I6DQo+
+ID4gPiBPdXRwdXRzDQo+ID4gPiAJQSBwcmUgZGVmaW5lZCBhY3Rpdml0eSB0eXBlDQo+ID4gPiAJ
+CVdBS0UNCj4gPiA+IAkJVElMVA0KPiA+ID4gCQlHTEFOQ0UNCj4gPiA+IAkJUElDS19VUA0KPiA+
+ID4gCQnCoCYNCj4gPiA+IAkJwqBtb3JlDQo+ID4gPiANCj4gPiA+IAlBIHVzZXIgZGVmaW5lZCBh
+Y3Rpdml0eSB0eXBlIGFzICJzdHJpbmciwqDCoA0KPiA+IFByZS1kZWZpbmVkIGFjdGl2aXRpZXMg
+YXJlIGVhc3kuDQo+ID4gDQo+ID4gQnV0IHdoYXQgYWJvdXQgdXNlci1kZWZpbmVkIGFjdGl2aXRp
+ZXM/IFdlJ2QgcmVhbGx5IGxpa2UgY29tbW9uDQo+ID4gaW50ZXJmYWNlIGFjcm9zcyBkaWZmZXJl
+bnQgaGFyZHdhcmUuLi7CoA0KPiBOYXN0eSB0byBoYW5kbGUgaW5kZWVkLsKgwqDCoEl0IG1heSBi
+ZSB0aGUgYmVzdCB3ZSBjYW4gZG8gaW5pdGlhbGx5DQo+IGF0IGxlYXN0IGlzIHVzZXJfZGVmaW5l
+ZE4gb3Igc2ltaWxhci7CoMKgTm8gd2F5IG9mIGNvbnN0cmFpbmluZw0KPiB1c2VycyBmcm9tIHVw
+bG9hZGluZyBzb21ldGhpbmcgcmVhbGx5IG9kZCB0aGF0IHdlIGNhbid0IGRlZmluZQ0KPiBhbiBp
+bnRlcmZhY2UgZm9yIChob3BwaW5nIHdoaWxzdCBob2xkaW5nIGEgcGhvbmUgaW4NCj4gdGhlaXIg
+dGVldGg/KQ0KVGhhdCdzIHdoYXQgSSB0aGluayBhbHNvLiBXZSBwcmUgZGVmaW5lIGZldyBVU0VS
+IGRlZmluZWQgYWN0aXZpdGllcw0KSWRzLg0KDQo+ID4gDQo+ID4gDQo+ID4gPiANCj4gPiA+IElu
+cHV0cw0KPiA+ID4gCUEgcmF3IGJpbmFyeSBjZGV2IGludGVyZmFjZSB0byBkb3dubG9hZCB0ZW1w
+bGF0ZXMvcGF0dGVybnPCoMKgDQo+ID4gLi4uLmFuZCAicmF3IGJpbmFyeSIgd2lsbCBub3Qgd29y
+ayBhY3Jvc3MgZGlmZmVyZW50IGhhcmR3YXJlIDotKC4NCj4gU2FkbHkgdGhlcmUgcHJvYmFibHkg
+aXNuJ3QgbXVjaCB3ZSBjYW4gZG8gYWJvdXQgdGhlIGZvcm1hdCBiZWluZw0KPiBjdXN0b20uDQo+
+IEJlc3QgYmV0IHdvdWxkIHVsdGltYXRlbHkgYmUgaWYgdGhlcmUgd2FzIGF0IGxlYXN0IGEgc3Rh
+bmRhcmQgdG9vbA0KPiB0byBnZW5lcmF0ZSB0aGUgZmlsZXMgZm9yIGRpZmZlcmVudCBkZXZpY2Vz
+Li4uDQo+IA0KQ29ycmVjdC4gVGhpcyB3aWxsIGRlcGVuZCBvbiDCoHRoZSBmaXJtd2FyZSBleHBl
+Y3RlZCBmb3JtYXQgLiBJIHRoaW5rDQp1bHRpbWF0ZWx5IGl0IHdpbGwgYmUgc3RhbmRhcmRpemVk
+Lg0KDQpUaGFua3MsDQpTcmluaXZhcw0KDQo+ID4gDQo+ID4gDQo+ID4gCQkJCQkJCQkJDQo+ID4g
+UGF2ZWw=
