@@ -1,76 +1,105 @@
-Return-Path: <alexandru.Ardelean@analog.com>
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "jic23@jic23.retrosnub.co.uk" <jic23@jic23.retrosnub.co.uk>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "Hennerich,
- Michael" <Michael.Hennerich@analog.com>
-Subject: Re: [PATCH v2] staging: iio: adc: ad7192: fix external frequency
- setting
-Date: Mon, 22 Jan 2018 07:54:12 +0000
-Message-ID: <1516607650.3628.1.camel@analog.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-sn1nam01on0052.outbound.protection.outlook.com ([104.47.32.52]:31904
+        "EHLO NAM01-SN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1751101AbeAVJxd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 22 Jan 2018 04:53:33 -0500
+Received: from NWD2HUBCAS8.ad.analog.com (nwd2hubcas8.ad.analog.com [10.64.69.108])
+        by nwd2mta4.analog.com (8.13.8/8.13.8) with ESMTP id w0M9rTU1023214
+        (version=TLSv1/SSLv3 cipher=AES128-SHA bits=128 verify=OK)
+        for <linux-iio@vger.kernel.org>; Mon, 22 Jan 2018 01:53:29 -0800
+From: <alexandru.ardelean@analog.com>
+To: <linux-iio@vger.kernel.org>
+CC: <michael.hennerich@analog.com>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH v3] staging: iio: adc: ad7192: fix external frequency setting
+Date: Mon, 22 Jan 2018 11:53:12 +0200
+Message-ID: <20180122095312.1150-1-alexandru.ardelean@analog.com>
+In-Reply-To: <20180118144449.20115-1-alexandru.ardelean@analog.com>
 References: <20180118144449.20115-1-alexandru.ardelean@analog.com>
-	 <20180120164126.04d90861@archlinux>
-In-Reply-To: <20180120164126.04d90861@archlinux>
-Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-T24gU2F0LCAyMDE4LTAxLTIwIGF0IDE2OjQxICswMDAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
-Og0KPiBPbiBUaHUsIDE4IEphbiAyMDE4IDE2OjQ0OjQ5ICswMjAwDQo+IDxhbGV4YW5kcnUuYXJk
-ZWxlYW5AYW5hbG9nLmNvbT4gd3JvdGU6DQo+IA0KPiA+IEZyb206IEFsZXhhbmRydSBBcmRlbGVh
-biA8YWxleGFuZHJ1LmFyZGVsZWFuQGFuYWxvZy5jb20+DQo+ID4gDQo+ID4gVGhlIGV4dGVybmFs
-IGNsb2NrIGZyZXF1ZW5jeSB3YXMgc2V0IG9ubHkgd2hlbiBzZWxlY3RpbmcNCj4gPiB0aGUgaW50
-ZXJuYWwgY2xvY2ssIHdoaWNoIGlzIGZpeGVkIGF0IDQuOTE1MiBNaHouDQo+ID4gDQo+ID4gVGhp
-cyBpcyBpbmNvcnJlY3QsIHNpbmNlIGl0IHNob3VsZCBiZSBzZXQgd2hlbiBhbnkgb2YNCj4gPiB0
-aGUgZXh0ZXJuYWwgY2xvY2sgb3IgY3J5c3RhbCBzZXR0aW5ncyBpcyBzZWxlY3RlZC4NCj4gPiAN
-Cj4gPiBBZGRlZCByYW5nZSB2YWxpZGF0aW9uIGZvciB0aGUgdmFsaWRhdGluZyB0aGUgZXh0ZXJu
-YWwNCj4gPiAoY3J5c3RhbC9jbG9jaykgZnJlcXVlbmN5IHNldHRpbmcuDQo+ID4gVmFsaWQgdmFs
-dWVzIGFyZSBiZXR3ZWVuIDIuNDU3NiBhbmQgNS4xMiBNaHouDQo+ID4gDQo+ID4gU2lnbmVkLW9m
-Zi1ieTogQWxleGFuZHJ1IEFyZGVsZWFuIDxhbGV4YW5kcnUuYXJkZWxlYW5AYW5hbG9nLmNvbT4N
-Cj4gDQo+IEEgY291cGxlIG9mIG1pbm9yIHBvaW50cyBpbmxpbmUuLg0KPiANCj4gSm9uYXRoYW4N
-Cj4gDQo+ID4gLS0tDQo+ID4gDQo+ID4gQ2hhbmdlcyBzaW5jZSB2MToNCj4gPiAgKiBhc3NpZ24g
-ZnJlcXVlbmN5IGZyb20gYHBkYXRhLT5leHRfY2xrX2h6YCwgbm90IGBwZGF0YS0NCj4gPiA+ZXh0
-X2Nsa19oemANCj4gDQo+IEVyciwgbXkgZXllIHNpZ2h0IG1heSBiZSBmYWlsaW5nIG1lLCBidXQg
-dGhvc2UgdHdvIGxvb2sgdGhlIHNhbWUuLi4NCg0KY29weStwYXN0ZSBnb29mIDsgY29ycmVjdCBp
-czoNCiAqIGFzc2lnbiBmcmVxdWVuY3kgZnJvbSBgcGRhdGEtPmV4dF9jbGtfaHpgLCBub3QgYHBk
-YXRhLQ0KPmNsb2NrX3NvdXJjZV9zZWxgDQoNCj4gDQo+ID4gICogY2hlY2sgZnJlcXVlbmN5IHJh
-bmdlIGZvciBib3RoIGNyeXN0YWwgJiAoZXh0ZXJuYWwpIGNsb2NrDQo+ID4gICogcHJpbnQgZXJy
-b3IgaWYgY2xvY2sgcmFuZ2UgaXMgaW52YWxpZA0KPiA+ICAqIHBhdGNoIHdhcyBzcGxpdCBhd2F5
-IGZyb20gcGF0Y2gtc2VyaWVzIChmb3IgZGV2aWNlLXRyZWUNCj4gPiBiaW5kaW5ncykNCj4gPiAN
-Cj4gPiAgZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3MTkyLmMgfCAyNiArKysrKysrKysrKysr
-KysrKystLS0tLS0tLQ0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgMTggaW5zZXJ0aW9ucygrKSwgOCBk
-ZWxldGlvbnMoLSkNCj4gPiANCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9zdGFnaW5nL2lpby9h
-ZGMvYWQ3MTkyLmMNCj4gPiBiL2RyaXZlcnMvc3RhZ2luZy9paW8vYWRjL2FkNzE5Mi5jDQo+ID4g
-aW5kZXggYWViYmMzYjU4MTk0Li42ZDExMGY4MTdiNGUgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVy
-cy9zdGFnaW5nL2lpby9hZGMvYWQ3MTkyLmMNCj4gPiArKysgYi9kcml2ZXJzL3N0YWdpbmcvaWlv
-L2FkYy9hZDcxOTIuYw0KPiA+IEBAIC0xNDEsNiArMTQxLDggQEANCj4gPiAgI2RlZmluZSBBRDcx
-OTJfR1BPQ09OX1AxREFUCUJJVCgxKSAvKiBQMSBzdGF0ZSAqLw0KPiA+ICAjZGVmaW5lIEFENzE5
-Ml9HUE9DT05fUDBEQVQJQklUKDApIC8qIFAwIHN0YXRlICovDQo+ID4gIA0KPiA+ICsjZGVmaW5l
-IEFENzE5Ml9FWFRfRlJFUV9NSFpfTUlOCTI0NTc2MDANCj4gPiArI2RlZmluZSBBRDcxOTJfRVhU
-X0ZSRVFfTUhaX01BWAk1MTIwMDAwDQo+ID4gICNkZWZpbmUgQUQ3MTkyX0lOVF9GUkVRX01IWgk0
-OTE1MjAwDQo+ID4gIA0KPiA+ICAvKiBOT1RFOg0KPiA+IEBAIC0yMTcsNiArMjE5LDEyIEBAIHN0
-YXRpYyBpbnQgYWQ3MTkyX2NhbGlicmF0ZV9hbGwoc3RydWN0DQo+ID4gYWQ3MTkyX3N0YXRlICpz
-dCkNCj4gPiAgCQkJCUFSUkFZX1NJWkUoYWQ3MTkyX2NhbGliX2FycikpOw0KPiA+ICB9DQo+ID4g
-IA0KPiA+ICtzdGF0aWMgaW5saW5lIGJvb2wgYWQ3MTkyX3ZhbGlkX2V4dGVybmFsX2ZyZXF1ZW5j
-eSh1MzIgZnJlcSkNCj4gPiArew0KPiA+ICsJcmV0dXJuIChmcmVxID49IEFENzE5Ml9FWFRfRlJF
-UV9NSFpfTUlOICYmDQo+ID4gKwkJZnJlcSA8PSBBRDcxOTJfRVhUX0ZSRVFfTUhaX01BWCk7DQo+
-ID4gK30NCj4gPiArDQo+ID4gIHN0YXRpYyBpbnQgYWQ3MTkyX3NldHVwKHN0cnVjdCBhZDcxOTJf
-c3RhdGUgKnN0LA0KPiA+ICAJCQljb25zdCBzdHJ1Y3QgYWQ3MTkyX3BsYXRmb3JtX2RhdGEgKnBk
-YXRhKQ0KPiA+ICB7DQo+ID4gQEAgLTI0NCwxNyArMjUyLDE5IEBAIHN0YXRpYyBpbnQgYWQ3MTky
-X3NldHVwKHN0cnVjdCBhZDcxOTJfc3RhdGUNCj4gPiAqc3QsDQo+ID4gIAkJCSBpZCk7DQo+ID4g
-IA0KPiA+ICAJc3dpdGNoIChwZGF0YS0+Y2xvY2tfc291cmNlX3NlbCkgew0KPiA+IC0JY2FzZSBB
-RDcxOTJfQ0xLX0VYVF9NQ0xLMV8yOg0KPiA+IC0JY2FzZSBBRDcxOTJfQ0xLX0VYVF9NQ0xLMjoN
-Cj4gPiAtCQlzdC0+bWNsayA9IEFENzE5Ml9JTlRfRlJFUV9NSFo7DQo+ID4gLQkJYnJlYWs7DQo+
-ID4gIAljYXNlIEFENzE5Ml9DTEtfSU5UOg0KPiA+ICAJY2FzZSBBRDcxOTJfQ0xLX0lOVF9DTzoN
-Cj4gPiAtCQlpZiAocGRhdGEtPmV4dF9jbGtfaHopDQo+ID4gLQkJCXN0LT5tY2xrID0gcGRhdGEt
-PmV4dF9jbGtfaHo7DQo+ID4gLQkJZWxzZQ0KPiA+IC0JCQlzdC0+bWNsayA9IEFENzE5Ml9JTlRf
-RlJFUV9NSFo7DQo+ID4gKwkJc3QtPm1jbGsgPSBBRDcxOTJfSU5UX0ZSRVFfTUhaOw0KPiA+ICAJ
-CWJyZWFrOw0KPiA+ICsJY2FzZSBBRDcxOTJfQ0xLX0VYVF9NQ0xLMV8yOg0KPiA+ICsJY2FzZSBB
-RDcxOTJfQ0xLX0VYVF9NQ0xLMjoNCj4gPiArCQlpZiAoYWQ3MTkyX3ZhbGlkX2V4dGVybmFsX2Zy
-ZXF1ZW5jeShwZGF0YS0NCj4gPiA+ZXh0X2Nsa19oeikpIHsNCj4gPiArCQkJc3QtPm1jbGsgPSBw
-ZGF0YS0+ZXh0X2Nsa19oejsNCj4gPiArCQkJYnJlYWs7DQo+ID4gKwkJfQ0KPiA+ICsJCWRldl9l
-cnIoJnN0LT5zZC5zcGktPmRldiwgIkludmFsaWQgZnJlcXVlbmN5DQo+ID4gc2V0dGluZyAldVxu
-IiwNCj4gPiArCQkJcGRhdGEtPmV4dF9jbGtfaHopOw0KPiA+ICsJCS8qIEZBTExUSFJPVUdIICov
-DQo+IA0KPiBXaGlsc3QgaXQgc2F2ZXMgbGluZXMgb2YgY29kZSwgdGhlIGNsYXJpdHkgb2YgdGhl
-IGNvZGUgaXMgcmVkdWNlZC4NCj4gSnVzdCBwdXQNCj4gcmV0ID0gLUVJTlZBTDsNCj4gYnJlYWs7
-DQoNCmFjaw0KDQo+ID4gIAlkZWZhdWx0Og0KPiA+ICAJCXJldCA9IC1FSU5WQUw7DQo+ID4gIAkJ
-Z290byBvdXQ7DQo+IA0KPiA=
+From: Alexandru Ardelean <alexandru.ardelean@analog.com>
+
+The external clock frequency was set only when selecting
+the internal clock, which is fixed at 4.9152 Mhz.
+
+This is incorrect, since it should be set when any of
+the external clock or crystal settings is selected.
+
+Added range validation for the external (crystal/clock)
+frequency setting.
+Valid values are between 2.4576 and 5.12 Mhz.
+
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+
+Changes v2 -> v3:
+ * changed fallthrough for AD7192_CLK_EXT_MCLK1_2 & AD7192_CLK_EXT_MCLK2
+   to `ret = -EINVAL` + `goto out`
+ * re-phrased commit comment; to make it more simple/direct
+
+ drivers/staging/iio/adc/ad7192.c | 27 +++++++++++++++++++--------
+ 1 file changed, 19 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+index 9287b50b7870..03aba22093a8 100644
+--- a/drivers/staging/iio/adc/ad7192.c
++++ b/drivers/staging/iio/adc/ad7192.c
+@@ -141,6 +141,8 @@
+ #define AD7192_GPOCON_P1DAT	BIT(1) /* P1 state */
+ #define AD7192_GPOCON_P0DAT	BIT(0) /* P0 state */
+ 
++#define AD7192_EXT_FREQ_MHZ_MIN	2457600
++#define AD7192_EXT_FREQ_MHZ_MAX	5120000
+ #define AD7192_INT_FREQ_MHZ	4915200
+ 
+ /* NOTE:
+@@ -217,6 +219,12 @@ static int ad7192_calibrate_all(struct ad7192_state *st)
+ 				ARRAY_SIZE(ad7192_calib_arr));
+ }
+ 
++static inline bool ad7192_valid_external_frequency(u32 freq)
++{
++	return (freq >= AD7192_EXT_FREQ_MHZ_MIN &&
++		freq <= AD7192_EXT_FREQ_MHZ_MAX);
++}
++
+ static int ad7192_setup(struct ad7192_state *st,
+ 			const struct ad7192_platform_data *pdata)
+ {
+@@ -244,17 +252,20 @@ static int ad7192_setup(struct ad7192_state *st,
+ 			 id);
+ 
+ 	switch (pdata->clock_source_sel) {
+-	case AD7192_CLK_EXT_MCLK1_2:
+-	case AD7192_CLK_EXT_MCLK2:
+-		st->mclk = AD7192_INT_FREQ_MHZ;
+-		break;
+ 	case AD7192_CLK_INT:
+ 	case AD7192_CLK_INT_CO:
+-		if (pdata->ext_clk_hz)
+-			st->mclk = pdata->ext_clk_hz;
+-		else
+-			st->mclk = AD7192_INT_FREQ_MHZ;
++		st->mclk = AD7192_INT_FREQ_MHZ;
+ 		break;
++	case AD7192_CLK_EXT_MCLK1_2:
++	case AD7192_CLK_EXT_MCLK2:
++		if (ad7192_valid_external_frequency(pdata->ext_clk_hz)) {
++			st->mclk = pdata->ext_clk_hz;
++			break;
++		}
++		dev_err(&st->sd.spi->dev, "Invalid frequency setting %u\n",
++			pdata->ext_clk_hz);
++		ret = -EINVAL;
++		goto out;
+ 	default:
+ 		ret = -EINVAL;
+ 		goto out;
+-- 
+2.14.1
+
