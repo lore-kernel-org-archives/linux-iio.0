@@ -1,44 +1,54 @@
-Return-Path: <SRS0=Kdk2=ET=intel.com=fengguang.wu@kernel.org>
-Date: Thu, 25 Jan 2018 02:53:42 +0800
-From: kbuild test robot <lkp@intel.com>
-To: Shreeya Patel <shreeya.patel23498@gmail.com>
-Cc: kbuild-all@01.org, lars@metafoo.de, Michael.Hennerich@analog.com,
-	jic23@kernel.org, knaack.h@gmx.de, pmeerw@pmeerw.net,
-	gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-	Shreeya Patel <shreeya.patel23498@gmail.com>
-Subject: Re: [PATCH] Staging: iio: ade7758: Expand buf_lock to cover both
- buffer
-Message-ID: <201801250253.o4jdYyJW%fengguang.wu@intel.com>
-References: <1516654973-6434-1-git-send-email-shreeya.patel23498@gmail.com>
+Return-Path: <SRS0=Ggth=ES=st.com=fabrice.gasnier@kernel.org>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+To: <jic23@kernel.org>
+CC: <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <mcoquelin.stm32@gmail.com>, <alexandre.torgue@st.com>,
+        <fabrice.gasnier@st.com>, <linux-iio@vger.kernel.org>,
+        <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>
+Subject: [PATCH] iio: adc: stm32: fix stm32h7_adc_enable error handling
+Date: Tue, 23 Jan 2018 17:04:56 +0100
+Message-ID: <1516723497-9018-1-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1516654973-6434-1-git-send-email-shreeya.patel23498@gmail.com>
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi Shreeya,
+Error handling in stm32h7_adc_enable routine doesn't unwind enable
+sequence correctly. ADEN can only be cleared by hardware (e.g. by
+writing one to ADDIS).
+It's also better to clear ADRDY just after it's been set by hardware.
 
-Thank you for the patch! Perhaps something to improve:
+Fixes: 95e339b6e85d ("iio: adc: stm32: add support for STM32H7")
 
-[auto build test WARNING on iio/togreg]
-[also build test WARNING on v4.15-rc9 next-20180119]
-[if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
-
-url:    https://github.com/0day-ci/linux/commits/Shreeya-Patel/Staging-iio-ade7758-Expand-buf_lock-to-cover-both-buffer/20180124-234049
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-reproduce:
-        # apt-get install sparse
-        make ARCH=x86_64 allmodconfig
-        make C=1 CF=-D__CHECK_ENDIAN__
-
-
-sparse warnings: (new ones prefixed by >>)
-
->> drivers/staging/iio/meter/ade7758_core.c:28:5: sparse: symbol '__ade7758_spi_write_reg_8' was not declared. Should it be
->> drivers/staging/iio/meter/ade7758_core.c:104:5: sparse: symbol '__ade7758_spi_read_reg_8' was not declared. Should it be
-
-Please review and possibly fold the followup patch.
-
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 ---
-0-DAY kernel test infrastructure                Open Source Technology Center
-https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+ drivers/iio/adc/stm32-adc.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
+index ca3b865..8177a92 100644
+--- a/drivers/iio/adc/stm32-adc.c
++++ b/drivers/iio/adc/stm32-adc.c
+@@ -735,8 +735,6 @@ static int stm32h7_adc_enable(struct stm32_adc *adc)
+ 	int ret;
+ 	u32 val;
+ 
+-	/* Clear ADRDY by writing one, then enable ADC */
+-	stm32_adc_set_bits(adc, STM32H7_ADC_ISR, STM32H7_ADRDY);
+ 	stm32_adc_set_bits(adc, STM32H7_ADC_CR, STM32H7_ADEN);
+ 
+ 	/* Poll for ADRDY to be set (after adc startup time) */
+@@ -744,8 +742,11 @@ static int stm32h7_adc_enable(struct stm32_adc *adc)
+ 					   val & STM32H7_ADRDY,
+ 					   100, STM32_ADC_TIMEOUT_US);
+ 	if (ret) {
+-		stm32_adc_clr_bits(adc, STM32H7_ADC_CR, STM32H7_ADEN);
++		stm32_adc_set_bits(adc, STM32H7_ADC_CR, STM32H7_ADDIS);
+ 		dev_err(&indio_dev->dev, "Failed to enable ADC\n");
++	} else {
++		/* Clear ADRDY by writing one */
++		stm32_adc_set_bits(adc, STM32H7_ADC_ISR, STM32H7_ADRDY);
+ 	}
+ 
+ 	return ret;
+-- 
+1.9.1
