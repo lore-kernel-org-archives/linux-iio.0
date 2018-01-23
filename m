@@ -1,135 +1,254 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-bn3nam01on0054.outbound.protection.outlook.com ([104.47.33.54]:36776
-        "EHLO NAM01-BN3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1751173AbeAWLkZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 23 Jan 2018 06:40:25 -0500
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "shreeya.patel23498@gmail.com" <shreeya.patel23498@gmail.com>,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46254 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751056AbeAWMAm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 23 Jan 2018 07:00:42 -0500
+Date: Tue, 23 Jan 2018 12:00:32 +0000
+In-Reply-To: <1516707617.2960.19.camel@analog.com>
+References: <1516654973-6434-1-git-send-email-shreeya.patel23498@gmail.com> <1516707617.2960.19.camel@analog.com>
+MIME-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Subject: Re: [PATCH] Staging: iio: ade7758: Expand buf_lock to cover both buffer
+To: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>,
+        "shreeya.patel23498@gmail.com" <shreeya.patel23498@gmail.com>,
         "lars@metafoo.de" <lars@metafoo.de>,
         "21cnbao@gmail.com" <21cnbao@gmail.com>,
         "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
         "Hennerich, Michael" <Michael.Hennerich@analog.com>,
         "jic23@kernel.org" <jic23@kernel.org>
-Subject: Re: [PATCH] Staging: iio: ade7758: Expand buf_lock to cover both
- buffer
-Date: Tue, 23 Jan 2018 11:40:21 +0000
-Message-ID: <1516707617.2960.19.camel@analog.com>
-References: <1516654973-6434-1-git-send-email-shreeya.patel23498@gmail.com>
-In-Reply-To: <1516654973-6434-1-git-send-email-shreeya.patel23498@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Message-ID: <4317A29D-AFA8-4972-97FF-EA90759CFC9E@jic23.retrosnub.co.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-T24gVHVlLCAyMDE4LTAxLTIzIGF0IDAyOjMyICswNTMwLCBTaHJlZXlhIFBhdGVsIHdyb3RlOg0K
-PiBpaW9fZGV2LT5tbG9jayBpcyB0byBiZSB1c2VkIG9ubHkgYnkgdGhlIElJTyBjb3JlIGZvciBw
-cm90ZWN0aW5nDQo+IGRldmljZSBtb2RlIGNoYW5nZXMgYmV0d2VlbiBJTkRJT19ESVJFQ1QgYW5k
-IElORElPX0JVRkZFUi4NCj4gDQo+IFRoaXMgcGF0Y2ggcmVwbGFjZXMgdGhlIHVzZSBvZiBtbG9j
-ayB3aXRoIHRoZSBhbHJlYWR5IGVzdGFibGlzaGVkDQo+IGJ1Zl9sb2NrIG11dGV4Lg0KPiANCj4g
-SW50cm9kdWNpbmcgJ3VubG9ja2VkJyBfX2FkZTc3NThfc3BpX3dyaXRlX3JlZ184IGFuZA0KPiBf
-X2FkZTc3NThfc3BpX3JlYWRfcmVnXzggZnVuY3Rpb25zIHRvIGJlIHVzZWQgYnkgYWRlNzc1OF93
-cml0ZV9zYW1wX2ZyZXENCj4gYW5kIGFkZTc3NThfcmVhZF9zYW1wX2ZyZXEgd2hpY2ggYXZvaWRz
-IG5lc3RlZCBsb2NrcyBhbmQgbWFpbnRhaW5zDQo+IGF0b21pY2l0eSBiZXR3ZWVuIGJ1cyBhbmQg
-ZGV2aWNlIGZyZXF1ZW5jeSBjaGFuZ2VzLg0KPiANCg0KaGV5LA0KDQpub3RlOiBpIHRvb2sgdGhl
-IGxpYmVydHkgb2YgcmUtYWRqdXN0aW5nIHRoZSByZXBseSBsaXN0IDsNCmluaXRpYWwgc2NvcGUg
-c2VlbWVkIHRvbyB3aWRlIDsNCmFkZGVkIEJhcnJ5IFNvbmcsIGFzIGhlJ3MgbGlzdGVkIGFzIHRo
-ZSBhdXRob3Igb2YgdGhlIGRyaXZlciA7DQoNCmFib3V0IHRoZSBwYXRjaDoNCm92ZXJhbGwgbG9v
-a3MgZ29vZA0KY29tbWVudHMgaW5saW5lDQoNCj4gU2lnbmVkLW9mZi1ieTogU2hyZWV5YSBQYXRl
-bCA8c2hyZWV5YS5wYXRlbDIzNDk4QGdtYWlsLmNvbT4NCj4gLS0tDQo+ICBkcml2ZXJzL3N0YWdp
-bmcvaWlvL21ldGVyL2FkZTc3NTguaCAgICAgIHwgIDIgKy0NCj4gIGRyaXZlcnMvc3RhZ2luZy9p
-aW8vbWV0ZXIvYWRlNzc1OF9jb3JlLmMgfCA0OSArKysrKysrKysrKysrKysrKysrKysrKy0tLS0t
-LS0tLQ0KPiAgMiBmaWxlcyBjaGFuZ2VkLCAzNyBpbnNlcnRpb25zKCspLCAxNCBkZWxldGlvbnMo
-LSkNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3N0YWdpbmcvaWlvL21ldGVyL2FkZTc3NTgu
-aCBiL2RyaXZlcnMvc3RhZ2luZy9paW8vbWV0ZXIvYWRlNzc1OC5oDQo+IGluZGV4IDZhZTc4ZDgu
-LjJkZTgxYjUgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvc3RhZ2luZy9paW8vbWV0ZXIvYWRlNzc1
-OC5oDQo+ICsrKyBiL2RyaXZlcnMvc3RhZ2luZy9paW8vbWV0ZXIvYWRlNzc1OC5oDQo+IEBAIC0x
-MTEsNyArMTExLDcgQEANCj4gICAqIEB0cmlnOgkJZGF0YSByZWFkeSB0cmlnZ2VyIHJlZ2lzdGVy
-ZWQgd2l0aCBpaW8NCj4gICAqIEB0eDoJCQl0cmFuc21pdCBidWZmZXINCj4gICAqIEByeDoJCQly
-ZWNlaXZlIGJ1ZmZlcg0KPiAtICogQGJ1Zl9sb2NrOgkJbXV0ZXggdG8gcHJvdGVjdCB0eCBhbmQg
-cngNCj4gKyAqIEBidWZfbG9jazoJCW11dGV4IHRvIHByb3RlY3QgdHgsIHJ4LCByZWFkIGFuZCB3
-cml0ZSBmcmVxdWVuY3kNCj4gICAqKi8NCj4gIHN0cnVjdCBhZGU3NzU4X3N0YXRlIHsNCj4gIAlz
-dHJ1Y3Qgc3BpX2RldmljZQkqdXM7DQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3N0YWdpbmcvaWlv
-L21ldGVyL2FkZTc3NThfY29yZS5jIGIvZHJpdmVycy9zdGFnaW5nL2lpby9tZXRlci9hZGU3NzU4
-X2NvcmUuYw0KPiBpbmRleCA3YjdmZmU1Li43ZjhmOGM0IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJz
-L3N0YWdpbmcvaWlvL21ldGVyL2FkZTc3NThfY29yZS5jDQo+ICsrKyBiL2RyaXZlcnMvc3RhZ2lu
-Zy9paW8vbWV0ZXIvYWRlNzc1OF9jb3JlLmMNCj4gQEAgLTI0LDE3ICsyNCwyNiBAQA0KPiAgI2lu
-Y2x1ZGUgIm1ldGVyLmgiDQo+ICAjaW5jbHVkZSAiYWRlNzc1OC5oIg0KPiAgDQo+IC1pbnQgYWRl
-Nzc1OF9zcGlfd3JpdGVfcmVnXzgoc3RydWN0IGRldmljZSAqZGV2LCB1OCByZWdfYWRkcmVzcywg
-dTggdmFsKQ0KPiArLyogVW5sb2NrZWQgdmVyc2lvbiBvZiBhZGU3NzU4X3NwaV93cml0ZV9yZWdf
-OCBmdW5jdGlvbiAqLw0KDQp5b3UgY2FuIHByb2JhYmx5IHJlbW92ZSB0aGlzIGNvbW1lbnQNCg0K
-PiAraW50IF9fYWRlNzc1OF9zcGlfd3JpdGVfcmVnXzgoc3RydWN0IGRldmljZSAqZGV2LCB1OCBy
-ZWdfYWRkcmVzcywgdTggdmFsKQ0KDQptYXliZSBtYWtlIHRoaXMgc3RhdGljIDsgDQp0aGlzIGZ1
-bmN0aW9uIGRvZXMgbm90IHNlZW0gdG8gYmUgZXhwb3J0ZWQgb3V0c2lkZSBvZiB0aGlzIGZpbGUN
-Cg0KPiAgew0KPiAtCWludCByZXQ7DQo+ICAJc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiA9IGRl
-dl90b19paW9fZGV2KGRldik7DQo+ICAJc3RydWN0IGFkZTc3NThfc3RhdGUgKnN0ID0gaWlvX3By
-aXYoaW5kaW9fZGV2KTsNCj4gIA0KPiAtCW11dGV4X2xvY2soJnN0LT5idWZfbG9jayk7DQo+ICAJ
-c3QtPnR4WzBdID0gQURFNzc1OF9XUklURV9SRUcocmVnX2FkZHJlc3MpOw0KPiAgCXN0LT50eFsx
-XSA9IHZhbDsNCj4gIA0KPiAtCXJldCA9IHNwaV93cml0ZShzdC0+dXMsIHN0LT50eCwgMik7DQo+
-ICsJcmV0dXJuIHNwaV93cml0ZShzdC0+dXMsIHN0LT50eCwgMik7DQo+ICt9DQo+ICsNCj4gK2lu
-dCBhZGU3NzU4X3NwaV93cml0ZV9yZWdfOChzdHJ1Y3QgZGV2aWNlICpkZXYsIHU4IHJlZ19hZGRy
-ZXNzLCB1OCB2YWwpDQo+ICt7DQo+ICsJaW50IHJldDsNCj4gKwlzdHJ1Y3QgaWlvX2RldiAqaW5k
-aW9fZGV2ID0gZGV2X3RvX2lpb19kZXYoZGV2KTsNCj4gKwlzdHJ1Y3QgYWRlNzc1OF9zdGF0ZSAq
-c3QgPSBpaW9fcHJpdihpbmRpb19kZXYpOw0KPiArDQo+ICsJbXV0ZXhfbG9jaygmc3QtPmJ1Zl9s
-b2NrKTsNCj4gKwlyZXQgPSBfX2FkZTc3NThfc3BpX3dyaXRlX3JlZ184KGRldiwgcmVnX2FkZHJl
-c3MsIHZhbCk7DQo+ICAJbXV0ZXhfdW5sb2NrKCZzdC0+YnVmX2xvY2spOw0KPiAgDQo+ICAJcmV0
-dXJuIHJldDsNCj4gQEAgLTkxLDcgKzEwMCw4IEBAIHN0YXRpYyBpbnQgYWRlNzc1OF9zcGlfd3Jp
-dGVfcmVnXzI0KHN0cnVjdCBkZXZpY2UgKmRldiwgdTggcmVnX2FkZHJlc3MsDQo+ICAJcmV0dXJu
-IHJldDsNCj4gIH0NCj4gIA0KPiAtaW50IGFkZTc3NThfc3BpX3JlYWRfcmVnXzgoc3RydWN0IGRl
-dmljZSAqZGV2LCB1OCByZWdfYWRkcmVzcywgdTggKnZhbCkNCj4gKy8qIFVubG9ja2VkIHZlcnNp
-b24gb2YgYWRlNzc1OF9zcGlfcmVhZF9yZWdfMTYgZnVuY3Rpb24gKi8NCnlvdSBjYW4gcHJvYmFi
-bHkgcmVtb3ZlIHRoaXMgY29tbWVudCBhcyB3ZWxsDQoNCj4gK2ludCBfX2FkZTc3NThfc3BpX3Jl
-YWRfcmVnXzgoc3RydWN0IGRldmljZSAqZGV2LCB1OCByZWdfYWRkcmVzcywgdTggKnZhbCkNCg0K
-bWFrZSB0aGlzIHN0YXRpYyBhcyB3ZWxsDQoNCj4gIHsNCj4gIAlzdHJ1Y3QgaWlvX2RldiAqaW5k
-aW9fZGV2ID0gZGV2X3RvX2lpb19kZXYoZGV2KTsNCj4gIAlzdHJ1Y3QgYWRlNzc1OF9zdGF0ZSAq
-c3QgPSBpaW9fcHJpdihpbmRpb19kZXYpOw0KPiBAQCAtMTExLDcgKzEyMSw2IEBAIGludCBhZGU3
-NzU4X3NwaV9yZWFkX3JlZ184KHN0cnVjdCBkZXZpY2UgKmRldiwgdTggcmVnX2FkZHJlc3MsIHU4
-ICp2YWwpDQo+ICAJCX0sDQo+ICAJfTsNCj4gIA0KPiAtCW11dGV4X2xvY2soJnN0LT5idWZfbG9j
-ayk7DQo+ICAJc3QtPnR4WzBdID0gQURFNzc1OF9SRUFEX1JFRyhyZWdfYWRkcmVzcyk7DQo+ICAJ
-c3QtPnR4WzFdID0gMDsNCj4gIA0KPiBAQCAtMTI0LDcgKzEzMywxOSBAQCBpbnQgYWRlNzc1OF9z
-cGlfcmVhZF9yZWdfOChzdHJ1Y3QgZGV2aWNlICpkZXYsIHU4IHJlZ19hZGRyZXNzLCB1OCAqdmFs
-KQ0KPiAgCSp2YWwgPSBzdC0+cnhbMF07DQo+ICANCj4gIGVycm9yX3JldDoNCj4gKwlyZXR1cm4g
-cmV0Ow0KPiArfQ0KPiArDQo+ICtpbnQgYWRlNzc1OF9zcGlfcmVhZF9yZWdfOChzdHJ1Y3QgZGV2
-aWNlICpkZXYsIHU4IHJlZ19hZGRyZXNzLCB1OCAqdmFsKQ0KPiArew0KPiArCXN0cnVjdCBpaW9f
-ZGV2ICppbmRpb19kZXYgPSBkZXZfdG9faWlvX2RldihkZXYpOw0KPiArCXN0cnVjdCBhZGU3NzU4
-X3N0YXRlICpzdCA9IGlpb19wcml2KGluZGlvX2Rldik7DQo+ICsJaW50IHJldDsNCj4gKw0KPiAr
-CW11dGV4X2xvY2soJnN0LT5idWZfbG9jayk7DQo+ICsJcmV0ID0gX19hZGU3NzU4X3NwaV9yZWFk
-X3JlZ184KGRldiwgcmVnX2FkZHJlc3MsIHZhbCk7DQo+ICAJbXV0ZXhfdW5sb2NrKCZzdC0+YnVm
-X2xvY2spOw0KPiArDQo+ICAJcmV0dXJuIHJldDsNCj4gIH0NCj4gIA0KPiBAQCAtNDcwLDcgKzQ5
-MSw3IEBAIHN0YXRpYyBpbnQgYWRlNzc1OF9yZWFkX3NhbXBfZnJlcShzdHJ1Y3QgZGV2aWNlICpk
-ZXYsIGludCAqdmFsKQ0KPiAgCWludCByZXQ7DQo+ICAJdTggdDsNCj4gIA0KPiAtCXJldCA9IGFk
-ZTc3NThfc3BpX3JlYWRfcmVnXzgoZGV2LCBBREU3NzU4X1dBVk1PREUsICZ0KTsNCj4gKwlyZXQg
-PSBfX2FkZTc3NThfc3BpX3JlYWRfcmVnXzgoZGV2LCBBREU3NzU4X1dBVk1PREUsICZ0KTsNCj4g
-IAlpZiAocmV0KQ0KPiAgCQlyZXR1cm4gcmV0Ow0KPiAgDQo+IEBAIC01MDMsMTQgKzUyNCwxNCBA
-QCBzdGF0aWMgaW50IGFkZTc3NThfd3JpdGVfc2FtcF9mcmVxKHN0cnVjdCBkZXZpY2UgKmRldiwg
-aW50IHZhbCkNCj4gIAkJZ290byBvdXQ7DQo+ICAJfQ0KPiAgDQo+IC0JcmV0ID0gYWRlNzc1OF9z
-cGlfcmVhZF9yZWdfOChkZXYsIEFERTc3NThfV0FWTU9ERSwgJnJlZyk7DQo+ICsJcmV0ID0gX19h
-ZGU3NzU4X3NwaV9yZWFkX3JlZ184KGRldiwgQURFNzc1OF9XQVZNT0RFLCAmcmVnKTsNCj4gIAlp
-ZiAocmV0KQ0KPiAgCQlnb3RvIG91dDsNCj4gIA0KPiAgCXJlZyAmPSB+KDUgPDwgMyk7DQo+ICAJ
-cmVnIHw9IHQgPDwgNTsNCj4gIA0KPiAtCXJldCA9IGFkZTc3NThfc3BpX3dyaXRlX3JlZ184KGRl
-diwgQURFNzc1OF9XQVZNT0RFLCByZWcpOw0KPiArCXJldCA9IF9fYWRlNzc1OF9zcGlfd3JpdGVf
-cmVnXzgoZGV2LCBBREU3NzU4X1dBVk1PREUsIHJlZyk7DQo+ICANCj4gIG91dDoNCj4gIAlyZXR1
-cm4gcmV0Ow0KPiBAQCAtNTIzLDEyICs1NDQsMTMgQEAgc3RhdGljIGludCBhZGU3NzU4X3JlYWRf
-cmF3KHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYsDQo+ICAJCQkgICAgbG9uZyBtYXNrKQ0KPiAg
-ew0KPiAgCWludCByZXQ7DQo+ICsJc3RydWN0IGFkZTc3NThfc3RhdGUgKnN0ID0gaWlvX3ByaXYo
-aW5kaW9fZGV2KTsNCj4gIA0KPiAgCXN3aXRjaCAobWFzaykgew0KPiAgCWNhc2UgSUlPX0NIQU5f
-SU5GT19TQU1QX0ZSRVE6DQo+IC0JCW11dGV4X2xvY2soJmluZGlvX2Rldi0+bWxvY2spOw0KPiAr
-CQltdXRleF9sb2NrKCZzdC0+YnVmX2xvY2spOw0KDQpUaGlzIG1heSBiZSBvay4NCkkgZGlkIG5v
-dCBzZWVtIHRvIGZpbmQgYSBnZW5lcmFsIGNvbnNlbnN1cyBvbiB3aGljaCBsb2NrIHNob3VsZCBi
-ZSBoZWxkIGhlcmUuDQpTb21lIGRyaXZlcnMgdXNlIGJ1Zl9sb2NrLCBzb21lIHVzZSB0aGUgZGV2
-aWNlJ3MgbWxvY2suDQoNCkkgZ3Vlc3Mgc29tZW9uZSBtb3JlIGZhbWlsaWFyIHdpdGggdGhlIElJ
-TyBmcmFtZXdvcmsgd291bGQgYmUgbW9yZSBzdWl0ZWQgdG8gY29tbWVudCBoZXJlLg0KDQo+ICAJ
-CXJldCA9IGFkZTc3NThfcmVhZF9zYW1wX2ZyZXEoJmluZGlvX2Rldi0+ZGV2LCB2YWwpOw0KPiAt
-CQltdXRleF91bmxvY2soJmluZGlvX2Rldi0+bWxvY2spOw0KPiArCQltdXRleF91bmxvY2soJnN0
-LT5idWZfbG9jayk7DQo+ICAJCXJldHVybiByZXQ7DQo+ICAJZGVmYXVsdDoNCj4gIAkJcmV0dXJu
-IC1FSU5WQUw7DQo+IEBAIC01NDIsMTQgKzU2NCwxNSBAQCBzdGF0aWMgaW50IGFkZTc3NThfd3Jp
-dGVfcmF3KHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYsDQo+ICAJCQkgICAgIGludCB2YWwsIGlu
-dCB2YWwyLCBsb25nIG1hc2spDQo+ICB7DQo+ICAJaW50IHJldDsNCj4gKwlzdHJ1Y3QgYWRlNzc1
-OF9zdGF0ZSAqc3QgPSBpaW9fcHJpdihpbmRpb19kZXYpOw0KPiAgDQo+ICAJc3dpdGNoIChtYXNr
-KSB7DQo+ICAJY2FzZSBJSU9fQ0hBTl9JTkZPX1NBTVBfRlJFUToNCj4gIAkJaWYgKHZhbDIpDQo+
-ICAJCQlyZXR1cm4gLUVJTlZBTDsNCj4gLQkJbXV0ZXhfbG9jaygmaW5kaW9fZGV2LT5tbG9jayk7
-DQo+ICsJCW11dGV4X2xvY2soJnN0LT5idWZfbG9jayk7DQoNCnNhbWUgaGVyZSBhYm91dCB0aGUg
-bG9jaw0KDQo+ICAJCXJldCA9IGFkZTc3NThfd3JpdGVfc2FtcF9mcmVxKCZpbmRpb19kZXYtPmRl
-diwgdmFsKTsNCj4gLQkJbXV0ZXhfdW5sb2NrKCZpbmRpb19kZXYtPm1sb2NrKTsNCj4gKwkJbXV0
-ZXhfdW5sb2NrKCZzdC0+YnVmX2xvY2spOw0KPiAgCQlyZXR1cm4gcmV0Ow0KPiAgCWRlZmF1bHQ6
-DQo+ICAJCXJldHVybiAtRUlOVkFMOw==
+
+
+On 23 January 2018 11:40:21 GMT, "Ardelean, Alexandru" <alexandru.Ardelean@analog.com> wrote:
+>On Tue, 2018-01-23 at 02:32 +0530, Shreeya Patel wrote:
+>> iio_dev->mlock is to be used only by the IIO core for protecting
+>> device mode changes between INDIO_DIRECT and INDIO_BUFFER.
+>> 
+>> This patch replaces the use of mlock with the already established
+>> buf_lock mutex.
+>> 
+>> Introducing 'unlocked' __ade7758_spi_write_reg_8 and
+>> __ade7758_spi_read_reg_8 functions to be used by
+>ade7758_write_samp_freq
+>> and ade7758_read_samp_freq which avoids nested locks and maintains
+>> atomicity between bus and device frequency changes.
+>> 
+>
+>hey,
+>
+>note: i took the liberty of re-adjusting the reply list ;
+>initial scope seemed too wide ;
+>added Barry Song, as he's listed as the author of the driver ;
+>
+>about the patch:
+>overall looks good
+>comments inline
+>
+>> Signed-off-by: Shreeya Patel <shreeya.patel23498@gmail.com>
+>> ---
+>>  drivers/staging/iio/meter/ade7758.h      |  2 +-
+>>  drivers/staging/iio/meter/ade7758_core.c | 49
+>+++++++++++++++++++++++---------
+>>  2 files changed, 37 insertions(+), 14 deletions(-)
+>> 
+>> diff --git a/drivers/staging/iio/meter/ade7758.h
+>b/drivers/staging/iio/meter/ade7758.h
+>> index 6ae78d8..2de81b5 100644
+>> --- a/drivers/staging/iio/meter/ade7758.h
+>> +++ b/drivers/staging/iio/meter/ade7758.h
+>> @@ -111,7 +111,7 @@
+>>   * @trig:		data ready trigger registered with iio
+>>   * @tx:			transmit buffer
+>>   * @rx:			receive buffer
+>> - * @buf_lock:		mutex to protect tx and rx
+>> + * @buf_lock:		mutex to protect tx, rx, read and write frequency
+>>   **/
+>>  struct ade7758_state {
+>>  	struct spi_device	*us;
+>> diff --git a/drivers/staging/iio/meter/ade7758_core.c
+>b/drivers/staging/iio/meter/ade7758_core.c
+>> index 7b7ffe5..7f8f8c4 100644
+>> --- a/drivers/staging/iio/meter/ade7758_core.c
+>> +++ b/drivers/staging/iio/meter/ade7758_core.c
+>> @@ -24,17 +24,26 @@
+>>  #include "meter.h"
+>>  #include "ade7758.h"
+>>  
+>> -int ade7758_spi_write_reg_8(struct device *dev, u8 reg_address, u8
+>val)
+>> +/* Unlocked version of ade7758_spi_write_reg_8 function */
+>
+>you can probably remove this comment
+>
+>> +int __ade7758_spi_write_reg_8(struct device *dev, u8 reg_address, u8
+>val)
+>
+>maybe make this static ; 
+>this function does not seem to be exported outside of this file
+>
+>>  {
+>> -	int ret;
+>>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>>  	struct ade7758_state *st = iio_priv(indio_dev);
+>>  
+>> -	mutex_lock(&st->buf_lock);
+>>  	st->tx[0] = ADE7758_WRITE_REG(reg_address);
+>>  	st->tx[1] = val;
+>>  
+>> -	ret = spi_write(st->us, st->tx, 2);
+>> +	return spi_write(st->us, st->tx, 2);
+>> +}
+>> +
+>> +int ade7758_spi_write_reg_8(struct device *dev, u8 reg_address, u8
+>val)
+>> +{
+>> +	int ret;
+>> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>> +	struct ade7758_state *st = iio_priv(indio_dev);
+>> +
+>> +	mutex_lock(&st->buf_lock);
+>> +	ret = __ade7758_spi_write_reg_8(dev, reg_address, val);
+>>  	mutex_unlock(&st->buf_lock);
+>>  
+>>  	return ret;
+>> @@ -91,7 +100,8 @@ static int ade7758_spi_write_reg_24(struct device
+>*dev, u8 reg_address,
+>>  	return ret;
+>>  }
+>>  
+>> -int ade7758_spi_read_reg_8(struct device *dev, u8 reg_address, u8
+>*val)
+>> +/* Unlocked version of ade7758_spi_read_reg_16 function */
+>you can probably remove this comment as well
+>
+>> +int __ade7758_spi_read_reg_8(struct device *dev, u8 reg_address, u8
+>*val)
+>
+>make this static as well
+>
+>>  {
+>>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>>  	struct ade7758_state *st = iio_priv(indio_dev);
+>> @@ -111,7 +121,6 @@ int ade7758_spi_read_reg_8(struct device *dev, u8
+>reg_address, u8 *val)
+>>  		},
+>>  	};
+>>  
+>> -	mutex_lock(&st->buf_lock);
+>>  	st->tx[0] = ADE7758_READ_REG(reg_address);
+>>  	st->tx[1] = 0;
+>>  
+>> @@ -124,7 +133,19 @@ int ade7758_spi_read_reg_8(struct device *dev,
+>u8 reg_address, u8 *val)
+>>  	*val = st->rx[0];
+>>  
+>>  error_ret:
+>> +	return ret;
+>> +}
+>> +
+>> +int ade7758_spi_read_reg_8(struct device *dev, u8 reg_address, u8
+>*val)
+>> +{
+>> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>> +	struct ade7758_state *st = iio_priv(indio_dev);
+>> +	int ret;
+>> +
+>> +	mutex_lock(&st->buf_lock);
+>> +	ret = __ade7758_spi_read_reg_8(dev, reg_address, val);
+>>  	mutex_unlock(&st->buf_lock);
+>> +
+>>  	return ret;
+>>  }
+>>  
+>> @@ -470,7 +491,7 @@ static int ade7758_read_samp_freq(struct device
+>*dev, int *val)
+>>  	int ret;
+>>  	u8 t;
+>>  
+>> -	ret = ade7758_spi_read_reg_8(dev, ADE7758_WAVMODE, &t);
+>> +	ret = __ade7758_spi_read_reg_8(dev, ADE7758_WAVMODE, &t);
+>>  	if (ret)
+>>  		return ret;
+>>  
+>> @@ -503,14 +524,14 @@ static int ade7758_write_samp_freq(struct
+>device *dev, int val)
+>>  		goto out;
+>>  	}
+>>  
+>> -	ret = ade7758_spi_read_reg_8(dev, ADE7758_WAVMODE, &reg);
+>> +	ret = __ade7758_spi_read_reg_8(dev, ADE7758_WAVMODE, &reg);
+>>  	if (ret)
+>>  		goto out;
+>>  
+>>  	reg &= ~(5 << 3);
+>>  	reg |= t << 5;
+>>  
+>> -	ret = ade7758_spi_write_reg_8(dev, ADE7758_WAVMODE, reg);
+>> +	ret = __ade7758_spi_write_reg_8(dev, ADE7758_WAVMODE, reg);
+>>  
+>>  out:
+>>  	return ret;
+>> @@ -523,12 +544,13 @@ static int ade7758_read_raw(struct iio_dev
+>*indio_dev,
+>>  			    long mask)
+>>  {
+>>  	int ret;
+>> +	struct ade7758_state *st = iio_priv(indio_dev);
+>>  
+>>  	switch (mask) {
+>>  	case IIO_CHAN_INFO_SAMP_FREQ:
+>> -		mutex_lock(&indio_dev->mlock);
+>> +		mutex_lock(&st->buf_lock);
+>
+>This may be ok.
+>I did not seem to find a general consensus on which lock should be held
+>here.
+>Some drivers use buf_lock, some use the device's mlock.
+>
+>I guess someone more familiar with the IIO framework would be more
+>suited to comment here.
+
+Mlock should never be taken directly. We just didn't police it well in the past.
+There are safe functions now to protect against state changes from poll to push modes in IIO.
+
+Here we only need to protect the read buffer.
+
+>
+>>  		ret = ade7758_read_samp_freq(&indio_dev->dev, val);
+>> -		mutex_unlock(&indio_dev->mlock);
+>> +		mutex_unlock(&st->buf_lock);
+>>  		return ret;
+>>  	default:
+>>  		return -EINVAL;
+>> @@ -542,14 +564,15 @@ static int ade7758_write_raw(struct iio_dev
+>*indio_dev,
+>>  			     int val, int val2, long mask)
+>>  {
+>>  	int ret;
+>> +	struct ade7758_state *st = iio_priv(indio_dev);
+>>  
+>>  	switch (mask) {
+>>  	case IIO_CHAN_INFO_SAMP_FREQ:
+>>  		if (val2)
+>>  			return -EINVAL;
+>> -		mutex_lock(&indio_dev->mlock);
+>> +		mutex_lock(&st->buf_lock);
+>
+>same here about the lock
+This one protects buffers and read modify write cycle. Buf_lock covers that.
+
+>
+>>  		ret = ade7758_write_samp_freq(&indio_dev->dev, val);
+>> -		mutex_unlock(&indio_dev->mlock);
+>> +		mutex_unlock(&st->buf_lock);
+>>  		return ret;
+>>  	default:
+>>  		return -EINVAL;
+
+-- 
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
