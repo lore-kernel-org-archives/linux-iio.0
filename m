@@ -7,41 +7,38 @@ Cc: kbuild-all@01.org, lars@metafoo.de, Michael.Hennerich@analog.com,
 	gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
 	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
 	Shreeya Patel <shreeya.patel23498@gmail.com>
-Subject: [RFC PATCH] Staging: iio: ade7758: __ade7758_spi_write_reg_8() can
- be static
-Message-ID: <20180124185342.GA40461@xian>
+Subject: Re: [PATCH] Staging: iio: ade7758: Expand buf_lock to cover both
+ buffer
+Message-ID: <201801250253.o4jdYyJW%fengguang.wu@intel.com>
 References: <1516654973-6434-1-git-send-email-shreeya.patel23498@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 In-Reply-To: <1516654973-6434-1-git-send-email-shreeya.patel23498@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
+Hi Shreeya,
 
-Fixes: c1960999e575 ("Staging: iio: ade7758: Expand buf_lock to cover both buffer")
-Signed-off-by: Fengguang Wu <fengguang.wu@intel.com>
+Thank you for the patch! Perhaps something to improve:
+
+[auto build test WARNING on iio/togreg]
+[also build test WARNING on v4.15-rc9 next-20180119]
+[if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
+
+url:    https://github.com/0day-ci/linux/commits/Shreeya-Patel/Staging-iio-ade7758-Expand-buf_lock-to-cover-both-buffer/20180124-234049
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
+reproduce:
+        # apt-get install sparse
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF=-D__CHECK_ENDIAN__
+
+
+sparse warnings: (new ones prefixed by >>)
+
+>> drivers/staging/iio/meter/ade7758_core.c:28:5: sparse: symbol '__ade7758_spi_write_reg_8' was not declared. Should it be
+>> drivers/staging/iio/meter/ade7758_core.c:104:5: sparse: symbol '__ade7758_spi_read_reg_8' was not declared. Should it be
+
+Please review and possibly fold the followup patch.
+
 ---
- ade7758_core.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/staging/iio/meter/ade7758_core.c b/drivers/staging/iio/meter/ade7758_core.c
-index 7f8f8c4..5794ebb 100644
---- a/drivers/staging/iio/meter/ade7758_core.c
-+++ b/drivers/staging/iio/meter/ade7758_core.c
-@@ -25,7 +25,7 @@
- #include "ade7758.h"
- 
- /* Unlocked version of ade7758_spi_write_reg_8 function */
--int __ade7758_spi_write_reg_8(struct device *dev, u8 reg_address, u8 val)
-+static int __ade7758_spi_write_reg_8(struct device *dev, u8 reg_address, u8 val)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ade7758_state *st = iio_priv(indio_dev);
-@@ -101,7 +101,7 @@ static int ade7758_spi_write_reg_24(struct device *dev, u8 reg_address,
- }
- 
- /* Unlocked version of ade7758_spi_read_reg_16 function */
--int __ade7758_spi_read_reg_8(struct device *dev, u8 reg_address, u8 *val)
-+static int __ade7758_spi_read_reg_8(struct device *dev, u8 reg_address, u8 *val)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ade7758_state *st = iio_priv(indio_dev);
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
