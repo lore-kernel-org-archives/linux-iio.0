@@ -1,75 +1,187 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48534 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752402AbeA1IZm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 28 Jan 2018 03:25:42 -0500
-Date: Sun, 28 Jan 2018 08:25:42 +0000
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc: <linux-iio@vger.kernel.org>, <michael.hennerich@analog.com>,
-        <lars@metafoo.de>
-Subject: Re: [PATCH] staging: iio: ad5933: switch buffer mode to software
-Message-ID: <20180128082542.440d9d7c@archlinux>
-In-Reply-To: <20180125123045.29550-1-alexandru.ardelean@analog.com>
-References: <20180125123045.29550-1-alexandru.ardelean@analog.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from mail-pg0-f65.google.com ([74.125.83.65]:35397 "EHLO
+        mail-pg0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750980AbeAYQkN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 25 Jan 2018 11:40:13 -0500
+From: Shreeya Patel <shreeya.patel23498@gmail.com>
+To: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Cc: Shreeya Patel <shreeya.patel23498@gmail.com>
+Subject: [PATCH v2] Staging: iio: ade7758: expand buf_lock to cover both buffer and state protection
+Date: Thu, 25 Jan 2018 22:10:08 +0530
+Message-Id: <1516898408-8129-1-git-send-email-shreeya.patel23498@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 25 Jan 2018 14:30:45 +0200
-Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
+iio_dev->mlock is to be used only by the IIO core for protecting
+device mode changes between INDIO_DIRECT and INDIO_BUFFER.
 
-> Since commit 152a6a884ae1 ("staging:iio:accel:sca3000 move
-> to hybrid hard / soft buffer design.")
-> the buffer mechanism has changed and the
-> INDIO_BUFFER_HARDWARE flag has been unused.
-> 
-> Since commit 2d6ca60f3284 ("iio: Add a DMAengine framework
-> based buffer")
-> the INDIO_BUFFER_HARDWARE flag has been re-purposed for
-> DMA buffers.
-> 
-> This driver has lagged behind these changes, and
-> in order for buffers to work, the INDIO_BUFFER_SOFTWARE
-> needs to be used.
-> 
-> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-hmm. Arguably this driver was always doing the hybrid model
-and should never have been marked as a hardware buffer in 
-the first place..  Anyhow, never mind.
+This patch replaces the use of mlock with the already established
+buf_lock mutex.
 
-Patch applied with the breaking commit (DMAEngine one) added
-as a fixes tag and marked for stable.
+Introducing 'unlocked' __ade7758_spi_write_reg_8 and
+__ade7758_spi_read_reg_8 functions to be used by ade7758_write_samp_freq
+and ade7758_read_samp_freq which avoids nested locks and maintains
+atomicity between bus and device frequency changes.
 
-Thanks,
+Signed-off-by: Shreeya Patel <shreeya.patel23498@gmail.com>
+---
 
-Jonathan
+Changes in v2
+  -Add static keyword to newly introduced functions and remove some
+added comments which are not required.
 
-> ---
->  drivers/staging/iio/impedance-analyzer/ad5933.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> index 3d539eeb0e26..6d31001d1825 100644
-> --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-> +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> @@ -649,8 +649,6 @@ static int ad5933_register_ring_funcs_and_init(struct iio_dev *indio_dev)
->  	/* Ring buffer functions - here trigger setup related */
->  	indio_dev->setup_ops = &ad5933_ring_setup_ops;
->  
-> -	indio_dev->modes |= INDIO_BUFFER_HARDWARE;
-> -
->  	return 0;
->  }
->  
-> @@ -763,7 +761,7 @@ static int ad5933_probe(struct i2c_client *client,
->  	indio_dev->dev.parent = &client->dev;
->  	indio_dev->info = &ad5933_info;
->  	indio_dev->name = id->name;
-> -	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->modes = (INDIO_BUFFER_SOFTWARE | INDIO_DIRECT_MODE);
->  	indio_dev->channels = ad5933_channels;
->  	indio_dev->num_channels = ARRAY_SIZE(ad5933_channels);
->  
+
+ drivers/staging/iio/meter/ade7758.h      |  2 +-
+ drivers/staging/iio/meter/ade7758_core.c | 47 +++++++++++++++++++++++---------
+ 2 files changed, 35 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/staging/iio/meter/ade7758.h b/drivers/staging/iio/meter/ade7758.h
+index 6ae78d8..2de81b5 100644
+--- a/drivers/staging/iio/meter/ade7758.h
++++ b/drivers/staging/iio/meter/ade7758.h
+@@ -111,7 +111,7 @@
+  * @trig:		data ready trigger registered with iio
+  * @tx:			transmit buffer
+  * @rx:			receive buffer
+- * @buf_lock:		mutex to protect tx and rx
++ * @buf_lock:		mutex to protect tx, rx, read and write frequency
+  **/
+ struct ade7758_state {
+ 	struct spi_device	*us;
+diff --git a/drivers/staging/iio/meter/ade7758_core.c b/drivers/staging/iio/meter/ade7758_core.c
+index 7b7ffe5..fed4684 100644
+--- a/drivers/staging/iio/meter/ade7758_core.c
++++ b/drivers/staging/iio/meter/ade7758_core.c
+@@ -24,17 +24,25 @@
+ #include "meter.h"
+ #include "ade7758.h"
+ 
+-int ade7758_spi_write_reg_8(struct device *dev, u8 reg_address, u8 val)
++static int __ade7758_spi_write_reg_8(struct device *dev, u8 reg_address, u8 val)
+ {
+-	int ret;
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ade7758_state *st = iio_priv(indio_dev);
+ 
+-	mutex_lock(&st->buf_lock);
+ 	st->tx[0] = ADE7758_WRITE_REG(reg_address);
+ 	st->tx[1] = val;
+ 
+-	ret = spi_write(st->us, st->tx, 2);
++	return spi_write(st->us, st->tx, 2);
++}
++
++int ade7758_spi_write_reg_8(struct device *dev, u8 reg_address, u8 val)
++{
++	int ret;
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct ade7758_state *st = iio_priv(indio_dev);
++
++	mutex_lock(&st->buf_lock);
++	ret = __ade7758_spi_write_reg_8(dev, reg_address, val);
+ 	mutex_unlock(&st->buf_lock);
+ 
+ 	return ret;
+@@ -91,7 +99,7 @@ static int ade7758_spi_write_reg_24(struct device *dev, u8 reg_address,
+ 	return ret;
+ }
+ 
+-int ade7758_spi_read_reg_8(struct device *dev, u8 reg_address, u8 *val)
++static int __ade7758_spi_read_reg_8(struct device *dev, u8 reg_address, u8 *val)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ade7758_state *st = iio_priv(indio_dev);
+@@ -111,7 +119,6 @@ int ade7758_spi_read_reg_8(struct device *dev, u8 reg_address, u8 *val)
+ 		},
+ 	};
+ 
+-	mutex_lock(&st->buf_lock);
+ 	st->tx[0] = ADE7758_READ_REG(reg_address);
+ 	st->tx[1] = 0;
+ 
+@@ -124,7 +131,19 @@ int ade7758_spi_read_reg_8(struct device *dev, u8 reg_address, u8 *val)
+ 	*val = st->rx[0];
+ 
+ error_ret:
++	return ret;
++}
++
++int ade7758_spi_read_reg_8(struct device *dev, u8 reg_address, u8 *val)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct ade7758_state *st = iio_priv(indio_dev);
++	int ret;
++
++	mutex_lock(&st->buf_lock);
++	ret = __ade7758_spi_read_reg_8(dev, reg_address, val);
+ 	mutex_unlock(&st->buf_lock);
++
+ 	return ret;
+ }
+ 
+@@ -470,7 +489,7 @@ static int ade7758_read_samp_freq(struct device *dev, int *val)
+ 	int ret;
+ 	u8 t;
+ 
+-	ret = ade7758_spi_read_reg_8(dev, ADE7758_WAVMODE, &t);
++	ret = __ade7758_spi_read_reg_8(dev, ADE7758_WAVMODE, &t);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -503,14 +522,14 @@ static int ade7758_write_samp_freq(struct device *dev, int val)
+ 		goto out;
+ 	}
+ 
+-	ret = ade7758_spi_read_reg_8(dev, ADE7758_WAVMODE, &reg);
++	ret = __ade7758_spi_read_reg_8(dev, ADE7758_WAVMODE, &reg);
+ 	if (ret)
+ 		goto out;
+ 
+ 	reg &= ~(5 << 3);
+ 	reg |= t << 5;
+ 
+-	ret = ade7758_spi_write_reg_8(dev, ADE7758_WAVMODE, reg);
++	ret = __ade7758_spi_write_reg_8(dev, ADE7758_WAVMODE, reg);
+ 
+ out:
+ 	return ret;
+@@ -523,12 +542,13 @@ static int ade7758_read_raw(struct iio_dev *indio_dev,
+ 			    long mask)
+ {
+ 	int ret;
++	struct ade7758_state *st = iio_priv(indio_dev);
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+-		mutex_lock(&indio_dev->mlock);
++		mutex_lock(&st->buf_lock);
+ 		ret = ade7758_read_samp_freq(&indio_dev->dev, val);
+-		mutex_unlock(&indio_dev->mlock);
++		mutex_unlock(&st->buf_lock);
+ 		return ret;
+ 	default:
+ 		return -EINVAL;
+@@ -542,14 +562,15 @@ static int ade7758_write_raw(struct iio_dev *indio_dev,
+ 			     int val, int val2, long mask)
+ {
+ 	int ret;
++	struct ade7758_state *st = iio_priv(indio_dev);
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+ 		if (val2)
+ 			return -EINVAL;
+-		mutex_lock(&indio_dev->mlock);
++		mutex_lock(&st->buf_lock);
+ 		ret = ade7758_write_samp_freq(&indio_dev->dev, val);
+-		mutex_unlock(&indio_dev->mlock);
++		mutex_unlock(&st->buf_lock);
+ 		return ret;
+ 	default:
+ 		return -EINVAL;
+-- 
+2.7.4
 
