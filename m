@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f65.google.com ([74.125.82.65]:51520 "EHLO
-        mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750864AbeAZPTq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 26 Jan 2018 10:19:46 -0500
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:53493 "EHLO
+        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751509AbeAZPTs (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 26 Jan 2018 10:19:48 -0500
 From: Philipp Rossak <embed3d@gmail.com>
 To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
         maxime.ripard@free-electrons.com, wens@csie.org,
@@ -15,67 +15,100 @@ To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
 Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-sunxi@googlegroups.com
-Subject: [PATCH 00/16] IIO-based thermal sensor driver for Allwinner H3 and A83T SoC
-Date: Fri, 26 Jan 2018 16:19:25 +0100
-Message-Id: <20180126151941.12183-1-embed3d@gmail.com>
+Subject: [PATCH 01/16] dt-bindings: update the Allwinner GPADC device tree binding for H3 & A83T
+Date: Fri, 26 Jan 2018 16:19:26 +0100
+Message-Id: <20180126151941.12183-2-embed3d@gmail.com>
+In-Reply-To: <20180126151941.12183-1-embed3d@gmail.com>
+References: <20180126151941.12183-1-embed3d@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Allwiner H3 and A83T SoCs have a thermal sensor, which is a large refactored
-version of the old Allwinner "GPADC" (although it have already only
-thermal part left in A33).
+Allwinner H3 features a thermal sensor like the one in A33, but has its
+register re-arranged, the clock divider moved to CCU (originally the
+clock divider is in ADC) and added a pair of bus clock and reset.
 
-This patch tried to add support for the sensor in H3 and A83T based on
-the A33 thermal sensor driver by Quentin Schulz, which is already merged.
+Allwinner A83T features a thermal sensor similar to the H3, the ths clock,
+the bus clock and the reset was removed from the CCU. The THS in A83T
+has a clock that is directly connected and runs with 24 MHz.
 
-This Patchseries is based on Icenowy Zhengs v4 patchseries [1]. 
-The first 5 patches are reworked patches from the v4 patchseries. 
-The rest of the patches add step by step a feature to support multible
-sensors, nvmem calibration and interupts. This patchseries should make it
-easy also to add other sunxi SoCs, like the H5, A64 and A80.
+Update the binding document to cover H3 and A83T.
 
-Patches that adds support for H5, A64 and A80 SoCs are allready prepared,
-and will be upstreamed if this patchseries is applied and the testing is done.
+Signed-off-by: Philipp Rossak <embed3d@gmail.com>
+---
+ .../devicetree/bindings/mfd/sun4i-gpadc.txt        | 50 ++++++++++++++++++++--
+ 1 file changed, 47 insertions(+), 3 deletions(-)
 
-I tried to pick up all the feedback from [1]. I hope I didn't miss anything.
-
-Regards,
-Philipp 
-
-[1]: https://lkml.org/lkml/2017/9/14/317
-
-
-Icenowy Zheng (1):
-  iio: adc: sun4i-gpadc-iio: rename A33-specified registers to contain
-    A33
-
-Philipp Rossak (15):
-  dt-bindings: update the Allwinner GPADC device tree binding for H3 &
-    A83T
-  arm: config: sunxi_defconfig: enable SUN4I_GPADC
-  iio: adc: sun4i-gpadc-iio: rework: sampling start/end code readout reg
-  iio: adc: sun4i-gpadc-iio: rework: support clocks and reset
-  iio: adc: sun4i-gpadc-iio: rework: support multible sensors
-  iio: adc: sun4i-gpadc-iio: rework: support nvmem calibration data
-  iio: adc: sun4i-gpadc-iio: rework: add interrupt support
-  iio: adc: sun4i-gpadc-iio: add support for H3 thermal sensor
-  iio: adc: sun4i-gpadc-iio: add support for A83T thermal sensor
-  arm: dts: sunxi-h3-h5: add support for the thermal sensor in H3 and H5
-  arm: dts: sun8i: h3: add support for the thermal sensor in H3
-  arm: dts: sun8i: h3: add thermal zone to H3
-  arm: dts: sun8i: h3: enable H3 sid controller
-  arm: dts: sun8i: a83t: add support for the thermal sensor in A83T
-  arm: dts: sun8i: a83t: add thermal zone to A83T
-
- .../devicetree/bindings/mfd/sun4i-gpadc.txt        |  50 ++-
- arch/arm/boot/dts/sun8i-a83t.dtsi                  |  28 ++
- arch/arm/boot/dts/sun8i-h3.dtsi                    |  21 ++
- arch/arm/boot/dts/sunxi-h3-h5.dtsi                 |   9 +
- arch/arm/configs/sunxi_defconfig                   |   1 +
- drivers/iio/adc/sun4i-gpadc-iio.c                  | 378 +++++++++++++++++++--
- include/linux/mfd/sun4i-gpadc.h                    |  66 +++-
- 7 files changed, 522 insertions(+), 31 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/mfd/sun4i-gpadc.txt b/Documentation/devicetree/bindings/mfd/sun4i-gpadc.txt
+index 86dd8191b04c..f6b939617a6d 100644
+--- a/Documentation/devicetree/bindings/mfd/sun4i-gpadc.txt
++++ b/Documentation/devicetree/bindings/mfd/sun4i-gpadc.txt
+@@ -4,12 +4,35 @@ The Allwinner SoCs all have an ADC that can also act as a thermal sensor
+ and sometimes as a touchscreen controller.
+ 
+ Required properties:
+-  - compatible: "allwinner,sun8i-a33-ths",
++  - compatible: must contain one of the following compatibles:
++		- "allwinner,sun8i-a33-ths"
++		- "allwinner,sun8i-h3-ths"
++		- "allwinner,sun8i-a83t-ths"
+   - reg: mmio address range of the chip,
+-  - #thermal-sensor-cells: shall be 0,
++  - #thermal-sensor-cells: shall be 0 or 1,
+   - #io-channel-cells: shall be 0,
+ 
+-Example:
++Required properties for the following compatibles:
++		- "allwinner,sun8i-h3-ths"
++		- "allwinner,sun8i-a83t-ths"
++  - interrupts: the sampling interrupt of the ADC,
++
++Required properties for the following compatibles:
++		- "allwinner,sun8i-h3-ths"
++  - clocks: the bus clock and the input clock of the ADC,
++  - clock-names: should be "bus" and "mod",
++  - resets: the bus reset of the ADC,
++
++Optional properties for the following compatibles:
++		- "allwinner,sun8i-h3-ths"
++  - nvmem-cells: A phandle to the calibration data provided by a nvmem device.
++		If unspecified default values shall be used. The size should
++		be 0x4 or 0x8, depending on the amount of CDATA registers.
++  - nvmem-cell-names: Should be "calibration".
++
++Details see: bindings/nvmem/nvmem.txt
++
++Example for A33:
+ 	ths: ths@1c25000 {
+ 		compatible = "allwinner,sun8i-a33-ths";
+ 		reg = <0x01c25000 0x100>;
+@@ -17,6 +40,27 @@ Example:
+ 		#io-channel-cells = <0>;
+ 	};
+ 
++Example for H3:
++	ths: thermal-sensor@1c25000 {
++		compatible = "allwinner,sun8i-h3-ths";
++		reg = <0x01c25000 0x400>;
++		clocks = <&ccu CLK_BUS_THS>, <&ccu CLK_THS>;
++		clock-names = "bus", "mod";
++		resets = <&ccu RST_BUS_THS>;
++		interrupts = <GIC_SPI 31 IRQ_TYPE_LEVEL_HIGH>;
++		#thermal-sensor-cells = <0>;
++		#io-channel-cells = <0>;
++	};
++
++Example for A83T:
++	ths: thermal-sensor@1f04000 {
++		compatible = "allwinner,sun8i-a83t-ths";
++		reg = <0x01f04000 0x100>;
++		interrupts = <GIC_SPI 41 IRQ_TYPE_LEVEL_HIGH>;
++		#thermal-sensor-cells = <1>;
++		#io-channel-cells = <0>;
++	};
++
+ sun4i, sun5i and sun6i SoCs are also supported via the older binding:
+ 
+ sun4i resistive touchscreen controller
 -- 
 2.11.0
 
