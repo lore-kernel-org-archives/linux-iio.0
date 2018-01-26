@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f66.google.com ([74.125.82.66]:34328 "EHLO
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:52467 "EHLO
         mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751338AbeAZPTv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 26 Jan 2018 10:19:51 -0500
+        with ESMTP id S1751738AbeAZPTw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 26 Jan 2018 10:19:52 -0500
 From: Philipp Rossak <embed3d@gmail.com>
 To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
         maxime.ripard@free-electrons.com, wens@csie.org,
@@ -15,34 +15,63 @@ To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
 Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-sunxi@googlegroups.com
-Subject: [PATCH 02/16] arm: config: sunxi_defconfig: enable SUN4I_GPADC
-Date: Fri, 26 Jan 2018 16:19:27 +0100
-Message-Id: <20180126151941.12183-3-embed3d@gmail.com>
+Subject: [PATCH 03/16] iio: adc: sun4i-gpadc-iio: rename A33-specified registers to contain A33
+Date: Fri, 26 Jan 2018 16:19:28 +0100
+Message-Id: <20180126151941.12183-4-embed3d@gmail.com>
 In-Reply-To: <20180126151941.12183-1-embed3d@gmail.com>
 References: <20180126151941.12183-1-embed3d@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This commit enables the SUN4I_GPADC config option and
-sets the value to yes. This is needed to enable the ths sensors.
+From: Icenowy Zheng <icenowy@aosc.io>
 
-Signed-off-by: Philipp Rossak <embed3d@gmail.com>
+As the H3 SoC, which is also in sun8i line, has totally different
+register map for the thermal sensor (a cut down version of GPADC), we
+should rename A23/A33-specified registers to contain A33, in order to
+prevent obfuscation with H3 registers. Currently these registers are
+only prefixed "SUN8I", not "SUN8I_A33".
+
+Add "_A33" after "SUN8I" on the register names.
+
+Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+Reviewed-by: Chen-Yu Tsai <wens@csie.org>
+Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+Acked-by: Lee Jones <lee.jones@linaro.org>
 ---
- arch/arm/configs/sunxi_defconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iio/adc/sun4i-gpadc-iio.c | 2 +-
+ include/linux/mfd/sun4i-gpadc.h   | 6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/configs/sunxi_defconfig b/arch/arm/configs/sunxi_defconfig
-index 5caaf971fb50..52c3990b9d91 100644
---- a/arch/arm/configs/sunxi_defconfig
-+++ b/arch/arm/configs/sunxi_defconfig
-@@ -131,6 +131,7 @@ CONFIG_DMA_SUN6I=y
- CONFIG_EXTCON=y
- CONFIG_IIO=y
- CONFIG_AXP20X_ADC=y
-+CONFIG_SUN4I_GPADC=y
- CONFIG_PWM=y
- CONFIG_PWM_SUN4I=y
- CONFIG_PHY_SUN4I_USB=y
+diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
+index 04d7147e0110..03804ff9c006 100644
+--- a/drivers/iio/adc/sun4i-gpadc-iio.c
++++ b/drivers/iio/adc/sun4i-gpadc-iio.c
+@@ -88,7 +88,7 @@ static const struct gpadc_data sun6i_gpadc_data = {
+ static const struct gpadc_data sun8i_a33_gpadc_data = {
+ 	.temp_offset = -1662,
+ 	.temp_scale = 162,
+-	.tp_mode_en = SUN8I_GPADC_CTRL1_CHOP_TEMP_EN,
++	.tp_mode_en = SUN8I_A33_GPADC_CTRL1_CHOP_TEMP_EN,
+ };
+ 
+ struct sun4i_gpadc_iio {
+diff --git a/include/linux/mfd/sun4i-gpadc.h b/include/linux/mfd/sun4i-gpadc.h
+index 139872c2e0fe..78d31984a222 100644
+--- a/include/linux/mfd/sun4i-gpadc.h
++++ b/include/linux/mfd/sun4i-gpadc.h
+@@ -38,9 +38,9 @@
+ #define SUN6I_GPADC_CTRL1_ADC_CHAN_SELECT(x)		(GENMASK(3, 0) & BIT(x))
+ #define SUN6I_GPADC_CTRL1_ADC_CHAN_MASK			GENMASK(3, 0)
+ 
+-/* TP_CTRL1 bits for sun8i SoCs */
+-#define SUN8I_GPADC_CTRL1_CHOP_TEMP_EN			BIT(8)
+-#define SUN8I_GPADC_CTRL1_GPADC_CALI_EN			BIT(7)
++/* TP_CTRL1 bits for A33 */
++#define SUN8I_A33_GPADC_CTRL1_CHOP_TEMP_EN		BIT(8)
++#define SUN8I_A33_GPADC_CTRL1_GPADC_CALI_EN		BIT(7)
+ 
+ #define SUN4I_GPADC_CTRL2				0x08
+ 
 -- 
 2.11.0
 
