@@ -26,67 +26,75 @@ Cc: linux-iio@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
 	linux-sunxi@googlegroups.com
-Subject: [PATCH 09/16] iio: adc: sun4i-gpadc-iio: add support for H3 thermal sensor
-Date: Fri, 26 Jan 2018 16:19:34 +0100
-Message-Id: <20180126151941.12183-10-embed3d@gmail.com>
+Subject: [PATCH 10/16] iio: adc: sun4i-gpadc-iio: add support for A83T thermal sensor
+Date: Fri, 26 Jan 2018 16:19:35 +0100
+Message-Id: <20180126151941.12183-11-embed3d@gmail.com>
 In-Reply-To: <20180126151941.12183-1-embed3d@gmail.com>
 References: <20180126151941.12183-1-embed3d@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch adds support for the H3 ths sensor.
+This patch adds support for the A83T ths sensor.
 
-The H3 supports interrupts. The interrupt is configured to update the
-the sensor values every second. The calibration data is writen at the
-begin of the init process.
+The A83T does not support interrupts. This seems to be broken.
+The calibration data is writen at the begin of the init process.
 
 Signed-off-by: Philipp Rossak <embed3d@gmail.com>
 ---
- drivers/iio/adc/sun4i-gpadc-iio.c | 29 +++++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+ drivers/iio/adc/sun4i-gpadc-iio.c | 38 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
 diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
-index 77e07f042730..f2e0ec65c53e 100644
+index f2e0ec65c53e..b8693afcdbea 100644
 --- a/drivers/iio/adc/sun4i-gpadc-iio.c
 +++ b/drivers/iio/adc/sun4i-gpadc-iio.c
-@@ -145,6 +145,31 @@ static const struct gpadc_data sun8i_a33_gpadc_data = {
- 	.support_irq = false,
+@@ -170,6 +170,40 @@ static const struct gpadc_data sun8i_h3_ths_data = {
+ 		SUNXI_THS_TEMP_PERIOD(0x7),
  };
  
-+static const struct gpadc_data sun8i_h3_ths_data = {
-+	.temp_offset = -1791,
-+	.temp_scale = -121,
-+	.temp_data = {SUNXI_THS_TDATA0, 0, 0, 0},
++static const struct gpadc_data sun8i_a83t_ths_data = {
++	.temp_offset = -2724,
++	.temp_scale = -70,
++	.temp_data = {SUNXI_THS_TDATA0,
++		SUNXI_THS_TDATA1,
++		SUNXI_THS_TDATA2,
++		0},
 +	.sample_start = sunxi_ths_sample_start,
 +	.sample_end = sunxi_ths_sample_end,
-+	.has_bus_clk = true,
-+	.has_bus_rst = true,
-+	.has_mod_clk = true,
-+	.sensor_count = 1,
-+	.supports_nvmem = true,
++	.sensor_count = 3,
++	.supports_nvmem = false,
 +	.support_irq = true,
-+	.ctrl0_map = SUNXI_THS_ACQ0(0xff),
-+	.ctrl2_map = SUNXI_THS_ACQ1(0x3f),
-+	.sensor_en_map = SUNXI_THS_TEMP_SENSE_EN0,
++	.ctrl0_map = SUNXI_THS_ACQ0(0x1f3),
++	.ctrl2_map = SUNXI_THS_ACQ1(0x1f3),
++	.sensor_en_map = SUNXI_THS_TEMP_SENSE_EN0 |
++		SUNXI_THS_TEMP_SENSE_EN1 |
++		SUNXI_THS_TEMP_SENSE_EN2,
 +	.filter_map = SUNXI_THS_FILTER_EN |
 +		SUNXI_THS_FILTER_TYPE(0x2),
 +	.irq_clear_map = SUNXI_THS_INTS_ALARM_INT_0 |
-+			SUNXI_THS_INTS_SHUT_INT_0   |
-+			SUNXI_THS_INTS_TDATA_IRQ_0  |
-+			SUNXI_THS_INTS_ALARM_OFF_0,
++		SUNXI_THS_INTS_ALARM_INT_1 |
++		SUNXI_THS_INTS_ALARM_INT_2 |
++		SUNXI_THS_INTS_SHUT_INT_0  |
++		SUNXI_THS_INTS_SHUT_INT_1  |
++		SUNXI_THS_INTS_SHUT_INT_2  |
++		SUNXI_THS_INTS_TDATA_IRQ_0 |
++		SUNXI_THS_INTS_TDATA_IRQ_1 |
++		SUNXI_THS_INTS_TDATA_IRQ_2,
 +	.irq_control_map = SUNXI_THS_INTC_TDATA_IRQ_EN0 |
-+		SUNXI_THS_TEMP_PERIOD(0x7),
++		SUNXI_THS_INTC_TDATA_IRQ_EN1 |
++		SUNXI_THS_INTC_TDATA_IRQ_EN2 |
++		SUNXI_THS_TEMP_PERIOD(0x257),
 +};
 +
  struct sun4i_gpadc_iio {
  	struct iio_dev			*indio_dev;
  	struct completion		completion;
-@@ -643,6 +668,10 @@ static const struct of_device_id sun4i_gpadc_of_id[] = {
- 		.compatible = "allwinner,sun8i-a33-ths",
- 		.data = &sun8i_a33_gpadc_data,
+@@ -672,6 +706,10 @@ static const struct of_device_id sun4i_gpadc_of_id[] = {
+ 		.compatible = "allwinner,sun8i-h3-ths",
+ 		.data = &sun8i_h3_ths_data,
  	},
 +	{
-+		.compatible = "allwinner,sun8i-h3-ths",
-+		.data = &sun8i_h3_ths_data,
++		.compatible = "allwinner,sun8i-a83t-ths",
++		.data = &sun8i_a83t_ths_data,
 +	},
  	{ /* sentinel */ }
  };
