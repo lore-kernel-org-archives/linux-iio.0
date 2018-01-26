@@ -1,248 +1,81 @@
-Return-Path: <SRS0=MwoA=EX=gmail.com=shreeya.patel23498@kernel.org>
-Message-ID: <1517130583.2100.11.camel@gmail.com>
-Subject: Re: [PATCH v2] Staging: iio: ade7758: expand buf_lock to cover both
- buffer and state protection
-From: Shreeya Patel <shreeya.patel23498@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
-	pmeerw@pmeerw.net, gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Date: Sun, 28 Jan 2018 14:39:43 +0530
-In-Reply-To: <20180128083140.6388275c@archlinux>
-References: <1516898408-8129-1-git-send-email-shreeya.patel23498@gmail.com>
-	 <20180128083140.6388275c@archlinux>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f65.google.com ([74.125.82.65]:51520 "EHLO
+        mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750864AbeAZPTq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 26 Jan 2018 10:19:46 -0500
+From: Philipp Rossak <embed3d@gmail.com>
+To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
+        maxime.ripard@free-electrons.com, wens@csie.org,
+        linux@armlinux.org.uk, jic23@kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, davem@davemloft.net,
+        hans.verkuil@cisco.com, mchehab@kernel.org, rask@formelder.dk,
+        clabbe.montjoie@gmail.com, sean@mess.org, krzk@kernel.org,
+        quentin.schulz@free-electrons.com, icenowy@aosc.io,
+        edu.molinas@gmail.com, singhalsimran0@gmail.com
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@googlegroups.com
+Subject: [PATCH 00/16] IIO-based thermal sensor driver for Allwinner H3 and A83T SoC
+Date: Fri, 26 Jan 2018 16:19:25 +0100
+Message-Id: <20180126151941.12183-1-embed3d@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sun, 2018-01-28 at 08:31 +0000, Jonathan Cameron wrote:
-> On Thu, 25 Jan 2018 22:10:08 +0530
-> Shreeya Patel <shreeya.patel23498@gmail.com> wrote:
-> 
-> > 
-> > iio_dev->mlock is to be used only by the IIO core for protecting
-> > device mode changes between INDIO_DIRECT and INDIO_BUFFER.
-> > 
-> > This patch replaces the use of mlock with the already established
-> > buf_lock mutex.
-> > 
-> > Introducing 'unlocked' __ade7758_spi_write_reg_8 and
-> > __ade7758_spi_read_reg_8 functions to be used by
-> > ade7758_write_samp_freq
-> > and ade7758_read_samp_freq which avoids nested locks and maintains
-> > atomicity between bus and device frequency changes.
-> > 
-> > Signed-off-by: Shreeya Patel <shreeya.patel23498@gmail.com>
-> Hi Shreeya,
-> 
-> This is now technically correct which is great.
-> I would make one minor change to make it slightly easier to read.
-> 
-> The read / write frequency functions now require the buf_lock to
-> be held.  That's not obvious so I would avoid this but moving
-> the locking inside the functions where it is then clear that
-> they are taking the unlocked forms of the register read/ write.
-> 
-> This would also then make it clear why the normal locked form
-> of _read_reg_8 is fine in the read_freq case but not the
-> write_freq case.  (Hence just use the normal locked form
-> for the read and don't explicitly take the locks when
-> reading the frequency - leave it to the register read function)
-> 
+Allwiner H3 and A83T SoCs have a thermal sensor, which is a large refactored
+version of the old Allwinner "GPADC" (although it have already only
+thermal part left in A33).
 
-Hi,
+This patch tried to add support for the sensor in H3 and A83T based on
+the A33 thermal sensor driver by Quentin Schulz, which is already merged.
 
-I have introduced unlocked form of the _read_reg_8 also, which is wrong
-on my side. I should have discarded the mlocks in the read_freq case
-first, then there would have been no need of having unlocked form of
-the _read_reg_8 :(
+This Patchseries is based on Icenowy Zhengs v4 patchseries [1]. 
+The first 5 patches are reworked patches from the v4 patchseries. 
+The rest of the patches add step by step a feature to support multible
+sensors, nvmem calibration and interupts. This patchseries should make it
+easy also to add other sunxi SoCs, like the H5, A64 and A80.
 
-Please discard this patch and I'll send two patches in which first I'll
-remove the mlocks from the read case and then I'll have only the
-unlocked form of the _write_reg_8. In this way, there won't be any
-useless code in the file for the read case.
+Patches that adds support for H5, A64 and A80 SoCs are allready prepared,
+and will be upstreamed if this patchseries is applied and the testing is done.
 
-Sorry, it took me a bit more time to understand.
+I tried to pick up all the feedback from [1]. I hope I didn't miss anything.
 
-Thanks
- 
-> Thanks,
-> 
-> Jonathan
-> > 
-> > ---
-> > 
-> > Changes in v2
-> >   -Add static keyword to newly introduced functions and remove some
-> > added comments which are not required.
-> > 
-> > 
-> >  drivers/staging/iio/meter/ade7758.h      |  2 +-
-> >  drivers/staging/iio/meter/ade7758_core.c | 47
-> > +++++++++++++++++++++++---------
-> >  2 files changed, 35 insertions(+), 14 deletions(-)
-> > 
-> > diff --git a/drivers/staging/iio/meter/ade7758.h
-> > b/drivers/staging/iio/meter/ade7758.h
-> > index 6ae78d8..2de81b5 100644
-> > --- a/drivers/staging/iio/meter/ade7758.h
-> > +++ b/drivers/staging/iio/meter/ade7758.h
-> > @@ -111,7 +111,7 @@
-> >   * @trig:		data ready trigger registered with iio
-> >   * @tx:			transmit buffer
-> >   * @rx:			receive buffer
-> > - * @buf_lock:		mutex to protect tx and rx
-> > + * @buf_lock:		mutex to protect tx, rx, read and
-> > write frequency
-> >   **/
-> >  struct ade7758_state {
-> >  	struct spi_device	*us;
-> > diff --git a/drivers/staging/iio/meter/ade7758_core.c
-> > b/drivers/staging/iio/meter/ade7758_core.c
-> > index 7b7ffe5..fed4684 100644
-> > --- a/drivers/staging/iio/meter/ade7758_core.c
-> > +++ b/drivers/staging/iio/meter/ade7758_core.c
-> > @@ -24,17 +24,25 @@
-> >  #include "meter.h"
-> >  #include "ade7758.h"
-> >  
-> > -int ade7758_spi_write_reg_8(struct device *dev, u8 reg_address, u8
-> > val)
-> > +static int __ade7758_spi_write_reg_8(struct device *dev, u8
-> > reg_address, u8 val)
-> >  {
-> > -	int ret;
-> >  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> >  	struct ade7758_state *st = iio_priv(indio_dev);
-> >  
-> > -	mutex_lock(&st->buf_lock);
-> >  	st->tx[0] = ADE7758_WRITE_REG(reg_address);
-> >  	st->tx[1] = val;
-> >  
-> > -	ret = spi_write(st->us, st->tx, 2);
-> > +	return spi_write(st->us, st->tx, 2);
-> > +}
-> > +
-> > +int ade7758_spi_write_reg_8(struct device *dev, u8 reg_address, u8
-> > val)
-> > +{
-> > +	int ret;
-> > +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> > +	struct ade7758_state *st = iio_priv(indio_dev);
-> > +
-> > +	mutex_lock(&st->buf_lock);
-> > +	ret = __ade7758_spi_write_reg_8(dev, reg_address, val);
-> >  	mutex_unlock(&st->buf_lock);
-> >  
-> >  	return ret;
-> > @@ -91,7 +99,7 @@ static int ade7758_spi_write_reg_24(struct device
-> > *dev, u8 reg_address,
-> >  	return ret;
-> >  }
-> >  
-> > -int ade7758_spi_read_reg_8(struct device *dev, u8 reg_address, u8
-> > *val)
-> > +static int __ade7758_spi_read_reg_8(struct device *dev, u8
-> > reg_address, u8 *val)
-> >  {
-> >  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> >  	struct ade7758_state *st = iio_priv(indio_dev);
-> > @@ -111,7 +119,6 @@ int ade7758_spi_read_reg_8(struct device *dev,
-> > u8 reg_address, u8 *val)
-> >  		},
-> >  	};
-> >  
-> > -	mutex_lock(&st->buf_lock);
-> >  	st->tx[0] = ADE7758_READ_REG(reg_address);
-> >  	st->tx[1] = 0;
-> >  
-> > @@ -124,7 +131,19 @@ int ade7758_spi_read_reg_8(struct device *dev,
-> > u8 reg_address, u8 *val)
-> >  	*val = st->rx[0];
-> >  
-> >  error_ret:
-> > +	return ret;
-> > +}
-> > +
-> > +int ade7758_spi_read_reg_8(struct device *dev, u8 reg_address, u8
-> > *val)
-> > +{
-> > +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> > +	struct ade7758_state *st = iio_priv(indio_dev);
-> > +	int ret;
-> > +
-> > +	mutex_lock(&st->buf_lock);
-> > +	ret = __ade7758_spi_read_reg_8(dev, reg_address, val);
-> >  	mutex_unlock(&st->buf_lock);
-> > +
-> >  	return ret;
-> >  }
-> >  
-> > @@ -470,7 +489,7 @@ static int ade7758_read_samp_freq(struct device
-> > *dev, int *val)
-> >  	int ret;
-> >  	u8 t;
-> >  
-> > -	ret = ade7758_spi_read_reg_8(dev, ADE7758_WAVMODE, &t);
-> > +	ret = __ade7758_spi_read_reg_8(dev, ADE7758_WAVMODE, &t);
-> >  	if (ret)
-> >  		return ret;
-> >  
-> > @@ -503,14 +522,14 @@ static int ade7758_write_samp_freq(struct
-> > device *dev, int val)
-> >  		goto out;
-> >  	}
-> >  
-> > -	ret = ade7758_spi_read_reg_8(dev, ADE7758_WAVMODE, &reg);
-> > +	ret = __ade7758_spi_read_reg_8(dev, ADE7758_WAVMODE,
-> > &reg);
-> >  	if (ret)
-> >  		goto out;
-> >  
-> >  	reg &= ~(5 << 3);
-> >  	reg |= t << 5;
-> >  
-> > -	ret = ade7758_spi_write_reg_8(dev, ADE7758_WAVMODE, reg);
-> > +	ret = __ade7758_spi_write_reg_8(dev, ADE7758_WAVMODE,
-> > reg);
-> >  
-> >  out:
-> >  	return ret;
-> > @@ -523,12 +542,13 @@ static int ade7758_read_raw(struct iio_dev
-> > *indio_dev,
-> >  			    long mask)
-> >  {
-> >  	int ret;
-> > +	struct ade7758_state *st = iio_priv(indio_dev);
-> >  
-> >  	switch (mask) {
-> >  	case IIO_CHAN_INFO_SAMP_FREQ:
-> > -		mutex_lock(&indio_dev->mlock);
-> > +		mutex_lock(&st->buf_lock);
-> >  		ret = ade7758_read_samp_freq(&indio_dev->dev,
-> > val);
-> > -		mutex_unlock(&indio_dev->mlock);
-> > +		mutex_unlock(&st->buf_lock);
-> >  		return ret;
-> >  	default:
-> >  		return -EINVAL;
-> > @@ -542,14 +562,15 @@ static int ade7758_write_raw(struct iio_dev
-> > *indio_dev,
-> >  			     int val, int val2, long mask)
-> >  {
-> >  	int ret;
-> > +	struct ade7758_state *st = iio_priv(indio_dev);
-> >  
-> >  	switch (mask) {
-> >  	case IIO_CHAN_INFO_SAMP_FREQ:
-> >  		if (val2)
-> >  			return -EINVAL;
-> > -		mutex_lock(&indio_dev->mlock);
-> > +		mutex_lock(&st->buf_lock);
-> >  		ret = ade7758_write_samp_freq(&indio_dev->dev,
-> > val);
-> > -		mutex_unlock(&indio_dev->mlock);
-> > +		mutex_unlock(&st->buf_lock);
-> >  		return ret;
-> >  	default:
-> >  		return -EINVAL;
+Regards,
+Philipp 
+
+[1]: https://lkml.org/lkml/2017/9/14/317
+
+
+Icenowy Zheng (1):
+  iio: adc: sun4i-gpadc-iio: rename A33-specified registers to contain
+    A33
+
+Philipp Rossak (15):
+  dt-bindings: update the Allwinner GPADC device tree binding for H3 &
+    A83T
+  arm: config: sunxi_defconfig: enable SUN4I_GPADC
+  iio: adc: sun4i-gpadc-iio: rework: sampling start/end code readout reg
+  iio: adc: sun4i-gpadc-iio: rework: support clocks and reset
+  iio: adc: sun4i-gpadc-iio: rework: support multible sensors
+  iio: adc: sun4i-gpadc-iio: rework: support nvmem calibration data
+  iio: adc: sun4i-gpadc-iio: rework: add interrupt support
+  iio: adc: sun4i-gpadc-iio: add support for H3 thermal sensor
+  iio: adc: sun4i-gpadc-iio: add support for A83T thermal sensor
+  arm: dts: sunxi-h3-h5: add support for the thermal sensor in H3 and H5
+  arm: dts: sun8i: h3: add support for the thermal sensor in H3
+  arm: dts: sun8i: h3: add thermal zone to H3
+  arm: dts: sun8i: h3: enable H3 sid controller
+  arm: dts: sun8i: a83t: add support for the thermal sensor in A83T
+  arm: dts: sun8i: a83t: add thermal zone to A83T
+
+ .../devicetree/bindings/mfd/sun4i-gpadc.txt        |  50 ++-
+ arch/arm/boot/dts/sun8i-a83t.dtsi                  |  28 ++
+ arch/arm/boot/dts/sun8i-h3.dtsi                    |  21 ++
+ arch/arm/boot/dts/sunxi-h3-h5.dtsi                 |   9 +
+ arch/arm/configs/sunxi_defconfig                   |   1 +
+ drivers/iio/adc/sun4i-gpadc-iio.c                  | 378 +++++++++++++++++++--
+ include/linux/mfd/sun4i-gpadc.h                    |  66 +++-
+ 7 files changed, 522 insertions(+), 31 deletions(-)
+
+-- 
+2.11.0
+
