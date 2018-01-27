@@ -1,94 +1,64 @@
-Return-Path: <SRS0=wWwz=EW=ucw.cz=pavel@kernel.org>
-Date: Sat, 27 Jan 2018 23:09:32 +0100
-From: Pavel Machek <pavel@ucw.cz>
-To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-Cc: "jic23@kernel.org" <jic23@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga09.intel.com ([134.134.136.24]:7356 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1752593AbeA0WzS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 27 Jan 2018 17:55:18 -0500
+From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+To: "pavel@ucw.cz" <pavel@ucw.cz>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "jic23@kernel.org" <jic23@kernel.org>
 Subject: Re: [RFP] iio: Support of gesture sensor as a standard IIO sensor
-Message-ID: <20180127220931.GA19668@amd>
+Date: Sat, 27 Jan 2018 22:55:15 +0000
+Message-ID: <1517093714.6759.6.camel@intel.com>
 References: <1515197240.26317.65.camel@intel.com>
- <20180118224026.GE17196@amd>
- <20180120151908.1d438aaf@archlinux>
- <1516480282.15527.4.camel@intel.com>
+         <20180118224026.GE17196@amd> <20180120151908.1d438aaf@archlinux>
+         <1516480282.15527.4.camel@intel.com> <20180127220931.GA19668@amd>
+In-Reply-To: <20180127220931.GA19668@amd>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="UugvWAfsgieZRqgk"
-In-Reply-To: <1516480282.15527.4.camel@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-
---UugvWAfsgieZRqgk
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Sat 2018-01-20 20:31:23, Pandruvada, Srinivas wrote:
-> On Sat, 2018-01-20 at 15:19 +0000, Jonathan Cameron wrote:
-> > On Thu, 18 Jan 2018 23:40:26 +0100
-> > Pavel Machek <pavel@ucw.cz> wrote:
-> >=20
-> > >=20
-> > > Hi!
-> > >=20
-> > > >=20
-> > > > From an IIO sensor point of view A Gesture sensor:
-> > > > Outputs
-> > > > 	A pre defined activity type
-> > > > 		WAKE
-> > > > 		TILT
-> > > > 		GLANCE
-> > > > 		PICK_UP
-> > > > 		=A0&
-> > > > 		=A0more
-> > > >=20
-> > > > 	A user defined activity type as "string"=A0=A0
-> > > Pre-defined activities are easy.
-> > >=20
-> > > But what about user-defined activities? We'd really like common
-> > > interface across different hardware...=A0
-> > Nasty to handle indeed.=A0=A0=A0It may be the best we can do initially
-> > at least is user_definedN or similar.=A0=A0No way of constraining
-> > users from uploading something really odd that we can't define
-> > an interface for (hopping whilst holding a phone in
-> > their teeth?)
-> That's what I think also. We pre define few USER defined activities
-> Ids.
-
-Ok, so this is really device for human interaction -- input device.
-
-> > > > Inputs
-> > > > 	A raw binary cdev interface to download templates/patterns=A0=A0
-> > > ....and "raw binary" will not work across different hardware :-(.
-> > Sadly there probably isn't much we can do about the format being
-> > custom.
-> > Best bet would ultimately be if there was at least a standard tool
-> > to generate the files for different devices...
-> >=20
-> Correct. This will depend on =A0the firmware expected format . I think
-> ultimately it will be standardized.
-
-Is it fair to say that "expected" format is some kind of bytecode for
-CPU in the gesture sensor?
-
-We have similar problem with smart LED devices...
-
-									Pavel
---=20
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
-
---UugvWAfsgieZRqgk
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAlps+JsACgkQMOfwapXb+vL0SwCeKA0Ng9x4fp1wF5AipENupu2x
-dRgAoK5pJ3zCQj23Hi/gAIR9lVaNIf4x
-=TjXy
------END PGP SIGNATURE-----
-
---UugvWAfsgieZRqgk--
+T24gU2F0LCAyMDE4LTAxLTI3IGF0IDIzOjA5ICswMTAwLCBQYXZlbCBNYWNoZWsgd3JvdGU6DQo+
+IE9uIFNhdCAyMDE4LTAxLTIwIDIwOjMxOjIzLCBQYW5kcnV2YWRhLCBTcmluaXZhcyB3cm90ZToN
+Cj4gPiANCj4gPiBPbiBTYXQsIDIwMTgtMDEtMjAgYXQgMTU6MTkgKzAwMDAsIEpvbmF0aGFuIENh
+bWVyb24gd3JvdGU6DQo+ID4gPiANCj4gPiA+IE9uIFRodSwgMTggSmFuIDIwMTggMjM6NDA6MjYg
+KzAxMDANCj4gPiA+IFBhdmVsIE1hY2hlayA8cGF2ZWxAdWN3LmN6PiB3cm90ZToNCj4gPiA+IA0K
+PiA+ID4gPiANCj4gPiA+ID4gDQo+ID4gPiA+IEhpIQ0KPiA+ID4gPiANCj4gPiA+ID4gPiANCj4g
+PiA+ID4gPiANCj4gPiA+ID4gPiBGcm9tIGFuIElJTyBzZW5zb3IgcG9pbnQgb2YgdmlldyBBIEdl
+c3R1cmUgc2Vuc29yOg0KPiA+ID4gPiA+IE91dHB1dHMNCj4gPiA+ID4gPiAJQSBwcmUgZGVmaW5l
+ZCBhY3Rpdml0eSB0eXBlDQo+ID4gPiA+ID4gCQlXQUtFDQo+ID4gPiA+ID4gCQlUSUxUDQo+ID4g
+PiA+ID4gCQlHTEFOQ0UNCj4gPiA+ID4gPiAJCVBJQ0tfVVANCj4gPiA+ID4gPiAJCcKgJg0KPiA+
+ID4gPiA+IAkJwqBtb3JlDQo+ID4gPiA+ID4gDQo+ID4gPiA+ID4gCUEgdXNlciBkZWZpbmVkIGFj
+dGl2aXR5IHR5cGUgYXMgInN0cmluZyLCoMKgDQo+ID4gPiA+IFByZS1kZWZpbmVkIGFjdGl2aXRp
+ZXMgYXJlIGVhc3kuDQo+ID4gPiA+IA0KPiA+ID4gPiBCdXQgd2hhdCBhYm91dCB1c2VyLWRlZmlu
+ZWQgYWN0aXZpdGllcz8gV2UnZCByZWFsbHkgbGlrZSBjb21tb24NCj4gPiA+ID4gaW50ZXJmYWNl
+IGFjcm9zcyBkaWZmZXJlbnQgaGFyZHdhcmUuLi7CoA0KPiA+ID4gTmFzdHkgdG8gaGFuZGxlIGlu
+ZGVlZC7CoMKgwqBJdCBtYXkgYmUgdGhlIGJlc3Qgd2UgY2FuIGRvIGluaXRpYWxseQ0KPiA+ID4g
+YXQgbGVhc3QgaXMgdXNlcl9kZWZpbmVkTiBvciBzaW1pbGFyLsKgwqBObyB3YXkgb2YgY29uc3Ry
+YWluaW5nDQo+ID4gPiB1c2VycyBmcm9tIHVwbG9hZGluZyBzb21ldGhpbmcgcmVhbGx5IG9kZCB0
+aGF0IHdlIGNhbid0IGRlZmluZQ0KPiA+ID4gYW4gaW50ZXJmYWNlIGZvciAoaG9wcGluZyB3aGls
+c3QgaG9sZGluZyBhIHBob25lIGluDQo+ID4gPiB0aGVpciB0ZWV0aD8pDQo+ID4gVGhhdCdzIHdo
+YXQgSSB0aGluayBhbHNvLiBXZSBwcmUgZGVmaW5lIGZldyBVU0VSIGRlZmluZWQgYWN0aXZpdGll
+cw0KPiA+IElkcy4NCj4gT2ssIHNvIHRoaXMgaXMgcmVhbGx5IGRldmljZSBmb3IgaHVtYW4gaW50
+ZXJhY3Rpb24gLS0gaW5wdXQgZGV2aWNlLg0KPiANCj4gPiANCj4gPiA+IA0KPiA+ID4gPiANCj4g
+PiA+ID4gPiANCj4gPiA+ID4gPiBJbnB1dHMNCj4gPiA+ID4gPiAJQSByYXcgYmluYXJ5IGNkZXYg
+aW50ZXJmYWNlIHRvIGRvd25sb2FkDQo+ID4gPiA+ID4gdGVtcGxhdGVzL3BhdHRlcm5zwqDCoA0K
+PiA+ID4gPiAuLi4uYW5kICJyYXcgYmluYXJ5IiB3aWxsIG5vdCB3b3JrIGFjcm9zcyBkaWZmZXJl
+bnQgaGFyZHdhcmUgOi0NCj4gPiA+ID4gKC4NCj4gPiA+IFNhZGx5IHRoZXJlIHByb2JhYmx5IGlz
+bid0IG11Y2ggd2UgY2FuIGRvIGFib3V0IHRoZSBmb3JtYXQgYmVpbmcNCj4gPiA+IGN1c3RvbS4N
+Cj4gPiA+IEJlc3QgYmV0IHdvdWxkIHVsdGltYXRlbHkgYmUgaWYgdGhlcmUgd2FzIGF0IGxlYXN0
+IGEgc3RhbmRhcmQNCj4gPiA+IHRvb2wNCj4gPiA+IHRvIGdlbmVyYXRlIHRoZSBmaWxlcyBmb3Ig
+ZGlmZmVyZW50IGRldmljZXMuLi4NCj4gPiA+IA0KPiA+IENvcnJlY3QuIFRoaXMgd2lsbCBkZXBl
+bmQgb24gwqB0aGUgZmlybXdhcmUgZXhwZWN0ZWQgZm9ybWF0IC4gSQ0KPiA+IHRoaW5rDQo+ID4g
+dWx0aW1hdGVseSBpdCB3aWxsIGJlIHN0YW5kYXJkaXplZC4NCj4gSXMgaXQgZmFpciB0byBzYXkg
+dGhhdCAiZXhwZWN0ZWQiIGZvcm1hdCBpcyBzb21lIGtpbmQgb2YgYnl0ZWNvZGUgZm9yDQo+IENQ
+VSBpbiB0aGUgZ2VzdHVyZSBzZW5zb3I/DQpOb3QgbmVjZXNzYXJpbHkgYSBieXRlIGNvZGUgdG8g
+ZXhlY3V0ZSBvbiB0aGUgQ1BVIGluIHRoZSBnZXN0dXJlDQpzZW5zb3IsIGJ1dCBhIGZvcm1hdCB0
+aGUgY29kZSBydW5uaW5nIG9uIHRoYXQgQ1BVIHVuZGVyc3RhbmRzIHRoZSB3YXkNCmdlc3R1cmVz
+IGFyZSBmb3JtYXR0ZWQuDQpCdXQgaXQgY2FuIGJlIGJ5dGUgY29kZSBmb3Igc29tZSBtYW51ZmFj
+dHVyZXJzLCBzbyBpZGVhIGlzIGp1c3QgcGFzcyB0bw0KdGhlIGZpcm13YXJlIGFuZCBsZXQgaXQg
+cHJvY2VzcyBpdCBhbiBvcGFxdWUgZm9ybWF0Lg0KDQpUaGFua3MsDQpTcmluaXZhcw0KDQo+IA0K
+PiBXZSBoYXZlIHNpbWlsYXIgcHJvYmxlbSB3aXRoIHNtYXJ0IExFRCBkZXZpY2VzLi4uDQo+IA0K
+PiAJCQkJCQkJCQkNCj4gUGF2ZWw=
