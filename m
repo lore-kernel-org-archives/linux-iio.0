@@ -1,42 +1,94 @@
-Return-Path: <SRS0=skAV=EP=intel.com=srinivas.pandruvada@kernel.org>
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To: "pavel@ucw.cz" <pavel@ucw.cz>, "jic23@kernel.org" <jic23@kernel.org>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+Return-Path: <SRS0=wWwz=EW=ucw.cz=pavel@kernel.org>
+Date: Sat, 27 Jan 2018 23:09:32 +0100
+From: Pavel Machek <pavel@ucw.cz>
+To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+Cc: "jic23@kernel.org" <jic23@kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 Subject: Re: [RFP] iio: Support of gesture sensor as a standard IIO sensor
-Date: Sat, 20 Jan 2018 20:31:23 +0000
-Message-ID: <1516480282.15527.4.camel@intel.com>
+Message-ID: <20180127220931.GA19668@amd>
 References: <1515197240.26317.65.camel@intel.com>
-	 <20180118224026.GE17196@amd> <20180120151908.1d438aaf@archlinux>
-In-Reply-To: <20180120151908.1d438aaf@archlinux>
-Content-Type: text/plain; charset="utf-8"
+ <20180118224026.GE17196@amd>
+ <20180120151908.1d438aaf@archlinux>
+ <1516480282.15527.4.camel@intel.com>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="UugvWAfsgieZRqgk"
+In-Reply-To: <1516480282.15527.4.camel@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-T24gU2F0LCAyMDE4LTAxLTIwIGF0IDE1OjE5ICswMDAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
-Og0KPiBPbiBUaHUsIDE4IEphbiAyMDE4IDIzOjQwOjI2ICswMTAwDQo+IFBhdmVsIE1hY2hlayA8
-cGF2ZWxAdWN3LmN6PiB3cm90ZToNCj4gDQo+ID4gDQo+ID4gSGkhDQo+ID4gDQo+ID4gPiANCj4g
-PiA+IEZyb20gYW4gSUlPIHNlbnNvciBwb2ludCBvZiB2aWV3IEEgR2VzdHVyZSBzZW5zb3I6DQo+
-ID4gPiBPdXRwdXRzDQo+ID4gPiAJQSBwcmUgZGVmaW5lZCBhY3Rpdml0eSB0eXBlDQo+ID4gPiAJ
-CVdBS0UNCj4gPiA+IAkJVElMVA0KPiA+ID4gCQlHTEFOQ0UNCj4gPiA+IAkJUElDS19VUA0KPiA+
-ID4gCQnCoCYNCj4gPiA+IAkJwqBtb3JlDQo+ID4gPiANCj4gPiA+IAlBIHVzZXIgZGVmaW5lZCBh
-Y3Rpdml0eSB0eXBlIGFzICJzdHJpbmciwqDCoA0KPiA+IFByZS1kZWZpbmVkIGFjdGl2aXRpZXMg
-YXJlIGVhc3kuDQo+ID4gDQo+ID4gQnV0IHdoYXQgYWJvdXQgdXNlci1kZWZpbmVkIGFjdGl2aXRp
-ZXM/IFdlJ2QgcmVhbGx5IGxpa2UgY29tbW9uDQo+ID4gaW50ZXJmYWNlIGFjcm9zcyBkaWZmZXJl
-bnQgaGFyZHdhcmUuLi7CoA0KPiBOYXN0eSB0byBoYW5kbGUgaW5kZWVkLsKgwqDCoEl0IG1heSBi
-ZSB0aGUgYmVzdCB3ZSBjYW4gZG8gaW5pdGlhbGx5DQo+IGF0IGxlYXN0IGlzIHVzZXJfZGVmaW5l
-ZE4gb3Igc2ltaWxhci7CoMKgTm8gd2F5IG9mIGNvbnN0cmFpbmluZw0KPiB1c2VycyBmcm9tIHVw
-bG9hZGluZyBzb21ldGhpbmcgcmVhbGx5IG9kZCB0aGF0IHdlIGNhbid0IGRlZmluZQ0KPiBhbiBp
-bnRlcmZhY2UgZm9yIChob3BwaW5nIHdoaWxzdCBob2xkaW5nIGEgcGhvbmUgaW4NCj4gdGhlaXIg
-dGVldGg/KQ0KVGhhdCdzIHdoYXQgSSB0aGluayBhbHNvLiBXZSBwcmUgZGVmaW5lIGZldyBVU0VS
-IGRlZmluZWQgYWN0aXZpdGllcw0KSWRzLg0KDQo+ID4gDQo+ID4gDQo+ID4gPiANCj4gPiA+IElu
-cHV0cw0KPiA+ID4gCUEgcmF3IGJpbmFyeSBjZGV2IGludGVyZmFjZSB0byBkb3dubG9hZCB0ZW1w
-bGF0ZXMvcGF0dGVybnPCoMKgDQo+ID4gLi4uLmFuZCAicmF3IGJpbmFyeSIgd2lsbCBub3Qgd29y
-ayBhY3Jvc3MgZGlmZmVyZW50IGhhcmR3YXJlIDotKC4NCj4gU2FkbHkgdGhlcmUgcHJvYmFibHkg
-aXNuJ3QgbXVjaCB3ZSBjYW4gZG8gYWJvdXQgdGhlIGZvcm1hdCBiZWluZw0KPiBjdXN0b20uDQo+
-IEJlc3QgYmV0IHdvdWxkIHVsdGltYXRlbHkgYmUgaWYgdGhlcmUgd2FzIGF0IGxlYXN0IGEgc3Rh
-bmRhcmQgdG9vbA0KPiB0byBnZW5lcmF0ZSB0aGUgZmlsZXMgZm9yIGRpZmZlcmVudCBkZXZpY2Vz
-Li4uDQo+IA0KQ29ycmVjdC4gVGhpcyB3aWxsIGRlcGVuZCBvbiDCoHRoZSBmaXJtd2FyZSBleHBl
-Y3RlZCBmb3JtYXQgLiBJIHRoaW5rDQp1bHRpbWF0ZWx5IGl0IHdpbGwgYmUgc3RhbmRhcmRpemVk
-Lg0KDQpUaGFua3MsDQpTcmluaXZhcw0KDQo+ID4gDQo+ID4gDQo+ID4gCQkJCQkJCQkJDQo+ID4g
-UGF2ZWw=
+
+--UugvWAfsgieZRqgk
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Sat 2018-01-20 20:31:23, Pandruvada, Srinivas wrote:
+> On Sat, 2018-01-20 at 15:19 +0000, Jonathan Cameron wrote:
+> > On Thu, 18 Jan 2018 23:40:26 +0100
+> > Pavel Machek <pavel@ucw.cz> wrote:
+> >=20
+> > >=20
+> > > Hi!
+> > >=20
+> > > >=20
+> > > > From an IIO sensor point of view A Gesture sensor:
+> > > > Outputs
+> > > > 	A pre defined activity type
+> > > > 		WAKE
+> > > > 		TILT
+> > > > 		GLANCE
+> > > > 		PICK_UP
+> > > > 		=A0&
+> > > > 		=A0more
+> > > >=20
+> > > > 	A user defined activity type as "string"=A0=A0
+> > > Pre-defined activities are easy.
+> > >=20
+> > > But what about user-defined activities? We'd really like common
+> > > interface across different hardware...=A0
+> > Nasty to handle indeed.=A0=A0=A0It may be the best we can do initially
+> > at least is user_definedN or similar.=A0=A0No way of constraining
+> > users from uploading something really odd that we can't define
+> > an interface for (hopping whilst holding a phone in
+> > their teeth?)
+> That's what I think also. We pre define few USER defined activities
+> Ids.
+
+Ok, so this is really device for human interaction -- input device.
+
+> > > > Inputs
+> > > > 	A raw binary cdev interface to download templates/patterns=A0=A0
+> > > ....and "raw binary" will not work across different hardware :-(.
+> > Sadly there probably isn't much we can do about the format being
+> > custom.
+> > Best bet would ultimately be if there was at least a standard tool
+> > to generate the files for different devices...
+> >=20
+> Correct. This will depend on =A0the firmware expected format . I think
+> ultimately it will be standardized.
+
+Is it fair to say that "expected" format is some kind of bytecode for
+CPU in the gesture sensor?
+
+We have similar problem with smart LED devices...
+
+									Pavel
+--=20
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
+g.html
+
+--UugvWAfsgieZRqgk
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAlps+JsACgkQMOfwapXb+vL0SwCeKA0Ng9x4fp1wF5AipENupu2x
+dRgAoK5pJ3zCQj23Hi/gAIR9lVaNIf4x
+=TjXy
+-----END PGP SIGNATURE-----
+
+--UugvWAfsgieZRqgk--
