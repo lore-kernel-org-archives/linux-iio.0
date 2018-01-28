@@ -26,33 +26,40 @@ Cc: linux-iio@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
 	linux-sunxi@googlegroups.com
-Subject: [PATCH v2 12/16] arm: dts: sun8i: h3: add support for the thermal sensor in H3
-Date: Mon, 29 Jan 2018 00:29:15 +0100
-Message-Id: <20180128232919.12639-13-embed3d@gmail.com>
+Subject: [PATCH v2 13/16] arm: dts: sun8i: h3: add thermal zone to H3
+Date: Mon, 29 Jan 2018 00:29:16 +0100
+Message-Id: <20180128232919.12639-14-embed3d@gmail.com>
 In-Reply-To: <20180128232919.12639-1-embed3d@gmail.com>
 References: <20180128232919.12639-1-embed3d@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch adds the missing compatible and the thermal sensor cells.
-The H3 has one sensor.
+This patch adds the thermal zones to the H3. We have only one sensor and
+that is placed in the cpu.
 
 Signed-off-by: Philipp Rossak <embed3d@gmail.com>
 ---
- arch/arm/boot/dts/sun8i-h3.dtsi | 5 +++++
- 1 file changed, 5 insertions(+)
+ arch/arm/boot/dts/sun8i-h3.dtsi | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
 diff --git a/arch/arm/boot/dts/sun8i-h3.dtsi b/arch/arm/boot/dts/sun8i-h3.dtsi
-index 8495deecedad..fbb007e5798e 100644
+index fbb007e5798e..3f83f6a27c74 100644
 --- a/arch/arm/boot/dts/sun8i-h3.dtsi
 +++ b/arch/arm/boot/dts/sun8i-h3.dtsi
-@@ -128,3 +128,8 @@
- &pio {
- 	compatible = "allwinner,sun8i-h3-pinctrl";
- };
+@@ -72,6 +72,15 @@
+ 		};
+ 	};
+ 
++	thermal-zones {
++		cpu-thermal {
++			/* milliseconds */
++			polling-delay-passive = <250>;
++			polling-delay = <1000>;
++			thermal-sensors = <&ths 0>;
++		};
++	};
 +
-+&ths {
-+	compatible = "allwinner,sun8i-h3-ths";
-+	#thermal-sensor-cells = <0>;
-+};
+ 	timer {
+ 		compatible = "arm,armv7-timer";
+ 		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
 -- 
 2.11.0
