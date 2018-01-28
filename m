@@ -1,85 +1,187 @@
-Return-Path: <SRS0=WHON=E2=gmail.com=embed3d@kernel.org>
-Subject: Re: [PATCH v2 04/16] iio: adc: sun4i-gpadc-iio: rework: sampling
- start/end code readout reg
-To: Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
- maxime.ripard@free-electrons.com, wens@csie.org, linux@armlinux.org.uk,
- jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
- davem@davemloft.net, hans.verkuil@cisco.com, mchehab@kernel.org,
- rask@formelder.dk, clabbe.montjoie@gmail.com, sean@mess.org,
- krzk@kernel.org, icenowy@aosc.io, edu.molinas@gmail.com,
- singhalsimran0@gmail.com, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, linux-sunxi@googlegroups.com
-References: <20180128232919.12639-1-embed3d@gmail.com>
- <20180128232919.12639-5-embed3d@gmail.com>
- <20180131175106.agrvwioaruioavqk@qschulz>
+Return-Path: <SRS0=zW5g=EX=gmail.com=embed3d@kernel.org>
 From: Philipp Rossak <embed3d@gmail.com>
-Message-ID: <025fc383-8a54-cc22-bdf3-0919b8ca2507@gmail.com>
-Date: Wed, 31 Jan 2018 19:35:55 +0100
-MIME-Version: 1.0
-In-Reply-To: <20180131175106.agrvwioaruioavqk@qschulz>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+To: lee.jones@linaro.org,
+	robh+dt@kernel.org,
+	mark.rutland@arm.com,
+	maxime.ripard@free-electrons.com,
+	wens@csie.org,
+	linux@armlinux.org.uk,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	davem@davemloft.net,
+	hans.verkuil@cisco.com,
+	mchehab@kernel.org,
+	rask@formelder.dk,
+	clabbe.montjoie@gmail.com,
+	sean@mess.org,
+	krzk@kernel.org,
+	quentin.schulz@free-electrons.com,
+	icenowy@aosc.io,
+	edu.molinas@gmail.com,
+	singhalsimran0@gmail.com
+Cc: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-sunxi@googlegroups.com
+Subject: [PATCH v2 05/16] iio: adc: sun4i-gpadc-iio: rework: support clocks and reset
+Date: Mon, 29 Jan 2018 00:29:08 +0100
+Message-Id: <20180128232919.12639-6-embed3d@gmail.com>
+In-Reply-To: <20180128232919.12639-1-embed3d@gmail.com>
+References: <20180128232919.12639-1-embed3d@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
+For adding newer sensor some basic rework of the code is necessary.
 
+The SoCs after H3 has newer thermal sensor ADCs, which have two clock
+inputs (bus clock and sampling clock) and a reset. The registers are
+also re-arranged.
 
-On 31.01.2018 18:51, Quentin Schulz wrote:
-> Hi Philipp,
-> 
-> On Mon, Jan 29, 2018 at 12:29:07AM +0100, Philipp Rossak wrote:
->> For adding newer sensor some basic rework of the code is necessary.
->>
->> This commit reworks the code and allows the sampling start/end code and
->> the position of value readout register to be altered. Later the start/end
->> functions will be used to configure the ths and start/stop the
->> sampling.
->>
->> Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
->> Signed-off-by: Philipp Rossak <embed3d@gmail.com>
->> ---
->>   drivers/iio/adc/sun4i-gpadc-iio.c | 44 ++++++++++++++++++++++++++++++++++-----
->>   1 file changed, 39 insertions(+), 5 deletions(-)
->>
->> diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
->> index 03804ff9c006..db57d9fffe48 100644
->> --- a/drivers/iio/adc/sun4i-gpadc-iio.c
->> +++ b/drivers/iio/adc/sun4i-gpadc-iio.c
->> @@ -49,6 +49,15 @@ static unsigned int sun6i_gpadc_chan_select(unsigned int chan)
->>   	return SUN6I_GPADC_CTRL1_ADC_CHAN_SELECT(chan);
->>   }
->>   
->> +struct sun4i_gpadc_iio;
->> +
->> +/*
->> + * Prototypes for these functions, which enable these functions to be
->> + * referenced in gpadc_data structures.
->> + */
-> 
-> Comment not needed.
-> 
->> +static int sun4i_gpadc_sample_start(struct sun4i_gpadc_iio *info);
->> +static int sun4i_gpadc_sample_end(struct sun4i_gpadc_iio *info);
->> +
->>   struct gpadc_data {
->>   	int		temp_offset;
->>   	int		temp_scale;
->> @@ -56,6 +65,9 @@ struct gpadc_data {
->>   	unsigned int	tp_adc_select;
->>   	unsigned int	(*adc_chan_select)(unsigned int chan);
->>   	unsigned int	adc_chan_mask;
->> +	unsigned int	temp_data;
-> 
-> Does not really have anything to do with sample_start/end. I would have
-> made a different commit for it.
-> 
-> Otherwise,
-> Reviewed-by: Quentin Schulz <quentin.schulz@free-electrons.com>
-> 
-> Quentin
-> 
+This commit reworks the code, adds the process of the clocks and
+resets.
 
-Ok I will split this.
+Signed-off-by: Philipp Rossak <embed3d@gmail.com>
+Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+---
+ drivers/iio/adc/sun4i-gpadc-iio.c | 71 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 71 insertions(+)
 
-Thanks,
-Philipp
+diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
+index db57d9fffe48..51ec0104d678 100644
+--- a/drivers/iio/adc/sun4i-gpadc-iio.c
++++ b/drivers/iio/adc/sun4i-gpadc-iio.c
+@@ -22,6 +22,7 @@
+  * shutdown for not being used.
+  */
+ 
++#include <linux/clk.h>
+ #include <linux/completion.h>
+ #include <linux/interrupt.h>
+ #include <linux/io.h>
+@@ -31,6 +32,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/regmap.h>
++#include <linux/reset.h>
+ #include <linux/thermal.h>
+ #include <linux/delay.h>
+ 
+@@ -68,6 +70,9 @@ struct gpadc_data {
+ 	unsigned int	temp_data;
+ 	int		(*sample_start)(struct sun4i_gpadc_iio *info);
+ 	int		(*sample_end)(struct sun4i_gpadc_iio *info);
++	bool		has_bus_clk;
++	bool		has_bus_rst;
++	bool		has_mod_clk;
+ };
+ 
+ static const struct gpadc_data sun4i_gpadc_data = {
+@@ -127,6 +132,9 @@ struct sun4i_gpadc_iio {
+ 	atomic_t			ignore_temp_data_irq;
+ 	const struct gpadc_data		*data;
+ 	bool				no_irq;
++	struct clk			*bus_clk;
++	struct clk			*mod_clk;
++	struct reset_control		*reset;
+ 	/* prevents concurrent reads of temperature and ADC */
+ 	struct mutex			mutex;
+ 	struct thermal_zone_device	*tzd;
+@@ -420,6 +428,10 @@ static int sun4i_gpadc_runtime_suspend(struct device *dev)
+ {
+ 	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(dev));
+ 
++	clk_disable(info->mod_clk);
++
++	clk_disable(info->bus_clk);
++
+ 	return info->data->sample_end(info);
+ }
+ 
+@@ -446,6 +458,10 @@ static int sun4i_gpadc_runtime_resume(struct device *dev)
+ {
+ 	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(dev));
+ 
++	clk_enable(info->mod_clk);
++
++	clk_enable(info->bus_clk);
++
+ 	return info->data->sample_start(info);
+ }
+ 
+@@ -560,10 +576,59 @@ static int sun4i_gpadc_probe_dt(struct platform_device *pdev,
+ 		return ret;
+ 	}
+ 
++	if (info->data->has_bus_rst) {
++		info->reset = devm_reset_control_get(&pdev->dev, NULL);
++		if (IS_ERR(info->reset)) {
++			ret = PTR_ERR(info->reset);
++			return ret;
++		}
++
++		ret = reset_control_deassert(info->reset);
++		if (ret)
++			return ret;
++	}
++
++	if (info->data->has_bus_clk) {
++		info->bus_clk = devm_clk_get(&pdev->dev, "bus");
++		if (IS_ERR(info->bus_clk)) {
++			ret = PTR_ERR(info->bus_clk);
++			goto assert_reset;
++		}
++
++		ret = clk_prepare_enable(info->bus_clk);
++		if (ret)
++			goto assert_reset;
++	}
++
++	if (info->data->has_mod_clk) {
++		info->mod_clk = devm_clk_get(&pdev->dev, "mod");
++		if (IS_ERR(info->mod_clk)) {
++			ret = PTR_ERR(info->mod_clk);
++			goto disable_bus_clk;
++		}
++
++		/* Running at 6MHz */
++		ret = clk_set_rate(info->mod_clk, 4000000);
++		if (ret)
++			goto disable_bus_clk;
++
++		ret = clk_prepare_enable(info->mod_clk);
++		if (ret)
++			goto disable_bus_clk;
++	}
++
+ 	if (IS_ENABLED(CONFIG_THERMAL_OF))
+ 		info->sensor_device = &pdev->dev;
+ 
+ 	return 0;
++
++disable_bus_clk:
++	clk_disable_unprepare(info->bus_clk);
++
++assert_reset:
++	reset_control_assert(info->reset);
++
++	return ret;
+ }
+ 
+ static int sun4i_gpadc_probe_mfd(struct platform_device *pdev,
+@@ -729,6 +794,12 @@ static int sun4i_gpadc_remove(struct platform_device *pdev)
+ 	if (!info->no_irq)
+ 		iio_map_array_unregister(indio_dev);
+ 
++	clk_disable_unprepare(info->mod_clk);
++
++	clk_disable_unprepare(info->bus_clk);
++
++	reset_control_assert(info->reset);
++
+ 	return 0;
+ }
+ 
+-- 
+2.11.0
