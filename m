@@ -26,62 +26,146 @@ Cc: linux-iio@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
 	linux-sunxi@googlegroups.com
-Subject: [PATCH v2 03/16] iio: adc: sun4i-gpadc-iio: rename A33-specified registers to contain A33
-Date: Mon, 29 Jan 2018 00:29:06 +0100
-Message-Id: <20180128232919.12639-4-embed3d@gmail.com>
+Subject: [PATCH v2 04/16] iio: adc: sun4i-gpadc-iio: rework: sampling start/end code readout reg
+Date: Mon, 29 Jan 2018 00:29:07 +0100
+Message-Id: <20180128232919.12639-5-embed3d@gmail.com>
 In-Reply-To: <20180128232919.12639-1-embed3d@gmail.com>
 References: <20180128232919.12639-1-embed3d@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-From: Icenowy Zheng <icenowy@aosc.io>
+For adding newer sensor some basic rework of the code is necessary.
 
-As the H3 SoC, which is also in sun8i line, has totally different
-register map for the thermal sensor (a cut down version of GPADC), we
-should rename A23/A33-specified registers to contain A33, in order to
-prevent obfuscation with H3 registers. Currently these registers are
-only prefixed "SUN8I", not "SUN8I_A33".
-
-Add "_A33" after "SUN8I" on the register names.
+This commit reworks the code and allows the sampling start/end code and
+the position of value readout register to be altered. Later the start/end
+functions will be used to configure the ths and start/stop the
+sampling.
 
 Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
-Reviewed-by: Chen-Yu Tsai <wens@csie.org>
-Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
-Acked-by: Lee Jones <lee.jones@linaro.org>
-Acked-by: Jonathan Cameron <jonathan.cameron@huawei.com>
+Signed-off-by: Philipp Rossak <embed3d@gmail.com>
 ---
- drivers/iio/adc/sun4i-gpadc-iio.c | 2 +-
- include/linux/mfd/sun4i-gpadc.h   | 6 +++---
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/iio/adc/sun4i-gpadc-iio.c | 44 ++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 39 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
-index 04d7147e0110..03804ff9c006 100644
+index 03804ff9c006..db57d9fffe48 100644
 --- a/drivers/iio/adc/sun4i-gpadc-iio.c
 +++ b/drivers/iio/adc/sun4i-gpadc-iio.c
-@@ -88,7 +88,7 @@ static const struct gpadc_data sun6i_gpadc_data = {
+@@ -49,6 +49,15 @@ static unsigned int sun6i_gpadc_chan_select(unsigned int chan)
+ 	return SUN6I_GPADC_CTRL1_ADC_CHAN_SELECT(chan);
+ }
+ 
++struct sun4i_gpadc_iio;
++
++/*
++ * Prototypes for these functions, which enable these functions to be
++ * referenced in gpadc_data structures.
++ */
++static int sun4i_gpadc_sample_start(struct sun4i_gpadc_iio *info);
++static int sun4i_gpadc_sample_end(struct sun4i_gpadc_iio *info);
++
+ struct gpadc_data {
+ 	int		temp_offset;
+ 	int		temp_scale;
+@@ -56,6 +65,9 @@ struct gpadc_data {
+ 	unsigned int	tp_adc_select;
+ 	unsigned int	(*adc_chan_select)(unsigned int chan);
+ 	unsigned int	adc_chan_mask;
++	unsigned int	temp_data;
++	int		(*sample_start)(struct sun4i_gpadc_iio *info);
++	int		(*sample_end)(struct sun4i_gpadc_iio *info);
+ };
+ 
+ static const struct gpadc_data sun4i_gpadc_data = {
+@@ -65,6 +77,9 @@ static const struct gpadc_data sun4i_gpadc_data = {
+ 	.tp_adc_select = SUN4I_GPADC_CTRL1_TP_ADC_SELECT,
+ 	.adc_chan_select = &sun4i_gpadc_chan_select,
+ 	.adc_chan_mask = SUN4I_GPADC_CTRL1_ADC_CHAN_MASK,
++	.temp_data = SUN4I_GPADC_TEMP_DATA,
++	.sample_start = sun4i_gpadc_sample_start,
++	.sample_end = sun4i_gpadc_sample_end,
+ };
+ 
+ static const struct gpadc_data sun5i_gpadc_data = {
+@@ -74,6 +89,9 @@ static const struct gpadc_data sun5i_gpadc_data = {
+ 	.tp_adc_select = SUN4I_GPADC_CTRL1_TP_ADC_SELECT,
+ 	.adc_chan_select = &sun4i_gpadc_chan_select,
+ 	.adc_chan_mask = SUN4I_GPADC_CTRL1_ADC_CHAN_MASK,
++	.temp_data = SUN4I_GPADC_TEMP_DATA,
++	.sample_start = sun4i_gpadc_sample_start,
++	.sample_end = sun4i_gpadc_sample_end,
+ };
+ 
+ static const struct gpadc_data sun6i_gpadc_data = {
+@@ -83,12 +101,18 @@ static const struct gpadc_data sun6i_gpadc_data = {
+ 	.tp_adc_select = SUN6I_GPADC_CTRL1_TP_ADC_SELECT,
+ 	.adc_chan_select = &sun6i_gpadc_chan_select,
+ 	.adc_chan_mask = SUN6I_GPADC_CTRL1_ADC_CHAN_MASK,
++	.temp_data = SUN4I_GPADC_TEMP_DATA,
++	.sample_start = sun4i_gpadc_sample_start,
++	.sample_end = sun4i_gpadc_sample_end,
+ };
+ 
  static const struct gpadc_data sun8i_a33_gpadc_data = {
  	.temp_offset = -1662,
  	.temp_scale = 162,
--	.tp_mode_en = SUN8I_GPADC_CTRL1_CHOP_TEMP_EN,
-+	.tp_mode_en = SUN8I_A33_GPADC_CTRL1_CHOP_TEMP_EN,
+ 	.tp_mode_en = SUN8I_A33_GPADC_CTRL1_CHOP_TEMP_EN,
++	.temp_data = SUN4I_GPADC_TEMP_DATA,
++	.sample_start = sun4i_gpadc_sample_start,
++	.sample_end = sun4i_gpadc_sample_end,
  };
  
  struct sun4i_gpadc_iio {
-diff --git a/include/linux/mfd/sun4i-gpadc.h b/include/linux/mfd/sun4i-gpadc.h
-index 139872c2e0fe..78d31984a222 100644
---- a/include/linux/mfd/sun4i-gpadc.h
-+++ b/include/linux/mfd/sun4i-gpadc.h
-@@ -38,9 +38,9 @@
- #define SUN6I_GPADC_CTRL1_ADC_CHAN_SELECT(x)		(GENMASK(3, 0) & BIT(x))
- #define SUN6I_GPADC_CTRL1_ADC_CHAN_MASK			GENMASK(3, 0)
+@@ -277,7 +301,7 @@ static int sun4i_gpadc_temp_read(struct iio_dev *indio_dev, int *val)
+ 	if (info->no_irq) {
+ 		pm_runtime_get_sync(indio_dev->dev.parent);
  
--/* TP_CTRL1 bits for sun8i SoCs */
--#define SUN8I_GPADC_CTRL1_CHOP_TEMP_EN			BIT(8)
--#define SUN8I_GPADC_CTRL1_GPADC_CALI_EN			BIT(7)
-+/* TP_CTRL1 bits for A33 */
-+#define SUN8I_A33_GPADC_CTRL1_CHOP_TEMP_EN		BIT(8)
-+#define SUN8I_A33_GPADC_CTRL1_GPADC_CALI_EN		BIT(7)
+-		regmap_read(info->regmap, SUN4I_GPADC_TEMP_DATA, val);
++		regmap_read(info->regmap, info->data->temp_data, val);
  
- #define SUN4I_GPADC_CTRL2				0x08
+ 		pm_runtime_mark_last_busy(indio_dev->dev.parent);
+ 		pm_runtime_put_autosuspend(indio_dev->dev.parent);
+@@ -382,10 +406,8 @@ static irqreturn_t sun4i_gpadc_fifo_data_irq_handler(int irq, void *dev_id)
+ 	return IRQ_HANDLED;
+ }
  
+-static int sun4i_gpadc_runtime_suspend(struct device *dev)
++static int sun4i_gpadc_sample_end(struct sun4i_gpadc_iio *info)
+ {
+-	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(dev));
+-
+ 	/* Disable the ADC on IP */
+ 	regmap_write(info->regmap, SUN4I_GPADC_CTRL1, 0);
+ 	/* Disable temperature sensor on IP */
+@@ -394,10 +416,15 @@ static int sun4i_gpadc_runtime_suspend(struct device *dev)
+ 	return 0;
+ }
+ 
+-static int sun4i_gpadc_runtime_resume(struct device *dev)
++static int sun4i_gpadc_runtime_suspend(struct device *dev)
+ {
+ 	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(dev));
+ 
++	return info->data->sample_end(info);
++}
++
++static int sun4i_gpadc_sample_start(struct sun4i_gpadc_iio *info)
++{
+ 	/* clkin = 6MHz */
+ 	regmap_write(info->regmap, SUN4I_GPADC_CTRL0,
+ 		     SUN4I_GPADC_CTRL0_ADC_CLK_DIVIDER(2) |
+@@ -415,6 +442,13 @@ static int sun4i_gpadc_runtime_resume(struct device *dev)
+ 	return 0;
+ }
+ 
++static int sun4i_gpadc_runtime_resume(struct device *dev)
++{
++	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(dev));
++
++	return info->data->sample_start(info);
++}
++
+ static int sun4i_gpadc_get_temp(void *data, int *temp)
+ {
+ 	struct sun4i_gpadc_iio *info = data;
 -- 
 2.11.0
