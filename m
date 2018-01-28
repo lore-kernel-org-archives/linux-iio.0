@@ -1,83 +1,101 @@
-Return-Path: <SRS0=NR6Q=EV=gmail.com=embed3d@kernel.org>
-Subject: Re: [linux-sunxi] [PATCH 16/16] arm: dts: sun8i: a83t: add thermal
- zone to A83T
-To: Samuel Holland <samuel@sholland.org>, lee.jones@linaro.org,
- robh+dt@kernel.org, mark.rutland@arm.com, maxime.ripard@free-electrons.com,
- wens@csie.org, linux@armlinux.org.uk, jic23@kernel.org, knaack.h@gmx.de,
- lars@metafoo.de, pmeerw@pmeerw.net, davem@davemloft.net,
- hans.verkuil@cisco.com, mchehab@kernel.org, rask@formelder.dk,
- clabbe.montjoie@gmail.com, sean@mess.org, krzk@kernel.org,
- quentin.schulz@free-electrons.com, icenowy@aosc.io, edu.molinas@gmail.com,
- singhalsimran0@gmail.com
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-sunxi@googlegroups.com
-References: <20180126151941.12183-1-embed3d@gmail.com>
- <20180126151941.12183-17-embed3d@gmail.com>
- <6ee10c04-6602-b927-5f47-64d6beb10625@sholland.org>
+Return-Path: <SRS0=zW5g=EX=gmail.com=embed3d@kernel.org>
 From: Philipp Rossak <embed3d@gmail.com>
-Message-ID: <c4153c3b-ff8d-0607-f3f4-3a7827f23348@gmail.com>
-Date: Fri, 26 Jan 2018 18:35:38 +0100
-MIME-Version: 1.0
-In-Reply-To: <6ee10c04-6602-b927-5f47-64d6beb10625@sholland.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+To: lee.jones@linaro.org,
+	robh+dt@kernel.org,
+	mark.rutland@arm.com,
+	maxime.ripard@free-electrons.com,
+	wens@csie.org,
+	linux@armlinux.org.uk,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	davem@davemloft.net,
+	hans.verkuil@cisco.com,
+	mchehab@kernel.org,
+	rask@formelder.dk,
+	clabbe.montjoie@gmail.com,
+	sean@mess.org,
+	krzk@kernel.org,
+	quentin.schulz@free-electrons.com,
+	icenowy@aosc.io,
+	edu.molinas@gmail.com,
+	singhalsimran0@gmail.com
+Cc: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-sunxi@googlegroups.com
+Subject: [PATCH v2 00/16] IIO-based thermal sensor driver for Allwinner H3 and A83T SoC
+Date: Mon, 29 Jan 2018 00:29:03 +0100
+Message-Id: <20180128232919.12639-1-embed3d@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
+Allwiner H3 and A83T SoCs have a thermal sensor, which is a large refactored
+version of the old Allwinner "GPADC" (although it have already only
+thermal part left in A33).
 
+This patch tried to add support for the sensor in H3 and A83T based on
+the A33 thermal sensor driver by Quentin Schulz, which is already merged.
 
-On 26.01.2018 17:25, Samuel Holland wrote:
-> On 01/26/18 09:19, Philipp Rossak wrote:
->> This patch adds the thermal zones to the A83T. Sensor 0 is located in the
->> cpu cluster 0. Sensor 1 is located in cluster 1 and Sensor 3 is located
->> in the gpu.
-> 
-> You mention sensor 3 here, but have sensor 2 in the device tree.
-That is a typo/wrong counting error. This should be sensor 2.
+This Patchseries is based on Icenowy Zhengs v4 patchseries [1]. 
+The first 5 patches are reworked patches from the v4 patchseries. 
+The rest of the patches add step by step a feature to support multible
+sensors, nvmem calibration and interupts. This patchseries should make it
+easy also to add other sunxi SoCs, like the H5, A64 and A80.
 
-I will fix that in the next version of this patch series.
+Patches that adds support for H5, A64 and A80 SoCs are allready prepared,
+and will be upstreamed if this patchseries is applied and the testing is done.
 
->> Signed-off-by: Philipp Rossak <embed3d@gmail.com>
->> ---
->>   arch/arm/boot/dts/sun8i-a83t.dtsi | 20 ++++++++++++++++++++
->>   1 file changed, 20 insertions(+)
->>
->> diff --git a/arch/arm/boot/dts/sun8i-a83t.dtsi b/arch/arm/boot/dts/sun8i-a83t.dtsi
->> index 9e53ff5ac4ed..4259a8726031 100644
->> --- a/arch/arm/boot/dts/sun8i-a83t.dtsi
->> +++ b/arch/arm/boot/dts/sun8i-a83t.dtsi
->> @@ -747,4 +747,24 @@
->>   			#size-cells = <0>;
->>   		};
->>   	};
->> +
->> +	thermal-zones {
->> +		cpu0_thermal: cpu0-thermal {
->> +			polling-delay-passive = <1000>;
->> +			polling-delay = <5000>;
->> +			thermal-sensors = <&ths 0>;
->> +		};
->> +
->> +		cpu1_thermal: cpu1-thermal {
->> +			polling-delay-passive = <1000>;
->> +			polling-delay = <5000>;
->> +			thermal-sensors = <&ths 1>;
->> +		};
->> +
->> +		gpu_thermal: gpu-thermal {
->> +			polling-delay-passive = <1000>;
->> +			polling-delay = <5000>;
->> +			thermal-sensors = <&ths 2>;
-> 
->                                             ^^^^ here
-> 
->> +		};
->> +	};
->>   };
->>
-> 
-> Thanks,
-> Samuel
-> 
+I tried to pick up all the feedback from [1]. I hope I didn't miss anything.
 
-Thanks,
-Philipp
+Regards,
+Philipp 
+
+@Jonathan
+	Could you please check Patch 8 again. I moved some code from 
+	Patch 8 to 9. Please chek it again, if your still ok with it.
+	But I think it sould be ok.
+
+changes since v1:
+	* collecting all acks 
+	* rewording commits/fix typos
+	* move code in place where it is used
+	* fix naming conventions of defines
+	* clarify commits
+	* update documentation to cover the new nvmem calibraion
+	* change nvmem calibration
+
+Icenowy Zheng (1):
+  iio: adc: sun4i-gpadc-iio: rename A33-specified registers to contain
+    A33
+
+Philipp Rossak (15):
+  dt-bindings: update the Allwinner GPADC device tree binding for H3 &
+    A83T
+  arm: config: sunxi_defconfig: enable SUN4I_GPADC
+  iio: adc: sun4i-gpadc-iio: rework: sampling start/end code readout reg
+  iio: adc: sun4i-gpadc-iio: rework: support clocks and reset
+  iio: adc: sun4i-gpadc-iio: rework: support multiple sensors
+  iio: adc: sun4i-gpadc-iio: rework: support nvmem calibration data
+  iio: adc: sun4i-gpadc-iio: rework: add interrupt support
+  iio: adc: sun4i-gpadc-iio: add support for H3 thermal sensor
+  iio: adc: sun4i-gpadc-iio: add support for A83T thermal sensor
+  arm: dts: sunxi-h3-h5: add support for the thermal sensor in H3 and H5
+  arm: dts: sun8i: h3: add support for the thermal sensor in H3
+  arm: dts: sun8i: h3: add thermal zone to H3
+  arm: dts: sun8i: h3: enable H3 sid controller
+  arm: dts: sun8i: a83t: add support for the thermal sensor in A83T
+  arm: dts: sun8i: a83t: add thermal zone to A83T
+
+ .../devicetree/bindings/mfd/sun4i-gpadc.txt        |  50 ++-
+ arch/arm/boot/dts/sun8i-a83t.dtsi                  |  28 ++
+ arch/arm/boot/dts/sun8i-h3.dtsi                    |  21 ++
+ arch/arm/boot/dts/sunxi-h3-h5.dtsi                 |   9 +
+ arch/arm/configs/sunxi_defconfig                   |   1 +
+ drivers/iio/adc/sun4i-gpadc-iio.c                  | 367 ++++++++++++++++++++-
+ include/linux/mfd/sun4i-gpadc.h                    |  51 ++-
+ 7 files changed, 503 insertions(+), 24 deletions(-)
+
+-- 
+2.11.0
