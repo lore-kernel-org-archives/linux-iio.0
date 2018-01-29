@@ -1,296 +1,43 @@
-Return-Path: <SRS0=euYi=EY=electromag.com.au=preid@kernel.org>
-From: Phil Reid <preid@electromag.com.au>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-  robh+dt@kernel.org, mark.rutland@arm.com, Michael.Hennerich@analog.com,
-  preid@electromag.com.au, linux-iio@vger.kernel.org,
-  devicetree@vger.kernel.org
-Subject: [PATCH v4 2/2] iio: ad5272: Add support for Analog Devices digital potentiometers
-Date: Mon, 29 Jan 2018 21:12:54 +0800
-Message-Id: <1517231574-92777-3-git-send-email-preid@electromag.com.au>
-In-Reply-To: <1517231574-92777-1-git-send-email-preid@electromag.com.au>
-References: <1517231574-92777-1-git-send-email-preid@electromag.com.au>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pg0-f67.google.com ([74.125.83.67]:36491 "EHLO
+        mail-pg0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751337AbeA2Otd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Jan 2018 09:49:33 -0500
+From: Shreeya Patel <shreeya.patel23498@gmail.com>
+To: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Cc: Shreeya Patel <shreeya.patel23498@gmail.com>
+Subject: [PATCH] Staging: iio: ade7758: Remove iio_dev mlock
+Date: Mon, 29 Jan 2018 20:19:26 +0530
+Message-Id: <1517237366-4818-1-git-send-email-shreeya.patel23498@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Add implementation for Analog Devices AD5272 and AD5274 digital
-potentiometer devices.
+In the ade7758 file, read raw does not require iio_dev->mlock for
+reads. It can run concurrently as resource protection is handled
+by buf_lock in ade7758_spi_read_reg_8()
 
-Signed-off-by: Phil Reid <preid@electromag.com.au>
+Signed-off-by: Shreeya Patel <shreeya.patel23498@gmail.com>
 ---
- drivers/iio/potentiometer/Kconfig  |  10 ++
- drivers/iio/potentiometer/Makefile |   1 +
- drivers/iio/potentiometer/ad5272.c | 231 +++++++++++++++++++++++++++++++++++++
- 3 files changed, 242 insertions(+)
- create mode 100644 drivers/iio/potentiometer/ad5272.c
+ drivers/staging/iio/meter/ade7758_core.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/iio/potentiometer/Kconfig b/drivers/iio/potentiometer/Kconfig
-index 8bf2825..8daf6d1 100644
---- a/drivers/iio/potentiometer/Kconfig
-+++ b/drivers/iio/potentiometer/Kconfig
-@@ -5,6 +5,16 @@
+diff --git a/drivers/staging/iio/meter/ade7758_core.c b/drivers/staging/iio/meter/ade7758_core.c
+index 7b7ffe5..227dbfc 100644
+--- a/drivers/staging/iio/meter/ade7758_core.c
++++ b/drivers/staging/iio/meter/ade7758_core.c
+@@ -526,9 +526,7 @@ static int ade7758_read_raw(struct iio_dev *indio_dev,
  
- menu "Digital potentiometers"
- 
-+config AD5272
-+	tristate "Analog Devices AD5272 and similar Digital Potentiometer driver"
-+	depends on I2C
-+	help
-+	  Say yes here to build support for the Analog Devices AD5272 and AD5274
-+	  digital potentiometer chip.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called ad5272.
-+
- config DS1803
- 	tristate "Maxim Integrated DS1803 Digital Potentiometer driver"
- 	depends on I2C
-diff --git a/drivers/iio/potentiometer/Makefile b/drivers/iio/potentiometer/Makefile
-index 2260d40..498bbb8 100644
---- a/drivers/iio/potentiometer/Makefile
-+++ b/drivers/iio/potentiometer/Makefile
-@@ -3,6 +3,7 @@
- #
- 
- # When adding new entries keep the list in alphabetical order
-+obj-$(CONFIG_AD5272) += ad5272.o
- obj-$(CONFIG_DS1803) += ds1803.o
- obj-$(CONFIG_MAX5481) += max5481.o
- obj-$(CONFIG_MAX5487) += max5487.o
-diff --git a/drivers/iio/potentiometer/ad5272.c b/drivers/iio/potentiometer/ad5272.c
-new file mode 100644
-index 0000000..0175fd5
---- /dev/null
-+++ b/drivers/iio/potentiometer/ad5272.c
-@@ -0,0 +1,231 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * Analog Devices AD5372 digital potentiometer driver
-+ * Copyright (C) 2018 Phil Reid <preid@electromag.com.au>
-+ *
-+ * Datasheet: http://www.analog.com/media/en/technical-documentation/data-sheets/AD5272_5274.pdf
-+ *
-+ * DEVID	#Wipers	#Positions	Resistor Opts (kOhm)	i2c address
-+ * ad5272	1	1024		20, 50, 100		01011xx
-+ * ad5274	1	256		20, 100			01011xx
-+ */
-+
-+#include <linux/delay.h>
-+#include <linux/gpio/consumer.h>
-+#include <linux/i2c.h>
-+#include <linux/iio/iio.h>
-+#include <linux/module.h>
-+
-+#define  AD5272_RDAC_WR  1
-+#define  AD5272_RDAC_RD  2
-+#define  AD5272_RESET    4
-+#define  AD5272_CTL      7
-+
-+#define  AD5272_RDAC_WR_EN  BIT(1)
-+
-+struct ad5272_cfg {
-+	int max_pos;
-+	int kohms;
-+	int shift;
-+};
-+
-+enum ad5272_type {
-+	AD5272_020,
-+	AD5272_050,
-+	AD5272_100,
-+	AD5274_020,
-+	AD5274_100,
-+};
-+
-+static const struct ad5272_cfg ad5272_cfg[] = {
-+	[AD5272_020] = { .max_pos = 1024, .kohms = 20 },
-+	[AD5272_050] = { .max_pos = 1024, .kohms = 50 },
-+	[AD5272_100] = { .max_pos = 1024, .kohms = 100 },
-+	[AD5274_020] = { .max_pos = 256,  .kohms = 20,  .shift = 2 },
-+	[AD5274_100] = { .max_pos = 256,  .kohms = 100, .shift = 2 },
-+};
-+
-+struct ad5272_data {
-+	struct i2c_client       *client;
-+	struct mutex            lock;
-+	const struct ad5272_cfg *cfg;
-+	u8                      buf[2] ____cacheline_aligned;
-+};
-+
-+static const struct iio_chan_spec ad5272_channel = {
-+	.type = IIO_RESISTANCE,
-+	.output = 1,
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
-+};
-+
-+static int ad5272_write(struct ad5272_data *data, int reg, int val)
-+{
-+	int ret;
-+
-+	data->buf[0] = (reg << 2) | ((val >> 8) & 0x3);
-+	data->buf[1] = (u8)val;
-+
-+	mutex_lock(&data->lock);
-+	ret = i2c_master_send(data->client, data->buf, sizeof(data->buf));
-+	mutex_unlock(&data->lock);
-+	return ret < 0 ? ret : 0;
-+}
-+
-+static int ad5272_read(struct ad5272_data *data, int reg, int *val)
-+{
-+	int ret;
-+
-+	data->buf[0] = reg << 2;
-+	data->buf[1] = 0;
-+
-+	mutex_lock(&data->lock);
-+	ret = i2c_master_send(data->client, data->buf, sizeof(data->buf));
-+	if (ret < 0)
-+		goto error;
-+
-+	ret = i2c_master_recv(data->client, data->buf, sizeof(data->buf));
-+	if (ret < 0)
-+		goto error;
-+
-+	*val = ((data->buf[0] & 0x3) << 8) | data->buf[1];
-+	ret = 0;
-+error:
-+	mutex_unlock(&data->lock);
-+	return ret;
-+}
-+
-+static int ad5272_read_raw(struct iio_dev *indio_dev,
-+			   struct iio_chan_spec const *chan,
-+			   int *val, int *val2, long mask)
-+{
-+	struct ad5272_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW: {
-+		ret = ad5272_read(data, AD5272_RDAC_RD, val);
-+		*val = *val >> data->cfg->shift;
-+		return ret ? ret : IIO_VAL_INT;
-+	}
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = 1000 * data->cfg->kohms;
-+		*val2 = data->cfg->max_pos;
-+		return IIO_VAL_FRACTIONAL;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static int ad5272_write_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan,
-+			    int val, int val2, long mask)
-+{
-+	struct ad5272_data *data = iio_priv(indio_dev);
-+
-+	if (mask != IIO_CHAN_INFO_RAW)
-+		return -EINVAL;
-+
-+	if (val >= data->cfg->max_pos || val < 0 || val2)
-+		return -EINVAL;
-+
-+	return ad5272_write(data, AD5272_RDAC_WR, val << data->cfg->shift);
-+}
-+
-+static const struct iio_info ad5272_info = {
-+	.read_raw = ad5272_read_raw,
-+	.write_raw = ad5272_write_raw,
-+};
-+
-+static int ad5272_reset(struct ad5272_data *data)
-+{
-+	struct gpio_desc *reset_gpio;
-+
-+	reset_gpio = devm_gpiod_get_optional(&data->client->dev, "reset",
-+		GPIOD_OUT_LOW);
-+	if (IS_ERR(reset_gpio))
-+		return PTR_ERR(reset_gpio);
-+
-+	if (reset_gpio) {
-+		udelay(1);
-+		gpiod_set_value(reset_gpio, 1);
-+	} else {
-+		ad5272_write(data, AD5272_RESET, 0);
-+	}
-+	usleep_range(1000, 2000);
-+
-+	return 0;
-+}
-+
-+static int ad5272_probe(struct i2c_client *client,
-+			const struct i2c_device_id *id)
-+{
-+	struct device *dev = &client->dev;
-+	struct iio_dev *indio_dev;
-+	struct ad5272_data *data;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	i2c_set_clientdata(client, indio_dev);
-+
-+	data = iio_priv(indio_dev);
-+	data->client = client;
-+	mutex_init(&data->lock);
-+	data->cfg = &ad5272_cfg[id->driver_data];
-+
-+	ret = ad5272_reset(data);
-+	if (ret)
-+		return ret;
-+
-+	ret = ad5272_write(data, AD5272_CTL, AD5272_RDAC_WR_EN);
-+	if (ret < 0)
-+		return -ENODEV;
-+
-+	indio_dev->dev.parent = dev;
-+	indio_dev->info = &ad5272_info;
-+	indio_dev->channels = &ad5272_channel;
-+	indio_dev->num_channels = 1;
-+	indio_dev->name = client->name;
-+
-+	return devm_iio_device_register(dev, indio_dev);
-+}
-+
-+#if defined(CONFIG_OF)
-+static const struct of_device_id ad5272_dt_ids[] = {
-+	{ .compatible = "adi,ad5272-020", .data = (void *)AD5272_020 },
-+	{ .compatible = "adi,ad5272-050", .data = (void *)AD5272_050 },
-+	{ .compatible = "adi,ad5272-100", .data = (void *)AD5272_100 },
-+	{ .compatible = "adi,ad5274-020", .data = (void *)AD5274_020 },
-+	{ .compatible = "adi,ad5274-100", .data = (void *)AD5274_100 },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, ad5272_dt_ids);
-+#endif /* CONFIG_OF */
-+
-+static const struct i2c_device_id ad5272_id[] = {
-+	{ "ad5272-020", AD5272_020 },
-+	{ "ad5272-050", AD5272_050 },
-+	{ "ad5272-100", AD5272_100 },
-+	{ "ad5274-020", AD5274_020 },
-+	{ "ad5274-100", AD5274_100 },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(i2c, ad5272_id);
-+
-+static struct i2c_driver ad5272_driver = {
-+	.driver = {
-+		.name	= "ad5272",
-+		.of_match_table = of_match_ptr(ad5272_dt_ids),
-+	},
-+	.probe		= ad5272_probe,
-+	.id_table	= ad5272_id,
-+};
-+
-+module_i2c_driver(ad5272_driver);
-+
-+MODULE_AUTHOR("Phil Reid <preid@eletromag.com.au>");
-+MODULE_DESCRIPTION("AD5272 digital potentiometer");
-+MODULE_LICENSE("GPL v2");
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+-		mutex_lock(&indio_dev->mlock);
+ 		ret = ade7758_read_samp_freq(&indio_dev->dev, val);
+-		mutex_unlock(&indio_dev->mlock);
+ 		return ret;
+ 	default:
+ 		return -EINVAL;
 -- 
-1.8.3.1
+2.7.4
+
