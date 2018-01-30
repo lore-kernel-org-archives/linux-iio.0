@@ -1,49 +1,69 @@
-Return-Path: <SRS0=ji7U=EZ=sirena.org.uk=broonie@kernel.org>
-Date: Tue, 30 Jan 2018 15:03:37 +0000
-From: Mark Brown <broonie@kernel.org>
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Arnaud Pouliquen <arnaud.pouliquen@st.com>,
-	linux-iio@vger.kernel.org, alsa-devel@alsa-project.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: STM32_DFSDM_ADC should depend on HAS_DMA
-Message-ID: <20180130150337.GC10525@sirena.org.uk>
-References: <1517318506-14664-1-git-send-email-geert@linux-m68k.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-qt0-f194.google.com ([209.85.216.194]:41933 "EHLO
+        mail-qt0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753165AbeA3Pb0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 30 Jan 2018 10:31:26 -0500
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="Izn7cH1Com+I3R9J"
-In-Reply-To: <1517318506-14664-1-git-send-email-geert@linux-m68k.org>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20180130150337.GC10525@sirena.org.uk>
+References: <1517318506-14664-1-git-send-email-geert@linux-m68k.org> <20180130150337.GC10525@sirena.org.uk>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 30 Jan 2018 16:31:24 +0100
+Message-ID: <CAMuHMdWhADAPSnj_34R04Oh_H_puyc0vzx--tpihAaUM4NDMQg@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: STM32_DFSDM_ADC should depend on HAS_DMA
+To: Mark Brown <broonie@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
+        linux-iio@vger.kernel.org,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+Hi Mark,
 
---Izn7cH1Com+I3R9J
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Tue, Jan 30, 2018 at 4:03 PM, Mark Brown <broonie@kernel.org> wrote:
+> On Tue, Jan 30, 2018 at 02:21:46PM +0100, Geert Uytterhoeven wrote:
+>> If NO_DMA=y:
+>>
+>>     ERROR: "bad_dma_ops" [drivers/iio/adc/stm32-dfsdm-adc.ko] undefined!
+>>
+>> Add a dependency on HAS_DMA to fix this.
+>
+> Once again I have to ask why we're doing this per driver and not having
+> the few architectures that have this issue set something up.
 
-On Tue, Jan 30, 2018 at 02:21:46PM +0100, Geert Uytterhoeven wrote:
-> If NO_DMA=3Dy:
->=20
->     ERROR: "bad_dma_ops" [drivers/iio/adc/stm32-dfsdm-adc.ko] undefined!
->=20
-> Add a dependency on HAS_DMA to fix this.
+Because doing so would lead us to
 
-Once again I have to ask why we're doing this per driver and not having
-the few architectures that have this issue set something up.
+    depends on COMPILE_TEST || HAS_DMA
 
---Izn7cH1Com+I3R9J
-Content-Type: application/pgp-signature; name="signature.asc"
+in many places. Is that any better?
 
------BEGIN PGP SIGNATURE-----
+I agree we could indeed use DMA dummies in cases where a driver uses:
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAlpwiUgACgkQJNaLcl1U
-h9DLPwf/QzrLNH1BfkugKqyYddmd2cAma8j0yuYG9OOjNzdxsdLrA+MWidgFuExp
-L3p5bDY4YPOzWlLyi80+nBp9GX3FdVrtV7YgpTUuUloygNP5AGbbmkaSLPHCbept
-7cM7zXoWC1WYqvJMvl5syq4IjWqgbEfvELSybELTQ9ZYuwR2S4bPqZYr9F6GQZZm
-AB3n1G9H3ZCGfZzNUwPVe0INQaLY7K+nq+Ic1GSfssocUSzux14dKAlLIkMVEkxO
-N2+7Kd4RL79Tj7d+R/zRK/mIFgFwoEExvCLvLrm1hxGsCszzmsxXVpfwfs4jPgUd
-7ravvGW9hLNtYrWoFIFWtNOMOPqdZA==
-=HoYM
------END PGP SIGNATURE-----
+   depends on ARCH_FOO || ARCH_BAR || COMPILE_TEST
+   depends on HAS_DMA
 
---Izn7cH1Com+I3R9J--
+But we also have generic options like:
+
+    config ATA_BMDMA
+            bool "ATA BMDMA support"
+            depends on HAS_DMA
+
+And even architecture-specific drivers for SoCs that may or not have DMA:
+
+config HASH_DEV_STM32
+        tristate "Support for STM32 hash accelerators"
+        depends on ARCH_STM32
+        depends on HAS_DMA
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
