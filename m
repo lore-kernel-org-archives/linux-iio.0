@@ -1,6 +1,6 @@
 Return-Path: <andy.shevchenko@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <197f448e-322f-dae4-aa4b-3cc2bd5b16bb@pressers.name>
+In-Reply-To: <CAHp75VeVuS51Z7U2P+t3YnfitUtVVAa_8oSbnXCHTY7rqrJUEQ@mail.gmail.com>
 References: <010001602cf53153-39ad69f1-1b39-4e6d-a748-9455a16c2fbd-000000@email.amazonses.com>
  <20171210182152.70ad8fbf@archlinux> <01000160dccefcb4-25edfd89-56f3-486f-88a4-cb8c07253974-000000@email.amazonses.com>
  <20180114104330.2aa7c1fd@archlinux> <20180128094021.572ab366@archlinux>
@@ -10,10 +10,10 @@ References: <010001602cf53153-39ad69f1-1b39-4e6d-a748-9455a16c2fbd-000000@email.
  <CADXBfmvKF_doLv0Vg0TY4cH_rDBEP5NvJ4jHJf85iuOjJB6TzA@mail.gmail.com>
  <CAHp75VdsDAbgJ1XmhaxA5C8FTcYX7tBa4x_Y4ZYk6Sub510nqw@mail.gmail.com>
  <f42f6acc-cb30-e36d-0c98-42b7e3d40457@pressers.name> <CAHp75VfmH5aNPzBLvm-GrQ-49uyJNNwdjbte3uh_kmaC91bz6A@mail.gmail.com>
- <197f448e-322f-dae4-aa4b-3cc2bd5b16bb@pressers.name>
+ <197f448e-322f-dae4-aa4b-3cc2bd5b16bb@pressers.name> <CAHp75VeVuS51Z7U2P+t3YnfitUtVVAa_8oSbnXCHTY7rqrJUEQ@mail.gmail.com>
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Tue, 30 Jan 2018 22:12:35 +0200
-Message-ID: <CAHp75VeVuS51Z7U2P+t3YnfitUtVVAa_8oSbnXCHTY7rqrJUEQ@mail.gmail.com>
+Date: Tue, 30 Jan 2018 23:20:28 +0200
+Message-ID: <CAHp75VfPBP0TVt-==0wjcK6Oxg1kVN4mQf5Ji50RBy=SXf6yFw@mail.gmail.com>
 Subject: Re: [PATCH v2] iio: accel: bmc150: Check for a second ACPI device for BOSC0200
 To: Steven Presser <steve@pressers.name>
 Cc: Hans de Goede <hdegoede@redhat.com>, Hartmut Knaack <knaack.h@gmx.de>,
@@ -25,40 +25,26 @@ Cc: Hans de Goede <hdegoede@redhat.com>, Hartmut Knaack <knaack.h@gmx.de>,
 Content-Type: text/plain; charset="UTF-8"
 List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, Jan 30, 2018 at 9:27 PM, Steven Presser <steve@pressers.name> wrote:
-> On 01/30/2018 02:05 PM, Andy Shevchenko wrote:
->> On Tue, Jan 30, 2018 at 8:34 PM, Steven Presser <steve@pressers.name>
->> wrote:
+On Tue, Jan 30, 2018 at 10:12 PM, Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+> On Tue, Jan 30, 2018 at 9:27 PM, Steven Presser <steve@pressers.name> wrote:
+>> On 01/30/2018 02:05 PM, Andy Shevchenko wrote:
+>>> On Tue, Jan 30, 2018 at 8:34 PM, Steven Presser <steve@pressers.name>
+>>> wrote:
 
->>> First, I believe the "bmc150" in the subject line is in some way a
->>> misnomer.
->>> You'd have to ask Jeremy for more details on what he intended it to refer
->>> to.  However, I believe the device in question is actually the bma250[1],
->>> which does not have a magnetometer component.  I'm unfortunately away
->>> from
->>> my notes, but I can check later if you need me to verify the exact chip.
->>
->> Please do, I would really be on the safe side here.
+> Let's do this way. Create a bug on kernel bugzilla, attach output of
 >
-> Will do.  My digital notes indicate I worked from what was exposed back to
-> what chip matched.  If you can give me through Friday evening, I'll crack it
-> and do a visual verification.  (Alas, I'm traveling and won't be back to it
-> until then).
+> % acpidump -o tables.dat # tables.dat file
+> % grep -H 15 /sys/bus/acpi/devices/*/status
+> % dmidecode
+>
+> and share the number here. I will take it.
 
-We are in the merge window anyway, so, no hurry.
+Here [1] is the branch with another approach. Can you test it and tell
+if it fixes the issue?
 
-I'm looking right now in the clean solution. Looks promising.
-
->> Bad, bad Lenovo. (DMI strings might help here)
-> What particular DMI strings would be helpful?  All of them?
-
-Let's do this way. Create a bug on kernel bugzilla, attach output of
-
-% acpidump -o tables.dat # tables.dat file
-% grep -H 15 /sys/bus/acpi/devices/*/status
-% dmidecode
-
-and share the number here. I will take it.
+[1]: https://bitbucket.org/andy-shev/linux/branch/topic/iio-acpi
+It's based on linux-next + compiletest branch of IIO subsystem.
 
 -- 
 With Best Regards,
