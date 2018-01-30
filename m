@@ -1,69 +1,57 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qt0-f194.google.com ([209.85.216.194]:41933 "EHLO
-        mail-qt0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753165AbeA3Pb0 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 30 Jan 2018 10:31:26 -0500
-MIME-Version: 1.0
-In-Reply-To: <20180130150337.GC10525@sirena.org.uk>
-References: <1517318506-14664-1-git-send-email-geert@linux-m68k.org> <20180130150337.GC10525@sirena.org.uk>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 30 Jan 2018 16:31:24 +0100
-Message-ID: <CAMuHMdWhADAPSnj_34R04Oh_H_puyc0vzx--tpihAaUM4NDMQg@mail.gmail.com>
-Subject: Re: [PATCH] iio: adc: STM32_DFSDM_ADC should depend on HAS_DMA
-To: Mark Brown <broonie@kernel.org>
+Return-Path: <SRS0=ji7U=EZ=sirena.org.uk=broonie@kernel.org>
+Date: Tue, 30 Jan 2018 16:35:07 +0000
+From: Mark Brown <broonie@kernel.org>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
 Cc: Jonathan Cameron <jic23@kernel.org>,
-        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
-        linux-iio@vger.kernel.org,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	Arnaud Pouliquen <arnaud.pouliquen@st.com>,
+	linux-iio@vger.kernel.org,
+	ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iio: adc: STM32_DFSDM_ADC should depend on HAS_DMA
+Message-ID: <20180130163507.GE10525@sirena.org.uk>
+References: <1517318506-14664-1-git-send-email-geert@linux-m68k.org>
+ <20180130150337.GC10525@sirena.org.uk>
+ <CAMuHMdWhADAPSnj_34R04Oh_H_puyc0vzx--tpihAaUM4NDMQg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="WBsA/oQW3eTA3LlM"
+In-Reply-To: <CAMuHMdWhADAPSnj_34R04Oh_H_puyc0vzx--tpihAaUM4NDMQg@mail.gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Mark,
 
-On Tue, Jan 30, 2018 at 4:03 PM, Mark Brown <broonie@kernel.org> wrote:
-> On Tue, Jan 30, 2018 at 02:21:46PM +0100, Geert Uytterhoeven wrote:
->> If NO_DMA=y:
->>
->>     ERROR: "bad_dma_ops" [drivers/iio/adc/stm32-dfsdm-adc.ko] undefined!
->>
->> Add a dependency on HAS_DMA to fix this.
->
-> Once again I have to ask why we're doing this per driver and not having
-> the few architectures that have this issue set something up.
+--WBsA/oQW3eTA3LlM
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Because doing so would lead us to
+On Tue, Jan 30, 2018 at 04:31:24PM +0100, Geert Uytterhoeven wrote:
+> On Tue, Jan 30, 2018 at 4:03 PM, Mark Brown <broonie@kernel.org> wrote:
 
-    depends on COMPILE_TEST || HAS_DMA
+> > Once again I have to ask why we're doing this per driver and not having
+> > the few architectures that have this issue set something up.
 
-in many places. Is that any better?
+> Because doing so would lead us to
 
-I agree we could indeed use DMA dummies in cases where a driver uses:
+>     depends on COMPILE_TEST || HAS_DMA
 
-   depends on ARCH_FOO || ARCH_BAR || COMPILE_TEST
-   depends on HAS_DMA
+> in many places. Is that any better?
 
-But we also have generic options like:
+Honestly I'd just not have any dependency here, I'm not sure the DMA
+dependencies are really covering a good percentage of what's really
+likely to be found on these platforms.
 
-    config ATA_BMDMA
-            bool "ATA BMDMA support"
-            depends on HAS_DMA
+--WBsA/oQW3eTA3LlM
+Content-Type: application/pgp-signature; name="signature.asc"
 
-And even architecture-specific drivers for SoCs that may or not have DMA:
+-----BEGIN PGP SIGNATURE-----
 
-config HASH_DEV_STM32
-        tristate "Support for STM32 hash accelerators"
-        depends on ARCH_STM32
-        depends on HAS_DMA
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAlpwnroACgkQJNaLcl1U
+h9Ajqwf8CzwrV4U8sSZ0G25bzklvvsjHNQkf4CgeH9Kw6v0OptVeyPYs4tJaPTIm
+RTyK/WEMzBVrBk1vyV7WyrguSx1R/aTpdx5G9kPhHsCq+Yt5sXb21iNGZYgyW0Ri
+ymakDUq3I9qS9pm7raimmwr5ZYfcFmtXxZyDw0uPI1Cp3vP1g7GHnllKuJLdbR3m
+w8Neir7C81QqgSyFGTdP/oin9JcfQ88bddvE77m8kMRopQ8pu42otddhpt36E3NM
+fIkVq1nyYYoO9wdb3QYiTrAWYIZFe1KvU/Qu4ZpaAFkt4xdUDZB7+WWcSnBI6qkL
+CP4qPBnGnXl8XYa1mOYaTgfixJppCA==
+=KIZ9
+-----END PGP SIGNATURE-----
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+--WBsA/oQW3eTA3LlM--
