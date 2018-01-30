@@ -1,63 +1,45 @@
-Return-Path: <SRS0=KCCV=EY=users.sourceforge.net=elfring@kernel.org>
-To: linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
- Hartmut Knaack <knaack.h@gmx.de>, Jiri Kosina <jikos@kernel.org>,
- Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
- Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
-From: SF Markus Elfring <elfring@users.sourceforge.net>
-Subject: [PATCH] iio/orientation: Delete an error message for a failed memory
- allocation in two functions
-Message-ID: <ebf6c923-d641-8bf8-5544-630a5ee39980@users.sourceforge.net>
-Date: Mon, 29 Jan 2018 22:26:15 +0100
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from xavier.telenet-ops.be ([195.130.132.52]:38248 "EHLO
+        xavier.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752209AbeA3NVt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 30 Jan 2018 08:21:49 -0500
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
+        Mark Brown <broonie@kernel.org>
+Cc: linux-iio@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH] iio: adc: STM32_DFSDM_ADC should depend on HAS_DMA
+Date: Tue, 30 Jan 2018 14:21:46 +0100
+Message-Id: <1517318506-14664-1-git-send-email-geert@linux-m68k.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Mon, 29 Jan 2018 22:20:07 +0100
+If NO_DMA=y:
 
-Omit an extra message for a memory allocation failure in these functions.
+    ERROR: "bad_dma_ops" [drivers/iio/adc/stm32-dfsdm-adc.ko] undefined!
 
-This issue was detected by using the Coccinelle software.
+Add a dependency on HAS_DMA to fix this.
 
-Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+Fixes: e2e6771c64625165 ("IIO: ADC: add STM32 DFSDM sigma delta ADC support")
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 ---
- drivers/iio/orientation/hid-sensor-incl-3d.c  | 4 +---
- drivers/iio/orientation/hid-sensor-rotation.c | 4 +---
- 2 files changed, 2 insertions(+), 6 deletions(-)
+ drivers/iio/adc/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iio/orientation/hid-sensor-incl-3d.c b/drivers/iio/orientation/hid-sensor-incl-3d.c
-index 1e5451d1ff88..742c0e0eb4cf 100644
---- a/drivers/iio/orientation/hid-sensor-incl-3d.c
-+++ b/drivers/iio/orientation/hid-sensor-incl-3d.c
-@@ -336,10 +336,8 @@ static int hid_incl_3d_probe(struct platform_device *pdev)
- 
- 	indio_dev->channels = kmemdup(incl_3d_channels,
- 				      sizeof(incl_3d_channels), GFP_KERNEL);
--	if (!indio_dev->channels) {
--		dev_err(&pdev->dev, "failed to duplicate channels\n");
-+	if (!indio_dev->channels)
- 		return -ENOMEM;
--	}
- 
- 	ret = incl_3d_parse_report(pdev, hsdev,
- 				   (struct iio_chan_spec *)indio_dev->channels,
-diff --git a/drivers/iio/orientation/hid-sensor-rotation.c b/drivers/iio/orientation/hid-sensor-rotation.c
-index a69db2002414..cbf5e406b1ee 100644
---- a/drivers/iio/orientation/hid-sensor-rotation.c
-+++ b/drivers/iio/orientation/hid-sensor-rotation.c
-@@ -277,10 +277,8 @@ static int hid_dev_rot_probe(struct platform_device *pdev)
- 	indio_dev->channels = devm_kmemdup(&pdev->dev, dev_rot_channels,
- 					   sizeof(dev_rot_channels),
- 					   GFP_KERNEL);
--	if (!indio_dev->channels) {
--		dev_err(&pdev->dev, "failed to duplicate channels\n");
-+	if (!indio_dev->channels)
- 		return -ENOMEM;
--	}
- 
- 	ret = dev_rot_parse_report(pdev, hsdev,
- 				   (struct iio_chan_spec *)indio_dev->channels,
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 39e3b345a6c84033..d976c64107c8e9fd 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -683,6 +683,7 @@ config STM32_DFSDM_CORE
+ config STM32_DFSDM_ADC
+ 	tristate "STMicroelectronics STM32 dfsdm adc"
+ 	depends on (ARCH_STM32 && OF) || COMPILE_TEST
++	depends on HAS_DMA
+ 	select STM32_DFSDM_CORE
+ 	select REGMAP_MMIO
+ 	select IIO_BUFFER_HW_CONSUMER
 -- 
-2.16.1
+2.7.4
+
