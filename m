@@ -1,33 +1,35 @@
-Return-Path: <SRS0=uf+1=EY=free-electrons.com=maxime.ripard@kernel.org>
-Date: Mon, 29 Jan 2018 10:46:50 +0100
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Return-Path: <SRS0=yo04=E2=free-electrons.com=quentin.schulz@kernel.org>
+Date: Wed, 31 Jan 2018 20:23:54 +0100
+From: Quentin Schulz <quentin.schulz@free-electrons.com>
 To: Philipp Rossak <embed3d@gmail.com>
 Cc: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
-	wens@csie.org, linux@armlinux.org.uk, jic23@kernel.org,
-	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	davem@davemloft.net, hans.verkuil@cisco.com, mchehab@kernel.org,
-	rask@formelder.dk, clabbe.montjoie@gmail.com, sean@mess.org,
-	krzk@kernel.org, quentin.schulz@free-electrons.com, icenowy@aosc.io,
-	edu.molinas@gmail.com, singhalsimran0@gmail.com,
+	maxime.ripard@free-electrons.com, wens@csie.org,
+	linux@armlinux.org.uk, jic23@kernel.org, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net, davem@davemloft.net,
+	hans.verkuil@cisco.com, mchehab@kernel.org, rask@formelder.dk,
+	clabbe.montjoie@gmail.com, sean@mess.org, krzk@kernel.org,
+	icenowy@aosc.io, edu.molinas@gmail.com, singhalsimran0@gmail.com,
 	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	linux-sunxi@googlegroups.com
 Subject: Re: [PATCH v2 09/16] iio: adc: sun4i-gpadc-iio: add support for H3
  thermal sensor
-Message-ID: <20180129094650.kpbhtbcpo42huadl@flea.lan>
+Message-ID: <20180131192354.sb7zmcwc6c3eisqj@qschulz>
 References: <20180128232919.12639-1-embed3d@gmail.com>
  <20180128232919.12639-10-embed3d@gmail.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="gd24cx5qwqzi4jit"
+	protocol="application/pgp-signature"; boundary="wbbx6ysk7ybivvth"
 In-Reply-To: <20180128232919.12639-10-embed3d@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
 
---gd24cx5qwqzi4jit
+--wbbx6ysk7ybivvth
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
+
+Hi Philipp,
 
 On Mon, Jan 29, 2018 at 12:29:12AM +0100, Philipp Rossak wrote:
 > This patch adds support for the H3 ths sensor.
@@ -55,6 +57,9 @@ adc-iio.c
 > +static int sunxi_ths_sample_start(struct sun4i_gpadc_iio *info);
 > +static int sunxi_ths_sample_end(struct sun4i_gpadc_iio *info);
 > +
+
+We try to avoid using the generic sunxi prefix.
+
 >  struct gpadc_data {
 >  	int		temp_offset;
 >  	int		temp_scale;
@@ -66,9 +71,6 @@ adc-iio.c
 > +	u32		ctrl2_map;
 > +	u32		sensor_en_map;
 > +	u32		filter_map;
-
-You can use a regmap_field for that.
-
 >  	u32		irq_clear_map;
 >  	u32		irq_control_map;
 >  	bool		has_bus_clk;
@@ -100,6 +102,10 @@ You can use a regmap_field for that.
 > +			SUN8I_H3_THS_INTS_ALARM_OFF_0,
 > +	.irq_control_map =3D SUN8I_H3_THS_INTC_TDATA_IRQ_EN0 |
 > +		SUN8I_H3_THS_TEMP_PERIOD(0x7),
+
+=46rom what I've understood, ACQ regs are basically clock dividers. We
+should make a better job at explaining it :)
+
 > +};
 > +
 >  struct sun4i_gpadc_iio {
@@ -148,34 +154,126 @@ dc_iio *info)
 >  }
 > =20
 > +static int sunxi_ths_sample_start(struct sun4i_gpadc_iio *info)
+> +{
+> +	u32 value;
+> +	sunxi_calibrate(info);
+> +
+> +	if (info->data->ctrl0_map)
+> +		regmap_write(info->regmap, SUN8I_H3_THS_CTRL0,
+> +			info->data->ctrl0_map);
+> +
+> +	regmap_write(info->regmap, SUN8I_H3_THS_CTRL2,
+> +		info->data->ctrl2_map);
+> +
+> +	regmap_write(info->regmap, SUN8I_H3_THS_STAT,
+> +			info->data->irq_clear_map);
+> +
+> +	regmap_write(info->regmap, SUN8I_H3_THS_FILTER,
+> +		info->data->filter_map);
+> +
+> +	regmap_write(info->regmap, SUN8I_H3_THS_INTC,
+> +		info->data->irq_control_map);
+> +
+> +	regmap_read(info->regmap, SUN8I_H3_THS_CTRL2, &value);
+> +
+> +	regmap_write(info->regmap, SUN8I_H3_THS_CTRL2,
+> +		info->data->sensor_en_map | value);
+> +
+> +	return 0;
+> +}
+> +
 
-Please remain consistent with the prefixes used in the driver
+I'm a bit worried. Will all the sensors have the same sample start? Or
+will we need at some point also entries in info->data for register
+addresses, if they have ctrl2 or filter, etc...
 
-Maxime
+Maybe we could define a sample_start for the h3 only and reuse-it if
+possible and if not declare another sample start? All depends if the
+sample start is most likely to change in the near future or not. If it
+is, then we should avoid adding a lot of variables in info->data and
+just go for a single sample_start per SoC.
 
---=20
-Maxime Ripard, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+>  static int sun4i_gpadc_runtime_resume(struct device *dev)
+>  {
+>  	struct sun4i_gpadc_iio *info =3D iio_priv(dev_get_drvdata(dev));
+> @@ -582,6 +664,10 @@ static const struct of_device_id sun4i_gpadc_of_id[]=
+ =3D {
+>  		.compatible =3D "allwinner,sun8i-a33-ths",
+>  		.data =3D &sun8i_a33_gpadc_data,
+>  	},
+> +	{
+> +		.compatible =3D "allwinner,sun8i-h3-ths",
+> +		.data =3D &sun8i_h3_ths_data,
+> +	},
+>  	{ /* sentinel */ }
+>  };
+> =20
+> diff --git a/include/linux/mfd/sun4i-gpadc.h b/include/linux/mfd/sun4i-gp=
+adc.h
+> index 458f2159a95a..80b79c31cea3 100644
+> --- a/include/linux/mfd/sun4i-gpadc.h
+> +++ b/include/linux/mfd/sun4i-gpadc.h
+> @@ -91,7 +91,29 @@
+>  #define SUN4I_GPADC_AUTOSUSPEND_DELAY			10000
+> =20
+>  /* SUNXI_THS COMMON REGISTERS + DEFINES */
+> +#define SUN8I_H3_THS_CTRL0				0x00
+> +#define SUN8I_H3_THS_CTRL2				0x40
+>  #define SUN8I_H3_THS_INTC				0x44
+> +#define SUN8I_H3_THS_STAT				0x48
+> +#define SUN8I_H3_THS_FILTER				0x70
+> +#define SUNXI_THS_CDATA_0_1				0x74
+> +#define SUNXI_THS_CDATA_2_3				0x78
+> +#define SUN8I_H3_THS_TDATA0				0x80
+> +
+> +#define SUN8I_H3_THS_ACQ1(x)				(GENMASK(31, 16) & ((x) << 16))
+> +
+> +#define SUN8I_H3_THS_TEMP_SENSE_EN0			BIT(0)
+> +
+> +#define SUN8I_H3_THS_TEMP_PERIOD(x)			(GENMASK(31, 12) & ((x) << 12))
+> +
+> +#define SUN8I_H3_THS_INTS_ALARM_INT_0			BIT(0)
+> +#define SUN8I_H3_THS_INTS_SHUT_INT_0			BIT(4)
+> +#define SUN8I_H3_THS_INTS_TDATA_IRQ_0			BIT(8)
+> +#define SUN8I_H3_THS_INTS_ALARM_OFF_0			BIT(12)
+> +
+> +#define SUN8I_H3_THS_INTC_ALARM_INT_EN0			BIT(0)
+> +#define SUN8I_H3_THS_INTC_SHUT_INT_EN0			BIT(4)
+> +#define SUN8I_H3_THS_INTC_TDATA_IRQ_EN0			BIT(8)
+> =20
 
---gd24cx5qwqzi4jit
+Personal taste here but I prefer the register bits to be defined just
+below the register address define.
+
+i.e.:
+
+#define SUN8I_H3_THS_CTRL2                           0x40
+#define SUN8I_H3_THS_ACQ1(x)                         (GENMASK(31, 16) & ((x=
+) << 16))
+#define SUN8I_H3_THS_TEMP_SENSE_EN0                  BIT(0)
+
+that way we know for which register we should use which constants.
+
+Quentin
+
+--wbbx6ysk7ybivvth
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEE0VqZU19dR2zEVaqr0rTAlCFNr3QFAlpu7YkACgkQ0rTAlCFN
-r3TTZQ/9E9HtoW3omwSUySaUVMtzKl9cy+xoWn6jUQBjnbewDgs180WLnCm+sk+z
-iN0UPMxTJ8T02KF8p7cq9JdWqYZHWdE1L8IBFLdrG3OJGVLnhbO+lubQ/e0wj0Oa
-LuDoIqnu11rvVwS4yzpDHwwmkgAJfql7fgTweK3DYYKXAjaz6aLiBRXWMEJXvnHz
-17yqtsydbdc++vu6PkcjHu6p3jK3HpKJtRShsNMomi+CCQ441/zMnEk1EuYJZ1XY
-8ggQp5B5l33E5IpPdjQc3uGFUajVpAzO/k5ocWE/RZptMO5CfUXdG2EZxOSOHSv+
-XRzc0NeWo8w0Tn1jU+vkhvsqMU6rdbFqqA7buhcwx1R0cog5wLVKf0kW/wNJ6vBT
-QYUvGuNn5HIjg6ZkyKfMxJ9Fkwkj54Fnr6VJDcwGTZoqLsWJnJKzdaiIyxJj7cA4
-KpczFC99CFzsy5X0f2F/ppFQTRG79V1uJrfgZ1XwjoUOMs0OUJBGEMQ6z6ixMZLy
-GQQH7nlhRtKV9RNa1I/oIM4UGTxWRtvTT3N3cGJdAyNXsVkfSknJvfHwz6hk5Pxz
-rr6mJw2eFcB4i16bb5hxj7wO4bPdq3YGqoIfjQzBA6M+hFNfgAa2jmavy/LLyYMH
-U5tRZg7gipgEQ3hzi6Ybh6dTqwWqFuJ42m3vfbcKVFPzBaP3SKM=
-=JOI2
+iQIcBAABCAAGBQJachfDAAoJEIS4mnU+4PGjAq0P/2PzqJJ1HZqIunUsaLkwXB1U
+39Pvx7cgIoUc2wlh55XwevHqpwKNlumbdJ3DGmrf04vv80lbQgtkX1ePc3B+EIIH
+foPHUVPET05LefG/gffeJOkCp24N1bmgQmqt0Pbk8fMu8XxPI+9rL3XTGsjuTgSu
+JwAhlI7AqI8PjzLT6s4FOpfqX9qcwdUoXWNZ+FZtNnmzTR6mRDOCEMWsRmIoW1q3
+TSM5Bn6LLpgNGnN26IzONGLHylammQW1i86NmjH9GwG5LU2Mi9I+7LpYBeAlAlBY
+G+xNCfkT15VKxVTvarhbvQQXXqZdFhoaGJ66I/CfSq+21io3QAHGEBx6D2f0W3oa
+lc9C0QRlmYa829ceDzV7jn1nQh8uRWH8Elx44MZ9VSBYCInNa9IPNVi7/43bZbtU
+R6lyPRt/fZQIFTaiZDQMtGUy80wKug1TFAdXa1sG0cPgk9W5kUEFzSFPzzDGOzlx
++b9LeJUc3A7/0B59YLdHUUEwWyuzHnokOFfGSkN1nCEprid5jORVzM7GZqHKVLn1
+l1KmArvjhLcNCNBZGhYJzOlhfT3K4P4ncYbkdD7FbCbSrPdIkpYcDtSiyS80Wk/c
+vsb9ajUCkM4ToP0T+RJqG+YhSdOD9fEZDmCnHvfqv9wnW2TwWhHFdKnsoOpfrXrw
+fZYm4K1+RQ3rGL4lf0qz
+=e73m
 -----END PGP SIGNATURE-----
 
---gd24cx5qwqzi4jit--
+--wbbx6ysk7ybivvth--
