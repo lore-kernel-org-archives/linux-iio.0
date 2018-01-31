@@ -1,8 +1,9 @@
-Return-Path: <SRS0=Pvho=EZ=free-electrons.com=maxime.ripard@kernel.org>
-Date: Tue, 30 Jan 2018 09:36:43 +0100
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Return-Path: <SRS0=3kB/=E2=intel.com=fengguang.wu@kernel.org>
+Date: Thu, 1 Feb 2018 06:49:29 +0800
+From: kbuild test robot <lkp@intel.com>
 To: Philipp Rossak <embed3d@gmail.com>
-Cc: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
+Cc: kbuild-all@01.org, lee.jones@linaro.org, robh+dt@kernel.org,
+	mark.rutland@arm.com, maxime.ripard@free-electrons.com,
 	wens@csie.org, linux@armlinux.org.uk, jic23@kernel.org,
 	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
 	davem@davemloft.net, hans.verkuil@cisco.com, mchehab@kernel.org,
@@ -14,149 +15,168 @@ Cc: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
 	linux-sunxi@googlegroups.com
 Subject: Re: [PATCH v2 07/16] iio: adc: sun4i-gpadc-iio: rework: support
  nvmem calibration data
-Message-ID: <20180130083642.cdpd7jnthkdrrk5r@flea.lan>
-References: <20180128232919.12639-1-embed3d@gmail.com>
- <20180128232919.12639-8-embed3d@gmail.com>
- <20180129094045.sagz2dnzvdadd4yx@flea.lan>
- <e319fde5-9ede-8be0-03ae-f0a22d50250c@gmail.com>
+Message-ID: <201802010647.sYlui5vv%fengguang.wu@intel.com>
+References: <20180128232919.12639-8-embed3d@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="6u2ivkblyv2lastj"
-In-Reply-To: <e319fde5-9ede-8be0-03ae-f0a22d50250c@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20180128232919.12639-8-embed3d@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
+Hi Philipp,
 
---6u2ivkblyv2lastj
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thank you for the patch! Perhaps something to improve:
 
-On Mon, Jan 29, 2018 at 01:33:12PM +0100, Philipp Rossak wrote:
-> > >   static const struct gpadc_data sun4i_gpadc_data =3D {
-> > > @@ -87,6 +89,7 @@ static const struct gpadc_data sun4i_gpadc_data =3D=
- {
-> > >   	.sample_start =3D sun4i_gpadc_sample_start,
-> > >   	.sample_end =3D sun4i_gpadc_sample_end,
-> > >   	.sensor_count =3D 1,
-> > > +	.supports_nvmem =3D false,
-> >=20
-> > That's already its value if you leave it out.
-> >=20
-> > >   };
-> > >   static const struct gpadc_data sun5i_gpadc_data =3D {
-> > > @@ -100,6 +103,7 @@ static const struct gpadc_data sun5i_gpadc_data =
-=3D {
-> > >   	.sample_start =3D sun4i_gpadc_sample_start,
-> > >   	.sample_end =3D sun4i_gpadc_sample_end,
-> > >   	.sensor_count =3D 1,
-> > > +	.supports_nvmem =3D false,
-> > >   };
-> > >   static const struct gpadc_data sun6i_gpadc_data =3D {
-> > > @@ -113,6 +117,7 @@ static const struct gpadc_data sun6i_gpadc_data =
-=3D {
-> > >   	.sample_start =3D sun4i_gpadc_sample_start,
-> > >   	.sample_end =3D sun4i_gpadc_sample_end,
-> > >   	.sensor_count =3D 1,
-> > > +	.supports_nvmem =3D false,
-> > >   };
-> > >   static const struct gpadc_data sun8i_a33_gpadc_data =3D {
-> > > @@ -123,6 +128,7 @@ static const struct gpadc_data sun8i_a33_gpadc_da=
-ta =3D {
-> > >   	.sample_start =3D sun4i_gpadc_sample_start,
-> > >   	.sample_end =3D sun4i_gpadc_sample_end,
-> > >   	.sensor_count =3D 1,
-> > > +	.supports_nvmem =3D false,
-> > >   };
-> > >   struct sun4i_gpadc_iio {
-> > > @@ -141,6 +147,8 @@ struct sun4i_gpadc_iio {
-> > >   	struct clk			*mod_clk;
-> > >   	struct reset_control		*reset;
-> > >   	int				sensor_id;
-> > > +	u32				calibration_data[2];
-> > > +	bool				has_calibration_data[2];
-> >=20
-> > Why do you have two different values here?
->=20
-> I think my idea was too complex! I thought it would be better to check if
-> calibration data was read, and is able to be written to hardware. those
-> information were split per register.
->=20
-> I think a u64 should be fine for calibration_data. When I write the
-> calibration data I can check on the sensor count and write only the lower=
- 32
-> bits if there are less than 3 sensors.
->=20
-> Is this ok for you?
+[auto build test WARNING on robh/for-next]
+[also build test WARNING on v4.15 next-20180126]
+[if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
 
-I'd need to see the implementation, but make sure that this is
-documented in your driver :)
+url:    https://github.com/0day-ci/linux/commits/Philipp-Rossak/IIO-based-thermal-sensor-driver-for-Allwinner-H3-and-A83T-SoC/20180201-043415
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
+reproduce:
+        # apt-get install sparse
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF=-D__CHECK_ENDIAN__
 
->=20
-> > >   	/* prevents concurrent reads of temperature and ADC */
-> > >   	struct mutex			mutex;
-> > >   	struct thermal_zone_device	*tzd;
-> > > @@ -561,6 +569,9 @@ static int sun4i_gpadc_probe_dt(struct platform_d=
-evice *pdev,
-> > >   	struct resource *mem;
-> > >   	void __iomem *base;
-> > >   	int ret;
-> > > +	struct nvmem_cell *cell;
-> > > +	ssize_t cell_size;
-> > > +	u64 *cell_data;
-> > >   	info->data =3D of_device_get_match_data(&pdev->dev);
-> > >   	if (!info->data)
-> > > @@ -575,6 +586,39 @@ static int sun4i_gpadc_probe_dt(struct platform_=
-device *pdev,
-> > >   	if (IS_ERR(base))
-> > >   		return PTR_ERR(base);
-> > > +	info->has_calibration_data[0] =3D false;
-> > > +	info->has_calibration_data[1] =3D false;
-> > > +
-> > > +	if (!info->data->supports_nvmem)
-> > > +		goto no_nvmem;
-> > > +
-> > > +	cell =3D nvmem_cell_get(&pdev->dev, "calibration");
-> > > +	if (IS_ERR(cell)) {
-> > > +		if (PTR_ERR(cell) =3D=3D -EPROBE_DEFER)
-> > > +			return PTR_ERR(cell);
-> > > +		goto no_nvmem;
-> >=20
-> > goto considered evil ? :)
->=20
-> this was a suggestion from Jonatan in version one, to make the code better
-> readable.
 
-Isn't
+sparse warnings: (new ones prefixed by >>)
 
-if (info->data->supports_nvmem && IS_ERR(cell =3D nvmem_cell_get()))
+>> drivers/iio/adc/sun4i-gpadc-iio.c:608:53: sparse: cast to restricted __be32
+>> drivers/iio/adc/sun4i-gpadc-iio.c:608:53: sparse: cast to restricted __be32
+>> drivers/iio/adc/sun4i-gpadc-iio.c:608:53: sparse: cast to restricted __be32
+>> drivers/iio/adc/sun4i-gpadc-iio.c:608:53: sparse: cast to restricted __be32
+>> drivers/iio/adc/sun4i-gpadc-iio.c:608:53: sparse: cast to restricted __be32
+>> drivers/iio/adc/sun4i-gpadc-iio.c:608:53: sparse: cast to restricted __be32
+   drivers/iio/adc/sun4i-gpadc-iio.c:613:53: sparse: cast to restricted __be32
+   drivers/iio/adc/sun4i-gpadc-iio.c:613:53: sparse: cast to restricted __be32
+   drivers/iio/adc/sun4i-gpadc-iio.c:613:53: sparse: cast to restricted __be32
+   drivers/iio/adc/sun4i-gpadc-iio.c:613:53: sparse: cast to restricted __be32
+   drivers/iio/adc/sun4i-gpadc-iio.c:613:53: sparse: cast to restricted __be32
+   drivers/iio/adc/sun4i-gpadc-iio.c:613:53: sparse: cast to restricted __be32
 
-pretty much the same thing?
+vim +608 drivers/iio/adc/sun4i-gpadc-iio.c
 
-Maxime
+   564	
+   565	static int sun4i_gpadc_probe_dt(struct platform_device *pdev,
+   566					struct iio_dev *indio_dev)
+   567	{
+   568		struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
+   569		struct resource *mem;
+   570		void __iomem *base;
+   571		int ret;
+   572		struct nvmem_cell *cell;
+   573		ssize_t cell_size;
+   574		u64 *cell_data;
+   575	
+   576		info->data = of_device_get_match_data(&pdev->dev);
+   577		if (!info->data)
+   578			return -ENODEV;
+   579	
+   580		info->no_irq = true;
+   581		indio_dev->num_channels = ARRAY_SIZE(sun8i_a33_gpadc_channels);
+   582		indio_dev->channels = sun8i_a33_gpadc_channels;
+   583	
+   584		mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+   585		base = devm_ioremap_resource(&pdev->dev, mem);
+   586		if (IS_ERR(base))
+   587			return PTR_ERR(base);
+   588	
+   589		info->has_calibration_data[0] = false;
+   590		info->has_calibration_data[1] = false;
+   591	
+   592		if (!info->data->supports_nvmem)
+   593			goto no_nvmem;
+   594	
+   595		cell = nvmem_cell_get(&pdev->dev, "calibration");
+   596		if (IS_ERR(cell)) {
+   597			if (PTR_ERR(cell) == -EPROBE_DEFER)
+   598				return PTR_ERR(cell);
+   599			goto no_nvmem;
+   600		}
+   601	
+   602		cell_data = (u64 *)nvmem_cell_read(cell, &cell_size);
+   603		nvmem_cell_put(cell);
+   604		switch (cell_size) {
+   605			case 8:
+   606			case 6:
+   607				info->has_calibration_data[1] = true;
+ > 608				info->calibration_data[1] = be32_to_cpu(
+   609						upper_32_bits(cell_data[0]));
+   610			case 4:
+   611			case 2:
+   612				info->has_calibration_data[0] = true;
+   613				info->calibration_data[0] = be32_to_cpu(
+   614						lower_32_bits(cell_data[0]));
+   615				break;
+   616			default:
+   617				break;
+   618		}
+   619	
+   620	no_nvmem:
+   621	
+   622		info->regmap = devm_regmap_init_mmio(&pdev->dev, base,
+   623						     &sun4i_gpadc_regmap_config);
+   624		if (IS_ERR(info->regmap)) {
+   625			ret = PTR_ERR(info->regmap);
+   626			dev_err(&pdev->dev, "failed to init regmap: %d\n", ret);
+   627			return ret;
+   628		}
+   629	
+   630		if (info->data->has_bus_rst) {
+   631			info->reset = devm_reset_control_get(&pdev->dev, NULL);
+   632			if (IS_ERR(info->reset)) {
+   633				ret = PTR_ERR(info->reset);
+   634				return ret;
+   635			}
+   636	
+   637			ret = reset_control_deassert(info->reset);
+   638			if (ret)
+   639				return ret;
+   640		}
+   641	
+   642		if (info->data->has_bus_clk) {
+   643			info->bus_clk = devm_clk_get(&pdev->dev, "bus");
+   644			if (IS_ERR(info->bus_clk)) {
+   645				ret = PTR_ERR(info->bus_clk);
+   646				goto assert_reset;
+   647			}
+   648	
+   649			ret = clk_prepare_enable(info->bus_clk);
+   650			if (ret)
+   651				goto assert_reset;
+   652		}
+   653	
+   654		if (info->data->has_mod_clk) {
+   655			info->mod_clk = devm_clk_get(&pdev->dev, "mod");
+   656			if (IS_ERR(info->mod_clk)) {
+   657				ret = PTR_ERR(info->mod_clk);
+   658				goto disable_bus_clk;
+   659			}
+   660	
+   661			/* Running at 6MHz */
+   662			ret = clk_set_rate(info->mod_clk, 4000000);
+   663			if (ret)
+   664				goto disable_bus_clk;
+   665	
+   666			ret = clk_prepare_enable(info->mod_clk);
+   667			if (ret)
+   668				goto disable_bus_clk;
+   669		}
+   670	
+   671		if (IS_ENABLED(CONFIG_THERMAL_OF))
+   672			info->sensor_device = &pdev->dev;
+   673	
+   674		return 0;
+   675	
+   676	disable_bus_clk:
+   677		clk_disable_unprepare(info->bus_clk);
+   678	
+   679	assert_reset:
+   680		reset_control_assert(info->reset);
+   681	
+   682		return ret;
+   683	}
+   684	
 
---=20
-Maxime Ripard, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
-
---6u2ivkblyv2lastj
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEE0VqZU19dR2zEVaqr0rTAlCFNr3QFAlpwLpoACgkQ0rTAlCFN
-r3QLSBAAjLwO1WgXEafxyjZ1raD52wYT6bCKca9SN7NRbNNAmWedkHabwdrhTOMH
-FJ8TrkYaZGYI7dK3cMCHrs6tNc1iaXCyGJsB1HYLO1quYLMI03qcSTJ88jI+gSFM
-0EBtgsa+PWx7QrbCIfWt4UmVtF9c+MdQJSLFfiz3b2SaIf2Ut2lpnCKEPFRCYWID
-CF2N60cUuxTcbUtUvuHyOsxTrWxCt8fq1L0OOdYL2vhsfUAgZaMI9q69cWxEbKK1
-c6BnCfe+/Ld4P37J3ptPcpsK5sa5sP99Ek0nbABvxSQrHqx3WxWBqYsl3NaBzr6L
-yyuPbjVH5Cd6pladYr2wohiuY4/0vMwSsC2y9GxhD6CgSJ7xVd+AoMES6KJUHZY0
-okd+cwKF4xEOCJj55TORVUjiuYPO7xOXoy/w4YWJqXHUA8apueHonYpt4fe3bhgn
-6/93z400uEgyjh246FOvehEz7aH+oX/ZPUa2MIOrBMUPSCtPuwQSNkpvaehl913r
-JJJ5vY3kJMoWQtBJVe9big5Pln2PZYoztPS/UrXjVmTQBSPoCsdCWk7/wX/LtdAw
-w39OVaWV4zL7HZFpYaOYBNJjlc/h3w9zzXmxQruuP10rp7yrSUnAw1XYYLVu0t4v
-jlfjeyTlqPaz3LcKcOE0yn+MmgmXSt0OM13oTRu1O4sqVFGTTXQ=
-=nsrh
------END PGP SIGNATURE-----
-
---6u2ivkblyv2lastj--
+---
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
