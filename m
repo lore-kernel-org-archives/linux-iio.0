@@ -1,52 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-io0-f193.google.com ([209.85.223.193]:44005 "EHLO
-        mail-io0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932930AbeBVPNC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 22 Feb 2018 10:13:02 -0500
-Received: by mail-io0-f193.google.com with SMTP id l12so6325459ioc.10
-        for <linux-iio@vger.kernel.org>; Thu, 22 Feb 2018 07:13:02 -0800 (PST)
+Received: from mail.kernel.org ([198.145.29.99]:49190 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1750927AbeBDKTZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 4 Feb 2018 05:19:25 -0500
+Date: Sun, 4 Feb 2018 10:19:18 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Joe Perches <joe@perches.com>
+Cc: Crt Mori <cmo@melexis.com>, Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Rusty Russell <rusty@rustcorp.com.au>,
+        Ian Abbott <abbotti@mev.co.uk>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Niklas Soderlund <niklas.soderlund+renesas@ragnatech.se>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        linux-kernel@vger.kernel.org,
+        Linux Iio <linux-iio@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>
+Subject: Re: [PATCH v12 1/3] lib: Add strongly typed 64bit int_sqrt
+Message-ID: <20180204101918.17b71aa7@archlinux>
+In-Reply-To: <1516012575.3045.37.camel@perches.com>
+References: <20180109151847.30258-1-cmo@melexis.com>
+        <1515525824.9619.103.camel@perches.com>
+        <CAKv63usChMeCNYJ6qshFcBCOLgEX9Q-mSv6miLG7YJkUKJ1gEA@mail.gmail.com>
+        <CAKv63uuDya8LU-WHtKiqnEJCtg855aYduhowu0dv5qBd1r284Q@mail.gmail.com>
+        <CAKv63uvq5Eq9f9VNSufUmJCOsd4vebbSu2V0Jzbmgth3vbJ9Dw@mail.gmail.com>
+        <1516012575.3045.37.camel@perches.com>
 MIME-Version: 1.0
-In-Reply-To: <20180131022151.GA14668@sophia>
-References: <cover.1514578085.git.vilhelm.gray@gmail.com> <CACRpkdbBA0DX22ZGSkQxi+euTSROPzsmLTvSPwY8peg6+7igFQ@mail.gmail.com>
- <20180131022151.GA14668@sophia>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Thu, 22 Feb 2018 16:13:01 +0100
-Message-ID: <CACRpkdY7JGmHO_oC6__+6+5ukJsThqq6Oy5u0+En01=DAN2owQ@mail.gmail.com>
-Subject: Re: [PATCH v2 0/5] Change ISA_BUS_API dependency to selection
-To: William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc: "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>,
-        Guenter Roeck <linux@roeck-us.net>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-iio@vger.kernel.org,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Jan 31, 2018 at 3:22 AM, William Breathitt Gray
-<vilhelm.gray@gmail.com> wrote:
-> On Tue, Jan 02, 2018 at 10:29:30AM +0100, Linus Walleij wrote:
->>On Fri, Dec 29, 2017 at 9:13 PM, William Breathitt Gray
->><vilhelm.gray@gmail.com> wrote:
->>
->>> Linus, please pickup this entire patchset through your GPIO subsystem
->>> tree; a recursive dependency error is present if these patches are
->>> cherry-picked (see https://lkml.org/lkml/2017/12/26/235), so they should
->>> be merged together in the same tree.
->>
->>OK I just need a bunch of ACKs so giving subsystem maintainers some
->>days to come back on this.
->>
->>Yours,
->>Linus Walleij
->
-> Hi Linus,
->
-> Do you have any objections to picking up this patchset now; or would you
-> prefer to wait for some more input from the other maintainers?
+On Mon, 15 Jan 2018 02:36:15 -0800
+Joe Perches <joe@perches.com> wrote:
 
-No I will try to apply it and see what happens :)
+> On Wed, 2018-01-10 at 09:37 +0100, Crt Mori wrote:
+> > Shouldn't I rather make it
+> > 
+> >          if (x <= ULONG_MAX)
+> >                  return int_sqrt((unsigned long) x);  
+> 
+> With this change: (I believe done in v13) and
+> as requested by Crt Mori in a private email:
+> 
+> Acked-by: Joe Perches <joe@perches.com>
 
-Yours,
-Linus Walleij
+Thanks Joe,
+
+I've applied v13 which indeed does have this change.
+Applied to the togreg branch of iio.git where it will sit until after
+the merge window.
+
+For now I'll only be pushing that out as a build test branch so
+still time for improvements without having to revert or anything.
+
+Thanks,
+
+Jonathan
+
+> 
+
