@@ -1,83 +1,66 @@
-Return-Path: <SRS0=yGIM=E6=jic23.retrosnub.co.uk=jic23@kernel.org>
-Date: Sun, 04 Feb 2018 19:10:43 +0000
-In-Reply-To: <20180204171026.GA32244@himanshu-Vostro-3559>
-References: <20180204152303.577edb42@archlinux> <20180204171026.GA32244@himanshu-Vostro-3559>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f41.google.com ([74.125.82.41]:37139 "EHLO
+        mail-wm0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751767AbeBDSu6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 4 Feb 2018 13:50:58 -0500
+Received: by mail-wm0-f41.google.com with SMTP id v71so21799585wmv.2
+        for <linux-iio@vger.kernel.org>; Sun, 04 Feb 2018 10:50:57 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+In-Reply-To: <20180204152303.577edb42@archlinux>
+References: <20180204152303.577edb42@archlinux>
+From: Daniel Baluta <daniel.baluta@gmail.com>
+Date: Sun, 4 Feb 2018 20:50:56 +0200
+Message-ID: <CAEnQRZDuvzahcmxKBN4YvotBvA28-06f6iAzbZQyLWzF+B-8gQ@mail.gmail.com>
 Subject: Re: [TODO] Potential Staging Clean-up: accel:adis16201.
-To: Himanshu Jha <himanshujha199640@gmail.com>,Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org,daniel.baluta@gmail.com,amsfield22@gmail.com,lars@metafoo.de
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Message-ID: <0E3A2C0E-D9EA-461F-B7B5-C2A7FE88B063@jic23.retrosnub.co.uk>
-List-ID: <linux-iio@vger.kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Alison Schofield <amsfield22@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Content-Type: text/plain; charset="UTF-8"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-
-
-On 4 February 2018 17:10:26 GMT, Himanshu Jha <himanshujha199640@gmail=2Ec=
-om> wrote:
->Hi Jonathan,
+On Sun, Feb 4, 2018 at 5:23 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> Hi All
 >
->On Sun, Feb 04, 2018 at 03:23:03PM +0000, Jonathan Cameron wrote:
->> Hi All
->>=20
->> I was looking over what we have left in staging for any low hanging
->fruit
->> and came across the adis16201 driver=2E
->>=20
->> I was wondering if anyone would like to clean it up?
->>=20
->> This would make a good opportuntity for someone who is fairly new to
->> kernel development to make a useful contribution=2E
->>=20
->> To that end I've done a review as if it had been submitted as a new
->> driver=2E
->>=20
->> If you want to take this on, please reply to say so in order to avoid
->> several people looking at this one driver=2E  Obviously if things
->change
->> and you then can't get to it reasonably quickly then 'hand it back'
->> on the mailing list=2E
->>=20
->> I'm happy to do this for a few more drivers if there are enough
->> interested people so do ping me if someone has claimed this one and
->you
->> would like a similar starting point=2E
->>=20
->> Ideally we would find someone who actually has hardware, but for the
->simple
->> stuff in this one I think we are unlikely to break anything that
->can't be
->> picked up in review=2E Hence I'm not totally bothered about it if no
->one
->> comes forward!
->>=20
->> Alison, Daniel=2E Feel free to add this to the outreachy task list if
->no
->> one else grabs it before the process starts again (just let us know
->if you are
->> doing that)=2E
+> I was looking over what we have left in staging for any low hanging fruit
+> and came across the adis16201 driver.
 >
->I would love to clean this up as I have just started learning about IIO
->subsytem=2E
-
-Cool
-
+> I was wondering if anyone would like to clean it up?
 >
->Do you want incremental patches everyday or all work done in a patchset
->while taking time ?
-
-I am fine with either way, but tend to take a little while to get to revie=
-wing so might be easier to=20
-go for a series=2E
-
+> This would make a good opportuntity for someone who is fairly new to
+> kernel development to make a useful contribution.
 >
->Though I'm not new to kernel development but yes I am new to IIO
->community=2E
+> To that end I've done a review as if it had been submitted as a new
+> driver.
+>
+> If you want to take this on, please reply to say so in order to avoid
+> several people looking at this one driver.  Obviously if things change
+> and you then can't get to it reasonably quickly then 'hand it back'
+> on the mailing list.
+>
+> I'm happy to do this for a few more drivers if there are enough
+> interested people so do ping me if someone has claimed this one and you
+> would like a similar starting point.
+>
+> Ideally we would find someone who actually has hardware, but for the simple
+> stuff in this one I think we are unlikely to break anything that can't be
+> picked up in review. Hence I'm not totally bothered about it if no one
+> comes forward!
+>
+> Alison, Daniel. Feel free to add this to the outreachy task list if no
+> one else grabs it before the process starts again (just let us know if you are
+> doing that).
 
-Great=2E
+Hi Jonathan,
 
-Jonathan
+Will keep this in mind for next round of Outreachy that starts in March.
 
---=20
-Sent from my Android device with K-9 Mail=2E Please excuse my brevity=2E
+I also submitted a proposal for GSoC:
+
+https://wiki.linuxfoundation.org/gsoc/2018-gsoc-iio-driver
+
+Let's see if this is accepted and we can have people working
+for the cleanups as a part of their application process.
+
+thanks,
+Daniel.
