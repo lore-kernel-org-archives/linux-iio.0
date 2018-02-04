@@ -1,269 +1,561 @@
-Return-Path: <SRS0=yGIM=E6=jic23.retrosnub.co.uk=jic23@kernel.org>
-Date: Sun, 04 Feb 2018 21:22:47 +0000
-In-Reply-To: <1517778185.2292.10.camel@gmail.com>
-References: <1517671892-4045-1-git-send-email-shreeya.patel23498@gmail.com> <20180204111022.0e6d08f6@archlinux> <1517778185.2292.10.camel@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.99]:50512 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751261AbeBDPXH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 4 Feb 2018 10:23:07 -0500
+Date: Sun, 4 Feb 2018 15:23:03 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org, <daniel.baluta@gmail.com>,
+        <amsfield22@gmail.com>, lars@metafoo.de
+Subject: [TODO] Potential Staging Clean-up: accel:adis16201.
+Message-ID: <20180204152303.577edb42@archlinux>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Subject: Re: [PATCH v4] Staging: iio: ade7758: Expand buf_lock to cover both buffer and state protection
-To: Shreeya Patel <shreeya.patel23498@gmail.com>,Jonathan Cameron <jic23@kernel.org>
-CC: lars@metafoo.de,Michael.Hennerich@analog.com,knaack.h@gmx.de,pmeerw@pmeerw.net,gregkh@linuxfoundation.org,linux-iio@vger.kernel.org,devel@driverdev.osuosl.org,linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Message-ID: <DB5C46AC-0A4E-4C0F-A80F-F730E8A21DAD@jic23.retrosnub.co.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+Hi All
 
+I was looking over what we have left in staging for any low hanging fruit
+and came across the adis16201 driver.
 
-On 4 February 2018 21:03:05 GMT, Shreeya Patel <shreeya=2Epatel23498@gmail=
-=2Ecom> wrote:
->On Sun, 2018-02-04 at 11:10 +0000, Jonathan Cameron wrote:
->> On Sat,=C2=A0=C2=A03 Feb 2018 21:01:32 +0530
->> Shreeya Patel <shreeya=2Epatel23498@gmail=2Ecom> wrote:
->>=20
->> >=20
->> > iio_dev->mlock is to be used only by the IIO core for protecting
->> > device mode changes between INDIO_DIRECT and INDIO_BUFFER=2E
->> >=20
->> > This patch replaces the use of mlock with the already established
->> > buf_lock mutex=2E
->> >=20
->> > Introducing 'unlocked' forms of read and write registers=2E The
->> > read/write frequency functions now require buf_lock to be held=2E
->> > That's not obvious so avoid this but moving the locking inside
->> > the functions where it is then clear that they are taking the
->> > unlocked forms of the register read/write=2E
->> >=20
->> > It isn't readily apparent that write frequency function requires
->> > the locks to be taken, so move it inside the function to where it
->> > is required to protect=2E
->> >=20
->> > Signed-off-by: Shreeya Patel <shreeya=2Epatel23498@gmail=2Ecom>
->> Hi Shreeya,
->>=20
->Hello sir,
->
->> Unfortunately this introduces a new bug - you end up unlocking
->> a mutex that you never locked in one of the error paths=2E
->> See inline=2E
->I'll make this change=2E
->>=20
->> We are also still taking the mlock around the read of the
->> frequency which doesn't make any sense given there is
->> no reason to protect that against state changes=2E
->> Arguably fixing that could be a separate patch as it never
->> made much sense, but it should probably be in this same series
->> at least=2E=C2=A0=C2=A0I would have no real problem with it being in it=
- this
->> same patch as long as the description above mentions it=2E
->>=20
->> Thanks,
->>=20
->> Jonathan
->>=20
->> >=20
->> > ---
->> >=20
->> > Changes in v2
->> > =C2=A0 -Add static keyword to newly introduced functions and remove s=
-ome
->> > added comments which are not required=2E
->> >=20
->> > Changes in v3
->> > =C2=A0 -Remove some useless mlocks and send it as another patch=2E
->> > Also make the necessary change in the current patch associated
->> > with=C2=A0
->> > the new patch with commit id 88eba33=2E Make commit message more=C2=
-=A0
->> > appropriate=2E
->> >=20
->> > Changes in v4
->> > =C2=A0 -Write frequency function do not require lock so move it insid=
-e
->> > the function to where it is required to protect=2E
->> >=20
->> >=20
->> > =C2=A0drivers/staging/iio/meter/ade7758=2Eh=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0|=C2=A0=C2=A02 +-
->> > =C2=A0drivers/staging/iio/meter/ade7758_core=2Ec | 49
->> > ++++++++++++++++++++++++--------
->> > =C2=A02 files changed, 38 insertions(+), 13 deletions(-)
->> >=20
->> > diff --git a/drivers/staging/iio/meter/ade7758=2Eh
->> > b/drivers/staging/iio/meter/ade7758=2Eh
->> > index 6ae78d8=2E=2E2de81b5 100644
->> > --- a/drivers/staging/iio/meter/ade7758=2Eh
->> > +++ b/drivers/staging/iio/meter/ade7758=2Eh
->> > @@ -111,7 +111,7 @@
->> > =C2=A0 * @trig:		data ready trigger registered with iio
->> > =C2=A0 * @tx:			transmit buffer
->> > =C2=A0 * @rx:			receive buffer
->> > - * @buf_lock:		mutex to protect tx and rx
->> > + * @buf_lock:		mutex to protect tx, rx, read and
->> > write frequency
->> > =C2=A0 **/
->> > =C2=A0struct ade7758_state {
->> > =C2=A0	struct spi_device	*us;
->> > diff --git a/drivers/staging/iio/meter/ade7758_core=2Ec
->> > b/drivers/staging/iio/meter/ade7758_core=2Ec
->> > index 227dbfc=2E=2Eff19d46 100644
->> > --- a/drivers/staging/iio/meter/ade7758_core=2Ec
->> > +++ b/drivers/staging/iio/meter/ade7758_core=2Ec
->> > @@ -24,17 +24,25 @@
->> > =C2=A0#include "meter=2Eh"
->> > =C2=A0#include "ade7758=2Eh"
->> > =C2=A0
->> > -int ade7758_spi_write_reg_8(struct device *dev, u8 reg_address, u8
->> > val)
->> > +static int __ade7758_spi_write_reg_8(struct device *dev, u8
->> > reg_address, u8 val)
->> > =C2=A0{
->> > -	int ret;
->> > =C2=A0	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
->> > =C2=A0	struct ade7758_state *st =3D iio_priv(indio_dev);
->> > =C2=A0
->> > -	mutex_lock(&st->buf_lock);
->> > =C2=A0	st->tx[0] =3D ADE7758_WRITE_REG(reg_address);
->> > =C2=A0	st->tx[1] =3D val;
->> > =C2=A0
->> > -	ret =3D spi_write(st->us, st->tx, 2);
->> > +	return spi_write(st->us, st->tx, 2);
->> > +}
->> > +
->> > +int ade7758_spi_write_reg_8(struct device *dev, u8 reg_address, u8
->> > val)
->> > +{
->> > +	int ret;
->> > +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
->> > +	struct ade7758_state *st =3D iio_priv(indio_dev);
->> > +
->> > +	mutex_lock(&st->buf_lock);
->> > +	ret =3D __ade7758_spi_write_reg_8(dev, reg_address, val);
->> > =C2=A0	mutex_unlock(&st->buf_lock);
->> > =C2=A0
->> > =C2=A0	return ret;
->> > @@ -91,7 +99,7 @@ static int ade7758_spi_write_reg_24(struct device
->> > *dev, u8 reg_address,
->> > =C2=A0	return ret;
->> > =C2=A0}
->> > =C2=A0
->> > -int ade7758_spi_read_reg_8(struct device *dev, u8 reg_address, u8
->> > *val)
->> > +static int __ade7758_spi_read_reg_8(struct device *dev, u8
->> > reg_address, u8 *val)
->> > =C2=A0{
->> > =C2=A0	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
->> > =C2=A0	struct ade7758_state *st =3D iio_priv(indio_dev);
->> > @@ -111,7 +119,6 @@ int ade7758_spi_read_reg_8(struct device *dev,
->> > u8 reg_address, u8 *val)
->> > =C2=A0		},
->> > =C2=A0	};
->> > =C2=A0
->> > -	mutex_lock(&st->buf_lock);
->> > =C2=A0	st->tx[0] =3D ADE7758_READ_REG(reg_address);
->> > =C2=A0	st->tx[1] =3D 0;
->> > =C2=A0
->> > @@ -124,7 +131,19 @@ int ade7758_spi_read_reg_8(struct device *dev,
->> > u8 reg_address, u8 *val)
->> > =C2=A0	*val =3D st->rx[0];
->> > =C2=A0
->> > =C2=A0error_ret:
->> > +	return ret;
->> > +}
->> > +
->> > +int ade7758_spi_read_reg_8(struct device *dev, u8 reg_address, u8
->> > *val)
->> > +{
->> > +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
->> > +	struct ade7758_state *st =3D iio_priv(indio_dev);
->> > +	int ret;
->> > +
->> > +	mutex_lock(&st->buf_lock);
->> > +	ret =3D __ade7758_spi_read_reg_8(dev, reg_address, val);
->> > =C2=A0	mutex_unlock(&st->buf_lock);
->> > +
->> > =C2=A0	return ret;
->> > =C2=A0}
->> > =C2=A0
->> > @@ -480,10 +499,12 @@ static int ade7758_read_samp_freq(struct
->> > device *dev, int *val)
->> > =C2=A0	return 0;
->> > =C2=A0}
->> > =C2=A0
->> > -static int ade7758_write_samp_freq(struct device *dev, int val)
->> > +static int ade7758_write_samp_freq(struct iio_dev *indio_dev, int
->> > val)
->> > =C2=A0{
->> > =C2=A0	int ret;
->> > =C2=A0	u8 reg, t;
->> > +	struct ade7758_state *st =3D iio_priv(indio_dev);
->> > +	struct device *dev =3D &indio_dev->dev;
->> > =C2=A0
->> > =C2=A0	switch (val) {
->> > =C2=A0	case 26040:
->> > @@ -503,16 +524,20 @@ static int ade7758_write_samp_freq(struct
->> > device *dev, int val)
->> > =C2=A0		goto out;
->> This goto out results in an unlock but the lock hasn't been locked
->> for a few more lines=2E=2E=2E
->>=20
->> Change this to a direct return here rather than a goto to fix this=2E
->> return -EINVAL;
->>=20
->> >=20
->> > =C2=A0	}
->> > =C2=A0
->> > -	ret =3D ade7758_spi_read_reg_8(dev, ADE7758_WAVMODE, &reg);
->> > +	mutex_lock(&st->buf_lock);
->> > +
->> > +	ret =3D __ade7758_spi_read_reg_8(dev, ADE7758_WAVMODE,
->> > &reg);
->> > =C2=A0	if (ret)
->> > =C2=A0		goto out;
->
->Here, can I move the above lock after the calling of the read register
->but before the if(ret) statement?
->With this we can avoid locks over the read cases=2E
->Mostly, this shouldn't create any problem but yet I thought of first
->confirming it from you=2E
+I was wondering if anyone would like to clean it up?
 
-Don't do that=2E We need to protect against another caller doing that read=
- before the write is done=2E
->
->Thank you=C2=A0
->
->> > =C2=A0
->> > =C2=A0	reg &=3D ~(5 << 3);
->> > =C2=A0	reg |=3D t << 5;
->> > =C2=A0
->> > -	ret =3D ade7758_spi_write_reg_8(dev, ADE7758_WAVMODE, reg);
->> > +	ret =3D __ade7758_spi_write_reg_8(dev, ADE7758_WAVMODE,
->> > reg);
->> > =C2=A0
->> > =C2=A0out:
->> > +	mutex_unlock(&st->buf_lock);
->> > +
->> > =C2=A0	return ret;
->> > =C2=A0}
->> > =C2=A0
->> > @@ -545,9 +570,9 @@ static int ade7758_write_raw(struct iio_dev
->> > *indio_dev,
->> > =C2=A0	case IIO_CHAN_INFO_SAMP_FREQ:
->> > =C2=A0		if (val2)
->> > =C2=A0			return -EINVAL;
->> > -		mutex_lock(&indio_dev->mlock);
->> > -		ret =3D ade7758_write_samp_freq(&indio_dev->dev,
->> > val);
->> > -		mutex_unlock(&indio_dev->mlock);
->> > +
->> > +		ret =3D ade7758_write_samp_freq(indio_dev, val);
->> > +
->> > =C2=A0		return ret;
->> > =C2=A0	default:
->> > =C2=A0		return -EINVAL;
->--
->To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->the body of a message to majordomo@vger=2Ekernel=2Eorg
->More majordomo info at  http://vger=2Ekernel=2Eorg/majordomo-info=2Ehtml
+This would make a good opportuntity for someone who is fairly new to
+kernel development to make a useful contribution.
 
---=20
-Sent from my Android device with K-9 Mail=2E Please excuse my brevity=2E
+To that end I've done a review as if it had been submitted as a new
+driver.
+
+If you want to take this on, please reply to say so in order to avoid
+several people looking at this one driver.  Obviously if things change
+and you then can't get to it reasonably quickly then 'hand it back'
+on the mailing list.
+
+I'm happy to do this for a few more drivers if there are enough
+interested people so do ping me if someone has claimed this one and you
+would like a similar starting point.
+
+Ideally we would find someone who actually has hardware, but for the simple
+stuff in this one I think we are unlikely to break anything that can't be
+picked up in review. Hence I'm not totally bothered about it if no one
+comes forward!
+
+Alison, Daniel. Feel free to add this to the outreachy task list if no
+one else grabs it before the process starts again (just let us know if you are
+doing that).
+
+Thanks,
+
+Jonathan
+
+> /*
+>  * ADIS16201 Dual-Axis Digital Inclinometer and Accelerometer
+>  *
+>  * Copyright 2010 Analog Devices Inc.
+>  *
+>  * Licensed under the GPL-2 or later.
+
+Might as well convert to SPDX format for the license if we
+are working on the driver anyway.
+
+>  */
+> 
+> #include <linux/delay.h>
+> #include <linux/mutex.h>
+> #include <linux/device.h>
+> #include <linux/kernel.h>
+> #include <linux/spi/spi.h>
+> #include <linux/slab.h>
+> #include <linux/sysfs.h>
+> #include <linux/module.h>
+
+Slight preference for alphabetical order in headers.
+
+However, it is useful to keep the iio headers separate
+as they are here.
+
+> 
+> #include <linux/iio/iio.h>
+> #include <linux/iio/sysfs.h>
+> #include <linux/iio/buffer.h>
+> #include <linux/iio/imu/adis.h>
+> 
+> #define ADIS16201_STARTUP_DELAY	220 /* ms */
+
+Why not just make this ADIS16201_STARTUP_DELAY_MS as then it will
+be obvious what the units are throughout the driver and remove
+the need for the comment.
+
+> 
+> /* Flash memory write count */
+> #define ADIS16201_FLASH_CNT      0x00
+
+To my mind there is far more commenting going on here than is actually
+useful.  If the name of the register doesn't make it reasonably clear
+what it is used for then it is not a good choice of name.
+
+It is made more complex by the fact these are the datasheet names
+so we need to keep 'close' to those names for ease of comparisom.
+
+So unless something odd is going on I would not expect to see any
+comments in here at all.
+
+Formatting wise, should be using tabs rather than spaces before the
+numbers.
+
+Also, we have a mixture of defines for register addresses and
+fields with in registers.  That is fine, but I would prefer
+the nice clear _REG postfix on the registers defines to make
+it more obvious which is which.
+
+e.g. What I'd expect here is something like:
+
+#define ADIS16201_FLASH_CNT_REG			0x00
+#define ADIS16201_SUPPLY_OUT_REG		0x02
+#define ADIS16201_XACCL_OUT_REG			0x04
+
+etc.
+
+> 
+> /* Output, power supply */
+> #define ADIS16201_SUPPLY_OUT     0x02
+
+The out naming is awkward given it doesn't mean the device is supplying the
+power, but rather that this is the reading the device is outputting.  Still
+can't do that much about this without breaking away from datasheet naming.
+
+> 
+> /* Output, x-axis accelerometer */
+> #define ADIS16201_XACCL_OUT      0x04
+> 
+> /* Output, y-axis accelerometer */
+> #define ADIS16201_YACCL_OUT      0x06
+> 
+> /* Output, auxiliary ADC input */
+> #define ADIS16201_AUX_ADC        0x08
+> 
+> /* Output, temperature */
+> #define ADIS16201_TEMP_OUT       0x0A
+> 
+> /* Output, x-axis inclination */
+> #define ADIS16201_XINCL_OUT      0x0C
+> 
+> /* Output, y-axis inclination */
+> #define ADIS16201_YINCL_OUT      0x0E
+> 
+> /* Calibration, x-axis acceleration offset */
+> #define ADIS16201_XACCL_OFFS     0x10
+> 
+> /* Calibration, y-axis acceleration offset */
+> #define ADIS16201_YACCL_OFFS     0x12
+> 
+> /* x-axis acceleration scale factor */
+> #define ADIS16201_XACCL_SCALE    0x14
+> 
+> /* y-axis acceleration scale factor */
+> #define ADIS16201_YACCL_SCALE    0x16
+> 
+> /* Calibration, x-axis inclination offset */
+> #define ADIS16201_XINCL_OFFS     0x18
+> 
+> /* Calibration, y-axis inclination offset */
+> #define ADIS16201_YINCL_OFFS     0x1A
+> 
+> /* x-axis inclination scale factor */
+> #define ADIS16201_XINCL_SCALE    0x1C
+> 
+> /* y-axis inclination scale factor */
+> #define ADIS16201_YINCL_SCALE    0x1E
+> 
+> /* Alarm 1 amplitude threshold */
+> #define ADIS16201_ALM_MAG1       0x20
+> 
+> /* Alarm 2 amplitude threshold */
+> #define ADIS16201_ALM_MAG2       0x22
+> 
+> /* Alarm 1, sample period */
+> #define ADIS16201_ALM_SMPL1      0x24
+> 
+> /* Alarm 2, sample period */
+> #define ADIS16201_ALM_SMPL2      0x26
+> 
+> /* Alarm control */
+> #define ADIS16201_ALM_CTRL       0x28
+> 
+> /* Auxiliary DAC data */
+> #define ADIS16201_AUX_DAC        0x30
+> 
+> /* General-purpose digital input/output control */
+> #define ADIS16201_GPIO_CTRL      0x32
+> 
+> /* Miscellaneous control */
+> #define ADIS16201_MSC_CTRL       0x34
+> 
+> /* Internal sample period (rate) control */
+> #define ADIS16201_SMPL_PRD       0x36
+> 
+> /* Operation, filter configuration */
+> #define ADIS16201_AVG_CNT        0x38
+> 
+> /* Operation, sleep mode control */
+> #define ADIS16201_SLP_CNT        0x3A
+> 
+> /* Diagnostics, system status register */
+> #define ADIS16201_DIAG_STAT      0x3C
+> 
+> /* Operation, system command register */
+> #define ADIS16201_GLOB_CMD       0x3E
+> 
+> /* MSC_CTRL */
+> 
+A really nice convention that has come up in recent drivers and makes
+all these register / register field relationships obvious is to
+use some subtle indenting of the fields and put them next to
+the register address.  An example is:
+
+#define ADIS16201_MSC_CTRL_REG			0x34
+#define   ADIS16201_MSC_CTRL_SELF_TEST_EN	BIT(8)
+#define   ADIS16201_MSC_CTRL_DATA_RDY_EN	BIT(2)
+#define   ADIS16201_MSC_CTRL_ACTIVE_HIGH	BIT(1)
+#define   ADIS16201_MSC_CTRL_DATA_RDY_DIO1	BIT(0)
+
+Again the naming of the fields is sufficient and the documentation
+doesn't add anything so I would drop it.
+
+> /* Self-test enable */
+> #define ADIS16201_MSC_CTRL_SELF_TEST_EN	        BIT(8)
+> 
+> /* Data-ready enable: 1 = enabled, 0 = disabled */
+> #define ADIS16201_MSC_CTRL_DATA_RDY_EN	        BIT(2)
+> 
+> /* Data-ready polarity: 1 = active high, 0 = active low */
+> #define ADIS16201_MSC_CTRL_ACTIVE_HIGH	        BIT(1)
+> 
+> /* Data-ready line selection: 1 = DIO1, 0 = DIO0 */
+> #define ADIS16201_MSC_CTRL_DATA_RDY_DIO1	BIT(0)
+> 
+> /* DIAG_STAT */
+> 
+> /* Alarm 2 status: 1 = alarm active, 0 = alarm inactive */
+> #define ADIS16201_DIAG_STAT_ALARM2        BIT(9)
+> 
+> /* Alarm 1 status: 1 = alarm active, 0 = alarm inactive */
+> #define ADIS16201_DIAG_STAT_ALARM1        BIT(8)
+> 
+> /* SPI communications failure */
+> #define ADIS16201_DIAG_STAT_SPI_FAIL_BIT   3
+> 
+> /* Flash update failure */
+> #define ADIS16201_DIAG_STAT_FLASH_UPT_BIT  2
+> 
+> /* Power supply above 3.625 V */
+> #define ADIS16201_DIAG_STAT_POWER_HIGH_BIT 1
+> 
+> /* Power supply below 3.15 V */
+> #define ADIS16201_DIAG_STAT_POWER_LOW_BIT  0
+> 
+> /* GLOB_CMD */
+> 
+> #define ADIS16201_GLOB_CMD_SW_RESET	BIT(7)
+> #define ADIS16201_GLOB_CMD_FACTORY_CAL	BIT(1)
+> 
+> #define ADIS16201_ERROR_ACTIVE          BIT(14)
+> 
+> enum adis16201_scan {
+> 	ADIS16201_SCAN_ACC_X,
+> 	ADIS16201_SCAN_ACC_Y,
+> 	ADIS16201_SCAN_INCLI_X,
+> 	ADIS16201_SCAN_INCLI_Y,
+> 	ADIS16201_SCAN_SUPPLY,
+> 	ADIS16201_SCAN_AUX_ADC,
+> 	ADIS16201_SCAN_TEMP,
+> };
+> 
+> static const u8 adis16201_addresses[] = {
+
+It is rather odd that this is only used for the offsets, not
+any of the other channel specific registers (scales, or the reading itself).
+
+> 	[ADIS16201_SCAN_ACC_X] = ADIS16201_XACCL_OFFS,
+> 	[ADIS16201_SCAN_ACC_Y] = ADIS16201_YACCL_OFFS,
+> 	[ADIS16201_SCAN_INCLI_X] = ADIS16201_XINCL_OFFS,
+> 	[ADIS16201_SCAN_INCLI_Y] = ADIS16201_YINCL_OFFS,
+> };
+> 
+> static int adis16201_read_raw(struct iio_dev *indio_dev,
+> 			      struct iio_chan_spec const *chan,
+> 			      int *val, int *val2,
+> 			      long mask)
+> {
+> 	struct adis *st = iio_priv(indio_dev);
+> 	int ret;
+> 	int bits;
+> 	u8 addr;
+> 	s16 val16;
+> 
+> 	switch (mask) {
+> 	case IIO_CHAN_INFO_RAW:
+> 		return adis_single_conversion(indio_dev, chan,
+> 				ADIS16201_ERROR_ACTIVE, val);
+
+Indenting could I think make the parameters align with the opening bracket.
+
+> 	case IIO_CHAN_INFO_SCALE:
+> 		switch (chan->type) {
+> 		case IIO_VOLTAGE:
+> 			if (chan->channel == 0) {
+> 				*val = 1;
+> 				*val2 = 220000; /* 1.22 mV */
+
+Comments don't add a huge amount given they kind of just
+state the value before them.
+
+> 			} else {
+
+Given there are only two relevant channels I would like to see
+them move explicitly matched using a switch statement.
+
+The default case would be an error return -EINVAL;
+
+> 				*val = 0;
+> 				*val2 = 610000; /* 0.610 mV */
+> 			}
+> 			return IIO_VAL_INT_PLUS_MICRO;
+> 		case IIO_TEMP:
+> 			*val = -470; /* 0.47 C */
+> 			*val2 = 0;
+> 			return IIO_VAL_INT_PLUS_MICRO;
+> 		case IIO_ACCEL:
+> 			*val = 0;
+> 			*val2 = IIO_G_TO_M_S_2(462400); /* 0.4624 mg */
+
+Not sure that comment adds anything..
+
+> 			return IIO_VAL_INT_PLUS_NANO;
+> 		case IIO_INCLI:
+> 			*val = 0;
+> 			*val2 = 100000; /* 0.1 degree */
+
+Or this one.
+
+> 			return IIO_VAL_INT_PLUS_MICRO;
+> 		default:
+> 			return -EINVAL;
+> 		}
+> 		break;
+> 	case IIO_CHAN_INFO_OFFSET:
+> 		*val = 25000 / -470 - 1278; /* 25 C = 1278 */
+> 		return IIO_VAL_INT;
+> 	case IIO_CHAN_INFO_CALIBBIAS:
+> 		switch (chan->type) {
+> 		case IIO_ACCEL:
+> 			bits = 12;
+> 			break;
+> 		case IIO_INCLI:
+> 			bits = 9;
+> 			break;
+> 		default:
+> 			return -EINVAL;
+> 		}
+> 		addr = adis16201_addresses[chan->scan_index];
+> 		ret = adis_read_reg_16(st, addr, &val16);
+> 		if (ret)
+> 			return ret;
+> 		val16 &= (1 << bits) - 1;
+
+Given the following sign extend, I don't think this does anything useful.
+
+> 		val16 = (s16)(val16 << (16 - bits)) >> (16 - bits);
+
+This looks like a 16bit sign extend to me.  We have functions to
+handle this nicely. See how it is done in other driverss
+
+> 		*val = val16;
+
+blank line before return always makes them more obvious and hence the
+code slightly more readable.  Do this throughout (including 2 lines
+below this)
+
+> 		return IIO_VAL_INT;
+> 	}
+> 	return -EINVAL;
+> }
+> 
+> static int adis16201_write_raw(struct iio_dev *indio_dev,
+> 			       struct iio_chan_spec const *chan,
+> 			       int val,
+> 			       int val2,
+> 			       long mask)
+> {
+> 	struct adis *st = iio_priv(indio_dev);
+> 	int bits;
+> 	s16 val16;
+> 	u8 addr;
+> 
+> 	switch (mask) {
+> 	case IIO_CHAN_INFO_CALIBBIAS:
+> 		switch (chan->type) {
+> 		case IIO_ACCEL:
+> 			bits = 12;
+> 			break;
+> 		case IIO_INCLI:
+> 			bits = 9;
+> 			break;
+> 		default:
+> 			return -EINVAL;
+> 		}
+> 		val16 = val & ((1 << bits) - 1);
+
+Given the above bits value is used only for this, why not create
+a mask in the switch statement instead of carrying the number of
+bits around.
+
+Then you can use GENMASK to make it nice and obvious what
+is going on.
+
+> 		addr = adis16201_addresses[chan->scan_index];
+> 		return adis_write_reg_16(st, addr, val16);
+> 	}
+> 	return -EINVAL;
+> }
+> 
+> static const struct iio_chan_spec adis16201_channels[] = {
+> 	ADIS_SUPPLY_CHAN(ADIS16201_SUPPLY_OUT, ADIS16201_SCAN_SUPPLY, 0, 12),
+> 	ADIS_TEMP_CHAN(ADIS16201_TEMP_OUT, ADIS16201_SCAN_TEMP, 0, 12),
+> 	ADIS_ACCEL_CHAN(X, ADIS16201_XACCL_OUT, ADIS16201_SCAN_ACC_X,
+> 			BIT(IIO_CHAN_INFO_CALIBBIAS), 0, 14),
+> 	ADIS_ACCEL_CHAN(Y, ADIS16201_YACCL_OUT, ADIS16201_SCAN_ACC_Y,
+> 			BIT(IIO_CHAN_INFO_CALIBBIAS), 0, 14),
+> 	ADIS_AUX_ADC_CHAN(ADIS16201_AUX_ADC, ADIS16201_SCAN_AUX_ADC, 0, 12),
+> 	ADIS_INCLI_CHAN(X, ADIS16201_XINCL_OUT, ADIS16201_SCAN_INCLI_X,
+> 			BIT(IIO_CHAN_INFO_CALIBBIAS), 0, 14),
+> 	ADIS_INCLI_CHAN(X, ADIS16201_YINCL_OUT, ADIS16201_SCAN_INCLI_Y,
+> 			BIT(IIO_CHAN_INFO_CALIBBIAS), 0, 14),
+> 	IIO_CHAN_SOFT_TIMESTAMP(7)
+> };
+> 
+> static const struct iio_info adis16201_info = {
+> 	.read_raw = adis16201_read_raw,
+> 	.write_raw = adis16201_write_raw,
+> 	.update_scan_mode = adis_update_scan_mode,
+> };
+> 
+> static const char * const adis16201_status_error_msgs[] = {
+> 	[ADIS16201_DIAG_STAT_SPI_FAIL_BIT] = "SPI failure",
+> 	[ADIS16201_DIAG_STAT_FLASH_UPT_BIT] = "Flash update failed",
+> 	[ADIS16201_DIAG_STAT_POWER_HIGH_BIT] = "Power supply above 3.625V",
+> 	[ADIS16201_DIAG_STAT_POWER_LOW_BIT] = "Power supply below 3.15V",
+> };
+> 
+> static const struct adis_data adis16201_data = {
+> 	.read_delay = 20,
+> 	.msc_ctrl_reg = ADIS16201_MSC_CTRL,
+> 	.glob_cmd_reg = ADIS16201_GLOB_CMD,
+> 	.diag_stat_reg = ADIS16201_DIAG_STAT,
+> 
+> 	.self_test_mask = ADIS16201_MSC_CTRL_SELF_TEST_EN,
+> 	.self_test_no_autoclear = true,
+> 	.startup_delay = ADIS16201_STARTUP_DELAY,
+> 
+> 	.status_error_msgs = adis16201_status_error_msgs,
+> 	.status_error_mask = BIT(ADIS16201_DIAG_STAT_SPI_FAIL_BIT) |
+> 		BIT(ADIS16201_DIAG_STAT_FLASH_UPT_BIT) |
+> 		BIT(ADIS16201_DIAG_STAT_POWER_HIGH_BIT) |
+> 		BIT(ADIS16201_DIAG_STAT_POWER_LOW_BIT),
+> };
+> 
+> static int adis16201_probe(struct spi_device *spi)
+> {
+> 	int ret;
+> 	struct adis *st;
+> 	struct iio_dev *indio_dev;
+There is a convention (when nothing else is guiding ordering) of doing
+things in reverse Christmas tree.
+
+That means longest line first and shortest last.  Very minor point though.
+
+> 
+> 	/* setup the industrialio driver allocated elements */
+
+Comment doesn't really add anything so drop it.
+
+> 	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+> 	if (!indio_dev)
+> 		return -ENOMEM;
+> 
+> 	st = iio_priv(indio_dev);
+> 	/* this is only used for removal purposes */
+
+Again, comment isn't really that useful...
+
+> 	spi_set_drvdata(spi, indio_dev);
+> 
+> 	indio_dev->name = spi->dev.driver->name;
+> 	indio_dev->dev.parent = &spi->dev;
+> 	indio_dev->info = &adis16201_info;
+> 
+> 	indio_dev->channels = adis16201_channels;
+> 	indio_dev->num_channels = ARRAY_SIZE(adis16201_channels);
+> 	indio_dev->modes = INDIO_DIRECT_MODE;
+> 
+> 	ret = adis_init(st, indio_dev, spi, &adis16201_data);
+> 	if (ret)
+> 		return ret;
+
+A blank line here would help readability by separating these two
+unconnected operations.
+
+> 	ret = adis_setup_buffer_and_trigger(st, indio_dev, NULL);
+> 	if (ret)
+> 		return ret;
+> 
+> 	/* Get the device into a sane initial state */
+> 	ret = adis_initial_startup(st);
+> 	if (ret)
+> 		goto error_cleanup_buffer_trigger;
+> 
+> 	ret = iio_device_register(indio_dev);
+> 	if (ret < 0)
+> 		goto error_cleanup_buffer_trigger;
+
+Blank line here.
+
+> 	return 0;
+> 
+> error_cleanup_buffer_trigger:
+> 	adis_cleanup_buffer_and_trigger(st, indio_dev);
+
+blank line here.
+
+> 	return ret;
+> }
+> 
+> static int adis16201_remove(struct spi_device *spi)
+> {
+> 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> 	struct adis *st = iio_priv(indio_dev);
+> 
+> 	iio_device_unregister(indio_dev);
+> 	adis_cleanup_buffer_and_trigger(st, indio_dev);
+> 
+> 	return 0;
+> }
+> 
+> static struct spi_driver adis16201_driver = {
+> 	.driver = {
+> 		.name = "adis16201",
+> 	},
+> 	.probe = adis16201_probe,
+> 	.remove = adis16201_remove,
+> };
+> module_spi_driver(adis16201_driver);
+
+Probably want to add devicetree bindings but not strictly necessary to
+move out of staging...
+
+> 
+> MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");
+> MODULE_DESCRIPTION("Analog Devices ADIS16201 Dual-Axis Digital Inclinometer and Accelerometer");
+> MODULE_LICENSE("GPL v2");
+> MODULE_ALIAS("spi:adis16201");
