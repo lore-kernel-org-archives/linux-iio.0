@@ -1,43 +1,25 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:50446 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750818AbeBDKeo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 4 Feb 2018 05:34:44 -0500
-Date: Sun, 4 Feb 2018 10:34:39 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <SRS0=O7n+=E7=gmail.com=robherring2@kernel.org>
+Date: Mon, 5 Feb 2018 00:07:29 -0600
+From: Rob Herring <robh@kernel.org>
 To: Phil Reid <preid@electromag.com.au>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        robh+dt@kernel.org, mark.rutland@arm.com,
-        Michael.Hennerich@analog.com, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	mark.rutland@arm.com, Michael.Hennerich@analog.com,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
 Subject: Re: [PATCH v4 1/2] dt-bindings: ad5272: Add bindings for Analog
  Devices digital potentiometers
-Message-ID: <20180204103439.5c49fa26@archlinux>
-In-Reply-To: <1517231574-92777-2-git-send-email-preid@electromag.com.au>
+Message-ID: <20180205060729.ux62jvdsy4d37s4x@rob-hp-laptop>
 References: <1517231574-92777-1-git-send-email-preid@electromag.com.au>
-        <1517231574-92777-2-git-send-email-preid@electromag.com.au>
+ <1517231574-92777-2-git-send-email-preid@electromag.com.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1517231574-92777-2-git-send-email-preid@electromag.com.au>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, 29 Jan 2018 21:12:53 +0800
-Phil Reid <preid@electromag.com.au> wrote:
-
+On Mon, Jan 29, 2018 at 09:12:53PM +0800, Phil Reid wrote:
 > Add binding documentation for Analog Devices AD5272 and AD5274 digital
 > potentiometer devices.
 > 
 > Signed-off-by: Phil Reid <preid@electromag.com.au>
-This is simply enough that I doubt Rob or Mark is that bothered about 
-reviewing it.  Obviously any reviews are still welcome though as it
-will be in a rebaseable tree probably until after the merge window closes.
-
-Applied to the togreg branch of iio.git and pushed out as testing.
-
-Thanks,
-
-Jonathan
-
 > ---
 >  .../bindings/iio/potentiometer/ad5272.txt          | 27 ++++++++++++++++++++++
 >  1 file changed, 27 insertions(+)
@@ -50,6 +32,9 @@ Jonathan
 > +++ b/Documentation/devicetree/bindings/iio/potentiometer/ad5272.txt
 > @@ -0,0 +1,27 @@
 > +* Analog Devices AD5272 digital potentiometer driver
+
+Bindings describe h/w not drivers.
+
 > +
 > +The node for this driver must be a child node of a I2C controller, hence
 > +all mandatory properties for your controller must be specified. See directory:
@@ -72,8 +57,15 @@ Jonathan
 > +
 > +Example:
 > +ad5272: ad5272@2f {
+
+potentiometer@2f
+
+Probably a node name we need to add to the spec.
+
 > +	reg = <0x2F>;
 > +	compatible = "adi,ad5272-020";
 > +	reset-gpios = <&gpio3 6 GPIO_ACTIVE_HIGH>;
 > +};
-
+> -- 
+> 1.8.3.1
+> 
