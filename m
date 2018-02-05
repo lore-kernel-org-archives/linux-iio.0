@@ -1,42 +1,54 @@
-Return-Path: <SRS0=zr3T=FB=linaro.org=linus.walleij@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f49.google.com ([74.125.82.49]:51690 "EHLO
+        mail-wm0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753289AbeBEQAB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 5 Feb 2018 11:00:01 -0500
+Received: by mail-wm0-f49.google.com with SMTP id r71so27240004wmd.1
+        for <linux-iio@vger.kernel.org>; Mon, 05 Feb 2018 08:00:01 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20180205012146.23981-15-ulfalizer@gmail.com>
-References: <20180205012146.23981-1-ulfalizer@gmail.com> <20180205012146.23981-15-ulfalizer@gmail.com>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Wed, 7 Feb 2018 13:10:32 +0100
-Message-ID: <CACRpkdaB2gUd8EHMFV1MJo9rF2KxhYYxJnMjHciw5R_akTv-MQ@mail.gmail.com>
-Subject: Re: [PATCH 14/20] iio: gyro: mpu3050: Remove INPUT_MPU3050 dep. from I2C
-To: Ulf Magnusson <ulfalizer@gmail.com>, Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	linux-kbuild <linux-kbuild@vger.kernel.org>, tfiga@chromium.org, paul.burton@mips.com,
-	Marek Szyprowski <m.szyprowski@samsung.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>,
-	Vineet Gupta <vgupta@synopsys.com>, mgorman@techsingularity.net,
-	Christoph Hellwig <hch@lst.de>, mina86@mina86.com, Rob Herring <robh@kernel.org>,
-	Stephen Boyd <sboyd@codeaurora.org>, Paul Mackerras <paulus@ozlabs.org>,
-	Will Deacon <will.deacon@arm.com>, ext Tony Lindgren <tony@atomide.com>,
-	Nicholas Piggin <npiggin@gmail.com>, Masahiro Yamada <yamada.masahiro@socionext.com>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+In-Reply-To: <CAGr58CFkn-5n6zB0ewXE3MC-ehLR8ibF91BUSRpF6h0OBfZWcg@mail.gmail.com>
+References: <CAGr58CFkn-5n6zB0ewXE3MC-ehLR8ibF91BUSRpF6h0OBfZWcg@mail.gmail.com>
+From: Daniel Baluta <daniel.baluta@gmail.com>
+Date: Mon, 5 Feb 2018 18:00:00 +0200
+Message-ID: <CAEnQRZAAut3iJ4V2xmr5xgofCH9w-7kJForVagYf5s1gctatWg@mail.gmail.com>
+Subject: Re: Want to contribute to linux-iio
+To: Dileep Sankhla <sankhla.dileep96@gmail.com>
+Cc: linux-iio@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, Feb 5, 2018 at 2:21 AM, Ulf Magnusson <ulfalizer@gmail.com> wrote:
+Hi Dileep,
 
-> The INPUT_MPU3050 symbol was removed in commit b1fe0cf06f92 ("Input:
-> delete MPU3050 driver").
+On Sun, Feb 4, 2018 at 10:06 PM, Dileep Sankhla
+<sankhla.dileep96@gmail.com> wrote:
 >
-> Remove the negative dependency on it from the MPU3050_I2C symbol. It is
-> always satisfied now.
->
-> Discovered with the
-> https://github.com/ulfalizer/Kconfiglib/blob/master/examples/list_undefined.py
-> script.
->
-> Signed-off-by: Ulf Magnusson <ulfalizer@gmail.com>
+> Hello, I want to contribute to linux-iio for GSoC'18 but I'm not getting where to start? Any help will be appreciated.
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+You can have a look at:
 
-Jonathan, please pick this up to IIO!
+https://marc.info/?l=linux-iio&m=151776188903638&w=2
 
-Yours,
-Linus Walleij
+or
+
+https://marc.info/?l=linux-iio&m=151775804702998&w=2
+
+
+but please keep in mind that there are already people interested in
+doing the cleanups.
+
+Will start a document to track who is assigned to each task.
+
+Also, before contributing to IIO please try to do some small
+contributions to drivers/staging directory.
+You may want to have a look here:
+
+https://kernelnewbies.org/FirstKernelPatch
+
+Also, please keep in mind that IIO project wasn't yet accepted to GSoC
+:) but feel free to start
+contributing :).
+
+
+thanks,
+Daniel.
