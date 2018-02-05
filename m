@@ -1,46 +1,201 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-bn3nam01on0074.outbound.protection.outlook.com ([104.47.33.74]:24096
-        "EHLO NAM01-BN3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1751835AbeBFHXW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 6 Feb 2018 02:23:22 -0500
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "lars@metafoo.de" <lars@metafoo.de>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "shreeya.patel23498@gmail.com" <shreeya.patel23498@gmail.com>
-Subject: Re: [PATCH 1/2] Staging: iio: ade7758: Remove iio_dev mlock
-Date: Tue, 6 Feb 2018 07:23:17 +0000
-Message-ID: <1517901796.2857.3.camel@analog.com>
+Return-Path: <SRS0=8i//=E7=gmail.com=shreeya.patel23498@kernel.org>
+From: Shreeya Patel <shreeya.patel23498@gmail.com>
+To: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	pmeerw@pmeerw.net,
+	gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Cc: Shreeya Patel <shreeya.patel23498@gmail.com>
+Subject: [PATCH v5 2/2] Staging: iio: ade7758: Expand buf_lock to cover both buffer and state protection
+Date: Tue,  6 Feb 2018 01:10:45 +0530
+Message-Id: <ec1848899e808fd5544bb1ca640abdc48fdfd6f3.1517845616.git.shreeya.patel23498@gmail.com>
+In-Reply-To: <cover.1517845616.git.shreeya.patel23498@gmail.com>
 References: <cover.1517845616.git.shreeya.patel23498@gmail.com>
-         <88eba335f73f931acb1e5d1be63992f8ae0fdc5b.1517845616.git.shreeya.patel23498@gmail.com>
-In-Reply-To: <88eba335f73f931acb1e5d1be63992f8ae0fdc5b.1517845616.git.shreeya.patel23498@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-T24gVHVlLCAyMDE4LTAyLTA2IGF0IDAxOjA4ICswNTMwLCBTaHJlZXlhIFBhdGVsIHdyb3RlOg0K
-PiBJbiB0aGUgYWRlNzc1OCBmaWxlLCByZWFkIHJhdyBkb2VzIG5vdCByZXF1aXJlIGlpb19kZXYt
-Pm1sb2NrIGZvcg0KPiByZWFkcy4gSXQgY2FuIHJ1biBjb25jdXJyZW50bHkgYXMgcmVzb3VyY2Ug
-cHJvdGVjdGlvbiBpcyBoYW5kbGVkDQo+IGJ5IGJ1Zl9sb2NrIGluIHJlYWQgcmVnaXN0ZXIuDQoN
-ClJlbW92ZWQgbGludXgta2VybmVsIGxpc3QgYW5kIEdyZWcgZnJvbSByZXBseSBsaXN0Lg0KDQo+
-IA0KPiBTaWduZWQtb2ZmLWJ5OiBTaHJlZXlhIFBhdGVsIDxzaHJlZXlhLnBhdGVsMjM0OThAZ21h
-aWwuY29tPg0KPiAtLS0NCj4gIGRyaXZlcnMvc3RhZ2luZy9paW8vbWV0ZXIvYWRlNzc1OF9jb3Jl
-LmMgfCAyIC0tDQo+ICAxIGZpbGUgY2hhbmdlZCwgMiBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYg
-LS1naXQgYS9kcml2ZXJzL3N0YWdpbmcvaWlvL21ldGVyL2FkZTc3NThfY29yZS5jIGIvZHJpdmVy
-cy9zdGFnaW5nL2lpby9tZXRlci9hZGU3NzU4X2NvcmUuYw0KPiBpbmRleCA3YjdmZmU1Li4yMjdk
-YmZjIDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL3N0YWdpbmcvaWlvL21ldGVyL2FkZTc3NThfY29y
-ZS5jDQo+ICsrKyBiL2RyaXZlcnMvc3RhZ2luZy9paW8vbWV0ZXIvYWRlNzc1OF9jb3JlLmMNCj4g
-QEAgLTUyNiw5ICs1MjYsNyBAQCBzdGF0aWMgaW50IGFkZTc3NThfcmVhZF9yYXcoc3RydWN0IGlp
-b19kZXYgKmluZGlvX2RldiwNCj4gIA0KPiAgCXN3aXRjaCAobWFzaykgew0KPiAgCWNhc2UgSUlP
-X0NIQU5fSU5GT19TQU1QX0ZSRVE6DQo+IC0JCW11dGV4X2xvY2soJmluZGlvX2Rldi0+bWxvY2sp
-Ow0KPiAgCQlyZXQgPSBhZGU3NzU4X3JlYWRfc2FtcF9mcmVxKCZpbmRpb19kZXYtPmRldiwgdmFs
-KTsNCj4gLQkJbXV0ZXhfdW5sb2NrKCZpbmRpb19kZXYtPm1sb2NrKTsNCg0KdGhpcyBwYXRjaCBj
-YW4gYmUgc3F1YXNoZWQgaW50byB0aGUgc2Vjb25kIG9uZQ0Kc2VtYW50aWNhbGx5IHRoZXkgYXJl
-IHRoZSBzYW1lDQoNCj4gIAkJcmV0dXJuIHJldDsNCj4gIAlkZWZhdWx0Og0KPiAgCQlyZXR1cm4g
-LUVJTlZBTDs=
+iio_dev->mlock is to be used only by the IIO core for protecting
+device mode changes between INDIO_DIRECT and INDIO_BUFFER.
+
+This patch replaces the use of mlock with the already established
+buf_lock mutex.
+
+Introducing 'unlocked' forms of read and write registers. The
+read/write frequency functions now require buf_lock to be held.
+That's not obvious so avoid this but moving the locking inside
+the functions where it is then clear that they are taking the
+unlocked forms of the register read/write.
+
+It isn't readily apparent that write frequency function requires
+the locks to be taken, so move it inside the function to where it
+is required to protect.
+
+Signed-off-by: Shreeya Patel <shreeya.patel23498@gmail.com>
+---
+
+Changes in v2
+  -Add static keyword to newly introduced functions and remove some
+added comments which are not required.
+
+Changes in v3
+  -Remove some useless mlocks and send it as another patch.
+Also make the necessary change in the current patch associated with 
+the new patch with commit id 88eba33. Make commit message more 
+appropriate.
+
+Changes in v4
+  -Write frequency function do not require lock so move it inside
+the function to where it is required to protect.
+
+Changes in v5
+  -Remove goto statement and make the code to return -EINVAL there
+itself. 
+
+ drivers/staging/iio/meter/ade7758.h      |  2 +-
+ drivers/staging/iio/meter/ade7758_core.c | 52 +++++++++++++++++++++++---------
+ 2 files changed, 39 insertions(+), 15 deletions(-)
+
+diff --git a/drivers/staging/iio/meter/ade7758.h b/drivers/staging/iio/meter/ade7758.h
+index 6ae78d8..2de81b5 100644
+--- a/drivers/staging/iio/meter/ade7758.h
++++ b/drivers/staging/iio/meter/ade7758.h
+@@ -111,7 +111,7 @@
+  * @trig:		data ready trigger registered with iio
+  * @tx:			transmit buffer
+  * @rx:			receive buffer
+- * @buf_lock:		mutex to protect tx and rx
++ * @buf_lock:		mutex to protect tx, rx, read and write frequency
+  **/
+ struct ade7758_state {
+ 	struct spi_device	*us;
+diff --git a/drivers/staging/iio/meter/ade7758_core.c b/drivers/staging/iio/meter/ade7758_core.c
+index 227dbfc..dfe8e97 100644
+--- a/drivers/staging/iio/meter/ade7758_core.c
++++ b/drivers/staging/iio/meter/ade7758_core.c
+@@ -24,17 +24,25 @@
+ #include "meter.h"
+ #include "ade7758.h"
+ 
+-int ade7758_spi_write_reg_8(struct device *dev, u8 reg_address, u8 val)
++static int __ade7758_spi_write_reg_8(struct device *dev, u8 reg_address, u8 val)
+ {
+-	int ret;
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ade7758_state *st = iio_priv(indio_dev);
+ 
+-	mutex_lock(&st->buf_lock);
+ 	st->tx[0] = ADE7758_WRITE_REG(reg_address);
+ 	st->tx[1] = val;
+ 
+-	ret = spi_write(st->us, st->tx, 2);
++	return spi_write(st->us, st->tx, 2);
++}
++
++int ade7758_spi_write_reg_8(struct device *dev, u8 reg_address, u8 val)
++{
++	int ret;
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct ade7758_state *st = iio_priv(indio_dev);
++
++	mutex_lock(&st->buf_lock);
++	ret = __ade7758_spi_write_reg_8(dev, reg_address, val);
+ 	mutex_unlock(&st->buf_lock);
+ 
+ 	return ret;
+@@ -91,7 +99,7 @@ static int ade7758_spi_write_reg_24(struct device *dev, u8 reg_address,
+ 	return ret;
+ }
+ 
+-int ade7758_spi_read_reg_8(struct device *dev, u8 reg_address, u8 *val)
++static int __ade7758_spi_read_reg_8(struct device *dev, u8 reg_address, u8 *val)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ade7758_state *st = iio_priv(indio_dev);
+@@ -111,7 +119,6 @@ int ade7758_spi_read_reg_8(struct device *dev, u8 reg_address, u8 *val)
+ 		},
+ 	};
+ 
+-	mutex_lock(&st->buf_lock);
+ 	st->tx[0] = ADE7758_READ_REG(reg_address);
+ 	st->tx[1] = 0;
+ 
+@@ -124,7 +131,19 @@ int ade7758_spi_read_reg_8(struct device *dev, u8 reg_address, u8 *val)
+ 	*val = st->rx[0];
+ 
+ error_ret:
++	return ret;
++}
++
++int ade7758_spi_read_reg_8(struct device *dev, u8 reg_address, u8 *val)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct ade7758_state *st = iio_priv(indio_dev);
++	int ret;
++
++	mutex_lock(&st->buf_lock);
++	ret = __ade7758_spi_read_reg_8(dev, reg_address, val);
+ 	mutex_unlock(&st->buf_lock);
++
+ 	return ret;
+ }
+ 
+@@ -480,10 +499,12 @@ static int ade7758_read_samp_freq(struct device *dev, int *val)
+ 	return 0;
+ }
+ 
+-static int ade7758_write_samp_freq(struct device *dev, int val)
++static int ade7758_write_samp_freq(struct iio_dev *indio_dev, int val)
+ {
+ 	int ret;
+ 	u8 reg, t;
++	struct ade7758_state *st = iio_priv(indio_dev);
++	struct device *dev = &indio_dev->dev;
+ 
+ 	switch (val) {
+ 	case 26040:
+@@ -499,20 +520,23 @@ static int ade7758_write_samp_freq(struct device *dev, int val)
+ 		t = 3;
+ 		break;
+ 	default:
+-		ret = -EINVAL;
+-		goto out;
++		return -EINVAL;
+ 	}
+ 
+-	ret = ade7758_spi_read_reg_8(dev, ADE7758_WAVMODE, &reg);
++	mutex_lock(&st->buf_lock);
++
++	ret = __ade7758_spi_read_reg_8(dev, ADE7758_WAVMODE, &reg);
+ 	if (ret)
+ 		goto out;
+ 
+ 	reg &= ~(5 << 3);
+ 	reg |= t << 5;
+ 
+-	ret = ade7758_spi_write_reg_8(dev, ADE7758_WAVMODE, reg);
++	ret = __ade7758_spi_write_reg_8(dev, ADE7758_WAVMODE, reg);
+ 
+ out:
++	mutex_unlock(&st->buf_lock);
++
+ 	return ret;
+ }
+ 
+@@ -545,9 +569,9 @@ static int ade7758_write_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+ 		if (val2)
+ 			return -EINVAL;
+-		mutex_lock(&indio_dev->mlock);
+-		ret = ade7758_write_samp_freq(&indio_dev->dev, val);
+-		mutex_unlock(&indio_dev->mlock);
++
++		ret = ade7758_write_samp_freq(indio_dev, val);
++
+ 		return ret;
+ 	default:
+ 		return -EINVAL;
+-- 
+2.7.4
