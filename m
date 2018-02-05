@@ -1,54 +1,42 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f49.google.com ([74.125.82.49]:51690 "EHLO
-        mail-wm0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753289AbeBEQAB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 5 Feb 2018 11:00:01 -0500
-Received: by mail-wm0-f49.google.com with SMTP id r71so27240004wmd.1
-        for <linux-iio@vger.kernel.org>; Mon, 05 Feb 2018 08:00:01 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <CAGr58CFkn-5n6zB0ewXE3MC-ehLR8ibF91BUSRpF6h0OBfZWcg@mail.gmail.com>
-References: <CAGr58CFkn-5n6zB0ewXE3MC-ehLR8ibF91BUSRpF6h0OBfZWcg@mail.gmail.com>
-From: Daniel Baluta <daniel.baluta@gmail.com>
-Date: Mon, 5 Feb 2018 18:00:00 +0200
-Message-ID: <CAEnQRZAAut3iJ4V2xmr5xgofCH9w-7kJForVagYf5s1gctatWg@mail.gmail.com>
-Subject: Re: Want to contribute to linux-iio
-To: Dileep Sankhla <sankhla.dileep96@gmail.com>
-Cc: linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=wkc1=E7=novotny.cz=tomas@kernel.org>
+From: Tomas Novotny <tomas@novotny.cz>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: [PATCH 0/2] iio: vcnl4000: add support for vcnl4200
+Date: Mon,  5 Feb 2018 19:04:22 +0100
+Message-Id: <20180205180424.30725-1-tomas@novotny.cz>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Dileep,
+VCNL4200 is another proximity and ambient light sensor from Vishay. I'm
+adding support for that sensor to vcnl4000 driver, which currently supports
+VCNL4000/10/20.
 
-On Sun, Feb 4, 2018 at 10:06 PM, Dileep Sankhla
-<sankhla.dileep96@gmail.com> wrote:
->
-> Hello, I want to contribute to linux-iio for GSoC'18 but I'm not getting where to start? Any help will be appreciated.
+The VCNL4200 is a bit different from VCNL4000/10/20. Common things are:
+- integrated proximity and ambient light sensor
+- SMBus compatible I2C interface
+- Vishay VCNL4xxx series...
 
-You can have a look at:
+Different things are:
+- totally different register map
+- 8-bit vs. 16-bit registers. The 16-bit values are in two 8-bit registers on
+  VCNL4000. 16-bit value is in one register on VCNL4200.
+- VCNL4000 has flags when the measurement is finished
 
-https://marc.info/?l=linux-iio&m=151776188903638&w=2
+The first patch generalizes the driver to support differencies. The second
+patch adds the support for VCNL4200.
 
-or
+It is tested on VCNL4020 and VCNL4200.
 
-https://marc.info/?l=linux-iio&m=151775804702998&w=2
+Tomas Novotny (2):
+  iio: vcnl4000: make the driver extendable
+  iio: vcnl4000: add support for VCNL4200
 
+ drivers/iio/light/Kconfig    |   5 +-
+ drivers/iio/light/vcnl4000.c | 158 +++++++++++++++++++++++++++++++++++++------
+ 2 files changed, 140 insertions(+), 23 deletions(-)
 
-but please keep in mind that there are already people interested in
-doing the cleanups.
-
-Will start a document to track who is assigned to each task.
-
-Also, before contributing to IIO please try to do some small
-contributions to drivers/staging directory.
-You may want to have a look here:
-
-https://kernelnewbies.org/FirstKernelPatch
-
-Also, please keep in mind that IIO project wasn't yet accepted to GSoC
-:) but feel free to start
-contributing :).
-
-
-thanks,
-Daniel.
+-- 
+2.12.3
