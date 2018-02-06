@@ -1,201 +1,137 @@
-Return-Path: <SRS0=8i//=E7=gmail.com=shreeya.patel23498@kernel.org>
-From: Shreeya Patel <shreeya.patel23498@gmail.com>
-To: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org,
-	knaack.h@gmx.de,
-	pmeerw@pmeerw.net,
-	gregkh@linuxfoundation.org,
-	linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Cc: Shreeya Patel <shreeya.patel23498@gmail.com>
-Subject: [PATCH v5 2/2] Staging: iio: ade7758: Expand buf_lock to cover both buffer and state protection
-Date: Tue,  6 Feb 2018 01:10:45 +0530
-Message-Id: <ec1848899e808fd5544bb1ca640abdc48fdfd6f3.1517845616.git.shreeya.patel23498@gmail.com>
-In-Reply-To: <cover.1517845616.git.shreeya.patel23498@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-by2nam03on0064.outbound.protection.outlook.com ([104.47.42.64]:3319
+        "EHLO NAM03-BY2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1751835AbeBFHcm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 6 Feb 2018 02:32:42 -0500
+From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+To: "lars@metafoo.de" <lars@metafoo.de>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "shreeya.patel23498@gmail.com" <shreeya.patel23498@gmail.com>
+Subject: Re: [PATCH v5 2/2] Staging: iio: ade7758: Expand buf_lock to cover
+ both buffer and state protection
+Date: Tue, 6 Feb 2018 07:32:34 +0000
+Message-ID: <1517902353.2857.7.camel@analog.com>
 References: <cover.1517845616.git.shreeya.patel23498@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+         <ec1848899e808fd5544bb1ca640abdc48fdfd6f3.1517845616.git.shreeya.patel23498@gmail.com>
+In-Reply-To: <ec1848899e808fd5544bb1ca640abdc48fdfd6f3.1517845616.git.shreeya.patel23498@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-iio_dev->mlock is to be used only by the IIO core for protecting
-device mode changes between INDIO_DIRECT and INDIO_BUFFER.
-
-This patch replaces the use of mlock with the already established
-buf_lock mutex.
-
-Introducing 'unlocked' forms of read and write registers. The
-read/write frequency functions now require buf_lock to be held.
-That's not obvious so avoid this but moving the locking inside
-the functions where it is then clear that they are taking the
-unlocked forms of the register read/write.
-
-It isn't readily apparent that write frequency function requires
-the locks to be taken, so move it inside the function to where it
-is required to protect.
-
-Signed-off-by: Shreeya Patel <shreeya.patel23498@gmail.com>
----
-
-Changes in v2
-  -Add static keyword to newly introduced functions and remove some
-added comments which are not required.
-
-Changes in v3
-  -Remove some useless mlocks and send it as another patch.
-Also make the necessary change in the current patch associated with 
-the new patch with commit id 88eba33. Make commit message more 
-appropriate.
-
-Changes in v4
-  -Write frequency function do not require lock so move it inside
-the function to where it is required to protect.
-
-Changes in v5
-  -Remove goto statement and make the code to return -EINVAL there
-itself. 
-
- drivers/staging/iio/meter/ade7758.h      |  2 +-
- drivers/staging/iio/meter/ade7758_core.c | 52 +++++++++++++++++++++++---------
- 2 files changed, 39 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/staging/iio/meter/ade7758.h b/drivers/staging/iio/meter/ade7758.h
-index 6ae78d8..2de81b5 100644
---- a/drivers/staging/iio/meter/ade7758.h
-+++ b/drivers/staging/iio/meter/ade7758.h
-@@ -111,7 +111,7 @@
-  * @trig:		data ready trigger registered with iio
-  * @tx:			transmit buffer
-  * @rx:			receive buffer
-- * @buf_lock:		mutex to protect tx and rx
-+ * @buf_lock:		mutex to protect tx, rx, read and write frequency
-  **/
- struct ade7758_state {
- 	struct spi_device	*us;
-diff --git a/drivers/staging/iio/meter/ade7758_core.c b/drivers/staging/iio/meter/ade7758_core.c
-index 227dbfc..dfe8e97 100644
---- a/drivers/staging/iio/meter/ade7758_core.c
-+++ b/drivers/staging/iio/meter/ade7758_core.c
-@@ -24,17 +24,25 @@
- #include "meter.h"
- #include "ade7758.h"
- 
--int ade7758_spi_write_reg_8(struct device *dev, u8 reg_address, u8 val)
-+static int __ade7758_spi_write_reg_8(struct device *dev, u8 reg_address, u8 val)
- {
--	int ret;
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ade7758_state *st = iio_priv(indio_dev);
- 
--	mutex_lock(&st->buf_lock);
- 	st->tx[0] = ADE7758_WRITE_REG(reg_address);
- 	st->tx[1] = val;
- 
--	ret = spi_write(st->us, st->tx, 2);
-+	return spi_write(st->us, st->tx, 2);
-+}
-+
-+int ade7758_spi_write_reg_8(struct device *dev, u8 reg_address, u8 val)
-+{
-+	int ret;
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct ade7758_state *st = iio_priv(indio_dev);
-+
-+	mutex_lock(&st->buf_lock);
-+	ret = __ade7758_spi_write_reg_8(dev, reg_address, val);
- 	mutex_unlock(&st->buf_lock);
- 
- 	return ret;
-@@ -91,7 +99,7 @@ static int ade7758_spi_write_reg_24(struct device *dev, u8 reg_address,
- 	return ret;
- }
- 
--int ade7758_spi_read_reg_8(struct device *dev, u8 reg_address, u8 *val)
-+static int __ade7758_spi_read_reg_8(struct device *dev, u8 reg_address, u8 *val)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ade7758_state *st = iio_priv(indio_dev);
-@@ -111,7 +119,6 @@ int ade7758_spi_read_reg_8(struct device *dev, u8 reg_address, u8 *val)
- 		},
- 	};
- 
--	mutex_lock(&st->buf_lock);
- 	st->tx[0] = ADE7758_READ_REG(reg_address);
- 	st->tx[1] = 0;
- 
-@@ -124,7 +131,19 @@ int ade7758_spi_read_reg_8(struct device *dev, u8 reg_address, u8 *val)
- 	*val = st->rx[0];
- 
- error_ret:
-+	return ret;
-+}
-+
-+int ade7758_spi_read_reg_8(struct device *dev, u8 reg_address, u8 *val)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct ade7758_state *st = iio_priv(indio_dev);
-+	int ret;
-+
-+	mutex_lock(&st->buf_lock);
-+	ret = __ade7758_spi_read_reg_8(dev, reg_address, val);
- 	mutex_unlock(&st->buf_lock);
-+
- 	return ret;
- }
- 
-@@ -480,10 +499,12 @@ static int ade7758_read_samp_freq(struct device *dev, int *val)
- 	return 0;
- }
- 
--static int ade7758_write_samp_freq(struct device *dev, int val)
-+static int ade7758_write_samp_freq(struct iio_dev *indio_dev, int val)
- {
- 	int ret;
- 	u8 reg, t;
-+	struct ade7758_state *st = iio_priv(indio_dev);
-+	struct device *dev = &indio_dev->dev;
- 
- 	switch (val) {
- 	case 26040:
-@@ -499,20 +520,23 @@ static int ade7758_write_samp_freq(struct device *dev, int val)
- 		t = 3;
- 		break;
- 	default:
--		ret = -EINVAL;
--		goto out;
-+		return -EINVAL;
- 	}
- 
--	ret = ade7758_spi_read_reg_8(dev, ADE7758_WAVMODE, &reg);
-+	mutex_lock(&st->buf_lock);
-+
-+	ret = __ade7758_spi_read_reg_8(dev, ADE7758_WAVMODE, &reg);
- 	if (ret)
- 		goto out;
- 
- 	reg &= ~(5 << 3);
- 	reg |= t << 5;
- 
--	ret = ade7758_spi_write_reg_8(dev, ADE7758_WAVMODE, reg);
-+	ret = __ade7758_spi_write_reg_8(dev, ADE7758_WAVMODE, reg);
- 
- out:
-+	mutex_unlock(&st->buf_lock);
-+
- 	return ret;
- }
- 
-@@ -545,9 +569,9 @@ static int ade7758_write_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_SAMP_FREQ:
- 		if (val2)
- 			return -EINVAL;
--		mutex_lock(&indio_dev->mlock);
--		ret = ade7758_write_samp_freq(&indio_dev->dev, val);
--		mutex_unlock(&indio_dev->mlock);
-+
-+		ret = ade7758_write_samp_freq(indio_dev, val);
-+
- 		return ret;
- 	default:
- 		return -EINVAL;
--- 
-2.7.4
+T24gVHVlLCAyMDE4LTAyLTA2IGF0IDAxOjEwICswNTMwLCBTaHJlZXlhIFBhdGVsIHdyb3RlOg0K
+PiBpaW9fZGV2LT5tbG9jayBpcyB0byBiZSB1c2VkIG9ubHkgYnkgdGhlIElJTyBjb3JlIGZvciBw
+cm90ZWN0aW5nDQo+IGRldmljZSBtb2RlIGNoYW5nZXMgYmV0d2VlbiBJTkRJT19ESVJFQ1QgYW5k
+IElORElPX0JVRkZFUi4NCj4gDQo+IFRoaXMgcGF0Y2ggcmVwbGFjZXMgdGhlIHVzZSBvZiBtbG9j
+ayB3aXRoIHRoZSBhbHJlYWR5IGVzdGFibGlzaGVkDQo+IGJ1Zl9sb2NrIG11dGV4Lg0KPiANCj4g
+SW50cm9kdWNpbmcgJ3VubG9ja2VkJyBmb3JtcyBvZiByZWFkIGFuZCB3cml0ZSByZWdpc3RlcnMu
+IFRoZQ0KPiByZWFkL3dyaXRlIGZyZXF1ZW5jeSBmdW5jdGlvbnMgbm93IHJlcXVpcmUgYnVmX2xv
+Y2sgdG8gYmUgaGVsZC4NCj4gVGhhdCdzIG5vdCBvYnZpb3VzIHNvIGF2b2lkIHRoaXMgYnV0IG1v
+dmluZyB0aGUgbG9ja2luZyBpbnNpZGUNCj4gdGhlIGZ1bmN0aW9ucyB3aGVyZSBpdCBpcyB0aGVu
+IGNsZWFyIHRoYXQgdGhleSBhcmUgdGFraW5nIHRoZQ0KPiB1bmxvY2tlZCBmb3JtcyBvZiB0aGUg
+cmVnaXN0ZXIgcmVhZC93cml0ZS4NCj4gDQo+IEl0IGlzbid0IHJlYWRpbHkgYXBwYXJlbnQgdGhh
+dCB3cml0ZSBmcmVxdWVuY3kgZnVuY3Rpb24gcmVxdWlyZXMNCj4gdGhlIGxvY2tzIHRvIGJlIHRh
+a2VuLCBzbyBtb3ZlIGl0IGluc2lkZSB0aGUgZnVuY3Rpb24gdG8gd2hlcmUgaXQNCj4gaXMgcmVx
+dWlyZWQgdG8gcHJvdGVjdC4NCg0KUmVtb3ZlZCBsaW51eC1rZXJuZWwgbGlzdCAmIEdyZWcgZnJv
+bSByZXBseSBsaXN0Lg0KDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBTaHJlZXlhIFBhdGVsIDxzaHJl
+ZXlhLnBhdGVsMjM0OThAZ21haWwuY29tPg0KPiAtLS0NCj4gDQo+IENoYW5nZXMgaW4gdjINCj4g
+ICAtQWRkIHN0YXRpYyBrZXl3b3JkIHRvIG5ld2x5IGludHJvZHVjZWQgZnVuY3Rpb25zIGFuZCBy
+ZW1vdmUgc29tZQ0KPiBhZGRlZCBjb21tZW50cyB3aGljaCBhcmUgbm90IHJlcXVpcmVkLg0KPiAN
+Cj4gQ2hhbmdlcyBpbiB2Mw0KPiAgIC1SZW1vdmUgc29tZSB1c2VsZXNzIG1sb2NrcyBhbmQgc2Vu
+ZCBpdCBhcyBhbm90aGVyIHBhdGNoLg0KPiBBbHNvIG1ha2UgdGhlIG5lY2Vzc2FyeSBjaGFuZ2Ug
+aW4gdGhlIGN1cnJlbnQgcGF0Y2ggYXNzb2NpYXRlZCB3aXRoIA0KPiB0aGUgbmV3IHBhdGNoIHdp
+dGggY29tbWl0IGlkIDg4ZWJhMzMuIE1ha2UgY29tbWl0IG1lc3NhZ2UgbW9yZSANCj4gYXBwcm9w
+cmlhdGUuDQo+IA0KPiBDaGFuZ2VzIGluIHY0DQo+ICAgLVdyaXRlIGZyZXF1ZW5jeSBmdW5jdGlv
+biBkbyBub3QgcmVxdWlyZSBsb2NrIHNvIG1vdmUgaXQgaW5zaWRlDQo+IHRoZSBmdW5jdGlvbiB0
+byB3aGVyZSBpdCBpcyByZXF1aXJlZCB0byBwcm90ZWN0Lg0KPiANCj4gQ2hhbmdlcyBpbiB2NQ0K
+PiAgIC1SZW1vdmUgZ290byBzdGF0ZW1lbnQgYW5kIG1ha2UgdGhlIGNvZGUgdG8gcmV0dXJuIC1F
+SU5WQUwgdGhlcmUNCj4gaXRzZWxmLiANCj4gDQo+ICBkcml2ZXJzL3N0YWdpbmcvaWlvL21ldGVy
+L2FkZTc3NTguaCAgICAgIHwgIDIgKy0NCj4gIGRyaXZlcnMvc3RhZ2luZy9paW8vbWV0ZXIvYWRl
+Nzc1OF9jb3JlLmMgfCA1MiArKysrKysrKysrKysrKysrKysrKysrKy0tLS0tLQ0KPiAtLS0NCj4g
+IDIgZmlsZXMgY2hhbmdlZCwgMzkgaW5zZXJ0aW9ucygrKSwgMTUgZGVsZXRpb25zKC0pDQo+IA0K
+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9zdGFnaW5nL2lpby9tZXRlci9hZGU3NzU4LmgNCj4gYi9k
+cml2ZXJzL3N0YWdpbmcvaWlvL21ldGVyL2FkZTc3NTguaA0KPiBpbmRleCA2YWU3OGQ4Li4yZGU4
+MWI1IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL3N0YWdpbmcvaWlvL21ldGVyL2FkZTc3NTguaA0K
+PiArKysgYi9kcml2ZXJzL3N0YWdpbmcvaWlvL21ldGVyL2FkZTc3NTguaA0KPiBAQCAtMTExLDcg
+KzExMSw3IEBADQo+ICAgKiBAdHJpZzoJCWRhdGEgcmVhZHkgdHJpZ2dlciByZWdpc3RlcmVkIHdp
+dGggaWlvDQo+ICAgKiBAdHg6CQkJdHJhbnNtaXQgYnVmZmVyDQo+ICAgKiBAcng6CQkJcmVjZWl2
+ZSBidWZmZXINCj4gLSAqIEBidWZfbG9jazoJCW11dGV4IHRvIHByb3RlY3QgdHggYW5kIHJ4DQo+
+ICsgKiBAYnVmX2xvY2s6CQltdXRleCB0byBwcm90ZWN0IHR4LCByeCwgcmVhZCBhbmQgd3JpdGUN
+Cj4gZnJlcXVlbmN5DQo+ICAgKiovDQo+ICBzdHJ1Y3QgYWRlNzc1OF9zdGF0ZSB7DQo+ICAJc3Ry
+dWN0IHNwaV9kZXZpY2UJKnVzOw0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9zdGFnaW5nL2lpby9t
+ZXRlci9hZGU3NzU4X2NvcmUuYw0KPiBiL2RyaXZlcnMvc3RhZ2luZy9paW8vbWV0ZXIvYWRlNzc1
+OF9jb3JlLmMNCj4gaW5kZXggMjI3ZGJmYy4uZGZlOGU5NyAxMDA2NDQNCj4gLS0tIGEvZHJpdmVy
+cy9zdGFnaW5nL2lpby9tZXRlci9hZGU3NzU4X2NvcmUuYw0KPiArKysgYi9kcml2ZXJzL3N0YWdp
+bmcvaWlvL21ldGVyL2FkZTc3NThfY29yZS5jDQo+IEBAIC0yNCwxNyArMjQsMjUgQEANCj4gICNp
+bmNsdWRlICJtZXRlci5oIg0KPiAgI2luY2x1ZGUgImFkZTc3NTguaCINCj4gIA0KPiAtaW50IGFk
+ZTc3NThfc3BpX3dyaXRlX3JlZ184KHN0cnVjdCBkZXZpY2UgKmRldiwgdTggcmVnX2FkZHJlc3Ms
+IHU4IHZhbCkNCj4gK3N0YXRpYyBpbnQgX19hZGU3NzU4X3NwaV93cml0ZV9yZWdfOChzdHJ1Y3Qg
+ZGV2aWNlICpkZXYsIHU4IHJlZ19hZGRyZXNzLCB1OA0KPiB2YWwpDQo+ICB7DQo+IC0JaW50IHJl
+dDsNCj4gIAlzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2ID0gZGV2X3RvX2lpb19kZXYoZGV2KTsN
+Cj4gIAlzdHJ1Y3QgYWRlNzc1OF9zdGF0ZSAqc3QgPSBpaW9fcHJpdihpbmRpb19kZXYpOw0KPiAg
+DQo+IC0JbXV0ZXhfbG9jaygmc3QtPmJ1Zl9sb2NrKTsNCj4gIAlzdC0+dHhbMF0gPSBBREU3NzU4
+X1dSSVRFX1JFRyhyZWdfYWRkcmVzcyk7DQo+ICAJc3QtPnR4WzFdID0gdmFsOw0KPiAgDQo+IC0J
+cmV0ID0gc3BpX3dyaXRlKHN0LT51cywgc3QtPnR4LCAyKTsNCj4gKwlyZXR1cm4gc3BpX3dyaXRl
+KHN0LT51cywgc3QtPnR4LCAyKTsNCj4gK30NCj4gKw0KPiAraW50IGFkZTc3NThfc3BpX3dyaXRl
+X3JlZ184KHN0cnVjdCBkZXZpY2UgKmRldiwgdTggcmVnX2FkZHJlc3MsIHU4IHZhbCkNCj4gK3sN
+Cj4gKwlpbnQgcmV0Ow0KPiArCXN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYgPSBkZXZfdG9faWlv
+X2RldihkZXYpOw0KPiArCXN0cnVjdCBhZGU3NzU4X3N0YXRlICpzdCA9IGlpb19wcml2KGluZGlv
+X2Rldik7DQo+ICsNCj4gKwltdXRleF9sb2NrKCZzdC0+YnVmX2xvY2spOw0KPiArCXJldCA9IF9f
+YWRlNzc1OF9zcGlfd3JpdGVfcmVnXzgoZGV2LCByZWdfYWRkcmVzcywgdmFsKTsNCj4gIAltdXRl
+eF91bmxvY2soJnN0LT5idWZfbG9jayk7DQo+ICANCj4gIAlyZXR1cm4gcmV0Ow0KPiBAQCAtOTEs
+NyArOTksNyBAQCBzdGF0aWMgaW50IGFkZTc3NThfc3BpX3dyaXRlX3JlZ18yNChzdHJ1Y3QgZGV2
+aWNlICpkZXYsIHU4DQo+IHJlZ19hZGRyZXNzLA0KPiAgCXJldHVybiByZXQ7DQo+ICB9DQo+ICAN
+Cj4gLWludCBhZGU3NzU4X3NwaV9yZWFkX3JlZ184KHN0cnVjdCBkZXZpY2UgKmRldiwgdTggcmVn
+X2FkZHJlc3MsIHU4ICp2YWwpDQo+ICtzdGF0aWMgaW50IF9fYWRlNzc1OF9zcGlfcmVhZF9yZWdf
+OChzdHJ1Y3QgZGV2aWNlICpkZXYsIHU4IHJlZ19hZGRyZXNzLCB1OA0KPiAqdmFsKQ0KPiAgew0K
+PiAgCXN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYgPSBkZXZfdG9faWlvX2RldihkZXYpOw0KPiAg
+CXN0cnVjdCBhZGU3NzU4X3N0YXRlICpzdCA9IGlpb19wcml2KGluZGlvX2Rldik7DQo+IEBAIC0x
+MTEsNyArMTE5LDYgQEAgaW50IGFkZTc3NThfc3BpX3JlYWRfcmVnXzgoc3RydWN0IGRldmljZSAq
+ZGV2LCB1OA0KPiByZWdfYWRkcmVzcywgdTggKnZhbCkNCj4gIAkJfSwNCj4gIAl9Ow0KPiAgDQo+
+IC0JbXV0ZXhfbG9jaygmc3QtPmJ1Zl9sb2NrKTsNCj4gIAlzdC0+dHhbMF0gPSBBREU3NzU4X1JF
+QURfUkVHKHJlZ19hZGRyZXNzKTsNCj4gIAlzdC0+dHhbMV0gPSAwOw0KPiAgDQo+IEBAIC0xMjQs
+NyArMTMxLDE5IEBAIGludCBhZGU3NzU4X3NwaV9yZWFkX3JlZ184KHN0cnVjdCBkZXZpY2UgKmRl
+diwgdTgNCj4gcmVnX2FkZHJlc3MsIHU4ICp2YWwpDQo+ICAJKnZhbCA9IHN0LT5yeFswXTsNCj4g
+IA0KPiAgZXJyb3JfcmV0Og0KPiArCXJldHVybiByZXQ7DQo+ICt9DQo+ICsNCj4gK2ludCBhZGU3
+NzU4X3NwaV9yZWFkX3JlZ184KHN0cnVjdCBkZXZpY2UgKmRldiwgdTggcmVnX2FkZHJlc3MsIHU4
+ICp2YWwpDQo+ICt7DQo+ICsJc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiA9IGRldl90b19paW9f
+ZGV2KGRldik7DQo+ICsJc3RydWN0IGFkZTc3NThfc3RhdGUgKnN0ID0gaWlvX3ByaXYoaW5kaW9f
+ZGV2KTsNCj4gKwlpbnQgcmV0Ow0KPiArDQo+ICsJbXV0ZXhfbG9jaygmc3QtPmJ1Zl9sb2NrKTsN
+Cj4gKwlyZXQgPSBfX2FkZTc3NThfc3BpX3JlYWRfcmVnXzgoZGV2LCByZWdfYWRkcmVzcywgdmFs
+KTsNCj4gIAltdXRleF91bmxvY2soJnN0LT5idWZfbG9jayk7DQo+ICsNCj4gIAlyZXR1cm4gcmV0
+Ow0KPiAgfQ0KPiAgDQo+IEBAIC00ODAsMTAgKzQ5OSwxMiBAQCBzdGF0aWMgaW50IGFkZTc3NThf
+cmVhZF9zYW1wX2ZyZXEoc3RydWN0IGRldmljZSAqZGV2LA0KPiBpbnQgKnZhbCkNCj4gIAlyZXR1
+cm4gMDsNCj4gIH0NCj4gIA0KPiAtc3RhdGljIGludCBhZGU3NzU4X3dyaXRlX3NhbXBfZnJlcShz
+dHJ1Y3QgZGV2aWNlICpkZXYsIGludCB2YWwpDQo+ICtzdGF0aWMgaW50IGFkZTc3NThfd3JpdGVf
+c2FtcF9mcmVxKHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYsIGludCB2YWwpDQoNCk1heWJlIGtl
+ZXAgdGhlIGRlY2xhcmF0aW9uIHRoZSBzYW1lLg0KVGhlIHNhbWUgY29uc3RydWN0IGZvciBhY2Nl
+c3NpbmcgaW5kaW9fZGV2IGNvdWxkIGJlIHVzZWQgYXMgYWJvdmUuDQpTbzogInN0cnVjdCBpaW9f
+ZGV2ICppbmRpb19kZXYgPSBkZXZfdG9faWlvX2RldihkZXYpOyINCg0KPiAgew0KPiAgCWludCBy
+ZXQ7DQo+ICAJdTggcmVnLCB0Ow0KPiArCXN0cnVjdCBhZGU3NzU4X3N0YXRlICpzdCA9IGlpb19w
+cml2KGluZGlvX2Rldik7DQo+ICsJc3RydWN0IGRldmljZSAqZGV2ID0gJmluZGlvX2Rldi0+ZGV2
+Ow0KPiAgDQo+ICAJc3dpdGNoICh2YWwpIHsNCj4gIAljYXNlIDI2MDQwOg0KPiBAQCAtNDk5LDIw
+ICs1MjAsMjMgQEAgc3RhdGljIGludCBhZGU3NzU4X3dyaXRlX3NhbXBfZnJlcShzdHJ1Y3QgZGV2
+aWNlICpkZXYsDQo+IGludCB2YWwpDQo+ICAJCXQgPSAzOw0KPiAgCQlicmVhazsNCj4gIAlkZWZh
+dWx0Og0KPiAtCQlyZXQgPSAtRUlOVkFMOw0KPiAtCQlnb3RvIG91dDsNCj4gKwkJcmV0dXJuIC1F
+SU5WQUw7DQo+ICAJfQ0KPiAgDQo+IC0JcmV0ID0gYWRlNzc1OF9zcGlfcmVhZF9yZWdfOChkZXYs
+IEFERTc3NThfV0FWTU9ERSwgJnJlZyk7DQo+ICsJbXV0ZXhfbG9jaygmc3QtPmJ1Zl9sb2NrKTsN
+Cj4gKw0KPiArCXJldCA9IF9fYWRlNzc1OF9zcGlfcmVhZF9yZWdfOChkZXYsIEFERTc3NThfV0FW
+TU9ERSwgJnJlZyk7DQo+ICAJaWYgKHJldCkNCj4gIAkJZ290byBvdXQ7DQo+ICANCj4gIAlyZWcg
+Jj0gfig1IDw8IDMpOw0KPiAgCXJlZyB8PSB0IDw8IDU7DQo+ICANCj4gLQlyZXQgPSBhZGU3NzU4
+X3NwaV93cml0ZV9yZWdfOChkZXYsIEFERTc3NThfV0FWTU9ERSwgcmVnKTsNCj4gKwlyZXQgPSBf
+X2FkZTc3NThfc3BpX3dyaXRlX3JlZ184KGRldiwgQURFNzc1OF9XQVZNT0RFLCByZWcpOw0KPiAg
+DQo+ICBvdXQ6DQo+ICsJbXV0ZXhfdW5sb2NrKCZzdC0+YnVmX2xvY2spOw0KPiArDQo+ICAJcmV0
+dXJuIHJldDsNCj4gIH0NCj4gIA0KPiBAQCAtNTQ1LDkgKzU2OSw5IEBAIHN0YXRpYyBpbnQgYWRl
+Nzc1OF93cml0ZV9yYXcoc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiwNCj4gIAljYXNlIElJT19D
+SEFOX0lORk9fU0FNUF9GUkVROg0KPiAgCQlpZiAodmFsMikNCj4gIAkJCXJldHVybiAtRUlOVkFM
+Ow0KPiAtCQltdXRleF9sb2NrKCZpbmRpb19kZXYtPm1sb2NrKTsNCj4gLQkJcmV0ID0gYWRlNzc1
+OF93cml0ZV9zYW1wX2ZyZXEoJmluZGlvX2Rldi0+ZGV2LCB2YWwpOw0KPiAtCQltdXRleF91bmxv
+Y2soJmluZGlvX2Rldi0+bWxvY2spOw0KPiArDQo+ICsJCXJldCA9IGFkZTc3NThfd3JpdGVfc2Ft
+cF9mcmVxKGluZGlvX2RldiwgdmFsKTsNCj4gKw0KPiAgCQlyZXR1cm4gcmV0Ow0KPiAgCWRlZmF1
+bHQ6DQo+ICAJCXJldHVybiAtRUlOVkFMOw==
