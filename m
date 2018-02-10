@@ -1,88 +1,63 @@
-Return-Path: <joe@perches.com>
-Message-ID: <1518284577.16865.8.camel@perches.com>
-Subject: Re: Software evolution around
- =?UTF-8?Q?=E2=80=9Ccheckpatch=2Epl=E2=80=9D=3F?=
-From: Joe Perches <joe@perches.com>
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc: SF Markus Elfring <elfring@users.sourceforge.net>,
- linux-iio@vger.kernel.org, linux-input@vger.kernel.org, Jonathan Cameron
- <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Jiri Kosina
- <jikos@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, Peter
- Meerwald-Stadler <pmeerw@pmeerw.net>, Srinivas Pandruvada
- <srinivas.pandruvada@linux.intel.com>,  LKML
- <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
-Date: Sat, 10 Feb 2018 09:42:57 -0800
-In-Reply-To: <20180210155734.708d01b6@archlinux>
+Return-Path: <elfring@users.sourceforge.net>
+Subject: =?UTF-8?Q?Re:_Software_evolution_around_=e2=80=9ccheckpatch.pl?=
+ =?UTF-8?B?4oCdPw==?=
+To: Joe Perches <joe@perches.com>,
+ Jonathan Cameron <jic23@jic23.retrosnub.co.uk>, linux-iio@vger.kernel.org,
+ linux-input@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+ Jiri Kosina <jikos@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+ Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+ Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+ LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
 References: <0406765c-bdd1-1a82-cf66-1c248063ae4f@users.sourceforge.net>
-	 <20180204112346.0977e938@archlinux>
-	 <9420fc82-1a37-3601-bafe-f57ef953bfcd@users.sourceforge.net>
-	 <87DF341A-1356-4B1B-8D25-14D5B0AAB01D@jic23.retrosnub.co.uk>
-	 <f008911b-c595-6e0f-d85f-076e994ae7db@users.sourceforge.net>
-	 <20180210145336.233c721d@archlinux> <1518274783.6579.2.camel@perches.com>
-	 <20180210155734.708d01b6@archlinux>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+ <20180204112346.0977e938@archlinux>
+ <9420fc82-1a37-3601-bafe-f57ef953bfcd@users.sourceforge.net>
+ <87DF341A-1356-4B1B-8D25-14D5B0AAB01D@jic23.retrosnub.co.uk>
+ <f008911b-c595-6e0f-d85f-076e994ae7db@users.sourceforge.net>
+ <20180210145336.233c721d@archlinux> <1518274783.6579.2.camel@perches.com>
+ <20180210155734.708d01b6@archlinux> <1518284577.16865.8.camel@perches.com>
+From: SF Markus Elfring <elfring@users.sourceforge.net>
+Message-ID: <a988eca2-36d4-19bd-e92c-1a92e497e0da@users.sourceforge.net>
+Date: Sat, 10 Feb 2018 19:30:15 +0100
+MIME-Version: 1.0
+In-Reply-To: <1518284577.16865.8.camel@perches.com>
+Content-Type: text/plain; charset=utf-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, 2018-02-10 at 15:57 +0000, Jonathan Cameron wrote:
-> On Sat, 10 Feb 2018 06:59:43 -0800
-> Joe Perches <joe@perches.com> wrote:
+>> So I think checkpatch is striking the right balance here in
+>> how it warns.  Obviously if it could assess the text
+>> and come to an informed decision that would be great but
+>> we are some way from that ;)
 > 
-> > On Sat, 2018-02-10 at 14:53 +0000, Jonathan Cameron wrote:
-> > > While it would be great to improve checkpatches false
-> > > positive rate, it's very nature as a string matcher makes
-> > > this hard.  
-> > 
-> > true.
-> > 
-> > what are the false positives you see?
-> > 
-> 
-> This particular case is only 'sort of' a false positive
-> in the warning that a message printed on a memory allocation
-> failure 'may' not add any information over the generic case.
+> The 'informed' bit is difficult as it is mostly a political problem.
 
-Right.  So it's not a 'false positive' at all.
-Are there any actual 'false positives' you know of?
+I find such a view very interesting.
 
-> Very hard to judge on whether it is useful to know more than
-> an allocation failed somewhere or not.
-> 
-> Message makes this clear:
-> > “WARNING: Possible unnecessary 'out of memory' message”
-> > (from the script “checkpatch.pl”)  
-> 
-> We also have the balance between any changes to existing code
-> adding 'some' maintenance overhead vs changing this stuff
-> in a new driver - which is what checkpatch is really intended
-> for.
 
-There's almost zero maintenance overhead here.
-The time it takes for the back and forth
-replies is likely larger.
+> I just wish Markus would improve his consistently terrible commit messages
 
-> So I think checkpatch is striking the right balance here in
-> how it warns.  Obviously if it could assess the text
-> and come to an informed decision that would be great but
-> we are some way from that ;)
+I tried to achieve another clarification a few times.
 
-The 'informed' bit is difficult as it is mostly
-a political problem.
 
-This particular message really is unnecessary as
-the generic dump_stack on any normal allocation
-(ie: without __GFP_WARN) already emits location
-specific information.
+> that just restate the action being done and detail
+> _why_ a particular thing _should_ be done.
 
-Removing these messages can help make the kernel
-image smaller and thereby help make these OOM
-messages a tiny bit less likely.
+Unfortunately, it seems that no other contributors picked
+corresponding opportunities up so far.
 
-I just wish Markus would improve his consistently
-terrible commit messages that just restate the
-action being done and detail _why_ a particular
-thing _should_ be done.
+You indicated also special software development challenges in your commit
+“checkpatch: attempt to find unnecessary 'out of memory' messages”.
 
-His acceptance rate would improve as many of these
-back and forth replies for what trivialities he
-posts as patches would be minimized.
+https://lkml.org/lkml/2014/6/10/382
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ebfdc40969f24fc0cdd1349835d36e8ebae05374
+
+
+> His acceptance rate would improve as many of these back and forth
+> replies for what trivialities he posts as patches would be minimized.
+
+My selection of change possibilities leads to mixed integration results.
+
+I stumbled on variations for general change resistance.
+
+Regards,
+Markus
