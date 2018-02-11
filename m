@@ -1,246 +1,36 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:44898 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750960AbeBQMB0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 17 Feb 2018 07:01:26 -0500
-Date: Sat, 17 Feb 2018 12:01:21 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: rodrigosiqueira <rodrigosiqueiramelo@gmail.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, daniel.baluta@nxp.com,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: ade7759: Fix open parenthesis alignment
-Message-ID: <20180217120121.0a5b3be0@archlinux>
-In-Reply-To: <20180210202315.l2jecbrips2g3vuq@smtp.gmail.com>
-References: <20180210202315.l2jecbrips2g3vuq@smtp.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=rDdW=FF=ccbib.org=harald@kernel.org>
+From: Harald Geyer <harald@ccbib.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	Edward Attfield <edward@attfield.ca>,
+	Harald Geyer <harald@ccbib.org>
+Subject: [PATCH] iio: dht11: Improve detection of sensor type
+Date: Sun, 11 Feb 2018 11:09:40 +0000
+Message-Id: <1518347380-9624-1-git-send-email-harald@ccbib.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, 10 Feb 2018 18:23:15 -0200
-rodrigosiqueira <rodrigosiqueiramelo@gmail.com> wrote:
+The old code was based on a DHT11 datasheet which specifies a measurement
+range of 20%-90% RH. Turns out the sensor actually reports values outside
+this range, so we should support it as far as possible.
 
-> This patch fixes the CHECKs reported by checkpatch.pl for "alignment
-> should match open parenthesis"
-> 
-> Signed-off-by: rodrigosiqueira <rodrigosiqueiramelo@gmail.com>
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+Reported-by: Edward Attfield <edward@attfield.ca>
+Signed-off-by: Harald Geyer <harald@ccbib.org>
+---
+ drivers/iio/humidity/dht11.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/staging/iio/meter/ade7759.c | 80 ++++++++++++++++++-------------------
->  1 file changed, 38 insertions(+), 42 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/meter/ade7759.c b/drivers/staging/iio/meter/ade7759.c
-> index d99cf508d8d0..1decb2b8afab 100644
-> --- a/drivers/staging/iio/meter/ade7759.c
-> +++ b/drivers/staging/iio/meter/ade7759.c
-> @@ -72,8 +72,8 @@ struct ade7759_state {
->  };
->  
->  static int ade7759_spi_write_reg_8(struct device *dev,
-> -		u8 reg_address,
-> -		u8 val)
-> +				   u8 reg_address,
-> +				   u8 val)
->  {
->  	int ret;
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> @@ -91,8 +91,8 @@ static int ade7759_spi_write_reg_8(struct device *dev,
->  
->  /*Unlocked version of ade7759_spi_write_reg_16 function */
->  static int __ade7759_spi_write_reg_16(struct device *dev,
-> -		u8 reg_address,
-> -		u16 value)
-> +				      u8 reg_address,
-> +				      u16 value)
->  {
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7759_state *st = iio_priv(indio_dev);
-> @@ -104,8 +104,8 @@ static int __ade7759_spi_write_reg_16(struct device *dev,
->  }
->  
->  static int ade7759_spi_write_reg_16(struct device *dev,
-> -		u8 reg_address,
-> -		u16 value)
-> +				    u8 reg_address,
-> +				    u16 value)
->  {
->  	int ret;
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> @@ -119,8 +119,8 @@ static int ade7759_spi_write_reg_16(struct device *dev,
->  }
->  
->  static int ade7759_spi_read_reg_8(struct device *dev,
-> -		u8 reg_address,
-> -		u8 *val)
-> +				  u8 reg_address,
-> +				  u8 *val)
->  {
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7759_state *st = iio_priv(indio_dev);
-> @@ -128,8 +128,9 @@ static int ade7759_spi_read_reg_8(struct device *dev,
->  
->  	ret = spi_w8r8(st->us, ADE7759_READ_REG(reg_address));
->  	if (ret < 0) {
-> -		dev_err(&st->us->dev, "problem when reading 8 bit register 0x%02X",
-> -				reg_address);
-> +		dev_err(&st->us->dev,
-> +			"problem when reading 8 bit register 0x%02X",
-> +			reg_address);
->  		return ret;
->  	}
->  	*val = ret;
-> @@ -138,8 +139,8 @@ static int ade7759_spi_read_reg_8(struct device *dev,
->  }
->  
->  static int ade7759_spi_read_reg_16(struct device *dev,
-> -		u8 reg_address,
-> -		u16 *val)
-> +				   u8 reg_address,
-> +				   u16 *val)
->  {
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7759_state *st = iio_priv(indio_dev);
-> @@ -158,8 +159,8 @@ static int ade7759_spi_read_reg_16(struct device *dev,
->  }
->  
->  static int ade7759_spi_read_reg_40(struct device *dev,
-> -		u8 reg_address,
-> -		u64 *val)
-> +				   u8 reg_address,
-> +				   u64 *val)
->  {
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7759_state *st = iio_priv(indio_dev);
-> @@ -179,8 +180,9 @@ static int ade7759_spi_read_reg_40(struct device *dev,
->  
->  	ret = spi_sync_transfer(st->us, xfers, ARRAY_SIZE(xfers));
->  	if (ret) {
-> -		dev_err(&st->us->dev, "problem when reading 40 bit register 0x%02X",
-> -				reg_address);
-> +		dev_err(&st->us->dev,
-> +			"problem when reading 40 bit register 0x%02X",
-> +			reg_address);
->  		goto error_ret;
->  	}
->  	*val = ((u64)st->rx[1] << 32) | ((u64)st->rx[2] << 24) |
-> @@ -192,8 +194,8 @@ static int ade7759_spi_read_reg_40(struct device *dev,
->  }
->  
->  static ssize_t ade7759_read_8bit(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +				 struct device_attribute *attr,
-> +				 char *buf)
->  {
->  	int ret;
->  	u8 val = 0;
-> @@ -207,8 +209,8 @@ static ssize_t ade7759_read_8bit(struct device *dev,
->  }
->  
->  static ssize_t ade7759_read_16bit(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +				  struct device_attribute *attr,
-> +				  char *buf)
->  {
->  	int ret;
->  	u16 val = 0;
-> @@ -222,8 +224,8 @@ static ssize_t ade7759_read_16bit(struct device *dev,
->  }
->  
->  static ssize_t ade7759_read_40bit(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +				  struct device_attribute *attr,
-> +				  char *buf)
->  {
->  	int ret;
->  	u64 val = 0;
-> @@ -237,9 +239,9 @@ static ssize_t ade7759_read_40bit(struct device *dev,
->  }
->  
->  static ssize_t ade7759_write_8bit(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +				  struct device_attribute *attr,
-> +				  const char *buf,
-> +				  size_t len)
->  {
->  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->  	int ret;
-> @@ -255,9 +257,9 @@ static ssize_t ade7759_write_8bit(struct device *dev,
->  }
->  
->  static ssize_t ade7759_write_16bit(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +				   struct device_attribute *attr,
-> +				   const char *buf,
-> +				   size_t len)
->  {
->  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->  	int ret;
-> @@ -277,9 +279,7 @@ static int ade7759_reset(struct device *dev)
->  	int ret;
->  	u16 val;
->  
-> -	ret = ade7759_spi_read_reg_16(dev,
-> -			ADE7759_MODE,
-> -			&val);
-> +	ret = ade7759_spi_read_reg_16(dev, ADE7759_MODE, &val);
->  	if (ret < 0)
->  		return ret;
->  
-> @@ -365,9 +365,7 @@ static int ade7759_stop_device(struct device *dev)
->  	int ret;
->  	u16 val;
->  
-> -	ret = ade7759_spi_read_reg_16(dev,
-> -			ADE7759_MODE,
-> -			&val);
-> +	ret = ade7759_spi_read_reg_16(dev, ADE7759_MODE, &val);
->  	if (ret < 0) {
->  		dev_err(dev, "unable to power down the device, error: %d\n",
->  			ret);
-> @@ -404,16 +402,14 @@ static int ade7759_initial_setup(struct iio_dev *indio_dev)
->  }
->  
->  static ssize_t ade7759_read_frequency(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +				      struct device_attribute *attr,
-> +				      char *buf)
->  {
->  	int ret;
->  	u16 t;
->  	int sps;
->  
-> -	ret = ade7759_spi_read_reg_16(dev,
-> -			ADE7759_MODE,
-> -			&t);
-> +	ret = ade7759_spi_read_reg_16(dev, ADE7759_MODE, &t);
->  	if (ret)
->  		return ret;
->  
-> @@ -424,9 +420,9 @@ static ssize_t ade7759_read_frequency(struct device *dev,
->  }
->  
->  static ssize_t ade7759_write_frequency(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +				       struct device_attribute *attr,
-> +				       const char *buf,
-> +				       size_t len)
->  {
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7759_state *st = iio_priv(indio_dev);
-
+diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
+index df6bab4..1a9f8f4 100644
+--- a/drivers/iio/humidity/dht11.c
++++ b/drivers/iio/humidity/dht11.c
+@@ -159,7 +159,7 @@ static int dht11_decode(struct dht11 *dht11, int offset)
+ 	}
+ 
+ 	dht11->timestamp = ktime_get_boot_ns();
+-	if (hum_int < 20) {  /* DHT22 */
++	if (hum_int < 4) {  /* DHT22: 100000 = (3*256+232)*100 */
+ 		dht11->temperature = (((temp_int & 0x7f) << 8) + temp_dec) *
+ 					((temp_int & 0x80) ? -100 : 100);
+ 		dht11->humidity = ((hum_int << 8) + hum_dec) * 100;
+-- 
+2.1.4
