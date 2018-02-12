@@ -1,52 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:45046 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750771AbeBQMGa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 17 Feb 2018 07:06:30 -0500
-Date: Sat, 17 Feb 2018 12:06:26 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Harald Geyer <harald@ccbib.org>
-Cc: linux-iio@vger.kernel.org, Edward Attfield <edward@attfield.ca>
-Subject: Re: [PATCH] iio: dht11: Improve detection of sensor type
-Message-ID: <20180217120626.728c3aaa@archlinux>
-In-Reply-To: <1518347380-9624-1-git-send-email-harald@ccbib.org>
-References: <1518347380-9624-1-git-send-email-harald@ccbib.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from mail-io0-f193.google.com ([209.85.223.193]:46646 "EHLO
+        mail-io0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933898AbeBLLzY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 12 Feb 2018 06:55:24 -0500
+From: Himanshu Jha <himanshujha199640@gmail.com>
+To: 21cnbao@gmail.com, jic23@kernel.org
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org,
+        Himanshu Jha <himanshujha199640@gmail.com>
+Subject: [PATCH 0/4] staging: iio: accel: adis16201 driver cleanup
+Date: Mon, 12 Feb 2018 17:24:55 +0530
+Message-Id: <1518436499-8584-1-git-send-email-himanshujha199640@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, 11 Feb 2018 11:09:40 +0000
-Harald Geyer <harald@ccbib.org> wrote:
+The following patch series cleans up miscellaneous code fragments and
+then the driver is moved from staging to mainline IIO subsytem directory.
+Note that the last patch to move driver is *not* generated using '-M' flag,
+which is used for detecting renames, since it may help reviewers to
+suggest more cleanups/fix while pointing inline to the patch the
+necessary changes.
 
-> The old code was based on a DHT11 datasheet which specifies a measurement
-> range of 20%-90% RH. Turns out the sensor actually reports values outside
-> this range, so we should support it as far as possible.
-> 
-> Reported-by: Edward Attfield <edward@attfield.ca>
-> Signed-off-by: Harald Geyer <harald@ccbib.org>
-Applied to the togreg branch of iio.git and pushed out as
-testing for the autobuilders to play with it.
+All the patches have been tested using 0-day test service with success.
 
-Thanks,
+For all the patches:
+Suggested-by: Jonathan Cameron <jic23@kernel.org>
 
-Jonathan
+Himanshu Jha (4):
+  staging: iio: accel: adis16201: Use SPDX identifier
+  staging: iio: accel: Remove unnecessary comments and add suitable
+    suffix
+  staging: iio: accel: Use sign_extend32 and adjust a switch statement
+  staging: iio: accel: Move adis16201 driver out of staging
 
-> ---
->  drivers/iio/humidity/dht11.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
-> index df6bab4..1a9f8f4 100644
-> --- a/drivers/iio/humidity/dht11.c
-> +++ b/drivers/iio/humidity/dht11.c
-> @@ -159,7 +159,7 @@ static int dht11_decode(struct dht11 *dht11, int offset)
->  	}
->  
->  	dht11->timestamp = ktime_get_boot_ns();
-> -	if (hum_int < 20) {  /* DHT22 */
-> +	if (hum_int < 4) {  /* DHT22: 100000 = (3*256+232)*100 */
->  		dht11->temperature = (((temp_int & 0x7f) << 8) + temp_dec) *
->  					((temp_int & 0x80) ? -100 : 100);
->  		dht11->humidity = ((hum_int << 8) + hum_dec) * 100;
+ drivers/iio/accel/Kconfig             |  12 ++
+ drivers/iio/accel/Makefile            |   1 +
+ drivers/iio/accel/adis16201.c         | 315 ++++++++++++++++++++++++++++
+ drivers/staging/iio/accel/Kconfig     |  12 --
+ drivers/staging/iio/accel/Makefile    |   1 -
+ drivers/staging/iio/accel/adis16201.c | 381 ----------------------------------
+ 6 files changed, 328 insertions(+), 394 deletions(-)
+ create mode 100644 drivers/iio/accel/adis16201.c
+ delete mode 100644 drivers/staging/iio/accel/adis16201.c
+
+-- 
+2.7.4
 
