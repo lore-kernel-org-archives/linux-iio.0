@@ -1,73 +1,45 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:45656 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750984AbeBQM0y (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 17 Feb 2018 07:26:54 -0500
-Date: Sat, 17 Feb 2018 12:26:49 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: Himanshu Jha <himanshujha199640@gmail.com>,
-        devel@driverdev.osuosl.org, lars@metafoo.de,
-        Michael.Hennerich@analog.com, linux-iio@vger.kernel.org,
-        gregkh@linuxfoundation.org, 21cnbao@gmail.com,
-        linux-kernel@vger.kernel.org, pmeerw@pmeerw.net, knaack.h@gmx.de
-Subject: Re: [PATCH 4/4] staging: iio: accel: Move adis16201 driver out of
- staging
-Message-ID: <20180217122649.1b476787@archlinux>
-In-Reply-To: <20180212144542.qievoq76rvjigwm4@mwanda>
-References: <1518436499-8584-1-git-send-email-himanshujha199640@gmail.com>
-        <1518436499-8584-5-git-send-email-himanshujha199640@gmail.com>
-        <20180212131826.ebazvmp6iv7i5fav@mwanda>
-        <20180212144157.GC12142@himanshu-Vostro-3559>
-        <20180212144542.qievoq76rvjigwm4@mwanda>
+Return-Path: <SRS0=KvD6=FG=nexb.com=pombredanne@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <1518436499-8584-5-git-send-email-himanshujha199640@gmail.com>
+References: <1518436499-8584-1-git-send-email-himanshujha199640@gmail.com> <1518436499-8584-5-git-send-email-himanshujha199640@gmail.com>
+From: Philippe Ombredanne <pombredanne@nexb.com>
+Date: Mon, 12 Feb 2018 15:10:56 +0100
+Message-ID: <CAOFm3uFOy+Rea8yz798sEoCGRfavsR9gwY9-d_RQ75K5yoq1=g@mail.gmail.com>
+Subject: Re: [PATCH 4/4] staging: iio: accel: Move adis16201 driver out of staging
+To: Himanshu Jha <himanshujha199640@gmail.com>
+Cc: 21cnbao@gmail.com, Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>, Michael.Hennerich@analog.com,
+	Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, 12 Feb 2018 17:45:42 +0300
-Dan Carpenter <dan.carpenter@oracle.com> wrote:
+On Mon, Feb 12, 2018 at 12:54 PM, Himanshu Jha
+<himanshujha199640@gmail.com> wrote:
+> Move the adis16201 driver out of staging directory and merge to the
+> mainline IIO directory.
+>
+> Signed-off-by: Himanshu Jha <himanshujha199640@gmail.com>
 
-> On Mon, Feb 12, 2018 at 08:11:57PM +0530, Himanshu Jha wrote:
-> > On Mon, Feb 12, 2018 at 04:18:26PM +0300, Dan Carpenter wrote:  
-> > > I think -M is prefered for these types of diffs?  Not sure.  
-> > 
-> > I wrote about that in the cover letter if you missed. :)
-> >   
-> 
-> Yeah.  I seldom read cover letters.
+<snip>
+> --- /dev/null
+> +++ b/drivers/iio/accel/adis16201.c
+> @@ -0,0 +1,315 @@
+> +// SPDX-License-Identifier: GPL-2.0+
 
-For anyone else (like me) who also doesn't often read them...
+<snip>
 
-This was a specific request from me to not use move detection.
+> +MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");
+> +MODULE_DESCRIPTION("Analog Devices ADIS16201 Dual-Axis Digital Inclinometer and Accelerometer");
+> +MODULE_LICENSE("GPL v2");
+> +MODULE_ALIAS("spi:adis16201");
 
-The reason is that it presents an opportunity for staging graduation patches
-for people to have the whole code in front of them allowing them to do a full
-review as if it were a new driver.
+Your MODULE_LICENSE does not match your SPDX license id.
+MODULE_LICENSE("GPL v2"); means SPDX GPL-2.0
+MODULE_LICENSE("GPL"); means SPDX GPL-2.0+
 
-I personally find this very helpful in this one case. For any other
-code move I'm as in favour of short emails as the next person ;)
 
-Jonathan
-> 
-> > > > +	ret = adis_init(st, indio_dev, spi, &adis16201_data);
-> > > > +	if (ret)
-> > > > +		return ret;
-> > > > +
-> > > > +	ret = adis_setup_buffer_and_trigger(st, indio_dev, NULL);
-> > > > +	if (ret)
-> > > > +		return ret;  
-> > > 
-> > > We should clean up the IRQ which we enabled in adis_init() instead of
-> > > returning directly.  
-> > 
-> > I'm not sure about how to do that.
-> >   
-> 
-> I believe in you that you can figure it out.  :)
-> 
-> regards,
-> dan carpenter
-> 
-> 
-
+-- 
+Cordially
+Philippe Ombredanne
