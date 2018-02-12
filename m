@@ -1,90 +1,66 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:45276 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750771AbeBQMQJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 17 Feb 2018 07:16:09 -0500
-Date: Sat, 17 Feb 2018 12:16:03 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: Himanshu Jha <himanshujha199640@gmail.com>,
-        devel@driverdev.osuosl.org, lars@metafoo.de,
-        Michael.Hennerich@analog.com, linux-iio@vger.kernel.org,
-        gregkh@linuxfoundation.org, 21cnbao@gmail.com,
-        linux-kernel@vger.kernel.org, pmeerw@pmeerw.net, knaack.h@gmx.de
-Subject: Re: [PATCH 2/4] staging: iio: accel: Remove unnecessary comments
- and add suitable suffix
-Message-ID: <20180217121603.1551e27b@archlinux>
-In-Reply-To: <20180212145731.kws25sjinzqq6ax6@mwanda>
+Return-Path: <SRS0=sxJY=FG=gmail.com=himanshujha199640@kernel.org>
+From: Himanshu Jha <himanshujha199640@gmail.com>
+To: 21cnbao@gmail.com,
+	jic23@kernel.org
+Cc: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	knaack.h@gmx.de,
+	pmeerw@pmeerw.net,
+	gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org,
+	Himanshu Jha <himanshujha199640@gmail.com>
+Subject: [PATCH 3/4] staging: iio: accel: Use sign_extend32 and adjust a switch statement
+Date: Mon, 12 Feb 2018 17:24:58 +0530
+Message-Id: <1518436499-8584-4-git-send-email-himanshujha199640@gmail.com>
+In-Reply-To: <1518436499-8584-1-git-send-email-himanshujha199640@gmail.com>
 References: <1518436499-8584-1-git-send-email-himanshujha199640@gmail.com>
-        <1518436499-8584-3-git-send-email-himanshujha199640@gmail.com>
-        <20180212125312.cjo76spuu6agjawc@mwanda>
-        <20180212143522.GA12142@himanshu-Vostro-3559>
-        <20180212145731.kws25sjinzqq6ax6@mwanda>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, 12 Feb 2018 17:57:31 +0300
-Dan Carpenter <dan.carpenter@oracle.com> wrote:
+Use sign_extend32 function instead of manually coding it. Also, adjust a
+switch block to explicitly match channels and return -EINVAL as default
+case which improves code readability.
 
-> On Mon, Feb 12, 2018 at 08:05:22PM +0530, Himanshu Jha wrote:
-> > But these should be done when we have *more* instances.
-> > 
-> > For eg: 
-> > I added a tab space in function static int adis16201_read_raw() argument
-> > to match open parentheses in this patch. But I also added tabs while
-> > removing and adding suitable suffix to the macros. So, should it also be
-> > done in a separate patch ?  
-> 
-> If you're changing a line of code and you fix a white space issue on
-> that same line, then that's fine.  If it's just in the same function,
-> then do it in a separate patch.  In other words, adding tabs when you're
-> moving around macros is fine, but adding it to the arguments is
-> unrelated.
-> 
-> This patch was honestly pretty tricky to review.
-> 
-> Jonathan assumes reviewers have the datasheet in front of them and I
-> assume that that they don't.  He's probably right...  But especially
-> comments like this:
+Signed-off-by: Himanshu Jha <himanshujha199640@gmail.com>
+---
+ drivers/staging/iio/accel/adis16201.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-Actually I don't.  I like the code to be very clear without the datasheet.
-
-That is one of the reasons I always advocate making it very clear what
-is a register and what is a field. The _REG postfix is useful to my mind
-for that reason.
-
-What I really don't like is needing comments to tell you what a register
-is for when the name of the define should make it clear.  Obviously
-there are sometimes places you can't do this because the meaning cannot
-be explained in a short enough name but they are fairly rare.
-
-I agree it is a trade off on whether the naming is sufficiently clear
-or not and your example of the power supply one is a classic.
-That register has a stupid name on the datasheet given how easy
-it would have been to make it clear in the name choice that it was
-measuring the power supply.
-
-The naming things _OUT on this datasheet is particularly nasty as
-it adds nothing other than confusion.  However, the question arises
-on whether it makes sense to get rid of that in the driver and
-make it harder to read with the datasheet.
-
-
-> 
-> 		*val2 = 220000; /* 1.22 mV */
-> 
-> They seem really helpful to me.
-This isn't about the data sheet, it is about knowledge of IIO.
-
-That one is perhaps debatable as the base units for voltage are
-less than ideal (I really wish I had been a stickler for SI units
-throughout from the first - this came about through trying to maintain
-compatibility with hwmon which with hind sight was a bad idea).
-
-> 
-> regards,
-> dan carpenter
-> 
-
+diff --git a/drivers/staging/iio/accel/adis16201.c b/drivers/staging/iio/accel/adis16201.c
+index 011d2c5..6800347 100644
+--- a/drivers/staging/iio/accel/adis16201.c
++++ b/drivers/staging/iio/accel/adis16201.c
+@@ -112,12 +112,17 @@ static int adis16201_read_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_SCALE:
+ 		switch (chan->type) {
+ 		case IIO_VOLTAGE:
+-			if (chan->channel == 0) {
++			switch (chan->channel) {
++			case 0:
+ 				*val = 1;
+ 				*val2 = 220000;
+-			} else {
++				break;
++			case 1:
+ 				*val = 0;
+ 				*val2 = 610000;
++				break;
++			default:
++				return -EINVAL;
+ 			}
+ 			return IIO_VAL_INT_PLUS_MICRO;
+ 		case IIO_TEMP:
+@@ -155,9 +160,7 @@ static int adis16201_read_raw(struct iio_dev *indio_dev,
+ 		if (ret)
+ 			return ret;
+ 
+-		val16 &= (1 << bits) - 1;
+-		val16 = (s16)(val16 << (16 - bits)) >> (16 - bits);
+-		*val = val16;
++		*val = sign_extend32(val16, bits - 1);
+ 		return IIO_VAL_INT;
+ 	}
+ 
+-- 
+2.7.4
