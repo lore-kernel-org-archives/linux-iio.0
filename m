@@ -1,75 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:46372 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750960AbeBQMil (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 17 Feb 2018 07:38:41 -0500
-Date: Sat, 17 Feb 2018 12:38:36 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: "Gustavo A. R. Silva" <garsilva@embeddedor.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+Received: from mail-wm0-f68.google.com ([74.125.82.68]:50180 "EHLO
+        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S965935AbeBMWiC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 13 Feb 2018 17:38:02 -0500
+Received: by mail-wm0-f68.google.com with SMTP id k87so1154946wmi.0
+        for <linux-iio@vger.kernel.org>; Tue, 13 Feb 2018 14:38:01 -0800 (PST)
+From: Richard Lai <richard@richardman.com>
+Cc: richard@richardman.com, Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Marc Titinger <marc.titinger@baylibre.com>,
-        Stefan =?UTF-8?B?QnLDvG5z?= <stefan.bruens@rwth-aachen.de>
-Subject: Re: [PATCH] iio: adc: ina2xx: Use 64-bit arithmetic instead of
- 32-bit
-Message-ID: <20180217123836.61cb3b25@archlinux>
-In-Reply-To: <20180213165258.GA12967@embeddedor.com>
-References: <20180213165258.GA12967@embeddedor.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: chemical: ccs811: Typo correction in HW_ID_VALUE constant define naming
+Date: Tue, 13 Feb 2018 22:36:57 +0000
+Message-Id: <1518561421-11736-1-git-send-email-richard@richardman.com>
+To: unlisted-recipients:; (no To-header on input)
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 13 Feb 2018 10:52:58 -0600
-"Gustavo A. R. Silva" <garsilva@embeddedor.com> wrote:
+This particular constant was named with prefix "CCS881", which should be
+"CCS811" instead, just like the rest of constant names in the file, as this
+driver implementation is for AMS CCS811 sensor. "CCS881" could literally be
+referring to another sensor product unrelated to AMS CCS811 sensor.
 
-> Add suffix ULL to constant 1000 in order to give the compiler complete
-> information about the proper arithmetic to use. Notice that this
-> constant is used in a context that expects an expression of type
-> u64 (64 bits, unsigned).
-> 
-> The expression 1000 * sampling_us is currently being evaluated
-> using 32-bit arithmetic.
-> 
-> Addresses-Coverity-ID: 1463793
-> Signed-off-by: Gustavo A. R. Silva <garsilva@embeddedor.com>
-I've been trying to figure out if this matters in reality.
-i.e. whether or not sampling_us is big enough for us to need
-64 bit multiplication.
-It's equal to the output for the macro SAMPLING_PERIOD(c)
-(int_time_vbus + int_time_vshunt) * avg
-So taking max values
-(8244 + 68100) * 1024 = 78176256 
-Then * 1000 which brings it well into the > 32bit range.
+Signed-off-by: Richard Lai <richard@richardman.com>
+---
+ drivers/iio/chemical/ccs811.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-So the next question is when was this introduced.
-I guess it was Stefan's recent patch but haven't checked yet...
-
-Marc / Stephan, could you check if we are correct in thinking this is a real
-bug rather than just a numerical oddity?
-
-Thanks,
-
-Jonathan
-
-
-> ---
->  drivers/iio/adc/ina2xx-adc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
-> index 0635a79..8649700 100644
-> --- a/drivers/iio/adc/ina2xx-adc.c
-> +++ b/drivers/iio/adc/ina2xx-adc.c
-> @@ -810,7 +810,7 @@ static int ina2xx_capture_thread(void *data)
->  		 * multiple times, i.e. samples are dropped.
->  		 */
->  		do {
-> -			timespec64_add_ns(&next, 1000 * sampling_us);
-> +			timespec64_add_ns(&next, 1000ULL * sampling_us);
->  			delta = timespec64_sub(next, now);
->  			delay_us = div_s64(timespec64_to_ns(&delta), 1000);
->  		} while (delay_us <= 0);
+diff --git a/drivers/iio/chemical/ccs811.c b/drivers/iio/chemical/ccs811.c
+index 840a6cb..8e8beb7 100644
+--- a/drivers/iio/chemical/ccs811.c
++++ b/drivers/iio/chemical/ccs811.c
+@@ -31,7 +31,7 @@
+ #define CCS811_ALG_RESULT_DATA	0x02
+ #define CCS811_RAW_DATA		0x03
+ #define CCS811_HW_ID		0x20
+-#define CCS881_HW_ID_VALUE	0x81
++#define CCS811_HW_ID_VALUE	0x81
+ #define CCS811_HW_VERSION	0x21
+ #define CCS811_HW_VERSION_VALUE	0x10
+ #define CCS811_HW_VERSION_MASK	0xF0
+@@ -315,7 +315,7 @@ static int ccs811_probe(struct i2c_client *client,
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	if (ret != CCS881_HW_ID_VALUE) {
++	if (ret != CCS811_HW_ID_VALUE) {
+ 		dev_err(&client->dev, "hardware id doesn't match CCS81x\n");
+ 		return -ENODEV;
+ 	}
+-- 
+2.7.4
 
