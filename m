@@ -1,117 +1,100 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:34768 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751000AbeBXLG0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 24 Feb 2018 06:06:26 -0500
-Date: Sat, 24 Feb 2018 11:06:21 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
-Cc: Richard Lai <richard@richardman.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: chemical: ccs811: Renamed resistance member in
- ccs811_reading struct
-Message-ID: <20180224110621.3d8b40b6@archlinux>
-In-Reply-To: <20180220202450.GA11057@nati-X550JK>
-References: <1518570519-1117-1-git-send-email-richard@richardman.com>
-        <20180217141442.728c941b@archlinux>
-        <20180220202450.GA11057@nati-X550JK>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=uwnM=FI=metafoo.de=lars@kernel.org>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] iio: adis_lib: Initialize trigger before requesting interrupt
+Date: Wed, 14 Feb 2018 15:43:00 +0100
+Message-Id: <20180214144300.27550-1-lars@metafoo.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, 20 Feb 2018 22:24:50 +0200
-Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com> wrote:
+The adis_probe_trigger() creates a new IIO trigger and requests an
+interrupt associated with the trigger. The interrupt uses the generic
+iio_trigger_generic_data_rdy_poll() function as its interrupt handler.
 
-> On Sat, Feb 17, 2018 at 02:14:42PM +0000, Jonathan Cameron wrote:
-> > On Wed, 14 Feb 2018 01:08:35 +0000
-> > Richard Lai <richard@richardman.com> wrote:
-> >   
-> > > The resistance member in ccs811_reading struct is an unsigned 16-bit
-> > > integer variable used to store RAW_DATA register bytes read from CCS811.
-> > > It is kind of misleading to name this struct member as resistance.
-> > > 
-> > > About the RAW_DATA register bytes, the CCS811 datasheet states that:
-> > > -----
-> > > Two byte read only register which contains the latest readings from the
-> > > sense resistor.
-> > > 
-> > > The most significant 6 bits of the Byte 0 contain the value of the current
-> > > through the sensor (0μA to 63μA).
-> > > 
-> > > The lower 10 bits contain (as computed from the ADC) the readings of the
-> > > voltage across the sensor with the selected current (1023 = 1.65V)"
-> > > -----
-> > >   
->     True.
-> 
-> > > Hence, the RAW_DATA register byte contains information about electric
-> > > current and voltage of the CCS811 sensor. Calling this struct member
-> > > 'resistance' is kind of misleading, although both electric current and
-> > > voltage are needed to calculate the electrical resistance of the sensor
-> > > using Ohm's law, V = I x R, in which a new channel type of IIO_RESISTANCE
-> > > may be added to the driver in the future.
-> > >   
->     
-> 
-> > > Signed-off-by: Richard Lai <richard@richardman.com>  
-> > This seems logical to me, but I'd just like to let it sit for a few
-> > more days to let Narcisa have time to respond.
-> >   
->     I agree, Richard's suggestion is a better fit as a name for this
->     register.
-Cool.  Ideally please give a formal
-Acked-by: as then it is recorded in the record rather than deep in an email
-archive.
+Currently the driver initializes some fields of the trigger structure after
+the interrupt has been requested. But an interrupt can fire as soon as it
+has been requested. This opens up a race condition.
 
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+iio_trigger_generic_data_rdy_poll() will access the trigger data structure
+and dereference the ops field. If the ops field is not yet initialized this
+will result in a NULL pointer deref.
 
-Thanks,
+It is not expected that the device generates an interrupt at this point, so
+typically this issue did not surface unless e.g. due to a hardware
+misconfiguration (wrong interrupt number, wrong polarity, etc.).
 
-Jonathan
+But some newer devices from the ADIS family start to generate periodic
+interrupts in their power-on reset configuration and unfortunately the
+interrupt can not be masked in the device.  This makes the race condition
+much more visible and the following crash has been observed occasionally
+when booting a system using the ADIS16460.
 
-> > Feel free to give me a poke if it looks like I have forgotten this
-> > in a week or so.
-> > 
-> > Thanks,
-> > 
-> > Jonathan
-> >   
-> > > ---
-> > >  drivers/iio/chemical/ccs811.c | 6 +++---
-> > >  1 file changed, 3 insertions(+), 3 deletions(-)
-> > > 
-> > > diff --git a/drivers/iio/chemical/ccs811.c b/drivers/iio/chemical/ccs811.c
-> > > index 8e8beb7..e6f6bc4 100644
-> > > --- a/drivers/iio/chemical/ccs811.c
-> > > +++ b/drivers/iio/chemical/ccs811.c
-> > > @@ -66,7 +66,7 @@ struct ccs811_reading {
-> > >  	__be16 voc;
-> > >  	u8 status;
-> > >  	u8 error;
-> > > -	__be16 resistance;
-> > > +	__be16 raw_data;
-> > >  } __attribute__((__packed__));
-> > >  
-> > >  struct ccs811_data {
-> > > @@ -202,12 +202,12 @@ static int ccs811_read_raw(struct iio_dev *indio_dev,
-> > >  
-> > >  		switch (chan->type) {
-> > >  		case IIO_VOLTAGE:
-> > > -			*val = be16_to_cpu(data->buffer.resistance) &
-> > > +			*val = be16_to_cpu(data->buffer.raw_data) &
-> > >  					   CCS811_VOLTAGE_MASK;
-> > >  			ret = IIO_VAL_INT;
-> > >  			break;
-> > >  		case IIO_CURRENT:
-> > > -			*val = be16_to_cpu(data->buffer.resistance) >> 10;
-> > > +			*val = be16_to_cpu(data->buffer.raw_data) >> 10;
-> > >  			ret = IIO_VAL_INT;
-> > >  			break;
-> > >  		case IIO_CONCENTRATION:  
-> >   
+	Unable to handle kernel NULL pointer dereference at virtual address 00000008
+	pgd = c0004000
+	[00000008] *pgd=00000000
+	Internal error: Oops: 5 [#1] PREEMPT SMP ARM
+	Modules linked in:
+	CPU: 0 PID: 1 Comm: swapper/0 Not tainted 4.9.0-04126-gf9739f0-dirty #257
+	Hardware name: Xilinx Zynq Platform
+	task: ef04f640 task.stack: ef050000
+	PC is at iio_trigger_notify_done+0x30/0x68
+	LR is at iio_trigger_generic_data_rdy_poll+0x18/0x20
+	pc : [<c042d868>]    lr : [<c042d924>]    psr: 60000193
+	sp : ef051bb8  ip : 00000000  fp : ef106400
+	r10: c081d80a  r9 : ef3bfa00  r8 : 00000087
+	r7 : ef051bec  r6 : 00000000  r5 : ef3bfa00  r4 : ee92ab00
+	r3 : 00000000  r2 : 00000000  r1 : 00000000  r0 : ee97e400
+	Flags: nZCv  IRQs off  FIQs on  Mode SVC_32  ISA ARM  Segment none
+	Control: 18c5387d  Table: 0000404a  DAC: 00000051
+	Process swapper/0 (pid: 1, stack limit = 0xef050210)
+	[<c042d868>] (iio_trigger_notify_done) from [<c0065b10>] (__handle_irq_event_percpu+0x88/0x118)
+	[<c0065b10>] (__handle_irq_event_percpu) from [<c0065bbc>] (handle_irq_event_percpu+0x1c/0x58)
+	[<c0065bbc>] (handle_irq_event_percpu) from [<c0065c30>] (handle_irq_event+0x38/0x5c)
+	[<c0065c30>] (handle_irq_event) from [<c0068e28>] (handle_level_irq+0xa4/0x130)
+	[<c0068e28>] (handle_level_irq) from [<c0064e74>] (generic_handle_irq+0x24/0x34)
+	[<c0064e74>] (generic_handle_irq) from [<c021ab7c>] (zynq_gpio_irqhandler+0xb8/0x13c)
+	[<c021ab7c>] (zynq_gpio_irqhandler) from [<c0064e74>] (generic_handle_irq+0x24/0x34)
+	[<c0064e74>] (generic_handle_irq) from [<c0065370>] (__handle_domain_irq+0x5c/0xb4)
+	[<c0065370>] (__handle_domain_irq) from [<c000940c>] (gic_handle_irq+0x48/0x8c)
+	[<c000940c>] (gic_handle_irq) from [<c0013e8c>] (__irq_svc+0x6c/0xa8)
 
+To fix this make sure that the trigger is fully initialized before
+requesting the interrupt.
+
+Fixes: ccd2b52f4ac6 ("staging:iio: Add common ADIS library")
+Reported-by: Robin Getz <Robin.Getz@analog.com>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/imu/adis_trigger.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iio/imu/adis_trigger.c b/drivers/iio/imu/adis_trigger.c
+index 0dd5a381be64..457372f36791 100644
+--- a/drivers/iio/imu/adis_trigger.c
++++ b/drivers/iio/imu/adis_trigger.c
+@@ -46,6 +46,10 @@ int adis_probe_trigger(struct adis *adis, struct iio_dev *indio_dev)
+ 	if (adis->trig == NULL)
+ 		return -ENOMEM;
+ 
++	adis->trig->dev.parent = &adis->spi->dev;
++	adis->trig->ops = &adis_trigger_ops;
++	iio_trigger_set_drvdata(adis->trig, adis);
++
+ 	ret = request_irq(adis->spi->irq,
+ 			  &iio_trigger_generic_data_rdy_poll,
+ 			  IRQF_TRIGGER_RISING,
+@@ -54,9 +58,6 @@ int adis_probe_trigger(struct adis *adis, struct iio_dev *indio_dev)
+ 	if (ret)
+ 		goto error_free_trig;
+ 
+-	adis->trig->dev.parent = &adis->spi->dev;
+-	adis->trig->ops = &adis_trigger_ops;
+-	iio_trigger_set_drvdata(adis->trig, adis);
+ 	ret = iio_trigger_register(adis->trig);
+ 
+ 	indio_dev->trig = iio_trigger_get(adis->trig);
+-- 
+2.11.0
