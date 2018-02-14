@@ -1,118 +1,624 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:44176 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750975AbeBQOSl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 17 Feb 2018 09:18:41 -0500
-Date: Sat, 17 Feb 2018 14:18:36 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: adis_lib: Initialize trigger before requesting
- interrupt
-Message-ID: <20180217141836.6303ab3a@archlinux>
-In-Reply-To: <20180214144300.27550-1-lars@metafoo.de>
-References: <20180214144300.27550-1-lars@metafoo.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=BL7r=FI=labundy.com=jeff@kernel.org>
+From: Jeff LaBundy <jeff@labundy.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org,
+	Jeff LaBundy <jeff@labundy.com>
+Subject: [PATCH] iio: light: lv0104cs: Add support for LV0104CS light sensor
+Date: Wed, 14 Feb 2018 08:58:05 -0600
+Message-Id: <1518620285-1893-1-git-send-email-jeff@labundy.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, 14 Feb 2018 15:43:00 +0100
-Lars-Peter Clausen <lars@metafoo.de> wrote:
+This patch adds support for the On Semiconductor LV0104CS ambient
+light sensor.
 
-> The adis_probe_trigger() creates a new IIO trigger and requests an
-> interrupt associated with the trigger. The interrupt uses the generic
-> iio_trigger_generic_data_rdy_poll() function as its interrupt handler.
-> 
-> Currently the driver initializes some fields of the trigger structure after
-> the interrupt has been requested. But an interrupt can fire as soon as it
-> has been requested. This opens up a race condition.
-> 
-> iio_trigger_generic_data_rdy_poll() will access the trigger data structure
-> and dereference the ops field. If the ops field is not yet initialized this
-> will result in a NULL pointer deref.
-> 
-> It is not expected that the device generates an interrupt at this point, so
-> typically this issue did not surface unless e.g. due to a hardware
-> misconfiguration (wrong interrupt number, wrong polarity, etc.).
-> 
-> But some newer devices from the ADIS family start to generate periodic
-> interrupts in their power-on reset configuration and unfortunately the
-> interrupt can not be masked in the device.  This makes the race condition
-> much more visible and the following crash has been observed occasionally
-> when booting a system using the ADIS16460.
-> 
-> 	Unable to handle kernel NULL pointer dereference at virtual address 00000008
-> 	pgd = c0004000
-> 	[00000008] *pgd=00000000
-> 	Internal error: Oops: 5 [#1] PREEMPT SMP ARM
-> 	Modules linked in:
-> 	CPU: 0 PID: 1 Comm: swapper/0 Not tainted 4.9.0-04126-gf9739f0-dirty #257
-> 	Hardware name: Xilinx Zynq Platform
-> 	task: ef04f640 task.stack: ef050000
-> 	PC is at iio_trigger_notify_done+0x30/0x68
-> 	LR is at iio_trigger_generic_data_rdy_poll+0x18/0x20
-> 	pc : [<c042d868>]    lr : [<c042d924>]    psr: 60000193
-> 	sp : ef051bb8  ip : 00000000  fp : ef106400
-> 	r10: c081d80a  r9 : ef3bfa00  r8 : 00000087
-> 	r7 : ef051bec  r6 : 00000000  r5 : ef3bfa00  r4 : ee92ab00
-> 	r3 : 00000000  r2 : 00000000  r1 : 00000000  r0 : ee97e400
-> 	Flags: nZCv  IRQs off  FIQs on  Mode SVC_32  ISA ARM  Segment none
-> 	Control: 18c5387d  Table: 0000404a  DAC: 00000051
-> 	Process swapper/0 (pid: 1, stack limit = 0xef050210)
-> 	[<c042d868>] (iio_trigger_notify_done) from [<c0065b10>] (__handle_irq_event_percpu+0x88/0x118)
-> 	[<c0065b10>] (__handle_irq_event_percpu) from [<c0065bbc>] (handle_irq_event_percpu+0x1c/0x58)
-> 	[<c0065bbc>] (handle_irq_event_percpu) from [<c0065c30>] (handle_irq_event+0x38/0x5c)
-> 	[<c0065c30>] (handle_irq_event) from [<c0068e28>] (handle_level_irq+0xa4/0x130)
-> 	[<c0068e28>] (handle_level_irq) from [<c0064e74>] (generic_handle_irq+0x24/0x34)
-> 	[<c0064e74>] (generic_handle_irq) from [<c021ab7c>] (zynq_gpio_irqhandler+0xb8/0x13c)
-> 	[<c021ab7c>] (zynq_gpio_irqhandler) from [<c0064e74>] (generic_handle_irq+0x24/0x34)
-> 	[<c0064e74>] (generic_handle_irq) from [<c0065370>] (__handle_domain_irq+0x5c/0xb4)
-> 	[<c0065370>] (__handle_domain_irq) from [<c000940c>] (gic_handle_irq+0x48/0x8c)
-> 	[<c000940c>] (gic_handle_irq) from [<c0013e8c>] (__irq_svc+0x6c/0xa8)
-> 
-> To fix this make sure that the trigger is fully initialized before
-> requesting the interrupt.
-> 
-> Fixes: ccd2b52f4ac6 ("staging:iio: Add common ADIS library")
-> Reported-by: Robin Getz <Robin.Getz@analog.com>
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the fixes-togreg-post-rc1 branch of iio.git and marked
-for stable.
+Signed-off-by: Jeff LaBundy <jeff@labundy.com>
+---
+ drivers/iio/light/Kconfig    |  10 +
+ drivers/iio/light/Makefile   |   1 +
+ drivers/iio/light/lv0104cs.c | 559 +++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 570 insertions(+)
+ create mode 100644 drivers/iio/light/lv0104cs.c
 
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/iio/imu/adis_trigger.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/adis_trigger.c b/drivers/iio/imu/adis_trigger.c
-> index 0dd5a381be64..457372f36791 100644
-> --- a/drivers/iio/imu/adis_trigger.c
-> +++ b/drivers/iio/imu/adis_trigger.c
-> @@ -46,6 +46,10 @@ int adis_probe_trigger(struct adis *adis, struct iio_dev *indio_dev)
->  	if (adis->trig == NULL)
->  		return -ENOMEM;
->  
-> +	adis->trig->dev.parent = &adis->spi->dev;
-> +	adis->trig->ops = &adis_trigger_ops;
-> +	iio_trigger_set_drvdata(adis->trig, adis);
-> +
->  	ret = request_irq(adis->spi->irq,
->  			  &iio_trigger_generic_data_rdy_poll,
->  			  IRQF_TRIGGER_RISING,
-> @@ -54,9 +58,6 @@ int adis_probe_trigger(struct adis *adis, struct iio_dev *indio_dev)
->  	if (ret)
->  		goto error_free_trig;
->  
-> -	adis->trig->dev.parent = &adis->spi->dev;
-> -	adis->trig->ops = &adis_trigger_ops;
-> -	iio_trigger_set_drvdata(adis->trig, adis);
->  	ret = iio_trigger_register(adis->trig);
->  
->  	indio_dev->trig = iio_trigger_get(adis->trig);
-
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+index 2356ed9..ca8918e 100644
+--- a/drivers/iio/light/Kconfig
++++ b/drivers/iio/light/Kconfig
+@@ -275,6 +275,16 @@ config LTR501
+ 	 This driver can also be built as a module.  If so, the module
+          will be called ltr501.
+ 
++config LV0104CS
++	tristate "LV0104CS Ambient Light Sensor"
++	depends on I2C
++	help
++	 Say Y here if you want to build support for the LV0104CS ambient
++	 light sensor.
++
++	 To compile this driver as a module, choose M here:
++	 the module will be called lv0104cs.
++
+ config MAX44000
+ 	tristate "MAX44000 Ambient and Infrared Proximity Sensor"
+ 	depends on I2C
+diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+index fa32fa4..77c8682 100644
+--- a/drivers/iio/light/Makefile
++++ b/drivers/iio/light/Makefile
+@@ -25,6 +25,7 @@ obj-$(CONFIG_ISL29125)		+= isl29125.o
+ obj-$(CONFIG_JSA1212)		+= jsa1212.o
+ obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
+ obj-$(CONFIG_LTR501)		+= ltr501.o
++obj-$(CONFIG_LV0104CS)		+= lv0104cs.o
+ obj-$(CONFIG_MAX44000)		+= max44000.o
+ obj-$(CONFIG_OPT3001)		+= opt3001.o
+ obj-$(CONFIG_PA12203001)	+= pa12203001.o
+diff --git a/drivers/iio/light/lv0104cs.c b/drivers/iio/light/lv0104cs.c
+new file mode 100644
+index 0000000..ecbba39
+--- /dev/null
++++ b/drivers/iio/light/lv0104cs.c
+@@ -0,0 +1,559 @@
++/*
++ * lv0104cs.c: LV0104CS Ambient Light Sensor Driver
++ *
++ * Copyright (C) 2018 Jeff LaBundy <jeff@labundy.com>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 of the License
++ * as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
++ * more details.
++ *
++ * 7-bit I2C slave address: 0x13
++ *
++ * This device has just one register and it is write-only. Read operations are
++ * limited to the 16-bit ADC output.
++ *
++ */
++
++#include <linux/module.h>
++#include <linux/i2c.h>
++#include <linux/mutex.h>
++#include <linux/device.h>
++#include <linux/delay.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++
++#define LV0104CS_REGVAL_MEASURE		0xE0
++#define LV0104CS_REGVAL_SLEEP		0x00
++
++#define LV0104CS_HWGAIN_0x25		0
++#define LV0104CS_HWGAIN_1x		1
++#define LV0104CS_HWGAIN_2x		2
++#define LV0104CS_HWGAIN_8x		3
++
++#define LV0104CS_INTEG_12m5		0
++#define LV0104CS_INTEG_100m		1
++#define LV0104CS_INTEG_200m		2
++
++#define LV0104CS_CALIB_UNITY		31
++
++struct lv0104cs_private {
++	struct i2c_client *client;
++	struct mutex lock;
++	unsigned char hardwaregain;
++	unsigned char int_time;
++	unsigned char calibscale;
++};
++
++struct lv0104cs_mapping {
++	int val;
++	int val2;
++	unsigned char regval;
++};
++
++static const struct lv0104cs_mapping lv0104cs_calibscales[] = {
++	{ 0, 666666, 0x81 },
++	{ 0, 800000, 0x82 },
++	{ 0, 857142, 0x83 },
++	{ 0, 888888, 0x84 },
++	{ 0, 909090, 0x85 },
++	{ 0, 923076, 0x86 },
++	{ 0, 933333, 0x87 },
++	{ 0, 941176, 0x88 },
++	{ 0, 947368, 0x89 },
++	{ 0, 952380, 0x8A },
++	{ 0, 956521, 0x8B },
++	{ 0, 960000, 0x8C },
++	{ 0, 962962, 0x8D },
++	{ 0, 965517, 0x8E },
++	{ 0, 967741, 0x8F },
++	{ 0, 969696, 0x90 },
++	{ 0, 971428, 0x91 },
++	{ 0, 972972, 0x92 },
++	{ 0, 974358, 0x93 },
++	{ 0, 975609, 0x94 },
++	{ 0, 976744, 0x95 },
++	{ 0, 977777, 0x96 },
++	{ 0, 978723, 0x97 },
++	{ 0, 979591, 0x98 },
++	{ 0, 980392, 0x99 },
++	{ 0, 981132, 0x9A },
++	{ 0, 981818, 0x9B },
++	{ 0, 982456, 0x9C },
++	{ 0, 983050, 0x9D },
++	{ 0, 983606, 0x9E },
++	{ 0, 984126, 0x9F },
++	{ 1, 0, 0x80 },
++	{ 1, 16129, 0xBF },
++	{ 1, 16666, 0xBE },
++	{ 1, 17241, 0xBD },
++	{ 1, 17857, 0xBC },
++	{ 1, 18518, 0xBB },
++	{ 1, 19230, 0xBA },
++	{ 1, 20000, 0xB9 },
++	{ 1, 20833, 0xB8 },
++	{ 1, 21739, 0xB7 },
++	{ 1, 22727, 0xB6 },
++	{ 1, 23809, 0xB5 },
++	{ 1, 24999, 0xB4 },
++	{ 1, 26315, 0xB3 },
++	{ 1, 27777, 0xB2 },
++	{ 1, 29411, 0xB1 },
++	{ 1, 31250, 0xB0 },
++	{ 1, 33333, 0xAF },
++	{ 1, 35714, 0xAE },
++	{ 1, 38461, 0xAD },
++	{ 1, 41666, 0xAC },
++	{ 1, 45454, 0xAB },
++	{ 1, 50000, 0xAA },
++	{ 1, 55555, 0xA9 },
++	{ 1, 62500, 0xA8 },
++	{ 1, 71428, 0xA7 },
++	{ 1, 83333, 0xA6 },
++	{ 1, 100000, 0xA5 },
++	{ 1, 125000, 0xA4 },
++	{ 1, 166666, 0xA3 },
++	{ 1, 250000, 0xA2 },
++	{ 1, 500000, 0xA1 },
++};
++
++static const struct lv0104cs_mapping lv0104cs_hardwaregains[] = {
++	{ 0, 250000, 0x00 },
++	{ 1, 0, 0x08 },
++	{ 2, 0, 0x10 },
++	{ 8, 0, 0x18 },
++};
++
++static const struct lv0104cs_mapping lv0104cs_int_times[] = {
++	{ 0, 12500, 0x00 },
++	{ 0, 100000, 0x02 },
++	{ 0, 200000, 0x04 },
++};
++
++static int lv0104cs_write_reg(struct lv0104cs_private *lv0104cs,
++				unsigned char regval)
++{
++	struct i2c_client *client = lv0104cs->client;
++	int ret;
++
++	ret = i2c_master_send(client, &regval, 1);
++	if (ret != 1) {
++		dev_err(&client->dev, "Failed to write to device: %d\n", ret);
++		return ret;
++	}
++
++	return 0;
++}
++
++static int lv0104cs_read_adc(struct lv0104cs_private *lv0104cs,
++				unsigned int *adc_output)
++{
++	struct i2c_client *client = lv0104cs->client;
++	unsigned char regval[2];
++	int ret;
++
++	ret = i2c_master_recv(client, regval, 2);
++	if (ret != 2) {
++		dev_err(&client->dev, "Failed to read from device: %d\n", ret);
++		return ret;
++	}
++
++	*adc_output = (regval[0] << 8) + regval[1];
++
++	return 0;
++}
++
++static int lv0104cs_get_lux(struct lv0104cs_private *lv0104cs,
++				unsigned int *val, unsigned int *val2)
++{
++	unsigned char regval = LV0104CS_REGVAL_MEASURE;
++	unsigned int adc_output;
++	int ret;
++
++	/* this function expects to be called while mutex is locked */
++	if (!mutex_is_locked(&lv0104cs->lock))
++		return -EACCES;
++
++	regval |= lv0104cs_hardwaregains[lv0104cs->hardwaregain].regval;
++	regval |= lv0104cs_int_times[lv0104cs->int_time].regval;
++	ret = lv0104cs_write_reg(lv0104cs, regval);
++	if (ret)
++		return ret;
++
++	/* wait for integration time to pass (with margin) */
++	switch (lv0104cs->int_time) {
++	case LV0104CS_INTEG_12m5:
++		msleep(50);
++		break;
++
++	case LV0104CS_INTEG_100m:
++		msleep(150);
++		break;
++
++	case LV0104CS_INTEG_200m:
++		msleep(250);
++		break;
++
++	default:
++		return -EINVAL;
++	}
++
++	ret = lv0104cs_read_adc(lv0104cs, &adc_output);
++	if (ret)
++		return ret;
++
++	ret = lv0104cs_write_reg(lv0104cs, LV0104CS_REGVAL_SLEEP);
++	if (ret)
++		return ret;
++
++	/* normalize to lux based on applied gain */
++	switch (lv0104cs->hardwaregain) {
++	case LV0104CS_HWGAIN_0x25:
++		*val = adc_output * 4;
++		*val2 = 0;
++		break;
++
++	case LV0104CS_HWGAIN_1x:
++		*val = adc_output;
++		*val2 = 0;
++		break;
++
++	case LV0104CS_HWGAIN_2x:
++		*val = adc_output / 2;
++		*val2 = (adc_output % 2) * 500000;
++		break;
++
++	case LV0104CS_HWGAIN_8x:
++		*val = adc_output / 8;
++		*val2 = (adc_output % 8) * 125000;
++		break;
++
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int lv0104cs_read_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				int *val, int *val2, long mask)
++{
++	struct lv0104cs_private *lv0104cs = iio_priv(indio_dev);
++	int ret;
++
++	if (chan->type != IIO_LIGHT)
++		return -EINVAL;
++
++	mutex_lock(&lv0104cs->lock);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_PROCESSED:
++		ret = lv0104cs_get_lux(lv0104cs, val, val2);
++		if (ret)
++			goto err_mutex;
++		ret = IIO_VAL_INT_PLUS_MICRO;
++		break;
++
++	case IIO_CHAN_INFO_CALIBSCALE:
++		*val = lv0104cs_calibscales[lv0104cs->calibscale].val;
++		*val2 = lv0104cs_calibscales[lv0104cs->calibscale].val2;
++		ret = IIO_VAL_INT_PLUS_MICRO;
++		break;
++
++	case IIO_CHAN_INFO_HARDWAREGAIN:
++		*val = lv0104cs_hardwaregains[lv0104cs->hardwaregain].val;
++		*val2 = lv0104cs_hardwaregains[lv0104cs->hardwaregain].val2;
++		ret = IIO_VAL_INT_PLUS_MICRO;
++		break;
++
++	case IIO_CHAN_INFO_INT_TIME:
++		*val = lv0104cs_int_times[lv0104cs->int_time].val;
++		*val2 = lv0104cs_int_times[lv0104cs->int_time].val2;
++		ret = IIO_VAL_INT_PLUS_MICRO;
++		break;
++
++	default:
++		ret = -EINVAL;
++	}
++
++err_mutex:
++	mutex_unlock(&lv0104cs->lock);
++
++	return ret;
++}
++
++static int lv0104cs_set_calibscale(struct lv0104cs_private *lv0104cs,
++				int val, int val2)
++{
++	int calibscale = val * 1000000 + val2;
++	int floor, ceil, mid;
++	int ret, i, index;
++
++	/* round to nearest quantized sensitivity */
++	for (i = 0; i < ARRAY_SIZE(lv0104cs_calibscales) - 1; i++) {
++		floor = lv0104cs_calibscales[i].val * 1000000
++				+ lv0104cs_calibscales[i].val2;
++		ceil = lv0104cs_calibscales[i + 1].val * 1000000
++				+ lv0104cs_calibscales[i + 1].val2;
++		mid = (floor + ceil) / 2;
++
++		/* round down */
++		if (calibscale >= floor && calibscale < mid) {
++			index = i;
++			break;
++		}
++
++		/* round up */
++		if (calibscale >= mid && calibscale <= ceil) {
++			index = i + 1;
++			break;
++		}
++	}
++
++	if (i == ARRAY_SIZE(lv0104cs_calibscales) - 1)
++		return -EINVAL;
++
++	/* set sensitivity */
++	ret = lv0104cs_write_reg(lv0104cs, lv0104cs_calibscales[index].regval);
++	if (ret)
++		return ret;
++
++	mutex_lock(&lv0104cs->lock);
++	lv0104cs->calibscale = index;
++	mutex_unlock(&lv0104cs->lock);
++
++	return 0;
++}
++
++static int lv0104cs_set_hardwaregain(struct lv0104cs_private *lv0104cs,
++				int val, int val2)
++{
++	int i;
++
++	/* hard matching */
++	for (i = 0; i < ARRAY_SIZE(lv0104cs_hardwaregains); i++) {
++		if (val != lv0104cs_hardwaregains[i].val)
++			continue;
++
++		if (val2 == lv0104cs_hardwaregains[i].val2)
++			break;
++	}
++
++	if (i == ARRAY_SIZE(lv0104cs_hardwaregains))
++		return -EINVAL;
++
++	mutex_lock(&lv0104cs->lock);
++	lv0104cs->hardwaregain = i;
++	mutex_unlock(&lv0104cs->lock);
++
++	return 0;
++}
++
++static int lv0104cs_set_int_time(struct lv0104cs_private *lv0104cs,
++				int val, int val2)
++{
++	int i;
++
++	/* hard matching */
++	for (i = 0; i < ARRAY_SIZE(lv0104cs_int_times); i++) {
++		if (val != lv0104cs_int_times[i].val)
++			continue;
++
++		if (val2 == lv0104cs_int_times[i].val2)
++			break;
++	}
++
++	if (i == ARRAY_SIZE(lv0104cs_int_times))
++		return -EINVAL;
++
++	mutex_lock(&lv0104cs->lock);
++	lv0104cs->int_time = i;
++	mutex_unlock(&lv0104cs->lock);
++
++	return 0;
++}
++
++static int lv0104cs_write_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				int val, int val2, long mask)
++{
++	struct lv0104cs_private *lv0104cs = iio_priv(indio_dev);
++	int ret;
++
++	if (chan->type != IIO_LIGHT)
++		return -EINVAL;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_CALIBSCALE:
++		ret = lv0104cs_set_calibscale(lv0104cs, val, val2);
++		break;
++
++	case IIO_CHAN_INFO_HARDWAREGAIN:
++		ret = lv0104cs_set_hardwaregain(lv0104cs, val, val2);
++		break;
++
++	case IIO_CHAN_INFO_INT_TIME:
++		ret = lv0104cs_set_int_time(lv0104cs, val, val2);
++		break;
++
++	default:
++		ret = -EINVAL;
++	}
++
++	return ret;
++}
++
++static ssize_t lv0104cs_show_calibscale_avail(struct device *dev,
++				struct device_attribute *attr, char *buf)
++{
++	ssize_t len = 0;
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(lv0104cs_calibscales); i++) {
++		len += scnprintf(buf + len, PAGE_SIZE - len, "%d.%06d ",
++				lv0104cs_calibscales[i].val,
++				lv0104cs_calibscales[i].val2);
++	}
++
++	buf[len - 1] = '\n';
++
++	return len;
++}
++
++static ssize_t lv0104cs_show_hardwaregain_avail(struct device *dev,
++				struct device_attribute *attr, char *buf)
++{
++	ssize_t len = 0;
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(lv0104cs_hardwaregains); i++) {
++		len += scnprintf(buf + len, PAGE_SIZE - len, "%d.%06d ",
++				lv0104cs_hardwaregains[i].val,
++				lv0104cs_hardwaregains[i].val2);
++	}
++
++	buf[len - 1] = '\n';
++
++	return len;
++}
++
++static ssize_t lv0104cs_show_int_time_avail(struct device *dev,
++				struct device_attribute *attr, char *buf)
++{
++	ssize_t len = 0;
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(lv0104cs_int_times); i++) {
++		len += scnprintf(buf + len, PAGE_SIZE - len, "%d.%06d ",
++				lv0104cs_int_times[i].val,
++				lv0104cs_int_times[i].val2);
++	}
++
++	buf[len - 1] = '\n';
++
++	return len;
++}
++
++static IIO_DEVICE_ATTR(calibscale_available, 0444,
++				lv0104cs_show_calibscale_avail, NULL, 0);
++static IIO_DEVICE_ATTR(hardwaregain_available, 0444,
++				lv0104cs_show_hardwaregain_avail, NULL, 0);
++static IIO_DEV_ATTR_INT_TIME_AVAIL(lv0104cs_show_int_time_avail);
++
++static struct attribute *lv0104cs_attributes[] = {
++	&iio_dev_attr_calibscale_available.dev_attr.attr,
++	&iio_dev_attr_hardwaregain_available.dev_attr.attr,
++	&iio_dev_attr_integration_time_available.dev_attr.attr,
++	NULL
++};
++
++static const struct attribute_group lv0104cs_attribute_group = {
++	.attrs = lv0104cs_attributes,
++};
++
++static const struct iio_info lv0104cs_info = {
++	.attrs = &lv0104cs_attribute_group,
++	.read_raw = &lv0104cs_read_raw,
++	.write_raw = &lv0104cs_write_raw,
++};
++
++static const struct iio_chan_spec lv0104cs_channels[] = {
++	{
++		.type = IIO_LIGHT,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
++				      BIT(IIO_CHAN_INFO_CALIBSCALE) |
++				      BIT(IIO_CHAN_INFO_HARDWAREGAIN) |
++				      BIT(IIO_CHAN_INFO_INT_TIME),
++	},
++};
++
++static int lv0104cs_probe(struct i2c_client *client,
++				const struct i2c_device_id *id)
++{
++	struct iio_dev *indio_dev;
++	struct device *dev = &client->dev;
++	struct lv0104cs_private *lv0104cs;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(struct lv0104cs_private));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	lv0104cs = iio_priv(indio_dev);
++
++	i2c_set_clientdata(client, lv0104cs);
++	lv0104cs->client = client;
++
++	mutex_init(&lv0104cs->lock);
++
++	lv0104cs->hardwaregain = LV0104CS_HWGAIN_1x;
++	lv0104cs->int_time = LV0104CS_INTEG_200m;
++	lv0104cs->calibscale = LV0104CS_CALIB_UNITY;
++
++	ret = lv0104cs_write_reg(lv0104cs,
++			lv0104cs_calibscales[LV0104CS_CALIB_UNITY].regval);
++	if (ret)
++		return -ENODEV;
++
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->dev.parent = dev;
++	indio_dev->channels = lv0104cs_channels;
++	indio_dev->num_channels = ARRAY_SIZE(lv0104cs_channels);
++	indio_dev->name = client->name;
++	indio_dev->info = &lv0104cs_info;
++
++	ret = devm_iio_device_register(dev, indio_dev);
++	if (ret) {
++		dev_err(dev, "Failed to register device: %d\n", ret);
++		return ret;
++	}
++
++	dev_info(dev, "Successfully registered device\n");
++
++	return 0;
++}
++
++static const struct i2c_device_id lv0104cs_id[] = {
++	{ "lv0104cs", 0 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, lv0104cs_id);
++
++static struct i2c_driver lv0104cs_i2c_driver = {
++	.driver = {
++		.name	= "lv0104cs",
++	},
++
++	.id_table	= lv0104cs_id,
++	.probe		= lv0104cs_probe,
++};
++module_i2c_driver(lv0104cs_i2c_driver);
++
++MODULE_AUTHOR("Jeff LaBundy <jeff@labundy.com>");
++MODULE_DESCRIPTION("LV0104CS Ambient Light Sensor Driver");
++MODULE_LICENSE("GPL v2");
+-- 
+2.7.4
