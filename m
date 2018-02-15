@@ -1,39 +1,60 @@
-Return-Path: <SRS0=oNRe=FO=opensource.cirrus.com=ckeepax@kernel.org>
-Date: Mon, 19 Feb 2018 11:42:04 +0000
+Return-Path: <SRS0=rlOl=FJ=opensource.cirrus.com=ckeepax@kernel.org>
 From: Charles Keepax <ckeepax@opensource.cirrus.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: <broonie@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
+To: <broonie@kernel.org>
+CC: <jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
         <pmeerw@pmeerw.net>, <linux-iio@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <patches@opensource.cirrus.com>
-Subject: Re: [PATCH 4/5] iio: accel: bcm150: Remove handling for regmap
- raw_read_max
-Message-ID: <20180219114204.nl3zsq55tezy7hvh@localhost.localdomain>
+Subject: [PATCH 5/5] regmap: Remove regmap_get_raw_read_max
+Date: Thu, 15 Feb 2018 17:52:20 +0000
+Message-ID: <20180215175220.2691-5-ckeepax@opensource.cirrus.com>
+In-Reply-To: <20180215175220.2691-1-ckeepax@opensource.cirrus.com>
 References: <20180215175220.2691-1-ckeepax@opensource.cirrus.com>
- <20180215175220.2691-4-ckeepax@opensource.cirrus.com>
- <20180217140935.74447c0b@archlinux>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-In-Reply-To: <20180217140935.74447c0b@archlinux>
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, Feb 17, 2018 at 02:09:35PM +0000, Jonathan Cameron wrote:
-> On Thu, 15 Feb 2018 17:52:19 +0000
-> Charles Keepax <ckeepax@opensource.cirrus.com> wrote:
-> 
-> > The regmap core now handles splitting up transactions according to
-> > max_raw_read, so this code is no longer required in client drivers.
-> > 
-> > Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-> Hi Charles,
-> 
-> This looks fine to me.  I'll need to wait for Mark's patches to work
-> their way through to mainline before I can apply this however.
-> 
-> Please give me a poke when that has happened if it looks like I have
-> forgotten it.
-> 
+Since the handling for max_raw_read is now inside regmap_raw_read there
+should be no need for client drivers to query as max_raw_read.
 
-Yeah can do.
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+---
+ drivers/base/regmap/regmap.c | 11 -----------
+ include/linux/regmap.h       |  1 -
+ 2 files changed, 12 deletions(-)
 
-Thanks,
-Charles
+diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
+index 872be065e3fe..a7ee885fce89 100644
+--- a/drivers/base/regmap/regmap.c
++++ b/drivers/base/regmap/regmap.c
+@@ -1641,17 +1641,6 @@ bool regmap_can_raw_write(struct regmap *map)
+ EXPORT_SYMBOL_GPL(regmap_can_raw_write);
+ 
+ /**
+- * regmap_get_raw_read_max - Get the maximum size we can read
+- *
+- * @map: Map to check.
+- */
+-size_t regmap_get_raw_read_max(struct regmap *map)
+-{
+-	return map->max_raw_read;
+-}
+-EXPORT_SYMBOL_GPL(regmap_get_raw_read_max);
+-
+-/**
+  * regmap_get_raw_write_max - Get the maximum size we can read
+  *
+  * @map: Map to check.
+diff --git a/include/linux/regmap.h b/include/linux/regmap.h
+index 6a3aeba40e9e..0382fb787c10 100644
+--- a/include/linux/regmap.h
++++ b/include/linux/regmap.h
+@@ -936,7 +936,6 @@ int regmap_get_max_register(struct regmap *map);
+ int regmap_get_reg_stride(struct regmap *map);
+ int regmap_async_complete(struct regmap *map);
+ bool regmap_can_raw_write(struct regmap *map);
+-size_t regmap_get_raw_read_max(struct regmap *map);
+ size_t regmap_get_raw_write_max(struct regmap *map);
+ 
+ int regcache_sync(struct regmap *map);
+-- 
+2.11.0
