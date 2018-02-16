@@ -1,60 +1,47 @@
-Return-Path: <SRS0=rlOl=FJ=opensource.cirrus.com=ckeepax@kernel.org>
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
-To: <broonie@kernel.org>
-CC: <jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
-        <pmeerw@pmeerw.net>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <patches@opensource.cirrus.com>
-Subject: [PATCH 5/5] regmap: Remove regmap_get_raw_read_max
-Date: Thu, 15 Feb 2018 17:52:20 +0000
-Message-ID: <20180215175220.2691-5-ckeepax@opensource.cirrus.com>
-In-Reply-To: <20180215175220.2691-1-ckeepax@opensource.cirrus.com>
+Return-Path: <SRS0=YAsF=FK=sirena.org.uk=broonie@kernel.org>
+Date: Fri, 16 Feb 2018 12:03:11 +0000
+From: Mark Brown <broonie@kernel.org>
+To: Charles Keepax <ckeepax@opensource.cirrus.com>
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	patches@opensource.cirrus.com
+Subject: Re: [PATCH 5/5] regmap: Remove regmap_get_raw_read_max
+Message-ID: <20180216120311.GG5886@sirena.org.uk>
 References: <20180215175220.2691-1-ckeepax@opensource.cirrus.com>
+ <20180215175220.2691-5-ckeepax@opensource.cirrus.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="1giRMj6yz/+FOIRq"
+In-Reply-To: <20180215175220.2691-5-ckeepax@opensource.cirrus.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Since the handling for max_raw_read is now inside regmap_raw_read there
-should be no need for client drivers to query as max_raw_read.
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
----
- drivers/base/regmap/regmap.c | 11 -----------
- include/linux/regmap.h       |  1 -
- 2 files changed, 12 deletions(-)
+--1giRMj6yz/+FOIRq
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
-index 872be065e3fe..a7ee885fce89 100644
---- a/drivers/base/regmap/regmap.c
-+++ b/drivers/base/regmap/regmap.c
-@@ -1641,17 +1641,6 @@ bool regmap_can_raw_write(struct regmap *map)
- EXPORT_SYMBOL_GPL(regmap_can_raw_write);
- 
- /**
-- * regmap_get_raw_read_max - Get the maximum size we can read
-- *
-- * @map: Map to check.
-- */
--size_t regmap_get_raw_read_max(struct regmap *map)
--{
--	return map->max_raw_read;
--}
--EXPORT_SYMBOL_GPL(regmap_get_raw_read_max);
--
--/**
-  * regmap_get_raw_write_max - Get the maximum size we can read
-  *
-  * @map: Map to check.
-diff --git a/include/linux/regmap.h b/include/linux/regmap.h
-index 6a3aeba40e9e..0382fb787c10 100644
---- a/include/linux/regmap.h
-+++ b/include/linux/regmap.h
-@@ -936,7 +936,6 @@ int regmap_get_max_register(struct regmap *map);
- int regmap_get_reg_stride(struct regmap *map);
- int regmap_async_complete(struct regmap *map);
- bool regmap_can_raw_write(struct regmap *map);
--size_t regmap_get_raw_read_max(struct regmap *map);
- size_t regmap_get_raw_write_max(struct regmap *map);
- 
- int regcache_sync(struct regmap *map);
--- 
-2.11.0
+On Thu, Feb 15, 2018 at 05:52:20PM +0000, Charles Keepax wrote:
+> Since the handling for max_raw_read is now inside regmap_raw_read there
+> should be no need for client drivers to query as max_raw_read.
+
+No, they might need to know if things are going to be combined into a
+single transaction - some devices have weird sensitivities about bulk
+I/O and so the driver may need to know exactly what's going on when it
+interacts with the device.
+
+--1giRMj6yz/+FOIRq
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAlqGyH4ACgkQJNaLcl1U
+h9C27gf9FGruca1bJJ8HPUq5QqsxtVWtsbh6dN825ZcshAg27PggFmdvvyQtcvmU
+CUdS8sI8dDe/bFQWVy3JJTP5Y387VQIClYQX7rNUO/kaHwr2sCSh478CqE0gIDnl
+ea4MOKRgi9XrxacDC3uzejwjamWdUnqV8Fq/br5MjPSYeJWa53PzJZKfz+5l2G8r
+1XMag8tVCWmPkgsY2VvVmwhv3SSWGY8zYxqot2sGClxhE2NIboQnoeOU3ltomFVq
+lFPtUbc/AoYsEM1taz3YweFgz49XK7yt5TNuUzeCxa4q2Ry3kDeYxiapPYsTZdlQ
+Ez58cGEI+8JtUbRJ3k24RpoNgNLRfg==
+=jr/8
+-----END PGP SIGNATURE-----
+
+--1giRMj6yz/+FOIRq--
