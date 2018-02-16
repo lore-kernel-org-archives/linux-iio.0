@@ -1,17 +1,44 @@
-Return-Path: <SRS0=rlOl=FJ=opensource.cirrus.com=ckeepax@kernel.org>
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
-To: <broonie@kernel.org>
-CC: <jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
-        <pmeerw@pmeerw.net>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <patches@opensource.cirrus.com>
-Subject: [PATCH 3/5] regmap: Use _regmap_read in regmap_bulk_read
-Date: Thu, 15 Feb 2018 17:52:18 +0000
-Message-ID: <20180215175220.2691-3-ckeepax@opensource.cirrus.com>
-In-Reply-To: <20180215175220.2691-1-ckeepax@opensource.cirrus.com>
-References: <20180215175220.2691-1-ckeepax@opensource.cirrus.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Return-Path: <SRS0=YAsF=FK=sirena.org.uk=broonie@kernel.org>
+From: Mark Brown <broonie@kernel.org>
+To: Charles Keepax <ckeepax@opensource.cirrus.com>
+Cc: Mark Brown <broonie@kernel.org>, broonie@kernel.org, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, patches@opensource.cirrus.com, linux-kernel@vger.kernel.org
+Subject: Applied "regmap: Use _regmap_read in regmap_bulk_read" to the regmap tree
+In-Reply-To: <20180215175220.2691-3-ckeepax@opensource.cirrus.com>
+Message-Id: <E1emelu-0005AA-Kr@debutante>
+Date: Fri, 16 Feb 2018 12:05:46 +0000
 List-ID: <linux-iio@vger.kernel.org>
+
+The patch
+
+   regmap: Use _regmap_read in regmap_bulk_read
+
+has been applied to the regmap tree at
+
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git 
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.  
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
+
+>From 186ba2eec275a5e4ee09d4b6a77c619e46fab9fd Mon Sep 17 00:00:00 2001
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
+Date: Thu, 15 Feb 2018 17:52:18 +0000
+Subject: [PATCH] regmap: Use _regmap_read in regmap_bulk_read
 
 Bulk reads may potentially read a lot of registers and regmap_read will
 take and release the regmap lock for each register. Avoid bouncing
@@ -21,12 +48,13 @@ reads will be done atomically so no other threads can sneak a write in
 during the regmap_bulk_read.
 
 Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Signed-off-by: Mark Brown <broonie@kernel.org>
 ---
  drivers/base/regmap/regmap.c | 18 +++++++++++++-----
  1 file changed, 13 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
-index 93d4218c5569..872be065e3fe 100644
+index ff30a9157de5..258a40e2a1d3 100644
 --- a/drivers/base/regmap/regmap.c
 +++ b/drivers/base/regmap/regmap.c
 @@ -2674,6 +2674,8 @@ int regmap_bulk_read(struct regmap *map, unsigned int reg, void *val,
@@ -77,4 +105,4 @@ index 93d4218c5569..872be065e3fe 100644
  EXPORT_SYMBOL_GPL(regmap_bulk_read);
  
 -- 
-2.11.0
+2.16.1
