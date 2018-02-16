@@ -1,29 +1,57 @@
-Return-Path: <SRS0=rlOl=FJ=opensource.cirrus.com=ckeepax@kernel.org>
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
-To: <broonie@kernel.org>
-CC: <jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
-        <pmeerw@pmeerw.net>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <patches@opensource.cirrus.com>
-Subject: [PATCH 2/5] regmap: Tidy up regmap_raw_read chunking code
-Date: Thu, 15 Feb 2018 17:52:17 +0000
-Message-ID: <20180215175220.2691-2-ckeepax@opensource.cirrus.com>
-In-Reply-To: <20180215175220.2691-1-ckeepax@opensource.cirrus.com>
-References: <20180215175220.2691-1-ckeepax@opensource.cirrus.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Return-Path: <SRS0=YAsF=FK=sirena.org.uk=broonie@kernel.org>
+From: Mark Brown <broonie@kernel.org>
+To: Charles Keepax <ckeepax@opensource.cirrus.com>
+Cc: Mark Brown <broonie@kernel.org>, broonie@kernel.org, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, patches@opensource.cirrus.com, linux-kernel@vger.kernel.org
+Subject: Applied "regmap: Tidy up regmap_raw_read chunking code" to the regmap tree
+In-Reply-To: <20180215175220.2691-2-ckeepax@opensource.cirrus.com>
+Message-Id: <E1emelx-0005B9-Op@debutante>
+Date: Fri, 16 Feb 2018 12:05:49 +0000
 List-ID: <linux-iio@vger.kernel.org>
+
+The patch
+
+   regmap: Tidy up regmap_raw_read chunking code
+
+has been applied to the regmap tree at
+
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git 
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.  
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
+
+>From 1b079ca2c2e9a4652051bc4b62a5ef83d59d86bb Mon Sep 17 00:00:00 2001
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
+Date: Thu, 15 Feb 2018 17:52:17 +0000
+Subject: [PATCH] regmap: Tidy up regmap_raw_read chunking code
 
 Raw reads may need to be split into small chunks if max_raw_read is
 set.  Tidy up the code implementing this, the new code is slightly
 clearer, slightly shorter and slightly more efficient.
 
 Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Signed-off-by: Mark Brown <broonie@kernel.org>
 ---
  drivers/base/regmap/regmap.c | 44 +++++++++++++++++++-------------------------
  1 file changed, 19 insertions(+), 25 deletions(-)
 
 diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
-index f78ddaa9a1e8..93d4218c5569 100644
+index 0cc7387008c9..ff30a9157de5 100644
 --- a/drivers/base/regmap/regmap.c
 +++ b/drivers/base/regmap/regmap.c
 @@ -2542,44 +2542,38 @@ int regmap_raw_read(struct regmap *map, unsigned int reg, void *val,
@@ -91,4 +119,4 @@ index f78ddaa9a1e8..93d4218c5569 100644
  	} else {
  		/* Otherwise go word by word for the cache; should be low
 -- 
-2.11.0
+2.16.1
