@@ -1,74 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qk0-f195.google.com ([209.85.220.195]:45039 "EHLO
-        mail-qk0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S967503AbeBPMuq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 16 Feb 2018 07:50:46 -0500
-Date: Fri, 16 Feb 2018 10:50:41 -0200
-From: rodrigosiqueira <rodrigosiqueiramelo@gmail.com>
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: daniel.baluta@nxp.com, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] staging: iio/meter: add name to function definition arguments
-Message-ID: <20180216125041.qfvg7xtpulc54tk6@smtp.gmail.com>
+Received: from mail-eopbgr10042.outbound.protection.outlook.com ([40.107.1.42]:47788
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S967661AbeBPM4k (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 16 Feb 2018 07:56:40 -0500
+From: Daniel Baluta <daniel.baluta@nxp.com>
+To: "lars@metafoo.de" <lars@metafoo.de>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "rodrigosiqueiramelo@gmail.com" <rodrigosiqueiramelo@gmail.com>,
+        "Michael.Hennerich@analog.com" <Michael.Hennerich@analog.com>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>
+Subject: Re: [PATCH] staging: iio/meter: add name to function definition
+ arguments
+Date: Fri, 16 Feb 2018 12:56:36 +0000
+Message-ID: <1518785796.9517.25.camel@nxp.com>
+References: <20180216125041.qfvg7xtpulc54tk6@smtp.gmail.com>
+In-Reply-To: <20180216125041.qfvg7xtpulc54tk6@smtp.gmail.com>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch fixes the checkpatch.pl warning:
-
-drivers/staging/iio/meter/ade7854.h:157: WARNING: function definition
-argument 'struct device *' should also have an identifier name...
-
-Signed-off-by: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
----
- drivers/staging/iio/meter/ade7854.h | 28 ++++++++++++++--------------
- 1 file changed, 14 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/staging/iio/meter/ade7854.h b/drivers/staging/iio/meter/ade7854.h
-index c27247a7891a..2362a4a51ce3 100644
---- a/drivers/staging/iio/meter/ade7854.h
-+++ b/drivers/staging/iio/meter/ade7854.h
-@@ -152,20 +152,20 @@
-  * @rx:			receive buffer
-  **/
- struct ade7854_state {
--	struct spi_device	*spi;
--	struct i2c_client	*i2c;
--	int			(*read_reg_8)(struct device *, u16, u8 *);
--	int			(*read_reg_16)(struct device *, u16, u16 *);
--	int			(*read_reg_24)(struct device *, u16, u32 *);
--	int			(*read_reg_32)(struct device *, u16, u32 *);
--	int			(*write_reg_8)(struct device *, u16, u8);
--	int			(*write_reg_16)(struct device *, u16, u16);
--	int			(*write_reg_24)(struct device *, u16, u32);
--	int			(*write_reg_32)(struct device *, u16, u32);
--	int			irq;
--	struct mutex		buf_lock;
--	u8			tx[ADE7854_MAX_TX] ____cacheline_aligned;
--	u8			rx[ADE7854_MAX_RX];
-+	struct spi_device *spi;
-+	struct i2c_client *i2c;
-+	int (*read_reg_8)(struct device *dev, u16 reg_address, u8 *val);
-+	int (*read_reg_16)(struct device *dev, u16 reg_address, u16 *val);
-+	int (*read_reg_24)(struct device *dev, u16 reg_address, u32 *val);
-+	int (*read_reg_32)(struct device *dev, u16 reg_address, u32 *val);
-+	int (*write_reg_8)(struct device *dev, u16 reg_address, u8 value);
-+	int (*write_reg_16)(struct device *dev, u16 reg_address, u16 value);
-+	int (*write_reg_24)(struct device *dev, u16 reg_address, u32 value);
-+	int (*write_reg_32)(struct device *dev, u16 reg_address, u32 value);
-+	int irq;
-+	struct mutex buf_lock;
-+	u8 tx[ADE7854_MAX_TX] ____cacheline_aligned;
-+	u8 rx[ADE7854_MAX_RX];
- 
- };
- 
--- 
-2.16.1
-
+SGkgUm9kcmlnbywNCg0KSSB0aGluayB0aGlzIGlzIGEgbmljZSBmaW5kaW5nLiBPbmUgY29tbWVu
+dCBpbmxpbmU6DQoNCk9uIFZpLCAyMDE4LTAyLTE2IGF0IDEwOjUwIC0wMjAwLCByb2RyaWdvc2lx
+dWVpcmEgd3JvdGU6DQo+IFRoaXMgcGF0Y2ggZml4ZXMgdGhlIGNoZWNrcGF0Y2gucGwgd2Fybmlu
+ZzoNCj4gDQo+IGRyaXZlcnMvc3RhZ2luZy9paW8vbWV0ZXIvYWRlNzg1NC5oOjE1NzogV0FSTklO
+RzogZnVuY3Rpb24gZGVmaW5pdGlvbg0KPiBhcmd1bWVudCAnc3RydWN0IGRldmljZSAqJyBzaG91
+bGQgYWxzbyBoYXZlIGFuIGlkZW50aWZpZXIgbmFtZS4uLg0KPsKgDQo+ICsJaW50ICgqcmVhZF9y
+ZWdfMzIpKHN0cnVjdCBkZXZpY2UgKmRldiwgdTE2IHJlZ19hZGRyZXNzLCB1MzIgKnZhbCk7DQo+
+ICsJaW50ICgqd3JpdGVfcmVnXzgpKHN0cnVjdCBkZXZpY2UgKmRldiwgdTE2IHJlZ19hZGRyZXNz
+LCB1OCB2YWx1ZSk7DQoNCg0KQW55IHBhcnRpY3VsYXIgcmVhc29uIGZvciB1c2luZyB2YWwgdnMg
+dmFsdWU/IEkgZ2V0IHRoYXQgb25lIGlzIGEgcG9pbnRlcg0KYW5kIGFub3RoZXIgYSBwbGFpbiB0
+eXBlLCBidXQgSSB0aGluayB0aGUgbmFtZSBzaG91bGQgYmUgdGhlIHNhbWUuDQoNCnRoYW5rcywN
+CkRhbmllbC4NCg0K
