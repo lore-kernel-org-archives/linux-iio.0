@@ -1,172 +1,124 @@
-Return-Path: <SRS0=YAsF=FK=sirena.org.uk=broonie@kernel.org>
-From: Mark Brown <broonie@kernel.org>
-To: Charles Keepax <ckeepax@opensource.cirrus.com>
-Cc: Mark Brown <broonie@kernel.org>, broonie@kernel.org, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, patches@opensource.cirrus.com, linux-kernel@vger.kernel.org
-Subject: Applied "regmap: Move the handling for max_raw_read into regmap_raw_read" to the regmap tree
-In-Reply-To: <20180215175220.2691-1-ckeepax@opensource.cirrus.com>
-Message-Id: <E1emem0-0005C9-T9@debutante>
-Date: Fri, 16 Feb 2018 12:05:52 +0000
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-by2nam01on0086.outbound.protection.outlook.com ([104.47.34.86]:24864
+        "EHLO NAM01-BY2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S965781AbeBPMJY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 16 Feb 2018 07:09:24 -0500
+From: Alexandru Ardelean <alexandru.ardelean@analog.com>
+To: <linux-iio@vger.kernel.org>
+CC: <michael.hennerich@analog.com>, <lars@metafoo.de>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH] staging: iio: ad5933: merge ring init function into probe function
+Date: Fri, 16 Feb 2018 14:09:15 +0200
+Message-ID: <20180216120915.19277-1-alexandru.ardelean@analog.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-The patch
+This is a small cleanup of the driver's init code.
+It does not fix anything.
 
-   regmap: Move the handling for max_raw_read into regmap_raw_read
+The `devm_iio_kfifo_allocate()` function is used instead of
+`iio_kfifo_allocate()`.  This removes the need for explicit deallocation of
+the driver's iio_buffer, which will now be handled via
+`iio_device_unregister()`.
 
-has been applied to the regmap tree at
+The `setup_ops` assignment has been moved into the `ad5933_probe()` call,
+since it's a one-liner.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git 
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.  
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
-
->From 0645ba4331c2b02ba9907b1591ba722535890e9f Mon Sep 17 00:00:00 2001
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
-Date: Thu, 15 Feb 2018 17:52:16 +0000
-Subject: [PATCH] regmap: Move the handling for max_raw_read into
- regmap_raw_read
-
-Currently regmap_bulk_read will split a read into chunks before
-calling regmap_raw_read if max_raw_read is set. It is more logical for
-this handling to be inside regmap_raw_read itself, as this removes the
-need to keep re-implementing the chunking code, which would be the
-same for all users of regmap_raw_read.
-
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
- drivers/base/regmap/regmap.c | 90 +++++++++++++++++---------------------------
- 1 file changed, 35 insertions(+), 55 deletions(-)
 
-diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
-index f075c05859b0..0cc7387008c9 100644
---- a/drivers/base/regmap/regmap.c
-+++ b/drivers/base/regmap/regmap.c
-@@ -2542,18 +2542,45 @@ int regmap_raw_read(struct regmap *map, unsigned int reg, void *val,
+Note: this change is based on top of `fixes-togreg-post-rc1` branch which
+contains commit (7d2b8e6aaf9: staging: iio: ad5933: switch buffer mode to
+software)
+
+ drivers/staging/iio/impedance-analyzer/ad5933.c | 35 +++++++------------------
+ 1 file changed, 10 insertions(+), 25 deletions(-)
+
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index 3bcf49466361..1cab67b3a81e 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -635,22 +635,6 @@ static const struct iio_buffer_setup_ops ad5933_ring_setup_ops = {
+ 	.postdisable = ad5933_ring_postdisable,
+ };
  
- 	if (regmap_volatile_range(map, reg, val_count) || map->cache_bypass ||
- 	    map->cache_type == REGCACHE_NONE) {
-+		int chunk_stride = map->reg_stride;
-+		size_t chunk_size = val_bytes;
-+		size_t chunk_count = val_count;
+-static int ad5933_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+-{
+-	struct iio_buffer *buffer;
+-
+-	buffer = iio_kfifo_allocate();
+-	if (!buffer)
+-		return -ENOMEM;
+-
+-	iio_device_attach_buffer(indio_dev, buffer);
+-
+-	/* Ring buffer functions - here trigger setup related */
+-	indio_dev->setup_ops = &ad5933_ring_setup_ops;
+-
+-	return 0;
+-}
+-
+ static void ad5933_work(struct work_struct *work)
+ {
+ 	struct ad5933_state *st = container_of(work,
+@@ -714,12 +698,19 @@ static int ad5933_probe(struct i2c_client *client,
+ 	int ret, voltage_uv = 0;
+ 	struct ad5933_platform_data *pdata = dev_get_platdata(&client->dev);
+ 	struct ad5933_state *st;
++	struct iio_buffer *buffer;
+ 	struct iio_dev *indio_dev;
+ 
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*st));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+ 
++	buffer = devm_iio_kfifo_allocate(&client->dev);
++	if (!buffer)
++		return -ENOMEM;
 +
- 		if (!map->bus->read) {
- 			ret = -ENOTSUPP;
- 			goto out;
- 		}
--		if (map->max_raw_read && map->max_raw_read < val_len) {
--			ret = -E2BIG;
--			goto out;
++	iio_device_attach_buffer(indio_dev, buffer);
 +
-+		if (!map->use_single_read) {
-+			if (map->max_raw_read)
-+				chunk_size = map->max_raw_read;
-+			else
-+				chunk_size = val_len;
-+			if (chunk_size % val_bytes)
-+				chunk_size -= chunk_size % val_bytes;
-+			chunk_count = val_len / chunk_size;
-+			chunk_stride *= chunk_size / val_bytes;
- 		}
- 
--		/* Physical block read if there's no cache involved */
--		ret = _regmap_raw_read(map, reg, val, val_len);
-+		/* Read bytes that fit into a multiple of chunk_size */
-+		for (i = 0; i < chunk_count; i++) {
-+			ret = _regmap_raw_read(map,
-+					       reg + (i * chunk_stride),
-+					       val + (i * chunk_size),
-+					       chunk_size);
-+			if (ret != 0)
-+				return ret;
-+		}
- 
-+		/* Read remaining bytes */
-+		if (chunk_size * i < val_len) {
-+			ret = _regmap_raw_read(map,
-+					       reg + (i * chunk_stride),
-+					       val + (i * chunk_size),
-+					       val_len - i * chunk_size);
-+			if (ret != 0)
-+				return ret;
-+		}
- 	} else {
- 		/* Otherwise go word by word for the cache; should be low
- 		 * cost as we expect to hit the cache.
-@@ -2655,56 +2682,9 @@ int regmap_bulk_read(struct regmap *map, unsigned int reg, void *val,
- 		return -EINVAL;
- 
- 	if (map->bus && map->format.parse_inplace && (vol || map->cache_type == REGCACHE_NONE)) {
--		/*
--		 * Some devices does not support bulk read, for
--		 * them we have a series of single read operations.
--		 */
--		size_t total_size = val_bytes * val_count;
+ 	st = iio_priv(indio_dev);
+ 	i2c_set_clientdata(client, indio_dev);
+ 	st->client = client;
+@@ -763,23 +754,18 @@ static int ad5933_probe(struct i2c_client *client,
+ 	indio_dev->modes = (INDIO_BUFFER_SOFTWARE | INDIO_DIRECT_MODE);
+ 	indio_dev->channels = ad5933_channels;
+ 	indio_dev->num_channels = ARRAY_SIZE(ad5933_channels);
 -
--		if (!map->use_single_read &&
--		    (!map->max_raw_read || map->max_raw_read > total_size)) {
--			ret = regmap_raw_read(map, reg, val,
--					      val_bytes * val_count);
--			if (ret != 0)
--				return ret;
--		} else {
--			/*
--			 * Some devices do not support bulk read or do not
--			 * support large bulk reads, for them we have a series
--			 * of read operations.
--			 */
--			int chunk_stride = map->reg_stride;
--			size_t chunk_size = val_bytes;
--			size_t chunk_count = val_count;
--
--			if (!map->use_single_read) {
--				chunk_size = map->max_raw_read;
--				if (chunk_size % val_bytes)
--					chunk_size -= chunk_size % val_bytes;
--				chunk_count = total_size / chunk_size;
--				chunk_stride *= chunk_size / val_bytes;
--			}
--
--			/* Read bytes that fit into a multiple of chunk_size */
--			for (i = 0; i < chunk_count; i++) {
--				ret = regmap_raw_read(map,
--						      reg + (i * chunk_stride),
--						      val + (i * chunk_size),
--						      chunk_size);
--				if (ret != 0)
--					return ret;
--			}
--
--			/* Read remaining bytes */
--			if (chunk_size * i < total_size) {
--				ret = regmap_raw_read(map,
--						      reg + (i * chunk_stride),
--						      val + (i * chunk_size),
--						      total_size - i * chunk_size);
--				if (ret != 0)
--					return ret;
--			}
--		}
-+		ret = regmap_raw_read(map, reg, val, val_bytes * val_count);
-+		if (ret != 0)
-+			return ret;
+-	ret = ad5933_register_ring_funcs_and_init(indio_dev);
+-	if (ret)
+-		goto error_disable_reg;
++	indio_dev->setup_ops = &ad5933_ring_setup_ops;
  
- 		for (i = 0; i < val_count * val_bytes; i += val_bytes)
- 			map->format.parse_inplace(val + i);
+ 	ret = ad5933_setup(st);
+ 	if (ret)
+-		goto error_unreg_ring;
++		goto error_disable_reg;
+ 
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret)
+-		goto error_unreg_ring;
++		goto error_disable_reg;
+ 
+ 	return 0;
+ 
+-error_unreg_ring:
+-	iio_kfifo_free(indio_dev->buffer);
+ error_disable_reg:
+ 	regulator_disable(st->reg);
+ 
+@@ -792,7 +778,6 @@ static int ad5933_remove(struct i2c_client *client)
+ 	struct ad5933_state *st = iio_priv(indio_dev);
+ 
+ 	iio_device_unregister(indio_dev);
+-	iio_kfifo_free(indio_dev->buffer);
+ 	regulator_disable(st->reg);
+ 
+ 	return 0;
 -- 
-2.16.1
+2.14.1
+
