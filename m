@@ -1,63 +1,59 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:46620 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750957AbeBQMme (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 17 Feb 2018 07:42:34 -0500
-Date: Sat, 17 Feb 2018 12:42:29 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: rodrigosiqueira <rodrigosiqueiramelo@gmail.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        daniel.baluta@nxp.com, linux-iio@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio:pressure:ms5611: Fix coding style in probe
- function
-Message-ID: <20180217124229.18d335fe@archlinux>
-In-Reply-To: <20180216194441.nep5zbb5sjf53cj6@smtp.gmail.com>
-References: <20180216194441.nep5zbb5sjf53cj6@smtp.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=Xqts=FL=konsulko.com=matt.ranostay@kernel.org>
+From: Matt Ranostay <matt.ranostay@konsulko.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Matt Ranostay <matt.ranostay@konsulko.com>
+Subject: [PATCH] iio: sysfs-bus-iio-*: update email contact
+Date: Fri, 16 Feb 2018 18:36:21 -0800
+Message-Id: <20180217023621.14482-1-matt.ranostay@konsulko.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, 16 Feb 2018 17:44:41 -0200
-rodrigosiqueira <rodrigosiqueiramelo@gmail.com> wrote:
+Change email contact for ABI documention to author's current employer
+on the following files:
 
-> This patch fixes the checkpatch.pl warning and error:
-> 
-> iio/pressure/ms5611.h:66: ERROR: code indent should use tabs where possible
-> iio/pressure/ms5611.h:66: WARNING: please, no spaces at the start of a line
-> iio/pressure/ms5611.h:66: ERROR: "foo* bar" should be "foo *bar"
-> 
-> Signed-off-by: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+* sysfs-bus-iio-chemical-vz89x
+* sysfs-bus-iio-proximity-as3935
 
-Thanks Daniel for your quick feedback on this.
+Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio-chemical-vz89x   | 2 +-
+ Documentation/ABI/testing/sysfs-bus-iio-proximity-as3935 | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-Thanks,
-
-Jonathan
-
-> ---
-> Changes in v2:
->   - Make the commit message more clearer.
-> 
->  drivers/iio/pressure/ms5611.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/pressure/ms5611.h b/drivers/iio/pressure/ms5611.h
-> index ccda63c5b3c3..ead9e9f85894 100644
-> --- a/drivers/iio/pressure/ms5611.h
-> +++ b/drivers/iio/pressure/ms5611.h
-> @@ -63,7 +63,7 @@ struct ms5611_state {
->  };
->  
->  int ms5611_probe(struct iio_dev *indio_dev, struct device *dev,
-> -                 const char* name, int type);
-> +		 const char *name, int type);
->  int ms5611_remove(struct iio_dev *indio_dev);
->  
->  #endif /* _MS5611_H */
-
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-chemical-vz89x b/Documentation/ABI/testing/sysfs-bus-iio-chemical-vz89x
+index c0c1ea924535..d512f865600e 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-chemical-vz89x
++++ b/Documentation/ABI/testing/sysfs-bus-iio-chemical-vz89x
+@@ -1,7 +1,7 @@
+ What:		/sys/bus/iio/devices/iio:deviceX/in_concentration_VOC_short_raw
+ Date:		September 2015
+ KernelVersion:	4.3
+-Contact:	Matt Ranostay <mranostay@gmail.com>
++Contact:	Matt Ranostay <matt.ranostay@konsulko.com>
+ Description:
+ 		Get the raw calibration VOC value from the sensor.
+ 		This value has little application outside of calibration.
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-proximity-as3935 b/Documentation/ABI/testing/sysfs-bus-iio-proximity-as3935
+index 147d4e8a1403..9a17ab5036a4 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-proximity-as3935
++++ b/Documentation/ABI/testing/sysfs-bus-iio-proximity-as3935
+@@ -1,7 +1,7 @@
+ What		/sys/bus/iio/devices/iio:deviceX/in_proximity_input
+ Date:		March 2014
+ KernelVersion:	3.15
+-Contact:	Matt Ranostay <mranostay@gmail.com>
++Contact:	Matt Ranostay <matt.ranostay@konsulko.com>
+ Description:
+ 		Get the current distance in meters of storm (1km steps)
+ 		1000-40000 = distance in meters
+@@ -9,7 +9,7 @@ Description:
+ What		/sys/bus/iio/devices/iio:deviceX/sensor_sensitivity
+ Date:		March 2014
+ KernelVersion:	3.15
+-Contact:	Matt Ranostay <mranostay@gmail.com>
++Contact:	Matt Ranostay <matt.ranostay@konsulko.com>
+ Description:
+ 		Show or set the gain boost of the amp, from 0-31 range.
+ 		18 = indoors (default)
+-- 
+2.14.1
