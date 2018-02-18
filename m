@@ -1,97 +1,99 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:50079 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751312AbeBRMI4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 18 Feb 2018 07:08:56 -0500
+Return-Path: <SRS0=/XLz=FM=metafoo.de=lars@kernel.org>
 Subject: Re: [PATCH 1/3] Staging: iio: adis16209: Use SPDX identifier
+From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@kernel.org>,
-        Shreeya Patel <shreeya.patel23498@gmail.com>
-Cc: Himanshu Jha <himanshujha199640@gmail.com>,
-        Michael.Hennerich@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        daniel.baluta@nxp.com
+ Shreeya Patel <shreeya.patel23498@gmail.com>
+Cc: Himanshu Jha <himanshujha199640@gmail.com>, Michael.Hennerich@analog.com,
+ knaack.h@gmx.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+ devel@driverdev.osuosl.org, daniel.baluta@nxp.com
 References: <cover.1518883035.git.shreeya.patel23498@gmail.com>
  <6771b95bbfb8301724086dba4d92df6a6b11d6f7.1518883035.git.shreeya.patel23498@gmail.com>
  <20180218113138.GA4039@himanshu-Vostro-3559>
  <1518953877.19751.3.camel@gmail.com> <20180218120243.298bdcdd@archlinux>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <c81d519c-a0a7-d369-92d6-668e0ace81a6@metafoo.de>
-Date: Sun, 18 Feb 2018 13:08:47 +0100
+ <c81d519c-a0a7-d369-92d6-668e0ace81a6@metafoo.de>
+Message-ID: <a8786cbf-8e3b-a2af-6be0-7413ae2b13c4@metafoo.de>
+Date: Sun, 18 Feb 2018 13:14:27 +0100
 MIME-Version: 1.0
-In-Reply-To: <20180218120243.298bdcdd@archlinux>
+In-Reply-To: <c81d519c-a0a7-d369-92d6-668e0ace81a6@metafoo.de>
 Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 02/18/2018 01:02 PM, Jonathan Cameron wrote:
-> On Sun, 18 Feb 2018 17:07:57 +0530
-> Shreeya Patel <shreeya.patel23498@gmail.com> wrote:
-> 
->> On Sun, 2018-02-18 at 17:01 +0530, Himanshu Jha wrote:
->>> Hi Shreeya,
->>>   
->> Hi Himanshu,
+On 02/18/2018 01:08 PM, Lars-Peter Clausen wrote:
+> On 02/18/2018 01:02 PM, Jonathan Cameron wrote:
+>> On Sun, 18 Feb 2018 17:07:57 +0530
+>> Shreeya Patel <shreeya.patel23498@gmail.com> wrote:
 >>
->>> On Sat, Feb 17, 2018 at 09:34:56PM +0530, Shreeya Patel wrote:  
+>>> On Sun, 2018-02-18 at 17:01 +0530, Himanshu Jha wrote:
+>>>> Hi Shreeya,
+>>>>   
+>>> Hi Himanshu,
+>>>
+>>>> On Sat, Feb 17, 2018 at 09:34:56PM +0530, Shreeya Patel wrote:  
+>>>>>
+>>>>> Use SPDX identifier format instead of GPLv2. Also rearrange the
+>>>>> headers in alphabetical order.
+>>>>>
+>>>>> Signed-off-by: Shreeya Patel <shreeya.patel23498@gmail.com>
+>>>>> ---
+>>>>>  drivers/staging/iio/accel/adis16209.c | 7 +++----
+>>>>>  1 file changed, 3 insertions(+), 4 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/staging/iio/accel/adis16209.c
+>>>>> b/drivers/staging/iio/accel/adis16209.c
+>>>>> index 7fcef9a..e3d9f80 100644
+>>>>> --- a/drivers/staging/iio/accel/adis16209.c
+>>>>> +++ b/drivers/staging/iio/accel/adis16209.c
+>>>>> @@ -1,19 +1,18 @@
+>>>>> +// SPDX-License-Identifier: GPL-2.0+
+>>>>>  /*
+>>>>>   * ADIS16209 Dual-Axis Digital Inclinometer and Accelerometer
+>>>>>   *
+>>>>>   * Copyright 2010 Analog Devices Inc.
+>>>>> - *
+>>>>> - * Licensed under the GPL-2 or later.  
+>>>> I see that you too are doing similar cleanup which I did a while ago
+>>>> https://lkml.org/lkml/2018/2/12/255  
+>>>
+>>> Yes, Jonathan suggested me to work on adis16209.
+>>> Your patches were quite useful for me :)
+>>>
+>>>> where I got some update suggestions for the patch series. It would be
+>>>> great if you could update this patch series consistent with the
+>>>> reviewers.
 >>>>
->>>> Use SPDX identifier format instead of GPLv2. Also rearrange the
->>>> headers in alphabetical order.
+>>>> For eg: in this patch you changed 
 >>>>
->>>> Signed-off-by: Shreeya Patel <shreeya.patel23498@gmail.com>
->>>> ---
->>>>  drivers/staging/iio/accel/adis16209.c | 7 +++----
->>>>  1 file changed, 3 insertions(+), 4 deletions(-)
->>>>
->>>> diff --git a/drivers/staging/iio/accel/adis16209.c
->>>> b/drivers/staging/iio/accel/adis16209.c
->>>> index 7fcef9a..e3d9f80 100644
->>>> --- a/drivers/staging/iio/accel/adis16209.c
->>>> +++ b/drivers/staging/iio/accel/adis16209.c
->>>> @@ -1,19 +1,18 @@
 >>>> +// SPDX-License-Identifier: GPL-2.0+
->>>>  /*
->>>>   * ADIS16209 Dual-Axis Digital Inclinometer and Accelerometer
->>>>   *
->>>>   * Copyright 2010 Analog Devices Inc.
->>>> - *
->>>> - * Licensed under the GPL-2 or later.  
->>> I see that you too are doing similar cleanup which I did a while ago
->>> https://lkml.org/lkml/2018/2/12/255  
+>>>>
+>>>> and therefore
+>>>>
+>>>> MODULE_LICENSE("GPL v2");
+>>>>
+>>>> should also be changed to 
+>>>>
+>>>> MODULE_LICENSE("GPL"); 
+>>>>
+>>>> as explained by	Philippe Ombredanne to me in my patch series.  
+>>>
+>> I'm not sure that was exactly what Philippe was suggesting.
+>> He was making the point that the licensing was inconsistent without
+>> saying which option should be chosen.
 >>
->> Yes, Jonathan suggested me to work on adis16209.
->> Your patches were quite useful for me :)
+>> We will need to seek clarification from Analog Devices
+>> on what their opinion on this is.
 >>
->>> where I got some update suggestions for the patch series. It would be
->>> great if you could update this patch series consistent with the
->>> reviewers.
->>>
->>> For eg: in this patch you changed 
->>>
->>> +// SPDX-License-Identifier: GPL-2.0+
->>>
->>> and therefore
->>>
->>> MODULE_LICENSE("GPL v2");
->>>
->>> should also be changed to 
->>>
->>> MODULE_LICENSE("GPL"); 
->>>
->>> as explained by	Philippe Ombredanne to me in my patch series.  
->>
-> I'm not sure that was exactly what Philippe was suggesting.
-> He was making the point that the licensing was inconsistent without
-> saying which option should be chosen.
+>> Lars / Michael, any clarification on the right way to resolve this
+>> inconsistency?
 > 
-> We will need to seek clarification from Analog Devices
-> on what their opinion on this is.
+> I can't speak for the intended license for code I wasn't involved in.
 > 
-> Lars / Michael, any clarification on the right way to resolve this
-> inconsistency?
+> But I'd in general if there are conflicting licensing information and you
+> want to be on the safe side choose the more restrictive license. E.g. GPL2+
+> is compatible with GPL2, but GPL2 is not compatible with GPL2+. So to be
+> compatible with both choose GPL2.
 
-I can't speak for the intended license for code I wasn't involved in.
+This is not legal advice btw.
 
-But I'd in general if there are conflicting licensing information and you
-want to be on the safe side choose the more restrictive license. E.g. GPL2+
-is compatible with GPL2, but GPL2 is not compatible with GPL2+. So to be
-compatible with both choose GPL2.
+I personally would stay away from messing with the licenses of code I do not
+own. Not everybody seems to agree yet that a SPDX tag is equivalent to a
+explicit licensing statement.
