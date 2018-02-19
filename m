@@ -19,37 +19,43 @@ Cc: knaack.h@gmx.de,
 	thomas.petazzoni@bootlin.com,
 	linux-sunxi@googlegroups.com,
 	Quentin Schulz <quentin.schulz@bootlin.com>
-Subject: [PATCH v4 09/13] mfd: axp20x: add battery power supply cell for AXP813
-Date: Mon, 19 Feb 2018 13:47:32 +0100
-Message-Id: <3aa781bcd28fe7ba6faaa85821952141351cf410.1519044068.git-series.quentin.schulz@bootlin.com>
+Subject: [PATCH v4 10/13] ARM: dtsi: axp81x: add battery power supply subnode
+Date: Mon, 19 Feb 2018 13:47:33 +0100
+Message-Id: <30ee1b77a0006b2a9a5b8fbd0b72a1dd568519e8.1519044068.git-series.quentin.schulz@bootlin.com>
 In-Reply-To: <cover.6545459c99a33874413abf619136986f53d2c2a2.1519044068.git-series.quentin.schulz@bootlin.com>
 References: <cover.6545459c99a33874413abf619136986f53d2c2a2.1519044068.git-series.quentin.schulz@bootlin.com>
 In-Reply-To: <cover.6545459c99a33874413abf619136986f53d2c2a2.1519044068.git-series.quentin.schulz@bootlin.com>
 References: <cover.6545459c99a33874413abf619136986f53d2c2a2.1519044068.git-series.quentin.schulz@bootlin.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-As axp20x-battery-power-supply now supports AXP813, add a cell for it.
+The X-Powers AXP81X PMIC exposes battery supply various data such as
+the battery status (charging, discharging, full, dead), current max
+limit, current current, battery capacity (in percentage), voltage max
+and min limits, current voltage, and battery capacity (in Ah).
+
+This adds the battery power supply subnode for AXP81X PMIC.
 
 Signed-off-by: Quentin Schulz <quentin.schulz@bootlin.com>
-Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
-Reviewed-by: Chen-Yu Tsai <wens@csie.org>
+Acked-by: Chen-Yu Tsai <wens@csie.org>
 ---
- drivers/mfd/axp20x.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm/boot/dts/axp81x.dtsi | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
-index e5516aa..aaf2acb 100644
---- a/drivers/mfd/axp20x.c
-+++ b/drivers/mfd/axp20x.c
-@@ -888,6 +888,9 @@ static struct mfd_cell axp813_cells[] = {
- 	}, {
- 		.name			= "axp813-adc",
- 		.of_compatible		= "x-powers,axp813-adc",
-+	}, {
-+		.name		= "axp20x-battery-power-supply",
-+		.of_compatible	= "x-powers,axp813-battery-power-supply",
- 	},
- };
+diff --git a/arch/arm/boot/dts/axp81x.dtsi b/arch/arm/boot/dts/axp81x.dtsi
+index 6b5e7bc..1b05c7f 100644
+--- a/arch/arm/boot/dts/axp81x.dtsi
++++ b/arch/arm/boot/dts/axp81x.dtsi
+@@ -69,6 +69,11 @@
+ 		};
+ 	};
  
++	battery_power_supply: battery-power-supply {
++		compatible = "x-powers,axp813-battery-power-supply";
++		status = "disabled";
++	};
++
+ 	regulators {
+ 		/* Default work frequency for buck regulators */
+ 		x-powers,dcdc-freq = <3000>;
 -- 
 git-series 0.9.1
