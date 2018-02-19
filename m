@@ -19,38 +19,36 @@ Cc: knaack.h@gmx.de,
 	thomas.petazzoni@bootlin.com,
 	linux-sunxi@googlegroups.com,
 	Quentin Schulz <quentin.schulz@bootlin.com>
-Subject: [PATCH v4 11/13] ARM: dtsi: sun8i: a711: enable battery power supply subnode
-Date: Mon, 19 Feb 2018 13:47:34 +0100
-Message-Id: <18433bfad4e66af7803b5f655b818fa265b3044c.1519044068.git-series.quentin.schulz@bootlin.com>
+Subject: [PATCH v4 12/13] ARM: dtsi: axp81x: remove IP name from DT node name
+Date: Mon, 19 Feb 2018 13:47:35 +0100
+Message-Id: <e72308b0ce1f2c7efa25a5e879159376a41bd453.1519044068.git-series.quentin.schulz@bootlin.com>
 In-Reply-To: <cover.6545459c99a33874413abf619136986f53d2c2a2.1519044068.git-series.quentin.schulz@bootlin.com>
 References: <cover.6545459c99a33874413abf619136986f53d2c2a2.1519044068.git-series.quentin.schulz@bootlin.com>
 In-Reply-To: <cover.6545459c99a33874413abf619136986f53d2c2a2.1519044068.git-series.quentin.schulz@bootlin.com>
 References: <cover.6545459c99a33874413abf619136986f53d2c2a2.1519044068.git-series.quentin.schulz@bootlin.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-The TBS A711 has an AXP813 PMIC and a soldered battery, thus, we enable
-the battery power supply subnode in its Device Tree.
+The DT node should be named after its functionality and not after the
+IP it's defining.
 
 Signed-off-by: Quentin Schulz <quentin.schulz@bootlin.com>
 Acked-by: Chen-Yu Tsai <wens@csie.org>
 ---
- arch/arm/boot/dts/sun8i-a83t-tbs-a711.dts | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/arm/boot/dts/axp81x.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/sun8i-a83t-tbs-a711.dts b/arch/arm/boot/dts/sun8i-a83t-tbs-a711.dts
-index 511fca4..1de362f 100644
---- a/arch/arm/boot/dts/sun8i-a83t-tbs-a711.dts
-+++ b/arch/arm/boot/dts/sun8i-a83t-tbs-a711.dts
-@@ -231,6 +231,10 @@
+diff --git a/arch/arm/boot/dts/axp81x.dtsi b/arch/arm/boot/dts/axp81x.dtsi
+index 1b05c7f..043c717 100644
+--- a/arch/arm/boot/dts/axp81x.dtsi
++++ b/arch/arm/boot/dts/axp81x.dtsi
+@@ -53,7 +53,7 @@
+ 		#io-channel-cells = <1>;
+ 	};
  
- #include "axp81x.dtsi"
- 
-+&battery_power_supply {
-+	status = "okay";
-+};
-+
- &reg_aldo1 {
- 	regulator-min-microvolt = <1800000>;
- 	regulator-max-microvolt = <1800000>;
+-	axp_gpio: axp-gpio {
++	axp_gpio: gpio {
+ 		compatible = "x-powers,axp813-gpio";
+ 		gpio-controller;
+ 		#gpio-cells = <2>;
 -- 
 git-series 0.9.1
