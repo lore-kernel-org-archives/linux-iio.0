@@ -1,46 +1,58 @@
-Return-Path: <SRS0=J+uo=FO=intel.com=fengguang.wu@kernel.org>
-Date: Tue, 20 Feb 2018 17:12:25 +0800
-From: kbuild test robot <lkp@intel.com>
-To: Quentin Schulz <quentin.schulz@bootlin.com>
-Cc: kbuild-all@01.org, sre@kernel.org, robh+dt@kernel.org,
-	mark.rutland@arm.com, wens@csie.org, linux@armlinux.org.uk,
-	maxime.ripard@bootlin.com, jic23@kernel.org, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, lee.jones@linaro.org,
-	linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-iio@vger.kernel.org, thomas.petazzoni@bootlin.com,
-	linux-sunxi@googlegroups.com,
-	Quentin Schulz <quentin.schulz@bootlin.com>
-Subject: Re: [PATCH v4 06/13] power: supply: axp20x_battery: use data struct
- for variant specific code
-Message-ID: <201802201606.lLg38XZv%fengguang.wu@intel.com>
-References: <52f68b8ed9452d643d9156a849014c9d0eb4404b.1519044068.git-series.quentin.schulz@bootlin.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <52f68b8ed9452d643d9156a849014c9d0eb4404b.1519044068.git-series.quentin.schulz@bootlin.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.free-electrons.com ([62.4.15.54]:33108 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752733AbeBSMsN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Feb 2018 07:48:13 -0500
+From: Quentin Schulz <quentin.schulz@bootlin.com>
+To: sre@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com,
+        wens@csie.org, linux@armlinux.org.uk, maxime.ripard@bootlin.com,
+        jic23@kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        lee.jones@linaro.org, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+        thomas.petazzoni@bootlin.com, linux-sunxi@googlegroups.com,
+        Quentin Schulz <quentin.schulz@bootlin.com>
+Subject: [PATCH v4 07/13] dt-bindings: power: supply: axp20x: add AXP813 battery DT binding
+Date: Mon, 19 Feb 2018 13:47:30 +0100
+Message-Id: <f572d282b5a20183f5bab5e6331be8e6b960eae3.1519044068.git-series.quentin.schulz@bootlin.com>
+In-Reply-To: <cover.6545459c99a33874413abf619136986f53d2c2a2.1519044068.git-series.quentin.schulz@bootlin.com>
+References: <cover.6545459c99a33874413abf619136986f53d2c2a2.1519044068.git-series.quentin.schulz@bootlin.com>
+In-Reply-To: <cover.6545459c99a33874413abf619136986f53d2c2a2.1519044068.git-series.quentin.schulz@bootlin.com>
+References: <cover.6545459c99a33874413abf619136986f53d2c2a2.1519044068.git-series.quentin.schulz@bootlin.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Quentin,
+The AXP813 can have a battery as power supply, so let's add it to the
+list of compatibles.
 
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on ]
-
-url:    https://github.com/0day-ci/linux/commits/Quentin-Schulz/add-support-for-AXP813-ADC-and-battery-power-supply/20180220-051138
-base:    
-reproduce:
-        # apt-get install sparse
-        make ARCH=x86_64 allmodconfig
-        make C=1 CF=-D__CHECK_ENDIAN__
-
-
-sparse warnings: (new ones prefixed by >>)
-
->> drivers/power/supply/axp20x_battery.c:479:23: sparse: symbol 'axp209_data' was not declared. Should it be
->> drivers/power/supply/axp20x_battery.c:486:23: sparse: symbol 'axp221_data' was not declared. Should it be
-
-Please review and possibly fold the followup patch.
-
+Signed-off-by: Quentin Schulz <quentin.schulz@bootlin.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Acked-by: Chen-Yu Tsai <wens@csie.org>
 ---
-0-DAY kernel test infrastructure                Open Source Technology Center
-https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+ Documentation/devicetree/bindings/power/supply/axp20x_battery.txt | 8 +++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/power/supply/axp20x_battery.txt b/Documentation/devicetree/bindings/power/supply/axp20x_battery.txt
+index c248866..41916f6 100644
+--- a/Documentation/devicetree/bindings/power/supply/axp20x_battery.txt
++++ b/Documentation/devicetree/bindings/power/supply/axp20x_battery.txt
+@@ -4,12 +4,12 @@ Required Properties:
+  - compatible, one of:
+ 			"x-powers,axp209-battery-power-supply"
+ 			"x-powers,axp221-battery-power-supply"
++			"x-powers,axp813-battery-power-supply"
+ 
+-This node is a subnode of the axp20x/axp22x PMIC.
++This node is a subnode of its respective PMIC DT node.
+ 
+-The AXP20X and AXP22X can read the battery voltage, charge and discharge
+-currents of the battery by reading ADC channels from the AXP20X/AXP22X
+-ADC.
++The supported devices can read the battery voltage, charge and discharge
++currents of the battery by reading ADC channels from the ADC.
+ 
+ Example:
+ 
+-- 
+git-series 0.9.1
