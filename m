@@ -1,458 +1,110 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:54110 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751285AbeBRL53 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 18 Feb 2018 06:57:29 -0500
-Date: Sun, 18 Feb 2018 11:57:25 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Matt Ranostay <matt.ranostay@konsulko.com>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: add SPDX identifier for various drivers
-Message-ID: <20180218115725.3eac5e5b@archlinux>
-In-Reply-To: <20180218053646.13471-1-matt.ranostay@konsulko.com>
-References: <20180218053646.13471-1-matt.ranostay@konsulko.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=rUgq=FN=bootlin.com=quentin.schulz@kernel.org>
+From: Quentin Schulz <quentin.schulz@bootlin.com>
+To: sre@kernel.org,
+	robh+dt@kernel.org,
+	mark.rutland@arm.com,
+	wens@csie.org,
+	linux@armlinux.org.uk,
+	maxime.ripard@bootlin.com,
+	jic23@kernel.org
+Cc: knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	lee.jones@linaro.org,
+	linux-pm@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org,
+	thomas.petazzoni@bootlin.com,
+	linux-sunxi@googlegroups.com,
+	Quentin Schulz <quentin.schulz@bootlin.com>
+Subject: [PATCH v4 00/13] add support for AXP813 ADC and battery power supply
+Date: Mon, 19 Feb 2018 13:47:23 +0100
+Message-Id: <cover.6545459c99a33874413abf619136986f53d2c2a2.1519044068.git-series.quentin.schulz@bootlin.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, 17 Feb 2018 21:36:46 -0800
-Matt Ranostay <matt.ranostay@konsulko.com> wrote:
+The AXP813 PMIC is relatively close to the already supported AXP20X and
+AXP22X. It provides three different power outputs: battery, AC and USB, and
+measures a few different things: temperature, power supply status, current
+current and voltage supplied, maximum current limit, battery capacity, min
+and max voltage limits.
 
-> Add GPLv2+ SPDX identifier and update email for author's drivers.
-> 
-> Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it (or ignore it as the case
-may be!)
+One of its two GPIOs can be used as an ADC.
 
-I'm happy for authors to convert their own code over whenever they
-like as there is no issue over precise interpretations.
+There are a few differences with AXP20X/AXP22X PMICs though:
+  - a different constant charge current formula,
+  - battery temperature, GPIO0 and battery voltages are the only voltages
+  measurable,
+  - all data are stored on 12 bits (AXP20X/AXP22X had one type of data that
+  was stored on 13 bits),
+  - different scales and offsets,
+  - a different ADC rate formula and register,
 
-Obviously not relevant here, but if anyone wants to convert other files
-in the short term at least, I will want to see Acks from authors of at
-least the majority of the code present.
+This patch series adds support for the PMIC's ADC and battery power supply
+in the existing drivers.
+
+Make the axp20x MFD automatically probe the ADC driver, add the battery
+power supply node in axp81x node and enable it for the TBS A711 since it
+has a soldered battery.
+
+I suggest patches:
+  - 1,2,4,10,11,12 go through Maxime and Chen-Yu's tree,
+  - 13 go through Jonathan's tree,
+  - 3,5,9 go through Lee's tree,
+  - 6,7,8 go through Sebastian's tree,
+
+v4:
+  - shortened one commit title as a workaround to Chen-Yu note,
+  - added const to data structures as proposed by Chen-Yu,
+  - added last patch for making sparse happy, on a proposal from Jonathan,
+  - removed already applied patches (IIO ones),
+
+v3:
+  - merging dt-bindings patches for axp_adc as requested by Rob,
+  - re-ordered constant in IIO driver as requested by Julian,
+  - compatibles for ADC are now named after the first design that
+  introduced the IP instead of wildcard as requested by Maxime,
+  - renamed DT node name from axp-adc to adc as requested by Rob,
+  - replaced enumeration of supported PMICs in battery power supply DT
+  bindings documentation by "supported devices" as requested by Jonathan,
+  - added a new patch for removing "axp-" from axp81x's pinctrl DT node,
+
+v2:
+  - introduce data structure instead of ID for variant specific code in
+  battery driver,
+  - add DT binding for ADC driver,
+  - make mfd probe the ADC driver via DT as well so that its IIO channels
+  can be consumed by other drivers via DT mapping,
 
 Thanks,
+Quentin
 
-Jonathan
+Quentin Schulz (13):
+  ARM: dtsi: axp209: add node for ADC
+  ARM: dtsi: axp22x: add node for ADC
+  mfd: axp20x: make AXP209/22x cells probe their ADC via DT
+  ARM: dtsi: axp81x: add node for ADC
+  mfd: axp20x: probe axp20x_adc driver for AXP813
+  power: supply: axp20x_battery: use data struct for variant specific code
+  dt-bindings: power: supply: axp20x: add AXP813 battery DT binding
+  power: supply: axp20x_battery: add support for AXP813
+  mfd: axp20x: add battery power supply cell for AXP813
+  ARM: dtsi: axp81x: add battery power supply subnode
+  ARM: dtsi: sun8i: a711: enable battery power supply subnode
+  ARM: dtsi: axp81x: remove IP name from DT node name
+  iio: adc: axp20x_adc: remove !! in favor of ternary condition
 
-> ---
->  drivers/iio/adc/ti-adc161s626.c                   | 16 ++++------------
->  drivers/iio/chemical/ams-iaq-core.c               | 17 ++++-------------
->  drivers/iio/chemical/atlas-ph-sensor.c            | 16 ++++------------
->  drivers/iio/chemical/vz89x.c                      | 17 ++++-------------
->  drivers/iio/health/max30100.c                     | 16 ++++------------
->  drivers/iio/humidity/hdc100x.c                    | 16 ++++------------
->  drivers/iio/light/apds9960.c                      | 16 ++++------------
->  drivers/iio/potentiometer/tpl0102.c               | 16 ++++------------
->  drivers/iio/potentiostat/lmp91000.c               | 16 ++++------------
->  drivers/iio/proximity/as3935.c                    | 17 ++++-------------
->  drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 16 ++++------------
->  drivers/iio/temperature/maxim_thermocouple.c      | 16 ++++------------
->  12 files changed, 48 insertions(+), 147 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ti-adc161s626.c b/drivers/iio/adc/ti-adc161s626.c
-> index 10fa7677ac4b..3bbc9b9ddbfe 100644
-> --- a/drivers/iio/adc/ti-adc161s626.c
-> +++ b/drivers/iio/adc/ti-adc161s626.c
-> @@ -1,3 +1,4 @@
-> +// SPDX-License-Identifier: GPL-2.0+
->  /*
->   * ti-adc161s626.c - Texas Instruments ADC161S626 1-channel differential ADC
->   *
-> @@ -5,17 +6,8 @@
->   *  adc141s626 - 14-bit ADC
->   *  adc161s626 - 16-bit ADC
->   *
-> - * Copyright (C) 2016 Matt Ranostay <mranostay@gmail.com>
-> - *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License as published by
-> - * the Free Software Foundation; either version 2 of the License, or
-> - * (at your option) any later version.
-> - *
-> - * This program is distributed in the hope that it will be useful,
-> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-> - * GNU General Public License for more details.
-> + * Copyright (C) 2016-2018
-> + * Author: Matt Ranostay <matt.ranostay@konsulko.com>
->   */
->  
->  #include <linux/module.h>
-> @@ -275,6 +267,6 @@ static struct spi_driver ti_adc_driver = {
->  };
->  module_spi_driver(ti_adc_driver);
->  
-> -MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
-> +MODULE_AUTHOR("Matt Ranostay <matt.ranostay@konsulko.com>");
->  MODULE_DESCRIPTION("Texas Instruments ADC1x1S 1-channel differential ADC");
->  MODULE_LICENSE("GPL");
-> diff --git a/drivers/iio/chemical/ams-iaq-core.c b/drivers/iio/chemical/ams-iaq-core.c
-> index d9e5950ad24a..a0646ba2ad88 100644
-> --- a/drivers/iio/chemical/ams-iaq-core.c
-> +++ b/drivers/iio/chemical/ams-iaq-core.c
-> @@ -1,18 +1,9 @@
-> +// SPDX-License-Identifier: GPL-2.0+
->  /*
->   * ams-iaq-core.c - Support for AMS iAQ-Core VOC sensors
->   *
-> - * Copyright (C) 2015 Matt Ranostay <mranostay@gmail.com>
-> - *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License as published by
-> - * the Free Software Foundation; either version 2 of the License, or
-> - * (at your option) any later version.
-> - *
-> - * This program is distributed in the hope that it will be useful,
-> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-> - * GNU General Public License for more details.
-> - *
-> + * Copyright (C) 2015, 2018
-> + * Author: Matt Ranostay <matt.ranostay@konsulko.com>
->   */
->  
->  #include <linux/module.h>
-> @@ -194,6 +185,6 @@ static struct i2c_driver ams_iaqcore_driver = {
->  };
->  module_i2c_driver(ams_iaqcore_driver);
->  
-> -MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
-> +MODULE_AUTHOR("Matt Ranostay <matt.ranostay@konsulko.com>");
->  MODULE_DESCRIPTION("AMS iAQ-Core VOC sensors");
->  MODULE_LICENSE("GPL v2");
-> diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
-> index 8c4e05580091..abfc4bbc4cfc 100644
-> --- a/drivers/iio/chemical/atlas-ph-sensor.c
-> +++ b/drivers/iio/chemical/atlas-ph-sensor.c
-> @@ -1,17 +1,9 @@
-> +// SPDX-License-Identifier: GPL-2.0+
->  /*
->   * atlas-ph-sensor.c - Support for Atlas Scientific OEM pH-SM sensor
->   *
-> - * Copyright (C) 2015 Matt Ranostay <mranostay@gmail.com>
-> - *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License as published by
-> - * the Free Software Foundation; either version 2 of the License, or
-> - * (at your option) any later version.
-> - *
-> - * This program is distributed in the hope that it will be useful,
-> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-> - * GNU General Public License for more details.
-> + * Copyright (C) 2015-2018 Matt Ranostay
-> + * Author: Matt Ranostay <matt.ranostay@konsulko.com>
->   */
->  
->  #include <linux/module.h>
-> @@ -689,6 +681,6 @@ static struct i2c_driver atlas_driver = {
->  };
->  module_i2c_driver(atlas_driver);
->  
-> -MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
-> +MODULE_AUTHOR("Matt Ranostay <matt.ranostay@konsulko.com>");
->  MODULE_DESCRIPTION("Atlas Scientific pH-SM sensor");
->  MODULE_LICENSE("GPL");
-> diff --git a/drivers/iio/chemical/vz89x.c b/drivers/iio/chemical/vz89x.c
-> index 9c9095ba4227..415b39339d4e 100644
-> --- a/drivers/iio/chemical/vz89x.c
-> +++ b/drivers/iio/chemical/vz89x.c
-> @@ -1,18 +1,9 @@
-> +// SPDX-License-Identifier: GPL-2.0+
->  /*
->   * vz89x.c - Support for SGX Sensortech MiCS VZ89X VOC sensors
->   *
-> - * Copyright (C) 2015 Matt Ranostay <mranostay@gmail.com>
-> - *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License as published by
-> - * the Free Software Foundation; either version 2 of the License, or
-> - * (at your option) any later version.
-> - *
-> - * This program is distributed in the hope that it will be useful,
-> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-> - * GNU General Public License for more details.
-> - *
-> + * Copyright (C) 2015-2018
-> + * Author: Matt Ranostay <matt.ranostay@konsulko.com>
->   */
->  
->  #include <linux/module.h>
-> @@ -419,6 +410,6 @@ static struct i2c_driver vz89x_driver = {
->  };
->  module_i2c_driver(vz89x_driver);
->  
-> -MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
-> +MODULE_AUTHOR("Matt Ranostay <matt.ranostay@konsulko.com>");
->  MODULE_DESCRIPTION("SGX Sensortech MiCS VZ89X VOC sensors");
->  MODULE_LICENSE("GPL v2");
-> diff --git a/drivers/iio/health/max30100.c b/drivers/iio/health/max30100.c
-> index 91aef5df24a1..84010501762d 100644
-> --- a/drivers/iio/health/max30100.c
-> +++ b/drivers/iio/health/max30100.c
-> @@ -1,17 +1,9 @@
-> +// SPDX-License-Identifier: GPL-2.0+
->  /*
->   * max30100.c - Support for MAX30100 heart rate and pulse oximeter sensor
->   *
-> - * Copyright (C) 2015 Matt Ranostay <mranostay@gmail.com>
-> - *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License as published by
-> - * the Free Software Foundation; either version 2 of the License, or
-> - * (at your option) any later version.
-> - *
-> - * This program is distributed in the hope that it will be useful,
-> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-> - * GNU General Public License for more details.
-> + * Copyright (C) 2015, 2018
-> + * Author: Matt Ranostay <matt.ranostay@konsulko.com>
->   *
->   * TODO: enable pulse length controls via device tree properties
->   */
-> @@ -518,6 +510,6 @@ static struct i2c_driver max30100_driver = {
->  };
->  module_i2c_driver(max30100_driver);
->  
-> -MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
-> +MODULE_AUTHOR("Matt Ranostay <matt.ranostay@konsulko.com>");
->  MODULE_DESCRIPTION("MAX30100 heart rate and pulse oximeter sensor");
->  MODULE_LICENSE("GPL");
-> diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
-> index d8438310b6d4..066e05f92081 100644
-> --- a/drivers/iio/humidity/hdc100x.c
-> +++ b/drivers/iio/humidity/hdc100x.c
-> @@ -1,17 +1,9 @@
-> +// SPDX-License-Identifier: GPL-2.0+
->  /*
->   * hdc100x.c - Support for the TI HDC100x temperature + humidity sensors
->   *
-> - * Copyright (C) 2015 Matt Ranostay <mranostay@gmail.com>
-> - *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License as published by
-> - * the Free Software Foundation; either version 2 of the License, or
-> - * (at your option) any later version.
-> - *
-> - * This program is distributed in the hope that it will be useful,
-> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-> - * GNU General Public License for more details.
-> + * Copyright (C) 2015, 2018
-> + * Author: Matt Ranostay <matt.ranostay@konsulko.com>
->   *
->   * Datasheets:
->   * http://www.ti.com/product/HDC1000/datasheet
-> @@ -449,6 +441,6 @@ static struct i2c_driver hdc100x_driver = {
->  };
->  module_i2c_driver(hdc100x_driver);
->  
-> -MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
-> +MODULE_AUTHOR("Matt Ranostay <matt.ranostay@konsulko.com>");
->  MODULE_DESCRIPTION("TI HDC100x humidity and temperature sensor driver");
->  MODULE_LICENSE("GPL");
-> diff --git a/drivers/iio/light/apds9960.c b/drivers/iio/light/apds9960.c
-> index a8fa00e31c39..1f112ae15f3c 100644
-> --- a/drivers/iio/light/apds9960.c
-> +++ b/drivers/iio/light/apds9960.c
-> @@ -1,17 +1,9 @@
-> +// SPDX-License-Identifier: GPL-2.0+
->  /*
->   * apds9960.c - Support for Avago APDS9960 gesture/RGB/ALS/proximity sensor
->   *
-> - * Copyright (C) 2015 Matt Ranostay <mranostay@gmail.com>
-> - *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License as published by
-> - * the Free Software Foundation; either version 2 of the License, or
-> - * (at your option) any later version.
-> - *
-> - * This program is distributed in the hope that it will be useful,
-> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-> - * GNU General Public License for more details.
-> + * Copyright (C) 2015, 2018
-> + * Author: Matt Ranostay <matt.ranostay@konsulko.com>
->   *
->   * TODO: gesture + proximity calib offsets
->   */
-> @@ -1141,6 +1133,6 @@ static struct i2c_driver apds9960_driver = {
->  };
->  module_i2c_driver(apds9960_driver);
->  
-> -MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
-> +MODULE_AUTHOR("Matt Ranostay <matt.ranostay@konsulko.com>");
->  MODULE_DESCRIPTION("ADPS9960 Gesture/RGB/ALS/Proximity sensor");
->  MODULE_LICENSE("GPL");
-> diff --git a/drivers/iio/potentiometer/tpl0102.c b/drivers/iio/potentiometer/tpl0102.c
-> index 93f9d4a8c9aa..ca1cce58fe20 100644
-> --- a/drivers/iio/potentiometer/tpl0102.c
-> +++ b/drivers/iio/potentiometer/tpl0102.c
-> @@ -1,17 +1,9 @@
-> +// SPDX-License-Identifier: GPL-2.0+
->  /*
->   * tpl0102.c - Support for Texas Instruments digital potentiometers
->   *
-> - * Copyright (C) 2016 Matt Ranostay <mranostay@gmail.com>
-> - *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License as published by
-> - * the Free Software Foundation; either version 2 of the License, or
-> - * (at your option) any later version.
-> - *
-> - * This program is distributed in the hope that it will be useful,
-> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-> - * GNU General Public License for more details.
-> + * Copyright (C) 2016, 2018
-> + * Author: Matt Ranostay <matt.ranostay@konsulko.com>
->   *
->   * TODO: enable/disable hi-z output control
->   */
-> @@ -156,6 +148,6 @@ static struct i2c_driver tpl0102_driver = {
->  
->  module_i2c_driver(tpl0102_driver);
->  
-> -MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
-> +MODULE_AUTHOR("Matt Ranostay <matt.ranostay@konsulko.com>");
->  MODULE_DESCRIPTION("TPL0102 digital potentiometer");
->  MODULE_LICENSE("GPL");
-> diff --git a/drivers/iio/potentiostat/lmp91000.c b/drivers/iio/potentiostat/lmp91000.c
-> index 007710991f15..85714055cc74 100644
-> --- a/drivers/iio/potentiostat/lmp91000.c
-> +++ b/drivers/iio/potentiostat/lmp91000.c
-> @@ -1,17 +1,9 @@
-> +// SPDX-License-Identifier: GPL-2.0+
->  /*
->   * lmp91000.c - Support for Texas Instruments digital potentiostats
->   *
-> - * Copyright (C) 2016 Matt Ranostay <mranostay@gmail.com>
-> - *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License as published by
-> - * the Free Software Foundation; either version 2 of the License, or
-> - * (at your option) any later version.
-> - *
-> - * This program is distributed in the hope that it will be useful,
-> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-> - * GNU General Public License for more details.
-> + * Copyright (C) 2016, 2018
-> + * Author: Matt Ranostay <matt.ranostay@konsulko.com>
->   *
->   * TODO: bias voltage + polarity control, and multiple chip support
->   */
-> @@ -440,6 +432,6 @@ static struct i2c_driver lmp91000_driver = {
->  };
->  module_i2c_driver(lmp91000_driver);
->  
-> -MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
-> +MODULE_AUTHOR("Matt Ranostay <matt.ranostay@konsulko.com>");
->  MODULE_DESCRIPTION("LMP91000 digital potentiostat");
->  MODULE_LICENSE("GPL");
-> diff --git a/drivers/iio/proximity/as3935.c b/drivers/iio/proximity/as3935.c
-> index b6249af48014..f130388a16a0 100644
-> --- a/drivers/iio/proximity/as3935.c
-> +++ b/drivers/iio/proximity/as3935.c
-> @@ -1,18 +1,9 @@
-> +// SPDX-License-Identifier: GPL-2.0+
->  /*
->   * as3935.c - Support for AS3935 Franklin lightning sensor
->   *
-> - * Copyright (C) 2014 Matt Ranostay <mranostay@gmail.com>
-> - *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License as published by
-> - * the Free Software Foundation; either version 2 of the License, or
-> - * (at your option) any later version.
-> - *
-> - * This program is distributed in the hope that it will be useful,
-> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-> - * GNU General Public License for more details.
-> - *
-> + * Copyright (C) 2014, 2017-2018
-> + * Author: Matt Ranostay <matt.ranostay@konsulko.com>
->   */
->  
->  #include <linux/module.h>
-> @@ -502,6 +493,6 @@ static struct spi_driver as3935_driver = {
->  };
->  module_spi_driver(as3935_driver);
->  
-> -MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
-> +MODULE_AUTHOR("Matt Ranostay <matt.ranostay@konsulko.com>");
->  MODULE_DESCRIPTION("AS3935 lightning sensor");
->  MODULE_LICENSE("GPL");
-> diff --git a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
-> index 4d56f67b24c6..47af54f14756 100644
-> --- a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
-> +++ b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
-> @@ -1,17 +1,9 @@
-> +// SPDX-License-Identifier: GPL-2.0+
->  /*
->   * pulsedlight-lidar-lite-v2.c - Support for PulsedLight LIDAR sensor
->   *
-> - * Copyright (C) 2015 Matt Ranostay <mranostay@gmail.com>
-> - *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License as published by
-> - * the Free Software Foundation; either version 2 of the License, or
-> - * (at your option) any later version.
-> - *
-> - * This program is distributed in the hope that it will be useful,
-> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-> - * GNU General Public License for more details.
-> + * Copyright (C) 2015, 2017-2018
-> + * Author: Matt Ranostay <matt.ranostay@konsulko.com>
->   *
->   * TODO: interrupt mode, and signal strength reporting
->   */
-> @@ -377,6 +369,6 @@ static struct i2c_driver lidar_driver = {
->  };
->  module_i2c_driver(lidar_driver);
->  
-> -MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
-> +MODULE_AUTHOR("Matt Ranostay <matt.ranostay@konsulko.com>");
->  MODULE_DESCRIPTION("PulsedLight LIDAR sensor");
->  MODULE_LICENSE("GPL");
-> diff --git a/drivers/iio/temperature/maxim_thermocouple.c b/drivers/iio/temperature/maxim_thermocouple.c
-> index e8b7e0b6c8ad..54e383231d1e 100644
-> --- a/drivers/iio/temperature/maxim_thermocouple.c
-> +++ b/drivers/iio/temperature/maxim_thermocouple.c
-> @@ -1,17 +1,9 @@
-> +// SPDX-License-Identifier: GPL-2.0+
->  /*
->   * maxim_thermocouple.c  - Support for Maxim thermocouple chips
->   *
-> - * Copyright (C) 2016 Matt Ranostay <mranostay@gmail.com>
-> - *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License as published by
-> - * the Free Software Foundation; either version 2 of the License, or
-> - * (at your option) any later version.
-> - *
-> - * This program is distributed in the hope that it will be useful,
-> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-> - * GNU General Public License for more details.
-> + * Copyright (C) 2016-2018 Matt Ranostay
-> + * Author: <matt.ranostay@konsulko.com>
->   */
->  
->  #include <linux/module.h>
-> @@ -281,6 +273,6 @@ static struct spi_driver maxim_thermocouple_driver = {
->  };
->  module_spi_driver(maxim_thermocouple_driver);
->  
-> -MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
-> +MODULE_AUTHOR("Matt Ranostay <matt.ranostay@konsulko.com>");
->  MODULE_DESCRIPTION("Maxim thermocouple sensors");
->  MODULE_LICENSE("GPL");
+ Documentation/devicetree/bindings/power/supply/axp20x_battery.txt |   8 ++--
+ arch/arm/boot/dts/axp209.dtsi                                     |   5 +++-
+ arch/arm/boot/dts/axp22x.dtsi                                     |   5 +++-
+ arch/arm/boot/dts/axp81x.dtsi                                     |  12 +++++-
+ arch/arm/boot/dts/sun8i-a83t-tbs-a711.dts                         |   4 ++-
+ drivers/iio/adc/axp20x_adc.c                                      |   8 ++--
+ drivers/mfd/axp20x.c                                              |  13 +++++--
+ drivers/power/supply/axp20x_battery.c                             | 134 +++++++++++++++++++++++++++++++++++++++++++++++++++++++-----------------
+ 8 files changed, 149 insertions(+), 40 deletions(-)
 
+base-commit: c4fb39f307d40fa088ebd39573f8d8d6c4388826
+-- 
+git-series 0.9.1
