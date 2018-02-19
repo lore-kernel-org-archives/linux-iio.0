@@ -19,43 +19,38 @@ Cc: knaack.h@gmx.de,
 	thomas.petazzoni@bootlin.com,
 	linux-sunxi@googlegroups.com,
 	Quentin Schulz <quentin.schulz@bootlin.com>
-Subject: [PATCH v4 10/13] ARM: dtsi: axp81x: add battery power supply subnode
-Date: Mon, 19 Feb 2018 13:47:33 +0100
-Message-Id: <30ee1b77a0006b2a9a5b8fbd0b72a1dd568519e8.1519044068.git-series.quentin.schulz@bootlin.com>
+Subject: [PATCH v4 11/13] ARM: dtsi: sun8i: a711: enable battery power supply subnode
+Date: Mon, 19 Feb 2018 13:47:34 +0100
+Message-Id: <18433bfad4e66af7803b5f655b818fa265b3044c.1519044068.git-series.quentin.schulz@bootlin.com>
 In-Reply-To: <cover.6545459c99a33874413abf619136986f53d2c2a2.1519044068.git-series.quentin.schulz@bootlin.com>
 References: <cover.6545459c99a33874413abf619136986f53d2c2a2.1519044068.git-series.quentin.schulz@bootlin.com>
 In-Reply-To: <cover.6545459c99a33874413abf619136986f53d2c2a2.1519044068.git-series.quentin.schulz@bootlin.com>
 References: <cover.6545459c99a33874413abf619136986f53d2c2a2.1519044068.git-series.quentin.schulz@bootlin.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-The X-Powers AXP81X PMIC exposes battery supply various data such as
-the battery status (charging, discharging, full, dead), current max
-limit, current current, battery capacity (in percentage), voltage max
-and min limits, current voltage, and battery capacity (in Ah).
-
-This adds the battery power supply subnode for AXP81X PMIC.
+The TBS A711 has an AXP813 PMIC and a soldered battery, thus, we enable
+the battery power supply subnode in its Device Tree.
 
 Signed-off-by: Quentin Schulz <quentin.schulz@bootlin.com>
 Acked-by: Chen-Yu Tsai <wens@csie.org>
 ---
- arch/arm/boot/dts/axp81x.dtsi | 5 +++++
- 1 file changed, 5 insertions(+)
+ arch/arm/boot/dts/sun8i-a83t-tbs-a711.dts | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/arch/arm/boot/dts/axp81x.dtsi b/arch/arm/boot/dts/axp81x.dtsi
-index 6b5e7bc..1b05c7f 100644
---- a/arch/arm/boot/dts/axp81x.dtsi
-+++ b/arch/arm/boot/dts/axp81x.dtsi
-@@ -69,6 +69,11 @@
- 		};
- 	};
+diff --git a/arch/arm/boot/dts/sun8i-a83t-tbs-a711.dts b/arch/arm/boot/dts/sun8i-a83t-tbs-a711.dts
+index 511fca4..1de362f 100644
+--- a/arch/arm/boot/dts/sun8i-a83t-tbs-a711.dts
++++ b/arch/arm/boot/dts/sun8i-a83t-tbs-a711.dts
+@@ -231,6 +231,10 @@
  
-+	battery_power_supply: battery-power-supply {
-+		compatible = "x-powers,axp813-battery-power-supply";
-+		status = "disabled";
-+	};
+ #include "axp81x.dtsi"
+ 
++&battery_power_supply {
++	status = "okay";
++};
 +
- 	regulators {
- 		/* Default work frequency for buck regulators */
- 		x-powers,dcdc-freq = <3000>;
+ &reg_aldo1 {
+ 	regulator-min-microvolt = <1800000>;
+ 	regulator-max-microvolt = <1800000>;
 -- 
 git-series 0.9.1
