@@ -11,39 +11,36 @@ Cc: kbuild-all@01.org, sre@kernel.org, robh+dt@kernel.org,
 	linux-iio@vger.kernel.org, thomas.petazzoni@bootlin.com,
 	linux-sunxi@googlegroups.com,
 	Quentin Schulz <quentin.schulz@bootlin.com>
-Subject: [RFC PATCH] power: supply: axp20x_battery: axp209_data can be static
-Message-ID: <20180220091225.GA95450@cairo>
+Subject: Re: [PATCH v4 06/13] power: supply: axp20x_battery: use data struct
+ for variant specific code
+Message-ID: <201802201606.lLg38XZv%fengguang.wu@intel.com>
 References: <52f68b8ed9452d643d9156a849014c9d0eb4404b.1519044068.git-series.quentin.schulz@bootlin.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 In-Reply-To: <52f68b8ed9452d643d9156a849014c9d0eb4404b.1519044068.git-series.quentin.schulz@bootlin.com>
 List-ID: <linux-iio@vger.kernel.org>
 
+Hi Quentin,
 
-Fixes: 94767270f0b0 ("power: supply: axp20x_battery: use data struct for variant specific code")
-Signed-off-by: Fengguang Wu <fengguang.wu@intel.com>
+Thank you for the patch! Perhaps something to improve:
+
+[auto build test WARNING on ]
+
+url:    https://github.com/0day-ci/linux/commits/Quentin-Schulz/add-support-for-AXP813-ADC-and-battery-power-supply/20180220-051138
+base:    
+reproduce:
+        # apt-get install sparse
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF=-D__CHECK_ENDIAN__
+
+
+sparse warnings: (new ones prefixed by >>)
+
+>> drivers/power/supply/axp20x_battery.c:479:23: sparse: symbol 'axp209_data' was not declared. Should it be
+>> drivers/power/supply/axp20x_battery.c:486:23: sparse: symbol 'axp221_data' was not declared. Should it be
+
+Please review and possibly fold the followup patch.
+
 ---
- axp20x_battery.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
-index 099e785..04a0d91 100644
---- a/drivers/power/supply/axp20x_battery.c
-+++ b/drivers/power/supply/axp20x_battery.c
-@@ -476,14 +476,14 @@ static const struct power_supply_desc axp20x_batt_ps_desc = {
- 	.set_property = axp20x_battery_set_prop,
- };
- 
--const struct axp_data axp209_data = {
-+static const struct axp_data axp209_data = {
- 	.ccc_scale = 100000,
- 	.ccc_offset = 300000,
- 	.get_max_voltage = axp20x_battery_get_max_voltage,
- 	.set_max_voltage = axp20x_battery_set_max_voltage,
- };
- 
--const struct axp_data axp221_data = {
-+static const struct axp_data axp221_data = {
- 	.ccc_scale = 150000,
- 	.ccc_offset = 300000,
- 	.has_fg_valid = true,
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
