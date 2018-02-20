@@ -1,130 +1,101 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ua0-f195.google.com ([209.85.217.195]:35931 "EHLO
-        mail-ua0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751131AbeBXNyC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 24 Feb 2018 08:54:02 -0500
-Date: Sat, 24 Feb 2018 10:53:58 -0300
-From: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        daniel.baluta@nxp.com, kernel-janitors@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio:dummy: Fix coding style in Kconfig
-Message-ID: <20180224135358.35tqecq74plebenu@smtp.gmail.com>
-References: <20180220132804.fnlsi6ag6h5rrqya@smtp.gmail.com>
- <20180224122428.007ccf89@archlinux>
- <20180224123609.ysidednaigprxq7m@smtp.gmail.com>
- <20180224134422.58c444c6@archlinux>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20180224134422.58c444c6@archlinux>
+Received: from smtp.gentoo.org ([140.211.166.183]:33860 "EHLO smtp.gentoo.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751352AbeBTNqd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 20 Feb 2018 08:46:33 -0500
+Received: from [192.168.1.4] (unknown [181.67.35.102])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: chrisadr)
+        by smtp.gentoo.org (Postfix) with ESMTPSA id 87300335C30
+        for <linux-iio@vger.kernel.org>; Tue, 20 Feb 2018 13:46:32 +0000 (UTC)
+Message-ID: <1519134383.2505.12.camel@gentoo.org>
+Subject: GSoC IIO Project: Christopher =?ISO-8859-1?Q?D=EDaz?= Riveros
+From: Christopher =?ISO-8859-1?Q?D=EDaz?= Riveros <chrisadr@gentoo.org>
+To: linux-iio@vger.kernel.org
+Date: Tue, 20 Feb 2018 08:46:23 -0500
+Content-Type: multipart/signed; micalg="pgp-sha512";
+        protocol="application/pgp-signature"; boundary="=-FeKrodG/B6oGHvP2EMOC"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/24, Jonathan Cameron wrote:
-> On Sat, 24 Feb 2018 09:36:09 -0300
-> Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com> wrote:
-> 
-> > On 02/24, Jonathan Cameron wrote:
-> > > On Tue, 20 Feb 2018 10:28:04 -0300
-> > > Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com> wrote:
-> > >   
-> > > > This patch fixes the checkpatch.pl warning:
-> > > > 
-> > > > drivers/iio/dummy/Kconfig:21: WARNING: please write a paragraph that
-> > > > describes the config symbol fully
-> > > > drivers/iio/dummy/Kconfig:29: WARNING: please write a paragraph that
-> > > > describes the config symbol fully
-> > > > 
-> > > > This patch expands the explanation about IIO_DUMMY_EVGEN by using the
-> > > > code documentation found in iio/dummy/iio_dummy_evgen.c. In the same
-> > > > way, the information related to IIO_SIMPLE_DUMMY_BUFFER was extracted
-> > > > from file iio_simple_dummy_buffer.c. Finally, this patch apply the
-> > > > coding-style for Kconfig files (Documentation/process/coding-style.rst)
-> > > > 
-> > > > Signed-off-by: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>  
-> > > 
-> > > Several different things going on in the one patch, please do
-> > > it as a short series with one thing per patch.
-> > > 
-> > > Certainly do the coding style separately from the additional documentation.
-> > > 
-> > > Thanks,
-> > > 
-> > > Jonathan  
-> > 
-> > So, should I split it into two different patches? One patch for the fix
-> > and other for the extra documentation?
-> Yes that would be perfect.
 
-Ok, I will send a v2 with two patches.
+--=-FeKrodG/B6oGHvP2EMOC
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Thanks
+Introduction and Task 01 result
 
-> > 
-> > Finally, in the two warnings related to "please write a paragraph that
-> > describes the config symbol fully" the extra documentation that fixes
-> > it. Other fixes, are related to the coding-style.rst however checkpatch
-> > does not complain about them.
-> 
-> Sure, checkpatch doesn't get everything.
-> 
-> Jonathan
-> >  
-> > >   
-> > > > ---
-> > > >  drivers/iio/dummy/Kconfig | 26 ++++++++++++++++----------
-> > > >  1 file changed, 16 insertions(+), 10 deletions(-)
-> > > > 
-> > > > diff --git a/drivers/iio/dummy/Kconfig b/drivers/iio/dummy/Kconfig
-> > > > index 5a29fbd3c531..4a7127fb2979 100644
-> > > > --- a/drivers/iio/dummy/Kconfig
-> > > > +++ b/drivers/iio/dummy/Kconfig
-> > > > @@ -9,20 +9,24 @@ config IIO_DUMMY_EVGEN
-> > > >  	tristate
-> > > >  
-> > > >  config IIO_SIMPLE_DUMMY
-> > > > -       tristate "An example driver with no hardware requirements"
-> > > > -       depends on IIO_SW_DEVICE
-> > > > -       help
-> > > > -	 Driver intended mainly as documentation for how to write
-> > > > -	 a driver. May also be useful for testing userspace code
-> > > > -	 without hardware.
-> > > > +	tristate "An example driver with no hardware requirements"
-> > > > +	depends on IIO_SW_DEVICE
-> > > > +	help
-> > > > +	  Driver intended mainly as documentation for how to write
-> > > > +	  a driver. May also be useful for testing userspace code
-> > > > +	  without hardware.
-> > > >  
-> > > >  if IIO_SIMPLE_DUMMY
-> > > >  
-> > > >  config IIO_SIMPLE_DUMMY_EVENTS
-> > > > -       bool "Event generation support"
-> > > > -       select IIO_DUMMY_EVGEN
-> > > > -       help
-> > > > -         Add some dummy events to the simple dummy driver.
-> > > > +	bool "Event generation support"
-> > > > +	select IIO_DUMMY_EVGEN
-> > > > +	help
-> > > > +	  Add some dummy events to the simple dummy driver.
-> > > > +
-> > > > +	  The purpose of this is to generate 'fake' event interrupts thus
-> > > > +	  allowing that driver's code to be as close as possible to that
-> > > > +	  a normal driver talking to hardware.
-> > > >  
-> > > >  config IIO_SIMPLE_DUMMY_BUFFER
-> > > >  	bool "Buffered capture support"
-> > > > @@ -32,6 +36,8 @@ config IIO_SIMPLE_DUMMY_BUFFER
-> > > >  	help
-> > > >  	  Add buffered data capture to the simple dummy driver.
-> > > >  
-> > > > +	  Buffer handling elements of industrial I/O reference driver.
-> > > > +	  Uses the kfifo buffer.
-> > > >  endif # IIO_SIMPLE_DUMMY
-> > > >  
-> > > >  endmenu  
-> > >   
-> 
+Good morning IIO community,=20
+
+My name is Christopher D=C3=ADaz Riveros, I'm living in Lima, Per=C3=BA. I'=
+m
+starting my last semester of studies, "Software development and Systems
+Integration" is the name of the career. Since a couple of months I've
+been trying to contribute in the kernel community, I have a couple of
+trivial fixes already in the main tree. I hope I'll be able to
+contribute here as well and learn more about driver development and
+specially the IIO subsystem.
+
+I have previously worked with Arduino and several kinds of sensors as
+part of my IoT course in the institute.
+
+If there is any other info that you need me to provide, feel free to
+ask please.
+
+Here is the my solution for Task 01:=20
+
+
+chris@gentoo ~/Repos/linux-next $ grep IIO .config=20
+# CONFIG_SENSORS_IIO_HWMON is not set
+CONFIG_IIO=3Dy
+CONFIG_IIO_BUFFER=3Dy
+# CONFIG_IIO_BUFFER_CB is not set
+# CONFIG_IIO_BUFFER_HW_CONSUMER is not set
+CONFIG_IIO_KFIFO_BUF=3Dy
+CONFIG_IIO_CONFIGFS=3Dy
+CONFIG_IIO_TRIGGER=3Dy
+CONFIG_IIO_CONSUMERS_PER_TRIGGER=3D2
+CONFIG_IIO_SW_DEVICE=3Dy
+# CONFIG_IIO_SW_TRIGGER is not set
+# CONFIG_IIO_CROS_EC_ACCEL_LEGACY is not set
+# CONFIG_IIO_ST_ACCEL_3AXIS is not set
+# Hid Sensor IIO Common
+# IIO dummy driver
+CONFIG_IIO_DUMMY_EVGEN=3Dy
+CONFIG_IIO_SIMPLE_DUMMY=3Dy
+CONFIG_IIO_SIMPLE_DUMMY_EVENTS=3Dy
+CONFIG_IIO_SIMPLE_DUMMY_BUFFER=3Dy
+# CONFIG_IIO_ST_GYRO_3AXIS is not set
+# CONFIG_IIO_ST_LSM6DSX is not set
+# CONFIG_IIO_ST_MAGN_3AXIS is not set
+# CONFIG_IIO_INTERRUPT_TRIGGER is not set
+# CONFIG_IIO_SYSFS_TRIGGER is not set
+# CONFIG_IIO_ST_PRESS is not set
+--=20
+Christopher D=C3=ADaz Riveros
+Gentoo Linux Developer
+GPG Fingerprint: E517 5ECB 8152 98E4 FEBC  2BAA 4DBB D10F 0FDD 2547
+--=-FeKrodG/B6oGHvP2EMOC
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQGTBAABCgB9FiEE5Rdey4FSmOT+vCuqTbvRDw/dJUcFAlqMJq9fFIAAAAAALgAo
+aXNzdWVyLWZwckBub3RhdGlvbnMub3BlbnBncC5maWZ0aGhvcnNlbWFuLm5ldEU1
+MTc1RUNCODE1Mjk4RTRGRUJDMkJBQTREQkJEMTBGMEZERDI1NDcACgkQTbvRDw/d
+JUc6xwf+PL5hY7HTffq+d+aeWCRzXHGW8lJZ3COvnyJspE8fNLjvdEpkMtbWC5+Y
+Hg0hxmZlxneC5hEKpGJVSR0vNF7sI5S62xxD6+BZ/gK3loX8fEWTJ0Gk+3OC2r1c
+TxobXTNrR1CsXcO79yKslzjwbD6iR6Jn8y85FxH+KK4erSVgUIAsIjfEAQvxFui4
+HiOjI6SWFkdKHD2wiJ0PIPheXK7gnsmbsyNYil5CN/fNZy8MMs9kGvU9hK4yN+ZB
+ATCdLwhZLUHMo4dFcWaL5mRLZjVZ9QsdTOjw7O2cWrUehc7LwzrdMgZDwUFcSlcS
+0LMnD2Knfsmt/qVtdA7jBWn5kxyIaw==
+=RM5p
+-----END PGP SIGNATURE-----
+
+--=-FeKrodG/B6oGHvP2EMOC--
+
