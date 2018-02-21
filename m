@@ -1,78 +1,86 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:40170 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750751AbeBXMUg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 24 Feb 2018 07:20:36 -0500
-Date: Sat, 24 Feb 2018 12:20:29 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <SRS0=D17u=FP=bootlin.com=maxime.ripard@kernel.org>
+Date: Wed, 21 Feb 2018 10:51:35 +0100
+From: Maxime Ripard <maxime.ripard@bootlin.com>
 To: Quentin Schulz <quentin.schulz@bootlin.com>
-Cc: sre@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com,
-        wens@csie.org, linux@armlinux.org.uk, maxime.ripard@bootlin.com,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        lee.jones@linaro.org, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-        thomas.petazzoni@bootlin.com, linux-sunxi@googlegroups.com
-Subject: Re: [PATCH v4 13/13] iio: adc: axp20x_adc: remove !! in favor of
- ternary condition
-Message-ID: <20180224122029.1520fe89@archlinux>
-In-Reply-To: <9ec180ff4358ac6e163115aa7832a0674b6a640e.1519044068.git-series.quentin.schulz@bootlin.com>
+Cc: sre@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com, wens@csie.org,
+	linux@armlinux.org.uk, jic23@kernel.org, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net, lee.jones@linaro.org,
+	linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org, thomas.petazzoni@bootlin.com,
+	linux-sunxi@googlegroups.com
+Subject: Re: [PATCH v4 00/13] add support for AXP813 ADC and battery power
+ supply
+Message-ID: <20180221095135.qasoo527jvlu6fsw@flea.lan>
 References: <cover.6545459c99a33874413abf619136986f53d2c2a2.1519044068.git-series.quentin.schulz@bootlin.com>
-        <9ec180ff4358ac6e163115aa7832a0674b6a640e.1519044068.git-series.quentin.schulz@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="dv5ei2er35pztlai"
+In-Reply-To: <cover.6545459c99a33874413abf619136986f53d2c2a2.1519044068.git-series.quentin.schulz@bootlin.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, 19 Feb 2018 13:47:36 +0100
-Quentin Schulz <quentin.schulz@bootlin.com> wrote:
 
-> !!'s behaviour isn't that obvious and sparse complained about it, so
-> let's replace it with a ternary condition.
-> 
-> Signed-off-by: Quentin Schulz <quentin.schulz@bootlin.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+--dv5ei2er35pztlai
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks,
+On Mon, Feb 19, 2018 at 01:47:23PM +0100, Quentin Schulz wrote:
+> The AXP813 PMIC is relatively close to the already supported AXP20X and
+> AXP22X. It provides three different power outputs: battery, AC and USB, a=
+nd
+> measures a few different things: temperature, power supply status, current
+> current and voltage supplied, maximum current limit, battery capacity, min
+> and max voltage limits.
+>=20
+> One of its two GPIOs can be used as an ADC.
+>=20
+> There are a few differences with AXP20X/AXP22X PMICs though:
+>   - a different constant charge current formula,
+>   - battery temperature, GPIO0 and battery voltages are the only voltages
+>   measurable,
+>   - all data are stored on 12 bits (AXP20X/AXP22X had one type of data th=
+at
+>   was stored on 13 bits),
+>   - different scales and offsets,
+>   - a different ADC rate formula and register,
+>=20
+> This patch series adds support for the PMIC's ADC and battery power supply
+> in the existing drivers.
+>=20
+> Make the axp20x MFD automatically probe the ADC driver, add the battery
+> power supply node in axp81x node and enable it for the TBS A711 since it
+> has a soldered battery.
+>=20
+> I suggest patches:
+>   - 1,2,4,10,11,12 go through Maxime and Chen-Yu's tree,
 
-Jonathan
+Applied, thanks!
+Maxiime
 
-> ---
->  drivers/iio/adc/axp20x_adc.c | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/axp20x_adc.c b/drivers/iio/adc/axp20x_adc.c
-> index a30a972..7a745cf 100644
-> --- a/drivers/iio/adc/axp20x_adc.c
-> +++ b/drivers/iio/adc/axp20x_adc.c
-> @@ -365,7 +365,7 @@ static int axp20x_adc_offset_voltage(struct iio_dev *indio_dev, int channel,
->  		return -EINVAL;
->  	}
->  
-> -	*val = !!(*val) * 700000;
-> +	*val = *val ? 700000 : 0;
->  
->  	return IIO_VAL_INT;
->  }
-> @@ -442,15 +442,17 @@ static int axp20x_write_raw(struct iio_dev *indio_dev,
->  	if (val != 0 && val != 700000)
->  		return -EINVAL;
->  
-> +	val = val ? 1 : 0;
-> +
->  	switch (chan->channel) {
->  	case AXP20X_GPIO0_V:
->  		reg = AXP20X_GPIO10_IN_RANGE_GPIO0;
-> -		regval = AXP20X_GPIO10_IN_RANGE_GPIO0_VAL(!!val);
-> +		regval = AXP20X_GPIO10_IN_RANGE_GPIO0_VAL(val);
->  		break;
->  
->  	case AXP20X_GPIO1_V:
->  		reg = AXP20X_GPIO10_IN_RANGE_GPIO1;
-> -		regval = AXP20X_GPIO10_IN_RANGE_GPIO1_VAL(!!val);
-> +		regval = AXP20X_GPIO10_IN_RANGE_GPIO1_VAL(val);
->  		break;
->  
->  	default:
+--=20
+Maxime Ripard, Bootlin (formerly Free Electrons)
+Embedded Linux and Kernel engineering
+https://bootlin.com
 
+--dv5ei2er35pztlai
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEE0VqZU19dR2zEVaqr0rTAlCFNr3QFAlqNQSYACgkQ0rTAlCFN
+r3Trsw/9EJBb7CEZav54SzhHbxqn6M72R75nl0OsNvvTDl043d8UapMH8lNPvIal
+nemW+99/JuxT+M/+uGr0I/wYiV0jBnA5nasgSerFWU2Thc2TXFOXx02ZlQB9EExP
+yXO2NlGTy6D8MYuPfFRbH/SQrWoy0XRXB26tRJ2wLa5SNW2MhZCNc+3jORu3dNM+
+EQ3HPpYiHd3RyqlSSJmRX63fKRA38MP9TenW65h8IwCTg96P93OHy0nxKjjvWvFQ
+tc2MO2NKICuPrD7lLeO6kuJC7VYGpJtSQHb0FNoy5lVSeiolF/amNEX3cM+UZ7f3
+FEJVpfNI+e1Cw5U0VZkKlM768WODk7nEHIh0kfAuOKyuuoAL3VlSrXNucw9GuBtF
+m5SFNbqIOLSNwJZW7XaO8YmeRnyUplu8GlIghMVfoQVWVhKxuLEN1Yn0UOqzMDTl
+QVduS+EErJg5HCNin1mUZVCiMGCfJxPXwZCLagks16SMuOmlSDWzhfubdYlKk3u2
+ybU2nvXFjv49mk0ecD+oSe8rmGH4bRHe3DSRCdgRL8oAOOyFGrRJfZSWm/N7MDaj
+sy561Q6JrwmP0phkKvKelcdBDbJAS/FkpcJCCpVopVTCBvi6inta3a8k+zT8BW4F
+cClcyodzEra3bEkqcRP7vwEbyu3pLqjx6oEklnkediO6K6hAq1c=
+=lZ7e
+-----END PGP SIGNATURE-----
+
+--dv5ei2er35pztlai--
