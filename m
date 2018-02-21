@@ -1,44 +1,32 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from anchovy3.45ru.net.au ([203.30.46.155]:48219 "EHLO
-        anchovy3.45ru.net.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752739AbeBVILi (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 22 Feb 2018 03:11:38 -0500
-Subject: Re: [PATCH v2] iio:dummy: Replace S_IWUSR by 0200
-To: Julia Lawall <julia.lawall@lip6.fr>,
-        Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        daniel.baluta@nxp.com, linux-iio@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20180221192807.qfyhp7z27f6r6p47@smtp.gmail.com>
- <alpine.DEB.2.20.1802212101160.2292@hadrien>
-From: Phil Reid <preid@electromag.com.au>
-Message-ID: <6d7692ef-0929-7ef2-a1c5-989593f02b1c@electromag.com.au>
-Date: Thu, 22 Feb 2018 16:11:29 +0800
+Return-Path: <SRS0=g9Tw=FP=gmail.com=daniel.baluta@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.20.1802212101160.2292@hadrien>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <20180221192807.qfyhp7z27f6r6p47@smtp.gmail.com>
+References: <20180221192807.qfyhp7z27f6r6p47@smtp.gmail.com>
+From: Daniel Baluta <daniel.baluta@gmail.com>
+Date: Wed, 21 Feb 2018 23:01:50 +0200
+Message-ID: <CAEnQRZBq3G+RPq66ObW+CM2A9BOE_tBn-fC++Ksy+O_nEFfz9Q@mail.gmail.com>
+Subject: Re: [PATCH v2] iio:dummy: Replace S_IWUSR by 0200
+To: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@nxp.com>, linux-iio@vger.kernel.org,
+	kernel-janitors@vger.kernel.org,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+List-ID: <linux-iio@vger.kernel.org>
 
-On 22/02/2018 04:01, Julia Lawall wrote:
-> 
-> On Wed, 21 Feb 2018, Rodrigo Siqueira wrote:
-> 
->> This patch fixes the checkpatch.pl warning:
->>
->> drivers/iio/dummy/iio_dummy_evgen.c:151: WARNING: Symbolic permissions
->> 'S_IWUSR' are not preferred. Consider using octal permissions '0200'.
-> I haven't studied up on it in great detail, but isn't there a more
-> specific macro that doesn't need a permission argument at all?
-> 
+On Wed, Feb 21, 2018 at 9:28 PM, Rodrigo Siqueira
+<rodrigosiqueiramelo@gmail.com> wrote:
+> This patch fixes the checkpatch.pl warning:
+>
+> drivers/iio/dummy/iio_dummy_evgen.c:151: WARNING: Symbolic permissions
+> 'S_IWUSR' are not preferred. Consider using octal permissions '0200'.
 
-Probably thinking of IIO_DEVICE_ATTR_RO / IIO_DEVICE_ATTR_WO
-But they don't provide flexibility for the show / store method.
+> ... Why this "..." :)?
 
--- 
-Regards
-Phil Reid
+Commit subject could be done better. It is pretty obvious from the code that
+we change S_IWUSR with 0200.
 
+Better message:
+
+iio:dummy: Fix poke_evN file permissions
