@@ -1,83 +1,34 @@
-Return-Path: <SRS0=WrQn=FP=gmail.com=rodrigosiqueiramelo@kernel.org>
-Date: Wed, 21 Feb 2018 11:05:33 -0300
-From: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: daniel.baluta@nxp.com, linux-iio@vger.kernel.org,
-	kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iio:dummy: Fix coding style in simple_dummy and evgen
-Message-ID: <20180221140533.lll6vbwg3gyjrlvi@smtp.gmail.com>
+Return-Path: <SRS0=g9Tw=FP=gmail.com=daniel.baluta@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20180221140533.lll6vbwg3gyjrlvi@smtp.gmail.com>
+References: <20180221140533.lll6vbwg3gyjrlvi@smtp.gmail.com>
+From: Daniel Baluta <daniel.baluta@gmail.com>
+Date: Wed, 21 Feb 2018 18:04:24 +0200
+Message-ID: <CAEnQRZAhZ=PR+X3=HYRQKkTHUnczWcsv4945piCrwK31PbuXGg@mail.gmail.com>
+Subject: Re: [PATCH] iio:dummy: Fix coding style in simple_dummy and evgen
+To: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@nxp.com>, linux-iio@vger.kernel.org,
+	kernel-janitors@vger.kernel.org,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch fixes the following checkpatch.pl warnings:
+On Wed, Feb 21, 2018 at 4:05 PM, Rodrigo Siqueira
+<rodrigosiqueiramelo@gmail.com> wrote:
+> This patch fixes the following checkpatch.pl warnings:
+>
+> drivers/iio/dummy/iio_simple_dummy.c:603: WARNING: Block comments should
+> align the * on each line
+> drivers/iio/dummy/iio_dummy_evgen.c:151: WARNING: Symbolic permissions
+> 'S_IWUSR' are not preferred. Consider using octal permissions '0200'...
+> drivers/iio/dummy/iio_simple_dummy.c:693: CHECK: Please use a blank line
+> after function/struct/union/enum declarations
 
-drivers/iio/dummy/iio_simple_dummy.c:603: WARNING: Block comments should
-align the * on each line
-drivers/iio/dummy/iio_dummy_evgen.c:151: WARNING: Symbolic permissions
-'S_IWUSR' are not preferred. Consider using octal permissions '0200'...
-drivers/iio/dummy/iio_simple_dummy.c:693: CHECK: Please use a blank line
-after function/struct/union/enum declarations
+You are trying to fix 3 things in one patch here. Please don't do that.
 
-Signed-off-by: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
----
- drivers/iio/dummy/iio_dummy_evgen.c  | 20 ++++++++++----------
- drivers/iio/dummy/iio_simple_dummy.c |  3 ++-
- 2 files changed, 12 insertions(+), 11 deletions(-)
+One patch per change please.
 
-diff --git a/drivers/iio/dummy/iio_dummy_evgen.c b/drivers/iio/dummy/iio_dummy_evgen.c
-index efd0005f59b4..16ea547f79f0 100644
---- a/drivers/iio/dummy/iio_dummy_evgen.c
-+++ b/drivers/iio/dummy/iio_dummy_evgen.c
-@@ -148,16 +148,16 @@ static ssize_t iio_evgen_poke(struct device *dev,
- 	return len;
- }
- 
--static IIO_DEVICE_ATTR(poke_ev0, S_IWUSR, NULL, &iio_evgen_poke, 0);
--static IIO_DEVICE_ATTR(poke_ev1, S_IWUSR, NULL, &iio_evgen_poke, 1);
--static IIO_DEVICE_ATTR(poke_ev2, S_IWUSR, NULL, &iio_evgen_poke, 2);
--static IIO_DEVICE_ATTR(poke_ev3, S_IWUSR, NULL, &iio_evgen_poke, 3);
--static IIO_DEVICE_ATTR(poke_ev4, S_IWUSR, NULL, &iio_evgen_poke, 4);
--static IIO_DEVICE_ATTR(poke_ev5, S_IWUSR, NULL, &iio_evgen_poke, 5);
--static IIO_DEVICE_ATTR(poke_ev6, S_IWUSR, NULL, &iio_evgen_poke, 6);
--static IIO_DEVICE_ATTR(poke_ev7, S_IWUSR, NULL, &iio_evgen_poke, 7);
--static IIO_DEVICE_ATTR(poke_ev8, S_IWUSR, NULL, &iio_evgen_poke, 8);
--static IIO_DEVICE_ATTR(poke_ev9, S_IWUSR, NULL, &iio_evgen_poke, 9);
-+static IIO_DEVICE_ATTR(poke_ev0, 0200, NULL, &iio_evgen_poke, 0);
-+static IIO_DEVICE_ATTR(poke_ev1, 0200, NULL, &iio_evgen_poke, 1);
-+static IIO_DEVICE_ATTR(poke_ev2, 0200, NULL, &iio_evgen_poke, 2);
-+static IIO_DEVICE_ATTR(poke_ev3, 0200, NULL, &iio_evgen_poke, 3);
-+static IIO_DEVICE_ATTR(poke_ev4, 0200, NULL, &iio_evgen_poke, 4);
-+static IIO_DEVICE_ATTR(poke_ev5, 0200, NULL, &iio_evgen_poke, 5);
-+static IIO_DEVICE_ATTR(poke_ev6, 0200, NULL, &iio_evgen_poke, 6);
-+static IIO_DEVICE_ATTR(poke_ev7, 0200, NULL, &iio_evgen_poke, 7);
-+static IIO_DEVICE_ATTR(poke_ev8, 0200, NULL, &iio_evgen_poke, 8);
-+static IIO_DEVICE_ATTR(poke_ev9, 0200, NULL, &iio_evgen_poke, 9);
- 
- static struct attribute *iio_evgen_attrs[] = {
- 	&iio_dev_attr_poke_ev0.dev_attr.attr,
-diff --git a/drivers/iio/dummy/iio_simple_dummy.c b/drivers/iio/dummy/iio_simple_dummy.c
-index 62052479c349..fcfc38d4bd93 100644
---- a/drivers/iio/dummy/iio_simple_dummy.c
-+++ b/drivers/iio/dummy/iio_simple_dummy.c
-@@ -599,7 +599,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
- 	 * indio_dev->dev.parent = &client->dev;
- 	 */
- 
--	 /*
-+	/*
- 	 * Make the iio_dev struct available to remove function.
- 	 * Bus equivalents
- 	 * i2c_set_clientdata(client, indio_dev);
-@@ -690,6 +690,7 @@ static int iio_dummy_remove(struct iio_sw_device *swd)
- 
- 	return 0;
- }
-+
- /**
-  * module_iio_sw_device_driver() -  device driver registration
-  *
--- 
-2.16.2
+thanks,
+Daniel.
