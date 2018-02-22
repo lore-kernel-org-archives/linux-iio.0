@@ -1,12 +1,13 @@
-Return-Path: <SRS0=CpX9=FP=gmail.com=andy.shevchenko@kernel.org>
+Return-Path: <SRS0=JQqN=FQ=google.com=delroth@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20180221194526.49183-1-delroth@google.com>
+In-Reply-To: <CAHp75VfXmzgQp1sDqYnsSNVxSmW-D4BhFdQK4tGmUg9oXZcnXg@mail.gmail.com>
 References: <20180221125512.8265-1-delroth@google.com> <20180221194526.49183-1-delroth@google.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Wed, 21 Feb 2018 23:57:53 +0200
-Message-ID: <CAHp75VfXmzgQp1sDqYnsSNVxSmW-D4BhFdQK4tGmUg9oXZcnXg@mail.gmail.com>
+ <CAHp75VfXmzgQp1sDqYnsSNVxSmW-D4BhFdQK4tGmUg9oXZcnXg@mail.gmail.com>
+From: "Pierre Bourdon (delroth)" <delroth@google.com>
+Date: Thu, 22 Feb 2018 15:58:10 +0100
+Message-ID: <CANEr7oVJosS5+XKqf+PBuwXG30cEqQFv_kvrgRdC=C+EvN67rg@mail.gmail.com>
 Subject: Re: [PATCH v2 1/2] iio: light: add driver for bh1730fvc chips
-To: Pierre Bourdon <delroth@google.com>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
 	Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
@@ -15,86 +16,103 @@ Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
 Content-Type: text/plain; charset="UTF-8"
 List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Feb 21, 2018 at 9:45 PM, Pierre Bourdon <delroth@google.com> wrote:
-> Ambient light sensor that supports visible light and IR measurements and
-> configurable gain/integration time.
+Hi Andy,
+
+Thanks for the review! Answers inline. I'll send a v3 when the two
+open questions are resolved.
+
+On Wed, Feb 21, 2018 at 10:57 PM, Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+> On Wed, Feb 21, 2018 at 9:45 PM, Pierre Bourdon <delroth@google.com> wrote:
+>> Ambient light sensor that supports visible light and IR measurements and
+>> configurable gain/integration time.
+>>
+>> Changed in v2:
+>> * Split off DT documentation change into a separate commit.
+>> * Use i2c's probe_new.
 >
-> Changed in v2:
-> * Split off DT documentation change into a separate commit.
-> * Use i2c's probe_new.
+> Btw, how big the difference with existing drivers?
 
-Btw, how big the difference with existing drivers?
+See https://lkml.org/lkml/2018/2/21/982 . In retrospect, I should have
+added this to the commit message. It will be there in v3.
 
-> +       default:
-> +               return -1;
+>> +       highest = max(visible, ir);
+>> +
+>> +       /*
+>> +        * If the read value is being clamped, assume the worst and go to the
+>> +        * lowest possible gain. The alternative is doing multiple
+>> +        * recalibrations, which would be slower and have the same effect.
+>> +        */
+>> +       if (highest == USHRT_MAX)
+>> +               highest *= 128;
+>> +       else
+>> +               highest = (highest * 128) / bh1730_gain_multiplier(bh1730);
+>
+> In both cases you multiply.
+> Why not just
+>
+>      highest = max(visible, ir) * 128;
+>
+> if (highest < USHRT_MAX)
+> ...
+> ?
 
-Better to
+You'd need < USHRT_MAX * 128 then. I refactored this a bit but
+differently. WDYT?
 
-return -EINVAL;
+        if (highest == USHRT_MAX)
+                gain = 1;
+        else
+                gain = bh1730_gain_multiplier(bh1730);
 
-> +       highest = max(visible, ir);
-> +
-> +       /*
-> +        * If the read value is being clamped, assume the worst and go to the
-> +        * lowest possible gain. The alternative is doing multiple
-> +        * recalibrations, which would be slower and have the same effect.
-> +        */
-> +       if (highest == USHRT_MAX)
-> +               highest *= 128;
-> +       else
-> +               highest = (highest * 128) / bh1730_gain_multiplier(bh1730);
+        highest = (highest * BH1730_MAX_GAIN_MULTIPLIER) / gain;
 
-In both cases you multiply.
-Why not just
+>> +       millilux = (u64)USEC_PER_MSEC * (visible_coef * visible - ir_coef * ir);
+>
+> I'm not sure I understand how time units is related to lux one.
 
-     highest = max(visible, ir) * 128;
+Now looks like this, which should match the units together better
+while keeping most multiplications before divisions (for accuracy).
+Not much better I can do here I think, for example the magic "103" is
+straight from the datasheet with no explanation.
 
-if (highest < USHRT_MAX)
-...
-?
+        millilux = visible_coef * visible - ir_coef * ir;
+        millilux = (millilux * USEC_PER_MSEC) / itime_us;
+        millilux *= 103;
+        millilux /= bh1730_gain_multiplier(bh1730);
 
-> +       millilux = (u64)USEC_PER_MSEC * (visible_coef * visible - ir_coef * ir);
+>> +       indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*bh1730));
+>> +       if (!indio_dev)
+>> +               return -ENOMEM;
+>> +
+>
+>> +       indio_dev->dev.parent = &client->dev;
+>
+> Strange, it's not done in IIO core... Jonathan, is it true that in
+> case of devm_iio_device_alloc() all drivers use supplied struct device
+> as a parent one?
+> If so, doesn't make sense to modify IIO core to do this?
 
-I'm not sure I understand how time units is related to lux one.
+It doesn't seem like IIO core is doing it at this point. Should we
+just leave that as-is for now and get everything fixed in a future
+patch?
 
-> +       millilux /= bh1730_gain_multiplier(bh1730);
-> +       millilux *= 103;
-> +       millilux /= itime_us;
-> +       return millilux;
-> +}
+>> +static int bh1730_remove(struct i2c_client *client)
+>> +{
+>> +       struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>> +       struct bh1730_data *bh1730 = iio_priv(indio_dev);
+>> +
+>
+>> +       iio_device_unregister(indio_dev);
+>
+> Hmm... Do you still need this even with devm IIO in ->probe()?
 
-> +       indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*bh1730));
-> +       if (!indio_dev)
-> +               return -ENOMEM;
-> +
+I *think* so, but that's mostly because all the other IIO light
+drivers that I've looked at are doing it. Can someone who knows the
+IIO subsystem well weigh in?
 
-> +       indio_dev->dev.parent = &client->dev;
-
-Strange, it's not done in IIO core... Jonathan, is it true that in
-case of devm_iio_device_alloc() all drivers use supplied struct device
-as a parent one?
-If so, doesn't make sense to modify IIO core to do this?
-
-> +static int bh1730_remove(struct i2c_client *client)
-> +{
-> +       struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +       struct bh1730_data *bh1730 = iio_priv(indio_dev);
-> +
-
-> +       iio_device_unregister(indio_dev);
-
-Hmm... Do you still need this even with devm IIO in ->probe()?
-
-
-> +#ifdef CONFIG_OF
-> +#endif
-
-This...
-
-> +               .of_match_table = of_match_ptr(of_bh1730_match),
-
-...and of_match_ptr() now pointless.
+Thanks!
+Best,
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Pierre Bourdon (delroth@)
