@@ -1,67 +1,57 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:49170 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750772AbeBXNfw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 24 Feb 2018 08:35:52 -0500
-Date: Sat, 24 Feb 2018 13:35:47 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Crt Mori <cmo@melexis.com>
-Cc: Dan Carpenter <dan.carpenter@oracle.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Linux Iio <linux-iio@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] iio temperature/mlx90632: silence a static checker
- warning
-Message-ID: <20180224133547.6f5d3384@archlinux>
-In-Reply-To: <CAKv63uuNqfc9=opZTUOpkdViHUREXKnGj1+u1HB71r0gpvySgQ@mail.gmail.com>
-References: <20180222091453.GC9883@mwanda>
-        <CAKv63uuNqfc9=opZTUOpkdViHUREXKnGj1+u1HB71r0gpvySgQ@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=Nd8U=FQ=linux.intel.com=andriy.shevchenko@kernel.org>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1] iio: accel: bmc150: Remove redundant __func__ in dev_dbg()
+Date: Thu, 22 Feb 2018 20:58:58 +0200
+Message-Id: <20180222185858.28714-1-andriy.shevchenko@linux.intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 22 Feb 2018 10:26:17 +0100
-Crt Mori <cmo@melexis.com> wrote:
+Dynamic debug has a run time knob to enable function name printing.
+Remove this from dev_dbg() calls.
 
-> OK, makes sense.
-> 
-> Acked-by: Crt Mori <cmo@melexis.com>
-> 
-Applied to the togreg branch of iio.git and pushed out as testing.
+Furthermore, functional tracing when enabled can show what function is
+called, therefore remove empty dev_dbg() calls.
 
-Thanks,
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/iio/accel/bmc150-accel-core.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-Jonathan
-
-> On 22 February 2018 at 10:14, Dan Carpenter <dan.carpenter@oracle.com> wrote:
-> >
-> > This shouldn't affect runtime at all, but Smatch complains that we
-> > should check if mlx90632_read_ambient_raw() otherwise we
-> > "ambient_new_raw" can be uninitialized.
-> >
-> >     drivers/iio/temperature/mlx90632.c:509 mlx90632_calc_ambient_dsp105()
-> >     error: uninitialized symbol 'ambient_new_raw'.
-> >
-> > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> >
-> > diff --git a/drivers/iio/temperature/mlx90632.c b/drivers/iio/temperature/mlx90632.c
-> > index d695ab97d27f..9851311aa3fd 100644
-> > --- a/drivers/iio/temperature/mlx90632.c
-> > +++ b/drivers/iio/temperature/mlx90632.c
-> > @@ -506,6 +506,8 @@ static int mlx90632_calc_ambient_dsp105(struct mlx90632_data *data, int *val)
-> >
-> >         ret = mlx90632_read_ambient_raw(data->regmap, &ambient_new_raw,
-> >                                         &ambient_old_raw);
-> > +       if (ret < 0)
-> > +               return ret;
-> >         *val = mlx90632_calc_temp_ambient(ambient_new_raw, ambient_old_raw,
-> >                                           PT, PR, PG, PO, Gb);
-> >         return ret;  
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
+diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+index 870f92ef61c2..208f2d9f0e8a 100644
+--- a/drivers/iio/accel/bmc150-accel-core.c
++++ b/drivers/iio/accel/bmc150-accel-core.c
+@@ -336,8 +336,7 @@ static int bmc150_accel_update_slope(struct bmc150_accel_data *data)
+ 		return ret;
+ 	}
+ 
+-	dev_dbg(dev, "%s: %x %x\n", __func__, data->slope_thres,
+-		data->slope_dur);
++	dev_dbg(dev, "%x %x\n", data->slope_thres, data->slope_dur);
+ 
+ 	return ret;
+ }
+@@ -1716,7 +1715,6 @@ static int bmc150_accel_runtime_suspend(struct device *dev)
+ 	struct bmc150_accel_data *data = iio_priv(indio_dev);
+ 	int ret;
+ 
+-	dev_dbg(dev,  __func__);
+ 	ret = bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_SUSPEND, 0);
+ 	if (ret < 0)
+ 		return -EAGAIN;
+@@ -1731,8 +1729,6 @@ static int bmc150_accel_runtime_resume(struct device *dev)
+ 	int ret;
+ 	int sleep_val;
+ 
+-	dev_dbg(dev,  __func__);
+-
+ 	ret = bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_NORMAL, 0);
+ 	if (ret < 0)
+ 		return ret;
+-- 
+2.16.1
