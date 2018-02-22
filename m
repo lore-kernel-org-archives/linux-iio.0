@@ -1,22 +1,19 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-io0-f196.google.com ([209.85.223.196]:44050 "EHLO
-        mail-io0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751435AbeBWOJr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Feb 2018 09:09:47 -0500
-Received: by mail-io0-f196.google.com with SMTP id z6so9910973iob.11
-        for <linux-iio@vger.kernel.org>; Fri, 23 Feb 2018 06:09:46 -0800 (PST)
+Received: from mail-io0-f194.google.com ([209.85.223.194]:45915 "EHLO
+        mail-io0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753868AbeBVPSC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 22 Feb 2018 10:18:02 -0500
+Received: by mail-io0-f194.google.com with SMTP id m22so6345045iob.12
+        for <linux-iio@vger.kernel.org>; Thu, 22 Feb 2018 07:18:02 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <ec0c1668-dc0d-cd44-1c87-b1d71215f477@maciej.szmigiero.name>
-References: <cover.1514578085.git.vilhelm.gray@gmail.com> <1534276cb63d1e9e6dd139b4edceedbe728f65f5.1514578085.git.vilhelm.gray@gmail.com>
- <CACRpkdaw75RH_WR4Ta9AmqNmGnaPhFKK2HfC=m8SNabACs95vg@mail.gmail.com>
- <20180222203009.GA10834@sophia> <278aed38-1b40-e362-00e2-38d61a4b81c2@maciej.szmigiero.name>
- <ec0c1668-dc0d-cd44-1c87-b1d71215f477@maciej.szmigiero.name>
+In-Reply-To: <bc33320887f448b772004e7c5d97322abb8cae0b.1514578085.git.vilhelm.gray@gmail.com>
+References: <cover.1514578085.git.vilhelm.gray@gmail.com> <bc33320887f448b772004e7c5d97322abb8cae0b.1514578085.git.vilhelm.gray@gmail.com>
 From: Linus Walleij <linus.walleij@linaro.org>
-Date: Fri, 23 Feb 2018 15:09:45 +0100
-Message-ID: <CACRpkdYmUrVAnZLJtxEdp__W8j1kFVPAhVDYr1Rb_1DczwzS+Q@mail.gmail.com>
-Subject: Re: [PATCH v2 3/5] gpio: Change ISA_BUS_API dependency to selection
-To: "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-Cc: William Breathitt Gray <vilhelm.gray@gmail.com>,
+Date: Thu, 22 Feb 2018 16:18:01 +0100
+Message-ID: <CACRpkdZKxHRHvURL97iS__fvx_VMtg3ZohJKt4PfFQjZgnAuCA@mail.gmail.com>
+Subject: Re: [PATCH v2 4/5] isa: Remove ISA_BUS_API selection for ISA_BUS
+To: William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc: "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>,
         Guenter Roeck <linux@roeck-us.net>,
         "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
         linux-iio@vger.kernel.org,
@@ -26,32 +23,24 @@ Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Feb 23, 2018 at 2:50 PM, Maciej S. Szmigiero
-<mail@maciej.szmigiero.name> wrote:
-> On 22.02.2018 21:44, Maciej S. Szmigiero wrote:
+On Fri, Dec 29, 2017 at 9:14 PM, William Breathitt Gray
+<vilhelm.gray@gmail.com> wrote:
 
->> Note that gpio-winbond (CONFIG_GPIO_WINBOND) driver was originally
->> merged using ISA_BUS_API selection as done for other ISA bus gpio drivers
->> by this patch, then temporary switched to the previous ("depends on")
->> style by commit 92a8046c9d952a to fix a circular Kconfig dependency.
->> So now this commit (92...) should be reverted to make gpio-winbond
->> driver Kconfig dependency / selection consistent with the remaining ISA
->> bus gpio drivers.
->>
->> Unfortunately, I can't test the reversion myself because it looks like
->> Linus didn't push his trees yet to git.kernel.org after applying this
->> series (or I am not looking at the right place - linusw/linux-gpio.git?).
+> ISA_BUS_API is selected by drivers themselves when necessary. The
+> ISA_BUS Kconfig option is now simply a mask for true ISA device drivers
+> and relevant configuration. For now, the ISA_BUS Kconfig option is only
+> available for X86, but may be added for other arch builds in the future
+> if the need arises.
 >
-> It looks like the series has been pushed to git.kernel.org now.
-> I have tested the reversion of commit 92a8046c9d952a and can confirm
-> that the ISA_BUS_API dependency / selection for gpio-winbond works
-> then as intended (in a way that is consistent with other ISA bus gpio
-> drivers).
->
-> @Linus:
-> Will you revert that commit or should I submit a patch that does it?
+> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 
-Oh send me a patch, that's easiest.
+Patch applied to the GPIO tree for v4.17.
+
+I'd like to have some ACK from some x86 maintainer for this
+so it makes me a bit nervous.
+
+Yet again the patch has been sitting since december with no
+comments so...
 
 Yours,
 Linus Walleij
