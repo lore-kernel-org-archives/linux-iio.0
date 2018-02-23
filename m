@@ -1,74 +1,48 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:49008 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750772AbeBXNaN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 24 Feb 2018 08:30:13 -0500
-Date: Sat, 24 Feb 2018 13:30:09 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v1] iio: accel: bmc150: Remove redundant __func__ in
- dev_dbg()
-Message-ID: <20180224133009.2f0c61df@archlinux>
-In-Reply-To: <20180222185858.28714-1-andriy.shevchenko@linux.intel.com>
-References: <20180222185858.28714-1-andriy.shevchenko@linux.intel.com>
+Return-Path: <SRS0=y4pC=FR=st.com=fabrice.gasnier@kernel.org>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+To: <jic23@kernel.org>, <robh+dt@kernel.org>
+CC: <linux@armlinux.org.uk>, <mark.rutland@arm.com>,
+        <mcoquelin.stm32@gmail.com>, <alexandre.torgue@st.com>,
+        <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
+        <fabrice.gasnier@st.com>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <benjamin.gaignard@linaro.org>,
+        <arnaud.pouliquen@st.com>
+Subject: [PATCH] dt-bindings: iio: adc: sd-modulator: fix io-channel-cells
+Date: Fri, 23 Feb 2018 12:07:21 +0100
+Message-ID: <1519384041-23782-1-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 22 Feb 2018 20:58:58 +0200
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+io-channel-cells should be <0> since sigma delta modulator exports only
+one channel, as described in ../iio/iio-bindings.txt "IIO providers"
+section. Only the phandle is necessary for IIO consumers in this case.
 
-> Dynamic debug has a run time knob to enable function name printing.
-> Remove this from dev_dbg() calls.
-> 
-> Furthermore, functional tracing when enabled can show what function is
-> called, therefore remove empty dev_dbg() calls.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+Fixes: af11143757b7 ("IIO: Add DT bindings for sigma delta adc modulator")
 
-Thanks,
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+---
+ Documentation/devicetree/bindings/iio/adc/sigma-delta-modulator.txt | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Jonathan
-
-> ---
->  drivers/iio/accel/bmc150-accel-core.c | 6 +-----
->  1 file changed, 1 insertion(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-> index 870f92ef61c2..208f2d9f0e8a 100644
-> --- a/drivers/iio/accel/bmc150-accel-core.c
-> +++ b/drivers/iio/accel/bmc150-accel-core.c
-> @@ -336,8 +336,7 @@ static int bmc150_accel_update_slope(struct bmc150_accel_data *data)
->  		return ret;
->  	}
->  
-> -	dev_dbg(dev, "%s: %x %x\n", __func__, data->slope_thres,
-> -		data->slope_dur);
-> +	dev_dbg(dev, "%x %x\n", data->slope_thres, data->slope_dur);
->  
->  	return ret;
->  }
-> @@ -1716,7 +1715,6 @@ static int bmc150_accel_runtime_suspend(struct device *dev)
->  	struct bmc150_accel_data *data = iio_priv(indio_dev);
->  	int ret;
->  
-> -	dev_dbg(dev,  __func__);
->  	ret = bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_SUSPEND, 0);
->  	if (ret < 0)
->  		return -EAGAIN;
-> @@ -1731,8 +1729,6 @@ static int bmc150_accel_runtime_resume(struct device *dev)
->  	int ret;
->  	int sleep_val;
->  
-> -	dev_dbg(dev,  __func__);
-> -
->  	ret = bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_NORMAL, 0);
->  	if (ret < 0)
->  		return ret;
-
+diff --git a/Documentation/devicetree/bindings/iio/adc/sigma-delta-modulator.txt b/Documentation/devicetree/bindings/iio/adc/sigma-delta-modulator.txt
+index e9ebb8a..ba24ca7 100644
+--- a/Documentation/devicetree/bindings/iio/adc/sigma-delta-modulator.txt
++++ b/Documentation/devicetree/bindings/iio/adc/sigma-delta-modulator.txt
+@@ -3,11 +3,11 @@ Device-Tree bindings for sigma delta modulator
+ Required properties:
+ - compatible: should be "ads1201", "sd-modulator". "sd-modulator" can be use
+ 	as a generic SD modulator if modulator not specified in compatible list.
+-- #io-channel-cells = <1>: See the IIO bindings section "IIO consumers".
++- #io-channel-cells = <0>: See the IIO bindings section "IIO consumers".
+ 
+ Example node:
+ 
+ 	ads1202: adc@0 {
+ 		compatible = "sd-modulator";
+-		#io-channel-cells = <1>;
++		#io-channel-cells = <0>;
+ 	};
+-- 
+1.9.1
