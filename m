@@ -1,132 +1,101 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:41522 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751455AbeBXMZZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 24 Feb 2018 07:25:25 -0500
-Date: Sat, 24 Feb 2018 12:18:09 +0000
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc: <linux-iio@vger.kernel.org>, <michael.hennerich@analog.com>,
-        <lars@metafoo.de>
+Return-Path: <alexandru.Ardelean@analog.com>
+From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+To: "jic23@jic23.retrosnub.co.uk" <jic23@jic23.retrosnub.co.uk>
+CC: "lars@metafoo.de" <lars@metafoo.de>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "Hennerich, Michael"
+	<Michael.Hennerich@analog.com>
 Subject: Re: [PATCH] staging: iio: ad5933: merge ring init function into
  probe function
-Message-ID: <20180224121747.6ff4b90b@archlinux>
-In-Reply-To: <20180216120915.19277-1-alexandru.ardelean@analog.com>
+Date: Mon, 26 Feb 2018 07:44:02 +0000
+Message-ID: <1519631043.4724.14.camel@analog.com>
 References: <20180216120915.19277-1-alexandru.ardelean@analog.com>
+	 <20180224121747.6ff4b90b@archlinux>
+In-Reply-To: <20180224121747.6ff4b90b@archlinux>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, 16 Feb 2018 14:09:15 +0200
-Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
-
-> This is a small cleanup of the driver's init code.
-> It does not fix anything.
-> 
-> The `devm_iio_kfifo_allocate()` function is used instead of
-> `iio_kfifo_allocate()`.  This removes the need for explicit deallocation of
-> the driver's iio_buffer, which will now be handled via
-> `iio_device_unregister()`.
-> 
-> The `setup_ops` assignment has been moved into the `ad5933_probe()` call,
-> since it's a one-liner.
-> 
-> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-> ---
-> 
-> Note: this change is based on top of `fixes-togreg-post-rc1` branch which
-> contains commit (7d2b8e6aaf9: staging: iio: ad5933: switch buffer mode to
-> software)
-It will take a few weeks for that to get to my togreg branch so please
-do remind me if it has and I seem to have forgotten this!
-
-Jonathan
-
-> 
->  drivers/staging/iio/impedance-analyzer/ad5933.c | 35 +++++++------------------
->  1 file changed, 10 insertions(+), 25 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> index 3bcf49466361..1cab67b3a81e 100644
-> --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-> +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> @@ -635,22 +635,6 @@ static const struct iio_buffer_setup_ops ad5933_ring_setup_ops = {
->  	.postdisable = ad5933_ring_postdisable,
->  };
->  
-> -static int ad5933_register_ring_funcs_and_init(struct iio_dev *indio_dev)
-> -{
-> -	struct iio_buffer *buffer;
-> -
-> -	buffer = iio_kfifo_allocate();
-> -	if (!buffer)
-> -		return -ENOMEM;
-> -
-> -	iio_device_attach_buffer(indio_dev, buffer);
-> -
-> -	/* Ring buffer functions - here trigger setup related */
-> -	indio_dev->setup_ops = &ad5933_ring_setup_ops;
-> -
-> -	return 0;
-> -}
-> -
->  static void ad5933_work(struct work_struct *work)
->  {
->  	struct ad5933_state *st = container_of(work,
-> @@ -714,12 +698,19 @@ static int ad5933_probe(struct i2c_client *client,
->  	int ret, voltage_uv = 0;
->  	struct ad5933_platform_data *pdata = dev_get_platdata(&client->dev);
->  	struct ad5933_state *st;
-> +	struct iio_buffer *buffer;
->  	struct iio_dev *indio_dev;
->  
->  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*st));
->  	if (!indio_dev)
->  		return -ENOMEM;
->  
-> +	buffer = devm_iio_kfifo_allocate(&client->dev);
-> +	if (!buffer)
-> +		return -ENOMEM;
-> +
-> +	iio_device_attach_buffer(indio_dev, buffer);
-> +
->  	st = iio_priv(indio_dev);
->  	i2c_set_clientdata(client, indio_dev);
->  	st->client = client;
-> @@ -763,23 +754,18 @@ static int ad5933_probe(struct i2c_client *client,
->  	indio_dev->modes = (INDIO_BUFFER_SOFTWARE | INDIO_DIRECT_MODE);
->  	indio_dev->channels = ad5933_channels;
->  	indio_dev->num_channels = ARRAY_SIZE(ad5933_channels);
-> -
-> -	ret = ad5933_register_ring_funcs_and_init(indio_dev);
-> -	if (ret)
-> -		goto error_disable_reg;
-> +	indio_dev->setup_ops = &ad5933_ring_setup_ops;
->  
->  	ret = ad5933_setup(st);
->  	if (ret)
-> -		goto error_unreg_ring;
-> +		goto error_disable_reg;
->  
->  	ret = iio_device_register(indio_dev);
->  	if (ret)
-> -		goto error_unreg_ring;
-> +		goto error_disable_reg;
->  
->  	return 0;
->  
-> -error_unreg_ring:
-> -	iio_kfifo_free(indio_dev->buffer);
->  error_disable_reg:
->  	regulator_disable(st->reg);
->  
-> @@ -792,7 +778,6 @@ static int ad5933_remove(struct i2c_client *client)
->  	struct ad5933_state *st = iio_priv(indio_dev);
->  
->  	iio_device_unregister(indio_dev);
-> -	iio_kfifo_free(indio_dev->buffer);
->  	regulator_disable(st->reg);
->  
->  	return 0;
-
+T24gU2F0LCAyMDE4LTAyLTI0IGF0IDEyOjE4ICswMDAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
+Og0KPiBPbiBGcmksIDE2IEZlYiAyMDE4IDE0OjA5OjE1ICswMjAwDQo+IEFsZXhhbmRydSBBcmRl
+bGVhbiA8YWxleGFuZHJ1LmFyZGVsZWFuQGFuYWxvZy5jb20+IHdyb3RlOg0KPiANCj4gPiBUaGlz
+IGlzIGEgc21hbGwgY2xlYW51cCBvZiB0aGUgZHJpdmVyJ3MgaW5pdCBjb2RlLg0KPiA+IEl0IGRv
+ZXMgbm90IGZpeCBhbnl0aGluZy4NCj4gPiANCj4gPiBUaGUgYGRldm1faWlvX2tmaWZvX2FsbG9j
+YXRlKClgIGZ1bmN0aW9uIGlzIHVzZWQgaW5zdGVhZCBvZg0KPiA+IGBpaW9fa2ZpZm9fYWxsb2Nh
+dGUoKWAuICBUaGlzIHJlbW92ZXMgdGhlIG5lZWQgZm9yIGV4cGxpY2l0IGRlYWxsb2NhdGlvbiBv
+Zg0KPiA+IHRoZSBkcml2ZXIncyBpaW9fYnVmZmVyLCB3aGljaCB3aWxsIG5vdyBiZSBoYW5kbGVk
+IHZpYQ0KPiA+IGBpaW9fZGV2aWNlX3VucmVnaXN0ZXIoKWAuDQo+ID4gDQo+ID4gVGhlIGBzZXR1
+cF9vcHNgIGFzc2lnbm1lbnQgaGFzIGJlZW4gbW92ZWQgaW50byB0aGUgYGFkNTkzM19wcm9iZSgp
+YCBjYWxsLA0KPiA+IHNpbmNlIGl0J3MgYSBvbmUtbGluZXIuDQo+ID4gDQo+ID4gU2lnbmVkLW9m
+Zi1ieTogQWxleGFuZHJ1IEFyZGVsZWFuIDxhbGV4YW5kcnUuYXJkZWxlYW5AYW5hbG9nLmNvbT4N
+Cj4gPiAtLS0NCj4gPiANCj4gPiBOb3RlOiB0aGlzIGNoYW5nZSBpcyBiYXNlZCBvbiB0b3Agb2Yg
+YGZpeGVzLXRvZ3JlZy1wb3N0LXJjMWAgYnJhbmNoIHdoaWNoDQo+ID4gY29udGFpbnMgY29tbWl0
+ICg3ZDJiOGU2YWFmOTogc3RhZ2luZzogaWlvOiBhZDU5MzM6IHN3aXRjaCBidWZmZXIgbW9kZSB0
+bw0KPiA+IHNvZnR3YXJlKQ0KPiANCj4gSXQgd2lsbCB0YWtlIGEgZmV3IHdlZWtzIGZvciB0aGF0
+IHRvIGdldCB0byBteSB0b2dyZWcgYnJhbmNoIHNvIHBsZWFzZQ0KPiBkbyByZW1pbmQgbWUgaWYg
+aXQgaGFzIGFuZCBJIHNlZW0gdG8gaGF2ZSBmb3Jnb3R0ZW4gdGhpcyENCj4gDQo+IEpvbmF0aGFu
+DQoNCkknbSBhIGJpdCBuZXcgdG8gaG93IHRoaW5ncyBwcm9ncmVzcyBpbiB0aGUgaWlvIHN1YnRy
+ZWUuDQpbQ3VyaW91c10gSXMgdGhlcmUgYSByZWNvbW1lbmRlZCBicmFuY2ggdGhhdCBpcyByZWd1
+bGFybHkgdXBkYXRlZCB3aXRoIGFjY2VwdGVkDQpwYXRjaGVzID8NCk9yIHdoaWNoIGJyYW5jaGVz
+IGRvIEkgbmVlZCB0byByZWJhc2Ugd2hlbiBzdWJtaXR0aW5nIG90aGVyIHBhdGNoZXMgPw0KDQpS
+ZWFzb24gaXM6IHRvIHJlYmFzZSBvdGhlciBwYXRjaGVzIG9uY2UgYSBwYXRjaCBhZnRlciBoYXMg
+YmVlbiBhY2NlcHRlZC4gVGhhdCdzDQphbHNvIGZvciBjYXNlcyB3aGVuIHN1Ym1pdHRpbmcgcGF0
+Y2hlcyBsaWtlIHRoaXMgb25lIFtzbWFsbCB1cGRhdGVzL2NsZWFudXBzXS4NClJlYmFzaW5nIG9m
+dGVuLCB3b3VsZCBhbGxvdyBmb3IgcGF0Y2hlcyBbbGlrZSB0aGlzXSB0byBiZSBzZW50IGEgYml0
+IG1vcmUNCmZyZXF1ZW50bHkuDQpJJ20gYXNzdW1pbmcgdGhhdCB0aGUgY3VycmVudCB3YXktb2Yt
+ZG9pbmctdGhpbmdzIGlzIGdlYXJlZCB0byBvcmdhbml6aW5nDQpwYXRjaGVzIHRvIGJlIHNlbnQg
+dG8gR3JlZy4NCg0KSSdtIG5vdCBhc2tpbmcgZm9yIHN1Y2ggYSBicmFuY2ggdG8gYmUgY3JlYXRl
+ZCBbb3IgYW55dGhpbmddLg0KSnVzdCB3YW50IHRvIGdldCBhIGZlZWwgZm9yIGhvdyB0aGluZ3Mg
+d29yaywgc28gdGhhdCBJIGNhbiBhZGFwdCBob3cgSSBvcmdhbml6ZQ0KbXlzZWxmIFt3aXRoIHN1
+Ym1pc3Npb24gb2YgcGF0Y2hlc10uDQoNCkFsZXgNCg0KPiANCj4gPiANCj4gPiAgZHJpdmVycy9z
+dGFnaW5nL2lpby9pbXBlZGFuY2UtYW5hbHl6ZXIvYWQ1OTMzLmMgfCAzNSArKysrKysrLS0tLS0t
+LS0tLS0tLS0tLS0tDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAxMCBpbnNlcnRpb25zKCspLCAyNSBk
+ZWxldGlvbnMoLSkNCj4gPiANCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9zdGFnaW5nL2lpby9p
+bXBlZGFuY2UtYW5hbHl6ZXIvYWQ1OTMzLmMgYi9kcml2ZXJzL3N0YWdpbmcvaWlvL2ltcGVkYW5j
+ZS1hbmFseXplci9hZDU5MzMuYw0KPiA+IGluZGV4IDNiY2Y0OTQ2NjM2MS4uMWNhYjY3YjNhODFl
+IDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvc3RhZ2luZy9paW8vaW1wZWRhbmNlLWFuYWx5emVy
+L2FkNTkzMy5jDQo+ID4gKysrIGIvZHJpdmVycy9zdGFnaW5nL2lpby9pbXBlZGFuY2UtYW5hbHl6
+ZXIvYWQ1OTMzLmMNCj4gPiBAQCAtNjM1LDIyICs2MzUsNiBAQCBzdGF0aWMgY29uc3Qgc3RydWN0
+IGlpb19idWZmZXJfc2V0dXBfb3BzIGFkNTkzM19yaW5nX3NldHVwX29wcyA9IHsNCj4gPiAgCS5w
+b3N0ZGlzYWJsZSA9IGFkNTkzM19yaW5nX3Bvc3RkaXNhYmxlLA0KPiA+ICB9Ow0KPiA+ICANCj4g
+PiAtc3RhdGljIGludCBhZDU5MzNfcmVnaXN0ZXJfcmluZ19mdW5jc19hbmRfaW5pdChzdHJ1Y3Qg
+aWlvX2RldiAqaW5kaW9fZGV2KQ0KPiA+IC17DQo+ID4gLQlzdHJ1Y3QgaWlvX2J1ZmZlciAqYnVm
+ZmVyOw0KPiA+IC0NCj4gPiAtCWJ1ZmZlciA9IGlpb19rZmlmb19hbGxvY2F0ZSgpOw0KPiA+IC0J
+aWYgKCFidWZmZXIpDQo+ID4gLQkJcmV0dXJuIC1FTk9NRU07DQo+ID4gLQ0KPiA+IC0JaWlvX2Rl
+dmljZV9hdHRhY2hfYnVmZmVyKGluZGlvX2RldiwgYnVmZmVyKTsNCj4gPiAtDQo+ID4gLQkvKiBS
+aW5nIGJ1ZmZlciBmdW5jdGlvbnMgLSBoZXJlIHRyaWdnZXIgc2V0dXAgcmVsYXRlZCAqLw0KPiA+
+IC0JaW5kaW9fZGV2LT5zZXR1cF9vcHMgPSAmYWQ1OTMzX3Jpbmdfc2V0dXBfb3BzOw0KPiA+IC0N
+Cj4gPiAtCXJldHVybiAwOw0KPiA+IC19DQo+ID4gLQ0KPiA+ICBzdGF0aWMgdm9pZCBhZDU5MzNf
+d29yayhzdHJ1Y3Qgd29ya19zdHJ1Y3QgKndvcmspDQo+ID4gIHsNCj4gPiAgCXN0cnVjdCBhZDU5
+MzNfc3RhdGUgKnN0ID0gY29udGFpbmVyX29mKHdvcmssDQo+ID4gQEAgLTcxNCwxMiArNjk4LDE5
+IEBAIHN0YXRpYyBpbnQgYWQ1OTMzX3Byb2JlKHN0cnVjdCBpMmNfY2xpZW50ICpjbGllbnQsDQo+
+ID4gIAlpbnQgcmV0LCB2b2x0YWdlX3V2ID0gMDsNCj4gPiAgCXN0cnVjdCBhZDU5MzNfcGxhdGZv
+cm1fZGF0YSAqcGRhdGEgPSBkZXZfZ2V0X3BsYXRkYXRhKCZjbGllbnQtPmRldik7DQo+ID4gIAlz
+dHJ1Y3QgYWQ1OTMzX3N0YXRlICpzdDsNCj4gPiArCXN0cnVjdCBpaW9fYnVmZmVyICpidWZmZXI7
+DQo+ID4gIAlzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2Ow0KPiA+ICANCj4gPiAgCWluZGlvX2Rl
+diA9IGRldm1faWlvX2RldmljZV9hbGxvYygmY2xpZW50LT5kZXYsIHNpemVvZigqc3QpKTsNCj4g
+PiAgCWlmICghaW5kaW9fZGV2KQ0KPiA+ICAJCXJldHVybiAtRU5PTUVNOw0KPiA+ICANCj4gPiAr
+CWJ1ZmZlciA9IGRldm1faWlvX2tmaWZvX2FsbG9jYXRlKCZjbGllbnQtPmRldik7DQo+ID4gKwlp
+ZiAoIWJ1ZmZlcikNCj4gPiArCQlyZXR1cm4gLUVOT01FTTsNCj4gPiArDQo+ID4gKwlpaW9fZGV2
+aWNlX2F0dGFjaF9idWZmZXIoaW5kaW9fZGV2LCBidWZmZXIpOw0KPiA+ICsNCj4gPiAgCXN0ID0g
+aWlvX3ByaXYoaW5kaW9fZGV2KTsNCj4gPiAgCWkyY19zZXRfY2xpZW50ZGF0YShjbGllbnQsIGlu
+ZGlvX2Rldik7DQo+ID4gIAlzdC0+Y2xpZW50ID0gY2xpZW50Ow0KPiA+IEBAIC03NjMsMjMgKzc1
+NCwxOCBAQCBzdGF0aWMgaW50IGFkNTkzM19wcm9iZShzdHJ1Y3QgaTJjX2NsaWVudCAqY2xpZW50
+LA0KPiA+ICAJaW5kaW9fZGV2LT5tb2RlcyA9IChJTkRJT19CVUZGRVJfU09GVFdBUkUgfCBJTkRJ
+T19ESVJFQ1RfTU9ERSk7DQo+ID4gIAlpbmRpb19kZXYtPmNoYW5uZWxzID0gYWQ1OTMzX2NoYW5u
+ZWxzOw0KPiA+ICAJaW5kaW9fZGV2LT5udW1fY2hhbm5lbHMgPSBBUlJBWV9TSVpFKGFkNTkzM19j
+aGFubmVscyk7DQo+ID4gLQ0KPiA+IC0JcmV0ID0gYWQ1OTMzX3JlZ2lzdGVyX3JpbmdfZnVuY3Nf
+YW5kX2luaXQoaW5kaW9fZGV2KTsNCj4gPiAtCWlmIChyZXQpDQo+ID4gLQkJZ290byBlcnJvcl9k
+aXNhYmxlX3JlZzsNCj4gPiArCWluZGlvX2Rldi0+c2V0dXBfb3BzID0gJmFkNTkzM19yaW5nX3Nl
+dHVwX29wczsNCj4gPiAgDQo+ID4gIAlyZXQgPSBhZDU5MzNfc2V0dXAoc3QpOw0KPiA+ICAJaWYg
+KHJldCkNCj4gPiAtCQlnb3RvIGVycm9yX3VucmVnX3Jpbmc7DQo+ID4gKwkJZ290byBlcnJvcl9k
+aXNhYmxlX3JlZzsNCj4gPiAgDQo+ID4gIAlyZXQgPSBpaW9fZGV2aWNlX3JlZ2lzdGVyKGluZGlv
+X2Rldik7DQo+ID4gIAlpZiAocmV0KQ0KPiA+IC0JCWdvdG8gZXJyb3JfdW5yZWdfcmluZzsNCj4g
+PiArCQlnb3RvIGVycm9yX2Rpc2FibGVfcmVnOw0KPiA+ICANCj4gPiAgCXJldHVybiAwOw0KPiA+
+ICANCj4gPiAtZXJyb3JfdW5yZWdfcmluZzoNCj4gPiAtCWlpb19rZmlmb19mcmVlKGluZGlvX2Rl
+di0+YnVmZmVyKTsNCj4gPiAgZXJyb3JfZGlzYWJsZV9yZWc6DQo+ID4gIAlyZWd1bGF0b3JfZGlz
+YWJsZShzdC0+cmVnKTsNCj4gPiAgDQo+ID4gQEAgLTc5Miw3ICs3NzgsNiBAQCBzdGF0aWMgaW50
+IGFkNTkzM19yZW1vdmUoc3RydWN0IGkyY19jbGllbnQgKmNsaWVudCkNCj4gPiAgCXN0cnVjdCBh
+ZDU5MzNfc3RhdGUgKnN0ID0gaWlvX3ByaXYoaW5kaW9fZGV2KTsNCj4gPiAgDQo+ID4gIAlpaW9f
+ZGV2aWNlX3VucmVnaXN0ZXIoaW5kaW9fZGV2KTsNCj4gPiAtCWlpb19rZmlmb19mcmVlKGluZGlv
+X2Rldi0+YnVmZmVyKTsNCj4gPiAgCXJlZ3VsYXRvcl9kaXNhYmxlKHN0LT5yZWcpOw0KPiA+ICAN
+Cj4gPiAgCXJldHVybiAwOw0KPiANCj4g
