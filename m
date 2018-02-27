@@ -1,60 +1,37 @@
-Return-Path: <SRS0=eWmn=FV=gmail.com=rodrigosiqueiramelo@kernel.org>
-Date: Tue, 27 Feb 2018 10:47:06 -0300
-From: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: daniel.baluta@nxp.com, kernel-janitors@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/2] iio:dummy: Add extra paragraphs on Kconfig
-Message-ID: <7cfd9fd93e76fede44d328045e7885cd78324a78.1519738995.git.rodrigosiqueiramelo@gmail.com>
-References: <cover.1519738995.git.rodrigosiqueiramelo@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f68.google.com ([74.125.82.68]:34727 "EHLO
+        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753117AbeB0O0L (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 27 Feb 2018 09:26:11 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 In-Reply-To: <cover.1519738995.git.rodrigosiqueiramelo@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+References: <cover.1519738995.git.rodrigosiqueiramelo@gmail.com>
+From: Daniel Baluta <daniel.baluta@gmail.com>
+Date: Tue, 27 Feb 2018 16:26:09 +0200
+Message-ID: <CAEnQRZD4RcZbQgOC-Zj2io0piYCHywKVUmgF1AptxxfWxtXmWw@mail.gmail.com>
+Subject: Re: [PATCH v2 0/2] iio:dummy: Rework Kconfig
+To: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        kernel-janitors@vger.kernel.org, linux-iio@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This patch fixes the checkpatch.pl warning:
+On Tue, Feb 27, 2018 at 3:46 PM, Rodrigo Siqueira
+<rodrigosiqueiramelo@gmail.com> wrote:
+> This series adds extra documentation inside iio/dummy/Kconfig, and
+> applies the coding-style to it.
+>
+> Changes v2:
+> - Separates single patch in a short series.
+>
+> Rodrigo Siqueira (2):
+>   iio: dummy: Add correct tabs and spaces to Kconfig
+>   iio:dummy: Add extra paragraphs on Kconfig
 
-drivers/iio/dummy/Kconfig:21: WARNING: please write a paragraph that
-describes the config symbol fully
-drivers/iio/dummy/Kconfig:27: WARNING: please write a paragraph that
-describes the config symbol fully
-
-This patch expands the explanation about IIO_DUMMY_EVGEN by using the
-code documentation found in iio/dummy/iio_dummy_evgen.c. In the same
-way, the information related to IIO_SIMPLE_DUMMY_BUFFER was extracted
-from file iio_simple_dummy_buffer.c.
-
-Signed-off-by: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
----
- drivers/iio/dummy/Kconfig | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/iio/dummy/Kconfig b/drivers/iio/dummy/Kconfig
-index 85e13b2e35bf..c4fd108e91d3 100644
---- a/drivers/iio/dummy/Kconfig
-+++ b/drivers/iio/dummy/Kconfig
-@@ -24,6 +24,10 @@ config IIO_SIMPLE_DUMMY_EVENTS
- 	help
- 	  Add some dummy events to the simple dummy driver.
- 
-+	  The purpose of this is to generate 'fake' event interrupts thus
-+	  allowing that driver's code to be as close as possible to that
-+	  a normal driver talking to hardware.
-+
- config IIO_SIMPLE_DUMMY_BUFFER
- 	bool "Buffered capture support"
- 	select IIO_BUFFER
-@@ -32,6 +36,9 @@ config IIO_SIMPLE_DUMMY_BUFFER
- 	help
- 	  Add buffered data capture to the simple dummy driver.
- 
-+	  Buffer handling elements of industrial I/O reference driver.
-+	  Uses the kfifo buffer.
-+
- endif # IIO_SIMPLE_DUMMY
- 
- endmenu
--- 
-2.16.2
+Reviewed-by: Daniel Baluta <daniel.baluta@nxp.com>
