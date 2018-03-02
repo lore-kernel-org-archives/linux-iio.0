@@ -1,41 +1,38 @@
-Return-Path: <SRS0=5jfr=FZ=google.com=delroth@kernel.org>
-MIME-Version: 1.0
-References: <20180228001525.96044-1-delroth@google.com> <CAHp75VfEaaJfREj5jBk7uwr2aRL96JN4Co=tir9Foy6L9=_o8A@mail.gmail.com>
- <20180303153723.40773aae@archlinux> <CAHp75VeEXdUMw2Skr=jDjUL+Rz=Xu-0S3Mw-X6MvjAXet974hw@mail.gmail.com>
- <20180303161507.2f60345f@archlinux>
-In-Reply-To: <20180303161507.2f60345f@archlinux>
-From: "Pierre Bourdon (delroth)" <delroth@google.com>
-Date: Sat, 03 Mar 2018 20:40:37 +0000
-Message-ID: <CANEr7oXzWGc0qOTNrFkP8vY4CAFG=Q4WNNpsBcQyU8CxUd9=MA@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] iio: light: add driver for bh1730fvc chips
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
-	devicetree <devicetree@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Daniel Baluta <daniel.baluta@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Return-Path: <SRS0=gG0f=FY=gmail.com=shreeya.patel23498@kernel.org>
+From: Shreeya Patel <shreeya.patel23498@gmail.com>
+To: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	pmeerw@pmeerw.net,
+	gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org,
+	daniel.baluta@gmail.com
+Cc: Shreeya Patel <shreeya.patel23498@gmail.com>
+Subject: [PATCH 0/6] adis16209 driver cleanup
+Date: Fri,  2 Mar 2018 18:46:29 +0530
+Message-Id: <cover.1519995673.git.shreeya.patel23498@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, Mar 3, 2018 at 8:15 AM Jonathan Cameron <jic23@kernel.org> wrote:
+This patchset has been introduced for the cleanup of
+adis16209 driver.
+This patchset cleans up miscellaneous code fragments
+and improves the code readability.
 
-> On Sat, 3 Mar 2018 17:44:44 +0200
-> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+Shreeya Patel (6):
+  Staging: iio: adis16209: Arrange headers in alphabetical order
+  Staging: iio: adis16209: Change the definition name
+  Staging: iio: adis16209: Add _REG postfix for registers
+  Staging: iio: adis16209: Remove unnecessary comments and group the
+    definitions
+  Staging: iio: adis16209: Add some informatic comments
+  Staging: iio: adis16209: Use sign_extend32 and adjust a switch
+    statement
 
-> > On Sat, Mar 3, 2018 at 5:37 PM, Jonathan Cameron <jic23@kernel.org>
-wrote:
-> > > On Wed, 28 Feb 2018 17:06:09 +0200
-> > >> On Wed, Feb 28, 2018 at 2:15 AM, Pierre Bourdon <delroth@google.com>
-wrote:
-> >
-> > Better to address even minors before submission.
-
-> Absolutely.
-
-Agreed. I'll be sending a hopefully final v4 addressing these next week.
-I'm giving v3 just a bit more settle time in case anyone else has comments.
-
-Best,
+ drivers/staging/iio/accel/adis16209.c | 245 +++++++++++++---------------------
+ 1 file changed, 94 insertions(+), 151 deletions(-)
 
 -- 
-Pierre Bourdon (delroth@)
+2.7.4
