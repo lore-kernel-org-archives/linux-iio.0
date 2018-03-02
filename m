@@ -1,89 +1,305 @@
-Return-Path: <alexandru.Ardelean@analog.com>
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "jic23@jic23.retrosnub.co.uk" <jic23@jic23.retrosnub.co.uk>
-CC: "lars@metafoo.de" <lars@metafoo.de>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "Hennerich, Michael"
-	<Michael.Hennerich@analog.com>
-Subject: Re: [PATCH] staging: iio: ad5933: merge ring init function into
- probe function
-Date: Tue, 13 Mar 2018 09:01:41 +0000
-Message-ID: <1520931701.3300.0.camel@analog.com>
-References: <20180216120915.19277-1-alexandru.ardelean@analog.com>
-	 <20180224121747.6ff4b90b@archlinux>
-In-Reply-To: <20180224121747.6ff4b90b@archlinux>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <SRS0=ugxn=FY=gmail.com=rodrigosiqueiramelo@kernel.org>
+Date: Fri, 2 Mar 2018 20:38:47 -0300
+From: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	daniel.baluta@nxp.com, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] staging:iio:meter: Add name to function definition
+ arguments
+Message-ID: <20180302233847.xwvs6qnpzhyqd6oq@smtp.gmail.com>
+References: <20180221195435.bycvg26n6sm45lx5@smtp.gmail.com>
+ <20180224134229.297acded@archlinux>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20180224134229.297acded@archlinux>
 List-ID: <linux-iio@vger.kernel.org>
 
-T24gU2F0LCAyMDE4LTAyLTI0IGF0IDEyOjE4ICswMDAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
-Og0KPiBPbiBGcmksIDE2IEZlYiAyMDE4IDE0OjA5OjE1ICswMjAwDQo+IEFsZXhhbmRydSBBcmRl
-bGVhbiA8YWxleGFuZHJ1LmFyZGVsZWFuQGFuYWxvZy5jb20+IHdyb3RlOg0KPiANCj4gPiBUaGlz
-IGlzIGEgc21hbGwgY2xlYW51cCBvZiB0aGUgZHJpdmVyJ3MgaW5pdCBjb2RlLg0KPiA+IEl0IGRv
-ZXMgbm90IGZpeCBhbnl0aGluZy4NCj4gPiANCj4gPiBUaGUgYGRldm1faWlvX2tmaWZvX2FsbG9j
-YXRlKClgIGZ1bmN0aW9uIGlzIHVzZWQgaW5zdGVhZCBvZg0KPiA+IGBpaW9fa2ZpZm9fYWxsb2Nh
-dGUoKWAuICBUaGlzIHJlbW92ZXMgdGhlIG5lZWQgZm9yIGV4cGxpY2l0IGRlYWxsb2NhdGlvbiBv
-Zg0KPiA+IHRoZSBkcml2ZXIncyBpaW9fYnVmZmVyLCB3aGljaCB3aWxsIG5vdyBiZSBoYW5kbGVk
-IHZpYQ0KPiA+IGBpaW9fZGV2aWNlX3VucmVnaXN0ZXIoKWAuDQo+ID4gDQo+ID4gVGhlIGBzZXR1
-cF9vcHNgIGFzc2lnbm1lbnQgaGFzIGJlZW4gbW92ZWQgaW50byB0aGUgYGFkNTkzM19wcm9iZSgp
-YCBjYWxsLA0KPiA+IHNpbmNlIGl0J3MgYSBvbmUtbGluZXIuDQo+ID4gDQo+ID4gU2lnbmVkLW9m
-Zi1ieTogQWxleGFuZHJ1IEFyZGVsZWFuIDxhbGV4YW5kcnUuYXJkZWxlYW5AYW5hbG9nLmNvbT4N
-Cj4gPiAtLS0NCj4gPiANCj4gPiBOb3RlOiB0aGlzIGNoYW5nZSBpcyBiYXNlZCBvbiB0b3Agb2Yg
-YGZpeGVzLXRvZ3JlZy1wb3N0LXJjMWAgYnJhbmNoIHdoaWNoDQo+ID4gY29udGFpbnMgY29tbWl0
-ICg3ZDJiOGU2YWFmOTogc3RhZ2luZzogaWlvOiBhZDU5MzM6IHN3aXRjaCBidWZmZXIgbW9kZSB0
-bw0KPiA+IHNvZnR3YXJlKQ0KPiANCj4gSXQgd2lsbCB0YWtlIGEgZmV3IHdlZWtzIGZvciB0aGF0
-IHRvIGdldCB0byBteSB0b2dyZWcgYnJhbmNoIHNvIHBsZWFzZQ0KPiBkbyByZW1pbmQgbWUgaWYg
-aXQgaGFzIGFuZCBJIHNlZW0gdG8gaGF2ZSBmb3Jnb3R0ZW4gdGhpcyENCj4gDQoNCldhcyB0aGlz
-IHN1cHBvc2VkIHRvIGdvIGludG8gb25lIG9mIHRoZSByZWNlbnQgcHVsbCByZXF1ZXN0cyA/DQpP
-ciBpcyB0aGlzIGZvciBhIGxhdGVyIHB1bGwgPw0KDQpBbGV4DQoNCj4gSm9uYXRoYW4NCj4gDQo+
-ID4gDQo+ID4gIGRyaXZlcnMvc3RhZ2luZy9paW8vaW1wZWRhbmNlLWFuYWx5emVyL2FkNTkzMy5j
-IHwgMzUgKysrKysrKy0tLS0tLS0tLS0tLS0tLS0tLQ0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgMTAg
-aW5zZXJ0aW9ucygrKSwgMjUgZGVsZXRpb25zKC0pDQo+ID4gDQo+ID4gZGlmZiAtLWdpdCBhL2Ry
-aXZlcnMvc3RhZ2luZy9paW8vaW1wZWRhbmNlLWFuYWx5emVyL2FkNTkzMy5jIGIvZHJpdmVycy9z
-dGFnaW5nL2lpby9pbXBlZGFuY2UtYW5hbHl6ZXIvYWQ1OTMzLmMNCj4gPiBpbmRleCAzYmNmNDk0
-NjYzNjEuLjFjYWI2N2IzYTgxZSAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL3N0YWdpbmcvaWlv
-L2ltcGVkYW5jZS1hbmFseXplci9hZDU5MzMuYw0KPiA+ICsrKyBiL2RyaXZlcnMvc3RhZ2luZy9p
-aW8vaW1wZWRhbmNlLWFuYWx5emVyL2FkNTkzMy5jDQo+ID4gQEAgLTYzNSwyMiArNjM1LDYgQEAg
-c3RhdGljIGNvbnN0IHN0cnVjdCBpaW9fYnVmZmVyX3NldHVwX29wcyBhZDU5MzNfcmluZ19zZXR1
-cF9vcHMgPSB7DQo+ID4gIAkucG9zdGRpc2FibGUgPSBhZDU5MzNfcmluZ19wb3N0ZGlzYWJsZSwN
-Cj4gPiAgfTsNCj4gPiAgDQo+ID4gLXN0YXRpYyBpbnQgYWQ1OTMzX3JlZ2lzdGVyX3JpbmdfZnVu
-Y3NfYW5kX2luaXQoc3RydWN0IGlpb19kZXYgKmluZGlvX2RldikNCj4gPiAtew0KPiA+IC0Jc3Ry
-dWN0IGlpb19idWZmZXIgKmJ1ZmZlcjsNCj4gPiAtDQo+ID4gLQlidWZmZXIgPSBpaW9fa2ZpZm9f
-YWxsb2NhdGUoKTsNCj4gPiAtCWlmICghYnVmZmVyKQ0KPiA+IC0JCXJldHVybiAtRU5PTUVNOw0K
-PiA+IC0NCj4gPiAtCWlpb19kZXZpY2VfYXR0YWNoX2J1ZmZlcihpbmRpb19kZXYsIGJ1ZmZlcik7
-DQo+ID4gLQ0KPiA+IC0JLyogUmluZyBidWZmZXIgZnVuY3Rpb25zIC0gaGVyZSB0cmlnZ2VyIHNl
-dHVwIHJlbGF0ZWQgKi8NCj4gPiAtCWluZGlvX2Rldi0+c2V0dXBfb3BzID0gJmFkNTkzM19yaW5n
-X3NldHVwX29wczsNCj4gPiAtDQo+ID4gLQlyZXR1cm4gMDsNCj4gPiAtfQ0KPiA+IC0NCj4gPiAg
-c3RhdGljIHZvaWQgYWQ1OTMzX3dvcmsoc3RydWN0IHdvcmtfc3RydWN0ICp3b3JrKQ0KPiA+ICB7
-DQo+ID4gIAlzdHJ1Y3QgYWQ1OTMzX3N0YXRlICpzdCA9IGNvbnRhaW5lcl9vZih3b3JrLA0KPiA+
-IEBAIC03MTQsMTIgKzY5OCwxOSBAQCBzdGF0aWMgaW50IGFkNTkzM19wcm9iZShzdHJ1Y3QgaTJj
-X2NsaWVudCAqY2xpZW50LA0KPiA+ICAJaW50IHJldCwgdm9sdGFnZV91diA9IDA7DQo+ID4gIAlz
-dHJ1Y3QgYWQ1OTMzX3BsYXRmb3JtX2RhdGEgKnBkYXRhID0gZGV2X2dldF9wbGF0ZGF0YSgmY2xp
-ZW50LT5kZXYpOw0KPiA+ICAJc3RydWN0IGFkNTkzM19zdGF0ZSAqc3Q7DQo+ID4gKwlzdHJ1Y3Qg
-aWlvX2J1ZmZlciAqYnVmZmVyOw0KPiA+ICAJc3RydWN0IGlpb19kZXYgKmluZGlvX2RldjsNCj4g
-PiAgDQo+ID4gIAlpbmRpb19kZXYgPSBkZXZtX2lpb19kZXZpY2VfYWxsb2MoJmNsaWVudC0+ZGV2
-LCBzaXplb2YoKnN0KSk7DQo+ID4gIAlpZiAoIWluZGlvX2RldikNCj4gPiAgCQlyZXR1cm4gLUVO
-T01FTTsNCj4gPiAgDQo+ID4gKwlidWZmZXIgPSBkZXZtX2lpb19rZmlmb19hbGxvY2F0ZSgmY2xp
-ZW50LT5kZXYpOw0KPiA+ICsJaWYgKCFidWZmZXIpDQo+ID4gKwkJcmV0dXJuIC1FTk9NRU07DQo+
-ID4gKw0KPiA+ICsJaWlvX2RldmljZV9hdHRhY2hfYnVmZmVyKGluZGlvX2RldiwgYnVmZmVyKTsN
-Cj4gPiArDQo+ID4gIAlzdCA9IGlpb19wcml2KGluZGlvX2Rldik7DQo+ID4gIAlpMmNfc2V0X2Ns
-aWVudGRhdGEoY2xpZW50LCBpbmRpb19kZXYpOw0KPiA+ICAJc3QtPmNsaWVudCA9IGNsaWVudDsN
-Cj4gPiBAQCAtNzYzLDIzICs3NTQsMTggQEAgc3RhdGljIGludCBhZDU5MzNfcHJvYmUoc3RydWN0
-IGkyY19jbGllbnQgKmNsaWVudCwNCj4gPiAgCWluZGlvX2Rldi0+bW9kZXMgPSAoSU5ESU9fQlVG
-RkVSX1NPRlRXQVJFIHwgSU5ESU9fRElSRUNUX01PREUpOw0KPiA+ICAJaW5kaW9fZGV2LT5jaGFu
-bmVscyA9IGFkNTkzM19jaGFubmVsczsNCj4gPiAgCWluZGlvX2Rldi0+bnVtX2NoYW5uZWxzID0g
-QVJSQVlfU0laRShhZDU5MzNfY2hhbm5lbHMpOw0KPiA+IC0NCj4gPiAtCXJldCA9IGFkNTkzM19y
-ZWdpc3Rlcl9yaW5nX2Z1bmNzX2FuZF9pbml0KGluZGlvX2Rldik7DQo+ID4gLQlpZiAocmV0KQ0K
-PiA+IC0JCWdvdG8gZXJyb3JfZGlzYWJsZV9yZWc7DQo+ID4gKwlpbmRpb19kZXYtPnNldHVwX29w
-cyA9ICZhZDU5MzNfcmluZ19zZXR1cF9vcHM7DQo+ID4gIA0KPiA+ICAJcmV0ID0gYWQ1OTMzX3Nl
-dHVwKHN0KTsNCj4gPiAgCWlmIChyZXQpDQo+ID4gLQkJZ290byBlcnJvcl91bnJlZ19yaW5nOw0K
-PiA+ICsJCWdvdG8gZXJyb3JfZGlzYWJsZV9yZWc7DQo+ID4gIA0KPiA+ICAJcmV0ID0gaWlvX2Rl
-dmljZV9yZWdpc3RlcihpbmRpb19kZXYpOw0KPiA+ICAJaWYgKHJldCkNCj4gPiAtCQlnb3RvIGVy
-cm9yX3VucmVnX3Jpbmc7DQo+ID4gKwkJZ290byBlcnJvcl9kaXNhYmxlX3JlZzsNCj4gPiAgDQo+
-ID4gIAlyZXR1cm4gMDsNCj4gPiAgDQo+ID4gLWVycm9yX3VucmVnX3Jpbmc6DQo+ID4gLQlpaW9f
-a2ZpZm9fZnJlZShpbmRpb19kZXYtPmJ1ZmZlcik7DQo+ID4gIGVycm9yX2Rpc2FibGVfcmVnOg0K
-PiA+ICAJcmVndWxhdG9yX2Rpc2FibGUoc3QtPnJlZyk7DQo+ID4gIA0KPiA+IEBAIC03OTIsNyAr
-Nzc4LDYgQEAgc3RhdGljIGludCBhZDU5MzNfcmVtb3ZlKHN0cnVjdCBpMmNfY2xpZW50ICpjbGll
-bnQpDQo+ID4gIAlzdHJ1Y3QgYWQ1OTMzX3N0YXRlICpzdCA9IGlpb19wcml2KGluZGlvX2Rldik7
-DQo+ID4gIA0KPiA+ICAJaWlvX2RldmljZV91bnJlZ2lzdGVyKGluZGlvX2Rldik7DQo+ID4gLQlp
-aW9fa2ZpZm9fZnJlZShpbmRpb19kZXYtPmJ1ZmZlcik7DQo+ID4gIAlyZWd1bGF0b3JfZGlzYWJs
-ZShzdC0+cmVnKTsNCj4gPiAgDQo+ID4gIAlyZXR1cm4gMDsNCj4gDQo+IA==
+On 02/24, Jonathan Cameron wrote:
+> On Wed, 21 Feb 2018 16:54:35 -0300
+> Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com> wrote:
+> 
+> > This patch fixes the checkpatch.pl warning:
+> > 
+> > drivers/staging/iio/meter/ade7854.h:157: WARNING: function definition
+> > argument 'struct device *' should also have an identifier name...
+> > 
+> > This commit adds arguments names to the signature declared in the
+> > ade7854_state struct. For consistency reason, It also renames all
+> > arguments in function definitions.
+> > 
+> > Signed-off-by: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
+> 
+> I would have slightly preferred this as two patches - one doing the
+> renames and one introducing them where they were missing.
+> 
+> Applied to the togreg branch of iio.git and pushed out as testing
+> for the autobuilders to play with it.
+
+Hi Jonathan,
+
+I looked at 'togreg' and 'testing' branch, and I did not find the patch.
+Is it in another branch?
+
+Thanks.
+
+ 
+> Thanks,
+> 
+> Jonathan
+> 
+> > ---
+> > Changes in v2:
+> >   - Make the commit message clearer.
+> >   - Use the same arguments name across signatures and definitions.
+> > Changes in v3:
+> >   - Fix name in the email header.
+> > 
+> >  drivers/staging/iio/meter/ade7754.c     |  6 +++---
+> >  drivers/staging/iio/meter/ade7854-i2c.c | 28 ++++++++++++++--------------
+> >  drivers/staging/iio/meter/ade7854-spi.c | 28 ++++++++++++++--------------
+> >  drivers/staging/iio/meter/ade7854.h     | 28 ++++++++++++++--------------
+> >  4 files changed, 45 insertions(+), 45 deletions(-)
+> > 
+> > diff --git a/drivers/staging/iio/meter/ade7754.c b/drivers/staging/iio/meter/ade7754.c
+> > index 3a1e342d75fb..9aa067736715 100644
+> > --- a/drivers/staging/iio/meter/ade7754.c
+> > +++ b/drivers/staging/iio/meter/ade7754.c
+> > @@ -132,7 +132,7 @@ static int ade7754_spi_write_reg_8(struct device *dev, u8 reg_address, u8 val)
+> >  }
+> >  
+> >  static int ade7754_spi_write_reg_16(struct device *dev,
+> > -				    u8 reg_address, u16 value)
+> > +				    u8 reg_address, u16 val)
+> >  {
+> >  	int ret;
+> >  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> > @@ -140,8 +140,8 @@ static int ade7754_spi_write_reg_16(struct device *dev,
+> >  
+> >  	mutex_lock(&st->buf_lock);
+> >  	st->tx[0] = ADE7754_WRITE_REG(reg_address);
+> > -	st->tx[1] = (value >> 8) & 0xFF;
+> > -	st->tx[2] = value & 0xFF;
+> > +	st->tx[1] = (val >> 8) & 0xFF;
+> > +	st->tx[2] = val & 0xFF;
+> >  	ret = spi_write(st->us, st->tx, 3);
+> >  	mutex_unlock(&st->buf_lock);
+> >  
+> > diff --git a/drivers/staging/iio/meter/ade7854-i2c.c b/drivers/staging/iio/meter/ade7854-i2c.c
+> > index 8106f8cceeab..317e4f0d8176 100644
+> > --- a/drivers/staging/iio/meter/ade7854-i2c.c
+> > +++ b/drivers/staging/iio/meter/ade7854-i2c.c
+> > @@ -17,7 +17,7 @@
+> >  
+> >  static int ade7854_i2c_write_reg_8(struct device *dev,
+> >  				   u16 reg_address,
+> > -				   u8 value)
+> > +				   u8 val)
+> >  {
+> >  	int ret;
+> >  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> > @@ -26,7 +26,7 @@ static int ade7854_i2c_write_reg_8(struct device *dev,
+> >  	mutex_lock(&st->buf_lock);
+> >  	st->tx[0] = (reg_address >> 8) & 0xFF;
+> >  	st->tx[1] = reg_address & 0xFF;
+> > -	st->tx[2] = value;
+> > +	st->tx[2] = val;
+> >  
+> >  	ret = i2c_master_send(st->i2c, st->tx, 3);
+> >  	mutex_unlock(&st->buf_lock);
+> > @@ -36,7 +36,7 @@ static int ade7854_i2c_write_reg_8(struct device *dev,
+> >  
+> >  static int ade7854_i2c_write_reg_16(struct device *dev,
+> >  				    u16 reg_address,
+> > -				    u16 value)
+> > +				    u16 val)
+> >  {
+> >  	int ret;
+> >  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> > @@ -45,8 +45,8 @@ static int ade7854_i2c_write_reg_16(struct device *dev,
+> >  	mutex_lock(&st->buf_lock);
+> >  	st->tx[0] = (reg_address >> 8) & 0xFF;
+> >  	st->tx[1] = reg_address & 0xFF;
+> > -	st->tx[2] = (value >> 8) & 0xFF;
+> > -	st->tx[3] = value & 0xFF;
+> > +	st->tx[2] = (val >> 8) & 0xFF;
+> > +	st->tx[3] = val & 0xFF;
+> >  
+> >  	ret = i2c_master_send(st->i2c, st->tx, 4);
+> >  	mutex_unlock(&st->buf_lock);
+> > @@ -56,7 +56,7 @@ static int ade7854_i2c_write_reg_16(struct device *dev,
+> >  
+> >  static int ade7854_i2c_write_reg_24(struct device *dev,
+> >  				    u16 reg_address,
+> > -				    u32 value)
+> > +				    u32 val)
+> >  {
+> >  	int ret;
+> >  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> > @@ -65,9 +65,9 @@ static int ade7854_i2c_write_reg_24(struct device *dev,
+> >  	mutex_lock(&st->buf_lock);
+> >  	st->tx[0] = (reg_address >> 8) & 0xFF;
+> >  	st->tx[1] = reg_address & 0xFF;
+> > -	st->tx[2] = (value >> 16) & 0xFF;
+> > -	st->tx[3] = (value >> 8) & 0xFF;
+> > -	st->tx[4] = value & 0xFF;
+> > +	st->tx[2] = (val >> 16) & 0xFF;
+> > +	st->tx[3] = (val >> 8) & 0xFF;
+> > +	st->tx[4] = val & 0xFF;
+> >  
+> >  	ret = i2c_master_send(st->i2c, st->tx, 5);
+> >  	mutex_unlock(&st->buf_lock);
+> > @@ -77,7 +77,7 @@ static int ade7854_i2c_write_reg_24(struct device *dev,
+> >  
+> >  static int ade7854_i2c_write_reg_32(struct device *dev,
+> >  				    u16 reg_address,
+> > -				    u32 value)
+> > +				    u32 val)
+> >  {
+> >  	int ret;
+> >  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> > @@ -86,10 +86,10 @@ static int ade7854_i2c_write_reg_32(struct device *dev,
+> >  	mutex_lock(&st->buf_lock);
+> >  	st->tx[0] = (reg_address >> 8) & 0xFF;
+> >  	st->tx[1] = reg_address & 0xFF;
+> > -	st->tx[2] = (value >> 24) & 0xFF;
+> > -	st->tx[3] = (value >> 16) & 0xFF;
+> > -	st->tx[4] = (value >> 8) & 0xFF;
+> > -	st->tx[5] = value & 0xFF;
+> > +	st->tx[2] = (val >> 24) & 0xFF;
+> > +	st->tx[3] = (val >> 16) & 0xFF;
+> > +	st->tx[4] = (val >> 8) & 0xFF;
+> > +	st->tx[5] = val & 0xFF;
+> >  
+> >  	ret = i2c_master_send(st->i2c, st->tx, 6);
+> >  	mutex_unlock(&st->buf_lock);
+> > diff --git a/drivers/staging/iio/meter/ade7854-spi.c b/drivers/staging/iio/meter/ade7854-spi.c
+> > index 63e200ffd1f2..72eddfec21f7 100644
+> > --- a/drivers/staging/iio/meter/ade7854-spi.c
+> > +++ b/drivers/staging/iio/meter/ade7854-spi.c
+> > @@ -17,7 +17,7 @@
+> >  
+> >  static int ade7854_spi_write_reg_8(struct device *dev,
+> >  		u16 reg_address,
+> > -		u8 value)
+> > +		u8 val)
+> >  {
+> >  	int ret;
+> >  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> > @@ -32,7 +32,7 @@ static int ade7854_spi_write_reg_8(struct device *dev,
+> >  	st->tx[0] = ADE7854_WRITE_REG;
+> >  	st->tx[1] = (reg_address >> 8) & 0xFF;
+> >  	st->tx[2] = reg_address & 0xFF;
+> > -	st->tx[3] = value & 0xFF;
+> > +	st->tx[3] = val & 0xFF;
+> >  
+> >  	ret = spi_sync_transfer(st->spi, &xfer, 1);
+> >  	mutex_unlock(&st->buf_lock);
+> > @@ -42,7 +42,7 @@ static int ade7854_spi_write_reg_8(struct device *dev,
+> >  
+> >  static int ade7854_spi_write_reg_16(struct device *dev,
+> >  		u16 reg_address,
+> > -		u16 value)
+> > +		u16 val)
+> >  {
+> >  	int ret;
+> >  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> > @@ -57,8 +57,8 @@ static int ade7854_spi_write_reg_16(struct device *dev,
+> >  	st->tx[0] = ADE7854_WRITE_REG;
+> >  	st->tx[1] = (reg_address >> 8) & 0xFF;
+> >  	st->tx[2] = reg_address & 0xFF;
+> > -	st->tx[3] = (value >> 8) & 0xFF;
+> > -	st->tx[4] = value & 0xFF;
+> > +	st->tx[3] = (val >> 8) & 0xFF;
+> > +	st->tx[4] = val & 0xFF;
+> >  
+> >  	ret = spi_sync_transfer(st->spi, &xfer, 1);
+> >  	mutex_unlock(&st->buf_lock);
+> > @@ -68,7 +68,7 @@ static int ade7854_spi_write_reg_16(struct device *dev,
+> >  
+> >  static int ade7854_spi_write_reg_24(struct device *dev,
+> >  		u16 reg_address,
+> > -		u32 value)
+> > +		u32 val)
+> >  {
+> >  	int ret;
+> >  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> > @@ -83,9 +83,9 @@ static int ade7854_spi_write_reg_24(struct device *dev,
+> >  	st->tx[0] = ADE7854_WRITE_REG;
+> >  	st->tx[1] = (reg_address >> 8) & 0xFF;
+> >  	st->tx[2] = reg_address & 0xFF;
+> > -	st->tx[3] = (value >> 16) & 0xFF;
+> > -	st->tx[4] = (value >> 8) & 0xFF;
+> > -	st->tx[5] = value & 0xFF;
+> > +	st->tx[3] = (val >> 16) & 0xFF;
+> > +	st->tx[4] = (val >> 8) & 0xFF;
+> > +	st->tx[5] = val & 0xFF;
+> >  
+> >  	ret = spi_sync_transfer(st->spi, &xfer, 1);
+> >  	mutex_unlock(&st->buf_lock);
+> > @@ -95,7 +95,7 @@ static int ade7854_spi_write_reg_24(struct device *dev,
+> >  
+> >  static int ade7854_spi_write_reg_32(struct device *dev,
+> >  		u16 reg_address,
+> > -		u32 value)
+> > +		u32 val)
+> >  {
+> >  	int ret;
+> >  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> > @@ -110,10 +110,10 @@ static int ade7854_spi_write_reg_32(struct device *dev,
+> >  	st->tx[0] = ADE7854_WRITE_REG;
+> >  	st->tx[1] = (reg_address >> 8) & 0xFF;
+> >  	st->tx[2] = reg_address & 0xFF;
+> > -	st->tx[3] = (value >> 24) & 0xFF;
+> > -	st->tx[4] = (value >> 16) & 0xFF;
+> > -	st->tx[5] = (value >> 8) & 0xFF;
+> > -	st->tx[6] = value & 0xFF;
+> > +	st->tx[3] = (val >> 24) & 0xFF;
+> > +	st->tx[4] = (val >> 16) & 0xFF;
+> > +	st->tx[5] = (val >> 8) & 0xFF;
+> > +	st->tx[6] = val & 0xFF;
+> >  
+> >  	ret = spi_sync_transfer(st->spi, &xfer, 1);
+> >  	mutex_unlock(&st->buf_lock);
+> > diff --git a/drivers/staging/iio/meter/ade7854.h b/drivers/staging/iio/meter/ade7854.h
+> > index c27247a7891a..a82d38224cbd 100644
+> > --- a/drivers/staging/iio/meter/ade7854.h
+> > +++ b/drivers/staging/iio/meter/ade7854.h
+> > @@ -152,20 +152,20 @@
+> >   * @rx:			receive buffer
+> >   **/
+> >  struct ade7854_state {
+> > -	struct spi_device	*spi;
+> > -	struct i2c_client	*i2c;
+> > -	int			(*read_reg_8)(struct device *, u16, u8 *);
+> > -	int			(*read_reg_16)(struct device *, u16, u16 *);
+> > -	int			(*read_reg_24)(struct device *, u16, u32 *);
+> > -	int			(*read_reg_32)(struct device *, u16, u32 *);
+> > -	int			(*write_reg_8)(struct device *, u16, u8);
+> > -	int			(*write_reg_16)(struct device *, u16, u16);
+> > -	int			(*write_reg_24)(struct device *, u16, u32);
+> > -	int			(*write_reg_32)(struct device *, u16, u32);
+> > -	int			irq;
+> > -	struct mutex		buf_lock;
+> > -	u8			tx[ADE7854_MAX_TX] ____cacheline_aligned;
+> > -	u8			rx[ADE7854_MAX_RX];
+> > +	struct spi_device *spi;
+> > +	struct i2c_client *i2c;
+> > +	int (*read_reg_8)(struct device *dev, u16 reg_address, u8 *val);
+> > +	int (*read_reg_16)(struct device *dev, u16 reg_address, u16 *val);
+> > +	int (*read_reg_24)(struct device *dev, u16 reg_address, u32 *val);
+> > +	int (*read_reg_32)(struct device *dev, u16 reg_address, u32 *val);
+> > +	int (*write_reg_8)(struct device *dev, u16 reg_address, u8 val);
+> > +	int (*write_reg_16)(struct device *dev, u16 reg_address, u16 val);
+> > +	int (*write_reg_24)(struct device *dev, u16 reg_address, u32 val);
+> > +	int (*write_reg_32)(struct device *dev, u16 reg_address, u32 val);
+> > +	int irq;
+> > +	struct mutex buf_lock;
+> > +	u8 tx[ADE7854_MAX_TX] ____cacheline_aligned;
+> > +	u8 rx[ADE7854_MAX_RX];
+> >  
+> >  };
+> >  
+> 
