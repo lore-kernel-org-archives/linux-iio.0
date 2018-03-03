@@ -1,178 +1,94 @@
-Return-Path: <SRS0=Tkac=GA=elementarea.net=a.brauchli@kernel.org>
-Message-ID: <084b2bfbc9bf88ff000609d7bc0dace985790d1f.camel@elementarea.net>
-Subject: Re: [PATCH 2/2] iio: chemical: sgpxx: triggered buffer support
-From: Andreas Brauchli <a.brauchli@elementarea.net>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Date: Sat, 10 Mar 2018 23:06:14 +0100
-In-Reply-To: <20171125174848.2d3d5b74@archlinux>
-References: <1511280689.12439.36.camel@elementarea.net>
-	 <20171125174848.2d3d5b74@archlinux>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.99]:47392 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751885AbeCCO5d (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 3 Mar 2018 09:57:33 -0500
+Date: Sat, 3 Mar 2018 14:57:29 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Jeff LaBundy <jeff@labundy.com>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] iio: light: lv0104cs: Add support for LV0104CS light
+ sensor
+Message-ID: <20180303145729.40142639@archlinux>
+In-Reply-To: <20180225023808.GA2301@labundy.com>
+References: <1518620285-1893-1-git-send-email-jeff@labundy.com>
+        <1518978307-7108-1-git-send-email-jeff@labundy.com>
+        <20180224120259.63e62d3c@archlinux>
+        <20180225023808.GA2301@labundy.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, 2017-11-25 at 17:48 +0000, Jonathan Cameron wrote:
-> On Tue, 21 Nov 2017 17:11:29 +0100
-> Andreas Brauchli <a.brauchli@elementarea.net> wrote:
-> 
-> > Support triggered buffer for use with e.g. hrtimer for automated
-> > polling to ensure that the sensor's internal baseline is correctly
-> > updated independently of the use-case.
-> 
-> Given the really strict timing requirements for this device and slow
-> read rates, I wouldn't involve a triggered buffer at all, but
-> actually
-> do it with a thread / timer within the initial driver.   The
-> sysfs interface is more than adequate for a 1Hz device so using
-> the buffered option is just adding unnecessary complexity...
+On Sat, 24 Feb 2018 20:38:08 -0600
+Jeff LaBundy <jeff@labundy.com> wrote:
 
-Thanks for the suggestions, I went with that in v2.
-
-> 
-> I reviewed the code anyway.  Key thing is though the file would be
-> small, there should be a separate .c file for the buffered support
-> if you are going to make it optional. That way we don't get ifdefs
-> in the c file, but rather stubs provided in the header.
-
-FWIW, I learned a few things
-
-> You could decide to add stubs to include/linux/iio/triggered_buffer.h
-> /buffer.h
-> 
-> and then use __maybe_unusued to mark your trigger function.
-> The compiler would drop it anyway and this would suppress build
-> warnings.  
-> 
-> However, I don't think this device wants to be supported via the
-> buffered interfaces at all.  More smartness needed in the core
-> driver to maintain the timing etc.
-> 
-> Jonathan
+<snip>
+> > > +static int lv0104cs_get_lux(struct lv0104cs_private *lv0104cs,
+> > > +				int *val, int *val2)
+> > > +{
+> > > +	u8 regval = LV0104CS_REGVAL_MEASURE;
+> > > +	u16 adc_output;
+> > > +	int ret;
+> > > +
+> > > +	regval |= lv0104cs_scales[lv0104cs->scale].regval;
+> > > +	regval |= lv0104cs_int_times[lv0104cs->int_time].regval;
+> > > +	ret = lv0104cs_write_reg(lv0104cs, regval);
+> > > +	if (ret)
+> > > +		return ret;
+> > > +
+> > > +	/* wait for integration time to pass (with margin) */
+> > > +	switch (lv0104cs->int_time) {
+> > > +	case LV0104CS_INTEG_12_5MS:
+> > > +		msleep(50);
+> > > +		break;
+> > > +
+> > > +	case LV0104CS_INTEG_100MS:
+> > > +		msleep(150);
+> > > +		break;
+> > > +
+> > > +	case LV0104CS_INTEG_200MS:
+> > > +		msleep(250);
+> > > +		break;
+> > > +
+> > > +	default:
+> > > +		return -EINVAL;
+> > > +	}
+> > > +
+> > > +	ret = lv0104cs_read_adc(lv0104cs, &adc_output);
+> > > +	if (ret)
+> > > +		return ret;
+> > > +
+> > > +	ret = lv0104cs_write_reg(lv0104cs, LV0104CS_REGVAL_SLEEP);
+> > > +	if (ret)
+> > > +		return ret;
+> > > +
+> > > +	/* convert ADC output to lux */
+> > > +	switch (lv0104cs->scale) {
+> > > +	case LV0104CS_SCALE_0_25X:  
+> > Hmm.  Given how simple the scale application is and the fact
+> > that we aren't trying dynamic control (which makes this complex)
+> > we 'could' go for the IIO default option of providing the raw
+> > value and letting userspace deal with the calibration.
 > > 
-> > Triggered buffer support is only enabled when IIO_BUFFER is set.
-> > 
-> > Signed-off-by: Andreas Brauchli <andreas.brauchli@sensirion.com>
-> > ---
-> >  drivers/iio/chemical/Kconfig |  3 +++
-> >  drivers/iio/chemical/sgpxx.c | 38
-> > ++++++++++++++++++++++++++++++++++++++
-> >  2 files changed, 41 insertions(+)
-> > 
-> > diff --git a/drivers/iio/chemical/Kconfig
-> > b/drivers/iio/chemical/Kconfig
-> > index 4574dd687513..6710fbfc6451 100644
-> > --- a/drivers/iio/chemical/Kconfig
-> > +++ b/drivers/iio/chemical/Kconfig
-> > @@ -42,12 +42,15 @@ config SENSIRION_SGPXX
-> >  	tristate "Sensirion SGPxx gas sensors"
-> >  	depends on I2C
-> >  	select CRC8
-> > +	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
-> >  	help
-> >  	  Say Y here to build I2C interface support for the
-> > following
-> >  	  Sensirion SGP gas sensors:
-> >  	    * SGP30 gas sensor
-> >  	    * SGPC3 gas sensor
-> >  
-> > +	  Also select IIO_BUFFER to enable triggered buffers.
-> > +
-> >  	  To compile this driver as module, choose M here: the
-> >  	  module will be called sgpxx.
-> >  
-> > diff --git a/drivers/iio/chemical/sgpxx.c
-> > b/drivers/iio/chemical/sgpxx.c
-> > index aea55e41d4cc..025206448f73 100644
-> > --- a/drivers/iio/chemical/sgpxx.c
-> > +++ b/drivers/iio/chemical/sgpxx.c
-> > @@ -27,6 +27,10 @@
-> >  #include <linux/of_device.h>
-> >  #include <linux/iio/iio.h>
-> >  #include <linux/iio/buffer.h>
-> > +#ifdef CONFIG_IIO_BUFFER
-> > +#include <linux/iio/trigger_consumer.h>
-> > +#include <linux/iio/triggered_buffer.h>
-> > +#endif /* CONFIG_IIO_BUFFER */
-> >  #include <linux/iio/sysfs.h>
-> >  
-> >  #define SGP_WORD_LEN			2
-> > @@ -789,6 +793,26 @@ static const struct of_device_id sgp_dt_ids[]
-> > = {
-> >  	{ }
-> >  };
-> >  
-> > +#ifdef CONFIG_IIO_BUFFER
+> > However, this is a slow device (fairly anyway) so the
+> > cost of conversion is trivial and we are unlikely to ever want
+> > to bother with a buffered interface on this I think things
+> > are fine as you have them.  
 > 
-> All this ifdef fun is rather messy.
-> Split it out to a separate file like most other drivers with
-> optional buffer support. 
-> 
-> General rule (more or less) of kernel drivers is that
-> any optional ifdef stuff should be in headers to provide stubs
-> when code isn't available, not down in the drivers making them
-> harder to read.
-> 
-> > +static irqreturn_t sgp_trigger_handler(int irq, void *p)
-> > +{
-> > +	struct iio_poll_func *pf = p;
-> > +	struct iio_dev *indio_dev = pf->indio_dev;
-> > +	struct sgp_data *data = iio_priv(indio_dev);
-> > +	int ret;
-> > +
-> > +	ret = sgp_get_measurement(data, data->measure_iaq_cmd,
-> > +				  SGP_MEASURE_MODE_IAQ);
-> > +	if (!ret)
-> > +		iio_push_to_buffers_with_timestamp(indio_dev,
-> > +						   &data-
-> > >buffer.start,
-> > +						   pf->timestamp);
-> > +
-> > +	iio_trigger_notify_done(indio_dev->trig);
-> > +	return IRQ_HANDLED;
-> > +}
-> > +#endif /* CONFIG_IIO_BUFFER */
-> > +
-> >  static int sgp_probe(struct i2c_client *client,
-> >  		     const struct i2c_device_id *id)
-> >  {
-> > @@ -846,6 +870,17 @@ static int sgp_probe(struct i2c_client
-> > *client,
-> >  	indio_dev->channels = chip->channels;
-> >  	indio_dev->num_channels = chip->num_channels;
-> >  
-> > +#ifdef CONFIG_IIO_BUFFER
-> > +	ret = iio_triggered_buffer_setup(indio_dev,
-> > +					 iio_pollfunc_store_time,
-> > +					 sgp_trigger_handler,
-> > +					 NULL);
-> > +	if (ret) {
-> > +		dev_err(&client->dev, "failed to setup iio
-> > triggered buffer\n");
-> > +		goto fail_free;
-> > +	}
-> > +#endif /* CONFIG_IIO_BUFFER */
-> > +
-> >  	ret = devm_iio_device_register(&client->dev, indio_dev);
-> >  	if (!ret)
-> >  		return ret;
-> > @@ -863,6 +898,9 @@ static int sgp_remove(struct i2c_client
-> > *client)
-> >  {
-> >  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> >  
-> > +#ifdef CONFIG_IIO_BUFFER
-> > +	iio_triggered_buffer_cleanup(indio_dev);
-> > +#endif /* CONFIG_IIO_BUFFER */
-> 
-> I would prefer stubs being added to the header for this case to
-> having
-> ifdefs in here.
-> 
-> >  	devm_iio_device_unregister(&client->dev, indio_dev);
-> >  	return 0;
-> >  }
-> 
-> 
+> Sure thing, I'll leave this as-is. The reason for having chosen
+> PROCESSED is because the device's ADC output already includes the
+> effects of CALIBSCALE, so the device technically does not offer
+> a RAW output on its own. Therefore I have presented a PROCESSED
+> value that includes the SCALE that was in place when the measurement
+> was captured.
+It's normal for a device to already include the effect of a
+calibscale as they are often done by tweaking a DAC in the
+analog section of the sensor circuit.  So don't let that
+argue against providing a _RAW value.
+
+The answer is still fine though, just thought I'd comment on the
+reasoning ;)
+
+<snip>
