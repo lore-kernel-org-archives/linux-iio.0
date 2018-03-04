@@ -1,97 +1,99 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:54908 "EHLO mail.kernel.org"
+Received: from onstation.org ([52.200.56.107]:52880 "EHLO onstation.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751169AbeCJOmb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 10 Mar 2018 09:42:31 -0500
-Date: Sat, 10 Mar 2018 14:42:25 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Brian Masney <masneyb@onstation.org>
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-        devel@driverdev.osuosl.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-kernel@vger.kernel.org,
-        Jon.Brenner@ams.com
-Subject: Re: [PATCH 06/12] staging: iio: tsl2x7x: correctly return errors in
- tsl2x7x_get_prox()
-Message-ID: <20180310144225.547f4ec3@archlinux>
-In-Reply-To: <20180304014942.18727-7-masneyb@onstation.org>
+        id S1751881AbeCDBy4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 3 Mar 2018 20:54:56 -0500
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
+Subject: [PATCH 07/12] staging: iio: tsl2x7x: correct 'Avoid CamelCase' warning from checkpatch
+Date: Sat,  3 Mar 2018 20:49:37 -0500
+Message-Id: <20180304014942.18727-8-masneyb@onstation.org>
+In-Reply-To: <20180304014942.18727-1-masneyb@onstation.org>
 References: <20180304014942.18727-1-masneyb@onstation.org>
-        <20180304014942.18727-7-masneyb@onstation.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat,  3 Mar 2018 20:49:36 -0500
-Brian Masney <masneyb@onstation.org> wrote:
+The statP and calP variables triggered an 'Avoid CamelCase' warning
+from checkpatch.pl. This patch renames these variables to stat and cal
+to fix this warning.
 
-> Not all errors that occurred in tsl2x7x_get_prox() were correctly
-> reported in the return value. This patch changes the error handling
-> so that errors are now returned properly.
-> 
-> Note that the ret variable is from the call to tsl2x7x_read_status(),
-> and it already has the correct error check. The -EINVAL error code is
-> for an unexpected value in the register.
-> 
-> This patch also corrects an unnecessary word wrap in the call to
-> le16_to_cpup() while changes are being made to this code.
-> 
-> Signed-off-by: Brian Masney <masneyb@onstation.org>
-Good cleanup.
+Signed-off-by: Brian Masney <masneyb@onstation.org>
+---
+ drivers/staging/iio/light/tsl2x7x.c | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
 
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to work their magic.
-
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/staging/iio/light/tsl2x7x.c | 15 +++++++++------
->  1 file changed, 9 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
-> index 5c611250127f..cc209b64ed5a 100644
-> --- a/drivers/staging/iio/light/tsl2x7x.c
-> +++ b/drivers/staging/iio/light/tsl2x7x.c
-> @@ -489,16 +489,20 @@ static int tsl2x7x_get_prox(struct iio_dev *indio_dev)
->  	case tmd2671:
->  	case tsl2771:
->  	case tmd2771:
-> -		if (!(ret & TSL2X7X_STA_ADC_VALID))
-> +		if (!(ret & TSL2X7X_STA_ADC_VALID)) {
-> +			ret = -EINVAL;
->  			goto prox_poll_err;
-> +		}
->  		break;
->  	case tsl2572:
->  	case tsl2672:
->  	case tmd2672:
->  	case tsl2772:
->  	case tmd2772:
-> -		if (!(ret & TSL2X7X_STA_PRX_VALID))
-> +		if (!(ret & TSL2X7X_STA_PRX_VALID)) {
-> +			ret = -EINVAL;
->  			goto prox_poll_err;
-> +		}
->  		break;
->  	}
->  
-> @@ -512,14 +516,13 @@ static int tsl2x7x_get_prox(struct iio_dev *indio_dev)
->  		chdata[i] = ret;
->  	}
->  
-> -	chip->prox_data =
-> -			le16_to_cpup((const __le16 *)&chdata[0]);
-> +	chip->prox_data = le16_to_cpup((const __le16 *)&chdata[0]);
-> +	ret = chip->prox_data;
->  
->  prox_poll_err:
-> -
->  	mutex_unlock(&chip->prox_mutex);
->  
-> -	return chip->prox_data;
-> +	return ret;
->  }
->  
->  /**
+diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
+index cc209b64ed5a..380a6c96a69a 100644
+--- a/drivers/staging/iio/light/tsl2x7x.c
++++ b/drivers/staging/iio/light/tsl2x7x.c
+@@ -773,7 +773,7 @@ static int tsl2x7x_invoke_change(struct iio_dev *indio_dev)
+ }
+ 
+ static void tsl2x7x_prox_calculate(int *data, int length,
+-				   struct tsl2x7x_prox_stat *statP)
++				   struct tsl2x7x_prox_stat *stat)
+ {
+ 	int i;
+ 	int sample_sum;
+@@ -783,21 +783,21 @@ static void tsl2x7x_prox_calculate(int *data, int length,
+ 		length = 1;
+ 
+ 	sample_sum = 0;
+-	statP->min = INT_MAX;
+-	statP->max = INT_MIN;
++	stat->min = INT_MAX;
++	stat->max = INT_MIN;
+ 	for (i = 0; i < length; i++) {
+ 		sample_sum += data[i];
+-		statP->min = min(statP->min, data[i]);
+-		statP->max = max(statP->max, data[i]);
++		stat->min = min(stat->min, data[i]);
++		stat->max = max(stat->max, data[i]);
+ 	}
+ 
+-	statP->mean = sample_sum / length;
++	stat->mean = sample_sum / length;
+ 	sample_sum = 0;
+ 	for (i = 0; i < length; i++) {
+-		tmp = data[i] - statP->mean;
++		tmp = data[i] - stat->mean;
+ 		sample_sum += tmp * tmp;
+ 	}
+-	statP->stddev = int_sqrt((long)sample_sum / length);
++	stat->stddev = int_sqrt((long)sample_sum / length);
+ }
+ 
+ /**
+@@ -812,7 +812,7 @@ static void tsl2x7x_prox_cal(struct iio_dev *indio_dev)
+ 	int prox_history[MAX_SAMPLES_CAL + 1];
+ 	int i;
+ 	struct tsl2x7x_prox_stat prox_stat_data[2];
+-	struct tsl2x7x_prox_stat *calP;
++	struct tsl2x7x_prox_stat *cal;
+ 	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
+ 	u8 tmp_irq_settings;
+ 	u8 current_state = chip->tsl2x7x_chip_status;
+@@ -844,13 +844,13 @@ static void tsl2x7x_prox_cal(struct iio_dev *indio_dev)
+ 	}
+ 
+ 	tsl2x7x_chip_off(indio_dev);
+-	calP = &prox_stat_data[PROX_STAT_CAL];
++	cal = &prox_stat_data[PROX_STAT_CAL];
+ 	tsl2x7x_prox_calculate(prox_history,
+-			       chip->settings.prox_max_samples_cal, calP);
+-	chip->settings.prox_thres_high = (calP->max << 1) - calP->mean;
++			       chip->settings.prox_max_samples_cal, cal);
++	chip->settings.prox_thres_high = (cal->max << 1) - cal->mean;
+ 
+ 	dev_info(&chip->client->dev, " cal min=%d mean=%d max=%d\n",
+-		 calP->min, calP->mean, calP->max);
++		 cal->min, cal->mean, cal->max);
+ 	dev_info(&chip->client->dev,
+ 		 "%s proximity threshold set to %d\n",
+ 		 chip->client->name, chip->settings.prox_thres_high);
+-- 
+2.14.3
 
