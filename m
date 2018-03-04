@@ -1,72 +1,81 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:54588 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751145AbeCJOkC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 10 Mar 2018 09:40:02 -0500
-Date: Sat, 10 Mar 2018 14:39:56 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Brian Masney <masneyb@onstation.org>
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-        devel@driverdev.osuosl.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-kernel@vger.kernel.org,
-        Jon.Brenner@ams.com
-Subject: Re: [PATCH 05/12] staging: iio: tsl2x7x: convert mutex_trylock() to
- mutex_lock()
-Message-ID: <20180310143956.29443f83@archlinux>
-In-Reply-To: <20180304014942.18727-6-masneyb@onstation.org>
+Return-Path: <SRS0=gLGt=F2=onstation.org=masneyb@kernel.org>
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org,
+	linux-iio@vger.kernel.org
+Cc: gregkh@linuxfoundation.org,
+	devel@driverdev.osuosl.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	linux-kernel@vger.kernel.org,
+	Jon.Brenner@ams.com
+Subject: [PATCH 06/12] staging: iio: tsl2x7x: correctly return errors in tsl2x7x_get_prox()
+Date: Sat,  3 Mar 2018 20:49:36 -0500
+Message-Id: <20180304014942.18727-7-masneyb@onstation.org>
+In-Reply-To: <20180304014942.18727-1-masneyb@onstation.org>
 References: <20180304014942.18727-1-masneyb@onstation.org>
-        <20180304014942.18727-6-masneyb@onstation.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat,  3 Mar 2018 20:49:35 -0500
-Brian Masney <masneyb@onstation.org> wrote:
+Not all errors that occurred in tsl2x7x_get_prox() were correctly
+reported in the return value. This patch changes the error handling
+so that errors are now returned properly.
 
-> The driver uses mutex_lock() and mutex_trylock() in several places.
-> Convert the mutex_trylock() to mutex_lock() for consistency with other
-> IIO light drivers in mainline.
-> 
-> Signed-off-by: Brian Masney <masneyb@onstation.org>
-This was a little odd given we don't lock the device for long and all this
-will do is slow down userspace access if it tries several at the same time
-(a fairy uncommon usecase).
+Note that the ret variable is from the call to tsl2x7x_read_status(),
+and it already has the correct error check. The -EINVAL error code is
+for an unexpected value in the register.
 
-Applied
+This patch also corrects an unnecessary word wrap in the call to
+le16_to_cpup() while changes are being made to this code.
 
-Thanks,
+Signed-off-by: Brian Masney <masneyb@onstation.org>
+---
+ drivers/staging/iio/light/tsl2x7x.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-Jonathan
-> ---
->  drivers/staging/iio/light/tsl2x7x.c | 9 ++-------
->  1 file changed, 2 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
-> index cf16dd206c0b..5c611250127f 100644
-> --- a/drivers/staging/iio/light/tsl2x7x.c
-> +++ b/drivers/staging/iio/light/tsl2x7x.c
-> @@ -350,8 +350,7 @@ static int tsl2x7x_get_lux(struct iio_dev *indio_dev)
->  	u32 ch0lux = 0;
->  	u32 ch1lux = 0;
->  
-> -	if (mutex_trylock(&chip->als_mutex) == 0)
-> -		return chip->als_cur_info.lux; /* busy, so return LAST VALUE */
-> +	mutex_lock(&chip->als_mutex);
->  
->  	if (chip->tsl2x7x_chip_status != TSL2X7X_CHIP_WORKING) {
->  		/* device is not enabled */
-> @@ -478,11 +477,7 @@ static int tsl2x7x_get_prox(struct iio_dev *indio_dev)
->  	u8 chdata[2];
->  	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
->  
-> -	if (mutex_trylock(&chip->prox_mutex) == 0) {
-> -		dev_err(&chip->client->dev,
-> -			"%s: Can't get prox mutex\n", __func__);
-> -		return -EBUSY;
-> -	}
-> +	mutex_lock(&chip->prox_mutex);
->  
->  	ret = tsl2x7x_read_status(chip);
->  	if (ret < 0)
-
+diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
+index 5c611250127f..cc209b64ed5a 100644
+--- a/drivers/staging/iio/light/tsl2x7x.c
++++ b/drivers/staging/iio/light/tsl2x7x.c
+@@ -489,16 +489,20 @@ static int tsl2x7x_get_prox(struct iio_dev *indio_dev)
+ 	case tmd2671:
+ 	case tsl2771:
+ 	case tmd2771:
+-		if (!(ret & TSL2X7X_STA_ADC_VALID))
++		if (!(ret & TSL2X7X_STA_ADC_VALID)) {
++			ret = -EINVAL;
+ 			goto prox_poll_err;
++		}
+ 		break;
+ 	case tsl2572:
+ 	case tsl2672:
+ 	case tmd2672:
+ 	case tsl2772:
+ 	case tmd2772:
+-		if (!(ret & TSL2X7X_STA_PRX_VALID))
++		if (!(ret & TSL2X7X_STA_PRX_VALID)) {
++			ret = -EINVAL;
+ 			goto prox_poll_err;
++		}
+ 		break;
+ 	}
+ 
+@@ -512,14 +516,13 @@ static int tsl2x7x_get_prox(struct iio_dev *indio_dev)
+ 		chdata[i] = ret;
+ 	}
+ 
+-	chip->prox_data =
+-			le16_to_cpup((const __le16 *)&chdata[0]);
++	chip->prox_data = le16_to_cpup((const __le16 *)&chdata[0]);
++	ret = chip->prox_data;
+ 
+ prox_poll_err:
+-
+ 	mutex_unlock(&chip->prox_mutex);
+ 
+-	return chip->prox_data;
++	return ret;
+ }
+ 
+ /**
+-- 
+2.14.3
