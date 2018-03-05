@@ -11,47 +11,40 @@ Cc: lars@metafoo.de,
 	linux-kernel@vger.kernel.org,
 	daniel.baluta@gmail.com,
 	Himanshu Jha <himanshujha199640@gmail.com>
-Subject: [PATCH 00/11] staging: iio: accel: adis16201 driver cleanup
-Date: Mon,  5 Mar 2018 13:19:19 +0530
-Message-Id: <1520236170-14668-1-git-send-email-himanshujha199640@gmail.com>
+Subject: [PATCH 01/11] Staging: iio: accel: Prefer alphabetical sequence of header files
+Date: Mon,  5 Mar 2018 13:19:20 +0530
+Message-Id: <1520236170-14668-2-git-send-email-himanshujha199640@gmail.com>
+In-Reply-To: <1520236170-14668-1-git-send-email-himanshujha199640@gmail.com>
+References: <1520236170-14668-1-git-send-email-himanshujha199640@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-The following patch series cleans up miscellaneous code fragments and
-then the driver is moved from staging to mainline IIO subsytem directory.
-Note that the last patch to move driver is *not* generated using '-M' flag,
-which is used for detecting renames, since it may help reviewers to
-suggest more cleanups/fix while pointing inline to the patch, the
-necessary changes. The framing of patch is made consistent with the datasheet
-naming where possible.
+Arrange header files in alphabetical sequence to improve readability.
 
-For all the patches:
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-https://marc.info/?l=linux-iio&m=151775804702998&w=2
+Signed-off-by: Himanshu Jha <himanshujha199640@gmail.com>
+---
+ drivers/staging/iio/accel/adis16201.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-All the patches have been tested using 0-day test service with success.
-
-Himanshu Jha (11):
-  Staging: iio: accel: Prefer alphabetical sequence of header files
-  Staging: iio: accel: Add a blank space before returns
-  Staging: iio: accel: Remove unnecessary comments
-  Staging: iio: accel: Rename few macro definitions
-  Staging: iio: accel: Add _REG suffix to registers
-  Staging: iio: accel: Reverse christmas tree
-  Staging: iio: accel: Adjust arguments to match open parentheses
-  Staging: iio: accel: Use switch statement than if-else
-  Staging: iio: accel: Use sign_extend32 function
-  Staging: iio: accel: Add comments about units in data read function
-  Staging: iio: accel: Move adis16201 driver out of staging subsystem
-
- drivers/iio/accel/Kconfig             |  12 ++
- drivers/iio/accel/Makefile            |   1 +
- drivers/iio/accel/adis16201.c         | 323 ++++++++++++++++++++++++++++
- drivers/staging/iio/accel/Kconfig     |  12 --
- drivers/staging/iio/accel/Makefile    |   1 -
- drivers/staging/iio/accel/adis16201.c | 381 ----------------------------------
- 6 files changed, 336 insertions(+), 394 deletions(-)
- create mode 100644 drivers/iio/accel/adis16201.c
- delete mode 100644 drivers/staging/iio/accel/adis16201.c
-
+diff --git a/drivers/staging/iio/accel/adis16201.c b/drivers/staging/iio/accel/adis16201.c
+index 2ebd275..0f6a204 100644
+--- a/drivers/staging/iio/accel/adis16201.c
++++ b/drivers/staging/iio/accel/adis16201.c
+@@ -7,13 +7,13 @@
+  */
+ 
+ #include <linux/delay.h>
+-#include <linux/mutex.h>
+ #include <linux/device.h>
+ #include <linux/kernel.h>
+-#include <linux/spi/spi.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
+ #include <linux/slab.h>
++#include <linux/spi/spi.h>
+ #include <linux/sysfs.h>
+-#include <linux/module.h>
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
 -- 
 2.7.4
