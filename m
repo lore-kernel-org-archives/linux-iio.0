@@ -1,55 +1,75 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:60904 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S965002AbeCGUZ0 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 7 Mar 2018 15:25:26 -0500
-Date: Wed, 7 Mar 2018 20:25:23 +0000
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Srishti Sharma <srishtishar@gmail.com>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: Unknown symbols in module
-Message-ID: <20180307202523.7b84fe6c@archlinux>
-In-Reply-To: <CAB3L5ozYkWv0qO5LrKUHyfXXdRf2RCgAOorHp-DNiKCMzDof6Q@mail.gmail.com>
-References: <CAB3L5ozYkWv0qO5LrKUHyfXXdRf2RCgAOorHp-DNiKCMzDof6Q@mail.gmail.com>
+Received: from mail-vk0-f49.google.com ([209.85.213.49]:36074 "EHLO
+        mail-vk0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933623AbeCEOC2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 5 Mar 2018 09:02:28 -0500
+Received: by mail-vk0-f49.google.com with SMTP id q7so9845802vkh.3
+        for <linux-iio@vger.kernel.org>; Mon, 05 Mar 2018 06:02:28 -0800 (PST)
+Date: Mon, 5 Mar 2018 11:02:24 -0300
+From: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
+To: linux-iio@vger.kernel.org, daniel.baluta@nxp.com, 21cnbao@gmail.com
+Subject: Work plan to move meter out of staging
+Message-ID: <20180305140224.dgh3rcywgxgxsxbx@smtp.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 5 Mar 2018 16:49:24 +0530
-Srishti Sharma <srishtishar@gmail.com> wrote:
+Hi,
 
-> Hello,
-> I was trying to work with the iio dummy driver, and when I try to load
-> the iio_dummy_evgen.ko module I am getting unknown symbols found in
-> module error on running modprobe.
-> 
-> These variables are unknown
-> iio_bus_type
-> irq_sim_init
-> irq_sim_fini
-> irq_sim_fire
-> irq_sim_fini
-> 
-> All of these variables are present in the Module.symvers file in the
-> /lib/modules/<kernel version>/build directory. The kernel and the
-> modules versions match. I ran make clean, make, and make
-> modules_install before trying to load them. I am unable to figure out
-> the problem. Where I might be going wrong any ideas ?
-The required functions are built into the kernel - there is no option
-to build them as a module. As such you'd need to also install the
-kernel image in order to be able to probe the module.
+Recently, I started to work on IIO subsystem, and I already have sent some
+patches. Now, I want to move to the next step by working for helping to push
+the meter module out of staging.
 
-The selected to be built when the dummy_evgen module is configured
-to be built.
+In this sense, I am planning to do the following tasks:
 
-Jonathan
+1) Make meter checkpatch free
 
-> 
-> Thanks,
-> Srishti
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+I already made some checkpatch cleanups in this module, but it still have some
+tiny things to fix. I already start to work on this task, and I will send a
+patch series this week with the checkpatch fixes.
 
+2) Code cleanups
+
+I noticed the code has some duplications and utilizes many magic numbers which
+make difficult to read the code. In order to attempt to improve the code
+readability, I am planning to work on the following tasks:
+
+* Part of the code that I believe that has some duplications that could be
+  generalized:
+ - ade7753_spi_write_reg_[0-9]+
+ - ade7753_read_[0-9]+bit
+ - ade7753_write_[0-9]+bit
+ - ade7758_spi_write_reg_[0-9]+
+ - ade7758_spi_read_reg_[0-9]+
+ - ade7758_spi_read_[0-9]+bit
+ - ade7758_spi_write_[0-9]+bit
+ - ade7759_spi_read_reg_[0-9]+
+
+* I believe there is a vast number of macro that could be removed because it is
+  used one or three times in the whole code. I think the direct use of
+  IIO_DEVICE_ATTR can be better in these cases. This changes can solve some
+  checkpatch problems, and improve the readability.
+
+* There are some magic numbers that I believe that came from the datasheet. I
+  think that it is possible to use some defines to improve the readability in
+  these cases.
+
+3) Missing code
+
+These parts look much more fun to work. However, I do not fully understand the
+IIO subsystem yet, and maybe I say something that does not make sense. So, If I
+say something that does not make sense, please let me know.
+
+So, I believe the meter module still need some pieces of code. For example:
+
+* ade7754, ade7759, ade7854 - It does not have iio_chan_spec and
+        											*_read_raw/*_write_raw
+
+* ade7758 - *_read_raw looks incomplete.
+
+
+That's it.
+Is my work plan to move meter out of staging make sense?
+
+Thanks
