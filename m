@@ -1,56 +1,28 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:48674 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751940AbeCCPXk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 3 Mar 2018 10:23:40 -0500
-Date: Sat, 3 Mar 2018 15:23:35 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        daniel.baluta@nxp.com, kernel-janitors@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio:magnetometer: Replace magic number 0 by
- IIO_CHAN_INFO_RAW
-Message-ID: <20180303152335.4c287ede@archlinux>
-In-Reply-To: <20180227144755.ifbzn5gekm345nk5@smtp.gmail.com>
-References: <20180227144755.ifbzn5gekm345nk5@smtp.gmail.com>
+Return-Path: <SRS0=cgJ/=F3=gmail.com=robherring2@kernel.org>
+Date: Mon, 5 Mar 2018 16:56:44 -0600
+From: Rob Herring <robh@kernel.org>
+To: Pierre Bourdon <delroth@google.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Daniel Baluta <daniel.baluta@gmail.com>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v3 2/2] dt-bindings: iio: light: Add bh1730fvc bindings
+Message-ID: <20180305225644.npkvx6nubyiuqcor@rob-hp-laptop>
+References: <20180228001525.96044-1-delroth@google.com>
+ <20180228001525.96044-2-delroth@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20180228001525.96044-2-delroth@google.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, 27 Feb 2018 11:47:55 -0300
-Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com> wrote:
-
-> The function magn_3d_read_raw has a switch statement handling multiple
-> cases per channel. The first case statement uses the magic number 0,
-> which means IIO_CHAN_INFO_RAW. Additionally, the iio_chan_spec for
-> magn_3d_channels is configured to be IIO_CHAN_INFO_RAW. Therefore, this
-> patch replaces the magic number 0 for the appropriate IIO_CHAN_INFO_RAW.
-> 
-> Signed-off-by: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
-Applied to the togreg branch of iio.git and pushed out as testing.
-
-Thanks,
-
-Jonathan
+On Wed, Feb 28, 2018 at 01:15:25AM +0100, Pierre Bourdon wrote:
+> Signed-off-by: Pierre Bourdon <delroth@google.com>
 > ---
->  drivers/iio/magnetometer/hid-sensor-magn-3d.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-> index a1fd9d591818..d55c4885211a 100644
-> --- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-> +++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-> @@ -167,7 +167,7 @@ static int magn_3d_read_raw(struct iio_dev *indio_dev,
->  	*val = 0;
->  	*val2 = 0;
->  	switch (mask) {
-> -	case 0:
-> +	case IIO_CHAN_INFO_RAW:
->  		hid_sensor_power_state(&magn_state->magn_flux_attributes, true);
->  		report_id =
->  			magn_state->magn[chan->address].report_id;
+>  .../devicetree/bindings/iio/light/bh1730.txt      | 15 +++++++++++++++
+>  1 file changed, 15 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/light/bh1730.txt
 
+Reviewed-by: Rob Herring <robh@kernel.org>
