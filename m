@@ -1,81 +1,73 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:57414 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751896AbeCCPAE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Mar 2018 10:00:04 -0500
-Date: Sat, 3 Mar 2018 15:00:01 +0000
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Daniel Baluta <daniel.baluta@gmail.com>
-Cc: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>
+Return-Path: <alexandru.Ardelean@analog.com>
+From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+To: "daniel.baluta@gmail.com" <daniel.baluta@gmail.com>,
+	"jic23@jic23.retrosnub.co.uk" <jic23@jic23.retrosnub.co.uk>
+CC: "lars@metafoo.de" <lars@metafoo.de>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "Hennerich, Michael"
+	<Michael.Hennerich@analog.com>
 Subject: Re: [PATCH] staging: iio: ad5933: merge ring init function into
  probe function
-Message-ID: <20180303150001.7040ecc9@archlinux>
-In-Reply-To: <CAEnQRZAL17PCfdK0nUx35e5DUznt_g7CGb5fNv=v_HXtFq9APg@mail.gmail.com>
+Date: Mon, 5 Mar 2018 07:24:47 +0000
+Message-ID: <1520234705.2837.11.camel@analog.com>
 References: <20180216120915.19277-1-alexandru.ardelean@analog.com>
-        <20180224121747.6ff4b90b@archlinux>
-        <1519631043.4724.14.camel@analog.com>
-        <CAEnQRZAL17PCfdK0nUx35e5DUznt_g7CGb5fNv=v_HXtFq9APg@mail.gmail.com>
+	 <20180224121747.6ff4b90b@archlinux> <1519631043.4724.14.camel@analog.com>
+	 <CAEnQRZAL17PCfdK0nUx35e5DUznt_g7CGb5fNv=v_HXtFq9APg@mail.gmail.com>
+	 <20180303150001.7040ecc9@archlinux>
+In-Reply-To: <20180303150001.7040ecc9@archlinux>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, 26 Feb 2018 12:47:28 +0200
-Daniel Baluta <daniel.baluta@gmail.com> wrote:
-
-> On Mon, Feb 26, 2018 at 9:44 AM, Ardelean, Alexandru
-> <alexandru.Ardelean@analog.com> wrote:
-> > On Sat, 2018-02-24 at 12:18 +0000, Jonathan Cameron wrote:  
-> >> On Fri, 16 Feb 2018 14:09:15 +0200
-> >> Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
-> >>  
-> >> > This is a small cleanup of the driver's init code.
-> >> > It does not fix anything.
-> >> >
-> >> > The `devm_iio_kfifo_allocate()` function is used instead of
-> >> > `iio_kfifo_allocate()`.  This removes the need for explicit deallocation of
-> >> > the driver's iio_buffer, which will now be handled via
-> >> > `iio_device_unregister()`.
-> >> >
-> >> > The `setup_ops` assignment has been moved into the `ad5933_probe()` call,
-> >> > since it's a one-liner.
-> >> >
-> >> > Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-> >> > ---
-> >> >
-> >> > Note: this change is based on top of `fixes-togreg-post-rc1` branch which
-> >> > contains commit (7d2b8e6aaf9: staging: iio: ad5933: switch buffer mode to
-> >> > software)  
-> >>
-> >> It will take a few weeks for that to get to my togreg branch so please
-> >> do remind me if it has and I seem to have forgotten this!
-> >>
-> >> Jonathan  
-> >
-> > I'm a bit new to how things progress in the iio subtree.
-> > [Curious] Is there a recommended branch that is regularly updated with accepted
-> > patches ?
-> > Or which branches do I need to rebase when submitting other patches ?  
-> 
-> 
-> Salut Alexandru,
-> 
-> You can use the togreg branch of iio tree.
-That tends to only get updated fairly infrequently except when I'm doing
-a pull request but that is 'in theory' the right branch to use.
-
-In practice, the only reason I'd change things in the testing branch
-is a build failure or a comment from someone suggesting a reason to pull
-a patch.  Mind you I've been pretty bad at remembering to push that out
-as well recently :(  I only find out when I realise I didn't get a build
-report from 0-day when I get to work on Monday.
-
-Jonathan
-
-> 
-> thanks,
-> Daniel.
-
+T24gU2F0LCAyMDE4LTAzLTAzIGF0IDE1OjAwICswMDAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
+Og0KPiBPbiBNb24sIDI2IEZlYiAyMDE4IDEyOjQ3OjI4ICswMjAwDQo+IERhbmllbCBCYWx1dGEg
+PGRhbmllbC5iYWx1dGFAZ21haWwuY29tPiB3cm90ZToNCj4gDQo+ID4gT24gTW9uLCBGZWIgMjYs
+IDIwMTggYXQgOTo0NCBBTSwgQXJkZWxlYW4sIEFsZXhhbmRydQ0KPiA+IDxhbGV4YW5kcnUuQXJk
+ZWxlYW5AYW5hbG9nLmNvbT4gd3JvdGU6DQo+ID4gPiBPbiBTYXQsIDIwMTgtMDItMjQgYXQgMTI6
+MTggKzAwMDAsIEpvbmF0aGFuIENhbWVyb24gd3JvdGU6ICANCj4gPiA+ID4gT24gRnJpLCAxNiBG
+ZWIgMjAxOCAxNDowOToxNSArMDIwMA0KPiA+ID4gPiBBbGV4YW5kcnUgQXJkZWxlYW4gPGFsZXhh
+bmRydS5hcmRlbGVhbkBhbmFsb2cuY29tPiB3cm90ZToNCj4gPiA+ID4gIA0KPiA+ID4gPiA+IFRo
+aXMgaXMgYSBzbWFsbCBjbGVhbnVwIG9mIHRoZSBkcml2ZXIncyBpbml0IGNvZGUuDQo+ID4gPiA+
+ID4gSXQgZG9lcyBub3QgZml4IGFueXRoaW5nLg0KPiA+ID4gPiA+IA0KPiA+ID4gPiA+IFRoZSBg
+ZGV2bV9paW9fa2ZpZm9fYWxsb2NhdGUoKWAgZnVuY3Rpb24gaXMgdXNlZCBpbnN0ZWFkIG9mDQo+
+ID4gPiA+ID4gYGlpb19rZmlmb19hbGxvY2F0ZSgpYC4gIFRoaXMgcmVtb3ZlcyB0aGUgbmVlZCBm
+b3IgZXhwbGljaXQgZGVhbGxvY2F0aW9uIG9mDQo+ID4gPiA+ID4gdGhlIGRyaXZlcidzIGlpb19i
+dWZmZXIsIHdoaWNoIHdpbGwgbm93IGJlIGhhbmRsZWQgdmlhDQo+ID4gPiA+ID4gYGlpb19kZXZp
+Y2VfdW5yZWdpc3RlcigpYC4NCj4gPiA+ID4gPiANCj4gPiA+ID4gPiBUaGUgYHNldHVwX29wc2Ag
+YXNzaWdubWVudCBoYXMgYmVlbiBtb3ZlZCBpbnRvIHRoZSBgYWQ1OTMzX3Byb2JlKClgIGNhbGws
+DQo+ID4gPiA+ID4gc2luY2UgaXQncyBhIG9uZS1saW5lci4NCj4gPiA+ID4gPiANCj4gPiA+ID4g
+PiBTaWduZWQtb2ZmLWJ5OiBBbGV4YW5kcnUgQXJkZWxlYW4gPGFsZXhhbmRydS5hcmRlbGVhbkBh
+bmFsb2cuY29tPg0KPiA+ID4gPiA+IC0tLQ0KPiA+ID4gPiA+IA0KPiA+ID4gPiA+IE5vdGU6IHRo
+aXMgY2hhbmdlIGlzIGJhc2VkIG9uIHRvcCBvZiBgZml4ZXMtdG9ncmVnLXBvc3QtcmMxYCBicmFu
+Y2ggd2hpY2gNCj4gPiA+ID4gPiBjb250YWlucyBjb21taXQgKDdkMmI4ZTZhYWY5OiBzdGFnaW5n
+OiBpaW86IGFkNTkzMzogc3dpdGNoIGJ1ZmZlciBtb2RlIHRvDQo+ID4gPiA+ID4gc29mdHdhcmUp
+ICANCj4gPiA+ID4gDQo+ID4gPiA+IEl0IHdpbGwgdGFrZSBhIGZldyB3ZWVrcyBmb3IgdGhhdCB0
+byBnZXQgdG8gbXkgdG9ncmVnIGJyYW5jaCBzbyBwbGVhc2UNCj4gPiA+ID4gZG8gcmVtaW5kIG1l
+IGlmIGl0IGhhcyBhbmQgSSBzZWVtIHRvIGhhdmUgZm9yZ290dGVuIHRoaXMhDQo+ID4gPiA+IA0K
+PiA+ID4gPiBKb25hdGhhbiAgDQo+ID4gPiANCj4gPiA+IEknbSBhIGJpdCBuZXcgdG8gaG93IHRo
+aW5ncyBwcm9ncmVzcyBpbiB0aGUgaWlvIHN1YnRyZWUuDQo+ID4gPiBbQ3VyaW91c10gSXMgdGhl
+cmUgYSByZWNvbW1lbmRlZCBicmFuY2ggdGhhdCBpcyByZWd1bGFybHkgdXBkYXRlZCB3aXRoIGFj
+Y2VwdGVkDQo+ID4gPiBwYXRjaGVzID8NCj4gPiA+IE9yIHdoaWNoIGJyYW5jaGVzIGRvIEkgbmVl
+ZCB0byByZWJhc2Ugd2hlbiBzdWJtaXR0aW5nIG90aGVyIHBhdGNoZXMgPyAgDQo+ID4gDQo+ID4g
+DQo+ID4gU2FsdXQgQWxleGFuZHJ1LA0KPiA+IA0KPiA+IFlvdSBjYW4gdXNlIHRoZSB0b2dyZWcg
+YnJhbmNoIG9mIGlpbyB0cmVlLg0KPiANCj4gVGhhdCB0ZW5kcyB0byBvbmx5IGdldCB1cGRhdGVk
+IGZhaXJseSBpbmZyZXF1ZW50bHkgZXhjZXB0IHdoZW4gSSdtIGRvaW5nDQo+IGEgcHVsbCByZXF1
+ZXN0IGJ1dCB0aGF0IGlzICdpbiB0aGVvcnknIHRoZSByaWdodCBicmFuY2ggdG8gdXNlLg0KPiAN
+Cj4gSW4gcHJhY3RpY2UsIHRoZSBvbmx5IHJlYXNvbiBJJ2QgY2hhbmdlIHRoaW5ncyBpbiB0aGUg
+dGVzdGluZyBicmFuY2gNCj4gaXMgYSBidWlsZCBmYWlsdXJlIG9yIGEgY29tbWVudCBmcm9tIHNv
+bWVvbmUgc3VnZ2VzdGluZyBhIHJlYXNvbiB0byBwdWxsDQo+IGEgcGF0Y2guICBNaW5kIHlvdSBJ
+J3ZlIGJlZW4gcHJldHR5IGJhZCBhdCByZW1lbWJlcmluZyB0byBwdXNoIHRoYXQgb3V0DQo+IGFz
+IHdlbGwgcmVjZW50bHkgOiggIEkgb25seSBmaW5kIG91dCB3aGVuIEkgcmVhbGlzZSBJIGRpZG4n
+dCBnZXQgYSBidWlsZA0KPiByZXBvcnQgZnJvbSAwLWRheSB3aGVuIEkgZ2V0IHRvIHdvcmsgb24g
+TW9uZGF5Lg0KPiANCg0KSSBkb24ndCBrbm93IGFib3V0IHlvdSBndXlzLCBidXQgSSd2ZSBhbHdh
+eXMgYmVlbiB0ZXJyaWJsZSBhdCBmb2xsb3dpbmcgZW1haWwNCnRocmVhZHMgYWZ0ZXIgdGhleSBn
+byBhYm92ZSBhIGNlcnRhaW4gY291bnQuDQpXaGljaCBpcyB3aHkgSSBhbSBhcHByZWNpYXRpdmUg
+d2hlbiB1c2luZyB3ZWItdG9vbHMgbGlrZSBHaXRodWIsIEdpdGxhYiwgZXRjIGFuZA0KdXNpbmcg
+ZW1haWwgbW9zdGx5IGFzIGEgbm90aWZpY2F0aW9uIG1ldGhvZC4NCg0KSSBhZG1pdCB0aGVyZSdz
+IHVzdWFsbHkgc29tZSBjb25jZXJuL3Jlc2lzdGFuY2UgdG8gY29uc2lkZXJpbmcgdGhlc2UgdG9v
+bHMuDQoNCltJIHVzdWFsbHkgcmVmZXIgdG8gT3BlbldydCBmb3IgYSBsb3Qgb2YgZXhhbXBsZXMs
+IHNpbmNlIEkgZm9sbG93IHRoZSBwcm9qZWN0XS4NCkN1cnJlbnRseSwgT3BlbldydCBoYXMgMiB3
+YXlzIG9mIGFjY2VwdGluZyBwYXRjaGVzOiAxIHZpYSBHaXRodWIsIDEgdmlhIGVtYWlsICsNCnBh
+dGNod29yay4NClRoZSBHaXRodWIgcmVwbyBpcyBqdXN0IGEgbWlycm9yIG9mIHRoZSBvZmZpY2lh
+bCByZXBvLg0KW0FGQUlLXSBQYXRjaGVzIGdldCBhcHBsaWVkIHRvIHRoZSBvZmZpY2lhbCByZXBv
+IGFuZCB0aGVuIG1pcnJvcmVkIG9uIEdpdGh1Yi4NCg0KQWxleA0KDQo+IEpvbmF0aGFuDQo+IA0K
+PiA+IA0KPiA+IHRoYW5rcywNCj4gPiBEYW5pZWwuDQo+IA0KPiA=
