@@ -1,94 +1,57 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from cock.li ([185.100.85.212]:54034 "EHLO cock.li"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752017AbeCEBy0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 4 Mar 2018 20:54:26 -0500
-From: Tom Lebreux <tomlebreux@cock.li>
-Subject: Fixing checkpatch.pl false positive for IIO_DEV_ATTR_CH_OFF
-To: linux-kernel@vger.kernel.org
-Cc: Andy Whitcroft <apw@canonical.com>, Joe Perches <joe@perches.com>,
-        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Message-ID: <110e9ac8-cd2e-0b09-7896-dcead45ce874@cock.li>
-Date: Sun, 4 Mar 2018 20:54:19 -0500
-MIME-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=UV2j=F3=gmail.com=himanshujha199640@kernel.org>
+From: Himanshu Jha <himanshujha199640@gmail.com>
+To: jic23@kernel.org
+Cc: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	knaack.h@gmx.de,
+	pmeerw@pmeerw.net,
+	gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org,
+	daniel.baluta@gmail.com,
+	Himanshu Jha <himanshujha199640@gmail.com>
+Subject: [PATCH 00/11] staging: iio: accel: adis16201 driver cleanup
+Date: Mon,  5 Mar 2018 13:19:19 +0530
+Message-Id: <1520236170-14668-1-git-send-email-himanshujha199640@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi,
+The following patch series cleans up miscellaneous code fragments and
+then the driver is moved from staging to mainline IIO subsytem directory.
+Note that the last patch to move driver is *not* generated using '-M' flag,
+which is used for detecting renames, since it may help reviewers to
+suggest more cleanups/fix while pointing inline to the patch, the
+necessary changes. The framing of patch is made consistent with the datasheet
+naming where possible.
 
-currently, checkpatch.pl gives false positive NON_OCTAL_PERMISSIONS
-errors for IIO_DEV_ATTR_CH_OFF (beginning of output removed):
+For all the patches:
+Suggested-by: Jonathan Cameron <jic23@kernel.org>
+https://marc.info/?l=linux-iio&m=151775804702998&w=2
 
-$ ./scripts/checkpatch.pl -f drivers/staging/iio/meter/ade7759.c                                                                                                     
-...
-ERROR: Use 4 digit octal (0777) not decimal permissions
-#331: FILE: drivers/staging/iio/meter/ade7759.c:331:
-+static IIO_DEV_ATTR_CH_OFF(1, 0644,
-+               ade7759_read_8bit,
-+               ade7759_write_8bit,
-+               ADE7759_CH1OS);
-...
+All the patches have been tested using 0-day test service with success.
 
-checkpatch.pl matches IIO_DEV_ATTR_[A-Z_]+ with the first argument, but
-the mode for IIO_DEV_ATTR_CH_OFF is the second argument.
+Himanshu Jha (11):
+  Staging: iio: accel: Prefer alphabetical sequence of header files
+  Staging: iio: accel: Add a blank space before returns
+  Staging: iio: accel: Remove unnecessary comments
+  Staging: iio: accel: Rename few macro definitions
+  Staging: iio: accel: Add _REG suffix to registers
+  Staging: iio: accel: Reverse christmas tree
+  Staging: iio: accel: Adjust arguments to match open parentheses
+  Staging: iio: accel: Use switch statement than if-else
+  Staging: iio: accel: Use sign_extend32 function
+  Staging: iio: accel: Add comments about units in data read function
+  Staging: iio: accel: Move adis16201 driver out of staging subsystem
 
-A quick grep in drivers/ shows that IIO_DEV_ATTR_CH_OFF is used only four 
-times (drivers/staging/iio/meter/ade775{3,9}.c). This means one way of solving
-this problem would be to change IIO_DEV_ATTR_CH_OFF to have the mode as the 
-first argument.
+ drivers/iio/accel/Kconfig             |  12 ++
+ drivers/iio/accel/Makefile            |   1 +
+ drivers/iio/accel/adis16201.c         | 323 ++++++++++++++++++++++++++++
+ drivers/staging/iio/accel/Kconfig     |  12 --
+ drivers/staging/iio/accel/Makefile    |   1 -
+ drivers/staging/iio/accel/adis16201.c | 381 ----------------------------------
+ 6 files changed, 336 insertions(+), 394 deletions(-)
+ create mode 100644 drivers/iio/accel/adis16201.c
+ delete mode 100644 drivers/staging/iio/accel/adis16201.c
 
-Another way would be adding an exclude field to @mode_permission_funcs in
-checkpatch.pl. I added an example patch at the end of this email. The exclude
-would be also a regex. This would allow us to solve the issue as shown below:
-
-@@ -554,7 +554,8 @@ our @mode_permission_funcs = (
-["debugfs_create_(?:file|u8|u16|u32|u64|x8|x16|x32|x64|size_t|atomic_t|bool|blob|regset32|u32_array)", 2],
-        ["proc_create(?:_data|)", 2],
-        ["(?:CLASS|DEVICE|SENSOR|SENSOR_DEVICE|IIO_DEVICE)_ATTR", 2],
--       ["IIO_DEV_ATTR_[A-Z_]+", 1],
-+       ["IIO_DEV_ATTR_CH_OFF", 2],
-+       ["IIO_DEV_ATTR_[A-Z_]+", 1, "IIO_DEV_ATTR_CH_OFF"],
-
-I don't think listing all the different IIO_DEV_ATTR_* in mode_permission_funcs is
-a good solution because there are many:
-
-$ grep "define IIO_DEV_ATTR_" -R drivers/ | wc -l                                                                                                                    
-125
-
-Example exclusion patch:
-
----
- scripts/checkpatch.pl | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
-index 3d4040322ae1..4f77fa7b6aa1 100755
---- a/scripts/checkpatch.pl
-+++ b/scripts/checkpatch.pl
-@@ -6379,6 +6379,7 @@ sub process {
- 			foreach my $entry (@mode_permission_funcs) {
- 				my $func = $entry->[0];
- 				my $arg_pos = $entry->[1];
-+				my $exclude_func = $entry->[2];
- 
- 				my $lc = $stat =~ tr@\n@@;
- 				$lc = $lc + $linenr;
-@@ -6392,8 +6393,14 @@ sub process {
- 					$arg_pos--;
- 					$skip_args = "(?:\\s*$FuncArg\\s*,\\s*){$arg_pos,$arg_pos}";
- 				}
-+
- 				my $test = "\\b$func\\s*\\(${skip_args}($FuncArg(?:\\|\\s*$FuncArg)*)\\s*[,\\)]";
- 				if ($stat =~ /$test/) {
-+					if ($exclude_func) {
-+						my $exclude_test = "\\b$exclude_func\\s*\\(${skip_args}($FuncArg(?:\\|\\s*$FuncArg)*)\\s*[,\\)]";
-+						next if ($stat =~ /$exclude_test/);
-+					}
-+
- 					my $val = $1;
- 					$val = $6 if ($skip_args ne "");
- 					if (!($func =~ /^(?:module_param|proc_create)/ && $val eq "0") &&
 -- 
-2.16.2
-
+2.7.4
