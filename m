@@ -1,184 +1,120 @@
-Return-Path: <SRS0=EEFn=GC=gmail.com=rodrigosiqueiramelo@kernel.org>
-Date: Mon, 12 Mar 2018 13:34:26 -0300
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-vk0-f65.google.com ([209.85.213.65]:38461 "EHLO
+        mail-vk0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750817AbeCFMDB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Mar 2018 07:03:01 -0500
+Date: Tue, 6 Mar 2018 09:02:57 -0300
 From: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
-To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-Cc: "jic23@kernel.org" <jic23@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"knaack.h@gmx.de" <knaack.h@gmx.de>,
-	"lars@metafoo.de" <lars@metafoo.de>,
-	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-	"daniel.baluta@nxp.com" <daniel.baluta@nxp.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>
-Subject: Re: [PATCH] iio:magnetometer: Remove duplications in iio_chan_spec
-Message-ID: <20180312163426.djfdfzjtmni33bdq@smtp.gmail.com>
-References: <20180306120011.pbnymd7izt2yxljl@smtp.gmail.com>
- <20180307202044.1d6e66f2@archlinux>
- <1520871676.15766.205.camel@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: daniel.baluta@nxp.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: Replace occurrences of magic number 0 by
+ IIO_CHAN_INFO_RAW
+Message-ID: <20180306120257.eo6kh3b65qmpotoe@smtp.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1520871676.15766.205.camel@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 03/12, Pandruvada, Srinivas wrote:
-> On Wed, 2018-03-07 at 20:20 +0000, Jonathan Cameron wrote:
-> > On Tue, 6 Mar 2018 09:00:11 -0300
-> > Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com> wrote:
-> > 
-> > > The magn_3d_channels array has multiple declarations of
-> > > iio_chan_spec.
-> > > Most of the iio_chan_spec are very similar, changing only by the
-> > > .type
-> > > and .channel2 field. This patch reduces the code duplication by
-> > > adding a
-> > > macro that can replace the iio_chan_spec  repetitions in the
-> > > magn_3d_channels array.
-> 
-> I don't think it was tested otherwise channel registration would have
-> failed. See below.
+Usually, functions responsible for reading raw data typically relies on
+values from iio_chan_info_enum to correctly identify the type of data to
+be read. There is a set of a device driver that uses the magic number 0
+instead of IIO_CHAN_INFO_RAW. This patch improves the readability by
+replaces the magic number 0 for the appropriate IIO_CHAN_INFO_RAW in six
+devices driver in the IIO subsystem.
 
-Hi,
+Signed-off-by: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
+---
+ drivers/iio/accel/hid-sensor-accel-3d.c | 2 +-
+ drivers/iio/dac/ad5380.c                | 2 +-
+ drivers/iio/dac/ad5764.c                | 2 +-
+ drivers/iio/gyro/hid-sensor-gyro-3d.c   | 2 +-
+ drivers/iio/light/hid-sensor-als.c      | 2 +-
+ drivers/iio/light/lm3533-als.c          | 2 +-
+ 6 files changed, 6 insertions(+), 6 deletions(-)
 
-Sorry for the mistake, I did not test it because I don't have the
-hardware. I'll be more cautious.
-
-Thanks for your review. I will send a v2.
+diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
+index c066a3bdbff7..41d97faf5013 100644
+--- a/drivers/iio/accel/hid-sensor-accel-3d.c
++++ b/drivers/iio/accel/hid-sensor-accel-3d.c
+@@ -155,7 +155,7 @@ static int accel_3d_read_raw(struct iio_dev *indio_dev,
+ 	*val = 0;
+ 	*val2 = 0;
+ 	switch (mask) {
+-	case 0:
++	case IIO_CHAN_INFO_RAW:
+ 		hid_sensor_power_state(&accel_state->common_attributes, true);
+ 		report_id = accel_state->accel[chan->scan_index].report_id;
+ 		address = accel_3d_addresses[chan->scan_index];
+diff --git a/drivers/iio/dac/ad5380.c b/drivers/iio/dac/ad5380.c
+index 845fd1c0fd9d..873c2bf637c0 100644
+--- a/drivers/iio/dac/ad5380.c
++++ b/drivers/iio/dac/ad5380.c
+@@ -158,7 +158,7 @@ static unsigned int ad5380_info_to_reg(struct iio_chan_spec const *chan,
+ 	long info)
+ {
+ 	switch (info) {
+-	case 0:
++	case IIO_CHAN_INFO_RAW:
+ 		return AD5380_REG_DATA(chan->address);
+ 	case IIO_CHAN_INFO_CALIBBIAS:
+ 		return AD5380_REG_OFFSET(chan->address);
+diff --git a/drivers/iio/dac/ad5764.c b/drivers/iio/dac/ad5764.c
+index 033f20eca616..9333177062c0 100644
+--- a/drivers/iio/dac/ad5764.c
++++ b/drivers/iio/dac/ad5764.c
+@@ -168,7 +168,7 @@ static int ad5764_read(struct iio_dev *indio_dev, unsigned int reg,
+ static int ad5764_chan_info_to_reg(struct iio_chan_spec const *chan, long info)
+ {
+ 	switch (info) {
+-	case 0:
++	case IIO_CHAN_INFO_RAW:
+ 		return AD5764_REG_DATA(chan->address);
+ 	case IIO_CHAN_INFO_CALIBBIAS:
+ 		return AD5764_REG_OFFSET(chan->address);
+diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+index f59995a90387..36941e69f959 100644
+--- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
++++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+@@ -115,7 +115,7 @@ static int gyro_3d_read_raw(struct iio_dev *indio_dev,
+ 	*val = 0;
+ 	*val2 = 0;
+ 	switch (mask) {
+-	case 0:
++	case IIO_CHAN_INFO_RAW:
+ 		hid_sensor_power_state(&gyro_state->common_attributes, true);
+ 		report_id = gyro_state->gyro[chan->scan_index].report_id;
+ 		address = gyro_3d_addresses[chan->scan_index];
+diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
+index befd693a4a31..406caaee9a3c 100644
+--- a/drivers/iio/light/hid-sensor-als.c
++++ b/drivers/iio/light/hid-sensor-als.c
+@@ -97,7 +97,7 @@ static int als_read_raw(struct iio_dev *indio_dev,
+ 	*val = 0;
+ 	*val2 = 0;
+ 	switch (mask) {
+-	case 0:
++	case IIO_CHAN_INFO_RAW:
+ 		switch (chan->scan_index) {
+ 		case  CHANNEL_SCAN_INDEX_INTENSITY:
+ 		case  CHANNEL_SCAN_INDEX_ILLUM:
+diff --git a/drivers/iio/light/lm3533-als.c b/drivers/iio/light/lm3533-als.c
+index 36208a3652e9..ff5a3324b489 100644
+--- a/drivers/iio/light/lm3533-als.c
++++ b/drivers/iio/light/lm3533-als.c
+@@ -199,7 +199,7 @@ static int lm3533_als_read_raw(struct iio_dev *indio_dev,
+ 	int ret;
  
-> > > 
-> > > Signed-off-by: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
-> > 
-> > Whilst this looks fine to me, I'd like Srinivas to take a look before
-> > I apply it as this is his driver.  Please do make sure to cc the
-> > author.
-> > Whilst many such email addresses bounce as they have moved on they
-> > don't always.
-> > 
-> > Jonathan
-> > 
-> > > ---
-> > >  drivers/iio/magnetometer/hid-sensor-magn-3d.c | 83 ++++++---------
-> > > ------------
-> > >  1 file changed, 19 insertions(+), 64 deletions(-)
-> > > 
-> > > diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-> > > b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-> > > index a1fd9d591818..fff64711a6c8 100644
-> > > --- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-> > > +++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-> > > @@ -74,72 +74,27 @@ static const u32
-> > > magn_3d_addresses[MAGN_3D_CHANNEL_MAX] = {
-> > >  	HID_USAGE_SENSOR_ORIENT_TRUE_NORTH,
-> > >  };
-> > >  
-> > > +#define HID_SENSOR_MAGN_3D_AXIS_CHANNEL(channel_type,
-> > > characteristic)	\
-> > > +	{								
-> > > \
-> > > +		.type = channel_type,				
-> > > 	\
-> > > +		.modified = 1,					
-> > > 	\
-> > > +		.channel2 = characteristic,			
-> > > 	\
-> > > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	
-> > > 	\
-> > > +		.info_mask_shared_by_type =
-> > > BIT(IIO_CHAN_INFO_OFFSET) | \
-> > > +					BIT(IIO_CHAN_INFO_SCALE) |
-> > > 	\
-> > > +					BIT(IIO_CHAN_INFO_SAMP_FRE
-> > > Q) |	\
-> > > +					BIT(IIO_CHAN_INFO_HYSTERES
-> > > IS),	\
-> > > +	}								
-> > > \
-> > > +
-> > >  /* Channel definitions */
-> > >  static const struct iio_chan_spec magn_3d_channels[] = {
-> > > -	{
-> > > -		.type = IIO_MAGN,
-> > > -		.modified = 1,
-> > > -		.channel2 = IIO_MOD_X,
-> > > -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> > > -		.info_mask_shared_by_type =
-> > > BIT(IIO_CHAN_INFO_OFFSET) |
-> > > -		BIT(IIO_CHAN_INFO_SCALE) |
-> > > -		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-> > > -		BIT(IIO_CHAN_INFO_HYSTERESIS),
-> > > -	}, {
-> > > -		.type = IIO_MAGN,
-> > > -		.modified = 1,
-> > > -		.channel2 = IIO_MOD_Y,
-> > > -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> > > -		.info_mask_shared_by_type =
-> > > BIT(IIO_CHAN_INFO_OFFSET) |
-> > > -		BIT(IIO_CHAN_INFO_SCALE) |
-> > > -		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-> > > -		BIT(IIO_CHAN_INFO_HYSTERESIS),
-> > > -	}, {
-> > > -		.type = IIO_MAGN,
-> > > -		.modified = 1,
-> > > -		.channel2 = IIO_MOD_Z,
-> > > -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> > > -		.info_mask_shared_by_type =
-> > > BIT(IIO_CHAN_INFO_OFFSET) |
-> > > -		BIT(IIO_CHAN_INFO_SCALE) |
-> > > -		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-> > > -		BIT(IIO_CHAN_INFO_HYSTERESIS),
-> > > -	}, {
-> > > -		.type = IIO_ROT,
-> > > -		.modified = 1,
-> > > -		.channel2 = IIO_MOD_NORTH_MAGN_TILT_COMP,
-> > > -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> > > -		.info_mask_shared_by_type =
-> > > BIT(IIO_CHAN_INFO_OFFSET) |
-> > > -		BIT(IIO_CHAN_INFO_SCALE) |
-> > > -		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-> > > -		BIT(IIO_CHAN_INFO_HYSTERESIS),
-> > > -	}, {
-> > > -		.type = IIO_ROT,
-> > > -		.modified = 1,
-> > > -		.channel2 = IIO_MOD_NORTH_TRUE_TILT_COMP,
-> > > -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> > > -		.info_mask_shared_by_type =
-> > > BIT(IIO_CHAN_INFO_OFFSET) |
-> > > -		BIT(IIO_CHAN_INFO_SCALE) |
-> > > -		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-> > > -		BIT(IIO_CHAN_INFO_HYSTERESIS),
-> > > -	}, {
-> > > -		.type = IIO_ROT,
-> > > -		.modified = 1,
-> > > -		.channel2 = IIO_MOD_NORTH_MAGN,
-> > > -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> > > -		.info_mask_shared_by_type =
-> > > BIT(IIO_CHAN_INFO_OFFSET) |
-> > > -		BIT(IIO_CHAN_INFO_SCALE) |
-> > > -		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-> > > -		BIT(IIO_CHAN_INFO_HYSTERESIS),
-> > > -	}, {
-> > > -		.type = IIO_ROT,
-> > > -		.modified = 1,
-> > > -		.channel2 = IIO_MOD_NORTH_TRUE,
-> > > -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> > > -		.info_mask_shared_by_type =
-> > > BIT(IIO_CHAN_INFO_OFFSET) |
-> > > -		BIT(IIO_CHAN_INFO_SCALE) |
-> > > -		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-> > > -		BIT(IIO_CHAN_INFO_HYSTERESIS),
-> > > -	}
-> > > +	HID_SENSOR_MAGN_3D_AXIS_CHANNEL(IIO_MAGN, IIO_MOD_X),
-> > > +	HID_SENSOR_MAGN_3D_AXIS_CHANNEL(IIO_MAGN, IIO_MOD_Y),
-> > > +	HID_SENSOR_MAGN_3D_AXIS_CHANNEL(IIO_MAGN, IIO_MOD_Z),
-> > > +	HID_SENSOR_MAGN_3D_AXIS_CHANNEL(IIO_ROT,
-> > > IIO_MOD_NORTH_MAGN_TILT_COMP),
-> > > +	HID_SENSOR_MAGN_3D_AXIS_CHANNEL(IIO_ROT,
-> > > IIO_MOD_NORTH_TRUE_TILT_COMP),
-> > > +	HID_SENSOR_MAGN_3D_AXIS_CHANNEL(IIO_ROT,
-> > > IIO_MOD_NORTH_MAGN),
-> > > +	HID_SENSOR_MAGN_3D_AXIS_CHANNEL(IIO_ROT,
-> > > IIO_MOD_NORTH_MAGN),
-> It should be 
-> HID_SENSOR_MAGN_3D_AXIS_CHANNEL(IIO_ROT, IIO_MOD_NORTH_TRUE)
-> 
-> Thanks,
-> Srinivas
+ 	switch (mask) {
+-	case 0:
++	case IIO_CHAN_INFO_RAW:
+ 		switch (chan->type) {
+ 		case IIO_LIGHT:
+ 			ret = lm3533_als_get_adc(indio_dev, false, val);
+-- 
+2.16.2
+
