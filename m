@@ -1,92 +1,130 @@
-Return-Path: <Michael.Hennerich@analog.com>
-Reply-To: <michael.hennerich@analog.com>
-Subject: Re: Work plan to move meter out of staging
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>, Daniel Baluta
-	<daniel.baluta@nxp.com>, "rodrigosiqueiramelo@gmail.com"
-	<rodrigosiqueiramelo@gmail.com>
-CC: "lars@metafoo.de" <lars@metafoo.de>, "21cnbao@gmail.com"
-	<21cnbao@gmail.com>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-References: <20180305140224.dgh3rcywgxgxsxbx@smtp.gmail.com>
- <1520259685.12790.12.camel@nxp.com>
- <e876642e-0286-9602-884f-00f026d6873f@metafoo.de>
- <f8f972b2-837d-b242-6fa3-40bf21952b0b@analog.com>
- <20180306123628.sawzr3k7ek3rkz46@smtp.gmail.com>
- <1520341471.12790.35.camel@nxp.com>
- <94A1C1A3-D492-41D3-A022-B1E1A2E6ED57@jic23.retrosnub.co.uk>
-From: Michael Hennerich <michael.hennerich@analog.com>
-Message-ID: <ad38b756-70f4-17f9-57df-ffec1100efd1@analog.com>
-Date: Tue, 6 Mar 2018 15:09:55 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-vk0-f65.google.com ([209.85.213.65]:45982 "EHLO
+        mail-vk0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750864AbeCFMAQ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Mar 2018 07:00:16 -0500
+Date: Tue, 6 Mar 2018 09:00:11 -0300
+From: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: daniel.baluta@nxp.com, linux-iio@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio:magnetometer: Remove duplications in iio_chan_spec
+Message-ID: <20180306120011.pbnymd7izt2yxljl@smtp.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <94A1C1A3-D492-41D3-A022-B1E1A2E6ED57@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 06.03.2018 14:41, Jonathan Cameron wrote:
-> 
-> 
-> On 6 March 2018 13:04:31 GMT, Daniel Baluta <daniel.baluta@nxp.com> wrote:
->> On Ma, 2018-03-06 at 09:36 -0300, Rodrigo Siqueira wrote:
->>> Hi,
->>>
->>>>
->>>> On 05.03.2018 17:30, Lars-Peter Clausen wrote:
->>>> In general I think this is a great idea, however looking at it from
->> a
->>>> different angle -
->>>> Most of the supported metering circuits are already marked as not
->>>> recommended for new designs.
->>>> While Analog Devices have a very strong product portfolio in the
->> Metering IC
->>>> space, all of the parts in
->>>> staging/iio/meter are from 2011 and before and have already seen
->> multiple
->>>> product iterations since then.
->>>> A major rework of these drivers might require testing,
->> unfortunately these
->>>> drivers were developed by a different team which now pursues
->> different
->>>> responsibilities.
->>>> So I won’t be able to test them again, and therefore I’m also a bit
->> hesitant
->>>> to lift them out of staging.
->>> I have seen your message a few minutes ago, just after I sent a patch
->>> series that removes checkpatch problems from meter module. Anyway,
->> after
->>> your comments, I believe that is a better idea to work on another
->> module
->>> in the staging. Is that ok Daniel?
->>
->> Hi,
->>
->> I think it is still a good idea to make the checkpatch changes in the
->> meter directory
->>from staging. 
-> For work already done I agree but perhaps we can find a better target for effort going forward.
-> 
-> Michael, what is the position on the CDC drivers and the resolver ones?
+The magn_3d_channels array has multiple declarations of iio_chan_spec.
+Most of the iio_chan_spec are very similar, changing only by the .type
+and .channel2 field. This patch reduces the code duplication by adding a
+macro that can replace the iio_chan_spec  repetitions in the
+magn_3d_channels array.
 
-The CDC and resolvers are much better targets. The products are still 
-appropriate for new designs. And what the CDC drivers are concerned I 
-still have HW to test.
+Signed-off-by: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
+---
+ drivers/iio/magnetometer/hid-sensor-magn-3d.c | 83 ++++++---------------------
+ 1 file changed, 19 insertions(+), 64 deletions(-)
 
-> 
-> Jonathan
->>>
->>> Just for curiosity, what is the process to remove meter from staging?
->>
->> Make sure we use the standard IIO interfaces, good quality code and
->> good testing :).
->>
->> thanks,
->> Daniel.
-> 
-
-
+diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+index a1fd9d591818..fff64711a6c8 100644
+--- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
++++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+@@ -74,72 +74,27 @@ static const u32 magn_3d_addresses[MAGN_3D_CHANNEL_MAX] = {
+ 	HID_USAGE_SENSOR_ORIENT_TRUE_NORTH,
+ };
+ 
++#define HID_SENSOR_MAGN_3D_AXIS_CHANNEL(channel_type, characteristic)	\
++	{								\
++		.type = channel_type,					\
++		.modified = 1,						\
++		.channel2 = characteristic,				\
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) | \
++					BIT(IIO_CHAN_INFO_SCALE) |	\
++					BIT(IIO_CHAN_INFO_SAMP_FREQ) |	\
++					BIT(IIO_CHAN_INFO_HYSTERESIS),	\
++	}								\
++
+ /* Channel definitions */
+ static const struct iio_chan_spec magn_3d_channels[] = {
+-	{
+-		.type = IIO_MAGN,
+-		.modified = 1,
+-		.channel2 = IIO_MOD_X,
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+-		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
+-		BIT(IIO_CHAN_INFO_SCALE) |
+-		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+-		BIT(IIO_CHAN_INFO_HYSTERESIS),
+-	}, {
+-		.type = IIO_MAGN,
+-		.modified = 1,
+-		.channel2 = IIO_MOD_Y,
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+-		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
+-		BIT(IIO_CHAN_INFO_SCALE) |
+-		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+-		BIT(IIO_CHAN_INFO_HYSTERESIS),
+-	}, {
+-		.type = IIO_MAGN,
+-		.modified = 1,
+-		.channel2 = IIO_MOD_Z,
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+-		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
+-		BIT(IIO_CHAN_INFO_SCALE) |
+-		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+-		BIT(IIO_CHAN_INFO_HYSTERESIS),
+-	}, {
+-		.type = IIO_ROT,
+-		.modified = 1,
+-		.channel2 = IIO_MOD_NORTH_MAGN_TILT_COMP,
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+-		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
+-		BIT(IIO_CHAN_INFO_SCALE) |
+-		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+-		BIT(IIO_CHAN_INFO_HYSTERESIS),
+-	}, {
+-		.type = IIO_ROT,
+-		.modified = 1,
+-		.channel2 = IIO_MOD_NORTH_TRUE_TILT_COMP,
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+-		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
+-		BIT(IIO_CHAN_INFO_SCALE) |
+-		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+-		BIT(IIO_CHAN_INFO_HYSTERESIS),
+-	}, {
+-		.type = IIO_ROT,
+-		.modified = 1,
+-		.channel2 = IIO_MOD_NORTH_MAGN,
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+-		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
+-		BIT(IIO_CHAN_INFO_SCALE) |
+-		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+-		BIT(IIO_CHAN_INFO_HYSTERESIS),
+-	}, {
+-		.type = IIO_ROT,
+-		.modified = 1,
+-		.channel2 = IIO_MOD_NORTH_TRUE,
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+-		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
+-		BIT(IIO_CHAN_INFO_SCALE) |
+-		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+-		BIT(IIO_CHAN_INFO_HYSTERESIS),
+-	}
++	HID_SENSOR_MAGN_3D_AXIS_CHANNEL(IIO_MAGN, IIO_MOD_X),
++	HID_SENSOR_MAGN_3D_AXIS_CHANNEL(IIO_MAGN, IIO_MOD_Y),
++	HID_SENSOR_MAGN_3D_AXIS_CHANNEL(IIO_MAGN, IIO_MOD_Z),
++	HID_SENSOR_MAGN_3D_AXIS_CHANNEL(IIO_ROT, IIO_MOD_NORTH_MAGN_TILT_COMP),
++	HID_SENSOR_MAGN_3D_AXIS_CHANNEL(IIO_ROT, IIO_MOD_NORTH_TRUE_TILT_COMP),
++	HID_SENSOR_MAGN_3D_AXIS_CHANNEL(IIO_ROT, IIO_MOD_NORTH_MAGN),
++	HID_SENSOR_MAGN_3D_AXIS_CHANNEL(IIO_ROT, IIO_MOD_NORTH_MAGN),
+ };
+ 
+ /* Adjust channel real bits based on report descriptor */
 -- 
-Greetings,
-Michael
+2.16.2
 
---
-Analog Devices GmbH      Otl-Aicher Strasse 60-64      80807 München
-Sitz der Gesellschaft München, Registergericht München HRB 40368,
-Geschäftsführer: Peter Kolberg, Ali Raza Husain, Eileen Wynne
