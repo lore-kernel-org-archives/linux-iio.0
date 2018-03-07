@@ -1,208 +1,42 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:53650 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S965054AbeCGUMU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 7 Mar 2018 15:12:20 -0500
-Date: Wed, 7 Mar 2018 20:12:15 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        daniel.baluta@nxp.com, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/3] staging:iio:meter: Aligns open parenthesis
-Message-ID: <20180307201215.1fe587d3@archlinux>
-In-Reply-To: <e276c37521ce2520df734dff1a70663d2f4c0d9b.1520382753.git.rodrigosiqueiramelo@gmail.com>
-References: <cover.1520382753.git.rodrigosiqueiramelo@gmail.com>
-        <e276c37521ce2520df734dff1a70663d2f4c0d9b.1520382753.git.rodrigosiqueiramelo@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=bf/5=F5=gmail.com=hariprasath.elango@kernel.org>
+From: hariprasath.elango@gmail.com
+To: lars@metafoo.de
+Cc: hariprasath.elango@gmail.com,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: iio: adc: Remove reduntant __func__ from debug print
+Date: Wed,  7 Mar 2018 10:40:05 +0530
+Message-Id: <20180307051005.13038-1-hariprasath.elango@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, 6 Mar 2018 21:44:26 -0300
-Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com> wrote:
+From: HariPrasath Elango <hariprasath.elango@gmail.com>
 
-> This patch fixes the checkpatch.pl checks:
-> 
-> staging/iio/meter/ade7854-spi.c:19: CHECK: Alignment should match open
-> parenthesis
-> staging/iio/meter/ade7854-spi.c:44: CHECK: Alignment should match open
-> parenthesis
-> staging/iio/meter/ade7854-spi.c:70: CHECK: Alignment should match open
-> parenthesis
-> staging/iio/meter/ade7854-spi.c:97: CHECK: Alignment should match open
-> parenthesis
-> staging/iio/meter/ade7854-spi.c:125: CHECK: Alignment should match open
-> parenthesis
-> 
-> ...
-> 
-> Signed-off-by: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+dev_dbg includes the function name & line number by default when dynamic
+debugging is enabled. Hence__func__ is reduntant here and removed.
 
-Thanks,
+Signed-off-by: HariPrasath Elango <hariprasath.elango@gmail.com>
+---
+ drivers/staging/iio/meter/ade7758_trigger.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Jonathan
-
-> ---
->  drivers/staging/iio/meter/ade7758_trigger.c |  6 ++---
->  drivers/staging/iio/meter/ade7854-spi.c     | 40 ++++++++++++++---------------
->  2 files changed, 23 insertions(+), 23 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/meter/ade7758_trigger.c b/drivers/staging/iio/meter/ade7758_trigger.c
-> index 1f0d1a0cf889..3314aa298d99 100644
-> --- a/drivers/staging/iio/meter/ade7758_trigger.c
-> +++ b/drivers/staging/iio/meter/ade7758_trigger.c
-> @@ -30,7 +30,7 @@ static irqreturn_t ade7758_data_rdy_trig_poll(int irq, void *private)
->   * ade7758_data_rdy_trigger_set_state() set datardy interrupt state
->   **/
->  static int ade7758_data_rdy_trigger_set_state(struct iio_trigger *trig,
-> -						bool state)
-> +					      bool state)
->  {
->  	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
->  
-> @@ -63,8 +63,8 @@ int ade7758_probe_trigger(struct iio_dev *indio_dev)
->  	int ret;
->  
->  	st->trig = iio_trigger_alloc("%s-dev%d",
-> -					spi_get_device_id(st->us)->name,
-> -					indio_dev->id);
-> +				     spi_get_device_id(st->us)->name,
-> +				     indio_dev->id);
->  	if (!st->trig) {
->  		ret = -ENOMEM;
->  		goto error_ret;
-> diff --git a/drivers/staging/iio/meter/ade7854-spi.c b/drivers/staging/iio/meter/ade7854-spi.c
-> index 72eddfec21f7..4419b8f06197 100644
-> --- a/drivers/staging/iio/meter/ade7854-spi.c
-> +++ b/drivers/staging/iio/meter/ade7854-spi.c
-> @@ -16,8 +16,8 @@
->  #include "ade7854.h"
->  
->  static int ade7854_spi_write_reg_8(struct device *dev,
-> -		u16 reg_address,
-> -		u8 val)
-> +				   u16 reg_address,
-> +				   u8 val)
->  {
->  	int ret;
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> @@ -41,8 +41,8 @@ static int ade7854_spi_write_reg_8(struct device *dev,
->  }
->  
->  static int ade7854_spi_write_reg_16(struct device *dev,
-> -		u16 reg_address,
-> -		u16 val)
-> +				    u16 reg_address,
-> +				    u16 val)
->  {
->  	int ret;
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> @@ -67,8 +67,8 @@ static int ade7854_spi_write_reg_16(struct device *dev,
->  }
->  
->  static int ade7854_spi_write_reg_24(struct device *dev,
-> -		u16 reg_address,
-> -		u32 val)
-> +				    u16 reg_address,
-> +				    u32 val)
->  {
->  	int ret;
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> @@ -94,8 +94,8 @@ static int ade7854_spi_write_reg_24(struct device *dev,
->  }
->  
->  static int ade7854_spi_write_reg_32(struct device *dev,
-> -		u16 reg_address,
-> -		u32 val)
-> +				    u16 reg_address,
-> +				    u32 val)
->  {
->  	int ret;
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> @@ -122,8 +122,8 @@ static int ade7854_spi_write_reg_32(struct device *dev,
->  }
->  
->  static int ade7854_spi_read_reg_8(struct device *dev,
-> -		u16 reg_address,
-> -		u8 *val)
-> +				  u16 reg_address,
-> +				  u8 *val)
->  {
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
-> @@ -149,7 +149,7 @@ static int ade7854_spi_read_reg_8(struct device *dev,
->  	ret = spi_sync_transfer(st->spi, xfers, ARRAY_SIZE(xfers));
->  	if (ret) {
->  		dev_err(&st->spi->dev, "problem when reading 8 bit register 0x%02X",
-> -				reg_address);
-> +			reg_address);
->  		goto error_ret;
->  	}
->  	*val = st->rx[0];
-> @@ -160,8 +160,8 @@ static int ade7854_spi_read_reg_8(struct device *dev,
->  }
->  
->  static int ade7854_spi_read_reg_16(struct device *dev,
-> -		u16 reg_address,
-> -		u16 *val)
-> +				   u16 reg_address,
-> +				   u16 *val)
->  {
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
-> @@ -186,7 +186,7 @@ static int ade7854_spi_read_reg_16(struct device *dev,
->  	ret = spi_sync_transfer(st->spi, xfers, ARRAY_SIZE(xfers));
->  	if (ret) {
->  		dev_err(&st->spi->dev, "problem when reading 16 bit register 0x%02X",
-> -				reg_address);
-> +			reg_address);
->  		goto error_ret;
->  	}
->  	*val = be16_to_cpup((const __be16 *)st->rx);
-> @@ -197,8 +197,8 @@ static int ade7854_spi_read_reg_16(struct device *dev,
->  }
->  
->  static int ade7854_spi_read_reg_24(struct device *dev,
-> -		u16 reg_address,
-> -		u32 *val)
-> +				   u16 reg_address,
-> +				   u32 *val)
->  {
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
-> @@ -224,7 +224,7 @@ static int ade7854_spi_read_reg_24(struct device *dev,
->  	ret = spi_sync_transfer(st->spi, xfers, ARRAY_SIZE(xfers));
->  	if (ret) {
->  		dev_err(&st->spi->dev, "problem when reading 24 bit register 0x%02X",
-> -				reg_address);
-> +			reg_address);
->  		goto error_ret;
->  	}
->  	*val = (st->rx[0] << 16) | (st->rx[1] << 8) | st->rx[2];
-> @@ -235,8 +235,8 @@ static int ade7854_spi_read_reg_24(struct device *dev,
->  }
->  
->  static int ade7854_spi_read_reg_32(struct device *dev,
-> -		u16 reg_address,
-> -		u32 *val)
-> +				   u16 reg_address,
-> +				   u32 *val)
->  {
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
-> @@ -262,7 +262,7 @@ static int ade7854_spi_read_reg_32(struct device *dev,
->  	ret = spi_sync_transfer(st->spi, xfers, ARRAY_SIZE(xfers));
->  	if (ret) {
->  		dev_err(&st->spi->dev, "problem when reading 32 bit register 0x%02X",
-> -				reg_address);
-> +			reg_address);
->  		goto error_ret;
->  	}
->  	*val = be32_to_cpup((const __be32 *)st->rx);
-
+diff --git a/drivers/staging/iio/meter/ade7758_trigger.c b/drivers/staging/iio/meter/ade7758_trigger.c
+index 1f0d1a0..da489ae 100644
+--- a/drivers/staging/iio/meter/ade7758_trigger.c
++++ b/drivers/staging/iio/meter/ade7758_trigger.c
+@@ -34,7 +34,7 @@ static int ade7758_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ {
+ 	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+ 
+-	dev_dbg(&indio_dev->dev, "%s (%d)\n", __func__, state);
++	dev_dbg(&indio_dev->dev, "(%d)\n", state);
+ 	return ade7758_set_irq(&indio_dev->dev, state);
+ }
+ 
+-- 
+2.10.0.GIT
