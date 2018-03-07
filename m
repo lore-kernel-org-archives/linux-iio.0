@@ -1,50 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qt0-f196.google.com ([209.85.216.196]:41621 "EHLO
-        mail-qt0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752931AbeCFUVo (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Mar 2018 15:21:44 -0500
-Date: Tue, 6 Mar 2018 17:21:38 -0300
+Received: from mail-qk0-f196.google.com ([209.85.220.196]:43284 "EHLO
+        mail-qk0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753878AbeCGAnW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Mar 2018 19:43:22 -0500
+Date: Tue, 6 Mar 2018 21:43:17 -0300
 From: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
-To: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
+To: Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        daniel.baluta@nxp.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] staging:iio:meter: Aligns open parenthesis
-Message-ID: <20180306202138.dquhxpfiwq6matbe@smtp.gmail.com>
-References: <cover.1520338980.git.rodrigosiqueiramelo@gmail.com>
- <284b70f83bac86ec5f0048b957ec2f679ca8ab99.1520338980.git.rodrigosiqueiramelo@gmail.com>
- <20180306135314.vxngtgj6yxomasm2@mwanda>
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: daniel.baluta@nxp.com, linux-iio@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/3] staging:iio:meter: Checkpatch cleanup for meter
+Message-ID: <cover.1520382753.git.rodrigosiqueiramelo@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20180306135314.vxngtgj6yxomasm2@mwanda>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi
+This patchset fixes errors and checks found by checkpatch.pl in the
+staging/iio/meter. These series fixes:
 
-On 03/06, Dan Carpenter wrote:
-> On Tue, Mar 06, 2018 at 09:26:07AM -0300, Rodrigo Siqueira wrote:
-> > @@ -63,7 +63,7 @@ int ade7758_probe_trigger(struct iio_dev *indio_dev)
-> >  	int ret;
-> >  
-> >  	st->trig = iio_trigger_alloc("%s-dev%d",
-> > -					spi_get_device_id(st->us)->name,
-> > +				     spi_get_device_id(st->us)->name,
-> >  					indio_dev->id);
->                                         ^^^^^^^^^^^^^
-> The "indio_dev->id" needs to be aligned as well.
+* Removes the use of 4 digit octal by replaces IIO_DEV_ATTR_CH_OFF by
+        IIO_DEVICE_ATTR;
+* Removes unnecessary macro;
+* Aligns open parenthesis;
 
-I will fix it and send a v2.
+Changes v2:
+- Aligns one extra open parenthesis in Patch 3.
 
-Thanks for the review!
- 
-> >  	if (!st->trig) {
-> >  		ret = -ENOMEM;
-> 
-> regards,
-> dan carpenter
-> 
+After apply this patch series, meter going to be checkpatch
+
+Rodrigo Siqueira (3):
+  staging:iio:meter: Replaces IIO_DEV_ATTR_CH_OFF by IIO_DEVICE_ATTR
+  staging:iio:meter: Remove unused macro IIO_DEV_ATTR_CH_OFF
+  staging:iio:meter: Aligns open parenthesis
+
+ drivers/staging/iio/meter/ade7753.c         | 18 +++++++------
+ drivers/staging/iio/meter/ade7758_trigger.c |  6 ++---
+ drivers/staging/iio/meter/ade7759.c         | 18 +++++++------
+ drivers/staging/iio/meter/ade7854-spi.c     | 40 ++++++++++++++---------------
+ drivers/staging/iio/meter/meter.h           |  3 ---
+ 5 files changed, 43 insertions(+), 42 deletions(-)
+
+-- 
+2.16.2
+
