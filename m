@@ -1,67 +1,272 @@
-Return-Path: <SRS0=UNOS=F4=gmail.com=himanshujha199640@kernel.org>
-Date: Wed, 7 Mar 2018 03:55:30 +0530
-From: Himanshu Jha <himanshujha199640@gmail.com>
-To: Shreeya Patel <shreeya.patel23498@gmail.com>
-Cc: jic23@kernel.org, lars@metafoo.de, Michael.Hennerich@analog.com,
-	knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org, daniel.baluta@gmail.com
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.99]:33600 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S934865AbeCGUkd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 7 Mar 2018 15:40:33 -0500
+Date: Wed, 7 Mar 2018 20:40:27 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Himanshu Jha <himanshujha199640@gmail.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, daniel.baluta@gmail.com
 Subject: Re: [PATCH 03/11] Staging: iio: accel: Remove unnecessary comments
-Message-ID: <20180306222530.GA2604@himanshu-Vostro-3559>
+Message-ID: <20180307204027.2c1a825e@archlinux>
+In-Reply-To: <1520236170-14668-4-git-send-email-himanshujha199640@gmail.com>
 References: <1520236170-14668-1-git-send-email-himanshujha199640@gmail.com>
- <1520236170-14668-4-git-send-email-himanshujha199640@gmail.com>
- <1520371619.4202.11.camel@gmail.com>
+        <1520236170-14668-4-git-send-email-himanshujha199640@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-In-Reply-To: <1520371619.4202.11.camel@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Shreeya,
+On Mon,  5 Mar 2018 13:19:22 +0530
+Himanshu Jha <himanshujha199640@gmail.com> wrote:
 
-> I was just going through your patch for giving myself 
-> a habit of reading patches.
-
-Great!
-
-> I see here that there are many comments which are necessary
-> have also been removed.
-> Jonathan told that some of the names do not explain
-> much about the how registers are related to the orientation.
-> So it is necessary for some comments to be there here.
+> Remove unnecessary comments since the definitions are pretty clear
+> with their macro names.
 > 
-> I saw your next patch too, in which you are changing some of the
-> names for betterment, but again, that doesn't cover everything which
-> was told by Jonathan.
+> Signed-off-by: Himanshu Jha <himanshujha199640@gmail.com>
+
+Hi,
+
+The art of commenting (and indeed removing comments) is never a clear one.
+I agree with the vast majority of what you have here, but as with other
+drivers in this set, I think there are a couple of places comments are useful
+and even in one case where the comment should be expanded to become useful.
+
+I'd also like to see the patches reordered so the renames occur before this
+one.  That will make some of the changes you have made in here a lot more
+obviously good!
+
+Thanks,
+
+Jonathan.
+> ---
+>  drivers/staging/iio/accel/adis16201.c | 82 +++++------------------------------
+>  1 file changed, 10 insertions(+), 72 deletions(-)
 > 
-> Here is the link to the patch where Jonathan had given detailed 
-> description
-> 
-> Just sharing this information so in case if Jonathan agrees with
-> this then he will not have to explain it all again :)
-> 
-> https://lkml.org/lkml/2018/3/3/104
+> diff --git a/drivers/staging/iio/accel/adis16201.c b/drivers/staging/iio/accel/adis16201.c
+> index 0fae8aa..59c1166 100644
+> --- a/drivers/staging/iio/accel/adis16201.c
+> +++ b/drivers/staging/iio/accel/adis16201.c
+> @@ -20,87 +20,42 @@
+>  #include <linux/iio/buffer.h>
+>  #include <linux/iio/imu/adis.h>
+>  
+> -#define ADIS16201_STARTUP_DELAY	220 /* ms */
+> +#define ADIS16201_STARTUP_DELAY		220
+As below, this would have made a lot more sense if you had
+the rename of the macro patch (I assume the unit will be added
+to the name) before this one.
 
-Well, the naming of macros is debatable as Jonathan pointed out[1] and
-the unusual/odd naming pointed to you was for rotation registers
+>  
+> -/* Flash memory write count */
+>  #define ADIS16201_FLASH_CNT      0x00
+>  
+> -/* Output, power supply */
+> +/* Data Output Register Information */
+>  #define ADIS16201_SUPPLY_OUT     0x02
+> -
+> -/* Output, x-axis accelerometer */
+>  #define ADIS16201_XACCL_OUT      0x04
+> -
+> -/* Output, y-axis accelerometer */
+>  #define ADIS16201_YACCL_OUT      0x06
+> -
+> -/* Output, auxiliary ADC input */
+>  #define ADIS16201_AUX_ADC        0x08
+> -
+> -/* Output, temperature */
+>  #define ADIS16201_TEMP_OUT       0x0A
+> -
+> -/* Output, x-axis inclination */
+>  #define ADIS16201_XINCL_OUT      0x0C
+> -
+> -/* Output, y-axis inclination */
+>  #define ADIS16201_YINCL_OUT      0x0E
+>  
+> -/* Calibration, x-axis acceleration offset */
+> +/* Calibration Register Definition */
+>  #define ADIS16201_XACCL_OFFS     0x10
+> -
+> -/* Calibration, y-axis acceleration offset */
+>  #define ADIS16201_YACCL_OFFS     0x12
+> -
+> -/* x-axis acceleration scale factor */
+>  #define ADIS16201_XACCL_SCALE    0x14
+> -
+> -/* y-axis acceleration scale factor */
+>  #define ADIS16201_YACCL_SCALE    0x16
+> -
+> -/* Calibration, x-axis inclination offset */
+>  #define ADIS16201_XINCL_OFFS     0x18
+> -
+> -/* Calibration, y-axis inclination offset */
+>  #define ADIS16201_YINCL_OFFS     0x1A
+> -
+> -/* x-axis inclination scale factor */
+>  #define ADIS16201_XINCL_SCALE    0x1C
+> -
+> -/* y-axis inclination scale factor */
+>  #define ADIS16201_YINCL_SCALE    0x1E
+>  
+> -/* Alarm 1 amplitude threshold */
+> +/* Alarm Register Definition */
+>  #define ADIS16201_ALM_MAG1       0x20
+> -
+> -/* Alarm 2 amplitude threshold */
+>  #define ADIS16201_ALM_MAG2       0x22
+> -
+> -/* Alarm 1, sample period */
+>  #define ADIS16201_ALM_SMPL1      0x24
+> -
+> -/* Alarm 2, sample period */
+>  #define ADIS16201_ALM_SMPL2      0x26
+> -
+> -/* Alarm control */
+>  #define ADIS16201_ALM_CTRL       0x28
+>  
+> -/* Auxiliary DAC data */
+>  #define ADIS16201_AUX_DAC        0x30
+> -
+> -/* General-purpose digital input/output control */
+>  #define ADIS16201_GPIO_CTRL      0x32
+> -
+> -/* Miscellaneous control */
+>  #define ADIS16201_MSC_CTRL       0x34
+>  
+> -/* Internal sample period (rate) control */
+>  #define ADIS16201_SMPL_PRD       0x36
+> -
+> -/* Operation, filter configuration */
+>  #define ADIS16201_AVG_CNT        0x38
+> -
+> -/* Operation, sleep mode control */
+>  #define ADIS16201_SLP_CNT        0x3A
+>  
+>  /* Diagnostics, system status register */
+> @@ -109,42 +64,28 @@
+>  /* Operation, system command register */
+>  #define ADIS16201_GLOB_CMD       0x3E
+>  
+> -/* MSC_CTRL */
+>  
+> -/* Self-test enable */
+>  #define ADIS16201_MSC_CTRL_SELF_TEST_EN	        BIT(8)
+>  
+> -/* Data-ready enable: 1 = enabled, 0 = disabled */
+>  #define ADIS16201_MSC_CTRL_DATA_RDY_EN	        BIT(2)
+>  
+> -/* Data-ready polarity: 1 = active high, 0 = active low */
+>  #define ADIS16201_MSC_CTRL_ACTIVE_HIGH	        BIT(1)
+>  
+> -/* Data-ready line selection: 1 = DIO1, 0 = DIO0 */
+>  #define ADIS16201_MSC_CTRL_DATA_RDY_DIO1	BIT(0)
+>  
+> -/* DIAG_STAT */
+>  
+> -/* Alarm 2 status: 1 = alarm active, 0 = alarm inactive */
+>  #define ADIS16201_DIAG_STAT_ALARM2        BIT(9)
+>  
+> -/* Alarm 1 status: 1 = alarm active, 0 = alarm inactive */
+>  #define ADIS16201_DIAG_STAT_ALARM1        BIT(8)
+>  
+> -/* SPI communications failure */
+>  #define ADIS16201_DIAG_STAT_SPI_FAIL_BIT   3
+>  
+> -/* Flash update failure */
+>  #define ADIS16201_DIAG_STAT_FLASH_UPT_BIT  2
+I would have preferred this and the next patch to be
+in the opposite order as then it would have been obvious when
+reading this patch on why the comment here is no longer needed.
 
-#define ADIS16209_ROT_OUT_REG		0x10
+>  
+> -/* Power supply above 3.625 V */
+>  #define ADIS16201_DIAG_STAT_POWER_HIGH_BIT 1
+>  
+> -/* Power supply below 3.15 V */
+>  #define ADIS16201_DIAG_STAT_POWER_LOW_BIT  0
+These two comments are providing information that isn't
+available from the naming so are useful and should stay.
 
-I renamed the unusual/odd naming macros for eg
-#define ADIS16209_DIAG_STAT_FLASH_UPT_BIT
+>  
+> -/* GLOB_CMD */
+> -
+>  #define ADIS16201_GLOB_CMD_SW_RESET	BIT(7)
+>  #define ADIS16201_GLOB_CMD_FACTORY_CAL	BIT(1)
+>  
+> @@ -187,30 +128,30 @@ static int adis16201_read_raw(struct iio_dev *indio_dev,
+>  		case IIO_VOLTAGE:
+>  			if (chan->channel == 0) {
+>  				*val = 1;
+> -				*val2 = 220000; /* 1.22 mV */
+> +				*val2 = 220000;
+>  			} else {
+>  				*val = 0;
+> -				*val2 = 610000; /* 0.610 mV */
+> +				*val2 = 610000;
+>  			}
+>  			return IIO_VAL_INT_PLUS_MICRO;
+>  		case IIO_TEMP:
+> -			*val = -470; /* 0.47 C */
+> +			*val = -470;
+The interesting point here is that the original comment
+was actually wrong. It is clearly -0.47!
 
-to
+>  			*val2 = 0;
+>  			return IIO_VAL_INT_PLUS_MICRO;
+>  		case IIO_ACCEL:
+>  			*val = 0;
+> -			*val2 = IIO_G_TO_M_S_2(462400); /* 0.4624 mg */
+> +			*val2 = IIO_G_TO_M_S_2(462400);
+>  			return IIO_VAL_INT_PLUS_NANO;
+>  		case IIO_INCLI:
+>  			*val = 0;
+> -			*val2 = 100000; /* 0.1 degree */
+> +			*val2 = 100000;
+>  			return IIO_VAL_INT_PLUS_MICRO;
+>  		default:
+>  			return -EINVAL;
+>  		}
+>  		break;
+>  	case IIO_CHAN_INFO_OFFSET:
+> -		*val = 25000 / -470 - 1278; /* 25 C = 1278 */
+> +		*val = 25000 / -470 - 1278;
+The original comment wasn't great but we probably would benefit from some
+information here.  Something like:
 
-#define ADIS16201_DIAG_STAT_FLASH_UPT_FAIL_BIT
+/*
+ * When temperature is 25 C sensor raw reading is 1278.
+ * The scale is -470 milli degree C per LSB.
+ */
 
-as it didn't look like a failure bit address for which I consulted Jonathan to which
-he agreed. Also, *DIAG_STAT* seems like a good name since these status registers
-are serving the purpose of diagnosing the device behavior. Again, GLOB_CMD stands
-for Global Command register for controlling the deivce operation such as
-Fatory Reset, Software Reset, etc.
+Hopefully that would let people know where the maths comes
+from (please check I got it right!)
 
-See, it is difficult to point the perfect names than the suitable ones!
-And let's just leave these *bikeshedding* ;-)
+>  		return IIO_VAL_INT;
+>  	case IIO_CHAN_INFO_CALIBBIAS:
+>  		switch (chan->type) {
+> @@ -318,13 +259,11 @@ static int adis16201_probe(struct spi_device *spi)
+>  	struct adis *st;
+>  	struct iio_dev *indio_dev;
+>  
+> -	/* setup the industrialio driver allocated elements */
+>  	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+>  	if (!indio_dev)
+>  		return -ENOMEM;
+>  
+>  	st = iio_priv(indio_dev);
+> -	/* this is only used for removal purposes */
+>  	spi_set_drvdata(spi, indio_dev);
+>  
+>  	indio_dev->name = spi->dev.driver->name;
+> @@ -343,7 +282,6 @@ static int adis16201_probe(struct spi_device *spi)
+>  	if (ret)
+>  		return ret;
+>  
+> -	/* Get the device into a sane initial state */
+>  	ret = adis_initial_startup(st);
+>  	if (ret)
+>  		goto error_cleanup_buffer_trigger;
 
--- 
-Thanks
-Himanshu Jha
