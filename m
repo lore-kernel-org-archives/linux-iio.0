@@ -1,106 +1,114 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:44246 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932127AbeCJPeD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 10 Mar 2018 10:34:03 -0500
-Date: Sat, 10 Mar 2018 15:34:00 +0000
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Michael Nosthoff <posted@heine.so>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: st_pressure: lps22: unused default data
-Message-ID: <20180310153400.1fca19a5@archlinux>
-In-Reply-To: <f5e6faf1ab9488d8f18a00a73d3a9a5a@heine.so>
-References: <c374f2001d45f64a4df8a1852616224f@heine.so>
-        <f5e6faf1ab9488d8f18a00a73d3a9a5a@heine.so>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=QTNd=F6=gmail.com=shreeya.patel23498@kernel.org>
+From: Shreeya Patel <shreeya.patel23498@gmail.com>
+To: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	pmeerw@pmeerw.net,
+	gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org,
+	daniel.baluta@gmail.com
+Cc: Shreeya Patel <shreeya.patel23498@gmail.com>
+Subject: [PATCH v4] Staging: iio: adis16209: Change some macro names
+Date: Thu,  8 Mar 2018 23:46:17 +0530
+Message-Id: <1520532977-10653-1-git-send-email-shreeya.patel23498@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 08 Mar 2018 15:19:39 +0100
-Michael Nosthoff <posted@heine.so> wrote:
+Make some of the macro names according to the names
+given in the datasheet of the adis16209 driver and
+have slight indentation in field definitions to make
+them clearly different from the register addresses.
 
-> On 2018-03-08 14:54, Michael Nosthoff wrote:
-> > Hi,  
-> 
-> Sorry for answering my own mail, but I got a bit further. See below
-> 
-> > I have an LPS22 sensor which i used sucessfully with Kernel 4.9. Upon
-> > switching to 4.14 it was not loading properly anymore. This failure
-> > occured:
-> > 
-> > [    3.827094] iio iio:device1: DRDY on pdata not valid.
-> > [    3.832578] st-press-i2c: probe of 0-005c failed with error -22
-> > 
-> > So I started digging. It started working again when I add this entry
-> > to my devicetree:
-> > 
-> > st,drdy-int-pin = <1>;
-> > 
-> > So it seems the default value seems to be not set in 4.14 but was in 
-> > 4.9
-> > 
-> > I came to the conclusion that the problem happens in
-> > drivers/iio/pressure/st_pressure_core.c in
-> > 
-> > st_press_common_probe:
-> > 
-> > 
-> > struct st_sensors_platform_data *pdata =
-> > 	(struct st_sensors_platform_data *)press_data->dev->platform_data;
-> > ...
-> > if (!pdata && press_data->sensor_settings->drdy_irq.addr)
-> > 	pdata =	(struct st_sensors_platform_data *)&default_press_pdata;
-> > 
-> > err = st_sensors_init_sensor(indio_dev, 
-> > press_data->dev->platform_data);
-> > 
-> > 
-> > If pdata is not set (which is correct in my case) it gets assigned a
-> > default value. But in the call to st_sensors_init_sensor it's still
-> > using the data stored in press_data.
-> > 
-> > Okay, simple solution would be to pass pdata here as well. But I'm a
-> > bit confused about the commit [1] which introduced this. pdata is not
-> > used anymore in this function, so it seems completely useless to set it
-> > there. And so I don't understand what the commit tries to achieve at 
-> > all
-> > besides never using the default data.
-> >   
-> 
-> Somebody seems also to have noticed in the accel driver. See this commit 
-> [2]
-> and decided to remove the default initialization completely. Which makes 
-> sense
-> as this code was not doing anything.
-> 
-> I guess the what the intial commit was trying to achieve was to not 
-> overwrite
-> the pointer in dev->platform_data which i can imagine might be a problem 
-> when
-> using it as a module. But maybe forgot to alter the following usage of 
-> the data.
-> 
-> So I would suggest to revert commit [2] and pass pdata to 
-> st_sensors_init_sensor
-> in both cases (st_pressure and st_accel).
-> 
-> Does this make sense?
-> 
-Yes,  I was clearly dozing when Colin's patch came through and failed
-to notice that it should have been doing something with that pointer.
-Should always have been passed the pdata copy.
+Signed-off-by: Shreeya Patel <shreeya.patel23498@gmail.com>
+---
 
-Thanks,
+Changes in v4
+  -Have slight indentation in field definitions.
 
+ drivers/staging/iio/accel/adis16209.c | 48 +++++++++++++++++------------------
+ 1 file changed, 24 insertions(+), 24 deletions(-)
 
-Jonathan
-
-> 
-> 
-> > 
-> > [1]
-> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/iio/pressure/st_pressure_core.c?id=7383d44b84c94aaca4bf695a6bd8a69f2295ef1a  
-> [2] 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/iio/accel/st_accel_core.c?id=585ed27d06151f98e39238298f43ee261314ae74
-
+diff --git a/drivers/staging/iio/accel/adis16209.c b/drivers/staging/iio/accel/adis16209.c
+index eb5c878..19636e2 100644
+--- a/drivers/staging/iio/accel/adis16209.c
++++ b/drivers/staging/iio/accel/adis16209.c
+@@ -68,21 +68,21 @@
+ #define  ADIS16209_MSC_CTRL_ACTIVE_HIGH		BIT(1)
+ #define  ADIS16209_MSC_CTRL_DATA_RDY_DIO2	BIT(0)
+ 
+-#define ADIS16209_STAT_REG			0x3C
+-#define  ADIS16209_STAT_ALARM2			BIT(9)
+-#define  ADIS16209_STAT_ALARM1			BIT(8)
+-#define ADIS16209_STAT_SELFTEST_FAIL_BIT	5
+-#define ADIS16209_STAT_SPI_FAIL_BIT		3
+-#define ADIS16209_STAT_FLASH_UPT_FAIL_BIT	2
++#define ADIS16209_DIAG_STAT_REG			0x3C
++#define  ADIS16209_DIAG_STAT_ALARM2		BIT(9)
++#define  ADIS16209_DIAG_STAT_ALARM1		BIT(8)
++#define  ADIS16209_DIAG_STAT_SELFTEST_FAIL_BIT	5
++#define  ADIS16209_DIAG_STAT_SPI_FAIL_BIT	3
++#define  ADIS16209_DIAG_STAT_FLASH_UPT_BIT	2
+ /* Power supply above 3.625 V */
+-#define ADIS16209_STAT_POWER_HIGH_BIT		1
++#define  ADIS16209_DIAG_STAT_POWER_HIGH_BIT	1
+ /* Power supply below 3.15 V */
+-#define ADIS16209_STAT_POWER_LOW_BIT		0
++#define  ADIS16209_DIAG_STAT_POWER_LOW_BIT	0
+ 
+-#define ADIS16209_CMD_REG			0x3E
+-#define  ADIS16209_CMD_SW_RESET			BIT(7)
+-#define  ADIS16209_CMD_CLEAR_STAT		BIT(4)
+-#define  ADIS16209_CMD_FACTORY_CAL		BIT(1)
++#define ADIS16209_GLOB_CMD_REG			0x3E
++#define  ADIS16209_GLOB_CMD_SW_RESET		BIT(7)
++#define  ADIS16209_GLOB_CMD_CLEAR_STAT		BIT(4)
++#define  ADIS16209_GLOB_CMD_FACTORY_CAL		BIT(1)
+ 
+ #define ADIS16209_ERROR_ACTIVE			BIT(14)
+ 
+@@ -238,29 +238,29 @@ static const struct iio_info adis16209_info = {
+ };
+ 
+ static const char * const adis16209_status_error_msgs[] = {
+-	[ADIS16209_STAT_SELFTEST_FAIL_BIT] = "Self test failure",
+-	[ADIS16209_STAT_SPI_FAIL_BIT] = "SPI failure",
+-	[ADIS16209_STAT_FLASH_UPT_FAIL_BIT] = "Flash update failed",
+-	[ADIS16209_STAT_POWER_HIGH_BIT] = "Power supply above 3.625V",
+-	[ADIS16209_STAT_POWER_LOW_BIT] = "Power supply below 3.15V",
++	[ADIS16209_DIAG_STAT_SELFTEST_FAIL_BIT] = "Self test failure",
++	[ADIS16209_DIAG_STAT_SPI_FAIL_BIT] = "SPI failure",
++	[ADIS16209_DIAG_STAT_FLASH_UPT_BIT] = "Flash update failed",
++	[ADIS16209_DIAG_STAT_POWER_HIGH_BIT] = "Power supply above 3.625V",
++	[ADIS16209_DIAG_STAT_POWER_LOW_BIT] = "Power supply below 3.15V",
+ };
+ 
+ static const struct adis_data adis16209_data = {
+ 	.read_delay = 30,
+ 	.msc_ctrl_reg = ADIS16209_MSC_CTRL_REG,
+-	.glob_cmd_reg = ADIS16209_CMD_REG,
+-	.diag_stat_reg = ADIS16209_STAT_REG,
++	.glob_cmd_reg = ADIS16209_GLOB_CMD_REG,
++	.diag_stat_reg = ADIS16209_DIAG_STAT_REG,
+ 
+ 	.self_test_mask = ADIS16209_MSC_CTRL_SELF_TEST_EN,
+ 	.self_test_no_autoclear = true,
+ 	.startup_delay = ADIS16209_STARTUP_DELAY_MS,
+ 
+ 	.status_error_msgs = adis16209_status_error_msgs,
+-	.status_error_mask = BIT(ADIS16209_STAT_SELFTEST_FAIL_BIT) |
+-		BIT(ADIS16209_STAT_SPI_FAIL_BIT) |
+-		BIT(ADIS16209_STAT_FLASH_UPT_FAIL_BIT) |
+-		BIT(ADIS16209_STAT_POWER_HIGH_BIT) |
+-		BIT(ADIS16209_STAT_POWER_LOW_BIT),
++	.status_error_mask = BIT(ADIS16209_DIAG_STAT_SELFTEST_FAIL_BIT) |
++		BIT(ADIS16209_DIAG_STAT_SPI_FAIL_BIT) |
++		BIT(ADIS16209_DIAG_STAT_FLASH_UPT_BIT) |
++		BIT(ADIS16209_DIAG_STAT_POWER_HIGH_BIT) |
++		BIT(ADIS16209_DIAG_STAT_POWER_LOW_BIT),
+ };
+ 
+ static int adis16209_probe(struct spi_device *spi)
+-- 
+2.7.4
