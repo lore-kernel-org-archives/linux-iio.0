@@ -1,43 +1,49 @@
-Return-Path: <SRS0=IJUW=GC=axentia.se=peda@kernel.org>
-Subject: Re: [PATCH 2/2] iio: potentiometer: mcp4018: driver for Microchip
- digital potentiometers
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from cock.li ([185.100.85.212]:49038 "EHLO cock.li"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1750783AbeCHXTX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 8 Mar 2018 18:19:23 -0500
+From: Tom Lebreux <tomlebreux@cock.li>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
- Mark Rutland <mark.rutland@arm.com>, Hartmut Knaack <knaack.h@gmx.de>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>, devicetree@vger.kernel.org,
- linux-iio@vger.kernel.org
-References: <20180308195830.16348-1-peda@axentia.se>
- <20180308195830.16348-3-peda@axentia.se> <20180310161511.66d2ef97@archlinux>
-From: Peter Rosin <peda@axentia.se>
-Message-ID: <89822e7a-569a-43b9-46bd-d9b65b895cab@axentia.se>
-Date: Mon, 12 Mar 2018 15:32:53 +0100
-MIME-Version: 1.0
-In-Reply-To: <20180310161511.66d2ef97@archlinux>
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
+        Tom Lebreux <tomlebreux@cock.li>
+Subject: [PATCH] staging:iio:ad7152: Align arguments to match open parenthesis
+Date: Thu,  8 Mar 2018 18:19:04 -0500
+Message-Id: <20180308231904.4154-1-tomlebreux@cock.li>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 2018-03-10 17:15, Jonathan Cameron wrote:
-> On Thu,  8 Mar 2018 20:58:30 +0100
-> Peter Rosin <peda@axentia.se> wrote:
-> 
->> Add support for Microchip digital potentiometers and rheostats
->> 	MCP4017, MCP4018, MCP4019
->>
->> They all have one wiper with 128 steps and come in 5, 10, 50 and 100 kOhm
->> variations.
->>
->> Datasheet: http://www.microchip.com/downloads/en/DeviceDoc/22147a.pdf
->>
->> Signed-off-by: Peter Rosin <peda@axentia.se>
-> Nice little driver.
-> 
-> Applied to the togreg branch of iio.git and pushed out as testing
-> for the autobuilders to play with it.
+This patch fixes checkpatch.pl CHECK for alignment.
 
-Thanks, and thanks for taking it quickly before the bike-shedding got
-started. I worried a bit about that, when the driver is so small and
-trivial... :-)
+Signed-off-by: Tom Lebreux <tomlebreux@cock.li>
+---
+ drivers/staging/iio/cdc/ad7152.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Cheers,
-Peter
+diff --git a/drivers/staging/iio/cdc/ad7152.c b/drivers/staging/iio/cdc/ad7152.c
+index 19dc896603a1..25f51db05d2d 100644
+--- a/drivers/staging/iio/cdc/ad7152.c
++++ b/drivers/staging/iio/cdc/ad7152.c
+@@ -426,8 +426,8 @@ static int ad7152_read_raw(struct iio_dev *indio_dev,
+ }
+ 
+ static int ad7152_write_raw_get_fmt(struct iio_dev *indio_dev,
+-			       struct iio_chan_spec const *chan,
+-			       long mask)
++				    struct iio_chan_spec const *chan,
++				    long mask)
+ {
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_SCALE:
+@@ -493,7 +493,7 @@ static const struct iio_chan_spec ad7152_channels[] = {
+  */
+ 
+ static int ad7152_probe(struct i2c_client *client,
+-		const struct i2c_device_id *id)
++			const struct i2c_device_id *id)
+ {
+ 	int ret = 0;
+ 	struct ad7152_chip_info *chip;
+-- 
+2.16.2
+
