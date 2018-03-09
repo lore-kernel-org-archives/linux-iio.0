@@ -1,400 +1,806 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:40864 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752626AbeCXReT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 24 Mar 2018 13:34:19 -0400
-Date: Sat, 24 Mar 2018 16:09:33 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        benjamin.gaignard@st.com, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 3/8] docs: Add Generic Counter interface
- documentation
-Message-ID: <20180324160933.186e01d1@archlinux>
-In-Reply-To: <c30b11b8839099bffb3888e9198751af6e5fe623.1520614431.git.vilhelm.gray@gmail.com>
+Return-Path: <SRS0=vam/=F7=gmail.com=vilhelm.gray@kernel.org>
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net
+Cc: benjamin.gaignard@st.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH v5 4/8] counter: 104-quad-8: Add Generic Counter interface support
+Date: Fri,  9 Mar 2018 13:43:06 -0500
+Message-Id: <bb69bfe2733ab94a2273394bb3d9a0a28816deff.1520614431.git.vilhelm.gray@gmail.com>
+In-Reply-To: <cover.1520614431.git.vilhelm.gray@gmail.com>
 References: <cover.1520614431.git.vilhelm.gray@gmail.com>
-        <c30b11b8839099bffb3888e9198751af6e5fe623.1520614431.git.vilhelm.gray@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri,  9 Mar 2018 13:42:48 -0500
-William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
+This patch adds support for the Generic Counter interface to the
+104-QUAD-8 driver. The existing 104-QUAD-8 device interface should not
+be affected by this patch; all changes are intended as supplemental
+additions as perceived by the user.
 
-> This patch adds high-level documentation about the Generic Counter
-> interface.
-> 
-> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
-Other than the little issues Randy raised and one more inline from
-me this looks good to me.
+Generic Counter Counts are created for the eight quadrature channel
+counts, as well as their respective quadrature A and B Signals (which
+are associated via respective Synapse structures) and respective index
+Signals.
 
-I would suggest you check whitespace in general to make sure there
-are not other odd mixes of tabs and spaces hiding in here.
+The new Generic Counter interface sysfs attributes are intended to
+expose the same functionality and data available via the existing
+104-QUAD-8 IIO device interface; the Generic Counter interface serves
+to provide the respective functionality and data in a standard way
+expected of counter devices.
 
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+---
+ MAINTAINERS                  |   4 +-
+ drivers/counter/104-quad-8.c | 685 ++++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 677 insertions(+), 12 deletions(-)
 
-> ---
->  Documentation/driver-api/generic-counter.rst | 321 +++++++++++++++++++++++++++
->  Documentation/driver-api/index.rst           |   1 +
->  MAINTAINERS                                  |   1 +
->  3 files changed, 323 insertions(+)
->  create mode 100644 Documentation/driver-api/generic-counter.rst
-> 
-> diff --git a/Documentation/driver-api/generic-counter.rst b/Documentation/driver-api/generic-counter.rst
-> new file mode 100644
-> index 000000000000..bce0cbc31963
-> --- /dev/null
-> +++ b/Documentation/driver-api/generic-counter.rst
-> @@ -0,0 +1,321 @@
-> +=========================
-> +Generic Counter Interface
-> +=========================
-> +
-> +Introduction
-> +============
-> +
-> +Counter devices are prevalent within a diverse spectrum of industries.
-> +The ubiquitous presence of these devices necessitates a common interface
-> +and standard of interaction and exposure. This driver API attempts to
-> +resolve the issue of duplicate code found among existing counter device
-> +drivers by introducing a generic counter interface for consumption. The
-> +Generic Counter interface enables drivers to support and expose a common
-> +set of components and functionality present in counter devices.
-> +
-> +Theory
-> +======
-> +
-> +Counter devices can vary greatly in design, but regardless of whether
-> +some devices are quadrature encoder counters or tally counters, all
-> +counter devices consist of a core set of components. This core set of
-> +components, shared by all counter devices, is what forms the essence of
-> +the Generic Counter interface.
-> +
-> +There are three core components to a counter:
-> +
-> +        COUNT
-> +        -----
-> +        A Count represents the count data for a set of Signals. The
-> +        Generic Counter interface provides the following available count
-> +        data types:
-> +
-> +		* COUNT_POSITION_UNSIGNED:
-> +			Unsigned integer value representing position.
-> +
-> +		* COUNT_POSITION_SIGNED:
-> +			Signed integer value representing position.
-> +
-> +        A Count has a count function mode which represents the update
-> +        behavior for the count data. The Generic Counter interface
-> +        provides the following available count function modes:
-> +
-> +		* Increase:
-> +			Accumulated count is incremented.
-> +
-> +		* Decrease:
-> +			Accumulated count is decremented.
-> +
-> +		* Pulse-Direction:
-> +			Rising edges on quadrature pair signal A updates
-> +                        the respective count. The input level of
-> +                        quadrature pair signal B determines direction.
-> +
-> +		* Quadrature x1:
-> +			If direction is forward, rising edges on
-> +                        quadrature pair signal A updates the respective
-> +                        count; if the direction is backward, falling
-> +                        edges on quadrature pair signal A updates the
-> +                        respective count. Quadrature encoding determines
-> +                        the direction.
-> +
-> +		* Quadrature x2:
-> +			Any state transition on quadrature pair signal A
-> +                        updates the respective count. Quadrature
-> +                        encoding determines the direction.
-> +
-> +		* Quadrature x4:
-> +			Any state transition on either quadrature pair
-> +                        signals updates	the respective count. Quadrature
-> +                        encoding determines the direction.
-> +
-> +        A Count has a set of one or more associated Signals.
-> +
-> +        SIGNAL
-> +        ------
-> +        A Signal represents a counter input data; this is the input data
-> +        that is analyzed by the counter to determine the count data;
-> +        e.g. a quadrature signal output line of a rotary encoder. Not
-> +        all counter devices provide user access to the Signal data.
-> +
-> +        The Generic Counter interface provides the following available
-> +        signal data types for when the Signal data is available for user
-> +        access:
-> +
-> +	        * SIGNAL_LEVEL_LOW:
-> +                        Signal line is in a low state.
-> +
-> +                * SIGNAL_LEVEL_HIGH:
-> +                        Signal line is in a high state.
-
-Something odd in formatting here as those two bullet points should
-be aligned.
-
-> +
-> +        A Signal may be associated to one or more Counts.
-> +
-> +        SYNAPSE
-> +        -------
-> +        A Synapse represents the association of a Signal with a
-> +        respective Count. Signal data affects respective Count data, and
-> +        the Synapse represents this relationship.
-> +
-> +        The Synapse action mode specifies the Signal data condition
-> +        which triggers the respective Count's count function evaluation
-> +        to update the count data. The Generic Counter interface provides
-> +        the following available action modes:
-> +
-> +                * None:
-> +                        Signal does not trigger the count function. In
-> +                        Pulse-Direction count function mode, this Signal
-> +                        is evaluated as Direction.
-> +                * Rising Edge:
-> +                        Low state transitions to high state.
-> +                * Falling Edge:
-> +                        High state transitions to low state.
-> +                * Both Edges:
-> +                        Any state transition.
-> +
-> +
-> +A counter is defined as a set of input signals associated to count data
-> +that are generated by the evaluation of the state of the associated
-> +input signals as defined by the respective count functions. Within the
-> +context of the Generic Counter interface, a counter consists of Counts
-> +each associated to a set of Signals, whose respective Synapse instances
-> +represent the count function update conditions for the associated
-> +Counts.
-> +
-> +Paradigm
-> +========
-> +
-> +The most basic counter device may be expressed as a single Count
-> +associated with a single Signal via a single Synapse. Take for example
-> +a counter device which simply accumulates a count of rising edges on a
-> +source input line.
-> +
-> +        Count                Synapse        Signal
-> +        -----                -------        ------
-> ++---------------------+
-> +| Data: Count         |    Rising Edge     ________
-> +| Function: Increase  |  <-------------   / Source \
-> +|                     |                  ____________
-> ++---------------------+
-> +
-> +In this example, the Signal is a source input line with a pulsing
-> +voltage, while the Count is a persistent count value which is repeatedly
-> +incremented. The Signal is associated with the respective Count via a
-> +Synapse. The increase function is triggered by the Signal data condition
-> +specified by the Synapse -- in this case a rising edge condition on the
-> +voltage input line. In summary, the counter device existence and
-> +behavior is aptly represented by respective Count, Signal, and Synapse
-> +components: a rising edge condition triggers an increase function on an
-> +accumulating count datum.
-> +
-> +A counter device is not limited to a single Signal; in fact, in theory
-> +many Signals may be associated with even a single Count. For example, a
-> +quadrature encoder counter device can keep track of position based on
-> +the states of two input lines.
-> +
-> +           Count                 Synapse     Signal
-> +           -----                 -------     ------
-> ++-------------------------+
-> +| Data: Position          |    Both Edges     ___
-> +| Function: Quadrature x4 |  <------------   / A \
-> +|                         |                 _______
-> +|                         |
-> +|                         |    Both Edges     ___
-> +|                         |  <------------   / B \
-> +|                         |                 _______
-> ++-------------------------+
-> +
-> +In this example, two Signals (quadrature encoder lines A and B) are
-> +associated to a single Count: a rising or falling edge on either A or B
-> +triggers the "Quadrature x4" function which determines the direction of
-> +movement and updates the respective position data. The "Quadrature x4"
-> +function is likely implemented in the hardware of the quadrature encoder
-> +counter device; the Count, Signals, and Synapses simply represent this
-> +hardware behavior and functionality.
-> +
-> +Signals associated to the same Count can have differing Synapse action
-> +mode conditions. For example, a quadrature encoder counter device
-> +operating in a non-quadrature Pulse-Direction mode could have one input
-> +line dedicated for movement and a second input line dedicated for
-> +direction.
-> +
-> +           Count                   Synapse      Signal
-> +           -----                   -------      ------
-> ++---------------------------+
-> +| Data: Position            |    Rising Edge     ___
-> +| Function: Pulse-Direction |  <-------------   / A \ (Movement)
-> +|                           |                  _______
-> +|                           |
-> +|                           |       None         ___
-> +|                           |  <-------------   / B \ (Direction)
-> +|                           |                  _______
-> ++---------------------------+
-> +
-> +Only Signal A triggers the "Pulse-Direction" update function, but the
-> +instantaneous state of Signal B is still required in order to know the
-> +direction so that the position data may be properly updated. Ultimately,
-> +both Signals are associated to the same Count via two respective
-> +Synapses, but only one Synapse has an active action mode condition which
-> +triggers the respective count function while the other is left with a
-> +"None" condition action mode to indicate its respective Signal's
-> +availability for state evaluation despite its non-triggering mode.
-> +
-> +Keep in mind that the Signal, Synapse, and Count are abstract
-> +representations which do not need to be closely married to their
-> +respective physical sources. This allows the user of a counter to
-> +divorce themselves from the nuances of physical components (such as
-> +whether an input line is differential or single-ended) and instead focus
-> +on the core idea of what the data and process represent (e.g. position
-> +as interpreted from quadrature encoding data).
-> +
-> +Userspace Interface
-> +===================
-> +
-> +Several sysfs attributes are generated by the Generic Counter interface,
-> +and reside under the /sys/bus/counter/devices/counterX directory, where
-> +counterX refers to the respective counter device. Please see
-> +Documentation/ABI/testing/sys-bus-counter-generic-sysfs for detailed
-> +information on each Generic Counter interface sysfs attribute.
-> +
-> +Through these sysfs attributes, programs and scripts may interact with
-> +the Generic Counter paradigm Counts, Signals, and Synapses of respective
-> +counter devices.
-> +
-> +Driver API
-> +==========
-> +
-> +Driver authors may utilize the Generic Counter interface in their code
-> +by including the include/linux/iio/counter.h header file. This header
-> +file provides several core data structures, function prototypes, and
-> +macros for defining a counter device.
-> +
-> +.. kernel-doc:: include/linux/counter.h
-> +   :internal:
-> +
-> +.. kernel-doc:: drivers/counter/generic-counter.c
-> +   :export:
-> +
-> +Implementation
-> +==============
-> +
-> +To support a counter device, a driver must first allocate the available
-> +Counter Signals via counter_signal structures. These Signals should
-> +be stored as an array and set to the signals array member of an
-> +allocated counter_device structure before the Counter is registered to
-> +the system.
-> +
-> +Counter Counts may be allocated via counter_count structures, and
-> +respective Counter Signal associations (Synapses) made via
-> +counter_synapse structures. Associated counter_synapse structures are
-> +stored as an array and set to the the synapses array member of the
-> +respective counter_count structure. These counter_count structures are
-> +set to the counts array member of an allocated counter_device structure
-> +before the Counter is registered to the system.
-> +
-> +Driver callbacks should be provided to the counter_device structure in
-> +order to communicate with the device: to read and write various Signals
-> +and Counts, and to set and get the "action mode" and "function mode" for
-> +various Synapses and Counts respectively.
-> +
-> +A defined counter_device structure may be registered to the system by
-> +passing it to the counter_register function, and unregistered by passing
-> +it to the counter_unregister function. Similarly, the
-> +devm_counter_register and devm_counter_unregister functions may be used
-> +if device memory-managed registration is desired.
-> +
-> +Extension sysfs attributes can be created for auxiliary functionality
-> +and data by passing in defined counter_device_ext, counter_count_ext,
-> +and counter_signal_ext structures. In these cases, the
-> +counter_device_ext structure is used for global configuration of the
-> +respective Counter device, while the counter_count_ext and
-> +counter_signal_ext structures allow for auxiliary exposure and
-> +configuration of a specific Count or Signal respectively.
-> +
-> +Architecture
-> +============
-> +
-> +When the Generic Counter interface counter module is loaded, the
-> +counter_init function is called which registers a bus_type named
-> +"counter" to the system. Subsequently, when the module is unloaded, the
-> +counter_exit function is called which unregisters the bus_type named
-> +"counter" from the system.
-> +
-> +Counter devices are registered to the system via the counter_register
-> +function, and later removed via the counter_unregister function. The
-> +counter_register function establishes a unique ID for the Counter
-> +device and creates a respective sysfs directory, where X is the
-> +mentioned unique ID:
-> +
-> +    /sys/bus/counter/devices/counterX
-> +
-> +Sysfs attributes are created within the counterX directory to expose
-> +functionality, configurations, and data relating to the Counts, Signals,
-> +and Synapses of the Counter device, as well as options and information
-> +for the Counter device itself.
-> +
-> +Each Signal has a directory created to house its relevant sysfs
-> +attributes, where Y is the unique ID of the respective Signal:
-> +
-> +    /sys/bus/counter/devices/counterX/signalY
-> +
-> +Similarly, each Count has a directory created to house its relevant
-> +sysfs attributes, where Y is the unique ID of the respective Count:
-> +
-> +    /sys/bus/counter/devices/counterX/countY
-> +
-> +For a more detailed breakdown of the available Generic Counter interface
-> +sysfs attributes, please refer to the
-> +Documentation/ABI/testing/sys-bus-counter file.
-> +
-> +The Signals and Counts associated with the Counter device are registered
-> +to the system as well by the counter_register function. The
-> +signal_read/signal_write driver callbacks are associated to their
-> +respective Signal attributes, while the count_read/count_write and
-> +function_get/function_set driver callbacks are associated to their
-> +respective Count attributes; similarly, the same is true for the
-> +action_get/action_set driver callbacks and their respective Synapse
-> +attributes. If a driver callback is left undefined, then the respective
-> +read/write permission is left disabled for the relevant attributes.
-> +
-> +Similarly, extension sysfs attributes are created for the defined
-> +counter_device_ext, counter_count_ext, and counter_signal_ext
-> +structures that are passed in.
-> diff --git a/Documentation/driver-api/index.rst b/Documentation/driver-api/index.rst
-> index e9b41b1634f3..57e6e2c1d063 100644
-> --- a/Documentation/driver-api/index.rst
-> +++ b/Documentation/driver-api/index.rst
-> @@ -25,6 +25,7 @@ available subsections can be seen below.
->     frame-buffer
->     regulator
->     iio/index
-> +   generic-counter
->     input
->     usb/index
->     pci
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 2a7bf2f84272..a71dff6eae87 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -3673,6 +3673,7 @@ M:	William Breathitt Gray <vilhelm.gray@gmail.com>
->  L:	linux-iio@vger.kernel.org
->  S:	Maintained
->  F:	Documentation/ABI/testing/sysfs-bus-counter*
-> +F:	Documentation/driver-api/generic-counter.rst
->  F:	drivers/counter/
->  F:	include/linux/counter.h
->  
-
+diff --git a/MAINTAINERS b/MAINTAINERS
+index a71dff6eae87..febe27a9962e 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -266,12 +266,12 @@ L:	linux-gpio@vger.kernel.org
+ S:	Maintained
+ F:	drivers/gpio/gpio-104-idio-16.c
+ 
+-ACCES 104-QUAD-8 IIO DRIVER
++ACCES 104-QUAD-8 DRIVER
+ M:	William Breathitt Gray <vilhelm.gray@gmail.com>
+ L:	linux-iio@vger.kernel.org
+ S:	Maintained
+ F:	Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8
+-F:	drivers/iio/counter/104-quad-8.c
++F:	drivers/counter/104-quad-8.c
+ 
+ ACCES PCI-IDIO-16 GPIO DRIVER
+ M:	William Breathitt Gray <vilhelm.gray@gmail.com>
+diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
+index b56985078d8c..5db314fcb08d 100644
+--- a/drivers/counter/104-quad-8.c
++++ b/drivers/counter/104-quad-8.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0-only
+ /*
+  * IIO driver for the ACCES 104-QUAD-8
+  * Copyright (C) 2016 William Breathitt Gray
+@@ -14,6 +15,7 @@
+  * This driver supports the ACCES 104-QUAD-8 and ACCES 104-QUAD-4.
+  */
+ #include <linux/bitops.h>
++#include <linux/counter.h>
+ #include <linux/device.h>
+ #include <linux/errno.h>
+ #include <linux/iio/iio.h>
+@@ -37,6 +39,7 @@ MODULE_PARM_DESC(base, "ACCES 104-QUAD-8 base addresses");
+ 
+ /**
+  * struct quad8_iio - IIO device private data structure
++ * @counter:		instance of the counter_device
+  * @preset:		array of preset values
+  * @count_mode:		array of count mode configurations
+  * @quadrature_mode:	array of quadrature mode configurations
+@@ -48,6 +51,7 @@ MODULE_PARM_DESC(base, "ACCES 104-QUAD-8 base addresses");
+  * @base:		base port address of the IIO device
+  */
+ struct quad8_iio {
++	struct counter_device counter;
+ 	unsigned int preset[QUAD8_NUM_COUNTERS];
+ 	unsigned int count_mode[QUAD8_NUM_COUNTERS];
+ 	unsigned int quadrature_mode[QUAD8_NUM_COUNTERS];
+@@ -527,24 +531,665 @@ static const struct iio_chan_spec quad8_channels[] = {
+ 	QUAD8_COUNT_CHAN(7), QUAD8_INDEX_CHAN(7)
+ };
+ 
++static int quad8_signal_read(struct counter_device *counter,
++	struct counter_signal *signal, struct signal_read_value *val)
++{
++	const struct quad8_iio *const priv = counter->priv;
++	unsigned int state;
++	enum signal_level level;
++
++	/* Only Index signal levels can be read */
++	if (signal->id < 16)
++		return -EINVAL;
++
++	state = inb(priv->base + 0x16) & BIT(signal->id - 16);
++
++	level = (state) ? SIGNAL_LEVEL_HIGH : SIGNAL_LEVEL_LOW;
++
++	set_signal_read_value(val, SIGNAL_LEVEL, &level);
++
++	return 0;
++}
++
++static int quad8_count_read(struct counter_device *counter,
++	struct counter_count *count, struct count_read_value *val)
++{
++	const struct quad8_iio *const priv = counter->priv;
++	const int base_offset = priv->base + 2 * count->id;
++	unsigned int flags;
++	unsigned int borrow;
++	unsigned int carry;
++	unsigned long position;
++	int i;
++
++	flags = inb(base_offset + 1);
++	borrow = flags & BIT(0);
++	carry = !!(flags & BIT(1));
++
++	/* Borrow XOR Carry effectively doubles count range */
++	position = (unsigned long)(borrow ^ carry) << 24;
++
++	/* Reset Byte Pointer; transfer Counter to Output Latch */
++	outb(0x11, base_offset + 1);
++
++	for (i = 0; i < 3; i++)
++		position |= (unsigned long)inb(base_offset) << (8 * i);
++
++	set_count_read_value(val, COUNT_POSITION_UNSIGNED, &position);
++
++	return 0;
++}
++
++static int quad8_count_write(struct counter_device *counter,
++	struct counter_count *count, struct count_write_value *val)
++{
++	const struct quad8_iio *const priv = counter->priv;
++	const int base_offset = priv->base + 2 * count->id;
++	int err;
++	unsigned long position;
++	int i;
++
++	err = get_count_write_value(&position, COUNT_POSITION_UNSIGNED, val);
++	if (err)
++		return err;
++
++	/* Only 24-bit values are supported */
++	if (position > 0xFFFFFF)
++		return -EINVAL;
++
++	/* Reset Byte Pointer */
++	outb(0x01, base_offset + 1);
++
++	/* Counter can only be set via Preset Register */
++	for (i = 0; i < 3; i++)
++		outb(position >> (8 * i), base_offset);
++
++	/* Transfer Preset Register to Counter */
++	outb(0x08, base_offset + 1);
++
++	/* Reset Byte Pointer */
++	outb(0x01, base_offset + 1);
++
++	/* Set Preset Register back to original value */
++	position = priv->preset[count->id];
++	for (i = 0; i < 3; i++)
++		outb(position >> (8 * i), base_offset);
++
++	/* Reset Borrow, Carry, Compare, and Sign flags */
++	outb(0x02, base_offset + 1);
++	/* Reset Error flag */
++	outb(0x06, base_offset + 1);
++
++	return 0;
++}
++
++enum quad8_count_function {
++	QUAD8_COUNT_FUNCTION_PULSE_DIRECTION = 0,
++	QUAD8_COUNT_FUNCTION_QUADRATURE_X1,
++	QUAD8_COUNT_FUNCTION_QUADRATURE_X2,
++	QUAD8_COUNT_FUNCTION_QUADRATURE_X4
++};
++
++static enum count_function quad8_count_functions_list[] = {
++	[QUAD8_COUNT_FUNCTION_PULSE_DIRECTION] = COUNT_FUNCTION_PULSE_DIRECTION,
++	[QUAD8_COUNT_FUNCTION_QUADRATURE_X1] = COUNT_FUNCTION_QUADRATURE_X1,
++	[QUAD8_COUNT_FUNCTION_QUADRATURE_X2] = COUNT_FUNCTION_QUADRATURE_X2,
++	[QUAD8_COUNT_FUNCTION_QUADRATURE_X4] = COUNT_FUNCTION_QUADRATURE_X4
++};
++
++static int quad8_function_get(struct counter_device *counter,
++	struct counter_count *count, size_t *function)
++{
++	const struct quad8_iio *const priv = counter->priv;
++	const int id = count->id;
++	const unsigned int quadrature_mode = priv->quadrature_mode[id];
++	const unsigned int scale = priv->quadrature_scale[id];
++
++	if (quadrature_mode)
++		switch (scale) {
++		case 0:
++			*function = QUAD8_COUNT_FUNCTION_QUADRATURE_X1;
++			break;
++		case 1:
++			*function = QUAD8_COUNT_FUNCTION_QUADRATURE_X2;
++			break;
++		case 2:
++			*function = QUAD8_COUNT_FUNCTION_QUADRATURE_X4;
++			break;
++		}
++	else
++		*function = QUAD8_COUNT_FUNCTION_PULSE_DIRECTION;
++
++	return 0;
++}
++
++static int quad8_function_set(struct counter_device *counter,
++	struct counter_count *count, size_t function)
++{
++	struct quad8_iio *const priv = counter->priv;
++	const int id = count->id;
++	unsigned int *const quadrature_mode = priv->quadrature_mode + id;
++	unsigned int *const scale = priv->quadrature_scale + id;
++	unsigned int mode_cfg = priv->count_mode[id] << 1;
++	unsigned int *const synchronous_mode = priv->synchronous_mode + id;
++	const unsigned int idr_cfg = priv->index_polarity[id] << 1;
++	const int base_offset = priv->base + 2 * id + 1;
++
++	if (function == QUAD8_COUNT_FUNCTION_PULSE_DIRECTION) {
++		*quadrature_mode = 0;
++
++		/* Quadrature scaling only available in quadrature mode */
++		*scale = 0;
++
++		/* Synchronous function not supported in non-quadrature mode */
++		if (*synchronous_mode) {
++			*synchronous_mode = 0;
++			/* Disable synchronous function mode */
++			outb(0x60 | idr_cfg, base_offset);
++		}
++	} else {
++		*quadrature_mode = 1;
++
++		switch (function) {
++		case QUAD8_COUNT_FUNCTION_QUADRATURE_X1:
++			*scale = 0;
++			mode_cfg |= 0x8;
++			break;
++		case QUAD8_COUNT_FUNCTION_QUADRATURE_X2:
++			*scale = 1;
++			mode_cfg |= 0x10;
++			break;
++		case QUAD8_COUNT_FUNCTION_QUADRATURE_X4:
++			*scale = 2;
++			mode_cfg |= 0x18;
++			break;
++		}
++	}
++
++	/* Load mode configuration to Counter Mode Register */
++	outb(0x20 | mode_cfg, base_offset);
++
++	return 0;
++}
++
++enum count_direction {
++	COUNT_DIRECTION_FORWARD = 0,
++	COUNT_DIRECTION_BACKWARD
++};
++
++static void quad8_direction_get(struct counter_device *counter,
++	struct counter_count *count, enum count_direction *direction)
++{
++	const struct quad8_iio *const priv = counter->priv;
++	unsigned int ud_flag;
++	const unsigned int flag_addr = priv->base + 2 * count->id + 1;
++
++	/* U/D flag: nonzero = up, zero = down */
++	ud_flag = inb(flag_addr) & BIT(5);
++
++	*direction = (ud_flag) ? COUNT_DIRECTION_FORWARD :
++		COUNT_DIRECTION_BACKWARD;
++}
++
++enum quad8_synapse_action {
++	QUAD8_SYNAPSE_ACTION_NONE = 0,
++	QUAD8_SYNAPSE_ACTION_RISING_EDGE,
++	QUAD8_SYNAPSE_ACTION_FALLING_EDGE,
++	QUAD8_SYNAPSE_ACTION_BOTH_EDGES
++};
++
++static enum synapse_action quad8_index_actions_list[] = {
++	[QUAD8_SYNAPSE_ACTION_NONE] = SYNAPSE_ACTION_NONE,
++	[QUAD8_SYNAPSE_ACTION_RISING_EDGE] = SYNAPSE_ACTION_RISING_EDGE
++};
++
++static enum synapse_action quad8_synapse_actions_list[] = {
++	[QUAD8_SYNAPSE_ACTION_NONE] = SYNAPSE_ACTION_NONE,
++	[QUAD8_SYNAPSE_ACTION_RISING_EDGE] = SYNAPSE_ACTION_RISING_EDGE,
++	[QUAD8_SYNAPSE_ACTION_FALLING_EDGE] = SYNAPSE_ACTION_FALLING_EDGE,
++	[QUAD8_SYNAPSE_ACTION_BOTH_EDGES] = SYNAPSE_ACTION_BOTH_EDGES
++};
++
++static int quad8_action_get(struct counter_device *counter,
++	struct counter_count *count, struct counter_synapse *synapse,
++	size_t *action)
++{
++	struct quad8_iio *const priv = counter->priv;
++	int err;
++	size_t function;
++	const size_t signal_a_id = count->synapses[0].signal->id;
++	enum count_direction direction;
++
++	/* Handle Index signals */
++	if (synapse->signal->id >= 16) {
++		if (priv->preset_enable[count->id])
++			*action = QUAD8_SYNAPSE_ACTION_RISING_EDGE;
++		else
++			*action = QUAD8_SYNAPSE_ACTION_NONE;
++
++		return 0;
++	}
++
++	err = counter->function_get(counter, count, &function);
++	if (err)
++		return err;
++
++	/* Default action mode */
++	*action = QUAD8_SYNAPSE_ACTION_NONE;
++
++	/* Determine action mode based on current count function mode */
++	switch (function) {
++	case QUAD8_COUNT_FUNCTION_PULSE_DIRECTION:
++		if (synapse->signal->id == signal_a_id)
++			*action = QUAD8_SYNAPSE_ACTION_RISING_EDGE;
++		break;
++	case QUAD8_COUNT_FUNCTION_QUADRATURE_X1:
++		if (synapse->signal->id == signal_a_id) {
++			quad8_direction_get(counter, count, &direction);
++
++			if (direction == COUNT_DIRECTION_FORWARD)
++				*action = QUAD8_SYNAPSE_ACTION_RISING_EDGE;
++			else
++				*action = QUAD8_SYNAPSE_ACTION_FALLING_EDGE;
++		}
++		break;
++	case QUAD8_COUNT_FUNCTION_QUADRATURE_X2:
++		if (synapse->signal->id == signal_a_id)
++			*action = QUAD8_SYNAPSE_ACTION_BOTH_EDGES;
++		break;
++	case QUAD8_COUNT_FUNCTION_QUADRATURE_X4:
++		*action = QUAD8_SYNAPSE_ACTION_BOTH_EDGES;
++		break;
++	}
++
++	return 0;
++}
++
++static int quad8_index_polarity_get(struct counter_device *counter,
++	struct counter_signal *signal, size_t *index_polarity)
++{
++	const struct quad8_iio *const priv = counter->priv;
++	const size_t channel_id = signal->id - 16;
++
++	*index_polarity = priv->index_polarity[channel_id];
++
++	return 0;
++}
++
++static int quad8_index_polarity_set(struct counter_device *counter,
++	struct counter_signal *signal, size_t index_polarity)
++{
++	struct quad8_iio *const priv = counter->priv;
++	const size_t channel_id = signal->id - 16;
++	const unsigned int idr_cfg = priv->synchronous_mode[channel_id] |
++		index_polarity << 1;
++	const int base_offset = priv->base + 2 * channel_id + 1;
++
++	priv->index_polarity[channel_id] = index_polarity;
++
++	/* Load Index Control configuration to Index Control Register */
++	outb(0x60 | idr_cfg, base_offset);
++
++	return 0;
++}
++
++static struct counter_signal_enum_ext quad8_index_pol_enum = {
++	.items = quad8_index_polarity_modes,
++	.num_items = ARRAY_SIZE(quad8_index_polarity_modes),
++	.get = quad8_index_polarity_get,
++	.set = quad8_index_polarity_set
++};
++
++static int quad8_synchronous_mode_get(struct counter_device *counter,
++	struct counter_signal *signal, size_t *synchronous_mode)
++{
++	const struct quad8_iio *const priv = counter->priv;
++	const size_t channel_id = signal->id - 16;
++
++	*synchronous_mode = priv->synchronous_mode[channel_id];
++
++	return 0;
++}
++
++static int quad8_synchronous_mode_set(struct counter_device *counter,
++	struct counter_signal *signal, size_t synchronous_mode)
++{
++	struct quad8_iio *const priv = counter->priv;
++	const size_t channel_id = signal->id - 16;
++	const unsigned int idr_cfg = synchronous_mode |
++		priv->index_polarity[channel_id] << 1;
++	const int base_offset = priv->base + 2 * channel_id + 1;
++
++	/* Index function must be non-synchronous in non-quadrature mode */
++	if (synchronous_mode && !priv->quadrature_mode[channel_id])
++		return -EINVAL;
++
++	priv->synchronous_mode[channel_id] = synchronous_mode;
++
++	/* Load Index Control configuration to Index Control Register */
++	outb(0x60 | idr_cfg, base_offset);
++
++	return 0;
++}
++
++static struct counter_signal_enum_ext quad8_syn_mode_enum = {
++	.items = quad8_synchronous_modes,
++	.num_items = ARRAY_SIZE(quad8_synchronous_modes),
++	.get = quad8_synchronous_mode_get,
++	.set = quad8_synchronous_mode_set
++};
++
++static int quad8_count_mode_get(struct counter_device *counter,
++	struct counter_count *count, size_t *count_mode)
++{
++	const struct quad8_iio *const priv = counter->priv;
++
++	*count_mode = priv->count_mode[count->id];
++
++	return 0;
++}
++
++static int quad8_count_mode_set(struct counter_device *counter,
++	struct counter_count *count, size_t count_mode)
++{
++	struct quad8_iio *const priv = counter->priv;
++	unsigned int mode_cfg = count_mode << 1;
++	const int base_offset = priv->base + 2 * count->id + 1;
++
++	priv->count_mode[count->id] = count_mode;
++
++	/* Add quadrature mode configuration */
++	if (priv->quadrature_mode[count->id])
++		mode_cfg |= (priv->quadrature_scale[count->id] + 1) << 3;
++
++	/* Load mode configuration to Counter Mode Register */
++	outb(0x20 | mode_cfg, base_offset);
++
++	return 0;
++}
++
++static struct counter_count_enum_ext quad8_cnt_mode_enum = {
++	.items = quad8_count_modes,
++	.num_items = ARRAY_SIZE(quad8_count_modes),
++	.get = quad8_count_mode_get,
++	.set = quad8_count_mode_set
++};
++
++static const char *const quad8_count_direction_str[] = {
++	[COUNT_DIRECTION_FORWARD] = "forward",
++	[COUNT_DIRECTION_BACKWARD] = "backward"
++};
++
++static ssize_t quad8_count_direction_read(struct counter_device *counter,
++	struct counter_count *count, void *priv, char *buf)
++{
++	enum count_direction direction;
++
++	quad8_direction_get(counter, count, &direction);
++
++	return scnprintf(buf, PAGE_SIZE, "%s\n",
++		quad8_count_direction_str[direction]);
++}
++
++static ssize_t quad8_count_enable_read(struct counter_device *counter,
++	struct counter_count *count, void *private, char *buf)
++{
++	const struct quad8_iio *const priv = counter->priv;
++
++	return scnprintf(buf, PAGE_SIZE, "%u\n", priv->ab_enable[count->id]);
++}
++
++static ssize_t quad8_count_enable_write(struct counter_device *counter,
++	struct counter_count *count, void *private, const char *buf, size_t len)
++{
++	struct quad8_iio *const priv = counter->priv;
++	const int base_offset = priv->base + 2 * count->id;
++	int err;
++	bool ab_enable;
++	unsigned int ior_cfg;
++
++	err = kstrtobool(buf, &ab_enable);
++	if (err)
++		return err;
++
++	priv->ab_enable[count->id] = ab_enable;
++
++	ior_cfg = ab_enable | priv->preset_enable[count->id] << 1;
++
++	/* Load I/O control configuration */
++	outb(0x40 | ior_cfg, base_offset + 1);
++
++	return len;
++}
++
++static int quad8_noise_error_get(struct counter_device *counter,
++	struct counter_count *count, size_t *noise_error)
++{
++	const struct quad8_iio *const priv = counter->priv;
++	const int base_offset = priv->base + 2 * count->id + 1;
++
++	*noise_error = !!(inb(base_offset) & BIT(4));
++
++	return 0;
++}
++
++static struct counter_count_enum_ext quad8_noise_err_enum = {
++	.items = quad8_noise_error_states,
++	.num_items = ARRAY_SIZE(quad8_noise_error_states),
++	.get = quad8_noise_error_get
++};
++
++static ssize_t quad8_count_preset_read(struct counter_device *counter,
++	struct counter_count *count, void *private, char *buf)
++{
++	const struct quad8_iio *const priv = counter->priv;
++
++	return snprintf(buf, PAGE_SIZE, "%u\n", priv->preset[count->id]);
++}
++
++static ssize_t quad8_count_preset_write(struct counter_device *counter,
++	struct counter_count *count, void *private, const char *buf, size_t len)
++{
++	struct quad8_iio *const priv = counter->priv;
++	const int base_offset = priv->base + 2 * count->id;
++	unsigned int preset;
++	int ret;
++	int i;
++
++	ret = kstrtouint(buf, 0, &preset);
++	if (ret)
++		return ret;
++
++	/* Only 24-bit values are supported */
++	if (preset > 0xFFFFFF)
++		return -EINVAL;
++
++	priv->preset[count->id] = preset;
++
++	/* Reset Byte Pointer */
++	outb(0x01, base_offset + 1);
++
++	/* Set Preset Register */
++	for (i = 0; i < 3; i++)
++		outb(preset >> (8 * i), base_offset);
++
++	return len;
++}
++
++static ssize_t quad8_count_preset_enable_read(struct counter_device *counter,
++	struct counter_count *count, void *private, char *buf)
++{
++	const struct quad8_iio *const priv = counter->priv;
++
++	return snprintf(buf, PAGE_SIZE, "%u\n",
++		!priv->preset_enable[count->id]);
++}
++
++static ssize_t quad8_count_preset_enable_write(struct counter_device *counter,
++	struct counter_count *count, void *private, const char *buf, size_t len)
++{
++	struct quad8_iio *const priv = counter->priv;
++	const int base_offset = priv->base + 2 * count->id + 1;
++	bool preset_enable;
++	int ret;
++	unsigned int ior_cfg;
++
++	ret = kstrtobool(buf, &preset_enable);
++	if (ret)
++		return ret;
++
++	/* Preset enable is active low in Input/Output Control register */
++	preset_enable = !preset_enable;
++
++	priv->preset_enable[count->id] = preset_enable;
++
++	ior_cfg = priv->ab_enable[count->id] | (unsigned int)preset_enable << 1;
++
++	/* Load I/O control configuration to Input / Output Control Register */
++	outb(0x40 | ior_cfg, base_offset);
++
++	return len;
++}
++
++static const struct counter_signal_ext quad8_index_ext[] = {
++	COUNTER_SIGNAL_ENUM("index_polarity", &quad8_index_pol_enum),
++	COUNTER_SIGNAL_ENUM_AVAILABLE("index_polarity",	&quad8_index_pol_enum),
++	COUNTER_SIGNAL_ENUM("synchronous_mode", &quad8_syn_mode_enum),
++	COUNTER_SIGNAL_ENUM_AVAILABLE("synchronous_mode", &quad8_syn_mode_enum)
++};
++
++#define	QUAD8_QUAD_SIGNAL(_id, _name) {	\
++	.id = (_id),			\
++	.name = (_name)			\
++}
++
++#define	QUAD8_INDEX_SIGNAL(_id, _name) {	\
++	.id = (_id),				\
++	.name = (_name),			\
++	.ext = quad8_index_ext,			\
++	.num_ext = ARRAY_SIZE(quad8_index_ext)	\
++}
++
++static struct counter_signal quad8_signals[] = {
++	QUAD8_QUAD_SIGNAL(0, "Channel 1 Quadrature A"),
++	QUAD8_QUAD_SIGNAL(1, "Channel 1 Quadrature B"),
++	QUAD8_QUAD_SIGNAL(2, "Channel 2 Quadrature A"),
++	QUAD8_QUAD_SIGNAL(3, "Channel 2 Quadrature B"),
++	QUAD8_QUAD_SIGNAL(4, "Channel 3 Quadrature A"),
++	QUAD8_QUAD_SIGNAL(5, "Channel 3 Quadrature B"),
++	QUAD8_QUAD_SIGNAL(6, "Channel 4 Quadrature A"),
++	QUAD8_QUAD_SIGNAL(7, "Channel 4 Quadrature B"),
++	QUAD8_QUAD_SIGNAL(8, "Channel 5 Quadrature A"),
++	QUAD8_QUAD_SIGNAL(9, "Channel 5 Quadrature B"),
++	QUAD8_QUAD_SIGNAL(10, "Channel 6 Quadrature A"),
++	QUAD8_QUAD_SIGNAL(11, "Channel 6 Quadrature B"),
++	QUAD8_QUAD_SIGNAL(12, "Channel 7 Quadrature A"),
++	QUAD8_QUAD_SIGNAL(13, "Channel 7 Quadrature B"),
++	QUAD8_QUAD_SIGNAL(14, "Channel 8 Quadrature A"),
++	QUAD8_QUAD_SIGNAL(15, "Channel 8 Quadrature B"),
++	QUAD8_INDEX_SIGNAL(16, "Channel 1 Index"),
++	QUAD8_INDEX_SIGNAL(17, "Channel 2 Index"),
++	QUAD8_INDEX_SIGNAL(18, "Channel 3 Index"),
++	QUAD8_INDEX_SIGNAL(19, "Channel 4 Index"),
++	QUAD8_INDEX_SIGNAL(20, "Channel 5 Index"),
++	QUAD8_INDEX_SIGNAL(21, "Channel 6 Index"),
++	QUAD8_INDEX_SIGNAL(22, "Channel 7 Index"),
++	QUAD8_INDEX_SIGNAL(23, "Channel 8 Index")
++};
++
++#define QUAD8_COUNT_SYNAPSES(_id) {					\
++	{								\
++		.actions_list = quad8_synapse_actions_list,		\
++		.num_actions = ARRAY_SIZE(quad8_synapse_actions_list),	\
++		.signal = quad8_signals + 2 * (_id)			\
++	},								\
++	{								\
++		.actions_list = quad8_synapse_actions_list,		\
++		.num_actions = ARRAY_SIZE(quad8_synapse_actions_list),	\
++		.signal = quad8_signals + 2 * (_id) + 1			\
++	},								\
++	{								\
++		.actions_list = quad8_index_actions_list,		\
++		.num_actions = ARRAY_SIZE(quad8_index_actions_list),	\
++		.signal = quad8_signals + 2 * (_id) + 16		\
++	}								\
++}
++
++static struct counter_synapse quad8_count_synapses[][3] = {
++	QUAD8_COUNT_SYNAPSES(0), QUAD8_COUNT_SYNAPSES(1),
++	QUAD8_COUNT_SYNAPSES(2), QUAD8_COUNT_SYNAPSES(3),
++	QUAD8_COUNT_SYNAPSES(4), QUAD8_COUNT_SYNAPSES(5),
++	QUAD8_COUNT_SYNAPSES(6), QUAD8_COUNT_SYNAPSES(7)
++};
++
++static const struct counter_count_ext quad8_count_ext[] = {
++	COUNTER_COUNT_ENUM("count_mode", &quad8_cnt_mode_enum),
++	COUNTER_COUNT_ENUM_AVAILABLE("count_mode", &quad8_cnt_mode_enum),
++	{
++		.name = "direction",
++		.read = quad8_count_direction_read
++	},
++	{
++		.name = "enable",
++		.read = quad8_count_enable_read,
++		.write = quad8_count_enable_write
++	},
++	COUNTER_COUNT_ENUM("noise_error", &quad8_noise_err_enum),
++	COUNTER_COUNT_ENUM_AVAILABLE("noise_error", &quad8_noise_err_enum),
++	{
++		.name = "preset",
++		.read = quad8_count_preset_read,
++		.write = quad8_count_preset_write
++	},
++	{
++		.name = "preset_enable",
++		.read = quad8_count_preset_enable_read,
++		.write = quad8_count_preset_enable_write
++	}
++};
++
++#define QUAD8_COUNT(_id, _cntname) {					\
++	.id = (_id),							\
++	.name = (_cntname),						\
++	.functions_list = quad8_count_functions_list,			\
++	.num_functions = ARRAY_SIZE(quad8_count_functions_list),	\
++	.synapses = quad8_count_synapses[(_id)],			\
++	.num_synapses =	2,						\
++	.ext = quad8_count_ext,						\
++	.num_ext = ARRAY_SIZE(quad8_count_ext)				\
++}
++
++static struct counter_count quad8_counts[] = {
++	QUAD8_COUNT(0, "Channel 1 Count"),
++	QUAD8_COUNT(1, "Channel 2 Count"),
++	QUAD8_COUNT(2, "Channel 3 Count"),
++	QUAD8_COUNT(3, "Channel 4 Count"),
++	QUAD8_COUNT(4, "Channel 5 Count"),
++	QUAD8_COUNT(5, "Channel 6 Count"),
++	QUAD8_COUNT(6, "Channel 7 Count"),
++	QUAD8_COUNT(7, "Channel 8 Count")
++};
++
+ static int quad8_probe(struct device *dev, unsigned int id)
+ {
+ 	struct iio_dev *indio_dev;
+-	struct quad8_iio *priv;
++	struct quad8_iio *quad8iio;
+ 	int i, j;
+ 	unsigned int base_offset;
++	int err;
+ 
+-	indio_dev = devm_iio_device_alloc(dev, sizeof(*priv));
+-	if (!indio_dev)
+-		return -ENOMEM;
+-
+-	if (!devm_request_region(dev, base[id], QUAD8_EXTENT,
+-		dev_name(dev))) {
++	if (!devm_request_region(dev, base[id], QUAD8_EXTENT, dev_name(dev))) {
+ 		dev_err(dev, "Unable to lock port addresses (0x%X-0x%X)\n",
+ 			base[id], base[id] + QUAD8_EXTENT);
+ 		return -EBUSY;
+ 	}
+ 
++	/* Allocate IIO device; this also allocates driver data structure */
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*quad8iio));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	/* Initialize IIO device */
+ 	indio_dev->info = &quad8_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->num_channels = ARRAY_SIZE(quad8_channels);
+@@ -552,8 +1197,22 @@ static int quad8_probe(struct device *dev, unsigned int id)
+ 	indio_dev->name = dev_name(dev);
+ 	indio_dev->dev.parent = dev;
+ 
+-	priv = iio_priv(indio_dev);
+-	priv->base = base[id];
++	/* Initialize Counter device and driver data */
++	quad8iio = iio_priv(indio_dev);
++	quad8iio->counter.name = dev_name(dev);
++	quad8iio->counter.parent = dev;
++	quad8iio->counter.signal_read = quad8_signal_read;
++	quad8iio->counter.count_read = quad8_count_read;
++	quad8iio->counter.count_write = quad8_count_write;
++	quad8iio->counter.function_get = quad8_function_get;
++	quad8iio->counter.function_set = quad8_function_set;
++	quad8iio->counter.action_get = quad8_action_get;
++	quad8iio->counter.counts = quad8_counts;
++	quad8iio->counter.num_counts = ARRAY_SIZE(quad8_counts);
++	quad8iio->counter.signals = quad8_signals;
++	quad8iio->counter.num_signals = ARRAY_SIZE(quad8_signals);
++	quad8iio->counter.priv = quad8iio;
++	quad8iio->base = base[id];
+ 
+ 	/* Reset all counters and disable interrupt function */
+ 	outb(0x01, base[id] + 0x11);
+@@ -579,7 +1238,13 @@ static int quad8_probe(struct device *dev, unsigned int id)
+ 	/* Enable all counters */
+ 	outb(0x00, base[id] + 0x11);
+ 
+-	return devm_iio_device_register(dev, indio_dev);
++	/* Register IIO device */
++	err = devm_iio_device_register(dev, indio_dev);
++	if (err)
++		return err;
++
++	/* Register Counter device */
++	return devm_counter_register(dev, &quad8iio->counter);
+ }
+ 
+ static struct isa_driver quad8_driver = {
+-- 
+2.16.2
