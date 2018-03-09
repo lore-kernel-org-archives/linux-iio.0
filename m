@@ -1,53 +1,51 @@
-Return-Path: <committed@heine.so>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Date: Mon, 12 Mar 2018 10:08:42 +0100
-From: Michael Nosthoff <committed@heine.so>
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pg0-f68.google.com ([74.125.83.68]:33819 "EHLO
+        mail-pg0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751086AbeCINQe (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Mar 2018 08:16:34 -0500
+Received: by mail-pg0-f68.google.com with SMTP id m19so3538068pgn.1
+        for <linux-iio@vger.kernel.org>; Fri, 09 Mar 2018 05:16:34 -0800 (PST)
+Date: Fri, 9 Mar 2018 18:46:28 +0530
+From: Himanshu Jha <himanshujha199640@gmail.com>
+To: kernelnewbies@kernelnewbies.org
 Cc: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: st_pressure: st_accel: pass correct platform
- data to init
-In-Reply-To: <20180310162906.20364dd8@archlinux>
-References: <500bb58a2dc6d70fa096d6a63321dc23@heine.so>
- <20180310162906.20364dd8@archlinux>
-Message-ID: <44e159cfa800395fcaee008684aaf669@heine.so>
-List-ID: <linux-iio@vger.kernel.org>
+Subject: Compiling kernel with -Wformat-signedness gcc flag
+Message-ID: <20180309131628.GA19442@himanshu-Vostro-3559>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 2018-03-10 17:29, Jonathan Cameron wrote:
-> On Fri, 09 Mar 2018 10:02:45 +0100
-> Michael Nosthoff <committed@heine.so> wrote:
-> 
->> Commit 7383d44b added a pointer pdata which get set to the default
->> platform_data when non was defined in the device. But it did not
->> pass this pointer to the st_sensors_init_sensor call but still
->> used the maybe uninitialized platform_data from dev.
->> 
->> This breaks initialization when no platform_data is given and
->> the optional st,drdy-int-pin devicetree option is not set.
->> 
->> This commit fixes this.
->> 
->> Cc: stable@vger.kernel.org
->> Fixes: 7383d44b ("iio: st_pressure: st_accel: Initialise sensor 
->> platform
->> data properly")
->> Signed-off-by: Michael Nosthoff <committed@heine.so>
-> Both patches were corrupted by your email client.  I did the
-> revert directly and then manually applied this.
-> 
+Hello everyone,
 
-Ah, sorry for that. I redid my setup so I hope my next patches will be 
-fine.
 
-> Thanks for tracking down the problem.
-> 
+I just compiled the kernel by passing "-Wformat-signedness" flag
 
-Happy to help :)
+https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
 
-> Applied to the fixes-togreg branch of iio.git.
-> 
-> Jonathan
-> 
+-Wformat-signedness:
+If -Wformat is specified, also warn if the format string requires an
+unsigned argument and the argument is signed and vice versa.
 
-Michael
+Now, the C standard says:
+
+"If a conversion specification is invalid, the behavior is undefined.
+If any argument is
+not the correct type for the corresponding conversion specification, the
+behavior is *undefined*."
+
+For eg:
+
+drivers/iio/trigger/stm32-timer-trigger.c:228:24: warning: format ‘%d’
+expects argument of type ‘int’, but argument 3 has type ‘unsigned int’
+[-Wformat=]
+  return sprintf(buf, "%d\n", (unsigned int)freq);
+                         ~^     ~~~~~~~~~~~~~~~~~~
+			                        %d
+
+What is the rationale for not including/using this flag in the
+HOSTCFLAGS in the Makefile ?
+
+-- 
+Thanks
+Himanshu Jha
