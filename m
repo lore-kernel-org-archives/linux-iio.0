@@ -1,104 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:44862 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932462AbeCJQfc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 10 Mar 2018 11:35:32 -0500
-Date: Sat, 10 Mar 2018 16:35:27 +0000
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Daniel Baluta <daniel.baluta@gmail.com>
-Cc: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>,
-        linux-iio@vger.kernel.org, Daniel Baluta <daniel.baluta@nxp.com>,
-        graff.yang@gmail.com, davidjulianveenstra@gmail.com
-Subject: Re: Work plan to move AD2S1210 out of staging
-Message-ID: <20180310163527.702a6668@archlinux>
-In-Reply-To: <CAEnQRZCYuP5K97=6uKJsepcQz+3gP9U67kZw7M8cd=gX3Cag6A@mail.gmail.com>
-References: <20180309005200.pj6ez2xgrxjwhvxe@smtp.gmail.com>
-        <CAEnQRZCYuP5K97=6uKJsepcQz+3gP9U67kZw7M8cd=gX3Cag6A@mail.gmail.com>
+Received: from mail.stresser.de ([88.198.198.115]:48734 "EHLO mail.stresser.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751026AbeCIJA5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 9 Mar 2018 04:00:57 -0500
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by mail.stresser.de (Postfix) with ESMTP id 260654380065
+        for <linux-iio@vger.kernel.org>; Fri,  9 Mar 2018 10:00:56 +0100 (CET)
+Received: from _ (frachter.heine.tech [46.4.84.91])
+        (using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.stresser.de (Postfix) with ESMTPSA id 17BA04380064
+        for <linux-iio@vger.kernel.org>; Fri,  9 Mar 2018 10:00:55 +0100 (CET)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Date: Fri, 09 Mar 2018 10:00:54 +0100
+From: Michael Nosthoff <committed@heine.so>
+To: linux-iio@vger.kernel.org
+Subject: [PATCH 0/2] iio: st_pressure: st_accel: Fix initialization of
+ platform_data
+Message-ID: <d67b56d1a2aea044ce27175e486fa4cb@heine.so>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 9 Mar 2018 10:04:02 +0200
-Daniel Baluta <daniel.baluta@gmail.com> wrote:
+Commit 7383d44b added a pointer pdata which gets initialized with
+the default platform_data when non was defined. But it did not
+pass this pointer to the st_sensors_init_sensor call but still
+used the maybe uninitialized platform_data from dev.
 
-> Hi Rodrigo,
-> 
-> Thanks for your effort on analyzing this.
-> 
-> On Fri, Mar 9, 2018 at 2:52 AM, Rodrigo Siqueira
-> <rodrigosiqueiramelo@gmail.com> wrote:
-> > Hi,
-> >
-> > Today I looked at the AD2S1210 code and datasheet. As a result, I present here
-> > the following work plan for discussion:
-> >
-> > 0) Checkpach free
-> >
-> > There are just two 'CHECKs' in this module. Fix it is easy.  
-> 
-> Great.
-> 
-> >
-> > 1) Update the channels definition
-> >
-> > After a first read of the datasheet, I believe the AD2S1210 need an update to
-> > the iio_chan_spec already defined and also requires another channel for
-> > velocity. I am not 100% sure, but I also think that other channels have to be
-> > defined because of this chip has many features (absolute position and velocity,
-> > system fault detect, programmable sinusoidal, etc.); however, I prefer to keep
-> > things simple now.
-> >  
-> 
-> > 2) Events for handling error detections
-> >
-> > The AD2S1210 provide many fault detection thresholds. The chip triggers some
-> > faults, and I believe the AD2S1210 module can handle it with events interface.
-> > If I am right, I to start by adding LOS  handler.
-> >
-> > 3) Use IIO ABI
-> >
-> > From what I understood from the documentation, I believe the write using sysfs
-> > interface is not right. The AD2S1210 module should use iio_info for this tasks
-> > (even for read). If I am right, I want to fix it.
-> >
-> > Is my work plan to move AD2S1210 out of staging make sense?  
-> 
-> Yup. It does makes sense.
-> 
-> For the moment no need to add new features. We should just concentrate
-> on supporting the existing functionality but with the standard IIO interface.
+This breaks initialization when no platform_data is given and
+the optional st,drdy-int-pin devicetree option is not set.
 
-I second this.  New features really require hardware to test.  We
-can probably assume the driver as is more or less works (presumably
-test hardware was originally available).  Careful review should
-prevent us breaking the driver - this isn't always true for new features
-where even the most careful datasheet reading may not pick up on some
-nuance.
+As pdata was not used at all after this a subsequent commit
+removed the setting of pdata. As it is needed to fix this the
+first patch reverts that commit.
 
-The chip is moderately cheap and easy to get hold of.  Resolvers are
-not.
+Michael Nosthoff (2):
+   iio: accel: Revert "iio: accel: st_accel: remove redundant pointer 
+pdata"
+   iio: st_pressure: st_accel: pass correct platform data to init
 
-I don't know if Michael or anyone else has test access to the relevant
-parts.
+  drivers/iio/accel/st_accel_core.c       | 7 ++++++-
+  drivers/iio/pressure/st_pressure_core.c | 2 +-
+  2 files changed, 7 insertions(+), 2 deletions(-)
 
-Jonathan
-
-> 
-> >
-> > Finally, I want to work on AD2S1210, but David Veenstra has priority on
-> > this task because he already expressed his interest in working on
-> > AD2S1210 and AD2S1200.  I proposed to him that we divided this task in
-> > two: I work in the  AD2S1210 and him in the AD2S1200.
-> >
-> > Best regards,
-> > Siqueira
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> > the body of a message to majordomo@vger.kernel.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html  
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
+-- 
+2.7.4
