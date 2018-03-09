@@ -1,107 +1,159 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-dm3nam03on0049.outbound.protection.outlook.com ([104.47.41.49]:54048
-        "EHLO NAM03-DM3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1751102AbeCIPBM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 9 Mar 2018 10:01:12 -0500
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "committed@heine.so" <committed@heine.so>
-CC: "jic23@kernel.org" <jic23@kernel.org>
-Subject: Re: [PATCH v4] iio: ad7793: implement IIO_CHAN_INFO_SAMP_FREQ
-Date: Fri, 9 Mar 2018 15:00:36 +0000
-Message-ID: <1520607666.502.11.camel@analog.com>
-References: <1520606703-7213-1-git-send-email-committed@heine.so>
-In-Reply-To: <1520606703-7213-1-git-send-email-committed@heine.so>
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
+Received: from mail.stresser.de ([88.198.198.115]:54130 "EHLO mail.stresser.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751096AbeCIPOL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 9 Mar 2018 10:14:11 -0500
+From: Michael Nosthoff <committed@heine.so>
+To: linux-iio@vger.kernel.org
+Cc: alexandru.Ardelean@analog.com, Jonathan Cameron <jic23@kernel.org>,
+        Michael Nosthoff <committed@heine.so>
+Subject: [PATCH] iio: ad7793: implement IIO_CHAN_INFO_SAMP_FREQ
+Date: Fri,  9 Mar 2018 16:13:52 +0100
+Message-Id: <1520608432-8463-1-git-send-email-committed@heine.so>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-T24gRnJpLCAyMDE4LTAzLTA5IGF0IDE1OjQ1ICswMTAwLCBNaWNoYWVsIE5vc3Rob2ZmIHdyb3Rl
-Og0KPiBUaGlzIGNvbW1pdCBpcyBhIGZvbGxvdy11cCB0byBjaGFuZ2VzIG1hZGUgdG8gYWRfc2ln
-bWFfZGVsdGEuaA0KPiBpbiBzdGFnaW5nOiBpaW86IGFkNzE5MjogaW1wbGVtZW50IElJT19DSEFO
-X0lORk9fU0FNUF9GUkVRDQo+IHdoaWNoIGJyb2tlIGFkNzc5MyBhcyBpdCB3YXMgbm90IGFsdGVy
-ZWQgdG8gbWF0Y2ggdGhvc2UgY2hhbmdlcy4NCj4gDQo+IFRoaXMgZHJpdmVyIHByZWRhdGVzIHRo
-ZSBhdmFpbGFiaWxpdHkgb2YgSUlPX0NIQU5fSU5GT19TQU1QX0ZSRVENCj4gYXR0cmlidXRlIHdo
-ZXJlaW4gdXNhZ2UgaGFzIHNvbWUgYWR2YW50YWdlcyBsaWtlIGl0IGNhbiBiZSBhY2Nlc3NlZCBi
-eQ0KPiBpbi1rZXJuZWwgY29uc3VtZXJzIGFzIHdlbGwgYXMgcmVkdWNlcyB0aGUgY29kZSBzaXpl
-Lg0KPiANCj4gVGhlcmVmb3JlLCB1c2UgSUlPX0NIQU5fSU5GT19TQU1QX0ZSRVEgdG8gaW1wbGVt
-ZW50IHRoZQ0KPiBzYW1wbGluZ19mcmVxdWVuY3kgYXR0cmlidXRlIGluc3RlYWQgb2YgdXNpbmcg
-SUlPX0RFVl9BVFRSX1NBTVBfRlJFUSgpDQo+IG1hY3JvLg0KPiANCj4gTW92ZSBjb2RlIGZyb20g
-dGhlIGZ1bmN0aW9ucyBhc3NvY2lhdGVkIHdpdGggSUlPX0RFVl9BVFRSX1NBTVBfRlJFUSgpDQo+
-IGludG8gcmVzcGVjdGl2ZSByZWFkIGFuZCB3cml0ZSBob29rcyB3aXRoIHRoZSBtYXNrIHNldCB0
-bw0KPiBJSU9fQ0hBTl9JTkZPX1NBTVBfRlJFUS4NCg0KWW91IGFyZSByZS1zcGlubmluZyBmYXN0
-ZXIgdGhhbiBJIGdldCBhIGNoYW5jZSB0byBsb29rIGF0IGNoYW5nZXMgOikNClsgV2hpY2ggaXMg
-bm90IGEgYmFkIHRoaW5nIF0NCg0KTWluZCBydW5uaW5nIHRoZSBjaGVja3BhdGNoLnBsIHNjcmlw
-dCBhbmQgc2VlaW5nIGlmIGl0IGhhcyBhbnkgY29tbWVudHMgPw0KDQpJbiB0aGUga2VybmVsIHRy
-ZWUgeW91IGNhbiBydW4gdGhpcyB3aXRoOg0KLi9zY3JpcHRzL2NoZWNrcGF0Y2gucGwgLS1naXQg
-SEVBRA0KWyBvciB0aGUgY29tbWl0IGhhc2ggdGhhdCBoYXMgdGhpcyBjaGFuZ2UgPyBdDQoNClNv
-cnJ5IGZvciBmb3JnZXR0aW5nIHRvIG1lbnRpb24gdGhpcyBzb29uZXIuDQoNClRoYW5rcw0KQWxl
-eA0KDQo+IA0KPiBGaXhlczogYTEzZTgzMWZjYWE3ICgic3RhZ2luZzogaWlvOiBhZDcxOTI6IGlt
-cGxlbWVudCBJSU9fQ0hBTl9JTkZPX1NBTVBfRlJFUSIpDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBN
-aWNoYWVsIE5vc3Rob2ZmIDxjb21taXR0ZWRAaGVpbmUuc28+DQo+IC0tLQ0KPiBDaGFuZ2VzIGlu
-IHY0Og0KPiANCj4gIC0gc2VuZCByZXZpc2VkIHYyIHVzaW5nIGdpdCBzZW5kLW1haWwNCj4gDQo+
-ICBkcml2ZXJzL2lpby9hZGMvYWQ3NzkzLmMgfCA3MyArKysrKysrKysrKysrKystLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4gIDEgZmlsZSBjaGFuZ2VkLCAyMiBpbnNlcnRpb25z
-KCspLCA1MSBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lpby9hZGMv
-YWQ3NzkzLmMgYi9kcml2ZXJzL2lpby9hZGMvYWQ3NzkzLmMNCj4gaW5kZXggNDdjM2Q3Zi4uZmEz
-MWEzNiAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9paW8vYWRjL2FkNzc5My5jDQo+ICsrKyBiL2Ry
-aXZlcnMvaWlvL2FkYy9hZDc3OTMuYw0KPiBAQCAtMzQ4LDU1ICszNDgsNiBAQCBzdGF0aWMgY29u
-c3QgdTE2IGFkNzc5M19zYW1wbGVfZnJlcV9hdmFpbFsxNl0gPSB7MCwgNDcwLCAyNDIsIDEyMywg
-NjIsIDUwLCAzOSwNCj4gIHN0YXRpYyBjb25zdCB1MTYgYWQ3Nzk3X3NhbXBsZV9mcmVxX2F2YWls
-WzE2XSA9IHswLCAwLCAwLCAxMjMsIDYyLCA1MCwgMCwNCj4gIAkJCQkJMzMsIDAsIDE3LCAxNiwg
-MTIsIDEwLCA4LCA2LCA0fTsNCj4gIA0KPiAtc3RhdGljIHNzaXplX3QgYWQ3NzkzX3JlYWRfZnJl
-cXVlbmN5KHN0cnVjdCBkZXZpY2UgKmRldiwNCj4gLQkJc3RydWN0IGRldmljZV9hdHRyaWJ1dGUg
-KmF0dHIsDQo+IC0JCWNoYXIgKmJ1ZikNCj4gLXsNCj4gLQlzdHJ1Y3QgaWlvX2RldiAqaW5kaW9f
-ZGV2ID0gZGV2X3RvX2lpb19kZXYoZGV2KTsNCj4gLQlzdHJ1Y3QgYWQ3NzkzX3N0YXRlICpzdCA9
-IGlpb19wcml2KGluZGlvX2Rldik7DQo+IC0NCj4gLQlyZXR1cm4gc3ByaW50ZihidWYsICIlZFxu
-IiwNCj4gLQkgICAgICAgc3QtPmNoaXBfaW5mby0+c2FtcGxlX2ZyZXFfYXZhaWxbQUQ3NzkzX01P
-REVfUkFURShzdC0+bW9kZSldKTsNCj4gLX0NCj4gLQ0KPiAtc3RhdGljIHNzaXplX3QgYWQ3Nzkz
-X3dyaXRlX2ZyZXF1ZW5jeShzdHJ1Y3QgZGV2aWNlICpkZXYsDQo+IC0JCXN0cnVjdCBkZXZpY2Vf
-YXR0cmlidXRlICphdHRyLA0KPiAtCQljb25zdCBjaGFyICpidWYsDQo+IC0JCXNpemVfdCBsZW4p
-DQo+IC17DQo+IC0Jc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiA9IGRldl90b19paW9fZGV2KGRl
-dik7DQo+IC0Jc3RydWN0IGFkNzc5M19zdGF0ZSAqc3QgPSBpaW9fcHJpdihpbmRpb19kZXYpOw0K
-PiAtCWxvbmcgbHZhbDsNCj4gLQlpbnQgaSwgcmV0Ow0KPiAtDQo+IC0JcmV0ID0ga3N0cnRvbChi
-dWYsIDEwLCAmbHZhbCk7DQo+IC0JaWYgKHJldCkNCj4gLQkJcmV0dXJuIHJldDsNCj4gLQ0KPiAt
-CWlmIChsdmFsID09IDApDQo+IC0JCXJldHVybiAtRUlOVkFMOw0KPiAtDQo+IC0JZm9yIChpID0g
-MDsgaSA8IDE2OyBpKyspDQo+IC0JCWlmIChsdmFsID09IHN0LT5jaGlwX2luZm8tPnNhbXBsZV9m
-cmVxX2F2YWlsW2ldKQ0KPiAtCQkJYnJlYWs7DQo+IC0JaWYgKGkgPT0gMTYpDQo+IC0JCXJldHVy
-biAtRUlOVkFMOw0KPiAtDQo+IC0JcmV0ID0gaWlvX2RldmljZV9jbGFpbV9kaXJlY3RfbW9kZShp
-bmRpb19kZXYpOw0KPiAtCWlmIChyZXQpDQo+IC0JCXJldHVybiByZXQ7DQo+IC0Jc3QtPm1vZGUg
-Jj0gfkFENzc5M19NT0RFX1JBVEUoLTEpOw0KPiAtCXN0LT5tb2RlIHw9IEFENzc5M19NT0RFX1JB
-VEUoaSk7DQo+IC0JYWRfc2Rfd3JpdGVfcmVnKCZzdC0+c2QsIEFENzc5M19SRUdfTU9ERSwgc2l6
-ZW9mKHN0LT5tb2RlKSwgc3QtPm1vZGUpOw0KPiAtCWlpb19kZXZpY2VfcmVsZWFzZV9kaXJlY3Rf
-bW9kZShpbmRpb19kZXYpOw0KPiAtDQo+IC0JcmV0dXJuIGxlbjsNCj4gLX0NCj4gLQ0KPiAtc3Rh
-dGljIElJT19ERVZfQVRUUl9TQU1QX0ZSRVEoU19JV1VTUiB8IFNfSVJVR08sDQo+IC0JCWFkNzc5
-M19yZWFkX2ZyZXF1ZW5jeSwNCj4gLQkJYWQ3NzkzX3dyaXRlX2ZyZXF1ZW5jeSk7DQo+IC0NCj4g
-IHN0YXRpYyBJSU9fQ09OU1RfQVRUUl9TQU1QX0ZSRVFfQVZBSUwoDQo+ICAJIjQ3MCAyNDIgMTIz
-IDYyIDUwIDM5IDMzIDE5IDE3IDE2IDEyIDEwIDggNiA0Iik7DQo+ICANCj4gQEAgLTQyNCw3ICsz
-NzUsNiBAQCBzdGF0aWMgSUlPX0RFVklDRV9BVFRSX05BTUVEKGluX21faW5fc2NhbGVfYXZhaWxh
-YmxlLA0KPiAgCQlhZDc3OTNfc2hvd19zY2FsZV9hdmFpbGFibGUsIE5VTEwsIDApOw0KPiAgDQo+
-ICBzdGF0aWMgc3RydWN0IGF0dHJpYnV0ZSAqYWQ3NzkzX2F0dHJpYnV0ZXNbXSA9IHsNCj4gLQkm
-aWlvX2Rldl9hdHRyX3NhbXBsaW5nX2ZyZXF1ZW5jeS5kZXZfYXR0ci5hdHRyLA0KPiAgCSZpaW9f
-Y29uc3RfYXR0cl9zYW1wbGluZ19mcmVxdWVuY3lfYXZhaWxhYmxlLmRldl9hdHRyLmF0dHIsDQo+
-ICAJJmlpb19kZXZfYXR0cl9pbl9tX2luX3NjYWxlX2F2YWlsYWJsZS5kZXZfYXR0ci5hdHRyLA0K
-PiAgCU5VTEwNCj4gQEAgLTQzNSw3ICszODUsNiBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IGF0dHJp
-YnV0ZV9ncm91cCBhZDc3OTNfYXR0cmlidXRlX2dyb3VwID0gew0KPiAgfTsNCj4gIA0KPiAgc3Rh
-dGljIHN0cnVjdCBhdHRyaWJ1dGUgKmFkNzc5N19hdHRyaWJ1dGVzW10gPSB7DQo+IC0JJmlpb19k
-ZXZfYXR0cl9zYW1wbGluZ19mcmVxdWVuY3kuZGV2X2F0dHIuYXR0ciwNCj4gIAkmaWlvX2NvbnN0
-X2F0dHJfc2FtcGxpbmdfZnJlcXVlbmN5X2F2YWlsYWJsZV9hZDc3OTcuZGV2X2F0dHIuYXR0ciwN
-Cj4gIAlOVUxMDQo+ICB9Ow0KPiBAQCAtNTA1LDYgKzQ1NCw5IEBAIHN0YXRpYyBpbnQgYWQ3Nzkz
-X3JlYWRfcmF3KHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYsDQo+ICAJCQkqdmFsIC09IG9mZnNl
-dDsNCj4gIAkJfQ0KPiAgCQlyZXR1cm4gSUlPX1ZBTF9JTlQ7DQo+ICsJY2FzZSBJSU9fQ0hBTl9J
-TkZPX1NBTVBfRlJFUToNCj4gKwkJKnZhbCA9IHN0LT5jaGlwX2luZm8tPnNhbXBsZV9mcmVxX2F2
-YWlsW0FENzc5M19NT0RFX1JBVEUoc3QtPm1vZGUpXTsNCj4gKwkJcmV0dXJuIElJT19WQUxfSU5U
-Ow0KPiAgCX0NCj4gIAlyZXR1cm4gLUVJTlZBTDsNCj4gIH0NCj4gQEAgLTU0Miw2ICs0OTQsMjUg
-QEAgc3RhdGljIGludCBhZDc3OTNfd3JpdGVfcmF3KHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYs
-DQo+ICAJCQkJYnJlYWs7DQo+ICAJCQl9DQo+ICAJCWJyZWFrOw0KPiArCWNhc2UgSUlPX0NIQU5f
-SU5GT19TQU1QX0ZSRVE6DQo+ICsJCWlmICghdmFsKSB7DQo+ICsJCQlyZXQgPSAtRUlOVkFMOw0K
-PiArCQkJYnJlYWs7DQo+ICsJCX0NCj4gKw0KPiArCQlmb3IgKGkgPSAwOyBpIDwgMTY7IGkrKykN
-Cj4gKwkJCWlmICh2YWwgPT0gc3QtPmNoaXBfaW5mby0+c2FtcGxlX2ZyZXFfYXZhaWxbaV0pDQo+
-ICsJCQkJYnJlYWs7DQo+ICsNCj4gKwkJaWYgKGkgPT0gMTYpIHsNCj4gKwkJCXJldCA9IC1FSU5W
-QUw7DQo+ICsJCQlicmVhazsNCj4gKwkJfQ0KPiArDQo+ICsJCXN0LT5tb2RlICY9IH5BRDc3OTNf
-TU9ERV9SQVRFKC0xKTsNCj4gKwkJc3QtPm1vZGUgfD0gQUQ3NzkzX01PREVfUkFURShpKTsNCj4g
-KwkJYWRfc2Rfd3JpdGVfcmVnKCZzdC0+c2QsIEFENzc5M19SRUdfTU9ERSwgc2l6ZW9mKHN0LT5t
-b2RlKSwgc3QtPm1vZGUpOw0KPiArCQlicmVhazsNCj4gIAlkZWZhdWx0Og0KPiAgCQlyZXQgPSAt
-RUlOVkFMOw0KPiAgCX0=
+This commit is a follow-up to changes made to ad_sigma_delta.h
+in staging: iio: ad7192: implement IIO_CHAN_INFO_SAMP_FREQ
+which broke ad7793 as it was not altered to match those changes.
+
+This driver predates the availability of IIO_CHAN_INFO_SAMP_FREQ
+attribute wherein usage has some advantages like it can be accessed by
+in-kernel consumers as well as reduces the code size.
+
+Therefore, use IIO_CHAN_INFO_SAMP_FREQ to implement the
+sampling_frequency attribute instead of using IIO_DEV_ATTR_SAMP_FREQ()
+macro.
+
+Move code from the functions associated with IIO_DEV_ATTR_SAMP_FREQ()
+into respective read and write hooks with the mask set to
+IIO_CHAN_INFO_SAMP_FREQ.
+
+Fixes: a13e831fcaa7 ("staging: iio: ad7192: implement IIO_CHAN_INFO_SAMP_FREQ")
+
+Signed-off-by: Michael Nosthoff <committed@heine.so>
+---
+Changes in v5:
+
+  - fixed checkpatchi.pl warnings for line-length
+
+ drivers/iio/adc/ad7793.c | 75 ++++++++++++++++--------------------------------
+ 1 file changed, 24 insertions(+), 51 deletions(-)
+
+diff --git a/drivers/iio/adc/ad7793.c b/drivers/iio/adc/ad7793.c
+index 801afb6..d4bbe5b 100644
+--- a/drivers/iio/adc/ad7793.c
++++ b/drivers/iio/adc/ad7793.c
+@@ -348,55 +348,6 @@ static const u16 ad7793_sample_freq_avail[16] = {0, 470, 242, 123, 62, 50, 39,
+ static const u16 ad7797_sample_freq_avail[16] = {0, 0, 0, 123, 62, 50, 0,
+ 					33, 0, 17, 16, 12, 10, 8, 6, 4};
+ 
+-static ssize_t ad7793_read_frequency(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct ad7793_state *st = iio_priv(indio_dev);
+-
+-	return sprintf(buf, "%d\n",
+-	       st->chip_info->sample_freq_avail[AD7793_MODE_RATE(st->mode)]);
+-}
+-
+-static ssize_t ad7793_write_frequency(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct ad7793_state *st = iio_priv(indio_dev);
+-	long lval;
+-	int i, ret;
+-
+-	ret = kstrtol(buf, 10, &lval);
+-	if (ret)
+-		return ret;
+-
+-	if (lval == 0)
+-		return -EINVAL;
+-
+-	for (i = 0; i < 16; i++)
+-		if (lval == st->chip_info->sample_freq_avail[i])
+-			break;
+-	if (i == 16)
+-		return -EINVAL;
+-
+-	ret = iio_device_claim_direct_mode(indio_dev);
+-	if (ret)
+-		return ret;
+-	st->mode &= ~AD7793_MODE_RATE(-1);
+-	st->mode |= AD7793_MODE_RATE(i);
+-	ad_sd_write_reg(&st->sd, AD7793_REG_MODE, sizeof(st->mode), st->mode);
+-	iio_device_release_direct_mode(indio_dev);
+-
+-	return len;
+-}
+-
+-static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+-		ad7793_read_frequency,
+-		ad7793_write_frequency);
+-
+ static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
+ 	"470 242 123 62 50 39 33 19 17 16 12 10 8 6 4");
+ 
+@@ -424,7 +375,6 @@ static IIO_DEVICE_ATTR_NAMED(in_m_in_scale_available,
+ 		ad7793_show_scale_available, NULL, 0);
+ 
+ static struct attribute *ad7793_attributes[] = {
+-	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+ 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+ 	&iio_dev_attr_in_m_in_scale_available.dev_attr.attr,
+ 	NULL
+@@ -435,7 +385,6 @@ static const struct attribute_group ad7793_attribute_group = {
+ };
+ 
+ static struct attribute *ad7797_attributes[] = {
+-	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+ 	&iio_const_attr_sampling_frequency_available_ad7797.dev_attr.attr,
+ 	NULL
+ };
+@@ -505,6 +454,10 @@ static int ad7793_read_raw(struct iio_dev *indio_dev,
+ 			*val -= offset;
+ 		}
+ 		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		*val = st->chip_info
++			       ->sample_freq_avail[AD7793_MODE_RATE(st->mode)];
++		return IIO_VAL_INT;
+ 	}
+ 	return -EINVAL;
+ }
+@@ -542,6 +495,26 @@ static int ad7793_write_raw(struct iio_dev *indio_dev,
+ 				break;
+ 			}
+ 		break;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		if (!val) {
++			ret = -EINVAL;
++			break;
++		}
++
++		for (i = 0; i < 16; i++)
++			if (val == st->chip_info->sample_freq_avail[i])
++				break;
++
++		if (i == 16) {
++			ret = -EINVAL;
++			break;
++		}
++
++		st->mode &= ~AD7793_MODE_RATE(-1);
++		st->mode |= AD7793_MODE_RATE(i);
++		ad_sd_write_reg(&st->sd, AD7793_REG_MODE, sizeof(st->mode),
++				st->mode);
++		break;
+ 	default:
+ 		ret = -EINVAL;
+ 	}
+-- 
+2.7.4
+
