@@ -1,69 +1,156 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi0-f54.google.com ([209.85.218.54]:43151 "EHLO
-        mail-oi0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751188AbeCIORC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Mar 2018 09:17:02 -0500
-Received: by mail-oi0-f54.google.com with SMTP id a207so7043676oii.10
-        for <linux-iio@vger.kernel.org>; Fri, 09 Mar 2018 06:17:01 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <CAH8yC8nMqgSS1Z10CuY_AwFRy2Vv6b2GfnPOpqU8HhSNoPu-bw@mail.gmail.com>
-References: <20180309131628.GA19442@himanshu-Vostro-3559> <CAH8yC8nMqgSS1Z10CuY_AwFRy2Vv6b2GfnPOpqU8HhSNoPu-bw@mail.gmail.com>
-From: Mathieu Malaterre <malat@debian.org>
-Date: Fri, 9 Mar 2018 15:16:40 +0100
-Message-ID: <CA+7wUszJLHu-Lm+LcEv+iE=AKyw0nEHsn17n4ziJv9uUjxsRHA@mail.gmail.com>
-Subject: Re: Compiling kernel with -Wformat-signedness gcc flag
-To: noloader@gmail.com
-Cc: Himanshu Jha <himanshujha199640@gmail.com>,
-        linux-iio@vger.kernel.org,
-        kernelnewbies <kernelnewbies@kernelnewbies.org>
-Content-Type: text/plain; charset="UTF-8"
+Received: from mail.stresser.de ([88.198.198.115]:53294 "EHLO mail.stresser.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S932100AbeCIOWG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 9 Mar 2018 09:22:06 -0500
+From: Michael Nosthoff <committed@heine.so>
+To: linux-iio@vger.kernel.org
+Cc: alexandru.Ardelean@analog.com,
+        Michael Nosthoff <committed@heine.so>
+Subject: [PATCH v3] iio: ad7793: implement IIO_CHAN_INFO_SAMP_FREQ
+Date: Fri,  9 Mar 2018 15:20:56 +0100
+Message-Id: <1520605256-6612-1-git-send-email-committed@heine.so>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Jeff,
+This commit is a follow-up to changes made to ad_sigma_delta.h
+in staging: iio: ad7192: implement IIO_CHAN_INFO_SAMP_FREQ
+which broke ad7793 as it was not altered to match those changes.
 
-On Fri, Mar 9, 2018 at 2:24 PM, Jeffrey Walton <noloader@gmail.com> wrote:
-> On Fri, Mar 9, 2018 at 8:16 AM, Himanshu Jha
-> <himanshujha199640@gmail.com> wrote:
->> Hello everyone,
->>
->>
->> I just compiled the kernel by passing "-Wformat-signedness" flag
->>
->> https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
->>
->> -Wformat-signedness:
->> If -Wformat is specified, also warn if the format string requires an
->> unsigned argument and the argument is signed and vice versa.
->>
->> Now, the C standard says:
->>
->> "If a conversion specification is invalid, the behavior is undefined.
->> If any argument is
->> not the correct type for the corresponding conversion specification, the
->> behavior is *undefined*."
->>
->> For eg:
->>
->> drivers/iio/trigger/stm32-timer-trigger.c:228:24: warning: format =E2=80=
-=98%d=E2=80=99
->> expects argument of type =E2=80=98int=E2=80=99, but argument 3 has type =
-=E2=80=98unsigned int=E2=80=99
->> [-Wformat=3D]
->>   return sprintf(buf, "%d\n", (unsigned int)freq);
->>                          ~^     ~~~~~~~~~~~~~~~~~~
->>                                                 %d
->>
->> What is the rationale for not including/using this flag in the
->> HOSTCFLAGS in the Makefile ?
->
-> In the past, it was posited the toolchain should be smart enough to
-> know when the programmer intended/needed a signed value versus an
-> unsigned one. Also see
-> http://linux.derkeiler.com/Mailing-Lists/Kernel/2006-11/msg08325.html.
+This driver predates the availability of IIO_CHAN_INFO_SAMP_FREQ
+attribute wherein usage has some advantages like it can be accessed by
+in-kernel consumers as well as reduces the code size.
 
-I am not sure this is best example why this flag is not used anymore.
-I can see that type-limits is being used. It is even a
--Werror=3Dtype-limits when compiling with W=3D1.
+Therefore, use IIO_CHAN_INFO_SAMP_FREQ to implement the
+sampling_frequency attribute instead of using IIO_DEV_ATTR_SAMP_FREQ()
+macro.
 
-Anyway I see your point, just that the example may be a bit out dated.
+Move code from the functions associated with IIO_DEV_ATTR_SAMP_FREQ()
+into respective read and write hooks with the mask set to
+IIO_CHAN_INFO_SAMP_FREQ.
+
+Signed-off-by: Michael Nosthoff <committed@heine.so>
+---
+Changes in v3:
+
+ - Resend using git send-email
+
+ drivers/iio/adc/ad7793.c | 74 +++++++++++++++---------------------------------
+ 1 file changed, 23 insertions(+), 51 deletions(-)
+
+diff --git a/drivers/iio/adc/ad7793.c b/drivers/iio/adc/ad7793.c
+index 47c3d7f..4079f40 100644
+--- a/drivers/iio/adc/ad7793.c
++++ b/drivers/iio/adc/ad7793.c
+@@ -348,55 +348,6 @@ static const u16 ad7793_sample_freq_avail[16] = {0, 470, 242, 123, 62, 50, 39,
+ static const u16 ad7797_sample_freq_avail[16] = {0, 0, 0, 123, 62, 50, 0,
+ 					33, 0, 17, 16, 12, 10, 8, 6, 4};
+ 
+-static ssize_t ad7793_read_frequency(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
+-{
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct ad7793_state *st = iio_priv(indio_dev);
+-
+-	return sprintf(buf, "%d\n",
+-	       st->chip_info->sample_freq_avail[AD7793_MODE_RATE(st->mode)]);
+-}
+-
+-static ssize_t ad7793_write_frequency(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
+-{
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct ad7793_state *st = iio_priv(indio_dev);
+-	long lval;
+-	int i, ret;
+-
+-	ret = kstrtol(buf, 10, &lval);
+-	if (ret)
+-		return ret;
+-
+-	if (lval == 0)
+-		return -EINVAL;
+-
+-	for (i = 0; i < 16; i++)
+-		if (lval == st->chip_info->sample_freq_avail[i])
+-			break;
+-	if (i == 16)
+-		return -EINVAL;
+-
+-	ret = iio_device_claim_direct_mode(indio_dev);
+-	if (ret)
+-		return ret;
+-	st->mode &= ~AD7793_MODE_RATE(-1);
+-	st->mode |= AD7793_MODE_RATE(i);
+-	ad_sd_write_reg(&st->sd, AD7793_REG_MODE, sizeof(st->mode), st->mode);
+-	iio_device_release_direct_mode(indio_dev);
+-
+-	return len;
+-}
+-
+-static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+-		ad7793_read_frequency,
+-		ad7793_write_frequency);
+-
+ static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
+ 	"470 242 123 62 50 39 33 19 17 16 12 10 8 6 4");
+ 
+@@ -424,7 +375,6 @@ static IIO_DEVICE_ATTR_NAMED(in_m_in_scale_available,
+ 		ad7793_show_scale_available, NULL, 0);
+ 
+ static struct attribute *ad7793_attributes[] = {
+-	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+ 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+ 	&iio_dev_attr_in_m_in_scale_available.dev_attr.attr,
+ 	NULL
+@@ -435,7 +385,6 @@ static const struct attribute_group ad7793_attribute_group = {
+ };
+ 
+ static struct attribute *ad7797_attributes[] = {
+-	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+ 	&iio_const_attr_sampling_frequency_available_ad7797.dev_attr.attr,
+ 	NULL
+ };
+@@ -505,6 +454,9 @@ static int ad7793_read_raw(struct iio_dev *indio_dev,
+ 			*val -= offset;
+ 		}
+ 		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		*val = st->chip_info->sample_freq_avail[AD7793_MODE_RATE(st->mode)];
++		return IIO_VAL_INT;
+ 	}
+ 	return -EINVAL;
+ }
+@@ -542,6 +494,26 @@ static int ad7793_write_raw(struct iio_dev *indio_dev,
+ 				break;
+ 			}
+ 		break;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		if (!val) {
++			ret = -EINVAL;
++			break;
++		}
++
++		for (i = 0; i < 16; i++)
++			if (val == st->chip_info->sample_freq_avail[i])
++				break;
++
++		if (i == 16) {
++			ret = -EINVAL;
++			break;
++		}
++
++		st->mode &= ~AD7793_MODE_RATE(-1);
++		st->mode |= AD7793_MODE_RATE(i);
++		ad_sd_write_reg(&st->sd, AD7793_REG_MODE, sizeof(st->mode), st->mode);
++		ret = 0;
++		break;
+ 	default:
+ 		ret = -EINVAL;
+ 	}
+-- 
+2.7.4
+
