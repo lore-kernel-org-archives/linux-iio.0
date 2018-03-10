@@ -1,501 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:45638 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752564AbeCRKJN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 18 Mar 2018 06:09:13 -0400
-Date: Sun, 18 Mar 2018 10:09:07 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Shreeya Patel <shreeya.patel23498@gmail.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, daniel.baluta@gmail.com
-Subject: Re: [PATCH v2] Staging: iio: adis16209: Move adis16209 driver out
- of staging
-Message-ID: <20180318100907.1a582d52@archlinux>
-In-Reply-To: <C8AE11A6-48CC-4EBD-AA5C-A08DDCD6970F@gmail.com>
-References: <1520677223-11505-1-git-send-email-shreeya.patel23498@gmail.com>
-        <20180310155731.7b7f584d@archlinux>
-        <C8AE11A6-48CC-4EBD-AA5C-A08DDCD6970F@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:50348 "EHLO
+        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751190AbeCJWG6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 10 Mar 2018 17:06:58 -0500
+Received: by mail-wm0-f66.google.com with SMTP id w128so9904942wmw.0
+        for <linux-iio@vger.kernel.org>; Sat, 10 Mar 2018 14:06:57 -0800 (PST)
+Message-ID: <cb0f18f82afd7df898e58dda7ddd3e973941fcfe.camel@elementarea.net>
+Subject: [PATCH v2 0/2] iio: chemical: sgp30: Support SGP30 / SGPC3 Gas
+ Sensors
+From: Andreas Brauchli <a.brauchli@elementarea.net>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc: linux-iio@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Date: Sat, 10 Mar 2018 23:06:55 +0100
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, 18 Mar 2018 15:18:44 +0530
-Shreeya Patel <shreeya.patel23498@gmail.com> wrote:
+This patch series adds support for Sensirion SGP30 and SGPC3 I2C gas
+sensors.
 
-> On 10 March 2018 21:27:31 GMT+05:30, Jonathan Cameron <jic23@kernel.org>
-> 
-> Hi Jonathan
-> 
-> >On Sat, 10 Mar 2018 15:50:23 +0530
-> >Shreeya Patel <shreeya.patel23498@gmail.com> wrote:
-> >  
-> >> Move the adis16209 driver out of staging directory and merge to the
-> >> mainline IIO subsystem.
-> >> 
-> >> Signed-off-by: Shreeya Patel <shreeya.patel23498@gmail.com>  
-> >As this has a clear dependency on the previous patch, please put them
-> >in the same series for the next version.  That way I won't miss one!
-> >
-> >This also doesn't actually seem to have all the patches in place.
-> >The sign extend one is definitely missing for some reason.
-> >
-> >One question on the ABI choice of X for the rotation axis.
-> >I think the logical choice is actually Z but would like to know what
-> >you and others think.
-> >
-> >All existing users of IIO_ROT (outside staging) have been magnetometer
-> >where we don't have an axis, but rather a magnetic reference frame or
-> >a quaternion output which includes all the axes.
-> >
-> >Jonathan
-> >  
-> >> ---
-> >> 
-> >> Changes in v2
-> >>   -Re-send the patch after having some cleanups in the
-> >> file included in this patch.
-> >> 
-> >>  drivers/iio/accel/Kconfig             |  12 ++
-> >>  drivers/iio/accel/Makefile            |   1 +
-> >>  drivers/iio/accel/adis16209.c         | 329  
-> >++++++++++++++++++++++++++++++++++  
-> >>  drivers/staging/iio/accel/Kconfig     |  12 --
-> >>  drivers/staging/iio/accel/Makefile    |   1 -
-> >>  drivers/staging/iio/accel/adis16209.c | 329  
-> >----------------------------------  
-> >>  6 files changed, 342 insertions(+), 342 deletions(-)
-> >>  create mode 100644 drivers/iio/accel/adis16209.c
-> >>  delete mode 100644 drivers/staging/iio/accel/adis16209.c
-> >> 
-> >> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> >> index c6d9517..f95f43c 100644
-> >> --- a/drivers/iio/accel/Kconfig
-> >> +++ b/drivers/iio/accel/Kconfig
-> >> @@ -5,6 +5,18 @@
-> >>  
-> >>  menu "Accelerometers"
-> >>  
-> >> +config ADIS16209
-> >> +        tristate "Analog Devices ADIS16209 Dual-Axis Digital  
-> >Inclinometer and Accelerometer"  
-> >> +        depends on SPI
-> >> +        select IIO_ADIS_LIB
-> >> +        select IIO_ADIS_LIB_BUFFER if IIO_BUFFER
-> >> +        help
-> >> +          Say Y here to build support for Analog Devices adis16209  
-> >dual-axis digital inclinometer  
-> >> +          and accelerometer.
-> >> +
-> >> +          To compile this driver as a module, say M here: the module  
-> >will be  
-> >> +          called adis16209.
-> >> +
-> >>  config ADXL345
-> >>  	tristate
-> >>  
-> >> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-> >> index 368aedb..40861b9 100644
-> >> --- a/drivers/iio/accel/Makefile
-> >> +++ b/drivers/iio/accel/Makefile
-> >> @@ -4,6 +4,7 @@
-> >>  #
-> >>  
-> >>  # When adding new entries keep the list in alphabetical order
-> >> +obj-$(CONFIG_ADIS16209) += adis16209.o
-> >>  obj-$(CONFIG_ADXL345) += adxl345_core.o
-> >>  obj-$(CONFIG_ADXL345_I2C) += adxl345_i2c.o
-> >>  obj-$(CONFIG_ADXL345_SPI) += adxl345_spi.o
-> >> diff --git a/drivers/iio/accel/adis16209.c  
-> >b/drivers/iio/accel/adis16209.c  
-> >> new file mode 100644
-> >> index 0000000..ed2e89f
-> >> --- /dev/null
-> >> +++ b/drivers/iio/accel/adis16209.c
-> >> @@ -0,0 +1,329 @@
-> >> +/*
-> >> + * ADIS16209 Dual-Axis Digital Inclinometer and Accelerometer
-> >> + *
-> >> + * Copyright 2010 Analog Devices Inc.
-> >> + *
-> >> + * Licensed under the GPL-2 or later.
-> >> + */
-> >> +
-> >> +#include <linux/delay.h>
-> >> +#include <linux/device.h>
-> >> +#include <linux/kernel.h>
-> >> +#include <linux/list.h>
-> >> +#include <linux/module.h>
-> >> +#include <linux/spi/spi.h>
-> >> +#include <linux/slab.h>
-> >> +#include <linux/sysfs.h>
-> >> +
-> >> +#include <linux/iio/iio.h>
-> >> +#include <linux/iio/sysfs.h>
-> >> +#include <linux/iio/buffer.h>
-> >> +#include <linux/iio/imu/adis.h>
-> >> +
-> >> +#define ADIS16209_STARTUP_DELAY_MS	220
-> >> +#define ADIS16209_FLASH_CNT_REG		0x00
-> >> +
-> >> +/* Data Output Register Definitions */
-> >> +#define ADIS16209_SUPPLY_OUT_REG	0x02
-> >> +#define ADIS16209_XACCL_OUT_REG		0x04
-> >> +#define ADIS16209_YACCL_OUT_REG		0x06
-> >> +/* Output, auxiliary ADC input */
-> >> +#define ADIS16209_AUX_ADC_REG		0x08
-> >> +/* Output, temperature */
-> >> +#define ADIS16209_TEMP_OUT_REG		0x0A
-> >> +/* Output, +/- 90 degrees X-axis inclination */
-> >> +#define ADIS16209_XINCL_OUT_REG		0x0C
-> >> +#define ADIS16209_YINCL_OUT_REG		0x0E
-> >> +/* Output, +/-180 vertical rotational position */
-> >> +#define ADIS16209_ROT_OUT_REG		0x10
-> >> +
-> >> +/*
-> >> + * Calibration Register Definitions.
-> >> + * Acceleration, inclination or rotation offset null.
-> >> + */
-> >> +#define ADIS16209_XACCL_NULL_REG	0x12
-> >> +#define ADIS16209_YACCL_NULL_REG	0x14
-> >> +#define ADIS16209_XINCL_NULL_REG	0x16
-> >> +#define ADIS16209_YINCL_NULL_REG	0x18
-> >> +#define ADIS16209_ROT_NULL_REG		0x1A
-> >> +
-> >> +/* Alarm Register Definitions */
-> >> +#define ADIS16209_ALM_MAG1_REG		0x20
-> >> +#define ADIS16209_ALM_MAG2_REG		0x22
-> >> +#define ADIS16209_ALM_SMPL1_REG		0x24
-> >> +#define ADIS16209_ALM_SMPL2_REG		0x26
-> >> +#define ADIS16209_ALM_CTRL_REG		0x28  
-> 
-> I see that these alarm registers are not being used anywhere in the driver and yet we have it's declaration. 
-> Is it the left out work that will be done in future? 
-It is never a obvious decision on whether to leave in defines
-for unused parts of the register map.  Potentially someone
-may want them in the future and they don't cause any confusion or
-hurt the readability of the code, so I would leave them in.
+Further product specs available from:
+https://www.sensirion.com/en/environmental-sensors/gas-sensors/multi-pixel-gas-sensors/
+https://www.sensirion.com/en/about-us/links/#c15360
 
-> 
-> >> +
-> >> +#define ADIS16209_AUX_DAC_REG		0x30
-> >> +#define ADIS16209_GPIO_CTRL_REG		0x32
-> >> +#define ADIS16209_SMPL_PRD_REG		0x36
-> >> +#define ADIS16209_AVG_CNT_REG		0x38
-> >> +#define ADIS16209_SLP_CNT_REG		0x3A
-> >> +
-> >> +#define ADIS16209_MSC_CTRL_REG			0x34
-> >> +#define  ADIS16209_MSC_CTRL_PWRUP_SELF_TEST	BIT(10)
-> >> +#define  ADIS16209_MSC_CTRL_SELF_TEST_EN	BIT(8)
-> >> +#define  ADIS16209_MSC_CTRL_DATA_RDY_EN		BIT(2)
-> >> +/* Data-ready polarity: 1 = active high, 0 = active low */
-> >> +#define  ADIS16209_MSC_CTRL_ACTIVE_HIGH		BIT(1)
-> >> +#define  ADIS16209_MSC_CTRL_DATA_RDY_DIO2	BIT(0)
-> >> +
-> >> +#define ADIS16209_STAT_REG			0x3C
-> >> +#define  ADIS16209_STAT_ALARM2			BIT(9)
-> >> +#define  ADIS16209_STAT_ALARM1			BIT(8)  
-> 
-> Even here
-> 
-> >> +#define  ADIS16209_STAT_SELFTEST_FAIL_BIT	5
-> >> +#define  ADIS16209_STAT_SPI_FAIL_BIT		3
-> >> +#define  ADIS16209_STAT_FLASH_UPT_FAIL_BIT	2
-> >> +/* Power supply above 3.625 V */
-> >> +#define  ADIS16209_STAT_POWER_HIGH_BIT		1
-> >> +/* Power supply below 3.15 V */
-> >> +#define  ADIS16209_STAT_POWER_LOW_BIT		0
-> >> +
-> >> +#define ADIS16209_CMD_REG			0x3E
-> >> +#define  ADIS16209_CMD_SW_RESET			BIT(7)
-> >> +#define  ADIS16209_CMD_CLEAR_STAT		BIT(4)
-> >> +#define  ADIS16209_CMD_FACTORY_CAL		BIT(1)
-> >> +  
-> 
-> Here also we are just using the register and not the bit macros anywhere.
-> 
-> I would like to know the reason behind this. 
-You guessed it.  No one wrote that support yet.  They might do in future
-if someone who has hardware is sufficiently interested to do so.
+Patch 1/2 add new IIO modifiers used by the driver
+Patch 2/2 add sgp30/sgpc3 driver and documentation
 
-For now they do no real harm and act as a kind of documentation
-(though Analog never seem to remove old datasheets so that shouldn't be a
-problem for these parts).
+Major changes to v1:
+* Driver renamed to sgp30
+* No or minimal sensor knowledge required to use the device:
+  automatic fixed interval polling (see next point) and initialization.
+* Background thread for IAQ polling
+* Remove triggered-buffers support
+* Add new IIO modifiers for ethanol and H2
+* Support for SGPC3 product increment ("feature set 0.6") including 
+  humidity compensation and an ultra-low power mode. Unfortunately, the
+  datasheet for this new SGPC3 has not been released yet.
+* ABI/DT Documentation
 
-> 
-> Thanks
-> 
-> >> +#define ADIS16209_ERROR_ACTIVE			BIT(14)
-> >> +
-> >> +enum adis16209_scan {
-> >> +	ADIS16209_SCAN_SUPPLY,
-> >> +	ADIS16209_SCAN_ACC_X,
-> >> +	ADIS16209_SCAN_ACC_Y,
-> >> +	ADIS16209_SCAN_AUX_ADC,
-> >> +	ADIS16209_SCAN_TEMP,
-> >> +	ADIS16209_SCAN_INCLI_X,
-> >> +	ADIS16209_SCAN_INCLI_Y,
-> >> +	ADIS16209_SCAN_ROT,
-> >> +};
-> >> +
-> >> +static const u8 adis16209_addresses[8][1] = {
-> >> +	[ADIS16209_SCAN_SUPPLY] = { },
-> >> +	[ADIS16209_SCAN_AUX_ADC] = { },
-> >> +	[ADIS16209_SCAN_ACC_X] = { ADIS16209_XACCL_NULL_REG },
-> >> +	[ADIS16209_SCAN_ACC_Y] = { ADIS16209_YACCL_NULL_REG },
-> >> +	[ADIS16209_SCAN_INCLI_X] = { ADIS16209_XINCL_NULL_REG },
-> >> +	[ADIS16209_SCAN_INCLI_Y] = { ADIS16209_YINCL_NULL_REG },
-> >> +	[ADIS16209_SCAN_ROT] = { },
-> >> +	[ADIS16209_SCAN_TEMP] = { },
-> >> +};
-> >> +
-> >> +static int adis16209_write_raw(struct iio_dev *indio_dev,
-> >> +			       struct iio_chan_spec const *chan,
-> >> +			       int val,
-> >> +			       int val2,
-> >> +			       long mask)
-> >> +{
-> >> +	struct adis *st = iio_priv(indio_dev);
-> >> +	int bits;
-> >> +	s16 val16;
-> >> +	u8 addr;
-> >> +
-> >> +	switch (mask) {
-> >> +	case IIO_CHAN_INFO_CALIBBIAS:
-> >> +		switch (chan->type) {
-> >> +		case IIO_ACCEL:
-> >> +		case IIO_INCLI:
-> >> +			bits = 14;
-> >> +			break;
-> >> +		default:
-> >> +			return -EINVAL;
-> >> +		}
-> >> +		val16 = val & ((1 << bits) - 1);
-> >> +		addr = adis16209_addresses[chan->scan_index][0];
-> >> +		return adis_write_reg_16(st, addr, val16);
-> >> +	}
-> >> +	return -EINVAL;
-> >> +}
-> >> +
-> >> +static int adis16209_read_raw(struct iio_dev *indio_dev,
-> >> +			      struct iio_chan_spec const *chan,
-> >> +			      int *val, int *val2,
-> >> +			      long mask)
-> >> +{
-> >> +	struct adis *st = iio_priv(indio_dev);
-> >> +	int ret;
-> >> +	int bits;
-> >> +	u8 addr;
-> >> +	s16 val16;
-> >> +
-> >> +	switch (mask) {
-> >> +	case IIO_CHAN_INFO_RAW:
-> >> +		return adis_single_conversion(indio_dev, chan,
-> >> +			ADIS16209_ERROR_ACTIVE, val);
-> >> +	case IIO_CHAN_INFO_SCALE:
-> >> +		switch (chan->type) {
-> >> +		case IIO_VOLTAGE:
-> >> +			*val = 0;
-> >> +			if (chan->channel == 0)
-> >> +				*val2 = 305180; /* 0.30518 mV */
-> >> +			else
-> >> +				*val2 = 610500; /* 0.6105 mV */
-> >> +			return IIO_VAL_INT_PLUS_MICRO;
-> >> +		case IIO_TEMP:
-> >> +			*val = -470;
-> >> +			*val2 = 0;
-> >> +			return IIO_VAL_INT_PLUS_MICRO;
-> >> +		case IIO_ACCEL:
-> >> +			/*
-> >> +			 * IIO base unit for sensitivity of accelerometer
-> >> +			 * is milli g.
-> >> +			 * 1 LSB represents 0.244 mg.
-> >> +			 */
-> >> +			*val = 0;
-> >> +			*val2 = IIO_G_TO_M_S_2(244140);
-> >> +			return IIO_VAL_INT_PLUS_NANO;
-> >> +		case IIO_INCLI:
-> >> +		case IIO_ROT:
-> >> +			/*
-> >> +			 * IIO base units for rotation are degrees.
-> >> +			 * 1 LSB represents 0.025 milli degrees.
-> >> +			 */
-> >> +			*val = 0;
-> >> +			*val2 = 25000;
-> >> +			return IIO_VAL_INT_PLUS_MICRO;
-> >> +		default:
-> >> +			return -EINVAL;
-> >> +		}
-> >> +		break;
-> >> +	case IIO_CHAN_INFO_OFFSET:
-> >> +		/*
-> >> +		 * The raw ADC value is 0x4FE when the temperature
-> >> +		 * is 45 degrees and the scale factor per milli
-> >> +		 * degree celcius is -470.
-> >> +		 */
-> >> +		*val = 25000 / -470 - 0x4FE;
-> >> +		return IIO_VAL_INT;
-> >> +	case IIO_CHAN_INFO_CALIBBIAS:
-> >> +		switch (chan->type) {
-> >> +		case IIO_ACCEL:
-> >> +			bits = 14;
-> >> +			break;
-> >> +		default:
-> >> +			return -EINVAL;
-> >> +		}
-> >> +		addr = adis16209_addresses[chan->scan_index][0];
-> >> +		ret = adis_read_reg_16(st, addr, &val16);
-> >> +		if (ret)
-> >> +			return ret;
-> >> +		val16 &= (1 << bits) - 1;
-> >> +		val16 = (s16)(val16 << (16 - bits)) >> (16 - bits);
-> >> +		*val = val16;  
-> >Something odd here as this isn't the current code - doesn't have the
-> >sign extend patch in place.
-> >  
-> >> +		return IIO_VAL_INT;
-> >> +	}
-> >> +	return -EINVAL;
-> >> +}
-> >> +
-> >> +static const struct iio_chan_spec adis16209_channels[] = {
-> >> +	ADIS_SUPPLY_CHAN(ADIS16209_SUPPLY_OUT_REG, ADIS16209_SCAN_SUPPLY,
-> >> +			 0, 14),
-> >> +	ADIS_TEMP_CHAN(ADIS16209_TEMP_OUT_REG, ADIS16209_SCAN_TEMP, 0, 12),
-> >> +	ADIS_ACCEL_CHAN(X, ADIS16209_XACCL_OUT_REG, ADIS16209_SCAN_ACC_X,
-> >> +			BIT(IIO_CHAN_INFO_CALIBBIAS), 0, 14),
-> >> +	ADIS_ACCEL_CHAN(Y, ADIS16209_YACCL_OUT_REG, ADIS16209_SCAN_ACC_Y,
-> >> +			BIT(IIO_CHAN_INFO_CALIBBIAS), 0, 14),
-> >> +	ADIS_AUX_ADC_CHAN(ADIS16209_AUX_ADC_REG, ADIS16209_SCAN_AUX_ADC, 0,  
-> >12),  
-> >> +	ADIS_INCLI_CHAN(X, ADIS16209_XINCL_OUT_REG, ADIS16209_SCAN_INCLI_X,
-> >> +			0, 0, 14),
-> >> +	ADIS_INCLI_CHAN(Y, ADIS16209_YINCL_OUT_REG, ADIS16209_SCAN_INCLI_Y,
-> >> +			0, 0, 14),
-> >> +	ADIS_ROT_CHAN(X, ADIS16209_ROT_OUT_REG, ADIS16209_SCAN_ROT, 0, 0,  
-> >14),
-> >This raises an interesting question.  How do we define rotation axes?
-> >I would assume it was rotation about the axis, as such I think the
-> >correct
-> >axis for this is Z.
-> >
-> >However, then we consider the two inclination axis. Again fiddly.  I
-> >suppose
-> >it is inclination 'from' an axis, but in what plane?  I guess x and y
-> >is about as good as we can do on those ones with the assumption they
-> >are aligned to perpendicular to the vertical.
-> >  
-> >> +	IIO_CHAN_SOFT_TIMESTAMP(8)
-> >> +};
-> >> +
-> >> +static const struct iio_info adis16209_info = {
-> >> +	.read_raw = adis16209_read_raw,
-> >> +	.write_raw = adis16209_write_raw,
-> >> +	.update_scan_mode = adis_update_scan_mode,
-> >> +};
-> >> +
-> >> +static const char * const adis16209_status_error_msgs[] = {
-> >> +	[ADIS16209_STAT_SELFTEST_FAIL_BIT] = "Self test failure",
-> >> +	[ADIS16209_STAT_SPI_FAIL_BIT] = "SPI failure",
-> >> +	[ADIS16209_STAT_FLASH_UPT_FAIL_BIT] = "Flash update failed",
-> >> +	[ADIS16209_STAT_POWER_HIGH_BIT] = "Power supply above 3.625V",
-> >> +	[ADIS16209_STAT_POWER_LOW_BIT] = "Power supply below 3.15V",
-> >> +};
-> >> +
-> >> +static const struct adis_data adis16209_data = {
-> >> +	.read_delay = 30,
-> >> +	.msc_ctrl_reg = ADIS16209_MSC_CTRL_REG,
-> >> +	.glob_cmd_reg = ADIS16209_CMD_REG,
-> >> +	.diag_stat_reg = ADIS16209_STAT_REG,
-> >> +
-> >> +	.self_test_mask = ADIS16209_MSC_CTRL_SELF_TEST_EN,
-> >> +	.self_test_no_autoclear = true,
-> >> +	.startup_delay = ADIS16209_STARTUP_DELAY_MS,
-> >> +
-> >> +	.status_error_msgs = adis16209_status_error_msgs,
-> >> +	.status_error_mask = BIT(ADIS16209_STAT_SELFTEST_FAIL_BIT) |
-> >> +		BIT(ADIS16209_STAT_SPI_FAIL_BIT) |
-> >> +		BIT(ADIS16209_STAT_FLASH_UPT_FAIL_BIT) |
-> >> +		BIT(ADIS16209_STAT_POWER_HIGH_BIT) |
-> >> +		BIT(ADIS16209_STAT_POWER_LOW_BIT),
-> >> +};
-> >> +
-> >> +static int adis16209_probe(struct spi_device *spi)
-> >> +{
-> >> +	int ret;
-> >> +	struct adis *st;
-> >> +	struct iio_dev *indio_dev;  
-> >It's not one I personally feel strongly about but when there is no
-> >reason not to do it, reverse Christmas tree ordering is preferred for
-> >variable declarations.
-> >  
-> >> +
-> >> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> >> +	if (!indio_dev)
-> >> +		return -ENOMEM;  
-> >Blank line here.
-> >  
-> >> +	st = iio_priv(indio_dev);
-> >> +	spi_set_drvdata(spi, indio_dev);
-> >> +
-> >> +	indio_dev->name = spi->dev.driver->name;
-> >> +	indio_dev->dev.parent = &spi->dev;
-> >> +	indio_dev->info = &adis16209_info;
-> >> +	indio_dev->channels = adis16209_channels;
-> >> +	indio_dev->num_channels = ARRAY_SIZE(adis16209_channels);
-> >> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> >> +
-> >> +	ret = adis_init(st, indio_dev, spi, &adis16209_data);
-> >> +	if (ret)
-> >> +		return ret;  
-> >Blank line here.
-> >  
-> >> +	ret = adis_setup_buffer_and_trigger(st, indio_dev, NULL);
-> >> +	if (ret)
-> >> +		return ret;
-> >> +
-> >> +	ret = adis_initial_startup(st);
-> >> +	if (ret)
-> >> +		goto error_cleanup_buffer_trigger;
-> >> +	ret = iio_device_register(indio_dev);
-> >> +	if (ret)
-> >> +		goto error_cleanup_buffer_trigger;
-> >> +
-> >> +	return 0;
-> >> +
-> >> +error_cleanup_buffer_trigger:
-> >> +	adis_cleanup_buffer_and_trigger(st, indio_dev);
-> >> +	return ret;
-> >> +}
-> >> +
-> >> +static int adis16209_remove(struct spi_device *spi)
-> >> +{
-> >> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-> >> +	struct adis *st = iio_priv(indio_dev);
-> >> +
-> >> +	iio_device_unregister(indio_dev);
-> >> +	adis_cleanup_buffer_and_trigger(st, indio_dev);
-> >> +
-> >> +	return 0;
-> >> +}
-> >> +
-> >> +static struct spi_driver adis16209_driver = {
-> >> +	.driver = {
-> >> +		.name = "adis16209",
-> >> +	},
-> >> +	.probe = adis16209_probe,
-> >> +	.remove = adis16209_remove,
-> >> +};
-> >> +module_spi_driver(adis16209_driver);
-> >> +
-> >> +MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");
-> >> +MODULE_DESCRIPTION("Analog Devices ADIS16209 Dual-Axis Digital  
-> >Inclinometer and Accelerometer");  
-> >> +MODULE_LICENSE("GPL v2");
-> >> +MODULE_ALIAS("spi:adis16209");]  
-> >
-> ><snip>  
-> 
+Many thanks to Peter Meerwald-Standler and Jonathan Cameron for their most valuable feedback on v1.
+
+Andreas Brauchli (2):
+  iio: Add modifiers for ethanol and H2 gases
+  iio: chemical: sgp30: Support Sensirion SGPxx sensors
+
+ Documentation/ABI/testing/sysfs-bus-iio            |    4 +
+ .../ABI/testing/sysfs-bus-iio-chemical-sgp30       |   62 ++
+ .../bindings/iio/chemical/sensirion,sgp30.txt      |   15 +
+ Documentation/iio/chemical/sgp30.txt               |   97 ++
+ drivers/iio/chemical/Kconfig                       |   13 +
+ drivers/iio/chemical/Makefile                      |    1 +
+ drivers/iio/chemical/sgp30.c                       | 1120 ++++++++++++++++++++
+ include/uapi/linux/iio/types.h                     |    2 +
+ tools/iio/iio_event_monitor.c                      |    4 +
+ 9 files changed, 1318 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-chemical-sgp30
+ create mode 100644 Documentation/devicetree/bindings/iio/chemical/sensirion,sgp30.txt
+ create mode 100644 Documentation/iio/chemical/sgp30.txt
+ create mode 100644 drivers/iio/chemical/sgp30.c
+
+-- 
+2.15.1
 
