@@ -1,66 +1,86 @@
-Return-Path: <SRS0=QNeF=GI=gmail.com=robherring2@kernel.org>
-Date: Sun, 18 Mar 2018 07:48:33 -0500
-From: Rob Herring <robh@kernel.org>
-To: Andreas Brauchli <a.brauchli@elementarea.net>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Jonathan Corbet <corbet@lwn.net>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-doc@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: chemical: sgp30: Support Sensirion SGPxx
- sensors
-Message-ID: <20180317234938.qf7j45o53nu4ryu2@rob-hp-laptop>
-References: <58a6dcdc4097d60e7bcee61ec1d0cbdf8ad3ae49.camel@elementarea.net>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.99]:50510 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S932136AbeCKNl4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 11 Mar 2018 09:41:56 -0400
+Date: Sun, 11 Mar 2018 13:41:52 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org
+Subject: [PULL] Second set of IIO fixes for the 4.16 cycle
+Message-ID: <20180311134152.04767f22@archlinux>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <58a6dcdc4097d60e7bcee61ec1d0cbdf8ad3ae49.camel@elementarea.net>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, Mar 10, 2018 at 11:07:30PM +0100, Andreas Brauchli wrote:
-> Support Sensirion SGP30 and SGPC3 multi-pixel I2C gas sensors
-> 
-> Supported Features:
-> 
-> * Indoor Air Quality (IAQ) concentrations for
->   - tVOC (in_concentration_voc_input)
->   - CO2eq (in_concentration_co2_input) - SGP30 only
->   IAQ concentrations are periodically read out by a background thread
->   to allow the sensor to maintain its internal baseline.
-> * Baseline support for IAQ (in_iaq_baseline, set_iaq_baseline)
-> * Gas concentration signals
->   - Ethanol (in_concentration_ethanol_raw)
->   - H2 (in_concentration_h2_raw) - SGP30 only
-> * On-chip self test (in_selftest)
-> * Sensor interface version (in_feature_set_version)
-> * Sensor serial number (in_serial_id)
-> * Humidity compensation
->   With the help of an external humidity signal, the gas signals can be
->   humidity-compensated. The sensor performs the compensation on-chip.
-> * Power mode switching between low power mode (1/2Hz) and
->   ultra low power mode (1/30Hz) sampling - SGPC3 only
-> * Checksummed I2C communication
-> 
-> For all features, refer to the data sheet or the documentation in
-> Documentation/iio/chemical/sgp30.txt for more details.
-> 
-> The ABI is documented in
-> Documentation/ABI/testing/sysfs-bus-iio-chemical-sgp30
-> 
-> Signed-off-by: Andreas Brauchli <andreas.brauchli@sensirion.com>
-> ---
->  .../ABI/testing/sysfs-bus-iio-chemical-sgp30       |   62 ++
->  .../bindings/iio/chemical/sensirion,sgp30.txt      |   15 +
+The following changes since commit c6754712e05317923e3f67ac01d45c7d5ec6f79f:
 
-Please split bindings to separate patch.
+  Merge tag 'iio-fixes-for-4.16a' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-linus (2018-02-20 10:03:22 +0100)
 
->  Documentation/iio/chemical/sgp30.txt               |   97 ++
->  drivers/iio/chemical/Kconfig                       |   13 +
->  drivers/iio/chemical/Makefile                      |    1 +
->  drivers/iio/chemical/sgp30.c                       | 1120 ++++++++++++++++++++
->  6 files changed, 1308 insertions(+)
->  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-chemical-sgp30
->  create mode 100644 Documentation/devicetree/bindings/iio/chemical/sensirion,sgp30.txt
->  create mode 100644 Documentation/iio/chemical/sgp30.txt
->  create mode 100644 drivers/iio/chemical/sgp30.c
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.16b
+
+for you to fetch changes up to 8b438686a001db64c21782d04ef68111e53c45d9:
+
+  iio: st_pressure: st_accel: pass correct platform data to init (2018-03-10 16:28:05 +0000)
+
+----------------------------------------------------------------
+Second set of IIO fixes for the 4.16 cycle.
+
+A slightly fiddly revert then fix pair in here as the bug lead to
+an unused local variable that was then removed without us noticing
+the bug.  The revert should only be needed on 4.16 - the fix
+goes back futher.
+
+* ccs811
+  - Fix the transition from 'boot' to 'application' mode.  Fixes the case
+    where the power is not cut between boot cycles.
+* meson-saradc
+  - Fix missing mutex_unlock in an error path.
+* sd-modulator
+  - Fix bindings doc to have the right value of io-channel-cells to reflect
+    that this device type only ever outputs one channel.
+* st-accel
+  - Revert drop of redundant pointer patch.
+  - Use the now available pointer to avoid overwriting the platform data
+    pointer and causing trouble on reprobing the driver.
+* st-pressure
+  - Use local copy of the platform data pointer to avoid overwriting the
+    one associated with the device, which would cause issues on reprobing
+    the driver.
+* stm32-dfsdm
+  - Use the right regmap_cfg for the type of device.
+  - Correct the ID passed to stop channel to be the channel one.
+  - Correct which clock is used to allow for the 'audio' clock.
+  - Fix allocation of channels when more than one is enabled.
+
+----------------------------------------------------------------
+Dan Carpenter (1):
+      iio: adc: meson-saradc: unlock on error in meson_sar_adc_lock()
+
+Fabrice Gasnier (5):
+      iio: adc: stm32-dfsdm: fix compatible data use
+      iio: adc: stm32-dfsdm: fix call to stop channel
+      iio: adc: stm32-dfsdm: fix clock source selection
+      iio: adc: stm32-dfsdm: fix multiple channel initialization
+      dt-bindings: iio: adc: sd-modulator: fix io-channel-cells
+
+Jonathan Cameron (1):
+      Revert "iio: accel: st_accel: remove redundant pointer pdata"
+
+Michael Nosthoff (1):
+      iio: st_pressure: st_accel: pass correct platform data to init
+
+Richard Lai (1):
+      iio: chemical: ccs811: Corrected firmware boot/application mode transition
+
+ .../bindings/iio/adc/sigma-delta-modulator.txt     |  4 +--
+ drivers/iio/accel/st_accel_core.c                  |  7 +++-
+ drivers/iio/adc/meson_saradc.c                     |  4 ++-
+ drivers/iio/adc/stm32-dfsdm-adc.c                  | 39 ++++++++++++----------
+ drivers/iio/adc/stm32-dfsdm-core.c                 | 12 +++++--
+ drivers/iio/chemical/ccs811.c                      |  3 ++
+ drivers/iio/pressure/st_pressure_core.c            |  2 +-
+ 7 files changed, 46 insertions(+), 25 deletions(-)
