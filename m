@@ -1,31 +1,97 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:50656 "EHLO
-        mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751131AbeCNLc7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 14 Mar 2018 07:32:59 -0400
-Date: Wed, 14 Mar 2018 12:32:58 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: [PULL] Second set of new drivers and cleanups for IIO in the
- 4.17 cycle.
-Message-ID: <20180314113258.GA23966@kroah.com>
-References: <20180311141733.31e977eb@archlinux>
+Return-Path: <SRS0=EG61=GC=analog.com=alexandru.Ardelean@kernel.org>
+From: Alexandru Ardelean <alexandru.ardelean@analog.com>
+To: <linux-iio@vger.kernel.org>
+CC: <michael.hennerich@analog.com>, <lars@metafoo.de>, <jic23@kernel.org>,
+	Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH 1/2] iio: adc: ad7791: remove sample freq sysfs attributes
+Date: Mon, 12 Mar 2018 14:06:53 +0200
+Message-ID: <20180312120654.1806-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20180311141733.31e977eb@archlinux>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, Mar 11, 2018 at 02:17:33PM +0000, Jonathan Cameron wrote:
-> The following changes since commit 721dfe4133a9a41e4b4a74e5b41089b7dac8f539:
-> 
->   staging: speakup: remove space after a cast (2018-02-23 09:54:57 +0100)
-> 
-> are available in the Git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-4.17b
+In the current state, these attributes are broken, because they are
+registered already, and the kernel throws a warning.
+The first registration happens via the `IIO_CHAN_INFO_SAMP_FREQ` flag from
+the `ad_sigma_delta` driver.
 
-Pulled and pushed out, thanks.
+In this commit these attrs are removed, and in the following the
+IIO_CHAN_INFO_SAMP_FREQ behavior will be implemented, which replaces these
+hooks.
 
-greg k-h
+This is done to make things a bit easier to review as there is a bit of
+overlap in the patch if it's done all at once.
+
+Fixes: a13e831fcaa7 ("staging: iio: ad7192: implement
+IIO_CHAN_INFO_SAMP_FREQ")
+
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+ drivers/iio/adc/ad7791.c | 49 ------------------------------------------------
+ 1 file changed, 49 deletions(-)
+
+diff --git a/drivers/iio/adc/ad7791.c b/drivers/iio/adc/ad7791.c
+index 70fbf92f9827..03a5f7d6cb0c 100644
+--- a/drivers/iio/adc/ad7791.c
++++ b/drivers/iio/adc/ad7791.c
+@@ -244,58 +244,9 @@ static int ad7791_read_raw(struct iio_dev *indio_dev,
+ 	return -EINVAL;
+ }
+ 
+-static const char * const ad7791_sample_freq_avail[] = {
+-	[AD7791_FILTER_RATE_120] = "120",
+-	[AD7791_FILTER_RATE_100] = "100",
+-	[AD7791_FILTER_RATE_33_3] = "33.3",
+-	[AD7791_FILTER_RATE_20] = "20",
+-	[AD7791_FILTER_RATE_16_6] = "16.6",
+-	[AD7791_FILTER_RATE_16_7] = "16.7",
+-	[AD7791_FILTER_RATE_13_3] = "13.3",
+-	[AD7791_FILTER_RATE_9_5] = "9.5",
+-};
+-
+-static ssize_t ad7791_read_frequency(struct device *dev,
+-	struct device_attribute *attr, char *buf)
+-{
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct ad7791_state *st = iio_priv(indio_dev);
+-	unsigned int rate = st->filter & AD7791_FILTER_RATE_MASK;
+-
+-	return sprintf(buf, "%s\n", ad7791_sample_freq_avail[rate]);
+-}
+-
+-static ssize_t ad7791_write_frequency(struct device *dev,
+-	struct device_attribute *attr, const char *buf, size_t len)
+-{
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct ad7791_state *st = iio_priv(indio_dev);
+-	int i, ret;
+-
+-	i = sysfs_match_string(ad7791_sample_freq_avail, buf);
+-	if (i < 0)
+-		return i;
+-
+-	ret = iio_device_claim_direct_mode(indio_dev);
+-	if (ret)
+-		return ret;
+-	st->filter &= ~AD7791_FILTER_RATE_MASK;
+-	st->filter |= i;
+-	ad_sd_write_reg(&st->sd, AD7791_REG_FILTER, sizeof(st->filter),
+-			st->filter);
+-	iio_device_release_direct_mode(indio_dev);
+-
+-	return len;
+-}
+-
+-static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+-		ad7791_read_frequency,
+-		ad7791_write_frequency);
+-
+ static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("120 100 33.3 20 16.7 16.6 13.3 9.5");
+ 
+ static struct attribute *ad7791_attributes[] = {
+-	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+ 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+ 	NULL
+ };
+-- 
+2.14.1
