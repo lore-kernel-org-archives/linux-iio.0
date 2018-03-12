@@ -1,5 +1,5 @@
 Return-Path: <SRS0=EEFn=GC=gmail.com=rodrigosiqueiramelo@kernel.org>
-Date: Mon, 12 Mar 2018 15:21:16 -0300
+Date: Mon, 12 Mar 2018 15:21:36 -0300
 From: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
 To: Lars-Peter Clausen <lars@metafoo.de>,
 	Michael Hennerich <Michael.Hennerich@analog.com>,
@@ -10,91 +10,111 @@ To: Lars-Peter Clausen <lars@metafoo.de>,
 	Graff Yang <graff.yang@gmail.com>
 Cc: daniel.baluta@nxp.com, linux-iio@vger.kernel.org,
 	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/3] staging:iio:ad2s1210: Add channel for fclkin and fexcit
-Message-ID: <335cf727d0583ccbe95f8bd97c282bf1fa210cae.1520878492.git.rodrigosiqueiramelo@gmail.com>
+Subject: [PATCH 2/3] staging:iio:ad2s1210: Add frequency handler in read_raw
+Message-ID: <9296eddbaaa4f815978ce9433c7970a3a498d85b.1520878492.git.rodrigosiqueiramelo@gmail.com>
 References: <cover.1520878492.git.rodrigosiqueiramelo@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 In-Reply-To: <cover.1520878492.git.rodrigosiqueiramelo@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-The ad2s1210 does not contain any channel for the fclkin and fexcit. As
-a result, it uses IIO_DEVICE_ATTR to expose this information. This patch
-adds one channel for fclkin and another for fexcit. It also adds an enum
-to easily address the correct channel.
+Read data from fclkin and fexcit does not utilize the ad2s1210_read_raw
+function. This patch, append the required handler in the
+ad2s1210_read_raw to return the correct value. Also, this patch removes
+the legacy code related to the read function
 
 Signed-off-by: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
 ---
- drivers/staging/iio/resolver/ad2s1210.c | 43 ++++++++++++++++++++++-----------
- 1 file changed, 29 insertions(+), 14 deletions(-)
+ drivers/staging/iio/resolver/ad2s1210.c | 45 +++++++++++++++------------------
+ 1 file changed, 20 insertions(+), 25 deletions(-)
 
 diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
-index ac13b99bd9cb..28c3fd439663 100644
+index 28c3fd439663..27a42ed10fcd 100644
 --- a/drivers/staging/iio/resolver/ad2s1210.c
 +++ b/drivers/staging/iio/resolver/ad2s1210.c
-@@ -67,6 +67,11 @@ enum ad2s1210_mode {
- 	MOD_RESERVED,
- };
+@@ -210,15 +210,6 @@ static inline int ad2s1210_soft_reset(struct ad2s1210_state *st)
+ 	return ad2s1210_config_write(st, 0x0);
+ }
  
-+enum ad2s1210_frequency_channel {
-+	FCLKIN = 0,
-+	FEXCIT,
-+};
-+
- static const unsigned int ad2s1210_resolution_value[] = { 10, 12, 14, 16 };
- 
- struct ad2s1210_state {
-@@ -88,6 +93,30 @@ static const int ad2s1210_mode_vals[4][2] = {
- 	[MOD_CONFIG] = { 1, 0 },
- };
- 
-+static const struct iio_chan_spec ad2s1210_channels[] = {
-+	{
-+		.type = IIO_ANGL,
-+		.indexed = 1,
-+		.channel = 0,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+	}, {
-+		.type = IIO_ANGL_VEL,
-+		.indexed = 1,
-+		.channel = 0,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+	}, {
-+		.type = IIO_CHAN_INFO_FREQUENCY,
-+		.indexed = 1,
-+		.channel = FCLKIN,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+	}, {
-+		.type = IIO_CHAN_INFO_FREQUENCY,
-+		.indexed = 1,
-+		.channel = FEXCIT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+	},
-+};
-+
- static inline void ad2s1210_set_mode(enum ad2s1210_mode mode,
- 				     struct ad2s1210_state *st)
- {
-@@ -552,20 +581,6 @@ static IIO_DEVICE_ATTR(lot_low_thrd, 0644,
- 		       ad2s1210_show_reg, ad2s1210_store_reg,
- 		       AD2S1210_REG_LOT_LOW_THRD);
- 
--static const struct iio_chan_spec ad2s1210_channels[] = {
--	{
--		.type = IIO_ANGL,
--		.indexed = 1,
--		.channel = 0,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
--	}, {
--		.type = IIO_ANGL_VEL,
--		.indexed = 1,
--		.channel = 0,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
--	}
--};
+-static ssize_t ad2s1210_show_fclkin(struct device *dev,
+-				    struct device_attribute *attr,
+-				    char *buf)
+-{
+-	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
 -
- static struct attribute *ad2s1210_attributes[] = {
- 	&iio_dev_attr_fclkin.dev_attr.attr,
- 	&iio_dev_attr_fexcit.dev_attr.attr,
+-	return sprintf(buf, "%u\n", st->fclkin);
+-}
+-
+ static ssize_t ad2s1210_store_fclkin(struct device *dev,
+ 				     struct device_attribute *attr,
+ 				     const char *buf,
+@@ -249,15 +240,6 @@ static ssize_t ad2s1210_store_fclkin(struct device *dev,
+ 	return ret < 0 ? ret : len;
+ }
+ 
+-static ssize_t ad2s1210_show_fexcit(struct device *dev,
+-				    struct device_attribute *attr,
+-				    char *buf)
+-{
+-	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
+-
+-	return sprintf(buf, "%u\n", st->fexcit);
+-}
+-
+ static ssize_t ad2s1210_store_fexcit(struct device *dev,
+ 				     struct device_attribute *attr,
+ 				     const char *buf, size_t len)
+@@ -486,7 +468,7 @@ static int ad2s1210_read_raw(struct iio_dev *indio_dev,
+ 			     struct iio_chan_spec const *chan,
+ 			     int *val,
+ 			     int *val2,
+-			     long m)
++			     long mask)
+ {
+ 	struct ad2s1210_state *st = iio_priv(indio_dev);
+ 	u16 negative;
+@@ -535,23 +517,36 @@ static int ad2s1210_read_raw(struct iio_dev *indio_dev,
+ 		*val = vel;
+ 		ret = IIO_VAL_INT;
+ 		break;
++	case IIO_CHAN_INFO_FREQUENCY:
++		ret = IIO_VAL_INT;
++		switch (chan->channel) {
++		case FCLKIN:
++			*val = st->fclkin;
++			goto unlock_mutex;
++		case FEXCIT:
++			*val = st->fexcit;
++			goto unlock_mutex;
++		default:
++			ret = -EINVAL;
++			goto unlock_mutex;
++		}
++		break;
+ 	default:
+-		mutex_unlock(&st->lock);
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto unlock_mutex;
+ 	}
+ 
+ error_ret:
+ 	gpio_set_value(st->pdata->sample, 1);
+ 	/* delay (2 * tck + 20) nano seconds */
+ 	udelay(1);
++unlock_mutex:
+ 	mutex_unlock(&st->lock);
+ 	return ret;
+ }
+ 
+-static IIO_DEVICE_ATTR(fclkin, 0644,
+-		       ad2s1210_show_fclkin, ad2s1210_store_fclkin, 0);
+-static IIO_DEVICE_ATTR(fexcit, 0644,
+-		       ad2s1210_show_fexcit,	ad2s1210_store_fexcit, 0);
++static IIO_DEVICE_ATTR(fclkin, 0644, NULL, ad2s1210_store_fclkin, 0);
++static IIO_DEVICE_ATTR(fexcit, 0644, NULL, ad2s1210_store_fexcit, 0);
+ static IIO_DEVICE_ATTR(control, 0644,
+ 		       ad2s1210_show_control, ad2s1210_store_control, 0);
+ static IIO_DEVICE_ATTR(bits, 0644,
 -- 
 2.16.2
