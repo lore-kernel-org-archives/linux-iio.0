@@ -1,21 +1,30 @@
-Return-Path: <SRS0=2i7U=GD=embeddedor.com=gustavo@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from gateway32.websitewelcome.com ([192.185.145.101]:30487 "EHLO
+        gateway32.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S932710AbeCMRHI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 13 Mar 2018 13:07:08 -0400
+Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
+        by gateway32.websitewelcome.com (Postfix) with ESMTP id 4059E59C6C
+        for <linux-iio@vger.kernel.org>; Tue, 13 Mar 2018 12:07:07 -0500 (CDT)
 Subject: Re: [PATCH] iio: potentiometer: ds1803: remove VLA usage
 To: Himanshu Jha <himanshujha199640@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20180313152343.GA31789@embeddedgus>
  <20180313162454.GA8769@himanshu-Vostro-3559>
  <be9b8f8d-929f-1c0b-334f-583d1c57460c@embeddedor.com>
  <20180313165906.GA11317@himanshu-Vostro-3559>
 From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Message-ID: <33e96dea-1d0d-f958-88bb-7627b867d251@embeddedor.com>
-Date: Tue, 13 Mar 2018 12:05:12 -0500
+Message-ID: <ef7f3979-afca-73d2-63f6-c3a380452a91@embeddedor.com>
+Date: Tue, 13 Mar 2018 12:07:00 -0500
 MIME-Version: 1.0
 In-Reply-To: <20180313165906.GA11317@himanshu-Vostro-3559>
 Content-Type: text/plain; charset=utf-8; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 
 
