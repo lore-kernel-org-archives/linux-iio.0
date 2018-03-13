@@ -1,83 +1,47 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from gateway32.websitewelcome.com ([192.185.145.101]:30487 "EHLO
-        gateway32.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S932710AbeCMRHI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 13 Mar 2018 13:07:08 -0400
-Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
-        by gateway32.websitewelcome.com (Postfix) with ESMTP id 4059E59C6C
-        for <linux-iio@vger.kernel.org>; Tue, 13 Mar 2018 12:07:07 -0500 (CDT)
-Subject: Re: [PATCH] iio: potentiometer: ds1803: remove VLA usage
-To: Himanshu Jha <himanshujha199640@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20180313152343.GA31789@embeddedgus>
- <20180313162454.GA8769@himanshu-Vostro-3559>
- <be9b8f8d-929f-1c0b-334f-583d1c57460c@embeddedor.com>
- <20180313165906.GA11317@himanshu-Vostro-3559>
-From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Message-ID: <ef7f3979-afca-73d2-63f6-c3a380452a91@embeddedor.com>
-Date: Tue, 13 Mar 2018 12:07:00 -0500
+Return-Path: <SRS0=lFjb=GD=gmail.com=rodrigosiqueiramelo@kernel.org>
+Date: Tue, 13 Mar 2018 13:05:06 -0300
+From: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Graff Yang <graff.yang@gmail.com>
+Cc: daniel.baluta@nxp.com, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/3] staging:iio:ad2s1210: Rework read/write operation for
+ fclkin and fexin
+Message-ID: <cover.1520956563.git.rodrigosiqueiramelo@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20180313165906.GA11317@himanshu-Vostro-3559>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+List-ID: <linux-iio@vger.kernel.org>
 
+This patchset changes the way that frequency of clock input (fclkin) and
+the excitation frequency (fexcit) are exposed to the userspace. The
+original code uses the IIO_DEVICE_ATTR to export the configuration of
+fclkin and fexcit to the userspace which is not in agreement with the
+current ABI. This patchset adds one channel per clock configuration,
+updating the read_raw function by adding a handler for the new channels,
+and introduces the write_raw function.  Furthermore, this patchset
+removes the legacy code responsible for the read and write operation
+related to fclkin and fexcit. Finally, this patchset uses parts of the
+original code for handling frequency configuration as an attempt to
+avoid problems.
 
+Changes in v2:
+ - Removes unnecessary switch case in the write_raw function.
+ - Replaces the use of goto for direct return.
+ - Removes definition with string.
+ - Removes unecessary label.
 
-On 03/13/2018 11:59 AM, Himanshu Jha wrote:
-> On Tue, Mar 13, 2018 at 11:31:19AM -0500, Gustavo A. R. Silva wrote:
->>
->>
->> On 03/13/2018 11:24 AM, Himanshu Jha wrote:
->>> Hi Gustavo,
->>>
->>> On Tue, Mar 13, 2018 at 10:23:43AM -0500, Gustavo A. R. Silva wrote:
->>>> In preparation to enabling -Wvla, remove VLA. In this particular
->>>> case use macro ARRAY_SIZE so the length of array _result_ can be
->>>> computed at preprocessing time.
->>>>
->>>> The use of stack Variable Length Arrays needs to be avoided, as they
->>>> can be a vector for stack exhaustion, which can be both a runtime bug
->>>> or a security flaw. Also, in general, as code evolves it is easy to
->>>> lose track of how big a VLA can get. Thus, we can end up having runtime
->>>> failures that are hard to debug.
->>>>
->>>> Also, fixed as part of the directive to remove all VLAs from
->>>> the kernel: https://lkml.org/lkml/2018/3/7/621
->>>>
->>>> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
->>>> ---
->>>
->>> It is already applied as I had sent the patch few days ago.
->>> https://lkml.org/lkml/2018/3/10/164
->>>
->>> I specifically CC'ed you and Kees to avoid the patch collisions.
->>>
->>
->> I see. Can you please update this spreadsheet:
->>
->> https://docs.google.com/spreadsheets/d/1OcfyKK8pJ24esYhSEsW4Q2boZE7UTGbYsSEEtFXf7U0/edit
-> 
-> Updated!
-> 
-> Also,
-> 
-> drivers/iio/humidity/hts221_i2c.c:43:2: warning: ISO C90
-> forbids variable length array ‘send’ [-Wvla]
-> 
-> This was already removed in recent commit when regmap API was used.
-> 
-> "6217792 iio: humidity: hts221: add regmap API support"
-> 
-> For this I added a short note in the *Notes* column.
-> 
+Rodrigo Siqueira (3):
+  staging:iio:ad2s1210: Add channel for fclkin and fexcit
+  staging:iio:ad2s1210: Add frequency handler in read_raw
+  staging:iio:ad2s1210: Add write_raw to handle frequency
 
-Awesome.
+ drivers/staging/iio/resolver/ad2s1210.c | 191 +++++++++++++++-----------------
+ 1 file changed, 92 insertions(+), 99 deletions(-)
 
-Thank you
---
-Gustavo
+-- 
+2.16.2
