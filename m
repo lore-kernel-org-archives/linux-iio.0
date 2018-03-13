@@ -1,53 +1,47 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:40872 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751809AbeCQWe2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 17 Mar 2018 18:34:28 -0400
-Date: Sat, 17 Mar 2018 22:34:22 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Arnaud Pouliquen <arnaud.pouliquen@st.com>
-Cc: Fabrice Gasnier <fabrice.gasnier@st.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <mcoquelin.stm32@gmail.com>,
-        <alexandre.torgue@st.com>, <linux-iio@vger.kernel.org>,
-        <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
-        <benjamin.gaignard@linaro.org>
-Subject: Re: [PATCH 0/2] iio: stm32-dfsdm-adc: fix filter & rate setting
-Message-ID: <20180317223422.1a08a254@archlinux>
-In-Reply-To: <1ddfcfad-f06e-738f-53cf-11dc56e61da1@st.com>
-References: <1520950986-23116-1-git-send-email-fabrice.gasnier@st.com>
-        <1ddfcfad-f06e-738f-53cf-11dc56e61da1@st.com>
+Return-Path: <SRS0=2i7U=GD=embeddedor.com=gustavo@kernel.org>
+Date: Tue, 13 Mar 2018 10:23:43 -0500
+From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	"Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH] iio: potentiometer: ds1803: remove VLA usage
+Message-ID: <20180313152343.GA31789@embeddedgus>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, 16 Mar 2018 10:10:09 +0100
-Arnaud Pouliquen <arnaud.pouliquen@st.com> wrote:
+In preparation to enabling -Wvla, remove VLA. In this particular
+case use macro ARRAY_SIZE so the length of array _result_ can be
+computed at preprocessing time.
 
-> Hello,
-> 
-> For the series:
-> Acked-by: Arnaud Pouliquen <arnaud.pouliquen@st.com>
-Both applied and marked for stable (as I'm not sure exactly when this will hit
-mainline and it may be after the next merge window)
+The use of stack Variable Length Arrays needs to be avoided, as they
+can be a vector for stack exhaustion, which can be both a runtime bug
+or a security flaw. Also, in general, as code evolves it is easy to
+lose track of how big a VLA can get. Thus, we can end up having runtime
+failures that are hard to debug.
 
-Thanks,
+Also, fixed as part of the directive to remove all VLAs from
+the kernel: https://lkml.org/lkml/2018/3/7/621
 
-Jonathan
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+---
+ drivers/iio/potentiometer/ds1803.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> 
-> Thanks,
-> Arnaud
-> 
-> On 03/13/2018 03:23 PM, Fabrice Gasnier wrote:
-> > This series brings fixes to STM32 DFSDM ADC driver.
-> > 
-> > Fabrice Gasnier (2):
-> >   iio: adc: stm32-dfsdm: fix successive oversampling settings
-> >   iio: adc: stm32-dfsdm: fix sample rate for div2 spi clock
-> > 
-> >  drivers/iio/adc/stm32-dfsdm-adc.c | 17 ++++++++++++++---
-> >  1 file changed, 14 insertions(+), 3 deletions(-)
-> >   
-
+diff --git a/drivers/iio/potentiometer/ds1803.c b/drivers/iio/potentiometer/ds1803.c
+index 9b0ff4a..6bf12c9 100644
+--- a/drivers/iio/potentiometer/ds1803.c
++++ b/drivers/iio/potentiometer/ds1803.c
+@@ -64,7 +64,7 @@ static int ds1803_read_raw(struct iio_dev *indio_dev,
+ 	struct ds1803_data *data = iio_priv(indio_dev);
+ 	int pot = chan->channel;
+ 	int ret;
+-	u8 result[indio_dev->num_channels];
++	u8 result[ARRAY_SIZE(ds1803_channels)];
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+-- 
+2.7.4
