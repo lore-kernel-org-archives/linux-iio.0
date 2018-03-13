@@ -1,129 +1,142 @@
-Return-Path: <SRS0=lFjb=GD=gmail.com=rodrigosiqueiramelo@kernel.org>
-Date: Mon, 12 Mar 2018 22:37:09 -0300
-From: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
-To: Srinivas Pandruvada <srinivas.pandruvada@intel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: daniel.baluta@nxp.com, linux-iio@vger.kernel.org,
-	kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] iio:magnetometer: Remove duplications in iio_chan_spec
-Message-ID: <20180313013709.ca7hxb5q56rbghch@smtp.gmail.com>
+Return-Path: <SRS0=OtJ0=GD=users.sourceforge.net=elfring@kernel.org>
+To: linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+ Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+ =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+ Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
+From: SF Markus Elfring <elfring@users.sourceforge.net>
+Subject: [PATCH] iio/accel/kxcjk-1013: Improve unlocking of a mutex in three
+ functions
+Message-ID: <a4522ea5-78dc-4746-054a-7477d395630f@users.sourceforge.net>
+Date: Tue, 13 Mar 2018 13:47:20 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 List-ID: <linux-iio@vger.kernel.org>
 
-The magn_3d_channels array has multiple declarations of iio_chan_spec.
-Most of the iio_chan_spec are very similar, changing only by the .type
-and .channel2 field. This patch reduces the code duplication by adding a
-macro that can replace the iio_chan_spec  repetitions in the
-magn_3d_channels array.
+From: Markus Elfring <elfring@users.sourceforge.net>
+Date: Tue, 13 Mar 2018 13:40:12 +0100
 
-Signed-off-by: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
+* Add jump targets so that a call of the function "mutex_unlock" is stored
+  less often in these function implementations.
+
+* Replace eight calls by goto statements.
+
+This issue was detected by using the Coccinelle software.
+
+Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
-Changes in v2:
- - Change IIO_MOD_NORTH_MAGN in the last element of iio_chan_info for
-   IIO_MOD_NORTH_TRUE in the last parameter.
+ drivers/iio/accel/kxcjk-1013.c | 46 ++++++++++++++++++------------------------
+ 1 file changed, 20 insertions(+), 26 deletions(-)
 
- drivers/iio/magnetometer/hid-sensor-magn-3d.c | 83 ++++++---------------------
- 1 file changed, 19 insertions(+), 64 deletions(-)
-
-diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-index d55c4885211a..cdbcfc61a180 100644
---- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-+++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-@@ -74,72 +74,27 @@ static const u32 magn_3d_addresses[MAGN_3D_CHANNEL_MAX] = {
- 	HID_USAGE_SENSOR_ORIENT_TRUE_NORTH,
- };
- 
-+#define HID_SENSOR_MAGN_3D_AXIS_CHANNEL(channel_type, characteristic)	\
-+	{								\
-+		.type = channel_type,					\
-+		.modified = 1,						\
-+		.channel2 = characteristic,				\
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) | \
-+					BIT(IIO_CHAN_INFO_SCALE) |	\
-+					BIT(IIO_CHAN_INFO_SAMP_FREQ) |	\
-+					BIT(IIO_CHAN_INFO_HYSTERESIS),	\
-+	}								\
+diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+index af53a1084ee5..4adf38b6d939 100644
+--- a/drivers/iio/accel/kxcjk-1013.c
++++ b/drivers/iio/accel/kxcjk-1013.c
+@@ -765,19 +765,18 @@ static int kxcjk1013_read_raw(struct iio_dev *indio_dev,
+ 			ret = -EBUSY;
+ 		else {
+ 			ret = kxcjk1013_set_power_state(data, true);
+-			if (ret < 0) {
+-				mutex_unlock(&data->mutex);
+-				return ret;
+-			}
++			if (ret < 0)
++				goto unlock;
 +
- /* Channel definitions */
- static const struct iio_chan_spec magn_3d_channels[] = {
--	{
--		.type = IIO_MAGN,
--		.modified = 1,
--		.channel2 = IIO_MOD_X,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
--		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
--		BIT(IIO_CHAN_INFO_SCALE) |
--		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
--		BIT(IIO_CHAN_INFO_HYSTERESIS),
--	}, {
--		.type = IIO_MAGN,
--		.modified = 1,
--		.channel2 = IIO_MOD_Y,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
--		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
--		BIT(IIO_CHAN_INFO_SCALE) |
--		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
--		BIT(IIO_CHAN_INFO_HYSTERESIS),
--	}, {
--		.type = IIO_MAGN,
--		.modified = 1,
--		.channel2 = IIO_MOD_Z,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
--		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
--		BIT(IIO_CHAN_INFO_SCALE) |
--		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
--		BIT(IIO_CHAN_INFO_HYSTERESIS),
--	}, {
--		.type = IIO_ROT,
--		.modified = 1,
--		.channel2 = IIO_MOD_NORTH_MAGN_TILT_COMP,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
--		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
--		BIT(IIO_CHAN_INFO_SCALE) |
--		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
--		BIT(IIO_CHAN_INFO_HYSTERESIS),
--	}, {
--		.type = IIO_ROT,
--		.modified = 1,
--		.channel2 = IIO_MOD_NORTH_TRUE_TILT_COMP,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
--		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
--		BIT(IIO_CHAN_INFO_SCALE) |
--		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
--		BIT(IIO_CHAN_INFO_HYSTERESIS),
--	}, {
--		.type = IIO_ROT,
--		.modified = 1,
--		.channel2 = IIO_MOD_NORTH_MAGN,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
--		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
--		BIT(IIO_CHAN_INFO_SCALE) |
--		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
--		BIT(IIO_CHAN_INFO_HYSTERESIS),
--	}, {
--		.type = IIO_ROT,
--		.modified = 1,
--		.channel2 = IIO_MOD_NORTH_TRUE,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
--		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
--		BIT(IIO_CHAN_INFO_SCALE) |
--		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
--		BIT(IIO_CHAN_INFO_HYSTERESIS),
--	}
-+	HID_SENSOR_MAGN_3D_AXIS_CHANNEL(IIO_MAGN, IIO_MOD_X),
-+	HID_SENSOR_MAGN_3D_AXIS_CHANNEL(IIO_MAGN, IIO_MOD_Y),
-+	HID_SENSOR_MAGN_3D_AXIS_CHANNEL(IIO_MAGN, IIO_MOD_Z),
-+	HID_SENSOR_MAGN_3D_AXIS_CHANNEL(IIO_ROT, IIO_MOD_NORTH_MAGN_TILT_COMP),
-+	HID_SENSOR_MAGN_3D_AXIS_CHANNEL(IIO_ROT, IIO_MOD_NORTH_TRUE_TILT_COMP),
-+	HID_SENSOR_MAGN_3D_AXIS_CHANNEL(IIO_ROT, IIO_MOD_NORTH_MAGN),
-+	HID_SENSOR_MAGN_3D_AXIS_CHANNEL(IIO_ROT, IIO_MOD_NORTH_TRUE),
- };
+ 			ret = kxcjk1013_get_acc_reg(data, chan->scan_index);
+ 			if (ret < 0) {
+ 				kxcjk1013_set_power_state(data, false);
+-				mutex_unlock(&data->mutex);
+-				return ret;
++				goto unlock;
+ 			}
+ 			*val = sign_extend32(ret >> 4, 11);
+ 			ret = kxcjk1013_set_power_state(data, false);
+ 		}
++unlock:
+ 		mutex_unlock(&data->mutex);
  
- /* Adjust channel real bits based on report descriptor */
+ 		if (ret < 0)
+@@ -905,8 +904,8 @@ static int kxcjk1013_write_event_config(struct iio_dev *indio_dev,
+ 
+ 	if (!state && data->motion_trigger_on) {
+ 		data->ev_enable_state = 0;
+-		mutex_unlock(&data->mutex);
+-		return 0;
++		ret = 0;
++		goto unlock;
+ 	}
+ 
+ 	/*
+@@ -919,23 +918,20 @@ static int kxcjk1013_write_event_config(struct iio_dev *indio_dev,
+ 	 * is always on so sequence doesn't matter
+ 	 */
+ 	ret = kxcjk1013_set_power_state(data, state);
+-	if (ret < 0) {
+-		mutex_unlock(&data->mutex);
+-		return ret;
+-	}
++	if (ret < 0)
++		goto unlock;
+ 
+ 	ret =  kxcjk1013_setup_any_motion_interrupt(data, state);
+ 	if (ret < 0) {
+ 		kxcjk1013_set_power_state(data, false);
+ 		data->ev_enable_state = 0;
+-		mutex_unlock(&data->mutex);
+-		return ret;
++		goto unlock;
+ 	}
+ 
+ 	data->ev_enable_state = state;
++unlock:
+ 	mutex_unlock(&data->mutex);
+-
+-	return 0;
++	return ret;
+ }
+ 
+ static int kxcjk1013_buffer_preenable(struct iio_dev *indio_dev)
+@@ -1086,32 +1082,30 @@ static int kxcjk1013_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 
+ 	if (!state && data->ev_enable_state && data->motion_trigger_on) {
+ 		data->motion_trigger_on = false;
+-		mutex_unlock(&data->mutex);
+-		return 0;
++		ret = 0;
++		goto unlock;
+ 	}
+ 
+ 	ret = kxcjk1013_set_power_state(data, state);
+-	if (ret < 0) {
+-		mutex_unlock(&data->mutex);
+-		return ret;
+-	}
++	if (ret < 0)
++		goto unlock;
++
+ 	if (data->motion_trig == trig)
+ 		ret = kxcjk1013_setup_any_motion_interrupt(data, state);
+ 	else
+ 		ret = kxcjk1013_setup_new_data_interrupt(data, state);
+ 	if (ret < 0) {
+ 		kxcjk1013_set_power_state(data, false);
+-		mutex_unlock(&data->mutex);
+-		return ret;
++		goto unlock;
+ 	}
+ 	if (data->motion_trig == trig)
+ 		data->motion_trigger_on = state;
+ 	else
+ 		data->dready_trigger_on = state;
+ 
++unlock:
+ 	mutex_unlock(&data->mutex);
+-
+-	return 0;
++	return ret;
+ }
+ 
+ static const struct iio_trigger_ops kxcjk1013_trigger_ops = {
 -- 
 2.16.2
