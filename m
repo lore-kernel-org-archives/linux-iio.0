@@ -6,56 +6,58 @@ CC: <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
         <fabrice.gasnier@st.com>, <linux-iio@vger.kernel.org>,
         <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
         <benjamin.gaignard@linaro.org>, <arnaud.pouliquen@st.com>
-Subject: [PATCH 1/2] iio: adc: stm32-dfsdm: fix successive oversampling settings
-Date: Tue, 13 Mar 2018 15:23:05 +0100
-Message-ID: <1520950986-23116-2-git-send-email-fabrice.gasnier@st.com>
+Subject: [PATCH 2/2] iio: adc: stm32-dfsdm: fix sample rate for div2 spi clock
+Date: Tue, 13 Mar 2018 15:23:06 +0100
+Message-ID: <1520950986-23116-3-git-send-email-fabrice.gasnier@st.com>
 In-Reply-To: <1520950986-23116-1-git-send-email-fabrice.gasnier@st.com>
 References: <1520950986-23116-1-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-When doing successive oversampling settings, it may fail to update filter
-parameters silently:
-- First time oversampling is being set, it will be successful, as fl->res
-is 0 initially.
-- Next attempts with various oversamp value may return 0 (success), but
-keep previous filter parameters, due to 'res' never reaches above or
-equal current 'fl->res'.
+When channel clk source is set to "CLKOUT_F" or "CLKOUT_R" (e.g. div2),
+sample rate is currently set to half the requested value.
 
-This is particularly true when setting sampling frequency (that relies on
-oversamp). Typical failure without error:
-- run 1st test @16kHz samp freq will succeed
-- run new test @8kHz will succeed as well
-- run new test @16kHz (again): sample rate will remain 8kHz without error
-
-Fixes: e2e6771c6462 ("IIO: ADC: add STM32 DFSDM sigma delta ADC support")
+Fixes: eca949800d2d ("IIO: ADC: add stm32 DFSDM support for PDM
+microphone")
 
 Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 ---
- drivers/iio/adc/stm32-dfsdm-adc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iio/adc/stm32-dfsdm-adc.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/adc/stm32-dfsdm-adc.c b/drivers/iio/adc/stm32-dfsdm-adc.c
-index 01422d1..dc911b6 100644
+index dc911b6..b28a716 100644
 --- a/drivers/iio/adc/stm32-dfsdm-adc.c
 +++ b/drivers/iio/adc/stm32-dfsdm-adc.c
-@@ -144,6 +144,7 @@ static int stm32_dfsdm_set_osrs(struct stm32_dfsdm_filter *fl,
- 	 * Leave as soon as if exact resolution if reached.
- 	 * Otherwise the higher resolution below 32 bits is kept.
- 	 */
-+	fl->res = 0;
- 	for (fosr = 1; fosr <= DFSDM_MAX_FL_OVERSAMPLING; fosr++) {
- 		for (iosr = 1; iosr <= DFSDM_MAX_INT_OVERSAMPLING; iosr++) {
- 			if (fast)
-@@ -193,7 +194,7 @@ static int stm32_dfsdm_set_osrs(struct stm32_dfsdm_filter *fl,
- 		}
- 	}
+@@ -771,7 +771,7 @@ static int stm32_dfsdm_write_raw(struct iio_dev *indio_dev,
+ 	struct stm32_dfsdm_adc *adc = iio_priv(indio_dev);
+ 	struct stm32_dfsdm_filter *fl = &adc->dfsdm->fl_list[adc->fl_id];
+ 	struct stm32_dfsdm_channel *ch = &adc->dfsdm->ch_list[chan->channel];
+-	unsigned int spi_freq = adc->spi_freq;
++	unsigned int spi_freq;
+ 	int ret = -EINVAL;
  
--	if (!fl->fosr)
-+	if (!fl->res)
- 		return -EINVAL;
+ 	switch (mask) {
+@@ -785,8 +785,18 @@ static int stm32_dfsdm_write_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+ 		if (!val)
+ 			return -EINVAL;
+-		if (ch->src != DFSDM_CHANNEL_SPI_CLOCK_EXTERNAL)
++
++		switch (ch->src) {
++		case DFSDM_CHANNEL_SPI_CLOCK_INTERNAL:
+ 			spi_freq = adc->dfsdm->spi_master_freq;
++			break;
++		case DFSDM_CHANNEL_SPI_CLOCK_INTERNAL_DIV2_FALLING:
++		case DFSDM_CHANNEL_SPI_CLOCK_INTERNAL_DIV2_RISING:
++			spi_freq = adc->dfsdm->spi_master_freq / 2;
++			break;
++		default:
++			spi_freq = adc->spi_freq;
++		}
  
- 	return 0;
+ 		if (spi_freq % val)
+ 			dev_warn(&indio_dev->dev,
 -- 
 1.9.1
