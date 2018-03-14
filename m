@@ -1,5 +1,5 @@
 Return-Path: <SRS0=Zfd2=GE=gmail.com=rodrigosiqueiramelo@kernel.org>
-Date: Wed, 14 Mar 2018 15:10:52 -0300
+Date: Wed, 14 Mar 2018 15:11:05 -0300
 From: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
@@ -8,247 +8,186 @@ To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
 	Barry Song <21cnbao@gmail.com>, John Syne <john3909@gmail.com>
 Cc: daniel.baluta@nxp.com, linux-iio@vger.kernel.org,
 	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/7] staging:iio:ade7854: Replace many functions for one
- function
-Message-ID: <6a661af6660a1951b4138e0be4269013686cce13.1521037060.git.rodrigosiqueiramelo@gmail.com>
+Subject: [PATCH 4/7] staging:iio:ade7854: Rework I2C read function
+Message-ID: <b6dbb1063924dacfc4b5f48abe8e8c8c52714a99.1521037060.git.rodrigosiqueiramelo@gmail.com>
 References: <cover.1521037060.git.rodrigosiqueiramelo@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 In-Reply-To: <cover.1521037060.git.rodrigosiqueiramelo@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch removes code duplications related to the write_reg_*
-functions and centralizes them in a single function. Also, it eliminates
-the legacy functions and replaces them by a unique signature that is
-used by SPI and I2C.
+The read operation for the I2C function has many duplications that can
+be generalized into a single function. This patch reworks the read
+operation for I2C to centralizes all similar code in a single function.
+Part of the rework includes a proper error handling and a fix on the
+i2c_master_recv for 32 bits as pointed by John Syne patches.
+
+It is possible to remove all the old interface to use the new one,
+however, for keeping the things simple and working this patch maintain
+legacy interface.
 
 Signed-off-by: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
+Signed-off-by: John Syne <john3909@gmail.com>
 ---
- drivers/staging/iio/meter/ade7854-i2c.c | 50 +--------------------------------
- drivers/staging/iio/meter/ade7854-spi.c | 49 +-------------------------------
- drivers/staging/iio/meter/ade7854.c     | 12 ++++----
- drivers/staging/iio/meter/ade7854.h     |  9 +++---
- 4 files changed, 12 insertions(+), 108 deletions(-)
+ drivers/staging/iio/meter/ade7854-i2c.c | 106 ++++++++++++++------------------
+ 1 file changed, 47 insertions(+), 59 deletions(-)
 
 diff --git a/drivers/staging/iio/meter/ade7854-i2c.c b/drivers/staging/iio/meter/ade7854-i2c.c
-index 03133a05eae4..f302359d2265 100644
+index f302359d2265..845f8c348945 100644
 --- a/drivers/staging/iio/meter/ade7854-i2c.c
 +++ b/drivers/staging/iio/meter/ade7854-i2c.c
-@@ -65,51 +65,6 @@ static int ade7854_i2c_write_reg(struct device *dev,
+@@ -65,9 +65,10 @@ static int ade7854_i2c_write_reg(struct device *dev,
  	return ret;
  }
  
--static int ade7854_i2c_write_reg_8(struct device *dev,
--				   u16 reg_address,
--				   u8 val)
--{
--	int ret;
--
--	ret = ade7854_i2c_write_reg(dev, reg_address, val, DATA_SIZE_8_BITS);
--
--	return ret;
--}
--
--static int ade7854_i2c_write_reg_16(struct device *dev,
--				    u16 reg_address,
--				    u16 val)
--{
--	int ret;
--
--	ret = ade7854_i2c_write_reg(dev, reg_address, val, DATA_SIZE_16_BITS);
--
--	return ret;
--}
--
--static int ade7854_i2c_write_reg_24(struct device *dev,
--				    u16 reg_address,
--				    u32 val)
--{
--	int ret;
--
--	ret = ade7854_i2c_write_reg(dev, reg_address, val, DATA_SIZE_24_BITS);
--
--	return ret;
--}
--
--static int ade7854_i2c_write_reg_32(struct device *dev,
--				    u16 reg_address,
--				    u32 val)
--{
--	int ret;
--
--	ret = ade7854_i2c_write_reg(dev, reg_address, val, DATA_SIZE_32_BITS);
--
--	return ret;
--}
--
--
- static int ade7854_i2c_read_reg_8(struct device *dev,
- 				  u16 reg_address,
- 				  u8 *val)
-@@ -230,10 +185,7 @@ static int ade7854_i2c_probe(struct i2c_client *client,
- 	st->read_reg_16 = ade7854_i2c_read_reg_16;
- 	st->read_reg_24 = ade7854_i2c_read_reg_24;
- 	st->read_reg_32 = ade7854_i2c_read_reg_32;
--	st->write_reg_8 = ade7854_i2c_write_reg_8;
--	st->write_reg_16 = ade7854_i2c_write_reg_16;
--	st->write_reg_24 = ade7854_i2c_write_reg_24;
--	st->write_reg_32 = ade7854_i2c_write_reg_32;
-+	st->write_reg = ade7854_i2c_write_reg;
- 	st->i2c = client;
- 	st->irq = client->irq;
+-static int ade7854_i2c_read_reg_8(struct device *dev,
+-				  u16 reg_address,
+-				  u8 *val)
++static int ade7854_i2c_read_reg(struct device *dev,
++				u16 reg_address,
++				u32 *val,
++				enum data_size type)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ade7854_state *st = iio_priv(indio_dev);
+@@ -78,42 +79,58 @@ static int ade7854_i2c_read_reg_8(struct device *dev,
+ 	st->tx[1] = reg_address & 0xFF;
  
-diff --git a/drivers/staging/iio/meter/ade7854-spi.c b/drivers/staging/iio/meter/ade7854-spi.c
-index 0dae118428cf..df3df85f9440 100644
---- a/drivers/staging/iio/meter/ade7854-spi.c
-+++ b/drivers/staging/iio/meter/ade7854-spi.c
-@@ -67,50 +67,6 @@ static int ade7854_spi_write_reg(struct device *dev,
+ 	ret = i2c_master_send(st->i2c, st->tx, 2);
+-	if (ret)
+-		goto out;
++	if (ret < 0)
++		goto error_i2c_read_unlock;
+ 
+-	ret = i2c_master_recv(st->i2c, st->rx, 1);
+-	if (ret)
+-		goto out;
++	ret = i2c_master_recv(st->i2c, st->rx, type);
++	if (ret < 0)
++		goto error_i2c_read_unlock;
+ 
+-	*val = st->rx[0];
+-out:
++	switch (type) {
++	case DATA_SIZE_8_BITS:
++		*val = st->rx[0];
++		break;
++	case DATA_SIZE_16_BITS:
++		*val = (st->rx[0] << 8) | st->rx[1];
++		break;
++	case DATA_SIZE_24_BITS:
++		*val = (st->rx[0] << 16) | (st->rx[1] << 8) | st->rx[2];
++		break;
++	case DATA_SIZE_32_BITS:
++		*val = (st->rx[0] << 24) | (st->rx[1] << 16) |
++			(st->rx[2] << 8) | st->rx[3];
++		break;
++	default:
++		ret = -EINVAL;
++		goto error_i2c_read_unlock;
++	}
++
++error_i2c_read_unlock:
+ 	mutex_unlock(&st->buf_lock);
  	return ret;
  }
  
--static int ade7854_spi_write_reg_8(struct device *dev,
--				   u16 reg_address,
--				   u8 val)
--{
--	int ret;
--
--	ret = ade7854_spi_write_reg(dev, reg_address, val, DATA_SIZE_8_BITS);
--
--	return ret;
--}
--
--static int ade7854_spi_write_reg_16(struct device *dev,
--				    u16 reg_address,
--				    u16 val)
--{
--	int ret;
--
--	ret = ade7854_spi_write_reg(dev, reg_address, val, DATA_SIZE_16_BITS);
--
--	return ret;
--}
--
--static int ade7854_spi_write_reg_24(struct device *dev,
--				    u16 reg_address,
--				    u32 val)
--{
--	int ret;
--
--	ret = ade7854_spi_write_reg(dev, reg_address, val, DATA_SIZE_24_BITS);
--
--	return ret;
--}
--
--static int ade7854_spi_write_reg_32(struct device *dev,
--				    u16 reg_address,
--				    u32 val)
--{
--	int ret;
--
--	ret = ade7854_spi_write_reg(dev, reg_address, val, DATA_SIZE_32_BITS);
--
--	return ret;
--}
--
- static int ade7854_spi_read_reg_8(struct device *dev,
- 				  u16 reg_address,
- 				  u8 *val)
-@@ -276,10 +232,7 @@ static int ade7854_spi_probe(struct spi_device *spi)
- 	st->read_reg_16 = ade7854_spi_read_reg_16;
- 	st->read_reg_24 = ade7854_spi_read_reg_24;
- 	st->read_reg_32 = ade7854_spi_read_reg_32;
--	st->write_reg_8 = ade7854_spi_write_reg_8;
--	st->write_reg_16 = ade7854_spi_write_reg_16;
--	st->write_reg_24 = ade7854_spi_write_reg_24;
--	st->write_reg_32 = ade7854_spi_write_reg_32;
-+	st->write_reg = ade7854_spi_write_reg;
- 	st->irq = spi->irq;
- 	st->spi = spi;
++static int ade7854_i2c_read_reg_8(struct device *dev,
++				  u16 reg_address,
++				  u8 *val)
++{
++	int ret;
++
++	ret = ade7854_i2c_read_reg(dev, reg_address, (u32 *)val,
++				   DATA_SIZE_8_BITS);
++
++	return ret;
++}
++
+ static int ade7854_i2c_read_reg_16(struct device *dev,
+ 				   u16 reg_address,
+ 				   u16 *val)
+ {
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct ade7854_state *st = iio_priv(indio_dev);
+ 	int ret;
  
-diff --git a/drivers/staging/iio/meter/ade7854.c b/drivers/staging/iio/meter/ade7854.c
-index 90d07cdca4b8..f9a977dcd670 100644
---- a/drivers/staging/iio/meter/ade7854.c
-+++ b/drivers/staging/iio/meter/ade7854.c
-@@ -105,7 +105,7 @@ static ssize_t ade7854_write_8bit(struct device *dev,
- 	ret = kstrtou8(buf, 10, &val);
- 	if (ret)
- 		goto error_ret;
--	ret = st->write_reg_8(dev, this_attr->address, val);
-+	ret = st->write_reg(dev, this_attr->address, val, DATA_SIZE_8_BITS);
+-	mutex_lock(&st->buf_lock);
+-	st->tx[0] = (reg_address >> 8) & 0xFF;
+-	st->tx[1] = reg_address & 0xFF;
+-
+-	ret = i2c_master_send(st->i2c, st->tx, 2);
+-	if (ret)
+-		goto out;
+-
+-	ret = i2c_master_recv(st->i2c, st->rx, 2);
+-	if (ret)
+-		goto out;
++	ret = ade7854_i2c_read_reg(dev, reg_address, (u32 *)val,
++				   DATA_SIZE_16_BITS);
  
- error_ret:
- 	return ret ? ret : len;
-@@ -126,7 +126,7 @@ static ssize_t ade7854_write_16bit(struct device *dev,
- 	ret = kstrtou16(buf, 10, &val);
- 	if (ret)
- 		goto error_ret;
--	ret = st->write_reg_16(dev, this_attr->address, val);
-+	ret = st->write_reg(dev, this_attr->address, val, DATA_SIZE_16_BITS);
- 
- error_ret:
- 	return ret ? ret : len;
-@@ -147,7 +147,7 @@ static ssize_t ade7854_write_24bit(struct device *dev,
- 	ret = kstrtou32(buf, 10, &val);
- 	if (ret)
- 		goto error_ret;
--	ret = st->write_reg_24(dev, this_attr->address, val);
-+	ret = st->write_reg(dev, this_attr->address, val, DATA_SIZE_24_BITS);
- 
- error_ret:
- 	return ret ? ret : len;
-@@ -168,7 +168,7 @@ static ssize_t ade7854_write_32bit(struct device *dev,
- 	ret = kstrtou32(buf, 10, &val);
- 	if (ret)
- 		goto error_ret;
--	ret = st->write_reg_32(dev, this_attr->address, val);
-+	ret = st->write_reg(dev, this_attr->address, val, DATA_SIZE_32_BITS);
- 
- error_ret:
- 	return ret ? ret : len;
-@@ -183,7 +183,7 @@ static int ade7854_reset(struct device *dev)
- 	st->read_reg_16(dev, ADE7854_CONFIG, &val);
- 	val |= BIT(7); /* Software Chip Reset */
- 
--	return st->write_reg_16(dev, ADE7854_CONFIG, val);
-+	return st->write_reg(dev, ADE7854_CONFIG, val, DATA_SIZE_16_BITS);
+-	*val = (st->rx[0] << 8) | st->rx[1];
+-out:
+-	mutex_unlock(&st->buf_lock);
+ 	return ret;
  }
  
- static IIO_DEV_ATTR_AIGAIN(0644,
-@@ -426,7 +426,7 @@ static int ade7854_set_irq(struct device *dev, bool enable)
- 	else
- 		irqen &= ~BIT(17);
+@@ -121,25 +138,11 @@ static int ade7854_i2c_read_reg_24(struct device *dev,
+ 				   u16 reg_address,
+ 				   u32 *val)
+ {
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct ade7854_state *st = iio_priv(indio_dev);
+ 	int ret;
  
--	return st->write_reg_32(dev, ADE7854_MASK0, irqen);
-+	return st->write_reg(dev, ADE7854_MASK0, irqen, DATA_SIZE_32_BITS);
+-	mutex_lock(&st->buf_lock);
+-	st->tx[0] = (reg_address >> 8) & 0xFF;
+-	st->tx[1] = reg_address & 0xFF;
+-
+-	ret = i2c_master_send(st->i2c, st->tx, 2);
+-	if (ret)
+-		goto out;
+-
+-	ret = i2c_master_recv(st->i2c, st->rx, 3);
+-	if (ret)
+-		goto out;
++	ret = ade7854_i2c_read_reg(dev, reg_address, (u32 *)val,
++				   DATA_SIZE_24_BITS);
+ 
+-	*val = (st->rx[0] << 16) | (st->rx[1] << 8) | st->rx[2];
+-out:
+-	mutex_unlock(&st->buf_lock);
+ 	return ret;
  }
  
- static int ade7854_initial_setup(struct iio_dev *indio_dev)
-diff --git a/drivers/staging/iio/meter/ade7854.h b/drivers/staging/iio/meter/ade7854.h
-index 71bdd638f348..3830607de7c5 100644
---- a/drivers/staging/iio/meter/ade7854.h
-+++ b/drivers/staging/iio/meter/ade7854.h
-@@ -152,7 +152,8 @@ enum data_size {
+@@ -147,26 +150,11 @@ static int ade7854_i2c_read_reg_32(struct device *dev,
+ 				   u16 reg_address,
+ 				   u32 *val)
+ {
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct ade7854_state *st = iio_priv(indio_dev);
+ 	int ret;
  
- /**
-  * struct ade7854_state - device instance specific data
-- * @spi:			actual spi_device
-+ * @spi:		actual spi_device
-+ * @write_reg		Wrapper function for I2C and SPI write
-  * @indio_dev:		industrial I/O device structure
-  * @buf_lock:		mutex to protect tx and rx
-  * @tx:			transmit buffer
-@@ -165,10 +166,8 @@ struct ade7854_state {
- 	int (*read_reg_16)(struct device *dev, u16 reg_address, u16 *val);
- 	int (*read_reg_24)(struct device *dev, u16 reg_address, u32 *val);
- 	int (*read_reg_32)(struct device *dev, u16 reg_address, u32 *val);
--	int (*write_reg_8)(struct device *dev, u16 reg_address, u8 val);
--	int (*write_reg_16)(struct device *dev, u16 reg_address, u16 val);
--	int (*write_reg_24)(struct device *dev, u16 reg_address, u32 val);
--	int (*write_reg_32)(struct device *dev, u16 reg_address, u32 val);
-+	int (*write_reg)(struct device *dev, u16 reg_address, u32 val,
-+			 enum data_size type);
- 	int irq;
- 	struct mutex buf_lock;
- 	u8 tx[ADE7854_MAX_TX] ____cacheline_aligned;
+-	mutex_lock(&st->buf_lock);
+-	st->tx[0] = (reg_address >> 8) & 0xFF;
+-	st->tx[1] = reg_address & 0xFF;
+-
+-	ret = i2c_master_send(st->i2c, st->tx, 2);
+-	if (ret)
+-		goto out;
+-
+-	ret = i2c_master_recv(st->i2c, st->rx, 3);
+-	if (ret)
+-		goto out;
++	ret = ade7854_i2c_read_reg(dev, reg_address, (u32 *)val,
++				   DATA_SIZE_32_BITS);
+ 
+-	*val = (st->rx[0] << 24) | (st->rx[1] << 16) |
+-		(st->rx[2] << 8) | st->rx[3];
+-out:
+-	mutex_unlock(&st->buf_lock);
+ 	return ret;
+ }
+ 
 -- 
 2.16.2
