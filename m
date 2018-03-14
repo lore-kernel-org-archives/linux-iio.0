@@ -1,5 +1,5 @@
 Return-Path: <SRS0=Zfd2=GE=gmail.com=rodrigosiqueiramelo@kernel.org>
-Date: Wed, 14 Mar 2018 15:10:00 -0300
+Date: Wed, 14 Mar 2018 15:10:18 -0300
 From: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
@@ -8,42 +8,186 @@ To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
 	Barry Song <21cnbao@gmail.com>, John Syne <john3909@gmail.com>
 Cc: daniel.baluta@nxp.com, linux-iio@vger.kernel.org,
 	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 0/7] staging:iio:ade7854: Cleanup on I2C/SPI code
-Message-ID: <cover.1521037060.git.rodrigosiqueiramelo@gmail.com>
+Subject: [PATCH 1/7] staging:iio:ade7854: Rework I2C write function
+Message-ID: <98c74382f0ea9c5d33f7ea9c9697d87889c1baa2.1521037060.git.rodrigosiqueiramelo@gmail.com>
+References: <cover.1521037060.git.rodrigosiqueiramelo@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <cover.1521037060.git.rodrigosiqueiramelo@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-This patchset reworks the I2C/SPI code from meter module. The set of
-patches try to reduce the code duplication and make the communication
-reliable. The current version of the module had many code duplications,
-which make the code more error-prone and hard to read. Jonh Syne
-identified some wrong error handling and fixed it in his patches; in
-this series of patches I analyzed Jonh's fixes, and use it in the new
-code.
+The write operation using I2C has many code duplications and four
+different interfaces per data size. This patch introduces a single
+function that centralizes the main tasks.
 
-It is important to highlight that meter module is under observation, due
-to the lack of hardware and the old design of the chip. However, John
-has the hardware for testing and interest to help to update the code
-[1]. As a result, this patchset represents the first work effort to
-update the meter module in the staging.
+The central function inserted by this patch can easily replace all the
+four functions related to the data size. However, this patch does not
+remove any code signature for keeping the meter module work and make
+easier to review this patch.
 
-1 - https://marc.info/?l=linux-iio&m=152046885922153&w=2 
+Signed-off-by: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
+---
+ drivers/staging/iio/meter/ade7854-i2c.c | 89 +++++++++++++++++++--------------
+ drivers/staging/iio/meter/ade7854.h     |  7 +++
+ 2 files changed, 58 insertions(+), 38 deletions(-)
 
-Rodrigo Siqueira (7):
-  staging:iio:ade7854: Rework I2C write function
-  staging:iio:ade7854: Rework SPI write function
-  staging:iio:ade7854: Replace many functions for one function
-  staging:iio:ade7854: Rework I2C read function
-  staging:iio:ade7854: Rework SPI read function
-  staging:iio:ade7854: Remove read_reg_* duplications
-  staging:iio:ade7854: Add proper error handling condition.
-
- drivers/staging/iio/meter/ade7854-i2c.c | 236 ++++++++--------------------
- drivers/staging/iio/meter/ade7854-spi.c | 268 +++++++-------------------------
- drivers/staging/iio/meter/ade7854.c     |  44 +++---
- drivers/staging/iio/meter/ade7854.h     |  23 +--
- 4 files changed, 160 insertions(+), 411 deletions(-)
-
+diff --git a/drivers/staging/iio/meter/ade7854-i2c.c b/drivers/staging/iio/meter/ade7854-i2c.c
+index 317e4f0d8176..03133a05eae4 100644
+--- a/drivers/staging/iio/meter/ade7854-i2c.c
++++ b/drivers/staging/iio/meter/ade7854-i2c.c
+@@ -15,41 +15,74 @@
+ #include <linux/iio/iio.h>
+ #include "ade7854.h"
+ 
+-static int ade7854_i2c_write_reg_8(struct device *dev,
+-				   u16 reg_address,
+-				   u8 val)
++static int ade7854_i2c_write_reg(struct device *dev,
++				 u16 reg_address,
++				 u32 val,
++				 enum data_size type)
+ {
+ 	int ret;
++	int count;
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ade7854_state *st = iio_priv(indio_dev);
+ 
+ 	mutex_lock(&st->buf_lock);
+ 	st->tx[0] = (reg_address >> 8) & 0xFF;
+ 	st->tx[1] = reg_address & 0xFF;
+-	st->tx[2] = val;
+ 
+-	ret = i2c_master_send(st->i2c, st->tx, 3);
++	switch (type) {
++	case DATA_SIZE_8_BITS:
++		st->tx[2] = val & 0xFF;
++		count = 3;
++		break;
++	case DATA_SIZE_16_BITS:
++		st->tx[2] = (val >> 8) & 0xFF;
++		st->tx[3] = val & 0xFF;
++		count = 4;
++		break;
++	case DATA_SIZE_24_BITS:
++		st->tx[2] = (val >> 16) & 0xFF;
++		st->tx[3] = (val >> 8) & 0xFF;
++		st->tx[4] = val & 0xFF;
++		count = 5;
++		break;
++	case DATA_SIZE_32_BITS:
++		st->tx[2] = (val >> 24) & 0xFF;
++		st->tx[3] = (val >> 16) & 0xFF;
++		st->tx[4] = (val >> 8) & 0xFF;
++		st->tx[5] = val & 0xFF;
++		count = 6;
++		break;
++	default:
++		ret = -EINVAL;
++		goto error_i2c_write_unlock;
++	}
++
++	ret = i2c_master_send(st->i2c, st->tx, count);
++
++error_i2c_write_unlock:
+ 	mutex_unlock(&st->buf_lock);
+ 
+ 	return ret;
+ }
+ 
++static int ade7854_i2c_write_reg_8(struct device *dev,
++				   u16 reg_address,
++				   u8 val)
++{
++	int ret;
++
++	ret = ade7854_i2c_write_reg(dev, reg_address, val, DATA_SIZE_8_BITS);
++
++	return ret;
++}
++
+ static int ade7854_i2c_write_reg_16(struct device *dev,
+ 				    u16 reg_address,
+ 				    u16 val)
+ {
+ 	int ret;
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct ade7854_state *st = iio_priv(indio_dev);
+ 
+-	mutex_lock(&st->buf_lock);
+-	st->tx[0] = (reg_address >> 8) & 0xFF;
+-	st->tx[1] = reg_address & 0xFF;
+-	st->tx[2] = (val >> 8) & 0xFF;
+-	st->tx[3] = val & 0xFF;
+-
+-	ret = i2c_master_send(st->i2c, st->tx, 4);
+-	mutex_unlock(&st->buf_lock);
++	ret = ade7854_i2c_write_reg(dev, reg_address, val, DATA_SIZE_16_BITS);
+ 
+ 	return ret;
+ }
+@@ -59,18 +92,8 @@ static int ade7854_i2c_write_reg_24(struct device *dev,
+ 				    u32 val)
+ {
+ 	int ret;
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct ade7854_state *st = iio_priv(indio_dev);
+ 
+-	mutex_lock(&st->buf_lock);
+-	st->tx[0] = (reg_address >> 8) & 0xFF;
+-	st->tx[1] = reg_address & 0xFF;
+-	st->tx[2] = (val >> 16) & 0xFF;
+-	st->tx[3] = (val >> 8) & 0xFF;
+-	st->tx[4] = val & 0xFF;
+-
+-	ret = i2c_master_send(st->i2c, st->tx, 5);
+-	mutex_unlock(&st->buf_lock);
++	ret = ade7854_i2c_write_reg(dev, reg_address, val, DATA_SIZE_24_BITS);
+ 
+ 	return ret;
+ }
+@@ -80,23 +103,13 @@ static int ade7854_i2c_write_reg_32(struct device *dev,
+ 				    u32 val)
+ {
+ 	int ret;
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct ade7854_state *st = iio_priv(indio_dev);
+-
+-	mutex_lock(&st->buf_lock);
+-	st->tx[0] = (reg_address >> 8) & 0xFF;
+-	st->tx[1] = reg_address & 0xFF;
+-	st->tx[2] = (val >> 24) & 0xFF;
+-	st->tx[3] = (val >> 16) & 0xFF;
+-	st->tx[4] = (val >> 8) & 0xFF;
+-	st->tx[5] = val & 0xFF;
+ 
+-	ret = i2c_master_send(st->i2c, st->tx, 6);
+-	mutex_unlock(&st->buf_lock);
++	ret = ade7854_i2c_write_reg(dev, reg_address, val, DATA_SIZE_32_BITS);
+ 
+ 	return ret;
+ }
+ 
++
+ static int ade7854_i2c_read_reg_8(struct device *dev,
+ 				  u16 reg_address,
+ 				  u8 *val)
+diff --git a/drivers/staging/iio/meter/ade7854.h b/drivers/staging/iio/meter/ade7854.h
+index a82d38224cbd..71bdd638f348 100644
+--- a/drivers/staging/iio/meter/ade7854.h
++++ b/drivers/staging/iio/meter/ade7854.h
+@@ -143,6 +143,13 @@
+ #define ADE7854_SPI_BURST	(u32)(1000 * 1000)
+ #define ADE7854_SPI_FAST	(u32)(2000 * 1000)
+ 
++enum data_size {
++	DATA_SIZE_8_BITS = 1,
++	DATA_SIZE_16_BITS,
++	DATA_SIZE_24_BITS,
++	DATA_SIZE_32_BITS,
++};
++
+ /**
+  * struct ade7854_state - device instance specific data
+  * @spi:			actual spi_device
 -- 
 2.16.2
