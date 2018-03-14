@@ -1,5 +1,5 @@
 Return-Path: <SRS0=Zfd2=GE=gmail.com=rodrigosiqueiramelo@kernel.org>
-Date: Wed, 14 Mar 2018 15:11:05 -0300
+Date: Wed, 14 Mar 2018 15:11:24 -0300
 From: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
@@ -8,183 +8,209 @@ To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
 	Barry Song <21cnbao@gmail.com>, John Syne <john3909@gmail.com>
 Cc: daniel.baluta@nxp.com, linux-iio@vger.kernel.org,
 	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 4/7] staging:iio:ade7854: Rework I2C read function
-Message-ID: <b6dbb1063924dacfc4b5f48abe8e8c8c52714a99.1521037060.git.rodrigosiqueiramelo@gmail.com>
+Subject: [PATCH 5/7] staging:iio:ade7854: Rework SPI read function
+Message-ID: <9d661f84a0745cd6f71c260fa2856bc0d8cf593e.1521037060.git.rodrigosiqueiramelo@gmail.com>
 References: <cover.1521037060.git.rodrigosiqueiramelo@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 In-Reply-To: <cover.1521037060.git.rodrigosiqueiramelo@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-The read operation for the I2C function has many duplications that can
-be generalized into a single function. This patch reworks the read
-operation for I2C to centralizes all similar code in a single function.
-Part of the rework includes a proper error handling and a fix on the
-i2c_master_recv for 32 bits as pointed by John Syne patches.
-
-It is possible to remove all the old interface to use the new one,
-however, for keeping the things simple and working this patch maintain
-legacy interface.
+Rework read SPI function to reduce the code duplication and centralizes
+all the task in a single function.
 
 Signed-off-by: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
-Signed-off-by: John Syne <john3909@gmail.com>
 ---
- drivers/staging/iio/meter/ade7854-i2c.c | 106 ++++++++++++++------------------
- 1 file changed, 47 insertions(+), 59 deletions(-)
+ drivers/staging/iio/meter/ade7854-spi.c | 132 ++++++++++----------------------
+ 1 file changed, 41 insertions(+), 91 deletions(-)
 
-diff --git a/drivers/staging/iio/meter/ade7854-i2c.c b/drivers/staging/iio/meter/ade7854-i2c.c
-index f302359d2265..845f8c348945 100644
---- a/drivers/staging/iio/meter/ade7854-i2c.c
-+++ b/drivers/staging/iio/meter/ade7854-i2c.c
-@@ -65,9 +65,10 @@ static int ade7854_i2c_write_reg(struct device *dev,
+diff --git a/drivers/staging/iio/meter/ade7854-spi.c b/drivers/staging/iio/meter/ade7854-spi.c
+index df3df85f9440..0feef24aa888 100644
+--- a/drivers/staging/iio/meter/ade7854-spi.c
++++ b/drivers/staging/iio/meter/ade7854-spi.c
+@@ -67,9 +67,10 @@ static int ade7854_spi_write_reg(struct device *dev,
  	return ret;
  }
  
--static int ade7854_i2c_read_reg_8(struct device *dev,
+-static int ade7854_spi_read_reg_8(struct device *dev,
 -				  u16 reg_address,
 -				  u8 *val)
-+static int ade7854_i2c_read_reg(struct device *dev,
++static int ade7854_spi_read_reg(struct device *dev,
 +				u16 reg_address,
 +				u32 *val,
 +				enum data_size type)
  {
  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
  	struct ade7854_state *st = iio_priv(indio_dev);
-@@ -78,42 +79,58 @@ static int ade7854_i2c_read_reg_8(struct device *dev,
- 	st->tx[1] = reg_address & 0xFF;
+@@ -82,7 +83,7 @@ static int ade7854_spi_read_reg_8(struct device *dev,
+ 		}, {
+ 			.rx_buf = st->rx,
+ 			.bits_per_word = 8,
+-			.len = 1,
++			.len = type,
+ 		}
+ 	};
  
- 	ret = i2c_master_send(st->i2c, st->tx, 2);
--	if (ret)
--		goto out;
-+	if (ret < 0)
-+		goto error_i2c_read_unlock;
+@@ -94,51 +95,52 @@ static int ade7854_spi_read_reg_8(struct device *dev,
  
--	ret = i2c_master_recv(st->i2c, st->rx, 1);
--	if (ret)
--		goto out;
-+	ret = i2c_master_recv(st->i2c, st->rx, type);
-+	if (ret < 0)
-+		goto error_i2c_read_unlock;
- 
--	*val = st->rx[0];
--out:
+ 	ret = spi_sync_transfer(st->spi, xfers, ARRAY_SIZE(xfers));
+ 	if (ret) {
+-		dev_err(&st->spi->dev, "problem when reading 8 bit register 0x%02X",
++		dev_err(&st->spi->dev, "problem when reading register 0x%02X",
+ 			reg_address);
+-		goto error_ret;
++		goto error_spi_read_unlock;
++	}
++
 +	switch (type) {
 +	case DATA_SIZE_8_BITS:
 +		*val = st->rx[0];
 +		break;
 +	case DATA_SIZE_16_BITS:
-+		*val = (st->rx[0] << 8) | st->rx[1];
++		*val = be16_to_cpup((const __be16 *)st->rx);
 +		break;
 +	case DATA_SIZE_24_BITS:
 +		*val = (st->rx[0] << 16) | (st->rx[1] << 8) | st->rx[2];
 +		break;
 +	case DATA_SIZE_32_BITS:
-+		*val = (st->rx[0] << 24) | (st->rx[1] << 16) |
-+			(st->rx[2] << 8) | st->rx[3];
++		*val = be32_to_cpup((const __be32 *)st->rx);
 +		break;
-+	default:
-+		ret = -EINVAL;
-+		goto error_i2c_read_unlock;
-+	}
-+
-+error_i2c_read_unlock:
+ 	}
+-	*val = st->rx[0];
+ 
+-error_ret:
++error_spi_read_unlock:
  	mutex_unlock(&st->buf_lock);
  	return ret;
  }
  
-+static int ade7854_i2c_read_reg_8(struct device *dev,
++static int ade7854_spi_read_reg_8(struct device *dev,
 +				  u16 reg_address,
 +				  u8 *val)
 +{
 +	int ret;
 +
-+	ret = ade7854_i2c_read_reg(dev, reg_address, (u32 *)val,
++	ret = ade7854_spi_read_reg(dev, reg_address, (u32 *)val,
 +				   DATA_SIZE_8_BITS);
 +
 +	return ret;
 +}
 +
- static int ade7854_i2c_read_reg_16(struct device *dev,
+ static int ade7854_spi_read_reg_16(struct device *dev,
  				   u16 reg_address,
  				   u16 *val)
  {
 -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
 -	struct ade7854_state *st = iio_priv(indio_dev);
  	int ret;
+-	struct spi_transfer xfers[] = {
+-		{
+-			.tx_buf = st->tx,
+-			.bits_per_word = 8,
+-			.len = 3,
+-		}, {
+-			.rx_buf = st->rx,
+-			.bits_per_word = 8,
+-			.len = 2,
+-		}
+-	};
  
 -	mutex_lock(&st->buf_lock);
--	st->tx[0] = (reg_address >> 8) & 0xFF;
--	st->tx[1] = reg_address & 0xFF;
--
--	ret = i2c_master_send(st->i2c, st->tx, 2);
--	if (ret)
--		goto out;
--
--	ret = i2c_master_recv(st->i2c, st->rx, 2);
--	if (ret)
--		goto out;
-+	ret = ade7854_i2c_read_reg(dev, reg_address, (u32 *)val,
+-	st->tx[0] = ADE7854_READ_REG;
+-	st->tx[1] = (reg_address >> 8) & 0xFF;
+-	st->tx[2] = reg_address & 0xFF;
++	ret = ade7854_spi_read_reg(dev, reg_address, (u32 *)val,
 +				   DATA_SIZE_16_BITS);
  
--	*val = (st->rx[0] << 8) | st->rx[1];
--out:
+-	ret = spi_sync_transfer(st->spi, xfers, ARRAY_SIZE(xfers));
+-	if (ret) {
+-		dev_err(&st->spi->dev, "problem when reading 16 bit register 0x%02X",
+-			reg_address);
+-		goto error_ret;
+-	}
+-	*val = be16_to_cpup((const __be16 *)st->rx);
+-
+-error_ret:
 -	mutex_unlock(&st->buf_lock);
  	return ret;
  }
  
-@@ -121,25 +138,11 @@ static int ade7854_i2c_read_reg_24(struct device *dev,
+@@ -146,37 +148,11 @@ static int ade7854_spi_read_reg_24(struct device *dev,
  				   u16 reg_address,
  				   u32 *val)
  {
 -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
 -	struct ade7854_state *st = iio_priv(indio_dev);
  	int ret;
+-	struct spi_transfer xfers[] = {
+-		{
+-			.tx_buf = st->tx,
+-			.bits_per_word = 8,
+-			.len = 3,
+-		}, {
+-			.rx_buf = st->rx,
+-			.bits_per_word = 8,
+-			.len = 3,
+-		}
+-	};
  
 -	mutex_lock(&st->buf_lock);
--	st->tx[0] = (reg_address >> 8) & 0xFF;
--	st->tx[1] = reg_address & 0xFF;
 -
--	ret = i2c_master_send(st->i2c, st->tx, 2);
--	if (ret)
--		goto out;
--
--	ret = i2c_master_recv(st->i2c, st->rx, 3);
--	if (ret)
--		goto out;
-+	ret = ade7854_i2c_read_reg(dev, reg_address, (u32 *)val,
+-	st->tx[0] = ADE7854_READ_REG;
+-	st->tx[1] = (reg_address >> 8) & 0xFF;
+-	st->tx[2] = reg_address & 0xFF;
++	ret = ade7854_spi_read_reg(dev, reg_address, (u32 *)val,
 +				   DATA_SIZE_24_BITS);
  
+-	ret = spi_sync_transfer(st->spi, xfers, ARRAY_SIZE(xfers));
+-	if (ret) {
+-		dev_err(&st->spi->dev, "problem when reading 24 bit register 0x%02X",
+-			reg_address);
+-		goto error_ret;
+-	}
 -	*val = (st->rx[0] << 16) | (st->rx[1] << 8) | st->rx[2];
--out:
+-
+-error_ret:
 -	mutex_unlock(&st->buf_lock);
  	return ret;
  }
  
-@@ -147,26 +150,11 @@ static int ade7854_i2c_read_reg_32(struct device *dev,
+@@ -184,37 +160,11 @@ static int ade7854_spi_read_reg_32(struct device *dev,
  				   u16 reg_address,
  				   u32 *val)
  {
 -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
 -	struct ade7854_state *st = iio_priv(indio_dev);
  	int ret;
+-	struct spi_transfer xfers[] = {
+-		{
+-			.tx_buf = st->tx,
+-			.bits_per_word = 8,
+-			.len = 3,
+-		}, {
+-			.rx_buf = st->rx,
+-			.bits_per_word = 8,
+-			.len = 4,
+-		}
+-	};
  
 -	mutex_lock(&st->buf_lock);
--	st->tx[0] = (reg_address >> 8) & 0xFF;
--	st->tx[1] = reg_address & 0xFF;
 -
--	ret = i2c_master_send(st->i2c, st->tx, 2);
--	if (ret)
--		goto out;
--
--	ret = i2c_master_recv(st->i2c, st->rx, 3);
--	if (ret)
--		goto out;
-+	ret = ade7854_i2c_read_reg(dev, reg_address, (u32 *)val,
+-	st->tx[0] = ADE7854_READ_REG;
+-	st->tx[1] = (reg_address >> 8) & 0xFF;
+-	st->tx[2] = reg_address & 0xFF;
++	ret = ade7854_spi_read_reg(dev, reg_address, (u32 *)val,
 +				   DATA_SIZE_32_BITS);
  
--	*val = (st->rx[0] << 24) | (st->rx[1] << 16) |
--		(st->rx[2] << 8) | st->rx[3];
--out:
+-	ret = spi_sync_transfer(st->spi, xfers, ARRAY_SIZE(xfers));
+-	if (ret) {
+-		dev_err(&st->spi->dev, "problem when reading 32 bit register 0x%02X",
+-			reg_address);
+-		goto error_ret;
+-	}
+-	*val = be32_to_cpup((const __be32 *)st->rx);
+-
+-error_ret:
 -	mutex_unlock(&st->buf_lock);
  	return ret;
  }
