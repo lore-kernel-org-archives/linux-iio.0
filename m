@@ -1,43 +1,33 @@
-Return-Path: <SRS0=O4k9=GG=gmail.com=rodrigosiqueiramelo@kernel.org>
-Date: Fri, 16 Mar 2018 17:03:53 -0300
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-qk0-f177.google.com ([209.85.220.177]:40798 "EHLO
+        mail-qk0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751408AbeCNTIv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 14 Mar 2018 15:08:51 -0400
+Received: by mail-qk0-f177.google.com with SMTP id o25so4681366qkl.7
+        for <linux-iio@vger.kernel.org>; Wed, 14 Mar 2018 12:08:50 -0700 (PDT)
+Date: Wed, 14 Mar 2018 16:08:47 -0300
 From: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
-To: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: devel@driverdev.osuosl.org, Lars-Peter Clausen <lars@metafoo.de>,
-	linux-iio@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Barry Song <21cnbao@gmail.com>, linux-kernel@vger.kernel.org,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Hartmut Knaack <knaack.h@gmx.de>, daniel.baluta@nxp.com,
-	Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH 7/7] staging:iio:ade7854: Add proper error handling
- condition
-Message-ID: <20180316200353.dgcdiduupslxtmng@smtp.gmail.com>
-References: <cover.1521037060.git.rodrigosiqueiramelo@gmail.com>
- <72d5aaef3445edaca08498b4d7aaff19d4ac0232.1521037060.git.rodrigosiqueiramelo@gmail.com>
- <20180315121115.iwkx2dfikgpjeeec@mwanda>
- <20180316002800.mvy75in42y5j2dpz@smtp.gmail.com>
- <20180316080257.dlglfjespmltwo3u@mwanda>
- <20180316135946.b7elcisgkfs4ibwy@smtp.gmail.com>
- <20180316141727.ia3mrwnmtkge7elm@mwanda>
+To: Michael Hennerich <michael.hennerich@analog.com>,
+        linux-iio@vger.kernel.org
+Subject: Hardware for testing resolver modules in staging
+Message-ID: <20180314190847.b7v5pllvl2qlle7e@smtp.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20180316141727.ia3mrwnmtkge7elm@mwanda>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 03/16, Dan Carpenter wrote:
-> Generally, it's better to fix the bug in the existing code, and then
-> do the cleanup later.  That way the fixes can be backported to stable
-> kernels more easily.
+Hi,
 
-Hummm... the backport argue make a lot of sense for me. I will generate
-a v2 with the bug fixes in the beginning.
+I am working in the AD2S1210 with the intention to move it out of
+staging. However, I don't have the device and Jonathan alerted me to the
+lack of hardware for testing.
 
-Thanks 
-> I don't know this subsystem very well.  Perhaps Jonathan doesn't care
-> for one reason or another (like maybe he's not going to back port the
-> fix).  So it might not matter how you do it.
-> 
-> regards,
-> dan carpenter
-> 
-> 
+Michael, is it possible that someone in Analog Devices could help with
+the hardware tests? If Analog Devices can't help, there is someone else
+that could help with it?
+
+P.s: Other guys are working in other modules in the resolver, I believe
+they could be interesting on this issue too.
+
+Best regards
+Rodrigo Siqueira
