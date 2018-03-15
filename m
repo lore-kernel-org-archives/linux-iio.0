@@ -1,66 +1,67 @@
-Return-Path: <SRS0=WaeF=GF=gmail.com=vilhelm.gray@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-yw0-f196.google.com ([209.85.161.196]:41196 "EHLO
+        mail-yw0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932427AbeCOPrB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 15 Mar 2018 11:47:01 -0400
 From: William Breathitt Gray <vilhelm.gray@gmail.com>
 To: linus.walleij@linaro.org
-Cc: andy.shevchenko@gmail.com,
-	linux-gpio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	William Breathitt Gray <vilhelm.gray@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: [PATCH v2 1/8] iio: stx104: Implement get_multiple callback
-Date: Thu, 15 Mar 2018 11:46:37 -0400
-Message-Id: <14a09900bf4642495ebe4072b9eb02769dbc4c5e.1521128287.git.vilhelm.gray@gmail.com>
+Cc: andy.shevchenko@gmail.com, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH v2 2/8] gpio: 104-idio-16: Implement get_multiple callback
+Date: Thu, 15 Mar 2018 11:46:54 -0400
+Message-Id: <486eb9bad0440ed305a78d9fc990728cbeb7d43e.1521128287.git.vilhelm.gray@gmail.com>
 In-Reply-To: <cover.1521128287.git.vilhelm.gray@gmail.com>
 References: <cover.1521128287.git.vilhelm.gray@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-The Apex Embedded Systems STX104 series of devices provides 4 TTL
-compatible lines of inputs accessed via a single 4-bit port. Since four
-input lines are acquired on a single port input read, the STX104 GPIO
-driver may improve multiple input reads by utilizing a get_multiple
-callback. This patch implements the stx104_gpio_get_multiple function
-which serves as the respective get_multiple callback.
+The ACCES I/O 104-IDIO-16 series of devices provides 16
+optically-isolated digital inputs accessed via two 8-bit ports. Since
+eight input lines are acquired on a single port input read, the
+104-IDIO-16 GPIO driver may improve multiple input reads by utilizing a
+get_multiple callback. This patch implements the
+idio_16_gpio_get_multiple function which serves as the respective
+get_multiple callback.
 
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- drivers/iio/adc/stx104.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/gpio/gpio-104-idio-16.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/drivers/iio/adc/stx104.c b/drivers/iio/adc/stx104.c
-index 17b021f33180..0662ca199eb0 100644
---- a/drivers/iio/adc/stx104.c
-+++ b/drivers/iio/adc/stx104.c
-@@ -233,6 +233,16 @@ static int stx104_gpio_get(struct gpio_chip *chip, unsigned int offset)
- 	return !!(inb(stx104gpio->base) & BIT(offset));
+diff --git a/drivers/gpio/gpio-104-idio-16.c b/drivers/gpio/gpio-104-idio-16.c
+index 2f16638a0589..5de5819e5156 100644
+--- a/drivers/gpio/gpio-104-idio-16.c
++++ b/drivers/gpio/gpio-104-idio-16.c
+@@ -90,6 +90,20 @@ static int idio_16_gpio_get(struct gpio_chip *chip, unsigned offset)
+ 	return !!(inb(idio16gpio->base + 5) & (mask>>8));
  }
  
-+static int stx104_gpio_get_multiple(struct gpio_chip *chip, unsigned long *mask,
-+	unsigned long *bits)
++static int idio_16_gpio_get_multiple(struct gpio_chip *chip,
++	unsigned long *mask, unsigned long *bits)
 +{
-+	struct stx104_gpio *const stx104gpio = gpiochip_get_data(chip);
++	struct idio_16_gpio *const idio16gpio = gpiochip_get_data(chip);
 +
-+	*bits = inb(stx104gpio->base);
++	*bits = 0;
++	if (*mask & 0xFF0000)
++		*bits |= (unsigned long)inb(idio16gpio->base + 1) << 16;
++	if (*mask & 0xFF000000)
++		*bits |= (unsigned long)inb(idio16gpio->base + 5) << 24;
 +
 +	return 0;
 +}
 +
- static void stx104_gpio_set(struct gpio_chip *chip, unsigned int offset,
- 	int value)
+ static void idio_16_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
  {
-@@ -342,6 +352,7 @@ static int stx104_probe(struct device *dev, unsigned int id)
- 	stx104gpio->chip.direction_input = stx104_gpio_direction_input;
- 	stx104gpio->chip.direction_output = stx104_gpio_direction_output;
- 	stx104gpio->chip.get = stx104_gpio_get;
-+	stx104gpio->chip.get_multiple = stx104_gpio_get_multiple;
- 	stx104gpio->chip.set = stx104_gpio_set;
- 	stx104gpio->chip.set_multiple = stx104_gpio_set_multiple;
- 	stx104gpio->base = base[id] + 3;
+ 	struct idio_16_gpio *const idio16gpio = gpiochip_get_data(chip);
+@@ -244,6 +258,7 @@ static int idio_16_probe(struct device *dev, unsigned int id)
+ 	idio16gpio->chip.direction_input = idio_16_gpio_direction_input;
+ 	idio16gpio->chip.direction_output = idio_16_gpio_direction_output;
+ 	idio16gpio->chip.get = idio_16_gpio_get;
++	idio16gpio->chip.get_multiple = idio_16_gpio_get_multiple;
+ 	idio16gpio->chip.set = idio_16_gpio_set;
+ 	idio16gpio->chip.set_multiple = idio_16_gpio_set_multiple;
+ 	idio16gpio->base = base[id];
 -- 
 2.16.2
+
