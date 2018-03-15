@@ -1,85 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:57128 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752381AbeCQQz0 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 17 Mar 2018 12:55:26 -0400
-Date: Sat, 17 Mar 2018 16:55:18 +0000
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
-Cc: Michael Hennerich <michael.hennerich@analog.com>,
-        linux-iio@vger.kernel.org
-Subject: Re: Hardware for testing resolver modules in staging
-Message-ID: <20180317165518.680fe706@archlinux>
-In-Reply-To: <20180316004120.dhnn7qax66saafiw@smtp.gmail.com>
-References: <20180314190847.b7v5pllvl2qlle7e@smtp.gmail.com>
-        <105a3c79-017b-53d4-22f2-8465e5ef5ac5@analog.com>
-        <20180316004120.dhnn7qax66saafiw@smtp.gmail.com>
+Received: from cock.li ([185.100.85.212]:42070 "EHLO cock.li"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751840AbeCOB3x (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 14 Mar 2018 21:29:53 -0400
+To: linux-iio@vger.kernel.org
+From: Tom Lebreux <tomlebreux@cock.li>
+Subject: Moving ad2s90 out of staging
+Message-ID: <63f2588d-0edd-9115-74a4-d0743fb358c1@cock.li>
+Date: Wed, 14 Mar 2018 21:29:48 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 15 Mar 2018 21:41:20 -0300
-Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com> wrote:
+Dear IIO community,
 
-> Hi,
-> 
-> On 03/15, Michael Hennerich wrote:
-> > On 14.03.2018 20:08, Rodrigo Siqueira wrote:  
-> > > Hi,
-> > > 
-> > > I am working in the AD2S1210 with the intention to move it out of
-> > > staging. However, I don't have the device and Jonathan alerted me to the
-> > > lack of hardware for testing.
-> > > 
-> > > Michael, is it possible that someone in Analog Devices could help with
-> > > the hardware tests? If Analog Devices can't help, there is someone else
-> > > that could help with it?
-> > > 
-> > > P.s: Other guys are working in other modules in the resolver, I believe
-> > > they could be interesting on this issue too.
-> > > 
-> > > Best regards
-> > > Rodrigo Siqueira
-> > >   
-> > 
-> > Hi Rodrigo,
-> > 
-> > Unfortunately I don't have HW to test these drivers.
-> > Besides the EVAL board and some connection to an single board computer,
-> > you would also need an industrial resolver which are quite expensive.
-> > 
-> > If you or someone else want to test things. I can certainly have someone
-> > ship a free EVAL board if they are on stock, but the resolver would need to
-> > be sourced from somewhere else.  
-> 
-> Nice.
-Old school resolvers do turn up on ebay from time to time. I have a bid
-in on one in the uk at the moment with a view to 'eventually' getting
-around to testing these drivers (and other future parts)
+I plan on working on the ad2s90 resolver driver. I understand that we do not
+have hardware to test the drivers, so I will not be adding new features. The
+work will be mostly about cleaning up the driver.
 
-> 
-> > In general I think these drivers have been tested, if we are carefully we
-> > could skip the additional test.  
-> 
-> Agree.
-> I will keep send patches to improve the AD2S1210 driver.
-Seeing as the chances are Michael would get pestered by anyone who found
-these drivers didn't work, I'm happy to go with this so we can make quicker
-progress than we would sourcing parts and getting around to testing properly.
+1. Clean up CHECK (mutex not commented)
 
-Jonathan
-> 
-> > -- 
-> > Greetings,
-> > Michael
-> > 
-> > --
-> > Analog Devices GmbH      Otl-Aicher Strasse 60-64      80807 München
-> > Sitz der Gesellschaft München, Registergericht München HRB 40368,
-> > Geschäftsführer: Peter Kolberg, Ali Raza Husain, Eileen Wynne  
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+2. Sort include alphabetically
 
+3. Reverse christmas tree ordering 
+I saw this in David's plan for the ad2s1200 driver as well as a patch for an
+accel driver. However, I did not see this mentionned in
+Documentation/process/coding-style.rst. Is this necessary, or even wanted ?
+
+4. Return -EINVAL on spi_read error
+Currently, on spi_read error, read_raw still returns IIO_VAL_INT. I believe this
+should be returning -EINVAL, as does, for example, the adxrs450 gyro driver.
+
+5. Remove indexed property as there is only 1 channel
+
+6. Use a #define for magic number 830000
+This sets the maximum clock speed of the spi driver. I am struggling to find
+where this number comes from. Is this number coming from the fact that there
+needs 600ns between the CS and the first galling edge (mentionned in the 
+comment right above the assigment)? The data sheet specifies the max SCLK input
+rate as being 2MHz.
+
+Is this a good plan ? Am I missing anything important ?
+
+This was my first time reading a specification document, learning about
+resolvers and resolver-to-digital converters.
+
+>From what I understand, the ad2s90 uses the spi interface to output (only) its
+absolute position angle. However, it supports many other outputs, such as A, B
+encoding, direction of rotation of input (DIR) and angular velocity of input
+signals (VEL). What is used to received these numbers ? Or are they only used
+to connect directly to other devices ?
+
+Best regards,
+
+Tom Lebreux
