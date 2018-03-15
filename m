@@ -1,103 +1,55 @@
-Return-Path: <SRS0=ztfD=GK=gmail.com=geert.uytterhoeven@kernel.org>
-MIME-Version: 1.0
-Sender: geert.uytterhoeven@gmail.com
-In-Reply-To: <20180317181936.14468be2@archlinux>
-References: <1521124947-18950-1-git-send-email-mnarani@xilinx.com>
- <20180316201925.GA18013@himanshu-Vostro-3559> <20180317181936.14468be2@archlinux>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 20 Mar 2018 10:44:21 +0100
-Message-ID: <CAMuHMdULXP1fxKmf9rx0ebxs-e82MOoRRZ9tSHeS4CZn3ZZfCA@mail.gmail.com>
-Subject: Re: [RFC PATCH] iio: adc: Add Xilinx AMS driver
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Himanshu Jha <himanshujha199640@gmail.com>, Manish Narani <manish.narani@xilinx.com>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
-	Michal Simek <michal.simek@xilinx.com>, Lee Jones <lee.jones@linaro.org>,
-	Mark Brown <broonie@kernel.org>, Arnaud Pouliquen <arnaud.pouliquen@st.com>,
-	quentin.schulz@free-electrons.com, Linus Walleij <linus.walleij@linaro.org>,
-	Ksenija Stanojevic <ksenija.stanojevic@gmail.com>, Arnd Bergmann <arnd@arndb.de>, martenli@axis.com,
-	jan.kiszka@siemens.com, Lukas Wunner <lukas@wunner.de>, vilhelm.gray@gmail.com,
-	Geert Uytterhoeven <geert+renesas@glider.be>, Fabio Estevam <fabio.estevam@nxp.com>, jackoalan@gmail.com,
-	mnarani@xilinx.com, mike.looijmans@topic.nl, alexander.sverdlin@gmail.com,
-	Jacopo Mondi <jacopo+renesas@jmondi.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-iio@vger.kernel.org,
-	Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-yw0-f193.google.com ([209.85.161.193]:44255 "EHLO
+        mail-yw0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932397AbeCOPqe (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 15 Mar 2018 11:46:34 -0400
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: linus.walleij@linaro.org
+Cc: andy.shevchenko@gmail.com, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH v2 0/8] Implement get_multiple for ACCES and PC/104 drivers
+Date: Thu, 15 Mar 2018 11:46:19 -0400
+Message-Id: <cover.1521128287.git.vilhelm.gray@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, Mar 17, 2018 at 7:19 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On Sat, 17 Mar 2018 01:49:25 +0530
-> Himanshu Jha <himanshujha199640@gmail.com> wrote:
->
->> On Thu, Mar 15, 2018 at 08:12:27PM +0530, Manish Narani wrote:
->> > The AMS includes an ADC as well as on-chip sensors that can be used to
->> > sample external voltages and monitor on-die operating conditions, such as
->> > temperature and supply voltage levels. The AMS has two SYSMON blocks.
->> > PL-SYSMON block is capable of monitoring off chip voltage and temperature.
->> > PL-SYSMON block has DRP, JTAG and I2C interface to enable monitoring from
->> > external master. Out of these interface currently only DRP is supported.
->> > Other block PS-SYSMON is memory mapped to PS.
->> >
->> > The AMS can use internal channels to monitor voltage and temperature
->> > as well as one primary and up to 16 auxiliary channels for measuring
->> > external voltages.
->> >
->> > The voltage and temperature monitoring channels also have event
->> > capability which allows to generate an interrupt when their value
->> > falls below or raises above a set threshold.
->> >
->> > Signed-off-by: Manish Narani <mnarani@xilinx.com>
->> > ---
->>
->> [..]
->>
->> > +static const struct of_device_id ams_of_match_table[] = {
->> > +       { .compatible = "xlnx,zynqmp-ams", &ams_pl_apb },
->> > +       { }
->> > +};
->> > +MODULE_DEVICE_TABLE(of, ams_of_match_table);
->>
->> [..]
->>
->> > +static int ams_probe(struct platform_device *pdev)
->> > +{
->> > +       struct iio_dev *indio_dev;
->> > +       struct ams *ams;
->> > +       struct resource *res;
->> > +       const struct of_device_id *id;
->> > +       int ret;
->> > +
->> > +       if (!pdev->dev.of_node)
->> > +               return -ENODEV;
->> > +
->> > +       id = of_match_node(ams_of_match_table, pdev->dev.of_node);
->> > +       if (!id)
->> > +               return -ENODEV;
->>
->> Is the above check required ?
->>
->> Isn't the probe function called if and only if a match is found in
->> ams_of_match_table[] since it is a pure OF driver ?
->>
->> And therefore the above condition would never happen!
-> Agreed in principle.  However, from a reviewer point of view, it is sometimes
-> easier to have an error check that can never happen than have to check whether
-> or not it can.  Hence I'd keep this in place (well actually not because there
-> are better ways of doing this block of code, but that is unconnected to your
-> comment Himanshu!)
+Changes in v2:
+  - Utilize bitmap_zero macro to clear bits array
+  - Refactor bitwise operations and loop structure for clarity
+  - Implement set_multiple callback for PCIe-IDIO-16 driver
 
-You can avoid the intermediate (and avoid reviewers wondering ;-) by just
-writing instead:
+This patchset implements get_multiple callbacks for the PC104 GPIO
+drivers as well as the PCI-IDIO-16 and PCIe-IDIO-24 GPIO drivers. These
+devices all acquire the multiple input lines with a single read, so
+utilizing the get_multiple callback can provide improvement for those
+users who regularly access multiple input lines.
 
-    ams->pl_bus = of_device_get_match_data(&pdev->dev);
+While developing this patchset I noticed many of these devices make use
+of Intel 8255 compatible interfaces for their I/O. I may write a generic
+8255 GPIO driver in the future to reduce some of the redundant code I
+see pop among the drivers for these devices.
 
+William Breathitt Gray (8):
+  iio: stx104: Implement get_multiple callback
+  gpio: 104-idio-16: Implement get_multiple callback
+  gpio: pci-idio-16: Implement get_multiple callback
+  gpio: pcie-idio-24: Implement get_multiple/set_multiple callbacks
+  gpio: 104-dio-48e: Implement get_multiple callback
+  gpio: 104-idi-48: Implement get_multiple callback
+  gpio: gpio-mm: Implement get_multiple callback
+  gpio: ws16c48: Implement get_multiple callback
 
-Gr{oetje,eeting}s,
-
-                        Geert
+ drivers/gpio/gpio-104-dio-48e.c  |  46 +++++++++++++++
+ drivers/gpio/gpio-104-idi-48.c   |  46 +++++++++++++++
+ drivers/gpio/gpio-104-idio-16.c  |  15 +++++
+ drivers/gpio/gpio-gpio-mm.c      |  46 +++++++++++++++
+ drivers/gpio/gpio-pci-idio-16.c  |  50 +++++++++++++++++
+ drivers/gpio/gpio-pcie-idio-24.c | 118 +++++++++++++++++++++++++++++++++++++++
+ drivers/gpio/gpio-ws16c48.c      |  46 +++++++++++++++
+ drivers/iio/adc/stx104.c         |  11 ++++
+ 8 files changed, 378 insertions(+)
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.16.2
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
