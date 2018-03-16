@@ -1,97 +1,104 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f193.google.com ([209.85.161.193]:43815 "EHLO
-        mail-yw0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932469AbeCOPxq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 15 Mar 2018 11:53:46 -0400
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: linus.walleij@linaro.org
-Cc: andy.shevchenko@gmail.com, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v2 8/8] gpio: ws16c48: Implement get_multiple callback
-Date: Thu, 15 Mar 2018 11:53:39 -0400
-Message-Id: <78fd4e6464713068ba9292ba8ef5d9227cdd294c.1521128287.git.vilhelm.gray@gmail.com>
-In-Reply-To: <cover.1521128287.git.vilhelm.gray@gmail.com>
-References: <cover.1521128287.git.vilhelm.gray@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=ZYyO=GG=gmail.com=john3909@kernel.org>
+From: John Syne <john3909@gmail.com>
+Content-Type: text/plain;
+	charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 11.2 \(3445.5.20\))
+Subject: [rfc] staging:iio:meter: IIO ABI issues
+Message-Id: <6BD44826-5F90-4377-8C15-230ED4014B27@gmail.com>
+Date: Thu, 15 Mar 2018 21:00:11 -0700
+Cc: Jonathan Cameron <jic23@kernel.org>,
+ Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+ Hartmut Knaack <knaack.h@gmx.de>,
+ daniel.baluta@nxp.com
+To: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-The WinSystems WS16C48 device provides 48 lines of digital I/O accessed
-via six 8-bit ports. Since eight input lines are acquired on a single
-port input read, the WS16C48 GPIO driver may improve multiple input
-reads by utilizing a get_multiple callback. This patch implements the
-ws16c48_gpio_get_multiple function which serves as the respective
-get_multiple callback.
+Hi Jonathan,
 
-Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
----
- drivers/gpio/gpio-ws16c48.c | 46 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 46 insertions(+)
+Since this is probably doing to require a few rounds, I have created a =
+new thread for this issue.
 
-diff --git a/drivers/gpio/gpio-ws16c48.c b/drivers/gpio/gpio-ws16c48.c
-index 746648244bf3..9f2e7d0b48f9 100644
---- a/drivers/gpio/gpio-ws16c48.c
-+++ b/drivers/gpio/gpio-ws16c48.c
-@@ -129,6 +129,51 @@ static int ws16c48_gpio_get(struct gpio_chip *chip, unsigned offset)
- 	return !!(port_state & mask);
- }
- 
-+static int ws16c48_gpio_get_multiple(struct gpio_chip *chip,
-+	unsigned long *mask, unsigned long *bits)
-+{
-+	struct ws16c48_gpio *const ws16c48gpio = gpiochip_get_data(chip);
-+	const unsigned int gpio_reg_size = 8;
-+	size_t i;
-+	const size_t num_ports = chip->ngpio / gpio_reg_size;
-+	unsigned int bits_offset;
-+	size_t word_index;
-+	unsigned int word_offset;
-+	unsigned long mask_word;
-+	const unsigned long port_mask = GENMASK(gpio_reg_size, 0);
-+	unsigned long port_state;
-+
-+	/* clear bits array to a clean slate */
-+	bitmap_zero(bits, chip->ngpio);
-+
-+	/* get bits are evaluated a gpio port register at a time */
-+	for (i = 0; i < num_ports; i++) {
-+		/* gpio offset in bits array */
-+		bits_offset = i * gpio_reg_size;
-+
-+		/* word index for bits array */
-+		word_index = BIT_WORD(bits_offset);
-+
-+		/* gpio offset within current word of bits array */
-+		word_offset = bits_offset % BITS_PER_LONG;
-+
-+		/* mask of get bits for current gpio within current word */
-+		word_mask = mask[word_index] & (port_mask << word_offset);
-+		if (!word_mask) {
-+			/* no get bits in this port so skip to next one */
-+			continue;
-+		}
-+
-+		/* read bits from current gpio port */
-+		port_state = inb(ws16c48gpio->base + i);
-+
-+		/* store acquired bits at respective bits array offset */
-+		bits[word_index] |= port_state << word_offset;
-+	}
-+
-+	return 0;
-+}
-+
- static void ws16c48_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
- {
- 	struct ws16c48_gpio *const ws16c48gpio = gpiochip_get_data(chip);
-@@ -383,6 +428,7 @@ static int ws16c48_probe(struct device *dev, unsigned int id)
- 	ws16c48gpio->chip.direction_input = ws16c48_gpio_direction_input;
- 	ws16c48gpio->chip.direction_output = ws16c48_gpio_direction_output;
- 	ws16c48gpio->chip.get = ws16c48_gpio_get;
-+	ws16c48gpio->chip.get_multiple = ws16c48_gpio_get_multiple;
- 	ws16c48gpio->chip.set = ws16c48_gpio_set;
- 	ws16c48gpio->chip.set_multiple = ws16c48_gpio_set_multiple;
- 	ws16c48gpio->base = base[id];
--- 
-2.16.2
+I have been looking at the IIO ABI docs and if I understand correctly, =
+the idea is to use consistent naming conventions? So for example, =
+looking at the ADE7854 datasheet, the naming matching the ADE7854 =
+registers would be as follows:
 
+{direction}_{type}_{index}_{modifier}_{info_mask}
+
+AIGAIN	-	In_current_a_gain
+AVGAIN	-	in_voltage_a_gain
+BIGAIN	-	in_current_b_gain
+BVGAIN	-	in_voltage_b_gain
+=E2=80=94
+How do we represent the rms and offset
+AIRMSOS	-	in_current_a_rmsoffset
+AVRMSOS	-	in_voltage_a_rmsoffset
+=E2=80=94
+Here I don=E2=80=99t understand how to represent both the phase and the =
+active/reactive/apparent power components. Do we combine the phase and =
+quadrature part like this
+AVAGAIN		-	in_power_a_gain				/* =
+apparent power */
+=E2=80=94
+AWGAIN		-	in_power_ai_gain				=
+/* active power */
+=E2=80=94
+AVARGAIN	-	in_power_aq_gain				=
+/* reactive power */
+=E2=80=94
+Now here it becomes more complicated. Not sure how this gets handled.=20
+AFWATTOS	-	in_power_a_active/fundamental/offset
+=E2=80=94
+AWATTHR	-	in_energy_ai_accumulation
+=E2=80=94
+
+
+Thinking about this a little more, perhaps only the attributes that =
+would be used in a user space app need to be this descriptive. Let me =
+explain. Most of the registers on the ADE7878 and even more so on the =
+ADE9000, would have nothing to do with the user space app. Most of these =
+registers are used purely for configuration, settings and calibration.
+
+For these registers, maybe we should use the register name as the =
+modifier. For example:
+
+AIGAIN	-	register_AIGAIN
+
+For measurement registers, we adhere to the traditional naming =
+convention:
+
+AIRMS		-	in_current_a_rms
+AVRMS		-	in_voltage_a_rms
+AWATTHR	-	in_energy_a
+AFWATTHR	-	in_energy_a_fundamental
+AVARHR		-	in_energy_aq				/* I =
+still have a problem with this one */
+AFVARHR	-	in_energy_aq_fundamental	/* See the problem here? =
+*/
+AIMAV		-	in_current_a_mean-abolute-value	/* I=E2=80=99m =
+having a difficult time trying to make this work */
+
+When I look at the ADE9000, the functionality is even more complex, so =
+I=E2=80=99m hoping everyone can offer suggestions on how to resolve =
+this.
+
+Regards,
+John
+
+
+AVARHR		-	in_energy_aq_accumulation
+=E2=80=94
+IPEAK		-	in_current_peak
+=E2=80=94
+
+I=E2=80=99ll leave it there, because there are some even more =
+complicated register naming issues.
+
+Regards,
+John
+
+
+Regards,
+John
