@@ -57,152 +57,123 @@ Cc: iommu@lists.linux-foundation.org,
 	devel@driverdev.osuosl.org,
 	linux-kernel@vger.kernel.org,
 	Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH v2 00/21] Allow compile-testing NO_DMA (drivers)
-Date: Fri, 16 Mar 2018 14:51:33 +0100
-Message-Id: <1521208314-4783-1-git-send-email-geert@linux-m68k.org>
+Subject: [PATCH v2 01/21] ASoC: Remove depends on HAS_DMA in case of platform dependency
+Date: Fri, 16 Mar 2018 14:51:34 +0100
+Message-Id: <1521208314-4783-2-git-send-email-geert@linux-m68k.org>
+In-Reply-To: <1521208314-4783-1-git-send-email-geert@linux-m68k.org>
+References: <1521208314-4783-1-git-send-email-geert@linux-m68k.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-	Hi all,
+Remove dependencies on HAS_DMA where a Kconfig symbol depends on another
+symbol that implies HAS_DMA, and, optionally, on "|| COMPILE_TEST".
+In most cases this other symbol is an architecture or platform specific
+symbol, or PCI.
 
-If NO_DMA=y, get_dma_ops() returns a reference to the non-existing
-symbol bad_dma_ops, thus causing a link failure if it is ever used.
+Generic symbols and drivers without platform dependencies keep their
+dependencies on HAS_DMA, to prevent compiling subsystems or drivers that
+cannot work anyway.
 
-The intention of this is twofold:
-  1. To catch users of the DMA API on systems that do no support the DMA
-     mapping API,
-  2. To avoid building drivers that cannot work on such systems anyway.
+This simplifies the dependencies, and allows to improve compile-testing.
 
-However, the disadvantage is that we have to keep on adding dependencies
-on HAS_DMA all over the place.
+Note:
+  - The various SND_SOC_LPASS_* symbols had to loose their dependencies
+    on HAS_DMA, as they are selected by SND_SOC_STORM and/or
+    SND_SOC_APQ8016_SBC.
 
-Thanks to the COMPILE_TEST symbol, lots of drivers now depend on one or
-more platform dependencies (that imply HAS_DMA) || COMPILE_TEST, thus
-already covering intention #2.  Having to add an explicit dependency on
-HAS_DMA here is cumbersome, and hinders compile-testing.
-
-Hence I think the time is ripe to reconsider the link failure.
-Patch series "[PATCH v2 0/5] Allow compile-testing NO_DMA (core)"
-(https://lkml.org/lkml/2018/3/16/435) already:
-  - Changed get_dma_ops() to return NULL instead,
-  - Added a few more dummies to enable compile-testing.
-
-This patch series:
-  - Removes dependencies on HAS_DMA for symbols that already have
-    platform dependencies implying HAS_DMA.
-
-To avoid allmodconfig/allyesconfig regressions on NO_DMA=y platforms,
-this (drivers) series should be applied after the previous (core)
-series (but not many people may notice/care ;-)
-
-Changes compared to v1:
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Reviewed-by: Mark Brown <broonie@kernel.org>
+Acked-by: Robin Murphy <robin.murphy@arm.com>
+---
+v2:
   - Add Reviewed-by, Acked-by,
+  - Drop RFC state,
   - Drop dependency of SND_SOC_LPASS_IPQ806X on HAS_DMA,
-  - Drop dependency of VIDEOBUF{,2}_DMA_{CONTIG,SG} on HAS_DMA,
-  - Drop new dependencies of VIDEO_IPU3_CIO2, DVB_C8SECTPFE, and
-    MTD_NAND_MARVELL on HAS_DMA,
-  - Split in per-subsystem patches,
-  - Split-off the core part in a separate series.
+  - Split per subsystem.
+---
+ sound/soc/bcm/Kconfig      | 3 +--
+ sound/soc/kirkwood/Kconfig | 1 -
+ sound/soc/pxa/Kconfig      | 1 -
+ sound/soc/qcom/Kconfig     | 7 ++-----
+ 4 files changed, 3 insertions(+), 9 deletions(-)
 
-This series is against v4.16-rc5. It can also be found at
-https://git.kernel.org/pub/scm/linux/kernel/git/geert/linux-m68k.git/log/?h=no-dma-compile-testing-v2
-
-It has been compile-tested with allmodconfig and allyesconfig for
-m68k/sun3, and has received attention from the kbuild test robot.
-
-Thanks!
-
-Geert Uytterhoeven (21):
-  ASoC: Remove depends on HAS_DMA in case of platform dependency
-  ata: Remove depends on HAS_DMA in case of platform dependency
-  crypto: Remove depends on HAS_DMA in case of platform dependency
-  fbdev: Remove depends on HAS_DMA in case of platform dependency
-  firewire: Remove depends on HAS_DMA in case of platform dependency
-  fpga: Remove depends on HAS_DMA in case of platform dependency
-  i2c: Remove depends on HAS_DMA in case of platform dependency
-  iio: adc: Remove depends on HAS_DMA in case of platform dependency
-  iommu: Remove depends on HAS_DMA in case of platform dependency
-  lightnvm: Remove depends on HAS_DMA in case of platform dependency
-  mailbox: Remove depends on HAS_DMA in case of platform dependency
-  media: Remove depends on HAS_DMA in case of platform dependency
-  mmc: Remove depends on HAS_DMA in case of platform dependency
-  mtd: Remove depends on HAS_DMA in case of platform dependency
-  net: Remove depends on HAS_DMA in case of platform dependency
-  remoteproc: Remove depends on HAS_DMA in case of platform dependency
-  scsi: hisi_sas: Remove depends on HAS_DMA in case of platform
-    dependency
-  serial: Remove depends on HAS_DMA in case of platform dependency
-  spi: Remove depends on HAS_DMA in case of platform dependency
-  staging: vc04_services: Remove depends on HAS_DMA in case of platform
-    dependency
-  usb: Remove depends on HAS_DMA in case of platform dependency
-
- drivers/ata/Kconfig                             |  2 --
- drivers/crypto/Kconfig                          | 14 +++------
- drivers/firewire/Kconfig                        |  1 -
- drivers/fpga/Kconfig                            |  1 -
- drivers/i2c/busses/Kconfig                      |  3 --
- drivers/iio/adc/Kconfig                         |  2 --
- drivers/iommu/Kconfig                           |  5 ++--
- drivers/lightnvm/Kconfig                        |  2 +-
- drivers/mailbox/Kconfig                         |  2 --
- drivers/media/common/videobuf2/Kconfig          |  2 --
- drivers/media/pci/dt3155/Kconfig                |  1 -
- drivers/media/pci/intel/ipu3/Kconfig            |  1 -
- drivers/media/pci/solo6x10/Kconfig              |  1 -
- drivers/media/pci/sta2x11/Kconfig               |  1 -
- drivers/media/pci/tw5864/Kconfig                |  1 -
- drivers/media/pci/tw686x/Kconfig                |  1 -
- drivers/media/platform/Kconfig                  | 40 ++++++++-----------------
- drivers/media/platform/am437x/Kconfig           |  2 +-
- drivers/media/platform/atmel/Kconfig            |  4 +--
- drivers/media/platform/blackfin/Kconfig         |  1 -
- drivers/media/platform/davinci/Kconfig          |  6 ----
- drivers/media/platform/marvell-ccic/Kconfig     |  3 +-
- drivers/media/platform/rcar-vin/Kconfig         |  2 +-
- drivers/media/platform/soc_camera/Kconfig       |  3 +-
- drivers/media/platform/sti/c8sectpfe/Kconfig    |  2 +-
- drivers/media/v4l2-core/Kconfig                 |  2 --
- drivers/mmc/host/Kconfig                        | 10 ++-----
- drivers/mtd/nand/Kconfig                        |  8 ++---
- drivers/mtd/spi-nor/Kconfig                     |  2 +-
- drivers/net/ethernet/amd/Kconfig                |  2 +-
- drivers/net/ethernet/apm/xgene-v2/Kconfig       |  1 -
- drivers/net/ethernet/apm/xgene/Kconfig          |  1 -
- drivers/net/ethernet/arc/Kconfig                |  6 ++--
- drivers/net/ethernet/broadcom/Kconfig           |  2 --
- drivers/net/ethernet/calxeda/Kconfig            |  2 +-
- drivers/net/ethernet/hisilicon/Kconfig          |  2 +-
- drivers/net/ethernet/marvell/Kconfig            |  8 ++---
- drivers/net/ethernet/mellanox/mlxsw/Kconfig     |  2 +-
- drivers/net/ethernet/renesas/Kconfig            |  2 --
- drivers/net/wireless/broadcom/brcm80211/Kconfig |  1 -
- drivers/net/wireless/quantenna/qtnfmac/Kconfig  |  2 +-
- drivers/remoteproc/Kconfig                      |  1 -
- drivers/scsi/hisi_sas/Kconfig                   |  2 +-
- drivers/spi/Kconfig                             | 12 ++------
- drivers/staging/media/davinci_vpfe/Kconfig      |  1 -
- drivers/staging/media/omap4iss/Kconfig          |  1 -
- drivers/staging/vc04_services/Kconfig           |  1 -
- drivers/tty/serial/Kconfig                      |  4 ---
- drivers/usb/gadget/udc/Kconfig                  |  4 +--
- drivers/usb/mtu3/Kconfig                        |  2 +-
- drivers/video/fbdev/Kconfig                     |  3 +-
- sound/soc/bcm/Kconfig                           |  3 +-
- sound/soc/kirkwood/Kconfig                      |  1 -
- sound/soc/pxa/Kconfig                           |  1 -
- sound/soc/qcom/Kconfig                          |  7 ++---
- 55 files changed, 56 insertions(+), 143 deletions(-)
-
+diff --git a/sound/soc/bcm/Kconfig b/sound/soc/bcm/Kconfig
+index edf367100ebd2f17..02f50b7a966ff262 100644
+--- a/sound/soc/bcm/Kconfig
++++ b/sound/soc/bcm/Kconfig
+@@ -11,9 +11,8 @@ config SND_BCM2835_SOC_I2S
+ config SND_SOC_CYGNUS
+ 	tristate "SoC platform audio for Broadcom Cygnus chips"
+ 	depends on ARCH_BCM_CYGNUS || COMPILE_TEST
+-	depends on HAS_DMA
+ 	help
+ 	  Say Y if you want to add support for ASoC audio on Broadcom
+ 	  Cygnus chips (bcm958300, bcm958305, bcm911360)
+ 
+-	  If you don't know what to do here, say N.
+\ No newline at end of file
++	  If you don't know what to do here, say N.
+diff --git a/sound/soc/kirkwood/Kconfig b/sound/soc/kirkwood/Kconfig
+index bc3c7b5ac752e471..132bb83f8e99aff3 100644
+--- a/sound/soc/kirkwood/Kconfig
++++ b/sound/soc/kirkwood/Kconfig
+@@ -1,7 +1,6 @@
+ config SND_KIRKWOOD_SOC
+ 	tristate "SoC Audio for the Marvell Kirkwood and Dove chips"
+ 	depends on ARCH_DOVE || ARCH_MVEBU || COMPILE_TEST
+-	depends on HAS_DMA
+ 	help
+ 	  Say Y or M if you want to add support for codecs attached to
+ 	  the Kirkwood I2S interface. You will also need to select the
+diff --git a/sound/soc/pxa/Kconfig b/sound/soc/pxa/Kconfig
+index 484ab3c2ad672fc8..960744e46edc0549 100644
+--- a/sound/soc/pxa/Kconfig
++++ b/sound/soc/pxa/Kconfig
+@@ -1,7 +1,6 @@
+ config SND_PXA2XX_SOC
+ 	tristate "SoC Audio for the Intel PXA2xx chip"
+ 	depends on ARCH_PXA || COMPILE_TEST
+-	depends on HAS_DMA
+ 	select SND_PXA2XX_LIB
+ 	help
+ 	  Say Y or M if you want to add support for codecs attached to
+diff --git a/sound/soc/qcom/Kconfig b/sound/soc/qcom/Kconfig
+index 8ec9a074b38bd702..3cc252e55468eaab 100644
+--- a/sound/soc/qcom/Kconfig
++++ b/sound/soc/qcom/Kconfig
+@@ -11,24 +11,21 @@ config SND_SOC_LPASS_CPU
+ 
+ config SND_SOC_LPASS_PLATFORM
+ 	tristate
+-	depends on HAS_DMA
+ 	select REGMAP_MMIO
+ 
+ config SND_SOC_LPASS_IPQ806X
+ 	tristate
+-	depends on HAS_DMA
+ 	select SND_SOC_LPASS_CPU
+ 	select SND_SOC_LPASS_PLATFORM
+ 
+ config SND_SOC_LPASS_APQ8016
+ 	tristate
+-	depends on HAS_DMA
+ 	select SND_SOC_LPASS_CPU
+ 	select SND_SOC_LPASS_PLATFORM
+ 
+ config SND_SOC_STORM
+ 	tristate "ASoC I2S support for Storm boards"
+-	depends on SND_SOC_QCOM && HAS_DMA
++	depends on SND_SOC_QCOM
+ 	select SND_SOC_LPASS_IPQ806X
+ 	select SND_SOC_MAX98357A
+ 	help
+@@ -37,7 +34,7 @@ config SND_SOC_STORM
+ 
+ config SND_SOC_APQ8016_SBC
+ 	tristate "SoC Audio support for APQ8016 SBC platforms"
+-	depends on SND_SOC_QCOM && HAS_DMA
++	depends on SND_SOC_QCOM
+ 	select SND_SOC_LPASS_APQ8016
+ 	help
+           Support for Qualcomm Technologies LPASS audio block in
 -- 
 2.7.4
-
-Gr{oetje,eeting}s,
-
-						Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-							    -- Linus Torvalds
