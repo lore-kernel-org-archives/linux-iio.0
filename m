@@ -1,17 +1,17 @@
-Return-Path: <SRS0=bQJH=GG=linuxfoundation.org=gregkh@kernel.org>
-Date: Fri, 16 Mar 2018 15:36:45 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Return-Path: <SRS0=k2mn=GG=gondor.apana.org.au=herbert@kernel.org>
+Date: Fri, 16 Mar 2018 23:14:10 +0800
+From: Herbert Xu <herbert@gondor.apana.org.au>
 To: Geert Uytterhoeven <geert@linux-m68k.org>
 Cc: Christoph Hellwig <hch@lst.de>,
 	Marek Szyprowski <m.szyprowski@samsung.com>,
 	Robin Murphy <robin.murphy@arm.com>,
 	Felipe Balbi <balbi@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	"James E . J . Bottomley" <jejb@linux.vnet.ibm.com>,
 	"Martin K . Petersen" <martin.petersen@oracle.com>,
 	Andrew Morton <akpm@linux-foundation.org>,
 	Mark Brown <broonie@kernel.org>,
 	Liam Girdwood <lgirdwood@gmail.com>, Tejun Heo <tj@kernel.org>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
 	"David S . Miller" <davem@davemloft.net>,
 	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
 	Stefan Richter <stefanr@s5r6.in-berlin.de>,
@@ -43,31 +43,44 @@ Cc: Christoph Hellwig <hch@lst.de>,
 	linux-remoteproc@vger.kernel.org, linux-serial@vger.kernel.org,
 	linux-spi@vger.kernel.org, devel@driverdev.osuosl.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 21/21] usb: Remove depends on HAS_DMA in case of
- platform dependency
-Message-ID: <20180316143645.GA32669@kroah.com>
+Subject: Re: [PATCH v2 00/21] Allow compile-testing NO_DMA (drivers)
+Message-ID: <20180316151410.GA6527@gondor.apana.org.au>
 References: <1521208314-4783-1-git-send-email-geert@linux-m68k.org>
- <1521208314-4783-22-git-send-email-geert@linux-m68k.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1521208314-4783-22-git-send-email-geert@linux-m68k.org>
+In-Reply-To: <1521208314-4783-1-git-send-email-geert@linux-m68k.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, Mar 16, 2018 at 02:51:54PM +0100, Geert Uytterhoeven wrote:
-> Remove dependencies on HAS_DMA where a Kconfig symbol depends on another
-> symbol that implies HAS_DMA, and, optionally, on "|| COMPILE_TEST".
-> In most cases this other symbol is an architecture or platform specific
-> symbol, or PCI.
+On Fri, Mar 16, 2018 at 02:51:33PM +0100, Geert Uytterhoeven wrote:
+>
+> This patch series:
+>   - Removes dependencies on HAS_DMA for symbols that already have
+>     platform dependencies implying HAS_DMA.
 > 
-> Generic symbols and drivers without platform dependencies keep their
-> dependencies on HAS_DMA, to prevent compiling subsystems or drivers that
-> cannot work anyway.
+> To avoid allmodconfig/allyesconfig regressions on NO_DMA=y platforms,
+> this (drivers) series should be applied after the previous (core)
+> series (but not many people may notice/care ;-)
 > 
-> This simplifies the dependencies, and allows to improve compile-testing.
+> Changes compared to v1:
+>   - Add Reviewed-by, Acked-by,
+>   - Drop dependency of SND_SOC_LPASS_IPQ806X on HAS_DMA,
+>   - Drop dependency of VIDEOBUF{,2}_DMA_{CONTIG,SG} on HAS_DMA,
+>   - Drop new dependencies of VIDEO_IPU3_CIO2, DVB_C8SECTPFE, and
+>     MTD_NAND_MARVELL on HAS_DMA,
+>   - Split in per-subsystem patches,
+>   - Split-off the core part in a separate series.
 > 
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Reviewed-by: Mark Brown <broonie@kernel.org>
-> Acked-by: Robin Murphy <robin.murphy@arm.com>
-> Acked-by: Felipe Balbi <felipe.balbi@linux.intel.com> [drivers/usb/gadget/]
+> This series is against v4.16-rc5. It can also be found at
+> https://git.kernel.org/pub/scm/linux/kernel/git/geert/linux-m68k.git/log/?h=no-dma-compile-testing-v2
+> 
+> It has been compile-tested with allmodconfig and allyesconfig for
+> m68k/sun3, and has received attention from the kbuild test robot.
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Do these patches have any dependencies? Can they be applied directly
+in a subsystem tree?
+
+Thanks,
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
