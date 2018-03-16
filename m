@@ -1,73 +1,33 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qk0-f193.google.com ([209.85.220.193]:36567 "EHLO
-        mail-qk0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932766AbeCPA2G (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 15 Mar 2018 20:28:06 -0400
-Date: Thu, 15 Mar 2018 21:28:00 -0300
-From: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
-To: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+Return-Path: <SRS0=D4ap=GG=oracle.com=dan.carpenter@kernel.org>
+Date: Fri, 16 Mar 2018 11:02:57 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
+Cc: devel@driverdev.osuosl.org, Lars-Peter Clausen <lars@metafoo.de>,
+        linux-iio@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Barry Song <21cnbao@gmail.com>, John Syne <john3909@gmail.com>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        daniel.baluta@nxp.com, linux-kernel@vger.kernel.org
+        Barry Song <21cnbao@gmail.com>, linux-kernel@vger.kernel.org,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Hartmut Knaack <knaack.h@gmx.de>, daniel.baluta@nxp.com,
+        Jonathan Cameron <jic23@kernel.org>
 Subject: Re: [PATCH 7/7] staging:iio:ade7854: Add proper error handling
  condition
-Message-ID: <20180316002800.mvy75in42y5j2dpz@smtp.gmail.com>
+Message-ID: <20180316080257.dlglfjespmltwo3u@mwanda>
 References: <cover.1521037060.git.rodrigosiqueiramelo@gmail.com>
  <72d5aaef3445edaca08498b4d7aaff19d4ac0232.1521037060.git.rodrigosiqueiramelo@gmail.com>
  <20180315121115.iwkx2dfikgpjeeec@mwanda>
+ <20180316002800.mvy75in42y5j2dpz@smtp.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20180315121115.iwkx2dfikgpjeeec@mwanda>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <20180316002800.mvy75in42y5j2dpz@smtp.gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 03/15, Dan Carpenter wrote:
-> On Wed, Mar 14, 2018 at 03:12:18PM -0300, Rodrigo Siqueira wrote:
-> > There is some improper error handling for IRQ and device register.  This
-> > patch adds a proper verification. The IRQ correction was extracted from
-> > John Syne patches.
-> > 
-> > Signed-off-by: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
-> > Signed-off-by: John Syne <john3909@gmail.com>
-> > ---
-> >  drivers/staging/iio/meter/ade7854.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/staging/iio/meter/ade7854.c b/drivers/staging/iio/meter/ade7854.c
-> > index 09fd8c067738..49cbe365e43d 100644
-> > --- a/drivers/staging/iio/meter/ade7854.c
-> > +++ b/drivers/staging/iio/meter/ade7854.c
-> > @@ -436,7 +436,7 @@ static int ade7854_initial_setup(struct iio_dev *indio_dev)
-> >  
-> >  	/* Disable IRQ */
-> >  	ret = ade7854_set_irq(dev, false);
-> > -	if (ret) {
-> > +	if (ret < 0) {
-> >  		dev_err(dev, "disable irq failed");
-> >  		goto err_ret;
-> >  	}
-> 
-> Why is the original wrong?  It seems fine.
+You're right that there is a bug but this is not the right fix.
 
-Hi,
+The ade7854_i2c_write_reg_32() function returns 6 on success which makes
+no sense.  It should be zero or negative error codes.  All the write_reg
+functions in drivers/staging/iio/meter/ade7854-i2c.c have the same bug.
 
-If you look at "drivers/staging/iio/meter/ade7854-(i2c|spi).c", you will
-find a line like this: " st->write_reg = ade7854_(i2c|spi)_write_reg;".
-Than, if you go through the "ade7854_i2c_write_reg" (focus only on i2c
-for while) you will see "i2c_master_send(st->i2c, st->tx, count)",
-which can returns a positive number that does not necessary means an
-error. If you find the same for the spi case, you will end up in the
-function "spi_sync_transfer" that only return 0 for success or negative
-for failure. So, handling the negative case better fit the i2c and spi case.
+Please, fix that instead and leave ade7854_initial_setup() alone.
 
-Thanks
-
-> regards,
-> dan carpenter
-> 
-> 
+regards,
+dan carpenter
