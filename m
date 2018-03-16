@@ -1,63 +1,34 @@
-Return-Path: <SRS0=bFjq=GD=st.com=fabrice.gasnier@kernel.org>
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-To: <jic23@kernel.org>
+Return-Path: <SRS0=p6sS=GG=st.com=arnaud.pouliquen@kernel.org>
+Subject: Re: [PATCH 0/2] iio: stm32-dfsdm-adc: fix filter & rate setting
+To: Fabrice Gasnier <fabrice.gasnier@st.com>, <jic23@kernel.org>
 CC: <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
         <mcoquelin.stm32@gmail.com>, <alexandre.torgue@st.com>,
-        <fabrice.gasnier@st.com>, <linux-iio@vger.kernel.org>,
-        <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
-        <benjamin.gaignard@linaro.org>, <arnaud.pouliquen@st.com>
-Subject: [PATCH 2/2] iio: adc: stm32-dfsdm: fix sample rate for div2 spi clock
-Date: Tue, 13 Mar 2018 15:23:06 +0100
-Message-ID: <1520950986-23116-3-git-send-email-fabrice.gasnier@st.com>
-In-Reply-To: <1520950986-23116-1-git-send-email-fabrice.gasnier@st.com>
+        <linux-iio@vger.kernel.org>, <lars@metafoo.de>, <knaack.h@gmx.de>,
+        <pmeerw@pmeerw.net>, <benjamin.gaignard@linaro.org>
 References: <1520950986-23116-1-git-send-email-fabrice.gasnier@st.com>
+From: Arnaud Pouliquen <arnaud.pouliquen@st.com>
+Message-ID: <1ddfcfad-f06e-738f-53cf-11dc56e61da1@st.com>
+Date: Fri, 16 Mar 2018 10:10:09 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <1520950986-23116-1-git-send-email-fabrice.gasnier@st.com>
+Content-Type: text/plain; charset="utf-8"
 List-ID: <linux-iio@vger.kernel.org>
 
-When channel clk source is set to "CLKOUT_F" or "CLKOUT_R" (e.g. div2),
-sample rate is currently set to half the requested value.
+Hello,
 
-Fixes: eca949800d2d ("IIO: ADC: add stm32 DFSDM support for PDM
-microphone")
+For the series:
+Acked-by: Arnaud Pouliquen <arnaud.pouliquen@st.com>
 
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
----
- drivers/iio/adc/stm32-dfsdm-adc.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+Thanks,
+Arnaud
 
-diff --git a/drivers/iio/adc/stm32-dfsdm-adc.c b/drivers/iio/adc/stm32-dfsdm-adc.c
-index dc911b6..b28a716 100644
---- a/drivers/iio/adc/stm32-dfsdm-adc.c
-+++ b/drivers/iio/adc/stm32-dfsdm-adc.c
-@@ -771,7 +771,7 @@ static int stm32_dfsdm_write_raw(struct iio_dev *indio_dev,
- 	struct stm32_dfsdm_adc *adc = iio_priv(indio_dev);
- 	struct stm32_dfsdm_filter *fl = &adc->dfsdm->fl_list[adc->fl_id];
- 	struct stm32_dfsdm_channel *ch = &adc->dfsdm->ch_list[chan->channel];
--	unsigned int spi_freq = adc->spi_freq;
-+	unsigned int spi_freq;
- 	int ret = -EINVAL;
- 
- 	switch (mask) {
-@@ -785,8 +785,18 @@ static int stm32_dfsdm_write_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_SAMP_FREQ:
- 		if (!val)
- 			return -EINVAL;
--		if (ch->src != DFSDM_CHANNEL_SPI_CLOCK_EXTERNAL)
-+
-+		switch (ch->src) {
-+		case DFSDM_CHANNEL_SPI_CLOCK_INTERNAL:
- 			spi_freq = adc->dfsdm->spi_master_freq;
-+			break;
-+		case DFSDM_CHANNEL_SPI_CLOCK_INTERNAL_DIV2_FALLING:
-+		case DFSDM_CHANNEL_SPI_CLOCK_INTERNAL_DIV2_RISING:
-+			spi_freq = adc->dfsdm->spi_master_freq / 2;
-+			break;
-+		default:
-+			spi_freq = adc->spi_freq;
-+		}
- 
- 		if (spi_freq % val)
- 			dev_warn(&indio_dev->dev,
--- 
-1.9.1
+On 03/13/2018 03:23 PM, Fabrice Gasnier wrote:
+> This series brings fixes to STM32 DFSDM ADC driver.
+> 
+> Fabrice Gasnier (2):
+>   iio: adc: stm32-dfsdm: fix successive oversampling settings
+>   iio: adc: stm32-dfsdm: fix sample rate for div2 spi clock
+> 
+>  drivers/iio/adc/stm32-dfsdm-adc.c | 17 ++++++++++++++---
+>  1 file changed, 14 insertions(+), 3 deletions(-)
+> 
