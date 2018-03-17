@@ -1,130 +1,186 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f195.google.com ([209.85.161.195]:36621 "EHLO
-        mail-yw0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752527AbeCUSt5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Mar 2018 14:49:57 -0400
-Date: Wed, 21 Mar 2018 14:49:43 -0400
+Received: from mail-yw0-f194.google.com ([209.85.161.194]:39083 "EHLO
+        mail-yw0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753464AbeCQPvN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 17 Mar 2018 11:51:13 -0400
 From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3 3/8] gpio: pci-idio-16: Implement get_multiple callback
-Message-ID: <20180321184943.GA24015@sophia>
+To: linus.walleij@linaro.org
+Cc: andy.shevchenko@gmail.com, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH v3 4/8] gpio: pcie-idio-24: Implement get_multiple/set_multiple callbacks
+Date: Sat, 17 Mar 2018 11:51:07 -0400
+Message-Id: <ef5f9e834305494017af8b3d6f3b22ab7aad1dee.1521301345.git.vilhelm.gray@gmail.com>
+In-Reply-To: <cover.1521301345.git.vilhelm.gray@gmail.com>
 References: <cover.1521301345.git.vilhelm.gray@gmail.com>
- <6ca4bf0ed930c057bdbcd07bab34ed0a474dd78d.1521301345.git.vilhelm.gray@gmail.com>
- <CAHp75Vfhe4qV73+A+X98bo-cpV0du5pwDERwEc0kPLGB612vmw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <CAHp75Vfhe4qV73+A+X98bo-cpV0du5pwDERwEc0kPLGB612vmw@mail.gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Mar 21, 2018 at 07:45:29PM +0200, Andy Shevchenko wrote:
->On Sat, Mar 17, 2018 at 5:50 PM, William Breathitt Gray
-><vilhelm.gray@gmail.com> wrote:
->> The ACCES I/O PCI-IDIO-16 series of devices provides 16
->> optically-isolated digital inputs accessed via two 8-bit ports. Since
->> eight input lines are acquired on a single port input read, the
->> PCI-IDIO-16 GPIO driver may improve multiple input reads by utilizing a
->> get_multiple callback. This patch implements the
->> idio_16_gpio_get_multiple function which serves as the respective
->> get_multiple callback.
->
->> +static int idio_16_gpio_get_multiple(struct gpio_chip *chip,
->> +       unsigned long *mask, unsigned long *bits)
->> +{
->> +       struct idio_16_gpio *const idio16gpio = gpiochip_get_data(chip);
->> +       size_t i;
->> +       const unsigned int gpio_reg_size = 8;
->> +       unsigned int bits_offset;
->> +       size_t word_index;
->> +       unsigned int word_offset;
->> +       unsigned long word_mask;
->
->> +       const unsigned long port_mask = GENMASK(gpio_reg_size, 0);
->
->gpio_reg_size - 1?
+The ACCES I/O PCIe-IDIO-24 series of devices provides 24
+optically-isolated digital I/O accessed via six 8-bit ports. Since eight
+input lines are acquired on a single port input read -- and similarly
+eight output lines are set on a single port output write -- the
+PCIe-IDIO-24 GPIO driver may improve multiple I/O reads/writes by
+utilizing a get_multiple/set_multiple callbacks. This patch implements
+the idio_24_gpio_get_multiple function which serves as the respective
+get_multiple callback, and implements the idio_24_gpio_set_multiple
+function which serves as the respective set_multiple callback.
 
-Oops, looks like I made an off-by-one error here so I'll make sure to
-fix that up.
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+---
+ drivers/gpio/gpio-pcie-idio-24.c | 117 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 117 insertions(+)
 
->Though I would prefer not to have that variable at all, just use 8 or
->7 respectively.
+diff --git a/drivers/gpio/gpio-pcie-idio-24.c b/drivers/gpio/gpio-pcie-idio-24.c
+index f666e2e69074..412aca253c76 100644
+--- a/drivers/gpio/gpio-pcie-idio-24.c
++++ b/drivers/gpio/gpio-pcie-idio-24.c
+@@ -15,6 +15,7 @@
+  * This driver supports the following ACCES devices: PCIe-IDIO-24,
+  * PCIe-IDI-24, PCIe-IDO-24, and PCIe-IDIO-12.
+  */
++#include <linux/bitmap.h>
+ #include <linux/bitops.h>
+ #include <linux/device.h>
+ #include <linux/errno.h>
+@@ -193,6 +194,61 @@ static int idio_24_gpio_get(struct gpio_chip *chip, unsigned int offset)
+ 	return !!(ioread8(&idio24gpio->reg->ttl_in0_7) & offset_mask);
+ }
+ 
++static int idio_24_gpio_get_multiple(struct gpio_chip *chip,
++	unsigned long *mask, unsigned long *bits)
++{
++	struct idio_24_gpio *const idio24gpio = gpiochip_get_data(chip);
++	size_t i;
++	const unsigned int gpio_reg_size = 8;
++	unsigned int bits_offset;
++	size_t word_index;
++	unsigned int word_offset;
++	unsigned long word_mask;
++	const unsigned long port_mask = GENMASK(gpio_reg_size, 0);
++	unsigned long port_state;
++	u8 __iomem ports[] = {
++		idio24gpio->reg->out0_7, idio24gpio->reg->out8_15,
++		idio24gpio->reg->out16_23, idio24gpio->reg->in0_7,
++		idio24gpio->reg->in8_15, idio24gpio->reg->in16_23
++	};
++	const unsigned long out_mode_mask = BIT(1);
++
++	/* clear bits array to a clean slate */
++	bitmap_zero(bits, chip->ngpio);
++
++	/* get bits are evaluated a gpio port register at a time */
++	for (i = 0; i < ARRAY_SIZE(ports); i++) {
++		/* gpio offset in bits array */
++		bits_offset = i * gpio_reg_size;
++
++		/* word index for bits array */
++		word_index = BIT_WORD(bits_offset);
++
++		/* gpio offset within current word of bits array */
++		word_offset = bits_offset % BITS_PER_LONG;
++
++		/* mask of get bits for current gpio within current word */
++		word_mask = mask[word_index] & (port_mask << word_offset);
++		if (!word_mask) {
++			/* no get bits in this port so skip to next one */
++			continue;
++		}
++
++		/* read bits from current gpio port (port 6 is TTL GPIO) */
++		if (i < 6)
++			port_state = ioread8(ports + i);
++		else if (ioread8(&idio24gpio->reg->ctl) & out_mode_mask)
++			port_state = ioread8(&idio24gpio->reg->ttl_out0_7);
++		else
++			port_state = ioread8(&idio24gpio->reg->ttl_in0_7);
++
++		/* store acquired bits at respective bits array offset */
++		bits[word_index] |= port_state << word_offset;
++	}
++
++	return 0;
++}
++
+ static void idio_24_gpio_set(struct gpio_chip *chip, unsigned int offset,
+ 	int value)
+ {
+@@ -234,6 +290,65 @@ static void idio_24_gpio_set(struct gpio_chip *chip, unsigned int offset,
+ 	raw_spin_unlock_irqrestore(&idio24gpio->lock, flags);
+ }
+ 
++static void idio_24_gpio_set_multiple(struct gpio_chip *chip,
++	unsigned long *mask, unsigned long *bits)
++{
++	struct idio_24_gpio *const idio24gpio = gpiochip_get_data(chip);
++	size_t i;
++	unsigned long bits_offset;
++	unsigned long gpio_mask;
++	const unsigned int gpio_reg_size = 8;
++	const unsigned long port_mask = GENMASK(gpio_reg_size, 0);
++	unsigned long flags;
++	unsigned int out_state;
++	u8 __iomem ports[] = {
++		idio24gpio->reg->out0_7, idio24gpio->reg->out8_15,
++		idio24gpio->reg->out16_23
++	};
++	const unsigned long out_mode_mask = BIT(1);
++	const unsigned int ttl_offset = 48;
++	const size_t ttl_i = BIT_WORD(ttl_offset);
++	const unsigned int word_offset = ttl_offset % BITS_PER_LONG;
++	const unsigned long ttl_mask = (mask[ttl_i] >> word_offset) & port_mask;
++	const unsigned long ttl_bits = (bits[ttl_i] >> word_offset) & ttl_mask;
++
++	/* set bits are processed a gpio port register at a time */
++	for (i = 0; i < ARRAY_SIZE(ports); i++) {
++		/* gpio offset in bits array */
++		bits_offset = i * gpio_reg_size;
++
++		/* check if any set bits for current port */
++		gpio_mask = (*mask >> bits_offset) & port_mask;
++		if (!gpio_mask) {
++			/* no set bits for this port so move on to next port */
++			continue;
++		}
++
++		raw_spin_lock_irqsave(&idio24gpio->lock, flags);
++
++		/* process output lines */
++		out_state = ioread8(ports + i) & ~gpio_mask;
++		out_state |= (*bits >> bits_offset) & gpio_mask;
++		iowrite8(out_state, ports + i);
++
++		raw_spin_unlock_irqrestore(&idio24gpio->lock, flags);
++	}
++
++	/* check if setting TTL lines and if they are in output mode */
++	if (!ttl_mask || !(ioread8(&idio24gpio->reg->ctl) & out_mode_mask))
++		return;
++
++	/* handle TTL output */
++	raw_spin_lock_irqsave(&idio24gpio->lock, flags);
++
++	/* process output lines */
++	out_state = ioread8(&idio24gpio->reg->ttl_out0_7) & ~ttl_mask;
++	out_state |= ttl_bits;
++	iowrite8(out_state, &idio24gpio->reg->ttl_out0_7);
++
++	raw_spin_unlock_irqrestore(&idio24gpio->lock, flags);
++}
++
+ static void idio_24_irq_ack(struct irq_data *data)
+ {
+ }
+@@ -397,7 +512,9 @@ static int idio_24_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	idio24gpio->chip.direction_input = idio_24_gpio_direction_input;
+ 	idio24gpio->chip.direction_output = idio_24_gpio_direction_output;
+ 	idio24gpio->chip.get = idio_24_gpio_get;
++	idio24gpio->chip.get_multiple = idio_24_gpio_get_multiple;
+ 	idio24gpio->chip.set = idio_24_gpio_set;
++	idio24gpio->chip.set_multiple = idio_24_gpio_set_multiple;
+ 
+ 	raw_spin_lock_init(&idio24gpio->lock);
+ 
+-- 
+2.16.2
 
-This device is simple enough that throughout this function I could
-inline gpio_reg_size and port_mask to 8 and 0xFF respectively, but I
-would like to keep the code generic enough for reuse in other drivers.
-In addition, I believe the variable names help keep the intention of the
-code clear, so I'll stick with dedicated const variables for now if
-there are no other objections.
-
->
->> +       unsigned long port_state;
->
->> +       u8 __iomem ports[] = {
->> +               idio16gpio->reg->out0_7, idio16gpio->reg->out8_15,
->
->> +               idio16gpio->reg->in0_7, idio16gpio->reg->in8_15
->
->I would leave comma even here.
-
-Will do.
-
->
->> +       };
->
->> +       /* get bits are evaluated a gpio port register at a time */
->> +       for (i = 0; i < ARRAY_SIZE(ports); i++) {
->> +               /* gpio offset in bits array */
->> +               bits_offset = i * gpio_reg_size;
->> +
->> +               /* word index for bits array */
->> +               word_index = BIT_WORD(bits_offset);
->> +
->> +               /* gpio offset within current word of bits array */
->> +               word_offset = bits_offset % BITS_PER_LONG;
->> +
->> +               /* mask of get bits for current gpio within current word */
->> +               word_mask = mask[word_index] & (port_mask << word_offset);
->> +               if (!word_mask) {
->> +                       /* no get bits in this port so skip to next one */
->> +                       continue;
->> +               }
->> +
->> +               /* read bits from current gpio port */
->> +               port_state = ioread8(ports + i);
->> +
->> +               /* store acquired bits at respective bits array offset */
->> +               bits[word_index] |= port_state << word_offset;
->> +       }
->
->I would propose to do other way around, i.e.
->read all ports to the bitmap array and call bitmap_and() after.
->
->Further optimization can be something like introduction of generic
->
->bitmap_copy_uXX_off(unsigned long *dst, u8 src, unsigned int offset);
->
->It can be done using macros, though it's another story not quite
->related to the topic.
-
-Port I/O is significantly more costly to perform than the bitmask
-evaluations for each port. Despite the increased complexity of the loop
-logic, I believe the latency improvements of skipping unnecessary I/O
-port reads are worth the trouble.
-
-I do like the idea of a bitmap_copy_uXX_off macro as that could be quite
-useful in general. Even if not for this particular patchset, I would be
-interested in seeing that functionality added to the bitmap API. Perhaps
-I might implement it as a standlone patch when I have some free time.
-
-William Breathitt Gray
-
->
->> +}
->
->-- 
->With Best Regards,
->Andy Shevchenko
