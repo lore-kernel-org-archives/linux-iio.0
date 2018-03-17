@@ -1,103 +1,109 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f195.google.com ([209.85.161.195]:38591 "EHLO
-        mail-yw0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751691AbeCUQE7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Mar 2018 12:04:59 -0400
-Date: Wed, 21 Mar 2018 12:04:50 -0400
+Received: from mail-yw0-f196.google.com ([209.85.161.196]:42499 "EHLO
+        mail-yw0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753700AbeCQPui (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 17 Mar 2018 11:50:38 -0400
 From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3 2/8] gpio: 104-idio-16: Implement get_multiple callback
-Message-ID: <20180321160450.GA21405@sophia>
+To: linus.walleij@linaro.org
+Cc: andy.shevchenko@gmail.com, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH v3 3/8] gpio: pci-idio-16: Implement get_multiple callback
+Date: Sat, 17 Mar 2018 11:50:31 -0400
+Message-Id: <6ca4bf0ed930c057bdbcd07bab34ed0a474dd78d.1521301345.git.vilhelm.gray@gmail.com>
+In-Reply-To: <cover.1521301345.git.vilhelm.gray@gmail.com>
 References: <cover.1521301345.git.vilhelm.gray@gmail.com>
- <486eb9bad0440ed305a78d9fc990728cbeb7d43e.1521301345.git.vilhelm.gray@gmail.com>
- <CAHp75VcdimgN3u5O5zye2=pXvCkWuZzCf3e0wOQozQoKz7W8yA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <CAHp75VcdimgN3u5O5zye2=pXvCkWuZzCf3e0wOQozQoKz7W8yA@mail.gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Mar 21, 2018 at 05:32:03PM +0200, Andy Shevchenko wrote:
->On Sat, Mar 17, 2018 at 5:50 PM, William Breathitt Gray
-><vilhelm.gray@gmail.com> wrote:
->> The ACCES I/O 104-IDIO-16 series of devices provides 16
->> optically-isolated digital inputs accessed via two 8-bit ports. Since
->> eight input lines are acquired on a single port input read, the
->> 104-IDIO-16 GPIO driver may improve multiple input reads by utilizing a
->> get_multiple callback. This patch implements the
->> idio_16_gpio_get_multiple function which serves as the respective
->> get_multiple callback.
->
->> +static int idio_16_gpio_get_multiple(struct gpio_chip *chip,
->> +       unsigned long *mask, unsigned long *bits)
->> +{
->> +       struct idio_16_gpio *const idio16gpio = gpiochip_get_data(chip);
->> +
->> +       *bits = 0;
->
->> +       if (*mask & 0xFF0000)
->
->GENMASK(23, 16) ?
->
->> +               *bits |= (unsigned long)inb(idio16gpio->base + 1) << 16;
->
->Do you need casting?
->
->> +       if (*mask & 0xFF000000)
->
->GENMASK(31, 24) ?
->
->Alternative (and for above):
->
->(*mask >> 24) & 0xff
->
->(*mask >> 16) & 0xff
+The ACCES I/O PCI-IDIO-16 series of devices provides 16
+optically-isolated digital inputs accessed via two 8-bit ports. Since
+eight input lines are acquired on a single port input read, the
+PCI-IDIO-16 GPIO driver may improve multiple input reads by utilizing a
+get_multiple callback. This patch implements the
+idio_16_gpio_get_multiple function which serves as the respective
+get_multiple callback.
 
-That's a good suggestion since GENMASK would be useful in making it
-clear which bits we are actually checking; the literal bitmasks such as
-0xFF000000 can be difficult to read at a glance. I'll incorporate
-GENMASK into a version 4 release of this patch.
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+---
+ drivers/gpio/gpio-pci-idio-16.c | 50 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 50 insertions(+)
 
->
->
->> +               *bits |= (unsigned long)inb(idio16gpio->base + 5) << 24;
->
->Do you need casting?
+diff --git a/drivers/gpio/gpio-pci-idio-16.c b/drivers/gpio/gpio-pci-idio-16.c
+index 57d1b7fbf07b..f273cf776cac 100644
+--- a/drivers/gpio/gpio-pci-idio-16.c
++++ b/drivers/gpio/gpio-pci-idio-16.c
+@@ -11,6 +11,7 @@
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  * General Public License for more details.
+  */
++#include <linux/bitmap.h>
+ #include <linux/bitops.h>
+ #include <linux/device.h>
+ #include <linux/errno.h>
+@@ -103,6 +104,54 @@ static int idio_16_gpio_get(struct gpio_chip *chip, unsigned int offset)
+ 	return !!(ioread8(&idio16gpio->reg->in8_15) & (mask >> 24));
+ }
+ 
++static int idio_16_gpio_get_multiple(struct gpio_chip *chip,
++	unsigned long *mask, unsigned long *bits)
++{
++	struct idio_16_gpio *const idio16gpio = gpiochip_get_data(chip);
++	size_t i;
++	const unsigned int gpio_reg_size = 8;
++	unsigned int bits_offset;
++	size_t word_index;
++	unsigned int word_offset;
++	unsigned long word_mask;
++	const unsigned long port_mask = GENMASK(gpio_reg_size, 0);
++	unsigned long port_state;
++	u8 __iomem ports[] = {
++		idio16gpio->reg->out0_7, idio16gpio->reg->out8_15,
++		idio16gpio->reg->in0_7, idio16gpio->reg->in8_15
++	};
++
++	/* clear bits array to a clean slate */
++	bitmap_zero(bits, chip->ngpio);
++
++	/* get bits are evaluated a gpio port register at a time */
++	for (i = 0; i < ARRAY_SIZE(ports); i++) {
++		/* gpio offset in bits array */
++		bits_offset = i * gpio_reg_size;
++
++		/* word index for bits array */
++		word_index = BIT_WORD(bits_offset);
++
++		/* gpio offset within current word of bits array */
++		word_offset = bits_offset % BITS_PER_LONG;
++
++		/* mask of get bits for current gpio within current word */
++		word_mask = mask[word_index] & (port_mask << word_offset);
++		if (!word_mask) {
++			/* no get bits in this port so skip to next one */
++			continue;
++		}
++
++		/* read bits from current gpio port */
++		port_state = ioread8(ports + i);
++
++		/* store acquired bits at respective bits array offset */
++		bits[word_index] |= port_state << word_offset;
++	}
++
++	return 0;
++}
++
+ static void idio_16_gpio_set(struct gpio_chip *chip, unsigned int offset,
+ 	int value)
+ {
+@@ -299,6 +348,7 @@ static int idio_16_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	idio16gpio->chip.direction_input = idio_16_gpio_direction_input;
+ 	idio16gpio->chip.direction_output = idio_16_gpio_direction_output;
+ 	idio16gpio->chip.get = idio_16_gpio_get;
++	idio16gpio->chip.get_multiple = idio_16_gpio_get_multiple;
+ 	idio16gpio->chip.set = idio_16_gpio_set;
+ 	idio16gpio->chip.set_multiple = idio_16_gpio_set_multiple;
+ 
+-- 
+2.16.2
 
-The inb function returns a u8, which is typically a typedef of an
-unsigned char. Since u8 only guaranteed a range of 8 bits, we require a
-cast to unsigned long to guarantee that the left shifted value stays
-intact as a 32-bit unsigned value rather than wrap around an 8-bit
-unsigned range.
-
-William Breathitt Gray
-
->
->> +
->> +       return 0;
->> +}
->> +
->>  static void idio_16_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
->>  {
->>         struct idio_16_gpio *const idio16gpio = gpiochip_get_data(chip);
->> @@ -244,6 +258,7 @@ static int idio_16_probe(struct device *dev, unsigned int id)
->>         idio16gpio->chip.direction_input = idio_16_gpio_direction_input;
->>         idio16gpio->chip.direction_output = idio_16_gpio_direction_output;
->>         idio16gpio->chip.get = idio_16_gpio_get;
->> +       idio16gpio->chip.get_multiple = idio_16_gpio_get_multiple;
->>         idio16gpio->chip.set = idio_16_gpio_set;
->>         idio16gpio->chip.set_multiple = idio_16_gpio_set_multiple;
->>         idio16gpio->base = base[id];
->> --
->> 2.16.2
->>
->
->
->
->-- 
->With Best Regards,
->Andy Shevchenko
