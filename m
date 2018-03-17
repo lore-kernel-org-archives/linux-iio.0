@@ -1,58 +1,67 @@
-Return-Path: <SRS0=111V=GH=gmail.com=vilhelm.gray@kernel.org>
-Date: Sat, 17 Mar 2018 15:15:55 -0400
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-yw0-f193.google.com ([209.85.161.193]:37605 "EHLO
+        mail-yw0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753642AbeCQPu1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 17 Mar 2018 11:50:27 -0400
 From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-	"open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v3 1/8] iio: stx104: Implement get_multiple callback
-Message-ID: <20180317191555.GA14672@sophia>
+To: linus.walleij@linaro.org
+Cc: andy.shevchenko@gmail.com, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH v3 2/8] gpio: 104-idio-16: Implement get_multiple callback
+Date: Sat, 17 Mar 2018 11:50:15 -0400
+Message-Id: <486eb9bad0440ed305a78d9fc990728cbeb7d43e.1521301345.git.vilhelm.gray@gmail.com>
+In-Reply-To: <cover.1521301345.git.vilhelm.gray@gmail.com>
 References: <cover.1521301345.git.vilhelm.gray@gmail.com>
- <14a09900bf4642495ebe4072b9eb02769dbc4c5e.1521301345.git.vilhelm.gray@gmail.com>
- <CAHp75Vci2sMWPC2Sij5WzNtSi_2b3f1PC5qn3-hiSf8xrCpcBQ@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <CAHp75Vci2sMWPC2Sij5WzNtSi_2b3f1PC5qn3-hiSf8xrCpcBQ@mail.gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, Mar 17, 2018 at 08:51:07PM +0200, Andy Shevchenko wrote:
->On Sat, Mar 17, 2018 at 5:49 PM, William Breathitt Gray
-><vilhelm.gray@gmail.com> wrote:
->> The Apex Embedded Systems STX104 series of devices provides 4 TTL
->> compatible lines of inputs accessed via a single 4-bit port. Since four
->> input lines are acquired on a single port input read, the STX104 GPIO
->> driver may improve multiple input reads by utilizing a get_multiple
->> callback. This patch implements the stx104_gpio_get_multiple function
->> which serves as the respective get_multiple callback.
->
->> +static int stx104_gpio_get_multiple(struct gpio_chip *chip, unsigned long *mask,
->> +       unsigned long *bits)
->> +{
->> +       struct stx104_gpio *const stx104gpio = gpiochip_get_data(chip);
->> +
->
->> +       *bits = inb(stx104gpio->base);
->
->I think on LE and BE if will give you different results.
+The ACCES I/O 104-IDIO-16 series of devices provides 16
+optically-isolated digital inputs accessed via two 8-bit ports. Since
+eight input lines are acquired on a single port input read, the
+104-IDIO-16 GPIO driver may improve multiple input reads by utilizing a
+get_multiple callback. This patch implements the
+idio_16_gpio_get_multiple function which serves as the respective
+get_multiple callback.
 
-That may be true for a memcpy operation, but in this case I'm relying on
-the standard C evaluation rules. I expect we should be fine with the
-returned byte assigned to an unsigned long, since it'll be evaluated by
-its value rather than memory representation.
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+---
+ drivers/gpio/gpio-104-idio-16.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-William Breathitt Gray
+diff --git a/drivers/gpio/gpio-104-idio-16.c b/drivers/gpio/gpio-104-idio-16.c
+index 2f16638a0589..5de5819e5156 100644
+--- a/drivers/gpio/gpio-104-idio-16.c
++++ b/drivers/gpio/gpio-104-idio-16.c
+@@ -90,6 +90,20 @@ static int idio_16_gpio_get(struct gpio_chip *chip, unsigned offset)
+ 	return !!(inb(idio16gpio->base + 5) & (mask>>8));
+ }
+ 
++static int idio_16_gpio_get_multiple(struct gpio_chip *chip,
++	unsigned long *mask, unsigned long *bits)
++{
++	struct idio_16_gpio *const idio16gpio = gpiochip_get_data(chip);
++
++	*bits = 0;
++	if (*mask & 0xFF0000)
++		*bits |= (unsigned long)inb(idio16gpio->base + 1) << 16;
++	if (*mask & 0xFF000000)
++		*bits |= (unsigned long)inb(idio16gpio->base + 5) << 24;
++
++	return 0;
++}
++
+ static void idio_16_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
+ {
+ 	struct idio_16_gpio *const idio16gpio = gpiochip_get_data(chip);
+@@ -244,6 +258,7 @@ static int idio_16_probe(struct device *dev, unsigned int id)
+ 	idio16gpio->chip.direction_input = idio_16_gpio_direction_input;
+ 	idio16gpio->chip.direction_output = idio_16_gpio_direction_output;
+ 	idio16gpio->chip.get = idio_16_gpio_get;
++	idio16gpio->chip.get_multiple = idio_16_gpio_get_multiple;
+ 	idio16gpio->chip.set = idio_16_gpio_set;
+ 	idio16gpio->chip.set_multiple = idio_16_gpio_set_multiple;
+ 	idio16gpio->base = base[id];
+-- 
+2.16.2
 
->
->> +
->> +       return 0;
->> +}
->
->
->
->-- 
->With Best Regards,
->Andy Shevchenko
