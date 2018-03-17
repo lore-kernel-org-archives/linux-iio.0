@@ -1,105 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f194.google.com ([209.85.161.194]:44643 "EHLO
-        mail-yw0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753670AbeCQPwO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 17 Mar 2018 11:52:14 -0400
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: linus.walleij@linaro.org
-Cc: andy.shevchenko@gmail.com, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v3 8/8] gpio: ws16c48: Implement get_multiple callback
-Date: Sat, 17 Mar 2018 11:52:01 -0400
-Message-Id: <6fce3d38ec4ea09923780db68de6e0091b7c7bdf.1521301345.git.vilhelm.gray@gmail.com>
-In-Reply-To: <cover.1521301345.git.vilhelm.gray@gmail.com>
-References: <cover.1521301345.git.vilhelm.gray@gmail.com>
+Received: from bombadil.infradead.org ([198.137.202.133]:41524 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752726AbeCQUmb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 17 Mar 2018 16:42:31 -0400
+Subject: Re: Unknown symbols in module (iio)
+To: Srishti Sharma <srishtishar@gmail.com>,
+        Linux kernel mailing list <linux-kernel@vger.kernel.org>
+References: <CAB3L5ow-gf0Z7NCRW1V0v+spRF553zx=J_pwc5m5YXxW4S27Lg@mail.gmail.com>
+Cc: linux-iio@vger.kernel.org
+From: Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <a1ceed29-158a-5ba8-6b05-cddd043baef8@infradead.org>
+Date: Sat, 17 Mar 2018 13:42:24 -0700
+MIME-Version: 1.0
+In-Reply-To: <CAB3L5ow-gf0Z7NCRW1V0v+spRF553zx=J_pwc5m5YXxW4S27Lg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The WinSystems WS16C48 device provides 48 lines of digital I/O accessed
-via six 8-bit ports. Since eight input lines are acquired on a single
-port input read, the WS16C48 GPIO driver may improve multiple input
-reads by utilizing a get_multiple callback. This patch implements the
-ws16c48_gpio_get_multiple function which serves as the respective
-get_multiple callback.
+[adding linux-iio mailing list]
 
-Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
----
- drivers/gpio/gpio-ws16c48.c | 47 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 47 insertions(+)
+Hi,
 
-diff --git a/drivers/gpio/gpio-ws16c48.c b/drivers/gpio/gpio-ws16c48.c
-index 746648244bf3..10525367aa6f 100644
---- a/drivers/gpio/gpio-ws16c48.c
-+++ b/drivers/gpio/gpio-ws16c48.c
-@@ -11,6 +11,7 @@
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  * General Public License for more details.
-  */
-+#include <linux/bitmap.h>
- #include <linux/bitops.h>
- #include <linux/device.h>
- #include <linux/errno.h>
-@@ -129,6 +130,51 @@ static int ws16c48_gpio_get(struct gpio_chip *chip, unsigned offset)
- 	return !!(port_state & mask);
- }
- 
-+static int ws16c48_gpio_get_multiple(struct gpio_chip *chip,
-+	unsigned long *mask, unsigned long *bits)
-+{
-+	struct ws16c48_gpio *const ws16c48gpio = gpiochip_get_data(chip);
-+	const unsigned int gpio_reg_size = 8;
-+	size_t i;
-+	const size_t num_ports = chip->ngpio / gpio_reg_size;
-+	unsigned int bits_offset;
-+	size_t word_index;
-+	unsigned int word_offset;
-+	unsigned long word_mask;
-+	const unsigned long port_mask = GENMASK(gpio_reg_size, 0);
-+	unsigned long port_state;
-+
-+	/* clear bits array to a clean slate */
-+	bitmap_zero(bits, chip->ngpio);
-+
-+	/* get bits are evaluated a gpio port register at a time */
-+	for (i = 0; i < num_ports; i++) {
-+		/* gpio offset in bits array */
-+		bits_offset = i * gpio_reg_size;
-+
-+		/* word index for bits array */
-+		word_index = BIT_WORD(bits_offset);
-+
-+		/* gpio offset within current word of bits array */
-+		word_offset = bits_offset % BITS_PER_LONG;
-+
-+		/* mask of get bits for current gpio within current word */
-+		word_mask = mask[word_index] & (port_mask << word_offset);
-+		if (!word_mask) {
-+			/* no get bits in this port so skip to next one */
-+			continue;
-+		}
-+
-+		/* read bits from current gpio port */
-+		port_state = inb(ws16c48gpio->base + i);
-+
-+		/* store acquired bits at respective bits array offset */
-+		bits[word_index] |= port_state << word_offset;
-+	}
-+
-+	return 0;
-+}
-+
- static void ws16c48_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
- {
- 	struct ws16c48_gpio *const ws16c48gpio = gpiochip_get_data(chip);
-@@ -383,6 +429,7 @@ static int ws16c48_probe(struct device *dev, unsigned int id)
- 	ws16c48gpio->chip.direction_input = ws16c48_gpio_direction_input;
- 	ws16c48gpio->chip.direction_output = ws16c48_gpio_direction_output;
- 	ws16c48gpio->chip.get = ws16c48_gpio_get;
-+	ws16c48gpio->chip.get_multiple = ws16c48_gpio_get_multiple;
- 	ws16c48gpio->chip.set = ws16c48_gpio_set;
- 	ws16c48gpio->chip.set_multiple = ws16c48_gpio_set_multiple;
- 	ws16c48gpio->base = base[id];
+It's always a good idea to include the kernel version in a problem report.
+
+
+On 03/05/2018 03:17 AM, Srishti Sharma wrote:
+> Hello,
+> I was trying to work with the iio dummy driver, and when I try to load
+> the iio_dummy_evgen.ko module I am getting unknown symbols found in
+> module error on running modprobe.
+> 
+> These variables are unknown
+> iio_bus_type		>>> in industrialio-core
+> irq_sim_init		>>> in iio_dummy_evgen
+> irq_sim_fini		>>> same
+> irq_sim_fire		>>> same
+> irq_sim_fini		>>> [duplicate]
+
+I tested this using Linux 4.16-rc5.  As long as I manually load all
+modules in the needed order, they will all load with no symbol problems.
+
+
+> All of these variables are present in the Module.symvers file in the
+> /lib/modules/<kernel version>/build directory. The kernel and the
+> modules versions match. I ran make clean, make, and make
+> modules_install before trying to load them. I am unable to figure out
+> the problem. Where I might be going wrong any ideas ?
+
+Were you expecting some module autoloading based on their internal
+dependencies?  If so, maybe someone on the linux-iio mailing list
+could comment on that.
+
+
 -- 
-2.16.2
-
+~Randy
