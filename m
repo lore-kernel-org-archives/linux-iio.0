@@ -1,109 +1,132 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f193.google.com ([209.85.161.193]:41227 "EHLO
-        mail-yw0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932427AbeCOPrS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 15 Mar 2018 11:47:18 -0400
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: linus.walleij@linaro.org
-Cc: andy.shevchenko@gmail.com, linux-gpio@vger.kernel.org,
+Received: from mga04.intel.com ([192.55.52.120]:7454 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1753192AbeCQTQb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 17 Mar 2018 15:16:31 -0400
+Date: Sun, 18 Mar 2018 03:16:08 +0800
+From: kbuild test robot <lkp@intel.com>
+To: William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc: kbuild-all@01.org, linus.walleij@linaro.org,
+        andy.shevchenko@gmail.com, linux-gpio@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v2 3/8] gpio: pci-idio-16: Implement get_multiple callback
-Date: Thu, 15 Mar 2018 11:47:11 -0400
-Message-Id: <b856f88b5f52e1787860f7dbca44673905f79744.1521128287.git.vilhelm.gray@gmail.com>
-In-Reply-To: <cover.1521128287.git.vilhelm.gray@gmail.com>
-References: <cover.1521128287.git.vilhelm.gray@gmail.com>
+Subject: Re: [PATCH v2 3/8] gpio: pci-idio-16: Implement get_multiple callback
+Message-ID: <201803180345.UikgMo06%fengguang.wu@intel.com>
+References: <b856f88b5f52e1787860f7dbca44673905f79744.1521128287.git.vilhelm.gray@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <b856f88b5f52e1787860f7dbca44673905f79744.1521128287.git.vilhelm.gray@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The ACCES I/O PCI-IDIO-16 series of devices provides 16
-optically-isolated digital inputs accessed via two 8-bit ports. Since
-eight input lines are acquired on a single port input read, the
-PCI-IDIO-16 GPIO driver may improve multiple input reads by utilizing a
-get_multiple callback. This patch implements the
-idio_16_gpio_get_multiple function which serves as the respective
-get_multiple callback.
+Hi William,
 
-Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+I love your patch! Perhaps something to improve:
+
+[auto build test WARNING on v4.16-rc4]
+[also build test WARNING on next-20180316]
+[if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
+
+url:    https://github.com/0day-ci/linux/commits/William-Breathitt-Gray/Implement-get_multiple-for-ACCES-and-PC-104-drivers/20180317-224135
+reproduce:
+        # apt-get install sparse
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF=-D__CHECK_ENDIAN__
+
+
+sparse warnings: (new ones prefixed by >>)
+
+   drivers/gpio/gpio-pci-idio-16.c:139:17: sparse: undefined identifier 'word_mask'
+   drivers/gpio/gpio-pci-idio-16.c:140:22: sparse: undefined identifier 'word_mask'
+>> drivers/gpio/gpio-pci-idio-16.c:120:27: sparse: dereference of noderef expression
+   drivers/gpio/gpio-pci-idio-16.c:120:52: sparse: dereference of noderef expression
+   drivers/gpio/gpio-pci-idio-16.c:121:27: sparse: dereference of noderef expression
+   drivers/gpio/gpio-pci-idio-16.c:121:51: sparse: dereference of noderef expression
+>> drivers/gpio/gpio-pci-idio-16.c:139:17: sparse: generating address of non-lvalue (3)
+   drivers/gpio/gpio-pci-idio-16.c: In function 'idio_16_gpio_get_multiple':
+   drivers/gpio/gpio-pci-idio-16.c:139:3: error: 'word_mask' undeclared (first use in this function); did you mean 'port_mask'?
+      word_mask = mask[word_index] & (port_mask << word_offset);
+      ^~~~~~~~~
+      port_mask
+   drivers/gpio/gpio-pci-idio-16.c:139:3: note: each undeclared identifier is reported only once for each function it appears in
+   drivers/gpio/gpio-pci-idio-16.c:146:24: warning: passing argument 1 of 'ioread8' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+      port_state = ioread8(ports + i);
+                           ^~~~~
+   In file included from arch/x86/include/asm/io.h:223:0,
+                    from arch/x86/include/asm/realmode.h:15,
+                    from arch/x86/include/asm/acpi.h:33,
+                    from arch/x86/include/asm/fixmap.h:19,
+                    from arch/x86/include/asm/apic.h:10,
+                    from arch/x86/include/asm/smp.h:13,
+                    from arch/x86/include/asm/mmzone_64.h:11,
+                    from arch/x86/include/asm/mmzone.h:5,
+                    from include/linux/mmzone.h:912,
+                    from include/linux/gfp.h:6,
+                    from include/linux/idr.h:16,
+                    from include/linux/kernfs.h:14,
+                    from include/linux/sysfs.h:16,
+                    from include/linux/kobject.h:20,
+                    from include/linux/device.h:16,
+                    from drivers/gpio/gpio-pci-idio-16.c:16:
+   include/asm-generic/iomap.h:29:21: note: expected 'void *' but argument is of type 'const u8 * {aka const unsigned char *}'
+    extern unsigned int ioread8(void __iomem *);
+                        ^~~~~~~
+   drivers/gpio/gpio-pci-idio-16.c:116:16: warning: unused variable 'mask_word' [-Wunused-variable]
+     unsigned long mask_word;
+                   ^~~~~~~~~
+
+vim +120 drivers/gpio/gpio-pci-idio-16.c
+
+   106	
+   107	static int idio_16_gpio_get_multiple(struct gpio_chip *chip,
+   108		unsigned long *mask, unsigned long *bits)
+   109	{
+   110		struct idio_16_gpio *const idio16gpio = gpiochip_get_data(chip);
+   111		size_t i;
+   112		const unsigned int gpio_reg_size = 8;
+   113		unsigned int bits_offset;
+   114		size_t word_index;
+   115		unsigned int word_offset;
+   116		unsigned long mask_word;
+   117		const unsigned long port_mask = GENMASK(gpio_reg_size, 0);
+   118		unsigned long port_state;
+   119		const u8 __iomem ports[] = {
+ > 120			idio16gpio->reg->out0_7, idio16gpio->reg->out8_15,
+   121			idio16gpio->reg->in0_7, idio16gpio->reg->in8_15
+   122		};
+   123	
+   124		/* clear bits array to a clean slate */
+   125		bitmap_zero(bits, chip->ngpio);
+   126	
+   127		/* get bits are evaluated a gpio port register at a time */
+   128		for (i = 0; i < ARRAY_SIZE(ports); i++) {
+   129			/* gpio offset in bits array */
+   130			bits_offset = i * gpio_reg_size;
+   131	
+   132			/* word index for bits array */
+   133			word_index = BIT_WORD(bits_offset);
+   134	
+   135			/* gpio offset within current word of bits array */
+   136			word_offset = bits_offset % BITS_PER_LONG;
+   137	
+   138			/* mask of get bits for current gpio within current word */
+ > 139			word_mask = mask[word_index] & (port_mask << word_offset);
+   140			if (!word_mask) {
+   141				/* no get bits in this port so skip to next one */
+   142				continue;
+   143			}
+   144	
+   145			/* read bits from current gpio port */
+   146			port_state = ioread8(ports + i);
+   147	
+   148			/* store acquired bits at respective bits array offset */
+   149			bits[word_index] |= port_state << word_offset;
+   150		}
+   151	
+   152		return 0;
+   153	}
+   154	
+
 ---
- drivers/gpio/gpio-pci-idio-16.c | 50 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 50 insertions(+)
-
-diff --git a/drivers/gpio/gpio-pci-idio-16.c b/drivers/gpio/gpio-pci-idio-16.c
-index 57d1b7fbf07b..ef43a37ccaff 100644
---- a/drivers/gpio/gpio-pci-idio-16.c
-+++ b/drivers/gpio/gpio-pci-idio-16.c
-@@ -11,6 +11,7 @@
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  * General Public License for more details.
-  */
-+#include <linux/bitmap.h>
- #include <linux/bitops.h>
- #include <linux/device.h>
- #include <linux/errno.h>
-@@ -103,6 +104,54 @@ static int idio_16_gpio_get(struct gpio_chip *chip, unsigned int offset)
- 	return !!(ioread8(&idio16gpio->reg->in8_15) & (mask >> 24));
- }
- 
-+static int idio_16_gpio_get_multiple(struct gpio_chip *chip,
-+	unsigned long *mask, unsigned long *bits)
-+{
-+	struct idio_16_gpio *const idio16gpio = gpiochip_get_data(chip);
-+	size_t i;
-+	const unsigned int gpio_reg_size = 8;
-+	unsigned int bits_offset;
-+	size_t word_index;
-+	unsigned int word_offset;
-+	unsigned long mask_word;
-+	const unsigned long port_mask = GENMASK(gpio_reg_size, 0);
-+	unsigned long port_state;
-+	const u8 __iomem ports[] = {
-+		idio16gpio->reg->out0_7, idio16gpio->reg->out8_15,
-+		idio16gpio->reg->in0_7, idio16gpio->reg->in8_15
-+	};
-+
-+	/* clear bits array to a clean slate */
-+	bitmap_zero(bits, chip->ngpio);
-+
-+	/* get bits are evaluated a gpio port register at a time */
-+	for (i = 0; i < ARRAY_SIZE(ports); i++) {
-+		/* gpio offset in bits array */
-+		bits_offset = i * gpio_reg_size;
-+
-+		/* word index for bits array */
-+		word_index = BIT_WORD(bits_offset);
-+
-+		/* gpio offset within current word of bits array */
-+		word_offset = bits_offset % BITS_PER_LONG;
-+
-+		/* mask of get bits for current gpio within current word */
-+		word_mask = mask[word_index] & (port_mask << word_offset);
-+		if (!word_mask) {
-+			/* no get bits in this port so skip to next one */
-+			continue;
-+		}
-+
-+		/* read bits from current gpio port */
-+		port_state = ioread8(ports + i);
-+
-+		/* store acquired bits at respective bits array offset */
-+		bits[word_index] |= port_state << word_offset;
-+	}
-+
-+	return 0;
-+}
-+
- static void idio_16_gpio_set(struct gpio_chip *chip, unsigned int offset,
- 	int value)
- {
-@@ -299,6 +348,7 @@ static int idio_16_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	idio16gpio->chip.direction_input = idio_16_gpio_direction_input;
- 	idio16gpio->chip.direction_output = idio_16_gpio_direction_output;
- 	idio16gpio->chip.get = idio_16_gpio_get;
-+	idio16gpio->chip.get_multiple = idio_16_gpio_get_multiple;
- 	idio16gpio->chip.set = idio_16_gpio_set;
- 	idio16gpio->chip.set_multiple = idio_16_gpio_set_multiple;
- 
--- 
-2.16.2
-
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
