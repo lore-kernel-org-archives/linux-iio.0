@@ -1,275 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:44476 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752791AbeCRKFx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 18 Mar 2018 06:05:53 -0400
-Date: Sun, 18 Mar 2018 10:05:47 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
-Cc: John Syne <john3909@gmail.com>, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, Barry Song <21cnbao@gmail.com>,
-        daniel.baluta@nxp.com
-Subject: Re: [PATCH v2 8/8] staging:iio:ade7854: Remove read_reg_*
- duplications
-Message-ID: <20180318100547.11d52bd4@archlinux>
-In-Reply-To: <dce9761d7477287e8b4d043695c064c97859ec58.1521239766.git.rodrigosiqueiramelo@gmail.com>
-References: <cover.1521239766.git.rodrigosiqueiramelo@gmail.com>
-        <dce9761d7477287e8b4d043695c064c97859ec58.1521239766.git.rodrigosiqueiramelo@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from mail-yw0-f195.google.com ([209.85.161.195]:37560 "EHLO
+        mail-yw0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752875AbeCQPtq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 17 Mar 2018 11:49:46 -0400
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: linus.walleij@linaro.org
+Cc: andy.shevchenko@gmail.com, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH v3 0/8] Implement get_multiple for ACCES and PC/104 drivers
+Date: Sat, 17 Mar 2018 11:49:39 -0400
+Message-Id: <cover.1521301345.git.vilhelm.gray@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 16 Mar 2018 19:50:29 -0300
-Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com> wrote:
+Changes in v2:
+  - Add missing bitmap.h header includes
+  - Fix typographical error in symbol name for word_mask
+  - Remove const qualifier for ports array
 
-> The original code had a read function per data size; after updates, all
-> read functions tasks were centralized in a single function, but the old
-> signature was kept to maintain the module working without problems. This
-> patch removes a set of duplications associated with read_reg_*, and
-> update the areas that calling the old interface by the new one. During
-> the update for use a single function, some errors handlings were updated
-> based on the John Syne patches.
-> 
-> Signed-off-by: Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>
-> Signed-off-by: John Syne <john3909@gmail.com>
-The meaning of John's signed-off-by here needs clarifying..
+This patchset implements get_multiple callbacks for the PC104 GPIO
+drivers as well as the PCI-IDIO-16 and PCIe-IDIO-24 GPIO drivers. These
+devices all acquire the multiple input lines with a single read, so
+utilizing the get_multiple callback can provide improvement for those
+users who regularly access multiple input lines.
 
-Also fix up the common on error handling as I believe you now do that in
-an earlier patch.
+While developing this patchset I noticed many of these devices make use
+of Intel 8255 compatible interfaces for their I/O. I may write a generic
+8255 GPIO driver in the future to reduce some of the redundant code I
+see pop among the drivers for these devices.
 
-Thanks and looking forward to v3.  This is a nice little bit of cleanup.
-These weird devices with variable register sizes are always somewhat of
-a pain to deal with.
+William Breathitt Gray (8):
+  iio: stx104: Implement get_multiple callback
+  gpio: 104-idio-16: Implement get_multiple callback
+  gpio: pci-idio-16: Implement get_multiple callback
+  gpio: pcie-idio-24: Implement get_multiple/set_multiple callbacks
+  gpio: 104-dio-48e: Implement get_multiple callback
+  gpio: 104-idi-48: Implement get_multiple callback
+  gpio: gpio-mm: Implement get_multiple callback
+  gpio: ws16c48: Implement get_multiple callback
 
-Jonathan
+ drivers/gpio/gpio-104-dio-48e.c  |  47 ++++++++++++++++
+ drivers/gpio/gpio-104-idi-48.c   |  47 ++++++++++++++++
+ drivers/gpio/gpio-104-idio-16.c  |  15 +++++
+ drivers/gpio/gpio-gpio-mm.c      |  47 ++++++++++++++++
+ drivers/gpio/gpio-pci-idio-16.c  |  50 +++++++++++++++++
+ drivers/gpio/gpio-pcie-idio-24.c | 117 +++++++++++++++++++++++++++++++++++++++
+ drivers/gpio/gpio-ws16c48.c      |  47 ++++++++++++++++
+ drivers/iio/adc/stx104.c         |  11 ++++
+ 8 files changed, 381 insertions(+)
 
-> ---
->  drivers/staging/iio/meter/ade7854-i2c.c | 37 +------------------------------
->  drivers/staging/iio/meter/ade7854-spi.c | 39 ++-------------------------------
->  drivers/staging/iio/meter/ade7854.c     | 18 +++++++--------
->  drivers/staging/iio/meter/ade7854.h     |  7 +++---
->  4 files changed, 15 insertions(+), 86 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/meter/ade7854-i2c.c b/drivers/staging/iio/meter/ade7854-i2c.c
-> index 20db8eedb84a..162c171a8851 100644
-> --- a/drivers/staging/iio/meter/ade7854-i2c.c
-> +++ b/drivers/staging/iio/meter/ade7854-i2c.c
-> @@ -110,38 +110,6 @@ static int ade7854_i2c_read_reg(struct device *dev,
->  	return ret;
->  }
->  
-> -static int ade7854_i2c_read_reg_8(struct device *dev,
-> -				  u16 reg_address,
-> -				  u8 *val)
-> -{
-> -	return ade7854_i2c_read_reg(dev, reg_address, (u32 *)val,
-> -				    DATA_SIZE_8_BITS);
-> -}
-> -
-> -static int ade7854_i2c_read_reg_16(struct device *dev,
-> -				   u16 reg_address,
-> -				   u16 *val)
-> -{
-> -	return ade7854_i2c_read_reg(dev, reg_address, (u32 *)val,
-> -				    DATA_SIZE_16_BITS);
-> -}
-> -
-> -static int ade7854_i2c_read_reg_24(struct device *dev,
-> -				   u16 reg_address,
-> -				   u32 *val)
-> -{
-> -	return ade7854_i2c_read_reg(dev, reg_address, (u32 *)val,
-> -				    DATA_SIZE_24_BITS);
-> -}
-> -
-> -static int ade7854_i2c_read_reg_32(struct device *dev,
-> -				   u16 reg_address,
-> -				   u32 *val)
-> -{
-> -	return ade7854_i2c_read_reg(dev, reg_address, (u32 *)val,
-> -				    DATA_SIZE_32_BITS);
-> -}
-> -
->  static int ade7854_i2c_probe(struct i2c_client *client,
->  			     const struct i2c_device_id *id)
->  {
-> @@ -153,10 +121,7 @@ static int ade7854_i2c_probe(struct i2c_client *client,
->  		return -ENOMEM;
->  	st = iio_priv(indio_dev);
->  	i2c_set_clientdata(client, indio_dev);
-> -	st->read_reg_8 = ade7854_i2c_read_reg_8;
-> -	st->read_reg_16 = ade7854_i2c_read_reg_16;
-> -	st->read_reg_24 = ade7854_i2c_read_reg_24;
-> -	st->read_reg_32 = ade7854_i2c_read_reg_32;
-> +	st->read_reg = ade7854_i2c_read_reg;
->  	st->write_reg = ade7854_i2c_write_reg;
->  	st->i2c = client;
->  	st->irq = client->irq;
-> diff --git a/drivers/staging/iio/meter/ade7854-spi.c b/drivers/staging/iio/meter/ade7854-spi.c
-> index 964d6c6e76d1..66b8a8767a26 100644
-> --- a/drivers/staging/iio/meter/ade7854-spi.c
-> +++ b/drivers/staging/iio/meter/ade7854-spi.c
-> @@ -94,7 +94,7 @@ static int ade7854_spi_read_reg(struct device *dev,
->  	st->tx[2] = reg_address & 0xFF;
->  
->  	ret = spi_sync_transfer(st->spi, xfers, ARRAY_SIZE(xfers));
-> -	if (ret) {
-> +	if (ret < 0) {
->  		dev_err(&st->spi->dev, "problem when reading register 0x%02X",
->  			reg_address);
->  		goto unlock;
-> @@ -120,38 +120,6 @@ static int ade7854_spi_read_reg(struct device *dev,
->  	return ret;
->  }
->  
-> -static int ade7854_spi_read_reg_8(struct device *dev,
-> -				  u16 reg_address,
-> -				  u8 *val)
-> -{
-> -	return ade7854_spi_read_reg(dev, reg_address, (u32 *)val,
-> -				    DATA_SIZE_8_BITS);
-> -}
-> -
-> -static int ade7854_spi_read_reg_16(struct device *dev,
-> -				   u16 reg_address,
-> -				   u16 *val)
-> -{
-> -	return ade7854_spi_read_reg(dev, reg_address, (u32 *)val,
-> -				    DATA_SIZE_16_BITS);
-> -}
-> -
-> -static int ade7854_spi_read_reg_24(struct device *dev,
-> -				   u16 reg_address,
-> -				   u32 *val)
-> -{
-> -	return ade7854_spi_read_reg(dev, reg_address, (u32 *)val,
-> -				    DATA_SIZE_24_BITS);
-> -}
-> -
-> -static int ade7854_spi_read_reg_32(struct device *dev,
-> -				   u16 reg_address,
-> -				   u32 *val)
-> -{
-> -	return ade7854_spi_read_reg(dev, reg_address, (u32 *)val,
-> -				    DATA_SIZE_32_BITS);
-> -}
-> -
->  static int ade7854_spi_probe(struct spi_device *spi)
->  {
->  	struct ade7854_state *st;
-> @@ -162,10 +130,7 @@ static int ade7854_spi_probe(struct spi_device *spi)
->  		return -ENOMEM;
->  	st = iio_priv(indio_dev);
->  	spi_set_drvdata(spi, indio_dev);
-> -	st->read_reg_8 = ade7854_spi_read_reg_8;
-> -	st->read_reg_16 = ade7854_spi_read_reg_16;
-> -	st->read_reg_24 = ade7854_spi_read_reg_24;
-> -	st->read_reg_32 = ade7854_spi_read_reg_32;
-> +	st->read_reg = ade7854_spi_read_reg;
->  	st->write_reg = ade7854_spi_write_reg;
->  	st->irq = spi->irq;
->  	st->spi = spi;
-> diff --git a/drivers/staging/iio/meter/ade7854.c b/drivers/staging/iio/meter/ade7854.c
-> index 4aa7c6ce0016..09fd8c067738 100644
-> --- a/drivers/staging/iio/meter/ade7854.c
-> +++ b/drivers/staging/iio/meter/ade7854.c
-> @@ -27,12 +27,12 @@ static ssize_t ade7854_read_8bit(struct device *dev,
->  				 char *buf)
->  {
->  	int ret;
-> -	u8 val = 0;
-> +	u32 val = 0;
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->  
-> -	ret = st->read_reg_8(dev, this_attr->address, &val);
-> +	ret = st->read_reg(dev, this_attr->address, &val, DATA_SIZE_8_BITS);
->  	if (ret < 0)
->  		return ret;
->  
-> @@ -44,12 +44,12 @@ static ssize_t ade7854_read_16bit(struct device *dev,
->  				  char *buf)
->  {
->  	int ret;
-> -	u16 val = 0;
-> +	u32 val = 0;
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->  
-> -	ret = st->read_reg_16(dev, this_attr->address, &val);
-> +	ret = st->read_reg(dev, this_attr->address, &val, DATA_SIZE_16_BITS);
->  	if (ret < 0)
->  		return ret;
->  
-> @@ -66,7 +66,7 @@ static ssize_t ade7854_read_24bit(struct device *dev,
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->  
-> -	ret = st->read_reg_24(dev, this_attr->address, &val);
-> +	ret = st->read_reg(dev, this_attr->address, &val, DATA_SIZE_24_BITS);
->  	if (ret < 0)
->  		return ret;
->  
-> @@ -83,7 +83,7 @@ static ssize_t ade7854_read_32bit(struct device *dev,
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
->  
-> -	ret = st->read_reg_32(dev, this_attr->address, &val);
-> +	ret = st->read_reg(dev, this_attr->address, &val, DATA_SIZE_32_BITS);
->  	if (ret < 0)
->  		return ret;
->  
-> @@ -178,9 +178,9 @@ static int ade7854_reset(struct device *dev)
->  {
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ade7854_state *st = iio_priv(indio_dev);
-> -	u16 val;
-> +	u32 val;
->  
-> -	st->read_reg_16(dev, ADE7854_CONFIG, &val);
-> +	st->read_reg(dev, ADE7854_CONFIG, &val, DATA_SIZE_16_BITS);
->  	val |= BIT(7); /* Software Chip Reset */
->  
->  	return st->write_reg(dev, ADE7854_CONFIG, val, DATA_SIZE_16_BITS);
-> @@ -415,7 +415,7 @@ static int ade7854_set_irq(struct device *dev, bool enable)
->  	int ret;
->  	u32 irqen;
->  
-> -	ret = st->read_reg_32(dev, ADE7854_MASK0, &irqen);
-> +	ret = st->read_reg(dev, ADE7854_MASK0, &irqen, DATA_SIZE_32_BITS);
->  	if (ret < 0)
->  		return ret;
->  
-> diff --git a/drivers/staging/iio/meter/ade7854.h b/drivers/staging/iio/meter/ade7854.h
-> index aa29faf7c91f..78584f01d052 100644
-> --- a/drivers/staging/iio/meter/ade7854.h
-> +++ b/drivers/staging/iio/meter/ade7854.h
-> @@ -153,6 +153,7 @@ enum data_size {
->  /**
->   * struct ade7854_state - device instance specific data
->   * @spi:		actual spi_device
-> + * @read_reg		Wrapper function for I2C and SPI read
->   * @write_reg		Wrapper function for I2C and SPI write
->   * @indio_dev:		industrial I/O device structure
->   * @buf_lock:		mutex to protect tx and rx
-> @@ -162,10 +163,8 @@ enum data_size {
->  struct ade7854_state {
->  	struct spi_device *spi;
->  	struct i2c_client *i2c;
-> -	int (*read_reg_8)(struct device *dev, u16 reg_address, u8 *val);
-> -	int (*read_reg_16)(struct device *dev, u16 reg_address, u16 *val);
-> -	int (*read_reg_24)(struct device *dev, u16 reg_address, u32 *val);
-> -	int (*read_reg_32)(struct device *dev, u16 reg_address, u32 *val);
-> +	int (*read_reg)(struct device *dev, u16 reg_address, u32 *val,
-> +			int type);
->  	int (*write_reg)(struct device *dev, u16 reg_address, u32 val,
->  			 int type);
->  	int irq;
+-- 
+2.16.2
 
