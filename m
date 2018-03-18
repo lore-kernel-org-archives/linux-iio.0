@@ -1,84 +1,69 @@
-Return-Path: <srishtishar@gmail.com>
+Return-Path: <SRS0=e4jg=GI=gmail.com=davidjulianveenstra@kernel.org>
+Date: Sun, 18 Mar 2018 14:33:52 +0100
+From: David Veenstra <davidjulianveenstra@gmail.com>
+To: lars@metafoo.de, jic23@kernel.org
+Cc: Michael.Hennerich@analog.com, knaack.h@gmx.de,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
+Subject: [PATCH 00/11] staging: iio: ad2s1200: Driver clean up
+Message-ID: <cover.1521379685.git.davidjulianveenstra@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20180318110416.30b45043@archlinux>
-References: <CAB3L5ow-gf0Z7NCRW1V0v+spRF553zx=J_pwc5m5YXxW4S27Lg@mail.gmail.com>
- <a1ceed29-158a-5ba8-6b05-cddd043baef8@infradead.org> <20180318110416.30b45043@archlinux>
-From: Srishti Sharma <srishtishar@gmail.com>
-Date: Sun, 18 Mar 2018 17:30:22 +0530
-Message-ID: <CAB3L5owZTL2wBNzS4XRB9zEKfHOqMDM-AkA-t804XdT_Gszhcg@mail.gmail.com>
-Subject: Re: Unknown symbols in module (iio)
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc: Randy Dunlap <rdunlap@infradead.org>,
-	Linux kernel mailing list <linux-kernel@vger.kernel.org>, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, Mar 18, 2018 at 4:34 PM, Jonathan Cameron
-<jic23@jic23.retrosnub.co.uk> wrote:
-> On Sat, 17 Mar 2018 13:42:24 -0700
-> Randy Dunlap <rdunlap@infradead.org> wrote:
->
->> [adding linux-iio mailing list]
->>
->> Hi,
->>
->> It's always a good idea to include the kernel version in a problem report.
->>
->>
->> On 03/05/2018 03:17 AM, Srishti Sharma wrote:
->> > Hello,
->> > I was trying to work with the iio dummy driver, and when I try to load
->> > the iio_dummy_evgen.ko module I am getting unknown symbols found in
->> > module error on running modprobe.
->> >
->> > These variables are unknown
->> > iio_bus_type                >>> in industrialio-core
->> > irq_sim_init                >>> in iio_dummy_evgen
->> > irq_sim_fini                >>> same
->> > irq_sim_fire                >>> same
->> > irq_sim_fini                >>> [duplicate]
->>
->> I tested this using Linux 4.16-rc5.  As long as I manually load all
->> modules in the needed order, they will all load with no symbol problems.
->>
->>
->> > All of these variables are present in the Module.symvers file in the
->> > /lib/modules/<kernel version>/build directory. The kernel and the
->> > modules versions match. I ran make clean, make, and make
->> > modules_install before trying to load them. I am unable to figure out
->> > the problem. Where I might be going wrong any ideas ?
->>
->> Were you expecting some module autoloading based on their internal
->> dependencies?  If so, maybe someone on the linux-iio mailing list
->> could comment on that.
->>
->>
-> Hi Randy,
->
-> Thanks for following up on this. Looks like Srishti followed this
-> with an email to the linux-iio list.  I sent a quick reply but haven't
-> heard back yet.
->
-> https://marc.info/?l=linux-iio&m=152024876720954&w=2
->
-> Superficially I was guessing that Srishti had missed the fact that irqsim
-> is built into the kernel rather than as a module, so a reboot would have
-> been required as well.
->
-> Srishti, if you do try a message on multiple lists, please do it by
-> replying to the original thread and cc'ing the new one.  That way we save
-> time by avoiding duplication of efforts on different lists.
-> (at least I am assuming you sent it to one list then the other?)
+Please forget the previous 3 emails, I forgot the message-id and
+reply-to business.
 
-Hey,
-I am sorry for the late reply, the solution Jonathan had proposed i.e;
-reinstalling the kernel after configuring it for loading the required
-modules worked for me, Thank you so much.
+This patch series is meant to move the ad2s1200 driver to mainline. In short
+the following is done:
 
-Regards,
-Srishti
+1. Clean up of minor code style issues
+2. Fix minor bugs
+3. Replace legacy GPIO ABI with modern ABI
+4. Change the channel definitions of angular position and angular
+   velocity to match the sysfs IIO ABI.
 
->
-> Thanks,
->
-> Jonathan
+The channel for angular position had to be changed to another type
+as there is no definition for IIO_ANGL in sysfs IIO ABI. There are other
+types that model some kind of rotation, the candidates are:
+- in_rot_from_north_*
+- in_rot_quaternion
+- in_incli
+
+The in_rot_from_north_*_raw family is a rotation relevative to the
+geographical north, or the magnetic north. These semantics are not a
+good fit for the angular position of a resolver. The
+in_rot_quaternion_raw als does not seem like a good choice, as it is
+overkill for a rotation over a single and fixed axis. This is also
+likely to be a cubersome format for users of the ABI interface. Finally,
+there is in_incli which seems to be meant for any kind of inclination,
+given in degrees. In my opinion in_incli is the best choice, as
+it has a conveniant format and has semantics similar to that of angular
+position.
+
+David Veenstra (11):
+  staging: iio: ad2s1200: Sort includes alphabetically
+  staging: iio: ad2s1200: Reverse Christmas tree order
+  staging: iio: ad2s1200: Add blank lines
+  staging: iio: ad2s1200: Add kernel docs to driver state
+  staging: iio: ad2s1200: Introduce variable for repeated value
+  staging: iio: ad2s1200: Improve readability with be16_to_cpup
+  staging: iio: ad2s1200: Ensure udelay(1) in all necessary code paths
+  staging: iio: ad2s1200: Replace legacy gpio ABI with modern ABI
+  staging: iio: ad2s1200: Add scaling factor for IIO_ANGL_VEL channel
+  staging: iio: ad2s1200: Replace angle channel with inclination channel
+  Move resolver ad2c1200 driver out of staging to mainline iio
+
+ drivers/iio/Kconfig                           |   1 +
+ drivers/iio/Makefile                          |   1 +
+ drivers/iio/resolver/Kconfig                  |  17 +++
+ drivers/iio/resolver/Makefile                 |   5 +
+ drivers/{staging => }/iio/resolver/ad2s1200.c | 177 ++++++++++++++++++--------
+ drivers/staging/iio/resolver/Kconfig          |  12 --
+ drivers/staging/iio/resolver/Makefile         |   1 -
+ 7 files changed, 151 insertions(+), 63 deletions(-)
+ create mode 100644 drivers/iio/resolver/Kconfig
+ create mode 100644 drivers/iio/resolver/Makefile
+ rename drivers/{staging => }/iio/resolver/ad2s1200.c (50%)
+
+-- 
+2.16.2
