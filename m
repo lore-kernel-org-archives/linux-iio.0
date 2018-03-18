@@ -1,115 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:41090 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751891AbeCXOE4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 24 Mar 2018 10:04:56 -0400
-Date: Sat, 24 Mar 2018 14:04:51 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: David Julian Veenstra <davidjulianveenstra@gmail.com>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, lars@metafoo.de,
-        Michael.Hennerich@analog.com, knaack.h@gmx.de,
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:52140 "EHLO
+        mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752372AbeCRNgB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 18 Mar 2018 09:36:01 -0400
+Received: by mail-wm0-f67.google.com with SMTP id h21so10721274wmd.1
+        for <linux-iio@vger.kernel.org>; Sun, 18 Mar 2018 06:36:01 -0700 (PDT)
+Date: Sun, 18 Mar 2018 14:35:58 +0100
+From: David Veenstra <davidjulianveenstra@gmail.com>
+To: lars@metafoo.de, jic23@kernel.org
+Cc: Michael.Hennerich@analog.com, knaack.h@gmx.de,
         linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
-Subject: Re: [PATCH 05/11] staging: iio: ad2s1200: Introduce variable for
- repeated value
-Message-ID: <20180324140451.54add9cb@archlinux>
-In-Reply-To: <87efk9mznl.fsf@gmail.com>
+Subject: [PATCH 06/11] staging: iio: ad2s1200: Improve readability with
+ be16_to_cpup
+Message-ID: <f27f082d3034fd5e560db4ceb61b276d44e850ea.1521379685.git.davidjulianveenstra@gmail.com>
 References: <cover.1521379685.git.davidjulianveenstra@gmail.com>
-        <bee0f530c7bc4756a1c4fd3b533a6496d17d1a62.1521379685.git.davidjulianveenstra@gmail.com>
-        <20180323141703.000028b5@huawei.com>
-        <87efk9mznl.fsf@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <cover.1521379685.git.davidjulianveenstra@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, 24 Mar 2018 13:22:22 +0100
-David Julian Veenstra <davidjulianveenstra@gmail.com> wrote:
+The manual states that the data is contained in the upper 12 bits
+of the 16 bits read by spi. The code that extracts these 12 bits
+is correct for both be and le machines, but this is not clear
+from a first glance.
 
-> On 23, March 2018 14:17, Jonathan Cameron wrote:
-> 
-> > On Sun, 18 Mar 2018 14:35:46 +0100
-> > David Veenstra <davidjulianveenstra@gmail.com> wrote:
-> >  
-> >> Add variable to hold &spi->dev in ad2s1200_probe. This value is repeatedly
-> >> used in ad2s1200_probe.
-> >> 
-> >> Signed-off-by: David Veenstra <davidjulianveenstra@gmail.com>  
-> > I'm a little unconvinced by this one. It adds code to save
-> > a really very trivial bit of repetition.  If it had been
-> > via another pointer or this would have made a big difference
-> > in number of lines by bringing a lot of entries below 80 chars
-> > that weren't previous, then there would be a good argument.
-> >
-> > Here, not so much.  
-> 
-> The 9th patch adds another 4 occurrences. So in total &st->dev appears
-> 9 times in ad2s1200_probe. To me it seemed worth it to
-> introduce a variable for it. But I agree that it doesn't add much.
-> 
-> Best regards,
-> David Veenstra
-> 
-OK, up to you then, I don't care enough to resist the change.
+To improve readability the relevant expressions are replaced
+with equivalent expressions that use be16_to_cpup.
 
-Jonathan
+Signed-off-by: David Veenstra <davidjulianveenstra@gmail.com>
+---
+ drivers/staging/iio/resolver/ad2s1200.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-
-> >
-> > Jonathan  
-> >> ---
-> >>  drivers/staging/iio/resolver/ad2s1200.c | 13 ++++++++-----
-> >>  1 file changed, 8 insertions(+), 5 deletions(-)
-> >> 
-> >> diff --git a/drivers/staging/iio/resolver/ad2s1200.c b/drivers/staging/iio/resolver/ad2s1200.c
-> >> index 00efba598671..eceb86e952de 100644
-> >> --- a/drivers/staging/iio/resolver/ad2s1200.c
-> >> +++ b/drivers/staging/iio/resolver/ad2s1200.c
-> >> @@ -118,19 +118,22 @@ static int ad2s1200_probe(struct spi_device *spi)
-> >>  	unsigned short *pins = spi->dev.platform_data;
-> >>  	struct ad2s1200_state *st;
-> >>  	struct iio_dev *indio_dev;
-> >> +	struct device *dev;
-> >>  	int pn, ret = 0;
-> >>  
-> >> +	dev = &spi->dev;
-> >> +
-> >>  	for (pn = 0; pn < AD2S1200_PN; pn++) {
-> >> -		ret = devm_gpio_request_one(&spi->dev, pins[pn], GPIOF_DIR_OUT,
-> >> +		ret = devm_gpio_request_one(dev, pins[pn], GPIOF_DIR_OUT,
-> >>  					    DRV_NAME);
-> >>  		if (ret) {
-> >> -			dev_err(&spi->dev, "request gpio pin %d failed\n",
-> >> +			dev_err(dev, "request gpio pin %d failed\n",
-> >>  				pins[pn]);
-> >>  			return ret;
-> >>  		}
-> >>  	}
-> >>  
-> >> -	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> >> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
-> >>  	if (!indio_dev)
-> >>  		return -ENOMEM;
-> >>  
-> >> @@ -141,14 +144,14 @@ static int ad2s1200_probe(struct spi_device *spi)
-> >>  	st->sample = pins[0];
-> >>  	st->rdvel = pins[1];
-> >>  
-> >> -	indio_dev->dev.parent = &spi->dev;
-> >> +	indio_dev->dev.parent = dev;
-> >>  	indio_dev->info = &ad2s1200_info;
-> >>  	indio_dev->modes = INDIO_DIRECT_MODE;
-> >>  	indio_dev->channels = ad2s1200_channels;
-> >>  	indio_dev->num_channels = ARRAY_SIZE(ad2s1200_channels);
-> >>  	indio_dev->name = spi_get_device_id(spi)->name;
-> >>  
-> >> -	ret = devm_iio_device_register(&spi->dev, indio_dev);
-> >> +	ret = devm_iio_device_register(dev, indio_dev);
-> >>  	if (ret)
-> >>  		return ret;
-> >>    
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/staging/iio/resolver/ad2s1200.c b/drivers/staging/iio/resolver/ad2s1200.c
+index eceb86e952de..e0e7c88368ed 100644
+--- a/drivers/staging/iio/resolver/ad2s1200.c
++++ b/drivers/staging/iio/resolver/ad2s1200.c
+@@ -58,7 +58,7 @@ static int ad2s1200_read_raw(struct iio_dev *indio_dev,
+ {
+ 	struct ad2s1200_state *st = iio_priv(indio_dev);
+ 	int ret = 0;
+-	s16 vel;
++	u16 vel;
+ 
+ 	mutex_lock(&st->lock);
+ 	gpio_set_value(st->sample, 0);
+@@ -74,14 +74,13 @@ static int ad2s1200_read_raw(struct iio_dev *indio_dev,
+ 		return ret;
+ 	}
+ 
++	vel = be16_to_cpup((__be16 *)st->rx);
+ 	switch (chan->type) {
+ 	case IIO_ANGL:
+-		*val = (((u16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >> 4);
++		*val = vel >> 4;
+ 		break;
+ 	case IIO_ANGL_VEL:
+-		vel = (((s16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >> 4);
+-		vel = sign_extend32(vel, 11);
+-		*val = vel;
++		*val = sign_extend32((s16)vel >> 4, 11);
+ 		break;
+ 	default:
+ 		mutex_unlock(&st->lock);
+-- 
+2.16.2
 
