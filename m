@@ -1,149 +1,364 @@
-Return-Path: <SRS0=UKhD=GV=axentia.se=peda@kernel.org>
-Subject: Re: [PATCH 2/3] dt-bindings: iio: wrapper: add
- io-channel-unit-converter
-To: Rob Herring <robh@kernel.org>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
- Mark Rutland <mark.rutland@arm.com>, "David S. Miller"
- <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Linus Walleij <linus.walleij@linaro.org>,
- Randy Dunlap <rdunlap@infradead.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org
-References: <20180319170246.26830-1-peda@axentia.se>
- <20180319170246.26830-3-peda@axentia.se>
- <20180326222326.sxdeawy5x5bjkla4@rob-hp-laptop>
- <986a7404-e157-6a1b-0610-07d1e127465f@axentia.se>
- <CAL_JsqJ3RZoMX+Q5boK-w3uHc=qgPCye7esXxJuwQcMM0HPLNw@mail.gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-eopbgr40134.outbound.protection.outlook.com ([40.107.4.134]:54118
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S967781AbeCSRDO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 19 Mar 2018 13:03:14 -0400
 From: Peter Rosin <peda@axentia.se>
-Message-ID: <96e221e1-9f6f-40cc-1b80-6d33acfdb933@axentia.se>
-Date: Sat, 31 Mar 2018 00:38:07 +0200
+To: linux-kernel@vger.kernel.org
+Cc: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH 3/3] iio: wrapper: unit-converter: new driver
+Date: Mon, 19 Mar 2018 18:02:46 +0100
+Message-Id: <20180319170246.26830-4-peda@axentia.se>
+In-Reply-To: <20180319170246.26830-1-peda@axentia.se>
+References: <20180319170246.26830-1-peda@axentia.se>
 MIME-Version: 1.0
-In-Reply-To: <CAL_JsqJ3RZoMX+Q5boK-w3uHc=qgPCye7esXxJuwQcMM0HPLNw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 2018-03-29 15:55, Rob Herring wrote:
-> On Tue, Mar 27, 2018 at 3:01 AM, Peter Rosin <peda@axentia.se> wrote:
->> On 2018-03-27 00:23, Rob Herring wrote:
->>> On Mon, Mar 19, 2018 at 06:02:45PM +0100, Peter Rosin wrote:
->>>> Allow linear scaling and modification of the type of an io-channel.
->>>>
->>>> When an ADC channel measures the midpoint of a voltage divider, the
->>>> interesting voltage is often the voltage over the full resistance
->>>> of the divider. Likewise, measuring the voltage over a resistor is
->>>> often a way to get to the current through it.
->>>>
->>>> This binding allows description of such hardware which is external
->>>> to the ADC.
->>>>
->>>> Signed-off-by: Peter Rosin <peda@axentia.se>
->>>> ---
->>>>  .../iio/wrapper/io-channel-unit-converter.txt      | 84 ++++++++++++++++++++++
->>>>  MAINTAINERS                                        |  6 ++
->>>>  2 files changed, 90 insertions(+)
->>>>  create mode 100644 Documentation/devicetree/bindings/iio/wrapper/io-channel-unit-converter.txt
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/iio/wrapper/io-channel-unit-converter.txt b/Documentation/devicetree/bindings/iio/wrapper/io-channel-unit-converter.txt
->>>> new file mode 100644
->>>> index 000000000000..23af661abe32
->>>> --- /dev/null
->>>> +++ b/Documentation/devicetree/bindings/iio/wrapper/io-channel-unit-converter.txt
->>>> @@ -0,0 +1,84 @@
->>>> +I/O channel unit converter bindings
->>>> +
->>>> +Allow linear scaling and modification of the type of an io-channel.
->>>> +
->>>> +When an ADC channel measures the midpoint of a voltage divider, the
->>>> +interesting voltage is often the voltage over the full resistance
->>>> +of the divider. Likewise, measuring the voltage over a resistor is
->>>> +often a way to get to the current through it.
->>>> +
->>>> +Required properties:
->>>> +- compatible : "io-channel-unit-converter"
->>>
->>> Would this apply to something besides ADCs?
->>
->> Not that I can think of. At the moment.
->>
->>>> +- io-channels : Channel node of the parent channel.
->>>> +- io-channel-names : Should be "parent".
->>>> +
->>>> +Optional properties:
->>>> +- numerator : The parent channel scale is multiplied by this value (default 1).
->>>> +- denominator : The parent channel scale is divided by this value (default 1).
->>>> +- type : The type of the wrapped channel is modified to this type. The default
->>>> +     is to use the same type as the parent channel. Recognized types are:
->>>> +            "voltage"
->>>> +            "current"
->>>
->>> This seems overly complicated for just describing a couple of resistors
->>> on an ADC. OTOH, keeping the ADC node and what's attached to the ADC
->>> separate
->>>
->>> Perhaps the type should be part of the compatible. For example, if you
->>> have a current measurement resistor/circuit, then the compatible should
->>> be based on that.
->>
->> Is a compatible like "current-sense-circuit" too long(ish)?
-> 
-> No, that's fine.
-> 
->> Is a vendor prefix absolutely required?
-> 
-> No, it can be common.
-> 
->> Sure, I can use "axentia,"
->> because we "implemented" the circuit this time, but it seems like
->> the list can grow very long if we should add every vendor that
->> may use something like this? Something more generic would be good
->> for something as simple as this IMHO.
->>
->> I propose the compatible "voltage-divider" for the other example,
->> but I have the same issue with the vendor prefix. Even more so
->> in this case.
-> 
-> "voltage-divider" doesn't really say what the purpose is.
+If an ADC channel measures the midpoint of a voltage divider, the
+interesting voltage is often the voltage over the full resistance.
+E.g. if the full voltage it too big for the ADC to handle.
+Likewise, if an ADC channel measures the voltage across a resistor,
+the interesting value is often the current through the resistor.
 
-No, but it says what it *is*, which is pretty much what the compatible
-is all about? If you have, I don't know, let's pick some regulator, you
-don't expect the compatible to give any details of the purpose. Not
-other than regulating of course. But a voltage divider pretty much divides
-a voltage, much like a regulator regulates, and that's it. The node name
-should be what hints at the purpose, no?
+This driver solves both problems by allowing to linearly scale a channel
+and by allowing changes to the type of the channel. Or both.
 
->>
->> Then the above type can be inferred from the compatible. I suppose
->> I should write the above two bindings as two separate files?
-> 
-> One is fine if the only difference is the compatible.
-> 
->>>> +
->>>> +Example 1:
->>>> +The system voltage is circa 12V, but divided down with a 22/200
->>>> +voltage divider to adjust it to the ADC range.
->>>> +
->>>> +SYSV        ADC       GND
->>>> +  +          +         +
->>>> +  |  .-----. | .----.  |
->>>> +  '--| 200 |-+-| 22 |--'
->>>> +     '-----'   '----'
->>>> +
->>>> +sysv {
->>>> +    compatible = "io-channel-unit-converter";
->>>> +    io-channles = <&maxadc 1>;
->>>> +    io-channel-names = "parent";
->>>
->>> parent doesn't seem to describe something about the h/w.
->>
->> Extrapolating from your first question, you are thinking "adc", right?
-> 
-> I don't really have any suggestion. With only 1 channel, there's not
-> really much point to having a name at all.
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ MAINTAINERS                              |   1 +
+ drivers/iio/wrapper/Kconfig              |   9 ++
+ drivers/iio/wrapper/Makefile             |   1 +
+ drivers/iio/wrapper/iio-unit-converter.c | 268 +++++++++++++++++++++++++++++++
+ 4 files changed, 279 insertions(+)
+ create mode 100644 drivers/iio/wrapper/iio-unit-converter.c
 
-Right, I'm ditching the -names line.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 5dd555c7b1b0..b879289f1318 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -6889,6 +6889,7 @@ M:	Peter Rosin <peda@axentia.se>
+ L:	linux-iio@vger.kernel.org
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/iio/wrapper/io-channel-unit-converter.txt
++F:	drivers/iio/wrapper/iio-unit-converter.c
+ 
+ IKANOS/ADI EAGLE ADSL USB DRIVER
+ M:	Matthieu Castet <castet.matthieu@free.fr>
+diff --git a/drivers/iio/wrapper/Kconfig b/drivers/iio/wrapper/Kconfig
+index f27de347c9b3..16554479264a 100644
+--- a/drivers/iio/wrapper/Kconfig
++++ b/drivers/iio/wrapper/Kconfig
+@@ -15,4 +15,13 @@ config IIO_MUX
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called iio-mux.
+ 
++config IIO_UNIT_CONVERTER
++	tristate "IIO unit converter"
++	depends on OF || COMPILE_TEST
++	help
++	  Say yes here to build support for the IIO unit converter.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called iio-unit-converter.
++
+ endmenu
+diff --git a/drivers/iio/wrapper/Makefile b/drivers/iio/wrapper/Makefile
+index 53a7b78734e3..1b9db53bd420 100644
+--- a/drivers/iio/wrapper/Makefile
++++ b/drivers/iio/wrapper/Makefile
+@@ -4,3 +4,4 @@
+ 
+ # When adding new entries keep the list in alphabetical order
+ obj-$(CONFIG_IIO_MUX) += iio-mux.o
++obj-$(CONFIG_IIO_UNIT_CONVERTER) += iio-unit-converter.o
+diff --git a/drivers/iio/wrapper/iio-unit-converter.c b/drivers/iio/wrapper/iio-unit-converter.c
+new file mode 100644
+index 000000000000..53c126f39e4e
+--- /dev/null
++++ b/drivers/iio/wrapper/iio-unit-converter.c
+@@ -0,0 +1,268 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * IIO unit converter
++ *
++ * Copyright (C) 2018 Axentia Technologies AB
++ *
++ * Author: Peter Rosin <peda@axentia.se>
++ */
++
++#include <linux/err.h>
++#include <linux/iio/consumer.h>
++#include <linux/iio/iio.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
++#include <linux/property.h>
++
++struct unit_converter {
++	struct iio_channel *parent;
++	struct iio_dev *indio_dev;
++	struct iio_chan_spec chan;
++	struct iio_chan_spec_ext_info *ext_info;
++	s32 numerator;
++	s32 denominator;
++};
++
++static int unit_converter_read_raw(struct iio_dev *indio_dev,
++				   struct iio_chan_spec const *chan,
++				   int *val, int *val2, long mask)
++{
++	struct unit_converter *uc = iio_priv(indio_dev);
++	unsigned long long tmp;
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		return iio_read_channel_raw(uc->parent, val);
++
++	case IIO_CHAN_INFO_SCALE:
++		ret = iio_read_channel_scale(uc->parent, val, val2);
++		switch (ret) {
++		case IIO_VAL_FRACTIONAL:
++			*val *= uc->numerator;
++			*val2 *= uc->denominator;
++			return ret;
++		case IIO_VAL_INT:
++			*val *= uc->numerator;
++			if (uc->denominator == 1)
++				return ret;
++			*val2 = uc->denominator;
++			return IIO_VAL_FRACTIONAL;
++		case IIO_VAL_FRACTIONAL_LOG2:
++			tmp = *val * 1000000000LL;
++			do_div(tmp, uc->denominator);
++			tmp *= uc->numerator;
++			do_div(tmp, 1000000000LL);
++			*val = tmp;
++			return ret;
++		}
++		return -EOPNOTSUPP;
++	}
++
++	return -EINVAL;
++}
++
++static int unit_converter_read_avail(struct iio_dev *indio_dev,
++				     struct iio_chan_spec const *chan,
++				     const int **vals, int *type, int *length,
++				     long mask)
++{
++	struct unit_converter *uc = iio_priv(indio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		*type = IIO_VAL_INT;
++		return iio_read_avail_channel_raw(uc->parent, vals, length);
++	}
++
++	return -EINVAL;
++}
++
++static int unit_converter_write_raw(struct iio_dev *indio_dev,
++				    struct iio_chan_spec const *chan,
++				    int val, int val2, long mask)
++{
++	struct unit_converter *uc = iio_priv(indio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		return iio_write_channel_raw(uc->parent, val);
++	}
++
++	return -EINVAL;
++}
++
++static const struct iio_info unit_converter_info = {
++	.read_raw = unit_converter_read_raw,
++	.read_avail = unit_converter_read_avail,
++	.write_raw = unit_converter_write_raw,
++};
++
++static ssize_t unit_converter_read_ext_info(struct iio_dev *indio_dev,
++					    uintptr_t private,
++					    struct iio_chan_spec const *chan,
++					    char *buf)
++{
++	struct unit_converter *uc = iio_priv(indio_dev);
++
++	return iio_read_channel_ext_info(uc->parent,
++					 uc->ext_info[private].name,
++					 buf);
++}
++
++static ssize_t unit_converter_write_ext_info(struct iio_dev *indio_dev,
++					     uintptr_t private,
++					     struct iio_chan_spec const *chan,
++					     const char *buf, size_t len)
++{
++	struct unit_converter *uc = iio_priv(indio_dev);
++
++	return iio_write_channel_ext_info(uc->parent,
++					  uc->ext_info[private].name,
++					  buf, len);
++}
++
++static int unit_converter_configure_channel(struct device *dev,
++					    struct unit_converter *uc,
++					    enum iio_chan_type type)
++{
++	struct iio_chan_spec *chan = &uc->chan;
++	struct iio_chan_spec const *pchan = uc->parent->channel;
++	int ret;
++
++	chan->indexed = 1;
++	chan->output = pchan->output;
++	chan->ext_info = uc->ext_info;
++
++	if (type == -1) {
++		ret = iio_get_channel_type(uc->parent, &type);
++		if (ret < 0) {
++			dev_err(dev, "failed to get parent channel type\n");
++			return ret;
++		}
++	}
++	chan->type = type;
++
++	if (iio_channel_has_info(pchan, IIO_CHAN_INFO_RAW))
++		chan->info_mask_separate |= BIT(IIO_CHAN_INFO_RAW);
++	if (iio_channel_has_info(pchan, IIO_CHAN_INFO_SCALE))
++		chan->info_mask_separate |= BIT(IIO_CHAN_INFO_SCALE);
++
++	if (iio_channel_has_available(pchan, IIO_CHAN_INFO_RAW))
++		chan->info_mask_separate_available |= BIT(IIO_CHAN_INFO_RAW);
++
++	chan->channel = 0;
++
++	return 0;
++}
++
++static int unit_converter_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct iio_dev *indio_dev;
++	struct iio_channel *parent;
++	struct unit_converter *uc;
++	const char *type_name;
++	enum iio_chan_type type = -1; /* default to same as parent */
++	int sizeof_ext_info;
++	int sizeof_priv;
++	int i;
++	int ret;
++
++	if (!device_property_read_string(dev, "type", &type_name)) {
++		if (!strcmp(type_name, "voltage"))
++			type = IIO_VOLTAGE;
++		else if (!strcmp(type_name, "current"))
++			type = IIO_CURRENT;
++		else
++			return -EINVAL;
++	}
++
++	parent = devm_iio_channel_get(dev, "parent");
++	if (IS_ERR(parent)) {
++		if (PTR_ERR(parent) != -EPROBE_DEFER)
++			dev_err(dev, "failed to get parent channel\n");
++		return PTR_ERR(parent);
++	}
++
++	sizeof_ext_info = iio_get_channel_ext_info_count(parent);
++	if (sizeof_ext_info) {
++		sizeof_ext_info += 1; /* one extra entry for the sentinel */
++		sizeof_ext_info *= sizeof(*uc->ext_info);
++	}
++
++	sizeof_priv = sizeof(*uc) + sizeof_ext_info;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof_priv);
++	if (!indio_dev)
++		return -ENOMEM;
++
++	uc = iio_priv(indio_dev);
++
++	uc->numerator = 1;
++	uc->denominator = 1;
++	device_property_read_u32(dev, "numerator", &uc->numerator);
++	device_property_read_u32(dev, "denominator", &uc->denominator);
++	if (!uc->numerator || !uc->denominator) {
++		dev_err(dev, "invalid scaling factor.\n");
++		return -EINVAL;
++	}
++
++	platform_set_drvdata(pdev, indio_dev);
++
++	uc->parent = parent;
++
++	indio_dev->name = dev_name(dev);
++	indio_dev->dev.parent = dev;
++	indio_dev->info = &unit_converter_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = &uc->chan;
++	indio_dev->num_channels = 1;
++	if (sizeof_ext_info) {
++		uc->ext_info = devm_kmemdup(dev,
++					    parent->channel->ext_info,
++					    sizeof_ext_info, GFP_KERNEL);
++		if (!uc->ext_info)
++			return -ENOMEM;
++
++		for (i = 0; uc->ext_info[i].name; ++i) {
++			if (parent->channel->ext_info[i].read)
++				uc->ext_info[i].read = unit_converter_read_ext_info;
++			if (parent->channel->ext_info[i].write)
++				uc->ext_info[i].write = unit_converter_write_ext_info;
++			uc->ext_info[i].private = i;
++		}
++	}
++
++	ret = unit_converter_configure_channel(dev, uc, type);
++	if (ret < 0)
++		return ret;
++
++	ret = devm_iio_device_register(dev, indio_dev);
++	if (ret) {
++		dev_err(dev, "failed to register iio device\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++static const struct of_device_id unit_converter_match[] = {
++	{ .compatible = "io-channel-unit-converter" },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, unit_converter_match);
++
++static struct platform_driver unit_converter_driver = {
++	.probe = unit_converter_probe,
++	.driver = {
++		.name = "iio-unit-converter",
++		.of_match_table = unit_converter_match,
++	},
++};
++module_platform_driver(unit_converter_driver);
++
++MODULE_DESCRIPTION("IIO unit converter driver");
++MODULE_AUTHOR("Peter Rosin <peda@axentia.se>");
++MODULE_LICENSE("GPL v2");
+-- 
+2.11.0
 
-Cheers,
-Peter
