@@ -1,54 +1,157 @@
-Return-Path: <SRS0=B+Oq=GJ=infradead.org=rdunlap@kernel.org>
-Subject: Re: [PATCH 1/3] iio: rename the multiplexer category to wrapper
-To: Peter Rosin <peda@axentia.se>, linux-kernel@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Rob Herring
- <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
- "David S. Miller" <davem@davemloft.net>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-eopbgr40097.outbound.protection.outlook.com ([40.107.4.97]:58137
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S967771AbeCSRDJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 19 Mar 2018 13:03:09 -0400
+From: Peter Rosin <peda@axentia.se>
+To: linux-kernel@vger.kernel.org
+Cc: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH 2/3] dt-bindings: iio: wrapper: add io-channel-unit-converter
+Date: Mon, 19 Mar 2018 18:02:45 +0100
+Message-Id: <20180319170246.26830-3-peda@axentia.se>
+In-Reply-To: <20180319170246.26830-1-peda@axentia.se>
 References: <20180319170246.26830-1-peda@axentia.se>
- <20180319170246.26830-2-peda@axentia.se>
-From: Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <6b97bd50-b2bb-2695-4efb-16bc70fd638b@infradead.org>
-Date: Mon, 19 Mar 2018 11:36:32 -0700
 MIME-Version: 1.0
-In-Reply-To: <20180319170246.26830-2-peda@axentia.se>
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 03/19/2018 10:02 AM, Peter Rosin wrote:
-> Paves the way for other wrappers.
-> 
-> Signed-off-by: Peter Rosin <peda@axentia.se>
-> ---
+Allow linear scaling and modification of the type of an io-channel.
 
-> diff --git a/drivers/iio/multiplexer/Kconfig b/drivers/iio/wrapper/Kconfig
-> similarity index 88%
-> rename from drivers/iio/multiplexer/Kconfig
-> rename to drivers/iio/wrapper/Kconfig
-> index 735a7b0e6fd8..f27de347c9b3 100644
-> --- a/drivers/iio/multiplexer/Kconfig
-> +++ b/drivers/iio/wrapper/Kconfig
-> @@ -1,9 +1,9 @@
->  #
-> -# Multiplexer drivers
-> +# Wrapper drivers
->  #
->  # When adding new entries keep the list in alphabetical order
->  
-> -menu "Multiplexers"
-> +menu "Wrapers"
+When an ADC channel measures the midpoint of a voltage divider, the
+interesting voltage is often the voltage over the full resistance
+of the divider. Likewise, measuring the voltage over a resistor is
+often a way to get to the current through it.
 
-         Wrappers
+This binding allows description of such hardware which is external
+to the ADC.
 
->  
->  config IIO_MUX
->  	tristate "IIO multiplexer driver"
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ .../iio/wrapper/io-channel-unit-converter.txt      | 84 ++++++++++++++++++++++
+ MAINTAINERS                                        |  6 ++
+ 2 files changed, 90 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/wrapper/io-channel-unit-converter.txt
 
-
+diff --git a/Documentation/devicetree/bindings/iio/wrapper/io-channel-unit-converter.txt b/Documentation/devicetree/bindings/iio/wrapper/io-channel-unit-converter.txt
+new file mode 100644
+index 000000000000..23af661abe32
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/wrapper/io-channel-unit-converter.txt
+@@ -0,0 +1,84 @@
++I/O channel unit converter bindings
++
++Allow linear scaling and modification of the type of an io-channel.
++
++When an ADC channel measures the midpoint of a voltage divider, the
++interesting voltage is often the voltage over the full resistance
++of the divider. Likewise, measuring the voltage over a resistor is
++often a way to get to the current through it.
++
++Required properties:
++- compatible : "io-channel-unit-converter"
++- io-channels : Channel node of the parent channel.
++- io-channel-names : Should be "parent".
++
++Optional properties:
++- numerator : The parent channel scale is multiplied by this value (default 1).
++- denominator : The parent channel scale is divided by this value (default 1).
++- type : The type of the wrapped channel is modified to this type. The default
++	 is to use the same type as the parent channel. Recognized types are:
++		"voltage"
++		"current"
++
++Example 1:
++The system voltage is circa 12V, but divided down with a 22/200
++voltage divider to adjust it to the ADC range.
++
++SYSV        ADC       GND
++  +          +         +
++  |  .-----. | .----.  |
++  '--| 200 |-+-| 22 |--'
++     '-----'   '----'
++
++sysv {
++	compatible = "io-channel-unit-converter";
++	io-channles = <&maxadc 1>;
++	io-channel-names = "parent";
++
++	/* multiply the ADC voltage by 222/22 to get the system voltage */
++	numerator = <222>; /* 200 + 22 */
++	denominator = <22>;
++}
++
++&spi {
++	maxadc: adc@0 {
++		compatible = "maxim,max1027";
++	      	reg = <0>;
++		#io-channel-cells = <1>;
++		interrupt-parent = <&gpio5>;
++		interrupts = <15 IRQ_TYPE_EDGE_RISING>;
++		spi-max-frequency = <1000000>;
++	};
++};
++
++Example 2:
++The system current is measured by measuring the voltage over a
++3.3 ohm resistor.
++
++sysi {
++	compatible = "io-channel-unit-converter";
++	io-channles = <&tiadc 0>;
++	io-channel-names = "parent";
++
++	/* divide the ADC voltage by 33/10 (i.e. 3.3) to get current */
++	numerator = <10>;
++	denominator = <33>;
++	type = "current";
++}
++
++&i2c {
++	tiadc: adc@48 {
++		compatible = "ti,ads1015";
++	      	reg = <0x48>;
++		#io-channel-cells = <1>;
++
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		channel@0 { /* IN0,IN1 differential */
++			reg = <0>;
++			ti,gain = <1>;
++			ti,datarate = <4>;
++		};
++	};
++};
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 96e5503bfb60..5dd555c7b1b0 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -6884,6 +6884,12 @@ F:	drivers/staging/iio/
+ F:	include/linux/iio/
+ F:	tools/iio/
+ 
++IIO UNIT CONVERTER
++M:	Peter Rosin <peda@axentia.se>
++L:	linux-iio@vger.kernel.org
++S:	Maintained
++F:	Documentation/devicetree/bindings/iio/wrapper/io-channel-unit-converter.txt
++
+ IKANOS/ADI EAGLE ADSL USB DRIVER
+ M:	Matthieu Castet <castet.matthieu@free.fr>
+ M:	Stanislaw Gruszka <stf_xl@wp.pl>
 -- 
-~Randy
+2.11.0
+
