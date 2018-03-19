@@ -1,77 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:53120 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932584AbeCSNRB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Mar 2018 09:17:01 -0400
-Date: Mon, 19 Mar 2018 13:16:51 +0000
-In-Reply-To: <20180319103717.tqxbbgo5ylmjcajc@b74fbbdcbeeb>
-References: <20180319103717.tqxbbgo5ylmjcajc@b74fbbdcbeeb>
+Received: from mail-eopbgr40121.outbound.protection.outlook.com ([40.107.4.121]:34880
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S967709AbeCSRC5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 19 Mar 2018 13:02:57 -0400
+From: Peter Rosin <peda@axentia.se>
+To: linux-kernel@vger.kernel.org
+Cc: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH 0/3] iio: add unit converter
+Date: Mon, 19 Mar 2018 18:02:43 +0100
+Message-Id: <20180319170246.26830-1-peda@axentia.se>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Subject: Re: tsl2x7x: IRQ event handler only being called when polling sysfs attributes
-To: Brian Masney <masneyb@onstation.org>, linux-iio@vger.kernel.org
-CC: Jon.Brenner@ams.com
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Message-ID: <311FE9AF-BB1E-4D93-8712-315025720342@jic23.retrosnub.co.uk>
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Hi!
 
+This moves the iio-mux driver to a new category, since I think
+it will be the single driver in that category forever, and now
+I'm adding a new driver that is somewhat similar in nature...
 
-On 19 March 2018 10:37:17 GMT, Brian Masney <masneyb@onstation.org> wrote:
->I am working on getting interrupts to work properly for the tsl2x7x
->staging cleanup but I've run into an odd issue where
->tsl2x7x_event_handler() is only called if I poll the corresponding
->sysfs attribute. So for example, when I run this in the background:
->
->	watch -n .1 cat in_illuminance0_input
->
->tsl2x7x_get_lux() shows that the relevant bit in the device register is
->asserting an interrupt and tsl2x7x_event_handler() is called. As soon
->as I stop that watch process, tsl2x7x_event_handler() is no longer
->called.
->
->tsl2x7x_event_handler() is not called for any proximity interrupts
->while I only poll the ALS. However, when I start polling
->in_proximity0_raw, then tsl2x7x_event_handler() is called as expected
->when the sensor is asserting an interrupt.
->
->Note: tsl2x7x_get_prox() in IIO testing is missing a call to clear the
->interrupt bit, but tsl2x7x_get_lux() clears it. I added code to clear
->the interrupt bit in tsl2x7x_get_prox() to my local tree.
->
->Here is my relevant device tree binding for the Raspberry Pi 2:
->
->&i2c1 {
->       tsl2772@39 {
->               compatible = "amstaos,tsl2772";
->               reg = <0x39>;
->               interrupt-parent = <&gpio>;
->               interrupts = <22 0x1>;
->       };
->};
->
->I have a 10K pull-up resistor on the interrupt pin.
->
->Any ideas?
->
-Superficially it sounds like the device is not in the free running mode it needs to be to get the
-samples needed for comparison. 
+But that rename is not very interesting, it's just reshuffling.
+It's the new driver that I need. Specifically, I need to allow
+linear scaling and modification of the type of an io-channel.
+I don't know exactly how that is accomplished in the best way,
+but this is what I came up with.
 
-Some devices require a different set of setting when threshold interrupts are enabled.
-Here it looks like it might be associated with the PON bit...
+The use cases are an ADC hooked up to measure a "big" voltage by
+looking at the midpoint of a voltage divider, and an ADC used
+to measure the current by looking at the voltage over a resistor.
 
-As it stands, you sysfs poll is making it manually take samples rather than do it autonomously.
+Comments?
 
-J
+Cheers,
+Peter
 
+Peter Rosin (3):
+  iio: rename the multiplexer category to wrapper
+  dt-bindings: iio: wrapper: add io-channel-unit-converter
+  iio: wrapper: unit-converter: new driver
 
->Brian
->--
->To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
+ .../{multiplexer => wrapper}/io-channel-mux.txt    |   0
+ .../iio/wrapper/io-channel-unit-converter.txt      |  84 +++++++
+ MAINTAINERS                                        |  11 +-
+ drivers/iio/Kconfig                                |   2 +-
+ drivers/iio/Makefile                               |   2 +-
+ drivers/iio/multiplexer/Makefile                   |   6 -
+ drivers/iio/{multiplexer => wrapper}/Kconfig       |  13 +-
+ drivers/iio/wrapper/Makefile                       |   7 +
+ drivers/iio/{multiplexer => wrapper}/iio-mux.c     |   0
+ drivers/iio/wrapper/iio-unit-converter.c           | 268 +++++++++++++++++++++
+ 10 files changed, 381 insertions(+), 12 deletions(-)
+ rename Documentation/devicetree/bindings/iio/{multiplexer => wrapper}/io-channel-mux.txt (100%)
+ create mode 100644 Documentation/devicetree/bindings/iio/wrapper/io-channel-unit-converter.txt
+ delete mode 100644 drivers/iio/multiplexer/Makefile
+ rename drivers/iio/{multiplexer => wrapper}/Kconfig (53%)
+ create mode 100644 drivers/iio/wrapper/Makefile
+ rename drivers/iio/{multiplexer => wrapper}/iio-mux.c (100%)
+ create mode 100644 drivers/iio/wrapper/iio-unit-converter.c
 
 -- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+2.11.0
+
