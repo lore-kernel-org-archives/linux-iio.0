@@ -1,15 +1,15 @@
-Return-Path: <SRS0=ztfD=GK=gmail.com=geert.uytterhoeven@kernel.org>
+Return-Path: <atull@kernel.org>
 MIME-Version: 1.0
-Sender: geert.uytterhoeven@gmail.com
-In-Reply-To: <CANk1AXR3sv2=G-KsQh1p0rdcvy-3XZs6qVy5EMbcAMS6OSVzeQ@mail.gmail.com>
+In-Reply-To: <CAMuHMdU-0VOs6MYrCaCrtRfBqGgaQfox1AgbExNNcYxVC6Uh-Q@mail.gmail.com>
 References: <1521208314-4783-1-git-send-email-geert@linux-m68k.org>
  <1521208314-4783-7-git-send-email-geert@linux-m68k.org> <CANk1AXR3sv2=G-KsQh1p0rdcvy-3XZs6qVy5EMbcAMS6OSVzeQ@mail.gmail.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 20 Mar 2018 11:04:09 +0100
-Message-ID: <CAMuHMdU-0VOs6MYrCaCrtRfBqGgaQfox1AgbExNNcYxVC6Uh-Q@mail.gmail.com>
+ <CAMuHMdU-0VOs6MYrCaCrtRfBqGgaQfox1AgbExNNcYxVC6Uh-Q@mail.gmail.com>
+From: Alan Tull <atull@kernel.org>
+Date: Tue, 20 Mar 2018 13:20:11 -0500
+Message-ID: <CANk1AXRve3asPTufFYe=C_YPfyGwDpXxOWYZbWDq2bAnVkj00A@mail.gmail.com>
 Subject: Re: [PATCH v2 06/21] fpga: Remove depends on HAS_DMA in case of
  platform dependency
-To: Alan Tull <atull@kernel.org>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
 Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
 	Robin Murphy <robin.murphy@arm.com>, Felipe Balbi <balbi@kernel.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -41,58 +41,72 @@ Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
 Content-Type: text/plain; charset="UTF-8"
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi Alan,
+On Tue, Mar 20, 2018 at 5:04 AM, Geert Uytterhoeven
+<geert@linux-m68k.org> wrote:
 
-On Mon, Mar 19, 2018 at 5:06 PM, Alan Tull <atull@kernel.org> wrote:
-> On Fri, Mar 16, 2018 at 8:51 AM, Geert Uytterhoeven
-> <geert@linux-m68k.org> wrote:
-> This essentially removes this commit
->
-> commit 1c8cb409491403036919dd1c6b45013dc8835a44
-> Author: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-> Date:   Wed Aug 3 13:45:46 2016 -0700
->
->     drivers/fpga/Kconfig: fix build failure
->
->     While building m32r allmodconfig the build is failing with the error:
->
->       ERROR: "bad_dma_ops" [drivers/fpga/zynq-fpga.ko] undefined!
->
->     Xilinx Zynq FPGA is using DMA but there was no dependency while
->     building.
->
->     Link: http://lkml.kernel.org/r/1464346526-13913-1-git-send-email-sudipm.mukherjee@gmail.com
->     Signed-off-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
->     Acked-by: Moritz Fischer <moritz.fischer@ettus.com>
->     Cc: Alan Tull <atull@opensource.altera.com>
->     Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
->     Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Hi Geert,
 
-Yes it does. The major change is that the first (core) series introduces
-all needed dummies to do successful compile-testing on NO_DMA=y platforms.
-
->> Remove dependencies on HAS_DMA where a Kconfig symbol depends on another
->> symbol that implies HAS_DMA, and, optionally, on "|| COMPILE_TEST".
->> In most cases this other symbol is an architecture or platform specific
->> symbol, or PCI.
+> Hi Alan,
+>
+> On Mon, Mar 19, 2018 at 5:06 PM, Alan Tull <atull@kernel.org> wrote:
+>> On Fri, Mar 16, 2018 at 8:51 AM, Geert Uytterhoeven
+>> <geert@linux-m68k.org> wrote:
+>> This essentially removes this commit
 >>
->> Generic symbols and drivers without platform dependencies keep their
->> dependencies on HAS_DMA, to prevent compiling subsystems or drivers that
->> cannot work anyway.
+>> commit 1c8cb409491403036919dd1c6b45013dc8835a44
+>> Author: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+>> Date:   Wed Aug 3 13:45:46 2016 -0700
 >>
->> This simplifies the dependencies, and allows to improve compile-testing.
+>>     drivers/fpga/Kconfig: fix build failure
 >>
->> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
->> Reviewed-by: Mark Brown <broonie@kernel.org>
->> Acked-by: Robin Murphy <robin.murphy@arm.com>
+>>     While building m32r allmodconfig the build is failing with the error:
+>>
+>>       ERROR: "bad_dma_ops" [drivers/fpga/zynq-fpga.ko] undefined!
+>>
+>>     Xilinx Zynq FPGA is using DMA but there was no dependency while
+>>     building.
+>>
+>>     Link: http://lkml.kernel.org/r/1464346526-13913-1-git-send-email-sudipm.mukherjee@gmail.com
+>>     Signed-off-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+>>     Acked-by: Moritz Fischer <moritz.fischer@ettus.com>
+>>     Cc: Alan Tull <atull@opensource.altera.com>
+>>     Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+>>     Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+>
+> Yes it does. The major change is that the first (core) series introduces
+> all needed dummies to do successful compile-testing on NO_DMA=y platforms.
 
-Gr{oetje,eeting}s,
+OK yes, I looked at the first patch that does the fix.  Looks good.
+Thanks for doing this.
 
-                        Geert
+>
+>>> Remove dependencies on HAS_DMA where a Kconfig symbol depends on another
+>>> symbol that implies HAS_DMA, and, optionally, on "|| COMPILE_TEST".
+>>> In most cases this other symbol is an architecture or platform specific
+>>> symbol, or PCI.
+>>>
+>>> Generic symbols and drivers without platform dependencies keep their
+>>> dependencies on HAS_DMA, to prevent compiling subsystems or drivers that
+>>> cannot work anyway.
+>>>
+>>> This simplifies the dependencies, and allows to improve compile-testing.
+>>>
+>>> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+>>> Reviewed-by: Mark Brown <broonie@kernel.org>
+>>> Acked-by: Robin Murphy <robin.murphy@arm.com>
+Acked-by: Alan Tull <atull@kernel.org>
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Regards,
+Alan
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+>
+> Gr{oetje,eeting}s,
+>
+>                         Geert
+>
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+>
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
