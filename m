@@ -1,82 +1,74 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from szxga06-in.huawei.com ([45.249.212.32]:40648 "EHLO huawei.com"
-        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1751983AbeCWMzM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 23 Mar 2018 08:55:12 -0400
-Date: Fri, 23 Mar 2018 12:54:55 +0000
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To: =?ISO-8859-1?Q?Hern=E1n?= Gonzalez <hernan@vanguardiasur.com.ar>
-CC: <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
-        <jic23@kernel.org>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 09/11] staging: iio: ad7746: Add devicetree bindings
- documentation
-Message-ID: <20180323135455.00007341@huawei.com>
-In-Reply-To: <1521642539-4845-10-git-send-email-hernan@vanguardiasur.com.ar>
+Return-Path: <SRS0=kCDT=GL=vanguardiasur.com.ar=hernan@kernel.org>
+From: =?UTF-8?q?Hern=C3=A1n=20Gonzalez?= <hernan@vanguardiasur.com.ar>
+To: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	hernan@vanguardiasur.com.ar
+Subject: [PATCH 10/11] staging: iio: ad7746: Rename sysfs attrs to comply with the ABI
+Date: Wed, 21 Mar 2018 11:28:58 -0300
+Message-Id: <1521642539-4845-11-git-send-email-hernan@vanguardiasur.com.ar>
+In-Reply-To: <1521642539-4845-1-git-send-email-hernan@vanguardiasur.com.ar>
 References: <1521642539-4845-1-git-send-email-hernan@vanguardiasur.com.ar>
-        <1521642539-4845-10-git-send-email-hernan@vanguardiasur.com.ar>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, 21 Mar 2018 11:28:57 -0300
-Hern·n Gonzalez <hernan@vanguardiasur.com.ar> wrote:
+Signed-off-by: Hern√°n Gonzalez <hernan@vanguardiasur.com.ar>
+---
+ drivers/staging/iio/cdc/ad7746.c | 30 +++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
 
-> Signed-off-by: Hern·n Gonzalez <hernan@vanguardiasur.com.ar>
-Device tree bindings must be cc'd to the device tree binding maintainers
-and the devicetree binding list.
-
-Comments inline but don't forget to cc them on v2.
-
-Jonathan
-
-> ---
->  .../devicetree/bindings/staging/iio/cdc/ad7746.txt | 32 ++++++++++++++++++++++
->  1 file changed, 32 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/staging/iio/cdc/ad7746.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/staging/iio/cdc/ad7746.txt b/Documentation/devicetree/bindings/staging/iio/cdc/ad7746.txt
-> new file mode 100644
-> index 0000000..13d0056
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/staging/iio/cdc/ad7746.txt
-> @@ -0,0 +1,32 @@
-> +Analog Devices AD7746/5/7 capacitive sensor driver
-> +
-> +Required properties:
-> +	- compatible: Should be one of
-> +		* "adi,ad7745": When using the AD7745 device
-> +		* "adi,ad7746": When using the AD7746 device
-> +		* "adi,ad7747": When using the AD7747 device
-The when using bit is kind of obvious.  Probably no need to state.
-
-> +	- reg: The 7-bits long I2c address of the device
-> +
-> +Optional properties:
-> +	- adi,exclvl: 0 = +-VDD/8
-> +                1 = +-VDD/4
-> +                2 = +-VDD * 3/8
-> +                3 = +-VDD/2 (Default)
-That needs a comment to explain what exactly it is rather than
-just documenting the enum values.
-
-> +	- adi,nexca_en: Invert excitation output A.
-> +	- adi,nexcb_en:	Invert excitation output B.
-> +
-> +Example:
-> +Here exclvl would be 1 (VDD/4), Excitation pin A would be inverted and
-> +Excitation pin B would NOT be inverted.
-> +
-> +i2c2 {
-> +
-> +      < . . . >
-> +
-> +      ad7746: ad7746@60 {
-> +              compatible = "ad7746";
-> +              reg = <0x60>;
-> +              adi,exclvl = <1>;
-> +              adi,nexca_en;
-> +      };
-> +};
-
+diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
+index b6b99e2..c1f76fc 100644
+--- a/drivers/staging/iio/cdc/ad7746.c
++++ b/drivers/staging/iio/cdc/ad7746.c
+@@ -336,16 +336,16 @@ static ssize_t ad7746_start_gain_calib(struct device *dev,
+ 				  AD7746_CONF_MODE_GAIN_CAL);
+ }
+ 
+-static IIO_DEVICE_ATTR(in_capacitance0_calibbias_calibration,
+-		       0200, NULL, ad7746_start_offset_calib, CIN1);
+-static IIO_DEVICE_ATTR(in_capacitance1_calibbias_calibration,
+-		       0200, NULL, ad7746_start_offset_calib, CIN2);
+-static IIO_DEVICE_ATTR(in_capacitance0_calibscale_calibration,
+-		       0200, NULL, ad7746_start_gain_calib, CIN1);
+-static IIO_DEVICE_ATTR(in_capacitance1_calibscale_calibration,
+-		       0200, NULL, ad7746_start_gain_calib, CIN2);
+-static IIO_DEVICE_ATTR(in_voltage0_calibscale_calibration,
+-		       0200, NULL, ad7746_start_gain_calib, VIN);
++static IIO_DEVICE_ATTR(in_capacitance0_calibbias, 0200, NULL,
++		       ad7746_start_offset_calib, CIN1);
++static IIO_DEVICE_ATTR(in_capacitance1_calibbias, 0200, NULL,
++		       ad7746_start_offset_calib, CIN2);
++static IIO_DEVICE_ATTR(in_capacitance0_calibscale, 0200, NULL,
++		       ad7746_start_gain_calib, CIN1);
++static IIO_DEVICE_ATTR(in_capacitance1_calibscale, 0200, NULL,
++		       ad7746_start_gain_calib, CIN2);
++static IIO_DEVICE_ATTR(in_voltage0_calibscale, 0200, NULL,
++		       ad7746_start_gain_calib, VIN);
+ 
+ static int ad7746_store_cap_filter_rate_setup(struct ad7746_chip_info *chip,
+ 					      int val)
+@@ -388,11 +388,11 @@ static IIO_CONST_ATTR(in_capacitance_sampling_frequency_available,
+ 		       "91 84 50 26 16 13 11 9");
+ 
+ static struct attribute *ad7746_attributes[] = {
+-	&iio_dev_attr_in_capacitance0_calibbias_calibration.dev_attr.attr,
+-	&iio_dev_attr_in_capacitance0_calibscale_calibration.dev_attr.attr,
+-	&iio_dev_attr_in_capacitance1_calibscale_calibration.dev_attr.attr,
+-	&iio_dev_attr_in_capacitance1_calibbias_calibration.dev_attr.attr,
+-	&iio_dev_attr_in_voltage0_calibscale_calibration.dev_attr.attr,
++	&iio_dev_attr_in_capacitance0_calibbias.dev_attr.attr,
++	&iio_dev_attr_in_capacitance0_calibscale.dev_attr.attr,
++	&iio_dev_attr_in_capacitance1_calibscale.dev_attr.attr,
++	&iio_dev_attr_in_capacitance1_calibbias.dev_attr.attr,
++	&iio_dev_attr_in_voltage0_calibscale.dev_attr.attr,
+ 	&iio_const_attr_in_voltage_sampling_frequency_available.dev_attr.attr,
+ 	&iio_const_attr_in_capacitance_sampling_frequency_available.dev_attr.attr,
+ 	NULL,
+-- 
+2.7.4
