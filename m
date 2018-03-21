@@ -1,85 +1,129 @@
-Return-Path: <SRS0=FfDz=GN=huawei.com=jonathan.cameron@kernel.org>
-Date: Fri, 23 Mar 2018 12:57:29 +0000
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To: =?ISO-8859-1?Q?Hern=E1n?= Gonzalez <hernan@vanguardiasur.com.ar>
-CC: <lars@metafoo.de>, <Michael.Hennerich@analog.com>, <jic23@kernel.org>,
-	<knaack.h@gmx.de>, <pmeerw@pmeerw.net>, <linux-iio@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 10/11] staging: iio: ad7746: Rename sysfs attrs to
- comply with the ABI
-Message-ID: <20180323135729.00003e93@huawei.com>
-In-Reply-To: <1521642539-4845-11-git-send-email-hernan@vanguardiasur.com.ar>
+Return-Path: <SRS0=kCDT=GL=vanguardiasur.com.ar=hernan@kernel.org>
+From: =?UTF-8?q?Hern=C3=A1n=20Gonzalez?= <hernan@vanguardiasur.com.ar>
+To: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	hernan@vanguardiasur.com.ar
+Subject: [PATCH 11/11] Move cdc ad7746 driver out of staging to mainline iio
+Date: Wed, 21 Mar 2018 11:28:59 -0300
+Message-Id: <1521642539-4845-12-git-send-email-hernan@vanguardiasur.com.ar>
+In-Reply-To: <1521642539-4845-1-git-send-email-hernan@vanguardiasur.com.ar>
 References: <1521642539-4845-1-git-send-email-hernan@vanguardiasur.com.ar>
-	<1521642539-4845-11-git-send-email-hernan@vanguardiasur.com.ar>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, 21 Mar 2018 11:28:58 -0300
-Hern=E1n Gonzalez <hernan@vanguardiasur.com.ar> wrote:
+Also modify the proper Kconfigs and move documentation.
 
-> Signed-off-by: Hern=E1n Gonzalez <hernan@vanguardiasur.com.ar>
-Please look at what these do.  It is not what those abi elements are
-documented as doing.
+Signed-off-by: Hernán Gonzalez <hernan@vanguardiasur.com.ar>
+---
+ .../devicetree/bindings/{staging => }/iio/cdc/ad7746.txt |  0
+ drivers/iio/Kconfig                                      |  1 +
+ drivers/iio/cdc/Kconfig                                  | 16 ++++++++++++++++
+ drivers/{staging => }/iio/cdc/ad7746.c                   |  2 +-
+ drivers/staging/iio/cdc/Kconfig                          | 10 ----------
+ {drivers/staging => include/linux}/iio/cdc/ad7746.h      |  4 ----
+ 6 files changed, 18 insertions(+), 15 deletions(-)
+ rename Documentation/devicetree/bindings/{staging => }/iio/cdc/ad7746.txt (100%)
+ create mode 100644 drivers/iio/cdc/Kconfig
+ rename drivers/{staging => }/iio/cdc/ad7746.c (99%)
+ rename {drivers/staging => include/linux}/iio/cdc/ad7746.h (88%)
 
-Also if it were you would need to support them via read_raw and write_raw
-and put them in the relevant info mask elements.
-
-Jonathan
-> ---
->  drivers/staging/iio/cdc/ad7746.c | 30 +++++++++++++++---------------
->  1 file changed, 15 insertions(+), 15 deletions(-)
->=20
-> diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/a=
-d7746.c
-> index b6b99e2..c1f76fc 100644
-> --- a/drivers/staging/iio/cdc/ad7746.c
-> +++ b/drivers/staging/iio/cdc/ad7746.c
-> @@ -336,16 +336,16 @@ static ssize_t ad7746_start_gain_calib(struct devic=
-e *dev,
->  				  AD7746_CONF_MODE_GAIN_CAL);
->  }
-> =20
-> -static IIO_DEVICE_ATTR(in_capacitance0_calibbias_calibration,
-> -		       0200, NULL, ad7746_start_offset_calib, CIN1);
-> -static IIO_DEVICE_ATTR(in_capacitance1_calibbias_calibration,
-> -		       0200, NULL, ad7746_start_offset_calib, CIN2);
-> -static IIO_DEVICE_ATTR(in_capacitance0_calibscale_calibration,
-> -		       0200, NULL, ad7746_start_gain_calib, CIN1);
-> -static IIO_DEVICE_ATTR(in_capacitance1_calibscale_calibration,
-> -		       0200, NULL, ad7746_start_gain_calib, CIN2);
-> -static IIO_DEVICE_ATTR(in_voltage0_calibscale_calibration,
-> -		       0200, NULL, ad7746_start_gain_calib, VIN);
-> +static IIO_DEVICE_ATTR(in_capacitance0_calibbias, 0200, NULL,
-> +		       ad7746_start_offset_calib, CIN1);
-> +static IIO_DEVICE_ATTR(in_capacitance1_calibbias, 0200, NULL,
-> +		       ad7746_start_offset_calib, CIN2);
-> +static IIO_DEVICE_ATTR(in_capacitance0_calibscale, 0200, NULL,
-> +		       ad7746_start_gain_calib, CIN1);
-> +static IIO_DEVICE_ATTR(in_capacitance1_calibscale, 0200, NULL,
-> +		       ad7746_start_gain_calib, CIN2);
-> +static IIO_DEVICE_ATTR(in_voltage0_calibscale, 0200, NULL,
-> +		       ad7746_start_gain_calib, VIN);
-> =20
->  static int ad7746_store_cap_filter_rate_setup(struct ad7746_chip_info *c=
-hip,
->  					      int val)
-> @@ -388,11 +388,11 @@ static IIO_CONST_ATTR(in_capacitance_sampling_frequ=
-ency_available,
->  		       "91 84 50 26 16 13 11 9");
-> =20
->  static struct attribute *ad7746_attributes[] =3D {
-> -	&iio_dev_attr_in_capacitance0_calibbias_calibration.dev_attr.attr,
-> -	&iio_dev_attr_in_capacitance0_calibscale_calibration.dev_attr.attr,
-> -	&iio_dev_attr_in_capacitance1_calibscale_calibration.dev_attr.attr,
-> -	&iio_dev_attr_in_capacitance1_calibbias_calibration.dev_attr.attr,
-> -	&iio_dev_attr_in_voltage0_calibscale_calibration.dev_attr.attr,
-> +	&iio_dev_attr_in_capacitance0_calibbias.dev_attr.attr,
-> +	&iio_dev_attr_in_capacitance0_calibscale.dev_attr.attr,
-> +	&iio_dev_attr_in_capacitance1_calibscale.dev_attr.attr,
-> +	&iio_dev_attr_in_capacitance1_calibbias.dev_attr.attr,
-> +	&iio_dev_attr_in_voltage0_calibscale.dev_attr.attr,
->  	&iio_const_attr_in_voltage_sampling_frequency_available.dev_attr.attr,
->  	&iio_const_attr_in_capacitance_sampling_frequency_available.dev_attr.at=
-tr,
->  	NULL,
+diff --git a/Documentation/devicetree/bindings/staging/iio/cdc/ad7746.txt b/Documentation/devicetree/bindings/iio/cdc/ad7746.txt
+similarity index 100%
+rename from Documentation/devicetree/bindings/staging/iio/cdc/ad7746.txt
+rename to Documentation/devicetree/bindings/iio/cdc/ad7746.txt
+diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+index b3c8c6e..d1c309b 100644
+--- a/drivers/iio/Kconfig
++++ b/drivers/iio/Kconfig
+@@ -71,6 +71,7 @@ config IIO_TRIGGERED_EVENT
+ source "drivers/iio/accel/Kconfig"
+ source "drivers/iio/adc/Kconfig"
+ source "drivers/iio/amplifiers/Kconfig"
++source "drivers/iio/cdc/Kconfig"
+ source "drivers/iio/chemical/Kconfig"
+ source "drivers/iio/common/Kconfig"
+ source "drivers/iio/counter/Kconfig"
+diff --git a/drivers/iio/cdc/Kconfig b/drivers/iio/cdc/Kconfig
+new file mode 100644
+index 0000000..d3a8600
+--- /dev/null
++++ b/drivers/iio/cdc/Kconfig
+@@ -0,0 +1,16 @@
++#
++# CDC drivers
++#
++menu "Capacitance to digital converters"
++
++config AD7746
++	tristate "Analog Devices AD7745, AD7746 AD7747 capacitive sensor driver"
++	depends on I2C
++	help
++	  Say yes here to build support for Analog Devices capacitive sensors.
++	  (AD7745, AD7746, AD7747) Provides direct access via sysfs.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called ad7746.
++
++endmenu
+diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/iio/cdc/ad7746.c
+similarity index 99%
+rename from drivers/staging/iio/cdc/ad7746.c
+rename to drivers/iio/cdc/ad7746.c
+index c1f76fc..23c9f61 100644
+--- a/drivers/staging/iio/cdc/ad7746.c
++++ b/drivers/iio/cdc/ad7746.c
+@@ -18,8 +18,8 @@
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
++#include <linux/iio/cdc/ad7746.h>
+ 
+-#include "ad7746.h"
+ 
+ /*
+  * AD7746 Register Definition
+diff --git a/drivers/staging/iio/cdc/Kconfig b/drivers/staging/iio/cdc/Kconfig
+index 80211df..a170ab3 100644
+--- a/drivers/staging/iio/cdc/Kconfig
++++ b/drivers/staging/iio/cdc/Kconfig
+@@ -23,14 +23,4 @@ config AD7152
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad7152.
+ 
+-config AD7746
+-	tristate "Analog Devices AD7745, AD7746 AD7747 capacitive sensor driver"
+-	depends on I2C
+-	help
+-	  Say yes here to build support for Analog Devices capacitive sensors.
+-	  (AD7745, AD7746, AD7747) Provides direct access via sysfs.
+-
+-	  To compile this driver as a module, choose M here: the
+-	  module will be called ad7746.
+-
+ endmenu
+diff --git a/drivers/staging/iio/cdc/ad7746.h b/include/linux/iio/cdc/ad7746.h
+similarity index 88%
+rename from drivers/staging/iio/cdc/ad7746.h
+rename to include/linux/iio/cdc/ad7746.h
+index 2fbcee8..46ff25e 100644
+--- a/drivers/staging/iio/cdc/ad7746.h
++++ b/include/linux/iio/cdc/ad7746.h
+@@ -9,10 +9,6 @@
+ #ifndef IIO_CDC_AD7746_H_
+ #define IIO_CDC_AD7746_H_
+ 
+-/*
+- * TODO: struct ad7746_platform_data needs to go into include/linux/iio
+- */
+-
+ struct ad7746_platform_data {
+ 	unsigned char exclvl;	/*Excitation Voltage Level */
+ 	bool exca_en;		/* enables EXCA pin as the excitation output */
+-- 
+2.7.4
