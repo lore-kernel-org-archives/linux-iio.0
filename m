@@ -1,102 +1,88 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:38970 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751894AbeCXNmx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 24 Mar 2018 09:42:53 -0400
-Date: Sat, 24 Mar 2018 13:42:48 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Brian Masney <masneyb@onstation.org>
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-        devel@driverdev.osuosl.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-kernel@vger.kernel.org,
-        Jon.Brenner@ams.com
-Subject: Re: [PATCH 09/11] staging: iio: tsl2x7x: remove ch0 and ch1
- variables from tsl2x7x_get_lux()
-Message-ID: <20180324134248.1faeb2ff@archlinux>
-In-Reply-To: <20180321102912.5130-10-masneyb@onstation.org>
+Return-Path: <SRS0=Ao9w=GL=onstation.org=masneyb@kernel.org>
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org,
+	linux-iio@vger.kernel.org
+Cc: gregkh@linuxfoundation.org,
+	devel@driverdev.osuosl.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	linux-kernel@vger.kernel.org,
+	Jon.Brenner@ams.com
+Subject: [PATCH 10/11] staging: iio: tsl2x7x: put local variables in reverse Christmas tree order
+Date: Wed, 21 Mar 2018 06:29:11 -0400
+Message-Id: <20180321102912.5130-11-masneyb@onstation.org>
+In-Reply-To: <20180321102912.5130-1-masneyb@onstation.org>
 References: <20180321102912.5130-1-masneyb@onstation.org>
-        <20180321102912.5130-10-masneyb@onstation.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, 21 Mar 2018 06:29:10 -0400
-Brian Masney <masneyb@onstation.org> wrote:
+This patch ensures that all of the local variable declarations are in
+reverse Christmas tree order where possible to increase code
+readability.
 
-> Remove the ch0 and ch1 variables from tsl2x7x_get_lux() and
-> write those values directly into the chip->als_cur_info.als_ch0
-> and chip->als_cur_info.als_ch01 variables.
-> 
-> Signed-off-by: Brian Masney <masneyb@onstation.org>
-Hmm. A marginal improvement in readability I suppose, but not a big one.
-This I wouldn't have bothered changing but fair enough.
+Signed-off-by: Brian Masney <masneyb@onstation.org>
+---
+ drivers/staging/iio/light/tsl2x7x.c | 21 ++++++++-------------
+ 1 file changed, 8 insertions(+), 13 deletions(-)
 
-Applied to the togreg branch of iio.git and pushed out as testing.
-
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/staging/iio/light/tsl2x7x.c | 21 ++++++++++-----------
->  1 file changed, 10 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
-> index 1e38e8449f9e..65b7fbca8c5d 100644
-> --- a/drivers/staging/iio/light/tsl2x7x.c
-> +++ b/drivers/staging/iio/light/tsl2x7x.c
-> @@ -336,7 +336,6 @@ static int tsl2x7x_write_control_reg(struct tsl2X7X_chip *chip, u8 data)
->   */
->  static int tsl2x7x_get_lux(struct iio_dev *indio_dev)
->  {
-> -	u16 ch0, ch1; /* separated ch0/ch1 data from device */
->  	u32 lux; /* raw lux calculated from device data */
->  	u64 lux64;
->  	u32 ratio;
-> @@ -382,24 +381,24 @@ static int tsl2x7x_get_lux(struct iio_dev *indio_dev)
->  	}
->  
->  	/* extract ALS/lux data */
-> -	ch0 = le16_to_cpup((const __le16 *)&buf[0]);
-> -	ch1 = le16_to_cpup((const __le16 *)&buf[2]);
-> +	chip->als_cur_info.als_ch0 = le16_to_cpup((const __le16 *)&buf[0]);
-> +	chip->als_cur_info.als_ch1 = le16_to_cpup((const __le16 *)&buf[2]);
->  
-> -	chip->als_cur_info.als_ch0 = ch0;
-> -	chip->als_cur_info.als_ch1 = ch1;
-> -
-> -	if (ch0 >= chip->als_saturation || ch1 >= chip->als_saturation) {
-> +	if (chip->als_cur_info.als_ch0 >= chip->als_saturation ||
-> +	    chip->als_cur_info.als_ch1 >= chip->als_saturation) {
->  		lux = TSL2X7X_LUX_CALC_OVER_FLOW;
->  		goto return_max;
->  	}
->  
-> -	if (!ch0) {
-> +	if (!chip->als_cur_info.als_ch0) {
->  		/* have no data, so return LAST VALUE */
->  		ret = chip->als_cur_info.lux;
->  		goto out_unlock;
->  	}
-> +
->  	/* calculate ratio */
-> -	ratio = (ch1 << 15) / ch0;
-> +	ratio = (chip->als_cur_info.als_ch1 << 15) / chip->als_cur_info.als_ch0;
-> +
->  	/* convert to unscaled lux using the pointer to the table */
->  	p = (struct tsl2x7x_lux *)chip->tsl2x7x_device_lux;
->  	while (p->ratio != 0 && p->ratio < ratio)
-> @@ -408,9 +407,9 @@ static int tsl2x7x_get_lux(struct iio_dev *indio_dev)
->  	if (p->ratio == 0) {
->  		lux = 0;
->  	} else {
-> -		lux = DIV_ROUND_UP(ch0 * p->ch0,
-> +		lux = DIV_ROUND_UP(chip->als_cur_info.als_ch0 * p->ch0,
->  				   tsl2x7x_als_gain[chip->settings.als_gain]) -
-> -		      DIV_ROUND_UP(ch1 * p->ch1,
-> +		      DIV_ROUND_UP(chip->als_cur_info.als_ch1 * p->ch1,
->  				   tsl2x7x_als_gain[chip->settings.als_gain]);
->  	}
->  
-
+diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
+index 65b7fbca8c5d..5f78664d2b0e 100644
+--- a/drivers/staging/iio/light/tsl2x7x.c
++++ b/drivers/staging/iio/light/tsl2x7x.c
+@@ -336,13 +336,12 @@ static int tsl2x7x_write_control_reg(struct tsl2X7X_chip *chip, u8 data)
+  */
+ static int tsl2x7x_get_lux(struct iio_dev *indio_dev)
+ {
+-	u32 lux; /* raw lux calculated from device data */
+-	u64 lux64;
+-	u32 ratio;
+-	u8 buf[4];
+-	struct tsl2x7x_lux *p;
+ 	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
++	struct tsl2x7x_lux *p;
++	u32 lux, ratio;
+ 	int i, ret;
++	u64 lux64;
++	u8 buf[4];
+ 
+ 	mutex_lock(&chip->als_mutex);
+ 
+@@ -589,13 +588,9 @@ static int tsl2x7x_als_calibrate(struct iio_dev *indio_dev)
+ 
+ static int tsl2x7x_chip_on(struct iio_dev *indio_dev)
+ {
+-	int i;
+-	int ret = 0;
+-	u8 *dev_reg;
+-	int als_count;
+-	int als_time;
+ 	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
+-	u8 reg_val = 0;
++	int ret, i, als_count, als_time;
++	u8 *dev_reg, reg_val;
+ 
+ 	/* Non calculated parameters */
+ 	chip->tsl2x7x_config[TSL2X7X_PRX_TIME] = chip->settings.prx_time;
+@@ -1121,8 +1116,8 @@ static int tsl2x7x_read_raw(struct iio_dev *indio_dev,
+ 			    int *val2,
+ 			    long mask)
+ {
+-	int ret = -EINVAL;
+ 	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
++	int ret = -EINVAL;
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_PROCESSED:
+@@ -1583,9 +1578,9 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
+ static int tsl2x7x_probe(struct i2c_client *clientp,
+ 			 const struct i2c_device_id *id)
+ {
+-	int ret;
+ 	struct iio_dev *indio_dev;
+ 	struct tsl2X7X_chip *chip;
++	int ret;
+ 
+ 	indio_dev = devm_iio_device_alloc(&clientp->dev, sizeof(*chip));
+ 	if (!indio_dev)
+-- 
+2.14.3
