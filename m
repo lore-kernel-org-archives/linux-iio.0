@@ -9,69 +9,55 @@ Cc: gregkh@linuxfoundation.org,
 	pmeerw@pmeerw.net,
 	linux-kernel@vger.kernel.org,
 	Jon.Brenner@ams.com
-Subject: [PATCH 00/11] staging: iio: tsl2x7x: staging cleanups
-Date: Wed, 21 Mar 2018 06:29:01 -0400
-Message-Id: <20180321102912.5130-1-masneyb@onstation.org>
+Subject: [PATCH 01/11] staging: iio: tsl2x7x: remove unnecessary code
+Date: Wed, 21 Mar 2018 06:29:02 -0400
+Message-Id: <20180321102912.5130-2-masneyb@onstation.org>
+In-Reply-To: <20180321102912.5130-1-masneyb@onstation.org>
+References: <20180321102912.5130-1-masneyb@onstation.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-Here is another set of staging cleanups for the tsl2x7x driver. The
-driver is about ready to move out of staging. I want to test a few other
-things first before submitting a patch to move the driver out of
-staging.
+As a follow up to the work in commit a0722d05a195 ("staging: iio:
+tsl2x7x: convert mutex_trylock() to mutex_lock()"), this patch removes
+the unnecessary calls to tsl2x7x_get_prox() and tsl2x7x_get_lux() in
+tsl2x7x_event_handler(). Previously, these functions were locked with
+mutex_trylock(), but that is no longer the case. This patch also removes
+a comment that is no longer relevant about returning the last sample.
 
-High-level changes in this series:
-- Interrupts and IIO events now work properly
-. Split out interrupt and persistence variables into separate ALS and
-  proximity variables to improve code readability.
-- Simplify code, remove unnecessary code, and improve code readability.
+Signed-off-by: Brian Masney <masneyb@onstation.org>
+---
+ drivers/staging/iio/light/tsl2x7x.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-# How to test the interrupts
-
-cd /sys/bus/iio/devices/iio:device0
-
-echo 0 > events/in_intensity0_thresh_falling_value
-echo 512 > events/in_intensity0_thresh_rising_value
-echo 1 > events/in_intensity0_thresh_rising_en
-
-# proximity0 already has threshold range at [0,512]
-echo 1 > events/in_proximity0_thresh_rising_en
-
-Run iio_event_monitor tsl2772 and verify that events are sent properly.
-
-Question: Should I use in_intensity0_thresh_either_en instead of
-in_intensity0_thresh_{rising,falling}_en? The same goes for the
-proximity0. This is the current contents of the events/ directory:
-
-in_intensity0_thresh_either_period
-in_intensity0_thresh_falling_en
-in_intensity0_thresh_falling_value
-in_intensity0_thresh_rising_en
-in_intensity0_thresh_rising_value
-in_proximity0_thresh_either_period
-in_proximity0_thresh_falling_en
-in_proximity0_thresh_falling_value
-in_proximity0_thresh_rising_en
-in_proximity0_thresh_rising_value
-
-Brian Masney (11):
-  staging: iio: tsl2x7x: remove unnecessary code
-  staging: iio: tsl2x7x: correct interrupt handler trigger
-  staging: iio: tsl2x7x: no need to clear interrupt flag when getting
-    lux
-  staging: iio: tsl2x7x: simplify tsl2x7x_prox_cal()
-  staging: iio: tsl2x7x: split out als and prox interrupt settings
-  staging: iio: tsl2x7x: make logging consistent and correct newlines
-  staging: iio: tsl2x7x: split out als and prox persistence settings
-  staging: iio: tsl2x7x: remove unused variables from tsl2x7x_get_lux()
-  staging: iio: tsl2x7x: remove ch0 and ch1 variables from
-    tsl2x7x_get_lux()
-  staging: iio: tsl2x7x: put local variables in reverse Christmas tree
-    order
-  staging: iio: tsl2x7x: add copyright
-
- drivers/staging/iio/light/tsl2x7x.c | 300 ++++++++++--------------------------
- drivers/staging/iio/light/tsl2x7x.h |  16 +-
- 2 files changed, 91 insertions(+), 225 deletions(-)
-
+diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
+index 82681300e106..82cf9d853b18 100644
+--- a/drivers/staging/iio/light/tsl2x7x.c
++++ b/drivers/staging/iio/light/tsl2x7x.c
+@@ -1430,7 +1430,6 @@ static irqreturn_t tsl2x7x_event_handler(int irq, void *private)
+ 
+ 	/* What type of interrupt do we need to process */
+ 	if (ret & TSL2X7X_STA_PRX_INTR) {
+-		tsl2x7x_get_prox(indio_dev); /* freshen data for ABI */
+ 		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY,
+ 						    0,
+@@ -1440,7 +1439,6 @@ static irqreturn_t tsl2x7x_event_handler(int irq, void *private)
+ 	}
+ 
+ 	if (ret & TSL2X7X_STA_ALS_INTR) {
+-		tsl2x7x_get_lux(indio_dev); /* freshen data for ABI */
+ 		iio_push_event(indio_dev,
+ 			       IIO_UNMOD_EVENT_CODE(IIO_LIGHT,
+ 						    0,
+@@ -1745,10 +1743,6 @@ static int tsl2x7x_probe(struct i2c_client *clientp,
+ 		return ret;
+ 	}
+ 
+-	/*
+-	 * ALS and PROX functions can be invoked via user space poll
+-	 * or H/W interrupt. If busy return last sample.
+-	 */
+ 	mutex_init(&chip->als_mutex);
+ 	mutex_init(&chip->prox_mutex);
+ 
 -- 
 2.14.3
