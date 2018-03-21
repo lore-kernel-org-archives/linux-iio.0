@@ -1,76 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:36754 "EHLO mail.kernel.org"
+Received: from onstation.org ([52.200.56.107]:47262 "EHLO onstation.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751894AbeCXNcM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 24 Mar 2018 09:32:12 -0400
-Date: Sat, 24 Mar 2018 13:32:06 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Brian Masney <masneyb@onstation.org>
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-        devel@driverdev.osuosl.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-kernel@vger.kernel.org,
-        Jon.Brenner@ams.com
-Subject: Re: [PATCH 01/11] staging: iio: tsl2x7x: remove unnecessary code
-Message-ID: <20180324133206.4ab7c8a0@archlinux>
-In-Reply-To: <20180321102912.5130-2-masneyb@onstation.org>
+        id S1751522AbeCUK3Z (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 21 Mar 2018 06:29:25 -0400
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
+Subject: [PATCH 02/11] staging: iio: tsl2x7x: correct interrupt handler trigger
+Date: Wed, 21 Mar 2018 06:29:03 -0400
+Message-Id: <20180321102912.5130-3-masneyb@onstation.org>
+In-Reply-To: <20180321102912.5130-1-masneyb@onstation.org>
 References: <20180321102912.5130-1-masneyb@onstation.org>
-        <20180321102912.5130-2-masneyb@onstation.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 21 Mar 2018 06:29:02 -0400
-Brian Masney <masneyb@onstation.org> wrote:
+tsl2x7x_event_handler() was not called as expected when the device was
+asserting a hardware interrupt. This patch changes the interrupt line
+trigger from rising to falling.
 
-> As a follow up to the work in commit a0722d05a195 ("staging: iio:
-> tsl2x7x: convert mutex_trylock() to mutex_lock()"), this patch removes
-> the unnecessary calls to tsl2x7x_get_prox() and tsl2x7x_get_lux() in
-> tsl2x7x_event_handler(). Previously, these functions were locked with
-> mutex_trylock(), but that is no longer the case. This patch also removes
-> a comment that is no longer relevant about returning the last sample.
-> 
-> Signed-off-by: Brian Masney <masneyb@onstation.org>
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+The driver was tested on a TSL2772 hooked up to a Raspberry Pi 2. The
+interrupt pin also had a 10K pull-up resistor per the requirements from
+the datasheet. The relevant device tree binding:
 
-Thanks,
+&i2c1 {
+	tsl2772@39 {
+		compatible = "amstaos,tsl2772";
+		reg = <0x39>;
+		interrupt-parent = <&gpio>;
+		interrupts = <22 0x2>;
+	};
+};
 
-Jonathan
+With this patch, iio_event_monitor now shows the events when the
+channels are outside the defined interrupt thresholds.
 
-> ---
->  drivers/staging/iio/light/tsl2x7x.c | 6 ------
->  1 file changed, 6 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
-> index 82681300e106..82cf9d853b18 100644
-> --- a/drivers/staging/iio/light/tsl2x7x.c
-> +++ b/drivers/staging/iio/light/tsl2x7x.c
-> @@ -1430,7 +1430,6 @@ static irqreturn_t tsl2x7x_event_handler(int irq, void *private)
->  
->  	/* What type of interrupt do we need to process */
->  	if (ret & TSL2X7X_STA_PRX_INTR) {
-> -		tsl2x7x_get_prox(indio_dev); /* freshen data for ABI */
->  		iio_push_event(indio_dev,
->  			       IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY,
->  						    0,
-> @@ -1440,7 +1439,6 @@ static irqreturn_t tsl2x7x_event_handler(int irq, void *private)
->  	}
->  
->  	if (ret & TSL2X7X_STA_ALS_INTR) {
-> -		tsl2x7x_get_lux(indio_dev); /* freshen data for ABI */
->  		iio_push_event(indio_dev,
->  			       IIO_UNMOD_EVENT_CODE(IIO_LIGHT,
->  						    0,
-> @@ -1745,10 +1743,6 @@ static int tsl2x7x_probe(struct i2c_client *clientp,
->  		return ret;
->  	}
->  
-> -	/*
-> -	 * ALS and PROX functions can be invoked via user space poll
-> -	 * or H/W interrupt. If busy return last sample.
-> -	 */
->  	mutex_init(&chip->als_mutex);
->  	mutex_init(&chip->prox_mutex);
->  
+$ sudo ./iio_event_monitor tsl2772
+Found IIO device with name tsl2772 with device number 0
+Event: time: 1478193460053760446, type: proximity, channel: 0, evtype:
+thresh, direction: either
+...
+Event: time: 1478193463020270185, type: illuminance, channel: 0, evtype:
+thresh, direction: either
+...
+
+Signed-off-by: Brian Masney <masneyb@onstation.org>
+---
+ drivers/staging/iio/light/tsl2x7x.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
+index 82cf9d853b18..59921850a226 100644
+--- a/drivers/staging/iio/light/tsl2x7x.c
++++ b/drivers/staging/iio/light/tsl2x7x.c
+@@ -1763,7 +1763,7 @@ static int tsl2x7x_probe(struct i2c_client *clientp,
+ 		ret = devm_request_threaded_irq(&clientp->dev, clientp->irq,
+ 						NULL,
+ 						&tsl2x7x_event_handler,
+-						IRQF_TRIGGER_RISING |
++						IRQF_TRIGGER_FALLING |
+ 						IRQF_ONESHOT,
+ 						"TSL2X7X_event",
+ 						indio_dev);
+-- 
+2.14.3
 
