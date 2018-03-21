@@ -8,44 +8,55 @@ To: lars@metafoo.de,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	hernan@vanguardiasur.com.ar
-Subject: [PATCH 03/11] staging: iio: ad7746: Reorder includes alphabetically
-Date: Wed, 21 Mar 2018 11:28:51 -0300
-Message-Id: <1521642539-4845-4-git-send-email-hernan@vanguardiasur.com.ar>
+Subject: [PATCH 04/11] staging: iio: ad7746: Reorder variable declarations
+Date: Wed, 21 Mar 2018 11:28:52 -0300
+Message-Id: <1521642539-4845-5-git-send-email-hernan@vanguardiasur.com.ar>
 In-Reply-To: <1521642539-4845-1-git-send-email-hernan@vanguardiasur.com.ar>
 References: <1521642539-4845-1-git-send-email-hernan@vanguardiasur.com.ar>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
+Reorder some variable declarations in an inverse-pyramid scheme.
+
 Signed-off-by: Hernán Gonzalez <hernan@vanguardiasur.com.ar>
 ---
- drivers/staging/iio/cdc/ad7746.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/staging/iio/cdc/ad7746.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
-index 557ed4d..86919e8 100644
+index 86919e8..57623db 100644
 --- a/drivers/staging/iio/cdc/ad7746.c
 +++ b/drivers/staging/iio/cdc/ad7746.c
-@@ -6,15 +6,15 @@
-  * Licensed under the GPL-2.
-  */
+@@ -220,8 +220,8 @@ static int ad7746_select_channel(struct iio_dev *indio_dev,
+ 				 struct iio_chan_spec const *chan)
+ {
+ 	struct ad7746_chip_info *chip = iio_priv(indio_dev);
+-	int ret, delay, idx;
+ 	u8 vt_setup, cap_setup;
++	int ret, delay, idx;
  
--#include <linux/interrupt.h>
-+#include <linux/delay.h>
- #include <linux/device.h>
--#include <linux/kernel.h>
--#include <linux/slab.h>
--#include <linux/sysfs.h>
- #include <linux/i2c.h>
--#include <linux/delay.h>
-+#include <linux/interrupt.h>
-+#include <linux/kernel.h>
- #include <linux/module.h>
-+#include <linux/slab.h>
- #include <linux/stat.h>
-+#include <linux/sysfs.h>
+ 	switch (chan->type) {
+ 	case IIO_CAPACITANCE:
+@@ -289,8 +289,8 @@ static inline ssize_t ad7746_start_calib(struct device *dev,
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad7746_chip_info *chip = iio_priv(indio_dev);
+-	bool doit;
+ 	int ret, timeout = 10;
++	bool doit;
  
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
+ 	ret = strtobool(buf, &doit);
+ 	if (ret < 0)
+@@ -681,8 +681,8 @@ static int ad7746_probe(struct i2c_client *client,
+ 	struct ad7746_platform_data *pdata = client->dev.platform_data;
+ 	struct ad7746_chip_info *chip;
+ 	struct iio_dev *indio_dev;
+-	int ret = 0;
+ 	unsigned char regval = 0;
++	int ret = 0;
+ 
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
+ 	if (!indio_dev)
 -- 
 2.7.4
