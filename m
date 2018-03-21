@@ -1,186 +1,162 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:37906 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751894AbeCXNgv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 24 Mar 2018 09:36:51 -0400
-Date: Sat, 24 Mar 2018 13:36:46 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Brian Masney <masneyb@onstation.org>
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-        devel@driverdev.osuosl.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-kernel@vger.kernel.org,
-        Jon.Brenner@ams.com
-Subject: Re: [PATCH 05/11] staging: iio: tsl2x7x: split out als and prox
- interrupt settings
-Message-ID: <20180324133646.4445277a@archlinux>
-In-Reply-To: <20180321102912.5130-6-masneyb@onstation.org>
+Return-Path: <SRS0=Ao9w=GL=onstation.org=masneyb@kernel.org>
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org,
+	linux-iio@vger.kernel.org
+Cc: gregkh@linuxfoundation.org,
+	devel@driverdev.osuosl.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	linux-kernel@vger.kernel.org,
+	Jon.Brenner@ams.com
+Subject: [PATCH 06/11] staging: iio: tsl2x7x: make logging consistent and correct newlines
+Date: Wed, 21 Mar 2018 06:29:07 -0400
+Message-Id: <20180321102912.5130-7-masneyb@onstation.org>
+In-Reply-To: <20180321102912.5130-1-masneyb@onstation.org>
 References: <20180321102912.5130-1-masneyb@onstation.org>
-        <20180321102912.5130-6-masneyb@onstation.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, 21 Mar 2018 06:29:06 -0400
-Brian Masney <masneyb@onstation.org> wrote:
+This patch updates all of the logging commands so that they are
+consistent with the other messages, includes __func__ in the message,
+and all of the messages include newlines. This patch also removes some
+debug log messages.
 
-> The struct tsl2x7x_settings contained an interrupts_en member that was
-> a bitmask for which interrupts are enabled. This required having
-> bitmasks in several parts of the code. This patch splits this field
-> out into two booleans to remove most of the bitmasks in the code.
-> 
-> This patch also fixes a bug where if an interrupt pin was configured,
-> but proximity interrupts were disabled, then the proximity value could
-> not be polled.
-> 
-> This patch also removes an unnecessary second call to writing the
-> control register in tsl2x7x_chip_on().
-> 
-> Driver tested using a TSL2772 hooked up to a Raspberry Pi 2.
-> 
-> Signed-off-by: Brian Masney <masneyb@onstation.org>
-Applied.
-> ---
->  drivers/staging/iio/light/tsl2x7x.c | 64 ++++++++++++-------------------------
->  drivers/staging/iio/light/tsl2x7x.h |  7 ++--
->  2 files changed, 24 insertions(+), 47 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
-> index 99230d9313e1..f7e7fcc17059 100644
-> --- a/drivers/staging/iio/light/tsl2x7x.c
-> +++ b/drivers/staging/iio/light/tsl2x7x.c
-> @@ -226,10 +226,11 @@ static const struct tsl2x7x_settings tsl2x7x_default_settings = {
->  	.prox_config = 0,
->  	.als_gain_trim = 1000,
->  	.als_cal_target = 150,
-> +	.als_interrupt_en = false,
->  	.als_thresh_low = 200,
->  	.als_thresh_high = 256,
->  	.persistence = 255,
-> -	.interrupts_en = 0,
-> +	.prox_interrupt_en = false,
->  	.prox_thres_low  = 0,
->  	.prox_thres_high = 512,
->  	.prox_max_samples_cal = 30,
-> @@ -686,37 +687,22 @@ static int tsl2x7x_chip_on(struct iio_dev *indio_dev)
->  	/* Power-on settling time */
->  	usleep_range(3000, 3500);
->  
-> -	/*
-> -	 * NOW enable the ADC
-> -	 * initialize the desired mode of operation
-> -	 */
-> -	ret = tsl2x7x_write_control_reg(chip,
-> -					TSL2X7X_CNTL_PWR_ON |
-> -					TSL2X7X_CNTL_ADC_ENBL |
-> -					TSL2X7X_CNTL_PROX_DET_ENBL);
-> +	reg_val = TSL2X7X_CNTL_PWR_ON | TSL2X7X_CNTL_ADC_ENBL |
-> +		  TSL2X7X_CNTL_PROX_DET_ENBL;
-> +	if (chip->settings.als_interrupt_en)
-> +		reg_val |= TSL2X7X_CNTL_ALS_INT_ENBL;
-> +	if (chip->settings.prox_interrupt_en)
-> +		reg_val |= TSL2X7X_CNTL_PROX_INT_ENBL;
-> +
-> +	ret = tsl2x7x_write_control_reg(chip, reg_val);
->  	if (ret < 0)
->  		return ret;
->  
-> -	chip->tsl2x7x_chip_status = TSL2X7X_CHIP_WORKING;
-> -
-> -	if (chip->settings.interrupts_en != 0) {
-> -		dev_info(&chip->client->dev, "Setting Up Interrupt(s)\n");
-> -
-> -		reg_val = TSL2X7X_CNTL_PWR_ON | TSL2X7X_CNTL_ADC_ENBL;
-> -		if (chip->settings.interrupts_en == 0x20 ||
-> -		    chip->settings.interrupts_en == 0x30)
-> -			reg_val |= TSL2X7X_CNTL_PROX_DET_ENBL;
-> -
-> -		reg_val |= chip->settings.interrupts_en;
-> -		ret = tsl2x7x_write_control_reg(chip, reg_val);
-> -		if (ret < 0)
-> -			return ret;
-> +	ret = tsl2x7x_clear_interrupts(chip, TSL2X7X_CMD_PROXALS_INT_CLR);
-> +	if (ret < 0)
-> +		return ret;
->  
-> -		ret = tsl2x7x_clear_interrupts(chip,
-> -					       TSL2X7X_CMD_PROXALS_INT_CLR);
-> -		if (ret < 0)
-> -			return ret;
-> -	}
-> +	chip->tsl2x7x_chip_status = TSL2X7X_CHIP_WORKING;
->  
->  	return ret;
->  }
-> @@ -978,14 +964,11 @@ static int tsl2x7x_read_interrupt_config(struct iio_dev *indio_dev,
->  					 enum iio_event_direction dir)
->  {
->  	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
-> -	int ret;
->  
->  	if (chan->type == IIO_INTENSITY)
-> -		ret = !!(chip->settings.interrupts_en & 0x10);
-> +		return chip->settings.als_interrupt_en;
->  	else
-> -		ret = !!(chip->settings.interrupts_en & 0x20);
-> -
-> -	return ret;
-> +		return chip->settings.prox_interrupt_en;
->  }
->  
->  static int tsl2x7x_write_interrupt_config(struct iio_dev *indio_dev,
-> @@ -997,17 +980,10 @@ static int tsl2x7x_write_interrupt_config(struct iio_dev *indio_dev,
->  	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
->  	int ret;
->  
-> -	if (chan->type == IIO_INTENSITY) {
-> -		if (val)
-> -			chip->settings.interrupts_en |= 0x10;
-> -		else
-> -			chip->settings.interrupts_en &= 0x20;
-> -	} else {
-> -		if (val)
-> -			chip->settings.interrupts_en |= 0x20;
-> -		else
-> -			chip->settings.interrupts_en &= 0x10;
-> -	}
-> +	if (chan->type == IIO_INTENSITY)
-> +		chip->settings.als_interrupt_en = val ? true : false;
-> +	else
-> +		chip->settings.prox_interrupt_en = val ? true : false;
->  
->  	ret = tsl2x7x_invoke_change(indio_dev);
->  	if (ret < 0)
-> diff --git a/drivers/staging/iio/light/tsl2x7x.h b/drivers/staging/iio/light/tsl2x7x.h
-> index 28b0e7fdc9b8..b2aa642299b3 100644
-> --- a/drivers/staging/iio/light/tsl2x7x.h
-> +++ b/drivers/staging/iio/light/tsl2x7x.h
-> @@ -50,12 +50,12 @@ struct tsl2x7x_lux {
->   *  @prox_config:           Prox configuration filters.
->   *  @als_cal_target:        Known external ALS reading for
->   *                          calibration.
-> - *  @interrupts_en:         Enable/Disable - 0x00 = none, 0x10 = als,
-> - *                                           0x20 = prx,  0x30 = bth
->   *  @persistence:           H/W Filters, Number of 'out of limits'
->   *                          ADC readings PRX/ALS.
-> + *  @als_interrupt_en:      Enable/Disable ALS interrupts
->   *  @als_thresh_low:        CH0 'low' count to trigger interrupt.
->   *  @als_thresh_high:       CH0 'high' count to trigger interrupt.
-> + *  @prox_interrupt_en:     Enable/Disable proximity interrupts
->   *  @prox_thres_low:        Low threshold proximity detection.
->   *  @prox_thres_high:       High threshold proximity detection
->   *  @prox_pulse_count:      Number if proximity emitter pulses
-> @@ -70,10 +70,11 @@ struct tsl2x7x_settings {
->  	int prox_gain;
->  	int prox_config;
->  	int als_cal_target;
-> -	u8  interrupts_en;
->  	u8  persistence;
-> +	bool als_interrupt_en;
->  	int als_thresh_low;
->  	int als_thresh_high;
-> +	bool prox_interrupt_en;
->  	int prox_thres_low;
->  	int prox_thres_high;
->  	int prox_pulse_count;
+Signed-off-by: Brian Masney <masneyb@onstation.org>
+---
+Changes since v1:
+- Remove some debug messages and every log message doesn't have to have
+  the function name.
+- Earlier patches in this current series dropped some of the debug
+  messages that were in v1.
 
+ drivers/staging/iio/light/tsl2x7x.c | 42 ++++++++++++++-----------------------
+ 1 file changed, 16 insertions(+), 26 deletions(-)
+
+diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
+index f7e7fcc17059..07ce3076a05d 100644
+--- a/drivers/staging/iio/light/tsl2x7x.c
++++ b/drivers/staging/iio/light/tsl2x7x.c
+@@ -374,7 +374,8 @@ static int tsl2x7x_get_lux(struct iio_dev *indio_dev)
+ 		ret = i2c_smbus_read_byte_data(chip->client, reg);
+ 		if (ret < 0) {
+ 			dev_err(&chip->client->dev,
+-				"failed to read. err=%x\n", ret);
++				"%s: failed to read from register %x: %d\n",
++				__func__, reg, ret);
+ 			goto out_unlock;
+ 		}
+ 
+@@ -416,7 +417,9 @@ static int tsl2x7x_get_lux(struct iio_dev *indio_dev)
+ 
+ 	/* note: lux is 31 bit max at this point */
+ 	if (ch1lux > ch0lux) {
+-		dev_dbg(&chip->client->dev, "ch1lux > ch0lux-return last value\n");
++		dev_dbg(&chip->client->dev,
++			"%s: ch1lux > ch0lux; returning last value\n",
++			__func__);
+ 		ret = chip->als_cur_info.lux;
+ 		goto out_unlock;
+ 	}
+@@ -591,8 +594,6 @@ static int tsl2x7x_als_calibrate(struct iio_dev *indio_dev)
+ 		return -ERANGE;
+ 
+ 	chip->settings.als_gain_trim = ret;
+-	dev_info(&chip->client->dev,
+-		 "%s als_calibrate completed\n", chip->client->name);
+ 
+ 	return ret;
+ }
+@@ -674,12 +675,14 @@ static int tsl2x7x_chip_on(struct iio_dev *indio_dev)
+ 	 */
+ 	for (i = 0, dev_reg = chip->tsl2x7x_config;
+ 			i < TSL2X7X_MAX_CONFIG_REG; i++) {
+-		ret = i2c_smbus_write_byte_data(chip->client,
+-						TSL2X7X_CMD_REG + i,
++		int reg = TSL2X7X_CMD_REG + i;
++
++		ret = i2c_smbus_write_byte_data(chip->client, reg,
+ 						*dev_reg++);
+ 		if (ret < 0) {
+ 			dev_err(&chip->client->dev,
+-				"failed on write to reg %d.\n", i);
++				"%s: failed to write to register %x: %d\n",
++				__func__, reg, ret);
+ 			return ret;
+ 		}
+ 	}
+@@ -907,15 +910,11 @@ static ssize_t in_illuminance0_lux_table_store(struct device *dev,
+ 	 */
+ 	n = value[0];
+ 	if ((n % 3) || n < 6 ||
+-	    n > ((ARRAY_SIZE(chip->tsl2x7x_device_lux) - 1) * 3)) {
+-		dev_info(dev, "LUX TABLE INPUT ERROR 1 Value[0]=%d\n", n);
++	    n > ((ARRAY_SIZE(chip->tsl2x7x_device_lux) - 1) * 3))
+ 		return -EINVAL;
+-	}
+ 
+-	if ((value[(n - 2)] | value[(n - 1)] | value[n]) != 0) {
+-		dev_info(dev, "LUX TABLE INPUT ERROR 2 Value[0]=%d\n", n);
++	if ((value[(n - 2)] | value[(n - 1)] | value[n]) != 0)
+ 		return -EINVAL;
+-	}
+ 
+ 	if (chip->tsl2x7x_chip_status == TSL2X7X_CHIP_WORKING) {
+ 		ret = tsl2x7x_chip_off(indio_dev);
+@@ -1048,15 +1047,10 @@ static int tsl2x7x_write_event_value(struct iio_dev *indio_dev,
+ 			chip->settings.persistence &= 0xF0;
+ 			chip->settings.persistence |=
+ 				(filter_delay & 0x0F);
+-			dev_info(&chip->client->dev, "%s: ALS persistence = %d",
+-				 __func__, filter_delay);
+ 		} else {
+ 			chip->settings.persistence &= 0x0F;
+ 			chip->settings.persistence |=
+ 				((filter_delay << 4) & 0xF0);
+-			dev_info(&chip->client->dev,
+-				 "%s: Proximity persistence = %d",
+-				 __func__, filter_delay);
+ 		}
+ 		ret = 0;
+ 		break;
+@@ -1269,9 +1263,6 @@ static int tsl2x7x_write_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_INT_TIME:
+ 		chip->settings.als_time =
+ 			TSL2X7X_MAX_TIMER_CNT - (val2 / TSL2X7X_MIN_ITIME);
+-
+-		dev_info(&chip->client->dev, "%s: als time = %d",
+-			 __func__, chip->settings.als_time);
+ 		break;
+ 	default:
+ 		return -EINVAL;
+@@ -1633,8 +1624,9 @@ static int tsl2x7x_probe(struct i2c_client *clientp,
+ 
+ 	ret = i2c_smbus_write_byte(clientp, TSL2X7X_CMD_REG | TSL2X7X_CNTRL);
+ 	if (ret < 0) {
+-		dev_err(&clientp->dev, "write to cmd reg failed. err = %d\n",
+-			ret);
++		dev_err(&clientp->dev,
++			"%s: Failed to write to CMD register: %d\n",
++			__func__, ret);
+ 		return ret;
+ 	}
+ 
+@@ -1664,7 +1656,7 @@ static int tsl2x7x_probe(struct i2c_client *clientp,
+ 						indio_dev);
+ 		if (ret) {
+ 			dev_err(&clientp->dev,
+-				"%s: irq request failed", __func__);
++				"%s: irq request failed\n", __func__);
+ 			return ret;
+ 		}
+ 	}
+@@ -1681,8 +1673,6 @@ static int tsl2x7x_probe(struct i2c_client *clientp,
+ 		return ret;
+ 	}
+ 
+-	dev_info(&clientp->dev, "%s Light sensor found.\n", id->name);
+-
+ 	return 0;
+ }
+ 
+-- 
+2.14.3
