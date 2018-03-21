@@ -1,72 +1,86 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:38806 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751923AbeCXNlY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 24 Mar 2018 09:41:24 -0400
-Date: Sat, 24 Mar 2018 13:41:19 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Brian Masney <masneyb@onstation.org>
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-        devel@driverdev.osuosl.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-kernel@vger.kernel.org,
-        Jon.Brenner@ams.com
-Subject: Re: [PATCH 08/11] staging: iio: tsl2x7x: remove unused variables
- from tsl2x7x_get_lux()
-Message-ID: <20180324134119.43c47d0f@archlinux>
-In-Reply-To: <20180321102912.5130-9-masneyb@onstation.org>
+Return-Path: <SRS0=Ao9w=GL=onstation.org=masneyb@kernel.org>
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org,
+	linux-iio@vger.kernel.org
+Cc: gregkh@linuxfoundation.org,
+	devel@driverdev.osuosl.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	linux-kernel@vger.kernel.org,
+	Jon.Brenner@ams.com
+Subject: [PATCH 09/11] staging: iio: tsl2x7x: remove ch0 and ch1 variables from tsl2x7x_get_lux()
+Date: Wed, 21 Mar 2018 06:29:10 -0400
+Message-Id: <20180321102912.5130-10-masneyb@onstation.org>
+In-Reply-To: <20180321102912.5130-1-masneyb@onstation.org>
 References: <20180321102912.5130-1-masneyb@onstation.org>
-        <20180321102912.5130-9-masneyb@onstation.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, 21 Mar 2018 06:29:09 -0400
-Brian Masney <masneyb@onstation.org> wrote:
+Remove the ch0 and ch1 variables from tsl2x7x_get_lux() and
+write those values directly into the chip->als_cur_info.als_ch0
+and chip->als_cur_info.als_ch01 variables.
 
-> tsl2x7x_get_lux() has a ch0lux and ch1lux variables that are not used
-> so this patch removes them.
-> 
-> Signed-off-by: Brian Masney <masneyb@onstation.org>
-Had to argue with this one ;)
+Signed-off-by: Brian Masney <masneyb@onstation.org>
+---
+ drivers/staging/iio/light/tsl2x7x.c | 21 ++++++++++-----------
+ 1 file changed, 10 insertions(+), 11 deletions(-)
 
-Applied,
-
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/staging/iio/light/tsl2x7x.c | 11 -----------
->  1 file changed, 11 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
-> index c1e441857226..1e38e8449f9e 100644
-> --- a/drivers/staging/iio/light/tsl2x7x.c
-> +++ b/drivers/staging/iio/light/tsl2x7x.c
-> @@ -344,8 +344,6 @@ static int tsl2x7x_get_lux(struct iio_dev *indio_dev)
->  	struct tsl2x7x_lux *p;
->  	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
->  	int i, ret;
-> -	u32 ch0lux = 0;
-> -	u32 ch1lux = 0;
->  
->  	mutex_lock(&chip->als_mutex);
->  
-> @@ -416,15 +414,6 @@ static int tsl2x7x_get_lux(struct iio_dev *indio_dev)
->  				   tsl2x7x_als_gain[chip->settings.als_gain]);
->  	}
->  
-> -	/* note: lux is 31 bit max at this point */
-> -	if (ch1lux > ch0lux) {
-> -		dev_dbg(&chip->client->dev,
-> -			"%s: ch1lux > ch0lux; returning last value\n",
-> -			__func__);
-> -		ret = chip->als_cur_info.lux;
-> -		goto out_unlock;
-> -	}
-> -
->  	/* adjust for active time scale */
->  	if (chip->als_time_scale == 0)
->  		lux = 0;
-
+diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
+index 1e38e8449f9e..65b7fbca8c5d 100644
+--- a/drivers/staging/iio/light/tsl2x7x.c
++++ b/drivers/staging/iio/light/tsl2x7x.c
+@@ -336,7 +336,6 @@ static int tsl2x7x_write_control_reg(struct tsl2X7X_chip *chip, u8 data)
+  */
+ static int tsl2x7x_get_lux(struct iio_dev *indio_dev)
+ {
+-	u16 ch0, ch1; /* separated ch0/ch1 data from device */
+ 	u32 lux; /* raw lux calculated from device data */
+ 	u64 lux64;
+ 	u32 ratio;
+@@ -382,24 +381,24 @@ static int tsl2x7x_get_lux(struct iio_dev *indio_dev)
+ 	}
+ 
+ 	/* extract ALS/lux data */
+-	ch0 = le16_to_cpup((const __le16 *)&buf[0]);
+-	ch1 = le16_to_cpup((const __le16 *)&buf[2]);
++	chip->als_cur_info.als_ch0 = le16_to_cpup((const __le16 *)&buf[0]);
++	chip->als_cur_info.als_ch1 = le16_to_cpup((const __le16 *)&buf[2]);
+ 
+-	chip->als_cur_info.als_ch0 = ch0;
+-	chip->als_cur_info.als_ch1 = ch1;
+-
+-	if (ch0 >= chip->als_saturation || ch1 >= chip->als_saturation) {
++	if (chip->als_cur_info.als_ch0 >= chip->als_saturation ||
++	    chip->als_cur_info.als_ch1 >= chip->als_saturation) {
+ 		lux = TSL2X7X_LUX_CALC_OVER_FLOW;
+ 		goto return_max;
+ 	}
+ 
+-	if (!ch0) {
++	if (!chip->als_cur_info.als_ch0) {
+ 		/* have no data, so return LAST VALUE */
+ 		ret = chip->als_cur_info.lux;
+ 		goto out_unlock;
+ 	}
++
+ 	/* calculate ratio */
+-	ratio = (ch1 << 15) / ch0;
++	ratio = (chip->als_cur_info.als_ch1 << 15) / chip->als_cur_info.als_ch0;
++
+ 	/* convert to unscaled lux using the pointer to the table */
+ 	p = (struct tsl2x7x_lux *)chip->tsl2x7x_device_lux;
+ 	while (p->ratio != 0 && p->ratio < ratio)
+@@ -408,9 +407,9 @@ static int tsl2x7x_get_lux(struct iio_dev *indio_dev)
+ 	if (p->ratio == 0) {
+ 		lux = 0;
+ 	} else {
+-		lux = DIV_ROUND_UP(ch0 * p->ch0,
++		lux = DIV_ROUND_UP(chip->als_cur_info.als_ch0 * p->ch0,
+ 				   tsl2x7x_als_gain[chip->settings.als_gain]) -
+-		      DIV_ROUND_UP(ch1 * p->ch1,
++		      DIV_ROUND_UP(chip->als_cur_info.als_ch1 * p->ch1,
+ 				   tsl2x7x_als_gain[chip->settings.als_gain]);
+ 	}
+ 
+-- 
+2.14.3
