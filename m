@@ -1,62 +1,76 @@
-Return-Path: <SRS0=kCDT=GL=vanguardiasur.com.ar=hernan@kernel.org>
-From: =?UTF-8?q?Hern=C3=A1n=20Gonzalez?= <hernan@vanguardiasur.com.ar>
-To: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org,
-	knaack.h@gmx.de,
-	pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	hernan@vanguardiasur.com.ar
-Subject: [PATCH 04/11] staging: iio: ad7746: Reorder variable declarations
-Date: Wed, 21 Mar 2018 11:28:52 -0300
-Message-Id: <1521642539-4845-5-git-send-email-hernan@vanguardiasur.com.ar>
-In-Reply-To: <1521642539-4845-1-git-send-email-hernan@vanguardiasur.com.ar>
+Return-Path: <SRS0=FfDz=GN=huawei.com=jonathan.cameron@kernel.org>
+Date: Fri, 23 Mar 2018 12:40:16 +0000
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To: =?ISO-8859-1?Q?Hern=E1n?= Gonzalez <hernan@vanguardiasur.com.ar>
+CC: <lars@metafoo.de>, <Michael.Hennerich@analog.com>, <jic23@kernel.org>,
+	<knaack.h@gmx.de>, <pmeerw@pmeerw.net>, <linux-iio@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 04/11] staging: iio: ad7746: Reorder variable
+ declarations
+Message-ID: <20180323134016.00007753@huawei.com>
+In-Reply-To: <1521642539-4845-5-git-send-email-hernan@vanguardiasur.com.ar>
 References: <1521642539-4845-1-git-send-email-hernan@vanguardiasur.com.ar>
+	<1521642539-4845-5-git-send-email-hernan@vanguardiasur.com.ar>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="ISO-8859-1"
 List-ID: <linux-iio@vger.kernel.org>
 
-Reorder some variable declarations in an inverse-pyramid scheme.
+On Wed, 21 Mar 2018 11:28:52 -0300
+Hern=E1n Gonzalez <hernan@vanguardiasur.com.ar> wrote:
 
-Signed-off-by: Hernán Gonzalez <hernan@vanguardiasur.com.ar>
----
- drivers/staging/iio/cdc/ad7746.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+> Reorder some variable declarations in an inverse-pyramid scheme.
+>=20
+> Signed-off-by: Hern=E1n Gonzalez <hernan@vanguardiasur.com.ar>
+I'm not sure the first few cases here actually add much in
+the way of readablity.
 
-diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
-index 86919e8..57623db 100644
---- a/drivers/staging/iio/cdc/ad7746.c
-+++ b/drivers/staging/iio/cdc/ad7746.c
-@@ -220,8 +220,8 @@ static int ad7746_select_channel(struct iio_dev *indio_dev,
- 				 struct iio_chan_spec const *chan)
- {
- 	struct ad7746_chip_info *chip = iio_priv(indio_dev);
--	int ret, delay, idx;
- 	u8 vt_setup, cap_setup;
-+	int ret, delay, idx;
- 
- 	switch (chan->type) {
- 	case IIO_CAPACITANCE:
-@@ -289,8 +289,8 @@ static inline ssize_t ad7746_start_calib(struct device *dev,
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad7746_chip_info *chip = iio_priv(indio_dev);
--	bool doit;
- 	int ret, timeout = 10;
-+	bool doit;
- 
- 	ret = strtobool(buf, &doit);
- 	if (ret < 0)
-@@ -681,8 +681,8 @@ static int ad7746_probe(struct i2c_client *client,
- 	struct ad7746_platform_data *pdata = client->dev.platform_data;
- 	struct ad7746_chip_info *chip;
- 	struct iio_dev *indio_dev;
--	int ret = 0;
- 	unsigned char regval = 0;
-+	int ret = 0;
- 
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
- 	if (!indio_dev)
--- 
-2.7.4
+This 'rule' is very 'vague' deliberately as sometimes it makes sense
+and sometimes it really doesn't.
+
+One nice convention is to have ret on it's own line when it is the
+value returned by the function (it doesn't logically group with anything
+else).  Having that one last is also nice to see (so I like your final
+change more than the others!)
+
+Jonathan
+> ---
+>  drivers/staging/iio/cdc/ad7746.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/a=
+d7746.c
+> index 86919e8..57623db 100644
+> --- a/drivers/staging/iio/cdc/ad7746.c
+> +++ b/drivers/staging/iio/cdc/ad7746.c
+> @@ -220,8 +220,8 @@ static int ad7746_select_channel(struct iio_dev *indi=
+o_dev,
+>  				 struct iio_chan_spec const *chan)
+>  {
+>  	struct ad7746_chip_info *chip =3D iio_priv(indio_dev);
+> -	int ret, delay, idx;
+>  	u8 vt_setup, cap_setup;
+> +	int ret, delay, idx;
+> =20
+>  	switch (chan->type) {
+>  	case IIO_CAPACITANCE:
+> @@ -289,8 +289,8 @@ static inline ssize_t ad7746_start_calib(struct devic=
+e *dev,
+>  {
+>  	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
+>  	struct ad7746_chip_info *chip =3D iio_priv(indio_dev);
+> -	bool doit;
+>  	int ret, timeout =3D 10;
+> +	bool doit;
+> =20
+>  	ret =3D strtobool(buf, &doit);
+>  	if (ret < 0)
+> @@ -681,8 +681,8 @@ static int ad7746_probe(struct i2c_client *client,
+>  	struct ad7746_platform_data *pdata =3D client->dev.platform_data;
+>  	struct ad7746_chip_info *chip;
+>  	struct iio_dev *indio_dev;
+> -	int ret =3D 0;
+>  	unsigned char regval =3D 0;
+> +	int ret =3D 0;
+> =20
+>  	indio_dev =3D devm_iio_device_alloc(&client->dev, sizeof(*chip));
+>  	if (!indio_dev)
