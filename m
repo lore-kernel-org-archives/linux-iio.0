@@ -1,41 +1,47 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:41024 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752229AbeCXO3l (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 24 Mar 2018 10:29:41 -0400
-Date: Sat, 24 Mar 2018 14:29:38 +0000
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Mahmoud Nagy <mnagy1312@gmail.com>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: Can't enable IIO_DUMMY_EVGEN for compiling
-Message-ID: <20180324142938.0d358864@archlinux>
-In-Reply-To: <b69d3da4-7c7b-5f00-6a77-81d11f6b52f9@gmail.com>
-References: <b69d3da4-7c7b-5f00-6a77-81d11f6b52f9@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=Um4Y=GO=onstation.org=masneyb@kernel.org>
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org,
+	linux-iio@vger.kernel.org
+Cc: gregkh@linuxfoundation.org,
+	devel@driverdev.osuosl.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	linux-kernel@vger.kernel.org,
+	Jon.Brenner@ams.com
+Subject: [PATCH 0/4] staging: iio: tsl2x7x: move out of staging
+Date: Sat, 24 Mar 2018 16:05:51 -0400
+Message-Id: <20180324200555.1403-1-masneyb@onstation.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, 24 Mar 2018 14:26:23 +0200
-Mahmoud Nagy <mnagy1312@gmail.com> wrote:
+Here is a patch series to move the tsl2x7x driver out of staging and
+into mainline. Driver was tested using various TSL2X7X devices on a
+Raspberry Pi 2.
 
-> So I'm starting with IIO_tasks,
-> and I have a little problem,
-> It seems I can't enable IIO_DUMMY_EVGEN config, nconfig gives "XXX" next
-> to it, I enabled every other config that is needed for task1, maybe for
-> a certain dependency that I can't see or something.
-> need help please.
-It's not a config variable that should be visible in the gui interfaces
-and when I run nconfig it isn't.
+Datasheet for the TSl2772:
+https://ams.com/eng/content/download/291503/1066377/file/TSL2772_DS000181_2-00.pdf
 
-That symbol should be selected (automatically enabled) by
-CONFIG_IIO_SIMPLE_DUMMY_EVENTS
+Brian Masney (4):
+  staging: iio: tsl2x7x: use auto increment I2C protocol
+  staging: iio: tsl2x7x: move IIO_CHAN_INFO_CALIB{SCALE,BIAS} to
+    IIO_LIGHT channel
+  staging: iio: tsl2x7x: use either direction for
+    IIO_EV_INFO_{ENABLE,PERIOD}
+  staging: iio: tsl2x7x: move out of staging
 
-Jonathan
+ drivers/iio/light/Kconfig                          |   8 ++
+ drivers/iio/light/Makefile                         |   1 +
+ drivers/{staging => }/iio/light/tsl2x7x.c          | 135 +++++++++++++--------
+ drivers/staging/iio/Kconfig                        |   1 -
+ drivers/staging/iio/Makefile                       |   1 -
+ drivers/staging/iio/light/Kconfig                  |  14 ---
+ drivers/staging/iio/light/Makefile                 |   5 -
+ .../linux/platform_data}/tsl2x7x.h                 |   0
+ 8 files changed, 93 insertions(+), 72 deletions(-)
+ rename drivers/{staging => }/iio/light/tsl2x7x.c (95%)
+ delete mode 100644 drivers/staging/iio/light/Kconfig
+ delete mode 100644 drivers/staging/iio/light/Makefile
+ rename {drivers/staging/iio/light => include/linux/platform_data}/tsl2x7x.h (100%)
 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
+-- 
+2.14.3
