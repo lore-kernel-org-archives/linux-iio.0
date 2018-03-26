@@ -1,89 +1,118 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:56460 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752446AbeC3MvU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 30 Mar 2018 08:51:20 -0400
-Date: Fri, 30 Mar 2018 13:51:13 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc: Yixun Lan <yixun.lan@amlogic.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Xingyu Chen <xingyu.chen@amlogic.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Carlo Caione <carlo@caione.org>, linux-iio@vger.kernel.org,
-        linux-amlogic@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] iio: adc: meson-axg: add saradc driver
-Message-ID: <20180330135113.1d64afd1@archlinux>
-In-Reply-To: <CAFBinCCK+Y0QAHcGDXvXvSqChS91XK5C6d5XunkmUVBQa4nn+Q@mail.gmail.com>
-References: <20180326084629.100070-1-yixun.lan@amlogic.com>
-        <20180326084629.100070-4-yixun.lan@amlogic.com>
-        <CAFBinCCK+Y0QAHcGDXvXvSqChS91XK5C6d5XunkmUVBQa4nn+Q@mail.gmail.com>
+Received: from mail-dm3nam03on0065.outbound.protection.outlook.com ([104.47.41.65]:54240
+        "EHLO NAM03-DM3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1751752AbeCZN7G (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 26 Mar 2018 09:59:06 -0400
+From: Jean-Baptiste Maneyrol <JManeyrol@invensense.com>
+To: linux-iio <linux-iio@vger.kernel.org>
+Subject: [PATCH 1/3] iio: imu: inv_mpu6050: clean set_power_itg and fix usage
+Date: Mon, 26 Mar 2018 13:59:03 +0000
+Message-ID: <CY4PR1201MB01847FB4C7079B9ED2FD5773C4AD0@CY4PR1201MB0184.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 30 Mar 2018 13:09:31 +0200
-Martin Blumenstingl <martin.blumenstingl@googlemail.com> wrote:
+Rewrite set_power_itg in a more clean way (failing now don't update
+the reference counter) and fix usage in init function (setting
+power on one time is sufficient to ensure chip is effectively on).
 
-> On Mon, Mar 26, 2018 at 10:46 AM, Yixun Lan <yixun.lan@amlogic.com> wrote:
-> > From: Xingyu Chen <xingyu.chen@amlogic.com>
-> >
-> > Add the SAR ADC driver for the Amlogic Meson-AXG SoC.
-> >
-> > Signed-off-by: Xingyu Chen <xingyu.chen@amlogic.com>  
-> I suggest changing the subject of this patch to:
-> iio: adc: meson-saradc: add support for Meson AXG
-> 
-Good point - updated.
-> (because "iio: adc: meson-axg" does not point to the "meson-saradc"
-> driver and no new driver is added with this patch)
-> 
-> with that:
-> Acked-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Thanks, acks added to all 3 patches.
+Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 44 ++++++++++++++++++--------=
+----
+ 1 file changed, 26 insertions(+), 18 deletions(-)
 
-Jonathan
-
-> 
-> > ---
-> >  drivers/iio/adc/meson_saradc.c | 8 ++++++++
-> >  1 file changed, 8 insertions(+)
-> >
-> > diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
-> > index 799ed929ab99..a5d481a2b4ef 100644
-> > --- a/drivers/iio/adc/meson_saradc.c
-> > +++ b/drivers/iio/adc/meson_saradc.c
-> > @@ -935,6 +935,11 @@ static const struct meson_sar_adc_data meson_sar_adc_gxm_data = {
-> >         .name = "meson-gxm-saradc",
-> >  };
-> >
-> > +static const struct meson_sar_adc_data meson_sar_adc_axg_data = {
-> > +       .param = &meson_sar_adc_gxl_param,
-> > +       .name = "meson-axg-saradc",
-> > +};
-> > +
-> >  static const struct of_device_id meson_sar_adc_of_match[] = {
-> >         {
-> >                 .compatible = "amlogic,meson8-saradc",
-> > @@ -953,6 +958,9 @@ static const struct of_device_id meson_sar_adc_of_match[] = {
-> >         }, {
-> >                 .compatible = "amlogic,meson-gxm-saradc",
-> >                 .data = &meson_sar_adc_gxm_data,
-> > +       }, {
-> > +               .compatible = "amlogic,meson-axg-saradc",
-> > +               .data = &meson_sar_adc_axg_data,
-> >         },
-> >         {},
-> >  };
-> > --
-> > 2.15.1
-> >  
-
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/i=
+nv_mpu6050/inv_mpu_core.c
+index 7d64be3..9f97f4f 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -185,26 +185,29 @@ int inv_mpu6050_switch_engine(struct inv_mpu6050_stat=
+e *st, bool en, u32 mask)
+=20
+ int inv_mpu6050_set_power_itg(struct inv_mpu6050_state *st, bool power_on)
+ {
+-	int result =3D 0;
++	int result;
+=20
+ 	if (power_on) {
+-		if (!st->powerup_count)
++		if (st->powerup_count =3D=3D 0) {
+ 			result =3D regmap_write(st->map, st->reg->pwr_mgmt_1, 0);
+-		if (!result)
+-			st->powerup_count++;
++			if (result)
++				return result;
++			usleep_range(INV_MPU6050_REG_UP_TIME_MIN,
++				     INV_MPU6050_REG_UP_TIME_MAX);
++		}
++		st->powerup_count++;
+ 	} else {
+-		st->powerup_count--;
+-		if (!st->powerup_count)
++		if (st->powerup_count =3D=3D 1) {
+ 			result =3D regmap_write(st->map, st->reg->pwr_mgmt_1,
+ 					      INV_MPU6050_BIT_SLEEP);
++			if (result)
++				return result;
++		}
++		st->powerup_count--;
+ 	}
+=20
+-	if (result)
+-		return result;
+-
+-	if (power_on)
+-		usleep_range(INV_MPU6050_REG_UP_TIME_MIN,
+-			     INV_MPU6050_REG_UP_TIME_MAX);
++	dev_dbg(regmap_get_device(st->map), "set power %d, count=3D%u\n",
++		power_on, st->powerup_count);
+=20
+ 	return 0;
+ }
+@@ -850,14 +853,11 @@ static int inv_check_and_setup_chip(struct inv_mpu605=
+0_state *st)
+ 	msleep(INV_MPU6050_POWER_UP_TIME);
+=20
+ 	/*
+-	 * toggle power state. After reset, the sleep bit could be on
+-	 * or off depending on the OTP settings. Toggling power would
++	 * toggle power on. After reset, the sleep bit could be on
++	 * or off depending on the OTP settings. Toggling power on
+ 	 * make it in a definite state as well as making the hardware
+ 	 * state align with the software state
+ 	 */
+-	result =3D inv_mpu6050_set_power_itg(st, false);
+-	if (result)
+-		return result;
+ 	result =3D inv_mpu6050_set_power_itg(st, true);
+ 	if (result)
+ 		return result;
+@@ -865,13 +865,21 @@ static int inv_check_and_setup_chip(struct inv_mpu605=
+0_state *st)
+ 	result =3D inv_mpu6050_switch_engine(st, false,
+ 					   INV_MPU6050_BIT_PWR_ACCL_STBY);
+ 	if (result)
+-		return result;
++		goto error_power_off;
+ 	result =3D inv_mpu6050_switch_engine(st, false,
+ 					   INV_MPU6050_BIT_PWR_GYRO_STBY);
+ 	if (result)
++		goto error_power_off;
++
++	result =3D inv_mpu6050_set_power_itg(st, false);
++	if (result)
+ 		return result;
+=20
+ 	return 0;
++
++error_power_off:
++	inv_mpu6050_set_power_itg(st, false);
++	return result;
+ }
+=20
+ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+--=20
+2.7.4
