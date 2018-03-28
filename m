@@ -1,126 +1,157 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:57326 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751258AbeC3NCS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 30 Mar 2018 09:02:18 -0400
-Date: Fri, 30 Mar 2018 14:02:12 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Eugen Hristev <eugen.hristev@microchip.com>
-Cc: <ludovic.desroches@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>,
-        <nicolas.ferre@microchip.com>, <dmitry.torokhov@gmail.com>
-Subject: Re: [PATCH v2 00/10]  Add support for SAMA5D2 touchscreen
-Message-ID: <20180330140212.57dad66d@archlinux>
-In-Reply-To: <1522153963-1121-1-git-send-email-eugen.hristev@microchip.com>
-References: <1522153963-1121-1-git-send-email-eugen.hristev@microchip.com>
+Received: from mail-bn3nam01on0084.outbound.protection.outlook.com ([104.47.33.84]:10537
+        "EHLO NAM01-BN3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1752176AbeC1A1c (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 27 Mar 2018 20:27:32 -0400
+From: Martin Kelly <mkelly@xevo.com>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+        Jean-Baptiste Maneyrol <JManeyrol@invensense.com>,
+        Martin Kelly <mkelly@xevo.com>
+Subject: [PATCH v2] imu: inv_mpu6050: interpolate missing timestamps
+Date: Tue, 27 Mar 2018 17:27:11 -0700
+Message-Id: <20180328002711.26896-1-mkelly@xevo.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 27 Mar 2018 15:32:33 +0300
-Eugen Hristev <eugen.hristev@microchip.com> wrote:
+When interrupts are generated at a slower rate than the FIFO fills up,
+we will have fewer timestamps than samples. Currently, we fill in 0 for
+any unmatched timestamps. However, this is very confusing for userspace,
+which does not expect discontinuities in timestamps and must somehow
+work around the issue.
 
-> Hello,
-> 
-> This patch series is a rework of my previous series named:
-> [PATCH 00/14] iio: triggers: add consumer support
-> 
-> In few words, this is the implementation of splitting the functionality
-> of the IP block ADC device in SAMA5D2 SoC from ADC with touchscreen
-> support. In order to avoid having a MFD device, two separate
-> drivers that would work on same register base and split the IRQ,etc,
-> as advised on the mailing list, I created a consumer driver for the
-> channels, that will connect to the ADC as described in the device tree.
-> 
-> I have collected feedback from everyone and here is the result:
-> I have added a new generic resistive touchscreen driver, which acts
-> as a iio consumer for the given channels and will create an input
-> device and report the events. It uses a callback buffer to register
-> to the IIO device and waits for data to be pushed.
-> Inside the IIO device, I have kept a similar approach with the first version
-> of the series, except that now the driver can take multiple buffers, and
-> will configure the touchscreen part of the hardware device if the specific
-> channels are requested.
-> 
-> The SAMA5D2 ADC driver registers three new channels: two for the
-> position on the X and Y axis, and one for the touch pressure.
-> When channels are requested, it will check if the touchscreen channel mask
-> includes the requested channels (it is possible that the consumer driver
-> will not request pressure for example). If it's the case, it will work
-> in touchscreen mode, and will refuse to do usual analog-digital conversion,
-> because we have a single trigger and the touchscreen needs it.
-> When the scan mask will include only old channels, the driver will function
-> in the same way as before. If the scan mask somehow is a mix of the two (the
-> masks intersect), the driver will refuse to work whatsoever (cannot have both
-> in the same time).
-> The driver allows reading raw data for the new channels, if claim direct
-> mode works: no touchscreen driver requested anything. The new channels can
-> act like the old ones. However, when requesting these channels, the usual
-> trigger will not work and will not be enabled. The touchscreen channels
-> require special trigger and irq configuration: pen detect, no pen detect
-> and a periodic trigger to sample the touchscreen position and pressure.
-> If the user attempts to use another trigger while there is a buffer
-> that already requested the touchscreen channels (thus the trigger), the
-> driver will refuse to comply.
-> 
-> In order to have defines for the channel numbers, I added a bindings include
-> file that goes on a separate commit :
-> dt-bindings: iio: adc: at91-sama5d2_adc: add channel specific consumer info
-> This should go in the same tree with the following commits :
->   ARM: dts: at91: sama5d2: add channel cells for ADC device
->   ARM: dts: at91: sama5d2: Add resistive touch device
-> 
-> as build will break because these commits depend on the binding one
-> which creates the included header file.
-> 
-> After the discussions earlier this year on the mailing list, I hope this
-> rework of the patches is much better and fulfills all the requirements
-> for this implementation.
-As I said in one of the later patches, I like this a lot.
-It is a good blend of the moderately nasty handling needed in the ADC
-driver with a lovely generic input driver.
+Improve the situation by interpolating timestamps when we can't map them
+1:1 to data. We do this by assuming the timestamps we have are the most
+recent and interpolating backwards to fill the older data. This makes
+sense because inv_mpu6050_read_fifo gets called right after an interrupt
+is generated, presumably when a datum was generated, so the most recent
+timestamp matches up with the most recent datum. In addition, this
+assumption is borne out by observation, which shows monotonically
+increasing timestamps when interpolating this way but discontinuities
+when interpolating in the other direction.
 
-Very nice!  Hope everyone else agrees ;)
+Although this method is not perfectly accurate, it is probably the best
+we can do if we don't get one interrupt per datum.
 
-Jonathan
+Signed-off-by: Martin Kelly <mkelly@xevo.com>
+---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |  2 ++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  2 ++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c | 40 +++++++++++++++++++++++++++---
+ 3 files changed, 41 insertions(+), 3 deletions(-)
 
-> 
-> Eugen Hristev (10):
->   MAINTAINERS: add generic resistive touchscreen adc
->   iio: Add channel for Position Relative
->   dt-bindings: input: touchscreen: touch_adc: create bindings
->   iio: inkern: add module put/get on iio dev module when requesting
->     channels
->   iio: adc: at91-sama5d2_adc: fix channel configuration for differential
->     channels
->   iio: adc: at91-sama5d2_adc: add support for position and pressure
->     channels
->   input: touchscreen: touch_adc: add generic resistive ADC touchscreen
->   dt-bindings: iio: adc: at91-sama5d2_adc: add channel specific consumer
->     info
->   ARM: dts: at91: sama5d2: add channel cells for ADC device
->   ARM: dts: at91: sama5d2: Add resistive touch device
-> 
->  Documentation/ABI/testing/sysfs-bus-iio            |  12 +
->  .../bindings/iio/adc/at91-sama5d2_adc.txt          |   9 +
->  .../bindings/input/touchscreen/touch_adc.txt       |  33 ++
->  MAINTAINERS                                        |   6 +
->  arch/arm/boot/dts/sama5d2.dtsi                     |  12 +
->  drivers/iio/adc/at91-sama5d2_adc.c                 | 491 ++++++++++++++++++++-
->  drivers/iio/industrialio-core.c                    |   1 +
->  drivers/iio/inkern.c                               |   8 +-
->  drivers/input/touchscreen/Kconfig                  |  13 +
->  drivers/input/touchscreen/Makefile                 |   1 +
->  drivers/input/touchscreen/touch_adc.c              | 199 +++++++++
->  include/dt-bindings/iio/adc/at91-sama5d2_adc.h     |  16 +
->  include/uapi/linux/iio/types.h                     |   1 +
->  tools/iio/iio_event_monitor.c                      |   2 +
->  14 files changed, 791 insertions(+), 13 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/input/touchscreen/touch_adc.txt
->  create mode 100644 drivers/input/touchscreen/touch_adc.c
->  create mode 100644 include/dt-bindings/iio/adc/at91-sama5d2_adc.h
-> 
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index 7d64be353403..4a95ff8df3b9 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -83,6 +83,7 @@ static const struct inv_mpu6050_chip_config chip_config_6050 = {
+ 	.fsr = INV_MPU6050_FSR_2000DPS,
+ 	.lpf = INV_MPU6050_FILTER_20HZ,
+ 	.fifo_rate = INV_MPU6050_INIT_FIFO_RATE,
++	.fifo_period = NSEC_PER_SEC / INV_MPU6050_INIT_FIFO_RATE,
+ 	.gyro_fifo_enable = false,
+ 	.accl_fifo_enable = false,
+ 	.accl_fs = INV_MPU6050_FS_02G,
+@@ -630,6 +631,7 @@ inv_mpu6050_fifo_rate_store(struct device *dev, struct device_attribute *attr,
+ 	if (result)
+ 		goto fifo_rate_fail_power_off;
+ 	st->chip_config.fifo_rate = fifo_rate;
++	st->chip_config.fifo_period = NSEC_PER_SEC / fifo_rate;
+ 
+ 	result = inv_mpu6050_set_lpf(st, fifo_rate);
+ 	if (result)
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+index 065794162d65..3bc7d62822ca 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+@@ -86,6 +86,7 @@ enum inv_devices {
+  *  @accl_fifo_enable:	enable accel data output
+  *  @gyro_fifo_enable:	enable gyro data output
+  *  @fifo_rate:		FIFO update rate.
++ *  @fifo_period:	FIFO update period, in nanoseconds.
+  */
+ struct inv_mpu6050_chip_config {
+ 	unsigned int fsr:2;
+@@ -94,6 +95,7 @@ struct inv_mpu6050_chip_config {
+ 	unsigned int accl_fifo_enable:1;
+ 	unsigned int gyro_fifo_enable:1;
+ 	u16 fifo_rate;
++	u32 fifo_period;
+ };
+ 
+ /**
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+index ff81c6aa009d..759844f9d8e6 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+@@ -126,7 +126,11 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
+ 	int result;
+ 	u8 data[INV_MPU6050_OUTPUT_DATA_SIZE];
+ 	u16 fifo_count;
++	u16 fifo_items;
++	s32 fifo_diff;
+ 	s64 timestamp;
++	s64 timestamp_interp;
++	s64 offset;
+ 
+ 	mutex_lock(&st->lock);
+ 	if (!(st->chip_config.accl_fifo_enable |
+@@ -156,9 +160,25 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
+ 	if (fifo_count >  INV_MPU6050_FIFO_THRESHOLD)
+ 		goto flush_fifo;
+ 	/* Timestamp mismatch. */
++	fifo_items = fifo_count / bytes_per_datum;
+ 	if (kfifo_len(&st->timestamps) >
+-	    fifo_count / bytes_per_datum + INV_MPU6050_TIME_STAMP_TOR)
++	    fifo_items + INV_MPU6050_TIME_STAMP_TOR)
+ 		goto flush_fifo;
++
++	/*
++	 * If we have more data than timestamps, the timestamps we have
++	 * correspond to the newest items in the FIFO, since some data was
++	 * generated without a corresponding interrupt and thus timestamp. Since
++	 * we remove FIFO items oldest to newest, we need to interpolate the
++	 * older timestamps based on the number of missing timestamps.
++	 */
++	fifo_diff = fifo_items - kfifo_len(&st->timestamps);
++	if (fifo_diff > 0)
++		offset = st->chip_config.fifo_period * fifo_diff;
++	else
++		offset = 0;
++
++	timestamp_interp = 0;
+ 	while (fifo_count >= bytes_per_datum) {
+ 		result = regmap_bulk_read(st->map, st->reg->fifo_r_w,
+ 					  data, bytes_per_datum);
+@@ -166,9 +186,23 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
+ 			goto flush_fifo;
+ 
+ 		result = kfifo_out(&st->timestamps, &timestamp, 1);
+-		/* when there is no timestamp, put timestamp as 0 */
++		/* When there is no timestamp, interpolate based on period */
+ 		if (result == 0)
+-			timestamp = 0;
++			/*
++			 * We have no more timestamps left, so interpolate the
++			 * rest of them.
++			 */
++			timestamp = timestamp_interp;
++		else {
++			/*
++			 * If we are interpolating, this is an older datum with
++			 * a newer timestamp, so offset it backwards to account
++			 * for the time gap.  Otherwise, offset will be 0.
++			 */
++			timestamp -= offset;
++			timestamp_interp = timestamp;
++		}
++		timestamp_interp += st->chip_config.fifo_period;
+ 
+ 		result = iio_push_to_buffers_with_timestamp(indio_dev, data,
+ 							    timestamp);
+-- 
+2.11.0
 
