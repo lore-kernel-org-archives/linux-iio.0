@@ -1,17 +1,17 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-bn3nam01on0084.outbound.protection.outlook.com ([104.47.33.84]:10537
-        "EHLO NAM01-BN3-obe.outbound.protection.outlook.com"
+Received: from mail-bl2nam02on0047.outbound.protection.outlook.com ([104.47.38.47]:34688
+        "EHLO NAM02-BL2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1752176AbeC1A1c (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 27 Mar 2018 20:27:32 -0400
+        id S1752161AbeC1Rk4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 28 Mar 2018 13:40:56 -0400
 From: Martin Kelly <mkelly@xevo.com>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
         Jean-Baptiste Maneyrol <JManeyrol@invensense.com>,
         Martin Kelly <mkelly@xevo.com>
-Subject: [PATCH v2] imu: inv_mpu6050: interpolate missing timestamps
-Date: Tue, 27 Mar 2018 17:27:11 -0700
-Message-Id: <20180328002711.26896-1-mkelly@xevo.com>
+Subject: [PATCH v3] imu: inv_mpu6050: interpolate missing timestamps
+Date: Wed, 28 Mar 2018 10:40:29 -0700
+Message-Id: <20180328174029.1045-1-mkelly@xevo.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
@@ -40,8 +40,15 @@ Signed-off-by: Martin Kelly <mkelly@xevo.com>
 ---
  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |  2 ++
  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  2 ++
- drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c | 40 +++++++++++++++++++++++++++---
- 3 files changed, 41 insertions(+), 3 deletions(-)
+ drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c | 50 +++++++++++++++++++++++++++---
+ 3 files changed, 50 insertions(+), 4 deletions(-)
+
+v1:
+- Set a missing timestamp to the last timestamp we saw.
+v2:
+- Interpolate missing timestamps.
+v3:
+- Slight optimization to move timestamp_interp += into the result == 0 case.
 
 diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
 index 7d64be353403..4a95ff8df3b9 100644
@@ -84,7 +91,7 @@ index 065794162d65..3bc7d62822ca 100644
  
  /**
 diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-index ff81c6aa009d..759844f9d8e6 100644
+index ff81c6aa009d..40610a316eb0 100644
 --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
 +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
 @@ -126,7 +126,11 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
@@ -126,20 +133,30 @@ index ff81c6aa009d..759844f9d8e6 100644
  	while (fifo_count >= bytes_per_datum) {
  		result = regmap_bulk_read(st->map, st->reg->fifo_r_w,
  					  data, bytes_per_datum);
-@@ -166,9 +186,23 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
+@@ -166,9 +186,31 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
  			goto flush_fifo;
  
  		result = kfifo_out(&st->timestamps, &timestamp, 1);
 -		/* when there is no timestamp, put timestamp as 0 */
-+		/* When there is no timestamp, interpolate based on period */
- 		if (result == 0)
+-		if (result == 0)
 -			timestamp = 0;
++		/* When there is no timestamp, interpolate based on period */
++		if (result == 0) {
 +			/*
 +			 * We have no more timestamps left, so interpolate the
 +			 * rest of them.
 +			 */
++			if (likely(timestamp_interp != 0))
++				timestamp_interp += st->chip_config.fifo_period;
++			else
++				/*
++				 * In this unlikely error case, we should output
++				 * a 0 timestamp instead of 0 + FIFO period.
++				 */
++				dev_err(regmap_get_device(st->map),
++					"Timestamp FIFO is empty!\n");
 +			timestamp = timestamp_interp;
-+		else {
++		} else {
 +			/*
 +			 * If we are interpolating, this is an older datum with
 +			 * a newer timestamp, so offset it backwards to account
@@ -148,7 +165,6 @@ index ff81c6aa009d..759844f9d8e6 100644
 +			timestamp -= offset;
 +			timestamp_interp = timestamp;
 +		}
-+		timestamp_interp += st->chip_config.fifo_period;
  
  		result = iio_push_to_buffers_with_timestamp(indio_dev, data,
  							    timestamp);
