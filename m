@@ -1,65 +1,72 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:38174 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750927AbeC3LgI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 30 Mar 2018 07:36:08 -0400
-Date: Fri, 30 Mar 2018 12:36:02 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Shreeya Patel <shreeya.patel23498@gmail.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        Michael.Hennerich@analog.com, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org, daniel.baluta@gmail.com
-Subject: Re: [PATCH v6 4/6] Staging: iio: adis16209: Remove unused headers
-Message-ID: <20180330123602.0907c3d9@archlinux>
-In-Reply-To: <52f7695224d2026d03fc5823a8a8c45ab48bbfe9.1522306893.git.shreeya.patel23498@gmail.com>
+Return-Path: <SRS0=2H+Q=GT=gmail.com=shreeya.patel23498@kernel.org>
+From: Shreeya Patel <shreeya.patel23498@gmail.com>
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	Michael.Hennerich@analog.com,
+	gregkh@linuxfoundation.org,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	daniel.baluta@gmail.com
+Cc: Shreeya Patel <shreeya.patel23498@gmail.com>
+Subject: [PATCH v6 5/6] Staging: iio: adis16209: Use GENMASK
+Date: Thu, 29 Mar 2018 14:51:19 +0530
+Message-Id: <5d43c34c95f3b58f5b79254ae67bf7a080f39a92.1522306893.git.shreeya.patel23498@gmail.com>
+In-Reply-To: <cover.1522306893.git.shreeya.patel23498@gmail.com>
 References: <cover.1522306893.git.shreeya.patel23498@gmail.com>
-        <52f7695224d2026d03fc5823a8a8c45ab48bbfe9.1522306893.git.shreeya.patel23498@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 29 Mar 2018 14:49:22 +0530
-Shreeya Patel <shreeya.patel23498@gmail.com> wrote:
+Use GENMASK to improve readability and remove the local
+variables used to store intermediate data.
 
-> Remove few unused header files since the adis core handles
-> the sysfs and buffer support.
-> 
-> Signed-off-by: Shreeya Patel <shreeya.patel23498@gmail.com>
-Applied,
+Signed-off-by: Shreeya Patel <shreeya.patel23498@gmail.com>
+---
 
-Thanks,
+Changes in v6
+  -Introduce this new patch in the series.
 
-Jonathan
+ drivers/staging/iio/accel/adis16209.c | 19 ++++++++-----------
+ 1 file changed, 8 insertions(+), 11 deletions(-)
 
-> ---
-> 
-> Changes in v6
->   -Introduce this new patch in the series.
-> 
->  drivers/staging/iio/accel/adis16209.c | 3 ---
->  1 file changed, 3 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/accel/adis16209.c b/drivers/staging/iio/accel/adis16209.c
-> index ee7e87b..ed6d7c7 100644
-> --- a/drivers/staging/iio/accel/adis16209.c
-> +++ b/drivers/staging/iio/accel/adis16209.c
-> @@ -6,7 +6,6 @@
->   * Licensed under the GPL-2 or later.
->   */
->  
-> -#include <linux/delay.h>
->  #include <linux/device.h>
->  #include <linux/kernel.h>
->  #include <linux/list.h>
-> @@ -16,8 +15,6 @@
->  #include <linux/sysfs.h>
->  
->  #include <linux/iio/iio.h>
-> -#include <linux/iio/sysfs.h>
-> -#include <linux/iio/buffer.h>
->  #include <linux/iio/imu/adis.h>
->  
->  #define ADIS16209_STARTUP_DELAY_MS	220
-
+diff --git a/drivers/staging/iio/accel/adis16209.c b/drivers/staging/iio/accel/adis16209.c
+index ed6d7c7..cc50667 100644
+--- a/drivers/staging/iio/accel/adis16209.c
++++ b/drivers/staging/iio/accel/adis16209.c
+@@ -112,25 +112,22 @@ static int adis16209_write_raw(struct iio_dev *indio_dev,
+ 			       long mask)
+ {
+ 	struct adis *st = iio_priv(indio_dev);
+-	int bits;
+-	s16 val16;
+-	u8 addr;
++	int m;
++
++	if (mask != IIO_CHAN_INFO_CALIBBIAS)
++		return -EINVAL;
+ 
+-	switch (mask) {
+-	case IIO_CHAN_INFO_CALIBBIAS:
+ 		switch (chan->type) {
+ 		case IIO_ACCEL:
+ 		case IIO_INCLI:
+-			bits = 14;
++			m = GENMASK(13, 0);
+ 			break;
+ 		default:
+ 			return -EINVAL;
+ 		}
+-		val16 = val & ((1 << bits) - 1);
+-		addr = adis16209_addresses[chan->scan_index][0];
+-		return adis_write_reg_16(st, addr, val16);
+-	}
+-	return -EINVAL;
++
++	return adis_write_reg_16(st, adis16209_addresses[chan->scan_index][0],
++				 val & m);
+ }
+ 
+ static int adis16209_read_raw(struct iio_dev *indio_dev,
+-- 
+2.7.4
