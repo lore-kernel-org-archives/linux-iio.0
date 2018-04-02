@@ -1,198 +1,113 @@
-Return-Path: <SRS0=t8Kp=G3=huawei.com=jonathan.cameron@kernel.org>
-Date: Fri, 6 Apr 2018 16:08:13 +0100
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To: William Breathitt Gray <vilhelm.gray@gmail.com>
-CC: Jonathan Cameron <jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
-	<pmeerw@pmeerw.net>, <benjamin.gaignard@st.com>, <linux-iio@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v5 5/8] counter: 104-quad-8: Documentation: Add Generic
- Counter sysfs documentation
-Message-ID: <20180406160813.00007982@huawei.com>
-In-Reply-To: <20180402194136.GA11724@sophia>
-References: <cover.1520614431.git.vilhelm.gray@gmail.com>
-	<c821777fbc8399583f49fe4058ca75a9b7d4581b.1520614431.git.vilhelm.gray@gmail.com>
-	<20180324172140.382659e2@archlinux>
-	<20180402194136.GA11724@sophia>
+Return-Path: <tomlebreux@cock.li>
+Subject: Re: Moving ad2s90 out of staging
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Cc: linux-iio@vger.kernel.org
+References: <63f2588d-0edd-9115-74a4-d0743fb358c1@cock.li>
+ <20180317222001.5846a58f@archlinux>
+From: Tom Lebreux <tomlebreux@cock.li>
+Message-ID: <6d00d7b9-dbae-b542-f670-473d326fa01b@cock.li>
+Date: Mon, 2 Apr 2018 14:57:53 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
+In-Reply-To: <20180317222001.5846a58f@archlinux>
+Content-Type: text/plain; charset=windows-1252
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, 2 Apr 2018 15:41:47 -0400
-William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
 
-> On Sat, Mar 24, 2018 at 05:21:40PM +0000, Jonathan Cameron wrote:
-> >On Fri,  9 Mar 2018 13:43:19 -0500
-> >William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
-> >  
-> >> This patch adds standard documentation for the Generic Counter interface
-> >> userspace sysfs attributes of the 104-QUAD-8 driver.
-> >> 
-> >> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>  
-> >A few minor comments inline...
-> >Some of this seems generic and common enough you should just put it in the
-> >main docs straight away rather that waiting for more devices to use it.
-> >
-> >Jonathan  
-> 
-> That sounds reasonable so I'll move some of these into the main Generic
-> Counter sysfs documentation file.
-> 
-> Some comments inline follow.
-> 
-> William Breathitt Gray
-> 
-> >  
-> >> ---
-> >>  .../ABI/testing/sysfs-bus-counter-104-quad-8       | 115 +++++++++++++++++++++
-> >>  MAINTAINERS                                        |   1 +
-> >>  2 files changed, 116 insertions(+)
-> >>  create mode 100644 Documentation/ABI/testing/sysfs-bus-counter-104-quad-8
-> >> 
-> >> diff --git a/Documentation/ABI/testing/sysfs-bus-counter-104-quad-8 b/Documentation/ABI/testing/sysfs-bus-counter-104-quad-8
-> >> new file mode 100644
-> >> index 000000000000..4269b438185a
-> >> --- /dev/null
-> >> +++ b/Documentation/ABI/testing/sysfs-bus-counter-104-quad-8
-> >> @@ -0,0 +1,115 @@
-> >> +What:		/sys/bus/counter/devices/counterX/countY_count_mode
-> >> +KernelVersion:	4.17
-> >> +Contact:	linux-iio@vger.kernel.org
-> >> +Description:
-> >> +		Count mode for channel Y. The preset value for channel Y is used
-> >> +		by the count mode where required. The following count modes are
-> >> +		available:
-> >> +
-> >> +		Normal:
-> >> +			Counting is continuous in either direction.
-> >> +
-> >> +		Range Limit:
-> >> +			An upper or lower limit is set, mimicking limit switches
-> >> +			in the mechanical counterpart. The upper limit is set to
-> >> +			the preset value, while the lower limit is set to 0. The
-> >> +			counter freezes at count = preset when counting up, and
-> >> +			at count = 0 when counting down. At either of these
-> >> +			limits, the counting is resumed only when the count
-> >> +			direction is reversed.
-> >> +
-> >> +		Non-recycle:
-> >> +			Counter is disabled whenever a 24-bit count overflow or
-> >> +			underflow takes place. The counter is re-enabled when a
-> >> +			new count value is loaded to the counter via a preset
-> >> +			operation or write to raw.
-> >> +
-> >> +		Modulo-N:
-> >> +			A count boundary is set between 0 and the preset value.
-> >> +			The counter is reset to 0 at count = preset when
-> >> +			counting up, while the counter is set to the preset
-> >> +			value at count = 0 when counting down; the counter does
-> >> +			not freeze at the bundary points, but counts
-> >> +			continuously throughout.  
-> >
-> >This worries me a little in that you will end up with all sorts of subtle
-> >variations around these concepts and hence end up with an impossible to
-> >generalize userspace interface...  
-> 
-> There is a potention for a deal of variations due to the diverse range
-> of counter devices out there -- in particular, I worry about the
-> confusion of similar functionality using slightly different names (e.g.
-> "Normal" may be named "Continuous" in another driver) and vice versa.
-> Perhaps I should standardize these count modes in the main Generic
-> Counter sysfs documentation file.
-I would definitely standardize these.  Any new type can then be added.
-At least for devices that do the same thing we'll have the same naming!
 
+On 03/17/2018 06:20 PM, Jonathan Cameron wrote:
+> On Wed, 14 Mar 2018 21:29:48 -0400
+> Tom Lebreux <tomlebreux@cock.li> wrote:
 > 
-> A difficulty with standardizing these count modes is how to handle
-> description cases such as "Non-recycle" mode whose limit range is that
-> of the count register size (24-bit). This limit range would be different
-> in a device of a different count register size; for example, the LS7366R
-> is a 32-bit version of this counter device with the same interface, but
-> which has a 32-bit limit in "Non-recycle" mode. However, this may not be
-> such a problem since the datasheet for these devices does use a more
-> generic description of this mode which I can utilize: "counter disabled
-> with carry or borrow, re-enabled with reset or load."
+>> Dear IIO community,
+>>
+>> I plan on working on the ad2s90 resolver driver. I understand that we do not
+>> have hardware to test the drivers, so I will not be adding new features. The
+>> work will be mostly about cleaning up the driver.
+>>
+>> 1. Clean up CHECK (mutex not commented)
+>>
+>> 2. Sort include alphabetically
+>>
+>> 3. Reverse christmas tree ordering 
+>> I saw this in David's plan for the ad2s1200 driver as well as a patch for an
+>> accel driver. However, I did not see this mentionned in
+>> Documentation/process/coding-style.rst. Is this necessary, or even wanted ?
+> It is one of those things that I wouldn't say is necessary but is moderately
+> common.
+Alright.
 
-Describe the range as a separate attribute?
-
+>>
+>> 4. Return -EINVAL on spi_read error
+>> Currently, on spi_read error, read_raw still returns IIO_VAL_INT. I believe this
+>> should be returning -EINVAL, as does, for example, the adxrs450 gyro driver.
+> Sounds reasonable.
+>>
+>> 5. Remove indexed property as there is only 1 channel
+> Leave it there.  The ABI allows this and actually if we hadn't originally
+> specified it to be fine to not be indexed, I think we would actually make
+> it a requirement.  It makes life ever so slightly easier for userspace
+> parsing.
 > 
-> The count_mode attribute is core enough to Generic Counter paradigm that
-> I expect it to appear in many Counter drivers, so I'll move this to the
-> main Generic Counter sysfs documentation file for better standardization
-> of its modes.
-> 
+I will leave it there.
 
-Great
-
-> >  
-> >> +
-> >> +What:		/sys/bus/counter/devices/counterX/countY_count_mode_available
-> >> +What:		/sys/bus/counter/devices/counterX/countY_noise_error_available
-> >> +KernelVersion:	4.17
-> >> +Contact:	linux-iio@vger.kernel.org
-> >> +Description:
-> >> +		Discrete set of available values for the respective Count Y
-> >> +		configuration are listed in this file.
-> >> +
-> >> +What:		/sys/bus/counter/devices/counterX/countY_direction
-> >> +KernelVersion:	4.17
-> >> +Contact:	linux-iio@vger.kernel.org
-> >> +Description:
-> >> +		Read-only attribute that indicates the count direction of
-> >> +		Count Y. Two count directions are available: Forward and
-> >> +		Backward.  
-> >Is this telling us which way it is currently counting?  I would imagine
-> >it's generic inversion control, but this description doesn't make that clear.  
+>>
+>> 6. Use a #define for magic number 830000
+>> This sets the maximum clock speed of the spi driver. I am struggling to find
+>> where this number comes from. Is this number coming from the fact that there
+>> needs 600ns between the CS and the first galling edge (mentionned in the 
+>> comment right above the assigment)? The data sheet specifies the max SCLK input
+>> rate as being 2MHz.
+> I'm not sure there is that much to be gained, it's not a magic number
+> in the sense that its value really is the frequency.
+> Given the comment I'd imagine that we have half a wavelength between the CS and
+> falling edge. If that indeed needs to be at least 600ns then this is the maximum
+> frequency. as 1/830000 = 1.2microseconds.
 > 
-> The nature of quadrature encoding allows direction of movement to be
-> determined -- in terms of count data this direction represents whether
-> the count value is increasing or decreasing. For the 104-QUAD-8 device,
-> this "direction" is a read-only value provided by the hardware
-> evaluation of the A and B input lines.
-
-Ah fair enough.  I would add a bit more text to give that quadrature
-example (I'd forgotten about that and was thinking of completely
-differently).
-
 > 
-> However, I can imagine some simple counter devices permitting write
-> operations to configure a direction as a form of inversion control for
-> the counter. This attribute is generic enough to include in the main
-> Generic Counter sysfs documentation file, so I'll move it there and add
-> a more detailed explanation of its read and write functionality.
+> 
+I will keep it as is, with the comments. 
+>>
+>> Is this a good plan ? Am I missing anything important ?
+>>
+>> This was my first time reading a specification document, learning about
+>> resolvers and resolver-to-digital converters.
+>>
+>> From what I understand, the ad2s90 uses the spi interface to output (only) its
+>> absolute position angle. However, it supports many other outputs, such as A, B
+>> encoding, direction of rotation of input (DIR) and angular velocity of input
+>> signals (VEL). What is used to received these numbers ? Or are they only used
+>> to connect directly to other devices ?
+> A / B would be signals to an encoder input.  There are quite a few devices
+> that have hardware that would interpret that.  The am335x found on a beaglebone
+> black for example.  Right now there is an out of tree driver for that, but nothing
+> in tree.  See the recent proposal for a counters subsystem.
+> 
+This hardware stuff is still new to me, thanks for giving me an example. I will take 
+a look.
 
-I would be careful about having the same attribute for those two use
-cases as they aren't really comparable.
+> The velocity input could be connected to any normal ADC.  At that point we
+> could support it by using the consumer interfaces for IIO reasonably well.
+> However, for now just stick to the absolute position that we can get digitally!
+> 
+> As for other things.
+> IIO_CHAN_INFO_RAW only seems a bit odd given the nature of resolvers
+> means we know the 'units' and hence can provide the scale.
+> 
+Are you saying we should provide the scale in addition to the RAW info? I'm
+not sure what the value of the scale should be in this case.
 
+> Otherwise, there is so little to this driver that there can't be much else that
+> needs doing!
 > 
-> >  
-> >> +
-> >> +What:		/sys/bus/counter/devices/counterX/countY_enable
-> >> +KernelVersion:	4.17
-> >> +Contact:	linux-iio@vger.kernel.org
-> >> +Description:
-> >> +		Whether channel Y inputs A and B are enabled. Valid attribute
-> >> +		values are boolean.  
-> >Why would you disable them?  I'm unclear on what userspace would do with this.  
-> 
-> Truthfully, I haven't found much use for this functionality in my
-> applications, but several devices provide it so I have exposed it here.
-> I believe the intention is to allow users to pause a counter temporarily
-> (i.e. by ignoring changes on the A and B inputs) and then pick up where
-> they left off.
-> 
-> I think a possible real life use case would look like this: a conveyor
-> system tracks total movement, reaches the end of a production run and
-> pauses the counter, rehomes the conveyor belt, then restarts the counter
-> and continues counting where it left off.
-> 
-> This count enable functionality is generic enough that I can also move
-> it to the main Generic Counter sysfs documentation file, but I'll give
-> it a more generic description without referencing the A and B input
-> lines.
-> 
-That's a good enough explanation.  I'd add the conveyor example to the
-docs so people don't wonder what sort of thing it is for in future!
+> Jonathan
+Indeed the driver is quite small and simple. Thanks for the plan review.
 
-> >  
-
-...
+>>
+>> Best regards,
+>>
+>> Tom Lebreux
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
