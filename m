@@ -1,27 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi0-f65.google.com ([209.85.218.65]:38117 "EHLO
-        mail-oi0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751988AbeDIVId (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 9 Apr 2018 17:08:33 -0400
-Date: Mon, 9 Apr 2018 16:08:31 -0500
-From: Rob Herring <robh@kernel.org>
-To: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH 2/2] Documentation: dt: iio: imu: st_lsm6dsx: add
- ism330dlc sensor device binding
-Message-ID: <20180409210831.vpagfy4ja74o6da7@rob-hp-laptop>
-References: <20180330203351.22681-3-lorenzo.bianconi@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20180330203351.22681-3-lorenzo.bianconi@redhat.com>
+Received: from smtp08.smtpout.orange.fr ([80.12.242.130]:43087 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752878AbeDBQ7r (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 Apr 2018 12:59:47 -0400
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, nfarnesi4@gmail.com
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH 1/2] iio: sca3000: Fix an error handling path in 'sca3000_probe()'
+Date: Mon,  2 Apr 2018 18:59:42 +0200
+Message-Id: <20180402165942.9056-1-christophe.jaillet@wanadoo.fr>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Mar 30, 2018 at 10:33:51PM +0200, Lorenzo Bianconi wrote:
-> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-> ---
->  Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt | 1 +
->  1 file changed, 1 insertion(+)
+In case of error, we must undo the previous 'sca3000_configure_ring()' call
+in order to free some memory.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/iio/accel/sca3000.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/accel/sca3000.c b/drivers/iio/accel/sca3000.c
+index f33dadf7b262..dae4c594c170 100644
+--- a/drivers/iio/accel/sca3000.c
++++ b/drivers/iio/accel/sca3000.c
+@@ -1496,7 +1496,7 @@ static int sca3000_probe(struct spi_device *spi)
+ 					   "sca3000",
+ 					   indio_dev);
+ 		if (ret)
+-			return ret;
++			goto error_unconfigure_ring;
+ 	}
+ 	indio_dev->setup_ops = &sca3000_ring_setup_ops;
+ 	ret = sca3000_clean_setup(st);
+@@ -1513,6 +1513,9 @@ static int sca3000_probe(struct spi_device *spi)
+ 	if (spi->irq)
+ 		free_irq(spi->irq, indio_dev);
+ 
++error_unconfigure_ring:
++	sca3000_unconfigure_ring(indio_dev);
++
+ 	return ret;
+ }
+ 
+-- 
+2.14.1
+
