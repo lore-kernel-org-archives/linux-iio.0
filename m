@@ -1,156 +1,82 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:48196 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752465AbeDOSI1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 15 Apr 2018 14:08:27 -0400
-Date: Sun, 15 Apr 2018 19:08:21 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-Cc: Douglas Fischer <fischerdouglasc@gmail.com>,
-        linux-iio@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net
-Subject: Re: [PATCH] iio: imu: Add mpu9255 support to mpu6050 driver
-Message-ID: <20180415190821.4c4c758c@archlinux>
-In-Reply-To: <0c1f753b-9f7f-f2ff-e549-8bfd522959ad@invensense.com>
-References: <20180402184200.0aa65204@Constantine>
-        <20180408174219.3147cfae@archlinux>
-        <0c1f753b-9f7f-f2ff-e549-8bfd522959ad@invensense.com>
+Received: from mail-he1eur01on0094.outbound.protection.outlook.com ([104.47.0.94]:59520
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1751195AbeDCPgs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 3 Apr 2018 11:36:48 -0400
+From: Peter Rosin <peda@axentia.se>
+To: linux-kernel@vger.kernel.org
+Cc: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Phil Reid <preid@electromag.com.au>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH v2 0/2] iio: add unit converter
+Date: Tue,  3 Apr 2018 17:36:33 +0200
+Message-Id: <20180403153635.8228-1-peda@axentia.se>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 9 Apr 2018 11:54:28 +0200
-Jean-Baptiste Maneyrol <jmaneyrol@invensense.com> wrote:
+Hi!
 
-> Hello,
-> 
-> mpu9255 is completely similar to mpu9250. The only thing that is 
-> changing is the associated firmware running inside it.
-> 
-> Since we are not loading and using firmware in this driver, the chips 
-> are virtually the same.
-> 
-> JB
-Cool. Applied to the togreg branch of iio.git and pushed out as
-testing for the autobuilders to play with it.
+This driver implements support for voltage dividers and current
+sense circuits. It's pretty generic and should be easily adaptable
+to other linear scaling purposes...
 
-Thanks,
+The driver is still named "unit converter", because it was not
+clear to me that there was a real problem with the driver being
+named that. I got the impression that the naming discussion in
+v1 was mainly about the category, and that it kind of looked odd
+and non-specific with unit-converter in the DT bindings, but
+what do I know?
 
-Jonathan
+Cheers,
+Peter
 
-> 
-> On 08/04/2018 18:42, Jonathan Cameron wrote:
-> > On Mon, 2 Apr 2018 18:42:00 -0400
-> > Douglas Fischer <fischerdouglasc@gmail.com> wrote:
-> >   
-> >> Added support for the mpu9255 IMU to the mpu6050 driver. The
-> >> register map is the same as the other chips; the only driver
-> >> difference is the compatible string and the WHOAMI register
-> >> value.
-> >>
-> >> Signed-off-by: Douglas Fischer <fischerdouglasc@gmail.com>  
-> > Looks good to me.  I'd like to give some time for Jean-Baptiste/others
-> > to confirm they are happy with this as well though.
-> > 
-> > Give me a bump if I seem to have lost it in a couple of
-> > weeks time.
-> > 
-> > Thanks.  It's interesting to note that all the manufacturer's
-> > interfaces finally seem to be stabilizing across generations.
-> > The days of large changes every version seem to finally
-> > be behind us.
-> > 
-> > Jonathan
-> >   
-> >> ---
-> >>
-> >> diff -uprN linux-4.16.orig/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt linux-4.16/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
-> >> --- linux-4.16.orig/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt	2018-04-01 17:20:27.000000000 -0400
-> >> +++ linux-4.16/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt	2018-04-02 18:31:38.342464417 -0400
-> >> @@ -8,6 +8,7 @@ Required properties:
-> >>    		"invensense,mpu6500"
-> >>   		"invensense,mpu9150"
-> >>   		"invensense,mpu9250"
-> >> +		"invensense,mpu9255"
-> >>   		"invensense,icm20608"
-> >>    - reg : the I2C address of the sensor
-> >>    - interrupt-parent : should be the phandle for the interrupt controller
-> >> diff -uprN linux-4.16.orig/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c linux-4.16/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> >> --- linux-4.16.orig/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c	2018-04-01 17:20:27.000000000 -0400
-> >> +++ linux-4.16/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c	2018-04-02 18:31:38.345464417 -0400
-> >> @@ -121,6 +121,12 @@ static const struct inv_mpu6050_hw hw_in
-> >>   		.config = &chip_config_6050,
-> >>   	},
-> >>   	{
-> >> +		.whoami = INV_MPU9255_WHOAMI_VALUE,
-> >> +		.name = "MPU9255",
-> >> +		.reg = &reg_set_6500,
-> >> +		.config = &chip_config_6050,
-> >> +	},
-> >> +	{
-> >>   		.whoami = INV_ICM20608_WHOAMI_VALUE,
-> >>   		.name = "ICM20608",
-> >>   		.reg = &reg_set_6500,
-> >> diff -uprN linux-4.16.orig/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c linux-4.16/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> >> --- linux-4.16.orig/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c	2018-04-01 17:20:27.000000000 -0400
-> >> +++ linux-4.16/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c	2018-04-02 18:31:38.348464417 -0400
-> >> @@ -179,6 +179,7 @@ static const struct i2c_device_id inv_mp
-> >>   	{"mpu6500", INV_MPU6500},
-> >>   	{"mpu9150", INV_MPU9150},
-> >>   	{"mpu9250", INV_MPU9250},
-> >> +	{"mpu9255", INV_MPU9255},
-> >>   	{"icm20608", INV_ICM20608},
-> >>   	{}
-> >>   };
-> >> @@ -203,6 +204,10 @@ static const struct of_device_id inv_of_
-> >>   		.data = (void *)INV_MPU9250
-> >>   	},
-> >>   	{
-> >> +		.compatible = "invensense,mpu9255",
-> >> +		.data = (void *)INV_MPU9255
-> >> +	},
-> >> +	{
-> >>   		.compatible = "invensense,icm20608",
-> >>   		.data = (void *)INV_ICM20608
-> >>   	},
-> >> diff -uprN linux-4.16.orig/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h linux-4.16/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> >> --- linux-4.16.orig/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h	2018-04-01 17:20:27.000000000 -0400
-> >> +++ linux-4.16/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h	2018-04-02 18:31:38.351464416 -0400
-> >> @@ -74,6 +74,7 @@ enum inv_devices {
-> >>   	INV_MPU6000,
-> >>   	INV_MPU9150,
-> >>   	INV_MPU9250,
-> >> +	INV_MPU9255,
-> >>   	INV_ICM20608,
-> >>   	INV_NUM_PARTS
-> >>   };
-> >> @@ -232,6 +233,7 @@ struct inv_mpu6050_state {
-> >>   #define INV_MPU6500_WHOAMI_VALUE		0x70
-> >>   #define INV_MPU9150_WHOAMI_VALUE		0x68
-> >>   #define INV_MPU9250_WHOAMI_VALUE		0x71
-> >> +#define INV_MPU9255_WHOAMI_VALUE		0x73
-> >>   #define INV_ICM20608_WHOAMI_VALUE		0xAF
-> >>   
-> >>   /* scan element definition */
-> >> diff -uprN linux-4.16.orig/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c linux-4.16/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-> >> --- linux-4.16.orig/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c	2018-04-01 17:20:27.000000000 -0400
-> >> +++ linux-4.16/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c	2018-04-02 18:31:38.356464416 -0400
-> >> @@ -83,6 +83,7 @@ static const struct spi_device_id inv_mp
-> >>   	{"mpu6500", INV_MPU6500},
-> >>   	{"mpu9150", INV_MPU9150},
-> >>   	{"mpu9250", INV_MPU9250},
-> >> +	{"mpu9255", INV_MPU9255},
-> >>   	{"icm20608", INV_ICM20608},
-> >>   	{}
-> >>   };
-> >> --
-> >> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> >> the body of a message to majordomo@vger.kernel.org
-> >> More majordomo info at  http://vger.kernel.org/majordomo-info.html  
-> >   
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Changes since v1:    https://lkml.org/lkml/2018/3/19/801
+- Put the driver in the new afe category (Analog Front Ends) and do not
+  move the iio-mux driver.
+- Do not refer to the source channel as "parent", use "source" instead.
+- Have the DT compatible drive the target unit, instead of relying on a
+  "type" DT-property for that.
+- In the DT bindings, use an unnamed source channel.
+- Do not set up writes to _RAW (sorry Phil) as I don't need it and have
+  not tested it. It's easy to add back if needed.
+- Fail if the source channel does not support _RAW or _SCALE.
+- Fix various spelling issues.
+- Fix various code style issues.
+
+Peter Rosin (2):
+  dt-bindings: iio: afe: add current-sense-cuicuit and voltage-divider
+  iio: afe: unit-converter: new driver
+
+ .../bindings/iio/afe/current-sense-circuit.txt     |  45 ++++
+ .../bindings/iio/afe/voltage-divider.txt           |  45 ++++
+ MAINTAINERS                                        |   8 +
+ drivers/iio/Kconfig                                |   1 +
+ drivers/iio/Makefile                               |   1 +
+ drivers/iio/afe/Kconfig                            |  18 ++
+ drivers/iio/afe/Makefile                           |   6 +
+ drivers/iio/afe/iio-unit-converter.c               | 257 +++++++++++++++++++++
+ 8 files changed, 381 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/afe/current-sense-circuit.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/afe/voltage-divider.txt
+ create mode 100644 drivers/iio/afe/Kconfig
+ create mode 100644 drivers/iio/afe/Makefile
+ create mode 100644 drivers/iio/afe/iio-unit-converter.c
+
+-- 
+2.11.0
 
