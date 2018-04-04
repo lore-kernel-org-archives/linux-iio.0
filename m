@@ -1,140 +1,104 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:33178 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751998AbeDHQCp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 8 Apr 2018 12:02:45 -0400
-Date: Sun, 8 Apr 2018 17:02:41 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Jean-Baptiste Maneyrol <JManeyrol@invensense.com>
-Cc: linux-iio <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v2 1/2] iio: imu: inv_mpu6050: clean set_power_itg and
- fix usage
-Message-ID: <20180408170241.2f048f07@archlinux>
-In-Reply-To: <CY4PR1201MB0184AE5EB297A0621275BAAEC4A40@CY4PR1201MB0184.namprd12.prod.outlook.com>
-References: <CY4PR1201MB0184E53EA4D1632786ED4CE8C4A10@CY4PR1201MB0184.namprd12.prod.outlook.com>
-        <CY4PR1201MB0184AE5EB297A0621275BAAEC4A40@CY4PR1201MB0184.namprd12.prod.outlook.com>
+Received: from mail-bl2nam02on0073.outbound.protection.outlook.com ([104.47.38.73]:23979
+        "EHLO NAM02-BL2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1751414AbeDDPIn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 4 Apr 2018 11:08:43 -0400
+From: Jean-Baptiste Maneyrol <JManeyrol@invensense.com>
+To: linux-iio <linux-iio@vger.kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH v2 2/2] iio: imu: inv_mpu6050: use set_power_itg function in
+ i2c mux
+Date: Wed, 4 Apr 2018 15:08:41 +0000
+Message-ID: <CY4PR1201MB01842211DDAB2002860B7A75C4A40@CY4PR1201MB0184.namprd12.prod.outlook.com>
+References: <CY4PR1201MB0184AB7010C925E3771F89D8C4A10@CY4PR1201MB0184.namprd12.prod.outlook.com>
+In-Reply-To: <CY4PR1201MB0184AB7010C925E3771F89D8C4A10@CY4PR1201MB0184.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 4 Apr 2018 15:07:22 +0000
-Jean-Baptiste Maneyrol <JManeyrol@invensense.com> wrote:
+Set power function is rewritten manually inside i2c mux select.
+Better use the already identical existing function.
 
-> Rewrite set_power_itg. Failing when turning power off is
-> no more decreasing the counter now and sleeping only happens
-> when effectively turning the chip on. Fix also usage in init
-> function (setting power on one time is sufficient to ensure
-> chip is effectively on).
-> 
-> Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-Hi Jean-Baptiste,
+Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+---
+=A0drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c | 33 ++++++++++++-------------=
+------
+=A01 file changed, 13 insertions(+), 20 deletions(-)
 
-I'm having trouble with your patches for some reason.  Looks
-like something in your email system is replacing tabs with spaces
-and generally messing things up.
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/in=
+v_mpu6050/inv_mpu_i2c.c
+index fcd7a92..8a8a5bd 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+@@ -29,25 +29,19 @@ static int inv_mpu6050_select_bypass(struct i2c_mux_cor=
+e *muxc, u32 chan_id)
+=A0{
+=A0=A0=A0=A0=A0=A0=A0 struct iio_dev *indio_dev =3D i2c_mux_priv(muxc);
+=A0=A0=A0=A0=A0=A0=A0 struct inv_mpu6050_state *st =3D iio_priv(indio_dev);
+-=A0=A0=A0=A0=A0=A0 int ret =3D 0;
++=A0=A0=A0=A0=A0=A0 int ret;
 
-It doesn't seem to be universal as the ones you sent a day after
-this appear to be fine.
+-=A0=A0=A0=A0=A0=A0 /* Use the same mutex which was used everywhere to prot=
+ect power-op */
+=A0=A0=A0=A0=A0=A0=A0 mutex_lock(&st->lock);
+-=A0=A0=A0=A0=A0=A0 if (!st->powerup_count) {
+-=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 ret =3D regmap_write(st->map, s=
+t->reg->pwr_mgmt_1, 0);
+-=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 if (ret)
+-=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 goto wr=
+ite_error;
 
-Could you take a look and see if you can figure out what is wrong.
+-=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 usleep_range(INV_MPU6050_REG_UP=
+_TIME_MIN,
+-=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0 INV_MPU6050_REG_UP_TIME_MAX);
+-=A0=A0=A0=A0=A0=A0 }
+-=A0=A0=A0=A0=A0=A0 if (!ret) {
+-=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 st->powerup_count++;
+-=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 ret =3D regmap_write(st->map, s=
+t->reg->int_pin_cfg,
+-=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0 INV_MPU6050_INT_PIN_CFG |
+-=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0 INV_MPU6050_BIT_BYPASS_EN);
+-=A0=A0=A0=A0=A0=A0 }
+-write_error:
++=A0=A0=A0=A0=A0=A0 ret =3D inv_mpu6050_set_power_itg(st, true);
++=A0=A0=A0=A0=A0=A0 if (ret)
++=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 goto error_unlock;
++
++=A0=A0=A0=A0=A0=A0 ret =3D regmap_write(st->map, st->reg->int_pin_cfg,
++=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0 INV_MPU6050_INT_PIN_CFG |
++=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0 INV_MPU6050_BIT_BYPASS_EN);
++
++error_unlock:
+=A0=A0=A0=A0=A0=A0=A0 mutex_unlock(&st->lock);
 
-Thanks,
+=A0=A0=A0=A0=A0=A0=A0 return ret;
+@@ -59,12 +53,11 @@ static int inv_mpu6050_deselect_bypass(struct i2c_mux_c=
+ore *muxc, u32 chan_id)
+=A0=A0=A0=A0=A0=A0=A0 struct inv_mpu6050_state *st =3D iio_priv(indio_dev);
 
-Jonathan
+=A0=A0=A0=A0=A0=A0=A0 mutex_lock(&st->lock);
++
+=A0=A0=A0=A0=A0=A0=A0 /* It doesn't really mattter, if any of the calls fai=
+ls */
+=A0=A0=A0=A0=A0=A0=A0 regmap_write(st->map, st->reg->int_pin_cfg, INV_MPU60=
+50_INT_PIN_CFG);
+-=A0=A0=A0=A0=A0=A0 st->powerup_count--;
+-=A0=A0=A0=A0=A0=A0 if (!st->powerup_count)
+-=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 regmap_write(st->map, st->reg->=
+pwr_mgmt_1,
+-=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0 INV_MPU6050_BIT_SLEEP);
++=A0=A0=A0=A0=A0=A0 inv_mpu6050_set_power_itg(st, false);
++
+=A0=A0=A0=A0=A0=A0=A0 mutex_unlock(&st->lock);
 
-> ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 44 ++++++++++++++++--------------
->  1 file changed, 24 insertions(+), 20 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index 7d64be3..f17fbfa 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -185,26 +185,29 @@ int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask)
-> 
->  int inv_mpu6050_set_power_itg(struct inv_mpu6050_state *st, bool power_on)
->  {
-> -       int result = 0;
-> +       int result;
-> 
->         if (power_on) {
-> -               if (!st->powerup_count)
-> +               if (!st->powerup_count) {
->                         result = regmap_write(st->map, st->reg->pwr_mgmt_1, 0);
-> -               if (!result)
-> -                       st->powerup_count++;
-> +                       if (result)
-> +                               return result;
-> +                       usleep_range(INV_MPU6050_REG_UP_TIME_MIN,
-> +                                    INV_MPU6050_REG_UP_TIME_MAX);
-> +               }
-> +               st->powerup_count++;
->         } else {
-> -               st->powerup_count--;
-> -               if (!st->powerup_count)
-> +               if (st->powerup_count == 1) {
->                         result = regmap_write(st->map, st->reg->pwr_mgmt_1,
->                                               INV_MPU6050_BIT_SLEEP);
-> +                       if (result)
-> +                               return result;
-> +               }
-> +               st->powerup_count--;
->         }
-> 
-> -       if (result)
-> -               return result;
-> -
-> -       if (power_on)
-> -               usleep_range(INV_MPU6050_REG_UP_TIME_MIN,
-> -                            INV_MPU6050_REG_UP_TIME_MAX);
-> +       dev_dbg(regmap_get_device(st->map), "set power %d, count=%u\n",
-> +               power_on, st->powerup_count);
-> 
->         return 0;
->  }
-> @@ -850,14 +853,11 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st)
->         msleep(INV_MPU6050_POWER_UP_TIME);
-> 
->         /*
-> -        * toggle power state. After reset, the sleep bit could be on
-> -        * or off depending on the OTP settings. Toggling power would
-> +        * Turn power on. After reset, the sleep bit could be on
-> +        * or off depending on the OTP settings. Turning power on
->          * make it in a definite state as well as making the hardware
->          * state align with the software state
->          */
-> -       result = inv_mpu6050_set_power_itg(st, false);
-> -       if (result)
-> -               return result;
->         result = inv_mpu6050_set_power_itg(st, true);
->         if (result)
->                 return result;
-> @@ -865,13 +865,17 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st)
->         result = inv_mpu6050_switch_engine(st, false,
->                                            INV_MPU6050_BIT_PWR_ACCL_STBY);
->         if (result)
-> -               return result;
-> +               goto error_power_off;
->         result = inv_mpu6050_switch_engine(st, false,
->                                            INV_MPU6050_BIT_PWR_GYRO_STBY);
->         if (result)
-> -               return result;
-> +               goto error_power_off;
-> 
-> -       return 0;
-> +       return inv_mpu6050_set_power_itg(st, false);
-> +
-> +error_power_off:
-> +       inv_mpu6050_set_power_itg(st, false);
-> +       return result;
->  }
-> 
->  int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
-> --
-> 2.7.4
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
+=A0=A0=A0=A0=A0=A0=A0 return 0;
+--
+2.7.4
