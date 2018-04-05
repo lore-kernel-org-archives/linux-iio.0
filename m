@@ -1,38 +1,66 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:56998 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752487AbeDHPkV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 Apr 2018 11:40:21 -0400
-Date: Sun, 8 Apr 2018 16:40:17 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Tom Lebreux <tomlebreux@cock.li>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: Moving ad2s90 out of staging
-Message-ID: <20180408164003.6c0e7242@archlinux>
-In-Reply-To: <6d00d7b9-dbae-b542-f670-473d326fa01b@cock.li>
-References: <63f2588d-0edd-9115-74a4-d0743fb358c1@cock.li>
-        <20180317222001.5846a58f@archlinux>
-        <6d00d7b9-dbae-b542-f670-473d326fa01b@cock.li>
+Return-Path: <SRS0=SzW4=G2=gmail.com=robherring2@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <1521208314-4783-1-git-send-email-geert@linux-m68k.org>
+References: <1521208314-4783-1-git-send-email-geert@linux-m68k.org>
+From: Rob Herring <robherring2@gmail.com>
+Date: Wed, 4 Apr 2018 19:32:53 -0500
+Message-ID: <CAL_JsqJMppYaz31Gg8BH2OaAxs56dnjZ4y+nzBBp-Tt2odaqCw@mail.gmail.com>
+Subject: Re: [PATCH v2 00/21] Allow compile-testing NO_DMA (drivers)
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>, Felipe Balbi <balbi@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"James E . J . Bottomley" <jejb@linux.vnet.ibm.com>,
+	"Martin K . Petersen" <martin.petersen@oracle.com>, Andrew Morton <akpm@linux-foundation.org>,
+	Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Tejun Heo <tj@kernel.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>, "David S . Miller" <davem@davemloft.net>,
+	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Stefan Richter <stefanr@s5r6.in-berlin.de>,
+	Alan Tull <atull@kernel.org>, Moritz Fischer <mdf@kernel.org>, Wolfram Sang <wsa@the-dreams.de>,
+	Jonathan Cameron <jic23@kernel.org>, Joerg Roedel <joro@8bytes.org>, Matias Bjorling <mb@lightnvm.io>,
+	Jassi Brar <jassisinghbrar@gmail.com>, Mauro Carvalho Chehab <mchehab@kernel.org>,
+	Ulf Hansson <ulf.hansson@linaro.org>, David Woodhouse <dwmw2@infradead.org>,
+	Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>,
+	Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>,
+	Boris Brezillon <boris.brezillon@free-electrons.com>, Richard Weinberger <richard@nod.at>,
+	Kalle Valo <kvalo@codeaurora.org>, Ohad Ben-Cohen <ohad@wizery.com>,
+	Bjorn Andersson <bjorn.andersson@linaro.org>, Eric Anholt <eric@anholt.net>,
+	Stefan Wahren <stefan.wahren@i2se.com>, Linux IOMMU <iommu@lists.linux-foundation.org>,
+	Linux USB List <linux-usb@vger.kernel.org>, linux-scsi@vger.kernel.org,
+	Linux-ALSA <alsa-devel@alsa-project.org>, linux-ide@vger.kernel.org,
+	"open list:HARDWARE RANDOM NUMBER GENERATOR CORE" <linux-crypto@vger.kernel.org>, linux-fbdev@vger.kernel.org,
+	linux1394-devel@lists.sourceforge.net, linux-fpga@vger.kernel.org,
+	Linux I2C <linux-i2c@vger.kernel.org>, linux-iio@vger.kernel.org,
+	linux-block@vger.kernel.org, linux-media@vger.kernel.org,
+	linux-mmc <linux-mmc@vger.kernel.org>, linux-mtd@lists.infradead.org,
+	netdev <netdev@vger.kernel.org>,
+	"open list:REMOTE PROCESSOR (REMOTEPROC) SUBSYSTEM" <linux-remoteproc@vger.kernel.org>,
+	"open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>, linux-spi@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+List-ID: <linux-iio@vger.kernel.org>
 
-> 
-> > The velocity input could be connected to any normal ADC.  At that point we
-> > could support it by using the consumer interfaces for IIO reasonably well.
-> > However, for now just stick to the absolute position that we can get digitally!
-> > 
-> > As for other things.
-> > IIO_CHAN_INFO_RAW only seems a bit odd given the nature of resolvers
-> > means we know the 'units' and hence can provide the scale.
-> >   
-> Are you saying we should provide the scale in addition to the RAW info? I'm
-> not sure what the value of the scale should be in this case.
-> 
+On Fri, Mar 16, 2018 at 8:51 AM, Geert Uytterhoeven
+<geert@linux-m68k.org> wrote:
+>         Hi all,
+>
+> If NO_DMA=y, get_dma_ops() returns a reference to the non-existing
+> symbol bad_dma_ops, thus causing a link failure if it is ever used.
+>
+> The intention of this is twofold:
+>   1. To catch users of the DMA API on systems that do no support the DMA
+>      mapping API,
+>   2. To avoid building drivers that cannot work on such systems anyway.
+>
+> However, the disadvantage is that we have to keep on adding dependencies
+> on HAS_DMA all over the place.
+>
+> Thanks to the COMPILE_TEST symbol, lots of drivers now depend on one or
+> more platform dependencies (that imply HAS_DMA) || COMPILE_TEST, thus
+> already covering intention #2.  Having to add an explicit dependency on
+> HAS_DMA here is cumbersome, and hinders compile-testing.
 
-Given we have rotation defined (indirectly via angular velocity) as being 
-in degrees (IIRC) it will be whatever we need to multiply the raw register
-value by to get an answer in degrees.
+The same can be said for CONFIG_IOMEM and CONFIG_OF. Any plans to
+remove those too? CONFIG_IOMEM is mostly just a !CONFIG_UM option.
 
-Jonathan
+Rob
