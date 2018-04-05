@@ -1,65 +1,140 @@
-Return-Path: <SRS0=7+Yi=G7=gmail.com=robherring2@kernel.org>
-Date: Tue, 10 Apr 2018 08:06:52 -0500
-From: Rob Herring <robh@kernel.org>
-To: Peter Rosin <peda@axentia.se>
-Cc: "Andrew F. Davis" <afd@ti.com>, linux-kernel@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Mark Rutland <mark.rutland@arm.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Michael Hennerich <michael.hennerich@analog.com>,
-	Phil Reid <preid@electromag.com.au>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 0/2] iio: add unit converter
-Message-ID: <20180410130652.d3kk3vo6p4524mid@rob-hp-laptop>
-References: <20180403153635.8228-1-peda@axentia.se>
- <93a6f7fc-4a53-c65c-422c-1649732fed50@ti.com>
- <5c18fa2a-0b10-5365-4868-ead6b61b45b2@axentia.se>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-bn3nam01on0089.outbound.protection.outlook.com ([104.47.33.89]:63584
+        "EHLO NAM01-BN3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1751516AbeDEQRD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 5 Apr 2018 12:17:03 -0400
+From: Jean-Baptiste Maneyrol <JManeyrol@invensense.com>
+To: linux-iio <linux-iio@vger.kernel.org>
+Subject: [PATCH] iio: imu: inv_mpu6050: fix error path not turning chip back
+ off
+Date: Thu, 5 Apr 2018 16:17:00 +0000
+Message-ID: <CY4PR1201MB0184E3B55121DA4A686A6391C4BB0@CY4PR1201MB0184.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <5c18fa2a-0b10-5365-4868-ead6b61b45b2@axentia.se>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Apr 03, 2018 at 08:09:08PM +0200, Peter Rosin wrote:
-> On 2018-04-03 19:41, Andrew F. Davis wrote:
-> > On 04/03/2018 10:36 AM, Peter Rosin wrote:
-> >> Hi!
-> >>
-> >> This driver implements support for voltage dividers and current
-> >> sense circuits. It's pretty generic and should be easily adaptable
-> >> to other linear scaling purposes...
-> >>
-> > 
-> > I really like this idea, defining channel scaling / channel type
-> > conversion in DT will be very useful. So much so that I would recommend
-> > this not be a use specific driver but instead moved into the IIO core.
-> > 
-> > This would allow defining these channel conversions in the device node
-> > itself, so as to not need a separate node just for the converter (the
-> > conversion is not a device and probably should not have it's own node
-> > anyway). It would also help with enabling this support for buffered
-> > readers/writers and not just devices only supporting _raw reads/writes.
-> 
-> In my case, the voltage dividers and the current sense circuit are very
-> much real, and I can point my finger at them on the board. Sure, they
-> are not ICs, but to not call them devices is wrong IMHO, and the ADC
-> which is involved have very little to do with the voltage dividers and
-> the fact that it is involved in sensing current. This is not an argument
-> for not moving the functionally to the core though, but that has some
-> problems AFAICT. Because you need some kind of clever and generic
-> binding to make the core do its thing, and it might not be easy to come
-> up with something that fits all devices? And if we do put this in the
-> core, that opens the door for more complex unit converters later on
-> (non-linear etc), further complicating the generic bindings.
+Some functions are turning the chip on and not back off in error
+path. With set_power function using a reference counter that
+would keep the chip on forever.
 
-I agree. We've learned the hard way that even things like the LED diode 
-itself need to be described and not just the controller.
+Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    | 12 ++++++++----
+ drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c | 25 ++++++++++++++++-------=
+--
+ 2 files changed, 24 insertions(+), 13 deletions(-)
 
-Rob
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/i=
+nv_mpu6050/inv_mpu_core.c
+index 7d64be3..18c8866 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -262,27 +262,31 @@ static int inv_mpu6050_init_config(struct iio_dev *in=
+dio_dev)
+ 	d =3D (INV_MPU6050_FSR_2000DPS << INV_MPU6050_GYRO_CONFIG_FSR_SHIFT);
+ 	result =3D regmap_write(st->map, st->reg->gyro_config, d);
+ 	if (result)
+-		return result;
++		goto error_power_off;
+=20
+ 	result =3D inv_mpu6050_set_lpf_regs(st, INV_MPU6050_FILTER_20HZ);
+ 	if (result)
+-		return result;
++		goto error_power_off;
+=20
+ 	d =3D INV_MPU6050_ONE_K_HZ / INV_MPU6050_INIT_FIFO_RATE - 1;
+ 	result =3D regmap_write(st->map, st->reg->sample_rate_div, d);
+ 	if (result)
+-		return result;
++		goto error_power_off;
+=20
+ 	d =3D (INV_MPU6050_FS_02G << INV_MPU6050_ACCL_CONFIG_FSR_SHIFT);
+ 	result =3D regmap_write(st->map, st->reg->accl_config, d);
+ 	if (result)
+-		return result;
++		goto error_power_off;
+=20
+ 	memcpy(&st->chip_config, hw_info[st->chip_type].config,
+ 	       sizeof(struct inv_mpu6050_chip_config));
+ 	result =3D inv_mpu6050_set_power_itg(st, false);
+=20
+ 	return result;
++
++error_power_off:
++	inv_mpu6050_set_power_itg(st, false);
++	return result;
+ }
+=20
+ static int inv_mpu6050_sensor_set(struct inv_mpu6050_state  *st, int reg,
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/iio/im=
+u/inv_mpu6050/inv_mpu_trigger.c
+index f963f9f..770b93a 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+@@ -53,45 +53,52 @@ static int inv_mpu6050_set_enable(struct iio_dev *indio=
+_dev, bool enable)
+ 			result =3D inv_mpu6050_switch_engine(st, true,
+ 					INV_MPU6050_BIT_PWR_GYRO_STBY);
+ 			if (result)
+-				return result;
++				goto error_power_off;
+ 		}
+ 		if (st->chip_config.accl_fifo_enable) {
+ 			result =3D inv_mpu6050_switch_engine(st, true,
+ 					INV_MPU6050_BIT_PWR_ACCL_STBY);
+ 			if (result)
+-				return result;
++				goto error_power_off;
+ 		}
+ 		result =3D inv_reset_fifo(indio_dev);
+ 		if (result)
+-			return result;
++			goto error_power_off;
+ 	} else {
+ 		result =3D regmap_write(st->map, st->reg->fifo_en, 0);
+ 		if (result)
+-			return result;
++			goto error_power_off;
+=20
+ 		result =3D regmap_write(st->map, st->reg->int_enable, 0);
+ 		if (result)
+-			return result;
++			goto error_power_off;
+=20
+ 		result =3D regmap_write(st->map, st->reg->user_ctrl, 0);
+ 		if (result)
+-			return result;
++			goto error_power_off;
+=20
+ 		result =3D inv_mpu6050_switch_engine(st, false,
+ 					INV_MPU6050_BIT_PWR_GYRO_STBY);
+ 		if (result)
+-			return result;
++			goto error_power_off;
+=20
+ 		result =3D inv_mpu6050_switch_engine(st, false,
+ 					INV_MPU6050_BIT_PWR_ACCL_STBY);
+ 		if (result)
+-			return result;
++			goto error_power_off;
++
+ 		result =3D inv_mpu6050_set_power_itg(st, false);
+ 		if (result)
+-			return result;
++			goto error_power_off;
+ 	}
+=20
+ 	return 0;
++
++error_power_off:
++	inv_mpu6050_switch_engine(st, false, INV_MPU6050_BIT_PWR_GYRO_STBY);
++	inv_mpu6050_switch_engine(st, false, INV_MPU6050_BIT_PWR_ACCL_STBY);
++	inv_mpu6050_set_power_itg(st, false);
++	return result;
+ }
+=20
+ /**
+--=20
+2.7.4
