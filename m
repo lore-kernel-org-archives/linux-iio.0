@@ -1,154 +1,209 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:57368 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751998AbeDHQMc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 Apr 2018 12:12:32 -0400
-Date: Sun, 8 Apr 2018 17:12:29 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Jean-Baptiste Maneyrol <JManeyrol@invensense.com>
-Cc: linux-iio <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] iio: imu: inv_mpu6050: fix error path not turning chip
- back off
-Message-ID: <20180408171229.3e3407f8@archlinux>
-In-Reply-To: <CY4PR1201MB0184E3B55121DA4A686A6391C4BB0@CY4PR1201MB0184.namprd12.prod.outlook.com>
-References: <CY4PR1201MB0184E3B55121DA4A686A6391C4BB0@CY4PR1201MB0184.namprd12.prod.outlook.com>
+Received: from mail-bn3nam01on0056.outbound.protection.outlook.com ([104.47.33.56]:46910
+        "EHLO NAM01-BN3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1751344AbeDFIFK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 6 Apr 2018 04:05:10 -0400
+From: Jean-Baptiste Maneyrol <JManeyrol@invensense.com>
+To: linux-iio <linux-iio@vger.kernel.org>
+Subject: [PATCH] iio: imu: inv_mpu6050: use devm_* at init and delete remove
+Date: Fri, 6 Apr 2018 08:05:07 +0000
+Message-ID: <CY4PR1201MB0184436AEE0F374831D9BDFFC4BA0@CY4PR1201MB0184.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 5 Apr 2018 16:17:00 +0000
-Jean-Baptiste Maneyrol <JManeyrol@invensense.com> wrote:
+Use devm_* for iio_triggered_buffer_setup, iio_device_register,
+iio_trigger_register. Delete unneeded inv_mpu6050_remove_trigger,
+inv_mpu_core_remove, and inv_mpu_remove for spi driver.
 
-> Some functions are turning the chip on and not back off in error
-> path. With set_power function using a reference counter that
-> would keep the chip on forever.
-> 
-> Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-Hmm. We are always in 'best try' territory when we get an error in
-these sorts of functions (as chances are it means the chip is dead
-and we have no idea what will happen next)... Still there are
-in some sense, correct things to do to undo anything that did succeed
-etc. That requires better balance than the big hammer of turn
-everything off that you have deployed here.
+Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    | 32 ++++++-----------------=
+----
+ drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c     | 12 ++++------
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h     |  2 --
+ drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c     |  6 -----
+ drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c |  7 +-----
+ 5 files changed, 12 insertions(+), 47 deletions(-)
 
-Jonathan
-
-> ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    | 12 ++++++++----
->  drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c | 25 ++++++++++++++++---------
->  2 files changed, 24 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index 7d64be3..18c8866 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -262,27 +262,31 @@ static int inv_mpu6050_init_config(struct iio_dev *indio_dev)
->  	d = (INV_MPU6050_FSR_2000DPS << INV_MPU6050_GYRO_CONFIG_FSR_SHIFT);
->  	result = regmap_write(st->map, st->reg->gyro_config, d);
->  	if (result)
-> -		return result;
-> +		goto error_power_off;
->  
->  	result = inv_mpu6050_set_lpf_regs(st, INV_MPU6050_FILTER_20HZ);
->  	if (result)
-> -		return result;
-> +		goto error_power_off;
->  
->  	d = INV_MPU6050_ONE_K_HZ / INV_MPU6050_INIT_FIFO_RATE - 1;
->  	result = regmap_write(st->map, st->reg->sample_rate_div, d);
->  	if (result)
-> -		return result;
-> +		goto error_power_off;
->  
->  	d = (INV_MPU6050_FS_02G << INV_MPU6050_ACCL_CONFIG_FSR_SHIFT);
->  	result = regmap_write(st->map, st->reg->accl_config, d);
->  	if (result)
-> -		return result;
-> +		goto error_power_off;
->  
->  	memcpy(&st->chip_config, hw_info[st->chip_type].config,
->  	       sizeof(struct inv_mpu6050_chip_config));
->  	result = inv_mpu6050_set_power_itg(st, false);
->  
->  	return result;
-> +
-> +error_power_off:
-> +	inv_mpu6050_set_power_itg(st, false);
-> +	return result;
->  }
->  
->  static int inv_mpu6050_sensor_set(struct inv_mpu6050_state  *st, int reg,
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-> index f963f9f..770b93a 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-> @@ -53,45 +53,52 @@ static int inv_mpu6050_set_enable(struct iio_dev *indio_dev, bool enable)
->  			result = inv_mpu6050_switch_engine(st, true,
->  					INV_MPU6050_BIT_PWR_GYRO_STBY);
->  			if (result)
-> -				return result;
-> +				goto error_power_off;
-Here you are turning off things you never turned on.  I would definitely
-prefer the error handling to match up.  I know these are effectively 
-idempotent so it doesn't matter in reality but from a code structure
-point of view it would definitely be cleaner to do it 'right'.
-
->  		}
->  		if (st->chip_config.accl_fifo_enable) {
->  			result = inv_mpu6050_switch_engine(st, true,
->  					INV_MPU6050_BIT_PWR_ACCL_STBY);
->  			if (result)
-> -				return result;
-> +				goto error_power_off;
->  		}
->  		result = inv_reset_fifo(indio_dev);
->  		if (result)
-> -			return result;
-> +			goto error_power_off;
->  	} else {
->  		result = regmap_write(st->map, st->reg->fifo_en, 0);
->  		if (result)
-> -			return result;
-> +			goto error_power_off;
-Why?  As far as I can tell this function didn't power it up in this path?
->  
->  		result = regmap_write(st->map, st->reg->int_enable, 0);
->  		if (result)
-> -			return result;
-> +			goto error_power_off;
->  
->  		result = regmap_write(st->map, st->reg->user_ctrl, 0);
->  		if (result)
-> -			return result;
-> +			goto error_power_off;
->  
->  		result = inv_mpu6050_switch_engine(st, false,
->  					INV_MPU6050_BIT_PWR_GYRO_STBY);
->  		if (result)
-> -			return result;
-> +			goto error_power_off;
->  
->  		result = inv_mpu6050_switch_engine(st, false,
->  					INV_MPU6050_BIT_PWR_ACCL_STBY);
->  		if (result)
-> -			return result;
-> +			goto error_power_off;
-> +
->  		result = inv_mpu6050_set_power_itg(st, false);
->  		if (result)
-> -			return result;
-> +			goto error_power_off;
->  	}
->  
->  	return 0;
-> +
-> +error_power_off:
-> +	inv_mpu6050_switch_engine(st, false, INV_MPU6050_BIT_PWR_GYRO_STBY);
-> +	inv_mpu6050_switch_engine(st, false, INV_MPU6050_BIT_PWR_ACCL_STBY);
-> +	inv_mpu6050_set_power_itg(st, false);
-> +	return result;
->  }
->  
->  /**
-
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/i=
+nv_mpu6050/inv_mpu_core.c
+index 7d64be3..c0a075d 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -940,10 +940,10 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq=
+, const char *name,
+ 	indio_dev->info =3D &mpu_info;
+ 	indio_dev->modes =3D INDIO_BUFFER_TRIGGERED;
+=20
+-	result =3D iio_triggered_buffer_setup(indio_dev,
+-					    inv_mpu6050_irq_handler,
+-					    inv_mpu6050_read_fifo,
+-					    NULL);
++	result =3D devm_iio_triggered_buffer_setup(dev, indio_dev,
++						 inv_mpu6050_irq_handler,
++						 inv_mpu6050_read_fifo,
++						 NULL);
+ 	if (result) {
+ 		dev_err(dev, "configure buffer fail %d\n", result);
+ 		return result;
+@@ -951,39 +951,21 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq=
+, const char *name,
+ 	result =3D inv_mpu6050_probe_trigger(indio_dev);
+ 	if (result) {
+ 		dev_err(dev, "trigger probe fail %d\n", result);
+-		goto out_unreg_ring;
++		return result;
+ 	}
+=20
+ 	INIT_KFIFO(st->timestamps);
+ 	spin_lock_init(&st->time_stamp_lock);
+-	result =3D iio_device_register(indio_dev);
++	result =3D devm_iio_device_register(dev, indio_dev);
+ 	if (result) {
+ 		dev_err(dev, "IIO register fail %d\n", result);
+-		goto out_remove_trigger;
++		return result;
+ 	}
+=20
+ 	return 0;
+-
+-out_remove_trigger:
+-	inv_mpu6050_remove_trigger(st);
+-out_unreg_ring:
+-	iio_triggered_buffer_cleanup(indio_dev);
+-	return result;
+ }
+ EXPORT_SYMBOL_GPL(inv_mpu_core_probe);
+=20
+-int inv_mpu_core_remove(struct device  *dev)
+-{
+-	struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
+-
+-	iio_device_unregister(indio_dev);
+-	inv_mpu6050_remove_trigger(iio_priv(indio_dev));
+-	iio_triggered_buffer_cleanup(indio_dev);
+-
+-	return 0;
+-}
+-EXPORT_SYMBOL_GPL(inv_mpu_core_remove);
+-
+ #ifdef CONFIG_PM_SLEEP
+=20
+ static int inv_mpu_resume(struct device *dev)
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/in=
+v_mpu6050/inv_mpu_i2c.c
+index fcd7a92..c9ed082 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+@@ -137,14 +137,12 @@ static int inv_mpu_probe(struct i2c_client *client,
+ 				 1, 0, I2C_MUX_LOCKED | I2C_MUX_GATE,
+ 				 inv_mpu6050_select_bypass,
+ 				 inv_mpu6050_deselect_bypass);
+-	if (!st->muxc) {
+-		result =3D -ENOMEM;
+-		goto out_unreg_device;
+-	}
++	if (!st->muxc)
++		return -ENOMEM;
+ 	st->muxc->priv =3D dev_get_drvdata(&client->dev);
+ 	result =3D i2c_mux_add_adapter(st->muxc, 0, 0, 0);
+ 	if (result)
+-		goto out_unreg_device;
++		return result;
+=20
+ 	result =3D inv_mpu_acpi_create_mux_client(client);
+ 	if (result)
+@@ -154,8 +152,6 @@ static int inv_mpu_probe(struct i2c_client *client,
+=20
+ out_del_mux:
+ 	i2c_mux_del_adapters(st->muxc);
+-out_unreg_device:
+-	inv_mpu_core_remove(&client->dev);
+ 	return result;
+ }
+=20
+@@ -167,7 +163,7 @@ static int inv_mpu_remove(struct i2c_client *client)
+ 	inv_mpu_acpi_delete_mux_client(client);
+ 	i2c_mux_del_adapters(st->muxc);
+=20
+-	return inv_mpu_core_remove(&client->dev);
++	return 0;
+ }
+=20
+ /*
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/in=
+v_mpu6050/inv_mpu_iio.h
+index c3d6225..f680d00 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+@@ -288,7 +288,6 @@ enum inv_mpu6050_clock_sel_e {
+ irqreturn_t inv_mpu6050_irq_handler(int irq, void *p);
+ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p);
+ int inv_mpu6050_probe_trigger(struct iio_dev *indio_dev);
+-void inv_mpu6050_remove_trigger(struct inv_mpu6050_state *st);
+ int inv_reset_fifo(struct iio_dev *indio_dev);
+ int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 m=
+ask);
+ int inv_mpu6050_write_reg(struct inv_mpu6050_state *st, int reg, u8 val);
+@@ -297,5 +296,4 @@ int inv_mpu_acpi_create_mux_client(struct i2c_client *c=
+lient);
+ void inv_mpu_acpi_delete_mux_client(struct i2c_client *client);
+ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+ 		int (*inv_mpu_bus_setup)(struct iio_dev *), int chip_type);
+-int inv_mpu_core_remove(struct device *dev);
+ extern const struct dev_pm_ops inv_mpu_pmops;
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c b/drivers/iio/imu/in=
+v_mpu6050/inv_mpu_spi.c
+index 74506e5..93fdd17 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+@@ -69,11 +69,6 @@ static int inv_mpu_probe(struct spi_device *spi)
+ 				  inv_mpu_i2c_disable, chip_type);
+ }
+=20
+-static int inv_mpu_remove(struct spi_device *spi)
+-{
+-	return inv_mpu_core_remove(&spi->dev);
+-}
+-
+ /*
+  * device id table is used to identify what device can be
+  * supported by this driver
+@@ -97,7 +92,6 @@ MODULE_DEVICE_TABLE(acpi, inv_acpi_match);
+=20
+ static struct spi_driver inv_mpu_driver =3D {
+ 	.probe		=3D	inv_mpu_probe,
+-	.remove		=3D	inv_mpu_remove,
+ 	.id_table	=3D	inv_mpu_id,
+ 	.driver =3D {
+ 		.acpi_match_table =3D ACPI_PTR(inv_acpi_match),
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/iio/im=
+u/inv_mpu6050/inv_mpu_trigger.c
+index f963f9f..2ec1215 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+@@ -141,7 +141,7 @@ int inv_mpu6050_probe_trigger(struct iio_dev *indio_dev=
+)
+ 	st->trig->ops =3D &inv_mpu_trigger_ops;
+ 	iio_trigger_set_drvdata(st->trig, indio_dev);
+=20
+-	ret =3D iio_trigger_register(st->trig);
++	ret =3D devm_iio_trigger_register(&indio_dev->dev, st->trig);
+ 	if (ret)
+ 		return ret;
+=20
+@@ -149,8 +149,3 @@ int inv_mpu6050_probe_trigger(struct iio_dev *indio_dev=
+)
+=20
+ 	return 0;
+ }
+-
+-void inv_mpu6050_remove_trigger(struct inv_mpu6050_state *st)
+-{
+-	iio_trigger_unregister(st->trig);
+-}
+--=20
+2.7.4
