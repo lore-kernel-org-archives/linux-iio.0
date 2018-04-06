@@ -1,134 +1,219 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:33544 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751742AbeD1PKZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 28 Apr 2018 11:10:25 -0400
-Date: Sat, 28 Apr 2018 16:10:21 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Martin Kelly <mkelly@xevo.com>
-Cc: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v3] imu: inv_mpu6050: interpolate missing timestamps
-Message-ID: <20180428161021.11ef16ab@archlinux>
-In-Reply-To: <f8750729-62fe-811f-f9ec-589d01931c5c@xevo.com>
-References: <20180328174029.1045-1-mkelly@xevo.com>
-        <20180330113606.1eba6011@archlinux>
-        <6041491c-811a-8b43-96cf-b19336332ec4@xevo.com>
-        <20180406161509.0000254a@huawei.com>
-        <CY4PR1201MB018485BCC65BD470449FFD92C4BA0@CY4PR1201MB0184.namprd12.prod.outlook.com>
-        <BC52B10A-D77E-4B92-AC95-F5C2BF79A98F@jic23.retrosnub.co.uk>
-        <45846c33-f8c0-4ad6-dbe0-d3d9a84ef135@xevo.com>
-        <c2673b82-71af-5f92-7090-528011f21f01@xevo.com>
-        <9e6b1a58-7322-a74a-69d3-b212e08a3e1a@invensense.com>
-        <f8750729-62fe-811f-f9ec-589d01931c5c@xevo.com>
+Return-Path: <SRS0=t8Kp=G3=huawei.com=jonathan.cameron@kernel.org>
+Date: Fri, 6 Apr 2018 16:19:20 +0100
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To: Stefan Popa <stefan.popa@analog.com>
+CC: <lars@metafoo.de>, <Michael.Hennerich@analog.com>, <jic23@kernel.org>,
+	<knaack.h@gmx.de>, <pmeerw@pmeerw.net>, <linux-pm@vger.kernel.org>,
+	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/3] iio:dac:ad5686: Add
+ AD5672R/AD5676/AD5676R/AD5684R/AD5685R/AD5686R support
+Message-ID: <20180406161920.0000247d@huawei.com>
+In-Reply-To: <1522418118-11810-2-git-send-email-stefan.popa@analog.com>
+References: <1522418118-11810-1-git-send-email-stefan.popa@analog.com>
+	<1522418118-11810-2-git-send-email-stefan.popa@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="US-ASCII"
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 26 Apr 2018 09:46:18 -0700
-Martin Kelly <mkelly@xevo.com> wrote:
+On Fri, 30 Mar 2018 16:55:18 +0300
+Stefan Popa <stefan.popa@analog.com> wrote:
 
-> On 04/26/2018 12:35 AM, Jean-Baptiste Maneyrol wrote:
-> > 
-> > 
-> > On 25/04/2018 20:06, Martin Kelly wrote:  
-> >> On 04/06/2018 09:33 AM, Martin Kelly wrote:  
-> >>> On 04/06/2018 08:41 AM, Jonathan Cameron wrote:  
-> >>>>
-> >>>>
-> >>>> On 6 April 2018 16:21:05 BST, Jean-Baptiste Maneyrol 
-> >>>> <JManeyrol@invensense.com> wrote:  
-> >>>>> Hello,
-> >>>>>
-> >>>>>
-> >>>>> there is just a problem if I'm understanding well.
-> >>>>>
-> >>>>>
-> >>>>> Reading FIFO count register under hard irq handler (when taking the
-> >>>>> timestamp) is not possible since i2c access is using a mutex. That's
-> >>>>> why we are using an irq thread for reading FIFO content.  
-> >>>>
-> >>>> Good point. Need more sleep or caffeine!
-> >>>>
-> >>>>  
-> >>>
-> >>> I was about to reply with the same, as I started coding it up :). Too 
-> >>> bad, it was such a great plan!
-> >>>
-> >>> I have a little update: When switching to level triggered interrupts, 
-> >>> the problem goes away for me, as do the bus errors I get at high 
-> >>> frequencies. I'm working on a patch to support other interrupt types 
-> >>> than rising edge, which is almost done.
-> >>>
-> >>> I also intend to look again at the bus errors for edge driven 
-> >>> interrupts. Since they happen only at high frequency and go away with 
-> >>> level driven interrupts (which must be acked and therefore prevent 
-> >>> reentrancy), I suspect there's a concurrency bug.
-> >>>
-> >>> That said, I think the question remains: Since we can't get the FIFO 
-> >>> count from the hard IRQ handler, and since it could be some time 
-> >>> before the bottom half thread is scheduled, I don't see any way to 
-> >>> accurately handle forward interpolation.
-> >>>
-> >>> Though we can't do forward interpolation, I think at least having 
-> >>> backward interpolation is better than filling in blank timestamps, 
-> >>> especially as we haven't seen an actual case of forward interpolation 
-> >>> being needed, while we have real use cases that require backward 
-> >>> interpolation (and can be easily verified in a logic analyzer).
-> >>>
-> >>> However, that's only my opinion. Jonathan, Jean-Baptiste, and others, 
-> >>> what do you think?
-> >>>  
-> >>
-> >> Hi,
-> >>
-> >> What can I do to help get closure on this? Is there any data I could 
-> >> gather that would help make a decision?
-> >>
-> >> In cases of a troubled system, I think the interpolation is very 
-> >> useful, and it's awkward to do in userspace, as it involves keeping a 
-> >> history of past records, which can be inconvenient and not always 
-> >> accurate (e.g. if userspace doesn't read fast enough and we miss 
-> >> records). However, I certainly understand the concern about 
-> >> interpolation. Should we consider making the interpolation 
-> >> configurable via sysfs or device-tree?
-> >>
-> >> I'd be happy to hear other ideas too about better handling the case of 
-> >> missed interrupts.  
-> > 
-> > Hello,
-> > 
-> > I have implemented a new timestamp mechanism that do something similar 
-> > but in a more precise way.
-> > 
-> > The main ideas are:
-> > * check if interrupt timestamp is valid (computes interrupt timestamps 
-> > interval and check against set period value with a margin)
-> > * use validated interrupt timestamps to measure chip internal period 
-> > from the system (to have more accurate computed timestamp value)
-> > * use the interrupt timestamp for data if it is valid
-> > * if interrupt timestamp is invalid (meaning interrupt was delayed or 
-> > missing), computes timestamp using the measured chip period
-> > 
-> > I will send the corresponding patch series as soon as my last clean-up 
-> > series has been accepted by Jonathan.
-> > 
-> > Regards,
-> > JB  
+> The AD5684R/AD5685R/AD5686R are a family of 4 channel DACs with 12-bit,
+> 14-bit and 16-bit precision respectively. The devices come either with a
+> built-in reference or no built-in reference.
 > 
-> Excellent, I look forward to the patches. Jonathan, are you OK with this 
-> design approach?
-It does sound a rather complex solution, but should be accurate.
+> The AD5672R/AD5676/AD5676R are similar, except that they have 8 channels
+> instead of 4.
+> 
+> Datasheets:
+> http://www.analog.com/media/en/technical-documentation/data-sheets/AD5672R_5676R.pdf
+> http://www.analog.com/media/en/technical-documentation/data-sheets/AD5686R_5685R_5684R.pdf
+> 
+> Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+For ease of review, I would prefer to see this split into 2 patches.
+First refactor to add num channels and the new macro forms for existing parts.
+Then add the new parts.
 
-We'll see when the patches are out, but it will probably do the job given
-I think we have concluded we want to hide this from userspace as much
-as possible.
-
-Thanks,
 
 Jonathan
 
-
+> ---
+>  drivers/iio/dac/ad5686.c | 97 ++++++++++++++++++++++++++++++++++++------------
+>  1 file changed, 74 insertions(+), 23 deletions(-)
+> 
+> diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
+> index f7f975c..5fb0179 100644
+> --- a/drivers/iio/dac/ad5686.c
+> +++ b/drivers/iio/dac/ad5686.c
+> @@ -19,8 +19,6 @@
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/sysfs.h>
+>  
+> -#define AD5686_DAC_CHANNELS			4
+> -
+>  #define AD5686_ADDR(x)				((x) << 16)
+>  #define AD5686_CMD(x)				((x) << 20)
+>  
+> @@ -46,12 +44,14 @@
+>  /**
+>   * struct ad5686_chip_info - chip specific information
+>   * @int_vref_mv:	AD5620/40/60: the internal reference voltage
+> + * @num_channels:	number of channels
+>   * @channel:		channel specification
+>  */
+>  
+>  struct ad5686_chip_info {
+>  	u16				int_vref_mv;
+> -	struct iio_chan_spec		channel[AD5686_DAC_CHANNELS];
+> +	unsigned int			num_channels;
+> +	struct iio_chan_spec		*channels;
+>  };
+>  
+>  /**
+> @@ -88,9 +88,14 @@ struct ad5686_state {
+>   */
+>  
+>  enum ad5686_supported_device_ids {
+> +	ID_AD5672R,
+> +	ID_AD5676,
+> +	ID_AD5676R,
+>  	ID_AD5684,
+> -	ID_AD5685,
+> +	ID_AD5684R,
+> +	ID_AD5685R,
+>  	ID_AD5686,
+> +	ID_AD5686R
+>  };
+>  static int ad5686_spi_write(struct ad5686_state *st,
+>  			     u8 cmd, u8 addr, u16 val, u8 shift)
+> @@ -269,14 +274,14 @@ static const struct iio_chan_spec_ext_info ad5686_ext_info[] = {
+>  	{ },
+>  };
+>  
+> -#define AD5868_CHANNEL(chan, bits, _shift) {			\
+> +#define AD5868_CHANNEL(chan, addr, bits, _shift) {		\
+>  		.type = IIO_VOLTAGE,				\
+>  		.indexed = 1,					\
+>  		.output = 1,					\
+>  		.channel = chan,				\
+>  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
+>  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),\
+> -		.address = AD5686_ADDR_DAC(chan),		\
+> +		.address = addr,				\
+>  		.scan_type = {					\
+>  			.sign = 'u',				\
+>  			.realbits = (bits),			\
+> @@ -286,31 +291,72 @@ static const struct iio_chan_spec_ext_info ad5686_ext_info[] = {
+>  		.ext_info = ad5686_ext_info,			\
+>  }
+>  
+> +#define DECLARE_AD5686_CHANNELS(name, bits, _shift)		\
+> +static struct iio_chan_spec name[] = {				\
+> +		AD5868_CHANNEL(0, 1, bits, _shift),		\
+> +		AD5868_CHANNEL(1, 2, bits, _shift),		\
+> +		AD5868_CHANNEL(2, 4, bits, _shift),		\
+> +		AD5868_CHANNEL(3, 8, bits, _shift),		\
+> +}
+> +
+> +#define DECLARE_AD5676_CHANNELS(name, bits, _shift)		\
+> +static struct iio_chan_spec name[] = {				\
+> +		AD5868_CHANNEL(0, 0, bits, _shift),		\
+> +		AD5868_CHANNEL(1, 1, bits, _shift),		\
+> +		AD5868_CHANNEL(2, 2, bits, _shift),		\
+> +		AD5868_CHANNEL(3, 3, bits, _shift),		\
+> +		AD5868_CHANNEL(4, 4, bits, _shift),		\
+> +		AD5868_CHANNEL(5, 5, bits, _shift),		\
+> +		AD5868_CHANNEL(6, 6, bits, _shift),		\
+> +		AD5868_CHANNEL(7, 7, bits, _shift),		\
+> +}
+> +
+> +DECLARE_AD5676_CHANNELS(ad5672_channels, 12, 4);
+> +DECLARE_AD5676_CHANNELS(ad5676_channels, 16, 0);
+> +DECLARE_AD5686_CHANNELS(ad5684_channels, 12, 4);
+> +DECLARE_AD5686_CHANNELS(ad5685r_channels, 14, 2);
+> +DECLARE_AD5686_CHANNELS(ad5686_channels, 16, 0);
+> +
+>  static const struct ad5686_chip_info ad5686_chip_info_tbl[] = {
+> +	[ID_AD5672R] = {
+> +		.channels = ad5672_channels,
+> +		.int_vref_mv = 2500,
+> +		.num_channels = 8,
+> +	},
+> +	[ID_AD5676] = {
+> +		.channels = ad5676_channels,
+> +		.num_channels = 8,
+> +	},
+> +	[ID_AD5676R] = {
+> +		.channels = ad5676_channels,
+> +		.int_vref_mv = 2500,
+> +		.num_channels = 8,
+> +	},
+>  	[ID_AD5684] = {
+> -		.channel[0] = AD5868_CHANNEL(0, 12, 4),
+> -		.channel[1] = AD5868_CHANNEL(1, 12, 4),
+> -		.channel[2] = AD5868_CHANNEL(2, 12, 4),
+> -		.channel[3] = AD5868_CHANNEL(3, 12, 4),
+> +		.channels = ad5684_channels,
+> +		.num_channels = 4,
+> +	},
+> +	[ID_AD5684R] = {
+> +		.channels = ad5684_channels,
+>  		.int_vref_mv = 2500,
+> +		.num_channels = 4,
+>  	},
+> -	[ID_AD5685] = {
+> -		.channel[0] = AD5868_CHANNEL(0, 14, 2),
+> -		.channel[1] = AD5868_CHANNEL(1, 14, 2),
+> -		.channel[2] = AD5868_CHANNEL(2, 14, 2),
+> -		.channel[3] = AD5868_CHANNEL(3, 14, 2),
+> +	[ID_AD5685R] = {
+> +		.channels = ad5685r_channels,
+>  		.int_vref_mv = 2500,
+> +		.num_channels = 4,
+>  	},
+>  	[ID_AD5686] = {
+> -		.channel[0] = AD5868_CHANNEL(0, 16, 0),
+> -		.channel[1] = AD5868_CHANNEL(1, 16, 0),
+> -		.channel[2] = AD5868_CHANNEL(2, 16, 0),
+> -		.channel[3] = AD5868_CHANNEL(3, 16, 0),
+> +		.channels = ad5686_channels,
+> +		.num_channels = 4,
+> +	},
+> +	[ID_AD5686R] = {
+> +		.channels = ad5686_channels,
+>  		.int_vref_mv = 2500,
+> +		.num_channels = 4,
+>  	},
+>  };
+>  
+> -
+>  static int ad5686_probe(struct spi_device *spi)
+>  {
+>  	struct ad5686_state *st;
+> @@ -354,8 +400,8 @@ static int ad5686_probe(struct spi_device *spi)
+>  	indio_dev->name = spi_get_device_id(spi)->name;
+>  	indio_dev->info = &ad5686_info;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+> -	indio_dev->channels = st->chip_info->channel;
+> -	indio_dev->num_channels = AD5686_DAC_CHANNELS;
+> +	indio_dev->channels = st->chip_info->channels;
+> +	indio_dev->num_channels = st->chip_info->num_channels;
+>  
+>  	ret = ad5686_spi_write(st, AD5686_CMD_INTERNAL_REFER_SETUP, 0,
+>  				!!voltage_uv, 0);
+> @@ -387,9 +433,14 @@ static int ad5686_remove(struct spi_device *spi)
+>  }
+>  
+>  static const struct spi_device_id ad5686_id[] = {
+> +	{"ad5672r", ID_AD5672R},
+> +	{"ad5676", ID_AD5676},
+> +	{"ad5676r", ID_AD5676R},
+>  	{"ad5684", ID_AD5684},
+> -	{"ad5685", ID_AD5685},
+> +	{"ad5684r", ID_AD5684R},
+> +	{"ad5685r", ID_AD5685R},
+>  	{"ad5686", ID_AD5686},
+> +	{"ad5686r", ID_AD5686R},
+>  	{}
+>  };
+>  MODULE_DEVICE_TABLE(spi, ad5686_id);
