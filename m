@@ -1,59 +1,174 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:60570 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:34968 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751770AbeDHPtQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 8 Apr 2018 11:49:16 -0400
-Date: Sun, 8 Apr 2018 16:49:11 +0100
+        id S1751998AbeDHQ2s (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 8 Apr 2018 12:28:48 -0400
+Date: Sun, 8 Apr 2018 17:28:44 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: imu: st_lsm6dsx: fix FIFO threshold mask for
- LSM6DSM/LSM6DSL
-Message-ID: <20180408164911.37b09b9a@archlinux>
-In-Reply-To: <20180330184322.5455-1-lorenzo.bianconi@redhat.com>
-References: <20180330184322.5455-1-lorenzo.bianconi@redhat.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH 1/2] iio: imu: st_lsm6dsx: add support to ism330dlc
+Message-ID: <20180408172844.38acd017@archlinux>
+In-Reply-To: <20180330203351.22681-2-lorenzo.bianconi@redhat.com>
+References: <20180330203351.22681-2-lorenzo.bianconi@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 30 Mar 2018 20:43:22 +0200
+On Fri, 30 Mar 2018 22:33:50 +0200
 Lorenzo Bianconi <lorenzo.bianconi@redhat.com> wrote:
 
-> According to the latest datasheet, LSM6DSM and LSM6DSL imu sensors
-> export GENMASK(10, 0) for FIFO threshold mask definition. Despite
-> that is not an actual issue since write on fifo_th register is protected
-> by max_fifo_size value, fix fifo_th and fifo_diff register definitions
+> Add support to STM ISM330DLC 6-axis (acc + gyro) Mems sensor
+> http://www.st.com/resource/en/datasheet/ism330dlc.pdf
 > 
-> Fixes: 290a6ce11d93 ("iio: imu: add support to lsm6dsx driver")
 > Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+Applied to the togreg branch of iio.git and pushed out as
+testing for the autobuilders to play with it.
 
-Thanks,
-
-Jonathan
+One note inline...
 
 > ---
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  drivers/iio/imu/st_lsm6dsx/Kconfig             |  3 ++-
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h        |  2 ++
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 10 +++++-----
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c   |  3 ++-
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c    |  5 +++++
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c    |  5 +++++
+>  6 files changed, 21 insertions(+), 7 deletions(-)
 > 
+> diff --git a/drivers/iio/imu/st_lsm6dsx/Kconfig b/drivers/iio/imu/st_lsm6dsx/Kconfig
+> index 14f2eb6e9fb7..ccc817e17eb8 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/Kconfig
+> +++ b/drivers/iio/imu/st_lsm6dsx/Kconfig
+> @@ -8,7 +8,8 @@ config IIO_ST_LSM6DSX
+>  	select IIO_ST_LSM6DSX_SPI if (SPI_MASTER)
+>  	help
+>  	  Say yes here to build support for STMicroelectronics LSM6DSx imu
+> -	  sensor. Supported devices: lsm6ds3, lsm6ds3h, lsm6dsl, lsm6dsm
+> +	  sensor. Supported devices: lsm6ds3, lsm6ds3h, lsm6dsl, lsm6dsm,
+> +	  ism330dlc
+>  
+>  	  To compile this driver as a module, choose M here: the module
+>  	  will be called st_lsm6dsx.
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+> index a3cc7cd97026..edcd838037cd 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+> @@ -18,12 +18,14 @@
+>  #define ST_LSM6DS3H_DEV_NAME	"lsm6ds3h"
+>  #define ST_LSM6DSL_DEV_NAME	"lsm6dsl"
+>  #define ST_LSM6DSM_DEV_NAME	"lsm6dsm"
+> +#define ST_ISM330DLC_DEV_NAME	"ism330dlc"
+>  
+>  enum st_lsm6dsx_hw_id {
+>  	ST_LSM6DS3_ID,
+>  	ST_LSM6DS3H_ID,
+>  	ST_LSM6DSL_ID,
+>  	ST_LSM6DSM_ID,
+> +	ST_ISM330DLC_ID,
+>  	ST_LSM6DSX_MAX_ID,
+>  };
+>  
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> index 1045e025e92b..4994f920a836 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> @@ -1,10 +1,10 @@
+>  /*
+>   * STMicroelectronics st_lsm6dsx FIFO buffer library driver
+>   *
+> - * LSM6DS3/LSM6DS3H/LSM6DSL/LSM6DSM: The FIFO buffer can be configured
+> - * to store data from gyroscope and accelerometer. Samples are queued
+> - * without any tag according to a specific pattern based on 'FIFO data sets'
+> - * (6 bytes each):
+> + * LSM6DS3/LSM6DS3H/LSM6DSL/LSM6DSM/ISM330DLC: The FIFO buffer can be
+I doubt this will be the last part we ever add.  Seems to me that a line break
+after that colon would reduce the 'noise' from adding parts in future.
+
+I don't care enough to 'fix' it now though.
+
+Jonathan
+> + * configured to store data from gyroscope and accelerometer. Samples are
+> + * queued without any tag according to a specific pattern based on
+> + * 'FIFO data sets' (6 bytes each):
+>   *  - 1st data set is reserved for gyroscope data
+>   *  - 2nd data set is reserved for accelerometer data
+>   * The FIFO pattern changes depending on the ODRs and decimation factors
+> @@ -276,7 +276,7 @@ static inline int st_lsm6dsx_read_block(struct st_lsm6dsx_hw *hw, u8 *data,
+>  #define ST_LSM6DSX_IIO_BUFF_SIZE	(ALIGN(ST_LSM6DSX_SAMPLE_SIZE, \
+>  					       sizeof(s64)) + sizeof(s64))
+>  /**
+> - * st_lsm6dsx_read_fifo() - LSM6DS3-LSM6DS3H-LSM6DSL-LSM6DSM read FIFO routine
+> + * st_lsm6dsx_read_fifo() - hw FIFO read routine
+>   * @hw: Pointer to instance of struct st_lsm6dsx_hw.
+>   *
+>   * Read samples from the hw FIFO and push them to IIO buffers.
 > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> index 8656d72ef4ee..50d6491df484 100644
+> index 50d6491df484..aebbe0ddd8d8 100644
 > --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
 > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> @@ -266,11 +266,11 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
->  		.fifo_ops = {
->  			.fifo_th = {
->  				.addr = 0x06,
-> -				.mask = GENMASK(11, 0),
-> +				.mask = GENMASK(10, 0),
->  			},
->  			.fifo_diff = {
->  				.addr = 0x3a,
-> -				.mask = GENMASK(11, 0),
-> +				.mask = GENMASK(10, 0),
->  			},
->  			.th_wl = 3, /* 1LSB = 2B */
+> @@ -17,7 +17,7 @@
+>   *   - Gyroscope supported full-scale [dps]: +-125/+-245/+-500/+-1000/+-2000
+>   *   - FIFO size: 8KB
+>   *
+> - * - LSM6DS3H/LSM6DSL/LSM6DSM:
+> + * - LSM6DS3H/LSM6DSL/LSM6DSM/ISM330DLC:
+>   *   - Accelerometer/Gyroscope supported ODR [Hz]: 13, 26, 52, 104, 208, 416
+>   *   - Accelerometer supported full-scale [g]: +-2/+-4/+-8/+-16
+>   *   - Gyroscope supported full-scale [dps]: +-125/+-245/+-500/+-1000/+-2000
+> @@ -252,6 +252,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
+>  		.id = {
+>  			[0] = ST_LSM6DSL_ID,
+>  			[1] = ST_LSM6DSM_ID,
+> +			[2] = ST_ISM330DLC_ID,
 >  		},
+>  		.decimator = {
+>  			[ST_LSM6DSX_ID_ACC] = {
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
+> index 41525dd2aab7..377c4e9997da 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
+> @@ -57,6 +57,10 @@ static const struct of_device_id st_lsm6dsx_i2c_of_match[] = {
+>  		.compatible = "st,lsm6dsm",
+>  		.data = (void *)ST_LSM6DSM_ID,
+>  	},
+> +	{
+> +		.compatible = "st,ism330dlc",
+> +		.data = (void *)ST_ISM330DLC_ID,
+> +	},
+>  	{},
+>  };
+>  MODULE_DEVICE_TABLE(of, st_lsm6dsx_i2c_of_match);
+> @@ -66,6 +70,7 @@ static const struct i2c_device_id st_lsm6dsx_i2c_id_table[] = {
+>  	{ ST_LSM6DS3H_DEV_NAME, ST_LSM6DS3H_ID },
+>  	{ ST_LSM6DSL_DEV_NAME, ST_LSM6DSL_ID },
+>  	{ ST_LSM6DSM_DEV_NAME, ST_LSM6DSM_ID },
+> +	{ ST_ISM330DLC_DEV_NAME, ST_ISM330DLC_ID },
+>  	{},
+>  };
+>  MODULE_DEVICE_TABLE(i2c, st_lsm6dsx_i2c_id_table);
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
+> index 2c8135834479..fec5c6ce7eb7 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
+> @@ -57,6 +57,10 @@ static const struct of_device_id st_lsm6dsx_spi_of_match[] = {
+>  		.compatible = "st,lsm6dsm",
+>  		.data = (void *)ST_LSM6DSM_ID,
+>  	},
+> +	{
+> +		.compatible = "st,ism330dlc",
+> +		.data = (void *)ST_ISM330DLC_ID,
+> +	},
+>  	{},
+>  };
+>  MODULE_DEVICE_TABLE(of, st_lsm6dsx_spi_of_match);
+> @@ -66,6 +70,7 @@ static const struct spi_device_id st_lsm6dsx_spi_id_table[] = {
+>  	{ ST_LSM6DS3H_DEV_NAME, ST_LSM6DS3H_ID },
+>  	{ ST_LSM6DSL_DEV_NAME, ST_LSM6DSL_ID },
+>  	{ ST_LSM6DSM_DEV_NAME, ST_LSM6DSM_ID },
+> +	{ ST_ISM330DLC_DEV_NAME, ST_ISM330DLC_ID },
+>  	{},
+>  };
+>  MODULE_DEVICE_TABLE(spi, st_lsm6dsx_spi_id_table);
 
