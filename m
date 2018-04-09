@@ -1,41 +1,37 @@
-Return-Path: <SRS0=t8Kp=G3=huawei.com=jonathan.cameron@kernel.org>
-Date: Fri, 6 Apr 2018 16:13:22 +0100
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-CC: Jonathan Cameron <jic23@kernel.org>, Eugen Hristev
-	<eugen.hristev@microchip.com>, <ludovic.desroches@microchip.com>,
-	<alexandre.belloni@bootlin.com>, <linux-arm-kernel@lists.infradead.org>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>,
-	<nicolas.ferre@microchip.com>
-Subject: Re: [PATCH v2 07/10] input: touchscreen: touch_adc: add generic
- resistive ADC touchscreen
-Message-ID: <20180406161322.00006190@huawei.com>
-In-Reply-To: <20180330180911.GA143703@dtor-ws>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-ot0-f193.google.com ([74.125.82.193]:43566 "EHLO
+        mail-ot0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753250AbeDISrp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 9 Apr 2018 14:47:45 -0400
+Date: Mon, 9 Apr 2018 13:47:43 -0500
+From: Rob Herring <robh@kernel.org>
+To: Eugen Hristev <eugen.hristev@microchip.com>
+Cc: jic23@kernel.org, ludovic.desroches@microchip.com,
+        alexandre.belloni@bootlin.com,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-input@vger.kernel.org, nicolas.ferre@microchip.com,
+        dmitry.torokhov@gmail.com
+Subject: Re: [PATCH v2 08/10] dt-bindings: iio: adc: at91-sama5d2_adc: add
+ channel specific consumer info
+Message-ID: <20180409184743.zu7ihom6tvi7aino@rob-hp-laptop>
 References: <1522153963-1121-1-git-send-email-eugen.hristev@microchip.com>
-	<1522153963-1121-8-git-send-email-eugen.hristev@microchip.com>
-	<20180330135835.6a8f57f1@archlinux>
-	<20180330180911.GA143703@dtor-ws>
+ <1522153963-1121-9-git-send-email-eugen.hristev@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1522153963-1121-9-git-send-email-eugen.hristev@microchip.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-> > > +
-> > > +	input->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS);
-> > > +	input->keybit[BIT_WORD(BTN_TOUCH)] = BIT_MASK(BTN_TOUCH);
-> > > +
-> > > +	st->input = input;
-> > > +	input_set_drvdata(input, st);
-> > > +
-> > > +	ret = input_register_device(input);
-> > > +	if (ret) {
-> > > +		dev_err(dev, "failed to register input device.");
-> > > +		return ret;
-> > > +	}
-> > > +
-> > > +	st->iio_cb = iio_channel_get_all_cb(&pdev->dev, grts_cb, st);  
+On Tue, Mar 27, 2018 at 03:32:41PM +0300, Eugen Hristev wrote:
+> Added defines for channel consumer device-tree binding
 > 
-> Hmm, we don't have devm-variant for this? Then you could use
-> devm_add_action_or_reset() to add cleanup action and completely remove
-> grts_remove().
-Not yet, but I'm not adverse to having one...
+> Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+> ---
+>  .../devicetree/bindings/iio/adc/at91-sama5d2_adc.txt     |  9 +++++++++
+>  include/dt-bindings/iio/adc/at91-sama5d2_adc.h           | 16 ++++++++++++++++
+>  2 files changed, 25 insertions(+)
+>  create mode 100644 include/dt-bindings/iio/adc/at91-sama5d2_adc.h
+
+Reviewed-by: Rob Herring <robh@kernel.org>
+
