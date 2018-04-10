@@ -1,63 +1,82 @@
-Return-Path: <SRS0=SU3E=HG=xevo.com=mkelly@kernel.org>
-Subject: Re: [PATCH v5 1/2] iio:imu: inv_mpu6050: support more interrupt types
-To: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
- Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-References: <20180409202128.5031-1-mkelly@xevo.com>
- <64b0a5c7-ee8d-d1ca-b3aa-a1801f19787c@invensense.com>
- <6e3f08f8-ec16-e67b-c68c-7020eb660b14@xevo.com>
- <2ab59fc6-49c9-7426-fe95-824a165cfefa@invensense.com>
- <ef871439-f42f-cb7d-6dc3-4e0c47ff8986@xevo.com>
- <20180415184351.544f4bfa@archlinux>
- <b282fe90-a16c-1dd5-f88f-84b73af3f989@xevo.com>
- <f4c27917-80e7-340d-6f51-42a44f161777@invensense.com>
-From: Martin Kelly <mkelly@xevo.com>
-Message-ID: <ca4ac214-d85f-bf9a-07db-31f72afbb95b@xevo.com>
-Date: Tue, 17 Apr 2018 11:14:22 -0700
-MIME-Version: 1.0
-In-Reply-To: <f4c27917-80e7-340d-6f51-42a44f161777@invensense.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pl0-f68.google.com ([209.85.160.68]:33606 "EHLO
+        mail-pl0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751490AbeDJGSZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 10 Apr 2018 02:18:25 -0400
+Received: by mail-pl0-f68.google.com with SMTP id s10-v6so6779410plp.0
+        for <linux-iio@vger.kernel.org>; Mon, 09 Apr 2018 23:18:25 -0700 (PDT)
+From: Matt Ranostay <matt.ranostay@konsulko.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+        Matt Ranostay <matt.ranostay@konsulko.com>,
+        Nicholas Mc Guire <hofrat@osadl.org>
+Subject: [PATCH] iio: chemical: atlas-ph-sensor: use msleep() for long uncritical delays
+Date: Mon,  9 Apr 2018 23:18:22 -0700
+Message-Id: <20180410061822.12750-1-matt.ranostay@konsulko.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 04/17/2018 07:10 AM, Jean-Baptiste Maneyrol wrote:
-> 
-> 
-> On 15/04/2018 21:05, Martin Kelly wrote:
->> On 04/15/2018 10:43 AM, Jonathan Cameron wrote:
->>> On Wed, 11 Apr 2018 09:42:14 -0700
->>> Martin Kelly <mkelly@xevo.com> wrote:
->>>
->>>> On 04/11/2018 12:01 AM, Jean-Baptiste Maneyrol wrote:
->>>>> This is OK for me.
->>>>>
->>>>> Jonathan will tell us about EBUSY error code for sure if it is not 
->>>>> correct.
->>>>>
->>>>> JB
->>>>
->>>> Sounds good; once we hear from Jonathan, I will submit the next 
->>>> revision.
->>> Optimists.  I can never make my mind up on some of the error codes.
->>>
->>> It's not totally silly so I'm happy with EBUSY or ENODEV as you wish.
->>>
->>> Jonathan
->>>
->>
->> OK, then I will defer to Jean-Baptiste on this. Shall we go with ENODEV?
-> 
-> After looking into the irq kernel code, I think perhaps the best value 
-> should be EINVAL. What it really means, is that configuration is missing 
-> in the dts file where it shouldn't. Incorrect value seams more 
-> meaningful in this case.
-> 
-> Do you agree?
-> 
-> JB
+usleep_range() uses hrtimers and provides no advantage over msleep()
+for larger delays.
 
-Yes, EINVAL is fine with me. I didn't use it because there was a note in 
-the aforementioned document saying that it's best to use a more specific 
-error code. However, none of these error codes have a clear case for 
-their use, and it's all a bit muddled, as Jonathan mentioned. I'll send 
-a revision with EINVAL later this week when I'm back to my desk with 
-hardware to test.
+Cc: Nicholas Mc Guire <hofrat@osadl.org>
+Link: http://lkml.org/lkml/2017/1/11/377
+Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
+---
+ drivers/iio/chemical/atlas-ph-sensor.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
+index abfc4bbc4cfc..a406ad31b096 100644
+--- a/drivers/iio/chemical/atlas-ph-sensor.c
++++ b/drivers/iio/chemical/atlas-ph-sensor.c
+@@ -61,9 +61,9 @@
+ #define ATLAS_REG_ORP_CALIB_STATUS	0x0d
+ #define ATLAS_REG_ORP_DATA		0x0e
+ 
+-#define ATLAS_PH_INT_TIME_IN_US		450000
+-#define ATLAS_EC_INT_TIME_IN_US		650000
+-#define ATLAS_ORP_INT_TIME_IN_US	450000
++#define ATLAS_PH_INT_TIME_IN_MS		450
++#define ATLAS_EC_INT_TIME_IN_MS		650
++#define ATLAS_ORP_INT_TIME_IN_MS	450
+ 
+ enum {
+ 	ATLAS_PH_SM,
+@@ -270,21 +270,21 @@ static struct atlas_device atlas_devices[] = {
+ 				.num_channels = 3,
+ 				.data_reg = ATLAS_REG_PH_DATA,
+ 				.calibration = &atlas_check_ph_calibration,
+-				.delay = ATLAS_PH_INT_TIME_IN_US,
++				.delay = ATLAS_PH_INT_TIME_IN_MS,
+ 	},
+ 	[ATLAS_EC_SM] = {
+ 				.channels = atlas_ec_channels,
+ 				.num_channels = 5,
+ 				.data_reg = ATLAS_REG_EC_DATA,
+ 				.calibration = &atlas_check_ec_calibration,
+-				.delay = ATLAS_EC_INT_TIME_IN_US,
++				.delay = ATLAS_EC_INT_TIME_IN_MS,
+ 	},
+ 	[ATLAS_ORP_SM] = {
+ 				.channels = atlas_orp_channels,
+ 				.num_channels = 2,
+ 				.data_reg = ATLAS_REG_ORP_DATA,
+ 				.calibration = &atlas_check_orp_calibration,
+-				.delay = ATLAS_ORP_INT_TIME_IN_US,
++				.delay = ATLAS_ORP_INT_TIME_IN_MS,
+ 	},
+ };
+ 
+@@ -393,7 +393,7 @@ static int atlas_read_measurement(struct atlas_data *data, int reg, __be32 *val)
+ 	}
+ 
+ 	if (suspended)
+-		usleep_range(data->chip->delay, data->chip->delay + 100000);
++		msleep(data->chip->delay);
+ 
+ 	ret = regmap_bulk_read(data->regmap, reg, (u8 *) val, sizeof(*val));
+ 
+-- 
+2.14.1
+
