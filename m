@@ -1,108 +1,128 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:47024 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752460AbeDORii (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 15 Apr 2018 13:38:38 -0400
-Date: Sun, 15 Apr 2018 18:38:34 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Matt Ranostay <matt.ranostay@konsulko.com>
-Cc: Nicholas Mc Guire <der.herr@hofr.at>, linux-iio@vger.kernel.org,
-        Nicholas Mc Guire <hofrat@osadl.org>
-Subject: Re: [PATCH] iio: chemical: atlas-ph-sensor: use msleep() for long
- uncritical delays
-Message-ID: <20180415183834.770a4963@archlinux>
-In-Reply-To: <CAJCx=gkOwabBczXtpt=03=U+nVVSwq2fZhyHOPYY0OEjEsPWdw@mail.gmail.com>
-References: <20180410061822.12750-1-matt.ranostay@konsulko.com>
-        <20180412012559.GC17901@osadl.at>
-        <CAJCx=gkOwabBczXtpt=03=U+nVVSwq2fZhyHOPYY0OEjEsPWdw@mail.gmail.com>
+Return-Path: <SRS0=HNhP=G7=microchip.com=Eugen.Hristev@kernel.org>
+From: Eugen Hristev <eugen.hristev@microchip.com>
+To: <jic23@kernel.org>, <ludovic.desroches@microchip.com>,
+	<alexandre.belloni@bootlin.com>, <linux-arm-kernel@lists.infradead.org>,
+	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>,
+	<nicolas.ferre@microchip.com>, <dmitry.torokhov@gmail.com>, <robh@kernel.org>
+CC: Eugen Hristev <eugen.hristev@microchip.com>
+Subject: [PATCH v3 00/11] Add support for SAMA5D2 touchscreen
+Date: Tue, 10 Apr 2018 11:57:46 +0300
+Message-ID: <1523350677-27106-1-git-send-email-eugen.hristev@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, 11 Apr 2018 20:52:49 -0700
-Matt Ranostay <matt.ranostay@konsulko.com> wrote:
+Hello,
 
-> On Wed, Apr 11, 2018 at 6:25 PM, Nicholas Mc Guire <der.herr@hofr.at> wrote:
-> > On Mon, Apr 09, 2018 at 11:18:22PM -0700, Matt Ranostay wrote:  
-> >> usleep_range() uses hrtimers and provides no advantage over msleep()
-> >> for larger delays.
-> >>  
-> >
-> > As the ATLAS_*_INT_TIME_IN_MS delays here are used exclusively for the
-> > usleep_ranges in the sustepnd case I guess that transformation is fine.  
-> 
-> Yeah only reason I submitted it. Probably a bit pedantic I'll admit :)
->
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play tih it.
+This patch series is a rework of my previous series named:
+[PATCH 00/14] iio: triggers: add consumer support
 
-Thanks,
+This is the version 3 of the series, and addresses the received feedback
+on the v2 series named:
+[PATCH v2 00/10]  Add support for SAMA5D2 touchscreen
+Changes in v3 are presented at the end of the cover letter below.
+Thanks everyone for the feedback. Below is the original v2 cover letter:
 
-Jonathan
- 
-> >  
-> >> Cc: Nicholas Mc Guire <hofrat@osadl.org>
-> >> Link: http://lkml.org/lkml/2017/1/11/377
-> >> Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>  
-> > Reviewed-by: Nicholas Mc Guire <hofrat@osadl.org>
-> >  
-> >> ---
-> >>  drivers/iio/chemical/atlas-ph-sensor.c | 14 +++++++-------
-> >>  1 file changed, 7 insertions(+), 7 deletions(-)
-> >>
-> >> diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
-> >> index abfc4bbc4cfc..a406ad31b096 100644
-> >> --- a/drivers/iio/chemical/atlas-ph-sensor.c
-> >> +++ b/drivers/iio/chemical/atlas-ph-sensor.c
-> >> @@ -61,9 +61,9 @@
-> >>  #define ATLAS_REG_ORP_CALIB_STATUS   0x0d
-> >>  #define ATLAS_REG_ORP_DATA           0x0e
-> >>
-> >> -#define ATLAS_PH_INT_TIME_IN_US              450000
-> >> -#define ATLAS_EC_INT_TIME_IN_US              650000
-> >> -#define ATLAS_ORP_INT_TIME_IN_US     450000
-> >> +#define ATLAS_PH_INT_TIME_IN_MS              450
-> >> +#define ATLAS_EC_INT_TIME_IN_MS              650
-> >> +#define ATLAS_ORP_INT_TIME_IN_MS     450
-> >>
-> >>  enum {
-> >>       ATLAS_PH_SM,
-> >> @@ -270,21 +270,21 @@ static struct atlas_device atlas_devices[] = {
-> >>                               .num_channels = 3,
-> >>                               .data_reg = ATLAS_REG_PH_DATA,
-> >>                               .calibration = &atlas_check_ph_calibration,
-> >> -                             .delay = ATLAS_PH_INT_TIME_IN_US,
-> >> +                             .delay = ATLAS_PH_INT_TIME_IN_MS,
-> >>       },
-> >>       [ATLAS_EC_SM] = {
-> >>                               .channels = atlas_ec_channels,
-> >>                               .num_channels = 5,
-> >>                               .data_reg = ATLAS_REG_EC_DATA,
-> >>                               .calibration = &atlas_check_ec_calibration,
-> >> -                             .delay = ATLAS_EC_INT_TIME_IN_US,
-> >> +                             .delay = ATLAS_EC_INT_TIME_IN_MS,
-> >>       },
-> >>       [ATLAS_ORP_SM] = {
-> >>                               .channels = atlas_orp_channels,
-> >>                               .num_channels = 2,
-> >>                               .data_reg = ATLAS_REG_ORP_DATA,
-> >>                               .calibration = &atlas_check_orp_calibration,
-> >> -                             .delay = ATLAS_ORP_INT_TIME_IN_US,
-> >> +                             .delay = ATLAS_ORP_INT_TIME_IN_MS,
-> >>       },
-> >>  };
-> >>
-> >> @@ -393,7 +393,7 @@ static int atlas_read_measurement(struct atlas_data *data, int reg, __be32 *val)
-> >>       }
-> >>
-> >>       if (suspended)
-> >> -             usleep_range(data->chip->delay, data->chip->delay + 100000);
-> >> +             msleep(data->chip->delay);
-> >>
-> >>       ret = regmap_bulk_read(data->regmap, reg, (u8 *) val, sizeof(*val));
-> >>
-> >> --
-> >> 2.14.1
-> >>  
+In few words, this is the implementation of splitting the functionality
+of the IP block ADC device in SAMA5D2 SoC from ADC with touchscreen
+support. In order to avoid having a MFD device, two separate
+drivers that would work on same register base and split the IRQ,etc,
+as advised on the mailing list, I created a consumer driver for the
+channels, that will connect to the ADC as described in the device tree.
 
+I have collected feedback from everyone and here is the result:
+I have added a new generic resistive touchscreen driver, which acts
+as a iio consumer for the given channels and will create an input
+device and report the events. It uses a callback buffer to register
+to the IIO device and waits for data to be pushed.
+Inside the IIO device, I have kept a similar approach with the first version
+of the series, except that now the driver can take multiple buffers, and
+will configure the touchscreen part of the hardware device if the specific
+channels are requested.
+
+The SAMA5D2 ADC driver registers three new channels: two for the
+position on the X and Y axis, and one for the touch pressure.
+When channels are requested, it will check if the touchscreen channel mask
+includes the requested channels (it is possible that the consumer driver
+will not request pressure for example). If it's the case, it will work
+in touchscreen mode, and will refuse to do usual analog-digital conversion,
+because we have a single trigger and the touchscreen needs it.
+When the scan mask will include only old channels, the driver will function
+in the same way as before. If the scan mask somehow is a mix of the two (the
+masks intersect), the driver will refuse to work whatsoever (cannot have both
+in the same time).
+The driver allows reading raw data for the new channels, if claim direct
+mode works: no touchscreen driver requested anything. The new channels can
+act like the old ones. However, when requesting these channels, the usual
+trigger will not work and will not be enabled. The touchscreen channels
+require special trigger and irq configuration: pen detect, no pen detect
+and a periodic trigger to sample the touchscreen position and pressure.
+If the user attempts to use another trigger while there is a buffer
+that already requested the touchscreen channels (thus the trigger), the
+driver will refuse to comply.
+
+In order to have defines for the channel numbers, I added a bindings include
+file that goes on a separate commit :
+dt-bindings: iio: adc: at91-sama5d2_adc: add channel specific consumer info
+This should go in the same tree with the following commits :
+  ARM: dts: at91: sama5d2: add channel cells for ADC device
+  ARM: dts: at91: sama5d2: Add resistive touch device
+
+as build will break because these commits depend on the binding one
+which creates the included header file.
+
+Changes in v3:
+ - changed input driver name according to feedback and reworked in commits
+to adapt to binding changes and new name.
+ - moved channel index fix in at91-sama5d2_adc at the beginning of the series
+(PATCH 01/11)
+ - created a new optional binding for the touchscreen as a separate commit
+and added it to the series :
+ [PATCH v3 04/11] dt-bindings: input: touchscreen: add pressure
+ threshold touchscreen property
+ - changed at91-sama5d2_adc driver patch to address the comments. Exact changes
+are in the patch file for the driver source file.
+
+
+Eugen Hristev (11):
+  iio: adc: at91-sama5d2_adc: fix channel configuration for differential
+    channels
+  MAINTAINERS: add generic resistive touchscreen adc
+  iio: Add channel for Position Relative
+  dt-bindings: input: touchscreen: add pressure threshold touchscreen
+    property
+  dt-bindings: input: touchscreen: resistive-adc-touch: create bindings
+  iio: inkern: add module put/get on iio dev module when requesting
+    channels
+  iio: adc: at91-sama5d2_adc: add support for position and pressure
+    channels
+  input: touchscreen: resistive-adc-touch: add generic resistive ADC
+    touchscreen
+  dt-bindings: iio: adc: at91-sama5d2_adc: add channel specific consumer
+    info
+  ARM: dts: at91: sama5d2: add channel cells for ADC device
+  ARM: dts: at91: sama5d2: Add resistive touch device
+
+ Documentation/ABI/testing/sysfs-bus-iio            |  12 +
+ .../bindings/iio/adc/at91-sama5d2_adc.txt          |   9 +
+ .../input/touchscreen/resistive-adc-touch.txt      |  30 +
+ .../bindings/input/touchscreen/touchscreen.txt     |   3 +
+ MAINTAINERS                                        |   6 +
+ arch/arm/boot/dts/sama5d2.dtsi                     |  12 +
+ drivers/iio/adc/at91-sama5d2_adc.c                 | 646 ++++++++++++++++++---
+ drivers/iio/industrialio-core.c                    |   1 +
+ drivers/iio/inkern.c                               |   8 +-
+ drivers/input/touchscreen/Kconfig                  |  13 +
+ drivers/input/touchscreen/Makefile                 |   1 +
+ drivers/input/touchscreen/resistive-adc-touch.c    | 200 +++++++
+ include/dt-bindings/iio/adc/at91-sama5d2_adc.h     |  16 +
+ include/uapi/linux/iio/types.h                     |   1 +
+ tools/iio/iio_event_monitor.c                      |   2 +
+ 15 files changed, 891 insertions(+), 69 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/input/touchscreen/resistive-adc-touch.txt
+ create mode 100644 drivers/input/touchscreen/resistive-adc-touch.c
+ create mode 100644 include/dt-bindings/iio/adc/at91-sama5d2_adc.h
+
+-- 
+2.7.4
