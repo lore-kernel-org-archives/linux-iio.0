@@ -1,12 +1,11 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-eopbgr30098.outbound.protection.outlook.com ([40.107.3.98]:55332
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1752095AbeDLOE5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 12 Apr 2018 10:04:57 -0400
-Subject: Re: [PATCH 2/2] iio: afe: unit-converter: add support for adi,lt6106
-To: "Andrew F. Davis" <afd@ti.com>, linux-kernel@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
+Received: from lelnx194.ext.ti.com ([198.47.27.80]:27877 "EHLO
+        lelnx194.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753405AbeDKPfc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 11 Apr 2018 11:35:32 -0400
+Subject: Re: [PATCH v3 0/2] iio: add unit converter
+To: Peter Rosin <peda@axentia.se>, <linux-kernel@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
@@ -18,58 +17,64 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
         Linus Walleij <linus.walleij@linaro.org>,
         Andrew Morton <akpm@linux-foundation.org>,
         Randy Dunlap <rdunlap@infradead.org>,
-        Fabio Estevam <festevam@gmail.com>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org
+        Fabio Estevam <festevam@gmail.com>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
 References: <20180410152802.30958-1-peda@axentia.se>
  <20180411141555.15044-1-peda@axentia.se>
- <20180411141555.15044-3-peda@axentia.se>
- <a70e8467-d0da-2b37-5dfa-7e14b388634c@ti.com>
-From: Peter Rosin <peda@axentia.se>
-Message-ID: <f944e87f-13b4-ccef-edf9-6283b6dd67a7@axentia.se>
-Date: Thu, 12 Apr 2018 16:04:37 +0200
+From: "Andrew F. Davis" <afd@ti.com>
+Message-ID: <fe90dc62-ef2b-d999-6841-2d9d5943654c@ti.com>
+Date: Wed, 11 Apr 2018 10:34:40 -0500
 MIME-Version: 1.0
-In-Reply-To: <a70e8467-d0da-2b37-5dfa-7e14b388634c@ti.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20180411141555.15044-1-peda@axentia.se>
+Content-Type: text/plain; charset="utf-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 2018-04-11 17:43, Andrew F. Davis wrote:
-> On 04/11/2018 09:15 AM, Peter Rosin wrote:
->> This is a current sense amplifier from Analog Devices.
->>
->> Signed-off-by: Peter Rosin <peda@axentia.se>
->> ---
->>  drivers/iio/afe/Kconfig              |  3 +-
->>  drivers/iio/afe/iio-unit-converter.c | 54 ++++++++++++++++++++++++++++++++++++
->>  2 files changed, 56 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/afe/Kconfig b/drivers/iio/afe/Kconfig
->> index 642ce4eb12a6..0e10fe8f459a 100644
->> --- a/drivers/iio/afe/Kconfig
->> +++ b/drivers/iio/afe/Kconfig
->> @@ -10,7 +10,8 @@ config IIO_UNIT_CONVERTER
->>  	depends on OF || COMPILE_TEST
->>  	help
->>  	  Say yes here to build support for the IIO unit converter
->> -	  that handles voltage dividers and current sense shunts.
->> +	  that handles voltage dividers, current sense shunts and
->> +	  the LT6106 Current Sense Amplifier from Analog Devices.
+On 04/11/2018 09:15 AM, Peter Rosin wrote:
+> Hi!
 > 
-> Could work better to split these out into separate drivers. Maybe a
-> iio-shunt-resistor.c that does just voltage->current with the
-> appropriate scaling. Then make a a separate lt6106.c.
+> I'm now following up with one more binding for the unit-converter.
+> This time with a real IC, namely LT6106 from Analog Devices.
+
+This makes more sense to me, I wasn't thinking about more complex ICs
+like this when I made my "resistor being part of the sensing device"
+argument.
+
+I can see how having a new node will probably be needed. It just seems
+strange to ask a resistor for its current, although it is the "device"
+that "knows" how much current if flowing though it..
+
+A case I'm more familiar with, fuel gauges, we have a gauge device that
+has a handle to the battery it is gauging [0], we still ask the
+"fuel-gauge" node to get out the state of charge, not the "battery"
+node, the battery is not a "device" from our perspective.
+
+Thinking more about that, I like your way better, so I recant my earlier
+objections.
+
+Andrew
+
+[0] Documentation/devicetree/bindings/power/supply/bq27xxx.txt
+
+> It's
+> a current sense amplifier. I was a but unsure if I should have
+> the Rin and Rout resistors in the binding or if I instead should
+> have used the "gain". In the end I went with the resistors since
+> while the normal case is an integer gain, that may not always be
+> the case. And when it's not, that could get tricky. But I'm open
+> for arguments on that.
 > 
-> "iio-unit-converter.c" isn't really doing what it says it is, it is not
-> a generic "unit converter" like one would assume. Having the driver name
-> describe what kind of device it physically represents will be better
-> when more complex AFEs show up that, for instance, have programmable
-> gains and need a larger driver.
-
-If an AFE needs programming etc, then it is definitely an option to
-write a specific driver for it. It was never my intention to cover
-all AFEs in this one driver, only those that make sense. Presumably
-that ends up being those doing linear scaling and perhaps requiring
-a change of the iio channel type.
-
-Cheers,
-Peter
+> Cheers,
+> Peter
+> 
+> Peter Rosin (2):
+>   dt-bindings: iio: afe: add binding for adi,lt6106
+>   iio: afe: unit-converter: add support for adi,lt6106
+> 
+>  .../devicetree/bindings/iio/afe/adi,lt6106.txt     | 50 ++++++++++++++++++++
+>  MAINTAINERS                                        |  1 +
+>  drivers/iio/afe/Kconfig                            |  3 +-
+>  drivers/iio/afe/iio-unit-converter.c               | 54 ++++++++++++++++++++++
+>  4 files changed, 107 insertions(+), 1 deletion(-)
+>  create mode 100644 Documentation/devicetree/bindings/iio/afe/adi,lt6106.txt
+> 
