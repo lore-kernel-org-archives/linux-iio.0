@@ -1,71 +1,61 @@
-Return-Path: <SRS0=KeEb=HH=huawei.com=jonathan.cameron@kernel.org>
-Date: Wed, 18 Apr 2018 10:37:21 +0100
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To: Peter Rosin <peda@axentia.se>
-CC: Jonathan Cameron <jic23@kernel.org>, <linux-kernel@vger.kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	"Peter Meerwald-Stadler" <pmeerw@pmeerw.net>, Rob Herring
-	<robh+dt@kernel.org>, "Mark Rutland" <mark.rutland@arm.com>, "David S.
- Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <mchehab@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij
-	<linus.walleij@linaro.org>, Andrew Morton <akpm@linux-foundation.org>, Randy
- Dunlap <rdunlap@infradead.org>, "Andrew F . Davis" <afd@ti.com>, Fabio
- Estevam <festevam@gmail.com>, <linux-iio@vger.kernel.org>,
-	<devicetree@vger.kernel.org>
-Subject: Re: [PATCH v3 2/2] iio: afe: unit-converter: new driver
-Message-ID: <20180418103721.00004171@huawei.com>
-In-Reply-To: <81e69701-d49b-6675-010d-99d5d3eaf827@axentia.se>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-eopbgr30110.outbound.protection.outlook.com ([40.107.3.110]:22405
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1752806AbeDKOQP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 11 Apr 2018 10:16:15 -0400
+From: Peter Rosin <peda@axentia.se>
+To: linux-kernel@vger.kernel.org
+Cc: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        "Andrew F . Davis" <afd@ti.com>,
+        Fabio Estevam <festevam@gmail.com>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH v3 0/2] iio: add unit converter
+Date: Wed, 11 Apr 2018 16:15:53 +0200
+Message-Id: <20180411141555.15044-1-peda@axentia.se>
+In-Reply-To: <20180410152802.30958-1-peda@axentia.se>
 References: <20180410152802.30958-1-peda@axentia.se>
-	<20180410152802.30958-3-peda@axentia.se>
-	<20180415183140.04c39ebe@archlinux>
-	<81e69701-d49b-6675-010d-99d5d3eaf827@axentia.se>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, 16 Apr 2018 09:12:45 +0200
-Peter Rosin <peda@axentia.se> wrote:
+Hi!
 
-> On 2018-04-15 19:31, Jonathan Cameron wrote:
-> > On Tue, 10 Apr 2018 17:28:02 +0200
-> > Peter Rosin <peda@axentia.se> wrote:
-> >   
-> >> If an ADC channel measures the midpoint of a voltage divider, the
-> >> interesting voltage is often the voltage over the full resistance.
-> >> E.g. if the full voltage is too big for the ADC to handle.
-> >> Likewise, if an ADC channel measures the voltage across a shunt
-> >> resistor, the interesting value is often the current through the
-> >> resistor.
-> >>
-> >> This driver solves both problems by allowing to linearly scale a channel
-> >> and by allowing changes to the type of the channel. Or both.
-> >>
-> >> Signed-off-by: Peter Rosin <peda@axentia.se>  
-> > So I 'think' the only outstanding question is Andrew's one about the driver
-> > name.  We aren't in a hurry at this point in the kernel cycle, so lets
-> > wait until that discussion has ended.  Assuming that we do possibly end
-> > up with a change, then please roll all the patches up into a single series
-> > to avoid me getting confusion.  
-> 
-> Yeah, sure, sorry for the split series, but the lt6106 that's present in
-> one of our newer designs didn't occur to me until just seconds after
-> firing the first half of the series. Which is kind of typical...
-> 
-> Anyway, about the driver naming. The suggestion I like best so far is
-> linear-scaler from Linus W, but thinking about it some more I think I
-> like iio-rescale even better.
-> 
-> Any objections to iio-rescale?
+I'm now following up with one more binding for the unit-converter.
+This time with a real IC, namely LT6106 from Analog Devices. It's
+a current sense amplifier. I was a but unsure if I should have
+the Rin and Rout resistors in the binding or if I instead should
+have used the "gain". In the end I went with the resistors since
+while the normal case is an integer gain, that may not always be
+the case. And when it's not, that could get tricky. But I'm open
+for arguments on that.
 
-Works for me. But then I rarely care 'that much' about naming and am
-responsible for plenty of previous confusing choices ;)
+Cheers,
+Peter
 
-Jonathan
+Peter Rosin (2):
+  dt-bindings: iio: afe: add binding for adi,lt6106
+  iio: afe: unit-converter: add support for adi,lt6106
 
-> 
-> Cheers,
-> Peter
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+ .../devicetree/bindings/iio/afe/adi,lt6106.txt     | 50 ++++++++++++++++++++
+ MAINTAINERS                                        |  1 +
+ drivers/iio/afe/Kconfig                            |  3 +-
+ drivers/iio/afe/iio-unit-converter.c               | 54 ++++++++++++++++++++++
+ 4 files changed, 107 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/afe/adi,lt6106.txt
+
+-- 
+2.11.0
+
