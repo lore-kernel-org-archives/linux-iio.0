@@ -1,24 +1,16 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-by2nam03on0073.outbound.protection.outlook.com ([104.47.42.73]:62159
-        "EHLO NAM03-BY2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1751856AbeDJP50 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 10 Apr 2018 11:57:26 -0400
+Return-Path: <SRS0=LAfQ=HA=analog.com=StefanSerban.Popa@kernel.org>
 From: Stefan Popa <stefan.popa@analog.com>
-To: <jic23@kernel.org>, <Michael.Hennerich@analog.com>,
-        <lars@metafoo.de>
-CC: <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <stefan.popa@analog.com>
-Subject: [PATCH v2 2/6] iio:dac:ad5686: Add support for various number of channels
-Date: Tue, 10 Apr 2018 18:57:12 +0300
-Message-ID: <1523375832-29402-1-git-send-email-stefan.popa@analog.com>
-In-Reply-To: <1522418118-11810-2-git-send-email-stefan.popa@analog.com>
-References: <1522418118-11810-2-git-send-email-stefan.popa@analog.com>
+To: <jic23@kernel.org>, <Michael.Hennerich@analog.com>, <lars@metafoo.de>
+CC: <knaack.h@gmx.de>, <pmeerw@pmeerw.net>, <linux-iio@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <stefan.popa@analog.com>
+Subject: [PATCH v3 3/7] iio:dac:ad5686: Add support for various number of channels
+Date: Wed, 11 Apr 2018 14:52:31 +0300
+Message-ID: <1523447551-13278-1-git-send-email-stefan.popa@analog.com>
+In-Reply-To: <1523375832-29402-1-git-send-email-stefan.popa@analog.com>
+References: <1523375832-29402-1-git-send-email-stefan.popa@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
 This patch adds a new num_channels attribute as part of the
 ad5686_chip_info struct which replaces the AD5686_DAC_CHANNELS define. This
@@ -30,15 +22,17 @@ Signed-off-by: Stefan Popa <stefan.popa@analog.com>
 Changes in v2:
 	- Refactored the patch to add num_channels and the new macro forms
 	  for the existing parts.
+Changes in v3:
+	- Nothing changed, just follow the patch set version.
 
  drivers/iio/dac/ad5686.c | 45 +++++++++++++++++++++++++--------------------
  1 file changed, 25 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index f7f975c..4d1ae3d 100644
+index e328513..87d6e6e 100644
 --- a/drivers/iio/dac/ad5686.c
 +++ b/drivers/iio/dac/ad5686.c
-@@ -19,8 +19,6 @@
+@@ -18,8 +18,6 @@
  #include <linux/iio/iio.h>
  #include <linux/iio/sysfs.h>
  
@@ -47,7 +41,7 @@ index f7f975c..4d1ae3d 100644
  #define AD5686_ADDR(x)				((x) << 16)
  #define AD5686_CMD(x)				((x) << 20)
  
-@@ -46,12 +44,14 @@
+@@ -45,12 +43,14 @@
  /**
   * struct ad5686_chip_info - chip specific information
   * @int_vref_mv:	AD5620/40/60: the internal reference voltage
@@ -63,7 +57,7 @@ index f7f975c..4d1ae3d 100644
  };
  
  /**
-@@ -269,14 +269,14 @@ static const struct iio_chan_spec_ext_info ad5686_ext_info[] = {
+@@ -268,14 +268,14 @@ static const struct iio_chan_spec_ext_info ad5686_ext_info[] = {
  	{ },
  };
  
@@ -80,7 +74,7 @@ index f7f975c..4d1ae3d 100644
  		.scan_type = {					\
  			.sign = 'u',				\
  			.realbits = (bits),			\
-@@ -286,31 +286,36 @@ static const struct iio_chan_spec_ext_info ad5686_ext_info[] = {
+@@ -285,31 +285,36 @@ static const struct iio_chan_spec_ext_info ad5686_ext_info[] = {
  		.ext_info = ad5686_ext_info,			\
  }
  
@@ -130,7 +124,7 @@ index f7f975c..4d1ae3d 100644
  static int ad5686_probe(struct spi_device *spi)
  {
  	struct ad5686_state *st;
-@@ -354,8 +359,8 @@ static int ad5686_probe(struct spi_device *spi)
+@@ -353,8 +358,8 @@ static int ad5686_probe(struct spi_device *spi)
  	indio_dev->name = spi_get_device_id(spi)->name;
  	indio_dev->info = &ad5686_info;
  	indio_dev->modes = INDIO_DIRECT_MODE;
@@ -143,4 +137,3 @@ index f7f975c..4d1ae3d 100644
  				!!voltage_uv, 0);
 -- 
 2.7.4
-
