@@ -1,69 +1,109 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:47174 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752460AbeDORlx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 15 Apr 2018 13:41:53 -0400
-Date: Sun, 15 Apr 2018 18:41:46 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Peter Rosin <peda@axentia.se>
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+Received: from mail-he1eur01on0136.outbound.protection.outlook.com ([104.47.0.136]:41568
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1752944AbeDKMt2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 11 Apr 2018 08:49:28 -0400
+From: Peter Rosin <peda@axentia.se>
+To: linux-kernel@vger.kernel.org
+Cc: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        "Andrew F . Davis" <afd@ti.com>,
-        Fabio Estevam <festevam@gmail.com>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 0/2] iio: add unit converter
-Message-ID: <20180415184146.72c1afd3@archlinux>
-In-Reply-To: <20180411141555.15044-1-peda@axentia.se>
-References: <20180410152802.30958-1-peda@axentia.se>
-        <20180411141555.15044-1-peda@axentia.se>
+        linux-iio@vger.kernel.org
+Subject: [PATCH 1/2] iio: potentiometer: mcp4018: switch to using .probe_new
+Date: Wed, 11 Apr 2018 14:49:14 +0200
+Message-Id: <20180411124915.9587-1-peda@axentia.se>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 11 Apr 2018 16:15:53 +0200
-Peter Rosin <peda@axentia.se> wrote:
+Use the new probe style for i2c drivers.
 
-> Hi!
-> 
-> I'm now following up with one more binding for the unit-converter.
-> This time with a real IC, namely LT6106 from Analog Devices. It's
-> a current sense amplifier. I was a but unsure if I should have
-> the Rin and Rout resistors in the binding or if I instead should
-> have used the "gain". In the end I went with the resistors since
-> while the normal case is an integer gain, that may not always be
-> the case. And when it's not, that could get tricky. But I'm open
-> for arguments on that.
-> 
-> Cheers,
-> Peter
-Trivial complaint of the day - why the same title for this email
-as the previous series?  Had me really confused for a minute ;)
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ drivers/iio/potentiometer/mcp4018.c | 41 ++++++++++++++++++-------------------
+ 1 file changed, 20 insertions(+), 21 deletions(-)
 
-Seems like the whole driver is stabilizing.  If we do a v4 please
-pull the whole lot into one series.
-
-Jonathan
-
-> 
-> Peter Rosin (2):
->   dt-bindings: iio: afe: add binding for adi,lt6106
->   iio: afe: unit-converter: add support for adi,lt6106
-> 
->  .../devicetree/bindings/iio/afe/adi,lt6106.txt     | 50 ++++++++++++++++++++
->  MAINTAINERS                                        |  1 +
->  drivers/iio/afe/Kconfig                            |  3 +-
->  drivers/iio/afe/iio-unit-converter.c               | 54 ++++++++++++++++++++++
->  4 files changed, 107 insertions(+), 1 deletion(-)
->  create mode 100644 Documentation/devicetree/bindings/iio/afe/adi,lt6106.txt
-> 
+diff --git a/drivers/iio/potentiometer/mcp4018.c b/drivers/iio/potentiometer/mcp4018.c
+index 601b25d1f387..320a7c929777 100644
+--- a/drivers/iio/potentiometer/mcp4018.c
++++ b/drivers/iio/potentiometer/mcp4018.c
+@@ -99,6 +99,23 @@ static const struct iio_info mcp4018_info = {
+ 	.write_raw = mcp4018_write_raw,
+ };
+ 
++static const struct i2c_device_id mcp4018_id[] = {
++	{ "mcp4017-502", MCP4018_502 },
++	{ "mcp4017-103", MCP4018_103 },
++	{ "mcp4017-503", MCP4018_503 },
++	{ "mcp4017-104", MCP4018_104 },
++	{ "mcp4018-502", MCP4018_502 },
++	{ "mcp4018-103", MCP4018_103 },
++	{ "mcp4018-503", MCP4018_503 },
++	{ "mcp4018-104", MCP4018_104 },
++	{ "mcp4019-502", MCP4018_502 },
++	{ "mcp4019-103", MCP4018_103 },
++	{ "mcp4019-503", MCP4018_503 },
++	{ "mcp4019-104", MCP4018_104 },
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, mcp4018_id);
++
+ #ifdef CONFIG_OF
+ 
+ #define MCP4018_COMPATIBLE(of_compatible, cfg) {	\
+@@ -125,8 +142,7 @@ MODULE_DEVICE_TABLE(of, mcp4018_of_match);
+ 
+ #endif
+ 
+-static int mcp4018_probe(struct i2c_client *client,
+-			 const struct i2c_device_id *id)
++static int mcp4018_probe(struct i2c_client *client)
+ {
+ 	struct device *dev = &client->dev;
+ 	struct mcp4018_data *data;
+@@ -150,7 +166,7 @@ static int mcp4018_probe(struct i2c_client *client,
+ 	if (match)
+ 		data->cfg = of_device_get_match_data(dev);
+ 	else
+-		data->cfg = &mcp4018_cfg[id->driver_data];
++		data->cfg = &mcp4018_cfg[i2c_match_id(mcp4018_id, client)->driver_data];
+ 
+ 	indio_dev->dev.parent = dev;
+ 	indio_dev->info = &mcp4018_info;
+@@ -161,29 +177,12 @@ static int mcp4018_probe(struct i2c_client *client,
+ 	return devm_iio_device_register(dev, indio_dev);
+ }
+ 
+-static const struct i2c_device_id mcp4018_id[] = {
+-	{ "mcp4017-502", MCP4018_502 },
+-	{ "mcp4017-103", MCP4018_103 },
+-	{ "mcp4017-503", MCP4018_503 },
+-	{ "mcp4017-104", MCP4018_104 },
+-	{ "mcp4018-502", MCP4018_502 },
+-	{ "mcp4018-103", MCP4018_103 },
+-	{ "mcp4018-503", MCP4018_503 },
+-	{ "mcp4018-104", MCP4018_104 },
+-	{ "mcp4019-502", MCP4018_502 },
+-	{ "mcp4019-103", MCP4018_103 },
+-	{ "mcp4019-503", MCP4018_503 },
+-	{ "mcp4019-104", MCP4018_104 },
+-	{}
+-};
+-MODULE_DEVICE_TABLE(i2c, mcp4018_id);
+-
+ static struct i2c_driver mcp4018_driver = {
+ 	.driver = {
+ 		.name	= "mcp4018",
+ 		.of_match_table = of_match_ptr(mcp4018_of_match),
+ 	},
+-	.probe		= mcp4018_probe,
++	.probe_new	= mcp4018_probe,
+ 	.id_table	= mcp4018_id,
+ };
+ 
+-- 
+2.11.0
 
