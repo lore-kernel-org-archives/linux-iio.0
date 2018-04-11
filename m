@@ -1,13 +1,13 @@
-Return-Path: <SRS0=Wx8j=G7=analog.com=StefanSerban.Popa@kernel.org>
+Return-Path: <SRS0=LAfQ=HA=analog.com=StefanSerban.Popa@kernel.org>
 From: Stefan Popa <stefan.popa@analog.com>
 To: <jic23@kernel.org>, <Michael.Hennerich@analog.com>, <lars@metafoo.de>
 CC: <knaack.h@gmx.de>, <pmeerw@pmeerw.net>, <linux-iio@vger.kernel.org>,
 	<linux-kernel@vger.kernel.org>, <stefan.popa@analog.com>
-Subject: [PATCH v2 4/6] iio:dac:ad5686: Add AD5672R/76/76R/84R/86R support
-Date: Tue, 10 Apr 2018 18:57:47 +0300
-Message-ID: <1523375867-29616-1-git-send-email-stefan.popa@analog.com>
-In-Reply-To: <1522418118-11810-2-git-send-email-stefan.popa@analog.com>
-References: <1522418118-11810-2-git-send-email-stefan.popa@analog.com>
+Subject: [PATCH v3 5/7] iio:dac:ad5686: Add AD5672R/76/76R/84R/86R support
+Date: Wed, 11 Apr 2018 14:53:01 +0300
+Message-ID: <1523447581-13496-1-git-send-email-stefan.popa@analog.com>
+In-Reply-To: <1523375867-29616-1-git-send-email-stefan.popa@analog.com>
+References: <1523375867-29616-1-git-send-email-stefan.popa@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
@@ -27,14 +27,17 @@ Signed-off-by: Stefan Popa <stefan.popa@analog.com>
 ---
 Changes in v2:
 	- Refactored the patch to add support for new parts
+Changes in v3:
+	- Nothing changed, just to follow the patch set version
+
  drivers/iio/dac/ad5686.c | 46 ++++++++++++++++++++++++++++++++++++++++++++++
  1 file changed, 46 insertions(+)
 
 diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index 7353c03..5fb0179 100644
+index a753ffd..54f67d5 100644
 --- a/drivers/iio/dac/ad5686.c
 +++ b/drivers/iio/dac/ad5686.c
-@@ -88,9 +88,14 @@ struct ad5686_state {
+@@ -87,9 +87,14 @@ struct ad5686_state {
   */
  
  enum ad5686_supported_device_ids {
@@ -49,7 +52,7 @@ index 7353c03..5fb0179 100644
  };
  static int ad5686_spi_write(struct ad5686_state *st,
  			     u8 cmd, u8 addr, u16 val, u8 shift)
-@@ -294,15 +299,47 @@ static struct iio_chan_spec name[] = {				\
+@@ -293,15 +298,47 @@ static struct iio_chan_spec name[] = {				\
  		AD5868_CHANNEL(3, 8, bits, _shift),		\
  }
  
@@ -97,7 +100,7 @@ index 7353c03..5fb0179 100644
  	},
  	[ID_AD5685R] = {
  		.channels = ad5685r_channels,
-@@ -312,7 +349,11 @@ static const struct ad5686_chip_info ad5686_chip_info_tbl[] = {
+@@ -311,7 +348,11 @@ static const struct ad5686_chip_info ad5686_chip_info_tbl[] = {
  	[ID_AD5686] = {
  		.channels = ad5686_channels,
  		.num_channels = 4,
@@ -109,7 +112,7 @@ index 7353c03..5fb0179 100644
  	},
  };
  
-@@ -392,9 +433,14 @@ static int ad5686_remove(struct spi_device *spi)
+@@ -391,9 +432,14 @@ static int ad5686_remove(struct spi_device *spi)
  }
  
  static const struct spi_device_id ad5686_id[] = {
