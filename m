@@ -1,20 +1,20 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-sn1nam01on0043.outbound.protection.outlook.com ([104.47.32.43]:26079
-        "EHLO NAM01-SN1-obe.outbound.protection.outlook.com"
+Received: from mail-co1nam03on0059.outbound.protection.outlook.com ([104.47.40.59]:18836
+        "EHLO NAM03-CO1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1751820AbeDJP5I (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 10 Apr 2018 11:57:08 -0400
+        id S1752401AbeDKLwI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 11 Apr 2018 07:52:08 -0400
 From: Stefan Popa <stefan.popa@analog.com>
 To: <jic23@kernel.org>, <Michael.Hennerich@analog.com>,
         <lars@metafoo.de>
 CC: <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
         <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <stefan.popa@analog.com>
-Subject: [PATCH v2 1/6] iio:dac:ad5686: Style fixes no functional changes
-Date: Tue, 10 Apr 2018 18:56:46 +0300
-Message-ID: <1523375806-29296-1-git-send-email-stefan.popa@analog.com>
-In-Reply-To: <1522418118-11810-1-git-send-email-stefan.popa@analog.com>
-References: <1522418118-11810-1-git-send-email-stefan.popa@analog.com>
+Subject: [PATCH v3 1/7] iio:dac:ad5686: Style fixes no functional changes
+Date: Wed, 11 Apr 2018 14:51:51 +0300
+Message-ID: <1523447511-13059-1-git-send-email-stefan.popa@analog.com>
+In-Reply-To: <1523375806-29296-1-git-send-email-stefan.popa@analog.com>
+References: <1523375806-29296-1-git-send-email-stefan.popa@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
@@ -25,6 +25,11 @@ functionality of the driver.
 
 Signed-off-by: Stefan Popa <stefan.popa@analog.com>
 ---
+Changes v2:
+	- Nothing changed, just follow the patch set version.
+Changes v3:
+        - Nothing changed, just follow the patch set version.
+
  drivers/iio/dac/ad5686.c | 25 ++++++++++++++-----------
  1 file changed, 14 insertions(+), 11 deletions(-)
 
