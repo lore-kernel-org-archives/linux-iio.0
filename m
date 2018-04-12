@@ -1,9 +1,9 @@
-Return-Path: <SRS0=z2XF=HB=metafoo.de=lars@kernel.org>
+Return-Path: <SRS0=8H2a=HB=gmail.com=gcembed@kernel.org>
 Subject: Re: Add support of Wiegand card reader
 To: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
  Matt Ranostay <matt.ranostay@konsulko.com>
-Cc: =?UTF-8?Q?Ga=c3=abtan_Carlier?= <gcembed@gmail.com>,
- Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen
+ <lars@metafoo.de>, linux-iio@vger.kernel.org
 References: <b36429ed-34cb-6f07-13a2-2ef960bd9b42@gmail.com>
  <CAJCx=gna64NhsMGHu4MGbssvNgeyWXwcoRCFZ4wDLQbu96susg@mail.gmail.com>
  <07edbbde-ac69-82c1-948b-a14f217cd467@gmail.com>
@@ -11,14 +11,15 @@ References: <b36429ed-34cb-6f07-13a2-2ef960bd9b42@gmail.com>
  <1ab90ba2-04c2-a690-7227-5d047ff2140c@gmail.com>
  <CAJCx=gnp752CWpmUTQBth7MEO5oNrcf0era9AL237PszS7fMZA@mail.gmail.com>
  <20180412122458.00001e51@huawei.com>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <0757b9ed-59f6-f52b-90a7-39a82f8b1d63@metafoo.de>
-Date: Thu, 12 Apr 2018 13:30:16 +0200
+From: =?UTF-8?Q?Ga=c3=abtan_Carlier?= <gcembed@gmail.com>
+Message-ID: <38c0d89a-a868-e369-68d5-4b9983bca5a4@gmail.com>
+Date: Thu, 12 Apr 2018 14:20:17 +0200
 MIME-Version: 1.0
 In-Reply-To: <20180412122458.00001e51@huawei.com>
 Content-Type: text/plain; charset=utf-8
 List-ID: <linux-iio@vger.kernel.org>
 
+Hi,
 On 04/12/2018 01:24 PM, Jonathan Cameron wrote:
 > On Wed, 11 Apr 2018 20:41:30 -0700
 > Matt Ranostay <matt.ranostay@konsulko.com> wrote:
@@ -64,5 +65,71 @@ On 04/12/2018 01:24 PM, Jonathan Cameron wrote:
 > of similar to some of the things like fingerprint readers that generate
 > a block of data in some cryptic format that needs a userspace library to
 > interpret it.
+> 
+> We have talked in the past about optimal storage for binary data (GPI signals
+> on devices that scan them in groups). This is kind of like that I guess.
+> 
+> So, Gaetan, what were you thinking the actual data layout in the buffer
+> would be?
+> 
+The buffer will contain : a u64 variable, a counter that will tell how much bits in u64 variables a used (wiegand is generally 26 bits or 34 bits but it can rise upto 60 bits but this situation is really rare).
 
-It looks like we are removing the frame from framework ;)
+Initially, I though that IIO subsystem was done for this kind of interface but after more reading it is only suited for ADC/DAC devices.
+Unfortunately, I can not use input subsystem because, I need raw data that must not be converted to Key code, ...
+So I am little lost. Where can I place my code ? Even is Wiegand is a very old/unsecured/... protocol, it is still used a lot.
+And with pulse of some microseconds, it is difficult to handle them via exported GPIO on sysfs and do all the stuff in userspace.
+
+I clearly understand (now) that Wiegand can not stay in IIO but do you have any lead for me please ?
+
+> 
+>>
+>>>>>  
+>>>>>>
+>>>>>> Also a few issues/points:
+>>>>>>
+>>>>>> * What is the interface to the Wiegand data? If it is inputting on a
+>>>>>> GPIO that is for sure not going to be real time enough to get valid
+>>>>>> data  
+>>>>> Wiegand protocol uses two data lines. Both data lines are pulled-up. When a 0 must be send, D0 line is set low, when a 1 must be sent, D1 line is set low. D0 and D1 line can never be set low at the same time. Reader will convert ID of the card into binary data flow of 26, 34, .... 60 bits.
+>>>>> The length of a data flow is configured in the reader and all readers connected on the same Wiegand bus have generally the same length.
+>>>>>  
+>>>>>> * Aren't there multiple Wiegand transport standards?  
+>>>>> Yes they are several data length.
+>>>>>  
+>>>>>> * Most keyreaders I've seen are emulated as keyboard devices so they
+>>>>>> use the input subsystem.  
+>>>>> If they are emulated as keyboard, they don't use Wiegand anymore ! Wiegand is still often used for hotels, ...
+>>>>>  
+>>>>>> * Also if the data being output is ASCII data, then I'm not sure that
+>>>>>> fits anywhere in iioData received from Wiegand bus are bits. They are not packed in 8 bits or any other size.  
+>>>>>  
+>>>>>>
+>>>>>> - Matt
+>>>>>>
+>>>>>>  
+>>>>>>>
+>>>>>>> Thank you for your help?
+>>>>>>> Best regards,
+>>>>>>> Gaëtan.
+>>>>>>>
+>>>>>>> [1] https://en.wikipedia.org/wiki/Wiegand_interface
+>>>>>>> --
+>>>>>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>>>>>> the body of a message to majordomo@vger.kernel.org
+>>>>>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html  
+>>>>>
+>>>>> Regards,
+>>>>> Gaëtan.  
+>>>
+>>> Thank you,
+>>> Regards,
+>>> Gaëtan.  
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+
+Thank you.
+Regards,
+Gaëtan.
