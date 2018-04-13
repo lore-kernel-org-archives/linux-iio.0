@@ -1,102 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:33558 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752754AbeDUOkW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 21 Apr 2018 10:40:22 -0400
-Date: Sat, 21 Apr 2018 15:40:13 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: =?UTF-8?B?SGVybsOhbg==?= Gonzalez <hernan@vanguardiasur.com.ar>,
-        <knaack.h@gmx.de>, <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        <gregkh@linuxfoundation.org>, <Michael.Hennerich@analog.com>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 03/14] staging: iio: ad7746: Fix bound checkings
-Message-ID: <20180421154013.3e9c3c3e@archlinux>
-In-Reply-To: <20180418103948.00004b93@huawei.com>
+Received: from mail-qt0-f196.google.com ([209.85.216.196]:44641 "EHLO
+        mail-qt0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751489AbeDMQiD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 13 Apr 2018 12:38:03 -0400
+Received: by mail-qt0-f196.google.com with SMTP id j26so8625468qtl.11
+        for <linux-iio@vger.kernel.org>; Fri, 13 Apr 2018 09:38:02 -0700 (PDT)
+From: =?UTF-8?q?Hern=C3=A1n=20Gonzalez?= <hernan@vanguardiasur.com.ar>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        Michael.Hennerich@analog.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc: =?UTF-8?q?Hern=C3=A1n=20Gonzalez?= <hernan@vanguardiasur.com.ar>
+Subject: [PATCH v2 04/14] staging: iio: ad7746: Fix multiple line dereference
+Date: Fri, 13 Apr 2018 13:36:41 -0300
+Message-Id: <1523637411-8531-5-git-send-email-hernan@vanguardiasur.com.ar>
+In-Reply-To: <1523637411-8531-1-git-send-email-hernan@vanguardiasur.com.ar>
 References: <1523637411-8531-1-git-send-email-hernan@vanguardiasur.com.ar>
-        <1523637411-8531-4-git-send-email-hernan@vanguardiasur.com.ar>
-        <20180415160550.4705667e@archlinux>
-        <CALfa3vFgh7jtb=B6doOu-y2Bm77wu4zVdLE1LuxbruTTKjLU=A@mail.gmail.com>
-        <20180418103948.00004b93@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 18 Apr 2018 10:39:48 +0100
-Jonathan Cameron <Jonathan.Cameron@huawei.com> wrote:
+Clear checkpatch.pl WARNING about multiple line derefence but creates a
+new one of line over 80 characters. In my opinion, it improves
+readability.
 
-> On Mon, 16 Apr 2018 11:47:05 -0300
-> Hernán Gonzalez <hernan@vanguardiasur.com.ar> wrote:
-> 
-> > On Sun, Apr 15, 2018 at 12:05 PM, Jonathan Cameron <jic23@kernel.org> wrote:  
-> > > On Fri, 13 Apr 2018 13:36:40 -0300
-> > > Hernán Gonzalez <hernan@vanguardiasur.com.ar> wrote:
-> > >    
-> > >> Also remove unnecessary parenthesis    
-> > > I am probably missing something.  I'm not sure what you mean
-> > > by fix bound checking?   There are superfluous brackets, but
-> > > I don't see any functional change to indicate there was anything
-> > > wrong with the original checks.
-> > >    
-> > 
-> > Maybe I'm wrong but | is a bitwise operator while || is a logical one.
-> > There are no functional changes as you said but, from K&R, "One must
-> > distinguish the bitwise operators & and | from the logical operators
-> > && and II, which imply left-to-right evaluation of a truth value. For
-> > example, if x is 1 and y is 2, then x & y is zero while x && y is one"
-> > so it'd be slightly faster if the first condition is true, and it
-> > would be the "correct" operator to use in this case, even though it
-> > doesn't affect the result.  
-> Got you, I missed the operator change entirely. Doh.
-> 
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+Signed-off-by: Hernán Gonzalez <hernan@vanguardiasur.com.ar>
+---
+ drivers/staging/iio/cdc/ad7746.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Thanks,
-
-Jonathan
-
-> Jonathan
-> 
-> >   
-> > >>
-> > >> Signed-off-by: Hernán Gonzalez <hernan@vanguardiasur.com.ar>
-> > >> ---
-> > >>  drivers/staging/iio/cdc/ad7746.c | 4 ++--
-> > >>  1 file changed, 2 insertions(+), 2 deletions(-)
-> > >>
-> > >> diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
-> > >> index 516aa93..d793785 100644
-> > >> --- a/drivers/staging/iio/cdc/ad7746.c
-> > >> +++ b/drivers/staging/iio/cdc/ad7746.c
-> > >> @@ -458,7 +458,7 @@ static int ad7746_write_raw(struct iio_dev *indio_dev,
-> > >>               ret = 0;
-> > >>               break;
-> > >>       case IIO_CHAN_INFO_CALIBBIAS:
-> > >> -             if ((val < 0) | (val > 0xFFFF)) {
-> > >> +             if (val < 0 || val > 0xFFFF) {
-> > >>                       ret = -EINVAL;
-> > >>                       goto out;
-> > >>               }
-> > >> @@ -470,7 +470,7 @@ static int ad7746_write_raw(struct iio_dev *indio_dev,
-> > >>               ret = 0;
-> > >>               break;
-> > >>       case IIO_CHAN_INFO_OFFSET:
-> > >> -             if ((val < 0) | (val > 43008000)) { /* 21pF */
-> > >> +             if (val < 0 || val > 43008000) { /* 21pF */
-> > >>                       ret = -EINVAL;
-> > >>                       goto out;
-> > >>               }    
-> > >    
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> > the body of a message to majordomo@vger.kernel.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html  
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
+index d793785..82fac76 100644
+--- a/drivers/staging/iio/cdc/ad7746.c
++++ b/drivers/staging/iio/cdc/ad7746.c
+@@ -410,8 +410,7 @@ static struct attribute *ad7746_attributes[] = {
+ 	&iio_dev_attr_in_capacitance1_calibbias_calibration.dev_attr.attr,
+ 	&iio_dev_attr_in_voltage0_calibscale_calibration.dev_attr.attr,
+ 	&iio_const_attr_in_voltage_sampling_frequency_available.dev_attr.attr,
+-	&iio_const_attr_in_capacitance_sampling_frequency_available.
+-	dev_attr.attr,
++	&iio_const_attr_in_capacitance_sampling_frequency_available.dev_attr.attr,
+ 	NULL,
+ };
+ 
+-- 
+2.7.4
 
