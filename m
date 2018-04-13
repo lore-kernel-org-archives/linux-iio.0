@@ -1,65 +1,30 @@
-Return-Path: <SRS0=z1i1=G6=xevo.com=mkelly@kernel.org>
-From: Martin Kelly <mkelly@xevo.com>
-To: linux-iio@vger.kernel.org
-Cc: devicetree@vger.kernel.org,
+Return-Path: <SRS0=dex8=HC=gmail.com=robherring2@kernel.org>
+Date: Fri, 13 Apr 2018 08:43:40 -0500
+From: Rob Herring <robh@kernel.org>
+To: Martin Kelly <mkelly@xevo.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
 	Jonathan Cameron <jic23@kernel.org>,
-	Jean-Baptiste Maneyrol <JManeyrol@invensense.com>,
-	Martin Kelly <mkelly@xevo.com>
-Subject: [PATCH v5 2/2] dt-bindings: iio:imu:mpu6050: support more interrupt types
-Date: Mon,  9 Apr 2018 13:21:28 -0700
-Message-Id: <20180409202128.5031-2-mkelly@xevo.com>
-In-Reply-To: <20180409202128.5031-1-mkelly@xevo.com>
+	Jean-Baptiste Maneyrol <JManeyrol@invensense.com>
+Subject: Re: [PATCH v5 2/2] dt-bindings: iio:imu:mpu6050: support more
+ interrupt types
+Message-ID: <20180413134340.x5xhdlyeibx3kfch@rob-hp-laptop>
 References: <20180409202128.5031-1-mkelly@xevo.com>
+ <20180409202128.5031-2-mkelly@xevo.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20180409202128.5031-2-mkelly@xevo.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Document that the inv_mpu6050 driver now supports falling edge, rising
-edge, level low, and level high interrupt types, rather than just rising
-edge.
+On Mon, Apr 09, 2018 at 01:21:28PM -0700, Martin Kelly wrote:
+> Document that the inv_mpu6050 driver now supports falling edge, rising
+> edge, level low, and level high interrupt types, rather than just rising
+> edge.
+> 
+> The language used is the same as that in st_lsm6dsx.txt.
+> 
+> Signed-off-by: Martin Kelly <mkelly@xevo.com>
+> ---
+>  Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt | 11 ++++++++---
+>  1 file changed, 8 insertions(+), 3 deletions(-)
 
-The language used is the same as that in st_lsm6dsx.txt.
-
-Signed-off-by: Martin Kelly <mkelly@xevo.com>
----
- Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt b/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
-index 2b4514592f83..6b106d5ef298 100644
---- a/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
-+++ b/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
-@@ -11,7 +11,12 @@ Required properties:
- 		"invensense,icm20608"
-  - reg : the I2C address of the sensor
-  - interrupt-parent : should be the phandle for the interrupt controller
-- - interrupts : interrupt mapping for GPIO IRQ
-+ - interrupts: interrupt mapping for IRQ. It should be configured with flags
-+   IRQ_TYPE_LEVEL_HIGH, IRQ_TYPE_EDGE_RISING, IRQ_TYPE_LEVEL_LOW or
-+   IRQ_TYPE_EDGE_FALLING.
-+
-+  Refer to interrupt-controller/interrupts.txt for generic interrupt client node
-+  bindings.
- 
- Optional properties:
-  - mount-matrix: an optional 3x3 mounting rotation matrix
-@@ -24,7 +29,7 @@ Example:
- 		compatible = "invensense,mpu6050";
- 		reg = <0x68>;
- 		interrupt-parent = <&gpio1>;
--		interrupts = <18 1>;
-+		interrupts = <18 IRQ_TYPE_EDGE_RISING>;
- 		mount-matrix = "-0.984807753012208",  /* x0 */
- 		               "0",                   /* y0 */
- 		               "-0.173648177666930",  /* z0 */
-@@ -41,7 +46,7 @@ Example:
- 		compatible = "invensense,mpu9250";
- 		reg = <0x68>;
- 		interrupt-parent = <&gpio3>;
--		interrupts = <21 1>;
-+		interrupts = <21 IRQ_TYPE_LEVEL_HIGH>;
- 		i2c-gate {
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--- 
-2.11.0
+Reviewed-by: Rob Herring <robh@kernel.org>
