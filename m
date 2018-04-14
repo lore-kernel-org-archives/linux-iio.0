@@ -1,62 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:52678 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752434AbeDOTwL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 15 Apr 2018 15:52:11 -0400
-Date: Sun, 15 Apr 2018 20:52:05 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Joe Perches <joe@perches.com>
-Cc: =?UTF-8?B?SGVybsOhbg==?= Gonzalez <hernan@vanguardiasur.com.ar>,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        gregkh@linuxfoundation.org, Michael.Hennerich@analog.com,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 14/14] staging: iio: Remove ad7746 from staging
-Message-ID: <20180415205205.71c87189@archlinux>
-In-Reply-To: <e82d25e0d82a55eba1097eab3c679ad5f667e999.camel@perches.com>
-References: <1523637411-8531-1-git-send-email-hernan@vanguardiasur.com.ar>
-        <1523637411-8531-15-git-send-email-hernan@vanguardiasur.com.ar>
-        <20180415164351.2666a114@archlinux>
-        <e82d25e0d82a55eba1097eab3c679ad5f667e999.camel@perches.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Received: from mx3-rdu2.redhat.com ([66.187.233.73]:36492 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1751019AbeDNPJM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 14 Apr 2018 11:09:12 -0400
+From: Hans de Goede <hdegoede@redhat.com>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Jonathan Cameron <jic23@kernel.org>
+Cc: Hans de Goede <hdegoede@redhat.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, Bastien Nocera <hadess@hadess.net>
+Subject: [PATCH] iio: hid-sensor-trigger: Fix sometimes not powering up the sensor after resume
+Date: Sat, 14 Apr 2018 17:09:09 +0200
+Message-Id: <20180414150909.14955-1-hdegoede@redhat.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, 15 Apr 2018 12:24:23 -0700
-Joe Perches <joe@perches.com> wrote:
+hid_sensor_set_power_work() powers the sensors back up after a resume
+based on the user_requested_state atomic_t.
 
-> On Sun, 2018-04-15 at 16:43 +0100, Jonathan Cameron wrote:
-> > On Fri, 13 Apr 2018 13:36:51 -0300
-> > Hernán Gonzalez <hernan@vanguardiasur.com.ar> wrote:
-> >   
-> > > Signed-off-by: Hernán Gonzalez <hernan@vanguardiasur.com.ar>  
-> > 
-> > Please have a single patch (with move detection turned off) for this and the
-> > previous.  
-> 
-> > Allows easy review by showing us the code but doesn't lead to a stage in which
-> > two different versions will build and hence probably break bisectiblity.  
-> 
-> Moving both files in a single patch is fine but
-> move detection off is much harder to review.
-> 
-Not in this one case.   Here we want explicitly to review the code,
-not the move.   The point is to put the whole driver code in front
-of people as part of the proposal to move it out of staging.  If we
-leave move detection on then there is a barrier to review as only
-someone who has actually applied all the patches will be able to
-see what state the driver is in.
+But hid_sensor_power_state() treats this as a boolean flag, leading to
+the following problematic scenario:
 
-Sure, side effect is we loose the check on whether it is a 'pure'
-move or not, but that is easy to check when I finally apply the patches.
+1) Some app starts using the iio-sensor in buffered / triggered mode,
+   hid_sensor_data_rdy_trigger_set_state(true) gets called, setting
+   user_requested_state to 1.
+2) Something directly accesses a _raw value through sysfs, leading
+   to a call to hid_sensor_power_state(true) followed by
+   hid_sensor_power_state(false) call, this sets user_requested_state
+   to 1 followed by setting it to 0.
+3) Suspend/resume the machine, hid_sensor_set_power_work() now does
+   NOT power the sensor back up because user_requested_state (wrongly)
+   is 0. Which stops the app using the sensor in buffered mode from
+   receiving any new values.
 
-I haven't come up with a better way of reviewing a staging driver
-on the mailing lists in a fashion similar to how we would review
-a newly submitted driver.
+This commit changes user_requested_state to a counter tracking how many
+times hid_sensor_power_state(true) was called instead, fixing this.
 
-Jonathan
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Cc: Bastien Nocera <hadess@hadess.net>
+Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/iio/common/hid-sensors/hid-sensor-trigger.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+index cfb6588565ba..4905a997a7ec 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+@@ -178,14 +178,14 @@ int hid_sensor_power_state(struct hid_sensor_common *st, bool state)
+ #ifdef CONFIG_PM
+ 	int ret;
+ 
+-	atomic_set(&st->user_requested_state, state);
+-
+ 	if (atomic_add_unless(&st->runtime_pm_enable, 1, 1))
+ 		pm_runtime_enable(&st->pdev->dev);
+ 
+-	if (state)
++	if (state) {
++		atomic_inc(&st->user_requested_state);
+ 		ret = pm_runtime_get_sync(&st->pdev->dev);
+-	else {
++	} else {
++		atomic_dec(&st->user_requested_state);
+ 		pm_runtime_mark_last_busy(&st->pdev->dev);
+ 		pm_runtime_use_autosuspend(&st->pdev->dev);
+ 		ret = pm_runtime_put_autosuspend(&st->pdev->dev);
+-- 
+2.17.0
 
