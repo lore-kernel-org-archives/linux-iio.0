@@ -1,64 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:34110 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752775AbeDUO6J (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 21 Apr 2018 10:58:09 -0400
-Date: Sat, 21 Apr 2018 15:58:03 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Eugen Hristev <eugen.hristev@microchip.com>
-Cc: <ludovic.desroches@microchip.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <nicolas.ferre@microchip.com>
-Subject: Re: [PATCH] iio: adc: select buffer for at91-sama5d2_adc
-Message-ID: <20180421155803.3df3f615@archlinux>
-In-Reply-To: <1523861643-3419-1-git-send-email-eugen.hristev@microchip.com>
-References: <1523861643-3419-1-git-send-email-eugen.hristev@microchip.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from mail.coding4coffee.org ([5.9.171.142]:36512 "EHLO
+        mail.coding4coffee.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751099AbeDPPpe (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 16 Apr 2018 11:45:34 -0400
+From: Fabian Mewes <architekt@coding4coffee.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Lukas Wunner <lukas@wunner.de>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Fabian Mewes <architekt@coding4coffee.org>
+Subject: [PATCH] dt-bindings: iio: adc: mcp320x: Use vendor prefix compatible strings
+Date: Mon, 16 Apr 2018 17:34:06 +0200
+Message-Id: <1523892846-25000-1-git-send-email-architekt@coding4coffee.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 16 Apr 2018 09:54:03 +0300
-Eugen Hristev <eugen.hristev@microchip.com> wrote:
+Update the example to use the compatible string including the
+vendor prefix instead of the ones deprecated in 3a872138e4b.
 
-> We need to select the buffer code, otherwise we get build errors
-> with undefined functions on the trigger and buffer,
-> if we select just IIO and then AT91_SAMA5D2_ADC from menuconfig
-> 
-> This adds a Kconfig 'select' statement like other ADC
-> drivers have it already.
-> 
-> Fixes: 5e1a1da0f8c9 ("iio: adc: at91-sama5d2_adc: add hw trigger and buffer support")
-> Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-Applied to the fixes-togreg branch of iio.git and marked for stable.
+Signed-off-by: Fabian Mewes <architekt@coding4coffee.org>
+---
+ Documentation/devicetree/bindings/iio/adc/mcp320x.txt |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
-
-Jonathan
-
-> ---
-> Hello Jonathan,
-> 
-> While you are at it, I also found this small kconfig issue during my tests.
-> Would be good to have as a fix as well.
-> 
-> Thanks,
-> Eugen
-> 
->  drivers/iio/adc/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 15606f2..9da7907 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -158,6 +158,7 @@ config AT91_SAMA5D2_ADC
->  	depends on ARCH_AT91 || COMPILE_TEST
->  	depends on HAS_IOMEM
->  	depends on HAS_DMA
-> +	select IIO_BUFFER
->  	select IIO_TRIGGERED_BUFFER
->  	help
->  	  Say yes here to build support for Atmel SAMA5D2 ADC which is
+diff --git a/Documentation/devicetree/bindings/iio/adc/mcp320x.txt b/Documentation/devicetree/bindings/iio/adc/mcp320x.txt
+index 7d64753..56373d6 100644
+--- a/Documentation/devicetree/bindings/iio/adc/mcp320x.txt
++++ b/Documentation/devicetree/bindings/iio/adc/mcp320x.txt
+@@ -49,7 +49,7 @@ Required properties:
+ Examples:
+ spi_controller {
+ 	mcp3x0x@0 {
+-		compatible = "mcp3002";
++		compatible = "microchip,mcp3002";
+ 		reg = <0>;
+ 		spi-max-frequency = <1000000>;
+ 		vref-supply = <&vref_reg>;
+-- 
+1.7.10.4
 
