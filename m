@@ -54,9 +54,9 @@ Cc: iommu@lists.linux-foundation.org,
 	devel@driverdev.osuosl.org,
 	linux-kernel@vger.kernel.org,
 	Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH v3 04/20] fbdev: Remove depends on HAS_DMA in case of platform dependency
-Date: Tue, 17 Apr 2018 19:49:04 +0200
-Message-Id: <1523987360-18760-5-git-send-email-geert@linux-m68k.org>
+Subject: [PATCH v3 05/20] firewire: Remove depends on HAS_DMA in case of platform dependency
+Date: Tue, 17 Apr 2018 19:49:05 +0200
+Message-Id: <1523987360-18760-6-git-send-email-geert@linux-m68k.org>
 In-Reply-To: <1523987360-18760-1-git-send-email-geert@linux-m68k.org>
 References: <1523987360-18760-1-git-send-email-geert@linux-m68k.org>
 List-ID: <linux-iio@vger.kernel.org>
@@ -75,10 +75,8 @@ This simplifies the dependencies, and allows to improve compile-testing.
 Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 Reviewed-by: Mark Brown <broonie@kernel.org>
 Acked-by: Robin Murphy <robin.murphy@arm.com>
-Acked-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
 ---
 v3:
-  - Add Acked-by,
   - Rebase to v4.17-rc1,
 
 v2:
@@ -86,22 +84,18 @@ v2:
   - Drop RFC state,
   - Split per subsystem.
 ---
- drivers/video/fbdev/Kconfig | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/firewire/Kconfig | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/Kconfig b/drivers/video/fbdev/Kconfig
-index d94254263ea5caa7..4f9853ec1721950f 100644
---- a/drivers/video/fbdev/Kconfig
-+++ b/drivers/video/fbdev/Kconfig
-@@ -2075,7 +2075,8 @@ config FB_XILINX
- 
- config FB_GOLDFISH
- 	tristate "Goldfish Framebuffer"
--	depends on FB && HAS_DMA && (GOLDFISH || COMPILE_TEST)
-+	depends on FB
-+	depends on GOLDFISH || COMPILE_TEST
- 	select FB_CFB_FILLRECT
- 	select FB_CFB_COPYAREA
- 	select FB_CFB_IMAGEBLIT
+diff --git a/drivers/firewire/Kconfig b/drivers/firewire/Kconfig
+index 145974f9662b63e6..4199849e37585181 100644
+--- a/drivers/firewire/Kconfig
++++ b/drivers/firewire/Kconfig
+@@ -1,5 +1,4 @@
+ menu "IEEE 1394 (FireWire) support"
+-	depends on HAS_DMA
+ 	depends on PCI || COMPILE_TEST
+ 	# firewire-core does not depend on PCI but is
+ 	# not useful without PCI controller driver
 -- 
 2.7.4
