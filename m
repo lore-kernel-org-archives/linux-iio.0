@@ -1,166 +1,183 @@
-Return-Path: <JManeyrol@invensense.com>
-Subject: Re: [PATCH v3 1/4] iio: imu: inv_mpu6050: fix error path not turning
- chip back off
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc: linux-iio@vger.kernel.org
-References: <1523952442-20104-1-git-send-email-jmaneyrol@invensense.com>
- <20180421160756.4df8cd6c@archlinux>
-From: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-Message-ID: <1dff6674-e898-cd1e-9f74-14d2921e1519@invensense.com>
-Date: Mon, 23 Apr 2018 12:29:00 +0200
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from xavier.telenet-ops.be ([195.130.132.52]:59916 "EHLO
+        xavier.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752813AbeDQSQH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Apr 2018 14:16:07 -0400
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+To: Christoph Hellwig <hch@lst.de>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>, Tejun Heo <tj@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Stefan Richter <stefanr@s5r6.in-berlin.de>,
+        Alan Tull <atull@kernel.org>, Moritz Fischer <mdf@kernel.org>,
+        Wolfram Sang <wsa@the-dreams.de>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Matias Bjorling <mb@lightnvm.io>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Brian Norris <computersforpeace@gmail.com>,
+        Marek Vasut <marek.vasut@gmail.com>,
+        Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>,
+        Boris Brezillon <boris.brezillon@free-electrons.com>,
+        Richard Weinberger <richard@nod.at>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Eric Anholt <eric@anholt.net>,
+        Stefan Wahren <stefan.wahren@i2se.com>
+Cc: iommu@lists.linux-foundation.org, linux-usb@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-ide@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        linux1394-devel@lists.sourceforge.net, linux-fpga@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+        netdev@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH v3 00/20] Allow compile-testing NO_DMA (drivers)
+Date: Tue, 17 Apr 2018 19:49:00 +0200
+Message-Id: <1523987360-18760-1-git-send-email-geert@linux-m68k.org>
 MIME-Version: 1.0
-In-Reply-To: <20180421160756.4df8cd6c@archlinux>
-Content-Type: text/plain; charset=utf-8; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+        Hi all,
 
+As of v4.17-rc1, patch series "[PATCH v2 0/5] Allow compile-testing
+NO_DMA (core)" (https://lkml.org/lkml/2018/3/16/435) has been included
+upstream, and drivers using the DMA API can be compile-tested on
+platforms selecting NO_DMA.
 
-On 21/04/2018 17:07, Jonathan Cameron wrote:
-> On Tue, 17 Apr 2018 10:07:19 +0200
-> Jean-Baptiste Maneyrol <jmaneyrol@invensense.com> wrote:
-> 
->> Some functions are turning the chip on and not back off in error
->> path. With set_power function using a reference counter that
->> would keep the chip on forever.
-> No sign off so I can't apply.
-> 
-> Also a minor thing I noticed inline (unconnected to the patch)
-> 
-> Thanks,
-> 
-> Jonathan
+This follow-up patch series removes dependencies on HAS_DMA for symbols
+that already have platform dependencies implying HAS_DMA, which increases
+compile-coverage.
 
-Sorry for the inconvenient, my fault. I am resending the series 
-including the fix you mentioned.
+Please apply to your tree if appropriate.
 
-JB
-> 
->> ---
->>   drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    | 12 ++++++---
->>   drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c | 35 ++++++++++++++++++---------
->>   2 files changed, 32 insertions(+), 15 deletions(-)
->>
->> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
->> index 20b94d9..ba2f08e 100644
->> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
->> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
->> @@ -268,27 +268,31 @@ static int inv_mpu6050_init_config(struct iio_dev *indio_dev)
->>   	d = (INV_MPU6050_FSR_2000DPS << INV_MPU6050_GYRO_CONFIG_FSR_SHIFT);
->>   	result = regmap_write(st->map, st->reg->gyro_config, d);
->>   	if (result)
->> -		return result;
->> +		goto error_power_off;
->>   
->>   	result = inv_mpu6050_set_lpf_regs(st, INV_MPU6050_FILTER_20HZ);
->>   	if (result)
->> -		return result;
->> +		goto error_power_off;
->>   
->>   	d = INV_MPU6050_ONE_K_HZ / INV_MPU6050_INIT_FIFO_RATE - 1;
->>   	result = regmap_write(st->map, st->reg->sample_rate_div, d);
->>   	if (result)
->> -		return result;
->> +		goto error_power_off;
->>   
->>   	d = (INV_MPU6050_FS_02G << INV_MPU6050_ACCL_CONFIG_FSR_SHIFT);
->>   	result = regmap_write(st->map, st->reg->accl_config, d);
->>   	if (result)
->> -		return result;
->> +		goto error_power_off;
->>   
->>   	memcpy(&st->chip_config, hw_info[st->chip_type].config,
->>   	       sizeof(struct inv_mpu6050_chip_config));
->>   	result = inv_mpu6050_set_power_itg(st, false);
->>   
->>   	return result;
-> 
-> Whilst you are here why not combine the two lines
-> above and avoid assigning result...
-> 
->> +
->> +error_power_off:
->> +	inv_mpu6050_set_power_itg(st, false);
->> +	return result;
->>   }
->>   
->>   static int inv_mpu6050_sensor_set(struct inv_mpu6050_state  *st, int reg,
->> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
->> index f963f9f..27aa976 100644
->> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
->> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
->> @@ -53,45 +53,58 @@ static int inv_mpu6050_set_enable(struct iio_dev *indio_dev, bool enable)
->>   			result = inv_mpu6050_switch_engine(st, true,
->>   					INV_MPU6050_BIT_PWR_GYRO_STBY);
->>   			if (result)
->> -				return result;
->> +				goto error_power_off;
->>   		}
->>   		if (st->chip_config.accl_fifo_enable) {
->>   			result = inv_mpu6050_switch_engine(st, true,
->>   					INV_MPU6050_BIT_PWR_ACCL_STBY);
->>   			if (result)
->> -				return result;
->> +				goto error_gyro_off;
->>   		}
->>   		result = inv_reset_fifo(indio_dev);
->>   		if (result)
->> -			return result;
->> +			goto error_accl_off;
->>   	} else {
->>   		result = regmap_write(st->map, st->reg->fifo_en, 0);
->>   		if (result)
->> -			return result;
->> +			goto error_accl_off;
->>   
->>   		result = regmap_write(st->map, st->reg->int_enable, 0);
->>   		if (result)
->> -			return result;
->> +			goto error_accl_off;
->>   
->>   		result = regmap_write(st->map, st->reg->user_ctrl, 0);
->>   		if (result)
->> -			return result;
->> +			goto error_accl_off;
->>   
->>   		result = inv_mpu6050_switch_engine(st, false,
->> -					INV_MPU6050_BIT_PWR_GYRO_STBY);
->> +					INV_MPU6050_BIT_PWR_ACCL_STBY);
->>   		if (result)
->> -			return result;
->> +			goto error_accl_off;
->>   
->>   		result = inv_mpu6050_switch_engine(st, false,
->> -					INV_MPU6050_BIT_PWR_ACCL_STBY);
->> +					INV_MPU6050_BIT_PWR_GYRO_STBY);
->>   		if (result)
->> -			return result;
->> +			goto error_gyro_off;
->> +
->>   		result = inv_mpu6050_set_power_itg(st, false);
->>   		if (result)
->> -			return result;
->> +			goto error_power_off;
->>   	}
->>   
->>   	return 0;
->> +
->> +error_accl_off:
->> +	if (st->chip_config.accl_fifo_enable)
->> +		inv_mpu6050_switch_engine(st, false,
->> +					  INV_MPU6050_BIT_PWR_ACCL_STBY);
->> +error_gyro_off:
->> +	if (st->chip_config.gyro_fifo_enable)
->> +		inv_mpu6050_switch_engine(st, false,
->> +					  INV_MPU6050_BIT_PWR_GYRO_STBY);
->> +error_power_off:
->> +	inv_mpu6050_set_power_itg(st, false);
->> +	return result;
->>   }
->>   
->>   /**
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Changes compared to v2:
+  - Add Acked-by,
+  - Rebased to v4.17-rc1, dropping applied patch for scsi/hisi_sas,
+  - Handle new VIDEO_RENESAS_CEU symbol,
+  - Drop obsolete note about FSL_FMAN.
+
+Changes compared to v1:
+  - Add Reviewed-by, Acked-by,
+  - Drop dependency of SND_SOC_LPASS_IPQ806X on HAS_DMA,
+  - Drop dependency of VIDEOBUF{,2}_DMA_{CONTIG,SG} on HAS_DMA,
+  - Drop new dependencies of VIDEO_IPU3_CIO2, DVB_C8SECTPFE, and
+    MTD_NAND_MARVELL on HAS_DMA,
+  - Split in per-subsystem patches,
+  - Split-off the core part in a separate series.
+
+This series is against v4.17-rc1. It can also be found at
+https://git.kernel.org/pub/scm/linux/kernel/git/geert/linux-m68k.git/log/?h=no-dma-compile-testing-v3
+
+It has been compile-tested with allmodconfig and allyesconfig for
+m68k/sun3, and has received attention from the kbuild test robot.
+
+Thanks for applying!
+
+Geert Uytterhoeven (20):
+  ASoC: Remove depends on HAS_DMA in case of platform dependency
+  ata: Remove depends on HAS_DMA in case of platform dependency
+  crypto: Remove depends on HAS_DMA in case of platform dependency
+  fbdev: Remove depends on HAS_DMA in case of platform dependency
+  firewire: Remove depends on HAS_DMA in case of platform dependency
+  fpga: Remove depends on HAS_DMA in case of platform dependency
+  i2c: Remove depends on HAS_DMA in case of platform dependency
+  iio: adc: Remove depends on HAS_DMA in case of platform dependency
+  iommu: Remove depends on HAS_DMA in case of platform dependency
+  lightnvm: Remove depends on HAS_DMA in case of platform dependency
+  mailbox: Remove depends on HAS_DMA in case of platform dependency
+  media: Remove depends on HAS_DMA in case of platform dependency
+  mmc: Remove depends on HAS_DMA in case of platform dependency
+  mtd: Remove depends on HAS_DMA in case of platform dependency
+  net: Remove depends on HAS_DMA in case of platform dependency
+  remoteproc: Remove depends on HAS_DMA in case of platform dependency
+  serial: Remove depends on HAS_DMA in case of platform dependency
+  spi: Remove depends on HAS_DMA in case of platform dependency
+  staging: vc04_services: Remove depends on HAS_DMA in case of platform
+    dependency
+  usb: Remove depends on HAS_DMA in case of platform dependency
+
+ drivers/ata/Kconfig                             |  2 --
+ drivers/crypto/Kconfig                          | 14 +++------
+ drivers/firewire/Kconfig                        |  1 -
+ drivers/fpga/Kconfig                            |  1 -
+ drivers/i2c/busses/Kconfig                      |  3 --
+ drivers/iio/adc/Kconfig                         |  2 --
+ drivers/iommu/Kconfig                           |  5 ++-
+ drivers/lightnvm/Kconfig                        |  2 +-
+ drivers/mailbox/Kconfig                         |  2 --
+ drivers/media/common/videobuf2/Kconfig          |  2 --
+ drivers/media/pci/dt3155/Kconfig                |  1 -
+ drivers/media/pci/intel/ipu3/Kconfig            |  1 -
+ drivers/media/pci/solo6x10/Kconfig              |  1 -
+ drivers/media/pci/sta2x11/Kconfig               |  1 -
+ drivers/media/pci/tw5864/Kconfig                |  1 -
+ drivers/media/pci/tw686x/Kconfig                |  1 -
+ drivers/media/platform/Kconfig                  | 42 +++++++++----------------
+ drivers/media/platform/am437x/Kconfig           |  2 +-
+ drivers/media/platform/atmel/Kconfig            |  4 +--
+ drivers/media/platform/davinci/Kconfig          |  6 ----
+ drivers/media/platform/marvell-ccic/Kconfig     |  3 +-
+ drivers/media/platform/rcar-vin/Kconfig         |  2 +-
+ drivers/media/platform/soc_camera/Kconfig       |  3 +-
+ drivers/media/platform/sti/c8sectpfe/Kconfig    |  2 +-
+ drivers/media/v4l2-core/Kconfig                 |  2 --
+ drivers/mmc/host/Kconfig                        | 10 ++----
+ drivers/mtd/nand/raw/Kconfig                    |  8 ++---
+ drivers/mtd/spi-nor/Kconfig                     |  2 +-
+ drivers/net/ethernet/amd/Kconfig                |  2 +-
+ drivers/net/ethernet/apm/xgene-v2/Kconfig       |  1 -
+ drivers/net/ethernet/apm/xgene/Kconfig          |  1 -
+ drivers/net/ethernet/arc/Kconfig                |  6 ++--
+ drivers/net/ethernet/broadcom/Kconfig           |  2 --
+ drivers/net/ethernet/calxeda/Kconfig            |  2 +-
+ drivers/net/ethernet/hisilicon/Kconfig          |  2 +-
+ drivers/net/ethernet/marvell/Kconfig            |  8 ++---
+ drivers/net/ethernet/mellanox/mlxsw/Kconfig     |  2 +-
+ drivers/net/ethernet/renesas/Kconfig            |  2 --
+ drivers/net/wireless/broadcom/brcm80211/Kconfig |  1 -
+ drivers/net/wireless/quantenna/qtnfmac/Kconfig  |  2 +-
+ drivers/remoteproc/Kconfig                      |  1 -
+ drivers/spi/Kconfig                             | 12 ++-----
+ drivers/staging/media/davinci_vpfe/Kconfig      |  1 -
+ drivers/staging/media/omap4iss/Kconfig          |  1 -
+ drivers/staging/vc04_services/Kconfig           |  1 -
+ drivers/tty/serial/Kconfig                      |  4 ---
+ drivers/usb/gadget/udc/Kconfig                  |  4 +--
+ drivers/usb/mtu3/Kconfig                        |  2 +-
+ drivers/video/fbdev/Kconfig                     |  3 +-
+ sound/soc/bcm/Kconfig                           |  3 +-
+ sound/soc/kirkwood/Kconfig                      |  1 -
+ sound/soc/pxa/Kconfig                           |  1 -
+ sound/soc/qcom/Kconfig                          |  7 ++---
+ 53 files changed, 56 insertions(+), 142 deletions(-)
+
+-- 
+2.7.4
+
+Gr{oetje,eeting}s,
+
+						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+							    -- Linus Torvalds
