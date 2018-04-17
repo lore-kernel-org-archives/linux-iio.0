@@ -1,147 +1,160 @@
-Return-Path: <SRS0=AqS/=HI=linaro.org=ulf.hansson@kernel.org>
-MIME-Version: 1.0
-In-Reply-To: <1523987360-18760-14-git-send-email-geert@linux-m68k.org>
-References: <1523987360-18760-1-git-send-email-geert@linux-m68k.org> <1523987360-18760-14-git-send-email-geert@linux-m68k.org>
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Date: Thu, 19 Apr 2018 15:17:53 +0200
-Message-ID: <CAPDyKFrDsqJ-URAi=b0JmRkqoAqgT01HDPpQtNkH5to_Enm+LA@mail.gmail.com>
-Subject: Re: [PATCH v3 13/20] mmc: Remove depends on HAS_DMA in case of
- platform dependency
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>, Felipe Balbi <balbi@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Morton <akpm@linux-foundation.org>,
-	Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Tejun Heo <tj@kernel.org>,
-	Herbert Xu <herbert@gondor.apana.org.au>, "David S . Miller" <davem@davemloft.net>,
-	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Stefan Richter <stefanr@s5r6.in-berlin.de>,
-	Alan Tull <atull@kernel.org>, Moritz Fischer <mdf@kernel.org>, Wolfram Sang <wsa@the-dreams.de>,
-	Jonathan Cameron <jic23@kernel.org>, Joerg Roedel <joro@8bytes.org>, Matias Bjorling <mb@lightnvm.io>,
-	Jassi Brar <jassisinghbrar@gmail.com>, Mauro Carvalho Chehab <mchehab@kernel.org>,
-	David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>,
-	Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>,
-	Boris Brezillon <boris.brezillon@free-electrons.com>, Richard Weinberger <richard@nod.at>,
-	Kalle Valo <kvalo@codeaurora.org>, Ohad Ben-Cohen <ohad@wizery.com>,
-	Bjorn Andersson <bjorn.andersson@linaro.org>, Eric Anholt <eric@anholt.net>,
-	Stefan Wahren <stefan.wahren@i2se.com>, iommu@lists.linux-foundation.org,
-	Linux USB List <linux-usb@vger.kernel.org>, alsa-devel@alsa-project.org,
-	linux-ide@vger.kernel.org, linux-crypto@vger.kernel.org,
-	Linux Fbdev development list <linux-fbdev@vger.kernel.org>, linux1394-devel@lists.sourceforge.net,
-	linux-fpga@vger.kernel.org, linux-i2c@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-block <linux-block@vger.kernel.org>,
+Return-Path: <SRS0=NYNp=HG=linux-m68k.org=geert@kernel.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+To: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Felipe Balbi <balbi@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Mark Brown <broonie@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Tejun Heo <tj@kernel.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	"David S . Miller" <davem@davemloft.net>,
+	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+	Stefan Richter <stefanr@s5r6.in-berlin.de>,
+	Alan Tull <atull@kernel.org>,
+	Moritz Fischer <mdf@kernel.org>,
+	Wolfram Sang <wsa@the-dreams.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>,
+	Matias Bjorling <mb@lightnvm.io>,
+	Jassi Brar <jassisinghbrar@gmail.com>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	Ulf Hansson <ulf.hansson@linaro.org>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Brian Norris <computersforpeace@gmail.com>,
+	Marek Vasut <marek.vasut@gmail.com>,
+	Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>,
+	Boris Brezillon <boris.brezillon@free-electrons.com>,
+	Richard Weinberger <richard@nod.at>,
+	Kalle Valo <kvalo@codeaurora.org>,
+	Ohad Ben-Cohen <ohad@wizery.com>,
+	Bjorn Andersson <bjorn.andersson@linaro.org>,
+	Eric Anholt <eric@anholt.net>,
+	Stefan Wahren <stefan.wahren@i2se.com>
+Cc: iommu@lists.linux-foundation.org,
+	linux-usb@vger.kernel.org,
+	alsa-devel@alsa-project.org,
+	linux-ide@vger.kernel.org,
+	linux-crypto@vger.kernel.org,
+	linux-fbdev@vger.kernel.org,
+	linux1394-devel@lists.sourceforge.net,
+	linux-fpga@vger.kernel.org,
+	linux-i2c@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-block@vger.kernel.org,
 	linux-media@vger.kernel.org,
-	"linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>, linux-mtd@lists.infradead.org,
-	netdev@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
-	driverdevel <devel@driverdev.osuosl.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+	linux-mmc@vger.kernel.org,
+	linux-mtd@lists.infradead.org,
+	netdev@vger.kernel.org,
+	linux-remoteproc@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-spi@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org,
+	Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH v3 14/20] mtd: Remove depends on HAS_DMA in case of platform dependency
+Date: Tue, 17 Apr 2018 19:49:14 +0200
+Message-Id: <1523987360-18760-15-git-send-email-geert@linux-m68k.org>
+In-Reply-To: <1523987360-18760-1-git-send-email-geert@linux-m68k.org>
+References: <1523987360-18760-1-git-send-email-geert@linux-m68k.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 17 April 2018 at 19:49, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> Remove dependencies on HAS_DMA where a Kconfig symbol depends on another
-> symbol that implies HAS_DMA, and, optionally, on "|| COMPILE_TEST".
-> In most cases this other symbol is an architecture or platform specific
-> symbol, or PCI.
->
-> Generic symbols and drivers without platform dependencies keep their
-> dependencies on HAS_DMA, to prevent compiling subsystems or drivers that
-> cannot work anyway.
->
-> This simplifies the dependencies, and allows to improve compile-testing.
->
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Reviewed-by: Mark Brown <broonie@kernel.org>
-> Acked-by: Robin Murphy <robin.murphy@arm.com>
-> Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
+Remove dependencies on HAS_DMA where a Kconfig symbol depends on another
+symbol that implies HAS_DMA, and, optionally, on "|| COMPILE_TEST".
+In most cases this other symbol is an architecture or platform specific
+symbol, or PCI.
 
-Thanks, applied for next!
+Generic symbols and drivers without platform dependencies keep their
+dependencies on HAS_DMA, to prevent compiling subsystems or drivers that
+cannot work anyway.
 
-Kind regrds
-Uffe
+This simplifies the dependencies, and allows to improve compile-testing.
 
-> ---
-> v3:
->   - Add Acked-by,
->   - Rebase to v4.17-rc1,
->
-> v2:
->   - Add Reviewed-by, Acked-by,
->   - Drop RFC state,
->   - Split per subsystem.
-> ---
->  drivers/mmc/host/Kconfig | 10 ++--------
->  1 file changed, 2 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/mmc/host/Kconfig b/drivers/mmc/host/Kconfig
-> index 9589f9c9046f14b1..3978d0418958bf6b 100644
-> --- a/drivers/mmc/host/Kconfig
-> +++ b/drivers/mmc/host/Kconfig
-> @@ -358,7 +358,6 @@ config MMC_MESON_MX_SDIO
->         tristate "Amlogic Meson6/Meson8/Meson8b SD/MMC Host Controller support"
->         depends on ARCH_MESON || COMPILE_TEST
->         depends on COMMON_CLK
-> -       depends on HAS_DMA
->         depends on OF
->         help
->           This selects support for the SD/MMC Host Controller on
-> @@ -401,7 +400,6 @@ config MMC_OMAP
->
->  config MMC_OMAP_HS
->         tristate "TI OMAP High Speed Multimedia Card Interface support"
-> -       depends on HAS_DMA
->         depends on ARCH_OMAP2PLUS || ARCH_KEYSTONE || COMPILE_TEST
->         help
->           This selects the TI OMAP High Speed Multimedia card Interface.
-> @@ -511,7 +509,6 @@ config MMC_DAVINCI
->
->  config MMC_GOLDFISH
->         tristate "goldfish qemu Multimedia Card Interface support"
-> -       depends on HAS_DMA
->         depends on GOLDFISH || COMPILE_TEST
->         help
->           This selects the Goldfish Multimedia card Interface emulation
-> @@ -605,7 +602,7 @@ config MMC_SDHI
->
->  config MMC_SDHI_SYS_DMAC
->         tristate "DMA for SDHI SD/SDIO controllers using SYS-DMAC"
-> -       depends on MMC_SDHI && HAS_DMA
-> +       depends on MMC_SDHI
->         default MMC_SDHI if (SUPERH || ARM)
->         help
->           This provides DMA support for SDHI SD/SDIO controllers
-> @@ -615,7 +612,7 @@ config MMC_SDHI_SYS_DMAC
->  config MMC_SDHI_INTERNAL_DMAC
->         tristate "DMA for SDHI SD/SDIO controllers using on-chip bus mastering"
->         depends on ARM64 || COMPILE_TEST
-> -       depends on MMC_SDHI && HAS_DMA
-> +       depends on MMC_SDHI
->         default MMC_SDHI if ARM64
->         help
->           This provides DMA support for SDHI SD/SDIO controllers
-> @@ -669,7 +666,6 @@ config MMC_CAVIUM_THUNDERX
->
->  config MMC_DW
->         tristate "Synopsys DesignWare Memory Card Interface"
-> -       depends on HAS_DMA
->         depends on ARC || ARM || ARM64 || MIPS || COMPILE_TEST
->         help
->           This selects support for the Synopsys DesignWare Mobile Storage IP
-> @@ -748,7 +744,6 @@ config MMC_DW_ZX
->
->  config MMC_SH_MMCIF
->         tristate "SuperH Internal MMCIF support"
-> -       depends on HAS_DMA
->         depends on SUPERH || ARCH_RENESAS || COMPILE_TEST
->         help
->           This selects the MMC Host Interface controller (MMCIF) found in various
-> @@ -868,7 +863,6 @@ config MMC_TOSHIBA_PCI
->  config MMC_BCM2835
->         tristate "Broadcom BCM2835 SDHOST MMC Controller support"
->         depends on ARCH_BCM2835 || COMPILE_TEST
-> -       depends on HAS_DMA
->         help
->           This selects the BCM2835 SDHOST MMC controller. If you have
->           a BCM2835 platform with SD or MMC devices, say Y or M here.
-> --
-> 2.7.4
->
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Reviewed-by: Mark Brown <broonie@kernel.org>
+Acked-by: Robin Murphy <robin.murphy@arm.com>
+---
+v3:
+  - Rebase to v4.17-rc1,
+
+v2:
+  - Add Reviewed-by, Acked-by,
+  - Drop RFC state,
+  - Drop new dependency of MTD_NAND_MARVELL on HAS_DMA,
+  - Split per subsystem.
+---
+ drivers/mtd/nand/raw/Kconfig | 8 ++------
+ drivers/mtd/spi-nor/Kconfig  | 2 +-
+ 2 files changed, 3 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/mtd/nand/raw/Kconfig b/drivers/mtd/nand/raw/Kconfig
+index 19a2b283fbbe627e..6871ff0fd300bb81 100644
+--- a/drivers/mtd/nand/raw/Kconfig
++++ b/drivers/mtd/nand/raw/Kconfig
+@@ -46,7 +46,7 @@ config MTD_NAND_DENALI
+ config MTD_NAND_DENALI_PCI
+         tristate "Support Denali NAND controller on Intel Moorestown"
+ 	select MTD_NAND_DENALI
+-	depends on HAS_DMA && PCI
++	depends on PCI
+         help
+           Enable the driver for NAND flash on Intel Moorestown, using the
+           Denali NAND controller core.
+@@ -152,7 +152,6 @@ config MTD_NAND_S3C2410_CLKSTOP
+ config MTD_NAND_TANGO
+ 	tristate "NAND Flash support for Tango chips"
+ 	depends on ARCH_TANGO || COMPILE_TEST
+-	depends on HAS_DMA
+ 	help
+ 	  Enables the NAND Flash controller on Tango chips.
+ 
+@@ -285,7 +284,7 @@ config MTD_NAND_MARVELL
+ 	tristate "NAND controller support on Marvell boards"
+ 	depends on PXA3xx || ARCH_MMP || PLAT_ORION || ARCH_MVEBU || \
+ 		   COMPILE_TEST
+-	depends on HAS_IOMEM && HAS_DMA
++	depends on HAS_IOMEM
+ 	help
+ 	  This enables the NAND flash controller driver for Marvell boards,
+ 	  including:
+@@ -447,7 +446,6 @@ config MTD_NAND_SH_FLCTL
+ 	tristate "Support for NAND on Renesas SuperH FLCTL"
+ 	depends on SUPERH || COMPILE_TEST
+ 	depends on HAS_IOMEM
+-	depends on HAS_DMA
+ 	help
+ 	  Several Renesas SuperH CPU has FLCTL. This option enables support
+ 	  for NAND Flash using FLCTL.
+@@ -515,7 +513,6 @@ config MTD_NAND_SUNXI
+ config MTD_NAND_HISI504
+ 	tristate "Support for NAND controller on Hisilicon SoC Hip04"
+ 	depends on ARCH_HISI || COMPILE_TEST
+-	depends on HAS_DMA
+ 	help
+ 	  Enables support for NAND controller on Hisilicon SoC Hip04.
+ 
+@@ -529,7 +526,6 @@ config MTD_NAND_QCOM
+ config MTD_NAND_MTK
+ 	tristate "Support for NAND controller on MTK SoCs"
+ 	depends on ARCH_MEDIATEK || COMPILE_TEST
+-	depends on HAS_DMA
+ 	help
+ 	  Enables support for NAND controller on MTK SoCs.
+ 	  This controller is found on mt27xx, mt81xx, mt65xx SoCs.
+diff --git a/drivers/mtd/spi-nor/Kconfig b/drivers/mtd/spi-nor/Kconfig
+index 89da88e591215db1..c493b8230a38c059 100644
+--- a/drivers/mtd/spi-nor/Kconfig
++++ b/drivers/mtd/spi-nor/Kconfig
+@@ -71,7 +71,7 @@ config SPI_FSL_QUADSPI
+ config SPI_HISI_SFC
+ 	tristate "Hisilicon SPI-NOR Flash Controller(SFC)"
+ 	depends on ARCH_HISI || COMPILE_TEST
+-	depends on HAS_IOMEM && HAS_DMA
++	depends on HAS_IOMEM
+ 	help
+ 	  This enables support for hisilicon SPI-NOR flash controller.
+ 
+-- 
+2.7.4
