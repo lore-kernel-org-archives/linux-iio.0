@@ -54,11 +54,13 @@ Cc: iommu@lists.linux-foundation.org,
 	devel@driverdev.osuosl.org,
 	linux-kernel@vger.kernel.org,
 	Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH v3 09/20] iommu: Remove depends on HAS_DMA in case of platform dependency
-Date: Tue, 17 Apr 2018 19:49:09 +0200
-Message-Id: <1523987360-18760-10-git-send-email-geert@linux-m68k.org>
+Subject: [PATCH v3 10/20] lightnvm: Remove depends on HAS_DMA in case of platform dependency
+Date: Tue, 17 Apr 2018 19:49:10 +0200
+Message-Id: <1523987360-18760-11-git-send-email-geert@linux-m68k.org>
 In-Reply-To: <1523987360-18760-1-git-send-email-geert@linux-m68k.org>
 References: <1523987360-18760-1-git-send-email-geert@linux-m68k.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
 Remove dependencies on HAS_DMA where a Kconfig symbol depends on another
@@ -75,49 +77,33 @@ This simplifies the dependencies, and allows to improve compile-testing.
 Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 Reviewed-by: Mark Brown <broonie@kernel.org>
 Acked-by: Robin Murphy <robin.murphy@arm.com>
-Acked-by: Joerg Roedel <jroedel@suse.de>
+Reviewed-by: Matias Bjørling <mb@lightnvm.io>
 ---
 v3:
-  - Add Acked-by,
+  - Add Reviewed-by,
   - Rebase to v4.17-rc1,
+  - Removed bogus notes,
 
 v2:
   - Add Reviewed-by, Acked-by,
   - Drop RFC state,
   - Split per subsystem.
 ---
- drivers/iommu/Kconfig | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/lightnvm/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index df171cb8582296b9..c76157e57f6ba4ba 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -23,7 +23,7 @@ config IOMMU_IO_PGTABLE
- config IOMMU_IO_PGTABLE_LPAE
- 	bool "ARMv7/v8 Long Descriptor Format"
- 	select IOMMU_IO_PGTABLE
--	depends on HAS_DMA && (ARM || ARM64 || (COMPILE_TEST && !GENERIC_ATOMIC64))
-+	depends on ARM || ARM64 || (COMPILE_TEST && !GENERIC_ATOMIC64)
+diff --git a/drivers/lightnvm/Kconfig b/drivers/lightnvm/Kconfig
+index 10c08982185a572f..9c03f35d9df113c6 100644
+--- a/drivers/lightnvm/Kconfig
++++ b/drivers/lightnvm/Kconfig
+@@ -4,7 +4,7 @@
+ 
+ menuconfig NVM
+ 	bool "Open-Channel SSD target support"
+-	depends on BLOCK && HAS_DMA && PCI
++	depends on BLOCK && PCI
+ 	select BLK_DEV_NVME
  	help
- 	  Enable support for the ARM long descriptor pagetable format.
- 	  This allocator supports 4K/2M/1G, 16K/32M and 64K/512M page
-@@ -42,7 +42,7 @@ config IOMMU_IO_PGTABLE_LPAE_SELFTEST
- config IOMMU_IO_PGTABLE_ARMV7S
- 	bool "ARMv7/v8 Short Descriptor Format"
- 	select IOMMU_IO_PGTABLE
--	depends on HAS_DMA && (ARM || ARM64 || COMPILE_TEST)
-+	depends on ARM || ARM64 || COMPILE_TEST
- 	help
- 	  Enable support for the ARM Short-descriptor pagetable format.
- 	  This supports 32-bit virtual and physical addresses mapped using
-@@ -376,7 +376,6 @@ config QCOM_IOMMU
- 	# Note: iommu drivers cannot (yet?) be built as modules
- 	bool "Qualcomm IOMMU Support"
- 	depends on ARCH_QCOM || (COMPILE_TEST && !GENERIC_ATOMIC64)
--	depends on HAS_DMA
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_LPAE
- 	select ARM_DMA_USE_IOMMU
+ 	  Say Y here to get to enable Open-channel SSDs.
 -- 
 2.7.4
