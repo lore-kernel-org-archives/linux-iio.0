@@ -1,54 +1,31 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:36478 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751476AbeDUP3x (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 21 Apr 2018 11:29:53 -0400
-Date: Sat, 21 Apr 2018 16:29:48 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Hans de Goede <hdegoede@redhat.com>
-Cc: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: accel: st_accel: Add support for the SMO8840 ACPI
- id
-Message-ID: <20180421162948.7db0a404@archlinux>
-In-Reply-To: <20180418123318.10948-1-hdegoede@redhat.com>
-References: <20180418123318.10948-1-hdegoede@redhat.com>
+Return-Path: <SRS0=Gb5z=HH=st.com=fabrice.gasnier@kernel.org>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+To: <jic23@kernel.org>, <robh+dt@kernel.org>, <alexandre.torgue@st.com>
+CC: <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>, <lars@metafoo.de>,
+        <knaack.h@gmx.de>, <pmeerw@pmeerw.net>, <fabrice.gasnier@st.com>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <benjamin.gaignard@linaro.org>
+Subject: [PATCH 0/3] Add support for STM32MP1 ADC
+Date: Wed, 18 Apr 2018 17:37:51 +0200
+Message-ID: <1524065874-434-1-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, 18 Apr 2018 14:33:18 +0200
-Hans de Goede <hdegoede@redhat.com> wrote:
+Add support for STM32MP1 Analog to Digital Converter variant.
+It's quite similar to STM32H7 ADC and re-use most of existing driver.
 
-> The Lenovo Ideapad Miix 320 uses an st accelerometer with an ACPI id
-> of SMO8840, add support for this.
-> 
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+Fabrice Gasnier (3):
+  dt-bindings: iio: stm32-adc: add support for STM32MP1.
+  iio: adc: stm32-adc: add support for STM32MP1
+  ARM: dts: stm32: Add ADC support to stm32mp157c
 
-Thanks,
+ .../devicetree/bindings/iio/adc/st,stm32-adc.txt   |  6 +-
+ arch/arm/boot/dts/stm32mp157c.dtsi                 | 32 +++++++++++
+ drivers/iio/adc/stm32-adc-core.c                   | 66 ++++++++++++++++------
+ drivers/iio/adc/stm32-adc.c                        | 47 +++++++++++++--
+ 4 files changed, 128 insertions(+), 23 deletions(-)
 
-Jonathan
-
-> ---
->  drivers/iio/accel/st_accel_i2c.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
-> index 6bdec8c451e0..056dddb27236 100644
-> --- a/drivers/iio/accel/st_accel_i2c.c
-> +++ b/drivers/iio/accel/st_accel_i2c.c
-> @@ -107,6 +107,7 @@ MODULE_DEVICE_TABLE(of, st_accel_of_match);
->  
->  #ifdef CONFIG_ACPI
->  static const struct acpi_device_id st_accel_acpi_match[] = {
-> +	{"SMO8840", LNG2DM},
->  	{"SMO8A90", LNG2DM},
->  	{ },
->  };
-
+-- 
+1.9.1
