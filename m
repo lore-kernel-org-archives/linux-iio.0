@@ -1,37 +1,42 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bert.emutex.com ([91.103.1.109]:53634 "EHLO bert.emutex.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752085AbeDSNph (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 19 Apr 2018 09:45:37 -0400
+Return-Path: <SRS0=P4e0=HI=emutex.com=javier@kernel.org>
 From: Javier Arteaga <javier@emutex.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Dan O'Donovan <dan@emutex.com>,
-        Javier Arteaga <javier@emutex.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 0/2] ACPI match adc128s052 to ADC on UP Squared
-Date: Thu, 19 Apr 2018 14:20:34 +0100
-Message-Id: <20180419132036.27493-1-javier@emutex.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Dan O'Donovan <dan@emutex.com>,
+	Javier Arteaga <javier@emutex.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] iio: adc128s052: allow driver to be matched using ACPI
+Date: Thu, 19 Apr 2018 14:20:35 +0100
+Message-Id: <20180419132036.27493-2-javier@emutex.com>
+In-Reply-To: <20180419132036.27493-1-javier@emutex.com>
+References: <20180419132036.27493-1-javier@emutex.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi all,
+From: Dan O'Donovan <dan@emutex.com>
 
-On AAEON's UP Squared board, there is an ADC124S101 enumerated via ACPI.
-This patchset enables ACPI matching by compatible string and by AAEON's
-allocated HID.
+Allow driver to be matched by compatible string in
+ACPI device properties.
 
-Dan O'Donovan (1):
-  iio: adc128s052: allow driver to be matched using ACPI
+Signed-off-by: Dan O'Donovan <dan@emutex.com>
+---
+ drivers/iio/adc/ti-adc128s052.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Nicola Lunghi (1):
-  iio: adc128s052: add ACPI _HID AANT1280
-
- drivers/iio/adc/ti-adc128s052.c | 27 +++++++++++++++++++++++++--
- 1 file changed, 25 insertions(+), 2 deletions(-)
-
+diff --git a/drivers/iio/adc/ti-adc128s052.c b/drivers/iio/adc/ti-adc128s052.c
+index 7cf39b3e2416..56ec04d1c68f 100644
+--- a/drivers/iio/adc/ti-adc128s052.c
++++ b/drivers/iio/adc/ti-adc128s052.c
+@@ -202,7 +202,7 @@ MODULE_DEVICE_TABLE(spi, adc128_id);
+ static struct spi_driver adc128_driver = {
+ 	.driver = {
+ 		.name = "adc128s052",
+-		.of_match_table = of_match_ptr(adc128_of_match),
++		.of_match_table = adc128_of_match,
+ 	},
+ 	.probe = adc128_probe,
+ 	.remove = adc128_remove,
 -- 
 2.17.0
-
