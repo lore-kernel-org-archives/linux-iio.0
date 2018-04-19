@@ -1,84 +1,37 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:37458 "EHLO mail.kernel.org"
+Received: from bert.emutex.com ([91.103.1.109]:53634 "EHLO bert.emutex.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752350AbeDUPhv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 21 Apr 2018 11:37:51 -0400
-Date: Sat, 21 Apr 2018 16:37:45 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Fabrice Gasnier <fabrice.gasnier@st.com>
-Cc: <robh+dt@kernel.org>, <alexandre.torgue@st.com>,
-        <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
-        <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <benjamin.gaignard@linaro.org>
-Subject: Re: [PATCH 3/3] ARM: dts: stm32: Add ADC support to stm32mp157c
-Message-ID: <20180421163745.797e2c67@archlinux>
-In-Reply-To: <1524065874-434-4-git-send-email-fabrice.gasnier@st.com>
-References: <1524065874-434-1-git-send-email-fabrice.gasnier@st.com>
-        <1524065874-434-4-git-send-email-fabrice.gasnier@st.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S1752085AbeDSNph (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 19 Apr 2018 09:45:37 -0400
+From: Javier Arteaga <javier@emutex.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Dan O'Donovan <dan@emutex.com>,
+        Javier Arteaga <javier@emutex.com>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] ACPI match adc128s052 to ADC on UP Squared
+Date: Thu, 19 Apr 2018 14:20:34 +0100
+Message-Id: <20180419132036.27493-1-javier@emutex.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 18 Apr 2018 17:37:54 +0200
-Fabrice Gasnier <fabrice.gasnier@st.com> wrote:
+Hi all,
 
-> stm32mp157c has an ADC block with two physical ADCs.
-> 
-> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-The relevant driver support is queued up for next merge window in the IIO tree.
+On AAEON's UP Squared board, there is an ADC124S101 enumerated via ACPI.
+This patchset enables ACPI matching by compatible string and by AAEON's
+allocated HID.
 
-Thanks,
+Dan O'Donovan (1):
+  iio: adc128s052: allow driver to be matched using ACPI
 
-Jonathan
+Nicola Lunghi (1):
+  iio: adc128s052: add ACPI _HID AANT1280
 
-> ---
->  arch/arm/boot/dts/stm32mp157c.dtsi | 32 ++++++++++++++++++++++++++++++++
->  1 file changed, 32 insertions(+)
-> 
-> diff --git a/arch/arm/boot/dts/stm32mp157c.dtsi b/arch/arm/boot/dts/stm32mp157c.dtsi
-> index bc3eddc..7758a90 100644
-> --- a/arch/arm/boot/dts/stm32mp157c.dtsi
-> +++ b/arch/arm/boot/dts/stm32mp157c.dtsi
-> @@ -160,6 +160,38 @@
->  			status = "disabled";
->  		};
->  
-> +		adc: adc@48003000 {
-> +			compatible = "st,stm32mp1-adc-core";
-> +			reg = <0x48003000 0x400>;
-> +			interrupts = <GIC_SPI 18 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>;
-> +			clocks = <&rcc ADC12>, <&rcc ADC12_K>;
-> +			clock-names = "bus", "adc";
-> +			interrupt-controller;
-> +			#interrupt-cells = <1>;
-> +			#address-cells = <1>;
-> +			#size-cells = <0>;
-> +			status = "disabled";
-> +
-> +			adc1: adc@0 {
-> +				compatible = "st,stm32mp1-adc";
-> +				#io-channel-cells = <1>;
-> +				reg = <0x0>;
-> +				interrupt-parent = <&adc>;
-> +				interrupts = <0>;
-> +				status = "disabled";
-> +			};
-> +
-> +			adc2: adc@100 {
-> +				compatible = "st,stm32mp1-adc";
-> +				#io-channel-cells = <1>;
-> +				reg = <0x100>;
-> +				interrupt-parent = <&adc>;
-> +				interrupts = <1>;
-> +				status = "disabled";
-> +			};
-> +		};
-> +
->  		rcc: rcc@50000000 {
->  			compatible = "st,stm32mp1-rcc", "syscon";
->  			reg = <0x50000000 0x1000>;
+ drivers/iio/adc/ti-adc128s052.c | 27 +++++++++++++++++++++++++--
+ 1 file changed, 25 insertions(+), 2 deletions(-)
+
+-- 
+2.17.0
 
