@@ -1,73 +1,92 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:40072 "EHLO mail.kernel.org"
+Received: from onstation.org ([52.200.56.107]:49882 "EHLO onstation.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752762AbeDUQS5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 21 Apr 2018 12:18:57 -0400
-Date: Sat, 21 Apr 2018 17:18:51 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Brian Masney <masneyb@onstation.org>
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-        devel@driverdev.osuosl.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-kernel@vger.kernel.org,
-        Jon.Brenner@ams.com
-Subject: Re: [PATCH 03/13] staging: iio: tsl2x7x: don't return error in IRQ
- handler
-Message-ID: <20180421171851.1543aba0@archlinux>
-In-Reply-To: <20180421004153.19073-4-masneyb@onstation.org>
+        id S1752887AbeDUAmM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 20 Apr 2018 20:42:12 -0400
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
+Subject: [PATCH 04/13] staging: iio: tsl2x7x: simplify tsl2x7x_clear_interrupts function
+Date: Fri, 20 Apr 2018 20:41:44 -0400
+Message-Id: <20180421004153.19073-5-masneyb@onstation.org>
+In-Reply-To: <20180421004153.19073-1-masneyb@onstation.org>
 References: <20180421004153.19073-1-masneyb@onstation.org>
-        <20180421004153.19073-4-masneyb@onstation.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 20 Apr 2018 20:41:43 -0400
-Brian Masney <masneyb@onstation.org> wrote:
+tsl2x7x_clear_interrupts() takes a reg argument but there are only
+two callers to this function and both callers pass the same value.
+Since this function was introduced, interrupts are now working
+properly for this driver, and several unnecessary calls to
+tsl2x7x_clear_interrupts() were removed. This patch removes the
+tsl2x7x_clear_interrupts() function and replaces the two callers
+with the i2c_smbus_write_byte() call instead.
 
-> tsl2x7x_event_handler() could return an error and this could cause the
-> interrupt to remain masked. We shouldn't return an error in the
-> interrupt handler so this patch always returns IRQ_HANDLED. An error
-> will be logged if one occurs.
-> 
-> Signed-off-by: Brian Masney <masneyb@onstation.org>
-There is a slight argument that we should report an error from the 
-interrupt clear if it generates an error, but I'm not that bothered
-as that is unlikely to happen and people rarely see these errors in
-their logs anyway.
+Signed-off-by: Brian Masney <masneyb@onstation.org>
+---
+ drivers/staging/iio/light/tsl2x7x.c | 32 +++++++++++++++-----------------
+ 1 file changed, 15 insertions(+), 17 deletions(-)
 
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
-
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/staging/iio/light/tsl2x7x.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
-> index 9cdcc8c9e812..95a00b965c5e 100644
-> --- a/drivers/staging/iio/light/tsl2x7x.c
-> +++ b/drivers/staging/iio/light/tsl2x7x.c
-> @@ -1320,7 +1320,7 @@ static irqreturn_t tsl2x7x_event_handler(int irq, void *private)
->  
->  	ret = tsl2x7x_read_status(chip);
->  	if (ret < 0)
-> -		return ret;
-> +		return IRQ_HANDLED;
->  
->  	/* What type of interrupt do we need to process */
->  	if (ret & TSL2X7X_STA_PRX_INTR) {
-> @@ -1341,9 +1341,7 @@ static irqreturn_t tsl2x7x_event_handler(int irq, void *private)
->  			       timestamp);
->  	}
->  
-> -	ret = tsl2x7x_clear_interrupts(chip, TSL2X7X_CMD_PROXALS_INT_CLR);
-> -	if (ret < 0)
-> -		return ret;
-> +	tsl2x7x_clear_interrupts(chip, TSL2X7X_CMD_PROXALS_INT_CLR);
->  
->  	return IRQ_HANDLED;
->  }
+diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
+index 95a00b965c5e..f37fc74b8fbc 100644
+--- a/drivers/staging/iio/light/tsl2x7x.c
++++ b/drivers/staging/iio/light/tsl2x7x.c
+@@ -271,20 +271,6 @@ static const u8 device_channel_config[] = {
+ 	ALSPRX2
+ };
+ 
+-static int tsl2x7x_clear_interrupts(struct tsl2X7X_chip *chip, int reg)
+-{
+-	int ret;
+-
+-	ret = i2c_smbus_write_byte(chip->client,
+-				   TSL2X7X_CMD_REG | TSL2X7X_CMD_SPL_FN | reg);
+-	if (ret < 0)
+-		dev_err(&chip->client->dev,
+-			"%s: failed to clear interrupt status %x: %d\n",
+-			__func__, reg, ret);
+-
+-	return ret;
+-}
+-
+ static int tsl2x7x_read_status(struct tsl2X7X_chip *chip)
+ {
+ 	int ret;
+@@ -714,9 +700,15 @@ static int tsl2x7x_chip_on(struct iio_dev *indio_dev)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = tsl2x7x_clear_interrupts(chip, TSL2X7X_CMD_PROXALS_INT_CLR);
+-	if (ret < 0)
++	ret = i2c_smbus_write_byte(chip->client,
++				   TSL2X7X_CMD_REG | TSL2X7X_CMD_SPL_FN |
++				   TSL2X7X_CMD_PROXALS_INT_CLR);
++	if (ret < 0) {
++		dev_err(&chip->client->dev,
++			"%s: failed to clear interrupt status: %d\n",
++			__func__, ret);
+ 		return ret;
++	}
+ 
+ 	chip->tsl2x7x_chip_status = TSL2X7X_CHIP_WORKING;
+ 
+@@ -1341,7 +1333,13 @@ static irqreturn_t tsl2x7x_event_handler(int irq, void *private)
+ 			       timestamp);
+ 	}
+ 
+-	tsl2x7x_clear_interrupts(chip, TSL2X7X_CMD_PROXALS_INT_CLR);
++	ret = i2c_smbus_write_byte(chip->client,
++				   TSL2X7X_CMD_REG | TSL2X7X_CMD_SPL_FN |
++				   TSL2X7X_CMD_PROXALS_INT_CLR);
++	if (ret < 0)
++		dev_err(&chip->client->dev,
++			"%s: failed to clear interrupt status: %d\n",
++			__func__, ret);
+ 
+ 	return IRQ_HANDLED;
+ }
+-- 
+2.14.3
 
