@@ -1,118 +1,36 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:38766 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752765AbeDUQFL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 21 Apr 2018 12:05:11 -0400
-Date: Sat, 21 Apr 2018 17:05:05 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Javier Arteaga <javier@emutex.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Dan O'Donovan <dan@emutex.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Return-Path: <SRS0=ZgA+=HK=emutex.com=javier@kernel.org>
+Date: Sat, 21 Apr 2018 21:46:05 +0100
+From: Javier Arteaga <javier@emutex.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Dan O'Donovan <dan@emutex.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
 Subject: Re: [PATCH 2/2] iio: adc128s052: add ACPI _HID AANT1280
-Message-ID: <20180421170505.60d7784a@archlinux>
-In-Reply-To: <20180419132036.27493-3-javier@emutex.com>
+Message-ID: <20180421204507.i77d6ov2je7e4ec7@localhost>
 References: <20180419132036.27493-1-javier@emutex.com>
-        <20180419132036.27493-3-javier@emutex.com>
+ <20180419132036.27493-3-javier@emutex.com>
+ <20180421170505.60d7784a@archlinux>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20180421170505.60d7784a@archlinux>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 19 Apr 2018 14:20:36 +0100
-Javier Arteaga <javier@emutex.com> wrote:
+Hi Jonathan,
 
-> From: Nicola Lunghi <nicola.lunghi@emutex.com>
+On Sat, Apr 21, 2018 at 05:05:05PM +0100, Jonathan Cameron wrote:
+> This is in principle fine, but I'd like to see it done somewhat more
+> explicitly.
 > 
-> ACPI _HID AANT1280 matches an ADC124S101 present on the UP Squared board
-> that is compatible with adc128s052.
+> 1) Add the adc124s101 and similar families to the driver first. I think
+>    this is just a case of IDs for all of
+>    adc124s051 and adc124s101.
 > 
-> Add it to the driver.
+> 2) Add the ACPI ID as you have done here.
 > 
-> Signed-off-by: Nicola Lunghi <nicola.lunghi@emutex.com>
-> [javier@emutex.com: fix up commit message and one checkpatch warning]
-> Signed-off-by: Javier Arteaga <javier@emutex.com>
-Hi Javier,
+> That way we at least reflect clearly that the part is supported rather than
+> just in a comment on the ACPI ID.
 
-This is in principle fine, but I'd like to see it done somewhat more
-explicitly.
+Will do for v2.
 
-1) Add the adc124s101 and similar families to the driver first. I think
-   this is just a case of IDs for all of
-   adc124s051 and adc124s101.
-
-2) Add the ACPI ID as you have done here.
-
-That way we at least reflect clearly that the part is supported rather than
-just in a comment on the ACPI ID.
-
-Hmm. Looking at it, we should perhaps revisit whether some of these
-TI parts are similar enough that their drivers can be cleanly combined.
-A job for another day!
-
-Jonathan
-
-
-> ---
->  drivers/iio/adc/ti-adc128s052.c | 25 ++++++++++++++++++++++++-
->  1 file changed, 24 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/ti-adc128s052.c b/drivers/iio/adc/ti-adc128s052.c
-> index 56ec04d1c68f..917273f1268c 100644
-> --- a/drivers/iio/adc/ti-adc128s052.c
-> +++ b/drivers/iio/adc/ti-adc128s052.c
-> @@ -17,6 +17,7 @@
->  #include <linux/module.h>
->  #include <linux/iio/iio.h>
->  #include <linux/regulator/consumer.h>
-> +#include <linux/acpi.h>
->  
->  struct adc128_configuration {
->  	const struct iio_chan_spec	*channels;
-> @@ -136,9 +137,22 @@ static int adc128_probe(struct spi_device *spi)
->  {
->  	struct iio_dev *indio_dev;
->  	struct adc128 *adc;
-> -	int config = spi_get_device_id(spi)->driver_data;
-> +	int config;
->  	int ret;
->  
-> +	if (ACPI_COMPANION(&spi->dev)) {
-> +		const struct acpi_device_id *ad_id;
-> +
-> +		ad_id = acpi_match_device(spi->dev.driver->acpi_match_table,
-> +					  &spi->dev);
-> +		if (!ad_id)
-> +			return -ENODEV;
-> +
-> +		config = ad_id->driver_data;
-> +	} else {
-> +		config = spi_get_device_id(spi)->driver_data;
-> +	}
-> +
->  	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*adc));
->  	if (!indio_dev)
->  		return -ENOMEM;
-> @@ -199,10 +213,19 @@ static const struct spi_device_id adc128_id[] = {
->  };
->  MODULE_DEVICE_TABLE(spi, adc128_id);
->  
-> +#ifdef CONFIG_ACPI
-> +static const struct acpi_device_id adc128_acpi_match[] = {
-> +	{ "AANT1280", 2 }, /* ADC124S021 compatible ACPI ID */
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(acpi, adc128_acpi_match);
-> +#endif
-> +
->  static struct spi_driver adc128_driver = {
->  	.driver = {
->  		.name = "adc128s052",
->  		.of_match_table = adc128_of_match,
-> +		.acpi_match_table = ACPI_PTR(adc128_acpi_match),
->  	},
->  	.probe = adc128_probe,
->  	.remove = adc128_remove,
-
+Thank you!
