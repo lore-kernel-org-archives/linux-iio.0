@@ -1,62 +1,45 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:37810 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752786AbeDUPyr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 21 Apr 2018 11:54:47 -0400
-Date: Sat, 21 Apr 2018 16:54:41 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Javier Arteaga <javier@emutex.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Dan O'Donovan <dan@emutex.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Return-Path: <SRS0=ZgA+=HK=emutex.com=javier@kernel.org>
+Date: Sat, 21 Apr 2018 21:41:57 +0100
+From: Javier Arteaga <javier@emutex.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Dan O'Donovan <dan@emutex.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
 Subject: Re: [PATCH 1/2] iio: adc128s052: allow driver to be matched using
  ACPI
-Message-ID: <20180421165441.0c64415d@archlinux>
-In-Reply-To: <20180419132036.27493-2-javier@emutex.com>
+Message-ID: <20180421204157.y3zoejow7gfl3pj3@localhost>
 References: <20180419132036.27493-1-javier@emutex.com>
-        <20180419132036.27493-2-javier@emutex.com>
+ <20180419132036.27493-2-javier@emutex.com>
+ <20180421165441.0c64415d@archlinux>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20180421165441.0c64415d@archlinux>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 19 Apr 2018 14:20:35 +0100
-Javier Arteaga <javier@emutex.com> wrote:
+Hi Jonathan,
 
-> From: Dan O'Donovan <dan@emutex.com>
-> 
-> Allow driver to be matched by compatible string in
-> ACPI device properties.
-> 
-> Signed-off-by: Dan O'Donovan <dan@emutex.com>
-Hi Javier,
+On Sat, Apr 21, 2018 at 04:54:41PM +0100, Jonathan Cameron wrote:
+> I don't really see the connection between the change in here
+> and what the description says...
 
-I don't really see the connection between the change in here
-and what the description says...
+I think you're right, we didn't make our intent clear here.
 
-If you are probing from ACPI then there is no need to ensure
-a valid of table is supplied (even if we aren't building with OF)
-which is what I think this patch is trying to do...
+> If you are probing from ACPI then there is no need to ensure
+> a valid of table is supplied (even if we aren't building with OF)
+> which is what I think this patch is trying to do...
 
-Jonathan
+The patch enables ACPI _DSD to reuse existing DT "compatible" strings,
+as described in Documentation/acpi/enumeration.txt, even without OF.
+This kind of patch has some precedent, like for example:
 
-> ---
->  drivers/iio/adc/ti-adc128s052.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/ti-adc128s052.c b/drivers/iio/adc/ti-adc128s052.c
-> index 7cf39b3e2416..56ec04d1c68f 100644
-> --- a/drivers/iio/adc/ti-adc128s052.c
-> +++ b/drivers/iio/adc/ti-adc128s052.c
-> @@ -202,7 +202,7 @@ MODULE_DEVICE_TABLE(spi, adc128_id);
->  static struct spi_driver adc128_driver = {
->  	.driver = {
->  		.name = "adc128s052",
-> -		.of_match_table = of_match_ptr(adc128_of_match),
-> +		.of_match_table = adc128_of_match,
->  	},
->  	.probe = adc128_probe,
->  	.remove = adc128_remove,
+    01427fe7c4b9 ("Input: adxl34x - make it enumerable in ACPI environment")
 
+To clarify, for the UP2 board we don't actually need this patch as we
+have an ACPI _HID - just thought it would might be an improvement for
+others.
+
+I'll improve the description and perhaps reorder this patch last for v2.
+Or I can send separately if you prefer.
+
+Thanks for your review!
