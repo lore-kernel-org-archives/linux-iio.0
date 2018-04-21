@@ -1,46 +1,54 @@
-Return-Path: <SRS0=w7IO=HJ=ispras.ru=khoroshilov@kernel.org>
-From: Alexey Khoroshilov <khoroshilov@ispras.ru>
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Alexey Khoroshilov <khoroshilov@ispras.ru>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	ldv-project@linuxtesting.org,
-	sil2review@lists.osadl.org
-Subject: [PATCH] iio: adc: ad799x: Fix error handling in ad799x_probe()
-Date: Fri, 20 Apr 2018 23:54:22 +0300
-Message-Id: <1524257662-6185-1-git-send-email-khoroshilov@ispras.ru>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from onstation.org ([52.200.56.107]:49810 "EHLO onstation.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1752644AbeDUAmK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 20 Apr 2018 20:42:10 -0400
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
+Subject: [PATCH 00/13] iio: tsl2x7x: staging cleanups
+Date: Fri, 20 Apr 2018 20:41:40 -0400
+Message-Id: <20180421004153.19073-1-masneyb@onstation.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-In case of errors in write/read config, st->vref is left undisabled.
-
-Found by Linux Driver Verification project (linuxtesting.org).
-
-Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-Fixes: 0f7ddcc1bff1 ("iio:adc:ad799x: Write default config on probe and reset alert status on probe")
----
- drivers/iio/adc/ad799x.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
-index e1da67d5ee22..9e61720db7ea 100644
---- a/drivers/iio/adc/ad799x.c
-+++ b/drivers/iio/adc/ad799x.c
-@@ -814,10 +814,10 @@ static int ad799x_probe(struct i2c_client *client,
+Here is another round of staging cleanups for this driver mostly based
+on Jonathon's feedback. We're very close to a staging graduation and I
+only have a few items remaining on my todo list:
  
- 	ret = ad799x_write_config(st, st->chip_config->default_config);
- 	if (ret < 0)
--		goto error_disable_reg;
-+		goto error_disable_vref;
- 	ret = ad799x_read_config(st);
- 	if (ret < 0)
--		goto error_disable_reg;
-+		goto error_disable_vref;
- 	st->config = ret;
- 
- 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+- Remove wildcards from the driver name. Jonathan suggested tsl2571.
+- Don't make the events/ directory available to user space via sysfs if
+  an interrupt pin is not configured.
+- Go through the newer ALS part numbers on AMS's site and see if there
+  are other part numbers that can be added to this driver.
+- I found this week an issue with the integration_time sysfs attribute.
+
+Hopefully I'll have time to wrap this up next week.
+
+Brian Masney (13):
+  staging: iio: tsl2x7x: move integration_time* attributes to
+    IIO_INTENSITY channel
+  staging: iio: tsl2x7x: use GPL-2.0+ SPDX license identifier
+  staging: iio: tsl2x7x: don't return error in IRQ handler
+  staging: iio: tsl2x7x: simplify tsl2x7x_clear_interrupts function
+  staging: iio: tsl2x7x: remove unnecessary chip status checks in
+    suspend/resume
+  staging: iio: tsl2x7x: simplify tsl2x7x_write_interrupt_config return
+  staging: iio: tsl2x7x: simplify device id verification
+  staging: iio: tsl2x7x: add range checking to three sysfs attributes
+  staging: iio: tsl2x7x: move power and diode settings into header file
+  staging: iio: tsl2x7x: rename prx to prox for consistency
+  staging: iio: tsl2x7x: use device defaults for als_time, prox_time and
+    wait_time
+  staging: iio: tsl2x7x: various comment cleanups
+  staging: iio: tsl2x7x: rename prox_config to als_prox_config
+
+ drivers/staging/iio/light/tsl2x7x.c | 217 ++++++++++++++----------------------
+ drivers/staging/iio/light/tsl2x7x.h |  81 +++++++-------
+ 2 files changed, 125 insertions(+), 173 deletions(-)
+
 -- 
-2.7.4
+2.14.3
+
