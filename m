@@ -1,69 +1,157 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:37882 "EHLO
+Received: from saturn.retrosnub.co.uk ([46.235.226.198]:37828 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752385AbeDUPLL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 21 Apr 2018 11:11:11 -0400
-Date: Sat, 21 Apr 2018 16:11:07 +0100
+        with ESMTP id S1752350AbeDUPH7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 21 Apr 2018 11:07:59 -0400
+Date: Sat, 21 Apr 2018 16:07:56 +0100
 From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 To: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
 Cc: linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3 4/4] iio: imu: inv_mpu6050: clean read channel data
- error path
-Message-ID: <20180421161107.4f9b3535@archlinux>
-In-Reply-To: <1523952442-20104-4-git-send-email-jmaneyrol@invensense.com>
+Subject: Re: [PATCH v3 1/4] iio: imu: inv_mpu6050: fix error path not
+ turning chip back off
+Message-ID: <20180421160756.4df8cd6c@archlinux>
+In-Reply-To: <1523952442-20104-1-git-send-email-jmaneyrol@invensense.com>
 References: <1523952442-20104-1-git-send-email-jmaneyrol@invensense.com>
-        <1523952442-20104-4-git-send-email-jmaneyrol@invensense.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 17 Apr 2018 10:07:22 +0200
+On Tue, 17 Apr 2018 10:07:19 +0200
 Jean-Baptiste Maneyrol <jmaneyrol@invensense.com> wrote:
 
-Nice to have some description of how it was cleaned + a signed-off-by...
+> Some functions are turning the chip on and not back off in error
+> path. With set_power function using a reference counter that
+> would keep the chip on forever.
+No sign off so I can't apply.
+
+Also a minor thing I noticed inline (unconnected to the patch)
+
+Thanks,
 
 Jonathan
 
 > ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 16 ++++++++++------
->  1 file changed, 10 insertions(+), 6 deletions(-)
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    | 12 ++++++---
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c | 35 ++++++++++++++++++---------
+>  2 files changed, 32 insertions(+), 15 deletions(-)
 > 
 > diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index a0cecd9..b842caf 100644
+> index 20b94d9..ba2f08e 100644
 > --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
 > +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -330,7 +330,7 @@ static int inv_mpu6050_read_channel_data(struct iio_dev *indio_dev,
->  {
->  	struct inv_mpu6050_state *st = iio_priv(indio_dev);
->  	int result;
-> -	int ret = IIO_VAL_INT;
-> +	int ret;
->  
->  	result = iio_device_claim_direct_mode(indio_dev);
->  	if (result)
-> @@ -375,14 +375,18 @@ static int inv_mpu6050_read_channel_data(struct iio_dev *indio_dev,
->  		break;
->  	}
->  
-> -error_power_off:
-> -	result |= inv_mpu6050_set_power_itg(st, false);
-> -error_release:
-> -	iio_device_release_direct_mode(indio_dev);
-> +	result = inv_mpu6050_set_power_itg(st, false);
+> @@ -268,27 +268,31 @@ static int inv_mpu6050_init_config(struct iio_dev *indio_dev)
+>  	d = (INV_MPU6050_FSR_2000DPS << INV_MPU6050_GYRO_CONFIG_FSR_SHIFT);
+>  	result = regmap_write(st->map, st->reg->gyro_config, d);
 >  	if (result)
 > -		return result;
 > +		goto error_power_off;
-> +	iio_device_release_direct_mode(indio_dev);
 >  
->  	return ret;
+>  	result = inv_mpu6050_set_lpf_regs(st, INV_MPU6050_FILTER_20HZ);
+>  	if (result)
+> -		return result;
+> +		goto error_power_off;
+>  
+>  	d = INV_MPU6050_ONE_K_HZ / INV_MPU6050_INIT_FIFO_RATE - 1;
+>  	result = regmap_write(st->map, st->reg->sample_rate_div, d);
+>  	if (result)
+> -		return result;
+> +		goto error_power_off;
+>  
+>  	d = (INV_MPU6050_FS_02G << INV_MPU6050_ACCL_CONFIG_FSR_SHIFT);
+>  	result = regmap_write(st->map, st->reg->accl_config, d);
+>  	if (result)
+> -		return result;
+> +		goto error_power_off;
+>  
+>  	memcpy(&st->chip_config, hw_info[st->chip_type].config,
+>  	       sizeof(struct inv_mpu6050_chip_config));
+>  	result = inv_mpu6050_set_power_itg(st, false);
+>  
+>  	return result;
+
+Whilst you are here why not combine the two lines
+above and avoid assigning result...
+
 > +
 > +error_power_off:
 > +	inv_mpu6050_set_power_itg(st, false);
-> +error_release:
-> +	iio_device_release_direct_mode(indio_dev);
 > +	return result;
 >  }
 >  
->  static int
+>  static int inv_mpu6050_sensor_set(struct inv_mpu6050_state  *st, int reg,
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+> index f963f9f..27aa976 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+> @@ -53,45 +53,58 @@ static int inv_mpu6050_set_enable(struct iio_dev *indio_dev, bool enable)
+>  			result = inv_mpu6050_switch_engine(st, true,
+>  					INV_MPU6050_BIT_PWR_GYRO_STBY);
+>  			if (result)
+> -				return result;
+> +				goto error_power_off;
+>  		}
+>  		if (st->chip_config.accl_fifo_enable) {
+>  			result = inv_mpu6050_switch_engine(st, true,
+>  					INV_MPU6050_BIT_PWR_ACCL_STBY);
+>  			if (result)
+> -				return result;
+> +				goto error_gyro_off;
+>  		}
+>  		result = inv_reset_fifo(indio_dev);
+>  		if (result)
+> -			return result;
+> +			goto error_accl_off;
+>  	} else {
+>  		result = regmap_write(st->map, st->reg->fifo_en, 0);
+>  		if (result)
+> -			return result;
+> +			goto error_accl_off;
+>  
+>  		result = regmap_write(st->map, st->reg->int_enable, 0);
+>  		if (result)
+> -			return result;
+> +			goto error_accl_off;
+>  
+>  		result = regmap_write(st->map, st->reg->user_ctrl, 0);
+>  		if (result)
+> -			return result;
+> +			goto error_accl_off;
+>  
+>  		result = inv_mpu6050_switch_engine(st, false,
+> -					INV_MPU6050_BIT_PWR_GYRO_STBY);
+> +					INV_MPU6050_BIT_PWR_ACCL_STBY);
+>  		if (result)
+> -			return result;
+> +			goto error_accl_off;
+>  
+>  		result = inv_mpu6050_switch_engine(st, false,
+> -					INV_MPU6050_BIT_PWR_ACCL_STBY);
+> +					INV_MPU6050_BIT_PWR_GYRO_STBY);
+>  		if (result)
+> -			return result;
+> +			goto error_gyro_off;
+> +
+>  		result = inv_mpu6050_set_power_itg(st, false);
+>  		if (result)
+> -			return result;
+> +			goto error_power_off;
+>  	}
+>  
+>  	return 0;
+> +
+> +error_accl_off:
+> +	if (st->chip_config.accl_fifo_enable)
+> +		inv_mpu6050_switch_engine(st, false,
+> +					  INV_MPU6050_BIT_PWR_ACCL_STBY);
+> +error_gyro_off:
+> +	if (st->chip_config.gyro_fifo_enable)
+> +		inv_mpu6050_switch_engine(st, false,
+> +					  INV_MPU6050_BIT_PWR_GYRO_STBY);
+> +error_power_off:
+> +	inv_mpu6050_set_power_itg(st, false);
+> +	return result;
+>  }
+>  
+>  /**
 
