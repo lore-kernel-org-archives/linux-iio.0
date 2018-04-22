@@ -1,187 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:35264 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1759184AbeD1RfS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 28 Apr 2018 13:35:18 -0400
-Date: Sat, 28 Apr 2018 18:35:14 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: David Veenstra <davidjulianveenstra@gmail.com>
-Cc: lars@metafoo.de, pmeerw@pmeerw.net, robh+dt@kernel.org,
-        Michael.Hennerich@analog.com, knaack.h@gmx.de,
+Received: from mail-wr0-f196.google.com ([209.85.128.196]:41704 "EHLO
+        mail-wr0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753529AbeDVWEP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 22 Apr 2018 18:04:15 -0400
+Date: Mon, 23 Apr 2018 00:04:10 +0200
+From: David Veenstra <davidjulianveenstra@gmail.com>
+To: jic23@kernel.org, lars@metafoo.de, pmeerw@pmeerw.net
+Cc: robh+dt@kernel.org, Michael.Hennerich@analog.com, knaack.h@gmx.de,
         linux-iio@vger.kernel.org, daniel.baluta@nxp.com,
         devel@driverdev.osuosl.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 6/9] staging: iio: ad2s1200: Add scaling factor for
- angular velocity channel
-Message-ID: <20180428183514.08ab2a6c@archlinux>
-In-Reply-To: <20180428182344.59fec23e@archlinux>
+Subject: [PATCH v3 7/9] staging: iio: Documentation: Add missing sysfs docs
+ for angle channel
+Message-ID: <7c715bd223b129faa9e5e484a3e4b8e6eba0abeb.1524432236.git.davidjulianveenstra@gmail.com>
 References: <cover.1524432236.git.davidjulianveenstra@gmail.com>
-        <803058d8b119451a193c556866ffbb291ec83bcb.1524432236.git.davidjulianveenstra@gmail.com>
-        <20180428182344.59fec23e@archlinux>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <cover.1524432236.git.davidjulianveenstra@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, 28 Apr 2018 18:23:44 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+The iio resolver drivers in staging use angle channels. This patch
+add missing documentation for this type of channel.
 
-> On Mon, 23 Apr 2018 00:03:59 +0200
-> David Veenstra <davidjulianveenstra@gmail.com> wrote:
-> 
-> > The sysfs iio ABI states radians per second is expected as the unit for
-> > angular velocity, but the 12-bit angular velocity register has rps  
-> Really small point, but rps is a bit ambiguous given we are
-> talking about converting to radian's per second ;)
-> 
-> revs is the 'common' name for what it currently is I think.
-> 
-> Otherwise this looks good.
-Actually, I can't immediately tell from the datasheet what the scaling is...
+As was discussed in [1], radians is chosen as the unit, to match the
+unit of angular velocity.
 
-"Bit 15 through bit 4 correspond to the angular
-information. The angular position data format is unsigned
-binary, with all zeros corresponding to 0 degrees and all ones
-corresponding to 360 degrees –l LSB. The angular velocity data
-format instead is twos complement binary, with the MSB
-representing the rotation direction"
+[1] https://marc.info/?l=linux-driver-devel&m=152190078308330&w=2
 
-Earlier was also had:
+Signed-off-by: David Veenstra <davidjulianveenstra@gmail.com>
+---
+Changes in v3:
+ - Remove axis modifier on in_angle.
 
-"Data Format
-The digital angle signal represents the absolute position of the
-resolver shaft as a 12-bit unsigned binary word. The digital
-velocity signal is a 12-bit twos complement word, which
-represents the velocity of the resolver shaft rotating in either a
-clockwise or a counterclockwise direction."
+ Documentation/ABI/testing/sysfs-bus-iio | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-So for position the 12 bits correspond to 0 to 360 - 360/(2^12)
-hence _SCALE is 360/(2^12)
-
-But I'm not seeing any hint whatsoever on the scaling for the
-rotational velocity...
-
-Am I missing it somewhere?  you might be right in how you have
-read it given it will track up to 1000rps and we are 2 directional
-so -2048 to 2047 so not a huge amount of wasted space.
-
-Failing any other evidence I'll go with what you have until we
-can test this, but the datasheet could be clearer!
-
-Jonathan
-> 
-> Jonathan
-> 
-> 
-> > as its unit. So a scaling factor of approximately 2 * Pi is
-> > added to the angular velocity channel.
-> > 
-> > Signed-off-by: David Veenstra <davidjulianveenstra@gmail.com>
-> > ---
-> > Changes in v3:
-> >  - A decimal approximation of the scale is used, instead
-> >    of a fractional approximation.
-> >  - Remove unneeded explanation of iio_convert_raw_to_processed.
-> > 
-> >  drivers/staging/iio/resolver/ad2s1200.c | 71 +++++++++++++++++++++------------
-> >  1 file changed, 45 insertions(+), 26 deletions(-)
-> > 
-> > diff --git a/drivers/staging/iio/resolver/ad2s1200.c b/drivers/staging/iio/resolver/ad2s1200.c
-> > index 3c7163610ff6..3e1696e52c38 100644
-> > --- a/drivers/staging/iio/resolver/ad2s1200.c
-> > +++ b/drivers/staging/iio/resolver/ad2s1200.c
-> > @@ -57,37 +57,55 @@ static int ad2s1200_read_raw(struct iio_dev *indio_dev,
-> >  	struct ad2s1200_state *st = iio_priv(indio_dev);
-> >  	int ret = 0;
-> >  
-> > -	mutex_lock(&st->lock);
-> > -	gpiod_set_value(st->sample, 0);
-> > -
-> > -	/* delay (6 * AD2S1200_TSCLK + 20) nano seconds */
-> > -	udelay(1);
-> > -	gpiod_set_value(st->sample, 1);
-> > -	gpiod_set_value(st->rdvel, !!(chan->type == IIO_ANGL));
-> > -
-> > -	ret = spi_read(st->sdev, &st->rx, 2);
-> > -	if (ret < 0) {
-> > +	switch (m) {
-> > +	case IIO_CHAN_INFO_SCALE:
-> > +		switch (chan->type) {
-> > +		case IIO_ANGL_VEL:
-> > +			/* 2 * Pi ~= 6.283185 */
-> > +			*val = 6;
-> > +			*val2 = 283185;
-> > +			return IIO_VAL_INT_PLUS_MICRO;
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> > +		break;
-> > +	case IIO_CHAN_INFO_RAW:
-> > +		mutex_lock(&st->lock);
-> > +		gpiod_set_value(st->sample, 0);
-> > +
-> > +		/* delay (6 * AD2S1200_TSCLK + 20) nano seconds */
-> > +		udelay(1);
-> > +		gpiod_set_value(st->sample, 1);
-> > +		gpiod_set_value(st->rdvel, !!(chan->type == IIO_ANGL));
-> > +
-> > +		ret = spi_read(st->sdev, &st->rx, 2);
-> > +		if (ret < 0) {
-> > +			mutex_unlock(&st->lock);
-> > +			return ret;
-> > +		}
-> > +
-> > +		switch (chan->type) {
-> > +		case IIO_ANGL:
-> > +			*val = be16_to_cpup(&st->rx) >> 4;
-> > +			break;
-> > +		case IIO_ANGL_VEL:
-> > +			*val = sign_extend32(be16_to_cpup(&st->rx) >> 4, 11);
-> > +			break;
-> > +		default:
-> > +			mutex_unlock(&st->lock);
-> > +			return -EINVAL;
-> > +		}
-> > +
-> > +		/* delay (2 * AD2S1200_TSCLK + 20) ns for sample pulse */
-> > +		udelay(1);
-> >  		mutex_unlock(&st->lock);
-> > -		return ret;
-> > -	}
-> >  
-> > -	switch (chan->type) {
-> > -	case IIO_ANGL:
-> > -		*val = be16_to_cpup(&st->rx) >> 4;
-> > -		break;
-> > -	case IIO_ANGL_VEL:
-> > -		*val = sign_extend32(be16_to_cpup(&st->rx) >> 4, 11);
-> > -		break;
-> > +		return IIO_VAL_INT;
-> >  	default:
-> > -		mutex_unlock(&st->lock);
-> > -		return -EINVAL;
-> > +		break;
-> >  	}
-> >  
-> > -	/* delay (2 * AD2S1200_TSCLK + 20) ns for sample pulse */
-> > -	udelay(1);
-> > -	mutex_unlock(&st->lock);
-> > -
-> > -	return IIO_VAL_INT;
-> > +	return -EINVAL;
-> >  }
-> >  
-> >  static const struct iio_chan_spec ad2s1200_channels[] = {
-> > @@ -101,6 +119,7 @@ static const struct iio_chan_spec ad2s1200_channels[] = {
-> >  		.indexed = 1,
-> >  		.channel = 0,
-> >  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> > +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
-> >  	}
-> >  };
-> >    
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 6a5f34b4d5b9..240287e2343a 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -190,6 +190,13 @@ Description:
+ 		but should match other such assignments on device).
+ 		Units after application of scale and offset are m/s^2.
+ 
++What:		/sys/bus/iio/devices/iio:deviceX/in_angl_raw
++KernelVersion:	4.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Angle of rotation. Units after application of scale and offset
++		are radians.
++
+ What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_x_raw
+ What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_y_raw
+ What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_z_raw
+@@ -297,6 +304,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_offset
+ What:		/sys/bus/iio/devices/iio:deviceX/in_humidityrelative_offset
+ What:		/sys/bus/iio/devices/iio:deviceX/in_magn_offset
+ What:		/sys/bus/iio/devices/iio:deviceX/in_rot_offset
++What:		/sys/bus/iio/devices/iio:deviceX/in_angl_offset
+ KernelVersion:	2.6.35
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -350,6 +358,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_humidityrelative_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_velocity_sqrt(x^2+y^2+z^2)_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_illuminance_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_countY_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_angl_scale
+ KernelVersion:	2.6.35
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+-- 
+2.16.2
 
