@@ -1,77 +1,87 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:52020 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1758503AbeD1RLL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 28 Apr 2018 13:11:11 -0400
-Date: Sat, 28 Apr 2018 18:11:05 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: David Veenstra <davidjulianveenstra@gmail.com>
-Cc: lars@metafoo.de, pmeerw@pmeerw.net, robh+dt@kernel.org,
-        Michael.Hennerich@analog.com, knaack.h@gmx.de,
+Received: from mail-wr0-f194.google.com ([209.85.128.194]:39255 "EHLO
+        mail-wr0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753069AbeDVWDH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 22 Apr 2018 18:03:07 -0400
+Date: Mon, 23 Apr 2018 00:03:03 +0200
+From: David Veenstra <davidjulianveenstra@gmail.com>
+To: jic23@kernel.org, lars@metafoo.de, pmeerw@pmeerw.net
+Cc: robh+dt@kernel.org, Michael.Hennerich@analog.com, knaack.h@gmx.de,
         linux-iio@vger.kernel.org, daniel.baluta@nxp.com,
         devel@driverdev.osuosl.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 1/9] staging: iio: ad2s1200: Add kernel docs to
- driver state
-Message-ID: <20180428181105.46a6b319@archlinux>
-In-Reply-To: <b880e7be5b1b70f0805db41dcd41571a50785fab.1524432236.git.davidjulianveenstra@gmail.com>
+Subject: [PATCH v3 2/9] staging: iio: ad2s1200: Improve readability with
+ be16_to_cpup
+Message-ID: <8e171d819a0916d7a4870bf70cfeada8ba9ebdc6.1524432236.git.davidjulianveenstra@gmail.com>
 References: <cover.1524432236.git.davidjulianveenstra@gmail.com>
-        <b880e7be5b1b70f0805db41dcd41571a50785fab.1524432236.git.davidjulianveenstra@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <cover.1524432236.git.davidjulianveenstra@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 23 Apr 2018 00:02:51 +0200
-David Veenstra <davidjulianveenstra@gmail.com> wrote:
+The manual states that the data is contained in the upper 12 bits
+of the 16 bits read by spi. The code that extracts these 12 bits
+is correct for both be and le machines, but this is not clear
+from a first glance.
 
-> Add missing kernel docs to the ad2s1200 driver state.
-> 
-> Signed-off-by: David Veenstra <davidjulianveenstra@gmail.com>
-Hi David,
+To improve readability the relevant expressions are replaced
+with equivalent expressions that use be16_to_cpup.
 
-Comment inline.
+Signed-off-by: David Veenstra <davidjulianveenstra@gmail.com>
+---
+Changes in v3:
+ - change type of rx to __be16.
+ - remove unneeded variable vel.
+ - remove unneeded type cast to s16 (patch line 79).
 
-> ---
-> Changes in v3:
->  - Added more explanation to mutex lock.
-> 
->  drivers/staging/iio/resolver/ad2s1200.c | 9 +++++++++
->  1 file changed, 9 insertions(+)
-> 
-> diff --git a/drivers/staging/iio/resolver/ad2s1200.c b/drivers/staging/iio/resolver/ad2s1200.c
-> index 357fe3c382b3..17d65cb437fd 100644
-> --- a/drivers/staging/iio/resolver/ad2s1200.c
-> +++ b/drivers/staging/iio/resolver/ad2s1200.c
-> @@ -33,6 +33,15 @@
->  /* clock period in nano second */
->  #define AD2S1200_TSCLK	(1000000000 / AD2S1200_HZ)
->  
-> +/**
-> + * struct ad2s1200_state - driver instance specific data.
-> + * @lock:	protects both the GPIO pins and the rx buffer, to prevent
-> + *		concurrent spi transactions.
-It isn't actually preventing concurrent spi transactions - that
-is done by the spi core itself.  What it is preventing is
-concurrent 'actions' with the device - these involve
-a mixture of gpio changes and spi transactions.
+ drivers/staging/iio/resolver/ad2s1200.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-That would take some considerable explaining and frankly the code
-does the job just fine once people know to look.
-
-I'd just leave it as "protects both the GPIO pins and the rx buffer."
-Or feel free to see if you can come up with a brief description of
-exactly what we need to be 'atomic'.
-
-Thanks,
-
-Jonathan
-
-> + * @sdev:	spi device.
-> + * @sample:	GPIO pin SAMPLE.
-> + * @rdvel:	GPIO pin RDVEL.
-> + * @rx:		buffer for spi transfers.
-> + */
->  struct ad2s1200_state {
->  	struct mutex lock;
->  	struct spi_device *sdev;
+diff --git a/drivers/staging/iio/resolver/ad2s1200.c b/drivers/staging/iio/resolver/ad2s1200.c
+index 17d65cb437fd..998f458dc1bd 100644
+--- a/drivers/staging/iio/resolver/ad2s1200.c
++++ b/drivers/staging/iio/resolver/ad2s1200.c
+@@ -47,7 +47,7 @@ struct ad2s1200_state {
+ 	struct spi_device *sdev;
+ 	int sample;
+ 	int rdvel;
+-	u8 rx[2] ____cacheline_aligned;
++	__be16 rx ____cacheline_aligned;
+ };
+ 
+ static int ad2s1200_read_raw(struct iio_dev *indio_dev,
+@@ -58,7 +58,6 @@ static int ad2s1200_read_raw(struct iio_dev *indio_dev,
+ {
+ 	struct ad2s1200_state *st = iio_priv(indio_dev);
+ 	int ret = 0;
+-	s16 vel;
+ 
+ 	mutex_lock(&st->lock);
+ 	gpio_set_value(st->sample, 0);
+@@ -68,7 +67,7 @@ static int ad2s1200_read_raw(struct iio_dev *indio_dev,
+ 	gpio_set_value(st->sample, 1);
+ 	gpio_set_value(st->rdvel, !!(chan->type == IIO_ANGL));
+ 
+-	ret = spi_read(st->sdev, st->rx, 2);
++	ret = spi_read(st->sdev, &st->rx, 2);
+ 	if (ret < 0) {
+ 		mutex_unlock(&st->lock);
+ 		return ret;
+@@ -76,12 +75,10 @@ static int ad2s1200_read_raw(struct iio_dev *indio_dev,
+ 
+ 	switch (chan->type) {
+ 	case IIO_ANGL:
+-		*val = (((u16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >> 4);
++		*val = be16_to_cpup(&st->rx) >> 4;
+ 		break;
+ 	case IIO_ANGL_VEL:
+-		vel = (((s16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >> 4);
+-		vel = sign_extend32(vel, 11);
+-		*val = vel;
++		*val = sign_extend32(be16_to_cpup(&st->rx) >> 4, 11);
+ 		break;
+ 	default:
+ 		mutex_unlock(&st->lock);
+-- 
+2.16.2
 
