@@ -1,157 +1,100 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:34012 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1757938AbeD1Ps5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 28 Apr 2018 11:48:57 -0400
-Date: Sat, 28 Apr 2018 16:48:54 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: [PATCH v4 1/4] iio: imu: inv_mpu6050: fix error path not
- turning chip back off
-Message-ID: <20180428164854.3b94c53f@archlinux>
-In-Reply-To: <1524479613-23954-1-git-send-email-jmaneyrol@invensense.com>
-References: <1524479613-23954-1-git-send-email-jmaneyrol@invensense.com>
+Return-Path: <SRS0=My0Y=HM=axentia.se=peda@kernel.org>
+From: Peter Rosin <peda@axentia.se>
+To: linux-kernel@vger.kernel.org
+Cc: Peter Rosin <peda@axentia.se>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Rob Herring <robh+dt@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	"Andrew F . Davis" <afd@ti.com>,
+	Fabio Estevam <festevam@gmail.com>,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: [PATCH v4 0/4] iio: add unit-converter
+Date: Mon, 23 Apr 2018 23:08:05 +0200
+Message-Id: <20180423210809.29586-1-peda@axentia.se>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, 23 Apr 2018 12:33:30 +0200
-Jean-Baptiste Maneyrol <jmaneyrol@invensense.com> wrote:
+Hi!
 
-> Some functions are turning the chip on and not back off in error
-> path. With set_power function using a reference counter that
-> would keep the chip on forever.
-> 
-> Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+This driver implements support for voltage dividers, current sense
+shunts and current sense amplifiers. It's pretty generic and should
+be easily adaptable to other linear scaling purposes.
 
-Thanks,
+Cheers,
+Peter
 
-Jonathan
+Changes since v3:    https://lkml.org/lkml/2018/4/10/614
+- Split the bindings patch for voltage-divider and current-sense-shunt
+  in two, thus retaining the tag from Rob on the latter, when the
+  former got a major update. The voltage-divider binding is now
+  clear of its history from the generic io-channel-unit-converter
+  binding roots (v1 of the series) and makes much more sense on its
+  own (IMHO).
+- Incorporate the confusing followup patches that added current sense
+  amplification to the series.
+- Drop the adi,lt6106 binding from that followup and replace it with
+  a generic current-sense-amplifier binding.
+- Adjust the driver to the above, and also rename it to iio-rescale
+  as unit-converter was perhaps a little bit too generic even for the
+  driver name.
 
-> ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    | 13 ++++++----
->  drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c | 35 ++++++++++++++++++---------
->  2 files changed, 32 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index e73c88c..5062fbe 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -273,21 +273,21 @@ static int inv_mpu6050_init_config(struct iio_dev *indio_dev)
->  	d = (INV_MPU6050_FSR_2000DPS << INV_MPU6050_GYRO_CONFIG_FSR_SHIFT);
->  	result = regmap_write(st->map, st->reg->gyro_config, d);
->  	if (result)
-> -		return result;
-> +		goto error_power_off;
->  
->  	result = inv_mpu6050_set_lpf_regs(st, INV_MPU6050_FILTER_20HZ);
->  	if (result)
-> -		return result;
-> +		goto error_power_off;
->  
->  	d = INV_MPU6050_ONE_K_HZ / INV_MPU6050_INIT_FIFO_RATE - 1;
->  	result = regmap_write(st->map, st->reg->sample_rate_div, d);
->  	if (result)
-> -		return result;
-> +		goto error_power_off;
->  
->  	d = (INV_MPU6050_FS_02G << INV_MPU6050_ACCL_CONFIG_FSR_SHIFT);
->  	result = regmap_write(st->map, st->reg->accl_config, d);
->  	if (result)
-> -		return result;
-> +		goto error_power_off;
->  
->  	result = regmap_write(st->map, st->reg->int_pin_cfg, st->irq_mask);
->  	if (result)
-> @@ -295,8 +295,11 @@ static int inv_mpu6050_init_config(struct iio_dev *indio_dev)
->  
->  	memcpy(&st->chip_config, hw_info[st->chip_type].config,
->  	       sizeof(struct inv_mpu6050_chip_config));
-> -	result = inv_mpu6050_set_power_itg(st, false);
->  
-> +	return inv_mpu6050_set_power_itg(st, false);
-> +
-> +error_power_off:
-> +	inv_mpu6050_set_power_itg(st, false);
->  	return result;
->  }
->  
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-> index b8c5584..fc8843c 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-> @@ -53,45 +53,58 @@ static int inv_mpu6050_set_enable(struct iio_dev *indio_dev, bool enable)
->  			result = inv_mpu6050_switch_engine(st, true,
->  					INV_MPU6050_BIT_PWR_GYRO_STBY);
->  			if (result)
-> -				return result;
-> +				goto error_power_off;
->  		}
->  		if (st->chip_config.accl_fifo_enable) {
->  			result = inv_mpu6050_switch_engine(st, true,
->  					INV_MPU6050_BIT_PWR_ACCL_STBY);
->  			if (result)
-> -				return result;
-> +				goto error_gyro_off;
->  		}
->  		result = inv_reset_fifo(indio_dev);
->  		if (result)
-> -			return result;
-> +			goto error_accl_off;
->  	} else {
->  		result = regmap_write(st->map, st->reg->fifo_en, 0);
->  		if (result)
-> -			return result;
-> +			goto error_accl_off;
->  
->  		result = regmap_write(st->map, st->reg->int_enable, 0);
->  		if (result)
-> -			return result;
-> +			goto error_accl_off;
->  
->  		result = regmap_write(st->map, st->reg->user_ctrl, 0);
->  		if (result)
-> -			return result;
-> +			goto error_accl_off;
->  
->  		result = inv_mpu6050_switch_engine(st, false,
-> -					INV_MPU6050_BIT_PWR_GYRO_STBY);
-> +					INV_MPU6050_BIT_PWR_ACCL_STBY);
->  		if (result)
-> -			return result;
-> +			goto error_accl_off;
->  
->  		result = inv_mpu6050_switch_engine(st, false,
-> -					INV_MPU6050_BIT_PWR_ACCL_STBY);
-> +					INV_MPU6050_BIT_PWR_GYRO_STBY);
->  		if (result)
-> -			return result;
-> +			goto error_gyro_off;
-> +
->  		result = inv_mpu6050_set_power_itg(st, false);
->  		if (result)
-> -			return result;
-> +			goto error_power_off;
->  	}
->  
->  	return 0;
-> +
-> +error_accl_off:
-> +	if (st->chip_config.accl_fifo_enable)
-> +		inv_mpu6050_switch_engine(st, false,
-> +					  INV_MPU6050_BIT_PWR_ACCL_STBY);
-> +error_gyro_off:
-> +	if (st->chip_config.gyro_fifo_enable)
-> +		inv_mpu6050_switch_engine(st, false,
-> +					  INV_MPU6050_BIT_PWR_GYRO_STBY);
-> +error_power_off:
-> +	inv_mpu6050_set_power_itg(st, false);
-> +	return result;
->  }
->  
->  /**
+Changes since v2:    https://lkml.org/lkml/2018/4/3/461
+- Rename from current-sence-circuit to current-sense-shunt (this
+  should also fix all the typing problems I had with curciut).
+- Describe the shunt resistance directly (instead of indirectly
+  in the form of a quotient).
+- Add a ->props() op to struct unit_converter_cfg to enable simple
+  separation of properties for different converters.
+- Shuffle the code around to minimize forward declarations.
+- Drop the unused indio member from struct unit_converter.
+- Drop error report on iio driver registration failure.
 
+Changes since v1:    https://lkml.org/lkml/2018/3/19/801
+- Put the driver in the new afe category (Analog Front Ends) and do not
+  move the iio-mux driver.
+- Do not refer to the source channel as "parent", use "source" instead.
+- Have the DT compatible drive the target unit, instead of relying on a
+  "type" DT-property for that.
+- In the DT bindings, use an unnamed source channel.
+- Do not set up writes to _RAW (sorry Phil) as I don't need it and have
+  not tested it. It's easy to add back if needed.
+- Fail if the source channel does not support _RAW or _SCALE.
+- Fix various spelling issues.
+- Fix various code style issues.
+
+Peter Rosin (4):
+  dt-bindings: iio: afe: add binding for current-sense-shunt
+  dt-bindings: iio: afe: add binding for voltage-divider
+  dt-bindings: iio: afe: add binding for current-sense-amplifier
+  iio: afe: rescale: new driver
+
+ .../bindings/iio/afe/current-sense-amplifier.txt   |  26 ++
+ .../bindings/iio/afe/current-sense-shunt.txt       |  41 +++
+ .../bindings/iio/afe/voltage-divider.txt           |  53 +++
+ MAINTAINERS                                        |   9 +
+ drivers/iio/Kconfig                                |   1 +
+ drivers/iio/Makefile                               |   1 +
+ drivers/iio/afe/Kconfig                            |  19 ++
+ drivers/iio/afe/Makefile                           |   6 +
+ drivers/iio/afe/iio-rescale.c                      | 359 +++++++++++++++++++++
+ 9 files changed, 515 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/afe/current-sense-amplifier.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/afe/current-sense-shunt.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/afe/voltage-divider.txt
+ create mode 100644 drivers/iio/afe/Kconfig
+ create mode 100644 drivers/iio/afe/Makefile
+ create mode 100644 drivers/iio/afe/iio-rescale.c
+
+-- 
+2.11.0
