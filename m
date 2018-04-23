@@ -1,109 +1,105 @@
-Return-Path: <SRS0=rJiq=HJ=gmail.com=embed3d@kernel.org>
-Subject: Re: [linux-sunxi] Re: [PATCH v2 14/16] arm: dts: sun8i: h3: enable H3
- sid controller
-To: Kyle Evans <kevans@freebsd.org>, icenowy@aosc.io
-Cc: Maxime Ripard <maxime.ripard@free-electrons.com>, lee.jones@linaro.org,
- Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
- Chen-Yu Tsai <wens@csie.org>, Russell King <linux@armlinux.org.uk>,
- jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
- davem@davemloft.net, hans.verkuil@cisco.com, mchehab@kernel.org,
- rask@formelder.dk, clabbe.montjoie@gmail.com, sean@mess.org,
- krzk@kernel.org, quentin.schulz@free-electrons.com, edu.molinas@gmail.com,
- singhalsimran0@gmail.com, linux-iio@vger.kernel.org,
- devicetree <devicetree@vger.kernel.org>,
- linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
- linux-kernel <linux-kernel@vger.kernel.org>,
- linux-sunxi <linux-sunxi@googlegroups.com>
-References: <20180128232919.12639-1-embed3d@gmail.com>
- <20180128232919.12639-15-embed3d@gmail.com>
- <20180129095200.attg7cgvpifpchtn@flea.lan>
- <470ec61e-8b08-5193-ede1-01d02b2c865e@gmail.com>
- <CACNAnaGVSbk7czb+mcGTx1C=YwCWe1qqHQDQe9+PNifwEXovMw@mail.gmail.com>
- <F1D7126A-B6ED-4A83-A941-5F39CED472CE@aosc.io>
- <CACNAnaFMKDmvAUXJngKHWkeGLfjsgn5hhJszNk7Sg4BU98Oafw@mail.gmail.com>
-From: Philipp Rossak <embed3d@gmail.com>
-Message-ID: <0ab29bf0-b069-338e-f312-e533656fa0b6@gmail.com>
-Date: Fri, 20 Apr 2018 11:35:48 +0200
+Return-Path: <SRS0=JlIF=HM=st.com=fabrice.gasnier@kernel.org>
+Subject: Re: [PATCH 5/7] iio: adc: stm32-dfsdm: misc style improvements and
+ fixes
+To: Jonathan Cameron <jic23@kernel.org>
+CC: <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <mcoquelin.stm32@gmail.com>, <alexandre.torgue@st.com>,
+        <linux-iio@vger.kernel.org>, <lars@metafoo.de>, <knaack.h@gmx.de>,
+        <pmeerw@pmeerw.net>, <benjamin.gaignard@linaro.org>,
+        <arnaud.pouliquen@st.com>
+References: <1519390261-25453-1-git-send-email-fabrice.gasnier@st.com>
+ <1519390261-25453-6-git-send-email-fabrice.gasnier@st.com>
+ <20180224130309.7129e79f@archlinux>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+Message-ID: <453b8fe0-3b32-b9b7-001f-78a3b1d0b56f@st.com>
+Date: Mon, 23 Apr 2018 09:48:56 +0200
 MIME-Version: 1.0
-In-Reply-To: <CACNAnaFMKDmvAUXJngKHWkeGLfjsgn5hhJszNk7Sg4BU98Oafw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20180224130309.7129e79f@archlinux>
+Content-Type: text/plain; charset="utf-8"
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi Kyle,
-
-I'm already working on a Version 3 of this patch series. Right now this 
-slowed down since I'm very busy and the ToDo-List is still very long.
-
-My plan is to send out a version during this release cycle.
-
-If you need it right now feel free to submit patches!
-
-Philipp
-
-On 19.04.2018 17:19, Kyle Evans wrote:
-> On Thu, Apr 19, 2018 at 10:13 AM, Icenowy Zheng <icenowy@aosc.io> wrote:
->>
->>
->> 于 2018年4月19日 GMT+08:00 下午11:11:22, Kyle Evans <kevans@freebsd.org> 写到:
->>> On Mon, Jan 29, 2018 at 6:03 AM, Philipp Rossak <embed3d@gmail.com>
->>> wrote:
->>>>
->>>>
->>>> On 29.01.2018 10:52, Maxime Ripard wrote:
->>>>>
->>>>> On Mon, Jan 29, 2018 at 12:29:17AM +0100, Philipp Rossak wrote:
->>>>>>
->>>>>> This patch enables the the sid controller in the H3. It can be used
->>>>>> for thermal calibration data.
->>>>>>
->>>>>> Signed-off-by: Philipp Rossak <embed3d@gmail.com>
->>>>>> ---
->>>>>>    arch/arm/boot/dts/sun8i-h3.dtsi | 7 +++++++
->>>>>>    1 file changed, 7 insertions(+)
->>>>>>
->>>>>> diff --git a/arch/arm/boot/dts/sun8i-h3.dtsi
->>>>>> b/arch/arm/boot/dts/sun8i-h3.dtsi
->>>>>> index 3f83f6a27c74..9bb5cc29fec5 100644
->>>>>> --- a/arch/arm/boot/dts/sun8i-h3.dtsi
->>>>>> +++ b/arch/arm/boot/dts/sun8i-h3.dtsi
->>>>>> @@ -72,6 +72,13 @@
->>>>>>                  };
->>>>>>          };
->>>>>>    +     soc {
->>>>>> +               sid: eeprom@1c14000 {
->>>>>> +                       compatible = "allwinner,sun8i-h3-sid";
->>>>>> +                       reg = <0x01c14000 0x400>;
->>>>>> +               };
->>>>>> +       };
->>>>>> +
->>>>>
->>>>>
->>>>> Shouldn't you also use a nvmem-cells property to the THS node?
->>>>>
->>>>> Maxime
->>>>>
->>>>
->>>> Oh seems like I forgot that.
->>>> As related to the wiki [1] this should be 64 bit wide at the address
->>> 0x34. I
->>>> will add that in the next version.
->>>>
->>>>
->>>> [1]: http://linux-sunxi.org/SID_Register_Guide#eFUSE
->>>>
->>>> Thanks,
->>>> Philipp
->>>>
->>>
->>> Hi,
->>>
->>> Any chance this will see a v3 soon? I'm kind of interested in sid node
->>> for h3. =)
->>
->> This patch is independent and can be easily sent out
->> by its own.
->>
+On 02/24/2018 02:03 PM, Jonathan Cameron wrote:
+> On Fri, 23 Feb 2018 13:50:59 +0100
+> Fabrice Gasnier <fabrice.gasnier@st.com> wrote:
 > 
-> Right- I had considered doing so, but wanted to make sure I wasn't
-> going to collide with this series if a v3 is imminent.
+>> Misc fixes & style improvements:
+>> - checkpatch warns about line over 80 characters.
+>> - remove extra spaces and a blank line (e.g. checkpatch --strict)
+>> - remove bad error message always printed in probe routine.
+>>
+>> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+> I'd have preferred this as 3 patches doing one type fo fix each.
+> 
+> Anyhow, I'll need to hold this until the fixes have made there
+> way upstream.  Give me a poke if I seem to have forgotten
+> and the dependencies have made it back to my togreg branch.
+
+Hi Jonathan,
+
+There are few pending patches in this series. I'm not sure everything
+have been merged yet.
+Do you wish I resend those patches as separate series ?
+
+Please let me know,
+Thanks in advance,
+BR,
+Fabrice
+
+> 
+> Thanks,
+> 
+> Jonathan
+> 
+>> ---
+>>  drivers/iio/adc/stm32-dfsdm-adc.c | 9 ++++-----
+>>  1 file changed, 4 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/iio/adc/stm32-dfsdm-adc.c b/drivers/iio/adc/stm32-dfsdm-adc.c
+>> index 01422d1..57bcb45 100644
+>> --- a/drivers/iio/adc/stm32-dfsdm-adc.c
+>> +++ b/drivers/iio/adc/stm32-dfsdm-adc.c
+>> @@ -253,7 +253,8 @@ static int stm32_dfsdm_start_filter(struct stm32_dfsdm *dfsdm,
+>>  				  DFSDM_CR1_RSWSTART(1));
+>>  }
+>>  
+>> -static void stm32_dfsdm_stop_filter(struct stm32_dfsdm *dfsdm, unsigned int fl_id)
+>> +static void stm32_dfsdm_stop_filter(struct stm32_dfsdm *dfsdm,
+>> +				    unsigned int fl_id)
+>>  {
+>>  	/* Disable conversion */
+>>  	regmap_update_bits(dfsdm->regmap, DFSDM_CR1(fl_id),
+>> @@ -337,7 +338,7 @@ static int stm32_dfsdm_channel_parse_of(struct stm32_dfsdm *dfsdm,
+>>  					    "st,adc-channel-types", chan_idx,
+>>  					    &of_str);
+>>  	if (!ret) {
+>> -		val  = stm32_dfsdm_str2val(of_str, stm32_dfsdm_chan_type);
+>> +		val = stm32_dfsdm_str2val(of_str, stm32_dfsdm_chan_type);
+>>  		if (val < 0)
+>>  			return val;
+>>  	} else {
+>> @@ -349,7 +350,7 @@ static int stm32_dfsdm_channel_parse_of(struct stm32_dfsdm *dfsdm,
+>>  					    "st,adc-channel-clk-src", chan_idx,
+>>  					    &of_str);
+>>  	if (!ret) {
+>> -		val  = stm32_dfsdm_str2val(of_str, stm32_dfsdm_chan_src);
+>> +		val = stm32_dfsdm_str2val(of_str, stm32_dfsdm_chan_src);
+>>  		if (val < 0)
+>>  			return val;
+>>  	} else {
+>> @@ -1093,7 +1094,6 @@ static int stm32_dfsdm_adc_probe(struct platform_device *pdev)
+>>  	char *name;
+>>  	int ret, irq, val;
+>>  
+>> -
+>>  	dev_data = of_device_get_match_data(dev);
+>>  	iio = devm_iio_device_alloc(dev, sizeof(*adc));
+>>  	if (!iio) {
+>> @@ -1161,7 +1161,6 @@ static int stm32_dfsdm_adc_probe(struct platform_device *pdev)
+>>  	if (ret < 0)
+>>  		goto err_cleanup;
+>>  
+>> -	dev_err(dev, "of_platform_populate\n");
+>>  	if (dev_data->type == DFSDM_AUDIO) {
+>>  		ret = of_platform_populate(np, NULL, NULL, dev);
+>>  		if (ret < 0) {
 > 
