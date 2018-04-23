@@ -1,67 +1,90 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bert.emutex.com ([91.103.1.109]:54290 "EHLO bert.emutex.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S932522AbeDWVi3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 23 Apr 2018 17:38:29 -0400
+Return-Path: <SRS0=btFp=HM=emutex.com=javier@kernel.org>
 From: Javier Arteaga <javier@emutex.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: Javier Arteaga <javier@emutex.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Dan O'Donovan <dan@emutex.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/3] iio: adc128s052: Add pin-compatible IDs
-Date: Mon, 23 Apr 2018 22:38:03 +0100
-Message-Id: <20180423213805.12591-2-javier@emutex.com>
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Dan O'Donovan <dan@emutex.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Nicola Lunghi <nicola.lunghi@emutex.com>
+Subject: [PATCH v2 2/3] iio: adc128s052: add ACPI _HID AANT1280
+Date: Mon, 23 Apr 2018 22:38:04 +0100
+Message-Id: <20180423213805.12591-3-javier@emutex.com>
 In-Reply-To: <20180423213805.12591-1-javier@emutex.com>
 References: <20180423213805.12591-1-javier@emutex.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-The datasheets for ADC122S021 and ADC124S021 list two more
-pin-compatible alternatives for each device.
+From: Nicola Lunghi <nicola.lunghi@emutex.com>
 
-Add their IDs as compatible strings.
+ACPI _HID AANT1280 matches an ADC124S101 present on E3940 SKUs of the UP
+Squared board.
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
+Add it to the driver.
+
+Signed-off-by: Nicola Lunghi <nicola.lunghi@emutex.com>
+[javier@emutex.com: fix up commit message and one checkpatch warning]
 Signed-off-by: Javier Arteaga <javier@emutex.com>
 ---
- drivers/iio/adc/ti-adc128s052.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ drivers/iio/adc/ti-adc128s052.c | 25 ++++++++++++++++++++++++-
+ 1 file changed, 24 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/adc/ti-adc128s052.c b/drivers/iio/adc/ti-adc128s052.c
-index 7cf39b3e2416..e6716c326c5e 100644
+index e6716c326c5e..bc5096e98900 100644
 --- a/drivers/iio/adc/ti-adc128s052.c
 +++ b/drivers/iio/adc/ti-adc128s052.c
-@@ -186,15 +186,23 @@ static int adc128_remove(struct spi_device *spi)
- static const struct of_device_id adc128_of_match[] = {
- 	{ .compatible = "ti,adc128s052", },
- 	{ .compatible = "ti,adc122s021", },
-+	{ .compatible = "ti,adc122s051", },
-+	{ .compatible = "ti,adc122s101", },
- 	{ .compatible = "ti,adc124s021", },
--	{ /* sentinel */ },
-+	{ .compatible = "ti,adc124s051", },
-+	{ .compatible = "ti,adc124s101", },
-+	{ }
- };
- MODULE_DEVICE_TABLE(of, adc128_of_match);
+@@ -12,6 +12,7 @@
+  * published by the Free Software Foundation.
+  */
  
- static const struct spi_device_id adc128_id[] = {
--	{ "adc128s052", 0},	/* index into adc128_config */
--	{ "adc122s021",	1},
--	{ "adc124s021", 2},
-+	{ "adc128s052", 0 },	/* index into adc128_config */
-+	{ "adc122s021",	1 },
-+	{ "adc122s051",	1 },
-+	{ "adc122s101",	1 },
-+	{ "adc124s021", 2 },
-+	{ "adc124s051", 2 },
-+	{ "adc124s101", 2 },
- 	{ }
++#include <linux/acpi.h>
+ #include <linux/err.h>
+ #include <linux/spi/spi.h>
+ #include <linux/module.h>
+@@ -136,9 +137,22 @@ static int adc128_probe(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev;
+ 	struct adc128 *adc;
+-	int config = spi_get_device_id(spi)->driver_data;
++	int config;
+ 	int ret;
+ 
++	if (ACPI_COMPANION(&spi->dev)) {
++		const struct acpi_device_id *ad_id;
++
++		ad_id = acpi_match_device(spi->dev.driver->acpi_match_table,
++					  &spi->dev);
++		if (!ad_id)
++			return -ENODEV;
++
++		config = ad_id->driver_data;
++	} else {
++		config = spi_get_device_id(spi)->driver_data;
++	}
++
+ 	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*adc));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+@@ -207,10 +221,19 @@ static const struct spi_device_id adc128_id[] = {
  };
  MODULE_DEVICE_TABLE(spi, adc128_id);
+ 
++#ifdef CONFIG_ACPI
++static const struct acpi_device_id adc128_acpi_match[] = {
++	{ "AANT1280", 2 }, /* ADC124S021 compatible ACPI ID */
++	{ }
++};
++MODULE_DEVICE_TABLE(acpi, adc128_acpi_match);
++#endif
++
+ static struct spi_driver adc128_driver = {
+ 	.driver = {
+ 		.name = "adc128s052",
+ 		.of_match_table = of_match_ptr(adc128_of_match),
++		.acpi_match_table = ACPI_PTR(adc128_acpi_match),
+ 	},
+ 	.probe = adc128_probe,
+ 	.remove = adc128_remove,
 -- 
 2.17.0
-
