@@ -1,40 +1,49 @@
-Return-Path: <SRS0=qFkR=HN=emutex.com=javier@kernel.org>
-Date: Tue, 24 Apr 2018 11:51:06 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from bert.emutex.com ([91.103.1.109]:54300 "EHLO bert.emutex.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S932522AbeDWVin (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 23 Apr 2018 17:38:43 -0400
 From: Javier Arteaga <javier@emutex.com>
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Dan O'Donovan <dan@emutex.com>, linux-iio@vger.kernel.org,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Nicola Lunghi <nicola.lunghi@emutex.com>
-Subject: Re: [PATCH v2 2/3] iio: adc128s052: add ACPI _HID AANT1280
-Message-ID: <20180424105106.33efoxuhizcxcz5e@localhost>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Javier Arteaga <javier@emutex.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Dan O'Donovan <dan@emutex.com>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 3/3] iio: adc128s052: reuse "compatible" for ACPI _DSD
+Date: Mon, 23 Apr 2018 22:38:05 +0100
+Message-Id: <20180423213805.12591-4-javier@emutex.com>
+In-Reply-To: <20180423213805.12591-1-javier@emutex.com>
 References: <20180423213805.12591-1-javier@emutex.com>
- <20180423213805.12591-3-javier@emutex.com>
- <CAHp75VfONiaWmuadb2ijFcqrdr0QLexmxyd6kHUTxxH-itYtUQ@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <CAHp75VfONiaWmuadb2ijFcqrdr0QLexmxyd6kHUTxxH-itYtUQ@mail.gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Andy,
+From: Dan O'Donovan <dan@emutex.com>
 
-On Tue, Apr 24, 2018 at 01:08:31AM +0300, Andy Shevchenko wrote:
-> > +       if (ACPI_COMPANION(&spi->dev)) {
-> 
-> > +               const struct acpi_device_id *ad_id;
-> > +
-> > +               ad_id = acpi_match_device(spi->dev.driver->acpi_match_table,
-> > +                                         &spi->dev);
-> > +               if (!ad_id)
-> > +                       return -ENODEV;
-> > +
-> > +               config = ad_id->driver_data;
-> 
-> There is a new API to get it by one call.
-> https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git/commit/?id=b283f157611f129f5bbbf7d06f5af860d76797fd
+Allow this driver to be ACPI matched by DT compatible string (through
+_DSD properties) when CONFIG_OF is disabled.
 
-That looks much cleaner. Will do for a v3.
+Signed-off-by: Dan O'Donovan <dan@emutex.com>
+[javier@emutex.com: edited the patch title and description]
+Signed-off-by: Javier Arteaga <javier@emutex.com>
+---
+ drivers/iio/adc/ti-adc128s052.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thank you!
+diff --git a/drivers/iio/adc/ti-adc128s052.c b/drivers/iio/adc/ti-adc128s052.c
+index bc5096e98900..c823929db784 100644
+--- a/drivers/iio/adc/ti-adc128s052.c
++++ b/drivers/iio/adc/ti-adc128s052.c
+@@ -232,7 +232,7 @@ MODULE_DEVICE_TABLE(acpi, adc128_acpi_match);
+ static struct spi_driver adc128_driver = {
+ 	.driver = {
+ 		.name = "adc128s052",
+-		.of_match_table = of_match_ptr(adc128_of_match),
++		.of_match_table = adc128_of_match,
+ 		.acpi_match_table = ACPI_PTR(adc128_acpi_match),
+ 	},
+ 	.probe = adc128_probe,
+-- 
+2.17.0
+
