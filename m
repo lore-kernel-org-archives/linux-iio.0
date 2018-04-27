@@ -1,48 +1,60 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-bn3nam01on0078.outbound.protection.outlook.com ([104.47.33.78]:54473
-        "EHLO NAM01-BN3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1756506AbeDZRAO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 26 Apr 2018 13:00:14 -0400
-Subject: Re: Patch process question
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Cc: Jonathan Cameron <jic23@kernel.org>
-References: <80821ad8-08fe-2a2a-ea2d-08db094dcf4b@xevo.com>
- <0d12f947-30be-6289-776b-f9dd22e04766@metafoo.de>
-From: Martin Kelly <mkelly@xevo.com>
-Message-ID: <83b1f705-c427-dc86-53d2-fbfcff14258a@xevo.com>
-Date: Thu, 26 Apr 2018 10:00:06 -0700
-MIME-Version: 1.0
-In-Reply-To: <0d12f947-30be-6289-776b-f9dd22e04766@metafoo.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=tvY0=HQ=konsulko.com=matt.ranostay@kernel.org>
+From: Matt Ranostay <matt.ranostay@konsulko.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Matt Ranostay <matt.ranostay@konsulko.com>,
+	device-tree@vger.kernel.org
+Subject: [PATCH] iio: potentiostat: lmp91000: add LMP91002 support
+Date: Thu, 26 Apr 2018 19:15:05 -0700
+Message-Id: <20180427021505.29526-1-matt.ranostay@konsulko.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 04/25/2018 11:09 AM, Lars-Peter Clausen wrote:
-> On 04/25/2018 07:49 PM, Martin Kelly wrote:
->> Hi,
->>
->> I have a quick question regarding the patch submission process for IIO.
->> Let's say I have a patch that I know will hit conflicts against other
->> accepted patches that are in linux-iio testing and/or togreg but have
->> not yet landed in torvalds master.
->>
->> Which of these things should I do?
->>
->> - Make patch against torvalds master (then it will have merge conflicts
->> when accepted).
->>
->> - Make patch against testing or togreg (whichever branch contains the
->> conflicts).
-> 
-> Either this...
-> 
->> - Wait to test/send the patch until the patches with conflicts make it
->> into torvalds master (this could be a while, and depending on which
->> patches get accepted, more conflicts may arise again in testing/togreg).
-> 
-> or this.
-> 
+LMP91002 is register compatible so add devicetree and i2c client ids
 
-Thanks!
+Cc: device-tree@vger.kernel.org
+Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
+---
+ Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt | 7 ++++---
+ drivers/iio/potentiostat/lmp91000.c                             | 2 ++
+ 2 files changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt b/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
+index b9b621e94cd7..d51639f0ebbf 100644
+--- a/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
++++ b/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
+@@ -1,10 +1,11 @@
+-* Texas Instruments LMP91000 potentiostat
++* Texas Instruments LMP91000 series of potentiostats
+ 
+-http://www.ti.com/lit/ds/symlink/lmp91000.pdf
++LMP91000: http://www.ti.com/lit/ds/symlink/lmp91000.pdf
++LMP91002: http://www.ti.com/lit/ds/symlink/lmp91002.pdf
+ 
+ Required properties:
+ 
+-  - compatible: should be "ti,lmp91000"
++  - compatible: should be "ti,lmp91000" or "ti,lmp91002"
+   - reg: the I2C address of the device
+   - io-channels: the phandle of the iio provider
+ 
+diff --git a/drivers/iio/potentiostat/lmp91000.c b/drivers/iio/potentiostat/lmp91000.c
+index 85714055cc74..90e895adf997 100644
+--- a/drivers/iio/potentiostat/lmp91000.c
++++ b/drivers/iio/potentiostat/lmp91000.c
+@@ -411,12 +411,14 @@ static int lmp91000_remove(struct i2c_client *client)
+ 
+ static const struct of_device_id lmp91000_of_match[] = {
+ 	{ .compatible = "ti,lmp91000", },
++	{ .compatible = "ti,lmp91002", },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, lmp91000_of_match);
+ 
+ static const struct i2c_device_id lmp91000_id[] = {
+ 	{ "lmp91000", 0 },
++	{ "lmp91002", 0 },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(i2c, lmp91000_id);
+-- 
+2.14.1
