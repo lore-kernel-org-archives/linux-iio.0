@@ -1,80 +1,98 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:46393 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1750941AbeDYHWq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 25 Apr 2018 03:22:46 -0400
-Subject: Re: [PATCH 1/3] dt-bindings: iio: stm32-adc: add support for
- STM32MP1.
-To: Rob Herring <robh@kernel.org>
-CC: <jic23@kernel.org>, <alexandre.torgue@st.com>,
+Received: from mail.kernel.org ([198.145.29.99]:35644 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751400AbeD1PSa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 28 Apr 2018 11:18:30 -0400
+Date: Sat, 28 Apr 2018 16:18:22 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Fabrice Gasnier <fabrice.gasnier@st.com>
+Cc: Rob Herring <robh@kernel.org>, <alexandre.torgue@st.com>,
         <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
         <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
         <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>, <benjamin.gaignard@linaro.org>
+Subject: Re: [PATCH 1/3] dt-bindings: iio: stm32-adc: add support for
+ STM32MP1.
+Message-ID: <20180428161822.6100bb07@archlinux>
+In-Reply-To: <ee92eb8d-9675-3c94-1c0d-f6e8f091d878@st.com>
 References: <1524065874-434-1-git-send-email-fabrice.gasnier@st.com>
- <1524065874-434-2-git-send-email-fabrice.gasnier@st.com>
- <20180424162721.qbfsc7j3syzzykeh@rob-hp-laptop>
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Message-ID: <ee92eb8d-9675-3c94-1c0d-f6e8f091d878@st.com>
-Date: Wed, 25 Apr 2018 09:22:02 +0200
+        <1524065874-434-2-git-send-email-fabrice.gasnier@st.com>
+        <20180424162721.qbfsc7j3syzzykeh@rob-hp-laptop>
+        <ee92eb8d-9675-3c94-1c0d-f6e8f091d878@st.com>
 MIME-Version: 1.0
-In-Reply-To: <20180424162721.qbfsc7j3syzzykeh@rob-hp-laptop>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/24/2018 06:27 PM, Rob Herring wrote:
-> On Wed, Apr 18, 2018 at 05:37:52PM +0200, Fabrice Gasnier wrote:
->> Document support for STM32MP1 ADC. It's quite similar to STM32H7 ADC.
->> Introduce "st,stm32mp1-adc" compatible to handle variants of this
->> hardware such as vregready flag, interrupts, clock rate.
->>
->> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
->> ---
->>  Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt | 6 +++++-
->>  1 file changed, 5 insertions(+), 1 deletion(-)
->>
->> diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt
->> index e8bb824..9994384 100644
->> --- a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt
->> +++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt
->> @@ -24,8 +24,11 @@ Required properties:
->>  - compatible: Should be one of:
->>    "st,stm32f4-adc-core"
->>    "st,stm32h7-adc-core"
->> +  "st,stm32mp1-adc-core"
->>  - reg: Offset and length of the ADC block register set.
->> -- interrupts: Must contain the interrupt for ADC block.
->> +- interrupts: One or more interrupts for ADC block. Some parts like stm32f4
->> +  and stm32h7 share a common ADC interrupt line. stm32mp1 has separate
->> +  lines for each ADC within ADC block.
+On Wed, 25 Apr 2018 09:22:02 +0200
+Fabrice Gasnier <fabrice.gasnier@st.com> wrote:
+
+> On 04/24/2018 06:27 PM, Rob Herring wrote:
+> > On Wed, Apr 18, 2018 at 05:37:52PM +0200, Fabrice Gasnier wrote:  
+> >> Document support for STM32MP1 ADC. It's quite similar to STM32H7 ADC.
+> >> Introduce "st,stm32mp1-adc" compatible to handle variants of this
+> >> hardware such as vregready flag, interrupts, clock rate.
+> >>
+> >> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+> >> ---
+> >>  Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt | 6 +++++-
+> >>  1 file changed, 5 insertions(+), 1 deletion(-)
+> >>
+> >> diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt
+> >> index e8bb824..9994384 100644
+> >> --- a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt
+> >> +++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt
+> >> @@ -24,8 +24,11 @@ Required properties:
+> >>  - compatible: Should be one of:
+> >>    "st,stm32f4-adc-core"
+> >>    "st,stm32h7-adc-core"
+> >> +  "st,stm32mp1-adc-core"
+> >>  - reg: Offset and length of the ADC block register set.
+> >> -- interrupts: Must contain the interrupt for ADC block.
+> >> +- interrupts: One or more interrupts for ADC block. Some parts like stm32f4
+> >> +  and stm32h7 share a common ADC interrupt line. stm32mp1 has separate
+> >> +  lines for each ADC within ADC block.  
+> > 
+> > How many interrupt lines is that?  
 > 
-> How many interrupt lines is that?
+> Hi Rob, Jonathan,
+> 
+> I should have mentioned this: stm32mp1 has two separate interrupt lines
+> for each ADC within ADC block.
+> 
+> Do you wish I send a V2 for this ? Or a patch to fix this ?
+Hmm. I haven't pushed this out as non rebasing so I'll revert this
+and the associated support so you can clean this corner up.
 
-Hi Rob, Jonathan,
+So please send a V2.
 
-I should have mentioned this: stm32mp1 has two separate interrupt lines
-for each ADC within ADC block.
+Thanks,
 
-Do you wish I send a V2 for this ? Or a patch to fix this ?
-
-Please let me know,
-BR,
-Fabrice
+Jonathan
 
 > 
->>  - clocks: Core can use up to two clocks, depending on part used:
->>    - "adc" clock: for the analog circuitry, common to all ADCs.
->>      It's required on stm32f4.
->> @@ -53,6 +56,7 @@ Required properties:
->>  - compatible: Should be one of:
->>    "st,stm32f4-adc"
->>    "st,stm32h7-adc"
->> +  "st,stm32mp1-adc"
->>  - reg: Offset of ADC instance in ADC block (e.g. may be 0x0, 0x100, 0x200).
->>  - clocks: Input clock private to this ADC instance. It's required only on
->>    stm32f4, that has per instance clock input for registers access.
->> -- 
->> 1.9.1
->>
+> Please let me know,
+> BR,
+> Fabrice
+> 
+> >   
+> >>  - clocks: Core can use up to two clocks, depending on part used:
+> >>    - "adc" clock: for the analog circuitry, common to all ADCs.
+> >>      It's required on stm32f4.
+> >> @@ -53,6 +56,7 @@ Required properties:
+> >>  - compatible: Should be one of:
+> >>    "st,stm32f4-adc"
+> >>    "st,stm32h7-adc"
+> >> +  "st,stm32mp1-adc"
+> >>  - reg: Offset of ADC instance in ADC block (e.g. may be 0x0, 0x100, 0x200).
+> >>  - clocks: Input clock private to this ADC instance. It's required only on
+> >>    stm32f4, that has per instance clock input for registers access.
+> >> -- 
+> >> 1.9.1
+> >>  
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
