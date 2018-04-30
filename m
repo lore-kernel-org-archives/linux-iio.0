@@ -1,25 +1,36 @@
-Return-Path: <SRS0=ySyy=HT=canonical.com=shrirang.bagul@kernel.org>
-Message-ID: <1525077563.10678.3.camel@canonical.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from youngberry.canonical.com ([91.189.89.112]:35283 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751959AbeD3ItU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 30 Apr 2018 04:49:20 -0400
+Received: from mail-pf0-f197.google.com ([209.85.192.197])
+        by youngberry.canonical.com with esmtps (TLS1.0:RSA_AES_128_CBC_SHA1:16)
+        (Exim 4.76)
+        (envelope-from <shrirang.bagul@canonical.com>)
+        id 1fD4Up-0007lr-6S
+        for linux-iio@vger.kernel.org; Mon, 30 Apr 2018 08:49:19 +0000
+Received: by mail-pf0-f197.google.com with SMTP id r63so5535717pfl.12
+        for <linux-iio@vger.kernel.org>; Mon, 30 Apr 2018 01:49:19 -0700 (PDT)
+Message-ID: <1525078153.10678.9.camel@canonical.com>
 Subject: Re: [PATCH][for iio-for-4.17b] iio: humidity: hts221: Fix sensor
  reads after resume
 From: Shrirang Bagul <shrirang.bagul@canonical.com>
 To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Date: Mon, 30 Apr 2018 16:39:23 +0800
+Date: Mon, 30 Apr 2018 16:49:13 +0800
 In-Reply-To: <CAA2SeNKTjVO7JBVV3qJMJhdM-j=r+igd_nADe+NH3Rux0oW1qA@mail.gmail.com>
 References: <20180430051658.9856-1-shrirang.bagul@canonical.com>
-	 <CAA2SeNKTjVO7JBVV3qJMJhdM-j=r+igd_nADe+NH3Rux0oW1qA@mail.gmail.com>
+         <CAA2SeNKTjVO7JBVV3qJMJhdM-j=r+igd_nADe+NH3Rux0oW1qA@mail.gmail.com>
 Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-5Behnhh449I6agYQ78z+"
+        protocol="application/pgp-signature"; boundary="=-r/uOq9txqxHGhbjFlkti"
 Mime-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 
---=-5Behnhh449I6agYQ78z+
+--=-r/uOq9txqxHGhbjFlkti
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-
-Hi Lorenzo,
 
 On Mon, 2018-04-30 at 09:48 +0200, Lorenzo Bianconi wrote:
 > > CTRL1 register (ODR & BDU settings) gets reset after system comes back
@@ -31,12 +42,8 @@ On Mon, 2018-04-30 at 09:48 +0200, Lorenzo Bianconi wrote:
 > Hi Shrirang,
 >=20
 > is just CTRL1 reset after suspend/resume or also other registers? are
-I have checked, contents of other registers survive the suspend/resume=20
-(both suspend-to-ram & suspend-to-disk)cycle. It's only CTRL1 which resets.
 > IIO triggers enabled before the suspend or
-No IIO triggers are enabled.
 > are you reading data from sysfs?
-Yes.
 >=20
 > > Based on:
 > > git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git iio-for-4.1=
@@ -75,6 +82,28 @@ vice *dev)
 > > +       return hts221_update_odr(hw, hw->odr);
 > >  }
 > >=20
+No need to re-enable the sensor here. hts221_read_oneshot() [called from ht=
+s221_read_raw()] does that every time before read:
+
+static int hts221_read_oneshot(struct hts221_hw *hw, u8 addr, int *val)
+{
+	__le16 data;
+	int err;
+
+	err =3D hts221_set_enable(hw, true);
+	if (err < 0)
+		return err;
+
+	msleep(50);
+
+	err =3D regmap_bulk_read(hw->regmap, addr, &data, sizeof(data));
+	if (err < 0)
+		return err;
+
+	hts221_set_enable(hw, false);
+
+Regards,
+Shrirang
 >=20
 > Here you need to re-enable the sensor if it was running before the
 > suspend operation.
@@ -89,26 +118,27 @@ vice *dev)
 >=20
 >=20
 >=20
---=-5Behnhh449I6agYQ78z+
+--=-r/uOq9txqxHGhbjFlkti
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: This is a digitally signed message part
 Content-Transfer-Encoding: 7bit
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIcBAABCAAGBQJa5tY7AAoJELlj3b/+u+hkvN8P/jXgKk9z9yBQQO73TXb09FL3
-3fTegtiY+uWdg1hXfX/FMVmvj6TFN6q+2jKcLQDAbD+AC5K/1CR5qp86dyQMUlyF
-XJnMXv5uMRIuG4PEs4UYHfN8+rCzyLwGbDPM0IVyx8X8LBGa63kpkH2l38Mm+f2j
-EJzHIJD4uFOVmJiYlulae4NoLyW7MBjn/ZJ8bWwhpwS1B1E+Y7Yz4NcP/kPd1Ei6
-Qij9XCF5476pM76Swl+O4h/EL3M3MrvtwBzzmSBxtw4qm5wf8lD5JUNxOyNwZXNp
-amGWoA1SzRf0HhpwQkLLeyKxllDbQ8FjyYFETTISWaZc05uAHPzjFG3YO1MbMxHh
-FX2CLc85O/nU1qi2HrK8AaR4qVxQH0OXTfJ+sz8/bLnj9U/xwE1AfLdRJ+a57D8r
-wmxLBQnHm/3NCx8GUIHXs0hLeplx86Ab9AN6JufIlAiHQGrRlm4Z0gB69lmOkbjJ
-7sa/yayW7OqYNQ8oHeUZSw50jBdzv/4HUM6L6NrRMxq2OA3K2dUWZ11JbimBOSBE
-h4FN8P/PdyGvc7XEwAS8jREFnuqT8utGelTfZ6gms7P+qFTz45yD2rK2WHAyxyoT
-yFWn6FddXSpDQb3S1g8dFdsVJZ3rw+ZFhTZlxVqwAX7cIsVgyhm9yNLp6AjHFDP6
-ZwdeagxUJ1H5UVyPAgBC
-=NaYG
+iQIcBAABCAAGBQJa5tiJAAoJELlj3b/+u+hki+oQAKzlQfYuqsQvLaBR6Xp6Rq7w
+XAsVdX3xXDpPY1ZZw8gbnvDMGEixLHZj1ZVe4FB+SMHhCqZnlJxIoAFhAGcAH+sn
+u8zL7nt2PB/7bvnrsOODRIgndUgS6CzIt0WwlzL3F94vS9iPbZg0KQCKTaCZEuo0
+k+e9jXrtReZcTXNcA5i8Q76M/QSm7ANBNKAvmfBXAUC51a/0RQhtD6HDaTsInpnq
+QO11DwaIWTVI/OumUZdmnt+qp2saCL56jW1iKFNam4ax5jAUmsHiWfYO/MayQEK0
+Y+9goGaUggNUWsHJXwEPhBHkMy7sc3PniUZXtv/0qZdY6054GUBPiGUth57JDgci
+CeS5Tdy2gsVCU4TDyhX3DmXcACmFaxScMW5Ty5z12pXGJyrNI18RKwCLDFZzeEjA
+brWY+HiO3EybGUfKeJhQ7EuJjH8L50y5tqN1OcIiSwVxLts9vMlkndA87NI/8Oz3
+/7YBHlLA3ul0+xh6Si7BY4OPupWIKQfZ3Aw2dzeoCh303HvQ3TSjP5YTiWu3RdmM
+SoSQzMCsFLbL5IP/OgaiPQhBnCfebqKKNbzyZDV4r4Tl1ZwJQPbSMWOLXy6BCVvB
+b3LLW9SMBbvCQZsMoCeJ3vADVbqckKn9DIF1akyoadxz2ZFWxho0Ez68NWXZ/wBP
+VgMUUvdoEkKTRpCpXVTn
+=ycdp
 -----END PGP SIGNATURE-----
 
---=-5Behnhh449I6agYQ78z+--
+--=-r/uOq9txqxHGhbjFlkti--
+
