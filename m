@@ -1,88 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:42872 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1757639AbeD1QEJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 28 Apr 2018 12:04:09 -0400
-Date: Sat, 28 Apr 2018 17:04:05 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Matt Ranostay <matt.ranostay@konsulko.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH] iio: potentiostat: lmp91000: add LMP91002 support
-Message-ID: <20180428170405.105c8e9a@archlinux>
-In-Reply-To: <CAJCx=gkUUo70O7c14orRr=tUSeQDNRq1PRX1mSQL6u3YP1G+kQ@mail.gmail.com>
-References: <20180427021505.29526-1-matt.ranostay@konsulko.com>
-        <CAJCx=gkUUo70O7c14orRr=tUSeQDNRq1PRX1mSQL6u3YP1G+kQ@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from youngberry.canonical.com ([91.189.89.112]:60479 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750771AbeD3EZ4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 30 Apr 2018 00:25:56 -0400
+From: Shrirang Bagul <shrirang.bagul@canonical.com>
+To: jic23@kernel.org
+Cc: lorenzo.bianconi83@gmail.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: humidity: hts221: Fix sensor reads after resume
+Date: Mon, 30 Apr 2018 12:25:46 +0800
+Message-Id: <20180430042546.8801-1-shrirang.bagul@canonical.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 26 Apr 2018 19:17:09 -0700
-Matt Ranostay <matt.ranostay@konsulko.com> wrote:
+CTRL1 register (ODR & BDU settings) gets reset after system comes back
+from suspend, causing subsequent reads from the sensor to fail.
 
-> On Thu, Apr 26, 2018 at 7:15 PM, Matt Ranostay
-> <matt.ranostay@konsulko.com> wrote:
-> > LMP91002 is register compatible so add devicetree and i2c client ids
-> >
-> > Cc: device-tree@vger.kernel.org  
-> 
-> *sigh* should be devicetree@vger.kernel.org ... adding correct CC
-> 
-> > Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
-> > ---
-> >  Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt | 7 ++++---
-> >  drivers/iio/potentiostat/lmp91000.c                             | 2 ++
-> >  2 files changed, 6 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt b/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
-> > index b9b621e94cd7..d51639f0ebbf 100644
-> > --- a/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
-> > +++ b/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
-> > @@ -1,10 +1,11 @@
-> > -* Texas Instruments LMP91000 potentiostat
-> > +* Texas Instruments LMP91000 series of potentiostats
-> >
-> > -http://www.ti.com/lit/ds/symlink/lmp91000.pdf
-> > +LMP91000: http://www.ti.com/lit/ds/symlink/lmp91000.pdf
-> > +LMP91002: http://www.ti.com/lit/ds/symlink/lmp91002.pdf
-> >
-> >  Required properties:
-> >
-> > -  - compatible: should be "ti,lmp91000"
-> > +  - compatible: should be "ti,lmp91000" or "ti,lmp91002"
-Please put each entry on a new line. Reduces churn going forward.
+This patch restores the CTRL1 register after resume.
 
-Thanks,
+Based on:
+git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git iio-fixes-for-4.14b
 
-Jonathan
+Since 4.17.rc1, this driver uses REGMAP; I'll send a separate patch to
+address this issue.
 
-> >    - reg: the I2C address of the device
-> >    - io-channels: the phandle of the iio provider
-> >
-> > diff --git a/drivers/iio/potentiostat/lmp91000.c b/drivers/iio/potentiostat/lmp91000.c
-> > index 85714055cc74..90e895adf997 100644
-> > --- a/drivers/iio/potentiostat/lmp91000.c
-> > +++ b/drivers/iio/potentiostat/lmp91000.c
-> > @@ -411,12 +411,14 @@ static int lmp91000_remove(struct i2c_client *client)
-> >
-> >  static const struct of_device_id lmp91000_of_match[] = {
-> >         { .compatible = "ti,lmp91000", },
-> > +       { .compatible = "ti,lmp91002", },
-> >         { },
-> >  };
-> >  MODULE_DEVICE_TABLE(of, lmp91000_of_match);
-> >
-> >  static const struct i2c_device_id lmp91000_id[] = {
-> >         { "lmp91000", 0 },
-> > +       { "lmp91002", 0 },
-> >         {}
-> >  };
-> >  MODULE_DEVICE_TABLE(i2c, lmp91000_id);
-> > --
-> > 2.14.1
-> >  
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Cc: stable@vger.kernel.org
+Fixes: ffebe74b7c95 (iio: humidity: hts221: avoid useless ODR reconfiguration)
+Signed-off-by: Shrirang Bagul <shrirang.bagul@canonical.com>
+---
+ drivers/iio/humidity/hts221_core.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iio/humidity/hts221_core.c b/drivers/iio/humidity/hts221_core.c
+index 32524a8dc66f..fed2da64fa3b 100644
+--- a/drivers/iio/humidity/hts221_core.c
++++ b/drivers/iio/humidity/hts221_core.c
+@@ -674,11 +674,15 @@ static int __maybe_unused hts221_resume(struct device *dev)
+ 	struct hts221_hw *hw = iio_priv(iio_dev);
+ 	int err = 0;
+ 
+-	if (hw->enabled)
+-		err = hts221_write_with_mask(hw, HTS221_REG_CNTRL1_ADDR,
+-					     HTS221_ENABLE_MASK, true);
++	err = hts221_write_with_mask(hw, HTS221_REG_CNTRL1_ADDR,
++				     HTS221_BDU_MASK, 1);
++	if (err < 0)
++		goto fail_err;
+ 
+-	return err;
++	err = hts221_update_odr(hw, hw->odr);
++
++fail_err:
++	return err < 0 ? err : 0;
+ }
+ 
+ const struct dev_pm_ops hts221_pm_ops = {
+-- 
+2.14.1
 
