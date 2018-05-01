@@ -1,161 +1,512 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:36006 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751795AbeEFTEI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 6 May 2018 15:04:08 -0400
-Date: Sun, 6 May 2018 20:04:02 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Eugen Hristev <eugen.hristev@microchip.com>
-Cc: <ludovic.desroches@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>,
-        <nicolas.ferre@microchip.com>, <dmitry.torokhov@gmail.com>,
-        <robh@kernel.org>
-Subject: Re: [PATCH v4 0/9] Add support for SAMA5D2 touchscreen
-Message-ID: <20180506200402.4068c967@archlinux>
-In-Reply-To: <1525084335-11276-1-git-send-email-eugen.hristev@microchip.com>
-References: <1525084335-11276-1-git-send-email-eugen.hristev@microchip.com>
+Received: from mail-he1eur01on0130.outbound.protection.outlook.com ([104.47.0.130]:62841
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1751081AbeEAIR3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 1 May 2018 04:17:29 -0400
+From: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+To: jic23@kernel.org, robh+dt@kernel.org
+Cc: Sean Nyekjaer <sean.nyekjaer@prevas.dk>, lars@metafoo.de,
+        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH 1/2] iio: dac: add TI DAC5755 family support
+Date: Tue,  1 May 2018 10:15:53 +0200
+Message-Id: <20180501081554.5832-1-sean.nyekjaer@prevas.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 30 Apr 2018 13:32:06 +0300
-Eugen Hristev <eugen.hristev@microchip.com> wrote:
+This patch adds support for the Texas Intruments DAC5755 Family.
 
-> Hello,
-> 
-> This patch series is a rework of my previous series named:
-> [PATCH 00/14] iio: triggers: add consumer support
-> 
-> This is the version 4 of the series, and addresses the received feedback
-> on the v2 series named:
-> [PATCH v2 00/10]  Add support for SAMA5D2 touchscreen
-> and the v3 series named
-> [PATCH v3 00/11]  Add support for SAMA5D2 touchscreen
-> 
-> This series applies on top of fixes-togreg branch of iio.git,
-> specifically on top of commit:
-> "f0c8d1f" : iio: adc: at91-sama5d2_adc:
->  fix channel configuration for differential channels
-> 
-> Changes in v3 and v4 are presented at the end of the cover letter below.
-> Thanks everyone for the feedback. Below is the original v2 cover letter:
-> 
-> In few words, this is the implementation of splitting the functionality
-> of the IP block ADC device in SAMA5D2 SoC from ADC with touchscreen
-> support. In order to avoid having a MFD device, two separate
-> drivers that would work on same register base and split the IRQ,etc,
-> as advised on the mailing list, I created a consumer driver for the
-> channels, that will connect to the ADC as described in the device tree.
-> 
-> I have collected feedback from everyone and here is the result:
-> I have added a new generic resistive touchscreen driver, which acts
-> as a iio consumer for the given channels and will create an input
-> device and report the events. It uses a callback buffer to register
-> to the IIO device and waits for data to be pushed.
-> Inside the IIO device, I have kept a similar approach with the first version
-> of the series, except that now the driver can take multiple buffers, and
-> will configure the touchscreen part of the hardware device if the specific
-> channels are requested.
-> 
-> The SAMA5D2 ADC driver registers three new channels: two for the
-> position on the X and Y axis, and one for the touch pressure.
-> When channels are requested, it will check if the touchscreen channel mask
-> includes the requested channels (it is possible that the consumer driver
-> will not request pressure for example). If it's the case, it will work
-> in touchscreen mode, and will refuse to do usual analog-digital conversion,
-> because we have a single trigger and the touchscreen needs it.
-> When the scan mask will include only old channels, the driver will function
-> in the same way as before. If the scan mask somehow is a mix of the two (the
-> masks intersect), the driver will refuse to work whatsoever (cannot have both
-> in the same time).
-> The driver allows reading raw data for the new channels, if claim direct
-> mode works: no touchscreen driver requested anything. The new channels can
-> act like the old ones. However, when requesting these channels, the usual
-> trigger will not work and will not be enabled. The touchscreen channels
-> require special trigger and irq configuration: pen detect, no pen detect
-> and a periodic trigger to sample the touchscreen position and pressure.
-> If the user attempts to use another trigger while there is a buffer
-> that already requested the touchscreen channels (thus the trigger), the
-> driver will refuse to comply.
-> 
-> In order to have defines for the channel numbers, I added a bindings include
-> file that goes on a separate commit :
-> dt-bindings: iio: adc: at91-sama5d2_adc: add channel specific consumer info
-> This should go in the same tree with the following commits :
->   ARM: dts: at91: sama5d2: add channel cells for ADC device
->   ARM: dts: at91: sama5d2: Add resistive touch device
-> 
-> as build will break because these commits depend on the binding one
-> which creates the included header file.
-> 
-> Changes in v4:
->  - removed patch for inkern module get/set kref
->  - addressed feedback on both the ADC and the touchscreen driver. each
-> patch has a history inside the patch file for the specific changes.
->  - patch that fixes the channel fix
-> [PATCH v3 01/11] iio: adc: at91-sama5d2_adc:
->  fix channel configuration for differential channels
-> was accepted in fixes-togreg branch thus removed from this series.
->  - added Reviewed-by for the bindings by Rob Herring
-> 
-> Changes in v3:
->  - changed input driver name according to feedback and reworked in commits
-> to adapt to binding changes and new name.
->  - moved channel index fix in at91-sama5d2_adc at the beginning of the series
-> (PATCH 01/11)
->  - created a new optional binding for the touchscreen as a separate commit
-> and added it to the series :
->  [PATCH v3 04/11] dt-bindings: input: touchscreen: add pressure
->  threshold touchscreen property
->  - changed at91-sama5d2_adc driver patch to address the comments. Exact changes
-> are in the patch file for the driver source file.
-> 
-> 
-> Eugen Hristev (9):
->   MAINTAINERS: add generic resistive touchscreen adc
->   iio: Add channel for Position Relative
->   dt-bindings: input: touchscreen: add pressure threshold touchscreen
->     property
->   dt-bindings: input: touchscreen: resistive-adc-touch: create bindings
->   iio: adc: at91-sama5d2_adc: add support for position and pressure
->     channels
->   input: touchscreen: resistive-adc-touch: add generic resistive ADC
->     touchscreen
->   dt-bindings: iio: adc: at91-sama5d2_adc: add channel specific consumer
->     info
->   ARM: dts: at91: sama5d2: add channel cells for ADC device
->   ARM: dts: at91: sama5d2: Add resistive touch device
-> 
->  Documentation/ABI/testing/sysfs-bus-iio            |  12 +
->  .../bindings/iio/adc/at91-sama5d2_adc.txt          |   9 +
->  .../input/touchscreen/resistive-adc-touch.txt      |  30 +
->  .../bindings/input/touchscreen/touchscreen.txt     |   3 +
->  MAINTAINERS                                        |   6 +
->  arch/arm/boot/dts/sama5d2.dtsi                     |  12 +
->  drivers/iio/adc/at91-sama5d2_adc.c                 | 609 +++++++++++++++++++--
->  drivers/iio/industrialio-core.c                    |   1 +
->  drivers/input/touchscreen/Kconfig                  |  13 +
->  drivers/input/touchscreen/Makefile                 |   1 +
->  drivers/input/touchscreen/resistive-adc-touch.c    | 199 +++++++
->  include/dt-bindings/iio/adc/at91-sama5d2_adc.h     |  16 +
->  include/uapi/linux/iio/types.h                     |   1 +
->  tools/iio/iio_event_monitor.c                      |   2 +
->  14 files changed, 856 insertions(+), 58 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/input/touchscreen/resistive-adc-touch.txt
->  create mode 100644 drivers/input/touchscreen/resistive-adc-touch.c
->  create mode 100644 include/dt-bindings/iio/adc/at91-sama5d2_adc.h
-> 
+Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+---
+ drivers/iio/dac/Kconfig      |  10 +
+ drivers/iio/dac/Makefile     |   1 +
+ drivers/iio/dac/ti-dac5571.c | 443 +++++++++++++++++++++++++++++++++++
+ 3 files changed, 454 insertions(+)
+ create mode 100644 drivers/iio/dac/ti-dac5571.c
 
-Hi All,
+diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+index 3ff8a32f1385..c77c6cf1d2ba 100644
+--- a/drivers/iio/dac/Kconfig
++++ b/drivers/iio/dac/Kconfig
+@@ -335,6 +335,16 @@ config TI_DAC082S085
+ 
+ 	  If compiled as a module, it will be called ti-dac082s085.
+ 
++config TI_DAC5571
++	tristate "Texas Instruments 8/10/12/16-bit 1/2/4-channel DAC driver"
++	depends on I2C
++	help
++	  Driver for the Texas Instruments
++	  DAC5571, DAC6571, DAC7571, DAC5574, DAC6574, DAC7574, DAC5573,
++	  DAC6573, DAC7573, DAC8571, DAC8574.
++
++	  If compiled as a module, it will be called ti-dac5571.
++
+ config VF610_DAC
+ 	tristate "Vybrid vf610 DAC driver"
+ 	depends on OF
+diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+index 4397e2114344..57aa230d34ab 100644
+--- a/drivers/iio/dac/Makefile
++++ b/drivers/iio/dac/Makefile
+@@ -37,4 +37,5 @@ obj-$(CONFIG_MCP4922) += mcp4922.o
+ obj-$(CONFIG_STM32_DAC_CORE) += stm32-dac-core.o
+ obj-$(CONFIG_STM32_DAC) += stm32-dac.o
+ obj-$(CONFIG_TI_DAC082S085) += ti-dac082s085.o
++obj-$(CONFIG_TI_DAC5571) += ti-dac5571.o
+ obj-$(CONFIG_VF610_DAC) += vf610_dac.o
+diff --git a/drivers/iio/dac/ti-dac5571.c b/drivers/iio/dac/ti-dac5571.c
+new file mode 100644
+index 000000000000..5ce110fe1bab
+--- /dev/null
++++ b/drivers/iio/dac/ti-dac5571.c
+@@ -0,0 +1,443 @@
++/*
++ * ti-dac5571.c - Texas Instruments 8/10/12-bit 1/4-channel DAC driver
++ *
++ * Copyright (C) 2018 Prevas A/S
++ *
++ * http://www.ti.com/lit/ds/symlink/dac5571.pdf
++ * http://www.ti.com/lit/ds/symlink/dac6571.pdf
++ * http://www.ti.com/lit/ds/symlink/dac7571.pdf
++ * http://www.ti.com/lit/ds/symlink/dac5574.pdf
++ * http://www.ti.com/lit/ds/symlink/dac6574.pdf
++ * http://www.ti.com/lit/ds/symlink/dac7574.pdf
++ * http://www.ti.com/lit/ds/symlink/dac5573.pdf
++ * http://www.ti.com/lit/ds/symlink/dac6573.pdf
++ * http://www.ti.com/lit/ds/symlink/dac7573.pdf
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License (version 2) as
++ * published by the Free Software Foundation.
++ */
++
++#include <linux/iio/iio.h>
++#include <linux/i2c.h>
++#include <linux/module.h>
++#include <linux/of_device.h>
++#include <linux/of.h>
++#include <linux/regulator/consumer.h>
++
++enum chip_id {
++	single_8bit, single_10bit, single_12bit,
++	quad_8bit, quad_10bit, quad_12bit
++};
++
++#define DAC5571_SINGLE_CHANNEL		1
++#define DAC5571_QUAD_CHANNEL		4
++
++struct dac5571_spec {
++	u8 num_channels;
++	u8 resolution;
++};
++
++static const struct dac5571_spec dac5571_spec[] = {
++	[single_8bit]  = {.num_channels = 1, .resolution =  8},
++	[single_10bit] = {.num_channels = 1, .resolution = 10},
++	[single_12bit] = {.num_channels = 1, .resolution = 12},
++	[quad_8bit]    = {.num_channels = 4, .resolution =  8},
++	[quad_10bit]   = {.num_channels = 4, .resolution = 10},
++	[quad_12bit]   = {.num_channels = 4, .resolution = 12},
++};
++
++struct dac5571_data {
++	struct i2c_client *client;
++	int id;
++	struct mutex lock;
++	struct regulator *vref;
++	u16 val[4];
++	bool powerdown;
++	u8 powerdown_mode;
++	struct dac5571_spec const *spec;
++	int (*dac5571_cmd)(struct dac5571_data *data, int channel, u16 val);
++	int (*dac5571_pwrdwn)(struct dac5571_data *data, int channel, u8 pwrdwn);
++	u8 buf[3] ____cacheline_aligned;
++};
++
++#define DAC5571_POWERDOWN(mode)		((mode) + 1)
++#define DAC5571_POWERDOWN_FLAG		BIT(0)
++#define DAC5571_CHANNEL_SELECT		1
++#define DAC5571_LOADMODE_DIRECT		BIT(4)
++#define DAC5571_SINGLE_PWRDWN_BITS	4
++#define DAC5571_QUAD_PWRDWN_BITS	6
++
++static int dac5571_cmd_single(struct dac5571_data *data, int channel, u16 val)
++{
++	unsigned int shift;
++
++	shift = 12 - data->spec->resolution;
++	data->buf[1] = val << shift;
++	data->buf[0] = val >> (8 - shift);
++
++	if (i2c_master_send(data->client, data->buf, 2) != 2)
++		return -EIO;
++
++	return 0;
++}
++
++
++static int dac5571_cmd_quad(struct dac5571_data *data, int channel, u16 val)
++{
++	unsigned int shift;
++
++	shift = 16 - data->spec->resolution;
++	data->buf[2] = val << shift;
++	data->buf[1] = (val >> (8 - shift));
++	data->buf[0] = (channel << DAC5571_CHANNEL_SELECT) |
++		       DAC5571_LOADMODE_DIRECT;
++
++	if (i2c_master_send(data->client, data->buf, 3) != 3)
++		return -EIO;
++
++	return 0;
++}
++
++static int dac5571_pwrdwn_single(struct dac5571_data *data, int channel, u8 pwrdwn)
++{
++	unsigned int shift;
++
++	shift = 12 - data->spec->resolution;
++	data->buf[1] = 0;
++	data->buf[0] = pwrdwn << DAC5571_SINGLE_PWRDWN_BITS;
++
++	if (i2c_master_send(data->client, data->buf, 2) != 2)
++		return -EIO;
++
++	return 0;
++}
++
++static int dac5571_pwrdwn_quad(struct dac5571_data *data, int channel, u8 pwrdwn)
++{
++	unsigned int shift;
++
++	shift = 16 - data->spec->resolution;
++	data->buf[2] = 0;
++	data->buf[1] = pwrdwn << DAC5571_QUAD_PWRDWN_BITS;
++	data->buf[0] = (channel << DAC5571_CHANNEL_SELECT) |
++		       DAC5571_LOADMODE_DIRECT | DAC5571_POWERDOWN_FLAG;
++
++	if (i2c_master_send(data->client, data->buf, 3) != 3)
++		return -EIO;
++
++	return 0;
++}
++
++static const char *const dac5571_powerdown_modes[] = {
++	"1kohm_to_gnd", "100kohm_to_gnd", "three_state",
++};
++
++static int dac5571_get_powerdown_mode(struct iio_dev *indio_dev,
++				      const struct iio_chan_spec *chan)
++{
++	struct dac5571_data *data = iio_priv(indio_dev);
++
++	return data->powerdown_mode;
++}
++
++static int dac5571_set_powerdown_mode(struct iio_dev *indio_dev,
++				      const struct iio_chan_spec *chan,
++				      unsigned int mode)
++{
++	struct dac5571_data *data = iio_priv(indio_dev);
++	int ret = 0;
++
++	if (data->powerdown_mode == mode)
++		return 0;
++
++	mutex_lock(&data->lock);
++	if (data->powerdown) {
++		ret = data->dac5571_pwrdwn(data, chan->channel,
++					   DAC5571_POWERDOWN(mode));
++		if (ret)
++			goto out;
++	}
++	data->powerdown_mode = mode;
++
++ out:
++	mutex_unlock(&data->lock);
++
++	return ret;
++}
++
++static const struct iio_enum dac5571_powerdown_mode = {
++	.items = dac5571_powerdown_modes,
++	.num_items = ARRAY_SIZE(dac5571_powerdown_modes),
++	.get = dac5571_get_powerdown_mode,
++	.set = dac5571_set_powerdown_mode,
++};
++
++static ssize_t dac5571_read_powerdown(struct iio_dev *indio_dev,
++				      uintptr_t private,
++				      const struct iio_chan_spec *chan,
++				      char *buf)
++{
++	struct dac5571_data *data = iio_priv(indio_dev);
++
++	return sprintf(buf, "%d\n", data->powerdown);
++}
++
++static ssize_t dac5571_write_powerdown(struct iio_dev *indio_dev,
++				       uintptr_t private,
++				       const struct iio_chan_spec *chan,
++				       const char *buf, size_t len)
++{
++	struct dac5571_data *data = iio_priv(indio_dev);
++	bool powerdown;
++	int ret;
++
++	ret = strtobool(buf, &powerdown);
++	if (ret)
++		return ret;
++
++	if (data->powerdown == powerdown)
++		return len;
++
++	mutex_lock(&data->lock);
++	if (powerdown)
++		ret = data->dac5571_pwrdwn(data, chan->channel,
++			    DAC5571_POWERDOWN(data->powerdown_mode));
++	else
++		ret = data->dac5571_cmd(data, chan->channel, data->val[0]);
++	if (ret)
++		goto out;
++
++	data->powerdown = powerdown;
++
++ out:
++	mutex_unlock(&data->lock);
++
++	return ret ? ret : len;
++}
++
++
++static const struct iio_chan_spec_ext_info dac5571_ext_info[] = {
++	{
++		.name	   = "powerdown",
++		.read	   = dac5571_read_powerdown,
++		.write	   = dac5571_write_powerdown,
++		.shared	   = IIO_SHARED_BY_TYPE,
++	},
++	IIO_ENUM("powerdown_mode", IIO_SHARED_BY_TYPE, &dac5571_powerdown_mode),
++	IIO_ENUM_AVAILABLE("powerdown_mode", &dac5571_powerdown_mode),
++	{},
++};
++
++#define dac5571_CHANNEL(chan, name) {				\
++	.type = IIO_VOLTAGE,					\
++	.channel = (chan),					\
++	.address = (chan),					\
++	.indexed = true,					\
++	.output = true,						\
++	.datasheet_name = name,					\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++	.ext_info = dac5571_ext_info,				\
++}
++
++static const struct iio_chan_spec dac5571_channels[] = {
++	dac5571_CHANNEL(0, "A"),
++	dac5571_CHANNEL(1, "B"),
++	dac5571_CHANNEL(2, "C"),
++	dac5571_CHANNEL(3, "D"),
++};
++
++static int dac5571_read_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int *val, int *val2, long mask)
++{
++	struct dac5571_data *data = iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		*val = data->val[chan->channel];
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_SCALE:
++		ret = regulator_get_voltage(data->vref);
++		if (ret < 0)
++			return ret;
++
++		*val = ret / 1000;
++		*val2 = data->spec->resolution;
++		return IIO_VAL_FRACTIONAL_LOG2;
++
++	default:
++		return -EINVAL;
++	}
++}
++
++static int dac5571_write_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int val, int val2, long mask)
++{
++	struct dac5571_data *data = iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		if (data->val[chan->channel] == val)
++			return 0;
++
++		if (val >= (1 << data->spec->resolution) || val < 0)
++			return -EINVAL;
++
++		if (data->powerdown)
++			return -EBUSY;
++
++		mutex_lock(&data->lock);
++		ret = data->dac5571_cmd(data, chan->channel, val);
++		if (ret == 0)
++			data->val[chan->channel] = val;
++		mutex_unlock(&data->lock);
++		return ret;
++
++	default:
++		return -EINVAL;
++	}
++}
++
++static int dac5571_write_raw_get_fmt(struct iio_dev *indio_dev,
++				     struct iio_chan_spec const *chan,
++				     long mask)
++{
++	return IIO_VAL_INT;
++}
++
++static const struct iio_info dac5571_info = {
++	.read_raw = dac5571_read_raw,
++	.write_raw = dac5571_write_raw,
++	.write_raw_get_fmt = dac5571_write_raw_get_fmt,
++};
++
++static int dac5571_probe(struct i2c_client *client,
++			 const struct i2c_device_id *id)
++{
++	struct device *dev = &client->dev;
++	const struct dac5571_spec *spec;
++	struct dac5571_data *data;
++	struct iio_dev *indio_dev;
++	int ret, i;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
++
++	indio_dev->dev.parent = dev;
++	indio_dev->dev.of_node = client->dev.of_node;
++	indio_dev->info = &dac5571_info;
++	indio_dev->name = id->name;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = dac5571_channels;
++
++	spec = &dac5571_spec[id->driver_data];
++	indio_dev->num_channels = spec->num_channels;
++	data->spec = spec;
++
++	data->vref = devm_regulator_get(dev, "vref");
++	if (IS_ERR(data->vref))
++		return PTR_ERR(data->vref);
++
++	ret = regulator_enable(data->vref);
++	if (ret < 0)
++		return ret;
++
++	mutex_init(&data->lock);
++
++	switch (spec->num_channels) {
++	case DAC5571_SINGLE_CHANNEL:
++		data->dac5571_cmd = dac5571_cmd_single;
++		data->dac5571_pwrdwn = dac5571_pwrdwn_single;
++		break;
++	case DAC5571_QUAD_CHANNEL:
++		data->dac5571_cmd = dac5571_cmd_quad;
++		data->dac5571_pwrdwn = dac5571_pwrdwn_quad;
++		break;
++	default:
++		goto err;
++	}
++
++	for (i = 0; i < spec->num_channels; i++) {
++		ret = data->dac5571_cmd(data, i, 0);
++		if (ret) {
++			dev_err(dev, "failed to initialize channel %d to 0\n", i);
++			goto err;
++		}
++	}
++
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		goto err;
++
++	return 0;
++
++ err:
++	regulator_disable(data->vref);
++	return ret;
++}
++
++static int dac5571_remove(struct i2c_client *i2c)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(i2c);
++	struct dac5571_data *data = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++	regulator_disable(data->vref);
++
++	return 0;
++}
++
++#ifdef CONFIG_OF
++static const struct of_device_id dac5571_of_id[] = {
++	{.compatible = "ti,dac5571"},
++	{.compatible = "ti,dac6571"},
++	{.compatible = "ti,dac7571"},
++	{.compatible = "ti,dac5574"},
++	{.compatible = "ti,dac6574"},
++	{.compatible = "ti,dac7574"},
++	{.compatible = "ti,dac5573"},
++	{.compatible = "ti,dac6573"},
++	{.compatible = "ti,dac7573"},
++	{}
++};
++MODULE_DEVICE_TABLE(of, dac5571_of_id);
++#endif
++
++static const struct i2c_device_id dac5571_id[] = {
++	{"dac5571", single_8bit},
++	{"dac6571", single_10bit},
++	{"dac7571", single_12bit},
++	{"dac5574", quad_8bit},
++	{"dac6574", quad_10bit},
++	{"dac7574", quad_12bit},
++	{"dac5573", quad_8bit},
++	{"dac6573", quad_10bit},
++	{"dac7573", quad_12bit},
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, dac5571_id);
++
++static struct i2c_driver dac5571_driver = {
++	.driver = {
++		   .name = "ti-dac5571",
++	},
++	.probe	  = dac5571_probe,
++	.remove   = dac5571_remove,
++	.id_table = dac5571_id,
++};
++module_i2c_driver(dac5571_driver);
++
++MODULE_AUTHOR("Sean Nyekjaer <sean.nyekjaer@prevas.dk>");
++MODULE_DESCRIPTION("Texas Instruments 8/10/12-bit 1/4-channel DAC driver");
++MODULE_LICENSE("GPL v2");
+-- 
+2.17.0
 
-This looks to be pretty close to needing a path upstream.
-I propose that I  take the driver parts (not dts changes obviously) through
-iio.  I can do an immutable branch if anyone wants one (just let
-me know).
-
-Thanks,
-
-Jonathan
