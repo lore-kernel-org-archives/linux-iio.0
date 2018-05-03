@@ -1,312 +1,179 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:44162 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751711AbeEFQ3x (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 6 May 2018 12:29:53 -0400
-Date: Sun, 6 May 2018 17:29:49 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Richard Tresidder <rtresidd@electromag.com.au>
+Received: from youngberry.canonical.com ([91.189.89.112]:37312 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750773AbeECHj5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 3 May 2018 03:39:57 -0400
+Received: from mail-pf0-f200.google.com ([209.85.192.200])
+        by youngberry.canonical.com with esmtps (TLS1.0:RSA_AES_128_CBC_SHA1:16)
+        (Exim 4.76)
+        (envelope-from <shrirang.bagul@canonical.com>)
+        id 1fE8qK-0005Hq-43
+        for linux-iio@vger.kernel.org; Thu, 03 May 2018 07:39:56 +0000
+Received: by mail-pf0-f200.google.com with SMTP id c4so14647267pfg.22
+        for <linux-iio@vger.kernel.org>; Thu, 03 May 2018 00:39:56 -0700 (PDT)
+Message-ID: <1525333190.4358.20.camel@canonical.com>
+Subject: Re: [PATCH][for iio-for-4.17b] iio: humidity: hts221: Fix sensor
+ reads after resume
+From: Shrirang Bagul <shrirang.bagul@canonical.com>
+To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
 Cc: linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: accell: mma8452: Reduce sleep time when data not
- ready
-Message-ID: <20180506172949.0bf0f33c@archlinux>
-In-Reply-To: <36898239-4047-b061-e6d7-7dd566a98976@electromag.com.au>
-References: <e15558d1-ef9b-edbf-7fd8-e4d0e86e6b22@electromag.com.au>
-        <36898239-4047-b061-e6d7-7dd566a98976@electromag.com.au>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Date: Thu, 03 May 2018 15:39:50 +0800
+In-Reply-To: <1525079565.10678.10.camel@canonical.com>
+References: <20180430051658.9856-1-shrirang.bagul@canonical.com>
+         <CAA2SeNKTjVO7JBVV3qJMJhdM-j=r+igd_nADe+NH3Rux0oW1qA@mail.gmail.com>
+         <1525078153.10678.9.camel@canonical.com>
+         <CAA2SeNKn6mavKBa8=pU5sPLWpLKY=A5GGnwRZcn65Mhzd-8jqQ@mail.gmail.com>
+         <1525079565.10678.10.camel@canonical.com>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-c+Ka7zQT6+sdJf1I9yR/"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 30 Apr 2018 17:50:06 +0800
-Richard Tresidder <rtresidd@electromag.com.au> wrote:
 
-> Hi
-> Sorry realised I hadn't cc'd a maintainer so trying again
-> First patch attempt.
-> Currently the driver runs into problems when trying to acquire at sample
-> rates higher than 50sps.
-> This is due to the usage of msleep when data is not ready.
-> This patch attempts to speed things up by utilising the usleep_range
-> call to allow shorter sleep times.
+--=-c+Ka7zQT6+sdJf1I9yR/
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+On Mon, 2018-04-30 at 17:12 +0800, Shrirang Bagul wrote:
+> On Mon, 2018-04-30 at 11:05 +0200, Lorenzo Bianconi wrote:
+> > > On Mon, 2018-04-30 at 09:48 +0200, Lorenzo Bianconi wrote:
+> > > > > CTRL1 register (ODR & BDU settings) gets reset after system comes=
+ back
+> > > > > from suspend, causing subsequent reads from the sensor to fail.
+> > > > >=20
+> > > > > This patch restores the CTRL1 register after resume.
+> > > > >=20
+> > > >=20
+> > > > Hi Shrirang,
+> > > >=20
+> > > > is just CTRL1 reset after suspend/resume or also other registers? a=
+re
+> > > > IIO triggers enabled before the suspend or
+> > > > are you reading data from sysfs?
+> > > >=20
+> > > > > Based on:
+> > > > > git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git iio-f=
+or-4.17b
+> > > > >=20
+> > > > > Fixes: ffebe74b7c95 (iio: humidity: hts221: avoid useless ODR rec=
+onfiguration)
+> > > > > Signed-off-by: Shrirang Bagul <shrirang.bagul@canonical.com>
+> > > > > ---
+> > > > >  drivers/iio/humidity/hts221_core.c | 13 +++++++------
+> > > > >  1 file changed, 7 insertions(+), 6 deletions(-)
+> > > > >=20
+> > > > > diff --git a/drivers/iio/humidity/hts221_core.c b/drivers/iio/hum=
+idity/hts221_core.c
+> > > > > index 166946d4978d..5d7a652aa6d9 100644
+> > > > > --- a/drivers/iio/humidity/hts221_core.c
+> > > > > +++ b/drivers/iio/humidity/hts221_core.c
+> > > > > @@ -658,12 +658,13 @@ static int __maybe_unused hts221_resume(str=
+uct device *dev)
+> > > > >         struct hts221_hw *hw =3D iio_priv(iio_dev);
+> > > > >         int err =3D 0;
+> > > > >=20
+> > > > > -       if (hw->enabled)
+> > > > > -               err =3D regmap_update_bits(hw->regmap, HTS221_REG=
+_CNTRL1_ADDR,
+> > > > > -                                        HTS221_ENABLE_MASK,
+> > > > > -                                        FIELD_PREP(HTS221_ENABLE=
+_MASK,
+> > > > > -                                                   true));
+> > > > > -       return err;
+> > > > > +       err =3D regmap_update_bits(hw->regmap, HTS221_REG_CNTRL1_=
+ADDR,
+> > > > > +                                HTS221_BDU_MASK,
+> > > > > +                                FIELD_PREP(HTS221_BDU_MASK, 1));
+> > > > > +       if (err < 0)
+> > > > > +               return err;
+> > > > > +
+> > > > > +       return hts221_update_odr(hw, hw->odr);
+> > > > >  }
+> > > > >=20
+> > >=20
+> > > No need to re-enable the sensor here. hts221_read_oneshot() [called f=
+rom hts221_read_raw()] does that every time before read:
+> > >=20
+> >=20
+> > Could please try to change other registers (e.g. rh or temp gain) and
+> > double check values are properly configured resuming the sensor?
+Further testing revealed that the contents of AV_CONF register value gets
+overwritten (set to 0x3F) every time system comes out of suspend.
+> > It is necessary to re-enable the sensor if you use IIO triggers and
+> > the sensor was enabled before the suspend operation
+Yes, I understand this is required, will handle this and restoring the AV_C=
+ONF
+register in the next version.
+
+I've tried using sysfs_trig_iio to test reading the sensor output from devf=
+s
+(using iio_generic_buffer) but looks like this is not supported in the curr=
+ent
+driver. HW interrupts cannot be used on my system.
+Please suggest if there are other alternatives?
 >=20
-> I've tested this using iio buffers and hr triggers up to 100sps on a
-> mma8451 device.
-> It should technically be ok up to the 800sps rate though.
->=20
-> I seem to have snuck a couple of whitespace alignment fixes into this also
-> Please let me know if I should remove separate them
+> Sure. I'll do some more testing and share the results.
 
-Separate patches please.  It is possible we will want to backport
-the reduction in sleep time to older kernels, where as we won't bother
-with the white space stuff.
+> >=20
+> > > static int hts221_read_oneshot(struct hts221_hw *hw, u8 addr, int *va=
+l)
+> > > {
+> > >         __le16 data;
+> > >         int err;
+> > >=20
+> > >         err =3D hts221_set_enable(hw, true);
+> > >         if (err < 0)
+> > >                 return err;
+> > >=20
+> > >         msleep(50);
+> > >=20
+> > >         err =3D regmap_bulk_read(hw->regmap, addr, &data, sizeof(data=
+));
+> > >         if (err < 0)
+> > >                 return err;
+> > >=20
+> > >         hts221_set_enable(hw, false);
+> > >=20
+> > > Regards,
+> > > Shrirang
+> > > >=20
+> > > > Here you need to re-enable the sensor if it was running before the
+> > > > suspend operation.
+> > > > Regards,
+> > > >=20
+> > > > Lorenzo
+> > > >=20
+> > > > >  const struct dev_pm_ops hts221_pm_ops =3D {
+> > > > > --
+> > > > > 2.14.1
+> > > > >=20
+> > > >=20
+> > > >=20
+> > > >=20
+> >=20
+> >=20
+--=-c+Ka7zQT6+sdJf1I9yR/
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
 
-Also I think your email client has replaced all tabs with spaces
-thus making the patch broken.  Please fix that up before sending
-a v2.
+-----BEGIN PGP SIGNATURE-----
 
-The fundamental change seems sensible to me. Please cc
-the original driver author on future versions (it's also
-worth checking for anyone else who had made large changes
-recently and adding them to the cc.)
+iQIcBAABCAAGBQJa6rzGAAoJELlj3b/+u+hksngP/jQ5msQyt/47n02QlfJxe3jH
+gB0asMb9MS4mgra7QIXPCKO/n6xb2lbbH5z0Izlxy0SLd771CjK9jZjo1jrU7MgE
+1f59V/2XbXVpDKxxnAmjQgALAA7UjLPazbiLn1hiznFx8ynTFlWFhOgByMrG+7jH
+Xvck1TNhO9l/+uSGPoZa8mylix/8GnikxSp4+89lZGlu0Se0o/qVt0YAR1FiLpnv
+arrPaVpMfvf/lPZkOcY32UpS1HjoqZPNW6FJgwNpYcNJhC8qdyL69YlSTFSbOjAJ
+4q79aWnjJxvb1RgTfeNggVID9et/wU5tCwRX2sbuFoiL7h4nPbeJxwZfcRJqqpEU
+UVpDYxp1blGMgaNfnUxsyNSHoJ6XIiMWgPf1n+s3H+ELalnUe3/PJ1u5grqg9jMP
+La15vEsPlo/P/D3Bn2xLB5XE7UZEFqUVi6jPEiY9vxYbvhUiqCYWQkNg0VzTAvaB
+QksP7HHcdhESL0B8Z7FtVQXoJ/COqtlXwBsjz43l6+VuCsTmJroKwgR8Gnpr926s
+rUza4JCyWZTI0/Fb4p02EfxtacAyT+i3oXY/GFxByO92SGoAnYnWCnSSz8b8pVFR
+x/dD+JYRzX1BzFNJdMgcCkO2DyT6ACBTHecmLTik9DErXATsF+buhOn21h/ydENt
+tb4OHRZrcX6TpniaoKv8
+=J+rd
+-----END PGP SIGNATURE-----
 
-Jonathan
-
->=20
-> Signed-off-by: Richard Tresidder <rtresidd@electromag.com.au>
-> ---
-> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> index 7a2da7f..cede523 100644
-> --- a/drivers/iio/accel/mma8452.c
-> +++ b/drivers/iio/accel/mma8452.c
-> @@ -57,7 +57,7 @@
-> =C2=A0#define MMA8452_FF_MT_THS=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 0x17
-> =C2=A0#define=C2=A0 MMA8452_FF_MT_THS_MASK=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x7f
-> =C2=A0#define MMA8452_FF_MT_COUNT=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x18
-> -#define MMA8452_FF_MT_CHAN_SHIFT=C2=A0=C2=A0=C2=A0 3
-> +#define MMA8452_FF_MT_CHAN_SHIFT=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0 3
-> =C2=A0#define MMA8452_TRANSIENT_CFG=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x1d
-> =C2=A0#define=C2=A0 MMA8452_TRANSIENT_CFG_CHAN(chan)=C2=A0=C2=A0=C2=A0 BI=
-T(chan + 1)
-> =C2=A0#define=C2=A0 MMA8452_TRANSIENT_CFG_HPF_BYP=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 BIT(0)
-> @@ -69,7 +69,7 @@
-> =C2=A0#define MMA8452_TRANSIENT_THS=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x1f
-> =C2=A0#define=C2=A0 MMA8452_TRANSIENT_THS_MASK=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0 GENMASK(6, 0)
-> =C2=A0#define MMA8452_TRANSIENT_COUNT=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x20
-> -#define MMA8452_TRANSIENT_CHAN_SHIFT 1
-> +#define MMA8452_TRANSIENT_CHAN_SHIFT=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0 1
-> =C2=A0#define MMA8452_CTRL_REG1=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 0x2a
-> =C2=A0#define=C2=A0 MMA8452_CTRL_ACTIVE=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 BIT(0)
-> =C2=A0#define=C2=A0 MMA8452_CTRL_DR_MASK=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 GENMASK(5, 3)
-> @@ -106,6 +106,7 @@ struct mma8452_data {
-> =C2=A0=C2=A0=C2=A0=C2=A0 u8 ctrl_reg1;
-> =C2=A0=C2=A0=C2=A0=C2=A0 u8 data_cfg;
-> =C2=A0=C2=A0=C2=A0=C2=A0 const struct mma_chip_info *chip_info;
-> +=C2=A0=C2=A0=C2=A0 int sleep_val;
-> =C2=A0};
-> =C2=A0
-> =C2=A0 /**
-> @@ -193,7 +194,10 @@ static int mma8452_drdy(struct mma8452_data *data)
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if ((ret & MMA8452_STATU=
-S_DRDY) =3D=3D MMA8452_STATUS_DRDY)
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =
-return 0;
-> =C2=A0
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 msleep(20);
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (data->sleep_val <=3D 20)
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 uslee=
-p_range(data->sleep_val * 250, data->sleep_val * 500);
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 else
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mslee=
-p(20);
-> =C2=A0=C2=A0=C2=A0=C2=A0 }
-> =C2=A0
-> =C2=A0=C2=A0=C2=A0=C2=A0 dev_err(&data->client->dev, "data not ready\n");
-> @@ -544,10 +548,22 @@ static int mma8452_read_raw(struct iio_dev *indio_d=
-ev,
-> =C2=A0=C2=A0=C2=A0=C2=A0 return -EINVAL;
-> =C2=A0}
-> =C2=A0
-> +static int mma8452_calculate_sleep(struct mma8452_data *data)
-> +{
-> +=C2=A0=C2=A0=C2=A0 int ret, i =3D mma8452_get_odr_index(data);
-> +=C2=A0=C2=A0
-> +=C2=A0=C2=A0=C2=A0 if (mma8452_samp_freq[i][0] > 0)
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D 1000 / mma8452_samp_f=
-req[i][0];
-> +=C2=A0=C2=A0=C2=A0 else
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D 1000;
-> +
-> +=C2=A0=C2=A0=C2=A0 return ret =3D=3D 0 ? 1 : ret;
-> +}
-> +
-> =C2=A0static int mma8452_standby(struct mma8452_data *data)
-> =C2=A0{
-> =C2=A0=C2=A0=C2=A0=C2=A0 return i2c_smbus_write_byte_data(data->client, M=
-MA8452_CTRL_REG1,
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->ctrl_reg1 & ~MMA8452_CTRL_=
-ACTIVE);
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->ctrl_reg1 & ~MMA8452=
-_CTRL_ACTIVE);
-> =C2=A0}
-> =C2=A0
-> =C2=A0static int mma8452_active(struct mma8452_data *data)
-> @@ -700,6 +716,8 @@ static int mma8452_write_raw(struct iio_dev *indio_de=
-v,
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->ctrl_reg1 &=3D ~MM=
-A8452_CTRL_DR_MASK;
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->ctrl_reg1 |=3D i <=
-< MMA8452_CTRL_DR_SHIFT;
-> =C2=A0
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->sleep_val =3D mma8452_c=
-alculate_sleep(data);
-> +
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D mma8452_change_c=
-onfig(data, MMA8452_CTRL_REG1,
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 da=
-ta->ctrl_reg1);
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 break;
-> @@ -738,7 +756,7 @@ static int mma8452_write_raw(struct iio_dev *indio_de=
-v,
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
-> =C2=A0
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D mma8452_change_c=
-onfig(data, MMA8452_DATA_CFG,
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 da=
-ta->data_cfg);
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->da=
-ta_cfg);
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 break;
-> =C2=A0
-> =C2=A0=C2=A0=C2=A0=C2=A0 case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-> @@ -761,8 +779,9 @@ static int mma8452_write_raw(struct iio_dev *indio_de=
-v,
-> =C2=A0}
-> =C2=A0
-> =C2=A0static int mma8452_get_event_regs(struct mma8452_data *data,
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 const struct iio_chan_spec *c=
-han, enum iio_event_direction dir,
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 const struct mma8452_event_re=
-gs **ev_reg)
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 const struct iio_chan_spec *chan,
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 enum iio_event_direction dir,
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 const struct mma8452_event_regs **ev_reg)
-> =C2=A0{
-> =C2=A0=C2=A0=C2=A0=C2=A0 if (!chan)
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return -EINVAL;
-> @@ -772,9 +791,9 @@ static int mma8452_get_event_regs(struct
-> mma8452_data *data,
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 switch (dir) {
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 case IIO_EV_DIR_RISING:
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =
-if ((data->chip_info->all_events
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 & MMA8452_INT_TRANS) &&
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 (data->chip_info->enabled_events
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 & MMA8452_INT_TRANS))
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 & MMA8452_INT_TRANS) &&
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 (data->chip_info->enabled_events
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 & MMA8452_INT_TRANS))
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 *ev_reg =3D &trans_ev_regs;
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =
-else
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 *ev_reg =3D &ff_mt_ev_regs;
-> @@ -791,11 +810,11 @@ static int mma8452_get_event_regs(struct
-> mma8452_data *data,
-> =C2=A0}
-> =C2=A0
-> =C2=A0static int mma8452_read_event_value(struct iio_dev *indio_dev,
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 const struct iio_chan_spec *chan,
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 enum iio_event_type type,
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 enum iio_event_direction dir,
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 enum iio_event_info info,
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 int *val, int *val2)
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 const struct iio_chan_spec *chan,
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 enum iio_event_type type,
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 enum iio_event_direction dir,
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 enum iio_event_info info,
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 int *val, int *val2)
-> =C2=A0{
-> =C2=A0=C2=A0=C2=A0=C2=A0 struct mma8452_data *data =3D iio_priv(indio_dev=
-);
-> =C2=A0=C2=A0=C2=A0=C2=A0 int ret, us, power_mode;
-> @@ -854,11 +873,11 @@ static int mma8452_read_event_value(struct iio_dev
-> *indio_dev,
-> =C2=A0}
-> =C2=A0
-> =C2=A0static int mma8452_write_event_value(struct iio_dev *indio_dev,
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 const struct iio_chan_spec *chan,
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 enum iio_event_type type,
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 enum iio_event_direction dir,
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 enum iio_event_info info,
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 int val, int val2)
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 const struct iio_chan_spec=
- *chan,
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 enum iio_event_type type,
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 enum iio_event_direction d=
-ir,
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 enum iio_event_info info,
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 int val, int val2)
-> =C2=A0{
-> =C2=A0=C2=A0=C2=A0=C2=A0 struct mma8452_data *data =3D iio_priv(indio_dev=
-);
-> =C2=A0=C2=A0=C2=A0=C2=A0 int ret, reg, steps;
-> @@ -1528,6 +1547,7 @@ static int mma8452_probe(struct i2c_client *client,
-> =C2=A0=C2=A0=C2=A0=C2=A0 case FXLS8471_DEVICE_ID:
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (ret =3D=3D data->chi=
-p_info->chip_id)
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =
-break;
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* FALLTHRU */
-> =C2=A0=C2=A0=C2=A0=C2=A0 default:
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return -ENODEV;
-> =C2=A0=C2=A0=C2=A0=C2=A0 }
-> @@ -1593,6 +1613,9 @@ static int mma8452_probe(struct i2c_client *client,
-> =C2=A0
-> =C2=A0=C2=A0=C2=A0=C2=A0 data->ctrl_reg1 =3D MMA8452_CTRL_ACTIVE |
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0 (MMA8452_CTRL_DR_DEFAULT << MMA8452_CTRL_DR_SHIFT);
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0
-> +=C2=A0=C2=A0=C2=A0 data->sleep_val =3D mma8452_calculate_sleep(data);
-> +
-> =C2=A0=C2=A0=C2=A0=C2=A0 ret =3D i2c_smbus_write_byte_data(client, MMA845=
-2_CTRL_REG1,
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->ctrl_reg1);
-> =C2=A0=C2=A0=C2=A0=C2=A0 if (ret < 0)
->=20
->=20
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--=-c+Ka7zQT6+sdJf1I9yR/--
 
