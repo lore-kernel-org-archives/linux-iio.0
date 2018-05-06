@@ -1,83 +1,156 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from esa6.microchip.iphmx.com ([216.71.154.253]:61961 "EHLO
-        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751901AbeEGKmc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 May 2018 06:42:32 -0400
-Subject: Re: [PATCH v4 5/9] iio: adc: at91-sama5d2_adc: add support for
- position and pressure channels
-To: Alexandre Belloni <alexandre.belloni@bootlin.com>
-CC: Jonathan Cameron <jic23@kernel.org>,
-        <ludovic.desroches@microchip.com>,
+Received: from mail.kernel.org ([198.145.29.99]:51224 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751774AbeEFRdr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 6 May 2018 13:33:47 -0400
+Date: Sun, 6 May 2018 18:33:41 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Eugen Hristev <eugen.hristev@microchip.com>
+Cc: <ludovic.desroches@microchip.com>, <alexandre.belloni@bootlin.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>,
         <nicolas.ferre@microchip.com>, <dmitry.torokhov@gmail.com>,
         <robh@kernel.org>
+Subject: Re: [PATCH v4 6/9] input: touchscreen: resistive-adc-touch: add
+ generic resistive ADC touchscreen
+Message-ID: <20180506183341.36919ad2@archlinux>
+In-Reply-To: <1525084335-11276-7-git-send-email-eugen.hristev@microchip.com>
 References: <1525084335-11276-1-git-send-email-eugen.hristev@microchip.com>
- <1525084335-11276-6-git-send-email-eugen.hristev@microchip.com>
- <20180506182953.6adad5b5@archlinux> <20180506175914.GL10960@piout.net>
- <eaeced9e-390f-0eea-0466-66c789bacdd6@microchip.com>
- <20180507102810.GO10960@piout.net>
-From: Eugen Hristev <eugen.hristev@microchip.com>
-Message-ID: <99e5d795-eaf6-eb07-3f80-d8b09772e5ff@microchip.com>
-Date: Mon, 7 May 2018 13:40:03 +0300
+        <1525084335-11276-7-git-send-email-eugen.hristev@microchip.com>
 MIME-Version: 1.0
-In-Reply-To: <20180507102810.GO10960@piout.net>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On Mon, 30 Apr 2018 13:32:12 +0300
+Eugen Hristev <eugen.hristev@microchip.com> wrote:
 
-
-On 07.05.2018 13:28, Alexandre Belloni wrote:
-> On 07/05/2018 09:18:39+0300, Eugen Hristev wrote:
->> On 06.05.2018 20:59, Alexandre Belloni wrote:
->>> Hi,
->>>
->>> On 06/05/2018 18:29:53+0100, Jonathan Cameron wrote:
->>>> On Mon, 30 Apr 2018 13:32:11 +0300
->>>> Eugen Hristev <eugen.hristev@microchip.com> wrote:
->>>>
->>>>> This implements the support for position and pressure for the included
->>>>> touchscreen support in the SAMA5D2 SOC ADC block.
->>>>> Two position channels are added and one for pressure.
->>>>> They can be read in raw format, or through a buffer.
->>>>> A normal use case is for a consumer driver to register a callback buffer
->>>>> for these channels.
->>>>> When the touchscreen channels are in the active scan mask,
->>>>> the driver will start the touchscreen sampling and push the data to the
->>>>> buffer.
->>>>>
->>>>> Some parts of this patch are based on initial original work by
->>>>> Mohamed Jamsheeth Hajanajubudeen and Bandaru Venkateswara Swamy
->>>>>
->>>>> Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
->>>> Looks good to me now.
->>>>
->>>> I'm assuming that once Dmitry and others are happy, I'll take the
->>>> series through the IIO tree. Will reply to the cover letter if the
->>>> rest of the patches look good to me to let everyone know that without
->>>> having to catch this comment down in here!
->>>>
->>>
->>> I'm planning to take both DT patches through the at91 tree once you take
->>> the DT bindings patches.
->>
->> Please take into consideration that those DT patches do not build
->> stand-alone, they depend on
->> [PATCH v4 7/9] dt-bindings: iio: adc: at91-sama5d2_adc: add channel specific
->> consumer info
->>
->> (the DT patches add an include statement of a file which is created in this
->> patch).
->>
+> This adds a generic resistive touchscreen (GRTS) driver, which is based
+> on an IIO device (an ADC). It must be connected to the channels of an ADC
+> to receive touch data. Then it will feed the data into the input subsystem
+> where it registers an input device.
+> It uses an IIO callback buffer to register to the IIO device
 > 
-> So the proper way is to actually have the values in the dt instead of
-> the define and then patch it on the next version of the kernel.
+> Some parts of this patch are based on initial original work by
+> Mohamed Jamsheeth Hajanajubudeen and Bandaru Venkateswara Swamy
 > 
-> Or we take the dts patches on the next version.
-
-Taking the DTS patches on the next version is fine for me.
-
-Thanks
+> Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+> ---
+> Changes in v4:
+>  - added a small description in file header
+>  - changed MAX_POS_MASK to GRTS_MAX_POS_MASK
+>  - initialized press with 0, as this value means no touch.
+> press has to be initialized because compiler/checkpatch complains
+> that can be used uninitialized.
+>  - changed of_property_read_u32 to device_*
+>  - set_abs_params for pressure will have range according to threshold
+>  - changed evbit and keybit with set_capability call
+>  - changed variable names to error instead of ret
+>  - checked errors for add_action_or_reset
+>  - cosmetic cleaning
 > 
+> Changes in v3:
+>  - pressure now reported naturally growing down-up
+>  - using helpers from touchscreen.h to parse DT properties
+>  - added devm_add_action_or_reset to handle callback buffer clean on exit
+>  - changed compatible and threshold property to adapt to changed bindings
+> 
+> Changes in v2:
+>  - this is now a generic resistive adc touchscreen driver
+> 
+>  drivers/input/touchscreen/Kconfig               |  13 ++
+>  drivers/input/touchscreen/Makefile              |   1 +
+>  drivers/input/touchscreen/resistive-adc-touch.c | 199 ++++++++++++++++++++++++
+>  3 files changed, 213 insertions(+)
+>  create mode 100644 drivers/input/touchscreen/resistive-adc-touch.c
+> 
+> diff --git a/drivers/input/touchscreen/Kconfig b/drivers/input/touchscreen/Kconfig
+> index 4f15496..8f85d3a 100644
+> --- a/drivers/input/touchscreen/Kconfig
+> +++ b/drivers/input/touchscreen/Kconfig
+> @@ -92,6 +92,19 @@ config TOUCHSCREEN_AD7879_SPI
+...
+> +static int grts_probe(struct platform_device *pdev)
+> +{
+> +	struct grts_state *st;
+> +	struct input_dev *input;
+> +	struct device *dev = &pdev->dev;
+> +	struct iio_channel *chan;
+> +	int error;
+> +
+> +	st = devm_kzalloc(dev, sizeof(struct grts_state), GFP_KERNEL);
+> +	if (!st)
+> +		return -ENOMEM;
+> +
+> +	error = device_property_read_u32(dev, "touchscreen-threshold-pressure",
+> +					 &st->pressure_threshold);
+> +	if (error) {
+> +		dev_dbg(dev, "can't get touchscreen pressure threshold property.\n");
+> +		st->pressure_threshold = GRTS_DEFAULT_PRESSURE_THRESHOLD;
+> +	}
+> +
+> +	/* get the channels from IIO device */
+> +	st->iio_chans = devm_iio_channel_get_all(dev);
+> +	if (IS_ERR(st->iio_chans)) {
+> +		if (PTR_ERR(st->iio_chans) != -EPROBE_DEFER)
+> +			dev_err(dev, "can't get iio channels.\n");
+> +		return PTR_ERR(st->iio_chans);
+> +	}
+> +
+> +	chan = &st->iio_chans[0];
+> +	st->pressure = false;
+> +	while (chan && chan->indio_dev) {
+> +		if (!strcmp(chan->channel->datasheet_name, "pressure"))
+> +			st->pressure = true;
+> +		chan++;
+> +	}
+> +
+> +	input = devm_input_allocate_device(dev);
+> +	if (!input) {
+> +		dev_err(dev, "failed to allocate input device.\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	input->name = DRIVER_NAME;
+> +	input->id.bustype = BUS_HOST;
+> +	input->open = grts_open;
+> +	input->close = grts_close;
+> +
+> +	input_set_abs_params(input, ABS_X, 0, GRTS_MAX_POS_MASK - 1, 0, 0);
+> +	input_set_abs_params(input, ABS_Y, 0, GRTS_MAX_POS_MASK - 1, 0, 0);
+> +	if (st->pressure)
+> +		input_set_abs_params(input, ABS_PRESSURE,
+> +				     st->pressure_threshold, 0xffff, 0, 0);
+> +
+> +	input_set_capability(input, EV_KEY, BTN_TOUCH);
+> +
+> +	/* parse optional device tree properties */
+> +	touchscreen_parse_properties(input, false, &st->prop);
+> +
+> +	st->input = input;
+> +	input_set_drvdata(input, st);
+> +
+> +	error = input_register_device(input);
+> +	if (error) {
+> +		dev_err(dev, "failed to register input device.");
+> +		return error;
+> +	}
+> +
+> +	st->iio_cb = iio_channel_get_all_cb(dev, grts_cb, st);
+> +	if (IS_ERR(st->iio_cb)) {
+> +		dev_err(dev, "failed to allocate callback buffer.\n");
+> +		error =  PTR_ERR(st->iio_cb);
+> +		return error;
+> +	}
+> +
+> +	error = devm_add_action_or_reset(dev, grts_disable, st->iio_cb);
+> +	if (error)
+> +		dev_err(dev, "failed to add disable action.\n");
+
+Why would you not be returning the error?
+
+> +
+> +	return 0;
+> +}
+..
