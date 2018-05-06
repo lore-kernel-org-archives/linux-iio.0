@@ -1,126 +1,150 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:56000 "EHLO
+Received: from saturn.retrosnub.co.uk ([46.235.226.198]:53536 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750722AbeELJiw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 May 2018 05:38:52 -0400
-Date: Sat, 12 May 2018 10:38:49 +0100
+        with ESMTP id S1751792AbeEFRBz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 6 May 2018 13:01:55 -0400
+Date: Sun, 6 May 2018 18:01:53 +0100
 From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 To: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
 Cc: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/4] iio: imu: inv_mpu6050: skip first sample when gyro
- is on
-Message-ID: <20180512103849.55ddcb16@archlinux>
-In-Reply-To: <50eccb4a-3a3c-2cd8-83ca-a304e71390a3@invensense.com>
+Subject: Re: [PATCH 4/4] iio: imu: inv_mpu6050: fix user_ctrl register
+ overwritten
+Message-ID: <20180506180153.46c62fb6@archlinux>
+In-Reply-To: <1525083251-8368-4-git-send-email-jmaneyrol@invensense.com>
 References: <1525083251-8368-1-git-send-email-jmaneyrol@invensense.com>
-        <1525083251-8368-3-git-send-email-jmaneyrol@invensense.com>
-        <20180506180015.52902895@archlinux>
-        <50eccb4a-3a3c-2cd8-83ca-a304e71390a3@invensense.com>
+        <1525083251-8368-4-git-send-email-jmaneyrol@invensense.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 8 May 2018 16:40:13 +0200
+On Mon, 30 Apr 2018 12:14:11 +0200
 Jean-Baptiste Maneyrol <jmaneyrol@invensense.com> wrote:
 
-> On 06/05/2018 19:00, Jonathan Cameron wrote:
-> > On Mon, 30 Apr 2018 12:14:10 +0200
-> > Jean-Baptiste Maneyrol <jmaneyrol@invensense.com> wrote:
-> >   
-> >> Implement generic skip first samples mechanism and use it to
-> >> filter out first sample when gyro is on.
-> >>
-> >> The problem for these chips is that the first sample of the gyro
-> >> is out of specs, because gyro is not completely stabilized. To
-> >> ensure all data are within sensor specs, we just skip the first
-> >> sample when turning gyro on.
-> >>
-> >> Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>  
-> > Neat and tidy solution so good.
-> > Is there a similar issue in the read_raw path which seems to just
-> > flick the gyro on then read from it immediately?
-> > 
-> > I may be missing a delay there which is preventing the data being
-> > bad though.
-> > 
-> > Jonathan  
-> Hello,
+> When in spi mode, we are setting i2c disable bit in user_ctrl
+> register. But the register is overwritten after when turning fifo
+> on. So save user_ctrl init value and always use it when updating
+> the register.
 > 
-> effectively raw reading should be affected. Since it is using direct 
-> sensor register reading, it should requires adding a correct sleep time. 
-> But direct reading like this is really not very reliable (turn chip and 
-> sensor on/off everytime, which is very bad for stability).
-> 
-> Is it possible to send later an additional patch for fixing this issue 
-> and accept this one? The fix for the 2 are completely unrelated since it 
-> doesn't use the same mechanism (FIFO reading vs register reading).
-Sure, that is fine. I think I just forgot to say I had applied this.
-Sorry about that.
+> Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+Applied, thanks.
 
 Jonathan
 
+> ---
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    |  7 ++++---
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h     |  1 +
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c    | 13 +++++++------
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c     |  5 +++--
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c |  3 ++-
+>  5 files changed, 17 insertions(+), 12 deletions(-)
 > 
-> Thanks.
-> JB
-> >> ---
-> >>   drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h     | 1 +
-> >>   drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c    | 7 ++++++-
-> >>   drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c | 3 +++
-> >>   3 files changed, 10 insertions(+), 1 deletion(-)
-> >>
-> >> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> >> index 142a835..dfb9e4e 100644
-> >> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> >> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> >> @@ -148,6 +148,7 @@ struct inv_mpu6050_state {
-> >>   	struct regmap *map;
-> >>   	int irq;
-> >>   	u8 irq_mask;
-> >> +	unsigned skip_samples;
-> >>   };
-> >>   
-> >>   /*register and associated bit definition*/
-> >> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-> >> index e51404f..1b57354 100644
-> >> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-> >> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-> >> @@ -185,7 +185,12 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
-> >>   		if (result == 0)
-> >>   			timestamp = 0;
-> >>   
-> >> -		iio_push_to_buffers_with_timestamp(indio_dev, data, timestamp);
-> >> +		/* skip first samples if needed */
-> >> +		if (st->skip_samples)
-> >> +			st->skip_samples--;
-> >> +		else
-> >> +			iio_push_to_buffers_with_timestamp(indio_dev, data,
-> >> +							   timestamp);
-> >>   
-> >>   		fifo_count -= bytes_per_datum;
-> >>   	}
-> >> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-> >> index 8a9f869..0d7db27 100644
-> >> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-> >> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-> >> @@ -49,11 +49,14 @@ static int inv_mpu6050_set_enable(struct iio_dev *indio_dev, bool enable)
-> >>   		if (result)
-> >>   			return result;
-> >>   		inv_scan_query(indio_dev);
-> >> +		st->skip_samples = 0;
-> >>   		if (st->chip_config.gyro_fifo_enable) {
-> >>   			result = inv_mpu6050_switch_engine(st, true,
-> >>   					INV_MPU6050_BIT_PWR_GYRO_STBY);
-> >>   			if (result)
-> >>   				goto error_power_off;
-> >> +			/* gyro first sample is out of specs, skip it */
-> >> +			st->skip_samples = 1;
-> >>   		}
-> >>   		if (st->chip_config.accl_fifo_enable) {
-> >>   			result = inv_mpu6050_switch_engine(st, true,  
-> > 
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> > the body of a message to majordomo@vger.kernel.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> >   
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> index 7358935..50c33e2 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> @@ -88,6 +88,7 @@ static const struct inv_mpu6050_chip_config chip_config_6050 = {
+>  	.gyro_fifo_enable = false,
+>  	.accl_fifo_enable = false,
+>  	.accl_fs = INV_MPU6050_FS_02G,
+> +	.user_ctrl = 0,
+>  };
+>  
+>  /* Indexed by enum inv_devices */
+> @@ -972,15 +973,15 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+>  	if (result)
+>  		return result;
+>  
+> -	if (inv_mpu_bus_setup)
+> -		inv_mpu_bus_setup(indio_dev);
+> -
+>  	result = inv_mpu6050_init_config(indio_dev);
+>  	if (result) {
+>  		dev_err(dev, "Could not initialize device.\n");
+>  		return result;
+>  	}
+>  
+> +	if (inv_mpu_bus_setup)
+> +		inv_mpu_bus_setup(indio_dev);
+> +
+>  	dev_set_drvdata(dev, indio_dev);
+>  	indio_dev->dev.parent = dev;
+>  	/* name will be NULL when enumerated via ACPI */
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> index dfb9e4e..c54da77 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> @@ -97,6 +97,7 @@ struct inv_mpu6050_chip_config {
+>  	unsigned int accl_fifo_enable:1;
+>  	unsigned int gyro_fifo_enable:1;
+>  	u16 fifo_rate;
+> +	u8 user_ctrl;
+>  };
+>  
+>  /**
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> index 1b57354..e7b23e3 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> @@ -51,13 +51,14 @@ int inv_reset_fifo(struct iio_dev *indio_dev)
+>  	if (result)
+>  		goto reset_fifo_fail;
+>  	/* disable fifo reading */
+> -	result = regmap_write(st->map, st->reg->user_ctrl, 0);
+> +	result = regmap_write(st->map, st->reg->user_ctrl,
+> +			      st->chip_config.user_ctrl);
+>  	if (result)
+>  		goto reset_fifo_fail;
+>  
+>  	/* reset FIFO*/
+> -	result = regmap_write(st->map, st->reg->user_ctrl,
+> -			      INV_MPU6050_BIT_FIFO_RST);
+> +	d = st->chip_config.user_ctrl | INV_MPU6050_BIT_FIFO_RST;
+> +	result = regmap_write(st->map, st->reg->user_ctrl, d);
+>  	if (result)
+>  		goto reset_fifo_fail;
+>  
+> @@ -72,9 +73,9 @@ int inv_reset_fifo(struct iio_dev *indio_dev)
+>  		if (result)
+>  			return result;
+>  	}
+> -	/* enable FIFO reading and I2C master interface*/
+> -	result = regmap_write(st->map, st->reg->user_ctrl,
+> -			      INV_MPU6050_BIT_FIFO_EN);
+> +	/* enable FIFO reading */
+> +	d = st->chip_config.user_ctrl | INV_MPU6050_BIT_FIFO_EN;
+> +	result = regmap_write(st->map, st->reg->user_ctrl, d);
+>  	if (result)
+>  		goto reset_fifo_fail;
+>  	/* enable sensor output to FIFO */
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+> index fe0bf5a..227f50a 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+> @@ -31,8 +31,9 @@ static int inv_mpu_i2c_disable(struct iio_dev *indio_dev)
+>  	if (ret)
+>  		return ret;
+>  
+> -	ret = regmap_write(st->map, INV_MPU6050_REG_USER_CTRL,
+> -			   INV_MPU6050_BIT_I2C_IF_DIS);
+> +	st->chip_config.user_ctrl |= INV_MPU6050_BIT_I2C_IF_DIS;
+> +	ret = regmap_write(st->map, st->reg->user_ctrl,
+> +			   st->chip_config.user_ctrl);
+>  	if (ret) {
+>  		inv_mpu6050_set_power_itg(st, false);
+>  		return ret;
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+> index 0d7db27..d3e26ae 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+> @@ -76,7 +76,8 @@ static int inv_mpu6050_set_enable(struct iio_dev *indio_dev, bool enable)
+>  		if (result)
+>  			goto error_accl_off;
+>  
+> -		result = regmap_write(st->map, st->reg->user_ctrl, 0);
+> +		result = regmap_write(st->map, st->reg->user_ctrl,
+> +				      st->chip_config.user_ctrl);
+>  		if (result)
+>  			goto error_accl_off;
+>  
 
