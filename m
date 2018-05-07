@@ -1,134 +1,247 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from anchovy3.45ru.net.au ([203.30.46.155]:54719 "EHLO
-        anchovy3.45ru.net.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756306AbeEJCWB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 May 2018 22:22:01 -0400
-Subject: Re: [PATCH v3] iio: accell: mma8452: Reduce sleep time when data not
- ready
-To: Martin Kepplinger <martink@posteo.de>, linux-iio@vger.kernel.org
+Received: from anchovy2.45ru.net.au ([203.30.46.146]:38785 "EHLO
+        anchovy2.45ru.net.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750732AbeEGEIe (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 May 2018 00:08:34 -0400
+Subject: [PATCH v3] iio: magnetometer: mag3110: Add ability to run in
+ continuous mode
+To: linux-iio@vger.kernel.org
+References: <c6182b29-3a9a-244e-6212-b425cb607027@electromag.com.au>
+ <19dc65cf-ce1b-e9f1-f4cd-cd936a11951d@electromag.com.au>
 Cc: Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, harinath922@gmail.com
-References: <4a845aca-600d-2473-9b66-51dea9d1651b@electromag.com.au>
- <5aad5eff-b0f4-4795-7c19-e177d415ed8b@electromag.com.au>
- <58db7210-1c84-3f5e-472d-8fae2b77bdd0@posteo.de>
- <8128071e-3b73-e0b1-eb2a-f1b245aea3e4@electromag.com.au>
- <939563a6-19ff-b51a-3a26-e90f10c7bae1@posteo.de>
- <cd307679-19c5-1132-79dc-b28c96cc537e@electromag.com.au>
- <7dc844c6-8666-c381-e6fe-d70dfebf2eeb@posteo.de>
+        lars@metafoo.de, pmeerw@pmeerw.net, javier@osg.samsung.com
 From: Richard Tresidder <rtresidd@electromag.com.au>
-Message-ID: <24930ae9-ec06-13bc-45ec-edbf97cbe2b5@electromag.com.au>
-Date: Thu, 10 May 2018 10:21:54 +0800
+Message-ID: <20c9e404-3dfe-4950-91be-43210c57811b@electromag.com.au>
+Date: Mon, 7 May 2018 12:08:35 +0800
 MIME-Version: 1.0
-In-Reply-To: <7dc844c6-8666-c381-e6fe-d70dfebf2eeb@posteo.de>
+In-Reply-To: <19dc65cf-ce1b-e9f1-f4cd-cd936a11951d@electromag.com.au>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-I'll take a look at the CRLF issue, seems the mail client is doing
-it.... strike 3 for thunderbird..
-Yes did run checkpatch
-Yes did note that line was 3 chars longer than 80 "0);"
-Aware that the coding standards allow this where it doesn't hide
-anything substantial and I think it's more readable..
-I'm ok to change it, just think it looks messy when split given it's in
-an un-bracketed if else statement.
-Theres over 100 of lines in the iio code alone that currently do the
-same thing on the last variable (including this file), so I thought it'd
-be ok.
+Adds the ability to run the Mag3110 in continuous mode to speed up the sampling rate.
+Depending on the sampling rate requested the device can be put in or out of continuous mode automatically.
+Shifting out of continuous mode requires a potential 1 / ODR wait which is also implemented
+Modified the sleep method when data is not ready to allow for sampling > 50sps to work.
 
-Cheers
-   Richard
-On 9/05/2018 5:57 PM, Martin Kepplinger wrote:
-> On 2018-05-08 10:19, Richard Tresidder wrote:
->> Modified the sleep method when data is not ready to allow for
-sampling > 50sps to work.
->>
->> Signed-off-by: Richard Tresidder <rtresidd@electromag.com.au>
->> ---
->> v3: Changes from v2
->>   * Removed fallthrough fix (will submit separately)
->>   * Fixed some blank lines, trailing white spaces.
->>
->> v2: Changes from v1
->>   * Remove whitespace changes
->>   * Added fallthrough fix (subsequently removed)
->>
->> drivers/iio/accel/mma8452.c | 23 ++++++++++++++++++++++-
->> 1 file changed, 22 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
->> index 7a2da7f..5650b59 100644
->> --- a/drivers/iio/accel/mma8452.c
->> +++ b/drivers/iio/accel/mma8452.c
->> @@ -106,6 +106,7 @@ struct mma8452_data {
->>      u8 ctrl_reg1;
->>      u8 data_cfg;
->>      const struct mma_chip_info *chip_info;
->> +    int sleep_val;
->>  };
->>
->>   /**
->> @@ -193,7 +194,10 @@ static int mma8452_drdy(struct mma8452_data *data)
->>          if ((ret & MMA8452_STATUS_DRDY) == MMA8452_STATUS_DRDY)
->>              return 0;
->>
->> -        msleep(20);
->> +        if (data->sleep_val <= 20)
->> +            usleep_range(data->sleep_val * 250, data->sleep_val * 500);
->
-> line over 80 chars. please use 2 lines.
->
-> Also, have you run checkpatch on this? You seem to have DOS line-endlings.
->
->> +        else
->> +            msleep(20);
->>      }
->>
->>      dev_err(&data->client->dev, "data not ready\n");
->> @@ -544,6 +548,18 @@ static int mma8452_read_raw(struct iio_dev
-*indio_dev,
->>      return -EINVAL;
->>  }
->>
->> +static int mma8452_calculate_sleep(struct mma8452_data *data)
->> +{
->> +    int ret, i = mma8452_get_odr_index(data);
->> +
->> +    if (mma8452_samp_freq[i][0] > 0)
->> +        ret = 1000 / mma8452_samp_freq[i][0];
->> +    else
->> +        ret = 1000;
->> +
->> +    return ret == 0 ? 1 : ret;
->> +}
->> +
->>  static int mma8452_standby(struct mma8452_data *data)
->>  {
->>      return i2c_smbus_write_byte_data(data->client, MMA8452_CTRL_REG1,
->> @@ -700,6 +716,8 @@ static int mma8452_write_raw(struct iio_dev
-*indio_dev,
->>          data->ctrl_reg1 &= ~MMA8452_CTRL_DR_MASK;
->>          data->ctrl_reg1 |= i << MMA8452_CTRL_DR_SHIFT;
->>
->> +        data->sleep_val = mma8452_calculate_sleep(data);
->> +
->>          ret = mma8452_change_config(data, MMA8452_CTRL_REG1,
->>                          data->ctrl_reg1);
->>          break;
->> @@ -1593,6 +1611,9 @@ static int mma8452_probe(struct i2c_client *client,
->>
->>      data->ctrl_reg1 = MMA8452_CTRL_ACTIVE |
->>                (MMA8452_CTRL_DR_DEFAULT << MMA8452_CTRL_DR_SHIFT);
->> +
->> +    data->sleep_val = mma8452_calculate_sleep(data);
->> +
->>      ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
->>                      data->ctrl_reg1);
->>      if (ret < 0)
->>
->
->
->
-
+Signed-off-by: Richard Tresidder <rtresidd@electromag.com.au>
+---
+diff --git a/drivers/iio/magnetometer/mag3110.c b/drivers/iio/magnetometer/mag3110.c
+index b34ace7..a8ad598 100644
+--- a/drivers/iio/magnetometer/mag3110.c
++++ b/drivers/iio/magnetometer/mag3110.c
+@@ -26,6 +26,7 @@
+ #define MAG3110_OUT_Y 0x03
+ #define MAG3110_OUT_Z 0x05
+ #define MAG3110_WHO_AM_I 0x07
++#define MAG3110_SYSMOD 0x08
+ #define MAG3110_OFF_X 0x09 /* MSB first */
+ #define MAG3110_OFF_Y 0x0b
+ #define MAG3110_OFF_Z 0x0d
+@@ -39,6 +40,8 @@
+ #define MAG3110_CTRL_DR_SHIFT 5
+ #define MAG3110_CTRL_DR_DEFAULT 0
+ 
++#define MAG3110_SYSMOD_MODE_MASK (BIT(1) | BIT(0))
++
+ #define MAG3110_CTRL_TM BIT(1) /* trigger single measurement */
+ #define MAG3110_CTRL_AC BIT(0) /* continuous measurements */
+ 
+@@ -52,17 +55,20 @@ struct mag3110_data {
+ 	struct i2c_client *client;
+ 	struct mutex lock;
+ 	u8 ctrl_reg1;
++	int sleep_val;
+ };
+ 
+ static int mag3110_request(struct mag3110_data *data)
+ {
+ 	int ret, tries = 150;
+ 
+-	/* trigger measurement */
+-	ret = i2c_smbus_write_byte_data(data->client, MAG3110_CTRL_REG1,
+-		data->ctrl_reg1 | MAG3110_CTRL_TM);
+-	if (ret < 0)
+-		return ret;
++	if ((data->ctrl_reg1 & MAG3110_CTRL_AC) == 0) {
++		/* trigger measurement */
++		ret = i2c_smbus_write_byte_data(data->client, MAG3110_CTRL_REG1,
++			data->ctrl_reg1 | MAG3110_CTRL_TM);
++		if (ret < 0)
++			return ret;
++	}
+ 
+ 	while (tries-- > 0) {
+ 		ret = i2c_smbus_read_byte_data(data->client, MAG3110_STATUS);
+@@ -71,7 +77,11 @@ static int mag3110_request(struct mag3110_data *data)
+ 		/* wait for data ready */
+ 		if ((ret & MAG3110_STATUS_DRDY) == MAG3110_STATUS_DRDY)
+ 			break;
+-		msleep(20);
++
++		if (data->sleep_val <= 20)
++			usleep_range(data->sleep_val * 250, data->sleep_val * 500);
++		else
++			msleep(20);
+ 	}
+ 
+ 	if (tries < 0) {
+@@ -144,6 +154,112 @@ static int mag3110_get_samp_freq_index(struct mag3110_data *data,
+ 		val2);
+ }
+ 
++static int mag3110_calculate_sleep(struct mag3110_data *data)
++{
++	int ret, i = data->ctrl_reg1 >> MAG3110_CTRL_DR_SHIFT;
++
++	if(mag3110_samp_freq[i][0] > 0)
++		ret = 1000 / mag3110_samp_freq[i][0];
++	else 
++		ret = 1000;
++
++	return ret == 0 ? 1 : ret;
++}
++
++static int mag3110_standby(struct mag3110_data *data)
++{
++	return i2c_smbus_write_byte_data(data->client, MAG3110_CTRL_REG1,
++		data->ctrl_reg1 & ~MAG3110_CTRL_AC);
++}
++
++static int mag3110_wait_standby(struct mag3110_data *data)
++{
++	int ret, tries = 30;
++
++	/* Takes up to 1/ODR to come out of active mode into stby 
++		 Longest expected period is 12.5seconds. We'll sleep for 500ms between checks*/
++	while (tries-- > 0) {
++		ret = i2c_smbus_read_byte_data(data->client, MAG3110_SYSMOD);
++		if (ret < 0) {
++			dev_err(&data->client->dev, "i2c error\n");
++			return ret;
++		}
++		/* wait for standby */
++		if ((ret & MAG3110_SYSMOD_MODE_MASK) == 0)
++			break;
++		
++		msleep_interruptible(500);
++	}
++
++	if (tries < 0) {
++		dev_err(&data->client->dev, "device not entering standby mode\n");
++		return -EIO;
++	}
++
++	return 0;
++}
++
++static int mag3110_active(struct mag3110_data *data)
++{
++	return i2c_smbus_write_byte_data(data->client, MAG3110_CTRL_REG1,
++					 data->ctrl_reg1);
++}
++
++/* returns >0 if active, 0 if in standby and <0 on error */
++static int mag3110_is_active(struct mag3110_data *data)
++{
++	int reg;
++
++	reg = i2c_smbus_read_byte_data(data->client, MAG3110_CTRL_REG1);
++	if (reg < 0)
++		return reg;
++
++	return reg & MAG3110_CTRL_AC;
++}
++
++static int mag3110_change_config(struct mag3110_data *data, u8 reg, u8 val)
++{
++	int ret;
++	int is_active;
++
++	mutex_lock(&data->lock);
++
++	is_active = mag3110_is_active(data);
++	if (is_active < 0) {
++		ret = is_active;
++		goto fail;
++	}
++
++	/* config can only be changed when in standby */
++	if (is_active > 0) {
++		ret = mag3110_standby(data);
++		if (ret < 0)
++			goto fail;
++	}
++
++	/* After coming out of active we must wait for the part to transition to STBY
++	   This can take up to 1 /ODR to occur */
++	ret = mag3110_wait_standby(data);
++	if (ret < 0)
++		goto fail;
++
++	ret = i2c_smbus_write_byte_data(data->client, reg, val);
++	if (ret < 0)
++		goto fail;
++
++	if (is_active > 0) {
++		ret = mag3110_active(data);
++		if (ret < 0)
++			goto fail;
++	}
++
++	ret = 0;
++fail:
++	mutex_unlock(&data->lock);
++
++	return ret;
++}
++
+ static int mag3110_read_raw(struct iio_dev *indio_dev,
+ 			    struct iio_chan_spec const *chan,
+ 			    int *val, int *val2, long mask)
+@@ -235,11 +351,13 @@ static int mag3110_write_raw(struct iio_dev *indio_dev,
+ 			ret = -EINVAL;
+ 			break;
+ 		}
+-
+-		data->ctrl_reg1 &= ~MAG3110_CTRL_DR_MASK;
++		data->ctrl_reg1 &= ~MAG3110_CTRL_DR_MASK & ~MAG3110_CTRL_AC;
+ 		data->ctrl_reg1 |= rate << MAG3110_CTRL_DR_SHIFT;
+-		ret = i2c_smbus_write_byte_data(data->client,
+-			MAG3110_CTRL_REG1, data->ctrl_reg1);
++		data->sleep_val = mag3110_calculate_sleep(data);
++		if (data->sleep_val < 40)
++			data->ctrl_reg1 |= MAG3110_CTRL_AC;
++
++		ret = mag3110_change_config(data, MAG3110_CTRL_REG1, data->ctrl_reg1);
+ 		break;
+ 	case IIO_CHAN_INFO_CALIBBIAS:
+ 		if (val < -10000 || val > 10000) {
+@@ -337,12 +455,6 @@ static irqreturn_t mag3110_trigger_handler(int irq, void *p)
+ 
+ static const unsigned long mag3110_scan_masks[] = {0x7, 0xf, 0};
+ 
+-static int mag3110_standby(struct mag3110_data *data)
+-{
+-	return i2c_smbus_write_byte_data(data->client, MAG3110_CTRL_REG1,
+-		data->ctrl_reg1 & ~MAG3110_CTRL_AC);
+-}
+-
+ static int mag3110_probe(struct i2c_client *client,
+ 			 const struct i2c_device_id *id)
+ {
+@@ -374,8 +486,11 @@ static int mag3110_probe(struct i2c_client *client,
+ 	indio_dev->available_scan_masks = mag3110_scan_masks;
+ 
+ 	data->ctrl_reg1 = MAG3110_CTRL_DR_DEFAULT << MAG3110_CTRL_DR_SHIFT;
+-	ret = i2c_smbus_write_byte_data(client, MAG3110_CTRL_REG1,
+-		data->ctrl_reg1);
++	data->sleep_val = mag3110_calculate_sleep(data);
++	if (data->sleep_val < 40)
++		data->ctrl_reg1 |= MAG3110_CTRL_AC;
++
++	ret = mag3110_change_config(data, MAG3110_CTRL_REG1, data->ctrl_reg1);
+ 	if (ret < 0)
+ 		return ret;
 
 
