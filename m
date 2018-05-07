@@ -1,94 +1,81 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from osg.samsung.com ([64.30.133.232]:61717 "EHLO osg.samsung.com"
+Received: from osg.samsung.com ([64.30.133.232]:49868 "EHLO osg.samsung.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752167AbeEGJgD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 7 May 2018 05:36:03 -0400
+        id S1752470AbeEGJgH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 7 May 2018 05:36:07 -0400
 From: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
 To: Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
         Mauro Carvalho Chehab <mchehab@infradead.org>,
         linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-wireless@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-fbdev@vger.kernel.org, linux-can@vger.kernel.org,
-        "Luis R. Rodriguez" <mcgrof@kernel.org>, linux-iio@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-crypto@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-pm@vger.kernel.org
-Subject: [PATCH 00/18] Fix some build warnings/errors with Sphinx
-Date: Mon,  7 May 2018 06:35:36 -0300
-Message-Id: <cover.1525684985.git.mchehab+samsung@kernel.org>
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org
+Subject: [PATCH 15/18] iio: iio.h: use nested struct support on kernel-doc markup
+Date: Mon,  7 May 2018 06:35:51 -0300
+Message-Id: <1a31240699b1b6ee089b5b36889ab27ae14ad94e.1525684985.git.mchehab+samsung@kernel.org>
+In-Reply-To: <cover.1525684985.git.mchehab+samsung@kernel.org>
+References: <cover.1525684985.git.mchehab+samsung@kernel.org>
+In-Reply-To: <cover.1525684985.git.mchehab+samsung@kernel.org>
+References: <cover.1525684985.git.mchehab+samsung@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-I decided to give a try with Sphinx last stable version
-(1.17.4), and noticed several issues. The worse one was
-with the networking book: a non-standard footnote there
-with [*] instead of a number causes it to break PDF building.
+Solve those Sphinx warnings:
 
-So, I took some spare time to address some warnings all over
-the tree, and moved a few text documents to a book. I with
-I had more time to move the other ones and to solve other
-warnings.
+    ./include/linux/iio/iio.h:270: warning: Function parameter or member 'scan_type.sign' not described in 'iio_chan_spec'
+    ./include/linux/iio/iio.h:270: warning: Function parameter or member 'scan_type.realbits' not described in 'iio_chan_spec'
+    ./include/linux/iio/iio.h:270: warning: Function parameter or member 'scan_type.storagebits' not described in 'iio_chan_spec'
+    ./include/linux/iio/iio.h:270: warning: Function parameter or member 'scan_type.shift' not described in 'iio_chan_spec'
+    ./include/linux/iio/iio.h:270: warning: Function parameter or member 'scan_type.repeat' not described in 'iio_chan_spec'
+    ./include/linux/iio/iio.h:270: warning: Function parameter or member 'scan_type.endianness' not described in 'iio_chan_spec'
 
-Mauro Carvalho Chehab (18):
-  docs: can.rst: fix a footnote reference
-  docs: fix location of request_firmware & friends
-  docs: */index.rst: Add newer documents to their respective index.rst
-  docs: admin-guide: add bcache documentation
-  docs: core-api: add cachetlb documentation
-  docs: core-api: add cgroup-v2 documentation
-  docs: core-api: add circular-buffers documentation
-  docs: driver-api: add clk documentation
-  net: mac80211.h: fix a bad comment line
-  rcu: rcupdate.h: get rid of Sphinx warnings at rcu_pointer_handoff()
-  docs: crypto_engine.rst: Fix two parse warnings
-  time: timer.c: adjust a kernel-doc comment
-  wait: wait.h: Get rid of a kernel-doc/Sphinx warnings
-  fbdev: modedb.c: fix a kernel-doc markup
-  iio: iio.h: use nested struct support on kernel-doc markup
-  mtd: rawnand.h: use nested union kernel-doc markups
-  docs: uio-howto.rst: use a code block to solve a warning
-  w1: w1_io.c: fix a kernel-doc warning
+    ./include/linux/iio/iio.h:191: WARNING: Unexpected indentation.
+    ./include/linux/iio/iio.h:192: WARNING: Block quote ends without a blank line; unexpected unindent.
+    ./include/linux/iio/iio.h:198: WARNING: Definition list ends without a blank line; unexpected unindent.
 
- Documentation/00-INDEX                        | 10 -------
- .../{bcache.txt => admin-guide/bcache.rst}    |  0
- .../cgroup-v2.rst}                            |  0
- Documentation/admin-guide/index.rst           |  2 ++
- .../admin-guide/kernel-parameters.txt         |  2 +-
- .../{cachetlb.txt => core-api/cachetlb.rst}   |  0
- .../circular-buffers.rst}                     |  0
- Documentation/core-api/index.rst              |  2 ++
- Documentation/crypto/crypto_engine.rst        |  8 +++---
- Documentation/crypto/index.rst                |  1 +
- Documentation/dell_rbu.txt                    |  4 +--
- Documentation/{clk.txt => driver-api/clk.rst} |  0
- .../firmware/fallback-mechanisms.rst          |  2 +-
- .../driver-api/firmware/request_firmware.rst  | 17 +++++++-----
- Documentation/driver-api/index.rst            |  2 ++
- Documentation/driver-api/infrastructure.rst   |  2 +-
- Documentation/driver-api/uio-howto.rst        |  3 ++-
- Documentation/memory-barriers.txt             |  4 +--
- Documentation/networking/can.rst              |  4 +--
- .../power/suspend-and-cpuhotplug.txt          |  2 +-
- Documentation/process/index.rst               |  1 +
- Documentation/security/index.rst              |  2 ++
- .../translations/ko_KR/memory-barriers.txt    |  4 +--
- drivers/video/fbdev/core/modedb.c             | 22 ++++++++--------
- drivers/w1/w1_io.c                            |  1 +
- include/linux/iio/iio.h                       | 24 ++++++++---------
- include/linux/mtd/rawnand.h                   | 26 +++++++++++++------
- include/linux/rcupdate.h                      |  5 ++--
- include/linux/wait.h                          |  2 +-
- include/net/mac80211.h                        |  2 +-
- kernel/time/timer.c                           | 14 +++++-----
- 31 files changed, 93 insertions(+), 75 deletions(-)
- rename Documentation/{bcache.txt => admin-guide/bcache.rst} (100%)
- rename Documentation/{cgroup-v2.txt => admin-guide/cgroup-v2.rst} (100%)
- rename Documentation/{cachetlb.txt => core-api/cachetlb.rst} (100%)
- rename Documentation/{circular-buffers.txt => core-api/circular-buffers.rst} (100%)
- rename Documentation/{clk.txt => driver-api/clk.rst} (100%)
+Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+---
+ include/linux/iio/iio.h | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 11579fd4126e..a74cb177dc6f 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -183,18 +183,18 @@ struct iio_event_spec {
+  * @address:		Driver specific identifier.
+  * @scan_index:		Monotonic index to give ordering in scans when read
+  *			from a buffer.
+- * @scan_type:		sign:		's' or 'u' to specify signed or unsigned
+- *			realbits:	Number of valid bits of data
+- *			storagebits:	Realbits + padding
+- *			shift:		Shift right by this before masking out
+- *					realbits.
+- *			repeat:		Number of times real/storage bits
+- *					repeats. When the repeat element is
+- *					more than 1, then the type element in
+- *					sysfs will show a repeat value.
+- *					Otherwise, the number of repetitions is
+- *					omitted.
+- *			endianness:	little or big endian
++ * @scan_type:		struct describing the scan type
++ * @scan_type.sign:		's' or 'u' to specify signed or unsigned
++ * @scan_type.realbits:		Number of valid bits of data
++ * @scan_type.storagebits:	Realbits + padding
++ * @scan_type.shift:		Shift right by this before masking out
++ *				realbits.
++ * @scan_type.repeat:		Number of times real/storage bits repeats.
++ *				When the repeat element is more than 1, then
++ *				the type element in sysfs will show a repeat
++ *				value. Otherwise, the number of repetitions
++ *				is omitted.
++ * @scan_type.endianness:	little or big endian
+  * @info_mask_separate: What information is to be exported that is specific to
+  *			this channel.
+  * @info_mask_separate_available: What availability information is to be
 -- 
 2.17.0
-
 
