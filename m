@@ -1,51 +1,51 @@
-Return-Path: <mchehab+samsung@kernel.org>
-Date: Wed, 9 May 2018 09:00:57 -0300
-From: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Linux Doc Mailing List <linux-doc@vger.kernel.org>, Mauro Carvalho
- Chehab <mchehab@infradead.org>, linux-kernel@vger.kernel.org, Jonathan
- Corbet <corbet@lwn.net>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter
- Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
- linux-iio@vger.kernel.org
-Subject: Re: [PATCH 15/18] iio: iio.h: use nested struct support on
- kernel-doc markup
-Message-ID: <20180509090057.23051846@vento.lan>
-In-Reply-To: <20180507180803.21e967b2@archlinux>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ms.lwn.net ([45.79.88.28]:35952 "EHLO ms.lwn.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1755237AbeEHQNq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 8 May 2018 12:13:46 -0400
+Date: Tue, 8 May 2018 10:13:42 -0600
+From: Jonathan Corbet <corbet@lwn.net>
+To: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+Cc: Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Mauro Carvalho Chehab <mchehab@infradead.org>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-mtd@lists.infradead.org, linux-fbdev@vger.kernel.org,
+        linux-can@vger.kernel.org, "Luis R. Rodriguez" <mcgrof@kernel.org>,
+        linux-iio@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-crypto@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-pm@vger.kernel.org
+Subject: Re: [PATCH 00/18] Fix some build warnings/errors with Sphinx
+Message-ID: <20180508101342.2bde20ea@lwn.net>
+In-Reply-To: <cover.1525684985.git.mchehab+samsung@kernel.org>
 References: <cover.1525684985.git.mchehab+samsung@kernel.org>
-	<1a31240699b1b6ee089b5b36889ab27ae14ad94e.1525684985.git.mchehab+samsung@kernel.org>
-	<20180507180803.21e967b2@archlinux>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Em Mon, 7 May 2018 18:08:03 +0100
-Jonathan Cameron <jic23@kernel.org> escreveu:
+On Mon,  7 May 2018 06:35:36 -0300
+Mauro Carvalho Chehab <mchehab+samsung@kernel.org> wrote:
 
-> On Mon,  7 May 2018 06:35:51 -0300
-> Mauro Carvalho Chehab <mchehab+samsung@kernel.org> wrote:
+> I decided to give a try with Sphinx last stable version
+> (1.17.4), and noticed several issues. The worse one was
+> with the networking book: a non-standard footnote there
+> with [*] instead of a number causes it to break PDF building.
 > 
-> > Solve those Sphinx warnings:
-> > 
-> >     ./include/linux/iio/iio.h:270: warning: Function parameter or member 'scan_type.sign' not described in 'iio_chan_spec'
-> >     ./include/linux/iio/iio.h:270: warning: Function parameter or member 'scan_type.realbits' not described in 'iio_chan_spec'
-> >     ./include/linux/iio/iio.h:270: warning: Function parameter or member 'scan_type.storagebits' not described in 'iio_chan_spec'
-> >     ./include/linux/iio/iio.h:270: warning: Function parameter or member 'scan_type.shift' not described in 'iio_chan_spec'
-> >     ./include/linux/iio/iio.h:270: warning: Function parameter or member 'scan_type.repeat' not described in 'iio_chan_spec'
-> >     ./include/linux/iio/iio.h:270: warning: Function parameter or member 'scan_type.endianness' not described in 'iio_chan_spec'
-> > 
-> >     ./include/linux/iio/iio.h:191: WARNING: Unexpected indentation.
-> >     ./include/linux/iio/iio.h:192: WARNING: Block quote ends without a blank line; unexpected unindent.
-> >     ./include/linux/iio/iio.h:198: WARNING: Definition list ends without a blank line; unexpected unindent.
-> > 
-> > Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>  
-> Great thanks.  I couldn't figure out how to do this last time
-> I looked at it.
+> So, I took some spare time to address some warnings all over
+> the tree, and moved a few text documents to a book. 
 
-Support for nested structs were only recently introduced :-)
+OK, I've applied the ones that seem to make sense for me to take now.
+There's comments on the firmware one, and I'd rather have Tejun's OK for
+the cgroup one.  The code-comment changes should probably go via the
+usual maintainers.
 
-> 
-> Applied to the togreg branch of iio.git and pushed out as testing for
-> the autobuilders to ignore it.
+> I with
+> I had more time to move the other ones and to solve other
+> warnings.
 
-Thanks!
-Mauro
+You and me both - but each step helps!
+
+Thanks,
+
+jon
