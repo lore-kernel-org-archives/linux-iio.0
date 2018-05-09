@@ -1,43 +1,51 @@
-Return-Path: <SRS0=g9gq=IJ=gmail.com=robherring2@kernel.org>
-Date: Tue, 22 May 2018 15:57:01 -0500
-From: Rob Herring <robh@kernel.org>
-To: Siddartha Mohanadoss <smohanad@codeaurora.org>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, cdevired@codeaurora.org,
-	rphani@codeaurora.org, sivaa@codeaurora.org
-Subject: Re: [PATCH 2/2] iio: adc: Add Qualcomm SPMI PMIC5 ADC driver
-Message-ID: <20180522205701.GA31572@rob-hp-laptop>
-References: <1525815536-27781-1-git-send-email-smohanad@codeaurora.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from merlin.infradead.org ([205.233.59.134]:41580 "EHLO
+        merlin.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932988AbeEIBOb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 May 2018 21:14:31 -0400
+Subject: Re: Using LIBIIO sending DATA to DAC and capturing the output from
+ DAC
+To: jarul <joearul09@gmail.com>, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org
+References: <1525828377261-0.post@n7.nabble.com>
+From: Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <e455a341-49eb-c9c3-89aa-3e090bdd8898@infradead.org>
+Date: Tue, 8 May 2018 18:14:28 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1525815536-27781-1-git-send-email-smohanad@codeaurora.org>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1525828377261-0.post@n7.nabble.com>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, May 08, 2018 at 02:38:56PM -0700, Siddartha Mohanadoss wrote:
-> This patch adds support for Qualcomm SPMI PMIC5 family
-> of ADC driver that supports hardware based offset and
-> gain compensation. The ADC peripheral can measure both
-> voltage and current channels whose input signal is
-> connected to the PMIC.
+[adding linux-iio mailing list]
+
+On 05/08/2018 06:12 PM, jarul wrote:
+> I would like to ask a question and if anybody can answer my question, I would
+> very much appreciate.
 > 
-> The register set and configuration has been refreshed
-> compared to the prior Qualcomm PMIC ADC family. Register
-> ADC5 as part of the IIO framework.
+> I am using Z706 and AD9361. I have setup the SD card image on the server
+> side and I have a client machine which is a Linux machine. I am using
+> ad9361-iiostream file where I send my data using sin and cos function to DAC
+> and try to get the output from DAC. If I send the random number which does
+> not exceed 2047, do the left shift 4 bit and send the data to DAC. It
+> creates a nice waveform file and the waveform can be seen on oscilloscope
+> clearly.  Using random number I can get the output from DAC. However, when I
+> send the sin and cos function, the output from DAC can not be captured or I
+> get just 0 and one single value as output.
 > 
-> Signed-off-by: Siddartha Mohanadoss <smohanad@codeaurora.org>
-> ---
->  drivers/iio/adc/Kconfig                  |  18 +
->  drivers/iio/adc/Makefile                 |   1 +
->  drivers/iio/adc/qcom-spmi-adc5.c         | 818 +++++++++++++++++++++++++++++++
->  drivers/iio/adc/qcom-vadc-common.c       | 241 +++++++++
->  drivers/iio/adc/qcom-vadc-common.h       |  51 ++
+> I have used iio_channel_read_raw function to capture the output else
+> iio_channel_read function to capture the output from DAC. I want to capture
+> the DAC output and then send the output to ADC and finally I want to capture
+> the ADC output to compare the digital data on both side.
+> 
+> Can any export or whoever is familiar with the subject libiio can answer my
+> question. Thanks a lot.
+> 
+> 
+> 
+> --
+> Sent from: http://linux-kernel.2935.n7.nabble.com/
 
->  include/dt-bindings/iio/qcom,spmi-vadc.h | 115 ++++-
 
-This belongs in the binding patch.
-
->  6 files changed, 1243 insertions(+), 1 deletion(-)
->  create mode 100644 drivers/iio/adc/qcom-spmi-adc5.c
+-- 
+~Randy
