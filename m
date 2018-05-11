@@ -1,77 +1,102 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:42822 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751739AbeELRoo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 12 May 2018 13:44:44 -0400
-Date: Sat, 12 May 2018 18:44:38 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Brian Masney <masneyb@onstation.org>
-Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        lars@metafoo.de, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, pmeerw@pmeerw.net, knaack.h@gmx.de,
-        drew.paterson@ams.com
-Subject: Re: [PATCH v3 9/9] staging: iio: tsl2x7x/tsl2772: move out of
- staging
-Message-ID: <20180512184438.4e4e49b9@archlinux>
-In-Reply-To: <20180512123630.f2b7opaob3cb3fom@a2245dbc7726>
-References: <20180511001223.12378-1-masneyb@onstation.org>
-        <20180511001223.12378-10-masneyb@onstation.org>
-        <20180511003206.pgh244sd5t6v4njx@a2245dbc7726>
-        <20180512124437.6526c6a0@archlinux>
-        <20180512123630.f2b7opaob3cb3fom@a2245dbc7726>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from smtp688out9.mel.oss-core.net ([210.50.217.236]:57442 "EHLO
+        smtp688out9.mel.oss-core.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1751406AbeEKJFF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 May 2018 05:05:05 -0400
+From: Richard Tresidder <rtresidd@electromag.com.au>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, harinath922@gmail.com, martink@posteo.de,
+        rtresidd@electromag.com.au, linux-iio@vger.kernel.org
+Subject: [PATCH v4 1/1] iio: accell: mma8452: Reduce sleep time when data not ready
+Date: Fri, 11 May 2018 16:54:59 +0800
+Message-Id: <1526028899-4995-1-git-send-email-rtresidd@electromag.com.au>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, 12 May 2018 08:36:30 -0400
-Brian Masney <masneyb@onstation.org> wrote:
+Modified the sleep method when data is not ready to allow for sampling > 50sps to work.
 
-> On Sat, May 12, 2018 at 12:44:37PM +0100, Jonathan Cameron wrote:
-> > On Thu, 10 May 2018 20:32:06 -0400
-> > Brian Masney <masneyb@onstation.org> wrote:
-> >   
-> > > On Thu, May 10, 2018 at 08:12:23PM -0400, Brian Masney wrote:  
-> > > > Move the tsl2772 driver out of staging and into mainline.    
-> > > 
-> > > Hey Jonathan,
-> > > 
-> > > Here is the .c and .h file to make your review easier. Thanks for all
-> > > your feedback on all of these changes to this driver plus the other 3
-> > > that I've already moved out of staging. I've learned a lot going through
-> > > this process.  
-> > 
-> > I have the great pleasure to say APPLIED! 
-> > Congratulations Brian.  This has been the longest and most complex driver
-> > cleanup I think we have ever had.
-> > 
-> > 64? patches 
-> > 
-> > 930 (+ 366) insertions, 710(+ 368) deletions (brackets for the driver rename
-> > which only sort of counts.
-> > 
-> > + this is the 4th driver as you say.
-> > 
-> > Particularly pleasing is that we no longer have any light sensors in iio staging.
-> > 
-> > So what's next?  
-> 
-> Great! Thank you!
-> 
-> I have two things that I'm planning to do next:
-> 
-> 1) See if the tsl2583 driver can be cleanly folded into tsl2772.
+Signed-off-by: Richard Tresidder <rtresidd@electromag.com.au>
+---
 
-Cool.  Always nice to merge similar drivers so hope that works out well.
+Notes:
+    v4: Changes from v3
+      * fix long line
+      * fix eol issues with patch
+    
+    v3: Changes from v2
+      * Removed fallthrough fix (will submit separately)
+      * Fixed some blank lines, trailing white spaces.
+    
+    v2: Changes from v1
+      * Remove whitespace changes
+      * Added fallthrough fix (subsequently removed
 
-> 
-> 2) I have a Google Nexus 5 phone and I'm going to work towards being
->    able to run an upstream kernel on the device. There has already been
->    some work on this so looking to join forces:
->    https://github.com/flto/linux/wiki/hammerhead-upstream
-Best of luck!
+ drivers/iio/accel/mma8452.c | 24 +++++++++++++++++++++++-
+ 1 file changed, 23 insertions(+), 1 deletion(-)
 
-Jonathan
-> 
-> Brian
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index 7a2da7f..7e3d82c 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -106,6 +106,7 @@ struct mma8452_data {
+ 	u8 ctrl_reg1;
+ 	u8 data_cfg;
+ 	const struct mma_chip_info *chip_info;
++	int sleep_val;
+ };
+ 
+  /**
+@@ -193,7 +194,11 @@ static int mma8452_drdy(struct mma8452_data *data)
+ 		if ((ret & MMA8452_STATUS_DRDY) == MMA8452_STATUS_DRDY)
+ 			return 0;
+ 
+-		msleep(20);
++		if (data->sleep_val <= 20)
++			usleep_range(data->sleep_val * 250,
++				     data->sleep_val * 500);
++		else
++			msleep(20);
+ 	}
+ 
+ 	dev_err(&data->client->dev, "data not ready\n");
+@@ -544,6 +549,18 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
+ 	return -EINVAL;
+ }
+ 
++static int mma8452_calculate_sleep(struct mma8452_data *data)
++{
++	int ret, i = mma8452_get_odr_index(data);
++
++	if (mma8452_samp_freq[i][0] > 0)
++		ret = 1000 / mma8452_samp_freq[i][0];
++	else
++		ret = 1000;
++
++	return ret == 0 ? 1 : ret;
++}
++
+ static int mma8452_standby(struct mma8452_data *data)
+ {
+ 	return i2c_smbus_write_byte_data(data->client, MMA8452_CTRL_REG1,
+@@ -700,6 +717,8 @@ static int mma8452_write_raw(struct iio_dev *indio_dev,
+ 		data->ctrl_reg1 &= ~MMA8452_CTRL_DR_MASK;
+ 		data->ctrl_reg1 |= i << MMA8452_CTRL_DR_SHIFT;
+ 
++		data->sleep_val = mma8452_calculate_sleep(data);
++
+ 		ret = mma8452_change_config(data, MMA8452_CTRL_REG1,
+ 					    data->ctrl_reg1);
+ 		break;
+@@ -1593,6 +1612,9 @@ static int mma8452_probe(struct i2c_client *client,
+ 
+ 	data->ctrl_reg1 = MMA8452_CTRL_ACTIVE |
+ 			  (MMA8452_CTRL_DR_DEFAULT << MMA8452_CTRL_DR_SHIFT);
++
++	data->sleep_val = mma8452_calculate_sleep(data);
++
+ 	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
+ 					data->ctrl_reg1);
+ 	if (ret < 0)
+-- 
+1.8.3.1
 
