@@ -1,293 +1,133 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:53266 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750749AbeELLUe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 12 May 2018 07:20:34 -0400
-Date: Sat, 12 May 2018 12:20:28 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Brian Masney <masneyb@onstation.org>
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-        devel@driverdev.osuosl.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-kernel@vger.kernel.org,
-        drew.paterson@ams.com
-Subject: Re: [PATCH v3 5/9] staging: iio: tsl2x7x: convert to use read_avail
-Message-ID: <20180512122028.31205986@archlinux>
-In-Reply-To: <20180511001223.12378-6-masneyb@onstation.org>
+Return-Path: <SRS0=6Xdg=H6=onstation.org=masneyb@kernel.org>
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org,
+	linux-iio@vger.kernel.org
+Cc: gregkh@linuxfoundation.org,
+	devel@driverdev.osuosl.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	linux-kernel@vger.kernel.org,
+	drew.paterson@ams.com
+Subject: [PATCH v3 6/9] staging: iio: tsl2x7x: correct IIO_EV_INFO_PERIOD values
+Date: Thu, 10 May 2018 20:12:20 -0400
+Message-Id: <20180511001223.12378-7-masneyb@onstation.org>
+In-Reply-To: <20180511001223.12378-1-masneyb@onstation.org>
 References: <20180511001223.12378-1-masneyb@onstation.org>
-        <20180511001223.12378-6-masneyb@onstation.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 10 May 2018 20:12:19 -0400
-Brian Masney <masneyb@onstation.org> wrote:
+The thresh periods assumed an integration time of 3ms. This patch adds
+support for the correct integration time (2.72ms or 2.73ms). The code
+had the ALS filter values as going up to 15, however the values actually
+went up to 60 since the values scaled in increments of 5 once the
+persistence value went above 3.
 
-> Make the sysfs attributes in_proximity0_calibscale_available, and
-> in_intensity0_{calibscale,integration_time}_available be created
-> using info_mask_separate_available on the channel configuration.
-> 
-> The driver assumed that the ALS increment was 2.72 ms, and the upper
-> range was 696 ms. Some other supported devices use 2.73 ms - 699 ms.
-> This patch adds support for the multiple ranges.
-> 
-> Signed-off-by: Brian Masney <masneyb@onstation.org>
-Nice thank you.
+Signed-off-by: Brian Masney <masneyb@onstation.org>
+---
+ drivers/staging/iio/light/tsl2x7x.c | 44 +++++++++++++++++++++----------------
+ drivers/staging/iio/light/tsl2x7x.h |  1 -
+ 2 files changed, 25 insertions(+), 20 deletions(-)
 
-Applied to the togreg branch of iio.git and pushed out as testing.
-
-Jonathan
-
-> ---
->  drivers/staging/iio/light/tsl2x7x.c | 93 ++++++++++++++++++++++++++++++-------
->  1 file changed, 76 insertions(+), 17 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
-> index 51c1a90cb592..2d713d3c7c7b 100644
-> --- a/drivers/staging/iio/light/tsl2x7x.c
-> +++ b/drivers/staging/iio/light/tsl2x7x.c
-> @@ -209,9 +209,9 @@ static const struct tsl2x7x_lux *tsl2x7x_default_lux_table_group[] = {
->  };
->  
->  static const struct tsl2x7x_settings tsl2x7x_default_settings = {
-> -	.als_time = 255, /* 2.73 ms */
-> +	.als_time = 255, /* 2.72 / 2.73 ms */
->  	.als_gain = 0,
-> -	.prox_time = 255, /* 2.73 ms */
-> +	.prox_time = 255, /* 2.72 / 2.73 ms */
->  	.prox_gain = 0,
->  	.wait_time = 255,
->  	.als_prox_config = 0,
-> @@ -245,6 +245,23 @@ static const s16 tsl2x7x_prox_gain[] = {
->  	8
->  };
->  
-> +static const int tsl2x7x_int_time_avail[][6] = {
-> +	[tsl2571] = { 0, 2720, 0, 2720, 0, 696000 },
-> +	[tsl2671] = { 0, 2720, 0, 2720, 0, 696000 },
-> +	[tmd2671] = { 0, 2720, 0, 2720, 0, 696000 },
-> +	[tsl2771] = { 0, 2720, 0, 2720, 0, 696000 },
-> +	[tmd2771] = { 0, 2720, 0, 2720, 0, 696000 },
-> +	[tsl2572] = { 0, 2730, 0, 2730, 0, 699000 },
-> +	[tsl2672] = { 0, 2730, 0, 2730, 0, 699000 },
-> +	[tmd2672] = { 0, 2730, 0, 2730, 0, 699000 },
-> +	[tsl2772] = { 0, 2730, 0, 2730, 0, 699000 },
-> +	[tmd2772] = { 0, 2730, 0, 2730, 0, 699000 },
-> +};
-> +
-> +static int tsl2x7x_int_calibscale_avail[] = { 1, 8, 16, 120 };
-> +
-> +static int tsl2x7x_prox_calibscale_avail[] = { 1, 2, 4, 8 };
-> +
->  /* Channel variations */
->  enum {
->  	ALS,
-> @@ -626,7 +643,7 @@ static int tsl2x7x_chip_on(struct iio_dev *indio_dev)
->  
->  	/* set chip time scaling and saturation */
->  	als_count = 256 - chip->settings.als_time;
-> -	als_time_us = als_count * 2720;
-> +	als_time_us = als_count * tsl2x7x_int_time_avail[chip->id][3];
->  	chip->als_saturation = als_count * 768; /* 75% of full scale */
->  	chip->als_gain_time_scale = als_time_us *
->  		tsl2x7x_als_gain[chip->settings.als_gain];
-> @@ -760,12 +777,33 @@ static int tsl2x7x_prox_cal(struct iio_dev *indio_dev)
->  	return tsl2x7x_invoke_change(indio_dev);
->  }
->  
-> -static IIO_CONST_ATTR(in_intensity0_calibscale_available, "1 8 16 120");
-> +static int tsl2x7x_read_avail(struct iio_dev *indio_dev,
-> +			      struct iio_chan_spec const *chan,
-> +			      const int **vals, int *type, int *length,
-> +			      long mask)
-> +{
-> +	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
->  
-> -static IIO_CONST_ATTR(in_proximity0_calibscale_available, "1 2 4 8");
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_CALIBSCALE:
-> +		if (chan->type == IIO_INTENSITY) {
-> +			*length = ARRAY_SIZE(tsl2x7x_int_calibscale_avail);
-> +			*vals = tsl2x7x_int_calibscale_avail;
-> +		} else {
-> +			*length = ARRAY_SIZE(tsl2x7x_prox_calibscale_avail);
-> +			*vals = tsl2x7x_prox_calibscale_avail;
-> +		}
-> +		*type = IIO_VAL_INT;
-> +		return IIO_AVAIL_LIST;
-> +	case IIO_CHAN_INFO_INT_TIME:
-> +		*length = ARRAY_SIZE(tsl2x7x_int_time_avail[chip->id]);
-> +		*vals = tsl2x7x_int_time_avail[chip->id];
-> +		*type = IIO_VAL_INT_PLUS_MICRO;
-> +		return IIO_AVAIL_RANGE;
-> +	}
->  
-> -static IIO_CONST_ATTR(in_intensity0_integration_time_available,
-> -		".00272 - .696");
-> +	return -EINVAL;
-> +}
->  
->  static ssize_t in_illuminance0_target_input_show(struct device *dev,
->  						 struct device_attribute *attr,
-> @@ -1110,7 +1148,8 @@ static int tsl2x7x_read_raw(struct iio_dev *indio_dev,
->  		return IIO_VAL_INT;
->  	case IIO_CHAN_INFO_INT_TIME:
->  		*val = 0;
-> -		*val2 = (256 - chip->settings.als_time) * 2720;
-> +		*val2 = (256 - chip->settings.als_time) *
-> +			tsl2x7x_int_time_avail[chip->id][3];
->  		return IIO_VAL_INT_PLUS_MICRO;
->  	default:
->  		return -EINVAL;
-> @@ -1167,7 +1206,8 @@ static int tsl2x7x_write_raw(struct iio_dev *indio_dev,
->  		chip->settings.als_gain_trim = val;
->  		break;
->  	case IIO_CHAN_INFO_INT_TIME:
-> -		chip->settings.als_time = 256 - (val2 / 2720);
-> +		chip->settings.als_time = 256 -
-> +			(val2 / tsl2x7x_int_time_avail[chip->id][3]);
->  		break;
->  	default:
->  		return -EINVAL;
-> @@ -1248,8 +1288,6 @@ static irqreturn_t tsl2x7x_event_handler(int irq, void *private)
->  }
->  
->  static struct attribute *tsl2x7x_ALS_device_attrs[] = {
-> -	&iio_const_attr_in_intensity0_calibscale_available.dev_attr.attr,
-> -	&iio_const_attr_in_intensity0_integration_time_available.dev_attr.attr,
->  	&dev_attr_in_illuminance0_target_input.attr,
->  	&dev_attr_in_illuminance0_calibrate.attr,
->  	&dev_attr_in_illuminance0_lux_table.attr,
-> @@ -1262,8 +1300,6 @@ static struct attribute *tsl2x7x_PRX_device_attrs[] = {
->  };
->  
->  static struct attribute *tsl2x7x_ALSPRX_device_attrs[] = {
-> -	&iio_const_attr_in_intensity0_calibscale_available.dev_attr.attr,
-> -	&iio_const_attr_in_intensity0_integration_time_available.dev_attr.attr,
->  	&dev_attr_in_illuminance0_target_input.attr,
->  	&dev_attr_in_illuminance0_calibrate.attr,
->  	&dev_attr_in_illuminance0_lux_table.attr,
-> @@ -1272,18 +1308,14 @@ static struct attribute *tsl2x7x_ALSPRX_device_attrs[] = {
->  
->  static struct attribute *tsl2x7x_PRX2_device_attrs[] = {
->  	&dev_attr_in_proximity0_calibrate.attr,
-> -	&iio_const_attr_in_proximity0_calibscale_available.dev_attr.attr,
->  	NULL
->  };
->  
->  static struct attribute *tsl2x7x_ALSPRX2_device_attrs[] = {
-> -	&iio_const_attr_in_intensity0_calibscale_available.dev_attr.attr,
-> -	&iio_const_attr_in_intensity0_integration_time_available.dev_attr.attr,
->  	&dev_attr_in_illuminance0_target_input.attr,
->  	&dev_attr_in_illuminance0_calibrate.attr,
->  	&dev_attr_in_illuminance0_lux_table.attr,
->  	&dev_attr_in_proximity0_calibrate.attr,
-> -	&iio_const_attr_in_proximity0_calibscale_available.dev_attr.attr,
->  	NULL
->  };
->  
-> @@ -1309,6 +1341,7 @@ static const struct attribute_group tsl2X7X_device_attr_group_tbl[] = {
->  	{ \
->  		.attrs = &tsl2X7X_device_attr_group_tbl[type], \
->  		.read_raw = &tsl2x7x_read_raw, \
-> +		.read_avail = &tsl2x7x_read_avail, \
->  		.write_raw = &tsl2x7x_write_raw, \
->  		.read_event_value = &tsl2x7x_read_event_value, \
->  		.write_event_value = &tsl2x7x_write_event_value, \
-> @@ -1357,6 +1390,9 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
->  				BIT(IIO_CHAN_INFO_INT_TIME) |
->  				BIT(IIO_CHAN_INFO_CALIBSCALE) |
->  				BIT(IIO_CHAN_INFO_CALIBBIAS),
-> +			.info_mask_separate_available =
-> +				BIT(IIO_CHAN_INFO_INT_TIME) |
-> +				BIT(IIO_CHAN_INFO_CALIBSCALE),
->  			.event_spec = tsl2x7x_events,
->  			.num_event_specs = ARRAY_SIZE(tsl2x7x_events),
->  			}, {
-> @@ -1379,6 +1415,9 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
->  				BIT(IIO_CHAN_INFO_INT_TIME) |
->  				BIT(IIO_CHAN_INFO_CALIBSCALE) |
->  				BIT(IIO_CHAN_INFO_CALIBBIAS),
-> +			.info_mask_separate_available =
-> +				BIT(IIO_CHAN_INFO_INT_TIME) |
-> +				BIT(IIO_CHAN_INFO_CALIBSCALE),
->  			}, {
->  			.type = IIO_INTENSITY,
->  			.indexed = 1,
-> @@ -1425,6 +1464,9 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
->  				BIT(IIO_CHAN_INFO_INT_TIME) |
->  				BIT(IIO_CHAN_INFO_CALIBSCALE) |
->  				BIT(IIO_CHAN_INFO_CALIBBIAS),
-> +			.info_mask_separate_available =
-> +				BIT(IIO_CHAN_INFO_INT_TIME) |
-> +				BIT(IIO_CHAN_INFO_CALIBSCALE),
->  			.event_spec = tsl2x7x_events,
->  			.num_event_specs = ARRAY_SIZE(tsl2x7x_events),
->  			}, {
-> @@ -1455,6 +1497,9 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
->  				BIT(IIO_CHAN_INFO_INT_TIME) |
->  				BIT(IIO_CHAN_INFO_CALIBSCALE) |
->  				BIT(IIO_CHAN_INFO_CALIBBIAS),
-> +			.info_mask_separate_available =
-> +				BIT(IIO_CHAN_INFO_INT_TIME) |
-> +				BIT(IIO_CHAN_INFO_CALIBSCALE),
->  			}, {
->  			.type = IIO_INTENSITY,
->  			.indexed = 1,
-> @@ -1478,6 +1523,8 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
->  			.channel = 0,
->  			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->  				BIT(IIO_CHAN_INFO_CALIBSCALE),
-> +			.info_mask_separate_available =
-> +				BIT(IIO_CHAN_INFO_CALIBSCALE),
->  			.event_spec = tsl2x7x_events,
->  			.num_event_specs = ARRAY_SIZE(tsl2x7x_events),
->  			},
-> @@ -1489,6 +1536,8 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
->  			.channel = 0,
->  			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->  				BIT(IIO_CHAN_INFO_CALIBSCALE),
-> +			.info_mask_separate_available =
-> +				BIT(IIO_CHAN_INFO_CALIBSCALE),
->  			},
->  		},
->  		.chan_table_elements = 1,
-> @@ -1509,6 +1558,9 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
->  				BIT(IIO_CHAN_INFO_INT_TIME) |
->  				BIT(IIO_CHAN_INFO_CALIBSCALE) |
->  				BIT(IIO_CHAN_INFO_CALIBBIAS),
-> +			.info_mask_separate_available =
-> +				BIT(IIO_CHAN_INFO_INT_TIME) |
-> +				BIT(IIO_CHAN_INFO_CALIBSCALE),
->  			.event_spec = tsl2x7x_events,
->  			.num_event_specs = ARRAY_SIZE(tsl2x7x_events),
->  			}, {
-> @@ -1522,6 +1574,8 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
->  			.channel = 0,
->  			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->  				BIT(IIO_CHAN_INFO_CALIBSCALE),
-> +			.info_mask_separate_available =
-> +				BIT(IIO_CHAN_INFO_CALIBSCALE),
->  			.event_spec = tsl2x7x_events,
->  			.num_event_specs = ARRAY_SIZE(tsl2x7x_events),
->  			},
-> @@ -1540,6 +1594,9 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
->  				BIT(IIO_CHAN_INFO_INT_TIME) |
->  				BIT(IIO_CHAN_INFO_CALIBSCALE) |
->  				BIT(IIO_CHAN_INFO_CALIBBIAS),
-> +			.info_mask_separate_available =
-> +				BIT(IIO_CHAN_INFO_INT_TIME) |
-> +				BIT(IIO_CHAN_INFO_CALIBSCALE),
->  			}, {
->  			.type = IIO_INTENSITY,
->  			.indexed = 1,
-> @@ -1551,6 +1608,8 @@ static const struct tsl2x7x_chip_info tsl2x7x_chip_info_tbl[] = {
->  			.channel = 0,
->  			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->  				BIT(IIO_CHAN_INFO_CALIBSCALE),
-> +			.info_mask_separate_available =
-> +				BIT(IIO_CHAN_INFO_CALIBSCALE),
->  			},
->  		},
->  		.chan_table_elements = 4,
-
+diff --git a/drivers/staging/iio/light/tsl2x7x.c b/drivers/staging/iio/light/tsl2x7x.c
+index 2d713d3c7c7b..0218eabcd6d7 100644
+--- a/drivers/staging/iio/light/tsl2x7x.c
++++ b/drivers/staging/iio/light/tsl2x7x.c
+@@ -103,8 +103,6 @@
+ #define TSL2X7X_CNTL_PROXPON_ENBL	0x0F
+ #define TSL2X7X_CNTL_INTPROXPON_ENBL	0x2F
+ 
+-#define TSL2X7X_MIN_ITIME		3
+-
+ /* TAOS txx2x7x Device family members */
+ enum {
+ 	tsl2571,
+@@ -984,7 +982,7 @@ static int tsl2x7x_write_event_value(struct iio_dev *indio_dev,
+ 				     int val, int val2)
+ {
+ 	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
+-	int ret = -EINVAL, y, z, filter_delay;
++	int ret = -EINVAL, count, persistence;
+ 	u8 time;
+ 
+ 	switch (info) {
+@@ -1023,15 +1021,20 @@ static int tsl2x7x_write_event_value(struct iio_dev *indio_dev,
+ 		else
+ 			time = chip->settings.prox_time;
+ 
+-		y = (TSL2X7X_MAX_TIMER_CNT - time) + 1;
+-		z = y * TSL2X7X_MIN_ITIME;
++		count = 256 - time;
++		persistence = ((val * 1000000) + val2) /
++			(count * tsl2x7x_int_time_avail[chip->id][3]);
+ 
+-		filter_delay = DIV_ROUND_UP((val * 1000) + val2, z);
++		if (chan->type == IIO_INTENSITY) {
++			/* ALS filter values are 1, 2, 3, 5, 10, 15, ..., 60 */
++			if (persistence > 3)
++				persistence = (persistence / 5) + 3;
++
++			chip->settings.als_persistence = persistence;
++		} else {
++			chip->settings.prox_persistence = persistence;
++		}
+ 
+-		if (chan->type == IIO_INTENSITY)
+-			chip->settings.als_persistence = filter_delay;
+-		else
+-			chip->settings.prox_persistence = filter_delay;
+ 		ret = 0;
+ 		break;
+ 	default:
+@@ -1052,7 +1055,7 @@ static int tsl2x7x_read_event_value(struct iio_dev *indio_dev,
+ 				    int *val, int *val2)
+ {
+ 	struct tsl2X7X_chip *chip = iio_priv(indio_dev);
+-	int filter_delay, mult;
++	int filter_delay, persistence;
+ 	u8 time;
+ 
+ 	switch (info) {
+@@ -1084,18 +1087,21 @@ static int tsl2x7x_read_event_value(struct iio_dev *indio_dev,
+ 	case IIO_EV_INFO_PERIOD:
+ 		if (chan->type == IIO_INTENSITY) {
+ 			time = chip->settings.als_time;
+-			mult = chip->settings.als_persistence;
++			persistence = chip->settings.als_persistence;
++
++			/* ALS filter values are 1, 2, 3, 5, 10, 15, ..., 60 */
++			if (persistence > 3)
++				persistence = (persistence - 3) * 5;
+ 		} else {
+ 			time = chip->settings.prox_time;
+-			mult = chip->settings.prox_persistence;
++			persistence = chip->settings.prox_persistence;
+ 		}
+ 
+-		/* Determine integration time */
+-		*val = (TSL2X7X_MAX_TIMER_CNT - time) + 1;
+-		*val2 = *val * TSL2X7X_MIN_ITIME;
+-		filter_delay = *val2 * mult;
+-		*val = filter_delay / 1000;
+-		*val2 = filter_delay % 1000;
++		filter_delay = persistence * (256 - time) *
++			tsl2x7x_int_time_avail[chip->id][3];
++
++		*val = filter_delay / 1000000;
++		*val2 = filter_delay % 1000000;
+ 		return IIO_VAL_INT_PLUS_MICRO;
+ 	default:
+ 		return -EINVAL;
+diff --git a/drivers/staging/iio/light/tsl2x7x.h b/drivers/staging/iio/light/tsl2x7x.h
+index db344796fc1b..b86f6b260f9f 100644
+--- a/drivers/staging/iio/light/tsl2x7x.h
++++ b/drivers/staging/iio/light/tsl2x7x.h
+@@ -31,7 +31,6 @@ struct tsl2x7x_lux {
+ #define TSL2X7X_50_mA                   0x01
+ #define TSL2X7X_25_mA                   0x02
+ #define TSL2X7X_13_mA                   0x03
+-#define TSL2X7X_MAX_TIMER_CNT           0xFF
+ 
+ /**
+  * struct tsl2x7x_settings - Settings for the tsl2x7x driver
+-- 
+2.14.3
