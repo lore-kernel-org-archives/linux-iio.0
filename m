@@ -1,225 +1,111 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-cys01nam02on0070.outbound.protection.outlook.com ([104.47.37.70]:61284
+Received: from mail-cys01nam02on0077.outbound.protection.outlook.com ([104.47.37.77]:41280
         "EHLO NAM02-CY1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1752432AbeENVGT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 14 May 2018 17:06:19 -0400
+        id S1752138AbeENVGX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 14 May 2018 17:06:23 -0400
 From: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
 To: linux-iio@vger.kernel.org
 Cc: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-Subject: [PATCH 1/5] iio: imu: inv_mpu6050: replace timestamp fifo by generic timestamp
-Date: Mon, 14 May 2018 23:05:51 +0200
-Message-Id: <1526331955-11869-1-git-send-email-jmaneyrol@invensense.com>
+Subject: [PATCH 2/5] iio: imu: inv_mpu6050: switch to use sample rate divider
+Date: Mon, 14 May 2018 23:05:52 +0200
+Message-Id: <1526331955-11869-2-git-send-email-jmaneyrol@invensense.com>
+In-Reply-To: <1526331955-11869-1-git-send-email-jmaneyrol@invensense.com>
+References: <1526331955-11869-1-git-send-email-jmaneyrol@invensense.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Using a fifo for storing timestamps is useless since the interrupt
-is in one-shot mode, preventing the hard irq handler to be called
-when the irq thread is running. Instead use the generic timestamp
-function iio_pollfunc_store_time.
+Instead of storing fifo rate in Hz, store the chip internal sample
+rate divider. This will be more useful for timestamping. There
+are both equivalent.
 
 Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
 ---
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |  6 +---
- drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  | 10 -------
- drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c | 44 +-----------------------------
- 3 files changed, 2 insertions(+), 58 deletions(-)
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 15 +++++++++------
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  4 ++--
+ 2 files changed, 11 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-index 43fba5f..1e7e750 100644
+index 1e7e750..9e5c5e7 100644
 --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
 +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -20,8 +20,6 @@
- #include <linux/jiffies.h>
- #include <linux/irq.h>
- #include <linux/interrupt.h>
--#include <linux/kfifo.h>
--#include <linux/spinlock.h>
- #include <linux/iio/iio.h>
- #include <linux/acpi.h>
- #include <linux/platform_device.h>
-@@ -996,7 +994,7 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
- 	indio_dev->modes = INDIO_BUFFER_TRIGGERED;
- 
- 	result = devm_iio_triggered_buffer_setup(dev, indio_dev,
--						 inv_mpu6050_irq_handler,
-+						 iio_pollfunc_store_time,
- 						 inv_mpu6050_read_fifo,
- 						 NULL);
- 	if (result) {
-@@ -1009,8 +1007,6 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
- 		return result;
- 	}
- 
--	INIT_KFIFO(st->timestamps);
--	spin_lock_init(&st->time_stamp_lock);
- 	result = devm_iio_device_register(dev, indio_dev);
- 	if (result) {
- 		dev_err(dev, "IIO register fail %d\n", result);
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-index c54da77..a92ddd4 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-@@ -12,8 +12,6 @@
- */
- #include <linux/i2c.h>
- #include <linux/i2c-mux.h>
--#include <linux/kfifo.h>
--#include <linux/spinlock.h>
- #include <linux/mutex.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/buffer.h>
-@@ -116,36 +114,30 @@ struct inv_mpu6050_hw {
- 
- /*
-  *  struct inv_mpu6050_state - Driver state variables.
-- *  @TIMESTAMP_FIFO_SIZE: fifo size for timestamp.
-  *  @lock:              Chip access lock.
-  *  @trig:              IIO trigger.
-  *  @chip_config:	Cached attribute information.
-  *  @reg:		Map of important registers.
-  *  @hw:		Other hardware-specific information.
-  *  @chip_type:		chip type.
-- *  @time_stamp_lock:	spin lock to time stamp.
-  *  @plat_data:		platform data (deprecated in favor of @orientation).
-  *  @orientation:	sensor chip orientation relative to main hardware.
-- *  @timestamps:        kfifo queue to store time stamp.
-  *  @map		regmap pointer.
-  *  @irq		interrupt number.
-  *  @irq_mask		the int_pin_cfg mask to configure interrupt type.
-  */
- struct inv_mpu6050_state {
--#define TIMESTAMP_FIFO_SIZE 16
- 	struct mutex lock;
- 	struct iio_trigger  *trig;
- 	struct inv_mpu6050_chip_config chip_config;
- 	const struct inv_mpu6050_reg_map *reg;
- 	const struct inv_mpu6050_hw *hw;
- 	enum   inv_devices chip_type;
--	spinlock_t time_stamp_lock;
- 	struct i2c_mux_core *muxc;
- 	struct i2c_client *mux_client;
- 	unsigned int powerup_count;
- 	struct inv_mpu6050_platform_data plat_data;
- 	struct iio_mount_matrix orientation;
--	DECLARE_KFIFO(timestamps, long long, TIMESTAMP_FIFO_SIZE);
- 	struct regmap *map;
- 	int irq;
- 	u8 irq_mask;
-@@ -234,7 +226,6 @@ struct inv_mpu6050_state {
- 
- /* init parameters */
- #define INV_MPU6050_INIT_FIFO_RATE           50
--#define INV_MPU6050_TIME_STAMP_TOR           5
- #define INV_MPU6050_MAX_FIFO_RATE            1000
- #define INV_MPU6050_MIN_FIFO_RATE            4
- #define INV_MPU6050_ONE_K_HZ                 1000
-@@ -300,7 +291,6 @@ enum inv_mpu6050_clock_sel_e {
- 	NUM_CLK
- };
- 
--irqreturn_t inv_mpu6050_irq_handler(int irq, void *p);
- irqreturn_t inv_mpu6050_read_fifo(int irq, void *p);
- int inv_mpu6050_probe_trigger(struct iio_dev *indio_dev, int irq_type);
- int inv_reset_fifo(struct iio_dev *indio_dev);
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-index 1795418..5436d18 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-@@ -19,20 +19,9 @@
- #include <linux/jiffies.h>
- #include <linux/irq.h>
- #include <linux/interrupt.h>
--#include <linux/kfifo.h>
- #include <linux/poll.h>
- #include "inv_mpu_iio.h"
- 
--static void inv_clear_kfifo(struct inv_mpu6050_state *st)
--{
--	unsigned long flags;
--
--	/* take the spin lock sem to avoid interrupt kick in */
--	spin_lock_irqsave(&st->time_stamp_lock, flags);
--	kfifo_reset(&st->timestamps);
--	spin_unlock_irqrestore(&st->time_stamp_lock, flags);
--}
--
- int inv_reset_fifo(struct iio_dev *indio_dev)
+@@ -82,7 +82,7 @@ static const struct inv_mpu6050_reg_map reg_set_6050 = {
+ static const struct inv_mpu6050_chip_config chip_config_6050 = {
+ 	.fsr = INV_MPU6050_FSR_2000DPS,
+ 	.lpf = INV_MPU6050_FILTER_20HZ,
+-	.fifo_rate = INV_MPU6050_INIT_FIFO_RATE,
++	.divider = (INV_MPU6050_ONE_K_HZ / INV_MPU6050_INIT_FIFO_RATE) - 1,
+ 	.gyro_fifo_enable = false,
+ 	.accl_fifo_enable = false,
+ 	.accl_fs = INV_MPU6050_FS_02G,
+@@ -628,7 +628,7 @@ static ssize_t
+ inv_mpu6050_fifo_rate_store(struct device *dev, struct device_attribute *attr,
+ 			    const char *buf, size_t count)
  {
+-	s32 fifo_rate;
++	int fifo_rate;
+ 	u8 d;
  	int result;
-@@ -62,9 +51,6 @@ int inv_reset_fifo(struct iio_dev *indio_dev)
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+@@ -644,8 +644,12 @@ inv_mpu6050_fifo_rate_store(struct device *dev, struct device_attribute *attr,
  	if (result)
- 		goto reset_fifo_fail;
+ 		return result;
  
--	/* clear timestamps fifo */
--	inv_clear_kfifo(st);
--
- 	/* enable interrupt */
- 	if (st->chip_config.accl_fifo_enable ||
- 	    st->chip_config.gyro_fifo_enable) {
-@@ -99,23 +85,6 @@ int inv_reset_fifo(struct iio_dev *indio_dev)
- }
++	/* compute freq divider and update fifo rate in case of truncation */
++	d = INV_MPU6050_ONE_K_HZ / fifo_rate - 1;
++	fifo_rate = INV_MPU6050_ONE_K_HZ / (d + 1);
++
+ 	mutex_lock(&st->lock);
+-	if (fifo_rate == st->chip_config.fifo_rate) {
++	if (d == st->chip_config.divider) {
+ 		result = 0;
+ 		goto fifo_rate_fail_unlock;
+ 	}
+@@ -653,11 +657,10 @@ inv_mpu6050_fifo_rate_store(struct device *dev, struct device_attribute *attr,
+ 	if (result)
+ 		goto fifo_rate_fail_unlock;
  
- /**
-- * inv_mpu6050_irq_handler() - Cache a timestamp at each data ready interrupt.
-- */
--irqreturn_t inv_mpu6050_irq_handler(int irq, void *p)
--{
--	struct iio_poll_func *pf = p;
--	struct iio_dev *indio_dev = pf->indio_dev;
--	struct inv_mpu6050_state *st = iio_priv(indio_dev);
--	s64 timestamp;
--
--	timestamp = iio_get_time_ns(indio_dev);
--	kfifo_in_spinlocked(&st->timestamps, &timestamp, 1,
--			    &st->time_stamp_lock);
--
--	return IRQ_WAKE_THREAD;
--}
--
--/**
-  * inv_mpu6050_read_fifo() - Transfer data from hardware FIFO to KFIFO.
-  */
- irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
-@@ -127,7 +96,7 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
- 	int result;
- 	u8 data[INV_MPU6050_OUTPUT_DATA_SIZE];
- 	u16 fifo_count;
--	s64 timestamp;
-+	s64 timestamp = pf->timestamp;
- 	int int_status;
+-	d = INV_MPU6050_ONE_K_HZ / fifo_rate - 1;
+ 	result = regmap_write(st->map, st->reg->sample_rate_div, d);
+ 	if (result)
+ 		goto fifo_rate_fail_power_off;
+-	st->chip_config.fifo_rate = fifo_rate;
++	st->chip_config.divider = d;
+ 
+ 	result = inv_mpu6050_set_lpf(st, fifo_rate);
+ 	if (result)
+@@ -685,7 +688,7 @@ inv_fifo_rate_show(struct device *dev, struct device_attribute *attr,
+ 	unsigned fifo_rate;
  
  	mutex_lock(&st->lock);
-@@ -171,28 +140,17 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
- 		goto flush_fifo;
- 	if (fifo_count >  INV_MPU6050_FIFO_THRESHOLD)
- 		goto flush_fifo;
--	/* Timestamp mismatch. */
--	if (kfifo_len(&st->timestamps) >
--	    fifo_count / bytes_per_datum + INV_MPU6050_TIME_STAMP_TOR)
--		goto flush_fifo;
- 	do {
- 		result = regmap_bulk_read(st->map, st->reg->fifo_r_w,
- 					  data, bytes_per_datum);
- 		if (result)
- 			goto flush_fifo;
--
--		result = kfifo_out(&st->timestamps, &timestamp, 1);
--		/* when there is no timestamp, put timestamp as 0 */
--		if (result == 0)
--			timestamp = 0;
--
- 		/* skip first samples if needed */
- 		if (st->skip_samples)
- 			st->skip_samples--;
- 		else
- 			iio_push_to_buffers_with_timestamp(indio_dev, data,
- 							   timestamp);
--
- 		fifo_count -= bytes_per_datum;
- 	} while (fifo_count >= bytes_per_datum);
+-	fifo_rate = st->chip_config.fifo_rate;
++	fifo_rate = INV_MPU6050_ONE_K_HZ / (st->chip_config.divider + 1);
+ 	mutex_unlock(&st->lock);
+ 
+ 	return scnprintf(buf, PAGE_SIZE, "%u\n", fifo_rate);
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+index a92ddd4..8d9044c 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+@@ -86,7 +86,7 @@ enum inv_devices {
+  *  @accl_fs:		accel full scale range.
+  *  @accl_fifo_enable:	enable accel data output
+  *  @gyro_fifo_enable:	enable gyro data output
+- *  @fifo_rate:		FIFO update rate.
++ *  @divider:		sample rate divider.
+  */
+ struct inv_mpu6050_chip_config {
+ 	unsigned int fsr:2;
+@@ -94,7 +94,7 @@ struct inv_mpu6050_chip_config {
+ 	unsigned int accl_fs:2;
+ 	unsigned int accl_fifo_enable:1;
+ 	unsigned int gyro_fifo_enable:1;
+-	u16 fifo_rate;
++	u8 divider;
+ 	u8 user_ctrl;
+ };
  
 -- 
 2.7.4
