@@ -1,69 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:44588 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750895AbeETKY1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 20 May 2018 06:24:27 -0400
-Date: Sun, 20 May 2018 11:24:21 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Peter Rosin <peda@axentia.se>, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jiri Kosina <trivial@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH trivial] dt-bindings: iio: afe: Spelling
- s/mesaurement/measurement/
-Message-ID: <20180520112421.2b71cfa5@archlinux>
-In-Reply-To: <1526389584-19835-1-git-send-email-geert+renesas@glider.be>
-References: <1526389584-19835-1-git-send-email-geert+renesas@glider.be>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from mail-wm0-f65.google.com ([74.125.82.65]:37269 "EHLO
+        mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752454AbeEOOdE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 May 2018 10:33:04 -0400
+Received: by mail-wm0-f65.google.com with SMTP id l1-v6so1565461wmb.2
+        for <linux-iio@vger.kernel.org>; Tue, 15 May 2018 07:33:03 -0700 (PDT)
+Message-ID: <1526394782.32235.3.camel@gmail.com>
+Subject: [PATCH] iio: dac: fix missing of_match_table assignment in LTC2632
+ device
+From: Silvan Murer <silvan.murer@gmail.com>
+To: lars@metafoo.de
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org
+Date: Tue, 15 May 2018 16:33:02 +0200
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 15 May 2018 15:06:24 +0200
-Geert Uytterhoeven <geert+renesas@glider.be> wrote:
+This patch fix a missing og_match_table assignment in the LTC2632 device
 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Silvan Murer <silvan.murer@gmail.com>
+---
+ drivers/iio/dac/ltc2632.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
 
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to ignore it.
-
-Thanks,
-
-Jonathan
-
-> ---
->  Documentation/devicetree/bindings/iio/afe/current-sense-amplifier.txt | 2 +-
->  Documentation/devicetree/bindings/iio/afe/current-sense-shunt.txt     | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/afe/current-sense-amplifier.txt b/Documentation/devicetree/bindings/iio/afe/current-sense-amplifier.txt
-> index 0ddbaebba8ceca13..821b61b8c542ff92 100644
-> --- a/Documentation/devicetree/bindings/iio/afe/current-sense-amplifier.txt
-> +++ b/Documentation/devicetree/bindings/iio/afe/current-sense-amplifier.txt
-> @@ -2,7 +2,7 @@ Current Sense Amplifier
->  =======================
->  
->  When an io-channel measures the output voltage from a current sense
-> -amplifier, the interesting mesaurement is almost always the current
-> +amplifier, the interesting measurement is almost always the current
->  through the sense resistor, not the voltage output. This binding
->  describes such a current sense circuit.
->  
-> diff --git a/Documentation/devicetree/bindings/iio/afe/current-sense-shunt.txt b/Documentation/devicetree/bindings/iio/afe/current-sense-shunt.txt
-> index 8e7b3e408a5253c5..0f67108a07b6327b 100644
-> --- a/Documentation/devicetree/bindings/iio/afe/current-sense-shunt.txt
-> +++ b/Documentation/devicetree/bindings/iio/afe/current-sense-shunt.txt
-> @@ -2,7 +2,7 @@ Current Sense Shunt
->  ===================
->  
->  When an io-channel measures the voltage over a current sense shunt,
-> -the interesting mesaurement is almost always the current through the
-> +the interesting measurement is almost always the current through the
->  shunt, not the voltage over it. This binding describes such a current
->  sense circuit.
->  
-
+diff --git a/drivers/iio/dac/ltc2632.c b/drivers/iio/dac/ltc2632.c
+index ac5e05f..d322b78 100644
+--- a/drivers/iio/dac/ltc2632.c
++++ b/drivers/iio/dac/ltc2632.c
+@@ -276,15 +276,6 @@ static const struct spi_device_id ltc2632_id[] = {
+ };
+ MODULE_DEVICE_TABLE(spi, ltc2632_id);
+ 
+-static struct spi_driver ltc2632_driver = {
+-	.driver		= {
+-		.name	= "ltc2632",
+-	},
+-	.probe		= ltc2632_probe,
+-	.id_table	= ltc2632_id,
+-};
+-module_spi_driver(ltc2632_driver);
+-
+ static const struct of_device_id ltc2632_of_match[] = {
+ 	{
+ 		.compatible = "lltc,ltc2632-l12",
+@@ -309,6 +300,16 @@ static const struct of_device_id ltc2632_of_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, ltc2632_of_match);
+ 
++static struct spi_driver ltc2632_driver = {
++	.driver		= {
++		.name	= "ltc2632",
++		.of_match_table = of_match_ptr(ltc2632_of_match),
++	},
++	.probe		= ltc2632_probe,
++	.id_table	= ltc2632_id,
++};
++module_spi_driver(ltc2632_driver);
++
+ MODULE_AUTHOR("Maxime Roussin-Belanger <maxime.roussinbelanger@gmail.com>");
+ MODULE_DESCRIPTION("LTC2632 DAC SPI driver");
+ MODULE_LICENSE("GPL v2");
+-- 
+2.7.4
