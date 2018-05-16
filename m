@@ -1,95 +1,138 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-bn3nam01on0084.outbound.protection.outlook.com ([104.47.33.84]:16040
-        "EHLO NAM01-BN3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1750960AbeEUSmu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 21 May 2018 14:42:50 -0400
-Subject: Re: [PATCH] iio: imu: inv_mpu6050: advertise max and min freqs
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
-        linux-iio@vger.kernel.org
-References: <20180515215349.27482-1-mkelly@xevo.com>
- <379508e0-0e27-6df6-f29d-1f892745c606@invensense.com>
- <356e12db-bddc-69c2-e3a3-3c9eb7adcef2@xevo.com>
- <20180520112838.3149f0f1@archlinux>
-From: Martin Kelly <mkelly@xevo.com>
-Message-ID: <90c03965-09d1-ebd0-1990-d8306815d41e@xevo.com>
-Date: Mon, 21 May 2018 11:42:42 -0700
-MIME-Version: 1.0
-In-Reply-To: <20180520112838.3149f0f1@archlinux>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=QM9Q=ID=gmail.com=vilhelm.gray@kernel.org>
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: jic23@kernel.org
+Cc: benjamin.gaignard@st.com,
+	fabrice.gasnier@st.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH v6 0/9] Introduce the Counter subsystem
+Date: Wed, 16 May 2018 13:50:10 -0400
+Message-Id: <cover.1526487615.git.vilhelm.gray@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 05/20/2018 03:28 AM, Jonathan Cameron wrote:
-> On Wed, 16 May 2018 09:07:53 -0700
-> Martin Kelly <mkelly@xevo.com> wrote:
-> 
->> On 05/16/2018 12:51 AM, Jean-Baptiste Maneyrol wrote:
->>>
->>>
->>> On 15/05/2018 23:53, Martin Kelly wrote:
->>>> CAUTION: This email originated from outside of the organization.
->>>> Please make sure the sender is who they say they are and do not click
->>>> links or open attachments unless you recognize the sender and know the
->>>> content is safe.
->>>>
->>>>
->>>> Currently, we allow a minimum FIFO rate of 4 and a max of 1000, but we
->>>> advertise down to only 10 and up to 1000. Expand the advertised range to
->>>> reflect the full available range.
->>>>
->>>> Signed-off-by: Martin Kelly <mkelly@xevo.com>
->>>> ---
->>>>    drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 2 +-
->>>>    1 file changed, 1 insertion(+), 1 deletion(-)
->>>>
->>>> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
->>>> b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
->>>> index 43fba5f7532b..3f4862f09db3 100644
->>>> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
->>>> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
->>>> @@ -799,7 +799,7 @@ static const struct iio_chan_spec
->>>> inv_mpu_channels[] = {
->>>>    };
->>>>
->>>>    /* constant IIO attribute */
->>>> -static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("10 20 50 100 200 500");
->>>> +static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("4 10 20 50 100 200 500 1000");
->>>>    static IIO_CONST_ATTR(in_anglvel_scale_available,
->>>>                                             "0.000133090 0.000266181
->>>> 0.000532362 0.001064724");
->>>>    static IIO_CONST_ATTR(in_accel_scale_available,
->>>> -- 
->>>> 2.11.0
->>>>   
->>>
->>> Hello,
->>>
->>> in fact we advertise only frequencies that are supported by the low-pass
->>> filter. Filter bandwidths are: 5Hz, 10Hz, 20Hz, 42Hz (~50), 98Hz (~100),
->>> 188Hz (~200), which are corresponding to a sampling rate of (x2): 10Hz,
->>> 20Hz, ~50Hz, ~200Hz, ~400Hz. Only 500Hz is a little out of specs, since
->>> 400Hz is not a possible frequency.
->>>
->>> You can always set the frequency to any supported values, but you can
->>> suffer from aliasing.
->>>
->>> I strongly suggest we just keep it like it is today. Better not
->>> advertise frequencies that are not correctly filtered.
->>>
->>> JB
->>
->> OK, that makes sense and is fine with me. Perhaps I should instead just
->> add a comment explaining the situation, since I couldn't tell from the
->> code itself.
-> Hmm. If this wasn't already the case I would advocate never allowing the
-> user to pick frequencies where the device effectively won't work properly.
-> 
-> Ah well, too late now as they are in the ABI.  Agreed a comment would
-> avoid anyone trying to figure this out in future.
-> 
-> Jonathan
-> 
+This revision is primarily a code refactor and formatting cleanup -- the
+interface has remained essentially the same as revision 5, with some
+minor additions.
 
-OK, I sent a patch adding an explanatory comment.
+Here's a brief summary of the Generic Counter interface and related code
+changes in this revision:
+
+    * checkpatch.pl formatting suggestions implemented (parameters line
+      up with opening round bracket, etc.)
+    * Implement struct counter_ops to enable const structure for
+      driver callbacks
+    * Provide const string array for count_direction and count_mode
+      options to help maintain a consistent interface
+    * Reduce local variables by inlining where appropriate
+    * Bring memory cleanup code closer to respective allocations for
+      clarity and easier debugging
+    * Implement counter_name_attribute_create function to reduce
+      repeated code for various "name" attributes
+    * Implement counter_global_attr_register function to organize global
+      counter attribute registration together
+    * Implement prepare_counter_device_groups_list and
+      prepare_counter_device_groups functions to organize sysfs
+      attribute configuration into logical groups (this makes the
+      counter_register function logic much easier to follow)
+
+Furthermore, the following additions have been made:
+
+    * The "ceiling" and "floor" attributes are defined to represent the
+      upper limit and lower limit respectively for a Count
+    * The following attributes are now part of the main Generic Counter
+      interface: count_mode, direction, enable, preset, preset_enable,
+      and error_noise
+    * The "Quadrature x1" and "Quadrature x2" function modes are now
+      known as "Quadrature x1 A" and "Quadrature x2 A" respectively
+    * The following new function modes are defined in order to support
+      the STM32 LP Timer quadrature modes: Quadrature x1 B, Quadrature
+      x2 B, Quadrature x2 Rising, and Quadrature x2 Falling
+    * The "num_counts" and "num_signals" attributes are defined to
+      represent the total number of Counts and total number of Signals
+      respectively
+
+The 104-QUAD-8 counter driver has been updated to make use of the
+Generic Counter API changes ("ceiling" and "floor" attributes, constant
+counter_ops structure, count_mode and direction string arrays, etc.).
+
+The STM32 Timer counter driver has been updated to make use of the
+Generic Counter API changes ("ceiling" attribute, constant counter_ops
+structure, etc.). In addition, Fabrice Gasnier added support for a
+missing encoder mode (see STM32_COUNT_ENCODER_MODE_2).
+
+Proper Generic Counter interface support for the STM32 LP Timer has been
+added to its respective counter driver. This is the last in-tree Linux
+kernel driver using the deprecated IIO Counter interface, so we can
+safely remove that interface in the future now.
+
+I've added deprecation notices to the IIO Counter attributes to
+encourage the switch to the Generic Counter interface. I didn't mention
+a removal date for the relevant code, but perhaps before the next
+longterm kernel release would be a good idea -- this should prevent the
+IIO Counter API from persisting longer than necessary.
+
+William Breathitt Gray
+
+Benjamin Gaignard (2):
+  dt-bindings: counter: Document stm32 quadrature encoder
+  counter: Add STM32 Timer quadrature encoder
+
+Fabrice Gasnier (1):
+  counter: stm32-lptimer: add counter device
+
+William Breathitt Gray (6):
+  counter: Introduce the Generic Counter interface
+  counter: Documentation: Add Generic Counter sysfs documentation
+  docs: Add Generic Counter interface documentation
+  counter: 104-quad-8: Add Generic Counter interface support
+  counter: 104-quad-8: Documentation: Add Generic Counter sysfs
+    documentation
+  iio: counter: Remove IIO counter subdirectory
+
+ Documentation/ABI/testing/sysfs-bus-counter   |  241 +++
+ .../ABI/testing/sysfs-bus-counter-104-quad-8  |   36 +
+ Documentation/ABI/testing/sysfs-bus-iio       |    8 +
+ .../testing/sysfs-bus-iio-counter-104-quad-8  |   16 +
+ .../{iio => }/counter/stm32-lptimer-cnt.txt   |    0
+ .../bindings/counter/stm32-timer-cnt.txt      |   26 +
+ .../devicetree/bindings/mfd/stm32-lptimer.txt |    2 +-
+ .../devicetree/bindings/mfd/stm32-timers.txt  |    7 +
+ Documentation/driver-api/generic-counter.rst  |  336 ++++
+ Documentation/driver-api/index.rst            |    1 +
+ MAINTAINERS                                   |   14 +-
+ drivers/Kconfig                               |    2 +
+ drivers/Makefile                              |    1 +
+ drivers/counter/104-quad-8.c                  | 1335 ++++++++++++++
+ drivers/counter/Kconfig                       |   59 +
+ drivers/{iio => }/counter/Makefile            |    6 +-
+ drivers/counter/generic-counter.c             | 1541 +++++++++++++++++
+ drivers/counter/stm32-lptimer-cnt.c           |  722 ++++++++
+ drivers/counter/stm32-timer-cnt.c             |  390 +++++
+ drivers/iio/Kconfig                           |    1 -
+ drivers/iio/Makefile                          |    1 -
+ drivers/iio/counter/104-quad-8.c              |  596 -------
+ drivers/iio/counter/Kconfig                   |   34 -
+ drivers/iio/counter/stm32-lptimer-cnt.c       |  382 ----
+ include/linux/counter.h                       |  554 ++++++
+ 25 files changed, 5293 insertions(+), 1018 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-counter
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-counter-104-quad-8
+ rename Documentation/devicetree/bindings/{iio => }/counter/stm32-lptimer-cnt.txt (100%)
+ create mode 100644 Documentation/devicetree/bindings/counter/stm32-timer-cnt.txt
+ create mode 100644 Documentation/driver-api/generic-counter.rst
+ create mode 100644 drivers/counter/104-quad-8.c
+ create mode 100644 drivers/counter/Kconfig
+ rename drivers/{iio => }/counter/Makefile (52%)
+ create mode 100644 drivers/counter/generic-counter.c
+ create mode 100644 drivers/counter/stm32-lptimer-cnt.c
+ create mode 100644 drivers/counter/stm32-timer-cnt.c
+ delete mode 100644 drivers/iio/counter/104-quad-8.c
+ delete mode 100644 drivers/iio/counter/Kconfig
+ delete mode 100644 drivers/iio/counter/stm32-lptimer-cnt.c
+ create mode 100644 include/linux/counter.h
+
+-- 
+2.17.0
