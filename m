@@ -1,74 +1,92 @@
-Return-Path: <SRS0=iAnx=IF=gmail.com=davidjulianveenstra@kernel.org>
-References: <cover.1524432236.git.davidjulianveenstra@gmail.com> <b880e7be5b1b70f0805db41dcd41571a50785fab.1524432236.git.davidjulianveenstra@gmail.com> <20180428181105.46a6b319@archlinux>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f68.google.com ([74.125.82.68]:50452 "EHLO
+        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752100AbeERNAs (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 May 2018 09:00:48 -0400
+References: <cover.1524432236.git.davidjulianveenstra@gmail.com> <0aa68c6684c2b45dd0af398c166d6b36c18be1af.1524432236.git.davidjulianveenstra@gmail.com> <20180427144820.jfvypgk6tfp2syty@rob-hp-laptop> <20180428162758.2a49130c@archlinux>
 From: David Julian Veenstra <davidjulianveenstra@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: lars@metafoo.de, pmeerw@pmeerw.net, robh+dt@kernel.org, Michael.Hennerich@analog.com, knaack.h@gmx.de, linux-iio@vger.kernel.org, daniel.baluta@nxp.com, devel@driverdev.osuosl.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 1/9] staging: iio: ad2s1200: Add kernel docs to driver state
-In-reply-to: <20180428181105.46a6b319@archlinux>
-Date: Fri, 18 May 2018 14:57:57 +0200
-Message-ID: <87603lce96.fsf@gmail.com>
+Cc: Rob Herring <robh@kernel.org>, lars@metafoo.de, pmeerw@pmeerw.net,
+        Michael.Hennerich@analog.com, knaack.h@gmx.de,
+        linux-iio@vger.kernel.org, daniel.baluta@nxp.com,
+        devel@driverdev.osuosl.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 5/9] staging: iio: ad2s1200: Add documentation for device tree binding
+In-reply-to: <20180428162758.2a49130c@archlinux>
+Date: Fri, 18 May 2018 15:00:44 +0200
+Message-ID: <874lj5ce4j.fsf@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 28, April 2018 17:11, Jonathan Cameron wrote:
+On 28, April 2018 15:27, Jonathan Cameron wrote:
 
-> On Mon, 23 Apr 2018 00:02:51 +0200
-> David Veenstra <davidjulianveenstra@gmail.com> wrote:
+> On Fri, 27 Apr 2018 09:48:20 -0500
+> Rob Herring <robh@kernel.org> wrote:
 >
->> Add missing kernel docs to the ad2s1200 driver state.
+>> On Mon, Apr 23, 2018 at 12:03:47AM +0200, David Veenstra wrote:
+>> > Add documentation for the added device tree bindings.
+>> > 
+>> > Signed-off-by: David Veenstra <davidjulianveenstra@gmail.com>
+>> > ---
+>> > Changes in v3:
+>> >  - Documentation is added to Documentation/devicetree/bindings/iio/resolver
+>> >    instead of staging directory.
+>> >  - Add mention to ad2s1205 device.
+>> > 
+>> >  .../devicetree/bindings/iio/resolver/ad2s1200.txt        | 16 ++++++++++++++++
+>> >  1 file changed, 16 insertions(+)
+>> >  create mode 100644 Documentation/devicetree/bindings/iio/resolver/ad2s1200.txt
+>> > 
+>> > diff --git a/Documentation/devicetree/bindings/iio/resolver/ad2s1200.txt b/Documentation/devicetree/bindings/iio/resolver/ad2s1200.txt
+>> > new file mode 100644
+>> > index 000000000000..46b51db38368
+>> > --- /dev/null
+>> > +++ b/Documentation/devicetree/bindings/iio/resolver/ad2s1200.txt
+>> > @@ -0,0 +1,16 @@
+>> > +Analog Devices AD2S1200 and AD2S1205 Resolver-to-Digital Converter
+>> > +
+>> > +Required properties:
+>> > + - compatible : should be "adi,ad2s1200" or "adi,ad2s1205"
+>> > + - reg : the SPI chip select number of the device
+>> > + - sample-gpios : The GPIO pin connected to the SAMPLE line of the AD2S1200
+>> > + - rdvel-gpios : The GPIO pin connected to the RDVEL line of the AD2S1200  
 >> 
->> Signed-off-by: David Veenstra <davidjulianveenstra@gmail.com>
-> Hi David,
+>> Are these gpios something that would be common to resolvers (whatever 
+>> that is) or specific to this chip. For the latter, you need vendor 
+>> prefixes.
 >
-> Comment inline.
+> They are pretty chip specific I think, so prefixes needed.
 >
->> ---
->> Changes in v3:
->>  - Added more explanation to mutex lock.
->> 
->>  drivers/staging/iio/resolver/ad2s1200.c | 9 +++++++++
->>  1 file changed, 9 insertions(+)
->> 
->> diff --git a/drivers/staging/iio/resolver/ad2s1200.c b/drivers/staging/iio/resolver/ad2s1200.c
->> index 357fe3c382b3..17d65cb437fd 100644
->> --- a/drivers/staging/iio/resolver/ad2s1200.c
->> +++ b/drivers/staging/iio/resolver/ad2s1200.c
->> @@ -33,6 +33,15 @@
->>  /* clock period in nano second */
->>  #define AD2S1200_TSCLK	(1000000000 / AD2S1200_HZ)
->>  
->> +/**
->> + * struct ad2s1200_state - driver instance specific data.
->> + * @lock:	protects both the GPIO pins and the rx buffer, to prevent
->> + *		concurrent spi transactions.
-> It isn't actually preventing concurrent spi transactions - that
-> is done by the spi core itself.  What it is preventing is
-> concurrent 'actions' with the device - these involve
-> a mixture of gpio changes and spi transactions.
->
-> That would take some considerable explaining and frankly the code
-> does the job just fine once people know to look.
->
-> I'd just leave it as "protects both the GPIO pins and the rx buffer."
-> Or feel free to see if you can come up with a brief description of
-> exactly what we need to be 'atomic'.
+> I'd not really registered that gpios should be vendor prefixed for some reason
+> (kind of obvious now you mention it).  We have only a few from a quick grep
+> of the bindings for IIO devices (there are loads elsewhere that aren't and
+> are clearly very much part specific).  Ah well, will try and do better moving
+> forward on this!
 
-Agreed that the code is clear. I'll revert the description.
+The vendor prefixes are new to me. I'll add it in the next version.
 
 Best regards,
 David Veenstra
 
 >
-> Thanks,
->
 > Jonathan
 >
->> + * @sdev:	spi device.
->> + * @sample:	GPIO pin SAMPLE.
->> + * @rdvel:	GPIO pin RDVEL.
->> + * @rx:		buffer for spi transfers.
->> + */
->>  struct ad2s1200_state {
->>  	struct mutex lock;
->>  	struct spi_device *sdev;
+>
+>> 
+>> > +
+>> > +Example:
+>> > +
+>> > +	resolver {  
+>> 
+>> Missing unit address.
+>> 
+>> > +		compatible = "adi,ad2s1200";
+>> > +		reg = <4>;
+>> > +		sample-gpios = <&gpio 5 GPIO_ACTIVE_HIGH>;
+>> > +		rdvel-gpios = <&gpio 6 GPIO_ACTIVE_HIGH>;
+>> > +	};
+>> > -- 
+>> > 2.16.2
+>> >   
+
