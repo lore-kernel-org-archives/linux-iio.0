@@ -1,65 +1,72 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from titan.imtexcloud.com ([52.52.55.48]:12040 "EHLO
-        titan.imtexcloud.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751363AbeERRwD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 May 2018 13:52:03 -0400
-To: <linux-iio@vger.kernel.org>, <pmeerw@pmeerw.net>
-From: =?UTF-8?Q?Maxime_Roussin-B=c3=a9langer?= <roussinm@sonatest.com>
-Subject: Re: SI1133 light sensor: Is there anything to refer to?
-Message-ID: <55cc843b-5fb8-c8e5-b2e3-26bc706fc9b3@sonatest.com>
-Date: Fri, 18 May 2018 13:42:11 -0400
+Return-Path: <SRS0=iAnx=IF=gmail.com=davidjulianveenstra@kernel.org>
+Date: Fri, 18 May 2018 20:20:52 +0200
+From: David Veenstra <davidjulianveenstra@gmail.com>
+To: jic23@kernel.org, lars@metafoo.de, pmeerw@pmeerw.net,
+	robh+dt@kernel.org
+Cc: Michael.Hennerich@analog.com, knaack.h@gmx.de,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	devicetree@vger.kernel.org
+Subject: [PATCH v4 00/12] iio: ad2s1200: Driver clean up
+Message-ID: <cover.1526667118.git.davidjulianveenstra@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+List-ID: <linux-iio@vger.kernel.org>
 
-Hello Peter,
+For v1 see [1], for v2 see [2], for v3 see [3].
 
-Do you have any progress that could be shared for si1153?
+A summary of this patch:
+1. Clean up of minor code style issues.
+2. Replace legacy GPIO ABI with modern ABI and remove usage of.
+   platform data.
+4. Add scaling factor for angular position and angular velocity to
+   match the sysfs IIO ABI.
+5. Add documentation for device tree binding
+6. Move driver to main line.
 
-Even if it's not complete I could use it to begin si1133.
+Changes in v4:
+- Some new minor code style fix ups.
+- Move spi setup to before iio device registration.
+- Add vendor prefix to gpios function name, and dt docs.
+- Add device tree table
+- Add copyright.
 
-Thanks,
-Maxime.
+Best regards,
+David Veenstra
 
->Excellent news. I'll keep a watch for this new driver to show up.
->In the meantime, we just got the sensor to respond correctly using
->i2cget|set commands.
->
->FYI, the issue we had was that the reset value of ADCCONFIGx is not 0x00
->(as specified by the datasheet), but 0x0f, which selected no photodiode.
->Hence, we received only noise values.
->
->Thanks a lot and have a good day
->
->--
->
->Olivier Dugas
->
->On 17-06-19 11:10 AM, Peter Meerwald-Stadler wrote:
->> Hello Olivier,
->>
->>> We've recently been trying to make the SI1133 light sensor work
-according to
->>> what's written in its datasheet. Unfortunately many questions remain
-and the
->>> si1145.c driver seems largely different from si1133. We believe that
-any code
->>> sample would be of a great help. Are you aware of any driver,
-unmerged patch
->>> or other code sample for this sensor?
->> the si1133 belongs in the same family as the si1153 which has a different
->> register layout than the previous chips, so I think a separate driver is
->> needed
->>
->> I do have an eval board for the si1153 and started a driver, but it's not
->> ready for submission (yet), the si1133 should be a lot simpler than the
->> si1153
->>
->> regards, p.
->>
->
->--
->To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
+[1] https://marc.info/?l=linux-iio&m=152137920426820&w=2
+[2] https://marc.info/?l=linux-iio&m=152425250915148&w=2
+[3] https://marc.info/?l=linux-iio&m=152443456824272&w=2
+
+David Veenstra (12):
+  staging: iio: ad2s1200: Remove unneeded newline in license
+  staging: iio: ad2s1200: Remove unneeded initializations
+  staging: iio: ad2s1200: Add kernel docs to driver state
+  staging: iio: ad2s1200: Setup spi before iio device register
+  staging: iio: ad2s1200: Replace legacy gpio API with modern API
+  staging: iio: ad2s1200: Replace platform data with dt bindings
+  staging: iio: ad2s1200: Add dt table
+  dt-bindings: iio: resolver: Document AD2S1200 bindings
+  staging: iio: ad2s1200: Add scaling factor for angular velocity
+    channel
+  staging: iio: ad2s1200: Add scaling factor for angle channel
+  staging: iio: ad2s1200: Add copyright
+  staging: iio: ad2s1200: Move driver out of staging
+
+ .../bindings/iio/resolver/ad2s1200.txt        |  16 ++
+ drivers/iio/Kconfig                           |   1 +
+ drivers/iio/Makefile                          |   1 +
+ drivers/iio/resolver/Kconfig                  |  17 ++
+ drivers/iio/resolver/Makefile                 |   5 +
+ drivers/iio/resolver/ad2s1200.c               | 210 ++++++++++++++++++
+ drivers/staging/iio/resolver/Kconfig          |  12 -
+ drivers/staging/iio/resolver/Makefile         |   1 -
+ drivers/staging/iio/resolver/ad2s1200.c       | 168 --------------
+ 9 files changed, 250 insertions(+), 181 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/resolver/ad2s1200.txt
+ create mode 100644 drivers/iio/resolver/Kconfig
+ create mode 100644 drivers/iio/resolver/Makefile
+ create mode 100644 drivers/iio/resolver/ad2s1200.c
+ delete mode 100644 drivers/staging/iio/resolver/ad2s1200.c
+
+-- 
+2.17.0
