@@ -1,61 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:47208 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750928AbeETKyG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 20 May 2018 06:54:06 -0400
-Date: Sun, 20 May 2018 11:53:59 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: David Veenstra <davidjulianveenstra@gmail.com>
-Cc: lars@metafoo.de, pmeerw@pmeerw.net, robh+dt@kernel.org,
-        Michael.Hennerich@analog.com, knaack.h@gmx.de,
+Received: from mail-wm0-f65.google.com ([74.125.82.65]:35469 "EHLO
+        mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751952AbeERSVt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 May 2018 14:21:49 -0400
+Date: Fri, 18 May 2018 20:21:44 +0200
+From: David Veenstra <davidjulianveenstra@gmail.com>
+To: jic23@kernel.org, lars@metafoo.de, pmeerw@pmeerw.net,
+        robh+dt@kernel.org
+Cc: Michael.Hennerich@analog.com, knaack.h@gmx.de,
         linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
         devicetree@vger.kernel.org
-Subject: Re: [PATCH v4 03/12] staging: iio: ad2s1200: Add kernel docs to
- driver state
-Message-ID: <20180520115359.3efc80fe@archlinux>
-In-Reply-To: <38a9e24e5cdbc98afbf4d06f9848c55c26ce37ff.1526667118.git.davidjulianveenstra@gmail.com>
+Subject: [PATCH v4 04/12] staging: iio: ad2s1200: Setup spi before iio device
+ register
+Message-ID: <2f531545d91366136c7e421f0931637a45b15d51.1526667118.git.davidjulianveenstra@gmail.com>
 References: <cover.1526667118.git.davidjulianveenstra@gmail.com>
-        <38a9e24e5cdbc98afbf4d06f9848c55c26ce37ff.1526667118.git.davidjulianveenstra@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <cover.1526667118.git.davidjulianveenstra@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 18 May 2018 20:21:34 +0200
-David Veenstra <davidjulianveenstra@gmail.com> wrote:
+The spi should be set up before the device is registered as an iio
+device.
 
-> Add missing kernel docs to the ad2s1200 driver state.
-> 
-> Signed-off-by: David Veenstra <davidjulianveenstra@gmail.com>
-Nice.
+This patch moves the setup to before the device registration.
 
-Applied,
+Signed-off-by: David Veenstra <davidjulianveenstra@gmail.com>
+---
+Changes in v4:
+ - Introduced in this version.
 
-Jonathan
-> ---
-> Changes in v4:
->  - Simplified explanation of lock.
-> 
->  drivers/staging/iio/resolver/ad2s1200.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/drivers/staging/iio/resolver/ad2s1200.c b/drivers/staging/iio/resolver/ad2s1200.c
-> index 9bdcf0c86217..068aa86e9c11 100644
-> --- a/drivers/staging/iio/resolver/ad2s1200.c
-> +++ b/drivers/staging/iio/resolver/ad2s1200.c
-> @@ -32,6 +32,14 @@
->  /* clock period in nano second */
->  #define AD2S1200_TSCLK	(1000000000 / AD2S1200_HZ)
->  
-> +/**
-> + * struct ad2s1200_state - driver instance specific data.
-> + * @lock:	protects both the GPIO pins and the rx buffer.
-> + * @sdev:	spi device.
-> + * @sample:	GPIO pin SAMPLE.
-> + * @rdvel:	GPIO pin RDVEL.
-> + * @rx:		buffer for spi transfers.
-> + */
->  struct ad2s1200_state {
->  	struct mutex lock;
->  	struct spi_device *sdev;
+ drivers/staging/iio/resolver/ad2s1200.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/staging/iio/resolver/ad2s1200.c b/drivers/staging/iio/resolver/ad2s1200.c
+index 068aa86e9c11..430cc62591fe 100644
+--- a/drivers/staging/iio/resolver/ad2s1200.c
++++ b/drivers/staging/iio/resolver/ad2s1200.c
+@@ -143,15 +143,16 @@ static int ad2s1200_probe(struct spi_device *spi)
+ 	indio_dev->num_channels = ARRAY_SIZE(ad2s1200_channels);
+ 	indio_dev->name = spi_get_device_id(spi)->name;
+ 
+-	ret = devm_iio_device_register(&spi->dev, indio_dev);
+-	if (ret)
+-		return ret;
+-
+ 	spi->max_speed_hz = AD2S1200_HZ;
+ 	spi->mode = SPI_MODE_3;
+-	spi_setup(spi);
++	ret = spi_setup(spi);
++
++	if (ret < 0) {
++		dev_err(&spi->dev, "spi_setup failed!\n");
++		return ret;
++	}
+ 
+-	return 0;
++	return devm_iio_device_register(&spi->dev, indio_dev);
+ }
+ 
+ static const struct spi_device_id ad2s1200_id[] = {
+-- 
+2.17.0
 
