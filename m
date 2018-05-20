@@ -1,59 +1,129 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx3-rdu2.redhat.com ([66.187.233.73]:41348 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1751292AbeETN3D (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 20 May 2018 09:29:03 -0400
+Return-Path: <SRS0=sUvW=IH=redhat.com=hdegoede@kernel.org>
 From: Hans de Goede <hdegoede@redhat.com>
 To: "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Wolfram Sang <wsa@the-dreams.de>,
-        Jonathan Cameron <jic23@kernel.org>
-Cc: Hans de Goede <hdegoede@redhat.com>, linux-acpi@vger.kernel.org,
-        linux-i2c@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
-Subject: [PATCH 0/9] ACPI/i2c Enumerate several instances out of one fwnode
-Date: Sun, 20 May 2018 15:28:48 +0200
-Message-Id: <20180520132857.8103-1-hdegoede@redhat.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	Len Brown <lenb@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Mika Westerberg <mika.westerberg@linux.intel.com>,
+	Wolfram Sang <wsa@the-dreams.de>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Hans de Goede <hdegoede@redhat.com>,
+	linux-acpi@vger.kernel.org,
+	linux-i2c@vger.kernel.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	linux-iio@vger.kernel.org
+Subject: [PATCH 1/9] ACPI: export __acpi_match_device and __acpi_device[_uevent]_modalias
+Date: Sun, 20 May 2018 15:28:49 +0200
+Message-Id: <20180520132857.8103-2-hdegoede@redhat.com>
+In-Reply-To: <20180520132857.8103-1-hdegoede@redhat.com>
+References: <20180520132857.8103-1-hdegoede@redhat.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi All,
+Normally __acpi_match_device and __acpi_device[_uevent]_modalias are only
+called through functions calling acpi_companion_match() so that if their
+are multiple devices sharing the ACPI firmware node only one matches /
+gets the acpi:ACPIHID modalias.
 
-This series really consists of 2 series, patches 1-5 add support for
-interesting ACPI tables which describe multiple i2c chips in a single
-fwnode, sometimes multiple cases of the same chip on different addresses,
-sometimes a bunch of related chips.
+Some DSDTs defines multiple i2c devices in a single apci_device and in
+the i2c-core-acpi code we want to instantiate separate devices for these,
+with all devices reporting / matching the acpi_devices's modalias.
 
-Andy Shevchenko has come up with the solution of adding a quirk based
-on the ACPI HID of the fwnode for these devices which makes the
-drivers/i2c/i2c-core-acpi.c code instantiate separate i2c_client devices
-for each I2cSerialBusV2 in the fwnode. I agree with him that this is
-the best (least ugly) solution for this.
+This commit exports __acpi_match_device and __acpi_device[_uevent]_modalias
+for use in the i2c-core-acpi code only, with a comment added that they
+should not be used in normal code.
 
-I've been testing this solution on a device if mine which needs a solution
-for this, the HP Pavilion x2 - 10-n000nd 2-in-1 has an acpi_device / fwnode
-with a HID of BSG1160 which describes 3 different i2c sensors in an accel /
-magneto / gyro sensor cluster on the tablet. This has let to some extra
-prep. patches and some fixes to Andy's patches.
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/acpi/bus.c          | 11 ++++++-----
+ drivers/acpi/device_sysfs.c |  4 +++-
+ include/linux/acpi.h        | 11 +++++++++++
+ 3 files changed, 20 insertions(+), 6 deletions(-)
 
-Patches 6-9 use the new functionality creating  one i2c-client per
-I2cSerialBusV2 resource to make the sensor cluster on the HP X2 work and
-are posted as part of this series to show how this functionality can be
-used.
-
-Assuming everyone is ok with this series (I'm not expecting anyone to be
-really happy about the need for this), then I suggest that patches 1-6
-get merged togther through either the ACPI or the i2c tree, I guess the
-i2c tree would make somewhat more sense, since most patches are there.
-
-Then once those are accepted patches 7-9 can be merged into the iio tree,
-there is no compile time dependency between the 2, so these can be merged
-separately. Note merging 7-9 before there is agreement that this is the
-right way to fix this is probably not a good idea.
-
-Regards,
-
-Hans
-
+diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
+index 84b4a62018eb..29a0e8fa2a13 100644
+--- a/drivers/acpi/bus.c
++++ b/drivers/acpi/bus.c
+@@ -767,11 +767,11 @@ static bool __acpi_match_device_cls(const struct acpi_device_id *id,
+ 	return true;
+ }
+ 
+-static bool __acpi_match_device(struct acpi_device *device,
+-				const struct acpi_device_id *acpi_ids,
+-				const struct of_device_id *of_ids,
+-				const struct acpi_device_id **acpi_id,
+-				const struct of_device_id **of_id)
++bool __acpi_match_device(struct acpi_device *device,
++			 const struct acpi_device_id *acpi_ids,
++			 const struct of_device_id *of_ids,
++			 const struct acpi_device_id **acpi_id,
++			 const struct of_device_id **of_id)
+ {
+ 	const struct acpi_device_id *id;
+ 	struct acpi_hardware_id *hwid;
+@@ -808,6 +808,7 @@ static bool __acpi_match_device(struct acpi_device *device,
+ 		*acpi_id = id;
+ 	return true;
+ }
++EXPORT_SYMBOL_GPL(__acpi_match_device);
+ 
+ /**
+  * acpi_match_device - Match a struct device against a given list of ACPI IDs
+diff --git a/drivers/acpi/device_sysfs.c b/drivers/acpi/device_sysfs.c
+index 545e91420cde..e6d784ef00da 100644
+--- a/drivers/acpi/device_sysfs.c
++++ b/drivers/acpi/device_sysfs.c
+@@ -276,6 +276,7 @@ int __acpi_device_uevent_modalias(struct acpi_device *adev,
+ 
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(__acpi_device_uevent_modalias);
+ 
+ /**
+  * acpi_device_uevent_modalias - uevent modalias for ACPI-enumerated devices.
+@@ -291,7 +292,7 @@ int acpi_device_uevent_modalias(struct device *dev, struct kobj_uevent_env *env)
+ }
+ EXPORT_SYMBOL_GPL(acpi_device_uevent_modalias);
+ 
+-static int __acpi_device_modalias(struct acpi_device *adev, char *buf, int size)
++int __acpi_device_modalias(struct acpi_device *adev, char *buf, int size)
+ {
+ 	int len, count;
+ 
+@@ -321,6 +322,7 @@ static int __acpi_device_modalias(struct acpi_device *adev, char *buf, int size)
+ 
+ 	return len;
+ }
++EXPORT_SYMBOL_GPL(__acpi_device_modalias);
+ 
+ /**
+  * acpi_device_modalias - modalias sysfs attribute for ACPI-enumerated devices.
+diff --git a/include/linux/acpi.h b/include/linux/acpi.h
+index 15bfb15c2fa5..cf97902792a5 100644
+--- a/include/linux/acpi.h
++++ b/include/linux/acpi.h
+@@ -586,12 +586,23 @@ extern int acpi_nvs_for_each_region(int (*func)(__u64, __u64, void *),
+ 
+ const struct acpi_device_id *acpi_match_device(const struct acpi_device_id *ids,
+ 					       const struct device *dev);
++/* Skips the acpi_companion_match() check, normal code must not use this */
++bool __acpi_match_device(struct acpi_device *device,
++			 const struct acpi_device_id *acpi_ids,
++			 const struct of_device_id *of_ids,
++			 const struct acpi_device_id **acpi_id,
++			 const struct of_device_id **of_id);
+ 
+ const void *acpi_device_get_match_data(const struct device *dev);
+ extern bool acpi_driver_match_device(struct device *dev,
+ 				     const struct device_driver *drv);
+ int acpi_device_uevent_modalias(struct device *, struct kobj_uevent_env *);
++/* Skips the acpi_companion_match() check, normal code must not use this */
++int __acpi_device_uevent_modalias(struct acpi_device *adev,
++				  struct kobj_uevent_env *env);
+ int acpi_device_modalias(struct device *, char *, int);
++/* Skips the acpi_companion_match() check, normal code must not use this */
++int __acpi_device_modalias(struct acpi_device *adev, char *buf, int size);
+ void acpi_walk_dep_device_list(acpi_handle handle);
+ 
+ struct platform_device *acpi_create_platform_device(struct acpi_device *,
+-- 
+2.17.0
