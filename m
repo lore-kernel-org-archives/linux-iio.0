@@ -1,53 +1,118 @@
-Return-Path: <SRS0=6PT2=II=linux.intel.com=andriy.shevchenko@kernel.org>
-Message-ID: <1e4b1957be1b64d0bc17a1d6f2d004435ee554df.camel@linux.intel.com>
-Subject: Re: [PATCH 2/9] i2c: Allow specifying irq-index to be used in
- i2c_device_probe()
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Hans de Goede <hdegoede@redhat.com>, "Rafael J . Wysocki"
-	 <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Mika Westerberg
-	 <mika.westerberg@linux.intel.com>, Wolfram Sang <wsa@the-dreams.de>,
-	Jonathan Cameron
-	 <jic23@kernel.org>
-Cc: linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org, Hartmut Knaack
-	 <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	linux-iio@vger.kernel.org
-Date: Mon, 21 May 2018 12:08:39 +0300
-In-Reply-To: <77af193a6335f8f29278dd23365f8c619a2c6e5f.camel@linux.intel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mx3-rdu2.redhat.com ([66.187.233.73]:41386 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1751372AbeETN3I (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 20 May 2018 09:29:08 -0400
+From: Hans de Goede <hdegoede@redhat.com>
+To: "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Wolfram Sang <wsa@the-dreams.de>,
+        Jonathan Cameron <jic23@kernel.org>
+Cc: Hans de Goede <hdegoede@redhat.com>, linux-acpi@vger.kernel.org,
+        linux-i2c@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
+Subject: [PATCH 3/9] i2c: acpi: Introduce i2c_acpi_get_i2c_resource() helper
+Date: Sun, 20 May 2018 15:28:51 +0200
+Message-Id: <20180520132857.8103-4-hdegoede@redhat.com>
+In-Reply-To: <20180520132857.8103-1-hdegoede@redhat.com>
 References: <20180520132857.8103-1-hdegoede@redhat.com>
-	 <20180520132857.8103-3-hdegoede@redhat.com>
-	 <77af193a6335f8f29278dd23365f8c619a2c6e5f.camel@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, 2018-05-21 at 12:07 +0300, Andy Shevchenko wrote:
-> On Sun, 2018-05-20 at 15:28 +0200, Hans de Goede wrote:
-> > Some types of interrupts are retrieved in i2c_device_probe() because
-> > getting them might fail with -EPROBE_DEFER.
-> > 
-> > So far we've always assumed the first IRQ (index 0) in the firmware-
-> > node
-> > is the one we want.
-> > 
-> > At least with ACPI enumerated i2c-clients in some cases the
-> > firmware-
-> > node
-> > is shared between multiple i2c-clients so we need to be able to
-> > specify
-> > the index rather then hardcoding it at 0.
-> > 
-> > This commit adds a new fwnode_irq_index member to i2c_board_info and
-> > i2c_client which allows specifying the index.
-> > 
-> 
-> FWIW,
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
+Besides current two users one more is coming. Definitely makes sense to
+introduce a helper.
 
-> P.S. I would go with 'unsigned int' for the index.
+No functional change intended.
 
-Ah, it seems it is needed to be -1 in some cases. Discard my comment.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/i2c/i2c-core-acpi.c | 31 +++++++++++++++++++------------
+ include/linux/acpi.h        | 11 +++++++++++
+ 2 files changed, 30 insertions(+), 12 deletions(-)
 
+diff --git a/drivers/i2c/i2c-core-acpi.c b/drivers/i2c/i2c-core-acpi.c
+index 7c3b4740b94b..7b1b0aeced36 100644
+--- a/drivers/i2c/i2c-core-acpi.c
++++ b/drivers/i2c/i2c-core-acpi.c
+@@ -45,6 +45,23 @@ struct i2c_acpi_lookup {
+ 	u32 min_speed;
+ };
+ 
++bool i2c_acpi_get_i2c_resource(struct acpi_resource *ares,
++			       struct acpi_resource_i2c_serialbus **i2c)
++{
++	struct acpi_resource_i2c_serialbus *sb;
++
++	if (ares->type != ACPI_RESOURCE_TYPE_SERIAL_BUS)
++		return false;
++
++	sb = &ares->data.i2c_serial_bus;
++	if (sb->type != ACPI_RESOURCE_SERIAL_TYPE_I2C)
++		return false;
++
++	*i2c = sb;
++	return true;
++}
++EXPORT_SYMBOL_GPL(i2c_acpi_get_i2c_resource);
++
+ static int i2c_acpi_fill_info(struct acpi_resource *ares, void *data)
+ {
+ 	struct i2c_acpi_lookup *lookup = data;
+@@ -52,11 +69,7 @@ static int i2c_acpi_fill_info(struct acpi_resource *ares, void *data)
+ 	struct acpi_resource_i2c_serialbus *sb;
+ 	acpi_status status;
+ 
+-	if (info->addr || ares->type != ACPI_RESOURCE_TYPE_SERIAL_BUS)
+-		return 1;
+-
+-	sb = &ares->data.i2c_serial_bus;
+-	if (sb->type != ACPI_RESOURCE_SERIAL_TYPE_I2C)
++	if (info->addr || !i2c_acpi_get_i2c_resource(ares, &sb))
+ 		return 1;
+ 
+ 	if (lookup->index != -1 && lookup->n++ != lookup->index)
+@@ -516,13 +529,7 @@ i2c_acpi_space_handler(u32 function, acpi_physical_address command,
+ 		goto err;
+ 	}
+ 
+-	if (!value64 || ares->type != ACPI_RESOURCE_TYPE_SERIAL_BUS) {
+-		ret = AE_BAD_PARAMETER;
+-		goto err;
+-	}
+-
+-	sb = &ares->data.i2c_serial_bus;
+-	if (sb->type != ACPI_RESOURCE_SERIAL_TYPE_I2C) {
++	if (!value64 || !i2c_acpi_get_i2c_resource(ares, &sb)) {
+ 		ret = AE_BAD_PARAMETER;
+ 		goto err;
+ 	}
+diff --git a/include/linux/acpi.h b/include/linux/acpi.h
+index cf97902792a5..f97c70f8ba4b 100644
+--- a/include/linux/acpi.h
++++ b/include/linux/acpi.h
+@@ -1062,6 +1062,17 @@ static inline int acpi_dev_gpio_irq_get(struct acpi_device *adev, int index)
+ }
+ #endif
+ 
++#if defined(CONFIG_ACPI) && IS_ENABLED(CONFIG_I2C)
++bool i2c_acpi_get_i2c_resource(struct acpi_resource *ares,
++			       struct acpi_resource_i2c_serialbus **i2c);
++#else
++static inline bool i2c_acpi_get_i2c_resource(struct acpi_resource *ares,
++			       struct acpi_resource_i2c_serialbus **i2c)
++{
++	return false;
++}
++#endif
++
+ /* Device properties */
+ 
+ #define MAX_ACPI_REFERENCE_ARGS	8
 -- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+2.17.0
+
