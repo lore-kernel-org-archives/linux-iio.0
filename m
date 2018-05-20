@@ -12,9 +12,9 @@ Cc: Hans de Goede <hdegoede@redhat.com>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	linux-iio@vger.kernel.org
-Subject: [PATCH 8/9] iio: gyro: bmg160: Add support for BSG1160 ACPI HID
-Date: Sun, 20 May 2018 15:28:56 +0200
-Message-Id: <20180520132857.8103-9-hdegoede@redhat.com>
+Subject: [PATCH 9/9] iio: magnetometer: bmc150: Add support for BSG1160 ACPI HID
+Date: Sun, 20 May 2018 15:28:57 +0200
+Message-Id: <20180520132857.8103-10-hdegoede@redhat.com>
 In-Reply-To: <20180520132857.8103-1-hdegoede@redhat.com>
 References: <20180520132857.8103-1-hdegoede@redhat.com>
 List-ID: <linux-iio@vger.kernel.org>
@@ -30,22 +30,22 @@ A previous patch on this series has added the BSG1160 HID to the
 i2c_acpi_multiple_devices_ids list, so that one i2c_client gets
 instantiated per sensor.
 
-This commit not only adds the BSG1160 HID to the bmg160 code, but it also
+This commit not only adds the BSG1160 HID to the bmc150 code, but it also
 makes the i2c probe function check the client address for devices with a
-BSG1160 HID and only bind to the one at address 0x68.
+BSG1160 HID and only bind to the one at address 0x13.
 
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
- drivers/iio/gyro/bmg160_i2c.c | 9 +++++++++
+ drivers/iio/magnetometer/bmc150_magn_i2c.c | 9 +++++++++
  1 file changed, 9 insertions(+)
 
-diff --git a/drivers/iio/gyro/bmg160_i2c.c b/drivers/iio/gyro/bmg160_i2c.c
-index 90126a5a7663..2f72f41e33bb 100644
---- a/drivers/iio/gyro/bmg160_i2c.c
-+++ b/drivers/iio/gyro/bmg160_i2c.c
-@@ -15,9 +15,17 @@ static const struct regmap_config bmg160_regmap_i2c_conf = {
- static int bmg160_i2c_probe(struct i2c_client *client,
- 			    const struct i2c_device_id *id)
+diff --git a/drivers/iio/magnetometer/bmc150_magn_i2c.c b/drivers/iio/magnetometer/bmc150_magn_i2c.c
+index 57e40dd1222e..c8a1e4178462 100644
+--- a/drivers/iio/magnetometer/bmc150_magn_i2c.c
++++ b/drivers/iio/magnetometer/bmc150_magn_i2c.c
+@@ -27,9 +27,17 @@
+ static int bmc150_magn_i2c_probe(struct i2c_client *client,
+ 				 const struct i2c_device_id *id)
  {
 +	const struct acpi_device_id *acpi_id;
  	struct regmap *regmap;
@@ -58,16 +58,16 @@ index 90126a5a7663..2f72f41e33bb 100644
 +	    client->addr != acpi_id->driver_data)
 +		return -ENODEV;
 +
- 	regmap = devm_regmap_init_i2c(client, &bmg160_regmap_i2c_conf);
+ 	regmap = devm_regmap_init_i2c(client, &bmc150_magn_regmap_config);
  	if (IS_ERR(regmap)) {
- 		dev_err(&client->dev, "Failed to register i2c regmap %d\n",
-@@ -41,6 +49,7 @@ static int bmg160_i2c_remove(struct i2c_client *client)
- static const struct acpi_device_id bmg160_acpi_match[] = {
- 	{"BMG0160", 0},
- 	{"BMI055B", 0},
-+	{"BSG1160", 0x68},
+ 		dev_err(&client->dev, "Failed to initialize i2c regmap\n");
+@@ -51,6 +59,7 @@ static const struct acpi_device_id bmc150_magn_acpi_match[] = {
+ 	{"BMC150B", 0},
+ 	{"BMC156B", 0},
+ 	{"BMM150B", 0},
++	{"BSG1160", 0x13},
  	{},
  };
- 
+ MODULE_DEVICE_TABLE(acpi, bmc150_magn_acpi_match);
 -- 
 2.17.0
