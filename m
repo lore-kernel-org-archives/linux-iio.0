@@ -1,118 +1,97 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx3-rdu2.redhat.com ([66.187.233.73]:41386 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1751372AbeETN3I (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 20 May 2018 09:29:08 -0400
+Return-Path: <SRS0=sUvW=IH=redhat.com=hdegoede@kernel.org>
 From: Hans de Goede <hdegoede@redhat.com>
 To: "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Wolfram Sang <wsa@the-dreams.de>,
-        Jonathan Cameron <jic23@kernel.org>
-Cc: Hans de Goede <hdegoede@redhat.com>, linux-acpi@vger.kernel.org,
-        linux-i2c@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
-Subject: [PATCH 3/9] i2c: acpi: Introduce i2c_acpi_get_i2c_resource() helper
-Date: Sun, 20 May 2018 15:28:51 +0200
-Message-Id: <20180520132857.8103-4-hdegoede@redhat.com>
+	Len Brown <lenb@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Mika Westerberg <mika.westerberg@linux.intel.com>,
+	Wolfram Sang <wsa@the-dreams.de>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Hans de Goede <hdegoede@redhat.com>,
+	linux-acpi@vger.kernel.org,
+	linux-i2c@vger.kernel.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	linux-iio@vger.kernel.org
+Subject: [PATCH 4/9] i2c: acpi: Allow get info by index in i2c_acpi_get_info()
+Date: Sun, 20 May 2018 15:28:52 +0200
+Message-Id: <20180520132857.8103-5-hdegoede@redhat.com>
 In-Reply-To: <20180520132857.8103-1-hdegoede@redhat.com>
 References: <20180520132857.8103-1-hdegoede@redhat.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Besides current two users one more is coming. Definitely makes sense to
-introduce a helper.
+For some devices we need to get info based on index. As a preparation of
+support such, slightly modify i2c_acpi_get_info() helper.
 
-No functional change intended.
+While here, assume that interrupt resources are provided in the same amount
+with 1:1 mapping to serial bus resources. This will not affect existing
+behaviour because only first resource of each type is considered.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
- drivers/i2c/i2c-core-acpi.c | 31 +++++++++++++++++++------------
- include/linux/acpi.h        | 11 +++++++++++
- 2 files changed, 30 insertions(+), 12 deletions(-)
+ drivers/i2c/i2c-core-acpi.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/i2c/i2c-core-acpi.c b/drivers/i2c/i2c-core-acpi.c
-index 7c3b4740b94b..7b1b0aeced36 100644
+index 7b1b0aeced36..75352b3744e5 100644
 --- a/drivers/i2c/i2c-core-acpi.c
 +++ b/drivers/i2c/i2c-core-acpi.c
-@@ -45,6 +45,23 @@ struct i2c_acpi_lookup {
- 	u32 min_speed;
- };
+@@ -129,17 +129,19 @@ static int i2c_acpi_do_lookup(struct acpi_device *adev,
  
-+bool i2c_acpi_get_i2c_resource(struct acpi_resource *ares,
-+			       struct acpi_resource_i2c_serialbus **i2c)
-+{
-+	struct acpi_resource_i2c_serialbus *sb;
-+
-+	if (ares->type != ACPI_RESOURCE_TYPE_SERIAL_BUS)
-+		return false;
-+
-+	sb = &ares->data.i2c_serial_bus;
-+	if (sb->type != ACPI_RESOURCE_SERIAL_TYPE_I2C)
-+		return false;
-+
-+	*i2c = sb;
-+	return true;
-+}
-+EXPORT_SYMBOL_GPL(i2c_acpi_get_i2c_resource);
-+
- static int i2c_acpi_fill_info(struct acpi_resource *ares, void *data)
+ static int i2c_acpi_get_info(struct acpi_device *adev,
+ 			     struct i2c_board_info *info,
++			     int index,
+ 			     struct i2c_adapter *adapter,
+ 			     acpi_handle *adapter_handle)
  {
- 	struct i2c_acpi_lookup *lookup = data;
-@@ -52,11 +69,7 @@ static int i2c_acpi_fill_info(struct acpi_resource *ares, void *data)
- 	struct acpi_resource_i2c_serialbus *sb;
- 	acpi_status status;
+ 	struct list_head resource_list;
+ 	struct resource_entry *entry;
+ 	struct i2c_acpi_lookup lookup;
++	unsigned int n;
+ 	int ret;
  
--	if (info->addr || ares->type != ACPI_RESOURCE_TYPE_SERIAL_BUS)
--		return 1;
--
--	sb = &ares->data.i2c_serial_bus;
--	if (sb->type != ACPI_RESOURCE_SERIAL_TYPE_I2C)
-+	if (info->addr || !i2c_acpi_get_i2c_resource(ares, &sb))
- 		return 1;
+ 	memset(&lookup, 0, sizeof(lookup));
+ 	lookup.info = info;
+-	lookup.index = -1;
++	lookup.index = index;
  
- 	if (lookup->index != -1 && lookup->n++ != lookup->index)
-@@ -516,13 +529,7 @@ i2c_acpi_space_handler(u32 function, acpi_physical_address command,
- 		goto err;
+ 	ret = i2c_acpi_do_lookup(adev, &lookup);
+ 	if (ret)
+@@ -170,10 +172,13 @@ static int i2c_acpi_get_info(struct acpi_device *adev,
+ 	if (ret < 0)
+ 		return -EINVAL;
+ 
++	n = 0;
+ 	resource_list_for_each_entry(entry, &resource_list) {
+ 		if (resource_type(entry->res) == IORESOURCE_IRQ) {
+-			info->irq = entry->res->start;
+-			break;
++			if (index == -1 || n++ == index) {
++				info->irq = entry->res->start;
++				break;
++			}
+ 		}
  	}
  
--	if (!value64 || ares->type != ACPI_RESOURCE_TYPE_SERIAL_BUS) {
--		ret = AE_BAD_PARAMETER;
--		goto err;
--	}
--
--	sb = &ares->data.i2c_serial_bus;
--	if (sb->type != ACPI_RESOURCE_SERIAL_TYPE_I2C) {
-+	if (!value64 || !i2c_acpi_get_i2c_resource(ares, &sb)) {
- 		ret = AE_BAD_PARAMETER;
- 		goto err;
- 	}
-diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-index cf97902792a5..f97c70f8ba4b 100644
---- a/include/linux/acpi.h
-+++ b/include/linux/acpi.h
-@@ -1062,6 +1062,17 @@ static inline int acpi_dev_gpio_irq_get(struct acpi_device *adev, int index)
- }
- #endif
+@@ -210,7 +215,7 @@ static acpi_status i2c_acpi_add_device(acpi_handle handle, u32 level,
+ 	if (acpi_bus_get_device(handle, &adev))
+ 		return AE_OK;
  
-+#if defined(CONFIG_ACPI) && IS_ENABLED(CONFIG_I2C)
-+bool i2c_acpi_get_i2c_resource(struct acpi_resource *ares,
-+			       struct acpi_resource_i2c_serialbus **i2c);
-+#else
-+static inline bool i2c_acpi_get_i2c_resource(struct acpi_resource *ares,
-+			       struct acpi_resource_i2c_serialbus **i2c)
-+{
-+	return false;
-+}
-+#endif
-+
- /* Device properties */
+-	if (i2c_acpi_get_info(adev, &info, adapter, NULL))
++	if (i2c_acpi_get_info(adev, &info, -1, adapter, NULL))
+ 		return AE_OK;
  
- #define MAX_ACPI_REFERENCE_ARGS	8
+ 	i2c_acpi_register_device(adapter, adev, &info);
+@@ -356,7 +361,7 @@ static int i2c_acpi_notify(struct notifier_block *nb, unsigned long value,
+ 
+ 	switch (value) {
+ 	case ACPI_RECONFIG_DEVICE_ADD:
+-		if (i2c_acpi_get_info(adev, &info, NULL, &adapter_handle))
++		if (i2c_acpi_get_info(adev, &info, -1, NULL, &adapter_handle))
+ 			break;
+ 
+ 		adapter = i2c_acpi_find_adapter_by_handle(adapter_handle);
 -- 
 2.17.0
-
