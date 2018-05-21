@@ -1,63 +1,77 @@
-Return-Path: <SRS0=R/eT=II=metafoo.de=lars@kernel.org>
+Return-Path: <SRS0=6PT2=II=linux.intel.com=andriy.shevchenko@kernel.org>
+Message-ID: <f9fc420005d926b2d35854331ec0288d3a98c925.camel@linux.intel.com>
 Subject: Re: [PATCH 0/9] ACPI/i2c Enumerate several instances out of one
  fwnode
-To: Jonathan Cameron <jic23@kernel.org>, Hans de Goede <hdegoede@redhat.com>
-Cc: "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Mika Westerberg <mika.westerberg@linux.intel.com>,
- Wolfram Sang <wsa@the-dreams.de>, linux-acpi@vger.kernel.org,
- linux-i2c@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
- linux-iio@vger.kernel.org
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Hans de Goede <hdegoede@redhat.com>, "Rafael J . Wysocki"
+	 <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Mika Westerberg
+	 <mika.westerberg@linux.intel.com>, Wolfram Sang <wsa@the-dreams.de>,
+	Jonathan Cameron
+	 <jic23@kernel.org>
+Cc: linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org, Hartmut Knaack
+	 <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+	linux-iio@vger.kernel.org
+Date: Mon, 21 May 2018 12:19:19 +0300
+In-Reply-To: <20180520132857.8103-1-hdegoede@redhat.com>
 References: <20180520132857.8103-1-hdegoede@redhat.com>
- <20180520172331.5297177b@archlinux>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <54827d1e-12ef-affe-b915-f0f2976f40de@metafoo.de>
-Date: Mon, 21 May 2018 15:19:44 +0200
-MIME-Version: 1.0
-In-Reply-To: <20180520172331.5297177b@archlinux>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-On 05/20/2018 06:23 PM, Jonathan Cameron wrote:
-> On Sun, 20 May 2018 15:28:48 +0200
-> Hans de Goede <hdegoede@redhat.com> wrote:
+On Sun, 2018-05-20 at 15:28 +0200, Hans de Goede wrote:
+> Hi All,
 > 
->> Hi All,
->>
->> This series really consists of 2 series, patches 1-5 add support for
->> interesting ACPI tables which describe multiple i2c chips in a single
->> fwnode, sometimes multiple cases of the same chip on different addresses,
->> sometimes a bunch of related chips.
->>
->> Andy Shevchenko has come up with the solution of adding a quirk based
->> on the ACPI HID of the fwnode for these devices which makes the
->> drivers/i2c/i2c-core-acpi.c code instantiate separate i2c_client devices
->> for each I2cSerialBusV2 in the fwnode. I agree with him that this is
->> the best (least ugly) solution for this.
->>
->> I've been testing this solution on a device if mine which needs a solution
->> for this, the HP Pavilion x2 - 10-n000nd 2-in-1 has an acpi_device / fwnode
->> with a HID of BSG1160 which describes 3 different i2c sensors in an accel /
->> magneto / gyro sensor cluster on the tablet. This has let to some extra
->> prep. patches and some fixes to Andy's patches.
->>
->> Patches 6-9 use the new functionality creating  one i2c-client per
->> I2cSerialBusV2 resource to make the sensor cluster on the HP X2 work and
->> are posted as part of this series to show how this functionality can be
->> used.
->>
->> Assuming everyone is ok with this series (I'm not expecting anyone to be
->> really happy about the need for this), then I suggest that patches 1-6
->> get merged togther through either the ACPI or the i2c tree, I guess the
->> i2c tree would make somewhat more sense, since most patches are there.
->>
->> Then once those are accepted patches 7-9 can be merged into the iio tree,
->> there is no compile time dependency between the 2, so these can be merged
->> separately. Note merging 7-9 before there is agreement that this is the
->> right way to fix this is probably not a good idea.
+> This series really consists of 2 series, patches 1-5 add support for
+> interesting ACPI tables which describe multiple i2c chips in a single
+> fwnode, sometimes multiple cases of the same chip on different
+> addresses,
+> sometimes a bunch of related chips.
 > 
-> It's hideous, but I can live with it as better than anything else anyone
-> has come up with.  I just hope we don't get a huge number of these
-> 'interesting' ACPI cases going forwards.
+> Andy Shevchenko has come up with the solution of adding a quirk based
+> on the ACPI HID of the fwnode for these devices which makes the
+> drivers/i2c/i2c-core-acpi.c code instantiate separate i2c_client
+> devices
+> for each I2cSerialBusV2 in the fwnode. I agree with him that this is
+> the best (least ugly) solution for this.
+> 
+> I've been testing this solution on a device if mine which needs a
+> solution
+> for this, the HP Pavilion x2 - 10-n000nd 2-in-1 has an acpi_device /
+> fwnode
+> with a HID of BSG1160 which describes 3 different i2c sensors in an
+> accel /
+> magneto / gyro sensor cluster on the tablet. This has let to some
+> extra
+> prep. patches and some fixes to Andy's patches.
 
-It's ACPI, you know this is just the beginning ;)
+Thanks for taking care!
+
+> Patches 6-9 use the new functionality creating  one i2c-client per
+> I2cSerialBusV2 resource to make the sensor cluster on the HP X2 work
+> and
+> are posted as part of this series to show how this functionality can
+> be
+> used.
+
+I suppose it's better to do an "MFD" type of IIO driver for that chip.
+Check, for example, drivers/iio/imu/bmi160/bmi160_core.c
+
+> 
+> Assuming everyone is ok with this series (I'm not expecting anyone to
+> be
+> really happy about the need for this), then I suggest that patches 1-6
+> get merged togther through either the ACPI or the i2c tree, I guess
+> the
+> i2c tree would make somewhat more sense, since most patches are there.
+> 
+> Then once those are accepted patches 7-9 can be merged into the iio
+> tree,
+> there is no compile time dependency between the 2, so these can be
+> merged
+> separately. Note merging 7-9 before there is agreement that this is
+> the
+> right way to fix this is probably not a good idea.
+
+-- 
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
