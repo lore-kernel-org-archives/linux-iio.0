@@ -1,105 +1,131 @@
-Return-Path: <SRS0=sUvW=IH=redhat.com=hdegoede@kernel.org>
-From: Hans de Goede <hdegoede@redhat.com>
-To: "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-	Len Brown <lenb@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Mika Westerberg <mika.westerberg@linux.intel.com>,
-	Wolfram Sang <wsa@the-dreams.de>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Hans de Goede <hdegoede@redhat.com>,
-	linux-acpi@vger.kernel.org,
-	linux-i2c@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
+Return-Path: <SRS0=6PT2=II=linux.intel.com=andriy.shevchenko@kernel.org>
+Message-ID: <77af193a6335f8f29278dd23365f8c619a2c6e5f.camel@linux.intel.com>
+Subject: Re: [PATCH 2/9] i2c: Allow specifying irq-index to be used in
+ i2c_device_probe()
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Hans de Goede <hdegoede@redhat.com>, "Rafael J . Wysocki"
+	 <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Mika Westerberg
+	 <mika.westerberg@linux.intel.com>, Wolfram Sang <wsa@the-dreams.de>,
+	Jonathan Cameron
+	 <jic23@kernel.org>
+Cc: linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org, Hartmut Knaack
+	 <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
 	linux-iio@vger.kernel.org
-Subject: [PATCH 2/9] i2c: Allow specifying irq-index to be used in i2c_device_probe()
-Date: Sun, 20 May 2018 15:28:50 +0200
-Message-Id: <20180520132857.8103-3-hdegoede@redhat.com>
-In-Reply-To: <20180520132857.8103-1-hdegoede@redhat.com>
+Date: Mon, 21 May 2018 12:07:24 +0300
+In-Reply-To: <20180520132857.8103-3-hdegoede@redhat.com>
 References: <20180520132857.8103-1-hdegoede@redhat.com>
+	 <20180520132857.8103-3-hdegoede@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-Some types of interrupts are retrieved in i2c_device_probe() because
-getting them might fail with -EPROBE_DEFER.
+On Sun, 2018-05-20 at 15:28 +0200, Hans de Goede wrote:
+> Some types of interrupts are retrieved in i2c_device_probe() because
+> getting them might fail with -EPROBE_DEFER.
+> 
+> So far we've always assumed the first IRQ (index 0) in the firmware-
+> node
+> is the one we want.
+> 
+> At least with ACPI enumerated i2c-clients in some cases the firmware-
+> node
+> is shared between multiple i2c-clients so we need to be able to
+> specify
+> the index rather then hardcoding it at 0.
+> 
+> This commit adds a new fwnode_irq_index member to i2c_board_info and
+> i2c_client which allows specifying the index.
+> 
 
-So far we've always assumed the first IRQ (index 0) in the firmware-node
-is the one we want.
+FWIW,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-At least with ACPI enumerated i2c-clients in some cases the firmware-node
-is shared between multiple i2c-clients so we need to be able to specify
-the index rather then hardcoding it at 0.
+P.S. I would go with 'unsigned int' for the index.
 
-This commit adds a new fwnode_irq_index member to i2c_board_info and
-i2c_client which allows specifying the index.
+> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+> ---
+>  drivers/i2c/i2c-core-base.c | 7 +++++--
+>  include/linux/i2c.h         | 5 +++++
+>  2 files changed, 10 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/i2c/i2c-core-base.c b/drivers/i2c/i2c-core-base.c
+> index 1ba40bb2b966..ae3fda2c96a4 100644
+> --- a/drivers/i2c/i2c-core-base.c
+> +++ b/drivers/i2c/i2c-core-base.c
+> @@ -312,9 +312,11 @@ static int i2c_device_probe(struct device *dev)
+>  		} else if (dev->of_node) {
+>  			irq = of_irq_get_byname(dev->of_node, "irq");
+>  			if (irq == -EINVAL || irq == -ENODATA)
+> -				irq = of_irq_get(dev->of_node, 0);
+> +				irq = of_irq_get(dev->of_node,
+> +						 client-
+> >fwnode_irq_index);
+>  		} else if (ACPI_COMPANION(dev)) {
+> -			irq =
+> acpi_dev_gpio_irq_get(ACPI_COMPANION(dev), 0);
+> +			irq =
+> acpi_dev_gpio_irq_get(ACPI_COMPANION(dev),
+> +						    client-
+> >fwnode_irq_index);
+>  		}
+>  		if (irq == -EPROBE_DEFER)
+>  			return irq;
+> @@ -724,6 +726,7 @@ i2c_new_device(struct i2c_adapter *adap, struct
+> i2c_board_info const *info)
+>  	client->flags = info->flags;
+>  	client->addr = info->addr;
+>  
+> +	client->fwnode_irq_index = info->fwnode_irq_index;
+>  	client->irq = info->irq;
+>  	if (!client->irq)
+>  		client->irq = i2c_dev_irq_from_resources(info-
+> >resources,
+> diff --git a/include/linux/i2c.h b/include/linux/i2c.h
+> index 44ad14e016b5..7f9506714a5e 100644
+> --- a/include/linux/i2c.h
+> +++ b/include/linux/i2c.h
+> @@ -316,6 +316,8 @@ struct i2c_driver {
+>   *	generic enough to hide second-sourcing and compatible
+> revisions.
+>   * @adapter: manages the bus segment hosting this I2C device
+>   * @dev: Driver model device node for the slave.
+> + * @fwnode_irq_index: some devices share a single fwnode, this tells
+> + *                    i2c_device_probe() to use the Nth irq from the
+> fwnode
+>   * @irq: indicates the IRQ generated by this device (if any)
+>   * @detected: member of an i2c_driver.clients list or i2c-core's
+>   *	userspace_devices list
+> @@ -334,6 +336,7 @@ struct i2c_client {
+>  	char name[I2C_NAME_SIZE];
+>  	struct i2c_adapter *adapter;	/* the adapter we sit on	
+> */
+>  	struct device dev;		/* the device structure	
+> 	*/
+> +	int fwnode_irq_index;		/* index for irq lookup	
+> 	*/
+>  	int irq;			/* irq issued by device	
+> 	*/
+>  	struct list_head detected;
+>  #if IS_ENABLED(CONFIG_I2C_SLAVE)
+> @@ -400,6 +403,7 @@ static inline bool i2c_detect_slave_mode(struct
+> device *dev) { return false; }
+>   * @properties: additional device properties for the device
+>   * @resources: resources associated with the device
+>   * @num_resources: number of resources in the @resources array
+> + * @fwnode_irq_index: stored in i2c_client.fwnode_irq_index
+>   * @irq: stored in i2c_client.irq
+>   *
+>   * I2C doesn't actually support hardware probing, although
+> controllers and
+> @@ -425,6 +429,7 @@ struct i2c_board_info {
+>  	const struct property_entry *properties;
+>  	const struct resource *resources;
+>  	unsigned int	num_resources;
+> +	int		fwnode_irq_index;
+>  	int		irq;
+>  };
+>  
 
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
----
- drivers/i2c/i2c-core-base.c | 7 +++++--
- include/linux/i2c.h         | 5 +++++
- 2 files changed, 10 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/i2c/i2c-core-base.c b/drivers/i2c/i2c-core-base.c
-index 1ba40bb2b966..ae3fda2c96a4 100644
---- a/drivers/i2c/i2c-core-base.c
-+++ b/drivers/i2c/i2c-core-base.c
-@@ -312,9 +312,11 @@ static int i2c_device_probe(struct device *dev)
- 		} else if (dev->of_node) {
- 			irq = of_irq_get_byname(dev->of_node, "irq");
- 			if (irq == -EINVAL || irq == -ENODATA)
--				irq = of_irq_get(dev->of_node, 0);
-+				irq = of_irq_get(dev->of_node,
-+						 client->fwnode_irq_index);
- 		} else if (ACPI_COMPANION(dev)) {
--			irq = acpi_dev_gpio_irq_get(ACPI_COMPANION(dev), 0);
-+			irq = acpi_dev_gpio_irq_get(ACPI_COMPANION(dev),
-+						    client->fwnode_irq_index);
- 		}
- 		if (irq == -EPROBE_DEFER)
- 			return irq;
-@@ -724,6 +726,7 @@ i2c_new_device(struct i2c_adapter *adap, struct i2c_board_info const *info)
- 	client->flags = info->flags;
- 	client->addr = info->addr;
- 
-+	client->fwnode_irq_index = info->fwnode_irq_index;
- 	client->irq = info->irq;
- 	if (!client->irq)
- 		client->irq = i2c_dev_irq_from_resources(info->resources,
-diff --git a/include/linux/i2c.h b/include/linux/i2c.h
-index 44ad14e016b5..7f9506714a5e 100644
---- a/include/linux/i2c.h
-+++ b/include/linux/i2c.h
-@@ -316,6 +316,8 @@ struct i2c_driver {
-  *	generic enough to hide second-sourcing and compatible revisions.
-  * @adapter: manages the bus segment hosting this I2C device
-  * @dev: Driver model device node for the slave.
-+ * @fwnode_irq_index: some devices share a single fwnode, this tells
-+ *                    i2c_device_probe() to use the Nth irq from the fwnode
-  * @irq: indicates the IRQ generated by this device (if any)
-  * @detected: member of an i2c_driver.clients list or i2c-core's
-  *	userspace_devices list
-@@ -334,6 +336,7 @@ struct i2c_client {
- 	char name[I2C_NAME_SIZE];
- 	struct i2c_adapter *adapter;	/* the adapter we sit on	*/
- 	struct device dev;		/* the device structure		*/
-+	int fwnode_irq_index;		/* index for irq lookup		*/
- 	int irq;			/* irq issued by device		*/
- 	struct list_head detected;
- #if IS_ENABLED(CONFIG_I2C_SLAVE)
-@@ -400,6 +403,7 @@ static inline bool i2c_detect_slave_mode(struct device *dev) { return false; }
-  * @properties: additional device properties for the device
-  * @resources: resources associated with the device
-  * @num_resources: number of resources in the @resources array
-+ * @fwnode_irq_index: stored in i2c_client.fwnode_irq_index
-  * @irq: stored in i2c_client.irq
-  *
-  * I2C doesn't actually support hardware probing, although controllers and
-@@ -425,6 +429,7 @@ struct i2c_board_info {
- 	const struct property_entry *properties;
- 	const struct resource *resources;
- 	unsigned int	num_resources;
-+	int		fwnode_irq_index;
- 	int		irq;
- };
- 
 -- 
-2.17.0
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
