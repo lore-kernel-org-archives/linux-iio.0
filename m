@@ -1,239 +1,248 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:49408 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S935648AbeE0KF2 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 May 2018 06:05:28 -0400
-Date: Sun, 27 May 2018 11:05:24 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 1/5] iio: imu: inv_mpu6050: replace timestamp fifo by
- generic timestamp
-Message-ID: <20180527110524.70b54aa2@archlinux>
-In-Reply-To: <20180522141822.11598-1-jmaneyrol@invensense.com>
-References: <20180522141822.11598-1-jmaneyrol@invensense.com>
+Received: from mail.kernel.org ([198.145.29.99]:40070 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751476AbeEVS5F (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 22 May 2018 14:57:05 -0400
+Date: Tue, 22 May 2018 19:57:00 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org
+Subject: [PULL] Second new devices, features and cleanup set for IIO in the
+ 4.18 cycle
+Message-ID: <20180522195700.5e1ee493@archlinux>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 22 May 2018 16:18:18 +0200
-Jean-Baptiste Maneyrol <jmaneyrol@invensense.com> wrote:
+The following changes since commit 21f4bb8756b22853ae3555f73ab8a44d328ee423:
 
-> Using a fifo for storing timestamps is useless since the interrupt
-> is in one-shot mode, preventing the hard irq handler to be called
-> when the irq thread is running. Instead use the generic timestamp
-> function iio_pollfunc_store_time.
-> 
-> Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.  May well miss the upcoming
-merge window depending on what noises Linus makes later today on
-when he thinks it will open...
+  staging: wlan-ng: fix block comment alignment in p80211metastruct.h (2018-05-11 12:03:44 +0200)
 
-Thanks,
+are available in the Git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-4.18b
 
-Jonathan
+for you to fetch changes up to 96c92d42e9c93b2647d55b84ad883b11baa76307:
 
-> ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |  6 +--
->  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  | 10 -----
->  drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c | 44 +---------------------
->  3 files changed, 2 insertions(+), 58 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index 43fba5f7532b..1e7e750294fc 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -20,8 +20,6 @@
->  #include <linux/jiffies.h>
->  #include <linux/irq.h>
->  #include <linux/interrupt.h>
-> -#include <linux/kfifo.h>
-> -#include <linux/spinlock.h>
->  #include <linux/iio/iio.h>
->  #include <linux/acpi.h>
->  #include <linux/platform_device.h>
-> @@ -996,7 +994,7 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
->  	indio_dev->modes = INDIO_BUFFER_TRIGGERED;
->  
->  	result = devm_iio_triggered_buffer_setup(dev, indio_dev,
-> -						 inv_mpu6050_irq_handler,
-> +						 iio_pollfunc_store_time,
->  						 inv_mpu6050_read_fifo,
->  						 NULL);
->  	if (result) {
-> @@ -1009,8 +1007,6 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
->  		return result;
->  	}
->  
-> -	INIT_KFIFO(st->timestamps);
-> -	spin_lock_init(&st->time_stamp_lock);
->  	result = devm_iio_device_register(dev, indio_dev);
->  	if (result) {
->  		dev_err(dev, "IIO register fail %d\n", result);
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> index c54da777945d..a92ddd45586c 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> @@ -12,8 +12,6 @@
->  */
->  #include <linux/i2c.h>
->  #include <linux/i2c-mux.h>
-> -#include <linux/kfifo.h>
-> -#include <linux/spinlock.h>
->  #include <linux/mutex.h>
->  #include <linux/iio/iio.h>
->  #include <linux/iio/buffer.h>
-> @@ -116,36 +114,30 @@ struct inv_mpu6050_hw {
->  
->  /*
->   *  struct inv_mpu6050_state - Driver state variables.
-> - *  @TIMESTAMP_FIFO_SIZE: fifo size for timestamp.
->   *  @lock:              Chip access lock.
->   *  @trig:              IIO trigger.
->   *  @chip_config:	Cached attribute information.
->   *  @reg:		Map of important registers.
->   *  @hw:		Other hardware-specific information.
->   *  @chip_type:		chip type.
-> - *  @time_stamp_lock:	spin lock to time stamp.
->   *  @plat_data:		platform data (deprecated in favor of @orientation).
->   *  @orientation:	sensor chip orientation relative to main hardware.
-> - *  @timestamps:        kfifo queue to store time stamp.
->   *  @map		regmap pointer.
->   *  @irq		interrupt number.
->   *  @irq_mask		the int_pin_cfg mask to configure interrupt type.
->   */
->  struct inv_mpu6050_state {
-> -#define TIMESTAMP_FIFO_SIZE 16
->  	struct mutex lock;
->  	struct iio_trigger  *trig;
->  	struct inv_mpu6050_chip_config chip_config;
->  	const struct inv_mpu6050_reg_map *reg;
->  	const struct inv_mpu6050_hw *hw;
->  	enum   inv_devices chip_type;
-> -	spinlock_t time_stamp_lock;
->  	struct i2c_mux_core *muxc;
->  	struct i2c_client *mux_client;
->  	unsigned int powerup_count;
->  	struct inv_mpu6050_platform_data plat_data;
->  	struct iio_mount_matrix orientation;
-> -	DECLARE_KFIFO(timestamps, long long, TIMESTAMP_FIFO_SIZE);
->  	struct regmap *map;
->  	int irq;
->  	u8 irq_mask;
-> @@ -234,7 +226,6 @@ struct inv_mpu6050_state {
->  
->  /* init parameters */
->  #define INV_MPU6050_INIT_FIFO_RATE           50
-> -#define INV_MPU6050_TIME_STAMP_TOR           5
->  #define INV_MPU6050_MAX_FIFO_RATE            1000
->  #define INV_MPU6050_MIN_FIFO_RATE            4
->  #define INV_MPU6050_ONE_K_HZ                 1000
-> @@ -300,7 +291,6 @@ enum inv_mpu6050_clock_sel_e {
->  	NUM_CLK
->  };
->  
-> -irqreturn_t inv_mpu6050_irq_handler(int irq, void *p);
->  irqreturn_t inv_mpu6050_read_fifo(int irq, void *p);
->  int inv_mpu6050_probe_trigger(struct iio_dev *indio_dev, int irq_type);
->  int inv_reset_fifo(struct iio_dev *indio_dev);
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-> index 1795418438e4..5436d181f2dc 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-> @@ -19,20 +19,9 @@
->  #include <linux/jiffies.h>
->  #include <linux/irq.h>
->  #include <linux/interrupt.h>
-> -#include <linux/kfifo.h>
->  #include <linux/poll.h>
->  #include "inv_mpu_iio.h"
->  
-> -static void inv_clear_kfifo(struct inv_mpu6050_state *st)
-> -{
-> -	unsigned long flags;
-> -
-> -	/* take the spin lock sem to avoid interrupt kick in */
-> -	spin_lock_irqsave(&st->time_stamp_lock, flags);
-> -	kfifo_reset(&st->timestamps);
-> -	spin_unlock_irqrestore(&st->time_stamp_lock, flags);
-> -}
-> -
->  int inv_reset_fifo(struct iio_dev *indio_dev)
->  {
->  	int result;
-> @@ -62,9 +51,6 @@ int inv_reset_fifo(struct iio_dev *indio_dev)
->  	if (result)
->  		goto reset_fifo_fail;
->  
-> -	/* clear timestamps fifo */
-> -	inv_clear_kfifo(st);
-> -
->  	/* enable interrupt */
->  	if (st->chip_config.accl_fifo_enable ||
->  	    st->chip_config.gyro_fifo_enable) {
-> @@ -98,23 +84,6 @@ int inv_reset_fifo(struct iio_dev *indio_dev)
->  	return result;
->  }
->  
-> -/**
-> - * inv_mpu6050_irq_handler() - Cache a timestamp at each data ready interrupt.
-> - */
-> -irqreturn_t inv_mpu6050_irq_handler(int irq, void *p)
-> -{
-> -	struct iio_poll_func *pf = p;
-> -	struct iio_dev *indio_dev = pf->indio_dev;
-> -	struct inv_mpu6050_state *st = iio_priv(indio_dev);
-> -	s64 timestamp;
-> -
-> -	timestamp = iio_get_time_ns(indio_dev);
-> -	kfifo_in_spinlocked(&st->timestamps, &timestamp, 1,
-> -			    &st->time_stamp_lock);
-> -
-> -	return IRQ_WAKE_THREAD;
-> -}
-> -
->  /**
->   * inv_mpu6050_read_fifo() - Transfer data from hardware FIFO to KFIFO.
->   */
-> @@ -127,7 +96,7 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
->  	int result;
->  	u8 data[INV_MPU6050_OUTPUT_DATA_SIZE];
->  	u16 fifo_count;
-> -	s64 timestamp;
-> +	s64 timestamp = pf->timestamp;
->  	int int_status;
->  
->  	mutex_lock(&st->lock);
-> @@ -171,28 +140,17 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
->  		goto flush_fifo;
->  	if (fifo_count >  INV_MPU6050_FIFO_THRESHOLD)
->  		goto flush_fifo;
-> -	/* Timestamp mismatch. */
-> -	if (kfifo_len(&st->timestamps) >
-> -	    fifo_count / bytes_per_datum + INV_MPU6050_TIME_STAMP_TOR)
-> -		goto flush_fifo;
->  	do {
->  		result = regmap_bulk_read(st->map, st->reg->fifo_r_w,
->  					  data, bytes_per_datum);
->  		if (result)
->  			goto flush_fifo;
-> -
-> -		result = kfifo_out(&st->timestamps, &timestamp, 1);
-> -		/* when there is no timestamp, put timestamp as 0 */
-> -		if (result == 0)
-> -			timestamp = 0;
-> -
->  		/* skip first samples if needed */
->  		if (st->skip_samples)
->  			st->skip_samples--;
->  		else
->  			iio_push_to_buffers_with_timestamp(indio_dev, data,
->  							   timestamp);
-> -
->  		fifo_count -= bytes_per_datum;
->  	} while (fifo_count >= bytes_per_datum);
->  
+  iio: imu: inv_mpu6050: add comment about frequencies (2018-05-22 18:29:09 +0100)
 
+----------------------------------------------------------------
+Second set of new device support, features and cleanup for IIO in the 4.18 cycle
+
+Usual mixture of new devices support and other stuff.  A couple of
+staging graduations in here and some old driver drops.
+
+New device support
+* ad5686
+  - Add support for AD5691R, AD5692R, AD5693 and AD5693R i2c DACs
+  - Add support for AD5681R, AD5682R, AD5683 and AD5683R SPI DACs
+* lmp91000
+  - Add ID for LMP91002
+* stm32-dfsdm
+  - Add support for the stm32mp1 devices.
+
+Drivers dropped
+* ADE7753
+  - No longer easily available, no users came forward and needs a lot
+    of work to move out of staging.
+* ADE7754
+* ADE7758
+* ADE7759
+
+Staging graduations
+- ad2s1200 - good cleanup from David Veenstra.
+- tsl2772 (was tsl2x7x) - Brian's quest is at an end and
+  staging/iio/light is no more!
+
+Features
+* tools
+  - loop forever on a negative number of loops being specified.
+* ltc 2632
+  - add of_match_table
+  - support an external reference regulator.
+* mag3110
+  - Support continuous mode when running fast as it increases the
+    posssible sampling rate.
+* ti-ads8688
+  - Add trigger and buffer support to this ADC.
+
+Cleanups / minor tweaks.
+* tools
+  - tidy up types in iio_generic_buffer.
+* ad2s1200
+  - Whitespace cleanup.
+  - Drop pointless initializations.
+  - Improve kernel docs.
+  - Reorder to setup the SPI prior to device registration (race fix).
+  - Change to modern gpiod framework.
+  - Drop platform data and move to DT bindings. There are no in
+    kernel users of the platform data. Any out of tree boards will
+    need changes.
+  - Add an explicit compatible table.
+  - Provide _scale for angular velocity and angle channels.
+  - Add David Veenstra to copyright notice as this cleanup was non
+    trivial.
+* ade8366
+  - Avoid a race by ensuring channel init is before registration
+    with the subsystem.
+* afe
+  - binding spelling fix.
+* imx7d-adc
+  - typo fix in Freescale
+* inv_mpu6050
+  - tidy up an ugly loop to take advantage of known entry condition.
+  - add a comment explaining why the sensible sampling frequencies
+    are more limited than might be immediately apparent (aliasing).
+* mma8452
+  - reduce the sleep time on data not ready when running at high
+    frequency.
+* stm32-dfsdm
+  - add missing header.
+* tsl2583
+  - fix integration_time_availabe which was in microsecs rather the
+    millisecs.
+* tsl2x7x/tsl2772
+  - Whitespace cleanup.
+  - Change to direct returns where sensible.
+  - Turn the chip off in the registration error path.
+  - Use macro to reduce repition when setting up the device_info
+    structures.
+  - Change the _available attributes over to read_avail callback,
+    and the range definitions that supports.
+  - Fix some wrong period values.
+  - Add some range checkign for _write_raw.
+  - Rename the driver to tsl2772 to avoid wild card clash problems
+    in future.
+
+----------------------------------------------------------------
+Alexandru Ardelean (1):
+      iio: amplifiers: ad8366: move channel init before iio_device_register()
+
+Brian Masney (10):
+      staging: iio: tsl2x7x: remove unnecessary whitespace
+      staging: iio: tsl2x7x: use direct returns
+      staging: iio: tsl2x7x: turn chip off if IIO device registration fails
+      staging: iio: tsl2x7x: use macro to populate tsl2X7X_device_info
+      staging: iio: tsl2x7x: convert to use read_avail
+      staging: iio: tsl2x7x: correct IIO_EV_INFO_PERIOD values
+      staging: iio: tsl2x7x: add range checking to tsl2x7x_write_raw
+      staging: iio: tsl2x7x: rename driver to tsl2772
+      staging: iio: tsl2x7x/tsl2772: move out of staging
+      iio: tsl2583: correct values in integration_time_available
+
+Colin Ian King (1):
+      iio: adc: fix spelling mistake: "Freeacale" -> "Freescale"
+
+David Veenstra (11):
+      staging: iio: ad2s1200: Remove unneeded newline in license
+      staging: iio: ad2s1200: Remove unneeded initializations
+      staging: iio: ad2s1200: Add kernel docs to driver state
+      staging: iio: ad2s1200: Setup spi before iio device register
+      staging: iio: ad2s1200: Replace legacy gpio API with modern API
+      staging: iio: ad2s1200: Replace platform data with dt bindings
+      staging: iio: ad2s1200: Add dt table
+      staging: iio: ad2s1200: Add scaling factor for angular velocity channel
+      staging: iio: ad2s1200: Add scaling factor for angle channel
+      staging: iio: ad2s1200: Add copyright
+      staging: iio: ad2s1200: Move driver out of staging
+
+Fabrice Gasnier (2):
+      iio: adc: stm32-dfsdm: Add support for stm32mp1
+      iio: adc: stm32-dfsdm: include stm32-dfsdm-adc.h
+
+Geert Uytterhoeven (1):
+      dt-bindings: iio: afe: Spelling s/mesaurement/measurement/
+
+Jonathan Cameron (4):
+      staging:iio:meter: Drop ADE7753 driver
+      staging:iio:meter: Drop ADE7754 driver
+      staging:iio:meter: Drop ADE7758 driver
+      staging:iio:meter: Drop ADE7759 driver
+
+Martin Kelly (4):
+      iio: imu: inv_mpu6050: make loop a do-while
+      tools: iio: iio_generic_buffer: fix types to match
+      tools: iio: iio_generic_buffer: allow continuous looping
+      iio: imu: inv_mpu6050: add comment about frequencies
+
+Matt Ranostay (1):
+      iio: potentiostat: lmp91000: add LMP91002 support
+
+Richard Tresidder (2):
+      iio: magnetometer: mag3110: Add ability to run in continuous mode
+      iio: accell: mma8452: Reduce sleep time when data not ready
+
+Sean Nyekjaer (1):
+      iio: adc: ti-ads8688: add trigger and buffer support
+
+Silvan Murer (2):
+      iio: dac: fix missing of_match_table assignment in the LTC 2632 device
+      iio: dac: Add support for external reference voltage through the regulator framework.
+
+Stefan Popa (2):
+      iio:dac:ad5686: Add AD5691R/AD5692R/AD5693/AD5693R support
+      iio:dac:ad5686: Add AD5681R/AD5682R/AD5683/AD5683R support
+
+ .../bindings/iio/adc/st,stm32-dfsdm-adc.txt        |   7 +-
+ .../bindings/iio/afe/current-sense-amplifier.txt   |   2 +-
+ .../bindings/iio/afe/current-sense-shunt.txt       |   2 +-
+ .../devicetree/bindings/iio/dac/ltc2632.txt        |  14 +
+ .../bindings/iio/potentiostat/lmp91000.txt         |   9 +-
+ drivers/iio/Kconfig                                |   1 +
+ drivers/iio/Makefile                               |   1 +
+ drivers/iio/accel/mma8452.c                        |  24 +-
+ drivers/iio/adc/imx7d_adc.c                        |   2 +-
+ drivers/iio/adc/stm32-dfsdm-adc.c                  |   4 +-
+ drivers/iio/adc/stm32-dfsdm-core.c                 |  21 +
+ drivers/iio/adc/ti-ads8688.c                       |  48 +-
+ drivers/iio/amplifiers/ad8366.c                    |   6 +-
+ drivers/iio/dac/ad5686-spi.c                       |  42 +-
+ drivers/iio/dac/ad5686.c                           | 125 ++-
+ drivers/iio/dac/ad5686.h                           |  24 +
+ drivers/iio/dac/ad5696-i2c.c                       |   7 +-
+ drivers/iio/dac/ltc2632.c                          |  89 +-
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c         |   9 +-
+ drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c         |   4 +-
+ drivers/iio/light/Kconfig                          |   8 +
+ drivers/iio/light/Makefile                         |   1 +
+ drivers/iio/light/tsl2583.c                        |   2 +-
+ .../iio/light/tsl2x7x.c => iio/light/tsl2772.c}    | 886 ++++++++++---------
+ drivers/iio/magnetometer/mag3110.c                 | 158 +++-
+ drivers/iio/potentiostat/lmp91000.c                |   2 +
+ drivers/iio/resolver/Kconfig                       |  17 +
+ drivers/iio/resolver/Makefile                      |   5 +
+ drivers/{staging => }/iio/resolver/ad2s1200.c      | 146 ++--
+ drivers/staging/iio/Kconfig                        |   1 -
+ drivers/staging/iio/Makefile                       |   1 -
+ drivers/staging/iio/light/Kconfig                  |  14 -
+ drivers/staging/iio/light/Makefile                 |   5 -
+ drivers/staging/iio/meter/Kconfig                  |  42 -
+ drivers/staging/iio/meter/Makefile                 |   8 -
+ drivers/staging/iio/meter/ade7753.c                | 630 --------------
+ drivers/staging/iio/meter/ade7754.c                | 664 --------------
+ drivers/staging/iio/meter/ade7758.h                | 183 ----
+ drivers/staging/iio/meter/ade7758_core.c           | 955 ---------------------
+ drivers/staging/iio/meter/ade7758_ring.c           | 177 ----
+ drivers/staging/iio/meter/ade7758_trigger.c        | 108 ---
+ drivers/staging/iio/meter/ade7759.c                | 558 ------------
+ drivers/staging/iio/resolver/Kconfig               |  12 -
+ drivers/staging/iio/resolver/Makefile              |   1 -
+ include/linux/iio/adc/stm32-dfsdm-adc.h            |   2 +
+ .../linux/platform_data/tsl2772.h                  |  51 +-
+ tools/iio/iio_generic_buffer.c                     |  13 +-
+ 47 files changed, 1152 insertions(+), 3939 deletions(-)
+ rename drivers/{staging/iio/light/tsl2x7x.c => iio/light/tsl2772.c} (59%)
+ create mode 100644 drivers/iio/resolver/Kconfig
+ create mode 100644 drivers/iio/resolver/Makefile
+ rename drivers/{staging => }/iio/resolver/ad2s1200.c (52%)
+ delete mode 100644 drivers/staging/iio/light/Kconfig
+ delete mode 100644 drivers/staging/iio/light/Makefile
+ delete mode 100644 drivers/staging/iio/meter/ade7753.c
+ delete mode 100644 drivers/staging/iio/meter/ade7754.c
+ delete mode 100644 drivers/staging/iio/meter/ade7758.h
+ delete mode 100644 drivers/staging/iio/meter/ade7758_core.c
+ delete mode 100644 drivers/staging/iio/meter/ade7758_ring.c
+ delete mode 100644 drivers/staging/iio/meter/ade7758_trigger.c
+ delete mode 100644 drivers/staging/iio/meter/ade7759.c
+ rename drivers/staging/iio/light/tsl2x7x.h => include/linux/platform_data/tsl2772.h (70%)
