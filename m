@@ -1,20 +1,28 @@
-Return-Path: <SRS0=y4C/=IK=pmeerw.net=pmeerw@kernel.org>
-Date: Wed, 23 May 2018 13:39:04 +0200 (CEST)
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ns.pmeerw.net ([84.19.176.117]:52950 "EHLO ns.pmeerw.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S932529AbeEWLmb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 23 May 2018 07:42:31 -0400
+Date: Wed, 23 May 2018 13:42:29 +0200 (CEST)
 From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 To: Borys Movchan <borys.movchan@axis.com>
-cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, ppmeerw@pmeerw.net,
-    linux-iio@vger.kernel.org, Borys Movchan <borysmn@axis.com>
+cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        ppmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        Borys Movchan <borysmn@axis.com>
 Subject: Re: [PATCH] iio: add ISL29033 Ultra-Low Lux ambient-ligth-sensor
 In-Reply-To: <20180523100033.26868-1-borys.movchan@axis.com>
-Message-ID: <alpine.DEB.2.21.1805231317320.15436@vps.pmeerw.net>
+Message-ID: <alpine.DEB.2.21.1805231341450.15436@vps.pmeerw.net>
 References: <20180523100033.26868-1-borys.movchan@axis.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 
-some trivial comments below
+light vs. ligth (in subject and bindings/iio/light/isl29033.txt)
 
+> From: Borys Movchan <Borys.Movchan@axis.com>
+> 
 > Add Intersil ISL29033 Ultra-Low Lux, Low Power, Integrated
 > Digital Ambient Light Sensor driver.
 > 
@@ -45,9 +53,7 @@ some trivial comments below
 > +++ b/Documentation/devicetree/bindings/iio/light/isl29033.txt
 > @@ -0,0 +1,15 @@
 > +ISL29033 Ultra low ligth ambient light sensor
-
-ultra low light is not quite right, should be low lux
-
+> +
 > +Required properties:
 > +  - compatible : Must be "isil,isl29033".
 > +  - reg: the I2C address of the device
@@ -77,9 +83,6 @@ ultra low light is not quite right, should be low lux
 > +	 Provides driver for the Intersil's ISL29033 device.
 > +	 This driver supports the sysfs interface to get the ALS and IR intensity
 > +	 value via iio.
-
-IIO maybe
-
 > +
 >  config ISL29125
 >  	tristate "Intersil ISL29125 digital color light sensor"
@@ -107,9 +110,6 @@ IIO maybe
 > + * isl29033.c: A iio driver for the light sensor ISL 29033.
 > + *
 > + * IIO driver for monitoring ambient light intensity in luxi, proximity
-
-luxi?
-
 > + * sensing and infrared sensing.
 > + *
 > + * Copyright (c) 2018, Axis Communication AB
@@ -165,9 +165,6 @@ luxi?
 > +#define ISL29033_REF_REXT		499	/* In kOhm */
 > +
 > +#define MICRO 1000000
-
-prefix please
-
 > +
 > +enum isl29033_int_time {
 > +	ISL29033_INT_TIME_16,
@@ -177,9 +174,6 @@ prefix please
 > +};
 > +
 > +#define _int_utime(adcmax) \
-
-prefix please
-
 > +	((unsigned int)(adcmax) * (MICRO / 1000) / 655)
 > +
 > +static const uint32_t isl29033_int_utimes[1][4] = {
@@ -187,9 +181,6 @@ prefix please
 > +};
 > +
 > +#define _scale(range, adcmax) \
-
-prefix please
-
 > +	 { (range) / (adcmax), \
 > +	   ((unsigned int)(range) * (MICRO / 10) / (adcmax) * 10) % MICRO }
 > +
@@ -231,17 +222,9 @@ prefix please
 > +};
 > +
 > +#define _rext_normalize(chip, val) \
-
-prefix please
-
 > +	((val) * ISL29033_REF_REXT / (chip)->rext)
 > +
 > +inline unsigned int _rext_normalize2(struct isl29033_chip *chip,
-
-static missing
-no need to annotate inline, let the compiler decide
-prefix please
-
 > +				     unsigned int val, unsigned int val2)
 > +{
 > +	val = val - _rext_normalize(chip, val) * chip->rext / ISL29033_REF_REXT;
@@ -346,9 +329,6 @@ prefix please
 > +static int isl29033_read_sensor_input(struct isl29033_chip *chip)
 > +{
 > +	int status;
-
-I'd rather use a generic variable name, such as ret
-
 > +	unsigned int lsb;
 > +	unsigned int msb;
 > +	struct device *dev = regmap_get_device(chip->regmap);
@@ -377,9 +357,6 @@ I'd rather use a generic variable name, such as ret
 > +static int isl29033_read_lux(struct isl29033_chip *chip, int *lux, int *ulux)
 > +{
 > +	int adc_data;
-
-I'd rather use a generic variable name, such as ret
-
 > +	unsigned int res;
 > +
 > +	adc_data = isl29033_read_sensor_input(chip);
@@ -404,8 +381,6 @@ I'd rather use a generic variable name, such as ret
 > +static int isl29033_read_ir(struct isl29033_chip *chip, int *ir)
 > +{
 > +	int ir_data;
-
-I'd rather use a generic variable name, such as ret
 > +
 > +	ir_data = isl29033_read_sensor_input(chip);
 > +	if (ir_data < 0)
@@ -417,9 +392,6 @@ I'd rather use a generic variable name, such as ret
 > +}
 > +
 > +static ssize_t in_illuminance_scale_available_show
-
-prefix please
-
 > +			(struct device *dev, struct device_attribute *attr,
 > +			 char *buf)
 > +{
@@ -444,9 +416,6 @@ prefix please
 > +}
 > +
 > +static ssize_t in_illuminance_integration_time_available_show
-
-prefix please
-
 > +			(struct device *dev, struct device_attribute *attr,
 > +			 char *buf)
 > +{
@@ -614,9 +583,6 @@ prefix please
 > +	.type = IIO_LIGHT,						\
 > +	.indexed = 0,							\
 > +	.channel = 0,							\
-
-no need to set those two
-
 > +	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |		\
 > +	BIT(IIO_CHAN_INFO_CALIBSCALE) |					\
 > +	BIT(IIO_CHAN_INFO_SCALE) |					\
@@ -656,19 +622,11 @@ no need to set those two
 > +
 > +enum {
 > +	isl29033,
-
-the driver just supports one part; is it planned to add further variants 
-in the future? maybe drop all the flexible code for now if there is no 
-immediate need
-
 > +};
 > +
 > +static int isl29033_chip_init(struct isl29033_chip *chip)
 > +{
 > +	int status;
-
-ret maybe?
-
 > +	struct device *dev = regmap_get_device(chip->regmap);
 > +
 > +
@@ -692,10 +650,6 @@ ret maybe?
 > +	status = regmap_write(chip->regmap, ISL29033_REG_TEST, 0x0);
 > +	if (status < 0) {
 > +		dev_err(dev, "Failed to clear isl29033 TEST reg.(%d)\n",
-
-the format of the message is different than the other error output, I 
-would expect something like "Failed to clear isl29033 TEST reg error %d"
-
 > +			status);
 > +		return status;
 > +	}
@@ -729,9 +683,6 @@ would expect something like "Failed to clear isl29033 TEST reg error %d"
 > +			* chip->rext / ISL29033_REF_REXT);
 > +	if (status < 0)
 > +		dev_err(dev, "Init of isl29033 fails(integration): %d\n",
-
-format of message, space missing
-
 > +			status);
 > +
 > +	return status;
@@ -778,9 +729,6 @@ format of message, space missing
 > +		.channels = isl29033_channels,
 > +		.num_channels = ARRAY_SIZE(isl29033_channels),
 > +		.indio_info = &isl29033_info,
-
-maybe just .info
-
 > +		.regmap_cfg = &isl29033_regmap_config,
 > +	},
 > +};
@@ -805,9 +753,6 @@ maybe just .info
 > +	struct isl29033_chip *chip;
 > +	struct iio_dev *indio_dev;
 > +	int err;
-
-ret maybe
-
 > +	const char *name = NULL;
 > +	int dev_id = 0;
 > +
