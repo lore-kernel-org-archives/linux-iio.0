@@ -1,66 +1,41 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:34858 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S933214AbeE0Jf0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 27 May 2018 05:35:26 -0400
-Date: Sun, 27 May 2018 10:35:20 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Quentin Schulz <quentin.schulz@bootlin.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: sun4i-gpadc: select REGMAP_IRQ
-Message-ID: <20180527103520.134fb6f8@archlinux>
-In-Reply-To: <20180525153451.3164970-1-arnd@arndb.de>
-References: <20180525153451.3164970-1-arnd@arndb.de>
+Received: from mail-wm0-f44.google.com ([74.125.82.44]:40049 "EHLO
+        mail-wm0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S966645AbeEYQBv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 25 May 2018 12:01:51 -0400
+Received: by mail-wm0-f44.google.com with SMTP id x2-v6so8546322wmh.5
+        for <linux-iio@vger.kernel.org>; Fri, 25 May 2018 09:01:51 -0700 (PDT)
+Received: from denali (smtp.parrot.biz. [62.23.167.188])
+        by smtp.gmail.com with ESMTPSA id f10-v6sm6217780wmc.0.2018.05.25.09.01.49
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 25 May 2018 09:01:49 -0700 (PDT)
+From: Mathieu Othacehe <m.othacehe@gmail.com>
+To: linux-iio@vger.kernel.org
+Subject: isl29501 and multiple calibration registers
+Date: Fri, 25 May 2018 18:01:48 +0200
+Message-ID: <87a7snd8r7.fsf@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 25 May 2018 17:34:23 +0200
-Arnd Bergmann <arnd@arndb.de> wrote:
 
-> We can't call regmap_irq_get_virq() unless the regmap-irq support
-> is enabled:
-> 
-> drivers/iio/adc/sun4i-gpadc-iio.o: In function `sun4i_irq_init':
-> sun4i-gpadc-iio.c:(.text+0x59c): undefined reference to `regmap_irq_get_virq'
-> 
-> I came across this in a randconfig build now, but I guess this is
-> a much older problem that I simply never hit before because regmap_irq
-> is usually enabled by one of the other drivers that need it.
-> 
-> Fixes: d1caa9905538 ("iio: adc: add support for Allwinner SoCs ADC")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Hello,
 
-Applied to the togreg branch of iio.git.  I might move it to the fixes
-branch if the merge window opens shortly so as to get it upstream
-faster. Pushed out as testing for the autobuilders to play with it.
+I'm currently working on a driver for the ISL29501 Time of Flight
+sensor[1] that I hope to publish soon. This sensor has many calibration
+and corrections registers (crosstalk_i, crosstalk_q, crosstalk_gain,
+phase_temp_correction ...).
 
-Thanks,
+I would like to make all those registers accessible from userspace but
+iio_chan_info_enum has no matching elements for most of those registers
+which are very specific to this sensor.
 
-Jonathan
+Any idea how could I proceed to make those registers accessible?
 
-> ---
->  drivers/iio/adc/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 9da79070357c..13922b595503 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -717,6 +717,7 @@ config SUN4I_GPADC
->  	depends on IIO
->  	depends on MFD_SUN4I_GPADC || MACH_SUN8I
->  	depends on THERMAL || !THERMAL_OF
-> +	select REGMAP_IRQ
->  	help
->  	  Say yes here to build support for Allwinner (A10, A13 and A31) SoCs
->  	  GPADC. This ADC provides 4 channels which can be used as an ADC or as
+Thanks in advance,
 
+Mathieu
+
+[1]: https://www.intersil.com/content/dam/intersil/documents/isl2/isl29501.pdf
