@@ -1,212 +1,239 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:49448 "EHLO
+Received: from saturn.retrosnub.co.uk ([46.235.226.198]:49408 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S935648AbeE0KHS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 May 2018 06:07:18 -0400
-Date: Sun, 27 May 2018 11:07:16 +0100
+        with ESMTP id S935648AbeE0KF2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 May 2018 06:05:28 -0400
+Date: Sun, 27 May 2018 11:05:24 +0100
 From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 To: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
 Cc: linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 5/5] iio: imu: inv_mpu6050: new timestamp mechanism
-Message-ID: <20180527110716.5b12016c@archlinux>
-In-Reply-To: <20180522141822.11598-5-jmaneyrol@invensense.com>
+Subject: Re: [PATCH v2 1/5] iio: imu: inv_mpu6050: replace timestamp fifo by
+ generic timestamp
+Message-ID: <20180527110524.70b54aa2@archlinux>
+In-Reply-To: <20180522141822.11598-1-jmaneyrol@invensense.com>
 References: <20180522141822.11598-1-jmaneyrol@invensense.com>
-        <20180522141822.11598-5-jmaneyrol@invensense.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 22 May 2018 16:18:22 +0200
+On Tue, 22 May 2018 16:18:18 +0200
 Jean-Baptiste Maneyrol <jmaneyrol@invensense.com> wrote:
 
-> Check validity of interrupt timestamps by computing time between
-> 2 interrupts. If it matches the chip frequency modulo 4%, it is
-> used as the data timestamp and also for estimating the chip
-> frequency measured from the system. Otherwise timestamp is
-> computed using the estimated chip frequency.
+> Using a fifo for storing timestamps is useless since the interrupt
+> is in one-shot mode, preventing the hard irq handler to be called
+> when the irq thread is running. Instead use the generic timestamp
+> function iio_pollfunc_store_time.
 > 
 > Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-Applied,
+Applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to play with it.  May well miss the upcoming
+merge window depending on what noises Linus makes later today on
+when he thinks it will open...
 
 Thanks,
+
 
 Jonathan
 
 > ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |  7 ++
->  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  8 +++
->  drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c | 81 +++++++++++++++++++++-
->  3 files changed, 95 insertions(+), 1 deletion(-)
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |  6 +--
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  | 10 -----
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c | 44 +---------------------
+>  3 files changed, 2 insertions(+), 58 deletions(-)
 > 
 > diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index 2c3e666aa970..93c64f30b615 100644
+> index 43fba5f7532b..1e7e750294fc 100644
 > --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
 > +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -295,6 +295,13 @@ static int inv_mpu6050_init_config(struct iio_dev *indio_dev)
->  	memcpy(&st->chip_config, hw_info[st->chip_type].config,
->  	       sizeof(struct inv_mpu6050_chip_config));
+> @@ -20,8 +20,6 @@
+>  #include <linux/jiffies.h>
+>  #include <linux/irq.h>
+>  #include <linux/interrupt.h>
+> -#include <linux/kfifo.h>
+> -#include <linux/spinlock.h>
+>  #include <linux/iio/iio.h>
+>  #include <linux/acpi.h>
+>  #include <linux/platform_device.h>
+> @@ -996,7 +994,7 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+>  	indio_dev->modes = INDIO_BUFFER_TRIGGERED;
 >  
-> +	/*
-> +	 * Internal chip period is 1ms (1kHz).
-> +	 * Let's use at the beginning the theorical value before measuring
-> +	 * with interrupt timestamps.
-> +	 */
-> +	st->chip_period = NSEC_PER_MSEC;
-> +
->  	return inv_mpu6050_set_power_itg(st, false);
+>  	result = devm_iio_triggered_buffer_setup(dev, indio_dev,
+> -						 inv_mpu6050_irq_handler,
+> +						 iio_pollfunc_store_time,
+>  						 inv_mpu6050_read_fifo,
+>  						 NULL);
+>  	if (result) {
+> @@ -1009,8 +1007,6 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+>  		return result;
+>  	}
 >  
->  error_power_off:
+> -	INIT_KFIFO(st->timestamps);
+> -	spin_lock_init(&st->time_stamp_lock);
+>  	result = devm_iio_device_register(dev, indio_dev);
+>  	if (result) {
+>  		dev_err(dev, "IIO register fail %d\n", result);
 > diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> index 6bc80ac9d120..de8391693e17 100644
+> index c54da777945d..a92ddd45586c 100644
 > --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
 > +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> @@ -125,6 +125,9 @@ struct inv_mpu6050_hw {
+> @@ -12,8 +12,6 @@
+>  */
+>  #include <linux/i2c.h>
+>  #include <linux/i2c-mux.h>
+> -#include <linux/kfifo.h>
+> -#include <linux/spinlock.h>
+>  #include <linux/mutex.h>
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/buffer.h>
+> @@ -116,36 +114,30 @@ struct inv_mpu6050_hw {
+>  
+>  /*
+>   *  struct inv_mpu6050_state - Driver state variables.
+> - *  @TIMESTAMP_FIFO_SIZE: fifo size for timestamp.
+>   *  @lock:              Chip access lock.
+>   *  @trig:              IIO trigger.
+>   *  @chip_config:	Cached attribute information.
+>   *  @reg:		Map of important registers.
+>   *  @hw:		Other hardware-specific information.
+>   *  @chip_type:		chip type.
+> - *  @time_stamp_lock:	spin lock to time stamp.
+>   *  @plat_data:		platform data (deprecated in favor of @orientation).
+>   *  @orientation:	sensor chip orientation relative to main hardware.
+> - *  @timestamps:        kfifo queue to store time stamp.
 >   *  @map		regmap pointer.
 >   *  @irq		interrupt number.
 >   *  @irq_mask		the int_pin_cfg mask to configure interrupt type.
-> + *  @chip_period:	chip internal period estimation (~1kHz).
-> + *  @it_timestamp:	timestamp from previous interrupt.
-> + *  @data_timestamp:	timestamp for next data sample.
 >   */
 >  struct inv_mpu6050_state {
+> -#define TIMESTAMP_FIFO_SIZE 16
 >  	struct mutex lock;
-> @@ -142,6 +145,9 @@ struct inv_mpu6050_state {
+>  	struct iio_trigger  *trig;
+>  	struct inv_mpu6050_chip_config chip_config;
+>  	const struct inv_mpu6050_reg_map *reg;
+>  	const struct inv_mpu6050_hw *hw;
+>  	enum   inv_devices chip_type;
+> -	spinlock_t time_stamp_lock;
+>  	struct i2c_mux_core *muxc;
+>  	struct i2c_client *mux_client;
+>  	unsigned int powerup_count;
+>  	struct inv_mpu6050_platform_data plat_data;
+>  	struct iio_mount_matrix orientation;
+> -	DECLARE_KFIFO(timestamps, long long, TIMESTAMP_FIFO_SIZE);
+>  	struct regmap *map;
 >  	int irq;
 >  	u8 irq_mask;
->  	unsigned skip_samples;
-> +	s64 chip_period;
-> +	s64 it_timestamp;
-> +	s64 data_timestamp;
->  };
->  
->  /*register and associated bit definition*/
-> @@ -223,6 +229,8 @@ struct inv_mpu6050_state {
->  #define INV_MPU6050_LATCH_INT_EN	0x20
->  #define INV_MPU6050_BIT_BYPASS_EN	0x2
->  
-> +/* Allowed timestamp period jitter in percent */
-> +#define INV_MPU6050_TS_PERIOD_JITTER	4
+> @@ -234,7 +226,6 @@ struct inv_mpu6050_state {
 >  
 >  /* init parameters */
 >  #define INV_MPU6050_INIT_FIFO_RATE           50
+> -#define INV_MPU6050_TIME_STAMP_TOR           5
+>  #define INV_MPU6050_MAX_FIFO_RATE            1000
+>  #define INV_MPU6050_MIN_FIFO_RATE            4
+>  #define INV_MPU6050_ONE_K_HZ                 1000
+> @@ -300,7 +291,6 @@ enum inv_mpu6050_clock_sel_e {
+>  	NUM_CLK
+>  };
+>  
+> -irqreturn_t inv_mpu6050_irq_handler(int irq, void *p);
+>  irqreturn_t inv_mpu6050_read_fifo(int irq, void *p);
+>  int inv_mpu6050_probe_trigger(struct iio_dev *indio_dev, int irq_type);
+>  int inv_reset_fifo(struct iio_dev *indio_dev);
 > diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-> index 7a4aaed83044..6930af413397 100644
+> index 1795418438e4..5436d181f2dc 100644
 > --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
 > +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-> @@ -23,12 +23,89 @@
->  #include <asm/unaligned.h>
+> @@ -19,20 +19,9 @@
+>  #include <linux/jiffies.h>
+>  #include <linux/irq.h>
+>  #include <linux/interrupt.h>
+> -#include <linux/kfifo.h>
+>  #include <linux/poll.h>
 >  #include "inv_mpu_iio.h"
 >  
-> +/**
-> + *  inv_mpu6050_update_period() - Update chip internal period estimation
-> + *
-> + *  @st:		driver state
-> + *  @timestamp:		the interrupt timestamp
-> + *  @nb:		number of data set in the fifo
-> + *
-> + *  This function uses interrupt timestamps to estimate the chip period and
-> + *  to choose the data timestamp to come.
-> + */
-> +static void inv_mpu6050_update_period(struct inv_mpu6050_state *st,
-> +				      s64 timestamp, size_t nb)
-> +{
-> +	/* Period boundaries for accepting timestamp */
-> +	const s64 period_min =
-> +		(NSEC_PER_MSEC * (100 - INV_MPU6050_TS_PERIOD_JITTER)) / 100;
-> +	const s64 period_max =
-> +		(NSEC_PER_MSEC * (100 + INV_MPU6050_TS_PERIOD_JITTER)) / 100;
-> +	const unsigned divider = INV_MPU6050_FREQ_DIVIDER(st);
-> +	s64 delta, interval;
-> +	bool use_it_timestamp = false;
-> +
-> +	if (st->it_timestamp == 0) {
-> +		/* not initialized, forced to use it_timestamp */
-> +		use_it_timestamp = true;
-> +	} else if (nb == 1) {
-> +		/*
-> +		 * Validate the use of it timestamp by checking if interrupt
-> +		 * has been delayed.
-> +		 * nb > 1 means interrupt was delayed for more than 1 sample,
-> +		 * so it's obviously not good.
-> +		 * Compute the chip period between 2 interrupts for validating.
-> +		 */
-> +		delta = (timestamp - st->it_timestamp) / divider;
-> +		if (delta > period_min && delta < period_max) {
-> +			/* update chip period and use it timestamp */
-> +			st->chip_period = (st->chip_period + delta) / 2;
-> +			use_it_timestamp = true;
-> +		}
-> +	}
-> +
-> +	if (use_it_timestamp) {
-> +		/*
-> +		 * Manage case of multiple samples in the fifo (nb > 1):
-> +		 * compute timestamp corresponding to the first sample using
-> +		 * estimated chip period.
-> +		 */
-> +		interval = (nb - 1) * st->chip_period * divider;
-> +		st->data_timestamp = timestamp - interval;
-> +	}
-> +
-> +	/* save it timestamp */
-> +	st->it_timestamp = timestamp;
-> +}
-> +
-> +/**
-> + *  inv_mpu6050_get_timestamp() - Return the current data timestamp
-> + *
-> + *  @st:		driver state
-> + *  @return:		current data timestamp
-> + *
-> + *  This function returns the current data timestamp and prepares for next one.
-> + */
-> +static s64 inv_mpu6050_get_timestamp(struct inv_mpu6050_state *st)
-> +{
-> +	s64 ts;
-> +
-> +	/* return current data timestamp and increment */
-> +	ts = st->data_timestamp;
-> +	st->data_timestamp += st->chip_period * INV_MPU6050_FREQ_DIVIDER(st);
-> +
-> +	return ts;
-> +}
-> +
+> -static void inv_clear_kfifo(struct inv_mpu6050_state *st)
+> -{
+> -	unsigned long flags;
+> -
+> -	/* take the spin lock sem to avoid interrupt kick in */
+> -	spin_lock_irqsave(&st->time_stamp_lock, flags);
+> -	kfifo_reset(&st->timestamps);
+> -	spin_unlock_irqrestore(&st->time_stamp_lock, flags);
+> -}
+> -
 >  int inv_reset_fifo(struct iio_dev *indio_dev)
 >  {
 >  	int result;
->  	u8 d;
->  	struct inv_mpu6050_state  *st = iio_priv(indio_dev);
+> @@ -62,9 +51,6 @@ int inv_reset_fifo(struct iio_dev *indio_dev)
+>  	if (result)
+>  		goto reset_fifo_fail;
 >  
-> +	/* reset it timestamp validation */
-> +	st->it_timestamp = 0;
-> +
->  	/* disable interrupt */
->  	result = regmap_write(st->map, st->reg->int_enable, 0);
->  	if (result) {
-> @@ -97,7 +174,7 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
+> -	/* clear timestamps fifo */
+> -	inv_clear_kfifo(st);
+> -
+>  	/* enable interrupt */
+>  	if (st->chip_config.accl_fifo_enable ||
+>  	    st->chip_config.gyro_fifo_enable) {
+> @@ -98,23 +84,6 @@ int inv_reset_fifo(struct iio_dev *indio_dev)
+>  	return result;
+>  }
+>  
+> -/**
+> - * inv_mpu6050_irq_handler() - Cache a timestamp at each data ready interrupt.
+> - */
+> -irqreturn_t inv_mpu6050_irq_handler(int irq, void *p)
+> -{
+> -	struct iio_poll_func *pf = p;
+> -	struct iio_dev *indio_dev = pf->indio_dev;
+> -	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+> -	s64 timestamp;
+> -
+> -	timestamp = iio_get_time_ns(indio_dev);
+> -	kfifo_in_spinlocked(&st->timestamps, &timestamp, 1,
+> -			    &st->time_stamp_lock);
+> -
+> -	return IRQ_WAKE_THREAD;
+> -}
+> -
+>  /**
+>   * inv_mpu6050_read_fifo() - Transfer data from hardware FIFO to KFIFO.
+>   */
+> @@ -127,7 +96,7 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
 >  	int result;
 >  	u8 data[INV_MPU6050_OUTPUT_DATA_SIZE];
 >  	u16 fifo_count;
-> -	s64 timestamp = pf->timestamp;
-> +	s64 timestamp;
+> -	s64 timestamp;
+> +	s64 timestamp = pf->timestamp;
 >  	int int_status;
->  	size_t i, nb;
 >  
-> @@ -140,6 +217,7 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
->  	fifo_count = get_unaligned_be16(&data[0]);
->  	/* compute and process all complete datum */
->  	nb = fifo_count / bytes_per_datum;
-> +	inv_mpu6050_update_period(st, pf->timestamp, nb);
->  	for (i = 0; i < nb; ++i) {
+>  	mutex_lock(&st->lock);
+> @@ -171,28 +140,17 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
+>  		goto flush_fifo;
+>  	if (fifo_count >  INV_MPU6050_FIFO_THRESHOLD)
+>  		goto flush_fifo;
+> -	/* Timestamp mismatch. */
+> -	if (kfifo_len(&st->timestamps) >
+> -	    fifo_count / bytes_per_datum + INV_MPU6050_TIME_STAMP_TOR)
+> -		goto flush_fifo;
+>  	do {
 >  		result = regmap_bulk_read(st->map, st->reg->fifo_r_w,
 >  					  data, bytes_per_datum);
-> @@ -150,6 +228,7 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
+>  		if (result)
+>  			goto flush_fifo;
+> -
+> -		result = kfifo_out(&st->timestamps, &timestamp, 1);
+> -		/* when there is no timestamp, put timestamp as 0 */
+> -		if (result == 0)
+> -			timestamp = 0;
+> -
+>  		/* skip first samples if needed */
+>  		if (st->skip_samples)
 >  			st->skip_samples--;
->  			continue;
->  		}
-> +		timestamp = inv_mpu6050_get_timestamp(st);
->  		iio_push_to_buffers_with_timestamp(indio_dev, data, timestamp);
->  	}
+>  		else
+>  			iio_push_to_buffers_with_timestamp(indio_dev, data,
+>  							   timestamp);
+> -
+>  		fifo_count -= bytes_per_datum;
+>  	} while (fifo_count >= bytes_per_datum);
 >  
 
