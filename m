@@ -1,289 +1,249 @@
-Return-Path: <m.othacehe@gmail.com>
-References: <87a7snd8r7.fsf@gmail.com>
-From: Mathieu Othacehe <m.othacehe@gmail.com>
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: isl29501 and multiple calibration registers
-In-reply-to: <20180527095907.5aa173b0@archlinux>
-Date: Mon, 28 May 2018 17:38:08 +0200
-Message-ID: <876037dc4f.fsf@gmail.com>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="=-=-="
+Return-Path: <SRS0=fua2=IO=gmail.com=vilhelm.gray@kernel.org>
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	pmeerw@pmeerw.net,
+	lars@metafoo.de,
+	William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH v2] iio: 104-quad-8: Provide defines for magic numbers
+Date: Sun, 27 May 2018 13:01:48 -0400
+Message-Id: <20180527170148.2027-1-vilhelm.gray@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
---=-=-=
-Content-Type: text/plain
+This patch adds several register and bit defines to help improve the
+clarity of the code by cleaning up magic numbers throughout the driver.
 
-
-Hi Jonathan,
-
-Thanks for you answer, it seems fine to me to use IIO ABI when possible
-and extend it with iio_chan_spec_ext_info for exotic calibration
-registers.
-
-Here is a proposal for sysfs-bus-iio-isl29501 document. Would it be ok?
-
-Thanks,
-
-Mathieu
-
---=-=-=
-Content-Type: text/x-diff
-Content-Disposition: inline;
- filename=0001-iio-isl29501-Add-documentation.patch
-
->From 6932a29f986a432ec591417b34e896351be6ce14 Mon Sep 17 00:00:00 2001
-From: Mathieu Othacehe <m.othacehe@gmail.com>
-Date: Mon, 28 May 2018 17:35:32 +0200
-Subject: [PATCH] iio: isl29501: Add documentation.
-
-The ISL29501 is a Time of Flight (ToF) based signal processing
-integrated circuit. The sensor enables long range optical distance
-sensing when combined with an external emitter and detector.
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- Documentation/ABI/testing/sysfs-bus-iio-isl29501 | 230 +++++++++++++++++++++++
- 1 file changed, 230 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-isl29501
+Changes in v2:
+  - Add "QUAD8_" prefix to defines to help prevent future name
+    collisions
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-isl29501 b/Documentation/ABI/testing/sysfs-bus-iio-isl29501
-new file mode 100644
-index 0000000..6f18f13
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-isl29501
-@@ -0,0 +1,230 @@
-+What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_raw
-+KernelVersion:	4.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+                Get the distance from the obstacle in meters. The
-+                distance is an integer between 0 and 65535.
+ drivers/iio/counter/104-quad-8.c | 87 ++++++++++++++++++++++----------
+ 1 file changed, 61 insertions(+), 26 deletions(-)
+
+diff --git a/drivers/iio/counter/104-quad-8.c b/drivers/iio/counter/104-quad-8.c
+index 4be85ec54af4..9a63afcb887c 100644
+--- a/drivers/iio/counter/104-quad-8.c
++++ b/drivers/iio/counter/104-quad-8.c
+@@ -59,6 +59,39 @@ struct quad8_iio {
+ 	unsigned int base;
+ };
+ 
++#define REG_CHANNEL_OPERATION 0x11
++#define REG_INDEX_INPUT_LEVELS 0x16
++/* Borrow Toggle flip-flop */
++#define QUAD8_FLAG_BT BIT(0)
++/* Carry Toggle flip-flop */
++#define QUAD8_FLAG_CT BIT(1)
++/* Error flag */
++#define QUAD8_FLAG_E BIT(4)
++/* Up/Down flag */
++#define QUAD8_FLAG_UD BIT(5)
++/* Reset and Load Signal Decoders */
++#define QUAD8_CTR_RLD 0x00
++/* Counter Mode Register */
++#define QUAD8_CTR_CMR 0x20
++/* Input / Output Control Register */
++#define QUAD8_CTR_IOR 0x40
++/* Index Control Register */
++#define QUAD8_CTR_IDR 0x60
++/* Reset Byte Pointer (three byte data pointer) */
++#define QUAD8_RLD_RESET_BP 0x01
++/* Reset Counter */
++#define QUAD8_RLD_RESET_CNTR 0x02
++/* Reset Borrow Toggle, Carry Toggle, Compare Toggle, and Sign flags */
++#define QUAD8_RLD_RESET_FLAGS 0x04
++/* Reset Error flag */
++#define QUAD8_RLD_RESET_E 0x06
++/* Preset Register to Counter */
++#define QUAD8_RLD_PRESET_CNTR 0x08
++/* Transfer Counter to Output Latch */
++#define QUAD8_RLD_CNTR_OUT 0x10
++#define QUAD8_CHAN_OP_ENABLE_COUNTERS 0x00
++#define QUAD8_CHAN_OP_RESET_COUNTERS 0x01
 +
-+What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_noise_approximation
-+KernelVersion:	4.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+                Get the measurement noise approximation in meters.
-+		The approximation is an integer between 0 and 65535.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_magn0_raw
-+KernelVersion:	4.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+                Get the magnitude of the received signal in nA.
-+		The magnitude is an integer between 0 and 65535.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/integration_time
-+KernelVersion:	4.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+                Control the length of each sample, which is equal to
-+		the time during which the optical pulse is active.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/integration_time_available
-+KernelVersion:	4.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+                Reading returns the list of possible integration times.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/sampling_frequency
-+KernelVersion:	4.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+                Control the sampling frequency of the sensor.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/sampling_frequency_available
-+KernelVersion:	4.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+                Reading returns the list of possible sampling frequencies.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_calib_cs_i
-+KernelVersion:	4.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+                Set the Crosstalk I calibration value when written
-+		to. The value must be an integer between -32768 and
-+		32767 inclusive.
-+
-+		Get this value from hardware and show it when read
-+		from.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_calib_cs_i_exp
-+KernelVersion:	4.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+                Set the Crosstalk I calibration exponent value when
-+		written to. The value must be an integer between
-+		0 and 255 inclusive.
-+
-+		Get this value from hardware and show it when read
-+		from.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_calib_cs_q
-+KernelVersion:	4.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+                Set the Crosstalk Q calibration value when written
-+		to. The value must be an integer between -32768 and
-+		32767 inclusive.
-+
-+		Get this value from hardware and show it when read
-+		from.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_calib_cs_q_exp
-+KernelVersion:	4.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+                Set the Crosstalk Q calibration exponent value when
-+		written to. The value must be an integer between
-+		0 and 255 inclusive.
-+
-+		Get this value from hardware and show it when read
-+		from.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_calib_cs_gain
-+KernelVersion:	4.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+                Set the Crosstalk gain value when written to. The
-+		value must be an integer between 0 and 65535
-+		inclusive.
-+
-+		Get this value from hardware and show it when read
-+		from.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_calib_mag_ref
-+KernelVersion:	4.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+                Set the magnitude reference when written to. The
-+		value must be an integer between 0 and 65535
-+		inclusive.
-+
-+		Get this value from hardware and show it when read
-+		from.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_calib_mag_exp
-+KernelVersion:	4.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+                Set the magnitude reference exponent when written
-+		to. The value must be an integer between 0 and 15
-+		inclusive.
-+
-+		Get this value from hardware and show it when read
-+		from.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_phase_offset
-+KernelVersion:	4.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+                Set the fixed distance offset calibration value when
-+		written to. The value must be an integer
-+		between 0 and 65535 inclusive.
-+
-+		Get this value from hardware and show it when read
-+		from.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_temp_ref
-+KernelVersion:	4.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+                Set the temperature reference value when written
-+		to. The value must be an integer between 0 and 255
-+		inclusive.
-+
-+		Get this value from hardware and show it when read
-+		from.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_phase_exp
-+KernelVersion:	4.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+                Set the phase correction exponent value when written
-+		to. The value must be an integer between 0 and 15
-+		inclusive.
-+
-+		Get this value from hardware and show it when read
-+		from.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_phase_temp_a
-+KernelVersion:	4.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+                Set the phase temperature A correction coefficient
-+		value when written to. The value must be an integer
-+		between 0 and 255 inclusive.
-+
-+		Get this value from hardware and show it when read
-+		from.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_phase_amb_a
-+KernelVersion:	4.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+                Set the phase ambient A correction coefficient value
-+		when written to. The value must be an integer between
-+		0 and 255 inclusive.
-+
-+		Get this value from hardware and show it when read
-+		from.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_phase_temp_b
-+KernelVersion:	4.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+                Set the phase temperature B correction coefficient
-+		value when written to. The value must be an integer
-+		between 0 and 255 inclusive.
-+
-+		Get this value from hardware and show it when read
-+		from.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_phase_amb_b
-+KernelVersion:	4.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+                Set the phase ambient B correction coefficient value
-+		when written to. The value must be an integer between
-+		0 and 255 inclusive.
-+
-+		Get this value from hardware and show it when read
-+		from.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_driver_range
-+KernelVersion:	4.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+                Set the current DAC scale when written to. The value
-+		must be an integer between 0 and 255 inclusive.
-+
-+		Get this value from hardware and show it when read
-+		from.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_emitter_dac
-+KernelVersion:	4.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+                Set the current DAC value when written to. The value
-+		must be an integer between 0 and 255 inclusive.
-+
-+		Get this value from hardware and show it when read
-+		from.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_emitter_offset
-+KernelVersion:	4.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+                Set the emitter voltage measure offset when written
-+		to. The value must be an integer between 0 and 255
-+		inclusive.
-+
-+		Get this value from hardware and show it when read
-+		from.
-\ No newline at end of file
+ static int quad8_read_raw(struct iio_dev *indio_dev,
+ 	struct iio_chan_spec const *chan, int *val, int *val2, long mask)
+ {
+@@ -72,19 +105,21 @@ static int quad8_read_raw(struct iio_dev *indio_dev,
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+ 		if (chan->type == IIO_INDEX) {
+-			*val = !!(inb(priv->base + 0x16) & BIT(chan->channel));
++			*val = !!(inb(priv->base + REG_INDEX_INPUT_LEVELS)
++				& BIT(chan->channel));
+ 			return IIO_VAL_INT;
+ 		}
+ 
+ 		flags = inb(base_offset + 1);
+-		borrow = flags & BIT(0);
+-		carry = !!(flags & BIT(1));
++		borrow = flags & QUAD8_FLAG_BT;
++		carry = !!(flags & QUAD8_FLAG_CT);
+ 
+ 		/* Borrow XOR Carry effectively doubles count range */
+ 		*val = (borrow ^ carry) << 24;
+ 
+ 		/* Reset Byte Pointer; transfer Counter to Output Latch */
+-		outb(0x11, base_offset + 1);
++		outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP | QUAD8_RLD_CNTR_OUT,
++		     base_offset + 1);
+ 
+ 		for (i = 0; i < 3; i++)
+ 			*val |= (unsigned int)inb(base_offset) << (8 * i);
+@@ -120,17 +155,17 @@ static int quad8_write_raw(struct iio_dev *indio_dev,
+ 			return -EINVAL;
+ 
+ 		/* Reset Byte Pointer */
+-		outb(0x01, base_offset + 1);
++		outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, base_offset + 1);
+ 
+ 		/* Counter can only be set via Preset Register */
+ 		for (i = 0; i < 3; i++)
+ 			outb(val >> (8 * i), base_offset);
+ 
+ 		/* Transfer Preset Register to Counter */
+-		outb(0x08, base_offset + 1);
++		outb(QUAD8_CTR_RLD | QUAD8_RLD_PRESET_CNTR, base_offset + 1);
+ 
+ 		/* Reset Byte Pointer */
+-		outb(0x01, base_offset + 1);
++		outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, base_offset + 1);
+ 
+ 		/* Set Preset Register back to original value */
+ 		val = priv->preset[chan->channel];
+@@ -138,9 +173,9 @@ static int quad8_write_raw(struct iio_dev *indio_dev,
+ 			outb(val >> (8 * i), base_offset);
+ 
+ 		/* Reset Borrow, Carry, Compare, and Sign flags */
+-		outb(0x04, base_offset + 1);
++		outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_FLAGS, base_offset + 1);
+ 		/* Reset Error flag */
+-		outb(0x06, base_offset + 1);
++		outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_E, base_offset + 1);
+ 
+ 		return 0;
+ 	case IIO_CHAN_INFO_ENABLE:
+@@ -153,7 +188,7 @@ static int quad8_write_raw(struct iio_dev *indio_dev,
+ 		ior_cfg = val | priv->preset_enable[chan->channel] << 1;
+ 
+ 		/* Load I/O control configuration */
+-		outb(0x40 | ior_cfg, base_offset + 1);
++		outb(QUAD8_CTR_IOR | ior_cfg, base_offset + 1);
+ 
+ 		return 0;
+ 	case IIO_CHAN_INFO_SCALE:
+@@ -217,7 +252,7 @@ static ssize_t quad8_write_preset(struct iio_dev *indio_dev, uintptr_t private,
+ 	priv->preset[chan->channel] = preset;
+ 
+ 	/* Reset Byte Pointer */
+-	outb(0x01, base_offset + 1);
++	outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, base_offset + 1);
+ 
+ 	/* Set Preset Register */
+ 	for (i = 0; i < 3; i++)
+@@ -258,7 +293,7 @@ static ssize_t quad8_write_set_to_preset_on_index(struct iio_dev *indio_dev,
+ 		(unsigned int)preset_enable << 1;
+ 
+ 	/* Load I/O control configuration to Input / Output Control Register */
+-	outb(0x40 | ior_cfg, base_offset);
++	outb(QUAD8_CTR_IOR | ior_cfg, base_offset);
+ 
+ 	return len;
+ }
+@@ -274,7 +309,7 @@ static int quad8_get_noise_error(struct iio_dev *indio_dev,
+ 	struct quad8_iio *const priv = iio_priv(indio_dev);
+ 	const int base_offset = priv->base + 2 * chan->channel + 1;
+ 
+-	return !!(inb(base_offset) & BIT(4));
++	return !!(inb(base_offset) & QUAD8_FLAG_E);
+ }
+ 
+ static const struct iio_enum quad8_noise_error_enum = {
+@@ -294,7 +329,7 @@ static int quad8_get_count_direction(struct iio_dev *indio_dev,
+ 	struct quad8_iio *const priv = iio_priv(indio_dev);
+ 	const int base_offset = priv->base + 2 * chan->channel + 1;
+ 
+-	return !!(inb(base_offset) & BIT(5));
++	return !!(inb(base_offset) & QUAD8_FLAG_UD);
+ }
+ 
+ static const struct iio_enum quad8_count_direction_enum = {
+@@ -324,7 +359,7 @@ static int quad8_set_count_mode(struct iio_dev *indio_dev,
+ 		mode_cfg |= (priv->quadrature_scale[chan->channel] + 1) << 3;
+ 
+ 	/* Load mode configuration to Counter Mode Register */
+-	outb(0x20 | mode_cfg, base_offset);
++	outb(QUAD8_CTR_CMR | mode_cfg, base_offset);
+ 
+ 	return 0;
+ }
+@@ -364,7 +399,7 @@ static int quad8_set_synchronous_mode(struct iio_dev *indio_dev,
+ 	priv->synchronous_mode[chan->channel] = synchronous_mode;
+ 
+ 	/* Load Index Control configuration to Index Control Register */
+-	outb(0x60 | idr_cfg, base_offset);
++	outb(QUAD8_CTR_IDR | idr_cfg, base_offset);
+ 
+ 	return 0;
+ }
+@@ -410,7 +445,7 @@ static int quad8_set_quadrature_mode(struct iio_dev *indio_dev,
+ 	priv->quadrature_mode[chan->channel] = quadrature_mode;
+ 
+ 	/* Load mode configuration to Counter Mode Register */
+-	outb(0x20 | mode_cfg, base_offset);
++	outb(QUAD8_CTR_CMR | mode_cfg, base_offset);
+ 
+ 	return 0;
+ }
+@@ -446,7 +481,7 @@ static int quad8_set_index_polarity(struct iio_dev *indio_dev,
+ 	priv->index_polarity[chan->channel] = index_polarity;
+ 
+ 	/* Load Index Control configuration to Index Control Register */
+-	outb(0x60 | idr_cfg, base_offset);
++	outb(QUAD8_CTR_IDR | idr_cfg, base_offset);
+ 
+ 	return 0;
+ }
+@@ -556,28 +591,28 @@ static int quad8_probe(struct device *dev, unsigned int id)
+ 	priv->base = base[id];
+ 
+ 	/* Reset all counters and disable interrupt function */
+-	outb(0x01, base[id] + 0x11);
++	outb(QUAD8_CHAN_OP_RESET_COUNTERS, base[id] + REG_CHANNEL_OPERATION);
+ 	/* Set initial configuration for all counters */
+ 	for (i = 0; i < QUAD8_NUM_COUNTERS; i++) {
+ 		base_offset = base[id] + 2 * i;
+ 		/* Reset Byte Pointer */
+-		outb(0x01, base_offset + 1);
++		outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, base_offset + 1);
+ 		/* Reset Preset Register */
+ 		for (j = 0; j < 3; j++)
+ 			outb(0x00, base_offset);
+ 		/* Reset Borrow, Carry, Compare, and Sign flags */
+-		outb(0x04, base_offset + 1);
++		outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_FLAGS, base_offset + 1);
+ 		/* Reset Error flag */
+-		outb(0x06, base_offset + 1);
++		outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_E, base_offset + 1);
+ 		/* Binary encoding; Normal count; non-quadrature mode */
+-		outb(0x20, base_offset + 1);
++		outb(QUAD8_CTR_CMR, base_offset + 1);
+ 		/* Disable A and B inputs; preset on index; FLG1 as Carry */
+-		outb(0x40, base_offset + 1);
++		outb(QUAD8_CTR_IOR, base_offset + 1);
+ 		/* Disable index function; negative index polarity */
+-		outb(0x60, base_offset + 1);
++		outb(QUAD8_CTR_IDR, base_offset + 1);
+ 	}
+ 	/* Enable all counters */
+-	outb(0x00, base[id] + 0x11);
++	outb(QUAD8_CHAN_OP_ENABLE_COUNTERS, base[id] + REG_CHANNEL_OPERATION);
+ 
+ 	return devm_iio_device_register(dev, indio_dev);
+ }
 -- 
-2.7.4
-
-
---=-=-=--
+2.17.0
