@@ -1,65 +1,289 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:48764 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S934160AbeE0I7K (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 May 2018 04:59:10 -0400
-Date: Sun, 27 May 2018 09:59:07 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Mathieu Othacehe <m.othacehe@gmail.com>
+Return-Path: <m.othacehe@gmail.com>
+References: <87a7snd8r7.fsf@gmail.com>
+From: Mathieu Othacehe <m.othacehe@gmail.com>
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 Cc: linux-iio@vger.kernel.org
 Subject: Re: isl29501 and multiple calibration registers
-Message-ID: <20180527095907.5aa173b0@archlinux>
-In-Reply-To: <87a7snd8r7.fsf@gmail.com>
-References: <87a7snd8r7.fsf@gmail.com>
+In-reply-to: <20180527095907.5aa173b0@archlinux>
+Date: Mon, 28 May 2018 17:38:08 +0200
+Message-ID: <876037dc4f.fsf@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: multipart/mixed; boundary="=-=-="
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, 25 May 2018 18:01:48 +0200
-Mathieu Othacehe <m.othacehe@gmail.com> wrote:
+--=-=-=
+Content-Type: text/plain
 
-> Hello,
-> 
-> I'm currently working on a driver for the ISL29501 Time of Flight
-> sensor[1] that I hope to publish soon. This sensor has many calibration
-> and corrections registers (crosstalk_i, crosstalk_q, crosstalk_gain,
-> phase_temp_correction ...).
-> 
-> I would like to make all those registers accessible from userspace but
-> iio_chan_info_enum has no matching elements for most of those registers
-> which are very specific to this sensor.
-> 
-> Any idea how could I proceed to make those registers accessible?
 
-First game is to try and match up with existing ABI defined for similar
-parts.  If that fails, it's worth thinking about whether any of them are
-likely to apply to a reasonably large number of parts in the near future.
-There are always chip specific values though so somethings just need
-a custom interface.   The key thing to remember is that they will effectively
-not exist for generic userspace code.
+Hi Jonathan,
 
-Anyhow, you can either implement them as sysfs attributes, or take the
-preferred route of iio_chan_spec_ext_info as that allows in kernel users
-to access them rather than just userspace.
+Thanks for you answer, it seems fine to me to use IIO ABI when possible
+and extend it with iio_chan_spec_ext_info for exotic calibration
+registers.
 
-The challenge is really to work out how to fit these device specific
-variables into the overall 'framework' of the ABI that is already defined.
-The first step is often ABI definition document for
-Documentation/ABI/testing/sysfs-bus-iio-isl29501 as it can be easier
-to talk about an ABI doc than work it out from the code.
+Here is a proposal for sysfs-bus-iio-isl29501 document. Would it be ok?
 
 Thanks,
 
-Jonathan
-> 
-> Thanks in advance,
-> 
-> Mathieu
-> 
-> [1]: https://www.intersil.com/content/dam/intersil/documents/isl2/isl29501.pdf
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Mathieu
 
+--=-=-=
+Content-Type: text/x-diff
+Content-Disposition: inline;
+ filename=0001-iio-isl29501-Add-documentation.patch
+
+>From 6932a29f986a432ec591417b34e896351be6ce14 Mon Sep 17 00:00:00 2001
+From: Mathieu Othacehe <m.othacehe@gmail.com>
+Date: Mon, 28 May 2018 17:35:32 +0200
+Subject: [PATCH] iio: isl29501: Add documentation.
+
+The ISL29501 is a Time of Flight (ToF) based signal processing
+integrated circuit. The sensor enables long range optical distance
+sensing when combined with an external emitter and detector.
+---
+ Documentation/ABI/testing/sysfs-bus-iio-isl29501 | 230 +++++++++++++++++++++++
+ 1 file changed, 230 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-isl29501
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-isl29501 b/Documentation/ABI/testing/sysfs-bus-iio-isl29501
+new file mode 100644
+index 0000000..6f18f13
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-isl29501
+@@ -0,0 +1,230 @@
++What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_raw
++KernelVersion:	4.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++                Get the distance from the obstacle in meters. The
++                distance is an integer between 0 and 65535.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_noise_approximation
++KernelVersion:	4.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++                Get the measurement noise approximation in meters.
++		The approximation is an integer between 0 and 65535.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn0_raw
++KernelVersion:	4.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++                Get the magnitude of the received signal in nA.
++		The magnitude is an integer between 0 and 65535.
++
++What:		/sys/bus/iio/devices/iio:deviceX/integration_time
++KernelVersion:	4.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++                Control the length of each sample, which is equal to
++		the time during which the optical pulse is active.
++
++What:		/sys/bus/iio/devices/iio:deviceX/integration_time_available
++KernelVersion:	4.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++                Reading returns the list of possible integration times.
++
++What:		/sys/bus/iio/devices/iio:deviceX/sampling_frequency
++KernelVersion:	4.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++                Control the sampling frequency of the sensor.
++
++What:		/sys/bus/iio/devices/iio:deviceX/sampling_frequency_available
++KernelVersion:	4.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++                Reading returns the list of possible sampling frequencies.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_calib_cs_i
++KernelVersion:	4.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++                Set the Crosstalk I calibration value when written
++		to. The value must be an integer between -32768 and
++		32767 inclusive.
++
++		Get this value from hardware and show it when read
++		from.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_calib_cs_i_exp
++KernelVersion:	4.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++                Set the Crosstalk I calibration exponent value when
++		written to. The value must be an integer between
++		0 and 255 inclusive.
++
++		Get this value from hardware and show it when read
++		from.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_calib_cs_q
++KernelVersion:	4.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++                Set the Crosstalk Q calibration value when written
++		to. The value must be an integer between -32768 and
++		32767 inclusive.
++
++		Get this value from hardware and show it when read
++		from.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_calib_cs_q_exp
++KernelVersion:	4.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++                Set the Crosstalk Q calibration exponent value when
++		written to. The value must be an integer between
++		0 and 255 inclusive.
++
++		Get this value from hardware and show it when read
++		from.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_calib_cs_gain
++KernelVersion:	4.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++                Set the Crosstalk gain value when written to. The
++		value must be an integer between 0 and 65535
++		inclusive.
++
++		Get this value from hardware and show it when read
++		from.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_calib_mag_ref
++KernelVersion:	4.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++                Set the magnitude reference when written to. The
++		value must be an integer between 0 and 65535
++		inclusive.
++
++		Get this value from hardware and show it when read
++		from.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_calib_mag_exp
++KernelVersion:	4.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++                Set the magnitude reference exponent when written
++		to. The value must be an integer between 0 and 15
++		inclusive.
++
++		Get this value from hardware and show it when read
++		from.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_phase_offset
++KernelVersion:	4.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++                Set the fixed distance offset calibration value when
++		written to. The value must be an integer
++		between 0 and 65535 inclusive.
++
++		Get this value from hardware and show it when read
++		from.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_temp_ref
++KernelVersion:	4.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++                Set the temperature reference value when written
++		to. The value must be an integer between 0 and 255
++		inclusive.
++
++		Get this value from hardware and show it when read
++		from.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_phase_exp
++KernelVersion:	4.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++                Set the phase correction exponent value when written
++		to. The value must be an integer between 0 and 15
++		inclusive.
++
++		Get this value from hardware and show it when read
++		from.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_phase_temp_a
++KernelVersion:	4.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++                Set the phase temperature A correction coefficient
++		value when written to. The value must be an integer
++		between 0 and 255 inclusive.
++
++		Get this value from hardware and show it when read
++		from.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_phase_amb_a
++KernelVersion:	4.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++                Set the phase ambient A correction coefficient value
++		when written to. The value must be an integer between
++		0 and 255 inclusive.
++
++		Get this value from hardware and show it when read
++		from.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_phase_temp_b
++KernelVersion:	4.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++                Set the phase temperature B correction coefficient
++		value when written to. The value must be an integer
++		between 0 and 255 inclusive.
++
++		Get this value from hardware and show it when read
++		from.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_phase_amb_b
++KernelVersion:	4.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++                Set the phase ambient B correction coefficient value
++		when written to. The value must be an integer between
++		0 and 255 inclusive.
++
++		Get this value from hardware and show it when read
++		from.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_driver_range
++KernelVersion:	4.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++                Set the current DAC scale when written to. The value
++		must be an integer between 0 and 255 inclusive.
++
++		Get this value from hardware and show it when read
++		from.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_emitter_dac
++KernelVersion:	4.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++                Set the current DAC value when written to. The value
++		must be an integer between 0 and 255 inclusive.
++
++		Get this value from hardware and show it when read
++		from.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_emitter_offset
++KernelVersion:	4.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++                Set the emitter voltage measure offset when written
++		to. The value must be an integer between 0 and 255
++		inclusive.
++
++		Get this value from hardware and show it when read
++		from.
+\ No newline at end of file
+-- 
+2.7.4
+
+
+--=-=-=--
