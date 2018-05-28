@@ -1,263 +1,207 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:49264 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S932142AbeE1J2F (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 28 May 2018 05:28:05 -0400
-Date: Mon, 28 May 2018 10:28:00 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc: knaack.h@gmx.de, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, pmeerw@pmeerw.net, lars@metafoo.de
-Subject: Re: [PATCH v3] iio: 104-quad-8: Provide defines for magic numbers
-Message-ID: <20180528102800.0988dc81@archlinux>
-In-Reply-To: <20180527171843.2664-1-vilhelm.gray@gmail.com>
-References: <20180527171843.2664-1-vilhelm.gray@gmail.com>
+Received: from mail-by2nam01on0056.outbound.protection.outlook.com ([104.47.34.56]:28253
+        "EHLO NAM01-BY2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1163496AbeE1NWh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 28 May 2018 09:22:37 -0400
+From: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+To: linux-iio@vger.kernel.org
+Cc: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+Subject: [PATCH v3 5/5] iio: imu: inv_mpu6050: new timestamp mechanism
+Date: Mon, 28 May 2018 15:22:04 +0200
+Message-Id: <20180528132204.15948-1-jmaneyrol@invensense.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, 27 May 2018 13:18:43 -0400
-William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
+Check validity of interrupt timestamps by computing time between
+2 interrupts. If it matches the chip frequency modulo 4%, it is
+used as the data timestamp and also for estimating the chip
+frequency measured from the system. Otherwise timestamp is
+computed using the estimated chip frequency.
 
-> This patch adds several register and bit defines to help improve the
-> clarity of the code by cleaning up magic numbers throughout the driver.
-> 
-> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |  7 ++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  8 +++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c | 82 +++++++++++++++++++++-
+ 3 files changed, 96 insertions(+), 1 deletion(-)
 
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
-
-Jonathan
-
-> ---
-> Changes in v3:
->  - Rename REG_CHANNEL_OPERATION to QUAD8_REG_CHAN_OP and
->    REG_INDEX_INPUT_LEVELS to QUAD_8_REG_INDEX_INPUT_LEVELS (these two
->    defines were missed in v2)
-> 
->  drivers/iio/counter/104-quad-8.c | 87 ++++++++++++++++++++++----------
->  1 file changed, 61 insertions(+), 26 deletions(-)
-> 
-> diff --git a/drivers/iio/counter/104-quad-8.c b/drivers/iio/counter/104-quad-8.c
-> index 4be85ec54af4..92be8d0f7735 100644
-> --- a/drivers/iio/counter/104-quad-8.c
-> +++ b/drivers/iio/counter/104-quad-8.c
-> @@ -59,6 +59,39 @@ struct quad8_iio {
->  	unsigned int base;
->  };
->  
-> +#define QUAD8_REG_CHAN_OP 0x11
-> +#define QUAD8_REG_INDEX_INPUT_LEVELS 0x16
-> +/* Borrow Toggle flip-flop */
-> +#define QUAD8_FLAG_BT BIT(0)
-> +/* Carry Toggle flip-flop */
-> +#define QUAD8_FLAG_CT BIT(1)
-> +/* Error flag */
-> +#define QUAD8_FLAG_E BIT(4)
-> +/* Up/Down flag */
-> +#define QUAD8_FLAG_UD BIT(5)
-> +/* Reset and Load Signal Decoders */
-> +#define QUAD8_CTR_RLD 0x00
-> +/* Counter Mode Register */
-> +#define QUAD8_CTR_CMR 0x20
-> +/* Input / Output Control Register */
-> +#define QUAD8_CTR_IOR 0x40
-> +/* Index Control Register */
-> +#define QUAD8_CTR_IDR 0x60
-> +/* Reset Byte Pointer (three byte data pointer) */
-> +#define QUAD8_RLD_RESET_BP 0x01
-> +/* Reset Counter */
-> +#define QUAD8_RLD_RESET_CNTR 0x02
-> +/* Reset Borrow Toggle, Carry Toggle, Compare Toggle, and Sign flags */
-> +#define QUAD8_RLD_RESET_FLAGS 0x04
-> +/* Reset Error flag */
-> +#define QUAD8_RLD_RESET_E 0x06
-> +/* Preset Register to Counter */
-> +#define QUAD8_RLD_PRESET_CNTR 0x08
-> +/* Transfer Counter to Output Latch */
-> +#define QUAD8_RLD_CNTR_OUT 0x10
-> +#define QUAD8_CHAN_OP_ENABLE_COUNTERS 0x00
-> +#define QUAD8_CHAN_OP_RESET_COUNTERS 0x01
-> +
->  static int quad8_read_raw(struct iio_dev *indio_dev,
->  	struct iio_chan_spec const *chan, int *val, int *val2, long mask)
->  {
-> @@ -72,19 +105,21 @@ static int quad8_read_raw(struct iio_dev *indio_dev,
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
->  		if (chan->type == IIO_INDEX) {
-> -			*val = !!(inb(priv->base + 0x16) & BIT(chan->channel));
-> +			*val = !!(inb(priv->base + QUAD8_REG_INDEX_INPUT_LEVELS)
-> +				& BIT(chan->channel));
->  			return IIO_VAL_INT;
->  		}
->  
->  		flags = inb(base_offset + 1);
-> -		borrow = flags & BIT(0);
-> -		carry = !!(flags & BIT(1));
-> +		borrow = flags & QUAD8_FLAG_BT;
-> +		carry = !!(flags & QUAD8_FLAG_CT);
->  
->  		/* Borrow XOR Carry effectively doubles count range */
->  		*val = (borrow ^ carry) << 24;
->  
->  		/* Reset Byte Pointer; transfer Counter to Output Latch */
-> -		outb(0x11, base_offset + 1);
-> +		outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP | QUAD8_RLD_CNTR_OUT,
-> +		     base_offset + 1);
->  
->  		for (i = 0; i < 3; i++)
->  			*val |= (unsigned int)inb(base_offset) << (8 * i);
-> @@ -120,17 +155,17 @@ static int quad8_write_raw(struct iio_dev *indio_dev,
->  			return -EINVAL;
->  
->  		/* Reset Byte Pointer */
-> -		outb(0x01, base_offset + 1);
-> +		outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, base_offset + 1);
->  
->  		/* Counter can only be set via Preset Register */
->  		for (i = 0; i < 3; i++)
->  			outb(val >> (8 * i), base_offset);
->  
->  		/* Transfer Preset Register to Counter */
-> -		outb(0x08, base_offset + 1);
-> +		outb(QUAD8_CTR_RLD | QUAD8_RLD_PRESET_CNTR, base_offset + 1);
->  
->  		/* Reset Byte Pointer */
-> -		outb(0x01, base_offset + 1);
-> +		outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, base_offset + 1);
->  
->  		/* Set Preset Register back to original value */
->  		val = priv->preset[chan->channel];
-> @@ -138,9 +173,9 @@ static int quad8_write_raw(struct iio_dev *indio_dev,
->  			outb(val >> (8 * i), base_offset);
->  
->  		/* Reset Borrow, Carry, Compare, and Sign flags */
-> -		outb(0x04, base_offset + 1);
-> +		outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_FLAGS, base_offset + 1);
->  		/* Reset Error flag */
-> -		outb(0x06, base_offset + 1);
-> +		outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_E, base_offset + 1);
->  
->  		return 0;
->  	case IIO_CHAN_INFO_ENABLE:
-> @@ -153,7 +188,7 @@ static int quad8_write_raw(struct iio_dev *indio_dev,
->  		ior_cfg = val | priv->preset_enable[chan->channel] << 1;
->  
->  		/* Load I/O control configuration */
-> -		outb(0x40 | ior_cfg, base_offset + 1);
-> +		outb(QUAD8_CTR_IOR | ior_cfg, base_offset + 1);
->  
->  		return 0;
->  	case IIO_CHAN_INFO_SCALE:
-> @@ -217,7 +252,7 @@ static ssize_t quad8_write_preset(struct iio_dev *indio_dev, uintptr_t private,
->  	priv->preset[chan->channel] = preset;
->  
->  	/* Reset Byte Pointer */
-> -	outb(0x01, base_offset + 1);
-> +	outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, base_offset + 1);
->  
->  	/* Set Preset Register */
->  	for (i = 0; i < 3; i++)
-> @@ -258,7 +293,7 @@ static ssize_t quad8_write_set_to_preset_on_index(struct iio_dev *indio_dev,
->  		(unsigned int)preset_enable << 1;
->  
->  	/* Load I/O control configuration to Input / Output Control Register */
-> -	outb(0x40 | ior_cfg, base_offset);
-> +	outb(QUAD8_CTR_IOR | ior_cfg, base_offset);
->  
->  	return len;
->  }
-> @@ -274,7 +309,7 @@ static int quad8_get_noise_error(struct iio_dev *indio_dev,
->  	struct quad8_iio *const priv = iio_priv(indio_dev);
->  	const int base_offset = priv->base + 2 * chan->channel + 1;
->  
-> -	return !!(inb(base_offset) & BIT(4));
-> +	return !!(inb(base_offset) & QUAD8_FLAG_E);
->  }
->  
->  static const struct iio_enum quad8_noise_error_enum = {
-> @@ -294,7 +329,7 @@ static int quad8_get_count_direction(struct iio_dev *indio_dev,
->  	struct quad8_iio *const priv = iio_priv(indio_dev);
->  	const int base_offset = priv->base + 2 * chan->channel + 1;
->  
-> -	return !!(inb(base_offset) & BIT(5));
-> +	return !!(inb(base_offset) & QUAD8_FLAG_UD);
->  }
->  
->  static const struct iio_enum quad8_count_direction_enum = {
-> @@ -324,7 +359,7 @@ static int quad8_set_count_mode(struct iio_dev *indio_dev,
->  		mode_cfg |= (priv->quadrature_scale[chan->channel] + 1) << 3;
->  
->  	/* Load mode configuration to Counter Mode Register */
-> -	outb(0x20 | mode_cfg, base_offset);
-> +	outb(QUAD8_CTR_CMR | mode_cfg, base_offset);
->  
->  	return 0;
->  }
-> @@ -364,7 +399,7 @@ static int quad8_set_synchronous_mode(struct iio_dev *indio_dev,
->  	priv->synchronous_mode[chan->channel] = synchronous_mode;
->  
->  	/* Load Index Control configuration to Index Control Register */
-> -	outb(0x60 | idr_cfg, base_offset);
-> +	outb(QUAD8_CTR_IDR | idr_cfg, base_offset);
->  
->  	return 0;
->  }
-> @@ -410,7 +445,7 @@ static int quad8_set_quadrature_mode(struct iio_dev *indio_dev,
->  	priv->quadrature_mode[chan->channel] = quadrature_mode;
->  
->  	/* Load mode configuration to Counter Mode Register */
-> -	outb(0x20 | mode_cfg, base_offset);
-> +	outb(QUAD8_CTR_CMR | mode_cfg, base_offset);
->  
->  	return 0;
->  }
-> @@ -446,7 +481,7 @@ static int quad8_set_index_polarity(struct iio_dev *indio_dev,
->  	priv->index_polarity[chan->channel] = index_polarity;
->  
->  	/* Load Index Control configuration to Index Control Register */
-> -	outb(0x60 | idr_cfg, base_offset);
-> +	outb(QUAD8_CTR_IDR | idr_cfg, base_offset);
->  
->  	return 0;
->  }
-> @@ -556,28 +591,28 @@ static int quad8_probe(struct device *dev, unsigned int id)
->  	priv->base = base[id];
->  
->  	/* Reset all counters and disable interrupt function */
-> -	outb(0x01, base[id] + 0x11);
-> +	outb(QUAD8_CHAN_OP_RESET_COUNTERS, base[id] + QUAD8_REG_CHAN_OP);
->  	/* Set initial configuration for all counters */
->  	for (i = 0; i < QUAD8_NUM_COUNTERS; i++) {
->  		base_offset = base[id] + 2 * i;
->  		/* Reset Byte Pointer */
-> -		outb(0x01, base_offset + 1);
-> +		outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, base_offset + 1);
->  		/* Reset Preset Register */
->  		for (j = 0; j < 3; j++)
->  			outb(0x00, base_offset);
->  		/* Reset Borrow, Carry, Compare, and Sign flags */
-> -		outb(0x04, base_offset + 1);
-> +		outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_FLAGS, base_offset + 1);
->  		/* Reset Error flag */
-> -		outb(0x06, base_offset + 1);
-> +		outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_E, base_offset + 1);
->  		/* Binary encoding; Normal count; non-quadrature mode */
-> -		outb(0x20, base_offset + 1);
-> +		outb(QUAD8_CTR_CMR, base_offset + 1);
->  		/* Disable A and B inputs; preset on index; FLG1 as Carry */
-> -		outb(0x40, base_offset + 1);
-> +		outb(QUAD8_CTR_IOR, base_offset + 1);
->  		/* Disable index function; negative index polarity */
-> -		outb(0x60, base_offset + 1);
-> +		outb(QUAD8_CTR_IDR, base_offset + 1);
->  	}
->  	/* Enable all counters */
-> -	outb(0x00, base[id] + 0x11);
-> +	outb(QUAD8_CHAN_OP_ENABLE_COUNTERS, base[id] + QUAD8_REG_CHAN_OP);
->  
->  	return devm_iio_device_register(dev, indio_dev);
->  }
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index f50477c360e2..de68e83fc52d 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -295,6 +295,13 @@ static int inv_mpu6050_init_config(struct iio_dev *indio_dev)
+ 	memcpy(&st->chip_config, hw_info[st->chip_type].config,
+ 	       sizeof(struct inv_mpu6050_chip_config));
+ 
++	/*
++	 * Internal chip period is 1ms (1kHz).
++	 * Let's use at the beginning the theorical value before measuring
++	 * with interrupt timestamps.
++	 */
++	st->chip_period = NSEC_PER_MSEC;
++
+ 	return inv_mpu6050_set_power_itg(st, false);
+ 
+ error_power_off:
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+index 6bc80ac9d120..de8391693e17 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+@@ -125,6 +125,9 @@ struct inv_mpu6050_hw {
+  *  @map		regmap pointer.
+  *  @irq		interrupt number.
+  *  @irq_mask		the int_pin_cfg mask to configure interrupt type.
++ *  @chip_period:	chip internal period estimation (~1kHz).
++ *  @it_timestamp:	timestamp from previous interrupt.
++ *  @data_timestamp:	timestamp for next data sample.
+  */
+ struct inv_mpu6050_state {
+ 	struct mutex lock;
+@@ -142,6 +145,9 @@ struct inv_mpu6050_state {
+ 	int irq;
+ 	u8 irq_mask;
+ 	unsigned skip_samples;
++	s64 chip_period;
++	s64 it_timestamp;
++	s64 data_timestamp;
+ };
+ 
+ /*register and associated bit definition*/
+@@ -223,6 +229,8 @@ struct inv_mpu6050_state {
+ #define INV_MPU6050_LATCH_INT_EN	0x20
+ #define INV_MPU6050_BIT_BYPASS_EN	0x2
+ 
++/* Allowed timestamp period jitter in percent */
++#define INV_MPU6050_TS_PERIOD_JITTER	4
+ 
+ /* init parameters */
+ #define INV_MPU6050_INIT_FIFO_RATE           50
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+index 7a4aaed83044..a8f525fe79e1 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+@@ -20,15 +20,93 @@
+ #include <linux/irq.h>
+ #include <linux/interrupt.h>
+ #include <linux/poll.h>
++#include <linux/math64.h>
+ #include <asm/unaligned.h>
+ #include "inv_mpu_iio.h"
+ 
++/**
++ *  inv_mpu6050_update_period() - Update chip internal period estimation
++ *
++ *  @st:		driver state
++ *  @timestamp:		the interrupt timestamp
++ *  @nb:		number of data set in the fifo
++ *
++ *  This function uses interrupt timestamps to estimate the chip period and
++ *  to choose the data timestamp to come.
++ */
++static void inv_mpu6050_update_period(struct inv_mpu6050_state *st,
++				      s64 timestamp, size_t nb)
++{
++	/* Period boundaries for accepting timestamp */
++	const s64 period_min =
++		(NSEC_PER_MSEC * (100 - INV_MPU6050_TS_PERIOD_JITTER)) / 100;
++	const s64 period_max =
++		(NSEC_PER_MSEC * (100 + INV_MPU6050_TS_PERIOD_JITTER)) / 100;
++	const s32 divider = INV_MPU6050_FREQ_DIVIDER(st);
++	s64 delta, interval;
++	bool use_it_timestamp = false;
++
++	if (st->it_timestamp == 0) {
++		/* not initialized, forced to use it_timestamp */
++		use_it_timestamp = true;
++	} else if (nb == 1) {
++		/*
++		 * Validate the use of it timestamp by checking if interrupt
++		 * has been delayed.
++		 * nb > 1 means interrupt was delayed for more than 1 sample,
++		 * so it's obviously not good.
++		 * Compute the chip period between 2 interrupts for validating.
++		 */
++		delta = div_s64(timestamp - st->it_timestamp, divider);
++		if (delta > period_min && delta < period_max) {
++			/* update chip period and use it timestamp */
++			st->chip_period = (st->chip_period + delta) / 2;
++			use_it_timestamp = true;
++		}
++	}
++
++	if (use_it_timestamp) {
++		/*
++		 * Manage case of multiple samples in the fifo (nb > 1):
++		 * compute timestamp corresponding to the first sample using
++		 * estimated chip period.
++		 */
++		interval = (nb - 1) * st->chip_period * divider;
++		st->data_timestamp = timestamp - interval;
++	}
++
++	/* save it timestamp */
++	st->it_timestamp = timestamp;
++}
++
++/**
++ *  inv_mpu6050_get_timestamp() - Return the current data timestamp
++ *
++ *  @st:		driver state
++ *  @return:		current data timestamp
++ *
++ *  This function returns the current data timestamp and prepares for next one.
++ */
++static s64 inv_mpu6050_get_timestamp(struct inv_mpu6050_state *st)
++{
++	s64 ts;
++
++	/* return current data timestamp and increment */
++	ts = st->data_timestamp;
++	st->data_timestamp += st->chip_period * INV_MPU6050_FREQ_DIVIDER(st);
++
++	return ts;
++}
++
+ int inv_reset_fifo(struct iio_dev *indio_dev)
+ {
+ 	int result;
+ 	u8 d;
+ 	struct inv_mpu6050_state  *st = iio_priv(indio_dev);
+ 
++	/* reset it timestamp validation */
++	st->it_timestamp = 0;
++
+ 	/* disable interrupt */
+ 	result = regmap_write(st->map, st->reg->int_enable, 0);
+ 	if (result) {
+@@ -97,7 +175,7 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
+ 	int result;
+ 	u8 data[INV_MPU6050_OUTPUT_DATA_SIZE];
+ 	u16 fifo_count;
+-	s64 timestamp = pf->timestamp;
++	s64 timestamp;
+ 	int int_status;
+ 	size_t i, nb;
+ 
+@@ -140,6 +218,7 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
+ 	fifo_count = get_unaligned_be16(&data[0]);
+ 	/* compute and process all complete datum */
+ 	nb = fifo_count / bytes_per_datum;
++	inv_mpu6050_update_period(st, pf->timestamp, nb);
+ 	for (i = 0; i < nb; ++i) {
+ 		result = regmap_bulk_read(st->map, st->reg->fifo_r_w,
+ 					  data, bytes_per_datum);
+@@ -150,6 +229,7 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
+ 			st->skip_samples--;
+ 			continue;
+ 		}
++		timestamp = inv_mpu6050_get_timestamp(st);
+ 		iio_push_to_buffers_with_timestamp(indio_dev, data, timestamp);
+ 	}
+ 
+-- 
+2.17.0
 
