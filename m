@@ -1,136 +1,45 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-by2nam03on0059.outbound.protection.outlook.com ([104.47.42.59]:46416
-        "EHLO NAM03-BY2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1750905AbeE3QH2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 30 May 2018 12:07:28 -0400
-Subject: Re: [PATCH] iio: imu: inv_mpu6050: clean return value for read_raw
- function
-To: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
-        linux-iio@vger.kernel.org
-References: <20180530065218.2922-1-jmaneyrol@invensense.com>
-From: Martin Kelly <mkelly@xevo.com>
-Message-ID: <c64625ff-8c95-20dd-fa03-43027470e477@xevo.com>
-Date: Wed, 30 May 2018 09:07:16 -0700
+Return-Path: <SRS0=rqf4=IR=canonical.com=colin.king@kernel.org>
+From: Colin King <colin.king@canonical.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Brian Masney <masneyb@onstation.org>,
+	linux-iio@vger.kernel.org
+Cc: kernel-janitors@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH][next] iio: tsl2x7x/tsl2772: avoid potential division by zero
+Date: Wed, 30 May 2018 19:19:36 +0100
+Message-Id: <20180530181936.17902-1-colin.king@canonical.com>
 MIME-Version: 1.0
-In-Reply-To: <20180530065218.2922-1-jmaneyrol@invensense.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+List-ID: <linux-iio@vger.kernel.org>
 
-On 05/29/2018 11:52 PM, Jean-Baptiste Maneyrol wrote:
-> Use only a single return at the end of the function and return
-> sensor_show value for calibbias reading including possible error.
-> 
-> Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-> ---
->   drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 46 ++++++++++++----------
->   1 file changed, 25 insertions(+), 21 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index de68e83fc52d..1f0c71f338ae 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -397,13 +397,12 @@ static int inv_mpu6050_read_channel_data(struct iio_dev *indio_dev,
->   	return result;
->   }
->   
-> -static int
-> -inv_mpu6050_read_raw(struct iio_dev *indio_dev,
-> -		     struct iio_chan_spec const *chan,
-> -		     int *val, int *val2, long mask)
-> +static int inv_mpu6050_read_raw(struct iio_dev *indio_dev,
-> +				struct iio_chan_spec const *chan,
-> +				int *val, int *val2, long mask)
->   {
->   	struct inv_mpu6050_state  *st = iio_priv(indio_dev);
-> -	int ret = 0;
-> +	int ret;
->   
->   	switch (mask) {
->   	case IIO_CHAN_INFO_RAW:
-> @@ -414,7 +413,7 @@ inv_mpu6050_read_raw(struct iio_dev *indio_dev,
->   		ret = inv_mpu6050_read_channel_data(indio_dev, chan, val);
->   		mutex_unlock(&st->lock);
->   		iio_device_release_direct_mode(indio_dev);
-> -		return ret;
-> +		break;
->   	case IIO_CHAN_INFO_SCALE:
->   		switch (chan->type) {
->   		case IIO_ANGL_VEL:
-> @@ -422,31 +421,33 @@ inv_mpu6050_read_raw(struct iio_dev *indio_dev,
->   			*val  = 0;
->   			*val2 = gyro_scale_6050[st->chip_config.fsr];
->   			mutex_unlock(&st->lock);
-> -
-> -			return IIO_VAL_INT_PLUS_NANO;
-> +			ret = IIO_VAL_INT_PLUS_NANO;
-> +			break;
->   		case IIO_ACCEL:
->   			mutex_lock(&st->lock);
->   			*val = 0;
->   			*val2 = accel_scale[st->chip_config.accl_fs];
->   			mutex_unlock(&st->lock);
-> -
-> -			return IIO_VAL_INT_PLUS_MICRO;
-> +			ret = IIO_VAL_INT_PLUS_MICRO;
-> +			break;
->   		case IIO_TEMP:
->   			*val = 0;
->   			*val2 = INV_MPU6050_TEMP_SCALE;
-> -
-> -			return IIO_VAL_INT_PLUS_MICRO;
-> +			ret = IIO_VAL_INT_PLUS_MICRO;
-> +			break;
->   		default:
-> -			return -EINVAL;
-> +			ret = -EINVAL;
-> +			break;
->   		}
->   	case IIO_CHAN_INFO_OFFSET:
->   		switch (chan->type) {
->   		case IIO_TEMP:
->   			*val = INV_MPU6050_TEMP_OFFSET;
-> -
-> -			return IIO_VAL_INT;
-> +			ret = IIO_VAL_INT;
-> +			break;
->   		default:
-> -			return -EINVAL;
-> +			ret = -EINVAL;
-> +			break;
->   		}
->   	case IIO_CHAN_INFO_CALIBBIAS:
->   		switch (chan->type) {
-> @@ -455,20 +456,23 @@ inv_mpu6050_read_raw(struct iio_dev *indio_dev,
->   			ret = inv_mpu6050_sensor_show(st, st->reg->gyro_offset,
->   						chan->channel2, val);
->   			mutex_unlock(&st->lock);
-> -			return IIO_VAL_INT;
-> +			break;
->   		case IIO_ACCEL:
->   			mutex_lock(&st->lock);
->   			ret = inv_mpu6050_sensor_show(st, st->reg->accl_offset,
->   						chan->channel2, val);
->   			mutex_unlock(&st->lock);
-> -			return IIO_VAL_INT;
-> -
-> +			break;
->   		default:
-> -			return -EINVAL;
-> +			ret = -EINVAL;
-> +			break;
->   		}
->   	default:
-> -		return -EINVAL;
-> +		ret = -EINVAL;
-> +		break;
->   	}
-> +
-> +	return ret;
->   }
->   
->   static int inv_mpu6050_write_gyro_scale(struct inv_mpu6050_state *st, int val)
-> 
+From: Colin Ian King <colin.king@canonical.com>
 
-Reviewed-by: Martin Kelly <mkelly@xevo.com>
+It may be possible for tsl2772_get_lux to return a zero lux value
+and hence a division by zero can occur when lux_val is zero. Check
+for this case and return -ERANGE to avoid the division by zero.
+
+Detected by CoverityScan, CID#1469484 ("Division or modulo by zero")
+
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/iio/light/tsl2772.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/iio/light/tsl2772.c b/drivers/iio/light/tsl2772.c
+index 34d42a2504c9..df5b2a0da96c 100644
+--- a/drivers/iio/light/tsl2772.c
++++ b/drivers/iio/light/tsl2772.c
+@@ -582,6 +582,8 @@ static int tsl2772_als_calibrate(struct iio_dev *indio_dev)
+ 			"%s: failed to get lux\n", __func__);
+ 		return lux_val;
+ 	}
++	if (lux_val == 0)
++		return -ERANGE;
+ 
+ 	ret = (chip->settings.als_cal_target * chip->settings.als_gain_trim) /
+ 			lux_val;
+-- 
+2.17.0
