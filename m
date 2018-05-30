@@ -1,116 +1,132 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-it0-f66.google.com ([209.85.214.66]:37844 "EHLO
-        mail-it0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932593AbeEaCGw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 May 2018 22:06:52 -0400
-Received: by mail-it0-f66.google.com with SMTP id l6-v6so12746649iti.2
-        for <linux-iio@vger.kernel.org>; Wed, 30 May 2018 19:06:52 -0700 (PDT)
+Received: from mail-co1nam03on0045.outbound.protection.outlook.com ([104.47.40.45]:34577
+        "EHLO NAM03-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S937206AbeE3Gwo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 30 May 2018 02:52:44 -0400
+From: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+To: linux-iio@vger.kernel.org
+Cc: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+Subject: [PATCH] iio: imu: inv_mpu6050: clean return value for read_raw function
+Date: Wed, 30 May 2018 08:52:18 +0200
+Message-Id: <20180530065218.2922-1-jmaneyrol@invensense.com>
 MIME-Version: 1.0
-In-Reply-To: <20180530142312.GA5434@arch>
-References: <20180528153859.813-1-tduszyns@gmail.com> <CAJCx=gnatQnSDFa_XqULgTibov-s=qec-Z3688xZj8dZzY-8Cw@mail.gmail.com>
- <9e2d3be3-bc59-eb62-9410-107091cb17ed@electromag.com.au> <CAJCx=gnDRvDLNwBQ=aJLdmExx+cTDQdOO2Vp5Q8_j=RTGCQKXQ@mail.gmail.com>
- <CAJCx=gkQDpdw7jGdyT72UMOkYkb7bDoMuQW_O_LEvNWApCVHqA@mail.gmail.com> <20180530142312.GA5434@arch>
-From: Matt Ranostay <matt.ranostay@konsulko.com>
-Date: Thu, 31 May 2018 10:06:50 +0800
-Message-ID: <CAJCx=g=TKfyojOH3d7m_4xhFRsGw19Z+aJbA+maGBLnCiJXvKg@mail.gmail.com>
-Subject: Re: [PATCH] iio: pressure: bmp280: fix relative humidity unit
-To: Tomasz Duszynski <tduszyns@gmail.com>
-Cc: Phil Reid <preid@electromag.com.au>, linux-iio@vger.kernel.org,
-        Jonathan Cameron <jic23@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, May 30, 2018 at 10:23 PM, Tomasz Duszynski <tduszyns@gmail.com> wrote:
-> On Wed, May 30, 2018 at 03:20:37PM +0800, Matt Ranostay wrote:
->> On Wed, May 30, 2018 at 1:05 PM, Matt Ranostay
->> <matt.ranostay@konsulko.com> wrote:
->> > On Wed, May 30, 2018 at 9:17 AM, Phil Reid <preid@electromag.com.au> wrote:
->> >> On 30/05/2018 08:44, Matt Ranostay wrote:
->> >>>
->> >>> On Mon, May 28, 2018 at 11:38 PM, Tomasz Duszynski <tduszyns@gmail.com>
->> >>> wrote:
->> >>>>
->> >>>> According to IIO ABI relative humidity reading should be
->> >>>> returned in milli percent.
->> >>>>
->> >>>> This patch addresses that by applying proper scaling and
->> >>>> returning integer instead of fractional format type specifier.
->> >>>>
->> >>>
->> >>> *sigh* seems this is my mistake, but good catch.  Slight nitpick
->> >>> below.. otherwise looks good
->> >>>
->> >>>> Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
->> >>>> ---
->> >>>>   drivers/iio/pressure/bmp280-core.c | 5 ++---
->> >>>>   1 file changed, 2 insertions(+), 3 deletions(-)
->> >>>>
->> >>>> diff --git a/drivers/iio/pressure/bmp280-core.c
->> >>>> b/drivers/iio/pressure/bmp280-core.c
->> >>>> index 5ec3e41b65f2..fe87d27779d9 100644
->> >>>> --- a/drivers/iio/pressure/bmp280-core.c
->> >>>> +++ b/drivers/iio/pressure/bmp280-core.c
->> >>>> @@ -415,10 +415,9 @@ static int bmp280_read_humid(struct bmp280_data
->> >>>> *data, int *val, int *val2)
->> >>>>          }
->> >>>>          comp_humidity = bmp280_compensate_humidity(data, adc_humidity);
->> >>>>
->> >>>> -       *val = comp_humidity;
->> >>>> -       *val2 = 1024;
->> >>>> +       *val = comp_humidity * 1000 / 1024;
->> >>>
->> >>>
->> >>> Minor nitpick  that it would look cleaner as:   (comp_humidity / 1024) *
->> >>> 1000
->> >>>
->> >> be careful of integer division.
->> >>
->> >
->> > Ah yes good point. You will have to check if comp_humidity isn't zero
->> > or it is possible to have a divide-by-zero.
->>
->> D'oh actually divide by zero would be an issue. But you'll want to be
->> sure of possible overflows (doubt that would be an issue here).
->
-> What kind of division-by-zero are you meaning? When would that happen
-> in this case?
->
->>
->> However it may be better to just add the scaling factor of 1000 with
->> IIO_CHAN_INFO_SCALE  and make the processed value now a raw one.
->
-> Is measurement precision your concern here? I would not bother with that
-> since the sensor is not a top-notch anyway. Even datasheet itself specifies
-> error margin of +/-3% for relative humidity.
+Use only a single return at the end of the function and return
+sensor_show value for calibbias reading including possible error.
 
-As Phil mentioned the original patchset is okay as it is. Now I agree
-with him after thinking it through.
+Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 46 ++++++++++++----------
+ 1 file changed, 25 insertions(+), 21 deletions(-)
 
-Acked-by: Matt Ranostay <matt.ranostay@konsulko.com>
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index de68e83fc52d..1f0c71f338ae 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -397,13 +397,12 @@ static int inv_mpu6050_read_channel_data(struct iio_dev *indio_dev,
+ 	return result;
+ }
+ 
+-static int
+-inv_mpu6050_read_raw(struct iio_dev *indio_dev,
+-		     struct iio_chan_spec const *chan,
+-		     int *val, int *val2, long mask)
++static int inv_mpu6050_read_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				int *val, int *val2, long mask)
+ {
+ 	struct inv_mpu6050_state  *st = iio_priv(indio_dev);
+-	int ret = 0;
++	int ret;
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+@@ -414,7 +413,7 @@ inv_mpu6050_read_raw(struct iio_dev *indio_dev,
+ 		ret = inv_mpu6050_read_channel_data(indio_dev, chan, val);
+ 		mutex_unlock(&st->lock);
+ 		iio_device_release_direct_mode(indio_dev);
+-		return ret;
++		break;
+ 	case IIO_CHAN_INFO_SCALE:
+ 		switch (chan->type) {
+ 		case IIO_ANGL_VEL:
+@@ -422,31 +421,33 @@ inv_mpu6050_read_raw(struct iio_dev *indio_dev,
+ 			*val  = 0;
+ 			*val2 = gyro_scale_6050[st->chip_config.fsr];
+ 			mutex_unlock(&st->lock);
+-
+-			return IIO_VAL_INT_PLUS_NANO;
++			ret = IIO_VAL_INT_PLUS_NANO;
++			break;
+ 		case IIO_ACCEL:
+ 			mutex_lock(&st->lock);
+ 			*val = 0;
+ 			*val2 = accel_scale[st->chip_config.accl_fs];
+ 			mutex_unlock(&st->lock);
+-
+-			return IIO_VAL_INT_PLUS_MICRO;
++			ret = IIO_VAL_INT_PLUS_MICRO;
++			break;
+ 		case IIO_TEMP:
+ 			*val = 0;
+ 			*val2 = INV_MPU6050_TEMP_SCALE;
+-
+-			return IIO_VAL_INT_PLUS_MICRO;
++			ret = IIO_VAL_INT_PLUS_MICRO;
++			break;
+ 		default:
+-			return -EINVAL;
++			ret = -EINVAL;
++			break;
+ 		}
+ 	case IIO_CHAN_INFO_OFFSET:
+ 		switch (chan->type) {
+ 		case IIO_TEMP:
+ 			*val = INV_MPU6050_TEMP_OFFSET;
+-
+-			return IIO_VAL_INT;
++			ret = IIO_VAL_INT;
++			break;
+ 		default:
+-			return -EINVAL;
++			ret = -EINVAL;
++			break;
+ 		}
+ 	case IIO_CHAN_INFO_CALIBBIAS:
+ 		switch (chan->type) {
+@@ -455,20 +456,23 @@ inv_mpu6050_read_raw(struct iio_dev *indio_dev,
+ 			ret = inv_mpu6050_sensor_show(st, st->reg->gyro_offset,
+ 						chan->channel2, val);
+ 			mutex_unlock(&st->lock);
+-			return IIO_VAL_INT;
++			break;
+ 		case IIO_ACCEL:
+ 			mutex_lock(&st->lock);
+ 			ret = inv_mpu6050_sensor_show(st, st->reg->accl_offset,
+ 						chan->channel2, val);
+ 			mutex_unlock(&st->lock);
+-			return IIO_VAL_INT;
+-
++			break;
+ 		default:
+-			return -EINVAL;
++			ret = -EINVAL;
++			break;
+ 		}
+ 	default:
+-		return -EINVAL;
++		ret = -EINVAL;
++		break;
+ 	}
++
++	return ret;
+ }
+ 
+ static int inv_mpu6050_write_gyro_scale(struct inv_mpu6050_state *st, int val)
+-- 
+2.17.0
 
-
->
->>
->> >
->> > - Matt
->> >
->> >>
->> >>>>
->> >>>> -       return IIO_VAL_FRACTIONAL;
->> >>>> +       return IIO_VAL_INT;
->> >>>>   }
->> >>>>
->> >>>>   static int bmp280_read_raw(struct iio_dev *indio_dev,
->> >>>> --
->> >>>> 2.17.0
->> >>
->> >>
->> >>>
->> >>
->> >>
->> >> --
->> >> Regards
->> >> Phil Reid
->> >>
