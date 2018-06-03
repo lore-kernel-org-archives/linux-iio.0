@@ -1,41 +1,138 @@
-Return-Path: <m.othacehe@gmail.com>
-References: <87a7snd8r7.fsf@gmail.com> <876037dc4f.fsf@gmail.com> <20180603153833.0710bc03@archlinux> <87o9gpbkpc.fsf@gmail.com> <20180610142909.278028c5@archlinux> <87wov5id5w.fsf@gmail.com> <20180616181355.769b990e@archlinux>
-From: Mathieu Othacehe <m.othacehe@gmail.com>
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc: linux-iio@vger.kernel.org, lars@metafoo.de, "pierre-moana.levesque\@parrot.com" <pierre-moana.levesque@parrot.com>
-Subject: Re: isl29501 and multiple calibration registers
-In-reply-to: <20180616181355.769b990e@archlinux>
-Date: Tue, 19 Jun 2018 12:24:48 +0200
-Message-ID: <87k1qvhy4v.fsf@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.99]:49444 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751243AbeFCO7x (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 3 Jun 2018 10:59:53 -0400
+Date: Sun, 3 Jun 2018 15:59:48 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Matt Ranostay <matt.ranostay@konsulko.com>
+Cc: Tomasz Duszynski <tduszyns@gmail.com>,
+        Phil Reid <preid@electromag.com.au>, linux-iio@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH] iio: pressure: bmp280: fix relative humidity unit
+Message-ID: <20180603155948.06f30151@archlinux>
+In-Reply-To: <CAJCx=g=TKfyojOH3d7m_4xhFRsGw19Z+aJbA+maGBLnCiJXvKg@mail.gmail.com>
+References: <20180528153859.813-1-tduszyns@gmail.com>
+        <CAJCx=gnatQnSDFa_XqULgTibov-s=qec-Z3688xZj8dZzY-8Cw@mail.gmail.com>
+        <9e2d3be3-bc59-eb62-9410-107091cb17ed@electromag.com.au>
+        <CAJCx=gnDRvDLNwBQ=aJLdmExx+cTDQdOO2Vp5Q8_j=RTGCQKXQ@mail.gmail.com>
+        <CAJCx=gkQDpdw7jGdyT72UMOkYkb7bDoMuQW_O_LEvNWApCVHqA@mail.gmail.com>
+        <20180530142312.GA5434@arch>
+        <CAJCx=g=TKfyojOH3d7m_4xhFRsGw19Z+aJbA+maGBLnCiJXvKg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+On Thu, 31 May 2018 10:06:50 +0800
+Matt Ranostay <matt.ranostay@konsulko.com> wrote:
 
-Hi Jonathan,
+> On Wed, May 30, 2018 at 10:23 PM, Tomasz Duszynski <tduszyns@gmail.com> wrote:
+> > On Wed, May 30, 2018 at 03:20:37PM +0800, Matt Ranostay wrote:  
+> >> On Wed, May 30, 2018 at 1:05 PM, Matt Ranostay
+> >> <matt.ranostay@konsulko.com> wrote:  
+> >> > On Wed, May 30, 2018 at 9:17 AM, Phil Reid <preid@electromag.com.au> wrote:  
+> >> >> On 30/05/2018 08:44, Matt Ranostay wrote:  
+> >> >>>
+> >> >>> On Mon, May 28, 2018 at 11:38 PM, Tomasz Duszynski <tduszyns@gmail.com>
+> >> >>> wrote:  
+> >> >>>>
+> >> >>>> According to IIO ABI relative humidity reading should be
+> >> >>>> returned in milli percent.
+> >> >>>>
+> >> >>>> This patch addresses that by applying proper scaling and
+> >> >>>> returning integer instead of fractional format type specifier.
+> >> >>>>  
+> >> >>>
+> >> >>> *sigh* seems this is my mistake, but good catch.  Slight nitpick
+> >> >>> below.. otherwise looks good
+> >> >>>  
+> >> >>>> Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
+> >> >>>> ---
+> >> >>>>   drivers/iio/pressure/bmp280-core.c | 5 ++---
+> >> >>>>   1 file changed, 2 insertions(+), 3 deletions(-)
+> >> >>>>
+> >> >>>> diff --git a/drivers/iio/pressure/bmp280-core.c
+> >> >>>> b/drivers/iio/pressure/bmp280-core.c
+> >> >>>> index 5ec3e41b65f2..fe87d27779d9 100644
+> >> >>>> --- a/drivers/iio/pressure/bmp280-core.c
+> >> >>>> +++ b/drivers/iio/pressure/bmp280-core.c
+> >> >>>> @@ -415,10 +415,9 @@ static int bmp280_read_humid(struct bmp280_data
+> >> >>>> *data, int *val, int *val2)
+> >> >>>>          }
+> >> >>>>          comp_humidity = bmp280_compensate_humidity(data, adc_humidity);
+> >> >>>>
+> >> >>>> -       *val = comp_humidity;
+> >> >>>> -       *val2 = 1024;
+> >> >>>> +       *val = comp_humidity * 1000 / 1024;  
+> >> >>>
+> >> >>>
+> >> >>> Minor nitpick  that it would look cleaner as:   (comp_humidity / 1024) *
+> >> >>> 1000
+> >> >>>  
+> >> >> be careful of integer division.
+> >> >>  
+> >> >
+> >> > Ah yes good point. You will have to check if comp_humidity isn't zero
+> >> > or it is possible to have a divide-by-zero.  
+> >>
+> >> D'oh actually divide by zero would be an issue. But you'll want to be
+> >> sure of possible overflows (doubt that would be an issue here).  
+> >
+> > What kind of division-by-zero are you meaning? When would that happen
+> > in this case?
+> >  
+> >>
+> >> However it may be better to just add the scaling factor of 1000 with
+> >> IIO_CHAN_INFO_SCALE  and make the processed value now a raw one.  
+> >
+> > Is measurement precision your concern here? I would not bother with that
+> > since the sensor is not a top-notch anyway. Even datasheet itself specifies
+> > error margin of +/-3% for relative humidity.  
+> 
+> As Phil mentioned the original patchset is okay as it is. Now I agree
+> with him after thinking it through.
+> 
+> Acked-by: Matt Ranostay <matt.ranostay@konsulko.com>
 
-> I'm not really keen on doing that (as hardware gain has a well defined
-> different meaning).  This is a rather opaque device specific value.
+Applied to the fixes-togreg branch of iio.git.
 
-Ok, I'll keep it as an extended field then.
+Note this won't go upstream until after the merge window.  It should also
+have had a relevant fixes tag.
 
-> This is interesting as it's specifically documented as requiring no external
-> actions.  Oh well, another clear datasheet.
+I added the original humidity one of Matt's though the patch won't apply
+that far back due to splitting of code when SPI support was added.
+I added a note to that effect.
 
-:)
+Jonathan
 
-> You are welcome, this is a fiddly device!  Sane hardware would store
-> all these in on chip flash, but I guess it's a cost thing to not do so.
+> 
+> 
+> >  
+> >>  
+> >> >
+> >> > - Matt
+> >> >  
+> >> >>  
+> >> >>>>
+> >> >>>> -       return IIO_VAL_FRACTIONAL;
+> >> >>>> +       return IIO_VAL_INT;
+> >> >>>>   }
+> >> >>>>
+> >> >>>>   static int bmp280_read_raw(struct iio_dev *indio_dev,
+> >> >>>> --
+> >> >>>> 2.17.0  
+> >> >>
+> >> >>  
+> >> >>>  
+> >> >>
+> >> >>
+> >> >> --
+> >> >> Regards
+> >> >> Phil Reid
+> >> >>  
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
-I sent a patch with the updated documentation and the driver
-itself. Note that I left the read/write of float values as TODO
-(returning -EINVAL when asked for).
-
-This way I hope we can keep reviewing this driver, will trying to find
-the best way to deal with those annoying floating numbers.
-
-Thanks,
-
-Mathieu
-
-(I cc'd Pierre-Moana who is working with me on this driver)
