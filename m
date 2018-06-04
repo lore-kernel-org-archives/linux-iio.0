@@ -1,100 +1,88 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi0-f67.google.com ([209.85.218.67]:41274 "EHLO
-        mail-oi0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751590AbeFDJmD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 4 Jun 2018 05:42:03 -0400
-Received: by mail-oi0-f67.google.com with SMTP id a141-v6so3934020oii.8
-        for <linux-iio@vger.kernel.org>; Mon, 04 Jun 2018 02:42:03 -0700 (PDT)
+Received: from mail-by2nam03on0076.outbound.protection.outlook.com ([104.47.42.76]:19632
+        "EHLO NAM03-BY2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1752222AbeFDOWn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 4 Jun 2018 10:22:43 -0400
+From: Stefan Popa <stefan.popa@analog.com>
+To: <jic23@kernel.org>, <Michael.Hennerich@analog.com>,
+        <lars@metafoo.de>
+CC: <knaack.h@gmx.de>, <pmeerw@pmeerw.net>, <linux-pm@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <stefan.popa@analog.com>
+Subject: [PATCH] iio:dac:ad5686: Add AD5311R support
+Date: Mon, 4 Jun 2018 17:22:07 +0300
+Message-ID: <1528122127-1911-1-git-send-email-stefan.popa@analog.com>
 MIME-Version: 1.0
-In-Reply-To: <CAK8P3a1emKA1VAsfgQV=pfUnADwYc=MCLeBrT1idDbvO2WgVAw@mail.gmail.com>
-References: <8ab19b1665b51364c1f7e607f9a69a86fe084d0d.1528102909.git.baolin.wang@linaro.org>
- <CAK8P3a1emKA1VAsfgQV=pfUnADwYc=MCLeBrT1idDbvO2WgVAw@mail.gmail.com>
-From: Baolin Wang <baolin.wang@linaro.org>
-Date: Mon, 4 Jun 2018 17:42:02 +0800
-Message-ID: <CAMz4kuKquqvZCzF8BCjVMERv5AFhNAqaGQCkSGArGZwoh-Jw5Q@mail.gmail.com>
-Subject: Re: [PATCH] iio: Convert to use timespec64 variables to get a time stamp
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Arnd,
+AD5311R is a single channel DAC with 10-bit precision and i2c interface.
+The device includes a 2.5V internal reference which is enabled by default.
 
-On 4 June 2018 at 17:17, Arnd Bergmann <arnd@arndb.de> wrote:
-> On Mon, Jun 4, 2018 at 11:07 AM, Baolin Wang <baolin.wang@linaro.org> wrote:
->> The struct timespec is not y2038 safe on 32bit machines, thus this patch
->> converts to use timespec64 variables and related APIs to get a time stamp
->> for events etc.
->>
->> Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
->
-> Hi Baolin,
->
-> I was waiting with this for the new header file cleanup to land. Thomas
-> merged that one recently, so now we should be able to do this more nicely:
+This device is similar to AD5691R/AD5692R/AD5693/AD5693R, the only
+difference is that it has 10-bit precision.
 
-Thanks to point this out. Yes, let's use your nice patch.
+Datasheet:
+http://www.analog.com/media/en/technical-documentation/data-sheets/AD5310R_5311R.pdf
 
->
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index 19bdf3d2962a..fcbe92c34a3d 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -207,35 +207,27 @@ static int iio_device_set_clock(struct iio_dev
-> *indio_dev, clockid_t clock_id)
->   */
->  s64 iio_get_time_ns(const struct iio_dev *indio_dev)
->  {
-> -       struct timespec tp;
-> +       struct timespec64 tp;
->
->         switch (iio_device_get_clock(indio_dev)) {
->         case CLOCK_REALTIME:
-> -               ktime_get_real_ts(&tp);
-> -               break;
-> +               return ktime_get_real_ns();
->         case CLOCK_MONOTONIC:
-> -               ktime_get_ts(&tp);
-> -               break;
-> +               return ktime_get_ns();
->         case CLOCK_MONOTONIC_RAW:
-> -               getrawmonotonic(&tp);
-> -               break;
-> +               return ktime_get_raw_ns();
->         case CLOCK_REALTIME_COARSE:
-> -               tp = current_kernel_time();
-> -               break;
-> +               return ktime_to_ns(ktime_get_coarse_real());
->         case CLOCK_MONOTONIC_COARSE:
-> -               tp = get_monotonic_coarse();
-> -               break;
-> +               ktime_get_coarse_ts64(&tp);
-> +               return timespec64_to_ns(&tp);
->         case CLOCK_BOOTTIME:
-> -               get_monotonic_boottime(&tp);
-> -               break;
-> +               return ktime_get_boot_ns();
->         case CLOCK_TAI:
-> -               timekeeping_clocktai(&tp);
-> -               break;
-> +               return ktime_get_tai_ns();
->         default:
->                 BUG();
->         }
-> -
-> -       return timespec_to_ns(&tp);
->  }
->  EXPORT_SYMBOL(iio_get_time_ns);
+Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+---
+ drivers/iio/dac/ad5686.c     | 7 +++++++
+ drivers/iio/dac/ad5686.h     | 1 +
+ drivers/iio/dac/ad5696-i2c.c | 1 +
+ 3 files changed, 9 insertions(+)
 
-
-
+diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
+index e136f0f..2ddbfc3 100644
+--- a/drivers/iio/dac/ad5686.c
++++ b/drivers/iio/dac/ad5686.c
+@@ -221,6 +221,7 @@ static struct iio_chan_spec name[] = {				\
+ 		AD5868_CHANNEL(7, 7, bits, _shift),		\
+ }
+ 
++DECLARE_AD5693_CHANNELS(ad5311r_channels, 10, 6);
+ DECLARE_AD5676_CHANNELS(ad5672_channels, 12, 4);
+ DECLARE_AD5676_CHANNELS(ad5676_channels, 16, 0);
+ DECLARE_AD5686_CHANNELS(ad5684_channels, 12, 4);
+@@ -231,6 +232,12 @@ DECLARE_AD5693_CHANNELS(ad5692r_channels, 14, 2);
+ DECLARE_AD5693_CHANNELS(ad5691r_channels, 12, 4);
+ 
+ static const struct ad5686_chip_info ad5686_chip_info_tbl[] = {
++	[ID_AD5311R] = {
++		.channels = ad5311r_channels,
++		.int_vref_mv = 2500,
++		.num_channels = 1,
++		.regmap_type = AD5693_REGMAP,
++	},
+ 	[ID_AD5671R] = {
+ 		.channels = ad5672_channels,
+ 		.int_vref_mv = 2500,
+diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
+index d05cda9..57b3c61 100644
+--- a/drivers/iio/dac/ad5686.h
++++ b/drivers/iio/dac/ad5686.h
+@@ -45,6 +45,7 @@
+  * ad5686_supported_device_ids:
+  */
+ enum ad5686_supported_device_ids {
++	ID_AD5311R,
+ 	ID_AD5671R,
+ 	ID_AD5672R,
+ 	ID_AD5675R,
+diff --git a/drivers/iio/dac/ad5696-i2c.c b/drivers/iio/dac/ad5696-i2c.c
+index d18735d..7350d98 100644
+--- a/drivers/iio/dac/ad5696-i2c.c
++++ b/drivers/iio/dac/ad5696-i2c.c
+@@ -71,6 +71,7 @@ static int ad5686_i2c_remove(struct i2c_client *i2c)
+ }
+ 
+ static const struct i2c_device_id ad5686_i2c_id[] = {
++	{"ad5311r", ID_AD5311R},
+ 	{"ad5671r", ID_AD5671R},
+ 	{"ad5675r", ID_AD5675R},
+ 	{"ad5691r", ID_AD5691R},
 -- 
-Baolin.wang
-Best Regards
+2.7.4
+
