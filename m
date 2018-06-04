@@ -1,145 +1,155 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-eopbgr40129.outbound.protection.outlook.com ([40.107.4.129]:5539
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S932065AbeE3VTA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 30 May 2018 17:19:00 -0400
-From: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
-To: jic23@kernel.org
-Cc: Sean Nyekjaer <sean.nyekjaer@prevas.dk>, pmeerw@pmeerw.net,
-        linux-iio@vger.kernel.org
-Subject: [PATCH] iio: adc: ti-ads8688: use the auto sequence feature
-Date: Wed, 30 May 2018 23:18:21 +0200
-Message-Id: <20180530211821.8496-1-sean.nyekjaer@prevas.dk>
+Received: from mail-ot0-f195.google.com ([74.125.82.195]:43711 "EHLO
+        mail-ot0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752066AbeFDNDx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 4 Jun 2018 09:03:53 -0400
+Received: by mail-ot0-f195.google.com with SMTP id i19-v6so6930175otk.10
+        for <linux-iio@vger.kernel.org>; Mon, 04 Jun 2018 06:03:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20180518162815.GA24966@rob-hp-laptop>
+References: <cover.1526487615.git.vilhelm.gray@gmail.com> <ccdbbfb2833d274b6bfa234aada57e68d9793dd5.1526487615.git.vilhelm.gray@gmail.com>
+ <CAL_Jsq+a4s=5N6wUWifoHWQoornbDBY-UY2xrwj1kggNH4Q5pQ@mail.gmail.com>
+ <CA+M3ks4vjE5JMmLjjPnf6ffD9QYSUmSyrpO+yxADT_8WqAA3Tg@mail.gmail.com> <20180518162815.GA24966@rob-hp-laptop>
+From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+Date: Mon, 4 Jun 2018 15:03:51 +0200
+Message-ID: <CA+M3ks43RzdhYPwz7i0kB_CPYPLmRfwtALS-bPzuwEQEMcts0Q@mail.gmail.com>
+Subject: Re: [PATCH v6 6/9] dt-bindings: counter: Document stm32 quadrature encoder
+To: Rob Herring <robh@kernel.org>
+Cc: William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        devicetree@vger.kernel.org,
+        Benjamin Gaignard <benjamin.gaignard@st.com>,
+        linux-iio@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+        <linux-arm-kernel@lists.infradead.org>,
+        Fabrice Gasnier <fabrice.gasnier@st.com>,
+        Jonathan Cameron <jic23@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The TI ADS8688 have a auto sequence feature that allows
-to continuesly reading new values from the chosen channels.
-Lets enable it and we will be able to sample at the double speed
-vs the old implementation
+2018-05-18 18:28 GMT+02:00 Rob Herring <robh@kernel.org>:
+> On Thu, May 17, 2018 at 08:59:40PM +0200, Benjamin Gaignard wrote:
+>> 2018-05-17 18:23 GMT+02:00 Rob Herring <robh+dt@kernel.org>:
+>> > On Wed, May 16, 2018 at 12:51 PM, William Breathitt Gray
+>> > <vilhelm.gray@gmail.com> wrote:
+>> >> From: Benjamin Gaignard <benjamin.gaignard@st.com>
+>> >
+>> > v6? Where's v1-v5?
+>> >
+>> >> Add bindings for STM32 Timer quadrature encoder.
+>> >> It is a sub-node of STM32 Timer which implement the
+>> >> counter part of the hardware.
+>> >>
+>> >> Cc: Rob Herring <robh+dt@kernel.org>
+>> >> Cc: Mark Rutland <mark.rutland@arm.com>
+>> >> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+>> >> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+>> >> ---
+>> >>  .../bindings/counter/stm32-timer-cnt.txt      | 26 +++++++++++++++++=
+++
+>> >>  .../devicetree/bindings/mfd/stm32-timers.txt  |  7 +++++
+>> >>  2 files changed, 33 insertions(+)
+>> >>  create mode 100644 Documentation/devicetree/bindings/counter/stm32-t=
+imer-cnt.txt
+>> >>
+>> >> diff --git a/Documentation/devicetree/bindings/counter/stm32-timer-cn=
+t.txt b/Documentation/devicetree/bindings/counter/stm32-timer-cnt.txt
+>> >> new file mode 100644
+>> >> index 000000000000..377728128bef
+>> >> --- /dev/null
+>> >> +++ b/Documentation/devicetree/bindings/counter/stm32-timer-cnt.txt
+>> >> @@ -0,0 +1,26 @@
+>> >> +STMicroelectronics STM32 Timer quadrature encoder
+>> >> +
+>> >> +STM32 Timer provides quadrature encoder counter mode to detect
+>> >
+>> > 'mode' does not sound like a sub-block of the timers block.
+>>
+>> quadrature encoding is one of the counting modes of this hardware
+>> block which is enable to count on other signals/triggers
+>
+> You don't need a child node and compatible to set a mode.
 
-Signed-off-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
----
- drivers/iio/adc/ti-ads8688.c | 60 +++++++++++++++++++++++++++++++++++-
- 1 file changed, 59 insertions(+), 1 deletion(-)
+"mode" isn't the good word here because quadratic encoder enable a
+sub-block of this hardware.
+Timer internal counter input could be internal or external clocks,
+some IIO triggers
+or the output of the quadratic encoder sub-block.
+It is a child like pwm or IIO trigger.
 
-diff --git a/drivers/iio/adc/ti-ads8688.c b/drivers/iio/adc/ti-ads8688.c
-index 184d686ebd99..8e18c0caa1d7 100644
---- a/drivers/iio/adc/ti-ads8688.c
-+++ b/drivers/iio/adc/ti-ads8688.c
-@@ -25,10 +25,12 @@
- #define ADS8688_CMD_REG(x)		(x << 8)
- #define ADS8688_CMD_REG_NOOP		0x00
- #define ADS8688_CMD_REG_RST		0x85
-+#define ADS8688_CMD_REG_AUTO_RST	0xA0
- #define ADS8688_CMD_REG_MAN_CH(chan)	(0xC0 | (4 * chan))
- #define ADS8688_CMD_DONT_CARE_BITS	16
- 
- #define ADS8688_PROG_REG(x)		(x << 9)
-+#define ADS8688_AUTO_SEQ_EN		0x01
- #define ADS8688_PROG_REG_RANGE_CH(chan)	(0x05 + chan)
- #define ADS8688_PROG_WR_BIT		BIT(8)
- #define ADS8688_PROG_DONT_CARE_BITS	8
-@@ -210,6 +212,39 @@ static int ads8688_reset(struct iio_dev *indio_dev)
- 	return spi_write(st->spi, &st->data[0].d8[0], 4);
- }
- 
-+static int ads8688_start_autoseq(struct iio_dev *indio_dev)
-+{
-+	struct ads8688_state *st = iio_priv(indio_dev);
-+	u32 tmp;
-+
-+	tmp = ADS8688_CMD_REG(ADS8688_CMD_REG_AUTO_RST);
-+	tmp <<= ADS8688_CMD_DONT_CARE_BITS;
-+	st->data[0].d32 = cpu_to_be32(tmp);
-+
-+	return spi_write(st->spi, &st->data[0].d8[0], 4);
-+}
-+
-+static int ads8688_read_autoseq(struct iio_dev *indio_dev)
-+{
-+	struct ads8688_state *st = iio_priv(indio_dev);
-+	int ret;
-+	u32 tmp;
-+	struct spi_transfer t = {
-+		.tx_buf = &st->data[0].d8[0],
-+		.len = 4,
-+	};
-+
-+	tmp = ADS8688_CMD_REG(ADS8688_CMD_REG_NOOP);
-+	tmp <<= ADS8688_CMD_DONT_CARE_BITS;
-+	st->data[0].d32 = cpu_to_be32(tmp);
-+
-+	ret = spi_sync_transfer(st->spi, &t, 1);
-+	if (ret < 0)
-+		return ret;
-+
-+	return be32_to_cpu(st->data[0].d32) & 0xffff;
-+}
-+
- static int ads8688_read(struct iio_dev *indio_dev, unsigned int chan)
- {
- 	struct ads8688_state *st = iio_priv(indio_dev);
-@@ -251,6 +286,10 @@ static int ads8688_read_raw(struct iio_dev *indio_dev,
- 
- 	struct ads8688_state *st = iio_priv(indio_dev);
- 
-+	/* Block raw reading when in triggered mode */
-+	if (iio_buffer_enabled(indio_dev))
-+		return -EBUSY;
-+
- 	mutex_lock(&st->lock);
- 	switch (m) {
- 	case IIO_CHAN_INFO_RAW:
-@@ -299,6 +338,10 @@ static int ads8688_write_raw(struct iio_dev *indio_dev,
- 	unsigned int scale = 0;
- 	int ret = -EINVAL, i, offset = 0;
- 
-+	/* Block setup when in triggered mode */
-+	if (iio_buffer_enabled(indio_dev))
-+		return -EBUSY;
-+
- 	mutex_lock(&st->lock);
- 	switch (mask) {
- 	case IIO_CHAN_INFO_SCALE:
-@@ -374,10 +417,25 @@ static int ads8688_write_raw_get_fmt(struct iio_dev *indio_dev,
- 	return -EINVAL;
- }
- 
-+static int ads8688_update_scan_mode(struct iio_dev *indio_dev,
-+	const unsigned long *active_scan_mask)
-+{
-+	int scan_count;
-+
-+	scan_count = bitmap_weight(active_scan_mask, indio_dev->masklength);
-+
-+	ads8688_prog_write(indio_dev, ADS8688_AUTO_SEQ_EN, (int)active_scan_mask);
-+
-+	ads8688_start_autoseq(indio_dev);
-+
-+	return 0;
-+}
-+
- static const struct iio_info ads8688_info = {
- 	.read_raw = &ads8688_read_raw,
- 	.write_raw = &ads8688_write_raw,
- 	.write_raw_get_fmt = &ads8688_write_raw_get_fmt,
-+	.update_scan_mode = ads8688_update_scan_mode,
- 	.attrs = &ads8688_attribute_group,
- };
- 
-@@ -391,7 +449,7 @@ static irqreturn_t ads8688_trigger_handler(int irq, void *p)
- 	for (i = 0; i < indio_dev->masklength; i++) {
- 		if (!test_bit(i, indio_dev->active_scan_mask))
- 			continue;
--		buffer[j] = ads8688_read(indio_dev, i);
-+		buffer[j] = ads8688_read_autoseq(indio_dev);
- 		j++;
- 	}
- 
--- 
-2.17.0
+>
+>> >> +angular position and direction of rotary elements,
+>> >> +from IN1 and IN2 input signals.
+>> >> +
+>> >> +Must be a sub-node of an STM32 Timer device tree node.
+>> >> +See ../mfd/stm32-timers.txt for details about the parent node.
+>> >> +
+>> >> +Required properties:
+>> >> +- compatible:          Must be "st,stm32-timer-counter".
+>> >> +- pinctrl-names:       Set to "default".
+>> >> +- pinctrl-0:           List of phandles pointing to pin configuratio=
+n nodes,
+>> >> +                       to set IN1/IN2 pins in mode of operation for =
+Low-Power
+>> >> +                       Timer input on external pin.
+>> >> +
+>> >> +Example:
+>> >> +       timers@40010000  {
+>> >> +               compatible =3D "st,stm32-timers";
+>> >> +               ...
+>> >> +               counter {
+>> >> +                       compatible =3D "st,stm32-timer-counter";
+>> >
+>> > Is there only 1? How is the counter addressed?
+>>
+>> Yes there is only one counter per hardware block.
+>> Counter is addressed like the two others sub-nodes and the details
+>> about parent mode are describe in stm32-timers.txt
+>> Should I add them here too ? so example will be like that:
+>
+> No, you should drop the child node and add pinctrl to the parent.
+>
+> Any other functions this block has that you plan on adding? Please make
+> bindings as complete as possible, not what you currently have drivers
+> for.
 
+Counter framework didn't exist when I pushed timer node but thanks to
+William's effort
+it will allow us to use this kindf of hardware
+
+Benjamin
+
+>
+>> timers@40010000  {
+>>   #address-cells =3D <1>;
+>>   #size-cells =3D <0>;
+>>   compatible =3D "st,stm32-timers";
+>>   reg =3D <0x40010000 0x400>;
+>>   clocks =3D <&rcc 0 160>;
+>>   clock-names =3D "int";
+>>   counter {
+>>     compatible =3D "st,stm32-timer-counter";
+>>     pinctrl-names =3D "default";
+>>     pinctrl-0 =3D <&tim1_in_pins>;
+>>     };
+>>  };
+>>
+>> Benjamin
+>> >
+>> > _______________________________________________
+>> > linux-arm-kernel mailing list
+>> > linux-arm-kernel@lists.infradead.org
+>> > http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+
+
+
+--=20
+Benjamin Gaignard
+
+Graphic Study Group
+
+Linaro.org =E2=94=82 Open source software for ARM SoCs
+
+Follow Linaro: Facebook | Twitter | Blog
