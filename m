@@ -1,73 +1,91 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:51776 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751832AbeFXNYZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 24 Jun 2018 09:24:25 -0400
-Date: Sun, 24 Jun 2018 14:24:16 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Phil Reid <preid@electromag.com.au>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/1] iio: buffer: fix the function signature to match
- implementation
-Message-ID: <20180624142416.75da760c@archlinux>
-In-Reply-To: <20180610143516.66739628@archlinux>
-References: <1528179310-10753-1-git-send-email-preid@electromag.com.au>
-        <20180610143516.66739628@archlinux>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:47892 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751296AbeFEJWT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 5 Jun 2018 05:22:19 -0400
+From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+To: linux-kernel@vger.kernel.org
+Cc: Gwendal Grignou <gwendal@chromium.org>, kernel@collabora.com,
+        Tony Luck <tony.luck@intel.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Paolo Cretaro <paolocretaro@gmail.com>,
+        linux-iio@vger.kernel.org,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        linux-i2c@vger.kernel.org, Olof Johansson <olof@lixom.net>,
+        linux-rtc@vger.kernel.org, Anton Vorontsov <anton@enomsg.org>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Benson Leung <bleung@chromium.org>,
+        linux-input@vger.kernel.org,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-pwm@vger.kernel.org,
+        Thierry Reding <thierry.reding@gmail.com>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Colin Cross <ccross@android.com>,
+        Kees Cook <keescook@chromium.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 0/9] croc_ec: Switch to SPDX identifier
+Date: Tue,  5 Jun 2018 11:22:00 +0200
+Message-Id: <20180605092209.22887-1-enric.balletbo@collabora.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, 10 Jun 2018 14:35:16 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+Dear all,
 
-> On Tue,  5 Jun 2018 14:15:10 +0800
-> Phil Reid <preid@electromag.com.au> wrote:
-> 
-> > linux/iio/buffer-dma.h was not updated to when length was changed to
-> > unsigned int.
-> > 
-> > Fixes: c043ec1ca5ba ("iio:buffer: make length types match kfifo types")
-> > Signed-off-by: Phil Reid <preid@electromag.com.au>  
-> Thanks, but I'll need to hold this for a few weeks due to some
-> ordering issues with some fixes that are queued up in my fixes branch
-> for after the merge window closes.
-> 
-> Give me a poke if I seem to have forgotten it in perhaps 2 weeks time.
-I got lazy and forced a rebase on my fixes branch to speed this up.
-
-Applied to the fixes-togreg branch of iio.git.
+This patchset is just to adopt the SPDX license identifier for all
+ChromeOS Embedded Controller related drivers. The patches touches
+different subsystems but every patch can be picked from their respective
+maintainer independently.
 
 Thanks,
+ Enric
 
-Jonathan
+Enric Balletbo i Serra (9):
+  platform/chrome: cros_ec: Switch to SPDX identifier.
+  platform/chrome: pstore: Switch to SPDX identifier.
+  mfd: cros_ec: Add or fix SPDX-License-Identifier in all files.
+  iio: cros_ec: Switch to SPDX identifier.
+  rtc: cros-ec: Switch to SPDX identifier.
+  Input: cros_ec_keyb - Switch to SPDX identifier.
+  pwm: cros-ec: Switch to SPDX identifier.
+  extcon: usbc-cros-ec: Switch to SPDX identifier.
+  i2c: i2c-cros-ec-tunnel: Switch to SPDX identifier.
 
-> 
-> Thanks,
-> 
-> Jonathan
-> 
-> > ---
-> >  include/linux/iio/buffer-dma.h | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/include/linux/iio/buffer-dma.h b/include/linux/iio/buffer-dma.h
-> > index 9182d4e..fbe053d 100644
-> > --- a/include/linux/iio/buffer-dma.h
-> > +++ b/include/linux/iio/buffer-dma.h
-> > @@ -141,7 +141,7 @@ int iio_dma_buffer_read(struct iio_buffer *buffer, size_t n,
-> >  	char __user *user_buffer);
-> >  size_t iio_dma_buffer_data_available(struct iio_buffer *buffer);
-> >  int iio_dma_buffer_set_bytes_per_datum(struct iio_buffer *buffer, size_t bpd);
-> > -int iio_dma_buffer_set_length(struct iio_buffer *buffer, int length);
-> > +int iio_dma_buffer_set_length(struct iio_buffer *buffer, unsigned int length);
-> >  int iio_dma_buffer_request_update(struct iio_buffer *buffer);
-> >  
-> >  int iio_dma_buffer_init(struct iio_dma_buffer_queue *queue,  
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+ drivers/extcon/extcon-usbc-cros-ec.c          | 20 ++++----------
+ drivers/i2c/busses/i2c-cros-ec-tunnel.c       | 14 +++-------
+ drivers/iio/accel/cros_ec_accel_legacy.c      | 23 ++++------------
+ .../common/cros_ec_sensors/cros_ec_sensors.c  | 24 +++++------------
+ .../cros_ec_sensors/cros_ec_sensors_core.c    | 18 +++----------
+ .../cros_ec_sensors/cros_ec_sensors_core.h    | 12 ++-------
+ drivers/iio/light/cros_ec_light_prox.c        | 18 +++----------
+ drivers/iio/pressure/cros_ec_baro.c           | 18 +++----------
+ drivers/input/keyboard/cros_ec_keyb.c         | 26 +++---------------
+ drivers/mfd/cros_ec.c                         | 27 +++++++------------
+ drivers/mfd/cros_ec_dev.c                     | 24 +++++------------
+ drivers/mfd/cros_ec_dev.h                     | 16 ++---------
+ drivers/mfd/cros_ec_i2c.c                     | 19 ++++---------
+ drivers/mfd/cros_ec_spi.c                     | 21 +++++----------
+ drivers/platform/chrome/chromeos_pstore.c     | 13 +++------
+ drivers/platform/chrome/cros_ec_debugfs.c     | 22 +++------------
+ drivers/platform/chrome/cros_ec_lightbar.c    | 22 +++------------
+ drivers/platform/chrome/cros_ec_lpc.c         | 26 +++---------------
+ drivers/platform/chrome/cros_ec_lpc_mec.c     | 26 +++---------------
+ drivers/platform/chrome/cros_ec_lpc_reg.c     | 26 +++---------------
+ drivers/platform/chrome/cros_ec_proto.c       | 19 +++----------
+ drivers/platform/chrome/cros_ec_sysfs.c       | 22 +++------------
+ drivers/platform/chrome/cros_ec_vbc.c         | 24 ++++-------------
+ .../platform/chrome/cros_kbd_led_backlight.c  | 19 +++----------
+ drivers/pwm/pwm-cros-ec.c                     | 13 +++------
+ drivers/rtc/rtc-cros-ec.c                     | 21 ++++-----------
+ include/linux/mfd/cros_ec.h                   | 10 +------
+ include/linux/mfd/cros_ec_commands.h          | 10 +------
+ include/linux/mfd/cros_ec_lpc_mec.h           | 12 ++-------
+ include/linux/mfd/cros_ec_lpc_reg.h           | 12 ++-------
+ 30 files changed, 123 insertions(+), 454 deletions(-)
+
+-- 
+2.17.1
 
