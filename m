@@ -1,217 +1,136 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:38554 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1753524AbeFJNkh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 10 Jun 2018 09:40:37 -0400
-Date: Sun, 10 Jun 2018 14:40:31 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc: linux-kernel@vger.kernel.org,
-        Gwendal Grignou <gwendal@chromium.org>, kernel@collabora.com,
-        Paolo Cretaro <paolocretaro@gmail.com>,
-        linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: [PATCH 4/9] iio: cros_ec: Switch to SPDX identifier.
-Message-ID: <20180610144031.57213b84@archlinux>
-In-Reply-To: <20180605092209.22887-5-enric.balletbo@collabora.com>
-References: <20180605092209.22887-1-enric.balletbo@collabora.com>
-        <20180605092209.22887-5-enric.balletbo@collabora.com>
+Received: from mail-co1nam03on0044.outbound.protection.outlook.com ([104.47.40.44]:47327
+        "EHLO NAM03-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1751590AbeFENxm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 5 Jun 2018 09:53:42 -0400
+From: Stefan Popa <stefan.popa@analog.com>
+To: <jic23@kernel.org>, <Michael.Hennerich@analog.com>,
+        <lars@metafoo.de>
+CC: <knaack.h@gmx.de>, <pmeerw@pmeerw.net>, <robh+dt@kernel.org>,
+        <mark.rutland@arm.com>, <mchehab@kernel.org>,
+        <davem@davemloft.net>, <gregkh@linuxfoundation.org>,
+        <akpm@linux-foundation.org>, <linus.walleij@linaro.org>,
+        <rdunlap@infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <stefan.popa@analog.com>
+Subject: [PATCH 2/2] dt-bindings: iio: dac: Add docs for AD5758 DAC
+Date: Tue, 5 Jun 2018 16:53:18 +0300
+Message-ID: <1528206798-14095-1-git-send-email-stefan.popa@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue,  5 Jun 2018 11:22:04 +0200
-Enric Balletbo i Serra <enric.balletbo@collabora.com> wrote:
+Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+---
+ .../devicetree/bindings/iio/dac/ad5758.txt         | 84 ++++++++++++++++++++++
+ MAINTAINERS                                        |  1 +
+ 2 files changed, 85 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/dac/ad5758.txt
 
-> Adopt the SPDX license identifier headers to ease license compliance
-> management.
-> 
-> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-This code has seen quite a few contributors, I'd like at least
-some of them to agree they are happy with this change.
-
-There hasn't been much general resistance in general to SPDX
-headers replacing text, but there has been some, so I've been
-asking this for all the IIO related SPDX patches.
-
-Thanks,
-
-Jonathan
-
-> ---
-> 
->  drivers/iio/accel/cros_ec_accel_legacy.c      | 23 ++++--------------
->  .../common/cros_ec_sensors/cros_ec_sensors.c  | 24 ++++++-------------
->  .../cros_ec_sensors/cros_ec_sensors_core.c    | 18 ++++----------
->  .../cros_ec_sensors/cros_ec_sensors_core.h    | 12 ++--------
->  drivers/iio/light/cros_ec_light_prox.c        | 18 ++++----------
->  drivers/iio/pressure/cros_ec_baro.c           | 18 ++++----------
->  6 files changed, 26 insertions(+), 87 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/cros_ec_accel_legacy.c b/drivers/iio/accel/cros_ec_accel_legacy.c
-> index 063e89eff791..e7350ddec328 100644
-> --- a/drivers/iio/accel/cros_ec_accel_legacy.c
-> +++ b/drivers/iio/accel/cros_ec_accel_legacy.c
-> @@ -1,21 +1,8 @@
-> -/*
-> - * Driver for older Chrome OS EC accelerometer
-> - *
-> - * Copyright 2017 Google, Inc
-> - *
-> - * This software is licensed under the terms of the GNU General Public
-> - * License version 2, as published by the Free Software Foundation, and
-> - * may be copied, distributed, and modified under those terms.
-> - *
-> - * This program is distributed in the hope that it will be useful,
-> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> - * GNU General Public License for more details.
-> - *
-> - * This driver uses the memory mapper cros-ec interface to communicate
-> - * with the Chrome OS EC about accelerometer data.
-> - * Accelerometer access is presented through iio sysfs.
-> - */
-> +// SPDX-License-Identifier: GPL-2.0+
-> +// Driver for older Chrome OS EC accelerometer
-> +//
-> +// Copyright (C) 2017 Google, Inc.
-> +// Author: Gwendal Grignou <gwendal@chromium.org>
->  
->  #include <linux/delay.h>
->  #include <linux/device.h>
-> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-> index 705cb3e72663..3dbc90baf6bb 100644
-> --- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-> @@ -1,20 +1,10 @@
-> -/*
-> - * cros_ec_sensors - Driver for Chrome OS Embedded Controller sensors.
-> - *
-> - * Copyright (C) 2016 Google, Inc
-> - *
-> - * This software is licensed under the terms of the GNU General Public
-> - * License version 2, as published by the Free Software Foundation, and
-> - * may be copied, distributed, and modified under those terms.
-> - *
-> - * This program is distributed in the hope that it will be useful,
-> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> - * GNU General Public License for more details.
-> - *
-> - * This driver uses the cros-ec interface to communicate with the Chrome OS
-> - * EC about sensors data. Data access is presented through iio sysfs.
-> - */
-> +// SPDX-License-Identifier: GPL-2.0
-> +// Driver for Chrome OS Embedded Controller sensors.
-> +//
-> +// Copyright (C) 2016 Google, Inc.
-> +//
-> +// This driver uses the cros-ec interface to communicate with the ChromeOS
-> +// EC about sensors data. Data access is presented through iio sysfs.
->  
->  #include <linux/delay.h>
->  #include <linux/device.h>
-> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> index a620eb5ce202..05221994197c 100644
-> --- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> @@ -1,17 +1,7 @@
-> -/*
-> - * cros_ec_sensors_core - Common function for Chrome OS EC sensor driver.
-> - *
-> - * Copyright (C) 2016 Google, Inc
-> - *
-> - * This software is licensed under the terms of the GNU General Public
-> - * License version 2, as published by the Free Software Foundation, and
-> - * may be copied, distributed, and modified under those terms.
-> - *
-> - * This program is distributed in the hope that it will be useful,
-> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> - * GNU General Public License for more details.
-> - */
-> +// SPDX-License-Identifier: GPL-2.0
-> +// Common functions for ChromeOS EC sensor driver.
-> +//
-> +// Copyright (C) 2016 Google, Inc.
->  
->  #include <linux/delay.h>
->  #include <linux/device.h>
-> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.h b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.h
-> index 2edf68dc7336..a9935489030e 100644
-> --- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.h
-> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.h
-> @@ -1,16 +1,8 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
->  /*
->   * ChromeOS EC sensor hub
->   *
-> - * Copyright (C) 2016 Google, Inc
-> - *
-> - * This software is licensed under the terms of the GNU General Public
-> - * License version 2, as published by the Free Software Foundation, and
-> - * may be copied, distributed, and modified under those terms.
-> - *
-> - * This program is distributed in the hope that it will be useful,
-> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> - * GNU General Public License for more details.
-> + * Copyright (C) 2016 Google, Inc.
->   */
->  
->  #ifndef __CROS_EC_SENSORS_CORE_H
-> diff --git a/drivers/iio/light/cros_ec_light_prox.c b/drivers/iio/light/cros_ec_light_prox.c
-> index 8e8a0e7f78d1..8635e1c18cd5 100644
-> --- a/drivers/iio/light/cros_ec_light_prox.c
-> +++ b/drivers/iio/light/cros_ec_light_prox.c
-> @@ -1,17 +1,7 @@
-> -/*
-> - * cros_ec_light_prox - Driver for light and prox sensors behing CrosEC.
-> - *
-> - * Copyright (C) 2017 Google, Inc
-> - *
-> - * This software is licensed under the terms of the GNU General Public
-> - * License version 2, as published by the Free Software Foundation, and
-> - * may be copied, distributed, and modified under those terms.
-> - *
-> - * This program is distributed in the hope that it will be useful,
-> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> - * GNU General Public License for more details.
-> - */
-> +// SPDX-License-Identifier: GPL-2.0
-> +// Driver for light and prox sensors behind ChromeOS EC.
-> +//
-> +// Copyright (C) 2017 Google, Inc.
->  
->  #include <linux/delay.h>
->  #include <linux/device.h>
-> diff --git a/drivers/iio/pressure/cros_ec_baro.c b/drivers/iio/pressure/cros_ec_baro.c
-> index 4599fde4dd25..8e134d65d18d 100644
-> --- a/drivers/iio/pressure/cros_ec_baro.c
-> +++ b/drivers/iio/pressure/cros_ec_baro.c
-> @@ -1,17 +1,7 @@
-> -/*
-> - * cros_ec_baro - Driver for barometer sensor behind CrosEC.
-> - *
-> - * Copyright (C) 2017 Google, Inc
-> - *
-> - * This software is licensed under the terms of the GNU General Public
-> - * License version 2, as published by the Free Software Foundation, and
-> - * may be copied, distributed, and modified under those terms.
-> - *
-> - * This program is distributed in the hope that it will be useful,
-> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> - * GNU General Public License for more details.
-> - */
-> +// SPDX-License-Identifier: GPL-2.0
-> +// Driver for barometer sensor behind ChromeOS EC.
-> +//
-> +// Copyright (C) 2017 Google, Inc.
->  
->  #include <linux/delay.h>
->  #include <linux/device.h>
+diff --git a/Documentation/devicetree/bindings/iio/dac/ad5758.txt b/Documentation/devicetree/bindings/iio/dac/ad5758.txt
+new file mode 100644
+index 0000000..75fff6c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/dac/ad5758.txt
+@@ -0,0 +1,84 @@
++Analog Devices AD5758 DAC device driver
++
++Required properties for the AD5758:
++	- compatible: Must be "adi,ad5758"
++	- reg: SPI chip select number for the device
++	- spi-max-frequency: Max SPI frequency to use (< 50000000)
++	- spi-cpha: is the only mode that is supported
++
++Optional properties:
++
++ - adi,dc-dc-mode: Mode of operation of the dc-to-dc converter
++		   The following values are currently supported:
++		   	* 0: DC-to-DC converter powered off
++			* 1: DPC current mode
++			* 2: DPC voltage mode
++			* 3: PPC current mode
++
++ - adi,dc-dc-ilim: The dc-to-dc converter current limit
++		   The following values are currently supported [mA]:
++		   	* 150
++			* 200
++			* 250
++			* 300
++			* 350
++			* 400
++
++ - adi,slew: Array of slewrate settings should contain 3 fields:
++	1: Should be either 0 or 1 in order to enable or disable slewrate.
++	2: Slew rate clock:
++		Valid values for the slew rate update frequency [Hz]:
++		* 240000
++		* 200000
++		* 150000
++		* 128000
++		* 64000
++		* 32000
++		* 16000
++		* 8000
++		* 4000
++		* 2000
++		* 1000
++		* 512
++		* 256
++		* 128
++		* 64
++		* 16
++	3: Slew rate step:
++		Defines by how much the output value changes at each update.
++		Valid values for the step size LSBs:
++		* 4
++		* 12
++		* 64
++		* 120
++		* 256
++		* 500
++		* 1820
++		* 2048
++
++ - adi,range: The output range
++	      The following values are currently supported:
++	      	* 0: 0 V to 5 V voltage range
++		* 1: 0 V to 10 V voltage range
++		* 2: ±5 V voltage range
++		* 3: ±10 V voltage range
++		* 8: 0 mA to 20 mA current range
++		* 9: 0 mA to 24 mA current range
++		* 10: 4 mA to 20 mA current range
++		* 11: ±20 mA current range
++		* 12: ±24 mA current range
++		* 13: −1 mA to +22 mA current range
++
++AD5758 Example:
++
++	ad5758@0 {
++		compatible = "adi,ad5758";
++		reg = <0>;
++		spi-max-frequency = <1000000>;
++		spi-cpha;
++
++		adi,dc-dc-mode = <2>;
++		adi,dc-dc-ilim = <200>;
++		adi,slew = <1 200000 12>;
++		adi,range = <1>;
++	};
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 1993779..f640146 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -808,6 +808,7 @@ L:	linux-iio@vger.kernel.org
+ W:	http://ez.analog.com/community/linux-device-drivers
+ S:	Supported
+ F:	drivers/iio/dac/ad5758.c
++F:	Documentation/devicetree/bindings/iio/dac/ad5758.txt
+ 
+ ANALOG DEVICES INC AD9389B DRIVER
+ M:	Hans Verkuil <hans.verkuil@cisco.com>
+-- 
+2.7.4
 
