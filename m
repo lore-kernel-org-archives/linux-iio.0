@@ -1,99 +1,208 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:50738 "EHLO
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:50786 "EHLO
         bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753150AbeFERyk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 5 Jun 2018 13:54:40 -0400
+        with ESMTP id S1753194AbeFERyn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 5 Jun 2018 13:54:43 -0400
 From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 To: linux-kernel@vger.kernel.org
 Cc: Gwendal Grignou <gwendal@chromium.org>, kernel@collabora.com,
-        Tony Luck <tony.luck@intel.com>,
         Paolo Cretaro <paolocretaro@gmail.com>,
-        linux-iio@vger.kernel.org, linux-i2c@vger.kernel.org,
-        Olof Johansson <olof@lixom.net>,
-        Anton Vorontsov <anton@enomsg.org>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Benson Leung <bleung@chromium.org>,
-        linux-input@vger.kernel.org,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
         Jonathan Cameron <jic23@kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-pwm@vger.kernel.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Colin Cross <ccross@android.com>,
-        Kees Cook <keescook@chromium.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2 0/8] cros_ec: Switch to SPDX identifier.
-Date: Tue,  5 Jun 2018 19:54:21 +0200
-Message-Id: <20180605175429.9072-1-enric.balletbo@collabora.com>
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: [PATCH v2 4/8] iio: cros_ec: Switch to SPDX identifier.
+Date: Tue,  5 Jun 2018 19:54:25 +0200
+Message-Id: <20180605175429.9072-5-enric.balletbo@collabora.com>
+In-Reply-To: <20180605175429.9072-1-enric.balletbo@collabora.com>
+References: <20180605175429.9072-1-enric.balletbo@collabora.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Dear all,
+Adopt the SPDX license identifier headers to ease license compliance
+management.
 
-This patchset is just to adopt the SPDX license identifier for all
-ChromeOS Embedded Controller related drivers. The patches touches
-different subsystems but every patch can be picked from their respective
-maintainer independently.
+Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+---
 
-This second version fixes some copy paste errors in the copyright year
-and takes care to no remove the paragraphs that have nothing to do with
-license notice.
+Changes in v2: None
 
-Thanks,
- Enric
+ drivers/iio/accel/cros_ec_accel_legacy.c      | 27 +++++++------------
+ .../common/cros_ec_sensors/cros_ec_sensors.c  | 24 +++++------------
+ .../cros_ec_sensors/cros_ec_sensors_core.c    | 18 +++----------
+ .../cros_ec_sensors/cros_ec_sensors_core.h    | 12 ++-------
+ drivers/iio/light/cros_ec_light_prox.c        | 18 +++----------
+ drivers/iio/pressure/cros_ec_baro.c           | 18 +++----------
+ 6 files changed, 30 insertions(+), 87 deletions(-)
 
-Changes in v2:
-- Removed '[PATCH 5/9] rtc: cros-ec: Switch to SPDX identifier' from
-  series as it was applied.
-- s/Chrome OS/ChromeOS/
-- [1/9] Fixed wrong copyright year.
-- [6/9] Do not remove last paragraph.
-- [8/9] Fixed wrong copyright year.
-
-Enric Balletbo i Serra (8):
-  platform/chrome: cros_ec: Switch to SPDX identifier.
-  platform/chrome: pstore: Switch to SPDX identifier.
-  mfd: cros_ec: Add or fix SPDX-License-Identifier in all files.
-  iio: cros_ec: Switch to SPDX identifier.
-  Input: cros_ec_keyb - Switch to SPDX identifier.
-  pwm: cros-ec: Switch to SPDX identifier.
-  extcon: usbc-cros-ec: Switch to SPDX identifier.
-  i2c: i2c-cros-ec-tunnel: Switch to SPDX identifier.
-
- drivers/extcon/extcon-usbc-cros-ec.c          | 20 +++--------
- drivers/i2c/busses/i2c-cros-ec-tunnel.c       | 14 +++-----
- drivers/iio/accel/cros_ec_accel_legacy.c      | 27 +++++----------
- .../common/cros_ec_sensors/cros_ec_sensors.c  | 24 ++++---------
- .../cros_ec_sensors/cros_ec_sensors_core.c    | 18 +++-------
- .../cros_ec_sensors/cros_ec_sensors_core.h    | 12 ++-----
- drivers/iio/light/cros_ec_light_prox.c        | 18 +++-------
- drivers/iio/pressure/cros_ec_baro.c           | 18 +++-------
- drivers/input/keyboard/cros_ec_keyb.c         | 34 +++++++------------
- drivers/mfd/cros_ec.c                         | 26 +++++---------
- drivers/mfd/cros_ec_dev.c                     | 23 +++----------
- drivers/mfd/cros_ec_dev.h                     | 16 ++-------
- drivers/mfd/cros_ec_i2c.c                     | 18 +++-------
- drivers/mfd/cros_ec_spi.c                     | 20 +++--------
- drivers/platform/chrome/chromeos_pstore.c     | 13 +++----
- drivers/platform/chrome/cros_ec_debugfs.c     | 22 +++---------
- drivers/platform/chrome/cros_ec_lightbar.c    | 22 +++---------
- drivers/platform/chrome/cros_ec_lpc.c         | 34 +++++++------------
- drivers/platform/chrome/cros_ec_lpc_mec.c     | 34 +++++++------------
- drivers/platform/chrome/cros_ec_lpc_reg.c     | 34 +++++++------------
- drivers/platform/chrome/cros_ec_proto.c       | 19 +++--------
- drivers/platform/chrome/cros_ec_sysfs.c       | 22 +++---------
- drivers/platform/chrome/cros_ec_vbc.c         | 24 +++----------
- .../platform/chrome/cros_kbd_led_backlight.c  | 19 +++--------
- drivers/pwm/pwm-cros-ec.c                     | 13 +++----
- include/linux/mfd/cros_ec.h                   | 10 +-----
- include/linux/mfd/cros_ec_commands.h          | 10 +-----
- include/linux/mfd/cros_ec_lpc_mec.h           | 14 ++------
- include/linux/mfd/cros_ec_lpc_reg.h           | 14 ++------
- 29 files changed, 152 insertions(+), 440 deletions(-)
-
+diff --git a/drivers/iio/accel/cros_ec_accel_legacy.c b/drivers/iio/accel/cros_ec_accel_legacy.c
+index 063e89eff791..525f7eb37e91 100644
+--- a/drivers/iio/accel/cros_ec_accel_legacy.c
++++ b/drivers/iio/accel/cros_ec_accel_legacy.c
+@@ -1,21 +1,12 @@
+-/*
+- * Driver for older Chrome OS EC accelerometer
+- *
+- * Copyright 2017 Google, Inc
+- *
+- * This software is licensed under the terms of the GNU General Public
+- * License version 2, as published by the Free Software Foundation, and
+- * may be copied, distributed, and modified under those terms.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+- *
+- * This driver uses the memory mapper cros-ec interface to communicate
+- * with the Chrome OS EC about accelerometer data.
+- * Accelerometer access is presented through iio sysfs.
+- */
++// SPDX-License-Identifier: GPL-2.0+
++// Driver for older ChromeOS EC accelerometer
++//
++// Copyright (C) 2017 Google, Inc.
++// Author: Gwendal Grignou <gwendal@chromium.org>
++//
++// This driver uses the memory mapper cros-ec interface to communicate
++// with the ChromeOS EC about accelerometer data.
++// Accelerometer access is presented through iio sysfs.
+ 
+ #include <linux/delay.h>
+ #include <linux/device.h>
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+index 705cb3e72663..39d4eecc97ea 100644
+--- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+@@ -1,20 +1,10 @@
+-/*
+- * cros_ec_sensors - Driver for Chrome OS Embedded Controller sensors.
+- *
+- * Copyright (C) 2016 Google, Inc
+- *
+- * This software is licensed under the terms of the GNU General Public
+- * License version 2, as published by the Free Software Foundation, and
+- * may be copied, distributed, and modified under those terms.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+- *
+- * This driver uses the cros-ec interface to communicate with the Chrome OS
+- * EC about sensors data. Data access is presented through iio sysfs.
+- */
++// SPDX-License-Identifier: GPL-2.0
++// Driver for ChromeOS Embedded Controller sensors.
++//
++// Copyright (C) 2016 Google, Inc.
++//
++// This driver uses the cros-ec interface to communicate with the ChromeOS
++// EC about sensors data. Data access is presented through iio sysfs.
+ 
+ #include <linux/delay.h>
+ #include <linux/device.h>
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+index a620eb5ce202..05221994197c 100644
+--- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+@@ -1,17 +1,7 @@
+-/*
+- * cros_ec_sensors_core - Common function for Chrome OS EC sensor driver.
+- *
+- * Copyright (C) 2016 Google, Inc
+- *
+- * This software is licensed under the terms of the GNU General Public
+- * License version 2, as published by the Free Software Foundation, and
+- * may be copied, distributed, and modified under those terms.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+- */
++// SPDX-License-Identifier: GPL-2.0
++// Common functions for ChromeOS EC sensor driver.
++//
++// Copyright (C) 2016 Google, Inc.
+ 
+ #include <linux/delay.h>
+ #include <linux/device.h>
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.h b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.h
+index 2edf68dc7336..a9935489030e 100644
+--- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.h
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.h
+@@ -1,16 +1,8 @@
++/* SPDX-License-Identifier: GPL-2.0 */
+ /*
+  * ChromeOS EC sensor hub
+  *
+- * Copyright (C) 2016 Google, Inc
+- *
+- * This software is licensed under the terms of the GNU General Public
+- * License version 2, as published by the Free Software Foundation, and
+- * may be copied, distributed, and modified under those terms.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
++ * Copyright (C) 2016 Google, Inc.
+  */
+ 
+ #ifndef __CROS_EC_SENSORS_CORE_H
+diff --git a/drivers/iio/light/cros_ec_light_prox.c b/drivers/iio/light/cros_ec_light_prox.c
+index 8e8a0e7f78d1..8635e1c18cd5 100644
+--- a/drivers/iio/light/cros_ec_light_prox.c
++++ b/drivers/iio/light/cros_ec_light_prox.c
+@@ -1,17 +1,7 @@
+-/*
+- * cros_ec_light_prox - Driver for light and prox sensors behing CrosEC.
+- *
+- * Copyright (C) 2017 Google, Inc
+- *
+- * This software is licensed under the terms of the GNU General Public
+- * License version 2, as published by the Free Software Foundation, and
+- * may be copied, distributed, and modified under those terms.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+- */
++// SPDX-License-Identifier: GPL-2.0
++// Driver for light and prox sensors behind ChromeOS EC.
++//
++// Copyright (C) 2017 Google, Inc.
+ 
+ #include <linux/delay.h>
+ #include <linux/device.h>
+diff --git a/drivers/iio/pressure/cros_ec_baro.c b/drivers/iio/pressure/cros_ec_baro.c
+index 4599fde4dd25..8e134d65d18d 100644
+--- a/drivers/iio/pressure/cros_ec_baro.c
++++ b/drivers/iio/pressure/cros_ec_baro.c
+@@ -1,17 +1,7 @@
+-/*
+- * cros_ec_baro - Driver for barometer sensor behind CrosEC.
+- *
+- * Copyright (C) 2017 Google, Inc
+- *
+- * This software is licensed under the terms of the GNU General Public
+- * License version 2, as published by the Free Software Foundation, and
+- * may be copied, distributed, and modified under those terms.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+- */
++// SPDX-License-Identifier: GPL-2.0
++// Driver for barometer sensor behind ChromeOS EC.
++//
++// Copyright (C) 2017 Google, Inc.
+ 
+ #include <linux/delay.h>
+ #include <linux/device.h>
 -- 
 2.17.1
 
