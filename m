@@ -1,89 +1,32 @@
-Return-Path: <SRS0=+HlV=I2=collabora.com=enric.balletbo@kernel.org>
-Subject: Re: [PATCH v3 00/12] cros_ec: Match licenses and switch to SPDX
- identifier.
-To: Joe Perches <joe@perches.com>, linux-kernel@vger.kernel.org
-Cc: Gwendal Grignou <gwendal@chromium.org>, kernel@collabora.com,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>, Tony Luck
- <tony.luck@intel.com>, Alessandro Zummo <a.zummo@towertech.it>,
- Paolo Cretaro <paolocretaro@gmail.com>, linux-iio@vger.kernel.org,
- Alexandre Belloni <alexandre.belloni@bootlin.com>,
- linux-i2c@vger.kernel.org, Olof Johansson <olof@lixom.net>,
- linux-rtc@vger.kernel.org, Anton Vorontsov <anton@enomsg.org>,
- Chanwoo Choi <cw00.choi@samsung.com>, Benson Leung <bleung@chromium.org>,
- linux-input@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
- Jonathan Cameron <jic23@kernel.org>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
- MyungJoo Ham <myungjoo.ham@samsung.com>, Lee Jones <lee.jones@linaro.org>,
- Hartmut Knaack <knaack.h@gmx.de>, Colin Cross <ccross@android.com>,
- Kees Cook <keescook@chromium.org>
-References: <20180606150900.8342-1-enric.balletbo@collabora.com>
- <517d33d8219f22126ec8caaf41072c14b5ebf407.camel@perches.com>
-From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Message-ID: <aee6f480-28e0-4b9f-0e90-35a2b7a37419@collabora.com>
-Date: Fri, 8 Jun 2018 10:58:31 +0200
+Return-Path: <SRS0=gUXu=IZ=oracle.com=dan.carpenter@kernel.org>
+Date: Thu, 7 Jun 2018 11:31:10 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: Jonathan Cameron <jic23@kernel.org>, Martin Kelly <mkelly@xevo.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH] tools: iio: iio_generic_buffer: allow infinite looping
+Message-ID: <20180607083110.gjfmdfuzw2my6sl5@kili.mountain>
 MIME-Version: 1.0
-In-Reply-To: <517d33d8219f22126ec8caaf41072c14b5ebf407.camel@perches.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi Joe,
+I think the num_loops variable was intended to be signed so that we
+could set it to -1 and it would loop forever.  Right now it just loops
+for a very long time.
 
-On 06/06/18 17:42, Joe Perches wrote:
-> On Wed, 2018-06-06 at 17:08 +0200, Enric Balletbo i Serra wrote:
->> Dear all,
->>
->> This patchset is just to adopt the SPDX license identifier for all
->> ChromeOS Embedded Controller related drivers.
-> 
-> This bit is fine,
-> 
->>  The patches touches
->> different subsystems but every patch can be picked from their respective
->> maintainer independently.
->>
->> This third version takes the license note as the valid license (I did
->> the contrary in the second version) so apart from add the SPDX tags it
->> also introduces new patches to match the license.
-> 
-> But why change any MODULE_LICENSE text?
-> 
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-Because in some cases there is a mismatch between the license note and the
-MODULE_LICENSE text.
-
-According to the documentation setting MODULE_LICENSE("GPL") means GNU Public
-License v2 or later [1], in the cases where the license note tells explicitly
-that is GPL v2 only I think that the MODULE_LICENSE should match and be changed
-to "GPL v2".
-
-[1] https://elixir.bootlin.com/linux/v4.17/source/include/linux/module.h#L172
-
-> There are uses of MODULE_LICENSE("GPL") where
-> the SPDX license identifier is some GPL variant
-> 
-
-Right, but I suppose in such cases is wrong and should be changed too?
-
-> For instance:
-> $ git grep -P --name-only
-> 'MODULE_LICENSE\s*\("GPL"\s*\)\s*;'| \
->   xargs grep "SPDX-License-
-> Identifier:" | \
->   cut -f3- -d: | \
->   sed -r 's@\s*\*/\s*$@@' | \
->   sort |
-> uniq -c | sort -rn
->     551  GPL-2.0+
->     281  GPL-2.0
->      13  GPL-1.0+
->     
->   9  GPL-2.0-only
->       2  GPL-2.0 OR MIT
->       1  (GPL-2.0 OR MPL-1.1)
->    
->    1  (GPL-2.0+ OR BSD-3-Clause)
->       1  (GPL-2.0 OR BSD-3-Clause)
-> 
-> And if you were to do this, please do it tree-wide,
-> and ideally via a script
-> 
+diff --git a/tools/iio/iio_generic_buffer.c b/tools/iio/iio_generic_buffer.c
+index 3040830d7797..84545666a09c 100644
+--- a/tools/iio/iio_generic_buffer.c
++++ b/tools/iio/iio_generic_buffer.c
+@@ -330,7 +330,7 @@ static const struct option longopts[] = {
+ 
+ int main(int argc, char **argv)
+ {
+-	unsigned long long num_loops = 2;
++	long long num_loops = 2;
+ 	unsigned long timedelay = 1000000;
+ 	unsigned long buf_len = 128;
+ 
