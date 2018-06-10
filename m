@@ -1,54 +1,42 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:38638 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1753530AbeFJNm4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 10 Jun 2018 09:42:56 -0400
-Date: Sun, 10 Jun 2018 14:42:52 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Giulio Benetti <giulio.benetti@micronovasrl.com>
-Cc: Greg Kroah-Hartman <greg@kroah.com>,
-        device-drivers-devel@blackfin.uclinux.org,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: adc: ad7606: fix function pointer
- parameter names missing.
-Message-ID: <20180610144252.31794e13@archlinux>
-In-Reply-To: <20180608221331.116928-1-giulio.benetti@micronovasrl.com>
-References: <20180608221331.116928-1-giulio.benetti@micronovasrl.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=kktx=I4=gmail.com=karim.eshapa@kernel.org>
+From: Karim Eshapa <karim.eshapa@gmail.com>
+To: lars@metafoo.de
+Cc: Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	pmeerw@pmeerw.net,
+	gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org,
+	Karim Eshapa <karim.eshapa@gmail.com>
+Subject: [PATCH] staging:iio:accel: use sign extend function avoiding code duplication
+Date: Mon, 11 Jun 2018 00:09:20 +0200
+Message-Id: <20180610220920.12244-1-karim.eshapa@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat,  9 Jun 2018 00:13:31 +0200
-Giulio Benetti <giulio.benetti@micronovasrl.com> wrote:
+Use sign_extend32 kernel function instead of code duplication.
+This function is also safe for 16 bits.
 
-> Checkpatch.pl complains about function pointer parameter names missing.
-> 
-> Add parameter names.
-> 
-> Signed-off-by: Giulio Benetti <giulio.benetti@micronovasrl.com>
+Signed-off-by: Karim Eshapa <karim.eshapa@gmail.com>
+---
+ drivers/staging/iio/accel/adis16201.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-Applied,
-
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/staging/iio/adc/ad7606.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
-> index acaed8d5379c..9716ee9d94a7 100644
-> --- a/drivers/staging/iio/adc/ad7606.h
-> +++ b/drivers/staging/iio/adc/ad7606.h
-> @@ -57,7 +57,7 @@ struct ad7606_state {
->  
->  struct ad7606_bus_ops {
->  	/* more methods added in future? */
-> -	int (*read_block)(struct device *, int, void *);
-> +	int (*read_block)(struct device *dev, int num, void *data);
->  };
->  
->  int ad7606_probe(struct device *dev, int irq, void __iomem *base_address,
-
+diff --git a/drivers/staging/iio/accel/adis16201.c b/drivers/staging/iio/accel/adis16201.c
+index 0fae8aaf1cf4..fe4494e65395 100644
+--- a/drivers/staging/iio/accel/adis16201.c
++++ b/drivers/staging/iio/accel/adis16201.c
+@@ -227,9 +227,7 @@ static int adis16201_read_raw(struct iio_dev *indio_dev,
+ 		ret = adis_read_reg_16(st, addr, &val16);
+ 		if (ret)
+ 			return ret;
+-		val16 &= (1 << bits) - 1;
+-		val16 = (s16)(val16 << (16 - bits)) >> (16 - bits);
+-		*val = val16;
++		*val = sign_extend32(val16, bits);
+ 		return IIO_VAL_INT;
+ 	}
+ 
+-- 
+2.17.1
