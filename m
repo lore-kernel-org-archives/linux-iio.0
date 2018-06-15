@@ -1,12 +1,13 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-eopbgr10120.outbound.protection.outlook.com ([40.107.1.120]:22368
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+Received: from mail-db5eur01on0133.outbound.protection.outlook.com ([104.47.2.133]:10720
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S965740AbeFSNGK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 19 Jun 2018 09:06:10 -0400
-Subject: Re: [PATCH 02/11] tpm/tpm_i2c_infineon: switch to i2c_lock_segment
-To: Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
-Cc: linux-kernel@vger.kernel.org, Peter Huewe <peterhuewe@gmx.de>,
+        id S965610AbeFOKPr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 15 Jun 2018 06:15:47 -0400
+From: Peter Rosin <peda@axentia.se>
+To: linux-kernel@vger.kernel.org
+Cc: Peter Rosin <peda@axentia.se>, Peter Huewe <peterhuewe@gmx.de>,
+        Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
         Jason Gunthorpe <jgg@ziepe.ca>, Arnd Bergmann <arnd@arndb.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Brian Norris <computersforpeace@gmail.com>,
@@ -40,33 +41,45 @@ Cc: linux-kernel@vger.kernel.org, Peter Huewe <peterhuewe@gmx.de>,
         linux-samsung-soc@vger.kernel.org, linux-tegra@vger.kernel.org,
         linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
         linux-media@vger.kernel.org
+Subject: [PATCH 03/11] i2c: mux: pca9541: switch to i2c_lock_segment
+Date: Fri, 15 Jun 2018 12:14:58 +0200
+Message-Id: <20180615101506.8012-4-peda@axentia.se>
+In-Reply-To: <20180615101506.8012-1-peda@axentia.se>
 References: <20180615101506.8012-1-peda@axentia.se>
- <20180615101506.8012-3-peda@axentia.se>
- <20180619125618.GB5609@linux.intel.com>
-From: Peter Rosin <peda@axentia.se>
-Message-ID: <eb583028-dfcb-7f1b-c2a1-236ad4c5c2b5@axentia.se>
-Date: Tue, 19 Jun 2018 15:05:50 +0200
 MIME-Version: 1.0
-In-Reply-To: <20180619125618.GB5609@linux.intel.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 2018-06-19 14:56, Jarkko Sakkinen wrote:
-> On Fri, Jun 15, 2018 at 12:14:57PM +0200, Peter Rosin wrote:
->> Locking the root adapter for __i2c_transfer will deadlock if the
->> device sits behind a mux-locked I2C mux. Switch to the finer-grained
->> i2c_lock_segment. If the device does not sit behind a mux-locked mux,
->> the two locking variants are equivalent.
->>
->> Signed-off-by: Peter Rosin <peda@axentia.se>
-> 
-> Can you quickly explain (or give a reference) the difference with these
-> functions? Not an expert in this area. Thanks.
+Locking the root adapter for __i2c_transfer will deadlock if the
+device sits behind a mux-locked I2C mux. Switch to the finer-grained
+i2c_lock_segment. If the device does not sit behind a mux-locked mux,
+the two locking variants are equivalent.
 
-There are some words in the cover letter. If you need more, there's
-always Documentation/i2c/i2c-topology. Hope that helps, otherwise I'll
-try to explain better...
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ drivers/i2c/muxes/i2c-mux-pca9541.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Cheers,
-Peter
+diff --git a/drivers/i2c/muxes/i2c-mux-pca9541.c b/drivers/i2c/muxes/i2c-mux-pca9541.c
+index 6a39adaf433f..74c560ed44cc 100644
+--- a/drivers/i2c/muxes/i2c-mux-pca9541.c
++++ b/drivers/i2c/muxes/i2c-mux-pca9541.c
+@@ -345,11 +345,11 @@ static int pca9541_probe(struct i2c_client *client,
+ 
+ 	/*
+ 	 * I2C accesses are unprotected here.
+-	 * We have to lock the adapter before releasing the bus.
++	 * We have to lock the I2C segment before releasing the bus.
+ 	 */
+-	i2c_lock_adapter(adap);
++	i2c_lock_segment(adap);
+ 	pca9541_release_bus(client);
+-	i2c_unlock_adapter(adap);
++	i2c_unlock_segment(adap);
+ 
+ 	/* Create mux adapter */
+ 
+-- 
+2.11.0
+
