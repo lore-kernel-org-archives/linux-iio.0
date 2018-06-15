@@ -2,8 +2,8 @@ Return-Path: <linux-iio-owner@vger.kernel.org>
 Received: from mail-db5eur01on0094.outbound.protection.outlook.com ([104.47.2.94]:38179
         "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S965683AbeFOKQF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 15 Jun 2018 06:16:05 -0400
+        id S936247AbeFOKQI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 15 Jun 2018 06:16:08 -0400
 From: Peter Rosin <peda@axentia.se>
 To: linux-kernel@vger.kernel.org
 Cc: Peter Rosin <peda@axentia.se>, Peter Huewe <peterhuewe@gmx.de>,
@@ -41,9 +41,9 @@ Cc: Peter Rosin <peda@axentia.se>, Peter Huewe <peterhuewe@gmx.de>,
         linux-samsung-soc@vger.kernel.org, linux-tegra@vger.kernel.org,
         linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
         linux-media@vger.kernel.org
-Subject: [PATCH 08/11] media: tda1004x: switch to i2c_lock_segment
-Date: Fri, 15 Jun 2018 12:15:03 +0200
-Message-Id: <20180615101506.8012-9-peda@axentia.se>
+Subject: [PATCH 09/11] media: tda18271: switch to i2c_lock_segment
+Date: Fri, 15 Jun 2018 12:15:04 +0200
+Message-Id: <20180615101506.8012-10-peda@axentia.se>
 In-Reply-To: <20180615101506.8012-1-peda@axentia.se>
 References: <20180615101506.8012-1-peda@axentia.se>
 MIME-Version: 1.0
@@ -58,39 +58,49 @@ the two locking variants are equivalent.
 
 Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/media/dvb-frontends/tda1004x.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/media/tuners/tda18271-common.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/media/dvb-frontends/tda1004x.c b/drivers/media/dvb-frontends/tda1004x.c
-index 58e3beff5adc..1e5c183cdd86 100644
---- a/drivers/media/dvb-frontends/tda1004x.c
-+++ b/drivers/media/dvb-frontends/tda1004x.c
-@@ -329,7 +329,7 @@ static int tda1004x_do_upload(struct tda1004x_state *state,
- 	tda1004x_write_byteI(state, dspCodeCounterReg, 0);
- 	fw_msg.addr = state->config->demod_address;
- 
--	i2c_lock_adapter(state->i2c);
-+	i2c_lock_segment(state->i2c);
- 	buf[0] = dspCodeInReg;
- 	while (pos != len) {
- 		// work out how much to send this time
-@@ -342,14 +342,14 @@ static int tda1004x_do_upload(struct tda1004x_state *state,
- 		fw_msg.len = tx_size + 1;
- 		if (__i2c_transfer(state->i2c, &fw_msg, 1) != 1) {
- 			printk(KERN_ERR "tda1004x: Error during firmware upload\n");
--			i2c_unlock_adapter(state->i2c);
-+			i2c_unlock_segment(state->i2c);
- 			return -EIO;
- 		}
- 		pos += tx_size;
- 
- 		dprintk("%s: fw_pos=0x%x\n", __func__, pos);
+diff --git a/drivers/media/tuners/tda18271-common.c b/drivers/media/tuners/tda18271-common.c
+index 7e81cd887c13..93cce2bcd601 100644
+--- a/drivers/media/tuners/tda18271-common.c
++++ b/drivers/media/tuners/tda18271-common.c
+@@ -225,7 +225,7 @@ static int __tda18271_write_regs(struct dvb_frontend *fe, int idx, int len,
+ 	 */
+ 	if (lock_i2c) {
+ 		tda18271_i2c_gate_ctrl(fe, 1);
+-		i2c_lock_adapter(priv->i2c_props.adap);
++		i2c_lock_segment(priv->i2c_props.adap);
  	}
--	i2c_unlock_adapter(state->i2c);
-+	i2c_unlock_segment(state->i2c);
+ 	while (len) {
+ 		if (max > len)
+@@ -246,7 +246,7 @@ static int __tda18271_write_regs(struct dvb_frontend *fe, int idx, int len,
+ 		len -= max;
+ 	}
+ 	if (lock_i2c) {
+-		i2c_unlock_adapter(priv->i2c_props.adap);
++		i2c_unlock_segment(priv->i2c_props.adap);
+ 		tda18271_i2c_gate_ctrl(fe, 0);
+ 	}
  
- 	/* give the DSP a chance to settle 03/10/05 Hac */
- 	msleep(100);
+@@ -300,7 +300,7 @@ int tda18271_init_regs(struct dvb_frontend *fe)
+ 	 * as those could cause bad things
+ 	 */
+ 	tda18271_i2c_gate_ctrl(fe, 1);
+-	i2c_lock_adapter(priv->i2c_props.adap);
++	i2c_lock_segment(priv->i2c_props.adap);
+ 
+ 	/* initialize registers */
+ 	switch (priv->id) {
+@@ -516,7 +516,7 @@ int tda18271_init_regs(struct dvb_frontend *fe)
+ 	/* synchronize */
+ 	__tda18271_write_regs(fe, R_EP1, 1, false);
+ 
+-	i2c_unlock_adapter(priv->i2c_props.adap);
++	i2c_unlock_segment(priv->i2c_props.adap);
+ 	tda18271_i2c_gate_ctrl(fe, 0);
+ 
+ 	return 0;
 -- 
 2.11.0
 
