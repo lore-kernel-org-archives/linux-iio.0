@@ -1,144 +1,36 @@
 Return-Path: <m.othacehe@gmail.com>
-References: <87a7snd8r7.fsf@gmail.com> <876037dc4f.fsf@gmail.com> <20180603153833.0710bc03@archlinux> <87o9gpbkpc.fsf@gmail.com> <20180610142909.278028c5@archlinux>
+References: <87a7snd8r7.fsf@gmail.com> <876037dc4f.fsf@gmail.com> <20180603153833.0710bc03@archlinux> <87o9gpbkpc.fsf@gmail.com> <20180610142909.278028c5@archlinux> <87wov5id5w.fsf@gmail.com>
 From: Mathieu Othacehe <m.othacehe@gmail.com>
 To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 Cc: linux-iio@vger.kernel.org, lars@metafoo.de
 Subject: Re: isl29501 and multiple calibration registers
-In-reply-to: <20180610142909.278028c5@archlinux>
-Date: Mon, 11 Jun 2018 16:57:31 +0200
-Message-ID: <87wov5id5w.fsf@gmail.com>
+In-reply-to: <87wov5id5w.fsf@gmail.com>
+Date: Fri, 15 Jun 2018 14:34:08 +0200
+Message-ID: <87po0si5z3.fsf@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
 
-Hi Jonathan,
+Hi,
 
-I'll send a v3 as a separate patch, here are some answers to your
-comments.
+I have another concern about I and Q representation. The formula given
+by Renesas to put them under decimal form is:
 
-> I'm not totally clear what this is.  From a really quick look at the
-> docs, I think we are looking at in phase and quadrature elements
-> of the amplitude.  As the amplitude is basically a light intensity
-> measurement
+         (MSB << 8 + LSB) << EXP/100000
 
-That's my understanding too, I'll rephrase.
+Given that EXP is an unsigned 8 bit integer, the maximum value of I and
+Q is ~2^255 which can only be represented as a double.
 
->
-> in_intensity0_q_raw
-> in_intensity0_i_raw
-> in_intensity0_scale if it is possible to relate this anything real
-> I think in reality it does have a unit, we just have no visibility
-> of what that is.
+Hence, it is not possible to represent them under in_intensity0_i/q_raw
+even using a scale.
 
-Ok.
+Same thing for I and Q calibbias (crosstalk values), the user can not
+input such a big number.
 
->
-> We also have a phase measurement, but naturally only one of htem
-> in_phase0_raw
-> in_phase0_scale
+How could we proceed about it, would it be ok to represent those values
+as EXP << 16 + MSB << 8 + LSB both for raw and calibbias values?
 
-Does that mean adding a new iio_chan_type "IIO_PHASE"?
-
-> Hmm. Thinking more on this, we could treat this as a separate channel.
-> Given it's light intensity it would be an intensity channel.
-> It's in some sense the combination of the split quadrature elements
-> above
-> in_intensity0_raw
-> in_intensity0_scale.  Note for these that the scale is assumed by
-> most userspace code to be fixed, so you'll need to roll the exponent
-> part into the _raw value not the _scale.#
-
-Seems fine!
-
-> in_proximity0_calib_cs_i -> in_intensity0_i_calibbias
-> in_proximity0_calib_cs_q -> in_intensity0_q_calibbias
-> in_proximity0_calib_cs_gain =-> in_intensity0_calibscale (I think the cs will effect intensity?)
-
-Ok.
-
-> +		The gain read from in_proximity0_hardwaregain shall
-> +		be written into in_proximity0_calib_cs_gain when
-> +		calibrating crosstalk.
->
-> I'm not following this one, hardwaregain is usually a write
-> parameter.  So should be under control of the userspace.
-
-The sensor has an "Automatic Gain Control" (AGC) which sets the analog
-signal levels at an optimum level by controlling programmable gain
-amplifiers according to the datasheet.
-
-The AGC value in an output of the sensor at it is supposed to be
-saved when calibrating crosstalk in "Crosstalk Gain" registers.
-
-Would it be ok to use hardwaregain as a read-only register for this
-purpose?
-
->
-> +
-> +		As the crosstalk is dependant on the emitter current,
-> +		the amplitude read from in_proximity0_amplitude shall
-> +		be written into in_proximity0_calib_ampl_ref when
-> +		calibrating crosstalk.
->
-> This last one is trickier from the description.  Do we know how it
-> is applied by the hardware?  Is it a simple offset?
->
-> Looking at the document an1724.pdf this doesn't seem to be something
-> that it necessarily makes any sense to expose to userspace. It is
-> a calibration that has no external inputs - just a sequence of
-> internal actions. Hence I would just do this on power up.
-
-No I don't know how it is applied. However, it can't be done on power up
-as it requires the emitter to be blocked from reaching the photodiode.
-
-I guess the principle here is to measure the amplitude of the received
-signal while the emitter is blocked so that it can be substracted to the
-further measures. Would it be ok to use in_intensity0_calibbias for it?
-
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_calib_distance_ref
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_proximity0_calib_temp_ref
->
-> Hmm. So these last two are C in the equation.
-
-Seems so (the sensor is computing the C from those two).
-
-> +		Finally, the c constant is set by the sensor in
-> +		function of in_proximity0_calib_temp_ref and
-> +		in_proximity0_calib_distance_ref values.
-> +
-> +		To fill in_proximity0_calib_distance_ref, a distance
-> +		measurement at a known distance has to be made.  The
-> +		result of the substraction between the known distance
-> +		and the measured value shall be stored in
-> +		in_proximity0_calib_distance_ref. The sensor
-> +		temperature at the time of this measurement read shall
-> +		be stored in in_proximity0_calib_temp_ref.
-> +
-> +		Get those values from hardware and show them when read
-> +		from.
->
-> I'm slightly less bothered by getting these perfect as they are very
-> chip specific and generic userspace code is unlikely to play with them.
-> We may want to revisit these in the future...
->
-> If we are using phase and intensity channels as suggested above,
-> these will want adjusting to take that into account.
-
-
-Those calib fields would become:
-
-in_proximity0_calib_temp_ref -> in_temp0_calibbias
-in_proximity0_calib_distance_ref -> in_proximity0_calibbias
-
-It would also require a new channel "in_intensity1_raw" for the ambient
-light output. Is it ok?
-
-> Treat the emitter as an output current channel and all this becomes
-> simpler.
-
-Ok.
-
-Thanks for your patience,
+Thanks,
 
 Mathieu
