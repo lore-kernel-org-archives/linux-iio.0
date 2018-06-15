@@ -1,12 +1,12 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-eopbgr50127.outbound.protection.outlook.com ([40.107.5.127]:55107
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+Received: from mail-db5eur01on0122.outbound.protection.outlook.com ([104.47.2.122]:4422
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1756803AbeFSVaE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 19 Jun 2018 17:30:04 -0400
-Subject: Re: [PATCH 01/11] i2c: add helpers for locking the I2C segment
-To: Wolfram Sang <wsa@the-dreams.de>
-Cc: linux-kernel@vger.kernel.org, Peter Huewe <peterhuewe@gmx.de>,
+        id S965553AbeFOKPo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 15 Jun 2018 06:15:44 -0400
+From: Peter Rosin <peda@axentia.se>
+To: linux-kernel@vger.kernel.org
+Cc: Peter Rosin <peda@axentia.se>, Peter Huewe <peterhuewe@gmx.de>,
         Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
         Jason Gunthorpe <jgg@ziepe.ca>, Arnd Bergmann <arnd@arndb.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -25,6 +25,7 @@ Cc: linux-kernel@vger.kernel.org, Peter Huewe <peterhuewe@gmx.de>,
         Laxman Dewangan <ldewangan@nvidia.com>,
         Thierry Reding <thierry.reding@gmail.com>,
         Jonathan Hunter <jonathanh@nvidia.com>,
+        Wolfram Sang <wsa@the-dreams.de>,
         Guenter Roeck <linux@roeck-us.net>, Crt Mori <cmo@melexis.com>,
         Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
@@ -40,49 +41,66 @@ Cc: linux-kernel@vger.kernel.org, Peter Huewe <peterhuewe@gmx.de>,
         linux-samsung-soc@vger.kernel.org, linux-tegra@vger.kernel.org,
         linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
         linux-media@vger.kernel.org
+Subject: [PATCH 02/11] tpm/tpm_i2c_infineon: switch to i2c_lock_segment
+Date: Fri, 15 Jun 2018 12:14:57 +0200
+Message-Id: <20180615101506.8012-3-peda@axentia.se>
+In-Reply-To: <20180615101506.8012-1-peda@axentia.se>
 References: <20180615101506.8012-1-peda@axentia.se>
- <20180615101506.8012-2-peda@axentia.se>
- <20180618110502.cb5s24srp4frahm6@ninjato>
- <b860025e-3d4b-f333-80b4-3831dd969757@axentia.se>
- <20180618115444.pgjmfntp767zuvmw@ninjato>
-From: Peter Rosin <peda@axentia.se>
-Message-ID: <4a721b58-d718-68c0-cca5-23b5b21ef100@axentia.se>
-Date: Tue, 19 Jun 2018 23:29:51 +0200
 MIME-Version: 1.0
-In-Reply-To: <20180618115444.pgjmfntp767zuvmw@ninjato>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 2018-06-18 13:54, Wolfram Sang wrote:
-> 
->>> I wonder if i2c_lock_segment() and i2c_lock_root_adapter() are really
->>> more readable and convenient than i2c_lock_bus() with the flag. I think
->>> the flags have speaking names, too.
->>>
->>> Is that an idea to remove these functions altogether and start using
->>> i2c_lock_bus()?
->>
->> That would be fine with me. I don't have a strong opinion and agree that
->> both are readable enough...
->>
->> It would make for a reduction of the number of lines so that's nice, but
->> the macro in drivers/i2c/busses/i2c-gpio.c (patch 11) would not fit in
->> the current \-width (or whatever you'd call that line of backslashes to
->> the right in a multi-line macro).
->>
->> Does anyone have a strong opinion?
-> 
-> I have a strong opinion on making i2c.h less bloated. And yes, less
-> number of lines is nice, too. I think that surely pays off the
-> whitespace exception.
+Locking the root adapter for __i2c_transfer will deadlock if the
+device sits behind a mux-locked I2C mux. Switch to the finer-grained
+i2c_lock_segment. If the device does not sit behind a mux-locked mux,
+the two locking variants are equivalent.
 
-Ok, I have rebased onto v4.18-rc1, killed the i2c-tegra hunk and converted
-i2c_lock_root(foo) over to i2c_lock_bus(foo, I2C_LOCK_ROOT_ADAPTER) and
-i2c_lock_segment(foo) over to i2c_lock_bus(foo, I2C_LOCK_SEGMENT). And I
-of course killed a bunch of locking helpers in i2c.h.
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ drivers/char/tpm/tpm_i2c_infineon.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-I doing build tests now, will post a v2 in the morning.
+diff --git a/drivers/char/tpm/tpm_i2c_infineon.c b/drivers/char/tpm/tpm_i2c_infineon.c
+index 6116cd05e228..b2889405b4fa 100644
+--- a/drivers/char/tpm/tpm_i2c_infineon.c
++++ b/drivers/char/tpm/tpm_i2c_infineon.c
+@@ -117,7 +117,7 @@ static int iic_tpm_read(u8 addr, u8 *buffer, size_t len)
+ 	/* Lock the adapter for the duration of the whole sequence. */
+ 	if (!tpm_dev.client->adapter->algo->master_xfer)
+ 		return -EOPNOTSUPP;
+-	i2c_lock_adapter(tpm_dev.client->adapter);
++	i2c_lock_segment(tpm_dev.client->adapter);
+ 
+ 	if (tpm_dev.chip_type == SLB9645) {
+ 		/* use a combined read for newer chips
+@@ -192,7 +192,7 @@ static int iic_tpm_read(u8 addr, u8 *buffer, size_t len)
+ 	}
+ 
+ out:
+-	i2c_unlock_adapter(tpm_dev.client->adapter);
++	i2c_unlock_segment(tpm_dev.client->adapter);
+ 	/* take care of 'guard time' */
+ 	usleep_range(SLEEP_DURATION_LOW, SLEEP_DURATION_HI);
+ 
+@@ -224,7 +224,7 @@ static int iic_tpm_write_generic(u8 addr, u8 *buffer, size_t len,
+ 
+ 	if (!tpm_dev.client->adapter->algo->master_xfer)
+ 		return -EOPNOTSUPP;
+-	i2c_lock_adapter(tpm_dev.client->adapter);
++	i2c_lock_segment(tpm_dev.client->adapter);
+ 
+ 	/* prepend the 'register address' to the buffer */
+ 	tpm_dev.buf[0] = addr;
+@@ -243,7 +243,7 @@ static int iic_tpm_write_generic(u8 addr, u8 *buffer, size_t len,
+ 		usleep_range(sleep_low, sleep_hi);
+ 	}
+ 
+-	i2c_unlock_adapter(tpm_dev.client->adapter);
++	i2c_unlock_segment(tpm_dev.client->adapter);
+ 	/* take care of 'guard time' */
+ 	usleep_range(SLEEP_DURATION_LOW, SLEEP_DURATION_HI);
+ 
+-- 
+2.11.0
 
-Cheers,
-Peter
