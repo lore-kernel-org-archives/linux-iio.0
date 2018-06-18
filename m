@@ -1,54 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-vk0-f66.google.com ([209.85.213.66]:43321 "EHLO
-        mail-vk0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752836AbeFTAhL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 19 Jun 2018 20:37:11 -0400
-Received: by mail-vk0-f66.google.com with SMTP id d74-v6so932994vke.10
-        for <linux-iio@vger.kernel.org>; Tue, 19 Jun 2018 17:37:11 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <1529337552-23726-5-git-send-email-akinobu.mita@gmail.com>
-References: <1529337552-23726-1-git-send-email-akinobu.mita@gmail.com> <1529337552-23726-5-git-send-email-akinobu.mita@gmail.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Wed, 20 Jun 2018 03:37:09 +0300
-Message-ID: <CAHp75VfM=WAe_UVqD7qQQHOZDekpVYUSueyqi++TXamsJ5xO9A@mail.gmail.com>
-Subject: Re: [PATCH v2 4/4] iio: accel: adxl345: add sampling frequency support
-To: Akinobu Mita <akinobu.mita@gmail.com>
-Cc: linux-iio@vger.kernel.org, Eva Rachel Retuya <eraretuya@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Received: from mx3-rdu2.redhat.com ([66.187.233.73]:60796 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1755249AbeFRQJk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 18 Jun 2018 12:09:40 -0400
+From: Hans de Goede <hdegoede@redhat.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hans de Goede <hdegoede@redhat.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, Martin Kelly <mkelly@xevo.com>,
+        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+Subject: [PATCH 4.18 REGRESSION fix] iio: imu: inv_mpu6050: Fix probe() failure on older ACPI based machines
+Date: Mon, 18 Jun 2018 18:09:36 +0200
+Message-Id: <20180618160936.6471-1-hdegoede@redhat.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Jun 18, 2018 at 6:59 PM, Akinobu Mita <akinobu.mita@gmail.com> wrote:
-> The ADXL345 provides selectable output data rate.  This adds the iio
-> channel information for the sampling frequency with that feature.
+Commit 5ec6486daa98 ("iio:imu: inv_mpu6050: support more interrupt types")
+causes inv_mpu_core_probe() to fail if the IRQ does not have a
+trigger-type setup.
 
-> +static const struct {
-> +       int val;
-> +       int val2;
-> +} adxl345_samp_freq_table[] = {
-> +       { 0, 97656 },
-> +       { 0, 195313 },
-> +       { 0, 390625 },
-> +       { 0, 781250 },
-> +       { 1, 562500 },
-> +       { 3, 125000 },
-> +       { 6, 250000 },
-> +       { 12, 500000 },
-> +       { 25, 0 },
-> +       { 50, 0 },
-> +       { 100, 0 },
-> +       { 200, 0 },
-> +       { 400, 0 },
-> +       { 800, 0 },
-> +       { 1600, 0 },
-> +       { 3200, 0 },
-> +};
+This happens on machines where the mpu6050 is enumerated through ACPI and
+an older Interrupt type ACPI resource is used for the interrupt, rather
+then a GpioInt type type, causing the mpu6050 driver to no longer work
+there. This happens on e.g. the Asus T100TA.
 
-So, this is effectively a just formula with a bit shifts (index is an
-exponent) and point of origin.
-Why to keep ugly table?
+This commits makes the mpu6050 fallback to the old IRQF_TRIGGER_RISING
+default if the irq-type is not setup, fixing this.
 
+Fixes: 5ec6486daa98 ("iio:imu: inv_mpu6050: support more interrupt types")
+Cc: Martin Kelly <mkelly@xevo.com>
+Cc: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index f9c0624505a2..42618fe4f83e 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -959,6 +959,8 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+ 	}
+ 
+ 	irq_type = irqd_get_trigger_type(desc);
++	if (!irq_type)
++		irq_type = IRQF_TRIGGER_RISING;
+ 	if (irq_type == IRQF_TRIGGER_RISING)
+ 		st->irq_mask = INV_MPU6050_ACTIVE_HIGH;
+ 	else if (irq_type == IRQF_TRIGGER_FALLING)
 -- 
-With Best Regards,
-Andy Shevchenko
+2.17.1
+
