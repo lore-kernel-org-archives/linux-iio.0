@@ -1,85 +1,66 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:45200 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751832AbeFXNwx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 24 Jun 2018 09:52:53 -0400
-Date: Sun, 24 Jun 2018 14:52:47 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Jonathan Cameron <jonathan.cameron@huawei.com>
-Cc: Hans de Goede <hdegoede@redhat.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        <linux-iio@vger.kernel.org>, Martin Kelly <mkelly@xevo.com>,
-        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-Subject: Re: [PATCH 4.18 REGRESSION fix] iio: imu: inv_mpu6050: Fix probe()
- failure on older ACPI based machines
-Message-ID: <20180624145247.78c2ccd8@archlinux>
-In-Reply-To: <20180622151827.00006396@huawei.com>
-References: <20180618160936.6471-1-hdegoede@redhat.com>
-        <20180622151827.00006396@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=/ZAZ=JE=gmail.com=karim.eshapa@kernel.org>
+From: Karim Eshapa <karim.eshapa@gmail.com>
+To: lars@metafoo.de
+Cc: Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	pmeerw@pmeerw.net,
+	gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org,
+	Karim Eshapa <karim.eshapa@gmail.com>
+Subject: [PATCH v3] staging:iio:accel:adis16240: sign extend function replace hard code duplication
+Date: Mon, 18 Jun 2018 19:44:50 +0200
+Message-Id: <20180618174450.3399-1-karim.eshapa@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, 22 Jun 2018 15:18:27 +0100
-Jonathan Cameron <jonathan.cameron@huawei.com> wrote:
+Use sign_extend32 kernel function instead of code duplication,
+Safe also for 16 bit. and remove declaration of bits variable not needed.
 
-> On Mon, 18 Jun 2018 18:09:36 +0200
-> Hans de Goede <hdegoede@redhat.com> wrote:
-> 
-> > Commit 5ec6486daa98 ("iio:imu: inv_mpu6050: support more interrupt types")
-> > causes inv_mpu_core_probe() to fail if the IRQ does not have a
-> > trigger-type setup.
-> > 
-> > This happens on machines where the mpu6050 is enumerated through ACPI and
-> > an older Interrupt type ACPI resource is used for the interrupt, rather
-> > then a GpioInt type type, causing the mpu6050 driver to no longer work
-> > there. This happens on e.g. the Asus T100TA.
-> > 
-> > This commits makes the mpu6050 fallback to the old IRQF_TRIGGER_RISING
-> > default if the irq-type is not setup, fixing this.
-> > 
-> > Fixes: 5ec6486daa98 ("iio:imu: inv_mpu6050: support more interrupt types")
-> > Cc: Martin Kelly <mkelly@xevo.com>
-> > Cc: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-> > Signed-off-by: Hans de Goede <hdegoede@redhat.com>  
-> 
-> Sorry for the delay - traveling this week.  Will pick this up over the weekend
-> once I'm back home.
+Signed-off-by: Karim Eshapa <karim.eshapa@gmail.com>
+---
+ drivers/staging/iio/accel/adis16240.c | 11 ++---------
+ 1 file changed, 2 insertions(+), 9 deletions(-)
 
-Applied to the fixes-togreg branch of iio.git.  Aiming to do a pull request
-later today.
-
-Thanks,
-
-Jonathan
-
-> 
-> J
-> 
-> > ---
-> >  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> > 
-> > diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> > index f9c0624505a2..42618fe4f83e 100644
-> > --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> > +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> > @@ -959,6 +959,8 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
-> >  	}
-> >  
-> >  	irq_type = irqd_get_trigger_type(desc);
-> > +	if (!irq_type)
-> > +		irq_type = IRQF_TRIGGER_RISING;
-> >  	if (irq_type == IRQF_TRIGGER_RISING)
-> >  		st->irq_mask = INV_MPU6050_ACTIVE_HIGH;
-> >  	else if (irq_type == IRQF_TRIGGER_FALLING)  
-> 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
+diff --git a/drivers/staging/iio/accel/adis16240.c b/drivers/staging/iio/accel/adis16240.c
+index fff6d99089cc..24e525f1ef25 100644
+--- a/drivers/staging/iio/accel/adis16240.c
++++ b/drivers/staging/iio/accel/adis16240.c
+@@ -250,7 +250,6 @@ static int adis16240_read_raw(struct iio_dev *indio_dev,
+ {
+ 	struct adis *st = iio_priv(indio_dev);
+ 	int ret;
+-	int bits;
+ 	u8 addr;
+ 	s16 val16;
+ 
+@@ -287,24 +286,18 @@ static int adis16240_read_raw(struct iio_dev *indio_dev,
+ 		*val = 25000 / 244 - 0x133; /* 25 C = 0x133 */
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_CALIBBIAS:
+-		bits = 10;
+ 		addr = adis16240_addresses[chan->scan_index][0];
+ 		ret = adis_read_reg_16(st, addr, &val16);
+ 		if (ret)
+ 			return ret;
+-		val16 &= (1 << bits) - 1;
+-		val16 = (s16)(val16 << (16 - bits)) >> (16 - bits);
+-		*val = val16;
++		*val = sign_extend32(val16, 9);
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_PEAK:
+-		bits = 10;
+ 		addr = adis16240_addresses[chan->scan_index][1];
+ 		ret = adis_read_reg_16(st, addr, &val16);
+ 		if (ret)
+ 			return ret;
+-		val16 &= (1 << bits) - 1;
+-		val16 = (s16)(val16 << (16 - bits)) >> (16 - bits);
+-		*val = val16;
++		*val = sign_extend32(val16, 9);
+ 		return IIO_VAL_INT;
+ 	}
+ 	return -EINVAL;
+-- 
+2.17.1
