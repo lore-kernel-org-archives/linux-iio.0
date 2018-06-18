@@ -1,166 +1,79 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:60578 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S932967AbeFPSum (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 16 Jun 2018 14:50:42 -0400
-Date: Sat, 16 Jun 2018 19:50:37 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Akinobu Mita <akinobu.mita@gmail.com>
-Cc: linux-iio@vger.kernel.org, Eva Rachel Retuya <eraretuya@gmail.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH 4/4] iio: accel: adxl345: add sampling frequency support
-Message-ID: <20180616195037.54e30923@archlinux>
-In-Reply-To: <1529161484-28781-5-git-send-email-akinobu.mita@gmail.com>
-References: <1529161484-28781-1-git-send-email-akinobu.mita@gmail.com>
-        <1529161484-28781-5-git-send-email-akinobu.mita@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=Ip9B=JE=arndb.de=arnd@kernel.org>
+From: Arnd Bergmann <arnd@arndb.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: y2038@lists.linaro.org,
+	Arnd Bergmann <arnd@arndb.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	"Gustavo A. R. Silva" <garsilva@embeddedor.com>,
+	Matt Fornero <matt.fornero@mathworks.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: use timespec64 based interfaces for iio_get_time_ns()
+Date: Mon, 18 Jun 2018 17:31:36 +0200
+Message-Id: <20180618153153.1903178-1-arnd@arndb.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, 17 Jun 2018 00:04:43 +0900
-Akinobu Mita <akinobu.mita@gmail.com> wrote:
+We have replacements for all the deprecated timespec based interfaces now,
+so this can finally convert iio_get_time_ns() to consistently use the
+nanosecond or timespec64 based interfaces instead, avoiding the y2038
+overflow.
 
-> The ADXL345 provides selectable output data rate.  This adds the iio
-> channel information for the sampling frequency with that feature.
-> 
-> Cc: Eva Rachel Retuya <eraretuya@gmail.com>
-> Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
-Looks good to me will pick up once patch 3 discussion is sorted.
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/iio/industrialio-core.c | 26 +++++++++-----------------
+ 1 file changed, 9 insertions(+), 17 deletions(-)
 
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/iio/accel/adxl345_core.c | 61 ++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 61 insertions(+)
-> 
-> diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_core.c
-> index a392f9e..80e60c5 100644
-> --- a/drivers/iio/accel/adxl345_core.c
-> +++ b/drivers/iio/accel/adxl345_core.c
-> @@ -14,6 +14,7 @@
->  #include <linux/regmap.h>
->  
->  #include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
->  
->  #include "adxl345.h"
->  
-> @@ -21,12 +22,15 @@
->  #define ADXL345_REG_OFSX		0x1e
->  #define ADXL345_REG_OFSY		0x1f
->  #define ADXL345_REG_OFSZ		0x20
-> +#define ADXL345_REG_BW_RATE		0x2C
->  #define ADXL345_REG_POWER_CTL		0x2D
->  #define ADXL345_REG_DATA_FORMAT		0x31
->  #define ADXL345_REG_DATAX0		0x32
->  #define ADXL345_REG_DATAY0		0x34
->  #define ADXL345_REG_DATAZ0		0x36
->  
-> +#define ADXL345_BW_RATE			GENMASK(3, 0)
-> +
->  #define ADXL345_POWER_CTL_MEASURE	BIT(3)
->  #define ADXL345_POWER_CTL_STANDBY	0x00
->  
-> @@ -59,6 +63,7 @@ struct adxl345_data {
->  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |			\
->  		BIT(IIO_CHAN_INFO_CALIBBIAS),				\
->  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
-> +		BIT(IIO_CHAN_INFO_SAMP_FREQ) |				\
->  		BIT(IIO_CHAN_INFO_CALIBSCALE),				\
->  	.scan_index = si,						\
->  }
-> @@ -69,6 +74,28 @@ static const struct iio_chan_spec adxl345_channels[] = {
->  	ADXL345_CHANNEL(2, Z),
->  };
->  
-> +static const struct {
-> +	int val;
-> +	int val2;
-> +} adxl345_samp_freq_table[] = {
-> +	{ 0, 97656 },
-> +	{ 0, 195313 },
-> +	{ 0, 390625 },
-> +	{ 0, 781250 },
-> +	{ 1, 562500 },
-> +	{ 3, 125000 },
-> +	{ 6, 250000 },
-> +	{ 12, 500000 },
-> +	{ 25, 0 },
-> +	{ 50, 0 },
-> +	{ 100, 0 },
-> +	{ 200, 0 },
-> +	{ 400, 0 },
-> +	{ 800, 0 },
-> +	{ 1600, 0 },
-> +	{ 3200, 0 },
-> +};
-> +
->  static int adxl345_read_raw(struct iio_dev *indio_dev,
->  			    struct iio_chan_spec const *chan,
->  			    int *val, int *val2, long mask)
-> @@ -114,6 +141,15 @@ static int adxl345_read_raw(struct iio_dev *indio_dev,
->  		*val2 = adxl345_uscale * 4;
->  
->  		return IIO_VAL_INT_PLUS_MICRO;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		ret = regmap_read(data->regmap, ADXL345_REG_BW_RATE, &regval);
-> +		if (ret < 0)
-> +			return ret;
-> +		regval &= ADXL345_BW_RATE;
-> +		*val = adxl345_samp_freq_table[regval].val;
-> +		*val2 = adxl345_samp_freq_table[regval].val2;
-> +
-> +		return IIO_VAL_INT_PLUS_MICRO;
->  	}
->  
->  	return -EINVAL;
-> @@ -125,18 +161,43 @@ static int adxl345_write_raw(struct iio_dev *indio_dev,
->  {
->  	struct adxl345_data *data = iio_priv(indio_dev);
->  	int ret;
-> +	int i;
->  
->  	switch (mask) {
->  	case IIO_CHAN_INFO_CALIBBIAS:
->  		ret = regmap_write(data->regmap,
->  				   ADXL345_REG_OFSX + chan->scan_index, val);
->  		return ret;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		for (i = 0; i < ARRAY_SIZE(adxl345_samp_freq_table); i++) {
-> +			if (adxl345_samp_freq_table[i].val == val &&
-> +			    adxl345_samp_freq_table[i].val2 == val2) {
-> +				return regmap_update_bits(data->regmap,
-> +							ADXL345_REG_BW_RATE,
-> +							ADXL345_BW_RATE, i);
-> +			}
-> +		}
-> +		return -EINVAL;
->  	}
->  
->  	return -EINVAL;
->  }
->  
-> +static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
-> +"0.097656 0.195313 0.390625 0.78125 1.5625 3.125 6.25 12.5 25 50 100 200 400 800 1600 3200"
-> +);
-> +
-> +static struct attribute *adxl345_attrs[] = {
-> +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-> +	NULL,
-> +};
-> +
-> +static const struct attribute_group adxl345_attrs_group = {
-> +	.attrs = adxl345_attrs,
-> +};
-> +
->  static const struct iio_info adxl345_info = {
-> +	.attrs		= &adxl345_attrs_group,
->  	.read_raw	= adxl345_read_raw,
->  	.write_raw	= adxl345_write_raw,
->  };
-
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 19bdf3d2962a..fcbe92c34a3d 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -207,35 +207,27 @@ static int iio_device_set_clock(struct iio_dev *indio_dev, clockid_t clock_id)
+  */
+ s64 iio_get_time_ns(const struct iio_dev *indio_dev)
+ {
+-	struct timespec tp;
++	struct timespec64 tp;
+ 
+ 	switch (iio_device_get_clock(indio_dev)) {
+ 	case CLOCK_REALTIME:
+-		ktime_get_real_ts(&tp);
+-		break;
++		return ktime_get_real_ns();
+ 	case CLOCK_MONOTONIC:
+-		ktime_get_ts(&tp);
+-		break;
++		return ktime_get_ns();
+ 	case CLOCK_MONOTONIC_RAW:
+-		getrawmonotonic(&tp);
+-		break;
++		return ktime_get_raw_ns();
+ 	case CLOCK_REALTIME_COARSE:
+-		tp = current_kernel_time();
+-		break;
++		return ktime_to_ns(ktime_get_coarse_real());
+ 	case CLOCK_MONOTONIC_COARSE:
+-		tp = get_monotonic_coarse();
+-		break;
++		ktime_get_coarse_ts64(&tp);
++		return timespec64_to_ns(&tp);
+ 	case CLOCK_BOOTTIME:
+-		get_monotonic_boottime(&tp);
+-		break;
++		return ktime_get_boot_ns();
+ 	case CLOCK_TAI:
+-		timekeeping_clocktai(&tp);
+-		break;
++		return ktime_get_tai_ns();
+ 	default:
+ 		BUG();
+ 	}
+-
+-	return timespec_to_ns(&tp);
+ }
+ EXPORT_SYMBOL(iio_get_time_ns);
+ 
+-- 
+2.9.0
