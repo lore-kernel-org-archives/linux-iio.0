@@ -1,97 +1,95 @@
-Return-Path: <SRS0=34Nm=JF=metafoo.de=lars@kernel.org>
-Subject: Re: [PATCH] staging:iio:adc:ad7816: Backward resources cleanups in
- probe
-To: Karim Eshapa <karim.eshapa@gmail.com>
-Cc: Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
- pmeerw@pmeerw.net, gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
- devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-References: <20180618233851.7992-1-karim.eshapa@gmail.com>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <0e5bb02e-a19a-3b6a-f1a6-98bb89a6d9b8@metafoo.de>
-Date: Tue, 19 Jun 2018 07:59:26 +0200
-MIME-Version: 1.0
-In-Reply-To: <20180618233851.7992-1-karim.eshapa@gmail.com>
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wr0-f196.google.com ([209.85.128.196]:39266 "EHLO
+        mail-wr0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1757163AbeFSKRF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 19 Jun 2018 06:17:05 -0400
+Received: by mail-wr0-f196.google.com with SMTP id w7-v6so19926959wrn.6
+        for <linux-iio@vger.kernel.org>; Tue, 19 Jun 2018 03:17:05 -0700 (PDT)
+From: Mathieu Othacehe <m.othacehe@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: pierre-moana.levesque@parrot.com,
+        Mathieu Othacehe <m.othacehe@gmail.com>
+Subject: [PATCH 1/2] iio: Add channel for Phase
+Date: Tue, 19 Jun 2018 12:16:48 +0200
+Message-Id: <1529403409-15179-1-git-send-email-m.othacehe@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 06/19/2018 01:38 AM, Karim Eshapa wrote:
-> Backward cleanups for all resources allocated in probing
-> in case of failure at any regestering or allocation step.
+Add new channel type support for phase.
 
-Hi,
+This channel may be used by Time-of-flight sensors to express the
+phase difference between emitted and received signals. Those sensor
+will then use the phase shift of return signals to approximate the
+distance to objects.
 
-Thanks for the patch.
+Signed-off-by: Mathieu Othacehe <m.othacehe@gmail.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 7 +++++++
+ drivers/iio/industrialio-core.c         | 1 +
+ include/uapi/linux/iio/types.h          | 1 +
+ tools/iio/iio_event_monitor.c           | 2 ++
+ 4 files changed, 11 insertions(+)
 
-Resources that are allocated with devm_ are freed automatically in case of
-an error, so this patch should not be necessary.
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 731146c..e0ff2b7 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1663,3 +1663,10 @@ KernelVersion:	4.12
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		Raw counter device counters direction for channel Y.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_phaseY_raw
++KernelVersion:	4.18
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Raw (unscaled) phase difference reading from channel Y
++		that can be processed to radians.
+\ No newline at end of file
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 19bdf3d..34333de 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -85,6 +85,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_COUNT] = "count",
+ 	[IIO_INDEX] = "index",
+ 	[IIO_GRAVITY]  = "gravity",
++	[IIO_PHASE] = "phase",
+ };
+ 
+ static const char * const iio_modifier_names[] = {
+diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+index 4213cdf..6252a0b 100644
+--- a/include/uapi/linux/iio/types.h
++++ b/include/uapi/linux/iio/types.h
+@@ -44,6 +44,7 @@ enum iio_chan_type {
+ 	IIO_COUNT,
+ 	IIO_INDEX,
+ 	IIO_GRAVITY,
++	IIO_PHASE,
+ };
+ 
+ enum iio_modifier {
+diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+index b61245e..34190f4 100644
+--- a/tools/iio/iio_event_monitor.c
++++ b/tools/iio/iio_event_monitor.c
+@@ -58,6 +58,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_PH] = "ph",
+ 	[IIO_UVINDEX] = "uvindex",
+ 	[IIO_GRAVITY] = "gravity",
++	[IIO_PHASE] = "phase",
+ };
+ 
+ static const char * const iio_ev_type_text[] = {
+@@ -151,6 +152,7 @@ static bool event_is_known(struct iio_event_data *event)
+ 	case IIO_PH:
+ 	case IIO_UVINDEX:
+ 	case IIO_GRAVITY:
++	case IIO_PHASE:
+ 		break;
+ 	default:
+ 		return false;
+-- 
+2.7.4
 
-> 
-> Signed-off-by: Karim Eshapa <karim.eshapa@gmail.com>
-> ---
->  drivers/staging/iio/adc/ad7816.c | 22 +++++++++++++++++-----
->  1 file changed, 17 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
-> index bf76a8620bdb..5ff14c830451 100644
-> --- a/drivers/staging/iio/adc/ad7816.c
-> +++ b/drivers/staging/iio/adc/ad7816.c
-> @@ -373,7 +373,7 @@ static int ad7816_probe(struct spi_device *spi_dev)
->  	if (ret) {
->  		dev_err(&spi_dev->dev, "Fail to request rdwr gpio PIN %d.\n",
->  			chip->rdwr_pin);
-> -		return ret;
-> +		goto device_free;
->  	}
->  	gpio_direction_input(chip->rdwr_pin);
->  	ret = devm_gpio_request(&spi_dev->dev, chip->convert_pin,
-> @@ -381,7 +381,7 @@ static int ad7816_probe(struct spi_device *spi_dev)
->  	if (ret) {
->  		dev_err(&spi_dev->dev, "Fail to request convert gpio PIN %d.\n",
->  			chip->convert_pin);
-> -		return ret;
-> +		goto free_rdwr_pin;
->  	}
->  	gpio_direction_input(chip->convert_pin);
->  	ret = devm_gpio_request(&spi_dev->dev, chip->busy_pin,
-> @@ -389,7 +389,7 @@ static int ad7816_probe(struct spi_device *spi_dev)
->  	if (ret) {
->  		dev_err(&spi_dev->dev, "Fail to request busy gpio PIN %d.\n",
->  			chip->busy_pin);
-> -		return ret;
-> +		goto free_convert_pin;
->  	}
->  	gpio_direction_input(chip->busy_pin);
->  
-> @@ -407,17 +407,29 @@ static int ad7816_probe(struct spi_device *spi_dev)
->  						indio_dev->name,
->  						indio_dev);
->  		if (ret)
-> -			return ret;
-> +			goto free_busy_pin;
->  	}
->  
->  	ret = devm_iio_device_register(&spi_dev->dev, indio_dev);
->  	if (ret)
-> -		return ret;
-> +		goto free_dev_irq;
->  
->  	dev_info(&spi_dev->dev, "%s temperature sensor and ADC registered.\n",
->  		 indio_dev->name);
->  
->  	return 0;
-> +free_dev_irq:
-> +	devm_free_irq(&spi_dev->dev, spi_dev->irq, indio_dev);
-> +free_busy_pin:
-> +	devm_gpio_free(&spi_dev->dev, chip->busy_pin);
-> +free_convert_pin:
-> +	devm_gpio_free(&spi_dev->dev, chip->convert_pin);
-> +free_rdwr_pin:
-> +	devm_gpio_free(&spi_dev->dev, chip->rdwr_pin);
-> +device_free:
-> +	devm_iio_device_free(&spi_dev->dev, indio_dev);
-> +
-> +	return ret;
->  }
->  
->  static const struct spi_device_id ad7816_id[] = {
-> 
