@@ -1,69 +1,80 @@
-Return-Path: <SRS0=nO1y=JM=linux.intel.com=jarkko.sakkinen@kernel.org>
-Message-ID: <6131ffd5cd7455426ea5f68633d5a8c8dd8457bb.camel@linux.intel.com>
-Subject: Re: [PATCH v2 01/10] tpm/tpm_i2c_infineon: switch to
- i2c_lock_bus(..., I2C_LOCK_SEGMENT)
-From: Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
-To: Alexander Steffen <Alexander.Steffen@infineon.com>, Peter Rosin
-	 <peda@axentia.se>
-Cc: linux-kernel@vger.kernel.org, Peter Huewe <peterhuewe@gmx.de>, Jason
- Gunthorpe <jgg@ziepe.ca>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>,  Brian Norris <computersforpeace@gmail.com>,
- Gregory Fong <gregory.0xf0@gmail.com>, Florian Fainelli
- <f.fainelli@gmail.com>, bcm-kernel-feedback-list@broadcom.com, Sekhar Nori
- <nsekhar@ti.com>, Kevin Hilman <khilman@kernel.org>, Haavard Skinnemoen
- <hskinnemoen@gmail.com>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski
- <krzk@kernel.org>, Orson Zhai <orsonzhai@gmail.com>, Baolin Wang
- <baolin.wang@linaro.org>, Chunyan Zhang <zhang.lyra@gmail.com>, Wolfram
- Sang <wsa@the-dreams.de>, Guenter Roeck <linux@roeck-us.net>, Crt Mori
- <cmo@melexis.com>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack
- <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter
- Meerwald-Stadler <pmeerw@pmeerw.net>, Dmitry Torokhov
- <dmitry.torokhov@gmail.com>, Antti Palosaari <crope@iki.fi>, Mauro Carvalho
- Chehab <mchehab@kernel.org>, Michael Krufky <mkrufky@linuxtv.org>, Lee
- Jones <lee.jones@linaro.org>,  linux-integrity@vger.kernel.org,
- linux-i2c@vger.kernel.org,  linux-arm-kernel@lists.infradead.org,
- linux-samsung-soc@vger.kernel.org,  linux-iio@vger.kernel.org,
- linux-input@vger.kernel.org,  linux-media@vger.kernel.org
-Date: Tue, 26 Jun 2018 15:07:59 +0300
-In-Reply-To: <6169da633eab7e68d645e6b933b605dcc9ae09f1.camel@linux.intel.com>
+Return-Path: <SRS0=BSd9=JG=axentia.se=peda@kernel.org>
+From: Peter Rosin <peda@axentia.se>
+To: linux-kernel@vger.kernel.org
+Cc: Peter Rosin <peda@axentia.se>,
+	Peter Huewe <peterhuewe@gmx.de>,
+	Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Brian Norris <computersforpeace@gmail.com>,
+	Gregory Fong <gregory.0xf0@gmail.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	bcm-kernel-feedback-list@broadcom.com,
+	Sekhar Nori <nsekhar@ti.com>,
+	Kevin Hilman <khilman@kernel.org>,
+	Haavard Skinnemoen <hskinnemoen@gmail.com>,
+	Kukjin Kim <kgene@kernel.org>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Orson Zhai <orsonzhai@gmail.com>,
+	Baolin Wang <baolin.wang@linaro.org>,
+	Chunyan Zhang <zhang.lyra@gmail.com>,
+	Wolfram Sang <wsa@the-dreams.de>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Crt Mori <cmo@melexis.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Antti Palosaari <crope@iki.fi>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	Michael Krufky <mkrufky@linuxtv.org>,
+	Lee Jones <lee.jones@linaro.org>,
+	linux-integrity@vger.kernel.org,
+	linux-i2c@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org,
+	linux-media@vger.kernel.org
+Subject: [PATCH v2 02/10] i2c: mux: pca9541: switch to i2c_lock_bus(..., I2C_LOCK_SEGMENT)
+Date: Wed, 20 Jun 2018 07:17:55 +0200
+Message-Id: <20180620051803.12206-3-peda@axentia.se>
+In-Reply-To: <20180620051803.12206-1-peda@axentia.se>
 References: <20180620051803.12206-1-peda@axentia.se>
-	 <20180620051803.12206-2-peda@axentia.se>
-	 <20180625102454.GA3845@linux.intel.com>
-	 <7703d6a2-b22c-104c-7390-b5143a504725@infineon.com>
-	 <6169da633eab7e68d645e6b933b605dcc9ae09f1.camel@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+MIME-Version: 1.0
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, 2018-06-26 at 15:05 +0300, Jarkko Sakkinen wrote:
-> On Tue, 2018-06-26 at 12:07 +0200, Alexander Steffen wrote:
-> > On 25.06.2018 12:24, Jarkko Sakkinen wrote:
-> > > On Wed, Jun 20, 2018 at 07:17:54AM +0200, Peter Rosin wrote:
-> > > > Locking the root adapter for __i2c_transfer will deadlock if the
-> > > > device sits behind a mux-locked I2C mux. Switch to the finer-grained
-> > > > i2c_lock_bus with the I2C_LOCK_SEGMENT flag. If the device does not
-> > > > sit behind a mux-locked mux, the two locking variants are equivalent.
-> > > > 
-> > > > Signed-off-by: Peter Rosin <peda@axentia.se>
-> > > 
-> > > Studied enough so that I can give
-> > > 
-> > > Reviewed-by: Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
-> > > 
-> > > Do not have hardware to test this, however.
-> > 
-> > I don't have a mux-locked I2C mux either, but at least I can confirm 
-> > that this change did not break my existing test setup (SLB9635/SLB9645 
-> > on Raspberry Pi 2B).
-> > 
-> > Tested-by: Alexander Steffen <Alexander.Steffen@infineon.com>
-> > 
-> > Alexander
-> 
-> Given the scope of the change and since analogous change works for
-> every other subsystem, this should be enough! Thank you.
+Locking the root adapter for __i2c_transfer will deadlock if the
+device sits behind a mux-locked I2C mux. Switch to the finer-grained
+i2c_lock_bus with the I2C_LOCK_SEGMENT flag. If the device does not
+sit behind a mux-locked mux, the two locking variants are equivalent.
 
-It is now applied to my tree (master). I will move it to the
-next branch once James has updated security/next-general.
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ drivers/i2c/muxes/i2c-mux-pca9541.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-/Jarkko
+diff --git a/drivers/i2c/muxes/i2c-mux-pca9541.c b/drivers/i2c/muxes/i2c-mux-pca9541.c
+index 6a39adaf433f..bc7c8cee5a8c 100644
+--- a/drivers/i2c/muxes/i2c-mux-pca9541.c
++++ b/drivers/i2c/muxes/i2c-mux-pca9541.c
+@@ -345,11 +345,11 @@ static int pca9541_probe(struct i2c_client *client,
+ 
+ 	/*
+ 	 * I2C accesses are unprotected here.
+-	 * We have to lock the adapter before releasing the bus.
++	 * We have to lock the I2C segment before releasing the bus.
+ 	 */
+-	i2c_lock_adapter(adap);
++	i2c_lock_bus(adap, I2C_LOCK_SEGMENT);
+ 	pca9541_release_bus(client);
+-	i2c_unlock_adapter(adap);
++	i2c_unlock_bus(adap, I2C_LOCK_SEGMENT);
+ 
+ 	/* Create mux adapter */
+ 
+-- 
+2.11.0
