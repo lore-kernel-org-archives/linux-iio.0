@@ -1,78 +1,74 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga03.intel.com ([134.134.136.65]:54139 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S935245AbeFMTY7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 13 Jun 2018 15:24:59 -0400
-Date: Thu, 14 Jun 2018 03:23:53 +0800
-From: kbuild test robot <lkp@intel.com>
+Return-Path: <SRS0=QMXo=JG=gmail.com=robherring2@kernel.org>
+Date: Wed, 20 Jun 2018 09:58:15 -0600
+From: Rob Herring <robh@kernel.org>
 To: Borys Movchan <borys.movchan@axis.com>
-Cc: kbuild-all@01.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, Borys Movchan <borysmn@axis.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Jeff LaBundy <jeff@labundy.com>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Brian Masney <masneyb@onstation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/2] iio: add ISL29033 Ultra-Low Lux
- ambient-light-sensor
-Message-ID: <201806140109.tvP88cyu%fengguang.wu@intel.com>
-References: <20180613140043.5802-2-borys.movchan@axis.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	Borys Movchan <borysmn@axis.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Mark Rutland <mark.rutland@arm.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 1/2] dt-bindings: iio: light: add ISL29033 device
+ bindings
+Message-ID: <20180620155815.GA10569@rob-hp-laptop>
+References: <20180613140043.5802-1-borys.movchan@axis.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20180613140043.5802-2-borys.movchan@axis.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <20180613140043.5802-1-borys.movchan@axis.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Borys,
+On Wed, Jun 13, 2018 at 04:00:15PM +0200, Borys Movchan wrote:
+> From: Borys Movchan <borysmn@axis.com>
 
-Thank you for the patch! Perhaps something to improve:
+Commit msg missing
 
-[auto build test WARNING on iio/togreg]
-[also build test WARNING on v4.17 next-20180613]
-[if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
+> 
+> Signed-off-by: Borys Movchan <borys.movchan@axis.com>
+> ---
+>  .../devicetree/bindings/iio/light/isl29033.txt         | 18 ++++++++++++++++++
+>  1 file changed, 18 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/light/isl29033.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/light/isl29033.txt b/Documentation/devicetree/bindings/iio/light/isl29033.txt
+> new file mode 100644
+> index 000000000000..988e40acc6ed
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/light/isl29033.txt
 
-url:    https://github.com/0day-ci/linux/commits/Borys-Movchan/dt-bindings-iio-light-add-ISL29033-device-bindings/20180613-220725
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-reproduce:
-        # apt-get install sparse
-        make ARCH=x86_64 allmodconfig
-        make C=1 CF=-D__CHECK_ENDIAN__
+Preferred name if there only one compatible is the full compatible 
+string plus '.txt'.
 
+> @@ -0,0 +1,18 @@
+> +Intersil ISL29033 Ultra-Low Lux, Low Power, Integrated Digital Ambient Light Sensor
+> +
+> +Required properties:
+> +  - compatible : Must be "isil,isl29033".
+> +  - reg: the I2C address of the device
+> +
+> +Optional properties:
+> +  - isil,rext-kohms: External resistor nominal in kOhms used for ADC
+> +    reference. If not specified, 499 kOhm value will be used.
 
-sparse warnings: (new ones prefixed by >>)
+-ohms and -micro-ohms are the documented units. Please use '-ohms' 
+unless there is a compelling reason not to.
 
->> drivers/iio/light/isl29033.c:235:15: sparse: cast to restricted __be16
->> drivers/iio/light/isl29033.c:235:15: sparse: cast to restricted __be16
->> drivers/iio/light/isl29033.c:235:15: sparse: cast to restricted __be16
->> drivers/iio/light/isl29033.c:235:15: sparse: cast to restricted __be16
+> +
+> +Example:
+> +
+> +        als_sensor@44 {
 
-vim +235 drivers/iio/light/isl29033.c
+light-sensor is the documented node name for ALSs.
 
-   220	
-   221	static int isl29033_read_sensor_input(struct isl29033_chip *chip)
-   222	{
-   223		int ret;
-   224		u16 val;
-   225		struct device *dev = regmap_get_device(chip->regmap);
-   226	
-   227		ret = regmap_bulk_read(chip->regmap, ISL29033_REG_ADD_DATA_LSB,
-   228					(u8 *)&val, 2);
-   229		if (ret < 0) {
-   230			dev_err(dev,
-   231				"Data bulk read error %d\n", ret);
-   232			return ret;
-   233		}
-   234	
- > 235		val = be16_to_cpu(val);
-   236		dev_vdbg(dev, "Data read: %x\n", val);
-   237	
-   238		return val;
-   239	}
-   240	
-
----
-0-DAY kernel test infrastructure                Open Source Technology Center
-https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+> +            compatible = "isil,isl29033";
+> +            reg = <0x44>;
+> +            isil,rext-kohms = <1000>;
+> +        };
+> +
+> -- 
+> 2.11.0
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe devicetree" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
