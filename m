@@ -1,444 +1,528 @@
-Return-Path: <SRS0=Qdne=JH=huawei.com=jonathan.cameron@kernel.org>
-Date: Thu, 21 Jun 2018 14:23:26 +0100
-From: Jonathan Cameron <jonathan.cameron@huawei.com>
-To: Himanshu Jha <himanshujha199640@gmail.com>
-CC: <jic23@kernel.org>, <linux-iio@vger.kernel.org>, <lars@metafoo.de>,
-	<pmeerw@pmeerw.net>, <daniel.baluta@gmail.com>
-Subject: Re: [RFC 1/3] iio: imu: bme680: Add initial support for Bosch
- BME680
-Message-ID: <20180621142326.00002c9f@huawei.com>
-In-Reply-To: <1529562877-9357-2-git-send-email-himanshujha199640@gmail.com>
+Return-Path: <SRS0=tcBH=JH=gmail.com=himanshujha199640@kernel.org>
+From: Himanshu Jha <himanshujha199640@gmail.com>
+To: jic23@kernel.org,
+	linux-iio@vger.kernel.org
+Cc: lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	daniel.baluta@gmail.com,
+	Himanshu Jha <himanshujha199640@gmail.com>
+Subject: [RFC 2/3] iio: imu: bme680: Add temperaure, pressure & humidity channels
+Date: Thu, 21 Jun 2018 12:04:36 +0530
+Message-Id: <1529562877-9357-3-git-send-email-himanshujha199640@gmail.com>
+In-Reply-To: <1529562877-9357-1-git-send-email-himanshujha199640@gmail.com>
 References: <1529562877-9357-1-git-send-email-himanshujha199640@gmail.com>
-	<1529562877-9357-2-git-send-email-himanshujha199640@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 21 Jun 2018 12:04:35 +0530
-Himanshu Jha <himanshujha199640@gmail.com> wrote:
+Add temperature,pressure,humidity channel function definitions to read
+raw values from the channels in bme680_read_*() and calibrate them
+to get the required readings in bme680_compensate_*() using the
+calibration parameters. These calibration parameters(read-only) are
+stored in the chip's NVM memory at the time of production and are
+used to get compensated readings for various channels.
 
-> Implement a minimal probe function to register the device to the
-> kernel. The probe does a simple power on reset and then checks for
-> chip id.
-> 
-> Datasheet:
-> https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BME680-DS001-00.pdf
-> 
-> Cc: Daniel Baluta <daniel.baluta@gmail.com>
-> Signed-off-by: Himanshu Jha <himanshujha199640@gmail.com>
+The various channels' oversampling ratio and IIR filter configurations
+are handled by bme680_chip_config().
 
-Looks very nice.  I put a few minor comments inline, but all in the
-'nice' to have category.
+Cc: Daniel Baluta <daniel.baluta@gmail.com>
+Signed-off-by: Himanshu Jha <himanshujha199640@gmail.com>
+---
+ drivers/iio/imu/bme680/bme680_core.c | 434 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 430 insertions(+), 4 deletions(-)
 
-I'm traveling this week so will get to the other patches and your
-general questions but might not be terribly quick about it!
-
-Jonathan
-
-> ---
->  drivers/iio/imu/Kconfig              |   1 +
->  drivers/iio/imu/Makefile             |   1 +
->  drivers/iio/imu/bme680/Kconfig       |  32 +++++++++++
->  drivers/iio/imu/bme680/Makefile      |   6 +++
->  drivers/iio/imu/bme680/bme680.h      |  11 ++++
->  drivers/iio/imu/bme680/bme680_core.c | 101
-> +++++++++++++++++++++++++++++++++++
-> drivers/iio/imu/bme680/bme680_i2c.c  |  56 +++++++++++++++++++
-> drivers/iio/imu/bme680/bme680_spi.c  |  49 +++++++++++++++++ 8 files
-> changed, 257 insertions(+) create mode 100644
-> drivers/iio/imu/bme680/Kconfig create mode 100644
-> drivers/iio/imu/bme680/Makefile create mode 100644
-> drivers/iio/imu/bme680/bme680.h create mode 100644
-> drivers/iio/imu/bme680/bme680_core.c create mode 100644
-> drivers/iio/imu/bme680/bme680_i2c.c create mode 100644
-> drivers/iio/imu/bme680/bme680_spi.c
-> 
-> diff --git a/drivers/iio/imu/Kconfig b/drivers/iio/imu/Kconfig
-> index 156630a..cb7d2c0 100644
-> --- a/drivers/iio/imu/Kconfig
-> +++ b/drivers/iio/imu/Kconfig
-> @@ -26,6 +26,7 @@ config ADIS16480
->  	  ADIS16485, ADIS16488 inertial sensors.
->  
->  source "drivers/iio/imu/bmi160/Kconfig"
-> +source "drivers/iio/imu/bme680/Kconfig"
->  
->  config KMX61
->  	tristate "Kionix KMX61 6-axis accelerometer and magnetometer"
-> diff --git a/drivers/iio/imu/Makefile b/drivers/iio/imu/Makefile
-> index 68629c68..6c8c937 100644
-> --- a/drivers/iio/imu/Makefile
-> +++ b/drivers/iio/imu/Makefile
-> @@ -15,6 +15,7 @@ adis_lib-$(CONFIG_IIO_ADIS_LIB_BUFFER) +=
-> adis_buffer.o obj-$(CONFIG_IIO_ADIS_LIB) += adis_lib.o
->  
->  obj-y += bmi160/
-> +obj-y += bme680/
->  obj-y += inv_mpu6050/
->  
->  obj-$(CONFIG_KMX61) += kmx61.o
-> diff --git a/drivers/iio/imu/bme680/Kconfig
-> b/drivers/iio/imu/bme680/Kconfig new file mode 100644
-> index 0000000..71c392b
-> --- /dev/null
-> +++ b/drivers/iio/imu/bme680/Kconfig
-> @@ -0,0 +1,32 @@
-> +#
-> +# Bosch BME680 Driver
-> +#
-> +
-> +config BME680
-> +	tristate
-> +	select IIO_BUFFER
-> +
-> +config BME680_I2C
-> +	tristate "Bosch BME680 I2C Driver"
-> +	depends on I2C
-
-Hmm. We started moving a while above to simplifying the various config
-options by just building in spi or i2c whenever the requirements were
-met.  As you can see here the cost is very low and there are definite
-benefits to having only one visible config option rather than 2.
-
-> +	select BME680
-> +	select REGMAP_I2C
-> +	help
-> +	  If you say yes here you get support for BME680 on I2C with
-> +	  temperature, pressure, humidity & gas sensing.
-> +
-> +	  This driver can also be built as a module. If so, the
-> module will be
-> +	  called bme68_i2c.
-> +
-> +config BME680_SPI
-> +	tristate "Bosch BME680 SPI Driver"
-> +	depends on SPI
-> +	select BME680
-> +	select REGMAP_SPI
-> +	help
-> +	  If you say yes here you get support for BME680 on SPI with
-> +	  temperature, pressure, humidity & gas sensing.
-> +
-> +	  This driver can also be built as a module. If so, the
-> module will be
-> +	  called bme68_spi.
-> +
-> diff --git a/drivers/iio/imu/bme680/Makefile
-> b/drivers/iio/imu/bme680/Makefile new file mode 100644
-> index 0000000..562a708
-> --- /dev/null
-> +++ b/drivers/iio/imu/bme680/Makefile
-> @@ -0,0 +1,6 @@
-> +#
-> +# Makefile for Bosch BME680
-> +#
-> +obj-$(CONFIG_BME680) += bme680_core.o
-> +obj-$(CONFIG_BME680_I2C) += bme680_i2c.o
-> +obj-$(CONFIG_BME680_SPI) += bme680_spi.o
-> diff --git a/drivers/iio/imu/bme680/bme680.h
-> b/drivers/iio/imu/bme680/bme680.h new file mode 100644
-> index 0000000..9ee0cf5
-> --- /dev/null
-> +++ b/drivers/iio/imu/bme680/bme680.h
-> @@ -0,0 +1,11 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-
-I think the convention everyone is settling on is c++ style comment
-for SPDX...  Could be wrong though ;)
-
-> +#ifndef BME680_H_
-> +#define BME680_H_
-> +
-> +extern const struct regmap_config bme680_regmap_config;
-> +
-> +int bme680_core_probe(struct device *dev, struct regmap *regmap,
-> +		      const char *name, bool use_spi);
-> +void bme680_core_remove(struct device *dev);
-> +
-> +#endif  /* BME680_H_ */
-> diff --git a/drivers/iio/imu/bme680/bme680_core.c
-> b/drivers/iio/imu/bme680/bme680_core.c new file mode 100644
-> index 0000000..a6d013d
-> --- /dev/null
-> +++ b/drivers/iio/imu/bme680/bme680_core.c
-> @@ -0,0 +1,101 @@
-> +/*
-> + * Bosch BME680 - Temperature, Pressure, Humidity & Gas Sensor
-> + *
-> + * IIO core driver - I2C & SPI bus support
-> + */
-> +#include <linux/iio/iio.h>
-> +#include <linux/module.h>
-> +#include <linux/regmap.h>
-> +
-> +#define BME680_REG_CHIP_I2C_ID	0xD0
-> +#define BME680_REG_CHIP_SPI_ID	0x50
-> +#define BME680_CHIP_ID_VAL	0x61
-> +#define BME680_SOFT_RESET	0xE0
-So is this one an address?  Make sure the naming is consistent.
-
-A nice trick from readability point of view is to use different
-formatting for the values and fields within a register.  A good choice
-is to put a few more spaces after the #define. e.g.
-
-#define BOB_REG        0x1
-#define   BOB_FIELD_1  BIT(30)
-
-etc
-> +#define BME680_CMD_SOFTRESET	0xB6
-> +
-> +struct bme680_data {
-> +	struct regmap *regmap;
-> +};
-> +
-> +const struct regmap_config bme680_regmap_config = {
-> +	.reg_bits = 8,
-> +	.val_bits = 8,
-> +};
-> +EXPORT_SYMBOL(bme680_regmap_config);
-> +
-> +static const struct iio_info bme680_info = {
-
-I'll assume this does something useful later, but as below, a comment
-to that effect here would be nice from a lazy reviewer point of view.
-You then drop the comment in the patch that adds something here.
-
-> +};
-> +
-> +static int bme680_chip_init(struct bme680_data *data, bool use_spi)
-> +{
-> +	struct device *dev = regmap_get_device(data->regmap);
-> +	unsigned int val;
-> +	int ret;
-> +
-> +	/* Power on Soft Reset */
-> +	ret = regmap_write(data->regmap, BME680_SOFT_RESET, BME680_CMD_SOFTRESET);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	if (!use_spi) {
-> +		ret = regmap_read(data->regmap, BME680_REG_CHIP_I2C_ID, &val);
-> +	} else {
-> +		ret = regmap_read(data->regmap, BME680_REG_CHIP_SPI_ID, &val);
-> +	}
-
-Brackets never needed around a single statement.
-
-It's a bit of a pain that you need to have different code paths in here
-for i2c and spi.  Those should really only exist in the individual
-drivers.    It is a bit heavy weight but I'd like to see this done
-with a callback that is provided to the core probe function.
-
-> +
-> +	if (ret < 0) {
-> +		dev_err(dev, "Error reading chip ID\n");
-> +		return ret;
-> +	}
-> +
-> +	if (val != BME680_CHIP_ID_VAL) {
-> +		dev_err(dev, "Wrong chip ID, got %x expected %x\n",
-> +				val, BME680_CHIP_ID_VAL);
-> +		return -ENODEV;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +int bme680_core_probe(struct device *dev, struct regmap *regmap,
-> +		      const char *name, bool use_spi)
-> +{
-> +	struct iio_dev *indio_dev;
-> +	struct bme680_data *data;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	data = iio_priv(indio_dev);
-> +	dev_set_drvdata(dev, indio_dev);
-> +	data->regmap = regmap;
-> +
-> +	ret = bme680_chip_init(data, use_spi);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	indio_dev->dev.parent = dev;
-> +	indio_dev->name = name;
-
-I think name can end up set to NULL at the moment.  That isn't a good
-idea (though I may have missed something)
-
-> +	indio_dev->info = &bme680_info;
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0)
-> +		return ret;
-> +	return 0;
-
-return iio_device_register(indio_dev);
-
-It will never return a positive so no need to worry about that case.
-
-> +}
-> +EXPORT_SYMBOL_GPL(bme680_core_probe);
-> +
-> +void bme680_core_remove(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct bme680_data *data = iio_priv(indio_dev);
-> +
-> +	iio_device_unregister(indio_dev);
-
-I'll assume that it becomes necessary later to not do this with the
-managed interfaces.  A nice little thing to do in this sort of case
-is put a comment in that is remove in the patch that follows and 
-causes this requirement.
-
-> +}
-> +EXPORT_SYMBOL_GPL(bme680_core_remove);
-> +
-> +MODULE_AUTHOR("Himanshu Jha <himanshujha199640@gmail.com>");
-> +MODULE_DESCRIPTION("Bosch BME680 Driver");
-> +MODULE_LICENSE("GPL v2");
-> diff --git a/drivers/iio/imu/bme680/bme680_i2c.c
-> b/drivers/iio/imu/bme680/bme680_i2c.c new file mode 100644
-> index 0000000..1c8223e
-> --- /dev/null
-> +++ b/drivers/iio/imu/bme680/bme680_i2c.c
-> @@ -0,0 +1,56 @@
-> +/*
-
-SPDX license headers needed for all files.
-
-> + * 7-Bit I2C slave address is:
-> + *	- 0x76 if SDO is pulled to GND
-> + *	- 0x77 if SDO is pulled to VDDIO
-> + */
-> +#include <linux/i2c.h>
-> +#include <linux/module.h>
-> +#include <linux/regmap.h>
-> +
-> +#include "bme680.h"
-> +
-> +static int bme680_i2c_probe(struct i2c_client *client,
-> +			    const struct i2c_device_id *id)
-> +{
-> +	struct regmap *regmap;
-> +	const char *name = NULL;
-> +
-> +	regmap = devm_regmap_init_i2c(client, &bme680_regmap_config);
-> +	if (IS_ERR(regmap)) {
-> +		dev_err(&client->dev, "Failed to register i2c regmap
-> %d\n",
-> +				(int)PTR_ERR(regmap));
-> +		return PTR_ERR(regmap);
-> +	}
-> +
-> +	if (id)
-> +		name = id->name;
-> +
-> +	return bme680_core_probe(&client->dev, regmap, name, false);
-> +}
-> +
-> +static int bme680_i2c_remove(struct i2c_client *client)
-> +{
-> +	bme680_core_remove(&client->dev);
-
-You could potentially use the devm_add_action inside the
-bme680_core_probe to add the remove action to be called on device
-removal.  It's basically a one time use devm_* registration function.
-
-That would get rid of the need to explicitly carry remove
-functions for both spi and i2c.
-
-https://elixir.bootlin.com/linux/latest/source/drivers/base/devres.c#L710
-
-It is something I only came across myself a few months back so not one
-that actually gets used that much 'yet'
-
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct i2c_device_id bme680_i2c_id[] = {
-> +	{"bme680", 0},
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(i2c, bme680_i2c_id);
-> +
-> +static struct i2c_driver bme680_i2c_driver = {
-> +	.driver = {
-> +		.name = "bme680_i2c",
-> +	},
-> +	.probe = bme680_i2c_probe,
-> +	.remove = bme680_i2c_remove,
-> +	.id_table = bme680_i2c_id,
-> +};
-> +module_i2c_driver(bme680_i2c_driver);
-> +
-> +MODULE_AUTHOR("Himanshu Jha <himanshujha199640@gmail.com>");
-> +MODULE_DESCRIPTION("BME680 I2C driver");
-> +MODULE_LICENSE("GPL v2");
-> diff --git a/drivers/iio/imu/bme680/bme680_spi.c
-> b/drivers/iio/imu/bme680/bme680_spi.c new file mode 100644
-> index 0000000..c135924
-> --- /dev/null
-> +++ b/drivers/iio/imu/bme680/bme680_spi.c
-> @@ -0,0 +1,49 @@
-> +/*
-
-Needs a license spec //SPDX preferred.
-
-Also, this is a one line comment, even thought it is the top of the
-file, please use the standard one line comment syntax.
-
-> + * BME680 - SPI Driver
-> + */
-> +#include <linux/module.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/regmap.h>
-> +
-> +#include "bme680.h"
-> +
-> +static int bme680_spi_probe(struct spi_device *spi)
-> +{
-> +	struct regmap *regmap;
-> +	const struct spi_device_id *id = spi_get_device_id(spi);
-> +
-> +	regmap = devm_regmap_init_spi(spi, &bme680_regmap_config);
-> +	if (IS_ERR(regmap)) {
-> +		dev_err(&spi->dev, "Failed to register spi regmap
-> %d\n",
-> +				(int)PTR_ERR(regmap));
-> +		return PTR_ERR(regmap);
-> +	}
-> +	return bme680_core_probe(&spi->dev, regmap, id->name, true);
-> +}
-> +
-> +static int bme680_spi_remove(struct spi_device *spi)
-> +{
-> +	bme680_core_remove(&spi->dev);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct spi_device_id bme680_spi_id[] = {
-> +	{"bme680", 0},
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(spi, bme680_spi_id);
-> +
-> +static struct spi_driver bme680_spi_driver = {
-> +	.driver = {
-> +		.name = "bme680_spi",
-> +	},
-> +	.probe = bme680_spi_probe,
-> +	.remove = bme680_spi_remove,
-> +	.id_table = bme680_spi_id,
-> +};
-> +module_spi_driver(bme680_spi_driver);
-> +
-> +MODULE_AUTHOR("Himanshu Jha <himanshujha199640@gmail.com>");
-> +MODULE_DESCRIPTION("Bosch BME680 SPI driver");
-> +MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/imu/bme680/bme680_core.c b/drivers/iio/imu/bme680/bme680_core.c
+index a6d013d..05712de 100644
+--- a/drivers/iio/imu/bme680/bme680_core.c
++++ b/drivers/iio/imu/bme680/bme680_core.c
+@@ -6,15 +6,73 @@
+ #include <linux/iio/iio.h>
+ #include <linux/module.h>
+ #include <linux/regmap.h>
++#include <linux/log2.h>
++#include <linux/iio/sysfs.h>
+ 
+ #define BME680_REG_CHIP_I2C_ID	0xD0
+ #define BME680_REG_CHIP_SPI_ID	0x50
+ #define BME680_CHIP_ID_VAL	0x61
+ #define BME680_SOFT_RESET	0xE0
+ #define BME680_CMD_SOFTRESET	0xB6
++#define BME680_REG_MEAS_STAT	0x1D
++
++#define BME680_OSRS_TEMP_X(osrs_t)      ((osrs_t) << 5)
++#define BME680_OSRS_PRESS_X(osrs_p)     ((osrs_p) << 2)
++#define BME680_OSRS_HUMID_X(osrs_h)	((osrs_h) << 0)
++
++#define BME680_REG_TEMP_MSB		0x22
++#define BME680_REG_PRESS_MSB		0x1F
++#define BM6880_REG_HUMIDITY_MSB		0x25
++
++#define BME680_REG_CTRL_HUMIDITY	0x72
++#define BME680_OSRS_HUMIDITY_MASK       GENMASK(2, 0)
++
++#define BME680_REG_CTRL_MEAS		0x74
++#define BME680_OSRS_TEMP_MASK		GENMASK(7, 5)
++#define BME680_OSRS_PRESS_MASK		GENMASK(4, 2)
++#define BME680_MODE_MASK		GENMASK(1, 0)
++
++#define BME680_MODE_FORCED		BIT(0)
++
++#define BME680_REG_CONFIG		0x75
++#define BME680_FILTER_MASK		GENMASK(4, 2)
++#define BME680_FILTER_4X		BIT(2)
++
++/* TEMP/PRESS/HUMID reading skipped */
++#define BME680_MEAS_SKIPPED		0x8000
++
++/* 
++ * TODO: the following structs stores various calibration
++ * paramters which are read from the sensor's NVM and used in
++ * the compensation function to obtain processed output.
++ */
++struct bme680_calib {
++};
+ 
+ struct bme680_data {
+ 	struct regmap *regmap;
++	struct device *dev;
++	const struct bme680_chip_info *chip_info;
++	struct bme680_calib bme680;
++	u8 oversampling_temp;
++	u8 oversampling_press;
++	u8 oversampling_humid;
++};
++
++struct bme680_chip_info {
++	const int *oversampling_temp_avail;
++	int num_oversampling_temp_avail;
++
++	const int *oversampling_press_avail;
++	int num_oversampling_press_avail;
++
++	const int *oversampling_humid_avail;
++	int num_oversampling_humid_avail;
++
++	int (*chip_config)(struct bme680_data *data);
++	int (*read_temp)(struct bme680_data *data, int *val);
++	int (*read_press)(struct bme680_data *data, int *val);
++	int (*read_humid)(struct bme680_data *data, int *val);
+ };
+ 
+ const struct regmap_config bme680_regmap_config = {
+@@ -23,9 +81,339 @@ const struct regmap_config bme680_regmap_config = {
+ };
+ EXPORT_SYMBOL(bme680_regmap_config);
+ 
++static const struct iio_chan_spec bme680_channels[] = {
++	{
++		.type = IIO_TEMP,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
++				      BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
++	},
++	{
++		.type = IIO_PRESSURE,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
++				      BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
++	},
++	{
++		.type = IIO_HUMIDITYRELATIVE,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
++				      BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
++	},
++};
++
++static const int bme680_oversampling_avail[] = { 1, 2, 4, 8, 16 };
++
++/* TODO: read calibration parameters from the sensor's NVM */
++static int bme680_read_calib(struct bme680_data *data,
++			     struct bme680_calib *calib)
++{
++	memset(calib, 0, sizeof(*calib));
++	return 0;
++}
++
++/* TODO: compensate raw temp readings using temp calibration parameters */
++static s16 bme680_compensate_temp(struct bme680_data *data,
++				  s32 adc_temp)
++{
++	return adc_temp;
++}
++
++/* TODO: compensate raw press readings using press calibration parameters */
++static u32 bme680_compensate_press(struct bme680_data *data,
++				   u32 adc_press)
++{
++	return adc_press;
++}
++
++/* TODO: compensate raw humid readings using humid calibration parameters */
++static u32 bme680_compensate_humid(struct bme680_data *data,
++				   u16 adc_humid)
++{
++	return adc_humid;
++}
++
++static int bme680_read_temp(struct bme680_data *data,
++			    int *val)
++{
++	int ret;
++	__be32 tmp = 0;
++	u32 adc_temp;
++	s16 comp_temp;
++
++	/* Set Forced Mode & sampling rate before reading raw data */
++	ret = data->chip_info->chip_config(data);
++	if (ret < 0) {
++		dev_err(data->dev,
++			"failed to set chip config %s\n", __func__);
++	}
++
++	ret = regmap_bulk_read(data->regmap, BME680_REG_TEMP_MSB,
++				(u8 *) &tmp, 3);
++	if (ret < 0) {
++		dev_err(data->dev, "failed to read temperature\n");
++		return ret;
++	}
++
++	adc_temp = be32_to_cpu(tmp) >> 12;
++	if (adc_temp == BME680_MEAS_SKIPPED) {
++		/* reading was skipped */
++		dev_err(data->dev, "reading temperature skipped\n");
++		return -EIO;
++	}
++	comp_temp = bme680_compensate_temp(data, adc_temp);
++
++	*val = comp_temp;
++	return IIO_VAL_INT;
++
++	return 0;
++}
++
++static int bme680_read_press(struct bme680_data *data,
++			     int *val)
++{
++	int ret;
++	__be32 tmp = 0;
++	u32 comp_press, adc_press;
++
++	ret = regmap_bulk_read(data->regmap, BME680_REG_PRESS_MSB,
++				(u8 *) &tmp, 3);
++	if (ret < 0) {
++		dev_err(data->dev, "failed to read pressure\n");
++		return ret;
++	}
++
++	adc_press = be32_to_cpu(tmp) >> 12;
++	if (adc_press == BME680_MEAS_SKIPPED) {
++		/* reading was skipped */
++		dev_err(data->dev, "reading pressure skipped\n");
++		return -EIO;
++	}
++	comp_press = bme680_compensate_press(data, adc_press);
++
++	*val = comp_press;
++	return IIO_VAL_INT;
++}
++
++static int bme680_read_humid(struct bme680_data *data,
++			     int *val)
++{
++	int ret;
++	__be16 tmp = 0;
++	u16 adc_humidity;
++	u32 comp_humidity;
++
++	ret = regmap_bulk_read(data->regmap, BM6880_REG_HUMIDITY_MSB,
++				(u8 *) &tmp, 2);
++	if (ret < 0) {
++		dev_err(data->dev, "failed to read humidity\n");
++		return ret;
++	}
++
++	adc_humidity = be16_to_cpu(tmp);
++	if (adc_humidity == BME680_MEAS_SKIPPED) {
++		/* reading was skipped */
++		dev_err(data->dev, "reading humidity skipped\n");
++		return -EIO;
++	}
++	comp_humidity = bme680_compensate_humid(data, adc_humidity);
++
++	*val = comp_humidity;
++	return IIO_VAL_INT;
++}
++
++static int bme680_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val, int *val2, long mask)
++{
++	struct bme680_data *data = iio_priv(indio_dev);
++	int ret = 0;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_PROCESSED:
++		switch (chan->type) {
++		case IIO_TEMP:
++			ret = data->chip_info->read_temp(data, val);
++			break;
++		case IIO_PRESSURE:
++			ret = data->chip_info->read_press(data, val);
++			break;
++		case IIO_HUMIDITYRELATIVE:
++			ret = data->chip_info->read_humid(data, val);
++			break;
++		default:
++			ret = -EINVAL;
++			break;
++		}
++		break;
++	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
++		switch (chan->type) {
++		case IIO_TEMP:
++			*val = 1 << data->oversampling_temp;
++			ret = IIO_VAL_INT;
++			break;
++		case IIO_PRESSURE:
++			*val = 1 << data->oversampling_press;
++			ret = IIO_VAL_INT;
++			break;
++		case IIO_HUMIDITYRELATIVE:
++			*val = 1 << data->oversampling_humid;
++			ret = IIO_VAL_INT;
++			break;
++		default:
++			ret = -EINVAL;
++			break;
++		}
++	}
++
++	return ret;
++}
++
++static int bme680_write_oversampling_ratio_temp(struct bme680_data *data,
++						int val)
++{
++	const int *avail = data->chip_info->oversampling_temp_avail;
++	const int n = data->chip_info->num_oversampling_temp_avail;
++	int i;
++
++	for (i = 0; i < n; ++i) {
++		if (avail[i] == val) {
++			data->oversampling_temp = ilog2(val);
++
++			return data->chip_info->chip_config(data);
++		}
++	}
++
++	return -EINVAL;
++}
++
++static int bme680_write_oversampling_ratio_press(struct bme680_data *data,
++						 int val)
++{
++	const int *avail = data->chip_info->oversampling_press_avail;
++	const int n = data->chip_info->num_oversampling_press_avail;
++	int i;
++
++	for (i = 0; i < n; ++i) {
++		if (avail[i] == val) {
++			data->oversampling_press = ilog2(val);
++
++			return data->chip_info->chip_config(data);
++		}
++	}
++
++	return -EINVAL;
++}
++
++static int bme680_write_oversampling_ratio_humid(struct bme680_data *data,
++						 int val)
++{
++	const int *avail = data->chip_info->oversampling_humid_avail;
++	const int n = data->chip_info->num_oversampling_humid_avail;
++	int i;
++
++	for (i = 0; i < n; ++i) {
++		if (avail[i] == val) {
++			data->oversampling_humid = ilog2(val);
++
++		return data->chip_info->chip_config(data);
++		}
++	}
++
++	return -EINVAL;
++}
++
++static int bme680_write_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int val, int val2, long mask)
++{
++	struct bme680_data *data = iio_priv(indio_dev);
++	int ret = 0;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
++		switch (chan->type) {
++		case IIO_TEMP:
++			ret = bme680_write_oversampling_ratio_temp(data, val);
++			break;
++		case IIO_PRESSURE:
++			ret = bme680_write_oversampling_ratio_press(data, val);
++			break;
++		case IIO_HUMIDITYRELATIVE:
++			ret = bme680_write_oversampling_ratio_humid(data, val);
++			break;
++		default:
++			ret = -EINVAL;
++			break;
++		}
++	}
++
++	return ret;
++}
++
++static const char bme680_oversampling_ratio_show[] = "1 2 4 8 16";
++
++static IIO_CONST_ATTR(oversampling_ratio_available,
++			bme680_oversampling_ratio_show);
++
++static struct attribute *bme680_attributes[] = {
++	&iio_const_attr_oversampling_ratio_available.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group bme680_attribute_group = {
++	.attrs = bme680_attributes,
++};
++
+ static const struct iio_info bme680_info = {
++	.read_raw = &bme680_read_raw,
++	.write_raw = &bme680_write_raw,
++	.attrs = &bme680_attribute_group,
+ };
+ 
++static int bme680_chip_config(struct bme680_data *data)
++{
++	int ret;
++	u8 osrs = BME680_OSRS_HUMID_X(data->oversampling_humid + 1);
++
++	/*
++	 * Highly recommended to set oversampling of humidity before
++	 * temperature/pressure oversampling.
++	 */
++	ret = regmap_update_bits(data->regmap, BME680_REG_CTRL_HUMIDITY,
++				 BME680_OSRS_HUMIDITY_MASK, osrs);
++
++	if (ret < 0) {
++		dev_err(data->dev,
++			"failed to write Ctrl_hum register\n");
++		return ret;
++	}
++	osrs = BME680_OSRS_TEMP_X(data->oversampling_temp + 1) |
++		  BME680_OSRS_PRESS_X(data->oversampling_press + 1);
++
++	ret = regmap_write_bits(data->regmap, BME680_REG_CTRL_MEAS,
++				BME680_OSRS_TEMP_MASK |
++				BME680_OSRS_PRESS_MASK |
++				BME680_MODE_MASK,
++				osrs | BME680_MODE_FORCED);
++	if (ret < 0) {
++		dev_err(data->dev,
++			"failed to write Ctrl_meas register\n");
++		return ret;
++	}
++
++	/* IIR filter settings */
++
++	ret = regmap_update_bits(data->regmap, BME680_REG_CONFIG,
++				 BME680_FILTER_MASK,
++				 BME680_FILTER_4X);
++
++	if (ret < 0) {
++		dev_err(data->dev,
++			"failed to write Config register\n");
++		return ret;
++	}
++
++	return ret;
++}
++
+ static int bme680_chip_init(struct bme680_data *data, bool use_spi)
+ {
+ 	struct device *dev = regmap_get_device(data->regmap);
+@@ -33,15 +421,15 @@ static int bme680_chip_init(struct bme680_data *data, bool use_spi)
+ 	int ret;
+ 
+ 	/* Power on Soft Reset */
+-	ret = regmap_write(data->regmap, BME680_SOFT_RESET, BME680_CMD_SOFTRESET);
++	ret = regmap_write(data->regmap, BME680_SOFT_RESET,
++			   BME680_CMD_SOFTRESET);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	if (!use_spi) {
++	if (!use_spi)
+ 		ret = regmap_read(data->regmap, BME680_REG_CHIP_I2C_ID, &val);
+-	} else {
++	else
+ 		ret = regmap_read(data->regmap, BME680_REG_CHIP_SPI_ID, &val);
+-	}
+ 
+ 	if (ret < 0) {
+ 		dev_err(dev, "Error reading chip ID\n");
+@@ -57,6 +445,22 @@ static int bme680_chip_init(struct bme680_data *data, bool use_spi)
+ 	return 0;
+ }
+ 
++static const struct bme680_chip_info bme680_chip_info = {
++	.oversampling_temp_avail = bme680_oversampling_avail,
++	.num_oversampling_temp_avail = ARRAY_SIZE(bme680_oversampling_avail),
++
++	.oversampling_press_avail = bme680_oversampling_avail,
++	.num_oversampling_press_avail = ARRAY_SIZE(bme680_oversampling_avail),
++
++	.oversampling_humid_avail = bme680_oversampling_avail,
++	.num_oversampling_press_avail = ARRAY_SIZE(bme680_oversampling_avail),
++
++	.chip_config = bme680_chip_config,
++	.read_temp = bme680_read_temp,
++	.read_press = bme680_read_press,
++	.read_humid = bme680_read_humid,
++};
++
+ int bme680_core_probe(struct device *dev, struct regmap *regmap,
+ 		      const char *name, bool use_spi)
+ {
+@@ -78,11 +482,33 @@ int bme680_core_probe(struct device *dev, struct regmap *regmap,
+ 
+ 	indio_dev->dev.parent = dev;
+ 	indio_dev->name = name;
++	indio_dev->channels = bme680_channels;
++	indio_dev->num_channels = ARRAY_SIZE(bme680_channels);
+ 	indio_dev->info = &bme680_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	data->chip_info = &bme680_chip_info;
++	data->oversampling_humid = ilog2(16);
++	data->oversampling_press = ilog2(16);
++	data->oversampling_temp = ilog2(2);
++
++	ret = data->chip_info->chip_config(data);
++	if (ret < 0) {
++		dev_err(data->dev,
++			"failed to set chip_config data\n");
++		return ret;
++	}
++	ret = bme680_read_calib(data, &data->bme680);
++	if (ret < 0) {
++		dev_err(data->dev,
++			"failed to read calibration coefficients\n");
++		return ret;
++	}
+ 
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret < 0)
+ 		return ret;
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(bme680_core_probe);
+-- 
+2.7.4
