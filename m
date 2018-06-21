@@ -6,108 +6,30 @@ Cc: lars@metafoo.de,
 	pmeerw@pmeerw.net,
 	daniel.baluta@gmail.com,
 	Himanshu Jha <himanshujha199640@gmail.com>
-Subject: [RFC 0/3] Bosch BME680 Driver 
-Date: Thu, 21 Jun 2018 12:04:34 +0530
-Message-Id: <1529562877-9357-1-git-send-email-himanshujha199640@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Subject: [RFC 1/3] iio: imu: bme680: Add initial support for Bosch BME680
+Date: Thu, 21 Jun 2018 12:04:35 +0530
+Message-Id: <1529562877-9357-2-git-send-email-himanshujha199640@gmail.com>
+In-Reply-To: <1529562877-9357-1-git-send-email-himanshujha199640@gmail.com>
+References: <1529562877-9357-1-git-send-email-himanshujha199640@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-GSoC'2018 Project: https://summerofcode.withgoogle.com/projects/#6691473790074880
-Mentor: Daniel Baluta
+Implement a minimal probe function to register the device to the kernel.
+The probe does a simple power on reset and then checks for chip id.
 
-BME680 is a 4-in-1 sensor with temperature, pressure, humidity & gas sensor
-with I2C and SPI interface support.
+Datasheet: https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BME680-DS001-00.pdf
 
-The sensor has various calibration parameters[1] to be used with raw adc data
-in the compensation functions[2] to evaluate the correct compensated reading.
-These calibration parameters are are programmed into the devices’ non-volatile
-memory (NVM) during production and cannot be altered by the customer. So, we
-are required to read those parameters once(suitably at probe) and use it
-in the compensation functions.
-
-But now the problem arises that these compensation functions, calibration
-parameters, their addresses are *not* provided in the datasheet and instead
-provided by Bosch Sensortec in their Github API[3]. The Github API has a LICENSE
-file[4] around 40 lines which I presume kernel community won't entertain.
-
-Therefore, we contacted Bosch Sensortec thrice 2 weeks ago and got no response
-so far. We stated all the problems relating to Lincensing & missing calibration
-info from the datasheet. I got to know about these missing information from the
-Github API and also looking at the various sensors supplied by the company
-such as BMP280, BME280 etc.
-
-After using their compensation function in my driver I get correct readings.
-But we can't simply use these function without their permission!
-
-For instance:
-I got a temperature reading of:
-
-	3254
-
-and if this sensor has a similar resolution as that of BMP280 which 0.01 degC
-then it is absolutely correct.
-
-	3254 * 0.01 = 32.54 degC
-
-This 0.01 degC resolution was mentioned in the BMP280 datasheet but
-there is no such information in the BME680 datasheet nor in the Github API.
-
-This is what I have assumed since after testing pressure & humidity also
-revealed similar readings and there is some possibilty that they could
-have same output resolution as they belong to the same family of sensors.
-
-For now I have placed the sensor in the IMU but this is not an IMU and there
-is no such sensor(4-in-1) in the whole IIO subsystem. So, where should it
-be placed ?
-Would it be worthwhile to create a new subdirectory "environmental" since
-it is a environmental sensor ?
-
-The sensor also has an IIR filter to remove short term fluctuations from
-the temperature and pressure readings. It has various filter coefficients
-and I have chosen the middle valued coefficient(15) from the table for now.
-
-What filter coefficient is most appropriate for the device ?
-
-Again, I asked this question too from Bosch since they discuss all these
-optimal selection of filter in "3.4 Filter selection" Pg 14 BMP280.
-
-I have used regmap API  and therefore we don't need the LSB address
-of data registers as we only care about the MSB address of the data register
-and regmap_bulk_read() handles everything fine.
-
-So, would it be worthwhile to add these LSB macros definition too ?
-They certainly will never be used!
-
-For now, this series doesn't include any of the copyrighted code from
-Bosch and I have just added them as a dummy function.
-
-I have mentioned more detailed summary in my blog[5] and would love
-any feedback on it.
-
-If anyone has contacts to Bosch Sensortec GmbH then please let me
-know.
-
-[1] https://github.com/BoschSensortec/BME680_driver/blob/313a58a9c57ad86c8df06c98521579c6cb695999/bme680_defs.h#L410
-[2] https://github.com/BoschSensortec/BME680_driver/blob/master/bme680.c#L876
-[3] https://github.com/BoschSensortec/BME680_driver
-[4] https://github.com/BoschSensortec/BME680_driver/blob/master/LICENSE
-[5] https://himanshujha199640.wordpress.com/2018/06/14/0x01bme680-temperature-channel/
-
-Himanshu Jha (3):
-  iio: imu: bme680: Add initial support for Bosch BME680
-  iio: imu: bme680: Add temperaure, pressure & humidity channels
-  iio: imu: bme680: Add ACPI support
-
+Cc: Daniel Baluta <daniel.baluta@gmail.com>
+Signed-off-by: Himanshu Jha <himanshujha199640@gmail.com>
+---
  drivers/iio/imu/Kconfig              |   1 +
  drivers/iio/imu/Makefile             |   1 +
- drivers/iio/imu/bme680/Kconfig       |  32 +++
- drivers/iio/imu/bme680/Makefile      |   6 +
- drivers/iio/imu/bme680/bme680.h      |  11 +
- drivers/iio/imu/bme680/bme680_core.c | 542 +++++++++++++++++++++++++++++++++++
- drivers/iio/imu/bme680/bme680_i2c.c  |  62 ++++
- drivers/iio/imu/bme680/bme680_spi.c  |  49 ++++
- 8 files changed, 704 insertions(+)
+ drivers/iio/imu/bme680/Kconfig       |  32 +++++++++++
+ drivers/iio/imu/bme680/Makefile      |   6 +++
+ drivers/iio/imu/bme680/bme680.h      |  11 ++++
+ drivers/iio/imu/bme680/bme680_core.c | 101 +++++++++++++++++++++++++++++++++++
+ drivers/iio/imu/bme680/bme680_i2c.c  |  56 +++++++++++++++++++
+ drivers/iio/imu/bme680/bme680_spi.c  |  49 +++++++++++++++++
+ 8 files changed, 257 insertions(+)
  create mode 100644 drivers/iio/imu/bme680/Kconfig
  create mode 100644 drivers/iio/imu/bme680/Makefile
  create mode 100644 drivers/iio/imu/bme680/bme680.h
@@ -115,5 +37,320 @@ Himanshu Jha (3):
  create mode 100644 drivers/iio/imu/bme680/bme680_i2c.c
  create mode 100644 drivers/iio/imu/bme680/bme680_spi.c
 
+diff --git a/drivers/iio/imu/Kconfig b/drivers/iio/imu/Kconfig
+index 156630a..cb7d2c0 100644
+--- a/drivers/iio/imu/Kconfig
++++ b/drivers/iio/imu/Kconfig
+@@ -26,6 +26,7 @@ config ADIS16480
+ 	  ADIS16485, ADIS16488 inertial sensors.
+ 
+ source "drivers/iio/imu/bmi160/Kconfig"
++source "drivers/iio/imu/bme680/Kconfig"
+ 
+ config KMX61
+ 	tristate "Kionix KMX61 6-axis accelerometer and magnetometer"
+diff --git a/drivers/iio/imu/Makefile b/drivers/iio/imu/Makefile
+index 68629c68..6c8c937 100644
+--- a/drivers/iio/imu/Makefile
++++ b/drivers/iio/imu/Makefile
+@@ -15,6 +15,7 @@ adis_lib-$(CONFIG_IIO_ADIS_LIB_BUFFER) += adis_buffer.o
+ obj-$(CONFIG_IIO_ADIS_LIB) += adis_lib.o
+ 
+ obj-y += bmi160/
++obj-y += bme680/
+ obj-y += inv_mpu6050/
+ 
+ obj-$(CONFIG_KMX61) += kmx61.o
+diff --git a/drivers/iio/imu/bme680/Kconfig b/drivers/iio/imu/bme680/Kconfig
+new file mode 100644
+index 0000000..71c392b
+--- /dev/null
++++ b/drivers/iio/imu/bme680/Kconfig
+@@ -0,0 +1,32 @@
++#
++# Bosch BME680 Driver
++#
++
++config BME680
++	tristate
++	select IIO_BUFFER
++
++config BME680_I2C
++	tristate "Bosch BME680 I2C Driver"
++	depends on I2C
++	select BME680
++	select REGMAP_I2C
++	help
++	  If you say yes here you get support for BME680 on I2C with
++	  temperature, pressure, humidity & gas sensing.
++
++	  This driver can also be built as a module. If so, the module will be
++	  called bme68_i2c.
++
++config BME680_SPI
++	tristate "Bosch BME680 SPI Driver"
++	depends on SPI
++	select BME680
++	select REGMAP_SPI
++	help
++	  If you say yes here you get support for BME680 on SPI with
++	  temperature, pressure, humidity & gas sensing.
++
++	  This driver can also be built as a module. If so, the module will be
++	  called bme68_spi.
++
+diff --git a/drivers/iio/imu/bme680/Makefile b/drivers/iio/imu/bme680/Makefile
+new file mode 100644
+index 0000000..562a708
+--- /dev/null
++++ b/drivers/iio/imu/bme680/Makefile
+@@ -0,0 +1,6 @@
++#
++# Makefile for Bosch BME680
++#
++obj-$(CONFIG_BME680) += bme680_core.o
++obj-$(CONFIG_BME680_I2C) += bme680_i2c.o
++obj-$(CONFIG_BME680_SPI) += bme680_spi.o
+diff --git a/drivers/iio/imu/bme680/bme680.h b/drivers/iio/imu/bme680/bme680.h
+new file mode 100644
+index 0000000..9ee0cf5
+--- /dev/null
++++ b/drivers/iio/imu/bme680/bme680.h
+@@ -0,0 +1,11 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef BME680_H_
++#define BME680_H_
++
++extern const struct regmap_config bme680_regmap_config;
++
++int bme680_core_probe(struct device *dev, struct regmap *regmap,
++		      const char *name, bool use_spi);
++void bme680_core_remove(struct device *dev);
++
++#endif  /* BME680_H_ */
+diff --git a/drivers/iio/imu/bme680/bme680_core.c b/drivers/iio/imu/bme680/bme680_core.c
+new file mode 100644
+index 0000000..a6d013d
+--- /dev/null
++++ b/drivers/iio/imu/bme680/bme680_core.c
+@@ -0,0 +1,101 @@
++/*
++ * Bosch BME680 - Temperature, Pressure, Humidity & Gas Sensor
++ *
++ * IIO core driver - I2C & SPI bus support
++ */
++#include <linux/iio/iio.h>
++#include <linux/module.h>
++#include <linux/regmap.h>
++
++#define BME680_REG_CHIP_I2C_ID	0xD0
++#define BME680_REG_CHIP_SPI_ID	0x50
++#define BME680_CHIP_ID_VAL	0x61
++#define BME680_SOFT_RESET	0xE0
++#define BME680_CMD_SOFTRESET	0xB6
++
++struct bme680_data {
++	struct regmap *regmap;
++};
++
++const struct regmap_config bme680_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++};
++EXPORT_SYMBOL(bme680_regmap_config);
++
++static const struct iio_info bme680_info = {
++};
++
++static int bme680_chip_init(struct bme680_data *data, bool use_spi)
++{
++	struct device *dev = regmap_get_device(data->regmap);
++	unsigned int val;
++	int ret;
++
++	/* Power on Soft Reset */
++	ret = regmap_write(data->regmap, BME680_SOFT_RESET, BME680_CMD_SOFTRESET);
++	if (ret < 0)
++		return ret;
++
++	if (!use_spi) {
++		ret = regmap_read(data->regmap, BME680_REG_CHIP_I2C_ID, &val);
++	} else {
++		ret = regmap_read(data->regmap, BME680_REG_CHIP_SPI_ID, &val);
++	}
++
++	if (ret < 0) {
++		dev_err(dev, "Error reading chip ID\n");
++		return ret;
++	}
++
++	if (val != BME680_CHIP_ID_VAL) {
++		dev_err(dev, "Wrong chip ID, got %x expected %x\n",
++				val, BME680_CHIP_ID_VAL);
++		return -ENODEV;
++	}
++
++	return 0;
++}
++
++int bme680_core_probe(struct device *dev, struct regmap *regmap,
++		      const char *name, bool use_spi)
++{
++	struct iio_dev *indio_dev;
++	struct bme680_data *data;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	dev_set_drvdata(dev, indio_dev);
++	data->regmap = regmap;
++
++	ret = bme680_chip_init(data, use_spi);
++	if (ret < 0)
++		return ret;
++
++	indio_dev->dev.parent = dev;
++	indio_dev->name = name;
++	indio_dev->info = &bme680_info;
++
++	ret = iio_device_register(indio_dev);
++	if (ret < 0)
++		return ret;
++	return 0;
++}
++EXPORT_SYMBOL_GPL(bme680_core_probe);
++
++void bme680_core_remove(struct device *dev)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct bme680_data *data = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++}
++EXPORT_SYMBOL_GPL(bme680_core_remove);
++
++MODULE_AUTHOR("Himanshu Jha <himanshujha199640@gmail.com>");
++MODULE_DESCRIPTION("Bosch BME680 Driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/imu/bme680/bme680_i2c.c b/drivers/iio/imu/bme680/bme680_i2c.c
+new file mode 100644
+index 0000000..1c8223e
+--- /dev/null
++++ b/drivers/iio/imu/bme680/bme680_i2c.c
+@@ -0,0 +1,56 @@
++/*
++ * 7-Bit I2C slave address is:
++ *	- 0x76 if SDO is pulled to GND
++ *	- 0x77 if SDO is pulled to VDDIO
++ */
++#include <linux/i2c.h>
++#include <linux/module.h>
++#include <linux/regmap.h>
++
++#include "bme680.h"
++
++static int bme680_i2c_probe(struct i2c_client *client,
++			    const struct i2c_device_id *id)
++{
++	struct regmap *regmap;
++	const char *name = NULL;
++
++	regmap = devm_regmap_init_i2c(client, &bme680_regmap_config);
++	if (IS_ERR(regmap)) {
++		dev_err(&client->dev, "Failed to register i2c regmap %d\n",
++				(int)PTR_ERR(regmap));
++		return PTR_ERR(regmap);
++	}
++
++	if (id)
++		name = id->name;
++
++	return bme680_core_probe(&client->dev, regmap, name, false);
++}
++
++static int bme680_i2c_remove(struct i2c_client *client)
++{
++	bme680_core_remove(&client->dev);
++
++	return 0;
++}
++
++static const struct i2c_device_id bme680_i2c_id[] = {
++	{"bme680", 0},
++	{},
++};
++MODULE_DEVICE_TABLE(i2c, bme680_i2c_id);
++
++static struct i2c_driver bme680_i2c_driver = {
++	.driver = {
++		.name = "bme680_i2c",
++	},
++	.probe = bme680_i2c_probe,
++	.remove = bme680_i2c_remove,
++	.id_table = bme680_i2c_id,
++};
++module_i2c_driver(bme680_i2c_driver);
++
++MODULE_AUTHOR("Himanshu Jha <himanshujha199640@gmail.com>");
++MODULE_DESCRIPTION("BME680 I2C driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/imu/bme680/bme680_spi.c b/drivers/iio/imu/bme680/bme680_spi.c
+new file mode 100644
+index 0000000..c135924
+--- /dev/null
++++ b/drivers/iio/imu/bme680/bme680_spi.c
+@@ -0,0 +1,49 @@
++/*
++ * BME680 - SPI Driver
++ */
++#include <linux/module.h>
++#include <linux/spi/spi.h>
++#include <linux/regmap.h>
++
++#include "bme680.h"
++
++static int bme680_spi_probe(struct spi_device *spi)
++{
++	struct regmap *regmap;
++	const struct spi_device_id *id = spi_get_device_id(spi);
++
++	regmap = devm_regmap_init_spi(spi, &bme680_regmap_config);
++	if (IS_ERR(regmap)) {
++		dev_err(&spi->dev, "Failed to register spi regmap %d\n",
++				(int)PTR_ERR(regmap));
++		return PTR_ERR(regmap);
++	}
++	return bme680_core_probe(&spi->dev, regmap, id->name, true);
++}
++
++static int bme680_spi_remove(struct spi_device *spi)
++{
++	bme680_core_remove(&spi->dev);
++
++	return 0;
++}
++
++static const struct spi_device_id bme680_spi_id[] = {
++	{"bme680", 0},
++	{}
++};
++MODULE_DEVICE_TABLE(spi, bme680_spi_id);
++
++static struct spi_driver bme680_spi_driver = {
++	.driver = {
++		.name = "bme680_spi",
++	},
++	.probe = bme680_spi_probe,
++	.remove = bme680_spi_remove,
++	.id_table = bme680_spi_id,
++};
++module_spi_driver(bme680_spi_driver);
++
++MODULE_AUTHOR("Himanshu Jha <himanshujha199640@gmail.com>");
++MODULE_DESCRIPTION("Bosch BME680 SPI driver");
++MODULE_LICENSE("GPL v2");
 -- 
 2.7.4
