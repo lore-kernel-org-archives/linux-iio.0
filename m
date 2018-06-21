@@ -1,114 +1,409 @@
-Return-Path: <SRS0=GMJS=JI=gmail.com=himanshujha199640@kernel.org>
-Date: Fri, 22 Jun 2018 19:44:06 +0530
-From: Himanshu Jha <himanshujha199640@gmail.com>
-To: Jonathan Cameron <jonathan.cameron@huawei.com>
-Cc: jic23@kernel.org, linux-iio@vger.kernel.org, lars@metafoo.de,
-	pmeerw@pmeerw.net, daniel.baluta@gmail.com,
-	gregkh@linuxfoundation.org
-Subject: Re: [RFC 0/3] Bosch BME680 Driver
-Message-ID: <20180622141406.GA17901@himanshu-Vostro-3559>
-References: <1529562877-9357-1-git-send-email-himanshujha199640@gmail.com>
- <20180622150143.00002e5b@huawei.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from esa1.microchip.iphmx.com ([68.232.147.91]:55950 "EHLO
+        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932466AbeFUIAB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Jun 2018 04:00:01 -0400
+From: Eugen Hristev <eugen.hristev@microchip.com>
+To: <jic23@kernel.org>, <ludovic.desroches@microchip.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <nicolas.ferre@microchip.com>
+CC: Eugen Hristev <eugen.hristev@microchip.com>
+Subject: [PATCH v2] iio: adc: at91-sama5d2_adc: add support for oversampling resolution
+Date: Thu, 21 Jun 2018 10:56:21 +0300
+Message-ID: <1529567781-21033-1-git-send-email-eugen.hristev@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <20180622150143.00002e5b@huawei.com>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Fri, Jun 22, 2018 at 03:01:43PM +0100, Jonathan Cameron wrote:
-> On Thu, 21 Jun 2018 12:04:34 +0530
-> Himanshu Jha <himanshujha199640@gmail.com> wrote:
-> 
-> > GSoC'2018 Project: https://summerofcode.withgoogle.com/projects/#6691473790074880
-> > Mentor: Daniel Baluta
-> > 
-> > BME680 is a 4-in-1 sensor with temperature, pressure, humidity & gas sensor
-> > with I2C and SPI interface support.
-> > 
-> > The sensor has various calibration parameters[1] to be used with raw adc data
-> > in the compensation functions[2] to evaluate the correct compensated reading.
-> > These calibration parameters are are programmed into the devices’ non-volatile
-> > memory (NVM) during production and cannot be altered by the customer. So, we
-> > are required to read those parameters once(suitably at probe) and use it
-> > in the compensation functions.
-> > 
-> > But now the problem arises that these compensation functions, calibration
-> > parameters, their addresses are *not* provided in the datasheet and instead
-> > provided by Bosch Sensortec in their Github API[3]. The Github API has a LICENSE
-> > file[4] around 40 lines which I presume kernel community won't entertain.
-> 
-> That looks to be 3 clause BSD.  Which I think is fine as it is considered to
-> be GPLv2 compatible.  Basic principle is that it's open enough that nothing
-> stops the code being used in GPL licensed code as long as we tag it with
-> the relevant license identifier.
-> 
-> I've cc'd Greg as he has a lot wider experience than I do!
+This implements oversampling support for the SAMA5d2 ADC device.
+Enabling oversampling : OSR can improve resolution from 12 bits to
+13 or 14 bits.
+Changing the channel specification to have 14 bits, and we shift the value
+1 bit to the left if we have oversampling for just one extra bit, and two
+bits to the left if we have no oversampling (old support).
+>From this commit on, the converted values for all the voltage channels
+change to 14 bits real data, with most insignificant two bits always zero
+if oversampling is not enabled.
+sysfs object oversampling_ratio has been enabled and
+oversampling_ratio_available will list possible values (1 or 4 or 16) having
+1 as default (no oversampling, 1 sample for each conversion).
+Special care was required for the triggered buffer scenario (+ DMA), to
+adjust the values accordingly.
+Touchscreen measurements supported by this driver are not affected by
+oversampling, they are still on 12 bits (scale handing is already included
+in the driver).
 
-I got a positive reply from Bosch later this day and we can easily use
-their compensation functions and calibration parameters without any
-legal issues.
+Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+---
+Changes in v2:
+ - updated channel spec to 14 bits as reviewed by Jonathan.
+This makes things much simpler, and no more INT_PLUS_MICRO values.
+ - tidy up the extra line which was forgotten there
+ - renamed 0SAMPLES macro to 1SAMPLES , which makes more sense (1 sample for
+each conversion is the actual number we have). other OSR values are 4SAMPLES
+or 16SAMPLES per conversion.
+ - made code a bit clearer to read by having a per array adjust function
+instead of those ugly casts I was using in v1. This is needed to adjust
+the values recieved from DMA for each u16 storage bits per conversion (shift
+left or not according to OSR setting).
 
-Just adding:
+ drivers/iio/adc/at91-sama5d2_adc.c | 189 ++++++++++++++++++++++++++++++++-----
+ 1 file changed, 163 insertions(+), 26 deletions(-)
 
-	Copyright (C) 2017 - 2018 Bosch Sensortec GmbH
-
-to the top of source would solve the problem :)
-
-> > This 0.01 degC resolution was mentioned in the BMP280 datasheet but
-> > there is no such information in the BME680 datasheet nor in the Github API.
-> > 
-> > This is what I have assumed since after testing pressure & humidity also
-> > revealed similar readings and there is some possibilty that they could
-> > have same output resolution as they belong to the same family of sensors.
-> > 
-> > For now I have placed the sensor in the IMU but this is not an IMU and there
-> > is no such sensor(4-in-1) in the whole IIO subsystem. So, where should it
-> > be placed ?
-> 
-> Choose the primary use case.  I.e. the bit that would lead people to put
-> this chip in place.   It's a chemical sensor as far as I can see
-> so put it in there.  Otherwise we end up with an ever increasing number
-> of categories dependent more on what is in the marketing material than
-> on how they group with similar sensors.  These categories don't need
-> to be perfect.
-
-Will do!
-
-> > Would it be worthwhile to create a new subdirectory "environmental" since
-> > it is a environmental sensor ?
-> > 
-> > The sensor also has an IIR filter to remove short term fluctuations from
-> > the temperature and pressure readings. It has various filter coefficients
-> > and I have chosen the middle valued coefficient(15) from the table for now.
-> > 
-> > What filter coefficient is most appropriate for the device ?
-> > 
-> > Again, I asked this question too from Bosch since they discuss all these
-> > optimal selection of filter in "3.4 Filter selection" Pg 14 BMP280.
-> 
-> This should be coming from device specific calibration.  So we can give
-> 'reasonable defaults', but I'd expect device manufacturers to provide
-> via DT or ACPI.
-
-I got the details from Bosch.
-No worries now :)
-
-> > I have used regmap API  and therefore we don't need the LSB address
-> > of data registers as we only care about the MSB address of the data register
-> > and regmap_bulk_read() handles everything fine.
-> > 
-> > So, would it be worthwhile to add these LSB macros definition too ?
-> > They certainly will never be used!
-> 
-> This is common.  Don't bother with the ones that aren't used.
-
-Sure!
-
-Thanks for the quick feedback Jonathan.
-
-And sorry Greg for the noise!
-
+diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
+index 58c4c2b..adf1d69 100644
+--- a/drivers/iio/adc/at91-sama5d2_adc.c
++++ b/drivers/iio/adc/at91-sama5d2_adc.c
+@@ -130,6 +130,15 @@
+ #define AT91_SAMA5D2_OVER	0x3c
+ /* Extended Mode Register */
+ #define AT91_SAMA5D2_EMR	0x40
++/* Extended Mode Register - Oversampling rate */
++#define AT91_SAMA5D2_EMR_OSR(V)			((V) << 16)
++#define AT91_SAMA5D2_EMR_OSR_MASK		GENMASK(17, 16)
++#define AT91_SAMA5D2_EMR_OSR_1SAMPLES		0
++#define AT91_SAMA5D2_EMR_OSR_4SAMPLES		1
++#define AT91_SAMA5D2_EMR_OSR_16SAMPLES		2
++
++/* Extended Mode Register - Averaging on single trigger event */
++#define AT91_SAMA5D2_EMR_ASTE(V)		((V) << 20)
+ /* Compare Window Register */
+ #define AT91_SAMA5D2_CWR	0x44
+ /* Channel Gain Register */
+@@ -248,6 +257,11 @@
+ #define AT91_HWFIFO_MAX_SIZE_STR	"128"
+ #define AT91_HWFIFO_MAX_SIZE		128
+ 
++/* Possible values for oversampling ratio */
++#define AT91_OSR_1SAMPLES		1
++#define AT91_OSR_4SAMPLES		4
++#define AT91_OSR_16SAMPLES		16
++
+ #define AT91_SAMA5D2_CHAN_SINGLE(num, addr)				\
+ 	{								\
+ 		.type = IIO_VOLTAGE,					\
+@@ -256,12 +270,13 @@
+ 		.scan_index = num,					\
+ 		.scan_type = {						\
+ 			.sign = 'u',					\
+-			.realbits = 12,					\
++			.realbits = 14,					\
+ 			.storagebits = 16,				\
+ 		},							\
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+ 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+-		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),\
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ)|\
++				BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),	\
+ 		.datasheet_name = "CH"#num,				\
+ 		.indexed = 1,						\
+ 	}
+@@ -276,12 +291,13 @@
+ 		.scan_index = num + AT91_SAMA5D2_SINGLE_CHAN_CNT,	\
+ 		.scan_type = {						\
+ 			.sign = 's',					\
+-			.realbits = 12,					\
++			.realbits = 14,					\
+ 			.storagebits = 16,				\
+ 		},							\
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+ 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+-		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),\
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ)|\
++				BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),	\
+ 		.datasheet_name = "CH"#num"-CH"#num2,			\
+ 		.indexed = 1,						\
+ 	}
+@@ -299,7 +315,8 @@
+ 			.storagebits = 16,				\
+ 		},							\
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+-		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),\
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ)|\
++				BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),	\
+ 		.datasheet_name = name,					\
+ 	}
+ #define AT91_SAMA5D2_CHAN_PRESSURE(num, name)				\
+@@ -313,7 +330,8 @@
+ 			.storagebits = 16,				\
+ 		},							\
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+-		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),\
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ)|\
++				BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),	\
+ 		.datasheet_name = name,					\
+ 	}
+ 
+@@ -384,6 +402,7 @@ struct at91_adc_state {
+ 	const struct iio_chan_spec	*chan;
+ 	bool				conversion_done;
+ 	u32				conversion_value;
++	unsigned int			oversampling_ratio;
+ 	struct at91_adc_soc_info	soc_info;
+ 	wait_queue_head_t		wq_data_available;
+ 	struct at91_adc_dma		dma_st;
+@@ -475,6 +494,77 @@ static inline int at91_adc_of_xlate(struct iio_dev *indio_dev,
+ 	return at91_adc_chan_xlate(indio_dev, iiospec->args[0]);
+ }
+ 
++static void at91_adc_config_emr(struct at91_adc_state *st)
++{
++	/* configure the extended mode register */
++	unsigned int emr = at91_adc_readl(st, AT91_SAMA5D2_EMR);
++
++	/* select oversampling per single trigger event */
++	emr |= AT91_SAMA5D2_EMR_ASTE(1);
++
++	/* delete leftover content if it's the case */
++	emr &= ~AT91_SAMA5D2_EMR_OSR_MASK;
++
++	/* select oversampling ratio from configuration */
++	switch (st->oversampling_ratio) {
++	case AT91_OSR_1SAMPLES:
++		emr |= AT91_SAMA5D2_EMR_OSR(AT91_SAMA5D2_EMR_OSR_1SAMPLES) &
++		       AT91_SAMA5D2_EMR_OSR_MASK;
++		break;
++	case AT91_OSR_4SAMPLES:
++		emr |= AT91_SAMA5D2_EMR_OSR(AT91_SAMA5D2_EMR_OSR_4SAMPLES) &
++		       AT91_SAMA5D2_EMR_OSR_MASK;
++		break;
++	case AT91_OSR_16SAMPLES:
++		emr |= AT91_SAMA5D2_EMR_OSR(AT91_SAMA5D2_EMR_OSR_16SAMPLES) &
++		       AT91_SAMA5D2_EMR_OSR_MASK;
++		break;
++	};
++
++	at91_adc_writel(st, AT91_SAMA5D2_EMR, emr);
++}
++
++static int at91_adc_adjust_val_osr(struct at91_adc_state *st, int *val)
++{
++	if (st->oversampling_ratio == AT91_OSR_1SAMPLES) {
++		/*
++		 * in this case we only have 12 bits of real data, but channel
++		 * is registered as 14 bits, so shift left two bits
++		 */
++		*val <<= 2;
++	} else if (st->oversampling_ratio == AT91_OSR_4SAMPLES) {
++		/*
++		 * in this case we have 13 bits of real data, but channel
++		 * is registered as 14 bits, so left shift one bit
++		 */
++		*val <<= 1;
++	}
++
++	return IIO_VAL_INT;
++}
++
++static void at91_adc_adjust_val_osr_array(struct at91_adc_state *st, void *buf,
++					  int len)
++{
++	int i = 0, val;
++	u16 *buf_u16 = (u16 *) buf;
++
++	/*
++	 * We are converting each two bytes (each sample).
++	 * First convert the byte based array to u16, and convert each sample
++	 * separately.
++	 * Each value is two bytes in an array of chars, so to not shift
++	 * more than we need, save the value separately.
++	 * len is in bytes, so divide by two to get number of samples.
++	 */
++	while (i < len / 2) {
++		val = buf_u16[i];
++		at91_adc_adjust_val_osr(st, &val);
++		buf_u16[i] = val;
++		i++;
++	}
++}
++
+ static int at91_adc_configure_touch(struct at91_adc_state *st, bool state)
+ {
+ 	u32 clk_khz = st->current_sample_rate / 1000;
+@@ -916,6 +1006,7 @@ static void at91_adc_trigger_handler_nodma(struct iio_dev *indio_dev,
+ {
+ 	struct at91_adc_state *st = iio_priv(indio_dev);
+ 	int i = 0;
++	int val;
+ 	u8 bit;
+ 
+ 	for_each_set_bit(bit, indio_dev->active_scan_mask,
+@@ -936,7 +1027,9 @@ static void at91_adc_trigger_handler_nodma(struct iio_dev *indio_dev,
+ 		 * Thus, emit a warning.
+ 		 */
+ 		if (chan->type == IIO_VOLTAGE) {
+-			st->buffer[i] = at91_adc_readl(st, chan->address);
++			val = at91_adc_readl(st, chan->address);
++			at91_adc_adjust_val_osr(st, &val);
++			st->buffer[i] = val;
+ 		} else {
+ 			st->buffer[i] = 0;
+ 			WARN(true, "This trigger cannot handle this type of channel");
+@@ -972,6 +1065,14 @@ static void at91_adc_trigger_handler_dma(struct iio_dev *indio_dev)
+ 	interval = div_s64((ns - st->dma_st.dma_ts), sample_count);
+ 
+ 	while (transferred_len >= sample_size) {
++		/*
++		 * for all the values in the current sample,
++		 * adjust the values inside the buffer for oversampling
++		 */
++		at91_adc_adjust_val_osr_array(st,
++					&st->dma_st.rx_buf[st->dma_st.buf_idx],
++					sample_size);
++
+ 		iio_push_to_buffers_with_timestamp(indio_dev,
+ 				(st->dma_st.rx_buf + st->dma_st.buf_idx),
+ 				(st->dma_st.dma_ts + interval * sample_index));
+@@ -1212,7 +1313,7 @@ static int at91_adc_read_info_raw(struct iio_dev *indio_dev,
+ 		mutex_unlock(&st->lock);
+ 		iio_device_release_direct_mode(indio_dev);
+ 
+-		return ret;
++		return at91_adc_adjust_val_osr(st, val);
+ 	}
+ 	if (chan->type == IIO_PRESSURE) {
+ 		ret = iio_device_claim_direct_mode(indio_dev);
+@@ -1225,7 +1326,7 @@ static int at91_adc_read_info_raw(struct iio_dev *indio_dev,
+ 		mutex_unlock(&st->lock);
+ 		iio_device_release_direct_mode(indio_dev);
+ 
+-		return ret;
++		return at91_adc_adjust_val_osr(st, val);
+ 	}
+ 
+ 	/* in this case we have a voltage channel */
+@@ -1254,9 +1355,9 @@ static int at91_adc_read_info_raw(struct iio_dev *indio_dev,
+ 
+ 	if (ret > 0) {
+ 		*val = st->conversion_value;
++		ret = at91_adc_adjust_val_osr(st, val);
+ 		if (chan->scan_type.sign == 's')
+ 			*val = sign_extend32(*val, 11);
+-		ret = IIO_VAL_INT;
+ 		st->conversion_done = false;
+ 	}
+ 
+@@ -1292,6 +1393,10 @@ static int at91_adc_read_raw(struct iio_dev *indio_dev,
+ 		*val = at91_adc_get_sample_freq(st);
+ 		return IIO_VAL_INT;
+ 
++	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
++		*val = st->oversampling_ratio;
++		return IIO_VAL_INT;
++
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -1303,16 +1408,28 @@ static int at91_adc_write_raw(struct iio_dev *indio_dev,
+ {
+ 	struct at91_adc_state *st = iio_priv(indio_dev);
+ 
+-	if (mask != IIO_CHAN_INFO_SAMP_FREQ)
+-		return -EINVAL;
++	switch (mask) {
++	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
++		if ((val != AT91_OSR_1SAMPLES) && (val != AT91_OSR_4SAMPLES) &&
++		    (val != AT91_OSR_16SAMPLES))
++			return -EINVAL;
++		/* if no change, optimize out */
++		if (val == st->oversampling_ratio)
++			return 0;
++		st->oversampling_ratio = val;
++		/* update ratio */
++		at91_adc_config_emr(st);
++		return 0;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		if (val < st->soc_info.min_sample_rate ||
++		    val > st->soc_info.max_sample_rate)
++			return -EINVAL;
+ 
+-	if (val < st->soc_info.min_sample_rate ||
+-	    val > st->soc_info.max_sample_rate)
++		at91_adc_setup_samp_freq(st, val);
++		return 0;
++	default:
+ 		return -EINVAL;
+-
+-	at91_adc_setup_samp_freq(st, val);
+-
+-	return 0;
++	};
+ }
+ 
+ static void at91_adc_dma_init(struct platform_device *pdev)
+@@ -1446,14 +1563,6 @@ static int at91_adc_update_scan_mode(struct iio_dev *indio_dev,
+ 	return 0;
+ }
+ 
+-static const struct iio_info at91_adc_info = {
+-	.read_raw = &at91_adc_read_raw,
+-	.write_raw = &at91_adc_write_raw,
+-	.update_scan_mode = &at91_adc_update_scan_mode,
+-	.of_xlate = &at91_adc_of_xlate,
+-	.hwfifo_set_watermark = &at91_adc_set_watermark,
+-};
+-
+ static void at91_adc_hw_init(struct at91_adc_state *st)
+ {
+ 	at91_adc_writel(st, AT91_SAMA5D2_CR, AT91_SAMA5D2_CR_SWRST);
+@@ -1466,6 +1575,9 @@ static void at91_adc_hw_init(struct at91_adc_state *st)
+ 			AT91_SAMA5D2_MR_TRANSFER(2) | AT91_SAMA5D2_MR_ANACH);
+ 
+ 	at91_adc_setup_samp_freq(st, st->soc_info.min_sample_rate);
++
++	/* configure extended mode register */
++	at91_adc_config_emr(st);
+ }
+ 
+ static ssize_t at91_adc_get_fifo_state(struct device *dev,
+@@ -1496,6 +1608,20 @@ static IIO_DEVICE_ATTR(hwfifo_watermark, 0444,
+ static IIO_CONST_ATTR(hwfifo_watermark_min, "2");
+ static IIO_CONST_ATTR(hwfifo_watermark_max, AT91_HWFIFO_MAX_SIZE_STR);
+ 
++static IIO_CONST_ATTR(oversampling_ratio_available,
++		      __stringify(AT91_OSR_1SAMPLES) " "
++		      __stringify(AT91_OSR_4SAMPLES) " "
++		      __stringify(AT91_OSR_16SAMPLES));
++
++static struct attribute *at91_adc_attributes[] = {
++	&iio_const_attr_oversampling_ratio_available.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group at91_adc_attribute_group = {
++	.attrs = at91_adc_attributes,
++};
++
+ static const struct attribute *at91_adc_fifo_attributes[] = {
+ 	&iio_const_attr_hwfifo_watermark_min.dev_attr.attr,
+ 	&iio_const_attr_hwfifo_watermark_max.dev_attr.attr,
+@@ -1504,6 +1630,15 @@ static const struct attribute *at91_adc_fifo_attributes[] = {
+ 	NULL,
+ };
+ 
++static const struct iio_info at91_adc_info = {
++	.attrs = &at91_adc_attribute_group,
++	.read_raw = &at91_adc_read_raw,
++	.write_raw = &at91_adc_write_raw,
++	.update_scan_mode = &at91_adc_update_scan_mode,
++	.of_xlate = &at91_adc_of_xlate,
++	.hwfifo_set_watermark = &at91_adc_set_watermark,
++};
++
+ static int at91_adc_probe(struct platform_device *pdev)
+ {
+ 	struct iio_dev *indio_dev;
+@@ -1532,6 +1667,8 @@ static int at91_adc_probe(struct platform_device *pdev)
+ 	bitmap_set(&st->touch_st.channels_bitmask,
+ 		   AT91_SAMA5D2_TOUCH_P_CHAN_IDX, 1);
+ 
++	st->oversampling_ratio = AT91_OSR_1SAMPLES;
++
+ 	ret = of_property_read_u32(pdev->dev.of_node,
+ 				   "atmel,min-sample-rate-hz",
+ 				   &st->soc_info.min_sample_rate);
 -- 
-Himanshu Jha
-Undergraduate Student
-Department of Electronics & Communication
-Guru Tegh Bahadur Institute of Technology
+2.7.4
+
