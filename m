@@ -1,162 +1,93 @@
-Return-Path: <SRS0=Hrng=JI=konsulko.com=matt.ranostay@kernel.org>
-MIME-Version: 1.0
-In-Reply-To: <1529562877-9357-1-git-send-email-himanshujha199640@gmail.com>
-References: <1529562877-9357-1-git-send-email-himanshujha199640@gmail.com>
-From: Matt Ranostay <matt.ranostay@konsulko.com>
-Date: Fri, 22 Jun 2018 15:38:42 +0900
-Message-ID: <CAJCx=gmDUZ47EUuGH3a_+mYwvoPcFj2RwdSKvPmhqhdrYi1DHg@mail.gmail.com>
-Subject: Re: [RFC 0/3] Bosch BME680 Driver
-To: Himanshu Jha <himanshujha199640@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pg0-f49.google.com ([74.125.83.49]:45035 "EHLO
+        mail-pg0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751086AbeFVJEt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Jun 2018 05:04:49 -0400
+Received: by mail-pg0-f49.google.com with SMTP id g26-v6so2688322pgn.11
+        for <linux-iio@vger.kernel.org>; Fri, 22 Jun 2018 02:04:49 -0700 (PDT)
+Date: Fri, 22 Jun 2018 14:34:42 +0530
+From: Himanshu Jha <himanshujha199640@gmail.com>
+To: Matt Ranostay <matt.ranostay@konsulko.com>
 Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, daniel.baluta@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-List-ID: <linux-iio@vger.kernel.org>
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        daniel.baluta@gmail.com
+Subject: Re: [RFC 0/3] Bosch BME680 Driver
+Message-ID: <20180622075458.GA12587@himanshu-Vostro-3559>
+References: <1529562877-9357-1-git-send-email-himanshujha199640@gmail.com>
+ <CAJCx=gmDUZ47EUuGH3a_+mYwvoPcFj2RwdSKvPmhqhdrYi1DHg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <CAJCx=gmDUZ47EUuGH3a_+mYwvoPcFj2RwdSKvPmhqhdrYi1DHg@mail.gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, Jun 21, 2018 at 3:34 PM, Himanshu Jha
-<himanshujha199640@gmail.com> wrote:
-> GSoC'2018 Project: https://summerofcode.withgoogle.com/projects/#66914737=
-90074880
-> Mentor: Daniel Baluta
->
-> BME680 is a 4-in-1 sensor with temperature, pressure, humidity & gas sens=
-or
-> with I2C and SPI interface support.
->
-> The sensor has various calibration parameters[1] to be used with raw adc =
-data
-> in the compensation functions[2] to evaluate the correct compensated read=
-ing.
-> These calibration parameters are are programmed into the devices=E2=80=99=
- non-volatile
-> memory (NVM) during production and cannot be altered by the customer. So,=
- we
-> are required to read those parameters once(suitably at probe) and use it
-> in the compensation functions.
->
-> But now the problem arises that these compensation functions, calibration
-> parameters, their addresses are *not* provided in the datasheet and inste=
-ad
-> provided by Bosch Sensortec in their Github API[3]. The Github API has a =
-LICENSE
-> file[4] around 40 lines which I presume kernel community won't entertain.
->
-> Therefore, we contacted Bosch Sensortec thrice 2 weeks ago and got no res=
-ponse
-> so far. We stated all the problems relating to Lincensing & missing calib=
-ration
-> info from the datasheet. I got to know about these missing information fr=
-om the
-> Github API and also looking at the various sensors supplied by the compan=
-y
-> such as BMP280, BME280 etc.
->
-> After using their compensation function in my driver I get correct readin=
-gs.
-> But we can't simply use these function without their permission!
->
-> For instance:
-> I got a temperature reading of:
->
->         3254
->
-> and if this sensor has a similar resolution as that of BMP280 which 0.01 =
-degC
-> then it is absolutely correct.
->
->         3254 * 0.01 =3D 32.54 degC
->
-> This 0.01 degC resolution was mentioned in the BMP280 datasheet but
-> there is no such information in the BME680 datasheet nor in the Github AP=
-I.
->
-> This is what I have assumed since after testing pressure & humidity also
-> revealed similar readings and there is some possibilty that they could
-> have same output resolution as they belong to the same family of sensors.
->
-> For now I have placed the sensor in the IMU but this is not an IMU and th=
-ere
-> is no such sensor(4-in-1) in the whole IIO subsystem. So, where should it
-> be placed ?
-> Would it be worthwhile to create a new subdirectory "environmental" since
-> it is a environmental sensor ?
->
+Hi Matt,
 
-Since it the most interesting feature is the VOC sensor I'd think it
-would make more sense  in drivers/iio/chemical (maybe I'm biased of
-course).
-Even thought is doesn't output a processed value that you can use
-without Bosch's software.
+> > For now I have placed the sensor in the IMU but this is not an IMU and there
+> > is no such sensor(4-in-1) in the whole IIO subsystem. So, where should it
+> > be placed ?
+> > Would it be worthwhile to create a new subdirectory "environmental" since
+> > it is a environmental sensor ?
+> >
+> 
+> Since it the most interesting feature is the VOC sensor I'd think it
+> would make more sense  in drivers/iio/chemical (maybe I'm biased of
+> course).
 
-Also I've looked briefly at the datasheet, and wondering why this
-can't be added to the existing BMP280 driver (like how the BME280
-humidity support was added).
+Yes, the gas sensing part is the most distinguished feature of the
+sensor and relatively different from Temperature, Pressure & Humidity.
 
-Thanks!
+But still not sure about the placement.
 
-Matt
+> Even thought is doesn't output a processed value that you can use
+> without Bosch's software.
+> 
+> Also I've looked briefly at the datasheet, and wondering why this
+> can't be added to the existing BMP280 driver (like how the BME280
+> humidity support was added).
 
-> The sensor also has an IIR filter to remove short term fluctuations from
-> the temperature and pressure readings. It has various filter coefficients
-> and I have chosen the middle valued coefficient(15) from the table for no=
-w.
->
-> What filter coefficient is most appropriate for the device ?
->
-> Again, I asked this question too from Bosch since they discuss all these
-> optimal selection of filter in "3.4 Filter selection" Pg 14 BMP280.
->
-> I have used regmap API  and therefore we don't need the LSB address
-> of data registers as we only care about the MSB address of the data regis=
-ter
-> and regmap_bulk_read() handles everything fine.
->
-> So, would it be worthwhile to add these LSB macros definition too ?
-> They certainly will never be used!
->
-> For now, this series doesn't include any of the copyrighted code from
-> Bosch and I have just added them as a dummy function.
->
-> I have mentioned more detailed summary in my blog[5] and would love
-> any feedback on it.
->
-> If anyone has contacts to Bosch Sensortec GmbH then please let me
-> know.
->
-> [1] https://github.com/BoschSensortec/BME680_driver/blob/313a58a9c57ad86c=
-8df06c98521579c6cb695999/bme680_defs.h#L410
-> [2] https://github.com/BoschSensortec/BME680_driver/blob/master/bme680.c#=
-L876
-> [3] https://github.com/BoschSensortec/BME680_driver
-> [4] https://github.com/BoschSensortec/BME680_driver/blob/master/LICENSE
-> [5] https://himanshujha199640.wordpress.com/2018/06/14/0x01bme680-tempera=
-ture-channel/
->
-> Himanshu Jha (3):
->   iio: imu: bme680: Add initial support for Bosch BME680
->   iio: imu: bme680: Add temperaure, pressure & humidity channels
->   iio: imu: bme680: Add ACPI support
->
->  drivers/iio/imu/Kconfig              |   1 +
->  drivers/iio/imu/Makefile             |   1 +
->  drivers/iio/imu/bme680/Kconfig       |  32 +++
->  drivers/iio/imu/bme680/Makefile      |   6 +
->  drivers/iio/imu/bme680/bme680.h      |  11 +
->  drivers/iio/imu/bme680/bme680_core.c | 542 +++++++++++++++++++++++++++++=
-++++++
->  drivers/iio/imu/bme680/bme680_i2c.c  |  62 ++++
->  drivers/iio/imu/bme680/bme680_spi.c  |  49 ++++
->  8 files changed, 704 insertions(+)
->  create mode 100644 drivers/iio/imu/bme680/Kconfig
->  create mode 100644 drivers/iio/imu/bme680/Makefile
->  create mode 100644 drivers/iio/imu/bme680/bme680.h
->  create mode 100644 drivers/iio/imu/bme680/bme680_core.c
->  create mode 100644 drivers/iio/imu/bme680/bme680_i2c.c
->  create mode 100644 drivers/iio/imu/bme680/bme680_spi.c
->
-> --
-> 2.7.4
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Agreed! I had this same question on my mind but if you look carefully at
+the BME280 datasheet "5.2 Register compatibility to BMP280" Pg 24, says
+that BME280 & BMP280 share the same register addressing which is why it
+was a wise decision to add them in a single driver. You don't need to
+make new functions for temp, press, humid, read_calib, chip_config,
+etc., separately and rather use a generic function for both of them.
+
+Also, bme680 has some peculiar characteristics such as:
+
+ 1. different chip id address for SPI and I2C.
+ 2. Two power modes only and no *normal mode*
+
+And a few more...
+
+It is sad that Bosch discusses about the trimming/calibration parameters in
+both bmp280 & bme280 but not in my(bme680) case. I don't know why ?
+
+Although I got to know about it through Bosch BME680 API but since it is
+mentioned *not* in datasheet and rather in their API. So, we need their
+permission before using it and it's been two weeks since I and Daniel both
+sent the email and no reply :(
+
+Anyway, you're a chemical sensor expert and I have a question for
+you which I would really appreciate if you could answer:
+
+The user needs to supply to attributes to the gas sensor:
+
+	1. Heater temperature: For eg. 200 degC to heat the sensor
+	heater elemnent used for sensing. So, this 200 degC is converted
+	to register code using BME680 API algorithm.
+
+	2. Heater duration: The duration for which heater will be
+	heated. For eg. 100ms
+
+What would be the appropriate channel type for the above ?
+
+Thank you for your time and that "Industrial I/O and You" Conference
+video :)
+
+-- 
+Himanshu Jha
+Undergraduate Student
+Department of Electronics & Communication
+Guru Tegh Bahadur Institute of Technology
