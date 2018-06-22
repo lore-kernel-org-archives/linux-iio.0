@@ -1,93 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:45132 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751661AbeFXNwW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 24 Jun 2018 09:52:22 -0400
-Date: Sun, 24 Jun 2018 14:52:17 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-Cc: "preid@electromag.com.au" <preid@electromag.com.au>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] iio:buffer: fix iio_dma_buffer_set_length() prototype
- mismatch
-Message-ID: <20180624145217.131da6f2@archlinux>
-In-Reply-To: <2126e135f7e414382131b4bbb8414d1eaac64f3a.camel@analog.com>
-References: <20180622085942.24253-1-alexandru.ardelean@analog.com>
-        <f836cf4b-96fe-a088-e13e-1b4545c0e5e8@electromag.com.au>
-        <2126e135f7e414382131b4bbb8414d1eaac64f3a.camel@analog.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Received: from xavier.telenet-ops.be ([195.130.132.52]:45238 "EHLO
+        xavier.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754080AbeFVLFE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Jun 2018 07:05:04 -0400
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH v4] iio: adc: Remove depends on HAS_DMA in case of platform dependency
+Date: Fri, 22 Jun 2018 13:05:01 +0200
+Message-Id: <20180622110501.31733-1-geert@linux-m68k.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 22 Jun 2018 09:32:52 +0000
-"Ardelean, Alexandru" <alexandru.Ardelean@analog.com> wrote:
+Remove dependencies on HAS_DMA where a Kconfig symbol depends on another
+symbol that implies HAS_DMA, and, optionally, on "|| COMPILE_TEST".
+In most cases this other symbol is an architecture or platform specific
+symbol, or PCI.
 
-> On Fri, 2018-06-22 at 17:15 +0800, Phil Reid wrote:
-> > On 22/06/2018 16:59, Alexandru Ardelean wrote: =20
-> > > Fixes commit c043ec1ca5ba ("iio:buffer: make length types match kfifo
-> > > types").
-> > > When the length parameter's type was updated in the
-> > > `iio_dma_buffer_set_length()` function, the prototype was omitted in
-> > > the
-> > > `include/linux/iio/buffer-dma.h` header.
-> > >=20
-> > > This causes a build error when running certain CFLAGS configurations
-> > > that
-> > > are a bit more pedantic. =20
-> >=20
-> > G'day Alexandru,
-> >=20
-> > I recently submitted a patch for the same issue.
-> > see: https://patchwork.kernel.org/patch/10447649/
-> >=20
-> > Jonathan was holding of for a couple of weeks due to ordering issues.
-> >  =20
->=20
-> Sorry for the noise/duplication.
-> I only looked into the iio/togreg tree and saw it wasn't there.
->=20
-> Let's drop my patch.
->=20
-> Thanks
-> Alex
+Generic symbols and drivers without platform dependencies keep their
+dependencies on HAS_DMA, to prevent compiling subsystems or drivers that
+cannot work anyway.
 
-I've just applied Phil's patch and will try to send a pull request
-out later today for that.
+This simplifies the dependencies, and allows to improve compile-testing.
 
-Thanks,
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Reviewed-by: Mark Brown <broonie@kernel.org>
+Acked-by: Robin Murphy <robin.murphy@arm.com>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+---
+v4:
+  - Rebase to v4.18-rc1 (applies to next-20180622, too),
 
-Jonathan
+v3:
+  - Add Acked-by,
+  - Rebase to v4.17-rc1,
 
->=20
-> >=20
-> >  =20
-> > >=20
-> > > Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-> > > ---
-> > >   include/linux/iio/buffer-dma.h | 2 +-
-> > >   1 file changed, 1 insertion(+), 1 deletion(-)
-> > >=20
-> > > diff --git a/include/linux/iio/buffer-dma.h b/include/linux/iio/buffe=
-r-
-> > > dma.h
-> > > index 767467d886de..67c75372b691 100644
-> > > --- a/include/linux/iio/buffer-dma.h
-> > > +++ b/include/linux/iio/buffer-dma.h
-> > > @@ -141,7 +141,7 @@ int iio_dma_buffer_read(struct iio_buffer *buffer,
-> > > size_t n,
-> > >   	char __user *user_buffer);
-> > >   size_t iio_dma_buffer_data_available(struct iio_buffer *buffer);
-> > >   int iio_dma_buffer_set_bytes_per_datum(struct iio_buffer *buffer,
-> > > size_t bpd);
-> > > -int iio_dma_buffer_set_length(struct iio_buffer *buffer, int length);
-> > > +int iio_dma_buffer_set_length(struct iio_buffer *buffer, unsigned int
-> > > length);
-> > >   int iio_dma_buffer_request_update(struct iio_buffer *buffer);
-> > >  =20
-> > >   int iio_dma_buffer_init(struct iio_dma_buffer_queue *queue,
-> > >  =20
-> >=20
-> > N_____r__y____b_X____v_^_)__{.n_+____{__*"__^n_r___z_=1A__h_____&__=1E_=
-G___h_=03(_______j"__=1A_=1Bm______z______f___h___~_ =20
+v2:
+  - Add Reviewed-by, Acked-by,
+  - Drop RFC state,
+  - Split per subsystem.
+---
+ drivers/iio/adc/Kconfig | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 9da79070357c7d93..434923dd6f1e3d66 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -157,7 +157,6 @@ config AT91_SAMA5D2_ADC
+ 	tristate "Atmel AT91 SAMA5D2 ADC"
+ 	depends on ARCH_AT91 || COMPILE_TEST
+ 	depends on HAS_IOMEM
+-	depends on HAS_DMA
+ 	select IIO_BUFFER
+ 	select IIO_TRIGGERED_BUFFER
+ 	help
+@@ -647,7 +646,6 @@ config SD_ADC_MODULATOR
+ config STM32_ADC_CORE
+ 	tristate "STMicroelectronics STM32 adc core"
+ 	depends on ARCH_STM32 || COMPILE_TEST
+-	depends on HAS_DMA
+ 	depends on OF
+ 	depends on REGULATOR
+ 	select IIO_BUFFER
+-- 
+2.17.1
 
