@@ -1,1014 +1,902 @@
-Return-Path: <SRS0=9eR3=JI=analog.com=alexandru.Ardelean@kernel.org>
-From: Alexandru Ardelean <alexandru.ardelean@analog.com>
-To: <linux-iio@vger.kernel.org>, <lars@metafoo.de>, <jic23@kernel.org>
-CC: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH][RFC] iio: Move attach/detach of the poll func to the core
-Date: Fri, 22 Jun 2018 16:53:22 +0300
-Message-ID: <20180622135322.3459-1-alexandru.ardelean@analog.com>
+Return-Path: <SRS0=MA9h=JI=gmail.com=maxime.roussinbelanger@kernel.org>
+From: =?UTF-8?q?Maxime=20Roussin-B=C3=A9langer?= <maxime.roussinbelanger@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org,
+	dagenaisj@sonatest.com,
+	=?UTF-8?q?Maxime=20Roussin-B=C3=A9langer?= <maxime.roussinbelanger@gmail.com>
+Subject: [PATCH] iio: light: introduce si1133
+Date: Fri, 22 Jun 2018 16:48:59 -0400
+Message-Id: <20180622204859.9667-1-maxime.roussinbelanger@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-All devices using a triggered buffer need to attach and detach the trigger
-to the device in order to properly work. Instead of doing this in each and
-every driver by hand move this into the core.
-
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Signed-off-by: Maxime Roussin-Bélanger <maxime.roussinbelanger@gmail.com>
+Reviewed-by: Jean-Francois Dagenais <dagenaisj@sonatest.com>
 ---
+ drivers/iio/light/Kconfig  |  11 +
+ drivers/iio/light/Makefile |   1 +
+ drivers/iio/light/si1133.c | 835 +++++++++++++++++++++++++++++++++++++
+ 3 files changed, 847 insertions(+)
+ create mode 100644 drivers/iio/light/si1133.c
 
-Note: `Signed-off-by` is also Lars-Peter Clausen because he is the
-original author of this patch [on an older kernel].
-The patch has been updated since the original patch from Lars.
-
-There has been a (small) discussion about whether such a patch makes
-sense to implement (for reducing code duplication), or whether it's too
-risky to do it.
-
-The reason for the risky-ness is that there is no consistent way in which
-drivers attach/detach the poll function.
-i.e.
-   1. some drivers call `iio_triggered_buffer_postenable()` before doing HW
-      stuff, some after (for attaching the poll func)
-   2. similarly, for `iio_triggered_buffer_predisable()` some drivers do it
-      before HW stuff, some after (for detaching the poll func)
-
-Common sense would dictate that (in the case of
-`iio_triggered_buffer_postenable()`) there would normally be HW setup first
-and then attach the poll func.
-And the reverse done for `iio_triggered_buffer_predisable()`.
-
-However, it's unclear whether this reasoning is completely sound for all
-drivers.
-
-Hence this RFC.
-
- drivers/iio/accel/bmc150-accel-core.c         |  4 +--
- drivers/iio/accel/kxcjk-1013.c                |  2 --
- drivers/iio/accel/kxsd9.c                     |  2 --
- drivers/iio/accel/st_accel_buffer.c           |  8 ------
- drivers/iio/accel/stk8312.c                   |  2 --
- drivers/iio/accel/stk8ba50.c                  |  2 --
- drivers/iio/adc/ad7266.c                      |  2 --
- drivers/iio/adc/ad7766.c                      |  2 --
- drivers/iio/adc/ad7887.c                      |  2 --
- drivers/iio/adc/ad_sigma_delta.c              |  5 ----
- drivers/iio/adc/at91-sama5d2_adc.c            |  6 +----
- drivers/iio/adc/dln2-adc.c                    |  4 +--
- drivers/iio/adc/mxs-lradc-adc.c               |  2 --
- drivers/iio/adc/stm32-adc.c                   | 11 --------
- drivers/iio/adc/ti-adc084s021.c               |  2 --
- drivers/iio/adc/ti-ads1015.c                  |  2 --
- drivers/iio/adc/vf610_adc.c                   |  6 +----
- drivers/iio/adc/xilinx-xadc-core.c            |  2 --
- .../buffer/industrialio-triggered-buffer.c    | 10 +-------
- drivers/iio/chemical/atlas-ph-sensor.c        |  8 ------
- drivers/iio/dummy/iio_simple_dummy_buffer.c   | 14 -----------
- drivers/iio/gyro/bmg160_core.c                |  2 --
- drivers/iio/gyro/mpu3050-core.c               |  2 --
- drivers/iio/gyro/st_gyro_buffer.c             |  8 ------
- drivers/iio/humidity/hdc100x.c                |  7 +-----
- drivers/iio/humidity/hts221_buffer.c          |  2 --
- drivers/iio/iio_core_trigger.h                | 17 +++++++++++++
- drivers/iio/industrialio-buffer.c             | 13 ++++++++++
- drivers/iio/industrialio-trigger.c            | 22 +++-------------
- drivers/iio/light/gp2ap020a00f.c              | 11 +-------
- drivers/iio/light/isl29125.c                  |  5 ----
- drivers/iio/light/rpr0521.c                   |  2 --
- drivers/iio/light/si1145.c                    |  2 --
- drivers/iio/light/st_uvis25_core.c            |  2 --
- drivers/iio/light/tcs3414.c                   |  5 ----
- drivers/iio/magnetometer/bmc150_magn.c        |  2 --
- drivers/iio/magnetometer/st_magn_buffer.c     | 23 +++--------------
- drivers/iio/potentiostat/lmp91000.c           |  1 -
- drivers/iio/pressure/st_pressure_buffer.c     | 25 +++----------------
- drivers/iio/pressure/zpa2326.c                |  6 -----
- drivers/iio/proximity/sx9500.c                |  3 ---
- drivers/staging/iio/meter/ade7758_ring.c      |  2 --
- include/linux/iio/trigger_consumer.h          |  7 ------
- 43 files changed, 50 insertions(+), 217 deletions(-)
-
-diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-index 383c802eb5b8..dcce3e178f10 100644
---- a/drivers/iio/accel/bmc150-accel-core.c
-+++ b/drivers/iio/accel/bmc150-accel-core.c
-@@ -1403,7 +1403,7 @@ static int bmc150_accel_buffer_postenable(struct iio_dev *indio_dev)
- 	int ret = 0;
- 
- 	if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED)
--		return iio_triggered_buffer_postenable(indio_dev);
-+		return 0;
- 
- 	mutex_lock(&data->mutex);
- 
-@@ -1435,7 +1435,7 @@ static int bmc150_accel_buffer_predisable(struct iio_dev *indio_dev)
- 	struct bmc150_accel_data *data = iio_priv(indio_dev);
- 
- 	if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED)
--		return iio_triggered_buffer_predisable(indio_dev);
-+		return 0;
- 
- 	mutex_lock(&data->mutex);
- 
-diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-index af53a1084ee5..62a1c86e5049 100644
---- a/drivers/iio/accel/kxcjk-1013.c
-+++ b/drivers/iio/accel/kxcjk-1013.c
-@@ -1019,9 +1019,7 @@ static const struct iio_chan_spec kxcjk1013_channels[] = {
- 
- static const struct iio_buffer_setup_ops kxcjk1013_buffer_setup_ops = {
- 	.preenable		= kxcjk1013_buffer_preenable,
--	.postenable		= iio_triggered_buffer_postenable,
- 	.postdisable		= kxcjk1013_buffer_postdisable,
--	.predisable		= iio_triggered_buffer_predisable,
- };
- 
- static const struct iio_info kxcjk1013_info = {
-diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
-index 0c0df4fce420..9da366bedaa0 100644
---- a/drivers/iio/accel/kxsd9.c
-+++ b/drivers/iio/accel/kxsd9.c
-@@ -255,8 +255,6 @@ static int kxsd9_buffer_postdisable(struct iio_dev *indio_dev)
- 
- static const struct iio_buffer_setup_ops kxsd9_buffer_setup_ops = {
- 	.preenable = kxsd9_buffer_preenable,
--	.postenable = iio_triggered_buffer_postenable,
--	.predisable = iio_triggered_buffer_predisable,
- 	.postdisable = kxsd9_buffer_postdisable,
- };
- 
-diff --git a/drivers/iio/accel/st_accel_buffer.c b/drivers/iio/accel/st_accel_buffer.c
-index 7fddc137e91e..cfa189774a1a 100644
---- a/drivers/iio/accel/st_accel_buffer.c
-+++ b/drivers/iio/accel/st_accel_buffer.c
-@@ -51,10 +51,6 @@ static int st_accel_buffer_postenable(struct iio_dev *indio_dev)
- 	if (err < 0)
- 		goto st_accel_buffer_postenable_error;
- 
--	err = iio_triggered_buffer_postenable(indio_dev);
--	if (err < 0)
--		goto st_accel_buffer_postenable_error;
--
- 	return err;
- 
- st_accel_buffer_postenable_error:
-@@ -68,10 +64,6 @@ static int st_accel_buffer_predisable(struct iio_dev *indio_dev)
- 	int err;
- 	struct st_sensor_data *adata = iio_priv(indio_dev);
- 
--	err = iio_triggered_buffer_predisable(indio_dev);
--	if (err < 0)
--		goto st_accel_buffer_predisable_error;
--
- 	err = st_sensors_set_axis_enable(indio_dev, ST_SENSORS_ENABLE_ALL_AXIS);
- 	if (err < 0)
- 		goto st_accel_buffer_predisable_error;
-diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
-index cacc0da2f874..7c05f8b91f1f 100644
---- a/drivers/iio/accel/stk8312.c
-+++ b/drivers/iio/accel/stk8312.c
-@@ -495,8 +495,6 @@ static int stk8312_buffer_postdisable(struct iio_dev *indio_dev)
- 
- static const struct iio_buffer_setup_ops stk8312_buffer_setup_ops = {
- 	.preenable   = stk8312_buffer_preenable,
--	.postenable  = iio_triggered_buffer_postenable,
--	.predisable  = iio_triggered_buffer_predisable,
- 	.postdisable = stk8312_buffer_postdisable,
- };
- 
-diff --git a/drivers/iio/accel/stk8ba50.c b/drivers/iio/accel/stk8ba50.c
-index 576b6b140f08..4e15da997d96 100644
---- a/drivers/iio/accel/stk8ba50.c
-+++ b/drivers/iio/accel/stk8ba50.c
-@@ -379,8 +379,6 @@ static int stk8ba50_buffer_postdisable(struct iio_dev *indio_dev)
- 
- static const struct iio_buffer_setup_ops stk8ba50_buffer_setup_ops = {
- 	.preenable   = stk8ba50_buffer_preenable,
--	.postenable  = iio_triggered_buffer_postenable,
--	.predisable  = iio_triggered_buffer_predisable,
- 	.postdisable = stk8ba50_buffer_postdisable,
- };
- 
-diff --git a/drivers/iio/adc/ad7266.c b/drivers/iio/adc/ad7266.c
-index 605eb5e7e829..93b02b28e377 100644
---- a/drivers/iio/adc/ad7266.c
-+++ b/drivers/iio/adc/ad7266.c
-@@ -75,8 +75,6 @@ static int ad7266_postdisable(struct iio_dev *indio_dev)
- 
- static const struct iio_buffer_setup_ops iio_triggered_buffer_setup_ops = {
- 	.preenable = &ad7266_preenable,
--	.postenable = &iio_triggered_buffer_postenable,
--	.predisable = &iio_triggered_buffer_predisable,
- 	.postdisable = &ad7266_postdisable,
- };
- 
-diff --git a/drivers/iio/adc/ad7766.c b/drivers/iio/adc/ad7766.c
-index 3ae14fc8c649..39e7e4004706 100644
---- a/drivers/iio/adc/ad7766.c
-+++ b/drivers/iio/adc/ad7766.c
-@@ -179,8 +179,6 @@ static const struct ad7766_chip_info ad7766_chip_info[] = {
- 
- static const struct iio_buffer_setup_ops ad7766_buffer_setup_ops = {
- 	.preenable = &ad7766_preenable,
--	.postenable = &iio_triggered_buffer_postenable,
--	.predisable = &iio_triggered_buffer_predisable,
- 	.postdisable = &ad7766_postdisable,
- };
- 
-diff --git a/drivers/iio/adc/ad7887.c b/drivers/iio/adc/ad7887.c
-index 205c0f1761aa..02e0e75a3a71 100644
---- a/drivers/iio/adc/ad7887.c
-+++ b/drivers/iio/adc/ad7887.c
-@@ -131,8 +131,6 @@ static irqreturn_t ad7887_trigger_handler(int irq, void *p)
- 
- static const struct iio_buffer_setup_ops ad7887_ring_setup_ops = {
- 	.preenable = &ad7887_ring_preenable,
--	.postenable = &iio_triggered_buffer_postenable,
--	.predisable = &iio_triggered_buffer_predisable,
- 	.postdisable = &ad7887_ring_postdisable,
- };
- 
-diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
-index cf1b048b0665..ef046277bf7b 100644
---- a/drivers/iio/adc/ad_sigma_delta.c
-+++ b/drivers/iio/adc/ad_sigma_delta.c
-@@ -338,10 +338,6 @@ static int ad_sd_buffer_postenable(struct iio_dev *indio_dev)
- 	unsigned int channel;
- 	int ret;
- 
--	ret = iio_triggered_buffer_postenable(indio_dev);
--	if (ret < 0)
--		return ret;
--
- 	channel = find_first_bit(indio_dev->active_scan_mask,
- 				 indio_dev->masklength);
- 	ret = ad_sigma_delta_set_channel(sigma_delta,
-@@ -426,7 +422,6 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
- 
- static const struct iio_buffer_setup_ops ad_sd_buffer_setup_ops = {
- 	.postenable = &ad_sd_buffer_postenable,
--	.predisable = &iio_triggered_buffer_predisable,
- 	.postdisable = &ad_sd_buffer_postdisable,
- 	.validate_scan_mask = &iio_validate_scan_mask_onehot,
- };
-diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
-index 4eff8351ce29..9c23d4bbcc47 100644
---- a/drivers/iio/adc/at91-sama5d2_adc.c
-+++ b/drivers/iio/adc/at91-sama5d2_adc.c
-@@ -500,7 +500,7 @@ static int at91_adc_buffer_postenable(struct iio_dev *indio_dev)
- 		return ret;
- 	}
- 
--	return iio_triggered_buffer_postenable(indio_dev);
-+	return 0;
- }
- 
- static int at91_adc_buffer_predisable(struct iio_dev *indio_dev)
-@@ -509,10 +509,6 @@ static int at91_adc_buffer_predisable(struct iio_dev *indio_dev)
- 	int ret;
- 	u8 bit;
- 
--	ret = iio_triggered_buffer_predisable(indio_dev);
--	if (ret < 0)
--		dev_err(&indio_dev->dev, "buffer predisable failed\n");
--
- 	if (!st->dma_st.dma_chan)
- 		return ret;
- 
-diff --git a/drivers/iio/adc/dln2-adc.c b/drivers/iio/adc/dln2-adc.c
-index c64c6675cae6..51135e7c0d4f 100644
---- a/drivers/iio/adc/dln2-adc.c
-+++ b/drivers/iio/adc/dln2-adc.c
-@@ -560,7 +560,7 @@ static int dln2_adc_triggered_buffer_postenable(struct iio_dev *indio_dev)
- 		mutex_unlock(&dln2->mutex);
- 	}
- 
--	return iio_triggered_buffer_postenable(indio_dev);
-+	return 0;
- }
- 
- static int dln2_adc_triggered_buffer_predisable(struct iio_dev *indio_dev)
-@@ -585,7 +585,7 @@ static int dln2_adc_triggered_buffer_predisable(struct iio_dev *indio_dev)
- 		return ret;
- 	}
- 
--	return iio_triggered_buffer_predisable(indio_dev);
-+	return 0;
- }
- 
- static const struct iio_buffer_setup_ops dln2_adc_buffer_setup_ops = {
-diff --git a/drivers/iio/adc/mxs-lradc-adc.c b/drivers/iio/adc/mxs-lradc-adc.c
-index c627513d9f0f..4a44d4c787be 100644
---- a/drivers/iio/adc/mxs-lradc-adc.c
-+++ b/drivers/iio/adc/mxs-lradc-adc.c
-@@ -575,8 +575,6 @@ static bool mxs_lradc_adc_validate_scan_mask(struct iio_dev *iio,
- 
- static const struct iio_buffer_setup_ops mxs_lradc_adc_buffer_ops = {
- 	.preenable = &mxs_lradc_adc_buffer_preenable,
--	.postenable = &iio_triggered_buffer_postenable,
--	.predisable = &iio_triggered_buffer_predisable,
- 	.postdisable = &mxs_lradc_adc_buffer_postdisable,
- 	.validate_scan_mask = &mxs_lradc_adc_validate_scan_mask,
- };
-diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
-index 378411853d75..ce0d17c03d7e 100644
---- a/drivers/iio/adc/stm32-adc.c
-+++ b/drivers/iio/adc/stm32-adc.c
-@@ -1482,10 +1482,6 @@ static int stm32_adc_buffer_postenable(struct iio_dev *indio_dev)
- 		goto err_clr_trig;
- 	}
- 
--	ret = iio_triggered_buffer_postenable(indio_dev);
--	if (ret < 0)
--		goto err_stop_dma;
--
- 	/* Reset adc buffer index */
- 	adc->bufi = 0;
- 
-@@ -1496,9 +1492,6 @@ static int stm32_adc_buffer_postenable(struct iio_dev *indio_dev)
- 
- 	return 0;
- 
--err_stop_dma:
--	if (adc->dma_chan)
--		dmaengine_terminate_all(adc->dma_chan);
- err_clr_trig:
- 	stm32_adc_set_trig(indio_dev, NULL);
- err_unprepare:
-@@ -1517,10 +1510,6 @@ static int stm32_adc_buffer_predisable(struct iio_dev *indio_dev)
- 	if (!adc->dma_chan)
- 		stm32_adc_conv_irq_disable(adc);
- 
--	ret = iio_triggered_buffer_predisable(indio_dev);
--	if (ret < 0)
--		dev_err(&indio_dev->dev, "predisable failed\n");
--
- 	if (adc->dma_chan)
- 		dmaengine_terminate_all(adc->dma_chan);
- 
-diff --git a/drivers/iio/adc/ti-adc084s021.c b/drivers/iio/adc/ti-adc084s021.c
-index 25504640e126..b5557ecb667e 100644
---- a/drivers/iio/adc/ti-adc084s021.c
-+++ b/drivers/iio/adc/ti-adc084s021.c
-@@ -190,8 +190,6 @@ static const struct iio_info adc084s021_info = {
- 
- static const struct iio_buffer_setup_ops adc084s021_buffer_setup_ops = {
- 	.preenable = adc084s021_buffer_preenable,
--	.postenable = iio_triggered_buffer_postenable,
--	.predisable = iio_triggered_buffer_predisable,
- 	.postdisable = adc084s021_buffer_postdisable,
- };
- 
-diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
-index 6a114dcb4a3a..2a4725ec68ce 100644
---- a/drivers/iio/adc/ti-ads1015.c
-+++ b/drivers/iio/adc/ti-ads1015.c
-@@ -784,8 +784,6 @@ static int ads1015_buffer_postdisable(struct iio_dev *indio_dev)
- 
- static const struct iio_buffer_setup_ops ads1015_buffer_setup_ops = {
- 	.preenable	= ads1015_buffer_preenable,
--	.postenable	= iio_triggered_buffer_postenable,
--	.predisable	= iio_triggered_buffer_predisable,
- 	.postdisable	= ads1015_buffer_postdisable,
- 	.validate_scan_mask = &iio_validate_scan_mask_onehot,
- };
-diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
-index bbcb7a4d7edf..3a15b98cfd39 100644
---- a/drivers/iio/adc/vf610_adc.c
-+++ b/drivers/iio/adc/vf610_adc.c
-@@ -740,10 +740,6 @@ static int vf610_adc_buffer_postenable(struct iio_dev *indio_dev)
- 	int ret;
- 	int val;
- 
--	ret = iio_triggered_buffer_postenable(indio_dev);
--	if (ret)
--		return ret;
--
- 	val = readl(info->regs + VF610_REG_ADC_GC);
- 	val |= VF610_ADC_ADCON;
- 	writel(val, info->regs + VF610_REG_ADC_GC);
-@@ -774,7 +770,7 @@ static int vf610_adc_buffer_predisable(struct iio_dev *indio_dev)
- 
- 	writel(hc_cfg, info->regs + VF610_REG_ADC_HC0);
- 
--	return iio_triggered_buffer_predisable(indio_dev);
-+	return 0;
- }
- 
- static const struct iio_buffer_setup_ops iio_triggered_buffer_setup_ops = {
-diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
-index d4f21d1be6c8..bc5b4f124a15 100644
---- a/drivers/iio/adc/xilinx-xadc-core.c
-+++ b/drivers/iio/adc/xilinx-xadc-core.c
-@@ -804,8 +804,6 @@ static int xadc_preenable(struct iio_dev *indio_dev)
- 
- static const struct iio_buffer_setup_ops xadc_buffer_ops = {
- 	.preenable = &xadc_preenable,
--	.postenable = &iio_triggered_buffer_postenable,
--	.predisable = &iio_triggered_buffer_predisable,
- 	.postdisable = &xadc_postdisable,
- };
- 
-diff --git a/drivers/iio/buffer/industrialio-triggered-buffer.c b/drivers/iio/buffer/industrialio-triggered-buffer.c
-index d3db1fce54d2..6d2d7e953904 100644
---- a/drivers/iio/buffer/industrialio-triggered-buffer.c
-+++ b/drivers/iio/buffer/industrialio-triggered-buffer.c
-@@ -16,11 +16,6 @@
- #include <linux/iio/triggered_buffer.h>
- #include <linux/iio/trigger_consumer.h>
- 
--static const struct iio_buffer_setup_ops iio_triggered_buffer_setup_ops = {
--	.postenable = &iio_triggered_buffer_postenable,
--	.predisable = &iio_triggered_buffer_predisable,
--};
--
- /**
-  * iio_triggered_buffer_setup() - Setup triggered buffer and pollfunc
-  * @indio_dev:		IIO device structure
-@@ -70,10 +65,7 @@ int iio_triggered_buffer_setup(struct iio_dev *indio_dev,
- 	}
- 
- 	/* Ring buffer functions - here trigger setup related */
--	if (setup_ops)
--		indio_dev->setup_ops = setup_ops;
--	else
--		indio_dev->setup_ops = &iio_triggered_buffer_setup_ops;
-+	indio_dev->setup_ops = setup_ops;
- 
- 	/* Flag that polled ring buffering is possible */
- 	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
-diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
-index a406ad31b096..8fed75f9e95d 100644
---- a/drivers/iio/chemical/atlas-ph-sensor.c
-+++ b/drivers/iio/chemical/atlas-ph-sensor.c
-@@ -305,10 +305,6 @@ static int atlas_buffer_postenable(struct iio_dev *indio_dev)
- 	struct atlas_data *data = iio_priv(indio_dev);
- 	int ret;
- 
--	ret = iio_triggered_buffer_postenable(indio_dev);
--	if (ret)
--		return ret;
--
- 	ret = pm_runtime_get_sync(&data->client->dev);
- 	if (ret < 0) {
- 		pm_runtime_put_noidle(&data->client->dev);
-@@ -323,10 +319,6 @@ static int atlas_buffer_predisable(struct iio_dev *indio_dev)
- 	struct atlas_data *data = iio_priv(indio_dev);
- 	int ret;
- 
--	ret = iio_triggered_buffer_predisable(indio_dev);
--	if (ret)
--		return ret;
--
- 	ret = atlas_set_interrupt(data, false);
- 	if (ret)
- 		return ret;
-diff --git a/drivers/iio/dummy/iio_simple_dummy_buffer.c b/drivers/iio/dummy/iio_simple_dummy_buffer.c
-index 744ca92c3c99..72b0a874d0c6 100644
---- a/drivers/iio/dummy/iio_simple_dummy_buffer.c
-+++ b/drivers/iio/dummy/iio_simple_dummy_buffer.c
-@@ -102,20 +102,6 @@ static irqreturn_t iio_simple_dummy_trigger_h(int irq, void *p)
- }
- 
- static const struct iio_buffer_setup_ops iio_simple_dummy_buffer_setup_ops = {
--	/*
--	 * iio_triggered_buffer_postenable:
--	 * Generic function that simply attaches the pollfunc to the trigger.
--	 * Replace this to mess with hardware state before we attach the
--	 * trigger.
--	 */
--	.postenable = &iio_triggered_buffer_postenable,
--	/*
--	 * iio_triggered_buffer_predisable:
--	 * Generic function that simple detaches the pollfunc from the trigger.
--	 * Replace this to put hardware state back again after the trigger is
--	 * detached but before userspace knows we have disabled the ring.
--	 */
--	.predisable = &iio_triggered_buffer_predisable,
- };
- 
- int iio_simple_dummy_configure_buffer(struct iio_dev *indio_dev)
-diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
-index 63ca31628a93..018d5aef9cdf 100644
---- a/drivers/iio/gyro/bmg160_core.c
-+++ b/drivers/iio/gyro/bmg160_core.c
-@@ -1043,8 +1043,6 @@ static int bmg160_buffer_postdisable(struct iio_dev *indio_dev)
- 
- static const struct iio_buffer_setup_ops bmg160_buffer_setup_ops = {
- 	.preenable = bmg160_buffer_preenable,
--	.postenable = iio_triggered_buffer_postenable,
--	.predisable = iio_triggered_buffer_predisable,
- 	.postdisable = bmg160_buffer_postdisable,
- };
- 
-diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-index 77fac81a3adc..159fb7cd6e2e 100644
---- a/drivers/iio/gyro/mpu3050-core.c
-+++ b/drivers/iio/gyro/mpu3050-core.c
-@@ -660,8 +660,6 @@ static int mpu3050_buffer_postdisable(struct iio_dev *indio_dev)
- 
- static const struct iio_buffer_setup_ops mpu3050_buffer_setup_ops = {
- 	.preenable = mpu3050_buffer_preenable,
--	.postenable = iio_triggered_buffer_postenable,
--	.predisable = iio_triggered_buffer_predisable,
- 	.postdisable = mpu3050_buffer_postdisable,
- };
- 
-diff --git a/drivers/iio/gyro/st_gyro_buffer.c b/drivers/iio/gyro/st_gyro_buffer.c
-index a5377044e42f..21501ffd879e 100644
---- a/drivers/iio/gyro/st_gyro_buffer.c
-+++ b/drivers/iio/gyro/st_gyro_buffer.c
-@@ -51,10 +51,6 @@ static int st_gyro_buffer_postenable(struct iio_dev *indio_dev)
- 	if (err < 0)
- 		goto st_gyro_buffer_postenable_error;
- 
--	err = iio_triggered_buffer_postenable(indio_dev);
--	if (err < 0)
--		goto st_gyro_buffer_postenable_error;
--
- 	return err;
- 
- st_gyro_buffer_postenable_error:
-@@ -68,10 +64,6 @@ static int st_gyro_buffer_predisable(struct iio_dev *indio_dev)
- 	int err;
- 	struct st_sensor_data *gdata = iio_priv(indio_dev);
- 
--	err = iio_triggered_buffer_predisable(indio_dev);
--	if (err < 0)
--		goto st_gyro_buffer_predisable_error;
--
- 	err = st_sensors_set_axis_enable(indio_dev, ST_SENSORS_ENABLE_ALL_AXIS);
- 	if (err < 0)
- 		goto st_gyro_buffer_predisable_error;
-diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
-index 066e05f92081..959d7e17d471 100644
---- a/drivers/iio/humidity/hdc100x.c
-+++ b/drivers/iio/humidity/hdc100x.c
-@@ -286,7 +286,7 @@ static int hdc100x_buffer_postenable(struct iio_dev *indio_dev)
- 	if (ret)
- 		return ret;
- 
--	return iio_triggered_buffer_postenable(indio_dev);
-+	return 0;
- }
- 
- static int hdc100x_buffer_predisable(struct iio_dev *indio_dev)
-@@ -294,11 +294,6 @@ static int hdc100x_buffer_predisable(struct iio_dev *indio_dev)
- 	struct hdc100x_data *data = iio_priv(indio_dev);
- 	int ret;
- 
--	/* First detach poll func, then reset ACQ mode. OK to disable buffer */
--	ret = iio_triggered_buffer_predisable(indio_dev);
--	if (ret)
--		return ret;
--
- 	mutex_lock(&data->lock);
- 	ret = hdc100x_update_config(data, HDC100X_REG_CONFIG_ACQ_MODE, 0);
- 	mutex_unlock(&data->lock);
-diff --git a/drivers/iio/humidity/hts221_buffer.c b/drivers/iio/humidity/hts221_buffer.c
-index 1a94b0b91721..dc45667b0364 100644
---- a/drivers/iio/humidity/hts221_buffer.c
-+++ b/drivers/iio/humidity/hts221_buffer.c
-@@ -156,8 +156,6 @@ static int hts221_buffer_postdisable(struct iio_dev *iio_dev)
- 
- static const struct iio_buffer_setup_ops hts221_buffer_ops = {
- 	.preenable = hts221_buffer_preenable,
--	.postenable = iio_triggered_buffer_postenable,
--	.predisable = iio_triggered_buffer_predisable,
- 	.postdisable = hts221_buffer_postdisable,
- };
- 
-diff --git a/drivers/iio/iio_core_trigger.h b/drivers/iio/iio_core_trigger.h
-index 1fdb1e4ea4a5..a6d6e880a8b8 100644
---- a/drivers/iio/iio_core_trigger.h
-+++ b/drivers/iio/iio_core_trigger.h
-@@ -21,6 +21,12 @@ void iio_device_register_trigger_consumer(struct iio_dev *indio_dev);
-  **/
- void iio_device_unregister_trigger_consumer(struct iio_dev *indio_dev);
- 
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+index 2356ed9285df..4ca3911c1449 100644
+--- a/drivers/iio/light/Kconfig
++++ b/drivers/iio/light/Kconfig
+@@ -322,6 +322,17 @@ config SI1145
+ 	  To compile this driver as a module, choose M here: the module will be
+ 	  called si1145.
+ 
++config SI1133
++	tristate "SI1133 UV Index Sensor and Ambient Light Sensor"
++	depends on I2C
++	select REGMAP_I2C
++	  help
++	  Say Y here if you want to build a driver for the Silicon Labs SI1133
++	  UV Index Sensor and Ambient Light Sensor chip.
 +
-+int iio_trigger_attach_poll_func(struct iio_trigger *trig,
-+				 struct iio_poll_func *pf);
-+int iio_trigger_detach_poll_func(struct iio_trigger *trig,
-+				 struct iio_poll_func *pf);
++	  To compile this driver as a module, choose M here: the module will be
++	  called si1133.
 +
- #else
- 
- /**
-@@ -40,4 +46,15 @@ static void iio_device_unregister_trigger_consumer(struct iio_dev *indio_dev)
- {
- }
- 
-+static inline int iio_trigger_attach_poll_func(struct iio_trigger *trig,
-+					       struct iio_poll_func *pf)
+ config STK3310
+ 	tristate "STK3310 ALS and proximity sensor"
+ 	depends on I2C
+diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+index fa32fa459e2e..23ccd38291ec 100644
+--- a/drivers/iio/light/Makefile
++++ b/drivers/iio/light/Makefile
+@@ -31,6 +31,7 @@ obj-$(CONFIG_PA12203001)	+= pa12203001.o
+ obj-$(CONFIG_RPR0521)		+= rpr0521.o
+ obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
+ obj-$(CONFIG_SI1145)		+= si1145.o
++obj-$(CONFIG_SI1133)		+= si1133.o
+ obj-$(CONFIG_STK3310)          += stk3310.o
+ obj-$(CONFIG_TCS3414)		+= tcs3414.o
+ obj-$(CONFIG_TCS3472)		+= tcs3472.o
+diff --git a/drivers/iio/light/si1133.c b/drivers/iio/light/si1133.c
+new file mode 100644
+index 000000000000..62e62e2dea1b
+--- /dev/null
++++ b/drivers/iio/light/si1133.c
+@@ -0,0 +1,835 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * si1133.c - Support for Silabs SI1133 combined ambient
++ * light and UV index sensors
++ *
++ * Copyright 2018 Maxime Roussin-Belanger <maxime.roussinbelanger@gmail.com>
++ */
++
++#include <linux/module.h>
++#include <linux/i2c.h>
++#include <linux/interrupt.h>
++#include <linux/delay.h>
++#include <linux/regmap.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++
++#include <linux/util_macros.h>
++
++#define SI1133_REG_PART_ID		0x00
++#define SI1133_REG_REV_ID		0x01
++#define SI1133_REG_MFR_ID		0x02
++#define SI1133_REG_INFO0		0x03
++#define SI1133_REG_INFO1		0x04
++
++#define SI1133_REG_HOSTIN0		0x0A
++#define SI1133_REG_COMMAND		0x0B
++#define SI1133_REG_IRQ_ENABLE		0x0F
++#define SI1133_REG_RESPONSE1		0x10
++#define SI1133_REG_RESPONSE0		0x11
++#define SI1133_REG_IRQ_STATUS		0x12
++#define SI1133_REG_MEAS_RATE		0x1A
++
++#define SI1133_CMD_RESET_CTR		0x00
++#define SI1133_CMD_RESET_SW		0x01
++#define SI1133_CMD_FORCE		0x11
++#define SI1133_CMD_START_AUTONOMOUS	0x13
++#define SI1133_CMD_PARAM_SET		0x80
++#define SI1133_CMD_PARAM_QUERY		0x40
++#define SI1133_CMD_PARAM_MASK		0x3F
++
++#define SI1133_CMD_ERR_MASK		BIT(4)
++#define SI1133_CMD_SEQ_MASK		0xF
++
++#define SI1133_PARAM_REG_CHAN_LIST	0x01
++#define SI1133_PARAM_REG_ADCCONFIG(x)	(((x) * 4) + 2)
++#define SI1133_PARAM_REG_ADCSENS(x)	(((x) * 4) + 3)
++
++#define SI1133_ADCMUX_MASK 0x1F
++#define SI1133_ADCSENS_SCALE_MASK 0x70
++#define SI1133_ADCSENS_SCALE_SHIFT 4
++
++#define SI1133_ADCSENS_HSIG_MASK 0x80
++#define SI1133_ADCSENS_HSIG_SHIFT 7
++
++#define SI1133_ADCSENS_HW_GAIN_MASK 0xF
++
++#define SI1133_PARAM_ADCMUX_SMALL_IR	0x0
++#define SI1133_PARAM_ADCMUX_MED_IR	0x1
++#define SI1133_PARAM_ADCMUX_LARGE_IR	0x2
++#define SI1133_PARAM_ADCMUX_WHITE	0xB
++#define SI1133_PARAM_ADCMUX_LARGE_WHITE	0xD
++#define SI1133_PARAM_ADCMUX_UV		0x18
++#define SI1133_PARAM_ADCMUX_UV_DEEP	0x19
++
++#define SI1133_ERR_INVALID_CMD		0x0
++#define SI1133_ERR_INVALID_LOCATION_CMD 0x1
++#define SI1133_ERR_SATURATION_ADC_OR_OVERFLOW_ACCUMULATION 0x2
++#define SI1133_ERR_OUTPUT_BUFFER_OVERFLOW 0x3
++
++#define SI1133_CMD_MINSLEEP_US_LOW	5000
++#define SI1133_CMD_MINSLEEP_US_HIGH	7500
++#define SI1133_CMD_TIMEOUT_MS		25
++#define SI1133_MAX_RETRIES 25
++
++#define SI1133_REG_HOSTOUT(x)		((x) + 0x13)
++
++#define SI1133_MAX_CMD_CTR		0xF
++
++#define SI1133_MEASUREMENT_FREQUENCY 1250
++
++static const int si1133_scale_available[] = {
++	1, 2, 4, 8, 16, 32, 64, 128};
++
++static IIO_CONST_ATTR(scale_available, "1 2 4 8 16 32 64 128");
++
++static IIO_CONST_ATTR_INT_TIME_AVAIL("0.0244 0.0488 0.0975 0.195 0.390 0.780 "
++				     "1.560 3.120 6.24 12.48 25.0 50.0");
++/* Integration time in milliseconds, nanoseconds */
++static const int si1133_int_time_table[][2] = {
++	{0, 24400},	{0, 48800},	{0, 97500},	{0, 195000},
++	{0, 390000},	{0, 780000},	{1, 560000},	{3, 120000},
++	{6, 240000},	{12, 480000},	{25, 000000},	{50, 000000},
++};
++
++static const struct regmap_range si1133_reg_ranges[] = {
++	regmap_reg_range(0x00, 0x02),
++	regmap_reg_range(0x0A, 0x0B),
++	regmap_reg_range(0x0F, 0x0F),
++	regmap_reg_range(0x10, 0x12),
++	regmap_reg_range(0x13, 0x2C),
++};
++
++static const struct regmap_range si1133_reg_ro_ranges[] = {
++	regmap_reg_range(0x00, 0x02),
++	regmap_reg_range(0x10, 0x2C),
++};
++
++static const struct regmap_range si1133_precious_ranges[] = {
++	regmap_reg_range(0x12, 0x12),
++};
++
++static const struct regmap_access_table si1133_write_ranges_table = {
++	.yes_ranges	= si1133_reg_ranges,
++	.n_yes_ranges	= ARRAY_SIZE(si1133_reg_ranges),
++	.no_ranges	= si1133_reg_ro_ranges,
++	.n_no_ranges	= ARRAY_SIZE(si1133_reg_ro_ranges),
++};
++
++static const struct regmap_access_table si1133_read_ranges_table = {
++	.yes_ranges	= si1133_reg_ranges,
++	.n_yes_ranges	= ARRAY_SIZE(si1133_reg_ranges),
++};
++
++static const struct regmap_access_table si1133_precious_table = {
++	.yes_ranges	= si1133_precious_ranges,
++	.n_yes_ranges	= ARRAY_SIZE(si1133_precious_ranges),
++};
++
++static const struct regmap_config si1133_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++
++	.max_register = 0x2C,
++
++	.wr_table = &si1133_write_ranges_table,
++	.rd_table = &si1133_read_ranges_table,
++
++	.precious_table = &si1133_precious_table,
++};
++
++/**
++ * struct si1133_part_info - si1133 chip info
++ * @part:	part number
++ * @iio_info	callbacks
++ * @channels:	list of channels
++ * @num_channels:	number of channels
++ */
++struct si1133_part_info {
++	u8 part;
++	const struct iio_info *iio_info;
++	const struct iio_chan_spec *channels;
++	unsigned int num_channels;
++};
++
++struct si1133_data {
++	struct regmap *regmap;
++	struct i2c_client *client;
++	const struct si1133_part_info *part_info;
++
++	struct mutex mutex;
++
++	int rsp_seq;
++	unsigned long scan_mask;
++	unsigned int adc_sens;
++	unsigned int adc_config;
++	unsigned int meas_rate;
++
++	struct completion completion;
++};
++
++/**
++ * si1133_cmd_reset_sw() - Reset the chip
++ *
++ * Wait till command reset completes or timeout
++ */
++static int si1133_cmd_reset_sw(struct si1133_data *data)
 +{
-+	return 0;
++	struct device *dev = &data->client->dev;
++	unsigned int resp;
++	unsigned long timeout;
++	int err;
++
++	err = regmap_write(data->regmap, SI1133_REG_COMMAND,
++			   SI1133_CMD_RESET_SW);
++	if (err)
++		return err;
++
++	timeout = jiffies + msecs_to_jiffies(SI1133_CMD_TIMEOUT_MS);
++	while (true) {
++		err = regmap_read(data->regmap, SI1133_REG_RESPONSE0, &resp);
++		if (err == -ENXIO) {
++			usleep_range(SI1133_CMD_MINSLEEP_US_LOW,
++				     SI1133_CMD_MINSLEEP_US_HIGH);
++			continue;
++		}
++
++		if ((resp & SI1133_MAX_CMD_CTR) == SI1133_MAX_CMD_CTR)
++			break;
++
++		if (time_after(jiffies, timeout)) {
++			dev_warn(dev, "timeout on reset ctr resp: %d\n", resp);
++			return -ETIMEDOUT;
++		}
++	}
++
++	if (!err)
++		data->rsp_seq = SI1133_MAX_CMD_CTR;
++
++	return err;
 +}
-+static inline int iio_trigger_detach_poll_func(struct iio_trigger *trig,
-+					       struct iio_poll_func *pf)
++
++static int si1133_parse_response_err(struct device *dev, unsigned int resp,
++				     u8 cmd)
 +{
++	int ret = 0;
++
++	resp &= 0xF;
++
++	switch (resp) {
++	case SI1133_ERR_OUTPUT_BUFFER_OVERFLOW:
++		dev_warn(dev, "Output buffer overflow: %#02hhx\n", cmd);
++		ret = -EOVERFLOW;
++		break;
++	case SI1133_ERR_SATURATION_ADC_OR_OVERFLOW_ACCUMULATION:
++		dev_warn(dev, "Saturation of the ADC or overflow of accumulation: %#02hhx\n",
++			 cmd);
++		ret = -EOVERFLOW;
++		break;
++	case SI1133_ERR_INVALID_LOCATION_CMD:
++		dev_warn(dev, "Parameter access to an invalid location: %#02hhx\n",
++			 cmd);
++		ret = -EINVAL;
++		break;
++	case SI1133_ERR_INVALID_CMD:
++		dev_warn(dev, "Invalid command %#02hhx\n", cmd);
++		ret = -EINVAL;
++		break;
++	default:
++		dev_warn(dev, "Unknown error %#02hhx\n", cmd);
++		return -EINVAL;
++	}
++
++	return ret;
++}
++
++static int si1133_cmd_reset_counter(struct si1133_data *data)
++{
++	int err = regmap_write(data->regmap, SI1133_REG_COMMAND,
++			       SI1133_CMD_RESET_CTR);
++	if (err)
++		return err;
++
++	data->rsp_seq = 0;
++
 +	return 0;
 +}
 +
- #endif /* CONFIG_TRIGGER_CONSUMER */
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index cd5bfe39591b..d8eb534a9544 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -24,6 +24,7 @@
- 
- #include <linux/iio/iio.h>
- #include "iio_core.h"
-+#include "iio_core_trigger.h"
- #include <linux/iio/sysfs.h>
- #include <linux/iio/buffer.h>
- #include <linux/iio/buffer_impl.h>
-@@ -961,6 +962,13 @@ static int iio_enable_buffers(struct iio_dev *indio_dev,
- 		}
- 	}
- 
-+	if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED) {
-+		ret = iio_trigger_attach_poll_func(indio_dev->trig,
-+						   indio_dev->pollfunc);
-+		if (ret)
-+			goto err_disable_buffers;
++static int si1133_command(struct si1133_data *data, u8 cmd)
++{
++	struct device *dev = &data->client->dev;
++	unsigned int resp;
++	int err;
++	int expected_seq;
++
++	mutex_lock(&data->mutex);
++
++	expected_seq = (data->rsp_seq + 1) & SI1133_MAX_CMD_CTR;
++
++	err = regmap_write(data->regmap, SI1133_REG_COMMAND, cmd);
++	if (err) {
++		dev_warn(dev, "failed to write command %#02hhx, ret=%d\n", cmd,
++			 err);
++		goto out;
 +	}
 +
- 	return 0;
- 
- err_disable_buffers:
-@@ -987,6 +995,11 @@ static int iio_disable_buffers(struct iio_dev *indio_dev)
- 	if (list_empty(&indio_dev->buffer_list))
- 		return 0;
- 
-+	if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED) {
-+		iio_trigger_detach_poll_func(indio_dev->trig,
-+					     indio_dev->pollfunc);
++	err = regmap_read_poll_timeout(data->regmap, SI1133_REG_RESPONSE0, resp,
++				       (resp & SI1133_CMD_SEQ_MASK) ==
++				       expected_seq ||
++				       (resp & SI1133_CMD_ERR_MASK),
++				       SI1133_CMD_MINSLEEP_US_LOW,
++				       SI1133_CMD_TIMEOUT_MS * 1000);
++
++	if (resp & SI1133_CMD_ERR_MASK) {
++		err = si1133_parse_response_err(dev, resp, cmd);
++		si1133_cmd_reset_counter(data);
++	} else {
++		data->rsp_seq = resp & SI1133_CMD_SEQ_MASK;
 +	}
 +
- 	/*
- 	 * If things go wrong at some step in disable we still need to continue
- 	 * to perform the other steps, otherwise we leave the device in a
-diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-index ce66699c7fcc..a4dacb638a72 100644
---- a/drivers/iio/industrialio-trigger.c
-+++ b/drivers/iio/industrialio-trigger.c
-@@ -242,8 +242,8 @@ static void iio_trigger_put_irq(struct iio_trigger *trig, int irq)
-  * the relevant function is in there may be the best option.
-  */
- /* Worth protecting against double additions? */
--static int iio_trigger_attach_poll_func(struct iio_trigger *trig,
--					struct iio_poll_func *pf)
-+int iio_trigger_attach_poll_func(struct iio_trigger *trig,
-+				 struct iio_poll_func *pf)
- {
- 	int ret = 0;
- 	bool notinuse
-@@ -290,8 +290,8 @@ static int iio_trigger_attach_poll_func(struct iio_trigger *trig,
- 	return ret;
- }
- 
--static int iio_trigger_detach_poll_func(struct iio_trigger *trig,
--					 struct iio_poll_func *pf)
-+int iio_trigger_detach_poll_func(struct iio_trigger *trig,
-+				 struct iio_poll_func *pf)
- {
- 	int ret = 0;
- 	bool no_other_users
-@@ -758,17 +758,3 @@ void iio_device_unregister_trigger_consumer(struct iio_dev *indio_dev)
- 	if (indio_dev->trig)
- 		iio_trigger_put(indio_dev->trig);
- }
--
--int iio_triggered_buffer_postenable(struct iio_dev *indio_dev)
--{
--	return iio_trigger_attach_poll_func(indio_dev->trig,
--					    indio_dev->pollfunc);
--}
--EXPORT_SYMBOL(iio_triggered_buffer_postenable);
--
--int iio_triggered_buffer_predisable(struct iio_dev *indio_dev)
--{
--	return iio_trigger_detach_poll_func(indio_dev->trig,
--					     indio_dev->pollfunc);
--}
--EXPORT_SYMBOL(iio_triggered_buffer_predisable);
-diff --git a/drivers/iio/light/gp2ap020a00f.c b/drivers/iio/light/gp2ap020a00f.c
-index 44b13fbcd093..24d4a57b41be 100644
---- a/drivers/iio/light/gp2ap020a00f.c
-+++ b/drivers/iio/light/gp2ap020a00f.c
-@@ -1423,12 +1423,8 @@ static int gp2ap020a00f_buffer_postenable(struct iio_dev *indio_dev)
- 		goto error_unlock;
- 
- 	data->buffer = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
--	if (!data->buffer) {
-+	if (!data->buffer)
- 		err = -ENOMEM;
--		goto error_unlock;
--	}
--
--	err = iio_triggered_buffer_postenable(indio_dev);
- 
- error_unlock:
- 	mutex_unlock(&data->lock);
-@@ -1443,10 +1439,6 @@ static int gp2ap020a00f_buffer_predisable(struct iio_dev *indio_dev)
- 
- 	mutex_lock(&data->lock);
- 
--	err = iio_triggered_buffer_predisable(indio_dev);
--	if (err < 0)
--		goto error_unlock;
--
- 	for_each_set_bit(i, indio_dev->active_scan_mask,
- 		indio_dev->masklength) {
- 		switch (i) {
-@@ -1468,7 +1460,6 @@ static int gp2ap020a00f_buffer_predisable(struct iio_dev *indio_dev)
- 	if (err == 0)
- 		kfree(data->buffer);
- 
--error_unlock:
- 	mutex_unlock(&data->lock);
- 
- 	return err;
-diff --git a/drivers/iio/light/isl29125.c b/drivers/iio/light/isl29125.c
-index ed38edcd5efe..5fdfce92019b 100644
---- a/drivers/iio/light/isl29125.c
-+++ b/drivers/iio/light/isl29125.c
-@@ -230,10 +230,6 @@ static int isl29125_buffer_predisable(struct iio_dev *indio_dev)
- 	struct isl29125_data *data = iio_priv(indio_dev);
- 	int ret;
- 
--	ret = iio_triggered_buffer_predisable(indio_dev);
--	if (ret < 0)
--		return ret;
--
- 	data->conf1 &= ~ISL29125_MODE_MASK;
- 	data->conf1 |= ISL29125_MODE_PD;
- 	return i2c_smbus_write_byte_data(data->client, ISL29125_CONF1,
-@@ -242,7 +238,6 @@ static int isl29125_buffer_predisable(struct iio_dev *indio_dev)
- 
- static const struct iio_buffer_setup_ops isl29125_buffer_setup_ops = {
- 	.preenable = isl29125_buffer_preenable,
--	.postenable = &iio_triggered_buffer_postenable,
- 	.predisable = isl29125_buffer_predisable,
- };
- 
-diff --git a/drivers/iio/light/rpr0521.c b/drivers/iio/light/rpr0521.c
-index ffe9ce798ea2..a700f5fed0d8 100644
---- a/drivers/iio/light/rpr0521.c
-+++ b/drivers/iio/light/rpr0521.c
-@@ -573,8 +573,6 @@ static int rpr0521_buffer_postdisable(struct iio_dev *indio_dev)
- 
- static const struct iio_buffer_setup_ops rpr0521_buffer_setup_ops = {
- 	.preenable = rpr0521_buffer_preenable,
--	.postenable = iio_triggered_buffer_postenable,
--	.predisable = iio_triggered_buffer_predisable,
- 	.postdisable = rpr0521_buffer_postdisable,
- };
- 
-diff --git a/drivers/iio/light/si1145.c b/drivers/iio/light/si1145.c
-index 76f16f9c7616..8019cc93251e 100644
---- a/drivers/iio/light/si1145.c
-+++ b/drivers/iio/light/si1145.c
-@@ -1175,8 +1175,6 @@ static bool si1145_validate_scan_mask(struct iio_dev *indio_dev,
- 
- static const struct iio_buffer_setup_ops si1145_buffer_setup_ops = {
- 	.preenable = si1145_buffer_preenable,
--	.postenable = iio_triggered_buffer_postenable,
--	.predisable = iio_triggered_buffer_predisable,
- 	.validate_scan_mask = si1145_validate_scan_mask,
- };
- 
-diff --git a/drivers/iio/light/st_uvis25_core.c b/drivers/iio/light/st_uvis25_core.c
-index 302635836e6b..7ef9c8890522 100644
---- a/drivers/iio/light/st_uvis25_core.c
-+++ b/drivers/iio/light/st_uvis25_core.c
-@@ -228,8 +228,6 @@ static int st_uvis25_buffer_postdisable(struct iio_dev *iio_dev)
- 
- static const struct iio_buffer_setup_ops st_uvis25_buffer_ops = {
- 	.preenable = st_uvis25_buffer_preenable,
--	.postenable = iio_triggered_buffer_postenable,
--	.predisable = iio_triggered_buffer_predisable,
- 	.postdisable = st_uvis25_buffer_postdisable,
- };
- 
-diff --git a/drivers/iio/light/tcs3414.c b/drivers/iio/light/tcs3414.c
-index 205e5659ce6b..c31ed0c640e9 100644
---- a/drivers/iio/light/tcs3414.c
-+++ b/drivers/iio/light/tcs3414.c
-@@ -257,10 +257,6 @@ static int tcs3414_buffer_predisable(struct iio_dev *indio_dev)
- 	struct tcs3414_data *data = iio_priv(indio_dev);
- 	int ret;
- 
--	ret = iio_triggered_buffer_predisable(indio_dev);
--	if (ret < 0)
--		return ret;
--
- 	data->control &= ~TCS3414_CONTROL_ADC_EN;
- 	return i2c_smbus_write_byte_data(data->client, TCS3414_CONTROL,
- 		data->control);
-@@ -268,7 +264,6 @@ static int tcs3414_buffer_predisable(struct iio_dev *indio_dev)
- 
- static const struct iio_buffer_setup_ops tcs3414_buffer_setup_ops = {
- 	.preenable = tcs3414_buffer_preenable,
--	.postenable = &iio_triggered_buffer_postenable,
- 	.predisable = tcs3414_buffer_predisable,
- };
- 
-diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
-index d91cb845e3d6..18f5e5013be4 100644
---- a/drivers/iio/magnetometer/bmc150_magn.c
-+++ b/drivers/iio/magnetometer/bmc150_magn.c
-@@ -828,8 +828,6 @@ static int bmc150_magn_buffer_postdisable(struct iio_dev *indio_dev)
- 
- static const struct iio_buffer_setup_ops bmc150_magn_buffer_setup_ops = {
- 	.preenable = bmc150_magn_buffer_preenable,
--	.postenable = iio_triggered_buffer_postenable,
--	.predisable = iio_triggered_buffer_predisable,
- 	.postdisable = bmc150_magn_buffer_postdisable,
- };
- 
-diff --git a/drivers/iio/magnetometer/st_magn_buffer.c b/drivers/iio/magnetometer/st_magn_buffer.c
-index 0a9e8fadfa9d..8a934b597acc 100644
---- a/drivers/iio/magnetometer/st_magn_buffer.c
-+++ b/drivers/iio/magnetometer/st_magn_buffer.c
-@@ -37,25 +37,13 @@ static int st_magn_buffer_preenable(struct iio_dev *indio_dev)
- 
- static int st_magn_buffer_postenable(struct iio_dev *indio_dev)
- {
--	int err;
- 	struct st_sensor_data *mdata = iio_priv(indio_dev);
- 
- 	mdata->buffer_data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
--	if (mdata->buffer_data == NULL) {
--		err = -ENOMEM;
--		goto allocate_memory_error;
--	}
--
--	err = iio_triggered_buffer_postenable(indio_dev);
--	if (err < 0)
--		goto st_magn_buffer_postenable_error;
--
--	return err;
-+	if (mdata->buffer_data == NULL)
-+		return -ENOMEM;
- 
--st_magn_buffer_postenable_error:
--	kfree(mdata->buffer_data);
--allocate_memory_error:
--	return err;
++out:
++	mutex_unlock(&data->mutex);
++
++	return err;
++}
++
++static int si1133_param_set(struct si1133_data *data, u8 param,
++			    unsigned int value)
++{
++	int err = regmap_write(data->regmap, SI1133_REG_HOSTIN0, value);
++
++	if (err)
++		return err;
++
++	return si1133_command(data, SI1133_CMD_PARAM_SET |
++			      (param & SI1133_CMD_PARAM_MASK));
++}
++
++static int si1133_param_query(struct si1133_data *data, u8 param,
++			      unsigned int *result)
++{
++	int err = si1133_command(data, SI1133_CMD_PARAM_QUERY |
++				 (param & SI1133_CMD_PARAM_MASK));
++	if (err)
++		return err;
++
++	return regmap_read(data->regmap, SI1133_REG_RESPONSE1, result);
++}
++
++#define SI1133_ST { \
++	.sign = 'u', \
++	.realbits = 16, \
++	.storagebits = 16, \
++	.endianness = IIO_LE, \
++	}
++
++#define SI1133_CHANNEL(_si, _ch, _type) \
++	.type = IIO_LIGHT, \
++	.indexed = 1, \
++	.channel = _ch, \
++	.scan_index = _si, \
++	.scan_type = SI1133_ST, \
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
++	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
++		BIT(IIO_CHAN_INFO_INT_TIME) | \
++		BIT(IIO_CHAN_INFO_SCALE) | \
++		BIT(IIO_CHAN_INFO_HARDWAREGAIN), \
++
++static const struct iio_chan_spec si1133_channels[] = {
++	{
++		SI1133_CHANNEL(0, SI1133_PARAM_ADCMUX_WHITE, IIO_LIGHT)
++	},
++	{
++		SI1133_CHANNEL(1, SI1133_PARAM_ADCMUX_LARGE_WHITE, IIO_LIGHT)
++		.extend_name = "large",
++	},
++	{
++		SI1133_CHANNEL(2, SI1133_PARAM_ADCMUX_SMALL_IR, IIO_LIGHT)
++		.extend_name = "small",
++		.modified = 1,
++		.channel2 = IIO_MOD_LIGHT_IR,
++	},
++	{
++		SI1133_CHANNEL(3, SI1133_PARAM_ADCMUX_MED_IR, IIO_LIGHT)
++		.extend_name = "med",
++		.modified = 1,
++		.channel2 = IIO_MOD_LIGHT_IR,
++	},
++	{
++		SI1133_CHANNEL(4, SI1133_PARAM_ADCMUX_LARGE_IR, IIO_LIGHT)
++		.extend_name = "large",
++		.modified = 1,
++		.channel2 = IIO_MOD_LIGHT_IR,
++	},
++	{
++		SI1133_CHANNEL(5, SI1133_PARAM_ADCMUX_UV, IIO_UVINDEX)
++	},
++	{
++		SI1133_CHANNEL(6, SI1133_PARAM_ADCMUX_UV_DEEP, IIO_UVINDEX)
++		.extend_name = "deep",
++	}
++};
++
++static int si1133_read_samp_freq(struct si1133_data *data, int *val, int *val2)
++{
++	*val = SI1133_MEASUREMENT_FREQUENCY;
++	*val2 = data->meas_rate;
++	return IIO_VAL_FRACTIONAL;
++}
++
++/* Set the samp freq in driver private data */
++static int si1133_store_samp_freq(struct si1133_data *data, int val)
++{
++	unsigned int meas_rate;
++
++	if (val <= 0 || val > SI1133_MEASUREMENT_FREQUENCY)
++		return -ERANGE;
++	meas_rate = SI1133_MEASUREMENT_FREQUENCY / val;
++
++	data->meas_rate = meas_rate;
++
 +	return 0;
- }
- 
- static int st_magn_buffer_predisable(struct iio_dev *indio_dev)
-@@ -63,13 +51,8 @@ static int st_magn_buffer_predisable(struct iio_dev *indio_dev)
- 	int err;
- 	struct st_sensor_data *mdata = iio_priv(indio_dev);
- 
--	err = iio_triggered_buffer_predisable(indio_dev);
--	if (err < 0)
--		goto st_magn_buffer_predisable_error;
--
- 	err = st_sensors_set_enable(indio_dev, false);
- 
--st_magn_buffer_predisable_error:
- 	kfree(mdata->buffer_data);
- 	return err;
- }
-diff --git a/drivers/iio/potentiostat/lmp91000.c b/drivers/iio/potentiostat/lmp91000.c
-index 85714055cc74..84f9105cbb37 100644
---- a/drivers/iio/potentiostat/lmp91000.c
-+++ b/drivers/iio/potentiostat/lmp91000.c
-@@ -295,7 +295,6 @@ static int lmp91000_buffer_predisable(struct iio_dev *indio_dev)
- 
- static const struct iio_buffer_setup_ops lmp91000_buffer_setup_ops = {
- 	.preenable = lmp91000_buffer_preenable,
--	.postenable = iio_triggered_buffer_postenable,
- 	.predisable = lmp91000_buffer_predisable,
- };
- 
-diff --git a/drivers/iio/pressure/st_pressure_buffer.c b/drivers/iio/pressure/st_pressure_buffer.c
-index 99468d0a64e7..7eff17e3d87c 100644
---- a/drivers/iio/pressure/st_pressure_buffer.c
-+++ b/drivers/iio/pressure/st_pressure_buffer.c
-@@ -37,25 +37,13 @@ static int st_press_buffer_preenable(struct iio_dev *indio_dev)
- 
- static int st_press_buffer_postenable(struct iio_dev *indio_dev)
- {
--	int err;
- 	struct st_sensor_data *press_data = iio_priv(indio_dev);
- 
- 	press_data->buffer_data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
--	if (press_data->buffer_data == NULL) {
--		err = -ENOMEM;
--		goto allocate_memory_error;
--	}
--
--	err = iio_triggered_buffer_postenable(indio_dev);
--	if (err < 0)
--		goto st_press_buffer_postenable_error;
--
--	return err;
-+	if (press_data->buffer_data == NULL)
-+		return -ENOMEM;
- 
--st_press_buffer_postenable_error:
--	kfree(press_data->buffer_data);
--allocate_memory_error:
--	return err;
++}
++
++static int si1133_get_int_time_index(int milliseconds, int nanoseconds)
++{
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(si1133_int_time_table); i++) {
++		if (milliseconds == si1133_int_time_table[i][0] &&
++		    nanoseconds == si1133_int_time_table[i][1])
++			return i;
++	}
++	return -EINVAL;
++}
++
++static int si1133_set_integration_time(struct si1133_data *data,
++				       int milliseconds, int nanoseconds)
++{
++	int index;
++
++	index = si1133_get_int_time_index(milliseconds, nanoseconds);
++	if (index < 0)
++		return index;
++
++	data->adc_sens &= 0xF0;
++	data->adc_sens |= index;
++
++	return si1133_param_set(data, SI1133_PARAM_REG_ADCSENS(0),
++				data->adc_sens);
++}
++
++static int si1133_set_chlist(struct iio_dev *indio_dev, unsigned long scan_mask)
++{
++	struct si1133_data *data = iio_priv(indio_dev);
++
++	/* channel list already set, no need to reprogram */
++	if (data->scan_mask == scan_mask)
++		return 0;
++
++	data->scan_mask = scan_mask;
++
++	return si1133_param_set(data, SI1133_PARAM_REG_CHAN_LIST, scan_mask);
++}
++
++static int si1133_set_adcmux(struct si1133_data *data, unsigned int mux)
++{
++	if ((mux & data->adc_config) == mux)
++		return 0; /* mux already set to correct value */
++
++	data->adc_config &= ~SI1133_ADCMUX_MASK;
++	data->adc_config |= mux;
++
++	return si1133_param_set(data, SI1133_PARAM_REG_ADCCONFIG(0),
++				data->adc_config);
++}
++
++static int si1133_measure(struct iio_dev *indio_dev,
++			  struct iio_chan_spec const *chan,
++			  int *val)
++{
++	struct si1133_data *data = iio_priv(indio_dev);
++	int err;
++	int retries;
++
++	__be16 resp;
++
++	err = si1133_set_chlist(indio_dev, BIT(0));
++	if (err)
++		return err;
++
++	err = si1133_set_adcmux(data, chan->channel);
++	if (err)
++		return err;
++
++	retries = SI1133_MAX_RETRIES;
++
++	err = si1133_command(data, SI1133_CMD_FORCE);
++	if (err)
++		return err;
++
++	reinit_completion(&data->completion);
++
++	if (!wait_for_completion_timeout(&data->completion,
++				msecs_to_jiffies(SI1133_CMD_TIMEOUT_MS))) {
++		return -ETIMEDOUT;
++	}
++
++	err = regmap_bulk_read(data->regmap, SI1133_REG_HOSTOUT(0), &resp,
++			       sizeof(__be16));
++	if (err)
++		return err;
++
++	*val = be16_to_cpu(resp);
++
++	return err;
++}
++
++static irqreturn_t si1133_threaded_irq_handler(int irq, void *private)
++{
++	unsigned int irq_status;
++
++	struct iio_dev *indio_dev = private;
++	struct si1133_data *data = iio_priv(indio_dev);
++	int err = regmap_read(data->regmap, SI1133_REG_IRQ_STATUS, &irq_status);
++
++	if (err) {
++		dev_err_ratelimited(&indio_dev->dev, "Error reading IRQ\n");
++		return IRQ_HANDLED;
++	}
++
++	if (irq_status & data->scan_mask) {
++		complete(&data->completion);
++		return IRQ_HANDLED;
++	}
++
++	return IRQ_NONE;
++}
++
++static unsigned long si1133_swgain_to_scale(unsigned int regval)
++{
++	return BIT(regval);
++}
++
++static int si1133_scale_to_swgain(int scale_integer, int scale_fractional)
++{
++	scale_integer = find_closest(scale_integer, si1133_scale_available,
++			   ARRAY_SIZE(si1133_scale_available));
++	if (scale_integer < 0 ||
++	    scale_integer > ARRAY_SIZE(si1133_scale_available) ||
++	    scale_fractional != 0)
++		return -EINVAL;
++
++	return scale_integer;
++}
++
++static int si1133_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val, int *val2, long mask)
++{
++	struct si1133_data *data = iio_priv(indio_dev);
++	unsigned int adc_sens = data->adc_sens;
++	int err;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		switch (chan->type) {
++		case IIO_UVINDEX:
++		case IIO_LIGHT:
++			err = iio_device_claim_direct_mode(indio_dev);
++			if (err)
++				return err;
++			err = si1133_measure(indio_dev, chan, val);
++			iio_device_release_direct_mode(indio_dev);
++
++			if (err)
++				return err;
++
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
++	case IIO_CHAN_INFO_INT_TIME:
++		switch (chan->type) {
++		case IIO_UVINDEX:
++		case IIO_LIGHT:
++			adc_sens &= SI1133_ADCSENS_HW_GAIN_MASK;
++
++			*val = si1133_int_time_table[adc_sens][0];
++			*val2 = si1133_int_time_table[adc_sens][1];
++			return IIO_VAL_INT_PLUS_MICRO;
++		default:
++			return -EINVAL;
++		}
++	case IIO_CHAN_INFO_SCALE:
++		switch (chan->type) {
++		case IIO_LIGHT:
++		case IIO_UVINDEX:
++			adc_sens &= SI1133_ADCSENS_SCALE_MASK;
++			adc_sens >>= SI1133_ADCSENS_SCALE_SHIFT;
++
++			*val = si1133_swgain_to_scale(adc_sens);
++
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
++	case IIO_CHAN_INFO_HARDWAREGAIN:
++		switch (chan->type) {
++		case IIO_LIGHT:
++		case IIO_UVINDEX:
++			adc_sens >>= SI1133_ADCSENS_HSIG_SHIFT;
++
++			*val = adc_sens;
++
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		return si1133_read_samp_freq(data, val, val2);
++	default:
++		return -EINVAL;
++	}
++
 +	return 0;
- }
- 
- static int st_press_buffer_predisable(struct iio_dev *indio_dev)
-@@ -63,14 +51,9 @@ static int st_press_buffer_predisable(struct iio_dev *indio_dev)
- 	int err;
- 	struct st_sensor_data *press_data = iio_priv(indio_dev);
- 
--	err = iio_triggered_buffer_predisable(indio_dev);
--	if (err < 0)
--		goto st_press_buffer_predisable_error;
--
- 	err = st_sensors_set_enable(indio_dev, false);
- 
--st_press_buffer_predisable_error:
--	kfree(press_data->buffer_data);
-+	kfree(pdata->buffer_data);
- 	return err;
- }
- 
-diff --git a/drivers/iio/pressure/zpa2326.c b/drivers/iio/pressure/zpa2326.c
-index 81d8f24eaeb4..2c4295087a36 100644
---- a/drivers/iio/pressure/zpa2326.c
-+++ b/drivers/iio/pressure/zpa2326.c
-@@ -1271,11 +1271,6 @@ static int zpa2326_postenable_buffer(struct iio_dev *indio_dev)
- 			goto err;
- 	}
- 
--	/* Plug our own trigger event handler. */
--	err = iio_triggered_buffer_postenable(indio_dev);
--	if (err)
--		goto err;
--
- 	return 0;
- 
- err:
-@@ -1294,7 +1289,6 @@ static int zpa2326_postdisable_buffer(struct iio_dev *indio_dev)
- static const struct iio_buffer_setup_ops zpa2326_buffer_setup_ops = {
- 	.preenable   = zpa2326_preenable_buffer,
- 	.postenable  = zpa2326_postenable_buffer,
--	.predisable  = iio_triggered_buffer_predisable,
- 	.postdisable = zpa2326_postdisable_buffer
- };
- 
-diff --git a/drivers/iio/proximity/sx9500.c b/drivers/iio/proximity/sx9500.c
-index ff80409e0c44..73335e61b350 100644
---- a/drivers/iio/proximity/sx9500.c
-+++ b/drivers/iio/proximity/sx9500.c
-@@ -707,8 +707,6 @@ static int sx9500_buffer_predisable(struct iio_dev *indio_dev)
- 	struct sx9500_data *data = iio_priv(indio_dev);
- 	int ret = 0, i;
- 
--	iio_triggered_buffer_predisable(indio_dev);
--
- 	mutex_lock(&data->mutex);
- 
- 	for (i = 0; i < SX9500_NUM_CHANNELS; i++)
-@@ -730,7 +728,6 @@ static int sx9500_buffer_predisable(struct iio_dev *indio_dev)
- 
- static const struct iio_buffer_setup_ops sx9500_buffer_setup_ops = {
- 	.preenable = sx9500_buffer_preenable,
--	.postenable = iio_triggered_buffer_postenable,
- 	.predisable = sx9500_buffer_predisable,
- };
- 
-diff --git a/drivers/staging/iio/meter/ade7758_ring.c b/drivers/staging/iio/meter/ade7758_ring.c
-index 6d7444d6e880..c1423de43587 100644
---- a/drivers/staging/iio/meter/ade7758_ring.c
-+++ b/drivers/staging/iio/meter/ade7758_ring.c
-@@ -98,8 +98,6 @@ static int ade7758_ring_preenable(struct iio_dev *indio_dev)
- 
- static const struct iio_buffer_setup_ops ade7758_ring_setup_ops = {
- 	.preenable = &ade7758_ring_preenable,
--	.postenable = &iio_triggered_buffer_postenable,
--	.predisable = &iio_triggered_buffer_predisable,
- 	.validate_scan_mask = &iio_validate_scan_mask_onehot,
- };
- 
-diff --git a/include/linux/iio/trigger_consumer.h b/include/linux/iio/trigger_consumer.h
-index c4f8c7409666..1d3be3a19e76 100644
---- a/include/linux/iio/trigger_consumer.h
-+++ b/include/linux/iio/trigger_consumer.h
-@@ -53,11 +53,4 @@ irqreturn_t iio_pollfunc_store_time(int irq, void *p);
- 
- void iio_trigger_notify_done(struct iio_trigger *trig);
- 
--/*
-- * Two functions for common case where all that happens is a pollfunc
-- * is attached and detached from a trigger
-- */
--int iio_triggered_buffer_postenable(struct iio_dev *indio_dev);
--int iio_triggered_buffer_predisable(struct iio_dev *indio_dev);
--
- #endif
++}
++
++static int si1133_set_adcsens(struct iio_dev *indio_dev,
++			      unsigned int mask, unsigned int shift,
++			      unsigned int value)
++{
++	struct si1133_data *data = iio_priv(indio_dev);
++	unsigned int adc_sens;
++	int err = si1133_param_query(data, SI1133_PARAM_REG_ADCSENS(0),
++				     &adc_sens);
++
++	if (err)
++		return err;
++
++	adc_sens &= ~mask;
++	adc_sens |= (value << shift);
++
++	err = si1133_param_set(data, SI1133_PARAM_REG_ADCSENS(0), adc_sens);
++	if (err) {
++		iio_device_release_direct_mode(indio_dev);
++		return err;
++	}
++
++	data->adc_sens = adc_sens;
++
++	return 0;
++}
++
++static int si1133_write_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int val, int val2, long mask)
++{
++	struct si1133_data *data = iio_priv(indio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SCALE:
++		switch (chan->type) {
++		case IIO_LIGHT:
++		case IIO_UVINDEX:
++			val = si1133_scale_to_swgain(val, val2);
++			if (val < 0)
++				return val;
++
++			return si1133_set_adcsens(indio_dev,
++						  SI1133_ADCSENS_SCALE_MASK,
++						  SI1133_ADCSENS_SCALE_SHIFT,
++						  val);
++		default:
++			return -EINVAL;
++		}
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		return si1133_store_samp_freq(data, val);
++	case IIO_CHAN_INFO_INT_TIME:
++		return si1133_set_integration_time(data, val, val2);
++	case IIO_CHAN_INFO_HARDWAREGAIN:
++		switch (chan->type) {
++		case IIO_LIGHT:
++		case IIO_UVINDEX:
++			if (val != 0 || val != 1)
++				return -EINVAL;
++
++			return si1133_set_adcsens(indio_dev,
++						  SI1133_ADCSENS_HSIG_MASK,
++						  SI1133_ADCSENS_HSIG_SHIFT,
++						  val);
++		default:
++			return -EINVAL;
++		}
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static struct attribute *si1133_attributes[] = {
++	&iio_const_attr_integration_time_available.dev_attr.attr,
++	&iio_const_attr_scale_available.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group si1133_attribute_group = {
++	.attrs = si1133_attributes,
++};
++
++static const struct iio_info si1133_info = {
++	.read_raw = si1133_read_raw,
++	.write_raw = si1133_write_raw,
++	.driver_module = THIS_MODULE,
++	.attrs = &si1133_attribute_group,
++};
++
++static const struct si1133_part_info si1133_part_info[] = {
++	[0] = {
++		0x33, &si1133_info, si1133_channels, ARRAY_SIZE(si1133_channels)
++	},
++};
++
++static int si1133_initialize(struct si1133_data *data)
++{
++	int err;
++
++	data->scan_mask = 0x01;
++
++	err = si1133_cmd_reset_sw(data);
++	if (err)
++		return err;
++
++	/* Turn off autonomous mode */
++	err = si1133_param_set(data, SI1133_REG_MEAS_RATE, 0);
++	if (err)
++		return err;
++
++	/* Initialize sampling freq to 1 Hz */
++	err = si1133_store_samp_freq(data, 1);
++	if (err)
++		return err;
++
++	/* Activate first channel */
++	err = si1133_param_set(data, SI1133_PARAM_REG_CHAN_LIST,
++			       data->scan_mask);
++	if (err < 0)
++		return err;
++
++	err = regmap_write(data->regmap, SI1133_REG_IRQ_ENABLE, 1);
++	if (err)
++		return err;
++
++	return 0;
++}
++
++static int si1133_probe(struct i2c_client *client,
++			const struct i2c_device_id *id)
++{
++	struct si1133_data *data;
++	struct iio_dev *indio_dev;
++	unsigned int part_id, rev_id, mfr_id;
++	int err;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++
++	init_completion(&data->completion);
++
++	data->regmap = devm_regmap_init_i2c(client, &si1133_regmap_config);
++	if (IS_ERR(data->regmap)) {
++		err = PTR_ERR(data->regmap);
++		dev_err(&client->dev, "Failed to initialise regmap: %d\n", err);
++		return err;
++	}
++
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
++	data->part_info = &si1133_part_info[id->driver_data];
++
++	err = regmap_read(data->regmap, SI1133_REG_PART_ID, &part_id);
++	if (err)
++		return err;
++
++	err = regmap_read(data->regmap, SI1133_REG_REV_ID, &rev_id);
++	if (err)
++		return err;
++
++	err = regmap_read(data->regmap, SI1133_REG_MFR_ID, &mfr_id);
++	if (err)
++		return err;
++
++	dev_info(&client->dev, "device ID part %#02hhx rev %#02hhx mfr %#02hhx\n",
++		 part_id, rev_id, mfr_id);
++	if (part_id != data->part_info->part) {
++		dev_err(&client->dev, "part ID mismatch got %#02hhx, expected %#02x\n",
++			part_id, data->part_info->part);
++		return -ENODEV;
++	}
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->name = id->name;
++	indio_dev->channels = data->part_info->channels;
++	indio_dev->num_channels = data->part_info->num_channels;
++	indio_dev->info = data->part_info->iio_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	mutex_init(&data->mutex);
++
++	err = si1133_initialize(data);
++	if (err) {
++		dev_err(&client->dev, "Error when initializing chip : %d", err);
++		return err;
++	}
++
++	if (client->irq) {
++		err = devm_request_threaded_irq(&client->dev, client->irq,
++						NULL,
++						si1133_threaded_irq_handler,
++						IRQF_ONESHOT | IRQF_SHARED,
++						client->name, indio_dev);
++
++		if (err) {
++			dev_warn(&client->dev, "Unable to request irq: %d for use\n",
++				 client->irq);
++			return err;
++		}
++	} else {
++		dev_err(&client->dev, "Required interrupt not provided, cannot proceed");
++		return -EINVAL;
++	}
++
++	err = devm_iio_device_register(&client->dev, indio_dev);
++	if (err) {
++		dev_err(&client->dev, "iio registration fails with error %d\n",
++			err);
++		return err;
++	}
++
++	return 0;
++}
++
++static const struct i2c_device_id si1133_ids[] = {
++	{ "si1133", 0 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, si1133_ids);
++
++static struct i2c_driver si1133_driver = {
++	.driver = {
++	    .name   = "si1133",
++	},
++	.probe  = si1133_probe,
++	.id_table = si1133_ids,
++};
++
++module_i2c_driver(si1133_driver);
++
++MODULE_AUTHOR("Maxime Roussin-Belanger <maxime.roussinbelanger@gmail.com>");
++MODULE_DESCRIPTION("Silabs SI1133, UV index sensor and ambient light sensor driver");
++MODULE_LICENSE("GPL");
 -- 
 2.17.1
