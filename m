@@ -1,59 +1,55 @@
-Return-Path: <SRS0=vNwF=JI=electromag.com.au=preid@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-bn3nam01on0078.outbound.protection.outlook.com ([104.47.33.78]:25184
+        "EHLO NAM01-BN3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1751235AbeFVJc4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 22 Jun 2018 05:32:56 -0400
+From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+To: "preid@electromag.com.au" <preid@electromag.com.au>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+CC: "jic23@kernel.org" <jic23@kernel.org>
 Subject: Re: [PATCH] iio:buffer: fix iio_dma_buffer_set_length() prototype
  mismatch
-To: Alexandru Ardelean <alexandru.ardelean@analog.com>,
-  linux-iio@vger.kernel.org
-Cc: jic23@kernel.org
+Date: Fri, 22 Jun 2018 09:32:52 +0000
+Message-ID: <2126e135f7e414382131b4bbb8414d1eaac64f3a.camel@analog.com>
 References: <20180622085942.24253-1-alexandru.ardelean@analog.com>
-From: Phil Reid <preid@electromag.com.au>
-Message-ID: <f836cf4b-96fe-a088-e13e-1b4545c0e5e8@electromag.com.au>
-Date: Fri, 22 Jun 2018 17:15:03 +0800
+         <f836cf4b-96fe-a088-e13e-1b4545c0e5e8@electromag.com.au>
+In-Reply-To: <f836cf4b-96fe-a088-e13e-1b4545c0e5e8@electromag.com.au>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20180622085942.24253-1-alexandru.ardelean@analog.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 22/06/2018 16:59, Alexandru Ardelean wrote:
-> Fixes commit c043ec1ca5ba ("iio:buffer: make length types match kfifo
-> types").
-> When the length parameter's type was updated in the
-> `iio_dma_buffer_set_length()` function, the prototype was omitted in the
-> `include/linux/iio/buffer-dma.h` header.
-> 
-> This causes a build error when running certain CFLAGS configurations that
-> are a bit more pedantic.
-
-G'day Alexandru,
-
-I recently submitted a patch for the same issue.
-see: https://patchwork.kernel.org/patch/10447649/
-
-Jonathan was holding of for a couple of weeks due to ordering issues.
-
-
-
-> 
-> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-> ---
->   include/linux/iio/buffer-dma.h | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/include/linux/iio/buffer-dma.h b/include/linux/iio/buffer-dma.h
-> index 767467d886de..67c75372b691 100644
-> --- a/include/linux/iio/buffer-dma.h
-> +++ b/include/linux/iio/buffer-dma.h
-> @@ -141,7 +141,7 @@ int iio_dma_buffer_read(struct iio_buffer *buffer, size_t n,
->   	char __user *user_buffer);
->   size_t iio_dma_buffer_data_available(struct iio_buffer *buffer);
->   int iio_dma_buffer_set_bytes_per_datum(struct iio_buffer *buffer, size_t bpd);
-> -int iio_dma_buffer_set_length(struct iio_buffer *buffer, int length);
-> +int iio_dma_buffer_set_length(struct iio_buffer *buffer, unsigned int length);
->   int iio_dma_buffer_request_update(struct iio_buffer *buffer);
->   
->   int iio_dma_buffer_init(struct iio_dma_buffer_queue *queue,
-> 
-
-
--- 
-Regards
-Phil
+T24gRnJpLCAyMDE4LTA2LTIyIGF0IDE3OjE1ICswODAwLCBQaGlsIFJlaWQgd3JvdGU6DQo+IE9u
+IDIyLzA2LzIwMTggMTY6NTksIEFsZXhhbmRydSBBcmRlbGVhbiB3cm90ZToNCj4gPiBGaXhlcyBj
+b21taXQgYzA0M2VjMWNhNWJhICgiaWlvOmJ1ZmZlcjogbWFrZSBsZW5ndGggdHlwZXMgbWF0Y2gg
+a2ZpZm8NCj4gPiB0eXBlcyIpLg0KPiA+IFdoZW4gdGhlIGxlbmd0aCBwYXJhbWV0ZXIncyB0eXBl
+IHdhcyB1cGRhdGVkIGluIHRoZQ0KPiA+IGBpaW9fZG1hX2J1ZmZlcl9zZXRfbGVuZ3RoKClgIGZ1
+bmN0aW9uLCB0aGUgcHJvdG90eXBlIHdhcyBvbWl0dGVkIGluDQo+ID4gdGhlDQo+ID4gYGluY2x1
+ZGUvbGludXgvaWlvL2J1ZmZlci1kbWEuaGAgaGVhZGVyLg0KPiA+IA0KPiA+IFRoaXMgY2F1c2Vz
+IGEgYnVpbGQgZXJyb3Igd2hlbiBydW5uaW5nIGNlcnRhaW4gQ0ZMQUdTIGNvbmZpZ3VyYXRpb25z
+DQo+ID4gdGhhdA0KPiA+IGFyZSBhIGJpdCBtb3JlIHBlZGFudGljLg0KPiANCj4gRydkYXkgQWxl
+eGFuZHJ1LA0KPiANCj4gSSByZWNlbnRseSBzdWJtaXR0ZWQgYSBwYXRjaCBmb3IgdGhlIHNhbWUg
+aXNzdWUuDQo+IHNlZTogaHR0cHM6Ly9wYXRjaHdvcmsua2VybmVsLm9yZy9wYXRjaC8xMDQ0NzY0
+OS8NCj4gDQo+IEpvbmF0aGFuIHdhcyBob2xkaW5nIG9mIGZvciBhIGNvdXBsZSBvZiB3ZWVrcyBk
+dWUgdG8gb3JkZXJpbmcgaXNzdWVzLg0KPiANCg0KU29ycnkgZm9yIHRoZSBub2lzZS9kdXBsaWNh
+dGlvbi4NCkkgb25seSBsb29rZWQgaW50byB0aGUgaWlvL3RvZ3JlZyB0cmVlIGFuZCBzYXcgaXQg
+d2Fzbid0IHRoZXJlLg0KDQpMZXQncyBkcm9wIG15IHBhdGNoLg0KDQpUaGFua3MNCkFsZXgNCg0K
+PiANCj4gDQo+ID4gDQo+ID4gU2lnbmVkLW9mZi1ieTogQWxleGFuZHJ1IEFyZGVsZWFuIDxhbGV4
+YW5kcnUuYXJkZWxlYW5AYW5hbG9nLmNvbT4NCj4gPiAtLS0NCj4gPiAgIGluY2x1ZGUvbGludXgv
+aWlvL2J1ZmZlci1kbWEuaCB8IDIgKy0NCj4gPiAgIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlv
+bigrKSwgMSBkZWxldGlvbigtKQ0KPiA+IA0KPiA+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4
+L2lpby9idWZmZXItZG1hLmggYi9pbmNsdWRlL2xpbnV4L2lpby9idWZmZXItDQo+ID4gZG1hLmgN
+Cj4gPiBpbmRleCA3Njc0NjdkODg2ZGUuLjY3Yzc1MzcyYjY5MSAxMDA2NDQNCj4gPiAtLS0gYS9p
+bmNsdWRlL2xpbnV4L2lpby9idWZmZXItZG1hLmgNCj4gPiArKysgYi9pbmNsdWRlL2xpbnV4L2lp
+by9idWZmZXItZG1hLmgNCj4gPiBAQCAtMTQxLDcgKzE0MSw3IEBAIGludCBpaW9fZG1hX2J1ZmZl
+cl9yZWFkKHN0cnVjdCBpaW9fYnVmZmVyICpidWZmZXIsDQo+ID4gc2l6ZV90IG4sDQo+ID4gICAJ
+Y2hhciBfX3VzZXIgKnVzZXJfYnVmZmVyKTsNCj4gPiAgIHNpemVfdCBpaW9fZG1hX2J1ZmZlcl9k
+YXRhX2F2YWlsYWJsZShzdHJ1Y3QgaWlvX2J1ZmZlciAqYnVmZmVyKTsNCj4gPiAgIGludCBpaW9f
+ZG1hX2J1ZmZlcl9zZXRfYnl0ZXNfcGVyX2RhdHVtKHN0cnVjdCBpaW9fYnVmZmVyICpidWZmZXIs
+DQo+ID4gc2l6ZV90IGJwZCk7DQo+ID4gLWludCBpaW9fZG1hX2J1ZmZlcl9zZXRfbGVuZ3RoKHN0
+cnVjdCBpaW9fYnVmZmVyICpidWZmZXIsIGludCBsZW5ndGgpOw0KPiA+ICtpbnQgaWlvX2RtYV9i
+dWZmZXJfc2V0X2xlbmd0aChzdHJ1Y3QgaWlvX2J1ZmZlciAqYnVmZmVyLCB1bnNpZ25lZCBpbnQN
+Cj4gPiBsZW5ndGgpOw0KPiA+ICAgaW50IGlpb19kbWFfYnVmZmVyX3JlcXVlc3RfdXBkYXRlKHN0
+cnVjdCBpaW9fYnVmZmVyICpidWZmZXIpOw0KPiA+ICAgDQo+ID4gICBpbnQgaWlvX2RtYV9idWZm
+ZXJfaW5pdChzdHJ1Y3QgaWlvX2RtYV9idWZmZXJfcXVldWUgKnF1ZXVlLA0KPiA+IA0KPiANCj4g
