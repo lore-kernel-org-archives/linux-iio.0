@@ -1,84 +1,162 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:53076 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751283AbeF3RsG (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 30 Jun 2018 13:48:06 -0400
-Date: Sat, 30 Jun 2018 18:48:02 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Daniel Baluta <daniel.baluta@gmail.com>
-Cc: Jonathan Cameron <jonathan.cameron@huawei.com>,
-        Himanshu Jha <himanshujha199640@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [RFC 3/3] iio: imu: bme680: Add ACPI support
-Message-ID: <20180630184802.15c97a00@archlinux>
-In-Reply-To: <CAEnQRZAayGy9n-h=zirvF6VbVgwDiTM5dr-dJx_b+ys+OitBAg@mail.gmail.com>
-References: <1529562877-9357-1-git-send-email-himanshujha199640@gmail.com>
-        <1529562877-9357-4-git-send-email-himanshujha199640@gmail.com>
-        <20180622144435.0000613b@huawei.com>
-        <CAEnQRZCOVrYk=oifne81Fo_ky_3vLq85AwA2v6qJ68s7HRMTDQ@mail.gmail.com>
-        <AF0F37DE-70F9-4B88-BEE1-48516E1795BB@jic23.retrosnub.co.uk>
-        <CAEnQRZAayGy9n-h=zirvF6VbVgwDiTM5dr-dJx_b+ys+OitBAg@mail.gmail.com>
+Return-Path: <SRS0=Hrng=JI=konsulko.com=matt.ranostay@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <1529562877-9357-1-git-send-email-himanshujha199640@gmail.com>
+References: <1529562877-9357-1-git-send-email-himanshujha199640@gmail.com>
+From: Matt Ranostay <matt.ranostay@konsulko.com>
+Date: Fri, 22 Jun 2018 15:38:42 +0900
+Message-ID: <CAJCx=gmDUZ47EUuGH3a_+mYwvoPcFj2RwdSKvPmhqhdrYi1DHg@mail.gmail.com>
+Subject: Re: [RFC 0/3] Bosch BME680 Driver
+To: Himanshu Jha <himanshujha199640@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, daniel.baluta@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, 29 Jun 2018 16:02:36 +0300
-Daniel Baluta <daniel.baluta@gmail.com> wrote:
+On Thu, Jun 21, 2018 at 3:34 PM, Himanshu Jha
+<himanshujha199640@gmail.com> wrote:
+> GSoC'2018 Project: https://summerofcode.withgoogle.com/projects/#66914737=
+90074880
+> Mentor: Daniel Baluta
+>
+> BME680 is a 4-in-1 sensor with temperature, pressure, humidity & gas sens=
+or
+> with I2C and SPI interface support.
+>
+> The sensor has various calibration parameters[1] to be used with raw adc =
+data
+> in the compensation functions[2] to evaluate the correct compensated read=
+ing.
+> These calibration parameters are are programmed into the devices=E2=80=99=
+ non-volatile
+> memory (NVM) during production and cannot be altered by the customer. So,=
+ we
+> are required to read those parameters once(suitably at probe) and use it
+> in the compensation functions.
+>
+> But now the problem arises that these compensation functions, calibration
+> parameters, their addresses are *not* provided in the datasheet and inste=
+ad
+> provided by Bosch Sensortec in their Github API[3]. The Github API has a =
+LICENSE
+> file[4] around 40 lines which I presume kernel community won't entertain.
+>
+> Therefore, we contacted Bosch Sensortec thrice 2 weeks ago and got no res=
+ponse
+> so far. We stated all the problems relating to Lincensing & missing calib=
+ration
+> info from the datasheet. I got to know about these missing information fr=
+om the
+> Github API and also looking at the various sensors supplied by the compan=
+y
+> such as BMP280, BME280 etc.
+>
+> After using their compensation function in my driver I get correct readin=
+gs.
+> But we can't simply use these function without their permission!
+>
+> For instance:
+> I got a temperature reading of:
+>
+>         3254
+>
+> and if this sensor has a similar resolution as that of BMP280 which 0.01 =
+degC
+> then it is absolutely correct.
+>
+>         3254 * 0.01 =3D 32.54 degC
+>
+> This 0.01 degC resolution was mentioned in the BMP280 datasheet but
+> there is no such information in the BME680 datasheet nor in the Github AP=
+I.
+>
+> This is what I have assumed since after testing pressure & humidity also
+> revealed similar readings and there is some possibilty that they could
+> have same output resolution as they belong to the same family of sensors.
+>
+> For now I have placed the sensor in the IMU but this is not an IMU and th=
+ere
+> is no such sensor(4-in-1) in the whole IIO subsystem. So, where should it
+> be placed ?
+> Would it be worthwhile to create a new subdirectory "environmental" since
+> it is a environmental sensor ?
+>
 
-> On Mon, Jun 25, 2018 at 1:06 PM, Jonathan Cameron
-> <jic23@jic23.retrosnub.co.uk> wrote:
-> >
-> >
-> > On 25 June 2018 08:40:08 BST, Daniel Baluta <daniel.baluta@gmail.com> wrote:  
-> >>On Fri, Jun 22, 2018 at 4:44 PM, Jonathan Cameron
-> >><jonathan.cameron@huawei.com> wrote:  
-> >>> On Thu, 21 Jun 2018 12:04:37 +0530
-> >>> Himanshu Jha <himanshujha199640@gmail.com> wrote:
-> >>>  
-> >>>> Add support to probe the bme680 sensor on the i2c bus using
-> >>>> ACPI.
-> >>>>
-> >>>> Cc: Daniel Baluta <daniel.baluta@gmail.com>
-> >>>> Signed-off-by: Himanshu Jha <himanshujha199640@gmail.com>  
-> >>>
-> >>> This looks fine.  Do we know for sure that they use that ACPI
-> >>> ID?  For these sorts of devices, it's fairly common to have entirely
-> >>> random ids presented.   Also, I'm a little curious to know, what
-> >>> ACPI based device has one of these?  
-> >>
-> >>Hi Jonathan,
-> >>
-> >>I am not aware of any ACPI device using our chosen ID. We just
-> >>picked BME0680 based on previous drivers from Bosch.
-> >>
-> >>It is useful to enumerate the sensor via ACPI because our
-> >>qemu testing setup uses ACPI.  
-> >
-> > Cool. Any docs on that setup?  Would be useful blog post if easy to do.  
-> 
-> We have multiple iterations of our setup, depending on the project.
-> 
-> Generic description that we use at University can be found here:
-> 
-> https://linux-kernel-labs.github.io/master/labs/vm.html
-> 
-> Scripts are here:
-> 
-> https://github.com/linux-kernel-labs/linux/tree/master/tools/labs/qemu
-> 
-> For IIO we use DLN2 (USB-I2C/SPI) adapter and we pass
-> -acpitable file=description.aml to qemu.
-> 
-Cool. I just got around to getting one of these last week as
-it seemed a useful tool to have!
+Since it the most interesting feature is the VOC sensor I'd think it
+would make more sense  in drivers/iio/chemical (maybe I'm biased of
+course).
+Even thought is doesn't output a processed value that you can use
+without Bosch's software.
 
-Thanks - will have a play with this when I get some time.
+Also I've looked briefly at the datasheet, and wondering why this
+can't be added to the existing BMP280 driver (like how the BME280
+humidity support was added).
 
-Jonathan
-> 
-> thanks,
-> Daniel.
+Thanks!
 
+Matt
+
+> The sensor also has an IIR filter to remove short term fluctuations from
+> the temperature and pressure readings. It has various filter coefficients
+> and I have chosen the middle valued coefficient(15) from the table for no=
+w.
+>
+> What filter coefficient is most appropriate for the device ?
+>
+> Again, I asked this question too from Bosch since they discuss all these
+> optimal selection of filter in "3.4 Filter selection" Pg 14 BMP280.
+>
+> I have used regmap API  and therefore we don't need the LSB address
+> of data registers as we only care about the MSB address of the data regis=
+ter
+> and regmap_bulk_read() handles everything fine.
+>
+> So, would it be worthwhile to add these LSB macros definition too ?
+> They certainly will never be used!
+>
+> For now, this series doesn't include any of the copyrighted code from
+> Bosch and I have just added them as a dummy function.
+>
+> I have mentioned more detailed summary in my blog[5] and would love
+> any feedback on it.
+>
+> If anyone has contacts to Bosch Sensortec GmbH then please let me
+> know.
+>
+> [1] https://github.com/BoschSensortec/BME680_driver/blob/313a58a9c57ad86c=
+8df06c98521579c6cb695999/bme680_defs.h#L410
+> [2] https://github.com/BoschSensortec/BME680_driver/blob/master/bme680.c#=
+L876
+> [3] https://github.com/BoschSensortec/BME680_driver
+> [4] https://github.com/BoschSensortec/BME680_driver/blob/master/LICENSE
+> [5] https://himanshujha199640.wordpress.com/2018/06/14/0x01bme680-tempera=
+ture-channel/
+>
+> Himanshu Jha (3):
+>   iio: imu: bme680: Add initial support for Bosch BME680
+>   iio: imu: bme680: Add temperaure, pressure & humidity channels
+>   iio: imu: bme680: Add ACPI support
+>
+>  drivers/iio/imu/Kconfig              |   1 +
+>  drivers/iio/imu/Makefile             |   1 +
+>  drivers/iio/imu/bme680/Kconfig       |  32 +++
+>  drivers/iio/imu/bme680/Makefile      |   6 +
+>  drivers/iio/imu/bme680/bme680.h      |  11 +
+>  drivers/iio/imu/bme680/bme680_core.c | 542 +++++++++++++++++++++++++++++=
+++++++
+>  drivers/iio/imu/bme680/bme680_i2c.c  |  62 ++++
+>  drivers/iio/imu/bme680/bme680_spi.c  |  49 ++++
+>  8 files changed, 704 insertions(+)
+>  create mode 100644 drivers/iio/imu/bme680/Kconfig
+>  create mode 100644 drivers/iio/imu/bme680/Makefile
+>  create mode 100644 drivers/iio/imu/bme680/bme680.h
+>  create mode 100644 drivers/iio/imu/bme680/bme680_core.c
+>  create mode 100644 drivers/iio/imu/bme680/bme680_i2c.c
+>  create mode 100644 drivers/iio/imu/bme680/bme680_spi.c
+>
+> --
+> 2.7.4
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
