@@ -1,42 +1,92 @@
-Return-Path: <SRS0=HeX8=JJ=it-klinger.de=ak@kernel.org>
-Date: Sat, 23 Jun 2018 20:55:18 +0200
-From: Andreas Klinger <ak@it-klinger.de>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	robh+dt@kernel.org, mark.rutland@arm.com, mchehab@kernel.org,
-	davem@davemloft.net, gregkh@linuxfoundation.org,
-	akpm@linux-foundation.org, linus.walleij@linaro.org,
-	rdunlap@infradead.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] iio: hx711: add maintainer for driver
-Message-ID: <20180623185518.GA17864@arbeit>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pf0-f195.google.com ([209.85.192.195]:42339 "EHLO
+        mail-pf0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751792AbeFXPFq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 24 Jun 2018 11:05:46 -0400
+Received: by mail-pf0-f195.google.com with SMTP id w7-v6so5292132pfn.9
+        for <linux-iio@vger.kernel.org>; Sun, 24 Jun 2018 08:05:46 -0700 (PDT)
+From: Akinobu Mita <akinobu.mita@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: Akinobu Mita <akinobu.mita@gmail.com>,
+        =?UTF-8?q?Stefan=20Br=C3=BCns?= <stefan.bruens@rwth-aachen.de>,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH] iio: adc: ina2xx: avoid kthread_stop() with stale task_struct
+Date: Mon, 25 Jun 2018 00:05:21 +0900
+Message-Id: <1529852721-17828-1-git-send-email-akinobu.mita@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-add a maintainer for driver hx711
+When the buffer is enabled for ina2xx driver, a dedicated kthread is
+invoked to capture mesurement data.  When the buffer is disabled, the
+kthread is stopped.
 
-Signed-off-by: Andreas Klinger <ak@it-klinger.de>
+However if the kthread gets register access errors, it immediately exits
+and when the malfunctional buffer is disabled, the stale task_struct
+pointer is accessed as there is no kthread to be stopped.
+
+A similar issue in the usbip driver is prevented by kthread_get_run and
+kthread_stop_put helpers by increasing usage count of the task_struct.
+This change applies the same solution.
+
+Cc: Stefan Brüns <stefan.bruens@rwth-aachen.de>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
 ---
- MAINTAINERS | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/iio/adc/ina2xx-adc.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 4b65225d443a..cfb8a08777ac 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2535,6 +2535,13 @@ S:	Maintained
- F:	drivers/auxdisplay/
- F:	include/linux/cfag12864b.h
+diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
+index 0635a79..d123962 100644
+--- a/drivers/iio/adc/ina2xx-adc.c
++++ b/drivers/iio/adc/ina2xx-adc.c
+@@ -30,6 +30,7 @@
+ #include <linux/module.h>
+ #include <linux/of_device.h>
+ #include <linux/regmap.h>
++#include <linux/sched/task.h>
+ #include <linux/util_macros.h>
  
-+AVIA HX711 ANALOG DIGITAL CONVERTER IIO DRIVER
-+M:	Andreas Klinger <ak@it-klinger.de>
-+L:	linux-iio@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/adc/avia-hx711.txt
-+F:	drivers/iio/adc/hx711.c
+ #include <linux/platform_data/ina2xx.h>
+@@ -826,6 +827,7 @@ static int ina2xx_buffer_enable(struct iio_dev *indio_dev)
+ {
+ 	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
+ 	unsigned int sampling_us = SAMPLING_PERIOD(chip);
++	struct task_struct *task;
+ 
+ 	dev_dbg(&indio_dev->dev, "Enabling buffer w/ scan_mask %02x, freq = %d, avg =%u\n",
+ 		(unsigned int)(*indio_dev->active_scan_mask),
+@@ -835,11 +837,17 @@ static int ina2xx_buffer_enable(struct iio_dev *indio_dev)
+ 	dev_dbg(&indio_dev->dev, "Async readout mode: %d\n",
+ 		chip->allow_async_readout);
+ 
+-	chip->task = kthread_run(ina2xx_capture_thread, (void *)indio_dev,
+-				 "%s:%d-%uus", indio_dev->name, indio_dev->id,
+-				 sampling_us);
++	task = kthread_create(ina2xx_capture_thread, (void *)indio_dev,
++			      "%s:%d-%uus", indio_dev->name, indio_dev->id,
++			      sampling_us);
++	if (IS_ERR(task))
++		return PTR_ERR(task);
 +
- AX.25 NETWORK LAYER
- M:	Ralf Baechle <ralf@linux-mips.org>
- L:	linux-hams@vger.kernel.org
++	get_task_struct(task);
++	wake_up_process(task);
++	chip->task = task;
+ 
+-	return PTR_ERR_OR_ZERO(chip->task);
++	return 0;
+ }
+ 
+ static int ina2xx_buffer_disable(struct iio_dev *indio_dev)
+@@ -848,6 +856,7 @@ static int ina2xx_buffer_disable(struct iio_dev *indio_dev)
+ 
+ 	if (chip->task) {
+ 		kthread_stop(chip->task);
++		put_task_struct(chip->task);
+ 		chip->task = NULL;
+ 	}
+ 
 -- 
-2.1.4
+2.7.4
+
