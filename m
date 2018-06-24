@@ -1,90 +1,91 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:53228 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751409AbeF3SAr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 30 Jun 2018 14:00:47 -0400
-Date: Sat, 30 Jun 2018 19:00:42 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Received: from mail.kernel.org ([198.145.29.99]:36638 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751864AbeFXN2M (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 24 Jun 2018 09:28:12 -0400
+Date: Sun, 24 Jun 2018 14:28:04 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 To: Baolin Wang <baolin.wang@linaro.org>
-Cc: Jonathan Cameron <jonathan.cameron@huawei.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        freeman.liu@spreadtrum.com, Mark Brown <broonie@kernel.org>,
-        DTML <devicetree@vger.kernel.org>, linux-iio@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 2/2] iio: adc: Add Spreadtrum SC27XX PMICs ADC
- support
-Message-ID: <20180630190042.4962bff3@archlinux>
-In-Reply-To: <CAMz4kuJb4aRxNKXYkDJ5vQQgFRN+87_br2gp1BtTLji0dp8XHQ@mail.gmail.com>
+Cc: robh+dt@kernel.org, mark.rutland@arm.com, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, freeman.liu@spreadtrum.com,
+        broonie@kernel.org, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] dt-bindings: iio: Add Spreadtrum SC27XX PMICs
+ ADC controller documentation
+Message-ID: <20180624142804.06ea3433@archlinux>
+In-Reply-To: <900586c7a4ce55818ab330c738f306c7452191ef.1529550463.git.baolin.wang@linaro.org>
 References: <900586c7a4ce55818ab330c738f306c7452191ef.1529550463.git.baolin.wang@linaro.org>
-        <95836d610301133ffdac1efa86d7daf4cecb97b7.1529550463.git.baolin.wang@linaro.org>
-        <20180622151338.00003622@huawei.com>
-        <CAMz4kuJUeDjTVJqNc4cNv=LwR1HkuFap4vBF7CCcrxNqnTHa-A@mail.gmail.com>
-        <20180624143009.48cf14f8@archlinux>
-        <20180624144734.62f28908@archlinux>
-        <CAMz4kuJb4aRxNKXYkDJ5vQQgFRN+87_br2gp1BtTLji0dp8XHQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 25 Jun 2018 09:47:54 +0800
+On Thu, 21 Jun 2018 11:14:04 +0800
 Baolin Wang <baolin.wang@linaro.org> wrote:
 
-> Hi Jonathan,
+> This patch adds the binding documentation for Spreadtrum SC27XX series
+> PMICs ADC controller device.
 > 
-> On 24 June 2018 at 21:47, Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
-> > On Sun, 24 Jun 2018 14:30:09 +0100
-> > Jonathan Cameron <jic23@kernel.org> wrote:
-> >  
-> >> On Sun, 24 Jun 2018 17:13:00 +0800
-> >> Baolin Wang <baolin.wang@linaro.org> wrote:
-> >>  
-> >> > Hi Jonathan,
-> >> >
-> >> > On 22 June 2018 at 22:13, Jonathan Cameron <jonathan.cameron@huawei.com> wrote:  
-> >> > > On Thu, 21 Jun 2018 11:14:05 +0800
-> >> > > Baolin Wang <baolin.wang@linaro.org> wrote:
-> >> > >  
-> >> > >> From: Freeman Liu <freeman.liu@spreadtrum.com>
-> >> > >>
-> >> > >> The Spreadtrum SC27XX PMICs ADC controller contains 32 channels,
-> >> > >> which is used to sample voltages with 12 bits conversion.
-> >> > >>
-> >> > >> [Baolin Wang did lots of improvements]
-> >> > >>
-> >> > >> Signed-off-by: Freeman Liu <freeman.liu@spreadtrum.com>
-> >> > >> Signed-off-by: Baolin Wang <baolin.wang@linaro.org>  
-> >> > >
-> >> > > One trivial missed bit of cleanup inline.  I'll sort that
-> >> > > when applying if no one else points anything out before I get back to my
-> >> > > development machine.  
-> >> >
-> >> > Thanks.  
-> >>
-> >> Applied to the togreg branch of iio.git and pushed out as testing
-> >> for the autobuilders to play with it.  
-> > Sorry, backed out for now.  My togreg tree is non rebasing and
-> > this is dependant on some stuff that only went in during the merge
-> > window.
-> >
-> > I'll send a pull request to GregKH fairly soon and after that do
-> > the merge back into my tree to pick that hwspin lock stuff up.
-> >
-> > So this will be a week or two before I can apply it without issues.
-> >
-> > Give me a poke if I seem to have forgotten about it.  
-> 
-> OK. Many thanks for your help.
-> 
-Applied now with dependencies in place.  Applied to the togreg
-branch of iio.git and pushed out as testing for the autobuilders
-to play with it.
+> Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to play with it.
 
 Thanks,
 
 Jonathan
+
+> ---
+> Changes since v2:
+>  - Add reviewed tag from Rob.
+> 
+> Changes since v1:
+>  - No updates.
+> ---
+>  .../bindings/iio/adc/sprd,sc27xx-adc.txt           |   36 ++++++++++++++++++++
+>  1 file changed, 36 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/sprd,sc27xx-adc.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/sprd,sc27xx-adc.txt b/Documentation/devicetree/bindings/iio/adc/sprd,sc27xx-adc.txt
+> new file mode 100644
+> index 0000000..8aad960
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/sprd,sc27xx-adc.txt
+> @@ -0,0 +1,36 @@
+> +Spreadtrum SC27XX series PMICs ADC binding
+> +
+> +Required properties:
+> +- compatible: Should be one of the following.
+> +	"sprd,sc2720-adc"
+> +	"sprd,sc2721-adc"
+> +	"sprd,sc2723-adc"
+> +	"sprd,sc2730-adc"
+> +	"sprd,sc2731-adc"
+> +- reg: The address offset of ADC controller.
+> +- interrupt-parent: The interrupt controller.
+> +- interrupts: The interrupt number for the ADC device.
+> +- #io-channel-cells: Number of cells in an IIO specifier.
+> +- hwlocks: Reference to a phandle of a hwlock provider node.
+> +
+> +Example:
+> +
+> +	sc2731_pmic: pmic@0 {
+> +		compatible = "sprd,sc2731";
+> +		reg = <0>;
+> +		spi-max-frequency = <26000000>;
+> +		interrupts = <GIC_SPI 31 IRQ_TYPE_LEVEL_HIGH>;
+> +		interrupt-controller;
+> +		#interrupt-cells = <2>;
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +
+> +		pmic_adc: adc@480 {
+> +			compatible = "sprd,sc2731-adc";
+> +			reg = <0x480>;
+> +			interrupt-parent = <&sc2731_pmic>;
+> +			interrupts = <0 IRQ_TYPE_LEVEL_HIGH>;
+> +			#io-channel-cells = <1>;
+> +			hwlocks = <&hwlock 4>;
+> +		};
+> +	};
 
