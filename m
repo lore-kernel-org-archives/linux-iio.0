@@ -1,113 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:47934 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:34812 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751252AbeF3RWY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 30 Jun 2018 13:22:24 -0400
-Date: Sat, 30 Jun 2018 18:22:19 +0100
+        id S934686AbeFYUoB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 25 Jun 2018 16:44:01 -0400
+Date: Mon, 25 Jun 2018 21:43:57 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Karim Eshapa <karim.eshapa@gmail.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] staging:iio:impedance-analyzer:ad5933: Macro
- replacement Cleanups.
-Message-ID: <20180630182219.31c668d0@archlinux>
-In-Reply-To: <20180625191123.3685-1-karim.eshapa@gmail.com>
-References: <20180625191123.3685-1-karim.eshapa@gmail.com>
+To: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org
+Subject: [PULL] First set of IIO fixes for the 4.18 cycle
+Message-ID: <20180625214357.46b49977@archlinux>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 25 Jun 2018 21:11:23 +0200
-Karim Eshapa <karim.eshapa@gmail.com> wrote:
+The following changes since commit ce397d215ccd07b8ae3f71db689aedb85d56ab40:
 
-> Doing some macro replacement to start an array of structures
-> so it can be reused by manipulating it with different values.
-> 
-> Signed-off-by: Karim Eshapa <karim.eshapa@gmail.com>
-There are all sorts of issues with the ABI this driver is providing to
-userspace, but this isn't a bad bit of cleanup none the less.
+  Linux 4.18-rc1 (2018-06-17 08:04:49 +0900)
 
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+are available in the Git repository at:
 
-Thanks,
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-4.18a
 
-Jonathan
+for you to fetch changes up to 2a221c04228bbf683fc8d3cb5d177aebb38b393c:
 
-> ---
->  .../staging/iio/impedance-analyzer/ad5933.c   | 57 +++++++------------
->  1 file changed, 19 insertions(+), 38 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> index 3bcf49466361..14df89510396 100644
-> --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-> +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> @@ -116,45 +116,26 @@ static struct ad5933_platform_data ad5933_default_pdata  = {
->  	.vref_mv = 3300,
->  };
->  
-> +#define AD5933_CHANNEL(_type, _extend_name, _info_mask_separate, _address, \
-> +		_scan_index, _realbits) { \
-> +	.type = (_type), \
-> +	.extend_name = (_extend_name), \
-> +	.info_mask_separate = (_info_mask_separate), \
-> +	.address = (_address), \
-> +	.scan_index = (_scan_index), \
-> +	.scan_type = { \
-> +		.sign = 's', \
-> +		.realbits = (_realbits), \
-> +		.storagebits = 16, \
-> +	}, \
-> +}
-> +
->  static const struct iio_chan_spec ad5933_channels[] = {
-> -	{
-> -		.type = IIO_TEMP,
-> -		.indexed = 1,
-> -		.channel = 0,
-> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> -			BIT(IIO_CHAN_INFO_SCALE),
-> -		.address = AD5933_REG_TEMP_DATA,
-> -		.scan_index = -1,
-> -		.scan_type = {
-> -			.sign = 's',
-> -			.realbits = 14,
-> -			.storagebits = 16,
-> -		},
-> -	}, { /* Ring Channels */
-> -		.type = IIO_VOLTAGE,
-> -		.indexed = 1,
-> -		.channel = 0,
-> -		.extend_name = "real",
-> -		.address = AD5933_REG_REAL_DATA,
-> -		.scan_index = 0,
-> -		.scan_type = {
-> -			.sign = 's',
-> -			.realbits = 16,
-> -			.storagebits = 16,
-> -		},
-> -	}, {
-> -		.type = IIO_VOLTAGE,
-> -		.indexed = 1,
-> -		.channel = 0,
-> -		.extend_name = "imag",
-> -		.address = AD5933_REG_IMAG_DATA,
-> -		.scan_index = 1,
-> -		.scan_type = {
-> -			.sign = 's',
-> -			.realbits = 16,
-> -			.storagebits = 16,
-> -		},
-> -	},
-> +	AD5933_CHANNEL(IIO_TEMP, NULL, BIT(IIO_CHAN_INFO_RAW) |
-> +		BIT(IIO_CHAN_INFO_SCALE), AD5933_REG_TEMP_DATA, -1, 14),
-> +	/* Ring Channels */
-> +	AD5933_CHANNEL(IIO_VOLTAGE, "real", 0, AD5933_REG_REAL_DATA, 0, 16),
-> +	AD5933_CHANNEL(IIO_VOLTAGE, "imag", 0, AD5933_REG_IMAG_DATA, 1, 16),
->  };
->  
->  static int ad5933_i2c_write(struct i2c_client *client, u8 reg, u8 len, u8 *data)
+  iio: imu: inv_mpu6050: Fix probe() failure on older ACPI based machines (2018-06-24 14:50:52 +0100)
 
+----------------------------------------------------------------
+First set of IIO fixes for the 4.18 cycle.
+
+* bmp280
+  - Fix wrong relative humidity unit.
+* buffer
+  - Fix a function signature to match the function.
+* inv_mpu6050
+  - Fix a regression in which older ACPI devices won't have working
+    interrupts due to lack of information on the interrupt type.
+* mma8452
+  - Don't ignore data ready interrupt when handling interrupts as will
+    look like an unhandled interrupt.
+* tsl2x7x/tsl2772
+  - Avoid a potential division by zero.
+
+----------------------------------------------------------------
+Colin Ian King (1):
+      iio: tsl2x7x/tsl2772: avoid potential division by zero
+
+Hans de Goede (1):
+      iio: imu: inv_mpu6050: Fix probe() failure on older ACPI based machines
+
+Leonard Crestez (1):
+      iio: mma8452: Fix ignoring MMA8452_INT_DRDY
+
+Phil Reid (1):
+      iio: buffer: fix the function signature to match implementation
+
+Tomasz Duszynski (1):
+      iio: pressure: bmp280: fix relative humidity unit
+
+ drivers/iio/accel/mma8452.c                | 2 +-
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 2 ++
+ drivers/iio/light/tsl2772.c                | 2 ++
+ drivers/iio/pressure/bmp280-core.c         | 5 ++---
+ include/linux/iio/buffer-dma.h             | 2 +-
+ 5 files changed, 8 insertions(+), 5 deletions(-)
