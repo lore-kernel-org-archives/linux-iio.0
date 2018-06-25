@@ -1,49 +1,42 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg0-f68.google.com ([74.125.83.68]:36395 "EHLO
-        mail-pg0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750972AbeFYPXF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jun 2018 11:23:05 -0400
-Received: by mail-pg0-f68.google.com with SMTP id m5-v6so6214770pgd.3
-        for <linux-iio@vger.kernel.org>; Mon, 25 Jun 2018 08:23:04 -0700 (PDT)
+Return-Path: <SRS0=bVbn=JL=gmail.com=akinobu.mita@kernel.org>
 From: Akinobu Mita <akinobu.mita@gmail.com>
 To: linux-iio@vger.kernel.org
 Cc: Akinobu Mita <akinobu.mita@gmail.com>,
-        Eva Rachel Retuya <eraretuya@gmail.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH v4 0/4] iio: accel: adxl345: add calibration offset and sampling frequency support
-Date: Tue, 26 Jun 2018 00:22:39 +0900
-Message-Id: <1529940163-5149-1-git-send-email-akinobu.mita@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	Eva Rachel Retuya <eraretuya@gmail.com>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH v4 1/4] iio: accel: adxl345: add link to datasheet
+Date: Tue, 26 Jun 2018 00:22:40 +0900
+Message-Id: <1529940163-5149-2-git-send-email-akinobu.mita@gmail.com>
+In-Reply-To: <1529940163-5149-1-git-send-email-akinobu.mita@gmail.com>
+References: <1529940163-5149-1-git-send-email-akinobu.mita@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-This patchset adds calibration offset and sampling frequency support for
-adxl345 driver with some preparatory changes.
-
-* v4 (Suggested by Jonathan Cameron)
-- Stop abusing scan_index and keep using address field in iio_chan_spec
-
-* v3 (Suggested by Andy Shevchenko)
-- Define ADXL345_REG_DATA_AXIS(si) for cleaner register access
-- Define ADXL345_REG_OSF_AXIS(si) for cleaner register access
-- Calculate sampling frequency at runtime instead of having constant table
-
-* v2
-- Adjust the value for the calibbias to make the same scale as the _raw
-  measurement, and remove misused calibscale.
-
-Akinobu Mita (4):
-  iio: accel: adxl345: add link to datasheet
-  iio: accel: adxl345: convert address field usage in iio_chan_spec
-  iio: accel: adxl345: add calibration offset support
-  iio: accel: adxl345: add sampling frequency support
-
- drivers/iio/accel/adxl345_core.c | 127 +++++++++++++++++++++++++++++++++++----
- 1 file changed, 116 insertions(+), 11 deletions(-)
+Add a link to the ADXL345 datasheet
 
 Cc: Eva Rachel Retuya <eraretuya@gmail.com>
 Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+---
+* v4
+- No changes from v3
+
+ drivers/iio/accel/adxl345_core.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_core.c
+index 7251d0e..8e0d56b 100644
+--- a/drivers/iio/accel/adxl345_core.c
++++ b/drivers/iio/accel/adxl345_core.c
+@@ -6,6 +6,8 @@
+  * This file is subject to the terms and conditions of version 2 of
+  * the GNU General Public License. See the file COPYING in the main
+  * directory of this archive for more details.
++ *
++ * Datasheet: http://www.analog.com/media/en/technical-documentation/data-sheets/ADXL345.pdf
+  */
+ 
+ #include <linux/module.h>
 -- 
 2.7.4
-
