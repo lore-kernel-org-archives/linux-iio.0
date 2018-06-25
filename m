@@ -1,58 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:57756 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751283AbeF3RgZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 30 Jun 2018 13:36:25 -0400
-Date: Sat, 30 Jun 2018 18:36:17 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Andreas Klinger <ak@it-klinger.de>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        robh+dt@kernel.org, mark.rutland@arm.com, mchehab@kernel.org,
-        davem@davemloft.net, gregkh@linuxfoundation.org,
-        akpm@linux-foundation.org, linus.walleij@linaro.org,
-        rdunlap@infradead.org, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 4/4] iio: hx711: warning in dt binding example doc
-Message-ID: <20180630183617.102dfb84@archlinux>
-In-Reply-To: <20180625151926.GA6403@arbeit>
-References: <20180625151926.GA6403@arbeit>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from mail-pg0-f68.google.com ([74.125.83.68]:36395 "EHLO
+        mail-pg0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750972AbeFYPXF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jun 2018 11:23:05 -0400
+Received: by mail-pg0-f68.google.com with SMTP id m5-v6so6214770pgd.3
+        for <linux-iio@vger.kernel.org>; Mon, 25 Jun 2018 08:23:04 -0700 (PDT)
+From: Akinobu Mita <akinobu.mita@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: Akinobu Mita <akinobu.mita@gmail.com>,
+        Eva Rachel Retuya <eraretuya@gmail.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH v4 0/4] iio: accel: adxl345: add calibration offset and sampling frequency support
+Date: Tue, 26 Jun 2018 00:22:39 +0900
+Message-Id: <1529940163-5149-1-git-send-email-akinobu.mita@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 25 Jun 2018 17:19:26 +0200
-Andreas Klinger <ak@it-klinger.de> wrote:
+This patchset adds calibration offset and sampling frequency support for
+adxl345 driver with some preparatory changes.
 
-> device tree compiler (dtc) gives a warning if a device node has "@" with a
-> following number as it's name but no reg property.
-> 
-> fix the example in the documentation of avia,hx711 to conform to dtc
-> behavior
-> 
-> Signed-off-by: Andreas Klinger <ak@it-klinger.de>
+* v4 (Suggested by Jonathan Cameron)
+- Stop abusing scan_index and keep using address field in iio_chan_spec
 
-Given there will be fuzz, I'll pick this up when patches 1 and 2 are
-ready and Acked by a devicetree maintainer.
+* v3 (Suggested by Andy Shevchenko)
+- Define ADXL345_REG_DATA_AXIS(si) for cleaner register access
+- Define ADXL345_REG_OSF_AXIS(si) for cleaner register access
+- Calculate sampling frequency at runtime instead of having constant table
 
-Thanks,
+* v2
+- Adjust the value for the calibbias to make the same scale as the _raw
+  measurement, and remove misused calibscale.
 
-Jonathan
-> ---
->  Documentation/devicetree/bindings/iio/adc/avia-hx711.txt | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/avia-hx711.txt b/Documentation/devicetree/bindings/iio/adc/avia-hx711.txt
-> index d0c066e3df69..8c9bcaa4d750 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/avia-hx711.txt
-> +++ b/Documentation/devicetree/bindings/iio/adc/avia-hx711.txt
-> @@ -15,7 +15,7 @@ Optional properties:
->  			is 50000 in the datasheet
->  
->  Example:
-> -weight@0 {
-> +weight {
->  	compatible = "avia,hx711";
->  	sck-gpios = <&gpio3 10 GPIO_ACTIVE_HIGH>;
->  	dout-gpios = <&gpio0 7 GPIO_ACTIVE_HIGH>;
+Akinobu Mita (4):
+  iio: accel: adxl345: add link to datasheet
+  iio: accel: adxl345: convert address field usage in iio_chan_spec
+  iio: accel: adxl345: add calibration offset support
+  iio: accel: adxl345: add sampling frequency support
+
+ drivers/iio/accel/adxl345_core.c | 127 +++++++++++++++++++++++++++++++++++----
+ 1 file changed, 116 insertions(+), 11 deletions(-)
+
+Cc: Eva Rachel Retuya <eraretuya@gmail.com>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>
+-- 
+2.7.4
 
