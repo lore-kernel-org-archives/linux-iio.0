@@ -1,71 +1,86 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:54442 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751460AbeF3Rcj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 30 Jun 2018 13:32:39 -0400
-Date: Sat, 30 Jun 2018 18:32:32 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Andreas Klinger <ak@it-klinger.de>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        robh+dt@kernel.org, mark.rutland@arm.com, mchehab@kernel.org,
-        davem@davemloft.net, gregkh@linuxfoundation.org,
-        akpm@linux-foundation.org, linus.walleij@linaro.org,
-        rdunlap@infradead.org, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/4] iio: hx711: add data-ready-delay-ns property in
- DT
-Message-ID: <20180630183232.540ce031@archlinux>
-In-Reply-To: <20180625151802.GA6369@arbeit>
-References: <20180625151802.GA6369@arbeit>
+Return-Path: <SRS0=DLFY=JL=it-klinger.de=ak@kernel.org>
+Date: Mon, 25 Jun 2018 17:18:24 +0200
+From: Andreas Klinger <ak@it-klinger.de>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	robh+dt@kernel.org, mark.rutland@arm.com, mchehab@kernel.org,
+	davem@davemloft.net, gregkh@linuxfoundation.org,
+	akpm@linux-foundation.org, linus.walleij@linaro.org,
+	rdunlap@infradead.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 2/4] iio: hx711: add delay until DOUT is ready
+Message-ID: <20180625151824.GA6380@arbeit>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, 25 Jun 2018 17:18:02 +0200
-Andreas Klinger <ak@it-klinger.de> wrote:
+On a system with parasitic capacities it turned out that DOUT is not ready
+after 100 ns after PD_SCK has raised. A measurement showed almost 1000 ns
+until DOUT has reached its correct value.
 
-> add data-ready-delay-ns property for hx711 ADC
-> this is the delay after rising PD_SCK until DOUT is read and assumed to be
-> ready
-> 
-> Signed-off-by: Andreas Klinger <ak@it-klinger.de>
+With this patch its now possible to wait until data is ready.
 
-Hmm. It's not particularly generic... I think this should have
-have vendor prefix until we have some visibility of whether it
-is a common thing we want to standardise around or not.
+The wait time should not be higher than the maximum PD_SCK high time which
+is corresponding to the datasheet 50000 ns.
 
-I'll also be waiting for a devicetree ack on this one as it's a
-tiny bit unusual.
+Signed-off-by: Andreas Klinger <ak@it-klinger.de>
+---
+ drivers/iio/adc/hx711.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-Thanks,
-
-Jonathan
-> ---
->  Documentation/devicetree/bindings/iio/adc/avia-hx711.txt | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/avia-hx711.txt b/Documentation/devicetree/bindings/iio/adc/avia-hx711.txt
-> index b3629405f568..d0c066e3df69 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/avia-hx711.txt
-> +++ b/Documentation/devicetree/bindings/iio/adc/avia-hx711.txt
-> @@ -8,11 +8,18 @@ Required properties:
->  		See Documentation/devicetree/bindings/gpio/gpio.txt
->   - avdd-supply:	Definition of the regulator used as analog supply
->  
-> +Optional properties:
-> + - data-ready-delay-ns:	additional delay in nanoseconds between rising of
-> +			PD_SCK until DOUT is ready
-> +			should be less then maximum PD_SCK high time which
-> +			is 50000 in the datasheet
-> +
->  Example:
->  weight@0 {
->  	compatible = "avia,hx711";
->  	sck-gpios = <&gpio3 10 GPIO_ACTIVE_HIGH>;
->  	dout-gpios = <&gpio0 7 GPIO_ACTIVE_HIGH>;
->  	avdd-suppy = <&avdd>;
-> +	data-ready-delay-ns = <1000>;
->  };
->  
-
+diff --git a/drivers/iio/adc/hx711.c b/drivers/iio/adc/hx711.c
+index 9430b54121e0..41e26ef324ee 100644
+--- a/drivers/iio/adc/hx711.c
++++ b/drivers/iio/adc/hx711.c
+@@ -97,6 +97,13 @@ struct hx711_data {
+ 	 * 2x32-bit channel + 64-bit timestamp
+ 	 */
+ 	u32			buffer[4];
++	/*
++	 * delay after a rising edge on SCK until the data is ready DOUT
++	 * this is dependent on the hx711 where the datasheet tells a
++	 * maximum value of 100 ns
++	 * but also on potential parasitic capacities on the wiring
++	 */
++	u32			data_ready_delay_ns;
+ };
+ 
+ static int hx711_cycle(struct hx711_data *hx711_data)
+@@ -110,6 +117,14 @@ static int hx711_cycle(struct hx711_data *hx711_data)
+ 	 */
+ 	preempt_disable();
+ 	gpiod_set_value(hx711_data->gpiod_pd_sck, 1);
++
++	/*
++	 * wait until DOUT is ready
++	 * it turned out that parasitic capacities are extending the time
++	 * until DOUT has reached it's value
++	 */
++	ndelay(hx711_data->data_ready_delay_ns);
++
+ 	val = gpiod_get_value(hx711_data->gpiod_dout);
+ 	/*
+ 	 * here we are not waiting for 0.2 us as suggested by the datasheet,
+@@ -458,6 +473,7 @@ static const struct iio_chan_spec hx711_chan_spec[] = {
+ static int hx711_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
++	struct device_node *np = dev->of_node;
+ 	struct hx711_data *hx711_data;
+ 	struct iio_dev *indio_dev;
+ 	int ret;
+@@ -530,6 +546,13 @@ static int hx711_probe(struct platform_device *pdev)
+ 	hx711_data->gain_set = 128;
+ 	hx711_data->gain_chan_a = 128;
+ 
++	ret = of_property_read_u32(np, "data-ready-delay-ns",
++					&hx711_data->data_ready_delay_ns);
++	if (ret < 0) {
++		dev_warn(dev, "data-ready-delay-ns not set - assuming 0 ns\n");
++		hx711_data->data_ready_delay_ns = 0;
++	}
++
+ 	platform_set_drvdata(pdev, indio_dev);
+ 
+ 	indio_dev->name = "hx711";
+-- 
+2.1.4
