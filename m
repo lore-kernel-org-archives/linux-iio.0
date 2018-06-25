@@ -1,64 +1,97 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-vk0-f66.google.com ([209.85.213.66]:44544 "EHLO
-        mail-vk0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750936AbeF0Wlw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 27 Jun 2018 18:41:52 -0400
-Received: by mail-vk0-f66.google.com with SMTP id x4-v6so2141888vkx.11
-        for <linux-iio@vger.kernel.org>; Wed, 27 Jun 2018 15:41:51 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <1529940163-5149-5-git-send-email-akinobu.mita@gmail.com>
-References: <1529940163-5149-1-git-send-email-akinobu.mita@gmail.com> <1529940163-5149-5-git-send-email-akinobu.mita@gmail.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Thu, 28 Jun 2018 01:41:50 +0300
-Message-ID: <CAHp75Vf5EvfeC4mDrM+vHQpitD=0yiQX2aOD=Y0oP3MxYBBqFQ@mail.gmail.com>
-Subject: Re: [PATCH v4 4/4] iio: accel: adxl345: add sampling frequency support
-To: Akinobu Mita <akinobu.mita@gmail.com>
-Cc: linux-iio@vger.kernel.org, Eva Rachel Retuya <eraretuya@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:50693 "EHLO
+        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752718AbeFYTLc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jun 2018 15:11:32 -0400
+From: Karim Eshapa <karim.eshapa@gmail.com>
+To: lars@metafoo.de
+Cc: Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, Karim Eshapa <karim.eshapa@gmail.com>
+Subject: [PATCH v2] staging:iio:impedance-analyzer:ad5933: Macro replacement Cleanups.
+Date: Mon, 25 Jun 2018 21:11:23 +0200
+Message-Id: <20180625191123.3685-1-karim.eshapa@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Jun 25, 2018 at 6:22 PM, Akinobu Mita <akinobu.mita@gmail.com> wrote:
-> The ADXL345 provides selectable output data rate.  This adds the iio
-> channel information for the sampling frequency with that feature.
+Doing some macro replacement to start an array of structures
+so it can be reused by manipulating it with different values.
 
-> +#define ADXL345_BW_RATE                        GENMASK(3, 0)
-> +#define ADXL345_BASE_RATE_NANO_HZ      97656250LL
+Signed-off-by: Karim Eshapa <karim.eshapa@gmail.com>
+---
+ .../staging/iio/impedance-analyzer/ad5933.c   | 57 +++++++------------
+ 1 file changed, 19 insertions(+), 38 deletions(-)
 
-> +               samp_freq_nhz = ADXL345_BASE_RATE_NANO_HZ <<
-> +                               (regval & ADXL345_BW_RATE);
-> +               *val = div_s64_rem(samp_freq_nhz, 1000000000, val2);
-
-Yep, looks cool!
-
-> +               for (i = 0; i <= ADXL345_BW_RATE; i++) {
-> +                       int nhz;
-> +                       int hz;
-> +
-> +                       hz = div_s64_rem(ADXL345_BASE_RATE_NANO_HZ << i,
-> +                                        1000000000, &nhz);
-> +                       if (hz == val && nhz == val2) {
-> +                               return regmap_update_bits(data->regmap,
-> +                                                       ADXL345_REG_BW_RATE,
-> +                                                       ADXL345_BW_RATE, i);
-> +                       }
-> +               }
-
-But this one can be just loop-less.
-
-Something like
-
-res = div_s64_rem(val * 1000000000 + val2, ADXL345_BASE_RATE_NANO_HZ, &rem);
-if (rem ...) // here to decide what margin is allowed, or choose
-closest, or choose lower / higher.
- return regmap...(..., res);
-
-And I guess you might want to use NSEC_PER_SEC. (Is it really period
-or frequency? If latter, perhaps add HZ_PER_GHZ macro, we have in one
-driver HZ_PER_MHZ, maybe in the future they would be consolidated
-somewhere).
-
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index 3bcf49466361..14df89510396 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -116,45 +116,26 @@ static struct ad5933_platform_data ad5933_default_pdata  = {
+ 	.vref_mv = 3300,
+ };
+ 
++#define AD5933_CHANNEL(_type, _extend_name, _info_mask_separate, _address, \
++		_scan_index, _realbits) { \
++	.type = (_type), \
++	.extend_name = (_extend_name), \
++	.info_mask_separate = (_info_mask_separate), \
++	.address = (_address), \
++	.scan_index = (_scan_index), \
++	.scan_type = { \
++		.sign = 's', \
++		.realbits = (_realbits), \
++		.storagebits = 16, \
++	}, \
++}
++
+ static const struct iio_chan_spec ad5933_channels[] = {
+-	{
+-		.type = IIO_TEMP,
+-		.indexed = 1,
+-		.channel = 0,
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+-			BIT(IIO_CHAN_INFO_SCALE),
+-		.address = AD5933_REG_TEMP_DATA,
+-		.scan_index = -1,
+-		.scan_type = {
+-			.sign = 's',
+-			.realbits = 14,
+-			.storagebits = 16,
+-		},
+-	}, { /* Ring Channels */
+-		.type = IIO_VOLTAGE,
+-		.indexed = 1,
+-		.channel = 0,
+-		.extend_name = "real",
+-		.address = AD5933_REG_REAL_DATA,
+-		.scan_index = 0,
+-		.scan_type = {
+-			.sign = 's',
+-			.realbits = 16,
+-			.storagebits = 16,
+-		},
+-	}, {
+-		.type = IIO_VOLTAGE,
+-		.indexed = 1,
+-		.channel = 0,
+-		.extend_name = "imag",
+-		.address = AD5933_REG_IMAG_DATA,
+-		.scan_index = 1,
+-		.scan_type = {
+-			.sign = 's',
+-			.realbits = 16,
+-			.storagebits = 16,
+-		},
+-	},
++	AD5933_CHANNEL(IIO_TEMP, NULL, BIT(IIO_CHAN_INFO_RAW) |
++		BIT(IIO_CHAN_INFO_SCALE), AD5933_REG_TEMP_DATA, -1, 14),
++	/* Ring Channels */
++	AD5933_CHANNEL(IIO_VOLTAGE, "real", 0, AD5933_REG_REAL_DATA, 0, 16),
++	AD5933_CHANNEL(IIO_VOLTAGE, "imag", 0, AD5933_REG_IMAG_DATA, 1, 16),
+ };
+ 
+ static int ad5933_i2c_write(struct i2c_client *client, u8 reg, u8 len, u8 *data)
 -- 
-With Best Regards,
-Andy Shevchenko
+2.17.1
+
