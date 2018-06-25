@@ -1,65 +1,141 @@
 Return-Path: <SRS0=iv4G=JL=analog.com=alexandru.Ardelean@kernel.org>
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "karim.eshapa@gmail.com" <karim.eshapa@gmail.com>, "lars@metafoo.de"
-	<lars@metafoo.de>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "Hennerich,
- Michael" <Michael.Hennerich@analog.com>, "jic23@kernel.org"
-	<jic23@kernel.org>
-Subject: Re: [PATCH] staging:iio:impedance-analyzer:ad5933: Macro replacment
- Cleanups.
-Date: Mon, 25 Jun 2018 07:17:48 +0000
-Message-ID: <62381313c7bd7dff1423fc1c90184379c0fd470f.camel@analog.com>
-References: <20180624201511.10597-1-karim.eshapa@gmail.com>
-In-Reply-To: <20180624201511.10597-1-karim.eshapa@gmail.com>
-Content-Type: text/plain; charset="utf-8"
+From: Alexandru Ardelean <alexandru.ardelean@analog.com>
+To: <linux-iio@vger.kernel.org>, <lars@metafoo.de>,
+	<Michael.Hennerich@analog.com>, <jic23@kernel.org>
+Subject: [PATCH] iio: ad9523: replace core mlock with local lock
+Date: Mon, 25 Jun 2018 10:28:08 +0300
+Message-ID: <20180625072808.8796-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-T24gU3VuLCAyMDE4LTA2LTI0IGF0IDIyOjE1ICswMjAwLCBLYXJpbSBFc2hhcGEgd3JvdGU6DQo+
-IERvaW5nIHNvbWUgbWFjcm8gcmVwbGFjbWVudCB0byBzdGFydCBhbiBhcnJheSBvZiBzdHJ1Y3R1
-cmVzDQo+IHNvIGl0IGNhbiBiZSByZXVzZWQgYnkgbWFuaXB1bGF0aW5nIGl0IHdpdGggZGlmZmVy
-ZW50IHZhbHVlcy4NCj4gDQoNCltSZWR1Y2VkIHJlcGx5IGxpc3QgdG8gbm90IHNwYW0gdG9vIG1h
-bnkgcGVvcGxlXQ0KDQpOaXRwaWNrOiB5b3UgaGF2ZSBhIHR5cG8gaW4geW91ciB0aXRsZS4NCg0K
-T3RoZXJ3aXNlIGxvb2tzIGdvb2QuDQoNClRoYW5rcyBmb3IgdGhlIHBhdGNoLg0KDQpBbGV4DQoN
-Cj4gU2lnbmVkLW9mZi1ieTogS2FyaW0gRXNoYXBhIDxrYXJpbS5lc2hhcGFAZ21haWwuY29tPg0K
-PiAtLS0NCj4gIC4uLi9zdGFnaW5nL2lpby9pbXBlZGFuY2UtYW5hbHl6ZXIvYWQ1OTMzLmMgICB8
-IDU3ICsrKysrKystLS0tLS0tLS0tLS0NCj4gIDEgZmlsZSBjaGFuZ2VkLCAxOSBpbnNlcnRpb25z
-KCspLCAzOCBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3N0YWdpbmcv
-aWlvL2ltcGVkYW5jZS1hbmFseXplci9hZDU5MzMuYw0KPiBiL2RyaXZlcnMvc3RhZ2luZy9paW8v
-aW1wZWRhbmNlLWFuYWx5emVyL2FkNTkzMy5jDQo+IGluZGV4IDNiY2Y0OTQ2NjM2MS4uMTRkZjg5
-NTEwMzk2IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL3N0YWdpbmcvaWlvL2ltcGVkYW5jZS1hbmFs
-eXplci9hZDU5MzMuYw0KPiArKysgYi9kcml2ZXJzL3N0YWdpbmcvaWlvL2ltcGVkYW5jZS1hbmFs
-eXplci9hZDU5MzMuYw0KPiBAQCAtMTE2LDQ1ICsxMTYsMjYgQEAgc3RhdGljIHN0cnVjdCBhZDU5
-MzNfcGxhdGZvcm1fZGF0YQ0KPiBhZDU5MzNfZGVmYXVsdF9wZGF0YSAgPSB7DQo+ICAJLnZyZWZf
-bXYgPSAzMzAwLA0KPiAgfTsNCj4gIA0KPiArI2RlZmluZSBBRDU5MzNfQ0hBTk5FTChfdHlwZSwg
-X2V4dGVuZF9uYW1lLCBfaW5mb19tYXNrX3NlcGFyYXRlLA0KPiBfYWRkcmVzcywgXA0KPiArCQlf
-c2Nhbl9pbmRleCwgX3JlYWxiaXRzKSB7IFwNCj4gKwkudHlwZSA9IChfdHlwZSksIFwNCj4gKwku
-ZXh0ZW5kX25hbWUgPSAoX2V4dGVuZF9uYW1lKSwgXA0KPiArCS5pbmZvX21hc2tfc2VwYXJhdGUg
-PSAoX2luZm9fbWFza19zZXBhcmF0ZSksIFwNCj4gKwkuYWRkcmVzcyA9IChfYWRkcmVzcyksIFwN
-Cj4gKwkuc2Nhbl9pbmRleCA9IChfc2Nhbl9pbmRleCksIFwNCj4gKwkuc2Nhbl90eXBlID0geyBc
-DQo+ICsJCS5zaWduID0gJ3MnLCBcDQo+ICsJCS5yZWFsYml0cyA9IChfcmVhbGJpdHMpLCBcDQo+
-ICsJCS5zdG9yYWdlYml0cyA9IDE2LCBcDQo+ICsJfSwgXA0KPiArfQ0KPiArDQo+ICBzdGF0aWMg
-Y29uc3Qgc3RydWN0IGlpb19jaGFuX3NwZWMgYWQ1OTMzX2NoYW5uZWxzW10gPSB7DQo+IC0Jew0K
-PiAtCQkudHlwZSA9IElJT19URU1QLA0KPiAtCQkuaW5kZXhlZCA9IDEsDQo+IC0JCS5jaGFubmVs
-ID0gMCwNCj4gLQkJLmluZm9fbWFza19zZXBhcmF0ZSA9IEJJVChJSU9fQ0hBTl9JTkZPX1JBVykg
-fA0KPiAtCQkJQklUKElJT19DSEFOX0lORk9fU0NBTEUpLA0KPiAtCQkuYWRkcmVzcyA9IEFENTkz
-M19SRUdfVEVNUF9EQVRBLA0KPiAtCQkuc2Nhbl9pbmRleCA9IC0xLA0KPiAtCQkuc2Nhbl90eXBl
-ID0gew0KPiAtCQkJLnNpZ24gPSAncycsDQo+IC0JCQkucmVhbGJpdHMgPSAxNCwNCj4gLQkJCS5z
-dG9yYWdlYml0cyA9IDE2LA0KPiAtCQl9LA0KPiAtCX0sIHsgLyogUmluZyBDaGFubmVscyAqLw0K
-PiAtCQkudHlwZSA9IElJT19WT0xUQUdFLA0KPiAtCQkuaW5kZXhlZCA9IDEsDQo+IC0JCS5jaGFu
-bmVsID0gMCwNCj4gLQkJLmV4dGVuZF9uYW1lID0gInJlYWwiLA0KPiAtCQkuYWRkcmVzcyA9IEFE
-NTkzM19SRUdfUkVBTF9EQVRBLA0KPiAtCQkuc2Nhbl9pbmRleCA9IDAsDQo+IC0JCS5zY2FuX3R5
-cGUgPSB7DQo+IC0JCQkuc2lnbiA9ICdzJywNCj4gLQkJCS5yZWFsYml0cyA9IDE2LA0KPiAtCQkJ
-LnN0b3JhZ2ViaXRzID0gMTYsDQo+IC0JCX0sDQo+IC0JfSwgew0KPiAtCQkudHlwZSA9IElJT19W
-T0xUQUdFLA0KPiAtCQkuaW5kZXhlZCA9IDEsDQo+IC0JCS5jaGFubmVsID0gMCwNCj4gLQkJLmV4
-dGVuZF9uYW1lID0gImltYWciLA0KPiAtCQkuYWRkcmVzcyA9IEFENTkzM19SRUdfSU1BR19EQVRB
-LA0KPiAtCQkuc2Nhbl9pbmRleCA9IDEsDQo+IC0JCS5zY2FuX3R5cGUgPSB7DQo+IC0JCQkuc2ln
-biA9ICdzJywNCj4gLQkJCS5yZWFsYml0cyA9IDE2LA0KPiAtCQkJLnN0b3JhZ2ViaXRzID0gMTYs
-DQo+IC0JCX0sDQo+IC0JfSwNCj4gKwlBRDU5MzNfQ0hBTk5FTChJSU9fVEVNUCwgTlVMTCwgQklU
-KElJT19DSEFOX0lORk9fUkFXKSB8DQo+ICsJCUJJVChJSU9fQ0hBTl9JTkZPX1NDQUxFKSwgQUQ1
-OTMzX1JFR19URU1QX0RBVEEsIC0xLCAxNCksDQo+ICsJLyogUmluZyBDaGFubmVscyAqLw0KPiAr
-CUFENTkzM19DSEFOTkVMKElJT19WT0xUQUdFLCAicmVhbCIsIDAsIEFENTkzM19SRUdfUkVBTF9E
-QVRBLCAwLA0KPiAxNiksDQo+ICsJQUQ1OTMzX0NIQU5ORUwoSUlPX1ZPTFRBR0UsICJpbWFnIiwg
-MCwgQUQ1OTMzX1JFR19JTUFHX0RBVEEsIDEsDQo+IDE2KSwNCj4gIH07DQo+ICANCj4gIHN0YXRp
-YyBpbnQgYWQ1OTMzX2kyY193cml0ZShzdHJ1Y3QgaTJjX2NsaWVudCAqY2xpZW50LCB1OCByZWcs
-IHU4IGxlbiwNCj4gdTggKmRhdGEp
+From: Lars-Peter Clausen <lars@metafoo.de>
+
+This is part of a long term effort to make the use of mlock opaque and
+single purpose.
+
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/frequency/ad9523.c | 27 +++++++++++++++++----------
+ 1 file changed, 17 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
+index ddb6a334ae68..1b70e8a13338 100644
+--- a/drivers/iio/frequency/ad9523.c
++++ b/drivers/iio/frequency/ad9523.c
+@@ -274,6 +274,8 @@ struct ad9523_state {
+ 	unsigned long		vco_out_freq[AD9523_NUM_CLK_SRC];
+ 	unsigned char		vco_out_map[AD9523_NUM_CHAN_ALT_CLK_SRC];
+ 
++	struct mutex		lock;
++
+ 	/*
+ 	 * DMA (thus cache coherency maintenance) requires the
+ 	 * transfer buffers to live in their own cache lines.
+@@ -500,6 +502,7 @@ static ssize_t ad9523_store(struct device *dev,
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	struct ad9523_state *st = iio_priv(indio_dev);
+ 	bool state;
+ 	int ret;
+ 
+@@ -510,7 +513,7 @@ static ssize_t ad9523_store(struct device *dev,
+ 	if (!state)
+ 		return 0;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&st->lock);
+ 	switch ((u32)this_attr->address) {
+ 	case AD9523_SYNC:
+ 		ret = ad9523_sync(indio_dev);
+@@ -521,7 +524,7 @@ static ssize_t ad9523_store(struct device *dev,
+ 	default:
+ 		ret = -ENODEV;
+ 	}
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&st->lock);
+ 
+ 	return ret ? ret : len;
+ }
+@@ -532,15 +535,16 @@ static ssize_t ad9523_show(struct device *dev,
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	struct ad9523_state *st = iio_priv(indio_dev);
+ 	int ret;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&st->lock);
+ 	ret = ad9523_read(indio_dev, AD9523_READBACK_0);
+ 	if (ret >= 0) {
+ 		ret = sprintf(buf, "%d\n", !!(ret & (1 <<
+ 			(u32)this_attr->address)));
+ 	}
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&st->lock);
+ 
+ 	return ret;
+ }
+@@ -623,9 +627,9 @@ static int ad9523_read_raw(struct iio_dev *indio_dev,
+ 	unsigned int code;
+ 	int ret;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&st->lock);
+ 	ret = ad9523_read(indio_dev, AD9523_CHANNEL_CLOCK_DIST(chan->channel));
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&st->lock);
+ 
+ 	if (ret < 0)
+ 		return ret;
+@@ -659,7 +663,7 @@ static int ad9523_write_raw(struct iio_dev *indio_dev,
+ 	unsigned int reg;
+ 	int ret, tmp, code;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&st->lock);
+ 	ret = ad9523_read(indio_dev, AD9523_CHANNEL_CLOCK_DIST(chan->channel));
+ 	if (ret < 0)
+ 		goto out;
+@@ -705,7 +709,7 @@ static int ad9523_write_raw(struct iio_dev *indio_dev,
+ 
+ 	ad9523_io_update(indio_dev);
+ out:
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&st->lock);
+ 	return ret;
+ }
+ 
+@@ -713,9 +717,10 @@ static int ad9523_reg_access(struct iio_dev *indio_dev,
+ 			      unsigned int reg, unsigned int writeval,
+ 			      unsigned int *readval)
+ {
++	struct ad9523_state *st = iio_priv(indio_dev);
+ 	int ret;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&st->lock);
+ 	if (readval == NULL) {
+ 		ret = ad9523_write(indio_dev, reg | AD9523_R1B, writeval);
+ 		ad9523_io_update(indio_dev);
+@@ -728,7 +733,7 @@ static int ad9523_reg_access(struct iio_dev *indio_dev,
+ 	}
+ 
+ out_unlock:
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&st->lock);
+ 
+ 	return ret;
+ }
+@@ -967,6 +972,8 @@ static int ad9523_probe(struct spi_device *spi)
+ 
+ 	st = iio_priv(indio_dev);
+ 
++	mutex_init(&st->lock);
++
+ 	st->reg = devm_regulator_get(&spi->dev, "vcc");
+ 	if (!IS_ERR(st->reg)) {
+ 		ret = regulator_enable(st->reg);
+-- 
+2.17.1
