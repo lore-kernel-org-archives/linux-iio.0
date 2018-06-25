@@ -1,96 +1,65 @@
-Return-Path: <SRS0=5Vk5=JK=gmail.com=karim.eshapa@kernel.org>
-From: Karim Eshapa <karim.eshapa@gmail.com>
-To: lars@metafoo.de
-Cc: Michael.Hennerich@analog.com,
-	jic23@kernel.org,
-	knaack.h@gmx.de,
-	pmeerw@pmeerw.net,
-	gregkh@linuxfoundation.org,
-	linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org,
-	Karim Eshapa <karim.eshapa@gmail.com>
-Subject: [PATCH] staging:iio:impedance-analyzer:ad5933: Macro replacment Cleanups.
-Date: Sun, 24 Jun 2018 22:15:11 +0200
-Message-Id: <20180624201511.10597-1-karim.eshapa@gmail.com>
+Return-Path: <SRS0=iv4G=JL=analog.com=alexandru.Ardelean@kernel.org>
+From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+To: "karim.eshapa@gmail.com" <karim.eshapa@gmail.com>, "lars@metafoo.de"
+	<lars@metafoo.de>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "Hennerich,
+ Michael" <Michael.Hennerich@analog.com>, "jic23@kernel.org"
+	<jic23@kernel.org>
+Subject: Re: [PATCH] staging:iio:impedance-analyzer:ad5933: Macro replacment
+ Cleanups.
+Date: Mon, 25 Jun 2018 07:17:48 +0000
+Message-ID: <62381313c7bd7dff1423fc1c90184379c0fd470f.camel@analog.com>
+References: <20180624201511.10597-1-karim.eshapa@gmail.com>
+In-Reply-To: <20180624201511.10597-1-karim.eshapa@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-Doing some macro replacment to start an array of structures
-so it can be reused by manipulating it with different values.
-
-Signed-off-by: Karim Eshapa <karim.eshapa@gmail.com>
----
- .../staging/iio/impedance-analyzer/ad5933.c   | 57 +++++++------------
- 1 file changed, 19 insertions(+), 38 deletions(-)
-
-diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-index 3bcf49466361..14df89510396 100644
---- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-+++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-@@ -116,45 +116,26 @@ static struct ad5933_platform_data ad5933_default_pdata  = {
- 	.vref_mv = 3300,
- };
- 
-+#define AD5933_CHANNEL(_type, _extend_name, _info_mask_separate, _address, \
-+		_scan_index, _realbits) { \
-+	.type = (_type), \
-+	.extend_name = (_extend_name), \
-+	.info_mask_separate = (_info_mask_separate), \
-+	.address = (_address), \
-+	.scan_index = (_scan_index), \
-+	.scan_type = { \
-+		.sign = 's', \
-+		.realbits = (_realbits), \
-+		.storagebits = 16, \
-+	}, \
-+}
-+
- static const struct iio_chan_spec ad5933_channels[] = {
--	{
--		.type = IIO_TEMP,
--		.indexed = 1,
--		.channel = 0,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
--			BIT(IIO_CHAN_INFO_SCALE),
--		.address = AD5933_REG_TEMP_DATA,
--		.scan_index = -1,
--		.scan_type = {
--			.sign = 's',
--			.realbits = 14,
--			.storagebits = 16,
--		},
--	}, { /* Ring Channels */
--		.type = IIO_VOLTAGE,
--		.indexed = 1,
--		.channel = 0,
--		.extend_name = "real",
--		.address = AD5933_REG_REAL_DATA,
--		.scan_index = 0,
--		.scan_type = {
--			.sign = 's',
--			.realbits = 16,
--			.storagebits = 16,
--		},
--	}, {
--		.type = IIO_VOLTAGE,
--		.indexed = 1,
--		.channel = 0,
--		.extend_name = "imag",
--		.address = AD5933_REG_IMAG_DATA,
--		.scan_index = 1,
--		.scan_type = {
--			.sign = 's',
--			.realbits = 16,
--			.storagebits = 16,
--		},
--	},
-+	AD5933_CHANNEL(IIO_TEMP, NULL, BIT(IIO_CHAN_INFO_RAW) |
-+		BIT(IIO_CHAN_INFO_SCALE), AD5933_REG_TEMP_DATA, -1, 14),
-+	/* Ring Channels */
-+	AD5933_CHANNEL(IIO_VOLTAGE, "real", 0, AD5933_REG_REAL_DATA, 0, 16),
-+	AD5933_CHANNEL(IIO_VOLTAGE, "imag", 0, AD5933_REG_IMAG_DATA, 1, 16),
- };
- 
- static int ad5933_i2c_write(struct i2c_client *client, u8 reg, u8 len, u8 *data)
--- 
-2.17.1
+T24gU3VuLCAyMDE4LTA2LTI0IGF0IDIyOjE1ICswMjAwLCBLYXJpbSBFc2hhcGEgd3JvdGU6DQo+
+IERvaW5nIHNvbWUgbWFjcm8gcmVwbGFjbWVudCB0byBzdGFydCBhbiBhcnJheSBvZiBzdHJ1Y3R1
+cmVzDQo+IHNvIGl0IGNhbiBiZSByZXVzZWQgYnkgbWFuaXB1bGF0aW5nIGl0IHdpdGggZGlmZmVy
+ZW50IHZhbHVlcy4NCj4gDQoNCltSZWR1Y2VkIHJlcGx5IGxpc3QgdG8gbm90IHNwYW0gdG9vIG1h
+bnkgcGVvcGxlXQ0KDQpOaXRwaWNrOiB5b3UgaGF2ZSBhIHR5cG8gaW4geW91ciB0aXRsZS4NCg0K
+T3RoZXJ3aXNlIGxvb2tzIGdvb2QuDQoNClRoYW5rcyBmb3IgdGhlIHBhdGNoLg0KDQpBbGV4DQoN
+Cj4gU2lnbmVkLW9mZi1ieTogS2FyaW0gRXNoYXBhIDxrYXJpbS5lc2hhcGFAZ21haWwuY29tPg0K
+PiAtLS0NCj4gIC4uLi9zdGFnaW5nL2lpby9pbXBlZGFuY2UtYW5hbHl6ZXIvYWQ1OTMzLmMgICB8
+IDU3ICsrKysrKystLS0tLS0tLS0tLS0NCj4gIDEgZmlsZSBjaGFuZ2VkLCAxOSBpbnNlcnRpb25z
+KCspLCAzOCBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3N0YWdpbmcv
+aWlvL2ltcGVkYW5jZS1hbmFseXplci9hZDU5MzMuYw0KPiBiL2RyaXZlcnMvc3RhZ2luZy9paW8v
+aW1wZWRhbmNlLWFuYWx5emVyL2FkNTkzMy5jDQo+IGluZGV4IDNiY2Y0OTQ2NjM2MS4uMTRkZjg5
+NTEwMzk2IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL3N0YWdpbmcvaWlvL2ltcGVkYW5jZS1hbmFs
+eXplci9hZDU5MzMuYw0KPiArKysgYi9kcml2ZXJzL3N0YWdpbmcvaWlvL2ltcGVkYW5jZS1hbmFs
+eXplci9hZDU5MzMuYw0KPiBAQCAtMTE2LDQ1ICsxMTYsMjYgQEAgc3RhdGljIHN0cnVjdCBhZDU5
+MzNfcGxhdGZvcm1fZGF0YQ0KPiBhZDU5MzNfZGVmYXVsdF9wZGF0YSAgPSB7DQo+ICAJLnZyZWZf
+bXYgPSAzMzAwLA0KPiAgfTsNCj4gIA0KPiArI2RlZmluZSBBRDU5MzNfQ0hBTk5FTChfdHlwZSwg
+X2V4dGVuZF9uYW1lLCBfaW5mb19tYXNrX3NlcGFyYXRlLA0KPiBfYWRkcmVzcywgXA0KPiArCQlf
+c2Nhbl9pbmRleCwgX3JlYWxiaXRzKSB7IFwNCj4gKwkudHlwZSA9IChfdHlwZSksIFwNCj4gKwku
+ZXh0ZW5kX25hbWUgPSAoX2V4dGVuZF9uYW1lKSwgXA0KPiArCS5pbmZvX21hc2tfc2VwYXJhdGUg
+PSAoX2luZm9fbWFza19zZXBhcmF0ZSksIFwNCj4gKwkuYWRkcmVzcyA9IChfYWRkcmVzcyksIFwN
+Cj4gKwkuc2Nhbl9pbmRleCA9IChfc2Nhbl9pbmRleCksIFwNCj4gKwkuc2Nhbl90eXBlID0geyBc
+DQo+ICsJCS5zaWduID0gJ3MnLCBcDQo+ICsJCS5yZWFsYml0cyA9IChfcmVhbGJpdHMpLCBcDQo+
+ICsJCS5zdG9yYWdlYml0cyA9IDE2LCBcDQo+ICsJfSwgXA0KPiArfQ0KPiArDQo+ICBzdGF0aWMg
+Y29uc3Qgc3RydWN0IGlpb19jaGFuX3NwZWMgYWQ1OTMzX2NoYW5uZWxzW10gPSB7DQo+IC0Jew0K
+PiAtCQkudHlwZSA9IElJT19URU1QLA0KPiAtCQkuaW5kZXhlZCA9IDEsDQo+IC0JCS5jaGFubmVs
+ID0gMCwNCj4gLQkJLmluZm9fbWFza19zZXBhcmF0ZSA9IEJJVChJSU9fQ0hBTl9JTkZPX1JBVykg
+fA0KPiAtCQkJQklUKElJT19DSEFOX0lORk9fU0NBTEUpLA0KPiAtCQkuYWRkcmVzcyA9IEFENTkz
+M19SRUdfVEVNUF9EQVRBLA0KPiAtCQkuc2Nhbl9pbmRleCA9IC0xLA0KPiAtCQkuc2Nhbl90eXBl
+ID0gew0KPiAtCQkJLnNpZ24gPSAncycsDQo+IC0JCQkucmVhbGJpdHMgPSAxNCwNCj4gLQkJCS5z
+dG9yYWdlYml0cyA9IDE2LA0KPiAtCQl9LA0KPiAtCX0sIHsgLyogUmluZyBDaGFubmVscyAqLw0K
+PiAtCQkudHlwZSA9IElJT19WT0xUQUdFLA0KPiAtCQkuaW5kZXhlZCA9IDEsDQo+IC0JCS5jaGFu
+bmVsID0gMCwNCj4gLQkJLmV4dGVuZF9uYW1lID0gInJlYWwiLA0KPiAtCQkuYWRkcmVzcyA9IEFE
+NTkzM19SRUdfUkVBTF9EQVRBLA0KPiAtCQkuc2Nhbl9pbmRleCA9IDAsDQo+IC0JCS5zY2FuX3R5
+cGUgPSB7DQo+IC0JCQkuc2lnbiA9ICdzJywNCj4gLQkJCS5yZWFsYml0cyA9IDE2LA0KPiAtCQkJ
+LnN0b3JhZ2ViaXRzID0gMTYsDQo+IC0JCX0sDQo+IC0JfSwgew0KPiAtCQkudHlwZSA9IElJT19W
+T0xUQUdFLA0KPiAtCQkuaW5kZXhlZCA9IDEsDQo+IC0JCS5jaGFubmVsID0gMCwNCj4gLQkJLmV4
+dGVuZF9uYW1lID0gImltYWciLA0KPiAtCQkuYWRkcmVzcyA9IEFENTkzM19SRUdfSU1BR19EQVRB
+LA0KPiAtCQkuc2Nhbl9pbmRleCA9IDEsDQo+IC0JCS5zY2FuX3R5cGUgPSB7DQo+IC0JCQkuc2ln
+biA9ICdzJywNCj4gLQkJCS5yZWFsYml0cyA9IDE2LA0KPiAtCQkJLnN0b3JhZ2ViaXRzID0gMTYs
+DQo+IC0JCX0sDQo+IC0JfSwNCj4gKwlBRDU5MzNfQ0hBTk5FTChJSU9fVEVNUCwgTlVMTCwgQklU
+KElJT19DSEFOX0lORk9fUkFXKSB8DQo+ICsJCUJJVChJSU9fQ0hBTl9JTkZPX1NDQUxFKSwgQUQ1
+OTMzX1JFR19URU1QX0RBVEEsIC0xLCAxNCksDQo+ICsJLyogUmluZyBDaGFubmVscyAqLw0KPiAr
+CUFENTkzM19DSEFOTkVMKElJT19WT0xUQUdFLCAicmVhbCIsIDAsIEFENTkzM19SRUdfUkVBTF9E
+QVRBLCAwLA0KPiAxNiksDQo+ICsJQUQ1OTMzX0NIQU5ORUwoSUlPX1ZPTFRBR0UsICJpbWFnIiwg
+MCwgQUQ1OTMzX1JFR19JTUFHX0RBVEEsIDEsDQo+IDE2KSwNCj4gIH07DQo+ICANCj4gIHN0YXRp
+YyBpbnQgYWQ1OTMzX2kyY193cml0ZShzdHJ1Y3QgaTJjX2NsaWVudCAqY2xpZW50LCB1OCByZWcs
+IHU4IGxlbiwNCj4gdTggKmRhdGEp
