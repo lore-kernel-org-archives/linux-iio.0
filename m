@@ -1,60 +1,98 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f68.google.com ([74.125.82.68]:37287 "EHLO
-        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S966488AbeF1Obm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 28 Jun 2018 10:31:42 -0400
-Received: by mail-wm0-f68.google.com with SMTP id n17-v6so8796774wmh.2
-        for <linux-iio@vger.kernel.org>; Thu, 28 Jun 2018 07:31:41 -0700 (PDT)
+Received: from mail-wr0-f195.google.com ([209.85.128.195]:35018 "EHLO
+        mail-wr0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S965966AbeF1Obn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 28 Jun 2018 10:31:43 -0400
+Received: by mail-wr0-f195.google.com with SMTP id c13-v6so5755608wrq.2
+        for <linux-iio@vger.kernel.org>; Thu, 28 Jun 2018 07:31:42 -0700 (PDT)
 From: Mathieu Othacehe <m.othacehe@gmail.com>
 To: linux-iio@vger.kernel.org, jonathan.cameron@huawei.com,
         pmeerw@pmeerw.net
 Cc: pierre-moana.levesque@parrot.com,
         Mathieu Othacehe <m.othacehe@gmail.com>
-Subject: [PATCH v4 0/2] Add ISL29501 support.
-Date: Thu, 28 Jun 2018 16:31:24 +0200
-Message-Id: <1530196286-18891-1-git-send-email-m.othacehe@gmail.com>
+Subject: [PATCH v4 1/2] iio: Add channel for Phase
+Date: Thu, 28 Jun 2018 16:31:25 +0200
+Message-Id: <1530196286-18891-2-git-send-email-m.othacehe@gmail.com>
+In-Reply-To: <1530196286-18891-1-git-send-email-m.othacehe@gmail.com>
+References: <1530196286-18891-1-git-send-email-m.othacehe@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+Add new channel type support for phase.
 
-Here's a new version of this serie. Please find the changelog above.
+This channel may be used by Time-of-flight sensors to express the
+phase difference between emitted and received signals. Those sensor
+will then use the phase shift of return signals to approximate the
+distance to objects.
 
-changelog:
+Signed-off-by: Mathieu Othacehe <m.othacehe@gmail.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 7 +++++++
+ drivers/iio/industrialio-core.c         | 1 +
+ include/uapi/linux/iio/types.h          | 1 +
+ tools/iio/iio_event_monitor.c           | 2 ++
+ 4 files changed, 11 insertions(+)
 
-v4:
-* Fix build warnings and rebase on top of next-20180628
-v3:
-* Renamings to add isl29501 prefix
-* Rename "amb" -> "light" in extended fields
-* Move mutex lock/unlock to register_read and register_write functions
-* Improve IIO_PHASE scale output with a better pi estimation
-v2:
-* Add missing eof new line
-* Do not set .indexed to true for all channels
-* Add a .extended to differenciate "magnitude" and "ambient_light"
-  intensity channels
-* Return isl29501_begin_acquisition result in isl29501_init_chip
-* Fix buffer size in isl29501_trigger_handler
-
-Mathieu Othacehe (2):
-  iio: Add channel for Phase
-  iio: light: isl29501: Add support for the ISL29501 ToF sensor.
-
- Documentation/ABI/testing/sysfs-bus-iio            |    7 +
- Documentation/ABI/testing/sysfs-bus-iio-isl29501   |   47 +
- .../devicetree/bindings/iio/light/isl29501.txt     |   13 +
- drivers/iio/industrialio-core.c                    |    1 +
- drivers/iio/light/Kconfig                          |   13 +
- drivers/iio/light/Makefile                         |    1 +
- drivers/iio/light/isl29501.c                       | 1140 ++++++++++++++++++++
- include/uapi/linux/iio/types.h                     |    1 +
- tools/iio/iio_event_monitor.c                      |    2 +
- 9 files changed, 1225 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-isl29501
- create mode 100644 Documentation/devicetree/bindings/iio/light/isl29501.txt
- create mode 100644 drivers/iio/light/isl29501.c
-
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index c735303..c9cfa83 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1675,3 +1675,10 @@ KernelVersion:	4.12
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		Raw counter device counters direction for channel Y.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_phaseY_raw
++KernelVersion:	4.18
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Raw (unscaled) phase difference reading from channel Y
++		that can be processed to radians.
+\ No newline at end of file
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index ed1b3eb..a16ad5a 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -86,6 +86,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_INDEX] = "index",
+ 	[IIO_GRAVITY]  = "gravity",
+ 	[IIO_POSITIONRELATIVE]  = "positionrelative",
++	[IIO_PHASE] = "phase",
+ };
+ 
+ static const char * const iio_modifier_names[] = {
+diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+index 033c7d2..e4df3cc 100644
+--- a/include/uapi/linux/iio/types.h
++++ b/include/uapi/linux/iio/types.h
+@@ -45,6 +45,7 @@ enum iio_chan_type {
+ 	IIO_INDEX,
+ 	IIO_GRAVITY,
+ 	IIO_POSITIONRELATIVE,
++	IIO_PHASE,
+ };
+ 
+ enum iio_modifier {
+diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+index 148f69d..f478f55 100644
+--- a/tools/iio/iio_event_monitor.c
++++ b/tools/iio/iio_event_monitor.c
+@@ -59,6 +59,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_UVINDEX] = "uvindex",
+ 	[IIO_GRAVITY] = "gravity",
+ 	[IIO_POSITIONRELATIVE] = "positionrelative",
++	[IIO_PHASE] = "phase",
+ };
+ 
+ static const char * const iio_ev_type_text[] = {
+@@ -153,6 +154,7 @@ static bool event_is_known(struct iio_event_data *event)
+ 	case IIO_UVINDEX:
+ 	case IIO_GRAVITY:
+ 	case IIO_POSITIONRELATIVE:
++	case IIO_PHASE:
+ 		break;
+ 	default:
+ 		return false;
 -- 
 2.7.4
 
