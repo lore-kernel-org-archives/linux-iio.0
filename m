@@ -1,58 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ed1-f43.google.com ([209.85.208.43]:43869 "EHLO
-        mail-ed1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933177AbeF2HsC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 29 Jun 2018 03:48:02 -0400
-Received: by mail-ed1-f43.google.com with SMTP id m21-v6so1946153eds.10
-        for <linux-iio@vger.kernel.org>; Fri, 29 Jun 2018 00:48:02 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <59135b1f-0020-3132-c283-38893ffb860e@metafoo.de>
-References: <20180628152425.00007abc@huawei.com> <59135b1f-0020-3132-c283-38893ffb860e@metafoo.de>
-From: Daniel Baluta <daniel.baluta@gmail.com>
-Date: Fri, 29 Jun 2018 10:48:01 +0300
-Message-ID: <CAEnQRZA16Abt6GYYVk1rKGqTLWT7hPcw0=iMQLqkWefp=JekOg@mail.gmail.com>
-Subject: Re: Potential IIO meeting / future directions discussion at ELCE 2018
- - Edinburgh 22-24 Oct
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jonathan Cameron <jonathan.cameron@huawei.com>,
-        linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Eugen Hristev <eugen.hristev@microchip.com>
-Content-Type: text/plain; charset="UTF-8"
+Received: from mail-wm0-f68.google.com ([74.125.82.68]:37287 "EHLO
+        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S966488AbeF1Obm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 28 Jun 2018 10:31:42 -0400
+Received: by mail-wm0-f68.google.com with SMTP id n17-v6so8796774wmh.2
+        for <linux-iio@vger.kernel.org>; Thu, 28 Jun 2018 07:31:41 -0700 (PDT)
+From: Mathieu Othacehe <m.othacehe@gmail.com>
+To: linux-iio@vger.kernel.org, jonathan.cameron@huawei.com,
+        pmeerw@pmeerw.net
+Cc: pierre-moana.levesque@parrot.com,
+        Mathieu Othacehe <m.othacehe@gmail.com>
+Subject: [PATCH v4 0/2] Add ISL29501 support.
+Date: Thu, 28 Jun 2018 16:31:24 +0200
+Message-Id: <1530196286-18891-1-git-send-email-m.othacehe@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Jun 28, 2018 at 8:11 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
-> On 06/28/2018 04:24 PM, Jonathan Cameron wrote:
->> Hi All,
->>
->> I know at least a few IIO developers are likely to be at the Embedded Linux
->> Conference Europe in a few months time.   Hence this email is exploring the
->> possibility of us doing something we have never done for IIO before and have
->> a formal meet up.   I would propose the topics to discuss would be loosely
->> around future directions for IIO development.  This might consist of actual
->> proposals or simply discussion of pain points.
->>
->> I'm not sure how long a session would be sensible, but one possibility is
->> to propose it as a BoF as that fits in their standard schedule without needing
->> any additional organization - I think by default that only gives us an hour or
->> so.  However, the deadline to propose one of those is this Sunday so things are
->> little tight.  We don't need a fully planned schedule but it would be good to
->> have made a start.  If we decide to do this I'll write an abstract and submit it.
->>
->> So I'm looking for topics and some idea of who is going to be there
->> or might be persuaded to make the trip!
-> I'll be at ELCE and I'm very interested in sitting down and having a longer
-> discussion about the state of the framework, potential future developments,
-> their requirements and how to get there.
->
-> I think a BoF would be good as a discussion starter and then maybe follow up
-> on that with the people who are interested and have a more focused discussion.
+Hi,
 
-I'll be there. Although, I'm mainly involved now with IIO via Outreachy/GSoC
-I think it is a good idea to have the meeting in the form of a BoF.
+Here's a new version of this serie. Please find the changelog above.
 
-CC-ing Eugen, I noticed he has done a lot of work recently in the IIO area.
+changelog:
 
-thanks,
-Daniel.
+v4:
+* Fix build warnings and rebase on top of next-20180628
+v3:
+* Renamings to add isl29501 prefix
+* Rename "amb" -> "light" in extended fields
+* Move mutex lock/unlock to register_read and register_write functions
+* Improve IIO_PHASE scale output with a better pi estimation
+v2:
+* Add missing eof new line
+* Do not set .indexed to true for all channels
+* Add a .extended to differenciate "magnitude" and "ambient_light"
+  intensity channels
+* Return isl29501_begin_acquisition result in isl29501_init_chip
+* Fix buffer size in isl29501_trigger_handler
+
+Mathieu Othacehe (2):
+  iio: Add channel for Phase
+  iio: light: isl29501: Add support for the ISL29501 ToF sensor.
+
+ Documentation/ABI/testing/sysfs-bus-iio            |    7 +
+ Documentation/ABI/testing/sysfs-bus-iio-isl29501   |   47 +
+ .../devicetree/bindings/iio/light/isl29501.txt     |   13 +
+ drivers/iio/industrialio-core.c                    |    1 +
+ drivers/iio/light/Kconfig                          |   13 +
+ drivers/iio/light/Makefile                         |    1 +
+ drivers/iio/light/isl29501.c                       | 1140 ++++++++++++++++++++
+ include/uapi/linux/iio/types.h                     |    1 +
+ tools/iio/iio_event_monitor.c                      |    2 +
+ 9 files changed, 1225 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-isl29501
+ create mode 100644 Documentation/devicetree/bindings/iio/light/isl29501.txt
+ create mode 100644 drivers/iio/light/isl29501.c
+
+-- 
+2.7.4
+
