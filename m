@@ -1,46 +1,67 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga04.intel.com ([192.55.52.120]:9613 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S965557AbeF1Pha (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 28 Jun 2018 11:37:30 -0400
-Date: Thu, 28 Jun 2018 23:37:09 +0800
-From: kbuild test robot <fengguang.wu@intel.com>
+Return-Path: <SRS0=UCu7=JO=gmail.com=himanshujha199640@kernel.org>
+Date: Fri, 29 Jun 2018 03:18:18 +0530
+From: Himanshu Jha <himanshujha199640@gmail.com>
 To: Stefan Popa <stefan.popa@analog.com>
-Cc: kbuild-all@01.org, jic23@kernel.org, Michael.Hennerich@analog.com,
-        lars@metafoo.de, knaack.h@gmx.de, pmeerw@pmeerw.net,
-        mchehab@kernel.org, davem@davemloft.net,
-        gregkh@linuxfoundation.org, akpm@linux-foundation.org,
-        linus.walleij@linaro.org, rdunlap@infradead.org, lukas@wunner.de,
-        Ismail.Kose@maximintegrated.com, vilhelm.gray@gmail.com,
-        sean.nyekjaer@prevas.dk, pombredanne@nexb.com,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stefan.popa@analog.com
-Subject: [RFC PATCH] iio: dac: cmpfunc() can be static
-Message-ID: <20180628153709.GA31782@lkp-ib03>
+Cc: jic23@kernel.org, Michael.Hennerich@analog.com, lars@metafoo.de,
+	knaack.h@gmx.de, pmeerw@pmeerw.net, mchehab@kernel.org,
+	davem@davemloft.net, gregkh@linuxfoundation.org,
+	akpm@linux-foundation.org, linus.walleij@linaro.org,
+	rdunlap@infradead.org, lukas@wunner.de,
+	Ismail.Kose@maximintegrated.com, vilhelm.gray@gmail.com,
+	sean.nyekjaer@prevas.dk, pombredanne@nexb.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] iio: dac: Add AD5758 support
+Message-ID: <20180628214818.GA3577@himanshu-Vostro-3559>
 References: <1530188012-28253-1-git-send-email-stefan.popa@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 In-Reply-To: <1530188012-28253-1-git-send-email-stefan.popa@analog.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
+On Thu, Jun 28, 2018 at 03:13:32PM +0300, Stefan Popa wrote:
+> The AD5758 is a single channel DAC with 16-bit precision which uses the
+> SPI interface that operates at clock rates up to 50MHz.
+> 
+> The output can be configured as voltage or current and is available on a
+> single terminal.
+> 
+> Datasheet:
+> http://www.analog.com/media/en/technical-documentation/data-sheets/ad5758.pdf
+> 
+> Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+> ---
+[..]
+> +static const int ad5758_dc_dc_ilim[6] = {
+> +	150000, 200000, 250000, 300000, 350000, 400000
+> +};
+[..]
+> +int cmpfunc(const void *a, const void *b)
+> +{
+> +	return (*(int *)a - *(int *)b);
+> +}
 
-Fixes: 2c1562568d29 ("iio: dac: Add AD5758 support")
-Signed-off-by: kbuild test robot <fengguang.wu@intel.com>
----
- ad5758.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Since Kbuild hit a Sparse error in this function, I would also like to
+add that the above implementation of cmpfunc() is not safe.
 
-diff --git a/drivers/iio/dac/ad5758.c b/drivers/iio/dac/ad5758.c
-index 2aaddf9..55c0a61 100644
---- a/drivers/iio/dac/ad5758.c
-+++ b/drivers/iio/dac/ad5758.c
-@@ -234,7 +234,7 @@ static int ad5758_spi_write_mask(struct ad5758_state *st,
- 	return ad5758_spi_reg_write(st, addr, regval);
- }
- 
--int cmpfunc(const void *a, const void *b)
-+static int cmpfunc(const void *a, const void *b)
- {
- 	return (*(int *)a - *(int *)b);
- }
+For eg: https://wandbox.org/permlink/MqGnA3nVg7eAN4I7
+
+The following will be safer:
+
+static int cmpfunc(const void *a, const void *b)
+{
+	int arg1 = *(const int*)a;
+	int arg2 = *(const int*)b;
+	return (arg1 > arg2) - (arg1 < arg2);
+}
+
+[..]
+> +		index = (int *) bsearch(&tmp, ad5758_dc_dc_ilim,
+> +					ARRAY_SIZE(ad5758_dc_dc_ilim),
+> +					sizeof(int), cmpfunc);
+
+Thanks.
+-- 
+Himanshu Jha
+Undergraduate Student
+Department of Electronics & Communication
+Guru Tegh Bahadur Institute of Technology
