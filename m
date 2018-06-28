@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f66.google.com ([74.125.82.66]:36724 "EHLO
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:34107 "EHLO
         mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S967125AbeF1XvT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 28 Jun 2018 19:51:19 -0400
+        with ESMTP id S1751539AbeF1XzK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 28 Jun 2018 19:55:10 -0400
 From: Karim Eshapa <karim.eshapa@gmail.com>
 To: lars@metafoo.de
 Cc: Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
@@ -10,8 +10,8 @@ Cc: Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
         linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
         linux-kernel@vger.kernel.org, Karim Eshapa <karim.eshapa@gmail.com>
 Subject: [PATCH] staging:iio:adc:ad7280a: Use GFP_ATOMIC in interrupt handler
-Date: Fri, 29 Jun 2018 01:51:00 +0200
-Message-Id: <20180628235100.4294-1-karim.eshapa@gmail.com>
+Date: Fri, 29 Jun 2018 01:55:03 +0200
+Message-Id: <20180628235503.4464-1-karim.eshapa@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
