@@ -1,96 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:43346 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750802AbeF3PdL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 30 Jun 2018 11:33:11 -0400
-Date: Sat, 30 Jun 2018 16:33:05 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-ua0-f195.google.com ([209.85.217.195]:36104 "EHLO
+        mail-ua0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1755478AbeF2UT5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 29 Jun 2018 16:19:57 -0400
+MIME-Version: 1.0
+In-Reply-To: <cover.1530268235.git.nikolaus.voss@loewensteinmedical.de>
+References: <cover.1530268235.git.nikolaus.voss@loewensteinmedical.de>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Fri, 29 Jun 2018 23:19:55 +0300
+Message-ID: <CAHp75VfR8JZaDbvzudW5mc4=nOoYM2EeXPMhUHCw1ovnPmGV5A@mail.gmail.com>
+Subject: Re: [PATCH 0/3] IIO: st_sensors_i2c: improve device enumeration
 To: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+Cc: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
         Linus Walleij <linus.walleij@linaro.org>,
         Xiongfeng Wang <xiongfeng.wang@linaro.org>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] IIO: st_accel.h: sync DT and I2C device ID table
- strings
-Message-ID: <20180630163305.00e08e17@archlinux>
-In-Reply-To: <5d00983e4fb2869fd3152a609c1fffe7616c4963.1530268235.git.nikolaus.voss@loewensteinmedical.de>
-References: <cover.1530268235.git.nikolaus.voss@loewensteinmedical.de>
-        <5d00983e4fb2869fd3152a609c1fffe7616c4963.1530268235.git.nikolaus.voss@loewensteinmedical.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        linux-iio@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 29 Jun 2018 10:45:54 +0200
-Nikolaus Voss <nikolaus.voss@loewensteinmedical.de> wrote:
+On Fri, Jun 29, 2018 at 1:30 PM, Nikolaus Voss
+<nikolaus.voss@loewensteinmedical.de> wrote:
+> When trying to instantiate a st_accel_i2c device from an ACPI based
+> system, I ran into some problems:
+>
+> For my device, there is no ACPI match table entry, so rather than
+> creating /allocating a new ACPI HID for the device, I wanted to use an
+> existing DT table compatible entry via creating an ACPI_DT_NAMESPACE_HID
+> /PRP0001 HID ACPI entry (see Documentation/acpi/enumeration.txt).
+>
+> This did not work because st_accel_i2c.c bails out if there is a ACPI
+> node but no ACPI table match instead of looking for a match from one of
+> the fallback mechanisms (patch 1).
+>
+> Patch 2 removes an error message when a ACPI node exists but no table
+> entry is found (this doesn't need to be fatal because of the fallback).
+>
+> Patch 3 syncs the strings in the I2C device table (which is used by the
+> I2C core for fallback matching) with the DT compatible strings, so a
+> PRP0001 entry can use the same compatible strings as a corresponding
+> DT entry. As far as I can see, the old I2C table strings aren't used
+> in mainline, so renaming them should be safe.
+>
 
-> I2C device ID table strings should really match the DT compatible
-> strings (without the manufacturer prefix) to avoid confusion. This is
-> especially reasonable when using ACPI PRP0001 HID /DT compatibility
-> entries along with the DT compatible property in DSD which is
-> used as a modalias (with manufacturer prefix stripped off) by the ACPI
-> layer and thus as i2c_board_info->type by the I2C layer.
-> 
-> Signed-off-by: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
+I'm not sure I understand how ->probe_new() is supposed to work
+against i2c_id_table, but I don't care for legacy platform data
+anyway.
 
-Nice to have I agree.  However, it's an ABI change as this is exposed
-via
-/sys/bus/iio/devices/iio:\deviceN/name and is used by lots of scripts
-etc to identify the device.  So we are stuck with it.
+What I would like to point to is device_get_match_data() API which
+should simplify / unify the case how you get driver data.
 
-There is a reason we've kept this mess here for quite some time.
+> Nikolaus Voss (3):
+>   IIO: st_accel_i2c.c: Use fallback if DT/ACPI enum failed
+>   IIO: st_sensors_i2c.c: Don't print error on failed ACPI match
+>   IIO: st_accel.h: sync DT and I2C device ID table strings
+>
+>  drivers/iio/accel/st_accel.h                  | 32 +++++++++----------
+>  drivers/iio/accel/st_accel_i2c.c              | 21 ++++++------
+>  .../iio/common/st_sensors/st_sensors_i2c.c    |  5 ++-
+>  3 files changed, 30 insertions(+), 28 deletions(-)
+>
+> --
+> 2.17.1
+>
 
-Jonathan
 
-> ---
->  drivers/iio/accel/st_accel.h | 32 ++++++++++++++++----------------
->  1 file changed, 16 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
-> index 2f931e4837e5..be4a4a41f849 100644
-> --- a/drivers/iio/accel/st_accel.h
-> +++ b/drivers/iio/accel/st_accel.h
-> @@ -37,23 +37,23 @@ enum st_accel_type {
->  	ST_ACCEL_MAX,
->  };
->  
-> -#define H3LIS331DL_ACCEL_DEV_NAME	"h3lis331dl_accel"
-> -#define LIS3LV02DL_ACCEL_DEV_NAME	"lis3lv02dl_accel"
-> -#define LSM303DLHC_ACCEL_DEV_NAME	"lsm303dlhc_accel"
-> -#define LIS3DH_ACCEL_DEV_NAME		"lis3dh"
-> -#define LSM330D_ACCEL_DEV_NAME		"lsm330d_accel"
-> -#define LSM330DL_ACCEL_DEV_NAME		"lsm330dl_accel"
-> -#define LSM330DLC_ACCEL_DEV_NAME	"lsm330dlc_accel"
-> -#define LIS331DL_ACCEL_DEV_NAME		"lis331dl_accel"
-> -#define LIS331DLH_ACCEL_DEV_NAME	"lis331dlh"
-> -#define LSM303DL_ACCEL_DEV_NAME		"lsm303dl_accel"
-> -#define LSM303DLH_ACCEL_DEV_NAME	"lsm303dlh_accel"
-> -#define LSM303DLM_ACCEL_DEV_NAME	"lsm303dlm_accel"
-> -#define LSM330_ACCEL_DEV_NAME		"lsm330_accel"
-> -#define LSM303AGR_ACCEL_DEV_NAME	"lsm303agr_accel"
-> -#define LIS2DH12_ACCEL_DEV_NAME		"lis2dh12_accel"
-> +#define H3LIS331DL_ACCEL_DEV_NAME	"h3lis331dl-accel"
-> +#define LIS3LV02DL_ACCEL_DEV_NAME	"lis3lv02dl-accel"
-> +#define LSM303DLHC_ACCEL_DEV_NAME	"lsm303dlhc-accel"
-> +#define LIS3DH_ACCEL_DEV_NAME		"lis3dh-accel"
-> +#define LSM330D_ACCEL_DEV_NAME		"lsm330d-accel"
-> +#define LSM330DL_ACCEL_DEV_NAME		"lsm330dl-accel"
-> +#define LSM330DLC_ACCEL_DEV_NAME	"lsm330dlc-accel"
-> +#define LIS331DL_ACCEL_DEV_NAME		"lis331dl-accel"
-> +#define LIS331DLH_ACCEL_DEV_NAME	"lis331dlh-accel"
-> +#define LSM303DL_ACCEL_DEV_NAME		"lsm303dl-accel"
-> +#define LSM303DLH_ACCEL_DEV_NAME	"lsm303dlh-accel"
-> +#define LSM303DLM_ACCEL_DEV_NAME	"lsm303dlm-accel"
-> +#define LSM330_ACCEL_DEV_NAME		"lsm330-accel"
-> +#define LSM303AGR_ACCEL_DEV_NAME	"lsm303agr-accel"
-> +#define LIS2DH12_ACCEL_DEV_NAME		"lis2dh12-accel"
->  #define LIS3L02DQ_ACCEL_DEV_NAME	"lis3l02dq"
-> -#define LNG2DM_ACCEL_DEV_NAME		"lng2dm"
-> +#define LNG2DM_ACCEL_DEV_NAME		"lng2dm-accel"
->  #define LIS2DW12_ACCEL_DEV_NAME		"lis2dw12"
->  #define LIS3DHH_ACCEL_DEV_NAME		"lis3dhh"
->  
 
+-- 
+With Best Regards,
+Andy Shevchenko
