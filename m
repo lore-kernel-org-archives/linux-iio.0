@@ -1,144 +1,142 @@
-Return-Path: <SRS0=SqJI=JQ=gmail.com=andy.shevchenko@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-by2nam03on0080.outbound.protection.outlook.com ([104.47.42.80]:33504
+        "EHLO NAM03-BY2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S965506AbeF2Ije (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 29 Jun 2018 04:39:34 -0400
+From: Stefan Popa <stefan.popa@analog.com>
+To: <jic23@kernel.org>, <Michael.Hennerich@analog.com>,
+        <lars@metafoo.de>
+CC: <knaack.h@gmx.de>, <pmeerw@pmeerw.net>, <robh+dt@kernel.org>,
+        <mark.rutland@arm.com>, <mchehab@kernel.org>,
+        <davem@davemloft.net>, <gregkh@linuxfoundation.org>,
+        <akpm@linux-foundation.org>, <linus.walleij@linaro.org>,
+        <rdunlap@infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <stefan.popa@analog.com>
+Subject: [PATCH v4 2/2] dt-bindings: iio: dac: Add docs for AD5758 DAC
+Date: Fri, 29 Jun 2018 11:39:10 +0300
+Message-ID: <1530261550-21224-1-git-send-email-stefan.popa@analog.com>
 MIME-Version: 1.0
-In-Reply-To: <1530261516-21118-1-git-send-email-stefan.popa@analog.com>
-References: <1530261516-21118-1-git-send-email-stefan.popa@analog.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Sun, 1 Jul 2018 00:26:56 +0300
-Message-ID: <CAHp75Vfb_b6FPpnhu4Z_=iBNovNubneCD3cRG9SawRmMCNOVjw@mail.gmail.com>
-Subject: Re: [PATCH v4 1/2] iio: dac: Add AD5758 support
-To: Stefan Popa <stefan.popa@analog.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Michael Hennerich <Michael.Hennerich@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>, Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>, "David S. Miller" <davem@davemloft.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrew Morton <akpm@linux-foundation.org>,
-	Linus Walleij <linus.walleij@linaro.org>, Randy Dunlap <rdunlap@infradead.org>,
-	Lukas Wunner <lukas@wunner.de>, Ismail.Kose@maximintegrated.com,
-	William Breathitt Gray <vilhelm.gray@gmail.com>, sean.nyekjaer@prevas.dk,
-	Philippe Ombredanne <pombredanne@nexb.com>, linux-iio@vger.kernel.org,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Fri, Jun 29, 2018 at 11:38 AM, Stefan Popa <stefan.popa@analog.com> wrote:
-> The AD5758 is a single channel DAC with 16-bit precision which uses the
-> SPI interface that operates at clock rates up to 50MHz.
->
-> The output can be configured as voltage or current and is available on a
-> single terminal.
->
-> Datasheet:
-> http://www.analog.com/media/en/technical-documentation/data-sheets/ad5758.pdf
+Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+---
+Changes in v4:
+	- Nothing changed, just to follow the patch set version.
+Changes in v3:
+	- AD5758 can be both a current and voltage output DAC. The
+	  decision is made based on the DT and the channel type is set
+	  during probe.
+	- range was replaced by range-microvolt and range-microamp
+	- dc-dc-mode, range-microvolt and range-microamp are required
+	  properties.
+	- Introduced a slew-time-us property from which slew rate clock
+	  and slew rate step are calculated using a best match algorithm.
+	- Added units in the name of the properties.
+	- Offered more explanation for the various modes of operation.
 
-Thanks for an update.
-Few comments below.
+Changes in v2:
+	- Nothing changed, just to follow the patch set version.
 
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/property.h>
-> +#include <linux/delay.h>
-> +#include <linux/bsearch.h>
+ .../devicetree/bindings/iio/dac/ad5758.txt         | 73 ++++++++++++++++++++++
+ MAINTAINERS                                        |  1 +
+ 2 files changed, 74 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/dac/ad5758.txt
 
-Perhaps keep them ordered?
-
-> +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +
-
-> +#include <asm/div64.h>
-
-ASM? Hmm...
-
-> +static int cmpfunc(const void *a, const void *b)
-> +{
-> +       return (*(int *)a - *(int *)b);
-
-Surrounding parens are not needed.
-
-> +}
-> +
-
-> +static int ad5758_find_closest_match(const int *array,
-> +                                    unsigned int size, int val)
-> +{
-> +       int i;
-> +
-> +       for (i = 0; i < size; i++) {
-> +               if (val <= array[i])
-> +                       return i;
-> +       }
-> +
-> +       return size - 1;
-> +}
-
-Isn't it what bsearch() covers as well?
-
-> +       do {
-> +               ret = ad5758_spi_reg_read(st, reg);
-> +               if (ret < 0)
-> +                       return ret;
-> +
-> +               if (!(ret & mask))
-> +                       return 0;
-> +
-
-> +               udelay(100);
-
-If it's not called from atomic context, perhaps switch to usleep_range() ?
-
-> +       } while (--timeout);
-
-
-> +static int ad5758_soft_reset(struct ad5758_state *st)
-> +{
-> +       int ret;
-> +
-> +       ret = ad5758_spi_reg_write(st, AD5758_KEY, AD5758_KEY_CODE_RESET_1);
-> +       if (ret < 0)
-> +               return ret;
-> +
-> +       ret = ad5758_spi_reg_write(st, AD5758_KEY, AD5758_KEY_CODE_RESET_2);
-> +
-
-> +       /* Perform a software reset and wait 100us */
-> +       udelay(100);
-
-Ditto.
-
-> +
-> +       return ret;
-> +}
-
-> +static int ad5758_find_out_range(struct ad5758_state *st,
-> +                                const struct ad5758_range *range,
-> +                                unsigned int size,
-> +                                int min, int max)
-> +{
-> +       int i;
-> +
-> +       for (i = 0; i < size; i++) {
-> +               if ((min == range[i].min) && (max == range[i].max)) {
-> +                       st->out_range.reg = range[i].reg;
-> +                       st->out_range.min = range[i].min;
-> +                       st->out_range.max = range[i].max;
-> +
-> +                       return 0;
-> +               }
-> +       }
-
-One more candidate to use bsearch().
-
-> +
-> +       return -EINVAL;
-> +}
-
-> +               index = (int *) bsearch(&tmp, ad5758_dc_dc_ilim,
-> +                                       ARRAY_SIZE(ad5758_dc_dc_ilim),
-> +                                       sizeof(int), cmpfunc);
-
-I'm not sure you need that casting.
-
+diff --git a/Documentation/devicetree/bindings/iio/dac/ad5758.txt b/Documentation/devicetree/bindings/iio/dac/ad5758.txt
+new file mode 100644
+index 0000000..797df9b
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/dac/ad5758.txt
+@@ -0,0 +1,73 @@
++Analog Devices AD5758 DAC device driver
++
++Required properties for the AD5758:
++	- compatible: Must be "adi,ad5758"
++	- reg: SPI chip select number for the device
++	- spi-max-frequency: Max SPI frequency to use (< 50000000)
++	- spi-cpha: is the only mode that is supported
++
++Required properties:
++
++ - adi,dc-dc-mode: Mode of operation of the dc-to-dc converter
++ 		   Dynamic Power Control (DPC)
++		   In this mode, the AD5758 circuitry senses the output voltage and
++		   dynamically regulates the supply voltage, VDPC+, to meet compliance
++		   requirements plus an optimized headroom voltage for the output buffer.
++
++		   Programmable Power Control (PPC)
++		   In this mode, the VDPC+ voltage is user-programmable to a fixed level
++		   that needs to accommodate the maximum output load required.
++
++		   The output of the DAC core is either converted to a current or voltage
++		   output at the VIOUT pin. Only one mode can be enabled at any one time.
++
++		   The following values are currently supported:
++			* 1: DPC current mode
++			* 2: DPC voltage mode
++			* 3: PPC current mode
++
++ Depending on the selected output mode (voltage or current) one of the two properties must
++ be present:
++
++ - adi,range-microvolt: Voltage output range
++ 		The array of voltage output ranges must contain two fields:
++	      	* <0 5000000>: 0 V to 5 V voltage range
++		* <0 10000000>: 0 V to 10 V voltage range
++		* <(-5000000) 5000000>: ±5 V voltage range
++		* <(-10000000) 10000000>: ±10 V voltage range
++ - adi,range-microamp: Current output range
++ 		The array of current output ranges must contain two fields:
++		* <0 20000>: 0 mA to 20 mA current range
++		* <0 24000>: 0 mA to 24 mA current range
++		* <4 24000>: 4 mA to 20 mA current range
++		* <(-20000) 20000>: ±20 mA current range
++		* <(-24000) 24000>: ±24 mA current range
++		* <(-1000) 22000>: −1 mA to +22 mA current range
++
++Optional properties:
++
++ - adi,dc-dc-ilim-microamp: The dc-to-dc converter current limit
++		   The following values are currently supported [uA]:
++		   	* 150000
++			* 200000
++			* 250000
++			* 300000
++			* 350000
++			* 400000
++
++ - adi,slew-time-us: The time it takes for the output to reach the full scale [uS]
++ 		     The supported range is between 133us up to 1023984375us
++
++AD5758 Example:
++
++	ad5758@0 {
++		compatible = "adi,ad5758";
++		reg = <0>;
++		spi-max-frequency = <1000000>;
++		spi-cpha;
++
++		adi,dc-dc-mode = <2>;
++		adi,range-microvolt = <0 10000000>;
++		adi,dc-dc-ilim-microamp = <200000>;
++		adi,slew-time-us = <125000>;
++	};
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 12d102d..60b1028 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -802,6 +802,7 @@ L:	linux-iio@vger.kernel.org
+ W:	http://ez.analog.com/community/linux-device-drivers
+ S:	Supported
+ F:	drivers/iio/dac/ad5758.c
++F:	Documentation/devicetree/bindings/iio/dac/ad5758.txt
+ 
+ ANALOG DEVICES INC AD5686 DRIVER
+ M:	Stefan Popa <stefan.popa@analog.com>
 -- 
-With Best Regards,
-Andy Shevchenko
+2.7.4
+
