@@ -1,40 +1,38 @@
-Return-Path: <SRS0=Jp6i=JO=gmail.com=karim.eshapa@kernel.org>
-From: Karim Eshapa <karim.eshapa@gmail.com>
-To: lars@metafoo.de
-Cc: Michael.Hennerich@analog.com,
-	jic23@kernel.org,
-	knaack.h@gmx.de,
-	pmeerw@pmeerw.net,
-	gregkh@linuxfoundation.org,
-	linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org,
-	Karim Eshapa <karim.eshapa@gmail.com>
-Subject: [PATCH 4/4] staging:iio:adc:ad7280a: Use GFP_ATOMIC in interrupt handler
-Date: Fri, 29 Jun 2018 01:49:28 +0200
-Message-Id: <20180628234928.4205-1-karim.eshapa@gmail.com>
+Return-Path: <SRS0=4lva=JP=oracle.com=dan.carpenter@kernel.org>
+Date: Fri, 29 Jun 2018 10:45:33 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: Karim Eshapa <karim.eshapa@gmail.com>
+Cc: lars@metafoo.de, devel@driverdev.osuosl.org, Michael.Hennerich@analog.com,
+        linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
+        linux-kernel@vger.kernel.org, pmeerw@pmeerw.net, knaack.h@gmx.de,
+        jic23@kernel.org
+Subject: Re: [PATCH 4/4] staging:iio:adc:ad7280a: Use GFP_ATOMIC in interrupt
+ handler
+Message-ID: <20180629074532.cbwwjx2lh6cc3f72@mwanda>
+References: <20180628234928.4205-1-karim.eshapa@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20180628234928.4205-1-karim.eshapa@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Use GFP_ATOMIC rather GFP_KERNEL in interrupt handler,
-as GFP_KERNEL may sleep according to slab allocator.
+On Fri, Jun 29, 2018 at 01:49:28AM +0200, Karim Eshapa wrote:
+> Use GFP_ATOMIC rather GFP_KERNEL in interrupt handler,
+> as GFP_KERNEL may sleep according to slab allocator.
+> 
 
-Signed-off-by: Karim Eshapa <karim.eshapa@gmail.com>
----
- drivers/staging/iio/adc/ad7280a.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This is a threaded IRQ so it can sleep.
 
-diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-index b736275c10f5..25c4fbc303f7 100644
---- a/drivers/staging/iio/adc/ad7280a.c
-+++ b/drivers/staging/iio/adc/ad7280a.c
-@@ -692,7 +692,7 @@ static irqreturn_t ad7280_event_handler(int irq, void *private)
- 	unsigned int *channels;
- 	int i, ret;
- 
--	channels = kcalloc(st->scan_cnt, sizeof(*channels), GFP_KERNEL);
-+	channels = kcalloc(st->scan_cnt, sizeof(*channels), GFP_ATOMIC);
- 	if (!channels)
- 		return IRQ_HANDLED;
- 
--- 
-2.17.1
+You should always think about the impact of a bug.  If this were a bug
+it would have showed up in testing right away.  Most of my patches are
+in error handling and so the impact is zero unless you deliberately try
+to inject errors that's why they can go undetected for years.
+
+Also you should always use the Fixes tag to see how the patch was
+introduced.  I often see bugs where the patch is new and it was
+introduced by someone doing major subsystem cleanups and they don't have
+the hardware so I know it hasn't been tested.  If the patch is a couple
+years old and the bug is in the success path which every one tests then
+I wonder if I am misreading the code somehow.
+
+regards,
+dan carpenter
