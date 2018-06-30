@@ -1,114 +1,63 @@
-Return-Path: <SRS0=e7t4=JQ=ti.com=vigneshr@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:35474 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S936968AbeF3Kcx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 30 Jun 2018 06:32:53 -0400
 From: Vignesh R <vigneshr@ti.com>
 To: Jonathan Cameron <jic23@kernel.org>,
-        Dmitry Torokhov
-	<dmitry.torokhov@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Lee Jones <lee.jones@linaro.org>
 CC: Vignesh R <vigneshr@ti.com>, <linux-iio@vger.kernel.org>,
         <linux-omap@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-input@vger.kernel.org>
-Subject: [PATCH 2/5] Input: ti_am335x_tsc: Mark TSC device as wakeup source
-Date: Sat, 30 Jun 2018 16:03:15 +0530
-Message-ID: <20180630103318.25355-3-vigneshr@ti.com>
+Subject: [PATCH 3/5] mfd: ti_am335x_tscadc: Keep ADC interface on if child is wakeup capable
+Date: Sat, 30 Jun 2018 16:03:16 +0530
+Message-ID: <20180630103318.25355-4-vigneshr@ti.com>
 In-Reply-To: <20180630103318.25355-1-vigneshr@ti.com>
 References: <20180630103318.25355-1-vigneshr@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Instead of TSCADC MFD device, mark TSC as wakeup source and change all
-wakeup related PM calls to operate on TSC device.
+If a child device like touchscreen is wakeup capable, then keep ADC
+interface on, so that a touching resistive screen will generate wakeup
+event to the system.
 
 Signed-off-by: Vignesh R <vigneshr@ti.com>
 ---
- drivers/input/touchscreen/ti_am335x_tsc.c | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
+ drivers/mfd/ti_am335x_tscadc.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index b86c1e5fbc11..a4f25a915ffc 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -46,6 +46,7 @@ static const int config_pins[] = {
- struct titsc {
- 	struct input_dev	*input;
- 	struct ti_tscadc_dev	*mfd_tscadc;
-+	struct device		*dev;
- 	unsigned int		irq;
- 	unsigned int		wires;
- 	unsigned int		x_plate_resistance;
-@@ -276,7 +277,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 	if (status & IRQENB_HW_PEN) {
- 		ts_dev->pen_down = true;
- 		irqclr |= IRQENB_HW_PEN;
--		pm_stay_awake(ts_dev->mfd_tscadc->dev);
-+		pm_stay_awake(ts_dev->dev);
- 	}
- 
- 	if (status & IRQENB_PENUP) {
-@@ -286,7 +287,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 			input_report_key(input_dev, BTN_TOUCH, 0);
- 			input_report_abs(input_dev, ABS_PRESSURE, 0);
- 			input_sync(input_dev);
--			pm_relax(ts_dev->mfd_tscadc->dev);
-+			pm_relax(ts_dev->dev);
- 		} else {
- 			ts_dev->pen_down = true;
- 		}
-@@ -422,6 +423,7 @@ static int titsc_probe(struct platform_device *pdev)
- 	ts_dev->mfd_tscadc = tscadc_dev;
- 	ts_dev->input = input_dev;
- 	ts_dev->irq = tscadc_dev->irq;
-+	ts_dev->dev = &pdev->dev;
- 
- 	err = titsc_parse_dt(pdev, ts_dev);
- 	if (err) {
-@@ -436,6 +438,8 @@ static int titsc_probe(struct platform_device *pdev)
- 		goto err_free_mem;
- 	}
- 
-+	device_init_wakeup(&pdev->dev, true);
-+
- 	titsc_writel(ts_dev, REG_IRQSTATUS, TSC_IRQENB_MASK);
- 	titsc_writel(ts_dev, REG_IRQENABLE, IRQENB_FIFO0THRES);
- 	titsc_writel(ts_dev, REG_IRQENABLE, IRQENB_EOS);
-@@ -467,6 +471,7 @@ static int titsc_probe(struct platform_device *pdev)
+diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+index 858c1a071a81..c21ed54d1662 100644
+--- a/drivers/mfd/ti_am335x_tscadc.c
++++ b/drivers/mfd/ti_am335x_tscadc.c
+@@ -294,11 +294,24 @@ static int ti_tscadc_remove(struct platform_device *pdev)
  	return 0;
+ }
  
- err_free_irq:
-+	device_init_wakeup(&pdev->dev, false);
- 	free_irq(ts_dev->irq, ts_dev);
- err_free_mem:
- 	input_free_device(input_dev);
-@@ -479,6 +484,7 @@ static int titsc_remove(struct platform_device *pdev)
- 	struct titsc *ts_dev = platform_get_drvdata(pdev);
- 	u32 steps;
++static int __maybe_unused ti_tscadc_can_wakeup(struct device *dev, void *data)
++{
++	return device_may_wakeup(dev);
++}
++
+ static int __maybe_unused tscadc_suspend(struct device *dev)
+ {
+ 	struct ti_tscadc_dev	*tscadc = dev_get_drvdata(dev);
  
-+	device_init_wakeup(&pdev->dev, false);
- 	free_irq(ts_dev->irq, ts_dev);
+ 	regmap_write(tscadc->regmap, REG_SE, 0x00);
++	if (device_for_each_child(dev, NULL, ti_tscadc_can_wakeup)) {
++		u32 ctrl;
++
++		regmap_read(tscadc->regmap, REG_CTRL, &ctrl);
++		ctrl &= ~(CNTRLREG_POWERDOWN);
++		ctrl |= CNTRLREG_TSCSSENB;
++		regmap_write(tscadc->regmap, REG_CTRL, ctrl);
++	}
+ 	pm_runtime_put_sync(dev);
  
- 	/* total steps followed by the enable mask */
-@@ -499,7 +505,7 @@ static int __maybe_unused titsc_suspend(struct device *dev)
- 	unsigned int idle;
- 
- 	tscadc_dev = ti_tscadc_dev_get(to_platform_device(dev));
--	if (device_may_wakeup(tscadc_dev->dev)) {
-+	if (device_may_wakeup(dev)) {
- 		titsc_writel(ts_dev, REG_IRQSTATUS, TSC_IRQENB_MASK);
- 		idle = titsc_readl(ts_dev, REG_IRQENABLE);
- 		titsc_writel(ts_dev, REG_IRQENABLE,
-@@ -515,11 +521,11 @@ static int __maybe_unused titsc_resume(struct device *dev)
- 	struct ti_tscadc_dev *tscadc_dev;
- 
- 	tscadc_dev = ti_tscadc_dev_get(to_platform_device(dev));
--	if (device_may_wakeup(tscadc_dev->dev)) {
-+	if (device_may_wakeup(dev)) {
- 		titsc_writel(ts_dev, REG_IRQWAKEUP,
- 				0x00);
- 		titsc_writel(ts_dev, REG_IRQCLR, IRQENB_HW_PEN);
--		pm_relax(ts_dev->mfd_tscadc->dev);
-+		pm_relax(dev);
- 	}
- 	titsc_step_config(ts_dev);
- 	titsc_writel(ts_dev, REG_FIFO0THR,
+ 	return 0;
 -- 
 2.18.0
+
