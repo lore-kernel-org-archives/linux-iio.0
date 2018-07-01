@@ -1,254 +1,103 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:49294 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1753572AbeGGQXN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 7 Jul 2018 12:23:13 -0400
-Date: Sat, 7 Jul 2018 17:23:06 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Parthiban Nallathambi <pn@denx.de>
-Cc: Jonathan Cameron <jonathan.cameron@huawei.com>, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, robh+dt@kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mark.rutland@arm.com, devicetree@vger.kernel.org,
-        matthias.bgg@gmail.com, wd@denx.de, sbabic@denx.de, hs@denx.de
-Subject: Re: [PATCH 1/2] iio: light: Add support for vishay vcnl4035
-Message-ID: <20180707172306.7a4a9d55@archlinux>
-In-Reply-To: <03abc2a3-82dd-c2fd-bbae-adc320319428@denx.de>
-References: <20180628123021.1628338-1-pn@denx.de>
-        <20180629185950.00005c54@huawei.com>
-        <03abc2a3-82dd-c2fd-bbae-adc320319428@denx.de>
+Received: from szxga07-in.huawei.com ([45.249.212.35]:48933 "EHLO huawei.com"
+        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1752456AbeGALJk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 1 Jul 2018 07:09:40 -0400
+Date: Sun, 1 Jul 2018 12:09:27 +0100
+From: Jonathan Cameron <jonathan.cameron@huawei.com>
+To: Daniel Baluta <daniel.baluta@gmail.com>
+CC: Lars-Peter Clausen <lars@metafoo.de>, <linux-iio@vger.kernel.org>,
+        "Hartmut Knaack" <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        "Eugen Hristev" <eugen.hristev@microchip.com>
+Subject: Re: Potential IIO meeting / future directions discussion at ELCE
+ 2018 - Edinburgh 22-24 Oct
+Message-ID: <20180701120927.000061dc@huawei.com>
+In-Reply-To: <CAEnQRZA16Abt6GYYVk1rKGqTLWT7hPcw0=iMQLqkWefp=JekOg@mail.gmail.com>
+References: <20180628152425.00007abc@huawei.com>
+        <59135b1f-0020-3132-c283-38893ffb860e@metafoo.de>
+        <CAEnQRZA16Abt6GYYVk1rKGqTLWT7hPcw0=iMQLqkWefp=JekOg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="US-ASCII"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 3 Jul 2018 15:35:05 +0200
-Parthiban Nallathambi <pn@denx.de> wrote:
+On Fri, 29 Jun 2018 10:48:01 +0300
+Daniel Baluta <daniel.baluta@gmail.com> wrote:
 
-> Hello Jonathan,
-Hi Parthiban,
+> On Thu, Jun 28, 2018 at 8:11 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+> > On 06/28/2018 04:24 PM, Jonathan Cameron wrote:  
+> >> Hi All,
+> >>
+> >> I know at least a few IIO developers are likely to be at the Embedded Linux
+> >> Conference Europe in a few months time.   Hence this email is exploring the
+> >> possibility of us doing something we have never done for IIO before and have
+> >> a formal meet up.   I would propose the topics to discuss would be loosely
+> >> around future directions for IIO development.  This might consist of actual
+> >> proposals or simply discussion of pain points.
+> >>
+> >> I'm not sure how long a session would be sensible, but one possibility is
+> >> to propose it as a BoF as that fits in their standard schedule without needing
+> >> any additional organization - I think by default that only gives us an hour or
+> >> so.  However, the deadline to propose one of those is this Sunday so things are
+> >> little tight.  We don't need a fully planned schedule but it would be good to
+> >> have made a start.  If we decide to do this I'll write an abstract and submit it.
+> >>
+> >> So I'm looking for topics and some idea of who is going to be there
+> >> or might be persuaded to make the trip!  
+> > I'll be at ELCE and I'm very interested in sitting down and having a longer
+> > discussion about the state of the framework, potential future developments,
+> > their requirements and how to get there.
+> >
+> > I think a BoF would be good as a discussion starter and then maybe follow up
+> > on that with the people who are interested and have a more focused discussion.  
+> 
+> I'll be there. Although, I'm mainly involved now with IIO via Outreachy/GSoC
+> I think it is a good idea to have the meeting in the form of a BoF.
+> 
+> CC-ing Eugen, I noticed he has done a lot of work recently in the IIO area.
+> 
+> thanks,
+> Daniel.
 
-Comments inline.
-...
-> >> +static irqreturn_t vcnl4035_drdy_irq_handler(int irq, void *private)
-> >> +{
-> >> +	struct iio_dev *indio_dev = private;
-> >> +	struct vcnl4035_data *data = iio_priv(indio_dev);
-> >> +
-> >> +	data->irq_timestamp = iio_get_time_ns(indio_dev);  
-> > 
-> > This all seems a bit more complex that I'd expect.
-> > I would like some comments on why it is so complex..
-> > 
-> > Only reason I can come up with quickly is to handle shared interrupts?
-> > But if that is the case you'll sometimes get the wrong timestamp here.
-> > 
-> > Otherwise, right now we only have one cause of interrupts and
-> > might as well just set pf->timestamp directly here.
-> >   
-> 
-> Based on Peter's comments, timestamp is ignored as the driver only
-> supports ALS measurement. So I will remove this part of handling and
-> will have only bottom half checking the INT flag and trigger the
-> consumer, thanks.
-> 
-> >> +	return IRQ_WAKE_THREAD;
-> >> +}
-> >> +
-> >> +static irqreturn_t vcnl4035_drdy_irq_thread(int irq, void *private)
-> >> +{
-> >> +	struct iio_dev *indio_dev = private;
-> >> +	struct vcnl4035_data *data = iio_priv(indio_dev);
-> >> +
-> >> +	if (vcnl4035_is_triggered(data)) {
-> >> +		iio_trigger_poll_chained(data->drdy_trigger0);
-> >> +		return IRQ_HANDLED;
-> >> +	}
-> >> +
-> >> +	return IRQ_NONE;
-> >> +}
-> >> +
-> >> +/* Triggered buffer */
-> >> +static irqreturn_t vcnl4035_trigger_consumer_store_time(int irq, void *p)
-> >> +{
-> >> +	struct iio_poll_func *pf = p;
-> >> +	struct iio_dev *indio_dev = pf->indio_dev;
-> >> +
-> >> +	if (!iio_trigger_using_own(indio_dev))
-> >> +		pf->timestamp = iio_get_time_ns(indio_dev);
-> >> +
-> >> +	return IRQ_WAKE_THREAD;
-> >> +}
-> >> +
-> >> +static irqreturn_t vcnl4035_trigger_consumer_handler(int irq, void *p)
-> >> +{
-> >> +	struct iio_poll_func *pf = p;
-> >> +	struct iio_dev *indio_dev = pf->indio_dev;
-> >> +	struct vcnl4035_data *data = iio_priv(indio_dev);
-> >> +	int als_data;
-> >> +	int ret;
-> >> +
-> >> +	if (iio_trigger_using_own(indio_dev) && data->irq_timestamp) {
-> >> +		pf->timestamp = data->irq_timestamp;
-> >> +		data->irq_timestamp = 0;  
-> > 
-> > If we get here and the path was anything other than via our top half
-> > handler that set this then something odd is going on.  
-> 
-> As mentioned above, timestamp is removed.
-> 
-> >   
-> >> +	}
-> >> +
-> >> +	if (!pf->timestamp)
-> >> +		pf->timestamp = iio_get_time_ns(indio_dev);  
-> > 
-> > Hmm. Why would we hit here when using our own trigger?  If not make this
-> > a simple else and it will be less confusing.  
-> 
-> As mentioned above, timestamp is removed.
-> 
-> >   
-> >> +
-> >> +	mutex_lock(&data->lock);
-> >> +	ret = regmap_read(data->regmap, VCNL4035_ALS_DATA, &als_data);
-> >> +	mutex_unlock(&data->lock);
-> >> +	if (!ret) {
-> >> +		als_data = le16_to_cpu(als_data);  
-> > As the autobuilder pointed out, use a local variable of the correct
-> > endianess.  
-> 
-> Fixed it in v2 already. Will remove the timestamp part and use
-> iio_push_to_buffers in v3, thanks.
-> 
+Cool - so it sounds like there is enough interest (given the very short notice!)
+to apply for a BoF.  The tricky bit is I need to put together an abstract by
+later today.
 
-I'll look at v3 later. I'm not totally sure why supporting ALS only
-means we shouldn't have a timestamp - perhaps the code will make it clear!
+So off the top of my head topics that come to mind are:
 
-...
-> >> +
-> >> +/* No direct ABI for persistence and threshold, so eventing */
-> >> +static int vcnl4035_read_thresh(struct iio_dev *indio_dev,
-> >> +		const struct iio_chan_spec *chan, enum iio_event_type type,
-> >> +		enum iio_event_direction dir, enum iio_event_info info,
-> >> +		int *val, int *val2)
-> >> +{
-> >> +	struct vcnl4035_data *data = iio_priv(indio_dev);
-> >> +
-> >> +	switch (info) {
-> >> +	case IIO_EV_INFO_VALUE:
-> >> +		switch (dir) {
-> >> +		case IIO_EV_DIR_RISING:
-> >> +			mutex_lock(&data->lock);
-> >> +			*val = data->als_thresh_high;
-> >> +			mutex_unlock(&data->lock);
-> >> +			break;
-> >> +		case IIO_EV_DIR_FALLING:
-> >> +			mutex_lock(&data->lock);
-> >> +			*val = data->als_thresh_low;
-> >> +			mutex_unlock(&data->lock);
-> >> +			break;
-> >> +		default:
-> >> +			return -EINVAL;
-> >> +		}
-> >> +		break;
-> >> +	case IIO_EV_INFO_PERIOD:
-> >> +		mutex_lock(&data->lock);
-> >> +		*val = data->als_persistence;
-> >> +		mutex_unlock(&data->lock);  
-> > 
-> > Given mutex is taken in all paths, why not take it outside
-> > the switch?  Mind you I'm not totally sure why we need to take
-> > the lock at all.  We don't take it whilst setting these values.  
-> 
-> Lock is introduced to protect the device parameters as both integration
-> time and scaling factor is proportionally calculated. This makes raw
-> read and INT read sync with the new/latest updated value of device.
+1. Userspace ABI pain points - the recent extensive discussions around the energy
+   meters have certainly shown there are some nasty corners.  The currently open
+   question about floating point support is also interesting (though we may well have
+   come to a conclusion about that long before October).
+ 
+2. High performance usecases - (Lars leading this one if he is willing)
+   DMA buffers and moving that infrastructure forward.  There is a lot of
+   out of kernel code around this currently, it would be nice to drag it in
+   once we are sure on how it should work long term!
 
-All we ensure here is that we don't get a transient value.  It's still
-possible for the read raw or interrupt to occur on either side
-of this.  I'm not seeing how the lock is preventing us getting an
-incorrect state (i.e. a different one from what we are expecting)?
+3. Missing in kernel consumer infrastructure.  We never implemented consumer
+   interfaces for events.  I assume this may be because no one cares, but
+   it does sometimes feel like we are working around that in some of the
+   use cases rather than just fixing it.
 
-All of these assignments are single value that will be atomic anyway.
-You'll only see one value or the other when reading - never a mixture
-of the two!
-> 
-> I will move the locking outside the switch.
-> 
-> > 
-...
-> >> +static IIO_CONST_ATTR(als_available_integration_time, "50 100 200 400 800");
-> >> +/* device ALS persistence 1 2 4 8 mapped to users 0 1 2 3 */
-> >> +static IIO_CONST_ATTR(als_available_persistence, "0 1 2 3");
-> >> +static IIO_CONST_ATTR(als_available_threshold_range, "0 65535");
-> >> +
-> >> +static struct attribute *vcnl4035_attributes[] = {
-> >> +	&iio_const_attr_als_available_integration_time.dev_attr.attr,  
-> > 
-> > These don't comply with the abi which has available at the end not the start.  
-> 
-> Sorry, so this needs to be moved to begining or start of the file.
-Sorry, I was unclear.  The issue is that _available is always a postfix.
+4. The Front end / back end split. This is most interesting for SoC ADCs where
+   we currently put out an IIO interface to userspace that no one cares about
+   (sometimes).  The plan was always to make that optional.  Would be interesting
+   to explore pushing this forward.  This includes things like the little used
+   available callbacks.
 
-So even if we accept the rest of the naming it should be
-als_persistence_available etc.
+5. General performance questions - can we narrow the gap with the dodgy userspace
+   hacks?
 
-Note these are non standard abi however..
+N. General process discussion - Is the current maintainer / review process
+   quick enough that it isn't causing anyone too much pain?  What can we do
+   better?  I'm always happy to get some feedback on this btw.
 
-> 
-> >   
-> >> +	&iio_const_attr_als_available_threshold_range.dev_attr.attr,  
-> > 
-> > I'm not even sure what these two are...
-> > 
-> > All new ABI or ABI that is currently specific to too narrow a range of
-> > parts must be documented in /Documentation/ABI/testing/sysfs-bus-iio-*  
-> 
-> Threshold range: Defines the lower and upper threshold ALS value. This
-> internally used by the device before triggering the interrupt i.e,
-> interrupt will be triggered only of the ALS values falls below or above
-> the threshold range here.
+So if at all possible, what I'm looking for is additional (of better) ideas to put
+down as somewhat of a placeholder to show we have lots to talk about.
 
-So in reality this device is generate threshold events, we are just using
-them to indicate new data ready?   Please handle as explicit events
-in IIO.  If you want to also use them as a trigger, then that can be
-done by basically disabling the events if the trigger is enabled and
-the other way around.
+If not I'll throw the above in with some editing.
 
-> 
-> Persistence value: How many intergration cycle the ALS values stays
-> lower or uppers then the threshold value.
+Jonathan
 
-This is very much an event property.  See the existing ABI defined
-for those.  It might need extending, I haven't checked.
-
-> 
-> Should I need to include a new ABI to handle this case or introduce a
-> driver specific sysfs entry to control theses values is fine.
-
-It depends.  The vast majority of the time, for something fairly generic
-we want to bring it into the main ABI.  That makes it useful for generic
-userspace code.   Just occasionally we'll have something so far from
-standard that generic code is never going to use it (often around wierd
-calibration requirements) so in those cases, just a properly defined
-(documented) sysfs interface is fine.
-
-> 
-> I have seen your comments about TSL2591 in the ML. So adding a new ABI
-> for the time PERIOD (in different form - persistence) does not make
-> sense. But this value lowers the amount of interrupt which is generated
-> by the device.
-
-This depends on whether you are intending it to be a 'data ready trigger'
-in which case what you are actually controlling is the effective sampling
-rate (so present it as that) or you are intending it as a threshold
-interrupt control, in which case present it as a control on the generated
-event, not the data capture itself.
-> 
-> >   
-> >> +	&iio_const_attr_als_available_persistence.dev_attr.attr,
-> >> +	NULL,
-> >> +};
-> >> +
-...
