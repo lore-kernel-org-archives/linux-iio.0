@@ -1,70 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ua0-f193.google.com ([209.85.217.193]:37397 "EHLO
-        mail-ua0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752667AbeGDWMU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 4 Jul 2018 18:12:20 -0400
-Received: by mail-ua0-f193.google.com with SMTP id u8-v6so4236335uao.4
-        for <linux-iio@vger.kernel.org>; Wed, 04 Jul 2018 15:12:19 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <1530376365-23946-1-git-send-email-akinobu.mita@gmail.com>
-References: <1530376365-23946-1-git-send-email-akinobu.mita@gmail.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Thu, 5 Jul 2018 01:12:19 +0300
-Message-ID: <CAHp75VcShwz3i5YvipN-1dGCw4buRGPDSZVi28=E_uNgp=Dp9A@mail.gmail.com>
-Subject: Re: [PATCH v5 0/4] iio: accel: adxl345: add calibration offset and
- sampling frequency support
-To: Akinobu Mita <akinobu.mita@gmail.com>
-Cc: linux-iio <linux-iio@vger.kernel.org>,
-        Eva Rachel Retuya <eraretuya@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Received: from vern.gendns.com ([206.190.152.46]:36676 "EHLO vern.gendns.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1752072AbeGADAv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 30 Jun 2018 23:00:51 -0400
+From: David Lechner <david@lechnology.com>
+To: linux-iio@vger.kernel.org
+Cc: David Lechner <david@lechnology.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: add channel type for frequency
+Date: Sat, 30 Jun 2018 21:59:53 -0500
+Message-Id: <20180701025953.3561-1-david@lechnology.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Jun 30, 2018 at 7:32 PM, Akinobu Mita <akinobu.mita@gmail.com> wrote:
-> This patchset adds calibration offset and sampling frequency support for
-> adxl345 driver with some preparatory changes.
->
+This adds a new type for frequency to the IIO channel type enumeration.
 
-One small comment to patch 5, otherwise FWIW,
+Units are in Hz.
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: David Lechner <david@lechnology.com>
+---
+ drivers/iio/industrialio-core.c | 1 +
+ include/uapi/linux/iio/types.h  | 1 +
+ tools/iio/iio_event_monitor.c   | 1 +
+ 3 files changed, 3 insertions(+)
 
-> * v5 (Suggested by Andy Shevchenko)
-> - Introduce constant for nHZ per HZ
-> - Find an register setting without looping over all available frequencies
-> - Allow all user supplied values and round to an available frequency
->
-> * v4 (Suggested by Jonathan Cameron)
-> - Stop abusing scan_index and keep using address field in iio_chan_spec
->
-> * v3 (Suggested by Andy Shevchenko)
-> - Define ADXL345_REG_DATA_AXIS(si) for cleaner register access
-> - Define ADXL345_REG_OSF_AXIS(si) for cleaner register access
-> - Calculate sampling frequency at runtime instead of having constant table
->
-> * v2
-> - Adjust the value for the calibbias to make the same scale as the _raw
->   measurement, and remove misused calibscale.
->
-> Akinobu Mita (4):
->   iio: accel: adxl345: add link to datasheet
->   iio: accel: adxl345: convert address field usage in iio_chan_spec
->   iio: accel: adxl345: add calibration offset support
->   iio: accel: adxl345: add sampling frequency support
->
->  drivers/iio/accel/adxl345_core.c | 121 +++++++++++++++++++++++++++++++++++----
->  1 file changed, 110 insertions(+), 11 deletions(-)
->
-> Cc: Eva Rachel Retuya <eraretuya@gmail.com>
-> Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> --
-> 2.7.4
->
-
-
-
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 19bdf3d2962a..f3c2c9e4b997 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -85,6 +85,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_COUNT] = "count",
+ 	[IIO_INDEX] = "index",
+ 	[IIO_GRAVITY]  = "gravity",
++	[IIO_FREQUENCY] = "frequency",
+ };
+ 
+ static const char * const iio_modifier_names[] = {
+diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+index 4213cdf88e3c..9fee86e2046f 100644
+--- a/include/uapi/linux/iio/types.h
++++ b/include/uapi/linux/iio/types.h
+@@ -44,6 +44,7 @@ enum iio_chan_type {
+ 	IIO_COUNT,
+ 	IIO_INDEX,
+ 	IIO_GRAVITY,
++	IIO_FREQUENCY,
+ };
+ 
+ enum iio_modifier {
+diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+index b61245e1181d..c3ef20057d52 100644
+--- a/tools/iio/iio_event_monitor.c
++++ b/tools/iio/iio_event_monitor.c
+@@ -58,6 +58,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_PH] = "ph",
+ 	[IIO_UVINDEX] = "uvindex",
+ 	[IIO_GRAVITY] = "gravity",
++	[IIO_FREQUENCY] = "frequency",
+ };
+ 
+ static const char * const iio_ev_type_text[] = {
 -- 
-With Best Regards,
-Andy Shevchenko
+2.17.1
+
