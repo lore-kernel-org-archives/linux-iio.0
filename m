@@ -1,93 +1,106 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:43194 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752164AbeGGQH1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 7 Jul 2018 12:07:27 -0400
-Date: Sat, 7 Jul 2018 17:07:21 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Akinobu Mita <akinobu.mita@gmail.com>
-Cc: linux-iio@vger.kernel.org,
-        Stefan =?UTF-8?B?QnLDvG5z?= <stefan.bruens@rwth-aachen.de>
-Subject: Re: [PATCH] iio: adc: ina2xx: avoid kthread_stop() with stale
- task_struct
-Message-ID: <20180707170721.5abc618f@archlinux>
-In-Reply-To: <CAC5umyhY62whz2GfY59MngLMUu6KLnpw5wW1+FY_p8FwHpLsOw@mail.gmail.com>
-References: <1529852721-17828-1-git-send-email-akinobu.mita@gmail.com>
-        <20180630184049.47d10937@archlinux>
-        <CAC5umyhY62whz2GfY59MngLMUu6KLnpw5wW1+FY_p8FwHpLsOw@mail.gmail.com>
+Return-Path: <SRS0=507y=JS=analog.com=alexandru.Ardelean@kernel.org>
+From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+To: "jic23@kernel.org" <jic23@kernel.org>
+CC: "lars@metafoo.de" <lars@metafoo.de>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "Hennerich, Michael"
+	<Michael.Hennerich@analog.com>
+Subject: Re: [PATCH V2] iio: ad9523: replace core mlock with local lock
+Date: Mon, 2 Jul 2018 07:56:01 +0000
+Message-ID: <73c0c0adf8a5651aa06b849084e2ecee0d1a902f.camel@analog.com>
+References: <20180625080117.13599-1-alexandru.ardelean@analog.com>
+	 <20180630183017.74c6a70a@archlinux>
+In-Reply-To: <20180630183017.74c6a70a@archlinux>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, 2 Jul 2018 17:44:42 +0900
-Akinobu Mita <akinobu.mita@gmail.com> wrote:
-
-> 2018=E5=B9=B47=E6=9C=881=E6=97=A5(=E6=97=A5) 2:40 Jonathan Cameron <jic23=
-@kernel.org>:
-> >
-> > On Mon, 25 Jun 2018 00:05:21 +0900
-> > Akinobu Mita <akinobu.mita@gmail.com> wrote:
-> > =20
-> > > When the buffer is enabled for ina2xx driver, a dedicated kthread is
-> > > invoked to capture mesurement data.  When the buffer is disabled, the
-> > > kthread is stopped.
-> > >
-> > > However if the kthread gets register access errors, it immediately ex=
-its
-> > > and when the malfunctional buffer is disabled, the stale task_struct
-> > > pointer is accessed as there is no kthread to be stopped.
-> > >
-> > > A similar issue in the usbip driver is prevented by kthread_get_run a=
-nd
-> > > kthread_stop_put helpers by increasing usage count of the task_struct.
-> > > This change applies the same solution.
-> > >
-> > > Cc: Stefan Br=C3=BCns <stefan.bruens@rwth-aachen.de>
-> > > Cc: Jonathan Cameron <jic23@kernel.org>
-> > > Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com> =20
-> > Seems fine, but this is a fix so should have an appropriate fixes
-> > tag.  Feel free to send one in reply to this thread rather than a v2. =
-=20
->=20
-> It seems like this problem has been there ever since the ina2xx driver
-> was added.
->=20
-> Fixes: c43a102e67db ("iio: ina2xx: add support for TI INA2xx Power Monito=
-rs")
->=20
-Thanks, added.
-> > Without a fixes tag it can be very hard to know exactly where
-> > a patch 'should' apply.  I also have little visibility on
-> > how important backporting htis issue is.  What would actually trigger
-> > the issue and is it likely to be seen in the wild? =20
->=20
-> This issue was actually triggered in the system with an I2C controller
-> that occasionally malfunctions due to a software bug in the controller
-> driver.
-
-In that case I'm not going to rush it, but rather will take it via the
-next merge window.
-
->=20
-> BTW, there is no way to notify this error to the process that is calling
-> poll() or read() to the buffer.  Maybe we should implement the mechanism
-> for returning POLLHUP or POLLERR events.
-
-I'm certainly not against adding something like that to notify on error
-cases.  In general, minor hardware failures are not well handled in the
-kernel - there is no 'standard' way of doing it.  Every now and then
-it is discussed but no one ever takes it any further.
-
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
-
-Thanks,
-
-Jonathan
-
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
+T24gU2F0LCAyMDE4LTA2LTMwIGF0IDE4OjMwICswMTAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
+Og0KPiBPbiBNb24sIDI1IEp1biAyMDE4IDExOjAxOjE3ICswMzAwDQo+IEFsZXhhbmRydSBBcmRl
+bGVhbiA8YWxleGFuZHJ1LmFyZGVsZWFuQGFuYWxvZy5jb20+IHdyb3RlOg0KPiANCj4gPiBGcm9t
+OiBMYXJzLVBldGVyIENsYXVzZW4gPGxhcnNAbWV0YWZvby5kZT4NCj4gPiANCj4gPiBUaGlzIGlz
+IHBhcnQgb2YgYSBsb25nIHRlcm0gZWZmb3J0IHRvIG1ha2UgdGhlIHVzZSBvZiBtbG9jayBvcGFx
+dWUgYW5kDQo+ID4gc2luZ2xlIHB1cnBvc2UuDQo+ID4gDQo+ID4gU2lnbmVkLW9mZi1ieTogTGFy
+cy1QZXRlciBDbGF1c2VuIDxsYXJzQG1ldGFmb28uZGU+DQo+ID4gU2lnbmVkLW9mZi1ieTogQWxl
+eGFuZHJ1IEFyZGVsZWFuIDxhbGV4YW5kcnUuYXJkZWxlYW5AYW5hbG9nLmNvbT4NCj4gDQo+IFBh
+dGNoIGlzIGZpbmUsIGJ1dCBJJ2QgbGlrZSB0byBzZWUgcHJlY2lzZSBkb2N1bWVudGF0aW9uIGZv
+ciB0aGUNCj4gc2NvcGUgb2YgdGhlIGxvY2suICBUaGVzZSB0aGluZ3MgY2FuIGJlIGF3ZnVsbHkg
+J2Z1enp5JyBzbyBnb29kDQo+IHRvIGRlZmluZSB0aGlzIGV4cGxpY2l0bHkuDQoNCkFjay4NCldp
+bGwgY29tZSBiYWNrIHdpdGggYSBWMi4NCg0KVGhhbmtzDQpBbGV4DQoNCj4gDQo+IEpvbmF0aGFu
+DQo+IA0KPiA+IC0tLQ0KPiA+IA0KPiA+IHYxIC0+IHYyOg0KPiA+ICogYWRkZWQgU2lnbmVkLW9m
+Zi1ieTogQWxleGFuZHJ1IEFyZGVsZWFuIDxhbGV4YW5kcnUuYXJkZWxlYW5AYW5hbG9nLmNvDQo+
+ID4gbT4NCj4gPiANCj4gPiAgZHJpdmVycy9paW8vZnJlcXVlbmN5L2FkOTUyMy5jIHwgMjcgKysr
+KysrKysrKysrKysrKystLS0tLS0tLS0tDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAxNyBpbnNlcnRp
+b25zKCspLCAxMCBkZWxldGlvbnMoLSkNCj4gPiANCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9p
+aW8vZnJlcXVlbmN5L2FkOTUyMy5jDQo+ID4gYi9kcml2ZXJzL2lpby9mcmVxdWVuY3kvYWQ5NTIz
+LmMNCj4gPiBpbmRleCBkZGI2YTMzNGFlNjguLjFiNzBlOGExMzMzOCAxMDA2NDQNCj4gPiAtLS0g
+YS9kcml2ZXJzL2lpby9mcmVxdWVuY3kvYWQ5NTIzLmMNCj4gPiArKysgYi9kcml2ZXJzL2lpby9m
+cmVxdWVuY3kvYWQ5NTIzLmMNCj4gPiBAQCAtMjc0LDYgKzI3NCw4IEBAIHN0cnVjdCBhZDk1MjNf
+c3RhdGUgew0KPiA+ICAJdW5zaWduZWQgbG9uZwkJdmNvX291dF9mcmVxW0FEOTUyM19OVU1fQ0xL
+X1NSQ107DQo+ID4gIAl1bnNpZ25lZCBjaGFyCQl2Y29fb3V0X21hcFtBRDk1MjNfTlVNX0NIQU5f
+QUxUX0MNCj4gPiBMS19TUkNdOw0KPiA+ICANCj4gDQo+IEknZCBsaWtlIHRvIHNlZSBhIHByZWNp
+c2UgZGVmaW5pdGlvbiBvZiB3aGF0IHRoaXMgbG9jayBpcyBpbnRlbmRlZA0KPiB0byBwcm90ZWN0
+LiAgTm90IHRvIG1lbnRpb24gY2hlY2twYXRjaCB3aWxsIG1vYW4gYWJvdXQgaXQgSSB0aGluaw0K
+PiBpZiB0aGVyZSBpcyBub3RoaW5nIGhlcmUgOykNCj4gDQo+ID4gKwlzdHJ1Y3QgbXV0ZXgJCWxv
+Y2s7DQo+ID4gKw0KPiA+ICAJLyoNCj4gPiAgCSAqIERNQSAodGh1cyBjYWNoZSBjb2hlcmVuY3kg
+bWFpbnRlbmFuY2UpIHJlcXVpcmVzIHRoZQ0KPiA+ICAJICogdHJhbnNmZXIgYnVmZmVycyB0byBs
+aXZlIGluIHRoZWlyIG93biBjYWNoZSBsaW5lcy4NCj4gPiBAQCAtNTAwLDYgKzUwMiw3IEBAIHN0
+YXRpYyBzc2l6ZV90IGFkOTUyM19zdG9yZShzdHJ1Y3QgZGV2aWNlICpkZXYsDQo+ID4gIHsNCj4g
+PiAgCXN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYgPSBkZXZfdG9faWlvX2RldihkZXYpOw0KPiA+
+ICAJc3RydWN0IGlpb19kZXZfYXR0ciAqdGhpc19hdHRyID0gdG9faWlvX2Rldl9hdHRyKGF0dHIp
+Ow0KPiA+ICsJc3RydWN0IGFkOTUyM19zdGF0ZSAqc3QgPSBpaW9fcHJpdihpbmRpb19kZXYpOw0K
+PiA+ICAJYm9vbCBzdGF0ZTsNCj4gPiAgCWludCByZXQ7DQo+ID4gIA0KPiA+IEBAIC01MTAsNyAr
+NTEzLDcgQEAgc3RhdGljIHNzaXplX3QgYWQ5NTIzX3N0b3JlKHN0cnVjdCBkZXZpY2UgKmRldiwN
+Cj4gPiAgCWlmICghc3RhdGUpDQo+ID4gIAkJcmV0dXJuIDA7DQo+ID4gIA0KPiA+IC0JbXV0ZXhf
+bG9jaygmaW5kaW9fZGV2LT5tbG9jayk7DQo+ID4gKwltdXRleF9sb2NrKCZzdC0+bG9jayk7DQo+
+ID4gIAlzd2l0Y2ggKCh1MzIpdGhpc19hdHRyLT5hZGRyZXNzKSB7DQo+ID4gIAljYXNlIEFEOTUy
+M19TWU5DOg0KPiA+ICAJCXJldCA9IGFkOTUyM19zeW5jKGluZGlvX2Rldik7DQo+ID4gQEAgLTUy
+MSw3ICs1MjQsNyBAQCBzdGF0aWMgc3NpemVfdCBhZDk1MjNfc3RvcmUoc3RydWN0IGRldmljZSAq
+ZGV2LA0KPiA+ICAJZGVmYXVsdDoNCj4gPiAgCQlyZXQgPSAtRU5PREVWOw0KPiA+ICAJfQ0KPiA+
+IC0JbXV0ZXhfdW5sb2NrKCZpbmRpb19kZXYtPm1sb2NrKTsNCj4gPiArCW11dGV4X3VubG9jaygm
+c3QtPmxvY2spOw0KPiA+ICANCj4gPiAgCXJldHVybiByZXQgPyByZXQgOiBsZW47DQo+ID4gIH0N
+Cj4gPiBAQCAtNTMyLDE1ICs1MzUsMTYgQEAgc3RhdGljIHNzaXplX3QgYWQ5NTIzX3Nob3coc3Ry
+dWN0IGRldmljZSAqZGV2LA0KPiA+ICB7DQo+ID4gIAlzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2
+ID0gZGV2X3RvX2lpb19kZXYoZGV2KTsNCj4gPiAgCXN0cnVjdCBpaW9fZGV2X2F0dHIgKnRoaXNf
+YXR0ciA9IHRvX2lpb19kZXZfYXR0cihhdHRyKTsNCj4gPiArCXN0cnVjdCBhZDk1MjNfc3RhdGUg
+KnN0ID0gaWlvX3ByaXYoaW5kaW9fZGV2KTsNCj4gPiAgCWludCByZXQ7DQo+ID4gIA0KPiA+IC0J
+bXV0ZXhfbG9jaygmaW5kaW9fZGV2LT5tbG9jayk7DQo+ID4gKwltdXRleF9sb2NrKCZzdC0+bG9j
+ayk7DQo+ID4gIAlyZXQgPSBhZDk1MjNfcmVhZChpbmRpb19kZXYsIEFEOTUyM19SRUFEQkFDS18w
+KTsNCj4gPiAgCWlmIChyZXQgPj0gMCkgew0KPiA+ICAJCXJldCA9IHNwcmludGYoYnVmLCAiJWRc
+biIsICEhKHJldCAmICgxIDw8DQo+ID4gIAkJCSh1MzIpdGhpc19hdHRyLT5hZGRyZXNzKSkpOw0K
+PiA+ICAJfQ0KPiA+IC0JbXV0ZXhfdW5sb2NrKCZpbmRpb19kZXYtPm1sb2NrKTsNCj4gPiArCW11
+dGV4X3VubG9jaygmc3QtPmxvY2spOw0KPiA+ICANCj4gPiAgCXJldHVybiByZXQ7DQo+ID4gIH0N
+Cj4gPiBAQCAtNjIzLDkgKzYyNyw5IEBAIHN0YXRpYyBpbnQgYWQ5NTIzX3JlYWRfcmF3KHN0cnVj
+dCBpaW9fZGV2DQo+ID4gKmluZGlvX2RldiwNCj4gPiAgCXVuc2lnbmVkIGludCBjb2RlOw0KPiA+
+ICAJaW50IHJldDsNCj4gPiAgDQo+ID4gLQltdXRleF9sb2NrKCZpbmRpb19kZXYtPm1sb2NrKTsN
+Cj4gPiArCW11dGV4X2xvY2soJnN0LT5sb2NrKTsNCj4gPiAgCXJldCA9IGFkOTUyM19yZWFkKGlu
+ZGlvX2RldiwgQUQ5NTIzX0NIQU5ORUxfQ0xPQ0tfRElTVChjaGFuLQ0KPiA+ID5jaGFubmVsKSk7
+DQo+ID4gLQltdXRleF91bmxvY2soJmluZGlvX2Rldi0+bWxvY2spOw0KPiA+ICsJbXV0ZXhfdW5s
+b2NrKCZzdC0+bG9jayk7DQo+ID4gIA0KPiA+ICAJaWYgKHJldCA8IDApDQo+ID4gIAkJcmV0dXJu
+IHJldDsNCj4gPiBAQCAtNjU5LDcgKzY2Myw3IEBAIHN0YXRpYyBpbnQgYWQ5NTIzX3dyaXRlX3Jh
+dyhzdHJ1Y3QgaWlvX2Rldg0KPiA+ICppbmRpb19kZXYsDQo+ID4gIAl1bnNpZ25lZCBpbnQgcmVn
+Ow0KPiA+ICAJaW50IHJldCwgdG1wLCBjb2RlOw0KPiA+ICANCj4gPiAtCW11dGV4X2xvY2soJmlu
+ZGlvX2Rldi0+bWxvY2spOw0KPiA+ICsJbXV0ZXhfbG9jaygmc3QtPmxvY2spOw0KPiA+ICAJcmV0
+ID0gYWQ5NTIzX3JlYWQoaW5kaW9fZGV2LCBBRDk1MjNfQ0hBTk5FTF9DTE9DS19ESVNUKGNoYW4t
+DQo+ID4gPmNoYW5uZWwpKTsNCj4gPiAgCWlmIChyZXQgPCAwKQ0KPiA+ICAJCWdvdG8gb3V0Ow0K
+PiA+IEBAIC03MDUsNyArNzA5LDcgQEAgc3RhdGljIGludCBhZDk1MjNfd3JpdGVfcmF3KHN0cnVj
+dCBpaW9fZGV2DQo+ID4gKmluZGlvX2RldiwNCj4gPiAgDQo+ID4gIAlhZDk1MjNfaW9fdXBkYXRl
+KGluZGlvX2Rldik7DQo+ID4gIG91dDoNCj4gPiAtCW11dGV4X3VubG9jaygmaW5kaW9fZGV2LT5t
+bG9jayk7DQo+ID4gKwltdXRleF91bmxvY2soJnN0LT5sb2NrKTsNCj4gPiAgCXJldHVybiByZXQ7
+DQo+ID4gIH0NCj4gPiAgDQo+ID4gQEAgLTcxMyw5ICs3MTcsMTAgQEAgc3RhdGljIGludCBhZDk1
+MjNfcmVnX2FjY2VzcyhzdHJ1Y3QgaWlvX2Rldg0KPiA+ICppbmRpb19kZXYsDQo+ID4gIAkJCSAg
+ICAgIHVuc2lnbmVkIGludCByZWcsIHVuc2lnbmVkIGludCB3cml0ZXZhbCwNCj4gPiAgCQkJICAg
+ICAgdW5zaWduZWQgaW50ICpyZWFkdmFsKQ0KPiA+ICB7DQo+ID4gKwlzdHJ1Y3QgYWQ5NTIzX3N0
+YXRlICpzdCA9IGlpb19wcml2KGluZGlvX2Rldik7DQo+ID4gIAlpbnQgcmV0Ow0KPiA+ICANCj4g
+PiAtCW11dGV4X2xvY2soJmluZGlvX2Rldi0+bWxvY2spOw0KPiA+ICsJbXV0ZXhfbG9jaygmc3Qt
+PmxvY2spOw0KPiA+ICAJaWYgKHJlYWR2YWwgPT0gTlVMTCkgew0KPiA+ICAJCXJldCA9IGFkOTUy
+M193cml0ZShpbmRpb19kZXYsIHJlZyB8IEFEOTUyM19SMUIsDQo+ID4gd3JpdGV2YWwpOw0KPiA+
+ICAJCWFkOTUyM19pb191cGRhdGUoaW5kaW9fZGV2KTsNCj4gPiBAQCAtNzI4LDcgKzczMyw3IEBA
+IHN0YXRpYyBpbnQgYWQ5NTIzX3JlZ19hY2Nlc3Moc3RydWN0IGlpb19kZXYNCj4gPiAqaW5kaW9f
+ZGV2LA0KPiA+ICAJfQ0KPiA+ICANCj4gPiAgb3V0X3VubG9jazoNCj4gPiAtCW11dGV4X3VubG9j
+aygmaW5kaW9fZGV2LT5tbG9jayk7DQo+ID4gKwltdXRleF91bmxvY2soJnN0LT5sb2NrKTsNCj4g
+PiAgDQo+ID4gIAlyZXR1cm4gcmV0Ow0KPiA+ICB9DQo+ID4gQEAgLTk2Nyw2ICs5NzIsOCBAQCBz
+dGF0aWMgaW50IGFkOTUyM19wcm9iZShzdHJ1Y3Qgc3BpX2RldmljZSAqc3BpKQ0KPiA+ICANCj4g
+PiAgCXN0ID0gaWlvX3ByaXYoaW5kaW9fZGV2KTsNCj4gPiAgDQo+ID4gKwltdXRleF9pbml0KCZz
+dC0+bG9jayk7DQo+ID4gKw0KPiA+ICAJc3QtPnJlZyA9IGRldm1fcmVndWxhdG9yX2dldCgmc3Bp
+LT5kZXYsICJ2Y2MiKTsNCj4gPiAgCWlmICghSVNfRVJSKHN0LT5yZWcpKSB7DQo+ID4gIAkJcmV0
+ID0gcmVndWxhdG9yX2VuYWJsZShzdC0+cmVnKTsNCj4gDQo+IA==
