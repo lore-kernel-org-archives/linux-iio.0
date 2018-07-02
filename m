@@ -1,96 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from vern.gendns.com ([206.190.152.46]:37800 "EHLO vern.gendns.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752184AbeGBPd4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 2 Jul 2018 11:33:56 -0400
-Subject: Re: [PATCH] iio: add channel type for frequency
-To: Jonathan Cameron <jonathan.cameron@huawei.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-kernel@vger.kernel.org,
-        William Breathitt Gray <vilhelm.gray@gmail.com>
-References: <20180701025953.3561-1-david@lechnology.com>
- <308015e8-d203-c4d1-ba80-3c2adf4b377a@metafoo.de>
- <74c98fdc-b498-c593-e0b1-6aeb7057398a@lechnology.com>
- <20180702140352.00002c6c@huawei.com>
-From: David Lechner <david@lechnology.com>
-Message-ID: <51fa1708-a19e-aa05-6145-b2479a89805b@lechnology.com>
-Date: Mon, 2 Jul 2018 10:33:52 -0500
-MIME-Version: 1.0
-In-Reply-To: <20180702140352.00002c6c@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Received: from mail-wr0-f194.google.com ([209.85.128.194]:44069 "EHLO
+        mail-wr0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932748AbeGBI75 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 Jul 2018 04:59:57 -0400
+Received: by mail-wr0-f194.google.com with SMTP id p12-v6so14670539wrn.11
+        for <linux-iio@vger.kernel.org>; Mon, 02 Jul 2018 01:59:56 -0700 (PDT)
+From: Mathieu Othacehe <m.othacehe@gmail.com>
+To: linux-iio@vger.kernel.org, jonathan.cameron@huawei.com,
+        pmeerw@pmeerw.net
+Cc: pierre-moana.levesque@parrot.com,
+        Mathieu Othacehe <m.othacehe@gmail.com>
+Subject: [PATCH v5 0/2] Add ISL29501 support.
+Date: Mon,  2 Jul 2018 10:59:25 +0200
+Message-Id: <1530521967-10152-1-git-send-email-m.othacehe@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/02/2018 08:03 AM, Jonathan Cameron wrote:
-> On Sun, 1 Jul 2018 17:24:34 -0500
-> David Lechner <david@lechnology.com> wrote:
-> 
->> On 07/01/2018 02:18 AM, Lars-Peter Clausen wrote:
->>> On 07/01/2018 04:59 AM, David Lechner wrote:
->>>> This adds a new type for frequency to the IIO channel type enumeration.
->>>>
->>>> Units are in Hz.
->>>>   
->>>
->>> Documentation?
->>
->> I take it that you mean Documentation/ABI/testing/sysfs-bus-iio? Or
->> somewhere else too?
-> 
-> Yes.
-> 
->>
->>>
->>> We already have the altvoltage channel type with the frequency attribute.
->>> Difficult to say if there are any overlaps without documentation on how this
->>> new attribute is supposed to be used.
->>
->> I'm basically trying to implement a quadrature encoder in iio. I want to be
->> able to use it in-kernel to get a rotational speed value for a motor.
-> 
-> Have you seen the counters subsystem work that is pretty much ready to merge?
+Hi,
 
-I hadn't seen that. Thanks. It sounds like the way to go since I am dealing with
-a quadrature encoder.
+Here's v5 of this serie, please find the changelog below.
 
-> 
-> https://lkml.org/lkml/2018/6/21/659
-> 
->>
->> The motors (and encoder wheels) are hot-swapable, so we don't know how many
->> counts from the quadrature encoder equals one rotation because it depends on
->> which motor is being used. So using IIO_ANGL_VEL doesn't work for this case.
-> 
-> Hmm. This always ugly when we have hotswappable external devices.  Ideal is
-> to describe them with device tree or similar none the less as this stuff isn't
-> really something userspace should have to figure out.
-> 
->>
->> It seems to me that the proper generic unit for "speed" from the quadrature
->> encoder would be counts per second, hence the suggestion of a frequency unit.
-> 
-> It is probably not that clear cut, as what is it frequency of?  All depends on
-> what mode the quadrature counter is working in x4 or x1 for simplest options.
-> 
-> 
->> I'm not sure if voltage frequency works here since a "count" on a quadrature
->> encoder is derived from two different voltage signals (and may vary depending
->> on how the encoder determines what one count it).
->>
->> Also, unrelated to my quadrature encoder project, I was thinking that
->> frequency counters would use this unit as well (although the voltage alt
->> makes more sense for this case).
->>
->> There are also sound sensors that measure frequency that could use this unit.
-> 
-> I have not fundamental issue with having a frequency channel, but only
-> if we have a clear cut use case.  I suspect the right option here is to
-> look at what extensions are needed to William's counter subsystem instead
-> of in IIO (which frankly failed to stretch far enough to support counters
-> well).
-> 
+Thanks,
 
-Agreed. Let's drop this patch.
+Mathieu
+
+v5:
+* Use IIO_MOD_LIGHT_CLEAR modifier for IIO_INTENSITY channel
+describing ambient light intensity and remove extended_names doing so.
+* Fix a possible leakage in isl29501_trigger_handler function.
+v4:
+* Fix build warnings and rebase on top of next-20180628
+v3:
+* Renamings to add isl29501 prefix
+* Rename "amb" -> "light" in extended fields
+* Move mutex lock/unlock to register_read and register_write functions
+* Improve IIO_PHASE scale output with a better pi estimation
+v2:
+* Add missing eof new line
+* Do not set .indexed to true for all channels
+* Add a .extended to differenciate "magnitude" and "ambient_light"
+  intensity channels
+* Return isl29501_begin_acquisition result in isl29501_init_chip
+* Fix buffer size in isl29501_trigger_handler
+
+Mathieu Othacehe (2):
+  iio: Add channel for Phase
+  iio: light: isl29501: Add support for the ISL29501 ToF sensor.
+
+ Documentation/ABI/testing/sysfs-bus-iio            |    7 +
+ Documentation/ABI/testing/sysfs-bus-iio-isl29501   |   47 +
+ .../devicetree/bindings/iio/light/isl29501.txt     |   13 +
+ drivers/iio/industrialio-core.c                    |    1 +
+ drivers/iio/light/Kconfig                          |   13 +
+ drivers/iio/light/Makefile                         |    1 +
+ drivers/iio/light/isl29501.c                       | 1125 ++++++++++++++++++++
+ include/uapi/linux/iio/types.h                     |    1 +
+ tools/iio/iio_event_monitor.c                      |    2 +
+ 9 files changed, 1210 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-isl29501
+ create mode 100644 Documentation/devicetree/bindings/iio/light/isl29501.txt
+ create mode 100644 drivers/iio/light/isl29501.c
+
+-- 
+2.7.4
+
