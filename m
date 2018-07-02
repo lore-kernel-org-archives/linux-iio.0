@@ -1,71 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f194.google.com ([209.85.161.194]:44561 "EHLO
-        mail-yw0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933150AbeGFTUX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 6 Jul 2018 15:20:23 -0400
-Date: Fri, 6 Jul 2018 15:20:13 -0400
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: David Lechner <david@lechnology.com>
-Cc: Jonathan Cameron <jonathan.cameron@huawei.com>,
-        gregkh@linuxfoundation.org, jic23@kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        fabrice.gasnier@st.com, benjamin.gaignard@st.com,
-        robh+dt@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, mark.rutland@arm.com
-Subject: Re: [PATCH v7 00/10] Introduce the Counter subsystem
-Message-ID: <20180706192013.GA6810@sophia>
-References: <cover.1529607879.git.vilhelm.gray@gmail.com>
- <603b0373-f1e1-5938-fa53-8328c9a5964f@lechnology.com>
- <20180703024835.GA9493@sophia>
- <20180706182154.0000002d@huawei.com>
- <59b0950e-ef39-4ad4-a32b-316992e1f236@lechnology.com>
+Received: from mail-pg0-f67.google.com ([74.125.83.67]:43190 "EHLO
+        mail-pg0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753343AbeGBIoy (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 Jul 2018 04:44:54 -0400
+Received: by mail-pg0-f67.google.com with SMTP id v13-v6so1197677pgr.10
+        for <linux-iio@vger.kernel.org>; Mon, 02 Jul 2018 01:44:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <59b0950e-ef39-4ad4-a32b-316992e1f236@lechnology.com>
+References: <1529852721-17828-1-git-send-email-akinobu.mita@gmail.com> <20180630184049.47d10937@archlinux>
+In-Reply-To: <20180630184049.47d10937@archlinux>
+From: Akinobu Mita <akinobu.mita@gmail.com>
+Date: Mon, 2 Jul 2018 17:44:42 +0900
+Message-ID: <CAC5umyhY62whz2GfY59MngLMUu6KLnpw5wW1+FY_p8FwHpLsOw@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: ina2xx: avoid kthread_stop() with stale task_struct
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+        =?UTF-8?Q?Stefan_Br=C3=BCns?= <stefan.bruens@rwth-aachen.de>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Jul 06, 2018 at 01:22:57PM -0500, David Lechner wrote:
->On 07/06/2018 12:21 PM, Jonathan Cameron wrote:
->> On Mon, 2 Jul 2018 22:48:35 -0400
->> William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
->>> Is frequency useful for other
->>> applications on its own (perhaps velocity of an automobile device
->>> equipped with an encoder wheel for some reason or other)?
+2018=E5=B9=B47=E6=9C=881=E6=97=A5(=E6=97=A5) 2:40 Jonathan Cameron <jic23@k=
+ernel.org>:
 >
->Since we are just dealing with counters here, I think we should call
->it "rate" instead of "frequency". At least that seems to be the common
->name in industrial automation.
+> On Mon, 25 Jun 2018 00:05:21 +0900
+> Akinobu Mita <akinobu.mita@gmail.com> wrote:
 >
->Another possible use case for "rate" would be flow meters. Some
->flow meters generate a pulse every X gallons. Assuming that the
->counter also has a rate output, then you can scale the rate (e.g.
->counts/second) into flow in gallons per minute.
->
->>>
->>> Once we figure out how this data is used, we can determine the best
->>> design and place to introduce it into the Generic Counter interface,
->>> then move on to integration from there.
->> 
->> Great - as long as this fits reasonably well in ABI wise (whatever the
->> details) sounds like we don't need to solve it today.  I'm anxious not
->> to delay merging this counter subsystem for another cycle.
->
->Certainly don't delay things on account of me. I'm just trying to get
->a feel for where things are headed since I missed the earlier discussions.
->I don't see any major problems with the current state of things.
->
->Once this lands, I may have a go at the eQEP and see how it looks.
+> > When the buffer is enabled for ina2xx driver, a dedicated kthread is
+> > invoked to capture mesurement data.  When the buffer is disabled, the
+> > kthread is stopped.
+> >
+> > However if the kthread gets register access errors, it immediately exit=
+s
+> > and when the malfunctional buffer is disabled, the stale task_struct
+> > pointer is accessed as there is no kthread to be stopped.
+> >
+> > A similar issue in the usbip driver is prevented by kthread_get_run and
+> > kthread_stop_put helpers by increasing usage count of the task_struct.
+> > This change applies the same solution.
+> >
+> > Cc: Stefan Br=C3=BCns <stefan.bruens@rwth-aachen.de>
+> > Cc: Jonathan Cameron <jic23@kernel.org>
+> > Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+> Seems fine, but this is a fix so should have an appropriate fixes
+> tag.  Feel free to send one in reply to this thread rather than a v2.
 
-No worries, it looks like your application would be served well by the
-Generic Counter interface, and exposing a "rate" value would be a simple
-feature to add. However, since this patchset has been stabilizing over
-the past few revisions, I want to postpone the addition of new features
-until this interface and its current feature set is merged.
+It seems like this problem has been there ever since the ina2xx driver
+was added.
 
-David, once this introduction patchset has been merged, submit to me a
-patch adding the "rate" functionality feature and we'll continue
-discussing it there.
+Fixes: c43a102e67db ("iio: ina2xx: add support for TI INA2xx Power Monitors=
+")
 
-William Breathitt Gray
+> Without a fixes tag it can be very hard to know exactly where
+> a patch 'should' apply.  I also have little visibility on
+> how important backporting htis issue is.  What would actually trigger
+> the issue and is it likely to be seen in the wild?
+
+This issue was actually triggered in the system with an I2C controller
+that occasionally malfunctions due to a software bug in the controller
+driver.
+
+BTW, there is no way to notify this error to the process that is calling
+poll() or read() to the buffer.  Maybe we should implement the mechanism
+for returning POLLHUP or POLLERR events.
