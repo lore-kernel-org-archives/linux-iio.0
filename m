@@ -1,113 +1,97 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-bn3nam01on0058.outbound.protection.outlook.com ([104.47.33.58]:41757
-        "EHLO NAM01-BN3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1752712AbeGDN0L (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 4 Jul 2018 09:26:11 -0400
-From: "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>
-To: "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>
-CC: "vilhelm.gray@gmail.com" <vilhelm.gray@gmail.com>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "mchehab@kernel.org" <mchehab@kernel.org>,
-        "Ismail.Kose@maximintegrated.com" <Ismail.Kose@maximintegrated.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "lukas@wunner.de" <lukas@wunner.de>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "sean.nyekjaer@prevas.dk" <sean.nyekjaer@prevas.dk>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "pombredanne@nexb.com" <pombredanne@nexb.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: Re: [PATCH v4 1/2] iio: dac: Add AD5758 support
-Date: Wed, 4 Jul 2018 13:26:03 +0000
-Message-ID: <1530710748.2057.32.camel@analog.com>
-References: <1530261516-21118-1-git-send-email-stefan.popa@analog.com>
-         <CAHp75Vfb_b6FPpnhu4Z_=iBNovNubneCD3cRG9SawRmMCNOVjw@mail.gmail.com>
-In-Reply-To: <CAHp75Vfb_b6FPpnhu4Z_=iBNovNubneCD3cRG9SawRmMCNOVjw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <SRS0=D4jH=JS=loewensteinmedical.de=nikolaus.voss@kernel.org>
+Date: Mon, 2 Jul 2018 08:53:00 +0200 (CEST)
+From: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
+To: Jonathan Cameron <jic23@kernel.org>
+cc: "Voss, Dr. Nikolaus" <Nikolaus.Dr.Voss@loewensteinmedical.de>,
+    Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+    Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+    Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+    Linus Walleij <linus.walleij@linaro.org>,
+    Xiongfeng Wang <xiongfeng.wang@linaro.org>,
+    "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+    "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/3] IIO: st_accel_i2c.c: Use fallback if DT/ACPI enum
+ failed
+In-Reply-To: <20180630162803.3a2ad759@archlinux>
+Message-ID: <alpine.DEB.2.20.1807020843100.31768@fox.voss.local>
+References: <cover.1530268235.git.nikolaus.voss@loewensteinmedical.de> <a84243a1a15d11511061eeae2f09c0ad8154d093.1530268235.git.nikolaus.voss@loewensteinmedical.de> <20180630162803.3a2ad759@archlinux>
 MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-T24gRHUsIDIwMTgtMDctMDEgYXQgMDA6MjYgKzAzMDAsIEFuZHkgU2hldmNoZW5rbyB3cm90ZToN
-Cj4gT24gRnJpLCBKdW4gMjksIDIwMTggYXQgMTE6MzggQU0sIFN0ZWZhbiBQb3BhIDxzdGVmYW4u
-cG9wYUBhbmFsb2cuY29tPiB3cm90ZToNCj4gPiANCj4gPiBUaGUgQUQ1NzU4IGlzIGEgc2luZ2xl
-IGNoYW5uZWwgREFDIHdpdGggMTYtYml0IHByZWNpc2lvbiB3aGljaCB1c2VzIHRoZQ0KPiA+IFNQ
-SSBpbnRlcmZhY2UgdGhhdCBvcGVyYXRlcyBhdCBjbG9jayByYXRlcyB1cCB0byA1ME1Iei4NCj4g
-PiANCj4gPiBUaGUgb3V0cHV0IGNhbiBiZSBjb25maWd1cmVkIGFzIHZvbHRhZ2Ugb3IgY3VycmVu
-dCBhbmQgaXMgYXZhaWxhYmxlIG9uIGENCj4gPiBzaW5nbGUgdGVybWluYWwuDQo+ID4gDQo+ID4g
-RGF0YXNoZWV0Og0KPiA+IGh0dHA6Ly93d3cuYW5hbG9nLmNvbS9tZWRpYS9lbi90ZWNobmljYWwt
-ZG9jdW1lbnRhdGlvbi9kYXRhLXNoZWV0cy9hZDU3NTgucGRmDQo+IFRoYW5rcyBmb3IgYW4gdXBk
-YXRlLg0KPiBGZXcgY29tbWVudHMgYmVsb3cuDQo+IA0KPiA+IA0KPiA+ICsjaW5jbHVkZSANCj4g
-PiArI2luY2x1ZGUgDQo+ID4gKyNpbmNsdWRlIA0KPiA+ICsjaW5jbHVkZSANCj4gPiArI2luY2x1
-ZGUgDQo+ID4gKyNpbmNsdWRlIA0KPiBQZXJoYXBzIGtlZXAgdGhlbSBvcmRlcmVkPw0KPiANCj4g
-PiANCj4gPiArDQo+ID4gKyNpbmNsdWRlIA0KPiA+ICsjaW5jbHVkZSANCj4gPiArDQo+ID4gDQo+
-ID4gKyNpbmNsdWRlIA0KPiBBU00/IEhtbS4uLg0KPiANCj4gPiANCj4gPiArc3RhdGljIGludCBj
-bXBmdW5jKGNvbnN0IHZvaWQgKmEsIGNvbnN0IHZvaWQgKmIpDQo+ID4gK3sNCj4gPiArwqDCoMKg
-wqDCoMKgwqByZXR1cm4gKCooaW50ICopYSAtICooaW50ICopYik7DQo+IFN1cnJvdW5kaW5nIHBh
-cmVucyBhcmUgbm90IG5lZWRlZC4NCj4gDQo+ID4gDQo+ID4gK30NCj4gPiArDQo+ID4gDQo+ID4g
-K3N0YXRpYyBpbnQgYWQ1NzU4X2ZpbmRfY2xvc2VzdF9tYXRjaChjb25zdCBpbnQgKmFycmF5LA0K
-PiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqB1bnNpZ25lZCBpbnQgc2l6ZSwgaW50IHZhbCkNCj4gPiArew0K
-PiA+ICvCoMKgwqDCoMKgwqDCoGludCBpOw0KPiA+ICsNCj4gPiArwqDCoMKgwqDCoMKgwqBmb3Ig
-KGkgPSAwOyBpIDwgc2l6ZTsgaSsrKSB7DQo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoGlmICh2YWwgPD0gYXJyYXlbaV0pDQo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqByZXR1cm4gaTsNCj4gPiArwqDCoMKgwqDCoMKgwqB9DQo+ID4g
-Kw0KPiA+ICvCoMKgwqDCoMKgwqDCoHJldHVybiBzaXplIC0gMTsNCj4gPiArfQ0KPiBJc24ndCBp
-dCB3aGF0IGJzZWFyY2goKSBjb3ZlcnMgYXMgd2VsbD8NCj4gDQoNCmJzZWFyY2goKSBsb29rcyBm
-b3IgYW4gaXRlbSBpbiBhbiBhcnJheSBhbmQgcmV0dXJucyBOVUxMIGlmIGl0IGlzIG5vdCBmb3Vu
-ZC4NClRoaXMgZnVuY3Rpb24gcmV0dXJucyB0aGUgaW5kZXggb2YgdGhlIGNsb3Nlc3QgdmFsdWUg
-dG8gdmFsIGV2ZW4gaWYgdGhlcmUgaXPCoA0Kbm8gZXhhY3QgbWF0Y2guDQoNCj4gPiANCj4gPiAr
-wqDCoMKgwqDCoMKgwqBkbyB7DQo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHJl
-dCA9IGFkNTc1OF9zcGlfcmVnX3JlYWQoc3QsIHJlZyk7DQo+ID4gK8KgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoGlmIChyZXQgPCAwKQ0KPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgcmV0dXJuIHJldDsNCj4gPiArDQo+ID4gK8KgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoGlmICghKHJldCAmIG1hc2spKQ0KPiA+ICvCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgcmV0dXJuIDA7DQo+ID4gKw0KPiA+IA0K
-PiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB1ZGVsYXkoMTAwKTsNCj4gSWYgaXQn
-cyBub3QgY2FsbGVkIGZyb20gYXRvbWljIGNvbnRleHQsIHBlcmhhcHMgc3dpdGNoIHRvIHVzbGVl
-cF9yYW5nZSgpID8NCj4gDQo+ID4gDQo+ID4gK8KgwqDCoMKgwqDCoMKgfSB3aGlsZSAoLS10aW1l
-b3V0KTsNCj4gDQo+ID4gDQo+ID4gK3N0YXRpYyBpbnQgYWQ1NzU4X3NvZnRfcmVzZXQoc3RydWN0
-IGFkNTc1OF9zdGF0ZSAqc3QpDQo+ID4gK3sNCj4gPiArwqDCoMKgwqDCoMKgwqBpbnQgcmV0Ow0K
-PiA+ICsNCj4gPiArwqDCoMKgwqDCoMKgwqByZXQgPSBhZDU3NThfc3BpX3JlZ193cml0ZShzdCwg
-QUQ1NzU4X0tFWSwgQUQ1NzU4X0tFWV9DT0RFX1JFU0VUXzEpOw0KPiA+ICvCoMKgwqDCoMKgwqDC
-oGlmIChyZXQgPCAwKQ0KPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqByZXR1cm4g
-cmV0Ow0KPiA+ICsNCj4gPiArwqDCoMKgwqDCoMKgwqByZXQgPSBhZDU3NThfc3BpX3JlZ193cml0
-ZShzdCwgQUQ1NzU4X0tFWSwgQUQ1NzU4X0tFWV9DT0RFX1JFU0VUXzIpOw0KPiA+ICsNCj4gPiAN
-Cj4gPiArwqDCoMKgwqDCoMKgwqAvKiBQZXJmb3JtIGEgc29mdHdhcmUgcmVzZXQgYW5kIHdhaXQg
-MTAwdXMgKi8NCj4gPiArwqDCoMKgwqDCoMKgwqB1ZGVsYXkoMTAwKTsNCj4gRGl0dG8uDQo+IA0K
-PiA+IA0KPiA+ICsNCj4gPiArwqDCoMKgwqDCoMKgwqByZXR1cm4gcmV0Ow0KPiA+ICt9DQo+ID4g
-DQo+ID4gK3N0YXRpYyBpbnQgYWQ1NzU4X2ZpbmRfb3V0X3JhbmdlKHN0cnVjdCBhZDU3NThfc3Rh
-dGUgKnN0LA0KPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgY29uc3Qgc3RydWN0IGFkNTc1OF9yYW5nZSAqcmFuZ2UsDQo+
-ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqB1bnNpZ25lZCBpbnQgc2l6ZSwNCj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGludCBtaW4sIGludCBt
-YXgpDQo+ID4gK3sNCj4gPiArwqDCoMKgwqDCoMKgwqBpbnQgaTsNCj4gPiArDQo+ID4gK8KgwqDC
-oMKgwqDCoMKgZm9yIChpID0gMDsgaSA8IHNpemU7IGkrKykgew0KPiA+ICvCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqBpZiAoKG1pbiA9PSByYW5nZVtpXS5taW4pICYmIChtYXggPT0gcmFu
-Z2VbaV0ubWF4KSkgew0KPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgc3QtPm91dF9yYW5nZS5yZWcgPSByYW5nZVtpXS5yZWc7DQo+ID4gK8KgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBzdC0+b3V0X3JhbmdlLm1pbiA9
-IHJhbmdlW2ldLm1pbjsNCj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoHN0LT5vdXRfcmFuZ2UubWF4ID0gcmFuZ2VbaV0ubWF4Ow0KPiA+ICsNCj4gPiAr
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHJldHVybiAwOw0K
-PiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB9DQo+ID4gK8KgwqDCoMKgwqDCoMKg
-fQ0KPiBPbmUgbW9yZSBjYW5kaWRhdGUgdG8gdXNlIGJzZWFyY2goKS4NCj4gDQoNCkkgYW0gbm90
-IHN1cmUgaWYgYnNlYXJjaCgpIHdpbGwgd29yayBpbiB0aGlzIGNhc2Ugc2luY2UgaXQgcmVxdWly
-ZXMgdGhhdCB0aGUgZ2l2ZW7CoA0KYXJyYXkgaXMgc29ydGVkLiBNb3Jlb3ZlciwgYm90aMKgYWQ1
-NzU4X3ZvbHRhZ2VfcmFuZ2VbXSBhbmTCoGFkNTc1OF9jdXJyZW50X3JhbmdlW13CoA0KY29udGFp
-biBkdXBsaWNhdGUgZWxlbWVudHMuDQoNCj4gPiANCj4gPiArDQo+ID4gK8KgwqDCoMKgwqDCoMKg
-cmV0dXJuIC1FSU5WQUw7DQo+ID4gK30NCj4gPiANCj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgaW5kZXggPSAoaW50ICopIGJzZWFyY2goJnRtcCwgYWQ1NzU4X2RjX2RjX2lsaW0s
-DQo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoEFSUkFZX1NJWkUoYWQ1NzU4X2RjX2RjX2lsaW0p
-LA0KPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBzaXplb2YoaW50KSwgY21wZnVuYyk7DQo+IEkn
-bSBub3Qgc3VyZSB5b3UgbmVlZCB0aGF0IGNhc3RpbmcuDQo+IA==
+On Sat, 30 Jun 2018, Jonathan Cameron wrote:
+
+> On Fri, 29 Jun 2018 10:10:10 +0200
+> Nikolaus Voss <nikolaus.voss@loewensteinmedical.de> wrote:
+>
+>> Currently, the driver bails out if not explicitly referred to in
+>> DT or ACPI tables. This prevents fallback mechanisms from coming
+>> into effect, e.g. I2C device ID table match via DT or ACPI
+>> PRP0001 HID. However DT/ACPI enum should take precedence over
+>> the fallback, so evaluate that first.
+>>
+>> Signed-off-by: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
+>
+> Is the change to probe_new actually related to the rest of the change?
+>
+> I can't immediately see why...  If not I would prefer that as a separate
+> change.
+
+Well, it is, because the id table pointer of the old probe() is not 
+used any more.
+
+>
+>> ---
+>>  drivers/iio/accel/st_accel_i2c.c | 21 ++++++++++++---------
+>>  1 file changed, 12 insertions(+), 9 deletions(-)
+>>
+>> diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
+>> index 6bdec8c451e0..e360da407027 100644
+>> --- a/drivers/iio/accel/st_accel_i2c.c
+>> +++ b/drivers/iio/accel/st_accel_i2c.c
+>> @@ -138,8 +138,7 @@ static const struct i2c_device_id st_accel_id_table[] = {
+>>  };
+>>  MODULE_DEVICE_TABLE(i2c, st_accel_id_table);
+>>
+>> -static int st_accel_i2c_probe(struct i2c_client *client,
+>> -						const struct i2c_device_id *id)
+>> +static int st_accel_i2c_probe(struct i2c_client *client)
+>>  {
+>>  	struct iio_dev *indio_dev;
+>>  	struct st_sensor_data *adata;
+>> @@ -156,14 +155,18 @@ static int st_accel_i2c_probe(struct i2c_client *client,
+>>  					 client->name, sizeof(client->name));
+>>  	} else if (ACPI_HANDLE(&client->dev)) {
+>>  		ret = st_sensors_match_acpi_device(&client->dev);
+>> -		if ((ret < 0) || (ret >= ST_ACCEL_MAX))
+>> -			return -ENODEV;
+>> -
+>> -		strlcpy(client->name, st_accel_id_table[ret].name,
+>> +		if ((ret >= 0) && (ret < ST_ACCEL_MAX))
+>> +			strlcpy(client->name, st_accel_id_table[ret].name,
+>>  				sizeof(client->name));
+>> -	} else if (!id)
+>> -		return -ENODEV;
+>> +	}
+>>
+>> +	/*
+>> +	 * If OF and ACPI enumeration failed, there could still be platform
+>> +	 * information via fallback enumeration or explicit instantiation, so
+>> +	 * check if id table has been matched via client->name.
+>> +	 */
+>> +	if (!client->name)
+>> +		return -ENODEV;
+>>
+>>  	st_sensors_i2c_configure(indio_dev, client, adata);
+>>
+>> @@ -187,7 +190,7 @@ static struct i2c_driver st_accel_driver = {
+>>  		.of_match_table = of_match_ptr(st_accel_of_match),
+>>  		.acpi_match_table = ACPI_PTR(st_accel_acpi_match),
+>>  	},
+>> -	.probe = st_accel_i2c_probe,
+>> +	.probe_new = st_accel_i2c_probe,
+>>  	.remove = st_accel_i2c_remove,
+>>  	.id_table = st_accel_id_table,
+>>  };
+>
+>
