@@ -1,51 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from gateway32.websitewelcome.com ([192.185.145.178]:37381 "EHLO
-        gateway32.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S932563AbeGGRne (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 7 Jul 2018 13:43:34 -0400
-Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
-        by gateway32.websitewelcome.com (Postfix) with ESMTP id 2C65419133A
-        for <linux-iio@vger.kernel.org>; Sat,  7 Jul 2018 12:22:51 -0500 (CDT)
-Subject: Re: [PATCH] iio: sca3000: Mark expected switch fall-through
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20180703193934.GA13572@embeddedor.com>
- <20180707180317.52cb8b39@archlinux>
+Received: from gateway24.websitewelcome.com ([192.185.51.110]:43421 "EHLO
+        gateway24.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1752682AbeGCUII (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 3 Jul 2018 16:08:08 -0400
+Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
+        by gateway24.websitewelcome.com (Postfix) with ESMTP id C812119A497
+        for <linux-iio@vger.kernel.org>; Tue,  3 Jul 2018 14:44:53 -0500 (CDT)
+Date: Tue, 3 Jul 2018 14:44:36 -0500
 From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Message-ID: <8d5b8eac-65ce-8c25-c77a-b4b1429ceeee@embeddedor.com>
-Date: Sat, 7 Jul 2018 12:22:37 -0500
+To: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH] iio: mma8452: Mark expected switch fall-through
+Message-ID: <20180703194436.GA15537@embeddedor.com>
 MIME-Version: 1.0
-In-Reply-To: <20180707180317.52cb8b39@archlinux>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+In preparation to enabling -Wimplicit-fallthrough, mark switch cases
+where we are expecting to fall through.
 
-On 07/07/2018 12:03 PM, Jonathan Cameron wrote:
-> On Tue, 3 Jul 2018 14:39:34 -0500
-> "Gustavo A. R. Silva" <gustavo@embeddedor.com> wrote:
-> 
->> In preparation to enabling -Wimplicit-fallthrough, mark switch cases
->> where we are expecting to fall through.
->>
->> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
-> 
-> Looks like a bug to me not an unmarked fall through.
-> 
-> Should be return ret;
->
+Warning level 2 was used in this case: -Wimplicit-fallthrough=2
 
-I see.
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+---
+ drivers/iio/accel/mma8452.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> Do you want to do the patch?
-> 
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index c149c9c..421a0a8 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -1547,6 +1547,7 @@ static int mma8452_probe(struct i2c_client *client,
+ 	case FXLS8471_DEVICE_ID:
+ 		if (ret == data->chip_info->chip_id)
+ 			break;
++		/* else: fall through */
+ 	default:
+ 		return -ENODEV;
+ 	}
+-- 
+2.7.4
 
-Sure thing. I'll send a patch shortly.
-
-Thanks for the feedback.
---
-Gustavo
