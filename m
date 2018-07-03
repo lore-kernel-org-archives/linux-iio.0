@@ -1,73 +1,57 @@
-Return-Path: <SRS0=TLAE=JV=loewensteinmedical.de=nikolaus.voss@kernel.org>
-Date: Thu, 5 Jul 2018 11:30:37 +0200 (CEST)
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.steuer-voss.de ([85.183.69.95]:45712 "EHLO
+        mail.steuer-voss.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753421AbeGDNfT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 4 Jul 2018 09:35:19 -0400
+Message-Id: <d6f374da848179583f86bfc965125ebf2e4d8317.1530710826.git.nikolaus.voss@loewensteinmedical.de>
+In-Reply-To: <cover.1530710826.git.nikolaus.voss@loewensteinmedical.de>
+References: <cover.1530710826.git.nikolaus.voss@loewensteinmedical.de>
 From: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-cc: "Voss, Dr. Nikolaus" <Nikolaus.Dr.Voss@loewensteinmedical.de>,
-    Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-    Lars-Peter Clausen <lars@metafoo.de>,
-    Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-    Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-    Linus Walleij <linus.walleij@linaro.org>,
-    Xiongfeng Wang <xiongfeng.wang@linaro.org>,
-    Javier Martinez Canillas <javier@dowhile0.org>,
-    "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-    Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 1/2] IIO: st_accel_i2c.c: Simplify access to driver
- data
-In-Reply-To: <CAHp75VfJOhX3+eL-ppvT7SPfDE_S7ht1drjobvFqmXPYApMETg@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1807051129060.21087@fox.voss.local>
-References: <cover.1530710826.git.nikolaus.voss@loewensteinmedical.de> <e8cb86f843d6b524b671f8fd79fece02475a61c0.1530710826.git.nikolaus.voss@loewensteinmedical.de> <CAHp75VfJOhX3+eL-ppvT7SPfDE_S7ht1drjobvFqmXPYApMETg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Date: Tue, 3 Jul 2018 08:06:57 +0200
+Subject: [PATCH v3 2/2] IIO: st_accel_i2c.c: Use probe_new() instead of probe()
+To: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Xiongfeng Wang <xiongfeng.wang@linaro.org>,
+        Javier Martinez Canillas <javier@dowhile0.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, 4 Jul 2018, Andy Shevchenko wrote:
-> On Tue, Jul 3, 2018 at 8:41 AM, Nikolaus Voss
-> <nikolaus.voss@loewensteinmedical.de> wrote:
->> Use device_get_match_data API to simplify access to driver data.
->> Let acpi_device_id table entries point to the same driver data as
->> of_device_id table entries and uniquify access to driver data by using
->> device_get_match_data API. Remove unused i2c_device_id .driver_data
->> fields.
->>
->
-> Couple of comments below, otherwise
->
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
->
->> Signed-off-by: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
->> ---
->>  drivers/iio/accel/st_accel_i2c.c | 56 ++++++++++++++------------------
->>  1 file changed, 24 insertions(+), 32 deletions(-)
->>
->> diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
->> index 6bdec8c451e0..c6e08c834f11 100644
->> --- a/drivers/iio/accel/st_accel_i2c.c
->> +++ b/drivers/iio/accel/st_accel_i2c.c
->> @@ -14,8 +14,8 @@
->>  #include <linux/acpi.h>
->>  #include <linux/i2c.h>
->>  #include <linux/iio/iio.h>
->> +#include <linux/property.h>
->>
->> -#include <linux/iio/common/st_sensors.h>
->>  #include <linux/iio/common/st_sensors_i2c.h>
->>  #include "st_accel.h"
->>
->> @@ -107,7 +107,7 @@ MODULE_DEVICE_TABLE(of, st_accel_of_match);
->>
->>  #ifdef CONFIG_ACPI
->>  static const struct acpi_device_id st_accel_acpi_match[] = {
->> -       {"SMO8A90", LNG2DM},
->> +       {"SMO8A90", (kernel_ulong_t)LNG2DM_ACCEL_DEV_NAME},
->>         { },
->
-> Is it done against iio-next?
->
-> I see two records in this table.
+struct i2c_device_id argument of probe() is not used, so use probe_new()
+instead.
 
-No, I'll rebase onto linux-next and resend...
+Signed-off-by: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
+---
+ drivers/iio/accel/st_accel_i2c.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-Niko
+diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
+index c6e08c834f11..0659e9a67f85 100644
+--- a/drivers/iio/accel/st_accel_i2c.c
++++ b/drivers/iio/accel/st_accel_i2c.c
+@@ -138,8 +138,7 @@ static const struct i2c_device_id st_accel_id_table[] = {
+ };
+ MODULE_DEVICE_TABLE(i2c, st_accel_id_table);
+ 
+-static int st_accel_i2c_probe(struct i2c_client *client,
+-						const struct i2c_device_id *id)
++static int st_accel_i2c_probe(struct i2c_client *client)
+ {
+ 	struct iio_dev *indio_dev;
+ 	struct st_sensor_data *adata;
+@@ -179,7 +178,7 @@ static struct i2c_driver st_accel_driver = {
+ 		.of_match_table = of_match_ptr(st_accel_of_match),
+ 		.acpi_match_table = ACPI_PTR(st_accel_acpi_match),
+ 	},
+-	.probe = st_accel_i2c_probe,
++	.probe_new = st_accel_i2c_probe,
+ 	.remove = st_accel_i2c_remove,
+ 	.id_table = st_accel_id_table,
+ };
+-- 
+2.17.1
 
-...
