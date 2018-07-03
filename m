@@ -1,5 +1,5 @@
 Return-Path: <SRS0=lHPj=JT=it-klinger.de=ak@kernel.org>
-Date: Tue, 3 Jul 2018 14:48:50 +0200
+Date: Tue, 3 Jul 2018 14:49:22 +0200
 From: Andreas Klinger <ak@it-klinger.de>
 To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
 	robh+dt@kernel.org, mark.rutland@arm.com, mchehab@kernel.org,
@@ -7,32 +7,44 @@ To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
 	akpm@linux-foundation.org, linus.walleij@linaro.org,
 	rdunlap@infradead.org, devicetree@vger.kernel.org,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 0/3] iio: hx711: add data-ready-delay
-Message-ID: <20180703124850.GA17965@arbeit>
+Subject: [PATCH v3 1/3] iio: hx711: add avia,data-ready-delay-ns property in
+ DT
+Message-ID: <20180703124922.GA18022@arbeit>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch adds an additional property in the device tree for adjusting the
-delay between a rising edge on PD_SCK until data is ready on DOUT.
+add avia,data-ready-delay-ns property for hx711 ADC
+this is the delay after rising PD_SCK until DOUT is read and assumed to be
+ready
 
-This is necessary because of parasitic capacities on different systems.
+Signed-off-by: Andreas Klinger <ak@it-klinger.de>
+---
+ Documentation/devicetree/bindings/iio/adc/avia-hx711.txt | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-In the last patch there is a fix of dtc warning if someone is using the
-given example
-
-Changes against v2:
-- added suggestion of Jonathan to add vendor prefix in device tree setting
-
-
-Andreas Klinger (3):
-  iio: hx711: add data-ready-delay-ns property in DT
-  iio: hx711: add delay until DOUT is ready
-  iio: hx711: warning in dt binding example doc
-
- .../devicetree/bindings/iio/adc/avia-hx711.txt     |  9 ++++++++-
- drivers/iio/adc/hx711.c                            | 23 ++++++++++++++++++++++
- 2 files changed, 31 insertions(+), 1 deletion(-)
-
+diff --git a/Documentation/devicetree/bindings/iio/adc/avia-hx711.txt b/Documentation/devicetree/bindings/iio/adc/avia-hx711.txt
+index b3629405f568..669d213e2964 100644
+--- a/Documentation/devicetree/bindings/iio/adc/avia-hx711.txt
++++ b/Documentation/devicetree/bindings/iio/adc/avia-hx711.txt
+@@ -8,11 +8,18 @@ Required properties:
+ 		See Documentation/devicetree/bindings/gpio/gpio.txt
+  - avdd-supply:	Definition of the regulator used as analog supply
+ 
++Optional properties:
++ - avia,data-ready-delay-ns:	additional delay in nanoseconds between
++				rising of PD_SCK until DOUT is ready
++				should be less then maximum PD_SCK high
++				time which is 50000 in the datasheet
++
+ Example:
+ weight@0 {
+ 	compatible = "avia,hx711";
+ 	sck-gpios = <&gpio3 10 GPIO_ACTIVE_HIGH>;
+ 	dout-gpios = <&gpio0 7 GPIO_ACTIVE_HIGH>;
+ 	avdd-suppy = <&avdd>;
++	avia,data-ready-delay-ns = <1000>;
+ };
+ 
 -- 
 2.1.4
