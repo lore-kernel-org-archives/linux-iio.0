@@ -1,56 +1,47 @@
 Return-Path: <SRS0=mx9i=JT=denx.de=pn@kernel.org>
 Cc: pn@denx.de, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
- robh+dt@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- mark.rutland@arm.com, devicetree@vger.kernel.org, matthias.bgg@gmail.com,
- wd@denx.de, sbabic@denx.de, hs@denx.de
-Subject: Re: [PATCH v2 1/2] iio: light: Add support for vishay vcnl4035
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+ pmeerw@pmeerw.net, robh+dt@kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, mark.rutland@arm.com,
+ devicetree@vger.kernel.org, matthias.bgg@gmail.com, wd@denx.de,
+ sbabic@denx.de, hs@denx.de
+Subject: Re: [PATCH 1/2] iio: light: Add support for vishay vcnl4035
+To: Jonathan Cameron <jonathan.cameron@huawei.com>
 References: <20180628123021.1628338-1-pn@denx.de>
- <20180629153802.1639514-1-pn@denx.de>
- <alpine.DEB.2.21.1806301131230.15970@vps.pmeerw.net>
+ <20180629185950.00005c54@huawei.com>
 From: Parthiban Nallathambi <pn@denx.de>
-Message-ID: <72632762-ebca-8fce-7291-458654b5ee4c@denx.de>
-Date: Tue, 3 Jul 2018 14:58:09 +0200
+Message-ID: <03abc2a3-82dd-c2fd-bbae-adc320319428@denx.de>
+Date: Tue, 3 Jul 2018 15:35:05 +0200
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.21.1806301131230.15970@vps.pmeerw.net>
+In-Reply-To: <20180629185950.00005c54@huawei.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-Hello Peter,
+Hello Jonathan,
 
-Thanks for your comments. Will send v3 with comments fixed.
+Thanks for your comments. Will send fixed v3 patch.
 
-On 06/30/2018 11:51 AM, Peter Meerwald-Stadler wrote:
+On 06/29/2018 07:59 PM, Jonathan Cameron wrote:
+> On Thu, 28 Jun 2018 14:30:20 +0200
+> Parthiban Nallathambi <pn@denx.de> wrote:
 > 
 >> Add support for VCNL4035, which is capable of Ambient light
 >> sensing (ALS) and proximity function. This patch adds support
 >> only for ALS function
-> 
-> comments below
-> 
-> a lot of effort is in getting a timestamp; is it worth it for ALS
-> measurement? also the implementation is quite involved, what is the idea?
-
-Initial idea was to include proximity function together with ALS and
-hence the complexity.
-
-Yes, timestamp is not required considering only ALS data. I have removed
-it now. Will send the cleaned up patch in v3.
-
->   
+>>
 >> Signed-off-by: Parthiban Nallathambi <pn@denx.de>
->> ---
->>
->> Changelog since v1:
->>
->> 1. Fixed 0-day warning on le16_to_cpu usage
->> 2. Persistence value is directly mapped to datasheet's value to
->> avoid confusions of usage from sysfs
+> 
+> Hi,
+> 
+> Looks fairly clean in general, but a few questions and minor suggestions inline.
+> 
+> There is some non standard ABI in here for which I'd like to have seen documentation.
+> 
+> Jonathan
 >> ---
 >>   drivers/iio/light/Kconfig    |  12 +
 >>   drivers/iio/light/Makefile   |   1 +
->>   drivers/iio/light/vcnl4035.c | 682 +++++++++++++++++++++++++++++++++++++++++++
->>   3 files changed, 695 insertions(+)
+>>   drivers/iio/light/vcnl4035.c | 684 +++++++++++++++++++++++++++++++++++++++++++
+>>   3 files changed, 697 insertions(+)
 >>   create mode 100644 drivers/iio/light/vcnl4035.c
 >>
 >> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
@@ -90,10 +81,10 @@ it now. Will send the cleaned up patch in v3.
 >>   obj-$(CONFIG_ZOPT2201)		+= zopt2201.o
 >> diff --git a/drivers/iio/light/vcnl4035.c b/drivers/iio/light/vcnl4035.c
 >> new file mode 100644
->> index 000000000000..45eccb462ed0
+>> index 000000000000..fc19856f965b
 >> --- /dev/null
 >> +++ b/drivers/iio/light/vcnl4035.c
->> @@ -0,0 +1,682 @@
+>> @@ -0,0 +1,684 @@
 >> +// SPDX-License-Identifier: GPL-2.0
 >> +/*
 >> + * VCNL4035 Ambient Light and Proximity Sensor - 7-bit I2C slave address 0x60
@@ -126,12 +117,6 @@ it now. Will send the cleaned up patch in v3.
 >> +#define VCNL4035_ALS_THDL	0x02
 >> +#define VCNL4035_ALS_DATA	0x0B
 >> +#define	VCNL4035_INT_FLAG	0x0D
-> 
-> there seems to be a tab before VCNL4035_INT_FLAG, should be space
-
-Sure, thanks. Replace with space.
-
-> 
 >> +#define VCNL4035_DEV_ID		0x0E
 >> +
 >> +/* Register masks */
@@ -160,7 +145,7 @@ Sure, thanks. Replace with space.
 >> +	/* protect device settings persistence, integration time, threshold */
 >> +	struct mutex lock;
 >> +	unsigned int als_it_val;
->> +	unsigned int als_persistence:4;
+>> +	unsigned int als_persistence;
 >> +	unsigned int als_thresh_low;
 >> +	unsigned int als_thresh_high;
 >> +	struct iio_trigger *drdy_trigger0;
@@ -187,6 +172,22 @@ Sure, thanks. Replace with space.
 >> +	struct vcnl4035_data *data = iio_priv(indio_dev);
 >> +
 >> +	data->irq_timestamp = iio_get_time_ns(indio_dev);
+> 
+> This all seems a bit more complex that I'd expect.
+> I would like some comments on why it is so complex..
+> 
+> Only reason I can come up with quickly is to handle shared interrupts?
+> But if that is the case you'll sometimes get the wrong timestamp here.
+> 
+> Otherwise, right now we only have one cause of interrupts and
+> might as well just set pf->timestamp directly here.
+> 
+
+Based on Peter's comments, timestamp is ignored as the driver only
+supports ALS measurement. So I will remove this part of handling and
+will have only bottom half checking the INT flag and trigger the
+consumer, thanks.
+
 >> +	return IRQ_WAKE_THREAD;
 >> +}
 >> +
@@ -226,39 +227,41 @@ Sure, thanks. Replace with space.
 >> +	if (iio_trigger_using_own(indio_dev) && data->irq_timestamp) {
 >> +		pf->timestamp = data->irq_timestamp;
 >> +		data->irq_timestamp = 0;
+> 
+> If we get here and the path was anything other than via our top half
+> handler that set this then something odd is going on.
+
+As mentioned above, timestamp is removed.
+
+> 
 >> +	}
 >> +
 >> +	if (!pf->timestamp)
 >> +		pf->timestamp = iio_get_time_ns(indio_dev);
+> 
+> Hmm. Why would we hit here when using our own trigger?  If not make this
+> a simple else and it will be less confusing.
+
+As mentioned above, timestamp is removed.
+
+> 
 >> +
 >> +	mutex_lock(&data->lock);
-> 
-> what is the purpose of the lock?
-> the comment in vcnl4035_data doesn't mention it either
-
-Device parameters are proportional, so lock it introduced to protect
-across scaling factor, integration time, so that raw read and INT read
-process it with correct/new integration time and scaling factor.
-
-But there isn't any need to protect the data read from the register. I
-will remove this lock here.
-
-> 
 >> +	ret = regmap_read(data->regmap, VCNL4035_ALS_DATA, &als_data);
 >> +	mutex_unlock(&data->lock);
->> +	if (!ret)
+>> +	if (!ret) {
+>> +		als_data = le16_to_cpu(als_data);
+> As the autobuilder pointed out, use a local variable of the correct
+> endianess.
+
+Fixed it in v2 already. Will remove the timestamp part and use
+iio_push_to_buffers in v3, thanks.
+
+> 
 >> +		iio_push_to_buffers_with_timestamp(indio_dev,
 >> +						   &als_data,
-> 
-> als_data needs to be large enough to hold the timestamp, see documentation
-> of iio_push_to_buffers_with_timestamp()
-
-Timestamp is removed, so I have used iio_push_to_buffers to push the raw
-ALS value.
-
-> 
 >> +						   pf->timestamp);
->> +	else
+>> +	} else
 >> +		dev_err(&data->client->dev,
 >> +			"Trigger consumer can't read from sensor.\n");
 >> +	pf->timestamp = 0;
@@ -282,6 +285,13 @@ ALS value.
 >> +				 val);
 >> +	if (ret)
 >> +		dev_err(&data->client->dev, "%s failed\n", __func__);
+> 
+> I believe you can configure dev_err to output the function name anyway
+> so not a lot of point of putting it here explicitly.
+
+Yes, returned directly from regmap_update_bits now. Thanks
+
+> 
 >> +
 >> +	return ret;
 >> +}
@@ -292,34 +302,16 @@ ALS value.
 >> +
 >> +/*
 >> + *	Device IT	INT Time(ms)	Scale (lux/step)
-> 
-> maybe space before (ms)?
-
-Sure, thanks.
-
-> 
 >> + *	000		50		0.064
 >> + *	001		100		0.032
 >> + *	010		200		0.016
 >> + *	100		400		0.008
 >> + *	101 - 111	800		0.004
 >> + * Values are proportial, so ALS INT is selected for input due to
-> 
-> proportional
-
-Typo corrected.
-
-> 
 >> + * simplicity reason. Integration time value and scaling is
 >> + * calculated based on device INT value
 >> + *
 >> + * Raw value needs to be scaled using ALS STEPS
-> 
-> steps
-
-Fixed it, thanks.
-
-> 
 >> + *
 >> + */
 >> +static int vcnl4035_read_raw(struct iio_dev *indio_dev,
@@ -329,12 +321,6 @@ Fixed it, thanks.
 >> +	struct vcnl4035_data *data = iio_priv(indio_dev);
 >> +	int ret;
 >> +	int busy;
-> 
-> needed? can 'ret' be used?
-
-busy is removed. ret is used and directly returned, thanks
-
-> 
 >> +	int raw_data;
 >> +
 >> +	switch (mask) {
@@ -342,6 +328,11 @@ busy is removed. ret is used and directly returned, thanks
 >> +		busy = iio_device_claim_direct_mode(indio_dev);
 >> +		if (busy)
 >> +			return -EBUSY;
+> why not use ret = iio_device_claim...
+> and return ret?  (which will be EBUSY if it's busy IIRC)
+
+Ok, busy is removed. returned ret directly here.
+
 >> +
 >> +		ret = regmap_read(data->regmap, VCNL4035_ALS_DATA, &raw_data);
 >> +		iio_device_release_direct_mode(indio_dev);
@@ -354,12 +345,6 @@ busy is removed. ret is used and directly returned, thanks
 >> +		mutex_lock(&data->lock);
 >> +		*val = data->als_it_val * 100;
 >> +		if (!*val)
-> 
-> maybe check data->als_it_val and then set *val accordingly as done below
-
-Ok, default is updated to 50 and condition check done.
-
-> 
 >> +			*val = 50;
 >> +		mutex_unlock(&data->lock);
 >> +		return IIO_VAL_INT;
@@ -396,13 +381,6 @@ Ok, default is updated to 50 and condition check done.
 >> +			data->als_it_val = val / 100;
 >> +		mutex_unlock(&data->lock);
 >> +		break;
-> 
-> return ret;
-> directly here
-
-Sure.
-
-> 
 >> +	default:
 >> +		return -EINVAL;
 >> +	}
@@ -438,19 +416,25 @@ Sure.
 >> +		mutex_lock(&data->lock);
 >> +		*val = data->als_persistence;
 >> +		mutex_unlock(&data->lock);
+> 
+> Given mutex is taken in all paths, why not take it outside
+> the switch?  Mind you I'm not totally sure why we need to take
+> the lock at all.  We don't take it whilst setting these values.
+
+Lock is introduced to protect the device parameters as both integration
+time and scaling factor is proportionally calculated. This makes raw
+read and INT read sync with the new/latest updated value of device.
+
+I will move the locking outside the switch.
+
+> 
+> 
 >> +		break;
 >> +	default:
 >> +		return -EINVAL;
 >> +	}
 >> +
 >> +	return IIO_VAL_INT;
-> 
-> move it up, instead of the
-> break;
-
-Sure.
-
-> 
 >> +}
 >> +
 >> +static int vcnl4035_write_thresh(struct iio_dev *indio_dev,
@@ -472,16 +456,6 @@ Sure.
 >> +			mutex_lock(&data->lock);
 >> +			ret = regmap_write(data->regmap, VCNL4035_ALS_THDH,
 >> +					   val);
-> 
-> isn't the purpose of the lock to have
-> data->als_thresh_high = val;
-> in the same critical section?
-> 
-> here and similarly below
-
-Yes, missed this sync. Will move this part inside lock.
-
-> 
 >> +			mutex_unlock(&data->lock);
 >> +			if (ret)
 >> +				return ret;
@@ -499,18 +473,12 @@ Yes, missed this sync. Will move this part inside lock.
 >> +		}
 >> +		break;
 >> +	case IIO_EV_INFO_PERIOD:
->> +		/* allow only 1 2 4 8 as persistence value */
->> +		if (val < 0 || val > 8 || (__sw_hweight8(val) != 1))
-> 
-> parenthesis around last condition not needed
-
-Sure, removed.
-
-> 
+>> +		if (val < 0 || val > 3)
 >> +			return -EINVAL;
 >> +		mutex_lock(&data->lock);
+>> +		/* device persistence values 1 2 4 8 mapped with 0 1 2 3 */
 >> +		ret = regmap_update_bits(data->regmap, VCNL4035_ALS_CONF,
->> +					 VCNL4035_ALS_PERS_MASK, val);
+>> +					 VCNL4035_ALS_PERS_MASK, 1 << val);
 >> +		mutex_unlock(&data->lock);
 >> +		if (ret)
 >> +			return ret;
@@ -523,12 +491,42 @@ Sure, removed.
 >> +}
 >> +
 >> +static IIO_CONST_ATTR(als_available_integration_time, "50 100 200 400 800");
->> +static IIO_CONST_ATTR(als_available_persistence, "1 2 4 8");
+>> +/* device ALS persistence 1 2 4 8 mapped to users 0 1 2 3 */
+>> +static IIO_CONST_ATTR(als_available_persistence, "0 1 2 3");
 >> +static IIO_CONST_ATTR(als_available_threshold_range, "0 65535");
 >> +
 >> +static struct attribute *vcnl4035_attributes[] = {
 >> +	&iio_const_attr_als_available_integration_time.dev_attr.attr,
+> 
+> These don't comply with the abi which has available at the end not the start.
+
+Sorry, so this needs to be moved to begining or start of the file.
+
+> 
 >> +	&iio_const_attr_als_available_threshold_range.dev_attr.attr,
+> 
+> I'm not even sure what these two are...
+> 
+> All new ABI or ABI that is currently specific to too narrow a range of
+> parts must be documented in /Documentation/ABI/testing/sysfs-bus-iio-*
+
+Threshold range: Defines the lower and upper threshold ALS value. This
+internally used by the device before triggering the interrupt i.e,
+interrupt will be triggered only of the ALS values falls below or above
+the threshold range here.
+
+Persistence value: How many intergration cycle the ALS values stays
+lower or uppers then the threshold value.
+
+Should I need to include a new ABI to handle this case or introduce a
+driver specific sysfs entry to control theses values is fine.
+
+I have seen your comments about TSL2591 in the ML. So adding a new ABI
+for the time PERIOD (in different form - persistence) does not make
+sense. But this value lowers the amount of interrupt which is generated
+by the device.
+
+> 
 >> +	&iio_const_attr_als_available_persistence.dev_attr.attr,
 >> +	NULL,
 >> +};
@@ -551,13 +549,6 @@ Sure, removed.
 >> +
 >> +static const unsigned long vcnl4035_available_scan_masks[] = {
 >> +	BIT(VCNL4035_CHAN_INDEX_LIGHT), 0
-> 
-> I'd put 0 in a separate line so that it can be extended with a single line
-> patch (extreme nitpick)
-
-Sure, make sense when extending it for proximity.
-
-> 
 >> +};
 >> +
 >> +static const struct iio_event_spec vcnl4035_event_spec[] = {
@@ -763,6 +754,16 @@ Sure, make sense when extending it for proximity.
 >> +
 >> +		/* Trigger setup */
 >> +		ret = devm_iio_triggered_buffer_setup(indio_dev->dev.parent,
+> 
+> I would prefer to see a clear unroll in the reverse order of setup.
+> That means you can't safely mix managed and unmanaged cleanup.  Only use
+> devm until the point where you have to do something that can't be managed, or
+> use the devm action approach to move all the cleanup into the managed path.
+
+Sure. I have moved this as unmanaged setup and also the trigger_register
+part and moved it above. Will clean the buffer setup explicit in failure
+
+> 
 >> +			indio_dev,
 >> +			vcnl4035_trigger_consumer_store_time,
 >> +			vcnl4035_trigger_consumer_handler,
@@ -777,13 +778,15 @@ Sure, make sense when extending it for proximity.
 >> +	if (ret)
 >> +		goto fail_pm_disable;
 >> +	dev_info(&client->dev, "%s Ambient light/proximity sensor\n",
-> 
-> no need for this logging
-
-Sure, removed it.
-
-> 
 >> +						VCNL4035_DRV_NAME);
+> 
+> I'm generally against this sort of print unless it adds real value.
+> Here it is just printing out something you can easily establish by lots
+> of other means.  Hence please drop it.
+
+Thanks, removed it.
+
+> 
 >> +	return 0;
 >> +
 >> +fail_pm_disable:
@@ -792,13 +795,6 @@ Sure, removed it.
 >> +	pm_runtime_put_noidle(&client->dev);
 >> +fail_poweroff:
 >> +	return vcnl4035_set_als_power_state(data, VCNL4035_MODE_ALS_DISABLE);
-> 
-> I think we want to return the 'ret' value indicating the original failure,
-> not the return value of vcnl4035_set_als_power_state() which is likely success
-
-Yes, will move the power state above and will return ret here. Thanks.
-
-> 
 >> +}
 >> +
 >> +static int vcnl4035_remove(struct i2c_client *client)
@@ -882,7 +878,8 @@ Yes, will move the power state above and will return ret here. Thanks.
 >> +MODULE_AUTHOR("Parthiban Nallathambi <pn@denx.de>");
 >> +MODULE_DESCRIPTION("VCNL4035 Ambient Light Sensor driver");
 >> +MODULE_LICENSE("GPL v2");
->>
+> 
+> 
 > 
 
 -- 
