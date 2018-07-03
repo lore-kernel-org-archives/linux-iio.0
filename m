@@ -1,41 +1,50 @@
-Return-Path: <SRS0=lHPj=JT=it-klinger.de=ak@kernel.org>
-Date: Tue, 3 Jul 2018 14:50:40 +0200
-From: Andreas Klinger <ak@it-klinger.de>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	robh+dt@kernel.org, mark.rutland@arm.com, mchehab@kernel.org,
-	davem@davemloft.net, gregkh@linuxfoundation.org,
-	akpm@linux-foundation.org, linus.walleij@linaro.org,
-	rdunlap@infradead.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 3/3] iio: hx711: warning in dt binding example doc
-Message-ID: <20180703125040.GA18226@arbeit>
+Return-Path: <SRS0=to0h=JT=embeddedor.com=gustavo@kernel.org>
+Date: Tue, 3 Jul 2018 14:35:50 -0500
+From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	"Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH] iio:imu:adis: Mark expected switch fall-throughs
+Message-ID: <20180703193550.GA12565@embeddedor.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 List-ID: <linux-iio@vger.kernel.org>
 
-device tree compiler (dtc) gives a warning if a device node has "@" with a
-following number as it's name but no reg property.
+In preparation to enabling -Wimplicit-fallthrough, mark switch cases
+where we are expecting to fall through.
 
-fix the example in the documentation of avia,hx711 to conform to dtc
-behavior
-
-Signed-off-by: Andreas Klinger <ak@it-klinger.de>
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 ---
- Documentation/devicetree/bindings/iio/adc/avia-hx711.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/imu/adis.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/avia-hx711.txt b/Documentation/devicetree/bindings/iio/adc/avia-hx711.txt
-index 669d213e2964..73676eef8f08 100644
---- a/Documentation/devicetree/bindings/iio/adc/avia-hx711.txt
-+++ b/Documentation/devicetree/bindings/iio/adc/avia-hx711.txt
-@@ -15,7 +15,7 @@ Optional properties:
- 				time which is 50000 in the datasheet
- 
- Example:
--weight@0 {
-+weight {
- 	compatible = "avia,hx711";
- 	sck-gpios = <&gpio3 10 GPIO_ACTIVE_HIGH>;
- 	dout-gpios = <&gpio0 7 GPIO_ACTIVE_HIGH>;
+diff --git a/drivers/iio/imu/adis.c b/drivers/iio/imu/adis.c
+index ad6f91d..c771ae6 100644
+--- a/drivers/iio/imu/adis.c
++++ b/drivers/iio/imu/adis.c
+@@ -81,9 +81,11 @@ int adis_write_reg(struct adis *adis, unsigned int reg,
+ 		adis->tx[9] = (value >> 24) & 0xff;
+ 		adis->tx[6] = ADIS_WRITE_REG(reg + 2);
+ 		adis->tx[7] = (value >> 16) & 0xff;
++		/* fall through */
+ 	case 2:
+ 		adis->tx[4] = ADIS_WRITE_REG(reg + 1);
+ 		adis->tx[5] = (value >> 8) & 0xff;
++		/* fall through */
+ 	case 1:
+ 		adis->tx[2] = ADIS_WRITE_REG(reg);
+ 		adis->tx[3] = value & 0xff;
+@@ -167,6 +169,7 @@ int adis_read_reg(struct adis *adis, unsigned int reg,
+ 		adis->tx[2] = ADIS_READ_REG(reg + 2);
+ 		adis->tx[3] = 0;
+ 		spi_message_add_tail(&xfers[1], &msg);
++		/* fall through */
+ 	case 2:
+ 		adis->tx[4] = ADIS_READ_REG(reg);
+ 		adis->tx[5] = 0;
 -- 
-2.1.4
+2.7.4
