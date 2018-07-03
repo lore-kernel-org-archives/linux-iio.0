@@ -1,61 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:54108 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1753949AbeGGQps (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 7 Jul 2018 12:45:48 -0400
-Date: Sat, 7 Jul 2018 17:45:43 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Sean =?UTF-8?B?Tnlla2rDpnI=?= <sean.nyekjaer@prevas.dk>
-Cc: Colin King <colin.king@canonical.com>,
+Received: from mail.steuer-voss.de ([85.183.69.95]:55098 "EHLO
+        mail.steuer-voss.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752719AbeGCHDx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 3 Jul 2018 03:03:53 -0400
+Message-Id: <cover.1530599660.git.nikolaus.voss@loewensteinmedical.de>
+From: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
+Date: Tue, 3 Jul 2018 08:34:20 +0200
+Subject: [PATCH v2 0/2] IIO: st_sensors_i2c: improve device enumeration
+To: Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: dac: remove redundant variable 'shift'
-Message-ID: <20180707174543.1f67e22d@archlinux>
-In-Reply-To: <62141c55-575a-d068-360a-e0ea53df6f17@prevas.dk>
-References: <20180702102435.16724-1-colin.king@canonical.com>
-        <62141c55-575a-d068-360a-e0ea53df6f17@prevas.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Xiongfeng Wang <xiongfeng.wang@linaro.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>, nv@vosn.de
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 2 Jul 2018 12:43:20 +0200
-Sean Nyekj=C3=A6r <sean.nyekjaer@prevas.dk> wrote:
+When trying to instantiate a st_accel_i2c device from an ACPI based
+system, I ran into some problems:
 
-> On 2018-07-02 12:24, Colin King wrote:
-> > From: Colin Ian King <colin.king@canonical.com>
-> >=20
-> > Variable shift is being assigned but is never used hence it is
-> > redundant and can be removed.
-> >=20
-> > Cleans up two clang warnings:
-> > warning: variable =E2=80=98shift=E2=80=99 set but not used [-Wunused-bu=
-t-set-variable]
-> >=20
-> > Signed-off-by: Colin Ian King <colin.king@canonical.com> =20
-> Reviewed-by: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
->=20
-> Good catch :-)
->=20
-> BR
-> /Sean
-Hi Colin,
+For my device, there is no ACPI match table entry, so rather than
+creating /allocating a new ACPI HID for the device, I wanted to use an
+existing DT table compatible entry via creating an ACPI_DT_NAMESPACE_HID
+/PRP0001 HID ACPI entry (see Documentation/acpi/enumeration.txt).
 
-As ever, thanks for the patch!
+This did not work because st_accel_i2c.c bails out if there is a ACPI
+node but no ACPI table match. Use device_get_match_data API to get the
+right driver data.
 
-If you wouldn't mind putting the name of the driver in question in patches
-like these that would be great.    There are enough drivers, that I doubt
-anyone (other than me) looks at all patches for DACs.  They only look at
-the particular parts they actually have on boards ;)
+acpi_device_get_match_data() currently doesn't return DT compatible
+matches. A separate patch is submitted to fix this.
 
-Applied to the togreg branch of iio.git and pushed out as testing for the
-autobuilders to play with it.
+v2:
+  - use device_get_match_data API as suggested by Andy Shevchenko
+  - removed syncing DT/I2C table names as Jonathan Cameron pointed out
+    this would be an ABI change
+  - converting from probe() to probe_new() is moved into a separate
+    patch (as suggested by Jonathan Cameron)
 
-Thanks,
+Nikolaus Voss (2):
+  IIO: st_accel_i2c.c: Simplify access to driver data
+  IIO: st_accel_i2c.c: Use probe_new() instead of probe()
 
-Jonathan
+ drivers/iio/accel/st_accel_i2c.c | 26 ++++++++++----------------
+ 1 file changed, 10 insertions(+), 16 deletions(-)
 
+-- 
+2.17.1
 
