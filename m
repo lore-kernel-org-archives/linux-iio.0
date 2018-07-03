@@ -1,106 +1,53 @@
-Return-Path: <SRS0=507y=JS=analog.com=alexandru.Ardelean@kernel.org>
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "jic23@kernel.org" <jic23@kernel.org>
-CC: "lars@metafoo.de" <lars@metafoo.de>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "Hennerich, Michael"
-	<Michael.Hennerich@analog.com>
-Subject: Re: [PATCH V2] iio: ad9523: replace core mlock with local lock
-Date: Mon, 2 Jul 2018 07:56:01 +0000
-Message-ID: <73c0c0adf8a5651aa06b849084e2ecee0d1a902f.camel@analog.com>
-References: <20180625080117.13599-1-alexandru.ardelean@analog.com>
-	 <20180630183017.74c6a70a@archlinux>
-In-Reply-To: <20180630183017.74c6a70a@archlinux>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-yb0-f195.google.com ([209.85.213.195]:34113 "EHLO
+        mail-yb0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753159AbeGCVsq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 3 Jul 2018 17:48:46 -0400
+Date: Tue, 3 Jul 2018 15:48:43 -0600
+From: Rob Herring <robh@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Andreas Klinger <ak@it-klinger.de>, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, mark.rutland@arm.com,
+        mchehab@kernel.org, davem@davemloft.net,
+        gregkh@linuxfoundation.org, akpm@linux-foundation.org,
+        linus.walleij@linaro.org, rdunlap@infradead.org,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] iio: hx711: add data-ready-delay-ns property in DT
+Message-ID: <20180703214843.GA484@rob-hp-laptop>
+References: <20180625151802.GA6369@arbeit>
+ <20180630183232.540ce031@archlinux>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20180630183232.540ce031@archlinux>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-T24gU2F0LCAyMDE4LTA2LTMwIGF0IDE4OjMwICswMTAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
-Og0KPiBPbiBNb24sIDI1IEp1biAyMDE4IDExOjAxOjE3ICswMzAwDQo+IEFsZXhhbmRydSBBcmRl
-bGVhbiA8YWxleGFuZHJ1LmFyZGVsZWFuQGFuYWxvZy5jb20+IHdyb3RlOg0KPiANCj4gPiBGcm9t
-OiBMYXJzLVBldGVyIENsYXVzZW4gPGxhcnNAbWV0YWZvby5kZT4NCj4gPiANCj4gPiBUaGlzIGlz
-IHBhcnQgb2YgYSBsb25nIHRlcm0gZWZmb3J0IHRvIG1ha2UgdGhlIHVzZSBvZiBtbG9jayBvcGFx
-dWUgYW5kDQo+ID4gc2luZ2xlIHB1cnBvc2UuDQo+ID4gDQo+ID4gU2lnbmVkLW9mZi1ieTogTGFy
-cy1QZXRlciBDbGF1c2VuIDxsYXJzQG1ldGFmb28uZGU+DQo+ID4gU2lnbmVkLW9mZi1ieTogQWxl
-eGFuZHJ1IEFyZGVsZWFuIDxhbGV4YW5kcnUuYXJkZWxlYW5AYW5hbG9nLmNvbT4NCj4gDQo+IFBh
-dGNoIGlzIGZpbmUsIGJ1dCBJJ2QgbGlrZSB0byBzZWUgcHJlY2lzZSBkb2N1bWVudGF0aW9uIGZv
-ciB0aGUNCj4gc2NvcGUgb2YgdGhlIGxvY2suICBUaGVzZSB0aGluZ3MgY2FuIGJlIGF3ZnVsbHkg
-J2Z1enp5JyBzbyBnb29kDQo+IHRvIGRlZmluZSB0aGlzIGV4cGxpY2l0bHkuDQoNCkFjay4NCldp
-bGwgY29tZSBiYWNrIHdpdGggYSBWMi4NCg0KVGhhbmtzDQpBbGV4DQoNCj4gDQo+IEpvbmF0aGFu
-DQo+IA0KPiA+IC0tLQ0KPiA+IA0KPiA+IHYxIC0+IHYyOg0KPiA+ICogYWRkZWQgU2lnbmVkLW9m
-Zi1ieTogQWxleGFuZHJ1IEFyZGVsZWFuIDxhbGV4YW5kcnUuYXJkZWxlYW5AYW5hbG9nLmNvDQo+
-ID4gbT4NCj4gPiANCj4gPiAgZHJpdmVycy9paW8vZnJlcXVlbmN5L2FkOTUyMy5jIHwgMjcgKysr
-KysrKysrKysrKysrKystLS0tLS0tLS0tDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAxNyBpbnNlcnRp
-b25zKCspLCAxMCBkZWxldGlvbnMoLSkNCj4gPiANCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9p
-aW8vZnJlcXVlbmN5L2FkOTUyMy5jDQo+ID4gYi9kcml2ZXJzL2lpby9mcmVxdWVuY3kvYWQ5NTIz
-LmMNCj4gPiBpbmRleCBkZGI2YTMzNGFlNjguLjFiNzBlOGExMzMzOCAxMDA2NDQNCj4gPiAtLS0g
-YS9kcml2ZXJzL2lpby9mcmVxdWVuY3kvYWQ5NTIzLmMNCj4gPiArKysgYi9kcml2ZXJzL2lpby9m
-cmVxdWVuY3kvYWQ5NTIzLmMNCj4gPiBAQCAtMjc0LDYgKzI3NCw4IEBAIHN0cnVjdCBhZDk1MjNf
-c3RhdGUgew0KPiA+ICAJdW5zaWduZWQgbG9uZwkJdmNvX291dF9mcmVxW0FEOTUyM19OVU1fQ0xL
-X1NSQ107DQo+ID4gIAl1bnNpZ25lZCBjaGFyCQl2Y29fb3V0X21hcFtBRDk1MjNfTlVNX0NIQU5f
-QUxUX0MNCj4gPiBMS19TUkNdOw0KPiA+ICANCj4gDQo+IEknZCBsaWtlIHRvIHNlZSBhIHByZWNp
-c2UgZGVmaW5pdGlvbiBvZiB3aGF0IHRoaXMgbG9jayBpcyBpbnRlbmRlZA0KPiB0byBwcm90ZWN0
-LiAgTm90IHRvIG1lbnRpb24gY2hlY2twYXRjaCB3aWxsIG1vYW4gYWJvdXQgaXQgSSB0aGluaw0K
-PiBpZiB0aGVyZSBpcyBub3RoaW5nIGhlcmUgOykNCj4gDQo+ID4gKwlzdHJ1Y3QgbXV0ZXgJCWxv
-Y2s7DQo+ID4gKw0KPiA+ICAJLyoNCj4gPiAgCSAqIERNQSAodGh1cyBjYWNoZSBjb2hlcmVuY3kg
-bWFpbnRlbmFuY2UpIHJlcXVpcmVzIHRoZQ0KPiA+ICAJICogdHJhbnNmZXIgYnVmZmVycyB0byBs
-aXZlIGluIHRoZWlyIG93biBjYWNoZSBsaW5lcy4NCj4gPiBAQCAtNTAwLDYgKzUwMiw3IEBAIHN0
-YXRpYyBzc2l6ZV90IGFkOTUyM19zdG9yZShzdHJ1Y3QgZGV2aWNlICpkZXYsDQo+ID4gIHsNCj4g
-PiAgCXN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYgPSBkZXZfdG9faWlvX2RldihkZXYpOw0KPiA+
-ICAJc3RydWN0IGlpb19kZXZfYXR0ciAqdGhpc19hdHRyID0gdG9faWlvX2Rldl9hdHRyKGF0dHIp
-Ow0KPiA+ICsJc3RydWN0IGFkOTUyM19zdGF0ZSAqc3QgPSBpaW9fcHJpdihpbmRpb19kZXYpOw0K
-PiA+ICAJYm9vbCBzdGF0ZTsNCj4gPiAgCWludCByZXQ7DQo+ID4gIA0KPiA+IEBAIC01MTAsNyAr
-NTEzLDcgQEAgc3RhdGljIHNzaXplX3QgYWQ5NTIzX3N0b3JlKHN0cnVjdCBkZXZpY2UgKmRldiwN
-Cj4gPiAgCWlmICghc3RhdGUpDQo+ID4gIAkJcmV0dXJuIDA7DQo+ID4gIA0KPiA+IC0JbXV0ZXhf
-bG9jaygmaW5kaW9fZGV2LT5tbG9jayk7DQo+ID4gKwltdXRleF9sb2NrKCZzdC0+bG9jayk7DQo+
-ID4gIAlzd2l0Y2ggKCh1MzIpdGhpc19hdHRyLT5hZGRyZXNzKSB7DQo+ID4gIAljYXNlIEFEOTUy
-M19TWU5DOg0KPiA+ICAJCXJldCA9IGFkOTUyM19zeW5jKGluZGlvX2Rldik7DQo+ID4gQEAgLTUy
-MSw3ICs1MjQsNyBAQCBzdGF0aWMgc3NpemVfdCBhZDk1MjNfc3RvcmUoc3RydWN0IGRldmljZSAq
-ZGV2LA0KPiA+ICAJZGVmYXVsdDoNCj4gPiAgCQlyZXQgPSAtRU5PREVWOw0KPiA+ICAJfQ0KPiA+
-IC0JbXV0ZXhfdW5sb2NrKCZpbmRpb19kZXYtPm1sb2NrKTsNCj4gPiArCW11dGV4X3VubG9jaygm
-c3QtPmxvY2spOw0KPiA+ICANCj4gPiAgCXJldHVybiByZXQgPyByZXQgOiBsZW47DQo+ID4gIH0N
-Cj4gPiBAQCAtNTMyLDE1ICs1MzUsMTYgQEAgc3RhdGljIHNzaXplX3QgYWQ5NTIzX3Nob3coc3Ry
-dWN0IGRldmljZSAqZGV2LA0KPiA+ICB7DQo+ID4gIAlzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2
-ID0gZGV2X3RvX2lpb19kZXYoZGV2KTsNCj4gPiAgCXN0cnVjdCBpaW9fZGV2X2F0dHIgKnRoaXNf
-YXR0ciA9IHRvX2lpb19kZXZfYXR0cihhdHRyKTsNCj4gPiArCXN0cnVjdCBhZDk1MjNfc3RhdGUg
-KnN0ID0gaWlvX3ByaXYoaW5kaW9fZGV2KTsNCj4gPiAgCWludCByZXQ7DQo+ID4gIA0KPiA+IC0J
-bXV0ZXhfbG9jaygmaW5kaW9fZGV2LT5tbG9jayk7DQo+ID4gKwltdXRleF9sb2NrKCZzdC0+bG9j
-ayk7DQo+ID4gIAlyZXQgPSBhZDk1MjNfcmVhZChpbmRpb19kZXYsIEFEOTUyM19SRUFEQkFDS18w
-KTsNCj4gPiAgCWlmIChyZXQgPj0gMCkgew0KPiA+ICAJCXJldCA9IHNwcmludGYoYnVmLCAiJWRc
-biIsICEhKHJldCAmICgxIDw8DQo+ID4gIAkJCSh1MzIpdGhpc19hdHRyLT5hZGRyZXNzKSkpOw0K
-PiA+ICAJfQ0KPiA+IC0JbXV0ZXhfdW5sb2NrKCZpbmRpb19kZXYtPm1sb2NrKTsNCj4gPiArCW11
-dGV4X3VubG9jaygmc3QtPmxvY2spOw0KPiA+ICANCj4gPiAgCXJldHVybiByZXQ7DQo+ID4gIH0N
-Cj4gPiBAQCAtNjIzLDkgKzYyNyw5IEBAIHN0YXRpYyBpbnQgYWQ5NTIzX3JlYWRfcmF3KHN0cnVj
-dCBpaW9fZGV2DQo+ID4gKmluZGlvX2RldiwNCj4gPiAgCXVuc2lnbmVkIGludCBjb2RlOw0KPiA+
-ICAJaW50IHJldDsNCj4gPiAgDQo+ID4gLQltdXRleF9sb2NrKCZpbmRpb19kZXYtPm1sb2NrKTsN
-Cj4gPiArCW11dGV4X2xvY2soJnN0LT5sb2NrKTsNCj4gPiAgCXJldCA9IGFkOTUyM19yZWFkKGlu
-ZGlvX2RldiwgQUQ5NTIzX0NIQU5ORUxfQ0xPQ0tfRElTVChjaGFuLQ0KPiA+ID5jaGFubmVsKSk7
-DQo+ID4gLQltdXRleF91bmxvY2soJmluZGlvX2Rldi0+bWxvY2spOw0KPiA+ICsJbXV0ZXhfdW5s
-b2NrKCZzdC0+bG9jayk7DQo+ID4gIA0KPiA+ICAJaWYgKHJldCA8IDApDQo+ID4gIAkJcmV0dXJu
-IHJldDsNCj4gPiBAQCAtNjU5LDcgKzY2Myw3IEBAIHN0YXRpYyBpbnQgYWQ5NTIzX3dyaXRlX3Jh
-dyhzdHJ1Y3QgaWlvX2Rldg0KPiA+ICppbmRpb19kZXYsDQo+ID4gIAl1bnNpZ25lZCBpbnQgcmVn
-Ow0KPiA+ICAJaW50IHJldCwgdG1wLCBjb2RlOw0KPiA+ICANCj4gPiAtCW11dGV4X2xvY2soJmlu
-ZGlvX2Rldi0+bWxvY2spOw0KPiA+ICsJbXV0ZXhfbG9jaygmc3QtPmxvY2spOw0KPiA+ICAJcmV0
-ID0gYWQ5NTIzX3JlYWQoaW5kaW9fZGV2LCBBRDk1MjNfQ0hBTk5FTF9DTE9DS19ESVNUKGNoYW4t
-DQo+ID4gPmNoYW5uZWwpKTsNCj4gPiAgCWlmIChyZXQgPCAwKQ0KPiA+ICAJCWdvdG8gb3V0Ow0K
-PiA+IEBAIC03MDUsNyArNzA5LDcgQEAgc3RhdGljIGludCBhZDk1MjNfd3JpdGVfcmF3KHN0cnVj
-dCBpaW9fZGV2DQo+ID4gKmluZGlvX2RldiwNCj4gPiAgDQo+ID4gIAlhZDk1MjNfaW9fdXBkYXRl
-KGluZGlvX2Rldik7DQo+ID4gIG91dDoNCj4gPiAtCW11dGV4X3VubG9jaygmaW5kaW9fZGV2LT5t
-bG9jayk7DQo+ID4gKwltdXRleF91bmxvY2soJnN0LT5sb2NrKTsNCj4gPiAgCXJldHVybiByZXQ7
-DQo+ID4gIH0NCj4gPiAgDQo+ID4gQEAgLTcxMyw5ICs3MTcsMTAgQEAgc3RhdGljIGludCBhZDk1
-MjNfcmVnX2FjY2VzcyhzdHJ1Y3QgaWlvX2Rldg0KPiA+ICppbmRpb19kZXYsDQo+ID4gIAkJCSAg
-ICAgIHVuc2lnbmVkIGludCByZWcsIHVuc2lnbmVkIGludCB3cml0ZXZhbCwNCj4gPiAgCQkJICAg
-ICAgdW5zaWduZWQgaW50ICpyZWFkdmFsKQ0KPiA+ICB7DQo+ID4gKwlzdHJ1Y3QgYWQ5NTIzX3N0
-YXRlICpzdCA9IGlpb19wcml2KGluZGlvX2Rldik7DQo+ID4gIAlpbnQgcmV0Ow0KPiA+ICANCj4g
-PiAtCW11dGV4X2xvY2soJmluZGlvX2Rldi0+bWxvY2spOw0KPiA+ICsJbXV0ZXhfbG9jaygmc3Qt
-PmxvY2spOw0KPiA+ICAJaWYgKHJlYWR2YWwgPT0gTlVMTCkgew0KPiA+ICAJCXJldCA9IGFkOTUy
-M193cml0ZShpbmRpb19kZXYsIHJlZyB8IEFEOTUyM19SMUIsDQo+ID4gd3JpdGV2YWwpOw0KPiA+
-ICAJCWFkOTUyM19pb191cGRhdGUoaW5kaW9fZGV2KTsNCj4gPiBAQCAtNzI4LDcgKzczMyw3IEBA
-IHN0YXRpYyBpbnQgYWQ5NTIzX3JlZ19hY2Nlc3Moc3RydWN0IGlpb19kZXYNCj4gPiAqaW5kaW9f
-ZGV2LA0KPiA+ICAJfQ0KPiA+ICANCj4gPiAgb3V0X3VubG9jazoNCj4gPiAtCW11dGV4X3VubG9j
-aygmaW5kaW9fZGV2LT5tbG9jayk7DQo+ID4gKwltdXRleF91bmxvY2soJnN0LT5sb2NrKTsNCj4g
-PiAgDQo+ID4gIAlyZXR1cm4gcmV0Ow0KPiA+ICB9DQo+ID4gQEAgLTk2Nyw2ICs5NzIsOCBAQCBz
-dGF0aWMgaW50IGFkOTUyM19wcm9iZShzdHJ1Y3Qgc3BpX2RldmljZSAqc3BpKQ0KPiA+ICANCj4g
-PiAgCXN0ID0gaWlvX3ByaXYoaW5kaW9fZGV2KTsNCj4gPiAgDQo+ID4gKwltdXRleF9pbml0KCZz
-dC0+bG9jayk7DQo+ID4gKw0KPiA+ICAJc3QtPnJlZyA9IGRldm1fcmVndWxhdG9yX2dldCgmc3Bp
-LT5kZXYsICJ2Y2MiKTsNCj4gPiAgCWlmICghSVNfRVJSKHN0LT5yZWcpKSB7DQo+ID4gIAkJcmV0
-ID0gcmVndWxhdG9yX2VuYWJsZShzdC0+cmVnKTsNCj4gDQo+IA==
+On Sat, Jun 30, 2018 at 06:32:32PM +0100, Jonathan Cameron wrote:
+> On Mon, 25 Jun 2018 17:18:02 +0200
+> Andreas Klinger <ak@it-klinger.de> wrote:
+> 
+> > add data-ready-delay-ns property for hx711 ADC
+> > this is the delay after rising PD_SCK until DOUT is read and assumed to be
+> > ready
+> > 
+> > Signed-off-by: Andreas Klinger <ak@it-klinger.de>
+> 
+> Hmm. It's not particularly generic... I think this should have
+> have vendor prefix until we have some visibility of whether it
+> is a common thing we want to standardise around or not.
+
+Agreed. Doesn't look like any interface I've seen before.
+
+Since it's bit-banging, seems to me it would be better to specify the 
+frequency for PD_SCK and sample DOUT just before or after setting PD_SCK 
+low. 
+
+Rob
+
+> I'll also be waiting for a devicetree ack on this one as it's a
+> tiny bit unusual.
+> 
+> Thanks,
+> 
+> Jonathan
