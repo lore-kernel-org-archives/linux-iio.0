@@ -1,52 +1,46 @@
-Return-Path: <SRS0=X8Mr=JT=loewensteinmedical.de=nikolaus.voss@kernel.org>
-Date: Tue, 3 Jul 2018 10:18:41 +0200 (CEST)
-From: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-    Lars-Peter Clausen <lars@metafoo.de>,
-    Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-    Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-    Linus Walleij <linus.walleij@linaro.org>,
-    Xiongfeng Wang <xiongfeng.wang@linaro.org>,
-    "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-    Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, nv@vosn.de
-Subject: Re: [PATCH 0/3] IIO: st_sensors_i2c: improve device enumeration
-In-Reply-To: <CAHp75Vdr=e-8g2bF0oF+xSY_UL8wD8k2Azkhvg2_a7-bpOFn-A@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.1807030959590.42930@fox.voss.local>
-References: <cover.1530268235.git.nikolaus.voss@loewensteinmedical.de> <CAHp75VfR8JZaDbvzudW5mc4=nOoYM2EeXPMhUHCw1ovnPmGV5A@mail.gmail.com> <alpine.DEB.2.20.1807020810580.31530@fox.voss.local>
- <CAHp75Vdr=e-8g2bF0oF+xSY_UL8wD8k2Azkhvg2_a7-bpOFn-A@mail.gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wr0-f193.google.com ([209.85.128.193]:34845 "EHLO
+        mail-wr0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932412AbeGDHiO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 4 Jul 2018 03:38:14 -0400
+Received: by mail-wr0-f193.google.com with SMTP id h40-v6so4255190wrh.2
+        for <linux-iio@vger.kernel.org>; Wed, 04 Jul 2018 00:38:13 -0700 (PDT)
+Date: Wed, 4 Jul 2018 08:38:10 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Vignesh R <vigneshr@ti.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        linux-iio@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org
+Subject: Re: [PATCH 1/5] mfd: ti_am335x_tscadc: Don't mark TSCADC MFD as
+ wakeup capable
+Message-ID: <20180704073810.GL20176@dell>
+References: <20180630103318.25355-1-vigneshr@ti.com>
+ <20180630103318.25355-2-vigneshr@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20180630103318.25355-2-vigneshr@ti.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, 2 Jul 2018, Andy Shevchenko wrote:
-> On Mon, Jul 2, 2018 at 9:41 AM, Nikolaus Voss
-> <nikolaus.voss@loewensteinmedical.de> wrote:
->> On Fri, 29 Jun 2018, Andy Shevchenko wrote:
->>
->>> I'm not sure I understand how ->probe_new() is supposed to work
->>> against i2c_id_table, but I don't care for legacy platform data
->>> anyway.
->>>
->>> What I would like to point to is device_get_match_data() API which
->>> should simplify / unify the case how you get driver data.
->>
->>
->> This driver doesn't need any driver data/ platform_data beyond the
->> i2c_id_table name (which has already been matched when probe()/ probe_new()
->> is called), so strictly neither of_match_table nor apci_match_table would be
->> necessary, because i2c DT/ ACPI enumeration also matches against i2c_table
->> names.
->
-> Looking at the code I see still calls to acpi_match_data() and of_match_data().
-> Instead nowadays better to use device_get_match_data().
+On Sat, 30 Jun 2018, Vignesh R wrote:
 
-You are completely right, sorry. I rewrote and reposted the patch.
+> Currently tscadc MFD is marked as wakeup capable which incorrect
+> because, its actually touch event by child TSC device that wakes up the
+> system. Therefore, remove device_init_wakeup() call that marks TSCADC
+> device as wakeup capable in favor of moving to mark TSC input device as
+> wakeup capable later.
+> 
+> Signed-off-by: Vignesh R <vigneshr@ti.com>
+> ---
+>  drivers/mfd/ti_am335x_tscadc.c | 1 -
+>  1 file changed, 1 deletion(-)
 
-> i2c_id_table should be removed from the module device table at least
-> (though you may continue to use it internally in the driver).
+For my own reference:
+  Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
 
-As I understand it, it is still necessary to make 
-i2c_register_board_info() work.
-
-Niko
+-- 
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
