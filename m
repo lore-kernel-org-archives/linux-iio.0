@@ -1,55 +1,40 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:55816 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S932546AbeGGREk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 7 Jul 2018 13:04:40 -0400
-Date: Sat, 7 Jul 2018 18:04:35 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: mma8452: Mark expected switch fall-through
-Message-ID: <20180707180435.414b7a95@archlinux>
-In-Reply-To: <20180703194436.GA15537@embeddedor.com>
-References: <20180703194436.GA15537@embeddedor.com>
+Return-Path: <SRS0=2HCd=JU=it-klinger.de=ak@kernel.org>
+Date: Wed, 4 Jul 2018 14:36:19 +0200
+From: Andreas Klinger <ak@it-klinger.de>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	robh+dt@kernel.org, mark.rutland@arm.com, mchehab@kernel.org,
+	davem@davemloft.net, gregkh@linuxfoundation.org,
+	akpm@linux-foundation.org, linus.walleij@linaro.org,
+	rdunlap@infradead.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 0/3] iio: hx711: add data-ready-delay
+Message-ID: <20180704123619.GA30524@arbeit>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, 3 Jul 2018 14:44:36 -0500
-"Gustavo A. R. Silva" <gustavo@embeddedor.com> wrote:
+This patch adds an additional property in the device tree for adjusting the
+delay between a rising edge on PD_SCK until data is ready on DOUT.
 
-> In preparation to enabling -Wimplicit-fallthrough, mark switch cases
-> where we are expecting to fall through.
-> 
-> Warning level 2 was used in this case: -Wimplicit-fallthrough=2
-> 
-> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+This is necessary because of parasitic capacities on different systems.
 
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to ignore.
+In the last patch there is a fix of dtc warning if someone is using the
+given example
 
-Thanks,
+Changes against v3:
+- added suggestion of Rob to rename the new attribute to clock-frequency
 
-Jonathan
+Changes against v2:
+- added suggestion of Jonathan to add vendor prefix in device tree setting
 
-> ---
->  drivers/iio/accel/mma8452.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> index c149c9c..421a0a8 100644
-> --- a/drivers/iio/accel/mma8452.c
-> +++ b/drivers/iio/accel/mma8452.c
-> @@ -1547,6 +1547,7 @@ static int mma8452_probe(struct i2c_client *client,
->  	case FXLS8471_DEVICE_ID:
->  		if (ret == data->chip_info->chip_id)
->  			break;
-> +		/* else: fall through */
->  	default:
->  		return -ENODEV;
->  	}
+Andreas Klinger (3):
+  iio: hx711: add clock-frequency property in DT
+  iio: hx711: add delay until DOUT is ready
+  iio: hx711: warning in dt binding example doc
 
+ .../devicetree/bindings/iio/adc/avia-hx711.txt     | 12 +++++++-
+ drivers/iio/adc/hx711.c                            | 33 ++++++++++++++++++++++
+ 2 files changed, 44 insertions(+), 1 deletion(-)
+
+-- 
+2.1.4
