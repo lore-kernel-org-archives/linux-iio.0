@@ -1,45 +1,71 @@
-Return-Path: <SRS0=7p2b=JV=mail.steuer-voss.de=nv@kernel.org>
-Message-Id: <b990bc14d89daba5ac3b14d4b2eefb47c972d63d.1530782560.git.nikolaus.voss@loewensteinmedical.de>
-In-Reply-To: <cover.1530782560.git.nikolaus.voss@loewensteinmedical.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.99]:52332 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1754314AbeGGQey (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 7 Jul 2018 12:34:54 -0400
+Date: Sat, 7 Jul 2018 17:34:47 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Xiongfeng Wang <xiongfeng.wang@linaro.org>, nv@vosn.de,
+        Javier Martinez Canillas <javier@dowhile0.org>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/2] IIO: st_accel_i2c.c: Use probe_new() instead of
+ probe()
+Message-ID: <20180707173447.56bb4d8c@archlinux>
+In-Reply-To: <b990bc14d89daba5ac3b14d4b2eefb47c972d63d.1530782560.git.nikolaus.voss@loewensteinmedical.de>
 References: <cover.1530782560.git.nikolaus.voss@loewensteinmedical.de>
-From: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
-Date: Tue, 3 Jul 2018 08:06:57 +0200
-Subject: [PATCH v4 2/2] IIO: st_accel_i2c.c: Use probe_new() instead of probe()
-To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Xiongfeng Wang <xiongfeng.wang@linaro.org>, nv@vosn.de, Javier Martinez Canillas <javier@dowhile0.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-List-ID: <linux-iio@vger.kernel.org>
+        <b990bc14d89daba5ac3b14d4b2eefb47c972d63d.1530782560.git.nikolaus.voss@loewensteinmedical.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-struct i2c_device_id argument of probe() is not used, so use probe_new()
-instead.
+On Tue, 3 Jul 2018 08:06:57 +0200
+Nikolaus Voss <nikolaus.voss@loewensteinmedical.de> wrote:
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
----
- drivers/iio/accel/st_accel_i2c.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+> struct i2c_device_id argument of probe() is not used, so use probe_new()
+> instead.
+> 
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Signed-off-by: Nikolaus Voss <nikolaus.voss@loewensteinmedical.de>
 
-diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
-index d02298f0256c..2ca5d1f6ade0 100644
---- a/drivers/iio/accel/st_accel_i2c.c
-+++ b/drivers/iio/accel/st_accel_i2c.c
-@@ -139,8 +139,7 @@ static const struct i2c_device_id st_accel_id_table[] = {
- };
- MODULE_DEVICE_TABLE(i2c, st_accel_id_table);
- 
--static int st_accel_i2c_probe(struct i2c_client *client,
--						const struct i2c_device_id *id)
-+static int st_accel_i2c_probe(struct i2c_client *client)
- {
- 	struct iio_dev *indio_dev;
- 	struct st_sensor_data *adata;
-@@ -179,7 +178,7 @@ static struct i2c_driver st_accel_driver = {
- 		.of_match_table = of_match_ptr(st_accel_of_match),
- 		.acpi_match_table = ACPI_PTR(st_accel_acpi_match),
- 	},
--	.probe = st_accel_i2c_probe,
-+	.probe_new = st_accel_i2c_probe,
- 	.remove = st_accel_i2c_remove,
- 	.id_table = st_accel_id_table,
- };
--- 
-2.17.1
+Applied to the togreg branch of iio.git and pushed out as testing for the
+autobuilders to play with it.
+
+Thanks,
+
+Jonathan
+
+> ---
+>  drivers/iio/accel/st_accel_i2c.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
+> index d02298f0256c..2ca5d1f6ade0 100644
+> --- a/drivers/iio/accel/st_accel_i2c.c
+> +++ b/drivers/iio/accel/st_accel_i2c.c
+> @@ -139,8 +139,7 @@ static const struct i2c_device_id st_accel_id_table[] = {
+>  };
+>  MODULE_DEVICE_TABLE(i2c, st_accel_id_table);
+>  
+> -static int st_accel_i2c_probe(struct i2c_client *client,
+> -						const struct i2c_device_id *id)
+> +static int st_accel_i2c_probe(struct i2c_client *client)
+>  {
+>  	struct iio_dev *indio_dev;
+>  	struct st_sensor_data *adata;
+> @@ -179,7 +178,7 @@ static struct i2c_driver st_accel_driver = {
+>  		.of_match_table = of_match_ptr(st_accel_of_match),
+>  		.acpi_match_table = ACPI_PTR(st_accel_acpi_match),
+>  	},
+> -	.probe = st_accel_i2c_probe,
+> +	.probe_new = st_accel_i2c_probe,
+>  	.remove = st_accel_i2c_remove,
+>  	.id_table = st_accel_id_table,
+>  };
+
