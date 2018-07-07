@@ -1,80 +1,382 @@
-Return-Path: <baolin.wang@linaro.org>
+Return-Path: <SRS0=mg5d=JX=linuxfoundation.org=gregkh@kernel.org>
+Date: Sat, 7 Jul 2018 17:16:22 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc: jic23@kernel.org, linux-arm-kernel@lists.infradead.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, fabrice.gasnier@st.com,
+	benjamin.gaignard@st.com, robh+dt@kernel.org, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net, mark.rutland@arm.com
+Subject: Re: [PATCH v7 01/10] counter: Introduce the Generic Counter interface
+Message-ID: <20180707151622.GB410@kroah.com>
+References: <cover.1529607879.git.vilhelm.gray@gmail.com>
+ <51b75b2b4495d4ad7ed173d91a726379bdae2353.1529607879.git.vilhelm.gray@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20180630190042.4962bff3@archlinux>
-References: <900586c7a4ce55818ab330c738f306c7452191ef.1529550463.git.baolin.wang@linaro.org>
- <95836d610301133ffdac1efa86d7daf4cecb97b7.1529550463.git.baolin.wang@linaro.org>
- <20180622151338.00003622@huawei.com> <CAMz4kuJUeDjTVJqNc4cNv=LwR1HkuFap4vBF7CCcrxNqnTHa-A@mail.gmail.com>
- <20180624143009.48cf14f8@archlinux> <20180624144734.62f28908@archlinux>
- <CAMz4kuJb4aRxNKXYkDJ5vQQgFRN+87_br2gp1BtTLji0dp8XHQ@mail.gmail.com> <20180630190042.4962bff3@archlinux>
-From: Baolin Wang <baolin.wang@linaro.org>
-Date: Mon, 2 Jul 2018 10:03:49 +0800
-Message-ID: <CAMz4kuKAA=m=++MO3NLzQwNtC=ms8SoU9pvXDwqfb=pQWOw2ww@mail.gmail.com>
-Subject: Re: [PATCH v3 2/2] iio: adc: Add Spreadtrum SC27XX PMICs ADC support
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc: Jonathan Cameron <jonathan.cameron@huawei.com>, Rob Herring <robh+dt@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, freeman.liu@spreadtrum.com,
-	Mark Brown <broonie@kernel.org>, DTML <devicetree@vger.kernel.org>,
-	linux-iio@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <51b75b2b4495d4ad7ed173d91a726379bdae2353.1529607879.git.vilhelm.gray@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 1 July 2018 at 02:00, Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
-> On Mon, 25 Jun 2018 09:47:54 +0800
-> Baolin Wang <baolin.wang@linaro.org> wrote:
->
->> Hi Jonathan,
->>
->> On 24 June 2018 at 21:47, Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
->> > On Sun, 24 Jun 2018 14:30:09 +0100
->> > Jonathan Cameron <jic23@kernel.org> wrote:
->> >
->> >> On Sun, 24 Jun 2018 17:13:00 +0800
->> >> Baolin Wang <baolin.wang@linaro.org> wrote:
->> >>
->> >> > Hi Jonathan,
->> >> >
->> >> > On 22 June 2018 at 22:13, Jonathan Cameron <jonathan.cameron@huawei.com> wrote:
->> >> > > On Thu, 21 Jun 2018 11:14:05 +0800
->> >> > > Baolin Wang <baolin.wang@linaro.org> wrote:
->> >> > >
->> >> > >> From: Freeman Liu <freeman.liu@spreadtrum.com>
->> >> > >>
->> >> > >> The Spreadtrum SC27XX PMICs ADC controller contains 32 channels,
->> >> > >> which is used to sample voltages with 12 bits conversion.
->> >> > >>
->> >> > >> [Baolin Wang did lots of improvements]
->> >> > >>
->> >> > >> Signed-off-by: Freeman Liu <freeman.liu@spreadtrum.com>
->> >> > >> Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
->> >> > >
->> >> > > One trivial missed bit of cleanup inline.  I'll sort that
->> >> > > when applying if no one else points anything out before I get back to my
->> >> > > development machine.
->> >> >
->> >> > Thanks.
->> >>
->> >> Applied to the togreg branch of iio.git and pushed out as testing
->> >> for the autobuilders to play with it.
->> > Sorry, backed out for now.  My togreg tree is non rebasing and
->> > this is dependant on some stuff that only went in during the merge
->> > window.
->> >
->> > I'll send a pull request to GregKH fairly soon and after that do
->> > the merge back into my tree to pick that hwspin lock stuff up.
->> >
->> > So this will be a week or two before I can apply it without issues.
->> >
->> > Give me a poke if I seem to have forgotten about it.
->>
->> OK. Many thanks for your help.
->>
-> Applied now with dependencies in place.  Applied to the togreg
-> branch of iio.git and pushed out as testing for the autobuilders
-> to play with it.
+On Thu, Jun 21, 2018 at 05:07:08PM -0400, William Breathitt Gray wrote:
+> This patch introduces the Generic Counter interface for supporting
+> counter devices.
+> 
+> In the context of the Generic Counter interface, a counter is defined as
+> a device that reports one or more "counts" based on the state changes of
+> one or more "signals" as evaluated by a defined "count function."
+> 
+> Driver callbacks should be provided to communicate with the device: to
+> read and write various Signals and Counts, and to set and get the
+> "action mode" and "count function" for various Synapses and Counts
+> respectively.
+> 
+> To support a counter device, a driver must first allocate the available
+> Counter Signals via counter_signal structures. These Signals should
+> be stored as an array and set to the signals array member of an
+> allocated counter_device structure before the Counter is registered to
+> the system.
+> 
+> Counter Counts may be allocated via counter_count structures, and
+> respective Counter Signal associations (Synapses) made via
+> counter_synapse structures. Associated counter_synapse structures are
+> stored as an array and set to the the synapses array member of the
+> respective counter_count structure. These counter_count structures are
+> set to the counts array member of an allocated counter_device structure
+> before the Counter is registered to the system.
+> 
+> A counter device is registered to the system by passing the respective
+> initialized counter_device structure to the counter_register function;
+> similarly, the counter_unregister function unregisters the respective
+> Counter. The devm_counter_register and devm_counter_unregister functions
+> serve as device memory-managed versions of the counter_register and
+> counter_unregister functions respectively.
+> 
+> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+> ---
+>  MAINTAINERS                       |    7 +
+>  drivers/Kconfig                   |    2 +
+>  drivers/Makefile                  |    1 +
+>  drivers/counter/Kconfig           |   18 +
+>  drivers/counter/Makefile          |    8 +
+>  drivers/counter/generic-counter.c | 1519 +++++++++++++++++++++++++++++
+>  include/linux/counter.h           |  534 ++++++++++
+>  7 files changed, 2089 insertions(+)
+>  create mode 100644 drivers/counter/Kconfig
+>  create mode 100644 drivers/counter/Makefile
+>  create mode 100644 drivers/counter/generic-counter.c
+>  create mode 100644 include/linux/counter.h
 
-Thanks Jonathan.
+First cut of review, does counter.h really have to be that big?  It
+feels like some of the "internal" functions and structures could be
+local to drivers/counter/ right?
 
----
-Baolin Wang
-Best Regards
+
+> +menuconfig COUNTER
+> +	tristate "Counter support"
+> +	help
+> +	  Provides Generic Counter interface support for counter devices.
+> +
+> +	  Counter devices are prevalent within a diverse spectrum of industries.
+> +	  The ubiquitous presence of these devices necessitates a common
+> +	  interface and standard of interaction and exposure. This driver API
+> +	  attempts to resolve the issue of duplicate code found among existing
+> +	  counter device drivers by providing a generic counter interface for
+> +	  consumption. The Generic Counter interface enables drivers to support
+> +	  and expose a common set of components and functionality present in
+> +	  counter devices.
+
+No need to explain an "API" in a Kconfig help text, which is for a user
+of the kernel, not for someone writing kernel code.  Odds are individual
+drivers will need to select this, or are you going to depend on this
+option?
+
+
+> diff --git a/drivers/counter/Makefile b/drivers/counter/Makefile
+> new file mode 100644
+> index 000000000000..ad1ba7109cdc
+> --- /dev/null
+> +++ b/drivers/counter/Makefile
+> @@ -0,0 +1,8 @@
+> +#
+> +# Makefile for Counter devices
+> +#
+> +
+> +# When adding new entries keep the list in alphabetical order
+
+Why does it matter?  :)
+
+> +
+> +obj-$(CONFIG_COUNTER) += counter.o
+> +counter-y := generic-counter.o
+
+Why not just call your .c file, "counter.c" to keep this simple?
+
+> diff --git a/drivers/counter/generic-counter.c b/drivers/counter/generic-counter.c
+> new file mode 100644
+> index 000000000000..483826c8ce01
+> --- /dev/null
+> +++ b/drivers/counter/generic-counter.c
+> @@ -0,0 +1,1519 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+
+Please use the normal SPDX identifiers we are using, as described in the
+kernel documentation.  We aren't ready to use the "new" ones just yet.
+
+> +/*
+> + * Generic Counter interface
+> + * Copyright (C) 2017 William Breathitt Gray
+
+It's 2018 now :)
+
+> + */
+> +#include <linux/device.h>
+> +#include <linux/err.h>
+> +#include <linux/export.h>
+> +#include <linux/fs.h>
+> +#include <linux/gfp.h>
+> +#include <linux/idr.h>
+> +#include <linux/init.h>
+> +#include <linux/kernel.h>
+> +#include <linux/list.h>
+> +#include <linux/module.h>
+> +#include <linux/printk.h>
+> +#include <linux/slab.h>
+> +#include <linux/string.h>
+> +#include <linux/sysfs.h>
+> +#include <linux/types.h>
+> +
+> +#include <linux/counter.h>
+
+Why a blank line?
+
+> +
+> +const char *const count_direction_str[2] = {
+> +	[COUNT_DIRECTION_FORWARD] = "forward",
+> +	[COUNT_DIRECTION_BACKWARD] = "backward"
+> +};
+> +EXPORT_SYMBOL(count_direction_str);
+
+I have to ask, for all of these, why not EXPORT_SYMBOL_GPL()?
+
+
+> +
+> +const char *const count_mode_str[4] = {
+> +	[COUNT_MODE_NORMAL] = "normal",
+> +	[COUNT_MODE_RANGE_LIMIT] = "range limit",
+> +	[COUNT_MODE_NON_RECYCLE] = "non-recycle",
+> +	[COUNT_MODE_MODULO_N] = "modulo-n"
+> +};
+> +EXPORT_SYMBOL(count_mode_str);
+
+And why do you need to export strings?
+
+
+
+> +
+> +ssize_t counter_signal_enum_read(struct counter_device *counter,
+> +				 struct counter_signal *signal, void *priv,
+> +				 char *buf)
+> +{
+> +	const struct counter_signal_enum_ext *const e = priv;
+> +	int err;
+> +	size_t index;
+> +
+> +	if (!e->get)
+> +		return -EINVAL;
+
+How can e->get not be set?  Shouldn't you just not have called into this
+if so?
+
+> +
+> +	err = e->get(counter, signal, &index);
+> +	if (err)
+> +		return err;
+> +
+> +	if (index >= e->num_items)
+> +		return -EINVAL;
+> +
+> +	return scnprintf(buf, PAGE_SIZE, "%s\n", e->items[index]);
+
+No need to do the scnprintf() crud, it's a sysfs file, a simple
+sprintf() works just fine.  Yeah, it makes people nervous, and it should :)
+
+
+> +}
+> +EXPORT_SYMBOL(counter_signal_enum_read);
+
+sysfs attribute files really should be EXPORT_SYMBOL_GPL() please.
+
+> +
+> +ssize_t counter_signal_enum_write(struct counter_device *counter,
+> +				  struct counter_signal *signal, void *priv,
+> +				  const char *buf, size_t len)
+> +{
+> +	const struct counter_signal_enum_ext *const e = priv;
+> +	ssize_t index;
+> +	int err;
+> +
+> +	if (!e->set)
+> +		return -EINVAL;
+
+Again, how can this be true?
+
+
+> +
+> +	index = __sysfs_match_string(e->items, e->num_items, buf);
+> +	if (index < 0)
+> +		return index;
+> +
+> +	err = e->set(counter, signal, index);
+> +	if (err)
+> +		return err;
+> +
+> +	return len;
+> +}
+> +EXPORT_SYMBOL(counter_signal_enum_write);
+> +
+> +ssize_t counter_signal_enum_available_read(struct counter_device *counter,
+> +					   struct counter_signal *signal,
+> +					   void *priv, char *buf)
+> +{
+> +	const struct counter_signal_enum_ext *const e = priv;
+> +	size_t i;
+> +	size_t len = 0;
+> +
+> +	if (!e->num_items)
+> +		return 0;
+> +
+> +	for (i = 0; i < e->num_items; i++)
+> +		len += scnprintf(buf + len, PAGE_SIZE - len, "%s\n",
+> +			e->items[i]);
+
+a list of items?  In sysfs?  Are you _SURE_ you want to do that?
+
+> +
+> +	return len;
+> +}
+> +EXPORT_SYMBOL(counter_signal_enum_available_read);
+> +
+> +ssize_t counter_count_enum_read(struct counter_device *counter,
+> +				struct counter_count *count, void *priv,
+> +				char *buf)
+> +{
+> +	const struct counter_count_enum_ext *const e = priv;
+> +	int err;
+> +	size_t index;
+> +
+> +	if (!e->get)
+> +		return -EINVAL;
+
+
+Same comment everywhere for this...
+
+let's skip lower in the files...
+
+> +static int counter_attribute_create(
+> +	struct counter_device_attr_group *const group,
+> +	const char *const prefix,
+> +	const char *const name,
+> +	ssize_t (*show)(struct device *dev, struct device_attribute *attr,
+> +			char *buf),
+> +	ssize_t (*store)(struct device *dev, struct device_attribute *attr,
+> +			 const char *buf, size_t len),
+
+Typedefs for these function pointers are good to have.
+
+> +	void *const component)
+
+That's a crazy list of parameters...
+
+
+> +{
+> +	struct counter_device_attr *counter_attr;
+> +	struct device_attribute *dev_attr;
+> +	int err;
+> +	struct list_head *const attr_list = &group->attr_list;
+> +
+> +	/* Allocate a Counter device attribute */
+> +	counter_attr = kzalloc(sizeof(*counter_attr), GFP_KERNEL);
+> +	if (!counter_attr)
+> +		return -ENOMEM;
+> +	dev_attr = &counter_attr->dev_attr;
+> +
+> +	sysfs_attr_init(&dev_attr->attr);
+> +
+> +	/* Configure device attribute */
+> +	dev_attr->attr.name = kasprintf(GFP_KERNEL, "%s%s", prefix, name);
+> +	if (!dev_attr->attr.name) {
+> +		err = -ENOMEM;
+> +		goto err_free_counter_attr;
+> +	}
+> +	if (show) {
+> +		dev_attr->attr.mode |= 0444;
+> +		dev_attr->show = show;
+> +	}
+> +	if (store) {
+> +		dev_attr->attr.mode |= 0200;
+> +		dev_attr->store = store;
+> +	}
+> +
+> +	/* Store associated Counter component with attribute */
+> +	counter_attr->component = component;
+> +
+> +	/* Keep track of the attribute for later cleanup */
+> +	list_add(&counter_attr->l, attr_list);
+> +	group->num_attr++;
+
+So you are dynamically creating sysfs attributes?  Why not just have one
+big group and only enable them if needed?  That would make things a lot
+simpler, right?
+
+> +struct signal_comp_t {
+
+"_t"???
+
+> +	struct counter_signal	*signal;
+> +};
+> +
+> +static ssize_t counter_signal_show(struct device *dev,
+> +				   struct device_attribute *attr, char *buf)
+> +{
+> +	struct counter_device *const counter = dev_get_drvdata(dev);
+> +	const struct counter_device_attr *const devattr = to_counter_attr(attr);
+> +	const struct signal_comp_t *const component = devattr->component;
+> +	struct counter_signal *const signal = component->signal;
+> +	int err;
+> +	struct signal_read_value val = { .buf = buf };
+> +
+> +	err = counter->ops->signal_read(counter, signal, &val);
+> +	if (err)
+> +		return err;
+> +
+> +	return val.len;
+> +}
+> +
+> +struct name_comp_t {
+
+"_t"???
+
+Same for the rest of this file...
+
+> diff --git a/include/linux/counter.h b/include/linux/counter.h
+> new file mode 100644
+> index 000000000000..88fc82ee30a7
+> --- /dev/null
+> +++ b/include/linux/counter.h
+> @@ -0,0 +1,534 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+
+Same identifier issue.
+
+> +/*
+> + * Counter interface
+> + * Copyright (C) 2017 William Breathitt Gray
+
+2018!
+
+And again, it looks like this file can be a lot smaller, but I don't see
+a user of it just yet, so I don't really know...
+
+thanks,
+
+greg k-h
