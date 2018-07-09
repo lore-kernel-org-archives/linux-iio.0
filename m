@@ -1,94 +1,156 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:54512 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727519AbeGUTBW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 21 Jul 2018 15:01:22 -0400
-Date: Sat, 21 Jul 2018 19:07:43 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Ludovic Desroches <ludovic.desroches@microchip.com>
-Cc: Dan Carpenter <dan.carpenter@oracle.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        <linux-iio@vger.kernel.org>, <kernel-janitors@vger.kernel.org>
-Subject: Re: [PATCH] iio: adc: at91-sama5d2_adc: fix up casting in
- at91_adc_read_info_raw()
-Message-ID: <20180721190743.370db592@archlinux>
-In-Reply-To: <20180717081200.gxg6fxvzlgycudo5@M43218.corp.atmel.com>
-References: <20180709110658.bjtebvyinfqjrzbr@kili.mountain>
-        <20180717081200.gxg6fxvzlgycudo5@M43218.corp.atmel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=XpJ7=JZ=gmail.com=akinobu.mita@kernel.org>
+From: Akinobu Mita <akinobu.mita@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: Akinobu Mita <akinobu.mita@gmail.com>,
+	Eva Rachel Retuya <eraretuya@gmail.com>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH v6] iio: accel: adxl345: add sampling frequency support
+Date: Tue, 10 Jul 2018 00:10:08 +0900
+Message-Id: <1531149008-2836-1-git-send-email-akinobu.mita@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, 17 Jul 2018 10:12:00 +0200
-Ludovic Desroches <ludovic.desroches@microchip.com> wrote:
+The ADXL345 provides selectable output data rate.  This adds the iio
+channel information for the sampling frequency with that feature.
 
-> On Mon, Jul 09, 2018 at 02:06:59PM +0300, Dan Carpenter wrote:
-> > This code is problematic because we're supposed to be writing an int but
-> > we instead write to only the high 16 bits.  This doesn't work on big
-> > endian systems, and there is a potential that the bottom 16 bits are
-> > used without being initialized.
-> > 
-> > Fixes: 23ec2774f1cc ("iio: adc: at91-sama5d2_adc: add support for position and pressure channels")
-> > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> >   
-> 
-> This patch sounds good and as it has been tested by Eugen:
-> Acked-by: Ludovic Desroches <ludovic.desroches@microchip.com>
-> 
-> Thanks Dan and Eugen.
+Cc: Eva Rachel Retuya <eraretuya@gmail.com>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+---
+This was part of a patchset titled "add calibration offset and sampling
+frequency support".  All other patches have already been picked up.
 
-Applied to the togreg branch of iio.git and pushed out as testing for the
-autobuilders to play with it.
+* v6 (Suggested by Andy Shevchenko)
+- Simplify calculation of sampling frequency setting by using clamp_val()
 
-Thanks
+ drivers/iio/accel/adxl345_core.c | 57 +++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 56 insertions(+), 1 deletion(-)
 
-Jonathan
-
-> 
-> > diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
-> > index e02f7d1c86bc..d5ea84cf6460 100644
-> > --- a/drivers/iio/adc/at91-sama5d2_adc.c
-> > +++ b/drivers/iio/adc/at91-sama5d2_adc.c
-> > @@ -1296,6 +1296,7 @@ static int at91_adc_read_info_raw(struct iio_dev *indio_dev,
-> >  {
-> >  	struct at91_adc_state *st = iio_priv(indio_dev);
-> >  	u32 cor = 0;
-> > +	u16 tmp_val;
-> >  	int ret;
-> >  
-> >  	/*
-> > @@ -1309,7 +1310,8 @@ static int at91_adc_read_info_raw(struct iio_dev *indio_dev,
-> >  		mutex_lock(&st->lock);
-> >  
-> >  		ret = at91_adc_read_position(st, chan->channel,
-> > -					     (u16 *)val);
-> > +					     &tmp_val);
-> > +		*val = tmp_val;
-> >  		mutex_unlock(&st->lock);
-> >  		iio_device_release_direct_mode(indio_dev);
-> >  
-> > @@ -1322,7 +1324,8 @@ static int at91_adc_read_info_raw(struct iio_dev *indio_dev,
-> >  		mutex_lock(&st->lock);
-> >  
-> >  		ret = at91_adc_read_pressure(st, chan->channel,
-> > -					     (u16 *)val);
-> > +					     &tmp_val);
-> > +		*val = tmp_val;
-> >  		mutex_unlock(&st->lock);
-> >  		iio_device_release_direct_mode(indio_dev);
-> >  
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> > the body of a message to majordomo@vger.kernel.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html  
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
+diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_core.c
+index 7b29ae8..3359f33 100644
+--- a/drivers/iio/accel/adxl345_core.c
++++ b/drivers/iio/accel/adxl345_core.c
+@@ -14,6 +14,7 @@
+ #include <linux/regmap.h>
+ 
+ #include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
+ 
+ #include "adxl345.h"
+ 
+@@ -22,6 +23,7 @@
+ #define ADXL345_REG_OFSY		0x1f
+ #define ADXL345_REG_OFSZ		0x20
+ #define ADXL345_REG_OFS_AXIS(index)	(ADXL345_REG_OFSX + (index))
++#define ADXL345_REG_BW_RATE		0x2C
+ #define ADXL345_REG_POWER_CTL		0x2D
+ #define ADXL345_REG_DATA_FORMAT		0x31
+ #define ADXL345_REG_DATAX0		0x32
+@@ -30,6 +32,10 @@
+ #define ADXL345_REG_DATA_AXIS(index)	\
+ 	(ADXL345_REG_DATAX0 + (index) * sizeof(__le16))
+ 
++#define ADXL345_BW_RATE			GENMASK(3, 0)
++#define ADXL345_BASE_RATE_NANO_HZ	97656250LL
++#define NHZ_PER_HZ			1000000000LL
++
+ #define ADXL345_POWER_CTL_MEASURE	BIT(3)
+ #define ADXL345_POWER_CTL_STANDBY	0x00
+ 
+@@ -62,7 +68,8 @@ struct adxl345_data {
+ 	.address = index,						\
+ 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |			\
+ 		BIT(IIO_CHAN_INFO_CALIBBIAS),				\
+-	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
++		BIT(IIO_CHAN_INFO_SAMP_FREQ),				\
+ }
+ 
+ static const struct iio_chan_spec adxl345_channels[] = {
+@@ -77,6 +84,7 @@ static int adxl345_read_raw(struct iio_dev *indio_dev,
+ {
+ 	struct adxl345_data *data = iio_priv(indio_dev);
+ 	__le16 accel;
++	long long samp_freq_nhz;
+ 	unsigned int regval;
+ 	int ret;
+ 
+@@ -112,6 +120,16 @@ static int adxl345_read_raw(struct iio_dev *indio_dev,
+ 		*val = sign_extend32(regval, 7) * 4;
+ 
+ 		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		ret = regmap_read(data->regmap, ADXL345_REG_BW_RATE, &regval);
++		if (ret < 0)
++			return ret;
++
++		samp_freq_nhz = ADXL345_BASE_RATE_NANO_HZ <<
++				(regval & ADXL345_BW_RATE);
++		*val = div_s64_rem(samp_freq_nhz, NHZ_PER_HZ, val2);
++
++		return IIO_VAL_INT_PLUS_NANO;
+ 	}
+ 
+ 	return -EINVAL;
+@@ -122,6 +140,7 @@ static int adxl345_write_raw(struct iio_dev *indio_dev,
+ 			    int val, int val2, long mask)
+ {
+ 	struct adxl345_data *data = iio_priv(indio_dev);
++	s64 n;
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_CALIBBIAS:
+@@ -132,14 +151,50 @@ static int adxl345_write_raw(struct iio_dev *indio_dev,
+ 		return regmap_write(data->regmap,
+ 				    ADXL345_REG_OFS_AXIS(chan->address),
+ 				    val / 4);
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		n = div_s64(val * NHZ_PER_HZ + val2, ADXL345_BASE_RATE_NANO_HZ);
++
++		return regmap_update_bits(data->regmap, ADXL345_REG_BW_RATE,
++					  ADXL345_BW_RATE,
++					  clamp_val(ilog2(n), 0,
++						    ADXL345_BW_RATE));
+ 	}
+ 
+ 	return -EINVAL;
+ }
+ 
++static int adxl345_write_raw_get_fmt(struct iio_dev *indio_dev,
++				     struct iio_chan_spec const *chan,
++				     long mask)
++{
++	switch (mask) {
++	case IIO_CHAN_INFO_CALIBBIAS:
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		return IIO_VAL_INT_PLUS_NANO;
++	default:
++		return -EINVAL;
++	}
++}
++
++static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
++"0.09765625 0.1953125 0.390625 0.78125 1.5625 3.125 6.25 12.5 25 50 100 200 400 800 1600 3200"
++);
++
++static struct attribute *adxl345_attrs[] = {
++	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group adxl345_attrs_group = {
++	.attrs = adxl345_attrs,
++};
++
+ static const struct iio_info adxl345_info = {
++	.attrs		= &adxl345_attrs_group,
+ 	.read_raw	= adxl345_read_raw,
+ 	.write_raw	= adxl345_write_raw,
++	.write_raw_get_fmt	= adxl345_write_raw_get_fmt,
+ };
+ 
+ int adxl345_core_probe(struct device *dev, struct regmap *regmap,
+-- 
+2.7.4
