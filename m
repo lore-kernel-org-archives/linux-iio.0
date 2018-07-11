@@ -1,151 +1,52 @@
-Return-Path: <SRS0=jkej=J3=onstation.org=masneyb@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from onstation.org ([52.200.56.107]:37666 "EHLO onstation.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732330AbeGKBfe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 10 Jul 2018 21:35:34 -0400
 From: Brian Masney <masneyb@onstation.org>
-To: jic23@kernel.org,
-	robh+dt@kernel.org,
-	mark.rutland@arm.com,
-	andy.gross@linaro.org,
-	david.brown@linaro.org,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org,
-	linux-soc@vger.kernel.org
-Cc: jonathan@marek.ca,
-	jmaneyrol@invensense.com,
-	knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	mkelly@xevo.com,
-	fischerdouglasc@gmail.com,
-	bshah@kde.org,
-	ctatlor97@gmail.com,
-	masneyb@onstation.org
-Subject: [PATCH 3/3] ARM: dts: qcom: msm8974-hammerhead: add device tree bindings for mpu6515
-Date: Tue, 10 Jul 2018 21:09:32 -0400
-Message-Id: <20180711010932.20313-4-masneyb@onstation.org>
-In-Reply-To: <20180711010932.20313-1-masneyb@onstation.org>
-References: <20180711010932.20313-1-masneyb@onstation.org>
-List-ID: <linux-iio@vger.kernel.org>
+To: jic23@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Cc: lars@metafoo.de, pmeerw@pmeerw.net, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: pressure: bmp280: remove unused options from device tree documentation
+Date: Tue, 10 Jul 2018 21:33:45 -0400
+Message-Id: <20180711013345.22951-1-masneyb@onstation.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This patch adds device tree bindings for the mpu6515 to the LG Nexus 5
-(hammerhead) phone. Confirmed that the gyroscope / accelerometer
-(mpu6515), magnetometer (ak8963), and temperature / pressure (bmp280)
-sensors are available on the phone.
-
-Interrupts are not working properly on the ak8963 magnetometer so they
-are currently not configured.
-
-The bmp280 retuns temperature/pressure measurement skipped errors but
-will reliably work if I run:
-
-    echo 1 > in_pressure_oversampling_ratio
-    echo 1 > in_temp_oversampling_ratio
+There are several options in the device tree documentation that are
+no longer relevant for the current in-kernel bmp280 driver so this patch
+removes them.
 
 Signed-off-by: Brian Masney <masneyb@onstation.org>
-Signed-off-by: Jonathan Marek <jonathan@marek.ca>
 ---
-I'll send follow up patch(es) once I investigate why the skipped errors
-are occurring with the bmp280 with the default oversampling ratios.
+ Documentation/devicetree/bindings/iio/pressure/bmp085.txt | 7 -------
+ 1 file changed, 7 deletions(-)
 
- .../qcom-msm8974-lge-nexus5-hammerhead.dts    | 56 +++++++++++++++++++
- arch/arm/boot/dts/qcom-msm8974.dtsi           | 11 ++++
- 2 files changed, 67 insertions(+)
-
-diff --git a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
-index c2dc9d09484a..96158044ca10 100644
---- a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
-+++ b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
-@@ -241,6 +241,24 @@
- 				bias-pull-up;
- 			};
- 		};
-+
-+		i2c12_pins: i2c12 {
-+			mux {
-+				pins = "gpio87", "gpio88";
-+				function = "blsp_i2c12";
-+				drive-strength = <2>;
-+				bias-disable;
-+			};
-+		};
-+
-+		mpu6515_pin: mpu6515 {
-+			irq {
-+				pins = "gpio73";
-+				function = "gpio";
-+				bias-disable;
-+				input-enable;
-+			};
-+		};
- 	};
+diff --git a/Documentation/devicetree/bindings/iio/pressure/bmp085.txt b/Documentation/devicetree/bindings/iio/pressure/bmp085.txt
+index c7198a03c906..abcab02504fb 100644
+--- a/Documentation/devicetree/bindings/iio/pressure/bmp085.txt
++++ b/Documentation/devicetree/bindings/iio/pressure/bmp085.txt
+@@ -8,10 +8,6 @@ Required properties:
+   "bosch,bme280"
  
- 	sdhci@f9824900 {
-@@ -277,6 +295,44 @@
- 			linux,code = <KEY_VOLUMEDOWN>;
- 		};
- 	};
-+
-+	i2c@f9968000 {
-+		status = "ok";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&i2c12_pins>;
-+		clock-frequency = <100000>;
-+		qcom,src-freq = <50000000>;
-+
-+		mpu6515@68 {
-+			compatible = "invensense,mpu6515";
-+			reg = <0x68>;
-+			interrupts-extended = <&msmgpio 73 IRQ_TYPE_EDGE_FALLING>;
-+			vddio-supply = <&pm8941_lvs1>;
-+
-+			pinctrl-names = "default";
-+			pinctrl-0 = <&mpu6515_pin>;
-+
-+			i2c-gate {
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				ak8963@f {
-+					compatible = "asahi-kasei,ak8963";
-+					reg = <0x0f>;
-+					// Device currently only works in polling mode.
-+					// gpios = <&msmgpio 61 0>;
-+					vid-supply = <&pm8941_lvs1>;
-+					vdd-supply = <&pm8941_l17>;
-+				};
-+
-+				bmp280@76 {
-+					compatible = "bosch,bmp280";
-+					reg = <0x76>;
-+					vdda-supply = <&pm8941_lvs1>;
-+					vddd-supply = <&pm8941_l17>;
-+				};
-+			};
-+		};
-+	};
- };
- 
- &spmi_bus {
-diff --git a/arch/arm/boot/dts/qcom-msm8974.dtsi b/arch/arm/boot/dts/qcom-msm8974.dtsi
-index d9019a49b292..cebb6ae9143a 100644
---- a/arch/arm/boot/dts/qcom-msm8974.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
-@@ -737,6 +737,17 @@
- 			dma-names = "tx", "rx";
- 		};
- 
-+		blsp_i2c12: i2c@f9968000 {
-+			status = "disabled";
-+			compatible = "qcom,i2c-qup-v2.1.1";
-+			reg = <0xf9968000 0x1000>;
-+			interrupts = <0 106 IRQ_TYPE_NONE>;
-+			clocks = <&gcc GCC_BLSP2_QUP6_I2C_APPS_CLK>, <&gcc GCC_BLSP2_AHB_CLK>;
-+			clock-names = "core", "iface";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+		};
-+
- 		spmi_bus: spmi@fc4cf000 {
- 			compatible = "qcom,spmi-pmic-arb";
- 			reg-names = "core", "intr", "cnfg";
+ Optional properties:
+-- chip-id: configurable chip id for non-default chip revisions
+-- temp-measurement-period: temperature measurement period (milliseconds)
+-- default-oversampling: default oversampling value to be used at startup,
+-  value range is 0-3 with rising sensitivity.
+ - interrupt-parent: should be the phandle for the interrupt controller
+ - interrupts: interrupt mapping for IRQ
+ - reset-gpios: a GPIO line handling reset of the sensor: as the line is
+@@ -24,9 +20,6 @@ Example:
+ pressure@77 {
+ 	compatible = "bosch,bmp085";
+ 	reg = <0x77>;
+-	chip-id = <10>;
+-	temp-measurement-period = <100>;
+-	default-oversampling = <2>;
+ 	interrupt-parent = <&gpio0>;
+ 	interrupts = <25 IRQ_TYPE_EDGE_RISING>;
+ 	reset-gpios = <&gpio0 26 GPIO_ACTIVE_LOW>;
 -- 
 2.17.1
+
