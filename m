@@ -1,151 +1,257 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:36448 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726021AbeGOJER (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 15 Jul 2018 05:04:17 -0400
-Date: Sun, 15 Jul 2018 09:41:58 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Jonathan Cameron <jonathan.cameron@huawei.com>
-Cc: Brian Masney <masneyb@onstation.org>, <robh+dt@kernel.org>,
-        <mark.rutland@arm.com>, <andy.gross@linaro.org>,
-        <david.brown@linaro.org>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-soc@vger.kernel.org>,
-        <jonathan@marek.ca>, <jmaneyrol@invensense.com>, <knaack.h@gmx.de>,
-        <lars@metafoo.de>, <pmeerw@pmeerw.net>, <mkelly@xevo.com>,
-        <fischerdouglasc@gmail.com>, <bshah@kde.org>, <ctatlor97@gmail.com>
-Subject: Re: [PATCH 1/3] iio: imu: mpu6050: add support for 6515 variant
-Message-ID: <20180715094158.08115f93@archlinux>
-In-Reply-To: <20180712154738.00002918@huawei.com>
+Return-Path: <SRS0=jkej=J3=onstation.org=masneyb@kernel.org>
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org,
+	robh+dt@kernel.org,
+	mark.rutland@arm.com,
+	andy.gross@linaro.org,
+	david.brown@linaro.org,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org,
+	linux-soc@vger.kernel.org
+Cc: jonathan@marek.ca,
+	jmaneyrol@invensense.com,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	mkelly@xevo.com,
+	fischerdouglasc@gmail.com,
+	bshah@kde.org,
+	ctatlor97@gmail.com,
+	masneyb@onstation.org
+Subject: [PATCH 2/3] iio: imu: mpu6050: add support for regulator framework
+Date: Tue, 10 Jul 2018 21:09:31 -0400
+Message-Id: <20180711010932.20313-3-masneyb@onstation.org>
+In-Reply-To: <20180711010932.20313-1-masneyb@onstation.org>
 References: <20180711010932.20313-1-masneyb@onstation.org>
-        <20180711010932.20313-2-masneyb@onstation.org>
-        <20180712154738.00002918@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 12 Jul 2018 15:47:38 +0100
-Jonathan Cameron <jonathan.cameron@huawei.com> wrote:
+This patch adds support for the regulator framework to the mpu6050
+driver.
 
-> On Tue, 10 Jul 2018 21:09:30 -0400
-> Brian Masney <masneyb@onstation.org> wrote:
-> 
-> > This patch adds support for the MPU 6515 variant. Confirmed that the
-> > driver functions correctly on a LG Nexus 5 (hammerhead) phone.
-> > 
-> > Signed-off-by: Brian Masney <masneyb@onstation.org>
-> > Signed-off-by: Jonathan Marek <jonathan@marek.ca>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+Signed-off-by: Brian Masney <masneyb@onstation.org>
+Signed-off-by: Jonathan Marek <jonathan@marek.ca>
+---
+This is a variation of Jonathan Marek's patch from postmarketOS
+https://gitlab.com/postmarketOS/linux-postmarketos/commit/b8ad1ec1859c8bbcbce94944b3f4dd68f8f9fc37
+with the following changes:
 
-thanks,
+- Stripped out 6515 variant code. (See my previous patch in this series)
+- Add the regulator to the mpu core instead of only the i2c variant.
+- Add error handling.
+- Release the regulator on suspend, device remove, etc.
+- Device tree documentation.
 
-Jonathan
+ .../bindings/iio/imu/inv_mpu6050.txt          |  1 +
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    | 57 +++++++++++++++++--
+ drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c     |  2 +-
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h     |  3 +
+ drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c     |  9 +++
+ 5 files changed, 66 insertions(+), 6 deletions(-)
 
-> > ---
-> > This is a variation of Jonathan Marek's patch from postmarketOS
-> > https://gitlab.com/postmarketOS/linux-postmarketos/commit/b8ad1ec1859c8bbcbce94944b3f4dd68f8f9fc37
-> > with the following changes:
-> > 
-> > - The driver was previously throwing a 'whoami mismatch got XXX' error.
-> >   Corrected ordering of hw_info variable to match the index of the
-> >   inv_devices enum. The mpu6515 needed to come after mpu6500, not
-> >   mpu6050.
-> > - Removed regulator code. See next patch in this series.
-> > 
-> > I got confirmation from Jonathan M. that it was ok for me to submit his
-> > patch upstream with these changes.
-> > 
-> > Jonathan C.: I assume that it is ok for the device tree binding
-> > documentation to go through IIO? If not, I can split this out into a
-> > separate patch if needed.  
-> A single ID addition is normally uncontroversial enough that we don't bother
-> the DT maintainers (though of course they are welcome to look!).
-> So this is fine.
-> > 
-> >  Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt | 1 +
-> >  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c                | 6 ++++++
-> >  drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c                 | 5 +++++
-> >  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h                 | 2 ++
-> >  4 files changed, 14 insertions(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt b/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
-> > index 5f4777e8cc9e..b7def51c8ad9 100644
-> > --- a/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
-> > +++ b/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
-> > @@ -6,6 +6,7 @@ Required properties:
-> >   - compatible : should be one of
-> >  		"invensense,mpu6050"
-> >   		"invensense,mpu6500"
-> > +		"invensense,mpu6515"
-> >  		"invensense,mpu9150"
-> >  		"invensense,mpu9250"
-> >  		"invensense,mpu9255"
-> > diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> > index de68e83fc52d..12c1b9507007 100644
-> > --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> > +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> > @@ -103,6 +103,12 @@ static const struct inv_mpu6050_hw hw_info[] = {
-> >  		.reg = &reg_set_6500,
-> >  		.config = &chip_config_6050,
-> >  	},
-> > +	{
-> > +		.whoami = INV_MPU6515_WHOAMI_VALUE,
-> > +		.name = "MPU6515",
-> > +		.reg = &reg_set_6500,
-> > +		.config = &chip_config_6050,
-> > +	},
-> >  	{
-> >  		.whoami = INV_MPU6000_WHOAMI_VALUE,
-> >  		.name = "MPU6000",
-> > diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> > index 495409d56207..dd758e3d403d 100644
-> > --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> > +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> > @@ -174,6 +174,7 @@ static int inv_mpu_remove(struct i2c_client *client)
-> >  static const struct i2c_device_id inv_mpu_id[] = {
-> >  	{"mpu6050", INV_MPU6050},
-> >  	{"mpu6500", INV_MPU6500},
-> > +	{"mpu6515", INV_MPU6515},
-> >  	{"mpu9150", INV_MPU9150},
-> >  	{"mpu9250", INV_MPU9250},
-> >  	{"mpu9255", INV_MPU9255},
-> > @@ -192,6 +193,10 @@ static const struct of_device_id inv_of_match[] = {
-> >  		.compatible = "invensense,mpu6500",
-> >  		.data = (void *)INV_MPU6500
-> >  	},
-> > +	{
-> > +		.compatible = "invensense,mpu6515",
-> > +		.data = (void *)INV_MPU6515
-> > +	},
-> >  	{
-> >  		.compatible = "invensense,mpu9150",
-> >  		.data = (void *)INV_MPU9150
-> > diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> > index de8391693e17..e69a59659dbc 100644
-> > --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> > +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> > @@ -71,6 +71,7 @@ struct inv_mpu6050_reg_map {
-> >  enum inv_devices {
-> >  	INV_MPU6050,
-> >  	INV_MPU6500,
-> > +	INV_MPU6515,
-> >  	INV_MPU6000,
-> >  	INV_MPU9150,
-> >  	INV_MPU9250,
-> > @@ -256,6 +257,7 @@ struct inv_mpu6050_state {
-> >  #define INV_MPU9150_WHOAMI_VALUE		0x68
-> >  #define INV_MPU9250_WHOAMI_VALUE		0x71
-> >  #define INV_MPU9255_WHOAMI_VALUE		0x73
-> > +#define INV_MPU6515_WHOAMI_VALUE		0x74
-> >  #define INV_ICM20608_WHOAMI_VALUE		0xAF
-> >  
-> >  /* scan element definition */  
-> 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
+diff --git a/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt b/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
+index b7def51c8ad9..d39907b12a46 100644
+--- a/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
++++ b/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
+@@ -21,6 +21,7 @@ Required properties:
+   bindings.
+ 
+ Optional properties:
++ - vddio-supply: regulator phandle for VDDIO supply
+  - mount-matrix: an optional 3x3 mounting rotation matrix
+  - i2c-gate node.  These devices also support an auxiliary i2c bus.  This is
+    simple enough to be described using the i2c-gate binding. See
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index 12c1b9507007..ec276b7bcc69 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -23,6 +23,7 @@
+ #include <linux/iio/iio.h>
+ #include <linux/acpi.h>
+ #include <linux/platform_device.h>
++#include <linux/regulator/consumer.h>
+ #include "inv_mpu_iio.h"
+ 
+ /*
+@@ -926,6 +927,19 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st)
+ 	return result;
+ }
+ 
++static int inv_mpu_core_enable_regulator(struct inv_mpu6050_state *st)
++{
++	int result;
++
++	result = regulator_enable(st->vddio_supply);
++	if (result == 0) {
++		/* Give the device a little bit of time to start up. */
++		usleep_range(35000, 70000);
++	}
++
++	return result;
++}
++
+ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+ 		int (*inv_mpu_bus_setup)(struct iio_dev *), int chip_type)
+ {
+@@ -990,15 +1004,28 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+ 		return -EINVAL;
+ 	}
+ 
++	st->vddio_supply = devm_regulator_get_optional(dev, "vddio");
++	if (IS_ERR(st->vddio_supply)) {
++		if (PTR_ERR(st->vddio_supply) != -EPROBE_DEFER)
++			dev_err(dev, "Failed to get vddio regulator %d\n",
++				(int)PTR_ERR(st->vddio_supply));
++
++		return PTR_ERR(st->vddio_supply);
++	}
++
++	result = inv_mpu_core_enable_regulator(st);
++	if (result)
++		return result;
++
+ 	/* power is turned on inside check chip type*/
+ 	result = inv_check_and_setup_chip(st);
+ 	if (result)
+-		return result;
++		goto out_disable_regulator;
+ 
+ 	result = inv_mpu6050_init_config(indio_dev);
+ 	if (result) {
+ 		dev_err(dev, "Could not initialize device.\n");
+-		return result;
++		goto out_disable_regulator;
+ 	}
+ 
+ 	if (inv_mpu_bus_setup)
+@@ -1023,24 +1050,34 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+ 						 NULL);
+ 	if (result) {
+ 		dev_err(dev, "configure buffer fail %d\n", result);
+-		return result;
++		goto out_disable_regulator;
+ 	}
+ 	result = inv_mpu6050_probe_trigger(indio_dev, irq_type);
+ 	if (result) {
+ 		dev_err(dev, "trigger probe fail %d\n", result);
+-		return result;
++		goto out_disable_regulator;
+ 	}
+ 
+ 	result = devm_iio_device_register(dev, indio_dev);
+ 	if (result) {
+ 		dev_err(dev, "IIO register fail %d\n", result);
+-		return result;
++		goto out_disable_regulator;
+ 	}
+ 
+ 	return 0;
++
++out_disable_regulator:
++	regulator_disable(st->vddio_supply);
++	return result;
++
+ }
+ EXPORT_SYMBOL_GPL(inv_mpu_core_probe);
+ 
++int inv_mpu_core_remove(struct inv_mpu6050_state *st)
++{
++	return regulator_disable(st->vddio_supply);
++}
++
+ #ifdef CONFIG_PM_SLEEP
+ 
+ static int inv_mpu_resume(struct device *dev)
+@@ -1050,6 +1087,11 @@ static int inv_mpu_resume(struct device *dev)
+ 
+ 	mutex_lock(&st->lock);
+ 	result = inv_mpu6050_set_power_itg(st, true);
++	if (result)
++		goto out_unlock;
++
++	result = inv_mpu_core_enable_regulator(st);
++out_unlock:
+ 	mutex_unlock(&st->lock);
+ 
+ 	return result;
+@@ -1062,6 +1104,11 @@ static int inv_mpu_suspend(struct device *dev)
+ 
+ 	mutex_lock(&st->lock);
+ 	result = inv_mpu6050_set_power_itg(st, false);
++	if (result)
++		goto out_unlock;
++
++	result = regulator_disable(st->vddio_supply);
++out_unlock:
+ 	mutex_unlock(&st->lock);
+ 
+ 	return result;
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+index dd758e3d403d..ce227038c61c 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+@@ -164,7 +164,7 @@ static int inv_mpu_remove(struct i2c_client *client)
+ 		i2c_mux_del_adapters(st->muxc);
+ 	}
+ 
+-	return 0;
++	return inv_mpu_core_remove(st);
+ }
+ 
+ /*
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+index e69a59659dbc..0289615a6135 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+@@ -129,6 +129,7 @@ struct inv_mpu6050_hw {
+  *  @chip_period:	chip internal period estimation (~1kHz).
+  *  @it_timestamp:	timestamp from previous interrupt.
+  *  @data_timestamp:	timestamp for next data sample.
++ *  @vddio_supply	voltage regulator for the chip.
+  */
+ struct inv_mpu6050_state {
+ 	struct mutex lock;
+@@ -149,6 +150,7 @@ struct inv_mpu6050_state {
+ 	s64 chip_period;
+ 	s64 it_timestamp;
+ 	s64 data_timestamp;
++	struct regulator *vddio_supply;
+ };
+ 
+ /*register and associated bit definition*/
+@@ -321,4 +323,5 @@ int inv_mpu_acpi_create_mux_client(struct i2c_client *client);
+ void inv_mpu_acpi_delete_mux_client(struct i2c_client *client);
+ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+ 		int (*inv_mpu_bus_setup)(struct iio_dev *), int chip_type);
++int inv_mpu_core_remove(struct inv_mpu6050_state *st);
+ extern const struct dev_pm_ops inv_mpu_pmops;
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+index 227f50afff22..fce935f8f1e4 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+@@ -70,6 +70,14 @@ static int inv_mpu_probe(struct spi_device *spi)
+ 				  inv_mpu_i2c_disable, chip_type);
+ }
+ 
++static int inv_mpu_remove(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev = spi_get_drvdata(spi);
++	struct inv_mpu6050_state *st = iio_priv(indio_dev);
++
++	return inv_mpu_core_remove(st);
++}
++
+ /*
+  * device id table is used to identify what device can be
+  * supported by this driver
+@@ -94,6 +102,7 @@ MODULE_DEVICE_TABLE(acpi, inv_acpi_match);
+ 
+ static struct spi_driver inv_mpu_driver = {
+ 	.probe		=	inv_mpu_probe,
++	.remove		=	inv_mpu_remove,
+ 	.id_table	=	inv_mpu_id,
+ 	.driver = {
+ 		.acpi_match_table = ACPI_PTR(inv_acpi_match),
+-- 
+2.17.1
