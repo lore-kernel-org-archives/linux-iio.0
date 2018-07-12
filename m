@@ -1,18 +1,12 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:35469 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389992AbeGKRM1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 11 Jul 2018 13:12:27 -0400
-Received: by mail-wr1-f65.google.com with SMTP id a3-v6so9687730wrt.2
-        for <linux-iio@vger.kernel.org>; Wed, 11 Jul 2018 10:07:11 -0700 (PDT)
-Date: Wed, 11 Jul 2018 19:07:08 +0200
+Return-Path: <SRS0=sf9n=J4=redhat.com=lorenzo.bianconi@kernel.org>
+Date: Thu, 12 Jul 2018 09:59:34 +0200
 From: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
 To: Jorge Ramirez-Ortiz <jramirez@baylibre.com>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org
 Subject: Re: [PATCH] iio: imu: st_lsm6dsx: irq not handled unless data pushed
  to buffers
-Message-ID: <20180711170707.GA3280@localhost.localdomain>
+Message-ID: <20180712075933.GA3982@localhost.localdomain>
 References: <1531297928-3824-1-git-send-email-jramirez@baylibre.com>
  <20180711122953.GC3871@localhost.localdomain>
  <2d1f0810-a6d0-3785-6692-003bb3f817e0@baylibre.com>
@@ -23,10 +17,8 @@ References: <1531297928-3824-1-git-send-email-jramirez@baylibre.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 In-Reply-To: <7f921bb7-3488-f1b7-3f43-be4c370b303d@baylibre.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Jul 11, Jorge Ramirez-Ortiz wrote:
 > On 07/11/2018 06:34 PM, Lorenzo Bianconi wrote:
 > > > On 07/11/2018 05:26 PM, Lorenzo Bianconi wrote:
 > > > > On Jul 11, Jorge Ramirez-Ortiz wrote:
@@ -102,16 +94,18 @@ On Jul 11, Jorge Ramirez-Ortiz wrote:
 > 
 > hey of course not :) please go ahead with your change! got to start packing
 > for my summer break anyways :)
-
-Ok, will post a patch adding that stuff. Have a nice vacation ;)
-
 > 
 > I was working this morning validating the driver on the LSM6DS33TR with
 > libiio and it is all good btw.
+
+According to the wai, LSM6DS33TR should be compatible with LSM6DS3/LSM6DS3H
+(I just looked at wai val, not all ds). If so I guess you can add explicit
+support for it (after your vacation :))
+
+Regards,
+Lorenzo
+
 > 
-
-Cool!
-
 > 
 > 
 > 
