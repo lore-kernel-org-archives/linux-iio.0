@@ -1,122 +1,44 @@
-Return-Path: <SRS0=fOIf=J4=analog.com=StefanSerban.Popa@kernel.org>
-From: Stefan Popa <stefan.popa@analog.com>
-To: <jic23@kernel.org>
-CC: <lars@metafoo.de>, <Michael.Hennerich@analog.com>, <knaack.h@gmx.de>,
-	<pmeerw@pmeerw.net>, <linux-iio@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <stefan.popa@analog.com>
-Subject: [PATCH 4/5] iio:adxl372: Add sampling frequency support
-Date: Thu, 12 Jul 2018 18:36:26 +0300
-Message-ID: <1531409786-20180-1-git-send-email-stefan.popa@analog.com>
+Return-Path: <SRS0=+dP8=J4=gmail.com=andy.shevchenko@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <1531409786-20180-1-git-send-email-stefan.popa@analog.com>
+References: <1531409786-20180-1-git-send-email-stefan.popa@analog.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Thu, 12 Jul 2018 21:25:51 +0300
+Message-ID: <CAHp75Ve+S7UDyLva_PY4s=cjKoSY+aMfWDUEHb6tp4AxGtGsDg@mail.gmail.com>
+Subject: Re: [PATCH 4/5] iio:adxl372: Add sampling frequency support
+To: Stefan Popa <stefan.popa@analog.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>, Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio <linux-iio@vger.kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch adds the option for the user to select the sampling frequency.
-Also, the user can read the available frequencies and read the currently
-set frequency via the read_raw function. The frequency can be set via the
-write_raw function.
+On Thu, Jul 12, 2018 at 6:36 PM, Stefan Popa <stefan.popa@analog.com> wrote:
+> This patch adds the option for the user to select the sampling frequency.
+> Also, the user can read the available frequencies and read the currently
+> set frequency via the read_raw function. The frequency can be set via the
+> write_raw function.
+>
+> When the frequency is set, the bandwidth is also checked and ensured
+> that it is constrained to at most half of the sampling frequency.
 
-When the frequency is set, the bandwidth is also checked and ensured
-that it is constrained to at most half of the sampling frequency.
+> +static int adxl372_find_closest_match(const int *array,
+> +                                     unsigned int size, int val)
+> +{
+> +       int i;
+> +
+> +       for (i = 0; i < size; i++) {
+> +               if (val <= array[i])
+> +                       return i;
+> +       }
+> +
+> +       return size - 1;
+> +}
 
-Signed-off-by: Stefan Popa <stefan.popa@analog.com>
----
- drivers/iio/accel/adxl372.c | 60 ++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 59 insertions(+), 1 deletion(-)
+Perhaps it's time to extend bsearch with something called
+bsearch_closest().
 
-diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
-index 645902d..498c740 100644
---- a/drivers/iio/accel/adxl372.c
-+++ b/drivers/iio/accel/adxl372.c
-@@ -205,7 +205,8 @@ static const int adxl372_samp_freq_tbl[5] = {
- 	.modified = 1,							\
- 	.channel2 = IIO_MOD_##axis,					\
- 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
--	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
-+				    BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
- 	.scan_index = index,						\
- 	.scan_type = {							\
- 		.sign = 's',						\
-@@ -291,6 +292,19 @@ static int adxl372_set_odr(struct adxl372_state *st,
- 	return ret;
- }
- 
-+static int adxl372_find_closest_match(const int *array,
-+				      unsigned int size, int val)
-+{
-+	int i;
-+
-+	for (i = 0; i < size; i++) {
-+		if (val <= array[i])
-+			return i;
-+	}
-+
-+	return size - 1;
-+}
-+
- static int adxl372_set_bandwidth(struct adxl372_state *st,
- 				 enum adxl372_bandwidth bw)
- {
-@@ -568,6 +582,37 @@ static int adxl372_read_raw(struct iio_dev *indio_dev,
- 		*val = 0;
- 		*val2 = ADXL372_USCALE;
- 		return IIO_VAL_INT_PLUS_MICRO;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		*val = adxl372_samp_freq_tbl[st->odr];
-+		return IIO_VAL_INT;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static int adxl372_write_raw(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     int val, int val2, long info)
-+{
-+	struct adxl372_state *st = iio_priv(indio_dev);
-+	int odr_index, ret;
-+
-+	switch (info) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		odr_index = adxl372_find_closest_match(adxl372_samp_freq_tbl,
-+					ARRAY_SIZE(adxl372_samp_freq_tbl),
-+					val);
-+		ret = adxl372_set_odr(st, odr_index);
-+		if (ret < 0)
-+			return ret;
-+		/*
-+		 * The maximum bandwidth is constrained to at most half of
-+		 * the ODR to ensure that the Nyquist criteria is not violated
-+		 */
-+		if (st->bw > odr_index)
-+			ret = adxl372_set_bandwidth(st, odr_index);
-+
-+		return ret;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -722,8 +767,21 @@ static const struct iio_trigger_ops adxl372_trigger_ops = {
- 	.set_trigger_state = adxl372_dready_trig_set_state,
- };
- 
-+static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("400 800 1600 3200 6400");
-+
-+static struct attribute *adxl372_attributes[] = {
-+	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group adxl372_attrs_group = {
-+	.attrs = adxl372_attributes,
-+};
-+
- static const struct iio_info adxl372_info = {
-+	.attrs = &adxl372_attrs_group,
- 	.read_raw = adxl372_read_raw,
-+	.write_raw = adxl372_write_raw,
- 	.debugfs_reg_access = &adxl372_reg_access,
- 	.hwfifo_set_watermark = adxl372_set_watermark,
- };
 -- 
-2.7.4
+With Best Regards,
+Andy Shevchenko
