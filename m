@@ -1,145 +1,123 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yb0-f196.google.com ([209.85.213.196]:41486 "EHLO
-        mail-yb0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727458AbeGUTRC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 21 Jul 2018 15:17:02 -0400
-Date: Sat, 21 Jul 2018 14:23:09 -0400
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: gregkh@linuxfoundation.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, fabrice.gasnier@st.com,
-        benjamin.gaignard@st.com, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, akpm@linux-foundation.org
-Subject: Re: [PATCH v8 00/11] Introduce the Counter subsystem
-Message-ID: <20180721182202.GA17344@sophia>
-References: <cover.1531685024.git.vilhelm.gray@gmail.com>
- <20180721190134.166e50ab@archlinux>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <20180721190134.166e50ab@archlinux>
+Received: from vern.gendns.com ([206.190.152.46]:55068 "EHLO vern.gendns.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729593AbeGQAFt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 16 Jul 2018 20:05:49 -0400
+From: David Lechner <david@lechnology.com>
+To: linux-iio@vger.kernel.org
+Cc: David Lechner <david@lechnology.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: adc: ti-ads7950: allow simultaneous use of buffer and direct mode
+Date: Mon, 16 Jul 2018 18:35:50 -0500
+Message-Id: <20180716233550.6449-1-david@lechnology.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Jul 21, 2018 at 07:01:34PM +0100, Jonathan Cameron wrote:
->On Sun, 15 Jul 2018 16:44:24 -0400
->William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
->
->> Changes in v8:
->>  - Add counter_enum.h file
->>  - Simplify COUNTER Kconfig option help text
->>  - Rename generic-counter.c to the more straightforward counter.c
->>  - Update copyright and license boilerplate (use recommended SPDX line)
->>  - Replace EXPORT_SYMBOL lines with respective EXPORT_SYMBOL_GPL lines
->>  - Replace scnprintf lines with sprintf since we're dealing with sysfs files
->>  - Add struct counter_attr_parm to simplify counter_attribute_create parameters
->>  - Rename *_comp_t suffixes to *_unit in order to avoid *_t suffix implications
->>  - List sysfs attribute values verbatim in sysfs documentation files
->>  - Reorganize 104-QUAD-8 driver license boilerplate update to dedicated patch
->> 
->> This revision is functionally identical to the last; changes in this version
->> were made to improve clarity, formatting and whitespace, and organization. I
->> also took this opportunity to record some of the new ACKs from the last
->> submission.
->> 
->> The counter_enum.h file was created to hold the Generic Counter enum helper
->> functions required by the Generic Counter enum macros (i.e. COUNTER_SIGNAL_ENUM,
->> COUNTER_COUNT_ENUM, etc.). These helper functions are not intended to be used
->> directly by driver authors, so I thought it best to keep them separated. Now the
->> counter.h file contains only macro, functions, and data structures that are
->> expected to possibly appear in a counter device driver.
->> 
->> The counter_attribute_create function parameter list was large so I reorganized
->> the parameters into the counter_attr_parm structure, which may be set and passed
->> by reference to the counter_attribute_create function. Since the show and store
->> function pointers match with the struct device_attribute show and store function
->> pointers, I decided to keep them declared as there are here without a typedef --
->> however, I can typedef them in a future revision if it will improve clarity to
->> do so.
->> 
->> Heads-up for Jonathan Cameron: you may pick-up the "iio: 104-quad-8: Update
->> license boilerplate" patch independent of this series; it's the SPDX license
->> boilerplate update for the 104-QUAD-8 IIO driver.
->> 
->> Sincerely,
->> 
->> William Breathitt Gray
->> 
->This crossed with Andrew Morton's good points on this occupying
->namespace that is rather too generically named.  Hence I'll assume
->we'll see a v9 with a solution to that (and personally ignore v8
->to save time ;)
->
->Ah I see you just replied to Andrew. Great!
->
->
->Jonathan
+This modifies the TI ADS7950 A/DC driver to allow the simultaneous use
+of both the triggered buffer and reading channels directly (via in-
+kernel API or sysfs).
 
-That's right: please ignore this v8 release; Andrew Morton's suggestions
-on the v7 thread are quick enough that I should have a v9 tested and
-submitted by tomorrow, so keep an eye out for that one instead.
+The use case for this is on LEGO MINDSTORMS EV3. Two of the voltage
+channels are used in-kernel by a power supply driver, which reads the
+values using iio_read_channel_processed(). These channels are only read
+at a slow rate (<= 1Hz).  However, we want to be able to read 12 other
+channels at the same time using the triggered buffer at a high rate (>=
+100Hz) without breaking the power supply driver.
 
-Thanks,
+Signed-off-by: David Lechner <david@lechnology.com>
+---
+ drivers/iio/adc/ti-ads7950.c | 29 +++++++++++++++++------------
+ 1 file changed, 17 insertions(+), 12 deletions(-)
 
-William Breathitt Gray
+diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
+index 0225c1b333ab..ba7e5a027490 100644
+--- a/drivers/iio/adc/ti-ads7950.c
++++ b/drivers/iio/adc/ti-ads7950.c
+@@ -58,6 +58,7 @@
+ 	(((val) >> (dec)) & ((1 << (bits)) - 1))
+ 
+ struct ti_ads7950_state {
++	struct iio_dev		*indio_dev;
+ 	struct spi_device	*spi;
+ 	struct spi_transfer	ring_xfer[TI_ADS7950_MAX_CHAN + 2];
+ 	struct spi_transfer	scan_single_xfer[3];
+@@ -68,6 +69,8 @@ struct ti_ads7950_state {
+ 	unsigned int		vref_mv;
+ 
+ 	unsigned int		settings;
++	__be16			single_tx;
++	__be16			single_rx;
+ 
+ 	/*
+ 	 * DMA (thus cache coherency maintenance) requires the
+@@ -299,14 +302,21 @@ static int ti_ads7950_scan_direct(struct ti_ads7950_state *st, unsigned int ch)
+ {
+ 	int ret, cmd;
+ 
++	mutex_lock(&st->indio_dev->mlock);
++
+ 	cmd = TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(ch) | st->settings;
+-	st->tx_buf[0] = cpu_to_be16(cmd);
++	st->single_tx = cpu_to_be16(cmd);
+ 
+ 	ret = spi_sync(st->spi, &st->scan_single_msg);
+ 	if (ret)
+-		return ret;
++		goto out;
++
++	ret = be16_to_cpu(st->single_rx);
++
++out:
++	mutex_unlock(&st->indio_dev->mlock);
+ 
+-	return be16_to_cpu(st->rx_buf[0]);
++		return ret;
+ }
+ 
+ static int ti_ads7950_get_range(struct ti_ads7950_state *st)
+@@ -338,13 +348,7 @@ static int ti_ads7950_read_raw(struct iio_dev *indio_dev,
+ 
+ 	switch (m) {
+ 	case IIO_CHAN_INFO_RAW:
+-
+-		ret = iio_device_claim_direct_mode(indio_dev);
+-		if (ret < 0)
+-			return ret;
+-
+ 		ret = ti_ads7950_scan_direct(st, chan->address);
+-		iio_device_release_direct_mode(indio_dev);
+ 		if (ret < 0)
+ 			return ret;
+ 
+@@ -389,6 +393,7 @@ static int ti_ads7950_probe(struct spi_device *spi)
+ 
+ 	spi_set_drvdata(spi, indio_dev);
+ 
++	st->indio_dev = indio_dev;
+ 	st->spi = spi;
+ 	st->settings = TI_ADS7950_CR_MANUAL | TI_ADS7950_CR_RANGE_5V;
+ 
+@@ -410,13 +415,13 @@ static int ti_ads7950_probe(struct spi_device *spi)
+ 	 * was read at the end of the first transfer.
+ 	 */
+ 
+-	st->scan_single_xfer[0].tx_buf = &st->tx_buf[0];
++	st->scan_single_xfer[0].tx_buf = &st->single_tx;
+ 	st->scan_single_xfer[0].len = 2;
+ 	st->scan_single_xfer[0].cs_change = 1;
+-	st->scan_single_xfer[1].tx_buf = &st->tx_buf[0];
++	st->scan_single_xfer[1].tx_buf = &st->single_tx;
+ 	st->scan_single_xfer[1].len = 2;
+ 	st->scan_single_xfer[1].cs_change = 1;
+-	st->scan_single_xfer[2].rx_buf = &st->rx_buf[0];
++	st->scan_single_xfer[2].rx_buf = &st->single_rx;
+ 	st->scan_single_xfer[2].len = 2;
+ 
+ 	spi_message_init_with_transfers(&st->scan_single_msg,
+-- 
+2.17.1
 
->
->> Benjamin Gaignard (2):
->>   counter: Add STM32 Timer quadrature encoder
->>   dt-bindings: counter: Document stm32 quadrature encoder
->> 
->> Fabrice Gasnier (2):
->>   counter: stm32-lptimer: add counter device
->>   dt-bindings: counter: Adjust dt-bindings for STM32 lptimer move
->> 
->> William Breathitt Gray (7):
->>   counter: Introduce the Generic Counter interface
->>   counter: Documentation: Add Generic Counter sysfs documentation
->>   docs: Add Generic Counter interface documentation
->>   iio: 104-quad-8: Update license boilerplate
->>   counter: 104-quad-8: Add Generic Counter interface support
->>   counter: 104-quad-8: Documentation: Add Generic Counter sysfs
->>     documentation
->>   iio: counter: Add deprecation markings for IIO Counter attributes
->> 
->>  Documentation/ABI/testing/sysfs-bus-counter   |  230 +++
->>  .../ABI/testing/sysfs-bus-counter-104-quad-8  |   36 +
->>  Documentation/ABI/testing/sysfs-bus-iio       |    8 +
->>  .../testing/sysfs-bus-iio-counter-104-quad-8  |   16 +
->>  .../{iio => }/counter/stm32-lptimer-cnt.txt   |    0
->>  .../bindings/counter/stm32-timer-cnt.txt      |   31 +
->>  .../devicetree/bindings/mfd/stm32-lptimer.txt |    2 +-
->>  .../devicetree/bindings/mfd/stm32-timers.txt  |    7 +
->>  Documentation/driver-api/generic-counter.rst  |  342 ++++
->>  Documentation/driver-api/index.rst            |    1 +
->>  MAINTAINERS                                   |   15 +-
->>  drivers/Kconfig                               |    2 +
->>  drivers/Makefile                              |    1 +
->>  drivers/{iio => }/counter/104-quad-8.c        |  782 ++++++++-
->>  drivers/counter/Kconfig                       |   51 +
->>  drivers/{iio => }/counter/Makefile            |    5 +-
->>  drivers/counter/counter.c                     | 1561 +++++++++++++++++
->>  drivers/{iio => }/counter/stm32-lptimer-cnt.c |  361 +++-
->>  drivers/counter/stm32-timer-cnt.c             |  390 ++++
->>  drivers/iio/Kconfig                           |    1 -
->>  drivers/iio/Makefile                          |    1 -
->>  drivers/iio/counter/Kconfig                   |   34 -
->>  include/linux/counter.h                       |  505 ++++++
->>  include/linux/counter_enum.h                  |   45 +
->>  24 files changed, 4341 insertions(+), 86 deletions(-)
->>  create mode 100644 Documentation/ABI/testing/sysfs-bus-counter
->>  create mode 100644 Documentation/ABI/testing/sysfs-bus-counter-104-quad-8
->>  rename Documentation/devicetree/bindings/{iio => }/counter/stm32-lptimer-cnt.txt (100%)
->>  create mode 100644 Documentation/devicetree/bindings/counter/stm32-timer-cnt.txt
->>  create mode 100644 Documentation/driver-api/generic-counter.rst
->>  rename drivers/{iio => }/counter/104-quad-8.c (44%)
->>  create mode 100644 drivers/counter/Kconfig
->>  rename drivers/{iio => }/counter/Makefile (46%)
->>  create mode 100644 drivers/counter/counter.c
->>  rename drivers/{iio => }/counter/stm32-lptimer-cnt.c (48%)
->>  create mode 100644 drivers/counter/stm32-timer-cnt.c
->>  delete mode 100644 drivers/iio/counter/Kconfig
->>  create mode 100644 include/linux/counter.h
->>  create mode 100644 include/linux/counter_enum.h
->> 
->
