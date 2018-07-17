@@ -1,185 +1,63 @@
-Return-Path: <SRS0=3Bdj=KB=novotny.cz=tomas@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from hosting.pavoucek.net ([46.28.107.168]:60791 "EHLO
+        hosting.pavoucek.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729683AbeGQRaR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Jul 2018 13:30:17 -0400
 From: Tomas Novotny <tomas@novotny.cz>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: [PATCH v2 1/4] iio: vcnl4000: make the driver extendable
-Date: Tue, 17 Jul 2018 18:46:52 +0200
-Message-Id: <20180717164655.27142-2-tomas@novotny.cz>
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: [PATCH v2 2/4] iio: vcnl4000: add VCNL4010 device id
+Date: Tue, 17 Jul 2018 18:46:53 +0200
+Message-Id: <20180717164655.27142-3-tomas@novotny.cz>
 In-Reply-To: <20180717164655.27142-1-tomas@novotny.cz>
 References: <20180717164655.27142-1-tomas@novotny.cz>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-There are similar chips in the vcnl4xxx family. The initialization and
-communication is a bit different for members of the family, so this
-patch makes the driver extendable for different chips.
-
-There is no functional change.
+The driver already supports VCNL4010/20 devices. The supported features
+and detectable product id are the same, so add shared id for them.
 
 Signed-off-by: Tomas Novotny <tomas@novotny.cz>
 ---
- drivers/iio/light/vcnl4000.c | 85 ++++++++++++++++++++++++++++++++++----------
- 1 file changed, 67 insertions(+), 18 deletions(-)
+ drivers/iio/light/vcnl4000.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index c599a90506ad..32c0b531395f 100644
+index 32c0b531395f..0688214fc152 100644
 --- a/drivers/iio/light/vcnl4000.c
 +++ b/drivers/iio/light/vcnl4000.c
-@@ -26,8 +26,8 @@
- #include <linux/iio/sysfs.h>
+@@ -48,6 +48,7 @@
  
- #define VCNL4000_DRV_NAME "vcnl4000"
--#define VCNL4000_ID		0x01
--#define VCNL4010_ID		0x02 /* for VCNL4020, VCNL4010 */
-+#define VCNL4000_PROD_ID	0x01
-+#define VCNL4010_PROD_ID	0x02 /* for VCNL4020, VCNL4010 */
- 
- #define VCNL4000_COMMAND	0x80 /* Command register */
- #define VCNL4000_PROD_REV	0x81 /* Product ID and Revision ID */
-@@ -46,17 +46,50 @@
- #define VCNL4000_AL_OD		BIT(4) /* start on-demand ALS measurement */
- #define VCNL4000_PS_OD		BIT(3) /* start on-demand proximity measurement */
- 
-+enum vcnl4000_device_ids {
-+	VCNL4000,
-+};
-+
- struct vcnl4000_data {
- 	struct i2c_client *client;
-+	enum vcnl4000_device_ids id;
-+	int rev;
-+	int al_scale;
-+	const struct vcnl4000_chip_spec *chip_spec;
- 	struct mutex lock;
+ enum vcnl4000_device_ids {
+ 	VCNL4000,
++	VCNL4010,
  };
  
-+struct vcnl4000_chip_spec {
-+	const char *prod;
-+	int (*init)(struct vcnl4000_data *data);
-+	int (*measure_light)(struct vcnl4000_data *data, int *val);
-+	int (*measure_proximity)(struct vcnl4000_data *data, int *val);
-+};
-+
+ struct vcnl4000_data {
+@@ -68,6 +69,7 @@ struct vcnl4000_chip_spec {
+ 
  static const struct i2c_device_id vcnl4000_id[] = {
--	{ "vcnl4000", 0 },
-+	{ "vcnl4000", VCNL4000 },
+ 	{ "vcnl4000", VCNL4000 },
++	{ "vcnl4010", VCNL4010 },
  	{ }
  };
  MODULE_DEVICE_TABLE(i2c, vcnl4000_id);
- 
-+static int vcnl4000_init(struct vcnl4000_data *data)
-+{
-+	int ret, prod_id;
-+
-+	ret = i2c_smbus_read_byte_data(data->client, VCNL4000_PROD_REV);
-+	if (ret < 0)
-+		return ret;
-+
-+	prod_id = ret >> 4;
-+	if (prod_id != VCNL4010_PROD_ID && prod_id != VCNL4000_PROD_ID)
-+		return -ENODEV;
-+
-+	data->rev = ret & 0xf;
-+	data->al_scale = 250000;
-+
-+	return 0;
-+};
-+
- static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
- 				u8 rdy_mask, u8 data_reg, int *val)
- {
-@@ -103,6 +136,29 @@ static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
- 	return ret;
- }
- 
-+static int vcnl4000_measure_light(struct vcnl4000_data *data, int *val)
-+{
-+	return vcnl4000_measure(data,
-+			VCNL4000_AL_OD, VCNL4000_AL_RDY,
-+			VCNL4000_AL_RESULT_HI, val);
-+}
-+
-+static int vcnl4000_measure_proximity(struct vcnl4000_data *data, int *val)
-+{
-+	return vcnl4000_measure(data,
-+			VCNL4000_PS_OD, VCNL4000_PS_RDY,
-+			VCNL4000_PS_RESULT_HI, val);
-+}
-+
-+static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
-+	[VCNL4000] = {
-+		.prod = "VCNL4000",
+@@ -157,6 +159,12 @@ static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
+ 		.measure_light = vcnl4000_measure_light,
+ 		.measure_proximity = vcnl4000_measure_proximity,
+ 	},
++	[VCNL4010] = {
++		.prod = "VCNL4010/4020",
 +		.init = vcnl4000_init,
 +		.measure_light = vcnl4000_measure_light,
 +		.measure_proximity = vcnl4000_measure_proximity,
 +	},
-+};
-+
+ };
+ 
  static const struct iio_chan_spec vcnl4000_channels[] = {
- 	{
- 		.type = IIO_LIGHT,
-@@ -125,16 +181,12 @@ static int vcnl4000_read_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_RAW:
- 		switch (chan->type) {
- 		case IIO_LIGHT:
--			ret = vcnl4000_measure(data,
--				VCNL4000_AL_OD, VCNL4000_AL_RDY,
--				VCNL4000_AL_RESULT_HI, val);
-+			ret = data->chip_spec->measure_light(data, val);
- 			if (ret < 0)
- 				return ret;
- 			return IIO_VAL_INT;
- 		case IIO_PROXIMITY:
--			ret = vcnl4000_measure(data,
--				VCNL4000_PS_OD, VCNL4000_PS_RDY,
--				VCNL4000_PS_RESULT_HI, val);
-+			ret = data->chip_spec->measure_proximity(data, val);
- 			if (ret < 0)
- 				return ret;
- 			return IIO_VAL_INT;
-@@ -146,7 +198,7 @@ static int vcnl4000_read_raw(struct iio_dev *indio_dev,
- 			return -EINVAL;
- 
- 		*val = 0;
--		*val2 = 250000;
-+		*val2 = data->al_scale;
- 		return IIO_VAL_INT_PLUS_MICRO;
- 	default:
- 		return -EINVAL;
-@@ -162,7 +214,7 @@ static int vcnl4000_probe(struct i2c_client *client,
- {
- 	struct vcnl4000_data *data;
- 	struct iio_dev *indio_dev;
--	int ret, prod_id;
-+	int ret;
- 
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
- 	if (!indio_dev)
-@@ -171,19 +223,16 @@ static int vcnl4000_probe(struct i2c_client *client,
- 	data = iio_priv(indio_dev);
- 	i2c_set_clientdata(client, indio_dev);
- 	data->client = client;
-+	data->id = id->driver_data;
-+	data->chip_spec = &vcnl4000_chip_spec_cfg[data->id];
- 	mutex_init(&data->lock);
- 
--	ret = i2c_smbus_read_byte_data(data->client, VCNL4000_PROD_REV);
-+	ret = data->chip_spec->init(data);
- 	if (ret < 0)
- 		return ret;
- 
--	prod_id = ret >> 4;
--	if (prod_id != VCNL4010_ID && prod_id != VCNL4000_ID)
--		return -ENODEV;
--
- 	dev_dbg(&client->dev, "%s Ambient light/proximity sensor, Rev: %02x\n",
--		(prod_id == VCNL4010_ID) ? "VCNL4010/4020" : "VCNL4000",
--		ret & 0xf);
-+		data->chip_spec->prod, data->rev);
- 
- 	indio_dev->dev.parent = &client->dev;
- 	indio_dev->info = &vcnl4000_info;
 -- 
 2.12.3
+
