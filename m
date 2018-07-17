@@ -1,106 +1,57 @@
-Return-Path: <SRS0=jEZM=KF=lechnology.com=david@kernel.org>
-Subject: Re: [PATCH 4/4] iio: adc: ti-ads7950: use SPI_CS_WORD to reduce CPU
- usage
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-spi@vger.kernel.org, linux-iio@vger.kernel.org,
- Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Mark Brown <broonie@kernel.org>,
- linux-kernel@vger.kernel.org
-References: <20180717032052.12273-1-david@lechnology.com>
- <20180717032052.12273-5-david@lechnology.com>
- <20180721185138.673bee00@archlinux>
-From: David Lechner <david@lechnology.com>
-Message-ID: <e564e3c9-2fea-b203-ca39-ea94ba2b83b0@lechnology.com>
-Date: Sat, 21 Jul 2018 14:05:49 -0500
-MIME-Version: 1.0
-In-Reply-To: <20180721185138.673bee00@archlinux>
-Content-Type: text/plain; charset=utf-8; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from onstation.org ([52.200.56.107]:58194 "EHLO onstation.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728024AbeGQJNd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 17 Jul 2018 05:13:33 -0400
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com,
+        andy.gross@linaro.org, david.brown@linaro.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-soc@vger.kernel.org
+Cc: jonathan@marek.ca, jmaneyrol@invensense.com, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, mkelly@xevo.com,
+        fischerdouglasc@gmail.com, bshah@kde.org, ctatlor97@gmail.com,
+        drew.paterson@ams.com
+Subject: [PATCH v2 0/7] ARM: dts: qcom: msm8974-hammerhead: add more sensors
+Date: Tue, 17 Jul 2018 04:41:51 -0400
+Message-Id: <20180717084158.23532-1-masneyb@onstation.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 07/21/2018 12:51 PM, Jonathan Cameron wrote:
-> On Mon, 16 Jul 2018 22:20:52 -0500
-> David Lechner <david@lechnology.com> wrote:
-> 
->> This changes how the SPI message for the triggered buffer is setup in
->> the TI ADS7950 A/DC driver. By using the SPI_CS_WORD flag, we can read
->> multiple samples in a single SPI transfer. If the SPI controller
->> supports DMA transfers, we can see a significant reduction in CPU usage.
->>
->> For example, on an ARM9 system running at 456MHz reading just 4 channels
->> at 100Hz: before this change, top shows the CPU usage of the IRQ thread
->> of this driver to be ~7.7%. After this change, the CPU usage drops to
->> ~3.8%.
->>
->> Signed-off-by: David Lechner <david@lechnology.com>
-> Hmm. There is a userspace ABI change in here, though it shouldn't matter
-> as long as people are using the full ABI rather than running some
-> scripts that make assumptions.
-> 
-> It's quite nice if we have all the relevant emulation in the SPI core
-> that this doesn't break things on any spi controllers.
-> 
-> Jonathan
-> 
->> ---
->>
->> Dependency: this patch applies on top of "iio: adc: ti-ads7950: allow
->> simultaneous use of buffer and direct mode"[1]
->>
->> [1]: https://lore.kernel.org/lkml/20180716233550.6449-1-david@lechnology.com/
->>
->>
->>   drivers/iio/adc/ti-ads7950.c | 53 +++++++++++++++++++++---------------
->>   1 file changed, 31 insertions(+), 22 deletions(-)
->>
->> diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
->> index ba7e5a027490..60de4cbbd5fc 100644
->> --- a/drivers/iio/adc/ti-ads7950.c
->> +++ b/drivers/iio/adc/ti-ads7950.c
->> @@ -60,7 +60,7 @@
->>   struct ti_ads7950_state {
->>   	struct iio_dev		*indio_dev;
->>   	struct spi_device	*spi;
->> -	struct spi_transfer	ring_xfer[TI_ADS7950_MAX_CHAN + 2];
->> +	struct spi_transfer	ring_xfer;
->>   	struct spi_transfer	scan_single_xfer[3];
->>   	struct spi_message	ring_msg;
->>   	struct spi_message	scan_single_msg;
->> @@ -69,16 +69,16 @@ struct ti_ads7950_state {
->>   	unsigned int		vref_mv;
->>   
->>   	unsigned int		settings;
->> -	__be16			single_tx;
->> -	__be16			single_rx;
->> +	u16			single_tx;
->> +	u16			single_rx;
->>   
->>   	/*
->>   	 * DMA (thus cache coherency maintenance) requires the
->>   	 * transfer buffers to live in their own cache lines.
->>   	 */
->> -	__be16	rx_buf[TI_ADS7950_MAX_CHAN + TI_ADS7950_TIMESTAMP_SIZE]
->> +	u16 rx_buf[TI_ADS7950_MAX_CHAN + 2 + TI_ADS7950_TIMESTAMP_SIZE]
->>   							____cacheline_aligned;
->> -	__be16	tx_buf[TI_ADS7950_MAX_CHAN];
->> +	u16 tx_buf[TI_ADS7950_MAX_CHAN + 2];
->>   };
->>   
->>   struct ti_ads7950_chip_info {
->> @@ -116,7 +116,7 @@ enum ti_ads7950_id {
->>   		.realbits = bits,				\
->>   		.storagebits = 16,				\
->>   		.shift = 12 - (bits),				\
->> -		.endianness = IIO_BE,				\
->> +		.endianness = IIO_CPU,				\
-> 
-> Hmm. I'm getting a little dubious.  This is a userspace ABI change - it 'might'
-> break someone.  We'd have to cross our fingers it doesn't.
+This patch set adds support for the gyroscope / accelerometer
+(mpu6515), magnetometer (ak8963), temperature / pressure (bmp280), and
+proximity / ALS (tsl2772) sensors to the LG Nexus 5 (hammerhead) phone.
 
-Dubious is a good word for this. ;-)
+Changes since v1:
+- Correct mpu6050 patch based on feedback from Jonathan Cameron. See
+  that patch for more details.
+- Add support for proximity / ALS driver (tsl2772).
 
-I was hoping that we could try to get away with this anyway. If someone
-complains, we can always change it back, right? And if no one complains, then
-did we really break anything?
+Brian Masney (7):
+  iio: imu: mpu6050: add support for regulator framework
+  ARM: dts: qcom: msm8974-hammerhead: add device tree bindings for
+    mpu6515
+  iio: tsl2772: add support for reading power settings from device tree
+  dt-bindings: trivial: remove tsl2772
+  iio: tsl2772: add support for regulator framework
+  iio: tsl2772: add device tree binding for avago,apds9930
+  ARM: dts: qcom: msm8974-hammerhead: add device tree bindings for ALS /
+    proximity
 
-I'll have to play around with the a default SPI_CS_WORD implementation first
-to make sure it won't influence this either.
+ .../bindings/iio/imu/inv_mpu6050.txt          |   1 +
+ .../devicetree/bindings/iio/light/tsl2772.txt |  44 +++++++
+ .../devicetree/bindings/trivial-devices.txt   |  10 --
+ .../qcom-msm8974-lge-nexus5-hammerhead.dts    |  83 +++++++++++++
+ arch/arm/boot/dts/qcom-msm8974.dtsi           |  22 ++++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    |  73 +++++++++++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h     |   3 +
+ drivers/iio/light/tsl2772.c                   | 116 +++++++++++++++++-
+ include/dt-bindings/iio/amstaos,tsl2772.h     |  24 ++++
+ 9 files changed, 363 insertions(+), 13 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/tsl2772.txt
+ create mode 100644 include/dt-bindings/iio/amstaos,tsl2772.h
+
+-- 
+2.17.1
+
