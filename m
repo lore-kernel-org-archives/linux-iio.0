@@ -1,110 +1,64 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:58362 "EHLO onstation.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729711AbeGQJNj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 17 Jul 2018 05:13:39 -0400
-From: Brian Masney <masneyb@onstation.org>
-To: jic23@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com,
-        andy.gross@linaro.org, david.brown@linaro.org,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-soc@vger.kernel.org
-Cc: jonathan@marek.ca, jmaneyrol@invensense.com, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, mkelly@xevo.com,
-        fischerdouglasc@gmail.com, bshah@kde.org, ctatlor97@gmail.com,
-        drew.paterson@ams.com
-Subject: [PATCH v2 7/7] ARM: dts: qcom: msm8974-hammerhead: add device tree bindings for ALS / proximity
-Date: Tue, 17 Jul 2018 04:41:58 -0400
-Message-Id: <20180717084158.23532-8-masneyb@onstation.org>
-In-Reply-To: <20180717084158.23532-1-masneyb@onstation.org>
-References: <20180717084158.23532-1-masneyb@onstation.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=3Bdj=KB=novotny.cz=tomas@kernel.org>
+From: Tomas Novotny <tomas@novotny.cz>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: [PATCH v2 0/4] iio: vcnl4000: add support for vcnl4200
+Date: Tue, 17 Jul 2018 18:46:51 +0200
+Message-Id: <20180717164655.27142-1-tomas@novotny.cz>
+List-ID: <linux-iio@vger.kernel.org>
 
-This patch adds device tree bindings for the tsl2772 ALS / proximity
-sensor for the LG Nexus 5 (hammerhead) phone.
+This is the second iteration of vcnl4200 support. The first one was posted
+on February, sorry for the long delay. I've implemented all notes from
+reviews (thanks to Peter and Jonathan) and nothing more.
 
-Signed-off-by: Brian Masney <masneyb@onstation.org>
-Signed-off-by: Jonathan Marek <jonathan@marek.ca>
----
- .../qcom-msm8974-lge-nexus5-hammerhead.dts    | 27 +++++++++++++++++++
- arch/arm/boot/dts/qcom-msm8974.dtsi           | 11 ++++++++
- 2 files changed, 38 insertions(+)
+Changes in v2:
+- reading light and proximity values for vcnl4200 is blocking (if you
+  request new value too early)
+- patches 2 and 3 were added; original patch 2 is now patch 4
+- vcnl4010 id is handled (patch 2)
+- warn user on incorrect usage of vcnl40{0,1}0 id (patch 3)
+- minor stuff (add parenthesis, switch instead of if, rename sensors to
+  channels, fix return)
 
-diff --git a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
-index 928affae1885..63c09e2a2eb2 100644
---- a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
-+++ b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
-@@ -3,6 +3,7 @@
- #include "qcom-pm8841.dtsi"
- #include "qcom-pm8941.dtsi"
- #include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/iio/amstaos,tsl2772.h>
- #include <dt-bindings/input/input.h>
- #include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
- 
-@@ -242,6 +243,15 @@
- 			};
- 		};
- 
-+		i2c3_pins: i2c3 {
-+			mux {
-+				pins = "gpio10", "gpio11";
-+				function = "blsp_i2c3";
-+				drive-strength = <2>;
-+				bias-disable;
-+			};
-+		};
-+
- 		i2c12_pins: i2c12 {
- 			mux {
- 				pins = "gpio87", "gpio88";
-@@ -333,6 +343,23 @@
- 			};
- 		};
- 	};
-+
-+	i2c@f9925000 {
-+		status = "ok";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&i2c3_pins>;
-+		clock-frequency = <100000>;
-+		qcom,src-freq = <50000000>;
-+
-+		avago_apds993@39 {
-+			compatible = "avago,apds9930";
-+			reg = <0x39>;
-+			interrupts-extended = <&msmgpio 61 IRQ_TYPE_EDGE_FALLING>;
-+			vdd-supply = <&pm8941_l17>;
-+			vddio-supply = <&pm8941_lvs1>;
-+			amstaos,prox_diode = <TSL2772_DIODE0>;
-+		};
-+	};
- };
- 
- &spmi_bus {
-diff --git a/arch/arm/boot/dts/qcom-msm8974.dtsi b/arch/arm/boot/dts/qcom-msm8974.dtsi
-index cebb6ae9143a..6dcf2bee66fb 100644
---- a/arch/arm/boot/dts/qcom-msm8974.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
-@@ -713,6 +713,17 @@
- 			#size-cells = <0>;
- 		};
- 
-+		blsp_i2c3: i2c@f9925000 {
-+			status = "disabled";
-+			compatible = "qcom,i2c-qup-v2.1.1";
-+			reg = <0xf9925000 0x1000>;
-+			interrupts = <0 97 IRQ_TYPE_NONE>;
-+			clocks = <&gcc GCC_BLSP1_QUP3_I2C_APPS_CLK>, <&gcc GCC_BLSP1_AHB_CLK>;
-+			clock-names = "core", "iface";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+		};
-+
- 		blsp_i2c8: i2c@f9964000 {
- 			status = "disabled";
- 			compatible = "qcom,i2c-qup-v2.1.1";
+Please note that I'm not sure if it is still good idea to have same driver
+for vcnl4000 and vcnl4200. The amount of different parts in v2 is even
+bigger. Just see below for differences and add the blocking read which is
+added in v2 for vcnl4200.
+
+Cover letter from v1:
+
+VCNL4200 is another proximity and ambient light sensor from Vishay. I'm
+adding support for that sensor to vcnl4000 driver, which currently supports
+VCNL4000/10/20.
+
+The VCNL4200 is a bit different from VCNL4000/10/20. Common things are:
+- integrated proximity and ambient light sensor
+- SMBus compatible I2C interface
+- Vishay VCNL4xxx series...
+
+Different things are:
+- totally different register map
+- 8-bit vs. 16-bit registers. The 16-bit values are in two 8-bit registers
+  on VCNL4000. 16-bit value is in one register on VCNL4200.
+- VCNL4000 has flags when the measurement is finished
+
+The first patch generalizes the driver to support differencies. The second
+patch adds the support for VCNL4200.
+
+It is tested on VCNL4020 and VCNL4200.
+
+Tomas Novotny (4):
+  iio: vcnl4000: make the driver extendable
+  iio: vcnl4000: add VCNL4010 device id
+  iio: vcnl4000: warn on incorrectly specified device id
+  iio: vcnl4000: add support for VCNL4200
+
+ drivers/iio/light/Kconfig    |   5 +-
+ drivers/iio/light/vcnl4000.c | 219 ++++++++++++++++++++++++++++++++++++++-----
+ 2 files changed, 196 insertions(+), 28 deletions(-)
+
 -- 
-2.17.1
-
+2.12.3
