@@ -1,146 +1,158 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:58256 "EHLO onstation.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728024AbeGQJNe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 17 Jul 2018 05:13:34 -0400
+Return-Path: <SRS0=MvsK=KB=onstation.org=masneyb@kernel.org>
 From: Brian Masney <masneyb@onstation.org>
-To: jic23@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com,
-        andy.gross@linaro.org, david.brown@linaro.org,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-soc@vger.kernel.org
-Cc: jonathan@marek.ca, jmaneyrol@invensense.com, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, mkelly@xevo.com,
-        fischerdouglasc@gmail.com, bshah@kde.org, ctatlor97@gmail.com,
-        drew.paterson@ams.com
-Subject: [PATCH v2 2/7] ARM: dts: qcom: msm8974-hammerhead: add device tree bindings for mpu6515
-Date: Tue, 17 Jul 2018 04:41:53 -0400
-Message-Id: <20180717084158.23532-3-masneyb@onstation.org>
+To: jic23@kernel.org,
+	robh+dt@kernel.org,
+	mark.rutland@arm.com,
+	andy.gross@linaro.org,
+	david.brown@linaro.org,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org,
+	linux-soc@vger.kernel.org
+Cc: jonathan@marek.ca,
+	jmaneyrol@invensense.com,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	mkelly@xevo.com,
+	fischerdouglasc@gmail.com,
+	bshah@kde.org,
+	ctatlor97@gmail.com,
+	drew.paterson@ams.com
+Subject: [PATCH v2 3/7] iio: tsl2772: add support for reading power settings from device tree
+Date: Tue, 17 Jul 2018 04:41:54 -0400
+Message-Id: <20180717084158.23532-4-masneyb@onstation.org>
 In-Reply-To: <20180717084158.23532-1-masneyb@onstation.org>
 References: <20180717084158.23532-1-masneyb@onstation.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-This patch adds device tree bindings for the mpu6515 to the LG Nexus 5
-(hammerhead) phone. Confirmed that the gyroscope / accelerometer
-(mpu6515), magnetometer (ak8963), and temperature / pressure (bmp280)
-sensors are available on the phone.
-
-Interrupts are not working properly on the ak8963 magnetometer so they
-are currently not configured.
-
-The bmp280 retuns temperature/pressure measurement skipped errors but
-will reliably work if I run:
-
-    echo 1 > in_pressure_oversampling_ratio
-    echo 1 > in_temp_oversampling_ratio
+This patch adds support for optionally reading the prox_diode and
+prox_power settings from device tree. This was tested using a LG
+Nexus 5 (hammerhead) which requires a different diode than the driver
+default for the IR LED.
 
 Signed-off-by: Brian Masney <masneyb@onstation.org>
-Signed-off-by: Jonathan Marek <jonathan@marek.ca>
 ---
-I'll send follow up patch(es) once I investigate why the skipped errors
-are occurring with the bmp280 with the default oversampling ratios.
+The next patch in the series removes the tsl2772 driver from the
+trivial-devices.txt file. I separated it out so that change can go
+through device tree.
 
- .../qcom-msm8974-lge-nexus5-hammerhead.dts    | 56 +++++++++++++++++++
- arch/arm/boot/dts/qcom-msm8974.dtsi           | 11 ++++
- 2 files changed, 67 insertions(+)
+ .../devicetree/bindings/iio/light/tsl2772.txt | 39 +++++++++++++++++++
+ drivers/iio/light/tsl2772.c                   | 16 ++++++++
+ include/dt-bindings/iio/amstaos,tsl2772.h     | 24 ++++++++++++
+ 3 files changed, 79 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/tsl2772.txt
+ create mode 100644 include/dt-bindings/iio/amstaos,tsl2772.h
 
-diff --git a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
-index c2dc9d09484a..928affae1885 100644
---- a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
-+++ b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
-@@ -241,6 +241,24 @@
- 				bias-pull-up;
- 			};
- 		};
+diff --git a/Documentation/devicetree/bindings/iio/light/tsl2772.txt b/Documentation/devicetree/bindings/iio/light/tsl2772.txt
+new file mode 100644
+index 000000000000..ab553d52b9fc
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/light/tsl2772.txt
+@@ -0,0 +1,39 @@
++* AMS/TAOS ALS and proximity sensor
 +
-+		i2c12_pins: i2c12 {
-+			mux {
-+				pins = "gpio87", "gpio88";
-+				function = "blsp_i2c12";
-+				drive-strength = <2>;
-+				bias-disable;
-+			};
-+		};
++Required properties:
 +
-+		mpu6515_pin: mpu6515 {
-+			irq {
-+				pins = "gpio73";
-+				function = "gpio";
-+				bias-disable;
-+				input-enable;
-+			};
-+		};
- 	};
++  - compatible: Should be one of
++		"amstaos,tsl2571"
++		"amstaos,tsl2671"
++		"amstaos,tmd2671"
++		"amstaos,tsl2771"
++		"amstaos,tmd2771"
++		"amstaos,tsl2572"
++		"amstaos,tsl2672"
++		"amstaos,tmd2672"
++		"amstaos,tsl2772"
++		"amstaos,tmd2772"
++  - reg: the I2C address of the device
++
++Optional properties:
++
++  - amstaos,prox_diode - must be TSL2772_DIODE0, TSL2772_DIODE1, or
++                         TSL2772_DIODE_BOTH.
++  - amstaos,prox_power - must be TSL2772_100_mA, TSL2772_50_mA, TSL2772_25_mA,
++                         or TSL2772_13_mA.
++  - interrupt-parent: should be the phandle for the interrupt controller
++  - interrupts: the sole interrupt generated by the device
++
++  Refer to interrupt-controller/interrupts.txt for generic interrupt client
++  node bindings.
++
++Example:
++
++#include <dt-bindings/iio/amstaos,tsl2772.h>
++
++tsl2772@39 {
++	compatible = "amstaos,tsl2772";
++	reg = <0x39>;
++	interrupts-extended = <&msmgpio 61 IRQ_TYPE_EDGE_FALLING>;
++	amstaos,prox_diode = <TSL2772_DIODE0>;
++};
+diff --git a/drivers/iio/light/tsl2772.c b/drivers/iio/light/tsl2772.c
+index 34d42a2504c9..0be57f2ecb02 100644
+--- a/drivers/iio/light/tsl2772.c
++++ b/drivers/iio/light/tsl2772.c
+@@ -515,6 +515,18 @@ static int tsl2772_get_prox(struct iio_dev *indio_dev)
+ 	return ret;
+ }
  
- 	sdhci@f9824900 {
-@@ -277,6 +295,44 @@
- 			linux,code = <KEY_VOLUMEDOWN>;
- 		};
- 	};
++#ifdef CONFIG_OF
++static void tsl2772_parse_dt(struct tsl2772_chip *chip)
++{
++	struct device_node *of_node = chip->client->dev.of_node;
 +
-+	i2c@f9968000 {
-+		status = "ok";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&i2c12_pins>;
-+		clock-frequency = <100000>;
-+		qcom,src-freq = <50000000>;
++	of_property_read_u32(of_node, "amstaos,prox_diode",
++			     &chip->settings.prox_diode);
++	of_property_read_u32(of_node, "amstaos,prox_power",
++			     &chip->settings.prox_power);
++}
++#endif
 +
-+		mpu6515@68 {
-+			compatible = "invensense,mpu6515";
-+			reg = <0x68>;
-+			interrupts-extended = <&msmgpio 73 IRQ_TYPE_EDGE_FALLING>;
-+			vddio-supply = <&pm8941_lvs1>;
+ /**
+  * tsl2772_defaults() - Populates the device nominal operating parameters
+  *                      with those provided by a 'platform' data struct or
+@@ -541,6 +553,10 @@ static void tsl2772_defaults(struct tsl2772_chip *chip)
+ 		memcpy(chip->tsl2772_device_lux,
+ 		       tsl2772_default_lux_table_group[chip->id],
+ 		       TSL2772_DEFAULT_TABLE_BYTES);
 +
-+			pinctrl-names = "default";
-+			pinctrl-0 = <&mpu6515_pin>;
-+
-+			i2c-gate {
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				ak8963@f {
-+					compatible = "asahi-kasei,ak8963";
-+					reg = <0x0f>;
-+					// Currently only works in polling mode.
-+					// gpios = <&msmgpio 61 0>;
-+					vid-supply = <&pm8941_lvs1>;
-+					vdd-supply = <&pm8941_l17>;
-+				};
-+
-+				bmp280@76 {
-+					compatible = "bosch,bmp280";
-+					reg = <0x76>;
-+					vdda-supply = <&pm8941_lvs1>;
-+					vddd-supply = <&pm8941_l17>;
-+				};
-+			};
-+		};
-+	};
- };
++#ifdef CONFIG_OF
++	tsl2772_parse_dt(chip);
++#endif
+ }
  
- &spmi_bus {
-diff --git a/arch/arm/boot/dts/qcom-msm8974.dtsi b/arch/arm/boot/dts/qcom-msm8974.dtsi
-index d9019a49b292..cebb6ae9143a 100644
---- a/arch/arm/boot/dts/qcom-msm8974.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
-@@ -737,6 +737,17 @@
- 			dma-names = "tx", "rx";
- 		};
- 
-+		blsp_i2c12: i2c@f9968000 {
-+			status = "disabled";
-+			compatible = "qcom,i2c-qup-v2.1.1";
-+			reg = <0xf9968000 0x1000>;
-+			interrupts = <0 106 IRQ_TYPE_NONE>;
-+			clocks = <&gcc GCC_BLSP2_QUP6_I2C_APPS_CLK>, <&gcc GCC_BLSP2_AHB_CLK>;
-+			clock-names = "core", "iface";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+		};
+ /**
+diff --git a/include/dt-bindings/iio/amstaos,tsl2772.h b/include/dt-bindings/iio/amstaos,tsl2772.h
+new file mode 100644
+index 000000000000..ad6f9fbc0845
+--- /dev/null
++++ b/include/dt-bindings/iio/amstaos,tsl2772.h
+@@ -0,0 +1,24 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++/*
++ * Device driver for monitoring ambient light intensity (lux)
++ * and proximity (prox) within the TAOS TSL2772 family of devices.
++ *
++ * Copyright (c) 2012 TAOS Corporation.
++ * Copyright (c) 2017-2018 Brian Masney <masneyb@onstation.org>
++ */
 +
- 		spmi_bus: spmi@fc4cf000 {
- 			compatible = "qcom,spmi-pmic-arb";
- 			reg-names = "core", "intr", "cnfg";
++#ifndef _DT_BINDINGS_AMSTAOS_TSL2772_H
++#define _DT_BINDINGS_AMSTAOS_TSL2772_H
++
++/* Proximity diode to use */
++#define TSL2772_DIODE0                  0x01
++#define TSL2772_DIODE1                  0x02
++#define TSL2772_DIODE_BOTH              0x03
++
++/* LED Power */
++#define TSL2772_100_mA                  0x00
++#define TSL2772_50_mA                   0x01
++#define TSL2772_25_mA                   0x02
++#define TSL2772_13_mA                   0x03
++
++#endif /* _DT_BINDINGS_AMSTAOS_TSL2772_H */
 -- 
 2.17.1
-
