@@ -1,147 +1,163 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from hosting.pavoucek.net ([46.28.107.168]:59028 "EHLO
-        hosting.pavoucek.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728619AbeGYKXL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 25 Jul 2018 06:23:11 -0400
-Date: Wed, 25 Jul 2018 11:12:21 +0200
-From: Tomas Novotny <tomas@novotny.cz>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v2 0/4] iio: vcnl4000: add support for vcnl4200
-Message-ID: <20180725111221.69163fa0@tomas.local.tbs-biometrics.cz>
-In-Reply-To: <20180724220117.42a922d9@archlinux>
-References: <20180717164655.27142-1-tomas@novotny.cz>
-        <20180721182526.6d29a6d9@archlinux>
-        <20180723195816.00fffa5b@tomas.local.tbs-biometrics.cz>
-        <20180724220117.42a922d9@archlinux>
+Received: from mail-eopbgr730046.outbound.protection.outlook.com ([40.107.73.46]:54187
+        "EHLO NAM05-DM3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726067AbeGRIGk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 18 Jul 2018 04:06:40 -0400
+From: Alexandru Ardelean <alexandru.ardelean@analog.com>
+To: <linux-iio@vger.kernel.org>, <lars@metafoo.de>,
+        <Michael.Hennerich@analog.com>, <jic23@kernel.org>
+CC: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH V4] iio: ad9523: replace core mlock with local lock
+Date: Wed, 18 Jul 2018 10:29:53 +0300
+Message-ID: <20180718072953.15669-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+From: Lars-Peter Clausen <lars@metafoo.de>
 
-On Tue, 24 Jul 2018 22:01:17 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+This is also part of a long term effort to make the use of mlock opaque and
+single purpose.
 
-> On Mon, 23 Jul 2018 19:58:16 +0200
-> Tomas Novotny <tomas@novotny.cz> wrote:
-> 
-> > Hi Jonathan,
-> > 
-> > On Sat, 21 Jul 2018 18:25:26 +0100
-> > Jonathan Cameron <jic23@kernel.org> wrote:
-> >   
-> > > On Tue, 17 Jul 2018 18:46:51 +0200
-> > > Tomas Novotny <tomas@novotny.cz> wrote:
-> > >     
-> > > > This is the second iteration of vcnl4200 support. The first one was posted
-> > > > on February, sorry for the long delay. I've implemented all notes from
-> > > > reviews (thanks to Peter and Jonathan) and nothing more.
-> > > > 
-> > > > Changes in v2:
-> > > > - reading light and proximity values for vcnl4200 is blocking (if you
-> > > >   request new value too early)
-> > > > - patches 2 and 3 were added; original patch 2 is now patch 4
-> > > > - vcnl4010 id is handled (patch 2)
-> > > > - warn user on incorrect usage of vcnl40{0,1}0 id (patch 3)
-> > > > - minor stuff (add parenthesis, switch instead of if, rename sensors to
-> > > >   channels, fix return)
-> > > > 
-> > > > Please note that I'm not sure if it is still good idea to have same driver
-> > > > for vcnl4000 and vcnl4200. The amount of different parts in v2 is even
-> > > > bigger. Just see below for differences and add the blocking read which is
-> > > > added in v2 for vcnl4200.      
-> > > 
-> > > Definitely marginal.  My view is it's your choice as the person doing
-> > > the work!  Which would you prefer?    
-> > 
-> > Well, I was thinking about different driver in the first place. But the reason
-> > was quite selfish (and not the technical one), as I'm interested only in
-> > vcnl4200. But I've seen general attitude to combine similar drivers so I've
-> > tried that way and I'm fine with the result. The only ugly part are some chip
-> > specific things in a shared data structure.
-> >   
-> > > I'm pretty happy with these patches if you want to go this way, but
-> > > given I assume you might add the support for other features, if you
-> > > think that is going to get even worse, then now is the time to make
-> > > the decision to not have a unified driver.    
-> > 
-> > I will probably add some settings, but this should be handled easily. I don't
-> > see anything problematic in the future (well, maybe interrupts or
-> > thresholds?), as both variants are more or less simple light and proximity
-> > chips.
-> >   
-> > > Sadly it might be a case of doing a 'hatchet' job on the code to
-> > > make a separate driver and see what it looks like.  If it's really
-> > > short and clean (which it probably is) then go with separate drivers.    
-> > 
-> > The separate vcnl4200 would be indeed short and clean. The structure and
-> > size would be very similar to current vcnl4000.
-> > 
-> > Anyway, I don't have enough experience to judge what is better. I'm ok to do
-> > any variant.  
-> 
-> Let's go with what you have here on the basis it's marginal but you have
-> done the work for this option already which makes this the better option!
+This lock is required for accessing device registers. Some operations
+require multiple consecutive R/W operations, during which the device
+shouldn't be interrupted.
 
-ok, thanks for all your comments. I will prepare v3 then.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
 
-Tomas
+V3 -> V4:
+* updated comment/description of the lock
 
-> Jonathan
-> 
-> > 
-> > Thanks for the review,
-> > 
-> > Tomas
-> >   
-> > > Jonathan
-> > >     
-> > > > 
-> > > > Cover letter from v1:
-> > > > 
-> > > > VCNL4200 is another proximity and ambient light sensor from Vishay. I'm
-> > > > adding support for that sensor to vcnl4000 driver, which currently supports
-> > > > VCNL4000/10/20.
-> > > > 
-> > > > The VCNL4200 is a bit different from VCNL4000/10/20. Common things are:
-> > > > - integrated proximity and ambient light sensor
-> > > > - SMBus compatible I2C interface
-> > > > - Vishay VCNL4xxx series...
-> > > > 
-> > > > Different things are:
-> > > > - totally different register map
-> > > > - 8-bit vs. 16-bit registers. The 16-bit values are in two 8-bit registers
-> > > >   on VCNL4000. 16-bit value is in one register on VCNL4200.
-> > > > - VCNL4000 has flags when the measurement is finished
-> > > > 
-> > > > The first patch generalizes the driver to support differencies. The second
-> > > > patch adds the support for VCNL4200.
-> > > > 
-> > > > It is tested on VCNL4020 and VCNL4200.
-> > > > 
-> > > > Tomas Novotny (4):
-> > > >   iio: vcnl4000: make the driver extendable
-> > > >   iio: vcnl4000: add VCNL4010 device id
-> > > >   iio: vcnl4000: warn on incorrectly specified device id
-> > > >   iio: vcnl4000: add support for VCNL4200
-> > > > 
-> > > >  drivers/iio/light/Kconfig    |   5 +-
-> > > >  drivers/iio/light/vcnl4000.c | 219 ++++++++++++++++++++++++++++++++++++++-----
-> > > >  2 files changed, 196 insertions(+), 28 deletions(-)
-> > > >       
-> > > 
-> > > --
-> > > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> > > the body of a message to majordomo@vger.kernel.org
-> > > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> > >     
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+ drivers/iio/frequency/ad9523.c | 32 ++++++++++++++++++++++----------
+ 1 file changed, 22 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
+index ddb6a334ae68..2ab175a0664d 100644
+--- a/drivers/iio/frequency/ad9523.c
++++ b/drivers/iio/frequency/ad9523.c
+@@ -274,6 +274,13 @@ struct ad9523_state {
+ 	unsigned long		vco_out_freq[AD9523_NUM_CLK_SRC];
+ 	unsigned char		vco_out_map[AD9523_NUM_CHAN_ALT_CLK_SRC];
+ 
++	/*
++	 * Lock for accessing device registers. Some operations require
++	 * multiple consecutive R/W operations, during which the device
++	 * shouldn't be interrupted.
++	 */
++	struct mutex		lock;
++
+ 	/*
+ 	 * DMA (thus cache coherency maintenance) requires the
+ 	 * transfer buffers to live in their own cache lines.
+@@ -500,6 +507,7 @@ static ssize_t ad9523_store(struct device *dev,
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	struct ad9523_state *st = iio_priv(indio_dev);
+ 	bool state;
+ 	int ret;
+ 
+@@ -510,7 +518,7 @@ static ssize_t ad9523_store(struct device *dev,
+ 	if (!state)
+ 		return 0;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&st->lock);
+ 	switch ((u32)this_attr->address) {
+ 	case AD9523_SYNC:
+ 		ret = ad9523_sync(indio_dev);
+@@ -521,7 +529,7 @@ static ssize_t ad9523_store(struct device *dev,
+ 	default:
+ 		ret = -ENODEV;
+ 	}
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&st->lock);
+ 
+ 	return ret ? ret : len;
+ }
+@@ -532,15 +540,16 @@ static ssize_t ad9523_show(struct device *dev,
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	struct ad9523_state *st = iio_priv(indio_dev);
+ 	int ret;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&st->lock);
+ 	ret = ad9523_read(indio_dev, AD9523_READBACK_0);
+ 	if (ret >= 0) {
+ 		ret = sprintf(buf, "%d\n", !!(ret & (1 <<
+ 			(u32)this_attr->address)));
+ 	}
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&st->lock);
+ 
+ 	return ret;
+ }
+@@ -623,9 +632,9 @@ static int ad9523_read_raw(struct iio_dev *indio_dev,
+ 	unsigned int code;
+ 	int ret;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&st->lock);
+ 	ret = ad9523_read(indio_dev, AD9523_CHANNEL_CLOCK_DIST(chan->channel));
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&st->lock);
+ 
+ 	if (ret < 0)
+ 		return ret;
+@@ -659,7 +668,7 @@ static int ad9523_write_raw(struct iio_dev *indio_dev,
+ 	unsigned int reg;
+ 	int ret, tmp, code;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&st->lock);
+ 	ret = ad9523_read(indio_dev, AD9523_CHANNEL_CLOCK_DIST(chan->channel));
+ 	if (ret < 0)
+ 		goto out;
+@@ -705,7 +714,7 @@ static int ad9523_write_raw(struct iio_dev *indio_dev,
+ 
+ 	ad9523_io_update(indio_dev);
+ out:
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&st->lock);
+ 	return ret;
+ }
+ 
+@@ -713,9 +722,10 @@ static int ad9523_reg_access(struct iio_dev *indio_dev,
+ 			      unsigned int reg, unsigned int writeval,
+ 			      unsigned int *readval)
+ {
++	struct ad9523_state *st = iio_priv(indio_dev);
+ 	int ret;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&st->lock);
+ 	if (readval == NULL) {
+ 		ret = ad9523_write(indio_dev, reg | AD9523_R1B, writeval);
+ 		ad9523_io_update(indio_dev);
+@@ -728,7 +738,7 @@ static int ad9523_reg_access(struct iio_dev *indio_dev,
+ 	}
+ 
+ out_unlock:
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&st->lock);
+ 
+ 	return ret;
+ }
+@@ -967,6 +977,8 @@ static int ad9523_probe(struct spi_device *spi)
+ 
+ 	st = iio_priv(indio_dev);
+ 
++	mutex_init(&st->lock);
++
+ 	st->reg = devm_regulator_get(&spi->dev, "vcc");
+ 	if (!IS_ERR(st->reg)) {
+ 		ret = regulator_enable(st->reg);
+-- 
+2.17.1
+
