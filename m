@@ -1,88 +1,92 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:60722 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729374AbeGRL4I (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Jul 2018 07:56:08 -0400
-Subject: Re: [PATCH 1/4] iio: adc: xilinx: Rename 'channels' variable name to
+Received: from mail-eopbgr720046.outbound.protection.outlook.com ([40.107.72.46]:10912
+        "EHLO NAM05-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729233AbeGRMaR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 18 Jul 2018 08:30:17 -0400
+From: Manish Narani <MNARANI@xilinx.com>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        Michal Simek <michals@xilinx.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org"
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC: Anirudha Sarangi <anirudh@xilinx.com>,
+        Srinivas Goud <sgoud@xilinx.com>, Joe Perches <joe@perches.com>
+Subject: RE: [PATCH 1/4] iio: adc: xilinx: Rename 'channels' variable name to
  'iio_xadc_channels'
-To: Manish Narani <manish.narani@xilinx.com>, jic23@kernel.org,
-        knaack.h@gmx.de, pmeerw@pmeerw.net, michal.simek@xilinx.com,
-        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Cc: anirudh@xilinx.com, sgoud@xilinx.com, Joe Perches <joe@perches.com>
+Date: Wed, 18 Jul 2018 11:52:39 +0000
+Message-ID: <SN6PR02MB4959267C97370CCE2052A9E4C1530@SN6PR02MB4959.namprd02.prod.outlook.com>
 References: <1531912331-26431-1-git-send-email-manish.narani@xilinx.com>
  <1531912331-26431-2-git-send-email-manish.narani@xilinx.com>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <d2c3ddfd-91da-e500-7b58-917d2da1d540@metafoo.de>
-Date: Wed, 18 Jul 2018 13:18:34 +0200
+ <d2c3ddfd-91da-e500-7b58-917d2da1d540@metafoo.de>
+In-Reply-To: <d2c3ddfd-91da-e500-7b58-917d2da1d540@metafoo.de>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <1531912331-26431-2-git-send-email-manish.narani@xilinx.com>
-Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/18/2018 01:12 PM, Manish Narani wrote:
-> This patch fix the following checkpatch warning in xadc driver.
-> - Reusing the krealloc arg is almost always a bug.
-> 
-> Renamed the 'channels' variable as 'iio_xadc_channels' to fix the above
-> warning.
-> 
-
-This is a bug in checkpatch and should be fixed in checkpatch. The code is
-not actually re-using the parameter. channels and xadc_channels are
-independent variables, just checkpatch somehow does not realize this.
-
-> Signed-off-by: Manish Narani <manish.narani@xilinx.com>
-> ---
->  drivers/iio/adc/xilinx-xadc-core.c | 16 +++++++++-------
->  1 file changed, 9 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
-> index d4f21d1..27b45df 100644
-> --- a/drivers/iio/adc/xilinx-xadc-core.c
-> +++ b/drivers/iio/adc/xilinx-xadc-core.c
-> @@ -1040,7 +1040,7 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
->  	unsigned int *conf)
->  {
->  	struct xadc *xadc = iio_priv(indio_dev);
-> -	struct iio_chan_spec *channels, *chan;
-> +	struct iio_chan_spec *iio_xadc_channels, *chan;
->  	struct device_node *chan_node, *child;
->  	unsigned int num_channels;
->  	const char *external_mux;
-> @@ -1083,12 +1083,13 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
->  		*conf |= XADC_CONF0_MUX | XADC_CONF0_CHAN(ext_mux_chan);
->  	}
->  
-> -	channels = kmemdup(xadc_channels, sizeof(xadc_channels), GFP_KERNEL);
-> -	if (!channels)
-> +	iio_xadc_channels = kmemdup(xadc_channels, sizeof(xadc_channels),
-> +				    GFP_KERNEL);
-> +	if (!iio_xadc_channels)
->  		return -ENOMEM;
->  
->  	num_channels = 9;
-> -	chan = &channels[9];
-> +	chan = &iio_xadc_channels[9];
->  
->  	chan_node = of_get_child_by_name(np, "xlnx,channels");
->  	if (chan_node) {
-> @@ -1119,11 +1120,12 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
->  	of_node_put(chan_node);
->  
->  	indio_dev->num_channels = num_channels;
-> -	indio_dev->channels = krealloc(channels, sizeof(*channels) *
-> -					num_channels, GFP_KERNEL);
-> +	indio_dev->channels = krealloc(iio_xadc_channels,
-> +				       sizeof(*iio_xadc_channels) *
-> +				       num_channels, GFP_KERNEL);
->  	/* If we can't resize the channels array, just use the original */
->  	if (!indio_dev->channels)
-> -		indio_dev->channels = channels;
-> +		indio_dev->channels = iio_xadc_channels;
->  
->  	return 0;
->  }
-> 
-
+SGkgTGFycywNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBMYXJzLVBl
+dGVyIENsYXVzZW4gW21haWx0bzpsYXJzQG1ldGFmb28uZGVdDQo+IFNlbnQ6IFdlZG5lc2RheSwg
+SnVseSAxOCwgMjAxOCA0OjQ5IFBNDQo+IFRvOiBNYW5pc2ggTmFyYW5pIDxNTkFSQU5JQHhpbGlu
+eC5jb20+OyBqaWMyM0BrZXJuZWwub3JnOw0KPiBrbmFhY2suaEBnbXguZGU7IHBtZWVyd0BwbWVl
+cncubmV0OyBNaWNoYWwgU2ltZWsNCj4gPG1pY2hhbHNAeGlsaW54LmNvbT47IGxpbnV4LWlpb0B2
+Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWFybS0NCj4ga2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmc7
+IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCj4gQ2M6IEFuaXJ1ZGhhIFNhcmFuZ2kgPGFu
+aXJ1ZGhAeGlsaW54LmNvbT47IFNyaW5pdmFzIEdvdWQNCj4gPHNnb3VkQHhpbGlueC5jb20+OyBK
+b2UgUGVyY2hlcyA8am9lQHBlcmNoZXMuY29tPg0KPiBTdWJqZWN0OiBSZTogW1BBVENIIDEvNF0g
+aWlvOiBhZGM6IHhpbGlueDogUmVuYW1lICdjaGFubmVscycgdmFyaWFibGUgbmFtZSB0bw0KPiAn
+aWlvX3hhZGNfY2hhbm5lbHMnDQo+IA0KPiBPbiAwNy8xOC8yMDE4IDAxOjEyIFBNLCBNYW5pc2gg
+TmFyYW5pIHdyb3RlOg0KPiA+IFRoaXMgcGF0Y2ggZml4IHRoZSBmb2xsb3dpbmcgY2hlY2twYXRj
+aCB3YXJuaW5nIGluIHhhZGMgZHJpdmVyLg0KPiA+IC0gUmV1c2luZyB0aGUga3JlYWxsb2MgYXJn
+IGlzIGFsbW9zdCBhbHdheXMgYSBidWcuDQo+ID4NCj4gPiBSZW5hbWVkIHRoZSAnY2hhbm5lbHMn
+IHZhcmlhYmxlIGFzICdpaW9feGFkY19jaGFubmVscycgdG8gZml4IHRoZQ0KPiA+IGFib3ZlIHdh
+cm5pbmcuDQo+ID4NCj4gDQo+IFRoaXMgaXMgYSBidWcgaW4gY2hlY2twYXRjaCBhbmQgc2hvdWxk
+IGJlIGZpeGVkIGluIGNoZWNrcGF0Y2guIFRoZSBjb2RlIGlzIG5vdA0KPiBhY3R1YWxseSByZS11
+c2luZyB0aGUgcGFyYW1ldGVyLiBjaGFubmVscyBhbmQgeGFkY19jaGFubmVscyBhcmUgaW5kZXBl
+bmRlbnQNCj4gdmFyaWFibGVzLCBqdXN0IGNoZWNrcGF0Y2ggc29tZWhvdyBkb2VzIG5vdCByZWFs
+aXplIHRoaXMuDQpJIGFncmVlIHdpdGggeW91IG9uIHRoaXMuIEluaXRpYWxseSBJIHByZXN1bWVk
+IHRoZSBjaGVja3BhdGNoIHRvIGJlIGdpdmluZyBnZW51aW5lDQp3YXJuaW5nIGJ1dCBub3cgSSBh
+bSBzdXJlIHRoYXQgdGhpcyBpcyBjZXJ0YWlubHkgdGhlIGNoZWNrcGF0Y2ggc2NyaXB0IGlzc3Vl
+Lg0KSW4gdGhhdCBjYXNlIHNob3VsZCB3ZSBrZWVwIHRoaXMgY29kZSBjaGFuZ2U/DQpQbGVhc2Ug
+c3VnZ2VzdC4NCg0KVGhhbmtzLA0KTWFuaXNoDQoNCj4gDQo+ID4gU2lnbmVkLW9mZi1ieTogTWFu
+aXNoIE5hcmFuaSA8bWFuaXNoLm5hcmFuaUB4aWxpbnguY29tPg0KPiA+IC0tLQ0KPiA+ICBkcml2
+ZXJzL2lpby9hZGMveGlsaW54LXhhZGMtY29yZS5jIHwgMTYgKysrKysrKysrLS0tLS0tLQ0KPiA+
+ICAxIGZpbGUgY2hhbmdlZCwgOSBpbnNlcnRpb25zKCspLCA3IGRlbGV0aW9ucygtKQ0KPiA+DQo+
+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaWlvL2FkYy94aWxpbngteGFkYy1jb3JlLmMNCj4gPiBi
+L2RyaXZlcnMvaWlvL2FkYy94aWxpbngteGFkYy1jb3JlLmMNCj4gPiBpbmRleCBkNGYyMWQxLi4y
+N2I0NWRmIDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvaWlvL2FkYy94aWxpbngteGFkYy1jb3Jl
+LmMNCj4gPiArKysgYi9kcml2ZXJzL2lpby9hZGMveGlsaW54LXhhZGMtY29yZS5jDQo+ID4gQEAg
+LTEwNDAsNyArMTA0MCw3IEBAIHN0YXRpYyBpbnQgeGFkY19wYXJzZV9kdChzdHJ1Y3QgaWlvX2Rl
+diAqaW5kaW9fZGV2LA0KPiBzdHJ1Y3QgZGV2aWNlX25vZGUgKm5wLA0KPiA+ICAJdW5zaWduZWQg
+aW50ICpjb25mKQ0KPiA+ICB7DQo+ID4gIAlzdHJ1Y3QgeGFkYyAqeGFkYyA9IGlpb19wcml2KGlu
+ZGlvX2Rldik7DQo+ID4gLQlzdHJ1Y3QgaWlvX2NoYW5fc3BlYyAqY2hhbm5lbHMsICpjaGFuOw0K
+PiA+ICsJc3RydWN0IGlpb19jaGFuX3NwZWMgKmlpb194YWRjX2NoYW5uZWxzLCAqY2hhbjsNCj4g
+PiAgCXN0cnVjdCBkZXZpY2Vfbm9kZSAqY2hhbl9ub2RlLCAqY2hpbGQ7DQo+ID4gIAl1bnNpZ25l
+ZCBpbnQgbnVtX2NoYW5uZWxzOw0KPiA+ICAJY29uc3QgY2hhciAqZXh0ZXJuYWxfbXV4Ow0KPiA+
+IEBAIC0xMDgzLDEyICsxMDgzLDEzIEBAIHN0YXRpYyBpbnQgeGFkY19wYXJzZV9kdChzdHJ1Y3Qg
+aWlvX2Rldg0KPiAqaW5kaW9fZGV2LCBzdHJ1Y3QgZGV2aWNlX25vZGUgKm5wLA0KPiA+ICAJCSpj
+b25mIHw9IFhBRENfQ09ORjBfTVVYIHwNCj4gWEFEQ19DT05GMF9DSEFOKGV4dF9tdXhfY2hhbik7
+DQo+ID4gIAl9DQo+ID4NCj4gPiAtCWNoYW5uZWxzID0ga21lbWR1cCh4YWRjX2NoYW5uZWxzLCBz
+aXplb2YoeGFkY19jaGFubmVscyksDQo+IEdGUF9LRVJORUwpOw0KPiA+IC0JaWYgKCFjaGFubmVs
+cykNCj4gPiArCWlpb194YWRjX2NoYW5uZWxzID0ga21lbWR1cCh4YWRjX2NoYW5uZWxzLCBzaXpl
+b2YoeGFkY19jaGFubmVscyksDQo+ID4gKwkJCQkgICAgR0ZQX0tFUk5FTCk7DQo+ID4gKwlpZiAo
+IWlpb194YWRjX2NoYW5uZWxzKQ0KPiA+ICAJCXJldHVybiAtRU5PTUVNOw0KPiA+DQo+ID4gIAlu
+dW1fY2hhbm5lbHMgPSA5Ow0KPiA+IC0JY2hhbiA9ICZjaGFubmVsc1s5XTsNCj4gPiArCWNoYW4g
+PSAmaWlvX3hhZGNfY2hhbm5lbHNbOV07DQo+ID4NCj4gPiAgCWNoYW5fbm9kZSA9IG9mX2dldF9j
+aGlsZF9ieV9uYW1lKG5wLCAieGxueCxjaGFubmVscyIpOw0KPiA+ICAJaWYgKGNoYW5fbm9kZSkg
+ew0KPiA+IEBAIC0xMTE5LDExICsxMTIwLDEyIEBAIHN0YXRpYyBpbnQgeGFkY19wYXJzZV9kdChz
+dHJ1Y3QgaWlvX2Rldg0KPiAqaW5kaW9fZGV2LCBzdHJ1Y3QgZGV2aWNlX25vZGUgKm5wLA0KPiA+
+ICAJb2Zfbm9kZV9wdXQoY2hhbl9ub2RlKTsNCj4gPg0KPiA+ICAJaW5kaW9fZGV2LT5udW1fY2hh
+bm5lbHMgPSBudW1fY2hhbm5lbHM7DQo+ID4gLQlpbmRpb19kZXYtPmNoYW5uZWxzID0ga3JlYWxs
+b2MoY2hhbm5lbHMsIHNpemVvZigqY2hhbm5lbHMpICoNCj4gPiAtCQkJCQludW1fY2hhbm5lbHMs
+IEdGUF9LRVJORUwpOw0KPiA+ICsJaW5kaW9fZGV2LT5jaGFubmVscyA9IGtyZWFsbG9jKGlpb194
+YWRjX2NoYW5uZWxzLA0KPiA+ICsJCQkJICAgICAgIHNpemVvZigqaWlvX3hhZGNfY2hhbm5lbHMp
+ICoNCj4gPiArCQkJCSAgICAgICBudW1fY2hhbm5lbHMsIEdGUF9LRVJORUwpOw0KPiA+ICAJLyog
+SWYgd2UgY2FuJ3QgcmVzaXplIHRoZSBjaGFubmVscyBhcnJheSwganVzdCB1c2UgdGhlIG9yaWdp
+bmFsICovDQo+ID4gIAlpZiAoIWluZGlvX2Rldi0+Y2hhbm5lbHMpDQo+ID4gLQkJaW5kaW9fZGV2
+LT5jaGFubmVscyA9IGNoYW5uZWxzOw0KPiA+ICsJCWluZGlvX2Rldi0+Y2hhbm5lbHMgPSBpaW9f
+eGFkY19jaGFubmVsczsNCj4gPg0KPiA+ICAJcmV0dXJuIDA7DQo+ID4gIH0NCj4gPg0KDQo=
