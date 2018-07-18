@@ -1,126 +1,37 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-eopbgr680053.outbound.protection.outlook.com ([40.107.68.53]:44000
-        "EHLO NAM04-BN3-obe.outbound.protection.outlook.com"
+Received: from mail-eopbgr690068.outbound.protection.outlook.com ([40.107.69.68]:11350
+        "EHLO NAM04-CO1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2388153AbeGWKcm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 23 Jul 2018 06:32:42 -0400
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "jic23@kernel.org" <jic23@kernel.org>
-CC: "lars@metafoo.de" <lars@metafoo.de>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>
-Subject: Re: [PATCH V4] iio: ad9523: replace core mlock with local lock
-Date: Mon, 23 Jul 2018 09:32:15 +0000
-Message-ID: <a9af1e61d84ecb4f91810b50e098dee942dd1682.camel@analog.com>
-References: <20180718072953.15669-1-alexandru.ardelean@analog.com>
-         <20180721174055.6b32df4c@archlinux>
-In-Reply-To: <20180721174055.6b32df4c@archlinux>
-Content-Type: text/plain; charset="utf-8"
+        id S1728103AbeGRLyI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 18 Jul 2018 07:54:08 -0400
+From: Manish Narani <manish.narani@xilinx.com>
+To: <jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
+        <pmeerw@pmeerw.net>, <michal.simek@xilinx.com>,
+        <manish.narani@xilinx.com>, <linux-iio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC: <anirudh@xilinx.com>, <sgoud@xilinx.com>
+Subject: [PATCH 0/4] iio: adc: xilinx: XADC driver enhancements and bug fixes
+Date: Wed, 18 Jul 2018 16:42:07 +0530
+Message-ID: <1531912331-26431-1-git-send-email-manish.narani@xilinx.com>
 MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-T24gU2F0LCAyMDE4LTA3LTIxIGF0IDE3OjQwICswMTAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
-Og0KPiBPbiBXZWQsIDE4IEp1bCAyMDE4IDEwOjI5OjUzICswMzAwDQo+IEFsZXhhbmRydSBBcmRl
-bGVhbiA8YWxleGFuZHJ1LmFyZGVsZWFuQGFuYWxvZy5jb20+IHdyb3RlOg0KPiANCj4gPiBGcm9t
-OiBMYXJzLVBldGVyIENsYXVzZW4gPGxhcnNAbWV0YWZvby5kZT4NCj4gPiANCj4gPiBUaGlzIGlz
-IGFsc28gcGFydCBvZiBhIGxvbmcgdGVybSBlZmZvcnQgdG8gbWFrZSB0aGUgdXNlIG9mIG1sb2Nr
-IG9wYXF1ZQ0KPiA+IGFuZA0KPiA+IHNpbmdsZSBwdXJwb3NlLg0KPiA+IA0KPiA+IFRoaXMgbG9j
-ayBpcyByZXF1aXJlZCBmb3IgYWNjZXNzaW5nIGRldmljZSByZWdpc3RlcnMuIFNvbWUgb3BlcmF0
-aW9ucw0KPiA+IHJlcXVpcmUgbXVsdGlwbGUgY29uc2VjdXRpdmUgUi9XIG9wZXJhdGlvbnMsIGR1
-cmluZyB3aGljaCB0aGUgZGV2aWNlDQo+ID4gc2hvdWxkbid0IGJlIGludGVycnVwdGVkLg0KPiA+
-IA0KPiA+IFNpZ25lZC1vZmYtYnk6IExhcnMtUGV0ZXIgQ2xhdXNlbiA8bGFyc0BtZXRhZm9vLmRl
-Pg0KPiA+IFNpZ25lZC1vZmYtYnk6IEFsZXhhbmRydSBBcmRlbGVhbiA8YWxleGFuZHJ1LmFyZGVs
-ZWFuQGFuYWxvZy5jb20+DQo+IA0KPiBIaSBBbGV4YW5kcnUuICBMYXJzIHBvaW50ZWQgb3V0IEkg
-d2FzIHNpbXBseSB3cm9uZyBpbiBteSBjb21wbGFpbnRzIHdpdGgNCj4gdGhlIHByZXZpb3VzIGRl
-c2NyaXB0aW9uIC0gaXQgd2FzIGNvcnJlY3QgaW4gdGhhdCBjYXNlIC0gd2UgbmVlZCBwZXJoYXBz
-DQo+IHRvIGV4cGFuZCB0aGUgZGVzY3JpcHRpb24gdG8gaW5jbHVkZSB3aGF0IHlvdSBoYXZlIGhl
-cmUgYXMgd2VsbC4NCj4gDQo+IEdpdmVuIEkgZG91YnQgeW91IGNhcmUgdG9vIG11Y2ggb24gdGhl
-IHdvcmRpbmcgSSd2ZSBmdXNlZCB0aGUgdHdvLg0KPiANCj4gCS8qDQo+IAkgKiBMb2NrIGZvciBh
-Y2Nlc3NpbmcgZGV2aWNlIHJlZ2lzdGVycy4gU29tZSBvcGVyYXRpb25zIHJlcXVpcmUNCj4gCSAq
-IG11bHRpcGxlIGNvbnNlY3V0aXZlIFIvVyBvcGVyYXRpb25zLCBkdXJpbmcgd2hpY2ggdGhlIGRl
-dmljZQ0KPiAJICogc2hvdWxkbid0IGJlIGludGVycnVwdGVkLiAgVGhlIGJ1ZmZlcnMgYXJlIGFs
-c28gc2hhcmVkIGFjcm9zcw0KPiAJICogYWxsIG9wZXJhdGlvbnMgc28gbmVlZCB0byBiZSBwcm90
-ZWN0ZWQgb24gc3RhbmQgYWxvbmUgcmVhZHMgYW5kDQo+IAkgKiB3cml0ZXMuDQo+IAkgKi8NCj4g
-DQo+IEFwcGxpZWQgd2l0aCB0aGF0IG1pbm9yIGFkZGl0aW9uLiAgVGhhbmtzIGZvciBwZXJzaXN0
-ZW5jZSBvbiB0aGlzIQ0KDQpBY2suDQoNCkkgd2Fzbid0IHN1cmUgd2hhdCB0aGUgZmluYWwgcHJl
-ZmVyZW5jZSB3YXMgZm9yIHRoaXMsIHNvIEkgc2VudCBhIFY0IGluDQpjYXNlIHRoYXQgd2FzIG1v
-cmUgcHJlZmVycmVkLg0KDQpUaGFua3MNCkFsZXgNCg0KPiANCj4gSm9uYXRoYW4NCj4gDQo+ID4g
-LS0tDQo+ID4gDQo+ID4gVjMgLT4gVjQ6DQo+ID4gKiB1cGRhdGVkIGNvbW1lbnQvZGVzY3JpcHRp
-b24gb2YgdGhlIGxvY2sNCj4gPiANCj4gPiAgZHJpdmVycy9paW8vZnJlcXVlbmN5L2FkOTUyMy5j
-IHwgMzIgKysrKysrKysrKysrKysrKysrKysrKy0tLS0tLS0tLS0NCj4gPiAgMSBmaWxlIGNoYW5n
-ZWQsIDIyIGluc2VydGlvbnMoKyksIDEwIGRlbGV0aW9ucygtKQ0KPiA+IA0KPiA+IGRpZmYgLS1n
-aXQgYS9kcml2ZXJzL2lpby9mcmVxdWVuY3kvYWQ5NTIzLmMNCj4gPiBiL2RyaXZlcnMvaWlvL2Zy
-ZXF1ZW5jeS9hZDk1MjMuYw0KPiA+IGluZGV4IGRkYjZhMzM0YWU2OC4uMmFiMTc1YTA2NjRkIDEw
-MDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvaWlvL2ZyZXF1ZW5jeS9hZDk1MjMuYw0KPiA+ICsrKyBi
-L2RyaXZlcnMvaWlvL2ZyZXF1ZW5jeS9hZDk1MjMuYw0KPiA+IEBAIC0yNzQsNiArMjc0LDEzIEBA
-IHN0cnVjdCBhZDk1MjNfc3RhdGUgew0KPiA+ICAJdW5zaWduZWQgbG9uZwkJdmNvX291dF9mcmVx
-W0FEOTUyM19OVU1fQ0xLX1NSQ107DQo+ID4gIAl1bnNpZ25lZCBjaGFyCQl2Y29fb3V0X21hcFtB
-RDk1MjNfTlVNX0NIQU5fQUxUX0MNCj4gPiBMS19TUkNdOw0KPiA+ICANCj4gPiArCS8qDQo+ID4g
-KwkgKiBMb2NrIGZvciBhY2Nlc3NpbmcgZGV2aWNlIHJlZ2lzdGVycy4gU29tZSBvcGVyYXRpb25z
-DQo+ID4gcmVxdWlyZQ0KPiA+ICsJICogbXVsdGlwbGUgY29uc2VjdXRpdmUgUi9XIG9wZXJhdGlv
-bnMsIGR1cmluZyB3aGljaCB0aGUNCj4gPiBkZXZpY2UNCj4gPiArCSAqIHNob3VsZG4ndCBiZSBp
-bnRlcnJ1cHRlZC4NCj4gPiArCSAqLw0KPiA+ICsJc3RydWN0IG11dGV4CQlsb2NrOw0KPiA+ICsN
-Cj4gPiAgCS8qDQo+ID4gIAkgKiBETUEgKHRodXMgY2FjaGUgY29oZXJlbmN5IG1haW50ZW5hbmNl
-KSByZXF1aXJlcyB0aGUNCj4gPiAgCSAqIHRyYW5zZmVyIGJ1ZmZlcnMgdG8gbGl2ZSBpbiB0aGVp
-ciBvd24gY2FjaGUgbGluZXMuDQo+ID4gQEAgLTUwMCw2ICs1MDcsNyBAQCBzdGF0aWMgc3NpemVf
-dCBhZDk1MjNfc3RvcmUoc3RydWN0IGRldmljZSAqZGV2LA0KPiA+ICB7DQo+ID4gIAlzdHJ1Y3Qg
-aWlvX2RldiAqaW5kaW9fZGV2ID0gZGV2X3RvX2lpb19kZXYoZGV2KTsNCj4gPiAgCXN0cnVjdCBp
-aW9fZGV2X2F0dHIgKnRoaXNfYXR0ciA9IHRvX2lpb19kZXZfYXR0cihhdHRyKTsNCj4gPiArCXN0
-cnVjdCBhZDk1MjNfc3RhdGUgKnN0ID0gaWlvX3ByaXYoaW5kaW9fZGV2KTsNCj4gPiAgCWJvb2wg
-c3RhdGU7DQo+ID4gIAlpbnQgcmV0Ow0KPiA+ICANCj4gPiBAQCAtNTEwLDcgKzUxOCw3IEBAIHN0
-YXRpYyBzc2l6ZV90IGFkOTUyM19zdG9yZShzdHJ1Y3QgZGV2aWNlICpkZXYsDQo+ID4gIAlpZiAo
-IXN0YXRlKQ0KPiA+ICAJCXJldHVybiAwOw0KPiA+ICANCj4gPiAtCW11dGV4X2xvY2soJmluZGlv
-X2Rldi0+bWxvY2spOw0KPiA+ICsJbXV0ZXhfbG9jaygmc3QtPmxvY2spOw0KPiA+ICAJc3dpdGNo
-ICgodTMyKXRoaXNfYXR0ci0+YWRkcmVzcykgew0KPiA+ICAJY2FzZSBBRDk1MjNfU1lOQzoNCj4g
-PiAgCQlyZXQgPSBhZDk1MjNfc3luYyhpbmRpb19kZXYpOw0KPiA+IEBAIC01MjEsNyArNTI5LDcg
-QEAgc3RhdGljIHNzaXplX3QgYWQ5NTIzX3N0b3JlKHN0cnVjdCBkZXZpY2UgKmRldiwNCj4gPiAg
-CWRlZmF1bHQ6DQo+ID4gIAkJcmV0ID0gLUVOT0RFVjsNCj4gPiAgCX0NCj4gPiAtCW11dGV4X3Vu
-bG9jaygmaW5kaW9fZGV2LT5tbG9jayk7DQo+ID4gKwltdXRleF91bmxvY2soJnN0LT5sb2NrKTsN
-Cj4gPiAgDQo+ID4gIAlyZXR1cm4gcmV0ID8gcmV0IDogbGVuOw0KPiA+ICB9DQo+ID4gQEAgLTUz
-MiwxNSArNTQwLDE2IEBAIHN0YXRpYyBzc2l6ZV90IGFkOTUyM19zaG93KHN0cnVjdCBkZXZpY2Ug
-KmRldiwNCj4gPiAgew0KPiA+ICAJc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiA9IGRldl90b19p
-aW9fZGV2KGRldik7DQo+ID4gIAlzdHJ1Y3QgaWlvX2Rldl9hdHRyICp0aGlzX2F0dHIgPSB0b19p
-aW9fZGV2X2F0dHIoYXR0cik7DQo+ID4gKwlzdHJ1Y3QgYWQ5NTIzX3N0YXRlICpzdCA9IGlpb19w
-cml2KGluZGlvX2Rldik7DQo+ID4gIAlpbnQgcmV0Ow0KPiA+ICANCj4gPiAtCW11dGV4X2xvY2so
-JmluZGlvX2Rldi0+bWxvY2spOw0KPiA+ICsJbXV0ZXhfbG9jaygmc3QtPmxvY2spOw0KPiA+ICAJ
-cmV0ID0gYWQ5NTIzX3JlYWQoaW5kaW9fZGV2LCBBRDk1MjNfUkVBREJBQ0tfMCk7DQo+ID4gIAlp
-ZiAocmV0ID49IDApIHsNCj4gPiAgCQlyZXQgPSBzcHJpbnRmKGJ1ZiwgIiVkXG4iLCAhIShyZXQg
-JiAoMSA8PA0KPiA+ICAJCQkodTMyKXRoaXNfYXR0ci0+YWRkcmVzcykpKTsNCj4gPiAgCX0NCj4g
-PiAtCW11dGV4X3VubG9jaygmaW5kaW9fZGV2LT5tbG9jayk7DQo+ID4gKwltdXRleF91bmxvY2so
-JnN0LT5sb2NrKTsNCj4gPiAgDQo+ID4gIAlyZXR1cm4gcmV0Ow0KPiA+ICB9DQo+ID4gQEAgLTYy
-Myw5ICs2MzIsOSBAQCBzdGF0aWMgaW50IGFkOTUyM19yZWFkX3JhdyhzdHJ1Y3QgaWlvX2Rldg0K
-PiA+ICppbmRpb19kZXYsDQo+ID4gIAl1bnNpZ25lZCBpbnQgY29kZTsNCj4gPiAgCWludCByZXQ7
-DQo+ID4gIA0KPiA+IC0JbXV0ZXhfbG9jaygmaW5kaW9fZGV2LT5tbG9jayk7DQo+ID4gKwltdXRl
-eF9sb2NrKCZzdC0+bG9jayk7DQo+ID4gIAlyZXQgPSBhZDk1MjNfcmVhZChpbmRpb19kZXYsIEFE
-OTUyM19DSEFOTkVMX0NMT0NLX0RJU1QoY2hhbi0NCj4gPiA+Y2hhbm5lbCkpOw0KPiA+IC0JbXV0
-ZXhfdW5sb2NrKCZpbmRpb19kZXYtPm1sb2NrKTsNCj4gPiArCW11dGV4X3VubG9jaygmc3QtPmxv
-Y2spOw0KPiA+ICANCj4gPiAgCWlmIChyZXQgPCAwKQ0KPiA+ICAJCXJldHVybiByZXQ7DQo+ID4g
-QEAgLTY1OSw3ICs2NjgsNyBAQCBzdGF0aWMgaW50IGFkOTUyM193cml0ZV9yYXcoc3RydWN0IGlp
-b19kZXYNCj4gPiAqaW5kaW9fZGV2LA0KPiA+ICAJdW5zaWduZWQgaW50IHJlZzsNCj4gPiAgCWlu
-dCByZXQsIHRtcCwgY29kZTsNCj4gPiAgDQo+ID4gLQltdXRleF9sb2NrKCZpbmRpb19kZXYtPm1s
-b2NrKTsNCj4gPiArCW11dGV4X2xvY2soJnN0LT5sb2NrKTsNCj4gPiAgCXJldCA9IGFkOTUyM19y
-ZWFkKGluZGlvX2RldiwgQUQ5NTIzX0NIQU5ORUxfQ0xPQ0tfRElTVChjaGFuLQ0KPiA+ID5jaGFu
-bmVsKSk7DQo+ID4gIAlpZiAocmV0IDwgMCkNCj4gPiAgCQlnb3RvIG91dDsNCj4gPiBAQCAtNzA1
-LDcgKzcxNCw3IEBAIHN0YXRpYyBpbnQgYWQ5NTIzX3dyaXRlX3JhdyhzdHJ1Y3QgaWlvX2Rldg0K
-PiA+ICppbmRpb19kZXYsDQo+ID4gIA0KPiA+ICAJYWQ5NTIzX2lvX3VwZGF0ZShpbmRpb19kZXYp
-Ow0KPiA+ICBvdXQ6DQo+ID4gLQltdXRleF91bmxvY2soJmluZGlvX2Rldi0+bWxvY2spOw0KPiA+
-ICsJbXV0ZXhfdW5sb2NrKCZzdC0+bG9jayk7DQo+ID4gIAlyZXR1cm4gcmV0Ow0KPiA+ICB9DQo+
-ID4gIA0KPiA+IEBAIC03MTMsOSArNzIyLDEwIEBAIHN0YXRpYyBpbnQgYWQ5NTIzX3JlZ19hY2Nl
-c3Moc3RydWN0IGlpb19kZXYNCj4gPiAqaW5kaW9fZGV2LA0KPiA+ICAJCQkgICAgICB1bnNpZ25l
-ZCBpbnQgcmVnLCB1bnNpZ25lZCBpbnQgd3JpdGV2YWwsDQo+ID4gIAkJCSAgICAgIHVuc2lnbmVk
-IGludCAqcmVhZHZhbCkNCj4gPiAgew0KPiA+ICsJc3RydWN0IGFkOTUyM19zdGF0ZSAqc3QgPSBp
-aW9fcHJpdihpbmRpb19kZXYpOw0KPiA+ICAJaW50IHJldDsNCj4gPiAgDQo+ID4gLQltdXRleF9s
-b2NrKCZpbmRpb19kZXYtPm1sb2NrKTsNCj4gPiArCW11dGV4X2xvY2soJnN0LT5sb2NrKTsNCj4g
-PiAgCWlmIChyZWFkdmFsID09IE5VTEwpIHsNCj4gPiAgCQlyZXQgPSBhZDk1MjNfd3JpdGUoaW5k
-aW9fZGV2LCByZWcgfCBBRDk1MjNfUjFCLA0KPiA+IHdyaXRldmFsKTsNCj4gPiAgCQlhZDk1MjNf
-aW9fdXBkYXRlKGluZGlvX2Rldik7DQo+ID4gQEAgLTcyOCw3ICs3MzgsNyBAQCBzdGF0aWMgaW50
-IGFkOTUyM19yZWdfYWNjZXNzKHN0cnVjdCBpaW9fZGV2DQo+ID4gKmluZGlvX2RldiwNCj4gPiAg
-CX0NCj4gPiAgDQo+ID4gIG91dF91bmxvY2s6DQo+ID4gLQltdXRleF91bmxvY2soJmluZGlvX2Rl
-di0+bWxvY2spOw0KPiA+ICsJbXV0ZXhfdW5sb2NrKCZzdC0+bG9jayk7DQo+ID4gIA0KPiA+ICAJ
-cmV0dXJuIHJldDsNCj4gPiAgfQ0KPiA+IEBAIC05NjcsNiArOTc3LDggQEAgc3RhdGljIGludCBh
-ZDk1MjNfcHJvYmUoc3RydWN0IHNwaV9kZXZpY2UgKnNwaSkNCj4gPiAgDQo+ID4gIAlzdCA9IGlp
-b19wcml2KGluZGlvX2Rldik7DQo+ID4gIA0KPiA+ICsJbXV0ZXhfaW5pdCgmc3QtPmxvY2spOw0K
-PiA+ICsNCj4gPiAgCXN0LT5yZWcgPSBkZXZtX3JlZ3VsYXRvcl9nZXQoJnNwaS0+ZGV2LCAidmNj
-Iik7DQo+ID4gIAlpZiAoIUlTX0VSUihzdC0+cmVnKSkgew0KPiA+ICAJCXJldCA9IHJlZ3VsYXRv
-cl9lbmFibGUoc3QtPnJlZyk7DQo+IA0KPiA=
+This patch series resolves code style problems as reported by code analysis
+tools.
+
+Manish Narani (4):
+  iio: adc: xilinx: Rename 'channels' variable name to
+    'iio_xadc_channels'
+  iio: adc: xilinx: Remove dead code from xadc_zynq_setup
+  iio: adc: xilinx: Check for return values in clk related functions
+  iio: adc: xilinx: Use devm_ functions while requesting irq
+
+ drivers/iio/adc/xilinx-xadc-core.c | 60 ++++++++++++++++++++++++--------------
+ 1 file changed, 38 insertions(+), 22 deletions(-)
+
+-- 
+2.1.1
+
