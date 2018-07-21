@@ -1,52 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:47492 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727865AbeGVJOF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 22 Jul 2018 05:14:05 -0400
-Date: Sun, 22 Jul 2018 09:18:09 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        linux-amlogic@lists.infradead.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: add Meson8m2 support
-Message-ID: <20180722091809.59d442b0@archlinux>
-In-Reply-To: <20180721194049.23265-2-martin.blumenstingl@googlemail.com>
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:40405 "EHLO
+        mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728077AbeGUUev (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 21 Jul 2018 16:34:51 -0400
+Received: by mail-wm0-f67.google.com with SMTP id z13-v6so12753566wma.5
+        for <linux-iio@vger.kernel.org>; Sat, 21 Jul 2018 12:40:58 -0700 (PDT)
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, linux-amlogic@lists.infradead.org,
+        linux-iio@vger.kernel.org
+Cc: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH 2/2] iio: adc: meson-saradc: add support for the Meson8m2 SoCs
+Date: Sat, 21 Jul 2018 21:40:49 +0200
+Message-Id: <20180721194049.23265-3-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20180721194049.23265-1-martin.blumenstingl@googlemail.com>
 References: <20180721194049.23265-1-martin.blumenstingl@googlemail.com>
-        <20180721194049.23265-2-martin.blumenstingl@googlemail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, 21 Jul 2018 21:40:48 +0200
-Martin Blumenstingl <martin.blumenstingl@googlemail.com> wrote:
+The SAR ADC on Meson8m2 behaves identical to the one found in the
+Meson8b SoCs. Add a separate compatible string because the temperature
+sensor logic (not supported yet) differs between Meson8 and Meson8m2
+(however, it's the same for Meson8b and Meson8m2).
 
-> The Amlogic Meson SAR ADC implementation on the Meson8m2 SoC is
-> identical to the Meson8b variant. Add a compatible string to indicate
-> that we support the SAR ADC on the Meson8m2 SoC.
-> 
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Applied to the togreg branch of iio.git and pushed out as testing for the
-autobuilder to ignore it.
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/iio/adc/meson_saradc.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-Thanks,
-
-Jonathan
-
-> ---
->  .../devicetree/bindings/iio/adc/amlogic,meson-saradc.txt         | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt
-> index d1acd5ea2737..54b823f3a453 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt
-> +++ b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt
-> @@ -4,6 +4,7 @@ Required properties:
->  - compatible:	depending on the SoC this should be one of:
->  			- "amlogic,meson8-saradc" for Meson8
->  			- "amlogic,meson8b-saradc" for Meson8b
-> +			- "amlogic,meson8m2-saradc" for Meson8m2
->  			- "amlogic,meson-gxbb-saradc" for GXBB
->  			- "amlogic,meson-gxl-saradc" for GXL
->  			- "amlogic,meson-gxm-saradc" for GXM
+diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
+index 2948909f3ee3..da2d16dfa63e 100644
+--- a/drivers/iio/adc/meson_saradc.c
++++ b/drivers/iio/adc/meson_saradc.c
+@@ -922,6 +922,11 @@ static const struct meson_sar_adc_data meson_sar_adc_meson8b_data = {
+ 	.name = "meson-meson8b-saradc",
+ };
+ 
++static const struct meson_sar_adc_data meson_sar_adc_meson8m2_data = {
++	.param = &meson_sar_adc_meson8_param,
++	.name = "meson-meson8m2-saradc",
++};
++
+ static const struct meson_sar_adc_data meson_sar_adc_gxbb_data = {
+ 	.param = &meson_sar_adc_gxbb_param,
+ 	.name = "meson-gxbb-saradc",
+@@ -951,6 +956,10 @@ static const struct of_device_id meson_sar_adc_of_match[] = {
+ 		.compatible = "amlogic,meson8b-saradc",
+ 		.data = &meson_sar_adc_meson8b_data,
+ 	},
++	{
++		.compatible = "amlogic,meson8m2-saradc",
++		.data = &meson_sar_adc_meson8m2_data,
++	},
+ 	{
+ 		.compatible = "amlogic,meson-gxbb-saradc",
+ 		.data = &meson_sar_adc_gxbb_data,
+-- 
+2.18.0
 
