@@ -1,328 +1,89 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:54542 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:49120 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388651AbeGXWIA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 24 Jul 2018 18:08:00 -0400
-Date: Tue, 24 Jul 2018 21:59:38 +0100
+        id S1727549AbeGUSS4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 21 Jul 2018 14:18:56 -0400
+Date: Sat, 21 Jul 2018 18:25:26 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Tomas Novotny <tomas@novotny.cz>
 Cc: linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v2 4/4] iio: vcnl4000: add support for VCNL4200
-Message-ID: <20180724215938.5961ca74@archlinux>
-In-Reply-To: <20180723193231.03e2135c@tomas.local.tbs-biometrics.cz>
+Subject: Re: [PATCH v2 0/4] iio: vcnl4000: add support for vcnl4200
+Message-ID: <20180721182526.6d29a6d9@archlinux>
+In-Reply-To: <20180717164655.27142-1-tomas@novotny.cz>
 References: <20180717164655.27142-1-tomas@novotny.cz>
-        <20180717164655.27142-5-tomas@novotny.cz>
-        <20180721182008.78233942@archlinux>
-        <20180723193231.03e2135c@tomas.local.tbs-biometrics.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 23 Jul 2018 19:32:31 +0200
+On Tue, 17 Jul 2018 18:46:51 +0200
 Tomas Novotny <tomas@novotny.cz> wrote:
 
-> Hi Jonathan,
+> This is the second iteration of vcnl4200 support. The first one was posted
+> on February, sorry for the long delay. I've implemented all notes from
+> reviews (thanks to Peter and Jonathan) and nothing more.
 > 
-> On Sat, 21 Jul 2018 18:20:21 +0100
-> Jonathan Cameron <jic23@kernel.org> wrote:
+> Changes in v2:
+> - reading light and proximity values for vcnl4200 is blocking (if you
+>   request new value too early)
+> - patches 2 and 3 were added; original patch 2 is now patch 4
+> - vcnl4010 id is handled (patch 2)
+> - warn user on incorrect usage of vcnl40{0,1}0 id (patch 3)
+> - minor stuff (add parenthesis, switch instead of if, rename sensors to
+>   channels, fix return)
 > 
-> > On Tue, 17 Jul 2018 18:46:55 +0200
-> > Tomas Novotny <tomas@novotny.cz> wrote:
-> >   
-> > > VCNL4200 is an integrated long distance (up to 1500mm) proximity and
-> > > ambient light sensor.
-> > > 
-> > > The support is very basic. There is no configuration of proximity and
-> > > ambient light sensing yet. Only the reading of both measured values is
-> > > done.
-> > > 
-> > > The reading of ambient light and proximity values is blocking. If you
-> > > request a new value too early, the driver waits for new value to be
-> > > ready.
-> > > 
-> > > Signed-off-by: Tomas Novotny <tomas@novotny.cz>    
-> > 
-> > A comment inline, but nothing much needs changing.
-> > 
-> > Jonathan
-> >   
-> > > ---
-> > >  drivers/iio/light/Kconfig    |   5 +-
-> > >  drivers/iio/light/vcnl4000.c | 114 ++++++++++++++++++++++++++++++++++++++++---
-> > >  2 files changed, 109 insertions(+), 10 deletions(-)
-> > > 
-> > > diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> > > index 074e50657366..c0344a961f54 100644
-> > > --- a/drivers/iio/light/Kconfig
-> > > +++ b/drivers/iio/light/Kconfig
-> > > @@ -430,11 +430,12 @@ config US5182D
-> > >  	 will be called us5182d.
-> > >  
-> > >  config VCNL4000
-> > > -	tristate "VCNL4000/4010/4020 combined ALS and proximity sensor"
-> > > +	tristate "VCNL4000/4010/4020/4200 combined ALS and proximity sensor"
-> > >  	depends on I2C
-> > >  	help
-> > >  	 Say Y here if you want to build a driver for the Vishay VCNL4000,
-> > > -	 VCNL4010, VCNL4020 combined ambient light and proximity sensor.
-> > > +	 VCNL4010, VCNL4020, VCNL4200 combined ambient light and proximity
-> > > +	 sensor.
-> > >  
-> > >  	 To compile this driver as a module, choose M here: the
-> > >  	 module will be called vcnl4000.
-> > > diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-> > > index 642a366c1479..5de0d500c310 100644
-> > > --- a/drivers/iio/light/vcnl4000.c
-> > > +++ b/drivers/iio/light/vcnl4000.c
-> > > @@ -1,5 +1,5 @@
-> > >  /*
-> > > - * vcnl4000.c - Support for Vishay VCNL4000/4010/4020 combined ambient
-> > > + * vcnl4000.c - Support for Vishay VCNL4000/4010/4020/4200 combined ambient
-> > >   * light and proximity sensor
-> > >   *
-> > >   * Copyright 2012 Peter Meerwald <pmeerw@pmeerw.net>
-> > > @@ -8,13 +8,15 @@
-> > >   * the GNU General Public License.  See the file COPYING in the main
-> > >   * directory of this archive for more details.
-> > >   *
-> > > - * IIO driver for VCNL4000 (7-bit I2C slave address 0x13)
-> > > + * IIO driver for:
-> > > + *   VCNL4000/10/20 (7-bit I2C slave address 0x13)
-> > > + *   VCNL4200 (7-bit I2C slave address 0x51)
-> > >   *
-> > >   * TODO:
-> > >   *   allow to adjust IR current
-> > >   *   proximity threshold and event handling
-> > >   *   periodic ALS/proximity measurement (VCNL4010/20)
-> > > - *   interrupts (VCNL4010/20)
-> > > + *   interrupts (VCNL4010/20, VCNL4200)
-> > >   */
-> > >  
-> > >  #include <linux/module.h>
-> > > @@ -28,6 +30,7 @@
-> > >  #define VCNL4000_DRV_NAME "vcnl4000"
-> > >  #define VCNL4000_PROD_ID	0x01
-> > >  #define VCNL4010_PROD_ID	0x02 /* for VCNL4020, VCNL4010 */
-> > > +#define VCNL4200_PROD_ID	0x58
-> > >  
-> > >  #define VCNL4000_COMMAND	0x80 /* Command register */
-> > >  #define VCNL4000_PROD_REV	0x81 /* Product ID and Revision ID */
-> > > @@ -40,6 +43,12 @@
-> > >  #define VCNL4000_PS_MEAS_FREQ	0x89 /* Proximity test signal frequency */
-> > >  #define VCNL4000_PS_MOD_ADJ	0x8a /* Proximity modulator timing adjustment */
-> > >  
-> > > +#define VCNL4200_AL_CONF	0x00 /* Ambient light configuration */
-> > > +#define VCNL4200_PS_CONF1	0x03 /* Proximity configuration */
-> > > +#define VCNL4200_PS_DATA	0x08 /* Proximity data */
-> > > +#define VCNL4200_AL_DATA	0x09 /* Ambient light data */
-> > > +#define VCNL4200_DEV_ID		0x0e /* Device ID, slave address and version */
-> > > +
-> > >  /* Bit masks for COMMAND register */
-> > >  #define VCNL4000_AL_RDY		BIT(6) /* ALS data ready? */
-> > >  #define VCNL4000_PS_RDY		BIT(5) /* proximity data ready? */
-> > > @@ -49,6 +58,14 @@
-> > >  enum vcnl4000_device_ids {
-> > >  	VCNL4000,
-> > >  	VCNL4010,
-> > > +	VCNL4200,
-> > > +};
-> > > +
-> > > +struct vcnl4200_channel {
-> > > +	u8 reg;
-> > > +	ktime_t last_measurement;
-> > > +	ktime_t sampling_rate;
-> > > +	struct mutex lock;
-> > >  };
-> > >  
-> > >  struct vcnl4000_data {
-> > > @@ -57,7 +74,9 @@ struct vcnl4000_data {
-> > >  	int rev;
-> > >  	int al_scale;
-> > >  	const struct vcnl4000_chip_spec *chip_spec;
-> > > -	struct mutex lock;
-> > > +	struct mutex vcnl4000_lock;
-> > > +	struct vcnl4200_channel vcnl4200_al;
-> > > +	struct vcnl4200_channel vcnl4200_ps;
-> > >  };
-> > >  
-> > >  struct vcnl4000_chip_spec {
-> > > @@ -70,6 +89,7 @@ struct vcnl4000_chip_spec {
-> > >  static const struct i2c_device_id vcnl4000_id[] = {
-> > >  	{ "vcnl4000", VCNL4000 },
-> > >  	{ "vcnl4010", VCNL4010 },
-> > > +	{ "vcnl4200", VCNL4200 },
-> > >  	{ }
-> > >  };
-> > >  MODULE_DEVICE_TABLE(i2c, vcnl4000_id);
-> > > @@ -100,6 +120,42 @@ static int vcnl4000_init(struct vcnl4000_data *data)
-> > >  
-> > >  	data->rev = ret & 0xf;
-> > >  	data->al_scale = 250000;
-> > > +	mutex_init(&data->vcnl4000_lock);
-> > > +
-> > > +	return 0;
-> > > +};
-> > > +
-> > > +static int vcnl4200_init(struct vcnl4000_data *data)
-> > > +{
-> > > +	int ret;
-> > > +
-> > > +	ret = i2c_smbus_read_word_data(data->client, VCNL4200_DEV_ID);
-> > > +	if (ret < 0)
-> > > +		return ret;
-> > > +
-> > > +	if ((ret & 0xff) != VCNL4200_PROD_ID)
-> > > +		return -ENODEV;
-> > > +
-> > > +	data->rev = (ret >> 8) & 0xf;
-> > > +
-> > > +	/* Set defaults and enable both channels */
-> > > +	ret = i2c_smbus_write_byte_data(data->client, VCNL4200_AL_CONF, 0x00);
-> > > +	if (ret < 0)
-> > > +		return ret;
-> > > +	ret = i2c_smbus_write_byte_data(data->client, VCNL4200_PS_CONF1, 0x00);
-> > > +	if (ret < 0)
-> > > +		return ret;
-> > > +
-> > > +	data->al_scale = 24000;
-> > > +	data->vcnl4200_al.reg = VCNL4200_AL_DATA;
-> > > +	data->vcnl4200_ps.reg = VCNL4200_PS_DATA;
-> > > +	/* Integration time is 50ms, but the experiments show 54ms in total. */
-> > > +	data->vcnl4200_al.sampling_rate = ktime_set(0, 54000 * 1000);
-> > > +	data->vcnl4200_ps.sampling_rate = ktime_set(0, 4200 * 1000);    
-> > 
-> > I'm not particularly keen on the mixing of constant and non constant
-> > stuff in these, but I guess there isn't enough constant stuff to bother
-> > factoring that out.  
-> 
-> If you wouldn't mind, I would leave it as it is. The sampling rate isn't
-> fixed - this value is just a default value after reset. There are some
-> settings which influence it, so it might be computed when the driver will be
-> extended.
+> Please note that I'm not sure if it is still good idea to have same driver
+> for vcnl4000 and vcnl4200. The amount of different parts in v2 is even
+> bigger. Just see below for differences and add the blocking read which is
+> added in v2 for vcnl4200.
 
-Fair enough. Fine as it is.
+Definitely marginal.  My view is it's your choice as the person doing
+the work!  Which would you prefer?
+
+I'm pretty happy with these patches if you want to go this way, but
+given I assume you might add the support for other features, if you
+think that is going to get even worse, then now is the time to make
+the decision to not have a unified driver.
+
+Sadly it might be a case of doing a 'hatchet' job on the code to
+make a separate driver and see what it looks like.  If it's really
+short and clean (which it probably is) then go with separate drivers.
 
 Jonathan
 
 > 
-> Thanks,
+> Cover letter from v1:
 > 
-> Tomas
+> VCNL4200 is another proximity and ambient light sensor from Vishay. I'm
+> adding support for that sensor to vcnl4000 driver, which currently supports
+> VCNL4000/10/20.
 > 
-> > > +	data->vcnl4200_al.last_measurement = ktime_set(0, 0);
-> > > +	data->vcnl4200_ps.last_measurement = ktime_set(0, 0);
-> > > +	mutex_init(&data->vcnl4200_al.lock);
-> > > +	mutex_init(&data->vcnl4200_ps.lock);
-> > >  
-> > >  	return 0;
-> > >  };
-> > > @@ -111,7 +167,7 @@ static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
-> > >  	__be16 buf;
-> > >  	int ret;
-> > >  
-> > > -	mutex_lock(&data->lock);
-> > > +	mutex_lock(&data->vcnl4000_lock);
-> > >  
-> > >  	ret = i2c_smbus_write_byte_data(data->client, VCNL4000_COMMAND,
-> > >  					req_mask);
-> > > @@ -140,16 +196,43 @@ static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
-> > >  	if (ret < 0)
-> > >  		goto fail;
-> > >  
-> > > -	mutex_unlock(&data->lock);
-> > > +	mutex_unlock(&data->vcnl4000_lock);
-> > >  	*val = be16_to_cpu(buf);
-> > >  
-> > >  	return 0;
-> > >  
-> > >  fail:
-> > > -	mutex_unlock(&data->lock);
-> > > +	mutex_unlock(&data->vcnl4000_lock);
-> > >  	return ret;
-> > >  }
-> > >  
-> > > +static int vcnl4200_measure(struct vcnl4000_data *data,
-> > > +		struct vcnl4200_channel *chan, int *val)
-> > > +{
-> > > +	int ret;
-> > > +	s64 delta;
-> > > +	ktime_t next_measurement;
-> > > +
-> > > +	mutex_lock(&chan->lock);
-> > > +
-> > > +	next_measurement = ktime_add(chan->last_measurement,
-> > > +			chan->sampling_rate);
-> > > +	delta = ktime_us_delta(next_measurement, ktime_get());
-> > > +	if (delta > 0)
-> > > +		usleep_range(delta, delta + 500);
-> > > +	chan->last_measurement = ktime_get();
-> > > +
-> > > +	mutex_unlock(&chan->lock);
-> > > +
-> > > +	ret = i2c_smbus_read_word_data(data->client, chan->reg);
-> > > +	if (ret < 0)
-> > > +		return ret;
-> > > +
-> > > +	*val = ret;
-> > > +
-> > > +	return 0;
-> > > +}
-> > > +
-> > >  static int vcnl4000_measure_light(struct vcnl4000_data *data, int *val)
-> > >  {
-> > >  	return vcnl4000_measure(data,
-> > > @@ -157,6 +240,11 @@ static int vcnl4000_measure_light(struct vcnl4000_data *data, int *val)
-> > >  			VCNL4000_AL_RESULT_HI, val);
-> > >  }
-> > >  
-> > > +static int vcnl4200_measure_light(struct vcnl4000_data *data, int *val)
-> > > +{
-> > > +	return vcnl4200_measure(data, &data->vcnl4200_al, val);
-> > > +}
-> > > +
-> > >  static int vcnl4000_measure_proximity(struct vcnl4000_data *data, int *val)
-> > >  {
-> > >  	return vcnl4000_measure(data,
-> > > @@ -164,6 +252,11 @@ static int vcnl4000_measure_proximity(struct vcnl4000_data *data, int *val)
-> > >  			VCNL4000_PS_RESULT_HI, val);
-> > >  }
-> > >  
-> > > +static int vcnl4200_measure_proximity(struct vcnl4000_data *data, int *val)
-> > > +{
-> > > +	return vcnl4200_measure(data, &data->vcnl4200_ps, val);
-> > > +}
-> > > +
-> > >  static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
-> > >  	[VCNL4000] = {
-> > >  		.prod = "VCNL4000",
-> > > @@ -177,6 +270,12 @@ static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
-> > >  		.measure_light = vcnl4000_measure_light,
-> > >  		.measure_proximity = vcnl4000_measure_proximity,
-> > >  	},
-> > > +	[VCNL4200] = {
-> > > +		.prod = "VCNL4200",
-> > > +		.init = vcnl4200_init,
-> > > +		.measure_light = vcnl4200_measure_light,
-> > > +		.measure_proximity = vcnl4200_measure_proximity,
-> > > +	},
-> > >  };
-> > >  
-> > >  static const struct iio_chan_spec vcnl4000_channels[] = {
-> > > @@ -245,7 +344,6 @@ static int vcnl4000_probe(struct i2c_client *client,
-> > >  	data->client = client;
-> > >  	data->id = id->driver_data;
-> > >  	data->chip_spec = &vcnl4000_chip_spec_cfg[data->id];
-> > > -	mutex_init(&data->lock);
-> > >  
-> > >  	ret = data->chip_spec->init(data);
-> > >  	if (ret < 0)    
-> > 
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> > the body of a message to majordomo@vger.kernel.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> >   
+> The VCNL4200 is a bit different from VCNL4000/10/20. Common things are:
+> - integrated proximity and ambient light sensor
+> - SMBus compatible I2C interface
+> - Vishay VCNL4xxx series...
+> 
+> Different things are:
+> - totally different register map
+> - 8-bit vs. 16-bit registers. The 16-bit values are in two 8-bit registers
+>   on VCNL4000. 16-bit value is in one register on VCNL4200.
+> - VCNL4000 has flags when the measurement is finished
+> 
+> The first patch generalizes the driver to support differencies. The second
+> patch adds the support for VCNL4200.
+> 
+> It is tested on VCNL4020 and VCNL4200.
+> 
+> Tomas Novotny (4):
+>   iio: vcnl4000: make the driver extendable
+>   iio: vcnl4000: add VCNL4010 device id
+>   iio: vcnl4000: warn on incorrectly specified device id
+>   iio: vcnl4000: add support for VCNL4200
+> 
+>  drivers/iio/light/Kconfig    |   5 +-
+>  drivers/iio/light/vcnl4000.c | 219 ++++++++++++++++++++++++++++++++++++++-----
+>  2 files changed, 196 insertions(+), 28 deletions(-)
+> 
 
