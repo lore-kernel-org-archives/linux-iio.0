@@ -1,58 +1,54 @@
-Return-Path: <SRS0=2uaw=KL=analog.com=alexandru.Ardelean@kernel.org>
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "hofrat@osadl.org" <hofrat@osadl.org>, "lars@metafoo.de" <lars@metafoo.de>
-CC: "knaack.h@gmx.de" <knaack.h@gmx.de>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>, "jic23@kernel.org"
-	<jic23@kernel.org>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] iio: ad_sigma_delta: use unsigned long for timeout
-Date: Fri, 27 Jul 2018 06:39:25 +0000
-Message-ID: <1284099be1e67ef443e7b7f0370db0a6b70cb48e.camel@analog.com>
-References: <1532337518-30085-1-git-send-email-hofrat@osadl.org>
-	 <c07f288a40a3626d79a1b57173fa1a340afd3180.camel@analog.com>
-In-Reply-To: <c07f288a40a3626d79a1b57173fa1a340afd3180.camel@analog.com>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-eopbgr700054.outbound.protection.outlook.com ([40.107.70.54]:14571
+        "EHLO NAM04-SN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2387852AbeGWQEJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 23 Jul 2018 12:04:09 -0400
+From: Manish Narani <manish.narani@xilinx.com>
+To: <lakshmi.sai.krishna.potthuri@xilinx.com>,
+        <manish.narani@xilinx.com>, <michal.simek@xilinx.com>,
+        <pmeerw@pmeerw.net>, <lars@metafoo.de>, <knaack.h@gmx.de>,
+        <jic23@kernel.org>
+CC: <anirudh@xilinx.com>, <sgoud@xilinx.com>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>
+Subject: [PATCH v2 0/4] iio: adc: xilinx: XADC driver Enhancements and bug fixes
+Date: Mon, 23 Jul 2018 20:31:59 +0530
+Message-ID: <1532358123-23485-1-git-send-email-manish.narani@xilinx.com>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-T24gVGh1LCAyMDE4LTA3LTI2IGF0IDExOjQ0ICswMDAwLCBBcmRlbGVhbiwgQWxleGFuZHJ1IHdy
-b3RlOg0KPiBPbiBNb24sIDIwMTgtMDctMjMgYXQgMTE6MTggKzAyMDAsIE5pY2hvbGFzIE1jIEd1
-aXJlIHdyb3RlOg0KPiA+IHdhaXRfZm9yX2NvbXBsZXRpb25fdGltZW91dCByZXR1cm5zIHVuc2ln
-bmVkIGxvbmcgbm90IGludCBzbyBhbg0KPiA+IGFwcHJvcHJpYXRlDQo+ID4gdmFyaWFibGUgaXMg
-ZGVjbGFyZWQgYW5kIHRoZSBhc3NpZ25tZW50IGFuZCBjaGVjayBmaXhlZCB1cC4NCj4gPiANCj4g
-DQo+IFBhdGNoIGxvb2tzIGdvb2QuDQo+IA0KPiBUaGFua3MgZm9yIHRoaXMNCg0KWyBJIGZvcmdv
-dCB0byBhZGQgdGhpcyBdDQoNClJldmlld2VkLWJ5OiBBbGV4YW5kcnUgQXJkZWxlYW4gPGFsZXhh
-bmRydS5hcmRlbGVhbkBhbmFsb2cuY29tPg0KDQoNCj4gDQo+IEFsZXgNCj4gDQo+ID4gU2lnbmVk
-LW9mZi1ieTogTmljaG9sYXMgTWMgR3VpcmUgPGhvZnJhdEBvc2FkbC5vcmc+DQo+ID4gLS0tDQo+
-ID4gDQo+ID4gZm91bmQgYnkgZXhwZXJpbWVudGFsIGNvY2NpbmVsbGUgc2NyaXB0DQo+ID4gDQo+
-ID4gQXMgdGhlIHRpbWVvdXQgcmV0dXJuZWQgaXMgYWx3YXlzIDw8IElOVF9NQVggdGhlcmUgaXMg
-bm8gc2lkZS1lZmZlY3QNCj4gPiB3aXRoDQo+ID4gdGhlDQo+ID4gdHlwZSBjb252ZXJzaW9uIGhl
-cmUsIG5ldmVyIHRoZSBsZXNzIHByb3BlciB0eXBlcyBzaG91bGQgYmUgdXNlZC4NCj4gPiANCj4g
-PiBQYXRjaCB3YXMgY29tcGlsZSB0ZXN0ZWQgd2l0aDogeDg2XzY0X2RlZmNvbmZpZyArIENPTkZJ
-R19TUEk9eSwNCj4gPiBDT05GSUdfSUlPPXksDQo+ID4gQ09ORklHX0FENzc5Mz15IChpbXBsaWVz
-IENPTkZJR19BRF9TSUdNQV9ERUxUQT15KQ0KPiA+IA0KPiA+IFBhdGNoIGlzIGFnYWluc3QgNC4x
-OC1yYzUgKGxvY2FsdmVyc2lvbi1uZXh0IGlzIG5leHQtMjAxODA3MjApDQo+ID4gDQo+ID4gIGRy
-aXZlcnMvaWlvL2FkYy9hZF9zaWdtYV9kZWx0YS5jIHwgNSArKystLQ0KPiA+ICAxIGZpbGUgY2hh
-bmdlZCwgMyBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQ0KPiA+IA0KPiA+IGRpZmYgLS1n
-aXQgYS9kcml2ZXJzL2lpby9hZGMvYWRfc2lnbWFfZGVsdGEuYw0KPiA+IGIvZHJpdmVycy9paW8v
-YWRjL2FkX3NpZ21hX2RlbHRhLmMNCj4gPiBpbmRleCBjZjFiMDQ4Li5mYzk1MTA3IDEwMDY0NA0K
-PiA+IC0tLSBhL2RyaXZlcnMvaWlvL2FkYy9hZF9zaWdtYV9kZWx0YS5jDQo+ID4gKysrIGIvZHJp
-dmVycy9paW8vYWRjL2FkX3NpZ21hX2RlbHRhLmMNCj4gPiBAQCAtMjA5LDYgKzIwOSw3IEBAIHN0
-YXRpYyBpbnQgYWRfc2RfY2FsaWJyYXRlKHN0cnVjdCBhZF9zaWdtYV9kZWx0YQ0KPiA+ICpzaWdt
-YV9kZWx0YSwNCj4gPiAgCXVuc2lnbmVkIGludCBtb2RlLCB1bnNpZ25lZCBpbnQgY2hhbm5lbCkN
-Cj4gPiAgew0KPiA+ICAJaW50IHJldDsNCj4gPiArCXVuc2lnbmVkIGxvbmcgdGltZW91dDsNCj4g
-PiAgDQo+ID4gIAlyZXQgPSBhZF9zaWdtYV9kZWx0YV9zZXRfY2hhbm5lbChzaWdtYV9kZWx0YSwg
-Y2hhbm5lbCk7DQo+ID4gIAlpZiAocmV0KQ0KPiA+IEBAIC0yMjQsOCArMjI1LDggQEAgc3RhdGlj
-IGludCBhZF9zZF9jYWxpYnJhdGUoc3RydWN0IGFkX3NpZ21hX2RlbHRhDQo+ID4gKnNpZ21hX2Rl
-bHRhLA0KPiA+ICANCj4gPiAgCXNpZ21hX2RlbHRhLT5pcnFfZGlzID0gZmFsc2U7DQo+ID4gIAll
-bmFibGVfaXJxKHNpZ21hX2RlbHRhLT5zcGktPmlycSk7DQo+ID4gLQlyZXQgPSB3YWl0X2Zvcl9j
-b21wbGV0aW9uX3RpbWVvdXQoJnNpZ21hX2RlbHRhLT5jb21wbGV0aW9uLA0KPiA+IDIqSFopOw0K
-PiA+IC0JaWYgKHJldCA9PSAwKSB7DQo+ID4gKwl0aW1lb3V0ID0gd2FpdF9mb3JfY29tcGxldGlv
-bl90aW1lb3V0KCZzaWdtYV9kZWx0YS0NCj4gPiA+Y29tcGxldGlvbiwNCj4gPiAyICogSFopOw0K
-PiA+ICsJaWYgKHRpbWVvdXQgPT0gMCkgew0KPiA+ICAJCXNpZ21hX2RlbHRhLT5pcnFfZGlzID0g
-dHJ1ZTsNCj4gPiAgCQlkaXNhYmxlX2lycV9ub3N5bmMoc2lnbWFfZGVsdGEtPnNwaS0+aXJxKTsN
-Cj4gPiAgCQlyZXQgPQ0KPiA+IC1FSU87Tu+/ve+/ve+/ve+/ve+/vXLvv73vv71577+977+977+9
-Yu+/vVjvv73vv73Hp3bvv71e77+9Kd66ey5u77+9K++/ve+/ve+/ve+/vXvvv73vv70qIu+/ve+/
-vV5u77+9cu+/ve+/ve+/vXrvv70a77+977+9aO+/ve+/ve+/ve+/vSbvv73vv70e77+9R++/ve+/
-vQ0KPiA+IO+/vWjvv70DKO+/vemaju+/vd2iaiLvv73vv70a77+9G23vv73vv73vv73vv73vv716
-77+93pbvv73vv73vv71m77+977+977+9aO+/ve+/ve+/vX7vv71t77+9
+This patch series resolves code style problems as reported by code analysis
+tools.
+
+Changes in v2:
+	- From the first version of patches, 2 patches are dropped in this
+	  series.
+	- In the v1 patch set, 1/4 was not required as the issue is in
+	  checkpatch.pl script and not in the code.
+	- In the v1 patch set 2/4 was applied on togreg branch of iio.git
+	- for 3/4 patch in v1 patch set, the patch is broken up in 2 patches
+	  in this series as per review comments. They are now 1/4 and 2/4 in
+	  this series.
+	- 4/4 patch in the v1 patch set was basically to resolve coverity
+	  warning for platform_get_irq() in xadc_remove function, but that was
+	  causing potential race condition. Fixed that in this series (3/4).
+	- A new patch is added in this series for moving request_irq() before
+	  enabling interrupts.
+
+
+Manish Narani (4):
+  iio: adc: xilinx: Check for return values in clk related functions
+  iio: adc: xilinx: limit pcap clock frequency value
+  iio: adc: xilinx: Remove platform_get_irq from xadc_remove function
+  iio: adc: xilinx: Move request_irq before enabling interrupts
+
+ drivers/iio/adc/xilinx-xadc-core.c | 40 +++++++++++++++++++++++++++++---------
+ drivers/iio/adc/xilinx-xadc.h      |  1 +
+ 2 files changed, 32 insertions(+), 9 deletions(-)
+
+-- 
+2.1.1
+
