@@ -1,75 +1,102 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-co1nam03on0075.outbound.protection.outlook.com ([104.47.40.75]:52128
-        "EHLO NAM03-CO1-obe.outbound.protection.outlook.com"
+Received: from mail-bn3nam01on0071.outbound.protection.outlook.com ([104.47.33.71]:19040
+        "EHLO NAM01-BN3-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726598AbeG3Lrw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 30 Jul 2018 07:47:52 -0400
-From: Manish Narani <MNARANI@xilinx.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Sai Krishna Potthuri <lakshmis@xilinx.com>,
-        Michal Simek <michals@xilinx.com>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        Anirudha Sarangi <anirudh@xilinx.com>,
-        Srinivas Goud <sgoud@xilinx.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org"
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: RE: [PATCH v2 2/4] iio: adc: xilinx: limit pcap clock frequency value
-Date: Mon, 30 Jul 2018 10:13:26 +0000
-Message-ID: <SN6PR02MB495915F6DDEC42F4F44DB13BC12F0@SN6PR02MB4959.namprd02.prod.outlook.com>
+        id S2388410AbeGWQES (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 23 Jul 2018 12:04:18 -0400
+From: Manish Narani <manish.narani@xilinx.com>
+To: <lakshmi.sai.krishna.potthuri@xilinx.com>,
+        <manish.narani@xilinx.com>, <michal.simek@xilinx.com>,
+        <pmeerw@pmeerw.net>, <lars@metafoo.de>, <knaack.h@gmx.de>,
+        <jic23@kernel.org>
+CC: <anirudh@xilinx.com>, <sgoud@xilinx.com>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>
+Subject: [PATCH v2 3/4] iio: adc: xilinx: Remove platform_get_irq from xadc_remove function
+Date: Mon, 23 Jul 2018 20:32:02 +0530
+Message-ID: <1532358123-23485-4-git-send-email-manish.narani@xilinx.com>
+In-Reply-To: <1532358123-23485-1-git-send-email-manish.narani@xilinx.com>
 References: <1532358123-23485-1-git-send-email-manish.narani@xilinx.com>
-        <1532358123-23485-3-git-send-email-manish.narani@xilinx.com>
- <20180729125106.05692a44@archlinux>
-In-Reply-To: <20180729125106.05692a44@archlinux>
-Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+This patch avoids getting irq number in xadc_remove function. Instead
+store 'irq' in xadc struct and use xadc->irq wherever needed.
+This patch also resolves a warning reported by coverity where it asks to
+check return value of platform_get_irq() for any errors in xadc_remove.
 
+Signed-off-by: Manish Narani <manish.narani@xilinx.com>
+---
+ drivers/iio/adc/xilinx-xadc-core.c | 10 +++++-----
+ drivers/iio/adc/xilinx-xadc.h      |  1 +
+ 2 files changed, 6 insertions(+), 5 deletions(-)
 
-> -----Original Message-----
-> From: Jonathan Cameron [mailto:jic23@kernel.org]
-> Sent: Sunday, July 29, 2018 5:21 PM
-> To: Manish Narani <MNARANI@xilinx.com>
-> Cc: Sai Krishna Potthuri <lakshmis@xilinx.com>; Michal Simek
-> <michals@xilinx.com>; pmeerw@pmeerw.net; lars@metafoo.de;
-> knaack.h@gmx.de; Anirudha Sarangi <anirudh@xilinx.com>; Srinivas Goud
-> <sgoud@xilinx.com>; linux-kernel@vger.kernel.org; linux-arm-
-> kernel@lists.infradead.org; linux-iio@vger.kernel.org
-> Subject: Re: [PATCH v2 2/4] iio: adc: xilinx: limit pcap clock frequency =
-value
->=20
-> On Mon, 23 Jul 2018 20:32:01 +0530
-> Manish Narani <manish.narani@xilinx.com> wrote:
->=20
-> > This patch limits the xadc pcap clock frequency value to be less than
-> > 200MHz. This fixes the issue when zynq is booted at higher frequency
-> > values, pcap crosses the maximum limit of 200MHz(Fmax) as it is
-> > derived from IOPLL.
-> > If this limit is crossed it is required to alter the WEDGE and REDGE
-> > bits of XADC_CFG register to make timings better in the interface. So
-> > to avoid alteration of these bits every time, the pcap value should
-> > not cross the Fmax limit.
-> >
-> > Signed-off-by: Manish Narani <manish.narani@xilinx.com>
->=20
-> Applied, to the togreg branch of iio.git.  If you want this backported to=
- stable,
-> then request it once this patch is upstream.  It may be sometime given we=
-'ve
-> probably just missed the coming merge window.
->=20
-> If you do need it faster then let me know and I'll look at moving it over=
- to the
-> branch of fixes during the RC phases.
-Thanks for getting this applied. There is no concern for this to be in the =
-stable
-ASAP. I can wait.
+diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
+index 0dd306d..44a2519 100644
+--- a/drivers/iio/adc/xilinx-xadc-core.c
++++ b/drivers/iio/adc/xilinx-xadc-core.c
+@@ -1175,6 +1175,7 @@ static int xadc_probe(struct platform_device *pdev)
+ 
+ 	xadc = iio_priv(indio_dev);
+ 	xadc->ops = id->data;
++	xadc->irq = irq;
+ 	init_completion(&xadc->completion);
+ 	mutex_init(&xadc->mutex);
+ 	spin_lock_init(&xadc->lock);
+@@ -1225,11 +1226,11 @@ static int xadc_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto err_free_samplerate_trigger;
+ 
+-	ret = xadc->ops->setup(pdev, indio_dev, irq);
++	ret = xadc->ops->setup(pdev, indio_dev, xadc->irq);
+ 	if (ret)
+ 		goto err_clk_disable_unprepare;
+ 
+-	ret = request_irq(irq, xadc->ops->interrupt_handler, 0,
++	ret = request_irq(xadc->irq, xadc->ops->interrupt_handler, 0,
+ 			dev_name(&pdev->dev), indio_dev);
+ 	if (ret)
+ 		goto err_clk_disable_unprepare;
+@@ -1288,7 +1289,7 @@ static int xadc_probe(struct platform_device *pdev)
+ 	return 0;
+ 
+ err_free_irq:
+-	free_irq(irq, indio_dev);
++	free_irq(xadc->irq, indio_dev);
+ err_clk_disable_unprepare:
+ 	clk_disable_unprepare(xadc->clk);
+ err_free_samplerate_trigger:
+@@ -1310,7 +1311,6 @@ static int xadc_remove(struct platform_device *pdev)
+ {
+ 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+ 	struct xadc *xadc = iio_priv(indio_dev);
+-	int irq = platform_get_irq(pdev, 0);
+ 
+ 	iio_device_unregister(indio_dev);
+ 	if (xadc->ops->flags & XADC_FLAGS_BUFFERED) {
+@@ -1318,7 +1318,7 @@ static int xadc_remove(struct platform_device *pdev)
+ 		iio_trigger_free(xadc->convst_trigger);
+ 		iio_triggered_buffer_cleanup(indio_dev);
+ 	}
+-	free_irq(irq, indio_dev);
++	free_irq(xadc->irq, indio_dev);
+ 	clk_disable_unprepare(xadc->clk);
+ 	cancel_delayed_work(&xadc->zynq_unmask_work);
+ 	kfree(xadc->data);
+diff --git a/drivers/iio/adc/xilinx-xadc.h b/drivers/iio/adc/xilinx-xadc.h
+index 62edbda..8c00095 100644
+--- a/drivers/iio/adc/xilinx-xadc.h
++++ b/drivers/iio/adc/xilinx-xadc.h
+@@ -68,6 +68,7 @@ struct xadc {
+ 	spinlock_t lock;
+ 
+ 	struct completion completion;
++	int irq;
+ };
+ 
+ struct xadc_ops {
+-- 
+2.1.1
 
-Thanks & Regards,
-Manish Narani
