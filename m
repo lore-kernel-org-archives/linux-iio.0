@@ -1,165 +1,179 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg0-f65.google.com ([74.125.83.65]:41829 "EHLO
-        mail-pg0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751246AbeF3QdJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 30 Jun 2018 12:33:09 -0400
-Received: by mail-pg0-f65.google.com with SMTP id l65-v6so5289562pgl.8
-        for <linux-iio@vger.kernel.org>; Sat, 30 Jun 2018 09:33:08 -0700 (PDT)
-From: Akinobu Mita <akinobu.mita@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: Akinobu Mita <akinobu.mita@gmail.com>,
-        Eva Rachel Retuya <eraretuya@gmail.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH v5 4/4] iio: accel: adxl345: add sampling frequency support
-Date: Sun,  1 Jul 2018 01:32:45 +0900
-Message-Id: <1530376365-23946-5-git-send-email-akinobu.mita@gmail.com>
-In-Reply-To: <1530376365-23946-1-git-send-email-akinobu.mita@gmail.com>
-References: <1530376365-23946-1-git-send-email-akinobu.mita@gmail.com>
+Received: from leonov.paulk.fr ([185.233.101.22]:49908 "EHLO leonov.paulk.fr"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388324AbeGXSfr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 24 Jul 2018 14:35:47 -0400
+Message-ID: <39b1eef01c2ed32f09ef30439c4f4297de009898.camel@paulk.fr>
+Subject: Re: [linux-sunxi] Re: [PATCH v2 14/16] arm: dts: sun8i: h3: enable
+ H3 sid controller
+From: Paul Kocialkowski <contact@paulk.fr>
+To: embed3d@gmail.com, Kyle Evans <kevans@freebsd.org>, icenowy@aosc.io
+Cc: Maxime Ripard <maxime.ripard@bootlin.com>, lee.jones@linaro.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Russell King <linux@armlinux.org.uk>, jic23@kernel.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        davem@davemloft.net, hans.verkuil@cisco.com, mchehab@kernel.org,
+        rask@formelder.dk, clabbe.montjoie@gmail.com, sean@mess.org,
+        krzk@kernel.org, quentin.schulz@free-electrons.com,
+        edu.molinas@gmail.com, singhalsimran0@gmail.com,
+        linux-iio@vger.kernel.org, devicetree <devicetree@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-sunxi <linux-sunxi@googlegroups.com>
+Date: Tue, 24 Jul 2018 19:19:54 +0200
+In-Reply-To: <0ab29bf0-b069-338e-f312-e533656fa0b6@gmail.com>
+References: <20180128232919.12639-1-embed3d@gmail.com>
+         <20180128232919.12639-15-embed3d@gmail.com>
+         <20180129095200.attg7cgvpifpchtn@flea.lan>
+         <470ec61e-8b08-5193-ede1-01d02b2c865e@gmail.com>
+         <CACNAnaGVSbk7czb+mcGTx1C=YwCWe1qqHQDQe9+PNifwEXovMw@mail.gmail.com>
+         <F1D7126A-B6ED-4A83-A941-5F39CED472CE@aosc.io>
+         <CACNAnaFMKDmvAUXJngKHWkeGLfjsgn5hhJszNk7Sg4BU98Oafw@mail.gmail.com>
+         <0ab29bf0-b069-338e-f312-e533656fa0b6@gmail.com>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-xzR/LJPMHBlmHKrlL/gR"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The ADXL345 provides selectable output data rate.  This adds the iio
-channel information for the sampling frequency with that feature.
 
-Cc: Eva Rachel Retuya <eraretuya@gmail.com>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
----
-* v5 (Suggested by Andy Shevchenko)
-- Introduce constant for nHZ per HZ
-- Find an register setting without looping over all available frequencies
-- Allow all user supplied values and round to an available frequency
+--=-xzR/LJPMHBlmHKrlL/gR
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
- drivers/iio/accel/adxl345_core.c | 57 +++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 56 insertions(+), 1 deletion(-)
+Hi,
 
-diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_core.c
-index 7b29ae8..fba1ae2 100644
---- a/drivers/iio/accel/adxl345_core.c
-+++ b/drivers/iio/accel/adxl345_core.c
-@@ -14,6 +14,7 @@
- #include <linux/regmap.h>
- 
- #include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
- 
- #include "adxl345.h"
- 
-@@ -22,6 +23,7 @@
- #define ADXL345_REG_OFSY		0x1f
- #define ADXL345_REG_OFSZ		0x20
- #define ADXL345_REG_OFS_AXIS(index)	(ADXL345_REG_OFSX + (index))
-+#define ADXL345_REG_BW_RATE		0x2C
- #define ADXL345_REG_POWER_CTL		0x2D
- #define ADXL345_REG_DATA_FORMAT		0x31
- #define ADXL345_REG_DATAX0		0x32
-@@ -30,6 +32,10 @@
- #define ADXL345_REG_DATA_AXIS(index)	\
- 	(ADXL345_REG_DATAX0 + (index) * sizeof(__le16))
- 
-+#define ADXL345_BW_RATE			GENMASK(3, 0)
-+#define ADXL345_BASE_RATE_NANO_HZ	97656250LL
-+#define NHZ_PER_HZ			1000000000LL
-+
- #define ADXL345_POWER_CTL_MEASURE	BIT(3)
- #define ADXL345_POWER_CTL_STANDBY	0x00
- 
-@@ -62,7 +68,8 @@ struct adxl345_data {
- 	.address = index,						\
- 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |			\
- 		BIT(IIO_CHAN_INFO_CALIBBIAS),				\
--	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
-+		BIT(IIO_CHAN_INFO_SAMP_FREQ),				\
- }
- 
- static const struct iio_chan_spec adxl345_channels[] = {
-@@ -77,6 +84,7 @@ static int adxl345_read_raw(struct iio_dev *indio_dev,
- {
- 	struct adxl345_data *data = iio_priv(indio_dev);
- 	__le16 accel;
-+	long long samp_freq_nhz;
- 	unsigned int regval;
- 	int ret;
- 
-@@ -112,6 +120,16 @@ static int adxl345_read_raw(struct iio_dev *indio_dev,
- 		*val = sign_extend32(regval, 7) * 4;
- 
- 		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		ret = regmap_read(data->regmap, ADXL345_REG_BW_RATE, &regval);
-+		if (ret < 0)
-+			return ret;
-+
-+		samp_freq_nhz = ADXL345_BASE_RATE_NANO_HZ <<
-+				(regval & ADXL345_BW_RATE);
-+		*val = div_s64_rem(samp_freq_nhz, NHZ_PER_HZ, val2);
-+
-+		return IIO_VAL_INT_PLUS_NANO;
- 	}
- 
- 	return -EINVAL;
-@@ -122,6 +140,7 @@ static int adxl345_write_raw(struct iio_dev *indio_dev,
- 			    int val, int val2, long mask)
- {
- 	struct adxl345_data *data = iio_priv(indio_dev);
-+	s64 n;
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_CALIBBIAS:
-@@ -132,14 +151,50 @@ static int adxl345_write_raw(struct iio_dev *indio_dev,
- 		return regmap_write(data->regmap,
- 				    ADXL345_REG_OFS_AXIS(chan->address),
- 				    val / 4);
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		n = div_s64(val * NHZ_PER_HZ + val2, ADXL345_BASE_RATE_NANO_HZ);
-+		n = ilog2(max_t(s64, n, 1));
-+
-+		return regmap_update_bits(data->regmap, ADXL345_REG_BW_RATE,
-+					  ADXL345_BW_RATE,
-+					  min_t(int, n, ADXL345_BW_RATE));
- 	}
- 
- 	return -EINVAL;
- }
- 
-+static int adxl345_write_raw_get_fmt(struct iio_dev *indio_dev,
-+				     struct iio_chan_spec const *chan,
-+				     long mask)
-+{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_CALIBBIAS:
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		return IIO_VAL_INT_PLUS_NANO;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
-+"0.09765625 0.1953125 0.390625 0.78125 1.5625 3.125 6.25 12.5 25 50 100 200 400 800 1600 3200"
-+);
-+
-+static struct attribute *adxl345_attrs[] = {
-+	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group adxl345_attrs_group = {
-+	.attrs = adxl345_attrs,
-+};
-+
- static const struct iio_info adxl345_info = {
-+	.attrs		= &adxl345_attrs_group,
- 	.read_raw	= adxl345_read_raw,
- 	.write_raw	= adxl345_write_raw,
-+	.write_raw_get_fmt	= adxl345_write_raw_get_fmt,
- };
- 
- int adxl345_core_probe(struct device *dev, struct regmap *regmap,
--- 
-2.7.4
+Le vendredi 20 avril 2018 =C3=A0 11:35 +0200, Philipp Rossak a =C3=A9crit :
+> Hi Kyle,
+>=20
+> I'm already working on a Version 3 of this patch series. Right now this=
+=20
+> slowed down since I'm very busy and the ToDo-List is still very long.
+>=20
+> My plan is to send out a version during this release cycle.
+>=20
+> If you need it right now feel free to submit patches!
+
+I just came around this patch while testing SID support for H3, that is
+not enabled in the dts at this point despite driver support.
+
+Maxime, would it make sense to merge this patch as-is, without support
+for the thermal calibration section, since the two aspects seem rather
+independent (and some other SoCs also have a SID node without linkage
+for thermal support anyway)?
+
+Cheers,
+
+Paul
+
+> Philipp
+>=20
+> On 19.04.2018 17:19, Kyle Evans wrote:
+> > On Thu, Apr 19, 2018 at 10:13 AM, Icenowy Zheng <icenowy@aosc.io> wrote=
+:
+> > >=20
+> > >=20
+> > > =E4=BA=8E 2018=E5=B9=B44=E6=9C=8819=E6=97=A5 GMT+08:00 =E4=B8=8B=E5=
+=8D=8811:11:22, Kyle Evans <kevans@freebsd.org> =E5=86=99=E5=88=B0:
+> > > > On Mon, Jan 29, 2018 at 6:03 AM, Philipp Rossak <embed3d@gmail.com>
+> > > > wrote:
+> > > > >=20
+> > > > >=20
+> > > > > On 29.01.2018 10:52, Maxime Ripard wrote:
+> > > > > >=20
+> > > > > > On Mon, Jan 29, 2018 at 12:29:17AM +0100, Philipp Rossak wrote:
+> > > > > > >=20
+> > > > > > > This patch enables the the sid controller in the H3. It can b=
+e used
+> > > > > > > for thermal calibration data.
+> > > > > > >=20
+> > > > > > > Signed-off-by: Philipp Rossak <embed3d@gmail.com>
+> > > > > > > ---
+> > > > > > >    arch/arm/boot/dts/sun8i-h3.dtsi | 7 +++++++
+> > > > > > >    1 file changed, 7 insertions(+)
+> > > > > > >=20
+> > > > > > > diff --git a/arch/arm/boot/dts/sun8i-h3.dtsi
+> > > > > > > b/arch/arm/boot/dts/sun8i-h3.dtsi
+> > > > > > > index 3f83f6a27c74..9bb5cc29fec5 100644
+> > > > > > > --- a/arch/arm/boot/dts/sun8i-h3.dtsi
+> > > > > > > +++ b/arch/arm/boot/dts/sun8i-h3.dtsi
+> > > > > > > @@ -72,6 +72,13 @@
+> > > > > > >                  };
+> > > > > > >          };
+> > > > > > >    +     soc {
+> > > > > > > +               sid: eeprom@1c14000 {
+> > > > > > > +                       compatible =3D "allwinner,sun8i-h3-si=
+d";
+> > > > > > > +                       reg =3D <0x01c14000 0x400>;
+> > > > > > > +               };
+> > > > > > > +       };
+> > > > > > > +
+> > > > > >=20
+> > > > > >=20
+> > > > > > Shouldn't you also use a nvmem-cells property to the THS node?
+> > > > > >=20
+> > > > > > Maxime
+> > > > > >=20
+> > > > >=20
+> > > > > Oh seems like I forgot that.
+> > > > > As related to the wiki [1] this should be 64 bit wide at the addr=
+ess
+> > > >=20
+> > > > 0x34. I
+> > > > > will add that in the next version.
+> > > > >=20
+> > > > >=20
+> > > > > [1]: http://linux-sunxi.org/SID_Register_Guide#eFUSE
+> > > > >=20
+> > > > > Thanks,
+> > > > > Philipp
+> > > > >=20
+> > > >=20
+> > > > Hi,
+> > > >=20
+> > > > Any chance this will see a v3 soon? I'm kind of interested in sid n=
+ode
+> > > > for h3. =3D)
+> > >=20
+> > > This patch is independent and can be easily sent out
+> > > by its own.
+> > >=20
+> >=20
+> > Right- I had considered doing so, but wanted to make sure I wasn't
+> > going to collide with this series if a v3 is imminent.
+> >=20
+>=20
+>=20
+--=20
+Developer of free digital technology and hardware support.
+
+Website: https://www.paulk.fr/
+Coding blog: https://code.paulk.fr/
+Git repositories: https://git.paulk.fr/ https://git.code.paulk.fr/
+
+--=-xzR/LJPMHBlmHKrlL/gR
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEAbcMXZQMtj1fphLChP3B6o/ulQwFAltXX7oACgkQhP3B6o/u
+lQzvTQ/+K8cvJP3xINJvqaxmiYerl69XPraXfIGCKUX8Ecj3UbSgBfZmMJMBtps0
+D4R7Rs9QYJUiiQaUmWm3yAMGXtohrB88ydSonAHGBrpUOsnPkN2DAE1Q/lohrE4I
+f6F52Y/KTSwa1qoGKcGcJsQrjkn5PSLN/8WLOk8ION3b3BYY7EKiNKP7w+DQeNrf
+/uR5IW7JMTDgKpFc1KFguQOb7vXrRg7aGWKIfS9J0Bx6Scozu2eVoqeS4f50LOZu
+vOdaobhnof3KMk8h2k0/B1kN5fGCILQIKD+9lQM0B11cUvSQ2pS6XFMTuJpBpLFY
+gwKTQN6E2YyK7mYzGvcd39ap/+iUJhaPk4tF23qjXWjN0lIhGz3gtqQaVjs6Pxoy
+mvqRjuA/Xm6sok/1YnabAc56wJH0rTJ4L4VVKra3yDKCWTVhBIoAcRgFCKHnepYH
+iuJ3jDlpW+qNoQ7KKQKnrOr2JgjpVte1hsXLZLuwtq+L1v0jMQcpkXWHBdYtoG0E
+QYF7lGtJ62TpJ8xVbODlJP3c+kbgI1rA+rsDLPR04AC9Gr0mNCC/AMoGQlem05I6
+gjbS72fl+cKbQhu05AdgANNHI/WDixbL+UnDu+eY1So+sEwzs8TRBEvS+xfnB5HX
+T0LqdRpFikWcUlvkdDilJRim3QWIfUFPH4F8XHNkegEq+xiCisw=
+=NWb7
+-----END PGP SIGNATURE-----
+
+--=-xzR/LJPMHBlmHKrlL/gR--
 
