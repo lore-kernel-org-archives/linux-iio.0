@@ -1,301 +1,66 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:56464 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726203AbeG2NGm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 29 Jul 2018 09:06:42 -0400
-Date: Sun, 29 Jul 2018 12:36:29 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Tomas Novotny <tomas.novotny@tbs-biometrics.com>
-Cc: linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Tomas Novotny <tomas@novotny.cz>
-Subject: Re: [PATCH v3 4/4] iio: vcnl4000: add support for VCNL4200
-Message-ID: <20180729123629.69bb319a@archlinux>
-In-Reply-To: <20180725151821.17566-5-tomas.novotny@tbs-biometrics.com>
-References: <20180725151821.17566-1-tomas.novotny@tbs-biometrics.com>
-        <20180725151821.17566-5-tomas.novotny@tbs-biometrics.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=Gjn+=KJ=codeaurora.org=smohanad@kernel.org>
+From: Siddartha Mohanadoss <smohanad@codeaurora.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Siddartha Mohanadoss <smohanad@codeaurora.org>,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Rob Herring <robh+dt@kernel.org>
+Subject: [PATCH v3 0/3] Add QCOM PMIC5 ADC driver
+Date: Wed, 25 Jul 2018 16:42:42 -0700
+Message-Id: <1532562162-6350-1-git-send-email-smohanad@codeaurora.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, 25 Jul 2018 17:18:21 +0200
-Tomas Novotny <tomas.novotny@tbs-biometrics.com> wrote:
+This patch series adds the PMIC5 ADC family of chipset
+that supports clients to measure voltage on
+inputs connected to the PMIC ADC AMUX. Clients include
+reading voltage phone power and on board system thermistors
+for thermal management.
 
-> From: Tomas Novotny <tomas@novotny.cz>
-> 
-> VCNL4200 is an integrated long distance (up to 1500mm) proximity and
-> ambient light sensor.
-> 
-> The support is very basic. There is no configuration of proximity and
-> ambient light sensing yet. Only the reading of both measured values is
-> done.
-> 
-> The reading of ambient light and proximity values is blocking. If you
-> request a new value too early, the driver waits for new value to be
-> ready.
-> 
-> Signed-off-by: Tomas Novotny <tomas@novotny.cz>
+The v3 patchset addresses most of the review comments from
+prior patchset.
 
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+Changes since patchset v2
+* Removed support for current channel as part of this series.
+* Fix pointer arithmetic for iio_chan.
+* Few minor changes.
+* Update license to SPDX format for ADC header file.
 
-Thanks,
+Changes since patchset v1
+* Merged DT bindings with prior PMIC family instead of a
+  seperate DT file for PMIC5 family.
+* Updated documentation for 'label' and 'value' property.
+* Updated using unique prefix adc5 for functions and defines
+  specific for this family of chipset.
+* Refactored scaling functions to use function pointer for
+  scaling lookup.
+* Added documentation comments as requested in the
+  scaling functions as applicable.
+* Added utility functions in the scaling API to avoid some of
+  the code repetitions.
+* Use consistent hex format for adc_data and use specific length
+  while assigning data.
+* Added support to determine controller version and check against
+  supported hardware settling delay values.
+* Various minor changes.
 
-Jonathan
+Siddartha Mohanadoss (3):
+  dt-bindings: iio: adc: Add DT binding document for PMIC5 ADC
+  iio: adc: Add QCOM SPMI PMIC5 ADC driver
+  iio: adc: Update QCOM ADC license to SPDX format
 
-> ---
-> No change v2..v3
-> 
->  drivers/iio/light/Kconfig    |   5 +-
->  drivers/iio/light/vcnl4000.c | 114 ++++++++++++++++++++++++++++++++++++++++---
->  2 files changed, 109 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index 074e50657366..c0344a961f54 100644
-> --- a/drivers/iio/light/Kconfig
-> +++ b/drivers/iio/light/Kconfig
-> @@ -430,11 +430,12 @@ config US5182D
->  	 will be called us5182d.
->  
->  config VCNL4000
-> -	tristate "VCNL4000/4010/4020 combined ALS and proximity sensor"
-> +	tristate "VCNL4000/4010/4020/4200 combined ALS and proximity sensor"
->  	depends on I2C
->  	help
->  	 Say Y here if you want to build a driver for the Vishay VCNL4000,
-> -	 VCNL4010, VCNL4020 combined ambient light and proximity sensor.
-> +	 VCNL4010, VCNL4020, VCNL4200 combined ambient light and proximity
-> +	 sensor.
->  
->  	 To compile this driver as a module, choose M here: the
->  	 module will be called vcnl4000.
-> diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-> index a0cd1dcbf935..04fd0d4b6f19 100644
-> --- a/drivers/iio/light/vcnl4000.c
-> +++ b/drivers/iio/light/vcnl4000.c
-> @@ -1,5 +1,5 @@
->  /*
-> - * vcnl4000.c - Support for Vishay VCNL4000/4010/4020 combined ambient
-> + * vcnl4000.c - Support for Vishay VCNL4000/4010/4020/4200 combined ambient
->   * light and proximity sensor
->   *
->   * Copyright 2012 Peter Meerwald <pmeerw@pmeerw.net>
-> @@ -8,13 +8,15 @@
->   * the GNU General Public License.  See the file COPYING in the main
->   * directory of this archive for more details.
->   *
-> - * IIO driver for VCNL4000 (7-bit I2C slave address 0x13)
-> + * IIO driver for:
-> + *   VCNL4000/10/20 (7-bit I2C slave address 0x13)
-> + *   VCNL4200 (7-bit I2C slave address 0x51)
->   *
->   * TODO:
->   *   allow to adjust IR current
->   *   proximity threshold and event handling
->   *   periodic ALS/proximity measurement (VCNL4010/20)
-> - *   interrupts (VCNL4010/20)
-> + *   interrupts (VCNL4010/20, VCNL4200)
->   */
->  
->  #include <linux/module.h>
-> @@ -28,6 +30,7 @@
->  #define VCNL4000_DRV_NAME "vcnl4000"
->  #define VCNL4000_PROD_ID	0x01
->  #define VCNL4010_PROD_ID	0x02 /* for VCNL4020, VCNL4010 */
-> +#define VCNL4200_PROD_ID	0x58
->  
->  #define VCNL4000_COMMAND	0x80 /* Command register */
->  #define VCNL4000_PROD_REV	0x81 /* Product ID and Revision ID */
-> @@ -40,6 +43,12 @@
->  #define VCNL4000_PS_MEAS_FREQ	0x89 /* Proximity test signal frequency */
->  #define VCNL4000_PS_MOD_ADJ	0x8a /* Proximity modulator timing adjustment */
->  
-> +#define VCNL4200_AL_CONF	0x00 /* Ambient light configuration */
-> +#define VCNL4200_PS_CONF1	0x03 /* Proximity configuration */
-> +#define VCNL4200_PS_DATA	0x08 /* Proximity data */
-> +#define VCNL4200_AL_DATA	0x09 /* Ambient light data */
-> +#define VCNL4200_DEV_ID		0x0e /* Device ID, slave address and version */
-> +
->  /* Bit masks for COMMAND register */
->  #define VCNL4000_AL_RDY		BIT(6) /* ALS data ready? */
->  #define VCNL4000_PS_RDY		BIT(5) /* proximity data ready? */
-> @@ -49,6 +58,14 @@
->  enum vcnl4000_device_ids {
->  	VCNL4000,
->  	VCNL4010,
-> +	VCNL4200,
-> +};
-> +
-> +struct vcnl4200_channel {
-> +	u8 reg;
-> +	ktime_t last_measurement;
-> +	ktime_t sampling_rate;
-> +	struct mutex lock;
->  };
->  
->  struct vcnl4000_data {
-> @@ -57,7 +74,9 @@ struct vcnl4000_data {
->  	int rev;
->  	int al_scale;
->  	const struct vcnl4000_chip_spec *chip_spec;
-> -	struct mutex lock;
-> +	struct mutex vcnl4000_lock;
-> +	struct vcnl4200_channel vcnl4200_al;
-> +	struct vcnl4200_channel vcnl4200_ps;
->  };
->  
->  struct vcnl4000_chip_spec {
-> @@ -71,6 +90,7 @@ static const struct i2c_device_id vcnl4000_id[] = {
->  	{ "vcnl4000", VCNL4000 },
->  	{ "vcnl4010", VCNL4010 },
->  	{ "vcnl4020", VCNL4010 },
-> +	{ "vcnl4200", VCNL4200 },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(i2c, vcnl4000_id);
-> @@ -101,6 +121,42 @@ static int vcnl4000_init(struct vcnl4000_data *data)
->  
->  	data->rev = ret & 0xf;
->  	data->al_scale = 250000;
-> +	mutex_init(&data->vcnl4000_lock);
-> +
-> +	return 0;
-> +};
-> +
-> +static int vcnl4200_init(struct vcnl4000_data *data)
-> +{
-> +	int ret;
-> +
-> +	ret = i2c_smbus_read_word_data(data->client, VCNL4200_DEV_ID);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	if ((ret & 0xff) != VCNL4200_PROD_ID)
-> +		return -ENODEV;
-> +
-> +	data->rev = (ret >> 8) & 0xf;
-> +
-> +	/* Set defaults and enable both channels */
-> +	ret = i2c_smbus_write_byte_data(data->client, VCNL4200_AL_CONF, 0x00);
-> +	if (ret < 0)
-> +		return ret;
-> +	ret = i2c_smbus_write_byte_data(data->client, VCNL4200_PS_CONF1, 0x00);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	data->al_scale = 24000;
-> +	data->vcnl4200_al.reg = VCNL4200_AL_DATA;
-> +	data->vcnl4200_ps.reg = VCNL4200_PS_DATA;
-> +	/* Integration time is 50ms, but the experiments show 54ms in total. */
-> +	data->vcnl4200_al.sampling_rate = ktime_set(0, 54000 * 1000);
-> +	data->vcnl4200_ps.sampling_rate = ktime_set(0, 4200 * 1000);
-> +	data->vcnl4200_al.last_measurement = ktime_set(0, 0);
-> +	data->vcnl4200_ps.last_measurement = ktime_set(0, 0);
-> +	mutex_init(&data->vcnl4200_al.lock);
-> +	mutex_init(&data->vcnl4200_ps.lock);
->  
->  	return 0;
->  };
-> @@ -112,7 +168,7 @@ static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
->  	__be16 buf;
->  	int ret;
->  
-> -	mutex_lock(&data->lock);
-> +	mutex_lock(&data->vcnl4000_lock);
->  
->  	ret = i2c_smbus_write_byte_data(data->client, VCNL4000_COMMAND,
->  					req_mask);
-> @@ -141,16 +197,43 @@ static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
->  	if (ret < 0)
->  		goto fail;
->  
-> -	mutex_unlock(&data->lock);
-> +	mutex_unlock(&data->vcnl4000_lock);
->  	*val = be16_to_cpu(buf);
->  
->  	return 0;
->  
->  fail:
-> -	mutex_unlock(&data->lock);
-> +	mutex_unlock(&data->vcnl4000_lock);
->  	return ret;
->  }
->  
-> +static int vcnl4200_measure(struct vcnl4000_data *data,
-> +		struct vcnl4200_channel *chan, int *val)
-> +{
-> +	int ret;
-> +	s64 delta;
-> +	ktime_t next_measurement;
-> +
-> +	mutex_lock(&chan->lock);
-> +
-> +	next_measurement = ktime_add(chan->last_measurement,
-> +			chan->sampling_rate);
-> +	delta = ktime_us_delta(next_measurement, ktime_get());
-> +	if (delta > 0)
-> +		usleep_range(delta, delta + 500);
-> +	chan->last_measurement = ktime_get();
-> +
-> +	mutex_unlock(&chan->lock);
-> +
-> +	ret = i2c_smbus_read_word_data(data->client, chan->reg);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	*val = ret;
-> +
-> +	return 0;
-> +}
-> +
->  static int vcnl4000_measure_light(struct vcnl4000_data *data, int *val)
->  {
->  	return vcnl4000_measure(data,
-> @@ -158,6 +241,11 @@ static int vcnl4000_measure_light(struct vcnl4000_data *data, int *val)
->  			VCNL4000_AL_RESULT_HI, val);
->  }
->  
-> +static int vcnl4200_measure_light(struct vcnl4000_data *data, int *val)
-> +{
-> +	return vcnl4200_measure(data, &data->vcnl4200_al, val);
-> +}
-> +
->  static int vcnl4000_measure_proximity(struct vcnl4000_data *data, int *val)
->  {
->  	return vcnl4000_measure(data,
-> @@ -165,6 +253,11 @@ static int vcnl4000_measure_proximity(struct vcnl4000_data *data, int *val)
->  			VCNL4000_PS_RESULT_HI, val);
->  }
->  
-> +static int vcnl4200_measure_proximity(struct vcnl4000_data *data, int *val)
-> +{
-> +	return vcnl4200_measure(data, &data->vcnl4200_ps, val);
-> +}
-> +
->  static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
->  	[VCNL4000] = {
->  		.prod = "VCNL4000",
-> @@ -178,6 +271,12 @@ static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
->  		.measure_light = vcnl4000_measure_light,
->  		.measure_proximity = vcnl4000_measure_proximity,
->  	},
-> +	[VCNL4200] = {
-> +		.prod = "VCNL4200",
-> +		.init = vcnl4200_init,
-> +		.measure_light = vcnl4200_measure_light,
-> +		.measure_proximity = vcnl4200_measure_proximity,
-> +	},
->  };
->  
->  static const struct iio_chan_spec vcnl4000_channels[] = {
-> @@ -246,7 +345,6 @@ static int vcnl4000_probe(struct i2c_client *client,
->  	data->client = client;
->  	data->id = id->driver_data;
->  	data->chip_spec = &vcnl4000_chip_spec_cfg[data->id];
-> -	mutex_init(&data->lock);
->  
->  	ret = data->chip_spec->init(data);
->  	if (ret < 0)
+ .../devicetree/bindings/iio/adc/qcom,spmi-vadc.txt |  77 +-
+ drivers/iio/adc/Kconfig                            |  20 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/qcom-spmi-adc5.c                   | 864 +++++++++++++++++++++
+ drivers/iio/adc/qcom-vadc-common.c                 | 189 ++++-
+ drivers/iio/adc/qcom-vadc-common.h                 |  54 ++
+ include/dt-bindings/iio/qcom,spmi-vadc.h           | 125 ++-
+ 7 files changed, 1296 insertions(+), 34 deletions(-)
+ create mode 100644 drivers/iio/adc/qcom-spmi-adc5.c
 
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
