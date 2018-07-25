@@ -1,31 +1,60 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:38714 "EHLO
-        mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728357AbeGYJ0C (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 25 Jul 2018 05:26:02 -0400
-Date: Wed, 25 Jul 2018 10:14:07 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: [PULL] IIO: Second set of new device support, cleanups and
- features for the 4.19 cycle.
-Message-ID: <20180725081407.GA27618@kroah.com>
-References: <20180724215731.71c540ff@archlinux>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20180724215731.71c540ff@archlinux>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=alW1=KJ=tbs-biometrics.com=tomas.novotny@kernel.org>
+From: Tomas Novotny <tomas.novotny@tbs-biometrics.com>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Tomas Novotny <tomas@novotny.cz>
+Subject: [PATCH v3 0/4] iio: vcnl4000: add support for vcnl4200
+Date: Wed, 25 Jul 2018 17:18:17 +0200
+Message-Id: <20180725151821.17566-1-tomas.novotny@tbs-biometrics.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, Jul 24, 2018 at 09:57:31PM +0100, Jonathan Cameron wrote:
-> The following changes since commit a98a5c27b54e01dd9c42e2b0addb543f0dc494cd:
-> 
->   staging: rtl8188eu: remove whitespace - coding style (2018-06-28 22:46:01 +0900)
-> 
-> are available in the Git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-4.19b
+From: Tomas Novotny <tomas@novotny.cz>
 
-Pulled and pushed out, thanks.
+VCNL4200 is another proximity and ambient light sensor from Vishay. I'm
+adding support for that sensor to vcnl4000 driver, which currently supports
+VCNL4000/10/20.
 
-greg k-h
+The VCNL4200 is a bit different from VCNL4000/10/20. Common things are:
+- integrated proximity and ambient light sensor
+- SMBus compatible I2C interface
+- Vishay VCNL4xxx series...
+
+Different things are:
+- totally different register map
+- 8-bit vs. 16-bit registers. The 16-bit values are in two 8-bit registers
+  on VCNL4000. 16-bit value is in one register on VCNL4200.
+- VCNL4000 has flags when the measurement is finished
+- blocking read is implemented for vcnl4200 (there is no 'ready' flag, just
+  interrupts)
+
+It is tested on VCNL4020 and VCNL4200.
+
+Changes in v3:
+- improve commit message of 2/4 (clearly state that it is groundwork for
+  another change)
+- add vcnl4020 device id to the list of supported ids
+
+Changes in v2:
+- reading light and proximity values for vcnl4200 is blocking (if you
+  request new value too early)
+- patches 2 and 3 were added; original patch 2 is now patch 4
+- vcnl4010 id is handled (patch 2)
+- warn user on incorrect usage of vcnl40{0,1}0 id (patch 3)
+- minor stuff (add parenthesis, switch instead of if, rename sensors to
+  channels, fix return)
+
+Tomas Novotny (4):
+  iio: vcnl4000: make the driver extendable
+  iio: vcnl4000: add VCNL4010 and VCNL4020 device id
+  iio: vcnl4000: warn on incorrectly specified device id
+  iio: vcnl4000: add support for VCNL4200
+
+ drivers/iio/light/Kconfig    |   5 +-
+ drivers/iio/light/vcnl4000.c | 220 ++++++++++++++++++++++++++++++++++++++-----
+ 2 files changed, 197 insertions(+), 28 deletions(-)
+
+-- 
+2.12.3
