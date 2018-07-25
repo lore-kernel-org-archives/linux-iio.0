@@ -1,42 +1,82 @@
-Return-Path: <SRS0=gwve=KJ=linux-foundation.org=akpm@kernel.org>
-Date: Tue, 24 Jul 2018 17:55:31 -0700
-From: Andrew Morton <akpm@linux-foundation.org>
-To: Joe Perches <joe@perches.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, Samuel Ortiz <sameo@linux.intel.com>,
- "David S. Miller" <davem@davemloft.net>, Rob Herring <robh+dt@kernel.org>,
- Michael Ellerman <mpe@ellerman.id.au>, Jonathan Cameron <jic23@kernel.org>,
- linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
- linuxppc-dev@lists.ozlabs.org, linux-iio@vger.kernel.org,
- linux-pm@vger.kernel.org, lvs-devel@vger.kernel.org,
- netfilter-devel@vger.kernel.org, coreteam@netfilter.org
+Return-Path: <SRS0=52tj=KJ=gmail.com=arndbergmann@kernel.org>
+MIME-Version: 1.0
+Sender: arndbergmann@gmail.com
+In-Reply-To: <20180724175531.75276cf4e539124aa9e27177@linux-foundation.org>
+References: <20180724111600.4158975-1-arnd@arndb.de> <20180724140010.e24a9964fd340afe2d98a994@linux-foundation.org>
+ <aa39b6d15f44555cb79d5ebdef74aeab19003d6a.camel@perches.com> <20180724175531.75276cf4e539124aa9e27177@linux-foundation.org>
+From: Arnd Bergmann <arnd@arndb.de>
+Date: Wed, 25 Jul 2018 15:12:11 +0200
+Message-ID: <CAK8P3a3tOuP1FVS7oD1UhO5s4C+fLkL8VT3eCpRnSxBZxKzf6A@mail.gmail.com>
 Subject: Re: [PATCH 1/4] treewide: convert ISO_8859-1 text comments to utf-8
-Message-Id: <20180724175531.75276cf4e539124aa9e27177@linux-foundation.org>
-In-Reply-To: <aa39b6d15f44555cb79d5ebdef74aeab19003d6a.camel@perches.com>
-References: <20180724111600.4158975-1-arnd@arndb.de>
-	<20180724140010.e24a9964fd340afe2d98a994@linux-foundation.org>
-	<aa39b6d15f44555cb79d5ebdef74aeab19003d6a.camel@perches.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Joe Perches <joe@perches.com>, Samuel Ortiz <sameo@linux.intel.com>,
+	"David S. Miller" <davem@davemloft.net>, Rob Herring <robh+dt@kernel.org>,
+	Michael Ellerman <mpe@ellerman.id.au>, Jonathan Cameron <jic23@kernel.org>,
+	linux-wireless <linux-wireless@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+	DTML <devicetree@vger.kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	Linux ARM <linux-arm-kernel@lists.infradead.org>,
+	"open list:HARDWARE RANDOM NUMBER GENERATOR CORE" <linux-crypto@vger.kernel.org>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+	linux-iio@vger.kernel.org, Linux PM list <linux-pm@vger.kernel.org>,
+	lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+	coreteam@netfilter.org
+Content-Type: text/plain; charset="UTF-8"
 List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, 24 Jul 2018 17:13:20 -0700 Joe Perches <joe@perches.com> wrote:
+tools/perf/tests/.gitignore:
+                            LLVM byte-codes, uncompressed
+On Wed, Jul 25, 2018 at 2:55 AM, Andrew Morton
+<akpm@linux-foundation.org> wrote:
+> On Tue, 24 Jul 2018 17:13:20 -0700 Joe Perches <joe@perches.com> wrote:
+>
+>> On Tue, 2018-07-24 at 14:00 -0700, Andrew Morton wrote:
+>> > On Tue, 24 Jul 2018 13:13:25 +0200 Arnd Bergmann <arnd@arndb.de> wrote:
+>> > > Almost all files in the kernel are either plain text or UTF-8
+>> > > encoded. A couple however are ISO_8859-1, usually just a few
+>> > > characters in a C comments, for historic reasons.
+>> > > This converts them all to UTF-8 for consistency.
+>> []
+>> > Will we be getting a checkpatch rule to keep things this way?
+>>
+>> How would that be done?
+>
+> I'm using this, seems to work.
+>
+>         if ! file $p | grep -q -P ", ASCII text|, UTF-8 Unicode text"
+>         then
+>                 echo $p: weird charset
+>         fi
 
-> On Tue, 2018-07-24 at 14:00 -0700, Andrew Morton wrote:
-> > On Tue, 24 Jul 2018 13:13:25 +0200 Arnd Bergmann <arnd@arndb.de> wrote:
-> > > Almost all files in the kernel are either plain text or UTF-8
-> > > encoded. A couple however are ISO_8859-1, usually just a few
-> > > characters in a C comments, for historic reasons.
-> > > This converts them all to UTF-8 for consistency.
-> []
-> > Will we be getting a checkpatch rule to keep things this way?
-> 
-> How would that be done?
+There are a couple of files that my version of 'find' incorrectly identified as
+something completely different, like:
 
-I'm using this, seems to work.
+Documentation/devicetree/bindings/pinctrl/pinctrl-sx150x.txt:
+            SemOne archive data
+Documentation/devicetree/bindings/rtc/epson,rtc7301.txt:
+            Microsoft Document Imaging Format
+Documentation/filesystems/nfs/pnfs-block-server.txt:
+            PPMN archive data
+arch/arm/boot/dts/bcm283x-rpi-usb-host.dtsi:
+        Sendmail frozen configuration  - version = "host";
+Documentation/networking/segmentation-offloads.txt:
+        StuffIt Deluxe Segment (data) : gmentation Offloads in the
+Linux Networking Stack
+arch/sparc/include/asm/visasm.h:                              SAS 7+
+arch/xtensa/kernel/setup.c:                                         ,
+init=0x454c, stat=0x090a, dev=0x2009, bas=0x2020
+drivers/cpufreq/powernow-k8.c:
+TI-XX Graphing Calculator (FLASH)
+tools/testing/selftests/net/forwarding/tc_shblocks.sh:
+                            Minix filesystem, V2 (big endian)
+tools/perf/tests/.gitignore:
+                            LLVM byte-codes, uncompressed
 
-        if ! file $p | grep -q -P ", ASCII text|, UTF-8 Unicode text"
-        then
-                echo $p: weird charset
-        fi
+All of the above seem to be valid ASCII or UTF-8 files, so the check
+above will lead
+to false-positives, but it may be good enough as they are the
+exception, and may be
+bugs in 'file'.
+
+Not sure if we need to worry about 'file' not being installed.
+
+       Arnd
