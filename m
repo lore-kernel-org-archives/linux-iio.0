@@ -1,56 +1,48 @@
-Return-Path: <SRS0=b4Gn=KH=osadl.org=hofrat@kernel.org>
-From: Nicholas Mc Guire <hofrat@osadl.org>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Nicholas Mc Guire <hofrat@osadl.org>
-Subject: [PATCH] iio: ad_sigma_delta: use unsigned long for timeout
-Date: Mon, 23 Jul 2018 11:18:38 +0200
-Message-Id: <1532337518-30085-1-git-send-email-hofrat@osadl.org>
+Return-Path: <SRS0=CEHA=KK=analog.com=alexandru.Ardelean@kernel.org>
+From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+To: "hofrat@osadl.org" <hofrat@osadl.org>, "lars@metafoo.de" <lars@metafoo.de>
+CC: "knaack.h@gmx.de" <knaack.h@gmx.de>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+	"Hennerich, Michael" <Michael.Hennerich@analog.com>, "jic23@kernel.org"
+	<jic23@kernel.org>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] iio: ad_sigma_delta: use unsigned long for timeout
+Date: Thu, 26 Jul 2018 11:44:52 +0000
+Message-ID: <c07f288a40a3626d79a1b57173fa1a340afd3180.camel@analog.com>
+References: <1532337518-30085-1-git-send-email-hofrat@osadl.org>
+In-Reply-To: <1532337518-30085-1-git-send-email-hofrat@osadl.org>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-wait_for_completion_timeout returns unsigned long not int so an appropriate
-variable is declared and the assignment and check fixed up.
-
-Signed-off-by: Nicholas Mc Guire <hofrat@osadl.org>
----
-
-found by experimental coccinelle script
-
-As the timeout returned is always << INT_MAX there is no side-effect with the
-type conversion here, never the less proper types should be used.
-
-Patch was compile tested with: x86_64_defconfig + CONFIG_SPI=y, CONFIG_IIO=y,
-CONFIG_AD7793=y (implies CONFIG_AD_SIGMA_DELTA=y)
-
-Patch is against 4.18-rc5 (localversion-next is next-20180720)
-
- drivers/iio/adc/ad_sigma_delta.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
-index cf1b048..fc95107 100644
---- a/drivers/iio/adc/ad_sigma_delta.c
-+++ b/drivers/iio/adc/ad_sigma_delta.c
-@@ -209,6 +209,7 @@ static int ad_sd_calibrate(struct ad_sigma_delta *sigma_delta,
- 	unsigned int mode, unsigned int channel)
- {
- 	int ret;
-+	unsigned long timeout;
- 
- 	ret = ad_sigma_delta_set_channel(sigma_delta, channel);
- 	if (ret)
-@@ -224,8 +225,8 @@ static int ad_sd_calibrate(struct ad_sigma_delta *sigma_delta,
- 
- 	sigma_delta->irq_dis = false;
- 	enable_irq(sigma_delta->spi->irq);
--	ret = wait_for_completion_timeout(&sigma_delta->completion, 2*HZ);
--	if (ret == 0) {
-+	timeout = wait_for_completion_timeout(&sigma_delta->completion, 2 * HZ);
-+	if (timeout == 0) {
- 		sigma_delta->irq_dis = true;
- 		disable_irq_nosync(sigma_delta->spi->irq);
- 		ret = -EIO;
--- 
-2.1.4
+T24gTW9uLCAyMDE4LTA3LTIzIGF0IDExOjE4ICswMjAwLCBOaWNob2xhcyBNYyBHdWlyZSB3cm90
+ZToNCj4gd2FpdF9mb3JfY29tcGxldGlvbl90aW1lb3V0IHJldHVybnMgdW5zaWduZWQgbG9uZyBu
+b3QgaW50IHNvIGFuDQo+IGFwcHJvcHJpYXRlDQo+IHZhcmlhYmxlIGlzIGRlY2xhcmVkIGFuZCB0
+aGUgYXNzaWdubWVudCBhbmQgY2hlY2sgZml4ZWQgdXAuDQo+IA0KDQpQYXRjaCBsb29rcyBnb29k
+Lg0KDQpUaGFua3MgZm9yIHRoaXMNCg0KQWxleA0KDQo+IFNpZ25lZC1vZmYtYnk6IE5pY2hvbGFz
+IE1jIEd1aXJlIDxob2ZyYXRAb3NhZGwub3JnPg0KPiAtLS0NCj4gDQo+IGZvdW5kIGJ5IGV4cGVy
+aW1lbnRhbCBjb2NjaW5lbGxlIHNjcmlwdA0KPiANCj4gQXMgdGhlIHRpbWVvdXQgcmV0dXJuZWQg
+aXMgYWx3YXlzIDw8IElOVF9NQVggdGhlcmUgaXMgbm8gc2lkZS1lZmZlY3Qgd2l0aA0KPiB0aGUN
+Cj4gdHlwZSBjb252ZXJzaW9uIGhlcmUsIG5ldmVyIHRoZSBsZXNzIHByb3BlciB0eXBlcyBzaG91
+bGQgYmUgdXNlZC4NCj4gDQo+IFBhdGNoIHdhcyBjb21waWxlIHRlc3RlZCB3aXRoOiB4ODZfNjRf
+ZGVmY29uZmlnICsgQ09ORklHX1NQST15LA0KPiBDT05GSUdfSUlPPXksDQo+IENPTkZJR19BRDc3
+OTM9eSAoaW1wbGllcyBDT05GSUdfQURfU0lHTUFfREVMVEE9eSkNCj4gDQo+IFBhdGNoIGlzIGFn
+YWluc3QgNC4xOC1yYzUgKGxvY2FsdmVyc2lvbi1uZXh0IGlzIG5leHQtMjAxODA3MjApDQo+IA0K
+PiAgZHJpdmVycy9paW8vYWRjL2FkX3NpZ21hX2RlbHRhLmMgfCA1ICsrKy0tDQo+ICAxIGZpbGUg
+Y2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdp
+dCBhL2RyaXZlcnMvaWlvL2FkYy9hZF9zaWdtYV9kZWx0YS5jDQo+IGIvZHJpdmVycy9paW8vYWRj
+L2FkX3NpZ21hX2RlbHRhLmMNCj4gaW5kZXggY2YxYjA0OC4uZmM5NTEwNyAxMDA2NDQNCj4gLS0t
+IGEvZHJpdmVycy9paW8vYWRjL2FkX3NpZ21hX2RlbHRhLmMNCj4gKysrIGIvZHJpdmVycy9paW8v
+YWRjL2FkX3NpZ21hX2RlbHRhLmMNCj4gQEAgLTIwOSw2ICsyMDksNyBAQCBzdGF0aWMgaW50IGFk
+X3NkX2NhbGlicmF0ZShzdHJ1Y3QgYWRfc2lnbWFfZGVsdGENCj4gKnNpZ21hX2RlbHRhLA0KPiAg
+CXVuc2lnbmVkIGludCBtb2RlLCB1bnNpZ25lZCBpbnQgY2hhbm5lbCkNCj4gIHsNCj4gIAlpbnQg
+cmV0Ow0KPiArCXVuc2lnbmVkIGxvbmcgdGltZW91dDsNCj4gIA0KPiAgCXJldCA9IGFkX3NpZ21h
+X2RlbHRhX3NldF9jaGFubmVsKHNpZ21hX2RlbHRhLCBjaGFubmVsKTsNCj4gIAlpZiAocmV0KQ0K
+PiBAQCAtMjI0LDggKzIyNSw4IEBAIHN0YXRpYyBpbnQgYWRfc2RfY2FsaWJyYXRlKHN0cnVjdCBh
+ZF9zaWdtYV9kZWx0YQ0KPiAqc2lnbWFfZGVsdGEsDQo+ICANCj4gIAlzaWdtYV9kZWx0YS0+aXJx
+X2RpcyA9IGZhbHNlOw0KPiAgCWVuYWJsZV9pcnEoc2lnbWFfZGVsdGEtPnNwaS0+aXJxKTsNCj4g
+LQlyZXQgPSB3YWl0X2Zvcl9jb21wbGV0aW9uX3RpbWVvdXQoJnNpZ21hX2RlbHRhLT5jb21wbGV0
+aW9uLA0KPiAyKkhaKTsNCj4gLQlpZiAocmV0ID09IDApIHsNCj4gKwl0aW1lb3V0ID0gd2FpdF9m
+b3JfY29tcGxldGlvbl90aW1lb3V0KCZzaWdtYV9kZWx0YS0+Y29tcGxldGlvbiwNCj4gMiAqIEha
+KTsNCj4gKwlpZiAodGltZW91dCA9PSAwKSB7DQo+ICAJCXNpZ21hX2RlbHRhLT5pcnFfZGlzID0g
+dHJ1ZTsNCj4gIAkJZGlzYWJsZV9pcnFfbm9zeW5jKHNpZ21hX2RlbHRhLT5zcGktPmlycSk7DQo+
+ICAJCXJldCA9IC1FSU87
