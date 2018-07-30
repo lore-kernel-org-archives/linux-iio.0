@@ -1,63 +1,45 @@
-Return-Path: <SRS0=oVyo=KP=gmail.com=himanshujha199640@kernel.org>
-Date: Tue, 31 Jul 2018 15:34:09 +0530
-From: Himanshu Jha <himanshujha199640@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Jonathan Cameron <jonathan.cameron@huawei.com>,
-	linux-iio@vger.kernel.org, Daniel Baluta <daniel.baluta@gmail.com>,
-	matt.ranostay@konsulko.com
-Subject: Re: Buffert trigger and Power management support for BME680 ?
-Message-ID: <20180731100409.GA3667@himanshu-Vostro-3559>
-References: <20180730121241.GA4362@himanshu-Vostro-3559>
- <20180730140746.0000337a@huawei.com>
- <20180730175341.GA27304@himanshu-Vostro-3559>
- <20180730192511.75b6f0b2@archlinux>
+Return-Path: <SRS0=J8LW=KO=canonical.com=colin.king@kernel.org>
+From: Colin King <colin.king@canonical.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org
+Cc: kernel-janitors@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: light: fix test for val being not zero or not one.
+Date: Mon, 30 Jul 2018 13:59:18 +0100
+Message-Id: <20180730125918.7100-1-colin.king@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20180730192511.75b6f0b2@archlinux>
+Content-Type: text/plain; charset="utf-8"
 List-ID: <linux-iio@vger.kernel.org>
 
-> > Ah, I also had attributes to supply oversampling ratio for temp,
-> > press & humid channels from userspace. So, does that make it an output
-> > channel ? Forcing ?
-> 
-> I'm not sure I see the connection to oversampling ratio etc. Those
-> are about measurement, this one is about outputting heat (hence 
-> output).  The fact it is internal to the sensor, doesn't effect this.
+From: Colin Ian King <colin.king@canonical.com>
 
-I get it!
+The current check on val always results in true and so the
+call to sii1133_update_adcsens never gets called. Fix this check
+so it returns with -EINVAL only when val is not zero and not one.
 
-> > Hmm. For heater duration we are supplying time(ms)
-> > And out_current_heater_raw is definitely not valid here.
-> > Still unsure about the channel type and the corresponding
-> > sysfs entry.
-> 
-> Indeed not for the time.  The target temperature is fair enough as a channel.
-> Ideally I'd like to get rid of the time as there is no real way for userspace
-> to 'guess' it right.  Just set it big enough that it is always fine perhaps?
+Detected by CoverityScan, CID#1472099 ("Logically dead code")
 
-That's what "default values" are -- supplied at probe!
-The defaults are suggested by Bosch, so that is indeed best combination
-I guess.
+Fixes: e01e7eaf37d8 ("iio: light: introduce si1133")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/iio/light/si1133.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> > Will forward the email after their permission as the background
-> > watermark text in the formula image says "Confidential!!"
-> > Sometimes you need to be careful ;)
-> 
-> Sure.  Check that first!
-
-"Thank you for your question.
-
-No, unfortunately you cannot share that information. Generally we only deliver BSEC library package.
-
-Only NDA customer could be shared with such information."
-	--- reply from Bosch
-
-So, I cannot share the info and it wasn't what we need.
-Instead it was about calculating IAQ index from the raw values that
-we get from the sensor.
-
+diff --git a/drivers/iio/light/si1133.c b/drivers/iio/light/si1133.c
+index d3fbeb3bc463..5ac22c46da1f 100644
+--- a/drivers/iio/light/si1133.c
++++ b/drivers/iio/light/si1133.c
+@@ -838,7 +838,7 @@ static int si1133_write_raw(struct iio_dev *iio_dev,
+ 		switch (chan->type) {
+ 		case IIO_INTENSITY:
+ 		case IIO_UVINDEX:
+-			if (val != 0 || val != 1)
++			if (val != 0 && val != 1)
+ 				return -EINVAL;
+ 
+ 			return si1133_update_adcsens(data,
 -- 
-Himanshu Jha
-Undergraduate Student
-Department of Electronics & Communication
-Guru Tegh Bahadur Institute of Technology
+2.17.1
