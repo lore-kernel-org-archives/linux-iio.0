@@ -1,45 +1,25 @@
-Return-Path: <SRS0=Gjn+=KJ=codeaurora.org=smohanad@kernel.org>
-From: Siddartha Mohanadoss <smohanad@codeaurora.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Siddartha Mohanadoss <smohanad@codeaurora.org>,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
+Return-Path: <SRS0=ahOE=KO=gmail.com=robherring2@kernel.org>
+Date: Mon, 30 Jul 2018 17:09:05 -0600
+From: Rob Herring <robh@kernel.org>
+To: Siddartha Mohanadoss <smohanad@codeaurora.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Rob Herring <robh+dt@kernel.org>
-Subject: [PATCH v3 3/3] iio: adc: Update QCOM ADC license to SPDX format
-Date: Wed, 25 Jul 2018 16:45:31 -0700
-Message-Id: <1532562331-7273-1-git-send-email-smohanad@codeaurora.org>
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: Re: [PATCH v3 3/3] iio: adc: Update QCOM ADC license to SPDX format
+Message-ID: <20180730230905.GA1154@rob-hp-laptop>
+References: <1532562331-7273-1-git-send-email-smohanad@codeaurora.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1532562331-7273-1-git-send-email-smohanad@codeaurora.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-Update QCOM ADC header file to SPDX format.
+On Wed, Jul 25, 2018 at 04:45:31PM -0700, Siddartha Mohanadoss wrote:
+> Update QCOM ADC header file to SPDX format.
+> 
+> Signed-off-by: Siddartha Mohanadoss <smohanad@codeaurora.org>
+> ---
+>  include/dt-bindings/iio/qcom,spmi-vadc.h | 10 +---------
+>  1 file changed, 1 insertion(+), 9 deletions(-)
 
-Signed-off-by: Siddartha Mohanadoss <smohanad@codeaurora.org>
----
- include/dt-bindings/iio/qcom,spmi-vadc.h | 10 +---------
- 1 file changed, 1 insertion(+), 9 deletions(-)
-
-diff --git a/include/dt-bindings/iio/qcom,spmi-vadc.h b/include/dt-bindings/iio/qcom,spmi-vadc.h
-index bf54b5a..61d556d 100644
---- a/include/dt-bindings/iio/qcom,spmi-vadc.h
-+++ b/include/dt-bindings/iio/qcom,spmi-vadc.h
-@@ -1,14 +1,6 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
- /*
-  * Copyright (c) 2012-2014,2018 The Linux Foundation. All rights reserved.
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License version 2 and
-- * only version 2 as published by the Free Software Foundation.
-- *
-- * This program is distributed in the hope that it will be useful
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- * GNU General Public License for more details.
-  */
- 
- #ifndef _DT_BINDINGS_QCOM_SPMI_VADC_H
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Acked-by: Rob Herring <robh@kernel.org>
