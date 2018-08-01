@@ -1,129 +1,104 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-bn3nam01on0053.outbound.protection.outlook.com ([104.47.33.53]:56176
-        "EHLO NAM01-BN3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2389694AbeHARFO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 1 Aug 2018 13:05:14 -0400
-From: Stefan Popa <stefan.popa@analog.com>
-To: <jic23@kernel.org>
-CC: <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
-        <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <stefan.popa@analog.com>
-Subject: [PATCH v2 6/6] iio:adxl372: Add filter bandwidth support
-Date: Wed, 1 Aug 2018 18:18:50 +0300
-Message-ID: <1533136730-32149-1-git-send-email-stefan.popa@analog.com>
+Received: from mail.kernel.org ([198.145.29.99]:34034 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731500AbeHAUJf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 1 Aug 2018 16:09:35 -0400
+Date: Wed, 1 Aug 2018 19:22:32 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org
+Subject: [PULL] 3rd set of new IIO device support, features, cleanups and
+ fixes for the 4.19 cycle.
+Message-ID: <20180801192232.3eb71a44@archlinux>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds the option for the user to select the filter bandwidth. The
-user can also read the available bandwidths which are always adjusted to be
-at most half of the sampling frequency. Furthermore, the currently selected
-bandwidth can be read via the read_raw function, while the write_raw sets a
-new bandwidth value.
+This is a somewhat sneaky late pull request given Linus has announced
+a likely 1 week delay.  If it is too late I'll resend after the merge
+window.  I merged in the fixes branch as those are primarily around
+things queued for the merge window.
 
-Signed-off-by: Stefan Popa <stefan.popa@analog.com>
----
-Changes in v2:
-	- nothing changed.
+Particulary good to see the output of our Himanshu Jha, a GSOC student
+who developed the bme680 driver.
 
- drivers/iio/accel/adxl372.c | 38 ++++++++++++++++++++++++++++++++++++--
- 1 file changed, 36 insertions(+), 2 deletions(-)
+New device support:
+* bme680 gas sensor (with temperature, humidity and pressure)
+  - new driver to support this device
+* vcn4000
+  - support vcnl4200 (lots of rework to allow this)
+  - ids added for VCNL4010 and VCNL4020 sensors
 
-diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
-index d9e4826..5c55bed 100644
---- a/drivers/iio/accel/adxl372.c
-+++ b/drivers/iio/accel/adxl372.c
-@@ -195,6 +195,10 @@ static const int adxl372_samp_freq_tbl[5] = {
- 	400, 800, 1600, 3200, 6400,
- };
- 
-+static const int adxl372_bw_freq_tbl[5] = {
-+	200, 400, 800, 1600, 3200,
-+};
-+
- struct adxl372_axis_lookup {
- 	unsigned int bits;
- 	enum adxl372_fifo_format fifo_format;
-@@ -218,7 +222,8 @@ static const struct adxl372_axis_lookup adxl372_axis_lookup_table[] = {
- 	.channel2 = IIO_MOD_##axis,					\
- 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
- 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
--				    BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
-+				    BIT(IIO_CHAN_INFO_SAMP_FREQ) |	\
-+		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),	\
- 	.scan_index = index,						\
- 	.scan_type = {							\
- 		.sign = 's',						\
-@@ -668,6 +673,9 @@ static int adxl372_read_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_SAMP_FREQ:
- 		*val = adxl372_samp_freq_tbl[st->odr];
- 		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
-+		*val = adxl372_bw_freq_tbl[st->bw];
-+		return IIO_VAL_INT;
- 	}
- 
- 	return -EINVAL;
-@@ -678,7 +686,7 @@ static int adxl372_write_raw(struct iio_dev *indio_dev,
- 			     int val, int val2, long info)
- {
- 	struct adxl372_state *st = iio_priv(indio_dev);
--	int odr_index, ret;
-+	int odr_index, bw_index, ret;
- 
- 	switch (info) {
- 	case IIO_CHAN_INFO_SAMP_FREQ:
-@@ -710,11 +718,34 @@ static int adxl372_write_raw(struct iio_dev *indio_dev,
- 			ret = adxl372_set_bandwidth(st, odr_index);
- 
- 		return ret;
-+	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
-+		bw_index = adxl372_find_closest_match(adxl372_bw_freq_tbl,
-+					ARRAY_SIZE(adxl372_bw_freq_tbl),
-+					val);
-+		return adxl372_set_bandwidth(st, bw_index);
- 	default:
- 		return -EINVAL;
- 	}
- }
- 
-+static ssize_t adxl372_show_filter_freq_avail(struct device *dev,
-+					      struct device_attribute *attr,
-+					      char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct adxl372_state *st = iio_priv(indio_dev);
-+	int i;
-+	size_t len = 0;
-+
-+	for (i = 0; i <= st->odr; i++)
-+		len += scnprintf(buf + len, PAGE_SIZE - len,
-+				 "%d ", adxl372_bw_freq_tbl[i]);
-+
-+	buf[len - 1] = '\n';
-+
-+	return len;
-+}
-+
- static ssize_t adxl372_get_fifo_enabled(struct device *dev,
- 					  struct device_attribute *attr,
- 					  char *buf)
-@@ -842,9 +873,12 @@ static const struct iio_trigger_ops adxl372_trigger_ops = {
- };
- 
- static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("400 800 1600 3200 6400");
-+static IIO_DEVICE_ATTR(in_accel_filter_low_pass_3db_frequency_available,
-+		       0444, adxl372_show_filter_freq_avail, NULL, 0);
- 
- static struct attribute *adxl372_attributes[] = {
- 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-+	&iio_dev_attr_in_accel_filter_low_pass_3db_frequency_available.dev_attr.attr,
- 	NULL,
- };
- 
--- 
-2.7.4
+New features:
+* ad9523
+  - support the various external signal options via gpios.
 
+Cleanups and fixes
+* ad_sigma_delta
+  - unsigned long for a timeout.
+* ad9523
+  - fix a wrong return value that was indicating successful write failed
+    and might lead to an infinite loop.
+* si1133
+  - fix an impossible test.
+  - fix an uninitialsed variable by reading from the device in all paths.
+* xilinx xadc
+  - check for return values in clk related functions
+  - limit the pcap clock frequency to supported ranges.
+  - stash the irq to avoid calling platform_get_irq from the remove path.
+  - ensure the irq is actually requested before we enable the hardware to
+    output it.
+
+----------------------------------------------------------------
+Colin Ian King (1):
+      iio: light: si1133 fix test for val being not zero or not one.
+
+Himanshu Jha (1):
+      iio: chemical: Add support for Bosch BME680 sensor
+
+Jonathan Cameron (1):
+      Merge branch 'fixes-togreg' into togreg
+
+Lars-Peter Clausen (1):
+      iio: ad9523: Fix return value for ad952x_store()
+
+Manish Narani (4):
+      iio: adc: xilinx: Check for return values in clk related functions
+      iio: adc: xilinx: limit pcap clock frequency value
+      iio: adc: xilinx: Remove platform_get_irq from xadc_remove function
+      iio: adc: xilinx: Move request_irq before enabling interrupts
+
+Maxime Roussin-B=C3=A9langer (1):
+      iio: light: si1133: fix uninitialized resp variable
+
+Michael Hennerich (1):
+      iio: ad9523: support for external signals via gpios
+
+Nicholas Mc Guire (1):
+      iio: ad_sigma_delta: use unsigned long for timeout
+
+Tomas Novotny (4):
+      iio: vcnl4000: make the driver extendable
+      iio: vcnl4000: add VCNL4010 and VCNL4020 device id
+      iio: vcnl4000: warn on incorrectly specified device id
+      iio: vcnl4000: add support for VCNL4200
+
+ drivers/iio/adc/ad_sigma_delta.c   |   5 +-
+ drivers/iio/adc/xilinx-xadc-core.c |  40 +-
+ drivers/iio/adc/xilinx-xadc.h      |   1 +
+ drivers/iio/chemical/Kconfig       |  23 +
+ drivers/iio/chemical/Makefile      |   3 +
+ drivers/iio/chemical/bme680.h      |  96 ++++
+ drivers/iio/chemical/bme680_core.c | 959 +++++++++++++++++++++++++++++++++=
+++++
+ drivers/iio/chemical/bme680_i2c.c  |  85 ++++
+ drivers/iio/chemical/bme680_spi.c  | 125 +++++
+ drivers/iio/frequency/ad9523.c     |  32 +-
+ drivers/iio/light/Kconfig          |   5 +-
+ drivers/iio/light/si1133.c         |   5 +-
+ drivers/iio/light/vcnl4000.c       | 220 ++++++++-
+ 13 files changed, 1558 insertions(+), 41 deletions(-)
+ create mode 100644 drivers/iio/chemical/bme680.h
+ create mode 100644 drivers/iio/chemical/bme680_core.c
+ create mode 100644 drivers/iio/chemical/bme680_i2c.c
+ create mode 100644 drivers/iio/chemical/bme680_spi.c
