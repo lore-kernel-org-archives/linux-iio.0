@@ -1,23 +1,20 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.117]:37628 "EHLO ns.pmeerw.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389437AbeHARR2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 1 Aug 2018 13:17:28 -0400
-Date: Wed, 1 Aug 2018 17:31:11 +0200 (CEST)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Return-Path: <SRS0=av6O=KR=huawei.com=jonathan.cameron@kernel.org>
+Date: Thu, 2 Aug 2018 14:02:07 +0100
+From: Jonathan Cameron <jonathan.cameron@huawei.com>
 To: Stefan Popa <stefan.popa@analog.com>
-cc: jic23@kernel.org, lars@metafoo.de, Michael.Hennerich@analog.com,
-        knaack.h@gmx.de, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+CC: <jic23@kernel.org>, <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
+	<knaack.h@gmx.de>, <pmeerw@pmeerw.net>, <linux-iio@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>
 Subject: Re: [PATCH v2 4/6] iio:adxl372: Add FIFO and interrupts support
+Message-ID: <20180802140207.00000963@huawei.com>
 In-Reply-To: <1533136692-31935-1-git-send-email-stefan.popa@analog.com>
-Message-ID: <alpine.DEB.2.21.1808011721040.22146@vps.pmeerw.net>
 References: <1533136692-31935-1-git-send-email-stefan.popa@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="US-ASCII"
+List-ID: <linux-iio@vger.kernel.org>
 
+On Wed, 1 Aug 2018 18:18:12 +0300
+Stefan Popa <stefan.popa@analog.com> wrote:
 
 > This patch adds support for the adxl372 FIFO. In order to accomplish this,
 > triggered buffers were used.
@@ -28,11 +25,14 @@ List-Id: linux-iio@vger.kernel.org
 > be configured in the XYZ peak mode.
 > 
 > The FIFO data is pushed to the IIO device's buffer.
-
-some minor comments below
-
 > 
 > Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+One comment inline.  I'm not suggesting you take on adding the 'computed type'
+field to the core, but it may be necessary to refactor the handling of peak
+in here once that work is done.
+
+Jonathan
+
 > ---
 > Changes in v2:	  
 > 	- removed DT bindings changes from this patch.
@@ -80,10 +80,6 @@ some minor comments below
 >  #define ADXL372_INT1_MAP_LOW_MODE(x)		(((x) & 0x1) << 7)
 >  
 > +#define ADXL372_FIFO_SIZE			512
-
-is this bytes or entries?
-seems to be entries
-
 > +
 >  /*
 >   * At +/- 200g with 12-bit resolution, scale is computed as:
@@ -128,9 +124,6 @@ seems to be entries
 > +	{ BIT(1) | BIT(2), ADXL372_YZ_FIFO },
 > +	{ BIT(0) | BIT(1) | BIT(2), ADXL372_XYZ_FIFO },
 > +	{ BIT(3), ADXL372_XYZ_PEAK_FIFO }
-
-maybe end with ,
-
 > +};
 > +
 >  #define ADXL372_ACCEL_CHANNEL(index, reg, axis) {			\
@@ -167,7 +160,11 @@ maybe end with ,
 > +		}
 > +	}
 
-end with ,
+I would like to look at doing this more elegantly.  It became clear for the power
+meter discussion that we need an extra field to represent 'computation applied'
+to the data.  However that isn't progressing fast and I think should remain
+compatible with this naming.  Hence perhaps we'll let this go in as it is and
+modify it later.
 
 >  };
 >  
@@ -188,9 +185,6 @@ end with ,
 > +	u8				int2_bitmask;
 > +	u16				watermark;
 > +	__be16				fifo_buf[512];
-
-maybe use ADXL372_FIFO_SIZE here?
-
 > +};
 > +
 > +static const unsigned long adxl372_channel_masks[] = {
@@ -207,9 +201,6 @@ maybe use ADXL372_FIFO_SIZE here?
 > +{
 > +	return regmap_pipe_read(st->regmap, ADXL372_FIFO_DATA,
 > +				st->fifo_buf, fifo_entries * 2);
-
-sizeof(be16) instead of 2?
-
 > +}
 > +
 >  static int adxl372_read_axis(struct adxl372_state *st, u8 addr)
@@ -263,16 +254,10 @@ sizeof(be16) instead of 2?
 > +			      u16 *fifo_entries)
 > +{
 > +	__be32 buf;
-
-the buf may be a packed struct probably?
-
 > +	u32 val;
 > +	int ret;
 > +
 > +	/* STATUS, STATUS2, FIFO_ENTRIES2 and FIFO_ENTRIES are adjacent regs */
-
-STATUS1 maybe?
-
 > +	ret = regmap_bulk_read(st->regmap, ADXL372_STATUS_1,
 > +			       &buf, sizeof(buf));
 > +	if (ret < 0)
@@ -282,9 +267,6 @@ STATUS1 maybe?
 > +
 > +	*status1 = val >> 24;
 > +	*status2 = val >> 16;
-
-mask missing?
-
 > +	/*
 > +	 * FIFO_ENTRIES contains the least significant byte, and FIFO_ENTRIES2
 > +	 * contains the two most significant bits
@@ -301,9 +283,6 @@ mask missing?
 > +	struct adxl372_state *st = iio_priv(indio_dev);
 > +	u8 status1, status2;
 > +	u16 fifo_entries, i;
-
-i should be just unsigned, not u16
-
 > +	int ret;
 > +
 > +	ret = adxl372_get_status(st, &status1, &status2, &fifo_entries);
@@ -312,9 +291,6 @@ i should be just unsigned, not u16
 > +
 > +	if ((st->fifo_mode != ADXL372_FIFO_BYPASSED) &&
 > +	    (ADXL372_STATUS_1_FIFO_FULL(status1))) {
-
-parenthesis not needed
-
 > +		/*
 > +		 * When reading data from multiple axes from the FIFO,
 > +		 * to ensure that data is not overwritten and stored out
@@ -328,9 +304,6 @@ parenthesis not needed
 > +			goto err;
 > +
 > +		for (i = 0; i < fifo_entries * 2; i += st->fifo_set_size * 2)
-
-this confuses me; 2 is what? use sizeof()
-
 > +			iio_push_to_buffers(indio_dev, &st->fifo_buf[i]);
 > +	}
 > +err:
@@ -546,9 +519,3 @@ this confuses me; 2 is what? use sizeof()
 >  	return devm_iio_device_register(&st->spi->dev, indio_dev);
 >  }
 >  
-> 
-
--- 
-
-Peter Meerwald-Stadler
-Mobile: +43 664 24 44 418
