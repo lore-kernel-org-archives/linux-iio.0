@@ -1,47 +1,91 @@
-Return-Path: <SRS0=StV2=KQ=codeaurora.org=smohanad@kernel.org>
-From: Siddartha Mohanadoss <smohanad@codeaurora.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Siddartha Mohanadoss <smohanad@codeaurora.org>,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org,
-	Rob Herring <robh+dt@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: [PATCH v4 3/3] iio: adc: Update QCOM ADC license to SPDX format
-Date: Wed,  1 Aug 2018 16:39:18 -0700
-Message-Id: <1533166758-23909-1-git-send-email-smohanad@codeaurora.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-out.m-online.net ([212.18.0.10]:52983 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387586AbeHBUT7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Aug 2018 16:19:59 -0400
+From: Parthiban Nallathambi <pn@denx.de>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, robh+dt@kernel.org
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mark.rutland@arm.com, devicetree@vger.kernel.org,
+        matthias.bgg@gmail.com, wd@denx.de, sbabic@denx.de, hs@denx.de,
+        Parthiban Nallathambi <pn@denx.de>
+Subject: [PATCH v4 1/3] iio: Add modifier for white light
+Date: Thu,  2 Aug 2018 20:27:27 +0200
+Message-Id: <20180802182729.2061830-1-pn@denx.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Update QCOM ADC header file to SPDX format.
-
-Signed-off-by: Siddartha Mohanadoss <smohanad@codeaurora.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Parthiban Nallathambi <pn@denx.de>
 ---
- include/dt-bindings/iio/qcom,spmi-vadc.h | 10 +---------
- 1 file changed, 1 insertion(+), 9 deletions(-)
+ Documentation/ABI/testing/sysfs-bus-iio | 7 +++++++
+ drivers/iio/industrialio-core.c         | 1 +
+ include/uapi/linux/iio/types.h          | 1 +
+ tools/iio/iio_event_monitor.c           | 2 ++
+ 4 files changed, 11 insertions(+)
 
-diff --git a/include/dt-bindings/iio/qcom,spmi-vadc.h b/include/dt-bindings/iio/qcom,spmi-vadc.h
-index bf54b5a..61d556d 100644
---- a/include/dt-bindings/iio/qcom,spmi-vadc.h
-+++ b/include/dt-bindings/iio/qcom,spmi-vadc.h
-@@ -1,14 +1,6 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
- /*
-  * Copyright (c) 2012-2014,2018 The Linux Foundation. All rights reserved.
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License version 2 and
-- * only version 2 as published by the Free Software Foundation.
-- *
-- * This program is distributed in the hope that it will be useful
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- * GNU General Public License for more details.
-  */
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 731146c3b138..43e481aed5b2 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1312,6 +1312,13 @@ Description:
+ 		standardised CIE Erythemal Action Spectrum. UV index values range
+ 		from 0 (low) to >=11 (extreme).
  
- #ifndef _DT_BINDINGS_QCOM_SPMI_VADC_H
++What:		/sys/.../iio:deviceX/in_intensityY_white_raw
++KernelVersion:	4.18
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Modifier white indicates that measurements contain white LED
++		component.
++
+ What:		/sys/.../iio:deviceX/in_intensity_red_integration_time
+ What:		/sys/.../iio:deviceX/in_intensity_green_integration_time
+ What:		/sys/.../iio:deviceX/in_intensity_blue_integration_time
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 19bdf3d2962a..cb939b9fad16 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -108,6 +108,7 @@ static const char * const iio_modifier_names[] = {
+ 	[IIO_MOD_LIGHT_GREEN] = "green",
+ 	[IIO_MOD_LIGHT_BLUE] = "blue",
+ 	[IIO_MOD_LIGHT_UV] = "uv",
++	[IIO_MOD_LIGHT_WHITE] = "white",
+ 	[IIO_MOD_QUATERNION] = "quaternion",
+ 	[IIO_MOD_TEMP_AMBIENT] = "ambient",
+ 	[IIO_MOD_TEMP_OBJECT] = "object",
+diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+index 4213cdf88e3c..de87a6c7e6de 100644
+--- a/include/uapi/linux/iio/types.h
++++ b/include/uapi/linux/iio/types.h
+@@ -84,6 +84,7 @@ enum iio_modifier {
+ 	IIO_MOD_CO2,
+ 	IIO_MOD_VOC,
+ 	IIO_MOD_LIGHT_UV,
++	IIO_MOD_LIGHT_WHITE,
+ };
+ 
+ enum iio_event_type {
+diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+index b61245e1181d..a2f9c62a79dd 100644
+--- a/tools/iio/iio_event_monitor.c
++++ b/tools/iio/iio_event_monitor.c
+@@ -96,6 +96,7 @@ static const char * const iio_modifier_names[] = {
+ 	[IIO_MOD_LIGHT_GREEN] = "green",
+ 	[IIO_MOD_LIGHT_BLUE] = "blue",
+ 	[IIO_MOD_LIGHT_UV] = "uv",
++	[IIO_MOD_LIGHT_WHITE] = "white",
+ 	[IIO_MOD_QUATERNION] = "quaternion",
+ 	[IIO_MOD_TEMP_AMBIENT] = "ambient",
+ 	[IIO_MOD_TEMP_OBJECT] = "object",
+@@ -178,6 +179,7 @@ static bool event_is_known(struct iio_event_data *event)
+ 	case IIO_MOD_LIGHT_GREEN:
+ 	case IIO_MOD_LIGHT_BLUE:
+ 	case IIO_MOD_LIGHT_UV:
++	case IIO_MOD_LIGHT_WHITE:
+ 	case IIO_MOD_QUATERNION:
+ 	case IIO_MOD_TEMP_AMBIENT:
+ 	case IIO_MOD_TEMP_OBJECT:
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+2.14.4
+
