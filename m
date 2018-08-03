@@ -1,115 +1,80 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:52486 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725930AbeHRUSB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 18 Aug 2018 16:18:01 -0400
-Date: Sat, 18 Aug 2018 18:09:31 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Brian Masney <masneyb@onstation.org>
-Cc: robh+dt@kernel.org, mark.rutland@arm.com, andy.gross@linaro.org,
-        david.brown@linaro.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org,
-        jonathan@marek.ca, jmaneyrol@invensense.com, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, mkelly@xevo.com,
-        fischerdouglasc@gmail.com, bshah@kde.org, ctatlor97@gmail.com
-Subject: Re: [PATCH v3 9/9] ARM: dts: qcom: msm8974-hammerhead: add device
- tree bindings for ALS / proximity
-Message-ID: <20180818180931.77165945@archlinux>
-In-Reply-To: <20180803001900.25371-10-masneyb@onstation.org>
-References: <20180803001900.25371-1-masneyb@onstation.org>
-        <20180803001900.25371-10-masneyb@onstation.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from smtp.codeaurora.org ([198.145.29.96]:44474 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731944AbeHCDga (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Aug 2018 23:36:30 -0400
+From: Siddartha Mohanadoss <smohanad@codeaurora.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Siddartha Mohanadoss <smohanad@codeaurora.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: [PATCH v5 0/3] Add QCOM PMIC5 ADC driver
+Date: Thu,  2 Aug 2018 18:42:26 -0700
+Message-Id: <1533260546-11916-1-git-send-email-smohanad@codeaurora.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu,  2 Aug 2018 20:19:00 -0400
-Brian Masney <masneyb@onstation.org> wrote:
+This patch series adds the PMIC5 ADC family of chipset
+that supports clients to measure voltage and current on
+inputs connected to the PMIC ADC AMUX. Clients include
+reading voltage phone power and on board system thermistors
+for thermal management.
 
-> This patch adds device tree bindings for the tsl2772 ALS / proximity
-> sensor for the LG Nexus 5 (hammerhead) phone.
-> 
-> Signed-off-by: Brian Masney <masneyb@onstation.org>
-> Signed-off-by: Jonathan Marek <jonathan@marek.ca>
-Acked-by: Jonathan Cameron <jonathan.cameron@huawei.com>
+The v5 patchset addresses most of the review comments from
+prior patchset.
 
-The precursors are working their way through the iio tree, but
-it will be the next merge window before they go upstream.
+Changes since patchset v4
+* Remove support to query channels raw ADC code readings.
+* Few minor changes.
 
-Thanks,
+Changes since patchset v3
+* Few minor changes.
 
-Jonathan
+Changes since patchset v2
+* Removed support for current channel as part of this series.
+* Fix pointer arithmetic for iio_chan.
+* Few minor changes.
+* Update license to SPDX format for ADC header file.
 
-> ---
->  .../qcom-msm8974-lge-nexus5-hammerhead.dts    | 27 +++++++++++++++++++
->  arch/arm/boot/dts/qcom-msm8974.dtsi           | 11 ++++++++
->  2 files changed, 38 insertions(+)
-> 
-> diff --git a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
-> index 928affae1885..ed8f064d0895 100644
-> --- a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
-> +++ b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
-> @@ -242,6 +242,15 @@
->  			};
->  		};
->  
-> +		i2c3_pins: i2c3 {
-> +			mux {
-> +				pins = "gpio10", "gpio11";
-> +				function = "blsp_i2c3";
-> +				drive-strength = <2>;
-> +				bias-disable;
-> +			};
-> +		};
-> +
->  		i2c12_pins: i2c12 {
->  			mux {
->  				pins = "gpio87", "gpio88";
-> @@ -333,6 +342,24 @@
->  			};
->  		};
->  	};
-> +
-> +	i2c@f9925000 {
-> +		status = "ok";
-> +		pinctrl-names = "default";
-> +		pinctrl-0 = <&i2c3_pins>;
-> +		clock-frequency = <100000>;
-> +		qcom,src-freq = <50000000>;
-> +
-> +		avago_apds993@39 {
-> +			compatible = "avago,apds9930";
-> +			reg = <0x39>;
-> +			interrupts-extended = <&msmgpio 61 IRQ_TYPE_EDGE_FALLING>;
-> +			vdd-supply = <&pm8941_l17>;
-> +			vddio-supply = <&pm8941_lvs1>;
-> +			led-max-microamp = <100000>;
-> +			amstaos,proximity-diodes = <0>;
-> +		};
-> +	};
->  };
->  
->  &spmi_bus {
-> diff --git a/arch/arm/boot/dts/qcom-msm8974.dtsi b/arch/arm/boot/dts/qcom-msm8974.dtsi
-> index cebb6ae9143a..6dcf2bee66fb 100644
-> --- a/arch/arm/boot/dts/qcom-msm8974.dtsi
-> +++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
-> @@ -713,6 +713,17 @@
->  			#size-cells = <0>;
->  		};
->  
-> +		blsp_i2c3: i2c@f9925000 {
-> +			status = "disabled";
-> +			compatible = "qcom,i2c-qup-v2.1.1";
-> +			reg = <0xf9925000 0x1000>;
-> +			interrupts = <0 97 IRQ_TYPE_NONE>;
-> +			clocks = <&gcc GCC_BLSP1_QUP3_I2C_APPS_CLK>, <&gcc GCC_BLSP1_AHB_CLK>;
-> +			clock-names = "core", "iface";
-> +			#address-cells = <1>;
-> +			#size-cells = <0>;
-> +		};
-> +
->  		blsp_i2c8: i2c@f9964000 {
->  			status = "disabled";
->  			compatible = "qcom,i2c-qup-v2.1.1";
+Changes since patchset v1
+* Merged DT bindings with prior PMIC family instead of a
+  seperate DT file for PMIC5 family.
+* Updated documentation for 'label' and 'value' property.
+* Updated using unique prefix adc5 for functions and defines
+  specific for this family of chipset.
+* Refactored scaling functions to use function pointer for
+  scaling lookup.
+* Added documentation comments as requested in the
+  scaling functions as applicable.
+* Added utility functions in the scaling API to avoid some of
+  the code repetitions.
+* Use consistent hex format for adc_data and use specific length
+  while assigning data.
+* Added support to determine controller version and check against
+  supported hardware settling delay values.
+* Various minor changes.
+
+Siddartha Mohanadoss (3):
+  dt-bindings: iio: adc: Add DT binding document for PMIC5 ADC
+  iio: adc: Add QCOM SPMI PMIC5 ADC driver
+  iio: adc: Update QCOM ADC license to SPDX format
+
+ ,                                                  |   0
+ .../devicetree/bindings/iio/adc/qcom,spmi-vadc.txt |  77 +-
+ drivers/iio/adc/Kconfig                            |  20 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/qcom-spmi-adc5.c                   | 788 +++++++++++++++++++++
+ drivers/iio/adc/qcom-vadc-common.c                 | 189 ++++-
+ drivers/iio/adc/qcom-vadc-common.h                 |  54 ++
+ include/dt-bindings/iio/qcom,spmi-vadc.h           | 125 +++-
+ 8 files changed, 1220 insertions(+), 34 deletions(-)
+ create mode 100644 ,
+ create mode 100644 drivers/iio/adc/qcom-spmi-adc5.c
+
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
+
