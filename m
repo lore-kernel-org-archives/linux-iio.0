@@ -1,64 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:53026 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725930AbeHRUU6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 18 Aug 2018 16:20:58 -0400
-Date: Sat, 18 Aug 2018 18:12:29 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Doug Anderson <dianders@chromium.org>
-Cc: kirtika@chromium.org,
-        Siddartha Mohanadoss <smohanad@codeaurora.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
+Received: from smtp.codeaurora.org ([198.145.29.96]:45514 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732067AbeHCDiE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Aug 2018 23:38:04 -0400
+From: Siddartha Mohanadoss <smohanad@codeaurora.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Siddartha Mohanadoss <smohanad@codeaurora.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v5 2/3] iio: adc: Add QCOM SPMI PMIC5 ADC driver
-Message-ID: <20180818181229.669b3951@archlinux>
-In-Reply-To: <CAD=FV=VcBiXLPHiQam+vvgUr7JdXmZNS043OPHWVCyqEP+9McA@mail.gmail.com>
-References: <1533260633-12385-1-git-send-email-smohanad@codeaurora.org>
-        <20180803223801.749909f4@archlinux>
-        <CAD=FV=VcBiXLPHiQam+vvgUr7JdXmZNS043OPHWVCyqEP+9McA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Subject: [PATCH v5 3/3] iio: adc: Update QCOM ADC license to SPDX format
+Date: Thu,  2 Aug 2018 18:44:06 -0700
+Message-Id: <1533260646-12476-1-git-send-email-smohanad@codeaurora.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 13 Aug 2018 09:01:04 -0700
-Doug Anderson <dianders@chromium.org> wrote:
+Update QCOM ADC header file to SPDX format.
 
-> Hi,
-> 
-> On Fri, Aug 3, 2018 at 2:38 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> > On Thu,  2 Aug 2018 18:43:53 -0700
-> > Siddartha Mohanadoss <smohanad@codeaurora.org> wrote:
-> >  
-> >> This patch adds support for QCOM SPMI PMIC5 family
-> >> of ADC driver that supports hardware based offset and
-> >> gain compensation. The ADC peripheral can measure both
-> >> voltage and current channels whose input signal is
-> >> connected to the PMIC ADC AMUX.
-> >>
-> >> The register set and configuration has been refreshed
-> >> compared to the prior QCOM PMIC ADC family. Register
-> >> ADC5 as part of the IIO framework.
-> >>
-> >> Signed-off-by: Siddartha Mohanadoss <smohanad@codeaurora.org>  
-> > Great.  Applied to the togreg branch of iio.git and pushed out as testing
-> > for the autobuilders to play with it.  
-> 
-> FYI that what landed in iio.git is slightly broken in that it
-> introduces an empty file called "," at the top level.  See:
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/commit/?h=testing&id=2c909be15f45c96d3dc6a84e56a76e5c3c7a60ae
-> 
-Good spot.  I've just cleaned that up in the testing branch.
+Signed-off-by: Siddartha Mohanadoss <smohanad@codeaurora.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+ include/dt-bindings/iio/qcom,spmi-vadc.h | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
 
-Thanks!
+diff --git a/include/dt-bindings/iio/qcom,spmi-vadc.h b/include/dt-bindings/iio/qcom,spmi-vadc.h
+index bf54b5a..61d556d 100644
+--- a/include/dt-bindings/iio/qcom,spmi-vadc.h
++++ b/include/dt-bindings/iio/qcom,spmi-vadc.h
+@@ -1,14 +1,6 @@
++/* SPDX-License-Identifier: GPL-2.0 */
+ /*
+  * Copyright (c) 2012-2014,2018 The Linux Foundation. All rights reserved.
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License version 2 and
+- * only version 2 as published by the Free Software Foundation.
+- *
+- * This program is distributed in the hope that it will be useful
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+  */
+ 
+ #ifndef _DT_BINDINGS_QCOM_SPMI_VADC_H
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
 
-Jonathan
-
-> 
-> -Doug
