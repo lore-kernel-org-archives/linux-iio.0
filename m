@@ -1,53 +1,39 @@
-Return-Path: <SRS0=M1Cr=KV=sirena.org.uk=broonie@kernel.org>
-Date: Mon, 6 Aug 2018 15:39:01 +0100
-From: Mark Brown <broonie@kernel.org>
-To: Stefan Popa <stefan.popa@analog.com>
-Cc: jic23@kernel.org, lars@metafoo.de, Michael.Hennerich@analog.com,
-	knaack.h@gmx.de, pmeerw@pmeerw.net, mark.rutland@arm.com,
-	davem@davemloft.net, mchehab+samsung@kernel.org,
-	gregkh@linuxfoundation.org, akpm@linux-foundation.org,
-	robh+dt@kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Crestez Dan Leonard <leonard.crestez@intel.com>
+Return-Path: <SRS0=2+VP=KV=analog.com=StefanSerban.Popa@kernel.org>
+From: "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>
+To: "broonie@kernel.org" <broonie@kernel.org>
+CC: "lars@metafoo.de" <lars@metafoo.de>, "robh+dt@kernel.org"
+	<robh+dt@kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"jic23@kernel.org" <jic23@kernel.org>, "devicetree@vger.kernel.org"
+	<devicetree@vger.kernel.org>, "Hennerich, Michael"
+	<Michael.Hennerich@analog.com>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "mchehab+samsung@kernel.org"
+	<mchehab+samsung@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>,
+	"akpm@linux-foundation.org" <akpm@linux-foundation.org>, "pmeerw@pmeerw.net"
+	<pmeerw@pmeerw.net>, "gregkh@linuxfoundation.org"
+	<gregkh@linuxfoundation.org>, "leonard.crestez@intel.com"
+	<leonard.crestez@intel.com>, "davem@davemloft.net" <davem@davemloft.net>
 Subject: Re: [PATCH v4 3/6] regmap: Add regmap_noinc_read API
-Message-ID: <20180806143901.GP2414@sirena.org.uk>
+Date: Mon, 6 Aug 2018 15:39:53 +0000
+Message-ID: <1533569985.11050.9.camel@analog.com>
 References: <1533557087-10401-1-git-send-email-stefan.popa@analog.com>
- <1533557087-10401-4-git-send-email-stefan.popa@analog.com>
+	 <1533557087-10401-4-git-send-email-stefan.popa@analog.com>
+	 <20180806143901.GP2414@sirena.org.uk>
+In-Reply-To: <20180806143901.GP2414@sirena.org.uk>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="p/1JFEOz/hVXxMAZ"
-In-Reply-To: <1533557087-10401-4-git-send-email-stefan.popa@analog.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-
---p/1JFEOz/hVXxMAZ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-On Mon, Aug 06, 2018 at 03:04:44PM +0300, Stefan Popa wrote:
-
-> +	if (!regmap_volatile(map, reg) || !regmap_readable(map, reg)) {
-> +		ret = -EINVAL;
-> +		goto out_unlock;
-> +	}
-
-I suggested having an explicit operation to check if a register supports
-this mode of operation when I reviewed an earlier version, I didn't
-notice a reply on that?
-
---p/1JFEOz/hVXxMAZ
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAltoXYEACgkQJNaLcl1U
-h9AJdAf+MuzrfAjV3XR/vvxIWIN5fNHaN8p8i6B479nzAsnIRY/IirqmWxYZ3+X0
-7IJOxtvbmZR6EW6VVT5ccTAlAnbrduCT11AbwOpLDYf8Zkjldv3AfepOURH9lUI0
-2/Ve5mb3F36MLGvOBqqdVKkAezpPb+MrWc44HuSofWo85mGGTeBWlMV7UGr26/HZ
-uMYXA55IRthFAAHjrkVDRt/Y4kYmzRtBJNt1ihytVH1T3OMjyqdWeE3WGA50uv0r
-GIZ3RIB8t9iiEFWFVxxR678VNa6bSBy1CjHyGN9TKVNPpwBEqUL11ToBFiobr9Jp
-ef5nNuAxn/I22hkhVMmCRQCU01V5DQ==
-=Prc5
------END PGP SIGNATURE-----
-
---p/1JFEOz/hVXxMAZ--
+T24gTHUsIDIwMTgtMDgtMDYgYXQgMTU6MzkgKzAxMDAsIE1hcmsgQnJvd24gd3JvdGU6DQo+IE9u
+IE1vbiwgQXVnIDA2LCAyMDE4IGF0IDAzOjA0OjQ0UE0gKzAzMDAsIFN0ZWZhbiBQb3BhIHdyb3Rl
+Og0KPiANCj4gPiANCj4gPiArCWlmICghcmVnbWFwX3ZvbGF0aWxlKG1hcCwgcmVnKSB8fCAhcmVn
+bWFwX3JlYWRhYmxlKG1hcCwgcmVnKSkNCj4gPiB7DQo+ID4gKwkJcmV0ID0gLUVJTlZBTDsNCj4g
+PiArCQlnb3RvIG91dF91bmxvY2s7DQo+ID4gKwl9DQo+IEkgc3VnZ2VzdGVkIGhhdmluZyBhbiBl
+eHBsaWNpdCBvcGVyYXRpb24gdG8gY2hlY2sgaWYgYSByZWdpc3RlciBzdXBwb3J0cw0KPiB0aGlz
+IG1vZGUgb2Ygb3BlcmF0aW9uIHdoZW4gSSByZXZpZXdlZCBhbiBlYXJsaWVyIHZlcnNpb24sIEkg
+ZGlkbid0DQo+IG5vdGljZSBhIHJlcGx5IG9uIHRoYXQ/DQoNCkhpIE1hcmssDQoNClNvcnJ5LCBJ
+IGdvdCBjb25mdXNlZCBhYm91dCB3aGF0IG5lZWRzIHRvIGJlIGRvbmUuIFNob3VsZCBJIGFkZCBh
+IG5ldyBmaWVsZA0KdG8gdGhlwqByZWdtYXBfY29uZmlnIHN0cnVjdCB3aGljaCB3aWxsIGJlIGNo
+ZWNrZWQgZHVyaW5nIHRoZSBmdW5jdGlvbiBjYWxsPw0KU29tZXRoaW5nIGxpa2XCoGNhbl9tdWx0
+aV93cml0ZT8gSG93IGRvIHlvdSBzdWdnZXN0IGl0IHNob3VsZCBiZSBjYWxsZWQ/IElzDQpyZWFk
+YWJsZV9ub2luY19yZWcgb2s/DQoNClRoYW5rIHlvdSENClN0ZWZhbg==
