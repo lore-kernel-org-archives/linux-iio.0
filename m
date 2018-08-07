@@ -1,58 +1,124 @@
-Return-Path: <SRS0=ku43=LD=oracle.com=dan.carpenter@kernel.org>
-Date: Mon, 20 Aug 2018 11:45:22 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: Himanshu Jha <himanshujha199640@gmail.com>
-Cc: Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        linux-iio@vger.kernel.org, lars@metafoo.de, jic23@kernel.org,
-        eraretuya@gmail.com
-Subject: Re: [PATCH] iio: adxl345: move null check for i2c id at start of
- probe
-Message-ID: <20180820084522.zln43vvzfcw4jslz@mwanda>
-References: <20180807140605.19156-1-alexandru.ardelean@analog.com>
- <20180811101833.GA5243@himanshu-Vostro-3559>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-sn1nam01on0064.outbound.protection.outlook.com ([104.47.32.64]:44835
+        "EHLO NAM01-SN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728167AbeHGRH3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 7 Aug 2018 13:07:29 -0400
+From: Stefan Popa <stefan.popa@analog.com>
+To: <jic23@kernel.org>, <broonie@kernel.org>
+CC: Stefan Popa <stefan.popa@analog.com>, <lars@metafoo.de>,
+        <Michael.Hennerich@analog.com>, <knaack.h@gmx.de>,
+        <pmeerw@pmeerw.net>, <mark.rutland@arm.com>, <davem@davemloft.net>,
+        <mchehab+samsung@kernel.org>, <gregkh@linuxfoundation.org>,
+        <akpm@linux-foundation.org>, <robh+dt@kernel.org>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v5 0/6] iio: accel: Add adxl372 driver
+Date: Tue, 7 Aug 2018 17:52:14 +0300
+Message-ID: <1533653540-24796-1-git-send-email-stefan.popa@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20180811101833.GA5243@himanshu-Vostro-3559>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, Aug 11, 2018 at 03:48:33PM +0530, Himanshu Jha wrote:
-> On Tue, Aug 07, 2018 at 05:06:05PM +0300, Alexandru Ardelean wrote:
-> > Fixes ef89f4b96a2 ("iio: adxl345: Add support for the ADXL375").
-> > 
-> > This was found via static checker.
-> > After looking into the code a bit, it's unlikely that there will be a NULL
-> > dereference if the `id` object in that specific code path.
-> > However, it's safe to add a NULL (paranoid) check just to make sure and
-> > remove any uncertainties.
-> 
-> I would like to know when would that case happen actually ?
-> 
-> Because probe will only be called only when a match occurs either
-> through DT or id matching. Isn't it ?
-> 
+Changes in v5:
+Patch 1, 2:
+	- nothing changed
+Patch 3:
+	- added a new readable_noinc operation based on feedback from
+	  Mark Brown
+Patch 4:
+	- added a readable_noinc callback based on the changes from the
+	  previous patch.
+Patch 5, 6:
+	- nothing changed
 
-Btw, normally Smatch doesn't warn about inconsistent NULL checking if
-it's clear that the NULL check is not required.  In this case, the
-adxl345 is not in my allmodconfig so I didn't build the cross function
-DB for it so I didn't have the caller information.  And also:
+Changes in v4:
+Patch 1:
+	- used a lookup table in adxl372_set_activity_threshold() instead
+	  of a switch(case).
+Patch 2: 
+	- removed the interrupt-parent from the bindings.
+Patch 3:
+	- renamed regmap_pipe_read() stub to regmap_noinc_read().
+Patch 4:
+	- removed the adxl372_read_fifo() wrapper and directly called
+	  regmap_noinc_read().
+	- called iio_triggered_buffer_predisable() before doing the local
+	  changes.
+Patch 5:
+	- nothing changed.
+Patch 6:
+	- nothing changed.
 
-drivers/i2c/i2c-core-base.c
-   391          /*
-   392           * When there are no more users of probe(),
-   393           * rename probe_new to probe.
-   394           */
-   395          if (driver->probe_new)
-   396                  status = driver->probe_new(client);
-   397          else if (driver->probe)
-   398                  status = driver->probe(client,
-   399                                         i2c_match_id(driver->id_table, client));
-   400          else
-   401                  status = -EINVAL;
-   402  
+Changes in v3:
+Patch 1, 2:
+	- nothing changed
+Patch 3:
+	- changed the name from regmap_pipe_read() to regmap_noinc_read()
+	- added a check for readable registers
+Patch 4:
+	- dropped the fifo peak mode
+	- corrected the patch based on feedback from Peter Meerwald-Stadler.
+Patch 5 and 6:
+	- nothing changed
 
-Smatch isn't smart enough to know that i2c_match_id() doesn't return a
-NULL.  I did look at the code before sending the bug report but it
-wasn't immediately clear to me either whether it was possible or not.
+Changes in v2:
+Patch 1:
+	- removed ADXL372_RD_FLAG_MSK and ADXL372_WR_FLAG_MSK macros.
+	- handled regmap read/write by setting reg_bits and pad_bits
+	  fields in regmap_config struct.
+	- removed the buffer specifications when defining the channels.
+	- changed the activity and inactivity thresholds.
+	- added two new functions for setting the activity and inactivity
+	  timers: adxl372_set_inactivity_time_ms() and
+	  adxl372_set_activity_time_ms().
+Patch 2:
+	- introduced all the DT bindings in a single patch.
+Patch 3:
+	- backported the patch based on this discussion: 
+          https://lkml.org/lkml/2016/6/16/548.
+	- this patch is required as the regmap_pipe_read() API will be used 
+	  to read the data from the FIFO.
+Patch 4:
+	- removed DT bindings changes from this patch.
+	- removed the linux/gpio/consumer.h header.
+	- used regmap_pipe_read() instead of regmap_bulk_read() when
+	  reading data from the FIFO.
+	- used multiple regmap_write() calls instead of a single
+	  regmap_bulk_write() if there is no fast path.
+	- used be32_to_cpu() inside the adxl372_get_status() function.
+	- added a new in_accel_x&y&z_peak scan element which allows the
+	  user to set the FIFO into XYZ peak mode.
+	- used a adxl372_axis_lookup_table() to determine the fifo format
+	  from the active_scan_mask.
+	- made IRQ optional.
+Patch 5 and 6:
+	- nothing changed
 
-regards,
-dan carpenter
+
+Crestez Dan Leonard (1):
+  regmap: Add regmap_noinc_read API
+
+Stefan Popa (5):
+  iio: adxl372: New driver for Analog Devices ADXL372 Accelerometer
+  dt-bindings: iio: accel: Add docs for ADXL372
+  iio:adxl372: Add FIFO and interrupts support
+  iio:adxl372: Add sampling frequency support
+  iio:adxl372: Add filter bandwidth support
+
+ .../devicetree/bindings/iio/accel/adxl372.txt      |  22 +
+ MAINTAINERS                                        |   7 +
+ drivers/base/regmap/internal.h                     |   3 +
+ drivers/base/regmap/regmap.c                       |  79 +-
+ drivers/iio/accel/Kconfig                          |  11 +
+ drivers/iio/accel/Makefile                         |   1 +
+ drivers/iio/accel/adxl372.c                        | 983 +++++++++++++++++++++
+ include/linux/regmap.h                             |  19 +
+ 8 files changed, 1124 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/accel/adxl372.txt
+ create mode 100644 drivers/iio/accel/adxl372.c
+
+-- 
+2.7.4
+
