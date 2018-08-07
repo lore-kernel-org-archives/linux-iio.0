@@ -1,54 +1,129 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:44573 "EHLO
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:44251 "EHLO
         mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726697AbeHHNOI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 8 Aug 2018 09:14:08 -0400
-Received: by mail-pg1-f194.google.com with SMTP id r1-v6so909948pgp.11
-        for <linux-iio@vger.kernel.org>; Wed, 08 Aug 2018 03:54:59 -0700 (PDT)
-Date: Wed, 8 Aug 2018 16:24:53 +0530
-From: Himanshu Jha <himanshujha199640@gmail.com>
-To: David Frey <dpfrey@gmail.com>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/2] iio: bme680: perform cosmetic cleanup
-Message-ID: <20180808105453.GB1882@himanshu-Vostro-3559>
+        with ESMTP id S1726027AbeHGWTp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Aug 2018 18:19:45 -0400
+Received: by mail-pg1-f194.google.com with SMTP id r1-v6so8321527pgp.11
+        for <linux-iio@vger.kernel.org>; Tue, 07 Aug 2018 13:03:44 -0700 (PDT)
+From: David Frey <dpfrey@gmail.com>
+To: linux-iio@vger.kernel.org, himanshujha199640@gmail.com
+Cc: David Frey <dpfrey@gmail.com>
+Subject: [PATCH 2/2] iio: bme680: simplify oversampling handling
+Date: Tue,  7 Aug 2018 13:07:21 -0700
+Message-Id: <20180807200721.22033-3-dpfrey@gmail.com>
+In-Reply-To: <20180807200721.22033-1-dpfrey@gmail.com>
 References: <20180807200721.22033-1-dpfrey@gmail.com>
- <20180807200721.22033-2-dpfrey@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20180807200721.22033-2-dpfrey@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Aug 07, 2018 at 01:07:20PM -0700, David Frey wrote:
->  * use consistent naming for masks. _MSK -> _MASK
->  * use GEN_MASK to define masks rather than hex constants
->  * consistently indent masks and values under the corresponding register
->    define
->  * use FIELD_GET instead of explicit mask and shift
->  * Join split lines in bme680_read_calib() which can fit in 80 chars
->  * Make use clamp macro
-> 
-> Signed-off-by: David Frey <dpfrey@gmail.com>
-> ---
+Temperature, pressure and humidity all expose and oversampling setting
+that works in the same way.  Provide common handling for the
+oversampling sysfs attributes.
 
-This patch is fine but ideally it should be split for each
-change. "One patch per change policy!"
+Signed-off-by: David Frey <dpfrey@gmail.com>
+---
+ drivers/iio/chemical/bme680_core.c | 65 +++++++++++---------------------------
+ 1 file changed, 19 insertions(+), 46 deletions(-)
 
-Dan is on vacation I guess otherwise he must have poked you
-before me ;)
-
-Also, please consider making subject:
-
-"iio: chemical: bme680: .... .. "
-
-Once you roll a v2, I will get it tested on my sensor.
-
-And yes, please also CC Jonathan <jic23@kernel.org> so that
-it doesn't get lost.
-
-Thanks for making the effort, David!
+diff --git a/drivers/iio/chemical/bme680_core.c b/drivers/iio/chemical/bme680_core.c
+index 0e79d03ecc40..446cf1cbef23 100644
+--- a/drivers/iio/chemical/bme680_core.c
++++ b/drivers/iio/chemical/bme680_core.c
+@@ -91,8 +91,6 @@ static const struct iio_chan_spec bme680_channels[] = {
+ 	},
+ };
+ 
+-static const int bme680_oversampling_avail[] = { 1, 2, 4, 8, 16 };
+-
+ static int bme680_read_calib(struct bme680_data *data,
+ 			     struct bme680_calib *calib)
+ {
+@@ -783,49 +781,14 @@ static int bme680_read_raw(struct iio_dev *indio_dev,
+ 	}
+ }
+ 
+-static int bme680_write_oversampling_ratio_temp(struct bme680_data *data,
+-						int val)
+-{
+-	int i;
+-
+-	for (i = 0; i < ARRAY_SIZE(bme680_oversampling_avail); i++) {
+-		if (bme680_oversampling_avail[i] == val) {
+-			data->oversampling_temp = ilog2(val);
+-
+-			return bme680_chip_config(data);
+-		}
+-	}
+-
+-	return -EINVAL;
+-}
+-
+-static int bme680_write_oversampling_ratio_press(struct bme680_data *data,
+-						 int val)
+-{
+-	int i;
+-
+-	for (i = 0; i < ARRAY_SIZE(bme680_oversampling_avail); i++) {
+-		if (bme680_oversampling_avail[i] == val) {
+-			data->oversampling_press = ilog2(val);
+-
+-			return bme680_chip_config(data);
+-		}
+-	}
+-
+-	return -EINVAL;
+-}
+-
+-static int bme680_write_oversampling_ratio_humid(struct bme680_data *data,
+-						 int val)
++static int bme680_oversampling_value_to_setting(int value)
+ {
+ 	int i;
+-
+-	for (i = 0; i < ARRAY_SIZE(bme680_oversampling_avail); i++) {
+-		if (bme680_oversampling_avail[i] == val) {
+-			data->oversampling_humid = ilog2(val);
+-
+-			return bme680_chip_config(data);
+-		}
++	/* valid values are 2^n where n >=0 && n <= 4 */
++	for (i = 0; i <= 4; i++) {
++		u8 setting = (1 << i);
++		if (setting == value)
++			return setting;
+ 	}
+ 
+ 	return -EINVAL;
+@@ -839,16 +802,26 @@ static int bme680_write_raw(struct iio_dev *indio_dev,
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
++	{
++		int os_setting = bme680_oversampling_value_to_setting(val);
++		if (os_setting < 0)
++			return -EINVAL;
++
+ 		switch (chan->type) {
+ 		case IIO_TEMP:
+-			return bme680_write_oversampling_ratio_temp(data, val);
++			data->oversampling_temp = os_setting;
++			break;
+ 		case IIO_PRESSURE:
+-			return bme680_write_oversampling_ratio_press(data, val);
++			data->oversampling_press = os_setting;
++			break;
+ 		case IIO_HUMIDITYRELATIVE:
+-			return bme680_write_oversampling_ratio_humid(data, val);
++			data->oversampling_humid = os_setting;
++			break;
+ 		default:
+ 			return -EINVAL;
+ 		}
++		return bme680_chip_config(data);
++	}
+ 	default:
+ 		return -EINVAL;
+ 	}
 -- 
-Himanshu Jha
-Undergraduate Student
-Department of Electronics & Communication
-Guru Tegh Bahadur Institute of Technology
+2.11.0
+
