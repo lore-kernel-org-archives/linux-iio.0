@@ -1,115 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:36876 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729828AbeHCXqv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 3 Aug 2018 19:46:51 -0400
-Date: Fri, 3 Aug 2018 22:48:38 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Brian Masney <masneyb@onstation.org>
-Cc: robh+dt@kernel.org, mark.rutland@arm.com, andy.gross@linaro.org,
-        david.brown@linaro.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org,
-        jonathan@marek.ca, jmaneyrol@invensense.com, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, mkelly@xevo.com,
-        fischerdouglasc@gmail.com, bshah@kde.org, ctatlor97@gmail.com
+Received: from mail-io0-f193.google.com ([209.85.223.193]:34091 "EHLO
+        mail-io0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727605AbeHGTJk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Aug 2018 15:09:40 -0400
+Date: Tue, 7 Aug 2018 10:54:26 -0600
+From: Rob Herring <robh@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Brian Masney <masneyb@onstation.org>, mark.rutland@arm.com,
+        andy.gross@linaro.org, david.brown@linaro.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-soc@vger.kernel.org, jonathan@marek.ca,
+        jmaneyrol@invensense.com, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, mkelly@xevo.com, fischerdouglasc@gmail.com,
+        bshah@kde.org, ctatlor97@gmail.com
 Subject: Re: [PATCH v3 4/9] dt-bindings: iio: tsl2772: add new bindings
-Message-ID: <20180803224838.362d6cf5@archlinux>
-In-Reply-To: <20180803001900.25371-5-masneyb@onstation.org>
+Message-ID: <20180807165426.GA7007@rob-hp-laptop>
 References: <20180803001900.25371-1-masneyb@onstation.org>
-        <20180803001900.25371-5-masneyb@onstation.org>
+ <20180803001900.25371-5-masneyb@onstation.org>
+ <20180803224838.362d6cf5@archlinux>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20180803224838.362d6cf5@archlinux>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu,  2 Aug 2018 20:18:55 -0400
-Brian Masney <masneyb@onstation.org> wrote:
-
-> This patch adds the new properties amstaos,proximity-diodes and
-> led-max-microamp to the tsl2772 driver. This patch also removes the
-> driver from the trivial-devices.txt.
+On Fri, Aug 03, 2018 at 10:48:38PM +0100, Jonathan Cameron wrote:
+> On Thu,  2 Aug 2018 20:18:55 -0400
+> Brian Masney <masneyb@onstation.org> wrote:
 > 
-> Signed-off-by: Brian Masney <masneyb@onstation.org>
-> ---
-This and the implementation look fine to me, but I'll leave them for
-now to give Rob time to take a look if he wants to.
-
-Thanks,
-
-Jonathan
-
-> I got a Reviewed-by: Rob Herring <robh@kernel.org> on my last series but
-> didn't include it due to the new file tsl2772.txt in this patch. Device
-> tree bindings need to be complete.
+> > This patch adds the new properties amstaos,proximity-diodes and
+> > led-max-microamp to the tsl2772 driver. This patch also removes the
+> > driver from the trivial-devices.txt.
+> > 
+> > Signed-off-by: Brian Masney <masneyb@onstation.org>
+> > ---
+> This and the implementation look fine to me, but I'll leave them for
+> now to give Rob time to take a look if he wants to.
 > 
->  .../devicetree/bindings/iio/light/tsl2772.txt | 37 +++++++++++++++++++
->  .../devicetree/bindings/trivial-devices.txt   | 10 -----
->  2 files changed, 37 insertions(+), 10 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/iio/light/tsl2772.txt
+> Thanks,
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/light/tsl2772.txt b/Documentation/devicetree/bindings/iio/light/tsl2772.txt
-> new file mode 100644
-> index 000000000000..6f33169344f2
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/light/tsl2772.txt
-> @@ -0,0 +1,37 @@
-> +* AMS/TAOS ALS and proximity sensor
-> +
-> +Required properties:
-> +
-> +  - compatible: Should be one of
-> +		"amstaos,tsl2571"
-> +		"amstaos,tsl2671"
-> +		"amstaos,tmd2671"
-> +		"amstaos,tsl2771"
-> +		"amstaos,tmd2771"
-> +		"amstaos,tsl2572"
-> +		"amstaos,tsl2672"
-> +		"amstaos,tmd2672"
-> +		"amstaos,tsl2772"
-> +		"amstaos,tmd2772"
-> +  - reg: the I2C address of the device
-> +
-> +Optional properties:
-> +
-> +  - amstaos,proximity-diodes - proximity diodes to enable. <0>, <1>, or <0 1>
-> +                               are the only valid values.
-> +  - led-max-microamp - current for the proximity LED. Must be 100000, 50000,
-> +                       25000, or 13000.
-> +  - interrupts: the sole interrupt generated by the device
-> +
-> +  Refer to interrupt-controller/interrupts.txt for generic interrupt client
-> +  node bindings.
-> +
-> +Example:
-> +
-> +tsl2772@39 {
-> +	compatible = "amstaos,tsl2772";
-> +	reg = <0x39>;
-> +	interrupts-extended = <&msmgpio 61 IRQ_TYPE_EDGE_FALLING>;
-> +	amstaos,proximity-diodes = <0>;
-> +	led-max-microamp = <100000>;
-> +};
-> diff --git a/Documentation/devicetree/bindings/trivial-devices.txt b/Documentation/devicetree/bindings/trivial-devices.txt
-> index 763a2808a95c..a977ccef7230 100644
-> --- a/Documentation/devicetree/bindings/trivial-devices.txt
-> +++ b/Documentation/devicetree/bindings/trivial-devices.txt
-> @@ -21,16 +21,6 @@ adi,adt7490		+/-1C TDM Extended Temp Range I.C
->  adi,adxl345		Three-Axis Digital Accelerometer
->  adi,adxl346		Three-Axis Digital Accelerometer (backward-compatibility value "adi,adxl345" must be listed too)
->  ams,iaq-core		AMS iAQ-Core VOC Sensor
-> -amstaos,tsl2571		AMS/TAOS ALS and proximity sensor
-> -amstaos,tsl2671		AMS/TAOS ALS and proximity sensor
-> -amstaos,tmd2671		AMS/TAOS ALS and proximity sensor
-> -amstaos,tsl2771		AMS/TAOS ALS and proximity sensor
-> -amstaos,tmd2771		AMS/TAOS ALS and proximity sensor
-> -amstaos,tsl2572		AMS/TAOS ALS and proximity sensor
-> -amstaos,tsl2672		AMS/TAOS ALS and proximity sensor
-> -amstaos,tmd2672		AMS/TAOS ALS and proximity sensor
-> -amstaos,tsl2772		AMS/TAOS ALS and proximity sensor
-> -amstaos,tmd2772		AMS/TAOS ALS and proximity sensor
->  at,24c08		i2c serial eeprom  (24cxx)
->  atmel,at97sc3204t	i2c trusted platform module (TPM)
->  capella,cm32181		CM32181: Ambient Light Sensor
+> Jonathan
+> 
+> > I got a Reviewed-by: Rob Herring <robh@kernel.org> on my last series but
+> > didn't include it due to the new file tsl2772.txt in this patch. Device
+> > tree bindings need to be complete.
+> > 
+> >  .../devicetree/bindings/iio/light/tsl2772.txt | 37 +++++++++++++++++++
+> >  .../devicetree/bindings/trivial-devices.txt   | 10 -----
+> >  2 files changed, 37 insertions(+), 10 deletions(-)
+> >  create mode 100644 Documentation/devicetree/bindings/iio/light/tsl2772.txt
 
+Reviewed-by: Rob Herring <robh@kernel.org>
