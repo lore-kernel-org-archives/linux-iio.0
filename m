@@ -1,59 +1,133 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:40900 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726399AbeHSUlK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 19 Aug 2018 16:41:10 -0400
-Date: Sun, 19 Aug 2018 18:28:53 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Colin King <colin.king@canonical.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: max44000: remove unused variable
- max44000_alstim_shift
-Message-ID: <20180819182853.2eda699d@archlinux>
-In-Reply-To: <20180809135338.10868-1-colin.king@canonical.com>
-References: <20180809135338.10868-1-colin.king@canonical.com>
+Received: from mail-eopbgr720041.outbound.protection.outlook.com ([40.107.72.41]:24306
+        "EHLO NAM05-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725832AbeHJLap (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 10 Aug 2018 07:30:45 -0400
+From: Stefan Popa <stefan.popa@analog.com>
+To: <jic23@kernel.org>, <broonie@kernel.org>
+CC: Stefan Popa <stefan.popa@analog.com>, <lars@metafoo.de>,
+        <Michael.Hennerich@analog.com>, <knaack.h@gmx.de>,
+        <pmeerw@pmeerw.net>, <mark.rutland@arm.com>, <davem@davemloft.net>,
+        <mchehab+samsung@kernel.org>, <gregkh@linuxfoundation.org>,
+        <akpm@linux-foundation.org>, <robh+dt@kernel.org>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v6 0/6] iio: accel: Add adxl372 driver
+Date: Fri, 10 Aug 2018 11:46:17 +0300
+Message-ID: <1533890783-13456-1-git-send-email-stefan.popa@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu,  9 Aug 2018 14:53:38 +0100
-Colin King <colin.king@canonical.com> wrote:
+Changes in v6:
+Patch 1:
+	- nothing changed.
+Patch 2, 3:
+	- added reviewed-by's which were lost when new versions were added.
+Patch 4:
+	- fixed kbuild warning by adding a buffer overflow check in
+	  adxl372_buffer_postenable().
+Patch 5, 6:
+	- nothing changed
 
-> From: Colin Ian King <colin.king@canonical.com>
-> 
-> Variable max44000_alstim_shift is defined but is never used hence it is
-> redundant and can be removed. This variable has been like this since
-> the driver was added back in 2016.
-> 
-> Cleans up clang warning:
-> warning: 'max44000_alstim_shift' defined but not used [-Wunused-const-variable=]
-> 
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-Applied to the togreg branch of iio.git and pushed out as testing for the
-autobuilders to play with it.
+Changes in v5:
+Patch 1, 2:
+	- nothing changed
+Patch 3:
+	- added a new readable_noinc operation based on feedback from
+	  Mark Brown
+Patch 4:
+	- added a readable_noinc callback based on the changes from the
+	  previous patch.
+Patch 5, 6:
+	- nothing changed
 
-Thanks,
+Changes in v4:
+Patch 1:
+	- used a lookup table in adxl372_set_activity_threshold() instead
+	  of a switch(case).
+Patch 2: 
+	- removed the interrupt-parent from the bindings.
+Patch 3:
+	- renamed regmap_pipe_read() stub to regmap_noinc_read().
+Patch 4:
+	- removed the adxl372_read_fifo() wrapper and directly called
+	  regmap_noinc_read().
+	- called iio_triggered_buffer_predisable() before doing the local
+	  changes.
+Patch 5:
+	- nothing changed.
+Patch 6:
+	- nothing changed.
 
-Jonathan
+Changes in v3:
+Patch 1, 2:
+	- nothing changed
+Patch 3:
+	- changed the name from regmap_pipe_read() to regmap_noinc_read()
+	- added a check for readable registers
+Patch 4:
+	- dropped the fifo peak mode
+	- corrected the patch based on feedback from Peter Meerwald-Stadler.
+Patch 5 and 6:
+	- nothing changed
 
-> ---
->  drivers/iio/light/max44000.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/iio/light/max44000.c b/drivers/iio/light/max44000.c
-> index bcdb0eb9e537..b9b0bd341be8 100644
-> --- a/drivers/iio/light/max44000.c
-> +++ b/drivers/iio/light/max44000.c
-> @@ -99,7 +99,6 @@ static const int max44000_alspga_shift[] = {0, 2, 4, 7};
->   * Handling this internally is also required for buffer support because the
->   * channel's scan_type can't be modified dynamically.
->   */
-> -static const int max44000_alstim_shift[] = {0, 2, 4, 6};
->  #define MAX44000_ALSTIM_SHIFT(alstim) (2 * (alstim))
->  
->  /* Available integration times with pretty manual alignment: */
+Changes in v2:
+Patch 1:
+	- removed ADXL372_RD_FLAG_MSK and ADXL372_WR_FLAG_MSK macros.
+	- handled regmap read/write by setting reg_bits and pad_bits
+	  fields in regmap_config struct.
+	- removed the buffer specifications when defining the channels.
+	- changed the activity and inactivity thresholds.
+	- added two new functions for setting the activity and inactivity
+	  timers: adxl372_set_inactivity_time_ms() and
+	  adxl372_set_activity_time_ms().
+Patch 2:
+	- introduced all the DT bindings in a single patch.
+Patch 3:
+	- backported the patch based on this discussion: 
+          https://lkml.org/lkml/2016/6/16/548.
+	- this patch is required as the regmap_pipe_read() API will be used 
+	  to read the data from the FIFO.
+Patch 4:
+	- removed DT bindings changes from this patch.
+	- removed the linux/gpio/consumer.h header.
+	- used regmap_pipe_read() instead of regmap_bulk_read() when
+	  reading data from the FIFO.
+	- used multiple regmap_write() calls instead of a single
+	  regmap_bulk_write() if there is no fast path.
+	- used be32_to_cpu() inside the adxl372_get_status() function.
+	- added a new in_accel_x&y&z_peak scan element which allows the
+	  user to set the FIFO into XYZ peak mode.
+	- used a adxl372_axis_lookup_table() to determine the fifo format
+	  from the active_scan_mask.
+	- made IRQ optional.
+Patch 5 and 6:
+	- nothing changed
+
+Crestez Dan Leonard (1):
+  regmap: Add regmap_noinc_read API
+
+Stefan Popa (5):
+  iio: adxl372: New driver for Analog Devices ADXL372 Accelerometer
+  dt-bindings: iio: accel: Add docs for ADXL372
+  iio:adxl372: Add FIFO and interrupts support
+  iio:adxl372: Add sampling frequency support
+  iio:adxl372: Add filter bandwidth support
+
+ .../devicetree/bindings/iio/accel/adxl372.txt      |  22 +
+ MAINTAINERS                                        |   7 +
+ drivers/base/regmap/internal.h                     |   3 +
+ drivers/base/regmap/regmap.c                       |  79 +-
+ drivers/iio/accel/Kconfig                          |  11 +
+ drivers/iio/accel/Makefile                         |   1 +
+ drivers/iio/accel/adxl372.c                        | 986 +++++++++++++++++++++
+ include/linux/regmap.h                             |  19 +
+ 8 files changed, 1127 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/accel/adxl372.txt
+ create mode 100644 drivers/iio/accel/adxl372.c
+
+-- 
+2.7.4
