@@ -7,9 +7,9 @@ To: Jonathan Cameron <jic23@kernel.org>,
 	Marcus Folkesson <marcus.folkesson@gmail.com>
 Cc: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: dac: max5821: avoid using CONFIG_PM_SLEEP
-Date: Fri, 10 Aug 2018 20:51:09 +0200
-Message-Id: <20180810185110.12710-2-marcus.folkesson@gmail.com>
+Subject: [PATCH] iio: dac: mcp4725: avoid using CONFIG_PM_SLEEP
+Date: Fri, 10 Aug 2018 20:51:10 +0200
+Message-Id: <20180810185110.12710-3-marcus.folkesson@gmail.com>
 In-Reply-To: <20180810185110.12710-1-marcus.folkesson@gmail.com>
 References: <20180810185110.12710-1-marcus.folkesson@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
@@ -18,51 +18,53 @@ SIMPLE_DEV_PM_OPS() is already doing this.
 
 Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
 ---
- drivers/iio/dac/max5821.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+ drivers/iio/dac/mcp4725.c | 12 +++---------
+ 1 file changed, 3 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iio/dac/max5821.c b/drivers/iio/dac/max5821.c
-index d0ecc1fdd8fc..f0cf6903dcd2 100644
---- a/drivers/iio/dac/max5821.c
-+++ b/drivers/iio/dac/max5821.c
-@@ -270,8 +270,7 @@ static int max5821_write_raw(struct iio_dev *indio_dev,
- 	}
+diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
+index 8b5aad4c32d9..6d71fd905e29 100644
+--- a/drivers/iio/dac/mcp4725.c
++++ b/drivers/iio/dac/mcp4725.c
+@@ -45,7 +45,7 @@ struct mcp4725_data {
+ 	struct regulator *vref_reg;
+ };
+ 
+-static int mcp4725_suspend(struct device *dev)
++static int __maybe_unused mcp4725_suspend(struct device *dev)
+ {
+ 	struct mcp4725_data *data = iio_priv(i2c_get_clientdata(
+ 		to_i2c_client(dev)));
+@@ -58,7 +58,7 @@ static int mcp4725_suspend(struct device *dev)
+ 	return i2c_master_send(data->client, outbuf, 2);
  }
  
+-static int mcp4725_resume(struct device *dev)
++static int __maybe_unused mcp4725_resume(struct device *dev)
+ {
+ 	struct mcp4725_data *data = iio_priv(i2c_get_clientdata(
+ 		to_i2c_client(dev)));
+@@ -71,13 +71,7 @@ static int mcp4725_resume(struct device *dev)
+ 
+ 	return i2c_master_send(data->client, outbuf, 2);
+ }
+-
 -#ifdef CONFIG_PM_SLEEP
--static int max5821_suspend(struct device *dev)
-+static int __maybe_unused max5821_suspend(struct device *dev)
- {
- 	u8 outbuf[2] = { MAX5821_EXTENDED_COMMAND_MODE,
- 			 MAX5821_EXTENDED_DAC_A |
-@@ -281,7 +280,7 @@ static int max5821_suspend(struct device *dev)
- 	return i2c_master_send(to_i2c_client(dev), outbuf, 2);
- }
- 
--static int max5821_resume(struct device *dev)
-+static int __maybe_unused max5821_resume(struct device *dev)
- {
- 	u8 outbuf[2] = { MAX5821_EXTENDED_COMMAND_MODE,
- 			 MAX5821_EXTENDED_DAC_A |
-@@ -292,10 +291,6 @@ static int max5821_resume(struct device *dev)
- }
- 
- static SIMPLE_DEV_PM_OPS(max5821_pm_ops, max5821_suspend, max5821_resume);
--#define MAX5821_PM_OPS (&max5821_pm_ops)
+ static SIMPLE_DEV_PM_OPS(mcp4725_pm_ops, mcp4725_suspend, mcp4725_resume);
+-#define MCP4725_PM_OPS (&mcp4725_pm_ops)
 -#else
--#define MAX5821_PM_OPS NULL
--#endif /* CONFIG_PM_SLEEP */
+-#define MCP4725_PM_OPS NULL
+-#endif
  
- static const struct iio_info max5821_info = {
- 	.read_raw = max5821_read_raw,
-@@ -392,7 +387,7 @@ static struct i2c_driver max5821_driver = {
+ static ssize_t mcp4725_store_eeprom(struct device *dev,
+ 	struct device_attribute *attr, const char *buf, size_t len)
+@@ -547,7 +541,7 @@ static struct i2c_driver mcp4725_driver = {
  	.driver = {
- 		.name	= "max5821",
- 		.of_match_table = max5821_of_match,
--		.pm     = MAX5821_PM_OPS,
-+		.pm     = &max5821_pm_ops,
+ 		.name	= MCP4725_DRV_NAME,
+ 		.of_match_table = of_match_ptr(mcp4725_of_match),
+-		.pm	= MCP4725_PM_OPS,
++		.pm	= &mcp4725_pm_ops,
  	},
- 	.probe		= max5821_probe,
- 	.remove		= max5821_remove,
+ 	.probe		= mcp4725_probe,
+ 	.remove		= mcp4725_remove,
 -- 
 2.11.0.rc2
