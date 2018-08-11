@@ -1,78 +1,68 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:56340 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726412AbeHYLsH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 25 Aug 2018 07:48:07 -0400
-Date: Sat, 25 Aug 2018 09:09:57 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Matthias Kaehlcke <mka@chromium.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Siddartha Mohanadoss <smohanad@codeaurora.org>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Douglas Anderson <dianders@chromium.org>
-Subject: Re: [PATCH] iio: adc: qcom-spmi-adc5: Add ADC5_AMUX_THM[24]_100K_PU
- to rev2 channel list
-Message-ID: <20180825090957.1e3a1076@archlinux>
-In-Reply-To: <20180824221439.GT160295@google.com>
-References: <20180810194702.144641-1-mka@chromium.org>
-        <20180819175452.31e0906b@archlinux>
-        <20180824221439.GT160295@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=fQkM=K2=gmail.com=marcus.folkesson@kernel.org>
+From: Marcus Folkesson <marcus.folkesson@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Marcus Folkesson <marcus.folkesson@gmail.com>
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [RESEND PATCH] iio: dac: max517: avoid using CONFIG_PM_SLEEP
+Date: Sat, 11 Aug 2018 10:47:09 +0200
+Message-Id: <20180811084709.6640-1-marcus.folkesson@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, 24 Aug 2018 15:14:39 -0700
-Matthias Kaehlcke <mka@chromium.org> wrote:
+This is already handled by SIMPLE_DEV_PM_OPS().
 
-> On Sun, Aug 19, 2018 at 05:54:52PM +0100, Jonathan Cameron wrote:
-> > On Fri, 10 Aug 2018 12:47:02 -0700
-> > Matthias Kaehlcke <mka@chromium.org> wrote:
-> >   
-> > > Add ADC5_AMUX_THM2_100K_PU and ADC5_AMUX_THM4_100K_PU to the list of
-> > > rev2 ADC channels.
-> > > 
-> > > Signed-off-by: Matthias Kaehlcke <mka@chromium.org>  
-> > This is fine and applied to the togreg branch of iio.git.
-> > Pushed out as testing to let the autobuilders play with it.  
-> 
-> Thanks!
-> 
-> > However, I took a quick look and can't immediately see what prevents us
-> > specifying channels in DT that don't have these definitions in the driver.  
-> 
-> Indeed, the DT could just specify an arbitrary value.
-> 
-> > Should we have a check for that as at least superficially it seems like
-> > a bad idea!  
-> 
-> It seems there isn't a single contiguous range, but a very superficial
-> check could at least verify that the value isn't larger than CHAN_MAX
-> or check a few sub-ranges.
+Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
+---
+Somehow git-send-email messed up (?!) the format for (at least) gmail, so resend it.
+Mutt still read the mail correct though.
 
-Given other entries will be zeroed, just check for something not being 0?
+ drivers/iio/dac/max517.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
-> 
-> > > ---
-> > >  drivers/iio/adc/qcom-spmi-adc5.c | 4 ++++
-> > >  1 file changed, 4 insertions(+)
-> > > 
-> > > diff --git a/drivers/iio/adc/qcom-spmi-adc5.c b/drivers/iio/adc/qcom-spmi-adc5.c
-> > > index a4299417f3de..1f9298a5c83d 100644
-> > > --- a/drivers/iio/adc/qcom-spmi-adc5.c
-> > > +++ b/drivers/iio/adc/qcom-spmi-adc5.c
-> > > @@ -491,8 +491,12 @@ static const struct adc5_channels adc5_chans_rev2[ADC5_MAX_CHANNEL] = {
-> > >  					SCALE_HW_CALIB_PMIC_THERM)
-> > >  	[ADC5_AMUX_THM1_100K_PU] = ADC5_CHAN_TEMP("amux_thm1_100k_pu", 1,
-> > >  					SCALE_HW_CALIB_THERM_100K_PULLUP)
-> > > +	[ADC5_AMUX_THM2_100K_PU] = ADC5_CHAN_TEMP("amux_thm2_100k_pu", 1,
-> > > +					SCALE_HW_CALIB_THERM_100K_PULLUP)
-> > >  	[ADC5_AMUX_THM3_100K_PU] = ADC5_CHAN_TEMP("amux_thm3_100k_pu", 1,
-> > >  					SCALE_HW_CALIB_THERM_100K_PULLUP)
-> > > +	[ADC5_AMUX_THM4_100K_PU] = ADC5_CHAN_TEMP("amux_thm4_100k_pu", 1,
-> > > +					SCALE_HW_CALIB_THERM_100K_PULLUP)
-> > >  	[ADC5_AMUX_THM5_100K_PU] = ADC5_CHAN_TEMP("amux_thm5_100k_pu", 1,
-> > >  					SCALE_HW_CALIB_THERM_100K_PULLUP)
-> > >  	[ADC5_XO_THERM_100K_PU]	= ADC5_CHAN_TEMP("xo_therm_100k_pu", 1,  
-> >   
+diff --git a/drivers/iio/dac/max517.c b/drivers/iio/dac/max517.c
+index 1d853247a205..451d10e323cf 100644
+--- a/drivers/iio/dac/max517.c
++++ b/drivers/iio/dac/max517.c
+@@ -113,15 +113,14 @@ static int max517_write_raw(struct iio_dev *indio_dev,
+ 	return ret;
+ }
+ 
+-#ifdef CONFIG_PM_SLEEP
+-static int max517_suspend(struct device *dev)
++static int __maybe_unused max517_suspend(struct device *dev)
+ {
+ 	u8 outbuf = COMMAND_PD;
+ 
+ 	return i2c_master_send(to_i2c_client(dev), &outbuf, 1);
+ }
+ 
+-static int max517_resume(struct device *dev)
++static int __maybe_unused max517_resume(struct device *dev)
+ {
+ 	u8 outbuf = 0;
+ 
+@@ -129,10 +128,6 @@ static int max517_resume(struct device *dev)
+ }
+ 
+ static SIMPLE_DEV_PM_OPS(max517_pm_ops, max517_suspend, max517_resume);
+-#define MAX517_PM_OPS (&max517_pm_ops)
+-#else
+-#define MAX517_PM_OPS NULL
+-#endif
+ 
+ static const struct iio_info max517_info = {
+ 	.read_raw = max517_read_raw,
+@@ -229,7 +224,7 @@ MODULE_DEVICE_TABLE(i2c, max517_id);
+ static struct i2c_driver max517_driver = {
+ 	.driver = {
+ 		.name	= MAX517_DRV_NAME,
+-		.pm		= MAX517_PM_OPS,
++		.pm	= &max517_pm_ops,
+ 	},
+ 	.probe		= max517_probe,
+ 	.remove		= max517_remove,
+-- 
+2.11.0.rc2
