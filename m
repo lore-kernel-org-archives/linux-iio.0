@@ -1,88 +1,46 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:51600 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726151AbeHSTz2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 19 Aug 2018 15:55:28 -0400
-Date: Sun, 19 Aug 2018 17:43:20 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Marcus Folkesson <marcus.folkesson@gmail.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RESEND PATCH] iio: dac: mcp4725: avoid using CONFIG_PM_SLEEP
-Message-ID: <20180819174320.29c8bc31@archlinux>
-In-Reply-To: <20180811084725.6742-1-marcus.folkesson@gmail.com>
-References: <20180811084725.6742-1-marcus.folkesson@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from mail.kmu-office.ch ([178.209.48.109]:49160 "EHLO
+        mail.kmu-office.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727205AbeHKLp5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 11 Aug 2018 07:45:57 -0400
+From: Stefan Agner <stefan@agner.ch>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stefan Agner <stefan@agner.ch>
+Subject: [PATCH] iio: adc: max9611: explicitly cast gain_selectors
+Date: Sat, 11 Aug 2018 11:12:19 +0200
+Message-Id: <20180811091219.5048-1-stefan@agner.ch>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, 11 Aug 2018 10:47:25 +0200
-Marcus Folkesson <marcus.folkesson@gmail.com> wrote:
+After finding a reasonable gain, the function converts the configured
+gain to a gain configuration option selector enum max9611_csa_gain.
+Make the conversion clearly visible by using an explicit cast. This
+also avoids a warning seen with clang:
+  drivers/iio/adc/max9611.c:292:16: warning: implicit conversion from
+      enumeration type 'enum max9611_conf_ids' to different enumeration
+      type 'enum max9611_csa_gain' [-Wenum-conversion]
+                        *csa_gain = gain_selectors[i];
+                                  ~ ^~~~~~~~~~~~~~~~~
 
-> This is already handled by SIMPLE_DEV_PM_OPS().
-> 
-> Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
-Applied to the togreg branch of iio.git and pushed out as testing for the
-autobuilders to play with it.
-> ---
-> Somehow git-send-email messed up (?!) the format for (at least) gmail, so resend it.
-> Mutt still read the mail correct though.
+Signed-off-by: Stefan Agner <stefan@agner.ch>
+---
+ drivers/iio/adc/max9611.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-You have my sympathies ;) oh for all email servers and clients being well behaved.
-
-Thanks,
-
-Jonathan
-
-> 
->  drivers/iio/dac/mcp4725.c | 12 +++---------
->  1 file changed, 3 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
-> index 8b5aad4c32d9..6d71fd905e29 100644
-> --- a/drivers/iio/dac/mcp4725.c
-> +++ b/drivers/iio/dac/mcp4725.c
-> @@ -45,7 +45,7 @@ struct mcp4725_data {
->  	struct regulator *vref_reg;
->  };
->  
-> -static int mcp4725_suspend(struct device *dev)
-> +static int __maybe_unused mcp4725_suspend(struct device *dev)
->  {
->  	struct mcp4725_data *data = iio_priv(i2c_get_clientdata(
->  		to_i2c_client(dev)));
-> @@ -58,7 +58,7 @@ static int mcp4725_suspend(struct device *dev)
->  	return i2c_master_send(data->client, outbuf, 2);
->  }
->  
-> -static int mcp4725_resume(struct device *dev)
-> +static int __maybe_unused mcp4725_resume(struct device *dev)
->  {
->  	struct mcp4725_data *data = iio_priv(i2c_get_clientdata(
->  		to_i2c_client(dev)));
-> @@ -71,13 +71,7 @@ static int mcp4725_resume(struct device *dev)
->  
->  	return i2c_master_send(data->client, outbuf, 2);
->  }
-> -
-> -#ifdef CONFIG_PM_SLEEP
->  static SIMPLE_DEV_PM_OPS(mcp4725_pm_ops, mcp4725_suspend, mcp4725_resume);
-> -#define MCP4725_PM_OPS (&mcp4725_pm_ops)
-> -#else
-> -#define MCP4725_PM_OPS NULL
-> -#endif
->  
->  static ssize_t mcp4725_store_eeprom(struct device *dev,
->  	struct device_attribute *attr, const char *buf, size_t len)
-> @@ -547,7 +541,7 @@ static struct i2c_driver mcp4725_driver = {
->  	.driver = {
->  		.name	= MCP4725_DRV_NAME,
->  		.of_match_table = of_match_ptr(mcp4725_of_match),
-> -		.pm	= MCP4725_PM_OPS,
-> +		.pm	= &mcp4725_pm_ops,
->  	},
->  	.probe		= mcp4725_probe,
->  	.remove		= mcp4725_remove,
+diff --git a/drivers/iio/adc/max9611.c b/drivers/iio/adc/max9611.c
+index 0538ff8c4ac1..643a4e66eb80 100644
+--- a/drivers/iio/adc/max9611.c
++++ b/drivers/iio/adc/max9611.c
+@@ -289,7 +289,7 @@ static int max9611_read_csa_voltage(struct max9611_dev *max9611,
+ 			return ret;
+ 
+ 		if (*adc_raw > 0) {
+-			*csa_gain = gain_selectors[i];
++			*csa_gain = (enum max9611_csa_gain)gain_selectors[i];
+ 			return 0;
+ 		}
+ 	}
+-- 
+2.18.0
