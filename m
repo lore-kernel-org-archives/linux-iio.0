@@ -1,159 +1,179 @@
-Return-Path: <SRS0=GI0E=LF=gmail.com=himanshujha199640@kernel.org>
-Date: Wed, 22 Aug 2018 17:24:50 +0530
-From: Himanshu Jha <himanshujha199640@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Frey <dpfrey@gmail.com>,
-	Jonathan Cameron <jonathan.cameron@huawei.com>,
-	linux-iio@vger.kernel.org, Daniel Baluta <daniel.baluta@gmail.com>,
-	matt.ranostay@konsulko.com
-Subject: Re: Buffert trigger and Power management support for BME680 ?
-Message-ID: <20180822115450.GC26015@himanshu-Vostro-3559>
-References: <20180730121241.GA4362@himanshu-Vostro-3559>
- <20180730140746.0000337a@huawei.com>
- <5b6c4b53-7141-93a5-b307-b7d91f8bea7f@gmail.com>
- <20180804143619.GA663@himanshu-Vostro-3559>
- <20180818175044.16820c0f@archlinux>
- <20180818183150.GA1993@himanshu-Vostro-3559>
- <20180819202816.7ded59d2@archlinux>
+Return-Path: <SRS0=912Y=K4=gmail.com=robherring2@kernel.org>
+Date: Mon, 13 Aug 2018 17:01:08 -0600
+From: Rob Herring <robh@kernel.org>
+To: Mircea Caprioru <mircea.caprioru@analog.com>
+Cc: no To-header on input <;, Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Sedat Dilek <sedat.dilek@gmail.com>,
+	Rafael Aquini <aquini@redhat.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Ludovic Desroches <ludovic.desroches@o2linux.fr>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: iio: dac: Add docs for AD5770R DAC
+Message-ID: <20180813230108.GA20314@rob-hp-laptop>
+References: <20180730135956.4611-1-mircea.caprioru@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20180819202816.7ded59d2@archlinux>
+In-Reply-To: <20180730135956.4611-1-mircea.caprioru@analog.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, Aug 19, 2018 at 08:28:16PM +0100, Jonathan Cameron wrote:
-> On Sun, 19 Aug 2018 00:01:50 +0530
-> Himanshu Jha <himanshujha199640@gmail.com> wrote:
+On Mon, Jul 30, 2018 at 04:59:55PM +0300, Mircea Caprioru wrote:
+> Adding dt-bindings documentation for AD5770R DAC. The bindings follow the
+> standard SPI and fixed regulator bindings.
 > 
-> > > > Their design for high precision readings is just flawless!
-> > > > 
-> > > > I need some time to get ideas so as to start with buffer support.
-> > > > 
-> > > > But what kind of buffer support should be used ?
-> > > > sysfs trigger using scan_elements ?
-> > > > 
-> > > > There are no interrupt supported by the sensor! And I don't know
-> > > > how hrtimer would work.  
-> > > 
-> > > Is it possible to poll for new data?  I.e. is there an explicit
-> > > way of telling you are looking at a complete set of different data
-> > > from what you got on the previous reading?  
-> > 
-> > Yes, we have such facility:
-> > 
-> > 5.3.5.1 New data status
-> > 
-> > The measured data are stored into the output data registers at the
-> > end of each TPHG conversion phase along with status
-> > flags and index of measurement.
-> > 
-> > register	addr	bit pos		description
-> > meas_status_0	0x1D	new_data_0<7>	New data flag
-> > 
-> > And why do you ask ?
+> Signed-off-by: Mircea Caprioru <mircea.caprioru@analog.com>
+> ---
+>  .../devicetree/bindings/iio/dac/ad5770r.txt   | 86 +++++++++++++++++++
+
+Preferred filename is matching compatible string if there's only 1 
+compatible string.
+
+>  MAINTAINERS                                   |  7 ++
+>  2 files changed, 93 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/dac/ad5770r.txt
 > 
-> Because it lets you use a timer / thread in the drive to emulate
-> a trigger interrupt (be it in a fairly nasty fashion).
+> diff --git a/Documentation/devicetree/bindings/iio/dac/ad5770r.txt b/Documentation/devicetree/bindings/iio/dac/ad5770r.txt
+> new file mode 100644
+> index 000000000000..bdd6ee4d5f2f
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/dac/ad5770r.txt
+> @@ -0,0 +1,86 @@
+> +Analog Devices AD5770R DAC device driver
 
-OK.
-Actually Matt gave me reference to his PulsedLight LIDAR sensor
-driver as a refernece for buffer support and the same suggestion
-was provided by Daniel during GSoC.
+Bindings aren't device drivers...
 
-So, now I will try and test because
+> +
+> +Required properties for the AD5770R:
+> +	- compatible: Must be "adi,ad5770r"
+> +	- reg: SPI chip select number for the device
+> +	- spi-max-frequency: Max SPI frequency to use (< 10000000, as per
+> +			Documentation/devicetree/bindings/spi/spi-bus.txt)
+> +	- child nodes: Each child node represents one channel and has
+> +		the following required properties:
+> +		* num: This represents the channel num
 
-	"Talk is cheap. Show me the code."
+Use reg instead.
 
-> > o Every time setting FORCED MODE to trigger measurement but then looking
-> >   at the following from BSEC makes me wonder:
-> > 
-> >      /* When the measurement is completed and data is ready for reading, the sensor must be in BME680_SLEEP_MODE.
-> >       * Read operation mode to check whether measurement is completely done and wait until the sensor is no more
-> >       * in BME680_FORCED_MODE. */
-> > 	while (bme680_g.power_mode == BME680_FORCED_MODE)
-> > 	{
-> > 		/* sleep for 5 ms */
-> > 		sleep(5);
-> > 		bme680_status = bme680_get_sensor_mode(&bme680_g);
-> > 	}
-> > 
-> >  Clearly, you wouldn't want this in interrupt handler, so we will
-> >  overwrite mode irrespective of current mode and avoid those checks.
-> You could have this in a thread.  Don't worry about anything in an interrupt
-> thread taking ages as it doesn't block anything from preempting the thread.
+> +		* adi,range-microamp: Output range of the channel
+> +		The following ranges are supported:
+> +		* Channel 0:
+> +			* <0 300000> 0 mA to 300 mA
+> +			* <(-60000) 0> -60 to 0 mA
+> +			* <(-60000) 300000> -60 to 300 mA
+> +		* Channel 1:
+> +			* <0 140000> 0 to 140 mA
+> +			* <0 250000> 0 to 250 mA
+> +		* Channel 2:
+> +			* <0 55000> 0 to 55 mA
+> +			* <0 150000> 0 to 150 mA
+> +		* Channel 3 to Channel 5:
+> +			* <0 45000> 0 to 45 mA
+> +			* <0 100000> 0 to 100 mA
+> +
+> +Optional properties:
+> +
+> +- vref: Specify the voltage of the external reference used.
+> +		Available reference options are: 1.25 V or 2.5 V. If no
+> +		external reference declared then the device will use the
+> +		internal reference of 1.25 V.
 
-Thanks for the clarification.
+This should be updated to vref-supply.
 
-> > o And lastly compensation functions, we wouldn't pass raw values and
-> >   instead processed instead. Isn't ?
+> +
+> +- reset-gpios: GPIO spec for the RESET pin. If specified, it will be
+> +		asserted during driver probe.
+
+Driver probe is not relevant to the binding. 
+> +
+> +AD5770R Example:
+> +
+> +	ad5770r@0 {
+
+dac@0
+
+> +		compatible = "ad5770r";
+> +		reg = <0>;
+> +                spi-max-frequency = <1000000>;
+
+Some whitespace problems here.
+
+> +		vref-supply = <&vref>;
+> +
+> +		reset-gpios = <&gpio 22 0>;
+> +
+> +		channel@0 {
+> +			num = <0>;
+> +			adi,range-microamp = <0 300000>;
+> +		};
+> +
+> +		channel@1 {
+> +			num = <1>;
+> +			adi,range-microamp = <0 140000>;
+> +		};
+> +
+> +		channel@2 {
+> +			num = <2>;
+> +			adi,range-microamp = <0 55000>;
+> +		};
+> +
+> +		channel@3 {
+> +			num = <3>;
+> +			adi,range-microamp = <0 45000>;
+> +		};
+> +
+> +		channel@4 {
+> +			num = <4>;
+> +			adi,range-microamp = <0 45000>;
+> +		};
+> +
+> +		channel@5 {
+> +			num = <5>;
+> +			adi,range-microamp = <0 45000>;
+> +		};
+> +       };
+> +
+> +External reference example:
+> +
+> +	vref: fixedregulator@0 {
+
+Unit-address should be dropped (no reg property here).
+
+> +		compatible = "regulator-fixed";
+> +		regulator-name = "fixed-supply";
+> +		regulator-min-microvolt = <1250000>;
+> +		regulator-max-microvolt = <1250000>;
+> +	};
+> +
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 6f7721d1634c..9c2626079592 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -756,6 +756,13 @@ M:	Michael Hanselmann <linux-kernel@hansmi.ch>
+>  S:	Supported
+>  F:	drivers/macintosh/ams/
+>  
+> +ANALOG DEVICES INC AD5770R DRIVER
+> +M:	Mircea Caprioru <mircea.caprioru@analog.com>
+> +L:	linux-iio@vger.kernel.org
+> +W:	http://ez.analog.com/community/linux-device-drivers
+> +S:	Supported
+> +F:	Documentation/devicetree/bindings/iio/dac/ad5770r.txt
+> +
+>  ANALOG DEVICES INC AD9389B DRIVER
+>  M:	Hans Verkuil <hans.verkuil@cisco.com>
+>  L:	linux-media@vger.kernel.org
+> -- 
+> 2.17.1
 > 
-> Now this is always awkward on devices with complex non linear functions
-> from raw to actual units.
-> 
-> I'm not sure it would be any use to output raw data in this case
-> so we would have to look at whether we can generate a packing without
-> loosing any precision of the final data.  It would probably have to be
-> 'sort of raw' to give us the multipliers to do fixed point values.
-
-Ah yes, we can do 'sort of raw' since each channel outputs an integer
-and we divide them with their respective resolutions.
-
-So, this division can be done in userspace.
-
-For eg: 43215 is pushed to buffer and later in userspace we divide
-it by 1000(.0001 % resolution of humidity).
-
-Also note that this 43215 is the result of "compensation function" and
-raw read obtained is useless.
-
-> We are looking at allowing a floating point output, but getting to that
-> in driver is going to be more than a little fiddly.  The intent is that
-> it is only really for cases where the device itself is outputting floating
-> point and we just pass it along...
-> > 
-> > So, now I see all these reading, setting config, checking bits,
-> > processing and finally pushing in an interrupt handler. Is this
-> > what shall be done ?
-> > 
-> > I'm asking too many questions because I don't want to waste my time
-> > doing wrong and getting a NACK in the end. Also, I have another huge
-> > project currently to focus by Linux Foundation.
-> 
-> The question is whether synchronized readings are needed across the channels.
-> If they are there is no other way of presenting them so we would need buffered
-> results.  If only nearly synchronized is fine then no point in bothering.
-
-Buffered support has the only advantage that we get all TPHG in one-go
-without triggering measurement for each channel every time.
-
-> > 
-> > But I'm happy to review and test patches anytime.
-> > 
-> > > > Another question arises, say for eg., we use sysfs trigger and buffer
-> > > > capture comes in action:
-> > > > 
-> > > > * Would I enable FORCED mode everytime in the trigger interrupt handler ?
-> > > > * Also check for config setting(such as oversampling) and set
-> > > >   them accordingly in the interrupt handler ?
-> > > > 
-> > > > If no, then other suggestion ?
-> > > > If yes, isn't that bad to do all that in "bottom half" ?  
-> > > 
-> > > The bottom half in this case is an interrupt thread so you can do what
-> > > ever you like in it.  
-> > 
-> > Hmm. OK
-> > I have a different vision for top/bottom half.
-> 
-> For this sort of slow device (and quite a lot of quick ones) the traditional
-> top half / bottom half is long gone in favour of a light top half then waking
-> up a preemptible thread to do the stuff that used to be in the bottom half.
-> This means things like sleeping are fine.
-
-Ok.
-
-Thanks
--- 
-Himanshu Jha
-Undergraduate Student
-Department of Electronics & Communication
-Guru Tegh Bahadur Institute of Technology
+> --
+> To unsubscribe from this list: send the line "unsubscribe devicetree" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
