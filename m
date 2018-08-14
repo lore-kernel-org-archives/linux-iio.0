@@ -1,15 +1,21 @@
-Return-Path: <SRS0=r4AX=K5=analog.com=Michael.Hennerich@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-bl2nam02on0079.outbound.protection.outlook.com ([104.47.38.79]:42784
+        "EHLO NAM02-BL2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727858AbeHNOJP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 14 Aug 2018 10:09:15 -0400
 From: <michael.hennerich@analog.com>
 To: <jic23@kernel.org>, <lars@metafoo.de>, <knaack.h@gmx.de>,
-	<pmeerw@pmeerw.net>
-CC: <linux-iio@vger.kernel.org>, Michael Hennerich
-	<michael.hennerich@analog.com>
+        <pmeerw@pmeerw.net>
+CC: <linux-iio@vger.kernel.org>,
+        Michael Hennerich <michael.hennerich@analog.com>
 Subject: [PATCH 1/7] drivers: iio: Update MODULE AUTHOR email address
-Date: Tue, 14 Aug 2018 13:22:13 +0200
-Message-ID: <1534245733-491-1-git-send-email-michael.hennerich@analog.com>
+Date: Tue, 14 Aug 2018 13:23:17 +0200
+Message-ID: <1534245797-632-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 From: Michael Hennerich <michael.hennerich@analog.com>
 
