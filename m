@@ -5,8 +5,8 @@ To: <jic23@kernel.org>, <lars@metafoo.de>, <knaack.h@gmx.de>,
 CC: <linux-iio@vger.kernel.org>, Michael Hennerich
 	<michael.hennerich@analog.com>
 Subject: [PATCH 1/7] drivers: iio: Update MODULE AUTHOR email address
-Date: Tue, 14 Aug 2018 13:19:49 +0200
-Message-ID: <1534245589-388-1-git-send-email-michael.hennerich@analog.com>
+Date: Tue, 14 Aug 2018 13:22:13 +0200
+Message-ID: <1534245733-491-1-git-send-email-michael.hennerich@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
