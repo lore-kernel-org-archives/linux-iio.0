@@ -1,64 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:48136 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726705AbeHSTeI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 19 Aug 2018 15:34:08 -0400
-Date: Sun, 19 Aug 2018 17:22:04 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+Received: from gateway21.websitewelcome.com ([192.185.45.191]:40934 "EHLO
+        gateway21.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729931AbeHOTbq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Aug 2018 15:31:46 -0400
+Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
+        by gateway21.websitewelcome.com (Postfix) with ESMTP id 4D873400DEBAB
+        for <linux-iio@vger.kernel.org>; Wed, 15 Aug 2018 11:38:54 -0500 (CDT)
+Date: Wed, 15 Aug 2018 11:38:52 -0500
+From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: health: max30102: Mark expected switch
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH] iio: accel: cros_ec_accel_legacy: Mark expected switch
  fall-throughs
-Message-ID: <20180819172204.29754098@archlinux>
-In-Reply-To: <20180815162349.GA3458@embeddedor.com>
-References: <20180815162349.GA3458@embeddedor.com>
+Message-ID: <20180815163852.GA4910@embeddedor.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 15 Aug 2018 11:23:49 -0500
-"Gustavo A. R. Silva" <gustavo@embeddedor.com> wrote:
+In preparation to enabling -Wimplicit-fallthrough, mark switch cases
+where we are expecting to fall through.
 
-> In preparation to enabling -Wimplicit-fallthrough, mark switch cases
-> where we are expecting to fall through.
-> 
-> Notice that in this particular case, I placed the "fall through"
-> annotation at the bottom of the case, which is what GCC is expecting
-> to find.
-> 
-> Addresses-Coverity-ID: 1458342 ("Missing break in switch")
-> Addresses-Coverity-ID: 1458345 ("Missing break in switch")
-> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+Addresses-Coverity-ID: 1462408 ("Missing break in switch")
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+---
+ drivers/iio/accel/cros_ec_accel_legacy.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/iio/health/max30102.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/health/max30102.c b/drivers/iio/health/max30102.c
-> index 15ccadc..3e29562 100644
-> --- a/drivers/iio/health/max30102.c
-> +++ b/drivers/iio/health/max30102.c
-> @@ -282,9 +282,11 @@ static int max30102_read_measurement(struct max30102_data *data,
->  	switch (measurements) {
->  	case 3:
->  		MAX30102_COPY_DATA(2);
-> -	case 2: /* fall-through */
-> +		/* fall through */
-> +	case 2:
->  		MAX30102_COPY_DATA(1);
-> -	case 1: /* fall-through */
-> +		/* fall through */
-> +	case 1:
->  		MAX30102_COPY_DATA(0);
->  		break;
->  	default:
+diff --git a/drivers/iio/accel/cros_ec_accel_legacy.c b/drivers/iio/accel/cros_ec_accel_legacy.c
+index 063e89e..d609654 100644
+--- a/drivers/iio/accel/cros_ec_accel_legacy.c
++++ b/drivers/iio/accel/cros_ec_accel_legacy.c
+@@ -385,8 +385,10 @@ static int cros_ec_accel_legacy_probe(struct platform_device *pdev)
+ 		switch (i) {
+ 		case X:
+ 			ec_accel_channels[X].scan_index = Y;
++			/* fall through */
+ 		case Y:
+ 			ec_accel_channels[Y].scan_index = X;
++			/* fall through */
+ 		case Z:
+ 			ec_accel_channels[Z].scan_index = Z;
+ 		}
+-- 
+2.7.4
