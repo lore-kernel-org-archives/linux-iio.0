@@ -1,69 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:36841 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388898AbeHPJNp (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Aug 2018 05:13:45 -0400
-Date: Thu, 16 Aug 2018 11:47:30 +0530
-From: Himanshu Jha <himanshujha199640@gmail.com>
-To: David Frey <dpfrey@gmail.com>
-Cc: linux-iio@vger.kernel.org, jic23@vger.kernel.org
-Subject: Re: [PATCH v2 4/7] iio: chemical: bme680: change MSK->MASK in
- #defines
-Message-ID: <20180816061730.GA1916@himanshu-Vostro-3559>
+Received: from mail-pl0-f68.google.com ([209.85.160.68]:45647 "EHLO
+        mail-pl0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726133AbeHOX3W (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Aug 2018 19:29:22 -0400
+From: David Frey <dpfrey@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@vger.kernel.org, himanshujha199640@gmail.com,
+        David Frey <dpfrey@gmail.com>
+Subject: [PATCH v2 5/7] iio: chemical: bme680: use GENMASK macro
+Date: Wed, 15 Aug 2018 13:38:33 -0700
+Message-Id: <20180815203835.21079-6-dpfrey@gmail.com>
+In-Reply-To: <20180815203835.21079-1-dpfrey@gmail.com>
 References: <20180815203835.21079-1-dpfrey@gmail.com>
- <20180815203835.21079-5-dpfrey@gmail.com>
- <ac666b9e-0767-fa08-58e6-2ea9cd3c7f91@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <ac666b9e-0767-fa08-58e6-2ea9cd3c7f91@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Aug 15, 2018 at 02:03:31PM -0700, David Frey wrote:
-> On 8/15/2018 1:38 PM, David Frey wrote:
-> 
-> <snip>
-> 
-> > diff --git a/drivers/iio/chemical/bme680_core.c b/drivers/iio/chemical/bme680_core.c
-> > index 49bb6b84f181..d62cb88af481 100644
-> > --- a/drivers/iio/chemical/bme680_core.c
-> > +++ b/drivers/iio/chemical/bme680_core.c
-> 
-> When splitting the patches apart, I screwed this one up slightly.  The patch
-> should also include this hunk:
-> 
-> > @@ -206,7 +206,7 @@ static int bme680_read_calib(struct bme680_data *data,
-> >                 return ret;
-> >         }
-> >         calib->par_h1 = (tmp_msb << BME680_HUM_REG_SHIFT_VAL) |
-> > -                       (tmp_lsb & BME680_BIT_H1_DATA_MSK);
-> > +                       (tmp_lsb & BME680_BIT_H1_DATA_MASK);
-> > 
-> >         ret = regmap_read(data->regmap, BME680_H2_MSB_REG, &tmp_msb);
-> >         if (ret < 0) {
-> 
-> What is the correct course of action in the situation?  Should I resend just
-> this one patch immediately?  Would it get a new version number "[PATCH v3
-> 4/7]"?  I think the version number refers to the whole patch series, so it
-> seems wrong to bump the revision of one patch and not transmit the whole
-> series.
+Replace hardcoded bit masks with GENMASK macro
 
-The rule is send the whole series again with the changelog mentioned
-below the '---' and in your case mentioning
-"no changes in this patch" in the changelog for all other patches in
-series would be nice.
+Signed-off-by: David Frey <dpfrey@gmail.com>
+---
+ drivers/iio/chemical/bme680.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Another issue which I see is that you would need to rebase on top of my
-patch that I sent a while ago because otherwise the patch won't apply
-cleanly to the iio tree.
-
-https://lore.kernel.org/lkml/20180811102636.6171-1-himanshujha199640@gmail.com/t/#u
-
-As soon as you would next version, I would get it tested.
-
-Thanks
+diff --git a/drivers/iio/chemical/bme680.h b/drivers/iio/chemical/bme680.h
+index 437d75c2bad5..a9f2a9a6abc5 100644
+--- a/drivers/iio/chemical/bme680.h
++++ b/drivers/iio/chemical/bme680.h
+@@ -18,7 +18,7 @@
+ #define BME680_REG_GAS_MSB			0x2A
+ #define BME680_REG_GAS_R_LSB			0x2B
+ #define   BME680_GAS_STAB_BIT			BIT(4)
+-#define   BME680_GAS_RANGE_MASK			0x0F
++#define   BME680_GAS_RANGE_MASK			GENMASK(3, 0)
+ 
+ #define BME680_REG_CTRL_HUMIDITY		0x72
+ #define   BME680_OSRS_HUMIDITY_MASK		GENMASK(2, 0)
+@@ -39,13 +39,13 @@
+ 
+ #define BME680_MAX_OVERFLOW_VAL			0x40000000
+ #define BME680_HUM_REG_SHIFT_VAL		4
+-#define BME680_BIT_H1_DATA_MASK			0x0F
++#define BME680_BIT_H1_DATA_MASK			GENMASK(3, 0)
+ 
+ #define BME680_REG_RES_HEAT_RANGE		0x02
+-#define   BME680_RHRANGE_MASK			0x30
++#define   BME680_RHRANGE_MASK			GENMASK(5, 4)
+ #define BME680_REG_RES_HEAT_VAL			0x00
+ #define BME680_REG_RANGE_SW_ERR			0x04
+-#define   BME680_RSERROR_MASK			0xF0
++#define   BME680_RSERROR_MASK			GENMASK(7, 4)
+ #define BME680_REG_RES_HEAT_0			0x5A
+ #define BME680_REG_GAS_WAIT_0			0x64
+ #define BME680_ADC_GAS_RES_SHIFT		6
 -- 
-Himanshu Jha
-Undergraduate Student
-Department of Electronics & Communication
-Guru Tegh Bahadur Institute of Technology
+2.11.0
