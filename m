@@ -1,35 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:36271 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726319AbeHPPyP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Aug 2018 11:54:15 -0400
-Received: by mail-pg1-f193.google.com with SMTP id h12-v6so2044629pgs.3
-        for <linux-iio@vger.kernel.org>; Thu, 16 Aug 2018 05:55:50 -0700 (PDT)
-Subject: Re: [PATCH v2 0/7] bme680 cleanup
-To: Himanshu Jha <himanshujha199640@gmail.com>
-Cc: linux-iio@vger.kernel.org, jic23@kernel.org
-References: <20180815203835.21079-1-dpfrey@gmail.com>
- <20180816062412.GB1916@himanshu-Vostro-3559>
-From: David Frey <dpfrey@gmail.com>
-Message-ID: <30d5522e-3871-466b-39b5-600c37891ee4@gmail.com>
-Date: Thu, 16 Aug 2018 05:55:47 -0700
-MIME-Version: 1.0
-In-Reply-To: <20180816062412.GB1916@himanshu-Vostro-3559>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:45562 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726011AbeHPVwD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Aug 2018 17:52:03 -0400
+From: Tomasz Duszynski <tduszyns@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, jic23@kernel.org
+Subject: [PATCH] iio: pressure: ms5611: remove deprecated compatible strings
+Date: Thu, 16 Aug 2018 20:49:15 +0200
+Message-Id: <20180816184915.32138-1-tduszyns@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 8/15/2018 11:24 PM, Himanshu Jha wrote:
-> On Wed, Aug 15, 2018 at 01:38:28PM -0700, David Frey wrote:
->> Note that I don't currently have bme680 hardware available, so I am hoping that
->> Himanshu is willing to validate the changes.
-> 
-> Another thing that is screwed up is Jonathan's email ;)
-> 
-> It is jic23@kernel.org and not jic23@vger.kernel.org
-> 
-> You can use:
-> 
-> $ ./scripts/get_maintainer.pl <patch>
+Compatible strings tend to follow manufacturer,model format.
+In case one wants to do a matching with manufacturer stripped
+off he can still do so since SPI/I2C core will try id_table
+based matching anyway.
 
-Yes... I realized that shortly after I received 8 bounce e-mails in reply.
+Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
+---
+ drivers/iio/pressure/ms5611_i2c.c | 2 --
+ drivers/iio/pressure/ms5611_spi.c | 2 --
+ 2 files changed, 4 deletions(-)
+
+diff --git a/drivers/iio/pressure/ms5611_i2c.c b/drivers/iio/pressure/ms5611_i2c.c
+index 55fb5fc0b6ea..0469c8ae1134 100644
+--- a/drivers/iio/pressure/ms5611_i2c.c
++++ b/drivers/iio/pressure/ms5611_i2c.c
+@@ -117,9 +117,7 @@ static int ms5611_i2c_remove(struct i2c_client *client)
+ #if defined(CONFIG_OF)
+ static const struct of_device_id ms5611_i2c_matches[] = {
+ 	{ .compatible = "meas,ms5611" },
+-	{ .compatible = "ms5611" },
+ 	{ .compatible = "meas,ms5607" },
+-	{ .compatible = "ms5607" },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, ms5611_i2c_matches);
+diff --git a/drivers/iio/pressure/ms5611_spi.c b/drivers/iio/pressure/ms5611_spi.c
+index 932e05001e1a..cd11d022208e 100644
+--- a/drivers/iio/pressure/ms5611_spi.c
++++ b/drivers/iio/pressure/ms5611_spi.c
+@@ -119,9 +119,7 @@ static int ms5611_spi_remove(struct spi_device *spi)
+ #if defined(CONFIG_OF)
+ static const struct of_device_id ms5611_spi_matches[] = {
+ 	{ .compatible = "meas,ms5611" },
+-	{ .compatible = "ms5611" },
+ 	{ .compatible = "meas,ms5607" },
+-	{ .compatible = "ms5607" },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, ms5611_spi_matches);
+-- 
+2.18.0
