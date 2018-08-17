@@ -1,41 +1,44 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:43280 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726541AbeHSTTZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 19 Aug 2018 15:19:25 -0400
-Date: Sun, 19 Aug 2018 17:07:26 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Himanshu Jha <himanshujha199640@gmail.com>
-Cc: David Frey <dpfrey@gmail.com>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3 5/7] iio: chemical: bme680: use GENMASK macro
-Message-ID: <20180819170726.7c4a43d5@archlinux>
-In-Reply-To: <20180818110951.GF24920@himanshu-Vostro-3559>
+Return-Path: <SRS0=axia=LA=gmail.com=dpfrey@kernel.org>
+From: David Frey <dpfrey@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	himanshujha199640@gmail.com,
+	David Frey <dpfrey@gmail.com>
+Subject: [PATCH v3 6/7] iio: chemical: bme680: use FIELD_GET macro
+Date: Fri, 17 Aug 2018 12:03:18 -0700
+Message-Id: <20180817190319.13119-7-dpfrey@gmail.com>
+In-Reply-To: <20180817190319.13119-1-dpfrey@gmail.com>
 References: <20180817190319.13119-1-dpfrey@gmail.com>
-        <20180817190319.13119-6-dpfrey@gmail.com>
-        <20180818110951.GF24920@himanshu-Vostro-3559>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, 18 Aug 2018 16:39:51 +0530
-Himanshu Jha <himanshujha199640@gmail.com> wrote:
+Use the FIELD_GET macro instead of explicit mask and shift.
 
-> On Fri, Aug 17, 2018 at 12:03:17PM -0700, David Frey wrote:
-> > Replace hardcoded bit masks with GENMASK macro
-> > 
-> > Signed-off-by: David Frey <dpfrey@gmail.com>  
-> 
-> Reviewed-by: Himanshu Jha <himanshujha199640@gmail.com>
-> Tested-by: Himanshu Jha <himanshujha199640@gmail.com>
-> 
-> Also, 0-day tested with build success!
-> 
-> Thanks
-> 
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+Signed-off-by: David Frey <dpfrey@gmail.com>
+---
+ drivers/iio/chemical/bme680_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Thanks,
-
-Jonathan
+diff --git a/drivers/iio/chemical/bme680_core.c b/drivers/iio/chemical/bme680_core.c
+index 7c7df40b615f..46afc93041f5 100644
+--- a/drivers/iio/chemical/bme680_core.c
++++ b/drivers/iio/chemical/bme680_core.c
+@@ -285,7 +285,7 @@ static int bme680_read_calib(struct bme680_data *data,
+ 		dev_err(dev, "failed to read resistance heat range\n");
+ 		return ret;
+ 	}
+-	calib->res_heat_range = (tmp & BME680_RHRANGE_MASK) / 16;
++	calib->res_heat_range = FIELD_GET(BME680_RHRANGE_MASK, tmp);
+ 
+ 	ret = regmap_read(data->regmap, BME680_REG_RES_HEAT_VAL, &tmp);
+ 	if (ret < 0) {
+@@ -299,7 +299,7 @@ static int bme680_read_calib(struct bme680_data *data,
+ 		dev_err(dev, "failed to read range software error\n");
+ 		return ret;
+ 	}
+-	calib->range_sw_err = (tmp & BME680_RSERROR_MASK) / 16;
++	calib->range_sw_err = FIELD_GET(BME680_RSERROR_MASK, tmp);
+ 
+ 	return 0;
+ }
+-- 
+2.11.0
