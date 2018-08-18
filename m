@@ -1,73 +1,38 @@
-Return-Path: <SRS0=axia=LA=gmail.com=dpfrey@kernel.org>
-From: David Frey <dpfrey@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	himanshujha199640@gmail.com,
-	David Frey <dpfrey@gmail.com>
-Subject: [PATCH v3 3/7] iio: chemical: bme680: indent #defines consistently
-Date: Fri, 17 Aug 2018 12:03:15 -0700
-Message-Id: <20180817190319.13119-4-dpfrey@gmail.com>
-In-Reply-To: <20180817190319.13119-1-dpfrey@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:43845 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726266AbeHROOr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 18 Aug 2018 10:14:47 -0400
+Received: by mail-pg1-f194.google.com with SMTP id v66-v6so3336687pgb.10
+        for <linux-iio@vger.kernel.org>; Sat, 18 Aug 2018 04:07:33 -0700 (PDT)
+Date: Sat, 18 Aug 2018 16:37:25 +0530
+From: Himanshu Jha <himanshujha199640@gmail.com>
+To: David Frey <dpfrey@gmail.com>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org
+Subject: Re: [PATCH v3 3/7] iio: chemical: bme680: indent #defines
+ consistently
+Message-ID: <20180818110725.GD24920@himanshu-Vostro-3559>
 References: <20180817190319.13119-1-dpfrey@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+ <20180817190319.13119-4-dpfrey@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20180817190319.13119-4-dpfrey@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: David Frey <dpfrey@gmail.com>
----
- drivers/iio/chemical/bme680.h | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+On Fri, Aug 17, 2018 at 12:03:15PM -0700, David Frey wrote:
+> Signed-off-by: David Frey <dpfrey@gmail.com>
 
-diff --git a/drivers/iio/chemical/bme680.h b/drivers/iio/chemical/bme680.h
-index e049323f209a..dd4247d364a0 100644
---- a/drivers/iio/chemical/bme680.h
-+++ b/drivers/iio/chemical/bme680.h
-@@ -4,10 +4,10 @@
- 
- #define BME680_REG_CHIP_I2C_ID			0xD0
- #define BME680_REG_CHIP_SPI_ID			0x50
--#define BME680_CHIP_ID_VAL			0x61
-+#define   BME680_CHIP_ID_VAL			0x61
- #define BME680_REG_SOFT_RESET_I2C		0xE0
- #define BME680_REG_SOFT_RESET_SPI		0x60
--#define BME680_CMD_SOFTRESET			0xB6
-+#define   BME680_CMD_SOFTRESET			0xB6
- #define BME680_REG_STATUS			0x73
- #define   BME680_SPI_MEM_PAGE_BIT		BIT(4)
- #define     BME680_SPI_MEM_PAGE_1_VAL		1
-@@ -18,6 +18,7 @@
- #define BME680_REG_GAS_MSB			0x2A
- #define BME680_REG_GAS_R_LSB			0x2B
- #define   BME680_GAS_STAB_BIT			BIT(4)
-+#define   BME680_GAS_RANGE_MASK			0x0F
- 
- #define BME680_REG_CTRL_HUMIDITY		0x72
- #define   BME680_OSRS_HUMIDITY_MASK		GENMASK(2, 0)
-@@ -26,9 +27,8 @@
- #define   BME680_OSRS_TEMP_MASK			GENMASK(7, 5)
- #define   BME680_OSRS_PRESS_MASK		GENMASK(4, 2)
- #define   BME680_MODE_MASK			GENMASK(1, 0)
--
--#define BME680_MODE_FORCED			1
--#define BME680_MODE_SLEEP			0
-+#define     BME680_MODE_FORCED			1
-+#define     BME680_MODE_SLEEP			0
- 
- #define BME680_REG_CONFIG			0x75
- #define   BME680_FILTER_MASK			GENMASK(4, 2)
-@@ -42,13 +42,12 @@
- #define BME680_BIT_H1_DATA_MSK			0x0F
- 
- #define BME680_REG_RES_HEAT_RANGE		0x02
--#define BME680_RHRANGE_MSK			0x30
-+#define   BME680_RHRANGE_MSK			0x30
- #define BME680_REG_RES_HEAT_VAL			0x00
- #define BME680_REG_RANGE_SW_ERR			0x04
--#define BME680_RSERROR_MSK			0xF0
-+#define   BME680_RSERROR_MSK			0xF0
- #define BME680_REG_RES_HEAT_0			0x5A
- #define BME680_REG_GAS_WAIT_0			0x64
--#define BME680_GAS_RANGE_MASK			0x0F
- #define BME680_ADC_GAS_RES_SHIFT		6
- #define BME680_AMB_TEMP				25
- 
+Reviewed-by: Himanshu Jha <himanshujha199640@gmail.com>
+Tested-by: Himanshu Jha <himanshujha199640@gmail.com>
+
+Also, 0-day tested with build success!
+
+Thanks
+
+
 -- 
-2.11.0
+Himanshu Jha
+Undergraduate Student
+Department of Electronics & Communication
+Guru Tegh Bahadur Institute of Technology
