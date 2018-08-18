@@ -1,44 +1,31 @@
-Return-Path: <SRS0=axia=LA=gmail.com=dpfrey@kernel.org>
-From: David Frey <dpfrey@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	himanshujha199640@gmail.com,
-	David Frey <dpfrey@gmail.com>
-Subject: [PATCH v3 6/7] iio: chemical: bme680: use FIELD_GET macro
-Date: Fri, 17 Aug 2018 12:03:18 -0700
-Message-Id: <20180817190319.13119-7-dpfrey@gmail.com>
-In-Reply-To: <20180817190319.13119-1-dpfrey@gmail.com>
+Return-Path: <SRS0=Z3Ke=LB=gmail.com=himanshujha199640@kernel.org>
+Date: Sat, 18 Aug 2018 16:40:35 +0530
+From: Himanshu Jha <himanshujha199640@gmail.com>
+To: David Frey <dpfrey@gmail.com>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org
+Subject: Re: [PATCH v3 6/7] iio: chemical: bme680: use FIELD_GET macro
+Message-ID: <20180818111035.GG24920@himanshu-Vostro-3559>
 References: <20180817190319.13119-1-dpfrey@gmail.com>
+ <20180817190319.13119-7-dpfrey@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20180817190319.13119-7-dpfrey@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Use the FIELD_GET macro instead of explicit mask and shift.
+On Fri, Aug 17, 2018 at 12:03:18PM -0700, David Frey wrote:
+> Use the FIELD_GET macro instead of explicit mask and shift.
+> 
+> Signed-off-by: David Frey <dpfrey@gmail.com>
 
-Signed-off-by: David Frey <dpfrey@gmail.com>
----
- drivers/iio/chemical/bme680_core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Reviewed-by: Himanshu Jha <himanshujha199640@gmail.com>
+Tested-by: Himanshu Jha <himanshujha199640@gmail.com>
 
-diff --git a/drivers/iio/chemical/bme680_core.c b/drivers/iio/chemical/bme680_core.c
-index 7c7df40b615f..46afc93041f5 100644
---- a/drivers/iio/chemical/bme680_core.c
-+++ b/drivers/iio/chemical/bme680_core.c
-@@ -285,7 +285,7 @@ static int bme680_read_calib(struct bme680_data *data,
- 		dev_err(dev, "failed to read resistance heat range\n");
- 		return ret;
- 	}
--	calib->res_heat_range = (tmp & BME680_RHRANGE_MASK) / 16;
-+	calib->res_heat_range = FIELD_GET(BME680_RHRANGE_MASK, tmp);
- 
- 	ret = regmap_read(data->regmap, BME680_REG_RES_HEAT_VAL, &tmp);
- 	if (ret < 0) {
-@@ -299,7 +299,7 @@ static int bme680_read_calib(struct bme680_data *data,
- 		dev_err(dev, "failed to read range software error\n");
- 		return ret;
- 	}
--	calib->range_sw_err = (tmp & BME680_RSERROR_MASK) / 16;
-+	calib->range_sw_err = FIELD_GET(BME680_RSERROR_MASK, tmp);
- 
- 	return 0;
- }
+Also, 0-day tested with build success!
+
+Thanks
+
 -- 
-2.11.0
+Himanshu Jha
+Undergraduate Student
+Department of Electronics & Communication
+Guru Tegh Bahadur Institute of Technology
