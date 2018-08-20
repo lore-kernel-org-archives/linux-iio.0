@@ -1,12 +1,12 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:45062 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726633AbeH2V5x (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Aug 2018 17:57:53 -0400
+Received: from mail-wm0-f68.google.com ([74.125.82.68]:33192 "EHLO
+        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726585AbeHUDAi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Aug 2018 23:00:38 -0400
 From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
-To: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>,
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Jonathan Corbet <corbet@lwn.net>,
+        Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>,
         Peter Korsgaard <peter.korsgaard@barco.com>,
         Peter Rosin <peda@axentia.se>,
         Ulf Hansson <ulf.hansson@linaro.org>,
@@ -22,160 +22,195 @@ Cc: Linus Walleij <linus.walleij@linaro.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>, linux-gpio@vger.kernel.org,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-i2c@vger.kernel.org, linux-mmc@vger.kernel.org,
-        Network Development <netdev@vger.kernel.org>,
+        linux-doc@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-mmc@vger.kernel.org, netdev@vger.kernel.org,
         linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-serial@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Willy Tarreau <w@1wt.eu>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
         Janusz Krzysztofik <jmkrzyszt@gmail.com>
-Subject: Re: [RFC RFT PATCH v4 1/4] gpiolib: Pass bitmaps, not integer arrays, to get/set array
-Date: Wed, 29 Aug 2018 20:01:01 +0200
-Message-ID: <21039309.e3MgZOjmZl@z50>
-In-Reply-To: <CANiq72kM9bYJ1Q+dbLumjfQLZW223ZTrYEFqfQ2Jv2SAjrD1NA@mail.gmail.com>
-References: <20180813223448.21316-1-jmkrzyszt@gmail.com> <20180820234341.5271-2-jmkrzyszt@gmail.com> <CANiq72kM9bYJ1Q+dbLumjfQLZW223ZTrYEFqfQ2Jv2SAjrD1NA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Subject: [RFC RFT PATCH v4 2/4] gpiolib: Identify arrays matching GPIO hardware
+Date: Tue, 21 Aug 2018 01:43:39 +0200
+Message-Id: <20180820234341.5271-3-jmkrzyszt@gmail.com>
+In-Reply-To: <20180820234341.5271-1-jmkrzyszt@gmail.com>
+References: <20180813223448.21316-1-jmkrzyszt@gmail.com>
+ <20180820234341.5271-1-jmkrzyszt@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wednesday, August 29, 2018 2:03:18 PM CEST Miguel Ojeda wrote:
-> Hi Janusz,
-> 
-> On Tue, Aug 21, 2018 at 1:43 AM, Janusz Krzysztofik <jmkrzyszt@gmail.com> wrote:
-> > Most users of get/set array functions iterate consecutive bits of data,
-> > usually a single integer, while or processing array of results obtained
-> > from or building an array of values to be passed to those functions.
-> > Save time wasted on those iterations by changing the functions' API to
-> > accept bitmaps.
-> >
-> > All current users are updated as well.
-> >
-> > More benefits from the change are expected as soon as planned support
-> > for accepting/passing those bitmaps directly from/to respective GPIO
-> > chip callbacks if applicable is implemented.
-> >
-> > Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
-> > ---
-> >  Documentation/driver-api/gpio/consumer.rst  | 22 ++++----
-> >  drivers/auxdisplay/hd44780.c                | 52 +++++++++--------
-> 
-> [CC'ing Willy and Geert for hd44780]
-> 
-> > diff --git a/drivers/auxdisplay/hd44780.c b/drivers/auxdisplay/hd44780.c
-> > index f1a42f0f1ded..d340473aa142 100644
-> > --- a/drivers/auxdisplay/hd44780.c
-> > +++ b/drivers/auxdisplay/hd44780.c
-> > @@ -62,20 +62,19 @@ static void hd44780_strobe_gpio(struct hd44780 *hd)
-> >  /* write to an LCD panel register in 8 bit GPIO mode */
-> >  static void hd44780_write_gpio8(struct hd44780 *hd, u8 val, unsigned int rs)
-> >  {
-> > -       int values[10]; /* for DATA[0-7], RS, RW */
-> > -       unsigned int i, n;
-> > +       unsigned long value_bitmap[1];  /* for DATA[0-7], RS, RW */
-> 
-> Why [1]? I understand it is because in other cases it may be more than
-> one,
+Certain GPIO array lookup results may map directly to GPIO pins of a
+single GPIO chip in hardware order.  If that condition is recognized
+and handled efficiently, significant performance gain of get/set array
+functions may be possible.
 
-Yes, I tried to point out the fact the new API accepts a bitmap of an arbitrary 
-length, and I tried to use the same code pattern across changes to the API 
-users.
+While processing a request for an array of GPIO descriptors, identify
+those which represent corresponding pins of a single GPIO chip.  Skip
+over pins which require open source or open drain special processing.
+Moreover, identify pins which require inversion.  Pass a pointer to
+that information with the array to the caller so it can benefit from
+enhanced performance as soon as get/set array functions can accept and
+make efficient use of it.
 
-> but...
-> 
-> > +       unsigned int n;
-> >
-> > -       for (i = 0; i < 8; i++)
-> > -               values[PIN_DATA0 + i] = !!(val & BIT(i));
-> > -       values[PIN_CTRL_RS] = rs;
-> > +       value_bitmap[0] = val;
-> > +       __assign_bit(PIN_CTRL_RS, value_bitmap, rs);
-> >         n = 9;
-> >         if (hd->pins[PIN_CTRL_RW]) {
-> > -               values[PIN_CTRL_RW] = 0;
-> > +               __clear_bit(PIN_CTRL_RW, value_bitmap);
-> >                 n++;
-> >         }
-> >
-> >         /* Present the data to the port */
-> > -       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA0], values);
-> > +       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA0], value_bitmap);
-> >
-> >         hd44780_strobe_gpio(hd);
-> >  }
-> > @@ -83,32 +82,31 @@ static void hd44780_write_gpio8(struct hd44780 *hd, u8 val, unsigned int rs)
-> >  /* write to an LCD panel register in 4 bit GPIO mode */
-> >  static void hd44780_write_gpio4(struct hd44780 *hd, u8 val, unsigned int rs)
-> >  {
-> > -       int values[10]; /* for DATA[0-7], RS, RW, but DATA[0-3] is unused */
-> > -       unsigned int i, n;
-> > +       /* for DATA[0-7], RS, RW, but DATA[0-3] is unused */
-> > +       unsigned long value_bitmap[0];
-> 
-> This one is even more strange... :-)
+Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+---
+ Documentation/driver-api/gpio/consumer.rst |  4 +-
+ drivers/gpio/gpiolib.c                     | 72 +++++++++++++++++++++++++++++-
+ drivers/gpio/gpiolib.h                     |  9 ++++
+ include/linux/gpio/consumer.h              |  9 ++++
+ 4 files changed, 92 insertions(+), 2 deletions(-)
 
-This one is an error, should be 1 of course :-), thanks.
-
-> > +       unsigned int n;
-> >
-> >         /* High nibble + RS, RW */
-> > -       for (i = 4; i < 8; i++)
-> > -               values[PIN_DATA0 + i] = !!(val & BIT(i));
-> > -       values[PIN_CTRL_RS] = rs;
-> > +       value_bitmap[0] = val;
-> > +       __assign_bit(PIN_CTRL_RS, value_bitmap, rs);
-> >         n = 5;
-> >         if (hd->pins[PIN_CTRL_RW]) {
-> > -               values[PIN_CTRL_RW] = 0;
-> > +               __clear_bit(PIN_CTRL_RW, value_bitmap);
-> >                 n++;
-> >         }
-> > +       value_bitmap[0] = value_bitmap[0] >> PIN_DATA4;
-> 
-> Maybe >>=?
-
-OK.
-
-Answering you question below:
-To make my changes as clear as I could imagine, I decided to use the same indexing as in the original code, i.e., assign high nibble of val to bits 4-7 and two other values - rs and an optional 0 - to bits 8 and 9, respectively.
-Unlike in case of array of integers, where for the high nibble part you could just pass a pointer to a sub-array starting at the 5th value (i.e., &values[PIN_DATA4]), it was not possible to do the same for and arbitrary bit of a bitmap, e.g., pass a pointer to the 5th bit of *value_bitmap as an argument pointing to bit 0 of a bitmap to be processed. That's why I shifted the bitmap right by 4 bits.
-Then, ...
-
-> >
-> >         /* Present the data to the port */
-> > -       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA4],
-> > -                                      &values[PIN_DATA4]);
-> > +       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA4], value_bitmap);
-> >
-> >         hd44780_strobe_gpio(hd);
-> >
-> >         /* Low nibble */
-> > -       for (i = 0; i < 4; i++)
-> > -               values[PIN_DATA4 + i] = !!(val & BIT(i));
-> > +       value_bitmap[0] &= ~((1 << PIN_DATA4) - 1);
-> > +       value_bitmap[0] |= val & ~((1 << PIN_DATA4) - 1);
-> 
-> Are you sure this is correct? You are basically doing an or of
-> value_bitmap and val and clearing the low-nibble.
-
-having the rs and optional 0 already assigned to bits 4 and 5 of the bitmap, I just cleared bits 0-3 still containing the high nibble of val and assigned the low nibble of it to those bits, getting a result ready to be passed as an argument to gpiod_set_array_value_cansleep() below.
-
-I hope I didn't miss anything.
-
-Thanks,
-Janusz
-
-> >
-> >         /* Present the data to the port */
-> > -       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA4],
-> > -                                      &values[PIN_DATA4]);
-> > +       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA4], value_bitmap);
-> >
-> >         hd44780_strobe_gpio(hd);
-> >  }
-> 
-> Cheers,
-> Miguel
-> 
+diff --git a/Documentation/driver-api/gpio/consumer.rst b/Documentation/driver-api/gpio/consumer.rst
+index ed68042ddccf..7e0298b9a7b9 100644
+--- a/Documentation/driver-api/gpio/consumer.rst
++++ b/Documentation/driver-api/gpio/consumer.rst
+@@ -109,9 +109,11 @@ For a function using multiple GPIOs all of those can be obtained with one call::
+ 					   enum gpiod_flags flags)
+ 
+ This function returns a struct gpio_descs which contains an array of
+-descriptors::
++descriptors.  It also contains a pointer to a gpiolib private structure which,
++if passed back to get/set array functions, may speed up I/O proocessing::
+ 
+ 	struct gpio_descs {
++		struct gpio_array *info;
+ 		unsigned int ndescs;
+ 		struct gpio_desc *desc[];
+ 	}
+diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
+index f0e9ffa8cab6..c1ed1c759345 100644
+--- a/drivers/gpio/gpiolib.c
++++ b/drivers/gpio/gpiolib.c
+@@ -4174,7 +4174,9 @@ struct gpio_descs *__must_check gpiod_get_array(struct device *dev,
+ {
+ 	struct gpio_desc *desc;
+ 	struct gpio_descs *descs;
+-	int count;
++	struct gpio_array *array_info = NULL;
++	struct gpio_chip *chip;
++	int count, bitmap_size;
+ 
+ 	count = gpiod_count(dev, con_id);
+ 	if (count < 0)
+@@ -4190,9 +4192,77 @@ struct gpio_descs *__must_check gpiod_get_array(struct device *dev,
+ 			gpiod_put_array(descs);
+ 			return ERR_CAST(desc);
+ 		}
++
+ 		descs->desc[descs->ndescs] = desc;
++
++		chip = gpiod_to_chip(desc);
++		/*
++		 * Select a chip of first array member
++		 * whose index matches its pin hardware number
++		 * as a candidate for fast bitmap processing.
++		 */
++		if (!array_info && gpio_chip_hwgpio(desc) == descs->ndescs) {
++			struct gpio_descs *array;
++
++			bitmap_size = BITS_TO_LONGS(chip->ngpio > count ?
++						    chip->ngpio : count);
++
++			array = kzalloc(struct_size(descs, desc, count) +
++					struct_size(array_info, invert_mask,
++					3 * bitmap_size), GFP_KERNEL);
++			if (!array) {
++				gpiod_put_array(descs);
++				return ERR_PTR(-ENOMEM);
++			}
++
++			memcpy(array, descs,
++			       struct_size(descs, desc, descs->ndescs + 1));
++			kfree(descs);
++
++			descs = array;
++			array_info = (void *)(descs->desc + count);
++			array_info->get_mask = array_info->invert_mask +
++						  bitmap_size;
++			array_info->set_mask = array_info->get_mask +
++						  bitmap_size;
++
++			array_info->desc = descs->desc;
++			array_info->size = count;
++			array_info->chip = chip;
++			bitmap_set(array_info->get_mask, descs->ndescs,
++				   count - descs->ndescs);
++			bitmap_set(array_info->set_mask, descs->ndescs,
++				   count - descs->ndescs);
++			descs->info = array_info;
++		}
++		/*
++		 * Unmark members which don't qualify for fast bitmap
++		 * processing (different chip, not in hardware order)
++		 */
++		if (array_info && (chip != array_info->chip ||
++		    gpio_chip_hwgpio(desc) != descs->ndescs)) {
++			__clear_bit(descs->ndescs, array_info->get_mask);
++			__clear_bit(descs->ndescs, array_info->set_mask);
++		} else if (array_info) {
++			/* Exclude open drain or open source from fast output */
++			if (gpiochip_line_is_open_drain(chip, descs->ndescs) ||
++			    gpiochip_line_is_open_source(chip, descs->ndescs))
++				__clear_bit(descs->ndescs,
++					    array_info->set_mask);
++			/* Identify 'fast' pins which require invertion */
++			if (gpiod_is_active_low(desc))
++				__set_bit(descs->ndescs,
++					  array_info->invert_mask);
++		}
++
+ 		descs->ndescs++;
+ 	}
++	if (array_info)
++		dev_dbg(dev,
++			"GPIO array info: chip=%s, size=%d, get_mask=%lx, set_mask=%lx, invert_mask=%lx\n",
++			array_info->chip->label, array_info->size,
++			*array_info->get_mask, *array_info->set_mask,
++			*array_info->invert_mask);
+ 	return descs;
+ }
+ EXPORT_SYMBOL_GPL(gpiod_get_array);
+diff --git a/drivers/gpio/gpiolib.h b/drivers/gpio/gpiolib.h
+index 11e83d2eef89..b60905d558b1 100644
+--- a/drivers/gpio/gpiolib.h
++++ b/drivers/gpio/gpiolib.h
+@@ -183,6 +183,15 @@ static inline bool acpi_can_fallback_to_crs(struct acpi_device *adev,
+ }
+ #endif
+ 
++struct gpio_array {
++	struct gpio_desc	**desc;
++	unsigned int		size;
++	struct gpio_chip	*chip;
++	unsigned long		*get_mask;
++	unsigned long		*set_mask;
++	unsigned long		invert_mask[];
++};
++
+ struct gpio_desc *gpiochip_get_desc(struct gpio_chip *chip, u16 hwnum);
+ int gpiod_get_array_value_complex(bool raw, bool can_sleep,
+ 				  unsigned int array_size,
+diff --git a/include/linux/gpio/consumer.h b/include/linux/gpio/consumer.h
+index 1b21dc7b0fad..8dede3e886af 100644
+--- a/include/linux/gpio/consumer.h
++++ b/include/linux/gpio/consumer.h
+@@ -17,11 +17,20 @@ struct device;
+  */
+ struct gpio_desc;
+ 
++/**
++ * Opaque descriptor for a structure of GPIO array attributes.  This structure
++ * is attached to struct gpiod_descs obtained from gpiod_get_array() and can be
++ * passed back to get/set array functions in order to activate fast processing
++ * path if applicable.
++ */
++struct gpio_array;
++
+ /**
+  * Struct containing an array of descriptors that can be obtained using
+  * gpiod_get_array().
+  */
+ struct gpio_descs {
++	struct gpio_array *info;
+ 	unsigned int ndescs;
+ 	struct gpio_desc *desc[];
+ };
+-- 
+2.16.4
