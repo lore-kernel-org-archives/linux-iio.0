@@ -1,60 +1,86 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pl0-f68.google.com ([209.85.160.68]:45456 "EHLO
-        mail-pl0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726399AbeHSUa6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Aug 2018 16:30:58 -0400
-Received: by mail-pl0-f68.google.com with SMTP id j8-v6so5923647pll.12
-        for <linux-iio@vger.kernel.org>; Sun, 19 Aug 2018 10:18:49 -0700 (PDT)
-Date: Sun, 19 Aug 2018 22:48:42 +0530
-From: Himanshu Jha <himanshujha199640@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Frey <dpfrey@gmail.com>, linux-iio@vger.kernel.org
+Return-Path: <SRS0=bXW4=LD=gmail.com=dpfrey@kernel.org>
 Subject: Re: [PATCH v3 2/7] iio: chemical: bme680: cleanup bme680_read_calib
  formatting
-Message-ID: <20180819171842.GB13175@himanshu-Vostro-3559>
+To: Himanshu Jha <himanshujha199640@gmail.com>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org
 References: <20180817190319.13119-1-dpfrey@gmail.com>
  <20180817190319.13119-3-dpfrey@gmail.com>
  <20180818110655.GC24920@himanshu-Vostro-3559>
- <20180819165421.77b693ed@archlinux>
+From: David Frey <dpfrey@gmail.com>
+Message-ID: <78bee2e8-c686-b2d1-b2c7-1681764095e4@gmail.com>
+Date: Mon, 20 Aug 2018 12:24:43 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20180819165421.77b693ed@archlinux>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <20180818110655.GC24920@himanshu-Vostro-3559>
+Content-Type: text/plain; charset=utf-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, Aug 19, 2018 at 04:54:21PM +0100, Jonathan Cameron wrote:
-> On Sat, 18 Aug 2018 16:36:55 +0530
-> Himanshu Jha <himanshujha199640@gmail.com> wrote:
+On 8/18/2018 4:06 AM, Himanshu Jha wrote:
+> On Fri, Aug 17, 2018 at 12:03:14PM -0700, David Frey wrote:
+>> Signed-off-by: David Frey <dpfrey@gmail.com>
 > 
-> > On Fri, Aug 17, 2018 at 12:03:14PM -0700, David Frey wrote:
-> > > Signed-off-by: David Frey <dpfrey@gmail.com>  
-> > 
-> > Reviewed-by: Himanshu Jha <himanshujha199640@gmail.com>
-> > Tested-by: Himanshu Jha <himanshujha199640@gmail.com>
-> > 
-> > Also, 0-day tested with build success!
-> > 
-> > Thanks
-> > 
-> > One minor comment below.
-> > 
-> > Maybe Jonathan would fix while applying, so don't need a
-> > new version for this.
-> I've fixed them up.
+> One minor comment below.
+
+<snip>
+
+>> diff --git a/drivers/iio/chemical/bme680_core.c b/drivers/iio/chemical/bme680_core.c
+>> index 35cbcb16c9f9..cde08d57e7d5 100644
+>> --- a/drivers/iio/chemical/bme680_core.c
+>> +++ b/drivers/iio/chemical/bme680_core.c
+<snip>
+>> @@ -208,30 +200,26 @@ static int bme680_read_calib(struct bme680_data *data,
+>>  		dev_err(dev, "failed to read BME680_H1_MSB_REG\n");
+>>  		return ret;
+>>  	}
+>> -
+>>  	ret = regmap_read(data->regmap, BME680_H1_LSB_REG, &tmp_lsb);
+>>  	if (ret < 0) {
+>>  		dev_err(dev, "failed to read BME680_H1_LSB_REG\n");
+>>  		return ret;
+>>  	}
+>> -
+>>  	calib->par_h1 = (tmp_msb << BME680_HUM_REG_SHIFT_VAL) |
+>> -				(tmp_lsb & BME680_BIT_H1_DATA_MSK);
+>> +	                (tmp_lsb & BME680_BIT_H1_DATA_MSK);
 > 
-> I would have liked to see a little more detail in the description of what
-> was being changed and why though...
+> Prefer tabs instead of spaces!
+> Please run checkpatch on the patch to get those warnings.
 
-Indeed!
-AFAIK Greg never takes any patch with empty commit log
-but I've seen patches with empty log in IIO.
+Thanks for telling me about the existence of checkpatch.pl.  The
+official docs
+(https://www.kernel.org/doc/html/v4.18/process/coding-style.html) are
+pretty light on information about indentation/alignment, but there is
+this relevant quote: "Outside of comments, documentation and except in
+Kconfig, spaces are never used for indentation, and the above example is
+deliberately broken."
 
-Point noted!
-Now, I'll poke each and everyone if I find such a case
-in future.
+I thought that the way I indented it was optimal because I used spaces a
+tab for indentation and then spaces for alignment, but checkpatch.pl
+seems to disagree.  Based on a quick read of the code, it seems that it
+will complain about more than 7 spaces in a row.
 
--- 
-Himanshu Jha
-Undergraduate Student
-Department of Electronics & Communication
-Guru Tegh Bahadur Institute of Technology
+I guess you could achieve visually identical alignment (where "------->"
+is tab and "_" is space) and this would still pass checkpatch.pl.  Note
+that I changed the identifier name slightly to demonstrate a mix of tabs
+and spaces.
+
+------->calib->par_h123 = (tmp_msb << BME680_HUM_REG_SHIFT_VAL) |
+------->------->------->__(tmp_lsb & BME680_BIT_H1_DATA_MSK);
+
+What I don't understand is the logic used to justify the original
+indentation:
+------->calib->par_h1 = (tmp_msb << BME680_HUM_REG_SHIFT_VAL) |
+------->------->------->------->(tmp_lsb & BME680_BIT_H1_DATA_MSK);
+
+Why not?
+------->calib->par_h1 = (tmp_msb << BME680_HUM_REG_SHIFT_VAL) |
+------->------->------->(tmp_lsb & BME680_BIT_H1_DATA_MSK);
+
+Or?
+------->calib->par_h1 = (tmp_msb << BME680_HUM_REG_SHIFT_VAL) |
+------->------->(tmp_lsb & BME680_BIT_H1_DATA_MSK);
+
+I'm not trying to turn this into a crazy bike shedding thread.  I just
+want to understand the rules a bit better.
+
+Thanks,
+David
