@@ -1,75 +1,67 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:34322 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726021AbeHTSxy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Aug 2018 14:53:54 -0400
-Received: by mail-pf1-f193.google.com with SMTP id k19-v6so6957641pfi.1
-        for <linux-iio@vger.kernel.org>; Mon, 20 Aug 2018 08:37:47 -0700 (PDT)
-Date: Mon, 20 Aug 2018 21:07:40 +0530
-From: Himanshu Jha <himanshujha199640@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Frey <dpfrey@gmail.com>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3 3/7] iio: chemical: bme680: indent #defines
- consistently
-Message-ID: <20180820153740.GA3588@himanshu-Vostro-3559>
-References: <20180817190319.13119-1-dpfrey@gmail.com>
- <20180817190319.13119-4-dpfrey@gmail.com>
- <20180818110725.GD24920@himanshu-Vostro-3559>
- <20180819170215.35a6b1de@archlinux>
- <20180819172844.GC13175@himanshu-Vostro-3559>
- <20180819201439.30d318c7@archlinux>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Return-Path: <SRS0=bXW4=LD=gmail.com=dpfrey@kernel.org>
+From: David Frey <dpfrey@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	himanshujha199640@gmail.com,
+	David Frey <dpfrey@gmail.com>
+Subject: [PATCH] iio: chemical: bme680: Remove field value defines
+Date: Mon, 20 Aug 2018 10:39:59 -0700
+Message-Id: <20180820173959.22380-1-dpfrey@gmail.com>
 In-Reply-To: <20180819201439.30d318c7@archlinux>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+References: <20180819201439.30d318c7@archlinux>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, Aug 19, 2018 at 08:14:39PM +0100, Jonathan Cameron wrote:
-> On Sun, 19 Aug 2018 22:58:44 +0530
-> Himanshu Jha <himanshujha199640@gmail.com> wrote:
-> 
-> > On Sun, Aug 19, 2018 at 05:02:15PM +0100, Jonathan Cameron wrote:
-> > > On Sat, 18 Aug 2018 16:37:25 +0530
-> > > Himanshu Jha <himanshujha199640@gmail.com> wrote:
-> > >   
-> > > > On Fri, Aug 17, 2018 at 12:03:15PM -0700, David Frey wrote:  
-> > > > > Signed-off-by: David Frey <dpfrey@gmail.com>    
-> > > > 
-> > > > Reviewed-by: Himanshu Jha <himanshujha199640@gmail.com>
-> > > > Tested-by: Himanshu Jha <himanshujha199640@gmail.com>
-> > > > 
-> > > > Also, 0-day tested with build success!
-> > > > 
-> > > > Thanks
-> > > > 
-> > > >   
-> > > 
-> > > Applied,
-> > > 
-> > > There is one more suspicious bit of indenting in here
-> > > #define BME680_REG_CTRL_GAS_1			0x71
-> > > #define   BME680_RUN_GAS_MASK			BIT(4)
-> > > #define   BME680_NB_CONV_MASK			GENMASK(3, 0)
-> > > #define     BME680_RUN_GAS_EN_BIT		BIT(4)
-> > > #define     BME680_NB_CONV_0_VAL		0
-> > > 
-> > > I think RUN_GAS_EN_BIT should be one level lower?  
-> > 
-> > No, its fine. It is a value and third level indent is expected.
-> > It should be set to 1 to initiate measurement. And
-> > the total mask value is
-> > 	0b00001000 == BME680_RUN_GAS_EN_BIT | BME680_NB_CONV_0_VAL
-> > 
-> Ah, then I'd argue it's name is wrong.  BIT elsewhere has been used
-> to indicate a field in the register, not a value.
-> 
-> Should probably just be BME680_RUN_GAS_EN?
+Remove BME680_RUN_GAS_EN_BIT and BME680_NB_CONV_0_VAL field value
+definitions because the fields are simply boolean and integer
+respectively.
 
-Sure.
-I will send a patch soon.
+Signed-off-by: David Frey <dpfrey@gmail.com>
+---
+This patch applies on top of my "indent #defines consistently" v3 patch.
+Appologies if I should have submitted this patch in a different way.  If
+I should have submitted this differently, I would appreciate a pointer
+on what I should have done in this case.
 
+BME680_RUN_GAS_EN_BIT was indeed somewhat wrongly formatted, but the
+issue was not the indentation level, but rather that I should have
+followed immediately after BME680_RUN_GAS_MASK.  Once I moved it there,
+I realized that neither this definition nor BME680_NB_CONV_0_VAL really
+added any value and hence I removed both in this patch.
+
+ drivers/iio/chemical/bme680.h      | 2 --
+ drivers/iio/chemical/bme680_core.c | 5 +++--
+ 2 files changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iio/chemical/bme680.h b/drivers/iio/chemical/bme680.h
+index dd4247d364a0..48dc9e50e017 100644
+--- a/drivers/iio/chemical/bme680.h
++++ b/drivers/iio/chemical/bme680.h
+@@ -54,8 +54,6 @@
+ #define BME680_REG_CTRL_GAS_1			0x71
+ #define   BME680_RUN_GAS_MASK			BIT(4)
+ #define   BME680_NB_CONV_MASK			GENMASK(3, 0)
+-#define     BME680_RUN_GAS_EN_BIT		BIT(4)
+-#define     BME680_NB_CONV_0_VAL		0
+ 
+ #define BME680_REG_MEAS_STAT_0			0x1D
+ #define   BME680_GAS_MEAS_BIT			BIT(6)
+diff --git a/drivers/iio/chemical/bme680_core.c b/drivers/iio/chemical/bme680_core.c
+index cde08d57e7d5..01ca7ba64ea0 100644
+--- a/drivers/iio/chemical/bme680_core.c
++++ b/drivers/iio/chemical/bme680_core.c
+@@ -566,10 +566,11 @@ static int bme680_gas_config(struct bme680_data *data)
+ 		return ret;
+ 	}
+ 
+-	/* Selecting the runGas and NB conversion settings for the sensor */
++	/* Enable the gas sensor and select heater profile set-point 0 */
+ 	ret = regmap_update_bits(data->regmap, BME680_REG_CTRL_GAS_1,
+ 				 BME680_RUN_GAS_MASK | BME680_NB_CONV_MASK,
+-				 BME680_RUN_GAS_EN_BIT | BME680_NB_CONV_0_VAL);
++				 FIELD_PREP(BME680_RUN_GAS_MASK, 1) |
++				 FIELD_PREP(BME680_NB_CONV_MASK, 0));
+ 	if (ret < 0)
+ 		dev_err(dev, "failed to write ctrl_gas_1 register\n");
+ 
 -- 
-Himanshu Jha
-Undergraduate Student
-Department of Electronics & Communication
-Guru Tegh Bahadur Institute of Technology
+2.11.0
