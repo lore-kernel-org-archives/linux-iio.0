@@ -1,67 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:43074 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725885AbeHSOXR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Aug 2018 10:23:17 -0400
-Date: Sun, 19 Aug 2018 12:12:08 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Jiecheng Wu <jasonwood2031@gmail.com>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: [PATCH] hmc5843_i2c.c: fix missing return value check of
- devm_regmap_init_i2c()
-Message-ID: <20180819121208.19951cde@archlinux>
-In-Reply-To: <20180819021641.3068-1-jasonwood2031@gmail.com>
-References: <20180819021641.3068-1-jasonwood2031@gmail.com>
+Received: from mail-eopbgr10126.outbound.protection.outlook.com ([40.107.1.126]:10240
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725948AbeHTNSH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 20 Aug 2018 09:18:07 -0400
+From: Peter Rosin <peda@axentia.se>
+To: linux-kernel@vger.kernel.org
+Cc: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org
+Subject: [PATCH 0/5] License cleanup of "my" IIO files
+Date: Mon, 20 Aug 2018 12:01:09 +0200
+Message-Id: <20180820100114.22966-1-peda@axentia.se>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, 19 Aug 2018 10:16:41 +0800
-Jiecheng Wu <jasonwood2031@gmail.com> wrote:
+Hi!
 
-> Function hmc5843_i2c_probe() defined in
->  drivers/iio/magnetometer/hmc5843_i2c.c calls devm_regmap_init_i2c()
->  to initialise managed register map. As the return value of
->  devm_regmap_init_i2c() will be an ERR_PTR() on error, the return
->  value must be checked against NULL.
+I found a couple of discrepancies in the license annotations in
+some of the files I have added to the drivers/iio/ directory.
 
-This text isn't accurate.  Checking IS_ERR is definitely not checking
-against NULL.
+This cleans up the trivialities that I found. While at it, convert
+the remaining IIO files that are "mine" to SPDX license identifiers.
 
-+ the issue with missing signoff etc that has already been raised.
+Cheers,
+Peter
 
-Jonathan
+Peter Rosin (5):
+  iio: potentiometer: mcp4018: use the correct MODULE_LICENSE
+  iio: potentiometer: mcp4531: switch to SPDX license identifier
+  iio: envelope-detector: switch to SPDX license identifier
+  iio: dpot-dac: switch to SPDX license identifier
+  iio: multiplexer: switch to SPDX license identifier
 
-> ---
->  drivers/iio/magnetometer/hmc5843_i2c.c | 10 ++++++++--
->  1 file changed, 8 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/magnetometer/hmc5843_i2c.c b/drivers/iio/magnetometer/hmc5843_i2c.c
-> index 3de7f44..4911cf8 100644
-> --- a/drivers/iio/magnetometer/hmc5843_i2c.c
-> +++ b/drivers/iio/magnetometer/hmc5843_i2c.c
-> @@ -14,6 +14,7 @@
->  #include <linux/regmap.h>
->  #include <linux/iio/iio.h>
->  #include <linux/iio/triggered_buffer.h>
-> +#include <linux/device.h>
->  
->  #include "hmc5843.h"
->  
-> @@ -58,8 +59,13 @@ static const struct regmap_config hmc5843_i2c_regmap_config = {
->  static int hmc5843_i2c_probe(struct i2c_client *cli,
->  			     const struct i2c_device_id *id)
->  {
-> -	return hmc5843_common_probe(&cli->dev,
-> -			devm_regmap_init_i2c(cli, &hmc5843_i2c_regmap_config),
-> +	struct regmap *regmap;
-> +	regmap = devm_regmap_init_i2c(cli, &hmc5843_i2c_regmap_config);
-> +	if (IS_ERR(regmap)) {
-> +		dev_err(&cli->dev, "Failed to initialize i2c regmap\n");
-> +		return PTR_ERR(regmap);
-> +	}
-> +	return hmc5843_common_probe(&cli->dev, regmap,
->  			id->driver_data, id->name);
->  }
->  
+ drivers/iio/adc/envelope-detector.c | 5 +----
+ drivers/iio/dac/dpot-dac.c          | 5 +----
+ drivers/iio/multiplexer/iio-mux.c   | 5 +----
+ drivers/iio/potentiometer/mcp4018.c | 2 +-
+ drivers/iio/potentiometer/mcp4531.c | 7 ++-----
+ 5 files changed, 6 insertions(+), 18 deletions(-)
+
+-- 
+2.11.0
