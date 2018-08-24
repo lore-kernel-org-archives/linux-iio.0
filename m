@@ -1,91 +1,137 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:33280 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726412AbeHYMJP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 25 Aug 2018 08:09:15 -0400
-Date: Sat, 25 Aug 2018 09:30:55 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Mathieu Othacehe <m.othacehe@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: light: isl29501: Simplify code to kill compiler
- warning
-Message-ID: <20180825093055.2cee2159@archlinux>
-In-Reply-To: <20180823212436.17423-1-geert@linux-m68k.org>
-References: <20180823212436.17423-1-geert@linux-m68k.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:40651 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726613AbeHXN2G (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 24 Aug 2018 09:28:06 -0400
+Received: by mail-pl1-f195.google.com with SMTP id s17-v6so883161plp.7
+        for <linux-iio@vger.kernel.org>; Fri, 24 Aug 2018 02:54:13 -0700 (PDT)
+From: Baolin Wang <baolin.wang@linaro.org>
+To: jic23@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        freeman.liu@spreadtrum.com, broonie@kernel.org,
+        baolin.wang@linaro.org, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] iio: adc: sc27xx: Add raw data support
+Date: Fri, 24 Aug 2018 17:53:15 +0800
+Message-Id: <4a7e33457617e6f0f7c9627fe20ddd3039e4fe82.1535103920.git.baolin.wang@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 23 Aug 2018 23:24:35 +0200
-Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+The headset device will use channel 20 of ADC controller to detect events,
+but it needs the raw ADC data to do conversion according to its own formula.
 
-> With gcc 4.1.2:
->=20
->     drivers/iio/proximity/isl29501.c: In function =E2=80=98isl29501_regis=
-ter_write=E2=80=99:
->     drivers/iio/proximity/isl29501.c:235: warning: =E2=80=98msb=E2=80=99 =
-may be used uninitialized in this function
->=20
-> While this is a false positive, it can easily be avoided by removing the
-> "msb" intermediate variable.
-> Remove the "lsb" intermediate variable for consistency.
->=20
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Thus we should configure the channel mask separately and configure channel
+20 as IIO_CHAN_INFO_RAW, as well as adding raw data read support.
 
-Looks sensible to me, but I'd obviously like to leave a little time for=20
-Mathieu to comment as it's his driver.
+Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
+---
+ drivers/iio/adc/sc27xx_adc.c |   80 ++++++++++++++++++++++++------------------
+ 1 file changed, 45 insertions(+), 35 deletions(-)
 
-Jonathan
-
-> ---
-> Compile-tested only.
-> ---
->  drivers/iio/proximity/isl29501.c | 12 ++----------
->  1 file changed, 2 insertions(+), 10 deletions(-)
->=20
-> diff --git a/drivers/iio/proximity/isl29501.c b/drivers/iio/proximity/isl=
-29501.c
-> index e5e94540f404dd2c..5ae549075b27c50d 100644
-> --- a/drivers/iio/proximity/isl29501.c
-> +++ b/drivers/iio/proximity/isl29501.c
-> @@ -232,7 +232,6 @@ static u32 isl29501_register_write(struct isl29501_pr=
-ivate *isl29501,
->  				   u32 value)
->  {
->  	const struct isl29501_register_desc *reg =3D &isl29501_registers[name];
-> -	u8 msb, lsb;
->  	int ret;
-> =20
->  	if (!reg->msb && value > U8_MAX)
-> @@ -241,22 +240,15 @@ static u32 isl29501_register_write(struct isl29501_=
-private *isl29501,
->  	if (value > U16_MAX)
->  		return -ERANGE;
-> =20
-> -	if (!reg->msb) {
-> -		lsb =3D value & 0xFF;
-> -	} else {
-> -		msb =3D (value >> 8) & 0xFF;
-> -		lsb =3D value & 0xFF;
-> -	}
-> -
->  	mutex_lock(&isl29501->lock);
->  	if (reg->msb) {
->  		ret =3D i2c_smbus_write_byte_data(isl29501->client,
-> -						reg->msb, msb);
-> +						reg->msb, value >> 8);
->  		if (ret < 0)
->  			goto err;
->  	}
-> =20
-> -	ret =3D i2c_smbus_write_byte_data(isl29501->client, reg->lsb, lsb);
-> +	ret =3D i2c_smbus_write_byte_data(isl29501->client, reg->lsb, value);
-> =20
->  err:
->  	mutex_unlock(&isl29501->lock);
+diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
+index 2b60efe..153c311 100644
+--- a/drivers/iio/adc/sc27xx_adc.c
++++ b/drivers/iio/adc/sc27xx_adc.c
+@@ -273,6 +273,17 @@ static int sc27xx_adc_read_raw(struct iio_dev *indio_dev,
+ 	int ret, tmp;
+ 
+ 	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		mutex_lock(&indio_dev->mlock);
++		ret = sc27xx_adc_read(data, chan->channel, scale, &tmp);
++		mutex_unlock(&indio_dev->mlock);
++
++		if (ret)
++			return ret;
++
++		*val = tmp;
++		return IIO_VAL_INT;
++
+ 	case IIO_CHAN_INFO_PROCESSED:
+ 		mutex_lock(&indio_dev->mlock);
+ 		ret = sc27xx_adc_read_processed(data, chan->channel, scale,
+@@ -315,48 +326,47 @@ static int sc27xx_adc_write_raw(struct iio_dev *indio_dev,
+ 	.write_raw = &sc27xx_adc_write_raw,
+ };
+ 
+-#define SC27XX_ADC_CHANNEL(index) {				\
++#define SC27XX_ADC_CHANNEL(index, mask) {			\
+ 	.type = IIO_VOLTAGE,					\
+ 	.channel = index,					\
+-	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |	\
+-			      BIT(IIO_CHAN_INFO_SCALE),		\
++	.info_mask_separate = mask | BIT(IIO_CHAN_INFO_SCALE),	\
+ 	.datasheet_name = "CH##index",				\
+ 	.indexed = 1,						\
+ }
+ 
+ static const struct iio_chan_spec sc27xx_channels[] = {
+-	SC27XX_ADC_CHANNEL(0),
+-	SC27XX_ADC_CHANNEL(1),
+-	SC27XX_ADC_CHANNEL(2),
+-	SC27XX_ADC_CHANNEL(3),
+-	SC27XX_ADC_CHANNEL(4),
+-	SC27XX_ADC_CHANNEL(5),
+-	SC27XX_ADC_CHANNEL(6),
+-	SC27XX_ADC_CHANNEL(7),
+-	SC27XX_ADC_CHANNEL(8),
+-	SC27XX_ADC_CHANNEL(9),
+-	SC27XX_ADC_CHANNEL(10),
+-	SC27XX_ADC_CHANNEL(11),
+-	SC27XX_ADC_CHANNEL(12),
+-	SC27XX_ADC_CHANNEL(13),
+-	SC27XX_ADC_CHANNEL(14),
+-	SC27XX_ADC_CHANNEL(15),
+-	SC27XX_ADC_CHANNEL(16),
+-	SC27XX_ADC_CHANNEL(17),
+-	SC27XX_ADC_CHANNEL(18),
+-	SC27XX_ADC_CHANNEL(19),
+-	SC27XX_ADC_CHANNEL(20),
+-	SC27XX_ADC_CHANNEL(21),
+-	SC27XX_ADC_CHANNEL(22),
+-	SC27XX_ADC_CHANNEL(23),
+-	SC27XX_ADC_CHANNEL(24),
+-	SC27XX_ADC_CHANNEL(25),
+-	SC27XX_ADC_CHANNEL(26),
+-	SC27XX_ADC_CHANNEL(27),
+-	SC27XX_ADC_CHANNEL(28),
+-	SC27XX_ADC_CHANNEL(29),
+-	SC27XX_ADC_CHANNEL(30),
+-	SC27XX_ADC_CHANNEL(31),
++	SC27XX_ADC_CHANNEL(0, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(1, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(2, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(3, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(4, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(5, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(6, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(7, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(8, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(9, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(10, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(11, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(12, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(13, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(14, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(15, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(16, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(17, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(18, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(19, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(20, BIT(IIO_CHAN_INFO_RAW)),
++	SC27XX_ADC_CHANNEL(21, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(22, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(23, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(24, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(25, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(26, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(27, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(28, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(29, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(30, BIT(IIO_CHAN_INFO_PROCESSED)),
++	SC27XX_ADC_CHANNEL(31, BIT(IIO_CHAN_INFO_PROCESSED)),
+ };
+ 
+ static int sc27xx_adc_enable(struct sc27xx_adc_data *data)
+-- 
+1.7.9.5
