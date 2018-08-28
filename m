@@ -1,42 +1,94 @@
-Return-Path: <SRS0=XuxN=LK=chromium.org=mka@kernel.org>
-From: Matthias Kaehlcke <mka@chromium.org>
-To: Jonathan Cameron <jic23@kernel.org>,
+Return-Path: <SRS0=xxzE=LL=gmail.com=robherring2@kernel.org>
+From: Rob Herring <robh@kernel.org>
+To: linux-kernel@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Siddartha Mohanadoss <smohanad@codeaurora.org>
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Douglas Anderson <dianders@chromium.org>,
-	Matthias Kaehlcke <mka@chromium.org>
-Subject: [PATCH] iio: adc: qcom-spmi-adc5: Verify channel numbers from DT
-Date: Mon, 27 Aug 2018 14:14:53 -0700
-Message-Id: <20180827211453.213061-1-mka@chromium.org>
-MIME-Version: 1.0
+	Lars-Peter Clausen <lars@metafoo.de>,
+	linux-iio@vger.kernel.org
+Subject: [PATCH] iio: Convert to using %pOFn instead of device_node.name
+Date: Mon, 27 Aug 2018 20:52:23 -0500
+Message-Id: <20180828015252.28511-22-robh@kernel.org>
+In-Reply-To: <20180828015252.28511-1-robh@kernel.org>
+References: <20180828015252.28511-1-robh@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-The driver only defines a subset of all possible ADC channels. Channel
-numbers read from the device tree are accepted as long as they don't
-exceed a max value, even when no channel definition exists. Add a
-check to abort initialization in this case.
+In preparation to remove the node name pointer from struct device_node,
+convert printf users to use the %pOFn format specifier.
 
-Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: linux-iio@vger.kernel.org
+Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- drivers/iio/adc/qcom-spmi-adc5.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iio/adc/qcom-pm8xxx-xoadc.c |  4 ++--
+ drivers/iio/adc/rcar-gyroadc.c      | 12 ++++++------
+ drivers/iio/frequency/adf4350.c     |  2 +-
+ 3 files changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iio/adc/qcom-spmi-adc5.c b/drivers/iio/adc/qcom-spmi-adc5.c
-index 9c8e6f9e8248..ab5bec917c0a 100644
---- a/drivers/iio/adc/qcom-spmi-adc5.c
-+++ b/drivers/iio/adc/qcom-spmi-adc5.c
-@@ -519,7 +519,8 @@ static int adc5_get_dt_channel_data(struct adc5_chip *adc,
- 		return ret;
- 	}
- 
--	if (chan > ADC5_PARALLEL_ISENSE_VBAT_IDATA) {
-+	if (chan > ADC5_PARALLEL_ISENSE_VBAT_IDATA ||
-+	    !data->adc_chans[chan].datasheet_name) {
- 		dev_err(dev, "%s invalid channel number %d\n", name, chan);
+diff --git a/drivers/iio/adc/qcom-pm8xxx-xoadc.c b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
+index b093ecddf1a8..c30c002f1fef 100644
+--- a/drivers/iio/adc/qcom-pm8xxx-xoadc.c
++++ b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
+@@ -708,8 +708,8 @@ static int pm8xxx_of_xlate(struct iio_dev *indio_dev,
+ 	 * mux.
+ 	 */
+ 	if (iiospec->args_count != 2) {
+-		dev_err(&indio_dev->dev, "wrong number of arguments for %s need 2 got %d\n",
+-			iiospec->np->name,
++		dev_err(&indio_dev->dev, "wrong number of arguments for %pOFn need 2 got %d\n",
++			iiospec->np,
+ 			iiospec->args_count);
  		return -EINVAL;
  	}
+diff --git a/drivers/iio/adc/rcar-gyroadc.c b/drivers/iio/adc/rcar-gyroadc.c
+index dcb50172186f..4e982b51bcda 100644
+--- a/drivers/iio/adc/rcar-gyroadc.c
++++ b/drivers/iio/adc/rcar-gyroadc.c
+@@ -343,8 +343,8 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
+ 	for_each_child_of_node(np, child) {
+ 		of_id = of_match_node(rcar_gyroadc_child_match, child);
+ 		if (!of_id) {
+-			dev_err(dev, "Ignoring unsupported ADC \"%s\".",
+-				child->name);
++			dev_err(dev, "Ignoring unsupported ADC \"%pOFn\".",
++				child);
+ 			continue;
+ 		}
+ 
+@@ -381,16 +381,16 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
+ 			ret = of_property_read_u32(child, "reg", &reg);
+ 			if (ret) {
+ 				dev_err(dev,
+-					"Failed to get child reg property of ADC \"%s\".\n",
+-					child->name);
++					"Failed to get child reg property of ADC \"%pOFn\".\n",
++					child);
+ 				return ret;
+ 			}
+ 
+ 			/* Channel number is too high. */
+ 			if (reg >= num_channels) {
+ 				dev_err(dev,
+-					"Only %i channels supported with %s, but reg = <%i>.\n",
+-					num_channels, child->name, reg);
++					"Only %i channels supported with %pOFn, but reg = <%i>.\n",
++					num_channels, child, reg);
+ 				return ret;
+ 			}
+ 		}
+diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
+index 6d768431d90e..f4748ff243f7 100644
+--- a/drivers/iio/frequency/adf4350.c
++++ b/drivers/iio/frequency/adf4350.c
+@@ -388,7 +388,7 @@ static struct adf4350_platform_data *adf4350_parse_dt(struct device *dev)
+ 	if (!pdata)
+ 		return NULL;
+ 
+-	strncpy(&pdata->name[0], np->name, SPI_NAME_SIZE - 1);
++	snprintf(&pdata->name[0], SPI_NAME_SIZE - 1, "%pOFn", np);
+ 
+ 	tmp = 10000;
+ 	of_property_read_u32(np, "adi,channel-spacing", &tmp);
 -- 
-2.19.0.rc0.228.g281dcd1b4d0-goog
+2.17.1
