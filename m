@@ -1,18 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-it0-f66.google.com ([209.85.214.66]:40464 "EHLO
-        mail-it0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727452AbeH2NC3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Aug 2018 09:02:29 -0400
-Received: by mail-it0-f66.google.com with SMTP id h23-v6so6284748ita.5
-        for <linux-iio@vger.kernel.org>; Wed, 29 Aug 2018 02:06:34 -0700 (PDT)
-MIME-Version: 1.0
-References: <20180813223448.21316-1-jmkrzyszt@gmail.com> <20180820234341.5271-1-jmkrzyszt@gmail.com>
-In-Reply-To: <20180820234341.5271-1-jmkrzyszt@gmail.com>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Wed, 29 Aug 2018 11:06:21 +0200
-Message-ID: <CACRpkdbgY6VNP-K-c5ErQtmO7E83D6c=49TN5siF8VTNh_66Jg@mail.gmail.com>
-Subject: Re: [RFC RFT PATCH 0/4] gpiolib: speed up GPIO array processing
-To: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:36159 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727399AbeH2WNO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Aug 2018 18:13:14 -0400
+From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+To: Linus Walleij <linus.walleij@linaro.org>
 Cc: Jonathan Corbet <corbet@lwn.net>,
         Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>,
         Peter Korsgaard <peter.korsgaard@barco.com>,
@@ -34,39 +26,60 @@ Cc: Jonathan Corbet <corbet@lwn.net>,
         linux-mmc <linux-mmc@vger.kernel.org>,
         netdev <netdev@vger.kernel.org>, linux-iio@vger.kernel.org,
         devel@driverdev.osuosl.org, linux-serial@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Janusz Krzysztofik <jmkrzyszt@gmail.com>
+Subject: Re: [RFC RFT PATCH 0/4] gpiolib: speed up GPIO array processing
+Date: Wed, 29 Aug 2018 20:16:20 +0200
+Message-ID: <1595423.PPW7Q1vFt0@z50>
+In-Reply-To: <CACRpkdbgY6VNP-K-c5ErQtmO7E83D6c=49TN5siF8VTNh_66Jg@mail.gmail.com>
+References: <20180813223448.21316-1-jmkrzyszt@gmail.com> <20180820234341.5271-1-jmkrzyszt@gmail.com> <CACRpkdbgY6VNP-K-c5ErQtmO7E83D6c=49TN5siF8VTNh_66Jg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Aug 21, 2018 at 1:42 AM Janusz Krzysztofik <jmkrzyszt@gmail.com> wrote:
+Hi Linus,
 
-> This series is a follow up of the former "mtd: rawnand: ams-delta: Use
-> gpio-omap accessors for data I/O" which already contained some changes
-> to gpiolib.  Those previous attempts were commented by Borris Brezillon
-> who suggested using GPIO API modified to accept bitmaps, and by Linus
-> Walleij who suggested still more great ideas for further immprovement
-> of the proposed API changes - thanks!
->
-> The goal is to boost performans of get/set array functions while
-> processing GPIO arrays which represent pins of a signle chip in
-> hardware order.  If resulting performance is close to PIO, GPIO API
-> can be used for data I/O without much loss of speed.
+On Wednesday, August 29, 2018 11:06:21 AM CEST Linus Walleij wrote:
+> On Tue, Aug 21, 2018 at 1:42 AM Janusz Krzysztofik <jmkrzyszt@gmail.com> 
+wrote:
+> 
+> > This series is a follow up of the former "mtd: rawnand: ams-delta: Use
+> > gpio-omap accessors for data I/O" which already contained some changes
+> > to gpiolib.  Those previous attempts were commented by Borris Brezillon
+> > who suggested using GPIO API modified to accept bitmaps, and by Linus
+> > Walleij who suggested still more great ideas for further immprovement
+> > of the proposed API changes - thanks!
+> >
+> > The goal is to boost performans of get/set array functions while
+> > processing GPIO arrays which represent pins of a signle chip in
+> > hardware order.  If resulting performance is close to PIO, GPIO API
+> > can be used for data I/O without much loss of speed.
+> 
+> Hands down, this is a very pretty patch set. I'm a big fan already.
+> 
+> This is mainly because it fulfills the requirement for libraries
+> to be narrow and deep, which is what we want.
+> This refers to John Ousterhouts software design philosophy,
+> here is a great lecture if you haven't seen it already:
+> https://www.youtube.com/watch?v=bmSAYlu0NcY
+> 
+> Let's get this into v1 and get some testing and merge it for v4.20
+> ASAP
 
-Hands down, this is a very pretty patch set. I'm a big fan already.
+Please hold on for a while, I'm going to resubmit soon, with the comment from 
+Peter Rosin on i2c-mux-gpio addressed and the error discovered by Miguel Ojeda 
+in hd44780 fixed.
 
-This is mainly because it fulfills the requirement for libraries
-to be narrow and deep, which is what we want.
-This refers to John Ousterhouts software design philosophy,
-here is a great lecture if you haven't seen it already:
-https://www.youtube.com/watch?v=bmSAYlu0NcY
+Thanks,
+Janusz
 
-Let's get this into v1 and get some testing and merge it for v4.20
-ASAP so we get some proper testing before the v4.20 merge
-window. It would be excellent if some of the current users of
-the array API could provide tested-by's or at least ACKs.
-
-For example ts-nbus.c must be a big benefactor.
-
-Yours,
-Linus Walleij
+> so we get some proper testing before the v4.20 merge
+> window. It would be excellent if some of the current users of
+> the array API could provide tested-by's or at least ACKs.
+> 
+> For example ts-nbus.c must be a big benefactor.
+> 
+> Yours,
+> Linus Walleij
+> 
