@@ -1,136 +1,181 @@
-Return-Path: <SRS0=a77n=LE=axentia.se=peda@kernel.org>
-Subject: Re: [RFC RFT PATCH v4 1/4] gpiolib: Pass bitmaps, not integer arrays,
- to get/set array
-From: Peter Rosin <peda@axentia.se>
-To: Janusz Krzysztofik <jmkrzyszt@gmail.com>,
- Linus Walleij <linus.walleij@linaro.org>
-Cc: Jonathan Corbet <corbet@lwn.net>,
- Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>,
- Peter Korsgaard <peter.korsgaard@barco.com>,
- Ulf Hansson <ulf.hansson@linaro.org>, Andrew Lunn <andrew@lunn.ch>,
- Florian Fainelli <f.fainelli@gmail.com>,
- "David S. Miller" <davem@davemloft.net>,
- Dominik Brodowski <linux@dominikbrodowski.net>,
- Kishon Vijay Abraham I <kishon@ti.com>, Lars-Peter Clausen
- <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jslaby@suse.com>, linux-gpio@vger.kernel.org, linux-doc@vger.kernel.org,
- linux-i2c@vger.kernel.org, linux-mmc@vger.kernel.org,
- netdev@vger.kernel.org, linux-iio@vger.kernel.org,
- devel@driverdev.osuosl.org, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20180813223448.21316-1-jmkrzyszt@gmail.com>
- <20180820234341.5271-1-jmkrzyszt@gmail.com>
- <20180820234341.5271-2-jmkrzyszt@gmail.com>
- <0e79bdc3-ca20-6823-c86f-5e9da7dafbc9@axentia.se>
-Message-ID: <83653abb-ae2c-b72c-0877-14483abc1f64@axentia.se>
-Date: Tue, 21 Aug 2018 08:52:33 +0200
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:45062 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726633AbeH2V5x (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Aug 2018 17:57:53 -0400
+From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+To: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Peter Korsgaard <peter.korsgaard@barco.com>,
+        Peter Rosin <peda@axentia.se>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-gpio@vger.kernel.org,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-i2c@vger.kernel.org, linux-mmc@vger.kernel.org,
+        Network Development <netdev@vger.kernel.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-serial@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Willy Tarreau <w@1wt.eu>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Janusz Krzysztofik <jmkrzyszt@gmail.com>
+Subject: Re: [RFC RFT PATCH v4 1/4] gpiolib: Pass bitmaps, not integer arrays, to get/set array
+Date: Wed, 29 Aug 2018 20:01:01 +0200
+Message-ID: <21039309.e3MgZOjmZl@z50>
+In-Reply-To: <CANiq72kM9bYJ1Q+dbLumjfQLZW223ZTrYEFqfQ2Jv2SAjrD1NA@mail.gmail.com>
+References: <20180813223448.21316-1-jmkrzyszt@gmail.com> <20180820234341.5271-2-jmkrzyszt@gmail.com> <CANiq72kM9bYJ1Q+dbLumjfQLZW223ZTrYEFqfQ2Jv2SAjrD1NA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <0e79bdc3-ca20-6823-c86f-5e9da7dafbc9@axentia.se>
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Sorry for replying to self...
+On Wednesday, August 29, 2018 2:03:18 PM CEST Miguel Ojeda wrote:
+> Hi Janusz,
+> 
+> On Tue, Aug 21, 2018 at 1:43 AM, Janusz Krzysztofik <jmkrzyszt@gmail.com> wrote:
+> > Most users of get/set array functions iterate consecutive bits of data,
+> > usually a single integer, while or processing array of results obtained
+> > from or building an array of values to be passed to those functions.
+> > Save time wasted on those iterations by changing the functions' API to
+> > accept bitmaps.
+> >
+> > All current users are updated as well.
+> >
+> > More benefits from the change are expected as soon as planned support
+> > for accepting/passing those bitmaps directly from/to respective GPIO
+> > chip callbacks if applicable is implemented.
+> >
+> > Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+> > ---
+> >  Documentation/driver-api/gpio/consumer.rst  | 22 ++++----
+> >  drivers/auxdisplay/hd44780.c                | 52 +++++++++--------
+> 
+> [CC'ing Willy and Geert for hd44780]
+> 
+> > diff --git a/drivers/auxdisplay/hd44780.c b/drivers/auxdisplay/hd44780.c
+> > index f1a42f0f1ded..d340473aa142 100644
+> > --- a/drivers/auxdisplay/hd44780.c
+> > +++ b/drivers/auxdisplay/hd44780.c
+> > @@ -62,20 +62,19 @@ static void hd44780_strobe_gpio(struct hd44780 *hd)
+> >  /* write to an LCD panel register in 8 bit GPIO mode */
+> >  static void hd44780_write_gpio8(struct hd44780 *hd, u8 val, unsigned int rs)
+> >  {
+> > -       int values[10]; /* for DATA[0-7], RS, RW */
+> > -       unsigned int i, n;
+> > +       unsigned long value_bitmap[1];  /* for DATA[0-7], RS, RW */
+> 
+> Why [1]? I understand it is because in other cases it may be more than
+> one,
 
-On 2018-08-21 08:49, Peter Rosin wrote:
-> On 2018-08-21 01:43, Janusz Krzysztofik wrote:
->> Most users of get/set array functions iterate consecutive bits of data,
->> usually a single integer, while or processing array of results obtained
->> from or building an array of values to be passed to those functions.
->> Save time wasted on those iterations by changing the functions' API to
->> accept bitmaps.
->>
->> All current users are updated as well.
->>
->> More benefits from the change are expected as soon as planned support
->> for accepting/passing those bitmaps directly from/to respective GPIO
->> chip callbacks if applicable is implemented.
->>
->> Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
->> ---
->>  Documentation/driver-api/gpio/consumer.rst  | 22 ++++----
->>  drivers/auxdisplay/hd44780.c                | 52 +++++++++--------
->>  drivers/bus/ts-nbus.c                       | 19 ++-----
->>  drivers/gpio/gpio-max3191x.c                | 17 +++---
->>  drivers/gpio/gpiolib.c                      | 86 +++++++++++++++--------------
->>  drivers/gpio/gpiolib.h                      |  4 +-
->>  drivers/i2c/muxes/i2c-mux-gpio.c            |  3 +-
->>  drivers/mmc/core/pwrseq_simple.c            | 13 ++---
->>  drivers/mux/gpio.c                          |  4 +-
->>  drivers/net/phy/mdio-mux-gpio.c             |  3 +-
->>  drivers/pcmcia/soc_common.c                 | 11 ++--
->>  drivers/phy/motorola/phy-mapphone-mdm6600.c | 17 +++---
->>  drivers/staging/iio/adc/ad7606.c            |  9 +--
->>  drivers/tty/serial/serial_mctrl_gpio.c      |  7 ++-
->>  include/linux/gpio/consumer.h               | 18 +++---
->>  15 files changed, 138 insertions(+), 147 deletions(-)
->>
-> 
-> *snip*
-> 
->> diff --git a/drivers/i2c/muxes/i2c-mux-gpio.c b/drivers/i2c/muxes/i2c-mux-gpio.c
->> index 401308e3d036..d675e0ca2fa4 100644
->> --- a/drivers/i2c/muxes/i2c-mux-gpio.c
->> +++ b/drivers/i2c/muxes/i2c-mux-gpio.c
->> @@ -27,13 +27,14 @@ struct gpiomux {
->>  
->>  static void i2c_mux_gpio_set(const struct gpiomux *mux, unsigned val)
->>  {
->> +	unsigned long value_bitmap[1] = { val, };
->>  	int i;
->>  
->>  	for (i = 0; i < mux->data.n_gpios; i++)
->>  		mux->values[i] = (val >> i) & 1;
->>  
->>  	gpiod_set_array_value_cansleep(mux->data.n_gpios,
->> -				       mux->gpios, mux->values);
->> +				       mux->gpios, value_bitmap);
->>  }
->>  
->>  static int i2c_mux_gpio_select(struct i2c_mux_core *muxc, u32 chan)
-> 
-> Please take the opportunity to completely get rid of the values member
-> in struct mux_gpio. It no longer serves any purpose.
+Yes, I tried to point out the fact the new API accepts a bitmap of an arbitrary 
+length, and I tried to use the same code pattern across changes to the API 
+users.
 
-struct gpiomux
-
+> but...
 > 
-> *snip*
+> > +       unsigned int n;
+> >
+> > -       for (i = 0; i < 8; i++)
+> > -               values[PIN_DATA0 + i] = !!(val & BIT(i));
+> > -       values[PIN_CTRL_RS] = rs;
+> > +       value_bitmap[0] = val;
+> > +       __assign_bit(PIN_CTRL_RS, value_bitmap, rs);
+> >         n = 9;
+> >         if (hd->pins[PIN_CTRL_RW]) {
+> > -               values[PIN_CTRL_RW] = 0;
+> > +               __clear_bit(PIN_CTRL_RW, value_bitmap);
+> >                 n++;
+> >         }
+> >
+> >         /* Present the data to the port */
+> > -       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA0], values);
+> > +       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA0], value_bitmap);
+> >
+> >         hd44780_strobe_gpio(hd);
+> >  }
+> > @@ -83,32 +82,31 @@ static void hd44780_write_gpio8(struct hd44780 *hd, u8 val, unsigned int rs)
+> >  /* write to an LCD panel register in 4 bit GPIO mode */
+> >  static void hd44780_write_gpio4(struct hd44780 *hd, u8 val, unsigned int rs)
+> >  {
+> > -       int values[10]; /* for DATA[0-7], RS, RW, but DATA[0-3] is unused */
+> > -       unsigned int i, n;
+> > +       /* for DATA[0-7], RS, RW, but DATA[0-3] is unused */
+> > +       unsigned long value_bitmap[0];
 > 
->> diff --git a/drivers/mux/gpio.c b/drivers/mux/gpio.c
->> index 6fdd9316db8b..cc2d5f50472a 100644
->> --- a/drivers/mux/gpio.c
->> +++ b/drivers/mux/gpio.c
->> @@ -23,14 +23,14 @@ struct mux_gpio {
->>  static int mux_gpio_set(struct mux_control *mux, int state)
->>  {
->>  	struct mux_gpio *mux_gpio = mux_chip_priv(mux->chip);
->> +	unsigned long value_bitmap[1] = { state, };
->>  	int i;
->>  
->>  	for (i = 0; i < mux_gpio->gpios->ndescs; i++)
->>  		mux_gpio->val[i] = (state >> i) & 1;
->>  
->>  	gpiod_set_array_value_cansleep(mux_gpio->gpios->ndescs,
->> -				       mux_gpio->gpios->desc,
->> -				       mux_gpio->val);
->> +				       mux_gpio->gpios->desc, value_bitmap);
->>  
->>  	return 0;
->>  }
+> This one is even more strange... :-)
+
+This one is an error, should be 1 of course :-), thanks.
+
+> > +       unsigned int n;
+> >
+> >         /* High nibble + RS, RW */
+> > -       for (i = 4; i < 8; i++)
+> > -               values[PIN_DATA0 + i] = !!(val & BIT(i));
+> > -       values[PIN_CTRL_RS] = rs;
+> > +       value_bitmap[0] = val;
+> > +       __assign_bit(PIN_CTRL_RS, value_bitmap, rs);
+> >         n = 5;
+> >         if (hd->pins[PIN_CTRL_RW]) {
+> > -               values[PIN_CTRL_RW] = 0;
+> > +               __clear_bit(PIN_CTRL_RW, value_bitmap);
+> >                 n++;
+> >         }
+> > +       value_bitmap[0] = value_bitmap[0] >> PIN_DATA4;
 > 
-> Dito (but the member name is val).
+> Maybe >>=?
 
-Here is where struct mux_gpio fits.
+OK.
 
-Cheers,
-Peter
+Answering you question below:
+To make my changes as clear as I could imagine, I decided to use the same indexing as in the original code, i.e., assign high nibble of val to bits 4-7 and two other values - rs and an optional 0 - to bits 8 and 9, respectively.
+Unlike in case of array of integers, where for the high nibble part you could just pass a pointer to a sub-array starting at the 5th value (i.e., &values[PIN_DATA4]), it was not possible to do the same for and arbitrary bit of a bitmap, e.g., pass a pointer to the 5th bit of *value_bitmap as an argument pointing to bit 0 of a bitmap to be processed. That's why I shifted the bitmap right by 4 bits.
+Then, ...
 
+> >
+> >         /* Present the data to the port */
+> > -       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA4],
+> > -                                      &values[PIN_DATA4]);
+> > +       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA4], value_bitmap);
+> >
+> >         hd44780_strobe_gpio(hd);
+> >
+> >         /* Low nibble */
+> > -       for (i = 0; i < 4; i++)
+> > -               values[PIN_DATA4 + i] = !!(val & BIT(i));
+> > +       value_bitmap[0] &= ~((1 << PIN_DATA4) - 1);
+> > +       value_bitmap[0] |= val & ~((1 << PIN_DATA4) - 1);
 > 
-> *snip*
+> Are you sure this is correct? You are basically doing an or of
+> value_bitmap and val and clearing the low-nibble.
+
+having the rs and optional 0 already assigned to bits 4 and 5 of the bitmap, I just cleared bits 0-3 still containing the high nibble of val and assigned the low nibble of it to those bits, getting a result ready to be passed as an argument to gpiod_set_array_value_cansleep() below.
+
+I hope I didn't miss anything.
+
+Thanks,
+Janusz
+
+> >
+> >         /* Present the data to the port */
+> > -       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA4],
+> > -                                      &values[PIN_DATA4]);
+> > +       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA4], value_bitmap);
+> >
+> >         hd44780_strobe_gpio(hd);
+> >  }
 > 
 > Cheers,
-> Peter
+> Miguel
 > 
