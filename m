@@ -1,119 +1,49 @@
-Return-Path: <SRS0=RlyY=LM=analog.com=StefanSerban.Popa@kernel.org>
-From: Stefan Popa <stefan.popa@analog.com>
-To: <jic23@kernel.org>, <robh+dt@kernel.org>
-CC: <knaack.h@gmx.de>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
-	<mark.rutland@arm.com>, <Michael.Hennerich@analog.com>,
-	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, Stefan Popa <stefan.popa@analog.com>
-Subject: [PATCH] iio: dac: ad5758: Add support for hard reset
-Date: Wed, 29 Aug 2018 17:58:42 +0300
-Message-ID: <1535554722-1094-1-git-send-email-stefan.popa@analog.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pg1-f177.google.com ([209.85.215.177]:40816 "EHLO
+        mail-pg1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727204AbeH2VdI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Aug 2018 17:33:08 -0400
+Received: by mail-pg1-f177.google.com with SMTP id z25-v6so2629865pgu.7
+        for <linux-iio@vger.kernel.org>; Wed, 29 Aug 2018 10:35:11 -0700 (PDT)
+Received: from [192.168.1.68] (d50-92-226-185.bchsia.telus.net. [50.92.226.185])
+        by smtp.gmail.com with ESMTPSA id l9-v6sm6511537pgg.79.2018.08.29.10.35.08
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 29 Aug 2018 10:35:08 -0700 (PDT)
+To: linux-iio <linux-iio@vger.kernel.org>
+From: David Frey <dpfrey@gmail.com>
+Subject: Idea: regmap_config.use_single_rw -> use_single_read,
+ use_single_write
+Message-ID: <2992280e-55f0-00d6-24cd-30714891ddc9@gmail.com>
+Date: Wed, 29 Aug 2018 10:35:07 -0700
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-The ad5758 has a hardware reset active low input pin. This patch adds a
-devicetree entry for a reset GPIO and a new ad5758_reset() function.
-During
-initialization, it is checked if the reset property is specified and the
-the GPIO is being asserted, therefore the device will become active.
+Hi,
 
-When the reset function is called, if the gpio_reset var is set, then
-the
-GPIO will be toggled, otherwise a software reset is performed.
+I just want to float an idea and see if it gets any support.
 
-Signed-off-by: Stefan Popa <stefan.popa@analog.com>
----
- .../devicetree/bindings/iio/dac/ad5758.txt         |  5 ++++
- drivers/iio/dac/ad5758.c                           | 27 ++++++++++++++++++++--
- 2 files changed, 30 insertions(+), 2 deletions(-)
+In struct regmap_config, there is a member "bool use_single_rw" which is
+documented as follows:
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/ad5758.txt b/Documentation/devicetree/bindings/iio/dac/ad5758.txt
-index bba01a5..bbcd789 100644
---- a/Documentation/devicetree/bindings/iio/dac/ad5758.txt
-+++ b/Documentation/devicetree/bindings/iio/dac/ad5758.txt
-@@ -50,6 +50,9 @@ Required properties:
- 
- Optional properties:
- 
-+ - reset-gpios : GPIO spec for the RESET pin. If specified, it will be
-+ 		 asserted during driver probe.
-+
-  - adi,dc-dc-ilim-microamp: The dc-to-dc converter current limit
- 		   The following values are currently supported [uA]:
- 			* 150000
-@@ -71,6 +74,8 @@ AD5758 Example:
- 		spi-max-frequency = <1000000>;
- 		spi-cpha;
- 
-+		reset-gpios = <&gpio 22 0>;
-+
- 		adi,dc-dc-mode = <2>;
- 		adi,range-microvolt = <0 10000000>;
- 		adi,dc-dc-ilim-microamp = <200000>;
-diff --git a/drivers/iio/dac/ad5758.c b/drivers/iio/dac/ad5758.c
-index bd36333..b5cc5bd 100644
---- a/drivers/iio/dac/ad5758.c
-+++ b/drivers/iio/dac/ad5758.c
-@@ -12,6 +12,7 @@
- #include <linux/module.h>
- #include <linux/property.h>
- #include <linux/spi/spi.h>
-+#include <linux/gpio/consumer.h>
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-@@ -108,6 +109,7 @@ struct ad5758_range {
- struct ad5758_state {
- 	struct spi_device *spi;
- 	struct mutex lock;
-+	struct gpio_desc *gpio_reset;
- 	struct ad5758_range out_range;
- 	unsigned int dc_dc_mode;
- 	unsigned int dc_dc_ilim;
-@@ -474,6 +476,22 @@ static int ad5758_internal_buffers_en(struct ad5758_state *st, bool enable)
- 					     AD5758_CAL_MEM_UNREFRESHED_MSK);
- }
- 
-+static int ad5758_reset(struct ad5758_state *st)
-+{
-+	if (st->gpio_reset) {
-+		gpiod_set_value(st->gpio_reset, 0);
-+		usleep_range(100, 1000);
-+		gpiod_set_value(st->gpio_reset, 1);
-+	} else {
-+		/* Perform a software reset */
-+		return ad5758_soft_reset(st);
-+	}
-+
-+	usleep_range(100, 1000);
-+
-+	return 0;
-+}
-+
- static int ad5758_reg_access(struct iio_dev *indio_dev,
- 			     unsigned int reg,
- 			     unsigned int writeval,
-@@ -768,13 +786,18 @@ static int ad5758_init(struct ad5758_state *st)
- {
- 	int regval, ret;
- 
-+	st->gpio_reset = devm_gpiod_get_optional(&st->spi->dev, "reset",
-+						 GPIOD_OUT_HIGH);
-+	if (IS_ERR(st->gpio_reset))
-+		return PTR_ERR(st->gpio_reset);
-+
- 	/* Disable CRC checks */
- 	ret = ad5758_crc_disable(st);
- 	if (ret < 0)
- 		return ret;
- 
--	/* Perform a software reset */
--	ret = ad5758_soft_reset(st);
-+	/* Perform a reset */
-+	ret = ad5758_reset(st);
- 	if (ret < 0)
- 		return ret;
- 
--- 
-2.7.4
+"If set, converts the bulk read and write operations into a series of
+single read and write operations. This is useful for device that does
+not support bulk read and write."
+
+My idea is to split this into:
+	bool use_single_read;
+	bool use_single_write;
+
+I think this would be useful because at least one device that I'm using
+(Bosch bmi160 IMU) supports bulk reads, but not bulk writes.  It would
+be convenient to be able to use regmap_bulk_read and regmap_bulk_write
+and have only regmap_bulk_write split the writes apart.  This change
+would also support the case where a device supports bulk writes, but not
+bulk reads.  I don't know of such a device, but I haven't made any
+attempt to find one.
+
+What do you think?
+
+David Frey
