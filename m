@@ -1,177 +1,119 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:36638 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726857AbeH2J7h (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Aug 2018 05:59:37 -0400
-Received: by mail-pf1-f196.google.com with SMTP id b11-v6so1800362pfo.3
-        for <linux-iio@vger.kernel.org>; Tue, 28 Aug 2018 23:04:23 -0700 (PDT)
-From: Baolin Wang <baolin.wang@linaro.org>
-To: jic23@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        freeman.liu@spreadtrum.com, broonie@kernel.org,
-        baolin.wang@linaro.org, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/2] iio: adc: sc27xx: Add ADC scale calibration
-Date: Wed, 29 Aug 2018 14:04:05 +0800
-Message-Id: <61cad47d5d10c771d3cc371744533e87d192ee96.1535434262.git.baolin.wang@linaro.org>
-In-Reply-To: <0adef2f9eafa913eb9f4bc1ed3dc643d09bf02a2.1535434262.git.baolin.wang@linaro.org>
-References: <0adef2f9eafa913eb9f4bc1ed3dc643d09bf02a2.1535434262.git.baolin.wang@linaro.org>
-In-Reply-To: <0adef2f9eafa913eb9f4bc1ed3dc643d09bf02a2.1535434262.git.baolin.wang@linaro.org>
-References: <0adef2f9eafa913eb9f4bc1ed3dc643d09bf02a2.1535434262.git.baolin.wang@linaro.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=RlyY=LM=analog.com=StefanSerban.Popa@kernel.org>
+From: Stefan Popa <stefan.popa@analog.com>
+To: <jic23@kernel.org>, <robh+dt@kernel.org>
+CC: <knaack.h@gmx.de>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
+	<mark.rutland@arm.com>, <Michael.Hennerich@analog.com>,
+	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, Stefan Popa <stefan.popa@analog.com>
+Subject: [PATCH] iio: dac: ad5758: Add support for hard reset
+Date: Wed, 29 Aug 2018 17:58:42 +0300
+Message-ID: <1535554722-1094-1-git-send-email-stefan.popa@analog.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-This patch adds support to read calibration values from the eFuse
-controller to calibrate the ADC channel scales, which can make ADC
-sample data more accurate.
+The ad5758 has a hardware reset active low input pin. This patch adds a
+devicetree entry for a reset GPIO and a new ad5758_reset() function.
+During
+initialization, it is checked if the reset property is specified and the
+the GPIO is being asserted, therefore the device will become active.
 
-Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
+When the reset function is called, if the gpio_reset var is set, then
+the
+GPIO will be toggled, otherwise a software reset is performed.
+
+Signed-off-by: Stefan Popa <stefan.popa@analog.com>
 ---
-Changes from v1:
- - Use nvmem_cell_read() instead of nvmem_cell_read_u32().
----
- .../bindings/iio/adc/sprd,sc27xx-adc.txt           |    4 ++
- drivers/iio/adc/sc27xx_adc.c                       |   74 +++++++++++++++++++-
- 2 files changed, 75 insertions(+), 3 deletions(-)
+ .../devicetree/bindings/iio/dac/ad5758.txt         |  5 ++++
+ drivers/iio/dac/ad5758.c                           | 27 ++++++++++++++++++++--
+ 2 files changed, 30 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/sprd,sc27xx-adc.txt b/Documentation/devicetree/bindings/iio/adc/sprd,sc27xx-adc.txt
-index 8aad960..b4daa15 100644
---- a/Documentation/devicetree/bindings/iio/adc/sprd,sc27xx-adc.txt
-+++ b/Documentation/devicetree/bindings/iio/adc/sprd,sc27xx-adc.txt
-@@ -12,6 +12,8 @@ Required properties:
- - interrupts: The interrupt number for the ADC device.
- - #io-channel-cells: Number of cells in an IIO specifier.
- - hwlocks: Reference to a phandle of a hwlock provider node.
-+- nvmem-cells: A phandle to the calibration cells provided by eFuse device.
-+- nvmem-cell-names: Should be "big_scale_calib", "small_scale_calib".
+diff --git a/Documentation/devicetree/bindings/iio/dac/ad5758.txt b/Documentation/devicetree/bindings/iio/dac/ad5758.txt
+index bba01a5..bbcd789 100644
+--- a/Documentation/devicetree/bindings/iio/dac/ad5758.txt
++++ b/Documentation/devicetree/bindings/iio/dac/ad5758.txt
+@@ -50,6 +50,9 @@ Required properties:
  
- Example:
+ Optional properties:
  
-@@ -32,5 +34,7 @@ Example:
- 			interrupts = <0 IRQ_TYPE_LEVEL_HIGH>;
- 			#io-channel-cells = <1>;
- 			hwlocks = <&hwlock 4>;
-+			nvmem-cells = <&adc_big_scale>, <&adc_small_scale>;
-+			nvmem-cell-names = "big_scale_calib", "small_scale_calib";
- 		};
- 	};
-diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
-index 153c311..7940b23 100644
---- a/drivers/iio/adc/sc27xx_adc.c
-+++ b/drivers/iio/adc/sc27xx_adc.c
-@@ -5,10 +5,12 @@
- #include <linux/iio/iio.h>
- #include <linux/interrupt.h>
++ - reset-gpios : GPIO spec for the RESET pin. If specified, it will be
++ 		 asserted during driver probe.
++
+  - adi,dc-dc-ilim-microamp: The dc-to-dc converter current limit
+ 		   The following values are currently supported [uA]:
+ 			* 150000
+@@ -71,6 +74,8 @@ AD5758 Example:
+ 		spi-max-frequency = <1000000>;
+ 		spi-cpha;
+ 
++		reset-gpios = <&gpio 22 0>;
++
+ 		adi,dc-dc-mode = <2>;
+ 		adi,range-microvolt = <0 10000000>;
+ 		adi,dc-dc-ilim-microamp = <200000>;
+diff --git a/drivers/iio/dac/ad5758.c b/drivers/iio/dac/ad5758.c
+index bd36333..b5cc5bd 100644
+--- a/drivers/iio/dac/ad5758.c
++++ b/drivers/iio/dac/ad5758.c
+@@ -12,6 +12,7 @@
  #include <linux/module.h>
-+#include <linux/nvmem-consumer.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
- #include <linux/platform_device.h>
- #include <linux/regmap.h>
-+#include <linux/slab.h>
+ #include <linux/property.h>
+ #include <linux/spi/spi.h>
++#include <linux/gpio/consumer.h>
  
- /* PMIC global registers definition */
- #define SC27XX_MODULE_EN		0xc08
-@@ -87,16 +89,73 @@ struct sc27xx_adc_linear_graph {
-  * should use the small-scale graph, and if more than 1.2v, we should use the
-  * big-scale graph.
-  */
--static const struct sc27xx_adc_linear_graph big_scale_graph = {
-+static struct sc27xx_adc_linear_graph big_scale_graph = {
- 	4200, 3310,
- 	3600, 2832,
- };
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+@@ -108,6 +109,7 @@ struct ad5758_range {
+ struct ad5758_state {
+ 	struct spi_device *spi;
+ 	struct mutex lock;
++	struct gpio_desc *gpio_reset;
+ 	struct ad5758_range out_range;
+ 	unsigned int dc_dc_mode;
+ 	unsigned int dc_dc_ilim;
+@@ -474,6 +476,22 @@ static int ad5758_internal_buffers_en(struct ad5758_state *st, bool enable)
+ 					     AD5758_CAL_MEM_UNREFRESHED_MSK);
+ }
  
--static const struct sc27xx_adc_linear_graph small_scale_graph = {
-+static struct sc27xx_adc_linear_graph small_scale_graph = {
- 	1000, 3413,
- 	100, 341,
- };
- 
-+static const struct sc27xx_adc_linear_graph big_scale_graph_calib = {
-+	4200, 856,
-+	3600, 733,
-+};
-+
-+static const struct sc27xx_adc_linear_graph small_scale_graph_calib = {
-+	1000, 833,
-+	100, 80,
-+};
-+
-+static int sc27xx_adc_get_calib_data(u32 calib_data, int calib_adc)
++static int ad5758_reset(struct ad5758_state *st)
 +{
-+	return ((calib_data & 0xff) + calib_adc - 128) * 4;
-+}
-+
-+static int sc27xx_adc_scale_calibration(struct sc27xx_adc_data *data,
-+					bool big_scale)
-+{
-+	const struct sc27xx_adc_linear_graph *calib_graph;
-+	struct sc27xx_adc_linear_graph *graph;
-+	struct nvmem_cell *cell;
-+	const char *cell_name;
-+	u32 calib_data = 0;
-+	void *buf;
-+	size_t len;
-+
-+	if (big_scale) {
-+		calib_graph = &big_scale_graph_calib;
-+		graph = &big_scale_graph;
-+		cell_name = "big_scale_calib";
++	if (st->gpio_reset) {
++		gpiod_set_value(st->gpio_reset, 0);
++		usleep_range(100, 1000);
++		gpiod_set_value(st->gpio_reset, 1);
 +	} else {
-+		calib_graph = &small_scale_graph_calib;
-+		graph = &small_scale_graph;
-+		cell_name = "small_scale_calib";
++		/* Perform a software reset */
++		return ad5758_soft_reset(st);
 +	}
 +
-+	cell = nvmem_cell_get(data->dev, cell_name);
-+	if (IS_ERR(cell))
-+		return PTR_ERR(cell);
++	usleep_range(100, 1000);
 +
-+	buf = nvmem_cell_read(cell, &len);
-+	nvmem_cell_put(cell);
-+
-+	if (IS_ERR(buf))
-+		return PTR_ERR(buf);
-+
-+	memcpy(&calib_data, buf, min(len, sizeof(u32)));
-+
-+	/* Only need to calibrate the adc values in the linear graph. */
-+	graph->adc0 = sc27xx_adc_get_calib_data(calib_data, calib_graph->adc0);
-+	graph->adc1 = sc27xx_adc_get_calib_data(calib_data >> 8,
-+						calib_graph->adc1);
-+
-+	kfree(buf);
 +	return 0;
 +}
 +
- static int sc27xx_adc_get_ratio(int channel, int scale)
+ static int ad5758_reg_access(struct iio_dev *indio_dev,
+ 			     unsigned int reg,
+ 			     unsigned int writeval,
+@@ -768,13 +786,18 @@ static int ad5758_init(struct ad5758_state *st)
  {
- 	switch (channel) {
-@@ -209,7 +268,7 @@ static void sc27xx_adc_volt_ratio(struct sc27xx_adc_data *data,
- 	*div_denominator = ratio & SC27XX_RATIO_DENOMINATOR_MASK;
- }
+ 	int regval, ret;
  
--static int sc27xx_adc_to_volt(const struct sc27xx_adc_linear_graph *graph,
-+static int sc27xx_adc_to_volt(struct sc27xx_adc_linear_graph *graph,
- 			      int raw_adc)
- {
- 	int tmp;
-@@ -390,6 +449,15 @@ static int sc27xx_adc_enable(struct sc27xx_adc_data *data)
- 	if (ret)
- 		goto disable_clk;
- 
-+	/* ADC channel scales' calibration from nvmem device */
-+	ret = sc27xx_adc_scale_calibration(data, true);
-+	if (ret)
-+		goto disable_clk;
++	st->gpio_reset = devm_gpiod_get_optional(&st->spi->dev, "reset",
++						 GPIOD_OUT_HIGH);
++	if (IS_ERR(st->gpio_reset))
++		return PTR_ERR(st->gpio_reset);
 +
-+	ret = sc27xx_adc_scale_calibration(data, false);
-+	if (ret)
-+		goto disable_clk;
-+
- 	return 0;
+ 	/* Disable CRC checks */
+ 	ret = ad5758_crc_disable(st);
+ 	if (ret < 0)
+ 		return ret;
  
- disable_clk:
+-	/* Perform a software reset */
+-	ret = ad5758_soft_reset(st);
++	/* Perform a reset */
++	ret = ad5758_reset(st);
+ 	if (ret < 0)
+ 		return ret;
+ 
 -- 
-1.7.9.5
+2.7.4
