@@ -1,78 +1,118 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-bn3nam01on0064.outbound.protection.outlook.com ([104.47.33.64]:57024
-        "EHLO NAM01-BN3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728295AbeH3OYa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 30 Aug 2018 10:24:30 -0400
-From: Manish Narani <manish.narani@xilinx.com>
-To: <jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
-        <pmeerw@pmeerw.net>, <robh+dt@kernel.org>, <mark.rutland@arm.com>,
-        <michal.simek@xilinx.com>, <manish.narani@xilinx.com>,
-        <leoyang.li@nxp.com>, <sudeep.holla@arm.com>,
-        <amit.kucheria@linaro.org>, <broonie@kernel.org>,
-        <arnaud.pouliquen@st.com>, <geert@linux-m68k.org>,
-        <eugen.hristev@microchip.com>, <rdunlap@infradead.org>,
-        <lukas@wunner.de>, <freeman.liu@spreadtrum.com>,
-        <vilhelm.gray@gmail.com>, <tglx@linutronix.de>,
-        <baolin.wang@linaro.org>, <gregkh@linuxfoundation.org>
-CC: <sgoud@xilinx.com>, <anirudh@xilinx.com>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 3/3] arm64: zynqmp: DT: Add Xilinx AMS node
-Date: Thu, 30 Aug 2018 15:52:19 +0530
-Message-ID: <1535624539-7839-4-git-send-email-manish.narani@xilinx.com>
-In-Reply-To: <1535624539-7839-1-git-send-email-manish.narani@xilinx.com>
-References: <1535624539-7839-1-git-send-email-manish.narani@xilinx.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=HpEw=LN=gmail.com=embed3d@kernel.org>
+From: Philipp Rossak <embed3d@gmail.com>
+To: lee.jones@linaro.org,
+	robh+dt@kernel.org,
+	mark.rutland@arm.com,
+	maxime.ripard@bootlin.com,
+	wens@csie.org,
+	linux@armlinux.org.uk,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	eugen.hristev@microchip.com,
+	rdunlap@infradead.org,
+	vilhelm.gray@gmail.com,
+	clabbe.montjoie@gmail.com,
+	quentin.schulz@bootlin.com,
+	geert+renesas@glider.be,
+	lukas@wunner.de,
+	icenowy@aosc.io,
+	arnd@arndb.de,
+	broonie@kernel.org,
+	arnaud.pouliquen@st.com
+Cc: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-sunxi@googlegroups.com
+Subject: [PATCH v3 00/30] IIO-based thermal sensor driver for Allwinner H3 and A83T SoC
+Date: Thu, 30 Aug 2018 17:44:48 +0200
+Message-Id: <20180830154518.29507-1-embed3d@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-The Xilinx AMS includes an ADC as well as on-chip sensors that can be
-used to sample external and monitor on-die operating conditions, such as
-temperature and supply voltage levels.
+Allwiner H3 and A83T SoCs have a thermal sensor, which is a large refactored
+version of the old Allwinner "GPADC" (although it have already only
+thermal part left in A33).
 
-Signed-off-by: Manish Narani <manish.narani@xilinx.com>
----
- arch/arm64/boot/dts/xilinx/zynqmp.dtsi | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+This patch tried to add support for the sensor in H3 and A83T based on
 
-diff --git a/arch/arm64/boot/dts/xilinx/zynqmp.dtsi b/arch/arm64/boot/dts/xilinx/zynqmp.dtsi
-index 29ce234..6e42ca2 100644
---- a/arch/arm64/boot/dts/xilinx/zynqmp.dtsi
-+++ b/arch/arm64/boot/dts/xilinx/zynqmp.dtsi
-@@ -617,5 +617,31 @@
- 			reg = <0x0 0xfd4d0000 0x0 0x1000>;
- 			timeout-sec = <10>;
- 		};
-+
-+		xilinx_ams: ams@ffa50000 {
-+			compatible = "xlnx,zynqmp-ams";
-+			status = "disabled";
-+			interrupt-parent = <&gic>;
-+			interrupts = <0 56 4>;
-+			interrupt-names = "ams-irq";
-+			reg = <0x0 0xffa50000 0x0 0x800>;
-+			reg-names = "ams-base";
-+			#address-cells = <2>;
-+			#size-cells = <2>;
-+			#io-channel-cells = <1>;
-+			ranges;
-+
-+			ams_ps: ams_ps@ffa50800 {
-+				compatible = "xlnx,zynqmp-ams-ps";
-+				status = "disabled";
-+				reg = <0x0 0xffa50800 0x0 0x400>;
-+			};
-+
-+			ams_pl: ams_pl@ffa50c00 {
-+				compatible = "xlnx,zynqmp-ams-pl";
-+				status = "disabled";
-+				reg = <0x0 0xffa50c00 0x0 0x400>;
-+			};
-+		};
- 	};
- };
+This Patchtseries was in the beginning based on Icenowy Zengs v4 patchseries [1]. Since we decided to merge the mfd driver into the GPADC this changed. So only one patch could be reused.
+
+Patches that adds support for H5, A64, A80 and H6 SoCs are allready prepared,
+and will be upstreamed if this patchseries is applied and the testing is done.
+
+Sorry for delaying this.
+
+Regards,
+Philipp 
+
+changes since v2:
+	* mfd driver is now merged into the gpadc driver
+	* complete rework
+
+changes since v1:
+	* collecting all acks 
+	* rewording commits/fix typos
+	* move code in place where it is used
+	* fix naming conventions of defines
+	* clarify commits
+	* update documentation to cover the new nvmem calibraion
+	* change nvmem calibration
+
+
+
+Icenowy Zheng (1):
+  iio: adc: sun4i-gpadc-iio: rename A33-specified registers to contain
+    A33
+
+Philipp Rossak (29):
+  mfd: Makefile: Remove build option for MFD:sun4i-gpadc
+  mfd: Kconfig: Remove MFD_SUN4I_GPADC config option
+  iio: adc: Remove ID table
+  iio: adc: Kconfig: Update Kconfig to new build options
+  iio: adc: move SUN4I_GPADC_CHANNEL define to header file
+  iio: adc: remove ofnode options
+  iio: adc: remove mfd_probe & sunwi_irq_init function
+  iio: adc: remove hwmon structure
+  iio: adc: Threat A33 as thermal sensor and remove non thermal sun4i
+    channel
+  iio: adc: rework irq and adc_channel handling
+  iio: adc: add new compatibles
+  mfd: Remove old mfd driver & Move sun4i-gpadc.h to iio/adc/
+  arm: config: Enable SUN4I_GPADC in defconfig
+  dt-bindings: update the Allwinner GPADC device tree binding for H3 &
+    A83T
+  iio: adc: sun4i-gpadc-iio: rework: readout temp_data
+  iio: adc: sun4i-gpadc-iio: rework: support clocks and reset
+  iio: adc: sun4i-gpadc-iio: rework: support multiple sensors
+  iio: adc: sun4i-gpadc-iio: rework: support nvmem calibration data
+  iio: adc: sun4i-gpadc-iio: rework: device specific suspend & resume
+  iio: adc: sun4i-gpadc-iio: add support for H3 thermal sensor
+  iio: adc: sun4i-gpadc-iio: add support for A83T thermal sensor
+  ARM: dts: sunxi-h3-h5: add support for the thermal sensor in H3 and H5
+  ARM: dts: sun8i: h3: add support for the thermal sensor in H3
+  ARM: dts: sun8i: h3: add thermal zone to H3
+  ARM: dts: sun8i: h3: enable H3 sid controller
+  ARM: dts: sun8i: h3: use calibration for ths
+  ARM: dts: sun8i: a83t: add support for the thermal sensor in A83T
+  ARM: dts: sun8i: a83t: add thermal zone to A83T
+  ARM: sun8i: a83t: full range OPP tables and CPUfreq
+
+ .../devicetree/bindings/iio/adc/sun4i-gpadc.txt    |  41 +-
+ arch/arm/boot/dts/sun8i-a83t.dtsi                  | 143 +++++
+ arch/arm/boot/dts/sun8i-h3.dtsi                    |  52 ++
+ arch/arm/boot/dts/sunxi-h3-h5.dtsi                 |  10 +
+ arch/arm/configs/sunxi_defconfig                   |   1 +
+ drivers/iio/adc/Kconfig                            |  11 +-
+ drivers/iio/adc/sun4i-gpadc-iio.c                  | 617 +++++++++++++--------
+ drivers/mfd/Kconfig                                |  17 -
+ drivers/mfd/Makefile                               |   1 -
+ drivers/mfd/sun4i-gpadc.c                          | 181 ------
+ include/linux/{mfd => iio/adc}/sun4i-gpadc.h       |  47 +-
+ 11 files changed, 681 insertions(+), 440 deletions(-)
+ delete mode 100644 drivers/mfd/sun4i-gpadc.c
+ rename include/linux/{mfd => iio/adc}/sun4i-gpadc.h (72%)
+
 -- 
-2.1.1
+2.11.0
