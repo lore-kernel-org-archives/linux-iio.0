@@ -1,95 +1,64 @@
-Return-Path: <SRS0=ftCP=LO=bootlin.com=maxime.ripard@kernel.org>
-Date: Fri, 31 Aug 2018 10:25:45 +0200
-From: Maxime Ripard <maxime.ripard@bootlin.com>
-To: Philipp Rossak <embed3d@gmail.com>
-Cc: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
-	wens@csie.org, linux@armlinux.org.uk, jic23@kernel.org,
-	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	eugen.hristev@microchip.com, rdunlap@infradead.org,
-	vilhelm.gray@gmail.com, clabbe.montjoie@gmail.com,
-	quentin.schulz@bootlin.com, geert+renesas@glider.be,
-	lukas@wunner.de, icenowy@aosc.io, arnd@arndb.de, broonie@kernel.org,
-	arnaud.pouliquen@st.com, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-sunxi@googlegroups.com
-Subject: Re: [PATCH v3 01/30] mfd: Makefile: Remove build option for
- MFD:sun4i-gpadc
-Message-ID: <20180831082545.z6oilsmizliin3li@flea>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f68.google.com ([74.125.82.68]:55429 "EHLO
+        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727149AbeH3TsJ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 30 Aug 2018 15:48:09 -0400
+From: Philipp Rossak <embed3d@gmail.com>
+To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
+        maxime.ripard@bootlin.com, wens@csie.org, linux@armlinux.org.uk,
+        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, eugen.hristev@microchip.com,
+        rdunlap@infradead.org, vilhelm.gray@gmail.com,
+        clabbe.montjoie@gmail.com, quentin.schulz@bootlin.com,
+        geert+renesas@glider.be, lukas@wunner.de, icenowy@aosc.io,
+        arnd@arndb.de, broonie@kernel.org, arnaud.pouliquen@st.com
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@googlegroups.com
+Subject: [PATCH v3 02/30] mfd: Kconfig: Remove MFD_SUN4I_GPADC config option
+Date: Thu, 30 Aug 2018 17:44:50 +0200
+Message-Id: <20180830154518.29507-3-embed3d@gmail.com>
+In-Reply-To: <20180830154518.29507-1-embed3d@gmail.com>
 References: <20180830154518.29507-1-embed3d@gmail.com>
- <20180830154518.29507-2-embed3d@gmail.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="j2u73h5y32ocesl5"
-In-Reply-To: <20180830154518.29507-2-embed3d@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+We are merging the mfd:sun4i-gpadc driver into the
+iio/adc/sun4i-gpadc driver. So we need to remove the MFD_SUN4I_GPADC
+config option.
 
---j2u73h5y32ocesl5
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Philipp Rossak <embed3d@gmail.com>
+---
+ drivers/mfd/Kconfig | 17 -----------------
+ 1 file changed, 17 deletions(-)
 
-Hi Philipp,
-
-First, thanks for doing that rework. It was needed, and it's very much
-appreciated :)
-
-As you can imagine though, I have a bunch of comments.
-
-On Thu, Aug 30, 2018 at 05:44:49PM +0200, Philipp Rossak wrote:
-> Since we are merging the mfd driver into the sun4i-gpadc driver we need
-> to remove the build options for the sun4i-gpadc driver.
->=20
-> Signed-off-by: Philipp Rossak <embed3d@gmail.com>
-> ---
->  drivers/mfd/Makefile | 1 -
->  1 file changed, 1 deletion(-)
->=20
-> diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-> index e9fd20dba18d..c680994db988 100644
-> --- a/drivers/mfd/Makefile
-> +++ b/drivers/mfd/Makefile
-> @@ -220,7 +220,6 @@ obj-$(CONFIG_INTEL_SOC_PMIC_CHTDC_TI)	+=3D intel_soc_=
-pmic_chtdc_ti.o
->  obj-$(CONFIG_MFD_MT6397)	+=3D mt6397-core.o
-> =20
->  obj-$(CONFIG_MFD_ALTERA_A10SR)	+=3D altera-a10sr.o
-> -obj-$(CONFIG_MFD_SUN4I_GPADC)	+=3D sun4i-gpadc.o
-
-One of the things we should strive for is bisectability, which means
-being able to have a working driver at every point in time while
-introducing the features.
-
-In this particular case, this isn't really a problem since you're
-removing part of code that were never really enabled, but you should
-at least document why in your commit log.
-
-Thanks!
-Maxime
-
---=20
-Maxime Ripard, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
-
---j2u73h5y32ocesl5
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEE0VqZU19dR2zEVaqr0rTAlCFNr3QFAluI+4gACgkQ0rTAlCFN
-r3R/VhAAmQ4SVvjzMqsfkWiQvO3ZbetzY3B9dF/6KJqtJk+2r3UHh8pk6jeS4h+H
-aOjik1EexDdOO06eQGIcRUjpt0CBcFeZ1AIFb5JouhFQH6lhWAlGRPvrHmRE7KX0
-vlYCjDtZLzA1QNv8cmN2oXeI4sVCvGdNzNaiyBaPj2ao9aOWPofgZNLBWUTDTOgf
-LEmXabxt6VqP/Ah8BgV4yEHxcU4rYKIBUYuQljL7hXaLyGR8r8NcFmBa4CUIgKUc
-lB8fdrvI9ADNl4bXFleBe7muAyU8rTFcfKCmGJ7IXkd8pQzEDxnpccY1ikdAGtCD
-95oLWBVNRvRxXwzCmGjGIKhQ55/uxixnO+EZHoL7dFFFPGdqQtvM01EJqx50Ccri
-ecb1NWiOwNSnaY/Z4/oWWEBAoYeRex21dhbInF4NXlob54U7r/CDlcy/StGTTF/H
-jvg/YmrEA00GF9/ykXJSy64qyBC0p0gA9DrXRq18eXVVo/utNgMi8hHKBoFUq5Pe
-iz0XdpQKlgGWalc3rx0cjNFWsiaAgg9Qq/4qyozBHJ6jcgs4Hql2Jdx3/ey/OTsv
-i40fGwAiJKRj30lEh5jmivvuRQfTMRuXk3OLFRdwwbO5wTBmBSVblP/CS5T5L802
-ttYxhpAmjH3XgpmSubblkg74EUA6OIVVci/ThHTmgbM7Yu8hatk=
-=7tUJ
------END PGP SIGNATURE-----
-
---j2u73h5y32ocesl5--
+diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+index b860eb5aa194..c7ab57d65610 100644
+--- a/drivers/mfd/Kconfig
++++ b/drivers/mfd/Kconfig
+@@ -40,23 +40,6 @@ config MFD_ACT8945A
+ 	  linear regulators, along with a complete ActivePath battery
+ 	  charger.
+ 
+-config MFD_SUN4I_GPADC
+-	tristate "Allwinner sunxi platforms' GPADC MFD driver"
+-	select MFD_CORE
+-	select REGMAP_MMIO
+-	select REGMAP_IRQ
+-	depends on ARCH_SUNXI || COMPILE_TEST
+-	depends on !TOUCHSCREEN_SUN4I
+-	help
+-	  Select this to get support for Allwinner SoCs (A10, A13 and A31) ADC.
+-	  This driver will only map the hardware interrupt and registers, you
+-	  have to select individual drivers based on this MFD to be able to use
+-	  the ADC or the thermal sensor. This will try to probe the ADC driver
+-	  sun4i-gpadc-iio and the hwmon driver iio_hwmon.
+-
+-	  To compile this driver as a module, choose M here: the module will be
+-	  called sun4i-gpadc.
+-
+ config MFD_AS3711
+ 	bool "AMS AS3711"
+ 	select MFD_CORE
+-- 
+2.11.0
