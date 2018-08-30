@@ -1,67 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg1-f176.google.com ([209.85.215.176]:41130 "EHLO
-        mail-pg1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726275AbeHaVsq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 31 Aug 2018 17:48:46 -0400
-Received: by mail-pg1-f176.google.com with SMTP id s15-v6so5752264pgv.8
-        for <linux-iio@vger.kernel.org>; Fri, 31 Aug 2018 10:40:14 -0700 (PDT)
-Subject: Re: Idea: regmap_config.use_single_rw -> use_single_read,
- use_single_write
-To: Himanshu Jha <himanshujha199640@gmail.com>
-Cc: linux-iio <linux-iio@vger.kernel.org>
-References: <2992280e-55f0-00d6-24cd-30714891ddc9@gmail.com>
- <475b58c1-195c-d896-754e-2c84ff5b5e3e@gmail.com>
- <20180831170907.GA10015@himanshu-Vostro-3559>
- <20180831172027.GA10477@himanshu-Vostro-3559>
-From: David Frey <dpfrey@gmail.com>
-Message-ID: <126ec402-58dc-832b-cd34-e444c5bd8856@gmail.com>
-Date: Fri, 31 Aug 2018 10:40:12 -0700
+Received: from mail-eopbgr730042.outbound.protection.outlook.com ([40.107.73.42]:13872
+        "EHLO NAM05-DM3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727496AbeH3OY1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 30 Aug 2018 10:24:27 -0400
+From: Manish Narani <manish.narani@xilinx.com>
+To: <jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
+        <pmeerw@pmeerw.net>, <robh+dt@kernel.org>, <mark.rutland@arm.com>,
+        <michal.simek@xilinx.com>, <manish.narani@xilinx.com>,
+        <leoyang.li@nxp.com>, <sudeep.holla@arm.com>,
+        <amit.kucheria@linaro.org>, <broonie@kernel.org>,
+        <arnaud.pouliquen@st.com>, <geert@linux-m68k.org>,
+        <eugen.hristev@microchip.com>, <rdunlap@infradead.org>,
+        <lukas@wunner.de>, <freeman.liu@spreadtrum.com>,
+        <vilhelm.gray@gmail.com>, <tglx@linutronix.de>,
+        <baolin.wang@linaro.org>, <gregkh@linuxfoundation.org>
+CC: <sgoud@xilinx.com>, <anirudh@xilinx.com>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH 0/3] Add Xilinx AMS Driver
+Date: Thu, 30 Aug 2018 15:52:16 +0530
+Message-ID: <1535624539-7839-1-git-send-email-manish.narani@xilinx.com>
 MIME-Version: 1.0
-In-Reply-To: <20180831172027.GA10477@himanshu-Vostro-3559>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 8/31/2018 10:20 AM, Himanshu Jha wrote:
-> On Fri, Aug 31, 2018 at 10:39:07PM +0530, Himanshu Jha wrote:
->> On Fri, Aug 31, 2018 at 07:55:36AM -0700, David Frey wrote:
->>> On 8/29/2018 10:35 AM, David Frey wrote:
->>>> Hi,
->>>>
->>>> I just want to float an idea and see if it gets any support.
->>>>
->>>> In struct regmap_config, there is a member "bool use_single_rw" which is
->>>> documented as follows:
->>>>
->>>> "If set, converts the bulk read and write operations into a series of
->>>> single read and write operations. This is useful for device that does
->>>> not support bulk read and write."
->>>>
->>>> My idea is to split this into:
->>>> 	bool use_single_read;
->>>> 	bool use_single_write;
->>>>
->>>> I think this would be useful because at least one device that I'm using
->>>> (Bosch bmi160 IMU) supports bulk reads, but not bulk writes.  It would
->>>> be convenient to be able to use regmap_bulk_read and regmap_bulk_write
->>>> and have only regmap_bulk_write split the writes apart.  This change
->>>> would also support the case where a device supports bulk writes, but not
->>>> bulk reads.  I don't know of such a device, but I haven't made any
->>>> attempt to find one.
->>>>
->>>> What do you think?
-> 
-> Btw, if device doesn't support a bulk write and instead only supports a bulk
-> read as we see in BMI160, wouldn't the following suffice the problem:
-> 
-> 	.use_single_rw = true,
-> 	.can_multi_write = false,  // or probably not setting it up(clear)
-> 
->  313  * @can_multi_write: If set, the device supports the multi write mode of bulk
->  314  *                   write operations, if clear multi write requests will be
->  315  *                   split into individual write operations
+Add Xilinx AMS driver which is used for Xilinx's ZynqMP AMS controller.
+This AMS driver is used to report various interface voltages and
+temperatures across the system.
+This driver handles AMS module including PS-Sysmon & PL-Sysmon. The
+binding documentation is added for understanding of AMS, PS, PL Sysmon
+Channels.
 
-I don't think the can_multi_write flag is relevant here.  Bulk writes
-have the form: {regN, dataN, dataN+1, dataN+2, ...}.  Multi-write is
-used by regmap_multi_reg_write() and is this form: {regaA, dataA, regF,
-dataF, regC, dataC, ...}.
+Manish Narani (3):
+  dt-bindings: iio: adc: Add Xilinx AMS binding documentation
+  iio: adc: Add Xilinx AMS driver
+  arm64: zynqmp: DT: Add Xilinx AMS node
+
+ .../devicetree/bindings/iio/adc/xilinx-ams.txt     |  159 +++
+ arch/arm64/boot/dts/xilinx/zynqmp.dtsi             |   26 +
+ drivers/iio/adc/Kconfig                            |   10 +
+ drivers/iio/adc/Makefile                           |    1 +
+ drivers/iio/adc/xilinx-ams.c                       | 1081 ++++++++++++++++++++
+ drivers/iio/adc/xilinx-ams.h                       |  281 +++++
+ 6 files changed, 1558 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/xilinx-ams.txt
+ create mode 100644 drivers/iio/adc/xilinx-ams.c
+ create mode 100644 drivers/iio/adc/xilinx-ams.h
+
+-- 
+2.1.1
