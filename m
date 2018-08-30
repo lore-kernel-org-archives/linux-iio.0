@@ -1,49 +1,28 @@
-Return-Path: <SRS0=HIwy=LO=redhat.com=lorenzo.bianconi@kernel.org>
-Date: Fri, 31 Aug 2018 10:44:00 +0200
+Return-Path: <SRS0=c1dR=LN=redhat.com=lorenzo.bianconi@kernel.org>
 From: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
 To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: imu: st_lsm6dsx: take into account ts samples in wm
- configuration
-Message-ID: <20180831084359.GA6236@localhost.localdomain>
-References: <20180830203859.6527-1-lorenzo.bianconi@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20180830203859.6527-1-lorenzo.bianconi@redhat.com>
+Cc: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: [PATCH 0/5] add support to STM LSM6DSO 6-axis Mems sensor
+Date: Thu, 30 Aug 2018 22:52:54 +0200
+Message-Id: <20180830205259.7029-1-lorenzo.bianconi@redhat.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-> Take into account hw timer samples in pattern length computation used
-> in st_lsm6dsx_update_watermark routine for watermark configuration
-> 
-> Fixes: 213451076bd3 ("iio: imu: st_lsm6dsx: add hw timestamp support")
-> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-> ---
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> index 7589f2ad1dae..2b49d928f4c0 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> @@ -187,9 +187,10 @@ static int st_lsm6dsx_set_fifo_odr(struct st_lsm6dsx_sensor *sensor,
->  
->  int st_lsm6dsx_update_watermark(struct st_lsm6dsx_sensor *sensor, u16 watermark)
->  {
-> -	u16 fifo_watermark = ~0, cur_watermark, sip = 0, fifo_th_mask;
-> +	u16 fifo_watermark = ~0, cur_watermark, fifo_th_mask;
->  	struct st_lsm6dsx_hw *hw = sensor->hw;
->  	struct st_lsm6dsx_sensor *cur_sensor;
-> +	u16 sip = hw->ts_sip;
->  	int i, err, data;
->  	__le16 wdata;
->  
-> -- 
-> 2.18.0
-> 
+Lorenzo Bianconi (5):
+  iio: imu: st_lsm6dsx: add read_fifo callback to fifo_ops
+  iio: imu: st_lsm6dsx: make st_lsm6dsx_check_odr() non-static
+  iio: imu: st_lsm6dsx: add addr/max_word_len to st_lsm6dsx_read_block()
+  iio: imu: st_lsm6dsx: add support to LSM6DSO
+  dt-bindings: iio: imu: st_lsm6dsx: add LSM6DSO device bindings
 
-Hi Jonathan,
+ .../bindings/iio/imu/st_lsm6dsx.txt           |   1 +
+ drivers/iio/imu/st_lsm6dsx/Kconfig            |   2 +-
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h       |  18 +-
+ .../iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c    | 166 ++++++++++++++++--
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c  |  51 +++++-
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c   |   5 +
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c   |   5 +
+ 7 files changed, 228 insertions(+), 20 deletions(-)
 
-please drop this patch, I am sending a v2 for this issue.
-
-Regards,
-Lorenzo
+-- 
+2.18.0
