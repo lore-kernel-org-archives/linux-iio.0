@@ -26,38 +26,51 @@ Cc: linux-iio@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
 	linux-sunxi@googlegroups.com
-Subject: [PATCH v3 26/30] ARM: dts: sun8i: h3: enable H3 sid controller
-Date: Thu, 30 Aug 2018 17:45:14 +0200
-Message-Id: <20180830154518.29507-27-embed3d@gmail.com>
+Subject: [PATCH v3 27/30] ARM: dts: sun8i: h3: use calibration for ths
+Date: Thu, 30 Aug 2018 17:45:15 +0200
+Message-Id: <20180830154518.29507-28-embed3d@gmail.com>
 In-Reply-To: <20180830154518.29507-1-embed3d@gmail.com>
 References: <20180830154518.29507-1-embed3d@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch enables the the sid controller in the H3. It can be used
-for thermal calibration data.
+The H3 SID is supported by the kernel so we can add a NVMEM Data cell,
+that contains the calibration data.
+
+On the H3 the eFuses are located at the offset 0x200. The thermal data
+itself has an offset of 0x34 from the eFuse base. So we end on an offset
+of 0x234.
 
 Signed-off-by: Philipp Rossak <embed3d@gmail.com>
 ---
- arch/arm/boot/dts/sun8i-h3.dtsi | 7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/arm/boot/dts/sun8i-h3.dtsi | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
 diff --git a/arch/arm/boot/dts/sun8i-h3.dtsi b/arch/arm/boot/dts/sun8i-h3.dtsi
-index 954848d5df50..1866aec69ec1 100644
+index 1866aec69ec1..0fc447f0c02a 100644
 --- a/arch/arm/boot/dts/sun8i-h3.dtsi
 +++ b/arch/arm/boot/dts/sun8i-h3.dtsi
-@@ -104,6 +104,13 @@
+@@ -106,8 +106,15 @@
+ 
+ 	soc {
+ 		sid: eeprom@1c14000 {
++			#address-cells = <1>;
++			#size-cells = <1>;
+ 			compatible = "allwinner,sun8i-h3-sid";
+ 			reg = <0x01c14000 0x400>;
++
++			/* Data cells */
++			thermal_calibration: calib@234 {
++				reg = <0x234 0x8>;
++			};
  		};
  	};
  
-+	soc {
-+		sid: eeprom@1c14000 {
-+			compatible = "allwinner,sun8i-h3-sid";
-+			reg = <0x01c14000 0x400>;
-+		};
-+	};
-+
- 	thermal-zones {
- 		cpu-thermal {
- 			/* milliseconds */
+@@ -227,4 +234,6 @@
+ &ths {
+ 	compatible = "allwinner,sun8i-h3-ths";
+ 	#thermal-sensor-cells = <0>;
++	nvmem-cells = <&thermal_calibration>;
++	nvmem-cell-names = "calibration";
+ };
 -- 
 2.11.0
