@@ -1,49 +1,78 @@
-Return-Path: <SRS0=rmbY=LN=infradead.org=rdunlap@kernel.org>
-Subject: Re: [PATCH 2/3] iio: adc: Add Xilinx AMS driver
-To: Manish Narani <manish.narani@xilinx.com>, jic23@kernel.org,
- knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, robh+dt@kernel.org,
- mark.rutland@arm.com, michal.simek@xilinx.com, leoyang.li@nxp.com,
- sudeep.holla@arm.com, amit.kucheria@linaro.org, broonie@kernel.org,
- arnaud.pouliquen@st.com, geert@linux-m68k.org, eugen.hristev@microchip.com,
- lukas@wunner.de, freeman.liu@spreadtrum.com, vilhelm.gray@gmail.com,
- tglx@linutronix.de, baolin.wang@linaro.org, gregkh@linuxfoundation.org
-Cc: sgoud@xilinx.com, anirudh@xilinx.com, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-bn3nam01on0064.outbound.protection.outlook.com ([104.47.33.64]:57024
+        "EHLO NAM01-BN3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728295AbeH3OYa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 30 Aug 2018 10:24:30 -0400
+From: Manish Narani <manish.narani@xilinx.com>
+To: <jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
+        <pmeerw@pmeerw.net>, <robh+dt@kernel.org>, <mark.rutland@arm.com>,
+        <michal.simek@xilinx.com>, <manish.narani@xilinx.com>,
+        <leoyang.li@nxp.com>, <sudeep.holla@arm.com>,
+        <amit.kucheria@linaro.org>, <broonie@kernel.org>,
+        <arnaud.pouliquen@st.com>, <geert@linux-m68k.org>,
+        <eugen.hristev@microchip.com>, <rdunlap@infradead.org>,
+        <lukas@wunner.de>, <freeman.liu@spreadtrum.com>,
+        <vilhelm.gray@gmail.com>, <tglx@linutronix.de>,
+        <baolin.wang@linaro.org>, <gregkh@linuxfoundation.org>
+CC: <sgoud@xilinx.com>, <anirudh@xilinx.com>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH 3/3] arm64: zynqmp: DT: Add Xilinx AMS node
+Date: Thu, 30 Aug 2018 15:52:19 +0530
+Message-ID: <1535624539-7839-4-git-send-email-manish.narani@xilinx.com>
+In-Reply-To: <1535624539-7839-1-git-send-email-manish.narani@xilinx.com>
 References: <1535624539-7839-1-git-send-email-manish.narani@xilinx.com>
- <1535624539-7839-3-git-send-email-manish.narani@xilinx.com>
-From: Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <378c10f8-9760-b36a-431d-4ce4339d7345@infradead.org>
-Date: Thu, 30 Aug 2018 08:36:52 -0700
 MIME-Version: 1.0
-In-Reply-To: <1535624539-7839-3-git-send-email-manish.narani@xilinx.com>
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 08/30/2018 03:22 AM, Manish Narani wrote:
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 4a75492..405ea00 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -941,4 +941,14 @@ config XILINX_XADC
->  	  The driver can also be build as a module. If so, the module will be called
->  	  xilinx-xadc.
->  
-> +config XILINX_AMS
-> +	tristate "Xilinx AMS driver"
-> +	depends on ARCH_ZYNQMP || COMPILE_TEST
-> +	depends on HAS_IOMEM
-> +	help
-> +	  Say yes here to have support for the Xilinx AMS.
-> +
-> +	  The driver can also be build as a module. If so, the module will be called
+The Xilinx AMS includes an ADC as well as on-chip sensors that can be
+used to sample external and monitor on-die operating conditions, such as
+temperature and supply voltage levels.
 
-	                         built
+Signed-off-by: Manish Narani <manish.narani@xilinx.com>
+---
+ arch/arm64/boot/dts/xilinx/zynqmp.dtsi | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
-> +	  xilinx-ams.
-> +
->  endmenu
-
-
+diff --git a/arch/arm64/boot/dts/xilinx/zynqmp.dtsi b/arch/arm64/boot/dts/xilinx/zynqmp.dtsi
+index 29ce234..6e42ca2 100644
+--- a/arch/arm64/boot/dts/xilinx/zynqmp.dtsi
++++ b/arch/arm64/boot/dts/xilinx/zynqmp.dtsi
+@@ -617,5 +617,31 @@
+ 			reg = <0x0 0xfd4d0000 0x0 0x1000>;
+ 			timeout-sec = <10>;
+ 		};
++
++		xilinx_ams: ams@ffa50000 {
++			compatible = "xlnx,zynqmp-ams";
++			status = "disabled";
++			interrupt-parent = <&gic>;
++			interrupts = <0 56 4>;
++			interrupt-names = "ams-irq";
++			reg = <0x0 0xffa50000 0x0 0x800>;
++			reg-names = "ams-base";
++			#address-cells = <2>;
++			#size-cells = <2>;
++			#io-channel-cells = <1>;
++			ranges;
++
++			ams_ps: ams_ps@ffa50800 {
++				compatible = "xlnx,zynqmp-ams-ps";
++				status = "disabled";
++				reg = <0x0 0xffa50800 0x0 0x400>;
++			};
++
++			ams_pl: ams_pl@ffa50c00 {
++				compatible = "xlnx,zynqmp-ams-pl";
++				status = "disabled";
++				reg = <0x0 0xffa50c00 0x0 0x400>;
++			};
++		};
+ 	};
+ };
 -- 
-~Randy
+2.1.1
