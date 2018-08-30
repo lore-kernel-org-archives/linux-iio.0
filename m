@@ -1,47 +1,114 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f68.google.com ([74.125.82.68]:54866 "EHLO
-        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727642AbeH3TsT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 30 Aug 2018 15:48:19 -0400
+Return-Path: <SRS0=HpEw=LN=gmail.com=embed3d@kernel.org>
 From: Philipp Rossak <embed3d@gmail.com>
-To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
-        maxime.ripard@bootlin.com, wens@csie.org, linux@armlinux.org.uk,
-        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, eugen.hristev@microchip.com,
-        rdunlap@infradead.org, vilhelm.gray@gmail.com,
-        clabbe.montjoie@gmail.com, quentin.schulz@bootlin.com,
-        geert+renesas@glider.be, lukas@wunner.de, icenowy@aosc.io,
-        arnd@arndb.de, broonie@kernel.org, arnaud.pouliquen@st.com
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@googlegroups.com
-Subject: [PATCH v3 13/30] arm: config: Enable SUN4I_GPADC in defconfig
-Date: Thu, 30 Aug 2018 17:45:01 +0200
-Message-Id: <20180830154518.29507-14-embed3d@gmail.com>
+To: lee.jones@linaro.org,
+	robh+dt@kernel.org,
+	mark.rutland@arm.com,
+	maxime.ripard@bootlin.com,
+	wens@csie.org,
+	linux@armlinux.org.uk,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	eugen.hristev@microchip.com,
+	rdunlap@infradead.org,
+	vilhelm.gray@gmail.com,
+	clabbe.montjoie@gmail.com,
+	quentin.schulz@bootlin.com,
+	geert+renesas@glider.be,
+	lukas@wunner.de,
+	icenowy@aosc.io,
+	arnd@arndb.de,
+	broonie@kernel.org,
+	arnaud.pouliquen@st.com
+Cc: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-sunxi@googlegroups.com
+Subject: [PATCH v3 14/30] dt-bindings: update the Allwinner GPADC device tree binding for H3 & A83T
+Date: Thu, 30 Aug 2018 17:45:02 +0200
+Message-Id: <20180830154518.29507-15-embed3d@gmail.com>
 In-Reply-To: <20180830154518.29507-1-embed3d@gmail.com>
 References: <20180830154518.29507-1-embed3d@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-Since we have now new compatibles we can enable the SUN4I_GPADC driver
-next to the sun4i-ts driver.
+Allwinner H3 features a thermal sensor like the one in A33, but has its
+register re-arranged, the clock divider moved to CCU (originally the
+clock divider is in ADC) and added a pair of bus clock and reset.
+
+Allwinner A83T features a thermal sensor similar to the H3, the ths clock,
+the bus clock and the reset was removed from the CCU. The THS in A83T
+has a clock that is directly connected and runs with 24 MHz.
+
+Update the binding document to cover H3 and A83T.
 
 Signed-off-by: Philipp Rossak <embed3d@gmail.com>
 ---
- arch/arm/configs/sunxi_defconfig | 1 +
- 1 file changed, 1 insertion(+)
+ .../devicetree/bindings/iio/adc/sun4i-gpadc.txt    | 41 ++++++++++++++++++++--
+ 1 file changed, 38 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/configs/sunxi_defconfig b/arch/arm/configs/sunxi_defconfig
-index df433abfcb02..2189349820ac 100644
---- a/arch/arm/configs/sunxi_defconfig
-+++ b/arch/arm/configs/sunxi_defconfig
-@@ -132,6 +132,7 @@ CONFIG_DMA_SUN6I=y
- # CONFIG_IOMMU_SUPPORT is not set
- CONFIG_EXTCON=y
- CONFIG_IIO=y
-+CONFIG_SUN4I_GPADC=y
- CONFIG_AXP20X_ADC=y
- CONFIG_PWM=y
- CONFIG_PWM_SUN4I=y
+diff --git a/Documentation/devicetree/bindings/iio/adc/sun4i-gpadc.txt b/Documentation/devicetree/bindings/iio/adc/sun4i-gpadc.txt
+index a7ef9dd21f04..9116ad308cf1 100644
+--- a/Documentation/devicetree/bindings/iio/adc/sun4i-gpadc.txt
++++ b/Documentation/devicetree/bindings/iio/adc/sun4i-gpadc.txt
+@@ -4,12 +4,35 @@ The Allwinner SoCs all have an ADC that can also act as a thermal sensor
+ and sometimes as a touchscreen controller.
+ 
+ Required properties:
+-  - compatible: "allwinner,sun8i-a33-ths",
++  - compatible: must contain one of the following compatibles:
++		- "allwinner,sun8i-a33-ths"
++		- "allwinner,sun8i-h3-ths"
++		- "allwinner,sun8i-a83t-ths"
+   - reg: mmio address range of the chip,
+-  - #thermal-sensor-cells: shall be 0,
++  - #thermal-sensor-cells:
++		Please refer <devicetree/bindings/thermal/thermal.txt>,
+   - #io-channel-cells: shall be 0,
+ 
+-Example:
++Required properties for the following compatibles:
++		- "allwinner,sun8i-h3-ths"
++		- "allwinner,sun8i-a83t-ths"
++  - interrupts: the sampling interrupt of the ADC,
++
++Required properties for the following compatibles:
++		- "allwinner,sun8i-h3-ths"
++  - clocks: the bus clock and the input clock of the ADC,
++  - clock-names: should be "bus" and "mod",
++  - resets: the bus reset of the ADC,
++
++Optional properties for the following compatibles:
++		- "allwinner,sun8i-h3-ths"
++		- "allwinner,sun8i-a83t-ths"
++  - nvmem-cells: A phandle to the calibration data provided by a nvmem device.
++  - nvmem-cell-names: Should be "calibration".
++
++Details see: bindings/nvmem/nvmem.txt
++
++Example for A33:
+ 	ths: ths@1c25000 {
+ 		compatible = "allwinner,sun8i-a33-ths";
+ 		reg = <0x01c25000 0x100>;
+@@ -17,6 +40,18 @@ Example:
+ 		#io-channel-cells = <0>;
+ 	};
+ 
++Example for H3:
++	ths: thermal-sensor@1c25000 {
++		compatible = "allwinner,sun8i-h3-ths";
++		reg = <0x01c25000 0x400>;
++		clocks = <&ccu CLK_BUS_THS>, <&ccu CLK_THS>;
++		clock-names = "bus", "mod";
++		resets = <&ccu RST_BUS_THS>;
++		interrupts = <GIC_SPI 31 IRQ_TYPE_LEVEL_HIGH>;
++		#thermal-sensor-cells = <0>;
++		#io-channel-cells = <0>;
++	};
++
+ sun4i, sun5i and sun6i SoCs are also supported via these bindings:
+ 
+ Required properties:
 -- 
 2.11.0
