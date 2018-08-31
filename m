@@ -1,81 +1,66 @@
-Return-Path: <SRS0=LU71=LN=megous.com=megous@kernel.org>
-Date: Thu, 30 Aug 2018 18:40:17 +0200
-From: =?utf-8?Q?Ond=C5=99ej?= Jirman <megous@megous.com>
+Return-Path: <SRS0=ftCP=LO=bootlin.com=maxime.ripard@kernel.org>
+Date: Fri, 31 Aug 2018 10:35:29 +0200
+From: Maxime Ripard <maxime.ripard@bootlin.com>
 To: Philipp Rossak <embed3d@gmail.com>
 Cc: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
-	maxime.ripard@bootlin.com, wens@csie.org, linux@armlinux.org.uk,
-	jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, eugen.hristev@microchip.com,
-	rdunlap@infradead.org, vilhelm.gray@gmail.com,
-	clabbe.montjoie@gmail.com, quentin.schulz@bootlin.com,
-	geert+renesas@glider.be, lukas@wunner.de, icenowy@aosc.io,
-	arnd@arndb.de, broonie@kernel.org, arnaud.pouliquen@st.com,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-sunxi@googlegroups.com
-Subject: Re: [linux-sunxi] [PATCH v3 09/30] iio: adc: Threat A33 as thermal
- sensor and remove non thermal sun4i channel
-Message-ID: <20180830164017.n7rcxcy2jj4mijpr@core>
+	wens@csie.org, linux@armlinux.org.uk, jic23@kernel.org,
+	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	eugen.hristev@microchip.com, rdunlap@infradead.org,
+	vilhelm.gray@gmail.com, clabbe.montjoie@gmail.com,
+	quentin.schulz@bootlin.com, geert+renesas@glider.be,
+	lukas@wunner.de, icenowy@aosc.io, arnd@arndb.de, broonie@kernel.org,
+	arnaud.pouliquen@st.com, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-sunxi@googlegroups.com
+Subject: Re: [PATCH v3 09/30] iio: adc: Threat A33 as thermal sensor and
+ remove non thermal sun4i channel
+Message-ID: <20180831083529.tdbgwlkchrr3j6py@flea>
 References: <20180830154518.29507-1-embed3d@gmail.com>
  <20180830154518.29507-10-embed3d@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="ccfulje7flqq36pl"
 In-Reply-To: <20180830154518.29507-10-embed3d@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
+
+
+--ccfulje7flqq36pl
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
 On Thu, Aug 30, 2018 at 05:44:57PM +0200, Philipp Rossak wrote:
 > We want to use this driver mostly as thermal sensor, that still supports
 > the adc for the older chips, thus we threat the A33 as thermal sensor.
 > We also remove the adc channel without thermal support.
 
-Threat -> treat (in the title and in the message body too)
+The A33 can definitely be used as an ADC, so we need to keep that support.
 
-> Signed-off-by: Philipp Rossak <embed3d@gmail.com>
-> ---
->  drivers/iio/adc/sun4i-gpadc-iio.c | 19 -------------------
->  1 file changed, 19 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
-> index ab474ce86fb6..658a7e3e3370 100644
-> --- a/drivers/iio/adc/sun4i-gpadc-iio.c
-> +++ b/drivers/iio/adc/sun4i-gpadc-iio.c
-> @@ -123,23 +123,6 @@ static const struct iio_chan_spec sun4i_gpadc_channels[] = {
->  	},
->  };
->  
-> -static const struct iio_chan_spec sun4i_gpadc_channels_no_temp[] = {
-> -	SUN4I_GPADC_ADC_CHANNEL(0, "adc_chan0"),
-> -	SUN4I_GPADC_ADC_CHANNEL(1, "adc_chan1"),
-> -	SUN4I_GPADC_ADC_CHANNEL(2, "adc_chan2"),
-> -	SUN4I_GPADC_ADC_CHANNEL(3, "adc_chan3"),
-> -};
-> -
-> -static const struct iio_chan_spec sun8i_a33_gpadc_channels[] = {
-> -	{
-> -		.type = IIO_TEMP,
-> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> -				      BIT(IIO_CHAN_INFO_SCALE) |
-> -				      BIT(IIO_CHAN_INFO_OFFSET),
-> -		.datasheet_name = "temp_adc",
-> -	},
-> -};
-> -
->  static const struct regmap_config sun4i_gpadc_regmap_config = {
->  	.reg_bits = 32,
->  	.val_bits = 32,
-> @@ -444,8 +427,6 @@ static int sun4i_gpadc_probe_dt(struct platform_device *pdev,
->  		return -ENODEV;
->  
->  	info->no_irq = true;
-> -	indio_dev->num_channels = ARRAY_SIZE(sun8i_a33_gpadc_channels);
-> -	indio_dev->channels = sun8i_a33_gpadc_channels;
->  
->  	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->  	base = devm_ioremap_resource(&pdev->dev, mem);
-> -- 
-> 2.11.0
-> 
-> -- 
-> You received this message because you are subscribed to the Google Groups "linux-sunxi" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to linux-sunxi+unsubscribe@googlegroups.com.
-> For more options, visit https://groups.google.com/d/optout.
+Maxime
+
+--=20
+Maxime Ripard, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
+
+--ccfulje7flqq36pl
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEE0VqZU19dR2zEVaqr0rTAlCFNr3QFAluI/dAACgkQ0rTAlCFN
+r3Skwg//ag+xkjfZMsrApqvaDw7n1fwYHuyQ3QIu4chiRSwKe1Apw7q9CUQuQZJA
+wPhYflvZYEOeciaPiBEaEqVb/LCoDEuBYT3DQQ8d8djRtviwGWFFt0NoAlc7g5UH
+dj6m8WL1J5vQ6wU3VBkvydigpPM6fPeH4AAEEpSOaZISjSTEeizq3WnEWYyXZrj5
+sDMPPEhHTINAg6oz7NkUc5TF23vEW8oGtAHYMTZ5GhUijYtQHdrJqPG8MExOYcmz
+Ef9P4AnuNzumanwJRWjHtixMY2BHbfJevbeXhuI2g7r96/2J7VXGsLalhBiDjtUY
++sdT0HtggohvFfIFWtm0WMt9dDF1s/fQO9qY8FMf8GhYvLsF1z/Dp+YwLUe9d5gY
+AA6j3wPnXZH5D+AzRknv0CRoNCgwRk202uSecjejeD465iuT4QVZKfPgWCTIt9tm
+o4kRvQCOfaZhuhGntgp3RiUsr2/DRbxmU8eJpkGBiNRzqbKwD/3EpcpQUFRjdiQs
+0pqR2WWLC4G/+DGrmZBoTFD9JFROwK577nmYD1v7/6furUD+6fU1m77Q19W1mH7y
+LuyG03DYTnjvmCZEgw5G8cXdGy9aXsBay1pSWrQISHztBXgTWGUKsAfRTluxqh0E
+CwdzMtEctoAyeFVfrbohszJGDxF9a2JrvCu0aS5/uo6suzyPDYQ=
+=wCS4
+-----END PGP SIGNATURE-----
+
+--ccfulje7flqq36pl--
