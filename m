@@ -1,53 +1,66 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f68.google.com ([74.125.82.68]:55437 "EHLO
-        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727530AbeH3TsO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 30 Aug 2018 15:48:14 -0400
-From: Philipp Rossak <embed3d@gmail.com>
-To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
-        maxime.ripard@bootlin.com, wens@csie.org, linux@armlinux.org.uk,
-        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, eugen.hristev@microchip.com,
-        rdunlap@infradead.org, vilhelm.gray@gmail.com,
-        clabbe.montjoie@gmail.com, quentin.schulz@bootlin.com,
-        geert+renesas@glider.be, lukas@wunner.de, icenowy@aosc.io,
-        arnd@arndb.de, broonie@kernel.org, arnaud.pouliquen@st.com
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@googlegroups.com
-Subject: [PATCH v3 08/30] iio: adc: remove hwmon structure
-Date: Thu, 30 Aug 2018 17:44:56 +0200
-Message-Id: <20180830154518.29507-9-embed3d@gmail.com>
-In-Reply-To: <20180830154518.29507-1-embed3d@gmail.com>
+Return-Path: <SRS0=ftCP=LO=bootlin.com=maxime.ripard@kernel.org>
+Date: Fri, 31 Aug 2018 10:34:36 +0200
+From: Maxime Ripard <maxime.ripard@bootlin.com>
+To: Philipp Rossak <embed3d@gmail.com>
+Cc: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
+	wens@csie.org, linux@armlinux.org.uk, jic23@kernel.org,
+	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	eugen.hristev@microchip.com, rdunlap@infradead.org,
+	vilhelm.gray@gmail.com, clabbe.montjoie@gmail.com,
+	quentin.schulz@bootlin.com, geert+renesas@glider.be,
+	lukas@wunner.de, icenowy@aosc.io, arnd@arndb.de, broonie@kernel.org,
+	arnaud.pouliquen@st.com, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-sunxi@googlegroups.com
+Subject: Re: [PATCH v3 08/30] iio: adc: remove hwmon structure
+Message-ID: <20180831083436.prcidrdli7gdtb45@flea>
 References: <20180830154518.29507-1-embed3d@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+ <20180830154518.29507-9-embed3d@gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="hrgudpzhyfwmlswe"
+In-Reply-To: <20180830154518.29507-9-embed3d@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-We remove the hwmon structure that was requiered for the mfd driver.
 
-Signed-off-by: Philipp Rossak <embed3d@gmail.com>
----
- drivers/iio/adc/sun4i-gpadc-iio.c | 8 --------
- 1 file changed, 8 deletions(-)
+--hrgudpzhyfwmlswe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
-index f787442a9e5f..ab474ce86fb6 100644
---- a/drivers/iio/adc/sun4i-gpadc-iio.c
-+++ b/drivers/iio/adc/sun4i-gpadc-iio.c
-@@ -109,14 +109,6 @@ struct sun4i_gpadc_iio {
- 	struct device			*sensor_device;
- };
- 
--static struct iio_map sun4i_gpadc_hwmon_maps[] = {
--	{
--		.adc_channel_label = "temp_adc",
--		.consumer_dev_name = "iio_hwmon.0",
--	},
--	{ /* sentinel */ },
--};
--
- static const struct iio_chan_spec sun4i_gpadc_channels[] = {
- 	SUN4I_GPADC_ADC_CHANNEL(0, "adc_chan0"),
- 	SUN4I_GPADC_ADC_CHANNEL(1, "adc_chan1"),
--- 
-2.11.0
+On Thu, Aug 30, 2018 at 05:44:56PM +0200, Philipp Rossak wrote:
+> We remove the hwmon structure that was requiered for the mfd driver.
+>=20
+> Signed-off-by: Philipp Rossak <embed3d@gmail.com>
+
+Same thing here, you should merge that in the commit that removes the
+probe_mfd call.
+
+Maxime
+
+--=20
+Maxime Ripard, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
+
+--hrgudpzhyfwmlswe
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEE0VqZU19dR2zEVaqr0rTAlCFNr3QFAluI/ZsACgkQ0rTAlCFN
+r3S6fA//WRoHHbAOcFw/N4sr4iBf4kynFp2QolCL56V3J03Q+OLkTw0ZPBhkbJDq
+7Hk6BtuykSHc+YGcYKO38TuqGYarWj4EuhN1H8sae0LdeUsg7OG8nsKfhy5LCzTA
+kDm66DCq0WhZNM9SEd3/FRXmskVjzvZ9M62GNJyYKkOVsggeh8SCps7K34abvnTp
+SEnU73uDS0x/nIlqh/JM8RfLftvBHTax2Fo88XPlRzSIk963tMfI8lnIrZZDl4Tw
+mQKY8dNHJ6WFVytQ+7FgbUQy3hhkixMMLa/mv8mZpNK86bnJZkF6H2QtcvPx8dhj
+Im1obmLnvrWcP0rDYjdTsj1e6JAVQxbj8TEUrZpcxdDF+y1IFdU5rhlv9ZxPwevi
+EQrIzZZMilRDrwf3H7OI5jGaJpm2lOZUXjV6+qPn1Ksu5F7ZaNActbfxqB5HM+aN
+UL8+0baBPZJT1C/6eezfaBedtpGwNouiiC4KcG23a7TT2/4MbDBSFs09Xjdd6EYB
++V3AadheHMbo8bLRBvxMfsnXp7zAqjA8XAKuFTkMEqTNTJA9pKEcA3c0uZflnMsr
+OpOYC2W8IP6ZC4RdRbtiIvLHpYT4qpTbh5W0pZKRiNIkI+gr7Se5EuaZGCs3UoC+
+L8MeeV/FLUrh1KgWXVE4wUgn7dsB/KAUYfsEpPmRj/vQa9xD5yA=
+=ty7p
+-----END PGP SIGNATURE-----
+
+--hrgudpzhyfwmlswe--
