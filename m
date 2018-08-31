@@ -1,36 +1,34 @@
-Return-Path: <SRS0=a+AT=LO=gmail.com=himanshujha199640@kernel.org>
-Date: Fri, 31 Aug 2018 17:55:04 +0530
-From: Himanshu Jha <himanshujha199640@gmail.com>
+Return-Path: <SRS0=iV0U=LO=gmail.com=tduszyns@kernel.org>
+Date: Fri, 31 Aug 2018 17:35:49 +0200
+From: Tomasz Duszynski <tduszyns@gmail.com>
 To: Afonso Bordado <afonsobordado@az8.co>
 Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	devicetree@vger.kernel.org
 Subject: Re: [PATCH v2 1/4] iio: gyro: add support for fxas21002c
-Message-ID: <20180831122504.GA5828@himanshu-Vostro-3559>
+Message-ID: <20180831153548.GA2679@arch>
 References: <20180830211825.12202-1-afonsobordado@az8.co>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 In-Reply-To: <20180830211825.12202-1-afonsobordado@az8.co>
 List-ID: <linux-iio@vger.kernel.org>
 
-Hello Afonso,
-
 On Thu, Aug 30, 2018 at 10:18:22PM +0100, Afonso Bordado wrote:
 > FXAS21002C is a 3 axis gyroscope with integrated temperature sensor
-> 
+>
 > Signed-off-by: Afonso Bordado <afonsobordado@az8.co>
 > ---
 >  Changes in v2
 >    - Use ANSI C Comments
 >    - Minor cleanups
 >    - More dscriptive devicetree bindings
-> 
+>
 >  drivers/iio/gyro/Kconfig      |  11 +
 >  drivers/iio/gyro/Makefile     |   1 +
 >  drivers/iio/gyro/fxas21002c.c | 367 ++++++++++++++++++++++++++++++++++
 >  3 files changed, 379 insertions(+)
 >  create mode 100644 drivers/iio/gyro/fxas21002c.c
-> 
+>
 > diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
 > index 3126cf05e6b9..d71e33ea9fa4 100644
 > --- a/drivers/iio/gyro/Kconfig
@@ -38,7 +36,7 @@ On Thu, Aug 30, 2018 at 10:18:22PM +0100, Afonso Bordado wrote:
 > @@ -73,6 +73,17 @@ config BMG160_SPI
 >  	tristate
 >  	select REGMAP_SPI
->  
+>
 > +config FXAS21002C
 > +	tristate "Freescale FXAS21002C Gyroscope"
 > +	depends on I2C
@@ -62,9 +60,9 @@ On Thu, Aug 30, 2018 at 10:18:22PM +0100, Afonso Bordado wrote:
 >  obj-$(CONFIG_BMG160_I2C) += bmg160_i2c.o
 >  obj-$(CONFIG_BMG160_SPI) += bmg160_spi.o
 > +obj-$(CONFIG_FXAS21002C) += fxas21002c.o
->  
+>
 >  obj-$(CONFIG_HID_SENSOR_GYRO_3D) += hid-sensor-gyro-3d.o
->  
+>
 > diff --git a/drivers/iio/gyro/fxas21002c.c b/drivers/iio/gyro/fxas21002c.c
 > new file mode 100644
 > index 000000000000..261b73629544
@@ -94,9 +92,7 @@ On Thu, Aug 30, 2018 at 10:18:22PM +0100, Afonso Bordado wrote:
 > +#include <linux/iio/iio.h>
 > +#include <linux/iio/sysfs.h>
 > +#include <linux/regmap.h>
-
-Nit: Alphabetical ordering would be nice.
-
+> +
 > +#define FXAS21002C_DRV_NAME "fxas21002c"
 > +
 > +#define FXAS21002C_MAX_TRANSITION_TIME_MS 61
@@ -139,6 +135,11 @@ Nit: Alphabetical ordering would be nice.
 > +#define FXAS21002C_TEMP_SCALE          1000
 > +
 > +enum fxas21002c_id {
+
+It looks like your are not using this named enum anywhere
+in the code so perhaps drop the name. Besides the name
+collides with i2c_device_id table's name. Just a suggestion though.
+
 > +	ID_FXAS21002C,
 > +};
 > +
@@ -187,14 +188,7 @@ Nit: Alphabetical ordering would be nice.
 > +	.volatile_table = &fxas21002c_volatile_table,
 > +};
 > +EXPORT_SYMBOL(fxas21002c_regmap_config);
-
-Is it necessary to export ?
-
-Well, if you have plans in future to add SPI support
-then probably it is essential. But for now it isn't.
-
-Also, maybe adding SPI support in TODO ?
-
+> +
 > +#define FXAS21002C_GYRO_CHAN(_axis) {					\
 > +	.type = IIO_ANGL_VEL,						\
 > +	.modified = 1,							\
@@ -220,11 +214,6 @@ Also, maybe adding SPI support in TODO ?
 > +
 > +static int fxas21002c_set_operating_mode(struct fxas21002c_data *data,
 > +					 enum fxas21002c_operating_mode om)
-
-If you plan to send a new version, then align this as:
-
-static int fxas21002c_set_operating_mode(struct fxas21002c_data *data,
-					 enum fxas21002c_operating_mode om)
 > +{
 > +	int ret;
 > +	int mask;
@@ -297,11 +286,6 @@ static int fxas21002c_set_operating_mode(struct fxas21002c_data *data,
 > +	int chip_id;
 > +
 > +	ret = regmap_read(data->regmap, FXAS21002C_REG_WHO_AM_I, &chip_id);
-
-Is this correct ?
-regmap_read() needs unsigned int * as a the third agrument. This warning is
-usually prompted on compilation IIRC and build shall fail!
-
 > +	if (ret) {
 > +		dev_err(&data->client->dev, "could not read device id\n");
 > +		return ret;
@@ -310,42 +294,6 @@ usually prompted on compilation IIRC and build shall fail!
 > +	if (chip_id != FXAS21002C_CHIP_ID) {
 > +		dev_err(&data->client->dev,
 > +			"unsupported chip id %02x\n", chip_id);
-						^ %02d ?
-
-I have been skimming through the kernel source for a few a while and
-have observed often that we ignore "-Wformat-signedness" warnings ?
-
--Wformat-signedness:
-https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
-"If -Wformat is specified, also warn if the format string requires
- an unsigned argument and the argument is signed and vice versa."
-
-And the ISO-C11 Standard says:
-https://port70.net/~nsz/c/c11/n1570.html#7.21.6.1p9
-
- "If a conversion specification is invalid, the behavior is undefined.
- If any argument is not the correct type for the corresponding
- conversion specification, the behavior is *undefined*."
-
-Undefined Behavior:
-------------------
-
-In the C community, undefined behavior may be humorously referred to as "nasal demons",
-after a comp.std.c post that explained undefined behavior as allowing the compiler to
-do _anything_ it chooses, even "to make demons fly out of your nose"
-
-And Paul E. McKenney comments on compiler writers:
-https://lwn.net/Articles/508999/
-
-"I have seen the glint in their eyes when they discuss optimization
- techniques that you would not want your children to know about!"
-
-
-You may try and check the compiler warning by building source with
-"-Wformat-signedness" flag.
-
-Otherwise, you can avoid my comment and call me a language-lawyer ;)
-
 > +		return -ENODEV;
 > +	}
 > +
@@ -354,9 +302,7 @@ Otherwise, you can avoid my comment and call me a language-lawyer ;)
 > +
 > +static int fxas21002c_read_oneshot(struct fxas21002c_data *data,
 > +				   struct iio_chan_spec const *chan, int *val)
-
-Similar alignment here.
-
+> +{
 > +	int ret;
 > +	__be16 bulk_raw;
 > +
@@ -383,18 +329,119 @@ Similar alignment here.
 > +static int fxas21002c_read_raw(struct iio_dev *indio_dev,
 > +			       struct iio_chan_spec const *chan, int *val,
 > +			       int *val2, long mask)
-
-Similarly here.
-
-static int fxas21002c_read_raw(struct iio_dev *indio_dev,
-			       struct iio_chan_spec const *chan, int *val,
-			       int *val2, long mask)
-
-
-
-Thanks
--- 
-Himanshu Jha
-Undergraduate Student
-Department of Electronics & Communication
-Guru Tegh Bahadur Institute of Technology
+> +{
+> +	struct fxas21002c_data *data = iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		return fxas21002c_read_oneshot(data, chan, val);
+> +	case IIO_CHAN_INFO_SCALE:
+> +		switch (chan->type) {
+> +		case IIO_ANGL_VEL:
+> +			*val = 0;
+> +			*val2 = FXAS21002C_DEFAULT_SENSITIVITY;
+> +
+> +			return IIO_VAL_INT_PLUS_MICRO;
+> +		case IIO_TEMP:
+> +			*val = FXAS21002C_TEMP_SCALE;
+> +
+> +			return IIO_VAL_INT;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		if (chan->type != IIO_ANGL_VEL)
+> +			return -EINVAL;
+> +
+> +		*val = FXAS21002C_DEFAULT_ODR_HZ;
+> +
+> +		return IIO_VAL_INT;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static const struct iio_info fxas21002c_info = {
+> +	.read_raw		= fxas21002c_read_raw,
+> +};
+> +
+> +static int fxas21002c_probe(struct i2c_client *client,
+> +			    const struct i2c_device_id *id)
+> +{
+> +	int ret;
+> +	struct iio_dev *indio_dev;
+> +	struct fxas21002c_data *data;
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	i2c_set_clientdata(client, indio_dev);
+> +	data = iio_priv(indio_dev);
+> +	data->client = client;
+> +
+> +	data->regmap = devm_regmap_init_i2c(client, &fxas21002c_regmap_config);
+> +	if (IS_ERR(data->regmap)) {
+> +		ret = PTR_ERR(data->regmap);
+> +		dev_err(&client->dev,
+> +			"Failed to allocate regmap, err: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->channels = fxas21002c_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(fxas21002c_channels);
+> +	indio_dev->name = id->name;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->info = &fxas21002c_info;
+> +
+> +	ret = fxas21002c_verify_chip(data);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = fxas21002c_reset(data);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = fxas21002c_set_operating_mode(data, FXAS21002C_OM_ACTIVE);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = devm_add_action(&client->dev, fxas21002c_standby, data);
+> +	if (ret < 0) {
+> +		fxas21002c_standby(data);
+> +		dev_err(&client->dev, "failed to add standby action\n");
+> +		return ret;
+> +	}
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret < 0)
+> +		dev_err(&client->dev, "failed to register iio device\n");
+> +
+> +	return ret;
+> +}
+> +
+> +static const struct i2c_device_id fxas21002c_id[] = {
+> +	{"fxas21002c", ID_FXAS21002C},
+> +	{}
+> +};
+> +
+> +MODULE_DEVICE_TABLE(i2c, fxas21002c_id);
+> +
+> +static struct i2c_driver fxas21002c_driver = {
+> +	.driver = {
+> +		.name = FXAS21002C_DRV_NAME,
+> +	},
+> +	.probe		= fxas21002c_probe,
+> +	.id_table	= fxas21002c_id,
+> +};
+> +
+> +module_i2c_driver(fxas21002c_driver);
+> +
+> +MODULE_AUTHOR("Afonso Bordado <afonsobordado@az8.co>");
+> +MODULE_DESCRIPTION("FXAS21002C Digital Angular Rate Gyroscope driver");
+> +MODULE_LICENSE("GPL v2");
+> --
+> 2.18.0
+>
+>
