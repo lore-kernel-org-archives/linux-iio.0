@@ -1,14 +1,16 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:46475 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726195AbeIBOd0 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Sep 2018 10:33:26 -0400
-From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
-To: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>,
+Received: from mail-eopbgr40116.outbound.protection.outlook.com ([40.107.4.116]:29776
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725852AbeIAEd3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 1 Sep 2018 00:33:29 -0400
+Subject: Re: [PATCH v6 1/4] gpiolib: Pass bitmaps, not integer arrays, to
+ get/set array
+To: Janusz Krzysztofik <jmkrzyszt@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Cc: Jonathan Corbet <corbet@lwn.net>,
+        Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>,
         Peter Korsgaard <peter.korsgaard@barco.com>,
-        Peter Rosin <peda@axentia.se>,
         Ulf Hansson <ulf.hansson@linaro.org>,
         Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -23,81 +25,90 @@ Cc: Linus Walleij <linus.walleij@linaro.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Jiri Slaby <jslaby@suse.com>, Willy Tarreau <w@1wt.eu>,
         Geert Uytterhoeven <geert@linux-m68k.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-i2c@vger.kernel.org, linux-mmc@vger.kernel.org,
-        Network Development <netdev@vger.kernel.org>,
+        linux-doc@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-mmc@vger.kernel.org, netdev@vger.kernel.org,
         linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
         linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Janusz Krzysztofik <jmkrzyszt@gmail.com>
-Subject: Re: [PATCH v5 1/4] gpiolib: Pass bitmaps, not integer arrays, to get/set array
-Date: Sun, 02 Sep 2018 12:19:11 +0200
-Message-ID: <2195152.WzNjLO0DAH@z50>
-In-Reply-To: <CANiq72kJT15ELkYr2U5r4-pvGunQFLmZ5dhdZLnjmM7NWBnkNQ@mail.gmail.com>
-References: <20180820234341.5271-1-jmkrzyszt@gmail.com> <20180829204900.19390-2-jmkrzyszt@gmail.com> <CANiq72kJT15ELkYr2U5r4-pvGunQFLmZ5dhdZLnjmM7NWBnkNQ@mail.gmail.com>
+        linux-kernel@vger.kernel.org
+References: <20180829204900.19390-1-jmkrzyszt@gmail.com>
+ <20180831225616.29221-1-jmkrzyszt@gmail.com>
+ <20180831225616.29221-2-jmkrzyszt@gmail.com>
+From: Peter Rosin <peda@axentia.se>
+Message-ID: <47a7e66f-8635-7131-8a0c-c26cf849fd50@axentia.se>
+Date: Sat, 1 Sep 2018 02:23:17 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <20180831225616.29221-2-jmkrzyszt@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Miguel,
-
-On Thursday, August 30, 2018 1:10:59 PM CEST Miguel Ojeda wrote:
-> Hi Janusz,
+On 2018-09-01 00:56, Janusz Krzysztofik wrote:
+> Most users of get/set array functions iterate consecutive bits of data,
+> usually a single integer, while processing array of results obtained
+> from, or building an array of values to be passed to those functions.
+> Save time wasted on those iterations by changing the functions' API to
+> accept bitmaps.
 > 
-> On Wed, Aug 29, 2018 at 10:48 PM, Janusz Krzysztofik
-> <jmkrzyszt@gmail.com> wrote:
-> > ...
-> >         /* High nibble + RS, RW */
-> > -       for (i = 4; i < 8; i++)
-> > -               values[PIN_DATA0 + i] = !!(val & BIT(i));
-> > -       values[PIN_CTRL_RS] = rs;
-> > +       value_bitmap[0] = val;
-> > +       __assign_bit(PIN_CTRL_RS, value_bitmap, rs);
-> >         n = 5;
-> >         if (hd->pins[PIN_CTRL_RW]) {
-> > -               values[PIN_CTRL_RW] = 0;
-> > +               __clear_bit(PIN_CTRL_RW, value_bitmap);
-> >                 n++;
-> >         }
-> > +       value_bitmap[0] >>= PIN_DATA4;
-> >
-> >         /* Present the data to the port */
-> > -       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA4],
-> > -                                      &values[PIN_DATA4]);
-> > +       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA4], 
-value_bitmap);
-> >
-> >         hd44780_strobe_gpio(hd);
-> >
-> >         /* Low nibble */
-> > -       for (i = 0; i < 4; i++)
-> > -               values[PIN_DATA4 + i] = !!(val & BIT(i));
-> > +       value_bitmap[0] &= ~((1 << PIN_DATA4) - 1);
-> > +       value_bitmap[0] |= val & ~((1 << PIN_DATA4) - 1);
+> All current users are updated as well.
 > 
-> This is still wrong! What I originally meant in my v4 review is that
-> there is an extra ~ in the second line.
+> More benefits from the change are expected as soon as planned support
+> for accepting/passing those bitmaps directly from/to respective GPIO
+> chip callbacks if applicable is implemented.
 
-Indeed, that's wrong, I missed your original point, sorry.
+> diff --git a/drivers/i2c/muxes/i2c-mux-gpio.c b/drivers/i2c/muxes/i2c-mux-gpio.c
+> index 401308e3d036..e28ddc20000d 100644
+> --- a/drivers/i2c/muxes/i2c-mux-gpio.c
+> +++ b/drivers/i2c/muxes/i2c-mux-gpio.c
+> @@ -22,18 +22,16 @@ struct gpiomux {
+>  	struct i2c_mux_gpio_platform_data data;
+>  	unsigned gpio_base;
+>  	struct gpio_desc **gpios;
+> -	int *values;
+>  };
+>  
+>  static void i2c_mux_gpio_set(const struct gpiomux *mux, unsigned val)
+>  {
+> -	int i;
+> -
+> -	for (i = 0; i < mux->data.n_gpios; i++)
+> -		mux->values[i] = (val >> i) & 1;
+> +	DECLARE_BITMAP(value_bitmap, mux->data.n_gpios);
 
-> Also, a couple of general comments:
-> 
->  - Please review the list of CCs (I was not CC'd originally, so maybe
-> there are other maintainers that aren't, either)
+Picking a random driver for this comment, it applies to many of them.
 
-That's probably because early versions of the series, prior to v4, were not 
-touching existing GPIO API so there were no changes to users of gpiod_get/
-set_array_value() and their variants. From v4 on, you are in the loop so don't 
-worry, you haven't missed anything.
-But anyway, thanks for your suggestion to review the Cc; list, I've done that 
-for v7 and added still a few people who contributed most to the code being 
-changed.
+I think this creates a VLA? Can't you, for the bit-count, just go with
+BITS_PER_TYPE(unsigned)? Or whatever is appropriate for the driver
+in question.
 
->  - In general, the new code seems harder to read than the original one
-> (but that is my impression).
+Also, I find that where you use DECLARE_BITMAP, the _bitmap suffix is
+just noise and I would very much like to zap it.
 
-I hope we are slowly approaching acceptable readability in recent iterations.
+Cheers,
+Peter
 
-Thanks,
-Janusz
+> +	
+> +	*value_bitmap = val;
+>  
+>  	gpiod_set_array_value_cansleep(mux->data.n_gpios,
+> -				       mux->gpios, mux->values);
+> +				       mux->gpios, value_bitmap);
+>  }
+>  
+>  static int i2c_mux_gpio_select(struct i2c_mux_core *muxc, u32 chan)
+> @@ -182,15 +180,13 @@ static int i2c_mux_gpio_probe(struct platform_device *pdev)
+>  		return -EPROBE_DEFER;
+>  
+>  	muxc = i2c_mux_alloc(parent, &pdev->dev, mux->data.n_values,
+> -			     mux->data.n_gpios * sizeof(*mux->gpios) +
+> -			     mux->data.n_gpios * sizeof(*mux->values), 0,
+> +			     mux->data.n_gpios * sizeof(*mux->gpios), 0,
+>  			     i2c_mux_gpio_select, NULL);
+>  	if (!muxc) {
+>  		ret = -ENOMEM;
+>  		goto alloc_failed;
+>  	}
+>  	mux->gpios = muxc->priv;
+> -	mux->values = (int *)(mux->gpios + mux->data.n_gpios);
+>  	muxc->priv = mux;
+>  
+>  	platform_set_drvdata(pdev, muxc);
