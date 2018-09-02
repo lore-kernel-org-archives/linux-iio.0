@@ -1,44 +1,46 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:39872 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727186AbeICQL2 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Sep 2018 12:11:28 -0400
-Received: by mail-wr1-f65.google.com with SMTP id o37-v6so364158wrf.6
-        for <linux-iio@vger.kernel.org>; Mon, 03 Sep 2018 04:51:39 -0700 (PDT)
-Date: Mon, 3 Sep 2018 13:51:36 +0200
-From: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To: Jonathan Cameron <jonathan.cameron@huawei.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: imu: st_lsm6dsx: take into account ts samples in wm
- configuration
-Message-ID: <20180903115136.GA4992@localhost.localdomain>
-References: <cover.1535705166.git.lorenzo.bianconi@redhat.com>
- <20180830203859.6527-1-lorenzo.bianconi@redhat.com>
- <20180902211942.4922c0ec@archlinux>
- <20180903094853.00004152@huawei.com>
+Received: from mail.kernel.org ([198.145.29.99]:33582 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726978AbeICApV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 2 Sep 2018 20:45:21 -0400
+Date: Sun, 2 Sep 2018 21:28:19 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH 0/5] add support to STM LSM6DSO 6-axis Mems sensor
+Message-ID: <20180902212819.00c34a7f@archlinux>
+In-Reply-To: <20180830205259.7029-1-lorenzo.bianconi@redhat.com>
+References: <20180830205259.7029-1-lorenzo.bianconi@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20180903094853.00004152@huawei.com>
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-> On Sun, 2 Sep 2018 21:19:42 +0100
-> Jonathan Cameron <jic23@kernel.org> wrote:
-> 
-> > On Thu, 30 Aug 2018 22:38:59 +0200
-> > Lorenzo Bianconi <lorenzo.bianconi@redhat.com> wrote:
-> > 
-> > > Take into account hw timer samples in pattern length computation used
-> > > in st_lsm6dsx_update_watermark routine for watermark configuration
-> > > 
-> > > Fixes: 213451076bd3 ("iio: imu: st_lsm6dsx: add hw timestamp support")
-> > > Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>  
-> > Applied to the fixes-togreg branch of iio.git and marked for stable.
-> > 
-> Oops. I actually applied V2 and replied to the wrong email.
-> 
+On Thu, 30 Aug 2018 22:52:54 +0200
+Lorenzo Bianconi <lorenzo.bianconi@redhat.com> wrote:
 
-No worries, I had already double-checked :)
+I'm in a fussy mood.  Not a lot of point in putting a cover letter on
+a series with nothing in it.  Please give a nice 'general' description
+of what you are adding. In particular point out anything you think
+might be controversial :)
 
-Regards,
-Lorenzo
+Thanks,
+
+Jonathan
+
+> Lorenzo Bianconi (5):
+>   iio: imu: st_lsm6dsx: add read_fifo callback to fifo_ops
+>   iio: imu: st_lsm6dsx: make st_lsm6dsx_check_odr() non-static
+>   iio: imu: st_lsm6dsx: add addr/max_word_len to st_lsm6dsx_read_block()
+>   iio: imu: st_lsm6dsx: add support to LSM6DSO
+>   dt-bindings: iio: imu: st_lsm6dsx: add LSM6DSO device bindings
+> 
+>  .../bindings/iio/imu/st_lsm6dsx.txt           |   1 +
+>  drivers/iio/imu/st_lsm6dsx/Kconfig            |   2 +-
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h       |  18 +-
+>  .../iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c    | 166 ++++++++++++++++--
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c  |  51 +++++-
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c   |   5 +
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c   |   5 +
+>  7 files changed, 228 insertions(+), 20 deletions(-)
+> 
