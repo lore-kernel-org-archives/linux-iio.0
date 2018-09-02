@@ -1,65 +1,103 @@
-Return-Path: <SRS0=x4Df=MK=ti.com=vigneshr@kernel.org>
-Subject: Re: [PATCH 0/5] ti_am335x_tsc: Enable wakeup capability
-To: Lee Jones <lee.jones@linaro.org>
-CC: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Jonathan Cameron
-	<jic23@kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-omap@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-input@vger.kernel.org>
-References: <20180630103318.25355-1-vigneshr@ti.com>
- <dcb4a63b-9ecb-a72e-bfb8-ebb62017b4f7@ti.com> <20180718074736.GA4641@dell>
- <20180718170902.vk7rahyoaevucxbi@penguin> <20180723053708.GA4213@dell>
- <2236aa96-ca56-fa30-157d-2f484c6968cc@ti.com> <20180725052621.GB5835@dell>
-From: Vignesh R <vigneshr@ti.com>
-Message-ID: <f61848d8-57f6-14c0-eb74-cab488ceda50@ti.com>
-Date: Fri, 28 Sep 2018 11:42:41 +0530
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:46475 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726195AbeIBOd0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Sep 2018 10:33:26 -0400
+From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+To: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Peter Korsgaard <peter.korsgaard@barco.com>,
+        Peter Rosin <peda@axentia.se>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Jiri Slaby <jslaby@suse.com>, Willy Tarreau <w@1wt.eu>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-i2c@vger.kernel.org, linux-mmc@vger.kernel.org,
+        Network Development <netdev@vger.kernel.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Janusz Krzysztofik <jmkrzyszt@gmail.com>
+Subject: Re: [PATCH v5 1/4] gpiolib: Pass bitmaps, not integer arrays, to get/set array
+Date: Sun, 02 Sep 2018 12:19:11 +0200
+Message-ID: <2195152.WzNjLO0DAH@z50>
+In-Reply-To: <CANiq72kJT15ELkYr2U5r4-pvGunQFLmZ5dhdZLnjmM7NWBnkNQ@mail.gmail.com>
+References: <20180820234341.5271-1-jmkrzyszt@gmail.com> <20180829204900.19390-2-jmkrzyszt@gmail.com> <CANiq72kJT15ELkYr2U5r4-pvGunQFLmZ5dhdZLnjmM7NWBnkNQ@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20180725052621.GB5835@dell>
-Content-Type: text/plain; charset="utf-8"
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Lee,
+Hi Miguel,
 
-On Wednesday 25 July 2018 10:56 AM, Lee Jones wrote:
-[...]
->>>>>>>
->>>>>>> Vignesh R (5):
->>>>>>>   mfd: ti_am335x_tscadc: Don't mark TSCADC MFD as wakeup capable
->>>>>>>   Input: ti_am335x_tsc: Mark TSC device as wakeup source
->>>>>>>   mfd: ti_am335x_tscadc: Keep ADC interface on if child is wakeup
->>>>>>>     capable
->>>>>>>   iio: adc: ti_am335x_adc: Disable ADC during suspend unconditionally
->>>>>>>   Input: ti_am335x_tsc: Mark IRQ as wakeup capable
->>>>>>>
->>>>>>>  drivers/iio/adc/ti_am335x_adc.c           | 12 ++++--------
->>>>>>>  drivers/input/touchscreen/ti_am335x_tsc.c | 22 +++++++++++++++++-----
->>>>>>>  drivers/mfd/ti_am335x_tscadc.c            | 14 +++++++++++++-
->>>>>>>  3 files changed, 34 insertions(+), 14 deletions(-)
->>>>>>>
->>>>>>
->>>>>> Gentle ping... Could you review/pick this series? MFD amd IIO bits are
->>>>>> already ACKed
->>>>>
->>>>> MFD patches are reviewed "for my own reference" meaning that we
->>>>> haven't yet agreed on a merge plan yet.
->>>>
->>>> I think this series makes sense to be pushed through a single tree as
->>>> opposed to being spread between 3, even if it could technically be
->>>> possible. It looks like Jonathan is fine with going it through either
->>>> his or some other tree, I am fine with it going through MFD.
->>>
->>> I'm happy either way.
->>>
->> Thanks Dmitry, Jonathan and Lee Jones!
->>
->> Could this be applied to one of the trees now? MFD perhaps?
+On Thursday, August 30, 2018 1:10:59 PM CEST Miguel Ojeda wrote:
+> Hi Janusz,
 > 
-> It'll be applied, when it's applied. ;)
+> On Wed, Aug 29, 2018 at 10:48 PM, Janusz Krzysztofik
+> <jmkrzyszt@gmail.com> wrote:
+> > ...
+> >         /* High nibble + RS, RW */
+> > -       for (i = 4; i < 8; i++)
+> > -               values[PIN_DATA0 + i] = !!(val & BIT(i));
+> > -       values[PIN_CTRL_RS] = rs;
+> > +       value_bitmap[0] = val;
+> > +       __assign_bit(PIN_CTRL_RS, value_bitmap, rs);
+> >         n = 5;
+> >         if (hd->pins[PIN_CTRL_RW]) {
+> > -               values[PIN_CTRL_RW] = 0;
+> > +               __clear_bit(PIN_CTRL_RW, value_bitmap);
+> >                 n++;
+> >         }
+> > +       value_bitmap[0] >>= PIN_DATA4;
+> >
+> >         /* Present the data to the port */
+> > -       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA4],
+> > -                                      &values[PIN_DATA4]);
+> > +       gpiod_set_array_value_cansleep(n, &hd->pins[PIN_DATA4], 
+value_bitmap);
+> >
+> >         hd44780_strobe_gpio(hd);
+> >
+> >         /* Low nibble */
+> > -       for (i = 0; i < 4; i++)
+> > -               values[PIN_DATA4 + i] = !!(val & BIT(i));
+> > +       value_bitmap[0] &= ~((1 << PIN_DATA4) - 1);
+> > +       value_bitmap[0] |= val & ~((1 << PIN_DATA4) - 1);
+> 
+> This is still wrong! What I originally meant in my v4 review is that
+> there is an extra ~ in the second line.
 
-I see that this series was not picked up for v4.19. Could you consider
-this series for v4.20? Patches apply cleanly against linux-next.
+Indeed, that's wrong, I missed your original point, sorry.
 
+> Also, a couple of general comments:
+> 
+>  - Please review the list of CCs (I was not CC'd originally, so maybe
+> there are other maintainers that aren't, either)
 
--- 
-Regards
-Vignesh
+That's probably because early versions of the series, prior to v4, were not 
+touching existing GPIO API so there were no changes to users of gpiod_get/
+set_array_value() and their variants. From v4 on, you are in the loop so don't 
+worry, you haven't missed anything.
+But anyway, thanks for your suggestion to review the Cc; list, I've done that 
+for v7 and added still a few people who contributed most to the code being 
+changed.
+
+>  - In general, the new code seems harder to read than the original one
+> (but that is my impression).
+
+I hope we are slowly approaching acceptable readability in recent iterations.
+
+Thanks,
+Janusz
