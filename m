@@ -1,109 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:48742 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:34442 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726065AbeIBWLv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 2 Sep 2018 18:11:51 -0400
-Date: Sun, 2 Sep 2018 18:55:05 +0100
+        id S1726003AbeIBNev (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 2 Sep 2018 09:34:51 -0400
+Date: Sun, 2 Sep 2018 10:19:41 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Rob Herring <robh@kernel.org>
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: Convert to using %pOFn instead of device_node.name
-Message-ID: <20180902185505.330efb32@archlinux>
-In-Reply-To: <20180828015252.28511-22-robh@kernel.org>
-References: <20180828015252.28511-1-robh@kernel.org>
-        <20180828015252.28511-22-robh@kernel.org>
+To: Eugen Hristev <eugen.hristev@microchip.com>
+Cc: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <nicolas.ferre@microchip.com>
+Subject: Re: [PATCH TRIVIAL] iio: fix position relative kernel version
+Message-ID: <20180902101941.4c6534cf@archlinux>
+In-Reply-To: <1535452234-13184-1-git-send-email-eugen.hristev@microchip.com>
+References: <1535452234-13184-1-git-send-email-eugen.hristev@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 27 Aug 2018 20:52:23 -0500
-Rob Herring <robh@kernel.org> wrote:
+On Tue, 28 Aug 2018 13:30:34 +0300
+Eugen Hristev <eugen.hristev@microchip.com> wrote:
 
-> In preparation to remove the node name pointer from struct device_node,
-> convert printf users to use the %pOFn format specifier.
+> Position relative channel type was added in 4.19 kernel version
 > 
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Hartmut Knaack <knaack.h@gmx.de>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: linux-iio@vger.kernel.org
-> Signed-off-by: Rob Herring <robh@kernel.org>
+> Fixes: "3055a6cfa04ba" ("iio: Add channel for Position Relative")
+> Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
 
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
-
-Thanks,
+Applied, thanks.
 
 Jonathan
-
 > ---
->  drivers/iio/adc/qcom-pm8xxx-xoadc.c |  4 ++--
->  drivers/iio/adc/rcar-gyroadc.c      | 12 ++++++------
->  drivers/iio/frequency/adf4350.c     |  2 +-
->  3 files changed, 9 insertions(+), 9 deletions(-)
+>  Documentation/ABI/testing/sysfs-bus-iio | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/adc/qcom-pm8xxx-xoadc.c b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
-> index b093ecddf1a8..c30c002f1fef 100644
-> --- a/drivers/iio/adc/qcom-pm8xxx-xoadc.c
-> +++ b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
-> @@ -708,8 +708,8 @@ static int pm8xxx_of_xlate(struct iio_dev *indio_dev,
->  	 * mux.
->  	 */
->  	if (iiospec->args_count != 2) {
-> -		dev_err(&indio_dev->dev, "wrong number of arguments for %s need 2 got %d\n",
-> -			iiospec->np->name,
-> +		dev_err(&indio_dev->dev, "wrong number of arguments for %pOFn need 2 got %d\n",
-> +			iiospec->np,
->  			iiospec->args_count);
->  		return -EINVAL;
->  	}
-> diff --git a/drivers/iio/adc/rcar-gyroadc.c b/drivers/iio/adc/rcar-gyroadc.c
-> index dcb50172186f..4e982b51bcda 100644
-> --- a/drivers/iio/adc/rcar-gyroadc.c
-> +++ b/drivers/iio/adc/rcar-gyroadc.c
-> @@ -343,8 +343,8 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
->  	for_each_child_of_node(np, child) {
->  		of_id = of_match_node(rcar_gyroadc_child_match, child);
->  		if (!of_id) {
-> -			dev_err(dev, "Ignoring unsupported ADC \"%s\".",
-> -				child->name);
-> +			dev_err(dev, "Ignoring unsupported ADC \"%pOFn\".",
-> +				child);
->  			continue;
->  		}
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index a5b4f22..8127a08 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -199,7 +199,7 @@ Description:
 >  
-> @@ -381,16 +381,16 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
->  			ret = of_property_read_u32(child, "reg", &reg);
->  			if (ret) {
->  				dev_err(dev,
-> -					"Failed to get child reg property of ADC \"%s\".\n",
-> -					child->name);
-> +					"Failed to get child reg property of ADC \"%pOFn\".\n",
-> +					child);
->  				return ret;
->  			}
->  
->  			/* Channel number is too high. */
->  			if (reg >= num_channels) {
->  				dev_err(dev,
-> -					"Only %i channels supported with %s, but reg = <%i>.\n",
-> -					num_channels, child->name, reg);
-> +					"Only %i channels supported with %pOFn, but reg = <%i>.\n",
-> +					num_channels, child, reg);
->  				return ret;
->  			}
->  		}
-> diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
-> index 6d768431d90e..f4748ff243f7 100644
-> --- a/drivers/iio/frequency/adf4350.c
-> +++ b/drivers/iio/frequency/adf4350.c
-> @@ -388,7 +388,7 @@ static struct adf4350_platform_data *adf4350_parse_dt(struct device *dev)
->  	if (!pdata)
->  		return NULL;
->  
-> -	strncpy(&pdata->name[0], np->name, SPI_NAME_SIZE - 1);
-> +	snprintf(&pdata->name[0], SPI_NAME_SIZE - 1, "%pOFn", np);
->  
->  	tmp = 10000;
->  	of_property_read_u32(np, "adi,channel-spacing", &tmp);
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_positionrelative_x_raw
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_positionrelative_y_raw
+> -KernelVersion:	4.18
+> +KernelVersion:	4.19
+>  Contact:	linux-iio@vger.kernel.org
+>  Description:
+>  		Relative position in direction x or y on a pad (may be
+> -- 
+> 2.7.4
+> 
