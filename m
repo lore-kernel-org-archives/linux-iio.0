@@ -1,112 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:56278 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727053AbeICAvp (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Sep 2018 20:51:45 -0400
-Date: Sun, 2 Sep 2018 21:34:43 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Tomasz Duszynski <tduszyns@gmail.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: pressure: ms5611: switch to SPDX identifier
-Message-ID: <20180902213443.60d89a61@archlinux>
-In-Reply-To: <20180901195214.11485-1-tduszyns@gmail.com>
-References: <20180901195214.11485-1-tduszyns@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:38638 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728081AbeIBRsA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Sep 2018 13:48:00 -0400
+From: Tomasz Duszynski <tduszyns@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: light: bh1750: simplify setting PM ops
+Date: Sun,  2 Sep 2018 15:29:23 +0200
+Message-Id: <20180902132923.13513-1-tduszyns@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat,  1 Sep 2018 21:52:14 +0200
-Tomasz Duszynski <tduszyns@gmail.com> wrote:
+Relying on CONFIG_PM_SLEEP to set PM ops is not necessary
+since core will handle everything internally. One have to only make sure
+that functions that can go unused are marked with __maybe_unused.
 
-> Drop boilerplate license text and use SPDX identifier instead.
-> 
-> Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
+Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
+---
+ drivers/iio/light/bh1750.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
-Applied.
+diff --git a/drivers/iio/light/bh1750.c b/drivers/iio/light/bh1750.c
+index 493ca7420602..c3a481452b67 100644
+--- a/drivers/iio/light/bh1750.c
++++ b/drivers/iio/light/bh1750.c
+@@ -278,8 +278,7 @@ static int bh1750_remove(struct i2c_client *client)
+ 	return 0;
+ }
 
-Thanks,
+-#ifdef CONFIG_PM_SLEEP
+-static int bh1750_suspend(struct device *dev)
++static int __maybe_unused bh1750_suspend(struct device *dev)
+ {
+ 	int ret;
+ 	struct bh1750_data *data =
+@@ -297,10 +296,6 @@ static int bh1750_suspend(struct device *dev)
+ }
 
-Jonathan
-> ---
->  drivers/iio/pressure/ms5611.h      | 5 +----
->  drivers/iio/pressure/ms5611_core.c | 5 +----
->  drivers/iio/pressure/ms5611_i2c.c  | 5 +----
->  drivers/iio/pressure/ms5611_spi.c  | 5 +----
->  4 files changed, 4 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/iio/pressure/ms5611.h b/drivers/iio/pressure/ms5611.h
-> index ead9e9f85894..c9dd86de3ade 100644
-> --- a/drivers/iio/pressure/ms5611.h
-> +++ b/drivers/iio/pressure/ms5611.h
-> @@ -1,12 +1,9 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
->  /*
->   * MS5611 pressure and temperature sensor driver
->   *
->   * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
->   *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License version 2 as
-> - * published by the Free Software Foundation.
-> - *
->   */
-> 
->  #ifndef _MS5611_H
-> diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
-> index f950cfde5db9..2f598ad91621 100644
-> --- a/drivers/iio/pressure/ms5611_core.c
-> +++ b/drivers/iio/pressure/ms5611_core.c
-> @@ -1,12 +1,9 @@
-> +// SPDX-License-Identifier: GPL-2.0
->  /*
->   * MS5611 pressure and temperature sensor driver
->   *
->   * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
->   *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License version 2 as
-> - * published by the Free Software Foundation.
-> - *
->   * Data sheet:
->   *  http://www.meas-spec.com/downloads/MS5611-01BA03.pdf
->   *  http://www.meas-spec.com/downloads/MS5607-02BA03.pdf
-> diff --git a/drivers/iio/pressure/ms5611_i2c.c b/drivers/iio/pressure/ms5611_i2c.c
-> index 0469c8ae1134..8089c59adce5 100644
-> --- a/drivers/iio/pressure/ms5611_i2c.c
-> +++ b/drivers/iio/pressure/ms5611_i2c.c
-> @@ -1,12 +1,9 @@
-> +// SPDX-License-Identifier: GPL-2.0
->  /*
->   * MS5611 pressure and temperature sensor driver (I2C bus)
->   *
->   * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
->   *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License version 2 as
-> - * published by the Free Software Foundation.
-> - *
->   * 7-bit I2C slave addresses:
->   *
->   * 0x77 (CSB pin low)
-> diff --git a/drivers/iio/pressure/ms5611_spi.c b/drivers/iio/pressure/ms5611_spi.c
-> index cd11d022208e..b463eaa799ab 100644
-> --- a/drivers/iio/pressure/ms5611_spi.c
-> +++ b/drivers/iio/pressure/ms5611_spi.c
-> @@ -1,12 +1,9 @@
-> +// SPDX-License-Identifier: GPL-2.0
->  /*
->   * MS5611 pressure and temperature sensor driver (SPI bus)
->   *
->   * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
->   *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License version 2 as
-> - * published by the Free Software Foundation.
-> - *
->   */
-> 
->  #include <linux/delay.h>
-> --
-> 2.18.0
-> 
+ static SIMPLE_DEV_PM_OPS(bh1750_pm_ops, bh1750_suspend, NULL);
+-#define BH1750_PM_OPS (&bh1750_pm_ops)
+-#else
+-#define BH1750_PM_OPS NULL
+-#endif
+
+ static const struct i2c_device_id bh1750_id[] = {
+ 	{ "bh1710", BH1710 },
+@@ -315,7 +310,7 @@ MODULE_DEVICE_TABLE(i2c, bh1750_id);
+ static struct i2c_driver bh1750_driver = {
+ 	.driver = {
+ 		.name = "bh1750",
+-		.pm = BH1750_PM_OPS,
++		.pm = &bh1750_pm_ops,
+ 	},
+ 	.probe = bh1750_probe,
+ 	.remove = bh1750_remove,
+--
+2.18.0
