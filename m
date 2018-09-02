@@ -1,76 +1,95 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:33768 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:34128 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726003AbeIBNaU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 2 Sep 2018 09:30:20 -0400
-Date: Sun, 2 Sep 2018 10:15:10 +0100
+        id S1726003AbeIBNdL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 2 Sep 2018 09:33:11 -0400
+Date: Sun, 2 Sep 2018 10:18:00 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Afonso Bordado <afonsobordado@az8.co>
 Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         devicetree@vger.kernel.org
-Subject: Re: [PATCH 2/4] iio: gyro: add device tree support for fxas21002c
-Message-ID: <20180902101510.01225f8d@archlinux>
-In-Reply-To: <060655b11b68d25fd855e9535df75db4b113a615.camel@az8.co>
+Subject: Re: [PATCH 1/4] iio: gyro: add support for fxas21002c
+Message-ID: <20180902101800.4165005f@archlinux>
+In-Reply-To: <d6c71f8699a0ee8eb09417381e301246b864e69e.camel@az8.co>
 References: <20180825211910.22929-1-afonsobordado@az8.co>
-        <20180825211910.22929-2-afonsobordado@az8.co>
-        <20180827181341.6563c0bf@archlinux>
-        <060655b11b68d25fd855e9535df75db4b113a615.camel@az8.co>
+        <20180827180805.7d4b9f4e@archlinux>
+        <d6c71f8699a0ee8eb09417381e301246b864e69e.camel@az8.co>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 29 Aug 2018 07:43:53 +0100
+On Wed, 29 Aug 2018 07:43:48 +0100
 Afonso Bordado <afonsobordado@az8.co> wrote:
 
-> On Mon, 2018-08-27 at 18:13 +0100, Jonathan Cameron wrote:
-> > On Sat, 25 Aug 2018 22:19:08 +0100
+> On Mon, 2018-08-27 at 18:08 +0100, Jonathan Cameron wrote:
+> > On Sat, 25 Aug 2018 22:19:07 +0100
 > > Afonso Bordado <afonsobordado@az8.co> wrote:
 > >   
-> > > This patch adds device tree support for the fxas21002c driver,
-> > > including
-> > > bindings.
+> > > FXAS21002C is a 3 axis gyroscope with integrated temperature sensor
 > > > 
 > > > Signed-off-by: Afonso Bordado <afonsobordado@az8.co>  
 > > 
-> > Now, the devicetree bindings should not reflect just what the driver
-> > uses right now, but rather describe the hardware.
+> > Hi,
 > > 
-> > There are interrupts on there for starters that definitely want to be
-> > described from the start.  Also there is a reset line that should
-> > probably
-> > be here from the start.
+> > Driver is pretty clean so only a few minor comments inline.
+> > If we were late in a cycle I'd probably just have taken it and fixed
+> > up
+> > but as we have lots of time and I'm inherently lazy I'll let you do a
+> > v2 :)
 > > 
-> > Potentially also the two power supplies though that's less critical
-> > (nice to have though)
-> > 
-> > It is also an i2c and spi part though that can probably be added
-> > later as
-> > we can argue we are only documenting the bindings for the device in
-> > i2c mode
-> > for now.
-> > 
-> > So what is here is fine, but I think we need to describe more.
-> > 
-> > It's all well understood details of how it is connected so no need to
-> > have tested it with a driver to be sure it will be right.
+> > Good job, thanks!
 > > 
 > > Jonathan  
 > 
-> Ok, so i'm thinking about adding both interrupts, the reset line and
-> the regulators. If i say they are optional in the device tree document,
-> i shouldn't need to add any more code immediately and could just
-> implement support for it later right?
+> Great!
 > 
-Absolutely, as long as you are happy to keep them optional as you
-add the features to the driver.
+> 
+> > > +
+> > > +static const struct regmap_access_table fxas21002c_volatile_table
+> > > = {
+> > > +	.yes_ranges = fxas21002c_volatile_ranges,
+> > > +	.n_yes_ranges = ARRAY_SIZE(fxas21002c_volatile_ranges),
+> > > +};
+> > > +
+> > > +const struct regmap_config fxas21002c_regmap_config = {
+> > > +	.reg_bits = 8,
+> > > +	.val_bits = 8,
+> > > +
+> > > +	.max_register = FXAS21002C_REG_CTRL_REG3,
+> > > +	// We don't specify a .rd_table because everything is readable  
+> > 
+> > /* ... */
+> > 
+> > Please run checkpatch as IIRC it complains about this.  
+> 
+> I've replaced all instances of C99 comments with ANSI comments.
+> However, has Joe Perches mentioned. Checkpatch did not warn me about
+> this.
+> 
+Yup, thanks to Joe for clarifying this I had missed the change.
+> 
+> > > +
+> > > +static int fxas21002c_remove(struct i2c_client *client)
+> > > +{
+> > > +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> > > +	struct fxas21002c_data *data = iio_priv(indio_dev);
+> > > +
+> > > +	iio_device_unregister(indio_dev);
+> > > +
+> > > +	fxas21002c_set_operating_mode(data, FXAS21002C_OM_STANDBY);  
+> > 
+> > You could have used the devm_add_action to allow the managed cleanup
+> > to handle
+> > this and hence gotten rid of the remove function.
+> > 
+> > (minor suggestion and somewhat a matter of personal taste).  
+> 
+> I didn't know this existed! Changed in v2.
 
-Regulators make that easy by providing stubs (as long as you don't
-need to read their voltages).  Reset and interrupts will need to be
-handled explicitly by the driver.
-
-Thanks,
+Nor me until someone used it in a driver a few months back ;)
+One of the advantages of doing a lot of review is that you get to see
+any new stuff other people use.
 
 Jonathan
-> 
