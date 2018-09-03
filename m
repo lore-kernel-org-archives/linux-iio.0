@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bmailout2.hostsharing.net ([83.223.90.240]:50073 "EHLO
-        bmailout2.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729179AbeIBRhr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Sep 2018 13:37:47 -0400
-Date: Sun, 2 Sep 2018 15:21:54 +0200
-From: Lukas Wunner <lukas@wunner.de>
+Received: from bombadil.infradead.org ([198.137.202.133]:51150 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725854AbeICIuR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Sep 2018 04:50:17 -0400
+Date: Sun, 2 Sep 2018 21:31:29 -0700
+From: Matthew Wilcox <willy@infradead.org>
 To: Janusz Krzysztofik <jmkrzyszt@gmail.com>
 Cc: Linus Walleij <linus.walleij@linaro.org>,
         Jonathan Corbet <corbet@lwn.net>,
@@ -31,15 +31,16 @@ Cc: Linus Walleij <linus.walleij@linaro.org>,
         linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Sebastien Bourdelin <sebastien.bourdelin@savoirfairelinux.com>,
+        Lukas Wunner <lukas@wunner.de>,
         Rojhalat Ibrahim <imr@rtschenk.de>,
         Russell King <rmk+kernel@armlinux.org.uk>,
         Tony Lindgren <tony@atomide.com>,
         Yegor Yefremov <yegorslists@googlemail.com>,
         Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-        <u.kleine-koenig@pengutronix.de>
+        <u.kleine-koenig@pengutronix.de>, linuxppc-dev@lists.ozlabs.org
 Subject: Re: [PATCH v7 1/4] gpiolib: Pass bitmaps, not integer arrays, to
  get/set array
-Message-ID: <20180902132154.aishrx5shpvjrm2x@wunner.de>
+Message-ID: <20180903043129.GA17856@bombadil.infradead.org>
 References: <20180831225616.29221-1-jmkrzyszt@gmail.com>
  <20180902120144.6855-1-jmkrzyszt@gmail.com>
  <20180902120144.6855-2-jmkrzyszt@gmail.com>
@@ -49,26 +50,28 @@ In-Reply-To: <20180902120144.6855-2-jmkrzyszt@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Sep 02, 2018 at 02:01:41PM +0200, Janusz Krzysztofik wrote:
-> @@ -461,7 +461,7 @@ static long linehandle_ioctl(struct file *filep, unsigned int cmd,
->  
->  		/* Clamp all values to [0,1] */
->  		for (i = 0; i < lh->numdescs; i++)
-> -			vals[i] = !!ghd.values[i];
-> +			__assign_bit(i, vals, !!ghd.values[i]);
+> +++ b/drivers/auxdisplay/hd44780.c
+> @@ -62,17 +62,12 @@ static void hd44780_strobe_gpio(struct hd44780 *hd)
+>  /* write to an LCD panel register in 8 bit GPIO mode */
+>  static void hd44780_write_gpio8(struct hd44780 *hd, u8 val, unsigned int rs)
+>  {
+> -	int values[10];	/* for DATA[0-7], RS, RW */
+> -	unsigned int i, n;
+> -
+> -	for (i = 0; i < 8; i++)
+> -		values[PIN_DATA0 + i] = !!(val & BIT(i));
+> -	values[PIN_CTRL_RS] = rs;
+> -	n = 9;
+> -	if (hd->pins[PIN_CTRL_RW]) {
+> -		values[PIN_CTRL_RW] = 0;
+> -		n++;
+> -	}
+> +	DECLARE_BITMAP(values, 10); /* for DATA[0-7], RS, RW */
+> +	unsigned int n;
+> +
+> +	*values = val;
+> +	__assign_bit(8, values, rs);
+> +	n = hd->pins[PIN_CTRL_RW] ? 10 : 9;
 
-The "!!" becomes unnecessary and can be removed, same for the code
-comment above.
-
-
->  /**
->   * gpiod_get_array_value() - read values from an array of GPIOs
-> - * @array_size: number of elements in the descriptor / value arrays
-> + * @array_size: number of elements in the descriptor array / value bitmap
->   * @desc_array: array of GPIO descriptors whose values will be read
-> - * @value_array: array to store the read values
-> + * @value_bitnap: bitmap to store the read values
-
-Typo, s/bitnap/bitmap/
-
-Otherwise LGTM.
+Doesn't this assume little endian bitmaps?  Has anyone tested this on
+big-endian machines?
