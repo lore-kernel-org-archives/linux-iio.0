@@ -1,65 +1,78 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:52136 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728575AbeICVum (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 3 Sep 2018 17:50:42 -0400
-Date: Mon, 3 Sep 2018 18:29:27 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <SRS0=GuC/=LR=bootlin.com=maxime.ripard@kernel.org>
+Date: Mon, 3 Sep 2018 11:44:04 +0200
+From: Maxime Ripard <maxime.ripard@bootlin.com>
 To: Philipp Rossak <embed3d@gmail.com>
 Cc: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
-        maxime.ripard@bootlin.com, wens@csie.org, linux@armlinux.org.uk,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        eugen.hristev@microchip.com, rdunlap@infradead.org,
-        vilhelm.gray@gmail.com, clabbe.montjoie@gmail.com,
-        quentin.schulz@bootlin.com, geert+renesas@glider.be,
-        lukas@wunner.de, icenowy@aosc.io, arnd@arndb.de,
-        broonie@kernel.org, arnaud.pouliquen@st.com,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@googlegroups.com
-Subject: Re: [PATCH v3 18/30] iio: adc: sun4i-gpadc-iio: rework: support
- multiple sensors
-Message-ID: <20180903182927.344858c4@archlinux>
-In-Reply-To: <3722842b-1aa3-ea46-c0ec-7a01bc8a723e@gmail.com>
+	wens@csie.org, linux@armlinux.org.uk, jic23@kernel.org,
+	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	eugen.hristev@microchip.com, rdunlap@infradead.org,
+	vilhelm.gray@gmail.com, clabbe.montjoie@gmail.com,
+	quentin.schulz@bootlin.com, geert+renesas@glider.be,
+	lukas@wunner.de, icenowy@aosc.io, arnd@arndb.de, broonie@kernel.org,
+	arnaud.pouliquen@st.com, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-sunxi@googlegroups.com
+Subject: Re: [PATCH v3 20/30] iio: adc: sun4i-gpadc-iio: rework: device
+ specific suspend & resume
+Message-ID: <20180903094404.ih2fsqsetz6oo7ie@flea>
 References: <20180830154518.29507-1-embed3d@gmail.com>
-        <20180830154518.29507-19-embed3d@gmail.com>
-        <20180902211125.0098c808@archlinux>
-        <3722842b-1aa3-ea46-c0ec-7a01bc8a723e@gmail.com>
+ <20180830154518.29507-21-embed3d@gmail.com>
+ <20180831090915.agbldint76ngj5jf@flea>
+ <ddd06c43-026e-2801-dc36-053d469e43f3@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="2x2tyzi3ftzmnojb"
+In-Reply-To: <ddd06c43-026e-2801-dc36-053d469e43f3@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, 3 Sep 2018 15:58:30 +0200
-Philipp Rossak <embed3d@gmail.com> wrote:
 
-> On 02.09.2018 22:11, Jonathan Cameron wrote:
-> > This feels like a good place to factor out the code into a utility
-> > function that just does one of them.  That should hopefully
-> > reduce the indenting etc enough to make the code easier to read.
-> >   
-> >> +		info->tzds[i].info = info;
-> >> +		info->tzds[i].sensor_id = i;
-> >> +
-> >> +		info->tzds[i].tzd = thermal_zone_of_sensor_register(
-> >> +				info->sensor_device,
-> >> +				i, &info->tzds[i], &sun4i_ts_tz_ops);
-> >> +		/*
-> >> +		 * Do not fail driver probing when failing to register in
-> >> +		 * thermal because no thermal DT node is found.
-> >> +		 */
-> >> +		if (IS_ERR(info->tzds[i].tzd) && \
-> >> +				PTR_ERR(info->tzds[i].tzd) != -ENODEV) {
-> >> +			dev_err(&pdev->dev,
-> >> +				"could not register thermal sensor: %ld\n",
-> >> +				PTR_ERR(info->tzds[i].tzd));
-> >> +			return PTR_ERR(info->tzds[i].tzd);
-> >> +		}  
-> 
-> So this code above should be placed in a separate function and called by 
-> the for loop?
-> Did I understand that right?
-Yes - exactly.
+--2x2tyzi3ftzmnojb
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> 
-> Philipp
+On Fri, Aug 31, 2018 at 02:05:59PM +0200, Philipp Rossak wrote:
+>=20
+>=20
+> On 31.08.2018 11:09, Maxime Ripard wrote:
+> > > +static int sun4i_ths_suspend(struct sun4i_gpadc_iio *info)
+> > suspend is already a hook in the kernel, which hasn't the same meaning
+> > than runtime_suspend (and the same applies to resume), so we'd rather
+> > pick a better name. And all the functions (and the driver) use gpadc,
+> > please continue to use that prefix.
+>=20
+> I agree.
+> For the newer sensors (from H3) the Sensor is referenced in the datasheets
+> as Thermal Sensor short THS. So I would like to use for the newer sensors
+> that prefix. Is that ok?
+
+Not really. The consistency within the driver is more important.
+
+Maxiem
+
+--=20
+Maxime Ripard, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
+
+--2x2tyzi3ftzmnojb
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEE0VqZU19dR2zEVaqr0rTAlCFNr3QFAluNAmMACgkQ0rTAlCFN
+r3RRLA/9EE4CSeZZeZEXf2yhIuVgyf9RPtvrT5mLAH5AtQPbtf1NnGQrnvxv040X
+yo7t6CxcybjaSH0HI8X0yDt1gLdXw6EKNEiAnc3HLNNJGMh5YDdo83BuxjSItm0q
+wQZfYNJ9BRyeRHzGp8KTgsxtvSOrSj8Jd6UVKSQNlxcctLEcOb/PmUqIgcXLv74p
+yTLbjlCwOn8sv+jDed/pkvFgFcMVTB6qfWUs67euMbP3Bx5HUd+p+UjQxs+U8t+N
+XO+W5CC6GW21bBvpsCbBjxX4QCFMcCqZTEcAhpSPEODwRklJ8Dfhbp3cRxJkRceX
+9uZ5p2HfM3kZVLSDEyThS0amaPpXZJMrYymX8LIu8B6ouWk/oTzL4WmuguOpydFJ
+TR239Q0ESp1xxC2DkuM+FiC9xchnLOcVoclKjQpeuUWpK1yd9SBmIvb/SI0448My
++0h1GtavU3qFWAyKW7dm/LA77HTWBWXP/cwOnZPJAkm4t0YfULAu5b7bOsHl0IlP
+e4K4aLBXoNTVBGnbJvTpDkvuqCvWR4nyuWxOslmUh+FpTAoQ+xS4TdbTIZOnedXd
+P8ibLgPsk+GpQw2I44DL6XwNd9DHNBfW7bJneNy64ruHChClOeNHMMaxphlc1+rm
+Tl3A9xivzwLF9h8sPEfNpyykeYQnY1Ad4QbMFKUiy6wyeTL0ha4=
+=uLub
+-----END PGP SIGNATURE-----
+
+--2x2tyzi3ftzmnojb--
