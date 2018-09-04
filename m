@@ -1,16 +1,16 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-eopbgr40116.outbound.protection.outlook.com ([40.107.4.116]:29776
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725852AbeIAEd3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 1 Sep 2018 00:33:29 -0400
-Subject: Re: [PATCH v6 1/4] gpiolib: Pass bitmaps, not integer arrays, to
- get/set array
-To: Janusz Krzysztofik <jmkrzyszt@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Cc: Jonathan Corbet <corbet@lwn.net>,
+Received: from mga05.intel.com ([192.55.52.43]:39423 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726206AbeIDTlT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 4 Sep 2018 15:41:19 -0400
+Date: Tue, 4 Sep 2018 23:28:18 +0800
+From: kbuild test robot <lkp@intel.com>
+To: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+Cc: kbuild-all@01.org, Linus Walleij <linus.walleij@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>,
         Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>,
         Peter Korsgaard <peter.korsgaard@barco.com>,
+        Peter Rosin <peda@axentia.se>,
         Ulf Hansson <ulf.hansson@linaro.org>,
         Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -29,86 +29,62 @@ Cc: Jonathan Corbet <corbet@lwn.net>,
         linux-mmc@vger.kernel.org, netdev@vger.kernel.org,
         linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
         linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20180829204900.19390-1-jmkrzyszt@gmail.com>
- <20180831225616.29221-1-jmkrzyszt@gmail.com>
- <20180831225616.29221-2-jmkrzyszt@gmail.com>
-From: Peter Rosin <peda@axentia.se>
-Message-ID: <47a7e66f-8635-7131-8a0c-c26cf849fd50@axentia.se>
-Date: Sat, 1 Sep 2018 02:23:17 +0200
+        linux-kernel@vger.kernel.org,
+        Janusz Krzysztofik <jmkrzyszt@gmail.com>
+Subject: Re: [PATCH v6 1/4] gpiolib: Pass bitmaps, not integer arrays, to
+ get/set array
+Message-ID: <20180904152817.GC17047@intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 In-Reply-To: <20180831225616.29221-2-jmkrzyszt@gmail.com>
-Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 2018-09-01 00:56, Janusz Krzysztofik wrote:
-> Most users of get/set array functions iterate consecutive bits of data,
-> usually a single integer, while processing array of results obtained
-> from, or building an array of values to be passed to those functions.
-> Save time wasted on those iterations by changing the functions' API to
-> accept bitmaps.
-> 
-> All current users are updated as well.
-> 
-> More benefits from the change are expected as soon as planned support
-> for accepting/passing those bitmaps directly from/to respective GPIO
-> chip callbacks if applicable is implemented.
+Hi Janusz,
 
-> diff --git a/drivers/i2c/muxes/i2c-mux-gpio.c b/drivers/i2c/muxes/i2c-mux-gpio.c
-> index 401308e3d036..e28ddc20000d 100644
-> --- a/drivers/i2c/muxes/i2c-mux-gpio.c
-> +++ b/drivers/i2c/muxes/i2c-mux-gpio.c
-> @@ -22,18 +22,16 @@ struct gpiomux {
->  	struct i2c_mux_gpio_platform_data data;
->  	unsigned gpio_base;
->  	struct gpio_desc **gpios;
-> -	int *values;
->  };
->  
->  static void i2c_mux_gpio_set(const struct gpiomux *mux, unsigned val)
->  {
-> -	int i;
-> -
-> -	for (i = 0; i < mux->data.n_gpios; i++)
-> -		mux->values[i] = (val >> i) & 1;
-> +	DECLARE_BITMAP(value_bitmap, mux->data.n_gpios);
+Thank you for the patch! Perhaps something to improve:
 
-Picking a random driver for this comment, it applies to many of them.
+[auto build test WARNING on gpio/for-next]
+[also build test WARNING on v4.19-rc2 next-20180831]
+[if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
 
-I think this creates a VLA? Can't you, for the bit-count, just go with
-BITS_PER_TYPE(unsigned)? Or whatever is appropriate for the driver
-in question.
+url:    https://github.com/0day-ci/linux/commits/Janusz-Krzysztofik/gpiolib-speed-up-GPIO-array-processing/20180903-174241
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-gpio.git for-next
+reproduce:
+        # apt-get install sparse
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF=-D__CHECK_ENDIAN__
+:::::: branch date: 9 hours ago
+:::::: commit date: 9 hours ago
 
-Also, I find that where you use DECLARE_BITMAP, the _bitmap suffix is
-just noise and I would very much like to zap it.
+>> drivers/mux/gpio.c:25:9: sparse: Variable length array is used.
+--
+>> drivers/i2c/muxes/i2c-mux-gpio.c:29:9: sparse: Variable length array is used.
+   include/linux/device.h:685:13: sparse: undefined identifier '__builtin_mul_overflow'
+   include/linux/device.h:685:13: sparse: not a function <noident>
+   include/linux/device.h:685:13: sparse: call with no type!
 
-Cheers,
-Peter
+# https://github.com/0day-ci/linux/commit/00db98568b73a7b04c5120e5b87934c7355cc015
+git remote add linux-review https://github.com/0day-ci/linux
+git remote update linux-review
+git checkout 00db98568b73a7b04c5120e5b87934c7355cc015
+vim +25 drivers/mux/gpio.c
 
-> +	
-> +	*value_bitmap = val;
->  
->  	gpiod_set_array_value_cansleep(mux->data.n_gpios,
-> -				       mux->gpios, mux->values);
-> +				       mux->gpios, value_bitmap);
->  }
->  
->  static int i2c_mux_gpio_select(struct i2c_mux_core *muxc, u32 chan)
-> @@ -182,15 +180,13 @@ static int i2c_mux_gpio_probe(struct platform_device *pdev)
->  		return -EPROBE_DEFER;
->  
->  	muxc = i2c_mux_alloc(parent, &pdev->dev, mux->data.n_values,
-> -			     mux->data.n_gpios * sizeof(*mux->gpios) +
-> -			     mux->data.n_gpios * sizeof(*mux->values), 0,
-> +			     mux->data.n_gpios * sizeof(*mux->gpios), 0,
->  			     i2c_mux_gpio_select, NULL);
->  	if (!muxc) {
->  		ret = -ENOMEM;
->  		goto alloc_failed;
->  	}
->  	mux->gpios = muxc->priv;
-> -	mux->values = (int *)(mux->gpios + mux->data.n_gpios);
->  	muxc->priv = mux;
->  
->  	platform_set_drvdata(pdev, muxc);
+2c089f08e drivers/mux/mux-gpio.c Peter Rosin        2017-05-14  21  
+2c089f08e drivers/mux/mux-gpio.c Peter Rosin        2017-05-14  22  static int mux_gpio_set(struct mux_control *mux, int state)
+2c089f08e drivers/mux/mux-gpio.c Peter Rosin        2017-05-14  23  {
+2c089f08e drivers/mux/mux-gpio.c Peter Rosin        2017-05-14  24  	struct mux_gpio *mux_gpio = mux_chip_priv(mux->chip);
+00db98568 drivers/mux/gpio.c     Janusz Krzysztofik 2018-09-01 @25  	DECLARE_BITMAP(value_bitmap, mux_gpio->gpios->ndescs);
+2c089f08e drivers/mux/mux-gpio.c Peter Rosin        2017-05-14  26  	
+00db98568 drivers/mux/gpio.c     Janusz Krzysztofik 2018-09-01  27  	*value_bitmap = state;
+2c089f08e drivers/mux/mux-gpio.c Peter Rosin        2017-05-14  28  
+2c089f08e drivers/mux/mux-gpio.c Peter Rosin        2017-05-14  29  	gpiod_set_array_value_cansleep(mux_gpio->gpios->ndescs,
+00db98568 drivers/mux/gpio.c     Janusz Krzysztofik 2018-09-01  30  				       mux_gpio->gpios->desc, value_bitmap);
+2c089f08e drivers/mux/mux-gpio.c Peter Rosin        2017-05-14  31  
+2c089f08e drivers/mux/mux-gpio.c Peter Rosin        2017-05-14  32  	return 0;
+2c089f08e drivers/mux/mux-gpio.c Peter Rosin        2017-05-14  33  }
+2c089f08e drivers/mux/mux-gpio.c Peter Rosin        2017-05-14  34  
+
+---
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
