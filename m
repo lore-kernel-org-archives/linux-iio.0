@@ -1,47 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga12.intel.com ([192.55.52.136]:42871 "EHLO mga12.intel.com"
+Received: from mga06.intel.com ([134.134.136.31]:48788 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726097AbeIDTlx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 4 Sep 2018 15:41:53 -0400
-Date: Tue, 4 Sep 2018 23:28:50 +0800
+        id S1726206AbeIDTkn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 4 Sep 2018 15:40:43 -0400
+Date: Tue, 4 Sep 2018 23:27:42 +0800
 From: kbuild test robot <lkp@intel.com>
 To: Janusz Krzysztofik <jmkrzyszt@gmail.com>
 Cc: kbuild-all@01.org, Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        linux-doc@vger.kernel.org, linux-iio@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Peter Rosin <peda@axentia.se>, netdev@vger.kernel.org,
+        linux-i2c@vger.kernel.org,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        devel@driverdev.osuosl.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Jonathan Corbet <corbet@lwn.net>,
+        Janusz Krzysztofik <jmkrzyszt@gmail.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        linux-gpio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Willy Tarreau <w@1wt.eu>,
         Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>,
         Peter Korsgaard <peter.korsgaard@barco.com>,
-        Peter Rosin <peda@axentia.se>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Jiri Slaby <jslaby@suse.com>, Willy Tarreau <w@1wt.eu>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        linux-doc@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-mmc@vger.kernel.org, netdev@vger.kernel.org,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-serial@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Janusz Krzysztofik <jmkrzyszt@gmail.com>
-Subject: Re: [PATCH v6 1/4] gpiolib: Pass bitmaps, not integer arrays, to
- get/set array
-Message-ID: <20180904152850.GD17047@intel.com>
+        "David S. Miller" <davem@davemloft.net>,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v6 3/4] gpiolib: Pass array info to get/set array
+ functions
+Message-ID: <20180904152742.GB17047@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="lYVfafuUkPqz/tKz"
-In-Reply-To: <20180831225616.29221-2-jmkrzyszt@gmail.com>
+Content-Type: multipart/mixed; boundary="ZcaUvQ23gCOmDTXi"
+In-Reply-To: <20180831225616.29221-4-jmkrzyszt@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
---lYVfafuUkPqz/tKz
+--ZcaUvQ23gCOmDTXi
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
@@ -62,26 +62,33 @@ reproduce:
         chmod +x ~/bin/make.cross
         # save the attached .config to linux build tree
         GCC_VERSION=7.2.0 make.cross ARCH=arm 
-:::::: branch date: 5 hours ago
-:::::: commit date: 5 hours ago
+:::::: branch date: 6 hours ago
+:::::: commit date: 6 hours ago
 
 All errors (new ones prefixed by >>):
 
    drivers/mmc/core/pwrseq_simple.c: In function 'mmc_pwrseq_simple_set_gpios_value':
->> drivers/mmc/core/pwrseq_simple.c:49:13: error: passing argument 3 of 'gpiod_set_array_value_cansleep' from incompatible pointer type [-Werror=incompatible-pointer-types]
-                value_bitmap);
-                ^~~~~~~~~~~~
+   drivers/mmc/core/pwrseq_simple.c:49:13: error: passing argument 3 of 'gpiod_set_array_value_cansleep' from incompatible pointer type [-Werror=incompatible-pointer-types]
+                reset_gpios->info, value_bitmap);
+                ^~~~~~~~~~~
    In file included from drivers/mmc/core/pwrseq_simple.c:18:0:
-   include/linux/gpio/consumer.h:400:20: note: expected 'int *' but argument is of type 'long unsigned int *'
+   include/linux/gpio/consumer.h:417:20: note: expected 'int *' but argument is of type 'struct gpio_array *'
+    static inline void gpiod_set_array_value_cansleep(unsigned int array_size,
+                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/mmc/core/pwrseq_simple.c:48:3: error: too many arguments to function 'gpiod_set_array_value_cansleep'
+      gpiod_set_array_value_cansleep(nvalues, reset_gpios->desc,
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   In file included from drivers/mmc/core/pwrseq_simple.c:18:0:
+   include/linux/gpio/consumer.h:417:20: note: declared here
     static inline void gpiod_set_array_value_cansleep(unsigned int array_size,
                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    cc1: some warnings being treated as errors
 
-# https://github.com/0day-ci/linux/commit/00db98568b73a7b04c5120e5b87934c7355cc015
+# https://github.com/0day-ci/linux/commit/2313edb413de154774fb6a3431f5f135f9c78180
 git remote add linux-review https://github.com/0day-ci/linux
 git remote update linux-review
-git checkout 00db98568b73a7b04c5120e5b87934c7355cc015
-vim +/gpiod_set_array_value_cansleep +49 drivers/mmc/core/pwrseq_simple.c
+git checkout 2313edb413de154774fb6a3431f5f135f9c78180
+vim +/gpiod_set_array_value_cansleep +48 drivers/mmc/core/pwrseq_simple.c
 
 5b96fea73 Srinivas Kandagatla      2016-04-14  36  
 934f1f483 Javier Martinez Canillas 2015-01-29  37  static void mmc_pwrseq_simple_set_gpios_value(struct mmc_pwrseq_simple *pwrseq,
@@ -95,22 +102,28 @@ ce0372758 Javier Martinez Canillas 2015-09-21  40  	struct gpio_descs *reset_gpi
 934f1f483 Javier Martinez Canillas 2015-01-29  45  
 00db98568 Janusz Krzysztofik       2018-09-01  46  		*value_bitmap = value;
 486e66613 Tobin C. Harding         2018-03-26  47  
-00db98568 Janusz Krzysztofik       2018-09-01  48  		gpiod_set_array_value_cansleep(nvalues, reset_gpios->desc,
-00db98568 Janusz Krzysztofik       2018-09-01 @49  					       value_bitmap);
+00db98568 Janusz Krzysztofik       2018-09-01 @48  		gpiod_set_array_value_cansleep(nvalues, reset_gpios->desc,
+2313edb41 Janusz Krzysztofik       2018-09-01 @49  					       reset_gpios->info, value_bitmap);
 64a67d476 Martin Fuzzey            2016-01-20  50  	}
 934f1f483 Javier Martinez Canillas 2015-01-29  51  }
 934f1f483 Javier Martinez Canillas 2015-01-29  52  
+
+:::::: The code at line 48 was first introduced by commit
+:::::: 00db98568b73a7b04c5120e5b87934c7355cc015 gpiolib: Pass bitmaps, not integer arrays, to get/set array
+
+:::::: TO: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+:::::: CC: 0day robot <lkp@intel.com>
 
 ---
 0-DAY kernel test infrastructure                Open Source Technology Center
 https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
 
---lYVfafuUkPqz/tKz
+--ZcaUvQ23gCOmDTXi
 Content-Type: application/gzip
 Content-Disposition: attachment; filename=".config.gz"
 Content-Transfer-Encoding: base64
 
-H4sICFI+jVsAAy5jb25maWcAjDxrj9u2st/7K4QUuGhxmmZtb/ZxL/YDTVE2a0lURMn27hfB
+H4sICIZTjVsAAy5jb25maWcAjDxrj9u2st/7K4QUuGhxmmZtb/ZxL/YDTVE2a0lURMn27hfB
 8SqJUa+9x/amzb+/M6RkkxKl9qAHiWeG73nPKD//9LNH3k77l9Vps15ttz+8r+WuPKxO5bP3
 ZbMt/8/zhReLzGM+z34H4nCze/v7w+rw4l3/Prj//er9YT3wZuVhV249ut992Xx9g9Gb/e6n
 n3+C/34G4MsrTHT4Xw8Gvd/i8Pdfd2/l6vPm/df12vvFLz9vVjvv9vchzDYY/Kr/BmOpiAM+
@@ -290,4 +303,4 @@ y8YUe9slnlatjXWSQId9tRPvMtP9E63eprOQ7udDzOGFETCa3LO1FfwYSARBaLIggQ/w9b+P
 1zf3R7co3/+CP3fbD3aPKwviu7VN9uzEefT2hGribvPy8uHec3UUGKGdtYDqRtDvMf/DYs6E
 T/0/sSQIoD2KAAA=
 
---lYVfafuUkPqz/tKz--
+--ZcaUvQ23gCOmDTXi--
