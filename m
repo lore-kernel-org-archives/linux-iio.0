@@ -1,73 +1,340 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:40440 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726817AbeIHW7L (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 8 Sep 2018 18:59:11 -0400
-Date: Sat, 8 Sep 2018 19:12:31 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Tomasz Duszynski <tduszyns@gmail.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: light: bh1750: simplify setting PM ops
-Message-ID: <20180908191231.78c01b47@archlinux>
-In-Reply-To: <20180902132923.13513-1-tduszyns@gmail.com>
-References: <20180902132923.13513-1-tduszyns@gmail.com>
+Received: from mail-eopbgr720064.outbound.protection.outlook.com ([40.107.72.64]:28305
+        "EHLO NAM05-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726961AbeIDSwR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 4 Sep 2018 14:52:17 -0400
+From: Stefan Popa <stefan.popa@analog.com>
+To: <jic23@kernel.org>
+CC: <knaack.h@gmx.de>, <lars@metafoo.de>,
+        <Michael.Hennerich@analog.com>, <pmeerw@pmeerw.net>,
+        <davem@davemloft.net>, <mchehab+samsung@kernel.org>,
+        <gregkh@linuxfoundation.org>, <akpm@linux-foundation.org>,
+        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <stefan.popa@analog.com>
+Subject: [PATCH 1/3] iio: adxl372: Refactor the driver
+Date: Tue, 4 Sep 2018 17:11:31 +0300
+Message-ID: <1536070291-5335-1-git-send-email-stefan.popa@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun,  2 Sep 2018 15:29:23 +0200
-Tomasz Duszynski <tduszyns@gmail.com> wrote:
+This patch restructures the existing adxl372 driver by adding a module for
+SPI and a header file, while the baseline module deals with the chip-logic.
 
-> Relying on CONFIG_PM_SLEEP to set PM ops is not necessary
-> since core will handle everything internally. One have to only make sure
-> that functions that can go unused are marked with __maybe_unused.
-> 
-> Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+This is a necessary step, as this driver should support in the future
+a similar device which differs only in the type of interface used (I2C
+instead of SPI).
 
-Thanks,
+Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+---
+ MAINTAINERS                     |  1 +
+ drivers/iio/accel/Kconfig       | 11 +++++--
+ drivers/iio/accel/Makefile      |  1 +
+ drivers/iio/accel/adxl372.c     | 73 ++++++++++++++---------------------------
+ drivers/iio/accel/adxl372.h     | 15 +++++++++
+ drivers/iio/accel/adxl372_spi.c | 52 +++++++++++++++++++++++++++++
+ 6 files changed, 102 insertions(+), 51 deletions(-)
+ create mode 100644 drivers/iio/accel/adxl372.h
+ create mode 100644 drivers/iio/accel/adxl372_spi.c
 
-Jonathan
-> ---
->  drivers/iio/light/bh1750.c | 9 ++-------
->  1 file changed, 2 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/iio/light/bh1750.c b/drivers/iio/light/bh1750.c
-> index 493ca7420602..c3a481452b67 100644
-> --- a/drivers/iio/light/bh1750.c
-> +++ b/drivers/iio/light/bh1750.c
-> @@ -278,8 +278,7 @@ static int bh1750_remove(struct i2c_client *client)
->  	return 0;
->  }
-> 
-> -#ifdef CONFIG_PM_SLEEP
-> -static int bh1750_suspend(struct device *dev)
-> +static int __maybe_unused bh1750_suspend(struct device *dev)
->  {
->  	int ret;
->  	struct bh1750_data *data =
-> @@ -297,10 +296,6 @@ static int bh1750_suspend(struct device *dev)
->  }
-> 
->  static SIMPLE_DEV_PM_OPS(bh1750_pm_ops, bh1750_suspend, NULL);
-> -#define BH1750_PM_OPS (&bh1750_pm_ops)
-> -#else
-> -#define BH1750_PM_OPS NULL
-> -#endif
-> 
->  static const struct i2c_device_id bh1750_id[] = {
->  	{ "bh1710", BH1710 },
-> @@ -315,7 +310,7 @@ MODULE_DEVICE_TABLE(i2c, bh1750_id);
->  static struct i2c_driver bh1750_driver = {
->  	.driver = {
->  		.name = "bh1750",
-> -		.pm = BH1750_PM_OPS,
-> +		.pm = &bh1750_pm_ops,
->  	},
->  	.probe = bh1750_probe,
->  	.remove = bh1750_remove,
-> --
-> 2.18.0
-> 
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 2bfc9b0..2938632 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -548,6 +548,7 @@ M:	Stefan Popa <stefan.popa@analog.com>
+ W:	http://ez.analog.com/community/linux-device-drivers
+ S:	Supported
+ F:	drivers/iio/accel/adxl372.c
++F:	drivers/iio/accel/adxl372_spi.c
+ F:	Documentation/devicetree/bindings/iio/accel/adxl372.txt
+ 
+ AF9013 MEDIA DRIVER
+diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+index eae23d6..bed5da8 100644
+--- a/drivers/iio/accel/Kconfig
++++ b/drivers/iio/accel/Kconfig
+@@ -61,15 +61,20 @@ config ADXL345_SPI
+ 	  for the core module.
+ 
+ config ADXL372
+-	tristate "Analog Devices ADXL372 3-Axis Accelerometer Driver"
+-	depends on SPI
++	tristate
+ 	select IIO_BUFFER
+ 	select IIO_TRIGGERED_BUFFER
++
++config ADXL372_SPI
++	tristate "Analog Devices ADXL372 3-Axis Accelerometer SPI Driver"
++	depends on SPI
++	select ADXL372
++	select REGMAP_SPI
+ 	help
+ 	  Say yes here to add support for the Analog Devices ADXL372 triaxial
+ 	  acceleration sensor.
+ 	  To compile this driver as a module, choose M here: the
+-	  module will be called adxl372.
++	  module will be called adxl372_spi.
+ 
+ config BMA180
+ 	tristate "Bosch BMA180/BMA250 3-Axis Accelerometer Driver"
+diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
+index 5758ffc..c9c5db9 100644
+--- a/drivers/iio/accel/Makefile
++++ b/drivers/iio/accel/Makefile
+@@ -10,6 +10,7 @@ obj-$(CONFIG_ADXL345) += adxl345_core.o
+ obj-$(CONFIG_ADXL345_I2C) += adxl345_i2c.o
+ obj-$(CONFIG_ADXL345_SPI) += adxl345_spi.o
+ obj-$(CONFIG_ADXL372) += adxl372.o
++obj-$(CONFIG_ADXL372_SPI) += adxl372_spi.o
+ obj-$(CONFIG_BMA180) += bma180.o
+ obj-$(CONFIG_BMA220) += bma220_spi.o
+ obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
+diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
+index fdaaa58..f1df89d 100644
+--- a/drivers/iio/accel/adxl372.c
++++ b/drivers/iio/accel/adxl372.c
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0+
+ /*
+- * ADXL372 3-Axis Digital Accelerometer SPI driver
++ * ADXL372 3-Axis Digital Accelerometer core driver
+  *
+  * Copyright 2018 Analog Devices Inc.
+  */
+@@ -20,6 +20,8 @@
+ #include <linux/iio/trigger_consumer.h>
+ #include <linux/iio/triggered_buffer.h>
+ 
++#include "adxl372.h"
++
+ /* ADXL372 registers definition */
+ #define ADXL372_DEVID			0x00
+ #define ADXL372_DEVID_MST		0x01
+@@ -246,7 +248,8 @@ static const struct iio_chan_spec adxl372_channels[] = {
+ };
+ 
+ struct adxl372_state {
+-	struct spi_device		*spi;
++	int				irq;
++	struct device			*dev;
+ 	struct regmap			*regmap;
+ 	struct iio_trigger		*dready_trig;
+ 	enum adxl372_fifo_mode		fifo_mode;
+@@ -565,7 +568,7 @@ static int adxl372_setup(struct adxl372_state *st)
+ 		return ret;
+ 
+ 	if (regval != ADXL372_DEVID_VAL) {
+-		dev_err(&st->spi->dev, "Invalid chip id %x\n", regval);
++		dev_err(st->dev, "Invalid chip id %x\n", regval);
+ 		return -ENODEV;
+ 	}
+ 
+@@ -891,56 +894,45 @@ static const struct iio_info adxl372_info = {
+ 	.hwfifo_set_watermark = adxl372_set_watermark,
+ };
+ 
+-static bool adxl372_readable_noinc_reg(struct device *dev, unsigned int reg)
++bool adxl372_readable_noinc_reg(struct device *dev, unsigned int reg)
+ {
+ 	return (reg == ADXL372_FIFO_DATA);
+ }
++EXPORT_SYMBOL_GPL(adxl372_readable_noinc_reg);
+ 
+-static const struct regmap_config adxl372_spi_regmap_config = {
+-	.reg_bits = 7,
+-	.pad_bits = 1,
+-	.val_bits = 8,
+-	.read_flag_mask = BIT(0),
+-	.readable_noinc_reg = adxl372_readable_noinc_reg,
+-};
+-
+-static int adxl372_probe(struct spi_device *spi)
++int adxl372_probe(struct device *dev, struct regmap *regmap,
++		  int irq, const char *name)
+ {
+ 	struct iio_dev *indio_dev;
+ 	struct adxl372_state *st;
+-	struct regmap *regmap;
+ 	int ret;
+ 
+-	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+ 
+ 	st = iio_priv(indio_dev);
+-	spi_set_drvdata(spi, indio_dev);
+-
+-	st->spi = spi;
+-
+-	regmap = devm_regmap_init_spi(spi, &adxl372_spi_regmap_config);
+-	if (IS_ERR(regmap))
+-		return PTR_ERR(regmap);
++	dev_set_drvdata(dev, indio_dev);
+ 
++	st->dev = dev;
+ 	st->regmap = regmap;
++	st->irq = irq;
+ 
+ 	indio_dev->channels = adxl372_channels;
+ 	indio_dev->num_channels = ARRAY_SIZE(adxl372_channels);
+ 	indio_dev->available_scan_masks = adxl372_channel_masks;
+-	indio_dev->dev.parent = &spi->dev;
+-	indio_dev->name = spi_get_device_id(spi)->name;
++	indio_dev->dev.parent = dev;
++	indio_dev->name = name;
+ 	indio_dev->info = &adxl372_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_SOFTWARE;
+ 
+ 	ret = adxl372_setup(st);
+ 	if (ret < 0) {
+-		dev_err(&st->spi->dev, "ADXL372 setup failed\n");
++		dev_err(dev, "ADXL372 setup failed\n");
+ 		return ret;
+ 	}
+ 
+-	ret = devm_iio_triggered_buffer_setup(&st->spi->dev,
++	ret = devm_iio_triggered_buffer_setup(dev,
+ 					      indio_dev, NULL,
+ 					      adxl372_trigger_handler,
+ 					      &adxl372_buffer_ops);
+@@ -949,8 +941,8 @@ static int adxl372_probe(struct spi_device *spi)
+ 
+ 	iio_buffer_set_attrs(indio_dev->buffer, adxl372_fifo_attributes);
+ 
+-	if (st->spi->irq) {
+-		st->dready_trig = devm_iio_trigger_alloc(&st->spi->dev,
++	if (st->irq) {
++		st->dready_trig = devm_iio_trigger_alloc(dev,
+ 							 "%s-dev%d",
+ 							 indio_dev->name,
+ 							 indio_dev->id);
+@@ -958,15 +950,15 @@ static int adxl372_probe(struct spi_device *spi)
+ 			return -ENOMEM;
+ 
+ 		st->dready_trig->ops = &adxl372_trigger_ops;
+-		st->dready_trig->dev.parent = &st->spi->dev;
++		st->dready_trig->dev.parent = dev;
+ 		iio_trigger_set_drvdata(st->dready_trig, indio_dev);
+-		ret = devm_iio_trigger_register(&st->spi->dev, st->dready_trig);
++		ret = devm_iio_trigger_register(dev, st->dready_trig);
+ 		if (ret < 0)
+ 			return ret;
+ 
+ 		indio_dev->trig = iio_trigger_get(st->dready_trig);
+ 
+-		ret = devm_request_threaded_irq(&st->spi->dev, st->spi->irq,
++		ret = devm_request_threaded_irq(dev, st->irq,
+ 					iio_trigger_generic_data_rdy_poll,
+ 					NULL,
+ 					IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+@@ -975,24 +967,9 @@ static int adxl372_probe(struct spi_device *spi)
+ 			return ret;
+ 	}
+ 
+-	return devm_iio_device_register(&st->spi->dev, indio_dev);
++	return devm_iio_device_register(dev, indio_dev);
+ }
+-
+-static const struct spi_device_id adxl372_id[] = {
+-	{ "adxl372", 0 },
+-	{}
+-};
+-MODULE_DEVICE_TABLE(spi, adxl372_id);
+-
+-static struct spi_driver adxl372_driver = {
+-	.driver = {
+-		.name = KBUILD_MODNAME,
+-	},
+-	.probe = adxl372_probe,
+-	.id_table = adxl372_id,
+-};
+-
+-module_spi_driver(adxl372_driver);
++EXPORT_SYMBOL_GPL(adxl372_probe);
+ 
+ MODULE_AUTHOR("Stefan Popa <stefan.popa@analog.com>");
+ MODULE_DESCRIPTION("Analog Devices ADXL372 3-axis accelerometer driver");
+diff --git a/drivers/iio/accel/adxl372.h b/drivers/iio/accel/adxl372.h
+new file mode 100644
+index 0000000..5da89b1
+--- /dev/null
++++ b/drivers/iio/accel/adxl372.h
+@@ -0,0 +1,15 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++/*
++ * ADXL372 3-Axis Digital Accelerometer
++ *
++ * Copyright 2018 Analog Devices Inc.
++ */
++
++#ifndef _ADXL372_H_
++#define _ADXL372_H_
++
++int adxl372_probe(struct device *dev, struct regmap *regmap,
++		  int irq, const char *name);
++bool adxl372_readable_noinc_reg(struct device *dev, unsigned int reg);
++
++#endif /* _ADXL372_H_ */
+diff --git a/drivers/iio/accel/adxl372_spi.c b/drivers/iio/accel/adxl372_spi.c
+new file mode 100644
+index 0000000..e14e655
+--- /dev/null
++++ b/drivers/iio/accel/adxl372_spi.c
+@@ -0,0 +1,52 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * ADXL372 3-Axis Digital Accelerometer SPI driver
++ *
++ * Copyright 2018 Analog Devices Inc.
++ */
++
++#include <linux/module.h>
++#include <linux/regmap.h>
++#include <linux/spi/spi.h>
++
++#include "adxl372.h"
++
++static const struct regmap_config adxl372_spi_regmap_config = {
++	.reg_bits = 7,
++	.pad_bits = 1,
++	.val_bits = 8,
++	.read_flag_mask = BIT(0),
++	.readable_noinc_reg = adxl372_readable_noinc_reg,
++};
++
++static int adxl372_spi_probe(struct spi_device *spi)
++{
++	const struct spi_device_id *id = spi_get_device_id(spi);
++	struct regmap *regmap;
++
++	regmap = devm_regmap_init_spi(spi, &adxl372_spi_regmap_config);
++	if (IS_ERR(regmap))
++		return PTR_ERR(regmap);
++
++	return adxl372_probe(&spi->dev, regmap, spi->irq, id->name);
++}
++
++static const struct spi_device_id adxl372_spi_id[] = {
++	{ "adxl372", 0 },
++	{}
++};
++MODULE_DEVICE_TABLE(spi, adxl372_spi_id);
++
++static struct spi_driver adxl372_spi_driver = {
++	.driver = {
++		.name = "adxl372_spi",
++	},
++	.probe = adxl372_spi_probe,
++	.id_table = adxl372_spi_id,
++};
++
++module_spi_driver(adxl372_spi_driver);
++
++MODULE_AUTHOR("Stefan Popa <stefan.popa@analog.com>");
++MODULE_DESCRIPTION("Analog Devices ADXL372 3-axis accelerometer SPI driver");
++MODULE_LICENSE("GPL");
+-- 
+2.7.4
