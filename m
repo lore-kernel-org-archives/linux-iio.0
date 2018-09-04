@@ -1,121 +1,252 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi0-f65.google.com ([209.85.218.65]:41369 "EHLO
-        mail-oi0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727411AbeIKBFk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 10 Sep 2018 21:05:40 -0400
-Date: Mon, 10 Sep 2018 15:09:55 -0500
-From: Rob Herring <robh@kernel.org>
-To: Afonso Bordado <afonsobordado@az8.co>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 2/4] iio: gyro: add device tree support for fxas21002c
-Message-ID: <20180910200955.GA27927@bogus>
+Return-Path: <SRS0=GFrl=LS=az8.co=afonsobordado@kernel.org>
+From: Afonso Bordado <afonsobordado@az8.co>
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: [PATCH v3 3/4] iio: fxas21002c: add ODR/Scale support
+Date: Tue,  4 Sep 2018 21:04:33 +0100
+Message-Id: <20180904200434.10442-3-afonsobordado@az8.co>
+In-Reply-To: <20180904200434.10442-1-afonsobordado@az8.co>
 References: <20180904200434.10442-1-afonsobordado@az8.co>
- <20180904200434.10442-2-afonsobordado@az8.co>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20180904200434.10442-2-afonsobordado@az8.co>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, Sep 04, 2018 at 09:04:32PM +0100, Afonso Bordado wrote:
-> This patch adds device tree support for the fxas21002c driver, including
-> bindings.
-> 
-> Signed-off-by: Afonso Bordado <afonsobordado@az8.co>
-> ---
->  .../bindings/iio/gyroscope/fsl,fxas21002c.txt | 35 +++++++++++++++++++
+This patch adds support for reading/writing ODR/Scale
 
-Please split bindings to separate patch.
+We don't support the scale boost modes.
 
->  drivers/iio/gyro/fxas21002c.c                 | 10 +++++-
->  2 files changed, 44 insertions(+), 1 deletion(-)
->  create mode 100644 Documentation/devicetree/bindings/iio/gyroscope/fsl,fxas21002c.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/gyroscope/fsl,fxas21002c.txt b/Documentation/devicetree/bindings/iio/gyroscope/fsl,fxas21002c.txt
-> new file mode 100644
-> index 000000000000..5f02cfa5ac82
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/gyroscope/fsl,fxas21002c.txt
-> @@ -0,0 +1,35 @@
-> +* Freescale FXAS21002C Digital Angular Rate Gyroscope
-> +
-> +Required properties:
-> +
-> +  - compatible: must be "fsl,fxas21002c"
-> +  - reg : the I2C address of the sensor
-> +
-> +Optional properties:
-> +
-> +  - interrupt-parent	: phandle to the parent interrupt controller.
-> +			  see interrupt-controller/interrupts.txt
+Signed-off-by: Afonso Bordado <afonsobordado@az8.co>
+---
+ drivers/iio/gyro/fxas21002c.c | 161 +++++++++++++++++++++++++++++++---
+ 1 file changed, 148 insertions(+), 13 deletions(-)
 
-This is implied, so drop it.
-
-> +  - interrupts		: The first interrupt listed must be the one
-> +			  connected to the INT1 pin, the second interrupt
-> +			  listed must be the one connected to the INT2 pin.
-> +			  The interrupts can be triggered on rising or falling
-> +			  edges alike.
-> +			  see interrupt-controller/interrupts.txt
-> +  - vdd-supply 		: The main voltage regulator
-> +  - iovdd-supply 	: The IO voltage regulator
-
-Some space before tab on these 2 lines.
-
-> +			  see regulator/regulator.txt
-> +  - reset-gpios		: GPIO used to reset the device.
-> +			  see gpio/gpio.txt.
-> +  - mount-matrix	: see iio/mount-matrix.txt
-> +
-> +Example:
-> +gyroscope@20 {
-> +	compatible = "fsl,fxas21002c";
-> +	reg = <0x20>;
-> +	reset-gpios = <&gpio0 2 0>;
-> +	vdd-supply = <&vref>;
-> +	iovdd-supply = <&vref2>;
-> +	interrupt-parent = <&foo>;
-> +	interrupts = <0 IRQ_TYPE_EDGE_RISING>,
-> +		     <1 (IRQ_TYPE_EDGE_RISING | IRQ_TYPE_EDGE_FALLING)>;
-> +};
-> diff --git a/drivers/iio/gyro/fxas21002c.c b/drivers/iio/gyro/fxas21002c.c
-> index 1668e6f3fe11..18b1f500dd3e 100644
-> --- a/drivers/iio/gyro/fxas21002c.c
-> +++ b/drivers/iio/gyro/fxas21002c.c
-> @@ -8,7 +8,6 @@
->   * Datasheet: https://www.nxp.com/docs/en/data-sheet/FXAS21002.pdf
->   * TODO:
->   *        ODR / Scale Support
-> - *        Devicetree
->   *        Power management
->   *        GPIO Reset
->   *        Power supplies
-> @@ -350,6 +349,14 @@ static int fxas21002c_probe(struct i2c_client *client,
->  	return ret;
->  }
->  
-> +#ifdef CONFIG_OF
-> +static const struct of_device_id fxas21002c_of_ids[] = {
-> +	{.compatible = "fsl,fxas21002c"},
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(of, fxas21002c_of_ids);
-> +#endif
-> +
->  static const struct i2c_device_id fxas21002c_id[] = {
->  	{"fxas21002c", ID_FXAS21002C},
->  	{}
-> @@ -360,6 +367,7 @@ MODULE_DEVICE_TABLE(i2c, fxas21002c_id);
->  static struct i2c_driver fxas21002c_driver = {
->  	.driver = {
->  		.name = FXAS21002C_DRV_NAME,
-> +		.of_match_table = of_match_ptr(fxas21002c_of_ids),
->  	},
->  	.probe		= fxas21002c_probe,
->  	.id_table	= fxas21002c_id,
-> -- 
-> 2.18.0
-> 
-> 
+diff --git a/drivers/iio/gyro/fxas21002c.c b/drivers/iio/gyro/fxas21002c.c
+index 18b1f500dd3e..7efef3156fa0 100644
+--- a/drivers/iio/gyro/fxas21002c.c
++++ b/drivers/iio/gyro/fxas21002c.c
+@@ -7,7 +7,7 @@
+  * IIO driver for FXAS21002C (7-bit I2C slave address 0x20 or 0x21).
+  * Datasheet: https://www.nxp.com/docs/en/data-sheet/FXAS21002.pdf
+  * TODO:
+- *        ODR / Scale Support
++ *        Scale boost mode
+  *        Power management
+  *        GPIO Reset
+  *        Power supplies
+@@ -44,7 +44,10 @@
+ #define FXAS21002C_REG_F_EVENT         0x0A
+ #define FXAS21002C_REG_INT_SRC_FLAG    0x0B
+ #define FXAS21002C_REG_WHO_AM_I        0x0C
++
+ #define FXAS21002C_REG_CTRL_REG0       0x0D
++#define FXAS21002C_SCALE_MASK          GENMASK(1, 0)
++
+ #define FXAS21002C_REG_RT_CFG          0x0E
+ #define FXAS21002C_REG_RT_SRC          0x0F
+ #define FXAS21002C_REG_RT_THS          0x10
+@@ -56,14 +59,12 @@
+ #define FXAS21002C_ACTIVE_BIT          BIT(1)
+ #define FXAS21002C_READY_BIT           BIT(0)
+ 
++#define FXAS21002C_ODR_SHIFT           2
++#define FXAS21002C_ODR_MASK            GENMASK(4, 2)
++
+ #define FXAS21002C_REG_CTRL_REG2       0x14
+ #define FXAS21002C_REG_CTRL_REG3       0x15
+ 
+-#define FXAS21002C_DEFAULT_ODR_HZ      800
+-
+-/* 0.0625 deg/s */
+-#define FXAS21002C_DEFAULT_SENSITIVITY IIO_DEGREE_TO_RAD(62500)
+-
+ #define FXAS21002C_TEMP_SCALE          1000
+ 
+ enum {
+@@ -82,6 +83,40 @@ struct fxas21002c_data {
+ 	struct regmap *regmap;
+ };
+ 
++enum fxas21002c_scale {
++	FXAS21002C_SCALE_62MDPS,
++	FXAS21002C_SCALE_31MDPS,
++	FXAS21002C_SCALE_15MDPS,
++	FXAS21002C_SCALE_7MDPS,
++};
++
++static const int fxas21002c_anglevel_scale_avail[4][2] = {
++	[FXAS21002C_SCALE_62MDPS] = { 0, IIO_DEGREE_TO_RAD(62500) },
++	[FXAS21002C_SCALE_31MDPS] = { 0, IIO_DEGREE_TO_RAD(31250) },
++	[FXAS21002C_SCALE_15MDPS] = { 0, IIO_DEGREE_TO_RAD(15625) },
++	[FXAS21002C_SCALE_7MDPS]  = { 0, IIO_DEGREE_TO_RAD(7812) },
++};
++
++enum fxas21002c_odr {
++	FXAS21002C_ODR_800,
++	FXAS21002C_ODR_400,
++	FXAS21002C_ODR_200,
++	FXAS21002C_ODR_100,
++	FXAS21002C_ODR_50,
++	FXAS21002C_ODR_25,
++	FXAS21002C_ODR_12_5,
++};
++
++static const int fxas21002c_sample_freq_avail[7][2] = {
++	[FXAS21002C_ODR_800]  = { 800, 0 },
++	[FXAS21002C_ODR_400]  = { 400, 0 },
++	[FXAS21002C_ODR_200]  = { 200, 0 },
++	[FXAS21002C_ODR_100]  = { 100, 0 },
++	[FXAS21002C_ODR_50]   = { 50, 0 },
++	[FXAS21002C_ODR_25]   = { 25, 0 },
++	[FXAS21002C_ODR_12_5] = { 12, 500000 },
++};
++
+ static const struct regmap_range fxas21002c_writable_ranges[] = {
+ 	regmap_reg_range(FXAS21002C_REG_F_SETUP, FXAS21002C_REG_F_SETUP),
+ 	regmap_reg_range(FXAS21002C_REG_CTRL_REG0, FXAS21002C_REG_RT_CFG),
+@@ -254,6 +289,49 @@ static int fxas21002c_read_oneshot(struct fxas21002c_data *data,
+ 	}
+ }
+ 
++static int fxas21002c_scale_read(struct fxas21002c_data *data, int *val,
++				 int *val2)
++{
++	int ret;
++	unsigned int raw;
++
++	ret = regmap_read(data->regmap, FXAS21002C_REG_CTRL_REG0, &raw);
++	if (ret)
++		return ret;
++
++	raw &= FXAS21002C_SCALE_MASK;
++
++	*val = fxas21002c_anglevel_scale_avail[raw][0];
++	*val2 = fxas21002c_anglevel_scale_avail[raw][1];
++
++	return IIO_VAL_INT_PLUS_MICRO;
++}
++
++static int fxas21002c_odr_read(struct fxas21002c_data *data, int *val,
++			       int *val2)
++{
++	int ret;
++	unsigned int raw;
++
++	ret = regmap_read(data->regmap, FXAS21002C_REG_CTRL_REG1, &raw);
++	if (ret)
++		return ret;
++
++	raw = (raw & FXAS21002C_ODR_MASK) >> FXAS21002C_ODR_SHIFT;
++
++	/*
++	 * We don't use this mode but according to the datasheet its
++	 * also a 12.5Hz
++	 */
++	if (raw == 7)
++		raw = FXAS21002C_ODR_12_5;
++
++	*val = fxas21002c_sample_freq_avail[raw][0];
++	*val2 = fxas21002c_sample_freq_avail[raw][1];
++
++	return IIO_VAL_INT_PLUS_MICRO;
++}
++
+ static int fxas21002c_read_raw(struct iio_dev *indio_dev,
+ 			       struct iio_chan_spec const *chan, int *val,
+ 			       int *val2, long mask)
+@@ -266,10 +344,7 @@ static int fxas21002c_read_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_SCALE:
+ 		switch (chan->type) {
+ 		case IIO_ANGL_VEL:
+-			*val = 0;
+-			*val2 = FXAS21002C_DEFAULT_SENSITIVITY;
+-
+-			return IIO_VAL_INT_PLUS_MICRO;
++			return fxas21002c_scale_read(data, val, val2);
+ 		case IIO_TEMP:
+ 			*val = FXAS21002C_TEMP_SCALE;
+ 
+@@ -281,16 +356,76 @@ static int fxas21002c_read_raw(struct iio_dev *indio_dev,
+ 		if (chan->type != IIO_ANGL_VEL)
+ 			return -EINVAL;
+ 
+-		*val = FXAS21002C_DEFAULT_ODR_HZ;
+-
+-		return IIO_VAL_INT;
++		return fxas21002c_odr_read(data, val, val2);
+ 	}
+ 
+ 	return -EINVAL;
+ }
+ 
++static int fxas21002c_write_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan, int val,
++				int val2, long mask)
++{
++	struct fxas21002c_data *data = iio_priv(indio_dev);
++	int ret = -EINVAL;
++	int i;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		for (i = 0; i < ARRAY_SIZE(fxas21002c_sample_freq_avail); i++) {
++			if (fxas21002c_sample_freq_avail[i][0] == val &&
++			    fxas21002c_sample_freq_avail[i][1] == val2)
++				break;
++		}
++
++		if (i == ARRAY_SIZE(fxas21002c_sample_freq_avail))
++			break;
++
++		return regmap_update_bits(data->regmap,
++					  FXAS21002C_REG_CTRL_REG1,
++					  FXAS21002C_ODR_MASK,
++					  i << FXAS21002C_ODR_SHIFT);
++	case IIO_CHAN_INFO_SCALE:
++		for (i = 0; i < ARRAY_SIZE(fxas21002c_anglevel_scale_avail);
++		     i++) {
++			if (fxas21002c_anglevel_scale_avail[i][0] == val &&
++			    fxas21002c_anglevel_scale_avail[i][1] == val2)
++				break;
++		}
++
++		if (i == ARRAY_SIZE(fxas21002c_anglevel_scale_avail))
++			break;
++
++		return regmap_update_bits(data->regmap,
++					  FXAS21002C_REG_CTRL_REG0,
++					  FXAS21002C_SCALE_MASK, i);
++	}
++
++	return ret;
++}
++
++static IIO_CONST_ATTR(anglevel_scale_available,
++		      "0.001090831 "  /* 62.5    mdps */
++		      "0.000545415 "  /* 31.25   mdps */
++		      "0.000272708 "  /* 15.625  mdps */
++		      "0.000136354"); /*  7.8125 mdps */
++
++static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("800 400 200 100 50 25 12.5");
++
++static struct attribute *fxas21002c_attributes[] = {
++	&iio_const_attr_anglevel_scale_available.dev_attr.attr,
++	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
++	NULL
++};
++
++static const struct attribute_group fxas21002c_attribute_group = {
++	.attrs = fxas21002c_attributes,
++};
++
+ static const struct iio_info fxas21002c_info = {
+ 	.read_raw		= fxas21002c_read_raw,
++	.write_raw              = fxas21002c_write_raw,
++	.attrs                  = &fxas21002c_attribute_group,
+ };
+ 
+ static int fxas21002c_probe(struct i2c_client *client,
+-- 
+2.18.0
