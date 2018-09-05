@@ -1,52 +1,172 @@
-Return-Path: <SRS0=H45W=MC=linaro.org=linus.walleij@kernel.org>
-MIME-Version: 1.0
-References: <20180831225616.29221-1-jmkrzyszt@gmail.com> <20180902120144.6855-1-jmkrzyszt@gmail.com>
- <CGME20180920101151eucas1p221f5a1715b8556bb9d99bf08fe09ce6f@eucas1p2.samsung.com>
- <20180902120144.6855-5-jmkrzyszt@gmail.com> <20180920101151eucas1p221f5a1715b8556bb9d99bf08fe09ce6f~WE-_cEf4l0754207542eucas1p27@eucas1p2.samsung.com>
-In-Reply-To: <20180920101151eucas1p221f5a1715b8556bb9d99bf08fe09ce6f~WE-_cEf4l0754207542eucas1p27@eucas1p2.samsung.com>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Thu, 20 Sep 2018 08:49:04 -0700
-Message-ID: <CACRpkdZD+kFsyvSKBm1JpCOd1is_TBRJGx3Yvd=kshoH5iPhXA@mail.gmail.com>
-Subject: Re: [PATCH v7 4/4] gpiolib: Implement fast processing path in get/set array
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Janusz Krzysztofik <jmkrzyszt@gmail.com>, Jonathan Corbet <corbet@lwn.net>,
+Return-Path: <SRS0=kJbz=LT=gmail.com=jmkrzyszt@kernel.org>
+From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Jonathan Corbet <corbet@lwn.net>,
 	Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>,
-	Peter Korsgaard <peter.korsgaard@barco.com>, Peter Rosin <peda@axentia.se>,
-	Ulf Hansson <ulf.hansson@linaro.org>, Andrew Lunn <andrew@lunn.ch>,
-	Florian Fainelli <f.fainelli@gmail.com>, "David S. Miller" <davem@davemloft.net>,
-	Dominik Brodowski <linux@dominikbrodowski.net>, Greg KH <gregkh@linuxfoundation.org>, kishon@ti.com,
-	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>,
-	Jiri Slaby <jslaby@suse.com>, Willy Tarreau <w@1wt.eu>, Geert Uytterhoeven <geert@linux-m68k.org>,
-	linux-doc@vger.kernel.org, linux-i2c@vger.kernel.org,
-	linux-mmc <linux-mmc@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	Peter Korsgaard <peter.korsgaard@barco.com>,
+	Peter Rosin <peda@axentia.se>,
+	Ulf Hansson <ulf.hansson@linaro.org>,
+	Andrew Lunn <andrew@lunn.ch>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Dominik Brodowski <linux@dominikbrodowski.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Kishon Vijay Abraham I <kishon@ti.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Jiri Slaby <jslaby@suse.com>,
+	Willy Tarreau <w@1wt.eu>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Sebastien Bourdelin <sebastien.bourdelin@savoirfairelinux.com>,
+	Lukas Wunner <lukas@wunner.de>,
+	Rojhalat Ibrahim <imr@rtschenk.de>,
+	Russell King <rmk+kernel@armlinux.org.uk>,
+	Tony Lindgren <tony@atomide.com>,
+	Yegor Yefremov <yegorslists@googlemail.com>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+	Janusz Krzysztofik <jmkrzyszt@gmail.com>,
+	linux-doc@vger.kernel.org,
+	linux-i2c@vger.kernel.org,
+	linux-mmc@vger.kernel.org,
+	netdev@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
 	linux-serial@vger.kernel.org,
-	"open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Sebastien Bourdelin <sebastien.bourdelin@savoirfairelinux.com>, Lukas Wunner <lukas@wunner.de>,
-	Rojhalat Ibrahim <imr@rtschenk.de>, Russell King <rmk+kernel@armlinux.org.uk>,
-	ext Tony Lindgren <tony@atomide.com>, Yegor Yefremov <yegorslists@googlemail.com>,
-	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-	linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+	linux-gpio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v8 0/4] gpiolib: speed up GPIO array processing
+Date: Wed,  5 Sep 2018 23:50:04 +0200
+Message-Id: <20180905215008.1649-1-jmkrzyszt@gmail.com>
+In-Reply-To: <20180902120144.6855-1-jmkrzyszt@gmail.com>
+References: <20180902120144.6855-1-jmkrzyszt@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, Sep 20, 2018 at 3:11 AM Marek Szyprowski
-<m.szyprowski@samsung.com> wrote:
 
-> I've just noticed that this patch landed in today's linux-next. Sadly it
-> breaks booting of Exynos5250-based Samsung Snow Chromebook (ARM 32bit,
-> device-tree source arch/arm/boot/dts/exynos5250-snow.dts).
+The goal is to boost performance of get/set array functions while
+processing GPIO arrays which represent pins of a signle chip in
+hardware order.  If resulting performance is close to PIO, GPIO API
+can be used for data I/O without much loss of speed.
 
-Thanks for testing on this platform!
+Created and tested on a low end Amstrad Delta board with NAND driver
+updated to use GPIO API for data I/O.  Performance degrade compared to
+PIO is much better than before the optimization though not quite
+satisfactory on my test hardware.
 
-> Booting hangs after detecting MMC cards. Reverting this patch fixes the
-> boot. I will try later to add some debugs and investigate it further what
-> really happens when booting hangs.
 
-How typical. I hope we can fix it, because this should mean speedups
-for your platform.
+Janusz Krzysztofik (4):
+      gpiolib: Pass bitmaps, not integer arrays, to get/set array
+      gpiolib: Identify arrays matching GPIO hardware
+      gpiolib: Pass array info to get/set array functions
+      gpiolib: Implement fast processing path in get/set array
 
-Yours,
-Linus Walleij
+
+Changelog:
+v8:
+[PATCH v8 1/4] gpiolib: Pass bitmaps, not integer arrays, to get/set array:
+- replace *values with values[0] where applicable - suggessted by Geert
+  Uytterhoeven, thanks,
+- drop !! from 3rd argument of __assign_bit() where applicable - suggested
+  by Lukas Wunner, thanks,
+drivers/gpio/gpiolib.c:
+- s/bitnap/bitmap/ - catched by Lukas Wunner, thanks,
+drivers/phy/motorola/phy-mapphone-mdm6600.c:
+- assign ddata->status directly from bitmap, not an intermediate 'val'
+  variable, now used only for debugging purposes,
+include/linux/gpio/consumer.h:
+- also update API of inline function replacements used if CONFIG_GPIOLIB
+  is not defined - catched by kbuild test robot,
+[PATCH v8 3/4] gpiolib: Pass array info to get/set array functions:
+commit message:
+- s/bulids/builds/ - catched by Geert Uytterhoeven, thanks,
+drivers/gpio/gpiolib.c:
+- add information on array_info arguments to array function descriptions -
+  catched by kbuild test robot,
+include/linux/gpio/consumer.h:
+- also update API of inline function replacements used if CONFIG_GPIOLIB
+  is not defined - catched by kbuild test robot.
+
+v7:
+- add more people to Cc: - authors and/or those who contributed most to
+  the drivers in scope of the change,
+[PATCH v7 1/4] gpiolib: Pass bitmaps, not integer arrays, to get/set:
+- avoid VLAs, use data source type bit number as bitmap size if not
+  constant - great recommendation by Peter Rosin, thanks,
+- revert names of local variables declared with DECLARE_BITMAP() from
+  'value_bitmap' to original names of value arrays they replace (but not
+  'value_array') - inspired by Peter Rosin suggestion - thanks!
+drivers/gpio/gpio-max3191x.c:
+- use bitmap_alloc() to be more consistent with DECLARE_BITMAP() pattern
+  used by other consumers,
+drivers/phy/motorola/phy-mapphone-mdm6600.c:
+- no need to mask unused bits of val before its assignment to bitmap,
+  passing PHY_MDM6600_NR_CMD_LINES to gpiod_set_array_value() as array/
+  bitmap size provides sufficient protection.
+
+v6:
+[PATCH v6 1/4] gpiolib: Pass bitmaps, not integer arrays, to get/set
+- use DECLARE_BITMAP() macro for declaring value_bitmap - great idea by
+  David Laight, thanks!
+drivers/auxdisplay/hd44780.c:
+- simplify the code and adjust comments as recommended by Geert
+  Uytterhoeven - thanks!,
+drivers/i2c/muxes/i2c-mux-gpio.c:
+- drop .values member of struct gpiomux - details provided by Peter
+  Rosin, thanks!, 
+drivers/mux/gpio.c:
+- drop .val member of struct mux_gpio - details provided by Peter
+  Rosin, thanks!,
+drivers/net/phy/mdio-mux-gpio.c:
+- drop .values member of struct mdio_mux_gpio_state and its processsing.
+
+v5:
+[PATCH v5 1/4] gpiolib: Pass bitmaps, not integer arrays, to get/set
+- drivers/i2c/muxes/i2c-mux-gpio.c:
+  - drop assigment of values to struct gpiomux.values, as recommended
+    by Peter Rosin - thanks!,
+  - mark the .values member of the structure as obsolete,
+- drivers/mux/gpio.c:
+  - drop assigment of values to struct mux_gpio.val, also recommended
+    by Peter Rosin - thanks!,
+  - merk the .val member of the structure as obsolete,
+- drivers/auxdisplay/hd44780.c:
+  - fix incorrect bitmap size,
+  - use >>= operator to simplify notation,
+  both catched by Miguel Ojeda - thanks!,
+- add Cc: clauses as well as Acked-by: collected so far.
+[PATCH v5 2/4] gpiolib: Identify arrays matching GPIO hardware
+- add Cc: clause.
+[PATCH v5 3/4] gpiolib: Pass array info to get/set array functions
+- add Cc: clauses as well as Acked-by: collected so far.
+[PATCH v5 4/4] gpiolib: Implement fast processing path in get/set
+- add Cc: clause.
+
+v4:
+That series was a follow up of the former "mtd: rawnand: ams-delta: Use
+gpio-omap accessors for data I/O" which already contained some changes
+to gpiolib.  Those previous attempts were commented by Borris Brezillon
+who suggested using GPIO API modified to accept bitmaps, and by Linus
+Walleij who suggested still more great ideas for further immprovement
+of the proposed API changes - thanks!
+
+
+diffstat:
+ Documentation/driver-api/gpio/board.rst     |   15 +
+ Documentation/driver-api/gpio/consumer.rst  |   48 +++-
+ drivers/auxdisplay/hd44780.c                |   67 ++----
+ drivers/bus/ts-nbus.c                       |   20 -
+ drivers/gpio/gpio-max3191x.c                |   16 -
+ drivers/gpio/gpiolib.c                      |  281 ++++++++++++++++++++++------
+ drivers/gpio/gpiolib.h                      |   15 +
+ drivers/i2c/muxes/i2c-mux-gpio.c            |   16 -
+ drivers/mmc/core/pwrseq_simple.c            |   15 -
+ drivers/mux/gpio.c                          |   16 -
+ drivers/net/phy/mdio-mux-gpio.c             |   13 -
+ drivers/pcmcia/soc_common.c                 |    9 
+ drivers/phy/motorola/phy-mapphone-mdm6600.c |   19 -
+ drivers/staging/iio/adc/ad7606.c            |   12 -
+ drivers/tty/serial/serial_mctrl_gpio.c      |    9 
+ include/linux/gpio/consumer.h               |   59 ++++-
+ 16 files changed, 420 insertions(+), 210 deletions(-)
