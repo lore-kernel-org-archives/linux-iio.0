@@ -1,72 +1,57 @@
-Return-Path: <SRS0=Kv0d=LU=chromium.org=mka@kernel.org>
-From: Matthias Kaehlcke <mka@chromium.org>
-To: Andy Gross <andy.gross@linaro.org>,
-	David Brown <david.brown@linaro.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will.deacon@arm.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: linux-arm-msm@vger.kernel.org,
-	linux-soc@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	Douglas Anderson <dianders@chromium.org>,
-	Matthias Kaehlcke <mka@chromium.org>
-Subject: [PATCH v2 2/3] arm64: dts: qcom: pm8998: Add adc node
-Date: Thu,  6 Sep 2018 14:04:53 -0700
-Message-Id: <20180906210454.247219-3-mka@chromium.org>
-In-Reply-To: <20180906210454.247219-1-mka@chromium.org>
-References: <20180906210454.247219-1-mka@chromium.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-ua1-f68.google.com ([209.85.222.68]:32889 "EHLO
+        mail-ua1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727534AbeIGBrF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 6 Sep 2018 21:47:05 -0400
+Received: by mail-ua1-f68.google.com with SMTP id i4-v6so10300892uak.0
+        for <linux-iio@vger.kernel.org>; Thu, 06 Sep 2018 14:09:48 -0700 (PDT)
+Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com. [209.85.222.51])
+        by smtp.gmail.com with ESMTPSA id f60-v6sm834948uaf.10.2018.09.06.14.09.46
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 06 Sep 2018 14:09:47 -0700 (PDT)
+Received: by mail-ua1-f51.google.com with SMTP id c12-v6so10282346uan.3
+        for <linux-iio@vger.kernel.org>; Thu, 06 Sep 2018 14:09:46 -0700 (PDT)
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20180906210454.247219-3-mka@chromium.org>
+References: <20180906210454.247219-1-mka@chromium.org> <20180906210454.247219-3-mka@chromium.org>
+From: Doug Anderson <dianders@chromium.org>
+Date: Thu, 6 Sep 2018 14:09:44 -0700
+Message-ID: <CAD=FV=XTbkfF0fTot_ebqD+ohbgQBYKVwHTZunuoxC7uGYN9Zw@mail.gmail.com>
+Subject: Re: [PATCH v2 2/3] arm64: dts: qcom: pm8998: Add adc node
+To: Matthias Kaehlcke <mka@chromium.org>
+Cc: Andy Gross <andy.gross@linaro.org>,
+        David Brown <david.brown@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will.deacon@arm.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        "open list:ARM/QUALCOMM SUPPORT" <linux-soc@vger.kernel.org>,
+        devicetree@vger.kernel.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This adds the adc node to pm8998 based on the examples in the
-bindings. It also fixes the order of the included headers.
+Hi,
 
-Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
---
-Changes in v2:
-- removed io-channel-ranges attribute
----
- arch/arm64/boot/dts/qcom/pm8998.dtsi | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+On Thu, Sep 6, 2018 at 2:04 PM, Matthias Kaehlcke <mka@chromium.org> wrote:
+> This adds the adc node to pm8998 based on the examples in the
+> bindings. It also fixes the order of the included headers.
+>
+> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+> --
+> Changes in v2:
+> - removed io-channel-ranges attribute
+> ---
+>  arch/arm64/boot/dts/qcom/pm8998.dtsi | 12 +++++++++++-
+>  1 file changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/pm8998.dtsi b/arch/arm64/boot/dts/qcom/pm8998.dtsi
-index 92bed1e7d4bb..41593ebbea2c 100644
---- a/arch/arm64/boot/dts/qcom/pm8998.dtsi
-+++ b/arch/arm64/boot/dts/qcom/pm8998.dtsi
-@@ -1,8 +1,9 @@
- // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
- /* Copyright 2018 Google LLC. */
- 
--#include <dt-bindings/spmi/spmi.h>
-+#include <dt-bindings/iio/qcom,spmi-vadc.h>
- #include <dt-bindings/interrupt-controller/irq.h>
-+#include <dt-bindings/spmi/spmi.h>
- 
- &spmi_bus {
- 	pm8998_lsid0: pmic@0 {
-@@ -11,6 +12,15 @@
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 
-+		pm8998_adc: adc@3100 {
-+			compatible = "qcom,spmi-adc-rev2";
-+			reg = <0x3100>;
-+			interrupts = <0x0 0x31 0x0 IRQ_TYPE_EDGE_RISING>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			#io-channel-cells = <1>;
-+		};
-+
- 		pm8998_gpio: gpios@c000 {
- 			compatible = "qcom,pm8998-gpio", "qcom,spmi-gpio";
- 			reg = <0xc000>;
--- 
-2.19.0.rc2.392.g5ba43deb5a-goog
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
