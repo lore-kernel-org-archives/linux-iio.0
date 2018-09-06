@@ -1,69 +1,158 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:39723 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727644AbeIFQyE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 6 Sep 2018 12:54:04 -0400
-Subject: Re: [linux-sunxi] Re: [PATCH v3 27/30] ARM: dts: sun8i: h3: use
- calibration for ths
-To: icenowy@aosc.io, maxime.ripard@bootlin.com
-Cc: Emmanuel Vadot <manu@bidouilliste.com>, lee.jones@linaro.org,
-        robh+dt@kernel.org, mark.rutland@arm.com, wens@csie.org,
-        linux@armlinux.org.uk, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, eugen.hristev@microchip.com,
-        rdunlap@infradead.org, vilhelm.gray@gmail.com,
-        clabbe.montjoie@gmail.com, quentin.schulz@bootlin.com,
-        geert+renesas@glider.be, lukas@wunner.de, arnd@arndb.de,
-        broonie@kernel.org, arnaud.pouliquen@st.com,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-sunxi@googlegroups.com, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
+Return-Path: <SRS0=iilg=LU=bootlin.com=quentin.schulz@kernel.org>
+Date: Thu, 6 Sep 2018 09:24:29 +0200
+From: Quentin Schulz <quentin.schulz@bootlin.com>
+To: Philipp Rossak <embed3d@gmail.com>
+Cc: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
+	maxime.ripard@bootlin.com, wens@csie.org, linux@armlinux.org.uk,
+	jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, eugen.hristev@microchip.com,
+	rdunlap@infradead.org, vilhelm.gray@gmail.com,
+	clabbe.montjoie@gmail.com, geert+renesas@glider.be, lukas@wunner.de,
+	icenowy@aosc.io, arnd@arndb.de, broonie@kernel.org,
+	arnaud.pouliquen@st.com, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-sunxi@googlegroups.com
+Subject: Re: [PATCH v3 30/30] ARM: sun8i: a83t: full range OPP tables and
+ CPUfreq
+Message-ID: <20180906072429.7qjwbbqsjlbskk6v@qschulz>
 References: <20180830154518.29507-1-embed3d@gmail.com>
- <20180830154518.29507-28-embed3d@gmail.com>
- <20180904184623.e4386b8e6b657b1b25e90c09@bidouilliste.com>
- <55579dd6-625d-e71b-1482-4592dccac665@gmail.com>
- <20180906115114.inc6dhqhy47obo25@flea>
- <BEA89263-1186-432A-B274-228FAC21A798@aosc.io>
-From: Philipp Rossak <embed3d@gmail.com>
-Message-ID: <d8825c55-60e0-16da-e122-22855c294bc4@gmail.com>
-Date: Thu, 6 Sep 2018 14:18:45 +0200
+ <20180830154518.29507-31-embed3d@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <BEA89263-1186-432A-B274-228FAC21A798@aosc.io>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="zzux7waj4fepvbk5"
+In-Reply-To: <20180830154518.29507-31-embed3d@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
 
+--zzux7waj4fepvbk5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 06.09.2018 14:04, Icenowy Zheng wrote:
-> 
-> 
-> 于 2018年9月6日 GMT+08:00 下午7:51:15, Maxime Ripard <maxime.ripard@bootlin.com> 写到:
->> On Thu, Sep 06, 2018 at 01:47:47PM +0200, Philipp Rossak wrote:
->>> On 04.09.2018 18:46, Emmanuel Vadot wrote:
->>>>> +			/* Data cells */
->>>>> +			thermal_calibration: calib@234 {
->>>>> +				reg = <0x234 0x8>;
->>>>> +			};
->>>>    You are declaring 8 bytes of calibration data but to my knowledge
->> it's
->>>> only 2 bytes per sensor, so 2 bytes for H3.
->>>>    Am I missing something ?
->>>>
->>>>    Thanks,
->>>
->>> Emmanuel you are right, it is 2 bytes per Sensor and should be 2
->> bytes for
->>> H3, but the thermal calibration data field is on all chips 64 bit
->> wide - so
->>> 8 bytes. So I'm reading here the complete calibration data field.
->>
->> Having one cell per channel would make more sense I guess.
-Ok I will change this.
-> 
-> I have mentioned that this is impossible because of wrong
-> addressing caused by LE2BE in SID driver.
->
-I know! But I would like to prepare patches for it, that they can be 
-merged when this is fixed.
+Hi Philipp,
 
-Philipp
+On Thu, Aug 30, 2018 at 05:45:18PM +0200, Philipp Rossak wrote:
+> Since we have now thermal trotteling enabeled we can now add the full
+> range of the OPP table.
+>=20
+
+That's not the reason why they were not added.
+
+Please see commit 2db639d8c1663d7543c9ab5323383d94c8a76c63[1].
+
+Basically, you only want the OPPs which can work below or at the default
+voltage of the CPU supply, because the CPU supply is specific to each
+board.
+
+If you set your CPU to work at a given frequency and the voltage isn't
+updated (saying opp-microvolt =3D <x>; in DT isn't enough, you need
+cpu-supply to be provided and functional), the CPU might just crash.
+
+Without cpu-supply property, underclocking isn't effective in term of
+thermal cooling or power saving. Overclocking is very, very, very likely
+to make the CPU crash.
+
+It's not a very difficult thing to do to test if a given frequency work
+well but it needs a specific test environment and it's a lengthy test,
+you can have a look at those tools here[3] if you like. It's not because
+it works in a given test case that'll work on the long term under heavy
+load and constant frequency changes.
+
+For A83T, I already did it and the outcome is the patch in [1]. Same for
+A33.
+
+So, if you want to use these three higher OPPs, you need to define them
+in your board DTS and add the cpu-supply property. See what's done for
+the A33 and more specifically the Sinlinx SinA33[2] as an example.
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/comm=
+it/?id=3D2db639d8c1663d7543c9ab5323383d94c8a76c63
+[2] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree=
+/arch/arm/boot/dts/sun8i-a33-sinlinx-sina33.dts
+[3] http://linux-sunxi.org/Hardware_Reliability_Tests#CPU
+
+Quentin
+
+> The operating points were found in Allwinner BSP and fex files.
+>=20
+> Signed-off-by: Philipp Rossak <embed3d@gmail.com>
+> ---
+>  arch/arm/boot/dts/sun8i-a83t.dtsi | 32 ++++++++++++++++++++++++++++++++
+>  1 file changed, 32 insertions(+)
+>=20
+> diff --git a/arch/arm/boot/dts/sun8i-a83t.dtsi b/arch/arm/boot/dts/sun8i-=
+a83t.dtsi
+> index 78aa448e869f..ddcf404f9c80 100644
+> --- a/arch/arm/boot/dts/sun8i-a83t.dtsi
+> +++ b/arch/arm/boot/dts/sun8i-a83t.dtsi
+> @@ -250,6 +250,22 @@
+>  			opp-microvolt =3D <840000>;
+>  			clock-latency-ns =3D <244144>; /* 8 32k periods */
+>  		};
+> +
+> +		opp-1608000000 {
+> +			opp-hz =3D /bits/ 64 <1608000000>;
+> +			opp-microvolt =3D <920000>;
+> +			clock-latency-ns =3D <244144>; /* 8 32k periods */
+> +		};
+> +		opp-1800000000 { /* BOOT FREQ */
+> +			opp-hz =3D /bits/ 64 <1800000000>;
+> +			opp-microvolt =3D <1000000>;
+> +			clock-latency-ns =3D <244144>; /* 8 32k periods */
+> +		};
+> +		opp-2016000000 {
+> +			opp-hz =3D /bits/ 64 <2016000000>;
+> +			opp-microvolt =3D <1080000>;
+> +			clock-latency-ns =3D <244144>; /* 8 32k periods */
+> +		};
+>  	};
+> =20
+>  	cpu1_opp_table: opp_table1 {
+> @@ -303,6 +319,22 @@
+>  			opp-microvolt =3D <840000>;
+>  			clock-latency-ns =3D <244144>; /* 8 32k periods */
+>  		};
+> +
+> +		opp-1608000000 {
+> +			opp-hz =3D /bits/ 64 <1608000000>;
+> +			opp-microvolt =3D <920000>;
+> +			clock-latency-ns =3D <244144>; /* 8 32k periods */
+> +		};
+> +		opp-1800000000 { /* BOOT FREQ */
+> +			opp-hz =3D /bits/ 64 <1800000000>;
+> +			opp-microvolt =3D <1000000>;
+> +			clock-latency-ns =3D <244144>; /* 8 32k periods */
+> +		};
+> +		opp-2016000000 {
+> +			opp-hz =3D /bits/ 64 <2016000000>;
+> +			opp-microvolt =3D <1080000>;
+> +			clock-latency-ns =3D <244144>; /* 8 32k periods */
+> +		};
+>  	};
+> =20
+>  	soc {
+> --=20
+> 2.11.0
+>=20
+
+--zzux7waj4fepvbk5
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEXeEYjDsJh38OoyMzhLiadT7g8aMFAluQ1i0ACgkQhLiadT7g
+8aNqzQ//eENMFfPMOD2u/ba5EcJIjcJsNe3BDIZLLPuDOXTAk3eYsLM4/lmY2ZOH
+bCE0criU1qrRSgp9WqKYYNN08o5R5gdxmxcconw1LTDP1oe88L6mQ/dXdOn7Sbys
+B3CqPXE4KTB8s8A4lGeuSvbDb/ganS8XM/wlpbANPobPjuP2rq/Jf2EpImv4tAKS
+wqdNF9acgps1LLFgDqxkYz3+bn3UJsX5mKWbsHr5PnYk/xxRulN7ex9Fu71DRGPV
+XqYi+ZBoxQ+CcVMD6dDWkg3RHJGaizOPN80dWo0Z8t7kwK7WKuXjQkncz084I1Tp
+hqz/D55T+p9zh7m09jxWVW1z2R/leFKdBPHD3cl2GjfXZjXqsTgjM9fgWNB4KTJo
+d5SEhCNerwDvVbaiQ9SVRkY0VZLjmNBdma+9IdeXPnxNxMzATKMAfEqqcF4I7VXI
+T0mUzMd0iWpHXlPu7Na3lDH7BwRjePNwq/mlPcFJoqkLMNn8r6hyra2yf38PHg3K
+Hc4zor9f4ZyQOziHectSdwY84+QVkhm2jGytiwfEuwU0xDfa7pL+ILNw4MZIFiTG
+gObYRCRzfvQoUzuaQJ90wTJZmtHS99F1TORrEqeC+MRrQBVkdjFc9u3R+d0aLAXT
+XkCEHuY0wDn0HK0x5BMUBh3rdr5EHQg4hnpG0tKYJQ/ZRm3oQHI=
+=H5A0
+-----END PGP SIGNATURE-----
+
+--zzux7waj4fepvbk5--
