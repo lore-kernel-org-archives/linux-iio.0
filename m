@@ -1,117 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:51406 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730906AbeICVt4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 3 Sep 2018 17:49:56 -0400
-Date: Mon, 3 Sep 2018 18:28:40 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Philipp Rossak <embed3d@gmail.com>
-Cc: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
-        maxime.ripard@bootlin.com, wens@csie.org, linux@armlinux.org.uk,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        eugen.hristev@microchip.com, rdunlap@infradead.org,
-        vilhelm.gray@gmail.com, clabbe.montjoie@gmail.com,
-        quentin.schulz@bootlin.com, geert+renesas@glider.be,
-        lukas@wunner.de, icenowy@aosc.io, arnd@arndb.de,
-        broonie@kernel.org, arnaud.pouliquen@st.com,
+Received: from mail-oi0-f67.google.com ([209.85.218.67]:45021 "EHLO
+        mail-oi0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728063AbeIKAkF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 10 Sep 2018 20:40:05 -0400
+Date: Mon, 10 Sep 2018 14:44:24 -0500
+From: Rob Herring <robh@kernel.org>
+To: Maxime Ripard <maxime.ripard@bootlin.com>
+Cc: Philipp Rossak <embed3d@gmail.com>, lee.jones@linaro.org,
+        mark.rutland@arm.com, wens@csie.org, linux@armlinux.org.uk,
+        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, eugen.hristev@microchip.com,
+        rdunlap@infradead.org, vilhelm.gray@gmail.com,
+        clabbe.montjoie@gmail.com, quentin.schulz@bootlin.com,
+        geert+renesas@glider.be, lukas@wunner.de, icenowy@aosc.io,
+        arnd@arndb.de, broonie@kernel.org, arnaud.pouliquen@st.com,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-sunxi@googlegroups.com
-Subject: Re: [PATCH v3 05/30] iio: adc: move SUN4I_GPADC_CHANNEL define to
- header file
-Message-ID: <20180903182840.77231c8b@archlinux>
-In-Reply-To: <882cb5f9-867b-d120-5ef5-80a8bee2d628@gmail.com>
+Subject: Re: [PATCH v3 14/30] dt-bindings: update the Allwinner GPADC device
+ tree binding for H3 & A83T
+Message-ID: <20180910194424.GA21461@bogus>
 References: <20180830154518.29507-1-embed3d@gmail.com>
-        <20180830154518.29507-6-embed3d@gmail.com>
-        <20180902210109.7bd4a567@archlinux>
-        <882cb5f9-867b-d120-5ef5-80a8bee2d628@gmail.com>
+ <20180830154518.29507-15-embed3d@gmail.com>
+ <20180831084854.q2uh63pw5vprqlzt@flea>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20180831084854.q2uh63pw5vprqlzt@flea>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 3 Sep 2018 16:24:32 +0200
-Philipp Rossak <embed3d@gmail.com> wrote:
-
-> On 02.09.2018 22:01, Jonathan Cameron wrote:
-> > On Thu, 30 Aug 2018 17:44:53 +0200
-> > Philipp Rossak <embed3d@gmail.com> wrote:
-> >   
-> >> We are moving the SUN4I_GPADC_CHANNEL define to the header file.  
-> > Maxime has raised this point in other patches...
+On Fri, Aug 31, 2018 at 10:48:54AM +0200, Maxime Ripard wrote:
+> On Thu, Aug 30, 2018 at 05:45:02PM +0200, Philipp Rossak wrote:
+> > Allwinner H3 features a thermal sensor like the one in A33, but has its
+> > register re-arranged, the clock divider moved to CCU (originally the
+> > clock divider is in ADC) and added a pair of bus clock and reset.
 > > 
-> > Why?  Obvious what but I have no idea why you are doing this.
+> > Allwinner A83T features a thermal sensor similar to the H3, the ths clock,
+> > the bus clock and the reset was removed from the CCU. The THS in A83T
+> > has a clock that is directly connected and runs with 24 MHz.
 > > 
-> > Thanks,
+> > Update the binding document to cover H3 and A83T.
 > > 
-> > Jonathan  
-> There are two reasons:
-> 1. Personal taste: I like to have the #define stuff in the header file.
-> 2. When I started the rework I had to get some better overview, so I 
-> moved it...
+> > Signed-off-by: Philipp Rossak <embed3d@gmail.com>
 > 
-> Since those two reasons are no good reasons to submit a patch I will 
-> drop it and keep it in the *.c file.
-Don't move it.
+> You probably want to have a look at:
+> https://www.spinics.net/lists/arm-kernel/msg670167.html
 
-For a 'utility' type define like this that is just about cutting
-down on code repetition it is nice to be able to see what it does near
-to where it is used.
+Well, which is it? An ADC or thermal sensor?
 
-Also, as a general rule kernel style is to not put things in a header
-unless they are needed in multiple files.  There are exceptions, but
-it is generally felt keeping things local to where they are used
-leads to easier to review code.
-
-Jonathan
-> 
-> Philipp
-> 
-> >>
-> >> Signed-off-by: Philipp Rossak <embed3d@gmail.com>
-> >> ---
-> >>   drivers/iio/adc/sun4i-gpadc-iio.c | 9 ---------
-> >>   include/linux/mfd/sun4i-gpadc.h   | 9 +++++++++
-> >>   2 files changed, 9 insertions(+), 9 deletions(-)
-> >>
-> >> diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
-> >> index d95dd0fde2a6..666329940e1e 100644
-> >> --- a/drivers/iio/adc/sun4i-gpadc-iio.c
-> >> +++ b/drivers/iio/adc/sun4i-gpadc-iio.c
-> >> @@ -109,15 +109,6 @@ struct sun4i_gpadc_iio {
-> >>   	struct device			*sensor_device;
-> >>   };
-> >>   
-> >> -#define SUN4I_GPADC_ADC_CHANNEL(_channel, _name) {		\
-> >> -	.type = IIO_VOLTAGE,					\
-> >> -	.indexed = 1,						\
-> >> -	.channel = _channel,					\
-> >> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> >> -	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> >> -	.datasheet_name = _name,				\
-> >> -}
-> >> -
-> >>   static struct iio_map sun4i_gpadc_hwmon_maps[] = {
-> >>   	{
-> >>   		.adc_channel_label = "temp_adc",
-> >> diff --git a/include/linux/mfd/sun4i-gpadc.h b/include/linux/mfd/sun4i-gpadc.h
-> >> index 139872c2e0fe..54c7c9375c1b 100644
-> >> --- a/include/linux/mfd/sun4i-gpadc.h
-> >> +++ b/include/linux/mfd/sun4i-gpadc.h
-> >> @@ -90,6 +90,15 @@
-> >>   /* 10s delay before suspending the IP */
-> >>   #define SUN4I_GPADC_AUTOSUSPEND_DELAY			10000
-> >>   
-> >> +#define SUN4I_GPADC_ADC_CHANNEL(_channel, _name) {		\
-> >> +	.type = IIO_VOLTAGE,					\
-> >> +	.indexed = 1,						\
-> >> +	.channel = _channel,					\
-> >> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> >> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> >> +	.datasheet_name = _name,				\
-> >> +}
-> >> +
-> >>   struct sun4i_gpadc_dev {
-> >>   	struct device			*dev;
-> >>   	struct regmap			*regmap;  
-> >   
+Rob
