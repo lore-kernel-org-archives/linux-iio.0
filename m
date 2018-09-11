@@ -1,51 +1,89 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi0-f67.google.com ([209.85.218.67]:45021 "EHLO
-        mail-oi0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728063AbeIKAkF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 10 Sep 2018 20:40:05 -0400
-Date: Mon, 10 Sep 2018 14:44:24 -0500
-From: Rob Herring <robh@kernel.org>
-To: Maxime Ripard <maxime.ripard@bootlin.com>
+Return-Path: <SRS0=0bsD=LZ=bootlin.com=maxime.ripard@kernel.org>
+Date: Tue, 11 Sep 2018 11:12:32 +0200
+From: Maxime Ripard <maxime.ripard@bootlin.com>
+To: Rob Herring <robh@kernel.org>
 Cc: Philipp Rossak <embed3d@gmail.com>, lee.jones@linaro.org,
-        mark.rutland@arm.com, wens@csie.org, linux@armlinux.org.uk,
-        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, eugen.hristev@microchip.com,
-        rdunlap@infradead.org, vilhelm.gray@gmail.com,
-        clabbe.montjoie@gmail.com, quentin.schulz@bootlin.com,
-        geert+renesas@glider.be, lukas@wunner.de, icenowy@aosc.io,
-        arnd@arndb.de, broonie@kernel.org, arnaud.pouliquen@st.com,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@googlegroups.com
+	mark.rutland@arm.com, wens@csie.org, linux@armlinux.org.uk,
+	jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, eugen.hristev@microchip.com,
+	rdunlap@infradead.org, vilhelm.gray@gmail.com,
+	clabbe.montjoie@gmail.com, quentin.schulz@bootlin.com,
+	geert+renesas@glider.be, lukas@wunner.de, icenowy@aosc.io,
+	arnd@arndb.de, broonie@kernel.org, arnaud.pouliquen@st.com,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-sunxi@googlegroups.com
 Subject: Re: [PATCH v3 14/30] dt-bindings: update the Allwinner GPADC device
  tree binding for H3 & A83T
-Message-ID: <20180910194424.GA21461@bogus>
+Message-ID: <20180911091232.2ozypemfam5kayef@flea>
 References: <20180830154518.29507-1-embed3d@gmail.com>
  <20180830154518.29507-15-embed3d@gmail.com>
  <20180831084854.q2uh63pw5vprqlzt@flea>
+ <20180910194424.GA21461@bogus>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="ttcwp2nzxxraldfm"
+In-Reply-To: <20180910194424.GA21461@bogus>
+List-ID: <linux-iio@vger.kernel.org>
+
+
+--ttcwp2nzxxraldfm
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20180831084854.q2uh63pw5vprqlzt@flea>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Aug 31, 2018 at 10:48:54AM +0200, Maxime Ripard wrote:
-> On Thu, Aug 30, 2018 at 05:45:02PM +0200, Philipp Rossak wrote:
-> > Allwinner H3 features a thermal sensor like the one in A33, but has its
-> > register re-arranged, the clock divider moved to CCU (originally the
-> > clock divider is in ADC) and added a pair of bus clock and reset.
-> > 
-> > Allwinner A83T features a thermal sensor similar to the H3, the ths clock,
-> > the bus clock and the reset was removed from the CCU. The THS in A83T
-> > has a clock that is directly connected and runs with 24 MHz.
-> > 
-> > Update the binding document to cover H3 and A83T.
-> > 
-> > Signed-off-by: Philipp Rossak <embed3d@gmail.com>
-> 
-> You probably want to have a look at:
-> https://www.spinics.net/lists/arm-kernel/msg670167.html
+On Mon, Sep 10, 2018 at 02:44:24PM -0500, Rob Herring wrote:
+> On Fri, Aug 31, 2018 at 10:48:54AM +0200, Maxime Ripard wrote:
+> > On Thu, Aug 30, 2018 at 05:45:02PM +0200, Philipp Rossak wrote:
+> > > Allwinner H3 features a thermal sensor like the one in A33, but has i=
+ts
+> > > register re-arranged, the clock divider moved to CCU (originally the
+> > > clock divider is in ADC) and added a pair of bus clock and reset.
+> > >=20
+> > > Allwinner A83T features a thermal sensor similar to the H3, the ths c=
+lock,
+> > > the bus clock and the reset was removed from the CCU. The THS in A83T
+> > > has a clock that is directly connected and runs with 24 MHz.
+> > >=20
+> > > Update the binding document to cover H3 and A83T.
+> > >=20
+> > > Signed-off-by: Philipp Rossak <embed3d@gmail.com>
+> >=20
+> > You probably want to have a look at:
+> > https://www.spinics.net/lists/arm-kernel/msg670167.html
+>=20
+> Well, which is it? An ADC or thermal sensor?
 
-Well, which is it? An ADC or thermal sensor?
+It's both actually. This IP used to be called GPADC, and had a thermal
+sensor + some ADC channels. The design evolved across several
+generations of SoCs to drop the ADC channels and be used only to have
+thermal sensors.
 
-Rob
+Maxime
+
+--=20
+Maxime Ripard, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
+
+--ttcwp2nzxxraldfm
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEE0VqZU19dR2zEVaqr0rTAlCFNr3QFAluXhv8ACgkQ0rTAlCFN
+r3RlLRAAhGrKBGOaPU36B9oHrqrOOdRRxLiK2BhzFdgWj8CadI2C62PxhwyTtyCZ
+O0Qbiuu3UEQdvK2ymSWeRR3sGEpdbNF0M9A44WMWn3+r9EchrryDNwpPHYQtE3N1
+eN3XFVOY4kEfVhwGrKLBPjECUoTORj8UAd1LUSkfubSqH26T77YZujRg5KHzDXmY
+leV5rs8/WfXLKJzcAiIqjDQaP/K71kEizka8Xdqt7nOn2hsr1oV/y1xxuPlsKPHv
+/ULINf1+EqR1u/a36WGICvdpMpgM4flKbp7cZEWIOIdKcoI7q23Szi5+3y129LdT
+0KOTGS+ywJxUTIHtduBs7gV0zOq4RCnqPjweXk5yOjjn8baF3OSHiv4m6zEJ9Wpt
+xB1HKbmcRdMyi5ttzAxkqWv4dowJywkkSD8K4OviRoixe944tFXW9o1GBogWosER
+i3wuMgj6A+HK5qDRZHmJMw+/W5UprUPxpzjNqNv8/ge09W4AB6mqLZ8HCgE/5OI8
+61XGlcNKcww/1l259vSgbD94I0ITrnrdcXmSuTOaHFwJLN0F8/cE5fIG7QCaeyeI
+7OfEefWqhLFpWLQYtqAZnF8dQaHmN+1X2//IBhWdMbLxOfyBGkHEB9jl3mgh8Wgz
++pQ40R+mn+TrqHCi6xu2Sn11dfz6j4DNWAlEMpTMyauE+THkuuk=
+=AUym
+-----END PGP SIGNATURE-----
+
+--ttcwp2nzxxraldfm--
