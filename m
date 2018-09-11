@@ -1,138 +1,101 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:59060 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728164AbeIJVLi (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 10 Sep 2018 17:11:38 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 2/2] staging:iio:ad7606: Add support for the ad7605-4
-Date: Mon, 10 Sep 2018 18:16:39 +0200
-Message-Id: <20180910161639.13591-2-lars@metafoo.de>
-In-Reply-To: <20180910161639.13591-1-lars@metafoo.de>
+Return-Path: <SRS0=tpNM=LZ=analog.com=alexandru.Ardelean@kernel.org>
+From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+To: "lars@metafoo.de" <lars@metafoo.de>, "jic23@kernel.org" <jic23@kernel.org>
+CC: "knaack.h@gmx.de" <knaack.h@gmx.de>, "pmeerw@pmeerw.net"
+	<pmeerw@pmeerw.net>, "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH 2/2] staging:iio:ad7606: Add support for the ad7605-4
+Date: Tue, 11 Sep 2018 07:15:36 +0000
+Message-ID: <c9cf4c90f6659d4ddc14312cb2652e20ac35eead.camel@analog.com>
 References: <20180910161639.13591-1-lars@metafoo.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	 <20180910161639.13591-2-lars@metafoo.de>
+In-Reply-To: <20180910161639.13591-2-lars@metafoo.de>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-Add support for the AD7605-4 to the AD7606 driver. The AD7605-4 is mostly
-interface compatible to the AD7606-6 with the only difference being not
-having support for oversampling.
-
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/adc/Kconfig      |  2 +-
- drivers/staging/iio/adc/ad7606.c     | 10 ++++++++++
- drivers/staging/iio/adc/ad7606.h     |  3 +++
- drivers/staging/iio/adc/ad7606_par.c |  3 +++
- drivers/staging/iio/adc/ad7606_spi.c |  1 +
- 5 files changed, 18 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
-index e17efb03bac0..9d3062a07460 100644
---- a/drivers/staging/iio/adc/Kconfig
-+++ b/drivers/staging/iio/adc/Kconfig
-@@ -11,7 +11,7 @@ config AD7606
- 	select IIO_TRIGGERED_BUFFER
- 	help
- 	  Say yes here to build support for Analog Devices:
--	  ad7606, ad7606-6, ad7606-4 analog to digital converters (ADC).
-+	  ad7605-4, ad7606, ad7606-6, ad7606-4 analog to digital converters (ADC).
- 
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called ad7606.
-diff --git a/drivers/staging/iio/adc/ad7606.c b/drivers/staging/iio/adc/ad7606.c
-index c5fe3003075b..44a4757b88cd 100644
---- a/drivers/staging/iio/adc/ad7606.c
-+++ b/drivers/staging/iio/adc/ad7606.c
-@@ -308,17 +308,24 @@ static const struct ad7606_chip_info ad7606_chip_info_tbl[] = {
- 	/*
- 	 * More devices added in future
- 	 */
-+	[ID_AD7605_4] = {
-+		.channels = ad7606_channels,
-+		.num_channels = 5,
-+	},
- 	[ID_AD7606_8] = {
- 		.channels = ad7606_channels,
- 		.num_channels = 9,
-+		.has_oversampling = true,
- 	},
- 	[ID_AD7606_6] = {
- 		.channels = ad7606_channels,
- 		.num_channels = 7,
-+		.has_oversampling = true,
- 	},
- 	[ID_AD7606_4] = {
- 		.channels = ad7606_channels,
- 		.num_channels = 5,
-+		.has_oversampling = true,
- 	},
- };
- 
-@@ -349,6 +356,9 @@ static int ad7606_request_gpios(struct ad7606_state *st)
- 	if (IS_ERR(st->gpio_frstdata))
- 		return PTR_ERR(st->gpio_frstdata);
- 
-+	if (!st->chip_info->has_oversampling)
-+		return 0;
-+
- 	st->gpio_os = devm_gpiod_get_array_optional(dev, "oversampling-ratio",
- 			GPIOD_OUT_LOW);
- 	return PTR_ERR_OR_ZERO(st->gpio_os);
-diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
-index fb56f479e2f1..2a8bc9e87449 100644
---- a/drivers/staging/iio/adc/ad7606.h
-+++ b/drivers/staging/iio/adc/ad7606.h
-@@ -14,11 +14,13 @@
-  * @name:		identification string for chip
-  * @channels:		channel specification
-  * @num_channels:	number of channels
-+ * @has_oversampling:	whether the device has oversampling support
-  */
- 
- struct ad7606_chip_info {
- 	const struct iio_chan_spec	*channels;
- 	unsigned int			num_channels;
-+	bool				has_oversampling;
- };
- 
- /**
-@@ -65,6 +67,7 @@ int ad7606_probe(struct device *dev, int irq, void __iomem *base_address,
- int ad7606_remove(struct device *dev, int irq);
- 
- enum ad7606_supported_device_ids {
-+	ID_AD7605_4,
- 	ID_AD7606_8,
- 	ID_AD7606_6,
- 	ID_AD7606_4
-diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/staging/iio/adc/ad7606_par.c
-index 956e38774767..8bd86e727b02 100644
---- a/drivers/staging/iio/adc/ad7606_par.c
-+++ b/drivers/staging/iio/adc/ad7606_par.c
-@@ -79,6 +79,9 @@ static int ad7606_par_remove(struct platform_device *pdev)
- 
- static const struct platform_device_id ad7606_driver_ids[] = {
- 	{
-+		.name		= "ad7605-4",
-+		.driver_data	= ID_AD7605_4,
-+	}, {
- 		.name		= "ad7606-8",
- 		.driver_data	= ID_AD7606_8,
- 	}, {
-diff --git a/drivers/staging/iio/adc/ad7606_spi.c b/drivers/staging/iio/adc/ad7606_spi.c
-index ffd9d0626ec2..b76ca5a8c059 100644
---- a/drivers/staging/iio/adc/ad7606_spi.c
-+++ b/drivers/staging/iio/adc/ad7606_spi.c
-@@ -55,6 +55,7 @@ static int ad7606_spi_remove(struct spi_device *spi)
- }
- 
- static const struct spi_device_id ad7606_id[] = {
-+	{"ad7605-4", ID_AD7605_4},
- 	{"ad7606-8", ID_AD7606_8},
- 	{"ad7606-6", ID_AD7606_6},
- 	{"ad7606-4", ID_AD7606_4},
--- 
-2.11.0
+T24gTW9uLCAyMDE4LTA5LTEwIGF0IDE4OjE2ICswMjAwLCBMYXJzLVBldGVyIENsYXVzZW4gd3Jv
+dGU6DQo+IEFkZCBzdXBwb3J0IGZvciB0aGUgQUQ3NjA1LTQgdG8gdGhlIEFENzYwNiBkcml2ZXIu
+IFRoZSBBRDc2MDUtNCBpcyBtb3N0bHkNCj4gaW50ZXJmYWNlIGNvbXBhdGlibGUgdG8gdGhlIEFE
+NzYwNi02IHdpdGggdGhlIG9ubHkgZGlmZmVyZW5jZSBiZWluZyBub3QNCj4gaGF2aW5nIHN1cHBv
+cnQgZm9yIG92ZXJzYW1wbGluZy4NCj4gDQoNCkhleSwNCg0KQSBmZXcgbm90ZXMuDQoNCj4gU2ln
+bmVkLW9mZi1ieTogTGFycy1QZXRlciBDbGF1c2VuIDxsYXJzQG1ldGFmb28uZGU+DQo+IC0tLQ0K
+PiAgZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvS2NvbmZpZyAgICAgIHwgIDIgKy0NCj4gIGRyaXZl
+cnMvc3RhZ2luZy9paW8vYWRjL2FkNzYwNi5jICAgICB8IDEwICsrKysrKysrKysNCj4gIGRyaXZl
+cnMvc3RhZ2luZy9paW8vYWRjL2FkNzYwNi5oICAgICB8ICAzICsrKw0KPiAgZHJpdmVycy9zdGFn
+aW5nL2lpby9hZGMvYWQ3NjA2X3Bhci5jIHwgIDMgKysrDQo+ICBkcml2ZXJzL3N0YWdpbmcvaWlv
+L2FkYy9hZDc2MDZfc3BpLmMgfCAgMSArDQo+ICA1IGZpbGVzIGNoYW5nZWQsIDE4IGluc2VydGlv
+bnMoKyksIDEgZGVsZXRpb24oLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3N0YWdpbmcv
+aWlvL2FkYy9LY29uZmlnDQo+IGIvZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvS2NvbmZpZw0KPiBp
+bmRleCBlMTdlZmIwM2JhYzAuLjlkMzA2MmEwNzQ2MCAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9z
+dGFnaW5nL2lpby9hZGMvS2NvbmZpZw0KPiArKysgYi9kcml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9L
+Y29uZmlnDQo+IEBAIC0xMSw3ICsxMSw3IEBAIGNvbmZpZyBBRDc2MDYNCj4gIAlzZWxlY3QgSUlP
+X1RSSUdHRVJFRF9CVUZGRVINCj4gIAloZWxwDQo+ICAJICBTYXkgeWVzIGhlcmUgdG8gYnVpbGQg
+c3VwcG9ydCBmb3IgQW5hbG9nIERldmljZXM6DQo+IC0JICBhZDc2MDYsIGFkNzYwNi02LCBhZDc2
+MDYtNCBhbmFsb2cgdG8gZGlnaXRhbCBjb252ZXJ0ZXJzIChBREMpLg0KPiArCSAgYWQ3NjA1LTQs
+IGFkNzYwNiwgYWQ3NjA2LTYsIGFkNzYwNi00IGFuYWxvZyB0byBkaWdpdGFsDQo+IGNvbnZlcnRl
+cnMgKEFEQykuDQo+ICANCj4gIAkgIFRvIGNvbXBpbGUgdGhpcyBkcml2ZXIgYXMgYSBtb2R1bGUs
+IGNob29zZSBNIGhlcmU6IHRoZQ0KPiAgCSAgbW9kdWxlIHdpbGwgYmUgY2FsbGVkIGFkNzYwNi4N
+Cj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvc3RhZ2luZy9paW8vYWRjL2FkNzYwNi5jDQo+IGIvZHJp
+dmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NjA2LmMNCj4gaW5kZXggYzVmZTMwMDMwNzViLi40NGE0
+NzU3Yjg4Y2QgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvc3RhZ2luZy9paW8vYWRjL2FkNzYwNi5j
+DQo+ICsrKyBiL2RyaXZlcnMvc3RhZ2luZy9paW8vYWRjL2FkNzYwNi5jDQo+IEBAIC0zMDgsMTcg
+KzMwOCwyNCBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IGFkNzYwNl9jaGlwX2luZm8NCj4gYWQ3NjA2
+X2NoaXBfaW5mb190YmxbXSA9IHsNCj4gIAkvKg0KPiAgCSAqIE1vcmUgZGV2aWNlcyBhZGRlZCBp
+biBmdXR1cmUNCj4gIAkgKi8NCj4gKwlbSURfQUQ3NjA1XzRdID0gew0KPiArCQkuY2hhbm5lbHMg
+PSBhZDc2MDZfY2hhbm5lbHMsDQo+ICsJCS5udW1fY2hhbm5lbHMgPSA1LA0KPiArCX0sDQo+ICAJ
+W0lEX0FENzYwNl84XSA9IHsNCj4gIAkJLmNoYW5uZWxzID0gYWQ3NjA2X2NoYW5uZWxzLA0KPiAg
+CQkubnVtX2NoYW5uZWxzID0gOSwNCj4gKwkJLmhhc19vdmVyc2FtcGxpbmcgPSB0cnVlLA0KPiAg
+CX0sDQo+ICAJW0lEX0FENzYwNl82XSA9IHsNCj4gIAkJLmNoYW5uZWxzID0gYWQ3NjA2X2NoYW5u
+ZWxzLA0KPiAgCQkubnVtX2NoYW5uZWxzID0gNywNCj4gKwkJLmhhc19vdmVyc2FtcGxpbmcgPSB0
+cnVlLA0KPiAgCX0sDQo+ICAJW0lEX0FENzYwNl80XSA9IHsNCj4gIAkJLmNoYW5uZWxzID0gYWQ3
+NjA2X2NoYW5uZWxzLA0KPiAgCQkubnVtX2NoYW5uZWxzID0gNSwNCj4gKwkJLmhhc19vdmVyc2Ft
+cGxpbmcgPSB0cnVlLA0KDQpUaGUgc3lzZnMgZW50cnkgZm9yIG92ZXJzYW1wbGluZyB3b3VsZCBz
+dGlsbCBzaG93IHVwIGZvciB0aGlzLg0KVGhlIElJT19DSEFOX0lORk9fT1ZFUlNBTVBMSU5HX1JB
+VElPIGJpdCBuZWVkcyB0byBiZSByZW1vdmVkIGZyb20gdGhlDQpgaW5mb19tYXNrX3NoYXJlZF9i
+eV9hbGxgIGZpZWxkLg0KSXQgZG9lc24ndCBodXJ0IHRvIGxlYXZlIGl0LCBqdXN0IGNhdXNlcyBz
+b21lIHNtYWxsIGNvbmZ1c2lvbnMgYWJvdXQNCm92ZXJzYW1wbGluZyB3aGVuIGxvb2tpbmcgYXQg
+dGhlIGRldmljZSBmcm9tIHN5c2ZzLg0KDQo+ICAJfSwNCj4gIH07DQo+ICANCj4gQEAgLTM0OSw2
+ICszNTYsOSBAQCBzdGF0aWMgaW50IGFkNzYwNl9yZXF1ZXN0X2dwaW9zKHN0cnVjdCBhZDc2MDZf
+c3RhdGUNCj4gKnN0KQ0KPiAgCWlmIChJU19FUlIoc3QtPmdwaW9fZnJzdGRhdGEpKQ0KPiAgCQly
+ZXR1cm4gUFRSX0VSUihzdC0+Z3Bpb19mcnN0ZGF0YSk7DQo+ICANCj4gKwlpZiAoIXN0LT5jaGlw
+X2luZm8tPmhhc19vdmVyc2FtcGxpbmcpDQo+ICsJCXJldHVybiAwOw0KPiArDQoNCkkgdGhpbmsg
+dGhpcyBuZWVkcyBhbiBleHRyYSBwYXRjaC9jaGFuZ2UuDQpBdCB0aGlzIHBvaW50IGluIHRpbWUg
+YHN0LT5jaGlwX2luZm9gIGlzIE5VTEwsIHNvIHRoZSBhc3NpZ25tZW50IGhhcyB0byBiZQ0KbW92
+ZWQgYmVmb3JlIGFkNzYwNl9yZXF1ZXN0X2dwaW9zKCkgaXMgY2FsbGVkLg0KDQoNCj4gIAlzdC0+
+Z3Bpb19vcyA9IGRldm1fZ3Bpb2RfZ2V0X2FycmF5X29wdGlvbmFsKGRldiwgIm92ZXJzYW1wbGlu
+Zy0NCj4gcmF0aW8iLA0KPiAgCQkJR1BJT0RfT1VUX0xPVyk7DQo+ICAJcmV0dXJuIFBUUl9FUlJf
+T1JfWkVSTyhzdC0+Z3Bpb19vcyk7DQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3N0YWdpbmcvaWlv
+L2FkYy9hZDc2MDYuaA0KPiBiL2RyaXZlcnMvc3RhZ2luZy9paW8vYWRjL2FkNzYwNi5oDQo+IGlu
+ZGV4IGZiNTZmNDc5ZTJmMS4uMmE4YmM5ZTg3NDQ5IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL3N0
+YWdpbmcvaWlvL2FkYy9hZDc2MDYuaA0KPiArKysgYi9kcml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9h
+ZDc2MDYuaA0KPiBAQCAtMTQsMTEgKzE0LDEzIEBADQo+ICAgKiBAbmFtZToJCWlkZW50aWZpY2F0
+aW9uIHN0cmluZyBmb3IgY2hpcA0KPiAgICogQGNoYW5uZWxzOgkJY2hhbm5lbCBzcGVjaWZpY2F0
+aW9uDQo+ICAgKiBAbnVtX2NoYW5uZWxzOgludW1iZXIgb2YgY2hhbm5lbHMNCj4gKyAqIEBoYXNf
+b3ZlcnNhbXBsaW5nOgl3aGV0aGVyIHRoZSBkZXZpY2UgaGFzIG92ZXJzYW1wbGluZyBzdXBwb3J0
+DQo+ICAgKi8NCj4gIA0KPiAgc3RydWN0IGFkNzYwNl9jaGlwX2luZm8gew0KPiAgCWNvbnN0IHN0
+cnVjdCBpaW9fY2hhbl9zcGVjCSpjaGFubmVsczsNCj4gIAl1bnNpZ25lZCBpbnQJCQludW1fY2hh
+bm5lbHM7DQo+ICsJYm9vbAkJCQloYXNfb3ZlcnNhbXBsaW5nOw0KPiAgfTsNCj4gIA0KPiAgLyoq
+DQo+IEBAIC02NSw2ICs2Nyw3IEBAIGludCBhZDc2MDZfcHJvYmUoc3RydWN0IGRldmljZSAqZGV2
+LCBpbnQgaXJxLCB2b2lkDQo+IF9faW9tZW0gKmJhc2VfYWRkcmVzcywNCj4gIGludCBhZDc2MDZf
+cmVtb3ZlKHN0cnVjdCBkZXZpY2UgKmRldiwgaW50IGlycSk7DQo+ICANCj4gIGVudW0gYWQ3NjA2
+X3N1cHBvcnRlZF9kZXZpY2VfaWRzIHsNCj4gKwlJRF9BRDc2MDVfNCwNCj4gIAlJRF9BRDc2MDZf
+OCwNCj4gIAlJRF9BRDc2MDZfNiwNCj4gIAlJRF9BRDc2MDZfNA0KPiBkaWZmIC0tZ2l0IGEvZHJp
+dmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NjA2X3Bhci5jDQo+IGIvZHJpdmVycy9zdGFnaW5nL2lp
+by9hZGMvYWQ3NjA2X3Bhci5jDQo+IGluZGV4IDk1NmUzODc3NDc2Ny4uOGJkODZlNzI3YjAyIDEw
+MDY0NA0KPiAtLS0gYS9kcml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9hZDc2MDZfcGFyLmMNCj4gKysr
+IGIvZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NjA2X3Bhci5jDQo+IEBAIC03OSw2ICs3OSw5
+IEBAIHN0YXRpYyBpbnQgYWQ3NjA2X3Bhcl9yZW1vdmUoc3RydWN0IHBsYXRmb3JtX2RldmljZQ0K
+PiAqcGRldikNCj4gIA0KPiAgc3RhdGljIGNvbnN0IHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2VfaWQg
+YWQ3NjA2X2RyaXZlcl9pZHNbXSA9IHsNCj4gIAl7DQo+ICsJCS5uYW1lCQk9ICJhZDc2MDUtNCIs
+DQo+ICsJCS5kcml2ZXJfZGF0YQk9IElEX0FENzYwNV80LA0KPiArCX0sIHsNCj4gIAkJLm5hbWUJ
+CT0gImFkNzYwNi04IiwNCj4gIAkJLmRyaXZlcl9kYXRhCT0gSURfQUQ3NjA2XzgsDQo+ICAJfSwg
+ew0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NjA2X3NwaS5jDQo+
+IGIvZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NjA2X3NwaS5jDQo+IGluZGV4IGZmZDlkMDYy
+NmVjMi4uYjc2Y2E1YThjMDU5IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL3N0YWdpbmcvaWlvL2Fk
+Yy9hZDc2MDZfc3BpLmMNCj4gKysrIGIvZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NjA2X3Nw
+aS5jDQo+IEBAIC01NSw2ICs1NSw3IEBAIHN0YXRpYyBpbnQgYWQ3NjA2X3NwaV9yZW1vdmUoc3Ry
+dWN0IHNwaV9kZXZpY2UgKnNwaSkNCj4gIH0NCj4gIA0KPiAgc3RhdGljIGNvbnN0IHN0cnVjdCBz
+cGlfZGV2aWNlX2lkIGFkNzYwNl9pZFtdID0gew0KPiArCXsiYWQ3NjA1LTQiLCBJRF9BRDc2MDVf
+NH0sDQo+ICAJeyJhZDc2MDYtOCIsIElEX0FENzYwNl84fSwNCj4gIAl7ImFkNzYwNi02IiwgSURf
+QUQ3NjA2XzZ9LA0KPiAgCXsiYWQ3NjA2LTQiLCBJRF9BRDc2MDZfNH0s
