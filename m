@@ -1,21 +1,26 @@
-Return-Path: <SRS0=jthp=LZ=gmail.com=songqiang1304521@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:35213 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726483AbeIKLoi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 11 Sep 2018 07:44:38 -0400
 From: Song Qiang <songqiang1304521@gmail.com>
-Date: Tue, 11 Sep 2018 10:47:09 +0800
+Date: Tue, 11 Sep 2018 14:46:38 +0800
 To: Himanshu Jha <himanshujha199640@gmail.com>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	andriy.shevchenko@linux.intel.com, matt.ranostay@konsulko.com,
-	kstewart@linuxfoundation.org, pombredanne@nexb.com,
-	gregkh@linuxfoundation.org, ak@it-klinger.de,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, andriy.shevchenko@linux.intel.com,
+        matt.ranostay@konsulko.com, ak@it-klinger.de,
+        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Subject: Re: [PATCH] iio: proximity: Add driver support for ST's VL53L0X ToF
  ranging sensor.
-Message-ID: <20180911024709.GA12549@Eros>
+Message-ID: <20180911064638.GA31507@Eros>
 References: <20180910144259.1339-1-songqiang.1304521@gmail.com>
  <20180910175747.GA5883@himanshu-Vostro-3559>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 In-Reply-To: <20180910175747.GA5883@himanshu-Vostro-3559>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 On Mon, Sep 10, 2018 at 11:27:47PM +0530, Himanshu Jha wrote:
 > On Mon, Sep 10, 2018 at 10:42:59PM +0800, Song Qiang wrote:
@@ -40,18 +45,6 @@ On Mon, Sep 10, 2018 at 11:27:47PM +0530, Himanshu Jha wrote:
 > 
 > Don't know why Kate & Greg are cc'ed ?
 > 
-
-Hi Himanshu,
-
-Since this is a new device driver may going to be added into
-drivers/iio/proximity folder, I used drivers/iio/proximity as
-the parameter of ./scripts/get_maintainer.pl and it just returned
-them. I rechecked it and seems like it says Greg and Kate are
-commit_signers. I send patches as Greg's speech "Write and Submit
-Your First Linux Kernel Patch" told. So, should I just send the
-patches to reviewers that get_maintainer.pl returned and stop cc
-all the commit_signers?
-
 > >  .../bindings/iio/proximity/vl53l0x.txt        |  12 +
 > >  drivers/iio/proximity/Kconfig                 |  13 +
 > >  drivers/iio/proximity/Makefile                |   2 +
@@ -268,6 +261,23 @@ all the commit_signers?
 > 				  const struct iio_chan_spec *chan,
 > 				  int *val)
 > 
+
+Hi Himanshu,
+
+I found that some functions like this one is too long for alignment,
+and if we force the parameters to align then the first parameter
+must go to the second line, while I havn't seen people done this
+before. In this case, should I remain others aligned except the
+first parameter or keep them all aligned with the first parameter
+in the second line?
+I have corrected the problems you and Andy listed just except this
+one, hoping for a reply.
+
+Thanks a lot for your reviewing.
+
+yours,
+Song Qiang
+
 > 
 > > +	int ret;
 > > +	struct i2c_client *client = data->client;
@@ -425,13 +435,3 @@ all the commit_signers?
 > Undergraduate Student
 > Department of Electronics & Communication
 > Guru Tegh Bahadur Institute of Technology
-
-Sorry for the mess in register table and some old methods I used.
-I was trying to use some methods that other drivers use in this
-folder to avoid mistakes, and seems like I should learn something new.
-I'll cleanup the register table as you and Andy says, replace
-old methods and remove the mutex and some comments which is useless
-for now.
-
-yours,
-Song Qiang
