@@ -1,491 +1,309 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:48982 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728187AbeIPRUm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 16 Sep 2018 13:20:42 -0400
-Date: Sun, 16 Sep 2018 12:57:53 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Afonso Bordado <afonsobordado@az8.co>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v4 1/5] iio: gyro: add support for fxas21002c
-Message-ID: <20180916125753.778c1c23@archlinux>
-In-Reply-To: <20180911150011.31964-1-afonsobordado@az8.co>
-References: <20180911150011.31964-1-afonsobordado@az8.co>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=veFq=L2=gmail.com=songqiang1304521@kernel.org>
+From: Song Qiang <songqiang1304521@gmail.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	andriy.shevchenko@linux.intel.com,
+	matt.ranostay@konsulko.com,
+	ak@it-klinger.de,
+	robh+dt@kernel.org,
+	mark.rutland@arm.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Song Qiang <songqiang.1304521@gmail.com>
+Subject: [PATCH v3] iio: proximity: Add driver support for ST's VL53L0X ToF ranging sensor.
+Date: Wed, 12 Sep 2018 10:20:34 +0800
+Message-Id: <20180912022034.25972-1-songqiang.1304521@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, 11 Sep 2018 16:00:07 +0100
-Afonso Bordado <afonsobordado@az8.co> wrote:
+This driver was originally written by ST in 2016 as a misc input device
+driver, and hasn't been maintained for a long time. I grabbed some code
+from it's API and reformed it into a iio proximity device driver.
+This version of driver uses i2c bus to talk to the sensor and
+polling for measuring completes, so no irq line is needed.
+This version of driver supports only one-shot mode, and it can be
+tested with reading from
+/sys/bus/iio/devices/iio:deviceX/in_distance_raw
 
-> FXAS21002C is a 3 axis gyroscope with integrated temperature sensor
-> 
-> Signed-off-by: Afonso Bordado <afonsobordado@az8.co>
-Hi Afonso,
+Signed-off-by: Song Qiang <songqiang.1304521@gmail.com>
+---
+Changes in v2:
+	- Clean up the register table.
+	- Sort header files declarations.
+	- Replace some bit definations with GENMASK() and BIT().
+	- Clean up some code and comments that's useless for now.
+	- Change the order of some the definations of some variables to reversed
+	  xmas tree order.
+	- Using do...while() rather while and check.
+	- Replace pr_err() with dev_err().
+	- Remove device id declaration since we recommend to use DT.
+	- Remove .owner = THIS_MODULE.
+	- Replace probe() with probe_new() hook.
+	- Remove IIO_BUFFER and IIO_TRIGGERED_BUFFER dependences.
+	- Change the driver module name to vl53l0x-i2c.
+	- Align all the parameters if they are in the same function with open
+	  parentheses.
+	- Replace iio_device_register() with devm_iio_device_register
+	  for better resource management.
+	- Remove the vl53l0x_remove() since it's not needed.
+	- Remove dev_set_drvdata() since it's already setted above.
 
-A few little things in here. I would have cleaned them up when applying
-if you didn't already have that issue with division in the later patch
-to clean up.  Easier to apply the series in one go.
+Changes in v3:
+	- Recover ST's copyright.
+	- Clean up indio_dev member in vl53l0x_data struct since it's
+	  useless now.
+	- Replace __le16_to_cpu() with le16_to_cpu().
+	- Remove the iio_device_{claim|release}_direct_mode() since it's
+	  only needed when we use buffered mode.
+	- Clean up some coding style problems.
 
-Thanks,
+ .../bindings/iio/proximity/vl53l0x.txt        |  12 ++
+ drivers/iio/proximity/Kconfig                 |  11 ++
+ drivers/iio/proximity/Makefile                |   2 +
+ drivers/iio/proximity/vl53l0x-i2c.c           | 184 ++++++++++++++++++
+ 4 files changed, 209 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/proximity/vl53l0x.txt
+ create mode 100644 drivers/iio/proximity/vl53l0x-i2c.c
 
-Jonathan
-
-> ---
->  Changes in v4
->    - Remove CONFIG_OF ifdefs
->    - Remove the use of the of_match_ptr macro
->    - Split bindings into a separate patch
->    - Remove interrupt-parent from binding documentation
->    - Whitespace fixes
->    - Remove scale and sample frequency tables
->    - Place MAINTAINERS block in correct position
-> 
->  Changes in v3
->    - Use unsigned int on regmap functions
->    - Remove the export of the regmap config
->    - Fix undefined behaviour on dev_err call
->    - Minor cleanups
-> 
->  Changes in v2
->    - Use ANSI C Comments
->    - Minor cleanups
->    - More dscriptive devicetree bindings
-> 
->  drivers/iio/gyro/Kconfig      |  11 +
->  drivers/iio/gyro/Makefile     |   1 +
->  drivers/iio/gyro/fxas21002c.c | 378 ++++++++++++++++++++++++++++++++++
->  3 files changed, 390 insertions(+)
->  create mode 100644 drivers/iio/gyro/fxas21002c.c
-> 
-> diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
-> index 3126cf05e6b9..d71e33ea9fa4 100644
-> --- a/drivers/iio/gyro/Kconfig
-> +++ b/drivers/iio/gyro/Kconfig
-> @@ -73,6 +73,17 @@ config BMG160_SPI
->  	tristate
->  	select REGMAP_SPI
->  
-> +config FXAS21002C
-> +	tristate "Freescale FXAS21002C Gyroscope"
-> +	depends on I2C
-> +	select REGMAP_I2C
-> +	help
-> +	  Say yes here to build support for the Freescale FXAS21002C Gyroscope
-> +	  driver connected via I2C.
-> +
-> +	  This driver can also be built as a module. If so, the module
-> +	  will be called fxas21002c.
-> +
->  config HID_SENSOR_GYRO_3D
->  	depends on HID_SENSOR_HUB
->  	select IIO_BUFFER
-> diff --git a/drivers/iio/gyro/Makefile b/drivers/iio/gyro/Makefile
-> index 295ec780c4eb..ec3e2aeae92a 100644
-> --- a/drivers/iio/gyro/Makefile
-> +++ b/drivers/iio/gyro/Makefile
-> @@ -12,6 +12,7 @@ obj-$(CONFIG_ADXRS450) += adxrs450.o
->  obj-$(CONFIG_BMG160) += bmg160_core.o
->  obj-$(CONFIG_BMG160_I2C) += bmg160_i2c.o
->  obj-$(CONFIG_BMG160_SPI) += bmg160_spi.o
-> +obj-$(CONFIG_FXAS21002C) += fxas21002c.o
->  
->  obj-$(CONFIG_HID_SENSOR_GYRO_3D) += hid-sensor-gyro-3d.o
->  
-> diff --git a/drivers/iio/gyro/fxas21002c.c b/drivers/iio/gyro/fxas21002c.c
-> new file mode 100644
-> index 000000000000..649316c26f5b
-> --- /dev/null
-> +++ b/drivers/iio/gyro/fxas21002c.c
-> @@ -0,0 +1,378 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * FXAS21002C - Digital Angular Rate Gyroscope driver
-> + *
-> + * Copyright (c) 2018, Afonso Bordado <afonsobordado@az8.co>
-> + *
-> + * IIO driver for FXAS21002C (7-bit I2C slave address 0x20 or 0x21).
-> + * Datasheet: https://www.nxp.com/docs/en/data-sheet/FXAS21002.pdf
-> + * TODO:
-> + *        ODR / Scale Support
-> + *        Devicetree
-> + *        Scale Boost Mode
-> + *        Power management
-> + *        GPIO Reset
-> + *        Power supplies
-> + *        Mount Matrix
-> + *        LowPass/HighPass Filters
-> + *        Buffers
-> + *        Interrupts
-> + *        Alarms
-> + *        SPI Support
-> + */
-> +
-> +#include <linux/i2c.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/module.h>
-> +#include <linux/regmap.h>
-> +
-> +#define FXAS21002C_DRV_NAME "fxas21002c"
-> +
-> +#define FXAS21002C_MAX_TRANSITION_TIME_MS 61
-> +
-> +#define FXAS21002C_CHIP_ID             0xD7
-> +
-> +#define FXAS21002C_REG_STATUS          0x00
-> +#define FXAS21002C_REG_OUT_X_MSB       0x01
-> +#define FXAS21002C_REG_OUT_X_LSB       0x02
-> +#define FXAS21002C_REG_OUT_Y_MSB       0x03
-> +#define FXAS21002C_REG_OUT_Y_LSB       0x04
-> +#define FXAS21002C_REG_OUT_Z_MSB       0x05
-> +#define FXAS21002C_REG_OUT_Z_LSB       0x06
-> +#define FXAS21002C_REG_DR_STATUS       0x07
-> +#define FXAS21002C_REG_F_STATUS        0x08
-> +#define FXAS21002C_REG_F_SETUP         0x09
-> +#define FXAS21002C_REG_F_EVENT         0x0A
-> +#define FXAS21002C_REG_INT_SRC_FLAG    0x0B
-> +#define FXAS21002C_REG_WHO_AM_I        0x0C
-> +
-> +#define FXAS21002C_REG_CTRL_REG0       0x0D
-> +#define FXAS21002C_SCALE_MASK          GENMASK(1, 0)
-> +
-> +#define FXAS21002C_REG_RT_CFG          0x0E
-> +#define FXAS21002C_REG_RT_SRC          0x0F
-> +#define FXAS21002C_REG_RT_THS          0x10
-> +#define FXAS21002C_REG_RT_COUNT        0x11
-> +#define FXAS21002C_REG_TEMP            0x12
-> +
-> +#define FXAS21002C_REG_CTRL_REG1       0x13
-> +#define FXAS21002C_RST_BIT             BIT(6)
-> +#define FXAS21002C_ACTIVE_BIT          BIT(1)
-> +#define FXAS21002C_READY_BIT           BIT(0)
-> +
-> +#define FXAS21002C_ODR_SHIFT           2
-> +#define FXAS21002C_ODR_MASK            GENMASK(4, 2)
-> +
-> +#define FXAS21002C_REG_CTRL_REG2       0x14
-> +#define FXAS21002C_REG_CTRL_REG3       0x15
-> +
-> +#define FXAS21002C_DEFAULT_ODR_HZ      800
-> +
-> +/* 0.0625 deg/s */
-> +#define FXAS21002C_DEFAULT_SENSITIVITY IIO_DEGREE_TO_RAD(62500)
-> +
-> +#define FXAS21002C_TEMP_SCALE          1000
-> +
-> +enum {
-> +	ID_FXAS21002C,
-Why have this when only one entry?  Just don't provide
-an device data until we support multiple parts in the driver.
-> +};
-> +
-> +enum fxas21002c_operating_mode {
-> +	FXAS21002C_OM_BOOT,
-> +	FXAS21002C_OM_STANDBY,
-> +	FXAS21002C_OM_READY,
-> +	FXAS21002C_OM_ACTIVE,
-> +};
-> +
-> +struct fxas21002c_data {
-> +	struct i2c_client *client;
-> +	struct regmap *regmap;
-> +};
-> +
-> +static const struct regmap_range fxas21002c_writable_ranges[] = {
-> +	regmap_reg_range(FXAS21002C_REG_F_SETUP, FXAS21002C_REG_F_SETUP),
-> +	regmap_reg_range(FXAS21002C_REG_CTRL_REG0, FXAS21002C_REG_RT_CFG),
-> +	regmap_reg_range(FXAS21002C_REG_RT_THS, FXAS21002C_REG_RT_COUNT),
-> +	regmap_reg_range(FXAS21002C_REG_CTRL_REG1, FXAS21002C_REG_CTRL_REG3),
-> +};
-> +
-> +static const struct regmap_access_table fxas21002c_writable_table = {
-> +	.yes_ranges = fxas21002c_writable_ranges,
-> +	.n_yes_ranges = ARRAY_SIZE(fxas21002c_writable_ranges),
-> +};
-> +
-> +static const struct regmap_range fxas21002c_volatile_ranges[] = {
-> +	regmap_reg_range(FXAS21002C_REG_STATUS, FXAS21002C_REG_F_STATUS),
-> +	regmap_reg_range(FXAS21002C_REG_F_EVENT, FXAS21002C_REG_INT_SRC_FLAG),
-> +	regmap_reg_range(FXAS21002C_REG_RT_COUNT, FXAS21002C_REG_CTRL_REG1),
-> +};
-> +
-> +static const struct regmap_access_table fxas21002c_volatile_table = {
-> +	.yes_ranges = fxas21002c_volatile_ranges,
-> +	.n_yes_ranges = ARRAY_SIZE(fxas21002c_volatile_ranges),
-> +};
-> +
-> +const struct regmap_config fxas21002c_regmap_config = {
-> +	.reg_bits = 8,
-> +	.val_bits = 8,
-> +
-> +	.max_register = FXAS21002C_REG_CTRL_REG3,
-> +	/* We don't specify a .rd_table because everything is readable */
-> +	.wr_table = &fxas21002c_writable_table,
-> +	.volatile_table = &fxas21002c_volatile_table,
-> +};
-> +
-> +#define FXAS21002C_GYRO_CHAN(_axis) {					\
-> +	.type = IIO_ANGL_VEL,						\
-> +	.modified = 1,							\
-> +	.channel2 = IIO_MOD_ ## _axis,					\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
-> +				    BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
-> +	.address = FXAS21002C_REG_OUT_ ## _axis ## _MSB,		\
-> +}
-> +
-> +static const struct iio_chan_spec fxas21002c_channels[] = {
-> +	{
-> +		.type = IIO_TEMP,
-> +		.address = FXAS21002C_REG_TEMP,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +	},
-> +	FXAS21002C_GYRO_CHAN(X),
-> +	FXAS21002C_GYRO_CHAN(Y),
-> +	FXAS21002C_GYRO_CHAN(Z),
-> +	IIO_CHAN_SOFT_TIMESTAMP(3),
-Timestamp without buffered mode?  It won't do anything so drop it.
-
-> +};
-> +
-> +static int fxas21002c_set_operating_mode(struct fxas21002c_data *data,
-> +					 enum fxas21002c_operating_mode om)
-> +{
-> +	int ret;
-> +	int mask;
-> +
-> +	switch (om) {
-> +	case FXAS21002C_OM_STANDBY:
-> +		mask = 0;
-> +		break;
-> +	case FXAS21002C_OM_READY:
-> +		mask = FXAS21002C_READY_BIT;
-> +		break;
-> +	case FXAS21002C_OM_ACTIVE:
-> +		mask = FXAS21002C_ACTIVE_BIT;
-> +		break;
-> +
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	ret = regmap_write(data->regmap, FXAS21002C_REG_CTRL_REG1, mask);
-> +	if (ret) {
-> +		dev_err(&data->client->dev,
-> +			"could not switch operating mode\n");
-> +		return ret;
-> +	}
-> +
-> +	msleep(FXAS21002C_MAX_TRANSITION_TIME_MS);
-> +
-> +	return 0;
-> +}
-> +
-> +static void fxas21002c_standby(void *_data)
-> +{
-> +	struct fxas21002c_data *data = _data;
-> +
-> +	fxas21002c_set_operating_mode(data, FXAS21002C_OM_STANDBY);
-> +}
-> +
-> +static int fxas21002c_reset(struct fxas21002c_data *data)
-> +{
-> +	int ret;
-> +
-> +	/*
-> +	 * On issuing a Software Reset command over an I2C interface,
-> +	 * the device immediately resets and does not send any
-> +	 * acknowledgment (ACK) of the written byte to the Master.
-> +	 *
-> +	 * This is documented in table 46 on the datasheet. Due to this
-> +	 * the write will fail with EREMOTEIO.
-> +	 */
-> +	ret = regmap_write(data->regmap,
-> +			   FXAS21002C_REG_CTRL_REG1, FXAS21002C_RST_BIT);
-> +
-> +	if (ret != -EREMOTEIO) {
-> +		dev_err(&data->client->dev, "could not reset device\n");
-> +		return ret;
-> +	}
-> +
-> +	regcache_mark_dirty(data->regmap);
-> +
-> +	/* Wait for device to boot up */
-> +	msleep(FXAS21002C_MAX_TRANSITION_TIME_MS);
-> +
-> +	return 0;
-> +}
-> +
-> +static int fxas21002c_verify_chip(struct fxas21002c_data *data)
-> +{
-> +	int ret;
-> +	unsigned int chip_id;
-> +
-> +	ret = regmap_read(data->regmap, FXAS21002C_REG_WHO_AM_I, &chip_id);
-> +	if (ret) {
-> +		dev_err(&data->client->dev, "could not read device id\n");
-> +		return ret;
-> +	}
-> +
-> +	if (chip_id != FXAS21002C_CHIP_ID) {
-> +		dev_err(&data->client->dev,
-> +			"unsupported chip id %02x\n", chip_id);
-> +		return -ENODEV;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int fxas21002c_read_oneshot(struct fxas21002c_data *data,
-> +				   struct iio_chan_spec const *chan, int *val)
-> +{
-> +	int ret;
-> +	__be16 bulk_raw;
-> +	unsigned int uval;
-> +
-> +	switch (chan->type) {
-> +	case IIO_ANGL_VEL:
-> +		ret = regmap_bulk_read(data->regmap, chan->address,
-> +				       &bulk_raw, sizeof(bulk_raw));
-> +		if (ret)
-> +			return ret;
-> +
-> +		*val = sign_extend32(be16_to_cpu(bulk_raw), 15);
-> +		return IIO_VAL_INT;
-> +	case IIO_TEMP:
-> +		ret = regmap_read(data->regmap, chan->address, &uval);
-> +		if (ret)
-> +			return ret;
-> +
-> +		*val = sign_extend32(uval, 7);
-> +		return IIO_VAL_INT;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int fxas21002c_read_raw(struct iio_dev *indio_dev,
-> +			       struct iio_chan_spec const *chan, int *val,
-> +			       int *val2, long mask)
-> +{
-> +	struct fxas21002c_data *data = iio_priv(indio_dev);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		return fxas21002c_read_oneshot(data, chan, val);
-> +	case IIO_CHAN_INFO_SCALE:
-> +		switch (chan->type) {
-> +		case IIO_ANGL_VEL:
-> +			*val = 0;
-> +			*val2 = FXAS21002C_DEFAULT_SENSITIVITY;
-> +
-> +			return IIO_VAL_INT_PLUS_MICRO;
-> +		case IIO_TEMP:
-> +			*val = FXAS21002C_TEMP_SCALE;
-> +
-> +			return IIO_VAL_INT;
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		if (chan->type != IIO_ANGL_VEL)
-> +			return -EINVAL;
-> +
-> +		*val = FXAS21002C_DEFAULT_ODR_HZ;
-> +
-> +		return IIO_VAL_INT;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static const struct iio_info fxas21002c_info = {
-> +	.read_raw		= fxas21002c_read_raw,
-> +};
-> +
-> +static int fxas21002c_probe(struct i2c_client *client,
-> +			    const struct i2c_device_id *id)
-> +{
-> +	int ret;
-> +	struct iio_dev *indio_dev;
-> +	struct fxas21002c_data *data;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	i2c_set_clientdata(client, indio_dev);
-> +	data = iio_priv(indio_dev);
-> +	data->client = client;
-> +
-> +	data->regmap = devm_regmap_init_i2c(client, &fxas21002c_regmap_config);
-> +	if (IS_ERR(data->regmap)) {
-> +		ret = PTR_ERR(data->regmap);
-> +		dev_err(&client->dev,
-> +			"Failed to allocate regmap, err: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->channels = fxas21002c_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(fxas21002c_channels);
-> +	indio_dev->name = id->name;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->info = &fxas21002c_info;
-> +
-> +	ret = fxas21002c_verify_chip(data);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = fxas21002c_reset(data);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = fxas21002c_set_operating_mode(data, FXAS21002C_OM_ACTIVE);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = devm_add_action(&client->dev, fxas21002c_standby, data);
-> +	if (ret < 0) {
-> +		fxas21002c_standby(data);
-> +		dev_err(&client->dev, "failed to add standby action\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0)
-> +		dev_err(&client->dev, "failed to register iio device\n");
-
-I'm not sure how I missed this before but you are using non
-managed functions in probe but don't have a remove to unwind them.
-Effectively your driver can't be removed.
-
-Easy fix, devm_iio_device_register here.
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct i2c_device_id fxas21002c_id[] = {
-> +	{"fxas21002c", ID_FXAS21002C},
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(i2c, fxas21002c_id);
-> +
-> +static struct i2c_driver fxas21002c_driver = {
-> +	.driver = {
-> +		.name = FXAS21002C_DRV_NAME,
-> +	},
-> +	.probe		= fxas21002c_probe,
-> +	.id_table	= fxas21002c_id,
-> +};
-> +
-> +module_i2c_driver(fxas21002c_driver);
-> +
-> +MODULE_AUTHOR("Afonso Bordado <afonsobordado@az8.co>");
-> +MODULE_DESCRIPTION("FXAS21002C Digital Angular Rate Gyroscope driver");
-> +MODULE_LICENSE("GPL v2");
+diff --git a/Documentation/devicetree/bindings/iio/proximity/vl53l0x.txt b/Documentation/devicetree/bindings/iio/proximity/vl53l0x.txt
+new file mode 100644
+index 000000000000..64b69442f08e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/proximity/vl53l0x.txt
+@@ -0,0 +1,12 @@
++ST's VL53L0X ToF ranging sensor
++
++Required properties:
++	- compatible: must be "st,vl53l0x-i2c"
++	- reg: i2c address where to find the device
++
++Example:
++
++vl53l0x@29 {
++	compatible = "st,vl53l0x-i2c";
++	reg = <0x29>;
++};
+diff --git a/drivers/iio/proximity/Kconfig b/drivers/iio/proximity/Kconfig
+index f726f9427602..5f421cbd37f3 100644
+--- a/drivers/iio/proximity/Kconfig
++++ b/drivers/iio/proximity/Kconfig
+@@ -79,4 +79,15 @@ config SRF08
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called srf08.
+ 
++config VL53L0X_I2C
++	tristate "STMicroelectronics VL53L0X ToF ranger sensor (I2C)"
++	depends on I2C
++	help
++	  Say Y here to build a driver for STMicroelectronics VL53L0X
++	  ToF ranger sensors with i2c interface.
++	  This driver can be used to measure the distance of objects.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called vl53l0x-i2c.
++
+ endmenu
+diff --git a/drivers/iio/proximity/Makefile b/drivers/iio/proximity/Makefile
+index 4f4ed45e87ef..dedfb5bf3475 100644
+--- a/drivers/iio/proximity/Makefile
++++ b/drivers/iio/proximity/Makefile
+@@ -10,3 +10,5 @@ obj-$(CONFIG_RFD77402)		+= rfd77402.o
+ obj-$(CONFIG_SRF04)		+= srf04.o
+ obj-$(CONFIG_SRF08)		+= srf08.o
+ obj-$(CONFIG_SX9500)		+= sx9500.o
++obj-$(CONFIG_VL53L0X_I2C)	+= vl53l0x-i2c.o
++
+diff --git a/drivers/iio/proximity/vl53l0x-i2c.c b/drivers/iio/proximity/vl53l0x-i2c.c
+new file mode 100644
+index 000000000000..0f7f124a38ed
+--- /dev/null
++++ b/drivers/iio/proximity/vl53l0x-i2c.c
+@@ -0,0 +1,184 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ *  Support for ST's VL53L0X FlightSense ToF Ranger Sensor on a i2c bus.
++ *
++ *  Copyright (C) 2016 STMicroelectronics Imaging Division.
++ *  Copyright (C) 2018 Song Qiang <songqiang.1304521@gmail.com>
++ */
++
++#include <linux/delay.h>
++#include <linux/i2c.h>
++#include <linux/iio/iio.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/slab.h>
++
++#define VL53L0X_DRV_NAME				"vl53l0x-i2c"
++
++#define VL_REG_SYSRANGE_MODE_MASK			GENMASK(3, 0)
++#define VL_REG_SYSRANGE_START				0x00
++#define VL_REG_SYSRANGE_MODE_SINGLESHOT			0x00
++#define VL_REG_SYSRANGE_MODE_START_STOP			BIT(0)
++#define VL_REG_SYSRANGE_MODE_BACKTOBACK			BIT(1)
++#define VL_REG_SYSRANGE_MODE_TIMED			BIT(2)
++#define VL_REG_SYSRANGE_MODE_HISTOGRAM			BIT(3)
++
++#define VL_REG_SYS_SEQUENCE_CFG				BIT(0)
++#define VL_REG_SYS_INTERMEASUREMENT_PERIOD		BIT(2)
++#define VL_REG_SYS_RANGE_CFG				0x09
++
++#define VL_REG_SYS_INT_GPIO_DISABLED			0x00
++#define VL_REG_SYS_INT_GPIO_LEVEL_LOW			BIT(0)
++#define VL_REG_SYS_INT_GPIO_LEVEL_HIGH			BIT(1)
++#define VL_REG_SYS_INT_GPIO_OUT_OF_WINDOW		0x03
++#define VL_REG_SYS_INT_GPIO_NEW_SAMPLE_READY		BIT(2)
++#define VL_REG_SYS_INT_CFG_GPIO				0x0A
++#define VL_REG_SYS_INT_CLEAR				0x0B
++#define VL_REG_GPIO_HV_MUX_ACTIVE_HIGH			0x84
++
++#define VL_REG_RESULT_INT_STATUS			0x13
++#define VL_REG_RESULT_RANGE_STATUS			0x14
++#define VL_REG_RESULT_RANGE_SATTUS_COMPLETE		BIT(0)
++
++#define VL_REG_I2C_SLAVE_DEVICE_ADDRESS			0x8a
++
++#define VL_REG_IDENTIFICATION_MODEL_ID			0xc0
++#define VL_REG_IDENTIFICATION_REVISION_ID		0xc2
++
++struct vl53l0x_data {
++	struct i2c_client *client;
++};
++
++static int vl53l0x_read_proximity(struct vl53l0x_data *data,
++				  const struct iio_chan_spec *chan,
++				  int *val)
++{
++	u8 write_command = VL_REG_RESULT_RANGE_STATUS;
++	struct i2c_client *client = data->client;
++	unsigned int tries = 20;
++	struct i2c_msg msg[2];
++	u8 buffer[12];
++	int ret;
++
++	ret = i2c_smbus_write_byte_data(data->client,
++					VL_REG_SYSRANGE_START, 1);
++	if (ret < 0)
++		return ret;
++
++	do {
++		ret = i2c_smbus_read_byte_data(data->client,
++					       VL_REG_RESULT_RANGE_STATUS);
++		if (ret < 0)
++			return ret;
++
++		if (ret & VL_REG_RESULT_RANGE_SATTUS_COMPLETE)
++			break;
++
++		usleep_range(1000, 5000);
++	} while (tries--);
++	if (!tries)
++		return -ETIMEDOUT;
++
++	msg[0].addr = client->addr;
++	msg[0].buf = &write_command;
++	msg[0].len = 1;
++	msg[0].flags = client->flags | I2C_M_STOP;
++
++	msg[1].addr = client->addr;
++	msg[1].buf = buffer;
++	msg[1].len = 12;
++	msg[1].flags = client->flags | I2C_M_RD;
++
++	ret = i2c_transfer(client->adapter, msg, 2);
++	if (ret < 0)
++		return ret;
++	else if (ret != 2)
++		dev_err(&data->client->dev, "vl53l0x: consecutively read error. ");
++
++	*val = le16_to_cpu((buffer[10] << 8) + buffer[11]);
++
++	return 0;
++}
++
++static const struct iio_chan_spec vl53l0x_channels[] = {
++	{
++		.type = IIO_DISTANCE,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)
++	},
++	IIO_CHAN_SOFT_TIMESTAMP(1),
++};
++
++static int vl53l0x_read_raw(struct iio_dev *indio_dev,
++			    const struct iio_chan_spec *chan,
++			    int *val, int *val2, long mask)
++{
++	struct vl53l0x_data *data = iio_priv(indio_dev);
++	int ret;
++
++	if (chan->type != IIO_DISTANCE) {
++		dev_err(&data->client->dev, "vl53l0x: iio type error");
++		return -EINVAL;
++	}
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ret = vl53l0x_read_proximity(data, chan, val);
++		if (ret < 0)
++			dev_err(&data->client->dev,
++				"vl53l0x: raw value read error with %d", ret);
++
++		return IIO_VAL_INT;
++	default:
++		dev_err(&data->client->dev, "vl53l0x: IIO_CHAN_* not recognzed.");
++		return -EINVAL;
++	}
++}
++
++static const struct iio_info vl53l0x_info = {
++	.read_raw = vl53l0x_read_raw,
++};
++
++static int vl53l0x_probe(struct i2c_client *client)
++{
++	struct vl53l0x_data *data;
++	struct iio_dev *indio_dev;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	data->client = client;
++	i2c_set_clientdata(client, indio_dev);
++
++	if (!i2c_check_functionality(client->adapter,
++				     I2C_FUNC_SMBUS_BYTE_DATA | I2C_FUNC_I2C))
++		return -EOPNOTSUPP;
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->name = VL53L0X_DRV_NAME;
++	indio_dev->info = &vl53l0x_info;
++	indio_dev->channels = vl53l0x_channels;
++	indio_dev->num_channels = ARRAY_SIZE(vl53l0x_channels);
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	return devm_iio_device_register(&client->dev, indio_dev);
++}
++
++static const struct of_device_id st_vl53l0x_dt_match[] = {
++	{ .compatible = "st,vl53l0x-i2c", },
++	{ }
++};
++
++static struct i2c_driver vl53l0x_driver = {
++	.driver = {
++		.name = VL53L0X_DRV_NAME,
++		.of_match_table = st_vl53l0x_dt_match,
++	},
++	.probe_new = vl53l0x_probe,
++};
++module_i2c_driver(vl53l0x_driver);
++
++MODULE_AUTHOR("Song Qiang <songqiang.1304521@gmail.com>");
++MODULE_DESCRIPTION("ST vl53l0x ToF ranging sensor");
++MODULE_LICENSE("GPL");
+-- 
+2.17.1
