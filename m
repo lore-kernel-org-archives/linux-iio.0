@@ -1,51 +1,60 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from zeniv.linux.org.uk ([195.92.253.2]:42968 "EHLO
-        ZenIV.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727416AbeIOCOJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 14 Sep 2018 22:14:09 -0400
-Date: Fri, 14 Sep 2018 21:57:48 +0100
-From: Al Viro <viro@ZenIV.linux.org.uk>
-To: Darren Hart <dvhart@infradead.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, linux-fsdevel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        qat-linux@intel.com, linux-crypto@vger.kernel.org,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org, amd-gfx@lists.freedesktop.org,
-        linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-nvdimm@lists.01.org,
-        linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-btrfs@vger.kernel.org, ceph-devel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 05/17] compat_ioctl: move more drivers to
- generic_compat_ioctl_ptrarg
-Message-ID: <20180914205748.GC19965@ZenIV.linux.org.uk>
-References: <20180912150142.157913-1-arnd@arndb.de>
- <20180912151134.436719-1-arnd@arndb.de>
- <20180914203506.GE35251@wrath>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20180914203506.GE35251@wrath>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=uEUa=L3=lechnology.com=david@kernel.org>
+From: David Lechner <david@lechnology.com>
+To: linux-spi@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Cc: David Lechner <david@lechnology.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Mark Brown <broonie@kernel.org>,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/4] spi: introduce SPI_CS_WORD mode flag
+Date: Wed, 12 Sep 2018 19:39:16 -0500
+Message-Id: <20180913003920.30600-1-david@lechnology.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, Sep 14, 2018 at 01:35:06PM -0700, Darren Hart wrote:
- 
-> Acked-by: Darren Hart (VMware) <dvhart@infradead.org>
-> 
-> As for a longer term solution, would it be possible to init fops in such
-> a way that the compat_ioctl call defaults to generic_compat_ioctl_ptrarg
-> so we don't have to duplicate this boilerplate for every ioctl fops
-> structure?
+This series introduces a new SPI mode flag, SPI_CS_WORD, that indicates that
+the chip select line should be toggled after each word sent. This series
+includes examples of how this can be implemented for both an SPI controller
+and an SPI device.
 
-	Bad idea, that...  Because several years down the road somebody will add
-an ioctl that takes an unsigned int for argument.  Without so much as looking
-at your magical mystery macro being used to initialize file_operations.
+The motivation here is to take advantage of DMA transfers with an analog/digital
+convert chip. This chip requires that the chip select line be toggled after
+each word send in order to drive the internal circuitry of the chip.
 
-	FWIW, I would name that helper in more blunt way - something like
-compat_ioctl_only_compat_pointer_ioctls_here()...
+The way we were accomplishing this was, for example, to read 16 channels, we
+would create 16 SPI _transfer_s in one SPI _message_. Although this works, it
+uses quite a bit of CPU because we have to do work at the end of each transfer
+to get the next transfer ready. When you are polling the chip at 100Hz, this
+CPU usage adds up.
+
+The SPI controller being used has DMA support, but only on the _transfer_ level
+and not on the _message_ level. So, to take advantage of DMA, we need to read
+all of the A/DC channels in a single _transfer_. The SPI controller is capable
+automatically toggling the chip select line during a DMA transfer, so we are
+adding a new SPI flag in order to take advantage of this.
+
+I have tested both the default software implementation and the spi-davinci
+implementation with the A/DC driver in this series.
+
+v2 changes:
+- dropped patch "spi: spi-bitbang: change flags from u8 to u16" that has already
+  been applied
+- new patch "spi: add software implementation for SPI_CS_WORD" that provides
+  a default implementation of SPI_CS_WORD for controllers
+
+David Lechner (4):
+  spi: add new SPI_CS_WORD flag
+  spi: add software implementation for SPI_CS_WORD
+  iio: adc: ti-ads7950: use SPI_CS_WORD to reduce CPU usage
+  spi: spi-davinci: Add support for SPI_CS_WORD
+
+ drivers/iio/adc/ti-ads7950.c | 53 +++++++++++++++++++++---------------
+ drivers/spi/spi-davinci.c    | 11 ++++++--
+ drivers/spi/spi.c            | 32 +++++++++++++++++++++-
+ include/linux/spi/spi.h      |  2 +-
+ 4 files changed, 71 insertions(+), 27 deletions(-)
+
+-- 
+2.17.1
