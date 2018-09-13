@@ -1,74 +1,77 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:42480 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728100AbeIPQen (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 16 Sep 2018 12:34:43 -0400
-Date: Sun, 16 Sep 2018 12:12:02 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc: <linux-iio@vger.kernel.org>, <Michael.Hennerich@analog.com>,
-        <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>
-Subject: Re: [PATCH V2] staging:iio:ad7606: fix voltage scales
-Message-ID: <20180916121202.547a8d41@archlinux>
-In-Reply-To: <20180913084409.5986-1-alexandru.ardelean@analog.com>
-References: <20180913084409.5986-1-alexandru.ardelean@analog.com>
+Return-Path: <SRS0=9z2R=L3=analog.com=alexandru.Ardelean@kernel.org>
+From: Alexandru Ardelean <alexandru.ardelean@analog.com>
+To: <linux-iio@vger.kernel.org>, <Michael.Hennerich@analog.com>,
+	<lars@metafoo.de>, <jic23@kernel.org>
+CC: <knaack.h@gmx.de>, <pmeerw@pmeerw.net>, Alexandru Ardelean
+	<alexandru.ardelean@analog.com>
+Subject: [PATCH] staging:iio:ad7606: update api calls to devm_* variants
+Date: Thu, 13 Sep 2018 12:51:38 +0300
+Message-ID: <20180913095138.18427-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 13 Sep 2018 11:44:09 +0300
-Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
+No significant functional changes. This just replaces the code with devm_*
+that reduce the driver code, and simplifies some error code paths in the
+ad7606_probe() function.
 
-> Fixes commit 17be2a2905a6ec9aa27cd59521495e2f490d2af0 ("staging: iio:
-> ad7606: replace range/range_available with corresponding scale").
-> 
-> The AD7606 devices don't have a 2.5V voltage range, they have 5V & 10V
-> voltage range, which is selectable via the `gpio_range` descriptor.
-> 
-> The scales also seem to have been miscomputed, because when they were
-> applied to the raw values, the results differ from the expected values.
-> After checking the ADC transfer function in the datasheet, these were
-> re-computed.
-> 
-> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-On thing inline.
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+ drivers/staging/iio/adc/ad7606.c | 25 +++++++++----------------
+ 1 file changed, 9 insertions(+), 16 deletions(-)
 
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
-
-Thanks,
-
-Jonathan
-
-> ---
-> 
-> Changelog V1 -> V2:
-> * changed 2.5/2**16 and 5/2**16 -> 5000/32768 and 10000/32768, because
->   my computation of 32768 in power of 2 is also wrong; it's 2**15, not 2**16
->   and the datasheet mentions 32768, so use that value
-> 
->  drivers/staging/iio/adc/ad7606.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7606.c b/drivers/staging/iio/adc/ad7606.c
-> index c5fe3003075b..87d5fb073c95 100644
-> --- a/drivers/staging/iio/adc/ad7606.c
-> +++ b/drivers/staging/iio/adc/ad7606.c
-> @@ -26,9 +26,11 @@
->  
->  #include "ad7606.h"
->  
-> -/* Scales are computed as 2.5/2**16 and 5/2**16 respectively */
-
-This isn't a kernel comment style. I'll fix up.
-
-> +/* Scales are computed as 5000/32768 and 10000/32768 respectively,
-> + * so that when applied to the raw values they provide mV values
-> + */
->  static const unsigned int scale_avail[2][2] = {
-> -	{0, 38147}, {0, 76294}
-> +	{0, 152588}, {0, 305176}
->  };
->  
->  static int ad7606_reset(struct ad7606_state *st)
+diff --git a/drivers/staging/iio/adc/ad7606.c b/drivers/staging/iio/adc/ad7606.c
+index 87d5fb073c95..793de92f27ed 100644
+--- a/drivers/staging/iio/adc/ad7606.c
++++ b/drivers/staging/iio/adc/ad7606.c
+@@ -458,28 +458,25 @@ int ad7606_probe(struct device *dev, int irq, void __iomem *base_address,
+ 	if (ret)
+ 		dev_warn(st->dev, "failed to RESET: no RESET GPIO specified\n");
+ 
+-	ret = request_irq(irq, ad7606_interrupt, IRQF_TRIGGER_FALLING, name,
+-			  indio_dev);
++	ret = devm_request_irq(dev, irq, ad7606_interrupt,
++			       IRQF_TRIGGER_FALLING,
++			       name, indio_dev);
+ 	if (ret)
+ 		goto error_disable_reg;
+ 
+-	ret = iio_triggered_buffer_setup(indio_dev, &ad7606_trigger_handler,
+-					 NULL, NULL);
++	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
++					      &ad7606_trigger_handler,
++					      NULL, NULL);
+ 	if (ret)
+-		goto error_free_irq;
++		goto error_disable_reg;
+ 
+-	ret = iio_device_register(indio_dev);
++	ret = devm_iio_device_register(dev, indio_dev);
+ 	if (ret)
+-		goto error_unregister_ring;
++		goto error_disable_reg;
+ 
+ 	dev_set_drvdata(dev, indio_dev);
+ 
+ 	return 0;
+-error_unregister_ring:
+-	iio_triggered_buffer_cleanup(indio_dev);
+-
+-error_free_irq:
+-	free_irq(irq, indio_dev);
+ 
+ error_disable_reg:
+ 	regulator_disable(st->reg);
+@@ -492,10 +489,6 @@ int ad7606_remove(struct device *dev, int irq)
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct ad7606_state *st = iio_priv(indio_dev);
+ 
+-	iio_device_unregister(indio_dev);
+-	iio_triggered_buffer_cleanup(indio_dev);
+-
+-	free_irq(irq, indio_dev);
+ 	regulator_disable(st->reg);
+ 
+ 	return 0;
+-- 
+2.17.1
