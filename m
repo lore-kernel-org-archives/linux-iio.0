@@ -1,82 +1,44 @@
-Return-Path: <SRS0=sJup=L7=analog.com=alexandru.Ardelean@kernel.org>
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "jic23@kernel.org" <jic23@kernel.org>
-CC: "lars@metafoo.de" <lars@metafoo.de>, "knaack.h@gmx.de" <knaack.h@gmx.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "Hennerich, Michael"
-	<Michael.Hennerich@analog.com>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>
-Subject: Re: [PATCH] staging:iio:ad7606: update api calls to devm_* variants
-Date: Mon, 17 Sep 2018 07:52:59 +0000
-Message-ID: <835e4c6ec5d3e146d91930c7fcc214b827ecda6a.camel@analog.com>
-References: <20180913095138.18427-1-alexandru.ardelean@analog.com>
-	 <20180916121649.73a46c2f@archlinux>
-In-Reply-To: <20180916121649.73a46c2f@archlinux>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-eopbgr690074.outbound.protection.outlook.com ([40.107.69.74]:57155
+        "EHLO NAM04-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726786AbeIMQLs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 13 Sep 2018 12:11:48 -0400
+From: Alexandru Ardelean <alexandru.ardelean@analog.com>
+To: <linux-iio@vger.kernel.org>, <Michael.Hennerich@analog.com>,
+        <lars@metafoo.de>, <jic23@kernel.org>
+CC: <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH 1/2] staging:iio:ad7606: Remove incorrect kernel doc annotations
+Date: Thu, 13 Sep 2018 14:02:11 +0300
+Message-ID: <20180913110212.29068-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-T24gU3VuLCAyMDE4LTA5LTE2IGF0IDEyOjE2ICswMTAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
-Og0KPiBPbiBUaHUsIDEzIFNlcCAyMDE4IDEyOjUxOjM4ICswMzAwDQo+IEFsZXhhbmRydSBBcmRl
-bGVhbiA8YWxleGFuZHJ1LmFyZGVsZWFuQGFuYWxvZy5jb20+IHdyb3RlOg0KPiANCj4gPiBObyBz
-aWduaWZpY2FudCBmdW5jdGlvbmFsIGNoYW5nZXMuIFRoaXMganVzdCByZXBsYWNlcyB0aGUgY29k
-ZSB3aXRoDQo+ID4gZGV2bV8qDQo+ID4gdGhhdCByZWR1Y2UgdGhlIGRyaXZlciBjb2RlLCBhbmQg
-c2ltcGxpZmllcyBzb21lIGVycm9yIGNvZGUgcGF0aHMgaW4NCj4gPiB0aGUNCj4gPiBhZDc2MDZf
-cHJvYmUoKSBmdW5jdGlvbi4NCj4gPiANCj4gPiBTaWduZWQtb2ZmLWJ5OiBBbGV4YW5kcnUgQXJk
-ZWxlYW4gPGFsZXhhbmRydS5hcmRlbGVhbkBhbmFsb2cuY29tPg0KPiANCj4gU29tZXRpbWVzIHRo
-ZXJlIGFyZSByZWFzb25zIHdoeSBkZXZtIGZ1bmN0aW9ucyBhcmVuJ3QgdXNlZC4gVGhleSBhcmUN
-Cj4gYWxtb3N0DQo+IGFsd2F5cyBhYm91dCBwb3RlbnRpYWwgcmFjZXMgaW4gcmVtb3ZlIHBhdGhz
-IGFuZCB0aGF0IGlzIGRlZmluaXRlbHkgdGhlDQo+IGNhc2UNCj4gaGVyZS4gIFN1Z2dlc3Rpb25z
-IGlubGluZSBvbiBob3cgdG8gYXZvaWQgdGhhdCBwcm9ibGVtLg0KPiANCg0KSSdsbCBhZG1pdCB0
-aGF0IEkgd2FzIGEgYml0IG5haXZlIGFib3V0IHRoaXMgb25lLg0KQnV0IEknbGwgdGFrZSBpdCBh
-cyBhIHF1aWNrIGNyYXNoLWNvdXJzZSBvbiB0aGlzIHN1YmplY3QgYW5kIGFkYXB0IG15DQp0aGlu
-a2luZyBmb3IgdGhlc2UgZHJpdmVycyArIGRldm1fIEFQSXMuDQoNCk5hdHVyYWxseSwgSSdkIGxp
-a2UgdG8gZHJvcCB0aGlzIHBhdGNoOyBJJ2xsIHRha2UgYSBxdWljayBsb29rIGF0IHRoZQ0KaW5p
-dGlhbGl6YXRpb24gc2VxdWVuY2UsIGFuZCBpZiBJIHNlZSBhbnl0aGluZyB3cm9uZywgSSdsbCBj
-b21lIGJhY2sgd2l0aA0KcGF0Y2ggZm9yIHRoYXQgaXNzdWUuDQoNClRoYW5rcw0KQWxleA0KDQoN
-Cj4gVGhhbmtzLA0KPiANCj4gSm9uYXRoYW4NCj4gDQo+ID4gLS0tDQo+ID4gIGRyaXZlcnMvc3Rh
-Z2luZy9paW8vYWRjL2FkNzYwNi5jIHwgMjUgKysrKysrKysrLS0tLS0tLS0tLS0tLS0tLQ0KPiA+
-ICAxIGZpbGUgY2hhbmdlZCwgOSBpbnNlcnRpb25zKCspLCAxNiBkZWxldGlvbnMoLSkNCj4gPiAN
-Cj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NjA2LmMNCj4gPiBi
-L2RyaXZlcnMvc3RhZ2luZy9paW8vYWRjL2FkNzYwNi5jDQo+ID4gaW5kZXggODdkNWZiMDczYzk1
-Li43OTNkZTkyZjI3ZWQgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9zdGFnaW5nL2lpby9hZGMv
-YWQ3NjA2LmMNCj4gPiArKysgYi9kcml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9hZDc2MDYuYw0KPiA+
-IEBAIC00NTgsMjggKzQ1OCwyNSBAQCBpbnQgYWQ3NjA2X3Byb2JlKHN0cnVjdCBkZXZpY2UgKmRl
-diwgaW50IGlycSwNCj4gPiB2b2lkIF9faW9tZW0gKmJhc2VfYWRkcmVzcywNCj4gPiAgCWlmIChy
-ZXQpDQo+ID4gIAkJZGV2X3dhcm4oc3QtPmRldiwgImZhaWxlZCB0byBSRVNFVDogbm8gUkVTRVQg
-R1BJTw0KPiA+IHNwZWNpZmllZFxuIik7DQo+ID4gIA0KPiA+IC0JcmV0ID0gcmVxdWVzdF9pcnEo
-aXJxLCBhZDc2MDZfaW50ZXJydXB0LCBJUlFGX1RSSUdHRVJfRkFMTElORywNCj4gPiBuYW1lLA0K
-PiA+IC0JCQkgIGluZGlvX2Rldik7DQo+ID4gKwlyZXQgPSBkZXZtX3JlcXVlc3RfaXJxKGRldiwg
-aXJxLCBhZDc2MDZfaW50ZXJydXB0LA0KPiA+ICsJCQkgICAgICAgSVJRRl9UUklHR0VSX0ZBTExJ
-TkcsDQo+ID4gKwkJCSAgICAgICBuYW1lLCBpbmRpb19kZXYpOw0KPiANCj4gWW91IGNhbm5vdCBz
-YWZlbHkgbWl4IGRldm0gYW5kIG5vbiBkZXZtIHNldHVwLiAgSW4gdGhpcyBjYXNlIHlvdSBlbmQg
-dXANCj4gd2l0aCBhbiBpbnRlcmVzdGluZyByYWNlIGFyb3VuZCB3aGVuIHRoZSByZWd1bGF0b3Ig
-aXMgdHVybmVkIG9mZg0KPiByZXN1bHRpbmcNCj4gaW4gdGhlIGRldmljZSBiZWluZyBwb3dlcmVk
-IGRvd24gYmVmb3JlIHRoZSBpbnRlcnJ1cHQgaXMgcmVsZWFzZWQuDQo+IA0KPiBOb3csIHRoYXQg
-bWlnaHQgYmUgZmluZSwgYnV0IGl0J3MgcmVhbGx5IGhhcmQgdG8gYmUgc3VyZSB3aGVuIHJldmll
-d2luZw0KPiBzbw0KPiBhcyBhIHJ1bGUgb2YgdGh1bWIgd2UgbmV2ZXIgYWxsb3cgbm9uIG9idmlv
-dXMgb3JkZXJpbmcuDQo+IA0KPiBOb3csIG9uZSBvcHRpb24gZm9yIHRoaXMgaXMgdG8gdXNlIGRl
-dm1fYWRkX2FjdGlvbiB0byBhdXRvbWF0aWNhbGx5IGNhbGwNCj4gdGhlIGNsZWFudXAgaW4gdGhl
-IHJpZ2h0IHNlcXVlbmNlIHdoZW4gcmVtb3ZlIG9jY3Vycy4NCj4gDQo+ID4gIAlpZiAocmV0KQ0K
-PiA+ICAJCWdvdG8gZXJyb3JfZGlzYWJsZV9yZWc7DQo+ID4gIA0KPiA+IC0JcmV0ID0gaWlvX3Ry
-aWdnZXJlZF9idWZmZXJfc2V0dXAoaW5kaW9fZGV2LA0KPiA+ICZhZDc2MDZfdHJpZ2dlcl9oYW5k
-bGVyLA0KPiA+IC0JCQkJCSBOVUxMLCBOVUxMKTsNCj4gPiArCXJldCA9IGRldm1faWlvX3RyaWdn
-ZXJlZF9idWZmZXJfc2V0dXAoZGV2LCBpbmRpb19kZXYsDQo+ID4gKwkJCQkJICAgICAgJmFkNzYw
-Nl90cmlnZ2VyX2hhbmRsZXIsDQo+ID4gKwkJCQkJICAgICAgTlVMTCwgTlVMTCk7DQo+ID4gIAlp
-ZiAocmV0KQ0KPiA+IC0JCWdvdG8gZXJyb3JfZnJlZV9pcnE7DQo+ID4gKwkJZ290byBlcnJvcl9k
-aXNhYmxlX3JlZzsNCj4gPiAgDQo+ID4gLQlyZXQgPSBpaW9fZGV2aWNlX3JlZ2lzdGVyKGluZGlv
-X2Rldik7DQo+ID4gKwlyZXQgPSBkZXZtX2lpb19kZXZpY2VfcmVnaXN0ZXIoZGV2LCBpbmRpb19k
-ZXYpOw0KPiA+ICAJaWYgKHJldCkNCj4gPiAtCQlnb3RvIGVycm9yX3VucmVnaXN0ZXJfcmluZzsN
-Cj4gPiArCQlnb3RvIGVycm9yX2Rpc2FibGVfcmVnOw0KPiANCj4gRGVmaW5pdGVseSBub3Qgb24g
-dGhpcyBvbmUuICBUaGUgcG93ZXIgd2lsbCBiZSBjdXQgYmVmb3JlIHRoZSBpbnRlcmZhY2VzDQo+
-IGFyZSByZW1vdmVkLiAgVGhhdCBvbmUgaXMgZGVmaW5pdGVseSBnb2luZyB0byBiZSBhIG5hc3R5
-IHJhY2UgY29uZGl0aW9uIQ0KPiANCj4gPiAgDQo+ID4gIAlkZXZfc2V0X2RydmRhdGEoZGV2LCBp
-bmRpb19kZXYpOw0KPiA+ICANCj4gPiAgCXJldHVybiAwOw0KPiA+IC1lcnJvcl91bnJlZ2lzdGVy
-X3Jpbmc6DQo+ID4gLQlpaW9fdHJpZ2dlcmVkX2J1ZmZlcl9jbGVhbnVwKGluZGlvX2Rldik7DQo+
-ID4gLQ0KPiA+IC1lcnJvcl9mcmVlX2lycToNCj4gPiAtCWZyZWVfaXJxKGlycSwgaW5kaW9fZGV2
-KTsNCj4gPiAgDQo+ID4gIGVycm9yX2Rpc2FibGVfcmVnOg0KPiA+ICAJcmVndWxhdG9yX2Rpc2Fi
-bGUoc3QtPnJlZyk7DQo+ID4gQEAgLTQ5MiwxMCArNDg5LDYgQEAgaW50IGFkNzYwNl9yZW1vdmUo
-c3RydWN0IGRldmljZSAqZGV2LCBpbnQgaXJxKQ0KPiA+ICAJc3RydWN0IGlpb19kZXYgKmluZGlv
-X2RldiA9IGRldl9nZXRfZHJ2ZGF0YShkZXYpOw0KPiA+ICAJc3RydWN0IGFkNzYwNl9zdGF0ZSAq
-c3QgPSBpaW9fcHJpdihpbmRpb19kZXYpOw0KPiA+ICANCj4gPiAtCWlpb19kZXZpY2VfdW5yZWdp
-c3RlcihpbmRpb19kZXYpOw0KPiA+IC0JaWlvX3RyaWdnZXJlZF9idWZmZXJfY2xlYW51cChpbmRp
-b19kZXYpOw0KPiA+IC0NCj4gPiAtCWZyZWVfaXJxKGlycSwgaW5kaW9fZGV2KTsNCj4gPiAgCXJl
-Z3VsYXRvcl9kaXNhYmxlKHN0LT5yZWcpOw0KPiA+ICANCj4gPiAgCXJldHVybiAwOw0KPiANCj4g
+The ad7606_chip_info struct does not have the lock & name fields. Remove
+the kernel documentation annotations for it.
+
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+ drivers/staging/iio/adc/ad7606.h | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
+index 24c2a85f5c5a..57f11b46bc69 100644
+--- a/drivers/staging/iio/adc/ad7606.h
++++ b/drivers/staging/iio/adc/ad7606.h
+@@ -11,10 +11,8 @@
+ 
+ /**
+  * struct ad7606_chip_info - chip specific information
+- * @name:		identification string for chip
+  * @channels:		channel specification
+  * @num_channels:	number of channels
+- * @lock		protect sensor state
+  */
+ 
+ struct ad7606_chip_info {
+-- 
+2.17.1
