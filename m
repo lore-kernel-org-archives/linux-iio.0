@@ -1,56 +1,49 @@
-Return-Path: <SRS0=SnZD=L4=gmail.com=himanshujha199640@kernel.org>
-Date: Fri, 14 Sep 2018 17:39:51 +0530
-From: Himanshu Jha <himanshujha199640@gmail.com>
-To: Song Qiang <songqiang1304521@gmail.com>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	matt.ranostay@konsulko.com, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Song Qiang <songqiang.1304521@gmail.com>
-Subject: Re: [PATCH] iio: proximity: lidar-v2: replace i2c block access
- method with the one already implemented.
-Message-ID: <20180914120950.GB6465@himanshu-Vostro-3559>
-References: <20180913035145.28056-1-songqiang.1304521@gmail.com>
+Return-Path: <SRS0=9z2R=L3=analog.com=alexandru.Ardelean@kernel.org>
+From: Alexandru Ardelean <alexandru.ardelean@analog.com>
+To: <linux-iio@vger.kernel.org>, <Michael.Hennerich@analog.com>,
+	<lars@metafoo.de>, <jic23@kernel.org>
+CC: <knaack.h@gmx.de>, <pmeerw@pmeerw.net>, Alexandru Ardelean
+	<alexandru.ardelean@analog.com>
+Subject: [PATCH] staging:iio:ad7606: fix voltage scales
+Date: Thu, 13 Sep 2018 10:39:20 +0300
+Message-ID: <20180913073920.16089-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20180913035145.28056-1-songqiang.1304521@gmail.com>
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, Sep 13, 2018 at 11:51:45AM +0800, Song Qiang wrote:
-> This driver tries to access a block of data on a i2c bus and it tries
-> to manually make a device command frame and a consecutively read frame,
-> then uses i2c_transfer() to read data. But this has already been
-> implemented in i2c_smbus_read_i2c_block_data().
-> Sorry for not having this device by my hand, which is a little expansive
-> for me, but I have another i2c device and tested with both i2c_transfer()
-> and i2c_smbus_read_i2c_block_data() and they all ends the same.
-> I'm not familiar with the SMBus, don't know if the lidar_smbus_xfer()
-> function is the same as i2c_smbus_read_block_data()? The original code
-> is commented with something I'm not sure, but I think if it's a standard
-> SMBus, it should be able to use in here.
-> Hoping for someone to explain.
+Fixes commit 17be2a2905a6ec9aa27cd59521495e2f490d2af0 ("staging: iio:
+ad7606: replace range/range_available with corresponding scale").
 
-This is not how you write a commit message.
-https://www.kernel.org/doc/html/latest/process/submitting-patches.html#describe-your-changes
+The AD7606 devices don't have a 2.5V voltage range, they have 5V & 10V
+voltage range, which is selectable via the `gpio_range` descriptor.
 
-> Signed-off-by: Song Qiang <songqiang.1304521@gmail.com>
-> ---
+The scales also seem to have been miscomputed, because when they were
+applied to the raw values, the results differ from the expected values.
+After checking the ADC transfer function in the datasheet, these were
+re-computed.
 
-Your doubts/suggestions/rants all should be here just below
-the `---` line, so that if maintainer applies the patch
-then your queries doesn't get included in the commit
-message.
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+ drivers/staging/iio/adc/ad7606.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-And no need to reply an explicit "thanks".
-That is implicit ;)
-
-We already have a ~30k email traffic on LKML...
-https://marc.info/?l=linux-kernel&r=1&w=2
-
-
-
-Thanks
+diff --git a/drivers/staging/iio/adc/ad7606.c b/drivers/staging/iio/adc/ad7606.c
+index c5fe3003075b..8f0eebf7316d 100644
+--- a/drivers/staging/iio/adc/ad7606.c
++++ b/drivers/staging/iio/adc/ad7606.c
+@@ -26,9 +26,11 @@
+ 
+ #include "ad7606.h"
+ 
+-/* Scales are computed as 2.5/2**16 and 5/2**16 respectively */
++/* Scales are computed as 5000/2**16 and 10000/2**16 respectively,
++ * so that when applied to the raw values they provide mV values
++ */
+ static const unsigned int scale_avail[2][2] = {
+-	{0, 38147}, {0, 76294}
++	{0, 152588}, {0, 305176}
+ };
+ 
+ static int ad7606_reset(struct ad7606_state *st)
 -- 
-Himanshu Jha
-Undergraduate Student
-Department of Electronics & Communication
-Guru Tegh Bahadur Institute of Technology
+2.17.1
