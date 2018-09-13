@@ -9,52 +9,41 @@ Cc: David Lechner <david@lechnology.com>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	Mark Brown <broonie@kernel.org>,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/4] spi: introduce SPI_CS_WORD mode flag
-Date: Wed, 12 Sep 2018 19:39:16 -0500
-Message-Id: <20180913003920.30600-1-david@lechnology.com>
+Subject: [PATCH v2 1/4] spi: add new SPI_CS_WORD flag
+Date: Wed, 12 Sep 2018 19:39:17 -0500
+Message-Id: <20180913003920.30600-2-david@lechnology.com>
+In-Reply-To: <20180913003920.30600-1-david@lechnology.com>
+References: <20180913003920.30600-1-david@lechnology.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-This series introduces a new SPI mode flag, SPI_CS_WORD, that indicates that
-the chip select line should be toggled after each word sent. This series
-includes examples of how this can be implemented for both an SPI controller
-and an SPI device.
+This adds a new SPI mode flag, SPI_CS_WORD, that is used to indicate
+that a SPI device requires the chip select to be toggled after each
+word that is transferred.
 
-The motivation here is to take advantage of DMA transfers with an analog/digital
-convert chip. This chip requires that the chip select line be toggled after
-each word send in order to drive the internal circuitry of the chip.
+Signed-off-by: David Lechner <david@lechnology.com>
+---
+ include/linux/spi/spi.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The way we were accomplishing this was, for example, to read 16 channels, we
-would create 16 SPI _transfer_s in one SPI _message_. Although this works, it
-uses quite a bit of CPU because we have to do work at the end of each transfer
-to get the next transfer ready. When you are polling the chip at 100Hz, this
-CPU usage adds up.
-
-The SPI controller being used has DMA support, but only on the _transfer_ level
-and not on the _message_ level. So, to take advantage of DMA, we need to read
-all of the A/DC channels in a single _transfer_. The SPI controller is capable
-automatically toggling the chip select line during a DMA transfer, so we are
-adding a new SPI flag in order to take advantage of this.
-
-I have tested both the default software implementation and the spi-davinci
-implementation with the A/DC driver in this series.
-
-v2 changes:
-- dropped patch "spi: spi-bitbang: change flags from u8 to u16" that has already
-  been applied
-- new patch "spi: add software implementation for SPI_CS_WORD" that provides
-  a default implementation of SPI_CS_WORD for controllers
-
-David Lechner (4):
-  spi: add new SPI_CS_WORD flag
-  spi: add software implementation for SPI_CS_WORD
-  iio: adc: ti-ads7950: use SPI_CS_WORD to reduce CPU usage
-  spi: spi-davinci: Add support for SPI_CS_WORD
-
- drivers/iio/adc/ti-ads7950.c | 53 +++++++++++++++++++++---------------
- drivers/spi/spi-davinci.c    | 11 ++++++--
- drivers/spi/spi.c            | 32 +++++++++++++++++++++-
- include/linux/spi/spi.h      |  2 +-
- 4 files changed, 71 insertions(+), 27 deletions(-)
-
+diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
+index d698f9db3484..7bb36145e2ba 100644
+--- a/include/linux/spi/spi.h
++++ b/include/linux/spi/spi.h
+@@ -163,6 +163,7 @@ struct spi_device {
+ #define	SPI_TX_QUAD	0x200			/* transmit with 4 wires */
+ #define	SPI_RX_DUAL	0x400			/* receive with 2 wires */
+ #define	SPI_RX_QUAD	0x800			/* receive with 4 wires */
++#define SPI_CS_WORD	0x1000			/* toggle cs after each word */
+ 	int			irq;
+ 	void			*controller_state;
+ 	void			*controller_data;
+@@ -177,7 +178,6 @@ struct spi_device {
+ 	 * the controller talks to each chip, like:
+ 	 *  - memory packing (12 bit samples into low bits, others zeroed)
+ 	 *  - priority
+-	 *  - drop chipselect after each word
+ 	 *  - chipselect delays
+ 	 *  - ...
+ 	 */
 -- 
 2.17.1
