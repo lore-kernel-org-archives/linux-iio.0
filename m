@@ -1,50 +1,51 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:35940 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728764AbeIVVSj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 22 Sep 2018 17:18:39 -0400
-Date: Sat, 22 Sep 2018 16:24:37 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Rob Herring <robh@kernel.org>
-Cc: Song Qiang <songqiang1304521@gmail.com>, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, mark.rutland@arm.com,
-        andriy.shevchenko@linux.intel.com, matt.ranostay@konsulko.com,
-        tglx@linutronix.de, ak@it-klinger.de, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        himanshujha199640@gmail.com,
-        Song Qiang <songqiang.1304521@gmail.com>
-Subject: Re: [PATCH v5] iio: proximity: Add driver support for ST's VL53L0X
- ToF ranging sensor.
-Message-ID: <20180922162437.224e574c@archlinux>
-In-Reply-To: <20180917061933.GA15262@bogus>
-References: <20180915095752.8116-1-songqiang.1304521@gmail.com>
-        <20180917061933.GA15262@bogus>
+Return-Path: <SRS0=T+HA=L5=huawei.com=yuehaibing@kernel.org>
+From: YueHaibing <yuehaibing@huawei.com>
+To: <jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
+	<pmeerw@pmeerw.net>
+CC: <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>, YueHaibing
+	<yuehaibing@huawei.com>
+Subject: [PATCH -next] iio: potentiometer: max5481: merge calls to of_match_device and of_device_get_match_data
+Date: Sat, 15 Sep 2018 18:50:33 +0800
+Message-ID: <20180915105033.5928-1-yuehaibing@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-...
-> > 
-> >  .../bindings/iio/proximity/vl53l0x.txt        |  12 ++
-> >  MAINTAINERS                                   |   7 +  
-> 
-> Otherwise,
-> 
-> Reviewed-by: Rob Herring <robh@kernel.org>
-Hi Song,
+Drop call to of_match_device, which is subsumed by the subsequent
+call to of_device_get_match_data.  The code becomes simpler, and a
+temporary variable can be dropped.
 
-Please make sure to pick up the various Acks, Reviewed-bys etc for later versions.
+Found by coccinelle.
 
-I've added this to the version I applied.
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ drivers/iio/potentiometer/max5481.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-Thanks,
-
-Jonathan
-> 
-> >  drivers/iio/proximity/Kconfig                 |  11 ++
-> >  drivers/iio/proximity/Makefile                |   2 +
-> >  drivers/iio/proximity/vl53l0x-i2c.c           | 180 ++++++++++++++++++
-> >  5 files changed, 212 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/iio/proximity/vl53l0x.txt
-> >  create mode 100644 drivers/iio/proximity/vl53l0x-i2c.c  
+diff --git a/drivers/iio/potentiometer/max5481.c b/drivers/iio/potentiometer/max5481.c
+index ffe2761..6d2f13f 100644
+--- a/drivers/iio/potentiometer/max5481.c
++++ b/drivers/iio/potentiometer/max5481.c
+@@ -137,7 +137,6 @@ static int max5481_probe(struct spi_device *spi)
+ 	struct iio_dev *indio_dev;
+ 	struct max5481_data *data;
+ 	const struct spi_device_id *id = spi_get_device_id(spi);
+-	const struct of_device_id *match;
+ 	int ret;
+ 
+ 	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*data));
+@@ -149,10 +148,8 @@ static int max5481_probe(struct spi_device *spi)
+ 
+ 	data->spi = spi;
+ 
+-	match = of_match_device(of_match_ptr(max5481_match), &spi->dev);
+-	if (match)
+-		data->cfg = of_device_get_match_data(&spi->dev);
+-	else
++	data->cfg = of_device_get_match_data(&spi->dev);
++	if (!data->cfg)
+ 		data->cfg = &max5481_cfg[id->driver_data];
+ 
+ 	indio_dev->name = id->name;
+-- 
+1.8.3.1
