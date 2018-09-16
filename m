@@ -1,27 +1,39 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:46242 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726943AbeIKVRr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 11 Sep 2018 17:17:47 -0400
-From: Song Qiang <songqiang1304521@gmail.com>
-Date: Wed, 12 Sep 2018 00:17:37 +0800
+Received: from mail.kernel.org ([198.145.29.99]:48982 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728187AbeIPRUm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 16 Sep 2018 13:20:42 -0400
+Date: Sun, 16 Sep 2018 12:57:53 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 To: Afonso Bordado <afonsobordado@az8.co>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
 Subject: Re: [PATCH v4 1/5] iio: gyro: add support for fxas21002c
-Message-ID: <20180911161737.GA14085@Eros>
+Message-ID: <20180916125753.778c1c23@archlinux>
+In-Reply-To: <20180911150011.31964-1-afonsobordado@az8.co>
 References: <20180911150011.31964-1-afonsobordado@az8.co>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20180911150011.31964-1-afonsobordado@az8.co>
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Sep 11, 2018 at 04:00:07PM +0100, Afonso Bordado wrote:
+On Tue, 11 Sep 2018 16:00:07 +0100
+Afonso Bordado <afonsobordado@az8.co> wrote:
+
 > FXAS21002C is a 3 axis gyroscope with integrated temperature sensor
 > 
 > Signed-off-by: Afonso Bordado <afonsobordado@az8.co>
+Hi Afonso,
+
+A few little things in here. I would have cleaned them up when applying
+if you didn't already have that issue with division in the later patch
+to clean up.  Easier to apply the series in one go.
+
+Thanks,
+
+Jonathan
+
 > ---
 >  Changes in v4
 >    - Remove CONFIG_OF ifdefs
@@ -167,6 +179,8 @@ On Tue, Sep 11, 2018 at 04:00:07PM +0100, Afonso Bordado wrote:
 > +
 > +enum {
 > +	ID_FXAS21002C,
+Why have this when only one entry?  Just don't provide
+an device data until we support multiple parts in the driver.
 > +};
 > +
 > +enum fxas21002c_operating_mode {
@@ -235,6 +249,8 @@ On Tue, Sep 11, 2018 at 04:00:07PM +0100, Afonso Bordado wrote:
 > +	FXAS21002C_GYRO_CHAN(Y),
 > +	FXAS21002C_GYRO_CHAN(Z),
 > +	IIO_CHAN_SOFT_TIMESTAMP(3),
+Timestamp without buffered mode?  It won't do anything so drop it.
+
 > +};
 > +
 > +static int fxas21002c_set_operating_mode(struct fxas21002c_data *data,
@@ -444,6 +460,12 @@ On Tue, Sep 11, 2018 at 04:00:07PM +0100, Afonso Bordado wrote:
 > +	ret = iio_device_register(indio_dev);
 > +	if (ret < 0)
 > +		dev_err(&client->dev, "failed to register iio device\n");
+
+I'm not sure how I missed this before but you are using non
+managed functions in probe but don't have a remove to unwind them.
+Effectively your driver can't be removed.
+
+Easy fix, devm_iio_device_register here.
 > +
 > +	return ret;
 > +}
@@ -459,16 +481,6 @@ On Tue, Sep 11, 2018 at 04:00:07PM +0100, Afonso Bordado wrote:
 > +		.name = FXAS21002C_DRV_NAME,
 > +	},
 > +	.probe		= fxas21002c_probe,
-
-Hi Afonso,
-
-Andy shevchenko reviewed my patch and told me that we should place with
-probe_new() with probe(), and in the declaration of this struct probe is
-commented depracated. And I think you might need to replace it, too.
-
-yours,
-Song Qiang
-
 > +	.id_table	= fxas21002c_id,
 > +};
 > +
@@ -477,7 +489,3 @@ Song Qiang
 > +MODULE_AUTHOR("Afonso Bordado <afonsobordado@az8.co>");
 > +MODULE_DESCRIPTION("FXAS21002C Digital Angular Rate Gyroscope driver");
 > +MODULE_LICENSE("GPL v2");
-> -- 
-> 2.18.0
-> 
-> 
