@@ -1,9 +1,9 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:54948 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:55108 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727071AbeIPSWv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 16 Sep 2018 14:22:51 -0400
-Date: Sun, 16 Sep 2018 13:59:53 +0100
+        id S1728363AbeIPSYT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 16 Sep 2018 14:24:19 -0400
+Date: Sun, 16 Sep 2018 14:01:21 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Afonso Bordado <afonsobordado@az8.co>
 Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
@@ -11,7 +11,7 @@ Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
         devicetree@vger.kernel.org
 Subject: Re: [PATCH v4 3/5] dt-bindings: fxas21002c: Document the fxas21002c
  I2C bindings
-Message-ID: <20180916135953.4247fe8d@archlinux>
+Message-ID: <20180916140121.0c88cf03@archlinux>
 In-Reply-To: <20180911150011.31964-3-afonsobordado@az8.co>
 References: <20180911150011.31964-1-afonsobordado@az8.co>
         <20180911150011.31964-3-afonsobordado@az8.co>
@@ -26,6 +26,16 @@ Afonso Bordado <afonsobordado@az8.co> wrote:
 > Add documentation for the fxas21002c I2C bindings.
 > 
 > Signed-off-by: Afonso Bordado <afonsobordado@az8.co>
+Device tree bindings should go to the devicetree maintainers
+and the devicetree binding list. Make sure v5 goes
+that way.
+
+This one is just about complex enough I'll want a review from
+Rob as he is more likely to catch a problem than I am.
+
+Thanks,
+
+Jonathan
 > ---
 >  .../bindings/iio/gyroscope/fsl,fxas21002c.txt | 33 +++++++++++++++++++
 >  1 file changed, 33 insertions(+)
@@ -58,13 +68,6 @@ Afonso Bordado <afonsobordado@az8.co> wrote:
 > +  - reset-gpios		: GPIO used to reset the device.
 > +			  see gpio/gpio.txt.
 > +  - mount-matrix	: see iio/mount-matrix.txt
-
-This last one could do with a very brief introduction to what
-it is (as well as the cross reference).
-This is particularly true as it isn't clear whether it is
-necessary or optional.  The below doesn't have it there for
-example.
-
 > +
 > +Example:
 > +gyroscope@20 {
@@ -76,6 +79,4 @@ example.
 > +	interrupt-parent = <&foo>;
 > +	interrupts = <0 IRQ_TYPE_EDGE_RISING>,
 > +		     <1 (IRQ_TYPE_EDGE_RISING | IRQ_TYPE_EDGE_FALLING)>;
-Perhaps keep these in the same order as in the description above.
-
 > +};
