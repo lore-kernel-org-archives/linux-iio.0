@@ -1,84 +1,154 @@
-Return-Path: <SRS0=sJup=L7=analog.com=alexandru.Ardelean@kernel.org>
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "jic23@kernel.org" <jic23@kernel.org>
-CC: "lars@metafoo.de" <lars@metafoo.de>, "knaack.h@gmx.de" <knaack.h@gmx.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "Hennerich, Michael"
-	<Michael.Hennerich@analog.com>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from szxga05-in.huawei.com ([45.249.212.191]:12163 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727329AbeIQNzP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 17 Sep 2018 09:55:15 -0400
+Date: Mon, 17 Sep 2018 09:28:39 +0100
+From: Jonathan Cameron <jonathan.cameron@huawei.com>
+To: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+CC: "jic23@kernel.org" <jic23@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>
 Subject: Re: [PATCH] staging:iio:ad7606: update structs with doc annotations
-Date: Mon, 17 Sep 2018 07:10:44 +0000
-Message-ID: <b303011d8e1bdd8795acfff7d83bfcc95ebaeed5.camel@analog.com>
+Message-ID: <20180917092839.0000332e@huawei.com>
+In-Reply-To: <b303011d8e1bdd8795acfff7d83bfcc95ebaeed5.camel@analog.com>
 References: <20180913110736.31182-1-alexandru.ardelean@analog.com>
-	 <20180916122436.63916f40@archlinux>
-In-Reply-To: <20180916122436.63916f40@archlinux>
-Content-Type: text/plain; charset="utf-8"
+        <20180916122436.63916f40@archlinux>
+        <b303011d8e1bdd8795acfff7d83bfcc95ebaeed5.camel@analog.com>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="US-ASCII"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-T24gU3VuLCAyMDE4LTA5LTE2IGF0IDEyOjI0ICswMTAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
-Og0KPiBPbiBUaHUsIDEzIFNlcCAyMDE4IDE0OjA3OjM2ICswMzAwDQo+IEFsZXhhbmRydSBBcmRl
-bGVhbiA8YWxleGFuZHJ1LmFyZGVsZWFuQGFuYWxvZy5jb20+IHdyb3RlOg0KPiANCj4gPiBUaGUg
-Y3VycmVudCBzdHJ1Y3RzIGFyZSBvbmx5IHBhcnRpYWxseSBkb2N1bWVudGVkIHZpYSBhbm5vdGF0
-aW9ucy4gVGhpcw0KPiA+IGNoYW5nZSB1cGRhdGVzIGFubm90YXRpb25zIGZvciBhbGwgc3RydWN0
-cyBpbiB0aGUgYWQ3NjA2LmggZmlsZS4NCj4gPiANCj4gPiBTaWduZWQtb2ZmLWJ5OiBBbGV4YW5k
-cnUgQXJkZWxlYW4gPGFsZXhhbmRydS5hcmRlbGVhbkBhbmFsb2cuY29tPg0KPiANCj4gR29vZCBz
-dHVmZiwgdGhvdWdoIGEgZmV3IHF1ZXN0aW9ucyBpbmxpbmUuDQo+IA0KPiBJJ20gaG9waW5nIHRo
-aXMgbWVhbnMgeW91IGFyZSBwbGFubmluZyB0byBmaW5pc2ggdGlkeWluZyB0aGlzIGRyaXZlcg0K
-PiB1cCBhbmQgbW92ZSBpdCBvdXQgb2Ygc3RhZ2luZz8gDQoNClJlcGxpZXMgaW5saW5lLg0KDQoN
-ClNvLCBJIGRvbid0IGhhdmUgYSBnb29kIHRyYWNrLXJlY29yZCBvZiBzYXlpbmcgeWVzIHRvIHRo
-aXMgcXVlc3Rpb24gYW5kDQpzdGlja2luZyB0byBpdCwgYmVjYXVzZSBJIGFsc28gaGF2ZSB0aGUg
-QUQ3MTkyIFtpbiBteSBwaXBlbGluZV0gdG8gbW92ZSBvdXQNCm9mIHN0YWdpbmcgW2FuZCBpdCdz
-IG9ubHkgcGFydGlhbGx5IGRvbmVdLg0KDQpCdXQsIHNwZWNpZmljYWxseSBmb3IgdGhpcyBkcml2
-ZXIsIHdlIHdhbnQgdG8gYWRkIGEgbmV3IGNoaXAgdG8gdGhpcyBbYWZ0ZXINCnRoZSBBRDc2MDUt
-NF0sIHNvIHRoZXJlIGlzIGFuIGludGVyZXN0IGZyb20gb3VyIHNpZGUgdG8gYWN0dWFsbHkgc2Vl
-IHRoaXMNCnRocm91Z2guDQoNCkFuZCBhbHNvLCB3ZSBkaWQgbWFuYWdlIHRvIHJlYmFzZSBxdWl0
-ZSBhIGxvdCBvZiBvdXIgcGF0Y2hlcyBvbiB0b3Agb2YgYQ0KNC4xNCBiYXNlIFsgd2hpY2ggc2hv
-dWxkIGhvcGVmdWxseSBtYWtlIHRoaW5ncyBtb3JlIGVhc2llciB0byB0cmFjaw0KaW50ZXJuYWxs
-eSB2cyB1cHN0cmVhbSBdLg0KSSBkbyBob3BlIHRvIHNlbmQtb3V0IGEgYmlnZ2VyIHNldCBvZiB0
-aGVzZSBwYXRjaGVzIHVwc3RyZWFtLg0KQW5kIEknbGwgdHJ5IHRvIHNlcGFyYXRlIHBhdGNoZXMg
-YXMgbXVjaCBhcyBwb3NzaWJsZSwgYmVjYXVzZSBpdCdzIHNpbXBsZXINCnRvIHJlc2VuZCBWMixW
-MywuLi4sVk4gZm9yIHNtYWxsZXIgc2V0cyBvZiBwYXRjaGVzLg0KDQpTbywgdGhpcyBpcyBub3Qg
-YSBkZWZpbml0ZS15ZXMgdG8geW91ciBxdWVzdGlvbjsgaXQncyBtb3JlIG9mIGFuIGluZGljYXRp
-dmUNCm9mIHdoYXQgd2UncmUgdHJ5aW5nIHRvIGRvLg0KDQpUaGFua3MNCkFsZXgNCg0KPiANCj4g
-VGhhbmtzLA0KPiANCj4gSm9uYXRoYW4NCj4gDQo+ID4gLS0tDQo+ID4gIGRyaXZlcnMvc3RhZ2lu
-Zy9paW8vYWRjL2FkNzYwNi5oIHwgMjMgKysrKysrKysrKysrKysrKysrKysrKysNCj4gPiAgMSBm
-aWxlIGNoYW5nZWQsIDIzIGluc2VydGlvbnMoKykNCj4gPiANCj4gPiBkaWZmIC0tZ2l0IGEvZHJp
-dmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NjA2LmgNCj4gPiBiL2RyaXZlcnMvc3RhZ2luZy9paW8v
-YWRjL2FkNzYwNi5oDQo+ID4gaW5kZXggNDk4M2UzYWE2YjBlLi5mNDIyMjk2MzU0YzkgMTAwNjQ0
-DQo+ID4gLS0tIGEvZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NjA2LmgNCj4gPiArKysgYi9k
-cml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9hZDc2MDYuaA0KPiA+IEBAIC0yNCw3ICsyNCwyNiBAQCBz
-dHJ1Y3QgYWQ3NjA2X2NoaXBfaW5mbyB7DQo+ID4gIA0KPiA+ICAvKioNCj4gPiAgICogc3RydWN0
-IGFkNzYwNl9zdGF0ZSAtIGRyaXZlciBpbnN0YW5jZSBzcGVjaWZpYyBkYXRhDQo+ID4gKyAqIEBk
-ZXYJCXBvaW50ZXIgdG8ga2VybmVsIGRldmljZQ0KPiA+ICsgKiBAY2hpcF9pbmZvCQllbnRyeSBp
-biB0aGUgdGFibGUgb2YgY2hpcHMgdGhhdA0KPiA+IGRlc2NyaWJlcyB0aGlzIGRldmljZQ0KPiA+
-ICsgKiBAcmVnCQlyZWd1bGF0b3IgaW5mbyBmb3IgdGhlIHRoZSBwb3dlciBzdXBwbHkgb2YgdGhl
-DQo+ID4gZGV2aWNlDQo+ID4gKyAqIEBwb2xsX3dvcmsJCXN0cnVjdCBpbmZvIGZvciByZWFkaW5n
-IGRhdGEgaW4gYnVmZmVyDQo+ID4gbW9kZQ0KPiANCj4gSSdtIG5vdCBxdWl0ZSBzdXJlIG9uIHRo
-ZSBpbnRlbmRlZCBtZWFuaW5nIG9mIHRoaXMgb25lIGFib3ZlLi4uDQpBY2suDQpXaWxsIHRyeSB0
-byBtYWtlIGl0IGNsZWFyZXIuDQoNCj4gDQo+ID4gKyAqIEB3cV9kYXRhX2F2YWlsCXdhaXQgcXVl
-dWUgc3RydWN0IGZvciBidWZmZXIgbW9kZQ0KPiA+ICsgKiBAYm9wcwkJYnVzIG9wZXJhdGlvbnMg
-KFNQSSBvciBwYXJhbGxlbCkNCj4gPiArICogQHJhbmdlCQl2b2x0YWdlIHJhbmdlIHNlbGVjdGlv
-biwgc2VsZWN0cyB3aGljaCBzY2FsZQ0KPiA+IHRvIGFwcGx5DQo+ID4gKyAqIEBvdmVyc2FtcGxp
-bmcJb3ZlcnNhbXBsaW5nIHNlbGVjdGlvbg0KPiA+ICsgKiBAZG9uZQkJbWFya3Mgd2hldGhlciBy
-ZWFkaW5nIGRhdGEgaXMgZG9uZQ0KPiA+ICsgKiBAYmFzZV9hZGRyZXNzCWFkZHJlc3MgZnJvbSB3
-aGVyZSB0byByZWFkIGRhdGEgaW4gcGFyYWxsZWwNCj4gPiBvcGVyYXRpb24NCj4gPiAgICogQGxv
-Y2sJCXByb3RlY3Qgc2Vuc29yIHN0YXRlDQo+IA0KPiBGcm9tIHdoYXQ/IENvbmN1cnJlbnQgY2hh
-bmdlcyBJIGd1ZXNzLCBidXQgd291bGQgYmUgZ29vZCB0byBiZSBjbGVhci4NCg0KQWNrLg0KV2ls
-bCB1cGRhdGUuDQoNCj4gDQo+ID4gKyAqIEBncGlvX2NvbnZzdAlHUElPIGRlc2NyaXB0b3IgZm9y
-IGNvbnZlcnNpb24gc3RhcnQgc2lnbmFsDQo+ID4gKENPTlZTVCkNCj4gPiArICogQGdwaW9fcmVz
-ZXQJCUdQSU8gZGVzY3JpcHRvciBmb3IgZGV2aWNlIGhhcmQtcmVzZXQNCj4gPiArICogQGdwaW9f
-cmFuZ2UJCUdQSU8gZGVzY3JpcHRvciBmb3IgcmFuZ2Ugc2VsZWN0aW9uDQo+ID4gKyAqIEBncGlv
-X3N0YW5kYnkJR1BJTyBkZXNjcmlwdG9yIGZvciBzdGFuZC1ieSBzaWduYWwgKFNUQlkpLA0KPiA+
-ICsgKgkJCWNvbnRyb2xzIHBvd2VyLWRvd24gbW9kZSBvZiBkZXZpY2UNCj4gPiArICogQGdwaW9f
-ZnJzdGRhdGEJR1BJTyBkZXNjcmlwdG9yIGZvciByZWFkaW5nIGZyb20gZGV2aWNlIHdoZW4NCj4g
-PiBkYXRhDQo+ID4gKyAqCQkJaXMgYmVpbmcgcmVhZCBvbiB0aGUgZmlyc3QgY2hhbm5lbA0KPiA+
-ICsgKiBAZ3Bpb19vcwkJR1BJTyBkZXNjcmlwdG9ycyB0byBjb250cm9sIG92ZXJzYW1wbGluZyBv
-bg0KPiA+IHRoZSBkZXZpY2UNCj4gPiArICogQGRhdGEJCWJ1ZmZlciBmb3IgcmVhZGluZyBkYXRh
-IGZyb20gdGhlIGRldmljZQ0KPiA+ICAgKi8NCj4gPiAgDQo+ID4gIHN0cnVjdCBhZDc2MDZfc3Rh
-dGUgew0KPiA+IEBAIC01NSw2ICs3NCwxMCBAQCBzdHJ1Y3QgYWQ3NjA2X3N0YXRlIHsNCj4gPiAg
-CXVuc2lnbmVkIHNob3J0CQkJZGF0YVsxMl0NCj4gPiBfX19fY2FjaGVsaW5lX2FsaWduZWQ7DQo+
-ID4gIH07DQo+ID4gIA0KPiA+ICsvKioNCj4gPiArICogc3RydWN0IGFkNzYwNl9idXNfb3BzIC0g
-ZHJpdmVyIGJ1cyBvcGVyYXRpb25zDQo+ID4gKyAqIEByZWFkX2Jsb2NrCQlmdW5jdGlvbiBwb2lu
-dGVyIGZvciByZWFkaW5nIGJsb2NrcyBvZg0KPiA+IGRhdGENCj4gPiArICovDQo+ID4gIHN0cnVj
-dCBhZDc2MDZfYnVzX29wcyB7DQo+ID4gIAkvKiBtb3JlIG1ldGhvZHMgYWRkZWQgaW4gZnV0dXJl
-PyAqLw0KPiA+ICAJaW50ICgqcmVhZF9ibG9jaykoc3RydWN0IGRldmljZSAqZGV2LCBpbnQgbnVt
-LCB2b2lkICpkYXRhKTsNCj4gDQo+IA==
+On Mon, 17 Sep 2018 07:10:44 +0000
+"Ardelean, Alexandru" <alexandru.Ardelean@analog.com> wrote:
+
+> On Sun, 2018-09-16 at 12:24 +0100, Jonathan Cameron wrote:
+> > On Thu, 13 Sep 2018 14:07:36 +0300
+> > Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
+> >   
+> > > The current structs are only partially documented via annotations. This
+> > > change updates annotations for all structs in the ad7606.h file.
+> > > 
+> > > Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>  
+> > 
+> > Good stuff, though a few questions inline.
+> > 
+> > I'm hoping this means you are planning to finish tidying this driver
+> > up and move it out of staging?   
+> 
+> Replies inline.
+> 
+> 
+> So, I don't have a good track-record of saying yes to this question and
+> sticking to it, because I also have the AD7192 [in my pipeline] to move out
+> of staging [and it's only partially done].
+> 
+> But, specifically for this driver, we want to add a new chip to this [after
+> the AD7605-4], so there is an interest from our side to actually see this
+> through.
+> 
+> And also, we did manage to rebase quite a lot of our patches on top of a
+> 4.14 base [ which should hopefully make things more easier to track
+> internally vs upstream ].
+> I do hope to send-out a bigger set of these patches upstream.
+> And I'll try to separate patches as much as possible, because it's simpler
+> to resend V2,V3,...,VN for smaller sets of patches.
+> 
+> So, this is not a definite-yes to your question; it's more of an indicative
+> of what we're trying to do.
+
+Cool. Thanks for the info and don't worry about it taking a while. I'm definitely
+keen that new device support in staging drivers should at least be tangentially
+connected to getting them out of staging as clearly there is active interest in
+them.
+
+I have drivers in my queue that have been there for a large number of years :(
+
+One day I'll get to them all!
+
+Jonathan
+> 
+> Thanks
+> Alex
+> 
+> > 
+> > Thanks,
+> > 
+> > Jonathan
+> >   
+> > > ---
+> > >  drivers/staging/iio/adc/ad7606.h | 23 +++++++++++++++++++++++
+> > >  1 file changed, 23 insertions(+)
+> > > 
+> > > diff --git a/drivers/staging/iio/adc/ad7606.h
+> > > b/drivers/staging/iio/adc/ad7606.h
+> > > index 4983e3aa6b0e..f422296354c9 100644
+> > > --- a/drivers/staging/iio/adc/ad7606.h
+> > > +++ b/drivers/staging/iio/adc/ad7606.h
+> > > @@ -24,7 +24,26 @@ struct ad7606_chip_info {
+> > >  
+> > >  /**
+> > >   * struct ad7606_state - driver instance specific data
+> > > + * @dev		pointer to kernel device
+> > > + * @chip_info		entry in the table of chips that
+> > > describes this device
+> > > + * @reg		regulator info for the the power supply of the
+> > > device
+> > > + * @poll_work		struct info for reading data in buffer
+> > > mode  
+> > 
+> > I'm not quite sure on the intended meaning of this one above...  
+> Ack.
+> Will try to make it clearer.
+> 
+> >   
+> > > + * @wq_data_avail	wait queue struct for buffer mode
+> > > + * @bops		bus operations (SPI or parallel)
+> > > + * @range		voltage range selection, selects which scale
+> > > to apply
+> > > + * @oversampling	oversampling selection
+> > > + * @done		marks whether reading data is done
+> > > + * @base_address	address from where to read data in parallel
+> > > operation
+> > >   * @lock		protect sensor state  
+> > 
+> > From what? Concurrent changes I guess, but would be good to be clear.  
+> 
+> Ack.
+> Will update.
+> 
+> >   
+> > > + * @gpio_convst	GPIO descriptor for conversion start signal
+> > > (CONVST)
+> > > + * @gpio_reset		GPIO descriptor for device hard-reset
+> > > + * @gpio_range		GPIO descriptor for range selection
+> > > + * @gpio_standby	GPIO descriptor for stand-by signal (STBY),
+> > > + *			controls power-down mode of device
+> > > + * @gpio_frstdata	GPIO descriptor for reading from device when
+> > > data
+> > > + *			is being read on the first channel
+> > > + * @gpio_os		GPIO descriptors to control oversampling on
+> > > the device
+> > > + * @data		buffer for reading data from the device
+> > >   */
+> > >  
+> > >  struct ad7606_state {
+> > > @@ -55,6 +74,10 @@ struct ad7606_state {
+> > >  	unsigned short			data[12]
+> > > ____cacheline_aligned;
+> > >  };
+> > >  
+> > > +/**
+> > > + * struct ad7606_bus_ops - driver bus operations
+> > > + * @read_block		function pointer for reading blocks of
+> > > data
+> > > + */
+> > >  struct ad7606_bus_ops {
+> > >  	/* more methods added in future? */
+> > >  	int (*read_block)(struct device *dev, int num, void *data);  
+> > 
+> >  
