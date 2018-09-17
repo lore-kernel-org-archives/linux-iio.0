@@ -1,142 +1,253 @@
-Return-Path: <SRS0=sJup=L7=analog.com=alexandru.Ardelean@kernel.org>
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "jic23@kernel.org" <jic23@kernel.org>
-CC: "lars@metafoo.de" <lars@metafoo.de>, "knaack.h@gmx.de" <knaack.h@gmx.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "Hennerich, Michael"
-	<Michael.Hennerich@analog.com>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from szxga05-in.huawei.com ([45.249.212.191]:12164 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727185AbeIQN4k (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 17 Sep 2018 09:56:40 -0400
+Date: Mon, 17 Sep 2018 09:30:00 +0100
+From: Jonathan Cameron <jonathan.cameron@huawei.com>
+To: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>,
+        "lars@metafoo.de" <lars@metafoo.de>
+CC: "jic23@kernel.org" <jic23@kernel.org>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>
 Subject: Re: [PATCH 2/2] staging:iio:ad7606: Add support for the ad7605-4
-Date: Mon, 17 Sep 2018 07:33:13 +0000
-Message-ID: <63a25b543a35e8f896e26796230ca7104a83b9cd.camel@analog.com>
+Message-ID: <20180917093000.00004920@huawei.com>
+In-Reply-To: <63a25b543a35e8f896e26796230ca7104a83b9cd.camel@analog.com>
 References: <20180913110212.29068-1-alexandru.ardelean@analog.com>
-	 <20180913110212.29068-2-alexandru.ardelean@analog.com>
-	 <20180916122201.71ca224c@archlinux>
-In-Reply-To: <20180916122201.71ca224c@archlinux>
-Content-Type: text/plain; charset="utf-8"
+        <20180913110212.29068-2-alexandru.ardelean@analog.com>
+        <20180916122201.71ca224c@archlinux>
+        <63a25b543a35e8f896e26796230ca7104a83b9cd.camel@analog.com>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="US-ASCII"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-T24gU3VuLCAyMDE4LTA5LTE2IGF0IDEyOjIyICswMTAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
-Og0KPiBPbiBUaHUsIDEzIFNlcCAyMDE4IDE0OjAyOjEyICswMzAwDQo+IEFsZXhhbmRydSBBcmRl
-bGVhbiA8YWxleGFuZHJ1LmFyZGVsZWFuQGFuYWxvZy5jb20+IHdyb3RlOg0KPiANCj4gPiBBZGQg
-c3VwcG9ydCBmb3IgdGhlIEFENzYwNS00IHRvIHRoZSBBRDc2MDYgZHJpdmVyLiBUaGUgQUQ3NjA1
-LTQgaXMNCj4gPiBtb3N0bHkNCj4gPiBpbnRlcmZhY2UgY29tcGF0aWJsZSB0byB0aGUgQUQ3NjA2
-LTYgd2l0aCB0aGUgb25seSBkaWZmZXJlbmNlIGJlaW5nIG5vdA0KPiA+IGhhdmluZyBzdXBwb3J0
-IGZvciBvdmVyc2FtcGxpbmcuDQo+ID4gDQo+ID4gU2lnbmVkLW9mZi1ieTogQWxleGFuZHJ1IEFy
-ZGVsZWFuIDxhbGV4YW5kcnUuYXJkZWxlYW5AYW5hbG9nLmNvbT4NCj4gDQo+IEkgYW0gZ3Vlc3Np
-bmcgdGhpcyBtaWdodCBjbGFzaCB3aXRoIHRoZSBkZXZtIGNoYW5nZSBmcm9tIGVhcmxpZXIgaW4g
-dGhlDQo+IGRheSBzbyBJJ20gbm90IGdvaW5nIHRvIGFwcGx5IGl0ICh0b28gbXVjaCByaXNrIG9m
-IGEgYnVnIHNuZWFraW5nIGluKS4NCj4gDQo+IFBsZWFzZSByZXNlbmQgdGhlIHJlbWFpbmluZyBw
-YXRjaGVzIGluIGZvciB0aGlzIGRyaXZlciBhcyBhIHNlcmllcyBzbw0KPiBvcmRlcmluZyBpcyBv
-YnZpb3VzIGV0Yy4NCg0KSG1tLCB0aGUgcGF0Y2ggZG9lc24ndCBjbGFzaCwgYnV0IEkgd2lsbCBz
-ZW5kIHRoZW0gYXMgYSBzZXJpZXMuDQoNCj4gDQo+IE90aGVyd2lzZSB0aGlzIG9uZSBsb29rcyBn
-b29kIHRvIG1lLg0KPiANCj4gVGhhbmtzLA0KPiANCj4gSm9uYXRoYW4NCg0KVGhhbmtzDQpBbGV4
-DQoNCj4gPiAtLS0NCj4gPiAgZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvS2NvbmZpZyAgICAgIHwg
-IDIgKy0NCj4gPiAgZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NjA2LmMgICAgIHwgMzMgKysr
-KysrKysrKysrKysrKysrKysrKystLS0tLQ0KPiA+ICBkcml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9h
-ZDc2MDYuaCAgICAgfCAgMyArKysNCj4gPiAgZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NjA2
-X3Bhci5jIHwgIDMgKysrDQo+ID4gIGRyaXZlcnMvc3RhZ2luZy9paW8vYWRjL2FkNzYwNl9zcGku
-YyB8ICAxICsNCj4gPiAgNSBmaWxlcyBjaGFuZ2VkLCAzNiBpbnNlcnRpb25zKCspLCA2IGRlbGV0
-aW9ucygtKQ0KPiA+IA0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9L
-Y29uZmlnDQo+ID4gYi9kcml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9LY29uZmlnDQo+ID4gaW5kZXgg
-ZTE3ZWZiMDNiYWMwLi45ZDMwNjJhMDc0NjAgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9zdGFn
-aW5nL2lpby9hZGMvS2NvbmZpZw0KPiA+ICsrKyBiL2RyaXZlcnMvc3RhZ2luZy9paW8vYWRjL0tj
-b25maWcNCj4gPiBAQCAtMTEsNyArMTEsNyBAQCBjb25maWcgQUQ3NjA2DQo+ID4gIAlzZWxlY3Qg
-SUlPX1RSSUdHRVJFRF9CVUZGRVINCj4gPiAgCWhlbHANCj4gPiAgCSAgU2F5IHllcyBoZXJlIHRv
-IGJ1aWxkIHN1cHBvcnQgZm9yIEFuYWxvZyBEZXZpY2VzOg0KPiA+IC0JICBhZDc2MDYsIGFkNzYw
-Ni02LCBhZDc2MDYtNCBhbmFsb2cgdG8gZGlnaXRhbCBjb252ZXJ0ZXJzDQo+ID4gKEFEQykuDQo+
-ID4gKwkgIGFkNzYwNS00LCBhZDc2MDYsIGFkNzYwNi02LCBhZDc2MDYtNCBhbmFsb2cgdG8gZGln
-aXRhbA0KPiA+IGNvbnZlcnRlcnMgKEFEQykuDQo+ID4gIA0KPiA+ICAJICBUbyBjb21waWxlIHRo
-aXMgZHJpdmVyIGFzIGEgbW9kdWxlLCBjaG9vc2UgTSBoZXJlOiB0aGUNCj4gPiAgCSAgbW9kdWxl
-IHdpbGwgYmUgY2FsbGVkIGFkNzYwNi4NCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9zdGFnaW5n
-L2lpby9hZGMvYWQ3NjA2LmMNCj4gPiBiL2RyaXZlcnMvc3RhZ2luZy9paW8vYWRjL2FkNzYwNi5j
-DQo+ID4gaW5kZXggNzkzZGU5MmYyN2VkLi4wNmQ2NTE5NmJlZGIgMTAwNjQ0DQo+ID4gLS0tIGEv
-ZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NjA2LmMNCj4gPiArKysgYi9kcml2ZXJzL3N0YWdp
-bmcvaWlvL2FkYy9hZDc2MDYuYw0KPiA+IEBAIC0yNzUsNyArMjc1LDcgQEAgc3RhdGljIGNvbnN0
-IHN0cnVjdCBhdHRyaWJ1dGVfZ3JvdXANCj4gPiBhZDc2MDZfYXR0cmlidXRlX2dyb3VwX3Jhbmdl
-ID0gew0KPiA+ICAJLmF0dHJzID0gYWQ3NjA2X2F0dHJpYnV0ZXNfcmFuZ2UsDQo+ID4gIH07DQo+
-ID4gIA0KPiA+IC0jZGVmaW5lIEFENzYwNl9DSEFOTkVMKG51bSkJCQkJCVwNCj4gPiArI2RlZmlu
-ZSBBRDc2MFhfQ0hBTk5FTChudW0sIG1hc2spCQkJCVwNCj4gPiAgCXsJCQkJCQkJXA0KPiA+ICAJ
-CS50eXBlID0gSUlPX1ZPTFRBR0UsCQkJCVwNCj4gPiAgCQkuaW5kZXhlZCA9IDEsCQkJCQlcDQo+
-ID4gQEAgLTI4Myw4ICsyODMsNyBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IGF0dHJpYnV0ZV9ncm91
-cA0KPiA+IGFkNzYwNl9hdHRyaWJ1dGVfZ3JvdXBfcmFuZ2UgPSB7DQo+ID4gIAkJLmFkZHJlc3Mg
-PSBudW0sCQkJCQkNCj4gPiBcDQo+ID4gIAkJLmluZm9fbWFza19zZXBhcmF0ZSA9IEJJVChJSU9f
-Q0hBTl9JTkZPX1JBVyksCVwNCj4gPiAgCQkuaW5mb19tYXNrX3NoYXJlZF9ieV90eXBlID0gQklU
-KElJT19DSEFOX0lORk9fU0NBTEUpLFwNCj4gPiAtCQkuaW5mb19tYXNrX3NoYXJlZF9ieV9hbGwg
-PQkJCVwNCj4gPiAtCQkJQklUKElJT19DSEFOX0lORk9fT1ZFUlNBTVBMSU5HX1JBVElPKSwJDQo+
-ID4gXA0KPiA+ICsJCS5pbmZvX21hc2tfc2hhcmVkX2J5X2FsbCA9IG1hc2ssCQlcDQo+ID4gIAkJ
-LnNjYW5faW5kZXggPSBudW0sCQkJCVwNCj4gPiAgCQkuc2Nhbl90eXBlID0gewkJCQkJDQo+ID4g
-XA0KPiA+ICAJCQkuc2lnbiA9ICdzJywJCQkJXA0KPiA+IEBAIC0yOTQsNiArMjkzLDIwIEBAIHN0
-YXRpYyBjb25zdCBzdHJ1Y3QgYXR0cmlidXRlX2dyb3VwDQo+ID4gYWQ3NjA2X2F0dHJpYnV0ZV9n
-cm91cF9yYW5nZSA9IHsNCj4gPiAgCQl9LAkJCQkJCVwNCj4gPiAgCX0NCj4gPiAgDQo+ID4gKyNk
-ZWZpbmUgQUQ3NjA1X0NIQU5ORUwobnVtKQlcDQo+ID4gKwlBRDc2MFhfQ0hBTk5FTChudW0sIDAp
-DQo+ID4gKw0KPiA+ICsjZGVmaW5lIEFENzYwNl9DSEFOTkVMKG51bSkJXA0KPiA+ICsJQUQ3NjBY
-X0NIQU5ORUwobnVtLCBCSVQoSUlPX0NIQU5fSU5GT19PVkVSU0FNUExJTkdfUkFUSU8pKQ0KPiA+
-ICsNCj4gPiArc3RhdGljIGNvbnN0IHN0cnVjdCBpaW9fY2hhbl9zcGVjIGFkNzYwNV9jaGFubmVs
-c1tdID0gew0KPiA+ICsJSUlPX0NIQU5fU09GVF9USU1FU1RBTVAoNCksDQo+ID4gKwlBRDc2MDVf
-Q0hBTk5FTCgwKSwNCj4gPiArCUFENzYwNV9DSEFOTkVMKDEpLA0KPiA+ICsJQUQ3NjA1X0NIQU5O
-RUwoMiksDQo+ID4gKwlBRDc2MDVfQ0hBTk5FTCgzKSwNCj4gPiArfTsNCj4gPiArDQo+ID4gIHN0
-YXRpYyBjb25zdCBzdHJ1Y3QgaWlvX2NoYW5fc3BlYyBhZDc2MDZfY2hhbm5lbHNbXSA9IHsNCj4g
-PiAgCUlJT19DSEFOX1NPRlRfVElNRVNUQU1QKDgpLA0KPiA+ICAJQUQ3NjA2X0NIQU5ORUwoMCks
-DQo+ID4gQEAgLTMxMCwxNyArMzIzLDI0IEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3QgYWQ3NjA2X2No
-aXBfaW5mbw0KPiA+IGFkNzYwNl9jaGlwX2luZm9fdGJsW10gPSB7DQo+ID4gIAkvKg0KPiA+ICAJ
-ICogTW9yZSBkZXZpY2VzIGFkZGVkIGluIGZ1dHVyZQ0KPiA+ICAJICovDQo+ID4gKwlbSURfQUQ3
-NjA1XzRdID0gew0KPiA+ICsJCS5jaGFubmVscyA9IGFkNzYwNV9jaGFubmVscywNCj4gPiArCQku
-bnVtX2NoYW5uZWxzID0gNSwNCj4gPiArCX0sDQo+ID4gIAlbSURfQUQ3NjA2XzhdID0gew0KPiA+
-ICAJCS5jaGFubmVscyA9IGFkNzYwNl9jaGFubmVscywNCj4gPiAgCQkubnVtX2NoYW5uZWxzID0g
-OSwNCj4gPiArCQkuaGFzX292ZXJzYW1wbGluZyA9IHRydWUsDQo+ID4gIAl9LA0KPiA+ICAJW0lE
-X0FENzYwNl82XSA9IHsNCj4gPiAgCQkuY2hhbm5lbHMgPSBhZDc2MDZfY2hhbm5lbHMsDQo+ID4g
-IAkJLm51bV9jaGFubmVscyA9IDcsDQo+ID4gKwkJLmhhc19vdmVyc2FtcGxpbmcgPSB0cnVlLA0K
-PiA+ICAJfSwNCj4gPiAgCVtJRF9BRDc2MDZfNF0gPSB7DQo+ID4gIAkJLmNoYW5uZWxzID0gYWQ3
-NjA2X2NoYW5uZWxzLA0KPiA+ICAJCS5udW1fY2hhbm5lbHMgPSA1LA0KPiA+ICsJCS5oYXNfb3Zl
-cnNhbXBsaW5nID0gdHJ1ZSwNCj4gPiAgCX0sDQo+ID4gIH07DQo+ID4gIA0KPiA+IEBAIC0zNTEs
-NiArMzcxLDkgQEAgc3RhdGljIGludCBhZDc2MDZfcmVxdWVzdF9ncGlvcyhzdHJ1Y3QgYWQ3NjA2
-X3N0YXRlDQo+ID4gKnN0KQ0KPiA+ICAJaWYgKElTX0VSUihzdC0+Z3Bpb19mcnN0ZGF0YSkpDQo+
-ID4gIAkJcmV0dXJuIFBUUl9FUlIoc3QtPmdwaW9fZnJzdGRhdGEpOw0KPiA+ICANCj4gPiArCWlm
-ICghc3QtPmNoaXBfaW5mby0+aGFzX292ZXJzYW1wbGluZykNCj4gPiArCQlyZXR1cm4gMDsNCj4g
-PiArDQo+ID4gIAlzdC0+Z3Bpb19vcyA9IGRldm1fZ3Bpb2RfZ2V0X2FycmF5X29wdGlvbmFsKGRl
-diwNCj4gPiAib3ZlcnNhbXBsaW5nLXJhdGlvIiwNCj4gPiAgCQkJR1BJT0RfT1VUX0xPVyk7DQo+
-ID4gIAlyZXR1cm4gUFRSX0VSUl9PUl9aRVJPKHN0LT5ncGlvX29zKTsNCj4gPiBAQCAtNDI5LDEy
-ICs0NTIsMTIgQEAgaW50IGFkNzYwNl9wcm9iZShzdHJ1Y3QgZGV2aWNlICpkZXYsIGludCBpcnEs
-DQo+ID4gdm9pZCBfX2lvbWVtICpiYXNlX2FkZHJlc3MsDQo+ID4gIAkJcmV0dXJuIHJldDsNCj4g
-PiAgCX0NCj4gPiAgDQo+ID4gKwlzdC0+Y2hpcF9pbmZvID0gJmFkNzYwNl9jaGlwX2luZm9fdGJs
-W2lkXTsNCj4gPiArDQo+ID4gIAlyZXQgPSBhZDc2MDZfcmVxdWVzdF9ncGlvcyhzdCk7DQo+ID4g
-IAlpZiAocmV0KQ0KPiA+ICAJCWdvdG8gZXJyb3JfZGlzYWJsZV9yZWc7DQo+ID4gIA0KPiA+IC0J
-c3QtPmNoaXBfaW5mbyA9ICZhZDc2MDZfY2hpcF9pbmZvX3RibFtpZF07DQo+ID4gLQ0KPiA+ICAJ
-aW5kaW9fZGV2LT5kZXYucGFyZW50ID0gZGV2Ow0KPiA+ICAJaWYgKHN0LT5ncGlvX29zKSB7DQo+
-ID4gIAkJaWYgKHN0LT5ncGlvX3JhbmdlKQ0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3N0YWdp
-bmcvaWlvL2FkYy9hZDc2MDYuaA0KPiA+IGIvZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NjA2
-LmgNCj4gPiBpbmRleCA1N2YxMWI0NmJjNjkuLmY0MjIyOTYzNTRjOSAxMDA2NDQNCj4gPiAtLS0g
-YS9kcml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9hZDc2MDYuaA0KPiA+ICsrKyBiL2RyaXZlcnMvc3Rh
-Z2luZy9paW8vYWRjL2FkNzYwNi5oDQo+ID4gQEAgLTEzLDExICsxMywxMyBAQA0KPiA+ICAgKiBz
-dHJ1Y3QgYWQ3NjA2X2NoaXBfaW5mbyAtIGNoaXAgc3BlY2lmaWMgaW5mb3JtYXRpb24NCj4gPiAg
-ICogQGNoYW5uZWxzOgkJY2hhbm5lbCBzcGVjaWZpY2F0aW9uDQo+ID4gICAqIEBudW1fY2hhbm5l
-bHM6CW51bWJlciBvZiBjaGFubmVscw0KPiA+ICsgKiBAaGFzX292ZXJzYW1wbGluZzogICB3aGV0
-aGVyIHRoZSBkZXZpY2UgaGFzIG92ZXJzYW1wbGluZyBzdXBwb3J0DQo+ID4gICAqLw0KPiA+ICAN
-Cj4gPiAgc3RydWN0IGFkNzYwNl9jaGlwX2luZm8gew0KPiA+ICAJY29uc3Qgc3RydWN0IGlpb19j
-aGFuX3NwZWMJKmNoYW5uZWxzOw0KPiA+ICAJdW5zaWduZWQgaW50CQkJbnVtX2NoYW5uZWxzOw0K
-PiA+ICsJYm9vbAkJCQloYXNfb3ZlcnNhbXBsaW5nOw0KPiA+ICB9Ow0KPiA+ICANCj4gPiAgLyoq
-DQo+ID4gQEAgLTg3LDYgKzg5LDcgQEAgaW50IGFkNzYwNl9wcm9iZShzdHJ1Y3QgZGV2aWNlICpk
-ZXYsIGludCBpcnEsIHZvaWQNCj4gPiBfX2lvbWVtICpiYXNlX2FkZHJlc3MsDQo+ID4gIGludCBh
-ZDc2MDZfcmVtb3ZlKHN0cnVjdCBkZXZpY2UgKmRldiwgaW50IGlycSk7DQo+ID4gIA0KPiA+ICBl
-bnVtIGFkNzYwNl9zdXBwb3J0ZWRfZGV2aWNlX2lkcyB7DQo+ID4gKwlJRF9BRDc2MDVfNCwNCj4g
-PiAgCUlEX0FENzYwNl84LA0KPiA+ICAJSURfQUQ3NjA2XzYsDQo+ID4gIAlJRF9BRDc2MDZfNA0K
-PiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9hZDc2MDZfcGFyLmMNCj4g
-PiBiL2RyaXZlcnMvc3RhZ2luZy9paW8vYWRjL2FkNzYwNl9wYXIuYw0KPiA+IGluZGV4IDk1NmUz
-ODc3NDc2Ny4uOGJkODZlNzI3YjAyIDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvc3RhZ2luZy9p
-aW8vYWRjL2FkNzYwNl9wYXIuYw0KPiA+ICsrKyBiL2RyaXZlcnMvc3RhZ2luZy9paW8vYWRjL2Fk
-NzYwNl9wYXIuYw0KPiA+IEBAIC03OSw2ICs3OSw5IEBAIHN0YXRpYyBpbnQgYWQ3NjA2X3Bhcl9y
-ZW1vdmUoc3RydWN0IHBsYXRmb3JtX2RldmljZQ0KPiA+ICpwZGV2KQ0KPiA+ICANCj4gPiAgc3Rh
-dGljIGNvbnN0IHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2VfaWQgYWQ3NjA2X2RyaXZlcl9pZHNbXSA9
-IHsNCj4gPiAgCXsNCj4gPiArCQkubmFtZQkJPSAiYWQ3NjA1LTQiLA0KPiA+ICsJCS5kcml2ZXJf
-ZGF0YQk9IElEX0FENzYwNV80LA0KPiA+ICsJfSwgew0KPiA+ICAJCS5uYW1lCQk9ICJhZDc2MDYt
-OCIsDQo+ID4gIAkJLmRyaXZlcl9kYXRhCT0gSURfQUQ3NjA2XzgsDQo+ID4gIAl9LCB7DQo+ID4g
-ZGlmZiAtLWdpdCBhL2RyaXZlcnMvc3RhZ2luZy9paW8vYWRjL2FkNzYwNl9zcGkuYw0KPiA+IGIv
-ZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NjA2X3NwaS5jDQo+ID4gaW5kZXggZmZkOWQwNjI2
-ZWMyLi5iNzZjYTVhOGMwNTkgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9zdGFnaW5nL2lpby9h
-ZGMvYWQ3NjA2X3NwaS5jDQo+ID4gKysrIGIvZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NjA2
-X3NwaS5jDQo+ID4gQEAgLTU1LDYgKzU1LDcgQEAgc3RhdGljIGludCBhZDc2MDZfc3BpX3JlbW92
-ZShzdHJ1Y3Qgc3BpX2RldmljZSAqc3BpKQ0KPiA+ICB9DQo+ID4gIA0KPiA+ICBzdGF0aWMgY29u
-c3Qgc3RydWN0IHNwaV9kZXZpY2VfaWQgYWQ3NjA2X2lkW10gPSB7DQo+ID4gKwl7ImFkNzYwNS00
-IiwgSURfQUQ3NjA1XzR9LA0KPiA+ICAJeyJhZDc2MDYtOCIsIElEX0FENzYwNl84fSwNCj4gPiAg
-CXsiYWQ3NjA2LTYiLCBJRF9BRDc2MDZfNn0sDQo+ID4gIAl7ImFkNzYwNi00IiwgSURfQUQ3NjA2
-XzR9LA0KPiANCj4g
+On Mon, 17 Sep 2018 07:33:13 +0000
+"Ardelean, Alexandru" <alexandru.Ardelean@analog.com> wrote:
+
+> On Sun, 2018-09-16 at 12:22 +0100, Jonathan Cameron wrote:
+> > On Thu, 13 Sep 2018 14:02:12 +0300
+> > Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
+> >   
+> > > Add support for the AD7605-4 to the AD7606 driver. The AD7605-4 is
+> > > mostly
+> > > interface compatible to the AD7606-6 with the only difference being not
+> > > having support for oversampling.
+> > > 
+> > > Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>  
+> > 
+> > I am guessing this might clash with the devm change from earlier in the
+> > day so I'm not going to apply it (too much risk of a bug sneaking in).
+> > 
+> > Please resend the remaining patches in for this driver as a series so
+> > ordering is obvious etc.  
+> 
+> Hmm, the patch doesn't clash, but I will send them as a series.
+
+I was being lazy and didn't actually check ;) Relied on false intuition.
+
+Thanks,
+
+Jonathan
+
+> 
+> > 
+> > Otherwise this one looks good to me.
+> > 
+> > Thanks,
+> > 
+> > Jonathan  
+> 
+> Thanks
+> Alex
+> 
+> > > ---
+> > >  drivers/staging/iio/adc/Kconfig      |  2 +-
+> > >  drivers/staging/iio/adc/ad7606.c     | 33 +++++++++++++++++++++++-----
+> > >  drivers/staging/iio/adc/ad7606.h     |  3 +++
+> > >  drivers/staging/iio/adc/ad7606_par.c |  3 +++
+> > >  drivers/staging/iio/adc/ad7606_spi.c |  1 +
+> > >  5 files changed, 36 insertions(+), 6 deletions(-)
+> > > 
+> > > diff --git a/drivers/staging/iio/adc/Kconfig
+> > > b/drivers/staging/iio/adc/Kconfig
+> > > index e17efb03bac0..9d3062a07460 100644
+> > > --- a/drivers/staging/iio/adc/Kconfig
+> > > +++ b/drivers/staging/iio/adc/Kconfig
+> > > @@ -11,7 +11,7 @@ config AD7606
+> > >  	select IIO_TRIGGERED_BUFFER
+> > >  	help
+> > >  	  Say yes here to build support for Analog Devices:
+> > > -	  ad7606, ad7606-6, ad7606-4 analog to digital converters
+> > > (ADC).
+> > > +	  ad7605-4, ad7606, ad7606-6, ad7606-4 analog to digital
+> > > converters (ADC).
+> > >  
+> > >  	  To compile this driver as a module, choose M here: the
+> > >  	  module will be called ad7606.
+> > > diff --git a/drivers/staging/iio/adc/ad7606.c
+> > > b/drivers/staging/iio/adc/ad7606.c
+> > > index 793de92f27ed..06d65196bedb 100644
+> > > --- a/drivers/staging/iio/adc/ad7606.c
+> > > +++ b/drivers/staging/iio/adc/ad7606.c
+> > > @@ -275,7 +275,7 @@ static const struct attribute_group
+> > > ad7606_attribute_group_range = {
+> > >  	.attrs = ad7606_attributes_range,
+> > >  };
+> > >  
+> > > -#define AD7606_CHANNEL(num)					\
+> > > +#define AD760X_CHANNEL(num, mask)				\
+> > >  	{							\
+> > >  		.type = IIO_VOLTAGE,				\
+> > >  		.indexed = 1,					\
+> > > @@ -283,8 +283,7 @@ static const struct attribute_group
+> > > ad7606_attribute_group_range = {
+> > >  		.address = num,					
+> > > \
+> > >  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
+> > >  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),\
+> > > -		.info_mask_shared_by_all =			\
+> > > -			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),	
+> > > \
+> > > +		.info_mask_shared_by_all = mask,		\
+> > >  		.scan_index = num,				\
+> > >  		.scan_type = {					
+> > > \
+> > >  			.sign = 's',				\
+> > > @@ -294,6 +293,20 @@ static const struct attribute_group
+> > > ad7606_attribute_group_range = {
+> > >  		},						\
+> > >  	}
+> > >  
+> > > +#define AD7605_CHANNEL(num)	\
+> > > +	AD760X_CHANNEL(num, 0)
+> > > +
+> > > +#define AD7606_CHANNEL(num)	\
+> > > +	AD760X_CHANNEL(num, BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO))
+> > > +
+> > > +static const struct iio_chan_spec ad7605_channels[] = {
+> > > +	IIO_CHAN_SOFT_TIMESTAMP(4),
+> > > +	AD7605_CHANNEL(0),
+> > > +	AD7605_CHANNEL(1),
+> > > +	AD7605_CHANNEL(2),
+> > > +	AD7605_CHANNEL(3),
+> > > +};
+> > > +
+> > >  static const struct iio_chan_spec ad7606_channels[] = {
+> > >  	IIO_CHAN_SOFT_TIMESTAMP(8),
+> > >  	AD7606_CHANNEL(0),
+> > > @@ -310,17 +323,24 @@ static const struct ad7606_chip_info
+> > > ad7606_chip_info_tbl[] = {
+> > >  	/*
+> > >  	 * More devices added in future
+> > >  	 */
+> > > +	[ID_AD7605_4] = {
+> > > +		.channels = ad7605_channels,
+> > > +		.num_channels = 5,
+> > > +	},
+> > >  	[ID_AD7606_8] = {
+> > >  		.channels = ad7606_channels,
+> > >  		.num_channels = 9,
+> > > +		.has_oversampling = true,
+> > >  	},
+> > >  	[ID_AD7606_6] = {
+> > >  		.channels = ad7606_channels,
+> > >  		.num_channels = 7,
+> > > +		.has_oversampling = true,
+> > >  	},
+> > >  	[ID_AD7606_4] = {
+> > >  		.channels = ad7606_channels,
+> > >  		.num_channels = 5,
+> > > +		.has_oversampling = true,
+> > >  	},
+> > >  };
+> > >  
+> > > @@ -351,6 +371,9 @@ static int ad7606_request_gpios(struct ad7606_state
+> > > *st)
+> > >  	if (IS_ERR(st->gpio_frstdata))
+> > >  		return PTR_ERR(st->gpio_frstdata);
+> > >  
+> > > +	if (!st->chip_info->has_oversampling)
+> > > +		return 0;
+> > > +
+> > >  	st->gpio_os = devm_gpiod_get_array_optional(dev,
+> > > "oversampling-ratio",
+> > >  			GPIOD_OUT_LOW);
+> > >  	return PTR_ERR_OR_ZERO(st->gpio_os);
+> > > @@ -429,12 +452,12 @@ int ad7606_probe(struct device *dev, int irq,
+> > > void __iomem *base_address,
+> > >  		return ret;
+> > >  	}
+> > >  
+> > > +	st->chip_info = &ad7606_chip_info_tbl[id];
+> > > +
+> > >  	ret = ad7606_request_gpios(st);
+> > >  	if (ret)
+> > >  		goto error_disable_reg;
+> > >  
+> > > -	st->chip_info = &ad7606_chip_info_tbl[id];
+> > > -
+> > >  	indio_dev->dev.parent = dev;
+> > >  	if (st->gpio_os) {
+> > >  		if (st->gpio_range)
+> > > diff --git a/drivers/staging/iio/adc/ad7606.h
+> > > b/drivers/staging/iio/adc/ad7606.h
+> > > index 57f11b46bc69..f422296354c9 100644
+> > > --- a/drivers/staging/iio/adc/ad7606.h
+> > > +++ b/drivers/staging/iio/adc/ad7606.h
+> > > @@ -13,11 +13,13 @@
+> > >   * struct ad7606_chip_info - chip specific information
+> > >   * @channels:		channel specification
+> > >   * @num_channels:	number of channels
+> > > + * @has_oversampling:   whether the device has oversampling support
+> > >   */
+> > >  
+> > >  struct ad7606_chip_info {
+> > >  	const struct iio_chan_spec	*channels;
+> > >  	unsigned int			num_channels;
+> > > +	bool				has_oversampling;
+> > >  };
+> > >  
+> > >  /**
+> > > @@ -87,6 +89,7 @@ int ad7606_probe(struct device *dev, int irq, void
+> > > __iomem *base_address,
+> > >  int ad7606_remove(struct device *dev, int irq);
+> > >  
+> > >  enum ad7606_supported_device_ids {
+> > > +	ID_AD7605_4,
+> > >  	ID_AD7606_8,
+> > >  	ID_AD7606_6,
+> > >  	ID_AD7606_4
+> > > diff --git a/drivers/staging/iio/adc/ad7606_par.c
+> > > b/drivers/staging/iio/adc/ad7606_par.c
+> > > index 956e38774767..8bd86e727b02 100644
+> > > --- a/drivers/staging/iio/adc/ad7606_par.c
+> > > +++ b/drivers/staging/iio/adc/ad7606_par.c
+> > > @@ -79,6 +79,9 @@ static int ad7606_par_remove(struct platform_device
+> > > *pdev)
+> > >  
+> > >  static const struct platform_device_id ad7606_driver_ids[] = {
+> > >  	{
+> > > +		.name		= "ad7605-4",
+> > > +		.driver_data	= ID_AD7605_4,
+> > > +	}, {
+> > >  		.name		= "ad7606-8",
+> > >  		.driver_data	= ID_AD7606_8,
+> > >  	}, {
+> > > diff --git a/drivers/staging/iio/adc/ad7606_spi.c
+> > > b/drivers/staging/iio/adc/ad7606_spi.c
+> > > index ffd9d0626ec2..b76ca5a8c059 100644
+> > > --- a/drivers/staging/iio/adc/ad7606_spi.c
+> > > +++ b/drivers/staging/iio/adc/ad7606_spi.c
+> > > @@ -55,6 +55,7 @@ static int ad7606_spi_remove(struct spi_device *spi)
+> > >  }
+> > >  
+> > >  static const struct spi_device_id ad7606_id[] = {
+> > > +	{"ad7605-4", ID_AD7605_4},
+> > >  	{"ad7606-8", ID_AD7606_8},
+> > >  	{"ad7606-6", ID_AD7606_6},
+> > >  	{"ad7606-4", ID_AD7606_4},  
+> > 
+> >  
