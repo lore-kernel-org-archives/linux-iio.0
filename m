@@ -1,108 +1,67 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:43648 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728187AbeIVViV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 22 Sep 2018 17:38:21 -0400
-Date: Sat, 22 Sep 2018 16:44:15 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Song Qiang <songqiang1304521@gmail.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        robh+dt@kernel.org, mark.rutland@arm.com,
-        andriy.shevchenko@linux.intel.com, matt.ranostay@konsulko.com,
-        tglx@linutronix.de, ak@it-klinger.de, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v6 1/2] iio: proximity: Add driver support for ST's
- VL53L0X ToF ranging sensor.
-Message-ID: <20180922164415.67a55cb2@archlinux>
-In-Reply-To: <20180922152621.GA953@Eros>
-References: <20180918082422.13050-1-songqiang1304521@gmail.com>
-        <20180922154658.752f2fbf@archlinux>
-        <20180922152621.GA953@Eros>
+Return-Path: <SRS0=hRY/=MA=analog.com=alexandru.Ardelean@kernel.org>
+From: Alexandru Ardelean <alexandru.ardelean@analog.com>
+To: <linux-iio@vger.kernel.org>, <Michael.Hennerich@analog.com>,
+	<lars@metafoo.de>, <jic23@kernel.org>
+CC: <knaack.h@gmx.de>, <pmeerw@pmeerw.net>, Alexandru Ardelean
+	<alexandru.ardelean@analog.com>
+Subject: [PATCH V2] staging:iio:ad7606: update structs with doc annotations
+Date: Tue, 18 Sep 2018 15:15:03 +0300
+Message-ID: <20180918121503.12651-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, 22 Sep 2018 23:28:04 +0800
-Song Qiang <songqiang1304521@gmail.com> wrote:
+The current structs are only partially documented via annotations. This
+change updates annotations for all structs in the ad7606.h file.
 
-> On Sat, Sep 22, 2018 at 03:46:58PM +0100, Jonathan Cameron wrote:
-> > On Tue, 18 Sep 2018 16:24:21 +0800
-> > Song Qiang <songqiang1304521@gmail.com> wrote:
-> >   
-> > > This driver was originally written by ST in 2016 as a misc input device
-> > > driver, and hasn't been maintained for a long time. I grabbed some code
-> > > from it's API and reformed it into an iio proximity device driver.
-> > > This version of driver uses i2c bus to talk to the sensor and
-> > > polling for measuring completes, so no irq line is needed.
-> > > It can be tested with reading from
-> > > /sys/bus/iio/devices/iio:deviceX/in_distance_input
-> > > 
-> > > Signed-off-by: Song Qiang <songqiang1304521@gmail.com>  
-> > There are a few bits and bobs in here, but as they are all minor and
-> > one at least was me giving you wrong advise, I've fixed it up.
-> > 
-> > Please check I haven't made a mess of it! 
-> > 
-> > Applied with changes to the togreg branch of iio.git and pushed out
-> > as testing (where it should be visible now) for the autobuilders to
-> > play with it.
-> > 
-> > Thanks,
-> > 
-> > Jonathan  
-> > > ---  
-> 
-> > > +	indio_dev->name = "vl53l0x";
-> > > +	indio_dev->info = &vl53l0x_info;
-> > > +	indio_dev->channels = vl53l0x_channels;
-> > > +	indio_dev->num_channels = ARRAY_SIZE(vl53l0x_channels);
-> > > +	indio_dev->modes = INDIO_DIRECT_MODE;
-> > > +
-> > > +	return devm_iio_device_register(&client->dev, indio_dev);
-> > > +}
-> > > +
-> > > +static const struct of_device_id st_vl53l0x_dt_match[] = {
-> > > +	{ .compatible = "st,vl53l0x-i2c", },  
-> > 
-> > Ah, this suffers from the same thing that was picked up in a driver
-> > you sent later in the week.  No need to have -i2c in the compatible
-> > as this is clear from the bus type.
-> > 
-> > (I might just fix this up).
-> >   
-> 
-> Hi Jonathan,
-> 
-> Sorry for the newbie mistakes you and Himanshu pointed out, I'm just
-> writing them down on my little checklist!
-> I just checked the code, found that this compatible string was not
-> getting corrected in the DT binding doc file, sorry that you have
-> to help correct my mistakes, thanks a lot!
-Fixed up (and this was my mistake - we all make them - that's what review
-is for!)
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+ drivers/staging/iio/adc/ad7606.h | 26 +++++++++++++++++++++++++-
+ 1 file changed, 25 insertions(+), 1 deletion(-)
 
-Thanks,
-
-Jonathan
-> 
-> yours,
-> Song Qiang
-> 
-> > > +	{ }
-> > > +};
-> > > +MODULE_DEVICE_TABLE(of, st_vl53l0x_dt_match);
-> > > +
-> > > +static struct i2c_driver vl53l0x_driver = {
-> > > +	.driver = {
-> > > +		.name = "vl53l0x-i2c",
-> > > +		.of_match_table = st_vl53l0x_dt_match,
-> > > +	},
-> > > +	.probe_new = vl53l0x_probe,
-> > > +};
-> > > +module_i2c_driver(vl53l0x_driver);
-> > > +
-> > > +MODULE_AUTHOR("Song Qiang <songqiang1304521@gmail.com>");
-> > > +MODULE_DESCRIPTION("ST vl53l0x ToF ranging sensor driver");
-> > > +MODULE_LICENSE("GPL v2");  
-> >   
+diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
+index 4983e3aa6b0e..86188054b60b 100644
+--- a/drivers/staging/iio/adc/ad7606.h
++++ b/drivers/staging/iio/adc/ad7606.h
+@@ -24,7 +24,27 @@ struct ad7606_chip_info {
+ 
+ /**
+  * struct ad7606_state - driver instance specific data
+- * @lock		protect sensor state
++ * @dev		pointer to kernel device
++ * @chip_info		entry in the table of chips that describes this device
++ * @reg		regulator info for the the power supply of the device
++ * @poll_work		work struct for continuously reading data from the device
++ *			into an IIO triggered buffer
++ * @wq_data_avail	wait queue struct for buffer mode
++ * @bops		bus operations (SPI or parallel)
++ * @range		voltage range selection, selects which scale to apply
++ * @oversampling	oversampling selection
++ * @done		marks whether reading data is done
++ * @base_address	address from where to read data in parallel operation
++ * @lock		protect sensor state from concurrent accesses to GPIOs
++ * @gpio_convst	GPIO descriptor for conversion start signal (CONVST)
++ * @gpio_reset		GPIO descriptor for device hard-reset
++ * @gpio_range		GPIO descriptor for range selection
++ * @gpio_standby	GPIO descriptor for stand-by signal (STBY),
++ *			controls power-down mode of device
++ * @gpio_frstdata	GPIO descriptor for reading from device when data
++ *			is being read on the first channel
++ * @gpio_os		GPIO descriptors to control oversampling on the device
++ * @data		buffer for reading data from the device
+  */
+ 
+ struct ad7606_state {
+@@ -55,6 +75,10 @@ struct ad7606_state {
+ 	unsigned short			data[12] ____cacheline_aligned;
+ };
+ 
++/**
++ * struct ad7606_bus_ops - driver bus operations
++ * @read_block		function pointer for reading blocks of data
++ */
+ struct ad7606_bus_ops {
+ 	/* more methods added in future? */
+ 	int (*read_block)(struct device *dev, int num, void *data);
+-- 
+2.17.1
