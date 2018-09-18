@@ -1,43 +1,52 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from vern.gendns.com ([206.190.152.46]:51313 "EHLO vern.gendns.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730140AbeIRWnD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 18 Sep 2018 18:43:03 -0400
+Return-Path: <SRS0=jqtk=MA=lechnology.com=david@kernel.org>
 From: David Lechner <david@lechnology.com>
-To: linux-spi@vger.kernel.org, linux-iio@vger.kernel.org
+To: linux-spi@vger.kernel.org,
+	linux-iio@vger.kernel.org
 Cc: David Lechner <david@lechnology.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Mark Brown <broonie@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 0/3] spi: SPI_CS_WORD followup
-Date: Tue, 18 Sep 2018 12:08:47 -0500
-Message-Id: <20180918170850.2749-1-david@lechnology.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Mark Brown <broonie@kernel.org>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 1/3] spi: always use software fallback for SPI_CS_WORD when using cs_gio
+Date: Tue, 18 Sep 2018 12:08:48 -0500
+Message-Id: <20180918170850.2749-2-david@lechnology.com>
+In-Reply-To: <20180918170850.2749-1-david@lechnology.com>
+References: <20180918170850.2749-1-david@lechnology.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-This is a followup to the series "spi: introduce SPI_CS_WORD mode flag" [1] to
-address some review comments.
+This modifies the condition for using the software fallback
+implementation for SPI_CS_WORD when the SPI controller is using a GPIO
+for the CS line. When using a GPIO for CS, the hardware implementation
+won't work, so we just enable the software fallback globally in this
+case.
 
-- The first two patches handle the case for GPIO CS
-- The last patch is the IIO patch from the previous series with an expanded
-  commit message.
+Signed-off-by: David Lechner <david@lechnology.com>
+---
+ drivers/spi/spi.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-
-[1]: https://lore.kernel.org/lkml/20180913003920.30600-1-david@lechnology.com/
-
-David Lechner (3):
-  spi: always use software fallback for SPI_CS_WORD when using cs_gio
-  spi: spi-davinci: Don't error when SPI_CS_WORD and cs_gpio
-  iio: adc: ti-ads7950: use SPI_CS_WORD to reduce CPU usage
-
- drivers/iio/adc/ti-ads7950.c | 53 +++++++++++++++++++++---------------
- drivers/spi/spi-davinci.c    |  3 --
- drivers/spi/spi.c            |  6 ++--
- 3 files changed, 35 insertions(+), 27 deletions(-)
-
+diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
+index e4fb87b304a0..03833924ca6c 100644
+--- a/drivers/spi/spi.c
++++ b/drivers/spi/spi.c
+@@ -2841,11 +2841,13 @@ static int __spi_validate(struct spi_device *spi, struct spi_message *message)
+ 		return -EINVAL;
+ 
+ 	/* If an SPI controller does not support toggling the CS line on each
+-	 * transfer (indicated by the SPI_CS_WORD flag), we can emulate it by
++	 * transfer (indicated by the SPI_CS_WORD flag) or we are using a GPIO
++	 * for the CS line, we can emulate the CS-per-word hardware function by
+ 	 * splitting transfers into one-word transfers and ensuring that
+ 	 * cs_change is set for each transfer.
+ 	 */
+-	if ((spi->mode & SPI_CS_WORD) && !(ctlr->mode_bits & SPI_CS_WORD)) {
++	if ((spi->mode & SPI_CS_WORD) && (!(ctlr->mode_bits & SPI_CS_WORD) ||
++					  gpio_is_valid(spi->cs_gpio))) {
+ 		size_t maxsize;
+ 		int ret;
+ 
 -- 
 2.17.1
