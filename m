@@ -1,72 +1,180 @@
-Return-Path: <SRS0=T3RB=MA=sirena.org.uk=broonie@kernel.org>
-From: Mark Brown <broonie@kernel.org>
-To: David Lechner <david@lechnology.com>
-Cc: Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org, linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Mark Brown <broonie@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org
-Subject: Applied "spi: spi-davinci: Don't error when SPI_CS_WORD and cs_gpio" to the spi tree
-In-Reply-To: <20180918170850.2749-3-david@lechnology.com>
-Message-Id: <20180918174549.DE9B4440078@finisterre.ee.mobilebroadband>
-Date: Tue, 18 Sep 2018 18:45:49 +0100 (BST)
-List-ID: <linux-iio@vger.kernel.org>
-
-The patch
-
-   spi: spi-davinci: Don't error when SPI_CS_WORD and cs_gpio
-
-has been applied to the spi tree at
-
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git 
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.  
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
-
->From f34ecdbd5661816ce8bbd7511f33181ffa8f4895 Mon Sep 17 00:00:00 2001
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from vern.gendns.com ([206.190.152.46]:51331 "EHLO vern.gendns.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730075AbeIRWnG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 18 Sep 2018 18:43:06 -0400
 From: David Lechner <david@lechnology.com>
-Date: Tue, 18 Sep 2018 12:08:49 -0500
-Subject: [PATCH] spi: spi-davinci: Don't error when SPI_CS_WORD and cs_gpio
+To: linux-spi@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: David Lechner <david@lechnology.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Mark Brown <broonie@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 3/3] iio: adc: ti-ads7950: use SPI_CS_WORD to reduce CPU usage
+Date: Tue, 18 Sep 2018 12:08:50 -0500
+Message-Id: <20180918170850.2749-4-david@lechnology.com>
+In-Reply-To: <20180918170850.2749-1-david@lechnology.com>
+References: <20180918170850.2749-1-david@lechnology.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This remove the check and subsequent return of error for the case when
-a SPI device requires SPI_CS_WORD and is also configured to use a GPIO
-for the CS line.
+This changes how the SPI message for the triggered buffer is setup in
+the TI ADS7950 A/DC driver. By using the SPI_CS_WORD flag, we can read
+multiple samples in a single SPI transfer. If the SPI controller
+supports DMA transfers, we can see a significant reduction in CPU usage.
 
-Commit a134cc414e86 ("spi: always use software fallback for SPI_CS_WORD
-when using cs_gio") handles this case now, so this check is no longer
-necessary.
+For example, on an ARM9 system running at 456MHz reading just 4 channels
+at 100Hz: before this change, top shows the CPU usage of the IRQ thread
+of this driver to be ~7.7%. After this change, the CPU usage drops to
+~3.8%.
+
+The use of big-endian for the raw data was cargo culted from another
+driver when this driver was originally written. It used an SPI word size
+of 8 bits and big-endian byte ordering to effectively emulate 16 bit
+words.
+
+Now, in order to inject a CS toggle between each word, we need to use
+the correct word size, otherwise we would get a CS toggle half way
+through each word 16-bit. The SPI subsystem uses CPU byte ordering for
+multi-byte words. So, the data we get back from the SPI is going to be
+CPU endian now no matter what. Converting that to big endian will just
+add overhead on little endian systems so we opt to change the raw data
+format from big endian to CPU endian.
+
+There is a small risk that this could break some lazy userspace programs
+that use the raw data without checking the data format. We can address
+this if/when it actually comes up.
 
 Signed-off-by: David Lechner <david@lechnology.com>
-Signed-off-by: Mark Brown <broonie@kernel.org>
 ---
- drivers/spi/spi-davinci.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/iio/adc/ti-ads7950.c | 53 +++++++++++++++++++++---------------
+ 1 file changed, 31 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/spi/spi-davinci.c b/drivers/spi/spi-davinci.c
-index 205f763c7383..56adec83f8fc 100644
---- a/drivers/spi/spi-davinci.c
-+++ b/drivers/spi/spi-davinci.c
-@@ -441,9 +441,6 @@ static int davinci_spi_setup(struct spi_device *spi)
+diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
+index a5bd5944bc66..0ad63592cc3c 100644
+--- a/drivers/iio/adc/ti-ads7950.c
++++ b/drivers/iio/adc/ti-ads7950.c
+@@ -51,7 +51,7 @@
  
- 		if (internal_cs) {
- 			set_io_bits(dspi->base + SPIPC0, 1 << spi->chip_select);
--		} else if (spi->mode & SPI_CS_WORD) {
--			dev_err(&spi->dev, "SPI_CS_WORD can't be use with GPIO CS\n");
--			return -EINVAL;
- 		}
+ struct ti_ads7950_state {
+ 	struct spi_device	*spi;
+-	struct spi_transfer	ring_xfer[TI_ADS7950_MAX_CHAN + 2];
++	struct spi_transfer	ring_xfer;
+ 	struct spi_transfer	scan_single_xfer[3];
+ 	struct spi_message	ring_msg;
+ 	struct spi_message	scan_single_msg;
+@@ -65,11 +65,11 @@ struct ti_ads7950_state {
+ 	 * DMA (thus cache coherency maintenance) requires the
+ 	 * transfer buffers to live in their own cache lines.
+ 	 */
+-	__be16	rx_buf[TI_ADS7950_MAX_CHAN + TI_ADS7950_TIMESTAMP_SIZE]
++	u16 rx_buf[TI_ADS7950_MAX_CHAN + 2 + TI_ADS7950_TIMESTAMP_SIZE]
+ 							____cacheline_aligned;
+-	__be16	tx_buf[TI_ADS7950_MAX_CHAN];
+-	__be16			single_tx;
+-	__be16			single_rx;
++	u16 tx_buf[TI_ADS7950_MAX_CHAN + 2];
++	u16 single_tx;
++	u16 single_rx;
+ 
+ };
+ 
+@@ -108,7 +108,7 @@ enum ti_ads7950_id {
+ 		.realbits = bits,				\
+ 		.storagebits = 16,				\
+ 		.shift = 12 - (bits),				\
+-		.endianness = IIO_BE,				\
++		.endianness = IIO_CPU,				\
+ 	},							\
+ }
+ 
+@@ -249,23 +249,14 @@ static int ti_ads7950_update_scan_mode(struct iio_dev *indio_dev,
+ 	len = 0;
+ 	for_each_set_bit(i, active_scan_mask, indio_dev->num_channels) {
+ 		cmd = TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(i) | st->settings;
+-		st->tx_buf[len++] = cpu_to_be16(cmd);
++		st->tx_buf[len++] = cmd;
  	}
  
+ 	/* Data for the 1st channel is not returned until the 3rd transfer */
+-	len += 2;
+-	for (i = 0; i < len; i++) {
+-		if ((i + 2) < len)
+-			st->ring_xfer[i].tx_buf = &st->tx_buf[i];
+-		if (i >= 2)
+-			st->ring_xfer[i].rx_buf = &st->rx_buf[i - 2];
+-		st->ring_xfer[i].len = 2;
+-		st->ring_xfer[i].cs_change = 1;
+-	}
+-	/* make sure last transfer's cs_change is not set */
+-	st->ring_xfer[len - 1].cs_change = 0;
++	st->tx_buf[len++] = 0;
++	st->tx_buf[len++] = 0;
+ 
+-	spi_message_init_with_transfers(&st->ring_msg, st->ring_xfer, len);
++	st->ring_xfer.len = len * 2;
+ 
+ 	return 0;
+ }
+@@ -281,7 +272,7 @@ static irqreturn_t ti_ads7950_trigger_handler(int irq, void *p)
+ 	if (ret < 0)
+ 		goto out;
+ 
+-	iio_push_to_buffers_with_timestamp(indio_dev, st->rx_buf,
++	iio_push_to_buffers_with_timestamp(indio_dev, &st->rx_buf[2],
+ 					   iio_get_time_ns(indio_dev));
+ 
+ out:
+@@ -298,13 +289,13 @@ static int ti_ads7950_scan_direct(struct iio_dev *indio_dev, unsigned int ch)
+ 	mutex_lock(&indio_dev->mlock);
+ 
+ 	cmd = TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(ch) | st->settings;
+-	st->single_tx = cpu_to_be16(cmd);
++	st->single_tx = cmd;
+ 
+ 	ret = spi_sync(st->spi, &st->scan_single_msg);
+ 	if (ret)
+ 		goto out;
+ 
+-	ret = be16_to_cpu(st->single_rx);
++	ret = st->single_rx;
+ 
+ out:
+ 	mutex_unlock(&indio_dev->mlock);
+@@ -378,6 +369,14 @@ static int ti_ads7950_probe(struct spi_device *spi)
+ 	const struct ti_ads7950_chip_info *info;
+ 	int ret;
+ 
++	spi->bits_per_word = 16;
++	spi->mode |= SPI_CS_WORD;
++	ret = spi_setup(spi);
++	if (ret < 0) {
++		dev_err(&spi->dev, "Error in spi setup\n");
++		return ret;
++	}
++
+ 	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+@@ -398,6 +397,16 @@ static int ti_ads7950_probe(struct spi_device *spi)
+ 	indio_dev->num_channels = info->num_channels;
+ 	indio_dev->info = &ti_ads7950_info;
+ 
++	/* build spi ring message */
++	spi_message_init(&st->ring_msg);
++
++	st->ring_xfer.tx_buf = &st->tx_buf[0];
++	st->ring_xfer.rx_buf = &st->rx_buf[0];
++	/* len will be set later */
++	st->ring_xfer.cs_change = true;
++
++	spi_message_add_tail(&st->ring_xfer, &st->ring_msg);
++
+ 	/*
+ 	 * Setup default message. The sample is read at the end of the first
+ 	 * transfer, then it takes one full cycle to convert the sample and one
 -- 
-2.19.0
+2.17.1
