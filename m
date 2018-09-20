@@ -1,65 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:40092 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727872AbeI2Rui (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 29 Sep 2018 13:50:38 -0400
-Date: Sat, 29 Sep 2018 12:22:28 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Song Qiang <songqiang1304521@gmail.com>
-Cc: Rob Herring <robh@kernel.org>, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, mark.rutland@arm.com, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: magnetometer: Add support for PNI RM3100 9-axis
- magnetometer
-Message-ID: <20180929122228.54c0b5dc@archlinux>
-In-Reply-To: <20180926003402.GA6020@Eros>
-References: <20180920131340.6699-1-songqiang1304521@gmail.com>
-        <5baa1b01.1c69fb81.f0d8f.30c6@mx.google.com>
-        <20180926003402.GA6020@Eros>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:34646 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732496AbeITTZ6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 20 Sep 2018 15:25:58 -0400
+From: Song Qiang <songqiang1304521@gmail.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, shubhrajyoti@ti.com
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Song Qiang <songqiang1304521@gmail.com>
+Subject: [PATCH] iio: magnetometer: hmc5843: Replace a return value.
+Date: Thu, 20 Sep 2018 21:42:19 +0800
+Message-Id: <20180920134219.8402-1-songqiang1304521@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 26 Sep 2018 08:34:02 +0800
-Song Qiang <songqiang1304521@gmail.com> wrote:
+This error apparently is caused by timed out event, so a -ETIMEDOUT
+should be used instead of a -EIO, and it also tells user what happened
+, so this dev_err may not be needed anymore.
 
-> On Mon, Sep 24, 2018 at 03:23:52PM -0700, Rob Herring wrote:
-> > On Thu, Sep 20, 2018 at 09:13:40PM +0800, Song Qiang wrote:  
-> > > PNI RM3100 magnetometer is a high resolution, large signal immunity
-> > > magnetometer, composed of 3 single sensors and a processing chip.
-> > > PNI is currently not in the vendors list, so this is also adding it.
-> > >   
-> 
-> ...
-> 
-> > > diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
-> > > index 41f0b97eb933..5bf3395fe9ae 100644
-> > > --- a/Documentation/devicetree/bindings/vendor-prefixes.txt
-> > > +++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
-> > > @@ -288,6 +288,7 @@ pine64	Pine64
-> > >  pixcir  PIXCIR MICROELECTRONICS Co., Ltd
-> > >  plathome	Plat'Home Co., Ltd.
-> > >  plda	PLDA
-> > > +pni     PNI  
-> > 
-> > PNI doesn't stand for something?
-> >   
-> 
-> Hi Rob,
-> 
-> PNI should be 'PNI Sensor Corporation'. I saw that PLDA above mine and
-> thought I should write down its abbreviation, which apparently is wrong.
+Signed-off-by: Song Qiang <songqiang1304521@gmail.com>
+---
+I used ./scripts/get_maintainer.pl to get maintainers about this file,
+I thought this script searches maintainers with looking up MAINTAINER,
+is that right?
+So I searched MAINTAINER and also found nothing related to hmc5843.
+In the declearation area I can see Shubhrajyoti Datta 
+<shubhrajyoti@ti.com> wroted this driver and several other people
+including Peter Meerwald have contributed. Is this driver now a orphan?
+Or if it is, I think we may also need to add it to the MAINTAINER file.
+I'm also familiar with this device, I think I can add interrupt support
+later.
 
-To answer more directly.  If PNI itself stands for anything the company
-is deliberately making it non obvious!  I had a good search to try and
-find out and got nowhere...
+ drivers/iio/magnetometer/hmc5843_core.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-> 
-> yours,
-> Song Qiang
-> 
-> > >  portwell	Portwell Inc.
-> > >  poslab	Poslab Technology Co., Ltd.
-> > >  powervr	PowerVR (deprecated, use img)  
-> >   
+diff --git a/drivers/iio/magnetometer/hmc5843_core.c b/drivers/iio/magnetometer/hmc5843_core.c
+index ada142fb7aa3..4fb393c3854c 100644
+--- a/drivers/iio/magnetometer/hmc5843_core.c
++++ b/drivers/iio/magnetometer/hmc5843_core.c
+@@ -170,8 +170,7 @@ static int hmc5843_wait_measurement(struct hmc5843_data *data)
+ 	}
+ 
+ 	if (tries < 0) {
+-		dev_err(data->dev, "data not ready\n");
+-		return -EIO;
++		return -ETIMEDOUT;
+ 	}
+ 
+ 	return 0;
+-- 
+2.17.1
