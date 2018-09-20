@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from esa1.microchip.iphmx.com ([68.232.147.91]:12618 "EHLO
-        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387552AbeITS2T (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 20 Sep 2018 14:28:19 -0400
+Received: from esa2.microchip.iphmx.com ([68.232.149.84]:22065 "EHLO
+        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387701AbeITS2V (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 20 Sep 2018 14:28:21 -0400
 From: Eugen Hristev <eugen.hristev@microchip.com>
 To: <jic23@kernel.org>, <ludovic.desroches@microchip.com>,
         <linux-arm-kernel@lists.infradead.org>,
@@ -11,43 +11,53 @@ CC: <nicolas.ferre@microchip.com>,
         Eugen Hristev <eugen.hristev@microchip.com>,
         Maxime Ripard <maxime.ripard@bootlin.com>,
         <stable@vger.kernel.org>
-Subject: [PATCH 1/2] iio: adc: at91: fix acking DRDY irq on simple conversions
-Date: Thu, 20 Sep 2018 15:40:37 +0300
-Message-ID: <1537447238-18674-1-git-send-email-eugen.hristev@microchip.com>
+Subject: [PATCH 2/2] iio: adc: at91: fix wrong channel number in triggered buffer mode
+Date: Thu, 20 Sep 2018 15:40:38 +0300
+Message-ID: <1537447238-18674-2-git-send-email-eugen.hristev@microchip.com>
+In-Reply-To: <1537447238-18674-1-git-send-email-eugen.hristev@microchip.com>
+References: <1537447238-18674-1-git-send-email-eugen.hristev@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-When doing simple conversions, the driver did not acknowledge the DRDY irq.
-If this irq is not acked, it will be left pending, and as soon as a trigger
-is enabled, the irq handler will be called, it doesn't know why this irq
-has occurred because no channel is pending, and then we will have irq loop
-and board will hang.
+When channels are registered, the hardware channel number is not the
+actual iio channel number.
+This is because the driver is probed with a certain number of accessible
+channels. Some pins are routed and some not, depending on the description of
+the board in the DT.
+Because of that, channels 0,1,2,3 can correspond to hardware channels
+2,3,4,5 for example.
+In the buffered triggered case, we need to do the translation accordingly.
+Fixed the channel number to stop reading the wrong channel.
 
-Fixes 0e589d5fb ("ARM: AT91: IIO: Add AT91 ADC driver.")
+Fixes 0e589d5fb "ARM: AT91: IIO: Add AT91 ADC driver."
 Cc: Maxime Ripard <maxime.ripard@bootlin.com>
 Cc: <stable@vger.kernel.org>
 Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
 ---
- drivers/iio/adc/at91_adc.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/iio/adc/at91_adc.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-index 44b5168..e85f859 100644
+index e85f859..6698804 100644
 --- a/drivers/iio/adc/at91_adc.c
 +++ b/drivers/iio/adc/at91_adc.c
-@@ -712,6 +712,11 @@ static int at91_adc_read_raw(struct iio_dev *idev,
- 		at91_adc_writel(st, AT91_ADC_CHDR,
- 				AT91_ADC_CH(chan->channel));
- 		at91_adc_writel(st, AT91_ADC_IDR, BIT(chan->channel));
-+		/*
-+		 * we need to ack the DRDY irq, otherwise it will be
-+		 * left pending and irq handler will be confused
-+		 */
-+		at91_adc_readl(st, AT91_ADC_LCDR);
+@@ -248,12 +248,14 @@ static irqreturn_t at91_adc_trigger_handler(int irq, void *p)
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *idev = pf->indio_dev;
+ 	struct at91_adc_state *st = iio_priv(idev);
++	struct iio_chan_spec *chan;
+ 	int i, j = 0;
  
- 		st->last_value = 0;
- 		st->done = false;
+ 	for (i = 0; i < idev->masklength; i++) {
+ 		if (!test_bit(i, idev->active_scan_mask))
+ 			continue;
+-		st->buffer[j] = at91_adc_readl(st, AT91_ADC_CHAN(st, i));
++		chan = idev->channels + i;
++		st->buffer[j] = at91_adc_readl(st, AT91_ADC_CHAN(st, chan->channel));
+ 		j++;
+ 	}
+ 
 -- 
 2.7.4
