@@ -1,68 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from szxga04-in.huawei.com ([45.249.212.190]:12631 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726028AbeITOPm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 20 Sep 2018 10:15:42 -0400
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 4183D646243E8
-        for <linux-iio@vger.kernel.org>; Thu, 20 Sep 2018 16:33:21 +0800 (CST)
-Date: Thu, 20 Sep 2018 09:33:11 +0100
-From: Jonathan Cameron <jonathan.cameron@huawei.com>
-To: David Frey <dpfrey@gmail.com>
-CC: linux-iio <linux-iio@vger.kernel.org>
-Subject: Re: question about iio_dev.active_scan_mask
-Message-ID: <20180920093311.00004ec4@huawei.com>
-In-Reply-To: <320ab010-4200-20cf-f71d-2fb77a2d1a67@gmail.com>
-References: <320ab010-4200-20cf-f71d-2fb77a2d1a67@gmail.com>
+Received: from esa1.microchip.iphmx.com ([68.232.147.91]:12618 "EHLO
+        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387552AbeITS2T (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 20 Sep 2018 14:28:19 -0400
+From: Eugen Hristev <eugen.hristev@microchip.com>
+To: <jic23@kernel.org>, <ludovic.desroches@microchip.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
+CC: <nicolas.ferre@microchip.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Maxime Ripard <maxime.ripard@bootlin.com>,
+        <stable@vger.kernel.org>
+Subject: [PATCH 1/2] iio: adc: at91: fix acking DRDY irq on simple conversions
+Date: Thu, 20 Sep 2018 15:40:37 +0300
+Message-ID: <1537447238-18674-1-git-send-email-eugen.hristev@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 19 Sep 2018 15:03:11 -0700
-David Frey <dpfrey@gmail.com> wrote:
+When doing simple conversions, the driver did not acknowledge the DRDY irq.
+If this irq is not acked, it will be left pending, and as soon as a trigger
+is enabled, the irq handler will be called, it doesn't know why this irq
+has occurred because no channel is pending, and then we will have irq loop
+and board will hang.
 
-> Hi,
-Hi David,
+Fixes 0e589d5fb ("ARM: AT91: IIO: Add AT91 ADC driver.")
+Cc: Maxime Ripard <maxime.ripard@bootlin.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+---
+ drivers/iio/adc/at91_adc.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-> 
-> I am looking at struct iio_dev in include/linux/iio/iio.h and the
-> active_scan_mask member is documented as:
-> 
-> @active_scan_mask:   [INTERN] union of all scan masks requested by buffers
-> 
-> I believe that this is a bitmap where if bit X is set, that means the
-> channel with scan_index == X is enabled for buffering.
-
-Correct. It represents the channels the device should be sampling,
-which are not always the same as the ones that the driver's userspace interface
-has configured as the channel demux may well be in use.
-
-> 
-> I believe that "[INTERN]" means that this member should not be accessed
-> by a device driver, but I see many device drivers iterating over the
-> bits of this field.  Is my understanding incorrect?  Perhaps "[INTERN]"
-> means that the field can be read from the driver, but should not be written.
-
-Yeah, this was a bit of historical mess we have slowly been cleaning out.
-(or at least intending to clear out - as you've noted we haven't gotten
-very far with it)
-
-The upshot is they shouldn't access it directly, but only via the value
-passed to the update_scan_mode callback. Now arguably we should reconsider
-this given there are drivers in which the only thing that callback would
-do is to take a copy of this field.  One that needs some more thought and
-analysis of whether this is because there is actually a common case where
-there are no optimizations that can be 'pre baked' in this callback, or
-because they simply haven't been done yet for many of these parts.
-
-This is one of those ugly corners I'd completely forgotten we still had
-so glad you reminded us!
-
-Jonathan
-
-> 
-> Please help me clear up my understanding.
-> 
-> Thanks,
-> David
+diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+index 44b5168..e85f859 100644
+--- a/drivers/iio/adc/at91_adc.c
++++ b/drivers/iio/adc/at91_adc.c
+@@ -712,6 +712,11 @@ static int at91_adc_read_raw(struct iio_dev *idev,
+ 		at91_adc_writel(st, AT91_ADC_CHDR,
+ 				AT91_ADC_CH(chan->channel));
+ 		at91_adc_writel(st, AT91_ADC_IDR, BIT(chan->channel));
++		/*
++		 * we need to ack the DRDY irq, otherwise it will be
++		 * left pending and irq handler will be confused
++		 */
++		at91_adc_readl(st, AT91_ADC_LCDR);
+ 
+ 		st->last_value = 0;
+ 		st->done = false;
+-- 
+2.7.4
