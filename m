@@ -1,53 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:52548 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726779AbeIYCR3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 24 Sep 2018 22:17:29 -0400
-Date: Mon, 24 Sep 2018 21:13:31 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc: linux-amlogic@lists.infradead.org, linux-iio@vger.kernel.org,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
-Subject: Re: [PATCH 1/3] iio: adc: meson-saradc: remove #define
- MESON_SAR_ADC_DELTA_10_TS_C_SHIFT
-Message-ID: <20180924211331.29fdcd6a@archlinux>
-In-Reply-To: <20180922222102.12023-2-martin.blumenstingl@googlemail.com>
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:33935 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725822AbeIWEQV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 23 Sep 2018 00:16:21 -0400
+Received: by mail-wr1-f66.google.com with SMTP id t15so8188975wrx.1
+        for <linux-iio@vger.kernel.org>; Sat, 22 Sep 2018 15:21:13 -0700 (PDT)
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To: linux-amlogic@lists.infradead.org, linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH 2/3] iio: adc: meson-saradc: use of_device_get_match_data
+Date: Sun, 23 Sep 2018 00:21:01 +0200
+Message-Id: <20180922222102.12023-3-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20180922222102.12023-1-martin.blumenstingl@googlemail.com>
 References: <20180922222102.12023-1-martin.blumenstingl@googlemail.com>
-        <20180922222102.12023-2-martin.blumenstingl@googlemail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, 23 Sep 2018 00:21:00 +0200
-Martin Blumenstingl <martin.blumenstingl@googlemail.com> wrote:
+This simplifies our _probe function by using of_device_get_match_data
+instead of open-coding it. No functional changes.
 
-> This define is of no use because the driver is avoiding shifting bits
-> by itself but using FIELD_GET/FIELD_PREP (which are using bit masks)
-> instead. There is already a MESON_SAR_ADC_DELTA_10_TS_C_MASK bit mask so
-> MESON_SAR_ADC_DELTA_10_TS_C_SHIFT was redundant.
-> 
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Applied to the togreg branch of iio.git and pushed out as testing for the
-autobuilders to play with it.
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/iio/adc/meson_saradc.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/iio/adc/meson_saradc.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
-> index da2d16dfa63e..b97b06bf7713 100644
-> --- a/drivers/iio/adc/meson_saradc.c
-> +++ b/drivers/iio/adc/meson_saradc.c
-> @@ -148,7 +148,6 @@
->  	#define MESON_SAR_ADC_DELTA_10_TS_REVE1			BIT(26)
->  	#define MESON_SAR_ADC_DELTA_10_CHAN1_DELTA_VALUE_MASK	GENMASK(25, 16)
->  	#define MESON_SAR_ADC_DELTA_10_TS_REVE0			BIT(15)
-> -	#define MESON_SAR_ADC_DELTA_10_TS_C_SHIFT		11
->  	#define MESON_SAR_ADC_DELTA_10_TS_C_MASK		GENMASK(14, 11)
->  	#define MESON_SAR_ADC_DELTA_10_TS_VBG_EN		BIT(10)
->  	#define MESON_SAR_ADC_DELTA_10_CHAN0_DELTA_VALUE_MASK	GENMASK(9, 0)
+diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
+index b97b06bf7713..9d8f2139debc 100644
+--- a/drivers/iio/adc/meson_saradc.c
++++ b/drivers/iio/adc/meson_saradc.c
+@@ -978,11 +978,11 @@ MODULE_DEVICE_TABLE(of, meson_sar_adc_of_match);
+ 
+ static int meson_sar_adc_probe(struct platform_device *pdev)
+ {
++	const struct meson_sar_adc_data *match_data;
+ 	struct meson_sar_adc_priv *priv;
+ 	struct iio_dev *indio_dev;
+ 	struct resource *res;
+ 	void __iomem *base;
+-	const struct of_device_id *match;
+ 	int irq, ret;
+ 
+ 	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*priv));
+@@ -994,13 +994,13 @@ static int meson_sar_adc_probe(struct platform_device *pdev)
+ 	priv = iio_priv(indio_dev);
+ 	init_completion(&priv->done);
+ 
+-	match = of_match_device(meson_sar_adc_of_match, &pdev->dev);
+-	if (!match) {
+-		dev_err(&pdev->dev, "failed to match device\n");
++	match_data = of_device_get_match_data(&pdev->dev);
++	if (!match_data) {
++		dev_err(&pdev->dev, "failed to get match data\n");
+ 		return -ENODEV;
+ 	}
+ 
+-	priv->data = match->data;
++	priv->data = match_data;
+ 
+ 	indio_dev->name = priv->data->name;
+ 	indio_dev->dev.parent = &pdev->dev;
+-- 
+2.19.0
