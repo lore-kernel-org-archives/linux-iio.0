@@ -10,42 +10,47 @@ Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	ryang <decatf@gmail.com>
-Subject: [PATCH v2 1/2] dt-bindings: iio: light: bh1750: Add device tree binding documentation
-Date: Sat, 22 Sep 2018 15:59:21 -0400
-Message-Id: <20180922195922.24791-1-decatf@gmail.com>
+Subject: [PATCH v2 2/2] iio: light: bh1750: Add device tree support
+Date: Sat, 22 Sep 2018 15:59:22 -0400
+Message-Id: <20180922195922.24791-2-decatf@gmail.com>
+In-Reply-To: <20180922195922.24791-1-decatf@gmail.com>
+References: <20180922195922.24791-1-decatf@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Document device tree bindings for ROHM BH1750 ambient light sensor driver.
+Add device tree support for ROHM BH1750 series ambient light sensors.
 
 Signed-off-by: ryang <decatf@gmail.com>
 ---
- .../devicetree/bindings/iio/light/bh1750.txt   | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/light/bh1750.txt
+Changes in v2:
+     - Export module device table
 
-diff --git a/Documentation/devicetree/bindings/iio/light/bh1750.txt b/Documentation/devicetree/bindings/iio/light/bh1750.txt
-new file mode 100644
-index 000000000000..468350cc7af6
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/light/bh1750.txt
-@@ -0,0 +1,18 @@
-+ROHM BH1750 - ALS, Ambient light sensor
-+
-+Required properties:
-+
-+- compatible: Must be one of:
-+    "rohm,bh1710"
-+    "rohm,bh1715"
-+    "rohm,bh1721"
-+    "rohm,bh1750"
-+    "rohm,bh1751"
-+- reg: the I2C address of the sensor
-+
-+Example:
-+
-+bh1750@23 {
-+	compatible = "rohm,bh1750";
-+	reg = <0x23>;
+ drivers/iio/light/bh1750.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/drivers/iio/light/bh1750.c b/drivers/iio/light/bh1750.c
+index c3a481452b67..ffe2e6d9c2e4 100644
+--- a/drivers/iio/light/bh1750.c
++++ b/drivers/iio/light/bh1750.c
+@@ -307,9 +307,20 @@ static const struct i2c_device_id bh1750_id[] = {
+ };
+ MODULE_DEVICE_TABLE(i2c, bh1750_id);
+ 
++static const struct of_device_id bh1750_of_match[] = {
++	{ .compatible = "rohm,bh1710", },
++	{ .compatible = "rohm,bh1715", },
++	{ .compatible = "rohm,bh1721", },
++	{ .compatible = "rohm,bh1750", },
++	{ .compatible = "rohm,bh1751", },
++	{ }
 +};
++MODULE_DEVICE_TABLE(of, bh1750_of_match);
++
+ static struct i2c_driver bh1750_driver = {
+ 	.driver = {
+ 		.name = "bh1750",
++		.of_match_table = of_match_ptr(bh1750_of_match),
+ 		.pm = &bh1750_pm_ops,
+ 	},
+ 	.probe = bh1750_probe,
 -- 
 2.17.1
