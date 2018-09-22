@@ -1,35 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:33931 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725726AbeIWEQT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 23 Sep 2018 00:16:19 -0400
-Received: by mail-wr1-f65.google.com with SMTP id t15so8188929wrx.1
-        for <linux-iio@vger.kernel.org>; Sat, 22 Sep 2018 15:21:11 -0700 (PDT)
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:39606 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725726AbeIWEQV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 23 Sep 2018 00:16:21 -0400
+Received: by mail-wm1-f65.google.com with SMTP id q8-v6so6567183wmq.4
+        for <linux-iio@vger.kernel.org>; Sat, 22 Sep 2018 15:21:12 -0700 (PDT)
 From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 To: linux-amlogic@lists.infradead.org, linux-iio@vger.kernel.org
 Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
         pmeerw@pmeerw.net,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH 0/3] meson-saradc: small code improvements
-Date: Sun, 23 Sep 2018 00:20:59 +0200
-Message-Id: <20180922222102.12023-1-martin.blumenstingl@googlemail.com>
+Subject: [PATCH 1/3] iio: adc: meson-saradc: remove #define MESON_SAR_ADC_DELTA_10_TS_C_SHIFT
+Date: Sun, 23 Sep 2018 00:21:00 +0200
+Message-Id: <20180922222102.12023-2-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20180922222102.12023-1-martin.blumenstingl@googlemail.com>
+References: <20180922222102.12023-1-martin.blumenstingl@googlemail.com>
 MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The goal of this series is to simplify the code a bit.
-This is a first preparation step for adding support for the temperature
-sensor on the 32-bit Meson8, Meson8b and Meson8m2 SoCs later.
+This define is of no use because the driver is avoiding shifting bits
+by itself but using FIELD_GET/FIELD_PREP (which are using bit masks)
+instead. There is already a MESON_SAR_ADC_DELTA_10_TS_C_MASK bit mask so
+MESON_SAR_ADC_DELTA_10_TS_C_SHIFT was redundant.
 
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/iio/adc/meson_saradc.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Martin Blumenstingl (3):
-  iio: adc: meson-saradc: remove #define
-    MESON_SAR_ADC_DELTA_10_TS_C_SHIFT
-  iio: adc: meson-saradc: use of_device_get_match_data
-  iio: adc: meson-saradc: simplify access to meson_sar_adc_param
-
- drivers/iio/adc/meson_saradc.c | 37 +++++++++++++++++-----------------
- 1 file changed, 18 insertions(+), 19 deletions(-)
-
+diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
+index da2d16dfa63e..b97b06bf7713 100644
+--- a/drivers/iio/adc/meson_saradc.c
++++ b/drivers/iio/adc/meson_saradc.c
+@@ -148,7 +148,6 @@
+ 	#define MESON_SAR_ADC_DELTA_10_TS_REVE1			BIT(26)
+ 	#define MESON_SAR_ADC_DELTA_10_CHAN1_DELTA_VALUE_MASK	GENMASK(25, 16)
+ 	#define MESON_SAR_ADC_DELTA_10_TS_REVE0			BIT(15)
+-	#define MESON_SAR_ADC_DELTA_10_TS_C_SHIFT		11
+ 	#define MESON_SAR_ADC_DELTA_10_TS_C_MASK		GENMASK(14, 11)
+ 	#define MESON_SAR_ADC_DELTA_10_TS_VBG_EN		BIT(10)
+ 	#define MESON_SAR_ADC_DELTA_10_CHAN0_DELTA_VALUE_MASK	GENMASK(9, 0)
 -- 
 2.19.0
