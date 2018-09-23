@@ -1,390 +1,190 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:37508 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728164AbeI2TNI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 29 Sep 2018 15:13:08 -0400
-Date: Sat, 29 Sep 2018 13:44:41 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Song Qiang <songqiang1304521@gmail.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        robh+dt@kernel.org, mark.rutland@arm.com,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Received: from aserp2120.oracle.com ([141.146.126.78]:58208 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726071AbeIWQ7I (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 23 Sep 2018 12:59:08 -0400
+Date: Sun, 23 Sep 2018 14:01:15 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: kbuild@01.org, Song Qiang <songqiang1304521@gmail.com>
+Cc: kbuild-all@01.org, jic23@kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, robh+dt@kernel.org,
+        mark.rutland@arm.com, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Song Qiang <songqiang1304521@gmail.com>
 Subject: Re: [PATCH] iio: magnetometer: Add support for PNI RM3100 9-axis
  magnetometer
-Message-ID: <20180929134441.2e400956@archlinux>
-In-Reply-To: <20180924143714.GA16236@Eros>
-References: <20180920131340.6699-1-songqiang1304521@gmail.com>
-        <20180922111409.597126fd@archlinux>
-        <20180924143714.GA16236@Eros>
+Message-ID: <20180923110115.vjnmfssmeq3i37pf@mwanda>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20180920131340.6699-1-songqiang1304521@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 24 Sep 2018 22:37:14 +0800
-Song Qiang <songqiang1304521@gmail.com> wrote:
+Hi Song,
 
-> On Sat, Sep 22, 2018 at 11:14:09AM +0100, Jonathan Cameron wrote:
-> > On Thu, 20 Sep 2018 21:13:40 +0800
-> > Song Qiang <songqiang1304521@gmail.com> wrote:
-> >   
-> > > PNI RM3100 magnetometer is a high resolution, large signal immunity
-> > > magnetometer, composed of 3 single sensors and a processing chip.
-> > > PNI is currently not in the vendors list, so this is also adding it.
-> > > 
-> > > Following functions are available:
-> > >  - Single-shot measurement from
-> > >    /sys/bus/iio/devices/iio:deviceX/in_magn_{axis}_raw
-> > >  - Triggerd buffer measurement.
-> > >  - Both i2c and spi interface are supported.
-> > >  - Both interrupt and polling measurement is supported, depands on if
-> > >    the 'interrupts' in DT is declared.
-> > > 
-> > > Signed-off-by: Song Qiang <songqiang1304521@gmail.com>  
-> > Hi Song,  
-> 
-> ...
-> 
-> > > +	if (ret < 0)
-> > > +		return ret;
-> > > +
-> > > +	/* 3sec more wait time. */
-> > > +	ret = regmap_read(data->regmap, RM_REG_TMRC, &tmp);
-> > > +	data->conversion_time = rm3100_samp_rates[tmp-RM_TMRC_OFFSET][2] + 3000;
-> > > +
-> > > +	/* Starting all channels' conversion. */
-> > > +	ret = regmap_write(regmap, RM_REG_CMM,
-> > > +		RM_CMM_PMX | RM_CMM_PMY | RM_CMM_PMZ | RM_CMM_START);
-> > > +	if (ret < 0)
-> > > +		return ret;
-> > > +
-> > > +	return devm_iio_device_register(dev, indio_dev);  
-> > Nope.  Can't do this without having a race condition.   You need
-> > to ensure the userspace and in kernel interfaces are removed 'before'.
-> > you do that RM_REG_CMM write in remove.
-> > 
-> > One option is to use devm_add_action to add a custom unwind function
-> > to the automatic handling. The other is to not use devm for everything 
-> > after the write above and do the device_unregister manually.
-> >   
-> 
-> Hi Jonathan,
-> 
-> I considered the both options you mentioned, and I was going to use the
-> manual way. But then something came to my mind, what if there is another
-> devm_* operation needs care, what if more. I checked devm_add_action in
-> source code, and it says that this function only adds unwinding handlers.
-> I guess this method was designed for this situation, and if we have
-> already used devm_ in our code, it's better to use devm_add_action for
-> cleanup, is that right?
+I love your patch! Perhaps something to improve:
 
-It can provide a very clean solution.  Be careful though. You do need
-to make sure to handle a failure of this function itself.
+url:    https://github.com/0day-ci/linux/commits/Song-Qiang/iio-magnetometer-Add-support-for-PNI-RM3100-9-axis-magnetometer/20180920-215124
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
 
-Jonathan
+smatch warnings:
+drivers/iio/magnetometer/rm3100-core.c:235 rm3100_set_samp_freq() warn: inconsistent returns 'mutex:&data->lock'.
+  Locked on:   line 206
+  Unlocked on: line 194
+drivers/iio/magnetometer/rm3100-core.c:319 rm3100_trigger_handler() warn: inconsistent returns 'mutex:&data->lock'.
+  Locked on:   line 310
+  Unlocked on: line 319
 
-> 
-> yours,
-> Song Qiang
-> 
-> > > +}
-> > > +EXPORT_SYMBOL(rm3100_common_probe);
-> > > +
-> > > +int rm3100_common_remove(struct device *dev)
-> > > +{
-> > > +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> > > +	struct rm3100_data *data = iio_priv(indio_dev);
-> > > +	struct regmap *regmap = data->regmap;
-> > > +
-> > > +	regmap_write(regmap, RM_REG_CMM, 0x00);
-> > > +
-> > > +	return 0;  
-> > No real point in returning int if you are always going to put 0 in
-> > in it.  Should probably check the regmap_write though and output
-> > a log message if it fails (as no other way of telling).
-> >   
-> > > +}
-> > > +EXPORT_SYMBOL(rm3100_common_remove);
-> > > +
-> > > +MODULE_AUTHOR("Song Qiang <songqiang1304521@gmail.com>");
-> > > +MODULE_DESCRIPTION("PNI RM3100 9-axis magnetometer i2c driver");
-> > > +MODULE_LICENSE("GPL v2");
-> > > diff --git a/drivers/iio/magnetometer/rm3100-i2c.c b/drivers/iio/magnetometer/rm3100-i2c.c
-> > > new file mode 100644
-> > > index 000000000000..b50dc5b1b30b
-> > > --- /dev/null
-> > > +++ b/drivers/iio/magnetometer/rm3100-i2c.c
-> > > @@ -0,0 +1,66 @@
-> > > +// SPDX-License-Identifier: GPL-2.0+
-> > > +/*
-> > > + * Support for PNI RM3100 9-axis geomagnetic sensor a i2c bus.
-> > > + *
-> > > + * Copyright (C) 2018 Song Qiang <songqiang1304521@gmail.com>
-> > > + *
-> > > + * User Manual available at
-> > > + * <https://www.pnicorp.com/download/rm3100-user-manual/>
-> > > + *
-> > > + * i2c slave address 0x20 + SA1 << 1 + SA0.
-> > > + */
-> > > +
-> > > +#include <linux/i2c.h>
-> > > +
-> > > +#include "rm3100.h"
-> > > +
-> > > +static const struct regmap_config rm3100_regmap_config = {
-> > > +		.reg_bits = 8,  
-> > This indenting seems an extra tab on conventional choice...  
-> > > +		.val_bits = 8,
-> > > +
-> > > +		.rd_table = &rm3100_readable_table,
-> > > +		.wr_table = &rm3100_writable_table,
-> > > +		.volatile_table = &rm3100_volatile_table,
-> > > +
-> > > +		.cache_type = REGCACHE_RBTREE,
-> > > +};
-> > > +
-> > > +static int rm3100_probe(struct i2c_client *client)
-> > > +{
-> > > +	struct regmap *regmap;
-> > > +
-> > > +	if (!i2c_check_functionality(client->adapter,
-> > > +		I2C_FUNC_SMBUS_READ_I2C_BLOCK | I2C_FUNC_SMBUS_BYTE_DATA))
-> > > +		return -EOPNOTSUPP;
-> > > +
-> > > +	regmap =  devm_regmap_init_i2c(client, &rm3100_regmap_config);
-> > > +	if (IS_ERR(regmap))
-> > > +		return PTR_ERR(regmap);
-> > > +
-> > > +	return rm3100_common_probe(&client->dev, regmap, client->irq);
-> > > +}
-> > > +
-> > > +static int rm3100_remove(struct i2c_client *client)
-> > > +{
-> > > +	return rm3100_common_remove(&client->dev);
-> > > +}
-> > > +
-> > > +static const struct of_device_id rm3100_dt_match[] = {
-> > > +	{ .compatible = "pni,rm3100-i2c", },
-> > > +	{ }
-> > > +};
-> > > +MODULE_DEVICE_TABLE(of, rm3100_dt_match);
-> > > +
-> > > +static struct i2c_driver rm3100_driver = {
-> > > +	.driver = {
-> > > +		.name = "rm3100-i2c",
-> > > +		.of_match_table = rm3100_dt_match,
-> > > +	},
-> > > +	.probe_new = rm3100_probe,
-> > > +	.remove = rm3100_remove,
-> > > +};
-> > > +module_i2c_driver(rm3100_driver);
-> > > +
-> > > +MODULE_AUTHOR("Song Qiang <songqiang1304521@gmail.com>");
-> > > +MODULE_DESCRIPTION("PNI RM3100 9-axis magnetometer i2c driver");
-> > > +MODULE_LICENSE("GPL v2");
-> > > diff --git a/drivers/iio/magnetometer/rm3100-spi.c b/drivers/iio/magnetometer/rm3100-spi.c
-> > > new file mode 100644
-> > > index 000000000000..2c7dd9e3a1a2
-> > > --- /dev/null
-> > > +++ b/drivers/iio/magnetometer/rm3100-spi.c
-> > > @@ -0,0 +1,72 @@
-> > > +// SPDX-License-Identifier: GPL-2.0+
-> > > +/*
-> > > + * Support for PNI RM3100 9-axis geomagnetic sensor a spi bus.
-> > > + *
-> > > + * Copyright (C) 2018 Song Qiang <songqiang1304521@gmail.com>
-> > > + *
-> > > + * User Manual available at
-> > > + * <https://www.pnicorp.com/download/rm3100-user-manual/>  
-> > 
-> > Probably only worth mentioning the manual in the main file.
-> >   
-> > > + */
-> > > +
-> > > +#include <linux/spi/spi.h>
-> > > +
-> > > +#include "rm3100.h"
-> > > +
-> > > +static const struct regmap_config rm3100_regmap_config = {
-> > > +		.reg_bits = 8,
-> > > +		.val_bits = 8,
-> > > +
-> > > +		.rd_table = &rm3100_readable_table,
-> > > +		.wr_table = &rm3100_writable_table,
-> > > +		.volatile_table = &rm3100_volatile_table,
-> > > +
-> > > +		.read_flag_mask = 0x80,
-> > > +
-> > > +		.cache_type = REGCACHE_RBTREE,
-> > > +};
-> > > +
-> > > +static int rm3100_probe(struct spi_device *spi)
-> > > +{
-> > > +	struct regmap *regmap;
-> > > +	int ret;
-> > > +
-> > > +	/* Actually this device supports both mode 0 and mode 3. */
-> > > +	spi->mode = SPI_MODE_0;
-> > > +	/* data rates cannot exceeds 1Mbits. */
-> > > +	spi->max_speed_hz = 1000000;
-> > > +	spi->bits_per_word = 8;
-> > > +	ret = spi_setup(spi);
-> > > +	if (ret)
-> > > +		return ret;
-> > > +
-> > > +	regmap =  devm_regmap_init_spi(spi, &rm3100_regmap_config);
-> > > +	if (IS_ERR(regmap))
-> > > +		return PTR_ERR(regmap);
-> > > +
-> > > +	return rm3100_common_probe(&spi->dev, regmap, spi->irq);
-> > > +}
-> > > +
-> > > +static int rm3100_remove(struct spi_device *spi)
-> > > +{
-> > > +	return rm3100_common_remove(&spi->dev);
-> > > +}
-> > > +
-> > > +static const struct of_device_id rm3100_dt_match[] = {
-> > > +	{ .compatible = "pni,rm3100-spi", },
-> > > +	{ }
-> > > +};
-> > > +MODULE_DEVICE_TABLE(of, rm3100_dt_match);
-> > > +
-> > > +static struct spi_driver rm3100_driver = {
-> > > +		.driver = {
-> > > +				.name = "rm3100-spi",
-> > > +				.of_match_table = rm3100_dt_match,  
-> > 
-> > Indenting looks oddly deep...
-> >   
-> > > +		},
-> > > +		.probe = rm3100_probe,
-> > > +		.remove = rm3100_remove,
-> > > +};
-> > > +module_spi_driver(rm3100_driver);
-> > > +
-> > > +MODULE_AUTHOR("Song Qiang <songqiang1304521@gmail.com>");
-> > > +MODULE_DESCRIPTION("PNI RM3100 9-axis magnetometer spi driver");
-> > > +MODULE_LICENSE("GPL v2");
-> > > diff --git a/drivers/iio/magnetometer/rm3100.h b/drivers/iio/magnetometer/rm3100.h
-> > > new file mode 100644
-> > > index 000000000000..5e30bc0f5149
-> > > --- /dev/null
-> > > +++ b/drivers/iio/magnetometer/rm3100.h
-> > > @@ -0,0 +1,90 @@
-> > > +/* SPDX-License-Identifier: GPL-2.0+ */
-> > > +/*
-> > > + * Header file for PNI RM3100 driver
-> > > + *
-> > > + * Copyright (C) 2018 Song Qiang <songqiang1304521@gmail.com>
-> > > + */
-> > > +
-> > > +#ifndef RM3100_CORE_H
-> > > +#define RM3100_CORE_H
-> > > +
-> > > +#include <linux/module.h>
-> > > +#include <linux/regmap.h>  
-> > 
-> > What in here needs module.h?  Push that down into the
-> > individual c files.  It's repetition but it si generally
-> > good practice to include headers at as low a level as possible.
-> >   
-> > > +
-> > > +#define RM_REG_REV_ID		0x36  
-> > I would prefer RM3100 as the prefix.  
-> > > +
-> > > +/* Cycle Count Registers MSBs and LSBs. */  
-> > Could probably give these slightly more human readable names?
-> > RM3100_REG_CC_X_MSB
-> > 
-> > Actually I doubt you use both of them in the driver anyway...
-> > (just searched, nope you don't so drop the ones you don't
-> >  use and then the MSB, LSB definition probably not necessary).
-> >   
-> > > +#define RM_REG_CCXM		0x04
-> > > +#define RM_REG_CCXL		0x05
-> > > +#define RM_REG_CCYM		0x06
-> > > +#define RM_REG_CCYL		0x07
-> > > +#define RM_REG_CCZM		0x08
-> > > +#define RM_REG_CCZL		0x09
-> > > +
-> > > +/* Single Measurement Mode register. */
-> > > +#define RM_REG_POLL		0x00
-> > > +#define RM_POLL_PMX		BIT(4)
-> > > +#define RM_POLL_PMY		BIT(5)
-> > > +#define RM_POLL_PMZ		BIT(6)
-> > > +
-> > > +/* Continues Measurement Mode register. */
-> > > +#define RM_REG_CMM		0x01
-> > > +#define RM_CMM_START		BIT(0)
-> > > +#define RM_CMM_DRDM		BIT(2)
-> > > +#define RM_CMM_PMX		BIT(4)
-> > > +#define RM_CMM_PMY		BIT(5)
-> > > +#define RM_CMM_PMZ		BIT(6)
-> > > +
-> > > +/* TiMe Rate Configuration register. */
-> > > +#define RM_REG_TMRC		0x0B
-> > > +#define RM_TMRC_OFFSET		0x92
-> > > +
-> > > +/* Result Status register. */
-> > > +#define RM_REG_STATUS		0x34
-> > > +#define RM_STATUS_DRDY		BIT(7)
-> > > +
-> > > +/* Measurement result registers. */
-> > > +#define RM_REG_MX2		0x24  
-> > 
-> > You only use some of these. Not sure having defines for the
-> > others is really helpful.
-> >   
-> > > +#define RM_REG_MX1		0x25
-> > > +#define RM_REG_MX0		0x26
-> > > +#define RM_REG_MY2		0x27
-> > > +#define RM_REG_MY1		0x28
-> > > +#define RM_REG_MY0		0x29
-> > > +#define RM_REG_MZ2		0x2a
-> > > +#define RM_REG_MZ1		0x2b
-> > > +#define RM_REG_MZ0		0x2c
-> > > +
-> > > +#define RM_REG_HSHAKE		0x35
-> > > +
-> > > +#define RM_W_REG_START		RM_REG_POLL
-> > > +#define RM_W_REG_END		RM_REG_REV_ID
-> > > +#define RM_R_REG_START		RM_REG_POLL
-> > > +#define RM_R_REG_END		RM_REG_HSHAKE
-> > > +#define RM_V_REG_START		RM_REG_MX2
-> > > +#define RM_V_REG_END		RM_REG_HSHAKE
-> > > +
-> > > +/* Built-In Self Test reigister. */
-> > > +#define RM_REG_BIST		0x33
-> > > +
-> > > +struct rm3100_data {
-> > > +	struct device *dev;
-> > > +	struct regmap *regmap;
-> > > +	struct completion measuring_done;
-> > > +	bool use_interrupt;
-> > > +
-> > > +	int conversion_time;
-> > > +
-> > > +	/* To protect consistency of every measurement and sampling  
-> > 
-> > /*
-> >  * To protect
-> >  */
-> > (common format to most of the kernel other than those 'crazy' :)
-> > people in net and a few other corners.
-> >   
-> > > +	 * frequency change operations.
-> > > +	 */
-> > > +	struct mutex lock;
-> > > +};
-> > > +
-> > > +extern const struct regmap_access_table rm3100_readable_table;
-> > > +extern const struct regmap_access_table rm3100_writable_table;
-> > > +extern const struct regmap_access_table rm3100_volatile_table;
-> > > +
-> > > +int rm3100_common_probe(struct device *dev, struct regmap *regmap, int irq);
-> > > +int rm3100_common_remove(struct device *dev);
-> > > +
-> > > +#endif /* RM3100_CORE_H */  
-> >   
+# https://github.com/0day-ci/linux/commit/0345472c15bab336397b25a25eb76a9f8586faf0
+git remote add linux-review https://github.com/0day-ci/linux
+git remote update linux-review
+git checkout 0345472c15bab336397b25a25eb76a9f8586faf0
+vim +235 drivers/iio/magnetometer/rm3100-core.c
+
+0345472c Song Qiang 2018-09-20  183  
+0345472c Song Qiang 2018-09-20  184  static int rm3100_set_samp_freq(struct rm3100_data *data, int val, int val2)
+0345472c Song Qiang 2018-09-20  185  {
+0345472c Song Qiang 2018-09-20  186  	struct regmap *regmap = data->regmap;
+0345472c Song Qiang 2018-09-20  187  	int cycle_count;
+0345472c Song Qiang 2018-09-20  188  	int ret;
+0345472c Song Qiang 2018-09-20  189  	int i;
+0345472c Song Qiang 2018-09-20  190  
+0345472c Song Qiang 2018-09-20  191  	/* All cycle count registers use the same value. */
+0345472c Song Qiang 2018-09-20  192  	ret = regmap_read(regmap, RM_REG_CCXL, &cycle_count);
+0345472c Song Qiang 2018-09-20  193  	if (cycle_count < 0)
+0345472c Song Qiang 2018-09-20  194  		return cycle_count;
+0345472c Song Qiang 2018-09-20  195  
+0345472c Song Qiang 2018-09-20  196  	for (i = 0; i < RM_SAMP_NUM; i++) {
+0345472c Song Qiang 2018-09-20  197  		if (val == rm3100_samp_rates[i][0] &&
+0345472c Song Qiang 2018-09-20  198  			val2 == rm3100_samp_rates[i][1])
+0345472c Song Qiang 2018-09-20  199  			break;
+0345472c Song Qiang 2018-09-20  200  	}
+0345472c Song Qiang 2018-09-20  201  
+0345472c Song Qiang 2018-09-20  202  	if (i != RM_SAMP_NUM) {
+0345472c Song Qiang 2018-09-20  203  		mutex_lock(&data->lock);
+                                                ^^^^^^^^^^^^^^^^^^^^^^^
+0345472c Song Qiang 2018-09-20  204  		ret = regmap_write(regmap, RM_REG_TMRC, i + RM_TMRC_OFFSET);
+0345472c Song Qiang 2018-09-20  205  		if (ret < 0)
+0345472c Song Qiang 2018-09-20  206  			return ret;
+                                                        ^^^^^^^^^^
+goto unlock;  there are a bunch of these.
+
+0345472c Song Qiang 2018-09-20  207  
+0345472c Song Qiang 2018-09-20  208  		/* Checking if cycle count registers need changing. */
+0345472c Song Qiang 2018-09-20  209  		if (val == 600 && cycle_count == 200) {
+0345472c Song Qiang 2018-09-20  210  			for (i = 0; i < 3; i++) {
+0345472c Song Qiang 2018-09-20  211  				regmap_write(regmap, RM_REG_CCXL + 2 * i, 100);
+0345472c Song Qiang 2018-09-20  212  				if (ret < 0)
+0345472c Song Qiang 2018-09-20  213  					return ret;
+0345472c Song Qiang 2018-09-20  214  			}
+0345472c Song Qiang 2018-09-20  215  		} else if (val != 600 && cycle_count == 100) {
+0345472c Song Qiang 2018-09-20  216  			for (i = 0; i < 3; i++) {
+0345472c Song Qiang 2018-09-20  217  				regmap_write(regmap, RM_REG_CCXL + 2 * i, 200);
+0345472c Song Qiang 2018-09-20  218  				if (ret < 0)
+0345472c Song Qiang 2018-09-20  219  					return ret;
+0345472c Song Qiang 2018-09-20  220  			}
+0345472c Song Qiang 2018-09-20  221  		}
+0345472c Song Qiang 2018-09-20  222  		/* Writing TMRC registers requires CMM reset. */
+0345472c Song Qiang 2018-09-20  223  		ret = regmap_write(regmap, RM_REG_CMM, 0);
+0345472c Song Qiang 2018-09-20  224  		if (ret < 0)
+0345472c Song Qiang 2018-09-20  225  			return ret;
+0345472c Song Qiang 2018-09-20  226  		ret = regmap_write(regmap, RM_REG_CMM, RM_CMM_PMX |
+0345472c Song Qiang 2018-09-20  227  			RM_CMM_PMY | RM_CMM_PMZ | RM_CMM_START);
+0345472c Song Qiang 2018-09-20  228  		if (ret < 0)
+0345472c Song Qiang 2018-09-20  229  			return ret;
+0345472c Song Qiang 2018-09-20  230  		mutex_unlock(&data->lock);
+0345472c Song Qiang 2018-09-20  231  
+0345472c Song Qiang 2018-09-20  232  		data->conversion_time = rm3100_samp_rates[i][2] + 3000;
+0345472c Song Qiang 2018-09-20  233  		return 0;
+0345472c Song Qiang 2018-09-20  234  	}
+0345472c Song Qiang 2018-09-20 @235  	return -EINVAL;
+0345472c Song Qiang 2018-09-20  236  }
+0345472c Song Qiang 2018-09-20  237  
+0345472c Song Qiang 2018-09-20  238  static int rm3100_read_raw(struct iio_dev *indio_dev,
+0345472c Song Qiang 2018-09-20  239  			   const struct iio_chan_spec *chan,
+0345472c Song Qiang 2018-09-20  240  			   int *val, int *val2, long mask)
+0345472c Song Qiang 2018-09-20  241  {
+0345472c Song Qiang 2018-09-20  242  	struct rm3100_data *data = iio_priv(indio_dev);
+0345472c Song Qiang 2018-09-20  243  	int ret;
+0345472c Song Qiang 2018-09-20  244  
+0345472c Song Qiang 2018-09-20  245  	switch (mask) {
+0345472c Song Qiang 2018-09-20  246  	case IIO_CHAN_INFO_RAW:
+0345472c Song Qiang 2018-09-20  247  		ret = iio_device_claim_direct_mode(indio_dev);
+0345472c Song Qiang 2018-09-20  248  		if (ret < 0)
+0345472c Song Qiang 2018-09-20  249  			return ret;
+0345472c Song Qiang 2018-09-20  250  		ret = rm3100_read_mag(data, chan->scan_index, val);
+0345472c Song Qiang 2018-09-20  251  		iio_device_release_direct_mode(indio_dev);
+0345472c Song Qiang 2018-09-20  252  
+0345472c Song Qiang 2018-09-20  253  		return ret;
+0345472c Song Qiang 2018-09-20  254  	case IIO_CHAN_INFO_SAMP_FREQ:
+0345472c Song Qiang 2018-09-20  255  		return ret = rm3100_get_samp_freq(data, val, val2);
+0345472c Song Qiang 2018-09-20  256  	default:
+0345472c Song Qiang 2018-09-20  257  		return -EINVAL;
+0345472c Song Qiang 2018-09-20  258  	}
+0345472c Song Qiang 2018-09-20  259  }
+0345472c Song Qiang 2018-09-20  260  
+0345472c Song Qiang 2018-09-20  261  static int rm3100_write_raw(struct iio_dev *indio_dev,
+0345472c Song Qiang 2018-09-20  262  			    struct iio_chan_spec const *chan,
+0345472c Song Qiang 2018-09-20  263  			    int val, int val2, long mask)
+0345472c Song Qiang 2018-09-20  264  {
+0345472c Song Qiang 2018-09-20  265  	struct rm3100_data *data = iio_priv(indio_dev);
+0345472c Song Qiang 2018-09-20  266  	int ret;
+0345472c Song Qiang 2018-09-20  267  
+0345472c Song Qiang 2018-09-20  268  	switch (mask) {
+0345472c Song Qiang 2018-09-20  269  	case IIO_CHAN_INFO_SAMP_FREQ:
+0345472c Song Qiang 2018-09-20  270  		ret = rm3100_set_samp_freq(data, val, val2);
+0345472c Song Qiang 2018-09-20  271  		if (ret < 0)
+0345472c Song Qiang 2018-09-20  272  			return ret;
+0345472c Song Qiang 2018-09-20  273  		return 0;
+0345472c Song Qiang 2018-09-20  274  	default:
+0345472c Song Qiang 2018-09-20  275  		return -EINVAL;
+0345472c Song Qiang 2018-09-20  276  	}
+0345472c Song Qiang 2018-09-20  277  
+0345472c Song Qiang 2018-09-20  278  }
+0345472c Song Qiang 2018-09-20  279  
+0345472c Song Qiang 2018-09-20  280  static const struct iio_info rm3100_info = {
+0345472c Song Qiang 2018-09-20  281  	.read_raw = rm3100_read_raw,
+0345472c Song Qiang 2018-09-20  282  	.write_raw = rm3100_write_raw,
+0345472c Song Qiang 2018-09-20  283  };
+0345472c Song Qiang 2018-09-20  284  
+0345472c Song Qiang 2018-09-20  285  static irqreturn_t rm3100_trigger_handler(int irq, void *p)
+0345472c Song Qiang 2018-09-20  286  {
+0345472c Song Qiang 2018-09-20  287  	struct iio_poll_func *pf = p;
+0345472c Song Qiang 2018-09-20  288  	struct iio_dev *indio_dev = pf->indio_dev;
+0345472c Song Qiang 2018-09-20  289  	struct rm3100_data *data = iio_priv(indio_dev);
+0345472c Song Qiang 2018-09-20  290  	struct regmap *regmap = data->regmap;
+0345472c Song Qiang 2018-09-20  291  	u8 *buffer;
+0345472c Song Qiang 2018-09-20  292  	int ret;
+0345472c Song Qiang 2018-09-20  293  	int i;
+0345472c Song Qiang 2018-09-20  294  
+0345472c Song Qiang 2018-09-20  295  	buffer = devm_kzalloc(data->dev, indio_dev->scan_bytes, GFP_KERNEL);
+0345472c Song Qiang 2018-09-20  296  	if (!buffer)
+0345472c Song Qiang 2018-09-20  297  		goto done;
+0345472c Song Qiang 2018-09-20  298  
+0345472c Song Qiang 2018-09-20  299  	mutex_lock(&data->lock);
+0345472c Song Qiang 2018-09-20  300  	ret = rm3100_wait_measurement(data);
+0345472c Song Qiang 2018-09-20  301  	if (ret < 0) {
+0345472c Song Qiang 2018-09-20  302  		mutex_unlock(&data->lock);
+0345472c Song Qiang 2018-09-20  303  		goto done;
+0345472c Song Qiang 2018-09-20  304  	}
+0345472c Song Qiang 2018-09-20  305  
+0345472c Song Qiang 2018-09-20  306  	for (i = 0; i < 3; i++) {
+0345472c Song Qiang 2018-09-20  307  		ret = regmap_bulk_read(regmap, RM_REG_MX2 + 3 * i,
+0345472c Song Qiang 2018-09-20  308  				buffer + 4 * i, 3);
+0345472c Song Qiang 2018-09-20  309  		if (ret < 0)
+0345472c Song Qiang 2018-09-20  310  			return ret;
+0345472c Song Qiang 2018-09-20  311  	}
+0345472c Song Qiang 2018-09-20  312  	mutex_unlock(&data->lock);
+0345472c Song Qiang 2018-09-20  313  
+0345472c Song Qiang 2018-09-20  314  	iio_push_to_buffers_with_timestamp(indio_dev, buffer,
+0345472c Song Qiang 2018-09-20  315  			iio_get_time_ns(indio_dev));
+0345472c Song Qiang 2018-09-20  316  done:
+0345472c Song Qiang 2018-09-20  317  	iio_trigger_notify_done(indio_dev->trig);
+0345472c Song Qiang 2018-09-20  318  
+0345472c Song Qiang 2018-09-20 @319  	return IRQ_HANDLED;
+0345472c Song Qiang 2018-09-20  320  }
+0345472c Song Qiang 2018-09-20  321  
+
+---
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
