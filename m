@@ -1,190 +1,129 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from aserp2120.oracle.com ([141.146.126.78]:58208 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726071AbeIWQ7I (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 23 Sep 2018 12:59:08 -0400
-Date: Sun, 23 Sep 2018 14:01:15 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: kbuild@01.org, Song Qiang <songqiang1304521@gmail.com>
-Cc: kbuild-all@01.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, robh+dt@kernel.org,
-        mark.rutland@arm.com, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Song Qiang <songqiang1304521@gmail.com>
+Return-Path: <SRS0=c8Cb=MH=gmail.com=robherring2@kernel.org>
+Message-ID: <5baa1b01.1c69fb81.f0d8f.30c6@mx.google.com>
+From: Rob Herring <robh@kernel.org>
+To: Song Qiang <songqiang1304521@gmail.com>
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	mark.rutland@arm.com, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH] iio: magnetometer: Add support for PNI RM3100 9-axis
  magnetometer
-Message-ID: <20180923110115.vjnmfssmeq3i37pf@mwanda>
+References: <20180920131340.6699-1-songqiang1304521@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 In-Reply-To: <20180920131340.6699-1-songqiang1304521@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Date: Mon, 24 Sep 2018 15:23:52 -0700
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Song,
+On Thu, Sep 20, 2018 at 09:13:40PM +0800, Song Qiang wrote:
+> PNI RM3100 magnetometer is a high resolution, large signal immunity
+> magnetometer, composed of 3 single sensors and a processing chip.
+> PNI is currently not in the vendors list, so this is also adding it.
+> 
+> Following functions are available:
+>  - Single-shot measurement from
+>    /sys/bus/iio/devices/iio:deviceX/in_magn_{axis}_raw
+>  - Triggerd buffer measurement.
+>  - Both i2c and spi interface are supported.
+>  - Both interrupt and polling measurement is supported, depands on if
+>    the 'interrupts' in DT is declared.
+> 
+> Signed-off-by: Song Qiang <songqiang1304521@gmail.com>
+> ---
+>  .../bindings/iio/magnetometer/pni,rm3100.txt  |  57 +++
+>  .../devicetree/bindings/vendor-prefixes.txt   |   1 +
 
-I love your patch! Perhaps something to improve:
+Please split bindings to separate patch.
 
-url:    https://github.com/0day-ci/linux/commits/Song-Qiang/iio-magnetometer-Add-support-for-PNI-RM3100-9-axis-magnetometer/20180920-215124
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
 
-smatch warnings:
-drivers/iio/magnetometer/rm3100-core.c:235 rm3100_set_samp_freq() warn: inconsistent returns 'mutex:&data->lock'.
-  Locked on:   line 206
-  Unlocked on: line 194
-drivers/iio/magnetometer/rm3100-core.c:319 rm3100_trigger_handler() warn: inconsistent returns 'mutex:&data->lock'.
-  Locked on:   line 310
-  Unlocked on: line 319
+>  MAINTAINERS                                   |  10 +
+>  drivers/iio/magnetometer/Kconfig              |  29 ++
+>  drivers/iio/magnetometer/Makefile             |   4 +
+>  drivers/iio/magnetometer/rm3100-core.c        | 399 ++++++++++++++++++
+>  drivers/iio/magnetometer/rm3100-i2c.c         |  66 +++
+>  drivers/iio/magnetometer/rm3100-spi.c         |  72 ++++
+>  drivers/iio/magnetometer/rm3100.h             |  90 ++++
+>  9 files changed, 728 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/pni,rm3100.txt
+>  create mode 100644 drivers/iio/magnetometer/rm3100-core.c
+>  create mode 100644 drivers/iio/magnetometer/rm3100-i2c.c
+>  create mode 100644 drivers/iio/magnetometer/rm3100-spi.c
+>  create mode 100644 drivers/iio/magnetometer/rm3100.h
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/magnetometer/pni,rm3100.txt b/Documentation/devicetree/bindings/iio/magnetometer/pni,rm3100.txt
+> new file mode 100644
+> index 000000000000..d0d2063e943f
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/magnetometer/pni,rm3100.txt
+> @@ -0,0 +1,57 @@
+> +* PNI RM3100 9-axis magnetometer sensor
+> +
+> +I2C Bus:
+> +
+> +Required properties:
+> +
+> +- compatible : should be "pni,rm3100-i2c"
+> +- reg : the I2C address of the magnetometer
+> +
+> +Optional properties:
+> +
+> +- interrupts: data ready (DRDY) from the chip.
+> +  The interrupts can be triggered on rising edges.
+> +
+> +	Refer to interrupt-controller/interrupts.txt for generic
+> +	interrupt client node bindings.
+> +
+> +- pinctrl-*: pinctrl setup for DRDY line.
+> +
+> +Example:
+> +
+> +rm3100: rm3100@20 {
+> +	pinctrl-names = "default";
+> +	pinctrl-0 = <&rm3100_pins>;
+> +
+> +	compatible = "pni,rm3100-i2c";
+> +	reg = <0x20>;
+> +	interrupt-parent = <&gpio0>;
+> +	interrupts = <4 IRQ_TYPE_EDGE_RISING>;
+> +};
+> +
+> +SPI Bus:
+> +
+> +Required properties:
+> +
+> +- compatible : should be "pni,rm3100-spi"
+> +- reg : address of sensor, usually 0 or 1.
+> +
+> +Optional properties:
+> +
+> +- interrupts: data ready (DRDY) from the chip.
+> +  The interrupts can be triggered on rising edges.
+> +
+> +	Refer to interrupt-controller/interrupts.txt for generic
+> +	interrupt client node bindings.
+> +
+> +- pinctrl-*: pinctrl setup for DRDY line, depands on archtechture.
+> +
+> +Example:
+> +
+> +rm3100: rm3100@0{
+> +	compatible = "pni,rm3100-spi";
+> +	reg = <0>;
+> +
+> +	interrupt-parent = <&gpio0>;
+> +	interrupts = <4 IRQ_TYPE_EDGE_RISING>;
+> +};
+> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+> index 41f0b97eb933..5bf3395fe9ae 100644
+> --- a/Documentation/devicetree/bindings/vendor-prefixes.txt
+> +++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+> @@ -288,6 +288,7 @@ pine64	Pine64
+>  pixcir  PIXCIR MICROELECTRONICS Co., Ltd
+>  plathome	Plat'Home Co., Ltd.
+>  plda	PLDA
+> +pni     PNI
 
-# https://github.com/0day-ci/linux/commit/0345472c15bab336397b25a25eb76a9f8586faf0
-git remote add linux-review https://github.com/0day-ci/linux
-git remote update linux-review
-git checkout 0345472c15bab336397b25a25eb76a9f8586faf0
-vim +235 drivers/iio/magnetometer/rm3100-core.c
+PNI doesn't stand for something?
 
-0345472c Song Qiang 2018-09-20  183  
-0345472c Song Qiang 2018-09-20  184  static int rm3100_set_samp_freq(struct rm3100_data *data, int val, int val2)
-0345472c Song Qiang 2018-09-20  185  {
-0345472c Song Qiang 2018-09-20  186  	struct regmap *regmap = data->regmap;
-0345472c Song Qiang 2018-09-20  187  	int cycle_count;
-0345472c Song Qiang 2018-09-20  188  	int ret;
-0345472c Song Qiang 2018-09-20  189  	int i;
-0345472c Song Qiang 2018-09-20  190  
-0345472c Song Qiang 2018-09-20  191  	/* All cycle count registers use the same value. */
-0345472c Song Qiang 2018-09-20  192  	ret = regmap_read(regmap, RM_REG_CCXL, &cycle_count);
-0345472c Song Qiang 2018-09-20  193  	if (cycle_count < 0)
-0345472c Song Qiang 2018-09-20  194  		return cycle_count;
-0345472c Song Qiang 2018-09-20  195  
-0345472c Song Qiang 2018-09-20  196  	for (i = 0; i < RM_SAMP_NUM; i++) {
-0345472c Song Qiang 2018-09-20  197  		if (val == rm3100_samp_rates[i][0] &&
-0345472c Song Qiang 2018-09-20  198  			val2 == rm3100_samp_rates[i][1])
-0345472c Song Qiang 2018-09-20  199  			break;
-0345472c Song Qiang 2018-09-20  200  	}
-0345472c Song Qiang 2018-09-20  201  
-0345472c Song Qiang 2018-09-20  202  	if (i != RM_SAMP_NUM) {
-0345472c Song Qiang 2018-09-20  203  		mutex_lock(&data->lock);
-                                                ^^^^^^^^^^^^^^^^^^^^^^^
-0345472c Song Qiang 2018-09-20  204  		ret = regmap_write(regmap, RM_REG_TMRC, i + RM_TMRC_OFFSET);
-0345472c Song Qiang 2018-09-20  205  		if (ret < 0)
-0345472c Song Qiang 2018-09-20  206  			return ret;
-                                                        ^^^^^^^^^^
-goto unlock;  there are a bunch of these.
-
-0345472c Song Qiang 2018-09-20  207  
-0345472c Song Qiang 2018-09-20  208  		/* Checking if cycle count registers need changing. */
-0345472c Song Qiang 2018-09-20  209  		if (val == 600 && cycle_count == 200) {
-0345472c Song Qiang 2018-09-20  210  			for (i = 0; i < 3; i++) {
-0345472c Song Qiang 2018-09-20  211  				regmap_write(regmap, RM_REG_CCXL + 2 * i, 100);
-0345472c Song Qiang 2018-09-20  212  				if (ret < 0)
-0345472c Song Qiang 2018-09-20  213  					return ret;
-0345472c Song Qiang 2018-09-20  214  			}
-0345472c Song Qiang 2018-09-20  215  		} else if (val != 600 && cycle_count == 100) {
-0345472c Song Qiang 2018-09-20  216  			for (i = 0; i < 3; i++) {
-0345472c Song Qiang 2018-09-20  217  				regmap_write(regmap, RM_REG_CCXL + 2 * i, 200);
-0345472c Song Qiang 2018-09-20  218  				if (ret < 0)
-0345472c Song Qiang 2018-09-20  219  					return ret;
-0345472c Song Qiang 2018-09-20  220  			}
-0345472c Song Qiang 2018-09-20  221  		}
-0345472c Song Qiang 2018-09-20  222  		/* Writing TMRC registers requires CMM reset. */
-0345472c Song Qiang 2018-09-20  223  		ret = regmap_write(regmap, RM_REG_CMM, 0);
-0345472c Song Qiang 2018-09-20  224  		if (ret < 0)
-0345472c Song Qiang 2018-09-20  225  			return ret;
-0345472c Song Qiang 2018-09-20  226  		ret = regmap_write(regmap, RM_REG_CMM, RM_CMM_PMX |
-0345472c Song Qiang 2018-09-20  227  			RM_CMM_PMY | RM_CMM_PMZ | RM_CMM_START);
-0345472c Song Qiang 2018-09-20  228  		if (ret < 0)
-0345472c Song Qiang 2018-09-20  229  			return ret;
-0345472c Song Qiang 2018-09-20  230  		mutex_unlock(&data->lock);
-0345472c Song Qiang 2018-09-20  231  
-0345472c Song Qiang 2018-09-20  232  		data->conversion_time = rm3100_samp_rates[i][2] + 3000;
-0345472c Song Qiang 2018-09-20  233  		return 0;
-0345472c Song Qiang 2018-09-20  234  	}
-0345472c Song Qiang 2018-09-20 @235  	return -EINVAL;
-0345472c Song Qiang 2018-09-20  236  }
-0345472c Song Qiang 2018-09-20  237  
-0345472c Song Qiang 2018-09-20  238  static int rm3100_read_raw(struct iio_dev *indio_dev,
-0345472c Song Qiang 2018-09-20  239  			   const struct iio_chan_spec *chan,
-0345472c Song Qiang 2018-09-20  240  			   int *val, int *val2, long mask)
-0345472c Song Qiang 2018-09-20  241  {
-0345472c Song Qiang 2018-09-20  242  	struct rm3100_data *data = iio_priv(indio_dev);
-0345472c Song Qiang 2018-09-20  243  	int ret;
-0345472c Song Qiang 2018-09-20  244  
-0345472c Song Qiang 2018-09-20  245  	switch (mask) {
-0345472c Song Qiang 2018-09-20  246  	case IIO_CHAN_INFO_RAW:
-0345472c Song Qiang 2018-09-20  247  		ret = iio_device_claim_direct_mode(indio_dev);
-0345472c Song Qiang 2018-09-20  248  		if (ret < 0)
-0345472c Song Qiang 2018-09-20  249  			return ret;
-0345472c Song Qiang 2018-09-20  250  		ret = rm3100_read_mag(data, chan->scan_index, val);
-0345472c Song Qiang 2018-09-20  251  		iio_device_release_direct_mode(indio_dev);
-0345472c Song Qiang 2018-09-20  252  
-0345472c Song Qiang 2018-09-20  253  		return ret;
-0345472c Song Qiang 2018-09-20  254  	case IIO_CHAN_INFO_SAMP_FREQ:
-0345472c Song Qiang 2018-09-20  255  		return ret = rm3100_get_samp_freq(data, val, val2);
-0345472c Song Qiang 2018-09-20  256  	default:
-0345472c Song Qiang 2018-09-20  257  		return -EINVAL;
-0345472c Song Qiang 2018-09-20  258  	}
-0345472c Song Qiang 2018-09-20  259  }
-0345472c Song Qiang 2018-09-20  260  
-0345472c Song Qiang 2018-09-20  261  static int rm3100_write_raw(struct iio_dev *indio_dev,
-0345472c Song Qiang 2018-09-20  262  			    struct iio_chan_spec const *chan,
-0345472c Song Qiang 2018-09-20  263  			    int val, int val2, long mask)
-0345472c Song Qiang 2018-09-20  264  {
-0345472c Song Qiang 2018-09-20  265  	struct rm3100_data *data = iio_priv(indio_dev);
-0345472c Song Qiang 2018-09-20  266  	int ret;
-0345472c Song Qiang 2018-09-20  267  
-0345472c Song Qiang 2018-09-20  268  	switch (mask) {
-0345472c Song Qiang 2018-09-20  269  	case IIO_CHAN_INFO_SAMP_FREQ:
-0345472c Song Qiang 2018-09-20  270  		ret = rm3100_set_samp_freq(data, val, val2);
-0345472c Song Qiang 2018-09-20  271  		if (ret < 0)
-0345472c Song Qiang 2018-09-20  272  			return ret;
-0345472c Song Qiang 2018-09-20  273  		return 0;
-0345472c Song Qiang 2018-09-20  274  	default:
-0345472c Song Qiang 2018-09-20  275  		return -EINVAL;
-0345472c Song Qiang 2018-09-20  276  	}
-0345472c Song Qiang 2018-09-20  277  
-0345472c Song Qiang 2018-09-20  278  }
-0345472c Song Qiang 2018-09-20  279  
-0345472c Song Qiang 2018-09-20  280  static const struct iio_info rm3100_info = {
-0345472c Song Qiang 2018-09-20  281  	.read_raw = rm3100_read_raw,
-0345472c Song Qiang 2018-09-20  282  	.write_raw = rm3100_write_raw,
-0345472c Song Qiang 2018-09-20  283  };
-0345472c Song Qiang 2018-09-20  284  
-0345472c Song Qiang 2018-09-20  285  static irqreturn_t rm3100_trigger_handler(int irq, void *p)
-0345472c Song Qiang 2018-09-20  286  {
-0345472c Song Qiang 2018-09-20  287  	struct iio_poll_func *pf = p;
-0345472c Song Qiang 2018-09-20  288  	struct iio_dev *indio_dev = pf->indio_dev;
-0345472c Song Qiang 2018-09-20  289  	struct rm3100_data *data = iio_priv(indio_dev);
-0345472c Song Qiang 2018-09-20  290  	struct regmap *regmap = data->regmap;
-0345472c Song Qiang 2018-09-20  291  	u8 *buffer;
-0345472c Song Qiang 2018-09-20  292  	int ret;
-0345472c Song Qiang 2018-09-20  293  	int i;
-0345472c Song Qiang 2018-09-20  294  
-0345472c Song Qiang 2018-09-20  295  	buffer = devm_kzalloc(data->dev, indio_dev->scan_bytes, GFP_KERNEL);
-0345472c Song Qiang 2018-09-20  296  	if (!buffer)
-0345472c Song Qiang 2018-09-20  297  		goto done;
-0345472c Song Qiang 2018-09-20  298  
-0345472c Song Qiang 2018-09-20  299  	mutex_lock(&data->lock);
-0345472c Song Qiang 2018-09-20  300  	ret = rm3100_wait_measurement(data);
-0345472c Song Qiang 2018-09-20  301  	if (ret < 0) {
-0345472c Song Qiang 2018-09-20  302  		mutex_unlock(&data->lock);
-0345472c Song Qiang 2018-09-20  303  		goto done;
-0345472c Song Qiang 2018-09-20  304  	}
-0345472c Song Qiang 2018-09-20  305  
-0345472c Song Qiang 2018-09-20  306  	for (i = 0; i < 3; i++) {
-0345472c Song Qiang 2018-09-20  307  		ret = regmap_bulk_read(regmap, RM_REG_MX2 + 3 * i,
-0345472c Song Qiang 2018-09-20  308  				buffer + 4 * i, 3);
-0345472c Song Qiang 2018-09-20  309  		if (ret < 0)
-0345472c Song Qiang 2018-09-20  310  			return ret;
-0345472c Song Qiang 2018-09-20  311  	}
-0345472c Song Qiang 2018-09-20  312  	mutex_unlock(&data->lock);
-0345472c Song Qiang 2018-09-20  313  
-0345472c Song Qiang 2018-09-20  314  	iio_push_to_buffers_with_timestamp(indio_dev, buffer,
-0345472c Song Qiang 2018-09-20  315  			iio_get_time_ns(indio_dev));
-0345472c Song Qiang 2018-09-20  316  done:
-0345472c Song Qiang 2018-09-20  317  	iio_trigger_notify_done(indio_dev->trig);
-0345472c Song Qiang 2018-09-20  318  
-0345472c Song Qiang 2018-09-20 @319  	return IRQ_HANDLED;
-0345472c Song Qiang 2018-09-20  320  }
-0345472c Song Qiang 2018-09-20  321  
-
----
-0-DAY kernel test infrastructure                Open Source Technology Center
-https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+>  portwell	Portwell Inc.
+>  poslab	Poslab Technology Co., Ltd.
+>  powervr	PowerVR (deprecated, use img)
