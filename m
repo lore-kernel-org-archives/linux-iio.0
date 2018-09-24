@@ -1,78 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:41940 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727872AbeI2R7S (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 29 Sep 2018 13:59:18 -0400
-Date: Sat, 29 Sep 2018 12:31:07 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Ludovic Desroches <ludovic.desroches@microchip.com>
-Cc: Eugen Hristev <eugen.hristev@microchip.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <nicolas.ferre@microchip.com>,
-        Maxime Ripard <maxime.ripard@bootlin.com>
-Subject: Re: [PATCH v2 1/2] iio: adc: at91: fix acking DRDY irq on simple
- conversions
-Message-ID: <20180929123107.0d0053e3@archlinux>
-In-Reply-To: <20180925131739.2nuoelhqmkszamqo@M43218.corp.atmel.com>
-References: <1537775504-7981-1-git-send-email-eugen.hristev@microchip.com>
-        <20180925131739.2nuoelhqmkszamqo@M43218.corp.atmel.com>
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:38098 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727586AbeIYERw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Sep 2018 00:17:52 -0400
+Received: by mail-wr1-f67.google.com with SMTP id j8-v6so17499099wrw.5
+        for <linux-iio@vger.kernel.org>; Mon, 24 Sep 2018 15:13:30 -0700 (PDT)
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To: linux-amlogic@lists.infradead.org, linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH 0/2] meson-saradc: preparations for temperature sensor support
+Date: Tue, 25 Sep 2018 00:13:24 +0200
+Message-Id: <20180924221326.2871-1-martin.blumenstingl@googlemail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 25 Sep 2018 15:17:39 +0200
-Ludovic Desroches <ludovic.desroches@microchip.com> wrote:
+This is a follow-up of my previous series "meson-saradc: small code
+improvements" from [0].
 
-> On Mon, Sep 24, 2018 at 10:51:43AM +0300, Eugen Hristev wrote:
-> > When doing simple conversions, the driver did not acknowledge the DRDY irq.
-> > If this irq status is not acked, it will be left pending, and as soon as a
-> > trigger is enabled, the irq handler will be called, it doesn't know why
-> > this status has occurred because no channel is pending, and then it will go
-> > int a irq loop and board will hang.
-> > To avoid this situation, read the LCDR after a raw conversion is done.
-> > 
-> > Fixes 0e589d5fb ("ARM: AT91: IIO: Add AT91 ADC driver.")
-> > Cc: Maxime Ripard <maxime.ripard@bootlin.com>
-> > Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>  
-> Acked-by: Ludovic Desroches <ludovic.desroches@microchip.com> 
-Applied to the togreg branch of iio.git and marked for stable.
+I broke these smaller patches out of my big "add support for the chip's
+temperature sensor" patch to make that easier to review. That patch
+will also depend on a change to the clock controller's dt-bindings on
+Meson8, Meson8b and Meson8m2 - see my patch "dt-bindings: clock:
+meson8b: use the registers from the HHI syscon" from [1].
 
-It's been broken long enough that I think it can wait for the merge window
-coming in a few weeks time.
+I can also post an RFC version of the actual temperature sensor patches
+if it makes the code-review of these smaller ones easier (so you see
+the "big picture").
 
-Thanks,
 
-Jonathan
+Regards
+Martin
 
-> 
-> > ---
-> > Hello Jonathan,
-> > 
-> > I moved this LCDR read/acknowledge into the IRQ handler after the conversion
-> > value is being read.
-> > Sorry about the noise to stable@vger, removed from message.
-> > 
-> > Thanks,
-> > Eugen
-> > 
-> >  drivers/iio/adc/at91_adc.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> > 
-> > diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-> > index 44b5168..e3be88e 100644
-> > --- a/drivers/iio/adc/at91_adc.c
-> > +++ b/drivers/iio/adc/at91_adc.c
-> > @@ -279,6 +279,8 @@ static void handle_adc_eoc_trigger(int irq, struct iio_dev *idev)
-> >  		iio_trigger_poll(idev->trig);
-> >  	} else {
-> >  		st->last_value = at91_adc_readl(st, AT91_ADC_CHAN(st, st->chnb));
-> > +		/* Needed to ACK the DRDY interruption */
-> > +		at91_adc_readl(st, AT91_ADC_LCDR);
-> >  		st->done = true;
-> >  		wake_up_interruptible(&st->wq_data_avail);
-> >  	}
-> > -- 
-> > 2.7.4
-> >   
+
+[0] https://www.spinics.net/lists/linux-iio/msg40632.html
+[1] https://patchwork.kernel.org/patch/10539027/
+
+Martin Blumenstingl (2):
+  iio: adc: meson-saradc: do not use meson_sar_adc_iio_channels directly
+  iio: adc: meson-saradc: use the address attribute from iio_chan_spec
+
+ drivers/iio/adc/meson_saradc.c | 33 +++++++++++++++++----------------
+ 1 file changed, 17 insertions(+), 16 deletions(-)
+
+-- 
+2.19.0
