@@ -1,65 +1,65 @@
-Return-Path: <SRS0=HIwy=LO=redhat.com=lorenzo.bianconi@kernel.org>
-From: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org
-Subject: [PATCH v2] iio: imu: st_lsm6dsx: take into account ts samples in wm configuration
-Date: Fri, 31 Aug 2018 10:51:14 +0200
-Message-Id: <d653e806f0aa1904bc0290b095837e13d6561a23.1535705166.git.lorenzo.bianconi@redhat.com>
-In-Reply-To: <cover.1535705166.git.lorenzo.bianconi@redhat.com>
-References: <cover.1535705166.git.lorenzo.bianconi@redhat.com>
+Return-Path: <SRS0=x4Df=MK=ti.com=vigneshr@kernel.org>
+Subject: Re: [PATCH 0/5] ti_am335x_tsc: Enable wakeup capability
+To: Lee Jones <lee.jones@linaro.org>
+CC: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Jonathan Cameron
+	<jic23@kernel.org>, <linux-iio@vger.kernel.org>,
+        <linux-omap@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-input@vger.kernel.org>
+References: <20180630103318.25355-1-vigneshr@ti.com>
+ <dcb4a63b-9ecb-a72e-bfb8-ebb62017b4f7@ti.com> <20180718074736.GA4641@dell>
+ <20180718170902.vk7rahyoaevucxbi@penguin> <20180723053708.GA4213@dell>
+ <2236aa96-ca56-fa30-157d-2f484c6968cc@ti.com> <20180725052621.GB5835@dell>
+From: Vignesh R <vigneshr@ti.com>
+Message-ID: <f61848d8-57f6-14c0-eb74-cab488ceda50@ti.com>
+Date: Fri, 28 Sep 2018 11:42:41 +0530
+MIME-Version: 1.0
+In-Reply-To: <20180725052621.GB5835@dell>
+Content-Type: text/plain; charset="utf-8"
 List-ID: <linux-iio@vger.kernel.org>
 
-Take into account hw timer samples in pattern length computation done
-in st_lsm6dsx_update_watermark routine for watermark configuration.
-Moreover use samples in pattern (sip) already computed in
-st_lsm6dsx_update_decimators routine
+Hi Lee,
 
-Fixes: 213451076bd3 ("iio: imu: st_lsm6dsx: add hw timestamp support")
-Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
----
-Changes since v1:
-- use samples in pattern already computed in st_lsm6dsx_update_decimators
----
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+On Wednesday 25 July 2018 10:56 AM, Lee Jones wrote:
+[...]
+>>>>>>>
+>>>>>>> Vignesh R (5):
+>>>>>>>   mfd: ti_am335x_tscadc: Don't mark TSCADC MFD as wakeup capable
+>>>>>>>   Input: ti_am335x_tsc: Mark TSC device as wakeup source
+>>>>>>>   mfd: ti_am335x_tscadc: Keep ADC interface on if child is wakeup
+>>>>>>>     capable
+>>>>>>>   iio: adc: ti_am335x_adc: Disable ADC during suspend unconditionally
+>>>>>>>   Input: ti_am335x_tsc: Mark IRQ as wakeup capable
+>>>>>>>
+>>>>>>>  drivers/iio/adc/ti_am335x_adc.c           | 12 ++++--------
+>>>>>>>  drivers/input/touchscreen/ti_am335x_tsc.c | 22 +++++++++++++++++-----
+>>>>>>>  drivers/mfd/ti_am335x_tscadc.c            | 14 +++++++++++++-
+>>>>>>>  3 files changed, 34 insertions(+), 14 deletions(-)
+>>>>>>>
+>>>>>>
+>>>>>> Gentle ping... Could you review/pick this series? MFD amd IIO bits are
+>>>>>> already ACKed
+>>>>>
+>>>>> MFD patches are reviewed "for my own reference" meaning that we
+>>>>> haven't yet agreed on a merge plan yet.
+>>>>
+>>>> I think this series makes sense to be pushed through a single tree as
+>>>> opposed to being spread between 3, even if it could technically be
+>>>> possible. It looks like Jonathan is fine with going it through either
+>>>> his or some other tree, I am fine with it going through MFD.
+>>>
+>>> I'm happy either way.
+>>>
+>> Thanks Dmitry, Jonathan and Lee Jones!
+>>
+>> Could this be applied to one of the trees now? MFD perhaps?
+> 
+> It'll be applied, when it's applied. ;)
 
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-index 7589f2ad1dae..631360b14ca7 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-@@ -187,12 +187,15 @@ static int st_lsm6dsx_set_fifo_odr(struct st_lsm6dsx_sensor *sensor,
- 
- int st_lsm6dsx_update_watermark(struct st_lsm6dsx_sensor *sensor, u16 watermark)
- {
--	u16 fifo_watermark = ~0, cur_watermark, sip = 0, fifo_th_mask;
-+	u16 fifo_watermark = ~0, cur_watermark, fifo_th_mask;
- 	struct st_lsm6dsx_hw *hw = sensor->hw;
- 	struct st_lsm6dsx_sensor *cur_sensor;
- 	int i, err, data;
- 	__le16 wdata;
- 
-+	if (!hw->sip)
-+		return 0;
-+
- 	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++) {
- 		cur_sensor = iio_priv(hw->iio_devs[i]);
- 
-@@ -203,14 +206,10 @@ int st_lsm6dsx_update_watermark(struct st_lsm6dsx_sensor *sensor, u16 watermark)
- 						       : cur_sensor->watermark;
- 
- 		fifo_watermark = min_t(u16, fifo_watermark, cur_watermark);
--		sip += cur_sensor->sip;
- 	}
- 
--	if (!sip)
--		return 0;
--
--	fifo_watermark = max_t(u16, fifo_watermark, sip);
--	fifo_watermark = (fifo_watermark / sip) * sip;
-+	fifo_watermark = max_t(u16, fifo_watermark, hw->sip);
-+	fifo_watermark = (fifo_watermark / hw->sip) * hw->sip;
- 	fifo_watermark = fifo_watermark * hw->settings->fifo_ops.th_wl;
- 
- 	err = regmap_read(hw->regmap, hw->settings->fifo_ops.fifo_th.addr + 1,
+I see that this series was not picked up for v4.19. Could you consider
+this series for v4.20? Patches apply cleanly against linux-next.
+
+
 -- 
-2.17.1
+Regards
+Vignesh
