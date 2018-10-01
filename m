@@ -1,81 +1,48 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtpo.poczta.interia.pl ([217.74.65.156]:37194 "EHLO
-        smtpo.poczta.interia.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729182AbeJATkZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 1 Oct 2018 15:40:25 -0400
-Date: Mon, 1 Oct 2018 15:02:47 +0200
-From: Slawomir Stepien <sst@poczta.fm>
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: linux-iio@vger.kernel.org, lars@metafoo.de, jic23@kernel.org,
-        gregkh@linuxfoundation.org, devel@driverdev.osuosl.org
+Return-Path: <SRS0=8BuI=MN=oracle.com=dan.carpenter@kernel.org>
+Date: Mon, 1 Oct 2018 15:52:16 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: Slawomir Stepien <sst@poczta.fm>
+Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org, lars@metafoo.de,
+        Michael.Hennerich@analog.com, gregkh@linuxfoundation.org,
+        pmeerw@pmeerw.net, knaack.h@gmx.de, jic23@kernel.org
 Subject: Re: [PATCH] staging: iio: adc: add missing spaces around minus sign
-Message-ID: <20181001130247.GA2376@x220.localdomain>
+Message-ID: <20181001125216.jdqtcqcnisnea3tf@mwanda>
 References: <20181001122834.GA13306@x220.localdomain>
- <alpine.DEB.2.21.1810011449270.19690@vps.pmeerw.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <alpine.DEB.2.21.1810011449270.19690@vps.pmeerw.net>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20181001122834.GA13306@x220.localdomain>
+List-ID: <linux-iio@vger.kernel.org>
 
-On paź 01, 2018 14:51, Peter Meerwald-Stadler wrote:
+On Mon, Oct 01, 2018 at 02:28:34PM +0200, Slawomir Stepien wrote:
+> The checkpatch.pl tool detected coding style problem:
 > 
-> > The checkpatch.pl tool detected coding style problem:
-> > 
-> >     CHECK: spaces preferred around that '-' (ctx:VxV)
+>     CHECK: spaces preferred around that '-' (ctx:VxV)
 > 
-> oh no, not again
-> please see e.g. https://lore.kernel.org/patchwork/patch/635994/
-> for some discussion why this patch doesn't make sense
+> in two files inside the adc directory. This patch will remove this
+> problem.
+> 
+> Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+> ---
+>  drivers/staging/iio/adc/ad7192.c  | 2 +-
+>  drivers/staging/iio/adc/ad7280a.c | 4 ++--
+>  2 files changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+> index acdbc07fd259..7c632cf1932b 100644
+> --- a/drivers/staging/iio/adc/ad7192.c
+> +++ b/drivers/staging/iio/adc/ad7192.c
+> @@ -355,7 +355,7 @@ ad7192_show_scale_available(struct device *dev,
+>  }
+>  
+>  static IIO_DEVICE_ATTR_NAMED(in_v_m_v_scale_available,
+> -			     in_voltage-voltage_scale_available,
+> +			     in_voltage - voltage_scale_available,
+>  			     0444, ad7192_show_scale_available, NULL, 0);
 
-Oh...my mistake. Thank you for clarification. I should be more careful. Sorry!
 
-> > in two files inside the adc directory. This patch will remove this
-> > problem.
-> > 
-> > Signed-off-by: Slawomir Stepien <sst@poczta.fm>
-> > ---
-> >  drivers/staging/iio/adc/ad7192.c  | 2 +-
-> >  drivers/staging/iio/adc/ad7280a.c | 4 ++--
-> >  2 files changed, 3 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-> > index acdbc07fd259..7c632cf1932b 100644
-> > --- a/drivers/staging/iio/adc/ad7192.c
-> > +++ b/drivers/staging/iio/adc/ad7192.c
-> > @@ -355,7 +355,7 @@ ad7192_show_scale_available(struct device *dev,
-> >  }
-> >  
-> 
-> >  static IIO_DEVICE_ATTR_NAMED(in_v_m_v_scale_available,
-> > -			     in_voltage-voltage_scale_available,
-> > +			     in_voltage - voltage_scale_available,
-> >  			     0444, ad7192_show_scale_available, NULL, 0);
-> >  
-> >  static IIO_DEVICE_ATTR(in_voltage_scale_available, 0444,
-> > diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-> > index 58420dcb406d..a4b4f8678c56 100644
-> > --- a/drivers/staging/iio/adc/ad7280a.c
-> > +++ b/drivers/staging/iio/adc/ad7280a.c
-> > @@ -750,14 +750,14 @@ static irqreturn_t ad7280_event_handler(int irq, void *private)
-> >  }
-> >  
-> >  static IIO_DEVICE_ATTR_NAMED(in_thresh_low_value,
-> > -		in_voltage-voltage_thresh_low_value,
-> > +		in_voltage - voltage_thresh_low_value,
-> >  		0644,
-> >  		ad7280_read_channel_config,
-> >  		ad7280_write_channel_config,
-> >  		AD7280A_CELL_UNDERVOLTAGE);
-> >  
-> >  static IIO_DEVICE_ATTR_NAMED(in_thresh_high_value,
-> > -		in_voltage-voltage_thresh_high_value,
-> > +		in_voltage - voltage_thresh_high_value,
-> >  		0644,
-> >  		ad7280_read_channel_config,
-> >  		ad7280_write_channel_config,
-> > 
-> 
+This doesn't work.  That's not arithmatic, it's a string which is passed
+to a macro.  It's an ugly macro, but it would take a lot of work to
+change it at this point.
 
--- 
-Slawomir Stepien
+regards,
+dan carpenter
