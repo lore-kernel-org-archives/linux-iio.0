@@ -1,26 +1,24 @@
-Return-Path: <SRS0=z80J=MO=linuxfoundation.org=gregkh@kernel.org>
-Date: Mon, 1 Oct 2018 18:14:36 -0700
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: [PULL] Second set of IIO new device support, cleanups etc for
- 4.20
-Message-ID: <20181002011436.GA20903@kroah.com>
-References: <20181001202825.315a1a8d@archlinux>
+Return-Path: <SRS0=Wg2O=MN=poczta.fm=sst@kernel.org>
+Date: Mon, 1 Oct 2018 21:32:23 +0200
+From: Slawomir Stepien <sst@poczta.fm>
+To: linux-iio@vger.kernel.org
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+	knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+	devel@driverdev.osuosl.org
+Subject: [PATCH 0/2] Fix style problems in ad7150 driver
+Message-ID: <20181001193223.GD24866@x220.localdomain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20181001202825.315a1a8d@archlinux>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Oct 01, 2018 at 08:28:25PM +0100, Jonathan Cameron wrote:
-> The following changes since commit 6029b7ac292abd36f8dff7f75e83dfd01332b265:
-> 
->   MAINTAINERS: remove myself as staging FBTFT maintainer (2018-09-14 15:41:34 +0200)
-> 
-> are available in the Git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-4.20b
+This series will fix simple style problem inside the ad7150 driver.
 
-Now pulled, thanks.
+Slawomir Stepien (2):
+  staging: iio: cdc: ad7150: use pointer to shorten the line length
+  staging: iio: cdc: ad7150: fix misaligned lines
 
-greg k-h
+ drivers/staging/iio/cdc/ad7150.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+-- 
+2.19.0
