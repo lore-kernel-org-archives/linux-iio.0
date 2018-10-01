@@ -1,62 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:33210 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725936AbeJBHlH (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 2 Oct 2018 03:41:07 -0400
-Subject: Re: [PATCH] iio: adc: Fix Renesas GyroADC MAINTAINERS entry
-To: Jonathan Cameron <jonathan.cameron@huawei.com>,
-        Wolfram Sang <wsa@the-dreams.de>
-Cc: linux-iio@vger.kernel.org,
-        Marek Vasut <marek.vasut+renesas@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Joe Perches <joe@perches.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Simon Horman <horms+renesas@verge.net.au>,
-        linux-renesas-soc@vger.kernel.org
-References: <20181001105804.17802-1-marek.vasut+renesas@gmail.com>
- <20181001115559.GA4134@kunai>
- <bc65ecfa-5135-5224-bdeb-938b3025c30c@gmail.com>
- <20181001121739.GB4134@kunai> <20181001132001.00007423@huawei.com>
+Received: from mail-wr1-f43.google.com ([209.85.221.43]:33830 "EHLO
+        mail-wr1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728791AbeJARft (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 1 Oct 2018 13:35:49 -0400
+Subject: Re: Bad MAINTAINERS pattern in section 'RENESAS R-CAR GYROADC DRIVER'
+To: Joe Perches <joe@perches.com>, linux-kernel@vger.kernel.org
+Cc: linux-iio@vger.kernel.org
+References: <20180928220152.31151-1-joe@perches.com>
 From: Marek Vasut <marek.vasut@gmail.com>
-Message-ID: <f7a97c8d-0b80-5873-3fbb-b3c6152323d0@gmail.com>
-Date: Tue, 2 Oct 2018 03:00:33 +0200
+Message-ID: <6b5b6ff4-1575-706e-defe-03fe4223c155@gmail.com>
+Date: Mon, 1 Oct 2018 12:58:32 +0200
 MIME-Version: 1.0
-In-Reply-To: <20181001132001.00007423@huawei.com>
+In-Reply-To: <20180928220152.31151-1-joe@perches.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/01/2018 02:20 PM, Jonathan Cameron wrote:
-> On Mon, 1 Oct 2018 14:17:40 +0200
-> Wolfram Sang <wsa@the-dreams.de> wrote:
+On 09/29/2018 12:01 AM, Joe Perches wrote:
+> Please fix this defect appropriately.
 > 
->> On Mon, Oct 01, 2018 at 01:58:26PM +0200, Marek Vasut wrote:
->>> On 10/01/2018 01:55 PM, Wolfram Sang wrote:  
->>>> On Mon, Oct 01, 2018 at 12:58:04PM +0200, Marek Vasut wrote:  
->>>>> Fix the F: entry in MAINTAINERS file, point it to the correct file.  
->>>>
->>>> Right...
->>>>   
->>>>> @@ -12471,7 +12471,7 @@ RENESAS R-CAR GYROADC DRIVER
->>>>>  M:	Marek Vasut <marek.vasut@gmail.com>
->>>>>  L:	linux-iio@vger.kernel.org
->>>>>  S:	Supported
->>>>> -F:	drivers/iio/adc/rcar_gyro_adc.c
->>>>> +F:	drivers/iio/adc/rcar-gyroadc.c  
->>>>
->>>> Add the bindings, too?
->>>>
->>>> Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt
->>>>   
->>> Separate patch or V2 ?  
->>
->> I'd say V2, but I am not the IIO maintainer.
->>
->>
+> linux-next MAINTAINERS section:
 > 
-> v2 please given I haven't done anything with v1 yet.
-
-Done
+> 	12496	RENESAS R-CAR GYROADC DRIVER
+> 	12497	M:	Marek Vasut <marek.vasut@gmail.com>
+> 	12498	L:	linux-iio@vger.kernel.org
+> 	12499	S:	Supported
+> -->	12500	F:	drivers/iio/adc/rcar_gyro_adc.c
+> 
+> Commit that introduced this:
+> 
+> commit 059c53b3232960cfd38cc46de0a7bedd642021f5
+>  Author: Marek Vasut <marek.vasut+renesas@gmail.com>
+>  Date:   Sat Jan 28 00:08:37 2017 +0100
+>  
+>      iio: adc: Add Renesas GyroADC driver
+>      
+>      Add IIO driver for the Renesas RCar GyroADC block. This block is a
+>      simple 4/8-channel ADC which samples 12/15/24 bits of data every
+>      cycle from all channels.
+>      
+>      Signed-off-by: Marek Vasut <marek.vasut+renesas@gmail.com>
+>      Cc: Geert Uytterhoeven <geert+renesas@glider.be>
+>      Cc: Simon Horman <horms+renesas@verge.net.au>
+>      Cc: Jonathan Cameron <jic23@kernel.org>
+>      Cc: linux-renesas-soc@vger.kernel.org
+>      Cc: Wolfram Sang <wsa@the-dreams.de>
+>      Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+>  
+>   MAINTAINERS                    |   6 +
+>   drivers/iio/adc/Kconfig        |  13 +
+>   drivers/iio/adc/Makefile       |   1 +
+>   drivers/iio/adc/rcar-gyroadc.c | 631 +++++++++++++++++++++++++++++++++++++++++
+>   4 files changed, 651 insertions(+)
+> 
+> No commit with drivers/iio/adc/rcar_gyro_adc.c found
+> 
+Fixed, thanks for the heads up.
 
 -- 
 Best regards,
