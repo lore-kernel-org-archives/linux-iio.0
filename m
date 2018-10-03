@@ -1,61 +1,34 @@
-Return-Path: <SRS0=9fiM=M4=prevas.dk=Sean.Nyekjaer@kernel.org>
-From: =?utf-8?B?U2VhbiBOeWVrasOmcg==?= <Sean.Nyekjaer@prevas.dk>
-To: Jonathan Cameron <jic23@kernel.org>, Chris Coffey <cmc@babblebit.net>
-CC: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Michael Welling
-	<mwelling@ieee.org>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"michael.hennerich@analog.com" <michael.hennerich@analog.com>,
-	"stefan.popa@analog.com" <stefan.popa@analog.com>,
-	"maxime.roussinbelanger@gmail.com" <maxime.roussinbelanger@gmail.com>,
-	"peda@axentia.se" <peda@axentia.se>
-Subject: Re: [PATCH] iio: dac: mcp4922: Add powerdown support
-Date: Mon, 15 Oct 2018 05:49:29 +0000
-Message-ID: <ddc2ecae-0500-4b60-3f0d-a50eb0451b8e@prevas.dk>
-References: <20181003090638.25111-1-cmc@babblebit.net>
- <20181008210829.41cc106f@archlinux> <20181009115707.r5yeq67dhbfjit6f@deb-660>
- <20181013131558.1ffda128@archlinux>
-In-Reply-To: <20181013131558.1ffda128@archlinux>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pg1-f182.google.com ([209.85.215.182]:45318 "EHLO
+        mail-pg1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726811AbeJCWf6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 3 Oct 2018 18:35:58 -0400
+Received: by mail-pg1-f182.google.com with SMTP id t70-v6so1733301pgd.12
+        for <linux-iio@vger.kernel.org>; Wed, 03 Oct 2018 08:47:02 -0700 (PDT)
+Received: from ?IPv6:2001:569:7014:cd00:2dad:2f78:5eb8:a229? (node-1w7jr9qg8sz2o0ibxwzy2aejt.ipv6.telus.net. [2001:569:7014:cd00:2dad:2f78:5eb8:a229])
+        by smtp.gmail.com with ESMTPSA id h10-v6sm3714721pfj.78.2018.10.03.08.47.00
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 03 Oct 2018 08:47:00 -0700 (PDT)
+To: linux-iio <linux-iio@vger.kernel.org>
+From: David Frey <dpfrey@gmail.com>
+Subject: CONFIG_IIO_TRIGGERED_BUFFER lacks Kconfig description
+Message-ID: <d784af9b-c687-530d-4499-fed635a7409e@gmail.com>
+Date: Wed, 3 Oct 2018 08:47:00 -0700
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-DQoNCk9uIDEzLzEwLzIwMTggMTQuMTUsIEpvbmF0aGFuIENhbWVyb24gd3JvdGU6DQo+IE9uIFR1
-ZSwgOSBPY3QgMjAxOCAxMjo1NzowNyArMDEwMA0KPiBDaHJpcyBDb2ZmZXkgPGNtY0BiYWJibGVi
-aXQubmV0PiB3cm90ZToNCj4gDQo+PiBIaSBKb25hdGhhbiwgdGhhbmsgeW91IGZvciB0aGUgcmV2
-aWV3LiBJIGFkZGVkIGEgZmV3IGNvbW1lbnRzIGJlbG93DQo+PiBiYXNlZCBvbiB5b3VyIGZlZWRi
-YWNrLg0KPj4NCj4+IC0gQ2hyaXMNCj4+DQo+PiBPbiBNb24sIE9jdCAwOCwgMjAxOCBhdCAwOTow
-ODoyOVBNICswMTAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3RlOg0KPj4+IFRoYXQncyBpbnRlcmVz
-dGluZy4gIEknbSBub3Qgc3VyZSB3ZSBoYXZlIGFueSBjb25zaXN0ZW5jeSBvZiBpbnRlcmZhY2UN
-Cj4+PiBhcm91bmQgd2hldGhlciBhIHdyaXRlIHRvIHRoZSB2YWx1ZSB3aGVuIHBvd2VyZWQgZG93
-biByZXN1bHRzIGluIHRoZSBkZXZpY2UNCj4+PiBwb3dlcmluZyB1cCBvciBub3QuICBJdCBjZXJ0
-YWlubHkgZmVlbHMgbGlrZSB3ZSBzaG91bGQgYmUgY29uc2lzdGVudCBvbiB0aGlzDQo+Pj4gYW5k
-IGRvY3VtZW50IGl0Lg0KPj4+DQo+Pj4gSSBjaGVja2VkIHRoZSBmaXJzdCByYW5kb20gZHJpdmVy
-IEkgZm91bmQgdGhlIGFkNTM2MCBhbmQgaXQgYXBwZWFycyB0bw0KPj4+IGhhdmUgdGhlIHBvd2Vy
-ZG93biBvbiB0aGUgZnJvbnQgZW5kIGluIHNvbWUgc2Vuc2UgaW4gdGhhdCB0aGVyZSBpcyBhDQo+
-Pj4gc3BlY2lmaWMgYml0IHRvIGNsZWFyIGluIG9yZGVyIHRvIHBvd2VyIHVwIGFnYWluIGFuZCBp
-dCBpcyBub3QgZG9uZQ0KPj4+IGJ5IGNoYW5naW5nIHRoZSBjdXJyZW50IHZhbHVlLg0KPj4+DQo+
-Pj4gVG8gbXkgbWluZCB0aGF0IGlzIHRoZSBtb3JlIGxvZ2ljYWwgb3B0aW9uLCBidXQgSSdkIGxp
-a2Ugb3RoZXJzIG9waW5pb25zDQo+Pj4gb24gdGhpcy4NCj4+PiAgICANCj4+IEkgc2VlIHdoYXQg
-eW91IG1lYW4uIE15IGludGVudCB3YXMgdG8gbWlycm9yIHRoZSBiZWhhdmlvciBvZiB1c2Vyc3Bh
-Y2UNCj4+IHByb2dyYW1zIGFuZCBBUElzIHRoYXQgSSd2ZSB3cml0dGVuIGFuZCBzZWVuIGZvciB0
-aGVzZSBjaGlwcy4gVGhleSB0YWtlDQo+PiBhZHZhbnRhZ2Ugb2YgdGhlIGZhY3QgYSBzaW5nbGUg
-Y29tbWFuZCB0byB0aGUgY2hpcCBzZXRzIHRoZSB2b2x0YWdlDQo+PiBsZXZlbCBhbmQgcG93ZXIg
-c3RhdGUuIFRoYXQgd2F5IHRoZXJlIGlzIG5vIG5lZWQgdG8gaXNzdWUgYSBzZXBhcmF0ZQ0KPj4g
-cG93ZXItdXAgY29tbWFuZCwgdGhvdWdoIGl0J3MgYXZhaWxhYmxlIGluIHN5c2ZzIGlmIGEgdXNl
-ciB3YW50cyBpdA0KPj4gKGUuZy4sIHRvIHRvZ2dsZSB0aGUgY2hhbm5lbCdzIHBvd2VyIHN0YXRl
-IHdpdGhvdXQgc3BlY2lmeWluZyBhIG5ldw0KPj4gdm9sdGFnZSBsZXZlbCkuDQo+Pg0KPj4gTGlr
-ZSB5b3UsIEknZCBiZSBjdXJpb3VzIHRvIGhlYXIgd2hhdCBvdGhlcnMgaGF2ZSB0byBzYXkuIE15
-IERBQw0KPj4gZXhwZXJpZW5jZSBpcyBhbG1vc3QgZXhjbHVzaXZlbHkgd2l0aCBNaWNyb2NoaXAg
-ZGV2aWNlcywgc28gSSBtYXkgYmUNCj4+IHN1ZmZlcmluZyBmcm9tIGEgYml0IG9mIHR1bm5lbCB2
-aXNpb24gaGVyZS4NCj4gDQo+IEFncmVlZC4gSSd2ZSBhZGRlZCBhIGZldyBhZGRpdGlvbmFsIEND
-cy4gIElmIHdlIGRvbid0IGdldCBhbnkNCj4gcmVwbGllcyB3ZSBtYXkgd2FudCB0byByYWlzZSBh
-IHNwZWNpZmljIFJGQyBlbWFpbCBvbiB0aGlzIHRvIGNhdGNoDQo+IHBlb3BsZSdzIGF0dGVudGlv
-bi4NCj4gDQo+IFRoZSBjYyBsaXN0IGlzIGZhaXJseSByYW5kb20sIHNvIGlmIHBlb3BsZSB3b3Vs
-ZG4ndCBtaW5kIGRyYXdpbmcNCj4gdGhlIGF0dGVudGlvbiBvZiBvdGhlcnMgdG8gdGhpcyBxdWVz
-dGlvbiB0aGF0IHdvdWxkIGJlIHZlcnkgaGVscGZ1bCENCj4gDQo+IEpvbmF0aGFuDQo+IA0KSGkN
-Cg0KVGhlIERBQzU1NzEgaXMgbGlrZSB0aGlzIG9uZSBhYmxlIHRvIGxlYXZlIHBvd2VyZG93biBt
-b2RlIHdpdGggYSBzaW5nbGUgDQp3cml0ZSBjb21tYW5kLiBCdXQgSSdtIGJsb2NraW5nIGZyb20g
-dXNpbmcgaXQgaW4gdGhlIGRyaXZlciBzbyB3ZSBhcmUgDQpjb25zaXN0ZW50IGFjcm9zcyBhbGwg
-dGhlIERBQyBkZXZpY2VzLiAoSG9wZWZ1bGx5KQ0KRm9yIG1lIGl0IG1ha2VzIHNlbnNlIHRvIHVz
-ZSB0aGUgcG93ZXJkb3duIEFQSSB0byBjb250cm9sIGFsbCBwb3dlcmRvd24gDQpzZXR0aW5ncy4u
-Lg0KDQovU2Vhbg0K
+Hi,
+
+I have noticed that CONFIG_IIO_TRIGGERED_BUFFER doesn't have any
+description in Kconfig.  I'm not an expert on Kconfig, but I believe
+this means that it is not possible to set the config option explicitly
+using menuconfig.  I see this as a problem because it means that you
+can't really build the necessary kernel config to support an out of tree
+driver which depends on CONFIG_IIO_TRIGGERED_BUFFER.  If I'm wrong about
+this, please let me know why.
+
+Thanks,
+David
