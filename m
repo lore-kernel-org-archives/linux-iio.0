@@ -1,262 +1,192 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:42222 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726427AbeJIDFN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 8 Oct 2018 23:05:13 -0400
-Date: Mon, 8 Oct 2018 20:51:44 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc: <linux-iio@vger.kernel.org>, <Michael.Hennerich@analog.com>,
-        <lars@metafoo.de>, <pmeerw@pmeerw.net>, <knaack.h@gmx.de>,
-        Paul Cercueil <paul.cercueil@analog.com>
-Subject: Re: [PATCH] iio: amplifiers: ad8366: Add support for the ADA4961
- DGA
-Message-ID: <20181008205144.556f6322@archlinux>
-In-Reply-To: <20181002123446.27121-1-alexandru.ardelean@analog.com>
-References: <20181002123446.27121-1-alexandru.ardelean@analog.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from mail.babblebit.net ([37.139.8.208]:49870 "EHLO
+        mail.babblebit.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726216AbeJCQJF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 3 Oct 2018 12:09:05 -0400
+From: Chris Coffey <cmc@babblebit.net>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Michael Welling <mwelling@ieee.org>, linux-iio@vger.kernel.org,
+        Chris Coffey <cmc@babblebit.net>
+Subject: [PATCH] iio: dac: mcp4922: Add powerdown support
+Date: Wed,  3 Oct 2018 10:06:38 +0100
+Message-Id: <20181003090638.25111-1-cmc@babblebit.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 2 Oct 2018 15:34:46 +0300
-Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
+This patch adds support for per-channel powerdown on the Microchip MCP
+4902/4912/4922 family of DACs.
 
-> From: Paul Cercueil <paul.cercueil@analog.com>
-> 
-> This change adds support for the ADA4961 BiCMOS RF Digital Gain Amplifier,
-> (DGA), which is optimized for driving heavy loads out 2.0 GHz and beyond.
-> The device typically achieves -90 dBc IMD3 performance at 500 MHz and
-> -85  dBc at 1.5 GHz.
-> 
-> Datasheet link:
->  http://www.analog.com/media/en/technical-documentation/data-sheets/ADA4961.pdf
-> 
-> This change re-uses the existing ad8366 driver, as most logic is similar.
-> 
-> Signed-off-by: Paul Cercueil <paul.cercueil@analog.com>
-> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-One naming related comment inline.  Otherwise this looks good.
+Signed-off-by: Chris Coffey <cmc@babblebit.net>
+---
+ drivers/iio/dac/mcp4922.c | 126 ++++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 110 insertions(+), 16 deletions(-)
 
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/iio/amplifiers/Kconfig  |   9 ++-
->  drivers/iio/amplifiers/ad8366.c | 100 +++++++++++++++++++++++++-------
->  2 files changed, 84 insertions(+), 25 deletions(-)
-> 
-> diff --git a/drivers/iio/amplifiers/Kconfig b/drivers/iio/amplifiers/Kconfig
-> index e9c5f2cd9257..db7ebf3effc8 100644
-> --- a/drivers/iio/amplifiers/Kconfig
-> +++ b/drivers/iio/amplifiers/Kconfig
-> @@ -6,12 +6,15 @@
->  menu "Amplifiers"
->  
->  config AD8366
-> -	tristate "Analog Devices AD8366 VGA"
-> +	tristate "Analog Devices AD8366 and similar SPI Gain Amplifiers"
->  	depends on SPI
->  	select BITREVERSE
->  	help
-> -	  Say yes here to build support for Analog Devices AD8366
-> -	  SPI Dual-Digital Variable Gain Amplifier (VGA).
-> +	  Say yes here to build support for Analog Devices AD8366 and similar
-> +	  gain amplifiers. This driver supports the following gain amplifiers
-> +	  from Analog Devices:
-> +	    AD8366 SPI Dual-Digital Variable Gain Amplifier (VGA)
-> +	    ADA4961 SPI BiCMOS RF Digital Gain Amplifier (DGA)
->  
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called ad8366.
-> diff --git a/drivers/iio/amplifiers/ad8366.c b/drivers/iio/amplifiers/ad8366.c
-> index 4b76b61ba4be..04396c23e067 100644
-> --- a/drivers/iio/amplifiers/ad8366.c
-> +++ b/drivers/iio/amplifiers/ad8366.c
-> @@ -1,7 +1,10 @@
->  /*
-> - * AD8366 SPI Dual-Digital Variable Gain Amplifier (VGA)
-> + * AD8366 and similar SPI Gain Amplifiers
-> + * This driver supports the following gain amplifiers:
-> + *   AD8366 SPI Dual-Digital Variable Gain Amplifier (VGA)
-> + *   ADA4961 SPI BiCMOS RF Digital Gain Amplifier (DGA)
->   *
-> - * Copyright 2012 Analog Devices Inc.
-> + * Copyright 2012-2018 Analog Devices Inc.
->   *
->   * Licensed under the GPL-2.
->   */
-> @@ -19,10 +22,17 @@
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
->  
-> +enum ad8366_type {
-> +	ID_AD8366,
-> +	ID_ADA4961,
-> +};
-> +
->  struct ad8366_state {
->  	struct spi_device	*spi;
->  	struct regulator	*reg;
->  	unsigned char		ch[2];
-> +	enum ad8366_type	type;
-> +
->  	/*
->  	 * DMA (thus cache coherency maintenance) requires the
->  	 * transfer buffers to live in their own cache lines.
-> @@ -36,13 +46,20 @@ static int ad8366_write(struct iio_dev *indio_dev,
->  	struct ad8366_state *st = iio_priv(indio_dev);
->  	int ret;
->  
-> -	ch_a = bitrev8(ch_a & 0x3F);
-> -	ch_b = bitrev8(ch_b & 0x3F);
-> +	switch (st->type) {
-> +	case ID_AD8366:
-> +		ch_a = bitrev8(ch_a & 0x3F);
-> +		ch_b = bitrev8(ch_b & 0x3F);
->  
-> -	st->data[0] = ch_b >> 4;
-> -	st->data[1] = (ch_b << 4) | (ch_a >> 2);
-> +		st->data[0] = ch_b >> 4;
-> +		st->data[1] = (ch_b << 4) | (ch_a >> 2);
-> +		break;
-> +	case ID_ADA4961:
-> +		st->data[0] = ch_a & 0x1F;
-> +		break;
-> +	}
->  
-> -	ret = spi_write(st->spi, st->data, ARRAY_SIZE(st->data));
-> +	ret = spi_write(st->spi, st->data, indio_dev->num_channels);
->  	if (ret < 0)
->  		dev_err(&indio_dev->dev, "write failed (%d)", ret);
->  
-> @@ -57,15 +74,23 @@ static int ad8366_read_raw(struct iio_dev *indio_dev,
->  {
->  	struct ad8366_state *st = iio_priv(indio_dev);
->  	int ret;
-> -	unsigned code;
-> +	int code;
->  
->  	mutex_lock(&indio_dev->mlock);
->  	switch (m) {
->  	case IIO_CHAN_INFO_HARDWAREGAIN:
->  		code = st->ch[chan->channel];
->  
-> +		switch (st->type) {
-> +		case ID_AD8366:
-> +			code = code * 253 + 4500;
-> +			break;
-> +		case ID_ADA4961:
-> +			code = 15000 - code * 1000;
-> +			break;
-> +		}
-> +
->  		/* Values in dB */
-> -		code = code * 253 + 4500;
->  		*val = code / 1000;
->  		*val2 = (code % 1000) * 1000;
->  
-> @@ -86,19 +111,24 @@ static int ad8366_write_raw(struct iio_dev *indio_dev,
->  			    long mask)
->  {
->  	struct ad8366_state *st = iio_priv(indio_dev);
-> -	unsigned code;
-> +	int code;
->  	int ret;
->  
-> -	if (val < 0 || val2 < 0)
-> -		return -EINVAL;
-> -
->  	/* Values in dB */
-> -	code = (((u8)val * 1000) + ((u32)val2 / 1000));
-> +	code = (((s8)val * 1000) + ((s32)val2 / 1000));
->  
-> -	if (code > 20500 || code < 4500)
-> -		return -EINVAL;
-> -
-> -	code = (code - 4500) / 253;
-> +	switch (st->type) {
-> +	case ID_AD8366:
-> +		if (code > 20500 || code < 4500)
-> +			return -EINVAL;
-> +		code = (code - 4500) / 253;
-> +		break;
-> +	case ID_ADA4961:
-> +		if (code > 15000 || code < -6000)
-> +			return -EINVAL;
-> +		code = (15000 - code) / 1000;
-> +		break;
-> +	}
->  
->  	mutex_lock(&indio_dev->mlock);
->  	switch (mask) {
-> @@ -132,6 +162,10 @@ static const struct iio_chan_spec ad8366_channels[] = {
->  	AD8366_CHAN(1),
->  };
->  
-> +static const struct iio_chan_spec ada4961_channels[] = {
-> +	AD8366_CHAN(0),
-> +};
-> +
->  static int ad8366_probe(struct spi_device *spi)
->  {
->  	struct iio_dev *indio_dev;
-> @@ -155,11 +189,32 @@ static int ad8366_probe(struct spi_device *spi)
->  	st->spi = spi;
->  
->  	indio_dev->dev.parent = &spi->dev;
-> -	indio_dev->name = spi_get_device_id(spi)->name;
-> +
-> +	/* try to get a unique name */
-
-This isn't actually meant to be a unique name as such. It's meant
-to reflect the device part number.
-
-There are other ways to get uniqueness such as using the parent
-device to identify it.
-
-Note we didn't always get this right so unfortunately there are
-some drivers not following this convention, that we can't now
-fix as it would be a userspace ABI breaking change...
-
-> +	if (spi->dev.platform_data)
-> +		indio_dev->name = spi->dev.platform_data;
-> +	else if (spi->dev.of_node)
-> +		indio_dev->name = spi->dev.of_node->name;
-> +	else
-> +		indio_dev->name = spi_get_device_id(spi)->name;
-> +
-> +	st->type = spi_get_device_id(spi)->driver_data;
-> +	switch (st->type) {
-> +	case ID_AD8366:
-> +		indio_dev->channels = ad8366_channels;
-> +		indio_dev->num_channels = ARRAY_SIZE(ad8366_channels);
-> +		break;
-> +	case ID_ADA4961:
-> +		indio_dev->channels = ada4961_channels;
-> +		indio_dev->num_channels = ARRAY_SIZE(ada4961_channels);
-> +		break;
-> +	default:
-> +		dev_err(&spi->dev, "Invalid device ID\n");
-> +		return -EINVAL;
-> +	}
-> +
->  	indio_dev->info = &ad8366_info;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
-> -	indio_dev->channels = ad8366_channels;
-> -	indio_dev->num_channels = ARRAY_SIZE(ad8366_channels);
->  
->  	ret = ad8366_write(indio_dev, 0 , 0);
->  	if (ret < 0)
-> @@ -193,7 +248,8 @@ static int ad8366_remove(struct spi_device *spi)
->  }
->  
->  static const struct spi_device_id ad8366_id[] = {
-> -	{"ad8366", 0},
-> +	{"ad8366", ID_AD8366},
-> +	{"ada4961", ID_ADA4961},
->  	{}
->  };
->  MODULE_DEVICE_TABLE(spi, ad8366_id);
+diff --git a/drivers/iio/dac/mcp4922.c b/drivers/iio/dac/mcp4922.c
+index b5190d1dae..15cd17aa9d 100644
+--- a/drivers/iio/dac/mcp4922.c
++++ b/drivers/iio/dac/mcp4922.c
+@@ -28,6 +28,9 @@
+ 
+ #define MCP4922_NUM_CHANNELS	2
+ 
++#define MCP4922_OUTA_POWER_DOWN	0x20
++#define MCP4922_OUTB_POWER_DOWN	0xa0
++
+ enum mcp4922_supported_device_ids {
+ 	ID_MCP4902,
+ 	ID_MCP4912,
+@@ -37,26 +40,13 @@ enum mcp4922_supported_device_ids {
+ struct mcp4922_state {
+ 	struct spi_device *spi;
+ 	unsigned int value[MCP4922_NUM_CHANNELS];
++	bool powerdown[MCP4922_NUM_CHANNELS];
++	unsigned int powerdown_mode;
+ 	unsigned int vref_mv;
+ 	struct regulator *vref_reg;
+ 	u8 mosi[2] ____cacheline_aligned;
+ };
+ 
+-#define MCP4922_CHAN(chan, bits) {			\
+-	.type = IIO_VOLTAGE,				\
+-	.output = 1,					\
+-	.indexed = 1,					\
+-	.channel = chan,				\
+-	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
+-	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+-	.scan_type = {					\
+-		.sign = 'u',				\
+-		.realbits = (bits),			\
+-		.storagebits = 16,			\
+-		.shift = 12 - (bits),			\
+-	},						\
+-}
+-
+ static int mcp4922_spi_write(struct mcp4922_state *state, u8 addr, u32 val)
+ {
+ 	state->mosi[1] = val & 0xff;
+@@ -106,8 +96,10 @@ static int mcp4922_write_raw(struct iio_dev *indio_dev,
+ 		val <<= chan->scan_type.shift;
+ 
+ 		ret = mcp4922_spi_write(state, chan->channel, val);
+-		if (!ret)
++		if (!ret) {
+ 			state->value[chan->channel] = val;
++			state->powerdown[chan->channel] = false;
++		}
+ 		return ret;
+ 
+ 	default:
+@@ -115,6 +107,108 @@ static int mcp4922_write_raw(struct iio_dev *indio_dev,
+ 	}
+ }
+ 
++static const char * const mcp4922_powerdown_modes[] = {
++	"500kohm_to_gnd"
++};
++
++static int mcp4922_get_powerdown_mode(struct iio_dev *indio_dev,
++					const struct iio_chan_spec *chan)
++{
++	struct mcp4922_state *state = iio_priv(indio_dev);
++
++	return state->powerdown_mode;
++}
++
++static int mcp4922_set_powerdown_mode(struct iio_dev *indio_dev,
++					const struct iio_chan_spec *chan,
++					unsigned int mode)
++{
++	struct mcp4922_state *state = iio_priv(indio_dev);
++
++	state->powerdown_mode = mode;
++
++	return 0;
++}
++
++static ssize_t mcp4922_read_powerdown(struct iio_dev *indio_dev,
++					uintptr_t private,
++					const struct iio_chan_spec *chan,
++					char *buf)
++{
++	struct mcp4922_state *state = iio_priv(indio_dev);
++
++	return sprintf(buf, "%d\n", state->powerdown[chan->channel]);
++}
++
++static ssize_t mcp4922_write_powerdown(struct iio_dev *indio_dev,
++					 uintptr_t private,
++					 const struct iio_chan_spec *chan,
++					 const char *buf, size_t len)
++{
++	struct mcp4922_state *state = iio_priv(indio_dev);
++	bool powerdown;
++	int ret;
++
++	ret = strtobool(buf, &powerdown);
++	if (ret)
++		return ret;
++
++	if (powerdown) {
++		state->mosi[0] = (chan->channel == 0) ?
++				MCP4922_OUTA_POWER_DOWN :
++				MCP4922_OUTB_POWER_DOWN;
++		state->mosi[1] = 0x00;
++
++		ret = spi_write(state->spi, state->mosi, 2);
++	} else {
++		/* Restore previous voltage level */
++		ret = mcp4922_write_raw(indio_dev, chan,
++					state->value[chan->channel], 0,
++					IIO_CHAN_INFO_RAW);
++	}
++	if (!ret)
++		state->powerdown[chan->channel] = powerdown;
++
++	return ret ? ret : len;
++}
++
++static const struct iio_enum mcp4922_powerdown_mode_enum = {
++	.items = mcp4922_powerdown_modes,
++	.num_items = ARRAY_SIZE(mcp4922_powerdown_modes),
++	.get = mcp4922_get_powerdown_mode,
++	.set = mcp4922_set_powerdown_mode,
++};
++
++static const struct iio_chan_spec_ext_info mcp4922_ext_info[] = {
++	{
++		.name = "powerdown",
++		.read = mcp4922_read_powerdown,
++		.write = mcp4922_write_powerdown,
++		.shared = IIO_SEPARATE,
++	},
++	IIO_ENUM("powerdown_mode", IIO_SHARED_BY_TYPE,
++			&mcp4922_powerdown_mode_enum),
++	IIO_ENUM_AVAILABLE("powerdown_mode",
++			&mcp4922_powerdown_mode_enum),
++	{ },
++};
++
++#define MCP4922_CHAN(chan, bits) {			\
++	.type = IIO_VOLTAGE,				\
++	.output = 1,					\
++	.indexed = 1,					\
++	.channel = chan,				\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++	.scan_type = {					\
++		.sign = 'u',				\
++		.realbits = (bits),			\
++		.storagebits = 16,			\
++		.shift = 12 - (bits),			\
++	},						\
++	.ext_info = mcp4922_ext_info,			\
++}
++
+ static const struct iio_chan_spec mcp4922_channels[3][MCP4922_NUM_CHANNELS] = {
+ 	[ID_MCP4902] = { MCP4922_CHAN(0, 8),	MCP4922_CHAN(1, 8) },
+ 	[ID_MCP4912] = { MCP4922_CHAN(0, 10),	MCP4922_CHAN(1, 10) },
+-- 
+2.11.0
