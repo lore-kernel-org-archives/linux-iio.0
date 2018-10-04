@@ -1,73 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-vs1-f66.google.com ([209.85.217.66]:40693 "EHLO
-        mail-vs1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727415AbeJDXkm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 4 Oct 2018 19:40:42 -0400
-Received: by mail-vs1-f66.google.com with SMTP id z130-v6so5775243vsc.7
-        for <linux-iio@vger.kernel.org>; Thu, 04 Oct 2018 09:46:36 -0700 (PDT)
-Received: from mail-vk1-f176.google.com (mail-vk1-f176.google.com. [209.85.221.176])
-        by smtp.gmail.com with ESMTPSA id v85-v6sm377007vkd.18.2018.10.04.09.46.35
-        for <linux-iio@vger.kernel.org>
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 04 Oct 2018 09:46:35 -0700 (PDT)
-Received: by mail-vk1-f176.google.com with SMTP id s197-v6so2307780vkf.10
-        for <linux-iio@vger.kernel.org>; Thu, 04 Oct 2018 09:46:35 -0700 (PDT)
-MIME-Version: 1.0
-References: <20181004001432.21218-1-mka@chromium.org> <20181004001432.21218-3-mka@chromium.org>
-In-Reply-To: <20181004001432.21218-3-mka@chromium.org>
-From: Doug Anderson <dianders@chromium.org>
-Date: Thu, 4 Oct 2018 09:46:23 -0700
-Message-ID: <CAD=FV=U0k2L4aqJeges-u-CSF6VwnU1h0kfR3GCv7BgU95gOcQ@mail.gmail.com>
-Subject: Re: [PATCH v5 2/2] arm64: dts: qcom: pm8998: Add die temperature
- channel node to the ADC
-To: Matthias Kaehlcke <mka@chromium.org>
-Cc: Andy Gross <andy.gross@linaro.org>,
-        David Brown <david.brown@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
+Received: from mail1.kuutio.org ([92.222.216.83]:47754 "EHLO mail1.kuutio.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727506AbeJECf2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 4 Oct 2018 22:35:28 -0400
+From: Oskari Lemmela <oskari@lemmela.net>
+To: Maxime Ripard <maxime.ripard@bootlin.com>,
+        Sebastian Reichel <sre@kernel.org>,
         Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        "open list:ARM/QUALCOMM SUPPORT" <linux-soc@vger.kernel.org>,
-        devicetree@vger.kernel.org, linux-iio <linux-iio@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Lee Jones <lee.jones@linaro.org>,
+        Quentin Schulz <quentin.schulz@free-electrons.com>,
+        Oskari Lemmela <oskari@lemmela.net>,
+        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH 0/4] AXP8x3 AC and battery power supply support
+Date: Thu,  4 Oct 2018 22:34:06 +0300
+Message-Id: <20181004193410.7265-1-oskari@lemmela.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
-On Wed, Oct 3, 2018 at 5:14 PM Matthias Kaehlcke <mka@chromium.org> wrote:
->
-> Add a channel node for the die temperature to the ADC.
->
-> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-> Reviewed-by: Douglas Anderson <dianders@chromium.org>
-> ---
-> Changes in v4:
-> - added unit address to 'die-temp' node
+AXP803 AC and battery power supply support.
+AXP803/AXP813 AC power supply support with input current and
+voltage limiting support.
 
-This probably should have been "changes in v5"
+Oskari Lemmela (4):
+  dt-bindings: add compatibles for AXP803 AC and battery power supplies
+  ARM: dtsi: axp81x: add AC power supply subnode
+  arm64: allwinner: a64: add battery and AC power supply support
+  power: supply: add AXP803/AXP813 AC and battery power supply support
 
-> ---
->  arch/arm64/boot/dts/qcom/pm8998.dtsi | 5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/arch/arm64/boot/dts/qcom/pm8998.dtsi b/arch/arm64/boot/dts/qcom/pm8998.dtsi
-> index 048f19fa0150..32b141637d13 100644
-> --- a/arch/arm64/boot/dts/qcom/pm8998.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/pm8998.dtsi
-> @@ -75,6 +75,11 @@
->                         #address-cells = <1>;
->                         #size-cells = <0>;
->                         #io-channel-cells = <1>;
-> +
-> +                       die-temp@ADC5_DIE_TEMP {
-> +                               reg = <ADC5_DIE_TEMP>;
+ .../devicetree/bindings/gpio/gpio-axp209.txt  |   3 +-
+ .../bindings/iio/adc/axp20x_adc.txt           |   3 +-
+ .../bindings/power/supply/axp20x_ac_power.txt |   4 +
+ .../bindings/power/supply/axp20x_battery.txt  |   1 +
+ arch/arm/boot/dts/axp81x.dtsi                 |   5 +
+ arch/arm64/boot/dts/allwinner/axp803.dtsi     |  31 +++
+ .../allwinner/sun50i-a64-sopine-baseboard.dts |   8 +
+ drivers/iio/adc/axp20x_adc.c                  |   1 +
+ drivers/mfd/axp20x.c                          |  22 +-
+ drivers/pinctrl/pinctrl-axp209.c              |   1 +
+ drivers/power/supply/axp20x_ac_power.c        | 194 ++++++++++++++++++
+ drivers/power/supply/axp20x_battery.c         |   3 +
+ include/linux/mfd/axp20x.h                    |   1 +
+ 13 files changed, 274 insertions(+), 3 deletions(-)
 
-Thanks for adding the unit address.  Note to Andy that this ought to
-go into the queue for 4.20 since you'll have the ADC5_DIE_TEMP then.
-
-
--Doug
+-- 
+2.17.1
