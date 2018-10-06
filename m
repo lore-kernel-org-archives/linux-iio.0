@@ -1,16 +1,16 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:44763 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726204AbeJGDB6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 6 Oct 2018 23:01:58 -0400
-Received: by mail-ed1-f68.google.com with SMTP id z21-v6so9963574edb.11
-        for <linux-iio@vger.kernel.org>; Sat, 06 Oct 2018 12:57:21 -0700 (PDT)
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:36657 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726573AbeJGDf3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 6 Oct 2018 23:35:29 -0400
+Received: by mail-ed1-f65.google.com with SMTP id c26-v6so6728671edt.3
+        for <linux-iio@vger.kernel.org>; Sat, 06 Oct 2018 13:30:46 -0700 (PDT)
 From: Charles-Antoine Couret <charles-antoine.couret@essensium.com>
 To: linux-iio@vger.kernel.org
 Cc: Charles-Antoine Couret <charles-antoine.couret@essensium.com>
-Subject: [PATCH] Add AD7949 ADC driver family
-Date: Sat,  6 Oct 2018 21:56:30 +0200
-Message-Id: <20181006195630.16823-1-charles-antoine.couret@essensium.com>
+Subject: [PATCH 1/2] Add AD7949 ADC driver family
+Date: Sat,  6 Oct 2018 22:30:35 +0200
+Message-Id: <20181006203036.20338-1-charles-antoine.couret@essensium.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
@@ -20,11 +20,13 @@ with SPI protocol
 
 Datasheet of the device:
 http://www.analog.com/media/en/technical-documentation/data-sheets/AD7949.pdf
+
+Signed-off-by: Charles-Antoine Couret <charles-antoine.couret@essensium.com>
 ---
  drivers/iio/adc/Kconfig  |  10 ++
  drivers/iio/adc/Makefile |   1 +
- drivers/iio/adc/ad7949.c | 331 +++++++++++++++++++++++++++++++++++++++
- 3 files changed, 342 insertions(+)
+ drivers/iio/adc/ad7949.c | 329 +++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 340 insertions(+)
  create mode 100644 drivers/iio/adc/ad7949.c
 
 diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
@@ -62,18 +64,16 @@ index 03db7b578f9c..88804c867aa9 100644
  obj-$(CONFIG_AT91_ADC) += at91_adc.o
 diff --git a/drivers/iio/adc/ad7949.c b/drivers/iio/adc/ad7949.c
 new file mode 100644
-index 000000000000..ac430ef217be
+index 000000000000..667636b476f8
 --- /dev/null
 +++ b/drivers/iio/adc/ad7949.c
-@@ -0,0 +1,331 @@
-+/*
-+ * ad7949.c - Analog Devices ADC driver 14/16 bits 4/8 channels
+@@ -0,0 +1,329 @@
++// SPDX-License-Identifier: GPL-2.0
++/* ad7949.c - Analog Devices ADC driver 14/16 bits 4/8 channels
 + *
 + * Copyright (C) 2018 CMC NV
 + *
 + * http://www.analog.com/media/en/technical-documentation/data-sheets/AD7949.pdf
-+ *
-+ * Licensed under the GPL-2 or later.
 + */
 +
 +#include <linux/iio/iio.h>
@@ -141,7 +141,7 @@ index 000000000000..ac430ef217be
 +}
 +
 +static int ad7949_spi_write_cfg(struct ad7949_adc_chip *ad7949_adc, u16 val,
-+			        u16 mask)
++				u16 mask)
 +{
 +	int ret;
 +	u16 cfg = ad7949_spi_read_cfg(ad7949_adc) & AD7949_MASK_TOTAL;
@@ -255,8 +255,8 @@ index 000000000000..ac430ef217be
 +}
 +
 +static int ad7949_spi_reg_access(struct iio_dev *indio_dev,
-+			unsigned reg, unsigned writeval,
-+			unsigned *readval)
++			unsigned int reg, unsigned int writeval,
++			unsigned int *readval)
 +{
 +	struct ad7949_adc_chip *ad7949_adc = iio_priv(indio_dev);
 +	int ret = 0;
