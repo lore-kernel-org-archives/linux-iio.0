@@ -1,42 +1,66 @@
-Return-Path: <SRS0=4408=MU=embeddedor.com=gustavo@kernel.org>
-Date: Mon, 8 Oct 2018 19:35:28 +0200
-From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	"Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH] iio: dpot-dac: mark expected switch fall-through
-Message-ID: <20181008173528.GA31787@embeddedor.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-he1eur01on0135.outbound.protection.outlook.com ([104.47.0.135]:43473
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726393AbeJID4U (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 8 Oct 2018 23:56:20 -0400
+From: Peter Rosin <peda@axentia.se>
+To: "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iio: dpot-dac: mark expected switch fall-through
+Date: Mon, 8 Oct 2018 20:42:41 +0000
+Message-ID: <ded46d23-0ec9-3fc8-3fc2-fa8003639272@axentia.se>
+References: <20181008173528.GA31787@embeddedor.com>
+In-Reply-To: <20181008173528.GA31787@embeddedor.com>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-In preparation to enabling -Wimplicit-fallthrough, mark switch cases
-where we are expecting to fall through.
-
-Notice that in this particular case, I replaced "...and fall through."
-with a proper "fall through", which is what GCC is expecting to find.
-
-Addresses-Coverity-ID: 1462408 ("Missing break in switch")
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
----
- drivers/iio/dac/dpot-dac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/dac/dpot-dac.c b/drivers/iio/dac/dpot-dac.c
-index a791d0a..e353946 100644
---- a/drivers/iio/dac/dpot-dac.c
-+++ b/drivers/iio/dac/dpot-dac.c
-@@ -78,7 +78,7 @@ static int dpot_dac_read_raw(struct iio_dev *indio_dev,
- 			 */
- 			*val2 = 1;
- 			ret = IIO_VAL_FRACTIONAL;
--			/* ...and fall through. */
-+			/* fall through */
- 		case IIO_VAL_FRACTIONAL:
- 			*val *= regulator_get_voltage(dac->vref) / 1000;
- 			*val2 *= dac->max_ohms;
--- 
-2.7.4
+T24gMjAxOC0xMC0wOCAxOTozNSwgR3VzdGF2byBBLiBSLiBTaWx2YSB3cm90ZToNCj4gSW4gcHJl
+cGFyYXRpb24gdG8gZW5hYmxpbmcgLVdpbXBsaWNpdC1mYWxsdGhyb3VnaCwgbWFyayBzd2l0Y2gg
+Y2FzZXMNCj4gd2hlcmUgd2UgYXJlIGV4cGVjdGluZyB0byBmYWxsIHRocm91Z2guDQoNClRoZSB3
+YXkgSSBzZWUgaXQsIGl0IGlzIHByZXR0eSB3ZWxsIG1hcmtlZCB1cCBhcyBpcy4gU28sIHRoaXMg
+cGFyYWdyYXBoDQppcyBub3QgZGVzY3JpYmluZyB0aGUgY2hhbmdlLg0KDQo+IA0KPiBOb3RpY2Ug
+dGhhdCBpbiB0aGlzIHBhcnRpY3VsYXIgY2FzZSwgSSByZXBsYWNlZCAiLi4uYW5kIGZhbGwgdGhy
+b3VnaC4iDQo+IHdpdGggYSBwcm9wZXIgImZhbGwgdGhyb3VnaCIsIHdoaWNoIGlzIHdoYXQgR0ND
+IGlzIGV4cGVjdGluZyB0byBmaW5kLg0KDQpXaGF0IGlzIG5vdCAicHJvcGVyIiBhYm91dCB0aGUg
+ZXhpc3RpbmcgY29tbWVudD8gWWVzIHllcywgSSAqa25vdyogdGhhdA0KR0NDIGlzIG5vdCB2ZXJ5
+IGludGVsbGlnZW50IGFib3V0IGl0IGFuZCByZXF1aXJlcyBoYW5kLWhvbGRpbmcsIGJ1dA0KYmxh
+bWluZyB0aGUgZXhpc3RpbmcgY29tbWVudCBmb3Igbm90ICpwcm9wZXJseSogbWFya2luZyBhbiBp
+bnRlbnRpb25hbA0KZmFsbCB0aHJvdWdoIGlzIC4uLiByaWNoLg0KDQo+IA0KPiBBZGRyZXNzZXMt
+Q292ZXJpdHktSUQ6IDE0NjI0MDggKCJNaXNzaW5nIGJyZWFrIGluIHN3aXRjaCIpDQo+IFNpZ25l
+ZC1vZmYtYnk6IEd1c3Rhdm8gQS4gUi4gU2lsdmEgPGd1c3Rhdm9AZW1iZWRkZWRvci5jb20+DQo+
+IC0tLQ0KPiAgZHJpdmVycy9paW8vZGFjL2Rwb3QtZGFjLmMgfCAyICstDQo+ICAxIGZpbGUgY2hh
+bmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24oLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9k
+cml2ZXJzL2lpby9kYWMvZHBvdC1kYWMuYyBiL2RyaXZlcnMvaWlvL2RhYy9kcG90LWRhYy5jDQo+
+IGluZGV4IGE3OTFkMGEuLmUzNTM5NDYgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvaWlvL2RhYy9k
+cG90LWRhYy5jDQo+ICsrKyBiL2RyaXZlcnMvaWlvL2RhYy9kcG90LWRhYy5jDQo+IEBAIC03OCw3
+ICs3OCw3IEBAIHN0YXRpYyBpbnQgZHBvdF9kYWNfcmVhZF9yYXcoc3RydWN0IGlpb19kZXYgKmlu
+ZGlvX2RldiwNCg0KQWRkaW5nIHNvbWUgbW9yZSBjb250ZXh0IGhlcmUuDQoNCgkJY2FzZSBJSU9f
+VkFMX0lOVDoNCgkJCS8qDQoJCQkgKiBDb252ZXJ0IGludGVnZXIgc2NhbGUgdG8gZnJhY3Rpb25h
+bCBzY2FsZSBieQ0KCQkJICogc2V0dGluZyB0aGUgZGVub21pbmF0b3IgKHZhbDIpIHRvIG9uZS4u
+Lg0KPiAgCQkJICovDQo+ICAJCQkqdmFsMiA9IDE7DQo+ICAJCQlyZXQgPSBJSU9fVkFMX0ZSQUNU
+SU9OQUw7DQo+IC0JCQkvKiAuLi5hbmQgZmFsbCB0aHJvdWdoLiAqLw0KPiArCQkJLyogZmFsbCB0
+aHJvdWdoICovDQo+ICAJCWNhc2UgSUlPX1ZBTF9GUkFDVElPTkFMOg0KPiAgCQkJKnZhbCAqPSBy
+ZWd1bGF0b3JfZ2V0X3ZvbHRhZ2UoZGFjLT52cmVmKSAvIDEwMDA7DQo+ICAJCQkqdmFsMiAqPSBk
+YWMtPm1heF9vaG1zOw0KPiANCg0KQ29uc2lkZXJpbmcgdGhlIGFib3ZlIGFkZGVkIGNvbnRleHQs
+IEkgaGF2ZSB0byBzYXkgdGhhdCB0aGlzIG1pbmRsZXNzDQpjaGFuZ2UgaXMgbm90IGFuIGltcHJv
+dmVtZW50LCBhcyB5b3UgaGF2ZSBqdXN0IGRlc3Ryb3llZCB0aGUgY29udGludWVkDQpzZW50ZW5j
+ZSBmcm9tIHRoZSBwcmV2aW91cyBjb21tZW50LiBZb3UgbXVzdCBoYXZlIG5vdGljZWQgdGhhdCB0
+aGlzDQp3YXMgdGhlIGVuZCBvZiBhIGNvbnRpbnVlZCBzZW50ZW5jZSwgYXMgeW91IGV2ZW4gcXVv
+dGVkIGl0IGluIHRoZSBjb21taXQNCm1lc3NhZ2UuIFRoZSBiaWcgcXVlc3Rpb24gaXMgd2h5IHlv
+dSBkaWQgbm90IHN0b3AgdG8gdGhpbmsgYW5kIGNvbnNpZGVyDQp0aGUgY29udGV4dD8NCg0KWWVz
+LCBJJ20gYW5ub3llZCBieSBtaW5kbGVzcyBjaGFuZ2VzLiBFc3BlY2lhbGx5IG1pbmRsZXNzIGNo
+YW5nZXMgYWltZWQNCmF0IGltcHJvdmluZyByZWFkYWJpbGl0eSB3aGlsZSBpbiBmYWN0IG1ha2lu
+ZyB0aGluZ3MgbGVzcyByZWFkYWJsZS4NCg0KVEw7RFIsIGlmIHlvdSBhcmUgZGVzcGVyYXRlIHRv
+IGZpeCAidGhlIHByb2JsZW0iIHdpdGggdGhpcyBmYWxsIHRocm91Z2gNCmNvbW1lbnQsIHBsZWFz
+ZSBkbyBzbyBpbiBhIHdheSB0aGF0IHByZXNlcnZlcyBvdmVyYWxsIHJlYWRhYmlsaXR5LiBBbmQN
+Cml0IHdvdWxkIGJlIG5pY2UgdG8gbm90IGJsYW1lIHRoZSBleGlzdGluZyBjb2RlIGZvciBicmFp
+biBkYW1hZ2UgaW4gR0NDDQphbmQgdmFyaW91cyBvdGhlciBzdGF0aWMgYW5hbHl6ZXJzLg0KDQpD
+aGVlcnMsDQpQZXRlcg0K
