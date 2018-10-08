@@ -1,27 +1,61 @@
-Return-Path: <SRS0=0QMn=M6=axentia.se=peda@kernel.org>
-From: Peter Rosin <peda@axentia.se>
-To: "Gustavo A. R. Silva" <gustavo@embeddedor.com>, Jonathan Cameron
-	<jic23@kernel.org>
-CC: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: dpot-dac: mark expected switch fall-through
-Date: Wed, 17 Oct 2018 06:55:40 +0000
-Message-ID: <f9e34759-0c6b-d69f-a255-34b87d7db8e2@axentia.se>
-References: <20181008173528.GA31787@embeddedor.com>
- <ded46d23-0ec9-3fc8-3fc2-fa8003639272@axentia.se>
- <20181013133831.7dbd31e8@archlinux>
- <43e89449-d693-3e1b-711c-7c9c139d288d@axentia.se>
- <20181014180134.287c0a66@archlinux>
- <6fe3f1f5-5bf6-2552-b322-90e766e6e5a2@embeddedor.com>
-In-Reply-To: <6fe3f1f5-5bf6-2552-b322-90e766e6e5a2@embeddedor.com>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from youngberry.canonical.com ([91.189.89.112]:39880 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725749AbeJIEWu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 9 Oct 2018 00:22:50 -0400
+From: Colin King <colin.king@canonical.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        =?UTF-8?q?Stefan=20Br=C3=BCns?= <stefan.bruens@rwth-aachen.de>,
+        linux-iio@vger.kernel.org
+Cc: kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: adc: ina2xx: fix missing break statement
+Date: Mon,  8 Oct 2018 22:09:04 +0100
+Message-Id: <20181008210904.9362-1-colin.king@canonical.com>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-T24gMjAxOC0xMC0xNiAxMzowMSwgR3VzdGF2byBBLiBSLiBTaWx2YSB3cm90ZToNCj4gT24gMTAv
-MTQvMTggNzowMSBQTSwgSm9uYXRoYW4gQ2FtZXJvbiB3cm90ZToNCj4+IERvbmUgdGhlIGZpcnN0
-IG9mIHRoZSBhYm92ZS4uLg0KPiANCj4gVGhhbmsgeW91LCBKb25hdGhhbi4NCg0KSW5kZWVkLiBJ
-IG1lYW50IHRvIHJlc3BvbmQgZWFybGllciwgYnV0IHRoZW4gZm9yZ290Li4uIFRoYW5rIHlvdSEN
-Cg0KQ2hlZXJzLA0KUGV0ZXINCg0K
+From: Colin Ian King <colin.king@canonical.com>
+
+The IIO_CHAN_INFO_SCALE case is missing a break statement and in
+the unlikely event that chan->address is not matched in the nested
+switch statement then the code falls through to the following
+IIO_CHAN_INFO_HARDWAREGAIN case.  Fix this by adding the missing
+break.   While we are fixing this, it's probably a good idea to
+add in a break statement to the IIO_CHAN_INFO_HARDWAREGAIN case
+too (this is a moot point).
+
+Detected by CoverityScan, CID#1462408 ("Missing break in switch")
+
+Fixes: ca6a2d86acae ("iio: adc: ina2xx: Allow setting Shunt Voltage PGA gain and Bus Voltage range")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/iio/adc/ina2xx-adc.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
+index d1239624187d..9bc5986780b9 100644
+--- a/drivers/iio/adc/ina2xx-adc.c
++++ b/drivers/iio/adc/ina2xx-adc.c
+@@ -250,6 +250,7 @@ static int ina2xx_read_raw(struct iio_dev *indio_dev,
+ 			*val2 = chip->shunt_resistor_uohm;
+ 			return IIO_VAL_FRACTIONAL;
+ 		}
++		break;
+ 
+ 	case IIO_CHAN_INFO_HARDWAREGAIN:
+ 		switch (chan->address) {
+@@ -262,6 +263,7 @@ static int ina2xx_read_raw(struct iio_dev *indio_dev,
+ 			*val = chip->range_vbus == 32 ? 1 : 2;
+ 			return IIO_VAL_INT;
+ 		}
++		break;
+ 	}
+ 
+ 	return -EINVAL;
+-- 
+2.17.1
