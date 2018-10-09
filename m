@@ -1,74 +1,45 @@
-Return-Path: <SRS0=Plxy=NF=linux.intel.com=andriy.shevchenko@kernel.org>
-Date: Thu, 25 Oct 2018 20:49:54 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Dan O'Donovan <dan@emutex.com>
-Cc: linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org,
-	Carlos Iglesias <carlos.iglesias@emutex.com>
-Subject: Re: [PATCH v3 0/3] iio: adc128s052: add matching options
-Message-ID: <20181025174954.GC10650@smile.fi.intel.com>
-References: <20180423213805.12591-1-javier@emutex.com>
- <1540481742-23596-1-git-send-email-dan@emutex.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:36307 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726103AbeJIRqJ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 9 Oct 2018 13:46:09 -0400
+Received: by mail-wm1-f65.google.com with SMTP id a8-v6so1361479wmf.1
+        for <linux-iio@vger.kernel.org>; Tue, 09 Oct 2018 03:29:53 -0700 (PDT)
+Date: Tue, 9 Oct 2018 11:29:49 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Vignesh R <vigneshr@ti.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        linux-iio@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org
+Subject: Re: [PATCH 1/5] mfd: ti_am335x_tscadc: Don't mark TSCADC MFD as
+ wakeup capable
+Message-ID: <20181009102949.GM4939@dell>
+References: <20180630103318.25355-1-vigneshr@ti.com>
+ <20180630103318.25355-2-vigneshr@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1540481742-23596-1-git-send-email-dan@emutex.com>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20180630103318.25355-2-vigneshr@ti.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, Oct 25, 2018 at 04:35:39PM +0100, Dan O'Donovan wrote:
-> Hi all,
-> 
-> On some SKUs of AAEON's UP Squared board, there is an ADC124S101
-> enumerated via ACPI. This is a pin-compatible variant of ADC124S021,
-> which is already supported by the adc128s052 driver.
-> 
-> This patchset adds missing DT compatible strings for ADC124S021 (and
-> ADC122S021) variants, adds AAEON's allocated ACPI HID, and adds the
-> SPDX GPL identifier to the driver.
-> 
-> v2 was posted at:
-> https://lore.kernel.org/lkml/20180423213805.12591-1-javier@emutex.com/
+On Sat, 30 Jun 2018, Vignesh R wrote:
 
-Overall LGTM
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Currently tscadc MFD is marked as wakeup capable which incorrect
+> because, its actually touch event by child TSC device that wakes up the
+> system. Therefore, remove device_init_wakeup() call that marks TSCADC
+> device as wakeup capable in favor of moving to mark TSC input device as
+> wakeup capable later.
+> 
+> Signed-off-by: Vignesh R <vigneshr@ti.com>
+> ---
+>  drivers/mfd/ti_am335x_tscadc.c | 1 -
+>  1 file changed, 1 deletion(-)
 
-> 
-> Changes from v2:
-> * Added device-tree bindings documentation for new chip variants
-> * Simplified code to get ACPI match data
-> * Dropped redundant patch to facilitate OF matching via ACPI _DSD
-> * Added patch to replace GPL license text with SPDX identifier
-> 
-> Changes from v1:
-> * Improved patch descriptions and series title
-> * Added an initial commit introducing new compatible strings
->   (as per Jonathan's suggestion)
-> * Moved of_match_ptr removal last as this patch is less important to us
-> 
-> Dan O'Donovan (1):
->   iio: adc128s052: use SPDX-License-Identifier
-> 
-> Javier Arteaga (1):
->   iio: adc128s052: Add pin-compatible IDs
-> 
-> Nicola Lunghi (1):
->   iio: adc128s052: add ACPI _HID AANT1280
-> 
->  .../devicetree/bindings/iio/adc/ti-adc128s052.txt  |  9 ++++-
->  drivers/iio/adc/ti-adc128s052.c                    | 39 +++++++++++++++++-----
->  2 files changed, 38 insertions(+), 10 deletions(-)
-> 
-> -- 
-> 2.7.4
-> 
-> 
-> ------
-> This email has been scanned for spam and malware by The Email Laundry.
-> 
+Applied, thanks.
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
