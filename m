@@ -1,91 +1,539 @@
-Return-Path: <SRS0=88Pu=MX=konsulko.com=matt.ranostay@kernel.org>
-MIME-Version: 1.0
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ns.pmeerw.net ([84.19.176.117]:43944 "EHLO ns.pmeerw.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727285AbeJKCzB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 10 Oct 2018 22:55:01 -0400
+Date: Wed, 10 Oct 2018 21:31:23 +0200 (CEST)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Matt Weber <matthew.weber@rockwellcollins.com>
+cc: linux-iio@vger.kernel.org, jic23@kernel.org, lars@metafoo.de,
+        Paresh Chaudhary <paresh.chaudhary@rockwellcollins.com>
+Subject: Re: [PATCH 1/2] iio:temperature: Add MAX31856 thermocouple support
+In-Reply-To: <1539198063-29825-1-git-send-email-matthew.weber@rockwellcollins.com>
+Message-ID: <alpine.DEB.2.21.1810102114200.1401@vps.pmeerw.net>
 References: <1539198063-29825-1-git-send-email-matthew.weber@rockwellcollins.com>
- <1539198063-29825-2-git-send-email-matthew.weber@rockwellcollins.com>
-In-Reply-To: <1539198063-29825-2-git-send-email-matthew.weber@rockwellcollins.com>
-From: Matt Ranostay <matt.ranostay@konsulko.com>
-Date: Thu, 11 Oct 2018 09:26:32 +0800
-Message-ID: <CAJCx=gk=-0_MDHQrJ69-UrX5fMGjJ5vKTf-C_AMA0izO+4CbdQ@mail.gmail.com>
-Subject: Re: [PATCH 2/2] iio:temperature:max31856:Add device tree bind info
-To: matthew.weber@rockwellcollins.com
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, paresh.chaudhary@rockwellcollins.com
-Content-Type: text/plain; charset="UTF-8"
-List-ID: <linux-iio@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, Oct 11, 2018 at 3:10 AM Matt Weber
-<matthew.weber@rockwellcollins.com> wrote:
->
+
 > From: Paresh Chaudhary <paresh.chaudhary@rockwellcollins.com>
->
-> This patch added device tree binding info for MAX31856 driver.
->
+> 
+> This patch adds support for Maxim MAX31856 thermocouple
+> temperature sensor support.
+
+some comments below
+
+> More information can be found in:
+> https://www.maximintegrated.com/en/ds/MAX31856.pdf
+> 
+> NOTE: Driver support only Comparator Mode.
+> 
 > Signed-off-by: Paresh Chaudhary <paresh.chaudhary@rockwellcollins.com>
 > Signed-off-by: Matt Weber <matthew.weber@rockwellcollins.com>
 > ---
->  .../bindings/iio/temperature/max31856.txt          | 36 ++++++++++++++++++++++
->  MAINTAINERS                                        |  1 +
->  2 files changed, 37 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/temperature/max31856.txt
->
-> diff --git a/Documentation/devicetree/bindings/iio/temperature/max31856.txt b/Documentation/devicetree/bindings/iio/temperature/max31856.txt
-> new file mode 100644
-> index 0000000..fb1dfca
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/temperature/max31856.txt
-> @@ -0,0 +1,36 @@
-> +Maxim MAX31856 thermocouple support
-> +
-> +https://datasheets.maximintegrated.com/en/ds/MAX31856.pdf
-> +
-> +Required properties:
-> +       - compatible: must be "max31856"
-> +       - reg: SPI chip select number for the device
-> +       - spi-max-frequency: As per datasheet max. supported freq is 5000000
-> +       - spi-cpha: must be defined for max31856 to enable SPI mode 1
-> +       - type: Type of thermocouple (By default is K-Type)
-> +       /*
-Remove the comment block, and just indent the possibilities accordingly.
-
-- Matt
-> +         TYPE_B = 0x00
-> +         TYPE_E = 0x01
-> +         TYPE_J = 0x02
-> +         TYPE_K = 0x03
-> +         TYPE_N = 0x04
-> +         TYPE_R = 0x05
-> +         TYPE_S = 0x06
-> +         TYPE_T = 0x07
-> +         VMODE_G8 = 0x08
-> +         VMODE_G32 = 0x12
-> +        */
-> +
-> +       Refer to spi/spi-bus.txt for generic SPI slave bindings.
-> +
-> +Optional properties:
-> +       - one-shot: Enable one-shot Conversion mode (By default mode is auto)
-> +
-> + Example:
-> +       max31856@0 {
-> +               compatible = "max31856";
-> +               reg = <0>;
-> +               spi-max-frequency = <5000000>;
-> +               spi-cpha;
-> +               type = <0x03>;
-> +       };
+> 
+> We assumed this should be applied and patch checked against the iio testing
+> branch found in the staging repo.
+> (git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git)
+> 
+> ---
+> 
+>  MAINTAINERS                        |   5 +
+>  drivers/iio/temperature/Kconfig    |  10 +
+>  drivers/iio/temperature/Makefile   |   1 +
+>  drivers/iio/temperature/max31856.c | 374 +++++++++++++++++++++++++++++++++++++
+>  4 files changed, 390 insertions(+)
+>  create mode 100644 drivers/iio/temperature/max31856.c
+> 
 > diff --git a/MAINTAINERS b/MAINTAINERS
-> index dd9a83d..6482ae8 100644
+> index f642044..dd9a83d 100644
 > --- a/MAINTAINERS
 > +++ b/MAINTAINERS
-> @@ -7161,6 +7161,7 @@ MAX31856 IIO DRIVER
->  M:     Matthew Weber <matthew.weber@rockwellcollins.com>
->  S:     Maintained
->  F:     drivers/iio/temperature/max31856.c
-> +F:     Documentation/devicetree/bindings/iio/temperature/max31856.txt
->
+> @@ -7157,6 +7157,11 @@ F:	drivers/staging/iio/
+>  F:	include/linux/iio/
+>  F:	tools/iio/
+>  
+> +MAX31856 IIO DRIVER
+> +M:	Matthew Weber <matthew.weber@rockwellcollins.com>
+> +S:	Maintained
+> +F:	drivers/iio/temperature/max31856.c
+> +
 >  IIO UNIT CONVERTER
->  M:     Peter Rosin <peda@axentia.se>
-> --
-> 1.9.1
->
+>  M:	Peter Rosin <peda@axentia.se>
+>  L:	linux-iio@vger.kernel.org
+> diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
+> index 82e4a62..c66eeb2 100644
+> --- a/drivers/iio/temperature/Kconfig
+> +++ b/drivers/iio/temperature/Kconfig
+> @@ -97,4 +97,14 @@ config TSYS02D
+>  	  This driver can also be built as a module. If so, the module will
+>  	  be called tsys02d.
+>  
+> +config MAX31856
+> +	tristate "MAX31856 thermocouple sensor"
+> +	depends on SPI
+> +	help
+> +	  If you say yes here you get support for MAX31856
+> +	  thermocouple sensor chip connected via SPI.
+> +
+> +	  This driver can also be built as a module.  If so, the module
+> +	  will be called max31856.
+> +
+>  endmenu
+> diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
+> index 34a31db..38cf178 100644
+> --- a/drivers/iio/temperature/Makefile
+> +++ b/drivers/iio/temperature/Makefile
+> @@ -11,3 +11,4 @@ obj-$(CONFIG_TMP006) += tmp006.o
+>  obj-$(CONFIG_TMP007) += tmp007.o
+>  obj-$(CONFIG_TSYS01) += tsys01.o
+>  obj-$(CONFIG_TSYS02D) += tsys02d.o
+> +obj-$(CONFIG_MAX31856) += max31856.o
+
+alphabethic order please
+
+> diff --git a/drivers/iio/temperature/max31856.c b/drivers/iio/temperature/max31856.c
+> new file mode 100644
+> index 0000000..eb5a03c
+> --- /dev/null
+> +++ b/drivers/iio/temperature/max31856.c
+> @@ -0,0 +1,374 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* max31856.c
+> + *
+> + * Maxim MAX31856 thermocouple sensor driver
+> + *
+> + * Copyright (C) 2018 Rockwell Collins
+> + *
+
+license text can be skipped thanks to SPDX line
+
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation; either version 2 of the License, or
+> + * (at your option) any later version.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/init.h>
+> +#include <linux/err.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +
+> +#define MAX31856_READ_MODE	   0x7F
+> +#define MAX31856_WRITE_MODE	   0x80
+> +
+> +/* The MAX31856 registers */
+> +#define MAX31856_CR0_REG           0x00
+> +#define MAX31856_CR1_REG           0x01
+> +#define MAX31856_MASK_REG          0x02
+> +#define MAX31856_CJHF_REG          0x03
+> +#define MAX31856_CJLF_REG          0x04
+> +#define MAX31856_LTHFTH_REG        0x05
+> +#define MAX31856_LTHFTL_REG        0x06
+> +#define MAX31856_LTLFTH_REG        0x07
+> +#define MAX31856_LTLFTL_REG        0x08
+> +#define MAX31856_CJTO_REG          0x09
+> +#define MAX31856_CJTH_REG          0x0A
+> +#define MAX31856_CJTL_REG          0x0B
+> +#define MAX31856_LTCBH_REG         0x0C
+> +#define MAX31856_LTCBM_REG         0x0D
+> +#define MAX31856_LTCBL_REG         0x0E
+> +#define MAX31856_SR_REG            0x0F
+> +
+> +static const struct iio_chan_spec max31856_channels[] = {
+> +	{	/* Thermocouple Temperature */
+> +		.type = IIO_TEMP,
+> +		.address = 2,
+> +		.info_mask_separate =
+> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+> +	},
+> +	{	/* Cold Junction Temperature */
+> +		.type = IIO_TEMP,
+> +		.channel2 = IIO_MOD_TEMP_AMBIENT,
+> +		.address = 0,
+> +		.modified = 1,
+> +		.info_mask_separate =
+> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+> +	},
+> +};
+> +
+> +struct max31856_data {
+> +	struct spi_device *spi;
+> +	bool one_shot;
+> +	u32 thermocouple_type;
+> +	int fault_ovuv;
+> +	int fault_oc;
+> +	u8 buf[3] ____cacheline_aligned;
+> +};
+> +
+> +static int max31856_read(struct max31856_data *data, unsigned int reg,
+> +			 s32 *val, int read_size)
+> +{
+> +	int ret = 0;
+
+no need to initialize ret, will be overwritten anyways
+
+> +	u8 *buf = data->buf;
+> +
+> +	/* Make sure top bit is not set,
+> +	 * The MSB(A7) of this byte determines whether the following byte will
+> +	 * be written or read If A7 is 0, one or more byte reads will follow the
+
+maybe use a full stop (.) after read / before If for readability
+
+> +	 * address byte
+> +	 */
+> +
+> +	reg &= MAX31856_READ_MODE;
+> +
+> +	buf[0] = reg;
+> +	buf[1] = 0x00;
+> +	buf[2] = 0x00;
+> +
+> +	ret = spi_write_then_read(data->spi, buf, 1, buf, read_size);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	switch (read_size) {
+> +	case 1:
+> +		*val = buf[0];
+> +		break;
+
+just return directly:
+return 0;
+
+> +	case 2:
+> +		*val = (buf[0] << 8) | buf[1];
+> +		break;
+> +	case 3:
+> +		*val = (buf[0] << 16) | (buf[1] << 8) | buf[2];
+> +		break;
+> +	default:
+> +		ret = -1;
+
+return -EINVAL
+shouldn't the read_size be checked before to avoid overflowing buf?
+
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static int max31856_write(struct max31856_data *data, unsigned int reg,
+> +			  unsigned int val)
+> +{
+> +	u8 *buf = data->buf;
+> +
+> +	/* Make sure top bit is set,
+> +	 * The MSB(A7) of this byte determines whether the following byte will
+> +	 * be written or read If A7 is 1, one or more byte writes will follow
+
+. before If
+
+> +	 * the address byte
+> +	 */
+> +
+> +	reg |= MAX31856_WRITE_MODE;
+> +
+> +	buf[0] = reg;
+> +	buf[1] = val;
+> +
+> +	return spi_write(data->spi, buf, 2);
+> +}
+> +
+> +static int max31856_init(struct max31856_data *data)
+> +{
+> +	int ret = 0;
+> +	s32 reg_val;
+> +
+> +	/* Enable Open circuit fault detection [01]
+> +	 * Read datasheet for more information: Table 4.
+> +	 * BITS [5:4]    | Fault Test
+> +	 * ---------------------------
+> +	 *	00    | Disabled
+> +	 * ---------------------------
+> +	 *	01    | Enabled(Once every 16 seconds)
+
+maybe a space after Enabled?
+> +	 * ---------------------------
+> +	 *	10    | Enabled(Once every 16 seconds)
+> +	 * ---------------------------
+> +	 *	11    | Enabled(Once every 16 seconds)
+> +	 */
+> +	ret = max31856_read(data, MAX31856_CR0_REG, &reg_val, 1);
+> +	if (ret)
+> +		return ret;
+> +	reg_val &= ~BIT(5);
+
+use #defines for these magic bits and masks in here
+
+> +	reg_val |= BIT(4);
+> +	ret = max31856_write(data, MAX31856_CR0_REG, reg_val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Set thermocouple type based on dts property */
+> +	ret = max31856_read(data, MAX31856_CR1_REG, &reg_val, 1);
+> +	if (ret)
+> +		return ret;
+> +
+> +	reg_val &= 0x00F0;
+> +	reg_val |= (data->thermocouple_type & 0x0F);
+> +	ret = max31856_write(data, MAX31856_CR1_REG, reg_val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Set Conversion Mode (Auto or Oneshot) based on dts property */
+> +	ret = max31856_read(data, MAX31856_CR0_REG, &reg_val, 1);
+> +	if (ret)
+> +		return ret;
+> +	if (data->one_shot) {
+> +		reg_val &= ~BIT(7);
+> +		reg_val |= BIT(6);
+> +	} else {
+> +		reg_val |= BIT(7);
+> +		reg_val &= ~BIT(6);
+> +	}
+> +	ret = max31856_write(data, MAX31856_CR0_REG, reg_val);
+
+just 
+return max31856_write(...);
+
+> +
+> +	return ret;
+> +}
+> +
+> +static int max31856_thermocouple_read(struct max31856_data *data,
+> +				      struct iio_chan_spec const *chan,
+> +				      int *val)
+> +{
+> +	int ret = 0, temp, offset_cjto;
+> +
+> +	switch (chan->channel2) {
+> +	case IIO_MOD_TEMP_AMBIENT:
+> +		/* Read register from 0x09-0x0B */
+> +		ret = max31856_read(data, MAX31856_CJTO_REG, val, 3);
+> +		/* Get Cold Junction Temp. offset register value */
+> +		offset_cjto = *val >> 16;
+> +		/* Mask last 2 bytes to get CJTH and CJTL reg. value */
+> +		*val &= 0x0000FFFF;
+> +		temp = *val;
+> +		/* last 2 bits unused in CJTL reg*/
+> +		*val >>= 2;
+> +		/* As per datasheet add offset into CJTH and CJTL */
+> +		*val += offset_cjto;
+> +		/* Check 15th bit for sign */
+> +		if (temp & 0x8000)
+> +			*val -= 0x4000;
+> +		break;
+> +	default:
+> +		ret = max31856_read(data, MAX31856_LTCBH_REG, val, 3);
+> +		temp = *val;
+> +		*val >>= 5;
+> +		/* Check 23th bit for sign */
+> +		if (temp & 0x800000)
+> +			*val -= 0x80000;
+> +	}
+> +
+> +	ret = max31856_read(data, MAX31856_SR_REG, &temp, 1);
+> +	/*Check for over voltage/under voltage fault */
+
+space before Check
+
+> +	data->fault_ovuv = (temp & BIT(1)) ? 1 : 0;
+> +	/* Check for open circuit fault */
+> +	data->fault_oc = (temp & BIT(0)) ? 1 : 0;
+
+what to do with these error conditions, maybe return -EIO?
+
+> +
+> +	return ret;
+> +}
+> +
+> +static int max31856_read_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     int *val, int *val2, long mask)
+> +{
+> +	struct max31856_data *data = iio_priv(indio_dev);
+> +	int ret = -EINVAL;
+
+no need to initialize ret
+
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		ret = max31856_thermocouple_read(data, chan, val);
+> +		if (ret)
+> +			return ret;
+> +		else
+> +			return IIO_VAL_INT;
+> +		break;
+
+why not just.
+	ret = max31856_thermocouple_read(data, chan, val);
+	if (ret)
+		return ret;
+	return IIO_VAL_INT;
+
+> +	case IIO_CHAN_INFO_SCALE:
+> +		switch (chan->channel2) {
+> +		case IIO_MOD_TEMP_AMBIENT:
+> +			/* Cold junction Temp. Data resolution is 0.015625 */
+> +			*val = 15;
+> +			*val2 = 625000; /* 1000 * 0.015625 */
+> +			ret = IIO_VAL_INT_PLUS_MICRO;
+> +			break;
+> +		default:
+> +			/* Thermocouple Temp. Data resolution is 0.0078125 */
+> +			*val = 7;
+> +			*val2 = 812500; /* 1000 * 0.0078125) */
+> +			ret = IIO_VAL_INT_PLUS_MICRO;
+
+just
+return IIO_VAL_INT_PLUS_MICRO;
+
+> +		};
+
+no semicolon after }
+
+> +		break;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static const struct iio_info max31856_info = {
+> +	.driver_module = THIS_MODULE,
+> +	.read_raw = max31856_read_raw,
+> +};
+> +
+> +static ssize_t show_fault_ovuv(struct device *dev,
+> +			       struct device_attribute *attr,
+> +			       char *buf)
+> +{
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	struct max31856_data *data = iio_priv(indio_dev);
+> +
+> +	return sprintf(buf, "%d\n", data->fault_ovuv);
+> +}
+> +
+> +static ssize_t show_fault_oc(struct device *dev,
+> +			     struct device_attribute *attr,
+> +			     char *buf)
+> +{
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	struct max31856_data *data = iio_priv(indio_dev);
+> +
+> +	return sprintf(buf, "%d\n", data->fault_oc);
+> +}
+> +
+> +static IIO_DEVICE_ATTR(fault_ovuv, 0444, show_fault_ovuv, NULL, 0);
+> +static IIO_DEVICE_ATTR(fault_oc, 0444, show_fault_oc, NULL, 0);
+> +
+> +static struct attribute *max31856_attributes[] = {
+> +	&iio_dev_attr_fault_ovuv.dev_attr.attr,
+> +	&iio_dev_attr_fault_oc.dev_attr.attr,
+> +	NULL,
+> +};
+> +
+> +static const struct attribute_group max31856_group = {
+> +	.attrs = max31856_attributes,
+> +};
+> +
+> +static int max31856_probe(struct spi_device *spi)
+> +{
+> +	const struct spi_device_id *id = spi_get_device_id(spi);
+> +	struct iio_dev *indio_dev;
+> +	struct max31856_data *data;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	data = iio_priv(indio_dev);
+> +	data->spi = spi;
+> +
+> +	spi_set_drvdata(spi, indio_dev);
+> +
+> +	indio_dev->info = &max31856_info;
+> +	indio_dev->name = id->name;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = max31856_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(max31856_channels);
+> +
+> +	data->one_shot = of_property_read_bool(spi->dev.of_node, "one-shot");
+> +
+> +	ret = of_property_read_u32(spi->dev.of_node, "type",
+> +				   &data->thermocouple_type);
+> +
+> +	if (ret) {
+> +		pr_info("Could not read thermocouple type DT property, Configuring as a K-Type\n");
+> +		data->thermocouple_type = 0x03; /* K-Type */
+> +	}
+> +
+> +	ret = max31856_init(data);
+> +	if (ret) {
+> +		pr_err("error: Failed to configure max31856\n");
+> +		return ret;
+> +	}
+> +
+> +	ret = iio_device_register(indio_dev);
+> +
+> +	data->fault_ovuv = 0;
+> +	data->fault_oc = 0;
+
+not needed to initialize; why after _register(), racy?
+
+> +	ret = sysfs_create_group(&indio_dev->dev.kobj, &max31856_group);
+
+should not be needed and overwrites ret of _register()
+> +
+> +	return ret;
+> +}
+> +
+> +static int max31856_remove(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> +
+> +	sysfs_remove_group(&indio_dev->dev.kobj, &max31856_group);
+> +	iio_device_unregister(indio_dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct spi_device_id max31856_id[] = {
+> +	{ "max31856", 0 },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(spi, max31856_id);
+> +
+> +static struct spi_driver max31856_driver = {
+> +	.driver = {
+> +		.name = "max31856",
+> +		.owner = THIS_MODULE,
+> +	},
+> +	.probe = max31856_probe,
+> +	.remove = max31856_remove,
+> +	.id_table = max31856_id,
+> +};
+> +module_spi_driver(max31856_driver);
+> +
+> +MODULE_AUTHOR("Paresh Chaudhary <paresh.chaudhary@rockwellcollins.com>");
+> +MODULE_DESCRIPTION("Maxim MAX31856 thermocouple sensor driver");
+> +MODULE_LICENSE("GPL");
+> 
+
+-- 
+
+Peter Meerwald-Stadler
+Mobile: +43 664 24 44 418
