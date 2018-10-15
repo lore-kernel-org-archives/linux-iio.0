@@ -1,88 +1,61 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:45136 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726033AbeJMTw6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 13 Oct 2018 15:52:58 -0400
-Date: Sat, 13 Oct 2018 13:15:58 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Chris Coffey <cmc@babblebit.net>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Michael Welling <mwelling@ieee.org>, linux-iio@vger.kernel.org,
-        <michael.hennerich@analog.com>, stefan.popa@analog.com,
-        Sean Nyekjaer <sean.nyekjaer@prevas.dk>,
-        maxime.roussinbelanger@gmail.com, peda@axentia.se
+Return-Path: <SRS0=9fiM=M4=prevas.dk=Sean.Nyekjaer@kernel.org>
+From: =?utf-8?B?U2VhbiBOeWVrasOmcg==?= <Sean.Nyekjaer@prevas.dk>
+To: Jonathan Cameron <jic23@kernel.org>, Chris Coffey <cmc@babblebit.net>
+CC: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Michael Welling
+	<mwelling@ieee.org>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"michael.hennerich@analog.com" <michael.hennerich@analog.com>,
+	"stefan.popa@analog.com" <stefan.popa@analog.com>,
+	"maxime.roussinbelanger@gmail.com" <maxime.roussinbelanger@gmail.com>,
+	"peda@axentia.se" <peda@axentia.se>
 Subject: Re: [PATCH] iio: dac: mcp4922: Add powerdown support
-Message-ID: <20181013131558.1ffda128@archlinux>
-In-Reply-To: <20181009115707.r5yeq67dhbfjit6f@deb-660>
+Date: Mon, 15 Oct 2018 05:49:29 +0000
+Message-ID: <ddc2ecae-0500-4b60-3f0d-a50eb0451b8e@prevas.dk>
 References: <20181003090638.25111-1-cmc@babblebit.net>
-        <20181008210829.41cc106f@archlinux>
-        <20181009115707.r5yeq67dhbfjit6f@deb-660>
+ <20181008210829.41cc106f@archlinux> <20181009115707.r5yeq67dhbfjit6f@deb-660>
+ <20181013131558.1ffda128@archlinux>
+In-Reply-To: <20181013131558.1ffda128@archlinux>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, 9 Oct 2018 12:57:07 +0100
-Chris Coffey <cmc@babblebit.net> wrote:
-
-> Hi Jonathan, thank you for the review. I added a few comments below
-> based on your feedback.
-> 
-> - Chris
-> 
-> On Mon, Oct 08, 2018 at 09:08:29PM +0100, Jonathan Cameron wrote:
-> > That's interesting.  I'm not sure we have any consistency of interface
-> > around whether a write to the value when powered down results in the device
-> > powering up or not.  It certainly feels like we should be consistent on this
-> > and document it.
-> > 
-> > I checked the first random driver I found the ad5360 and it appears to
-> > have the powerdown on the front end in some sense in that there is a
-> > specific bit to clear in order to power up again and it is not done
-> > by changing the current value.
-> > 
-> > To my mind that is the more logical option, but I'd like others opinions
-> > on this.
-> >   
-> I see what you mean. My intent was to mirror the behavior of userspace
-> programs and APIs that I've written and seen for these chips. They take
-> advantage of the fact a single command to the chip sets the voltage
-> level and power state. That way there is no need to issue a separate
-> power-up command, though it's available in sysfs if a user wants it
-> (e.g., to toggle the channel's power state without specifying a new
-> voltage level).
-> 
-> Like you, I'd be curious to hear what others have to say. My DAC
-> experience is almost exclusively with Microchip devices, so I may be
-> suffering from a bit of tunnel vision here.
-
-Agreed. I've added a few additional CCs.  If we don't get any
-replies we may want to raise a specific RFC email on this to catch
-people's attention.
-
-The cc list is fairly random, so if people wouldn't mind drawing
-the attention of others to this question that would be very helpful!
-
-Jonathan
-
-
-> 
-> > It's a little unusual to have an enum specified with just
-> > one value.. I can see the advantage in terms of this looking
-> > like every other powerdown mode control.
-> > 
-> > I don't suppose it hurts though.   Seems a little pointless
-> > to have this set function actually do anything though...
-> > 
-> > Also no really point in having the get actually read the value.
-> > 
-> > So I would just provide a stub for this that returns the
-> > same value ever time and nothing at all for the set.
-> >   
-> Makes sense. I was indeed trying to be consistent with the powerdown
-> mode interface in other drivers, but as you note, there's no point in
-> actually doing anything in these get/set functions, as the value will
-> never change.
-> 
+DQoNCk9uIDEzLzEwLzIwMTggMTQuMTUsIEpvbmF0aGFuIENhbWVyb24gd3JvdGU6DQo+IE9uIFR1
+ZSwgOSBPY3QgMjAxOCAxMjo1NzowNyArMDEwMA0KPiBDaHJpcyBDb2ZmZXkgPGNtY0BiYWJibGVi
+aXQubmV0PiB3cm90ZToNCj4gDQo+PiBIaSBKb25hdGhhbiwgdGhhbmsgeW91IGZvciB0aGUgcmV2
+aWV3LiBJIGFkZGVkIGEgZmV3IGNvbW1lbnRzIGJlbG93DQo+PiBiYXNlZCBvbiB5b3VyIGZlZWRi
+YWNrLg0KPj4NCj4+IC0gQ2hyaXMNCj4+DQo+PiBPbiBNb24sIE9jdCAwOCwgMjAxOCBhdCAwOTow
+ODoyOVBNICswMTAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3RlOg0KPj4+IFRoYXQncyBpbnRlcmVz
+dGluZy4gIEknbSBub3Qgc3VyZSB3ZSBoYXZlIGFueSBjb25zaXN0ZW5jeSBvZiBpbnRlcmZhY2UN
+Cj4+PiBhcm91bmQgd2hldGhlciBhIHdyaXRlIHRvIHRoZSB2YWx1ZSB3aGVuIHBvd2VyZWQgZG93
+biByZXN1bHRzIGluIHRoZSBkZXZpY2UNCj4+PiBwb3dlcmluZyB1cCBvciBub3QuICBJdCBjZXJ0
+YWlubHkgZmVlbHMgbGlrZSB3ZSBzaG91bGQgYmUgY29uc2lzdGVudCBvbiB0aGlzDQo+Pj4gYW5k
+IGRvY3VtZW50IGl0Lg0KPj4+DQo+Pj4gSSBjaGVja2VkIHRoZSBmaXJzdCByYW5kb20gZHJpdmVy
+IEkgZm91bmQgdGhlIGFkNTM2MCBhbmQgaXQgYXBwZWFycyB0bw0KPj4+IGhhdmUgdGhlIHBvd2Vy
+ZG93biBvbiB0aGUgZnJvbnQgZW5kIGluIHNvbWUgc2Vuc2UgaW4gdGhhdCB0aGVyZSBpcyBhDQo+
+Pj4gc3BlY2lmaWMgYml0IHRvIGNsZWFyIGluIG9yZGVyIHRvIHBvd2VyIHVwIGFnYWluIGFuZCBp
+dCBpcyBub3QgZG9uZQ0KPj4+IGJ5IGNoYW5naW5nIHRoZSBjdXJyZW50IHZhbHVlLg0KPj4+DQo+
+Pj4gVG8gbXkgbWluZCB0aGF0IGlzIHRoZSBtb3JlIGxvZ2ljYWwgb3B0aW9uLCBidXQgSSdkIGxp
+a2Ugb3RoZXJzIG9waW5pb25zDQo+Pj4gb24gdGhpcy4NCj4+PiAgICANCj4+IEkgc2VlIHdoYXQg
+eW91IG1lYW4uIE15IGludGVudCB3YXMgdG8gbWlycm9yIHRoZSBiZWhhdmlvciBvZiB1c2Vyc3Bh
+Y2UNCj4+IHByb2dyYW1zIGFuZCBBUElzIHRoYXQgSSd2ZSB3cml0dGVuIGFuZCBzZWVuIGZvciB0
+aGVzZSBjaGlwcy4gVGhleSB0YWtlDQo+PiBhZHZhbnRhZ2Ugb2YgdGhlIGZhY3QgYSBzaW5nbGUg
+Y29tbWFuZCB0byB0aGUgY2hpcCBzZXRzIHRoZSB2b2x0YWdlDQo+PiBsZXZlbCBhbmQgcG93ZXIg
+c3RhdGUuIFRoYXQgd2F5IHRoZXJlIGlzIG5vIG5lZWQgdG8gaXNzdWUgYSBzZXBhcmF0ZQ0KPj4g
+cG93ZXItdXAgY29tbWFuZCwgdGhvdWdoIGl0J3MgYXZhaWxhYmxlIGluIHN5c2ZzIGlmIGEgdXNl
+ciB3YW50cyBpdA0KPj4gKGUuZy4sIHRvIHRvZ2dsZSB0aGUgY2hhbm5lbCdzIHBvd2VyIHN0YXRl
+IHdpdGhvdXQgc3BlY2lmeWluZyBhIG5ldw0KPj4gdm9sdGFnZSBsZXZlbCkuDQo+Pg0KPj4gTGlr
+ZSB5b3UsIEknZCBiZSBjdXJpb3VzIHRvIGhlYXIgd2hhdCBvdGhlcnMgaGF2ZSB0byBzYXkuIE15
+IERBQw0KPj4gZXhwZXJpZW5jZSBpcyBhbG1vc3QgZXhjbHVzaXZlbHkgd2l0aCBNaWNyb2NoaXAg
+ZGV2aWNlcywgc28gSSBtYXkgYmUNCj4+IHN1ZmZlcmluZyBmcm9tIGEgYml0IG9mIHR1bm5lbCB2
+aXNpb24gaGVyZS4NCj4gDQo+IEFncmVlZC4gSSd2ZSBhZGRlZCBhIGZldyBhZGRpdGlvbmFsIEND
+cy4gIElmIHdlIGRvbid0IGdldCBhbnkNCj4gcmVwbGllcyB3ZSBtYXkgd2FudCB0byByYWlzZSBh
+IHNwZWNpZmljIFJGQyBlbWFpbCBvbiB0aGlzIHRvIGNhdGNoDQo+IHBlb3BsZSdzIGF0dGVudGlv
+bi4NCj4gDQo+IFRoZSBjYyBsaXN0IGlzIGZhaXJseSByYW5kb20sIHNvIGlmIHBlb3BsZSB3b3Vs
+ZG4ndCBtaW5kIGRyYXdpbmcNCj4gdGhlIGF0dGVudGlvbiBvZiBvdGhlcnMgdG8gdGhpcyBxdWVz
+dGlvbiB0aGF0IHdvdWxkIGJlIHZlcnkgaGVscGZ1bCENCj4gDQo+IEpvbmF0aGFuDQo+IA0KSGkN
+Cg0KVGhlIERBQzU1NzEgaXMgbGlrZSB0aGlzIG9uZSBhYmxlIHRvIGxlYXZlIHBvd2VyZG93biBt
+b2RlIHdpdGggYSBzaW5nbGUgDQp3cml0ZSBjb21tYW5kLiBCdXQgSSdtIGJsb2NraW5nIGZyb20g
+dXNpbmcgaXQgaW4gdGhlIGRyaXZlciBzbyB3ZSBhcmUgDQpjb25zaXN0ZW50IGFjcm9zcyBhbGwg
+dGhlIERBQyBkZXZpY2VzLiAoSG9wZWZ1bGx5KQ0KRm9yIG1lIGl0IG1ha2VzIHNlbnNlIHRvIHVz
+ZSB0aGUgcG93ZXJkb3duIEFQSSB0byBjb250cm9sIGFsbCBwb3dlcmRvd24gDQpzZXR0aW5ncy4u
+Lg0KDQovU2Vhbg0K
