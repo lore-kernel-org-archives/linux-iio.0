@@ -1,35 +1,69 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from userp2130.oracle.com ([156.151.31.86]:40782 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727359AbeJROHm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 18 Oct 2018 10:07:42 -0400
-Date: Thu, 18 Oct 2018 09:07:34 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: Shreeya Patel <shreeya.patel23498@gmail.com>
-Cc: Marcelo Schmitt <marcelo.schmitt1@gmail.com>, lars@metafoo.de,
-        Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
-Subject: Re: [PATCH] Staging iio/adc: fixes parenthesis alignment
-Message-ID: <20181018060734.f7ysidkikuoxnkkw@mwanda>
-References: <20181016160104.6276-1-marcelo.schmitt1@gmail.com>
- <0a6618af45b673ff14e4b92cd4642b72b632c7b8.camel@gmail.com>
+Return-Path: <SRS0=eLMt=M4=canonical.com=colin.king@kernel.org>
+From: Colin King <colin.king@canonical.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	=?UTF-8?q?Stefan=20Br=C3=BCns?= <stefan.bruens@rwth-aachen.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org
+Cc: kernel-janitors@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH][V2] iio: adc: ina2xx: add in early -EINVAL returns in case statements
+Date: Tue, 16 Oct 2018 17:14:18 +0100
+Message-Id: <20181016161418.29213-1-colin.king@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <0a6618af45b673ff14e4b92cd4642b72b632c7b8.camel@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+List-ID: <linux-iio@vger.kernel.org>
 
-I feel like these are overly nit-picky...
+From: Colin Ian King <colin.king@canonical.com>
 
-I understand that everyone is picky about different things.  For
-example, I have a prefered style for error handling.  So two days ago
-there was a new staging driver and it used label name like
-"goto kmalloc_failed;" and I looked until I found an error handling bug
-and then I said, "Here is a bug, plus your label names are bad."  When
-people have bad style but it doesn't lead to bugs then I let them get
-away with it.
+Static analysis with CoverityScan is throwing warnings that specific
+case statements are missing breaks.  Rather than adding breaks, add
+return -EINVAL to the specific case statements to clarify the
+error return paths. Fix also saves 50 bytes.
 
-regards,
-dan carpenter
+Before:
+   text	   data	    bss	    dec	    hex	filename
+  21418	   4936	    128	  26482	   6772	drivers/iio/adc/ina2xx-adc.o
+
+After:
+  dec	    hex	filename
+  21370	   4936	    128	  26434	   6742	drivers/iio/adc/ina2xx-adc.o
+
+(gcc 8.2, x86-64)
+
+Detected by CoverityScan, CID#1462408 ("Missing break in switch")
+
+---
+
+V2: use returns instead of break statements to keep with the
+current style used in the switch statement.
+
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/iio/adc/ina2xx-adc.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
+index d1239624187d..bdd7cba6f6b0 100644
+--- a/drivers/iio/adc/ina2xx-adc.c
++++ b/drivers/iio/adc/ina2xx-adc.c
+@@ -250,6 +250,7 @@ static int ina2xx_read_raw(struct iio_dev *indio_dev,
+ 			*val2 = chip->shunt_resistor_uohm;
+ 			return IIO_VAL_FRACTIONAL;
+ 		}
++		return -EINVAL;
+ 
+ 	case IIO_CHAN_INFO_HARDWAREGAIN:
+ 		switch (chan->address) {
+@@ -262,6 +263,7 @@ static int ina2xx_read_raw(struct iio_dev *indio_dev,
+ 			*val = chip->range_vbus == 32 ? 1 : 2;
+ 			return IIO_VAL_INT;
+ 		}
++		return -EINVAL;
+ 	}
+ 
+ 	return -EINVAL;
+-- 
+2.19.1
