@@ -1,108 +1,179 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:52258 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727266AbeJUWsx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 21 Oct 2018 18:48:53 -0400
-Date: Sun, 21 Oct 2018 15:34:15 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Martin Kelly <martin@martingkelly.com>
-Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v2] iio: st_sensors: miscellaneous cleanup
-Message-ID: <20181021153415.3ce6b128@archlinux>
-In-Reply-To: <20181016032709.3745-1-martin@martingkelly.com>
-References: <20181016032709.3745-1-martin@martingkelly.com>
+Return-Path: <SRS0=y4vc=M4=gmail.com=nishadkamdar@kernel.org>
+Date: Tue, 16 Oct 2018 20:16:27 +0530
+From: Nishad Kamdar <nishadkamdar@gmail.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org, outreachy-kernel@googlegroups.com
+Subject: [PATCH] staging: iio: ad7816: Switch to the gpio descriptor interface
+Message-ID: <20181016144623.GA9890@nishad>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, 15 Oct 2018 20:27:09 -0700
-Martin Kelly <martin@martingkelly.com> wrote:
+Use the gpiod interface for rdwr_pin, convert_pin and busy_pin
+instead of the deprecated old non-descriptor interface.
 
-> From: Martin Kelly <martin@martingkelly.com>
-> 
-> Miscellaneous cleanup to fix minor consistency, grammar, and spelling
-> issues.
-> 
-> Signed-off-by: Martin Kelly <martin@martingkelly.com>
+Signed-off-by: Nishad Kamdar <nishadkamdar@gmail.com>
+---
+ drivers/staging/iio/adc/ad7816.c | 72 +++++++++++++-------------------
+ 1 file changed, 30 insertions(+), 42 deletions(-)
 
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
-
-Thanks,
-
-Jonathan
-
-> ---
-> v2:
-> - Explicit return, eliminating goto st_sensors_match_odr_error.
-> 
->  drivers/iio/common/st_sensors/st_sensors_core.c    | 3 +--
->  drivers/iio/common/st_sensors/st_sensors_trigger.c | 4 ++--
->  drivers/iio/magnetometer/st_magn_core.c            | 6 +++---
->  3 files changed, 6 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-> index 26fbd1bd9413..e50c975250e9 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-> @@ -133,7 +133,7 @@ static int st_sensors_match_fs(struct st_sensor_settings *sensor_settings,
-> 
->  	for (i = 0; i < ST_SENSORS_FULLSCALE_AVL_MAX; i++) {
->  		if (sensor_settings->fs.fs_avl[i].num == 0)
-> -			goto st_sensors_match_odr_error;
-> +			return ret;
-> 
->  		if (sensor_settings->fs.fs_avl[i].num == fs) {
->  			*index_fs_avl = i;
-> @@ -142,7 +142,6 @@ static int st_sensors_match_fs(struct st_sensor_settings *sensor_settings,
->  		}
->  	}
-> 
-> -st_sensors_match_odr_error:
->  	return ret;
->  }
-> 
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-> index fdcc5a891958..224596b0e189 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-> @@ -104,7 +104,7 @@ static irqreturn_t st_sensors_irq_thread(int irq, void *p)
->  		return IRQ_HANDLED;
-> 
->  	/*
-> -	 * If we are using egde IRQs, new samples arrived while processing
-> +	 * If we are using edge IRQs, new samples arrived while processing
->  	 * the IRQ and those may be missed unless we pick them here, so poll
->  	 * again. If the sensor delivery frequency is very high, this thread
->  	 * turns into a polled loop handler.
-> @@ -148,7 +148,7 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
->  		if (!sdata->sensor_settings->drdy_irq.addr_ihl) {
->  			dev_err(&indio_dev->dev,
->  				"falling/low specified for IRQ "
-> -				"but hardware only support rising/high: "
-> +				"but hardware supports only rising/high: "
->  				"will request rising/high\n");
->  			if (irq_trig == IRQF_TRIGGER_FALLING)
->  				irq_trig = IRQF_TRIGGER_RISING;
-> diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-> index 72f6d1335a04..880c11c7f1cb 100644
-> --- a/drivers/iio/magnetometer/st_magn_core.c
-> +++ b/drivers/iio/magnetometer/st_magn_core.c
-> @@ -29,9 +29,9 @@
->  #define ST_MAGN_NUMBER_DATA_CHANNELS		3
-> 
->  /* DEFAULT VALUE FOR SENSORS */
-> -#define ST_MAGN_DEFAULT_OUT_X_H_ADDR		0X03
-> -#define ST_MAGN_DEFAULT_OUT_Y_H_ADDR		0X07
-> -#define ST_MAGN_DEFAULT_OUT_Z_H_ADDR		0X05
-> +#define ST_MAGN_DEFAULT_OUT_X_H_ADDR		0x03
-> +#define ST_MAGN_DEFAULT_OUT_Y_H_ADDR		0x07
-> +#define ST_MAGN_DEFAULT_OUT_Z_H_ADDR		0x05
-> 
->  /* FULLSCALE */
->  #define ST_MAGN_FS_AVL_1300MG			1300
-> --
-> 2.11.0
-> 
+diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
+index bf76a8620bdb..190b751af866 100644
+--- a/drivers/staging/iio/adc/ad7816.c
++++ b/drivers/staging/iio/adc/ad7816.c
+@@ -7,7 +7,7 @@
+  */
+ 
+ #include <linux/interrupt.h>
+-#include <linux/gpio.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/device.h>
+ #include <linux/kernel.h>
+ #include <linux/slab.h>
+@@ -44,9 +44,9 @@
+ 
+ struct ad7816_chip_info {
+ 	struct spi_device *spi_dev;
+-	u16 rdwr_pin;
+-	u16 convert_pin;
+-	u16 busy_pin;
++	struct gpio_desc *rdwr_pin;
++	struct gpio_desc *convert_pin;
++	struct gpio_desc *busy_pin;
+ 	u8  oti_data[AD7816_CS_MAX + 1];
+ 	u8  channel_id;	/* 0 always be temperature */
+ 	u8  mode;
+@@ -61,28 +61,28 @@ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
+ 	int ret = 0;
+ 	__be16 buf;
+ 
+-	gpio_set_value(chip->rdwr_pin, 1);
+-	gpio_set_value(chip->rdwr_pin, 0);
++	gpiod_set_value(chip->rdwr_pin, 1);
++	gpiod_set_value(chip->rdwr_pin, 0);
+ 	ret = spi_write(spi_dev, &chip->channel_id, sizeof(chip->channel_id));
+ 	if (ret < 0) {
+ 		dev_err(&spi_dev->dev, "SPI channel setting error\n");
+ 		return ret;
+ 	}
+-	gpio_set_value(chip->rdwr_pin, 1);
++	gpiod_set_value(chip->rdwr_pin, 1);
+ 
+ 	if (chip->mode == AD7816_PD) { /* operating mode 2 */
+-		gpio_set_value(chip->convert_pin, 1);
+-		gpio_set_value(chip->convert_pin, 0);
++		gpiod_set_value(chip->convert_pin, 1);
++		gpiod_set_value(chip->convert_pin, 0);
+ 	} else { /* operating mode 1 */
+-		gpio_set_value(chip->convert_pin, 0);
+-		gpio_set_value(chip->convert_pin, 1);
++		gpiod_set_value(chip->convert_pin, 0);
++		gpiod_set_value(chip->convert_pin, 1);
+ 	}
+ 
+-	while (gpio_get_value(chip->busy_pin))
++	while (gpiod_get_value(chip->busy_pin))
+ 		cpu_relax();
+ 
+-	gpio_set_value(chip->rdwr_pin, 0);
+-	gpio_set_value(chip->rdwr_pin, 1);
++	gpiod_set_value(chip->rdwr_pin, 0);
++	gpiod_set_value(chip->rdwr_pin, 1);
+ 	ret = spi_read(spi_dev, &buf, sizeof(*data));
+ 	if (ret < 0) {
+ 		dev_err(&spi_dev->dev, "SPI data read error\n");
+@@ -99,8 +99,8 @@ static int ad7816_spi_write(struct ad7816_chip_info *chip, u8 data)
+ 	struct spi_device *spi_dev = chip->spi_dev;
+ 	int ret = 0;
+ 
+-	gpio_set_value(chip->rdwr_pin, 1);
+-	gpio_set_value(chip->rdwr_pin, 0);
++	gpiod_set_value(chip->rdwr_pin, 1);
++	gpiod_set_value(chip->rdwr_pin, 0);
+ 	ret = spi_write(spi_dev, &data, sizeof(data));
+ 	if (ret < 0)
+ 		dev_err(&spi_dev->dev, "SPI oti data write error\n");
+@@ -129,10 +129,10 @@ static ssize_t ad7816_store_mode(struct device *dev,
+ 	struct ad7816_chip_info *chip = iio_priv(indio_dev);
+ 
+ 	if (strcmp(buf, "full")) {
+-		gpio_set_value(chip->rdwr_pin, 1);
++		gpiod_set_value(chip->rdwr_pin, 1);
+ 		chip->mode = AD7816_FULL;
+ 	} else {
+-		gpio_set_value(chip->rdwr_pin, 0);
++		gpiod_set_value(chip->rdwr_pin, 0);
+ 		chip->mode = AD7816_PD;
+ 	}
+ 
+@@ -345,15 +345,9 @@ static int ad7816_probe(struct spi_device *spi_dev)
+ {
+ 	struct ad7816_chip_info *chip;
+ 	struct iio_dev *indio_dev;
+-	unsigned short *pins = dev_get_platdata(&spi_dev->dev);
+ 	int ret = 0;
+ 	int i;
+ 
+-	if (!pins) {
+-		dev_err(&spi_dev->dev, "No necessary GPIO platform data.\n");
+-		return -EINVAL;
+-	}
+-
+ 	indio_dev = devm_iio_device_alloc(&spi_dev->dev, sizeof(*chip));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+@@ -364,34 +358,28 @@ static int ad7816_probe(struct spi_device *spi_dev)
+ 	chip->spi_dev = spi_dev;
+ 	for (i = 0; i <= AD7816_CS_MAX; i++)
+ 		chip->oti_data[i] = 203;
+-	chip->rdwr_pin = pins[0];
+-	chip->convert_pin = pins[1];
+-	chip->busy_pin = pins[2];
+ 
+-	ret = devm_gpio_request(&spi_dev->dev, chip->rdwr_pin,
+-				spi_get_device_id(spi_dev)->name);
+-	if (ret) {
++	chip->rdwr_pin = devm_gpiod_get(&spi_dev->dev, "rdwr", GPIOD_IN);
++	if (IS_ERR(chip->rdwr_pin)) {
++		ret = PTR_ERR(chip->rdwr_pin);
+ 		dev_err(&spi_dev->dev, "Fail to request rdwr gpio PIN %d.\n",
+-			chip->rdwr_pin);
++			ret);
+ 		return ret;
+ 	}
+-	gpio_direction_input(chip->rdwr_pin);
+-	ret = devm_gpio_request(&spi_dev->dev, chip->convert_pin,
+-				spi_get_device_id(spi_dev)->name);
+-	if (ret) {
++	chip->convert_pin = devm_gpiod_get(&spi_dev->dev, "convert", GPIOD_IN);
++	if (IS_ERR(chip->convert_pin)) {
++		ret = PTR_ERR(chip->convert_pin);
+ 		dev_err(&spi_dev->dev, "Fail to request convert gpio PIN %d.\n",
+-			chip->convert_pin);
++			ret);
+ 		return ret;
+ 	}
+-	gpio_direction_input(chip->convert_pin);
+-	ret = devm_gpio_request(&spi_dev->dev, chip->busy_pin,
+-				spi_get_device_id(spi_dev)->name);
+-	if (ret) {
++	chip->busy_pin = devm_gpiod_get(&spi_dev->dev, "busy", GPIOD_IN);
++	if (IS_ERR(chip->busy_pin)) {
++		ret = PTR_ERR(chip->busy_pin);
+ 		dev_err(&spi_dev->dev, "Fail to request busy gpio PIN %d.\n",
+-			chip->busy_pin);
++			ret);
+ 		return ret;
+ 	}
+-	gpio_direction_input(chip->busy_pin);
+ 
+ 	indio_dev->name = spi_get_device_id(spi_dev)->name;
+ 	indio_dev->dev.parent = &spi_dev->dev;
+-- 
+2.17.1
