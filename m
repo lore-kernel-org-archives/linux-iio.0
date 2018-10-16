@@ -1,73 +1,89 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtprelay0188.hostedemail.com ([216.40.44.188]:54529 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727006AbeJQCIa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 16 Oct 2018 22:08:30 -0400
-Message-ID: <928f615f2a25f821e785f2db96f90df009d2fa34.camel@perches.com>
-Subject: Re: [PATCH] staging: iio: adc: Add comments to prevent checks
- corrections
-From: Joe Perches <joe@perches.com>
-To: Slawomir Stepien <sst@poczta.fm>,
-        Gabriel Capella <gabriel@capella.pro>
+Return-Path: <MAILER-DAEMON>
+From: Martin Kelly <martin@martingkelly.com>
+To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com,
-        apw@canonical.com
-Date: Tue, 16 Oct 2018 11:16:46 -0700
-In-Reply-To: <20181016180631.GA6085@x220.localdomain>
-References: <20181015212521.GA24512@mantaray>
-         <20181016180631.GA6085@x220.localdomain>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Martin Kelly <martin@martingkelly.com>
+Subject: [PATCH v2] iio: st_sensors: miscellaneous cleanup
+Date: Mon, 15 Oct 2018 20:27:09 -0700
+Message-Id: <20181016032709.3745-1-martin@martingkelly.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, 2018-10-16 at 20:06 +0200, Slawomir Stepien wrote:
-> On paź 15, 2018 18:25, Gabriel Capella wrote:
-> > This patch adds 3 comments in 2 different files.
-> > These comments warn to don't correct the checks of type:
-> > "CHECK: spaces preferred around that '-'"
-> > 
-> > Signed-off-by: Gabriel Capella <gabriel@capella.pro>
-> > ---
-> >  drivers/staging/iio/adc/ad7192.c  | 1 +
-> >  drivers/staging/iio/adc/ad7280a.c | 2 ++
-> >  2 files changed, 3 insertions(+)
-> 
-> I have this simpler solution...let's focus our efforts on moving the two drivers
-> out of staging. This will prevent the CHK to appear:
-> 
-> Cut from checkpatch.pl:
-> 
-> if ($realfile =~ m@^(?:drivers/net/|net/|drivers/staging/)@) {
-> 	$check = 1;
-> 
-> Existing driver out of staging, with this "problem":
-> $ ./scripts/checkpatch.pl --types SPACING --file drivers/iio/adc/ad7793.c        
-> total: 0 errors, 0 warnings, 827 lines checked
-> 
-> drivers/iio/adc/ad7793.c has no obvious style problems and is ready for submission.
-> 
-> NOTE: Used message types: SPACING
-> 
-> In my opinion it would stop this incorrect patches. -
-> 
-> I have also this changes to checkpatch.pl:
-> https://github.com/s-stepien/linux-1/commit/c976a31b392393fb417f2d9e2ec9639bc226ad0b
-> and usage:
-> https://github.com/s-stepien/linux-1/commit/1adc0428b496f44f6a931637084bb619ddd9992d
-> but I'm not that sure it is the best way to go.
-> 
-> What do you all think?
+From: Martin Kelly <martin@martingkelly.com>
 
-I think the suggested form is somewhat cryptic
+Miscellaneous cleanup to fix minor consistency, grammar, and spelling
+issues.
 
-	/* checkpatch-<foo> */
+Signed-off-by: Martin Kelly <martin@martingkelly.com>
+---
+v2:
+- Explicit return, eliminating goto st_sensors_match_odr_error.
 
-and the new checkpatch code is somewhat balky.
+ drivers/iio/common/st_sensors/st_sensors_core.c    | 3 +--
+ drivers/iio/common/st_sensors/st_sensors_trigger.c | 4 ++--
+ drivers/iio/magnetometer/st_magn_core.c            | 6 +++---
+ 3 files changed, 6 insertions(+), 7 deletions(-)
 
-It also allows only a single type to ignore per line.
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+index 26fbd1bd9413..e50c975250e9 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_core.c
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -133,7 +133,7 @@ static int st_sensors_match_fs(struct st_sensor_settings *sensor_settings,
+
+ 	for (i = 0; i < ST_SENSORS_FULLSCALE_AVL_MAX; i++) {
+ 		if (sensor_settings->fs.fs_avl[i].num == 0)
+-			goto st_sensors_match_odr_error;
++			return ret;
+
+ 		if (sensor_settings->fs.fs_avl[i].num == fs) {
+ 			*index_fs_avl = i;
+@@ -142,7 +142,6 @@ static int st_sensors_match_fs(struct st_sensor_settings *sensor_settings,
+ 		}
+ 	}
+
+-st_sensors_match_odr_error:
+ 	return ret;
+ }
+
+diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+index fdcc5a891958..224596b0e189 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
++++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+@@ -104,7 +104,7 @@ static irqreturn_t st_sensors_irq_thread(int irq, void *p)
+ 		return IRQ_HANDLED;
+
+ 	/*
+-	 * If we are using egde IRQs, new samples arrived while processing
++	 * If we are using edge IRQs, new samples arrived while processing
+ 	 * the IRQ and those may be missed unless we pick them here, so poll
+ 	 * again. If the sensor delivery frequency is very high, this thread
+ 	 * turns into a polled loop handler.
+@@ -148,7 +148,7 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
+ 		if (!sdata->sensor_settings->drdy_irq.addr_ihl) {
+ 			dev_err(&indio_dev->dev,
+ 				"falling/low specified for IRQ "
+-				"but hardware only support rising/high: "
++				"but hardware supports only rising/high: "
+ 				"will request rising/high\n");
+ 			if (irq_trig == IRQF_TRIGGER_FALLING)
+ 				irq_trig = IRQF_TRIGGER_RISING;
+diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
+index 72f6d1335a04..880c11c7f1cb 100644
+--- a/drivers/iio/magnetometer/st_magn_core.c
++++ b/drivers/iio/magnetometer/st_magn_core.c
+@@ -29,9 +29,9 @@
+ #define ST_MAGN_NUMBER_DATA_CHANNELS		3
+
+ /* DEFAULT VALUE FOR SENSORS */
+-#define ST_MAGN_DEFAULT_OUT_X_H_ADDR		0X03
+-#define ST_MAGN_DEFAULT_OUT_Y_H_ADDR		0X07
+-#define ST_MAGN_DEFAULT_OUT_Z_H_ADDR		0X05
++#define ST_MAGN_DEFAULT_OUT_X_H_ADDR		0x03
++#define ST_MAGN_DEFAULT_OUT_Y_H_ADDR		0x07
++#define ST_MAGN_DEFAULT_OUT_Z_H_ADDR		0x05
+
+ /* FULLSCALE */
+ #define ST_MAGN_FS_AVL_1300MG			1300
+--
+2.11.0
