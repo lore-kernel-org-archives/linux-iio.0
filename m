@@ -1,432 +1,426 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:47324 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727688AbeJUXVn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Oct 2018 19:21:43 -0400
-Date: Sun, 21 Oct 2018 16:07:01 +0100
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Charles-Antoine Couret <charles-antoine.couret@essensium.com>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/2] Add driver for Texas Instrument DAC7311 It is a
- driver for Texas Instruments 8/10/12-bit 1-channel compatible with DAC6311
- and DAC5311 chips.
-Message-ID: <20181021160701.769a86cf@archlinux>
-In-Reply-To: <20181017203738.13477-1-charles-antoine.couret@essensium.com>
-References: <20181017203738.13477-1-charles-antoine.couret@essensium.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:38262 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725798AbeJREh2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 18 Oct 2018 00:37:28 -0400
+Received: by mail-ed1-f68.google.com with SMTP id c1-v6so26183850ede.5
+        for <linux-iio@vger.kernel.org>; Wed, 17 Oct 2018 13:40:02 -0700 (PDT)
+From: Charles-Antoine Couret <charles-antoine.couret@essensium.com>
+To: linux-iio@vger.kernel.org
+Cc: Charles-Antoine Couret <charles-antoine.couret@essensium.com>
+Subject: [PATCHv2 1/2] Add AD7949 ADC driver family
+Date: Wed, 17 Oct 2018 22:39:53 +0200
+Message-Id: <20181017203954.13744-1-charles-antoine.couret@essensium.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 17 Oct 2018 22:37:37 +0200
-Charles-Antoine Couret <charles-antoine.couret@essensium.com> wrote:
+Add AD7949 ADC driver family
 
-> Datasheet of this chip:
-> http://www.ti.com/lit/ds/symlink/dac7311.pdf
-> 
-> Signed-off-by: Charles-Antoine Couret <charles-antoine.couret@essensium.com>
-Hi Charles-Antoine.
+Compatible with AD7682 and AD7689 chips.
+It is a Analog Devices ADC driver 14/16 bits 4/8 channels
+with SPI protocol
 
-Something slightly odd happened with the title of this patch.
+Datasheet of the device:
+http://www.analog.com/media/en/technical-documentation/data-sheets/AD7949.pdf
 
-Also, I assume it is a V2?  Then it should have 
-[PATCH V2 1/2]...
+Signed-off-by: Charles-Antoine Couret <charles-antoine.couret@essensium.com>
+---
+ drivers/iio/adc/Kconfig  |  10 ++
+ drivers/iio/adc/Makefile |   1 +
+ drivers/iio/adc/ad7949.c | 352 +++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 363 insertions(+)
+ create mode 100644 drivers/iio/adc/ad7949.c
 
-
-> ---
-Here is where we would expect to see a list of updates made from V1.
-
-
-Other than that procedural stuff, looks good to me. 
-
-I'll leave it on the list for a little longer though and I think you'll
-end up doing a v3 to tidy up the DT binding example.
-
-
-Thanks,
-
-Jonathan
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 4a754921fb6f..42e66efff6c0 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -116,6 +116,16 @@ config AD7923
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad7923.
  
->  drivers/iio/dac/Kconfig      |   9 +
->  drivers/iio/dac/Makefile     |   1 +
->  drivers/iio/dac/ti-dac7311.c | 341 +++++++++++++++++++++++++++++++++++
->  3 files changed, 351 insertions(+)
->  create mode 100644 drivers/iio/dac/ti-dac7311.c
-> 
-> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> index 80beb64e9e0c..ac205c8f5de0 100644
-> --- a/drivers/iio/dac/Kconfig
-> +++ b/drivers/iio/dac/Kconfig
-> @@ -356,6 +356,15 @@ config TI_DAC5571
->  
->  	  If compiled as a module, it will be called ti-dac5571.
->  
-> +config TI_DAC7311
-> +	tristate "Texas Instruments 8/10/12-bit 1-channel DAC driver"
-> +	depends on SPI
-> +	help
-> +	  Driver for the Texas Instruments
-> +	  DAC7311, DAC6311, DAC5311.
-> +
-> +	  If compiled as a module, it will be called ti-dac7311.
-> +
->  config VF610_DAC
->  	tristate "Vybrid vf610 DAC driver"
->  	depends on OF
-> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
-> index a1b37cf99441..4b02021cc30f 100644
-> --- a/drivers/iio/dac/Makefile
-> +++ b/drivers/iio/dac/Makefile
-> @@ -39,4 +39,5 @@ obj-$(CONFIG_STM32_DAC_CORE) += stm32-dac-core.o
->  obj-$(CONFIG_STM32_DAC) += stm32-dac.o
->  obj-$(CONFIG_TI_DAC082S085) += ti-dac082s085.o
->  obj-$(CONFIG_TI_DAC5571) += ti-dac5571.o
-> +obj-$(CONFIG_TI_DAC7311) += ti-dac7311.o
->  obj-$(CONFIG_VF610_DAC) += vf610_dac.o
-> diff --git a/drivers/iio/dac/ti-dac7311.c b/drivers/iio/dac/ti-dac7311.c
-> new file mode 100644
-> index 000000000000..2010bf27c371
-> --- /dev/null
-> +++ b/drivers/iio/dac/ti-dac7311.c
-> @@ -0,0 +1,341 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* ti-dac7311.c - Texas Instruments 8/10/12-bit 1-channel DAC driver
-> + *
-> + * Copyright (C) 2018 CMC NV
-> + *
-> + * http://www.ti.com/lit/ds/symlink/dac7311.pdf
-> + */
-> +
-> +#include <linux/iio/iio.h>
-> +#include <linux/module.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/spi/spi.h>
-> +
-> +enum {
-> +	ID_DAC5311 = 0,
-> +	ID_DAC6311,
-> +	ID_DAC7311,
-> +};
-> +
-> +enum {
-> +	POWER_1KOHM_TO_GND = 0,
-> +	POWER_100KOHM_TO_GND,
-> +	POWER_TRI_STATE,
-> +};
-> +
-> +struct ti_dac_spec {
-> +	u8 resolution;
-> +};
-> +
-> +static const struct ti_dac_spec ti_dac_spec[] = {
-> +	[ID_DAC5311]  = { .resolution = 8  },
-> +	[ID_DAC6311] = { .resolution = 10 },
-> +	[ID_DAC7311] = { .resolution = 12 },
-> +};
-> +
-> +/**
-> + * struct ti_dac_chip - TI DAC chip
-> + * @lock: protects write sequences
-> + * @vref: regulator generating Vref
-> + * @spi: SPI device to send data to the device
-> + * @val: cached value
-> + * @powerdown: whether the chip is powered down
-> + * @powerdown_mode: selected by the user
-> + * @resolution: resolution of the chip
-> + * @buf: buffer for transfer data
-> + */
-> +struct ti_dac_chip {
-> +	struct mutex lock;
-> +	struct regulator *vref;
-> +	struct spi_device *spi;
-> +	u16 val;
-> +	bool powerdown;
-> +	u8 powerdown_mode;
-> +	u8 resolution;
-> +	u8 buf[2] ____cacheline_aligned;
-> +};
-> +
-> +static u8 ti_dac_get_power(struct ti_dac_chip *ti_dac, bool powerdown)
-> +{
-> +	if (powerdown)
-> +		return ti_dac->powerdown_mode + 1;
-> +
-> +	return 0;
-> +}
-> +
-> +static int ti_dac_cmd(struct ti_dac_chip *ti_dac, u8 power, u16 val)
-> +{
-> +	u8 shift = 14 - ti_dac->resolution;
-> +
-> +	ti_dac->buf[0] = (val << shift) & 0xFF;
-> +	ti_dac->buf[1] = (power << 6) | (val >> (8 - shift));
-> +	return spi_write(ti_dac->spi, ti_dac->buf, 2);
-> +}
-> +
-> +static const char * const ti_dac_powerdown_modes[] = {
-> +	"1kohm_to_gnd",
-> +	"100kohm_to_gnd",
-> +	"three_state",
-> +};
-> +
-> +static int ti_dac_get_powerdown_mode(struct iio_dev *indio_dev,
-> +				     const struct iio_chan_spec *chan)
-> +{
-> +	struct ti_dac_chip *ti_dac = iio_priv(indio_dev);
-> +
-> +	return ti_dac->powerdown_mode;
-> +}
-> +
-> +static int ti_dac_set_powerdown_mode(struct iio_dev *indio_dev,
-> +				     const struct iio_chan_spec *chan,
-> +				     unsigned int mode)
-> +{
-> +	struct ti_dac_chip *ti_dac = iio_priv(indio_dev);
-> +
-> +	ti_dac->powerdown_mode = mode;
-> +	return 0;
-> +}
-> +
-> +static const struct iio_enum ti_dac_powerdown_mode = {
-> +	.items = ti_dac_powerdown_modes,
-> +	.num_items = ARRAY_SIZE(ti_dac_powerdown_modes),
-> +	.get = ti_dac_get_powerdown_mode,
-> +	.set = ti_dac_set_powerdown_mode,
-> +};
-> +
-> +static ssize_t ti_dac_read_powerdown(struct iio_dev *indio_dev,
-> +				     uintptr_t private,
-> +				     const struct iio_chan_spec *chan,
-> +				     char *buf)
-> +{
-> +	struct ti_dac_chip *ti_dac = iio_priv(indio_dev);
-> +
-> +	return sprintf(buf, "%d\n", ti_dac->powerdown);
-> +}
-> +
-> +static ssize_t ti_dac_write_powerdown(struct iio_dev *indio_dev,
-> +				      uintptr_t private,
-> +				      const struct iio_chan_spec *chan,
-> +				      const char *buf, size_t len)
-> +{
-> +	struct ti_dac_chip *ti_dac = iio_priv(indio_dev);
-> +	bool powerdown;
-> +	u8 power;
-> +	int ret;
-> +
-> +	ret = strtobool(buf, &powerdown);
-> +	if (ret)
-> +		return ret;
-> +
-> +	power = ti_dac_get_power(ti_dac, powerdown);
-> +
-> +	mutex_lock(&ti_dac->lock);
-> +	ret = ti_dac_cmd(ti_dac, power, 0);
-> +	if (!ret)
-> +		ti_dac->powerdown = powerdown;
-> +	mutex_unlock(&ti_dac->lock);
-> +
-> +	return ret ? ret : len;
-> +}
-> +
-> +static const struct iio_chan_spec_ext_info ti_dac_ext_info[] = {
-> +	{
-> +		.name	   = "powerdown",
-> +		.read	   = ti_dac_read_powerdown,
-> +		.write	   = ti_dac_write_powerdown,
-> +		.shared	   = IIO_SHARED_BY_TYPE,
-> +	},
-> +	IIO_ENUM("powerdown_mode", IIO_SHARED_BY_TYPE, &ti_dac_powerdown_mode),
-> +	IIO_ENUM_AVAILABLE("powerdown_mode", &ti_dac_powerdown_mode),
-> +	{ },
-> +};
-> +
-> +#define TI_DAC_CHANNEL(chan) {					\
-> +	.type = IIO_VOLTAGE,					\
-> +	.channel = (chan),					\
-> +	.output = true,						\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +	.ext_info = ti_dac_ext_info,				\
-> +}
-> +
-> +static const struct iio_chan_spec ti_dac_channels[] = {
-> +	TI_DAC_CHANNEL(0),
-> +};
-> +
-> +static int ti_dac_read_raw(struct iio_dev *indio_dev,
-> +			   struct iio_chan_spec const *chan,
-> +			   int *val, int *val2, long mask)
-> +{
-> +	struct ti_dac_chip *ti_dac = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		*val = ti_dac->val;
-> +		return IIO_VAL_INT;
-> +
-> +	case IIO_CHAN_INFO_SCALE:
-> +		ret = regulator_get_voltage(ti_dac->vref);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		*val = ret / 1000;
-> +		*val2 = ti_dac->resolution;
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static int ti_dac_write_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int val, int val2, long mask)
-> +{
-> +	struct ti_dac_chip *ti_dac = iio_priv(indio_dev);
-> +	u8 power = ti_dac_get_power(ti_dac, ti_dac->powerdown);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		if (ti_dac->val == val)
-> +			return 0;
-> +
-> +		if (val >= (1 << ti_dac->resolution) || val < 0)
-> +			return -EINVAL;
-> +
-> +		if (ti_dac->powerdown)
-> +			return -EBUSY;
-> +
-> +		mutex_lock(&ti_dac->lock);
-> +		ret = ti_dac_cmd(ti_dac, power, val);
-> +		if (!ret)
-> +			ti_dac->val = val;
-> +		mutex_unlock(&ti_dac->lock);
-> +		break;
-> +
-> +	default:
-> +		ret = -EINVAL;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static int ti_dac_write_raw_get_fmt(struct iio_dev *indio_dev,
-> +				    struct iio_chan_spec const *chan, long mask)
-> +{
-> +	return IIO_VAL_INT;
-> +}
-> +
-> +static const struct iio_info ti_dac_info = {
-> +	.read_raw	   = ti_dac_read_raw,
-> +	.write_raw	   = ti_dac_write_raw,
-> +	.write_raw_get_fmt = ti_dac_write_raw_get_fmt,
-> +};
-> +
-> +static int ti_dac_probe(struct spi_device *spi)
-> +{
-> +	struct device *dev = &spi->dev;
-> +	const struct ti_dac_spec *spec;
-> +	struct ti_dac_chip *ti_dac;
-> +	struct iio_dev *indio_dev;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*ti_dac));
-> +	if (!indio_dev) {
-> +		dev_err(dev, "can not allocate iio device\n");
-> +		return -ENOMEM;
-> +	}
-> +
-> +	spi->max_speed_hz = 50000000;
-> +	spi->mode = SPI_MODE_1;
-> +	spi->bits_per_word = 16;
-> +	spi_setup(spi);
-> +
-> +	indio_dev->dev.parent = dev;
-> +	indio_dev->dev.of_node = spi->dev.of_node;
-> +	indio_dev->info = &ti_dac_info;
-> +	indio_dev->name = spi_get_device_id(spi)->name;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = ti_dac_channels;
-> +	spi_set_drvdata(spi, indio_dev);
-> +
-> +	ti_dac = iio_priv(indio_dev);
-> +	ti_dac->powerdown = false;
-> +	ti_dac->spi = spi;
-> +
-> +	spec = &ti_dac_spec[spi_get_device_id(spi)->driver_data];
-> +	indio_dev->num_channels = 1;
-> +	ti_dac->resolution = spec->resolution;
-> +
-> +	ti_dac->vref = devm_regulator_get(dev, "vref");
-> +	if (IS_ERR(ti_dac->vref)) {
-> +		dev_err(dev, "error to get regulator\n");
-> +		return PTR_ERR(ti_dac->vref);
-> +	}
-> +
-> +	ret = regulator_enable(ti_dac->vref);
-> +	if (ret < 0) {
-> +		dev_err(dev, "can not enable regulator\n");
-> +		return ret;
-> +	}
-> +
-> +	mutex_init(&ti_dac->lock);
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret) {
-> +		dev_err(dev, "fail to register iio device: %d\n", ret);
-> +		goto err;
-> +	}
-> +
-> +	return 0;
-> +
-> +err:
-> +	mutex_destroy(&ti_dac->lock);
-> +	regulator_disable(ti_dac->vref);
-> +	return ret;
-> +}
-> +
-> +static int ti_dac_remove(struct spi_device *spi)
-> +{
-> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-> +	struct ti_dac_chip *ti_dac = iio_priv(indio_dev);
-> +
-> +	iio_device_unregister(indio_dev);
-> +	mutex_destroy(&ti_dac->lock);
-> +	regulator_disable(ti_dac->vref);
-> +	return 0;
-> +}
-> +
-> +#ifdef CONFIG_OF
-> +static const struct of_device_id ti_dac_of_id[] = {
-> +	{ .compatible = "ti,dac5311" },
-> +	{ .compatible = "ti,dac6311" },
-> +	{ .compatible = "ti,dac7311" },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(of, ti_dac_of_id);
-> +#endif
-> +
-> +static const struct spi_device_id ti_dac_spi_id[] = {
-> +	{ "dac5311", ID_DAC5311  },
-> +	{ "dac6311", ID_DAC6311 },
-> +	{ "dac7311", ID_DAC7311 },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(spi, ti_dac_spi_id);
-> +
-> +static struct spi_driver ti_dac_driver = {
-> +	.driver = {
-> +		.name		= "ti-dac7311",
-> +		.of_match_table	= of_match_ptr(ti_dac_of_id),
-> +	},
-> +	.probe	  = ti_dac_probe,
-> +	.remove   = ti_dac_remove,
-> +	.id_table = ti_dac_spi_id,
-> +};
-> +module_spi_driver(ti_dac_driver);
-> +
-> +MODULE_AUTHOR("Charles-Antoine Couret <charles-antoine.couret@essensium.com>");
-> +MODULE_DESCRIPTION("Texas Instruments 8/10/12-bit 1-channel DAC driver");
-> +MODULE_LICENSE("GPL v2");
++config AD7949
++	tristate "Analog Devices AD7949 and similar ADCs driver"
++	depends on SPI
++	help
++	  Say yes here to build support for Analog Devices
++	  AD7949, AD7682, AD7689 8 Channel ADCs.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called ad7949.
++
+ config AD799X
+ 	tristate "Analog Devices AD799x ADC driver"
+ 	depends on I2C
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 03db7b578f9c..88804c867aa9 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -14,6 +14,7 @@ obj-$(CONFIG_AD7766) += ad7766.o
+ obj-$(CONFIG_AD7791) += ad7791.o
+ obj-$(CONFIG_AD7793) += ad7793.o
+ obj-$(CONFIG_AD7887) += ad7887.o
++obj-$(CONFIG_AD7949) += ad7949.o
+ obj-$(CONFIG_AD799X) += ad799x.o
+ obj-$(CONFIG_ASPEED_ADC) += aspeed_adc.o
+ obj-$(CONFIG_AT91_ADC) += at91_adc.o
+diff --git a/drivers/iio/adc/ad7949.c b/drivers/iio/adc/ad7949.c
+new file mode 100644
+index 000000000000..da5082e80317
+--- /dev/null
++++ b/drivers/iio/adc/ad7949.c
+@@ -0,0 +1,352 @@
++// SPDX-License-Identifier: GPL-2.0
++/* ad7949.c - Analog Devices ADC driver 14/16 bits 4/8 channels
++ *
++ * Copyright (C) 2018 CMC NV
++ *
++ * http://www.analog.com/media/en/technical-documentation/data-sheets/AD7949.pdf
++ */
++
++#include <linux/delay.h>
++#include <linux/iio/iio.h>
++#include <linux/module.h>
++#include <linux/regulator/consumer.h>
++#include <linux/spi/spi.h>
++
++#define AD7949_MASK_CHANNEL_SEL		GENMASK(9, 7)
++#define AD7949_MASK_TOTAL		GENMASK(13, 0)
++#define AD7949_OFFSET_CHANNEL_SEL	7
++#define AD7949_CFG_READ_BACK		0x1
++#define AD7949_CFG_REG_SIZE_BITS	14
++
++enum {
++	ID_AD7949 = 0,
++	ID_AD7682,
++	ID_AD7689,
++};
++
++struct ad7949_adc_spec {
++	u8 num_channels;
++	u8 resolution;
++};
++
++static const struct ad7949_adc_spec ad7949_adc_spec[] = {
++	[ID_AD7949]  = { .num_channels = 8, .resolution = 14 },
++	[ID_AD7682] = { .num_channels = 4, .resolution = 16 },
++	[ID_AD7689] = { .num_channels = 8, .resolution = 16 },
++};
++
++/**
++ * struct ad7949_adc_chip - AD ADC chip
++ * @lock: protects write sequences
++ * @vref: regulator generating Vref
++ * @iio_dev: reference to iio structure
++ * @spi: reference to spi structure
++ * @resolution: resolution of the chip
++ * @cfg: copy of the configuration register
++ * @current_channel: current channel in use
++ * @buffer: buffer to send / receive data to / from device
++ */
++struct ad7949_adc_chip {
++	struct mutex lock;
++	struct regulator *vref;
++	struct iio_dev *indio_dev;
++	struct spi_device *spi;
++	u8 resolution;
++	u16 cfg;
++	unsigned int current_channel;
++	u32 buffer ____cacheline_aligned;
++};
++
++static bool ad7949_spi_cfg_is_read_back(struct ad7949_adc_chip *ad7949_adc)
++{
++	if (!(ad7949_adc->cfg & AD7949_CFG_READ_BACK))
++		return true;
++
++	return false;
++}
++
++static int ad7949_spi_bits_per_word(struct ad7949_adc_chip *ad7949_adc)
++{
++	int ret = ad7949_adc->resolution;
++
++	if (ad7949_spi_cfg_is_read_back(ad7949_adc))
++		ret += AD7949_CFG_REG_SIZE_BITS;
++
++	return ret;
++}
++
++static int ad7949_spi_write_cfg(struct ad7949_adc_chip *ad7949_adc, u16 val,
++				u16 mask)
++{
++	int ret;
++	int bits_per_word = ad7949_spi_bits_per_word(ad7949_adc);
++	int shift = bits_per_word - AD7949_CFG_REG_SIZE_BITS;
++	struct spi_message msg;
++	struct spi_transfer tx[] = {
++		{
++			.tx_buf = &ad7949_adc->buffer,
++			.len = 4,
++			.bits_per_word = bits_per_word,
++		},
++	};
++
++	ad7949_adc->cfg = (val & mask) | (ad7949_adc->cfg & ~mask);
++	ad7949_adc->buffer = ad7949_adc->cfg << shift;
++	spi_message_init(&msg);
++	spi_message_add_tail(&tx[0], &msg);
++	ret = spi_sync(ad7949_adc->spi, &msg);
++
++	/* This delay is to avoid a new request before the required time to
++	 * send a new command to the device
++	 */ 
++	udelay(2);
++	return ret;
++}
++
++static int ad7949_spi_read_channel(struct ad7949_adc_chip *ad7949_adc, int *val,
++				   unsigned int channel)
++{
++	int ret;
++	int bits_per_word = ad7949_spi_bits_per_word(ad7949_adc);
++	int mask = GENMASK(ad7949_adc->resolution, 0);
++	struct spi_message msg;
++	struct spi_transfer tx[] = {
++		{
++			.rx_buf = &ad7949_adc->buffer,
++			.len = 4,
++			.bits_per_word = bits_per_word,
++		},
++	};
++
++	ret = ad7949_spi_write_cfg(ad7949_adc,
++				   channel << AD7949_OFFSET_CHANNEL_SEL,
++				   AD7949_MASK_CHANNEL_SEL);
++	if (ret)
++		return ret;
++
++	ad7949_adc->buffer = 0;
++	spi_message_init(&msg);
++	spi_message_add_tail(&tx[0], &msg);
++	ret = spi_sync(ad7949_adc->spi, &msg);
++	if (ret)
++		return ret;
++
++	/* This delay is to avoid a new request before the required time to
++	 * send a new command to the device
++	 */ 
++	udelay(2);
++
++	ad7949_adc->current_channel = channel;
++
++	if (ad7949_spi_cfg_is_read_back(ad7949_adc))
++		*val = (ad7949_adc->buffer >> AD7949_CFG_REG_SIZE_BITS) & mask;
++	else
++		*val = ad7949_adc->buffer & mask;
++
++	return 0;
++}
++
++#define AD7949_ADC_CHANNEL(chan) {				\
++	.type = IIO_VOLTAGE,					\
++	.indexed = 1,						\
++	.channel = (chan),					\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++}
++
++static const struct iio_chan_spec ad7949_adc_channels[] = {
++	AD7949_ADC_CHANNEL(0),
++	AD7949_ADC_CHANNEL(1),
++	AD7949_ADC_CHANNEL(2),
++	AD7949_ADC_CHANNEL(3),
++	AD7949_ADC_CHANNEL(4),
++	AD7949_ADC_CHANNEL(5),
++	AD7949_ADC_CHANNEL(6),
++	AD7949_ADC_CHANNEL(7),
++};
++
++static int ad7949_spi_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val, int *val2, long mask)
++{
++	struct ad7949_adc_chip *ad7949_adc = iio_priv(indio_dev);
++	int ret;
++
++	if (!val)
++		return -EINVAL;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		mutex_lock(&ad7949_adc->lock);
++		ret = ad7949_spi_read_channel(ad7949_adc, val, chan->channel);
++		mutex_unlock(&ad7949_adc->lock);
++
++		if (ret < 0)
++			return ret;
++
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_SCALE:
++		ret = regulator_get_voltage(ad7949_adc->vref);
++		if (ret < 0)
++			return ret;
++
++		*val = ret / 5000;
++		return IIO_VAL_INT;
++	}
++
++	return -EINVAL;
++}
++
++static int ad7949_spi_reg_access(struct iio_dev *indio_dev,
++			unsigned int reg, unsigned int writeval,
++			unsigned int *readval)
++{
++	struct ad7949_adc_chip *ad7949_adc = iio_priv(indio_dev);
++	int ret = 0;
++
++	if (readval)
++		*readval = ad7949_adc->cfg;
++	else
++		ret = ad7949_spi_write_cfg(ad7949_adc,
++			writeval & AD7949_MASK_TOTAL, AD7949_MASK_TOTAL);
++
++	return ret;
++}
++
++static const struct iio_info ad7949_spi_info = {
++	.read_raw = ad7949_spi_read_raw,
++	.debugfs_reg_access = ad7949_spi_reg_access,
++};
++
++static int ad7949_spi_init(struct ad7949_adc_chip *ad7949_adc)
++{
++	int ret;
++	int val;
++
++	/* Sequencer disabled, CFG readback disabled, IN0 as default channel */
++	ad7949_adc->current_channel = 0;
++	ret = ad7949_spi_write_cfg(ad7949_adc, 0x3C79, AD7949_MASK_TOTAL);
++
++	/* Do two dummy conversions to apply the first configuration setting.
++	 * Required only after the start up of the device.
++	 */
++	ad7949_spi_read_channel(ad7949_adc, &val, ad7949_adc->current_channel);
++	ad7949_spi_read_channel(ad7949_adc, &val, ad7949_adc->current_channel);
++	return ret;
++}
++
++static int ad7949_spi_probe(struct spi_device *spi)
++{
++	struct device *dev = &spi->dev;
++	const struct ad7949_adc_spec *spec;
++	struct ad7949_adc_chip *ad7949_adc;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*ad7949_adc));
++	if (!indio_dev) {
++		dev_err(dev, "can not allocate iio device\n");
++		return -ENOMEM;
++	}
++
++	spi->max_speed_hz = 33000000;
++	spi->mode = SPI_MODE_0;
++	spi->bits_per_word = 8;
++	spi_setup(spi);
++
++	indio_dev->dev.parent = dev;
++	indio_dev->dev.of_node = dev->of_node;
++	indio_dev->info = &ad7949_spi_info;
++	indio_dev->name = spi_get_device_id(spi)->name;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = ad7949_adc_channels;
++	spi_set_drvdata(spi, indio_dev);
++
++	ad7949_adc = iio_priv(indio_dev);
++	ad7949_adc->indio_dev = indio_dev;
++	ad7949_adc->spi = spi;
++
++	spec = &ad7949_adc_spec[spi_get_device_id(spi)->driver_data];
++	indio_dev->num_channels = spec->num_channels;
++	ad7949_adc->resolution = spec->resolution;
++
++	ad7949_adc->vref = devm_regulator_get(dev, "vref");
++	if (IS_ERR(ad7949_adc->vref)) {
++		dev_err(dev, "fail to request regulator\n");
++		return PTR_ERR(ad7949_adc->vref);
++	}
++
++	ret = regulator_enable(ad7949_adc->vref);
++	if (ret < 0) {
++		dev_err(dev, "fail to enable regulator\n");
++		goto err_regulator;
++	}
++
++	mutex_init(&ad7949_adc->lock);
++
++	ret = ad7949_spi_init(ad7949_adc);
++	if (ret) {
++		dev_err(dev, "enable to init this device: %d\n", ret);
++		goto err;
++	}
++
++	ret = iio_device_register(indio_dev);
++	if (ret) {
++		dev_err(dev, "fail to register iio device: %d\n", ret);
++		goto err;
++	}
++
++	return 0;
++
++err:
++	mutex_destroy(&ad7949_adc->lock);
++	regulator_disable(ad7949_adc->vref);
++err_regulator:
++	return ret;
++}
++
++static int ad7949_spi_remove(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev = spi_get_drvdata(spi);
++	struct ad7949_adc_chip *ad7949_adc = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++	mutex_destroy(&ad7949_adc->lock);
++	regulator_disable(ad7949_adc->vref);
++
++	return 0;
++}
++
++#ifdef CONFIG_OF
++static const struct of_device_id ad7949_spi_of_id[] = {
++	{ .compatible = "ad7949" },
++	{ .compatible = "ad7682" },
++	{ .compatible = "ad7689" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, ad7949_spi_of_id);
++#endif
++
++static const struct spi_device_id ad7949_spi_id[] = {
++	{ "ad7949", ID_AD7949  },
++	{ "ad7682", ID_AD7682 },
++	{ "ad7689", ID_AD7689 },
++	{ }
++};
++MODULE_DEVICE_TABLE(spi, ad7949_spi_id);
++
++static struct spi_driver ad7949_spi_driver = {
++	.driver = {
++		.name		= "ad7949",
++		.of_match_table	= of_match_ptr(ad7949_spi_of_id),
++	},
++	.probe	  = ad7949_spi_probe,
++	.remove   = ad7949_spi_remove,
++	.id_table = ad7949_spi_id,
++};
++module_spi_driver(ad7949_spi_driver);
++
++MODULE_AUTHOR("Charles-Antoine Couret <charles-antoine.couret@essensium.com>");
++MODULE_DESCRIPTION("Analog Devices 14/16-bit 8-channel ADC driver");
++MODULE_LICENSE("GPL v2");
+-- 
+2.17.2
