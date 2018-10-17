@@ -1,37 +1,64 @@
-Return-Path: <SRS0=0nC8=M5=metafoo.de=lars@kernel.org>
+Return-Path: <sashal@kernel.org>
+Date: Wed, 17 Oct 2018 10:58:23 -0400
+From: Sasha Levin <sashal@kernel.org>
+To: Nishad Kamdar <nishadkamdar@gmail.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org, outreachy-kernel@googlegroups.com
 Subject: Re: [PATCH v2] staging: iio: ad7816: Switch to the gpio descriptor
  interface
-To: Nishad Kamdar <nishadkamdar@gmail.com>
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-iio@vger.kernel.org,
- devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
- outreachy-kernel@googlegroups.com
+Message-ID: <20181017145823.GC135013@sasha-vm>
 References: <20181017144716.GA11485@nishad>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <5b077abc-e3c2-6183-4341-627d6edf09ee@metafoo.de>
-Date: Wed, 17 Oct 2018 16:49:42 +0200
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; format=flowed
 In-Reply-To: <20181017144716.GA11485@nishad>
-Content-Type: text/plain; charset=utf-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On 10/17/2018 04:47 PM, Nishad Kamdar wrote:
-> Use the gpiod interface for rdwr_pin, convert_pin and busy_pin
-> instead of the deprecated old non-descriptor interface.
-> 
-> Signed-off-by: Nishad Kamdar <nishadkamdar@gmail.com>
+On Wed, Oct 17, 2018 at 08:17:20PM +0530, Nishad Kamdar wrote:
+>+	chip->rdwr_pin = devm_gpiod_get(&spi_dev->dev, "rdwr", GPIOD_IN);
+>+	if (IS_ERR(chip->rdwr_pin)) {
+>+		ret = PTR_ERR(chip->rdwr_pin);
+>+		dev_err(&spi_dev->dev, "Failed to request rdwr GPIO: %d\n",
+>+			ret);
+> 		return ret;
+> 	}
+>-	gpio_direction_input(chip->rdwr_pin);
+>-	ret = devm_gpio_request(&spi_dev->dev, chip->convert_pin,
+>-				spi_get_device_id(spi_dev)->name);
+>-	if (ret) {
+>-		dev_err(&spi_dev->dev, "Fail to request convert gpio PIN %d.\n",
+>-			chip->convert_pin);
+>+	chip->convert_pin = devm_gpiod_get(&spi_dev->dev, "convert", GPIOD_IN);
+>+	if (IS_ERR(chip->convert_pin)) {
+>+		ret = PTR_ERR(chip->convert_pin);
+>+		dev_err(&spi_dev->dev, "Failed to request convert GPIO: %d\n",
+>+			ret);
+> 		return ret;
+> 	}
+>-	gpio_direction_input(chip->convert_pin);
+>-	ret = devm_gpio_request(&spi_dev->dev, chip->busy_pin,
+>-				spi_get_device_id(spi_dev)->name);
+>-	if (ret) {
+>-		dev_err(&spi_dev->dev, "Fail to request busy gpio PIN %d.\n",
+>-			chip->busy_pin);
+>+	chip->busy_pin = devm_gpiod_get(&spi_dev->dev, "busy", GPIOD_IN);
+>+	if (IS_ERR(chip->busy_pin)) {
+>+		ret = PTR_ERR(chip->busy_pin);
+>+		dev_err(&spi_dev->dev, "Failed to request busy GPIO: %d\n",
+>+			ret);
+> 		return ret;
+> 	}
 
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Hm, from what I can tell devm_gpio_request() is allocating some memory,
+which makes this a series of 4 allocations.
 
-Thanks.
+What happens if the fourth allocation fails? Do we leak the first three?
 
-> ---
-> Changes in v2:
->  - Correct the error messages as pin number being showed
->    has now been replaced by error code.
-> ---
->  drivers/staging/iio/adc/ad7816.c | 80 ++++++++++++++------------------
->  1 file changed, 34 insertions(+), 46 deletions(-)
-> 
+--
+Thanks,
+Sasha
