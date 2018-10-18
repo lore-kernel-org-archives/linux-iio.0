@@ -1,69 +1,88 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:54506 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727266AbeJUW4M (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 21 Oct 2018 18:56:12 -0400
-Date: Sun, 21 Oct 2018 15:41:33 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
-Subject: Re: [PATCH v2] Staging iio: adc: Match parenthesis alignment
-Message-ID: <20181021154133.44cf95ab@archlinux>
-In-Reply-To: <20181018013147.15352-1-marcelo.schmitt1@gmail.com>
-References: <20181018013147.15352-1-marcelo.schmitt1@gmail.com>
+Received: from mail-yb1-f193.google.com ([209.85.219.193]:40007 "EHLO
+        mail-yb1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727348AbeJRMbE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 18 Oct 2018 08:31:04 -0400
+Received: by mail-yb1-f193.google.com with SMTP id w7-v6so11326651ybm.7
+        for <linux-iio@vger.kernel.org>; Wed, 17 Oct 2018 21:32:02 -0700 (PDT)
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com. [209.85.219.169])
+        by smtp.gmail.com with ESMTPSA id y206-v6sm4973842ywg.57.2018.10.17.21.32.00
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 17 Oct 2018 21:32:00 -0700 (PDT)
+Received: by mail-yb1-f169.google.com with SMTP id k132-v6so185705ybc.2
+        for <linux-iio@vger.kernel.org>; Wed, 17 Oct 2018 21:32:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <20181017075242.21790-1-henryhsu@chromium.org> <13883852.6N9L7C0n48@avalon>
+ <CAAFQd5B+4x4aSUywtdukwgUmQNQsQsbK4sjedNphwNFteaTscg@mail.gmail.com> <2355808.GKno8i6Ks9@avalon>
+In-Reply-To: <2355808.GKno8i6Ks9@avalon>
+From: Tomasz Figa <tfiga@chromium.org>
+Date: Thu, 18 Oct 2018 13:31:48 +0900
+Message-ID: <CAAFQd5AL2CnnWLk+i133RRa36HTa0baFkezRhpTXf9YP0DSF1Q@mail.gmail.com>
+Subject: Re: [PATCH] media: uvcvideo: Add boottime clock support
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        gwendal@chromium.org, amstan@chromium.org
+Cc: Heng-Ruey Hsu <henryhsu@chromium.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Ricky Liang <jcliang@chromium.org>, linux-iio@vger.kernel.org,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 17 Oct 2018 22:31:47 -0300
-Marcelo Schmitt <marcelo.schmitt1@gmail.com> wrote:
+On Thu, Oct 18, 2018 at 5:50 AM Laurent Pinchart
+<laurent.pinchart@ideasonboard.com> wrote:
+>
+> Hi Tomasz,
+>
+> On Wednesday, 17 October 2018 11:28:52 EEST Tomasz Figa wrote:
+> > On Wed, Oct 17, 2018 at 5:02 PM Laurent Pinchart wrote:
+> > > On Wednesday, 17 October 2018 10:52:42 EEST Heng-Ruey Hsu wrote:
+> > >> Android requires camera timestamps to be reported with
+> > >> CLOCK_BOOTTIME to sync timestamp with other sensor sources.
+> > >
+> > > What's the rationale behind this, why can't CLOCK_MONOTONIC work ? If the
+> > > monotonic clock has shortcomings that make its use impossible for proper
+> > > synchronization, then we should consider switching to CLOCK_BOOTTIME
+> > > globally in V4L2, not in selected drivers only.
+> >
+> > CLOCK_BOOTTIME includes the time spent in suspend, while
+> > CLOCK_MONOTONIC doesn't. I can imagine the former being much more
+> > useful for anything that cares about the actual, long term, time
+> > tracking. Especially important since suspend is a very common event on
+> > Android and doesn't stop the time flow there, i.e. applications might
+> > wake up the device to perform various tasks at necessary times.
+>
+> Sure, but this patch mentions timestamp synchronization with other sensors,
+> and from that point of view, I'd like to know what is wrong with the monotonic
+> clock if all devices use it.
 
-> Change close parenthesis alignment to match respective open parenthesis at
-> iio/drivers/staging/iio/adc/ad7606.c line 379.
-> This makes the file more compliant with the preferred coding style for the
-> linux kernel.
-Hi Marcelo,
+AFAIK the sensors mentioned there are not camera sensors, but rather
+things we normally put under IIO, e.g. accelerometers, gyroscopes and
+so on. I'm not sure how IIO deals with timestamps, but Android seems
+to operate in the CLOCK_BOTTIME domain. Let me add some IIO folks.
 
-Nice cleanup and applied to the togreg branch of iio.git and pushed
-out as testing for the autobuilders to play with it.
-(basically this lets 0-day run a whole bunch of build tests on
-it before I push it out in a form that others can rely on not changing)
+Gwendal, Alexandru, do you think you could shed some light on how we
+handle IIO sensors timestamps across the kernel, Chrome OS and
+Android?
 
-Patch naming is one of those things that is very inconsistent
-in different areas of the kernel.   I take the view that if I'm going
-to be fussy I'll fix it up myself when applying if that is the only
-thing I'm otherwise going to comment on.
+>
+> > Generally, I'd see a V4L2_BUF_FLAG_TIMESTAMP_BOOTTIME flag being added
+> > and user space being given choice to select the time stamp base it
+> > needs, perhaps by setting the flag in v4l2_buffer struct at QBUF time?
+>
+> I would indeed prefer a mechanism specified at the V4L2 API level, with an
+> implementation in the V4L2 core, over a module parameter. If the goal is to
+> use the boottime clock for synchronization purpose, we need to make sure that
+> all drivers will support it correctly. Patching drivers one by one doesn't
+> really scale.
 
-However, definite preference for the name of the driver being in there
-somewhere!  When I saw this description I thought we were looking
-at a cleanup of the whole directory rather than the single driver
-you have here.
+Agreed.
 
-Thanks,
-
-Jonathan
-
-
-> 
-> Signed-of-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-> ---
->  drivers/staging/iio/adc/ad7606.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7606.c b/drivers/staging/iio/adc/ad7606.c
-> index 0b728b6ea135..230faae38c12 100644
-> --- a/drivers/staging/iio/adc/ad7606.c
-> +++ b/drivers/staging/iio/adc/ad7606.c
-> @@ -376,7 +376,7 @@ static int ad7606_request_gpios(struct ad7606_state *st)
->  		return 0;
->  
->  	st->gpio_os = devm_gpiod_get_array_optional(dev, "oversampling-ratio",
-> -			GPIOD_OUT_LOW);
-> +						    GPIOD_OUT_LOW);
->  	return PTR_ERR_OR_ZERO(st->gpio_os);
->  }
->  
+Best regards,
+Tomasz
