@@ -1,47 +1,82 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-eopbgr730089.outbound.protection.outlook.com ([40.107.73.89]:19720
-        "EHLO NAM05-DM3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727337AbeJROwt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 18 Oct 2018 10:52:49 -0400
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "giuliano.belinassi@gmail.com" <giuliano.belinassi@gmail.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC: "renatogeh@gmail.com" <renatogeh@gmail.com>,
+Received: from mail-qt1-f174.google.com ([209.85.160.174]:45369 "EHLO
+        mail-qt1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727439AbeJRTm2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 18 Oct 2018 15:42:28 -0400
+Received: by mail-qt1-f174.google.com with SMTP id e10-v6so33751953qtq.12
+        for <linux-iio@vger.kernel.org>; Thu, 18 Oct 2018 04:41:50 -0700 (PDT)
+From: Giuliano Belinassi <giuliano.belinassi@gmail.com>
+Date: Thu, 18 Oct 2018 08:41:45 -0300
+To: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+Cc: "giuliano.belinassi@gmail.com" <giuliano.belinassi@gmail.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "renatogeh@gmail.com" <renatogeh@gmail.com>,
         "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>
 Subject: Re: Questions related to some drivers
-Date: Thu, 18 Oct 2018 06:53:12 +0000
-Message-ID: <d0fc5a236a82d03fdbe4d05eb27ff3bd3ac36958.camel@analog.com>
+Message-ID: <20181018114145.amqff57holmecxpo@smtp.gmail.com>
 References: <20181017190028.wu2kgsooj64beh7o@smtp.gmail.com>
-In-Reply-To: <20181017190028.wu2kgsooj64beh7o@smtp.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+ <d0fc5a236a82d03fdbe4d05eb27ff3bd3ac36958.camel@analog.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <d0fc5a236a82d03fdbe4d05eb27ff3bd3ac36958.camel@analog.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-SGV5LA0KDQpUaGFua3MgZm9yIHRoZSBub3RpZmljYXRpb24uDQoNClllcywgYWxsIHRoZXNlIDMg
-ZHJpdmVycyBzaG91bGQgYmUgbW92ZWQgb3V0IG9mIHN0YWdpbmcuDQoNCldlIHdlcmUgcGxhbm5p
-bmcgdG8gc3RhcnQgd29ya2luZyBvbiB0aGVtICh0byBtb3ZlIHRoZW0gb3V0IG9mIHN0YWdpbmcp
-LA0KYnV0IHByaW9yaXRpZXMgYXJlIHNoaWZ0aW5nIGZyb20gb25lIHdlZWsgdG8gdGhlIG90aGVy
-Lg0KU28sIGlmIHlvdSBndXlzIGhhdmUgdGhlIHRpbWUgYW5kIGFyZSB3aWxsaW5nIHRvIGRvIGl0
-LCBwbGVhc2UgZ28gYWhlYWQsDQphbmQgYWRkIG1lLCBtaWNoYWVsLmhlbm5lcmljaEBhbmFsb2cu
-Y29tIGFuZCBzdGVmYW4ucG9wYUBhbmFsb2cuY29tIHRvIHRoZQ0KQ0Mgd2hlbiBzZW5kaW5nIHBh
-dGNoZXMsIGFuZCB3ZSB3aWxsIGFsc28gdGFrZSBhIGxvb2sgb3ZlciB5b3VyIHBhdGNoZXMuDQoN
-CklmIHlvdSBoYXZlbid0IHRha2VuIGEgbG9vayBhbHJlYWR5LCBmZWVsIGZyZWUgdG8gYWxzbyB0
-YWtlIGEgbG9vayBhdCBvdXINCndpa2k6DQpodHRwczovL3dpa2kuYW5hbG9nLmNvbS9yZXNvdXJj
-ZXMvdG9vbHMtc29mdHdhcmUvbGludXgtZHJpdmVycy1hbGwNCkl0J3MgbW9yZSB0ZWNobmljYWwg
-Zm9yIHRoZSBTVyBzaWRlOyBpdCBtaWdodCBoZWxwIHdpdGggc29tZSBnZW5lcmFsIGluZm8uDQpB
-bmQgdGhlIGRhdGFzaGVldHMgc2hvdWxkIGJlIGF2YWlsYWJsZSBvbiB0aGUgYW5hbG9nLmNvbS88
-cHJvZHVjdF9pZD4NCnBhZ2VzLg0KDQoNClRoYW5rcw0KQWxleA0KDQoNCk9uIFdlZCwgMjAxOC0x
-MC0xNyBhdCAxNjowMCAtMDMwMCwgR2l1bGlhbm8gQmVsaW5hc3NpIHdyb3RlOg0KPiBIZWxsbywN
-Cj4gDQo+IFdlIGFyZSBhIHN0dWRlbnQgZ3JvdXAgYW5kIHdlIHdhbnQgdG8gY29udHJpYnV0ZSB0
-byB0aGUgbGludXgga2VybmVsLiBXZQ0KPiBhcmUgdGhpbmtpbmcgaW4gcHV0IGVmZm9ydCB0byBt
-b3ZlIGEgZHJpdmVyIGZyb20gc3RhZ2luZyB0byB0aGUgbWFpbg0KPiB0cmVlLg0KPiBXZSBsb29r
-ZWQgaW50byB0aHJlZSBkcml2ZXJzOg0KPiAgIA0KPiAgICogYWRjL2FkNzc4MC5jDQo+ICAgKiBh
-ZGMvYWQ3ODE2LmMNCj4gICAqIGltcGVkYW5jZS1hbmFseXplci9hZDU5MzMuYw0KPiANCj4gQXJl
-IHRoZXNlIGRyaXZlcnMgc3RpbGwgYmVpbmcgd29ya2VkIG9uPyBUaGUgbGFzdCBjb21taXQgcmVm
-ZXJlbmNpbmcNCj4gdGhlc2UNCj4gZHJpdmVycyB3ZXJlIG9uIG1hcmNoIDIwMTgsIGJ1dCB0aGV5
-IGFyZSBzdGlsbCBpbiBzdGFnaW5nIHNpbmNlIDIwMTAuDQo+IA0KPiBXZSBhbHJlYWR5IGtub3cg
-dGhhdCB3ZSBoYXZlIHRvIGNvbnZlcnQgZnJvbSB0aGUgb2xkIGFwaSB0byB0aGUgbmV3IG9uZS4N
-Cj4gSXQgaXMNCj4gT0sgZm9yIHVzIHRvIHdvcmsgb24gdGhpcz8gSXMgdGhlcmUgc29tZXRoaW5n
-IGVsc2Ugd2UgY2FuIGRvPw0KPiANCj4gVGhhbmsgeW91DQo+IA0K
+On 10/18, Ardelean, Alexandru wrote:
+
+Thank you for the reply :-). We will put effort into at least one driver to
+remove it from staging.
+
+> Hey,
+> 
+> Thanks for the notification.
+> 
+> Yes, all these 3 drivers should be moved out of staging.
+> 
+> We were planning to start working on them (to move them out of staging),
+> but priorities are shifting from one week to the other.
+> So, if you guys have the time and are willing to do it, please go ahead,
+> and add me, michael.hennerich@analog.com and stefan.popa@analog.com to the
+> CC when sending patches, and we will also take a look over your patches.
+> 
+> If you haven't taken a look already, feel free to also take a look at our
+> wiki:
+> https://wiki.analog.com/resources/tools-software/linux-drivers-all
+> It's more technical for the SW side; it might help with some general info.
+> And the datasheets should be available on the analog.com/<product_id>
+> pages.
+> 
+> 
+> Thanks
+> Alex
+> 
+> 
+> On Wed, 2018-10-17 at 16:00 -0300, Giuliano Belinassi wrote:
+> > Hello,
+> > 
+> > We are a student group and we want to contribute to the linux kernel. We
+> > are thinking in put effort to move a driver from staging to the main
+> > tree.
+> > We looked into three drivers:
+> >   
+> >   * adc/ad7780.c
+> >   * adc/ad7816.c
+> >   * impedance-analyzer/ad5933.c
+> > 
+> > Are these drivers still being worked on? The last commit referencing
+> > these
+> > drivers were on march 2018, but they are still in staging since 2010.
+> > 
+> > We already know that we have to convert from the old api to the new one.
+> > It is
+> > OK for us to work on this? Is there something else we can do?
+> > 
+> > Thank you
+> > 
+> 
+> -- 
+> You received this message because you are subscribed to the Google Groups "Kernel USP" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to kernel-usp+unsubscribe@googlegroups.com.
+> To post to this group, send email to kernel-usp@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/kernel-usp/d0fc5a236a82d03fdbe4d05eb27ff3bd3ac36958.camel%40analog.com.
+> For more options, visit https://groups.google.com/d/optout.
