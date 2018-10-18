@@ -1,26 +1,24 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtpo.poczta.interia.pl ([217.74.65.157]:42092 "EHLO
-        smtpo.poczta.interia.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726173AbeJRTb2 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 18 Oct 2018 15:31:28 -0400
-Date: Thu, 18 Oct 2018 13:31:09 +0200
+Return-Path: <SRS0=KjQi=M6=poczta.fm=sst@kernel.org>
+Date: Thu, 18 Oct 2018 13:49:15 +0200
 From: Slawomir Stepien <sst@poczta.fm>
 To: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-        knaack.h@gmx.de, pmeerw@pmeerw.net
+	knaack.h@gmx.de, pmeerw@pmeerw.net
 Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org
-Subject: [PATCH 1/1] staging: iio: adc: ad7280a: use crc8.h API to build crc
- table
-Message-ID: <20181018113108.GA26916@x220.localdomain>
+Subject: [PATCH v2 1/1] staging: iio: adc: ad7280a: use crc8.h API to build
+ crc table
+Message-ID: <20181018114915.GA30276@x220.localdomain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
 The custom build function ad7280_crc8_build_table is not needed. The
-crc8_populate_msb funtion from linux/crc8.h will build the same crc
+crc8_populate_msb function from linux/crc8.h will build the same crc
 table.
 
 Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+---
+Since v1:
+* Fix typo in commit message.
 ---
  drivers/staging/iio/adc/ad7280a.c | 24 +++---------------------
  1 file changed, 3 insertions(+), 21 deletions(-)
