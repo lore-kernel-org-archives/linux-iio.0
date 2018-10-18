@@ -1,28 +1,30 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yb1-f193.google.com ([209.85.219.193]:40007 "EHLO
-        mail-yb1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727348AbeJRMbE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 18 Oct 2018 08:31:04 -0400
-Received: by mail-yb1-f193.google.com with SMTP id w7-v6so11326651ybm.7
-        for <linux-iio@vger.kernel.org>; Wed, 17 Oct 2018 21:32:02 -0700 (PDT)
-Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com. [209.85.219.169])
-        by smtp.gmail.com with ESMTPSA id y206-v6sm4973842ywg.57.2018.10.17.21.32.00
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:34548 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726269AbeJSBa1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 18 Oct 2018 21:30:27 -0400
+Received: by mail-oi1-f195.google.com with SMTP id v69-v6so24695280oif.1
+        for <linux-iio@vger.kernel.org>; Thu, 18 Oct 2018 10:28:29 -0700 (PDT)
+Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com. [209.85.167.180])
+        by smtp.gmail.com with ESMTPSA id y63-v6sm6880996oia.39.2018.10.18.10.28.27
         for <linux-iio@vger.kernel.org>
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 17 Oct 2018 21:32:00 -0700 (PDT)
-Received: by mail-yb1-f169.google.com with SMTP id k132-v6so185705ybc.2
-        for <linux-iio@vger.kernel.org>; Wed, 17 Oct 2018 21:32:00 -0700 (PDT)
+        Thu, 18 Oct 2018 10:28:27 -0700 (PDT)
+Received: by mail-oi1-f180.google.com with SMTP id k64-v6so24637507oia.13
+        for <linux-iio@vger.kernel.org>; Thu, 18 Oct 2018 10:28:27 -0700 (PDT)
 MIME-Version: 1.0
+In-Reply-To: <CAAFQd5AL2CnnWLk+i133RRa36HTa0baFkezRhpTXf9YP0DSF1Q@mail.gmail.com>
 References: <20181017075242.21790-1-henryhsu@chromium.org> <13883852.6N9L7C0n48@avalon>
- <CAAFQd5B+4x4aSUywtdukwgUmQNQsQsbK4sjedNphwNFteaTscg@mail.gmail.com> <2355808.GKno8i6Ks9@avalon>
-In-Reply-To: <2355808.GKno8i6Ks9@avalon>
-From: Tomasz Figa <tfiga@chromium.org>
-Date: Thu, 18 Oct 2018 13:31:48 +0900
-Message-ID: <CAAFQd5AL2CnnWLk+i133RRa36HTa0baFkezRhpTXf9YP0DSF1Q@mail.gmail.com>
+ <CAAFQd5B+4x4aSUywtdukwgUmQNQsQsbK4sjedNphwNFteaTscg@mail.gmail.com>
+ <2355808.GKno8i6Ks9@avalon> <CAAFQd5AL2CnnWLk+i133RRa36HTa0baFkezRhpTXf9YP0DSF1Q@mail.gmail.com>
+From: Alexandru M Stan <amstan@chromium.org>
+Date: Thu, 18 Oct 2018 10:28:06 -0700
+Message-ID: <CAHNYxRwbSSp02Zr4a1z5gh0q6cHUUDnZCqRQU7QtP8LMe3Jp2A@mail.gmail.com>
 Subject: Re: [PATCH] media: uvcvideo: Add boottime clock support
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        gwendal@chromium.org, amstan@chromium.org
-Cc: Heng-Ruey Hsu <henryhsu@chromium.org>,
+To: Tomasz Figa <tfiga@chromium.org>
+Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Heng-Ruey Hsu <henryhsu@chromium.org>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Linux Media Mailing List <linux-media@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
@@ -35,54 +37,56 @@ Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Oct 18, 2018 at 5:50 AM Laurent Pinchart
-<laurent.pinchart@ideasonboard.com> wrote:
+On Wed, Oct 17, 2018 at 9:31 PM, Tomasz Figa <tfiga@chromium.org> wrote:
+> On Thu, Oct 18, 2018 at 5:50 AM Laurent Pinchart
+> <laurent.pinchart@ideasonboard.com> wrote:
+>>
+>> Hi Tomasz,
+>>
+>> On Wednesday, 17 October 2018 11:28:52 EEST Tomasz Figa wrote:
+>> > On Wed, Oct 17, 2018 at 5:02 PM Laurent Pinchart wrote:
+>> > > On Wednesday, 17 October 2018 10:52:42 EEST Heng-Ruey Hsu wrote:
+>> > >> Android requires camera timestamps to be reported with
+>> > >> CLOCK_BOOTTIME to sync timestamp with other sensor sources.
+>> > >
+>> > > What's the rationale behind this, why can't CLOCK_MONOTONIC work ? If the
+>> > > monotonic clock has shortcomings that make its use impossible for proper
+>> > > synchronization, then we should consider switching to CLOCK_BOOTTIME
+>> > > globally in V4L2, not in selected drivers only.
+>> >
+>> > CLOCK_BOOTTIME includes the time spent in suspend, while
+>> > CLOCK_MONOTONIC doesn't. I can imagine the former being much more
+>> > useful for anything that cares about the actual, long term, time
+>> > tracking. Especially important since suspend is a very common event on
+>> > Android and doesn't stop the time flow there, i.e. applications might
+>> > wake up the device to perform various tasks at necessary times.
+>>
+>> Sure, but this patch mentions timestamp synchronization with other sensors,
+>> and from that point of view, I'd like to know what is wrong with the monotonic
+>> clock if all devices use it.
 >
-> Hi Tomasz,
+> AFAIK the sensors mentioned there are not camera sensors, but rather
+> things we normally put under IIO, e.g. accelerometers, gyroscopes and
+> so on. I'm not sure how IIO deals with timestamps, but Android seems
+> to operate in the CLOCK_BOTTIME domain. Let me add some IIO folks.
 >
-> On Wednesday, 17 October 2018 11:28:52 EEST Tomasz Figa wrote:
-> > On Wed, Oct 17, 2018 at 5:02 PM Laurent Pinchart wrote:
-> > > On Wednesday, 17 October 2018 10:52:42 EEST Heng-Ruey Hsu wrote:
-> > >> Android requires camera timestamps to be reported with
-> > >> CLOCK_BOOTTIME to sync timestamp with other sensor sources.
-> > >
-> > > What's the rationale behind this, why can't CLOCK_MONOTONIC work ? If the
-> > > monotonic clock has shortcomings that make its use impossible for proper
-> > > synchronization, then we should consider switching to CLOCK_BOOTTIME
-> > > globally in V4L2, not in selected drivers only.
-> >
-> > CLOCK_BOOTTIME includes the time spent in suspend, while
-> > CLOCK_MONOTONIC doesn't. I can imagine the former being much more
-> > useful for anything that cares about the actual, long term, time
-> > tracking. Especially important since suspend is a very common event on
-> > Android and doesn't stop the time flow there, i.e. applications might
-> > wake up the device to perform various tasks at necessary times.
->
-> Sure, but this patch mentions timestamp synchronization with other sensors,
-> and from that point of view, I'd like to know what is wrong with the monotonic
-> clock if all devices use it.
+> Gwendal, Alexandru, do you think you could shed some light on how we
+> handle IIO sensors timestamps across the kernel, Chrome OS and
+> Android?
 
-AFAIK the sensors mentioned there are not camera sensors, but rather
-things we normally put under IIO, e.g. accelerometers, gyroscopes and
-so on. I'm not sure how IIO deals with timestamps, but Android seems
-to operate in the CLOCK_BOTTIME domain. Let me add some IIO folks.
+On our devices of interest have a specialized "sensor" that comes via
+IIO (from the EC, cros-ec-ring driver) that can be used to more
+accurately timestamp each frame (since it's recorded with very low
+jitter by a realtime-ish OS). In some high level userspace thing
+(specifically the Android Camera HAL) we try to pick the best
+timestamp from the IIO, whatever's closest to what the V4L stuff gives
+us.
 
-Gwendal, Alexandru, do you think you could shed some light on how we
-handle IIO sensors timestamps across the kernel, Chrome OS and
-Android?
+I guess the Android convention is for sensor timestamps to be in
+CLOCK_BOOTTIME (maybe because it likes sleeping so much). There's
+probably no advantage to using one over the other, but the important
+thing is that they have to be the same, otherwise the closest match
+logic would fail.
 
->
-> > Generally, I'd see a V4L2_BUF_FLAG_TIMESTAMP_BOOTTIME flag being added
-> > and user space being given choice to select the time stamp base it
-> > needs, perhaps by setting the flag in v4l2_buffer struct at QBUF time?
->
-> I would indeed prefer a mechanism specified at the V4L2 API level, with an
-> implementation in the V4L2 core, over a module parameter. If the goal is to
-> use the boottime clock for synchronization purpose, we need to make sure that
-> all drivers will support it correctly. Patching drivers one by one doesn't
-> really scale.
-
-Agreed.
-
-Best regards,
-Tomasz
+Regards,
+Alexandru Stan
