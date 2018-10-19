@@ -1,167 +1,150 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:45063 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725768AbeJWJAo (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 23 Oct 2018 05:00:44 -0400
-Date: Mon, 22 Oct 2018 19:39:49 -0500
-From: Rob Herring <robh@kernel.org>
-To: Stefan Popa <stefan.popa@analog.com>
-Cc: jic23@kernel.org, mark.rutland@arm.com, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, Michael.Hennerich@analog.com,
-        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/3] dt-bindings: iio: adc: Add docs for ad7124
-Message-ID: <20181023003949.GA24213@bogus>
-References: <1539935265-8904-1-git-send-email-stefan.popa@analog.com>
+Received: from smtpo.poczta.interia.pl ([217.74.65.157]:40421 "EHLO
+        smtpo.poczta.interia.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726976AbeJTCOw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Oct 2018 22:14:52 -0400
+Date: Fri, 19 Oct 2018 20:08:01 +0200
+From: Slawomir Stepien <sst@poczta.fm>
+To: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+        knaack.h@gmx.de, pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org
+Subject: [PATCH v2 1/1] staging: iio: adc: ad7280a: use devm_* APIs
+Message-ID: <20181019180801.GB20587@x220.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1539935265-8904-1-git-send-email-stefan.popa@analog.com>
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Oct 19, 2018 at 10:47:45AM +0300, Stefan Popa wrote:
-> Add support for Analog Devices AD7124 4-channels and 8-channels ADC.
-> 
-> Signed-off-by: Stefan Popa <stefan.popa@analog.com>
-> ---
-> Changes in v2:
-> 	- Nothing changed.
-> 
->  .../devicetree/bindings/iio/adc/adi,ad7124.txt     | 96 ++++++++++++++++++++++
->  MAINTAINERS                                        |  1 +
->  2 files changed, 97 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7124.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7124.txt b/Documentation/devicetree/bindings/iio/adc/adi,ad7124.txt
-> new file mode 100644
-> index 0000000..77a7b92
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7124.txt
-> @@ -0,0 +1,96 @@
-> +Analog Devices AD7124 ADC device driver
-> +
-> +Required properties for the AD7124:
-> +	- compatible: Must be one of "adi,ad7124-4" or "adi,ad7124-8"
-> +	- reg: SPI chip select number for the device
-> +	- spi-max-frequency: Max SPI frequency to use
-> +		see: Documentation/devicetree/bindings/spi/spi-bus.txt
-> +	- clocks: phandle to the master clock (mclk)
-> +		see: Documentation/devicetree/bindings/clock/clock-bindings.txt
-> +	- clock-names: Must be "mclk".
-> +	- interrupts: IRQ line for the ADC
-> +		see: Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
-> +
-> +	- adi,channels: List of external channels connected to the ADC:
+devm_* APIs are device managed and make code simpler.
 
-It's not clear here that this is a node, not a property. However, I 
-think you can just get rid of this extra level unless you anticipate 
-having other child nodes that aren't channels.
+Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+---
+Since v1:
 
-> +	  Required properties:
-> +		* #address-cells: Must be 2.
-> +		* #size-cells: Must be 0.
-> +
-> +	  The child nodes of this node represent the external channels which are
-> +	  connected to the ADC.
-> +
-> +	  Each child node represents one channel and has the following
-> +	  properties:
-> +		Required properties:
-> +			* reg: Pins the channel is connected to. The first value specifies
-> +			  the positive input pin, the second value the negative input pin.
+* request_threaded_irq -> devm_request_threaded_irq
+---
+ drivers/staging/iio/adc/ad7280a.c | 45 ++++++++++++-------------------
+ 1 file changed, 17 insertions(+), 28 deletions(-)
 
-That sounds more like 2 entries than a 2 cell address.
-
-> +			* adi,channel-number: It can have up to 4 channels on ad7124-4 and
-> +			  8 channels on ad7124-8, numbered from 0 to 15.
-
-Humm, I think the channel number would be more typically what 'reg' 
-defines and then have a custom property to list the pins. There's 
-probably some other multi-channel ADC examples in the tree.
-
-> +
-> +		Optional properties:
-> +			* adi,bipolar: If set the channel is used in bipolar mode.
-
-So boolean type?
-
-> +			* adi,reference-select: Select the reference source to use when
-> +			  converting on the the specific channel. Valid values are:
-> +			  0: REFIN1(+)/REFIN1(−).
-> +			  1: REFIN2(+)/REFIN2(−).
-> +			  3: AVDD
-> +			  If this field is left empty, internal reference is selected.
-> +			* adi,gain: Select the gain when converting on the specific channel.
-> +			  Valid values are: 1, 2, 4, 8, 16, 32, 64, 128.
-> +			  If this field is left empty, gain of 1 is selected.
-> +			* adi,odr-hz: The output data rate can be programmed from:
-> +			  9 to 19200 for full power mode (when the master clock is 614.4 kHz)
-> +			  2 to 4800 for mid power mode (when the master clock is 153.6 kHz)
-> +			  1 to 2400 for low power mode (when the master clock is 76.8 kHz)
-> +			  If this field is left empty, odr of 9 is selected.
-> +
-> +Optional properties:
-> +	- refin1-supply: refin1 supply can be used as reference for conversion.
-> +	- refin2-supply: refin2 supply can be used as reference for conversion.
-> +	- avdd-supply: avdd supply can be used as reference for conversion.
-> +
-> +Example:
-> +	adc@0 {
-> +		compatible = "adi,ad7124-4";
-> +		reg = <0>;
-> +		spi-max-frequency = <5000000>;
-> +		interrupts = <25 2>;
-> +		interrupt-parent = <&gpio>;
-> +		refin1-supply = <&adc_vref>;
-> +		clocks = <&ad7124_mclk>;
-> +		clock-names = "mclk";
-> +
-> +		adi,channels {
-> +			#address-cells = <2>;
-> +			#size-cells = <0>;
-> +
-> +			channel@0 {
-> +				reg = <0 1>;
-> +				adi,channel-number = <0>;
-> +				adi,reference-select = <0>;
-> +				adi,gain = <2>;
-> +				adi,odr-hz = <10>;
-> +			};
-> +
-> +			channel@1 {
-> +				reg = <2 3>;
-> +				adi,bipolar;
-> +				adi,channel-number = <1>;
-> +				adi,reference-select = <0>;
-> +				adi,gain = <4>;
-> +				adi,odr-hz = <50>;
-> +			};
-> +
-> +			channel@2 {
-> +				reg = <4 5>;
-> +				adi,channel-number = <2>;
-> +				adi,gain = <128>;
-> +				adi,odr-hz = <19200>;
-> +			};
-> +
-> +			channel@3 {
-> +				reg = <6 7>;
-> +				adi,channel-number = <3>;
-> +			};
-> +		};
-> +	};
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 3a1bfcb..f2fa508 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -845,6 +845,7 @@ L:	linux-iio@vger.kernel.org
->  W:	http://ez.analog.com/community/linux-device-drivers
->  S:	Supported
->  F:	drivers/iio/adc/ad7124.c
-> +F:	Documentation/devicetree/bindings/iio/adc/adi,ad7124.txt
->  
->  ANALOG DEVICES INC AD9389B DRIVER
->  M:	Hans Verkuil <hans.verkuil@cisco.com>
-> -- 
-> 2.7.4
-> 
+diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
+index b736275c10f5..37a6347f255d 100644
+--- a/drivers/staging/iio/adc/ad7280a.c
++++ b/drivers/staging/iio/adc/ad7280a.c
+@@ -8,7 +8,6 @@
+ 
+ #include <linux/device.h>
+ #include <linux/kernel.h>
+-#include <linux/slab.h>
+ #include <linux/sysfs.h>
+ #include <linux/spi/spi.h>
+ #include <linux/err.h>
+@@ -492,8 +491,8 @@ static int ad7280_channel_init(struct ad7280_state *st)
+ {
+ 	int dev, ch, cnt;
+ 
+-	st->channels = kcalloc((st->slave_num + 1) * 12 + 2,
+-			       sizeof(*st->channels), GFP_KERNEL);
++	st->channels = devm_kcalloc(&st->spi->dev, (st->slave_num + 1) * 12 + 2,
++				    sizeof(*st->channels), GFP_KERNEL);
+ 	if (!st->channels)
+ 		return -ENOMEM;
+ 
+@@ -553,9 +552,9 @@ static int ad7280_attr_init(struct ad7280_state *st)
+ {
+ 	int dev, ch, cnt;
+ 
+-	st->iio_attr = kcalloc(2, sizeof(*st->iio_attr) *
+-			       (st->slave_num + 1) * AD7280A_CELLS_PER_DEV,
+-			       GFP_KERNEL);
++	st->iio_attr = devm_kcalloc(&st->spi->dev, 2, sizeof(*st->iio_attr) *
++				    (st->slave_num + 1) * AD7280A_CELLS_PER_DEV,
++				    GFP_KERNEL);
+ 	if (!st->iio_attr)
+ 		return -ENOMEM;
+ 
+@@ -692,7 +691,8 @@ static irqreturn_t ad7280_event_handler(int irq, void *private)
+ 	unsigned int *channels;
+ 	int i, ret;
+ 
+-	channels = kcalloc(st->scan_cnt, sizeof(*channels), GFP_KERNEL);
++	channels = devm_kcalloc(&st->spi->dev, st->scan_cnt, sizeof(*channels),
++				GFP_KERNEL);
+ 	if (!channels)
+ 		return IRQ_HANDLED;
+ 
+@@ -744,7 +744,7 @@ static irqreturn_t ad7280_event_handler(int irq, void *private)
+ 	}
+ 
+ out:
+-	kfree(channels);
++	devm_kfree(&st->spi->dev, channels);
+ 
+ 	return IRQ_HANDLED;
+ }
+@@ -909,11 +909,11 @@ static int ad7280_probe(struct spi_device *spi)
+ 
+ 	ret = ad7280_attr_init(st);
+ 	if (ret < 0)
+-		goto error_free_channels;
++		return ret;
+ 
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret)
+-		goto error_free_attr;
++		return ret;
+ 
+ 	if (spi->irq > 0) {
+ 		ret = ad7280_write(st, AD7280A_DEVADDR_MASTER,
+@@ -929,13 +929,13 @@ static int ad7280_probe(struct spi_device *spi)
+ 		if (ret)
+ 			goto error_unregister;
+ 
+-		ret = request_threaded_irq(spi->irq,
+-					   NULL,
+-					   ad7280_event_handler,
+-					   IRQF_TRIGGER_FALLING |
+-					   IRQF_ONESHOT,
+-					   indio_dev->name,
+-					   indio_dev);
++		ret = devm_request_threaded_irq(&spi->dev, spi->irq,
++						NULL,
++						ad7280_event_handler,
++						IRQF_TRIGGER_FALLING |
++						IRQF_ONESHOT,
++						indio_dev->name,
++						indio_dev);
+ 		if (ret)
+ 			goto error_unregister;
+ 	}
+@@ -944,12 +944,6 @@ static int ad7280_probe(struct spi_device *spi)
+ error_unregister:
+ 	iio_device_unregister(indio_dev);
+ 
+-error_free_attr:
+-	kfree(st->iio_attr);
+-
+-error_free_channels:
+-	kfree(st->channels);
+-
+ 	return ret;
+ }
+ 
+@@ -958,16 +952,11 @@ static int ad7280_remove(struct spi_device *spi)
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 	struct ad7280_state *st = iio_priv(indio_dev);
+ 
+-	if (spi->irq > 0)
+-		free_irq(spi->irq, indio_dev);
+ 	iio_device_unregister(indio_dev);
+ 
+ 	ad7280_write(st, AD7280A_DEVADDR_MASTER, AD7280A_CONTROL_HB, 1,
+ 		     AD7280A_CTRL_HB_PWRDN_SW | st->ctrl_hb);
+ 
+-	kfree(st->channels);
+-	kfree(st->iio_attr);
+-
+ 	return 0;
+ }
+ 
+-- 
+2.19.1
