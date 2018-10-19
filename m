@@ -1,129 +1,122 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:35178 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727345AbeJUVq2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 21 Oct 2018 17:46:28 -0400
-Date: Sun, 21 Oct 2018 14:31:55 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Slawomir Stepien <sst@poczta.fm>, Michael.Hennerich@analog.com,
-        knaack.h@gmx.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        gregkh@linuxfoundation.org
-Subject: Re: [PATCH v3 1/1] staging: iio: adc: ad7280a: use crc8.h API to
- build crc table
-Message-ID: <20181021143155.71699aac@archlinux>
-In-Reply-To: <8cf5b8c0-7d64-0ddd-09a4-fba989143b0d@metafoo.de>
-References: <20181018185933.GA25468@x220.localdomain>
-        <8cf5b8c0-7d64-0ddd-09a4-fba989143b0d@metafoo.de>
+Received: from mail-by2nam03on0049.outbound.protection.outlook.com ([104.47.42.49]:37430
+        "EHLO NAM03-BY2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726698AbeJSPxK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 19 Oct 2018 11:53:10 -0400
+From: Stefan Popa <stefan.popa@analog.com>
+To: <jic23@kernel.org>
+CC: <Michael.Hennerich@analog.com>, <knaack.h@gmx.de>,
+        <lars@metafoo.de>, <pmeerw@pmeerw.net>,
+        <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <stefan.popa@analog.com>
+Subject: [PATCH v2 1/3] iio: ad_sigma_delta: Allow to provide custom data register address
+Date: Fri, 19 Oct 2018 10:46:15 +0300
+Message-ID: <1539935175-8690-1-git-send-email-stefan.popa@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 19 Oct 2018 08:41:00 +0200
-Lars-Peter Clausen <lars@metafoo.de> wrote:
+From: Lars-Peter Clausen <lars@metafoo.de>
 
-> On 10/18/2018 08:59 PM, Slawomir Stepien wrote:
-> > The custom build function ad7280_crc8_build_table is not needed. The
-> > crc8_populate_msb function from linux/crc8.h will build the same crc
-> > table.
-> > 
-> > Signed-off-by: Slawomir Stepien <sst@poczta.fm>  
-> 
-> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+Some newer devices from the Sigma-Delta ADC family do have their data
+register at a different address than the current default address. Add a
+parameter to the ad_sigma_delta_info struct which allows to override the
+default address.
 
-Thanks,
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+---
+Changes in v2:
+	- Added this commit.
 
-Jonathan
+ drivers/iio/adc/ad_sigma_delta.c       | 22 +++++++++++++++++-----
+ include/linux/iio/adc/ad_sigma_delta.h |  3 +++
+ 2 files changed, 20 insertions(+), 5 deletions(-)
 
-> 
-> > ---
-> > Since v2:
-> > * Fix compilation by adding "select CRC8" in Kconfig.
-> > 
-> > Since v1:
-> > * Fix typo in commit message.
-> > ---
-> >  drivers/staging/iio/adc/Kconfig   |  1 +
-> >  drivers/staging/iio/adc/ad7280a.c | 24 +++---------------------
-> >  2 files changed, 4 insertions(+), 21 deletions(-)
-> > 
-> > diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
-> > index e17efb03bac0..d6bd1bb9d2e6 100644
-> > --- a/drivers/staging/iio/adc/Kconfig
-> > +++ b/drivers/staging/iio/adc/Kconfig
-> > @@ -73,6 +73,7 @@ config AD7192
-> >  config AD7280
-> >  	tristate "Analog Devices AD7280A Lithium Ion Battery Monitoring System"
-> >  	depends on SPI
-> > +	select CRC8
-> >  	help
-> >  	  Say yes here to build support for Analog Devices AD7280A
-> >  	  Lithium Ion Battery Monitoring System.
-> > diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-> > index b736275c10f5..c701f07853fa 100644
-> > --- a/drivers/staging/iio/adc/ad7280a.c
-> > +++ b/drivers/staging/iio/adc/ad7280a.c
-> > @@ -6,6 +6,7 @@
-> >   * Licensed under the GPL-2.
-> >   */
-> >  
-> > +#include <linux/crc8.h>
-> >  #include <linux/device.h>
-> >  #include <linux/kernel.h>
-> >  #include <linux/slab.h>
-> > @@ -121,8 +122,6 @@ static unsigned int ad7280a_devaddr(unsigned int addr)
-> >   * P(x) = x^8 + x^5 + x^3 + x^2 + x^1 + x^0 = 0b100101111 => 0x2F
-> >   */
-> >  #define POLYNOM		0x2F
-> > -#define POLYNOM_ORDER	8
-> > -#define HIGHBIT		(1 << (POLYNOM_ORDER - 1))
-> >  
-> >  struct ad7280_state {
-> >  	struct spi_device		*spi;
-> > @@ -131,7 +130,7 @@ struct ad7280_state {
-> >  	int				slave_num;
-> >  	int				scan_cnt;
-> >  	int				readback_delay_us;
-> > -	unsigned char			crc_tab[256];
-> > +	unsigned char			crc_tab[CRC8_TABLE_SIZE];
-> >  	unsigned char			ctrl_hb;
-> >  	unsigned char			ctrl_lb;
-> >  	unsigned char			cell_threshhigh;
-> > @@ -144,23 +143,6 @@ struct ad7280_state {
-> >  	__be32				buf[2] ____cacheline_aligned;
-> >  };
-> >  
-> > -static void ad7280_crc8_build_table(unsigned char *crc_tab)
-> > -{
-> > -	unsigned char bit, crc;
-> > -	int cnt, i;
-> > -
-> > -	for (cnt = 0; cnt < 256; cnt++) {
-> > -		crc = cnt;
-> > -		for (i = 0; i < 8; i++) {
-> > -			bit = crc & HIGHBIT;
-> > -			crc <<= 1;
-> > -			if (bit)
-> > -				crc ^= POLYNOM;
-> > -		}
-> > -		crc_tab[cnt] = crc;
-> > -	}
-> > -}
-> > -
-> >  static unsigned char ad7280_calc_crc8(unsigned char *crc_tab, unsigned int val)
-> >  {
-> >  	unsigned char crc;
-> > @@ -857,7 +839,7 @@ static int ad7280_probe(struct spi_device *spi)
-> >  	if (!pdata)
-> >  		pdata = &ad7793_default_pdata;
-> >  
-> > -	ad7280_crc8_build_table(st->crc_tab);
-> > +	crc8_populate_msb(st->crc_tab, POLYNOM);
-> >  
-> >  	st->spi->max_speed_hz = AD7280A_MAX_SPI_CLK_HZ;
-> >  	st->spi->mode = SPI_MODE_1;
-> >   
-> 
+diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
+index fc95107..ff5f2da 100644
+--- a/drivers/iio/adc/ad_sigma_delta.c
++++ b/drivers/iio/adc/ad_sigma_delta.c
+@@ -278,6 +278,7 @@ int ad_sigma_delta_single_conversion(struct iio_dev *indio_dev,
+ {
+ 	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
+ 	unsigned int sample, raw_sample;
++	unsigned int data_reg;
+ 	int ret = 0;
+ 
+ 	if (iio_buffer_enabled(indio_dev))
+@@ -305,7 +306,12 @@ int ad_sigma_delta_single_conversion(struct iio_dev *indio_dev,
+ 	if (ret < 0)
+ 		goto out;
+ 
+-	ret = ad_sd_read_reg(sigma_delta, AD_SD_REG_DATA,
++	if (sigma_delta->info->data_reg != 0)
++		data_reg = sigma_delta->info->data_reg;
++	else
++		data_reg = AD_SD_REG_DATA;
++
++	ret = ad_sd_read_reg(sigma_delta, data_reg,
+ 		DIV_ROUND_UP(chan->scan_type.realbits + chan->scan_type.shift, 8),
+ 		&raw_sample);
+ 
+@@ -392,6 +398,7 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
+ 	unsigned int reg_size;
++	unsigned int data_reg;
+ 	uint8_t data[16];
+ 	int ret;
+ 
+@@ -401,18 +408,23 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
+ 			indio_dev->channels[0].scan_type.shift;
+ 	reg_size = DIV_ROUND_UP(reg_size, 8);
+ 
++	if (sigma_delta->info->data_reg != 0)
++		data_reg = sigma_delta->info->data_reg;
++	else
++		data_reg = AD_SD_REG_DATA;
++
+ 	switch (reg_size) {
+ 	case 4:
+ 	case 2:
+ 	case 1:
+-		ret = ad_sd_read_reg_raw(sigma_delta, AD_SD_REG_DATA,
+-			reg_size, &data[0]);
++		ret = ad_sd_read_reg_raw(sigma_delta, data_reg, reg_size,
++			&data[0]);
+ 		break;
+ 	case 3:
+ 		/* We store 24 bit samples in a 32 bit word. Keep the upper
+ 		 * byte set to zero. */
+-		ret = ad_sd_read_reg_raw(sigma_delta, AD_SD_REG_DATA,
+-			reg_size, &data[1]);
++		ret = ad_sd_read_reg_raw(sigma_delta, data_reg, reg_size,
++			&data[1]);
+ 		break;
+ 	}
+ 
+diff --git a/include/linux/iio/adc/ad_sigma_delta.h b/include/linux/iio/adc/ad_sigma_delta.h
+index 730ead1..7e84351 100644
+--- a/include/linux/iio/adc/ad_sigma_delta.h
++++ b/include/linux/iio/adc/ad_sigma_delta.h
+@@ -39,6 +39,8 @@ struct iio_dev;
+  *		if there is just one read-only sample data shift register.
+  * @addr_shift: Shift of the register address in the communications register.
+  * @read_mask: Mask for the communications register having the read bit set.
++ * @data_reg: Address of the data register, if 0 the default address of 0x3 will
++ *   be used.
+  */
+ struct ad_sigma_delta_info {
+ 	int (*set_channel)(struct ad_sigma_delta *, unsigned int channel);
+@@ -47,6 +49,7 @@ struct ad_sigma_delta_info {
+ 	bool has_registers;
+ 	unsigned int addr_shift;
+ 	unsigned int read_mask;
++	unsigned int data_reg;
+ };
+ 
+ /**
+-- 
+2.7.4
