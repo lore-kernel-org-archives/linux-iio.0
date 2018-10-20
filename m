@@ -1,104 +1,98 @@
-Return-Path: <SRS0=DmY4=NA=martingkelly.com=martin@kernel.org>
-Subject: Re: [RFC][PATCH] iio:st_magn: enable device after trigger
-To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
- Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
- Denis Ciocca <denis.ciocca@st.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:40223 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726618AbeJUHeu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Oct 2018 03:34:50 -0400
+From: Denis CIOCCA <denis.ciocca@st.com>
+To: Martin Kelly <martin@martingkelly.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        "Lorenzo Bianconi" <lorenzo.bianconi83@gmail.com>
+Subject: RE: [RFC][PATCH] iio:st_magn: enable device after trigger
+Date: Sat, 20 Oct 2018 23:22:12 +0000
+Message-ID: <d1ed5e96f158490ba536558e6b4a841a@SFHDAG2NODE1.st.com>
 References: <20181015015336.21066-1-martin@martingkelly.com>
  <CAA2SeNLH1hTRz5tx0DCtniX2i8iPt=MzeYYO77Y+=Dg9ZOSL0w@mail.gmail.com>
-From: Martin Kelly <martin@martingkelly.com>
-Message-ID: <b5771fc2-0e1b-cb9f-e970-2ed1b768db33@martingkelly.com>
-Date: Fri, 19 Oct 2018 21:08:05 -0700
+ <811d448f-2e66-8dac-fe25-19a754d0fe99@martingkelly.com>
+In-Reply-To: <811d448f-2e66-8dac-fe25-19a754d0fe99@martingkelly.com>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <CAA2SeNLH1hTRz5tx0DCtniX2i8iPt=MzeYYO77Y+=Dg9ZOSL0w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 10/15/18 12:19 AM, Lorenzo Bianconi wrote:
->> Currently, we enable the device before we enable the device trigger. At
->> high frequencies, this can cause interrupts that don't yet have a poll
->> function associated with them and are thus treated as spurious. At high
->> frequencies with level interrupts, this can even cause an interrupt storm
->> of repeated spurious interrupts (~100,000 on my Beagleboard with the
->> LSM9DS1 magnetometer). If these repeat too much, the interrupt will get
->> disabled and the device will stop functioning.
->>
->> To prevent these problems, enable the device prior to enabling the device
->> trigger, and disable the divec prior to disabling the trigger. This means
->> there's no window of time during which the device creates interrupts but we
->> have no trigger to answer them.
->>
-> 
-> I have just reviewed the code (not carried out any tests) and I guess this patch
-> is correct. Moreover if the memory allocation in st_magn_buffer_postenable fails
-> we will end up with a device generating interrupts without any buffer
-> to collect data.
-> I guess there is the same issue in st_magn_buffer_predisable(), if
-> st_sensors_set_enable
-> or iio_triggered_buffer_predisable fails, should we remove the data
-> buffer? Maybe we
-> just skip return code from st_sensors_set_enable.
-> @Denis: any hints?
-> 
-> Regards,
-> Lorenzo
-> 
-
-Dennis, any opinion?
-
->> Signed-off-by: Martin Kelly <martin@martingkelly.com>
->> ---
->>   drivers/iio/magnetometer/st_magn_buffer.c | 12 +++---------
->>   1 file changed, 3 insertions(+), 9 deletions(-)
->>
->> diff --git a/drivers/iio/magnetometer/st_magn_buffer.c b/drivers/iio/magnetometer/st_magn_buffer.c
->> index 0a9e8fadfa9d..37ab30566464 100644
->> --- a/drivers/iio/magnetometer/st_magn_buffer.c
->> +++ b/drivers/iio/magnetometer/st_magn_buffer.c
->> @@ -30,11 +30,6 @@ int st_magn_trig_set_state(struct iio_trigger *trig, bool state)
->>          return st_sensors_set_dataready_irq(indio_dev, state);
->>   }
->>
->> -static int st_magn_buffer_preenable(struct iio_dev *indio_dev)
->> -{
->> -       return st_sensors_set_enable(indio_dev, true);
->> -}
->> -
->>   static int st_magn_buffer_postenable(struct iio_dev *indio_dev)
->>   {
->>          int err;
->> @@ -50,7 +45,7 @@ static int st_magn_buffer_postenable(struct iio_dev *indio_dev)
->>          if (err < 0)
->>                  goto st_magn_buffer_postenable_error;
->>
->> -       return err;
->> +       return st_sensors_set_enable(indio_dev, true);
->>
->>   st_magn_buffer_postenable_error:
->>          kfree(mdata->buffer_data);
->> @@ -63,11 +58,11 @@ static int st_magn_buffer_predisable(struct iio_dev *indio_dev)
->>          int err;
->>          struct st_sensor_data *mdata = iio_priv(indio_dev);
->>
->> -       err = iio_triggered_buffer_predisable(indio_dev);
->> +       err = st_sensors_set_enable(indio_dev, false);
->>          if (err < 0)
->>                  goto st_magn_buffer_predisable_error;
->>
->> -       err = st_sensors_set_enable(indio_dev, false);
->> +       err = iio_triggered_buffer_predisable(indio_dev);
->>
->>   st_magn_buffer_predisable_error:
->>          kfree(mdata->buffer_data);
->> @@ -75,7 +70,6 @@ static int st_magn_buffer_predisable(struct iio_dev *indio_dev)
->>   }
->>
->>   static const struct iio_buffer_setup_ops st_magn_buffer_setup_ops = {
->> -       .preenable = &st_magn_buffer_preenable,
->>          .postenable = &st_magn_buffer_postenable,
->>          .predisable = &st_magn_buffer_predisable,
->>   };
->> --
->> 2.11.0
->>
+SGkgTWFydGluLA0KDQpJIGFtIHBlcmZvcm1pbmcgZmV3IHRlc3RzLiBJJ2xsIGdpdmUgeW91IGEg
+ZmVlZGJhY2sgdG9tb3Jyb3chDQoNClRoYW5rcywNCkRlbmlzDQoNCg0KLS0tLS1PcmlnaW5hbCBN
+ZXNzYWdlLS0tLS0NCkZyb206IE1hcnRpbiBLZWxseSA8bWFydGluQG1hcnRpbmdrZWxseS5jb20+
+IA0KU2VudDogRnJpZGF5LCBPY3RvYmVyIDE5LCAyMDE4IDk6MDggUE0NClRvOiBMb3JlbnpvIEJp
+YW5jb25pIDxsb3JlbnpvLmJpYW5jb25pODNAZ21haWwuY29tPg0KQ2M6IGxpbnV4LWlpb0B2Z2Vy
+Lmtlcm5lbC5vcmc7IEpvbmF0aGFuIENhbWVyb24gPGppYzIzQGtlcm5lbC5vcmc+OyBIYXJ0bXV0
+IEtuYWFjayA8a25hYWNrLmhAZ214LmRlPjsgTGFycy1QZXRlciBDbGF1c2VuIDxsYXJzQG1ldGFm
+b28uZGU+OyBQZXRlciBNZWVyd2FsZC1TdGFkbGVyIDxwbWVlcndAcG1lZXJ3Lm5ldD47IERlbmlz
+IENJT0NDQSA8ZGVuaXMuY2lvY2NhQHN0LmNvbT4NClN1YmplY3Q6IFJlOiBbUkZDXVtQQVRDSF0g
+aWlvOnN0X21hZ246IGVuYWJsZSBkZXZpY2UgYWZ0ZXIgdHJpZ2dlcg0KDQpPbiAxMC8xNS8xOCAx
+MjoxOSBBTSwgTG9yZW56byBCaWFuY29uaSB3cm90ZToNCj4+IEN1cnJlbnRseSwgd2UgZW5hYmxl
+IHRoZSBkZXZpY2UgYmVmb3JlIHdlIGVuYWJsZSB0aGUgZGV2aWNlIHRyaWdnZXIuIA0KPj4gQXQg
+aGlnaCBmcmVxdWVuY2llcywgdGhpcyBjYW4gY2F1c2UgaW50ZXJydXB0cyB0aGF0IGRvbid0IHll
+dCBoYXZlIGEgDQo+PiBwb2xsIGZ1bmN0aW9uIGFzc29jaWF0ZWQgd2l0aCB0aGVtIGFuZCBhcmUg
+dGh1cyB0cmVhdGVkIGFzIHNwdXJpb3VzLiANCj4+IEF0IGhpZ2ggZnJlcXVlbmNpZXMgd2l0aCBs
+ZXZlbCBpbnRlcnJ1cHRzLCB0aGlzIGNhbiBldmVuIGNhdXNlIGFuIA0KPj4gaW50ZXJydXB0IHN0
+b3JtIG9mIHJlcGVhdGVkIHNwdXJpb3VzIGludGVycnVwdHMgKH4xMDAsMDAwIG9uIG15IA0KPj4g
+QmVhZ2xlYm9hcmQgd2l0aCB0aGUNCj4+IExTTTlEUzEgbWFnbmV0b21ldGVyKS4gSWYgdGhlc2Ug
+cmVwZWF0IHRvbyBtdWNoLCB0aGUgaW50ZXJydXB0IHdpbGwgDQo+PiBnZXQgZGlzYWJsZWQgYW5k
+IHRoZSBkZXZpY2Ugd2lsbCBzdG9wIGZ1bmN0aW9uaW5nLg0KPj4NCj4+IFRvIHByZXZlbnQgdGhl
+c2UgcHJvYmxlbXMsIGVuYWJsZSB0aGUgZGV2aWNlIHByaW9yIHRvIGVuYWJsaW5nIHRoZSANCj4+
+IGRldmljZSB0cmlnZ2VyLCBhbmQgZGlzYWJsZSB0aGUgZGl2ZWMgcHJpb3IgdG8gZGlzYWJsaW5n
+IHRoZSB0cmlnZ2VyLiANCj4+IFRoaXMgbWVhbnMgdGhlcmUncyBubyB3aW5kb3cgb2YgdGltZSBk
+dXJpbmcgd2hpY2ggdGhlIGRldmljZSBjcmVhdGVzIA0KPj4gaW50ZXJydXB0cyBidXQgd2UgaGF2
+ZSBubyB0cmlnZ2VyIHRvIGFuc3dlciB0aGVtLg0KPj4NCj4gDQo+IEkgaGF2ZSBqdXN0IHJldmll
+d2VkIHRoZSBjb2RlIChub3QgY2FycmllZCBvdXQgYW55IHRlc3RzKSBhbmQgSSBndWVzcyANCj4g
+dGhpcyBwYXRjaCBpcyBjb3JyZWN0LiBNb3Jlb3ZlciBpZiB0aGUgbWVtb3J5IGFsbG9jYXRpb24g
+aW4gDQo+IHN0X21hZ25fYnVmZmVyX3Bvc3RlbmFibGUgZmFpbHMgd2Ugd2lsbCBlbmQgdXAgd2l0
+aCBhIGRldmljZSANCj4gZ2VuZXJhdGluZyBpbnRlcnJ1cHRzIHdpdGhvdXQgYW55IGJ1ZmZlciB0
+byBjb2xsZWN0IGRhdGEuDQo+IEkgZ3Vlc3MgdGhlcmUgaXMgdGhlIHNhbWUgaXNzdWUgaW4gc3Rf
+bWFnbl9idWZmZXJfcHJlZGlzYWJsZSgpLCBpZiANCj4gc3Rfc2Vuc29yc19zZXRfZW5hYmxlIG9y
+IGlpb190cmlnZ2VyZWRfYnVmZmVyX3ByZWRpc2FibGUgZmFpbHMsIHNob3VsZCANCj4gd2UgcmVt
+b3ZlIHRoZSBkYXRhIGJ1ZmZlcj8gTWF5YmUgd2UganVzdCBza2lwIHJldHVybiBjb2RlIGZyb20g
+DQo+IHN0X3NlbnNvcnNfc2V0X2VuYWJsZS4NCj4gQERlbmlzOiBhbnkgaGludHM/DQo+IA0KPiBS
+ZWdhcmRzLA0KPiBMb3JlbnpvDQo+IA0KDQpEZW5pcywgYW55IG9waW5pb24/DQoNCj4+IFNpZ25l
+ZC1vZmYtYnk6IE1hcnRpbiBLZWxseSA8bWFydGluQG1hcnRpbmdrZWxseS5jb20+DQo+PiAtLS0N
+Cj4+ICAgZHJpdmVycy9paW8vbWFnbmV0b21ldGVyL3N0X21hZ25fYnVmZmVyLmMgfCAxMiArKyst
+LS0tLS0tLS0NCj4+ICAgMSBmaWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKSwgOSBkZWxldGlv
+bnMoLSkNCj4+DQo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9paW8vbWFnbmV0b21ldGVyL3N0X21h
+Z25fYnVmZmVyLmMgDQo+PiBiL2RyaXZlcnMvaWlvL21hZ25ldG9tZXRlci9zdF9tYWduX2J1ZmZl
+ci5jDQo+PiBpbmRleCAwYTllOGZhZGZhOWQuLjM3YWIzMDU2NjQ2NCAxMDA2NDQNCj4+IC0tLSBh
+L2RyaXZlcnMvaWlvL21hZ25ldG9tZXRlci9zdF9tYWduX2J1ZmZlci5jDQo+PiArKysgYi9kcml2
+ZXJzL2lpby9tYWduZXRvbWV0ZXIvc3RfbWFnbl9idWZmZXIuYw0KPj4gQEAgLTMwLDExICszMCw2
+IEBAIGludCBzdF9tYWduX3RyaWdfc2V0X3N0YXRlKHN0cnVjdCBpaW9fdHJpZ2dlciAqdHJpZywg
+Ym9vbCBzdGF0ZSkNCj4+ICAgICAgICAgIHJldHVybiBzdF9zZW5zb3JzX3NldF9kYXRhcmVhZHlf
+aXJxKGluZGlvX2Rldiwgc3RhdGUpOw0KPj4gICB9DQo+Pg0KPj4gLXN0YXRpYyBpbnQgc3RfbWFn
+bl9idWZmZXJfcHJlZW5hYmxlKHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYpIC17DQo+PiAtICAg
+ICAgIHJldHVybiBzdF9zZW5zb3JzX3NldF9lbmFibGUoaW5kaW9fZGV2LCB0cnVlKTsNCj4+IC19
+DQo+PiAtDQo+PiAgIHN0YXRpYyBpbnQgc3RfbWFnbl9idWZmZXJfcG9zdGVuYWJsZShzdHJ1Y3Qg
+aWlvX2RldiAqaW5kaW9fZGV2KQ0KPj4gICB7DQo+PiAgICAgICAgICBpbnQgZXJyOw0KPj4gQEAg
+LTUwLDcgKzQ1LDcgQEAgc3RhdGljIGludCBzdF9tYWduX2J1ZmZlcl9wb3N0ZW5hYmxlKHN0cnVj
+dCBpaW9fZGV2ICppbmRpb19kZXYpDQo+PiAgICAgICAgICBpZiAoZXJyIDwgMCkNCj4+ICAgICAg
+ICAgICAgICAgICAgZ290byBzdF9tYWduX2J1ZmZlcl9wb3N0ZW5hYmxlX2Vycm9yOw0KPj4NCj4+
+IC0gICAgICAgcmV0dXJuIGVycjsNCj4+ICsgICAgICAgcmV0dXJuIHN0X3NlbnNvcnNfc2V0X2Vu
+YWJsZShpbmRpb19kZXYsIHRydWUpOw0KPj4NCj4+ICAgc3RfbWFnbl9idWZmZXJfcG9zdGVuYWJs
+ZV9lcnJvcjoNCj4+ICAgICAgICAgIGtmcmVlKG1kYXRhLT5idWZmZXJfZGF0YSk7DQo+PiBAQCAt
+NjMsMTEgKzU4LDExIEBAIHN0YXRpYyBpbnQgc3RfbWFnbl9idWZmZXJfcHJlZGlzYWJsZShzdHJ1
+Y3QgaWlvX2RldiAqaW5kaW9fZGV2KQ0KPj4gICAgICAgICAgaW50IGVycjsNCj4+ICAgICAgICAg
+IHN0cnVjdCBzdF9zZW5zb3JfZGF0YSAqbWRhdGEgPSBpaW9fcHJpdihpbmRpb19kZXYpOw0KPj4N
+Cj4+IC0gICAgICAgZXJyID0gaWlvX3RyaWdnZXJlZF9idWZmZXJfcHJlZGlzYWJsZShpbmRpb19k
+ZXYpOw0KPj4gKyAgICAgICBlcnIgPSBzdF9zZW5zb3JzX3NldF9lbmFibGUoaW5kaW9fZGV2LCBm
+YWxzZSk7DQo+PiAgICAgICAgICBpZiAoZXJyIDwgMCkNCj4+ICAgICAgICAgICAgICAgICAgZ290
+byBzdF9tYWduX2J1ZmZlcl9wcmVkaXNhYmxlX2Vycm9yOw0KPj4NCj4+IC0gICAgICAgZXJyID0g
+c3Rfc2Vuc29yc19zZXRfZW5hYmxlKGluZGlvX2RldiwgZmFsc2UpOw0KPj4gKyAgICAgICBlcnIg
+PSBpaW9fdHJpZ2dlcmVkX2J1ZmZlcl9wcmVkaXNhYmxlKGluZGlvX2Rldik7DQo+Pg0KPj4gICBz
+dF9tYWduX2J1ZmZlcl9wcmVkaXNhYmxlX2Vycm9yOg0KPj4gICAgICAgICAga2ZyZWUobWRhdGEt
+PmJ1ZmZlcl9kYXRhKTsNCj4+IEBAIC03NSw3ICs3MCw2IEBAIHN0YXRpYyBpbnQgc3RfbWFnbl9i
+dWZmZXJfcHJlZGlzYWJsZShzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2KQ0KPj4gICB9DQo+Pg0K
+Pj4gICBzdGF0aWMgY29uc3Qgc3RydWN0IGlpb19idWZmZXJfc2V0dXBfb3BzIHN0X21hZ25fYnVm
+ZmVyX3NldHVwX29wcyA9IHsNCj4+IC0gICAgICAgLnByZWVuYWJsZSA9ICZzdF9tYWduX2J1ZmZl
+cl9wcmVlbmFibGUsDQo+PiAgICAgICAgICAucG9zdGVuYWJsZSA9ICZzdF9tYWduX2J1ZmZlcl9w
+b3N0ZW5hYmxlLA0KPj4gICAgICAgICAgLnByZWRpc2FibGUgPSAmc3RfbWFnbl9idWZmZXJfcHJl
+ZGlzYWJsZSwNCj4+ICAgfTsNCj4+IC0tDQo+PiAyLjExLjANCj4+DQoNCg==
