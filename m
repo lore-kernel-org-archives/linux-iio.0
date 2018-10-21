@@ -1,78 +1,91 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtpo.poczta.interia.pl ([217.74.65.157]:33122 "EHLO
-        smtpo.poczta.interia.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726162AbeJUFPn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Oct 2018 01:15:43 -0400
-Date: Sat, 20 Oct 2018 23:04:11 +0200
-From: Slawomir Stepien <sst@poczta.fm>
-To: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-        knaack.h@gmx.de, pmeerw@pmeerw.net
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org
-Subject: [PATCH 1/1] staging: iio: adc: ad7280a: handle error from
+Received: from mail.kernel.org ([198.145.29.99]:32920 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726982AbeJUVcQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 21 Oct 2018 17:32:16 -0400
+Date: Sun, 21 Oct 2018 14:17:51 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Slawomir Stepien <sst@poczta.fm>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        gregkh@linuxfoundation.org
+Subject: Re: [PATCH 1/1] staging: iio: adc: ad7280a: handle error from
  __ad7280_read32()
-Message-ID: <20181020210411.GA7662@x220.localdomain>
+Message-ID: <20181021141751.68fa7cb7@archlinux>
+In-Reply-To: <20181020210411.GA7662@x220.localdomain>
+References: <20181020210411.GA7662@x220.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Inside __ad7280_read32(), the spi_sync_transfer() can fail with negative
-error code. This change will ensure that this error is being passed up
-in the call stack, so it can be handled.
+On Sat, 20 Oct 2018 23:04:11 +0200
+Slawomir Stepien <sst@poczta.fm> wrote:
 
-Signed-off-by: Slawomir Stepien <sst@poczta.fm>
----
- drivers/staging/iio/adc/ad7280a.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+> Inside __ad7280_read32(), the spi_sync_transfer() can fail with negative
+> error code. This change will ensure that this error is being passed up
+> in the call stack, so it can be handled.
+> 
+> Signed-off-by: Slawomir Stepien <sst@poczta.fm>
 
-diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-index b736275c10f5..6a48ad067a8b 100644
---- a/drivers/staging/iio/adc/ad7280a.c
-+++ b/drivers/staging/iio/adc/ad7280a.c
-@@ -256,7 +256,9 @@ static int ad7280_read(struct ad7280_state *st, unsigned int devaddr,
- 	if (ret)
- 		return ret;
- 
--	__ad7280_read32(st, &tmp);
-+	ret = __ad7280_read32(st, &tmp);
-+	if (ret)
-+		return ret;
- 
- 	if (ad7280_check_crc(st, tmp))
- 		return -EIO;
-@@ -294,7 +296,9 @@ static int ad7280_read_channel(struct ad7280_state *st, unsigned int devaddr,
- 
- 	ad7280_delay(st);
- 
--	__ad7280_read32(st, &tmp);
-+	ret = __ad7280_read32(st, &tmp);
-+	if (ret)
-+		return ret;
- 
- 	if (ad7280_check_crc(st, tmp))
- 		return -EIO;
-@@ -327,7 +331,9 @@ static int ad7280_read_all_channels(struct ad7280_state *st, unsigned int cnt,
- 	ad7280_delay(st);
- 
- 	for (i = 0; i < cnt; i++) {
--		__ad7280_read32(st, &tmp);
-+		ret = __ad7280_read32(st, &tmp);
-+		if (ret)
-+			return ret;
- 
- 		if (ad7280_check_crc(st, tmp))
- 			return -EIO;
-@@ -370,7 +376,10 @@ static int ad7280_chain_setup(struct ad7280_state *st)
- 		return ret;
- 
- 	for (n = 0; n <= AD7280A_MAX_CHAIN; n++) {
--		__ad7280_read32(st, &val);
-+		ret = __ad7280_read32(st, &val);
-+		if (ret)
-+			return ret;
-+
- 		if (val == 0)
- 			return n - 1;
- 
--- 
-2.19.1
+Looks good to me.
+
+Applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to play with it.
+
+Thanks,
+
+Jonathan
+> ---
+>  drivers/staging/iio/adc/ad7280a.c | 17 +++++++++++++----
+>  1 file changed, 13 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
+> index b736275c10f5..6a48ad067a8b 100644
+> --- a/drivers/staging/iio/adc/ad7280a.c
+> +++ b/drivers/staging/iio/adc/ad7280a.c
+> @@ -256,7 +256,9 @@ static int ad7280_read(struct ad7280_state *st, unsigned int devaddr,
+>  	if (ret)
+>  		return ret;
+>  
+> -	__ad7280_read32(st, &tmp);
+> +	ret = __ad7280_read32(st, &tmp);
+> +	if (ret)
+> +		return ret;
+>  
+>  	if (ad7280_check_crc(st, tmp))
+>  		return -EIO;
+> @@ -294,7 +296,9 @@ static int ad7280_read_channel(struct ad7280_state *st, unsigned int devaddr,
+>  
+>  	ad7280_delay(st);
+>  
+> -	__ad7280_read32(st, &tmp);
+> +	ret = __ad7280_read32(st, &tmp);
+> +	if (ret)
+> +		return ret;
+>  
+>  	if (ad7280_check_crc(st, tmp))
+>  		return -EIO;
+> @@ -327,7 +331,9 @@ static int ad7280_read_all_channels(struct ad7280_state *st, unsigned int cnt,
+>  	ad7280_delay(st);
+>  
+>  	for (i = 0; i < cnt; i++) {
+> -		__ad7280_read32(st, &tmp);
+> +		ret = __ad7280_read32(st, &tmp);
+> +		if (ret)
+> +			return ret;
+>  
+>  		if (ad7280_check_crc(st, tmp))
+>  			return -EIO;
+> @@ -370,7 +376,10 @@ static int ad7280_chain_setup(struct ad7280_state *st)
+>  		return ret;
+>  
+>  	for (n = 0; n <= AD7280A_MAX_CHAIN; n++) {
+> -		__ad7280_read32(st, &val);
+> +		ret = __ad7280_read32(st, &val);
+> +		if (ret)
+> +			return ret;
+> +
+>  		if (val == 0)
+>  			return n - 1;
+>  
