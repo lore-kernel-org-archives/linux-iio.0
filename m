@@ -1,105 +1,249 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:41041 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726984AbeJaLaQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 31 Oct 2018 07:30:16 -0400
+Return-Path: <SRS0=ncuq=ND=gmail.com=nishadkamdar@kernel.org>
+Date: Wed, 24 Oct 2018 00:34:41 +0530
+From: Nishad Kamdar <nishadkamdar@gmail.com>
+To: Slawomir Stepien <sst@poczta.fm>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v3] staging: iio: ad2s1210: Switch to the gpio descriptor
+ interface
+Message-ID: <20181023190437.GA12974@nishad>
 MIME-Version: 1.0
-References: <20181023185330.10472-1-oskari@lemmela.net> <20181025133017.2rdnbgmvdlx67kcz@earth.universe>
-In-Reply-To: <20181025133017.2rdnbgmvdlx67kcz@earth.universe>
-From: Chen-Yu Tsai <wens@csie.org>
-Date: Wed, 31 Oct 2018 10:33:58 +0800
-Message-ID: <CAGb2v64oGFyUenJ9-054RCXoG0Z+z5ziiTiL95Ga-5yy3xFyxw@mail.gmail.com>
-Subject: Re: [PATCH v5 00/11] AXP8x3 AC and battery power supply support
-To: sebastian.reichel@collabora.com, oskari@lemmela.net
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Vasily Khoruzhick <anarsoul@gmail.com>,
-        Quentin Schulz <quentin.schulz@free-electrons.com>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, Oct 26, 2018 at 3:08 AM Sebastian Reichel
-<sebastian.reichel@collabora.com> wrote:
->
-> Hi,
->
-> Patches 1, 2 & 9 look good to me and do not seem to have any
-> dependencies. I plan to merge them after the merge window
-> for 4.20 closes.
+Use the gpiod interface instead of the deprecated old non-descriptor
+interface.
 
-Patches 2, 3 & 4 aren't needed. They aren't in the correct format
-for model-specific + fallback compatibles either.
+Signed-off-by: Nishad Kamdar <nishadkamdar@gmail.com>
+---
+Changes in v3:
+ - Use a pointer to pointer for gpio_desc in
+   struct ad2s1210_gpio as it will be used to
+   modify a pointer.
+ - Use dot notation to initialize the structure.
+ - Use a pointer variable to avoid writing gpios[i].
+Changes in v2:
+ - Use the spi_device struct embedded in st instead
+   of passing it as an argument to ad2s1210_setup_gpios().
+ - Use an array of structs to reduce redundant code in
+   in ad2s1210_setup_gpios().
+ - Remove ad2s1210_free_gpios() as devm API is being used.
+---
+ drivers/staging/iio/resolver/ad2s1210.c | 92 ++++++++++++++-----------
+ drivers/staging/iio/resolver/ad2s1210.h |  3 -
+ 2 files changed, 50 insertions(+), 45 deletions(-)
 
-ChenYu
-
->
-> -- Sebastian
->
-> On Tue, Oct 23, 2018 at 09:53:19PM +0300, Oskari Lemmela wrote:
-> > AXP813 AC power supply support with input current and
-> > voltage limiting support.
-> >
-> > AXP803 AC and battery power supply support.
-> >
-> > Changes in v5:
-> > * Return correct input current limit for values 0x6 and 0x7
-> > * Add specific compatibles for AXP803
-> > * Change commit messages
-> > * Add Vasily Khoruzhick Pinebook DTS patch
-> >
-> > Changes in v4:
-> > * Change order of axp20x-gpio in axp20x.c
-> > * Fix indentation and spaces to tabs in axp20x.c
-> >
-> > Changes in v3:
-> > * Reorder ac_power_supply DT node
-> > * Rename axp20x_ac_power_set_property function
-> > * Split mfd commit
-> >
-> > Changes in v2:
-> > * Reuse axp813 compatibles for axp803
-> > * Refactor axp20x_ac_power.c
-> >
-> > Oskari Lemmela (10):
-> >   dt-bindings: power: supply: axp20x: add AXP813 AC power DT binding
-> >   dt-bindings: power: supply: axp20x: add AXP803 power bindings
-> >   dt-bindings: gpio: gpio-axp209: add AXP803 GPIO bindings
-> >   dt-bindings: iio: adc: add AXP803 ADC bindings
-> >   ARM: dts: axp81x: add AC power supply subnode
-> >   arm64: dts: allwinner: axp803: add AC and battery power supplies
-> >   arm64: dts: allwinner: a64: sopine-baseboard: enable power supplies
-> >   power: supply: add AC power supply driver for AXP813
-> >   mfd: axp20x: Add AC power supply cell for AXP813
-> >   mfd: axp20x: Add supported cells for AXP803
-> >
-> > Vasily Khoruzhick (1):
-> >   arm64: dts: allwinner: a64: pinebook: enable power supplies
-> >
-> >  .../devicetree/bindings/gpio/gpio-axp209.txt  |  2 +
-> >  .../bindings/iio/adc/axp20x_adc.txt           |  2 +
-> >  .../bindings/power/supply/axp20x_ac_power.txt |  4 +
-> >  .../bindings/power/supply/axp20x_battery.txt  |  1 +
-> >  arch/arm/boot/dts/axp81x.dtsi                 |  5 +
-> >  arch/arm64/boot/dts/allwinner/axp803.dtsi     | 33 +++++++
-> >  .../dts/allwinner/sun50i-a64-pinebook.dts     |  8 ++
-> >  .../allwinner/sun50i-a64-sopine-baseboard.dts |  8 ++
-> >  drivers/mfd/axp20x.c                          | 20 ++++
-> >  drivers/power/supply/axp20x_ac_power.c        | 94 +++++++++++++++++++
-> >  include/linux/mfd/axp20x.h                    |  1 +
-> >  11 files changed, 178 insertions(+)
-> >
-> > --
-> > 2.17.1
-> >
+diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
+index ac13b99bd9cb..fbf0cc722979 100644
+--- a/drivers/staging/iio/resolver/ad2s1210.c
++++ b/drivers/staging/iio/resolver/ad2s1210.c
+@@ -15,7 +15,7 @@
+ #include <linux/slab.h>
+ #include <linux/sysfs.h>
+ #include <linux/delay.h>
+-#include <linux/gpio.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/module.h>
+ 
+ #include <linux/iio/iio.h>
+@@ -69,10 +69,21 @@ enum ad2s1210_mode {
+ 
+ static const unsigned int ad2s1210_resolution_value[] = { 10, 12, 14, 16 };
+ 
++struct ad2s1210_gpio {
++	struct gpio_desc **ptr;
++	const char *name;
++	unsigned long flags;
++};
++
+ struct ad2s1210_state {
+ 	const struct ad2s1210_platform_data *pdata;
+ 	struct mutex lock;
+ 	struct spi_device *sdev;
++	struct gpio_desc *sample;
++	struct gpio_desc *a0;
++	struct gpio_desc *a1;
++	struct gpio_desc *res0;
++	struct gpio_desc *res1;
+ 	unsigned int fclkin;
+ 	unsigned int fexcit;
+ 	bool hysteresis;
+@@ -91,8 +102,8 @@ static const int ad2s1210_mode_vals[4][2] = {
+ static inline void ad2s1210_set_mode(enum ad2s1210_mode mode,
+ 				     struct ad2s1210_state *st)
+ {
+-	gpio_set_value(st->pdata->a[0], ad2s1210_mode_vals[mode][0]);
+-	gpio_set_value(st->pdata->a[1], ad2s1210_mode_vals[mode][1]);
++	gpiod_set_value(st->a0, ad2s1210_mode_vals[mode][0]);
++	gpiod_set_value(st->a1, ad2s1210_mode_vals[mode][1]);
+ 	st->mode = mode;
+ }
+ 
+@@ -152,8 +163,8 @@ int ad2s1210_update_frequency_control_word(struct ad2s1210_state *st)
+ 
+ static unsigned char ad2s1210_read_resolution_pin(struct ad2s1210_state *st)
+ {
+-	int resolution = (gpio_get_value(st->pdata->res[0]) << 1) |
+-			  gpio_get_value(st->pdata->res[1]);
++	int resolution = (gpiod_get_value(st->res0) << 1) |
++			  gpiod_get_value(st->res1);
+ 
+ 	return ad2s1210_resolution_value[resolution];
+ }
+@@ -164,10 +175,10 @@ static const int ad2s1210_res_pins[4][2] = {
+ 
+ static inline void ad2s1210_set_resolution_pin(struct ad2s1210_state *st)
+ {
+-	gpio_set_value(st->pdata->res[0],
+-		       ad2s1210_res_pins[(st->resolution - 10) / 2][0]);
+-	gpio_set_value(st->pdata->res[1],
+-		       ad2s1210_res_pins[(st->resolution - 10) / 2][1]);
++	gpiod_set_value(st->res0,
++			ad2s1210_res_pins[(st->resolution - 10) / 2][0]);
++	gpiod_set_value(st->res1,
++			ad2s1210_res_pins[(st->resolution - 10) / 2][1]);
+ }
+ 
+ static inline int ad2s1210_soft_reset(struct ad2s1210_state *st)
+@@ -401,15 +412,15 @@ static ssize_t ad2s1210_clear_fault(struct device *dev,
+ 	int ret;
+ 
+ 	mutex_lock(&st->lock);
+-	gpio_set_value(st->pdata->sample, 0);
++	gpiod_set_value(st->sample, 0);
+ 	/* delay (2 * tck + 20) nano seconds */
+ 	udelay(1);
+-	gpio_set_value(st->pdata->sample, 1);
++	gpiod_set_value(st->sample, 1);
+ 	ret = ad2s1210_config_read(st, AD2S1210_REG_FAULT);
+ 	if (ret < 0)
+ 		goto error_ret;
+-	gpio_set_value(st->pdata->sample, 0);
+-	gpio_set_value(st->pdata->sample, 1);
++	gpiod_set_value(st->sample, 0);
++	gpiod_set_value(st->sample, 1);
+ error_ret:
+ 	mutex_unlock(&st->lock);
+ 
+@@ -466,7 +477,7 @@ static int ad2s1210_read_raw(struct iio_dev *indio_dev,
+ 	s16 vel;
+ 
+ 	mutex_lock(&st->lock);
+-	gpio_set_value(st->pdata->sample, 0);
++	gpiod_set_value(st->sample, 0);
+ 	/* delay (6 * tck + 20) nano seconds */
+ 	udelay(1);
+ 
+@@ -512,7 +523,7 @@ static int ad2s1210_read_raw(struct iio_dev *indio_dev,
+ 	}
+ 
+ error_ret:
+-	gpio_set_value(st->pdata->sample, 1);
++	gpiod_set_value(st->sample, 1);
+ 	/* delay (2 * tck + 20) nano seconds */
+ 	udelay(1);
+ 	mutex_unlock(&st->lock);
+@@ -630,30 +641,32 @@ static const struct iio_info ad2s1210_info = {
+ 
+ static int ad2s1210_setup_gpios(struct ad2s1210_state *st)
+ {
+-	unsigned long flags = st->pdata->gpioin ? GPIOF_DIR_IN : GPIOF_DIR_OUT;
+-	struct gpio ad2s1210_gpios[] = {
+-		{ st->pdata->sample, GPIOF_DIR_IN, "sample" },
+-		{ st->pdata->a[0], flags, "a0" },
+-		{ st->pdata->a[1], flags, "a1" },
+-		{ st->pdata->res[0], flags, "res0" },
+-		{ st->pdata->res[0], flags, "res1" },
++	int ret, i;
++	struct spi_device *spi = st->sdev;
++	struct ad2s1210_gpio *pin;
++	unsigned long flags = st->pdata->gpioin ? GPIOD_IN : GPIOD_OUT_LOW;
++
++	struct ad2s1210_gpio gpios[] = {
++		{.ptr = &st->sample, .name = "sample", .flags = GPIOD_IN},
++		{.ptr = &st->a0, .name = "a0", .flags = flags},
++		{.ptr = &st->a1, .name = "a1", .flags = flags},
++		{.ptr = &st->res0, .name = "res0", .flags = flags},
++		{.ptr = &st->res1, .name = "res1", .flags = flags},
+ 	};
+ 
+-	return gpio_request_array(ad2s1210_gpios, ARRAY_SIZE(ad2s1210_gpios));
+-}
+-
+-static void ad2s1210_free_gpios(struct ad2s1210_state *st)
+-{
+-	unsigned long flags = st->pdata->gpioin ? GPIOF_DIR_IN : GPIOF_DIR_OUT;
+-	struct gpio ad2s1210_gpios[] = {
+-		{ st->pdata->sample, GPIOF_DIR_IN, "sample" },
+-		{ st->pdata->a[0], flags, "a0" },
+-		{ st->pdata->a[1], flags, "a1" },
+-		{ st->pdata->res[0], flags, "res0" },
+-		{ st->pdata->res[0], flags, "res1" },
+-	};
++	for (i = 0; i < ARRAY_SIZE(gpios); i++) {
++		pin = &gpios[i];
++		*pin->ptr = devm_gpiod_get(&spi->dev, pin->name,
++					   pin->flags);
++		if (IS_ERR(pin->ptr)) {
++			ret = PTR_ERR(pin->ptr);
++			dev_err(&spi->dev, "Failed to request %s GPIO: %d\n",
++				pin->name, ret);
++			return ret;
++		}
++	}
+ 
+-	gpio_free_array(ad2s1210_gpios, ARRAY_SIZE(ad2s1210_gpios));
++	return 0;
+ }
+ 
+ static int ad2s1210_probe(struct spi_device *spi)
+@@ -692,7 +705,7 @@ static int ad2s1210_probe(struct spi_device *spi)
+ 
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret)
+-		goto error_free_gpios;
++		return ret;
+ 
+ 	st->fclkin = spi->max_speed_hz;
+ 	spi->mode = SPI_MODE_3;
+@@ -700,10 +713,6 @@ static int ad2s1210_probe(struct spi_device *spi)
+ 	ad2s1210_initial(st);
+ 
+ 	return 0;
+-
+-error_free_gpios:
+-	ad2s1210_free_gpios(st);
+-	return ret;
+ }
+ 
+ static int ad2s1210_remove(struct spi_device *spi)
+@@ -711,7 +720,6 @@ static int ad2s1210_remove(struct spi_device *spi)
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 
+ 	iio_device_unregister(indio_dev);
+-	ad2s1210_free_gpios(iio_priv(indio_dev));
+ 
+ 	return 0;
+ }
+diff --git a/drivers/staging/iio/resolver/ad2s1210.h b/drivers/staging/iio/resolver/ad2s1210.h
+index e9b2147701fc..63d479b20a6c 100644
+--- a/drivers/staging/iio/resolver/ad2s1210.h
++++ b/drivers/staging/iio/resolver/ad2s1210.h
+@@ -12,9 +12,6 @@
+ #define _AD2S1210_H
+ 
+ struct ad2s1210_platform_data {
+-	unsigned int		sample;
+-	unsigned int		a[2];
+-	unsigned int		res[2];
+ 	bool			gpioin;
+ };
+ #endif /* _AD2S1210_H */
+-- 
+2.17.1
