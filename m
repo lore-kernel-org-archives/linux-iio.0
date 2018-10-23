@@ -1,140 +1,178 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:54111 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726857AbeJVMON (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 22 Oct 2018 08:14:13 -0400
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: Martin Kelly <martin@martingkelly.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:37102 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725768AbeJWK5C (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 23 Oct 2018 06:57:02 -0400
+Received: by mail-pg1-f196.google.com with SMTP id c10-v6so19931848pgq.4
+        for <linux-iio@vger.kernel.org>; Mon, 22 Oct 2018 19:35:47 -0700 (PDT)
+Subject: Re: [RFC][PATCH] iio:st_magn: enable device after trigger
+To: Denis CIOCCA <denis.ciocca@st.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
         Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        "Lorenzo Bianconi" <lorenzo.bianconi83@gmail.com>
-Subject: RE: [RFC][PATCH] iio:st_magn: enable device after trigger
-Date: Mon, 22 Oct 2018 03:56:59 +0000
-Message-ID: <c7340331e1c34227b1d513c1054ff8a8@SFHDAG2NODE1.st.com>
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
 References: <20181015015336.21066-1-martin@martingkelly.com>
  <CAA2SeNLH1hTRz5tx0DCtniX2i8iPt=MzeYYO77Y+=Dg9ZOSL0w@mail.gmail.com>
  <811d448f-2e66-8dac-fe25-19a754d0fe99@martingkelly.com>
-Content-Type: text/plain; charset="utf-8"
+ <c7340331e1c34227b1d513c1054ff8a8@SFHDAG2NODE1.st.com>
+From: Martin Kelly <martin@martingkelly.com>
+Message-ID: <054c7b6f-c3fe-4e13-d638-b1618003c4fc@martingkelly.com>
+Date: Mon, 22 Oct 2018 19:35:45 -0700
 MIME-Version: 1.0
+In-Reply-To: <c7340331e1c34227b1d513c1054ff8a8@SFHDAG2NODE1.st.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-SGkgTWFydGluLA0KDQpJIHBlcmZvcm1lZCBmZXcgdGVzdHMgdG9kYXkuDQoNCkhlcmUgaXMgbXkg
-dGhvdWdodHM6DQoNCjEuIEludGVycnVwdHMgU0hPVUxEIGJlIHVzZWQgaW4gbGV2ZWwuIDk5JSBv
-ZiBvdXIgZGV2aWNlcyBzZXQgaW50ZXJydXB0IGxldmVsIHdoZW4gbmV3IGRhdGEgYXJlIGdlbmVy
-YXRlZCBhbmQgcmVzZXQgdGhlIHN0YXR1cyBvZiB0aGUgcGFkIGFmdGVyIGFuIGkyYyByZWFkIG9m
-IHRoZSBvdXRwdXQgcmVnaXN0ZXJzIGlzIHBlcmZvcm1lZC4gSWYgaTJjIHJlYWQgZmFpbHMgb3Ig
-c2Vuc29yIGRpc2FibGUgZmFpbHMsIGludGVycnVwdCBpcyBrZXB0IHNldC4gVGhhdCdzIHdoeSBp
-bnRlcnJ1cHRzIHNob3VsZCBhbHdheXMgYmUgdHJlYXRlZCBpbiBsZXZlbCBtb2RlLiBUaGVyZSBh
-cmUgaW5zdGVhZCBvdGhlciBkZXZpY2VzIChzdWNoIGFzIGxzbTZkc20pIHdoZXJlIHBhZHMgY2Fu
-IGJlIGNvbmZpZ3VyZWQgdG8gZ2VuZXJhdGUgcHVsc2VkIGludGVycnVwdHMgb2YgNzV1cyB3aWR0
-aCwgaW4gdGhpcyBjYXNlIGludGVycnVwdHMgYXJlIGNvbnRpbnVhbGx5IGdlbmVyYXRlZCBpbmRl
-cGVuZGVudGx5IGZyb20gb3V0cHV0IHJlYWRzLiBUaGlzIGxhdGVzdCBjYXNlIHNob3VsZCBiZSB0
-cmVhdGVkIGluc3RlYWQgaW4gZWRnZSBtb2RlLg0KTFNNOURTMSBtYWduIGlzIGNvbXBhdGlibGUg
-d2l0aCBMSVMzTURMLCB0aGF0IGlzIHdvcmtpbmcgYXMgZGVzY3JpYmVkIGluIHRoZSBmaXJzdCBj
-YXNlLg0KDQoyLiBGcm9tIGxvZ2ljYWwgcG9pbnQgb2YgdmlldyBkcml2ZXIgc2hvdWxkIGJlIHJl
-YWR5IHRvIHJlY2VpdmUgaXJxcyBiZWZvcmUgZW5hYmxpbmcgdGhlIHNlbnNvciBpdHNlbGYuIFlv
-dXIgc3VnZ2VzdGlvbiBpcyAnbG9naWNhbGx5JyBhIGJldHRlciBpbXBsZW1lbnRhdGlvbi4gDQoN
-CjMuIEFib3V0IHNwdXJpb3VzIC8gc3Rvcm0gaW50ZXJydXB0cy4gRnJvbSBteSB0ZXN0cyB3aXRo
-IHRoZSAgb3NjaWxsb3BlLCB3aXRoIGhpZ2ggb2RycyAoODBIeiksIGludGVycnVwdHMgaW4gZmFj
-dCBhcmUgZ2VuZXJhdGVkIGJlZm9yZSBpcnEgaXMgcmVxdWVzdGVkLiBUaGlzIGlzIGdlbmVyYWxs
-eSBub3QgYW4gaXNzdWUuIEludHJvZHVjdGlvbiBvZiANCg0KaWlvOiBzdF9zZW5zb3JzOiBoYXJk
-ZW4gaW50ZXJydXB0IGhhbmRsaW5nDQo5MGVmZTA1NTYyOTIxNzY4ZDM0ZTQ0YzAyOTI3MDNlYTMx
-NjhiYThkDQoNCmhhcyBnZW5lcmF0ZWQgYSBwcm9ibGVtIHRob3VnaC4NCg0KSXJxX3RocmVhZCBm
-dW5jdGlvbiBpcyBjaGVja2luZyB0aGUgc3RhdHVzIG9mIGh3X2lycV90cmlnZ2VyIHZhcmlhYmxl
-IHRoYXQgaXMgc2V0IGV4ZWN1dGluZyBzdF9tYWduX3RyaWdfc2V0X3N0YXRlIGZ1bmN0aW9uLg0K
-U28sIGlmIGJldHdlZW4gcmVxdWVzdF9pcnEgYW5kIHN0X21hZ25fdHJpZ19zZXRfc3RhdGUgaW50
-ZXJydXB0cyBhcmUgcmVjZWl2ZWQsIGlycV90aHJlYWQgdHJlYXRzIHRob3NlIGFzIElSUV9OT05F
-LiBNYW55IG9mIHRob3NlIChiZWNhdXNlIG9mIGxldmVsKSBjYXVzZSBkaXNhYmxpbmcgb2YgdGhl
-IElSUS4NCg0KVG8gc3VtbWFyaXplLCB5b3VyIHBhdGNoICh3aXRoIGZldyBtb2RpZmljYXRpb25z
-KSBhcmUgdmFsaWQgdG8gbWUsIGV2ZW4gZm9yIG90aGVyIHNlbnNvcnMgYnV0IGlzIG5vdCBjb3Zl
-cmluZyBhbGwgY2FzZXMuIEZvciBleGFtcGxlIGlmIHNlbnNvciBmYWlscyB0aGUgZGlzYWJsZSBp
-bnRlcnJ1cHRzIGFyZSBzdGlsbCBnZW5lcmF0ZWQgYW5kIG5ldyBlbmFibGUgY291bGQgY2F1c2Ug
-dGhlIHNhbWUgaXNzdWUuDQoNCkkndmUgbW9kaWZpZWQgdGhlIHBhdGNoIHlvdSBwcm9wb3NlIGJl
-Y2F1c2UgaXMgbm90IGNvdmVyaW5nIGZhaWx1cmVzLCBJJ2xsIHRyeSB0byBzZW5kIHRoZSBwYXRj
-aCB0b21vcnJvdyBzaW5jZSBJIGFtIGhhdmluZyBwcm9ibGVtcyB3aXRoIGdpdC1zZW5kLWVtYWls
-IHRocm91Z2ggY29tcGFueSBwcm94eSA6KA0KDQpGZWVkYmFjayBhcmUgdmVyeSB3ZWxjb21lIQ0K
-DQpCZXN0IFJlZ2FyZHMsDQpEZW5pcw0KDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpG
-cm9tOiBEZW5pcyBDSU9DQ0EgDQpTZW50OiBTYXR1cmRheSwgT2N0b2JlciAyMCwgMjAxOCA0OjIy
-IFBNDQpUbzogJ01hcnRpbiBLZWxseScgPG1hcnRpbkBtYXJ0aW5na2VsbHkuY29tPg0KQ2M6IGxp
-bnV4LWlpb0B2Z2VyLmtlcm5lbC5vcmc7IEpvbmF0aGFuIENhbWVyb24gPGppYzIzQGtlcm5lbC5v
-cmc+OyBIYXJ0bXV0IEtuYWFjayA8a25hYWNrLmhAZ214LmRlPjsgTGFycy1QZXRlciBDbGF1c2Vu
-IDxsYXJzQG1ldGFmb28uZGU+OyBQZXRlciBNZWVyd2FsZC1TdGFkbGVyIDxwbWVlcndAcG1lZXJ3
-Lm5ldD47IExvcmVuem8gQmlhbmNvbmkgPGxvcmVuem8uYmlhbmNvbmk4M0BnbWFpbC5jb20+DQpT
-dWJqZWN0OiBSRTogW1JGQ11bUEFUQ0hdIGlpbzpzdF9tYWduOiBlbmFibGUgZGV2aWNlIGFmdGVy
-IHRyaWdnZXINCg0KSGkgTWFydGluLA0KDQpJIGFtIHBlcmZvcm1pbmcgZmV3IHRlc3RzLiBJJ2xs
-IGdpdmUgeW91IGEgZmVlZGJhY2sgdG9tb3Jyb3chDQoNClRoYW5rcywNCkRlbmlzDQoNCg0KLS0t
-LS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IE1hcnRpbiBLZWxseSA8bWFydGluQG1hcnRp
-bmdrZWxseS5jb20+DQpTZW50OiBGcmlkYXksIE9jdG9iZXIgMTksIDIwMTggOTowOCBQTQ0KVG86
-IExvcmVuem8gQmlhbmNvbmkgPGxvcmVuem8uYmlhbmNvbmk4M0BnbWFpbC5jb20+DQpDYzogbGlu
-dXgtaWlvQHZnZXIua2VybmVsLm9yZzsgSm9uYXRoYW4gQ2FtZXJvbiA8amljMjNAa2VybmVsLm9y
-Zz47IEhhcnRtdXQgS25hYWNrIDxrbmFhY2suaEBnbXguZGU+OyBMYXJzLVBldGVyIENsYXVzZW4g
-PGxhcnNAbWV0YWZvby5kZT47IFBldGVyIE1lZXJ3YWxkLVN0YWRsZXIgPHBtZWVyd0BwbWVlcncu
-bmV0PjsgRGVuaXMgQ0lPQ0NBIDxkZW5pcy5jaW9jY2FAc3QuY29tPg0KU3ViamVjdDogUmU6IFtS
-RkNdW1BBVENIXSBpaW86c3RfbWFnbjogZW5hYmxlIGRldmljZSBhZnRlciB0cmlnZ2VyDQoNCk9u
-IDEwLzE1LzE4IDEyOjE5IEFNLCBMb3JlbnpvIEJpYW5jb25pIHdyb3RlOg0KPj4gQ3VycmVudGx5
-LCB3ZSBlbmFibGUgdGhlIGRldmljZSBiZWZvcmUgd2UgZW5hYmxlIHRoZSBkZXZpY2UgdHJpZ2dl
-ci4gDQo+PiBBdCBoaWdoIGZyZXF1ZW5jaWVzLCB0aGlzIGNhbiBjYXVzZSBpbnRlcnJ1cHRzIHRo
-YXQgZG9uJ3QgeWV0IGhhdmUgYSANCj4+IHBvbGwgZnVuY3Rpb24gYXNzb2NpYXRlZCB3aXRoIHRo
-ZW0gYW5kIGFyZSB0aHVzIHRyZWF0ZWQgYXMgc3B1cmlvdXMuDQo+PiBBdCBoaWdoIGZyZXF1ZW5j
-aWVzIHdpdGggbGV2ZWwgaW50ZXJydXB0cywgdGhpcyBjYW4gZXZlbiBjYXVzZSBhbiANCj4+IGlu
-dGVycnVwdCBzdG9ybSBvZiByZXBlYXRlZCBzcHVyaW91cyBpbnRlcnJ1cHRzICh+MTAwLDAwMCBv
-biBteSANCj4+IEJlYWdsZWJvYXJkIHdpdGggdGhlDQo+PiBMU005RFMxIG1hZ25ldG9tZXRlciku
-IElmIHRoZXNlIHJlcGVhdCB0b28gbXVjaCwgdGhlIGludGVycnVwdCB3aWxsIA0KPj4gZ2V0IGRp
-c2FibGVkIGFuZCB0aGUgZGV2aWNlIHdpbGwgc3RvcCBmdW5jdGlvbmluZy4NCj4+DQo+PiBUbyBw
-cmV2ZW50IHRoZXNlIHByb2JsZW1zLCBlbmFibGUgdGhlIGRldmljZSBwcmlvciB0byBlbmFibGlu
-ZyB0aGUgDQo+PiBkZXZpY2UgdHJpZ2dlciwgYW5kIGRpc2FibGUgdGhlIGRpdmVjIHByaW9yIHRv
-IGRpc2FibGluZyB0aGUgdHJpZ2dlci4NCj4+IFRoaXMgbWVhbnMgdGhlcmUncyBubyB3aW5kb3cg
-b2YgdGltZSBkdXJpbmcgd2hpY2ggdGhlIGRldmljZSBjcmVhdGVzIA0KPj4gaW50ZXJydXB0cyBi
-dXQgd2UgaGF2ZSBubyB0cmlnZ2VyIHRvIGFuc3dlciB0aGVtLg0KPj4NCj4gDQo+IEkgaGF2ZSBq
-dXN0IHJldmlld2VkIHRoZSBjb2RlIChub3QgY2FycmllZCBvdXQgYW55IHRlc3RzKSBhbmQgSSBn
-dWVzcyANCj4gdGhpcyBwYXRjaCBpcyBjb3JyZWN0LiBNb3Jlb3ZlciBpZiB0aGUgbWVtb3J5IGFs
-bG9jYXRpb24gaW4gDQo+IHN0X21hZ25fYnVmZmVyX3Bvc3RlbmFibGUgZmFpbHMgd2Ugd2lsbCBl
-bmQgdXAgd2l0aCBhIGRldmljZSANCj4gZ2VuZXJhdGluZyBpbnRlcnJ1cHRzIHdpdGhvdXQgYW55
-IGJ1ZmZlciB0byBjb2xsZWN0IGRhdGEuDQo+IEkgZ3Vlc3MgdGhlcmUgaXMgdGhlIHNhbWUgaXNz
-dWUgaW4gc3RfbWFnbl9idWZmZXJfcHJlZGlzYWJsZSgpLCBpZiANCj4gc3Rfc2Vuc29yc19zZXRf
-ZW5hYmxlIG9yIGlpb190cmlnZ2VyZWRfYnVmZmVyX3ByZWRpc2FibGUgZmFpbHMsIHNob3VsZCAN
-Cj4gd2UgcmVtb3ZlIHRoZSBkYXRhIGJ1ZmZlcj8gTWF5YmUgd2UganVzdCBza2lwIHJldHVybiBj
-b2RlIGZyb20gDQo+IHN0X3NlbnNvcnNfc2V0X2VuYWJsZS4NCj4gQERlbmlzOiBhbnkgaGludHM/
-DQo+IA0KPiBSZWdhcmRzLA0KPiBMb3JlbnpvDQo+IA0KDQpEZW5pcywgYW55IG9waW5pb24/DQoN
-Cj4+IFNpZ25lZC1vZmYtYnk6IE1hcnRpbiBLZWxseSA8bWFydGluQG1hcnRpbmdrZWxseS5jb20+
-DQo+PiAtLS0NCj4+ICAgZHJpdmVycy9paW8vbWFnbmV0b21ldGVyL3N0X21hZ25fYnVmZmVyLmMg
-fCAxMiArKystLS0tLS0tLS0NCj4+ICAgMSBmaWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKSwg
-OSBkZWxldGlvbnMoLSkNCj4+DQo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9paW8vbWFnbmV0b21l
-dGVyL3N0X21hZ25fYnVmZmVyLmMNCj4+IGIvZHJpdmVycy9paW8vbWFnbmV0b21ldGVyL3N0X21h
-Z25fYnVmZmVyLmMNCj4+IGluZGV4IDBhOWU4ZmFkZmE5ZC4uMzdhYjMwNTY2NDY0IDEwMDY0NA0K
-Pj4gLS0tIGEvZHJpdmVycy9paW8vbWFnbmV0b21ldGVyL3N0X21hZ25fYnVmZmVyLmMNCj4+ICsr
-KyBiL2RyaXZlcnMvaWlvL21hZ25ldG9tZXRlci9zdF9tYWduX2J1ZmZlci5jDQo+PiBAQCAtMzAs
-MTEgKzMwLDYgQEAgaW50IHN0X21hZ25fdHJpZ19zZXRfc3RhdGUoc3RydWN0IGlpb190cmlnZ2Vy
-ICp0cmlnLCBib29sIHN0YXRlKQ0KPj4gICAgICAgICAgcmV0dXJuIHN0X3NlbnNvcnNfc2V0X2Rh
-dGFyZWFkeV9pcnEoaW5kaW9fZGV2LCBzdGF0ZSk7DQo+PiAgIH0NCj4+DQo+PiAtc3RhdGljIGlu
-dCBzdF9tYWduX2J1ZmZlcl9wcmVlbmFibGUoc3RydWN0IGlpb19kZXYgKmluZGlvX2RldikgLXsN
-Cj4+IC0gICAgICAgcmV0dXJuIHN0X3NlbnNvcnNfc2V0X2VuYWJsZShpbmRpb19kZXYsIHRydWUp
-Ow0KPj4gLX0NCj4+IC0NCj4+ICAgc3RhdGljIGludCBzdF9tYWduX2J1ZmZlcl9wb3N0ZW5hYmxl
-KHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYpDQo+PiAgIHsNCj4+ICAgICAgICAgIGludCBlcnI7
-DQo+PiBAQCAtNTAsNyArNDUsNyBAQCBzdGF0aWMgaW50IHN0X21hZ25fYnVmZmVyX3Bvc3RlbmFi
-bGUoc3RydWN0IGlpb19kZXYgKmluZGlvX2RldikNCj4+ICAgICAgICAgIGlmIChlcnIgPCAwKQ0K
-Pj4gICAgICAgICAgICAgICAgICBnb3RvIHN0X21hZ25fYnVmZmVyX3Bvc3RlbmFibGVfZXJyb3I7
-DQo+Pg0KPj4gLSAgICAgICByZXR1cm4gZXJyOw0KPj4gKyAgICAgICByZXR1cm4gc3Rfc2Vuc29y
-c19zZXRfZW5hYmxlKGluZGlvX2RldiwgdHJ1ZSk7DQo+Pg0KPj4gICBzdF9tYWduX2J1ZmZlcl9w
-b3N0ZW5hYmxlX2Vycm9yOg0KPj4gICAgICAgICAga2ZyZWUobWRhdGEtPmJ1ZmZlcl9kYXRhKTsN
-Cj4+IEBAIC02MywxMSArNTgsMTEgQEAgc3RhdGljIGludCBzdF9tYWduX2J1ZmZlcl9wcmVkaXNh
-YmxlKHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYpDQo+PiAgICAgICAgICBpbnQgZXJyOw0KPj4g
-ICAgICAgICAgc3RydWN0IHN0X3NlbnNvcl9kYXRhICptZGF0YSA9IGlpb19wcml2KGluZGlvX2Rl
-dik7DQo+Pg0KPj4gLSAgICAgICBlcnIgPSBpaW9fdHJpZ2dlcmVkX2J1ZmZlcl9wcmVkaXNhYmxl
-KGluZGlvX2Rldik7DQo+PiArICAgICAgIGVyciA9IHN0X3NlbnNvcnNfc2V0X2VuYWJsZShpbmRp
-b19kZXYsIGZhbHNlKTsNCj4+ICAgICAgICAgIGlmIChlcnIgPCAwKQ0KPj4gICAgICAgICAgICAg
-ICAgICBnb3RvIHN0X21hZ25fYnVmZmVyX3ByZWRpc2FibGVfZXJyb3I7DQo+Pg0KPj4gLSAgICAg
-ICBlcnIgPSBzdF9zZW5zb3JzX3NldF9lbmFibGUoaW5kaW9fZGV2LCBmYWxzZSk7DQo+PiArICAg
-ICAgIGVyciA9IGlpb190cmlnZ2VyZWRfYnVmZmVyX3ByZWRpc2FibGUoaW5kaW9fZGV2KTsNCj4+
-DQo+PiAgIHN0X21hZ25fYnVmZmVyX3ByZWRpc2FibGVfZXJyb3I6DQo+PiAgICAgICAgICBrZnJl
-ZShtZGF0YS0+YnVmZmVyX2RhdGEpOw0KPj4gQEAgLTc1LDcgKzcwLDYgQEAgc3RhdGljIGludCBz
-dF9tYWduX2J1ZmZlcl9wcmVkaXNhYmxlKHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYpDQo+PiAg
-IH0NCj4+DQo+PiAgIHN0YXRpYyBjb25zdCBzdHJ1Y3QgaWlvX2J1ZmZlcl9zZXR1cF9vcHMgc3Rf
-bWFnbl9idWZmZXJfc2V0dXBfb3BzID0gew0KPj4gLSAgICAgICAucHJlZW5hYmxlID0gJnN0X21h
-Z25fYnVmZmVyX3ByZWVuYWJsZSwNCj4+ICAgICAgICAgIC5wb3N0ZW5hYmxlID0gJnN0X21hZ25f
-YnVmZmVyX3Bvc3RlbmFibGUsDQo+PiAgICAgICAgICAucHJlZGlzYWJsZSA9ICZzdF9tYWduX2J1
-ZmZlcl9wcmVkaXNhYmxlLA0KPj4gICB9Ow0KPj4gLS0NCj4+IDIuMTEuMA0KPj4NCg0K
+On 10/21/18 8:56 PM, Denis CIOCCA wrote:
+> Hi Martin,
+> 
+> I performed few tests today.
+> 
+> Here is my thoughts:
+> 
+> 1. Interrupts SHOULD be used in level. 99% of our devices set interrupt level when new data are generated and reset the status of the pad after an i2c read of the output registers is performed. If i2c read fails or sensor disable fails, interrupt is kept set. That's why interrupts should always be treated in level mode. There are instead other devices (such as lsm6dsm) where pads can be configured to generate pulsed interrupts of 75us width, in this case interrupts are continually generated independently from output reads. This latest case should be treated instead in edge mode.
+> LSM9DS1 magn is compatible with LIS3MDL, that is working as described in the first case.
+> 
+> 2. From logical point of view driver should be ready to receive irqs before enabling the sensor itself. Your suggestion is 'logically' a better implementation.
+> 
+> 3. About spurious / storm interrupts. From my tests with the  oscillope, with high odrs (80Hz), interrupts in fact are generated before irq is requested. This is generally not an issue. Introduction of
+> 
+> iio: st_sensors: harden interrupt handling
+> 90efe05562921768d34e44c0292703ea3168ba8d
+> 
+> has generated a problem though.
+> 
+> Irq_thread function is checking the status of hw_irq_trigger variable that is set executing st_magn_trig_set_state function.
+> So, if between request_irq and st_magn_trig_set_state interrupts are received, irq_thread treats those as IRQ_NONE. Many of those (because of level) cause disabling of the IRQ.
+> 
+> To summarize, your patch (with few modifications) are valid to me, even for other sensors but is not covering all cases. For example if sensor fails the disable interrupts are still generated and new enable could cause the same issue.
+> 
+> I've modified the patch you propose because is not covering failures, I'll try to send the patch tomorrow since I am having problems with git-send-email through company proxy :(
+> 
+
+Thank you for the very thorough analysis. It sounds like you observed 
+the same behavior that I did (CPU spike and interrupts running as fast 
+as possible, returning IRQ_NONE). It's especially noticeable with high 
+ODRs but occurs all the time.
+
+I look forward to your patch!
+
+> Feedback are very welcome!
+> 
+> Best Regards,
+> Denis
+> 
+> 
+> -----Original Message-----
+> From: Denis CIOCCA
+> Sent: Saturday, October 20, 2018 4:22 PM
+> To: 'Martin Kelly' <martin@martingkelly.com>
+> Cc: linux-iio@vger.kernel.org; Jonathan Cameron <jic23@kernel.org>; Hartmut Knaack <knaack.h@gmx.de>; Lars-Peter Clausen <lars@metafoo.de>; Peter Meerwald-Stadler <pmeerw@pmeerw.net>; Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+> Subject: RE: [RFC][PATCH] iio:st_magn: enable device after trigger
+> 
+> Hi Martin,
+> 
+> I am performing few tests. I'll give you a feedback tomorrow!
+> 
+> Thanks,
+> Denis
+> 
+> 
+> -----Original Message-----
+> From: Martin Kelly <martin@martingkelly.com>
+> Sent: Friday, October 19, 2018 9:08 PM
+> To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+> Cc: linux-iio@vger.kernel.org; Jonathan Cameron <jic23@kernel.org>; Hartmut Knaack <knaack.h@gmx.de>; Lars-Peter Clausen <lars@metafoo.de>; Peter Meerwald-Stadler <pmeerw@pmeerw.net>; Denis CIOCCA <denis.ciocca@st.com>
+> Subject: Re: [RFC][PATCH] iio:st_magn: enable device after trigger
+> 
+> On 10/15/18 12:19 AM, Lorenzo Bianconi wrote:
+>>> Currently, we enable the device before we enable the device trigger.
+>>> At high frequencies, this can cause interrupts that don't yet have a
+>>> poll function associated with them and are thus treated as spurious.
+>>> At high frequencies with level interrupts, this can even cause an
+>>> interrupt storm of repeated spurious interrupts (~100,000 on my
+>>> Beagleboard with the
+>>> LSM9DS1 magnetometer). If these repeat too much, the interrupt will
+>>> get disabled and the device will stop functioning.
+>>>
+>>> To prevent these problems, enable the device prior to enabling the
+>>> device trigger, and disable the divec prior to disabling the trigger.
+>>> This means there's no window of time during which the device creates
+>>> interrupts but we have no trigger to answer them.
+>>>
+>>
+>> I have just reviewed the code (not carried out any tests) and I guess
+>> this patch is correct. Moreover if the memory allocation in
+>> st_magn_buffer_postenable fails we will end up with a device
+>> generating interrupts without any buffer to collect data.
+>> I guess there is the same issue in st_magn_buffer_predisable(), if
+>> st_sensors_set_enable or iio_triggered_buffer_predisable fails, should
+>> we remove the data buffer? Maybe we just skip return code from
+>> st_sensors_set_enable.
+>> @Denis: any hints?
+>>
+>> Regards,
+>> Lorenzo
+>>
+> 
+> Denis, any opinion?
+> 
+>>> Signed-off-by: Martin Kelly <martin@martingkelly.com>
+>>> ---
+>>>    drivers/iio/magnetometer/st_magn_buffer.c | 12 +++---------
+>>>    1 file changed, 3 insertions(+), 9 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/magnetometer/st_magn_buffer.c
+>>> b/drivers/iio/magnetometer/st_magn_buffer.c
+>>> index 0a9e8fadfa9d..37ab30566464 100644
+>>> --- a/drivers/iio/magnetometer/st_magn_buffer.c
+>>> +++ b/drivers/iio/magnetometer/st_magn_buffer.c
+>>> @@ -30,11 +30,6 @@ int st_magn_trig_set_state(struct iio_trigger *trig, bool state)
+>>>           return st_sensors_set_dataready_irq(indio_dev, state);
+>>>    }
+>>>
+>>> -static int st_magn_buffer_preenable(struct iio_dev *indio_dev) -{
+>>> -       return st_sensors_set_enable(indio_dev, true);
+>>> -}
+>>> -
+>>>    static int st_magn_buffer_postenable(struct iio_dev *indio_dev)
+>>>    {
+>>>           int err;
+>>> @@ -50,7 +45,7 @@ static int st_magn_buffer_postenable(struct iio_dev *indio_dev)
+>>>           if (err < 0)
+>>>                   goto st_magn_buffer_postenable_error;
+>>>
+>>> -       return err;
+>>> +       return st_sensors_set_enable(indio_dev, true);
+>>>
+>>>    st_magn_buffer_postenable_error:
+>>>           kfree(mdata->buffer_data);
+>>> @@ -63,11 +58,11 @@ static int st_magn_buffer_predisable(struct iio_dev *indio_dev)
+>>>           int err;
+>>>           struct st_sensor_data *mdata = iio_priv(indio_dev);
+>>>
+>>> -       err = iio_triggered_buffer_predisable(indio_dev);
+>>> +       err = st_sensors_set_enable(indio_dev, false);
+>>>           if (err < 0)
+>>>                   goto st_magn_buffer_predisable_error;
+>>>
+>>> -       err = st_sensors_set_enable(indio_dev, false);
+>>> +       err = iio_triggered_buffer_predisable(indio_dev);
+>>>
+>>>    st_magn_buffer_predisable_error:
+>>>           kfree(mdata->buffer_data);
+>>> @@ -75,7 +70,6 @@ static int st_magn_buffer_predisable(struct iio_dev *indio_dev)
+>>>    }
+>>>
+>>>    static const struct iio_buffer_setup_ops st_magn_buffer_setup_ops = {
+>>> -       .preenable = &st_magn_buffer_preenable,
+>>>           .postenable = &st_magn_buffer_postenable,
+>>>           .predisable = &st_magn_buffer_predisable,
+>>>    };
+>>> --
+>>> 2.11.0
+>>>
+>
