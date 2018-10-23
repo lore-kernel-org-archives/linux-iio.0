@@ -1,76 +1,81 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:46750 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726592AbeJ2ARZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 28 Oct 2018 20:17:25 -0400
-Date: Sun, 28 Oct 2018 15:32:27 +0000
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Charles-Antoine Couret <charles-antoine.couret@essensium.com>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: [PATCH V3 1/2] iio:dac:ti-dac7311 Add driver for Texas
- Instrument DAC7311
-Message-ID: <20181028153227.768d3966@archlinux>
-In-Reply-To: <20181022210340.1136-1-charles-antoine.couret@essensium.com>
-References: <20181022210340.1136-1-charles-antoine.couret@essensium.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from mail1.kuutio.org ([92.222.216.83]:45744 "EHLO mail1.kuutio.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727829AbeJXDSp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 23 Oct 2018 23:18:45 -0400
+From: Oskari Lemmela <oskari@lemmela.net>
+To: Linus Walleij <linus.walleij@linaro.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Maxime Ripard <maxime.ripard@bootlin.com>,
+        Jonathan Cameron <jic23@kernel.org>
+Cc: Lee Jones <lee.jones@linaro.org>, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Vasily Khoruzhick <anarsoul@gmail.com>,
+        Quentin Schulz <quentin.schulz@free-electrons.com>,
+        Oskari Lemmela <oskari@lemmela.net>, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+        linux-iio@vger.kernel.org
+Subject: [PATCH v5 00/11] AXP8x3 AC and battery power supply support
+Date: Tue, 23 Oct 2018 21:53:19 +0300
+Message-Id: <20181023185330.10472-1-oskari@lemmela.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 22 Oct 2018 23:03:39 +0200
-Charles-Antoine Couret <charles-antoine.couret@essensium.com> wrote:
+AXP813 AC power supply support with input current and
+voltage limiting support.
 
-> It is a driver for Texas Instruments 8/10/12-bit 1-channel
-> compatible with DAC6311 and DAC5311 chips.
-> 
-> Datasheet of this chip:
-> http://www.ti.com/lit/ds/symlink/dac7311.pdf
-> 
-> Signed-off-by: Charles-Antoine Couret <charles-antoine.couret@essensium.com>
+AXP803 AC and battery power supply support.
 
-Only the same point around not defining out the of table when
-CONFIG_OF isn't set (as it's used by ACPI sometimes).
+Changes in v5:
+* Return correct input current limit for values 0x6 and 0x7
+* Add specific compatibles for AXP803
+* Change commit messages
+* Add Vasily Khoruzhick Pinebook DTS patch
 
-I would just have fixed that up, but there seems to be just enough stuff that
-needs changing in the binding patch that I'd rather we went to a v4 and
-gave Rob plenty of time to give the binding one last look.
+Changes in v4:
+* Change order of axp20x-gpio in axp20x.c
+* Fix indentation and spaces to tabs in axp20x.c
 
-...
+Changes in v3:
+* Reorder ac_power_supply DT node
+* Rename axp20x_ac_power_set_property function
+* Split mfd commit 
 
-> +
-> +#ifdef CONFIG_OF
-> +static const struct of_device_id ti_dac_of_id[] = {
-> +	{ .compatible = "ti,dac5311" },
-> +	{ .compatible = "ti,dac6311" },
-> +	{ .compatible = "ti,dac7311" },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(of, ti_dac_of_id);
-> +#endif
-> +
-> +static const struct spi_device_id ti_dac_spi_id[] = {
-> +	{ "dac5311", ID_DAC5311  },
-> +	{ "dac6311", ID_DAC6311 },
-> +	{ "dac7311", ID_DAC7311 },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(spi, ti_dac_spi_id);
-> +
-> +static struct spi_driver ti_dac_driver = {
-> +	.driver = {
-> +		.name		= "ti-dac7311",
-> +		.of_match_table	= of_match_ptr(ti_dac_of_id),
+Changes in v2:
+* Reuse axp813 compatibles for axp803
+* Refactor axp20x_ac_power.c
 
-As with previous driver, please don't make of_match_table presence
-dependent on CONFIG_OF as it's used by ACPI as well (odd but true!)
+Oskari Lemmela (10):
+  dt-bindings: power: supply: axp20x: add AXP813 AC power DT binding
+  dt-bindings: power: supply: axp20x: add AXP803 power bindings
+  dt-bindings: gpio: gpio-axp209: add AXP803 GPIO bindings
+  dt-bindings: iio: adc: add AXP803 ADC bindings
+  ARM: dts: axp81x: add AC power supply subnode
+  arm64: dts: allwinner: axp803: add AC and battery power supplies
+  arm64: dts: allwinner: a64: sopine-baseboard: enable power supplies
+  power: supply: add AC power supply driver for AXP813
+  mfd: axp20x: Add AC power supply cell for AXP813
+  mfd: axp20x: Add supported cells for AXP803
 
-> +	},
-> +	.probe	  = ti_dac_probe,
-> +	.remove   = ti_dac_remove,
-> +	.id_table = ti_dac_spi_id,
-> +};
-> +module_spi_driver(ti_dac_driver);
-> +
-> +MODULE_AUTHOR("Charles-Antoine Couret <charles-antoine.couret@essensium.com>");
-> +MODULE_DESCRIPTION("Texas Instruments 8/10/12-bit 1-channel DAC driver");
-> +MODULE_LICENSE("GPL v2");
+Vasily Khoruzhick (1):
+  arm64: dts: allwinner: a64: pinebook: enable power supplies
+
+ .../devicetree/bindings/gpio/gpio-axp209.txt  |  2 +
+ .../bindings/iio/adc/axp20x_adc.txt           |  2 +
+ .../bindings/power/supply/axp20x_ac_power.txt |  4 +
+ .../bindings/power/supply/axp20x_battery.txt  |  1 +
+ arch/arm/boot/dts/axp81x.dtsi                 |  5 +
+ arch/arm64/boot/dts/allwinner/axp803.dtsi     | 33 +++++++
+ .../dts/allwinner/sun50i-a64-pinebook.dts     |  8 ++
+ .../allwinner/sun50i-a64-sopine-baseboard.dts |  8 ++
+ drivers/mfd/axp20x.c                          | 20 ++++
+ drivers/power/supply/axp20x_ac_power.c        | 94 +++++++++++++++++++
+ include/linux/mfd/axp20x.h                    |  1 +
+ 11 files changed, 178 insertions(+)
+
+-- 
+2.17.1
