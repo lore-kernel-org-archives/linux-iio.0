@@ -19,45 +19,45 @@ Cc: Lee Jones <lee.jones@linaro.org>,
 	linux-arm-kernel@lists.infradead.org,
 	linux-gpio@vger.kernel.org,
 	linux-iio@vger.kernel.org
-Subject: [PATCH v5 01/11] dt-bindings: power: supply: axp20x: add AXP813 AC power DT binding
-Date: Tue, 23 Oct 2018 21:53:20 +0300
-Message-Id: <20181023185330.10472-2-oskari@lemmela.net>
+Subject: [PATCH v5 02/11] dt-bindings: power: supply: axp20x: add AXP803 power bindings
+Date: Tue, 23 Oct 2018 21:53:21 +0300
+Message-Id: <20181023185330.10472-3-oskari@lemmela.net>
 In-Reply-To: <20181023185330.10472-1-oskari@lemmela.net>
 References: <20181023185330.10472-1-oskari@lemmela.net>
 List-ID: <linux-iio@vger.kernel.org>
 
-The AXP803/AXP813 AC power supply can limit input current and voltage.
+The AXP803 power supplies are compatible with AXP813, but
+add specific compatibles for them.
 
 Signed-off-by: Oskari Lemmela <oskari@lemmela.net>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Quentin Schulz <quentin.schulz@bootlin.com>
-Reviewed-by: Chen-Yu Tsai <wens@csie.org>
-Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-Tested-by: Vasily Khoruzhick <anarsoul@gmail.com>
 ---
- .../devicetree/bindings/power/supply/axp20x_ac_power.txt       | 3 +++
- 1 file changed, 3 insertions(+)
+ .../devicetree/bindings/power/supply/axp20x_ac_power.txt         | 1 +
+ .../devicetree/bindings/power/supply/axp20x_battery.txt          | 1 +
+ 2 files changed, 2 insertions(+)
 
 diff --git a/Documentation/devicetree/bindings/power/supply/axp20x_ac_power.txt b/Documentation/devicetree/bindings/power/supply/axp20x_ac_power.txt
-index 826e8a879121..7a1fb532abe5 100644
+index 7a1fb532abe5..acdeb4b8f4cc 100644
 --- a/Documentation/devicetree/bindings/power/supply/axp20x_ac_power.txt
 +++ b/Documentation/devicetree/bindings/power/supply/axp20x_ac_power.txt
 @@ -4,6 +4,7 @@ Required Properties:
   - compatible: One of:
  			"x-powers,axp202-ac-power-supply"
  			"x-powers,axp221-ac-power-supply"
-+			"x-powers,axp813-ac-power-supply"
++			"x-powers,axp803-ac-power-supply"
+ 			"x-powers,axp813-ac-power-supply"
  
  This node is a subnode of the axp20x PMIC.
+diff --git a/Documentation/devicetree/bindings/power/supply/axp20x_battery.txt b/Documentation/devicetree/bindings/power/supply/axp20x_battery.txt
+index 41916f69902c..780ebd7e3b84 100644
+--- a/Documentation/devicetree/bindings/power/supply/axp20x_battery.txt
++++ b/Documentation/devicetree/bindings/power/supply/axp20x_battery.txt
+@@ -4,6 +4,7 @@ Required Properties:
+  - compatible, one of:
+ 			"x-powers,axp209-battery-power-supply"
+ 			"x-powers,axp221-battery-power-supply"
++			"x-powers,axp803-battery-power-supply"
+ 			"x-powers,axp813-battery-power-supply"
  
-@@ -13,6 +14,8 @@ reading ADC channels from the AXP20X ADC.
- The AXP22X is only able to tell if an AC power supply is present and
- usable.
- 
-+AXP813/AXP803 are able to limit current and supply voltage
-+
- Example:
- 
- &axp209 {
+ This node is a subnode of its respective PMIC DT node.
 -- 
 2.17.1
