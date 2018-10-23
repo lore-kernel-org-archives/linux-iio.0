@@ -1,81 +1,63 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail1.kuutio.org ([92.222.216.83]:45744 "EHLO mail1.kuutio.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727829AbeJXDSp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 23 Oct 2018 23:18:45 -0400
+Return-Path: <SRS0=zrzp=ND=lemmela.net=oskari@kernel.org>
 From: Oskari Lemmela <oskari@lemmela.net>
 To: Linus Walleij <linus.walleij@linaro.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        Jonathan Cameron <jic23@kernel.org>
-Cc: Lee Jones <lee.jones@linaro.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Vasily Khoruzhick <anarsoul@gmail.com>,
-        Quentin Schulz <quentin.schulz@free-electrons.com>,
-        Oskari Lemmela <oskari@lemmela.net>, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
-        linux-iio@vger.kernel.org
-Subject: [PATCH v5 00/11] AXP8x3 AC and battery power supply support
-Date: Tue, 23 Oct 2018 21:53:19 +0300
-Message-Id: <20181023185330.10472-1-oskari@lemmela.net>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	Sebastian Reichel <sre@kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Chen-Yu Tsai <wens@csie.org>,
+	Maxime Ripard <maxime.ripard@bootlin.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Lee Jones <lee.jones@linaro.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Vasily Khoruzhick <anarsoul@gmail.com>,
+	Quentin Schulz <quentin.schulz@free-electrons.com>,
+	Oskari Lemmela <oskari@lemmela.net>,
+	linux-pm@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-gpio@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: [PATCH v5 01/11] dt-bindings: power: supply: axp20x: add AXP813 AC power DT binding
+Date: Tue, 23 Oct 2018 21:53:20 +0300
+Message-Id: <20181023185330.10472-2-oskari@lemmela.net>
+In-Reply-To: <20181023185330.10472-1-oskari@lemmela.net>
+References: <20181023185330.10472-1-oskari@lemmela.net>
+List-ID: <linux-iio@vger.kernel.org>
 
-AXP813 AC power supply support with input current and
-voltage limiting support.
+The AXP803/AXP813 AC power supply can limit input current and voltage.
 
-AXP803 AC and battery power supply support.
+Signed-off-by: Oskari Lemmela <oskari@lemmela.net>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Quentin Schulz <quentin.schulz@bootlin.com>
+Reviewed-by: Chen-Yu Tsai <wens@csie.org>
+Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Tested-by: Vasily Khoruzhick <anarsoul@gmail.com>
+---
+ .../devicetree/bindings/power/supply/axp20x_ac_power.txt       | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Changes in v5:
-* Return correct input current limit for values 0x6 and 0x7
-* Add specific compatibles for AXP803
-* Change commit messages
-* Add Vasily Khoruzhick Pinebook DTS patch
-
-Changes in v4:
-* Change order of axp20x-gpio in axp20x.c
-* Fix indentation and spaces to tabs in axp20x.c
-
-Changes in v3:
-* Reorder ac_power_supply DT node
-* Rename axp20x_ac_power_set_property function
-* Split mfd commit 
-
-Changes in v2:
-* Reuse axp813 compatibles for axp803
-* Refactor axp20x_ac_power.c
-
-Oskari Lemmela (10):
-  dt-bindings: power: supply: axp20x: add AXP813 AC power DT binding
-  dt-bindings: power: supply: axp20x: add AXP803 power bindings
-  dt-bindings: gpio: gpio-axp209: add AXP803 GPIO bindings
-  dt-bindings: iio: adc: add AXP803 ADC bindings
-  ARM: dts: axp81x: add AC power supply subnode
-  arm64: dts: allwinner: axp803: add AC and battery power supplies
-  arm64: dts: allwinner: a64: sopine-baseboard: enable power supplies
-  power: supply: add AC power supply driver for AXP813
-  mfd: axp20x: Add AC power supply cell for AXP813
-  mfd: axp20x: Add supported cells for AXP803
-
-Vasily Khoruzhick (1):
-  arm64: dts: allwinner: a64: pinebook: enable power supplies
-
- .../devicetree/bindings/gpio/gpio-axp209.txt  |  2 +
- .../bindings/iio/adc/axp20x_adc.txt           |  2 +
- .../bindings/power/supply/axp20x_ac_power.txt |  4 +
- .../bindings/power/supply/axp20x_battery.txt  |  1 +
- arch/arm/boot/dts/axp81x.dtsi                 |  5 +
- arch/arm64/boot/dts/allwinner/axp803.dtsi     | 33 +++++++
- .../dts/allwinner/sun50i-a64-pinebook.dts     |  8 ++
- .../allwinner/sun50i-a64-sopine-baseboard.dts |  8 ++
- drivers/mfd/axp20x.c                          | 20 ++++
- drivers/power/supply/axp20x_ac_power.c        | 94 +++++++++++++++++++
- include/linux/mfd/axp20x.h                    |  1 +
- 11 files changed, 178 insertions(+)
-
+diff --git a/Documentation/devicetree/bindings/power/supply/axp20x_ac_power.txt b/Documentation/devicetree/bindings/power/supply/axp20x_ac_power.txt
+index 826e8a879121..7a1fb532abe5 100644
+--- a/Documentation/devicetree/bindings/power/supply/axp20x_ac_power.txt
++++ b/Documentation/devicetree/bindings/power/supply/axp20x_ac_power.txt
+@@ -4,6 +4,7 @@ Required Properties:
+  - compatible: One of:
+ 			"x-powers,axp202-ac-power-supply"
+ 			"x-powers,axp221-ac-power-supply"
++			"x-powers,axp813-ac-power-supply"
+ 
+ This node is a subnode of the axp20x PMIC.
+ 
+@@ -13,6 +14,8 @@ reading ADC channels from the AXP20X ADC.
+ The AXP22X is only able to tell if an AC power supply is present and
+ usable.
+ 
++AXP813/AXP803 are able to limit current and supply voltage
++
+ Example:
+ 
+ &axp209 {
 -- 
 2.17.1
