@@ -1,284 +1,151 @@
-Return-Path: <SRS0=MIvi=NE=gmail.com=nishadkamdar@kernel.org>
-Date: Wed, 24 Oct 2018 19:40:42 +0530
-From: Nishad Kamdar <nishadkamdar@gmail.com>
-To: Slawomir Stepien <sst@poczta.fm>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] staging: iio: ad2s1210: Switch to the gpio descriptor
- interface
-Message-ID: <20181024141037.GA17297@nishad>
-References: <20181023190437.GA12974@nishad>
- <20181024065249.GA19150@x220.localdomain>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <20181024065249.GA19150@x220.localdomain>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:39461 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725952AbeJXLl0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 24 Oct 2018 07:41:26 -0400
+Received: by mail-pl1-f196.google.com with SMTP id e67-v6so1567406plb.6
+        for <linux-iio@vger.kernel.org>; Tue, 23 Oct 2018 20:15:20 -0700 (PDT)
+From: Martin Kelly <martin@martingkelly.com>
+To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Cc: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Denis Ciocca <denis.ciocca@st.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Martin Kelly <martin@martingkelly.com>
+Subject: [PATCH 1/2] iio:magnetometer: st_magn: add LSM9DS1 support
+Date: Tue, 23 Oct 2018 18:39:47 -0700
+Message-Id: <20181024013948.16326-1-martin@martingkelly.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, Oct 24, 2018 at 08:52:49AM +0200, Slawomir Stepien wrote:
-> On paź 24, 2018 00:34, Nishad Kamdar wrote:
-> > Use the gpiod interface instead of the deprecated old non-descriptor
-> > interface.
-> 
-> Hi Nishad
-> 
-> Few more comments from me below.
-> 
-> > Signed-off-by: Nishad Kamdar <nishadkamdar@gmail.com>
-> > ---
-> > Changes in v3:
-> >  - Use a pointer to pointer for gpio_desc in
-> >    struct ad2s1210_gpio as it will be used to
-> >    modify a pointer.
-> >  - Use dot notation to initialize the structure.
-> >  - Use a pointer variable to avoid writing gpios[i].
-> > Changes in v2:
-> >  - Use the spi_device struct embedded in st instead
-> >    of passing it as an argument to ad2s1210_setup_gpios().
-> >  - Use an array of structs to reduce redundant code in
-> >    in ad2s1210_setup_gpios().
-> >  - Remove ad2s1210_free_gpios() as devm API is being used.
-> > ---
-> >  drivers/staging/iio/resolver/ad2s1210.c | 92 ++++++++++++++-----------
-> >  drivers/staging/iio/resolver/ad2s1210.h |  3 -
-> >  2 files changed, 50 insertions(+), 45 deletions(-)
-> > 
-> > diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
-> > index ac13b99bd9cb..fbf0cc722979 100644
-> > --- a/drivers/staging/iio/resolver/ad2s1210.c
-> > +++ b/drivers/staging/iio/resolver/ad2s1210.c
-> > @@ -15,7 +15,7 @@
-> >  #include <linux/slab.h>
-> >  #include <linux/sysfs.h>
-> >  #include <linux/delay.h>
-> > -#include <linux/gpio.h>
-> > +#include <linux/gpio/consumer.h>
-> >  #include <linux/module.h>
-> >  
-> >  #include <linux/iio/iio.h>
-> > @@ -69,10 +69,21 @@ enum ad2s1210_mode {
-> >  
-> >  static const unsigned int ad2s1210_resolution_value[] = { 10, 12, 14, 16 };
-> >  
-> > +struct ad2s1210_gpio {
-> > +	struct gpio_desc **ptr;
-> > +	const char *name;
-> > +	unsigned long flags;
-> > +};
-> > +
-> >  struct ad2s1210_state {
-> >  	const struct ad2s1210_platform_data *pdata;
-> >  	struct mutex lock;
-> >  	struct spi_device *sdev;
-> > +	struct gpio_desc *sample;
-> > +	struct gpio_desc *a0;
-> > +	struct gpio_desc *a1;
-> > +	struct gpio_desc *res0;
-> > +	struct gpio_desc *res1;
-> >  	unsigned int fclkin;
-> >  	unsigned int fexcit;
-> >  	bool hysteresis;
-> > @@ -91,8 +102,8 @@ static const int ad2s1210_mode_vals[4][2] = {
-> >  static inline void ad2s1210_set_mode(enum ad2s1210_mode mode,
-> >  				     struct ad2s1210_state *st)
-> >  {
-> > -	gpio_set_value(st->pdata->a[0], ad2s1210_mode_vals[mode][0]);
-> > -	gpio_set_value(st->pdata->a[1], ad2s1210_mode_vals[mode][1]);
-> > +	gpiod_set_value(st->a0, ad2s1210_mode_vals[mode][0]);
-> > +	gpiod_set_value(st->a1, ad2s1210_mode_vals[mode][1]);
-> >  	st->mode = mode;
-> >  }
-> >  
-> > @@ -152,8 +163,8 @@ int ad2s1210_update_frequency_control_word(struct ad2s1210_state *st)
-> >  
-> >  static unsigned char ad2s1210_read_resolution_pin(struct ad2s1210_state *st)
-> >  {
-> > -	int resolution = (gpio_get_value(st->pdata->res[0]) << 1) |
-> > -			  gpio_get_value(st->pdata->res[1]);
-> > +	int resolution = (gpiod_get_value(st->res0) << 1) |
-> > +			  gpiod_get_value(st->res1);
-> >  
-> >  	return ad2s1210_resolution_value[resolution];
-> >  }
-> > @@ -164,10 +175,10 @@ static const int ad2s1210_res_pins[4][2] = {
-> >  
-> >  static inline void ad2s1210_set_resolution_pin(struct ad2s1210_state *st)
-> >  {
-> > -	gpio_set_value(st->pdata->res[0],
-> > -		       ad2s1210_res_pins[(st->resolution - 10) / 2][0]);
-> > -	gpio_set_value(st->pdata->res[1],
-> > -		       ad2s1210_res_pins[(st->resolution - 10) / 2][1]);
-> > +	gpiod_set_value(st->res0,
-> > +			ad2s1210_res_pins[(st->resolution - 10) / 2][0]);
-> > +	gpiod_set_value(st->res1,
-> > +			ad2s1210_res_pins[(st->resolution - 10) / 2][1]);
-> >  }
-> >  
-> >  static inline int ad2s1210_soft_reset(struct ad2s1210_state *st)
-> > @@ -401,15 +412,15 @@ static ssize_t ad2s1210_clear_fault(struct device *dev,
-> >  	int ret;
-> >  
-> >  	mutex_lock(&st->lock);
-> > -	gpio_set_value(st->pdata->sample, 0);
-> > +	gpiod_set_value(st->sample, 0);
-> >  	/* delay (2 * tck + 20) nano seconds */
-> >  	udelay(1);
-> > -	gpio_set_value(st->pdata->sample, 1);
-> > +	gpiod_set_value(st->sample, 1);
-> >  	ret = ad2s1210_config_read(st, AD2S1210_REG_FAULT);
-> >  	if (ret < 0)
-> >  		goto error_ret;
-> > -	gpio_set_value(st->pdata->sample, 0);
-> > -	gpio_set_value(st->pdata->sample, 1);
-> > +	gpiod_set_value(st->sample, 0);
-> > +	gpiod_set_value(st->sample, 1);
-> >  error_ret:
-> >  	mutex_unlock(&st->lock);
-> >  
-> > @@ -466,7 +477,7 @@ static int ad2s1210_read_raw(struct iio_dev *indio_dev,
-> >  	s16 vel;
-> >  
-> >  	mutex_lock(&st->lock);
-> > -	gpio_set_value(st->pdata->sample, 0);
-> > +	gpiod_set_value(st->sample, 0);
-> >  	/* delay (6 * tck + 20) nano seconds */
-> >  	udelay(1);
-> >  
-> > @@ -512,7 +523,7 @@ static int ad2s1210_read_raw(struct iio_dev *indio_dev,
-> >  	}
-> >  
-> >  error_ret:
-> > -	gpio_set_value(st->pdata->sample, 1);
-> > +	gpiod_set_value(st->sample, 1);
-> >  	/* delay (2 * tck + 20) nano seconds */
-> >  	udelay(1);
-> >  	mutex_unlock(&st->lock);
-> > @@ -630,30 +641,32 @@ static const struct iio_info ad2s1210_info = {
-> >  
-> >  static int ad2s1210_setup_gpios(struct ad2s1210_state *st)
-> >  {
-> > -	unsigned long flags = st->pdata->gpioin ? GPIOF_DIR_IN : GPIOF_DIR_OUT;
-> > -	struct gpio ad2s1210_gpios[] = {
-> > -		{ st->pdata->sample, GPIOF_DIR_IN, "sample" },
-> > -		{ st->pdata->a[0], flags, "a0" },
-> > -		{ st->pdata->a[1], flags, "a1" },
-> > -		{ st->pdata->res[0], flags, "res0" },
-> > -		{ st->pdata->res[0], flags, "res1" },
-> > +	int ret, i;
-> > +	struct spi_device *spi = st->sdev;
-> > +	struct ad2s1210_gpio *pin;
-> > +	unsigned long flags = st->pdata->gpioin ? GPIOD_IN : GPIOD_OUT_LOW;
-> > +
-> > +	struct ad2s1210_gpio gpios[] = {
-> > +		{.ptr = &st->sample, .name = "sample", .flags = GPIOD_IN},
-> > +		{.ptr = &st->a0, .name = "a0", .flags = flags},
-> > +		{.ptr = &st->a1, .name = "a1", .flags = flags},
-> > +		{.ptr = &st->res0, .name = "res0", .flags = flags},
-> > +		{.ptr = &st->res1, .name = "res1", .flags = flags},
-> >  	};
-> 
-> I think that you should add spaces after { and before }. It's the file style
-> from what I see.
+From: Martin Kelly <martin@martingkelly.com>
 
-Ok. I'll do that.
-> 
-> >  
-> > -	return gpio_request_array(ad2s1210_gpios, ARRAY_SIZE(ad2s1210_gpios));
-> > -}
-> > -
-> > -static void ad2s1210_free_gpios(struct ad2s1210_state *st)
-> > -{
-> > -	unsigned long flags = st->pdata->gpioin ? GPIOF_DIR_IN : GPIOF_DIR_OUT;
-> > -	struct gpio ad2s1210_gpios[] = {
-> > -		{ st->pdata->sample, GPIOF_DIR_IN, "sample" },
-> > -		{ st->pdata->a[0], flags, "a0" },
-> > -		{ st->pdata->a[1], flags, "a1" },
-> > -		{ st->pdata->res[0], flags, "res0" },
-> > -		{ st->pdata->res[0], flags, "res1" },
-> > -	};
-> > +	for (i = 0; i < ARRAY_SIZE(gpios); i++) {
-> > +		pin = &gpios[i];
-> > +		*pin->ptr = devm_gpiod_get(&spi->dev, pin->name,
-> > +					   pin->flags);
-> 
-> This can now fit into one line.
-> 
-> > +		if (IS_ERR(pin->ptr)) {
-> 
-> Here you are checking the wrong pointer. Also notice the line below.
-> 
+Update the sensor settings to support the LSM9DS1 sensor. Although the
+LSM9DS1 accelerometer and gyroscope are coupled together to use the same
+FIFO, the magnetometer is separate and can be cleanly supported without
+refactoring the existing driver.
 
-Yes. I'll change that.
-> > +			ret = PTR_ERR(pin->ptr);
-> > +			dev_err(&spi->dev, "Failed to request %s GPIO: %d\n",
-> > +				pin->name, ret);
-> 
-> Please notice how other dev_err looks like in this code. Align the message to
-> the existing format.
-> 
+Signed-off-by: Martin Kelly <martin@martingkelly.com>
+---
+ drivers/iio/magnetometer/st_magn.h      |  1 +
+ drivers/iio/magnetometer/st_magn_core.c | 68 +++++++++++++++++++++++++++++++++
+ drivers/iio/magnetometer/st_magn_spi.c  |  5 +++
+ 3 files changed, 74 insertions(+)
 
-Ok. I'll do that.
-> > +			return ret;
-> > +		}
-> > +	}
-> >  
-> > -	gpio_free_array(ad2s1210_gpios, ARRAY_SIZE(ad2s1210_gpios));
-> > +	return 0;
-> >  }
-> >  
-> >  static int ad2s1210_probe(struct spi_device *spi)
-> > @@ -692,7 +705,7 @@ static int ad2s1210_probe(struct spi_device *spi)
-> >  
-> >  	ret = iio_device_register(indio_dev);
-> >  	if (ret)
-> > -		goto error_free_gpios;
-> > +		return ret;
-> >  
-> >  	st->fclkin = spi->max_speed_hz;
-> >  	spi->mode = SPI_MODE_3;
-> > @@ -700,10 +713,6 @@ static int ad2s1210_probe(struct spi_device *spi)
-> >  	ad2s1210_initial(st);
-> >  
-> >  	return 0;
-> > -
-> > -error_free_gpios:
-> > -	ad2s1210_free_gpios(st);
-> > -	return ret;
-> >  }
-> >  
-> >  static int ad2s1210_remove(struct spi_device *spi)
-> > @@ -711,7 +720,6 @@ static int ad2s1210_remove(struct spi_device *spi)
-> >  	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-> >  
-> >  	iio_device_unregister(indio_dev);
-> > -	ad2s1210_free_gpios(iio_priv(indio_dev));
-> >  
-> >  	return 0;
-> >  }
-> > diff --git a/drivers/staging/iio/resolver/ad2s1210.h b/drivers/staging/iio/resolver/ad2s1210.h
-> > index e9b2147701fc..63d479b20a6c 100644
-> > --- a/drivers/staging/iio/resolver/ad2s1210.h
-> > +++ b/drivers/staging/iio/resolver/ad2s1210.h
-> > @@ -12,9 +12,6 @@
-> >  #define _AD2S1210_H
-> >  
-> >  struct ad2s1210_platform_data {
-> > -	unsigned int		sample;
-> > -	unsigned int		a[2];
-> > -	unsigned int		res[2];
-> >  	bool			gpioin;
-> >  };
-> >  #endif /* _AD2S1210_H */
-> 
-> -- 
-> Slawomir Stepien
-
-Thanks for the review.
-
-regards,
-Nishad
+diff --git a/drivers/iio/magnetometer/st_magn.h b/drivers/iio/magnetometer/st_magn.h
+index 8fe51ce427bd..3a4abcd1f106 100644
+--- a/drivers/iio/magnetometer/st_magn.h
++++ b/drivers/iio/magnetometer/st_magn.h
+@@ -20,6 +20,7 @@
+ #define LIS3MDL_MAGN_DEV_NAME		"lis3mdl"
+ #define LSM303AGR_MAGN_DEV_NAME		"lsm303agr_magn"
+ #define LIS2MDL_MAGN_DEV_NAME		"lis2mdl"
++#define LSM9DS1_MAGN_DEV_NAME		"lsm9ds1"
+ 
+ int st_magn_common_probe(struct iio_dev *indio_dev);
+ void st_magn_common_remove(struct iio_dev *indio_dev);
+diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
+index 72f6d1335a04..dfbdeb428467 100644
+--- a/drivers/iio/magnetometer/st_magn_core.c
++++ b/drivers/iio/magnetometer/st_magn_core.c
+@@ -378,6 +378,74 @@ static const struct st_sensor_settings st_magn_sensors_settings[] = {
+ 		.multi_read_bit = false,
+ 		.bootime = 2,
+ 	},
++	{
++		.wai = 0x3d,
++		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
++		.sensors_supported = {
++			[0] = LSM9DS1_MAGN_DEV_NAME,
++		},
++		.ch = (struct iio_chan_spec *)st_magn_2_16bit_channels,
++		.odr = {
++			/* Fast ODR mode currently not supported. */
++			.addr = 0x20,
++			.mask = 0x1c,
++			.odr_avl = {
++				{ .hz = 5, .value = 0x03 },
++				{ .hz = 10, .value = 0x04 },
++				{ .hz = 20, .value = 0x05 },
++				{ .hz = 40, .value = 0x06 },
++				{ .hz = 80, .value = 0x07 },
++			},
++		},
++		.pw = {
++			.addr = 0x22,
++			.mask = 0x03,
++			.value_on = 0x00,
++			.value_off = 0x03,
++		},
++		.fs = {
++			.addr = 0x21,
++			.mask = 0x60,
++			.fs_avl = {
++				[0] = {
++					.num = ST_MAGN_FS_AVL_4000MG,
++					.value = 0x00,
++					.gain = 140,
++				},
++				[1] = {
++					.num = ST_MAGN_FS_AVL_8000MG,
++					.value = 0x01,
++					.gain = 290,
++				},
++				[2] = {
++					.num = ST_MAGN_FS_AVL_12000MG,
++					.value = 0x02,
++					.gain = 430,
++				},
++				[3] = {
++					.num = ST_MAGN_FS_AVL_16000MG,
++					.value = 0x03,
++					.gain = 580,
++				},
++			},
++		},
++		.bdu = {
++			.addr = 0x24,
++			.mask = 0x40,
++		},
++		.drdy_irq = {
++			.stat_drdy = {
++				.addr = ST_SENSORS_DEFAULT_STAT_ADDR,
++				.mask = 0x07,
++			},
++		},
++		.sim = {
++			.addr = 0x22,
++			.value = BIT(2),
++		},
++		.multi_read_bit = true,
++		.bootime = 2,
++	},
+ };
+ 
+ static int st_magn_read_raw(struct iio_dev *indio_dev,
+diff --git a/drivers/iio/magnetometer/st_magn_spi.c b/drivers/iio/magnetometer/st_magn_spi.c
+index 7b7cd08fcc32..433456920673 100644
+--- a/drivers/iio/magnetometer/st_magn_spi.c
++++ b/drivers/iio/magnetometer/st_magn_spi.c
+@@ -37,6 +37,10 @@ static const struct of_device_id st_magn_of_match[] = {
+ 		.compatible = "st,lis2mdl",
+ 		.data = LIS2MDL_MAGN_DEV_NAME,
+ 	},
++	{
++		.compatible = "st,lsm9ds1",
++		.data = LSM9DS1_MAGN_DEV_NAME,
++	},
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, st_magn_of_match);
+@@ -79,6 +83,7 @@ static const struct spi_device_id st_magn_id_table[] = {
+ 	{ LIS3MDL_MAGN_DEV_NAME },
+ 	{ LSM303AGR_MAGN_DEV_NAME },
+ 	{ LIS2MDL_MAGN_DEV_NAME },
++	{ LSM9DS1_MAGN_DEV_NAME },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(spi, st_magn_id_table);
+-- 
+2.11.0
