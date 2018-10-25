@@ -1,62 +1,97 @@
-Return-Path: <SRS0=mkZ5=NF=emutex.com=dan@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mr33.theemaillaundry.net ([176.9.125.106]:43288 "EHLO
+        mr33.theemaillaundry.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727313AbeJZAYZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 25 Oct 2018 20:24:25 -0400
 From: Dan O'Donovan <dan@emutex.com>
 To: linux-kernel@vger.kernel.org
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org,
-	Rob Herring <robh+dt@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	devicetree@vger.kernel.org,
-	Carlos Iglesias <carlos.iglesias@emutex.com>,
-	Dan O'Donovan <dan@emutex.com>
-Subject: [PATCH v3 0/3] iio: adc128s052: add matching options
-Date: Thu, 25 Oct 2018 16:35:39 +0100
-Message-Id: <1540481742-23596-1-git-send-email-dan@emutex.com>
-In-Reply-To: <20180423213805.12591-1-javier@emutex.com>
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        devicetree@vger.kernel.org,
+        Carlos Iglesias <carlos.iglesias@emutex.com>,
+        Javier Arteaga <javier@emutex.com>,
+        Dan O'Donovan <dan@emutex.com>
+Subject: [PATCH v3 1/3] iio: adc128s052: Add pin-compatible IDs
+Date: Thu, 25 Oct 2018 16:35:40 +0100
+Message-Id: <1540481742-23596-2-git-send-email-dan@emutex.com>
+In-Reply-To: <1540481742-23596-1-git-send-email-dan@emutex.com>
 References: <20180423213805.12591-1-javier@emutex.com>
-List-ID: <linux-iio@vger.kernel.org>
+ <1540481742-23596-1-git-send-email-dan@emutex.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi all,
+From: Javier Arteaga <javier@emutex.com>
 
-On some SKUs of AAEON's UP Squared board, there is an ADC124S101
-enumerated via ACPI. This is a pin-compatible variant of ADC124S021,
-which is already supported by the adc128s052 driver.
+The datasheets for ADC122S021 and ADC124S021 list two more
+pin-compatible alternatives for each device.
 
-This patchset adds missing DT compatible strings for ADC124S021 (and
-ADC122S021) variants, adds AAEON's allocated ACPI HID, and adds the
-SPDX GPL identifier to the driver.
+Add their IDs as compatible strings.
 
-v2 was posted at:
-https://lore.kernel.org/lkml/20180423213805.12591-1-javier@emutex.com/
+Suggested-by: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Javier Arteaga <javier@emutex.com>
+Signed-off-by: Dan O'Donovan <dan@emutex.com>
+---
+ .../devicetree/bindings/iio/adc/ti-adc128s052.txt        |  9 ++++++++-
+ drivers/iio/adc/ti-adc128s052.c                          | 16 ++++++++++++----
+ 2 files changed, 20 insertions(+), 5 deletions(-)
 
-Changes from v2:
-* Added device-tree bindings documentation for new chip variants
-* Simplified code to get ACPI match data
-* Dropped redundant patch to facilitate OF matching via ACPI _DSD
-* Added patch to replace GPL license text with SPDX identifier
-
-Changes from v1:
-* Improved patch descriptions and series title
-* Added an initial commit introducing new compatible strings
-  (as per Jonathan's suggestion)
-* Moved of_match_ptr removal last as this patch is less important to us
-
-Dan O'Donovan (1):
-  iio: adc128s052: use SPDX-License-Identifier
-
-Javier Arteaga (1):
-  iio: adc128s052: Add pin-compatible IDs
-
-Nicola Lunghi (1):
-  iio: adc128s052: add ACPI _HID AANT1280
-
- .../devicetree/bindings/iio/adc/ti-adc128s052.txt  |  9 ++++-
- drivers/iio/adc/ti-adc128s052.c                    | 39 +++++++++++++++++-----
- 2 files changed, 38 insertions(+), 10 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/iio/adc/ti-adc128s052.txt b/Documentation/devicetree/bindings/iio/adc/ti-adc128s052.txt
+index daa2b2c..c07ce1a 100644
+--- a/Documentation/devicetree/bindings/iio/adc/ti-adc128s052.txt
++++ b/Documentation/devicetree/bindings/iio/adc/ti-adc128s052.txt
+@@ -1,7 +1,14 @@
+ * Texas Instruments' ADC128S052, ADC122S021 and ADC124S021 ADC chip
+ 
+ Required properties:
+- - compatible: Should be "ti,adc128s052", "ti,adc122s021" or "ti,adc124s021"
++ - compatible: Should be one of:
++   - "ti,adc128s052"
++   - "ti,adc122s021"
++   - "ti,adc122s051"
++   - "ti,adc122s101"
++   - "ti,adc124s021"
++   - "ti,adc124s051"
++   - "ti,adc124s101"
+  - reg: spi chip select number for the device
+  - vref-supply: The regulator supply for ADC reference voltage
+ 
+diff --git a/drivers/iio/adc/ti-adc128s052.c b/drivers/iio/adc/ti-adc128s052.c
+index 7cf39b3..e6716c3 100644
+--- a/drivers/iio/adc/ti-adc128s052.c
++++ b/drivers/iio/adc/ti-adc128s052.c
+@@ -186,15 +186,23 @@ static int adc128_remove(struct spi_device *spi)
+ static const struct of_device_id adc128_of_match[] = {
+ 	{ .compatible = "ti,adc128s052", },
+ 	{ .compatible = "ti,adc122s021", },
++	{ .compatible = "ti,adc122s051", },
++	{ .compatible = "ti,adc122s101", },
+ 	{ .compatible = "ti,adc124s021", },
+-	{ /* sentinel */ },
++	{ .compatible = "ti,adc124s051", },
++	{ .compatible = "ti,adc124s101", },
++	{ }
+ };
+ MODULE_DEVICE_TABLE(of, adc128_of_match);
+ 
+ static const struct spi_device_id adc128_id[] = {
+-	{ "adc128s052", 0},	/* index into adc128_config */
+-	{ "adc122s021",	1},
+-	{ "adc124s021", 2},
++	{ "adc128s052", 0 },	/* index into adc128_config */
++	{ "adc122s021",	1 },
++	{ "adc122s051",	1 },
++	{ "adc122s101",	1 },
++	{ "adc124s021", 2 },
++	{ "adc124s051", 2 },
++	{ "adc124s101", 2 },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(spi, adc128_id);
 -- 
 2.7.4
 
