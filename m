@@ -1,61 +1,105 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:58898 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726828AbeJ2AnM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 28 Oct 2018 20:43:12 -0400
-Date: Sun, 28 Oct 2018 15:58:07 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Renato Lui Geh <renatogeh@gmail.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        alexandru.Ardelean@analog.com, stefan.popa@analog.com,
-        giuliano.belinassi@usp.br, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        kernel-usp@googlegroups.com
-Subject: Re: [PATCH v2 2/2] staging: iio: ad7780: fix offset read value
-Message-ID: <20181028155807.4de0f874@archlinux>
-In-Reply-To: <ff71d89625c048601d3e3770ca3b4bcceb2068ac.1540506298.git.renatogeh@gmail.com>
-References: <cover.1540506298.git.renatogeh@gmail.com>
-        <ff71d89625c048601d3e3770ca3b4bcceb2068ac.1540506298.git.renatogeh@gmail.com>
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:6318 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726246AbeJZHIZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 26 Oct 2018 03:08:25 -0400
+From: Denis Ciocca <denis.ciocca@st.com>
+To: <linux-iio@vger.kernel.org>, <lars@metafoo.de>, <jic23@kernel.org>,
+        <lorenzo.bianconi83@gmail.com>, <pmeerw@pmeerw.net>,
+        <martin@martingkelly.com>, <knaack.h@gmx.de>
+CC: Denis Ciocca <denis.ciocca@st.com>
+Subject: [PATCH] iio:st_magn: enable trigger before enabling sensor
+Date: Thu, 25 Oct 2018 15:32:26 -0700
+Message-ID: <20181025223226.10292-1-denis.ciocca@st.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 25 Oct 2018 19:30:37 -0300
-Renato Lui Geh <renatogeh@gmail.com> wrote:
+>From logical point of view driver should be ready to
+receive irqs before enabling the sensor itself.
+This patch is fixing also an issue related to
+sensors that generate interrupts unconditionally,
+(DRDY pads) when interrupt level is used.
 
-> Variable val subtracted an uninitialized value on IIO_CHAN_INFO_OFFSET.
-> This was fixed by assigning the correct value instead.
-> 
-> Signed-off-by: Renato Lui Geh <renatogeh@gmail.com>
+Signed-off-by: Martin Kelly <martin@martingkelly.com>
+Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
+---
+ drivers/iio/magnetometer/st_magn_buffer.c | 33 +++++++++++------------
+ 1 file changed, 16 insertions(+), 17 deletions(-)
 
-It obviously doesn't make much difference, but as you are respinning anyway...
-Please could you always put fixes at the beginning of a set as it makes it
-easier to back port them.  It think this one is simple enough that it is
-worth applying to the stable kernels.
-
-(naturally I could do that anyway as the rebase is trivial, so I'm just
-encouraging good practice by asking you to do it in v3!)
-
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/staging/iio/adc/ad7780.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
-> index 27972563bb6a..06700fe554a2 100644
-> --- a/drivers/staging/iio/adc/ad7780.c
-> +++ b/drivers/staging/iio/adc/ad7780.c
-> @@ -100,7 +100,7 @@ static int ad7780_read_raw(struct iio_dev *indio_dev,
->  		*val2 = chan->scan_type.realbits - 1;
->  		return IIO_VAL_FRACTIONAL_LOG2;
->  	case IIO_CHAN_INFO_OFFSET:
-> -		*val -= (1 << (chan->scan_type.realbits - 1));
-> +		*val = -(1 << (chan->scan_type.realbits - 1));
->  		return IIO_VAL_INT;
->  	}
->  
+diff --git a/drivers/iio/magnetometer/st_magn_buffer.c b/drivers/iio/magnetometer/st_magn_buffer.c
+index 0a9e8fadfa9d..097e6e88a464 100644
+--- a/drivers/iio/magnetometer/st_magn_buffer.c
++++ b/drivers/iio/magnetometer/st_magn_buffer.c
+@@ -30,11 +30,6 @@ int st_magn_trig_set_state(struct iio_trigger *trig, bool state)
+ 	return st_sensors_set_dataready_irq(indio_dev, state);
+ }
+ 
+-static int st_magn_buffer_preenable(struct iio_dev *indio_dev)
+-{
+-	return st_sensors_set_enable(indio_dev, true);
+-}
+-
+ static int st_magn_buffer_postenable(struct iio_dev *indio_dev)
+ {
+ 	int err;
+@@ -42,40 +37,44 @@ static int st_magn_buffer_postenable(struct iio_dev *indio_dev)
+ 
+ 	mdata->buffer_data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
+ 	if (mdata->buffer_data == NULL) {
+-		err = -ENOMEM;
+-		goto allocate_memory_error;
++		return -ENOMEM;
+ 	}
+ 
+ 	err = iio_triggered_buffer_postenable(indio_dev);
+ 	if (err < 0)
+-		goto st_magn_buffer_postenable_error;
++		goto st_magn_buffer_free_buffer_data;
++
++	err = st_sensors_set_enable(indio_dev, true);
++	if (err < 0)
++		goto st_magn_buffer_buffer_predisable;
+ 
+ 	return err;
+ 
+-st_magn_buffer_postenable_error:
++st_magn_buffer_buffer_predisable:
++	iio_triggered_buffer_predisable(indio_dev);
++st_magn_buffer_free_buffer_data:
+ 	kfree(mdata->buffer_data);
+-allocate_memory_error:
+ 	return err;
+ }
+ 
+ static int st_magn_buffer_predisable(struct iio_dev *indio_dev)
+ {
+-	int err;
++	int err = 0, err2;
+ 	struct st_sensor_data *mdata = iio_priv(indio_dev);
+ 
+-	err = iio_triggered_buffer_predisable(indio_dev);
+-	if (err < 0)
+-		goto st_magn_buffer_predisable_error;
++	err2 = st_sensors_set_enable(indio_dev, false);
++	if (err2 < 0)
++		err = err2;
+ 
+-	err = st_sensors_set_enable(indio_dev, false);
++	err2 = iio_triggered_buffer_predisable(indio_dev);
++	if (err2 < 0)
++		err = err2;
+ 
+-st_magn_buffer_predisable_error:
+ 	kfree(mdata->buffer_data);
+ 	return err;
+ }
+ 
+ static const struct iio_buffer_setup_ops st_magn_buffer_setup_ops = {
+-	.preenable = &st_magn_buffer_preenable,
+ 	.postenable = &st_magn_buffer_postenable,
+ 	.predisable = &st_magn_buffer_predisable,
+ };
+-- 
+2.19.1
