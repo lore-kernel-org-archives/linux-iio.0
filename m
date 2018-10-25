@@ -1,65 +1,74 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:44512 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726354AbeJ1Umm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 28 Oct 2018 16:42:42 -0400
-Date: Sun, 28 Oct 2018 11:58:10 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <SRS0=Plxy=NF=linux.intel.com=andriy.shevchenko@kernel.org>
+Date: Thu, 25 Oct 2018 20:49:54 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Dan O'Donovan <dan@emutex.com>
-Cc: linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        devicetree@vger.kernel.org,
-        Carlos Iglesias <carlos.iglesias@emutex.com>
-Subject: Re: [PATCH v3 3/3] iio: adc128s052: use SPDX-License-Identifier
-Message-ID: <20181028115810.1bcdaa5a@archlinux>
-In-Reply-To: <1540481742-23596-4-git-send-email-dan@emutex.com>
+Cc: linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org,
+	Carlos Iglesias <carlos.iglesias@emutex.com>
+Subject: Re: [PATCH v3 0/3] iio: adc128s052: add matching options
+Message-ID: <20181025174954.GC10650@smile.fi.intel.com>
 References: <20180423213805.12591-1-javier@emutex.com>
-        <1540481742-23596-1-git-send-email-dan@emutex.com>
-        <1540481742-23596-4-git-send-email-dan@emutex.com>
+ <1540481742-23596-1-git-send-email-dan@emutex.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1540481742-23596-1-git-send-email-dan@emutex.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 25 Oct 2018 16:35:42 +0100
-Dan O'Donovan <dan@emutex.com> wrote:
-
-> This updates the ti-adc128s052.c file to use SPDX-License-Identifier
-> instead of more verbose license text.
+On Thu, Oct 25, 2018 at 04:35:39PM +0100, Dan O'Donovan wrote:
+> Hi all,
 > 
-> Signed-off-by: Dan O'Donovan <dan@emutex.com>
-Applied, 
-
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/iio/adc/ti-adc128s052.c | 5 +----
->  1 file changed, 1 insertion(+), 4 deletions(-)
+> On some SKUs of AAEON's UP Squared board, there is an ADC124S101
+> enumerated via ACPI. This is a pin-compatible variant of ADC124S021,
+> which is already supported by the adc128s052 driver.
 > 
-> diff --git a/drivers/iio/adc/ti-adc128s052.c b/drivers/iio/adc/ti-adc128s052.c
-> index c2d1453..7d2861f 100644
-> --- a/drivers/iio/adc/ti-adc128s052.c
-> +++ b/drivers/iio/adc/ti-adc128s052.c
-> @@ -1,3 +1,4 @@
-> +// SPDX-License-Identifier: GPL-2.0
->  /*
->   * Copyright (C) 2014 Angelo Compagnucci <angelo.compagnucci@gmail.com>
->   *
-> @@ -6,10 +7,6 @@
->   * http://www.ti.com/lit/ds/symlink/adc128s052.pdf
->   * http://www.ti.com/lit/ds/symlink/adc122s021.pdf
->   * http://www.ti.com/lit/ds/symlink/adc124s021.pdf
-> - *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License version 2 as
-> - * published by the Free Software Foundation.
->   */
->  
->  #include <linux/acpi.h>
+> This patchset adds missing DT compatible strings for ADC124S021 (and
+> ADC122S021) variants, adds AAEON's allocated ACPI HID, and adds the
+> SPDX GPL identifier to the driver.
+> 
+> v2 was posted at:
+> https://lore.kernel.org/lkml/20180423213805.12591-1-javier@emutex.com/
+
+Overall LGTM
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+> 
+> Changes from v2:
+> * Added device-tree bindings documentation for new chip variants
+> * Simplified code to get ACPI match data
+> * Dropped redundant patch to facilitate OF matching via ACPI _DSD
+> * Added patch to replace GPL license text with SPDX identifier
+> 
+> Changes from v1:
+> * Improved patch descriptions and series title
+> * Added an initial commit introducing new compatible strings
+>   (as per Jonathan's suggestion)
+> * Moved of_match_ptr removal last as this patch is less important to us
+> 
+> Dan O'Donovan (1):
+>   iio: adc128s052: use SPDX-License-Identifier
+> 
+> Javier Arteaga (1):
+>   iio: adc128s052: Add pin-compatible IDs
+> 
+> Nicola Lunghi (1):
+>   iio: adc128s052: add ACPI _HID AANT1280
+> 
+>  .../devicetree/bindings/iio/adc/ti-adc128s052.txt  |  9 ++++-
+>  drivers/iio/adc/ti-adc128s052.c                    | 39 +++++++++++++++++-----
+>  2 files changed, 38 insertions(+), 10 deletions(-)
+> 
+> -- 
+> 2.7.4
+> 
+> 
+> ------
+> This email has been scanned for spam and malware by The Email Laundry.
+> 
+
+-- 
+With Best Regards,
+Andy Shevchenko
