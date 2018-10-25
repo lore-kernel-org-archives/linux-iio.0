@@ -1,32 +1,53 @@
-Return-Path: <SRS0=qdDs=NF=gmail.com=renatogeh@kernel.org>
-Date: Thu, 25 Oct 2018 19:29:31 -0300
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:37202 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726763AbeJZHEi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 26 Oct 2018 03:04:38 -0400
+Date: Thu, 25 Oct 2018 19:30:04 -0300
 From: Renato Lui Geh <renatogeh@gmail.com>
 To: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-	knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-	alexandru.Ardelean@analog.com, stefan.popa@analog.com,
-	giuliano.belinassi@usp.br
+        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        alexandru.Ardelean@analog.com, stefan.popa@analog.com,
+        giuliano.belinassi@usp.br
 Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
-Subject: [PATCH v2 0/2] staging: iio: ad7780: correct driver read
-Message-ID: <cover.1540506298.git.renatogeh@gmail.com>
+        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
+Subject: [PATCH v2 1/2] staging: iio: ad7780: update voltage on read
+Message-ID: <1f7b2c6ee0e18b1c43a8b27f482b08313c52d4e9.1540506298.git.renatogeh@gmail.com>
+References: <cover.1540506298.git.renatogeh@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <cover.1540506298.git.renatogeh@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-The purpose of this series is to correct two issues in the driver's raw
-read function.
+The ad7780 driver previously did not read the correct device output, as
+it read an outdated value set at initialization. It now updates its
+voltage on read.
 
-Changelog:
-* v2
-	- separated original patch into two patches
-	  (https://marc.info/?l=linux-iio&m=154047435605492)
+Signed-off-by: Renato Lui Geh <renatogeh@gmail.com>
+---
+ drivers/staging/iio/adc/ad7780.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Renato Lui Geh (2):
-  staging: iio: ad7780: update voltage on read
-  staging: iio: ad7780: fix offset read value
-
- drivers/staging/iio/adc/ad7780.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
+diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
+index b67412db0318..27972563bb6a 100644
+--- a/drivers/staging/iio/adc/ad7780.c
++++ b/drivers/staging/iio/adc/ad7780.c
+@@ -87,11 +87,15 @@ static int ad7780_read_raw(struct iio_dev *indio_dev,
+ 			   long m)
+ {
+ 	struct ad7780_state *st = iio_priv(indio_dev);
++	int voltage_uv = 0;
+ 
+ 	switch (m) {
+ 	case IIO_CHAN_INFO_RAW:
+ 		return ad_sigma_delta_single_conversion(indio_dev, chan, val);
+ 	case IIO_CHAN_INFO_SCALE:
++		voltage_uv = regulator_get_voltage(st->reg);
++		if (voltage_uv)
++			st->int_vref_mv = voltage_uv/1000;
+ 		*val = st->int_vref_mv * st->gain;
+ 		*val2 = chan->scan_type.realbits - 1;
+ 		return IIO_VAL_FRACTIONAL_LOG2;
 -- 
 2.19.1
