@@ -1,95 +1,121 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-dm3nam03on0055.outbound.protection.outlook.com ([104.47.41.55]:32310
-        "EHLO NAM03-DM3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727516AbeJRSgO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 18 Oct 2018 14:36:14 -0400
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:39477 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727400AbeJZDRY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 25 Oct 2018 23:17:24 -0400
+Date: Thu, 25 Oct 2018 13:43:26 -0500
+From: Rob Herring <robh@kernel.org>
+To: Stefan Popa <stefan.popa@analog.com>
+Cc: jic23@kernel.org, mark.rutland@arm.com, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, Michael.Hennerich@analog.com,
+        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH 2/2] dt-bindings: iio: adc: Add docs for AD7606 ADC
-Date: Thu, 18 Oct 2018 10:35:42 +0000
-Message-ID: <66d43c0401e0899584665c7ddec5d36caae49a20.camel@analog.com>
+Message-ID: <20181025184326.GA9995@bogus>
 References: <1539853956-26644-1-git-send-email-stefan.popa@analog.com>
-In-Reply-To: <1539853956-26644-1-git-send-email-stefan.popa@analog.com>
-Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+In-Reply-To: <1539853956-26644-1-git-send-email-stefan.popa@analog.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-T24gVGh1LCAyMDE4LTEwLTE4IGF0IDEyOjEyICswMzAwLCBTdGVmYW4gUG9wYSB3cm90ZToNCj4g
-RG9jdW1lbnQgc3VwcG9ydCBmb3IgQUQ3NjA2IEFuYWxvZyB0byBEaWdpdGFsIENvbnZlcnRlci4N
-Cj4gDQoNCkNvbW1tZW50cyBpbmxpbmUNCg0KPiBTaWduZWQtb2ZmLWJ5OiBTdGVmYW4gUG9wYSA8
-c3RlZmFuLnBvcGFAYW5hbG9nLmNvbT4NCj4gLS0tDQo+ICAuLi4vZGV2aWNldHJlZS9iaW5kaW5n
-cy9paW8vYWRjL2FkaSxhZDc2MDYudHh0ICAgICB8IDUxDQo+ICsrKysrKysrKysrKysrKysrKysr
-KysNCj4gIE1BSU5UQUlORVJTICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-IHwgIDEgKw0KPiAgMiBmaWxlcyBjaGFuZ2VkLCA1MiBpbnNlcnRpb25zKCspDQo+ICBjcmVhdGUg
-bW9kZSAxMDA2NDQNCj4gRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2lpby9hZGMv
-YWRpLGFkNzYwNi50eHQNCj4gDQo+IGRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2RldmljZXRy
-ZWUvYmluZGluZ3MvaWlvL2FkYy9hZGksYWQ3NjA2LnR4dA0KPiBiL0RvY3VtZW50YXRpb24vZGV2
-aWNldHJlZS9iaW5kaW5ncy9paW8vYWRjL2FkaSxhZDc2MDYudHh0DQo+IG5ldyBmaWxlIG1vZGUg
-MTAwNjQ0DQo+IGluZGV4IDAwMDAwMDAuLmRlZGU1ODENCj4gLS0tIC9kZXYvbnVsbA0KPiArKysg
-Yi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaWlvL2FkYy9hZGksYWQ3NjA2LnR4
-dA0KPiBAQCAtMCwwICsxLDUxIEBADQo+ICtBbmFsb2cgRGV2aWNlcyBBRDc2MDYgU2ltdWx0YW5l
-b3VzIFNhbXBsaW5nIEFEQw0KPiArDQo+ICtSZXF1aXJlZCBwcm9wZXJ0aWVzIGZvciB0aGUgQUQ3
-NjA2Og0KPiArDQo+ICsgLSBjb21wYXRpYmxlOiBNdXN0IGJlIG9uZSBvZiAiYWRpLGFkNzYwNS00
-IiwgImFkaSxhZDc2MDYtOCIsDQo+ICJhZGksYWQ3NjA2LTYiIG9yDQo+ICsgCSAgICAgICAiYWRp
-LGFkNzYwNi00Ii4NCj4gKyAtIHJlZzogU1BJIGNoaXAgc2VsZWN0IG51bWJlciBmb3IgdGhlIGRl
-dmljZQ0KPiArIC0gc3BpLW1heC1mcmVxdWVuY3k6IE1heCBTUEkgZnJlcXVlbmN5IHRvIHVzZQ0K
-PiArIAlzZWU6IERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9zcGkvc3BpLWJ1cy50
-eHQNCj4gKyAtIHNwaS1jcGhhOiBTZWUgRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdz
-L3NwaS9zcGktYnVzLnR4dA0KDQpJIGRvbid0IGtub3cgd2hhdCB0aGUgdHlwaWNhbCBwcmVmZXJl
-bmNlIGlzICh3aXRoIHJlc3BlY3QgdG8gU1BJIGRvY3MpLCBidXQNCkknZCBqdXN0IHJlZmVyZW5j
-ZSB0aGUgIkRvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9zcGkvc3BpLWJ1cy50eHQN
-CiJkb2MgaGVyZS4NCg0KPiArIC0gYXZjYy1zdXBwbHk6IHBoYW5kbGUgdG8gdGhlIEF2Y2MgcG93
-ZXIgc3VwcGx5DQo+ICsgLSBpbnRlcnJ1cHRzOiBJUlEgbGluZSBmb3IgdGhlIEFEQw0KPiArIAlz
-ZWU6IERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9pbnRlcnJ1cHQtDQo+IGNvbnRy
-b2xsZXIvaW50ZXJydXB0cy50eHQNCj4gKyAtIGNvbnZlcnNpb24tc3RhcnQtZ3BpbzogbXVzdCBi
-ZSB0aGUgZGV2aWNlIHRyZWUgaWRlbnRpZmllciBvZiB0aGUNCj4gQ09OVlNUIHBpbi4NCj4gKwkJ
-CSAgVGhpcyBsb2dpYyBpbnB1dCBpcyB1c2VkIHRvIGluaXRpYXRlIGNvbnZlcnNpb25zDQo+IG9u
-DQo+ICsJCQkgIHRoZSBhbmFsb2cgaW5wdXQgY2hhbm5lbHMuDQo+ICsNCj4gK09wdGlvbmFsIHBy
-b3BlcnRpZXM6DQo+ICsNCj4gKyAtIHJlc2V0LWdwaW86IG11c3QgYmUgdGhlIGRldmljZSB0cmVl
-IGlkZW50aWZpZXIgb2YgdGhlIFJFU0VUIHBpbi4gSWYNCj4gc3BlY2lmaWVkLA0KPiArIAkgICAg
-ICAgaXQgd2lsbCBiZSBhc3NlcnRlZCBkdXJpbmcgZHJpdmVyIHByb2JlLg0KPiArIC0gZmlyc3Qt
-ZGF0YS1ncGlvOiBtdXN0IGJlIHRoZSBkZXZpY2UgdHJlZSBpZGVudGlmaWVyIG9mIHRoZSBGUlNU
-REFUQQ0KPiBwaW4uDQo+ICsgCQkgICAgVGhlIEZSU1REQVRBIG91dHB1dCBpbmRpY2F0ZXMgd2hl
-biB0aGUgZmlyc3QgY2hhbm5lbCwNCj4gVjEsIGlzDQo+ICsJCSAgICBiZWluZyByZWFkIGJhY2sg
-b24gZWl0aGVyIHRoZSBwYXJhbGxlbCwgYnl0ZSBvciBzZXJpYWwNCj4gaW50ZXJmYWNlLg0KPiAr
-LSBzdGFuZGJ5LWdwaW86IG11c3QgYmUgdGhlIGRldmljZSB0cmVlIGlkZW50aWZpZXIgb2YgdGhl
-IFNUQlkgcGluLiBUaGlzDQo+IHBpbiBpcyB1c2VkDQo+ICsJCXRvIHBsYWNlIHRoZSBBRDc2MDYg
-aW50byBvbmUgb2YgdHdvIHBvd2VyLWRvd24gbW9kZXMsDQo+IFN0YW5kYnkgbW9kZSBvcg0KPiAr
-CQlTaHV0ZG93biBtb2RlLg0KPiArLSByYW5nZS1ncGlvOiBtdXN0IGJlIHRoZSBkZXZpY2UgdHJl
-ZSBpZGVudGlmaWVyIG9mIHRoZSBSQU5HRSBwaW4uIFRoZQ0KPiBwb2xhcml0eSBvbg0KPiArCSAg
-ICAgIHRoaXMgcGluIGRldGVybWluZXMgdGhlIGlucHV0IHJhbmdlIG9mIHRoZSBhbmFsb2cgaW5w
-dXQNCj4gY2hhbm5lbHMuIElmDQo+ICsJICAgICAgdGhpcyBwaW4gaXMgdGllZCB0byBhIGxvZ2lj
-IGhpZ2gsIHRoZSBhbmFsb2cgaW5wdXQgcmFuZ2UgaXMNCj4gwrExMFYgZm9yDQo+ICsJICAgICAg
-YWxsY2hhbm5lbHMuIElmIHRoaXMgcGluIGlzIHRpZWQgdG8gYSBsb2dpYyBsb3csIHRoZSBhbmFs
-b2cNCj4gaW5wdXQgcmFuZ2UNCj4gKwkgICAgICBpcyDCsTVWIGZvciBhbGwgY2hhbm5lbHMuDQo+
-ICsNCg0Kbml0cGljazogYHJhbmdlLWdwaW9gICYmIGBzdGFuZGJ5LWdwaW9gIGVudHJpZXMgYXJl
-IGluZGVudGVkIGRpZmZlcmVudGx5DQp0aGFuIGByZXNldC1ncGlvYCAmJiBgZmlyc3QtZGF0YS1n
-cGlvYA0KDQo+ICtFeGFtcGxlOg0KPiArDQo+ICsJYWRjQDAgew0KPiArCQljb21wYXRpYmxlID0g
-ImFkaSxhZDc2MDYtOCI7DQo+ICsJCXJlZyA9IDwwPjsNCj4gKwkJc3BpLW1heC1mcmVxdWVuY3kg
-PSA8MTAwMDAwMD47DQo+ICsJCXNwaS1jcG9sOw0KPiArDQo+ICsJCWF2Y2Mtc3VwcGx5ID0gPCZh
-ZGNfdnJlZj47DQo+ICsNCj4gKwkJaW50ZXJydXB0cyA9IDwyNSBJUlFfVFlQRV9FREdFX0ZBTExJ
-Tkc+Ow0KPiArCQlpbnRlcnJ1cHQtcGFyZW50ID0gPCZncGlvPjsNCj4gKw0KPiArCQljb252ZXJz
-aW9uLXN0YXJ0LWdwaW8gPSA8JmdwaW8gMTcgMD47DQo+ICsJCXJlc2V0LWdwaW8gPSA8JmdwaW8g
-MjcgMD47DQo+ICsJCWZpcnN0LWRhdGEtZ3BpbyA9IDwmZ3BpbyAyMiAwPjsNCj4gKwkJc3RhbmRi
-eS1ncGlvID0gPCZncGlvIDI0IDA+Ow0KPiArCX07DQo+IGRpZmYgLS1naXQgYS9NQUlOVEFJTkVS
-UyBiL01BSU5UQUlORVJTDQo+IGluZGV4IDg0MzU0NWQuLjZkNjNkYjQgMTAwNjQ0DQo+IC0tLSBh
-L01BSU5UQUlORVJTDQo+ICsrKyBiL01BSU5UQUlORVJTDQo+IEBAIC04NDUsNiArODQ1LDcgQEAg
-TDoJbGludXgtaWlvQHZnZXIua2VybmVsLm9yZw0KPiAgVzoJaHR0cDovL2V6LmFuYWxvZy5jb20v
-Y29tbXVuaXR5L2xpbnV4LWRldmljZS1kcml2ZXJzDQo+ICBTOglTdXBwb3J0ZWQNCj4gIEY6CWRy
-aXZlcnMvaWlvL2FkYy9hZDc2MDYuYw0KPiArRjoJRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2Jp
-bmRpbmdzL2lpby9hZGMvYWQ3NjA2LnR4dA0KPiAgDQo+ICBBTkFMT0cgREVWSUNFUyBJTkMgQUQ5
-Mzg5QiBEUklWRVINCj4gIE06CUhhbnMgVmVya3VpbCA8aGFucy52ZXJrdWlsQGNpc2NvLmNvbT4N
-Cg==
+On Thu, Oct 18, 2018 at 12:12:36PM +0300, Stefan Popa wrote:
+> Document support for AD7606 Analog to Digital Converter.
+> 
+> Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+> ---
+>  .../devicetree/bindings/iio/adc/adi,ad7606.txt     | 51 ++++++++++++++++++++++
+>  MAINTAINERS                                        |  1 +
+>  2 files changed, 52 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7606.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7606.txt b/Documentation/devicetree/bindings/iio/adc/adi,ad7606.txt
+> new file mode 100644
+> index 0000000..dede581
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7606.txt
+> @@ -0,0 +1,51 @@
+> +Analog Devices AD7606 Simultaneous Sampling ADC
+> +
+> +Required properties for the AD7606:
+> +
+> + - compatible: Must be one of "adi,ad7605-4", "adi,ad7606-8", "adi,ad7606-6" or
+> + 	       "adi,ad7606-4".
+
+Format as one per line please.
+
+> + - reg: SPI chip select number for the device
+> + - spi-max-frequency: Max SPI frequency to use
+> + 	see: Documentation/devicetree/bindings/spi/spi-bus.txt
+> + - spi-cpha: See Documentation/devicetree/bindings/spi/spi-bus.txt
+> + - avcc-supply: phandle to the Avcc power supply
+> + - interrupts: IRQ line for the ADC
+> + 	see: Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
+> + - conversion-start-gpio: must be the device tree identifier of the CONVST pin.
+> +			  This logic input is used to initiate conversions on
+> +			  the analog input channels.
+
+Doesn't IIO have trigger GPIOs?
+
+> +
+> +Optional properties:
+> +
+> + - reset-gpio: must be the device tree identifier of the RESET pin. If specified,
+> + 	       it will be asserted during driver probe.
+
+-gpios is the preferred form: reset-gpios
+
+And state the active state
+
+> + - first-data-gpio: must be the device tree identifier of the FRSTDATA pin.
+> + 		    The FRSTDATA output indicates when the first channel, V1, is
+> +		    being read back on either the parallel, byte or serial interface.
+> +- standby-gpio: must be the device tree identifier of the STBY pin. This pin is used
+> +		to place the AD7606 into one of two power-down modes, Standby mode or
+> +		Shutdown mode.
+> +- range-gpio: must be the device tree identifier of the RANGE pin. The polarity on
+> +	      this pin determines the input range of the analog input channels. If
+> +	      this pin is tied to a logic high, the analog input range is ±10V for
+> +	      allchannels. If this pin is tied to a logic low, the analog input range
+
+s/allchannels/all channels/
+
+> +	      is ±5V for all channels.
+
+conversion-start-gpio, first-data-gpio, and range-gpio should all have 
+vendor prefix (in addition to -gpios).
+
+> +
+> +Example:
+> +
+> +	adc@0 {
+> +		compatible = "adi,ad7606-8";
+> +		reg = <0>;
+> +		spi-max-frequency = <1000000>;
+> +		spi-cpol;
+> +
+> +		avcc-supply = <&adc_vref>;
+> +
+> +		interrupts = <25 IRQ_TYPE_EDGE_FALLING>;
+> +		interrupt-parent = <&gpio>;
+> +
+> +		conversion-start-gpio = <&gpio 17 0>;
+> +		reset-gpio = <&gpio 27 0>;
+> +		first-data-gpio = <&gpio 22 0>;
+> +		standby-gpio = <&gpio 24 0>;
+> +	};
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 843545d..6d63db4 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -845,6 +845,7 @@ L:	linux-iio@vger.kernel.org
+>  W:	http://ez.analog.com/community/linux-device-drivers
+>  S:	Supported
+>  F:	drivers/iio/adc/ad7606.c
+> +F:	Documentation/devicetree/bindings/iio/adc/ad7606.txt
+>  
+>  ANALOG DEVICES INC AD9389B DRIVER
+>  M:	Hans Verkuil <hans.verkuil@cisco.com>
+> -- 
+> 2.7.4
+> 
