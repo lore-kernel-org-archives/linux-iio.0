@@ -1,68 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:53974 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725860AbeJ2Do5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 28 Oct 2018 23:44:57 -0400
-Date: Sun, 28 Oct 2018 18:59:21 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Slawomir Stepien <sst@poczta.fm>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        gregkh@linuxfoundation.org
-Subject: Re: [PATCH 1/1] staging: iio: adc: ad7280a: don't cast type inside
- switch expression
-Message-ID: <20181028185921.732e8ce0@archlinux>
-In-Reply-To: <20181026165310.16545-1-sst@poczta.fm>
-References: <20181026165310.16545-1-sst@poczta.fm>
+Received: from mail-eopbgr30093.outbound.protection.outlook.com ([40.107.3.93]:50723
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726815AbeJ0Cwl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 26 Oct 2018 22:52:41 -0400
+From: Carlos Iglesias <carlos.iglesias@emutex.com>
+To: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>
+CC: "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Dan O'Donovan <dan.odonovan@emutex.com>,
+        Carlos Iglesias <carlos.iglesias@emutex.com>
+Subject: [PATCH 0/2] iio: pressure: Add support for Honeywell HSC SPI sensors
+Date: Fri, 26 Oct 2018 18:14:35 +0000
+Message-ID: <20181026181406.14545-1-carlos.iglesias@emutex.com>
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 26 Oct 2018 18:53:10 +0200
-Slawomir Stepien <sst@poczta.fm> wrote:
+Hi all,
 
-> The type promotion will kick in, so the comparison will work.
-> 
-> Signed-off-by: Slawomir Stepien <sst@poczta.fm>
-Looks good to me.  Applied to the togreg branch of iio.git and pushed out as
-testing for the autobuilders to play with it.
+The Honeywell HSC is a series of pressure sensors that provide different
+pressure ranges and measurement types (absolute, differential, gauge). The
+available output types are analog, I2C or SPI (see [1]).
 
-Thanks,
+This driver provides support for a limited set of the HSC sensor models,
+namely the absolute pressure sensors with SPI interface.
 
-Jonathan
-> ---
->  drivers/staging/iio/adc/ad7280a.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-> index b736275c10f5..7de6be4f0c27 100644
-> --- a/drivers/staging/iio/adc/ad7280a.c
-> +++ b/drivers/staging/iio/adc/ad7280a.c
-> @@ -610,7 +610,7 @@ static ssize_t ad7280_read_channel_config(struct device *dev,
->  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->  	unsigned int val;
->  
-> -	switch ((u32)this_attr->address) {
-> +	switch (this_attr->address) {
->  	case AD7280A_CELL_OVERVOLTAGE:
->  		val = 1000 + (st->cell_threshhigh * 1568) / 100;
->  		break;
-> @@ -646,7 +646,7 @@ static ssize_t ad7280_write_channel_config(struct device *dev,
->  	if (ret)
->  		return ret;
->  
-> -	switch ((u32)this_attr->address) {
-> +	switch (this_attr->address) {
->  	case AD7280A_CELL_OVERVOLTAGE:
->  	case AD7280A_CELL_UNDERVOLTAGE:
->  		val = ((val - 1000) * 100) / 1568; /* LSB 15.68mV */
-> @@ -662,7 +662,7 @@ static ssize_t ad7280_write_channel_config(struct device *dev,
->  	val = clamp(val, 0L, 0xFFL);
->  
->  	mutex_lock(&st->lock);
-> -	switch ((u32)this_attr->address) {
-> +	switch (this_attr->address) {
->  	case AD7280A_CELL_OVERVOLTAGE:
->  		st->cell_threshhigh = val;
->  		break;
+References:
+[1] Datasheet https://sensing.honeywell.com/honeywell-sensing-trustability-=
+hsc-series-high-accuracy-board-mount-pressure-sensors-50099148-a-en.pdf
+[2] SPI Communications with Honeywell Digital Output Pressure Sensors https=
+://sensing.honeywell.com/spi-comms-digital-ouptu-pressure-sensors-tn-008202=
+-3-en-final-30may12.pdf
+
+Carlos Iglesias (2):
+  dt-bindings: iio: pressure: Add support for Honeywell HSC SPI sensors
+  iio: pressure: Add support for Honeywell HSC SPI sensors
+
+ .../bindings/iio/pressure/hsc_spi.txt         |  85 +++
+ MAINTAINERS                                   |   6 +
+ drivers/iio/pressure/Kconfig                  |  10 +
+ drivers/iio/pressure/Makefile                 |   2 +
+ drivers/iio/pressure/hsc_spi.c                | 543 ++++++++++++++++++
+ 5 files changed, 646 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/pressure/hsc_spi.=
+txt
+ create mode 100644 drivers/iio/pressure/hsc_spi.c
+
+--=20
+2.19.1
