@@ -1,218 +1,640 @@
-Return-Path: <SRS0=YZFO=NK=emutex.com=carlos.iglesias@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-eopbgr30093.outbound.protection.outlook.com ([40.107.3.93]:50723
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726815AbeJ0Cwq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 26 Oct 2018 22:52:46 -0400
 From: Carlos Iglesias <carlos.iglesias@emutex.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com"
-	<mark.rutland@arm.com>, "knaack.h@gmx.de" <knaack.h@gmx.de>,
-	"lars@metafoo.de" <lars@metafoo.de>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Dan O'Donovan
-	<dan.odonovan@emutex.com>
-Subject: Re: [PATCH 1/2] dt-bindings: iio: pressure: Add support for Honeywell
- HSC SPI sensors
-Date: Tue, 30 Oct 2018 15:56:58 +0000
-Message-ID: <0dbb2254-8035-b498-6302-26bc3a2219ca@emutex.com>
+To: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>
+CC: "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Dan O'Donovan <dan.odonovan@emutex.com>,
+        Carlos Iglesias <carlos.iglesias@emutex.com>
+Subject: [PATCH 2/2] iio: pressure: Add support for Honeywell HSC SPI sensors
+Date: Fri, 26 Oct 2018 18:14:37 +0000
+Message-ID: <20181026181406.14545-3-carlos.iglesias@emutex.com>
 References: <20181026181406.14545-1-carlos.iglesias@emutex.com>
- <20181026181406.14545-2-carlos.iglesias@emutex.com>
- <20181028173842.580ba1d4@archlinux>
-In-Reply-To: <20181028173842.580ba1d4@archlinux>
-Content-Type: multipart/alternative;
-	boundary="_000_0dbb22548035b498630226bc3a2219caemutexcom_"
+In-Reply-To: <20181026181406.14545-1-carlos.iglesias@emutex.com>
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
---_000_0dbb22548035b498630226bc3a2219caemutexcom_
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Add device driver for the HSC pressure sensors with SPI interface.
+In addition to the main measurement -pressure- these sensors also
+provide temperature measurement.
 
-UGxlYXNlIHNlZSBjb21tZW50cyBpbmxpbmUgYmVsb3cuDQoNCk9uIDEwLzI4LzE4IDU6MzggUE0s
-IEpvbmF0aGFuIENhbWVyb24gd3JvdGU6DQoNCk9uIEZyaSwgMjYgT2N0IDIwMTggMTg6MTQ6MzYg
-KzAwMDANCkNhcmxvcyBJZ2xlc2lhcyA8Y2FybG9zLmlnbGVzaWFzQGVtdXRleC5jb20+PG1haWx0
-bzpjYXJsb3MuaWdsZXNpYXNAZW11dGV4LmNvbT4gd3JvdGU6DQoNCg0KDQpBZGQgZGV2aWNlIHRy
-ZWUgYmluZGluZ3MgZm9yIHRoZSBIU0MgcHJlc3N1cmUgc2Vuc29ycy4NCg0KU2lnbmVkLW9mZi1i
-eTogQ2FybG9zIElnbGVzaWFzIDxjYXJsb3MuaWdsZXNpYXNAZW11dGV4LmNvbT48bWFpbHRvOmNh
-cmxvcy5pZ2xlc2lhc0BlbXV0ZXguY29tPg0KLS0tDQogLi4uL2JpbmRpbmdzL2lpby9wcmVzc3Vy
-ZS9oc2Nfc3BpLnR4dCAgICAgICAgIHwgODUgKysrKysrKysrKysrKysrKysrKw0KIDEgZmlsZSBj
-aGFuZ2VkLCA4NSBpbnNlcnRpb25zKCspDQogY3JlYXRlIG1vZGUgMTAwNjQ0IERvY3VtZW50YXRp
-b24vZGV2aWNldHJlZS9iaW5kaW5ncy9paW8vcHJlc3N1cmUvaHNjX3NwaS50eHQNCg0KZGlmZiAt
-LWdpdCBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9paW8vcHJlc3N1cmUvaHNj
-X3NwaS50eHQgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaWlvL3ByZXNzdXJl
-L2hzY19zcGkudHh0DQpuZXcgZmlsZSBtb2RlIDEwMDY0NA0KaW5kZXggMDAwMDAwMDAwMDAwLi4y
-MzAyZDZlZWY3YzcNCi0tLSAvZGV2L251bGwNCisrKyBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJl
-ZS9iaW5kaW5ncy9paW8vcHJlc3N1cmUvaHNjX3NwaS50eHQNCkBAIC0wLDAgKzEsODUgQEANCitI
-b25leXdlbGwgSFNDIFNlcmllcyBvZiBQcmVzc3VyZSBTZW5zb3JzDQorDQorUHJlc3N1cmUgc2Vu
-c29ycyBmcm9tIEhvbmV5d2VsbCB3aXRoIGFuYWxvZywgSTJDIGFuZCBTUEkgaW50ZXJmYWNlcw0K
-Kw0KK1JlcXVpcmVkIHByb3BlcnRpZXM6DQorLSBjb21wYXRpYmxlOiBzZWxlY3RzIHRoZSBzZW5z
-b3IgbW9kZWw7IG11c3QgYmUgb25lIG9mIHRoZSBmb2xsb3dpbmcNCisgICAgICAgImhvbmV5d2Vs
-bCxoc2MwMDFiYWEiDQorICAgICAgICJob25leXdlbGwsaHNjMDAxYmFiIg0KKyAgICAgICAiaG9u
-ZXl3ZWxsLGhzYzAwMWJhYyINCisgICAgICAgImhvbmV5d2VsbCxoc2MwMDFiYWYiDQorICAgICAg
-ICJob25leXdlbGwsaHNjMV82YmFhIg0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzFfNmJhYiINCisg
-ICAgICAgImhvbmV5d2VsbCxoc2MxXzZiYWMiDQorICAgICAgICJob25leXdlbGwsaHNjMV82YmFm
-Ig0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzJfNWJhYSINCisgICAgICAgImhvbmV5d2VsbCxoc2My
-XzViYWIiDQorICAgICAgICJob25leXdlbGwsaHNjMl81YmFjIg0KKyAgICAgICAiaG9uZXl3ZWxs
-LGhzYzJfNWJhZiINCisgICAgICAgImhvbmV5d2VsbCxoc2MwMDRiYWEiDQorICAgICAgICJob25l
-eXdlbGwsaHNjMDA0YmFiIg0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzAwNGJhYyINCisgICAgICAg
-ImhvbmV5d2VsbCxoc2MwMDRiYWYiDQorICAgICAgICJob25leXdlbGwsaHNjMDA2YmFhIg0KKyAg
-ICAgICAiaG9uZXl3ZWxsLGhzYzAwNmJhYiINCisgICAgICAgImhvbmV5d2VsbCxoc2MwMDZiYWMi
-DQorICAgICAgICJob25leXdlbGwsaHNjMDA2YmFmIg0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzAx
-MGJhYSINCisgICAgICAgImhvbmV5d2VsbCxoc2MwMTBiYWIiDQorICAgICAgICJob25leXdlbGws
-aHNjMDEwYmFjIg0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzAxMGJhZiINCisgICAgICAgImhvbmV5
-d2VsbCxoc2MxMDBrYWEiDQorICAgICAgICJob25leXdlbGwsaHNjMTAwa2FiIg0KKyAgICAgICAi
-aG9uZXl3ZWxsLGhzYzEwMGthYyINCisgICAgICAgImhvbmV5d2VsbCxoc2MxMDBrYWYiDQorICAg
-ICAgICJob25leXdlbGwsaHNjMTYwa2FhIg0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzE2MGthYiIN
-CisgICAgICAgImhvbmV5d2VsbCxoc2MxNjBrYWMiDQorICAgICAgICJob25leXdlbGwsaHNjMTYw
-a2FmIg0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzI1MGthYSINCisgICAgICAgImhvbmV5d2VsbCxo
-c2MyNTBrYWIiDQorICAgICAgICJob25leXdlbGwsaHNjMjUwa2FjIg0KKyAgICAgICAiaG9uZXl3
-ZWxsLGhzYzI1MGthZiINCisgICAgICAgImhvbmV5d2VsbCxoc2M0MDBrYWEiDQorICAgICAgICJo
-b25leXdlbGwsaHNjNDAwa2FiIg0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzQwMGthYyINCisgICAg
-ICAgImhvbmV5d2VsbCxoc2M0MDBrYWYiDQorICAgICAgICJob25leXdlbGwsaHNjNjAwa2FhIg0K
-KyAgICAgICAiaG9uZXl3ZWxsLGhzYzYwMGthYiINCisgICAgICAgImhvbmV5d2VsbCxoc2M2MDBr
-YWMiDQorICAgICAgICJob25leXdlbGwsaHNjNjAwa2FmIg0KKyAgICAgICAiaG9uZXl3ZWxsLGhz
-YzAwMWdhYSINCisgICAgICAgImhvbmV5d2VsbCxoc2MwMDFnYWIiDQorICAgICAgICJob25leXdl
-bGwsaHNjMDAxZ2FjIg0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzAwMWdhZiINCisgICAgICAgImhv
-bmV5d2VsbCxoc2MwMTVwYWEiDQorICAgICAgICJob25leXdlbGwsaHNjMDE1cGFiIg0KKyAgICAg
-ICAiaG9uZXl3ZWxsLGhzYzAxNXBhYyINCisgICAgICAgImhvbmV5d2VsbCxoc2MwMTVwYWYiDQor
-ICAgICAgICJob25leXdlbGwsaHNjMDMwcGFhIg0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzAzMHBh
-YiINCisgICAgICAgImhvbmV5d2VsbCxoc2MwMzBwYWMiDQorICAgICAgICJob25leXdlbGwsaHNj
-MDMwcGFmIg0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzA2MHBhYSINCisgICAgICAgImhvbmV5d2Vs
-bCxoc2MwNjBwYWIiDQorICAgICAgICJob25leXdlbGwsaHNjMDYwcGFjIg0KKyAgICAgICAiaG9u
-ZXl3ZWxsLGhzYzA2MHBhZiINCisgICAgICAgImhvbmV5d2VsbCxoc2MxMDBwYWEiDQorICAgICAg
-ICJob25leXdlbGwsaHNjMTAwcGFiIg0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzEwMHBhYyINCisg
-ICAgICAgImhvbmV5d2VsbCxoc2MxMDBwYWYiDQorICAgICAgICJob25leXdlbGwsaHNjMTUwcGFh
-Ig0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzE1MHBhYiINCisgICAgICAgImhvbmV5d2VsbCxoc2Mx
-NTBwYWMiDQorICAgICAgICJob25leXdlbGwsaHNjMTUwcGFmIg0KKy0gcmVnOiB0aGUgU1BJIGNo
-aXAgc2VsZWN0IG51bWJlciB1c2VkIGJ5IHRoZSBzZW5zb3IuDQorLSBzcGktbWF4LWZyZXF1ZW5j
-eTogbWF4aW11bSBjbG9jayBmcmVxdWVuY3kgKEh6KSB1c2VkIGZvciB0aGUgU1BJIGJ1cy4NCisg
-IFRoZSBtYXhpbXVtIHZhbHVlIHN1cHBvcnRlZCBieSB0aGUgc2Vuc29ycyBpcyA0MDAwMDAuDQoN
-Cg0KQXMgUm9iIHBvaW50ZWQgb3V0IGluIGEgZmV3IHJldmlld3MgdGhpcyB3ZWVrLCB0aGUgZGV2
-aWNldHJlZSBiaW5kaW5nDQpmb3IgdGhpcyBzaG91bGQgb25seSBiZSBhcHBseWluZyBhIHRpZ2h0
-ZXIgYm91bmQgdGhhbiBlaXRoZXIgdGhlDQpkZXZpY2Ugb3IgdGhlIGJ1cyBtYXN0ZXIuIFNvIHNv
-bWV0aGluZyBpbnRyb2R1Y2VkIGJ5IHRoZSBib2FyZA0KbGF5b3V0IGZvciBleGFtcGxlLCBvciBh
-IGxldmVsIGNvbnZlcnRvci4uDQoNCkpvbmF0aGFuDQoNCkNoZWNraW5nIHRoZSBkZXZpY2V0cmVl
-IGJpbmRpbmdzIGZpbGVzIG9mIG90aGVyIHNwaSBzZW5zb3JzIEkgc2VlIGEgZnJlcXVlbnQgYXBw
-cm9hY2ggaXMgdG8gaW5jbHVkZSBhIHJlZmVyZW5jZSB0byBEb2N1bWVudGF0aW9uL2RldmljZXRy
-ZWUvYmluZGluZ3Mvc3BpL3NwaS1idXMudHh0LCBmb3IgZXhhbXBsZToNCg0KUHJvcGVydHkgcnVs
-ZXMgZGVzY3JpYmVkIGluIERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9zcGkvc3Bp
-LWJ1cy50eHQgYXBwbHkuIEluIHBhcnRpY3VsYXIsICJyZWciIGFuZCAic3BpLW1heC1mcmVxdWVu
-Y3kiIHByb3BlcnRpZXMgbXVzdCBiZSBnaXZlbi4NCg0KTWF5YmUgaXQgd291bGQgYmUgYSBiZXR0
-ZXIgb3B0aW9uIHRvIHBsYWNlIHN1Y2ggYSBub3RlIGluc3RlYWQgb2YgdGhlICJyZWciIGFuZCAi
-c3BpLW1heC1mcmVxdWVuY3kiIHBvaW50cy4gV2hhdCBkbyB5b3UgdGhpbms/DQoNClNvcnJ5LCBJ
-IHdhcyBub3QgYXdhcmUgb2YgUm9iIEhlcnJpbmcncyBwcmV2aW91cyBjb21tZW50cyBvbiB0aGlz
-IHRvcGljLCBJIGFtIG5vdCBzdWJzY3JpYmVkIHRvIHRoZSBMS01MLg0KDQoNCg0KDQorDQorRXhh
-bXBsZToNCisNCisgICAgICAgaHNjX3NwaTA6IGhzY0AwIHsNCisgICAgICAgICAgICAgICBjb21w
-YXRpYmxlID0gImhvbmV5d2VsbCxoc2MwMTBiYWEiOw0KKyAgICAgICAgICAgICAgIHJlZyA9IDww
-PjsNCisgICAgICAgICAgICAgICBzcGktbWF4LWZyZXF1ZW5jeSA9IDw0MDAwMDA+Ow0KKyAgICAg
-ICB9Ow0KDQoNCg0KDQo=
+Signed-off-by: Carlos Iglesias <carlos.iglesias@emutex.com>
+---
+ MAINTAINERS                    |   6 +
+ drivers/iio/pressure/Kconfig   |  10 +
+ drivers/iio/pressure/Makefile  |   2 +
+ drivers/iio/pressure/hsc_spi.c | 543 +++++++++++++++++++++++++++++++++
+ 4 files changed, 561 insertions(+)
+ create mode 100644 drivers/iio/pressure/hsc_spi.c
 
---_000_0dbb22548035b498630226bc3a2219caemutexcom_
-Content-Type: text/html; charset="utf-8"
-Content-ID: <E0C3BD64EF09854BA93BFFF5957D36F9@EURP190.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
-
-PGh0bWw+DQo8aGVhZD4NCjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIgY29udGVudD0i
-dGV4dC9odG1sOyBjaGFyc2V0PXV0Zi04Ij4NCjwvaGVhZD4NCjxib2R5IHRleHQ9IiMwMDAwMDAi
-IGJnY29sb3I9IiNGRkZGRkYiPg0KPHA+UGxlYXNlIHNlZSBjb21tZW50cyBpbmxpbmUgYmVsb3cu
-PGJyPg0KPC9wPg0KPGRpdiBjbGFzcz0ibW96LWNpdGUtcHJlZml4Ij5PbiAxMC8yOC8xOCA1OjM4
-IFBNLCBKb25hdGhhbiBDYW1lcm9uIHdyb3RlOjxicj4NCjwvZGl2Pg0KPGJsb2NrcXVvdGUgdHlw
-ZT0iY2l0ZSIgY2l0ZT0ibWlkOjIwMTgxMDI4MTczODQyLjU4MGJhMWQ0QGFyY2hsaW51eCI+DQo8
-cHJlIGNsYXNzPSJtb3otcXVvdGUtcHJlIiB3cmFwPSIiPk9uIEZyaSwgMjYgT2N0IDIwMTggMTg6
-MTQ6MzYgJiM0MzswMDAwDQpDYXJsb3MgSWdsZXNpYXMgPGEgY2xhc3M9Im1vei10eHQtbGluay1y
-ZmMyMzk2RSIgaHJlZj0ibWFpbHRvOmNhcmxvcy5pZ2xlc2lhc0BlbXV0ZXguY29tIj4mbHQ7Y2Fy
-bG9zLmlnbGVzaWFzQGVtdXRleC5jb20mZ3Q7PC9hPiB3cm90ZToNCg0KPC9wcmU+DQo8YmxvY2tx
-dW90ZSB0eXBlPSJjaXRlIj4NCjxwcmUgY2xhc3M9Im1vei1xdW90ZS1wcmUiIHdyYXA9IiI+QWRk
-IGRldmljZSB0cmVlIGJpbmRpbmdzIGZvciB0aGUgSFNDIHByZXNzdXJlIHNlbnNvcnMuDQoNClNp
-Z25lZC1vZmYtYnk6IENhcmxvcyBJZ2xlc2lhcyA8YSBjbGFzcz0ibW96LXR4dC1saW5rLXJmYzIz
-OTZFIiBocmVmPSJtYWlsdG86Y2FybG9zLmlnbGVzaWFzQGVtdXRleC5jb20iPiZsdDtjYXJsb3Mu
-aWdsZXNpYXNAZW11dGV4LmNvbSZndDs8L2E+DQotLS0NCiAuLi4vYmluZGluZ3MvaWlvL3ByZXNz
-dXJlL2hzY19zcGkudHh0ICAgICAgICAgfCA4NSAmIzQzOyYjNDM7JiM0MzsmIzQzOyYjNDM7JiM0
-MzsmIzQzOyYjNDM7JiM0MzsmIzQzOyYjNDM7JiM0MzsmIzQzOyYjNDM7JiM0MzsmIzQzOyYjNDM7
-JiM0MzsmIzQzOw0KIDEgZmlsZSBjaGFuZ2VkLCA4NSBpbnNlcnRpb25zKCYjNDM7KQ0KIGNyZWF0
-ZSBtb2RlIDEwMDY0NCBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaWlvL3ByZXNz
-dXJlL2hzY19zcGkudHh0DQoNCmRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUv
-YmluZGluZ3MvaWlvL3ByZXNzdXJlL2hzY19zcGkudHh0IGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0
-cmVlL2JpbmRpbmdzL2lpby9wcmVzc3VyZS9oc2Nfc3BpLnR4dA0KbmV3IGZpbGUgbW9kZSAxMDA2
-NDQNCmluZGV4IDAwMDAwMDAwMDAwMC4uMjMwMmQ2ZWVmN2M3DQotLS0gL2Rldi9udWxsDQomIzQz
-OyYjNDM7JiM0MzsgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaWlvL3ByZXNz
-dXJlL2hzY19zcGkudHh0DQpAQCAtMCwwICYjNDM7MSw4NSBAQA0KJiM0MztIb25leXdlbGwgSFND
-IFNlcmllcyBvZiBQcmVzc3VyZSBTZW5zb3JzDQomIzQzOw0KJiM0MztQcmVzc3VyZSBzZW5zb3Jz
-IGZyb20gSG9uZXl3ZWxsIHdpdGggYW5hbG9nLCBJMkMgYW5kIFNQSSBpbnRlcmZhY2VzDQomIzQz
-Ow0KJiM0MztSZXF1aXJlZCBwcm9wZXJ0aWVzOg0KJiM0MzstIGNvbXBhdGlibGU6IHNlbGVjdHMg
-dGhlIHNlbnNvciBtb2RlbDsgbXVzdCBiZSBvbmUgb2YgdGhlIGZvbGxvd2luZw0KJiM0MzsJJnF1
-b3Q7aG9uZXl3ZWxsLGhzYzAwMWJhYSZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAw
-MWJhYiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAwMWJhYyZxdW90Ow0KJiM0MzsJ
-JnF1b3Q7aG9uZXl3ZWxsLGhzYzAwMWJhZiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhz
-YzFfNmJhYSZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzFfNmJhYiZxdW90Ow0KJiM0
-MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzFfNmJhYyZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxs
-LGhzYzFfNmJhZiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzJfNWJhYSZxdW90Ow0K
-JiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzJfNWJhYiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3
-ZWxsLGhzYzJfNWJhYyZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzJfNWJhZiZxdW90
-Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAwNGJhYSZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9u
-ZXl3ZWxsLGhzYzAwNGJhYiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAwNGJhYyZx
-dW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAwNGJhZiZxdW90Ow0KJiM0MzsJJnF1b3Q7
-aG9uZXl3ZWxsLGhzYzAwNmJhYSZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAwNmJh
-YiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAwNmJhYyZxdW90Ow0KJiM0MzsJJnF1
-b3Q7aG9uZXl3ZWxsLGhzYzAwNmJhZiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAx
-MGJhYSZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAxMGJhYiZxdW90Ow0KJiM0MzsJ
-JnF1b3Q7aG9uZXl3ZWxsLGhzYzAxMGJhYyZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhz
-YzAxMGJhZiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzEwMGthYSZxdW90Ow0KJiM0
-MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzEwMGthYiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxs
-LGhzYzEwMGthYyZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzEwMGthZiZxdW90Ow0K
-JiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzE2MGthYSZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3
-ZWxsLGhzYzE2MGthYiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzE2MGthYyZxdW90
-Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzE2MGthZiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9u
-ZXl3ZWxsLGhzYzI1MGthYSZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzI1MGthYiZx
-dW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzI1MGthYyZxdW90Ow0KJiM0MzsJJnF1b3Q7
-aG9uZXl3ZWxsLGhzYzI1MGthZiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzQwMGth
-YSZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzQwMGthYiZxdW90Ow0KJiM0MzsJJnF1
-b3Q7aG9uZXl3ZWxsLGhzYzQwMGthYyZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzQw
-MGthZiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzYwMGthYSZxdW90Ow0KJiM0MzsJ
-JnF1b3Q7aG9uZXl3ZWxsLGhzYzYwMGthYiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhz
-YzYwMGthYyZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzYwMGthZiZxdW90Ow0KJiM0
-MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAwMWdhYSZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxs
-LGhzYzAwMWdhYiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAwMWdhYyZxdW90Ow0K
-JiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAwMWdhZiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3
-ZWxsLGhzYzAxNXBhYSZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAxNXBhYiZxdW90
-Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAxNXBhYyZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9u
-ZXl3ZWxsLGhzYzAxNXBhZiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAzMHBhYSZx
-dW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAzMHBhYiZxdW90Ow0KJiM0MzsJJnF1b3Q7
-aG9uZXl3ZWxsLGhzYzAzMHBhYyZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAzMHBh
-ZiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzA2MHBhYSZxdW90Ow0KJiM0MzsJJnF1
-b3Q7aG9uZXl3ZWxsLGhzYzA2MHBhYiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzA2
-MHBhYyZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzA2MHBhZiZxdW90Ow0KJiM0MzsJ
-JnF1b3Q7aG9uZXl3ZWxsLGhzYzEwMHBhYSZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhz
-YzEwMHBhYiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzEwMHBhYyZxdW90Ow0KJiM0
-MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzEwMHBhZiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxs
-LGhzYzE1MHBhYSZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzE1MHBhYiZxdW90Ow0K
-JiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzE1MHBhYyZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3
-ZWxsLGhzYzE1MHBhZiZxdW90Ow0KJiM0MzstIHJlZzogdGhlIFNQSSBjaGlwIHNlbGVjdCBudW1i
-ZXIgdXNlZCBieSB0aGUgc2Vuc29yLg0KJiM0MzstIHNwaS1tYXgtZnJlcXVlbmN5OiBtYXhpbXVt
-IGNsb2NrIGZyZXF1ZW5jeSAoSHopIHVzZWQgZm9yIHRoZSBTUEkgYnVzLg0KJiM0MzsgIFRoZSBt
-YXhpbXVtIHZhbHVlIHN1cHBvcnRlZCBieSB0aGUgc2Vuc29ycyBpcyA0MDAwMDAuDQo8L3ByZT4N
-CjwvYmxvY2txdW90ZT4NCjxwcmUgY2xhc3M9Im1vei1xdW90ZS1wcmUiIHdyYXA9IiI+QXMgUm9i
-IHBvaW50ZWQgb3V0IGluIGEgZmV3IHJldmlld3MgdGhpcyB3ZWVrLCB0aGUgZGV2aWNldHJlZSBi
-aW5kaW5nDQpmb3IgdGhpcyBzaG91bGQgb25seSBiZSBhcHBseWluZyBhIHRpZ2h0ZXIgYm91bmQg
-dGhhbiBlaXRoZXIgdGhlDQpkZXZpY2Ugb3IgdGhlIGJ1cyBtYXN0ZXIuIFNvIHNvbWV0aGluZyBp
-bnRyb2R1Y2VkIGJ5IHRoZSBib2FyZA0KbGF5b3V0IGZvciBleGFtcGxlLCBvciBhIGxldmVsIGNv
-bnZlcnRvci4uDQoNCkpvbmF0aGFuPC9wcmU+DQo8L2Jsb2NrcXVvdGU+DQo8cD5DaGVja2luZyB0
-aGUgZGV2aWNldHJlZSBiaW5kaW5ncyBmaWxlcyBvZiBvdGhlciBzcGkgc2Vuc29ycyBJIHNlZSBh
-IGZyZXF1ZW50IGFwcHJvYWNoIGlzIHRvIGluY2x1ZGUgYSByZWZlcmVuY2UgdG8gRG9jdW1lbnRh
-dGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3NwaS9zcGktYnVzLnR4dCwgZm9yIGV4YW1wbGU6PC9w
-Pg0KPGJsb2NrcXVvdGU+DQo8cD5Qcm9wZXJ0eSBydWxlcyBkZXNjcmliZWQgaW4gRG9jdW1lbnRh
-dGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3NwaS9zcGktYnVzLnR4dCBhcHBseS4gSW4gcGFydGlj
-dWxhciwgJnF1b3Q7cmVnJnF1b3Q7IGFuZCAmcXVvdDtzcGktbWF4LWZyZXF1ZW5jeSZxdW90OyBw
-cm9wZXJ0aWVzIG11c3QgYmUgZ2l2ZW4uPC9wPg0KPC9ibG9ja3F1b3RlPg0KPHA+TWF5YmUgaXQg
-d291bGQgYmUgYSBiZXR0ZXIgb3B0aW9uIHRvIHBsYWNlIHN1Y2ggYSBub3RlIGluc3RlYWQgb2Yg
-dGhlICZxdW90O3JlZyZxdW90OyBhbmQgJnF1b3Q7c3BpLW1heC1mcmVxdWVuY3kmcXVvdDsgcG9p
-bnRzLiBXaGF0IGRvIHlvdSB0aGluaz88L3A+DQo8cD5Tb3JyeSwgSSB3YXMgbm90IGF3YXJlIG9m
-IFJvYiBIZXJyaW5nJ3MgcHJldmlvdXMgY29tbWVudHMgb24gdGhpcyB0b3BpYywgSSBhbSBub3Qg
-c3Vic2NyaWJlZCB0byB0aGUgTEtNTC48YnI+DQo8L3A+DQo8YmxvY2txdW90ZSB0eXBlPSJjaXRl
-IiBjaXRlPSJtaWQ6MjAxODEwMjgxNzM4NDIuNTgwYmExZDRAYXJjaGxpbnV4Ij4NCjxwcmUgY2xh
-c3M9Im1vei1xdW90ZS1wcmUiIHdyYXA9IiI+DQo8L3ByZT4NCjxibG9ja3F1b3RlIHR5cGU9ImNp
-dGUiPg0KPHByZSBjbGFzcz0ibW96LXF1b3RlLXByZSIgd3JhcD0iIj4mIzQzOw0KJiM0MztFeGFt
-cGxlOg0KJiM0MzsNCiYjNDM7CWhzY19zcGkwOiBoc2NAMCB7DQomIzQzOwkJY29tcGF0aWJsZSA9
-ICZxdW90O2hvbmV5d2VsbCxoc2MwMTBiYWEmcXVvdDs7DQomIzQzOwkJcmVnID0gJmx0OzAmZ3Q7
-Ow0KJiM0MzsJCXNwaS1tYXgtZnJlcXVlbmN5ID0gJmx0OzQwMDAwMCZndDs7DQomIzQzOwl9Ow0K
-PC9wcmU+DQo8L2Jsb2NrcXVvdGU+DQo8cHJlIGNsYXNzPSJtb3otcXVvdGUtcHJlIiB3cmFwPSIi
-Pg0KPC9wcmU+DQo8L2Jsb2NrcXVvdGU+DQo8L2JvZHk+DQo8L2h0bWw+DQo=
-
---_000_0dbb22548035b498630226bc3a2219caemutexcom_--
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 556f902b3766..a4af4cbd4b0f 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -6696,6 +6696,12 @@ W:	http://artax.karlin.mff.cuni.cz/~mikulas/vyplody/=
+hpfs/index-e.cgi
+ S:	Maintained
+ F:	fs/hpfs/
+=20
++HSC SERIES PRESSURE SENSORS
++M;	Carlos Iglesias <carlos.iglesias@emutex.com>
++S:	Maintained
++F:	Documentation/devicetree/bindings/iio/pressure/hsc_spi.txt
++F:	drivers/iio/pressure/hsc_spi.c
++
+ HSI SUBSYSTEM
+ M:	Sebastian Reichel <sre@kernel.org>
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/sre/linux-hsi.git
+diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+index eaa7cfcb4c2a..593663d4ffa8 100644
+--- a/drivers/iio/pressure/Kconfig
++++ b/drivers/iio/pressure/Kconfig
+@@ -227,4 +227,14 @@ config ZPA2326_SPI
+ 	tristate
+ 	select REGMAP_SPI
+=20
++config HSC_SPI
++	tristate "Honeywell HSC pressure sensors (SPI)"
++	depends on SPI_MASTER
++	help
++	  Say yes here to build support for the Honeywell HSC range of
++	  pressure sensors (SPI interface only).
++
++	  To compile this driver as a module, choose M here: the module will
++	  be called hsc_spi.
++
+ endmenu
+diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
+index c2058d7b2f93..b1db2116e9f6 100644
+--- a/drivers/iio/pressure/Makefile
++++ b/drivers/iio/pressure/Makefile
+@@ -31,3 +31,5 @@ obj-$(CONFIG_ZPA2326_SPI) +=3D zpa2326_spi.o
+=20
+ obj-$(CONFIG_IIO_ST_PRESS_I2C) +=3D st_pressure_i2c.o
+ obj-$(CONFIG_IIO_ST_PRESS_SPI) +=3D st_pressure_spi.o
++
++obj-$(CONFIG_HSC_SPI) +=3D hsc_spi.o
+diff --git a/drivers/iio/pressure/hsc_spi.c b/drivers/iio/pressure/hsc_spi.=
+c
+new file mode 100644
+index 000000000000..efe45a09da8f
+--- /dev/null
++++ b/drivers/iio/pressure/hsc_spi.c
+@@ -0,0 +1,543 @@
++// SPDX-License-Identifier: GPL-2.0
++
++/*
++ * hsc_spi.c - Driver for Honeywell HSC pressure sensors with
++ *             SPI interface
++ *
++ * Copyright (c) 2018 Carlos Iglesias <carlos.iglesias@emutex.com>
++ */
++
++#include <linux/device.h>
++#include <linux/err.h>
++#include <linux/iio/iio.h>
++#include <linux/io.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/of_platform.h>
++#include <linux/spi/spi.h>
++
++#define HSC_MAX_SPI_FREQ_HZ	400000
++
++#define HSC_TEMP_BITS		11
++#define HSC_PRESS_BITS		14
++#define HSC_TEMP_MASK		(0x7FF)
++#define HSC_TEMP_SHIFT		(5)
++
++#define HSC_STATUS_S0		BIT(14)
++#define HSC_STATUS_S1		BIT(15)
++#define HSC_STATUS_MSK		((HSC_STATUS_S0) | (HSC_STATUS_S1))
++#define HSC_STATUS_CMD		HSC_STATUS_S0
++#define HSC_STATUS_STALE	HSC_STATUS_S1
++#define HSC_STATUS_DIAG		((HSC_STATUS_S0) | (HSC_STATUS_S1))
++
++static inline int hsc_status_error(struct device dev, int val)
++{
++	int st_check =3D val & HSC_STATUS_MSK;
++
++	if (st_check) {
++		switch (st_check) {
++		case HSC_STATUS_CMD:
++			dev_warn(&dev, "%s:Device in COMMAND MODE\n",
++				 __func__);
++			return -EIO;
++		case HSC_STATUS_STALE:
++			dev_warn(&dev, "%s:Stale data - sampling too fast?\n",
++				 __func__);
++			return -EAGAIN;
++		case HSC_STATUS_DIAG:
++			dev_warn(&dev, "%s:Calibration signature changed\n",
++				 __func__);
++			return -EIO;
++		default:
++			dev_err(&dev, "%s:Invalid status code (%d)\n",
++				__func__, st_check);
++			return -EIO;
++		}
++	}
++
++	return 0;
++}
++
++enum hsc_variant {
++	/* Note: Only the absolute range sensors are supported */
++	HSC001BAA, HSC001BAB, HSC001BAC, HSC001BAF,
++	HSC1_6BAA, HSC1_6BAB, HSC1_6BAC, HSC1_6BAF,
++	HSC2_5BAA, HSC2_5BAB, HSC2_5BAC, HSC2_5BAF,
++	HSC004BAA, HSC004BAB, HSC004BAC, HSC004BAF,
++	HSC006BAA, HSC006BAB, HSC006BAC, HSC006BAF,
++	HSC010BAA, HSC010BAB, HSC010BAC, HSC010BAF,
++
++	HSC100KAA, HSC100KAB, HSC100KAC, HSC100KAF,
++	HSC160KAA, HSC160KAB, HSC160KAC, HSC160KAF,
++	HSC250KAA, HSC250KAB, HSC250KAC, HSC250KAF,
++	HSC400KAA, HSC400KAB, HSC400KAC, HSC400KAF,
++	HSC600KAA, HSC600KAB, HSC600KAC, HSC600KAF,
++	HSC001GAA, HSC001GAB, HSC001GAC, HSC001GAF,
++
++	HSC015PAA, HSC015PAB, HSC015PAC, HSC015PAF,
++	HSC030PAA, HSC030PAB, HSC030PAC, HSC030PAF,
++	HSC060PAA, HSC060PAB, HSC060PAC, HSC060PAF,
++	HSC100PAA, HSC100PAB, HSC100PAC, HSC100PAF,
++	HSC150PAA, HSC150PAB, HSC150PAC, HSC150PAF,
++};
++
++enum hsc_meas_channel {
++	HSC_CH_PRESSURE,
++	HSC_CH_TEMPERATURE
++};
++
++struct hsc_config {
++	int pmin;	/* Lower pressure limit */
++	int pmax;	/* Upper pressure limit */
++	int rmin;	/* Lower transfer function limit (%) */
++	int rmax;	/* Upper transfer function limit (%) */
++	int knum;	/* Pressure kPa conversion factor (numerator) */
++	int kden;	/* Pressure kPa conversion factor /denominator) */
++};
++
++struct hsc_fract_val {
++	int num;	/* numerator */
++	int den;	/* denominator */
++};
++
++struct hsc_state {
++	struct device *dev;
++	struct spi_device *spi_dev;
++	struct spi_transfer spi_xfer;
++	struct spi_message spi_msg;
++	__be16 rx_buf[2];
++
++	/* Model-dependent values */
++	struct hsc_fract_val scale;
++	struct hsc_fract_val offset;
++};
++
++#define HSC_CONFIG(_pmin, _pmax, _rmin, _rmax, _knum, _kden) {	\
++		.pmin =3D (_pmin),				\
++		.pmax =3D (_pmax),				\
++		.rmin =3D (_rmin),				\
++		.rmax =3D (_rmax),				\
++		.knum =3D (_knum),				\
++		.kden =3D (_kden),				\
++	}
++
++static struct hsc_config hsc_cfg[] =3D {
++	/* Absolute range, mbar */
++	[HSC001BAA] =3D HSC_CONFIG(0, 1000, 10, 90, 1, 10),
++	[HSC001BAB] =3D HSC_CONFIG(0, 1000, 5, 95, 1, 10),
++	[HSC001BAC] =3D HSC_CONFIG(0, 1000, 5, 85, 1, 10),
++	[HSC001BAF] =3D HSC_CONFIG(0, 1000, 4, 94, 1, 10),
++	[HSC1_6BAA] =3D HSC_CONFIG(0, 1600, 10, 90, 1, 10),
++	[HSC1_6BAB] =3D HSC_CONFIG(0, 1600, 5, 95, 1, 10),
++	[HSC1_6BAC] =3D HSC_CONFIG(0, 1600, 5, 85, 1, 10),
++	[HSC1_6BAF] =3D HSC_CONFIG(0, 1600, 4, 94, 1, 10),
++	[HSC2_5BAA] =3D HSC_CONFIG(0, 2500, 10, 90, 1, 10),
++	[HSC2_5BAB] =3D HSC_CONFIG(0, 2500, 5, 95, 1, 10),
++	[HSC2_5BAC] =3D HSC_CONFIG(0, 2500, 5, 85, 1, 10),
++	[HSC2_5BAF] =3D HSC_CONFIG(0, 2500, 4, 94, 1, 10),
++	[HSC004BAA] =3D HSC_CONFIG(0, 4000, 10, 90, 1, 10),
++	[HSC004BAB] =3D HSC_CONFIG(0, 4000, 5, 95, 1, 10),
++	[HSC004BAC] =3D HSC_CONFIG(0, 4000, 5, 85, 1, 10),
++	[HSC004BAF] =3D HSC_CONFIG(0, 4000, 4, 94, 1, 10),
++	[HSC006BAA] =3D HSC_CONFIG(0, 6000, 10, 90, 1, 10),
++	[HSC006BAB] =3D HSC_CONFIG(0, 6000, 5, 95, 1, 10),
++	[HSC006BAC] =3D HSC_CONFIG(0, 6000, 5, 85, 1, 10),
++	[HSC006BAF] =3D HSC_CONFIG(0, 6000, 4, 94, 1, 10),
++	[HSC010BAA] =3D HSC_CONFIG(0, 10000, 10, 90, 1, 10),
++	[HSC010BAB] =3D HSC_CONFIG(0, 10000, 5, 95, 1, 10),
++	[HSC010BAC] =3D HSC_CONFIG(0, 10000, 5, 85, 1, 10),
++	[HSC010BAF] =3D HSC_CONFIG(0, 10000, 4, 94, 1, 10),
++	/* Absolute range, kPa */
++	[HSC100KAA] =3D HSC_CONFIG(0, 100, 10, 90, 1, 1),
++	[HSC100KAB] =3D HSC_CONFIG(0, 100, 5, 95, 1, 1),
++	[HSC100KAC] =3D HSC_CONFIG(0, 100, 5, 85, 1, 1),
++	[HSC100KAF] =3D HSC_CONFIG(0, 100, 4, 94, 1, 1),
++	[HSC160KAA] =3D HSC_CONFIG(0, 160, 10, 90, 1, 1),
++	[HSC160KAB] =3D HSC_CONFIG(0, 160, 5, 95, 1, 1),
++	[HSC160KAC] =3D HSC_CONFIG(0, 160, 5, 85, 1, 1),
++	[HSC160KAF] =3D HSC_CONFIG(0, 160, 4, 94, 1, 1),
++	[HSC250KAA] =3D HSC_CONFIG(0, 250, 10, 90, 1, 1),
++	[HSC250KAB] =3D HSC_CONFIG(0, 250, 5, 95, 1, 1),
++	[HSC250KAC] =3D HSC_CONFIG(0, 250, 5, 85, 1, 1),
++	[HSC250KAF] =3D HSC_CONFIG(0, 250, 4, 94, 1, 1),
++	[HSC400KAA] =3D HSC_CONFIG(0, 400, 10, 90, 1, 1),
++	[HSC400KAB] =3D HSC_CONFIG(0, 400, 5, 95, 1, 1),
++	[HSC400KAC] =3D HSC_CONFIG(0, 400, 5, 85, 1, 1),
++	[HSC400KAF] =3D HSC_CONFIG(0, 400, 4, 94, 1, 1),
++	[HSC600KAA] =3D HSC_CONFIG(0, 600, 10, 90, 1, 1),
++	[HSC600KAB] =3D HSC_CONFIG(0, 600, 5, 95, 1, 1),
++	[HSC600KAC] =3D HSC_CONFIG(0, 600, 5, 85, 1, 1),
++	[HSC600KAF] =3D HSC_CONFIG(0, 600, 4, 94, 1, 1),
++	[HSC001GAA] =3D HSC_CONFIG(0, 1000, 10, 90, 1, 1),
++	[HSC001GAB] =3D HSC_CONFIG(0, 1000, 5, 95, 1, 1),
++	[HSC001GAC] =3D HSC_CONFIG(0, 1000, 5, 85, 1, 1),
++	[HSC001GAF] =3D HSC_CONFIG(0, 1000, 4, 94, 1, 1),
++	/* Absolute range, psi */
++	[HSC015PAA] =3D HSC_CONFIG(0, 15, 10, 90, 6895, 1000),
++	[HSC015PAB] =3D HSC_CONFIG(0, 15, 5, 95, 6895, 1000),
++	[HSC015PAC] =3D HSC_CONFIG(0, 15, 5, 85, 6895, 1000),
++	[HSC015PAF] =3D HSC_CONFIG(0, 15, 4, 94, 6895, 1000),
++	[HSC030PAA] =3D HSC_CONFIG(0, 30, 10, 90, 6895, 1000),
++	[HSC030PAB] =3D HSC_CONFIG(0, 30, 5, 95, 6895, 1000),
++	[HSC030PAC] =3D HSC_CONFIG(0, 30, 5, 85, 6895, 1000),
++	[HSC030PAF] =3D HSC_CONFIG(0, 30, 4, 94, 6895, 1000),
++	[HSC060PAA] =3D HSC_CONFIG(0, 60, 10, 90, 6895, 1000),
++	[HSC060PAB] =3D HSC_CONFIG(0, 60, 5, 95, 6895, 1000),
++	[HSC060PAC] =3D HSC_CONFIG(0, 60, 5, 85, 6895, 1000),
++	[HSC060PAF] =3D HSC_CONFIG(0, 60, 4, 94, 6895, 1000),
++	[HSC100PAA] =3D HSC_CONFIG(0, 100, 10, 90, 6895, 1000),
++	[HSC100PAB] =3D HSC_CONFIG(0, 100, 5, 95, 6895, 1000),
++	[HSC100PAC] =3D HSC_CONFIG(0, 100, 5, 85, 6895, 1000),
++	[HSC100PAF] =3D HSC_CONFIG(0, 100, 4, 94, 6895, 1000),
++	[HSC150PAA] =3D HSC_CONFIG(0, 150, 10, 90, 6895, 1000),
++	[HSC150PAB] =3D HSC_CONFIG(0, 150, 5, 95, 6895, 1000),
++	[HSC150PAC] =3D HSC_CONFIG(0, 150, 5, 85, 6895, 1000),
++	[HSC150PAF] =3D HSC_CONFIG(0, 150, 4, 94, 6895, 1000),
++};
++
++static const struct iio_chan_spec hsc_channels[] =3D {
++	{
++		.type =3D IIO_PRESSURE,
++		.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_OFFSET) |
++				      BIT(IIO_CHAN_INFO_SCALE),
++		.channel =3D HSC_CH_PRESSURE,
++		.scan_type =3D {
++			.sign =3D 'u',
++			.realbits =3D HSC_PRESS_BITS,
++			.storagebits =3D 16,
++			.shift =3D 0,
++			.endianness =3D IIO_BE,
++		}
++	},
++	{
++		.type =3D IIO_TEMP,
++		.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_OFFSET) |
++				      BIT(IIO_CHAN_INFO_SCALE),
++		.channel =3D HSC_CH_TEMPERATURE,
++		.scan_type =3D {
++			.sign =3D 'u',
++			.realbits =3D HSC_TEMP_BITS,
++			.storagebits =3D 16,
++			.shift =3D HSC_TEMP_SHIFT,
++			.endianness =3D IIO_BE,
++		}
++	}
++};
++
++static int hsc_get_pressure(struct hsc_state *state)
++{
++	int ret =3D 0;
++	int error;
++
++	state->spi_xfer.len =3D 2;
++	ret =3D spi_sync(state->spi_dev, &state->spi_msg);
++	if (ret)
++		return ret;
++
++	ret =3D be16_to_cpu(state->rx_buf[0]);
++
++	error =3D hsc_status_error(state->spi_dev->dev, ret);
++	if (error)
++		return error;
++
++	return ret;
++}
++
++static int hsc_get_temperature(struct hsc_state *state)
++{
++	int ret;
++	int error;
++
++	state->spi_xfer.len =3D 4;
++	ret =3D spi_sync(state->spi_dev, &state->spi_msg);
++	if (ret)
++		return ret;
++
++	ret =3D be16_to_cpu(state->rx_buf[0]);
++	error =3D hsc_status_error(state->spi_dev->dev, ret);
++	if (error)
++		return error;
++
++	ret =3D be16_to_cpu(state->rx_buf[1]);
++	ret =3D (ret >> HSC_TEMP_SHIFT) & HSC_TEMP_MASK;
++
++	return ret;
++}
++
++static int hsc_read_raw(struct iio_dev *indio_dev,
++			struct iio_chan_spec const *chan, int *val,
++			int *val2, long mask)
++{
++	struct hsc_state *state =3D iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		switch (chan->channel) {
++		case HSC_CH_PRESSURE:
++			ret =3D hsc_get_pressure(state);
++			if (ret < 0)
++				break;
++			*val =3D ret;
++			ret =3D IIO_VAL_INT;
++			break;
++		case HSC_CH_TEMPERATURE:
++			ret =3D hsc_get_temperature(state);
++			if (ret < 0)
++				break;
++			*val =3D ret;
++			ret =3D IIO_VAL_INT;
++			break;
++		default:
++			ret =3D -EINVAL;
++			dev_err(state->dev,
++				"%s - IIO_CHAN_INFO_RAW-bad channel (%d)\n",
++				__func__, chan->channel);
++			break;
++		}
++		break;
++	case IIO_CHAN_INFO_OFFSET:
++		switch (chan->channel) {
++		case HSC_CH_PRESSURE:
++			*val =3D state->offset.num;
++			*val2 =3D state->offset.den;
++			ret =3D IIO_VAL_FRACTIONAL;
++			break;
++		case HSC_CH_TEMPERATURE:
++			*val =3D BIT(HSC_TEMP_BITS) - 1;
++			*val2 =3D -200 / 50;
++			ret =3D IIO_VAL_FRACTIONAL;
++			break;
++		default:
++			dev_err(state->dev,
++				"%s - IIO_CHAN_INFO_OFFSET-bad channel (%d)\n",
++				__func__, chan->channel);
++			ret =3D -EINVAL;
++			break;
++		}
++		break;
++	case IIO_CHAN_INFO_SCALE:
++		switch (chan->channel) {
++		case HSC_CH_PRESSURE:		/* output unit is kPa */
++			*val =3D state->scale.num;
++			*val2 =3D state->scale.den;
++			ret =3D IIO_VAL_FRACTIONAL;
++			break;
++		case HSC_CH_TEMPERATURE:  /* output unit is milli Celsius */
++			*val =3D 200 * 1000;
++			*val2 =3D BIT(HSC_TEMP_BITS) - 1;
++			ret =3D IIO_VAL_FRACTIONAL;
++			break;
++		default:
++			dev_err(state->dev,
++				"%s - IIO_CHAN_INFO_SCALE-bad channel (%d)\n",
++				__func__, chan->channel);
++			ret =3D -EINVAL;
++			break;
++		}
++		break;
++	default:
++		dev_err(state->dev, "%s - mask =3D %ld (INVALID)\n",
++			__func__, mask);
++		ret =3D -EINVAL;
++		break;
++	}
++
++	return ret;
++}
++
++static const struct iio_info hsc_info =3D {
++	.read_raw =3D hsc_read_raw,
++};
++
++static void hsc_init_device(struct iio_dev *indio_dev)
++{
++	struct hsc_state *state =3D iio_priv(indio_dev);
++	const struct hsc_config *cfg =3D of_device_get_match_data(state->dev);
++
++	/* Pressure offset value */
++	state->offset.num =3D BIT(HSC_PRESS_BITS) *
++			    (cfg->pmin * cfg->rmax - cfg->pmax * cfg->rmin);
++	state->offset.den =3D 100 * (cfg->pmax - cfg->pmin);
++
++	/* Pressure scale value */
++	state->scale.num =3D 100 * cfg->knum * (cfg->pmax - cfg->pmin);
++	state->scale.den =3D BIT(HSC_PRESS_BITS) *
++			   cfg->kden * (cfg->rmax - cfg->rmin);
++}
++
++static int hsc_spi_probe(struct spi_device *spi)
++{
++	struct device *dev =3D &spi->dev;
++	struct hsc_state *state;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	if (spi->max_speed_hz > HSC_MAX_SPI_FREQ_HZ) {
++		dev_warn(dev, "SPI CLK, %d Hz exceeds %d Hz - changed to max\n",
++			spi->max_speed_hz,
++			HSC_MAX_SPI_FREQ_HZ);
++		spi->max_speed_hz =3D HSC_MAX_SPI_FREQ_HZ;
++	}
++
++	spi->bits_per_word =3D 8;
++	spi->mode =3D SPI_MODE_0;
++
++	ret =3D spi_setup(spi);
++	if (ret < 0) {
++		dev_err(dev, "%s - Error in spi_setup()\n", __func__);
++		return ret;
++	}
++
++	indio_dev =3D devm_iio_device_alloc(dev, sizeof(*state));
++	if (!indio_dev) {
++		dev_err(dev, "%s - Error allocating iio_device\n", __func__);
++		return -ENOMEM;
++	}
++
++	state =3D iio_priv(indio_dev);
++	spi_set_drvdata(spi, state);
++	state->spi_dev =3D spi;
++	state->dev =3D dev;
++
++	indio_dev->dev.parent =3D dev;
++	indio_dev->modes =3D INDIO_DIRECT_MODE;
++	indio_dev->info =3D &hsc_info;
++	indio_dev->channels =3D hsc_channels;
++	indio_dev->num_channels =3D ARRAY_SIZE(hsc_channels);
++
++	state->spi_xfer.rx_buf =3D &state->rx_buf[0];
++	state->spi_xfer.tx_buf =3D NULL;
++	state->spi_xfer.cs_change =3D 0;
++	spi_message_init(&state->spi_msg);
++	spi_message_add_tail(&state->spi_xfer, &state->spi_msg);
++
++	hsc_init_device(indio_dev);
++
++	ret =3D iio_device_register(indio_dev);
++	if (ret < 0)
++		dev_err(dev, "iio_device_register failed: %d\n", ret);
++
++	dev_dbg(dev, "%s - scale =3D %d/%d, offset =3D %d/%d\n", __func__,
++		state->scale.num, state->scale.den,
++		state->offset.num, state->offset.den);
++
++	return ret;
++}
++
++static int hsc_spi_remove(struct spi_device *spi)
++{
++	struct device *dev =3D &spi->dev;
++	struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
++
++	iio_device_unregister(indio_dev);
++
++	return 0;
++}
++
++static const struct of_device_id hsc_of_match[] =3D {
++	{ .compatible =3D "honeywell,hsc001baa", .data =3D &hsc_cfg[HSC001BAA] },
++	{ .compatible =3D "honeywell,hsc001bab", .data =3D &hsc_cfg[HSC001BAB] },
++	{ .compatible =3D "honeywell,hsc001bac", .data =3D &hsc_cfg[HSC001BAC] },
++	{ .compatible =3D "honeywell,hsc001baf", .data =3D &hsc_cfg[HSC001BAF] },
++
++	{ .compatible =3D "honeywell,hsc1_6baa", .data =3D &hsc_cfg[HSC1_6BAA] },
++	{ .compatible =3D "honeywell,hsc1_6bab", .data =3D &hsc_cfg[HSC1_6BAB] },
++	{ .compatible =3D "honeywell,hsc1_6bac", .data =3D &hsc_cfg[HSC1_6BAC] },
++	{ .compatible =3D "honeywell,hsc1_6baf", .data =3D &hsc_cfg[HSC1_6BAF] },
++
++	{ .compatible =3D "honeywell,hsc2_5baa", .data =3D &hsc_cfg[HSC2_5BAA] },
++	{ .compatible =3D "honeywell,hsc2_5bab", .data =3D &hsc_cfg[HSC2_5BAB] },
++	{ .compatible =3D "honeywell,hsc2_5bac", .data =3D &hsc_cfg[HSC2_5BAC] },
++	{ .compatible =3D "honeywell,hsc2_5baf", .data =3D &hsc_cfg[HSC2_5BAF] },
++
++	{ .compatible =3D "honeywell,hsc004baa", .data =3D &hsc_cfg[HSC004BAA] },
++	{ .compatible =3D "honeywell,hsc004bab", .data =3D &hsc_cfg[HSC004BAB] },
++	{ .compatible =3D "honeywell,hsc004bac", .data =3D &hsc_cfg[HSC004BAC] },
++	{ .compatible =3D "honeywell,hsc004baf", .data =3D &hsc_cfg[HSC004BAF] },
++
++	{ .compatible =3D "honeywell,hsc006baa", .data =3D &hsc_cfg[HSC006BAA] },
++	{ .compatible =3D "honeywell,hsc006bab", .data =3D &hsc_cfg[HSC006BAB] },
++	{ .compatible =3D "honeywell,hsc006bac", .data =3D &hsc_cfg[HSC006BAC] },
++	{ .compatible =3D "honeywell,hsc006baf", .data =3D &hsc_cfg[HSC006BAF] },
++
++	{ .compatible =3D "honeywell,hsc010baa", .data =3D &hsc_cfg[HSC010BAA] },
++	{ .compatible =3D "honeywell,hsc010bab", .data =3D &hsc_cfg[HSC010BAB] },
++	{ .compatible =3D "honeywell,hsc010bac", .data =3D &hsc_cfg[HSC010BAC] },
++	{ .compatible =3D "honeywell,hsc010baf", .data =3D &hsc_cfg[HSC010BAF] },
++
++	{ .compatible =3D "honeywell,hsc100kaa", .data =3D &hsc_cfg[HSC100KAA] },
++	{ .compatible =3D "honeywell,hsc100kab", .data =3D &hsc_cfg[HSC100KAB] },
++	{ .compatible =3D "honeywell,hsc100kac", .data =3D &hsc_cfg[HSC100KAC] },
++	{ .compatible =3D "honeywell,hsc100kaf", .data =3D &hsc_cfg[HSC100KAF] },
++
++	{ .compatible =3D "honeywell,hsc160kaa", .data =3D &hsc_cfg[HSC160KAA] },
++	{ .compatible =3D "honeywell,hsc160kab", .data =3D &hsc_cfg[HSC160KAB] },
++	{ .compatible =3D "honeywell,hsc160kac", .data =3D &hsc_cfg[HSC160KAC] },
++	{ .compatible =3D "honeywell,hsc160kaf", .data =3D &hsc_cfg[HSC160KAF] },
++
++	{ .compatible =3D "honeywell,hsc250kaa", .data =3D &hsc_cfg[HSC250KAA] },
++	{ .compatible =3D "honeywell,hsc250kab", .data =3D &hsc_cfg[HSC250KAB] },
++	{ .compatible =3D "honeywell,hsc250kac", .data =3D &hsc_cfg[HSC250KAC] },
++	{ .compatible =3D "honeywell,hsc250kaf", .data =3D &hsc_cfg[HSC250KAF] },
++
++	{ .compatible =3D "honeywell,hsc400kaa", .data =3D &hsc_cfg[HSC400KAA] },
++	{ .compatible =3D "honeywell,hsc400kab", .data =3D &hsc_cfg[HSC400KAB] },
++	{ .compatible =3D "honeywell,hsc400kac", .data =3D &hsc_cfg[HSC400KAC] },
++	{ .compatible =3D "honeywell,hsc400kaf", .data =3D &hsc_cfg[HSC400KAF] },
++
++	{ .compatible =3D "honeywell,hsc600kaa", .data =3D &hsc_cfg[HSC600KAA] },
++	{ .compatible =3D "honeywell,hsc600kab", .data =3D &hsc_cfg[HSC600KAB] },
++	{ .compatible =3D "honeywell,hsc600kac", .data =3D &hsc_cfg[HSC600KAC] },
++	{ .compatible =3D "honeywell,hsc600kaf", .data =3D &hsc_cfg[HSC600KAF] },
++
++	{ .compatible =3D "honeywell,hsc001gaa", .data =3D &hsc_cfg[HSC001GAA] },
++	{ .compatible =3D "honeywell,hsc001gab", .data =3D &hsc_cfg[HSC001GAB] },
++	{ .compatible =3D "honeywell,hsc001gac", .data =3D &hsc_cfg[HSC001GAC] },
++	{ .compatible =3D "honeywell,hsc001gaf", .data =3D &hsc_cfg[HSC001GAF] },
++
++	{ .compatible =3D "honeywell,hsc015paa", .data =3D &hsc_cfg[HSC015PAA] },
++	{ .compatible =3D "honeywell,hsc015pab", .data =3D &hsc_cfg[HSC015PAB] },
++	{ .compatible =3D "honeywell,hsc015pac", .data =3D &hsc_cfg[HSC015PAC] },
++	{ .compatible =3D "honeywell,hsc015paf", .data =3D &hsc_cfg[HSC015PAF] },
++
++	{ .compatible =3D "honeywell,hsc030paa", .data =3D &hsc_cfg[HSC030PAA] },
++	{ .compatible =3D "honeywell,hsc030pab", .data =3D &hsc_cfg[HSC030PAB] },
++	{ .compatible =3D "honeywell,hsc030pac", .data =3D &hsc_cfg[HSC030PAC] },
++	{ .compatible =3D "honeywell,hsc030paf", .data =3D &hsc_cfg[HSC030PAF] },
++
++	{ .compatible =3D "honeywell,hsc060paa", .data =3D &hsc_cfg[HSC060PAA] },
++	{ .compatible =3D "honeywell,hsc060pab", .data =3D &hsc_cfg[HSC060PAB] },
++	{ .compatible =3D "honeywell,hsc060pac", .data =3D &hsc_cfg[HSC060PAC] },
++	{ .compatible =3D "honeywell,hsc060paf", .data =3D &hsc_cfg[HSC060PAF] },
++
++	{ .compatible =3D "honeywell,hsc100paa", .data =3D &hsc_cfg[HSC100PAA] },
++	{ .compatible =3D "honeywell,hsc100pab", .data =3D &hsc_cfg[HSC100PAB] },
++	{ .compatible =3D "honeywell,hsc100pac", .data =3D &hsc_cfg[HSC100PAC] },
++	{ .compatible =3D "honeywell,hsc100paf", .data =3D &hsc_cfg[HSC100PAF] },
++
++	{ .compatible =3D "honeywell,hsc150paa", .data =3D &hsc_cfg[HSC150PAA] },
++	{ .compatible =3D "honeywell,hsc150pab", .data =3D &hsc_cfg[HSC150PAB] },
++	{ .compatible =3D "honeywell,hsc150pac", .data =3D &hsc_cfg[HSC150PAC] },
++	{ .compatible =3D "honeywell,hsc150paf", .data =3D &hsc_cfg[HSC150PAF] },
++
++	{ },
++};
++MODULE_DEVICE_TABLE(of, hsc_of_match);
++
++static struct spi_driver hsc_spi_driver =3D {
++	.probe =3D hsc_spi_probe,
++	.remove =3D hsc_spi_remove,
++	.driver =3D {
++		.name =3D "hsc_spi_pressure_sensor",
++		.of_match_table =3D hsc_of_match,
++	},
++};
++
++module_spi_driver(hsc_spi_driver);
++
++MODULE_AUTHOR("Carlos Iglesias <carlosiglesias@emutex.com>");
++MODULE_DESCRIPTION("Honeywell HSC SPI pressure sensor driver");
++MODULE_LICENSE("GPL v2");
+--=20
+2.19.1
