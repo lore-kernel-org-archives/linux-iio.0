@@ -1,48 +1,61 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:42055 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726174AbeJaGjy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 31 Oct 2018 02:39:54 -0400
-Date: Tue, 30 Oct 2018 16:44:41 -0500
-From: Rob Herring <robh@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Martin Kelly <martin@martingkelly.com>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Denis Ciocca <denis.ciocca@st.com>
-Subject: Re: [PATCH v2 4/4] dt-bindings: iio: magn: add LSM9DS1 bindings
-Message-ID: <20181030214441.GA25441@bogus>
+Return-Path: <SRS0=9Qln=NG=st.com=denis.ciocca@kernel.org>
+From: Denis CIOCCA <denis.ciocca@st.com>
+To: Martin Kelly <martin@martingkelly.com>,
+        "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org"
+	<devicetree@vger.kernel.org>
+CC: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Jonathan Cameron
+	<jic23@kernel.org>, Rob Herring <robh+dt@kernel.org>
+Subject: RE: [PATCH v2 1/4] iio: magnetometer: add clarifying comment
+Date: Fri, 26 Oct 2018 18:24:41 +0000
+Message-ID: <405cfbe9c82c430682409372aaea4f21@SFHDAG2NODE1.st.com>
 References: <20181026023812.29720-1-martin@martingkelly.com>
- <20181026023812.29720-4-martin@martingkelly.com>
- <20181028185308.20edd4f3@archlinux>
+In-Reply-To: <20181026023812.29720-1-martin@martingkelly.com>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20181028185308.20edd4f3@archlinux>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, Oct 28, 2018 at 06:53:08PM +0000, Jonathan Cameron wrote:
-> On Thu, 25 Oct 2018 19:38:12 -0700
-> Martin Kelly <martin@martingkelly.com> wrote:
-> 
-> > From: Martin Kelly <martin@martingkelly.com>
-> > 
-> > Add DT binding documentation for the LSM9DS1 magnetometer driver.
+Hi Martin,
 
-Bindings are for h/w, not drivers.
+All the series [v2 / 4 patches] looks good to me. Thanks
 
-> > 
-> > Signed-off-by: Martin Kelly <martin@martingkelly.com>
-> Given here isn't really an alternative way of doing this (or we
-> haven't come up with one yet) in the sensors that are basically multiple
-> chips in one package, I'll hope that Rob is happy with the new name
-> and apply it.   As I'm only pushing out for build tests today I can
-> revert or add his Reviewed-by as needed.
+Denis
 
-Given only the supplies seem to be shared and those can be handled 
-correctly with ref counting, separate devices is fine. We do the same 
-thing for BT/WiFi combo chips with separate host interfaces.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+-----Original Message-----
+From: Martin Kelly <martin@martingkelly.com>=20
+Sent: Thursday, October 25, 2018 7:38 PM
+To: linux-iio@vger.kernel.org; devicetree@vger.kernel.org
+Cc: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>; Denis CIOCCA <denis.ci=
+occa@st.com>; Jonathan Cameron <jic23@kernel.org>; Rob Herring <robh+dt@ker=
+nel.org>; Martin Kelly <martin@martingkelly.com>
+Subject: [PATCH v2 1/4] iio: magnetometer: add clarifying comment
 
-Rob
+From: Martin Kelly <martin@martingkelly.com>
+
+Add a comment clarifying better when to use <device_name> vs <device_name>-=
+magn in compatibility strings.
+
+Signed-off-by: Martin Kelly <martin@martingkelly.com>
+---
+ drivers/iio/magnetometer/st_magn_spi.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/iio/magnetometer/st_magn_spi.c b/drivers/iio/magnetome=
+ter/st_magn_spi.c
+index 7b7cd08fcc32..15bb09267098 100644
+--- a/drivers/iio/magnetometer/st_magn_spi.c
++++ b/drivers/iio/magnetometer/st_magn_spi.c
+@@ -23,6 +23,8 @@
+  * For new single-chip sensors use <device_name> as compatible string.
+  * For old single-chip devices keep <device_name>-magn to maintain
+  * compatibility
++ * For multi-chip devices, use <device_name>-magn to distinguish which
++ * capability is being used
+  */
+ static const struct of_device_id st_magn_of_match[] =3D {
+ 	{
+--
+2.11.0
