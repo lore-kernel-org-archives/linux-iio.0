@@ -1,139 +1,209 @@
-Return-Path: <SRS0=VS0X=NF=st.com=denis.ciocca@kernel.org>
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Martin Kelly
-	<martin@martingkelly.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:33220 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725842AbeJZLK0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 26 Oct 2018 07:10:26 -0400
+Received: by mail-pf1-f196.google.com with SMTP id a15-v6so1332529pfn.0
+        for <linux-iio@vger.kernel.org>; Thu, 25 Oct 2018 19:35:17 -0700 (PDT)
+Subject: Re: [PATCH 1/2] iio:magnetometer: st_magn: add LSM9DS1 support
+To: Denis CIOCCA <denis.ciocca@st.com>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
         "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Jonathan Cameron
-	<jic23@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
         "robh+dt@kernel.org" <robh+dt@kernel.org>,
         "mark.rutland@arm.com" <mark.rutland@arm.com>
-Subject: RE: [PATCH 1/2] iio:magnetometer: st_magn: add LSM9DS1 support
-Date: Thu, 25 Oct 2018 21:13:18 +0000
-Message-ID: <86c25419092243fc91ff33854d814efa@SFHDAG2NODE1.st.com>
 References: <20181024013948.16326-1-martin@martingkelly.com>
  <CAA2SeN+FiBEWJnbzGZssGQB3zq5RqQgQ-1D2YQvJeZwsfkS7gQ@mail.gmail.com>
-In-Reply-To: <CAA2SeN+FiBEWJnbzGZssGQB3zq5RqQgQ-1D2YQvJeZwsfkS7gQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+ <86c25419092243fc91ff33854d814efa@SFHDAG2NODE1.st.com>
+From: Martin Kelly <martin@martingkelly.com>
+Message-ID: <69487cfc-33b3-dae3-6385-a6e63c1b3c3a@martingkelly.com>
+Date: Thu, 25 Oct 2018 19:35:15 -0700
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <86c25419092243fc91ff33854d814efa@SFHDAG2NODE1.st.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-SGkgTWFydGluLCBMb3JlbnpvLA0KDQpJbmxpbmUgbXkgY29tbWVudHMuDQoNCi0tLS0tT3JpZ2lu
-YWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBMb3JlbnpvIEJpYW5jb25pIDxsb3JlbnpvLmJpYW5jb25p
-ODNAZ21haWwuY29tPiANClNlbnQ6IFRodXJzZGF5LCBPY3RvYmVyIDI1LCAyMDE4IDE6MTcgQU0N
-ClRvOiBNYXJ0aW4gS2VsbHkgPG1hcnRpbkBtYXJ0aW5na2VsbHkuY29tPg0KQ2M6IGxpbnV4LWlp
-b0B2Z2VyLmtlcm5lbC5vcmc7IGRldmljZXRyZWVAdmdlci5rZXJuZWwub3JnOyBEZW5pcyBDSU9D
-Q0EgPGRlbmlzLmNpb2NjYUBzdC5jb20+OyBKb25hdGhhbiBDYW1lcm9uIDxqaWMyM0BrZXJuZWwu
-b3JnPjsgcm9iaCtkdEBrZXJuZWwub3JnOyBtYXJrLnJ1dGxhbmRAYXJtLmNvbQ0KU3ViamVjdDog
-UmU6IFtQQVRDSCAxLzJdIGlpbzptYWduZXRvbWV0ZXI6IHN0X21hZ246IGFkZCBMU005RFMxIHN1
-cHBvcnQNCg0KPg0KPiBGcm9tOiBNYXJ0aW4gS2VsbHkgPG1hcnRpbkBtYXJ0aW5na2VsbHkuY29t
-Pg0KPg0KPiBVcGRhdGUgdGhlIHNlbnNvciBzZXR0aW5ncyB0byBzdXBwb3J0IHRoZSBMU005RFMx
-IHNlbnNvci4gQWx0aG91Z2ggdGhlDQo+IExTTTlEUzEgYWNjZWxlcm9tZXRlciBhbmQgZ3lyb3Nj
-b3BlIGFyZSBjb3VwbGVkIHRvZ2V0aGVyIHRvIHVzZSB0aGUgDQo+IHNhbWUgRklGTywgdGhlIG1h
-Z25ldG9tZXRlciBpcyBzZXBhcmF0ZSBhbmQgY2FuIGJlIGNsZWFubHkgc3VwcG9ydGVkIA0KPiB3
-aXRob3V0IHJlZmFjdG9yaW5nIHRoZSBleGlzdGluZyBkcml2ZXIuDQo+DQo+IFNpZ25lZC1vZmYt
-Ynk6IE1hcnRpbiBLZWxseSA8bWFydGluQG1hcnRpbmdrZWxseS5jb20+DQo+IC0tLQ0KPiAgZHJp
-dmVycy9paW8vbWFnbmV0b21ldGVyL3N0X21hZ24uaCAgICAgIHwgIDEgKw0KPiAgZHJpdmVycy9p
-aW8vbWFnbmV0b21ldGVyL3N0X21hZ25fY29yZS5jIHwgNjggDQo+ICsrKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKyAgDQo+IGRyaXZlcnMvaWlvL21hZ25ldG9tZXRlci9zdF9tYWduX3Nw
-aS5jICB8ICA1ICsrKw0KPiAgMyBmaWxlcyBjaGFuZ2VkLCA3NCBpbnNlcnRpb25zKCspDQo+DQo+
-IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lpby9tYWduZXRvbWV0ZXIvc3RfbWFnbi5oIA0KPiBiL2Ry
-aXZlcnMvaWlvL21hZ25ldG9tZXRlci9zdF9tYWduLmgNCj4gaW5kZXggOGZlNTFjZTQyN2JkLi4z
-YTRhYmNkMWYxMDYgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvaWlvL21hZ25ldG9tZXRlci9zdF9t
-YWduLmgNCj4gKysrIGIvZHJpdmVycy9paW8vbWFnbmV0b21ldGVyL3N0X21hZ24uaA0KPiBAQCAt
-MjAsNiArMjAsNyBAQA0KPiAgI2RlZmluZSBMSVMzTURMX01BR05fREVWX05BTUUgICAgICAgICAg
-ImxpczNtZGwiDQo+ICAjZGVmaW5lIExTTTMwM0FHUl9NQUdOX0RFVl9OQU1FICAgICAgICAgICAg
-ICAgICJsc20zMDNhZ3JfbWFnbiINCj4gICNkZWZpbmUgTElTMk1ETF9NQUdOX0RFVl9OQU1FICAg
-ICAgICAgICJsaXMybWRsIg0KPiArI2RlZmluZSBMU005RFMxX01BR05fREVWX05BTUUgICAgICAg
-ICAgImxzbTlkczEiDQoNCkl0IHNob3VsZCBiZSAibHNtOWRzMV9tYWduIiBzaW5jZSBsc205ZHMx
-IGlkZW50aWZ5IEErRytNLiBBcyB5b3UgY2FuIHNlZSBpbiBsc20zMDN4eHggc2VyaWVzLg0KDQoN
-Cj4NCj4gIGludCBzdF9tYWduX2NvbW1vbl9wcm9iZShzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2
-KTsgIHZvaWQgDQo+IHN0X21hZ25fY29tbW9uX3JlbW92ZShzdHJ1Y3QgaWlvX2RldiAqaW5kaW9f
-ZGV2KTsgZGlmZiAtLWdpdCANCj4gYS9kcml2ZXJzL2lpby9tYWduZXRvbWV0ZXIvc3RfbWFnbl9j
-b3JlLmMgDQo+IGIvZHJpdmVycy9paW8vbWFnbmV0b21ldGVyL3N0X21hZ25fY29yZS5jDQo+IGlu
-ZGV4IDcyZjZkMTMzNWEwNC4uZGZiZGViNDI4NDY3IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL2lp
-by9tYWduZXRvbWV0ZXIvc3RfbWFnbl9jb3JlLmMNCj4gKysrIGIvZHJpdmVycy9paW8vbWFnbmV0
-b21ldGVyL3N0X21hZ25fY29yZS5jDQo+IEBAIC0zNzgsNiArMzc4LDc0IEBAIHN0YXRpYyBjb25z
-dCBzdHJ1Y3Qgc3Rfc2Vuc29yX3NldHRpbmdzIHN0X21hZ25fc2Vuc29yc19zZXR0aW5nc1tdID0g
-ew0KPiAgICAgICAgICAgICAgICAgLm11bHRpX3JlYWRfYml0ID0gZmFsc2UsDQo+ICAgICAgICAg
-ICAgICAgICAuYm9vdGltZSA9IDIsDQo+ICAgICAgICAgfSwNCj4gKyAgICAgICB7DQo+ICsgICAg
-ICAgICAgICAgICAud2FpID0gMHgzZCwNCj4gKyAgICAgICAgICAgICAgIC53YWlfYWRkciA9IFNU
-X1NFTlNPUlNfREVGQVVMVF9XQUlfQUREUkVTUywNCj4gKyAgICAgICAgICAgICAgIC5zZW5zb3Jz
-X3N1cHBvcnRlZCA9IHsNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgWzBdID0gTFNNOURTMV9N
-QUdOX0RFVl9OQU1FLA0KDQphY2NvcmRpbmcgdG8gdGhlIGZvbGxvd2luZyByZWdpc3RlciBtYXAg
-SSBndWVzcyB3ZSBjYW4gc2ltcGx5IGFkZCBsc205ZHMxLW1hZ24gZGV2aWNlIG5hbWUgaW4gbGlz
-M21kbCBzZW5zb3JzX3N1cHBvcnRlZCBsaXN0DQoNCkFncmVlIHdpdGggTG9yZW56bw0KDQoNCj4g
-KyAgICAgICAgICAgICAgIH0sDQo+ICsgICAgICAgICAgICAgICAuY2ggPSAoc3RydWN0IGlpb19j
-aGFuX3NwZWMgKilzdF9tYWduXzJfMTZiaXRfY2hhbm5lbHMsDQo+ICsgICAgICAgICAgICAgICAu
-b2RyID0gew0KPiArICAgICAgICAgICAgICAgICAgICAgICAvKiBGYXN0IE9EUiBtb2RlIGN1cnJl
-bnRseSBub3Qgc3VwcG9ydGVkLiAqLw0KPiArICAgICAgICAgICAgICAgICAgICAgICAuYWRkciA9
-IDB4MjAsDQo+ICsgICAgICAgICAgICAgICAgICAgICAgIC5tYXNrID0gMHgxYywNCj4gKyAgICAg
-ICAgICAgICAgICAgICAgICAgLm9kcl9hdmwgPSB7DQo+ICsgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgeyAuaHogPSA1LCAudmFsdWUgPSAweDAzIH0sDQo+ICsgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgeyAuaHogPSAxMCwgLnZhbHVlID0gMHgwNCB9LA0KPiArICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIHsgLmh6ID0gMjAsIC52YWx1ZSA9IDB4MDUgfSwNCj4gKyAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICB7IC5oeiA9IDQwLCAudmFsdWUgPSAweDA2IH0s
-DQo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgeyAuaHogPSA4MCwgLnZhbHVlID0g
-MHgwNyB9LA0KPiArICAgICAgICAgICAgICAgICAgICAgICB9LA0KPiArICAgICAgICAgICAgICAg
-fSwNCj4gKyAgICAgICAgICAgICAgIC5wdyA9IHsNCj4gKyAgICAgICAgICAgICAgICAgICAgICAg
-LmFkZHIgPSAweDIyLA0KPiArICAgICAgICAgICAgICAgICAgICAgICAubWFzayA9IDB4MDMsDQo+
-ICsgICAgICAgICAgICAgICAgICAgICAgIC52YWx1ZV9vbiA9IDB4MDAsDQo+ICsgICAgICAgICAg
-ICAgICAgICAgICAgIC52YWx1ZV9vZmYgPSAweDAzLA0KPiArICAgICAgICAgICAgICAgfSwNCj4g
-KyAgICAgICAgICAgICAgIC5mcyA9IHsNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgLmFkZHIg
-PSAweDIxLA0KPiArICAgICAgICAgICAgICAgICAgICAgICAubWFzayA9IDB4NjAsDQo+ICsgICAg
-ICAgICAgICAgICAgICAgICAgIC5mc19hdmwgPSB7DQo+ICsgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgWzBdID0gew0KPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgLm51bSA9IFNUX01BR05fRlNfQVZMXzQwMDBNRywNCj4gKyAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgIC52YWx1ZSA9IDB4MDAsDQo+ICsgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAuZ2FpbiA9IDE0MCwNCj4gKyAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICB9LA0KPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFsxXSA9IHsN
-Cj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC5udW0gPSBTVF9NQUdO
-X0ZTX0FWTF84MDAwTUcsDQo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAudmFsdWUgPSAweDAxLA0KPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgLmdhaW4gPSAyOTAsDQo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfSwNCj4g
-KyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBbMl0gPSB7DQo+ICsgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAubnVtID0gU1RfTUFHTl9GU19BVkxfMTIwMDBNRywN
-Cj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC52YWx1ZSA9IDB4MDIs
-DQo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAuZ2FpbiA9IDQzMCwN
-Cj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB9LA0KPiArICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgIFszXSA9IHsNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgIC5udW0gPSBTVF9NQUdOX0ZTX0FWTF8xNjAwME1HLA0KPiArICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgLnZhbHVlID0gMHgwMywNCj4gKyAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgIC5nYWluID0gNTgwLA0KPiArICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgIH0sDQo+ICsgICAgICAgICAgICAgICAgICAgICAgIH0sDQo+ICsg
-ICAgICAgICAgICAgICB9LA0KPiArICAgICAgICAgICAgICAgLmJkdSA9IHsNCj4gKyAgICAgICAg
-ICAgICAgICAgICAgICAgLmFkZHIgPSAweDI0LA0KPiArICAgICAgICAgICAgICAgICAgICAgICAu
-bWFzayA9IDB4NDAsDQo+ICsgICAgICAgICAgICAgICB9LA0KPiArICAgICAgICAgICAgICAgLmRy
-ZHlfaXJxID0gew0KPiArICAgICAgICAgICAgICAgICAgICAgICAuc3RhdF9kcmR5ID0gew0KPiAr
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC5hZGRyID0gU1RfU0VOU09SU19ERUZBVUxU
-X1NUQVRfQUREUiwNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAubWFzayA9IDB4
-MDcsDQo+ICsgICAgICAgICAgICAgICAgICAgICAgIH0sDQo+ICsgICAgICAgICAgICAgICB9LA0K
-PiArICAgICAgICAgICAgICAgLnNpbSA9IHsNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgLmFk
-ZHIgPSAweDIyLA0KPiArICAgICAgICAgICAgICAgICAgICAgICAudmFsdWUgPSBCSVQoMiksDQo+
-ICsgICAgICAgICAgICAgICB9LA0KPiArICAgICAgICAgICAgICAgLm11bHRpX3JlYWRfYml0ID0g
-dHJ1ZSwNCj4gKyAgICAgICAgICAgICAgIC5ib290aW1lID0gMiwNCj4gKyAgICAgICB9LA0KPiAg
-fTsNCj4NCj4gIHN0YXRpYyBpbnQgc3RfbWFnbl9yZWFkX3JhdyhzdHJ1Y3QgaWlvX2RldiAqaW5k
-aW9fZGV2LCBkaWZmIC0tZ2l0IA0KPiBhL2RyaXZlcnMvaWlvL21hZ25ldG9tZXRlci9zdF9tYWdu
-X3NwaS5jIA0KPiBiL2RyaXZlcnMvaWlvL21hZ25ldG9tZXRlci9zdF9tYWduX3NwaS5jDQo+IGlu
-ZGV4IDdiN2NkMDhmY2MzMi4uNDMzNDU2OTIwNjczIDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL2lp
-by9tYWduZXRvbWV0ZXIvc3RfbWFnbl9zcGkuYw0KPiArKysgYi9kcml2ZXJzL2lpby9tYWduZXRv
-bWV0ZXIvc3RfbWFnbl9zcGkuYw0KPiBAQCAtMzcsNiArMzcsMTAgQEAgc3RhdGljIGNvbnN0IHN0
-cnVjdCBvZl9kZXZpY2VfaWQgc3RfbWFnbl9vZl9tYXRjaFtdID0gew0KPiAgICAgICAgICAgICAg
-ICAgLmNvbXBhdGlibGUgPSAic3QsbGlzMm1kbCIsDQo+ICAgICAgICAgICAgICAgICAuZGF0YSA9
-IExJUzJNRExfTUFHTl9ERVZfTkFNRSwNCj4gICAgICAgICB9LA0KPiArICAgICAgIHsNCj4gKyAg
-ICAgICAgICAgICAgIC5jb21wYXRpYmxlID0gInN0LGxzbTlkczEiLA0KDQpBcyBzdWdnZXN0ZWQg
-ZnJvbSBMb3JlbnpvLCBpdCBzaG91bGQgYmUgInN0LGxzbTlkczEtbWFnbiINCg0KDQo+ICsgICAg
-ICAgICAgICAgICAuZGF0YSA9IExTTTlEUzFfTUFHTl9ERVZfTkFNRSwNCj4gKyAgICAgICB9LA0K
-PiAgICAgICAgIHt9DQo+ICB9Ow0KPiAgTU9EVUxFX0RFVklDRV9UQUJMRShvZiwgc3RfbWFnbl9v
-Zl9tYXRjaCk7IEBAIC03OSw2ICs4Myw3IEBAIHN0YXRpYyANCj4gY29uc3Qgc3RydWN0IHNwaV9k
-ZXZpY2VfaWQgc3RfbWFnbl9pZF90YWJsZVtdID0gew0KPiAgICAgICAgIHsgTElTM01ETF9NQUdO
-X0RFVl9OQU1FIH0sDQo+ICAgICAgICAgeyBMU00zMDNBR1JfTUFHTl9ERVZfTkFNRSB9LA0KPiAg
-ICAgICAgIHsgTElTMk1ETF9NQUdOX0RFVl9OQU1FIH0sDQo+ICsgICAgICAgeyBMU005RFMxX01B
-R05fREVWX05BTUUgfSwNCj4gICAgICAgICB7fSwNCj4gIH07DQo+ICBNT0RVTEVfREVWSUNFX1RB
-QkxFKHNwaSwgc3RfbWFnbl9pZF90YWJsZSk7DQo+IC0tDQoNCkkgZ3Vlc3MgeW91IG1pc3NlZCB0
-aGUgaTJjIGNvdW50ZXJwYXJ0Lg0KDQpSZWdhcmRzLA0KTG9yZW56bw0KDQo+IDIuMTEuMA0KPg0K
-DQoNCi0tDQpVTklYIGlzIFNleHk6IHdobyB8IGdyZXAgLWkgYmxvbmRlIHwgdGFsazsgY2Qgfjsg
-d2luZTsgdGFsazsgdG91Y2g7IHVuemlwOyB0b3VjaDsgc3RyaXA7IGdhc3A7IGZpbmdlcjsgZ2Fz
-cDsgbW91bnQ7IGZzY2s7IG1vcmU7IHllczsgZ2FzcDsgdW1vdW50OyBtYWtlIGNsZWFuOyBzbGVl
-cA0K
+On 10/25/18 2:13 PM, Denis CIOCCA wrote:
+> Hi Martin, Lorenzo,
+> 
+> Inline my comments.
+> 
+> -----Original Message-----
+> From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+> Sent: Thursday, October 25, 2018 1:17 AM
+> To: Martin Kelly <martin@martingkelly.com>
+> Cc: linux-iio@vger.kernel.org; devicetree@vger.kernel.org; Denis CIOCCA <denis.ciocca@st.com>; Jonathan Cameron <jic23@kernel.org>; robh+dt@kernel.org; mark.rutland@arm.com
+> Subject: Re: [PATCH 1/2] iio:magnetometer: st_magn: add LSM9DS1 support
+> 
+>>
+>> From: Martin Kelly <martin@martingkelly.com>
+>>
+>> Update the sensor settings to support the LSM9DS1 sensor. Although the
+>> LSM9DS1 accelerometer and gyroscope are coupled together to use the
+>> same FIFO, the magnetometer is separate and can be cleanly supported
+>> without refactoring the existing driver.
+>>
+>> Signed-off-by: Martin Kelly <martin@martingkelly.com>
+>> ---
+>>   drivers/iio/magnetometer/st_magn.h      |  1 +
+>>   drivers/iio/magnetometer/st_magn_core.c | 68
+>> +++++++++++++++++++++++++++++++++
+>> drivers/iio/magnetometer/st_magn_spi.c  |  5 +++
+>>   3 files changed, 74 insertions(+)
+>>
+>> diff --git a/drivers/iio/magnetometer/st_magn.h
+>> b/drivers/iio/magnetometer/st_magn.h
+>> index 8fe51ce427bd..3a4abcd1f106 100644
+>> --- a/drivers/iio/magnetometer/st_magn.h
+>> +++ b/drivers/iio/magnetometer/st_magn.h
+>> @@ -20,6 +20,7 @@
+>>   #define LIS3MDL_MAGN_DEV_NAME          "lis3mdl"
+>>   #define LSM303AGR_MAGN_DEV_NAME                "lsm303agr_magn"
+>>   #define LIS2MDL_MAGN_DEV_NAME          "lis2mdl"
+>> +#define LSM9DS1_MAGN_DEV_NAME          "lsm9ds1"
+> 
+> It should be "lsm9ds1_magn" since lsm9ds1 identify A+G+M. As you can see in lsm303xxx series.
+> 
+> 
+>>
+>>   int st_magn_common_probe(struct iio_dev *indio_dev);  void
+>> st_magn_common_remove(struct iio_dev *indio_dev); diff --git
+>> a/drivers/iio/magnetometer/st_magn_core.c
+>> b/drivers/iio/magnetometer/st_magn_core.c
+>> index 72f6d1335a04..dfbdeb428467 100644
+>> --- a/drivers/iio/magnetometer/st_magn_core.c
+>> +++ b/drivers/iio/magnetometer/st_magn_core.c
+>> @@ -378,6 +378,74 @@ static const struct st_sensor_settings st_magn_sensors_settings[] = {
+>>                  .multi_read_bit = false,
+>>                  .bootime = 2,
+>>          },
+>> +       {
+>> +               .wai = 0x3d,
+>> +               .wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
+>> +               .sensors_supported = {
+>> +                       [0] = LSM9DS1_MAGN_DEV_NAME,
+> 
+> according to the following register map I guess we can simply add lsm9ds1-magn device name in lis3mdl sensors_supported list
+> 
+> Agree with Lorenzo
+> 
+
+Ah, I didn't notice that, thanks! The one difference between the two is 
+that LIS3MDL doesn't specify .bdu, but I'll add that in as a separate 
+patch in v2.
+
+> 
+>> +               },
+>> +               .ch = (struct iio_chan_spec *)st_magn_2_16bit_channels,
+>> +               .odr = {
+>> +                       /* Fast ODR mode currently not supported. */
+>> +                       .addr = 0x20,
+>> +                       .mask = 0x1c,
+>> +                       .odr_avl = {
+>> +                               { .hz = 5, .value = 0x03 },
+>> +                               { .hz = 10, .value = 0x04 },
+>> +                               { .hz = 20, .value = 0x05 },
+>> +                               { .hz = 40, .value = 0x06 },
+>> +                               { .hz = 80, .value = 0x07 },
+>> +                       },
+>> +               },
+>> +               .pw = {
+>> +                       .addr = 0x22,
+>> +                       .mask = 0x03,
+>> +                       .value_on = 0x00,
+>> +                       .value_off = 0x03,
+>> +               },
+>> +               .fs = {
+>> +                       .addr = 0x21,
+>> +                       .mask = 0x60,
+>> +                       .fs_avl = {
+>> +                               [0] = {
+>> +                                       .num = ST_MAGN_FS_AVL_4000MG,
+>> +                                       .value = 0x00,
+>> +                                       .gain = 140,
+>> +                               },
+>> +                               [1] = {
+>> +                                       .num = ST_MAGN_FS_AVL_8000MG,
+>> +                                       .value = 0x01,
+>> +                                       .gain = 290,
+>> +                               },
+>> +                               [2] = {
+>> +                                       .num = ST_MAGN_FS_AVL_12000MG,
+>> +                                       .value = 0x02,
+>> +                                       .gain = 430,
+>> +                               },
+>> +                               [3] = {
+>> +                                       .num = ST_MAGN_FS_AVL_16000MG,
+>> +                                       .value = 0x03,
+>> +                                       .gain = 580,
+>> +                               },
+>> +                       },
+>> +               },
+>> +               .bdu = {
+>> +                       .addr = 0x24,
+>> +                       .mask = 0x40,
+>> +               },
+>> +               .drdy_irq = {
+>> +                       .stat_drdy = {
+>> +                               .addr = ST_SENSORS_DEFAULT_STAT_ADDR,
+>> +                               .mask = 0x07,
+>> +                       },
+>> +               },
+>> +               .sim = {
+>> +                       .addr = 0x22,
+>> +                       .value = BIT(2),
+>> +               },
+>> +               .multi_read_bit = true,
+>> +               .bootime = 2,
+>> +       },
+>>   };
+>>
+>>   static int st_magn_read_raw(struct iio_dev *indio_dev, diff --git
+>> a/drivers/iio/magnetometer/st_magn_spi.c
+>> b/drivers/iio/magnetometer/st_magn_spi.c
+>> index 7b7cd08fcc32..433456920673 100644
+>> --- a/drivers/iio/magnetometer/st_magn_spi.c
+>> +++ b/drivers/iio/magnetometer/st_magn_spi.c
+>> @@ -37,6 +37,10 @@ static const struct of_device_id st_magn_of_match[] = {
+>>                  .compatible = "st,lis2mdl",
+>>                  .data = LIS2MDL_MAGN_DEV_NAME,
+>>          },
+>> +       {
+>> +               .compatible = "st,lsm9ds1",
+> 
+> As suggested from Lorenzo, it should be "st,lsm9ds1-magn"
+> 
+> 
+>> +               .data = LSM9DS1_MAGN_DEV_NAME,
+>> +       },
+>>          {}
+>>   };
+>>   MODULE_DEVICE_TABLE(of, st_magn_of_match); @@ -79,6 +83,7 @@ static
+>> const struct spi_device_id st_magn_id_table[] = {
+>>          { LIS3MDL_MAGN_DEV_NAME },
+>>          { LSM303AGR_MAGN_DEV_NAME },
+>>          { LIS2MDL_MAGN_DEV_NAME },
+>> +       { LSM9DS1_MAGN_DEV_NAME },
+>>          {},
+>>   };
+>>   MODULE_DEVICE_TABLE(spi, st_magn_id_table);
+>> --
+> 
+> I guess you missed the i2c counterpart.
+> 
+
+Yeah, I misread the datasheet as supporting only SPI for the 
+magnetometer. I tested with I2C and it's working now in my v2 patch.
+
+> Regards,
+> Lorenzo
+> 
+>> 2.11.0
+>>
+> 
+> 
+> --
+> UNIX is Sexy: who | grep -i blonde | talk; cd ~; wine; talk; touch; unzip; touch; strip; gasp; finger; gasp; mount; fsck; more; yes; gasp; umount; make clean; sleep
+> 
