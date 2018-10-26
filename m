@@ -1,56 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:49628 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726015AbeJ2DeD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 28 Oct 2018 23:34:03 -0400
-Date: Sun, 28 Oct 2018 18:48:29 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Martin Kelly <martin@martingkelly.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Denis Ciocca <denis.ciocca@st.com>,
-        Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH v2 1/4] iio: magnetometer: add clarifying comment
-Message-ID: <20181028184829.2fa0bb09@archlinux>
-In-Reply-To: <20181026023812.29720-1-martin@martingkelly.com>
-References: <20181026023812.29720-1-martin@martingkelly.com>
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:35689 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726014AbeJZWAY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 26 Oct 2018 18:00:24 -0400
+Date: Fri, 26 Oct 2018 18:53:12 +0530
+From: Nishad Kamdar <nishadkamdar@gmail.com>
+To: Slawomir Stepien <sst@poczta.fm>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v5 0/2] staging: iio: ad2s1210: Switch to the gpio descriptor
+ interface.
+Message-ID: <cover.1540489369.git.nishadkamdar@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 25 Oct 2018 19:38:09 -0700
-Martin Kelly <martin@martingkelly.com> wrote:
+Use the gpiod interface instead of the deprecated old non-descriptor
 
-> From: Martin Kelly <martin@martingkelly.com>
-> 
-> Add a comment clarifying better when to use <device_name> vs
-> <device_name>-magn in compatibility strings.
-> 
-> Signed-off-by: Martin Kelly <martin@martingkelly.com>
-Applied to the togreg branch of iio.git and pushed out as testing.
-I'll ideally added acks from Dennis and Rob for relevant patches
-before I push it out as non rebasing which will probably be next
-weekend given my current habits.
+Changes in v5:
+ - Add device tree support.
+ - Add device tree table for matching vendor ID.
+ - Add Support for retrieving platform data from device tree.
+Changes in v4:
+ - Add spaces after { and before } in gpios[]
+   initialization.
+ - Check the correct pointer for error.
+ - Align the dev_err msg to existing format in the code.
+Changes in v3:
+ - Use a pointer to pointer for gpio_desc in
+   struct ad2s1210_gpio as it will be used to
+   modify a pointer.
+ - Use dot notation to initialize the structure.
+ - Use a pointer variable to avoid writing gpios[i].
+Changes in v2:
+ - Use the spi_device struct embedded in st instead
+   of passing it as an argument to ad2s1210_setup_gpios().
+ - Use an array of structs to reduce redundant code in
+   in ad2s1210_setup_gpios().
+ - Remove ad2s1210_free_gpios() as devm API is being used.
+-
+Nishad Kamdar (2):
+  staging: iio: ad2s1210: Switch to the gpio descriptor interface
+  staging: iio: ad2s1210: Add device tree support.
 
-Thanks,
+ drivers/staging/iio/resolver/ad2s1210.c | 129 ++++++++++++++++--------
+ drivers/staging/iio/resolver/ad2s1210.h |   3 -
+ 2 files changed, 89 insertions(+), 43 deletions(-)
 
-Jonathan
-
-> ---
->  drivers/iio/magnetometer/st_magn_spi.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/iio/magnetometer/st_magn_spi.c b/drivers/iio/magnetometer/st_magn_spi.c
-> index 7b7cd08fcc32..15bb09267098 100644
-> --- a/drivers/iio/magnetometer/st_magn_spi.c
-> +++ b/drivers/iio/magnetometer/st_magn_spi.c
-> @@ -23,6 +23,8 @@
->   * For new single-chip sensors use <device_name> as compatible string.
->   * For old single-chip devices keep <device_name>-magn to maintain
->   * compatibility
-> + * For multi-chip devices, use <device_name>-magn to distinguish which
-> + * capability is being used
->   */
->  static const struct of_device_id st_magn_of_match[] = {
->  	{
+-- 
+2.17.1
