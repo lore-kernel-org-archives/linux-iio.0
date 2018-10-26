@@ -1,128 +1,58 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mr30.theemaillaundry.net ([78.46.72.43]:38966 "EHLO
-        mr30.theemaillaundry.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726278AbeJZStf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 26 Oct 2018 14:49:35 -0400
-Subject: Re: [PATCH v3 2/3] iio: adc128s052: add ACPI _HID AANT1280
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Return-Path: <SRS0=Vi+J=NG=linux.intel.com=andriy.shevchenko@kernel.org>
+Date: Fri, 26 Oct 2018 15:12:28 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Dan O'Donovan <dan@emutex.com>
 Cc: linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        devicetree@vger.kernel.org,
-        Carlos Iglesias <carlos.iglesias@emutex.com>,
-        Nicola Lunghi <nicola.lunghi@emutex.com>,
-        Javier Arteaga <javier@emutex.com>
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org,
+	Carlos Iglesias <carlos.iglesias@emutex.com>,
+	Nicola Lunghi <nicola.lunghi@emutex.com>,
+	Javier Arteaga <javier@emutex.com>
+Subject: Re: [PATCH v3 2/3] iio: adc128s052: add ACPI _HID AANT1280
+Message-ID: <20181026121228.GE10650@smile.fi.intel.com>
 References: <20180423213805.12591-1-javier@emutex.com>
  <1540481742-23596-1-git-send-email-dan@emutex.com>
  <1540481742-23596-3-git-send-email-dan@emutex.com>
  <20181025174638.GB10650@smile.fi.intel.com>
-From: Dan O'Donovan <dan@emutex.com>
-Message-ID: <c17cf6de-846b-aed3-7745-4f635495873e@emutex.com>
-Date: Fri, 26 Oct 2018 11:13:01 +0100
+ <c17cf6de-846b-aed3-7745-4f635495873e@emutex.com>
 MIME-Version: 1.0
-In-Reply-To: <20181025174638.GB10650@smile.fi.intel.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <c17cf6de-846b-aed3-7745-4f635495873e@emutex.com>
+List-ID: <linux-iio@vger.kernel.org>
+
+On Fri, Oct 26, 2018 at 11:13:01AM +0100, Dan O'Donovan wrote:
+> On 10/25/2018 06:46 PM, Andy Shevchenko wrote:
+> > On Thu, Oct 25, 2018 at 04:35:41PM +0100, Dan O'Donovan wrote:
+
+> >> +	{ "AANT1280", 2 }, /* ADC124S021 compatible ACPI ID */
+
+> > Looking how driver is organized and what ACPI can provide I would highly
+> > recommend to look forward to PTYP field for utilization of the type of the HW.
+
+> > Maybe it would not work with published BIOSes, but would be good for the future
+> > (in that case anybody can utilize that _HID + PTYP pair on their platforms).
+
+> Thanks Andy for your review and feedback.  Your _HID + PTYP suggestion sounds
+> interesting, but I couldn't find any information in the ACPI spec or elsewhere
+> about how/when/where to use it.  
+
+I stand corrected, it's not in the spec, rather de facto use of it in some
+cases, see below.
+
+> It isn't used in the UP Squared ACPI tables.
+> Do you have any links or other information you could share about it? Thanks!
+
+As far as I can find the following code in the kernel and thus real ACPI tables
+in the wild that utilize it.
+
+drivers/acpi/dptf/dptf_power.c:84:      status = acpi_evaluate_integer(acpi_dev->handle, "PTYP", NULL, &ptype);
+drivers/platform/x86/intel_cht_int33fe.c:101:   status = acpi_evaluate_integer(ACPI_HANDLE(dev), "PTYP", NULL, &ptyp);
+drivers/thermal/int340x_thermal/int3403_thermal.c:237:  status = acpi_evaluate_integer(priv->adev->handle, "PTYP",
 
 
-
-On 10/25/2018 06:46 PM, Andy Shevchenko wrote:
-> On Thu, Oct 25, 2018 at 04:35:41PM +0100, Dan O'Donovan wrote:
->> From: Nicola Lunghi <nicola.lunghi@emutex.com>
->>
->> ACPI _HID AANT1280 matches an ADC124S101 present on E3940 SKUs of the UP
->> Squared board.
->>
->> Add it to the driver.
->>
->> Signed-off-by: Nicola Lunghi <nicola.lunghi@emutex.com>
->> [javier@emutex.com: fix up commit message and one checkpatch warning]
->> Signed-off-by: Javier Arteaga <javier@emutex.com>
->> Signed-off-by: Dan O'Donovan <dan@emutex.com>
->> ---
->>  drivers/iio/adc/ti-adc128s052.c | 18 +++++++++++++++++-
->>  1 file changed, 17 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/adc/ti-adc128s052.c b/drivers/iio/adc/ti-adc128s052.c
->> index e6716c3..c2d1453 100644
->> --- a/drivers/iio/adc/ti-adc128s052.c
->> +++ b/drivers/iio/adc/ti-adc128s052.c
->> @@ -12,10 +12,12 @@
->>   * published by the Free Software Foundation.
->>   */
->>  
->> +#include <linux/acpi.h>
->>  #include <linux/err.h>
->>  #include <linux/spi/spi.h>
->>  #include <linux/module.h>
->>  #include <linux/iio/iio.h>
->> +#include <linux/property.h>
->>  #include <linux/regulator/consumer.h>
->>  
->>  struct adc128_configuration {
->> @@ -135,10 +137,15 @@ static const struct iio_info adc128_info = {
->>  static int adc128_probe(struct spi_device *spi)
->>  {
->>  	struct iio_dev *indio_dev;
->> +	unsigned int config;
->>  	struct adc128 *adc;
->> -	int config = spi_get_device_id(spi)->driver_data;
->>  	int ret;
->>  
->> +	if (dev_fwnode(&spi->dev))
->> +		config = (unsigned long) device_get_match_data(&spi->dev);
->> +	else
->> +		config = spi_get_device_id(spi)->driver_data;
->> +
->>  	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*adc));
->>  	if (!indio_dev)
->>  		return -ENOMEM;
->> @@ -207,10 +214,19 @@ static const struct spi_device_id adc128_id[] = {
->>  };
->>  MODULE_DEVICE_TABLE(spi, adc128_id);
->>  
->> +#ifdef CONFIG_ACPI
->> +static const struct acpi_device_id adc128_acpi_match[] = {
-> 
->> +	{ "AANT1280", 2 }, /* ADC124S021 compatible ACPI ID */
-> 
-> Looking how driver is organized and what ACPI can provide I would highly
-> recommend to look forward to PTYP field for utilization of the type of the HW.
-> 
-> Maybe it would not work with published BIOSes, but would be good for the future
-> (in that case anybody can utilize that _HID + PTYP pair on their platforms).
-> 
-Thanks Andy for your review and feedback.  Your _HID + PTYP suggestion sounds
-interesting, but I couldn't find any information in the ACPI spec or elsewhere
-about how/when/where to use it.  It isn't used in the UP Squared ACPI tables.
-Do you have any links or other information you could share about it? Thanks!
-
->> +	{ }
->> +};
->> +MODULE_DEVICE_TABLE(acpi, adc128_acpi_match);
->> +#endif
->> +
->>  static struct spi_driver adc128_driver = {
->>  	.driver = {
->>  		.name = "adc128s052",
-> 
->>  		.of_match_table = of_match_ptr(adc128_of_match),
->> +		.acpi_match_table = ACPI_PTR(adc128_acpi_match),
->>  	},
->>  	.probe = adc128_probe,
->>  	.remove = adc128_remove,
->> -- 
->> 2.7.4
->>
->>
->> ------
->> This email has been scanned for spam and malware by The Email Laundry.
->>
-> 
-
-------
-This email has been scanned for spam and malware by The Email Laundry.
+-- 
+With Best Regards,
+Andy Shevchenko
