@@ -1,61 +1,85 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:38099 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727792AbeJ0KkI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 27 Oct 2018 06:40:08 -0400
-Received: by mail-qt1-f193.google.com with SMTP id r22-v6so3417727qtm.5
-        for <linux-iio@vger.kernel.org>; Fri, 26 Oct 2018 19:00:47 -0700 (PDT)
+Return-Path: <SRS0=Nfwt=NH=usp.br=matheus.bernardino@kernel.org>
 From: Matheus Tavares <matheus.bernardino@usp.br>
 To: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
-Subject: [PATCH v2 4/6] staging:iio:ad2s90: Move device registration to the end of probe
-Date: Fri, 26 Oct 2018 23:00:03 -0300
-Message-Id: <20181027020005.3140-5-matheus.bernardino@usp.br>
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org,
+	kernel-usp@googlegroups.com,
+	Victor Colombo <victorcolombo@gmail.com>
+Subject: [PATCH v2 5/6] staging:iio:ad2s90: Add IIO_CHAN_INFO_SCALE to channel spec and read_raw
+Date: Fri, 26 Oct 2018 23:00:04 -0300
+Message-Id: <20181027020005.3140-6-matheus.bernardino@usp.br>
 In-Reply-To: <20181027020005.3140-1-matheus.bernardino@usp.br>
 References: <20181027020005.3140-1-matheus.bernardino@usp.br>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-Previously, devm_iio_device_register was being called before the
-spi_setup call and the spi_device's max_speed_hz and mode assignments.
-This could lead to a race condition since the driver was still being
-set up after it was already made ready to use. To fix it, this patch
-moves the device registration to the end of ad2s90_probe.
+This patch adds the IIO_CHAN_INFO_SCALE mask to ad2s90_chan and
+implements the relative read behavior at ad2s90_read_raw.
 
+Signed-off-by: Victor Colombo <victorcolombo@gmail.com>
 Signed-off-by: Matheus Tavares <matheus.bernardino@usp.br>
 ---
- drivers/staging/iio/resolver/ad2s90.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ drivers/staging/iio/resolver/ad2s90.c | 32 ++++++++++++++++++---------
+ 1 file changed, 22 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/staging/iio/resolver/ad2s90.c b/drivers/staging/iio/resolver/ad2s90.c
-index c20d37dc065a..b4a6a89c11b0 100644
+index b4a6a89c11b0..52b656875ed1 100644
 --- a/drivers/staging/iio/resolver/ad2s90.c
 +++ b/drivers/staging/iio/resolver/ad2s90.c
-@@ -81,10 +81,6 @@ static int ad2s90_probe(struct spi_device *spi)
- 	indio_dev->num_channels = 1;
- 	indio_dev->name = spi_get_device_id(spi)->name;
+@@ -34,19 +34,31 @@ static int ad2s90_read_raw(struct iio_dev *indio_dev,
+ 	int ret;
+ 	struct ad2s90_state *st = iio_priv(indio_dev);
  
--	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
--	if (ret)
+-	mutex_lock(&st->lock);
++	switch (m) {
++	case IIO_CHAN_INFO_SCALE:
++		/* 2 * Pi / (2^12 - 1) ~= 0.001534355 */
++		*val = 0;
++		*val2 = 1534355;
++		return IIO_VAL_INT_PLUS_NANO;
++	case IIO_CHAN_INFO_RAW:
++		mutex_lock(&st->lock);
++
++		ret = spi_read(st->sdev, st->rx, 2);
++		if (ret < 0) {
++			mutex_unlock(&st->lock);
++			return ret;
++		}
++
++		*val = (((u16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >> 4);
+ 
+-	ret = spi_read(st->sdev, st->rx, 2);
+-	if (ret < 0) {
+ 		mutex_unlock(&st->lock);
 -		return ret;
--
- 	/* need 600ns between CS and the first falling edge of SCLK */
- 	spi->max_speed_hz = 830000;
- 	spi->mode = SPI_MODE_3;
-@@ -95,7 +91,7 @@ static int ad2s90_probe(struct spi_device *spi)
- 		return ret;
- 	}
+-	}
  
--	return 0;
-+	return devm_iio_device_register(indio_dev->dev.parent, indio_dev);
+-	*val = (((u16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >> 4);
+-
+-	mutex_unlock(&st->lock);
++		return IIO_VAL_INT;
++	default:
++		break;
++	}
+ 
+-	return IIO_VAL_INT;
++	return -EINVAL;
  }
  
- static const struct spi_device_id ad2s90_id[] = {
+ static const struct iio_info ad2s90_info = {
+@@ -57,7 +69,7 @@ static const struct iio_chan_spec ad2s90_chan = {
+ 	.type = IIO_ANGL,
+ 	.indexed = 1,
+ 	.channel = 0,
+-	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+ };
+ 
+ static int ad2s90_probe(struct spi_device *spi)
 -- 
 2.18.0
