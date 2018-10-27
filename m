@@ -1,116 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:60568 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726492AbeJ2Bfz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 28 Oct 2018 21:35:55 -0400
-Date: Sun, 28 Oct 2018 16:50:40 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Matheus Tavares <matheus.bernardino@usp.br>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:36156 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727878AbeJ0KkO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 27 Oct 2018 06:40:14 -0400
+Received: by mail-qk1-f196.google.com with SMTP id q184-v6so1847607qkd.3
+        for <linux-iio@vger.kernel.org>; Fri, 26 Oct 2018 19:00:53 -0700 (PDT)
+From: Matheus Tavares <matheus.bernardino@usp.br>
+To: Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com,
-        Victor Colombo <victorcolombo@gmail.com>
-Subject: Re: [PATCH v2 5/6] staging:iio:ad2s90: Add IIO_CHAN_INFO_SCALE to
- channel spec and read_raw
-Message-ID: <20181028165040.27c69fc5@archlinux>
-In-Reply-To: <20181027020005.3140-6-matheus.bernardino@usp.br>
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
+Subject: [PATCH v2 6/6] staging:iio:ad2s90: Check channel type at read_raw
+Date: Fri, 26 Oct 2018 23:00:05 -0300
+Message-Id: <20181027020005.3140-7-matheus.bernardino@usp.br>
+In-Reply-To: <20181027020005.3140-1-matheus.bernardino@usp.br>
 References: <20181027020005.3140-1-matheus.bernardino@usp.br>
-        <20181027020005.3140-6-matheus.bernardino@usp.br>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 26 Oct 2018 23:00:04 -0300
-Matheus Tavares <matheus.bernardino@usp.br> wrote:
+This patch adds a channel type check at the beginning of the
+ad2s90_read_raw function. Since ad2s90 has only one channel, it just
+checks if the given channel is the expected one and if not, return
+-EINVAL.
 
-> This patch adds the IIO_CHAN_INFO_SCALE mask to ad2s90_chan and
-> implements the relative read behavior at ad2s90_read_raw.
-> 
-> Signed-off-by: Victor Colombo <victorcolombo@gmail.com>
-> Signed-off-by: Matheus Tavares <matheus.bernardino@usp.br>
+Signed-off-by: Matheus Tavares <matheus.bernardino@usp.br>
+---
+ drivers/staging/iio/resolver/ad2s90.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Hi,
-
-A suggestion inline.  This is a common case that we have infrastructure
-to simplify.  + I think your scale factor is very slightly wrong.
-
-Jonathan
-
-> ---
->  drivers/staging/iio/resolver/ad2s90.c | 32 ++++++++++++++++++---------
->  1 file changed, 22 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/resolver/ad2s90.c b/drivers/staging/iio/resolver/ad2s90.c
-> index b4a6a89c11b0..52b656875ed1 100644
-> --- a/drivers/staging/iio/resolver/ad2s90.c
-> +++ b/drivers/staging/iio/resolver/ad2s90.c
-> @@ -34,19 +34,31 @@ static int ad2s90_read_raw(struct iio_dev *indio_dev,
->  	int ret;
->  	struct ad2s90_state *st = iio_priv(indio_dev);
->  
-> -	mutex_lock(&st->lock);
-> +	switch (m) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		/* 2 * Pi / (2^12 - 1) ~= 0.001534355 */
-> +		*val = 0;
-> +		*val2 = 1534355;
-Definitely 2^12 - 1?  That's a bit unusual if true as it would imply
-that 2^12 - 1 and 0 were the same value.
-
-Imagine a smaller version with on 2^2 bits so 0, 1, 2, 3
-Values of each are
-
-0, M_PI/2, M_PI, 3*M_PI/2
-
-So the multiplier is 2*M_PI/(2^2) not 2*M_PI/(2^2 - 1)
-1/2 vs 2/3 * M_PI
-
-Now this is a very common case so we have the return type
-IIO_VAL_FRACTIONAL_LOG2 to give a more obvious and potentially
-more accurate representation.
-
-> +		return IIO_VAL_INT_PLUS_NANO;
-> +	case IIO_CHAN_INFO_RAW:
-> +		mutex_lock(&st->lock);
-> +
-> +		ret = spi_read(st->sdev, st->rx, 2);
-> +		if (ret < 0) {
-> +			mutex_unlock(&st->lock);
-> +			return ret;
-> +		}
-> +
-> +		*val = (((u16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >> 4);
->  
-> -	ret = spi_read(st->sdev, st->rx, 2);
-> -	if (ret < 0) {
->  		mutex_unlock(&st->lock);
-> -		return ret;
-> -	}
->  
-> -	*val = (((u16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >> 4);
-> -
-> -	mutex_unlock(&st->lock);
-> +		return IIO_VAL_INT;
-> +	default:
-> +		break;
-> +	}
->  
-> -	return IIO_VAL_INT;
-> +	return -EINVAL;
->  }
->  
->  static const struct iio_info ad2s90_info = {
-> @@ -57,7 +69,7 @@ static const struct iio_chan_spec ad2s90_chan = {
->  	.type = IIO_ANGL,
->  	.indexed = 1,
->  	.channel = 0,
-> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
->  };
->  
->  static int ad2s90_probe(struct spi_device *spi)
+diff --git a/drivers/staging/iio/resolver/ad2s90.c b/drivers/staging/iio/resolver/ad2s90.c
+index 52b656875ed1..24002042a5c5 100644
+--- a/drivers/staging/iio/resolver/ad2s90.c
++++ b/drivers/staging/iio/resolver/ad2s90.c
+@@ -34,6 +34,9 @@ static int ad2s90_read_raw(struct iio_dev *indio_dev,
+ 	int ret;
+ 	struct ad2s90_state *st = iio_priv(indio_dev);
+ 
++	if (chan->type != IIO_ANGL)
++		return -EINVAL;
++
+ 	switch (m) {
+ 	case IIO_CHAN_INFO_SCALE:
+ 		/* 2 * Pi / (2^12 - 1) ~= 0.001534355 */
+-- 
+2.18.0
