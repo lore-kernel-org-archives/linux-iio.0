@@ -1,70 +1,68 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:54116 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726015AbeJ2DsA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 28 Oct 2018 23:48:00 -0400
-Date: Sun, 28 Oct 2018 19:02:23 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc: linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, robh+dt@kernel.org, pmeerw@pmeerw.net,
-        lars@metafoo.de, knaack.h@gmx.de, khilman@baylibre.com,
-        carlo@caione.org
-Subject: Re: [PATCH 2/7] iio: adc: meson-saradc: add support for the chip's
- temperature sensor
-Message-ID: <20181028190223.35fb8f49@archlinux>
-In-Reply-To: <CAFBinCAy_1R01RH=JcT6Fhf_ScDvZ2g3cYdaT-s=VsVQGN+LNg@mail.gmail.com>
+Return-Path: <SRS0=Ck17=NI=googlemail.com=martin.blumenstingl@kernel.org>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To: linux-amlogic@lists.infradead.org,
+	devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	robh+dt@kernel.org,
+	pmeerw@pmeerw.net,
+	lars@metafoo.de,
+	knaack.h@gmx.de,
+	jic23@kernel.org
+Cc: khilman@baylibre.com,
+	carlo@caione.org,
+	Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH 3/7] ARM: dts: meson8: add the temperature calibration data for the SAR ADC
+Date: Sun, 28 Oct 2018 13:26:25 +0100
+Message-Id: <20181028122629.10144-4-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20181028122629.10144-1-martin.blumenstingl@googlemail.com>
 References: <20181028122629.10144-1-martin.blumenstingl@googlemail.com>
-        <20181028122629.10144-3-martin.blumenstingl@googlemail.com>
-        <20181028163506.4305f0b8@archlinux>
-        <CAFBinCAy_1R01RH=JcT6Fhf_ScDvZ2g3cYdaT-s=VsVQGN+LNg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, 28 Oct 2018 18:02:28 +0100
-Martin Blumenstingl <martin.blumenstingl@googlemail.com> wrote:
+The SAR ADC can measure the chip temperature of the SoC. This only
+works if the chip is calibrated and if the calibration data is written
+to the correct registers. The calibration data is stored in the upper
+two bytes of eFuse offset 0x1f4.
 
-Hi Martin,
-..
+This adds the eFuse cell for the temperature calibration data and
+passes it to the SAR ADC. We also need to pass the HHI sysctrl node to
+the SAR ADC because the 4th TSC (temperature sensor calibration
+coefficient) bit is stored in the HHI region (unlike bits [3:0] which
+are stored directly inside the SAR ADC's register area).
 
-> > > +     if (buf[3] & MESON_SARADC_EFUSE_BYTE3_IS_CALIBRATED)
-> > > +             priv->temperature_sensor_calibrated = true;
-> > > +     else
-> > > +             priv->temperature_sensor_calibrated = false;  
-> >
-> > Could just assign?
-> >         priv->temperature_sensor_calibrated =
-> >                 buf[3] & MEESON_SARADC_EFUSE_BYTE3_IS_CALIBRATED;  
-> I could change this but (personal preference here) my eyes are not
-> trained to read variable assignments where the value is broken into a
-> new line
-> looking back at it I could also remove the whole "else" block as
-> "false" is obviously the default value
-> 
-> let me know whether you'd like me to change this, then I'll do that for v2
+On boards that have the SAR ADC enabled channel 8 can be used to
+measure the chip temperature.
 
-I don't feel strongly on any of the options.. Take your pick!
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ arch/arm/boot/dts/meson8.dtsi | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-> 
-> > > +
-> > > +     priv->temperature_sensor_coefficient = buf[2] & trimming_mask;
-> > > +
-> > > +     upper_adc_val = FIELD_GET(MESON_SARADC_EFUSE_BYTE3_UPPER_ADC_VAL,
-> > > +                               buf[3]);
-> > > +
-> > > +     priv->temperature_sensor_adc_val = buf[2];
-> > > +     priv->temperature_sensor_adc_val |= upper_adc_val << BITS_PER_BYTE;
-> > > +     priv->temperature_sensor_adc_val >>= trimming_bits;
-> > > +
-> > > +     kfree(buf);
-> > > +
-> > > +     return 0;
-> > > +}
-> > > +  
-> > ...  
-> 
-> 
-> Regards
-> Martin
+diff --git a/arch/arm/boot/dts/meson8.dtsi b/arch/arm/boot/dts/meson8.dtsi
+index 3e3d9c54cddc..30d4406f63b3 100644
+--- a/arch/arm/boot/dts/meson8.dtsi
++++ b/arch/arm/boot/dts/meson8.dtsi
+@@ -304,6 +304,11 @@
+ 	compatible = "amlogic,meson8-efuse";
+ 	clocks = <&clkc CLKID_EFUSE>;
+ 	clock-names = "core";
++
++	temperature_calib: calib@1f4 {
++		/* only the upper two bytes are relevant */
++		reg = <0x1f4 0x4>;
++	};
+ };
+ 
+ &ethmac {
+@@ -364,6 +369,9 @@
+ 	clocks = <&clkc CLKID_XTAL>,
+ 		<&clkc CLKID_SAR_ADC>;
+ 	clock-names = "clkin", "core";
++	amlogic,hhi-sysctrl = <&hhi>;
++	nvmem-cells = <&temperature_calib>;
++	nvmem-cell-names = "temperature_calib";
+ };
+ 
+ &sdio {
+-- 
+2.19.1
