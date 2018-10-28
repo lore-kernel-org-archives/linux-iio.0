@@ -1,70 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-io1-f68.google.com ([209.85.166.68]:34228 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727876AbeJaBv3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 30 Oct 2018 21:51:29 -0400
-Received: by mail-io1-f68.google.com with SMTP id d80-v6so7705956iof.1
-        for <linux-iio@vger.kernel.org>; Tue, 30 Oct 2018 09:57:12 -0700 (PDT)
-MIME-Version: 1.0
-References: <20181027020005.3140-1-matheus.bernardino@usp.br> <20181028165202.52ee89b3@archlinux>
-In-Reply-To: <20181028165202.52ee89b3@archlinux>
-From: Matheus Tavares Bernardino <matheus.bernardino@usp.br>
-Date: Tue, 30 Oct 2018 13:57:00 -0300
-Message-ID: <CAHd-oW58oc6=YOFdXDhPMJ9d1U19W3mc1essNzy1F8wakPLJnw@mail.gmail.com>
-Subject: Re: [PATCH v2 0/6] staging:iio:ad2s90: Add scale info and improve
- error handling
-To: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:42849 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726488AbeJ1Qd7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 28 Oct 2018 12:33:59 -0400
+Date: Sun, 28 Oct 2018 13:19:59 +0530
+From: Nishad Kamdar <nishadkamdar@gmail.com>
+To: Slawomir Stepien <sst@poczta.fm>
 Cc: Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v6 0/3] staging: iio: ad2s1210: Switch to the gpio descriptor
+ interface.
+Message-ID: <cover.1540712249.git.nishadkamdar@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Oct 28, 2018 at 1:52 PM Jonathan Cameron <jic23@kernel.org> wrote:
->
-> On Fri, 26 Oct 2018 22:59:59 -0300
-> Matheus Tavares <matheus.bernardino@usp.br> wrote:
->
-> > This patch set adds scale info to ad2s90's single channel, improve
-> > error handling in it's functions and fix a possible race condition
-> > issue.
-> >
-> > The goal with this patch set is to address the points discussed in the
-> > mailing list in an effort to move ad2s90.c out of staging.
-> Thanks,
->
-> A good series in general.  A few suggested improvements.
-> If I haven't commented on a patch, usually it means I'm happy with it
-> and will pick it up with the rest of the series.
->
-> Jonathan
->
+Use the gpiod interface instead of the deprecated old non-descriptor
 
-Thanks for the review, Jonathan. We will address the necessary changes in v3!
+Changes in v6:
+ - Split device tree table addition and device tree support 
+   addition in two patches.
+ - Replace platform data with device tree support.
+ - Rename boolean property.
+Changes in v5:
+ - Add device tree support.
+ - Add device tree table for matching vendor ID.
+ - Add Support for retrieving platform data from device tree.
+Changes in v4:
+ - Add spaces after { and before } in gpios[]
+   initialization.
+ - Check the correct pointer for error.
+ - Align the dev_err msg to existing format in the code.
+Changes in v3:
+ - Use a pointer to pointer for gpio_desc in
+   struct ad2s1210_gpio as it will be used to
+   modify a pointer.
+ - Use dot notation to initialize the structure.
+ - Use a pointer variable to avoid writing gpios[i].
+Changes in v2:
+ - Use the spi_device struct embedded in st instead
+   of passing it as an argument to ad2s1210_setup_gpios().
+ - Use an array of structs to reduce redundant code in
+   in ad2s1210_setup_gpios().
+ - Remove ad2s1210_free_gpios() as devm API is being used.
+-
 
-Matheus
+Nishad Kamdar (3):
+  staging: iio: ad2s1210: Switch to the gpio descriptor interface
+  staging: iio: ad2s1210: Add device tree table.
+  staging: iio: ad2s1210: Add device tree support.
 
-> >
-> > Changes in v2:
-> >  - Added my S-o-B in patch 5.
-> >
-> > Matheus Tavares (5):
-> >   staging:iio:ad2s90: Make read_raw return spi_read's error code
-> >   staging:iio:ad2s90: Make probe handle spi_setup failure
-> >   staging:iio:ad2s90: Remove always overwritten assignment
-> >   staging:iio:ad2s90: Move device registration to the end of probe
-> >   staging:iio:ad2s90: Check channel type at read_raw
-> >
-> > Victor Colombo (1):
-> >   staging:iio:ad2s90: Add IIO_CHAN_INFO_SCALE to channel spec and
-> >     read_raw
-> >
-> >  drivers/staging/iio/resolver/ad2s90.c | 55 ++++++++++++++++++---------
-> >  1 file changed, 37 insertions(+), 18 deletions(-)
-> >
->
+ drivers/staging/iio/resolver/Kconfig    |   1 +
+ drivers/staging/iio/resolver/ad2s1210.c | 114 +++++++++++++-----------
+ drivers/staging/iio/resolver/ad2s1210.h |  20 -----
+ 3 files changed, 65 insertions(+), 70 deletions(-)
+
+-- 
+2.17.1
