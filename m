@@ -11,9 +11,9 @@ To: linux-amlogic@lists.infradead.org,
 Cc: khilman@baylibre.com,
 	carlo@caione.org,
 	Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH 3/7] ARM: dts: meson8: add the temperature calibration data for the SAR ADC
-Date: Sun, 28 Oct 2018 13:26:25 +0100
-Message-Id: <20181028122629.10144-4-martin.blumenstingl@googlemail.com>
+Subject: [PATCH 4/7] ARM: dts: meson8b: add the temperature calibration data for the SAR ADC
+Date: Sun, 28 Oct 2018 13:26:26 +0100
+Message-Id: <20181028122629.10144-5-martin.blumenstingl@googlemail.com>
 In-Reply-To: <20181028122629.10144-1-martin.blumenstingl@googlemail.com>
 References: <20181028122629.10144-1-martin.blumenstingl@googlemail.com>
 MIME-Version: 1.0
@@ -35,15 +35,15 @@ measure the chip temperature.
 
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 ---
- arch/arm/boot/dts/meson8.dtsi | 8 ++++++++
+ arch/arm/boot/dts/meson8b.dtsi | 8 ++++++++
  1 file changed, 8 insertions(+)
 
-diff --git a/arch/arm/boot/dts/meson8.dtsi b/arch/arm/boot/dts/meson8.dtsi
-index 3e3d9c54cddc..30d4406f63b3 100644
---- a/arch/arm/boot/dts/meson8.dtsi
-+++ b/arch/arm/boot/dts/meson8.dtsi
-@@ -304,6 +304,11 @@
- 	compatible = "amlogic,meson8-efuse";
+diff --git a/arch/arm/boot/dts/meson8b.dtsi b/arch/arm/boot/dts/meson8b.dtsi
+index f92aab0aa247..dd47af174c4d 100644
+--- a/arch/arm/boot/dts/meson8b.dtsi
++++ b/arch/arm/boot/dts/meson8b.dtsi
+@@ -283,6 +283,11 @@
+ 	compatible = "amlogic,meson8b-efuse";
  	clocks = <&clkc CLKID_EFUSE>;
  	clock-names = "core";
 +
@@ -54,7 +54,7 @@ index 3e3d9c54cddc..30d4406f63b3 100644
  };
  
  &ethmac {
-@@ -364,6 +369,9 @@
+@@ -354,6 +359,9 @@
  	clocks = <&clkc CLKID_XTAL>,
  		<&clkc CLKID_SAR_ADC>;
  	clock-names = "clkin", "core";
