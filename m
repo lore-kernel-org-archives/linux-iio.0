@@ -1,114 +1,178 @@
-Return-Path: <SRS0=4E6R=NI=st.com=denis.ciocca@kernel.org>
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: Martin Kelly <martin@martingkelly.com>,
-        Jonathan Cameron
-	<jic23@kernel.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "lars@metafoo.de"
-	<lars@metafoo.de>,
-        "lorenzo.bianconi83@gmail.com"
-	<lorenzo.bianconi83@gmail.com>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:38815 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725984AbeJ2IBa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Oct 2018 04:01:30 -0400
+Received: by mail-pl1-f196.google.com with SMTP id p7-v6so2883709plk.5
+        for <linux-iio@vger.kernel.org>; Sun, 28 Oct 2018 16:15:24 -0700 (PDT)
+Subject: Re: [PATCH] iio:st_magn: enable trigger before enabling sensor
+To: Denis CIOCCA <denis.ciocca@st.com>,
+        Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "lorenzo.bianconi83@gmail.com" <lorenzo.bianconi83@gmail.com>,
         "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
         "knaack.h@gmx.de" <knaack.h@gmx.de>
-Subject: RE: [PATCH] iio:st_magn: enable trigger before enabling sensor
-Date: Sun, 28 Oct 2018 22:55:23 +0000
-Message-ID: <ccecd4c6893d4ec89b21002d8303b640@SFHDAG2NODE1.st.com>
 References: <20181025223226.10292-1-denis.ciocca@st.com>
  <20181028162018.7d351195@archlinux>
  <0b3bcaaf-cb86-a6f4-4a4e-f73e1ffd4077@martingkelly.com>
-In-Reply-To: <0b3bcaaf-cb86-a6f4-4a4e-f73e1ffd4077@martingkelly.com>
-Content-Type: text/plain; charset="utf-8"
+ <ccecd4c6893d4ec89b21002d8303b640@SFHDAG2NODE1.st.com>
+From: Martin Kelly <martin@martingkelly.com>
+Message-ID: <9ad64403-2a0d-2dec-020c-493fd861e26d@martingkelly.com>
+Date: Sun, 28 Oct 2018 16:15:21 -0700
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <ccecd4c6893d4ec89b21002d8303b640@SFHDAG2NODE1.st.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-SGV5IE1hcnRpbiwgSm9uYXRoYW4sDQoNClNvcnJ5IG15IGJhZC4gSSBoYWQgcHVzaGVkIHdoYXQg
-SSd2ZSBtb2RpZmllZCBwZXJmb3JtaW5nIHRoZSB0ZXN0cyBub3QgY29uc2lkZXJpbmcgYXQgYWxs
-IHRoZSBwcm9jZWR1cmVzLiBJIGRpZG4ndCBtZWFuIHRvIHRha2UgYWR2YW50YWdlLiBJIGFwb2xv
-Z2l6ZS4NCg0KTWFydGluLCBpZiB5b3UgY2FuLCBwbGVhc2UganVzdCB0YWtlIHRoZSBwYXJ0IG5l
-ZWRlZCBhbmQgdXBkYXRlIGFjY29yZGFudGx5IHRoZSBmaXJzdCBwYXRjaCB5b3Ugc2VudCBwbGVh
-c2UuIEkgdGhpbmsgSSBqdXN0IGFwcGx5IGEgJ21pbm9yJyBjaGFuZ2UgaW4gdGhlcmUuIFRoZSBt
-YWpvciBzdHVmZiBoZXJlIHdhcyB0aGUgZGV0ZWN0aW9uIG9mIHRoZSB3cm9uZyBvcmRlciBhbmQg
-TWFydGluIGRpZCB0aGUgam9iIQ0KDQpUaGFua3MhDQpEZW5pcw0KDQoNCg0KLS0tLS1PcmlnaW5h
-bCBNZXNzYWdlLS0tLS0NCkZyb206IE1hcnRpbiBLZWxseSA8bWFydGluQG1hcnRpbmdrZWxseS5j
-b20+IA0KU2VudDogU3VuZGF5LCBPY3RvYmVyIDI4LCAyMDE4IDEyOjA3IFBNDQpUbzogSm9uYXRo
-YW4gQ2FtZXJvbiA8amljMjNAa2VybmVsLm9yZz47IERlbmlzIENJT0NDQSA8ZGVuaXMuY2lvY2Nh
-QHN0LmNvbT4NCkNjOiBsaW51eC1paW9Admdlci5rZXJuZWwub3JnOyBsYXJzQG1ldGFmb28uZGU7
-IGxvcmVuem8uYmlhbmNvbmk4M0BnbWFpbC5jb207IHBtZWVyd0BwbWVlcncubmV0OyBrbmFhY2su
-aEBnbXguZGUNClN1YmplY3Q6IFJlOiBbUEFUQ0hdIGlpbzpzdF9tYWduOiBlbmFibGUgdHJpZ2dl
-ciBiZWZvcmUgZW5hYmxpbmcgc2Vuc29yDQoNCk9uIDEwLzI4LzE4IDk6MjAgQU0sIEpvbmF0aGFu
-IENhbWVyb24gd3JvdGU6DQo+IE9uIFRodSwgMjUgT2N0IDIwMTggMTU6MzI6MjYgLTA3MDANCj4g
-RGVuaXMgQ2lvY2NhIDxkZW5pcy5jaW9jY2FAc3QuY29tPiB3cm90ZToNCj4gDQo+PiAgRnJvbSBs
-b2dpY2FsIHBvaW50IG9mIHZpZXcgZHJpdmVyIHNob3VsZCBiZSByZWFkeSB0byByZWNlaXZlIGly
-cXMgDQo+PiBiZWZvcmUgZW5hYmxpbmcgdGhlIHNlbnNvciBpdHNlbGYuDQo+PiBUaGlzIHBhdGNo
-IGlzIGZpeGluZyBhbHNvIGFuIGlzc3VlIHJlbGF0ZWQgdG8gc2Vuc29ycyB0aGF0IGdlbmVyYXRl
-IA0KPj4gaW50ZXJydXB0cyB1bmNvbmRpdGlvbmFsbHksIChEUkRZIHBhZHMpIHdoZW4gaW50ZXJy
-dXB0IGxldmVsIGlzIHVzZWQuDQo+Pg0KPj4gU2lnbmVkLW9mZi1ieTogTWFydGluIEtlbGx5IDxt
-YXJ0aW5AbWFydGluZ2tlbGx5LmNvbT4NCj4+IFNpZ25lZC1vZmYtYnk6IERlbmlzIENpb2NjYSA8
-ZGVuaXMuY2lvY2NhQHN0LmNvbT4NCj4gQSBjb3VwbGUgb2YgdmVyeSBtaW5vciBwb2ludHMgaW5s
-aW5lLg0KPiANCj4gQWxzbywgYXV0aG9yIHNob3VsZCBtYXRjaCB0aGUgZmlyc3Qgc2lnbiBvZmYu
-ICBJIGtpbmQgb2YgbG9zdCB0b3VjaCBvZiANCj4gaG93IG11Y2ggZ290IG1vZGlmaWVkLCBidXQg
-YSBSZXBvcnRlZC1ieTogb3IgdGhlIG9uZSB5b3Ugb2NjYXNpb25hbGx5IA0KPiBnZXQgaXMgT3Jp
-Z2luYXRlZC1ieTogZm9yIG1hcnRpbiB3b3VsZCBiZSBwcmVmZXJyZWQgaWYgdGhlIGNoYW5nZXMg
-YXJlIA0KPiBtYWpvciwgaWYgdGhleSBhcmUgbWlub3IsIHRoZW4gdGhlIGF1dGhvciBzaG91bGQg
-YmUgbWFydGluIHdpdGggYSBzaWduIA0KPiBvZmYgZnJvbSBEZW5pcy4NCj4gDQoNCkkgd291bGQg
-c2F5IHRoZSBjaGFuZ2VzIGFyZSBtaW5vciwgYWx0aG91Z2ggaXQncyBzdWJqZWN0aXZlIGV4YWN0
-bHkgd2hhdCAibWlub3IiIHZzLiAibWFqb3IiIGFyZSwgb2YgY291cnNlLiBJbiB0aGlzIGNhc2Us
-IERlbmlzIGFkZGVkIHNvbWUgZ290by1lcnJvciBjbGVhbnVwIHRoYXQgSSBoYWQgbWlzc2VkLCBi
-dXQgdGhlIGJ1ZyBmaXggd2FzIGZyb20gdGhlIG9yaWdpbmFsIHBhdGNoLg0KDQo+IEFsc28sIGFz
-IEkgdW5kZXJzdGFuZCBpdCB0aGlzIGlzIGEgZml4IGZvciBhbiBpc3N1ZSBzZWVuLCBzbyBtYWtl
-IHRoYXQgDQo+IGNsZWFyIGluIHRoZSBuYW1pbmcgb2YgdGhlIHBhdGNoIGFuZCBnaXZlIGEgZml4
-ZXMtdGFnIHRvIGluZGljYXRlIGhvdyANCj4gZmFyIGJhY2sgd2Ugc2hvdWxkIGFwcGx5IHRoaXMg
-aW4gc3RhYmxlLg0KPiANCj4gVGhhbmtzLA0KPiANCj4gSm9uYXRoYW4NCj4gDQo+PiAtLS0NCj4+
-ICAgZHJpdmVycy9paW8vbWFnbmV0b21ldGVyL3N0X21hZ25fYnVmZmVyLmMgfCAzMyArKysrKysr
-KysrKy0tLS0tLS0tLS0tLQ0KPj4gICAxIGZpbGUgY2hhbmdlZCwgMTYgaW5zZXJ0aW9ucygrKSwg
-MTcgZGVsZXRpb25zKC0pDQo+Pg0KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaWlvL21hZ25ldG9t
-ZXRlci9zdF9tYWduX2J1ZmZlci5jIA0KPj4gYi9kcml2ZXJzL2lpby9tYWduZXRvbWV0ZXIvc3Rf
-bWFnbl9idWZmZXIuYw0KPj4gaW5kZXggMGE5ZThmYWRmYTlkLi4wOTdlNmU4OGE0NjQgMTAwNjQ0
-DQo+PiAtLS0gYS9kcml2ZXJzL2lpby9tYWduZXRvbWV0ZXIvc3RfbWFnbl9idWZmZXIuYw0KPj4g
-KysrIGIvZHJpdmVycy9paW8vbWFnbmV0b21ldGVyL3N0X21hZ25fYnVmZmVyLmMNCj4+IEBAIC0z
-MCwxMSArMzAsNiBAQCBpbnQgc3RfbWFnbl90cmlnX3NldF9zdGF0ZShzdHJ1Y3QgaWlvX3RyaWdn
-ZXIgKnRyaWcsIGJvb2wgc3RhdGUpDQo+PiAgIAlyZXR1cm4gc3Rfc2Vuc29yc19zZXRfZGF0YXJl
-YWR5X2lycShpbmRpb19kZXYsIHN0YXRlKTsNCj4+ICAgfQ0KPj4gICANCj4+IC1zdGF0aWMgaW50
-IHN0X21hZ25fYnVmZmVyX3ByZWVuYWJsZShzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2KSAtew0K
-Pj4gLQlyZXR1cm4gc3Rfc2Vuc29yc19zZXRfZW5hYmxlKGluZGlvX2RldiwgdHJ1ZSk7DQo+PiAt
-fQ0KPj4gLQ0KPj4gICBzdGF0aWMgaW50IHN0X21hZ25fYnVmZmVyX3Bvc3RlbmFibGUoc3RydWN0
-IGlpb19kZXYgKmluZGlvX2RldikNCj4+ICAgew0KPj4gICAJaW50IGVycjsNCj4+IEBAIC00Miw0
-MCArMzcsNDQgQEAgc3RhdGljIGludCBzdF9tYWduX2J1ZmZlcl9wb3N0ZW5hYmxlKHN0cnVjdCAN
-Cj4+IGlpb19kZXYgKmluZGlvX2RldikNCj4+ICAgDQo+PiAgIAltZGF0YS0+YnVmZmVyX2RhdGEg
-PSBrbWFsbG9jKGluZGlvX2Rldi0+c2Nhbl9ieXRlcywgR0ZQX0tFUk5FTCk7DQo+PiAgIAlpZiAo
-bWRhdGEtPmJ1ZmZlcl9kYXRhID09IE5VTEwpIHsNCj4+IC0JCWVyciA9IC1FTk9NRU07DQo+PiAt
-CQlnb3RvIGFsbG9jYXRlX21lbW9yeV9lcnJvcjsNCj4+ICsJCXJldHVybiAtRU5PTUVNOw0KPiBJ
-IHdvdWxkIGhhdmUgYSB2ZXJ5IHNsaWdodCBwcmVmZXJlbmNlIGZvciB0aGF0IGhhdmluZyBiZWVu
-IGluIGEgc2VwYXJhdGUgcGF0Y2guDQo+IEdvb2QgY2xlYW51cCBidXQgbm90IHBhcnQgb2YgdGhl
-IG1haW4gcG9pbnQgb2YgdGhpcyBwYXRjaC4NCj4gDQo+PiAgIAl9DQo+PiAgIA0KPj4gICAJZXJy
-ID0gaWlvX3RyaWdnZXJlZF9idWZmZXJfcG9zdGVuYWJsZShpbmRpb19kZXYpOw0KPj4gICAJaWYg
-KGVyciA8IDApDQo+PiAtCQlnb3RvIHN0X21hZ25fYnVmZmVyX3Bvc3RlbmFibGVfZXJyb3I7DQo+
-PiArCQlnb3RvIHN0X21hZ25fYnVmZmVyX2ZyZWVfYnVmZmVyX2RhdGE7DQo+PiArDQo+PiArCWVy
-ciA9IHN0X3NlbnNvcnNfc2V0X2VuYWJsZShpbmRpb19kZXYsIHRydWUpOw0KPj4gKwlpZiAoZXJy
-IDwgMCkNCj4+ICsJCWdvdG8gc3RfbWFnbl9idWZmZXJfYnVmZmVyX3ByZWRpc2FibGU7DQo+PiAg
-IA0KPj4gICAJcmV0dXJuIGVycjsNCj4+ICAgDQo+PiAtc3RfbWFnbl9idWZmZXJfcG9zdGVuYWJs
-ZV9lcnJvcjoNCj4+ICtzdF9tYWduX2J1ZmZlcl9idWZmZXJfcHJlZGlzYWJsZToNCj4+ICsJaWlv
-X3RyaWdnZXJlZF9idWZmZXJfcHJlZGlzYWJsZShpbmRpb19kZXYpOw0KPj4gK3N0X21hZ25fYnVm
-ZmVyX2ZyZWVfYnVmZmVyX2RhdGE6DQo+PiAgIAlrZnJlZShtZGF0YS0+YnVmZmVyX2RhdGEpOw0K
-Pj4gLWFsbG9jYXRlX21lbW9yeV9lcnJvcjoNCj4+ICAgCXJldHVybiBlcnI7DQo+PiAgIH0NCj4+
-ICAgDQo+PiAgIHN0YXRpYyBpbnQgc3RfbWFnbl9idWZmZXJfcHJlZGlzYWJsZShzdHJ1Y3QgaWlv
-X2RldiAqaW5kaW9fZGV2KQ0KPj4gICB7DQo+PiAtCWludCBlcnI7DQo+PiArCWludCBlcnIgPSAw
-LCBlcnIyOw0KPj4gICAJc3RydWN0IHN0X3NlbnNvcl9kYXRhICptZGF0YSA9IGlpb19wcml2KGlu
-ZGlvX2Rldik7DQo+PiAgIA0KPj4gLQllcnIgPSBpaW9fdHJpZ2dlcmVkX2J1ZmZlcl9wcmVkaXNh
-YmxlKGluZGlvX2Rldik7DQo+PiAtCWlmIChlcnIgPCAwKQ0KPj4gLQkJZ290byBzdF9tYWduX2J1
-ZmZlcl9wcmVkaXNhYmxlX2Vycm9yOw0KPj4gKwllcnIyID0gc3Rfc2Vuc29yc19zZXRfZW5hYmxl
-KGluZGlvX2RldiwgZmFsc2UpOw0KPj4gKwlpZiAoZXJyMiA8IDApDQo+PiArCQllcnIgPSBlcnIy
-Ow0KPj4gICANCj4+IC0JZXJyID0gc3Rfc2Vuc29yc19zZXRfZW5hYmxlKGluZGlvX2RldiwgZmFs
-c2UpOw0KPj4gKwllcnIyID0gaWlvX3RyaWdnZXJlZF9idWZmZXJfcHJlZGlzYWJsZShpbmRpb19k
-ZXYpOw0KPj4gKwlpZiAoZXJyMiA8IDApDQo+PiArCQllcnIgPSBlcnIyOw0KPiBUaGVyZSBpcyBh
-IHNtYWxsIGFyZ3VtZW50IHRoYXQgd2Ugc2hvdWxkIGhhdmUgc29tZSB2aXNpYmlsaXR5IG9mIHRo
-ZSANCj4gdmFsdWUgb2YgdGhlIGVycm9yIGZyb20gc3Rfc2Vuc29yc19zZXRfZW5hYmxlIGlmIGJv
-dGggZXJyb3IgcGF0aHMgDQo+IHRyaWdnZXIuICBJIHRoaW5rIHRoZSBzdWdnZXN0aW9uIG1hZGUg
-aW4gdGhlIG90aGVyIHJldmlldyBvZiBhbiBlcnJvciANCj4gY29tbWVudCB3b3VsZCBzb2x2ZSB0
-aGF0IGZhaXJseSB3ZWxsLg0KPiANCj4+ICAgDQo+PiAtc3RfbWFnbl9idWZmZXJfcHJlZGlzYWJs
-ZV9lcnJvcjoNCj4+ICAgCWtmcmVlKG1kYXRhLT5idWZmZXJfZGF0YSk7DQo+PiAgIAlyZXR1cm4g
-ZXJyOw0KPj4gICB9DQo+PiAgIA0KPj4gICBzdGF0aWMgY29uc3Qgc3RydWN0IGlpb19idWZmZXJf
-c2V0dXBfb3BzIHN0X21hZ25fYnVmZmVyX3NldHVwX29wcyA9IHsNCj4+IC0JLnByZWVuYWJsZSA9
-ICZzdF9tYWduX2J1ZmZlcl9wcmVlbmFibGUsDQo+PiAgIAkucG9zdGVuYWJsZSA9ICZzdF9tYWdu
-X2J1ZmZlcl9wb3N0ZW5hYmxlLA0KPj4gICAJLnByZWRpc2FibGUgPSAmc3RfbWFnbl9idWZmZXJf
-cHJlZGlzYWJsZSwNCj4+ICAgfTsNCj4gDQoNCg==
+On 10/28/18 3:55 PM, Denis CIOCCA wrote:
+> Hey Martin, Jonathan,
+> 
+> Sorry my bad. I had pushed what I've modified performing the tests not considering at all the procedures. I didn't mean to take advantage. I apologize.
+> 
+> Martin, if you can, please just take the part needed and update accordantly the first patch you sent please. I think I just apply a 'minor' change in there. The major stuff here was the detection of the wrong order and Martin did the job!
+> 
+> Thanks!
+> Denis
+> 
+
+No problem, patch "authorship" can be a rather fuzzy concept in a 
+collaborative open source project. I sometimes wish git would allow for 
+multiple authors like academic papers have, as it's sometimes the most 
+correct expression of how a patch comes to be.
+
+I'll send the original patch in the next few days, making sure I cover 
+the goto-errors properly and re-testing (I think I may have missed them 
+the first time). I'll add a Fixes tag too.
+
+After that, Denis may want to issue some of the cleanups that were 
+included here as a separate patch.
+
+> 
+> 
+> -----Original Message-----
+> From: Martin Kelly <martin@martingkelly.com>
+> Sent: Sunday, October 28, 2018 12:07 PM
+> To: Jonathan Cameron <jic23@kernel.org>; Denis CIOCCA <denis.ciocca@st.com>
+> Cc: linux-iio@vger.kernel.org; lars@metafoo.de; lorenzo.bianconi83@gmail.com; pmeerw@pmeerw.net; knaack.h@gmx.de
+> Subject: Re: [PATCH] iio:st_magn: enable trigger before enabling sensor
+> 
+> On 10/28/18 9:20 AM, Jonathan Cameron wrote:
+>> On Thu, 25 Oct 2018 15:32:26 -0700
+>> Denis Ciocca <denis.ciocca@st.com> wrote:
+>>
+>>>   From logical point of view driver should be ready to receive irqs
+>>> before enabling the sensor itself.
+>>> This patch is fixing also an issue related to sensors that generate
+>>> interrupts unconditionally, (DRDY pads) when interrupt level is used.
+>>>
+>>> Signed-off-by: Martin Kelly <martin@martingkelly.com>
+>>> Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
+>> A couple of very minor points inline.
+>>
+>> Also, author should match the first sign off.  I kind of lost touch of
+>> how much got modified, but a Reported-by: or the one you occasionally
+>> get is Originated-by: for martin would be preferred if the changes are
+>> major, if they are minor, then the author should be martin with a sign
+>> off from Denis.
+>>
+> 
+> I would say the changes are minor, although it's subjective exactly what "minor" vs. "major" are, of course. In this case, Denis added some goto-error cleanup that I had missed, but the bug fix was from the original patch.
+> 
+>> Also, as I understand it this is a fix for an issue seen, so make that
+>> clear in the naming of the patch and give a fixes-tag to indicate how
+>> far back we should apply this in stable.
+>>
+>> Thanks,
+>>
+>> Jonathan
+>>
+>>> ---
+>>>    drivers/iio/magnetometer/st_magn_buffer.c | 33 +++++++++++------------
+>>>    1 file changed, 16 insertions(+), 17 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/magnetometer/st_magn_buffer.c
+>>> b/drivers/iio/magnetometer/st_magn_buffer.c
+>>> index 0a9e8fadfa9d..097e6e88a464 100644
+>>> --- a/drivers/iio/magnetometer/st_magn_buffer.c
+>>> +++ b/drivers/iio/magnetometer/st_magn_buffer.c
+>>> @@ -30,11 +30,6 @@ int st_magn_trig_set_state(struct iio_trigger *trig, bool state)
+>>>    	return st_sensors_set_dataready_irq(indio_dev, state);
+>>>    }
+>>>    
+>>> -static int st_magn_buffer_preenable(struct iio_dev *indio_dev) -{
+>>> -	return st_sensors_set_enable(indio_dev, true);
+>>> -}
+>>> -
+>>>    static int st_magn_buffer_postenable(struct iio_dev *indio_dev)
+>>>    {
+>>>    	int err;
+>>> @@ -42,40 +37,44 @@ static int st_magn_buffer_postenable(struct
+>>> iio_dev *indio_dev)
+>>>    
+>>>    	mdata->buffer_data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
+>>>    	if (mdata->buffer_data == NULL) {
+>>> -		err = -ENOMEM;
+>>> -		goto allocate_memory_error;
+>>> +		return -ENOMEM;
+>> I would have a very slight preference for that having been in a separate patch.
+>> Good cleanup but not part of the main point of this patch.
+>>
+>>>    	}
+>>>    
+>>>    	err = iio_triggered_buffer_postenable(indio_dev);
+>>>    	if (err < 0)
+>>> -		goto st_magn_buffer_postenable_error;
+>>> +		goto st_magn_buffer_free_buffer_data;
+>>> +
+>>> +	err = st_sensors_set_enable(indio_dev, true);
+>>> +	if (err < 0)
+>>> +		goto st_magn_buffer_buffer_predisable;
+>>>    
+>>>    	return err;
+>>>    
+>>> -st_magn_buffer_postenable_error:
+>>> +st_magn_buffer_buffer_predisable:
+>>> +	iio_triggered_buffer_predisable(indio_dev);
+>>> +st_magn_buffer_free_buffer_data:
+>>>    	kfree(mdata->buffer_data);
+>>> -allocate_memory_error:
+>>>    	return err;
+>>>    }
+>>>    
+>>>    static int st_magn_buffer_predisable(struct iio_dev *indio_dev)
+>>>    {
+>>> -	int err;
+>>> +	int err = 0, err2;
+>>>    	struct st_sensor_data *mdata = iio_priv(indio_dev);
+>>>    
+>>> -	err = iio_triggered_buffer_predisable(indio_dev);
+>>> -	if (err < 0)
+>>> -		goto st_magn_buffer_predisable_error;
+>>> +	err2 = st_sensors_set_enable(indio_dev, false);
+>>> +	if (err2 < 0)
+>>> +		err = err2;
+>>>    
+>>> -	err = st_sensors_set_enable(indio_dev, false);
+>>> +	err2 = iio_triggered_buffer_predisable(indio_dev);
+>>> +	if (err2 < 0)
+>>> +		err = err2;
+>> There is a small argument that we should have some visibility of the
+>> value of the error from st_sensors_set_enable if both error paths
+>> trigger.  I think the suggestion made in the other review of an error
+>> comment would solve that fairly well.
+>>
+>>>    
+>>> -st_magn_buffer_predisable_error:
+>>>    	kfree(mdata->buffer_data);
+>>>    	return err;
+>>>    }
+>>>    
+>>>    static const struct iio_buffer_setup_ops st_magn_buffer_setup_ops = {
+>>> -	.preenable = &st_magn_buffer_preenable,
+>>>    	.postenable = &st_magn_buffer_postenable,
+>>>    	.predisable = &st_magn_buffer_predisable,
+>>>    };
+>>
+> 
