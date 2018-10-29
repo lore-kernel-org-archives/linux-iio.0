@@ -1,79 +1,124 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-co1nam03on0060.outbound.protection.outlook.com ([104.47.40.60]:34030
-        "EHLO NAM03-CO1-obe.outbound.protection.outlook.com"
+Received: from mail-sn1nam02on0064.outbound.protection.outlook.com ([104.47.36.64]:28569
+        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728416AbeJ2U7l (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 29 Oct 2018 16:59:41 -0400
-From: Manish Narani <manish.narani@xilinx.com>
-To: <jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
-        <pmeerw@pmeerw.net>, <robh+dt@kernel.org>, <mark.rutland@arm.com>,
-        <michal.simek@xilinx.com>, <manish.narani@xilinx.com>,
-        <amit.kucheria@linaro.org>, <sudeep.holla@arm.com>,
-        <olof@lixom.net>, <broonie@kernel.org>, <arnaud.pouliquen@st.com>,
-        <eugen.hristev@microchip.com>, <linus.walleij@linaro.org>,
-        <vilhelm.gray@gmail.com>, <geert@linux-m68k.org>,
-        <freeman.liu@spreadtrum.com>, <rdunlap@infradead.org>,
-        <tglx@linutronix.de>, <baolin.wang@linaro.org>,
-        <gregkh@linuxfoundation.org>, <jdelvare@suse.com>,
-        <linux@roeck-us.net>
-CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-hwmon@vger.kernel.org>
-Subject: [PATCH v3 3/3] arm64: zynqmp: DT: Add Xilinx AMS node
-Date: Mon, 29 Oct 2018 17:40:26 +0530
-Message-ID: <1540815026-1012-4-git-send-email-manish.narani@xilinx.com>
-In-Reply-To: <1540815026-1012-1-git-send-email-manish.narani@xilinx.com>
-References: <1540815026-1012-1-git-send-email-manish.narani@xilinx.com>
+        id S1727694AbeJ3B0l (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 29 Oct 2018 21:26:41 -0400
+From: Stefan Popa <stefan.popa@analog.com>
+To: <jic23@kernel.org>
+CC: <Michael.Hennerich@analog.com>, <knaack.h@gmx.de>,
+        <lars@metafoo.de>, <pmeerw@pmeerw.net>,
+        <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <stefan.popa@analog.com>
+Subject: [PATCH v3 1/3] iio: ad_sigma_delta: Allow to provide custom data register address
+Date: Mon, 29 Oct 2018 18:36:52 +0200
+Message-ID: <1540831012-2758-1-git-send-email-stefan.popa@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The Xilinx AMS includes an ADC as well as on-chip sensors that can be
-used to sample external and monitor on-die operating conditions, such as
-temperature and supply voltage levels.
+From: Lars-Peter Clausen <lars@metafoo.de>
 
-Signed-off-by: Manish Narani <manish.narani@xilinx.com>
+Some newer devices from the Sigma-Delta ADC family do have their data
+register at a different address than the current default address. Add a
+parameter to the ad_sigma_delta_info struct which allows to override the
+default address.
+
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Stefan Popa <stefan.popa@analog.com>
 ---
- arch/arm64/boot/dts/xilinx/zynqmp.dtsi | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+Changes in v2:
+	- Added this commit.
+Changes in v3:
+	- Nothing changed.
 
-diff --git a/arch/arm64/boot/dts/xilinx/zynqmp.dtsi b/arch/arm64/boot/dts/xilinx/zynqmp.dtsi
-index 29ce234..e5facd8 100644
---- a/arch/arm64/boot/dts/xilinx/zynqmp.dtsi
-+++ b/arch/arm64/boot/dts/xilinx/zynqmp.dtsi
-@@ -617,5 +617,32 @@
- 			reg = <0x0 0xfd4d0000 0x0 0x1000>;
- 			timeout-sec = <10>;
- 		};
+ drivers/iio/adc/ad_sigma_delta.c       | 22 +++++++++++++++++-----
+ include/linux/iio/adc/ad_sigma_delta.h |  3 +++
+ 2 files changed, 20 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
+index fc95107..ff5f2da 100644
+--- a/drivers/iio/adc/ad_sigma_delta.c
++++ b/drivers/iio/adc/ad_sigma_delta.c
+@@ -278,6 +278,7 @@ int ad_sigma_delta_single_conversion(struct iio_dev *indio_dev,
+ {
+ 	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
+ 	unsigned int sample, raw_sample;
++	unsigned int data_reg;
+ 	int ret = 0;
+ 
+ 	if (iio_buffer_enabled(indio_dev))
+@@ -305,7 +306,12 @@ int ad_sigma_delta_single_conversion(struct iio_dev *indio_dev,
+ 	if (ret < 0)
+ 		goto out;
+ 
+-	ret = ad_sd_read_reg(sigma_delta, AD_SD_REG_DATA,
++	if (sigma_delta->info->data_reg != 0)
++		data_reg = sigma_delta->info->data_reg;
++	else
++		data_reg = AD_SD_REG_DATA;
 +
-+		xilinx_ams: ams@ffa50000 {
-+			compatible = "xlnx,zynqmp-ams";
-+			status = "disabled";
-+			interrupt-parent = <&gic>;
-+			interrupts = <0 56 4>;
-+			interrupt-names = "ams-irq";
-+			reg = <0x0 0xffa50000 0x0 0x800>;
-+			reg-names = "ams-base";
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			#io-channel-cells = <1>;
-+			ranges = <0 0 0xffa50800 0x400
-+				  1 0 0xffa50c00 0x400>;
++	ret = ad_sd_read_reg(sigma_delta, data_reg,
+ 		DIV_ROUND_UP(chan->scan_type.realbits + chan->scan_type.shift, 8),
+ 		&raw_sample);
+ 
+@@ -392,6 +398,7 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
+ 	unsigned int reg_size;
++	unsigned int data_reg;
+ 	uint8_t data[16];
+ 	int ret;
+ 
+@@ -401,18 +408,23 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
+ 			indio_dev->channels[0].scan_type.shift;
+ 	reg_size = DIV_ROUND_UP(reg_size, 8);
+ 
++	if (sigma_delta->info->data_reg != 0)
++		data_reg = sigma_delta->info->data_reg;
++	else
++		data_reg = AD_SD_REG_DATA;
 +
-+			ams_ps: ams_ps@0,0 {
-+				compatible = "xlnx,zynqmp-ams-ps";
-+				status = "disabled";
-+				reg = <0 0x400>;
-+			};
-+
-+			ams_pl: ams_pl@1,0 {
-+				compatible = "xlnx,zynqmp-ams-pl";
-+				status = "disabled";
-+				reg = <0 0x400>;
-+			};
-+		};
- 	};
+ 	switch (reg_size) {
+ 	case 4:
+ 	case 2:
+ 	case 1:
+-		ret = ad_sd_read_reg_raw(sigma_delta, AD_SD_REG_DATA,
+-			reg_size, &data[0]);
++		ret = ad_sd_read_reg_raw(sigma_delta, data_reg, reg_size,
++			&data[0]);
+ 		break;
+ 	case 3:
+ 		/* We store 24 bit samples in a 32 bit word. Keep the upper
+ 		 * byte set to zero. */
+-		ret = ad_sd_read_reg_raw(sigma_delta, AD_SD_REG_DATA,
+-			reg_size, &data[1]);
++		ret = ad_sd_read_reg_raw(sigma_delta, data_reg, reg_size,
++			&data[1]);
+ 		break;
+ 	}
+ 
+diff --git a/include/linux/iio/adc/ad_sigma_delta.h b/include/linux/iio/adc/ad_sigma_delta.h
+index 730ead1..7e84351 100644
+--- a/include/linux/iio/adc/ad_sigma_delta.h
++++ b/include/linux/iio/adc/ad_sigma_delta.h
+@@ -39,6 +39,8 @@ struct iio_dev;
+  *		if there is just one read-only sample data shift register.
+  * @addr_shift: Shift of the register address in the communications register.
+  * @read_mask: Mask for the communications register having the read bit set.
++ * @data_reg: Address of the data register, if 0 the default address of 0x3 will
++ *   be used.
+  */
+ struct ad_sigma_delta_info {
+ 	int (*set_channel)(struct ad_sigma_delta *, unsigned int channel);
+@@ -47,6 +49,7 @@ struct ad_sigma_delta_info {
+ 	bool has_registers;
+ 	unsigned int addr_shift;
+ 	unsigned int read_mask;
++	unsigned int data_reg;
  };
+ 
+ /**
 -- 
-2.1.1
+2.7.4
