@@ -1,76 +1,224 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-eopbgr730055.outbound.protection.outlook.com ([40.107.73.55]:8753
-        "EHLO NAM05-DM3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728416AbeJ2U7U (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 29 Oct 2018 16:59:20 -0400
+Return-Path: <SRS0=lVAd=NJ=xilinx.com=MNARANI@kernel.org>
 From: Manish Narani <manish.narani@xilinx.com>
 To: <jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
-        <pmeerw@pmeerw.net>, <robh+dt@kernel.org>, <mark.rutland@arm.com>,
-        <michal.simek@xilinx.com>, <manish.narani@xilinx.com>,
-        <amit.kucheria@linaro.org>, <sudeep.holla@arm.com>,
-        <olof@lixom.net>, <broonie@kernel.org>, <arnaud.pouliquen@st.com>,
-        <eugen.hristev@microchip.com>, <linus.walleij@linaro.org>,
-        <vilhelm.gray@gmail.com>, <geert@linux-m68k.org>,
-        <freeman.liu@spreadtrum.com>, <rdunlap@infradead.org>,
-        <tglx@linutronix.de>, <baolin.wang@linaro.org>,
-        <gregkh@linuxfoundation.org>, <jdelvare@suse.com>,
-        <linux@roeck-us.net>
+	<pmeerw@pmeerw.net>, <robh+dt@kernel.org>, <mark.rutland@arm.com>,
+	<michal.simek@xilinx.com>, <manish.narani@xilinx.com>,
+	<amit.kucheria@linaro.org>, <sudeep.holla@arm.com>, <olof@lixom.net>,
+	<broonie@kernel.org>, <arnaud.pouliquen@st.com>,
+	<eugen.hristev@microchip.com>, <linus.walleij@linaro.org>,
+	<vilhelm.gray@gmail.com>, <geert@linux-m68k.org>,
+	<freeman.liu@spreadtrum.com>, <rdunlap@infradead.org>, <tglx@linutronix.de>,
+	<baolin.wang@linaro.org>, <gregkh@linuxfoundation.org>, <jdelvare@suse.com>,
+	<linux@roeck-us.net>
 CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-hwmon@vger.kernel.org>
-Subject: [PATCH v3 0/3] Add Xilinx AMS Driver
-Date: Mon, 29 Oct 2018 17:40:23 +0530
-Message-ID: <1540815026-1012-1-git-send-email-manish.narani@xilinx.com>
+	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+	<linux-hwmon@vger.kernel.org>
+Subject: [PATCH v3 1/3] dt-bindings: iio: adc: Add Xilinx AMS binding documentation
+Date: Mon, 29 Oct 2018 17:40:24 +0530
+Message-ID: <1540815026-1012-2-git-send-email-manish.narani@xilinx.com>
+In-Reply-To: <1540815026-1012-1-git-send-email-manish.narani@xilinx.com>
+References: <1540815026-1012-1-git-send-email-manish.narani@xilinx.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-Add Xilinx AMS driver which is used for Xilinx's ZynqMP AMS controller.
-This AMS driver is used to report various interface voltages and temperatures
-across the system.
-This driver will be used by iio-hwmon to repport voltages and temperatures
-across the system by using various channel interfaces.
-This driver handles AMS module including PS-Sysmon & PL-Sysmon. The binding
-documentation is added for understanding of AMS, PS, PL Sysmon Channels.
+Xilinx AMS have several ADC channels that can be used for measurement of
+different voltages and temperatures. Document the same in the bindings.
 
-Changes in v2:
-	- Added documentation for sysfs (Patch-2)
-	- Addressed code style review comments
-	- Patch-2 (Now it is Patch-3)
-		- Arranged the includes in alphabetical order
-		- Removed the wrapper 'ams_pl_write_reg()' and used writel
-		  instead
-		- Removed the unnecessary delay of 1ms and used polling of EOC
-		  instead
-		- Removed spin_lock and used mutex only.
-		- Used request_irq() instead of devm_request_irq() and handled
-		  respective error conditions
-		- Moved contents of xilinx-ams.h to inline with xilinx-ams.c
-	- Patch-1
-		- Addressed Documentation style comments
-
-Changes in v3:
-	- Updated bindings document with the suggested modification in v2 review
-	- Removed documentation for sysfs
-	- Removed extended names for channels in the Xilinx AMS driver
-	- Modified dts to use ranges for child nodes
-	- Reduced address and size cells to 32-bit instead of 64-bit
-
-Manish Narani (3):
-  dt-bindings: iio: adc: Add Xilinx AMS binding documentation
-  iio: adc: Add Xilinx AMS driver
-  arm64: zynqmp: DT: Add Xilinx AMS node
-
- .../devicetree/bindings/iio/adc/xilinx-ams.txt     |  183 +++
- arch/arm64/boot/dts/xilinx/zynqmp.dtsi             |   27 +
- drivers/iio/adc/Kconfig                            |   10 +
- drivers/iio/adc/Makefile                           |    1 +
- drivers/iio/adc/xilinx-ams.c                       | 1343 ++++++++++++++++++++
- 5 files changed, 1564 insertions(+)
+Signed-off-by: Manish Narani <manish.narani@xilinx.com>
+---
+ .../devicetree/bindings/iio/adc/xilinx-ams.txt     | 183 +++++++++++++++++++++
+ 1 file changed, 183 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iio/adc/xilinx-ams.txt
- create mode 100644 drivers/iio/adc/xilinx-ams.c
 
+diff --git a/Documentation/devicetree/bindings/iio/adc/xilinx-ams.txt b/Documentation/devicetree/bindings/iio/adc/xilinx-ams.txt
+new file mode 100644
+index 0000000..1635576
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/xilinx-ams.txt
+@@ -0,0 +1,183 @@
++Xilinx AMS controller
++`````````````````````
++The AMS includes an ADC as well as on-chip sensors that can be used to
++sample external voltages and monitor on-die operating conditions, such as
++temperature and supply voltage levels.
++The AMS has two SYSMON blocks which are PL (Programmable Logic) SYSMON and
++PS (Processing System) SYSMON.
++All designs should have AMS registers, but PS and PL are optional. The
++AMS controller can work with only PS, only PL and both PS and PL
++configurations. Please specify registers according to your design. Devicetree
++should always have AMS module property. Providing PS & PL module is optional.
++
++Required properties:
++	- compatible: Should be "xlnx,zynqmp-ams"
++	- reg: Should specify AMS register space
++	- interrupts: Interrupt number for the AMS control interface
++	- interrupt-names: Interrupt name, must be "ams-irq"
++	- clocks: Should contain a clock specifier for the device
++	- ranges: keep the property empty to map child address space
++	          (for PS and/or PL) nodes 1:1 onto the parent address
++	          space
++
++	AMS sub-nodes:
++		- ams_ps : Used as PS-SYSMON node
++		- ams_pl : Used as PL-SYSMON node
++
++
++
++AMS PS-SYSMON
++`````````````
++PS (Processing System) SYSMON is memory mapped to PS. This block has built-in
++alarm generation logic that is used to interrupt the processor based on
++condition set.
++
++Required properties:
++	- compatible: Should be "xlnx,zynqmp-ams-ps"
++	- reg: Register space for PS-SYSMON
++
++
++
++AMS PL-SYSMON
++`````````````
++PL-SYSMON is capable of monitoring off chip voltage and temperature. PL-SYSMON
++block has DRP, JTAG and I2C interface to enable monitoring from external master.
++Out of this interface currently only DRP is supported. This block has alarm
++generation logic that is used to interrupt the processor based on condition set.
++
++Required properties:
++	- compatible: Should be "xlnx,zynqmp-ams-pl"
++	- reg: Register space for PL-SYSMON
++
++PL-SYSMON optional sub-nodes:
++	- xlnx,ext-channels: List of external channels that are connected to the
++	                     AMS PL module.
++
++	  The child nodes of PL-SYSMON represent the external channels which are
++	  connected to this Module. If the property is not present
++	  no external channels will be assumed to be connected.
++
++	  Each child node represents one channel and has the following
++	  properties:
++
++	Required properties:
++		* reg: Pair of pins the channel is connected to.
++
++		    'reg' value		Channel Name		Channel Number
++		    -----------		------------		--------------
++			 0		VP/VN			      30
++			 1		VUSER0			      31
++			 2		VUSER1			      32
++			 3		VUSER3			      33
++			 4		VUSER4			      34
++			 5		VAUXP[0]/VAUXN[0]	      35
++			 6		VAUXP[1]/VAUXN[1]	      36
++			...
++			20		VAUXP[15]/VAUXN[15]	      50
++
++		Each channel number should only be used at most once. For
++		more details on channels, refer to the table given at the end.
++
++	Optional properties:
++		* xlnx,bipolar: If set the channel is used in bipolar
++		  mode.
++
++
++Example:
++	xilinx_ams: ams@ffa50000 {
++		compatible = "xlnx,zynqmp-ams";
++		interrupt-parent = <&gic>;
++		interrupts = <0 56 4>;
++		interrupt-names = "ams-irq";
++		reg = <0x0 0xffa50000 0x0 0x800>;
++		reg-names = "ams-base";
++		#address-cells = <1>;
++		#size-cells = <1>;
++		#io-channel-cells = <1>;
++		ranges = <0 0 0xffa50800 0x400
++			  1 0 0xffa50c00 0x400>;
++
++		ams_ps: ams_ps@0,0 {
++			compatible = "xlnx,zynqmp-ams-ps";
++			reg = <0 0x400>;
++		};
++
++		ams_pl: ams_pl@1,0 {
++			compatible = "xlnx,zynqmp-ams-pl";
++			reg = <0 0x400>;
++			xlnx,ext-channels {
++				channel@0 {
++					reg = <0>;
++					xlnx,bipolar;
++				};
++				channel@1 {
++					reg = <1>;
++				};
++				channel@8 {
++					reg = <8>;
++					xlnx,bipolar;
++				};
++			};
++		};
++	};
++
++
++AMS Channel Details
++```````````````````
++Sysmon Block	|Channel|			Details					|Measurement
++		|Number	|							 	|Type
++---------------------------------------------------------------------------------------------------------
++AMS CTRL	|0	|System PLLs voltage measurement, VCC_PSPLL.			|Voltage
++		|1	|Battery voltage measurement, VCC_PSBATT.			|Voltage
++		|2	|PL Internal voltage measurement, VCCINT.			|Voltage
++		|3	|Block RAM voltage measurement, VCCBRAM.			|Voltage
++		|4	|PL Aux voltage measurement, VCCAUX.				|Voltage
++		|5	|Voltage measurement for six DDR I/O PLLs, VCC_PSDDR_PLL.	|Voltage
++		|6	|VCC_PSINTFP_DDR voltage measurement.				|Voltage
++---------------------------------------------------------------------------------------------------------
++PS Sysmon	|7	|LPD temperature measurement.					|Temperature
++		|8	|FPD temperature measurement (REMOTE).				|Temperature
++		|9	|VCC PS LPD voltage measurement (supply1).			|Voltage
++		|10	|VCC PS FPD voltage measurement (supply2).			|Voltage
++		|11	|PS Aux voltage reference (supply3).				|Voltage
++		|12	|DDR I/O VCC voltage measurement.				|Voltage
++		|13	|PS IO Bank 503 voltage measurement (supply5).			|Voltage
++		|14	|PS IO Bank 500 voltage measurement (supply6).			|Voltage
++		|15	|VCCO_PSIO1 voltage measurement.				|Voltage
++		|16	|VCCO_PSIO2 voltage measurement.				|Voltage
++		|17	|VCC_PS_GTR voltage measurement (VPS_MGTRAVCC).			|Voltage
++		|18	|VTT_PS_GTR voltage measurement (VPS_MGTRAVTT).			|Voltage
++		|19	|VCC_PSADC voltage measurement.					|Voltage
++---------------------------------------------------------------------------------------------------------
++PL Sysmon	|20	|PL temperature measurement.					|Temperature
++		|21	|PL Internal voltage measurement, VCCINT.			|Voltage
++		|22	|PL Auxiliary voltage measurement, VCCAUX.			|Voltage
++		|23	|ADC Reference P+ voltage measurement.				|Voltage
++		|24	|ADC Reference N- voltage measurement.				|Voltage
++		|25	|PL Block RAM voltage measurement, VCCBRAM.			|Voltage
++		|26	|LPD Internal voltage measurement, VCC_PSINTLP (supply4).	|Voltage
++		|27	|FPD Internal voltage measurement, VCC_PSINTFP (supply5).	|Voltage
++		|28	|PS Auxiliary voltage measurement (supply6).			|Voltage
++		|29	|PL VCCADC voltage measurement (vccams).			|Voltage
++		|30	|Differential analog input signal voltage measurment.		|Voltage
++		|31	|VUser0 voltage measurement (supply7).				|Voltage
++		|32	|VUser1 voltage measurement (supply8).				|Voltage
++		|33	|VUser2 voltage measurement (supply9).				|Voltage
++		|34	|VUser3 voltage measurement (supply10).				|Voltage
++		|35	|Auxiliary ch 0 voltage measurement (VAux0).			|Voltage
++		|36	|Auxiliary ch 1 voltage measurement (VAux1).			|Voltage
++		|37	|Auxiliary ch 2 voltage measurement (VAux2).			|Voltage
++		|38	|Auxiliary ch 3 voltage measurement (VAux3).			|Voltage
++		|39	|Auxiliary ch 4 voltage measurement (VAux4).			|Voltage
++		|40	|Auxiliary ch 5 voltage measurement (VAux5).			|Voltage
++		|41	|Auxiliary ch 6 voltage measurement (VAux6).			|Voltage
++		|42	|Auxiliary ch 7 voltage measurement (VAux7).			|Voltage
++		|43	|Auxiliary ch 8 voltage measurement (VAux8).			|Voltage
++		|44	|Auxiliary ch 9 voltage measurement (VAux9).			|Voltage
++		|45	|Auxiliary ch 10 voltage measurement (VAux10).			|Voltage
++		|46	|Auxiliary ch 11 voltage measurement (VAux11).			|Voltage
++		|47	|Auxiliary ch 12 voltage measurement (VAux12).			|Voltage
++		|48	|Auxiliary ch 13 voltage measurement (VAux13).			|Voltage
++		|49	|Auxiliary ch 14 voltage measurement (VAux14).			|Voltage
++		|50	|Auxiliary ch 15 voltage measurement (VAux15).			|Voltage
++---------------------------------------------------------------------------------------------------------
 -- 
 2.1.1
