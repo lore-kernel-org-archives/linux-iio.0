@@ -1,136 +1,218 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:52768 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725860AbeJ2CYG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 28 Oct 2018 22:24:06 -0400
-Date: Sun, 28 Oct 2018 17:38:42 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Carlos Iglesias <carlos.iglesias@emutex.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Dan O'Donovan <dan.odonovan@emutex.com>
-Subject: Re: [PATCH 1/2] dt-bindings: iio: pressure: Add support for
- Honeywell HSC SPI sensors
-Message-ID: <20181028173842.580ba1d4@archlinux>
-In-Reply-To: <20181026181406.14545-2-carlos.iglesias@emutex.com>
+Return-Path: <SRS0=YZFO=NK=emutex.com=carlos.iglesias@kernel.org>
+From: Carlos Iglesias <carlos.iglesias@emutex.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com"
+	<mark.rutland@arm.com>, "knaack.h@gmx.de" <knaack.h@gmx.de>,
+	"lars@metafoo.de" <lars@metafoo.de>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Dan O'Donovan
+	<dan.odonovan@emutex.com>
+Subject: Re: [PATCH 1/2] dt-bindings: iio: pressure: Add support for Honeywell
+ HSC SPI sensors
+Date: Tue, 30 Oct 2018 15:56:58 +0000
+Message-ID: <0dbb2254-8035-b498-6302-26bc3a2219ca@emutex.com>
 References: <20181026181406.14545-1-carlos.iglesias@emutex.com>
-        <20181026181406.14545-2-carlos.iglesias@emutex.com>
+ <20181026181406.14545-2-carlos.iglesias@emutex.com>
+ <20181028173842.580ba1d4@archlinux>
+In-Reply-To: <20181028173842.580ba1d4@archlinux>
+Content-Type: multipart/alternative;
+	boundary="_000_0dbb22548035b498630226bc3a2219caemutexcom_"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, 26 Oct 2018 18:14:36 +0000
-Carlos Iglesias <carlos.iglesias@emutex.com> wrote:
+--_000_0dbb22548035b498630226bc3a2219caemutexcom_
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 
-> Add device tree bindings for the HSC pressure sensors.
-> 
-> Signed-off-by: Carlos Iglesias <carlos.iglesias@emutex.com>
-> ---
->  .../bindings/iio/pressure/hsc_spi.txt         | 85 +++++++++++++++++++
->  1 file changed, 85 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/pressure/hsc_spi.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/pressure/hsc_spi.txt b/Documentation/devicetree/bindings/iio/pressure/hsc_spi.txt
-> new file mode 100644
-> index 000000000000..2302d6eef7c7
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/pressure/hsc_spi.txt
-> @@ -0,0 +1,85 @@
-> +Honeywell HSC Series of Pressure Sensors
-> +
-> +Pressure sensors from Honeywell with analog, I2C and SPI interfaces
-> +
-> +Required properties:
-> +- compatible: selects the sensor model; must be one of the following
-> +	"honeywell,hsc001baa"
-> +	"honeywell,hsc001bab"
-> +	"honeywell,hsc001bac"
-> +	"honeywell,hsc001baf"
-> +	"honeywell,hsc1_6baa"
-> +	"honeywell,hsc1_6bab"
-> +	"honeywell,hsc1_6bac"
-> +	"honeywell,hsc1_6baf"
-> +	"honeywell,hsc2_5baa"
-> +	"honeywell,hsc2_5bab"
-> +	"honeywell,hsc2_5bac"
-> +	"honeywell,hsc2_5baf"
-> +	"honeywell,hsc004baa"
-> +	"honeywell,hsc004bab"
-> +	"honeywell,hsc004bac"
-> +	"honeywell,hsc004baf"
-> +	"honeywell,hsc006baa"
-> +	"honeywell,hsc006bab"
-> +	"honeywell,hsc006bac"
-> +	"honeywell,hsc006baf"
-> +	"honeywell,hsc010baa"
-> +	"honeywell,hsc010bab"
-> +	"honeywell,hsc010bac"
-> +	"honeywell,hsc010baf"
-> +	"honeywell,hsc100kaa"
-> +	"honeywell,hsc100kab"
-> +	"honeywell,hsc100kac"
-> +	"honeywell,hsc100kaf"
-> +	"honeywell,hsc160kaa"
-> +	"honeywell,hsc160kab"
-> +	"honeywell,hsc160kac"
-> +	"honeywell,hsc160kaf"
-> +	"honeywell,hsc250kaa"
-> +	"honeywell,hsc250kab"
-> +	"honeywell,hsc250kac"
-> +	"honeywell,hsc250kaf"
-> +	"honeywell,hsc400kaa"
-> +	"honeywell,hsc400kab"
-> +	"honeywell,hsc400kac"
-> +	"honeywell,hsc400kaf"
-> +	"honeywell,hsc600kaa"
-> +	"honeywell,hsc600kab"
-> +	"honeywell,hsc600kac"
-> +	"honeywell,hsc600kaf"
-> +	"honeywell,hsc001gaa"
-> +	"honeywell,hsc001gab"
-> +	"honeywell,hsc001gac"
-> +	"honeywell,hsc001gaf"
-> +	"honeywell,hsc015paa"
-> +	"honeywell,hsc015pab"
-> +	"honeywell,hsc015pac"
-> +	"honeywell,hsc015paf"
-> +	"honeywell,hsc030paa"
-> +	"honeywell,hsc030pab"
-> +	"honeywell,hsc030pac"
-> +	"honeywell,hsc030paf"
-> +	"honeywell,hsc060paa"
-> +	"honeywell,hsc060pab"
-> +	"honeywell,hsc060pac"
-> +	"honeywell,hsc060paf"
-> +	"honeywell,hsc100paa"
-> +	"honeywell,hsc100pab"
-> +	"honeywell,hsc100pac"
-> +	"honeywell,hsc100paf"
-> +	"honeywell,hsc150paa"
-> +	"honeywell,hsc150pab"
-> +	"honeywell,hsc150pac"
-> +	"honeywell,hsc150paf"
-> +- reg: the SPI chip select number used by the sensor.
-> +- spi-max-frequency: maximum clock frequency (Hz) used for the SPI bus.
-> +  The maximum value supported by the sensors is 400000.
-As Rob pointed out in a few reviews this week, the devicetree binding
-for this should only be applying a tighter bound than either the
-device or the bus master. So something introduced by the board
-layout for example, or a level convertor..
+UGxlYXNlIHNlZSBjb21tZW50cyBpbmxpbmUgYmVsb3cuDQoNCk9uIDEwLzI4LzE4IDU6MzggUE0s
+IEpvbmF0aGFuIENhbWVyb24gd3JvdGU6DQoNCk9uIEZyaSwgMjYgT2N0IDIwMTggMTg6MTQ6MzYg
+KzAwMDANCkNhcmxvcyBJZ2xlc2lhcyA8Y2FybG9zLmlnbGVzaWFzQGVtdXRleC5jb20+PG1haWx0
+bzpjYXJsb3MuaWdsZXNpYXNAZW11dGV4LmNvbT4gd3JvdGU6DQoNCg0KDQpBZGQgZGV2aWNlIHRy
+ZWUgYmluZGluZ3MgZm9yIHRoZSBIU0MgcHJlc3N1cmUgc2Vuc29ycy4NCg0KU2lnbmVkLW9mZi1i
+eTogQ2FybG9zIElnbGVzaWFzIDxjYXJsb3MuaWdsZXNpYXNAZW11dGV4LmNvbT48bWFpbHRvOmNh
+cmxvcy5pZ2xlc2lhc0BlbXV0ZXguY29tPg0KLS0tDQogLi4uL2JpbmRpbmdzL2lpby9wcmVzc3Vy
+ZS9oc2Nfc3BpLnR4dCAgICAgICAgIHwgODUgKysrKysrKysrKysrKysrKysrKw0KIDEgZmlsZSBj
+aGFuZ2VkLCA4NSBpbnNlcnRpb25zKCspDQogY3JlYXRlIG1vZGUgMTAwNjQ0IERvY3VtZW50YXRp
+b24vZGV2aWNldHJlZS9iaW5kaW5ncy9paW8vcHJlc3N1cmUvaHNjX3NwaS50eHQNCg0KZGlmZiAt
+LWdpdCBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9paW8vcHJlc3N1cmUvaHNj
+X3NwaS50eHQgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaWlvL3ByZXNzdXJl
+L2hzY19zcGkudHh0DQpuZXcgZmlsZSBtb2RlIDEwMDY0NA0KaW5kZXggMDAwMDAwMDAwMDAwLi4y
+MzAyZDZlZWY3YzcNCi0tLSAvZGV2L251bGwNCisrKyBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJl
+ZS9iaW5kaW5ncy9paW8vcHJlc3N1cmUvaHNjX3NwaS50eHQNCkBAIC0wLDAgKzEsODUgQEANCitI
+b25leXdlbGwgSFNDIFNlcmllcyBvZiBQcmVzc3VyZSBTZW5zb3JzDQorDQorUHJlc3N1cmUgc2Vu
+c29ycyBmcm9tIEhvbmV5d2VsbCB3aXRoIGFuYWxvZywgSTJDIGFuZCBTUEkgaW50ZXJmYWNlcw0K
+Kw0KK1JlcXVpcmVkIHByb3BlcnRpZXM6DQorLSBjb21wYXRpYmxlOiBzZWxlY3RzIHRoZSBzZW5z
+b3IgbW9kZWw7IG11c3QgYmUgb25lIG9mIHRoZSBmb2xsb3dpbmcNCisgICAgICAgImhvbmV5d2Vs
+bCxoc2MwMDFiYWEiDQorICAgICAgICJob25leXdlbGwsaHNjMDAxYmFiIg0KKyAgICAgICAiaG9u
+ZXl3ZWxsLGhzYzAwMWJhYyINCisgICAgICAgImhvbmV5d2VsbCxoc2MwMDFiYWYiDQorICAgICAg
+ICJob25leXdlbGwsaHNjMV82YmFhIg0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzFfNmJhYiINCisg
+ICAgICAgImhvbmV5d2VsbCxoc2MxXzZiYWMiDQorICAgICAgICJob25leXdlbGwsaHNjMV82YmFm
+Ig0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzJfNWJhYSINCisgICAgICAgImhvbmV5d2VsbCxoc2My
+XzViYWIiDQorICAgICAgICJob25leXdlbGwsaHNjMl81YmFjIg0KKyAgICAgICAiaG9uZXl3ZWxs
+LGhzYzJfNWJhZiINCisgICAgICAgImhvbmV5d2VsbCxoc2MwMDRiYWEiDQorICAgICAgICJob25l
+eXdlbGwsaHNjMDA0YmFiIg0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzAwNGJhYyINCisgICAgICAg
+ImhvbmV5d2VsbCxoc2MwMDRiYWYiDQorICAgICAgICJob25leXdlbGwsaHNjMDA2YmFhIg0KKyAg
+ICAgICAiaG9uZXl3ZWxsLGhzYzAwNmJhYiINCisgICAgICAgImhvbmV5d2VsbCxoc2MwMDZiYWMi
+DQorICAgICAgICJob25leXdlbGwsaHNjMDA2YmFmIg0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzAx
+MGJhYSINCisgICAgICAgImhvbmV5d2VsbCxoc2MwMTBiYWIiDQorICAgICAgICJob25leXdlbGws
+aHNjMDEwYmFjIg0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzAxMGJhZiINCisgICAgICAgImhvbmV5
+d2VsbCxoc2MxMDBrYWEiDQorICAgICAgICJob25leXdlbGwsaHNjMTAwa2FiIg0KKyAgICAgICAi
+aG9uZXl3ZWxsLGhzYzEwMGthYyINCisgICAgICAgImhvbmV5d2VsbCxoc2MxMDBrYWYiDQorICAg
+ICAgICJob25leXdlbGwsaHNjMTYwa2FhIg0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzE2MGthYiIN
+CisgICAgICAgImhvbmV5d2VsbCxoc2MxNjBrYWMiDQorICAgICAgICJob25leXdlbGwsaHNjMTYw
+a2FmIg0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzI1MGthYSINCisgICAgICAgImhvbmV5d2VsbCxo
+c2MyNTBrYWIiDQorICAgICAgICJob25leXdlbGwsaHNjMjUwa2FjIg0KKyAgICAgICAiaG9uZXl3
+ZWxsLGhzYzI1MGthZiINCisgICAgICAgImhvbmV5d2VsbCxoc2M0MDBrYWEiDQorICAgICAgICJo
+b25leXdlbGwsaHNjNDAwa2FiIg0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzQwMGthYyINCisgICAg
+ICAgImhvbmV5d2VsbCxoc2M0MDBrYWYiDQorICAgICAgICJob25leXdlbGwsaHNjNjAwa2FhIg0K
+KyAgICAgICAiaG9uZXl3ZWxsLGhzYzYwMGthYiINCisgICAgICAgImhvbmV5d2VsbCxoc2M2MDBr
+YWMiDQorICAgICAgICJob25leXdlbGwsaHNjNjAwa2FmIg0KKyAgICAgICAiaG9uZXl3ZWxsLGhz
+YzAwMWdhYSINCisgICAgICAgImhvbmV5d2VsbCxoc2MwMDFnYWIiDQorICAgICAgICJob25leXdl
+bGwsaHNjMDAxZ2FjIg0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzAwMWdhZiINCisgICAgICAgImhv
+bmV5d2VsbCxoc2MwMTVwYWEiDQorICAgICAgICJob25leXdlbGwsaHNjMDE1cGFiIg0KKyAgICAg
+ICAiaG9uZXl3ZWxsLGhzYzAxNXBhYyINCisgICAgICAgImhvbmV5d2VsbCxoc2MwMTVwYWYiDQor
+ICAgICAgICJob25leXdlbGwsaHNjMDMwcGFhIg0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzAzMHBh
+YiINCisgICAgICAgImhvbmV5d2VsbCxoc2MwMzBwYWMiDQorICAgICAgICJob25leXdlbGwsaHNj
+MDMwcGFmIg0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzA2MHBhYSINCisgICAgICAgImhvbmV5d2Vs
+bCxoc2MwNjBwYWIiDQorICAgICAgICJob25leXdlbGwsaHNjMDYwcGFjIg0KKyAgICAgICAiaG9u
+ZXl3ZWxsLGhzYzA2MHBhZiINCisgICAgICAgImhvbmV5d2VsbCxoc2MxMDBwYWEiDQorICAgICAg
+ICJob25leXdlbGwsaHNjMTAwcGFiIg0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzEwMHBhYyINCisg
+ICAgICAgImhvbmV5d2VsbCxoc2MxMDBwYWYiDQorICAgICAgICJob25leXdlbGwsaHNjMTUwcGFh
+Ig0KKyAgICAgICAiaG9uZXl3ZWxsLGhzYzE1MHBhYiINCisgICAgICAgImhvbmV5d2VsbCxoc2Mx
+NTBwYWMiDQorICAgICAgICJob25leXdlbGwsaHNjMTUwcGFmIg0KKy0gcmVnOiB0aGUgU1BJIGNo
+aXAgc2VsZWN0IG51bWJlciB1c2VkIGJ5IHRoZSBzZW5zb3IuDQorLSBzcGktbWF4LWZyZXF1ZW5j
+eTogbWF4aW11bSBjbG9jayBmcmVxdWVuY3kgKEh6KSB1c2VkIGZvciB0aGUgU1BJIGJ1cy4NCisg
+IFRoZSBtYXhpbXVtIHZhbHVlIHN1cHBvcnRlZCBieSB0aGUgc2Vuc29ycyBpcyA0MDAwMDAuDQoN
+Cg0KQXMgUm9iIHBvaW50ZWQgb3V0IGluIGEgZmV3IHJldmlld3MgdGhpcyB3ZWVrLCB0aGUgZGV2
+aWNldHJlZSBiaW5kaW5nDQpmb3IgdGhpcyBzaG91bGQgb25seSBiZSBhcHBseWluZyBhIHRpZ2h0
+ZXIgYm91bmQgdGhhbiBlaXRoZXIgdGhlDQpkZXZpY2Ugb3IgdGhlIGJ1cyBtYXN0ZXIuIFNvIHNv
+bWV0aGluZyBpbnRyb2R1Y2VkIGJ5IHRoZSBib2FyZA0KbGF5b3V0IGZvciBleGFtcGxlLCBvciBh
+IGxldmVsIGNvbnZlcnRvci4uDQoNCkpvbmF0aGFuDQoNCkNoZWNraW5nIHRoZSBkZXZpY2V0cmVl
+IGJpbmRpbmdzIGZpbGVzIG9mIG90aGVyIHNwaSBzZW5zb3JzIEkgc2VlIGEgZnJlcXVlbnQgYXBw
+cm9hY2ggaXMgdG8gaW5jbHVkZSBhIHJlZmVyZW5jZSB0byBEb2N1bWVudGF0aW9uL2RldmljZXRy
+ZWUvYmluZGluZ3Mvc3BpL3NwaS1idXMudHh0LCBmb3IgZXhhbXBsZToNCg0KUHJvcGVydHkgcnVs
+ZXMgZGVzY3JpYmVkIGluIERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9zcGkvc3Bp
+LWJ1cy50eHQgYXBwbHkuIEluIHBhcnRpY3VsYXIsICJyZWciIGFuZCAic3BpLW1heC1mcmVxdWVu
+Y3kiIHByb3BlcnRpZXMgbXVzdCBiZSBnaXZlbi4NCg0KTWF5YmUgaXQgd291bGQgYmUgYSBiZXR0
+ZXIgb3B0aW9uIHRvIHBsYWNlIHN1Y2ggYSBub3RlIGluc3RlYWQgb2YgdGhlICJyZWciIGFuZCAi
+c3BpLW1heC1mcmVxdWVuY3kiIHBvaW50cy4gV2hhdCBkbyB5b3UgdGhpbms/DQoNClNvcnJ5LCBJ
+IHdhcyBub3QgYXdhcmUgb2YgUm9iIEhlcnJpbmcncyBwcmV2aW91cyBjb21tZW50cyBvbiB0aGlz
+IHRvcGljLCBJIGFtIG5vdCBzdWJzY3JpYmVkIHRvIHRoZSBMS01MLg0KDQoNCg0KDQorDQorRXhh
+bXBsZToNCisNCisgICAgICAgaHNjX3NwaTA6IGhzY0AwIHsNCisgICAgICAgICAgICAgICBjb21w
+YXRpYmxlID0gImhvbmV5d2VsbCxoc2MwMTBiYWEiOw0KKyAgICAgICAgICAgICAgIHJlZyA9IDww
+PjsNCisgICAgICAgICAgICAgICBzcGktbWF4LWZyZXF1ZW5jeSA9IDw0MDAwMDA+Ow0KKyAgICAg
+ICB9Ow0KDQoNCg0KDQo=
 
-Jonathan
-> +
-> +Example:
-> +
-> +	hsc_spi0: hsc@0 {
-> +		compatible = "honeywell,hsc010baa";
-> +		reg = <0>;
-> +		spi-max-frequency = <400000>;
-> +	};
+--_000_0dbb22548035b498630226bc3a2219caemutexcom_
+Content-Type: text/html; charset="utf-8"
+Content-ID: <E0C3BD64EF09854BA93BFFF5957D36F9@EURP190.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+
+PGh0bWw+DQo8aGVhZD4NCjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIgY29udGVudD0i
+dGV4dC9odG1sOyBjaGFyc2V0PXV0Zi04Ij4NCjwvaGVhZD4NCjxib2R5IHRleHQ9IiMwMDAwMDAi
+IGJnY29sb3I9IiNGRkZGRkYiPg0KPHA+UGxlYXNlIHNlZSBjb21tZW50cyBpbmxpbmUgYmVsb3cu
+PGJyPg0KPC9wPg0KPGRpdiBjbGFzcz0ibW96LWNpdGUtcHJlZml4Ij5PbiAxMC8yOC8xOCA1OjM4
+IFBNLCBKb25hdGhhbiBDYW1lcm9uIHdyb3RlOjxicj4NCjwvZGl2Pg0KPGJsb2NrcXVvdGUgdHlw
+ZT0iY2l0ZSIgY2l0ZT0ibWlkOjIwMTgxMDI4MTczODQyLjU4MGJhMWQ0QGFyY2hsaW51eCI+DQo8
+cHJlIGNsYXNzPSJtb3otcXVvdGUtcHJlIiB3cmFwPSIiPk9uIEZyaSwgMjYgT2N0IDIwMTggMTg6
+MTQ6MzYgJiM0MzswMDAwDQpDYXJsb3MgSWdsZXNpYXMgPGEgY2xhc3M9Im1vei10eHQtbGluay1y
+ZmMyMzk2RSIgaHJlZj0ibWFpbHRvOmNhcmxvcy5pZ2xlc2lhc0BlbXV0ZXguY29tIj4mbHQ7Y2Fy
+bG9zLmlnbGVzaWFzQGVtdXRleC5jb20mZ3Q7PC9hPiB3cm90ZToNCg0KPC9wcmU+DQo8YmxvY2tx
+dW90ZSB0eXBlPSJjaXRlIj4NCjxwcmUgY2xhc3M9Im1vei1xdW90ZS1wcmUiIHdyYXA9IiI+QWRk
+IGRldmljZSB0cmVlIGJpbmRpbmdzIGZvciB0aGUgSFNDIHByZXNzdXJlIHNlbnNvcnMuDQoNClNp
+Z25lZC1vZmYtYnk6IENhcmxvcyBJZ2xlc2lhcyA8YSBjbGFzcz0ibW96LXR4dC1saW5rLXJmYzIz
+OTZFIiBocmVmPSJtYWlsdG86Y2FybG9zLmlnbGVzaWFzQGVtdXRleC5jb20iPiZsdDtjYXJsb3Mu
+aWdsZXNpYXNAZW11dGV4LmNvbSZndDs8L2E+DQotLS0NCiAuLi4vYmluZGluZ3MvaWlvL3ByZXNz
+dXJlL2hzY19zcGkudHh0ICAgICAgICAgfCA4NSAmIzQzOyYjNDM7JiM0MzsmIzQzOyYjNDM7JiM0
+MzsmIzQzOyYjNDM7JiM0MzsmIzQzOyYjNDM7JiM0MzsmIzQzOyYjNDM7JiM0MzsmIzQzOyYjNDM7
+JiM0MzsmIzQzOw0KIDEgZmlsZSBjaGFuZ2VkLCA4NSBpbnNlcnRpb25zKCYjNDM7KQ0KIGNyZWF0
+ZSBtb2RlIDEwMDY0NCBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaWlvL3ByZXNz
+dXJlL2hzY19zcGkudHh0DQoNCmRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUv
+YmluZGluZ3MvaWlvL3ByZXNzdXJlL2hzY19zcGkudHh0IGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0
+cmVlL2JpbmRpbmdzL2lpby9wcmVzc3VyZS9oc2Nfc3BpLnR4dA0KbmV3IGZpbGUgbW9kZSAxMDA2
+NDQNCmluZGV4IDAwMDAwMDAwMDAwMC4uMjMwMmQ2ZWVmN2M3DQotLS0gL2Rldi9udWxsDQomIzQz
+OyYjNDM7JiM0MzsgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaWlvL3ByZXNz
+dXJlL2hzY19zcGkudHh0DQpAQCAtMCwwICYjNDM7MSw4NSBAQA0KJiM0MztIb25leXdlbGwgSFND
+IFNlcmllcyBvZiBQcmVzc3VyZSBTZW5zb3JzDQomIzQzOw0KJiM0MztQcmVzc3VyZSBzZW5zb3Jz
+IGZyb20gSG9uZXl3ZWxsIHdpdGggYW5hbG9nLCBJMkMgYW5kIFNQSSBpbnRlcmZhY2VzDQomIzQz
+Ow0KJiM0MztSZXF1aXJlZCBwcm9wZXJ0aWVzOg0KJiM0MzstIGNvbXBhdGlibGU6IHNlbGVjdHMg
+dGhlIHNlbnNvciBtb2RlbDsgbXVzdCBiZSBvbmUgb2YgdGhlIGZvbGxvd2luZw0KJiM0MzsJJnF1
+b3Q7aG9uZXl3ZWxsLGhzYzAwMWJhYSZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAw
+MWJhYiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAwMWJhYyZxdW90Ow0KJiM0MzsJ
+JnF1b3Q7aG9uZXl3ZWxsLGhzYzAwMWJhZiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhz
+YzFfNmJhYSZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzFfNmJhYiZxdW90Ow0KJiM0
+MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzFfNmJhYyZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxs
+LGhzYzFfNmJhZiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzJfNWJhYSZxdW90Ow0K
+JiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzJfNWJhYiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3
+ZWxsLGhzYzJfNWJhYyZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzJfNWJhZiZxdW90
+Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAwNGJhYSZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9u
+ZXl3ZWxsLGhzYzAwNGJhYiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAwNGJhYyZx
+dW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAwNGJhZiZxdW90Ow0KJiM0MzsJJnF1b3Q7
+aG9uZXl3ZWxsLGhzYzAwNmJhYSZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAwNmJh
+YiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAwNmJhYyZxdW90Ow0KJiM0MzsJJnF1
+b3Q7aG9uZXl3ZWxsLGhzYzAwNmJhZiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAx
+MGJhYSZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAxMGJhYiZxdW90Ow0KJiM0MzsJ
+JnF1b3Q7aG9uZXl3ZWxsLGhzYzAxMGJhYyZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhz
+YzAxMGJhZiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzEwMGthYSZxdW90Ow0KJiM0
+MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzEwMGthYiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxs
+LGhzYzEwMGthYyZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzEwMGthZiZxdW90Ow0K
+JiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzE2MGthYSZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3
+ZWxsLGhzYzE2MGthYiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzE2MGthYyZxdW90
+Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzE2MGthZiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9u
+ZXl3ZWxsLGhzYzI1MGthYSZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzI1MGthYiZx
+dW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzI1MGthYyZxdW90Ow0KJiM0MzsJJnF1b3Q7
+aG9uZXl3ZWxsLGhzYzI1MGthZiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzQwMGth
+YSZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzQwMGthYiZxdW90Ow0KJiM0MzsJJnF1
+b3Q7aG9uZXl3ZWxsLGhzYzQwMGthYyZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzQw
+MGthZiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzYwMGthYSZxdW90Ow0KJiM0MzsJ
+JnF1b3Q7aG9uZXl3ZWxsLGhzYzYwMGthYiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhz
+YzYwMGthYyZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzYwMGthZiZxdW90Ow0KJiM0
+MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAwMWdhYSZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxs
+LGhzYzAwMWdhYiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAwMWdhYyZxdW90Ow0K
+JiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAwMWdhZiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3
+ZWxsLGhzYzAxNXBhYSZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAxNXBhYiZxdW90
+Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAxNXBhYyZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9u
+ZXl3ZWxsLGhzYzAxNXBhZiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAzMHBhYSZx
+dW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAzMHBhYiZxdW90Ow0KJiM0MzsJJnF1b3Q7
+aG9uZXl3ZWxsLGhzYzAzMHBhYyZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzAzMHBh
+ZiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzA2MHBhYSZxdW90Ow0KJiM0MzsJJnF1
+b3Q7aG9uZXl3ZWxsLGhzYzA2MHBhYiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzA2
+MHBhYyZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzA2MHBhZiZxdW90Ow0KJiM0MzsJ
+JnF1b3Q7aG9uZXl3ZWxsLGhzYzEwMHBhYSZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhz
+YzEwMHBhYiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzEwMHBhYyZxdW90Ow0KJiM0
+MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzEwMHBhZiZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxs
+LGhzYzE1MHBhYSZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzE1MHBhYiZxdW90Ow0K
+JiM0MzsJJnF1b3Q7aG9uZXl3ZWxsLGhzYzE1MHBhYyZxdW90Ow0KJiM0MzsJJnF1b3Q7aG9uZXl3
+ZWxsLGhzYzE1MHBhZiZxdW90Ow0KJiM0MzstIHJlZzogdGhlIFNQSSBjaGlwIHNlbGVjdCBudW1i
+ZXIgdXNlZCBieSB0aGUgc2Vuc29yLg0KJiM0MzstIHNwaS1tYXgtZnJlcXVlbmN5OiBtYXhpbXVt
+IGNsb2NrIGZyZXF1ZW5jeSAoSHopIHVzZWQgZm9yIHRoZSBTUEkgYnVzLg0KJiM0MzsgIFRoZSBt
+YXhpbXVtIHZhbHVlIHN1cHBvcnRlZCBieSB0aGUgc2Vuc29ycyBpcyA0MDAwMDAuDQo8L3ByZT4N
+CjwvYmxvY2txdW90ZT4NCjxwcmUgY2xhc3M9Im1vei1xdW90ZS1wcmUiIHdyYXA9IiI+QXMgUm9i
+IHBvaW50ZWQgb3V0IGluIGEgZmV3IHJldmlld3MgdGhpcyB3ZWVrLCB0aGUgZGV2aWNldHJlZSBi
+aW5kaW5nDQpmb3IgdGhpcyBzaG91bGQgb25seSBiZSBhcHBseWluZyBhIHRpZ2h0ZXIgYm91bmQg
+dGhhbiBlaXRoZXIgdGhlDQpkZXZpY2Ugb3IgdGhlIGJ1cyBtYXN0ZXIuIFNvIHNvbWV0aGluZyBp
+bnRyb2R1Y2VkIGJ5IHRoZSBib2FyZA0KbGF5b3V0IGZvciBleGFtcGxlLCBvciBhIGxldmVsIGNv
+bnZlcnRvci4uDQoNCkpvbmF0aGFuPC9wcmU+DQo8L2Jsb2NrcXVvdGU+DQo8cD5DaGVja2luZyB0
+aGUgZGV2aWNldHJlZSBiaW5kaW5ncyBmaWxlcyBvZiBvdGhlciBzcGkgc2Vuc29ycyBJIHNlZSBh
+IGZyZXF1ZW50IGFwcHJvYWNoIGlzIHRvIGluY2x1ZGUgYSByZWZlcmVuY2UgdG8gRG9jdW1lbnRh
+dGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3NwaS9zcGktYnVzLnR4dCwgZm9yIGV4YW1wbGU6PC9w
+Pg0KPGJsb2NrcXVvdGU+DQo8cD5Qcm9wZXJ0eSBydWxlcyBkZXNjcmliZWQgaW4gRG9jdW1lbnRh
+dGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3NwaS9zcGktYnVzLnR4dCBhcHBseS4gSW4gcGFydGlj
+dWxhciwgJnF1b3Q7cmVnJnF1b3Q7IGFuZCAmcXVvdDtzcGktbWF4LWZyZXF1ZW5jeSZxdW90OyBw
+cm9wZXJ0aWVzIG11c3QgYmUgZ2l2ZW4uPC9wPg0KPC9ibG9ja3F1b3RlPg0KPHA+TWF5YmUgaXQg
+d291bGQgYmUgYSBiZXR0ZXIgb3B0aW9uIHRvIHBsYWNlIHN1Y2ggYSBub3RlIGluc3RlYWQgb2Yg
+dGhlICZxdW90O3JlZyZxdW90OyBhbmQgJnF1b3Q7c3BpLW1heC1mcmVxdWVuY3kmcXVvdDsgcG9p
+bnRzLiBXaGF0IGRvIHlvdSB0aGluaz88L3A+DQo8cD5Tb3JyeSwgSSB3YXMgbm90IGF3YXJlIG9m
+IFJvYiBIZXJyaW5nJ3MgcHJldmlvdXMgY29tbWVudHMgb24gdGhpcyB0b3BpYywgSSBhbSBub3Qg
+c3Vic2NyaWJlZCB0byB0aGUgTEtNTC48YnI+DQo8L3A+DQo8YmxvY2txdW90ZSB0eXBlPSJjaXRl
+IiBjaXRlPSJtaWQ6MjAxODEwMjgxNzM4NDIuNTgwYmExZDRAYXJjaGxpbnV4Ij4NCjxwcmUgY2xh
+c3M9Im1vei1xdW90ZS1wcmUiIHdyYXA9IiI+DQo8L3ByZT4NCjxibG9ja3F1b3RlIHR5cGU9ImNp
+dGUiPg0KPHByZSBjbGFzcz0ibW96LXF1b3RlLXByZSIgd3JhcD0iIj4mIzQzOw0KJiM0MztFeGFt
+cGxlOg0KJiM0MzsNCiYjNDM7CWhzY19zcGkwOiBoc2NAMCB7DQomIzQzOwkJY29tcGF0aWJsZSA9
+ICZxdW90O2hvbmV5d2VsbCxoc2MwMTBiYWEmcXVvdDs7DQomIzQzOwkJcmVnID0gJmx0OzAmZ3Q7
+Ow0KJiM0MzsJCXNwaS1tYXgtZnJlcXVlbmN5ID0gJmx0OzQwMDAwMCZndDs7DQomIzQzOwl9Ow0K
+PC9wcmU+DQo8L2Jsb2NrcXVvdGU+DQo8cHJlIGNsYXNzPSJtb3otcXVvdGUtcHJlIiB3cmFwPSIi
+Pg0KPC9wcmU+DQo8L2Jsb2NrcXVvdGU+DQo8L2JvZHk+DQo8L2h0bWw+DQo=
+
+--_000_0dbb22548035b498630226bc3a2219caemutexcom_--
