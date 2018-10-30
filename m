@@ -1,190 +1,128 @@
-Return-Path: <SRS0=AVRX=NK=redhat.com=hdegoede@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:37256 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727429AbeJaDrQ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 30 Oct 2018 23:47:16 -0400
+Received: by mail-wr1-f68.google.com with SMTP id g9-v6so13786839wrq.4
+        for <linux-iio@vger.kernel.org>; Tue, 30 Oct 2018 11:52:34 -0700 (PDT)
 Subject: Re: [RFC][PATCH v1] ACPI / scan: Create platform device for BOSC0200
  ACPI nodes
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-acpi@vger.kernel.org,
- Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
- Darren Hart <dvhart@infradead.org>, platform-driver-x86@vger.kernel.org,
- linux-kernel@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>,
- Javier Martinez Canillas <javierm@redhat.com>
-Cc: Steven Presser <steve@pressers.name>, Bastien Nocera <hadess@hadess.net>
-References: <20181030144706.6737-1-andriy.shevchenko@linux.intel.com>
 From: Hans de Goede <hdegoede@redhat.com>
-Message-ID: <3e34f7c0-e747-7393-4b79-317b8483f0a6@redhat.com>
-Date: Tue, 30 Oct 2018 16:27:36 +0100
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        linux-acpi@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+        linux-iio@vger.kernel.org, Darren Hart <dvhart@infradead.org>,
+        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Wolfram Sang <wsa@the-dreams.de>,
+        Javier Martinez Canillas <javierm@redhat.com>
+Cc: Steven Presser <steve@pressers.name>,
+        Bastien Nocera <hadess@hadess.net>
+References: <20181030144706.6737-1-andriy.shevchenko@linux.intel.com>
+ <3e34f7c0-e747-7393-4b79-317b8483f0a6@redhat.com>
+Message-ID: <93b9b138-2e58-8fcc-f86d-688afc3a59c1@redhat.com>
+Date: Tue, 30 Oct 2018 19:52:32 +0100
 MIME-Version: 1.0
-In-Reply-To: <20181030144706.6737-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <3e34f7c0-e747-7393-4b79-317b8483f0a6@redhat.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 Hi,
 
-On 30-10-18 15:47, Andy Shevchenko wrote:
-> On some laptops the ACPI device with BOSC0200 _HID is representing
-> two accelerometers under one node.
+On 30-10-18 16:27, Hans de Goede wrote:
+> Hi,
 > 
-> We add an ID to the I2C multi instantiate list to enumerate
-> all I2C slaves correctly.
-
-I believe that overall the approach here is correct, but I've
-several (at least 4 different models) devices which use the
-BOSC0200 _HID but with only 1 accelerometer / 1 I2cSerialBus
-resource in the _CRS table.
-
-So I believe that you need to add a new optional bool to
-struct i2c_inst_data and ignore i2c_acpi_new_device()
-returning NULL when this is set (and set it for the second
-accelerometer).
-
-i2c_unregister_device can handle NULL, so some entries
-of the multi->clients[i] array ending up as NULL is not
-a problem.
-
-Hmm, I have just realized that there is another issue
-which is a real problem, we have stuff like this:
-
-[hans@shalem linux]$ ack BOSC0200 /lib/udev/hwdb.d/60-sensor.hwdb
-sensor:modalias:acpi:BOSC0200*:dmi:*:svnHampoo:pnD2D3_Vi8A1:*
-sensor:modalias:acpi:BOSC0200*:dmi:*:svnHampoo:pnX1D3_C806N:*
-sensor:modalias:acpi:BOSC0200*:dmi:*:svn*CHUWIINNOVATIONANDTECHNOLOGY*:pnHi10protablet:*
-sensor:modalias:acpi:BOSC0200*:dmi:*:svnHampoo:pnP02BD6_HI-122LP:*
-# match the entire dmi-alias, assuming that the use of a BOSC0200 +
-sensor:modalias:acpi:BOSC0200*:dmi:bvnAmericanMegatrendsInc.:bvr5.11:bd05/07/2016:svnDefaultstring:pnDefaultstring:pvrDefaultstring:rvnHampoo:rnCherryTrailCR:rvrDefaultstring:cvnDefaultstring:ct3:cvrDefaultstring:
-sensor:modalias:acpi:BOSC0200*:dmi:bvnAmericanMegatrendsInc.:bvr5.11:bd05/28/2016:svnDefaultstring:pnDefaultstring:pvrDefaultstring:rvnHampoo:rnCherryTrailCR:rvrDefaultstring:cvnDefaultstring:ct3:cvrDefaultstring:
-sensor:modalias:acpi:BOSC0200*:dmi:bvnINSYDECorp.:bvrjumperx.T87.KFBNEE*
-sensor:modalias:acpi:BOSC0200*:dmi:*:svnJumper:pnEZpad:*:rvr.A006:*
-sensor:modalias:acpi:BOSC0200:BOSC0200:dmi:*ThinkPadYoga11e3rdGen*
-sensor:modalias:acpi:*BOSC0200*:dmi:*:svnLENOVO*:pn80XF:*
-sensor:modalias:acpi:*BOSC0200*:dmi:*:svnLENOVO*:pn80XE:*
-sensor:modalias:acpi:BOSC0200*:dmi:*:svnLINX*:pnLINX1010B:*
-
-And using i2c-multi-instantiate will change the modalias from
-acpi:BOSC0200 to i2c:bmc150_accel breaking this.
-
-One way to fix this would be making sure we only use an
-i2c:bmc150_accel modalias for the second device. This will
-also allow differentiating between the 2 in hwdb quirks for
-devices with 2 accelerometers. But the way we currently
-generate modalias-es does not allow doing this in an
-easy way. Making this possible will require some changes to
-show_modalias() and i2c_device_uevent() in
-drivers/i2c/i2c-core-base.c
-
-> For reference here is the relevant DSDT blurb from the Yoga 11e:
+> On 30-10-18 15:47, Andy Shevchenko wrote:
+>> On some laptops the ACPI device with BOSC0200 _HID is representing
+>> two accelerometers under one node.
+>>
+>> We add an ID to the I2C multi instantiate list to enumerate
+>> all I2C slaves correctly.
 > 
-> Device (ACC)
-> {
-> 	Name (_ADR, Zero)  // _ADR: Address
-> 	Name (_HID, "BOSC0200")  // _HID: Hardware ID
-> 	Name (_CID, "BOSC0200")  // _CID: Compatible ID
-> 	Name (_DDN, "Accelerometer")  // _DDN: DOS Device Name
-> 	Name (_UID, One)  // _UID: Unique ID
-> 	Method (_CRS, 0, NotSerialized)  // _CRS: Current Resource Settings
-> 	{
-> 		Name (RBUF, ResourceTemplate ()
-> 		{
-> 			I2cSerialBusV2 (0x0019, ControllerInitiated, 0x00061A80,
-> 				AddressingMode7Bit, "\\_SB.PCI0.I2C3",
-> 				0x00, ResourceConsumer, , Exclusive,
-> 			)
-> 			I2cSerialBusV2 (0x0018, ControllerInitiated, 0x00061A80,
-> 				AddressingMode7Bit, "\\_SB.PCI0.I2C3",
-> 				0x00, ResourceConsumer, , Exclusive,
-> 			)
-> 		})
-> 		Return (RBUF) /* \_SB_.PCI0.I2C3.ACC_._CRS.RBUF */
-> 	}
+> I believe that overall the approach here is correct, but I've
+> several (at least 4 different models) devices which use the
+> BOSC0200 _HID but with only 1 accelerometer / 1 I2cSerialBus
+> resource in the _CRS table.
 > 
-> Reported-by: Jeremy Cline <jeremy@jcline.org>
-> Cc: Steven Presser <steve@pressers.name>
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
+> So I believe that you need to add a new optional bool to
+> struct i2c_inst_data and ignore i2c_acpi_new_device()
+> returning NULL when this is set (and set it for the second
+> accelerometer).
 > 
-> The previous approach had been discussed at
-> https://lore.kernel.org/lkml/010001602cf53153-39ad69f1-1b39-4e6d-a748-9455a16c2fbd-000000@email.amazonses.com/
+> i2c_unregister_device can handle NULL, so some entries
+> of the multi->clients[i] array ending up as NULL is not
+> a problem.
 > 
-> This has an obvious regression as per commit 1911f48de0d9 ("iio: accel: bmc150:
-> Add support for BOSC0200 ACPI device id") there are tables where under same ID
-> we have different sets of the devices (luckily some of that is possible to
-> autodetect):
+> Hmm, I have just realized that there is another issue
+> which is a real problem, we have stuff like this:
 > 
-> - one accellerometer  (250e)
-> - one accellerometer  (222e)
-> - two accellerometers (???)
+> [hans@shalem linux]$ ack BOSC0200 /lib/udev/hwdb.d/60-sensor.hwdb
+> sensor:modalias:acpi:BOSC0200*:dmi:*:svnHampoo:pnD2D3_Vi8A1:*
+> sensor:modalias:acpi:BOSC0200*:dmi:*:svnHampoo:pnX1D3_C806N:*
+> sensor:modalias:acpi:BOSC0200*:dmi:*:svn*CHUWIINNOVATIONANDTECHNOLOGY*:pnHi10protablet:*
+> sensor:modalias:acpi:BOSC0200*:dmi:*:svnHampoo:pnP02BD6_HI-122LP:*
+> # match the entire dmi-alias, assuming that the use of a BOSC0200 +
+> sensor:modalias:acpi:BOSC0200*:dmi:bvnAmericanMegatrendsInc.:bvr5.11:bd05/07/2016:svnDefaultstring:pnDefaultstring:pvrDefaultstring:rvnHampoo:rnCherryTrailCR:rvrDefaultstring:cvnDefaultstring:ct3:cvrDefaultstring:
+> sensor:modalias:acpi:BOSC0200*:dmi:bvnAmericanMegatrendsInc.:bvr5.11:bd05/28/2016:svnDefaultstring:pnDefaultstring:pvrDefaultstring:rvnHampoo:rnCherryTrailCR:rvrDefaultstring:cvnDefaultstring:ct3:cvrDefaultstring:
+> sensor:modalias:acpi:BOSC0200*:dmi:bvnINSYDECorp.:bvrjumperx.T87.KFBNEE*
+> sensor:modalias:acpi:BOSC0200*:dmi:*:svnJumper:pnEZpad:*:rvr.A006:*
+> sensor:modalias:acpi:BOSC0200:BOSC0200:dmi:*ThinkPadYoga11e3rdGen*
+> sensor:modalias:acpi:*BOSC0200*:dmi:*:svnLENOVO*:pn80XF:*
+> sensor:modalias:acpi:*BOSC0200*:dmi:*:svnLENOVO*:pn80XE:*
+> sensor:modalias:acpi:BOSC0200*:dmi:*:svnLINX*:pnLINX1010B:*
 > 
-> The proper enabling of the last case w/o a regression sounds like a DMI based
-> data for I2C multi instantiate driver along with automatic selection of the latter
-> whenever user selects bmc150-accel-i2c.c.
+> And using i2c-multi-instantiate will change the modalias from
+> acpi:BOSC0200 to i2c:bmc150_accel breaking this.
+> 
+> One way to fix this would be making sure we only use an
+> i2c:bmc150_accel modalias for the second device. This will
+> also allow differentiating between the 2 in hwdb quirks for
+> devices with 2 accelerometers. But the way we currently
+> generate modalias-es does not allow doing this in an
+> easy way. Making this possible will require some changes to
+> show_modalias() and i2c_device_uevent() in
+> drivers/i2c/i2c-core-base.c
 
-We can just use "bmc150_accel" everywhere without problems, i2c_device_id.driver_data
-does get set by bmc150-accel-i2c.c but not used. i2c_device_id.name does get used
-as the name for the iio-dev but that is purely cosmetic so we can simply use
-"bmc150_accel" everywhere as the drivers/iio/accel/bmc150-accel-core.c code
-will always auto-detect the actual type anyways. So this bit is not a problem
-(unlike the modalias changing).
+Ok, new idea how about we modify the code in acpi_device_enumeration_by_parent
+to instead of looking at a HID list, to simply count if there is more then
+1 I2cSerialBus resource and if that is the case enumerate the device as
+a platform device for i2c-multi-instantiate.c to handle. This means that
+we will only change the way how the BOSC0200 is enumerated on the
+Yoga 11e and not elsewhere.
+
+This is somewhat likely to trigger a regression somewhere, but we should
+be able to fix those regressions by adding the necessary info to
+i2c-multi-instantiate.c.  Then it could still be a problem because of
+the modalias changing for an i2c device from some other DSDT which we
+are not aware of yet, but that only is a problem if the modalias is
+used in hwdb. The actual driver for the hardware should bind to the
+new modalias too and if not we can fix that.
+
+I believe the amount of devices which turn out to have more then 1
+I2cSerialBus resource will be small and the set of devices which are already
+working somehow (because the 1st resource is the one we care about) and also
+have a hwdb entry will likely be very small and we can help users who
+hit this combo by providing hwdb patches.
+
+...
+
+Hmm, a quick random spot check of a few of the too many DSTDs I have
+turns out that at least the INT34D3 (Intel Whiskey Cove PMIC) will
+be bitten by this. This is trivial to fix though.
+
+And another one is the "CPLM3218" ambient light sensor, which does
+not have an in tree driver, but there is an out of tree one which
+is on my list to upstream...
+
+This will also cause us to stop generating i2c-clients for some of
+the camera sensors on BYT/CHT since some list multiple (some up to 10 ???)
+addresses I guess this is for some sorta auto-probe function in
+the windows drivers.
+
+TL;DR: the idea of just checking for multiple I2cSerialBus resources
+in a single acpi_fwnode is interesting, but might cause more problems
+then I would hope.
 
 Regards,
 
 Hans
-
-
-
-
-
-
-> 
->   drivers/acpi/scan.c                          | 1 +
->   drivers/iio/accel/bmc150-accel-i2c.c         | 1 -
->   drivers/platform/x86/i2c-multi-instantiate.c | 7 +++++++
->   3 files changed, 8 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-> index bd1c59fb0e17..a8cdae057a47 100644
-> --- a/drivers/acpi/scan.c
-> +++ b/drivers/acpi/scan.c
-> @@ -1539,6 +1539,7 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
->   	 * which i2c_device_id to use for each resource.
->   	 */
->   	static const struct acpi_device_id i2c_multi_instantiate_ids[] = {
-> +		{"BOSC0200", },
->   		{"BSG1160", },
->   		{"INT33FE", },
->   		{}
-> diff --git a/drivers/iio/accel/bmc150-accel-i2c.c b/drivers/iio/accel/bmc150-accel-i2c.c
-> index 8ffc308d5fd0..9d22a4d9d568 100644
-> --- a/drivers/iio/accel/bmc150-accel-i2c.c
-> +++ b/drivers/iio/accel/bmc150-accel-i2c.c
-> @@ -64,7 +64,6 @@ static const struct acpi_device_id bmc150_accel_acpi_match[] = {
->   	{"BMA250E",	bma250e},
->   	{"BMA222E",	bma222e},
->   	{"BMA0280",	bma280},
-> -	{"BOSC0200"},
->   	{ },
->   };
->   MODULE_DEVICE_TABLE(acpi, bmc150_accel_acpi_match);
-> diff --git a/drivers/platform/x86/i2c-multi-instantiate.c b/drivers/platform/x86/i2c-multi-instantiate.c
-> index 5456581b473c..8e763765a05e 100644
-> --- a/drivers/platform/x86/i2c-multi-instantiate.c
-> +++ b/drivers/platform/x86/i2c-multi-instantiate.c
-> @@ -100,6 +100,12 @@ static int i2c_multi_inst_remove(struct platform_device *pdev)
->   	return 0;
->   }
->   
-> +static const struct i2c_inst_data bosc0200_data[]  = {
-> +	{ "bmc150_accel", -1 },
-> +	{ "bmc150_accel", -1 },
-> +	{}
-> +};
-> +
->   static const struct i2c_inst_data bsg1160_data[]  = {
->   	{ "bmc150_accel", 0 },
->   	{ "bmc150_magn", -1 },
-> @@ -112,6 +118,7 @@ static const struct i2c_inst_data bsg1160_data[]  = {
->    * drivers/acpi/scan.c: acpi_device_enumeration_by_parent().
->    */
->   static const struct acpi_device_id i2c_multi_inst_acpi_ids[] = {
-> +	{ "BOSC0200", (unsigned long)bosc0200_data },
->   	{ "BSG1160", (unsigned long)bsg1160_data },
->   	{ }
->   };
-> 
