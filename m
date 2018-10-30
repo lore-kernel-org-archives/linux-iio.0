@@ -1,198 +1,370 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtpo.poczta.interia.pl ([217.74.65.208]:40242 "EHLO
-        smtpo.poczta.interia.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726079AbeJ3Bmj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Oct 2018 21:42:39 -0400
-From: Slawomir Stepien <sst@poczta.fm>
-To: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-        knaack.h@gmx.de, pmeerw@pmeerw.net
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-        Slawomir Stepien <sst@poczta.fm>
-Subject: [PATCH v4 1/1] staging: iio: adc: ad7280a: use devm_* APIs
-Date: Mon, 29 Oct 2018 17:52:41 +0100
-Message-Id: <20181029165241.22993-1-sst@poczta.fm>
+Received: from mx1.redhat.com ([209.132.183.28]:54460 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726203AbeJ3Qx3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 30 Oct 2018 12:53:29 -0400
+From: Hans de Goede <hdegoede@redhat.com>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc: Hans de Goede <hdegoede@redhat.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org
+Subject: [PATCH] iio/hid-sensors: Fix IIO_CHAN_INFO_RAW returning wrong values for signed numbers
+Date: Tue, 30 Oct 2018 09:00:57 +0100
+Message-Id: <20181030080057.20060-1-hdegoede@redhat.com>
 MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-devm_* APIs are device managed and make code simpler.
+Before this commit sensor_hub_input_attr_get_raw_value() failed to take
+the signedness of 16 and 8 bit values into account, returning e.g.
+65436 instead of -100 for the z-axis reading of an accelerometer.
 
-Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+This commit adds a new is_signed parameter to the function and makes all
+callers pass the appropriate value for this.
+
+While at it, this commit also fixes up some neighboring lines where
+statements were needlessly split over 2 lines to improve readability.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
- drivers/staging/iio/adc/ad7280a.c | 95 +++++++++++++------------------
- 1 file changed, 39 insertions(+), 56 deletions(-)
+ drivers/hid/hid-sensor-custom.c                  |  2 +-
+ drivers/hid/hid-sensor-hub.c                     | 13 ++++++++++---
+ drivers/iio/accel/hid-sensor-accel-3d.c          |  5 ++++-
+ drivers/iio/gyro/hid-sensor-gyro-3d.c            |  5 ++++-
+ drivers/iio/humidity/hid-sensor-humidity.c       |  3 ++-
+ drivers/iio/light/hid-sensor-als.c               |  8 +++++---
+ drivers/iio/light/hid-sensor-prox.c              |  8 +++++---
+ drivers/iio/magnetometer/hid-sensor-magn-3d.c    |  8 +++++---
+ drivers/iio/orientation/hid-sensor-incl-3d.c     |  8 +++++---
+ drivers/iio/pressure/hid-sensor-press.c          |  8 +++++---
+ drivers/iio/temperature/hid-sensor-temperature.c |  3 ++-
+ drivers/rtc/rtc-hid-sensor-time.c                |  2 +-
+ include/linux/hid-sensor-hub.h                   |  3 ++-
+ 13 files changed, 51 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-index b736275c10f5..1263b70693ed 100644
---- a/drivers/staging/iio/adc/ad7280a.c
-+++ b/drivers/staging/iio/adc/ad7280a.c
-@@ -342,6 +342,14 @@ static int ad7280_read_all_channels(struct ad7280_state *st, unsigned int cnt,
- 	return sum;
- }
- 
-+static void ad7280_sw_power_down(void *data)
-+{
-+	struct ad7280_state *st = data;
-+
-+	ad7280_write(st, AD7280A_DEVADDR_MASTER, AD7280A_CONTROL_HB, 1,
-+		     AD7280A_CTRL_HB_PWRDN_SW | st->ctrl_hb);
-+}
-+
- static int ad7280_chain_setup(struct ad7280_state *st)
+diff --git a/drivers/hid/hid-sensor-custom.c b/drivers/hid/hid-sensor-custom.c
+index e8a114157f87..bb012bc032e0 100644
+--- a/drivers/hid/hid-sensor-custom.c
++++ b/drivers/hid/hid-sensor-custom.c
+@@ -358,7 +358,7 @@ static ssize_t show_value(struct device *dev, struct device_attribute *attr,
+ 						sensor_inst->hsdev,
+ 						sensor_inst->hsdev->usage,
+ 						usage, report_id,
+-						SENSOR_HUB_SYNC);
++						SENSOR_HUB_SYNC, false);
+ 	} else if (!strncmp(name, "units", strlen("units")))
+ 		value = sensor_inst->fields[field_index].attribute.units;
+ 	else if (!strncmp(name, "unit-expo", strlen("unit-expo")))
+diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
+index 2b63487057c2..4256fdc5cd6d 100644
+--- a/drivers/hid/hid-sensor-hub.c
++++ b/drivers/hid/hid-sensor-hub.c
+@@ -299,7 +299,8 @@ EXPORT_SYMBOL_GPL(sensor_hub_get_feature);
+ int sensor_hub_input_attr_get_raw_value(struct hid_sensor_hub_device *hsdev,
+ 					u32 usage_id,
+ 					u32 attr_usage_id, u32 report_id,
+-					enum sensor_hub_read_flags flag)
++					enum sensor_hub_read_flags flag,
++					bool is_signed)
  {
- 	unsigned int val, n;
-@@ -492,8 +500,8 @@ static int ad7280_channel_init(struct ad7280_state *st)
- {
- 	int dev, ch, cnt;
+ 	struct sensor_hub_data *data = hid_get_drvdata(hsdev->hdev);
+ 	unsigned long flags;
+@@ -331,10 +332,16 @@ int sensor_hub_input_attr_get_raw_value(struct hid_sensor_hub_device *hsdev,
+ 						&hsdev->pending.ready, HZ*5);
+ 		switch (hsdev->pending.raw_size) {
+ 		case 1:
+-			ret_val = *(u8 *)hsdev->pending.raw_data;
++			if (is_signed)
++				ret_val = *(s8 *)hsdev->pending.raw_data;
++			else
++				ret_val = *(u8 *)hsdev->pending.raw_data;
+ 			break;
+ 		case 2:
+-			ret_val = *(u16 *)hsdev->pending.raw_data;
++			if (is_signed)
++				ret_val = *(s16 *)hsdev->pending.raw_data;
++			else
++				ret_val = *(u16 *)hsdev->pending.raw_data;
+ 			break;
+ 		case 4:
+ 			ret_val = *(u32 *)hsdev->pending.raw_data;
+diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
+index 41d97faf5013..38ff374a3ca4 100644
+--- a/drivers/iio/accel/hid-sensor-accel-3d.c
++++ b/drivers/iio/accel/hid-sensor-accel-3d.c
+@@ -149,6 +149,7 @@ static int accel_3d_read_raw(struct iio_dev *indio_dev,
+ 	int report_id = -1;
+ 	u32 address;
+ 	int ret_type;
++	s32 min;
+ 	struct hid_sensor_hub_device *hsdev =
+ 					accel_state->common_attributes.hsdev;
  
--	st->channels = kcalloc((st->slave_num + 1) * 12 + 2,
--			       sizeof(*st->channels), GFP_KERNEL);
-+	st->channels = devm_kcalloc(&st->spi->dev, (st->slave_num + 1) * 12 + 2,
-+				    sizeof(*st->channels), GFP_KERNEL);
- 	if (!st->channels)
- 		return -ENOMEM;
+@@ -158,12 +159,14 @@ static int accel_3d_read_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_RAW:
+ 		hid_sensor_power_state(&accel_state->common_attributes, true);
+ 		report_id = accel_state->accel[chan->scan_index].report_id;
++		min = accel_state->accel[chan->scan_index].logical_minimum;
+ 		address = accel_3d_addresses[chan->scan_index];
+ 		if (report_id >= 0)
+ 			*val = sensor_hub_input_attr_get_raw_value(
+ 					accel_state->common_attributes.hsdev,
+ 					hsdev->usage, address, report_id,
+-					SENSOR_HUB_SYNC);
++					SENSOR_HUB_SYNC,
++					min < 0);
+ 		else {
+ 			*val = 0;
+ 			hid_sensor_power_state(&accel_state->common_attributes,
+diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+index 36941e69f959..88e857c4baf4 100644
+--- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
++++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+@@ -111,6 +111,7 @@ static int gyro_3d_read_raw(struct iio_dev *indio_dev,
+ 	int report_id = -1;
+ 	u32 address;
+ 	int ret_type;
++	s32 min;
  
-@@ -552,16 +560,18 @@ static int ad7280_channel_init(struct ad7280_state *st)
- static int ad7280_attr_init(struct ad7280_state *st)
- {
- 	int dev, ch, cnt;
-+	unsigned int index;
+ 	*val = 0;
+ 	*val2 = 0;
+@@ -118,13 +119,15 @@ static int gyro_3d_read_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_RAW:
+ 		hid_sensor_power_state(&gyro_state->common_attributes, true);
+ 		report_id = gyro_state->gyro[chan->scan_index].report_id;
++		min = gyro_state->gyro[chan->scan_index].logical_minimum;
+ 		address = gyro_3d_addresses[chan->scan_index];
+ 		if (report_id >= 0)
+ 			*val = sensor_hub_input_attr_get_raw_value(
+ 					gyro_state->common_attributes.hsdev,
+ 					HID_USAGE_SENSOR_GYRO_3D, address,
+ 					report_id,
+-					SENSOR_HUB_SYNC);
++					SENSOR_HUB_SYNC,
++					min < 0);
+ 		else {
+ 			*val = 0;
+ 			hid_sensor_power_state(&gyro_state->common_attributes,
+diff --git a/drivers/iio/humidity/hid-sensor-humidity.c b/drivers/iio/humidity/hid-sensor-humidity.c
+index beab6d6fd6e1..4bc95f31c730 100644
+--- a/drivers/iio/humidity/hid-sensor-humidity.c
++++ b/drivers/iio/humidity/hid-sensor-humidity.c
+@@ -75,7 +75,8 @@ static int humidity_read_raw(struct iio_dev *indio_dev,
+ 				HID_USAGE_SENSOR_HUMIDITY,
+ 				HID_USAGE_SENSOR_ATMOSPHERIC_HUMIDITY,
+ 				humid_st->humidity_attr.report_id,
+-				SENSOR_HUB_SYNC);
++				SENSOR_HUB_SYNC,
++				humid_st->humidity_attr.logical_minimum < 0);
+ 		hid_sensor_power_state(&humid_st->common_attributes, false);
  
--	st->iio_attr = kcalloc(2, sizeof(*st->iio_attr) *
--			       (st->slave_num + 1) * AD7280A_CELLS_PER_DEV,
--			       GFP_KERNEL);
-+	st->iio_attr = devm_kcalloc(&st->spi->dev, 2, sizeof(*st->iio_attr) *
-+				    (st->slave_num + 1) * AD7280A_CELLS_PER_DEV,
-+				    GFP_KERNEL);
- 	if (!st->iio_attr)
- 		return -ENOMEM;
+ 		return IIO_VAL_INT;
+diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
+index 406caaee9a3c..94f33250ba5a 100644
+--- a/drivers/iio/light/hid-sensor-als.c
++++ b/drivers/iio/light/hid-sensor-als.c
+@@ -93,6 +93,7 @@ static int als_read_raw(struct iio_dev *indio_dev,
+ 	int report_id = -1;
+ 	u32 address;
+ 	int ret_type;
++	s32 min;
  
- 	for (dev = 0, cnt = 0; dev <= st->slave_num; dev++)
- 		for (ch = AD7280A_CELL_VOLTAGE_1; ch <= AD7280A_CELL_VOLTAGE_6;
- 			ch++, cnt++) {
-+			index = dev * AD7280A_CELLS_PER_DEV + ch;
- 			st->iio_attr[cnt].address =
- 				ad7280a_devaddr(dev) << 8 | ch;
- 			st->iio_attr[cnt].dev_attr.attr.mode =
-@@ -571,10 +581,9 @@ static int ad7280_attr_init(struct ad7280_state *st)
- 			st->iio_attr[cnt].dev_attr.store =
- 				ad7280_store_balance_sw;
- 			st->iio_attr[cnt].dev_attr.attr.name =
--				kasprintf(GFP_KERNEL,
--					  "in%d-in%d_balance_switch_en",
--					  dev * AD7280A_CELLS_PER_DEV + ch,
--					  dev * AD7280A_CELLS_PER_DEV + ch + 1);
-+				devm_kasprintf(&st->spi->dev, GFP_KERNEL,
-+					       "in%d-in%d_balance_switch_en",
-+					       index, index + 1);
- 			ad7280_attributes[cnt] =
- 				&st->iio_attr[cnt].dev_attr.attr;
- 			cnt++;
-@@ -588,10 +597,9 @@ static int ad7280_attr_init(struct ad7280_state *st)
- 			st->iio_attr[cnt].dev_attr.store =
- 				ad7280_store_balance_timer;
- 			st->iio_attr[cnt].dev_attr.attr.name =
--				kasprintf(GFP_KERNEL,
--					  "in%d-in%d_balance_timer",
--					  dev * AD7280A_CELLS_PER_DEV + ch,
--					  dev * AD7280A_CELLS_PER_DEV + ch + 1);
-+				devm_kasprintf(&st->spi->dev, GFP_KERNEL,
-+					       "in%d-in%d_balance_timer",
-+					       index, index + 1);
- 			ad7280_attributes[cnt] =
- 				&st->iio_attr[cnt].dev_attr.attr;
- 		}
-@@ -909,65 +917,41 @@ static int ad7280_probe(struct spi_device *spi)
+ 	*val = 0;
+ 	*val2 = 0;
+@@ -102,8 +103,8 @@ static int als_read_raw(struct iio_dev *indio_dev,
+ 		case  CHANNEL_SCAN_INDEX_INTENSITY:
+ 		case  CHANNEL_SCAN_INDEX_ILLUM:
+ 			report_id = als_state->als_illum.report_id;
+-			address =
+-			HID_USAGE_SENSOR_LIGHT_ILLUM;
++			min = als_state->als_illum.logical_minimum;
++			address = HID_USAGE_SENSOR_LIGHT_ILLUM;
+ 			break;
+ 		default:
+ 			report_id = -1;
+@@ -116,7 +117,8 @@ static int als_read_raw(struct iio_dev *indio_dev,
+ 					als_state->common_attributes.hsdev,
+ 					HID_USAGE_SENSOR_ALS, address,
+ 					report_id,
+-					SENSOR_HUB_SYNC);
++					SENSOR_HUB_SYNC,
++					min < 0);
+ 			hid_sensor_power_state(&als_state->common_attributes,
+ 						false);
+ 		} else {
+diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-sensor-prox.c
+index 45107f7537b5..cf5a0c242609 100644
+--- a/drivers/iio/light/hid-sensor-prox.c
++++ b/drivers/iio/light/hid-sensor-prox.c
+@@ -73,6 +73,7 @@ static int prox_read_raw(struct iio_dev *indio_dev,
+ 	int report_id = -1;
+ 	u32 address;
+ 	int ret_type;
++	s32 min;
  
- 	ret = ad7280_attr_init(st);
- 	if (ret < 0)
--		goto error_free_channels;
-+		return ret;
+ 	*val = 0;
+ 	*val2 = 0;
+@@ -81,8 +82,8 @@ static int prox_read_raw(struct iio_dev *indio_dev,
+ 		switch (chan->scan_index) {
+ 		case  CHANNEL_SCAN_INDEX_PRESENCE:
+ 			report_id = prox_state->prox_attr.report_id;
+-			address =
+-			HID_USAGE_SENSOR_HUMAN_PRESENCE;
++			min = prox_state->prox_attr.logical_minimum;
++			address = HID_USAGE_SENSOR_HUMAN_PRESENCE;
+ 			break;
+ 		default:
+ 			report_id = -1;
+@@ -95,7 +96,8 @@ static int prox_read_raw(struct iio_dev *indio_dev,
+ 				prox_state->common_attributes.hsdev,
+ 				HID_USAGE_SENSOR_PROX, address,
+ 				report_id,
+-				SENSOR_HUB_SYNC);
++				SENSOR_HUB_SYNC,
++				min < 0);
+ 			hid_sensor_power_state(&prox_state->common_attributes,
+ 						false);
+ 		} else {
+diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+index d55c4885211a..f3c0d41e5a8c 100644
+--- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
++++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+@@ -163,21 +163,23 @@ static int magn_3d_read_raw(struct iio_dev *indio_dev,
+ 	int report_id = -1;
+ 	u32 address;
+ 	int ret_type;
++	s32 min;
  
--	ret = iio_device_register(indio_dev);
-+	ret = devm_add_action(&spi->dev, ad7280_sw_power_down, st);
- 	if (ret)
--		goto error_free_attr;
-+		return ret;
-+
-+	ret = devm_iio_device_register(&spi->dev, indio_dev);
-+	if (ret)
-+		return ret;
+ 	*val = 0;
+ 	*val2 = 0;
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+ 		hid_sensor_power_state(&magn_state->magn_flux_attributes, true);
+-		report_id =
+-			magn_state->magn[chan->address].report_id;
++		report_id = magn_state->magn[chan->address].report_id;
++		min = magn_state->magn[chan->address].logical_minimum;
+ 		address = magn_3d_addresses[chan->address];
+ 		if (report_id >= 0)
+ 			*val = sensor_hub_input_attr_get_raw_value(
+ 				magn_state->magn_flux_attributes.hsdev,
+ 				HID_USAGE_SENSOR_COMPASS_3D, address,
+ 				report_id,
+-				SENSOR_HUB_SYNC);
++				SENSOR_HUB_SYNC,
++				min < 0);
+ 		else {
+ 			*val = 0;
+ 			hid_sensor_power_state(
+diff --git a/drivers/iio/orientation/hid-sensor-incl-3d.c b/drivers/iio/orientation/hid-sensor-incl-3d.c
+index 1e5451d1ff88..bdc5e4554ee4 100644
+--- a/drivers/iio/orientation/hid-sensor-incl-3d.c
++++ b/drivers/iio/orientation/hid-sensor-incl-3d.c
+@@ -111,21 +111,23 @@ static int incl_3d_read_raw(struct iio_dev *indio_dev,
+ 	int report_id = -1;
+ 	u32 address;
+ 	int ret_type;
++	s32 min;
  
- 	if (spi->irq > 0) {
- 		ret = ad7280_write(st, AD7280A_DEVADDR_MASTER,
- 				   AD7280A_ALERT, 1,
- 				   AD7280A_ALERT_RELAY_SIG_CHAIN_DOWN);
- 		if (ret)
--			goto error_unregister;
-+			return ret;
+ 	*val = 0;
+ 	*val2 = 0;
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+ 		hid_sensor_power_state(&incl_state->common_attributes, true);
+-		report_id =
+-			incl_state->incl[chan->scan_index].report_id;
++		report_id = incl_state->incl[chan->scan_index].report_id;
++		min = incl_state->incl[chan->scan_index].logical_minimum;
+ 		address = incl_3d_addresses[chan->scan_index];
+ 		if (report_id >= 0)
+ 			*val = sensor_hub_input_attr_get_raw_value(
+ 				incl_state->common_attributes.hsdev,
+ 				HID_USAGE_SENSOR_INCLINOMETER_3D, address,
+ 				report_id,
+-				SENSOR_HUB_SYNC);
++				SENSOR_HUB_SYNC,
++				min < 0);
+ 		else {
+ 			hid_sensor_power_state(&incl_state->common_attributes,
+ 						false);
+diff --git a/drivers/iio/pressure/hid-sensor-press.c b/drivers/iio/pressure/hid-sensor-press.c
+index 4c437918f1d2..d7b1c00ceb4d 100644
+--- a/drivers/iio/pressure/hid-sensor-press.c
++++ b/drivers/iio/pressure/hid-sensor-press.c
+@@ -77,6 +77,7 @@ static int press_read_raw(struct iio_dev *indio_dev,
+ 	int report_id = -1;
+ 	u32 address;
+ 	int ret_type;
++	s32 min;
  
- 		ret = ad7280_write(st, ad7280a_devaddr(st->slave_num),
- 				   AD7280A_ALERT, 0,
- 				   AD7280A_ALERT_GEN_STATIC_HIGH |
- 				   (pdata->chain_last_alert_ignore & 0xF));
- 		if (ret)
--			goto error_unregister;
--
--		ret = request_threaded_irq(spi->irq,
--					   NULL,
--					   ad7280_event_handler,
--					   IRQF_TRIGGER_FALLING |
--					   IRQF_ONESHOT,
--					   indio_dev->name,
--					   indio_dev);
-+			return ret;
-+
-+		ret = devm_request_threaded_irq(&spi->dev, spi->irq,
-+						NULL,
-+						ad7280_event_handler,
-+						IRQF_TRIGGER_FALLING |
-+						IRQF_ONESHOT,
-+						indio_dev->name,
-+						indio_dev);
- 		if (ret)
--			goto error_unregister;
-+			return ret;
- 	}
+ 	*val = 0;
+ 	*val2 = 0;
+@@ -85,8 +86,8 @@ static int press_read_raw(struct iio_dev *indio_dev,
+ 		switch (chan->scan_index) {
+ 		case  CHANNEL_SCAN_INDEX_PRESSURE:
+ 			report_id = press_state->press_attr.report_id;
+-			address =
+-			HID_USAGE_SENSOR_ATMOSPHERIC_PRESSURE;
++			min = press_state->press_attr.logical_minimum;
++			address = HID_USAGE_SENSOR_ATMOSPHERIC_PRESSURE;
+ 			break;
+ 		default:
+ 			report_id = -1;
+@@ -99,7 +100,8 @@ static int press_read_raw(struct iio_dev *indio_dev,
+ 				press_state->common_attributes.hsdev,
+ 				HID_USAGE_SENSOR_PRESSURE, address,
+ 				report_id,
+-				SENSOR_HUB_SYNC);
++				SENSOR_HUB_SYNC,
++				min < 0);
+ 			hid_sensor_power_state(&press_state->common_attributes,
+ 						false);
+ 		} else {
+diff --git a/drivers/iio/temperature/hid-sensor-temperature.c b/drivers/iio/temperature/hid-sensor-temperature.c
+index beaf6fd3e337..b592fc4f007e 100644
+--- a/drivers/iio/temperature/hid-sensor-temperature.c
++++ b/drivers/iio/temperature/hid-sensor-temperature.c
+@@ -76,7 +76,8 @@ static int temperature_read_raw(struct iio_dev *indio_dev,
+ 			HID_USAGE_SENSOR_TEMPERATURE,
+ 			HID_USAGE_SENSOR_DATA_ENVIRONMENTAL_TEMPERATURE,
+ 			temp_st->temperature_attr.report_id,
+-			SENSOR_HUB_SYNC);
++			SENSOR_HUB_SYNC,
++			temp_st->temperature_attr.logical_minimum < 0);
+ 		hid_sensor_power_state(
+ 				&temp_st->common_attributes,
+ 				false);
+diff --git a/drivers/rtc/rtc-hid-sensor-time.c b/drivers/rtc/rtc-hid-sensor-time.c
+index 2751dba850c6..3e1abb455472 100644
+--- a/drivers/rtc/rtc-hid-sensor-time.c
++++ b/drivers/rtc/rtc-hid-sensor-time.c
+@@ -213,7 +213,7 @@ static int hid_rtc_read_time(struct device *dev, struct rtc_time *tm)
+ 	/* get a report with all values through requesting one value */
+ 	sensor_hub_input_attr_get_raw_value(time_state->common_attributes.hsdev,
+ 			HID_USAGE_SENSOR_TIME, hid_time_addresses[0],
+-			time_state->info[0].report_id, SENSOR_HUB_SYNC);
++			time_state->info[0].report_id, SENSOR_HUB_SYNC, false);
+ 	/* wait for all values (event) */
+ 	ret = wait_for_completion_killable_timeout(
+ 			&time_state->comp_last_time, HZ*6);
+diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
+index 331dc377c275..d1ea16abe008 100644
+--- a/include/linux/hid-sensor-hub.h
++++ b/include/linux/hid-sensor-hub.h
+@@ -190,7 +190,8 @@ enum sensor_hub_read_flags {
+ int sensor_hub_input_attr_get_raw_value(struct hid_sensor_hub_device *hsdev,
+  					u32 usage_id,
+  					u32 attr_usage_id, u32 report_id,
+- 					enum sensor_hub_read_flags flag
++					enum sensor_hub_read_flags flag,
++					bool is_signed
+ );
  
--	return 0;
--error_unregister:
--	iio_device_unregister(indio_dev);
--
--error_free_attr:
--	kfree(st->iio_attr);
--
--error_free_channels:
--	kfree(st->channels);
--
--	return ret;
--}
--
--static int ad7280_remove(struct spi_device *spi)
--{
--	struct iio_dev *indio_dev = spi_get_drvdata(spi);
--	struct ad7280_state *st = iio_priv(indio_dev);
--
--	if (spi->irq > 0)
--		free_irq(spi->irq, indio_dev);
--	iio_device_unregister(indio_dev);
--
--	ad7280_write(st, AD7280A_DEVADDR_MASTER, AD7280A_CONTROL_HB, 1,
--		     AD7280A_CTRL_HB_PWRDN_SW | st->ctrl_hb);
--
--	kfree(st->channels);
--	kfree(st->iio_attr);
--
- 	return 0;
- }
- 
-@@ -982,7 +966,6 @@ static struct spi_driver ad7280_driver = {
- 		.name	= "ad7280",
- 	},
- 	.probe		= ad7280_probe,
--	.remove		= ad7280_remove,
- 	.id_table	= ad7280_id,
- };
- module_spi_driver(ad7280_driver);
+ /**
 -- 
-2.19.1
+2.19.0
