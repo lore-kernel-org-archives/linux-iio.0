@@ -1,5 +1,5 @@
 Return-Path: <SRS0=75sL=NL=gmail.com=nishadkamdar@kernel.org>
-Date: Wed, 31 Oct 2018 21:24:16 +0530
+Date: Wed, 31 Oct 2018 21:28:52 +0530
 From: Nishad Kamdar <nishadkamdar@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: Slawomir Stepien <sst@poczta.fm>, Lars-Peter Clausen <lars@metafoo.de>,
@@ -9,56 +9,243 @@ Cc: Slawomir Stepien <sst@poczta.fm>, Lars-Peter Clausen <lars@metafoo.de>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v7 0/3] staging: iio: ad2s1210: Switch to the gpio descriptor
- interface.
-Message-ID: <cover.1541000375.git.nishadkamdar@gmail.com>
+Subject: [PATCH v7 1/3] staging: iio: ad2s1210: Switch to the gpio descriptor
+ interface
+Message-ID: <1626698317a8f0b1caf5596374088f6d5b6141c9.1541000375.git.nishadkamdar@gmail.com>
+References: <cover.1541000375.git.nishadkamdar@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <cover.1541000375.git.nishadkamdar@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
 Use the gpiod interface instead of the deprecated old non-descriptor
+interface.
 
-Changes in v7:
- - Adds a level of indirection to read and write
-   the gpio_desc to make the code simpler.
- - Drop gpioin flag which decides how the GPIOs
-   are controlled as the GPIOs must be outputs
-   for the host as per the datasheet.
-Changes in v6:
- - Split device tree table addition and device tree support 
-   addition in two patches.
- - Replace platform data with device tree support.
- - Rename boolean property.
-Changes in v5:
- - Add device tree support.
- - Add device tree table for matching vendor ID.
- - Add Support for retrieving platform data from device tree.
-Changes in v4:
- - Add spaces after { and before } in gpios[]
-   initialization.
- - Check the correct pointer for error.
- - Align the dev_err msg to existing format in the code.
-Changes in v3:
- - Use a pointer to pointer for gpio_desc in
-   struct ad2s1210_gpio as it will be used to
-   modify a pointer.
- - Use dot notation to initialize the structure.
- - Use a pointer variable to avoid writing gpios[i].
-Changes in v2:
- - Use the spi_device struct embedded in st instead
-   of passing it as an argument to ad2s1210_setup_gpios().
- - Use an array of structs to reduce redundant code in
-   in ad2s1210_setup_gpios().
- - Remove ad2s1210_free_gpios() as devm API is being used.
+Signed-off-by: Nishad Kamdar <nishadkamdar@gmail.com>
+---
+ drivers/staging/iio/resolver/ad2s1210.c | 106 ++++++++++++++----------
+ drivers/staging/iio/resolver/ad2s1210.h |   3 -
+ 2 files changed, 62 insertions(+), 47 deletions(-)
 
-Nishad Kamdar (3):
-  staging: iio: ad2s1210: Switch to the gpio descriptor interface
-  staging: iio: ad2s1210: Drop the gpioin flag.
-  staging: iio: ad2s1210: Add device tree table.
-
- drivers/staging/iio/resolver/ad2s1210.c | 132 +++++++++++-------------
- drivers/staging/iio/resolver/ad2s1210.h |  20 ----
- 2 files changed, 62 insertions(+), 90 deletions(-)
-
+diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
+index ac13b99bd9cb..82ac9847f6f4 100644
+--- a/drivers/staging/iio/resolver/ad2s1210.c
++++ b/drivers/staging/iio/resolver/ad2s1210.c
+@@ -15,7 +15,7 @@
+ #include <linux/slab.h>
+ #include <linux/sysfs.h>
+ #include <linux/delay.h>
+-#include <linux/gpio.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/module.h>
+ 
+ #include <linux/iio/iio.h>
+@@ -67,12 +67,42 @@ enum ad2s1210_mode {
+ 	MOD_RESERVED,
+ };
+ 
++enum ad2s1210_gpios {
++	AD2S1210_SAMPLE,
++	AD2S1210_A0,
++	AD2S1210_A1,
++	AD2S1210_RES0,
++	AD2S1210_RES1,
++};
++
++struct ad2s1210_gpio {
++	const char *name;
++	unsigned long flags;
++};
++
++static const struct ad2s1210_gpio gpios_in[] = {
++	[AD2S1210_SAMPLE] = { .name = "adi,sample", .flags = GPIOD_IN },
++	[AD2S1210_A0] = { .name = "adi,a0", .flags = GPIOD_IN },
++	[AD2S1210_A1] = { .name = "adi,a1", .flags = GPIOD_IN },
++	[AD2S1210_RES0] = { .name = "adi,res0", .flags = GPIOD_IN },
++	[AD2S1210_RES1] = { .name = "adi,res1", .flags = GPIOD_IN },
++};
++
++static const struct ad2s1210_gpio gpios_out[] = {
++	[AD2S1210_SAMPLE] = { .name = "adi,sample", .flags = GPIOD_OUT_LOW },
++	[AD2S1210_A0] = { .name = "adi,a0", .flags = GPIOD_OUT_LOW },
++	[AD2S1210_A1] = { .name = "adi,a1", .flags = GPIOD_OUT_LOW },
++	[AD2S1210_RES0] = { .name = "adi,res0", .flags = GPIOD_OUT_LOW },
++	[AD2S1210_RES1] = { .name = "adi,res1", .flags = GPIOD_OUT_LOW },
++};
++
+ static const unsigned int ad2s1210_resolution_value[] = { 10, 12, 14, 16 };
+ 
+ struct ad2s1210_state {
+ 	const struct ad2s1210_platform_data *pdata;
+ 	struct mutex lock;
+ 	struct spi_device *sdev;
++	struct gpio_desc *gpios[5];
+ 	unsigned int fclkin;
+ 	unsigned int fexcit;
+ 	bool hysteresis;
+@@ -91,8 +121,8 @@ static const int ad2s1210_mode_vals[4][2] = {
+ static inline void ad2s1210_set_mode(enum ad2s1210_mode mode,
+ 				     struct ad2s1210_state *st)
+ {
+-	gpio_set_value(st->pdata->a[0], ad2s1210_mode_vals[mode][0]);
+-	gpio_set_value(st->pdata->a[1], ad2s1210_mode_vals[mode][1]);
++	gpiod_set_value(st->gpios[AD2S1210_A0], ad2s1210_mode_vals[mode][0]);
++	gpiod_set_value(st->gpios[AD2S1210_A1], ad2s1210_mode_vals[mode][1]);
+ 	st->mode = mode;
+ }
+ 
+@@ -152,8 +182,8 @@ int ad2s1210_update_frequency_control_word(struct ad2s1210_state *st)
+ 
+ static unsigned char ad2s1210_read_resolution_pin(struct ad2s1210_state *st)
+ {
+-	int resolution = (gpio_get_value(st->pdata->res[0]) << 1) |
+-			  gpio_get_value(st->pdata->res[1]);
++	int resolution = (gpiod_get_value(st->gpios[AD2S1210_RES0]) << 1) |
++			  gpiod_get_value(st->gpios[AD2S1210_RES1]);
+ 
+ 	return ad2s1210_resolution_value[resolution];
+ }
+@@ -164,10 +194,10 @@ static const int ad2s1210_res_pins[4][2] = {
+ 
+ static inline void ad2s1210_set_resolution_pin(struct ad2s1210_state *st)
+ {
+-	gpio_set_value(st->pdata->res[0],
+-		       ad2s1210_res_pins[(st->resolution - 10) / 2][0]);
+-	gpio_set_value(st->pdata->res[1],
+-		       ad2s1210_res_pins[(st->resolution - 10) / 2][1]);
++	gpiod_set_value(st->gpios[AD2S1210_RES0],
++			ad2s1210_res_pins[(st->resolution - 10) / 2][0]);
++	gpiod_set_value(st->gpios[AD2S1210_RES1],
++			ad2s1210_res_pins[(st->resolution - 10) / 2][1]);
+ }
+ 
+ static inline int ad2s1210_soft_reset(struct ad2s1210_state *st)
+@@ -401,15 +431,15 @@ static ssize_t ad2s1210_clear_fault(struct device *dev,
+ 	int ret;
+ 
+ 	mutex_lock(&st->lock);
+-	gpio_set_value(st->pdata->sample, 0);
++	gpiod_set_value(st->gpios[AD2S1210_SAMPLE], 0);
+ 	/* delay (2 * tck + 20) nano seconds */
+ 	udelay(1);
+-	gpio_set_value(st->pdata->sample, 1);
++	gpiod_set_value(st->gpios[AD2S1210_SAMPLE], 1);
+ 	ret = ad2s1210_config_read(st, AD2S1210_REG_FAULT);
+ 	if (ret < 0)
+ 		goto error_ret;
+-	gpio_set_value(st->pdata->sample, 0);
+-	gpio_set_value(st->pdata->sample, 1);
++	gpiod_set_value(st->gpios[AD2S1210_SAMPLE], 0);
++	gpiod_set_value(st->gpios[AD2S1210_SAMPLE], 1);
+ error_ret:
+ 	mutex_unlock(&st->lock);
+ 
+@@ -466,7 +496,7 @@ static int ad2s1210_read_raw(struct iio_dev *indio_dev,
+ 	s16 vel;
+ 
+ 	mutex_lock(&st->lock);
+-	gpio_set_value(st->pdata->sample, 0);
++	gpiod_set_value(st->gpios[AD2S1210_SAMPLE], 0);
+ 	/* delay (6 * tck + 20) nano seconds */
+ 	udelay(1);
+ 
+@@ -512,7 +542,7 @@ static int ad2s1210_read_raw(struct iio_dev *indio_dev,
+ 	}
+ 
+ error_ret:
+-	gpio_set_value(st->pdata->sample, 1);
++	gpiod_set_value(st->gpios[AD2S1210_SAMPLE], 1);
+ 	/* delay (2 * tck + 20) nano seconds */
+ 	udelay(1);
+ 	mutex_unlock(&st->lock);
+@@ -630,30 +660,23 @@ static const struct iio_info ad2s1210_info = {
+ 
+ static int ad2s1210_setup_gpios(struct ad2s1210_state *st)
+ {
+-	unsigned long flags = st->pdata->gpioin ? GPIOF_DIR_IN : GPIOF_DIR_OUT;
+-	struct gpio ad2s1210_gpios[] = {
+-		{ st->pdata->sample, GPIOF_DIR_IN, "sample" },
+-		{ st->pdata->a[0], flags, "a0" },
+-		{ st->pdata->a[1], flags, "a1" },
+-		{ st->pdata->res[0], flags, "res0" },
+-		{ st->pdata->res[0], flags, "res1" },
+-	};
+-
+-	return gpio_request_array(ad2s1210_gpios, ARRAY_SIZE(ad2s1210_gpios));
+-}
+-
+-static void ad2s1210_free_gpios(struct ad2s1210_state *st)
+-{
+-	unsigned long flags = st->pdata->gpioin ? GPIOF_DIR_IN : GPIOF_DIR_OUT;
+-	struct gpio ad2s1210_gpios[] = {
+-		{ st->pdata->sample, GPIOF_DIR_IN, "sample" },
+-		{ st->pdata->a[0], flags, "a0" },
+-		{ st->pdata->a[1], flags, "a1" },
+-		{ st->pdata->res[0], flags, "res0" },
+-		{ st->pdata->res[0], flags, "res1" },
+-	};
++	struct ad2s1210_gpio *pin = st->pdata->gpioin ? &gpios_in[0] : &gpios_out[0];
++	struct spi_device *spi = st->sdev;
++	int i, ret;
++
++	for (i = 0; i < ARRAY_SIZE(gpios_in); i++) {
++		st->gpios[i] = devm_gpiod_get(&spi->dev, pin[i].name,
++					      pin[i].flags);
++		if (IS_ERR(st->gpios[i])) {
++			ret = PTR_ERR(st->gpios[i]);
++			dev_err(&spi->dev,
++				"ad2s1210: failed to request %s GPIO: %d\n",
++				pin[i].name, ret);
++			return ret;
++		}
++	}
+ 
+-	gpio_free_array(ad2s1210_gpios, ARRAY_SIZE(ad2s1210_gpios));
++	return 0;
+ }
+ 
+ static int ad2s1210_probe(struct spi_device *spi)
+@@ -692,7 +715,7 @@ static int ad2s1210_probe(struct spi_device *spi)
+ 
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret)
+-		goto error_free_gpios;
++		return ret;
+ 
+ 	st->fclkin = spi->max_speed_hz;
+ 	spi->mode = SPI_MODE_3;
+@@ -700,10 +723,6 @@ static int ad2s1210_probe(struct spi_device *spi)
+ 	ad2s1210_initial(st);
+ 
+ 	return 0;
+-
+-error_free_gpios:
+-	ad2s1210_free_gpios(st);
+-	return ret;
+ }
+ 
+ static int ad2s1210_remove(struct spi_device *spi)
+@@ -711,7 +730,6 @@ static int ad2s1210_remove(struct spi_device *spi)
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 
+ 	iio_device_unregister(indio_dev);
+-	ad2s1210_free_gpios(iio_priv(indio_dev));
+ 
+ 	return 0;
+ }
+diff --git a/drivers/staging/iio/resolver/ad2s1210.h b/drivers/staging/iio/resolver/ad2s1210.h
+index e9b2147701fc..63d479b20a6c 100644
+--- a/drivers/staging/iio/resolver/ad2s1210.h
++++ b/drivers/staging/iio/resolver/ad2s1210.h
+@@ -12,9 +12,6 @@
+ #define _AD2S1210_H
+ 
+ struct ad2s1210_platform_data {
+-	unsigned int		sample;
+-	unsigned int		a[2];
+-	unsigned int		res[2];
+ 	bool			gpioin;
+ };
+ #endif /* _AD2S1210_H */
 -- 
 2.17.1
