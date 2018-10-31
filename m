@@ -1,41 +1,80 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:36184 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726285AbeJXWX7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 24 Oct 2018 18:23:59 -0400
-Date: Wed, 24 Oct 2018 08:55:44 -0500
-From: Rob Herring <robh@kernel.org>
-To: Oskari Lemmela <oskari@lemmela.net>
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:34872 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726200AbeJaL5N (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 31 Oct 2018 07:57:13 -0400
+MIME-Version: 1.0
+References: <20181023185330.10472-1-oskari@lemmela.net> <20181023185330.10472-4-oskari@lemmela.net>
+In-Reply-To: <20181023185330.10472-4-oskari@lemmela.net>
+From: Chen-Yu Tsai <wens@csie.org>
+Date: Wed, 31 Oct 2018 11:00:51 +0800
+Message-ID: <CAGb2v666Vn_GdFwT4MXfbD7Gb1UC+gwGdVhquKH09Ld_Q3QmtA@mail.gmail.com>
+Subject: Re: [PATCH v5 03/11] dt-bindings: gpio: gpio-axp209: add AXP803 GPIO bindings
+To: oskari@lemmela.net
 Cc: Linus Walleij <linus.walleij@linaro.org>,
         Sebastian Reichel <sre@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Maxime Ripard <maxime.ripard@bootlin.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Lee Jones <lee.jones@linaro.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Vasily Khoruzhick <anarsoul@gmail.com>,
         Quentin Schulz <quentin.schulz@free-electrons.com>,
-        Oskari Lemmela <oskari@lemmela.net>, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH v5 03/11] dt-bindings: gpio: gpio-axp209: add AXP803 GPIO
- bindings
-Message-ID: <20181024135544.GA31518@bogus>
-References: <20181023185330.10472-1-oskari@lemmela.net>
- <20181023185330.10472-4-oskari@lemmela.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20181023185330.10472-4-oskari@lemmela.net>
+        "open list:THERMAL" <linux-pm@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 23 Oct 2018 21:53:22 +0300, Oskari Lemmela wrote:
+On Wed, Oct 24, 2018 at 2:54 AM Oskari Lemmela <oskari@lemmela.net> wrote:
+>
 > The AXP803 GPIO is compatible with AXP813 GPIO, but add
 > specific compatible for it.
-> 
+>
 > Signed-off-by: Oskari Lemmela <oskari@lemmela.net>
 > ---
 >  Documentation/devicetree/bindings/gpio/gpio-axp209.txt | 2 ++
 >  1 file changed, 2 insertions(+)
-> 
+>
+> diff --git a/Documentation/devicetree/bindings/gpio/gpio-axp209.txt b/Documentation/devicetree/bindings/gpio/gpio-axp209.txt
+> index fc42b2caa06d..5337a21d7bcf 100644
+> --- a/Documentation/devicetree/bindings/gpio/gpio-axp209.txt
+> +++ b/Documentation/devicetree/bindings/gpio/gpio-axp209.txt
+> @@ -11,6 +11,7 @@ This driver employs the per-pin muxing pattern.
+>  Required properties:
+>  - compatible: Should be one of:
+>         - "x-powers,axp209-gpio"
+> +       - "x-powers,axp803-gpio"
+>         - "x-powers,axp813-gpio"
+>  - #gpio-cells: Should be two. The first cell is the pin number and the
+>    second is the GPIO flags.
+> @@ -67,6 +68,7 @@ GPIO0 |       gpio_in, gpio_out, ldo, adc
+>  GPIO1  |       gpio_in, gpio_out, ldo, adc
+>  GPIO2  |       gpio_in, gpio_out
+>
+> +axp803
+>  axp813
+>  ------
+>  GPIO   |       Functions
+> --
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+As mentioned in my reply to the cover letter, this patch isn't needed.
+
+We ask people to add model-specific compatibles in the device tree
+in case the hardware turns out not to be so compatible with the old
+hardware we thought it was compatible with. With the model-specific
+compatible in place, we have a way out. Without it, we'd have to ask
+everyone to update their device trees, which annoys some people who'd
+like to have some sort of backward compatibility.
+
+If the model-specific + fallback compatibles combination was to be
+listed, the line would include both compatibles. But we're not doing
+that for Allwinner stuff. As mentioned it is there just in case. The
+best outcome is we don't care and don't need to use them.
+
+ChenYu
