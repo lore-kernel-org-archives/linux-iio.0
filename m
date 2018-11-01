@@ -1,74 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:36398 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726849AbeKDCfJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 3 Nov 2018 22:35:09 -0400
-Date: Sat, 3 Nov 2018 17:23:11 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Renato Lui Geh <renatogeh@gmail.com>
-Cc: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        "giuliano.belinassi@usp.br" <giuliano.belinassi@usp.br>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-        "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>
-Subject: Re: [PATCH v3 1/3] staging: iio: ad7780: fix offset read value
-Message-ID: <20181103172311.7a73b759@archlinux>
-In-Reply-To: <20181103155915.32wgi6ybkvhr5qzb@renatolg>
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:44981 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728832AbeKAXqp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 1 Nov 2018 19:46:45 -0400
+Date: Thu, 1 Nov 2018 11:43:23 -0300
+From: Renato Lui Geh <renatogeh@gmail.com>
+To: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        giuliano.belinassi@usp.br
+Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
+Subject: [PATCH v3 2/3] staging: iio: ad7780: update voltage on read
+Message-ID: <1bc4bdf6342d4bc0c2fea17fb3bcd79fabf0e1d1.1541082656.git.renatogeh@gmail.com>
 References: <cover.1541082656.git.renatogeh@gmail.com>
-        <2191be4d531651db39682178ec0660eeb5697439.1541082656.git.renatogeh@gmail.com>
-        <17254fcab5fb927e31ba6eac2194b0aeb9456cf0.camel@analog.com>
-        <20181103130721.53a806a5@archlinux>
-        <20181103155915.32wgi6ybkvhr5qzb@renatolg>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <cover.1541082656.git.renatogeh@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, 3 Nov 2018 12:59:16 -0300
-Renato Lui Geh <renatogeh@gmail.com> wrote:
+The ad7780 driver previously did not read the correct device output, as
+it read an outdated value set at initialization. It now updates its
+voltage on read.
 
-> Hi,
-> 
-> >On Thu, 1 Nov 2018 15:02:32 +0000
-> >"Ardelean, Alexandru" <alexandru.Ardelean@analog.com> wrote:
-> >  
-> >> Good catch.  
-> 
-> That was actually Jonathan's catch. :)
-> 
-> >> Acked-by: Alexandru Ardelean <alexandru.ardelean@analog.com>  
-> 
-> I read up on Acked-by on the kernel docs, as I didn't know exactly what
-> it meant, but I'm not so sure on how to proceed once the patch has been
-> acked.  For future patches, do I add this Acked-by line on the patch's
-> message body? Or is this just an informal way of approval?
-It's formal.  You put the line directly below your Signed-off-by: line
-if you are resending.  If I pick up the patch I paste it in there
-whilst applying.
+Signed-off-by: Renato Lui Geh <renatogeh@gmail.com>
+---
+Changes in v3:
+	- removed initialization (int voltage_uv = 0)
+	- returns error when voltage_uv is null
 
-> 
-> >On the basis this has been broken for a long time, and you are clearly
-> >doing other nearby not fix work, I'm going to take this through the togreg
-> >tree rather than via the quicker fix path.  It makes my life
-> >easier :)
-> >
-> >Applied to the togreg branch of iio.git and pushed out as testing for
-> >the autobuilders to play with it.  
-> 
-> So this means I should skip this patch on v4, right?
-Yes. Already in the tree so don't send it again.
+ drivers/staging/iio/adc/ad7780.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-Thanks
-
-Jonathan
-
-> 
-> Thanks,
-> Renato
-> 
+diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
+index 91e016d534ed..f2a11e9424cd 100644
+--- a/drivers/staging/iio/adc/ad7780.c
++++ b/drivers/staging/iio/adc/ad7780.c
+@@ -87,12 +87,16 @@ static int ad7780_read_raw(struct iio_dev *indio_dev,
+ 			   long m)
+ {
+ 	struct ad7780_state *st = iio_priv(indio_dev);
++	int voltage_uv;
+ 
+ 	switch (m) {
+ 	case IIO_CHAN_INFO_RAW:
+ 		return ad_sigma_delta_single_conversion(indio_dev, chan, val);
+ 	case IIO_CHAN_INFO_SCALE:
+-		*val = st->int_vref_mv * st->gain;
++		voltage_uv = regulator_get_voltage(st->reg);
++		if (!voltage_uv)
++			return -EINVAL;
++		*val = (voltage_uv / 1000) * st->gain;
+ 		*val2 = chan->scan_type.realbits - 1;
+ 		return IIO_VAL_FRACTIONAL_LOG2;
+ 	case IIO_CHAN_INFO_OFFSET:
+-- 
+2.19.1
