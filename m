@@ -1,43 +1,39 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:34877 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728181AbeKAXph (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 1 Nov 2018 19:45:37 -0400
-Date: Thu, 1 Nov 2018 11:42:16 -0300
+Return-Path: <SRS0=tw9e=NM=gmail.com=renatogeh@kernel.org>
+Date: Thu, 1 Nov 2018 11:43:02 -0300
 From: Renato Lui Geh <renatogeh@gmail.com>
 To: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        giuliano.belinassi@usp.br
+	knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+	giuliano.belinassi@usp.br
 Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
-Subject: [PATCH v3 0/3] staging: iio: ad7780: correct driver read
-Message-ID: <cover.1541082656.git.renatogeh@gmail.com>
+	linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
+Subject: [PATCH v3 1/3] staging: iio: ad7780: fix offset read value
+Message-ID: <2191be4d531651db39682178ec0660eeb5697439.1541082656.git.renatogeh@gmail.com>
+References: <cover.1541082656.git.renatogeh@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <cover.1541082656.git.renatogeh@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-The purpose of this series is to correct two issues in the driver's raw
-read function and remove unnecessary struct fields.
+Variable val subtracted an uninitialized value on IIO_CHAN_INFO_OFFSET.
+This was fixed by assigning the correct value instead.
 
-Changelog:
-*v2
-	- separated original patch into two patches
-	  (https://marc.info/?l=linux-iio&m=154047435605492)
-*v3
-	- reordered patches so that fixes go first
-	- removed unnecessary initialization
-	- removed unnecessary voltage field variable
-	- dropped reading voltage on probe
-	- returns -EINVAL error on null voltage
+Signed-off-by: Renato Lui Geh <renatogeh@gmail.com>
+---
+ drivers/staging/iio/adc/ad7780.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Renato Lui Geh (3):
-  staging: iio: ad7780: fix offset read value
-  staging: iio: ad7780: update voltage on read
-  staging: iio: ad7780: remove unnecessary stashed voltage value
-
- drivers/staging/iio/adc/ad7780.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
-
+diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
+index b67412db0318..91e016d534ed 100644
+--- a/drivers/staging/iio/adc/ad7780.c
++++ b/drivers/staging/iio/adc/ad7780.c
+@@ -96,7 +96,7 @@ static int ad7780_read_raw(struct iio_dev *indio_dev,
+ 		*val2 = chan->scan_type.realbits - 1;
+ 		return IIO_VAL_FRACTIONAL_LOG2;
+ 	case IIO_CHAN_INFO_OFFSET:
+-		*val -= (1 << (chan->scan_type.realbits - 1));
++		*val = -(1 << (chan->scan_type.realbits - 1));
+ 		return IIO_VAL_INT;
+ 	}
+ 
 -- 
 2.19.1
