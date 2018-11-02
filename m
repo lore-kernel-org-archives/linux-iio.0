@@ -1,31 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:37356 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387556AbeKFErm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 5 Nov 2018 23:47:42 -0500
-Date: Mon, 5 Nov 2018 13:26:30 -0600
-From: Rob Herring <robh@kernel.org>
-To: Song Qiang <songqiang1304521@gmail.com>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:33265 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725843AbeKBQsv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 2 Nov 2018 12:48:51 -0400
+From: Song Qiang <songqiang1304521@gmail.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
         pmeerw@pmeerw.net, robh+dt@kernel.org, mark.rutland@arm.com,
-        preid@electromag.com.au, himanshujha199640@gmail.com,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        preid@electromag.com.au, himanshujha199640@gmail.com
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         devicetree@vger.kernel.org, Song Qiang <songqiang1304521@gmail.com>
-Subject: Re: [PATCH v5 1/3] dt-bindings: Add PNI to the vendor prefixes.
-Message-ID: <20181105192630.GA8881@bogus>
+Subject: [PATCH v5 2/3] iio: magnetometer: Add DT support for PNI RM3100
+Date: Fri,  2 Nov 2018 15:42:08 +0800
+Message-Id: <20181102074209.12620-3-songqiang1304521@gmail.com>
+In-Reply-To: <20181102074209.12620-1-songqiang1304521@gmail.com>
 References: <20181102074209.12620-1-songqiang1304521@gmail.com>
- <20181102074209.12620-2-songqiang1304521@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20181102074209.12620-2-songqiang1304521@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri,  2 Nov 2018 15:42:07 +0800, Song Qiang wrote:
-> Signed-off-by: Song Qiang <songqiang1304521@gmail.com>
-> ---
->  Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +
->  1 file changed, 1 insertion(+)
-> 
-
+Signed-off-by: Song Qiang <songqiang1304521@gmail.com>
 Reviewed-by: Rob Herring <robh@kernel.org>
+
+---
+ .../bindings/iio/magnetometer/pni,rm3100.txt  | 20 +++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/pni,rm3100.txt
+
+diff --git a/Documentation/devicetree/bindings/iio/magnetometer/pni,rm3100.txt b/Documentation/devicetree/bindings/iio/magnetometer/pni,rm3100.txt
+new file mode 100644
+index 000000000000..497c932e9e39
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/magnetometer/pni,rm3100.txt
+@@ -0,0 +1,20 @@
++* PNI RM3100 3-axis magnetometer sensor
++
++Required properties:
++
++- compatible : should be "pni,rm3100"
++- reg : the I2C address or SPI chip select number of the sensor.
++
++Optional properties:
++
++- interrupts: data ready (DRDY) from the chip.
++  The interrupts can be triggered on level high.
++
++Example:
++
++rm3100: rm3100@20 {
++	compatible = "pni,rm3100";
++	reg = <0x20>;
++	interrupt-parent = <&gpio0>;
++	interrupts = <4 IRQ_TYPE_LEVEL_HIGH>;
++};
+-- 
+2.17.1
