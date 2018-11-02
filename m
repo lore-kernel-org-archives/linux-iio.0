@@ -1,146 +1,113 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:43350 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726276AbeKGG44 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 7 Nov 2018 01:56:56 -0500
-Date: Tue, 6 Nov 2018 15:29:40 -0600
-From: Rob Herring <robh@kernel.org>
-To: Carlos Iglesias <carlos.iglesias@emutex.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Dan O'Donovan <dan.odonovan@emutex.com>
-Subject: Re: [PATCH 1/2] dt-bindings: iio: pressure: Add support for
- Honeywell HSC SPI sensors
-Message-ID: <20181106212940.GA13434@bogus>
-References: <20181026181406.14545-1-carlos.iglesias@emutex.com>
- <20181026181406.14545-2-carlos.iglesias@emutex.com>
+Return-Path: <SRS0=mkE0=NN=usp.br=matheus.bernardino@kernel.org>
+Subject: Re: [PATCH v2 1/6] staging:iio:ad2s90: Make read_raw return
+ spi_read's error code
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald-Stadler
+ <pmeerw@pmeerw.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+ linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
+References: <20181027020005.3140-1-matheus.bernardino@usp.br>
+ <20181027020005.3140-2-matheus.bernardino@usp.br>
+ <20181028164038.0c920358@archlinux>
+From: Matheus Tavares <matheus.bernardino@usp.br>
+Message-ID: <707d385e-7c08-91a3-2925-0cadf5bc2ac4@usp.br>
+Date: Fri, 2 Nov 2018 10:49:59 -0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20181026181406.14545-2-carlos.iglesias@emutex.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <20181028164038.0c920358@archlinux>
+Content-Type: text/plain; charset=utf-8; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, Oct 26, 2018 at 06:14:36PM +0000, Carlos Iglesias wrote:
-> Add device tree bindings for the HSC pressure sensors.
-> 
-> Signed-off-by: Carlos Iglesias <carlos.iglesias@emutex.com>
-> ---
->  .../bindings/iio/pressure/hsc_spi.txt         | 85 +++++++++++++++++++
->  1 file changed, 85 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/pressure/hsc_spi.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/pressure/hsc_spi.txt b/Documentation/devicetree/bindings/iio/pressure/hsc_spi.txt
-> new file mode 100644
-> index 000000000000..2302d6eef7c7
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/pressure/hsc_spi.txt
-> @@ -0,0 +1,85 @@
-> +Honeywell HSC Series of Pressure Sensors
-> +
-> +Pressure sensors from Honeywell with analog, I2C and SPI interfaces
 
-But you named the file with 'spi'. You expect 
-> +
-> +Required properties:
-> +- compatible: selects the sensor model; must be one of the following
-> +	"honeywell,hsc001baa"
-> +	"honeywell,hsc001bab"
-> +	"honeywell,hsc001bac"
-> +	"honeywell,hsc001baf"
+On 10/28/18 1:40 PM, Jonathan Cameron wrote:
+> On Fri, 26 Oct 2018 23:00:00 -0300
+> Matheus Tavares <matheus.bernardino@usp.br> wrote:
+>
+>> Previously, when spi_read returned an error code inside ad2s90_read_raw,
+>> the code was ignored and IIO_VAL_INT was returned. This patch makes the
+>> function return the error code returned by spi_read when it fails.
+>>
+>> Signed-off-by: Matheus Tavares <matheus.bernardino@usp.br>
+> Hi Matheus,
+>
+> One quick process note is that it takes people a while to get around to reviewing
+> a series, so whilst it's tempting to very quickly send out a fix the moment
+> someone points out something that needs fixing, it is perhaps better to wait
+> at least a few days to see if you can pick up a few more reviews before you
+> do a V2.
+>
+> A few comments on this one inline.  I think it can be done 'slightly'
+> (and I mean only slightly) nicer than the version you have.  Result is the
+> same though.
+>
+> Thanks,
+>
+> Jonathan
+>
+>> ---
+>>   drivers/staging/iio/resolver/ad2s90.c | 9 ++++++---
+>>   1 file changed, 6 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/staging/iio/resolver/ad2s90.c b/drivers/staging/iio/resolver/ad2s90.c
+>> index 59586947a936..11fac9f90148 100644
+>> --- a/drivers/staging/iio/resolver/ad2s90.c
+>> +++ b/drivers/staging/iio/resolver/ad2s90.c
+>> @@ -35,12 +35,15 @@ static int ad2s90_read_raw(struct iio_dev *indio_dev,
+>>   	struct ad2s90_state *st = iio_priv(indio_dev);
+>>   
+>>   	mutex_lock(&st->lock);
+>> +
+> Unconnected change.  I'm not against the change in principle but please
+> group white space tidying up in it's own patch.
+>
+>>   	ret = spi_read(st->sdev, st->rx, 2);
+>> -	if (ret)
+>> -		goto error_ret;
+>> +	if (ret < 0) {
+>> +		mutex_unlock(&st->lock);
+>> +		return ret;
+> I'd actually prefer to keep the return path the same as before as then
+> it is easy (if the function gets more complex in future) to be sure
+> that all paths unlock the mutex.
 
-I normally tell people to imply things from compatible strings, but this 
-may be a good case where some properties make sense. The last letter 
-appears to be 'transfer function'. Maybe even the pressure range should 
-be a property. I think it depends if there's any other s/w visible 
-differences.
 
-Plus this list doesn't even include the differential or gage parts and 
-those lists are longer.
+Ok, got it! But then, in patch 5, when we add the switch for 
+IIO_CHAN_INFO_SCALE and IIO_CHAN_INFO_RAW, should I keep the goto and 
+label inside the switch case? I mean, should it be something like this:
 
-> +	"honeywell,hsc1_6baa"
-> +	"honeywell,hsc1_6bab"
-> +	"honeywell,hsc1_6bac"
-> +	"honeywell,hsc1_6baf"
-> +	"honeywell,hsc2_5baa"
-> +	"honeywell,hsc2_5bab"
-> +	"honeywell,hsc2_5bac"
-> +	"honeywell,hsc2_5baf"
-> +	"honeywell,hsc004baa"
-> +	"honeywell,hsc004bab"
-> +	"honeywell,hsc004bac"
-> +	"honeywell,hsc004baf"
-> +	"honeywell,hsc006baa"
-> +	"honeywell,hsc006bab"
-> +	"honeywell,hsc006bac"
-> +	"honeywell,hsc006baf"
-> +	"honeywell,hsc010baa"
-> +	"honeywell,hsc010bab"
-> +	"honeywell,hsc010bac"
-> +	"honeywell,hsc010baf"
-> +	"honeywell,hsc100kaa"
-> +	"honeywell,hsc100kab"
-> +	"honeywell,hsc100kac"
-> +	"honeywell,hsc100kaf"
-> +	"honeywell,hsc160kaa"
-> +	"honeywell,hsc160kab"
-> +	"honeywell,hsc160kac"
-> +	"honeywell,hsc160kaf"
-> +	"honeywell,hsc250kaa"
-> +	"honeywell,hsc250kab"
-> +	"honeywell,hsc250kac"
-> +	"honeywell,hsc250kaf"
-> +	"honeywell,hsc400kaa"
-> +	"honeywell,hsc400kab"
-> +	"honeywell,hsc400kac"
-> +	"honeywell,hsc400kaf"
-> +	"honeywell,hsc600kaa"
-> +	"honeywell,hsc600kab"
-> +	"honeywell,hsc600kac"
-> +	"honeywell,hsc600kaf"
-> +	"honeywell,hsc001gaa"
-> +	"honeywell,hsc001gab"
-> +	"honeywell,hsc001gac"
-> +	"honeywell,hsc001gaf"
-> +	"honeywell,hsc015paa"
-> +	"honeywell,hsc015pab"
-> +	"honeywell,hsc015pac"
-> +	"honeywell,hsc015paf"
-> +	"honeywell,hsc030paa"
-> +	"honeywell,hsc030pab"
-> +	"honeywell,hsc030pac"
-> +	"honeywell,hsc030paf"
-> +	"honeywell,hsc060paa"
-> +	"honeywell,hsc060pab"
-> +	"honeywell,hsc060pac"
-> +	"honeywell,hsc060paf"
-> +	"honeywell,hsc100paa"
-> +	"honeywell,hsc100pab"
-> +	"honeywell,hsc100pac"
-> +	"honeywell,hsc100paf"
-> +	"honeywell,hsc150paa"
-> +	"honeywell,hsc150pab"
-> +	"honeywell,hsc150pac"
-> +	"honeywell,hsc150paf"
-> +- reg: the SPI chip select number used by the sensor.
-> +- spi-max-frequency: maximum clock frequency (Hz) used for the SPI bus.
-> +  The maximum value supported by the sensors is 400000.
-> +
-> +Example:
-> +
-> +	hsc_spi0: hsc@0 {
 
-pressure-sensor@0
+     switch (m) {
+     case IIO_CHAN_INFO_SCALE:
+         ... // Does not use mutex
+     case IIO_CHAN_INFO_RAW:
+         mutex_lock(&st->lock);
+         ret = spi_read(st->sdev, st->rx, 2);
+         if (ret)
+             goto error_ret;
+         *val = (((u16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >> 4);
 
-> +		compatible = "honeywell,hsc010baa";
-> +		reg = <0>;
-> +		spi-max-frequency = <400000>;
-> +	};
-> -- 
-> 2.19.1
-> 
+error_ret:
+         mutex_unlock(&st->lock);
+
+         return ret ? ret : IIO_VAL_INT;
+     default:
+         break;
+     }
+
+
+Matheus
+
+
+>> +	}
+>> +
+>>   	*val = (((u16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >> 4);
+>>   
+>> -error_ret:
+>>   	mutex_unlock(&st->lock);
+>>   
+>>   	return IIO_VAL_INT;
+> The 'standard' if slightly nasty way of doing this is:
+>
+> 	return ret ? ret : IIO_VAL_INT;
+>
