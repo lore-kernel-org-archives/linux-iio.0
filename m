@@ -1,65 +1,55 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:34476 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730753AbeKEBvy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 4 Nov 2018 20:51:54 -0500
-Date: Sun, 4 Nov 2018 16:36:16 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Matheus Tavares <matheus.bernardino@usp.br>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
-Subject: Re: [PATCH v3 1/6] staging:iio:ad2s90: Make read_raw return
- spi_read's error code
-Message-ID: <20181104163616.7c864dcc@archlinux>
-In-Reply-To: <20181103224948.31014-2-matheus.bernardino@usp.br>
+Return-Path: <SRS0=H39v=NO=usp.br=matheus.bernardino@kernel.org>
+From: Matheus Tavares <matheus.bernardino@usp.br>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org,
+	kernel-usp@googlegroups.com
+Subject: [PATCH v3 2/6] staging:iio:ad2s90: Make probe handle spi_setup failure
+Date: Sat,  3 Nov 2018 19:49:44 -0300
+Message-Id: <20181103224948.31014-3-matheus.bernardino@usp.br>
+In-Reply-To: <20181103224948.31014-1-matheus.bernardino@usp.br>
 References: <20181103224948.31014-1-matheus.bernardino@usp.br>
-        <20181103224948.31014-2-matheus.bernardino@usp.br>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat,  3 Nov 2018 19:49:43 -0300
-Matheus Tavares <matheus.bernardino@usp.br> wrote:
+Previously, ad2s90_probe ignored the return code from spi_setup, not
+handling its possible failure. This patch makes ad2s90_probe check if
+the code is an error code and, if so, do the following:
 
-> Previously, when spi_read returned an error code inside ad2s90_read_raw,
-> the code was ignored and IIO_VAL_INT was returned. This patch makes the
-> function return the error code returned by spi_read when it fails.
-> 
-> Signed-off-by: Matheus Tavares <matheus.bernardino@usp.br>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+- Call dev_err with an appropriate error message.
+- Return the spi_setup's error code.
 
-Thanks,
+Note: The 'return ret' statement could be out of the 'if' block, but
+this whole block will be moved up in the function in the patch:
+'staging:iio:ad2s90: Move device registration to the end of probe'.
 
-Jonathan
+Signed-off-by: Matheus Tavares <matheus.bernardino@usp.br>
+---
+ drivers/staging/iio/resolver/ad2s90.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-> ---
->  drivers/staging/iio/resolver/ad2s90.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/resolver/ad2s90.c b/drivers/staging/iio/resolver/ad2s90.c
-> index 59586947a936..ba55de29ef36 100644
-> --- a/drivers/staging/iio/resolver/ad2s90.c
-> +++ b/drivers/staging/iio/resolver/ad2s90.c
-> @@ -36,11 +36,12 @@ static int ad2s90_read_raw(struct iio_dev *indio_dev,
->  
->  	mutex_lock(&st->lock);
->  	ret = spi_read(st->sdev, st->rx, 2);
-> -	if (ret)
-> -		goto error_ret;
-> +	if (ret < 0) {
-> +		mutex_unlock(&st->lock);
-> +		return ret;
-> +	}
->  	*val = (((u16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >> 4);
->  
-> -error_ret:
->  	mutex_unlock(&st->lock);
->  
->  	return IIO_VAL_INT;
+diff --git a/drivers/staging/iio/resolver/ad2s90.c b/drivers/staging/iio/resolver/ad2s90.c
+index ba55de29ef36..4908c8a95fad 100644
+--- a/drivers/staging/iio/resolver/ad2s90.c
++++ b/drivers/staging/iio/resolver/ad2s90.c
+@@ -86,7 +86,12 @@ static int ad2s90_probe(struct spi_device *spi)
+ 	/* need 600ns between CS and the first falling edge of SCLK */
+ 	spi->max_speed_hz = 830000;
+ 	spi->mode = SPI_MODE_3;
+-	spi_setup(spi);
++	ret = spi_setup(spi);
++
++	if (ret < 0) {
++		dev_err(&spi->dev, "spi_setup failed!\n");
++		return ret;
++	}
+ 
+ 	return 0;
+ }
+-- 
+2.18.0
