@@ -1,145 +1,188 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:53918 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:51600 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728498AbeKLBXC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 11 Nov 2018 20:23:02 -0500
-Date: Sun, 11 Nov 2018 15:34:05 +0000
+        id S1727256AbeKCVJa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 3 Nov 2018 17:09:30 -0400
+Date: Sat, 3 Nov 2018 11:58:19 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>
-Cc: "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 2/3] iio: adc: Add ad7124 support
-Message-ID: <20181111153405.45ccb948@archlinux>
-In-Reply-To: <1541695681.2091.10.camel@analog.com>
-References: <1540831111-3040-1-git-send-email-stefan.popa@analog.com>
-        <20181103121606.2fc461ec@archlinux>
-        <1541687328.2091.2.camel@analog.com>
-        <CAL_Jsq+zc2RGWgkwXNk8qjJqjo+FpdPZUOOxd44mb8Cu7+EsaQ@mail.gmail.com>
-        <1541695681.2091.10.camel@analog.com>
+To: Rob Herring <robh@kernel.org>
+Cc: Stefan Popa <stefan.popa@analog.com>, mark.rutland@arm.com,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        Michael.Hennerich@analog.com, gregkh@linuxfoundation.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 3/3] dt-bindings: iio: adc: Add docs for ad7124
+Message-ID: <20181103115819.1aa65a6c@archlinux>
+In-Reply-To: <20181030205615.GA13185@bogus>
+References: <1540831170-3150-1-git-send-email-stefan.popa@analog.com>
+        <20181030205615.GA13185@bogus>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 8 Nov 2018 16:48:02 +0000
-"Popa, Stefan Serban" <StefanSerban.Popa@analog.com> wrote:
+On Tue, 30 Oct 2018 15:56:15 -0500
+Rob Herring <robh@kernel.org> wrote:
 
-> On Jo, 2018-11-08 at 10:34 -0600, Rob Herring wrote:
-> > On Thu, Nov 8, 2018 at 9:02 AM Popa, Stefan Serban
-> > <StefanSerban.Popa@analog.com> wrote: =20
-> > >=20
-> > >=20
-> > > On Sb, 2018-11-03 at 12:16 +0000, Jonathan Cameron wrote: =20
-> > > >=20
-> > > > On Mon, 29 Oct 2018 18:38:31 +0200
-> > > > Stefan Popa <stefan.popa@analog.com> wrote:
-> > > >  =20
-> > > > >=20
-> > > > >=20
-> > > > > The ad7124-4 and ad7124-8 are a family of 4 and 8 channel sigma-
-> > > > > delta
-> > > > > ADCs
-> > > > > with 24-bit precision and reference.
-> > > > >=20
-> > > > > Three power modes are available which in turn affect the output
-> > > > > data
-> > > > > rate:
-> > > > > =C2=A0* Full power: 9.38 SPS to 19,200 SPS
-> > > > > =C2=A0* Mid power: 2.34 SPS to 4800 SPS
-> > > > > =C2=A0* Low power: 1.17 SPS to 2400 SPS
-> > > > >=20
-> > > > > The ad7124-4 can be configured to have four differential inputs,
-> > > > > while
-> > > > > ad7124-8 can have 8. Moreover, ad7124 also supports per channel
-> > > > > configuration. Each configuration consists of gain, reference
-> > > > > source,
-> > > > > output data rate and bipolar/unipolar configuration.
-> > > > >=20
-> > > > > Datasheets:
-> > > > > Link: http://www.analog.com/media/en/technical-documentation/data=
--s
-> > > > > heet
-> > > > > s/AD7124-4.pdf
-> > > > > Link: http://www.analog.com/media/en/technical-documentation/data=
--s
-> > > > > heet
-> > > > > s/ad7124-8.pdf
-> > > > >=20
-> > > > > Signed-off-by: Stefan Popa <stefan.popa@analog.com> =20
-> > > > Hi Stefan,
-> > > >=20
-> > > > The discussion around the DT binding has gotten me looking at bit
-> > > > more closely at that for this version.
-> > > >=20
-> > > > Some most comments in that section.=C2=A0=C2=A0Also a really minor =
-ordering
-> > > > issue
-> > > > in
-> > > > remove which I'd just have fixed if we weren't going around again f=
-or
-> > > > the binding.
-> > > >=20
-> > > > Main binding thing is I don't think the odr value belongs in DT.
-> > > > Gain is more marginal (unless the part can actually be damaged by
-> > > > a wrong value - which I hope it can't!).=C2=A0=C2=A0I'm not that fu=
-ssed
-> > > > as there are definitely reasons to specify a default scale to
-> > > > cover the reasonable range on a pin.
-> > > >=20
-> > > > Thanks,
-> > > >=20
-> > > > Jonathan =20
-> > > Hi Jonathan,
-> > >=20
-> > > Thank you for the review! So, how should I proceed?
-> > >=20
-> > > First, we need an adc.txt file where "bipolar" and something like
-> > > "diff-
-> > > channels" should be documented. Should the file be placed under
-> > > Documentation/devicetree/bindings/iio/adc? =20
-> > Yes.
-> >  =20
-> > >=20
-> > > Regarding the "odr-hz" property, it totally makes sense to remove it
-> > > from
-> > > the DT. How about the "gain"? Should we leave it in the DT and also a=
-dd
-> > > the
-> > > possibility to be configured from user space? =20
-> > Look at other bindings. I think there are others having gain. If not,
-> > then it probably should only be user space configurable. If so, then
-> > can it be a common property too.
+> On Mon, Oct 29, 2018 at 06:39:30PM +0200, Stefan Popa wrote:
+> > Add support for Analog Devices AD7124 4-channels and 8-channels ADC.
 > >=20
-> > Rob
+> > Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+> > ---
+> > Changes in v2:
+> > 	- Nothing changed.
+> > Changes in v3:
+> > 	- Removed the "adi,channels" property.
+> > 	- Used the "reg" property to get the channel number and "adi,diff-chan=
+nels"
+> > 	  for the differential pins. The "adi,channel-number" property was rem=
+oved.
+> > 	- adi,bipolar is of boolean type.
+> >=20
+> >  .../devicetree/bindings/iio/adc/adi,ad7124.txt     | 90 ++++++++++++++=
+++++++++
+> >  MAINTAINERS                                        |  1 +
+> >  2 files changed, 91 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad712=
+4.txt
+> >=20
+> > diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7124.txt b=
+/Documentation/devicetree/bindings/iio/adc/adi,ad7124.txt
+> > new file mode 100644
+> > index 0000000..46a9b71
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7124.txt
+> > @@ -0,0 +1,90 @@
+> > +Analog Devices AD7124 ADC device driver
+> > +
+> > +Required properties for the AD7124:
+> > +	- compatible: Must be one of "adi,ad7124-4" or "adi,ad7124-8"
+> > +	- reg: SPI chip select number for the device
+> > +	- spi-max-frequency: Max SPI frequency to use
+> > +		see: Documentation/devicetree/bindings/spi/spi-bus.txt
+> > +	- clocks: phandle to the master clock (mclk)
+> > +		see: Documentation/devicetree/bindings/clock/clock-bindings.txt
+> > +	- clock-names: Must be "mclk".
+> > +	- interrupts: IRQ line for the ADC
+> > +		see: Documentation/devicetree/bindings/interrupt-controller/interrup=
+ts.txt
+> > +
+> > +	  Required properties:
+> > +		* #address-cells: Must be 1.
+> > +		* #size-cells: Must be 0.
+> > +
+> > +	  Subnode(s) represent the external channels which are connected to t=
+he ADC.
+> > +	  Each subnode represents one channel and has the following propertie=
+s:
+> > +		Required properties:
+> > +			* reg: The channel number. It can have up to 4 channels on ad7124-4
+> > +			  and 8 channels on ad7124-8, numbered from 0 to 15.
+> > +			* adi,diff-channels: Pins the channel is connected to. The first va=
+lue
+> > +			  specifies the positive input pin, the second value the negative i=
+nput pin.
+> > +
+> > +		Optional properties:
+> > +			* adi,bipolar: Boolean, if set the channel is used in bipolar mode.=
+ =20
+>=20
+> Both this and Xilinx AMS which I just reviewed are defining a bipolar=20
+> property. Can we come up with a common property please.
+Sometimes it's implicit given particular channel selects but agreed
+for this particular simple case, lets just put it in the generic
+binding as
+
+bipolar.
+
+Now the tricky question ;).. Where to document it. Only really applies to
+ADCs but we don't have a specific adc.txt binding doc. I guess we'll need
+one to start defining properties.
+
+This also doesn't actually obey the documented naming for channels
+in the top level binding.  I'm not adverse to changing that (as it's
+not actually user visible and we don't enforce it anyway) but we should
+discuss that in a separate thread so as to get more eyes on it.
+
+>=20
+> > +			* adi,reference-select: Select the reference source to use when
+> > +			  converting on the the specific channel. Valid values are:
+> > +			  0: REFIN1(+)/REFIN1(=E2=88=92).
+> > +			  1: REFIN2(+)/REFIN2(=E2=88=92).
+> > +			  3: AVDD
+> > +			  If this field is left empty, internal reference is selected.
+> > +			* adi,gain: Select the gain when converting on the specific channel.
+> > +			  Valid values are: 1, 2, 4, 8, 16, 32, 64, 128.
+> > +			  If this field is left empty, gain of 1 is selected.
+> > +			* adi,odr-hz: The output data rate can be programmed from:
+> > +			  9 to 19200 for full power mode (when the master clock is 614.4 kH=
+z)
+> > +			  2 to 4800 for mid power mode (when the master clock is 153.6 kHz)
+> > +			  1 to 2400 for low power mode (when the master clock is 76.8 kHz)
+> > +			  If this field is left empty, odr of 9 is selected.
+> > +
+> > +Optional properties:
+> > +	- refin1-supply: refin1 supply can be used as reference for conversio=
+n.
+> > +	- refin2-supply: refin2 supply can be used as reference for conversio=
+n.
+> > +	- avdd-supply: avdd supply can be used as reference for conversion.
+> > +
+> > +Example:
+> > +	adc@0 {
+> > +		compatible =3D "adi,ad7124-4";
+> > +		reg =3D <0>;
+> > +		spi-max-frequency =3D <5000000>;
+> > +		interrupts =3D <25 2>;
+> > +		interrupt-parent =3D <&gpio>;
+> > +		refin1-supply =3D <&adc_vref>;
+> > +		clocks =3D <&ad7124_mclk>;
+> > +		clock-names =3D "mclk";
+> > +
+> > +		#address-cells =3D <1>;
+> > +		#size-cells =3D <0>;
+> > +
+> > +		channel@0 {
+> > +			reg =3D <0>;
+> > +			adi,diff-channels =3D <0 1>;
+> > +			adi,reference-select =3D <0>;
+> > +			adi,gain =3D <2>;
+> > +			adi,odr-hz =3D <10>;
+> > +		};
+> > +
+> > +		channel@1 {
+> > +			reg =3D <1>;
+> > +			adi,bipolar;
+> > +			adi,diff-channels =3D <2 3>;
+> > +			adi,reference-select =3D <0>;
+> > +			adi,gain =3D <4>;
+> > +			adi,odr-hz =3D <50>;
+> > +		};
+> > +
+> > +		channel@2 {
+> > +			reg =3D <2>;
+> > +			adi,diff-channels =3D <4 5>;
+> > +			adi,gain =3D <128>;
+> > +			adi,odr-hz =3D <19200>;
+> > +		};
+> > +
+> > +		channel@3 {
+> > +			reg =3D <3>;
+> > +			adi,diff-channels =3D <6 7>;
+> > +		};
+> > +	};
+> > diff --git a/MAINTAINERS b/MAINTAINERS
+> > index 3a1bfcb..f2fa508 100644
+> > --- a/MAINTAINERS
+> > +++ b/MAINTAINERS
+> > @@ -845,6 +845,7 @@ L:	linux-iio@vger.kernel.org
+> >  W:	http://ez.analog.com/community/linux-device-drivers
+> >  S:	Supported
+> >  F:	drivers/iio/adc/ad7124.c
+> > +F:	Documentation/devicetree/bindings/iio/adc/adi,ad7124.txt
+> > =20
+> >  ANALOG DEVICES INC AD9389B DRIVER
+> >  M:	Hans Verkuil <hans.verkuil@cisco.com>
+> > --=20
+> > 2.7.4
 > >  =20
->=20
-> Hi Rob,
->=20
-> I found only a couple of examples using gain in other bindings, so I guess
-> it's not common practice. I will remove the gain as well from the DT and
-> set it with the default of 1.
->=20
-> @Jonathan: I think that=C2=A0IIO_CHAN_INFO_HARDWAREGAIN is the attribute =
-that
-> can be used in user space?
-Sorry, I missed this.  Guess you will see my review anyway around now.
-Nope, hardwaregain is an oddity for devices where we aren't controlling
-the thing being measured, but something like the amplifier of a
-time of flight device.
-
-There is some argument to potentially provide sane limits on gain in DT
-(particularly if a device really doesn't like going out of range) but
-in general I'm not keen on it as it is rather an application specific
-question so best left to userspace.
-
-Jonathan
-
->=20
-> Thank you!
-> -Stefan
