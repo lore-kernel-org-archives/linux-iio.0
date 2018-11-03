@@ -1,1493 +1,825 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:50314 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:55118 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727658AbeKCVBn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 3 Nov 2018 17:01:43 -0400
-Date: Sat, 3 Nov 2018 11:50:29 +0000
+        id S1726795AbeKCV1V (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 3 Nov 2018 17:27:21 -0400
+Date: Sat, 3 Nov 2018 12:16:06 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Manish Narani <manish.narani@xilinx.com>
-Cc: <knaack.h@gmx.de>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
-        <robh+dt@kernel.org>, <mark.rutland@arm.com>,
-        <michal.simek@xilinx.com>, <amit.kucheria@linaro.org>,
-        <sudeep.holla@arm.com>, <olof@lixom.net>, <broonie@kernel.org>,
-        <arnaud.pouliquen@st.com>, <eugen.hristev@microchip.com>,
-        <linus.walleij@linaro.org>, <vilhelm.gray@gmail.com>,
-        <geert@linux-m68k.org>, <freeman.liu@spreadtrum.com>,
-        <rdunlap@infradead.org>, <tglx@linutronix.de>,
-        <baolin.wang@linaro.org>, <gregkh@linuxfoundation.org>,
-        <jdelvare@suse.com>, <linux@roeck-us.net>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-hwmon@vger.kernel.org>
-Subject: Re: [PATCH v3 2/3] iio: adc: Add Xilinx AMS driver
-Message-ID: <20181103115029.2a716d83@archlinux>
-In-Reply-To: <1540815026-1012-3-git-send-email-manish.narani@xilinx.com>
-References: <1540815026-1012-1-git-send-email-manish.narani@xilinx.com>
-        <1540815026-1012-3-git-send-email-manish.narani@xilinx.com>
+To: Stefan Popa <stefan.popa@analog.com>
+Cc: <Michael.Hennerich@analog.com>, <knaack.h@gmx.de>,
+        <lars@metafoo.de>, <pmeerw@pmeerw.net>,
+        <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH v3 2/3] iio: adc: Add ad7124 support
+Message-ID: <20181103121606.2fc461ec@archlinux>
+In-Reply-To: <1540831111-3040-1-git-send-email-stefan.popa@analog.com>
+References: <1540831111-3040-1-git-send-email-stefan.popa@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 29 Oct 2018 17:40:25 +0530
-Manish Narani <manish.narani@xilinx.com> wrote:
+On Mon, 29 Oct 2018 18:38:31 +0200
+Stefan Popa <stefan.popa@analog.com> wrote:
 
-> The AMS includes an ADC as well as on-chip sensors that can be used to
-> sample external voltages and monitor on-die operating conditions, such
-> as temperature and supply voltage levels. The AMS has two SYSMON blocks.
-> PL-SYSMON block is capable of monitoring off chip voltage and
-> temperature.
-> PL-SYSMON block has DRP, JTAG and I2C interface to enable monitoring
-> from external master. Out of these interface currently only DRP is
-> supported.
-> Other block PS-SYSMON is memory mapped to PS.
-> The AMS can use internal channels to monitor voltage and temperature as
-> well as one primary and up to 16 auxiliary channels for measuring
-> external voltages.
-> The voltage and temperature monitoring channels also have event
-> capability which allows to generate an interrupt when their value falls
-> below or raises above a set threshold.
-> 
-> Signed-off-by: Manish Narani <manish.narani@xilinx.com>
+> The ad7124-4 and ad7124-8 are a family of 4 and 8 channel sigma-delta ADCs
+> with 24-bit precision and reference.
+>=20
+> Three power modes are available which in turn affect the output data rate:
+>  * Full power: 9.38 SPS to 19,200 SPS
+>  * Mid power: 2.34 SPS to 4800 SPS
+>  * Low power: 1.17 SPS to 2400 SPS
+>=20
+> The ad7124-4 can be configured to have four differential inputs, while
+> ad7124-8 can have 8. Moreover, ad7124 also supports per channel
+> configuration. Each configuration consists of gain, reference source,
+> output data rate and bipolar/unipolar configuration.
+>=20
+> Datasheets:
+> Link: http://www.analog.com/media/en/technical-documentation/data-sheets/=
+AD7124-4.pdf
+> Link: http://www.analog.com/media/en/technical-documentation/data-sheets/=
+ad7124-8.pdf
+>=20
+> Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+Hi Stefan,
 
-Hi Manish,
+The discussion around the DT binding has gotten me looking at bit
+more closely at that for this version.
 
-Looking pretty good. Two things:
+Some most comments in that section.  Also a really minor ordering issue in
+remove which I'd just have fixed if we weren't going around again for
+the binding.
 
-1) There are a lot of NULLs being passed around now we have mostly
-dropped the extname stuff. I would drop them from the macros.
-
-2) I hadn't really noticed before but you set chan->address to actually
-be the address of the read register, which is fine on simple devices, but
-here results in a number of reverse lookups (which can't easily be
-put in a static lookup table) to get to things about the channel.
-Perhaps consider if this would be better done by making chan->address
-an enum value (the sequence enum might work though I haven't checked) and
-then move to look up tables for the actual address and related bit
-positions etc.  I think it might simplify the code a fair bit.  Feel 
-free to say it doesn't if I'm wrong!  It's a complex mapping in somecases
-so it may not be worth the effort.
+Main binding thing is I don't think the odr value belongs in DT.
+Gain is more marginal (unless the part can actually be damaged by
+a wrong value - which I hope it can't!).  I'm not that fussed
+as there are definitely reasons to specify a default scale to
+cover the reasonable range on a pin.
 
 Thanks,
 
 Jonathan
-
 > ---
->  drivers/iio/adc/Kconfig      |   10 +
->  drivers/iio/adc/Makefile     |    1 +
->  drivers/iio/adc/xilinx-ams.c | 1343 ++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 1354 insertions(+)
->  create mode 100644 drivers/iio/adc/xilinx-ams.c
-> 
+> Changes in v2:
+> 	- Added this commit.
+> Changes in v3:
+> 	- Removed channel, address, scan_index and shift fields from
+> 	  ad7124_channel_template.
+> 	- Added a sanity check for val2 in ad7124_write_raw().
+> 	- Used the "reg" property to get the channel address and "adi,diff-chann=
+els"
+> 	  for the differential pins. The "adi,channel-number" property was remov=
+ed.
+> 	- When calling regulator_get_optional, the probe is given up in case of =
+error,
+> 	  but continues in case of -ENODEV.
+> 	- clk_disable_unprepare() is called before ad_sd_cleanup_buffer_and_trig=
+ger
+> 	  in ad7124_remove().
+>=20
+>  MAINTAINERS              |   7 +
+>  drivers/iio/adc/Kconfig  |  11 +
+>  drivers/iio/adc/Makefile |   1 +
+>  drivers/iio/adc/ad7124.c | 648 +++++++++++++++++++++++++++++++++++++++++=
+++++++
+>  4 files changed, 667 insertions(+)
+>  create mode 100644 drivers/iio/adc/ad7124.c
+>=20
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index f642044..3a1bfcb 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -839,6 +839,13 @@ S:	Supported
+>  F:	drivers/iio/dac/ad5758.c
+>  F:	Documentation/devicetree/bindings/iio/dac/ad5758.txt
+> =20
+> +ANALOG DEVICES INC AD7124 DRIVER
+> +M:	Stefan Popa <stefan.popa@analog.com>
+> +L:	linux-iio@vger.kernel.org
+> +W:	http://ez.analog.com/community/linux-device-drivers
+> +S:	Supported
+> +F:	drivers/iio/adc/ad7124.c
+> +
+>  ANALOG DEVICES INC AD9389B DRIVER
+>  M:	Hans Verkuil <hans.verkuil@cisco.com>
+>  L:	linux-media@vger.kernel.org
 > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 4a75492..8f7dd62 100644
+> index a52fea8..148a10f 100644
 > --- a/drivers/iio/adc/Kconfig
 > +++ b/drivers/iio/adc/Kconfig
-> @@ -941,4 +941,14 @@ config XILINX_XADC
->  	  The driver can also be build as a module. If so, the module will be called
->  	  xilinx-xadc.
->  
-> +config XILINX_AMS
-> +	tristate "Xilinx AMS driver"
-> +	depends on ARCH_ZYNQMP || COMPILE_TEST
-> +	depends on HAS_IOMEM
+> @@ -10,6 +10,17 @@ config AD_SIGMA_DELTA
+>  	select IIO_BUFFER
+>  	select IIO_TRIGGERED_BUFFER
+> =20
+> +config AD7124
+> +	tristate "Analog Devices AD7124 and similar sigma-delta ADCs driver"
+> +	depends on SPI_MASTER
+> +	select AD_SIGMA_DELTA
 > +	help
-> +	  Say yes here to have support for the Xilinx AMS.
+> +	  Say yes here to build support for Analog Devices AD7124-4 and AD7124-8
+> +	  SPI analog to digital converters (ADC).
 > +
-> +	  The driver can also be built as a module. If so, the module will be called
-> +	  xilinx-ams.
+> +	  To compile this driver as a module, choose M here: the module will be
+> +	  called ad7124.
 > +
->  endmenu
+>  config AD7266
+>  	tristate "Analog Devices AD7265/AD7266 ADC driver"
+>  	depends on SPI_MASTER
 > diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index 03db7b5..fbfcc45 100644
+> index a6e6a0b..76168b2 100644
 > --- a/drivers/iio/adc/Makefile
 > +++ b/drivers/iio/adc/Makefile
-> @@ -85,4 +85,5 @@ obj-$(CONFIG_VF610_ADC) += vf610_adc.o
->  obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
->  xilinx-xadc-y := xilinx-xadc-core.o xilinx-xadc-events.o
->  obj-$(CONFIG_XILINX_XADC) += xilinx-xadc.o
-> +obj-$(CONFIG_XILINX_AMS) += xilinx-ams.o
->  obj-$(CONFIG_SD_ADC_MODULATOR) += sd_adc_modulator.o
-> diff --git a/drivers/iio/adc/xilinx-ams.c b/drivers/iio/adc/xilinx-ams.c
+> @@ -5,6 +5,7 @@
+> =20
+>  # When adding new entries keep the list in alphabetical order
+>  obj-$(CONFIG_AD_SIGMA_DELTA) +=3D ad_sigma_delta.o
+> +obj-$(CONFIG_AD7124) +=3D ad7124.o
+>  obj-$(CONFIG_AD7266) +=3D ad7266.o
+>  obj-$(CONFIG_AD7291) +=3D ad7291.o
+>  obj-$(CONFIG_AD7298) +=3D ad7298.o
+> diff --git a/drivers/iio/adc/ad7124.c b/drivers/iio/adc/ad7124.c
 > new file mode 100644
-> index 0000000..fee1d66
+> index 0000000..0660135
 > --- /dev/null
-> +++ b/drivers/iio/adc/xilinx-ams.c
-> @@ -0,0 +1,1343 @@
-> +// SPDX-License-Identifier: GPL-2.0
+> +++ b/drivers/iio/adc/ad7124.c
+> @@ -0,0 +1,648 @@
+> +// SPDX-License-Identifier: GPL-2.0+
 > +/*
-> + * Xilinx AMS driver
+> + * AD7124 SPI ADC driver
 > + *
-> + *  Copyright (C) 2017-2018 Xilinx, Inc.
-> + *
-> + *  Manish Narani <mnarani@xilinx.com>
-> + *  Rajnikant Bhojani <rajnikant.bhojani@xilinx.com>
+> + * Copyright 2018 Analog Devices Inc.
 > + */
-> +
+> +#include <linux/bitfield.h>
 > +#include <linux/clk.h>
 > +#include <linux/delay.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/io.h>
-> +#include <linux/iopoll.h>
+> +#include <linux/device.h>
+> +#include <linux/err.h>
 > +#include <linux/kernel.h>
 > +#include <linux/module.h>
-> +#include <linux/of_address.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/slab.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/spi/spi.h>
 > +
-> +#include <linux/iio/events.h>
 > +#include <linux/iio/iio.h>
+> +#include <linux/iio/adc/ad_sigma_delta.h>
 > +#include <linux/iio/sysfs.h>
 > +
-> +static const unsigned int AMS_UNMASK_TIMEOUT_MS = 500;
+> +/* AD7124 registers */
+> +#define AD7124_COMMS			0x00
+> +#define AD7124_STATUS			0x00
+> +#define AD7124_ADC_CONTROL		0x01
+> +#define AD7124_DATA			0x02
+> +#define AD7124_IO_CONTROL_1		0x03
+> +#define AD7124_IO_CONTROL_2		0x04
+> +#define AD7124_ID			0x05
+> +#define AD7124_ERROR			0x06
+> +#define AD7124_ERROR_EN		0x07
+> +#define AD7124_MCLK_COUNT		0x08
+> +#define AD7124_CHANNEL(x)		(0x09 + (x))
+> +#define AD7124_CONFIG(x)		(0x19 + (x))
+> +#define AD7124_FILTER(x)		(0x21 + (x))
+> +#define AD7124_OFFSET(x)		(0x29 + (x))
+> +#define AD7124_GAIN(x)			(0x31 + (x))
 > +
-> +/* AMS registers definitions */
-> +#define AMS_ISR_0			0x010
-> +#define AMS_ISR_1			0x014
-> +#define AMS_IER_0			0x020
-> +#define AMS_IER_1			0x024
-> +#define AMS_IDR_0			0x028
-> +#define AMS_IDR_1			0x02c
-> +#define AMS_PS_CSTS			0x040
-> +#define AMS_PL_CSTS			0x044
+> +/* AD7124_STATUS */
+> +#define AD7124_STATUS_POR_FLAG_MSK	BIT(4)
 > +
-> +#define AMS_VCC_PSPLL0			0x060
-> +#define AMS_VCC_PSPLL3			0x06C
-> +#define AMS_VCCINT			0x078
-> +#define AMS_VCCBRAM			0x07C
-> +#define AMS_VCCAUX			0x080
-> +#define AMS_PSDDRPLL			0x084
-> +#define AMS_PSINTFPDDR			0x09C
+> +/* AD7124_ADC_CONTROL */
+> +#define AD7124_ADC_CTRL_PWR_MSK	GENMASK(7, 6)
+> +#define AD7124_ADC_CTRL_PWR(x)		FIELD_PREP(AD7124_ADC_CTRL_PWR_MSK, x)
+> +#define AD7124_ADC_CTRL_MODE_MSK	GENMASK(5, 2)
+> +#define AD7124_ADC_CTRL_MODE(x)	FIELD_PREP(AD7124_ADC_CTRL_MODE_MSK, x)
 > +
-> +#define AMS_VCC_PSPLL0_CH		48
-> +#define AMS_VCC_PSPLL3_CH		51
-> +#define AMS_VCCINT_CH			54
-> +#define AMS_VCCBRAM_CH			55
-> +#define AMS_VCCAUX_CH			56
-> +#define AMS_PSDDRPLL_CH			57
-> +#define AMS_PSINTFPDDR_CH		63
+> +/* AD7124_CHANNEL_X */
+> +#define AD7124_CHANNEL_EN_MSK		BIT(15)
+> +#define AD7124_CHANNEL_EN(x)		FIELD_PREP(AD7124_CHANNEL_EN_MSK, x)
+> +#define AD7124_CHANNEL_SETUP_MSK	GENMASK(14, 12)
+> +#define AD7124_CHANNEL_SETUP(x)	FIELD_PREP(AD7124_CHANNEL_SETUP_MSK, x)
+> +#define AD7124_CHANNEL_AINP_MSK	GENMASK(9, 5)
+> +#define AD7124_CHANNEL_AINP(x)		FIELD_PREP(AD7124_CHANNEL_AINP_MSK, x)
+> +#define AD7124_CHANNEL_AINM_MSK	GENMASK(4, 0)
+> +#define AD7124_CHANNEL_AINM(x)		FIELD_PREP(AD7124_CHANNEL_AINM_MSK, x)
 > +
-> +#define AMS_REG_CONFIG0			0x100
-> +#define AMS_REG_CONFIG1			0x104
-> +#define AMS_REG_CONFIG3			0x10C
-> +#define AMS_REG_SEQ_CH0			0x120
-> +#define AMS_REG_SEQ_CH1			0x124
-> +#define AMS_REG_SEQ_CH2			0x118
+> +/* AD7124_CONFIG_X */
+> +#define AD7124_CONFIG_BIPOLAR_MSK	BIT(11)
+> +#define AD7124_CONFIG_BIPOLAR(x)	FIELD_PREP(AD7124_CONFIG_BIPOLAR_MSK, x)
+> +#define AD7124_CONFIG_REF_SEL_MSK	GENMASK(4, 3)
+> +#define AD7124_CONFIG_REF_SEL(x)	FIELD_PREP(AD7124_CONFIG_REF_SEL_MSK, x)
+> +#define AD7124_CONFIG_PGA_MSK		GENMASK(2, 0)
+> +#define AD7124_CONFIG_PGA(x)		FIELD_PREP(AD7124_CONFIG_PGA_MSK, x)
 > +
-> +#define AMS_TEMP			0x000
-> +#define AMS_SUPPLY1			0x004
-> +#define AMS_SUPPLY2			0x008
-> +#define AMS_VP_VN			0x00c
-> +#define AMS_VREFP			0x010
-> +#define AMS_VREFN			0x014
-> +#define AMS_SUPPLY3			0x018
-> +#define AMS_SUPPLY4			0x034
-> +#define AMS_SUPPLY5			0x038
-> +#define AMS_SUPPLY6			0x03c
-> +#define AMS_SUPPLY7			0x200
-> +#define AMS_SUPPLY8			0x204
-> +#define AMS_SUPPLY9			0x208
-> +#define AMS_SUPPLY10			0x20c
-> +#define AMS_VCCAMS			0x210
-> +#define AMS_TEMP_REMOTE			0x214
+> +/* AD7124_FILTER_X */
+> +#define AD7124_FILTER_FS_MSK		GENMASK(10, 0)
+> +#define AD7124_FILTER_FS(x)		FIELD_PREP(AD7124_FILTER_FS_MSK, x)
 > +
-> +#define AMS_REG_VAUX(x)			(0x40 + 4*(x))
-> +
-> +#define AMS_PS_RESET_VALUE		0xFFFF
-> +#define AMS_PL_RESET_VALUE		0xFFFF
-> +
-> +#define AMS_CONF0_CHANNEL_NUM_MASK	GENMASK(6, 0)
-> +
-> +#define AMS_CONF1_SEQ_MASK		GENMASK(15, 12)
-> +#define AMS_CONF1_SEQ_DEFAULT		(0 << 12)
-> +#define AMS_CONF1_SEQ_CONTINUOUS	(2 << 12)
-> +#define AMS_CONF1_SEQ_SINGLE_CHANNEL	(3 << 12)
-> +
-> +#define AMS_REG_SEQ0_MASK		0xFFFF
-> +#define AMS_REG_SEQ2_MASK		0x003F
-> +#define AMS_REG_SEQ1_MASK		0xFFFF
-> +#define AMS_REG_SEQ2_MASK_SHIFT		16
-> +#define AMS_REG_SEQ1_MASK_SHIFT		22
-> +
-> +#define AMS_REGCFG1_ALARM_MASK		0xF0F
-> +#define AMS_REGCFG3_ALARM_MASK		0x3F
-> +
-> +#define AMS_ALARM_TEMP			0x140
-> +#define AMS_ALARM_SUPPLY1		0x144
-> +#define AMS_ALARM_SUPPLY2		0x148
-> +#define AMS_ALARM_SUPPLY3		0x160
-> +#define AMS_ALARM_SUPPLY4		0x164
-> +#define AMS_ALARM_SUPPLY5		0x168
-> +#define AMS_ALARM_SUPPLY6		0x16c
-> +#define AMS_ALARM_SUPPLY7		0x180
-> +#define AMS_ALARM_SUPPLY8		0x184
-> +#define AMS_ALARM_SUPPLY9		0x188
-> +#define AMS_ALARM_SUPPLY10		0x18c
-> +#define AMS_ALARM_VCCAMS		0x190
-> +#define AMS_ALARM_TEMP_REMOTE		0x194
-> +#define AMS_ALARM_THRESHOLD_OFF_10	0x10
-> +#define AMS_ALARM_THRESHOLD_OFF_20	0x20
-> +
-> +#define AMS_ALARM_THR_DIRECT_MASK	0x01
-> +#define AMS_ALARM_THR_MIN		0x0000
-> +#define AMS_ALARM_THR_MAX		0xffff
-> +
-> +#define AMS_NO_OF_ALARMS		32
-> +#define AMS_PL_ALARM_START		16
-> +#define AMS_ISR0_ALARM_MASK		0xFFFFFFFFU
-> +#define AMS_ISR1_ALARM_MASK		0xE000001FU
-> +#define AMS_ISR1_EOC_MASK		0x00000008U
-> +#define AMS_ISR1_INTR_MASK_SHIFT	32
-> +#define AMS_ISR0_ALARM_2_TO_0_MASK	0x07
-> +#define AMS_ISR0_ALARM_6_TO_3_MASK	0x78
-> +#define AMS_ISR0_ALARM_12_TO_7_MASK	0x3F
-> +#define AMS_CONF1_ALARM_2_TO_0_SHIFT	1
-> +#define AMS_CONF1_ALARM_6_TO_3_SHIFT	5
-> +#define AMS_CONF3_ALARM_12_TO_7_SHIFT	8
-> +
-> +#define AMS_PS_CSTS_PS_READY		0x08010000U
-> +#define AMS_PL_CSTS_ACCESS_MASK		0x00000001U
-> +
-> +#define AMS_PL_MAX_FIXED_CHANNEL	10
-> +#define AMS_PL_MAX_EXT_CHANNEL		20
-> +
-> +#define AMS_INIT_TIMEOUT_US		10000
-> +
-> +/*
-> + * Following scale and offset value is derived from
-> + * UG580 (v1.7) December 20, 2016
-> + */
-> +#define AMS_SUPPLY_SCALE_1VOLT		1000
-> +#define AMS_SUPPLY_SCALE_3VOLT		3000
-> +#define AMS_SUPPLY_SCALE_6VOLT		6000
-> +#define AMS_SUPPLY_SCALE_DIV_BIT	16
-> +
-> +#define AMS_TEMP_SCALE			509314
-> +#define AMS_TEMP_SCALE_DIV_BIT		16
-> +#define AMS_TEMP_OFFSET			-((280230L << 16) / 509314)
-> +
-> +enum ams_alarm_bit {
-> +	AMS_ALARM_BIT_TEMP,
-> +	AMS_ALARM_BIT_SUPPLY1,
-> +	AMS_ALARM_BIT_SUPPLY2,
-> +	AMS_ALARM_BIT_SUPPLY3,
-> +	AMS_ALARM_BIT_SUPPLY4,
-> +	AMS_ALARM_BIT_SUPPLY5,
-> +	AMS_ALARM_BIT_SUPPLY6,
-> +	AMS_ALARM_BIT_RESERVED,
-> +	AMS_ALARM_BIT_SUPPLY7,
-> +	AMS_ALARM_BIT_SUPPLY8,
-> +	AMS_ALARM_BIT_SUPPLY9,
-> +	AMS_ALARM_BIT_SUPPLY10,
-> +	AMS_ALARM_BIT_VCCAMS,
-> +	AMS_ALARM_BIT_TEMP_REMOTE
+> +enum ad7124_ids {
+> +	ID_AD7124_4,
+> +	ID_AD7124_8,
 > +};
 > +
-> +enum ams_seq {
-> +	AMS_SEQ_VCC_PSPLL,
-> +	AMS_SEQ_VCC_PSBATT,
-> +	AMS_SEQ_VCCINT,
-> +	AMS_SEQ_VCCBRAM,
-> +	AMS_SEQ_VCCAUX,
-> +	AMS_SEQ_PSDDRPLL,
-> +	AMS_SEQ_INTDDR
+> +enum ad7124_ref_sel {
+> +	AD7124_REFIN1,
+> +	AD7124_REFIN2,
+> +	AD7124_INT_REF,
+> +	AD7124_AVDD_REF,
 > +};
 > +
-> +enum ams_ps_pl_seq {
-> +	AMS_SEQ_CALIB,
-> +	AMS_SEQ_RSVD_1,
-> +	AMS_SEQ_RSVD_2,
-> +	AMS_SEQ_TEST,
-> +	AMS_SEQ_RSVD_4,
-> +	AMS_SEQ_SUPPLY4,
-> +	AMS_SEQ_SUPPLY5,
-> +	AMS_SEQ_SUPPLY6,
-> +	AMS_SEQ_TEMP,
-> +	AMS_SEQ_SUPPLY2,
-> +	AMS_SEQ_SUPPLY1,
-> +	AMS_SEQ_VP_VN,
-> +	AMS_SEQ_VREFP,
-> +	AMS_SEQ_VREFN,
-> +	AMS_SEQ_SUPPLY3,
-> +	AMS_SEQ_CURRENT_MON,
-> +	AMS_SEQ_SUPPLY7,
-> +	AMS_SEQ_SUPPLY8,
-> +	AMS_SEQ_SUPPLY9,
-> +	AMS_SEQ_SUPPLY10,
-> +	AMS_SEQ_VCCAMS,
-> +	AMS_SEQ_TEMP_REMOTE,
-> +	AMS_SEQ_MAX
+> +enum ad7124_power_mode {
+> +	AD7124_LOW_POWER,
+> +	AD7124_MID_POWER,
+> +	AD7124_FULL_POWER,
 > +};
 > +
-> +#define AMS_SEQ(x)		(AMS_SEQ_MAX + (x))
-> +#define AMS_VAUX_SEQ(x)		(AMS_SEQ_MAX + (x))
-> +
-> +#define AMS_PS_SEQ_MAX		AMS_SEQ_MAX
-> +#define PS_SEQ(x)		(x)
-> +#define PL_SEQ(x)		(AMS_PS_SEQ_MAX + (x))
-> +
-> +#define AMS_CHAN_TEMP(_scan_index, _addr, _ext) { \
-> +	.type = IIO_TEMP, \
-> +	.indexed = 1, \
-> +	.address = (_addr), \
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
-> +		BIT(IIO_CHAN_INFO_SCALE) | \
-> +		BIT(IIO_CHAN_INFO_OFFSET), \
-> +	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
-> +	.event_spec = ams_temp_events, \
-> +	.num_event_specs = ARRAY_SIZE(ams_temp_events), \
-> +	.scan_index = (_scan_index), \
-> +	.scan_type = { \
-> +		.sign = 'u', \
-> +		.realbits = 12, \
-> +		.storagebits = 16, \
-> +		.shift = 4, \
-> +		.endianness = IIO_CPU, \
-> +	}, \
-> +	.extend_name = _ext, \
-> +}
-> +
-> +#define AMS_CHAN_VOLTAGE(_scan_index, _addr, _ext, _alarm) { \
-> +	.type = IIO_VOLTAGE, \
-> +	.indexed = 1, \
-> +	.address = (_addr), \
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
-> +		BIT(IIO_CHAN_INFO_SCALE), \
-> +	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
-> +	.event_spec = (_alarm) ? ams_voltage_events : NULL, \
-> +	.num_event_specs = (_alarm) ? ARRAY_SIZE(ams_voltage_events) : 0, \
-> +	.scan_index = (_scan_index), \
-> +	.scan_type = { \
-> +		.realbits = 10, \
-> +		.storagebits = 16, \
-> +		.shift = 6, \
-> +		.endianness = IIO_CPU, \
-> +	}, \
-> +	.extend_name = _ext, \
-> +}
-> +
-> +#define AMS_PS_CHAN_TEMP(_scan_index, _addr, _ext) \
-> +	AMS_CHAN_TEMP(PS_SEQ(_scan_index), _addr, _ext)
-> +#define AMS_PS_CHAN_VOLTAGE(_scan_index, _addr, _ext) \
-> +	AMS_CHAN_VOLTAGE(PS_SEQ(_scan_index), _addr, _ext, true)
-> +
-> +#define AMS_PL_CHAN_TEMP(_scan_index, _addr, _ext) \
-> +	AMS_CHAN_TEMP(PL_SEQ(_scan_index), _addr, _ext)
-> +#define AMS_PL_CHAN_VOLTAGE(_scan_index, _addr, _ext, _alarm) \
-> +	AMS_CHAN_VOLTAGE(PL_SEQ(_scan_index), _addr, _ext, _alarm)
-> +#define AMS_PL_AUX_CHAN_VOLTAGE(_auxno, _ext) \
-> +	AMS_CHAN_VOLTAGE(PL_SEQ(AMS_VAUX_SEQ(_auxno)), \
-> +			AMS_REG_VAUX(_auxno), _ext, false)
-
-Given we no longer set _ext we should drop the parameter in general.
-This applies to all these macros where it is no longer used.
-
-> +#define AMS_CTRL_CHAN_VOLTAGE(_scan_index, _addr, _ext) \
-> +	AMS_CHAN_VOLTAGE(PL_SEQ(AMS_VAUX_SEQ(AMS_SEQ(_scan_index))), \
-> +			_addr, _ext, false)
-> +
-> +struct ams {
-> +	void __iomem *base;
-> +	void __iomem *ps_base;
-> +	void __iomem *pl_base;
-> +	struct clk *clk;
-> +	struct device *dev;
-> +	struct mutex lock;
-> +	unsigned int alarm_mask;
-> +	unsigned int masked_alarm;
-> +	u64 intr_mask;
-> +	int irq;
-> +	struct delayed_work ams_unmask_work;
+> +static const unsigned int ad7124_gain[8] =3D {
+> +	1, 2, 4, 8, 16, 32, 64, 128
 > +};
 > +
-> +static inline void ams_ps_update_reg(struct ams *ams, unsigned int offset,
-> +				     u32 mask, u32 data)
-> +{
-> +	u32 val;
+> +static const int ad7124_master_clk_freq_hz[3] =3D {
+> +	[AD7124_LOW_POWER] =3D 76800,
+> +	[AD7124_MID_POWER] =3D 153600,
+> +	[AD7124_FULL_POWER] =3D 614400,
+> +};
 > +
-> +	val = readl(ams->ps_base + offset);
-> +	writel((val & ~mask) | (data & mask), ams->ps_base + offset);
-> +}
+> +static const char * const ad7124_ref_names[] =3D {
+> +	[AD7124_REFIN1] =3D "refin1",
+> +	[AD7124_REFIN2] =3D "refin2",
+> +	[AD7124_INT_REF] =3D "int",
+> +	[AD7124_AVDD_REF] =3D "avdd",
+> +};
 > +
-> +static inline void ams_pl_update_reg(struct ams *ams, unsigned int offset,
-> +					 u32 mask, u32 data)
-> +{
-> +	u32 val;
+> +struct ad7124_chip_info {
+> +	unsigned int num_inputs;
+> +};
 > +
-> +	val = readl(ams->pl_base + offset);
-> +	writel((val & ~mask) | (data & mask), ams->pl_base + offset);
-> +}
+> +struct ad7124_channel_config {
+> +	enum ad7124_ref_sel refsel;
+> +	bool bipolar;
+> +	unsigned int ain;
+> +	unsigned int vref_mv;
+> +	unsigned int pga_bits;
+> +	unsigned int odr;
+> +};
 > +
-> +static void ams_update_intrmask(struct ams *ams, u64 mask, u64 val)
-> +{
-> +	ams->intr_mask &= ~mask;
-> +	ams->intr_mask |= (val & mask);
+> +struct ad7124_state {
+> +	const struct ad7124_chip_info *chip_info;
+> +	struct ad_sigma_delta sd;
+> +	struct ad7124_channel_config channel_config[4];
+> +	struct regulator *vref[4];
+> +	struct clk *mclk;
+> +	unsigned int adc_control;
+> +	unsigned int num_channels;
+> +};
 > +
-> +	writel(~(ams->intr_mask | ams->masked_alarm), ams->base + AMS_IER_0);
-> +	writel(~(ams->intr_mask >> AMS_ISR1_INTR_MASK_SHIFT),
-> +			ams->base + AMS_IER_1);
-> +	writel(ams->intr_mask | ams->masked_alarm, ams->base + AMS_IDR_0);
-> +	writel(ams->intr_mask >> AMS_ISR1_INTR_MASK_SHIFT,
-> +			ams->base + AMS_IDR_1);
-> +}
+> +static const struct iio_chan_spec ad7124_channel_template =3D {
+> +	.type =3D IIO_VOLTAGE,
+> +	.indexed =3D 1,
+> +	.differential =3D 1,
+> +	.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |
+> +		BIT(IIO_CHAN_INFO_SCALE) |
+> +		BIT(IIO_CHAN_INFO_OFFSET) |
+> +		BIT(IIO_CHAN_INFO_SAMP_FREQ),
+> +	.scan_type =3D {
+> +		.sign =3D 'u',
+> +		.realbits =3D 24,
+> +		.storagebits =3D 32,
+> +	},
+> +};
 > +
-> +static void ams_disable_all_alarms(struct ams *ams)
-> +{
-> +	/* disable PS module alarm */
-> +	if (ams->ps_base) {
-> +		ams_ps_update_reg(ams, AMS_REG_CONFIG1, AMS_REGCFG1_ALARM_MASK,
-> +				  AMS_REGCFG1_ALARM_MASK);
-> +		ams_ps_update_reg(ams, AMS_REG_CONFIG3, AMS_REGCFG3_ALARM_MASK,
-> +				  AMS_REGCFG3_ALARM_MASK);
-> +	}
+> +static struct ad7124_chip_info ad7124_chip_info_tbl[] =3D {
+> +	[ID_AD7124_4] =3D {
+> +		.num_inputs =3D 8,
+> +	},
+> +	[ID_AD7124_8] =3D {
+> +		.num_inputs =3D 16,
+> +	},
+> +};
 > +
-> +	/* disable PL module alarm */
-> +	if (ams->pl_base) {
-> +		ams_pl_update_reg(ams, AMS_REG_CONFIG1,
-> +				    AMS_REGCFG1_ALARM_MASK,
-> +				    AMS_REGCFG1_ALARM_MASK);
-> +		ams_pl_update_reg(ams, AMS_REG_CONFIG3,
-> +				    AMS_REGCFG3_ALARM_MASK,
-> +				    AMS_REGCFG3_ALARM_MASK);
-> +	}
-> +}
-> +
-> +static void ams_update_alarm(struct ams *ams, unsigned long alarm_mask)
-> +{
-> +	u32 cfg;
-> +	unsigned long pl_alarm_mask;
-> +
-> +	if (ams->ps_base) {
-> +		/* Configuring PS alarm enable */
-> +		cfg = ~((alarm_mask & AMS_ISR0_ALARM_2_TO_0_MASK) <<
-> +			       AMS_CONF1_ALARM_2_TO_0_SHIFT);
-> +		cfg &= ~((alarm_mask & AMS_ISR0_ALARM_6_TO_3_MASK) <<
-> +				AMS_CONF1_ALARM_6_TO_3_SHIFT);
-> +		ams_ps_update_reg(ams, AMS_REG_CONFIG1, AMS_REGCFG1_ALARM_MASK,
-> +				  cfg);
-> +
-> +		cfg = ~((alarm_mask >> AMS_CONF3_ALARM_12_TO_7_SHIFT) &
-> +				AMS_ISR0_ALARM_12_TO_7_MASK);
-> +		ams_ps_update_reg(ams, AMS_REG_CONFIG3, AMS_REGCFG3_ALARM_MASK,
-> +				  cfg);
-> +	}
-> +
-> +	if (ams->pl_base) {
-> +		pl_alarm_mask = (alarm_mask >> AMS_PL_ALARM_START);
-> +		/* Configuring PL alarm enable */
-> +		cfg = ~((pl_alarm_mask & AMS_ISR0_ALARM_2_TO_0_MASK) <<
-> +			       AMS_CONF1_ALARM_2_TO_0_SHIFT);
-> +		cfg &= ~((pl_alarm_mask & AMS_ISR0_ALARM_6_TO_3_MASK) <<
-> +				AMS_CONF1_ALARM_6_TO_3_SHIFT);
-> +		ams_pl_update_reg(ams, AMS_REG_CONFIG1,
-> +				AMS_REGCFG1_ALARM_MASK, cfg);
-> +
-> +		cfg = ~((pl_alarm_mask >> AMS_CONF3_ALARM_12_TO_7_SHIFT) &
-> +				AMS_ISR0_ALARM_12_TO_7_MASK);
-> +		ams_pl_update_reg(ams, AMS_REG_CONFIG3,
-> +				AMS_REGCFG3_ALARM_MASK, cfg);
-> +	}
-> +
-> +	mutex_lock(&ams->lock);
-> +	ams_update_intrmask(ams, AMS_ISR0_ALARM_MASK, ~alarm_mask);
-> +	mutex_unlock(&ams->lock);
-> +}
-> +
-> +static void ams_enable_channel_sequence(struct ams *ams)
+> +static int ad7124_find_closest_match(const int *array,
+> +				     unsigned int size, int val)
 > +{
 > +	int i;
-> +	unsigned long long scan_mask;
-> +	struct iio_dev *indio_dev = iio_priv_to_dev(ams);
 > +
+> +	for (i =3D 0; i < size; i++) {
+> +		if (val <=3D array[i])
+> +			return i;
+> +	}
+> +
+> +	return size - 1;
+> +}
+> +
+> +static int ad7124_spi_write_mask(struct ad7124_state *st,
+> +				 unsigned int addr,
+> +				 unsigned long mask,
+> +				 unsigned int val,
+> +				 unsigned int bytes)
+> +{
+> +	unsigned int readval;
+> +	int ret;
+> +
+> +	ret =3D ad_sd_read_reg(&st->sd, addr, bytes, &readval);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	readval &=3D ~mask;
+> +	readval |=3D val;
+> +
+> +	return ad_sd_write_reg(&st->sd, addr, bytes, readval);
+> +}
+> +
+> +static int ad7124_set_mode(struct ad_sigma_delta *sd,
+> +			   enum ad_sigma_delta_mode mode)
+> +{
+> +	struct ad7124_state *st =3D container_of(sd, struct ad7124_state, sd);
+> +
+> +	st->adc_control &=3D ~AD7124_ADC_CTRL_MODE_MSK;
+> +	st->adc_control |=3D AD7124_ADC_CTRL_MODE(mode);
+> +
+> +	return ad_sd_write_reg(&st->sd, AD7124_ADC_CONTROL, 2, st->adc_control);
+> +}
+> +
+> +static int ad7124_set_channel(struct ad_sigma_delta *sd, unsigned int ch=
+annel)
+> +{
+> +	struct ad7124_state *st =3D container_of(sd, struct ad7124_state, sd);
+> +	unsigned int val;
+> +
+> +	val =3D st->channel_config[channel].ain | AD7124_CHANNEL_EN(1) |
+> +	      AD7124_CHANNEL_SETUP(channel);
+> +
+> +	return ad_sd_write_reg(&st->sd, AD7124_CHANNEL(channel), 2, val);
+> +}
+> +
+> +static const struct ad_sigma_delta_info ad7124_sigma_delta_info =3D {
+> +	.set_channel =3D ad7124_set_channel,
+> +	.set_mode =3D ad7124_set_mode,
+> +	.has_registers =3D true,
+> +	.addr_shift =3D 0,
+> +	.read_mask =3D BIT(6),
+> +	.data_reg =3D AD7124_DATA,
+> +};
+> +
+> +static int ad7124_set_channel_odr(struct ad7124_state *st,
+> +				  unsigned int channel,
+> +				  unsigned int odr)
+> +{
+> +	unsigned int fclk, odr_sel_bits;
+> +	int ret;
+> +
+> +	fclk =3D clk_get_rate(st->mclk);
 > +	/*
-> +	 * Enable channel sequence. First 22 bits of scan_mask represent
-> +	 * PS channels, and next remaining bits represent PL channels.
+> +	 * FS[10:0] =3D fCLK / (fADC x 32) where:
+> +	 * fADC is the output data rate
+> +	 * fCLK is the master clock frequency
+> +	 * FS[10:0] are the bits in the filter register
+> +	 * FS[10:0] can have a value from 1 to 2047
 > +	 */
+> +	odr_sel_bits =3D DIV_ROUND_CLOSEST(fclk, odr * 32);
+> +	if (odr_sel_bits < 1)
+> +		odr_sel_bits =3D 1;
+> +	else if (odr_sel_bits > 2047)
+> +		odr_sel_bits =3D 2047;
 > +
-> +	/* Run calibration of PS & PL as part of the sequence */
-> +	scan_mask = 0x1 | BIT(AMS_PS_SEQ_MAX);
-> +	for (i = 0; i < indio_dev->num_channels; i++)
-> +		scan_mask |= BIT(indio_dev->channels[i].scan_index);
-> +
-> +	if (ams->ps_base) {
-> +		/* put sysmon in a soft reset to change the sequence */
-> +		ams_ps_update_reg(ams, AMS_REG_CONFIG1, AMS_CONF1_SEQ_MASK,
-> +				  AMS_CONF1_SEQ_DEFAULT);
-> +
-> +		/* configure basic channels */
-> +		writel(scan_mask & AMS_REG_SEQ0_MASK,
-> +				ams->ps_base + AMS_REG_SEQ_CH0);
-> +		writel(AMS_REG_SEQ2_MASK &
-> +			(scan_mask >> AMS_REG_SEQ2_MASK_SHIFT),
-> +			ams->ps_base + AMS_REG_SEQ_CH2);
-> +
-> +		/* set continuous sequence mode */
-> +		ams_ps_update_reg(ams, AMS_REG_CONFIG1, AMS_CONF1_SEQ_MASK,
-> +				  AMS_CONF1_SEQ_CONTINUOUS);
-> +	}
-> +
-> +	if (ams->pl_base) {
-> +		/* put sysmon in a soft reset to change the sequence */
-> +		ams_pl_update_reg(ams, AMS_REG_CONFIG1, AMS_CONF1_SEQ_MASK,
-> +				    AMS_CONF1_SEQ_DEFAULT);
-> +
-> +		/* configure basic channels */
-> +		scan_mask = scan_mask >> AMS_PS_SEQ_MAX;
-> +		writel(scan_mask & AMS_REG_SEQ0_MASK,
-> +				ams->pl_base + AMS_REG_SEQ_CH0);
-> +		writel(AMS_REG_SEQ2_MASK &
-> +				(scan_mask >> AMS_REG_SEQ2_MASK_SHIFT),
-> +				ams->pl_base + AMS_REG_SEQ_CH2);
-> +		writel(AMS_REG_SEQ1_MASK &
-> +				(scan_mask >> AMS_REG_SEQ1_MASK_SHIFT),
-> +				ams->pl_base + AMS_REG_SEQ_CH1);
-> +
-> +		/* set continuous sequence mode */
-> +		ams_pl_update_reg(ams, AMS_REG_CONFIG1, AMS_CONF1_SEQ_MASK,
-> +				AMS_CONF1_SEQ_CONTINUOUS);
-> +	}
-> +}
-> +
-> +static int ams_init_device(struct ams *ams)
-> +{
-> +	u32 reg;
-> +	int ret;
-> +
-> +	/* reset AMS */
-> +	if (ams->ps_base) {
-> +		writel(AMS_PS_RESET_VALUE, ams->ps_base + AMS_VP_VN);
-> +
-> +		ret = readl_poll_timeout(ams->base + AMS_PS_CSTS, reg,
-> +					 (reg & AMS_PS_CSTS_PS_READY) ==
-> +					 AMS_PS_CSTS_PS_READY, 0,
-> +					 AMS_INIT_TIMEOUT_US);
-> +		if (ret)
-> +			return ret;
-> +
-> +		/* put sysmon in a default state */
-> +		ams_ps_update_reg(ams, AMS_REG_CONFIG1, AMS_CONF1_SEQ_MASK,
-> +				  AMS_CONF1_SEQ_DEFAULT);
-> +	}
-> +
-> +	if (ams->pl_base) {
-> +		writel(AMS_PL_RESET_VALUE, ams->pl_base + AMS_VP_VN);
-> +
-> +		ret = readl_poll_timeout(ams->base + AMS_PL_CSTS, reg,
-> +					 (reg & AMS_PL_CSTS_ACCESS_MASK) ==
-> +					 AMS_PL_CSTS_ACCESS_MASK, 0,
-> +					 AMS_INIT_TIMEOUT_US);
-> +		if (ret)
-> +			return ret;
-> +
-> +		/* put sysmon in a default state */
-> +		ams_pl_update_reg(ams, AMS_REG_CONFIG1, AMS_CONF1_SEQ_MASK,
-> +				    AMS_CONF1_SEQ_DEFAULT);
-> +	}
-> +
-> +	ams_disable_all_alarms(ams);
-> +
-> +	/* Disable interrupt */
-> +	ams_update_intrmask(ams, ~0, ~0);
-> +
-> +	/* Clear any pending interrupt */
-> +	writel(AMS_ISR0_ALARM_MASK, ams->base + AMS_ISR_0);
-> +	writel(AMS_ISR1_ALARM_MASK, ams->base + AMS_ISR_1);
-> +
-> +	return 0;
-> +}
-> +
-> +static int ams_enable_single_channel(struct ams *ams, unsigned int offset)
-> +{
-> +	u8 channel_num = 0;
-> +
-> +	switch (offset) {
-> +	case AMS_VCC_PSPLL0:
-This lookup seems backwards.  See the comment in read_raw.
-It's due to having chan->address literally be the channel address. I think
-perhaps it should be a more abstract value that is used to index everything
-about the channel.
-
-> +		channel_num = AMS_VCC_PSPLL0_CH;
-> +		break;
-> +	case AMS_VCC_PSPLL3:
-> +		channel_num = AMS_VCC_PSPLL3_CH;
-> +		break;
-> +	case AMS_VCCINT:
-> +		channel_num = AMS_VCCINT_CH;
-> +		break;
-> +	case AMS_VCCBRAM:
-> +		channel_num = AMS_VCCBRAM_CH;
-> +		break;
-> +	case AMS_VCCAUX:
-> +		channel_num = AMS_VCCAUX_CH;
-> +		break;
-> +	case AMS_PSDDRPLL:
-> +		channel_num = AMS_PSDDRPLL_CH;
-> +		break;
-> +	case AMS_PSINTFPDDR:
-> +		channel_num = AMS_PSINTFPDDR_CH;
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	/* set single channel, sequencer off mode */
-> +	ams_ps_update_reg(ams, AMS_REG_CONFIG1, AMS_CONF1_SEQ_MASK,
-> +			AMS_CONF1_SEQ_SINGLE_CHANNEL);
-> +
-> +	/* write the channel number */
-> +	ams_ps_update_reg(ams, AMS_REG_CONFIG0, AMS_CONF0_CHANNEL_NUM_MASK,
-> +			channel_num);
-> +	return 0;
-> +}
-> +
-> +static int ams_read_vcc_reg(struct ams *ams, unsigned int offset, u32 *data)
-> +{
-> +	u32 reg;
-> +	int ret;
-> +
-> +	ret = ams_enable_single_channel(ams, offset);
-> +	if (ret)
+> +	ret =3D ad7124_spi_write_mask(st, AD7124_FILTER(channel),
+> +				    AD7124_FILTER_FS_MSK,
+> +				    AD7124_FILTER_FS(odr_sel_bits), 3);
+> +	if (ret < 0)
 > +		return ret;
-> +
-> +	ret = readl_poll_timeout(ams->base + AMS_ISR_1, reg,
-> +				 (reg & AMS_ISR1_EOC_MASK) == AMS_ISR1_EOC_MASK,
-> +				 0, AMS_INIT_TIMEOUT_US);
-> +	if (ret)
-> +		return ret;
-> +
-> +	*data = readl(ams->base + offset);
-> +	ams_enable_channel_sequence(ams);
+> +	/* fADC =3D fCLK / (FS[10:0] x 32) */
+> +	st->channel_config[channel].odr =3D
+> +		DIV_ROUND_CLOSEST(fclk, odr_sel_bits * 32);
 > +
 > +	return 0;
 > +}
 > +
-> +static int ams_read_raw(struct iio_dev *indio_dev,
-> +			struct iio_chan_spec const *chan,
-> +			int *val, int *val2, long mask)
+> +static int ad7124_read_raw(struct iio_dev *indio_dev,
+> +			   struct iio_chan_spec const *chan,
+> +			   int *val, int *val2, long info)
 > +{
-> +	struct ams *ams = iio_priv(indio_dev);
-> +	int ret;
+> +	struct ad7124_state *st =3D iio_priv(indio_dev);
+> +	int idx, ret;
 > +
-> +	switch (mask) {
+> +	switch (info) {
 > +	case IIO_CHAN_INFO_RAW:
-> +		mutex_lock(&ams->lock);
-> +		if (chan->scan_index >= (AMS_PS_SEQ_MAX * 3)) {
-> +			ret = ams_read_vcc_reg(ams, chan->address, val);
-There are a few places where you end up reverse looking up from the channel
-address to other things which is nasty.  Perhaps consider setting
-chan->address to the sequence enum them some of those at least can
-become simple look up tables. One of which gives the register address.
-
-
-> +			if (ret) {
-> +				mutex_unlock(&ams->lock);
-> +				return -EINVAL;
-> +			}
-> +		} else if (chan->scan_index >= AMS_PS_SEQ_MAX)
-> +			*val = readl(ams->pl_base + chan->address);
-> +		else
-> +			*val = readl(ams->ps_base + chan->address);
-> +		mutex_unlock(&ams->lock);
+> +		ret =3D ad_sigma_delta_single_conversion(indio_dev, chan, val);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		/* After the conversion is performed, disable the channel */
+> +		ret =3D ad_sd_write_reg(&st->sd,
+> +				      AD7124_CHANNEL(chan->address), 2,
+> +				      st->channel_config[chan->address].ain |
+> +				      AD7124_CHANNEL_EN(0));
+> +		if (ret < 0)
+> +			return ret;
 > +
 > +		return IIO_VAL_INT;
 > +	case IIO_CHAN_INFO_SCALE:
-> +		switch (chan->type) {
-> +		case IIO_VOLTAGE:
-> +			switch (chan->address) {
-> +			case AMS_SUPPLY1:
-> +			case AMS_SUPPLY2:
-> +			case AMS_SUPPLY3:
-> +			case AMS_SUPPLY4:
-> +				*val = AMS_SUPPLY_SCALE_3VOLT;
-> +				break;
-> +			case AMS_SUPPLY5:
-> +			case AMS_SUPPLY6:
-> +				if (chan->scan_index < AMS_PS_SEQ_MAX)
-> +					*val = AMS_SUPPLY_SCALE_6VOLT;
-> +				else
-> +					*val = AMS_SUPPLY_SCALE_3VOLT;
-> +				break;
-> +			case AMS_SUPPLY7:
-> +			case AMS_SUPPLY8:
-> +				*val = AMS_SUPPLY_SCALE_6VOLT;
-> +				break;
-> +			case AMS_SUPPLY9:
-> +			case AMS_SUPPLY10:
-> +				if (chan->scan_index < AMS_PS_SEQ_MAX)
-> +					*val = AMS_SUPPLY_SCALE_3VOLT;
-> +				else
-> +					*val = AMS_SUPPLY_SCALE_6VOLT;
-> +				break;
-> +			case AMS_VCC_PSPLL0:
-> +			case AMS_VCC_PSPLL3:
-> +			case AMS_VCCINT:
-> +			case AMS_VCCBRAM:
-> +			case AMS_VCCAUX:
-> +			case AMS_PSDDRPLL:
-> +			case AMS_PSINTFPDDR:
-> +				*val = AMS_SUPPLY_SCALE_3VOLT;
-> +				break;
-> +			default:
-> +				*val = AMS_SUPPLY_SCALE_1VOLT;
-> +				break;
-> +			}
-> +			*val2 = AMS_SUPPLY_SCALE_DIV_BIT;
-> +			return IIO_VAL_FRACTIONAL_LOG2;
-> +		case IIO_TEMP:
-> +			*val = AMS_TEMP_SCALE;
-> +			*val2 = AMS_TEMP_SCALE_DIV_BIT;
-> +			return IIO_VAL_FRACTIONAL_LOG2;
-> +		default:
-> +			return -EINVAL;
-> +		}
+> +		idx =3D st->channel_config[chan->address].pga_bits;
+> +		*val =3D st->channel_config[chan->address].vref_mv /
+> +			ad7124_gain[idx];
+> +		if (st->channel_config[chan->address].bipolar)
+> +			*val2 =3D chan->scan_type.realbits - 1;
+> +		else
+> +			*val2 =3D chan->scan_type.realbits;
+> +
+> +		return IIO_VAL_FRACTIONAL_LOG2;
 > +	case IIO_CHAN_INFO_OFFSET:
-> +		/* Only the temperature channel has an offset */
-> +		*val = AMS_TEMP_OFFSET;
+> +		if (st->channel_config[chan->address].bipolar) {
+> +			/* Code =3D 2^(n =E2=88=92 1) =C3=97 ((Ain =C3=97 Gain / Vref) + 1) */
+> +			idx =3D st->channel_config[chan->address].pga_bits;
+> +			*val =3D -(st->channel_config[chan->address].vref_mv /
+> +				 ad7124_gain[idx]);
+> +		} else {
+> +			*val =3D 0;
+> +		}
+> +
 > +		return IIO_VAL_INT;
-> +	}
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		*val =3D st->channel_config[chan->address].odr;
 > +
-> +	return -EINVAL;
-> +}
-> +
-> +static int ams_get_alarm_offset(int scan_index, enum iio_event_direction dir)
-> +{
-> +	int offset = 0;
-> +
-> +	if (scan_index >= AMS_PS_SEQ_MAX)
-> +		scan_index -= AMS_PS_SEQ_MAX;
-> +
-> +	if (dir == IIO_EV_DIR_FALLING) {
-> +		if (scan_index < AMS_SEQ_SUPPLY7)
-> +			offset = AMS_ALARM_THRESHOLD_OFF_10;
-> +		else
-> +			offset = AMS_ALARM_THRESHOLD_OFF_20;
-> +	}
-> +
-> +	switch (scan_index) {
-
-Not sure why I didn't comment on this before, but this
-looks awfully like a case for a look up table rather than the
-switch statement of doom.
-
-There are a few other places where this is true in the code
-and some of them can be easily combined into one array
-(e.g address and bit)   The event to channel one below
-though is a hot path so you'll either need the reverse table
-as well, or just leave that one as a huge switch statement.
-
-> +	case AMS_SEQ_TEMP:
-> +		return AMS_ALARM_TEMP + offset;
-> +	case AMS_SEQ_SUPPLY1:
-> +		return AMS_ALARM_SUPPLY1 + offset;
-> +	case AMS_SEQ_SUPPLY2:
-> +		return AMS_ALARM_SUPPLY2 + offset;
-> +	case AMS_SEQ_SUPPLY3:
-> +		return AMS_ALARM_SUPPLY3 + offset;
-> +	case AMS_SEQ_SUPPLY4:
-> +		return AMS_ALARM_SUPPLY4 + offset;
-> +	case AMS_SEQ_SUPPLY5:
-> +		return AMS_ALARM_SUPPLY5 + offset;
-> +	case AMS_SEQ_SUPPLY6:
-> +		return AMS_ALARM_SUPPLY6 + offset;
-> +	case AMS_SEQ_SUPPLY7:
-> +		return AMS_ALARM_SUPPLY7 + offset;
-> +	case AMS_SEQ_SUPPLY8:
-> +		return AMS_ALARM_SUPPLY8 + offset;
-> +	case AMS_SEQ_SUPPLY9:
-> +		return AMS_ALARM_SUPPLY9 + offset;
-> +	case AMS_SEQ_SUPPLY10:
-> +		return AMS_ALARM_SUPPLY10 + offset;
-> +	case AMS_SEQ_VCCAMS:
-> +		return AMS_ALARM_VCCAMS + offset;
-> +	case AMS_SEQ_TEMP_REMOTE:
-> +		return AMS_ALARM_TEMP_REMOTE + offset;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct iio_chan_spec *ams_event_to_channel(
-> +		struct iio_dev *indio_dev, u32 event)
-> +{
-> +	int scan_index = 0, i;
-> +
-> +	if (event >= AMS_PL_ALARM_START) {
-> +		event -= AMS_PL_ALARM_START;
-> +		scan_index = AMS_PS_SEQ_MAX;
-> +	}
-> +
-> +	switch (event) {
-> +	case AMS_ALARM_BIT_TEMP:
-> +		scan_index += AMS_SEQ_TEMP;
-> +		break;
-> +	case AMS_ALARM_BIT_SUPPLY1:
-> +		scan_index += AMS_SEQ_SUPPLY1;
-> +		break;
-> +	case AMS_ALARM_BIT_SUPPLY2:
-> +		scan_index += AMS_SEQ_SUPPLY2;
-> +		break;
-> +	case AMS_ALARM_BIT_SUPPLY3:
-> +		scan_index += AMS_SEQ_SUPPLY3;
-> +		break;
-> +	case AMS_ALARM_BIT_SUPPLY4:
-> +		scan_index += AMS_SEQ_SUPPLY4;
-> +		break;
-> +	case AMS_ALARM_BIT_SUPPLY5:
-> +		scan_index += AMS_SEQ_SUPPLY5;
-> +		break;
-> +	case AMS_ALARM_BIT_SUPPLY6:
-> +		scan_index += AMS_SEQ_SUPPLY6;
-> +		break;
-> +	case AMS_ALARM_BIT_SUPPLY7:
-> +		scan_index += AMS_SEQ_SUPPLY7;
-> +		break;
-> +	case AMS_ALARM_BIT_SUPPLY8:
-> +		scan_index += AMS_SEQ_SUPPLY8;
-> +		break;
-> +	case AMS_ALARM_BIT_SUPPLY9:
-> +		scan_index += AMS_SEQ_SUPPLY9;
-> +		break;
-> +	case AMS_ALARM_BIT_SUPPLY10:
-> +		scan_index += AMS_SEQ_SUPPLY10;
-> +		break;
-> +	case AMS_ALARM_BIT_VCCAMS:
-> +		scan_index += AMS_SEQ_VCCAMS;
-> +		break;
-> +	case AMS_ALARM_BIT_TEMP_REMOTE:
-> +		scan_index += AMS_SEQ_TEMP_REMOTE;
-> +		break;
-> +	}
-> +
-> +	for (i = 0; i < indio_dev->num_channels; i++)
-> +		if (indio_dev->channels[i].scan_index == scan_index)
-> +			break;
-> +
-> +	return &indio_dev->channels[i];
-> +}
-> +
-> +static int ams_get_alarm_mask(int scan_index)
-> +{
-> +	int bit = 0;
-> +
-> +	if (scan_index >= AMS_PS_SEQ_MAX) {
-> +		bit = AMS_PL_ALARM_START;
-> +		scan_index -= AMS_PS_SEQ_MAX;
-> +	}
-> +
-> +	switch (scan_index) {
-> +	case AMS_SEQ_TEMP:
-> +		return BIT(AMS_ALARM_BIT_TEMP + bit);
-> +	case AMS_SEQ_SUPPLY1:
-> +		return BIT(AMS_ALARM_BIT_SUPPLY1 + bit);
-> +	case AMS_SEQ_SUPPLY2:
-> +		return BIT(AMS_ALARM_BIT_SUPPLY2 + bit);
-> +	case AMS_SEQ_SUPPLY3:
-> +		return BIT(AMS_ALARM_BIT_SUPPLY3 + bit);
-> +	case AMS_SEQ_SUPPLY4:
-> +		return BIT(AMS_ALARM_BIT_SUPPLY4 + bit);
-> +	case AMS_SEQ_SUPPLY5:
-> +		return BIT(AMS_ALARM_BIT_SUPPLY5 + bit);
-> +	case AMS_SEQ_SUPPLY6:
-> +		return BIT(AMS_ALARM_BIT_SUPPLY6 + bit);
-> +	case AMS_SEQ_SUPPLY7:
-> +		return BIT(AMS_ALARM_BIT_SUPPLY7 + bit);
-> +	case AMS_SEQ_SUPPLY8:
-> +		return BIT(AMS_ALARM_BIT_SUPPLY8 + bit);
-> +	case AMS_SEQ_SUPPLY9:
-> +		return BIT(AMS_ALARM_BIT_SUPPLY9 + bit);
-> +	case AMS_SEQ_SUPPLY10:
-> +		return BIT(AMS_ALARM_BIT_SUPPLY10 + bit);
-> +	case AMS_SEQ_VCCAMS:
-> +		return BIT(AMS_ALARM_BIT_VCCAMS + bit);
-> +	case AMS_SEQ_TEMP_REMOTE:
-> +		return BIT(AMS_ALARM_BIT_TEMP_REMOTE + bit);
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int ams_read_event_config(struct iio_dev *indio_dev,
-> +				 const struct iio_chan_spec *chan,
-> +				 enum iio_event_type type,
-> +				 enum iio_event_direction dir)
-> +{
-> +	struct ams *ams = iio_priv(indio_dev);
-> +
-> +	return (ams->alarm_mask & ams_get_alarm_mask(chan->scan_index)) ? 1 : 0;
-Huh.  My initial assumption was that we wouldn't need to force this to 1 or
-0 because surely the core would do that.  oops it doesn't.  Just outputs
-the value directly to userspace. 
-
-I hope there is no userspace actually taking advantage of that little
-delight.  One for the list of things to clean up in the core, but for
-now this is correct.
-
-> +}
-> +
-> +static int ams_write_event_config(struct iio_dev *indio_dev,
-> +				  const struct iio_chan_spec *chan,
-> +				  enum iio_event_type type,
-> +				  enum iio_event_direction dir,
-> +				  int state)
-> +{
-> +	struct ams *ams = iio_priv(indio_dev);
-> +	unsigned int alarm;
-> +
-> +	alarm = ams_get_alarm_mask(chan->scan_index);
-> +
-> +	mutex_lock(&ams->lock);
-> +
-> +	if (state)
-> +		ams->alarm_mask |= alarm;
-> +	else
-> +		ams->alarm_mask &= ~alarm;
-> +
-> +	ams_update_alarm(ams, ams->alarm_mask);
-> +
-> +	mutex_unlock(&ams->lock);
-> +
-> +	return 0;
-> +}
-> +
-> +static int ams_read_event_value(struct iio_dev *indio_dev,
-> +				const struct iio_chan_spec *chan,
-> +				enum iio_event_type type,
-> +				enum iio_event_direction dir,
-> +				enum iio_event_info info, int *val, int *val2)
-> +{
-> +	struct ams *ams = iio_priv(indio_dev);
-> +	unsigned int offset = ams_get_alarm_offset(chan->scan_index, dir);
-> +
-> +	mutex_lock(&ams->lock);
-> +
-> +	if (chan->scan_index >= AMS_PS_SEQ_MAX)
-> +		*val = readl(ams->pl_base + offset);
-> +	else
-> +		*val = readl(ams->ps_base + offset);
-> +
-> +	mutex_unlock(&ams->lock);
-> +
-> +	return IIO_VAL_INT;
-> +}
-> +
-> +static int ams_write_event_value(struct iio_dev *indio_dev,
-> +				 const struct iio_chan_spec *chan,
-> +				 enum iio_event_type type,
-> +				 enum iio_event_direction dir,
-> +				 enum iio_event_info info, int val, int val2)
-> +{
-> +	struct ams *ams = iio_priv(indio_dev);
-> +	unsigned int offset;
-> +
-> +	mutex_lock(&ams->lock);
-> +
-> +	/* Set temperature channel threshold to direct threshold */
-> +	if (chan->type == IIO_TEMP) {
-> +		offset = ams_get_alarm_offset(chan->scan_index,
-> +					      IIO_EV_DIR_FALLING);
-> +
-> +		if (chan->scan_index >= AMS_PS_SEQ_MAX)
-> +			ams_pl_update_reg(ams, offset,
-> +					    AMS_ALARM_THR_DIRECT_MASK,
-> +					    AMS_ALARM_THR_DIRECT_MASK);
-> +		else
-> +			ams_ps_update_reg(ams, offset,
-> +					  AMS_ALARM_THR_DIRECT_MASK,
-> +					  AMS_ALARM_THR_DIRECT_MASK);
-> +	}
-> +
-> +	offset = ams_get_alarm_offset(chan->scan_index, dir);
-> +	if (chan->scan_index >= AMS_PS_SEQ_MAX)
-> +		writel(val, ams->pl_base + offset);
-> +	else
-> +		writel(val, ams->ps_base + offset);
-> +
-> +	mutex_unlock(&ams->lock);
-> +
-> +	return 0;
-> +}
-> +
-> +static void ams_handle_event(struct iio_dev *indio_dev, u32 event)
-> +{
-> +	const struct iio_chan_spec *chan;
-> +
-> +	chan = ams_event_to_channel(indio_dev, event);
-> +
-> +	if (chan->type == IIO_TEMP) {
-> +		/*
-> +		 * The temperature channel only supports over-temperature
-> +		 * events
-> +		 */
-> +		iio_push_event(indio_dev,
-> +			       IIO_UNMOD_EVENT_CODE(chan->type, chan->channel,
-> +						    IIO_EV_TYPE_THRESH,
-> +						    IIO_EV_DIR_RISING),
-> +			iio_get_time_ns(indio_dev));
-> +	} else {
-> +		/*
-> +		 * For other channels we don't know whether it is a upper or
-> +		 * lower threshold event. Userspace will have to check the
-> +		 * channel value if it wants to know.
-> +		 */
-> +		iio_push_event(indio_dev,
-> +			       IIO_UNMOD_EVENT_CODE(chan->type, chan->channel,
-> +						    IIO_EV_TYPE_THRESH,
-> +						    IIO_EV_DIR_EITHER),
-> +			iio_get_time_ns(indio_dev));
+> +		return IIO_VAL_INT;
+> +	default:
+> +		return -EINVAL;
 > +	}
 > +}
 > +
-> +static void ams_handle_events(struct iio_dev *indio_dev, unsigned long events)
+> +static int ad7124_write_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int val, int val2, long info)
 > +{
-> +	unsigned int bit;
+> +	struct ad7124_state *st =3D iio_priv(indio_dev);
 > +
-> +	for_each_set_bit(bit, &events, AMS_NO_OF_ALARMS)
-> +		ams_handle_event(indio_dev, bit);
+> +	switch (info) {
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		if (val2 !=3D 0)
+> +			return -EINVAL;
+> +
+> +		return ad7124_set_channel_odr(st, chan->address, val);
+> +	default:
+> +		return -EINVAL;
+> +	}
 > +}
 > +
-> +/**
-> + * ams_unmask_worker - ams alarm interrupt unmask worker
-> + * @work :		work to be done
-> + *
-> + * The ZynqMP threshold interrupts are level sensitive. Since we can't make the
-> + * threshold condition go way from within the interrupt handler, this means as
-> + * soon as a threshold condition is present we would enter the interrupt handler
-> + * again and again. To work around this we mask all active threshold interrupts
-> + * in the interrupt handler and start a timer. In this timer we poll the
-> + * interrupt status and only if the interrupt is inactive we unmask it again.
-> + */
-> +static void ams_unmask_worker(struct work_struct *work)
-> +{
-> +	struct ams *ams = container_of(work, struct ams, ams_unmask_work.work);
-> +	unsigned int status, unmask;
-> +
-> +	mutex_lock(&ams->lock);
-> +
-> +	status = readl(ams->base + AMS_ISR_0);
-> +
-> +	/* Clear those bits which are not active anymore */
-> +	unmask = (ams->masked_alarm ^ status) & ams->masked_alarm;
-> +
-> +	/* clear status of disabled alarm */
-> +	unmask |= ams->intr_mask;
-> +
-> +	ams->masked_alarm &= status;
-> +
-> +	/* Also clear those which are masked out anyway */
-> +	ams->masked_alarm &= ~ams->intr_mask;
-> +
-> +	/* Clear the interrupts before we unmask them */
-> +	writel(unmask, ams->base + AMS_ISR_0);
-> +
-> +	ams_update_intrmask(ams, 0, 0);
-> +
-> +	mutex_unlock(&ams->lock);
-> +
-> +	/* if still pending some alarm re-trigger the timer */
-> +	if (ams->masked_alarm)
-> +		schedule_delayed_work(&ams->ams_unmask_work,
-> +				      msecs_to_jiffies(AMS_UNMASK_TIMEOUT_MS));
-> +}
-> +
-> +static irqreturn_t ams_irq(int irq, void *data)
-> +{
-> +	struct iio_dev *indio_dev = data;
-> +	struct ams *ams = iio_priv(indio_dev);
-> +	u32 isr0;
-> +
-> +	isr0 = readl(ams->base + AMS_ISR_0);
-> +
-> +	/* only process alarms that are not masked */
-> +	isr0 &= ~((ams->intr_mask & AMS_ISR0_ALARM_MASK) | ams->masked_alarm);
-> +
-> +	if (!isr0)
-> +		return IRQ_NONE;
-> +
-> +	/* clear interrupt */
-> +	writel(isr0, ams->base + AMS_ISR_0);
-> +
-> +	/* Mask the alarm interrupts until cleared */
-> +	ams->masked_alarm |= isr0;
-> +	ams_update_intrmask(ams, 0, 0);
-> +
-> +	ams_handle_events(indio_dev, isr0);
-> +
-> +	schedule_delayed_work(&ams->ams_unmask_work,
-> +			      msecs_to_jiffies(AMS_UNMASK_TIMEOUT_MS));
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static const struct iio_event_spec ams_temp_events[] = {
-> +	{
-> +		.type = IIO_EV_TYPE_THRESH,
-> +		.dir = IIO_EV_DIR_RISING,
-> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE) |
-> +				BIT(IIO_EV_INFO_VALUE),
-> +	},
+> +static const struct iio_info ad7124_info =3D {
+> +	.read_raw =3D ad7124_read_raw,
+> +	.write_raw =3D ad7124_write_raw,
 > +};
 > +
-> +static const struct iio_event_spec ams_voltage_events[] = {
-> +	{
-> +		.type = IIO_EV_TYPE_THRESH,
-> +		.dir = IIO_EV_DIR_RISING,
-> +		.mask_separate = BIT(IIO_EV_INFO_VALUE),
-> +	},
-> +	{
-> +		.type = IIO_EV_TYPE_THRESH,
-> +		.dir = IIO_EV_DIR_FALLING,
-> +		.mask_separate = BIT(IIO_EV_INFO_VALUE),
-> +	},
-> +	{
-> +		.type = IIO_EV_TYPE_THRESH,
-> +		.dir = IIO_EV_DIR_EITHER,
-> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
-> +	},
-> +};
-> +
-> +static const struct iio_chan_spec ams_ps_channels[] = {
-> +	AMS_PS_CHAN_TEMP(AMS_SEQ_TEMP, AMS_TEMP, NULL),
-> +	AMS_PS_CHAN_TEMP(AMS_SEQ_TEMP_REMOTE, AMS_TEMP_REMOTE, NULL),
-> +	AMS_PS_CHAN_VOLTAGE(AMS_SEQ_SUPPLY1, AMS_SUPPLY1, NULL),
-> +	AMS_PS_CHAN_VOLTAGE(AMS_SEQ_SUPPLY2, AMS_SUPPLY2, NULL),
-> +	AMS_PS_CHAN_VOLTAGE(AMS_SEQ_SUPPLY3, AMS_SUPPLY3, NULL),
-> +	AMS_PS_CHAN_VOLTAGE(AMS_SEQ_SUPPLY4, AMS_SUPPLY4, NULL),
-> +	AMS_PS_CHAN_VOLTAGE(AMS_SEQ_SUPPLY5, AMS_SUPPLY5, NULL),
-> +	AMS_PS_CHAN_VOLTAGE(AMS_SEQ_SUPPLY6, AMS_SUPPLY6, NULL),
-> +	AMS_PS_CHAN_VOLTAGE(AMS_SEQ_SUPPLY7, AMS_SUPPLY7, NULL),
-> +	AMS_PS_CHAN_VOLTAGE(AMS_SEQ_SUPPLY8, AMS_SUPPLY8, NULL),
-> +	AMS_PS_CHAN_VOLTAGE(AMS_SEQ_SUPPLY9, AMS_SUPPLY9, NULL),
-> +	AMS_PS_CHAN_VOLTAGE(AMS_SEQ_SUPPLY10, AMS_SUPPLY10, NULL),
-> +	AMS_PS_CHAN_VOLTAGE(AMS_SEQ_VCCAMS, AMS_VCCAMS, NULL),
-> +};
-> +
-> +static const struct iio_chan_spec ams_pl_channels[] = {
-> +	AMS_PL_CHAN_TEMP(AMS_SEQ_TEMP, AMS_TEMP, NULL),
-> +	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_SUPPLY1, AMS_SUPPLY1, NULL, true),
-> +	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_SUPPLY2, AMS_SUPPLY2, NULL, true),
-> +	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_VREFP, AMS_VREFP, NULL, false),
-> +	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_VREFN, AMS_VREFN, NULL, false),
-> +	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_SUPPLY3, AMS_SUPPLY3, NULL, true),
-> +	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_SUPPLY4, AMS_SUPPLY4, NULL, true),
-> +	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_SUPPLY5, AMS_SUPPLY5, NULL, true),
-> +	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_SUPPLY6, AMS_SUPPLY6, NULL, true),
-> +	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_VCCAMS, AMS_VCCAMS, NULL, true),
-> +	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_VP_VN, AMS_VP_VN, NULL, false),
-> +	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_SUPPLY7, AMS_SUPPLY7, NULL, true),
-> +	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_SUPPLY8, AMS_SUPPLY8, NULL, true),
-> +	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_SUPPLY9, AMS_SUPPLY9, NULL, true),
-> +	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_SUPPLY10, AMS_SUPPLY10, NULL, true),
-> +	AMS_PL_AUX_CHAN_VOLTAGE(0, NULL),
-> +	AMS_PL_AUX_CHAN_VOLTAGE(1, NULL),
-> +	AMS_PL_AUX_CHAN_VOLTAGE(2, NULL),
-> +	AMS_PL_AUX_CHAN_VOLTAGE(3, NULL),
-> +	AMS_PL_AUX_CHAN_VOLTAGE(4, NULL),
-> +	AMS_PL_AUX_CHAN_VOLTAGE(5, NULL),
-> +	AMS_PL_AUX_CHAN_VOLTAGE(6, NULL),
-> +	AMS_PL_AUX_CHAN_VOLTAGE(7, NULL),
-> +	AMS_PL_AUX_CHAN_VOLTAGE(8, NULL),
-> +	AMS_PL_AUX_CHAN_VOLTAGE(9, NULL),
-> +	AMS_PL_AUX_CHAN_VOLTAGE(10, NULL),
-> +	AMS_PL_AUX_CHAN_VOLTAGE(11, NULL),
-> +	AMS_PL_AUX_CHAN_VOLTAGE(12, NULL),
-> +	AMS_PL_AUX_CHAN_VOLTAGE(13, NULL),
-> +	AMS_PL_AUX_CHAN_VOLTAGE(14, NULL),
-> +	AMS_PL_AUX_CHAN_VOLTAGE(15, NULL),
-> +};
-> +
-> +static const struct iio_chan_spec ams_ctrl_channels[] = {
-> +	AMS_CTRL_CHAN_VOLTAGE(AMS_SEQ_VCC_PSPLL, AMS_VCC_PSPLL0, NULL),
-> +	AMS_CTRL_CHAN_VOLTAGE(AMS_SEQ_VCC_PSBATT, AMS_VCC_PSPLL3, NULL),
-> +	AMS_CTRL_CHAN_VOLTAGE(AMS_SEQ_VCCINT, AMS_VCCINT, NULL),
-> +	AMS_CTRL_CHAN_VOLTAGE(AMS_SEQ_VCCBRAM, AMS_VCCBRAM, NULL),
-> +	AMS_CTRL_CHAN_VOLTAGE(AMS_SEQ_VCCAUX, AMS_VCCAUX, NULL),
-> +	AMS_CTRL_CHAN_VOLTAGE(AMS_SEQ_PSDDRPLL, AMS_PSDDRPLL, NULL),
-> +	AMS_CTRL_CHAN_VOLTAGE(AMS_SEQ_INTDDR, AMS_PSINTFPDDR, NULL),
-> +};
-> +
-> +static int ams_get_ext_chan(struct device_node *chan_node,
-> +			    struct iio_chan_spec *channels, int num_channels)
+> +static int ad7124_soft_reset(struct ad7124_state *st)
 > +{
-> +	struct device_node *child;
-> +	unsigned int reg;
+> +	unsigned int readval, timeout;
 > +	int ret;
 > +
-> +	for_each_child_of_node(chan_node, child) {
-> +		ret = of_property_read_u32(child, "reg", &reg);
-> +		if (ret || reg > AMS_PL_MAX_EXT_CHANNEL)
-> +			continue;
+> +	ret =3D ad_sd_reset(&st->sd, 64);
+> +	if (ret < 0)
+> +		return ret;
 > +
-> +		memcpy(&channels[num_channels], &ams_pl_channels[reg +
-> +		       AMS_PL_MAX_FIXED_CHANNEL], sizeof(*channels));
+> +	timeout =3D 100;
+> +	do {
+> +		ret =3D ad_sd_read_reg(&st->sd, AD7124_STATUS, 1, &readval);
+> +		if (ret < 0)
+> +			return ret;
 > +
-> +		if (of_property_read_bool(child,
-> +					  "xlnx,bipolar"))
-> +			channels[num_channels].scan_type.sign =	's';
+> +		if (!(readval & AD7124_STATUS_POR_FLAG_MSK))
+> +			return 0;
 > +
-> +		num_channels++;
-> +	}
+> +		/* The AD7124 requires typically 2ms to power up and settle */
+> +		usleep_range(100, 2000);
+> +	} while (--timeout);
 > +
-> +	return num_channels;
+> +	dev_err(&st->sd.spi->dev, "Soft reset failed\n");
+> +
+> +	return -EIO;
 > +}
 > +
-> +static int ams_init_module(struct iio_dev *indio_dev, struct device_node *np,
-> +			   struct iio_chan_spec *channels)
+> +static int ad7124_init_channel_vref(struct ad7124_state *st,
+> +				    unsigned int channel_number)
 > +{
-> +	struct ams *ams = iio_priv(indio_dev);
-> +	struct device_node *chan_node;
-> +	int num_channels = 0;
+> +	unsigned int refsel =3D st->channel_config[channel_number].refsel;
 > +
-> +	if (of_device_is_compatible(np, "xlnx,zynqmp-ams-ps")) {
-> +		ams->ps_base = of_iomap(np, 0);
-> +		if (!ams->ps_base)
-> +			return -ENXIO;
-> +
-> +		/* add PS channels to iio device channels */
-> +		memcpy(channels + num_channels, ams_ps_channels,
-> +		       sizeof(ams_ps_channels));
-> +		num_channels += ARRAY_SIZE(ams_ps_channels);
-> +	} else if (of_device_is_compatible(np, "xlnx,zynqmp-ams-pl")) {
-> +		ams->pl_base = of_iomap(np, 0);
-> +		if (!ams->pl_base)
-> +			return -ENXIO;
-> +
-> +		/* Copy only first 10 fix channels */
-> +		memcpy(channels + num_channels, ams_pl_channels,
-> +		       AMS_PL_MAX_FIXED_CHANNEL * sizeof(*channels));
-> +		num_channels += AMS_PL_MAX_FIXED_CHANNEL;
-> +
-> +		chan_node = of_get_child_by_name(np, "xlnx,ext-channels");
-> +		if (chan_node)
-> +			num_channels = ams_get_ext_chan(chan_node, channels,
-> +							num_channels);
-> +
-> +		of_node_put(chan_node);
-> +	} else if (of_device_is_compatible(np, "xlnx,zynqmp-ams")) {
-> +		/* add AMS channels to iio device channels */
-> +		memcpy(channels + num_channels, ams_ctrl_channels,
-> +				sizeof(ams_ctrl_channels));
-> +		num_channels += ARRAY_SIZE(ams_ctrl_channels);
-> +	} else {
+> +	switch (refsel) {
+> +	case AD7124_REFIN1:
+> +	case AD7124_REFIN2:
+> +	case AD7124_AVDD_REF:
+> +		if (IS_ERR(st->vref[refsel])) {
+> +			dev_err(&st->sd.spi->dev,
+> +				"Error, trying to use external voltage reference without a %s regula=
+tor.",
+> +				ad7124_ref_names[refsel]);
+> +				return PTR_ERR(st->vref[refsel]);
+> +		}
+> +		st->channel_config[channel_number].vref_mv =3D
+> +			regulator_get_voltage(st->vref[refsel]);
+> +		/* Conversion from uV to mV */
+> +		st->channel_config[channel_number].vref_mv /=3D 1000;
+> +		break;
+> +	case AD7124_INT_REF:
+> +		st->channel_config[channel_number].vref_mv =3D 2500;
+> +		break;
+> +	default:
+> +		dev_err(&st->sd.spi->dev, "Invalid reference %d\n", refsel);
 > +		return -EINVAL;
 > +	}
 > +
-> +	return num_channels;
+> +	return 0;
 > +}
 > +
-> +static int ams_parse_dt(struct iio_dev *indio_dev, struct platform_device *pdev)
+> +static int ad7124_of_parse_channel_config(struct iio_dev *indio_dev,
+> +					  struct device_node *np)
 > +{
-> +	struct ams *ams = iio_priv(indio_dev);
-> +	struct iio_chan_spec *ams_channels, *dev_channels;
-> +	struct device_node *child_node = NULL, *np = pdev->dev.of_node;
-> +	int ret, vol_ch_cnt = 0, temp_ch_cnt = 0, i, rising_off, falling_off;
-> +	unsigned int num_channels = 0;
+> +	struct ad7124_state *st =3D iio_priv(indio_dev);
+> +	struct device_node *child;
+> +	struct iio_chan_spec *chan;
+> +	unsigned int ain[2], channel =3D 0, tmp;
+> +	int ret, res;
 > +
-> +	/* Initialize buffer for channel specification */
-> +	ams_channels = kzalloc(sizeof(ams_ps_channels) +
-> +			       sizeof(ams_pl_channels) +
-> +			       sizeof(ams_ctrl_channels), GFP_KERNEL);
-> +	if (!ams_channels)
+> +	st->num_channels =3D of_get_available_child_count(np);
+> +	if (!st->num_channels) {
+> +		dev_err(indio_dev->dev.parent, "no channel children\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	chan =3D devm_kcalloc(indio_dev->dev.parent, st->num_channels,
+> +			    sizeof(*chan), GFP_KERNEL);
+> +	if (!chan)
 > +		return -ENOMEM;
 > +
-> +	if (of_device_is_available(np)) {
-> +		ret = ams_init_module(indio_dev, np, ams_channels);
-> +		if (ret < 0)
+> +	indio_dev->channels =3D chan;
+> +	indio_dev->num_channels =3D st->num_channels;
+> +
+> +	for_each_available_child_of_node(np, child) {
+> +		ret =3D of_property_read_u32(child, "reg", &channel);
+> +		if (ret)
 > +			goto err;
 > +
-> +		num_channels += ret;
-> +	}
+> +		ret =3D of_property_read_u32_array(child, "adi,diff-channels",
+> +						 ain, 2);
+
+This actually feels like something we could standardize as well as bipolar.
+In the oldest drivers we actually let userspace configure all of this, but
+I can understand that only some combinations make sense on a given board
+so it arguably makes sense to only enable those, particularly when there
+is a reference select that has to be paired with channel choice.
+
+> +		if (ret)
+> +			goto err;
 > +
-> +	for_each_child_of_node(np, child_node) {
-> +		if (of_device_is_available(child_node)) {
-> +			ret = ams_init_module(indio_dev, child_node,
-> +					      ams_channels + num_channels);
-> +			if (ret < 0)
-> +				goto err;
-> +
-> +			num_channels += ret;
+> +		if (ain[0] >=3D st->chip_info->num_inputs ||
+> +		    ain[1] >=3D st->chip_info->num_inputs) {
+> +			dev_err(indio_dev->dev.parent,
+> +				"Input pin number out of range.\n");
+> +			ret =3D -EINVAL;
+> +			goto err;
 > +		}
-> +	}
+> +		st->channel_config[channel].ain =3D AD7124_CHANNEL_AINP(ain[0]) |
+> +						  AD7124_CHANNEL_AINM(ain[1]);
+> +		st->channel_config[channel].bipolar =3D
+> +			of_property_read_bool(child, "adi,bipolar");
 > +
-> +	for (i = 0; i < num_channels; i++) {
-> +		if (ams_channels[i].type == IIO_VOLTAGE)
-> +			ams_channels[i].channel = vol_ch_cnt++;
+> +		ret =3D of_property_read_u32(child, "adi,reference-select", &tmp);
+> +		if (ret)
+> +			st->channel_config[channel].refsel =3D AD7124_INT_REF;
 > +		else
-> +			ams_channels[i].channel = temp_ch_cnt++;
+> +			st->channel_config[channel].refsel =3D tmp;
 > +
-> +		if (ams_channels[i].scan_index < (AMS_PS_SEQ_MAX * 3)) {
-> +			/* set threshold to max and min for each channel */
-> +			falling_off = ams_get_alarm_offset(
-> +					ams_channels[i].scan_index,
-> +					IIO_EV_DIR_FALLING);
-> +			rising_off = ams_get_alarm_offset(
-> +					ams_channels[i].scan_index,
-> +					IIO_EV_DIR_RISING);
-> +			if (ams_channels[i].scan_index >= AMS_PS_SEQ_MAX) {
-> +				writel(AMS_ALARM_THR_MIN,
-> +						ams->pl_base + falling_off);
-> +				writel(AMS_ALARM_THR_MAX,
-> +						ams->pl_base + rising_off);
-> +			} else {
-> +				writel(AMS_ALARM_THR_MIN,
-> +						ams->ps_base + falling_off);
-> +				writel(AMS_ALARM_THR_MAX,
-> +						ams->ps_base + rising_off);
-> +			}
+> +		ret =3D of_property_read_u32(child, "adi,gain", &tmp);
+> +		if (ret) {
+> +			st->channel_config[channel].pga_bits =3D 0;
+> +		} else {
+> +			res =3D ad7124_find_closest_match(ad7124_gain,
+> +						ARRAY_SIZE(ad7124_gain), tmp);
+> +			st->channel_config[channel].pga_bits =3D res;
+Hmm. The old question of what to put in DT as it reflects wiring and
+what to leave to userspace. Gain is tricky as only some values make sense
+for a given system, but there can be more than one that does...
+This is probably reasonable as it can be considered as setting the default
+that makes sense for what is wired.  Potentially user space could override
+it later if it wanted to.
+
 > +		}
+> +
+> +		ret =3D of_property_read_u32(child, "adi,odr-hz", &tmp);
+
+Why is this in DT. This one feels like a userspace choice to me. It's
+only tangentially connected to how things are connected on the board.
+You also support control from userspace.  I would pick a sensible
+general default and then drop this from the DT binding. It's optional
+anyway.
+
+> +		if (ret)
+> +			/*
+> +			 * 9 SPS is the minimum output data rate supported
+> +			 * regardless of the selected power mode.
+> +			 */
+> +			st->channel_config[channel].odr =3D 9;
+> +		else
+> +			st->channel_config[channel].odr =3D tmp;
+> +
+> +		*chan =3D ad7124_channel_template;
+> +		chan->address =3D channel;
+> +		chan->scan_index =3D channel;
+> +		chan->channel =3D ain[0];
+> +		chan->channel2 =3D ain[1];
+> +
+> +		chan++;
 > +	}
 > +
-> +	dev_channels = devm_kzalloc(&pdev->dev, sizeof(*dev_channels) *
-> +				    num_channels, GFP_KERNEL);
-> +	if (!dev_channels) {
-> +		ret = -ENOMEM;
-> +		goto err;
-> +	}
-> +
-> +	memcpy(dev_channels, ams_channels,
-> +	       sizeof(*ams_channels) * num_channels);
-> +	indio_dev->channels = dev_channels;
-> +	indio_dev->num_channels = num_channels;
-> +
-> +	ret = 0;
+> +	return 0;
 > +err:
-> +	kfree(ams_channels);
+> +	of_node_put(child);
 > +
 > +	return ret;
 > +}
 > +
-> +static const struct iio_info iio_pl_info = {
-> +	.read_raw = &ams_read_raw,
-> +	.read_event_config = &ams_read_event_config,
-> +	.write_event_config = &ams_write_event_config,
-> +	.read_event_value = &ams_read_event_value,
-> +	.write_event_value = &ams_write_event_value,
-> +};
-> +
-> +static const struct of_device_id ams_of_match_table[] = {
-> +	{ .compatible = "xlnx,zynqmp-ams" },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(of, ams_of_match_table);
-> +
-> +static int ams_probe(struct platform_device *pdev)
+> +static int ad7124_setup(struct ad7124_state *st)
 > +{
+> +	unsigned int val, fclk, power_mode;
+> +	int i, ret;
+> +
+> +	fclk =3D clk_get_rate(st->mclk);
+> +	if (!fclk)
+> +		return -EINVAL;
+> +
+> +	/* The power mode changes the master clock frequency */
+> +	power_mode =3D ad7124_find_closest_match(ad7124_master_clk_freq_hz,
+> +					ARRAY_SIZE(ad7124_master_clk_freq_hz),
+> +					fclk);
+> +	if (fclk !=3D ad7124_master_clk_freq_hz[power_mode]) {
+> +		ret =3D clk_set_rate(st->mclk, fclk);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	/* Set the power mode */
+> +	st->adc_control &=3D ~AD7124_ADC_CTRL_PWR_MSK;
+> +	st->adc_control |=3D AD7124_ADC_CTRL_PWR(power_mode);
+> +	ret =3D ad_sd_write_reg(&st->sd, AD7124_ADC_CONTROL, 2, st->adc_control=
+);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	for (i =3D 0; i < st->num_channels; i++) {
+> +		val =3D st->channel_config[i].ain | AD7124_CHANNEL_SETUP(i);
+> +		ret =3D ad_sd_write_reg(&st->sd, AD7124_CHANNEL(i), 2, val);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		ret =3D ad7124_init_channel_vref(st, i);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		val =3D AD7124_CONFIG_BIPOLAR(st->channel_config[i].bipolar) |
+> +		      AD7124_CONFIG_REF_SEL(st->channel_config[i].refsel) |
+> +		      AD7124_CONFIG_PGA(st->channel_config[i].pga_bits);
+> +		ret =3D ad_sd_write_reg(&st->sd, AD7124_CONFIG(i), 2, val);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		ret =3D ad7124_set_channel_odr(st, i, st->channel_config[i].odr);
+> +		if (ret < 0)
+> +			return ret;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static int ad7124_probe(struct spi_device *spi)
+> +{
+> +	const struct spi_device_id *id;
+> +	struct ad7124_state *st;
 > +	struct iio_dev *indio_dev;
-> +	struct ams *ams;
-> +	struct resource *res;
-> +	int ret;
+> +	int i, ret;
 > +
-> +	if (!pdev->dev.of_node)
-> +		return -ENODEV;
-> +
-> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*ams));
+> +	indio_dev =3D devm_iio_device_alloc(&spi->dev, sizeof(*st));
 > +	if (!indio_dev)
 > +		return -ENOMEM;
 > +
-> +	ams = iio_priv(indio_dev);
-> +	mutex_init(&ams->lock);
+> +	st =3D iio_priv(indio_dev);
 > +
-> +	indio_dev->dev.parent = &pdev->dev;
-> +	indio_dev->dev.of_node = pdev->dev.of_node;
-> +	indio_dev->name = "xilinx-ams";
+> +	id =3D spi_get_device_id(spi);
+> +	st->chip_info =3D &ad7124_chip_info_tbl[id->driver_data];
 > +
-> +	indio_dev->info = &iio_pl_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	ad_sd_init(&st->sd, indio_dev, spi, &ad7124_sigma_delta_info);
 > +
-> +	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "ams-base");
-> +	ams->base = devm_ioremap_resource(&pdev->dev, res);
-> +	if (IS_ERR(ams->base))
-> +		return PTR_ERR(ams->base);
+> +	spi_set_drvdata(spi, indio_dev);
 > +
-> +	ams->clk = devm_clk_get(&pdev->dev, NULL);
-> +	if (IS_ERR(ams->clk))
-> +		return PTR_ERR(ams->clk);
-> +	clk_prepare_enable(ams->clk);
+> +	indio_dev->dev.parent =3D &spi->dev;
+> +	indio_dev->name =3D spi_get_device_id(spi)->name;
+> +	indio_dev->modes =3D INDIO_DIRECT_MODE;
+> +	indio_dev->info =3D &ad7124_info;
 > +
-> +	INIT_DELAYED_WORK(&ams->ams_unmask_work, ams_unmask_worker);
+> +	ret =3D ad7124_of_parse_channel_config(indio_dev, spi->dev.of_node);
+> +	if (ret < 0)
+> +		return ret;
 > +
-> +	ret = ams_init_device(ams);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "failed to initialize AMS\n");
-> +		goto err_probe;
+> +	for (i =3D 0; i < ARRAY_SIZE(st->vref); i++) {
+> +		if (i !=3D AD7124_INT_REF) {
+> +			st->vref[i] =3D devm_regulator_get_optional(&spi->dev,
+> +							ad7124_ref_names[i]);
+> +			if (PTR_ERR(st->vref[i]) =3D=3D -ENODEV)
+> +				continue;
+> +			else if (IS_ERR(st->vref[i]))
+> +				return PTR_ERR(st->vref[i]);
+> +
+> +			ret =3D regulator_enable(st->vref[i]);
+> +			if (ret)
+> +				return ret;
+> +		}
 > +	}
 > +
-> +	ret = ams_parse_dt(indio_dev, pdev);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "failure in parsing DT\n");
-> +		goto err_probe;
+> +	st->mclk =3D devm_clk_get(&spi->dev, "mclk");
+> +	if (IS_ERR(st->mclk)) {
+> +		ret =3D PTR_ERR(st->mclk);
+> +		goto error_regulator_disable;
 > +	}
 > +
-> +	ams_enable_channel_sequence(ams);
+> +	ret =3D clk_prepare_enable(st->mclk);
+> +	if (ret < 0)
+> +		goto error_regulator_disable;
 > +
-> +	ams->irq = platform_get_irq_byname(pdev, "ams-irq");
-> +	ret = request_irq(ams->irq, &ams_irq, 0, "ams-irq", indio_dev);
+> +	ret =3D ad7124_soft_reset(st);
+> +	if (ret < 0)
+> +		goto error_clk_disable_unprepare;
+> +
+> +	ret =3D ad7124_setup(st);
+> +	if (ret < 0)
+> +		goto error_clk_disable_unprepare;
+> +
+> +	ret =3D ad_sd_setup_buffer_and_trigger(indio_dev);
+> +	if (ret < 0)
+> +		goto error_clk_disable_unprepare;
+> +
+> +	ret =3D iio_device_register(indio_dev);
 > +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "failed to register interrupt\n");
-> +		goto err_probe;
+> +		dev_err(&spi->dev, "Failed to register iio device\n");
+> +		goto error_remove_trigger;
 > +	}
-> +
-> +	platform_set_drvdata(pdev, indio_dev);
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret)
-> +		goto err_irq_free;
 > +
 > +	return 0;
 > +
-> +err_irq_free:
-> +	free_irq(ams->irq, indio_dev);
-> +
-> +err_probe:
-> +	cancel_delayed_work(&ams->ams_unmask_work);
-> +	clk_disable_unprepare(ams->clk);
+> +error_remove_trigger:
+> +	ad_sd_cleanup_buffer_and_trigger(indio_dev);
+> +error_clk_disable_unprepare:
+> +	clk_disable_unprepare(st->mclk);
+> +error_regulator_disable:
+> +	for (i =3D ARRAY_SIZE(st->vref) - 1; i >=3D 0; i--) {
+> +		if (!IS_ERR_OR_NULL(st->vref[i]))
+> +			regulator_disable(st->vref[i]);
+> +	}
 > +
 > +	return ret;
 > +}
 > +
-> +static int ams_remove(struct platform_device *pdev)
+> +static int ad7124_remove(struct spi_device *spi)
 > +{
-> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> +	struct ams *ams = iio_priv(indio_dev);
+> +	struct iio_dev *indio_dev =3D spi_get_drvdata(spi);
+> +	struct ad7124_state *st =3D iio_priv(indio_dev);
+> +	int i;
 > +
 > +	iio_device_unregister(indio_dev);
-> +	free_irq(ams->irq, indio_dev);
-> +	cancel_delayed_work(&ams->ams_unmask_work);
-> +	clk_disable_unprepare(ams->clk);
+> +	clk_disable_unprepare(st->mclk);
+> +	ad_sd_cleanup_buffer_and_trigger(indio_dev);
+The ordering here should match that in the error path above.
+(so the two things here should be reversed).
+It's in the category of making things obviously safe rather than an
+actual issue.
+I like to be able to check the ordering only once rather than twice
+when reviewing so will always confirm they match.
+
+> +
+> +	for (i =3D ARRAY_SIZE(st->vref) - 1; i >=3D 0; i--) {
+> +		if (!IS_ERR_OR_NULL(st->vref[i]))
+> +			regulator_disable(st->vref[i]);
+> +	}
 > +
 > +	return 0;
 > +}
 > +
-> +static int __maybe_unused ams_suspend(struct device *dev)
-> +{
-> +	struct ams *ams = iio_priv(dev_get_drvdata(dev));
-> +
-> +	clk_disable_unprepare(ams->clk);
-> +
-> +	return 0;
-> +}
-> +
-> +static int __maybe_unused ams_resume(struct device *dev)
-> +{
-> +	struct ams *ams = iio_priv(dev_get_drvdata(dev));
-> +
-> +	clk_prepare_enable(ams->clk);
-> +
-> +	return 0;
-> +}
-> +
-> +static SIMPLE_DEV_PM_OPS(ams_pm_ops, ams_suspend, ams_resume);
-> +
-> +static struct platform_driver ams_driver = {
-> +	.probe = ams_probe,
-> +	.remove = ams_remove,
-> +	.driver = {
-> +		.name = "xilinx-ams",
-> +		.pm = &ams_pm_ops,
-> +		.of_match_table = ams_of_match_table,
-> +	},
+> +static const struct spi_device_id ad7124_id_table[] =3D {
+> +	{ "ad7124-4", ID_AD7124_4 },
+> +	{ "ad7124-8", ID_AD7124_8 },
+> +	{}
 > +};
-> +module_platform_driver(ams_driver);
+> +MODULE_DEVICE_TABLE(spi, ad7124_id_table);
 > +
-> +MODULE_LICENSE("GPL v2");
-> +MODULE_AUTHOR("Xilinx, Inc.");
+> +static const struct of_device_id ad7124_of_match[] =3D {
+> +	{ .compatible =3D "adi,ad7124-4" },
+> +	{ .compatible =3D "adi,ad7124-8" },
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(of, ad7124_of_match);
+> +
+> +static struct spi_driver ad71124_driver =3D {
+> +	.driver =3D {
+> +		.name =3D "ad7124",
+> +		.of_match_table =3D ad7124_of_match,
+> +	},
+> +	.probe =3D ad7124_probe,
+> +	.remove	=3D ad7124_remove,
+> +	.id_table =3D ad7124_id_table,
+> +};
+> +module_spi_driver(ad71124_driver);
+> +
+> +MODULE_AUTHOR("Stefan Popa <stefan.popa@analog.com>");
+> +MODULE_DESCRIPTION("Analog Devices AD7124 SPI driver");
+> +MODULE_LICENSE("GPL");
