@@ -1,224 +1,91 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:38930 "EHLO
+Received: from saturn.retrosnub.co.uk ([46.235.226.198]:54860 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731574AbeKEDn1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 4 Nov 2018 22:43:27 -0500
-Date: Sun, 4 Nov 2018 18:27:30 +0000
+        with ESMTP id S1726711AbeKCTcr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Nov 2018 15:32:47 -0400
+Date: Sat, 3 Nov 2018 10:21:53 +0000
 From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Matheus Tavares Bernardino <matheus.bernardino@usp.br>
-Cc: Victor Colombo <victorcolombo@gmail.com>,
-        linux-iio@vger.kernel.org, kernel-usp@googlegroups.com
-Subject: Re: Work plan on ad2s90
-Message-ID: <20181104182730.35ae081f@archlinux>
-In-Reply-To: <CAHd-oW7R-iWKUnfjTBcswtayuidhC=qTiLyZKsuMxym7eceRPQ@mail.gmail.com>
-References: <CAHd-oW7fA_1H3jnUTOhs7VXJ3Zciq6j2WthAytE39NedYpTibg@mail.gmail.com>
-        <20181023104554.155dcdcf@archlinux>
-        <CADGsZakW=0BRnuYx47mQVxzjcTbP+80wjaFt_ZB1pY3G6_TfQw@mail.gmail.com>
-        <20181028141228.2d338b7f@archlinux>
-        <CAHd-oW7R-iWKUnfjTBcswtayuidhC=qTiLyZKsuMxym7eceRPQ@mail.gmail.com>
+To: Chen-Yu Tsai <wens@csie.org>
+Cc: Rob Herring <robh@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        "open list:THERMAL" <linux-pm@vger.kernel.org>,
+        linux-iio@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Vasily Khoruzhick <anarsoul@gmail.com>,
+        Quentin Schulz <quentin.schulz@free-electrons.com>,
+        devicetree <devicetree@vger.kernel.org>, oskari@lemmela.net,
+        linux-gpio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Lee Jones <lee.jones@linaro.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Quentin Schulz <quentin.schulz@bootlin.com>
+Subject: Re: [PATCH v5 04/11] dt-bindings: iio: adc: add AXP803 ADC bindings
+Message-ID: <20181103102153.4f0481ad@archlinux>
+In-Reply-To: <CAGb2v65JKj_7VcEr1KuZVop85hn-3h73NrExprpmLbKZiosD5Q@mail.gmail.com>
+References: <20181023185330.10472-1-oskari@lemmela.net>
+        <20181023185330.10472-5-oskari@lemmela.net>
+        <20181024135633.GA342@bogus>
+        <20181028154011.04efdecf@archlinux>
+        <20181029130757.m5okrfvusjl5fu5m@qschulz>
+        <CAGb2v65JKj_7VcEr1KuZVop85hn-3h73NrExprpmLbKZiosD5Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, 4 Nov 2018 14:34:35 -0200
-Matheus Tavares Bernardino <matheus.bernardino@usp.br> wrote:
+On Wed, 31 Oct 2018 10:29:59 +0800
+Chen-Yu Tsai <wens@csie.org> wrote:
 
-> Hi Jonathan,
+> On Mon, Oct 29, 2018 at 9:10 PM Quentin Schulz
+> <quentin.schulz@bootlin.com> wrote:
+> >
+> > Hi Jonathan,
+> >
+> > On Sun, Oct 28, 2018 at 03:40:11PM +0000, Jonathan Cameron wrote:  
+> > > On Wed, 24 Oct 2018 08:56:33 -0500
+> > > Rob Herring <robh@kernel.org> wrote:
+> > >  
+> > > > On Tue, 23 Oct 2018 21:53:23 +0300, Oskari Lemmela wrote:  
+> > > > > The AXP803 ADC is compatible with AXP813 ADC, but add
+> > > > > specific compatible for it.
+> > > > >
+> > > > > Signed-off-by: Oskari Lemmela <oskari@lemmela.net>
+> > > > > ---
+> > > > >  Documentation/devicetree/bindings/iio/adc/axp20x_adc.txt | 2 ++
+> > > > >  1 file changed, 2 insertions(+)
+> > > > >  
+> > > >
+> > > > Reviewed-by: Rob Herring <robh@kernel.org>  
+> > >
+> > > This doesn't seem to have any dependencies with the other patches
+> > > so applied to the togreg branch of iio.git and pushed out as testing
+> > > for the autobuilders to ignore.  However I am a little curious to know
+> > > why we would add the ID and then not use it (that I can see)?
+> > >  
+> >
+> > Sometimes with Allwinner (and X-Powers), two IPs seem identical until we
+> > discover something that is slightly different. When this happens, we
+> > have to add a compatible to differentiate both. However, we would also
+> > need to change the Device Tree to change the compatible. We would need
+> > to handle the driver behaviour for both Device Trees.
+> >
+> > So better anticipate a possible difference so that we don't have to do
+> > some hacks in the driver to handle the device correctly.
+> >
+> > As always, Chen-Yu or Maxime may know better so I'm just stating what I
+> > seem to recall.  
 > 
-> thanks a lot for the detailed explanation. As I was browsing the
-> Documentation/devicetree/bindings/iio dir, I realized that ad2s1200,
-> which is already in the main tree, doesn't have a binding
-> documentation (nor any of the resolver drivers at staging). 
-Gah, that is an omission.  It certainly should have one.
-If you feel like writing one it would be welcomed!
-Perhaps we should have done it earlier as Himanshu suggested - then
-we wouldn't have forgotten it when moving out of staging.
-
-> Should I
-> write a documentation for ad2s90 or just add the of_device_id section
-> in the driver's code?
-Definitely should have a binding doc.
-
-> Also, if it should be written, it has to go
-> under Documentation/devicetree/bindings/staging/iio/resolver, right?
-
-Nope.  Devicetree docs would go directly in
-Documentation/devicetree/bindings/iio/resolver.  Do it as an immediate
-precursor to the patch suggesting we move it out of staging.
-
-I had forgotten that staging directory existed and should move
-the two files that have snuck in there out.
-
-Ah they date back to the dark days of no actual maintenance or proper
-review for DT bindings.  No way they would have gotten in there otherwise.
-Thanks for bringing those up!
+> With Allwinner stuff (X-Powers included), sometimes the documents are
+> incomplete or have errors. We tend to add a model-specific compatible
+> just in case things turn out not to be so compatible, unless someone
+> has triple-checked everything, documents and actual hardware included.
+> 
+> However we don't actually document these, so this patch isn't strictly
+> needed. (I suppose this might annoy the device tree binding maintainers.)
+> 
+> ChenYu
+I don't think it does any harm so I'll leave it in place.  Thanks for
+the explanations.
 
 Jonathan
-
-> 
-> Matheus.
-> 
-> On Sun, Oct 28, 2018 at 11:12 AM Jonathan Cameron
-> <jic23@jic23.retrosnub.co.uk> wrote:
-> >
-> > On Fri, 26 Oct 2018 03:35:34 -0300
-> > Victor Colombo <victorcolombo@gmail.com> wrote:
-> >  
-> > > Hi Jonathan,
-> > >
-> > > Thank you for the insights! We have sent a patch set addressing the points
-> > > you brought up, except the device tree one.
-> > >
-> > > We didn't quite get what needs to be done on the device tree. Do you have
-> > > some pointers to help us with that?  
-> > Sure.
-> >
-> > Take a look at driver that has a table of type
-> > struct of_device_id.
-> >
-> > These ID's are very similar to the spi_device_id table that is already there
-> > in the driver, just used to describe in the devices presence in device tree
-> > tables.  For examples of those look in arch/arm/boot/dts/
-> >
-> > Now except for a somewhat nasty hack in the spi and i2c subsystems the
-> > intent is that we actually have 3 common ways of describing the presence
-> > and connectivity of a device on a bus that cannot be enumerated (buses
-> > like USB where you can query what is there don't need this magic - mostly.. :)
-> >
-> > 1) struct spi_device_id - original method used to instantiate a device from a
-> >    description provided by a 'board_file'.  Examples that are still in tree
-> >    include arch/arm/mach-pxa/stargate2.c which includes:
-> >
-> > static struct spi_board_info spi_board_info[] __initdata = {
-> >         {
-> >                 .modalias = "lis3l02dq",
-> >                 .max_speed_hz = 8000000,/* 8MHz max spi frequency at 3V */
-> >                 .bus_num = 1,
-> >                 .chip_select = 0,
-> >                 .controller_data = &staccel_chip_info,
-> >                 .irq = PXA_GPIO_TO_IRQ(96),
-> >         }, {
-> >                 .modalias = "cc2420",
-> >                 .max_speed_hz = 6500000,
-> >                 .bus_num = 3,
-> >                 .chip_select = 0,
-> >                 .controller_data = &cc2420_info,
-> >         },
-> > };
-> > ..
-> >         spi_register_board_info(spi_board_info, ARRAY_SIZE(spi_board_info));
-> > ..
-> >
-> > The problem was that we had a very rapid growth in the number of board files
-> > which was becoming totally unmanageable.  There were lots of subtle variations
-> > in how things were done and it was a complete mess.
-> > Linus (and others) threw up their hands in horror and said this needed sorting.
-> > As a lot of embedded platforms had few discoverable busses, a description had
-> > to come from somewhere.  Devicetree is about moving that description out of
-> > the kernel source and standardising it.
-> >
-> > 2) Devicetree bindings.  These are documented in Documentation/devicetree/bindings/
-> > and the uses can be found in arch/arm/boot/dts/
-> > They actually do a very similar job to the above board files, but in a format that
-> > is purely descriptive, not a random mixture of descriptive structures and code.
-> > From a practical point of view the other change was that they are always supposed
-> > to be given in the form manufacturer,partnumber rather than simply the part number
-> > you see above.  This is due to the fact we were starting to see naming clashes
-> > across manufacturers.
-> >
-> > Now the 'hack' that I think is sometimes regretted now, but was very useful at
-> > the time, is that for spi and i2c there is some glue logic that, having failed
-> > to match against a specfic devicetree binding provided by of_device_id, it
-> > falls back to stripping off the naming before the comma and trying to match
-> > against the version in spi_device_id.    Whilst this works, it gets rid of
-> > that naming clash prevention that we got from the devicetree ID.  As such
-> > there are never ending plans to get rid of spi_device_id entirely.  Not sure
-> > it'll ever actually happen, but we certainly want to prepare for it!
-> >
-> > 3) ACPI.  This is the approach used on nearly all x86 machines and arm servers.
-> > It's kind of like devicetree in the sense that the description is separate
-> > from the code (no board files), but with some nasty corners such as the DSDT
-> > table which provides this information actually containing code and using a
-> > complex parser to handle all the weird corners.
-> > For ACPI ids, the formats are only 8 characters consisting of a manufacturer
-> > ID and a hex number that identifies the part.   As got pointed out in a
-> > different thread there are numerous ACPI IDs that don't obey the naming
-> > laid out in the spec.  Generally we just support the ones seen in the wild
-> > for a particular part.   There are various ways of providing a DSDT table
-> > other than getting it from a bios (which most people can't change - sadly
-> > only a few manufacturers use an open source (ish) BIOS like EDK2) but they
-> > are all meant for testing only, not for production systems.
-> >
-> > For this device, it's unlikely to turn up on an
-> > ACPI platform in the near future, so we don't need the ACPI binding.
-> > The devicetree binding however is the most likely way the OS will discover
-> > the device is there so that one should definitely be on our list before
-> > we move it out of staging.
-> >
-> > Jonathan
-> >  
-> > >
-> > > Best,
-> > > Victor
-> > >
-> > > Em ter, 23 de out de 2018 às 06:45, Jonathan Cameron <  
-> > > jic23@jic23.retrosnub.co.uk> escreveu:  
-> > >  
-> > > > On Fri, 19 Oct 2018 23:49:06 -0300
-> > > > Matheus Tavares Bernardino <matheus.bernardino@usp.br> wrote:
-> > > >  
-> > > > > Hello everyone.  
-> > > > Hi Matheus.  
-> > > > >
-> > > > > I'm looking at the code and datasheet of ad2s90, trying to understand
-> > > > > what is needed to move it to the main tree. I and my study group
-> > > > > intend to work on it.  
-> > > >
-> > > > Great,
-> > > >  
-> > > > >
-> > > > > I do not understand all the necessary steps yet, but I will present
-> > > > > here some brief items for discussion. I'd like to ask if I'm on the
-> > > > > right track. All feedback will be much appreciated.
-> > > > >
-> > > > > Some of the things that I think need to be done:
-> > > > > - The IIO_CHAN_INFO_SCALE information mask is not set yet  
-> > > > Good point, that should be possible to establish for a resolver.
-> > > >  
-> > > > > - The read_raw function does not return the error code returned by
-> > > > > spi_read on failure  
-> > > > Good spot (I missed that one at first glance ;)
-> > > >  
-> > > > > - There is no channel for velocity yet  
-> > > >
-> > > > I'm fairly sure that's because the device doesn't allow you to read that
-> > > > via the serial bus.  There is an analog velocity outlook so you could
-> > > > read it via an ADC and do the appropriate chaining of IIO devices
-> > > > to provide that in this driver, but I wouldn't necessarily suggest doing
-> > > > that without some hardware to test it.
-> > > >  
-> > > > > - There are two minor codestyle corrections to be made
-> > > > > - Maybe it's possible to change the bit operations at the read_raw for
-> > > > > a bitops.h function call  
-> > > > Not really.  It is a weird form of shifted endian conversion, so you
-> > > > 'could' do it that way and in theory make it a single shift in once case
-> > > > and swap and shift in the other.  Probably not worth it though.
-> > > >
-> > > > a few additions.
-> > > > * Devicetree support with standard devicetree id table.
-> > > >
-> > > > * The spi setup at the end of probe occurs 'after' the device is ready
-> > > > for use.  A definite race condition that needs fixing.
-> > > >
-> > > > * Some pointless variable initial assignments that are always overwritten.
-> > > >  
-> > > > >
-> > > > > Best regards,
-> > > > > Matheus  
-> > > >
-> > > > Thanks,
-> > > >
-> > > > Jonathan
-> > > >  
-> >  
