@@ -1,49 +1,80 @@
-Return-Path: <SRS0=thGR=NM=analog.com=alexandru.Ardelean@kernel.org>
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "lars@metafoo.de" <lars@metafoo.de>, "knaack.h@gmx.de" <knaack.h@gmx.de>,
-	"jic23@kernel.org" <jic23@kernel.org>, "Hennerich, Michael"
-	<Michael.Hennerich@analog.com>, "renatogeh@gmail.com" <renatogeh@gmail.com>,
-	"giuliano.belinassi@usp.br" <giuliano.belinassi@usp.br>, "pmeerw@pmeerw.net"
-	<pmeerw@pmeerw.net>, "gregkh@linuxfoundation.org"
-	<gregkh@linuxfoundation.org>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-	"kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.99]:47640 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725900AbeKCWWK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 3 Nov 2018 18:22:10 -0400
+Date: Sat, 3 Nov 2018 13:10:47 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+Cc: "lars@metafoo.de" <lars@metafoo.de>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        "renatogeh@gmail.com" <renatogeh@gmail.com>,
+        "giuliano.belinassi@usp.br" <giuliano.belinassi@usp.br>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+        "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>
 Subject: Re: [PATCH v3 3/3] staging: iio: ad7780: remove unnecessary stashed
  voltage value
-Date: Thu, 1 Nov 2018 15:28:19 +0000
-Message-ID: <8e33078437ba3153305c5d31aba54412a786a9bb.camel@analog.com>
+Message-ID: <20181103131047.235ee9cf@archlinux>
+In-Reply-To: <8e33078437ba3153305c5d31aba54412a786a9bb.camel@analog.com>
 References: <cover.1541082656.git.renatogeh@gmail.com>
-	 <d6b6aeda46121f59a53b43599bf0200580d7a79d.1541082656.git.renatogeh@gmail.com>
-In-Reply-To: <d6b6aeda46121f59a53b43599bf0200580d7a79d.1541082656.git.renatogeh@gmail.com>
-Content-Type: text/plain; charset="utf-8"
+        <d6b6aeda46121f59a53b43599bf0200580d7a79d.1541082656.git.renatogeh@gmail.com>
+        <8e33078437ba3153305c5d31aba54412a786a9bb.camel@analog.com>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-T24gVGh1LCAyMDE4LTExLTAxIGF0IDExOjQzIC0wMzAwLCBSZW5hdG8gTHVpIEdlaCB3cm90ZToN
-Cj4gVGhpcyBwYXRjaCByZW1vdmVzIHRoZSB1bm5lY2Vzc2FyeSBmaWVsZCBpbnRfdnJlZl9tdiBp
-biBhZDc3ODBfc3RhdGUNCj4gcmVmZXJyaW5nIHRvIHRoZSBkZXZpY2UncyB2b2x0YWdlLg0KPiAN
-Cj4gU2lnbmVkLW9mZi1ieTogUmVuYXRvIEx1aSBHZWggPHJlbmF0b2dlaEBnbWFpbC5jb20+DQo+
-IC0tLQ0KPiBDaGFuZ2VzIGluIHYzOg0KPiAJLSByZW1vdmVkIHVubmVjZXNzYXJ5IGludF92cmVm
-X212IGZyb20gYWQ3NzgwX3N0YXRlDQo+IA0KPiAgZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3
-NzgwLmMgfCA1ICstLS0tDQo+ICAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDQgZGVs
-ZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3
-NzgwLmMNCj4gYi9kcml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9hZDc3ODAuYw0KPiBpbmRleCBmMmEx
-MWU5NDI0Y2QuLmYyNTAzNzBlZmNmNyAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9zdGFnaW5nL2lp
-by9hZGMvYWQ3NzgwLmMNCj4gKysrIGIvZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NzgwLmMN
-Cj4gQEAgLTQyLDcgKzQyLDYgQEAgc3RydWN0IGFkNzc4MF9zdGF0ZSB7DQo+ICAJc3RydWN0IHJl
-Z3VsYXRvcgkJKnJlZzsNCj4gIAlzdHJ1Y3QgZ3Bpb19kZXNjCQkqcG93ZXJkb3duX2dwaW87DQo+
-ICAJdW5zaWduZWQgaW50CWdhaW47DQo+IC0JdTE2CQkJCWludF92cmVmX212Ow0KPiAgDQo+ICAJ
-c3RydWN0IGFkX3NpZ21hX2RlbHRhIHNkOw0KPiAgfTsNCj4gQEAgLTE5MCw5ICsxODksNyBAQCBz
-dGF0aWMgaW50IGFkNzc4MF9wcm9iZShzdHJ1Y3Qgc3BpX2RldmljZSAqc3BpKQ0KPiAgCXN0LT5j
-aGlwX2luZm8gPQ0KPiAgCQkmYWQ3NzgwX2NoaXBfaW5mb190Ymxbc3BpX2dldF9kZXZpY2VfaWQo
-c3BpKS0+ZHJpdmVyX2RhdGFdOw0KPiAgDQo+IC0JaWYgKHZvbHRhZ2VfdXYpDQo+IC0JCXN0LT5p
-bnRfdnJlZl9tdiA9IHZvbHRhZ2VfdXYgLyAxMDAwOw0KPiAtCWVsc2UNCj4gKwlpZiAoIXZvbHRh
-Z2VfdXYpDQo+ICAJCWRldl93YXJuKCZzcGktPmRldiwgIlJlZmVyZW5jZSB2b2x0YWdlIHVuc3Bl
-Y2lmaWVkXG4iKTsNCg0KSSB0aGluayB5b3UgY291bGQgcmVtb3ZlIHRoaXMgYWx0b2dldGhlciwg
-YW5kIGFsc28gcmVtb3ZlIHRoZSBlbnRpcmUNCmB2b2x0YWdlX3V2ID0gcmVndWxhdG9yX2dldF92
-b2x0YWdlKHN0LT5yZWcpO2AgYXNzaWdubWVudC4NCg0KSXQgZG9lc24ndCBtYWtlIG11Y2ggc2Vu
-c2UgdG8gcmVhZCB0aGUgdm9sdGFnZSBoZXJlLCBzaW5jZSBpdCB3b24ndCBiZSB1c2VkDQppbiB0
-aGUgcHJvYmUgcGFydCBhbnltb3JlLg0KDQo+ICANCj4gIAlzcGlfc2V0X2RydmRhdGEoc3BpLCBp
-bmRpb19kZXYpOw0K
+On Thu, 1 Nov 2018 15:28:19 +0000
+"Ardelean, Alexandru" <alexandru.Ardelean@analog.com> wrote:
+
+> On Thu, 2018-11-01 at 11:43 -0300, Renato Lui Geh wrote:
+> > This patch removes the unnecessary field int_vref_mv in ad7780_state
+> > referring to the device's voltage.
+> > 
+> > Signed-off-by: Renato Lui Geh <renatogeh@gmail.com>
+> > ---
+> > Changes in v3:
+> > 	- removed unnecessary int_vref_mv from ad7780_state
+> > 
+> >  drivers/staging/iio/adc/ad7780.c | 5 +----
+> >  1 file changed, 1 insertion(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/staging/iio/adc/ad7780.c
+> > b/drivers/staging/iio/adc/ad7780.c
+> > index f2a11e9424cd..f250370efcf7 100644
+> > --- a/drivers/staging/iio/adc/ad7780.c
+> > +++ b/drivers/staging/iio/adc/ad7780.c
+> > @@ -42,7 +42,6 @@ struct ad7780_state {
+> >  	struct regulator		*reg;
+> >  	struct gpio_desc		*powerdown_gpio;
+> >  	unsigned int	gain;
+> > -	u16				int_vref_mv;
+> >  
+> >  	struct ad_sigma_delta sd;
+> >  };
+> > @@ -190,9 +189,7 @@ static int ad7780_probe(struct spi_device *spi)
+> >  	st->chip_info =
+> >  		&ad7780_chip_info_tbl[spi_get_device_id(spi)->driver_data];
+> >  
+> > -	if (voltage_uv)
+> > -		st->int_vref_mv = voltage_uv / 1000;
+> > -	else
+> > +	if (!voltage_uv)
+> >  		dev_warn(&spi->dev, "Reference voltage unspecified\n");  
+> 
+> I think you could remove this altogether, and also remove the entire
+> `voltage_uv = regulator_get_voltage(st->reg);` assignment.
+> 
+> It doesn't make much sense to read the voltage here, since it won't be used
+> in the probe part anymore.
+> 
+Absolutely agree on this. There is no point in reading here at all.
+
+Jonathan
+> >  
+> >  	spi_set_drvdata(spi, indio_dev);  
