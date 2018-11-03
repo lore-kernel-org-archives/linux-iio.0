@@ -1,20 +1,11 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-it1-f196.google.com ([209.85.166.196]:55418 "EHLO
-        mail-it1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728381AbeKDBP6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Nov 2018 21:15:58 -0400
-Received: by mail-it1-f196.google.com with SMTP id b7-v6so7194885itd.5
-        for <linux-iio@vger.kernel.org>; Sat, 03 Nov 2018 09:04:16 -0700 (PDT)
-MIME-Version: 1.0
-References: <20181027020005.3140-1-matheus.bernardino@usp.br>
- <20181027020005.3140-6-matheus.bernardino@usp.br> <20181028165040.27c69fc5@archlinux>
-In-Reply-To: <20181028165040.27c69fc5@archlinux>
-From: Matheus Tavares Bernardino <matheus.bernardino@usp.br>
-Date: Sat, 3 Nov 2018 13:04:04 -0300
-Message-ID: <CAHd-oW4wki7am70DHFWb0GjOCtptRYRfAO2BG=32=YBBeAyASg@mail.gmail.com>
-Subject: Re: [PATCH v2 5/6] staging:iio:ad2s90: Add IIO_CHAN_INFO_SCALE to
- channel spec and read_raw
-To: Jonathan Cameron <jic23@kernel.org>
+Received: from mail.kernel.org ([198.145.29.99]:36672 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726849AbeKDCiF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 3 Nov 2018 22:38:05 -0400
+Date: Sat, 3 Nov 2018 17:26:06 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Matheus Tavares Bernardino <matheus.bernardino@usp.br>
 Cc: Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
         Hartmut Knaack <knaack.h@gmx.de>,
@@ -23,107 +14,128 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
         linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
         linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com,
         Victor Colombo <victorcolombo@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH v2 5/6] staging:iio:ad2s90: Add IIO_CHAN_INFO_SCALE to
+ channel spec and read_raw
+Message-ID: <20181103172606.364fc1b0@archlinux>
+In-Reply-To: <CAHd-oW4wki7am70DHFWb0GjOCtptRYRfAO2BG=32=YBBeAyASg@mail.gmail.com>
+References: <20181027020005.3140-1-matheus.bernardino@usp.br>
+        <20181027020005.3140-6-matheus.bernardino@usp.br>
+        <20181028165040.27c69fc5@archlinux>
+        <CAHd-oW4wki7am70DHFWb0GjOCtptRYRfAO2BG=32=YBBeAyASg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Oct 28, 2018 at 1:50 PM Jonathan Cameron <jic23@kernel.org> wrote:
->
-> On Fri, 26 Oct 2018 23:00:04 -0300
-> Matheus Tavares <matheus.bernardino@usp.br> wrote:
->
-> > This patch adds the IIO_CHAN_INFO_SCALE mask to ad2s90_chan and
-> > implements the relative read behavior at ad2s90_read_raw.
-> >
-> > Signed-off-by: Victor Colombo <victorcolombo@gmail.com>
-> > Signed-off-by: Matheus Tavares <matheus.bernardino@usp.br>
->
-> Hi,
->
-> A suggestion inline.  This is a common case that we have infrastructure
-> to simplify.  + I think your scale factor is very slightly wrong.
->
-> Jonathan
->
-> > ---
-> >  drivers/staging/iio/resolver/ad2s90.c | 32 ++++++++++++++++++---------
-> >  1 file changed, 22 insertions(+), 10 deletions(-)
-> >
-> > diff --git a/drivers/staging/iio/resolver/ad2s90.c b/drivers/staging/iio/resolver/ad2s90.c
-> > index b4a6a89c11b0..52b656875ed1 100644
-> > --- a/drivers/staging/iio/resolver/ad2s90.c
-> > +++ b/drivers/staging/iio/resolver/ad2s90.c
-> > @@ -34,19 +34,31 @@ static int ad2s90_read_raw(struct iio_dev *indio_dev,
-> >       int ret;
-> >       struct ad2s90_state *st = iio_priv(indio_dev);
-> >
-> > -     mutex_lock(&st->lock);
-> > +     switch (m) {
-> > +     case IIO_CHAN_INFO_SCALE:
-> > +             /* 2 * Pi / (2^12 - 1) ~= 0.001534355 */
-> > +             *val = 0;
-> > +             *val2 = 1534355;
-> Definitely 2^12 - 1?  That's a bit unusual if true as it would imply
-> that 2^12 - 1 and 0 were the same value.
->
-> Imagine a smaller version with on 2^2 bits so 0, 1, 2, 3
-> Values of each are
->
-> 0, M_PI/2, M_PI, 3*M_PI/2
->
-> So the multiplier is 2*M_PI/(2^2) not 2*M_PI/(2^2 - 1)
-> 1/2 vs 2/3 * M_PI
+On Sat, 3 Nov 2018 13:04:04 -0300
+Matheus Tavares Bernardino <matheus.bernardino@usp.br> wrote:
 
-Oh, that makes a lot of sense! We used 2^12 - 1 here based on driver
-drivers/iio/resolver/ad2s1200.c, whose resolution is also 12 bits, as
-the ad2s90.c. Do you think this section is, perhaps, wrong on
-ad2s1200.c too, or maybe there is some difference between these two
-drivers that I didn't catch regarding the resolution?
+> On Sun, Oct 28, 2018 at 1:50 PM Jonathan Cameron <jic23@kernel.org> wrote:
+> >
+> > On Fri, 26 Oct 2018 23:00:04 -0300
+> > Matheus Tavares <matheus.bernardino@usp.br> wrote:
+> >  
+> > > This patch adds the IIO_CHAN_INFO_SCALE mask to ad2s90_chan and
+> > > implements the relative read behavior at ad2s90_read_raw.
+> > >
+> > > Signed-off-by: Victor Colombo <victorcolombo@gmail.com>
+> > > Signed-off-by: Matheus Tavares <matheus.bernardino@usp.br>  
+> >
+> > Hi,
+> >
+> > A suggestion inline.  This is a common case that we have infrastructure
+> > to simplify.  + I think your scale factor is very slightly wrong.
+> >
+> > Jonathan
+> >  
+> > > ---
+> > >  drivers/staging/iio/resolver/ad2s90.c | 32 ++++++++++++++++++---------
+> > >  1 file changed, 22 insertions(+), 10 deletions(-)
+> > >
+> > > diff --git a/drivers/staging/iio/resolver/ad2s90.c b/drivers/staging/iio/resolver/ad2s90.c
+> > > index b4a6a89c11b0..52b656875ed1 100644
+> > > --- a/drivers/staging/iio/resolver/ad2s90.c
+> > > +++ b/drivers/staging/iio/resolver/ad2s90.c
+> > > @@ -34,19 +34,31 @@ static int ad2s90_read_raw(struct iio_dev *indio_dev,
+> > >       int ret;
+> > >       struct ad2s90_state *st = iio_priv(indio_dev);
+> > >
+> > > -     mutex_lock(&st->lock);
+> > > +     switch (m) {
+> > > +     case IIO_CHAN_INFO_SCALE:
+> > > +             /* 2 * Pi / (2^12 - 1) ~= 0.001534355 */
+> > > +             *val = 0;
+> > > +             *val2 = 1534355;  
+> > Definitely 2^12 - 1?  That's a bit unusual if true as it would imply
+> > that 2^12 - 1 and 0 were the same value.
+> >
+> > Imagine a smaller version with on 2^2 bits so 0, 1, 2, 3
+> > Values of each are
+> >
+> > 0, M_PI/2, M_PI, 3*M_PI/2
+> >
+> > So the multiplier is 2*M_PI/(2^2) not 2*M_PI/(2^2 - 1)
+> > 1/2 vs 2/3 * M_PI  
+> 
+> Oh, that makes a lot of sense! We used 2^12 - 1 here based on driver
+> drivers/iio/resolver/ad2s1200.c, whose resolution is also 12 bits, as
+> the ad2s90.c. Do you think this section is, perhaps, wrong on
+> ad2s1200.c too, or maybe there is some difference between these two
+> drivers that I didn't catch regarding the resolution?
+Certainly seems likely to be wrong.  Difference is tiny so no one
+probably ever noticed :(
 
-Matheus.
+Feel free to post a patch fixing that one as well!
 
-> Now this is a very common case so we have the return type
-> IIO_VAL_FRACTIONAL_LOG2 to give a more obvious and potentially
-> more accurate representation.
->
-> > +             return IIO_VAL_INT_PLUS_NANO;
-> > +     case IIO_CHAN_INFO_RAW:
-> > +             mutex_lock(&st->lock);
-> > +
-> > +             ret = spi_read(st->sdev, st->rx, 2);
-> > +             if (ret < 0) {
-> > +                     mutex_unlock(&st->lock);
-> > +                     return ret;
-> > +             }
-> > +
-> > +             *val = (((u16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >> 4);
-> >
-> > -     ret = spi_read(st->sdev, st->rx, 2);
-> > -     if (ret < 0) {
-> >               mutex_unlock(&st->lock);
-> > -             return ret;
-> > -     }
-> >
-> > -     *val = (((u16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >> 4);
-> > -
-> > -     mutex_unlock(&st->lock);
-> > +             return IIO_VAL_INT;
-> > +     default:
-> > +             break;
-> > +     }
-> >
-> > -     return IIO_VAL_INT;
-> > +     return -EINVAL;
-> >  }
-> >
-> >  static const struct iio_info ad2s90_info = {
-> > @@ -57,7 +69,7 @@ static const struct iio_chan_spec ad2s90_chan = {
-> >       .type = IIO_ANGL,
-> >       .indexed = 1,
-> >       .channel = 0,
-> > -     .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> > +     .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-> >  };
-> >
-> >  static int ad2s90_probe(struct spi_device *spi)
->
+Thanks,
+
+Jonathan
+
+> 
+> Matheus.
+> 
+> > Now this is a very common case so we have the return type
+> > IIO_VAL_FRACTIONAL_LOG2 to give a more obvious and potentially
+> > more accurate representation.
+> >  
+> > > +             return IIO_VAL_INT_PLUS_NANO;
+> > > +     case IIO_CHAN_INFO_RAW:
+> > > +             mutex_lock(&st->lock);
+> > > +
+> > > +             ret = spi_read(st->sdev, st->rx, 2);
+> > > +             if (ret < 0) {
+> > > +                     mutex_unlock(&st->lock);
+> > > +                     return ret;
+> > > +             }
+> > > +
+> > > +             *val = (((u16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >> 4);
+> > >
+> > > -     ret = spi_read(st->sdev, st->rx, 2);
+> > > -     if (ret < 0) {
+> > >               mutex_unlock(&st->lock);
+> > > -             return ret;
+> > > -     }
+> > >
+> > > -     *val = (((u16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >> 4);
+> > > -
+> > > -     mutex_unlock(&st->lock);
+> > > +             return IIO_VAL_INT;
+> > > +     default:
+> > > +             break;
+> > > +     }
+> > >
+> > > -     return IIO_VAL_INT;
+> > > +     return -EINVAL;
+> > >  }
+> > >
+> > >  static const struct iio_info ad2s90_info = {
+> > > @@ -57,7 +69,7 @@ static const struct iio_chan_spec ad2s90_chan = {
+> > >       .type = IIO_ANGL,
+> > >       .indexed = 1,
+> > >       .channel = 0,
+> > > -     .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> > > +     .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+> > >  };
+> > >
+> > >  static int ad2s90_probe(struct spi_device *spi)  
+> >  
