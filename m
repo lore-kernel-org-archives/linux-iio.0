@@ -1,47 +1,42 @@
-Return-Path: <SRS0=1eYy=NR=poczta.fm=sst@kernel.org>
-Date: Tue, 6 Nov 2018 19:50:03 +0100
-From: Slawomir Stepien <sst@poczta.fm>
-To: Himanshu Jha <himanshujha199640@gmail.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-	knaack.h@gmx.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-	gregkh@linuxfoundation.org
-Subject: Re: [PATCH v5 1/1] staging: iio: adc: ad7280a: use devm_* APIs
-Message-ID: <20181106185003.GB1600@x220.localdomain>
-References: <20181104104900.13997-1-sst@poczta.fm>
- <20181104145456.GA13773@himanshu-Vostro-3559>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm1-f52.google.com ([209.85.128.52]:38640 "EHLO
+        mail-wm1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727834AbeKDXy2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 4 Nov 2018 18:54:28 -0500
+Received: by mail-wm1-f52.google.com with SMTP id l2-v6so5655353wmh.3
+        for <linux-iio@vger.kernel.org>; Sun, 04 Nov 2018 06:39:13 -0800 (PST)
+From: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH 0/7] add i2c controller support to st_lsm6dsx driver
+Date: Sun,  4 Nov 2018 15:38:59 +0100
+Message-Id: <cover.1541341926.git.lorenzo.bianconi@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20181104145456.GA13773@himanshu-Vostro-3559>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On lis 04, 2018 20:24, Himanshu Jha wrote:
-> On Sun, Nov 04, 2018 at 11:49:00AM +0100, Slawomir Stepien wrote:
-> > devm_* APIs are device managed and make code simpler.
-> > 
-> > Signed-off-by: Slawomir Stepien <sst@poczta.fm>
-> > ---
-> 
-> []
-> 
-> > Since v4:
-> > * on devm_add_action fail, call the action on error handling
-> 
-> For such a use case, `devm_add_action_or_reset()` seems like a better
-> candidate.
+Introduce i2c controller support to st_lsm6dsx driver for lsm6dso sensor.
+Add register map for lis2mdl magnetometer sensor.
+Add hw FIFO support to st_lsm6dsx sensorhub driver.
 
-Thank you for that.
+Lorenzo Bianconi (7):
+  iio: imu: st_lsm6dsx: introduce locked read/write utility routines
+  iio: imu: st_lsm6dsx: reboot memory content after reset
+  iio: imu: st_lsm6dsx: remove static from st_lsm6dsx_set_watermark
+  iio: imu: st_lsm6dsx: introduce ST_LSM6DSX_ID_EXT sensor ids
+  iio: imu: st_lsm6dsx: add i2c embedded controller support
+  iio: imu: st_lsm6dsx: add hw FIFO support to i2c controller
+  dt-bindings: iio: imu: st_lsm6dsx: add support to i2c pullup resistors
 
-> > +	ret = devm_add_action(&spi->dev, ad7280_sw_power_down, st);
-> > +	if (ret) {
-> > +		ad7280_sw_power_down(st);
-> > +		return ret;
-> > +	}
-> 
-> Also, you can suppress the `1/1` in sunject [PATCH v5 1/1] by passing
-> `-N` flag to `git format-patch`.
-
-I haven't even notice that 1/1. I will use -N when sending only one patch.
-Thanks!
+ .../bindings/iio/imu/st_lsm6dsx.txt           |   1 +
+ drivers/iio/imu/st_lsm6dsx/Makefile           |   3 +-
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h       | 167 +++-
+ .../iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c    | 169 ++--
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c  | 273 +++++--
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c  | 753 ++++++++++++++++++
+ .../linux/platform_data/st_sensors_pdata.h    |   2 +
+ 7 files changed, 1226 insertions(+), 142 deletions(-)
+ create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
 
 -- 
-Slawomir Stepien
+2.19.1
