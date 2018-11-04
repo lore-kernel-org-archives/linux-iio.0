@@ -1,218 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:57030 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726795AbeKCVcX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 3 Nov 2018 17:32:23 -0400
-Date: Sat, 3 Nov 2018 12:21:08 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Slawomir Stepien <sst@poczta.fm>
+Received: from smtpo.poczta.interia.pl ([217.74.65.239]:32884 "EHLO
+        smtpo.poczta.interia.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728909AbeKDUDB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 4 Nov 2018 15:03:01 -0500
+Date: Sun, 4 Nov 2018 11:48:45 +0100
+From: Slawomir Stepien <sst@poczta.fm>
+To: Jonathan Cameron <jic23@kernel.org>
 Cc: lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
         pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
         gregkh@linuxfoundation.org
 Subject: Re: [PATCH v4 1/1] staging: iio: adc: ad7280a: use devm_* APIs
-Message-ID: <20181103122108.6124f55a@archlinux>
-In-Reply-To: <20181029165241.22993-1-sst@poczta.fm>
+Message-ID: <20181104104845.GA1600@x220.localdomain>
 References: <20181029165241.22993-1-sst@poczta.fm>
+ <20181103122108.6124f55a@archlinux>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20181103122108.6124f55a@archlinux>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 29 Oct 2018 17:52:41 +0100
-Slawomir Stepien <sst@poczta.fm> wrote:
-
-> devm_* APIs are device managed and make code simpler.
+On lis 03, 2018 12:21, Jonathan Cameron wrote:
+> On Mon, 29 Oct 2018 17:52:41 +0100
+> Slawomir Stepien <sst@poczta.fm> wrote:
 > 
-> Signed-off-by: Slawomir Stepien <sst@poczta.fm>
-Very nearly perfect (I think).
-
-But there is one path where we don't quite manage to clean everything up.
-
-> ---
-Also, I should be seeing a version log here to avoid me having to look back
-at previous versions (potentially) to remind me what needed changing.
-
-Thanks,
-
-Jonathan
-
->  drivers/staging/iio/adc/ad7280a.c | 95 +++++++++++++------------------
->  1 file changed, 39 insertions(+), 56 deletions(-)
+> > devm_* APIs are device managed and make code simpler.
+> > 
+> > Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+> Very nearly perfect (I think).
 > 
-> diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-> index b736275c10f5..1263b70693ed 100644
-> --- a/drivers/staging/iio/adc/ad7280a.c
-> +++ b/drivers/staging/iio/adc/ad7280a.c
-> @@ -342,6 +342,14 @@ static int ad7280_read_all_channels(struct ad7280_state *st, unsigned int cnt,
->  	return sum;
->  }
->  
-> +static void ad7280_sw_power_down(void *data)
-> +{
-> +	struct ad7280_state *st = data;
-> +
-> +	ad7280_write(st, AD7280A_DEVADDR_MASTER, AD7280A_CONTROL_HB, 1,
-> +		     AD7280A_CTRL_HB_PWRDN_SW | st->ctrl_hb);
-> +}
-> +
->  static int ad7280_chain_setup(struct ad7280_state *st)
->  {
->  	unsigned int val, n;
-> @@ -492,8 +500,8 @@ static int ad7280_channel_init(struct ad7280_state *st)
->  {
->  	int dev, ch, cnt;
->  
-> -	st->channels = kcalloc((st->slave_num + 1) * 12 + 2,
-> -			       sizeof(*st->channels), GFP_KERNEL);
-> +	st->channels = devm_kcalloc(&st->spi->dev, (st->slave_num + 1) * 12 + 2,
-> +				    sizeof(*st->channels), GFP_KERNEL);
->  	if (!st->channels)
->  		return -ENOMEM;
->  
-> @@ -552,16 +560,18 @@ static int ad7280_channel_init(struct ad7280_state *st)
->  static int ad7280_attr_init(struct ad7280_state *st)
->  {
->  	int dev, ch, cnt;
-> +	unsigned int index;
->  
-> -	st->iio_attr = kcalloc(2, sizeof(*st->iio_attr) *
-> -			       (st->slave_num + 1) * AD7280A_CELLS_PER_DEV,
-> -			       GFP_KERNEL);
-> +	st->iio_attr = devm_kcalloc(&st->spi->dev, 2, sizeof(*st->iio_attr) *
-> +				    (st->slave_num + 1) * AD7280A_CELLS_PER_DEV,
-> +				    GFP_KERNEL);
->  	if (!st->iio_attr)
->  		return -ENOMEM;
->  
->  	for (dev = 0, cnt = 0; dev <= st->slave_num; dev++)
->  		for (ch = AD7280A_CELL_VOLTAGE_1; ch <= AD7280A_CELL_VOLTAGE_6;
->  			ch++, cnt++) {
-> +			index = dev * AD7280A_CELLS_PER_DEV + ch;
->  			st->iio_attr[cnt].address =
->  				ad7280a_devaddr(dev) << 8 | ch;
->  			st->iio_attr[cnt].dev_attr.attr.mode =
-> @@ -571,10 +581,9 @@ static int ad7280_attr_init(struct ad7280_state *st)
->  			st->iio_attr[cnt].dev_attr.store =
->  				ad7280_store_balance_sw;
->  			st->iio_attr[cnt].dev_attr.attr.name =
-> -				kasprintf(GFP_KERNEL,
-> -					  "in%d-in%d_balance_switch_en",
-> -					  dev * AD7280A_CELLS_PER_DEV + ch,
-> -					  dev * AD7280A_CELLS_PER_DEV + ch + 1);
-> +				devm_kasprintf(&st->spi->dev, GFP_KERNEL,
-> +					       "in%d-in%d_balance_switch_en",
-> +					       index, index + 1);
->  			ad7280_attributes[cnt] =
->  				&st->iio_attr[cnt].dev_attr.attr;
->  			cnt++;
-> @@ -588,10 +597,9 @@ static int ad7280_attr_init(struct ad7280_state *st)
->  			st->iio_attr[cnt].dev_attr.store =
->  				ad7280_store_balance_timer;
->  			st->iio_attr[cnt].dev_attr.attr.name =
-> -				kasprintf(GFP_KERNEL,
-> -					  "in%d-in%d_balance_timer",
-> -					  dev * AD7280A_CELLS_PER_DEV + ch,
-> -					  dev * AD7280A_CELLS_PER_DEV + ch + 1);
-> +				devm_kasprintf(&st->spi->dev, GFP_KERNEL,
-> +					       "in%d-in%d_balance_timer",
-> +					       index, index + 1);
->  			ad7280_attributes[cnt] =
->  				&st->iio_attr[cnt].dev_attr.attr;
->  		}
-> @@ -909,65 +917,41 @@ static int ad7280_probe(struct spi_device *spi)
->  
->  	ret = ad7280_attr_init(st);
->  	if (ret < 0)
-> -		goto error_free_channels;
-> +		return ret;
->  
-> -	ret = iio_device_register(indio_dev);
-> +	ret = devm_add_action(&spi->dev, ad7280_sw_power_down, st);
->  	if (ret)
-What state are we left in if the devm_add_action fails?
+> But there is one path where we don't quite manage to clean everything up.
 
-Answer: Everything is unwound except the thing we were adding the action
-for.  So you need to call ad7280_sw_power_down in the error path here.
+Or maybe more than on. See below and in v5.
 
-> -		goto error_free_attr;
-> +		return ret;
-> +
-> +	ret = devm_iio_device_register(&spi->dev, indio_dev);
-> +	if (ret)
-> +		return ret;
->  
->  	if (spi->irq > 0) {
->  		ret = ad7280_write(st, AD7280A_DEVADDR_MASTER,
->  				   AD7280A_ALERT, 1,
->  				   AD7280A_ALERT_RELAY_SIG_CHAIN_DOWN);
->  		if (ret)
-> -			goto error_unregister;
-> +			return ret;
->  
->  		ret = ad7280_write(st, ad7280a_devaddr(st->slave_num),
->  				   AD7280A_ALERT, 0,
->  				   AD7280A_ALERT_GEN_STATIC_HIGH |
->  				   (pdata->chain_last_alert_ignore & 0xF));
->  		if (ret)
-> -			goto error_unregister;
-> -
-> -		ret = request_threaded_irq(spi->irq,
-> -					   NULL,
-> -					   ad7280_event_handler,
-> -					   IRQF_TRIGGER_FALLING |
-> -					   IRQF_ONESHOT,
-> -					   indio_dev->name,
-> -					   indio_dev);
-> +			return ret;
-> +
-> +		ret = devm_request_threaded_irq(&spi->dev, spi->irq,
-> +						NULL,
-> +						ad7280_event_handler,
-> +						IRQF_TRIGGER_FALLING |
-> +						IRQF_ONESHOT,
-> +						indio_dev->name,
-> +						indio_dev);
->  		if (ret)
-> -			goto error_unregister;
-> +			return ret;
->  	}
->  
-> -	return 0;
-> -error_unregister:
-> -	iio_device_unregister(indio_dev);
-> -
-> -error_free_attr:
-> -	kfree(st->iio_attr);
-> -
-> -error_free_channels:
-> -	kfree(st->channels);
-> -
-> -	return ret;
-> -}
-> -
-> -static int ad7280_remove(struct spi_device *spi)
-> -{
-> -	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-> -	struct ad7280_state *st = iio_priv(indio_dev);
-> -
-> -	if (spi->irq > 0)
-> -		free_irq(spi->irq, indio_dev);
-> -	iio_device_unregister(indio_dev);
-> -
-> -	ad7280_write(st, AD7280A_DEVADDR_MASTER, AD7280A_CONTROL_HB, 1,
-> -		     AD7280A_CTRL_HB_PWRDN_SW | st->ctrl_hb);
-> -
-> -	kfree(st->channels);
-> -	kfree(st->iio_attr);
-> -
->  	return 0;
->  }
->  
-> @@ -982,7 +966,6 @@ static struct spi_driver ad7280_driver = {
->  		.name	= "ad7280",
->  	},
->  	.probe		= ad7280_probe,
-> -	.remove		= ad7280_remove,
->  	.id_table	= ad7280_id,
->  };
->  module_spi_driver(ad7280_driver);
+> > ---
+> Also, I should be seeing a version log here to avoid me having to look back
+> at previous versions (potentially) to remind me what needed changing.
+
+I am so sorry about that. Will add the whole history in v5.
+
+> > @@ -909,65 +917,41 @@ static int ad7280_probe(struct spi_device *spi)
+> >  
+> >  	ret = ad7280_attr_init(st);
+> >  	if (ret < 0)
+> > -		goto error_free_channels;
+> > +		return ret;
+> >  
+> > -	ret = iio_device_register(indio_dev);
+> > +	ret = devm_add_action(&spi->dev, ad7280_sw_power_down, st);
+> >  	if (ret)
+> What state are we left in if the devm_add_action fails?
+> 
+> Answer: Everything is unwound except the thing we were adding the action
+> for.  So you need to call ad7280_sw_power_down in the error path here.
+
+OK. I have also moved the devm_add_action call just after spi_setup in v5. So
+the action will be also called for fail in: ad7280_chain_setup,
+ad7280_channel_init and ad7280_attr_init. I think it is ok to do so if we are
+calling this action also when devm_add_action fails.
+
+> > -		goto error_free_attr;
+> > +		return ret;
+
+Thank you for review!
+
+-- 
+Slawomir Stepien
