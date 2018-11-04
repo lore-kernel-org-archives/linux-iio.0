@@ -1,89 +1,222 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:43818 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728331AbeKLAxi (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 11 Nov 2018 19:53:38 -0500
-Date: Sun, 11 Nov 2018 15:04:45 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc: linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, robh+dt@kernel.org, pmeerw@pmeerw.net,
-        lars@metafoo.de, knaack.h@gmx.de
-Subject: Re: [PATCH v2 2/2] iio: adc: meson-saradc: add support for the
- chip's temperature sensor
-Message-ID: <20181111150445.4e2110ea@archlinux>
-In-Reply-To: <CAFBinCB4bByOqXbUJEv2-fMKWDett-ym++7=x87tDWD4BTQ7QA@mail.gmail.com>
-References: <20181103231024.659-1-martin.blumenstingl@googlemail.com>
-        <20181103231024.659-3-martin.blumenstingl@googlemail.com>
-        <20181104170041.1fcc4932@archlinux>
-        <CAFBinCB4bByOqXbUJEv2-fMKWDett-ym++7=x87tDWD4BTQ7QA@mail.gmail.com>
+Return-Path: <SRS0=3wik=NP=poczta.fm=sst@kernel.org>
+From: Slawomir Stepien <sst@poczta.fm>
+To: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org,
+	gregkh@linuxfoundation.org,
+	Slawomir Stepien <sst@poczta.fm>
+Subject: [PATCH v5 1/1] staging: iio: adc: ad7280a: use devm_* APIs
+Date: Sun,  4 Nov 2018 11:49:00 +0100
+Message-Id: <20181104104900.13997-1-sst@poczta.fm>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, 4 Nov 2018 23:36:10 +0100
-Martin Blumenstingl <martin.blumenstingl@googlemail.com> wrote:
+devm_* APIs are device managed and make code simpler.
 
-> Hi Jonathan,
-> 
-> On Sun, Nov 4, 2018 at 6:00 PM Jonathan Cameron <jic23@kernel.org> wrote:
-> >
-> > On Sun,  4 Nov 2018 00:10:24 +0100
-> > Martin Blumenstingl <martin.blumenstingl@googlemail.com> wrote:
-> >  
-> > > Channel 6 of the SAR ADC can be switched between two inputs:
-> > > SAR_ADC_CH6 input (an actual pad on the SoC) and the signal from the
-> > > temperature sensor inside the SoC.
-> > >
-> > > To get usable results from the temperature sensor we need to read the
-> > > corresponding calibration data from the eFuse and pass it to the SAR ADC
-> > > registers. If the temperature sensor is not calibrated (the eFuse data
-> > > contains a bit for this) then the driver will only register the
-> > > iio_chan_spec's for voltage measurements.
-> > >
-> > > (bits [3:0]) and (on Meson8b and Meson8m2) to a scratch register in the
-> > > HHI region.  
-> I missed this "fragment" (I wouldn't call it a sentence) when I sent the patch.
-> the next paragraph already contains an explanation about the TSC on
-> Meson8b and Meson8m2 as well as the HHI register area.
-> so this paragraph doesn't make any sense and should be removed. do you
-> want me to re-send this patch (or even the whole series) or can you
-> remove it? everything else is fine (I double-checked this time...)
-fixed up.
+Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+---
+Since v4:
+* on devm_add_action fail, call the action on error handling
+* move the devm_add_action just after spi_setup - this will call the action on
+  more error paths in probe (fail in: ad7280_chain_setup, ad7280_channel_init,
+  ad7280_attr_init)
 
-Thanks,
+Since v3:
+* use devm_add_action with software power down
+* the whole remove call back is not needed anymore
 
-Jonathan
+Since v2:
+* iio_device_register -> devm_iio_device_register
 
-> 
-> > > This only enables the temperature sensor for the Meson8 SoC. Meson8b and
-> > > Meson8m2 SoCs can be supported in the future as well but we first need
-> > > a way to pass the fifth TSC (temperature sensor coefficient) bit to the
-> > > HHI register area (apart from that the infrastructure as already
-> > > implemented for Meson8 can be used). On the 64-bit SoCs (GXBB, GXL and
-> > > GXM) the temperature sensor inside SAR ADC is firmware-controlled (by
-> > > BL30, we can simply use the SCPI hwmon driver to get the chip
-> > > temperature).
-> > >
-> > > To keep the devicetree interface backwards compatible we simply skip the
-> > > temperature sensor initialization if no eFuse nvmem cell is passed via
-> > > devicetree.
-> > >
-> > > The public documentation for the SAR ADC IP block does not explain how
-> > > to use the registers to read the temperature. The logic from this patch
-> > > is based on reading and understanding Amlogic's GPL kernel sources.
-> > >
-> > > Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>  
-> > Good detailed explanation.  Thanks.  
-> you're welcome!
-> please see my comment above where I have to admit that not all of the
-> description is "good".
-> 
-> > Applied to the togreg branch of iio.git and pushed out as testing for
-> > the autobuilders to play with it.  
-> that was quick - thank you!
-> 
-> 
-> Regards
-> Martin
+Since v1:
+* request_threaded_irq -> devm_request_threaded_irq
+---
+ drivers/staging/iio/adc/ad7280a.c | 97 +++++++++++++------------------
+ 1 file changed, 41 insertions(+), 56 deletions(-)
+
+diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
+index 58420dcb406d..0d82be30a5de 100644
+--- a/drivers/staging/iio/adc/ad7280a.c
++++ b/drivers/staging/iio/adc/ad7280a.c
+@@ -342,6 +342,14 @@ static int ad7280_read_all_channels(struct ad7280_state *st, unsigned int cnt,
+ 	return sum;
+ }
+ 
++static void ad7280_sw_power_down(void *data)
++{
++	struct ad7280_state *st = data;
++
++	ad7280_write(st, AD7280A_DEVADDR_MASTER, AD7280A_CONTROL_HB, 1,
++		     AD7280A_CTRL_HB_PWRDN_SW | st->ctrl_hb);
++}
++
+ static int ad7280_chain_setup(struct ad7280_state *st)
+ {
+ 	unsigned int val, n;
+@@ -492,8 +500,8 @@ static int ad7280_channel_init(struct ad7280_state *st)
+ {
+ 	int dev, ch, cnt;
+ 
+-	st->channels = kcalloc((st->slave_num + 1) * 12 + 2,
+-			       sizeof(*st->channels), GFP_KERNEL);
++	st->channels = devm_kcalloc(&st->spi->dev, (st->slave_num + 1) * 12 + 2,
++				    sizeof(*st->channels), GFP_KERNEL);
+ 	if (!st->channels)
+ 		return -ENOMEM;
+ 
+@@ -552,16 +560,18 @@ static int ad7280_channel_init(struct ad7280_state *st)
+ static int ad7280_attr_init(struct ad7280_state *st)
+ {
+ 	int dev, ch, cnt;
++	unsigned int index;
+ 
+-	st->iio_attr = kcalloc(2, sizeof(*st->iio_attr) *
+-			       (st->slave_num + 1) * AD7280A_CELLS_PER_DEV,
+-			       GFP_KERNEL);
++	st->iio_attr = devm_kcalloc(&st->spi->dev, 2, sizeof(*st->iio_attr) *
++				    (st->slave_num + 1) * AD7280A_CELLS_PER_DEV,
++				    GFP_KERNEL);
+ 	if (!st->iio_attr)
+ 		return -ENOMEM;
+ 
+ 	for (dev = 0, cnt = 0; dev <= st->slave_num; dev++)
+ 		for (ch = AD7280A_CELL_VOLTAGE_1; ch <= AD7280A_CELL_VOLTAGE_6;
+ 			ch++, cnt++) {
++			index = dev * AD7280A_CELLS_PER_DEV + ch;
+ 			st->iio_attr[cnt].address =
+ 				ad7280a_devaddr(dev) << 8 | ch;
+ 			st->iio_attr[cnt].dev_attr.attr.mode =
+@@ -571,10 +581,9 @@ static int ad7280_attr_init(struct ad7280_state *st)
+ 			st->iio_attr[cnt].dev_attr.store =
+ 				ad7280_store_balance_sw;
+ 			st->iio_attr[cnt].dev_attr.attr.name =
+-				kasprintf(GFP_KERNEL,
+-					  "in%d-in%d_balance_switch_en",
+-					  dev * AD7280A_CELLS_PER_DEV + ch,
+-					  dev * AD7280A_CELLS_PER_DEV + ch + 1);
++				devm_kasprintf(&st->spi->dev, GFP_KERNEL,
++					       "in%d-in%d_balance_switch_en",
++					       index, index + 1);
+ 			ad7280_attributes[cnt] =
+ 				&st->iio_attr[cnt].dev_attr.attr;
+ 			cnt++;
+@@ -588,10 +597,9 @@ static int ad7280_attr_init(struct ad7280_state *st)
+ 			st->iio_attr[cnt].dev_attr.store =
+ 				ad7280_store_balance_timer;
+ 			st->iio_attr[cnt].dev_attr.attr.name =
+-				kasprintf(GFP_KERNEL,
+-					  "in%d-in%d_balance_timer",
+-					  dev * AD7280A_CELLS_PER_DEV + ch,
+-					  dev * AD7280A_CELLS_PER_DEV + ch + 1);
++				devm_kasprintf(&st->spi->dev, GFP_KERNEL,
++					       "in%d-in%d_balance_timer",
++					       index, index + 1);
+ 			ad7280_attributes[cnt] =
+ 				&st->iio_attr[cnt].dev_attr.attr;
+ 		}
+@@ -863,6 +871,12 @@ static int ad7280_probe(struct spi_device *spi)
+ 	st->spi->mode = SPI_MODE_1;
+ 	spi_setup(st->spi);
+ 
++	ret = devm_add_action(&spi->dev, ad7280_sw_power_down, st);
++	if (ret) {
++		ad7280_sw_power_down(st);
++		return ret;
++	}
++
+ 	st->ctrl_lb = AD7280A_CTRL_LB_ACQ_TIME(pdata->acquisition_time & 0x3);
+ 	st->ctrl_hb = AD7280A_CTRL_HB_CONV_AVG(pdata->conversion_averaging
+ 			& 0x3) | (pdata->thermistor_term_en ?
+@@ -909,65 +923,37 @@ static int ad7280_probe(struct spi_device *spi)
+ 
+ 	ret = ad7280_attr_init(st);
+ 	if (ret < 0)
+-		goto error_free_channels;
++		return ret;
+ 
+-	ret = iio_device_register(indio_dev);
++	ret = devm_iio_device_register(&spi->dev, indio_dev);
+ 	if (ret)
+-		goto error_free_attr;
++		return ret;
+ 
+ 	if (spi->irq > 0) {
+ 		ret = ad7280_write(st, AD7280A_DEVADDR_MASTER,
+ 				   AD7280A_ALERT, 1,
+ 				   AD7280A_ALERT_RELAY_SIG_CHAIN_DOWN);
+ 		if (ret)
+-			goto error_unregister;
++			return ret;
+ 
+ 		ret = ad7280_write(st, ad7280a_devaddr(st->slave_num),
+ 				   AD7280A_ALERT, 0,
+ 				   AD7280A_ALERT_GEN_STATIC_HIGH |
+ 				   (pdata->chain_last_alert_ignore & 0xF));
+ 		if (ret)
+-			goto error_unregister;
+-
+-		ret = request_threaded_irq(spi->irq,
+-					   NULL,
+-					   ad7280_event_handler,
+-					   IRQF_TRIGGER_FALLING |
+-					   IRQF_ONESHOT,
+-					   indio_dev->name,
+-					   indio_dev);
++			return ret;
++
++		ret = devm_request_threaded_irq(&spi->dev, spi->irq,
++						NULL,
++						ad7280_event_handler,
++						IRQF_TRIGGER_FALLING |
++						IRQF_ONESHOT,
++						indio_dev->name,
++						indio_dev);
+ 		if (ret)
+-			goto error_unregister;
++			return ret;
+ 	}
+ 
+-	return 0;
+-error_unregister:
+-	iio_device_unregister(indio_dev);
+-
+-error_free_attr:
+-	kfree(st->iio_attr);
+-
+-error_free_channels:
+-	kfree(st->channels);
+-
+-	return ret;
+-}
+-
+-static int ad7280_remove(struct spi_device *spi)
+-{
+-	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+-	struct ad7280_state *st = iio_priv(indio_dev);
+-
+-	if (spi->irq > 0)
+-		free_irq(spi->irq, indio_dev);
+-	iio_device_unregister(indio_dev);
+-
+-	ad7280_write(st, AD7280A_DEVADDR_MASTER, AD7280A_CONTROL_HB, 1,
+-		     AD7280A_CTRL_HB_PWRDN_SW | st->ctrl_hb);
+-
+-	kfree(st->channels);
+-	kfree(st->iio_attr);
+-
+ 	return 0;
+ }
+ 
+@@ -982,7 +968,6 @@ static struct spi_driver ad7280_driver = {
+ 		.name	= "ad7280",
+ 	},
+ 	.probe		= ad7280_probe,
+-	.remove		= ad7280_remove,
+ 	.id_table	= ad7280_id,
+ };
+ module_spi_driver(ad7280_driver);
+-- 
+2.19.1
