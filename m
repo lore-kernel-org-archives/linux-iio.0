@@ -1,86 +1,127 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from szxga07-in.huawei.com ([45.249.212.35]:60949 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725986AbeKBSkW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 2 Nov 2018 14:40:22 -0400
-Date: Fri, 2 Nov 2018 09:33:35 +0000
-From: Jonathan Cameron <jonathan.cameron@huawei.com>
-To: Paresh Chaudhary <paresh.chaudhary@rockwellcollins.com>
-CC: <jic23@kernel.org>,
-        Matthew Weber <matthew.weber@rockwellcollins.com>,
-        <linux-iio@vger.kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
-        <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v2 1/2] iio:temperature: Add MAX31856 thermocouple
- support
-Message-ID: <20181102093335.000042d9@huawei.com>
-In-Reply-To: <CAGSBOwZ-KfbGDrOHZqDd6piXJOCG2zdwjJ5naCrTBKvXtS_mgQ@mail.gmail.com>
-References: <1539275890-38141-1-git-send-email-matthew.weber@rockwellcollins.com>
-        <20181013145143.16530539@archlinux>
-        <CAGSBOwZ-KfbGDrOHZqDd6piXJOCG2zdwjJ5naCrTBKvXtS_mgQ@mail.gmail.com>
+Return-Path: <giuliano.belinassi@usp.br>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+References: <20181017190028.wu2kgsooj64beh7o@smtp.gmail.com>
+ <d0fc5a236a82d03fdbe4d05eb27ff3bd3ac36958.camel@analog.com>
+ <20181018114145.amqff57holmecxpo@smtp.gmail.com> <CAEFO=4BjSiYeNW_n0PjoC3EqaN1Z8E1XB_CO+FJJdTwZo4enzg@mail.gmail.com>
+ <20181023105126.408ef7ab@archlinux>
+In-Reply-To: <20181023105126.408ef7ab@archlinux>
+From: Giuliano Augusto Faulin Belinassi <giuliano.belinassi@usp.br>
+Date: Mon, 5 Nov 2018 16:46:54 -0200
+Message-ID: <CAEFO=4Dc_v90MHFnniTpAcMvajpt3O55rtc730Pr0F6+Aau49A@mail.gmail.com>
+Subject: Re: Questions related to some drivers
+To: jic23@jic23.retrosnub.co.uk
+Cc: giuliano.belinassi@gmail.com, alexandru.Ardelean@analog.com,
+	linux-iio@vger.kernel.org, Renato Geh <renatogeh@gmail.com>,
+	kernel-usp@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+List-ID: <linux-iio@vger.kernel.org>
 
-Just the one outstanding discussion I think so I've heavily cropped the email..
+Hello,
+Could you help us figure out what must be added/changed into the
+staging/iio/adc/ad7780.c to remove it from staiging?
 
-On Tue, 16 Oct 2018 10:28:40 -0500
-Paresh Chaudhary <paresh.chaudhary@rockwellcollins.com> wrote:
+For instance, should we add an id field in ad7780_state struct that
+represents ID1 and ID0 from the status bits (page 13 from datasheet)?
+Or check the Status pattern bits PAT1, PAT0 for errors? Or something
+else we can work on?
 
-> > > +static int max31856_probe(struct spi_device *spi)
-> > > +{
-> > > +     const struct spi_device_id *id = spi_get_device_id(spi);
-> > > +     struct iio_dev *indio_dev;
-> > > +     struct max31856_data *data;
-> > > +     int ret;
-> > > +
-> > > +     indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*data));
-> > > +     if (!indio_dev)
-> > > +             return -ENOMEM;
-> > > +
-> > > +     data = iio_priv(indio_dev);
-> > > +     data->spi = spi;
-> > > +
-> > > +     spi_set_drvdata(spi, indio_dev);
-> > > +
-> > > +     indio_dev->info = &max31856_info;
-> > > +     indio_dev->name = id->name;
-> > > +     indio_dev->modes = INDIO_DIRECT_MODE;
-> > > +     indio_dev->channels = max31856_channels;
-> > > +     indio_dev->num_channels = ARRAY_SIZE(max31856_channels);
-> > > +
-> > > +     data->one_shot = of_property_read_bool(spi->dev.of_node, "one-shot");  
+Thank you.
+On Tue, Oct 23, 2018 at 6:51 AM Jonathan Cameron
+<jic23@jic23.retrosnub.co.uk> wrote:
+>
+> On Mon, 22 Oct 2018 18:56:16 -0300
+> Giuliano Augusto Faulin Belinassi <giuliano.belinassi@usp.br> wrote:
+>
+> > Hello,
+> > I have some questions about the ad7780 driver.
 > >
-> > This does not look to me like something that should be controlled in devicetree.
-> > Normally we'd switch between oneshot and continuous modes based on some sort
-> > of rule such as whether we are doing buffered reads vs polled ones, or perhaps
-> > switch to oneshot if there hasn't been a reading taken for a 'while'.
-> > (a form of runtime power management).
-> >  
->    I am totally agree with your runtime power management concern but
-> as of now, current
->    driver does not have support for runtime coversion mode change.
-
-So to make this clear as we are going in circles, what I am saying is that
-until you implement some dynamic control you need to make a decision on
-which mode to support and only support one of them.
-
-We do not want this property in the devicetree bindings at all as we will
-then have to work with it forever and it is control that does not belong
-there.  It is not a function of the board design, it is a policy decision.
-
-> > > +
-> > > +     ret = of_property_read_u32(spi->dev.of_node, "type",
-> > > +                                &data->thermocouple_type);
-> > > +
-> > > +     if (ret) {
-> > > +             pr_info("Could not read thermocouple type DT property, Configuring as a K-Type\n");
-> > > +             data->thermocouple_type = 0x03; /* K-Type */
-> > > +     }
-> > > +
-> > > +     ret = max31856_init(data);
-> > > +     if (ret) {
-> > > +             pr_err("error: Failed to configure max31856\n");
-> > > +             return ret;
-> > > +     }
-> > > +
+> >   * What is the val2 In the line 96 (*val2 = chan->scan_type.realbits
+> > - 1;)? How it is used? Is it related to the 24-bits ADC precision?
+>
+> To understand that follow through what the code does when the type of a
+> read_raw is IIO_VAL_FRACTIONAL_LOG2;
+>
+> >   * Why there is a subtraction in the line 99 ( *val -= (1 <<
+> > (chan->scan_type.realbits - 1)); )? Is the *val initialized with 0? Is
+> > that related to the formula described in the DATA OUTPUT CODING, at
+> > page 12?
+> > https://www.analog.com/media/en/technical-documentation/data-sheets/ad7780.pdf
+>
+> Yeah, that -= is definitely wrong.  Should just be an assignment to the
+> negative value.  This is telling userspace that the raw value should be
+> offset by half of it's maximum range before applying the scale to get
+> a reading in the IIO base units (here mV IIRC).
+>
+> >
+> > With regards
+> >
+> >
+> > On Thu, Oct 18, 2018 at 8:41 AM Giuliano Belinassi
+> > <giuliano.belinassi@gmail.com> wrote:
+> > >
+> > > On 10/18, Ardelean, Alexandru wrote:
+> > >
+> > > Thank you for the reply :-). We will put effort into at least one driver to
+> > > remove it from staging.
+> > >
+> > > > Hey,
+> > > >
+> > > > Thanks for the notification.
+> > > >
+> > > > Yes, all these 3 drivers should be moved out of staging.
+> > > >
+> > > > We were planning to start working on them (to move them out of staging),
+> > > > but priorities are shifting from one week to the other.
+> > > > So, if you guys have the time and are willing to do it, please go ahead,
+> > > > and add me, michael.hennerich@analog.com and stefan.popa@analog.com to the
+> > > > CC when sending patches, and we will also take a look over your patches.
+> > > >
+> > > > If you haven't taken a look already, feel free to also take a look at our
+> > > > wiki:
+> > > > https://wiki.analog.com/resources/tools-software/linux-drivers-all
+> > > > It's more technical for the SW side; it might help with some general info.
+> > > > And the datasheets should be available on the analog.com/<product_id>
+> > > > pages.
+> > > >
+> > > >
+> > > > Thanks
+> > > > Alex
+> > > >
+> > > >
+> > > > On Wed, 2018-10-17 at 16:00 -0300, Giuliano Belinassi wrote:
+> > > > > Hello,
+> > > > >
+> > > > > We are a student group and we want to contribute to the linux kernel. We
+> > > > > are thinking in put effort to move a driver from staging to the main
+> > > > > tree.
+> > > > > We looked into three drivers:
+> > > > >
+> > > > >   * adc/ad7780.c
+> > > > >   * adc/ad7816.c
+> > > > >   * impedance-analyzer/ad5933.c
+> > > > >
+> > > > > Are these drivers still being worked on? The last commit referencing
+> > > > > these
+> > > > > drivers were on march 2018, but they are still in staging since 2010.
+> > > > >
+> > > > > We already know that we have to convert from the old api to the new one.
+> > > > > It is
+> > > > > OK for us to work on this? Is there something else we can do?
+> > > > >
+> > > > > Thank you
+> > > > >
+> > > >
+> > > > --
+> > > > You received this message because you are subscribed to the Google Groups "Kernel USP" group.
+> > > > To unsubscribe from this group and stop receiving emails from it, send an email to kernel-usp+unsubscribe@googlegroups.com.
+> > > > To post to this group, send email to kernel-usp@googlegroups.com.
+> > > > To view this discussion on the web visit https://groups.google.com/d/msgid/kernel-usp/d0fc5a236a82d03fdbe4d05eb27ff3bd3ac36958.camel%40analog.com.
+> > > > For more options, visit https://groups.google.com/d/optout.
+> > >
+> > > --
+> > > You received this message because you are subscribed to the Google Groups "Kernel USP" group.
+> > > To unsubscribe from this group and stop receiving emails from it, send an email to kernel-usp+unsubscribe@googlegroups.com.
+> > > To post to this group, send email to kernel-usp@googlegroups.com.
+> > > To view this discussion on the web visit https://groups.google.com/d/msgid/kernel-usp/20181018114145.amqff57holmecxpo%40smtp.gmail.com.
+> > > For more options, visit https://groups.google.com/d/optout.
+>
