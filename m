@@ -1,116 +1,34 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:36246 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727817AbeKLAVu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 11 Nov 2018 19:21:50 -0500
-Date: Sun, 11 Nov 2018 14:33:03 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 0/7] add i2c controller support to st_lsm6dsx driver
-Message-ID: <20181111143303.5d526561@archlinux>
-In-Reply-To: <CAJ0CqmXYazbniu44T2YF1RZJvySHvgWd2rOQZ6gMT1UKY0bCDQ@mail.gmail.com>
-References: <cover.1541341926.git.lorenzo.bianconi@redhat.com>
-        <20181104181223.48618c1f@archlinux>
-        <CAJ0CqmVhpw=99YKg8fRFG83H6NcYfcRH9eZxgJh-xCrp5rXfXQ@mail.gmail.com>
-        <20181104183413.66b9abf1@archlinux>
-        <CAJ0CqmXYazbniu44T2YF1RZJvySHvgWd2rOQZ6gMT1UKY0bCDQ@mail.gmail.com>
+Received: from mail-qk1-f171.google.com ([209.85.222.171]:46399 "EHLO
+        mail-qk1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726932AbeKFEUU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 5 Nov 2018 23:20:20 -0500
+Received: by mail-qk1-f171.google.com with SMTP id q1so16645799qkf.13
+        for <linux-iio@vger.kernel.org>; Mon, 05 Nov 2018 10:59:17 -0800 (PST)
+Date: Mon, 5 Nov 2018 16:59:11 -0200
+From: Lucas Santos <ilucas.ms@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: kernel-usp@googlegroups.com
+Subject: Work plan on ad5933
+Message-ID: <20181105185911.g5324s46ixlgbvxj@smtp.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, 4 Nov 2018 20:07:02 +0100
-Lorenzo Bianconi <lorenzo.bianconi@redhat.com> wrote:
+Hello,
 
-> >
-> > On Sun, 4 Nov 2018 19:27:42 +0100
-> > Lorenzo Bianconi <lorenzo.bianconi@redhat.com> wrote:
-> >  
-> > > >
-> > > > On Sun,  4 Nov 2018 15:38:59 +0100
-> > > > Lorenzo Bianconi <lorenzo.bianconi@redhat.com> wrote:
-> > > >  
-> > > > > Introduce i2c controller support to st_lsm6dsx driver for lsm6dso sensor.
-> > > > > Add register map for lis2mdl magnetometer sensor.
-> > > > > Add hw FIFO support to st_lsm6dsx sensorhub driver.
-> > > > >
-> > > > > Lorenzo Bianconi (7):
-> > > > >   iio: imu: st_lsm6dsx: introduce locked read/write utility routines
-> > > > >   iio: imu: st_lsm6dsx: reboot memory content after reset
-> > > > >   iio: imu: st_lsm6dsx: remove static from st_lsm6dsx_set_watermark
-> > > > >   iio: imu: st_lsm6dsx: introduce ST_LSM6DSX_ID_EXT sensor ids
-> > > > >   iio: imu: st_lsm6dsx: add i2c embedded controller support
-> > > > >   iio: imu: st_lsm6dsx: add hw FIFO support to i2c controller
-> > > > >   dt-bindings: iio: imu: st_lsm6dsx: add support to i2c pullup resistors
-> > > > >
-> > > > >  .../bindings/iio/imu/st_lsm6dsx.txt           |   1 +
-> > > > >  drivers/iio/imu/st_lsm6dsx/Makefile           |   3 +-
-> > > > >  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h       | 167 +++-
-> > > > >  .../iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c    | 169 ++--
-> > > > >  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c  | 273 +++++--
-> > > > >  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c  | 753 ++++++++++++++++++
-> > > > >  .../linux/platform_data/st_sensors_pdata.h    |   2 +
-> > > > >  7 files changed, 1226 insertions(+), 142 deletions(-)
-> > > > >  create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
-> > > > >  
-> > > >
-> > > > Hi Lorenzo,
-> > > >
-> > > > Great to see this series.  
-> > >
-> > > Hi Jonathan,
-> > >
-> > > thx a lot for the fast review :) I will fix your comments in a v2
-> > >  
-> > > >
-> > > > It seems to have come together fairly nicely given the inherent complexity
-> > > > of dealing with these slave i2c controllers.   What I would like to
-> > > > see in this cover letter though is a brief description of what can be
-> > > > put behind these devices?
-> > > >
-> > > > The one thing I want to be careful of is ending up with lots of sort
-> > > > of replicated drivers where we have a version in each sensor hub
-> > > > and one for directly connected devices.  Superficially this
-> > > > device seems to have a very restricted I2C master so that might not
-> > > > be a significant problem.  What do you think?
-> > > > This gets particularly interesting if we think about switching in
-> > > > and out of pass through.  At that point this looks like an i2c offload
-> > > > engine (sort of) similar to the one Lars did for spi, be it a very
-> > > > restricted one.  
-> > >
-> > > I think the main purpose of the i2c controller embedded in lsm6dso is
-> > > to connect a magnetometer sensor
-> > > to it and get in this way a 9axis device (please note this is just my opinion).
-> > > However we can think to connect other devices like temperature or
-> > > pressure sensors (I tested them in the past :)).
-> > > I think we will never use it as a 'general purpose' contoller, e.g. to
-> > >  connect an adc :)  
-> >
-> > Hmm. Lets keep an eye on what gets added. If it gets silly we can revisit how
-> > to handle things.  Particularly if we get things that can't be so easily
-> > probed.  Of course, we may find no one ever adds anything else and that
-> > would be fine :)
-> >  
-> 
-> Do you have something to point out?
-Nothing in particular.
+I'm looking at the code of impedaance-analyzer/ad5933, trying to understand
+what is needed to move it to the main tree. I am part of a study group and we
+are willing to work on it.
 
-> Maybe a future improvement can be a more general way to pass
-> slave register map. What do you think?
-Possibly true.  These sort of 'half implementations' of an i2c master
-with offload are getting more common so we may need to look at this in detail.
+We do not understand all the necessary steps yet, but we have some guests. I'd
+like to ask if we are on the right track. All feedback will be much
+appreciated.
 
-Jonathan
-> 
-> Regards,
-> Lorenzo
-> 
-> > Jonathan  
-> > >
-> > > Regards,
-> > > Lorenzo
-> > >  
-> > > >
-> > > > Jonathan  
-> >  
+We understand that we should refactor the way the driver is designed. We think
+we should removed the delayed work pattern (events queue) and use IRQ pattern
+instead. Is that correct? Do we need to do any additional work?
+
+Best regards,
+Lucas
