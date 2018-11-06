@@ -1,31 +1,30 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtpo.poczta.interia.pl ([217.74.65.235]:41691 "EHLO
+Received: from smtpo.poczta.interia.pl ([217.74.65.235]:46321 "EHLO
         smtpo.poczta.interia.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387537AbeKGEj5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Nov 2018 23:39:57 -0500
+        with ESMTP id S1726138AbeKGHKQ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 7 Nov 2018 02:10:16 -0500
 From: Slawomir Stepien <sst@poczta.fm>
 To: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
         knaack.h@gmx.de, pmeerw@pmeerw.net
 Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-        =?UTF-8?q?S=C5=82awomir=20St=C4=99pie=C5=84?=
-        <slawomir.stepien@nokia.com>
-Subject: [PATCH] staging: iio: adc: ad7280a: do not pass the copy of struct element
-Date: Tue,  6 Nov 2018 19:48:15 +0100
-Message-Id: <20181106184815.27910-1-sst@poczta.fm>
+        Slawomir Stepien <sst@poczta.fm>
+Subject: [PATCH v2] staging: iio: adc: ad7280a: do not pass the copy of struct element
+Date: Tue,  6 Nov 2018 22:43:08 +0100
+Message-Id: <20181106214308.10619-1-sst@poczta.fm>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
-
-From: Sławomir Stępień <slawomir.stepien@nokia.com>
 
 There is no need to pass this parameter since is always a copy of
 parameter that is available via st pointer.
 
-Signed-off-by: Sławomir Stępień <slawomir.stepien@nokia.com>
+Signed-off-by: Slawomir Stepien <sst@poczta.fm>
 ---
 Note: this has been rebased on kernel/git/jic23/iio.git testing branch. I hope
       that's OK!
+
+Changes since v1:
+* Change my email address
 ---
  drivers/staging/iio/adc/ad7280a.c | 8 ++++----
  1 file changed, 4 insertions(+), 4 deletions(-)
