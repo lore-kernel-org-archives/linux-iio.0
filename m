@@ -1,127 +1,147 @@
-Return-Path: <giuliano.belinassi@usp.br>
-MIME-Version: 1.0
-References: <20181017190028.wu2kgsooj64beh7o@smtp.gmail.com>
- <d0fc5a236a82d03fdbe4d05eb27ff3bd3ac36958.camel@analog.com>
- <20181018114145.amqff57holmecxpo@smtp.gmail.com> <CAEFO=4BjSiYeNW_n0PjoC3EqaN1Z8E1XB_CO+FJJdTwZo4enzg@mail.gmail.com>
- <20181023105126.408ef7ab@archlinux>
-In-Reply-To: <20181023105126.408ef7ab@archlinux>
-From: Giuliano Augusto Faulin Belinassi <giuliano.belinassi@usp.br>
-Date: Mon, 5 Nov 2018 16:46:54 -0200
-Message-ID: <CAEFO=4Dc_v90MHFnniTpAcMvajpt3O55rtc730Pr0F6+Aau49A@mail.gmail.com>
+Return-Path: <alexandru.Ardelean@analog.com>
+From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+To: "giuliano.belinassi@usp.br" <giuliano.belinassi@usp.br>,
+	"jic23@jic23.retrosnub.co.uk" <jic23@jic23.retrosnub.co.uk>
+CC: "giuliano.belinassi@gmail.com" <giuliano.belinassi@gmail.com>,
+	"renatogeh@gmail.com" <renatogeh@gmail.com>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "kernel-usp@googlegroups.com"
+	<kernel-usp@googlegroups.com>
 Subject: Re: Questions related to some drivers
-To: jic23@jic23.retrosnub.co.uk
-Cc: giuliano.belinassi@gmail.com, alexandru.Ardelean@analog.com,
-	linux-iio@vger.kernel.org, Renato Geh <renatogeh@gmail.com>,
-	kernel-usp@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 6 Nov 2018 13:23:19 +0000
+Message-ID: <6f9ad9ace7828741f25ea6e7c555c9f4e91a203b.camel@analog.com>
+References: <20181017190028.wu2kgsooj64beh7o@smtp.gmail.com>
+	 <d0fc5a236a82d03fdbe4d05eb27ff3bd3ac36958.camel@analog.com>
+	 <20181018114145.amqff57holmecxpo@smtp.gmail.com>
+	 <CAEFO=4BjSiYeNW_n0PjoC3EqaN1Z8E1XB_CO+FJJdTwZo4enzg@mail.gmail.com>
+	 <20181023105126.408ef7ab@archlinux>
+	 <CAEFO=4Dc_v90MHFnniTpAcMvajpt3O55rtc730Pr0F6+Aau49A@mail.gmail.com>
+In-Reply-To: <CAEFO=4Dc_v90MHFnniTpAcMvajpt3O55rtc730Pr0F6+Aau49A@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-Hello,
-Could you help us figure out what must be added/changed into the
-staging/iio/adc/ad7780.c to remove it from staiging?
-
-For instance, should we add an id field in ad7780_state struct that
-represents ID1 and ID0 from the status bits (page 13 from datasheet)?
-Or check the Status pattern bits PAT1, PAT0 for errors? Or something
-else we can work on?
-
-Thank you.
-On Tue, Oct 23, 2018 at 6:51 AM Jonathan Cameron
-<jic23@jic23.retrosnub.co.uk> wrote:
->
-> On Mon, 22 Oct 2018 18:56:16 -0300
-> Giuliano Augusto Faulin Belinassi <giuliano.belinassi@usp.br> wrote:
->
-> > Hello,
-> > I have some questions about the ad7780 driver.
-> >
-> >   * What is the val2 In the line 96 (*val2 = chan->scan_type.realbits
-> > - 1;)? How it is used? Is it related to the 24-bits ADC precision?
->
-> To understand that follow through what the code does when the type of a
-> read_raw is IIO_VAL_FRACTIONAL_LOG2;
->
-> >   * Why there is a subtraction in the line 99 ( *val -= (1 <<
-> > (chan->scan_type.realbits - 1)); )? Is the *val initialized with 0? Is
-> > that related to the formula described in the DATA OUTPUT CODING, at
-> > page 12?
-> > https://www.analog.com/media/en/technical-documentation/data-sheets/ad7780.pdf
->
-> Yeah, that -= is definitely wrong.  Should just be an assignment to the
-> negative value.  This is telling userspace that the raw value should be
-> offset by half of it's maximum range before applying the scale to get
-> a reading in the IIO base units (here mV IIRC).
->
-> >
-> > With regards
-> >
-> >
-> > On Thu, Oct 18, 2018 at 8:41 AM Giuliano Belinassi
-> > <giuliano.belinassi@gmail.com> wrote:
-> > >
-> > > On 10/18, Ardelean, Alexandru wrote:
-> > >
-> > > Thank you for the reply :-). We will put effort into at least one driver to
-> > > remove it from staging.
-> > >
-> > > > Hey,
-> > > >
-> > > > Thanks for the notification.
-> > > >
-> > > > Yes, all these 3 drivers should be moved out of staging.
-> > > >
-> > > > We were planning to start working on them (to move them out of staging),
-> > > > but priorities are shifting from one week to the other.
-> > > > So, if you guys have the time and are willing to do it, please go ahead,
-> > > > and add me, michael.hennerich@analog.com and stefan.popa@analog.com to the
-> > > > CC when sending patches, and we will also take a look over your patches.
-> > > >
-> > > > If you haven't taken a look already, feel free to also take a look at our
-> > > > wiki:
-> > > > https://wiki.analog.com/resources/tools-software/linux-drivers-all
-> > > > It's more technical for the SW side; it might help with some general info.
-> > > > And the datasheets should be available on the analog.com/<product_id>
-> > > > pages.
-> > > >
-> > > >
-> > > > Thanks
-> > > > Alex
-> > > >
-> > > >
-> > > > On Wed, 2018-10-17 at 16:00 -0300, Giuliano Belinassi wrote:
-> > > > > Hello,
-> > > > >
-> > > > > We are a student group and we want to contribute to the linux kernel. We
-> > > > > are thinking in put effort to move a driver from staging to the main
-> > > > > tree.
-> > > > > We looked into three drivers:
-> > > > >
-> > > > >   * adc/ad7780.c
-> > > > >   * adc/ad7816.c
-> > > > >   * impedance-analyzer/ad5933.c
-> > > > >
-> > > > > Are these drivers still being worked on? The last commit referencing
-> > > > > these
-> > > > > drivers were on march 2018, but they are still in staging since 2010.
-> > > > >
-> > > > > We already know that we have to convert from the old api to the new one.
-> > > > > It is
-> > > > > OK for us to work on this? Is there something else we can do?
-> > > > >
-> > > > > Thank you
-> > > > >
-> > > >
-> > > > --
-> > > > You received this message because you are subscribed to the Google Groups "Kernel USP" group.
-> > > > To unsubscribe from this group and stop receiving emails from it, send an email to kernel-usp+unsubscribe@googlegroups.com.
-> > > > To post to this group, send email to kernel-usp@googlegroups.com.
-> > > > To view this discussion on the web visit https://groups.google.com/d/msgid/kernel-usp/d0fc5a236a82d03fdbe4d05eb27ff3bd3ac36958.camel%40analog.com.
-> > > > For more options, visit https://groups.google.com/d/optout.
-> > >
-> > > --
-> > > You received this message because you are subscribed to the Google Groups "Kernel USP" group.
-> > > To unsubscribe from this group and stop receiving emails from it, send an email to kernel-usp+unsubscribe@googlegroups.com.
-> > > To post to this group, send email to kernel-usp@googlegroups.com.
-> > > To view this discussion on the web visit https://groups.google.com/d/msgid/kernel-usp/20181018114145.amqff57holmecxpo%40smtp.gmail.com.
-> > > For more options, visit https://groups.google.com/d/optout.
->
+T24gTW9uLCAyMDE4LTExLTA1IGF0IDE2OjQ2IC0wMjAwLCBHaXVsaWFubyBBdWd1c3RvIEZhdWxp
+biBCZWxpbmFzc2kgd3JvdGU6DQo+IEhlbGxvLA0KPiBDb3VsZCB5b3UgaGVscCB1cyBmaWd1cmUg
+b3V0IHdoYXQgbXVzdCBiZSBhZGRlZC9jaGFuZ2VkIGludG8gdGhlDQo+IHN0YWdpbmcvaWlvL2Fk
+Yy9hZDc3ODAuYyB0byByZW1vdmUgaXQgZnJvbSBzdGFpZ2luZz8NCj4gDQo+IEZvciBpbnN0YW5j
+ZSwgc2hvdWxkIHdlIGFkZCBhbiBpZCBmaWVsZCBpbiBhZDc3ODBfc3RhdGUgc3RydWN0IHRoYXQN
+Cj4gcmVwcmVzZW50cyBJRDEgYW5kIElEMCBmcm9tIHRoZSBzdGF0dXMgYml0cyAocGFnZSAxMyBm
+cm9tIGRhdGFzaGVldCk/DQo+IE9yIGNoZWNrIHRoZSBTdGF0dXMgcGF0dGVybiBiaXRzIFBBVDEs
+IFBBVDAgZm9yIGVycm9ycz8gT3Igc29tZXRoaW5nDQo+IGVsc2Ugd2UgY2FuIHdvcmsgb24/DQo+
+IA0KDQpIZXksDQoNCllvdSBkb24ndCBuZWVkIHRvIGNoZWNrIGFueSBwYXR0ZXJucywgdGhhdCdz
+IGFscmVhZHkgYmVpbmcgZG9uZSBpbiB0aGUNCmRyaXZlciAoc2VlIGBwYXR0ZXJuYCAmIGBwYXR0
+ZXJuX21hc2tgIGZpZWxkcykuIA0KQW5kIHNlZSBmdW5jdGlvbiBhZDc3ODBfcG9zdHByb2Nlc3Nf
+c2FtcGxlKCkuDQpUaG91Z2ggSSB3aWxsIGFkbWl0IGl0IHdvdWxkIGhhdmUgYmVlbiBuaWNlciBp
+ZiB0aG9zZSBwYXR0ZXJucyB3ZXJlDQpnZW5lcmF0ZWQgZnJvbSBBRDc3ODBfUEFUMSAmIEFENzc4
+MF9QQVQwLiBTbyAoaWYgeW91IHdhbnQpLCB5b3UgY291bGQNCnVwZGF0ZSB0aG9zZSBwYXR0ZXJu
+IGFzc2lnbm1lbnRzIHdpdGggc29tZSBtYWNyb3MgOyBmb3IgQUQ3MTd4IHlvdSBtYXkgbmVlZA0K
+dG8gYWRkIEFENzE3MF9QQVQyIChCSVQoMikpDQoNCkkgYW0gbm90aWNpbmcgYSBzbWFsbCBidWcg
+d2l0aCB0aGUgZHJpdmVyIG5vdw0KKGluIGFkNzc4MF9wb3N0cHJvY2Vzc19zYW1wbGUoKSkuDQpU
+aGUgQUQ3NzgwX0dBSU4gYml0LWZpZWxkIChmb3IgQUQ3Nzh4KSBvdmVybGFwcyB3aXRoIEFENzE3
+MF9QQVQyIChmb3INCkFENzE3eCkuIFNvLCBtYXliZSB5b3UgY291bGQgYWRkIGEgZmllbGQgY2Fs
+bGVkIGBpc19hZDc3OHhgIGluDQpgYWQ3NzgwX2NoaXBfaW5mb2AgYW5kIGluaXRpYWxpemUgaXQg
+dG8gdHJ1ZSBpbiB0aGUgYGFkNzc4MF9jaGlwX2luZm9fdGJsYA0KZm9yIEFENzc4MCAmIEFENzc4
+MSA7IGFuZCBvbmx5IHBlcmZvcm0gdGhlIEFENzc4MF9HQUlOIGNoZWNrIGZvciB0aGVzZQ0KZGV2
+aWNlcy4NCkFjY29yZGluZyB0byB0aGUgZGF0YXNoZWV0cyBBRDcxNzAgJiBBRDcxNzEgaGF2ZSBh
+IGZpeGVkIGdhaW4gb2YgMS4NCg0KSSB3b3VsZCBpZ25vcmUgdGhlIElEMCAmIElEMSBmaWVsZHMg
+OyB0aG9zZSBzZWVtIHRvIG92ZXJsYXAgYSBiaXQgYmV0d2Vlbg0KQUQ3MTd4ICYgQUQ3Nzh4LiBB
+bmQgdGhleSdyZSBub3QgdmVyeSB1c2VmdWwgaW4gdGhlIGRyaXZlci4NCg0KRm9yIEFENzc4eCB5
+b3UgY291bGQgYWxzbyBhZGQgc3VwcG9ydCBmb3IgdGhlIEdBSU4gJiBGSUxURVIgcGlucyB2aWEg
+R1BJT3MsDQp0byBjb250cm9sIHRoZXNlIHNldHRpbmdzLiBBbmQgdGhlbiBpbiB0aGUgYWQ3Nzgw
+X3Bvc3Rwcm9jZXNzX3NhbXBsZSgpDQpmdW5jdGlvbiBjaGVjayBpZiB0aGUgR1BJTyBzZXR0aW5n
+cyAoc3RvcmVkIG9uIGEgZ3Bpb19kZXNjIG9uIGFkNzc4MF9zdGF0ZSkNCm1hdGNoIHRoZSBleHBl
+Y3RlZCBHQUlOICYgRklMVEVSIGJpdCBzZXR0aW5ncyA7IGlmIG5vdCByZXR1cm4gLUVJTy4NCg0K
+QWxsLWluLWFsbCwgdGhlIGRyaXZlciBpcyBhbG1vc3QgcmVhZHkgdG8gbW92ZSBvdXQgb2Ygc3Rh
+Z2luZyAoZnJvbSBteQ0KcG9pbnQgb2YgdmlldykuDQpOb3Qgc3VyZSBpZiBhbnlvbmUgZWxzZSBo
+YXMgYW55dGhpbmcgZWxzZSB0byBhZGQuDQpUaGUgYnVnIHNob3VsZCBiZSBmaXhlZCwgYW5kIHRo
+ZSByZXN0IGlzIG5pY2UtdG8taGF2ZSwgYnV0IG5vdCBuZWNlc3NhcmlseQ0KYSBtdXN0IChhZ2Fp
+biwgZnJvbSBteSBwb2ludCBvZiB2aWV3KSB0byBrZWVwIGl0IGluIHN0YWdpbmcuDQoNCkFsc28s
+IGdlbmVyYWxseTogbWF5YmUgZG8gYSBjb21wYXJhdGl2ZSBzd2VlcCBiZXR3ZWVuIEFENzE3eCAm
+IEFENzc4eA0KZGF0YXNoZWV0cyBhbmQgc2VlIGlmIHRoZXJlJ3Mgc29tZXRoaW5nIGxlZnQgdGhh
+dCdzIGluY29ycmVjdCBmb3IgYW55IG9mDQp0aGVzZSBjaGlwcy4NCg0KVGhhbmtzDQpBbGV4DQoN
+Cj4gVGhhbmsgeW91Lg0KPiBPbiBUdWUsIE9jdCAyMywgMjAxOCBhdCA2OjUxIEFNIEpvbmF0aGFu
+IENhbWVyb24NCj4gPGppYzIzQGppYzIzLnJldHJvc251Yi5jby51az4gd3JvdGU6DQo+ID4gDQo+
+ID4gT24gTW9uLCAyMiBPY3QgMjAxOCAxODo1NjoxNiAtMDMwMA0KPiA+IEdpdWxpYW5vIEF1Z3Vz
+dG8gRmF1bGluIEJlbGluYXNzaSA8Z2l1bGlhbm8uYmVsaW5hc3NpQHVzcC5icj4gd3JvdGU6DQo+
+ID4gDQo+ID4gPiBIZWxsbywNCj4gPiA+IEkgaGF2ZSBzb21lIHF1ZXN0aW9ucyBhYm91dCB0aGUg
+YWQ3NzgwIGRyaXZlci4NCj4gPiA+IA0KPiA+ID4gICAqIFdoYXQgaXMgdGhlIHZhbDIgSW4gdGhl
+IGxpbmUgOTYgKCp2YWwyID0gY2hhbi0+c2Nhbl90eXBlLnJlYWxiaXRzDQo+ID4gPiAtIDE7KT8g
+SG93IGl0IGlzIHVzZWQ/IElzIGl0IHJlbGF0ZWQgdG8gdGhlIDI0LWJpdHMgQURDIHByZWNpc2lv
+bj8NCj4gPiANCj4gPiBUbyB1bmRlcnN0YW5kIHRoYXQgZm9sbG93IHRocm91Z2ggd2hhdCB0aGUg
+Y29kZSBkb2VzIHdoZW4gdGhlIHR5cGUgb2YgYQ0KPiA+IHJlYWRfcmF3IGlzIElJT19WQUxfRlJB
+Q1RJT05BTF9MT0cyOw0KPiA+IA0KPiA+ID4gICAqIFdoeSB0aGVyZSBpcyBhIHN1YnRyYWN0aW9u
+IGluIHRoZSBsaW5lIDk5ICggKnZhbCAtPSAoMSA8PA0KPiA+ID4gKGNoYW4tPnNjYW5fdHlwZS5y
+ZWFsYml0cyAtIDEpKTsgKT8gSXMgdGhlICp2YWwgaW5pdGlhbGl6ZWQgd2l0aCAwPw0KPiA+ID4g
+SXMNCj4gPiA+IHRoYXQgcmVsYXRlZCB0byB0aGUgZm9ybXVsYSBkZXNjcmliZWQgaW4gdGhlIERB
+VEEgT1VUUFVUIENPRElORywgYXQNCj4gPiA+IHBhZ2UgMTI/DQo+ID4gPiANCmh0dHBzOi8vd3d3
+LmFuYWxvZy5jb20vbWVkaWEvZW4vdGVjaG5pY2FsLWRvY3VtZW50YXRpb24vZGF0YS1zaGVldHMv
+YWQ3NzgwLnBkZg0KPiA+IA0KPiA+IFllYWgsIHRoYXQgLT0gaXMgZGVmaW5pdGVseSB3cm9uZy4g
+IFNob3VsZCBqdXN0IGJlIGFuIGFzc2lnbm1lbnQgdG8gdGhlDQo+ID4gbmVnYXRpdmUgdmFsdWUu
+ICBUaGlzIGlzIHRlbGxpbmcgdXNlcnNwYWNlIHRoYXQgdGhlIHJhdyB2YWx1ZSBzaG91bGQgYmUN
+Cj4gPiBvZmZzZXQgYnkgaGFsZiBvZiBpdCdzIG1heGltdW0gcmFuZ2UgYmVmb3JlIGFwcGx5aW5n
+IHRoZSBzY2FsZSB0byBnZXQNCj4gPiBhIHJlYWRpbmcgaW4gdGhlIElJTyBiYXNlIHVuaXRzICho
+ZXJlIG1WIElJUkMpLg0KPiA+IA0KPiA+ID4gDQo+ID4gPiBXaXRoIHJlZ2FyZHMNCj4gPiA+IA0K
+PiA+ID4gDQo+ID4gPiBPbiBUaHUsIE9jdCAxOCwgMjAxOCBhdCA4OjQxIEFNIEdpdWxpYW5vIEJl
+bGluYXNzaQ0KPiA+ID4gPGdpdWxpYW5vLmJlbGluYXNzaUBnbWFpbC5jb20+IHdyb3RlOg0KPiA+
+ID4gPiANCj4gPiA+ID4gT24gMTAvMTgsIEFyZGVsZWFuLCBBbGV4YW5kcnUgd3JvdGU6DQo+ID4g
+PiA+IA0KPiA+ID4gPiBUaGFuayB5b3UgZm9yIHRoZSByZXBseSA6LSkuIFdlIHdpbGwgcHV0IGVm
+Zm9ydCBpbnRvIGF0IGxlYXN0IG9uZQ0KPiA+ID4gPiBkcml2ZXIgdG8NCj4gPiA+ID4gcmVtb3Zl
+IGl0IGZyb20gc3RhZ2luZy4NCj4gPiA+ID4gDQo+ID4gPiA+ID4gSGV5LA0KPiA+ID4gPiA+IA0K
+PiA+ID4gPiA+IFRoYW5rcyBmb3IgdGhlIG5vdGlmaWNhdGlvbi4NCj4gPiA+ID4gPiANCj4gPiA+
+ID4gPiBZZXMsIGFsbCB0aGVzZSAzIGRyaXZlcnMgc2hvdWxkIGJlIG1vdmVkIG91dCBvZiBzdGFn
+aW5nLg0KPiA+ID4gPiA+IA0KPiA+ID4gPiA+IFdlIHdlcmUgcGxhbm5pbmcgdG8gc3RhcnQgd29y
+a2luZyBvbiB0aGVtICh0byBtb3ZlIHRoZW0gb3V0IG9mDQo+ID4gPiA+ID4gc3RhZ2luZyksDQo+
+ID4gPiA+ID4gYnV0IHByaW9yaXRpZXMgYXJlIHNoaWZ0aW5nIGZyb20gb25lIHdlZWsgdG8gdGhl
+IG90aGVyLg0KPiA+ID4gPiA+IFNvLCBpZiB5b3UgZ3V5cyBoYXZlIHRoZSB0aW1lIGFuZCBhcmUg
+d2lsbGluZyB0byBkbyBpdCwgcGxlYXNlIGdvDQo+ID4gPiA+ID4gYWhlYWQsDQo+ID4gPiA+ID4g
+YW5kIGFkZCBtZSwgbWljaGFlbC5oZW5uZXJpY2hAYW5hbG9nLmNvbSBhbmQgDQo+ID4gPiA+ID4g
+c3RlZmFuLnBvcGFAYW5hbG9nLmNvbSB0byB0aGUNCj4gPiA+ID4gPiBDQyB3aGVuIHNlbmRpbmcg
+cGF0Y2hlcywgYW5kIHdlIHdpbGwgYWxzbyB0YWtlIGEgbG9vayBvdmVyIHlvdXINCj4gPiA+ID4g
+PiBwYXRjaGVzLg0KPiA+ID4gPiA+IA0KPiA+ID4gPiA+IElmIHlvdSBoYXZlbid0IHRha2VuIGEg
+bG9vayBhbHJlYWR5LCBmZWVsIGZyZWUgdG8gYWxzbyB0YWtlIGENCj4gPiA+ID4gPiBsb29rIGF0
+IG91cg0KPiA+ID4gPiA+IHdpa2k6DQo+ID4gPiA+ID4gDQpodHRwczovL3dpa2kuYW5hbG9nLmNv
+bS9yZXNvdXJjZXMvdG9vbHMtc29mdHdhcmUvbGludXgtZHJpdmVycy1hbGwNCj4gPiA+ID4gPiBJ
+dCdzIG1vcmUgdGVjaG5pY2FsIGZvciB0aGUgU1cgc2lkZTsgaXQgbWlnaHQgaGVscCB3aXRoIHNv
+bWUNCj4gPiA+ID4gPiBnZW5lcmFsIGluZm8uDQo+ID4gPiA+ID4gQW5kIHRoZSBkYXRhc2hlZXRz
+IHNob3VsZCBiZSBhdmFpbGFibGUgb24gdGhlDQo+ID4gPiA+ID4gYW5hbG9nLmNvbS88cHJvZHVj
+dF9pZD4NCj4gPiA+ID4gPiBwYWdlcy4NCj4gPiA+ID4gPiANCj4gPiA+ID4gPiANCj4gPiA+ID4g
+PiBUaGFua3MNCj4gPiA+ID4gPiBBbGV4DQo+ID4gPiA+ID4gDQo+ID4gPiA+ID4gDQo+ID4gPiA+
+ID4gT24gV2VkLCAyMDE4LTEwLTE3IGF0IDE2OjAwIC0wMzAwLCBHaXVsaWFubyBCZWxpbmFzc2kg
+d3JvdGU6DQo+ID4gPiA+ID4gPiBIZWxsbywNCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gV2Ug
+YXJlIGEgc3R1ZGVudCBncm91cCBhbmQgd2Ugd2FudCB0byBjb250cmlidXRlIHRvIHRoZSBsaW51
+eA0KPiA+ID4gPiA+ID4ga2VybmVsLiBXZQ0KPiA+ID4gPiA+ID4gYXJlIHRoaW5raW5nIGluIHB1
+dCBlZmZvcnQgdG8gbW92ZSBhIGRyaXZlciBmcm9tIHN0YWdpbmcgdG8gdGhlDQo+ID4gPiA+ID4g
+PiBtYWluDQo+ID4gPiA+ID4gPiB0cmVlLg0KPiA+ID4gPiA+ID4gV2UgbG9va2VkIGludG8gdGhy
+ZWUgZHJpdmVyczoNCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gICAqIGFkYy9hZDc3ODAuYw0K
+PiA+ID4gPiA+ID4gICAqIGFkYy9hZDc4MTYuYw0KPiA+ID4gPiA+ID4gICAqIGltcGVkYW5jZS1h
+bmFseXplci9hZDU5MzMuYw0KPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPiBBcmUgdGhlc2UgZHJp
+dmVycyBzdGlsbCBiZWluZyB3b3JrZWQgb24/IFRoZSBsYXN0IGNvbW1pdA0KPiA+ID4gPiA+ID4g
+cmVmZXJlbmNpbmcNCj4gPiA+ID4gPiA+IHRoZXNlDQo+ID4gPiA+ID4gPiBkcml2ZXJzIHdlcmUg
+b24gbWFyY2ggMjAxOCwgYnV0IHRoZXkgYXJlIHN0aWxsIGluIHN0YWdpbmcgc2luY2UNCj4gPiA+
+ID4gPiA+IDIwMTAuDQo+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+IFdlIGFscmVhZHkga25vdyB0
+aGF0IHdlIGhhdmUgdG8gY29udmVydCBmcm9tIHRoZSBvbGQgYXBpIHRvIHRoZQ0KPiA+ID4gPiA+
+ID4gbmV3IG9uZS4NCj4gPiA+ID4gPiA+IEl0IGlzDQo+ID4gPiA+ID4gPiBPSyBmb3IgdXMgdG8g
+d29yayBvbiB0aGlzPyBJcyB0aGVyZSBzb21ldGhpbmcgZWxzZSB3ZSBjYW4gZG8/DQo+ID4gPiA+
+ID4gPiANCj4gPiA+ID4gPiA+IFRoYW5rIHlvdQ0KPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gDQo+
+ID4gPiA+ID4gLS0NCj4gPiA+ID4gPiBZb3UgcmVjZWl2ZWQgdGhpcyBtZXNzYWdlIGJlY2F1c2Ug
+eW91IGFyZSBzdWJzY3JpYmVkIHRvIHRoZQ0KPiA+ID4gPiA+IEdvb2dsZSBHcm91cHMgIktlcm5l
+bCBVU1AiIGdyb3VwLg0KPiA+ID4gPiA+IFRvIHVuc3Vic2NyaWJlIGZyb20gdGhpcyBncm91cCBh
+bmQgc3RvcCByZWNlaXZpbmcgZW1haWxzIGZyb20gaXQsDQo+ID4gPiA+ID4gc2VuZCBhbiBlbWFp
+bCB0byBrZXJuZWwtdXNwK3Vuc3Vic2NyaWJlQGdvb2dsZWdyb3Vwcy5jb20uDQo+ID4gPiA+ID4g
+VG8gcG9zdCB0byB0aGlzIGdyb3VwLCBzZW5kIGVtYWlsIHRvIGtlcm5lbC11c3BAZ29vZ2xlZ3Jv
+dXBzLmNvbS4NCj4gPiA+ID4gPiBUbyB2aWV3IHRoaXMgZGlzY3Vzc2lvbiBvbiB0aGUgd2ViIHZp
+c2l0IA0KPiA+ID4gPiA+IGh0dHBzOi8vZ3JvdXBzLmdvb2dsZS5jb20vZC9tc2dpZC9rZXJuZWwt
+dXNwL2QwZmM1YTIzNmE4MmQwM2ZkYmU0ZDA1ZWIyN2ZmM2JkM2FjMzY5NTguY2FtZWwlNDBhbmFs
+b2cuY29tDQo+ID4gPiA+ID4gLg0KPiA+ID4gPiA+IEZvciBtb3JlIG9wdGlvbnMsIHZpc2l0IGh0
+dHBzOi8vZ3JvdXBzLmdvb2dsZS5jb20vZC9vcHRvdXQuDQo+ID4gPiA+IA0KPiA+ID4gPiAtLQ0K
+PiA+ID4gPiBZb3UgcmVjZWl2ZWQgdGhpcyBtZXNzYWdlIGJlY2F1c2UgeW91IGFyZSBzdWJzY3Jp
+YmVkIHRvIHRoZSBHb29nbGUNCj4gPiA+ID4gR3JvdXBzICJLZXJuZWwgVVNQIiBncm91cC4NCj4g
+PiA+ID4gVG8gdW5zdWJzY3JpYmUgZnJvbSB0aGlzIGdyb3VwIGFuZCBzdG9wIHJlY2VpdmluZyBl
+bWFpbHMgZnJvbSBpdCwNCj4gPiA+ID4gc2VuZCBhbiBlbWFpbCB0byBrZXJuZWwtdXNwK3Vuc3Vi
+c2NyaWJlQGdvb2dsZWdyb3Vwcy5jb20uDQo+ID4gPiA+IFRvIHBvc3QgdG8gdGhpcyBncm91cCwg
+c2VuZCBlbWFpbCB0byBrZXJuZWwtdXNwQGdvb2dsZWdyb3Vwcy5jb20uDQo+ID4gPiA+IFRvIHZp
+ZXcgdGhpcyBkaXNjdXNzaW9uIG9uIHRoZSB3ZWIgdmlzaXQgDQo+ID4gPiA+IGh0dHBzOi8vZ3Jv
+dXBzLmdvb2dsZS5jb20vZC9tc2dpZC9rZXJuZWwtdXNwLzIwMTgxMDE4MTE0MTQ1LmFtcWZmNTdo
+b2xtZWN4cG8lNDBzbXRwLmdtYWlsLmNvbQ0KPiA+ID4gPiAuDQo+ID4gPiA+IEZvciBtb3JlIG9w
+dGlvbnMsIHZpc2l0IGh0dHBzOi8vZ3JvdXBzLmdvb2dsZS5jb20vZC9vcHRvdXQuDQo+IA0KPiAN
+Cg==
