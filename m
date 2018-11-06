@@ -1,100 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:35714 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728275AbeKLAUH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 11 Nov 2018 19:20:07 -0500
-Date: Sun, 11 Nov 2018 14:31:16 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-Cc: "lars@metafoo.de" <lars@metafoo.de>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        "renatogeh@gmail.com" <renatogeh@gmail.com>,
-        "giuliano.belinassi@usp.br" <giuliano.belinassi@usp.br>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-        "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>
-Subject: Re: [PATCH v4 2/2] staging: iio: ad7780: remove unnecessary stashed
- voltage value
-Message-ID: <20181111143116.3c886b46@archlinux>
-In-Reply-To: <f36da3b8962d463a68e53e29563b3c9bff2e0ddf.camel@analog.com>
-References: <cover.1541444377.git.renatogeh@gmail.com>
-        <3920d49d888f63b600a4d2f2600921ed2900a470.1541444377.git.renatogeh@gmail.com>
-        <f36da3b8962d463a68e53e29563b3c9bff2e0ddf.camel@analog.com>
+Received: from mail-io1-f65.google.com ([209.85.166.65]:45399 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725839AbeKFKdu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Nov 2018 05:33:50 -0500
+Received: by mail-io1-f65.google.com with SMTP id p83-v6so8020947iod.12
+        for <linux-iio@vger.kernel.org>; Mon, 05 Nov 2018 17:11:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+From: Matheus Tavares Bernardino <matheus.bernardino@usp.br>
+Date: Mon, 5 Nov 2018 23:11:04 -0200
+Message-ID: <CAHd-oW68iJ=m2Woz63bVwnK_cCJi2uF2e0_EVur6DHJLRmKw+A@mail.gmail.com>
+Subject: Question about max frequency in ad2s90
+To: linux-iio@vger.kernel.org, graf.yang@analog.com,
+        jic23@jic23.retrosnub.co.uk,
+        Michael Hennerich <Michael.Hennerich@analog.com>
+Cc: kernel-usp@googlegroups.com,
+        Victor Colombo <victorcolombo@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 6 Nov 2018 09:25:27 +0000
-"Ardelean, Alexandru" <alexandru.Ardelean@analog.com> wrote:
+Hello everyone,
 
-> On Mon, 2018-11-05 at 17:16 -0200, Renato Lui Geh wrote:
-> > This patch removes the unnecessary field int_vref_mv in ad7780_state
-> > referring to the device's voltage.
-> >   
-> 
-> Looks good from my side.
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+While working on the ad2s90 driver, I had a question about the maximum
+frequency set. Any feedback will be much appreciated.
+
+The ad2s90 driver sets its maximum speed to 830000hz (or 0.83Mhz), but
+the datasheet [1] specifies a maximum of 2Mhz. Above the max_speed_hz
+setup, there's a commentary saying  "need 600ns between CS and the
+first falling edge of SCLK", which is also said in the datasheet.
+
+Is max_speed_hz set to 0.83Mhz, not 2Mhz, due to the required minimum
+delay of 600ns, somehow? If not:
+  1) is 0.83Mhz really correct? and
+  2) is the minimum delay of 600ns being respected?
 
 Thanks,
+Matheus.
 
-Jonathan
-
-> 
-> Alex
-> 
-> > Signed-off-by: Renato Lui Geh <renatogeh@gmail.com>
-> > ---
-> > Changes in v3:
-> > 	- removed unnecessary int_vref_mv from ad7780_state
-> > Changes in v4:
-> > 	- removed voltage reading on probe
-> > 
-> >  drivers/staging/iio/adc/ad7780.c | 9 +--------
-> >  1 file changed, 1 insertion(+), 8 deletions(-)
-> > 
-> > diff --git a/drivers/staging/iio/adc/ad7780.c
-> > b/drivers/staging/iio/adc/ad7780.c
-> > index c7cb05cedbbc..52a914360574 100644
-> > --- a/drivers/staging/iio/adc/ad7780.c
-> > +++ b/drivers/staging/iio/adc/ad7780.c
-> > @@ -42,7 +42,6 @@ struct ad7780_state {
-> >  	struct regulator		*reg;
-> >  	struct gpio_desc		*powerdown_gpio;
-> >  	unsigned int	gain;
-> > -	u16				int_vref_mv;
-> >  
-> >  	struct ad_sigma_delta sd;
-> >  };
-> > @@ -165,7 +164,7 @@ static int ad7780_probe(struct spi_device *spi)
-> >  {
-> >  	struct ad7780_state *st;
-> >  	struct iio_dev *indio_dev;
-> > -	int ret, voltage_uv = 0;
-> > +	int ret;
-> >  
-> >  	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> >  	if (!indio_dev)
-> > @@ -185,16 +184,10 @@ static int ad7780_probe(struct spi_device *spi)
-> >  		dev_err(&spi->dev, "Failed to enable specified AVdd
-> > supply\n");
-> >  		return ret;
-> >  	}
-> > -	voltage_uv = regulator_get_voltage(st->reg);
-> >  
-> >  	st->chip_info =
-> >  		&ad7780_chip_info_tbl[spi_get_device_id(spi)->driver_data];
-> >  
-> > -	if (voltage_uv)
-> > -		st->int_vref_mv = voltage_uv / 1000;
-> > -	else
-> > -		dev_warn(&spi->dev, "Reference voltage unspecified\n");
-> > -
-> >  	spi_set_drvdata(spi, indio_dev);
-> >  
-> >  	indio_dev->dev.parent = &spi->dev;  
+[1] https://www.analog.com/media/en/technical-documentation/data-sheets/AD2S90.pdf
