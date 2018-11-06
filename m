@@ -1,89 +1,333 @@
-Return-Path: <alexandru.Ardelean@analog.com>
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "matheus.bernardino@usp.br" <matheus.bernardino@usp.br>
-CC: "victorcolombo@gmail.com" <victorcolombo@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "Hennerich, Michael"
-	<Michael.Hennerich@analog.com>, "jic23@jic23.retrosnub.co.uk"
-	<jic23@jic23.retrosnub.co.uk>, "graf.yang@analog.com" <graf.yang@analog.com>,
-	"kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>
-Subject: Re: Question about max frequency in ad2s90
-Date: Thu, 8 Nov 2018 07:23:05 +0000
-Message-ID: <54460ef53be605486a20f4c8aba5f69681186047.camel@analog.com>
-References: <CAHd-oW68iJ=m2Woz63bVwnK_cCJi2uF2e0_EVur6DHJLRmKw+A@mail.gmail.com>
-	 <2ed30f2fa4ffc437c5a012831521d1eb6abe259f.camel@analog.com>
-	 <CAHd-oW79GbM8_-3aAx-ar_qKWZPyidNcjEH1H8Ta6hcT_hf4Ag@mail.gmail.com>
-In-Reply-To: <CAHd-oW79GbM8_-3aAx-ar_qKWZPyidNcjEH1H8Ta6hcT_hf4Ag@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
+Return-Path: <SRS0=g9eo=NR=babblebit.net=cmc@kernel.org>
+From: Chris Coffey <cmc@babblebit.net>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Peter Rosin <peda@axentia.se>,
+	Slawomir Stepien <sst@poczta.fm>,
+	Rob Herring <robh+dt@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Chris Coffey <cmc@babblebit.net>
+Subject: [PATCH] iio: potentiometer: Add driver for Microchip MCP41xxx/42xxx
+Date: Tue,  6 Nov 2018 11:31:30 +0000
+Message-Id: <20181106113130.9612-1-cmc@babblebit.net>
 List-ID: <linux-iio@vger.kernel.org>
 
-T24gV2VkLCAyMDE4LTExLTA3IGF0IDE2OjA1IC0wMjAwLCBNYXRoZXVzIFRhdmFyZXMgQmVybmFy
-ZGlubyB3cm90ZToNCj4gT24gVHVlLCBOb3YgNiwgMjAxOCBhdCAxMDozNCBBTSBBcmRlbGVhbiwg
-QWxleGFuZHJ1DQo+IDxhbGV4YW5kcnUuQXJkZWxlYW5AYW5hbG9nLmNvbT4gd3JvdGU6DQo+ID4g
-DQo+ID4gT24gTW9uLCAyMDE4LTExLTA1IGF0IDIzOjExIC0wMjAwLCBNYXRoZXVzIFRhdmFyZXMg
-QmVybmFyZGlubyB3cm90ZToNCj4gPiA+IEhlbGxvIGV2ZXJ5b25lLA0KPiA+ID4gDQo+ID4gDQo+
-ID4gSGV5LA0KPiA+IA0KPiA+ID4gV2hpbGUgd29ya2luZyBvbiB0aGUgYWQyczkwIGRyaXZlciwg
-SSBoYWQgYSBxdWVzdGlvbiBhYm91dCB0aGUNCj4gPiA+IG1heGltdW0NCj4gPiA+IGZyZXF1ZW5j
-eSBzZXQuIEFueSBmZWVkYmFjayB3aWxsIGJlIG11Y2ggYXBwcmVjaWF0ZWQuDQo+ID4gPiANCj4g
-PiANCj4gPiBKdXN0IGEgbm90ZS9yZW1pbmRlciBmb3IgeW91OiB0aGF0IGRyaXZlciBsb29rcyBw
-cmV0dHkgb2xkIGFuZCBbc2luY2UNCj4gPiBpdCdzDQo+ID4gc3RhZ2luZyBhcyB3ZWxsXSB5b3Ug
-c2hvdWxkIGFsc28gY29uc2lkZXIgdGhhdCBpdCdzIGxpa2VseSB0aGF0IHNvbWUNCj4gPiBbZ29v
-ZF0NCj4gPiBwcmFjdGljZXMgd2VyZSBub3QgeWV0IGV4aXN0aW5nIGF0IHRoZSB0aW1lIFthYm91
-dCBob3cgdG8gZG8gdGhpbmdzXS4NCj4gPiANCj4gPiA+IFRoZSBhZDJzOTAgZHJpdmVyIHNldHMg
-aXRzIG1heGltdW0gc3BlZWQgdG8gODMwMDAwaHogKG9yIDAuODNNaHopLA0KPiA+ID4gYnV0DQo+
-ID4gPiB0aGUgZGF0YXNoZWV0IFsxXSBzcGVjaWZpZXMgYSBtYXhpbXVtIG9mIDJNaHouIEFib3Zl
-IHRoZSBtYXhfc3BlZWRfaHoNCj4gPiA+IHNldHVwLCB0aGVyZSdzIGEgY29tbWVudGFyeSBzYXlp
-bmcgICJuZWVkIDYwMG5zIGJldHdlZW4gQ1MgYW5kIHRoZQ0KPiA+ID4gZmlyc3QgZmFsbGluZyBl
-ZGdlIG9mIFNDTEsiLCB3aGljaCBpcyBhbHNvIHNhaWQgaW4gdGhlIGRhdGFzaGVldC4NCj4gPiA+
-IA0KPiA+ID4gSXMgbWF4X3NwZWVkX2h6IHNldCB0byAwLjgzTWh6LCBub3QgMk1oeiwgZHVlIHRv
-IHRoZSByZXF1aXJlZCBtaW5pbXVtDQo+ID4gPiBkZWxheSBvZiA2MDBucywgc29tZWhvdz8gSWYg
-bm90Og0KPiA+ID4gICAxKSBpcyAwLjgzTWh6IHJlYWxseSBjb3JyZWN0PyBhbmQNCj4gPiA+ICAg
-MikgaXMgdGhlIG1pbmltdW0gZGVsYXkgb2YgNjAwbnMgYmVpbmcgcmVzcGVjdGVkPw0KPiA+ID4g
-DQo+ID4gDQo+ID4gVGhlIDAuODMgTWh6IGxpbWl0YXRpb24gbG9va3MgdmVyeSBtdWNoIGxpa2Ug
-aXQgd2FzIGFkZGVkIHRvIHNhdGlzZnkNCj4gPiB0aGUNCj4gPiA2MDAgbnMgbGltaXRhdGlvbi4g
-SSBxdWlja2x5IGRpZCB0aGUgY29tcHV0YXRpb24gYW5kIGl0IHJvdWdobHkgZW5kcyB1cA0KPiA+
-IGJlaW5nIDAuODMgTWh6IGZvciA2MDAgbnMuIChpLmUuICgxIC8gMCwwMDA2MDApIC8gMiA9IGhh
-bGYgYSBwZXJpb2QgKQ0KPiA+IA0KPiA+IFRoYXQgbGltaXRhdGlvbiAoZm9yIHRoZSBkZWxheSBD
-UyBhbmQgdGhlIGZpcnN0IGRhdGEpIGlzIGltcG9zZWQgYnkgdGhlDQo+ID4gZGF0YXNoZWV0IDsg
-d2hpbGUgdGhlIGNoaXAgY291bGQgb3BlcmF0ZSBhdCBhIGxvd2VyIGRlbGF5IChhbmQNCj4gPiBz
-dWJzZXF1ZW50bHkNCj4gPiBoaWdoZXIgZnJlcXVlbmN5IHVwIHRvIDIgTWh6KSwgaXQncyBzYWZl
-ciB0byBrZWVwIGl0IHNvbWVob3cNCj4gPiBpbXBsZW1lbnRlZC4NCj4gPiANCj4gPiBJIHRvb2sg
-YSBsb29rIGluIHRoZSBTUEkgY29kZSBhbmQgaXQgZG9lc24ndCBsb29rIGxpa2UgaXQgaW1wbGVt
-ZW50cw0KPiA+IHNvbWUNCj4gPiBzb3J0IG9mIGRlbGF5IGJldHdlZW4gQ1MgYW5kIGZpcnN0IGRh
-dGEgYmVpbmcgcmVhZC4gSSBtYXkgaGF2ZSBtaXNzZWQNCj4gPiBzdHVmZg0KPiA+IHRob3VnaC4N
-Cj4gPiANCj4gPiBJbiBhbnkgY2FzZSwgSSBkbyBzdWdnZXN0IHJlbW92aW5nIGFsbCB0aG9zZSA0
-IGxpbmVzIGZvciB0aGUgU1BJIHNldHVwDQo+ID4gY29kZS4NCj4gPiBpLmUuDQo+ID4gDQo+ID4g
-ICAgICAgICAvKiBuZWVkIDYwMG5zIGJldHdlZW4gQ1MgYW5kIHRoZSBmaXJzdCBmYWxsaW5nIGVk
-Z2Ugb2YgU0NMSyAqLw0KPiA+ICAgICAgICAgc3BpLT5tYXhfc3BlZWRfaHogPSA4MzAwMDA7DQo+
-ID4gICAgICAgICBzcGktPm1vZGUgPSBTUElfTU9ERV8zOw0KPiA+ICAgICAgICAgc3BpX3NldHVw
-KHNwaSk7DQo+ID4gDQo+ID4gVGhpcyBzaG91bGQgYmUgaGFuZGxlZCB2aWEgZGV2aWNlLXRyZWUu
-DQo+ID4gDQo+ID4gSW5zdGVhZCwgd2hhdCBjb3VsZCBiZSBkb25lIGluIHRoZSBhZDJzOTBfcHJv
-YmUoKSBmdW5jdGlvbiwgaXMgdG8gYWRkDQo+ID4gKGVhcmx5IGluIHRoZSBjb2RlKSBhIGNoZWNr
-IGZvciB0aGUgbWF4IGZyZXF1ZW5jeS4NCj4gPiANCj4gPiBTb21ldGhpbmcgbGlrZToNCj4gPiAN
-Cj4gPiAjZGVmaW5lIEFEMlM5MF9NQVhfU1BJX0ZSRVFfSFogIDIwMDAwMDANCj4gPiANCj4gPiAg
-ICAgICAgaWYgKHNwaS0+bWF4X3NwZWVkX2h6ID4gQUQyUzkwX01BWF9TUElfRlJFUV9IWikgew0K
-PiA+ICAgICAgICAgICAgICAgICBkZXZfZXJyKCZzcGktPmRldiwgIlNQSSBDTEssICVkIEh6IGV4
-Y2VlZHMgMiBNSHpcbiIsDQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgc3BpLT5tYXhfc3Bl
-ZWRfaHopOw0KPiA+ICAgICAgICAgICAgICAgICByZXR1cm4gLUVJTlZBTDsNCj4gPiAgICAgICAg
-IH0NCj4gPiANCj4gPiBPciwgeW91IGNvdWxkIG1ha2UgQUQyUzkwX01BWF9TUElfRlJFUV9IWiA9
-IDgzMDAwMA0KPiA+IA0KPiA+IE9yLCB5b3UgY291bGQganVzdCBwcmludCBhIHdhcm5pbmcgZm9y
-ID4gODMwMDAwLg0KPiA+IFNvbWV0aGluZyBsaWtlOg0KPiA+IA0KPiA+ICNkZWZpbmUgQUQyUzkw
-X01BWF9TUElfU0FGRV9GUkVRX0haICA4MzAwMDANCj4gPiANCj4gPiAgICAgICAgaWYgKHNwaS0+
-bWF4X3NwZWVkX2h6ID4gQUQyUzkwX01BWF9TUElfU0FGRV9GUkVRX0haKQ0KPiA+ICAgICAgICAg
-ICAgICAgICBkZXZfd2Fybigmc3BpLT5kZXYsICJTUEkgQ0xLLCAlZCBIeiA+IDAuODMgTUh6LCBk
-ZXZpY2UNCj4gPiBtYXkNCj4gPiBub3Qgb3BlcmF0ZSBjb3JyZWN0bHlcbiIsDQo+ID4gICAgICAg
-ICAgICAgICAgICAgICAgICAgc3BpLT5tYXhfc3BlZWRfaHopOw0KPiA+IA0KPiANCj4gSSdtIGFk
-ZGluZyB0aGVzZSBzdWdnZXN0aW9ucyBpbiBhIHBhdGNoIHNldCwgYnV0IEkgZG9uJ3QgcmVhbGx5
-IGtub3cNCj4gd2hhdCdzIHRoZSByaWdodCB3YXkgb2YgY3JlZGl0aW5nIHRoZSBhdXRob3JzaGlw
-IGluIHRoaXMgY2FzZS4gU2hvdWxkDQo+IEkgc2V0IHlvdSBhcyB0aGUgYXV0aG9yIGFuZCBhZGQg
-bXkgUy1vLUI/DQoNCkZlZWwgZnJlZSB0byBub3QgaW5jbHVkZSBtZSBpbiB0aGUgcGF0Y2gtc2V0
-IGluIGFueSB3YXkgOikNClRoaXMgZW1haWwgc2hvdWxkIHNlcnZlIGFzIGEgbm90ZS9tZW50aW9u
-IHRoYXQgSSBhbSBmaW5lIHdpdGggdGhpcy4NCg0KV2hhdCBJIHByb3ZpZGVkIHdhcyBtb3JlIG9m
-IGEgQyBwc2V1ZG8tY29kZSA7IHlvdXIgUy1vLUIgaW1wbGllcyB0aGF0IHlvdQ0KZGlkIHRoZSBm
-aW5hbCB3b3JrIGFuZCB0ZXN0aW5nIG9mIHRoZSBwYXRjaC4NCg0KVGhhbmtzDQpBbGV4DQo+IA0K
-PiBUaGFua3MNCj4gTWF0aGV1cw0KPiANCj4gPiANCj4gPiBJJ20gbm90IHN1cmUgd2hhdCB3b3Vs
-ZCBiZSByZWNvbW1lbmRlZCBoZXJlLiBNYXliZSBzb21lb25lIGVsc2UgaGFzIGENCj4gPiBzdHJv
-bmdlciBvcGluaW9uIGFib3V0IHRoaXMuDQo+ID4gDQo+ID4gVGhhbmtzDQo+ID4gQWxleA0KPiA+
-IA0KPiA+ID4gVGhhbmtzLA0KPiA+ID4gTWF0aGV1cy4NCj4gPiA+IA0KPiA+ID4gWzFdDQo+ID4g
-PiANCmh0dHBzOi8vd3d3LmFuYWxvZy5jb20vbWVkaWEvZW4vdGVjaG5pY2FsLWRvY3VtZW50YXRp
-b24vZGF0YS1zaGVldHMvQUQyUzkwLnBkZg0KPiA+ID4gDQo+IA0KPiANCg==
+This patch adds driver support for the Microchip MCP41xxx/42xxx family
+of digital potentiometers:
+
+DEVICE      Wipers  Positions   Resistance (kOhm)
+MCP41010    1       256         10
+MCP41050    1       256         50
+MCP41100    1       256         100
+MCP42010    2       256         10
+MCP42050    2       256         50
+MCP42100    2       256         100
+
+Datasheet: http://ww1.microchip.com/downloads/en/devicedoc/11195c.pdf
+
+Signed-off-by: Chris Coffey <cmc@babblebit.net>
+---
+ .../bindings/iio/potentiometer/mcp41010.txt        |  29 +++
+ drivers/iio/potentiometer/Kconfig                  |  12 ++
+ drivers/iio/potentiometer/Makefile                 |   1 +
+ drivers/iio/potentiometer/mcp41010.c               | 216 +++++++++++++++++++++
+ 4 files changed, 258 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/potentiometer/mcp41010.txt
+ create mode 100644 drivers/iio/potentiometer/mcp41010.c
+
+diff --git a/Documentation/devicetree/bindings/iio/potentiometer/mcp41010.txt b/Documentation/devicetree/bindings/iio/potentiometer/mcp41010.txt
+new file mode 100644
+index 0000000000..17565acace
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/potentiometer/mcp41010.txt
+@@ -0,0 +1,29 @@
++* Microchip MCP41010/41050/41100/42010/42050/42100 Digital Potentiometer
++  driver
++
++Datasheet publicly available at:
++http://ww1.microchip.com/downloads/en/devicedoc/11195c.pdf
++
++The node for this driver must be a child node of a SPI controller, hence
++all mandatory properties described in
++
++        Documentation/devicetree/bindings/spi/spi-bus.txt
++
++must be specified.
++
++Required properties:
++	- compatible:  	Must be one of the following, depending on the
++			model:
++			"microchip,mcp41010"
++			"microchip,mcp41050"
++			"microchip,mcp41100"
++			"microchip,mcp42010"
++			"microchip,mcp42050"
++			"microchip,mcp42100"
++
++Example:
++mcp41010: potentiometer@0 {
++	compatible = "mcp41010";
++	reg = <0>;
++	spi-max-frequency = <500000>;
++};
+diff --git a/drivers/iio/potentiometer/Kconfig b/drivers/iio/potentiometer/Kconfig
+index 79ec2eba49..6303cbe799 100644
+--- a/drivers/iio/potentiometer/Kconfig
++++ b/drivers/iio/potentiometer/Kconfig
+@@ -90,6 +90,18 @@ config MCP4531
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called mcp4531.
+ 
++config MCP41010
++	tristate "Microchip MCP41xxx/MCP42xxx Digital Potentiometer driver"
++	depends on SPI
++	help
++	  Say yes here to build support for the Microchip
++	  MCP41010, MCP41050, MCP41100,
++	  MCP42010, MCP42050, MCP42100
++	  digital potentiometer chips.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called mcp41010.
++
+ config TPL0102
+ 	tristate "Texas Instruments digital potentiometer driver"
+ 	depends on I2C
+diff --git a/drivers/iio/potentiometer/Makefile b/drivers/iio/potentiometer/Makefile
+index 4af657883c..8ff55138cf 100644
+--- a/drivers/iio/potentiometer/Makefile
++++ b/drivers/iio/potentiometer/Makefile
+@@ -11,4 +11,5 @@ obj-$(CONFIG_MAX5487) += max5487.o
+ obj-$(CONFIG_MCP4018) += mcp4018.o
+ obj-$(CONFIG_MCP4131) += mcp4131.o
+ obj-$(CONFIG_MCP4531) += mcp4531.o
++obj-$(CONFIG_MCP41010) += mcp41010.o
+ obj-$(CONFIG_TPL0102) += tpl0102.o
+diff --git a/drivers/iio/potentiometer/mcp41010.c b/drivers/iio/potentiometer/mcp41010.c
+new file mode 100644
+index 0000000000..4068e8eb57
+--- /dev/null
++++ b/drivers/iio/potentiometer/mcp41010.c
+@@ -0,0 +1,216 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Industrial I/O driver for Microchip digital potentiometers
++ *
++ * Copyright (c) 2018 Chris Coffey <cmc@babblebit.net>
++ * Based on: Slawomir Stepien's code from mcp4131.c
++ *
++ * Datasheet: http://ww1.microchip.com/downloads/en/devicedoc/11195c.pdf
++ *
++ * DEVID	#Wipers	#Positions	Resistance (kOhm)
++ * mcp41010	1	256		10
++ * mcp41050	1	256		50
++ * mcp41100	1	256		100
++ * mcp42010	2	256		10
++ * mcp42050	2	256		50
++ * mcp42100	2	256		100
++ *
++ */
++
++#include <linux/cache.h>
++#include <linux/err.h>
++#include <linux/export.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/types.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/of.h>
++#include <linux/spi/spi.h>
++
++#define MCP41010_MAX_WIPERS	2
++#define MCP41010_WRITE		(0x01 << 4)
++#define MCP41010_WIPER_MAX	255
++#define MCP41010_WIPER_ENABLE	BIT(0)
++
++struct mcp41010_cfg {
++	int wipers;
++	int kohms;
++};
++
++enum mcp41010_type {
++	MCP41010 = 0,
++	MCP41050,
++	MCP41100,
++	MCP42010,
++	MCP42050,
++	MCP42100,
++};
++
++static const struct mcp41010_cfg mcp41010_cfg[] = {
++	[MCP41010] = { .wipers = 1, .kohms =  10, },
++	[MCP41050] = { .wipers = 1, .kohms =  50, },
++	[MCP41100] = { .wipers = 1, .kohms = 100, },
++	[MCP42010] = { .wipers = 2, .kohms =  10, },
++	[MCP42050] = { .wipers = 2, .kohms =  50, },
++	[MCP42100] = { .wipers = 2, .kohms = 100, },
++};
++
++struct mcp41010_data {
++	struct spi_device *spi;
++	const struct mcp41010_cfg *cfg;
++	struct mutex lock; /* Protect write sequences */
++	unsigned int value[MCP41010_MAX_WIPERS]; /* Cache wiper values */
++	u8 buf[2] ____cacheline_aligned;
++};
++
++#define MCP41010_CHANNEL(ch) {					\
++	.type = IIO_RESISTANCE,					\
++	.indexed = 1,						\
++	.output = 1,						\
++	.channel = (ch),					\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++}
++
++static const struct iio_chan_spec mcp41010_channels[] = {
++	MCP41010_CHANNEL(0),
++	MCP41010_CHANNEL(1),
++};
++
++static int mcp41010_read_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int *val, int *val2, long mask)
++{
++	struct mcp41010_data *data = iio_priv(indio_dev);
++	int channel = chan->channel;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		*val = data->value[channel];
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_SCALE:
++		*val = 1000 * data->cfg->kohms;
++		*val2 = MCP41010_WIPER_MAX;
++		return IIO_VAL_FRACTIONAL;
++	}
++
++	return -EINVAL;
++}
++
++static int mcp41010_write_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int val, int val2, long mask)
++{
++	int err;
++	struct mcp41010_data *data = iio_priv(indio_dev);
++	int channel = chan->channel;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		if (val > MCP41010_WIPER_MAX || val < 0)
++			return -EINVAL;
++		break;
++
++	default:
++		return -EINVAL;
++	}
++
++	mutex_lock(&data->lock);
++
++	data->buf[0] = MCP41010_WIPER_ENABLE << channel;
++	data->buf[0] |= MCP41010_WRITE;
++	data->buf[1] = val & 0xff;
++
++	err = spi_write(data->spi, data->buf, 2);
++	if (!err)
++		data->value[channel] = val;
++
++	mutex_unlock(&data->lock);
++
++	return err;
++}
++
++static const struct iio_info mcp41010_info = {
++	.read_raw = mcp41010_read_raw,
++	.write_raw = mcp41010_write_raw,
++};
++
++static int mcp41010_probe(struct spi_device *spi)
++{
++	int err;
++	struct device *dev = &spi->dev;
++	unsigned long devid = spi_get_device_id(spi)->driver_data;
++	struct mcp41010_data *data;
++	struct iio_dev *indio_dev;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	spi_set_drvdata(spi, indio_dev);
++	data->spi = spi;
++	data->cfg = &mcp41010_cfg[devid];
++
++	mutex_init(&data->lock);
++
++	indio_dev->dev.parent = dev;
++	indio_dev->info = &mcp41010_info;
++	indio_dev->channels = mcp41010_channels;
++	indio_dev->num_channels = data->cfg->wipers;
++	indio_dev->name = spi_get_device_id(spi)->name;
++
++	err = devm_iio_device_register(dev, indio_dev);
++	if (err) {
++		dev_info(&spi->dev, "Unable to register %s\n", indio_dev->name);
++		return err;
++	}
++
++	return 0;
++}
++
++#if defined(CONFIG_OF)
++static const struct of_device_id mcp41010_dt_ids[] = {
++	{ .compatible = "microchip,mcp41010",
++		.data = &mcp41010_cfg[MCP41010] },
++	{ .compatible = "microchip,mcp41050",
++		.data = &mcp41010_cfg[MCP41050] },
++	{ .compatible = "microchip,mcp41100",
++		.data = &mcp41010_cfg[MCP41100] },
++	{ .compatible = "microchip,mcp42010",
++		.data = &mcp41010_cfg[MCP42010] },
++	{ .compatible = "microchip,mcp42050",
++		.data = &mcp41010_cfg[MCP42050] },
++	{ .compatible = "microchip,mcp42100",
++		.data = &mcp41010_cfg[MCP42100] },
++	{}
++};
++MODULE_DEVICE_TABLE(of, mcp41010_dt_ids);
++#endif /* CONFIG_OF */
++
++static const struct spi_device_id mcp41010_id[] = {
++	{ "mcp41010", MCP41010 },
++	{ "mcp41050", MCP41050 },
++	{ "mcp41100", MCP41100 },
++	{ "mcp42010", MCP42010 },
++	{ "mcp42050", MCP42050 },
++	{ "mcp42100", MCP42100 },
++	{}
++};
++MODULE_DEVICE_TABLE(spi, mcp41010_id);
++
++static struct spi_driver mcp41010_driver = {
++	.driver = {
++		.name	= "mcp41010",
++		.of_match_table = of_match_ptr(mcp41010_dt_ids),
++	},
++	.probe		= mcp41010_probe,
++	.id_table	= mcp41010_id,
++};
++
++module_spi_driver(mcp41010_driver);
++
++MODULE_AUTHOR("Chris Coffey <cmc@babblebit.net>");
++MODULE_DESCRIPTION("MCP41010 digital potentiometer");
++MODULE_LICENSE("GPL v2");
+-- 
+2.11.0
