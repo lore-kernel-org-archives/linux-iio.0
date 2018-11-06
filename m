@@ -1,60 +1,48 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:41147 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387659AbeKFEgL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 5 Nov 2018 23:36:11 -0500
-Date: Mon, 5 Nov 2018 17:14:58 -0200
-From: Renato Lui Geh <renatogeh@gmail.com>
-To: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        giuliano.belinassi@usp.br
-Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
-Subject: [PATCH v4 1/2] staging: iio: ad7780: update voltage on read
-Message-ID: <4b47bd8f4bac2575b72529b37e5ac90bebae2446.1541444377.git.renatogeh@gmail.com>
+Return-Path: <SRS0=8Wyh=NR=analog.com=alexandru.Ardelean@kernel.org>
+From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+To: "lars@metafoo.de" <lars@metafoo.de>, "knaack.h@gmx.de" <knaack.h@gmx.de>,
+	"jic23@kernel.org" <jic23@kernel.org>, "Hennerich, Michael"
+	<Michael.Hennerich@analog.com>, "renatogeh@gmail.com" <renatogeh@gmail.com>,
+	"giuliano.belinassi@usp.br" <giuliano.belinassi@usp.br>, "pmeerw@pmeerw.net"
+	<pmeerw@pmeerw.net>, "gregkh@linuxfoundation.org"
+	<gregkh@linuxfoundation.org>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+	"kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>
+Subject: Re: [PATCH v4 1/2] staging: iio: ad7780: update voltage on read
+Date: Tue, 6 Nov 2018 09:24:44 +0000
+Message-ID: <30c1ff317baefde88a0f4d0a002b19010290d16b.camel@analog.com>
 References: <cover.1541444377.git.renatogeh@gmail.com>
+	 <4b47bd8f4bac2575b72529b37e5ac90bebae2446.1541444377.git.renatogeh@gmail.com>
+In-Reply-To: <4b47bd8f4bac2575b72529b37e5ac90bebae2446.1541444377.git.renatogeh@gmail.com>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-In-Reply-To: <cover.1541444377.git.renatogeh@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-The ad7780 driver previously did not read the correct device output, as
-it read an outdated value set at initialization. It now updates its
-voltage on read.
-
-Signed-off-by: Renato Lui Geh <renatogeh@gmail.com>
----
-Changes in v3:
-	- removed initialization (int voltage_uv = 0)
-	- returns error when voltage_uv is null
-Changes in v4:
-	- returns error when voltage_uv is negative
-
- drivers/staging/iio/adc/ad7780.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
-index b67412db0318..c7cb05cedbbc 100644
---- a/drivers/staging/iio/adc/ad7780.c
-+++ b/drivers/staging/iio/adc/ad7780.c
-@@ -87,12 +87,16 @@ static int ad7780_read_raw(struct iio_dev *indio_dev,
- 			   long m)
- {
- 	struct ad7780_state *st = iio_priv(indio_dev);
-+	int voltage_uv;
- 
- 	switch (m) {
- 	case IIO_CHAN_INFO_RAW:
- 		return ad_sigma_delta_single_conversion(indio_dev, chan, val);
- 	case IIO_CHAN_INFO_SCALE:
--		*val = st->int_vref_mv * st->gain;
-+		voltage_uv = regulator_get_voltage(st->reg);
-+		if (voltage_uv < 0)
-+			return voltage_uv;
-+		*val = (voltage_uv / 1000) * st->gain;
- 		*val2 = chan->scan_type.realbits - 1;
- 		return IIO_VAL_FRACTIONAL_LOG2;
- 	case IIO_CHAN_INFO_OFFSET:
--- 
-2.19.1
+T24gTW9uLCAyMDE4LTExLTA1IGF0IDE3OjE0IC0wMjAwLCBSZW5hdG8gTHVpIEdlaCB3cm90ZToN
+Cj4gVGhlIGFkNzc4MCBkcml2ZXIgcHJldmlvdXNseSBkaWQgbm90IHJlYWQgdGhlIGNvcnJlY3Qg
+ZGV2aWNlIG91dHB1dCwgYXMNCj4gaXQgcmVhZCBhbiBvdXRkYXRlZCB2YWx1ZSBzZXQgYXQgaW5p
+dGlhbGl6YXRpb24uIEl0IG5vdyB1cGRhdGVzIGl0cw0KPiB2b2x0YWdlIG9uIHJlYWQuDQo+IA0K
+DQpMb29rcyBnb29kIGZyb20gbXkgc2lkZS4NCg0KQWxleA0KDQo+IFNpZ25lZC1vZmYtYnk6IFJl
+bmF0byBMdWkgR2VoIDxyZW5hdG9nZWhAZ21haWwuY29tPg0KPiAtLS0NCj4gQ2hhbmdlcyBpbiB2
+MzoNCj4gCS0gcmVtb3ZlZCBpbml0aWFsaXphdGlvbiAoaW50IHZvbHRhZ2VfdXYgPSAwKQ0KPiAJ
+LSByZXR1cm5zIGVycm9yIHdoZW4gdm9sdGFnZV91diBpcyBudWxsDQo+IENoYW5nZXMgaW4gdjQ6
+DQo+IAktIHJldHVybnMgZXJyb3Igd2hlbiB2b2x0YWdlX3V2IGlzIG5lZ2F0aXZlDQo+IA0KPiAg
+ZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NzgwLmMgfCA2ICsrKysrLQ0KPiAgMSBmaWxlIGNo
+YW5nZWQsIDUgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQ0KPiANCj4gZGlmZiAtLWdpdCBh
+L2RyaXZlcnMvc3RhZ2luZy9paW8vYWRjL2FkNzc4MC5jDQo+IGIvZHJpdmVycy9zdGFnaW5nL2lp
+by9hZGMvYWQ3NzgwLmMNCj4gaW5kZXggYjY3NDEyZGIwMzE4Li5jN2NiMDVjZWRiYmMgMTAwNjQ0
+DQo+IC0tLSBhL2RyaXZlcnMvc3RhZ2luZy9paW8vYWRjL2FkNzc4MC5jDQo+ICsrKyBiL2RyaXZl
+cnMvc3RhZ2luZy9paW8vYWRjL2FkNzc4MC5jDQo+IEBAIC04NywxMiArODcsMTYgQEAgc3RhdGlj
+IGludCBhZDc3ODBfcmVhZF9yYXcoc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiwNCj4gIAkJCSAg
+IGxvbmcgbSkNCj4gIHsNCj4gIAlzdHJ1Y3QgYWQ3NzgwX3N0YXRlICpzdCA9IGlpb19wcml2KGlu
+ZGlvX2Rldik7DQo+ICsJaW50IHZvbHRhZ2VfdXY7DQo+ICANCj4gIAlzd2l0Y2ggKG0pIHsNCj4g
+IAljYXNlIElJT19DSEFOX0lORk9fUkFXOg0KPiAgCQlyZXR1cm4gYWRfc2lnbWFfZGVsdGFfc2lu
+Z2xlX2NvbnZlcnNpb24oaW5kaW9fZGV2LCBjaGFuLA0KPiB2YWwpOw0KPiAgCWNhc2UgSUlPX0NI
+QU5fSU5GT19TQ0FMRToNCj4gLQkJKnZhbCA9IHN0LT5pbnRfdnJlZl9tdiAqIHN0LT5nYWluOw0K
+PiArCQl2b2x0YWdlX3V2ID0gcmVndWxhdG9yX2dldF92b2x0YWdlKHN0LT5yZWcpOw0KPiArCQlp
+ZiAodm9sdGFnZV91diA8IDApDQo+ICsJCQlyZXR1cm4gdm9sdGFnZV91djsNCj4gKwkJKnZhbCA9
+ICh2b2x0YWdlX3V2IC8gMTAwMCkgKiBzdC0+Z2FpbjsNCj4gIAkJKnZhbDIgPSBjaGFuLT5zY2Fu
+X3R5cGUucmVhbGJpdHMgLSAxOw0KPiAgCQlyZXR1cm4gSUlPX1ZBTF9GUkFDVElPTkFMX0xPRzI7
+DQo+ICAJY2FzZSBJSU9fQ0hBTl9JTkZPX09GRlNFVDoNCg==
