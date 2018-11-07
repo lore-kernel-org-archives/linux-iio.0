@@ -1,147 +1,83 @@
-Return-Path: <alexandru.Ardelean@analog.com>
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "giuliano.belinassi@usp.br" <giuliano.belinassi@usp.br>,
-	"jic23@jic23.retrosnub.co.uk" <jic23@jic23.retrosnub.co.uk>
-CC: "giuliano.belinassi@gmail.com" <giuliano.belinassi@gmail.com>,
-	"renatogeh@gmail.com" <renatogeh@gmail.com>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "kernel-usp@googlegroups.com"
-	<kernel-usp@googlegroups.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-qk1-f180.google.com ([209.85.222.180]:35445 "EHLO
+        mail-qk1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726335AbeKHE3X (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 7 Nov 2018 23:29:23 -0500
+Received: by mail-qk1-f180.google.com with SMTP id v68-v6so22291787qka.2
+        for <linux-iio@vger.kernel.org>; Wed, 07 Nov 2018 10:57:43 -0800 (PST)
+From: Renato Lui Geh <renatogeh@gmail.com>
+Date: Wed, 7 Nov 2018 16:57:37 -0200
+To: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+Cc: "giuliano.belinassi@usp.br" <giuliano.belinassi@usp.br>,
+        "jic23@jic23.retrosnub.co.uk" <jic23@jic23.retrosnub.co.uk>,
+        "giuliano.belinassi@gmail.com" <giuliano.belinassi@gmail.com>,
+        "renatogeh@gmail.com" <renatogeh@gmail.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>
 Subject: Re: Questions related to some drivers
-Date: Tue, 6 Nov 2018 13:23:19 +0000
-Message-ID: <6f9ad9ace7828741f25ea6e7c555c9f4e91a203b.camel@analog.com>
+Message-ID: <20181107185735.wryk5o4wndy6bkzn@renatolg>
 References: <20181017190028.wu2kgsooj64beh7o@smtp.gmail.com>
-	 <d0fc5a236a82d03fdbe4d05eb27ff3bd3ac36958.camel@analog.com>
-	 <20181018114145.amqff57holmecxpo@smtp.gmail.com>
-	 <CAEFO=4BjSiYeNW_n0PjoC3EqaN1Z8E1XB_CO+FJJdTwZo4enzg@mail.gmail.com>
-	 <20181023105126.408ef7ab@archlinux>
-	 <CAEFO=4Dc_v90MHFnniTpAcMvajpt3O55rtc730Pr0F6+Aau49A@mail.gmail.com>
-In-Reply-To: <CAEFO=4Dc_v90MHFnniTpAcMvajpt3O55rtc730Pr0F6+Aau49A@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+ <d0fc5a236a82d03fdbe4d05eb27ff3bd3ac36958.camel@analog.com>
+ <20181018114145.amqff57holmecxpo@smtp.gmail.com>
+ <CAEFO=4BjSiYeNW_n0PjoC3EqaN1Z8E1XB_CO+FJJdTwZo4enzg@mail.gmail.com>
+ <20181023105126.408ef7ab@archlinux>
+ <CAEFO=4Dc_v90MHFnniTpAcMvajpt3O55rtc730Pr0F6+Aau49A@mail.gmail.com>
+ <6f9ad9ace7828741f25ea6e7c555c9f4e91a203b.camel@analog.com>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <6f9ad9ace7828741f25ea6e7c555c9f4e91a203b.camel@analog.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-T24gTW9uLCAyMDE4LTExLTA1IGF0IDE2OjQ2IC0wMjAwLCBHaXVsaWFubyBBdWd1c3RvIEZhdWxp
-biBCZWxpbmFzc2kgd3JvdGU6DQo+IEhlbGxvLA0KPiBDb3VsZCB5b3UgaGVscCB1cyBmaWd1cmUg
-b3V0IHdoYXQgbXVzdCBiZSBhZGRlZC9jaGFuZ2VkIGludG8gdGhlDQo+IHN0YWdpbmcvaWlvL2Fk
-Yy9hZDc3ODAuYyB0byByZW1vdmUgaXQgZnJvbSBzdGFpZ2luZz8NCj4gDQo+IEZvciBpbnN0YW5j
-ZSwgc2hvdWxkIHdlIGFkZCBhbiBpZCBmaWVsZCBpbiBhZDc3ODBfc3RhdGUgc3RydWN0IHRoYXQN
-Cj4gcmVwcmVzZW50cyBJRDEgYW5kIElEMCBmcm9tIHRoZSBzdGF0dXMgYml0cyAocGFnZSAxMyBm
-cm9tIGRhdGFzaGVldCk/DQo+IE9yIGNoZWNrIHRoZSBTdGF0dXMgcGF0dGVybiBiaXRzIFBBVDEs
-IFBBVDAgZm9yIGVycm9ycz8gT3Igc29tZXRoaW5nDQo+IGVsc2Ugd2UgY2FuIHdvcmsgb24/DQo+
-IA0KDQpIZXksDQoNCllvdSBkb24ndCBuZWVkIHRvIGNoZWNrIGFueSBwYXR0ZXJucywgdGhhdCdz
-IGFscmVhZHkgYmVpbmcgZG9uZSBpbiB0aGUNCmRyaXZlciAoc2VlIGBwYXR0ZXJuYCAmIGBwYXR0
-ZXJuX21hc2tgIGZpZWxkcykuIA0KQW5kIHNlZSBmdW5jdGlvbiBhZDc3ODBfcG9zdHByb2Nlc3Nf
-c2FtcGxlKCkuDQpUaG91Z2ggSSB3aWxsIGFkbWl0IGl0IHdvdWxkIGhhdmUgYmVlbiBuaWNlciBp
-ZiB0aG9zZSBwYXR0ZXJucyB3ZXJlDQpnZW5lcmF0ZWQgZnJvbSBBRDc3ODBfUEFUMSAmIEFENzc4
-MF9QQVQwLiBTbyAoaWYgeW91IHdhbnQpLCB5b3UgY291bGQNCnVwZGF0ZSB0aG9zZSBwYXR0ZXJu
-IGFzc2lnbm1lbnRzIHdpdGggc29tZSBtYWNyb3MgOyBmb3IgQUQ3MTd4IHlvdSBtYXkgbmVlZA0K
-dG8gYWRkIEFENzE3MF9QQVQyIChCSVQoMikpDQoNCkkgYW0gbm90aWNpbmcgYSBzbWFsbCBidWcg
-d2l0aCB0aGUgZHJpdmVyIG5vdw0KKGluIGFkNzc4MF9wb3N0cHJvY2Vzc19zYW1wbGUoKSkuDQpU
-aGUgQUQ3NzgwX0dBSU4gYml0LWZpZWxkIChmb3IgQUQ3Nzh4KSBvdmVybGFwcyB3aXRoIEFENzE3
-MF9QQVQyIChmb3INCkFENzE3eCkuIFNvLCBtYXliZSB5b3UgY291bGQgYWRkIGEgZmllbGQgY2Fs
-bGVkIGBpc19hZDc3OHhgIGluDQpgYWQ3NzgwX2NoaXBfaW5mb2AgYW5kIGluaXRpYWxpemUgaXQg
-dG8gdHJ1ZSBpbiB0aGUgYGFkNzc4MF9jaGlwX2luZm9fdGJsYA0KZm9yIEFENzc4MCAmIEFENzc4
-MSA7IGFuZCBvbmx5IHBlcmZvcm0gdGhlIEFENzc4MF9HQUlOIGNoZWNrIGZvciB0aGVzZQ0KZGV2
-aWNlcy4NCkFjY29yZGluZyB0byB0aGUgZGF0YXNoZWV0cyBBRDcxNzAgJiBBRDcxNzEgaGF2ZSBh
-IGZpeGVkIGdhaW4gb2YgMS4NCg0KSSB3b3VsZCBpZ25vcmUgdGhlIElEMCAmIElEMSBmaWVsZHMg
-OyB0aG9zZSBzZWVtIHRvIG92ZXJsYXAgYSBiaXQgYmV0d2Vlbg0KQUQ3MTd4ICYgQUQ3Nzh4LiBB
-bmQgdGhleSdyZSBub3QgdmVyeSB1c2VmdWwgaW4gdGhlIGRyaXZlci4NCg0KRm9yIEFENzc4eCB5
-b3UgY291bGQgYWxzbyBhZGQgc3VwcG9ydCBmb3IgdGhlIEdBSU4gJiBGSUxURVIgcGlucyB2aWEg
-R1BJT3MsDQp0byBjb250cm9sIHRoZXNlIHNldHRpbmdzLiBBbmQgdGhlbiBpbiB0aGUgYWQ3Nzgw
-X3Bvc3Rwcm9jZXNzX3NhbXBsZSgpDQpmdW5jdGlvbiBjaGVjayBpZiB0aGUgR1BJTyBzZXR0aW5n
-cyAoc3RvcmVkIG9uIGEgZ3Bpb19kZXNjIG9uIGFkNzc4MF9zdGF0ZSkNCm1hdGNoIHRoZSBleHBl
-Y3RlZCBHQUlOICYgRklMVEVSIGJpdCBzZXR0aW5ncyA7IGlmIG5vdCByZXR1cm4gLUVJTy4NCg0K
-QWxsLWluLWFsbCwgdGhlIGRyaXZlciBpcyBhbG1vc3QgcmVhZHkgdG8gbW92ZSBvdXQgb2Ygc3Rh
-Z2luZyAoZnJvbSBteQ0KcG9pbnQgb2YgdmlldykuDQpOb3Qgc3VyZSBpZiBhbnlvbmUgZWxzZSBo
-YXMgYW55dGhpbmcgZWxzZSB0byBhZGQuDQpUaGUgYnVnIHNob3VsZCBiZSBmaXhlZCwgYW5kIHRo
-ZSByZXN0IGlzIG5pY2UtdG8taGF2ZSwgYnV0IG5vdCBuZWNlc3NhcmlseQ0KYSBtdXN0IChhZ2Fp
-biwgZnJvbSBteSBwb2ludCBvZiB2aWV3KSB0byBrZWVwIGl0IGluIHN0YWdpbmcuDQoNCkFsc28s
-IGdlbmVyYWxseTogbWF5YmUgZG8gYSBjb21wYXJhdGl2ZSBzd2VlcCBiZXR3ZWVuIEFENzE3eCAm
-IEFENzc4eA0KZGF0YXNoZWV0cyBhbmQgc2VlIGlmIHRoZXJlJ3Mgc29tZXRoaW5nIGxlZnQgdGhh
-dCdzIGluY29ycmVjdCBmb3IgYW55IG9mDQp0aGVzZSBjaGlwcy4NCg0KVGhhbmtzDQpBbGV4DQoN
-Cj4gVGhhbmsgeW91Lg0KPiBPbiBUdWUsIE9jdCAyMywgMjAxOCBhdCA2OjUxIEFNIEpvbmF0aGFu
-IENhbWVyb24NCj4gPGppYzIzQGppYzIzLnJldHJvc251Yi5jby51az4gd3JvdGU6DQo+ID4gDQo+
-ID4gT24gTW9uLCAyMiBPY3QgMjAxOCAxODo1NjoxNiAtMDMwMA0KPiA+IEdpdWxpYW5vIEF1Z3Vz
-dG8gRmF1bGluIEJlbGluYXNzaSA8Z2l1bGlhbm8uYmVsaW5hc3NpQHVzcC5icj4gd3JvdGU6DQo+
-ID4gDQo+ID4gPiBIZWxsbywNCj4gPiA+IEkgaGF2ZSBzb21lIHF1ZXN0aW9ucyBhYm91dCB0aGUg
-YWQ3NzgwIGRyaXZlci4NCj4gPiA+IA0KPiA+ID4gICAqIFdoYXQgaXMgdGhlIHZhbDIgSW4gdGhl
-IGxpbmUgOTYgKCp2YWwyID0gY2hhbi0+c2Nhbl90eXBlLnJlYWxiaXRzDQo+ID4gPiAtIDE7KT8g
-SG93IGl0IGlzIHVzZWQ/IElzIGl0IHJlbGF0ZWQgdG8gdGhlIDI0LWJpdHMgQURDIHByZWNpc2lv
-bj8NCj4gPiANCj4gPiBUbyB1bmRlcnN0YW5kIHRoYXQgZm9sbG93IHRocm91Z2ggd2hhdCB0aGUg
-Y29kZSBkb2VzIHdoZW4gdGhlIHR5cGUgb2YgYQ0KPiA+IHJlYWRfcmF3IGlzIElJT19WQUxfRlJB
-Q1RJT05BTF9MT0cyOw0KPiA+IA0KPiA+ID4gICAqIFdoeSB0aGVyZSBpcyBhIHN1YnRyYWN0aW9u
-IGluIHRoZSBsaW5lIDk5ICggKnZhbCAtPSAoMSA8PA0KPiA+ID4gKGNoYW4tPnNjYW5fdHlwZS5y
-ZWFsYml0cyAtIDEpKTsgKT8gSXMgdGhlICp2YWwgaW5pdGlhbGl6ZWQgd2l0aCAwPw0KPiA+ID4g
-SXMNCj4gPiA+IHRoYXQgcmVsYXRlZCB0byB0aGUgZm9ybXVsYSBkZXNjcmliZWQgaW4gdGhlIERB
-VEEgT1VUUFVUIENPRElORywgYXQNCj4gPiA+IHBhZ2UgMTI/DQo+ID4gPiANCmh0dHBzOi8vd3d3
-LmFuYWxvZy5jb20vbWVkaWEvZW4vdGVjaG5pY2FsLWRvY3VtZW50YXRpb24vZGF0YS1zaGVldHMv
-YWQ3NzgwLnBkZg0KPiA+IA0KPiA+IFllYWgsIHRoYXQgLT0gaXMgZGVmaW5pdGVseSB3cm9uZy4g
-IFNob3VsZCBqdXN0IGJlIGFuIGFzc2lnbm1lbnQgdG8gdGhlDQo+ID4gbmVnYXRpdmUgdmFsdWUu
-ICBUaGlzIGlzIHRlbGxpbmcgdXNlcnNwYWNlIHRoYXQgdGhlIHJhdyB2YWx1ZSBzaG91bGQgYmUN
-Cj4gPiBvZmZzZXQgYnkgaGFsZiBvZiBpdCdzIG1heGltdW0gcmFuZ2UgYmVmb3JlIGFwcGx5aW5n
-IHRoZSBzY2FsZSB0byBnZXQNCj4gPiBhIHJlYWRpbmcgaW4gdGhlIElJTyBiYXNlIHVuaXRzICho
-ZXJlIG1WIElJUkMpLg0KPiA+IA0KPiA+ID4gDQo+ID4gPiBXaXRoIHJlZ2FyZHMNCj4gPiA+IA0K
-PiA+ID4gDQo+ID4gPiBPbiBUaHUsIE9jdCAxOCwgMjAxOCBhdCA4OjQxIEFNIEdpdWxpYW5vIEJl
-bGluYXNzaQ0KPiA+ID4gPGdpdWxpYW5vLmJlbGluYXNzaUBnbWFpbC5jb20+IHdyb3RlOg0KPiA+
-ID4gPiANCj4gPiA+ID4gT24gMTAvMTgsIEFyZGVsZWFuLCBBbGV4YW5kcnUgd3JvdGU6DQo+ID4g
-PiA+IA0KPiA+ID4gPiBUaGFuayB5b3UgZm9yIHRoZSByZXBseSA6LSkuIFdlIHdpbGwgcHV0IGVm
-Zm9ydCBpbnRvIGF0IGxlYXN0IG9uZQ0KPiA+ID4gPiBkcml2ZXIgdG8NCj4gPiA+ID4gcmVtb3Zl
-IGl0IGZyb20gc3RhZ2luZy4NCj4gPiA+ID4gDQo+ID4gPiA+ID4gSGV5LA0KPiA+ID4gPiA+IA0K
-PiA+ID4gPiA+IFRoYW5rcyBmb3IgdGhlIG5vdGlmaWNhdGlvbi4NCj4gPiA+ID4gPiANCj4gPiA+
-ID4gPiBZZXMsIGFsbCB0aGVzZSAzIGRyaXZlcnMgc2hvdWxkIGJlIG1vdmVkIG91dCBvZiBzdGFn
-aW5nLg0KPiA+ID4gPiA+IA0KPiA+ID4gPiA+IFdlIHdlcmUgcGxhbm5pbmcgdG8gc3RhcnQgd29y
-a2luZyBvbiB0aGVtICh0byBtb3ZlIHRoZW0gb3V0IG9mDQo+ID4gPiA+ID4gc3RhZ2luZyksDQo+
-ID4gPiA+ID4gYnV0IHByaW9yaXRpZXMgYXJlIHNoaWZ0aW5nIGZyb20gb25lIHdlZWsgdG8gdGhl
-IG90aGVyLg0KPiA+ID4gPiA+IFNvLCBpZiB5b3UgZ3V5cyBoYXZlIHRoZSB0aW1lIGFuZCBhcmUg
-d2lsbGluZyB0byBkbyBpdCwgcGxlYXNlIGdvDQo+ID4gPiA+ID4gYWhlYWQsDQo+ID4gPiA+ID4g
-YW5kIGFkZCBtZSwgbWljaGFlbC5oZW5uZXJpY2hAYW5hbG9nLmNvbSBhbmQgDQo+ID4gPiA+ID4g
-c3RlZmFuLnBvcGFAYW5hbG9nLmNvbSB0byB0aGUNCj4gPiA+ID4gPiBDQyB3aGVuIHNlbmRpbmcg
-cGF0Y2hlcywgYW5kIHdlIHdpbGwgYWxzbyB0YWtlIGEgbG9vayBvdmVyIHlvdXINCj4gPiA+ID4g
-PiBwYXRjaGVzLg0KPiA+ID4gPiA+IA0KPiA+ID4gPiA+IElmIHlvdSBoYXZlbid0IHRha2VuIGEg
-bG9vayBhbHJlYWR5LCBmZWVsIGZyZWUgdG8gYWxzbyB0YWtlIGENCj4gPiA+ID4gPiBsb29rIGF0
-IG91cg0KPiA+ID4gPiA+IHdpa2k6DQo+ID4gPiA+ID4gDQpodHRwczovL3dpa2kuYW5hbG9nLmNv
-bS9yZXNvdXJjZXMvdG9vbHMtc29mdHdhcmUvbGludXgtZHJpdmVycy1hbGwNCj4gPiA+ID4gPiBJ
-dCdzIG1vcmUgdGVjaG5pY2FsIGZvciB0aGUgU1cgc2lkZTsgaXQgbWlnaHQgaGVscCB3aXRoIHNv
-bWUNCj4gPiA+ID4gPiBnZW5lcmFsIGluZm8uDQo+ID4gPiA+ID4gQW5kIHRoZSBkYXRhc2hlZXRz
-IHNob3VsZCBiZSBhdmFpbGFibGUgb24gdGhlDQo+ID4gPiA+ID4gYW5hbG9nLmNvbS88cHJvZHVj
-dF9pZD4NCj4gPiA+ID4gPiBwYWdlcy4NCj4gPiA+ID4gPiANCj4gPiA+ID4gPiANCj4gPiA+ID4g
-PiBUaGFua3MNCj4gPiA+ID4gPiBBbGV4DQo+ID4gPiA+ID4gDQo+ID4gPiA+ID4gDQo+ID4gPiA+
-ID4gT24gV2VkLCAyMDE4LTEwLTE3IGF0IDE2OjAwIC0wMzAwLCBHaXVsaWFubyBCZWxpbmFzc2kg
-d3JvdGU6DQo+ID4gPiA+ID4gPiBIZWxsbywNCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gV2Ug
-YXJlIGEgc3R1ZGVudCBncm91cCBhbmQgd2Ugd2FudCB0byBjb250cmlidXRlIHRvIHRoZSBsaW51
-eA0KPiA+ID4gPiA+ID4ga2VybmVsLiBXZQ0KPiA+ID4gPiA+ID4gYXJlIHRoaW5raW5nIGluIHB1
-dCBlZmZvcnQgdG8gbW92ZSBhIGRyaXZlciBmcm9tIHN0YWdpbmcgdG8gdGhlDQo+ID4gPiA+ID4g
-PiBtYWluDQo+ID4gPiA+ID4gPiB0cmVlLg0KPiA+ID4gPiA+ID4gV2UgbG9va2VkIGludG8gdGhy
-ZWUgZHJpdmVyczoNCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gICAqIGFkYy9hZDc3ODAuYw0K
-PiA+ID4gPiA+ID4gICAqIGFkYy9hZDc4MTYuYw0KPiA+ID4gPiA+ID4gICAqIGltcGVkYW5jZS1h
-bmFseXplci9hZDU5MzMuYw0KPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPiBBcmUgdGhlc2UgZHJp
-dmVycyBzdGlsbCBiZWluZyB3b3JrZWQgb24/IFRoZSBsYXN0IGNvbW1pdA0KPiA+ID4gPiA+ID4g
-cmVmZXJlbmNpbmcNCj4gPiA+ID4gPiA+IHRoZXNlDQo+ID4gPiA+ID4gPiBkcml2ZXJzIHdlcmUg
-b24gbWFyY2ggMjAxOCwgYnV0IHRoZXkgYXJlIHN0aWxsIGluIHN0YWdpbmcgc2luY2UNCj4gPiA+
-ID4gPiA+IDIwMTAuDQo+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+IFdlIGFscmVhZHkga25vdyB0
-aGF0IHdlIGhhdmUgdG8gY29udmVydCBmcm9tIHRoZSBvbGQgYXBpIHRvIHRoZQ0KPiA+ID4gPiA+
-ID4gbmV3IG9uZS4NCj4gPiA+ID4gPiA+IEl0IGlzDQo+ID4gPiA+ID4gPiBPSyBmb3IgdXMgdG8g
-d29yayBvbiB0aGlzPyBJcyB0aGVyZSBzb21ldGhpbmcgZWxzZSB3ZSBjYW4gZG8/DQo+ID4gPiA+
-ID4gPiANCj4gPiA+ID4gPiA+IFRoYW5rIHlvdQ0KPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gDQo+
-ID4gPiA+ID4gLS0NCj4gPiA+ID4gPiBZb3UgcmVjZWl2ZWQgdGhpcyBtZXNzYWdlIGJlY2F1c2Ug
-eW91IGFyZSBzdWJzY3JpYmVkIHRvIHRoZQ0KPiA+ID4gPiA+IEdvb2dsZSBHcm91cHMgIktlcm5l
-bCBVU1AiIGdyb3VwLg0KPiA+ID4gPiA+IFRvIHVuc3Vic2NyaWJlIGZyb20gdGhpcyBncm91cCBh
-bmQgc3RvcCByZWNlaXZpbmcgZW1haWxzIGZyb20gaXQsDQo+ID4gPiA+ID4gc2VuZCBhbiBlbWFp
-bCB0byBrZXJuZWwtdXNwK3Vuc3Vic2NyaWJlQGdvb2dsZWdyb3Vwcy5jb20uDQo+ID4gPiA+ID4g
-VG8gcG9zdCB0byB0aGlzIGdyb3VwLCBzZW5kIGVtYWlsIHRvIGtlcm5lbC11c3BAZ29vZ2xlZ3Jv
-dXBzLmNvbS4NCj4gPiA+ID4gPiBUbyB2aWV3IHRoaXMgZGlzY3Vzc2lvbiBvbiB0aGUgd2ViIHZp
-c2l0IA0KPiA+ID4gPiA+IGh0dHBzOi8vZ3JvdXBzLmdvb2dsZS5jb20vZC9tc2dpZC9rZXJuZWwt
-dXNwL2QwZmM1YTIzNmE4MmQwM2ZkYmU0ZDA1ZWIyN2ZmM2JkM2FjMzY5NTguY2FtZWwlNDBhbmFs
-b2cuY29tDQo+ID4gPiA+ID4gLg0KPiA+ID4gPiA+IEZvciBtb3JlIG9wdGlvbnMsIHZpc2l0IGh0
-dHBzOi8vZ3JvdXBzLmdvb2dsZS5jb20vZC9vcHRvdXQuDQo+ID4gPiA+IA0KPiA+ID4gPiAtLQ0K
-PiA+ID4gPiBZb3UgcmVjZWl2ZWQgdGhpcyBtZXNzYWdlIGJlY2F1c2UgeW91IGFyZSBzdWJzY3Jp
-YmVkIHRvIHRoZSBHb29nbGUNCj4gPiA+ID4gR3JvdXBzICJLZXJuZWwgVVNQIiBncm91cC4NCj4g
-PiA+ID4gVG8gdW5zdWJzY3JpYmUgZnJvbSB0aGlzIGdyb3VwIGFuZCBzdG9wIHJlY2VpdmluZyBl
-bWFpbHMgZnJvbSBpdCwNCj4gPiA+ID4gc2VuZCBhbiBlbWFpbCB0byBrZXJuZWwtdXNwK3Vuc3Vi
-c2NyaWJlQGdvb2dsZWdyb3Vwcy5jb20uDQo+ID4gPiA+IFRvIHBvc3QgdG8gdGhpcyBncm91cCwg
-c2VuZCBlbWFpbCB0byBrZXJuZWwtdXNwQGdvb2dsZWdyb3Vwcy5jb20uDQo+ID4gPiA+IFRvIHZp
-ZXcgdGhpcyBkaXNjdXNzaW9uIG9uIHRoZSB3ZWIgdmlzaXQgDQo+ID4gPiA+IGh0dHBzOi8vZ3Jv
-dXBzLmdvb2dsZS5jb20vZC9tc2dpZC9rZXJuZWwtdXNwLzIwMTgxMDE4MTE0MTQ1LmFtcWZmNTdo
-b2xtZWN4cG8lNDBzbXRwLmdtYWlsLmNvbQ0KPiA+ID4gPiAuDQo+ID4gPiA+IEZvciBtb3JlIG9w
-dGlvbnMsIHZpc2l0IGh0dHBzOi8vZ3JvdXBzLmdvb2dsZS5jb20vZC9vcHRvdXQuDQo+IA0KPiAN
-Cg==
+On 11/06, Ardelean, Alexandru wrote:
+>Hey,
+>
+>You don't need to check any patterns, that's already being done in the
+>driver (see `pattern` & `pattern_mask` fields).
+>And see function ad7780_postprocess_sample().
+>Though I will admit it would have been nicer if those patterns were
+>generated from AD7780_PAT1 & AD7780_PAT0. So (if you want), you could
+>update those pattern assignments with some macros ; for AD717x you may need
+>to add AD7170_PAT2 (BIT(2))
+>
+>I am noticing a small bug with the driver now
+>(in ad7780_postprocess_sample()).
+>The AD7780_GAIN bit-field (for AD778x) overlaps with AD7170_PAT2 (for
+>AD717x). So, maybe you could add a field called `is_ad778x` in
+>`ad7780_chip_info` and initialize it to true in the `ad7780_chip_info_tbl`
+>for AD7780 & AD7781 ; and only perform the AD7780_GAIN check for these
+>devices.
+>According to the datasheets AD7170 & AD7171 have a fixed gain of 1.
+>
+>I would ignore the ID0 & ID1 fields ; those seem to overlap a bit between
+>AD717x & AD778x. And they're not very useful in the driver.
+>
+
+Hi,
+
+Thank you for the clues on what to work on. We've just now sent a
+patchset with the fixes you mentioned in the quoted block above.
+
+>For AD778x you could also add support for the GAIN & FILTER pins via GPIOs,
+>to control these settings. And then in the ad7780_postprocess_sample()
+>function check if the GPIO settings (stored on a gpio_desc on ad7780_state)
+>match the expected GAIN & FILTER bit settings ; if not return -EIO.
+>
+>All-in-all, the driver is almost ready to move out of staging (from my
+>point of view).
+>Not sure if anyone else has anything else to add.
+>The bug should be fixed, and the rest is nice-to-have, but not necessarily
+>a must (again, from my point of view) to keep it in staging.
+>
+>Also, generally: maybe do a comparative sweep between AD717x & AD778x
+>datasheets and see if there's something left that's incorrect for any of
+>these chips.
+
+We'll take a look on these issues and study them further and will start
+working on them once we're confident we understand them.
+
+>Thanks
+>Alex
+
+Thanks,
+Renato
