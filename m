@@ -1,109 +1,121 @@
-Return-Path: <alexandru.Ardelean@analog.com>
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "matheus.bernardino@usp.br" <matheus.bernardino@usp.br>
-CC: "victorcolombo@gmail.com" <victorcolombo@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "Hennerich, Michael"
-	<Michael.Hennerich@analog.com>, "jic23@jic23.retrosnub.co.uk"
-	<jic23@jic23.retrosnub.co.uk>, "graf.yang@analog.com" <graf.yang@analog.com>,
-	"kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>
-Subject: Re: Question about max frequency in ad2s90
-Date: Wed, 7 Nov 2018 08:31:00 +0000
-Message-ID: <893c4f5ec97e677098ddaae19ebe7cf001614f25.camel@analog.com>
-References: <CAHd-oW68iJ=m2Woz63bVwnK_cCJi2uF2e0_EVur6DHJLRmKw+A@mail.gmail.com>
-	 <2ed30f2fa4ffc437c5a012831521d1eb6abe259f.camel@analog.com>
-	 <CAHd-oW5iPLbEECw-SzyHGprSrEkrCSnH+xnhSB8uKqr-PqocPg@mail.gmail.com>
-In-Reply-To: <CAHd-oW5iPLbEECw-SzyHGprSrEkrCSnH+xnhSB8uKqr-PqocPg@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-it1-f180.google.com ([209.85.166.180]:39582 "EHLO
+        mail-it1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727604AbeKHDgz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 7 Nov 2018 22:36:55 -0500
+Received: by mail-it1-f180.google.com with SMTP id m15so24051076itl.4
+        for <linux-iio@vger.kernel.org>; Wed, 07 Nov 2018 10:05:23 -0800 (PST)
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+References: <CAHd-oW68iJ=m2Woz63bVwnK_cCJi2uF2e0_EVur6DHJLRmKw+A@mail.gmail.com>
+ <2ed30f2fa4ffc437c5a012831521d1eb6abe259f.camel@analog.com>
+In-Reply-To: <2ed30f2fa4ffc437c5a012831521d1eb6abe259f.camel@analog.com>
+From: Matheus Tavares Bernardino <matheus.bernardino@usp.br>
+Date: Wed, 7 Nov 2018 16:05:11 -0200
+Message-ID: <CAHd-oW79GbM8_-3aAx-ar_qKWZPyidNcjEH1H8Ta6hcT_hf4Ag@mail.gmail.com>
+Subject: Re: Question about max frequency in ad2s90
+To: alexandru.Ardelean@analog.com
+Cc: jic23@jic23.retrosnub.co.uk, linux-iio@vger.kernel.org,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        graf.yang@analog.com, Victor Colombo <victorcolombo@gmail.com>,
+        kernel-usp@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-T24gVHVlLCAyMDE4LTExLTA2IGF0IDEzOjEyIC0wMjAwLCBNYXRoZXVzIFRhdmFyZXMgQmVybmFy
-ZGlubyB3cm90ZToNCj4gT24gVHVlLCBOb3YgNiwgMjAxOCBhdCAxMDozNCBBTSBBcmRlbGVhbiwg
-QWxleGFuZHJ1DQo+IDxhbGV4YW5kcnUuQXJkZWxlYW5AYW5hbG9nLmNvbT4gd3JvdGU6DQo+ID4g
-DQo+ID4gT24gTW9uLCAyMDE4LTExLTA1IGF0IDIzOjExIC0wMjAwLCBNYXRoZXVzIFRhdmFyZXMg
-QmVybmFyZGlubyB3cm90ZToNCj4gPiA+IEhlbGxvIGV2ZXJ5b25lLA0KPiA+ID4gDQo+ID4gDQo+
-ID4gSGV5LA0KPiA+IA0KPiANCj4gSGksIEFsZXgNCj4gDQo+ID4gPiBXaGlsZSB3b3JraW5nIG9u
-IHRoZSBhZDJzOTAgZHJpdmVyLCBJIGhhZCBhIHF1ZXN0aW9uIGFib3V0IHRoZQ0KPiA+ID4gbWF4
-aW11bQ0KPiA+ID4gZnJlcXVlbmN5IHNldC4gQW55IGZlZWRiYWNrIHdpbGwgYmUgbXVjaCBhcHBy
-ZWNpYXRlZC4NCj4gPiA+IA0KPiA+IA0KPiA+IEp1c3QgYSBub3RlL3JlbWluZGVyIGZvciB5b3U6
-IHRoYXQgZHJpdmVyIGxvb2tzIHByZXR0eSBvbGQgYW5kIFtzaW5jZQ0KPiA+IGl0J3MNCj4gPiBz
-dGFnaW5nIGFzIHdlbGxdIHlvdSBzaG91bGQgYWxzbyBjb25zaWRlciB0aGF0IGl0J3MgbGlrZWx5
-IHRoYXQgc29tZQ0KPiA+IFtnb29kXQ0KPiA+IHByYWN0aWNlcyB3ZXJlIG5vdCB5ZXQgZXhpc3Rp
-bmcgYXQgdGhlIHRpbWUgW2Fib3V0IGhvdyB0byBkbyB0aGluZ3NdLg0KPiA+IA0KPiANCj4gVGhh
-bmtzIGZvciB0aGUgcmVtaW5kZXIuIFZpY3RvciBhbmQgSSBhcmUgdHJ5aW5nIHRvIGZpbmQgd2hh
-dCBuZWVkcyB0bw0KPiBiZSB1cGRhdGVkL21vZGlmaWVkIHRvIG1vdmUgdGhpcyBkcml2ZXIgb3V0
-IG9mIHN0YWdpbmcuIFdlJ3ZlIHNlbnQNCj4gc29tZSBwYXRjaGVzIGFuZCBub3cgSSdtIHdvcmtp
-bmcgb24gdGhlIGRldmljZSB0cmVlIHN1cHBvcnQsIHdoaWNoIGlzDQo+IHRoZSBsYXN0IHRoaW5n
-IHRvIGJlIGRvbmUgaW4gYSBsaXN0IEpvbmF0aGFuIGhlbHBlZCB1cyB0byBlbnVtZXJhdGUuDQo+
-IFNvIEkgdGFrZSB0aGlzIG9wcG9ydHVuaXR5IHRvIGFzayB5b3UgdG8sIHBsZWFzZSwgbGV0IHVz
-IGtub3cgaWYNCj4gdGhlcmUncyBhbnl0aGluZyBlbHNlIHlvdSBzZWUgdGhhdCBuZWVkcyB0byBi
-ZSBkb25lIGJlZm9yZSBtb3ZpbmcgaXQNCj4gb3V0IG9mIHN0YWdpbmcuDQo+IA0KPiA+ID4gVGhl
-IGFkMnM5MCBkcml2ZXIgc2V0cyBpdHMgbWF4aW11bSBzcGVlZCB0byA4MzAwMDBoeiAob3IgMC44
-M01oeiksDQo+ID4gPiBidXQNCj4gPiA+IHRoZSBkYXRhc2hlZXQgWzFdIHNwZWNpZmllcyBhIG1h
-eGltdW0gb2YgMk1oei4gQWJvdmUgdGhlIG1heF9zcGVlZF9oeg0KPiA+ID4gc2V0dXAsIHRoZXJl
-J3MgYSBjb21tZW50YXJ5IHNheWluZyAgIm5lZWQgNjAwbnMgYmV0d2VlbiBDUyBhbmQgdGhlDQo+
-ID4gPiBmaXJzdCBmYWxsaW5nIGVkZ2Ugb2YgU0NMSyIsIHdoaWNoIGlzIGFsc28gc2FpZCBpbiB0
-aGUgZGF0YXNoZWV0Lg0KPiA+ID4gDQo+ID4gPiBJcyBtYXhfc3BlZWRfaHogc2V0IHRvIDAuODNN
-aHosIG5vdCAyTWh6LCBkdWUgdG8gdGhlIHJlcXVpcmVkIG1pbmltdW0NCj4gPiA+IGRlbGF5IG9m
-IDYwMG5zLCBzb21laG93PyBJZiBub3Q6DQo+ID4gPiAgIDEpIGlzIDAuODNNaHogcmVhbGx5IGNv
-cnJlY3Q/IGFuZA0KPiA+ID4gICAyKSBpcyB0aGUgbWluaW11bSBkZWxheSBvZiA2MDBucyBiZWlu
-ZyByZXNwZWN0ZWQ/DQo+ID4gPiANCj4gPiANCj4gPiBUaGUgMC44MyBNaHogbGltaXRhdGlvbiBs
-b29rcyB2ZXJ5IG11Y2ggbGlrZSBpdCB3YXMgYWRkZWQgdG8gc2F0aXNmeQ0KPiA+IHRoZQ0KPiA+
-IDYwMCBucyBsaW1pdGF0aW9uLiBJIHF1aWNrbHkgZGlkIHRoZSBjb21wdXRhdGlvbiBhbmQgaXQg
-cm91Z2hseSBlbmRzIHVwDQo+ID4gYmVpbmcgMC44MyBNaHogZm9yIDYwMCBucy4gKGkuZS4gKDEg
-LyAwLDAwMDYwMCkgLyAyID0gaGFsZiBhIHBlcmlvZCApDQo+ID4gDQo+IA0KPiBUaGFua3MuIE5v
-dyBJIGJldHRlciB1bmRlcnN0b29kIHRoZSBjYWxjdWxhdGlvbiBtYWRlIHRvIHVzZSAwLjgzTWh6
-Lg0KPiANCj4gPiBUaGF0IGxpbWl0YXRpb24gKGZvciB0aGUgZGVsYXkgQ1MgYW5kIHRoZSBmaXJz
-dCBkYXRhKSBpcyBpbXBvc2VkIGJ5IHRoZQ0KPiA+IGRhdGFzaGVldCA7IHdoaWxlIHRoZSBjaGlw
-IGNvdWxkIG9wZXJhdGUgYXQgYSBsb3dlciBkZWxheSAoYW5kDQo+ID4gc3Vic2VxdWVudGx5DQo+
-ID4gaGlnaGVyIGZyZXF1ZW5jeSB1cCB0byAyIE1oeiksIGl0J3Mgc2FmZXIgdG8ga2VlcCBpdCBz
-b21laG93DQo+ID4gaW1wbGVtZW50ZWQuDQo+ID4gDQo+ID4gSSB0b29rIGEgbG9vayBpbiB0aGUg
-U1BJIGNvZGUgYW5kIGl0IGRvZXNuJ3QgbG9vayBsaWtlIGl0IGltcGxlbWVudHMNCj4gPiBzb21l
-DQo+ID4gc29ydCBvZiBkZWxheSBiZXR3ZWVuIENTIGFuZCBmaXJzdCBkYXRhIGJlaW5nIHJlYWQu
-IEkgbWF5IGhhdmUgbWlzc2VkDQo+ID4gc3R1ZmYNCj4gPiB0aG91Z2guDQo+ID4gDQo+IA0KPiBP
-ay4gU28ganVzdCB0byBjaGVjayBpZiBJIGdvdCBpdCByaWdodDogVGhlIGNoaXAgY291bGQgd29y
-ayBhdCAyTWh6DQo+IGJ1dCBuZWVkcyBhIGRlbGF5IG9mIDYwMG5zIGJldHdlZW4gQ1MgYW5kIHRo
-ZSBmaXJzdCBkYXRhIGJpdA0KPiByZXRyaWV2YWwuIFRoZSBkcml2ZXIgY291bGQgaW1wbGVtZW50
-IHRoZSBkZWxheSBhbmQgdGhlbiBjbG9jayBhdA0KPiAyTWh6LCBidXQgdGhlIFNQSSBjb2RlIGRv
-ZXNuJ3QgaGF2ZSBhIHdheSB0byBpbXBsZW1lbnQgdGhpcyBkZWxheSwgc28NCj4gd2UgaGF2ZSB0
-byBzdGF5IGF0IGEgbG93ZXIgZnJlcXVlbmN5IChvZiBtYXhpbXVtIDAuODNNaHopLCB0byBzYXRp
-c2Z5DQo+IHRoZSA2MDBucyBkZWxheS4gSXMgdGhhdCByaWdodD8NCg0KWWVzLCB0aGF0J3MgY29y
-cmVjdC4NCg0KPiANCj4gU28gdGhlcmUncyBub3RoaW5nIHRvIGRvIGFib3V0IGl0LCByaWdodD8N
-Cj4gDQoNClllcywgdGhhdCdzIGFsc28gY29ycmVjdC4NClsgV2VsbCwgd2Ugd291bGQgbmVlZCB0
-byB1cGRhdGUgdGhlIFNQSSBkcml2ZXIsIGJ1dCBJJ20gbm90IHN1cmUgaWYgaXQncw0Kd29ydGgg
-dGhlIGNoYW5nZSBqdXN0IGZvciB0aGlzIGNoaXAsIHdoaWNoIGlzIHByZXR0eSBvbGQgOyBuZXdl
-ciBjaGlwcw0Kc2hvdWxkbid0IGhhdmUgdGhpcyBwcm9ibGVtIF0uDQoNCj4gPiBJbiBhbnkgY2Fz
-ZSwgSSBkbyBzdWdnZXN0IHJlbW92aW5nIGFsbCB0aG9zZSA0IGxpbmVzIGZvciB0aGUgU1BJIHNl
-dHVwDQo+ID4gY29kZS4NCj4gPiBpLmUuDQo+ID4gDQo+ID4gICAgICAgICAvKiBuZWVkIDYwMG5z
-IGJldHdlZW4gQ1MgYW5kIHRoZSBmaXJzdCBmYWxsaW5nIGVkZ2Ugb2YgU0NMSyAqLw0KPiA+ICAg
-ICAgICAgc3BpLT5tYXhfc3BlZWRfaHogPSA4MzAwMDA7DQo+ID4gICAgICAgICBzcGktPm1vZGUg
-PSBTUElfTU9ERV8zOw0KPiA+ICAgICAgICAgc3BpX3NldHVwKHNwaSk7DQo+ID4gDQo+ID4gVGhp
-cyBzaG91bGQgYmUgaGFuZGxlZCB2aWEgZGV2aWNlLXRyZWUuDQo+ID4gDQo+IA0KPiBSaWdodCEg
-VGhhbmtzIGZvciBwb2ludGluZyBpdCBvdXQuIEknbSBnb2luZyB0byBhZGRyZXNzIHRob3NlIGNo
-YW5nZXMNCj4gaW4gdGhlIG5leHQgcGF0Y2ggc2V0IEknbSB3b3JraW5nIG9uLCByZWdhcmRpbmcg
-ZGV2aWNlIHRyZWUgc3VwcG9ydC4NCj4gDQo+ID4gSW5zdGVhZCwgd2hhdCBjb3VsZCBiZSBkb25l
-IGluIHRoZSBhZDJzOTBfcHJvYmUoKSBmdW5jdGlvbiwgaXMgdG8gYWRkDQo+ID4gKGVhcmx5IGlu
-IHRoZSBjb2RlKSBhIGNoZWNrIGZvciB0aGUgbWF4IGZyZXF1ZW5jeS4NCj4gPiANCj4gPiBTb21l
-dGhpbmcgbGlrZToNCj4gPiANCj4gPiAjZGVmaW5lIEFEMlM5MF9NQVhfU1BJX0ZSRVFfSFogIDIw
-MDAwMDANCj4gPiANCj4gPiAgICAgICAgaWYgKHNwaS0+bWF4X3NwZWVkX2h6ID4gQUQyUzkwX01B
-WF9TUElfRlJFUV9IWikgew0KPiA+ICAgICAgICAgICAgICAgICBkZXZfZXJyKCZzcGktPmRldiwg
-IlNQSSBDTEssICVkIEh6IGV4Y2VlZHMgMiBNSHpcbiIsDQo+ID4gICAgICAgICAgICAgICAgICAg
-ICAgICAgc3BpLT5tYXhfc3BlZWRfaHopOw0KPiA+ICAgICAgICAgICAgICAgICByZXR1cm4gLUVJ
-TlZBTDsNCj4gPiAgICAgICAgIH0NCj4gPiANCj4gPiBPciwgeW91IGNvdWxkIG1ha2UgQUQyUzkw
-X01BWF9TUElfRlJFUV9IWiA9IDgzMDAwMA0KPiA+IA0KPiA+IE9yLCB5b3UgY291bGQganVzdCBw
-cmludCBhIHdhcm5pbmcgZm9yID4gODMwMDAwLg0KPiA+IFNvbWV0aGluZyBsaWtlOg0KPiA+IA0K
-PiA+ICNkZWZpbmUgQUQyUzkwX01BWF9TUElfU0FGRV9GUkVRX0haICA4MzAwMDANCj4gPiANCj4g
-PiAgICAgICAgaWYgKHNwaS0+bWF4X3NwZWVkX2h6ID4gQUQyUzkwX01BWF9TUElfU0FGRV9GUkVR
-X0haKQ0KPiA+ICAgICAgICAgICAgICAgICBkZXZfd2Fybigmc3BpLT5kZXYsICJTUEkgQ0xLLCAl
-ZCBIeiA+IDAuODMgTUh6LCBkZXZpY2UNCj4gPiBtYXkNCj4gPiBub3Qgb3BlcmF0ZSBjb3JyZWN0
-bHlcbiIsDQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgc3BpLT5tYXhfc3BlZWRfaHopOw0K
-PiA+IA0KPiA+IA0KPiA+IEknbSBub3Qgc3VyZSB3aGF0IHdvdWxkIGJlIHJlY29tbWVuZGVkIGhl
-cmUuIE1heWJlIHNvbWVvbmUgZWxzZSBoYXMgYQ0KPiA+IHN0cm9uZ2VyIG9waW5pb24gYWJvdXQg
-dGhpcy4NCj4gPiANCj4gDQo+IEdvdCBpdC4gTWF5YmUgd2UgY291bGQgam9pbiBib3RoLCBhZGRp
-bmcgdGhlIGVycm9yIGZvciBmcmVxID4gMk1oeiBhbmQNCj4gdGhlIHdhcm5pbmcgZm9yIGZyZXEg
-PiAwLjgzIE1oej8gQW55d2F5LCBtb3JlIG9waW5pb25zIG9uIHRoaXMgd291bGQNCj4gYmUgbmlj
-ZSwgYXMgeW91IHNhaWQuDQo+IA0KPiBUaGFua3MgZm9yIGFsbCB0aGUgZmVlZGJhY2suDQo+IE1h
-dGhldXMNCj4gDQo+ID4gVGhhbmtzDQo+ID4gQWxleA0KPiA+IA0KPiA+ID4gVGhhbmtzLA0KPiA+
-ID4gTWF0aGV1cy4NCj4gPiA+IA0KPiA+ID4gWzFdDQo+ID4gPiANCmh0dHBzOi8vd3d3LmFuYWxv
-Zy5jb20vbWVkaWEvZW4vdGVjaG5pY2FsLWRvY3VtZW50YXRpb24vZGF0YS1zaGVldHMvQUQyUzkw
-LnBkZg0KPiA+ID4gDQo+IA0KPiANCg==
+On Tue, Nov 6, 2018 at 10:34 AM Ardelean, Alexandru
+<alexandru.Ardelean@analog.com> wrote:
+>
+> On Mon, 2018-11-05 at 23:11 -0200, Matheus Tavares Bernardino wrote:
+> > Hello everyone,
+> >
+>
+> Hey,
+>
+> > While working on the ad2s90 driver, I had a question about the maximum
+> > frequency set. Any feedback will be much appreciated.
+> >
+>
+> Just a note/reminder for you: that driver looks pretty old and [since it's
+> staging as well] you should also consider that it's likely that some [good]
+> practices were not yet existing at the time [about how to do things].
+>
+> > The ad2s90 driver sets its maximum speed to 830000hz (or 0.83Mhz), but
+> > the datasheet [1] specifies a maximum of 2Mhz. Above the max_speed_hz
+> > setup, there's a commentary saying  "need 600ns between CS and the
+> > first falling edge of SCLK", which is also said in the datasheet.
+> >
+> > Is max_speed_hz set to 0.83Mhz, not 2Mhz, due to the required minimum
+> > delay of 600ns, somehow? If not:
+> >   1) is 0.83Mhz really correct? and
+> >   2) is the minimum delay of 600ns being respected?
+> >
+>
+> The 0.83 Mhz limitation looks very much like it was added to satisfy the
+> 600 ns limitation. I quickly did the computation and it roughly ends up
+> being 0.83 Mhz for 600 ns. (i.e. (1 / 0,000600) / 2 = half a period )
+>
+> That limitation (for the delay CS and the first data) is imposed by the
+> datasheet ; while the chip could operate at a lower delay (and subsequently
+> higher frequency up to 2 Mhz), it's safer to keep it somehow implemented.
+>
+> I took a look in the SPI code and it doesn't look like it implements some
+> sort of delay between CS and first data being read. I may have missed stuff
+> though.
+>
+> In any case, I do suggest removing all those 4 lines for the SPI setup
+> code.
+> i.e.
+>
+>         /* need 600ns between CS and the first falling edge of SCLK */
+>         spi->max_speed_hz = 830000;
+>         spi->mode = SPI_MODE_3;
+>         spi_setup(spi);
+>
+> This should be handled via device-tree.
+>
+> Instead, what could be done in the ad2s90_probe() function, is to add
+> (early in the code) a check for the max frequency.
+>
+> Something like:
+>
+> #define AD2S90_MAX_SPI_FREQ_HZ  2000000
+>
+>        if (spi->max_speed_hz > AD2S90_MAX_SPI_FREQ_HZ) {
+>                 dev_err(&spi->dev, "SPI CLK, %d Hz exceeds 2 MHz\n",
+>                         spi->max_speed_hz);
+>                 return -EINVAL;
+>         }
+>
+> Or, you could make AD2S90_MAX_SPI_FREQ_HZ = 830000
+>
+> Or, you could just print a warning for > 830000.
+> Something like:
+>
+> #define AD2S90_MAX_SPI_SAFE_FREQ_HZ  830000
+>
+>        if (spi->max_speed_hz > AD2S90_MAX_SPI_SAFE_FREQ_HZ)
+>                 dev_warn(&spi->dev, "SPI CLK, %d Hz > 0.83 MHz, device may
+> not operate correctly\n",
+>                         spi->max_speed_hz);
+>
+
+I'm adding these suggestions in a patch set, but I don't really know
+what's the right way of crediting the authorship in this case. Should
+I set you as the author and add my S-o-B?
+
+Thanks
+Matheus
+
+>
+> I'm not sure what would be recommended here. Maybe someone else has a
+> stronger opinion about this.
+>
+> Thanks
+> Alex
+>
+> > Thanks,
+> > Matheus.
+> >
+> > [1]
+> > https://www.analog.com/media/en/technical-documentation/data-sheets/AD2S90.pdf
+> >
