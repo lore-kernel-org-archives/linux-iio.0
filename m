@@ -1,47 +1,63 @@
-Return-Path: <SRS0=8Yro=NS=axentia.se=peda@kernel.org>
-From: Peter Rosin <peda@axentia.se>
-To: Chris Coffey <cmc@babblebit.net>, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter
- Meerwald-Stadler <pmeerw@pmeerw.net>
-CC: Slawomir Stepien <sst@poczta.fm>, Rob Herring <robh+dt@kernel.org>, Mark
- Rutland <mark.rutland@arm.com>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "devicetree@vger.kernel.org"
-	<devicetree@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.babblebit.net ([37.139.8.208]:38256 "EHLO
+        mail.babblebit.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726097AbeKGSyh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 7 Nov 2018 13:54:37 -0500
+Date: Wed, 7 Nov 2018 09:25:04 +0000
+From: Chris Coffey <cmc@babblebit.net>
+To: Peter Rosin <peda@axentia.se>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Slawomir Stepien <sst@poczta.fm>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 Subject: Re: [PATCH] iio: potentiometer: Add driver for Microchip
  MCP41xxx/42xxx
-Date: Tue, 6 Nov 2018 20:08:15 +0000
-Message-ID: <afc9d11f-b4bf-fe74-bb9d-417c6f29ea9a@axentia.se>
+Message-ID: <20181107092503.z3tdakbsckj2nwns@deb-660>
 References: <20181106113130.9612-1-cmc@babblebit.net>
  <6f3ead94-b1ed-900d-b675-3822d67dbfd7@axentia.se>
-In-Reply-To: <6f3ead94-b1ed-900d-b675-3822d67dbfd7@axentia.se>
-Content-Type: text/plain; charset="utf-8"
+ <afc9d11f-b4bf-fe74-bb9d-417c6f29ea9a@axentia.se>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <afc9d11f-b4bf-fe74-bb9d-417c6f29ea9a@axentia.se>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-T24gMjAxOC0xMS0wNiAxNzozNywgUGV0ZXIgUm9zaW4gd3JvdGU6DQo+IEhpIQ0KPiANCj4gU29t
-ZSBjb21tZW50cyBpbmxpbmUuLi4NCj4gDQo+PiArDQo+PiArc3RhdGljIGludCBtY3A0MTAxMF93
-cml0ZV9yYXcoc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiwNCj4+ICsJCQkgICAgIHN0cnVjdCBp
-aW9fY2hhbl9zcGVjIGNvbnN0ICpjaGFuLA0KPj4gKwkJCSAgICAgaW50IHZhbCwgaW50IHZhbDIs
-IGxvbmcgbWFzaykNCj4+ICt7DQo+PiArCWludCBlcnI7DQo+PiArCXN0cnVjdCBtY3A0MTAxMF9k
-YXRhICpkYXRhID0gaWlvX3ByaXYoaW5kaW9fZGV2KTsNCj4+ICsJaW50IGNoYW5uZWwgPSBjaGFu
-LT5jaGFubmVsOw0KPj4gKw0KPj4gKwlzd2l0Y2ggKG1hc2spIHsNCj4+ICsJY2FzZSBJSU9fQ0hB
-Tl9JTkZPX1JBVzoNCj4+ICsJCWlmICh2YWwgPiBNQ1A0MTAxMF9XSVBFUl9NQVggfHwgdmFsIDwg
-MCkNCj4+ICsJCQlyZXR1cm4gLUVJTlZBTDsNCj4+ICsJCWJyZWFrOw0KPj4gKw0KPj4gKwlkZWZh
-dWx0Og0KPj4gKwkJcmV0dXJuIC1FSU5WQUw7DQo+PiArCX0NCj4+ICsNCj4+ICsJbXV0ZXhfbG9j
-aygmZGF0YS0+bG9jayk7DQo+PiArDQo+PiArCWRhdGEtPmJ1ZlswXSA9IE1DUDQxMDEwX1dJUEVS
-X0VOQUJMRSA8PCBjaGFubmVsOw0KPj4gKwlkYXRhLT5idWZbMF0gfD0gTUNQNDEwMTBfV1JJVEU7
-DQo+IA0KPiBXaWxsIHRoaXMgbm90IGNsb2JiZXIgdGhlIG90aGVyIGNoYW5uZWwgZm9yIG1jcDQy
-eHh4IGNoaXBzPz8/DQoNCg0KSSBoYWQgYSBwZWFrIGluIHRoZSBkYXRhc2hlZXQsIGFuZCBubywg
-aXQgd2lsbCBub3QuIEl0IHdhcyBqdXN0IHRoZSBuYW1pbmcNCndpdGggLi4uX1dJUEVSX0VOQUJM
-RSB0aGF0IHRocmV3IG1lIG9mZi4gSXQgYXNzdW1lZCwgZnJvbSB0aGUgbmFtaW5nLCB0aGF0DQpl
-YWNoIGNoYW5uZWwgaGFzIGEgc2VwYXJhdGUgZW5hYmxlIGJpdCBpbiB0aGUgY29tbWFuZCBieXRl
-IGFuZCB0aGF0IHlvdQ0Kd2VyZSByZXF1aXJlZCB0byBrZWVwIHRoZSBzdGF0ZSBvZiB0aG9zZSBp
-bnRhY3QgZm9yIGVhY2ggYW5kIGV2ZXJ5IGNvbW1hbmQNCnlvdSBzZW50LiBBZnRlciBsb29raW5n
-IGF0IHRoZSBkYXRhc2hlZXQsIHRoYXQgaXMgb2J2aW91c2x5IG5vdCB0aGUgY2FzZSwNCmFuZCB0
-aGUgY29kZSBpcyBmaW5lLiBCdXQgbWF5IEkgYXNrIGZvciBhIGNoYW5nZSBpbiBuYW1pbmcgaGVy
-ZT8NCg0KTUNQNDEwMTBfV0lQRVJfQ0hBTk5FTCBpbnN0ZWFkIG9mIE1DUDQxMDEwX1dJUEVSX0VO
-QUJMRSBwZXJoYXBzPw0KDQpDaGVlcnMsDQpQZXRlcg0KDQo+IA0KPj4gKwlkYXRhLT5idWZbMV0g
-PSB2YWwgJiAweGZmOw0KPj4gKw0KPj4gKwllcnIgPSBzcGlfd3JpdGUoZGF0YS0+c3BpLCBkYXRh
-LT5idWYsIDIpOw0KPj4gKwlpZiAoIWVycikNCj4+ICsJCWRhdGEtPnZhbHVlW2NoYW5uZWxdID0g
-dmFsOw0KPj4gKw0KPj4gKwltdXRleF91bmxvY2soJmRhdGEtPmxvY2spOw0KPj4gKw0KPj4gKwly
-ZXR1cm4gZXJyOw0KPj4gK30NCg==
+On Tue, Nov 06, 2018 at 08:08:15PM +0000, Peter Rosin wrote:
+> On 2018-11-06 17:37, Peter Rosin wrote:
+> > Hi!
+> > 
+> > Some comments inline...
+> > 
+
+[snip]
+
+> >> +
+> >> +	data->buf[0] = MCP41010_WIPER_ENABLE << channel;
+> >> +	data->buf[0] |= MCP41010_WRITE;
+> > 
+> > Will this not clobber the other channel for mcp42xxx chips???
+> 
+> 
+> I had a peak in the datasheet, and no, it will not. It was just the naming
+> with ..._WIPER_ENABLE that threw me off. It assumed, from the naming, that
+> each channel has a separate enable bit in the command byte and that you
+> were required to keep the state of those intact for each and every command
+> you sent. After looking at the datasheet, that is obviously not the case,
+> and the code is fine. But may I ask for a change in naming here?
+> 
+> MCP41010_WIPER_CHANNEL instead of MCP41010_WIPER_ENABLE perhaps?
+> 
+> Cheers,
+> Peter
+> 
+
+I agree -- my naming for this is indeed ambiguous/confusing. I'll
+change it for v2.
+
+Thanks again,
+Chris
