@@ -1,34 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qk1-f171.google.com ([209.85.222.171]:46399 "EHLO
-        mail-qk1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726932AbeKFEUU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 5 Nov 2018 23:20:20 -0500
-Received: by mail-qk1-f171.google.com with SMTP id q1so16645799qkf.13
-        for <linux-iio@vger.kernel.org>; Mon, 05 Nov 2018 10:59:17 -0800 (PST)
-Date: Mon, 5 Nov 2018 16:59:11 -0200
-From: Lucas Santos <ilucas.ms@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: kernel-usp@googlegroups.com
-Subject: Work plan on ad5933
-Message-ID: <20181105185911.g5324s46ixlgbvxj@smtp.gmail.com>
+Received: from mail-eopbgr680049.outbound.protection.outlook.com ([40.107.68.49]:54272
+        "EHLO NAM04-BN3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726411AbeKGXKT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 7 Nov 2018 18:10:19 -0500
+From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+To: "ilucas.ms@gmail.com" <ilucas.ms@gmail.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+CC: "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>
+Subject: Re: Work plan on ad5933
+Date: Wed, 7 Nov 2018 13:39:48 +0000
+Message-ID: <09719f42c739655736a0d7ca6c07c74db0246b67.camel@analog.com>
+References: <20181105185911.g5324s46ixlgbvxj@smtp.gmail.com>
+In-Reply-To: <20181105185911.g5324s46ixlgbvxj@smtp.gmail.com>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello,
-
-I'm looking at the code of impedaance-analyzer/ad5933, trying to understand
-what is needed to move it to the main tree. I am part of a study group and we
-are willing to work on it.
-
-We do not understand all the necessary steps yet, but we have some guests. I'd
-like to ask if we are on the right track. All feedback will be much
-appreciated.
-
-We understand that we should refactor the way the driver is designed. We think
-we should removed the delayed work pattern (events queue) and use IRQ pattern
-instead. Is that correct? Do we need to do any additional work?
-
-Best regards,
-Lucas
+T24gTW9uLCAyMDE4LTExLTA1IGF0IDE2OjU5IC0wMjAwLCBMdWNhcyBTYW50b3Mgd3JvdGU6DQo+
+IEhlbGxvLA0KPiANCg0KSGV5LA0KDQpTb3JyeSBmb3IgdGhlIGxhdGUgcmVwbHkuDQpJIGRlZmVy
+cmVkIGFuc3dlcmluZyB5b3VyIGVtYWlsLCBhbmQgbmVhcmx5IGZvcmdvdC4NCg0KDQo+IEknbSBs
+b29raW5nIGF0IHRoZSBjb2RlIG9mIGltcGVkYWFuY2UtYW5hbHl6ZXIvYWQ1OTMzLCB0cnlpbmcg
+dG8NCj4gdW5kZXJzdGFuZA0KPiB3aGF0IGlzIG5lZWRlZCB0byBtb3ZlIGl0IHRvIHRoZSBtYWlu
+IHRyZWUuIEkgYW0gcGFydCBvZiBhIHN0dWR5IGdyb3VwDQo+IGFuZCB3ZQ0KPiBhcmUgd2lsbGlu
+ZyB0byB3b3JrIG9uIGl0Lg0KDQpDb29sIDopDQpUaGFua3MNCg0KPiANCj4gV2UgZG8gbm90IHVu
+ZGVyc3RhbmQgYWxsIHRoZSBuZWNlc3Nhcnkgc3RlcHMgeWV0LCBidXQgd2UgaGF2ZSBzb21lDQo+
+IGd1ZXN0cy4gSSdkDQo+IGxpa2UgdG8gYXNrIGlmIHdlIGFyZSBvbiB0aGUgcmlnaHQgdHJhY2su
+IEFsbCBmZWVkYmFjayB3aWxsIGJlIG11Y2gNCj4gYXBwcmVjaWF0ZWQuDQo+IA0KPiBXZSB1bmRl
+cnN0YW5kIHRoYXQgd2Ugc2hvdWxkIHJlZmFjdG9yIHRoZSB3YXkgdGhlIGRyaXZlciBpcyBkZXNp
+Z25lZC4gV2UNCj4gdGhpbmsNCj4gd2Ugc2hvdWxkIHJlbW92ZWQgdGhlIGRlbGF5ZWQgd29yayBw
+YXR0ZXJuIChldmVudHMgcXVldWUpIGFuZCB1c2UgSVJRDQo+IHBhdHRlcm4NCj4gaW5zdGVhZC4g
+SXMgdGhhdCBjb3JyZWN0PyBEbyB3ZSBuZWVkIHRvIGRvIGFueSBhZGRpdGlvbmFsIHdvcms/DQo+
+IA0KDQpJIGRvbid0IHRoaW5rIHRoZSBkcml2ZXIgbmVlZHMgYSByZS1kZXNpZ24gZnJvbSB0aGF0
+IHBlcnNwZWN0aXZlIChpLmUuDQpkZWxheWVkLXdvcmsgdG8gSVJRKTsgZXNwZWNpYWxseSwgc2lu
+Y2UgdGhlcmUgZG9lc24ndCBzZWVtIHRvIGJlIGFueSBwaW5zDQp0aGF0IGNhbiBiZSB1c2VkIHRv
+IHRyaWdnZXIgYW55IGludGVycnVwdHMuDQpJIGNvdWxkIGJlIHdyb25nIGFib3V0IHRoaXMsIGJ1
+dCB0aGF0J3MgbXkgY3VycmVudCB1bmRlcnN0YW5kaW5nIGZyb20gdGhlDQpkYXRhc2hlZXQuDQoN
+ClRoZSBkcml2ZXIgZG9lcyBuZWVkIHNvbWUgd29yayB0byBnZXQgb3V0IG9mIHN0YWdpbmcuDQoN
+CkZpcnN0ICYgZm9yZW1vc3Q6IGZpbmFsaXplIGRldmljZS10cmVlIHN1cHBvcnQgOyBhbmQgbWF5
+YmUgcmVtb3ZlIHRoZQ0KYGFkNTkzM19wbGF0Zm9ybV9kYXRhYCBhbHRvZ2V0aGVyLiBJIGFsc28g
+d2FudGVkIHRvIGRvIHRoaXMsIGJ1dCBKb25hdGhhbg0KbWFkZSBzb21lIGdvb2QgcG9pbnRzIGFi
+b3V0IG15IHBhdGNoZXMgYW5kIEkgZGlkIG5vdCBoYXZlIHRpbWUgdG8gcmUtc3Bpbi4NCkJhc2lj
+YWxseSB3aGF0IG5lZWRzIHRvIGJlIGRvbmUgaXMgdG8gcmVwbGFjZSB0aGUgdnJlZl9tdiB3aXRo
+IHVzaW5nIGENCnJlZ3VsYXRvciBhbmQgZXh0X2Nsa19IeiB1c2luZyBhIGNsb2NrIGZyYW1ld29y
+ay4NCg0KVGhlbiwgbWF5YmUgYWRkIGEgYG9mX2RldmljZV9pZGAgL2BvZl9tYXRjaF90YWJsZWAu
+DQoNCkNoZWNrIGlmIHRoZSBkcml2ZXIgaXMgcHJvcGVybHkgYWRhcHRlZCBmb3IgYm90aCBhZDU5
+MzMgYW5kIGFkNTkzNCAoc2luY2UNCml0IHN1cHBvcnRzIGJvdGgpIDsgaXQgY291bGQgYmUgdGhh
+dCB0aGVyZSBhcmUgc29tZSBkaWZmZXJlbmNlcyBiZXR3ZWVuIHRoZQ0KMiBjaGlwcyB0aGF0IG5l
+ZWQgdG8gYmUgdXBkYXRlZCBpbiB0aGUgZHJpdmVyIChJIGRpZG4ndCBsb29rIHlldCkuDQoNCllv
+dSBjb3VsZCB0YWtlIGEgbG9vayBhdCB1c2luZyB0aGUgcmVnbWFwIEkyQyBzdHVmZiB0aGF0J3Mg
+aW4gdGhlIGtlcm5lbC4NCkknbSBub3Qgc3VyZSBpZiB0aGlzIG1ha2VzIHNlbnNlIHRvIHVzZS9j
+aGFuZ2UgaW4gdGhpcyBkcml2ZXIsIGJ1dCBpdCBtYXkNCm1ha2Ugc2Vuc2UgdG8gaW52ZXN0aWdh
+dGUgdGhpcywgYW5kIGlmIHRoZSBvdmVyYWxsIGJlbmVmaXRzIGFyZSBvYnZpb3VzLA0KdGhpcyBj
+b3VsZCBnbyBpbi4gU2luY2UgaXQgaXMgaW52ZXN0aWdhdGlvbiB3b3JrLCB5b3UgY291bGQgYmUg
+ZXhwZWN0ZWQNCnRoYXQgdGhlIHdvcmsgZG9lc24ndCBnZXQgaW5jbHVkZWQgaW4gdGhlIGtlcm5l
+bC4NCg0KRGVmaW5pdGVseSBkbyBzb21lIHRlc3Rpbmcgb2Ygc29tZSBvZiB0aGUgZXhpc3Rpbmcg
+c3R1ZmY7IHdlIGRpZCBmaW5kIHNvbWUNCmJ1Z3MgaW4gYSBmZXcgb2Ygb3VyIG9sZCBkcml2ZXJz
+IChtaXNtYXRjaGVkIHJlZyB2YWx1ZXMsIG9yIGJpdCBmaWVsZHMsDQplcnJvbm91cyBzZXF1ZW5j
+ZXMsIHN0dWZmIGxpa2UgdGhhdCkuDQoNCkkgdGhpbmsgdGhlIG1haW4gdGhpbmcgdG8gZ2V0IHRo
+aXMgZHJpdmVyIG91dCBvZiBzdGFnaW5nIChhdCB0aGUgbW9tZW50KSBpcw0KanVzdCB0aGUgZGV2
+aWNlLXRyZWUgc3VwcG9ydC4NCg0KSSdsbCBhc2sgYXJvdW5kIChpbiBvdXIgb2ZmaWNlKSB0byBz
+ZWUgaWYgYW55b25lIGVsc2UgaGFzIG90aGVyIHRob3VnaHRzIG9uDQp0aGlzIGRyaXZlciwgYnV0
+IEkgdGhpbmsgdGhpcyB3b3VsZCBiZSBtb3N0bHkgaXQuDQoNClRoYW5rcw0KQWxleA0KDQo+IEJl
+c3QgcmVnYXJkcywNCj4gTHVjYXMNCj4gDQo=
