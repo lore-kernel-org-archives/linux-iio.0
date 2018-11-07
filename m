@@ -1,77 +1,115 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-eopbgr740053.outbound.protection.outlook.com ([40.107.74.53]:14574
-        "EHLO NAM01-BN3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726225AbeKGTp4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 7 Nov 2018 14:45:56 -0500
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "lars@metafoo.de" <lars@metafoo.de>,
-        "sst@poczta.fm" <sst@poczta.fm>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Return-Path: <SRS0=3hpd=NS=poczta.fm=sst@kernel.org>
+Date: Wed, 7 Nov 2018 23:39:35 +0100
+From: Slawomir Stepien <sst@poczta.fm>
+To: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+Cc: "lars@metafoo.de" <lars@metafoo.de>,
+	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
+	"jic23@kernel.org" <jic23@kernel.org>,
+	"knaack.h@gmx.de" <knaack.h@gmx.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
 Subject: Re: [PATCH v2] staging: iio: adc: ad7280a: do not pass the copy of
  struct element
-Date: Wed, 7 Nov 2018 10:16:09 +0000
-Message-ID: <82f74f8b82df3faf44e46b19f03654b173d0fbf1.camel@analog.com>
+Message-ID: <20181107223935.GA25135@x220.localdomain>
 References: <20181106214308.10619-1-sst@poczta.fm>
-In-Reply-To: <20181106214308.10619-1-sst@poczta.fm>
-Content-Type: text/plain; charset="utf-8"
+ <82f74f8b82df3faf44e46b19f03654b173d0fbf1.camel@analog.com>
 MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <82f74f8b82df3faf44e46b19f03654b173d0fbf1.camel@analog.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-T24gVHVlLCAyMDE4LTExLTA2IGF0IDIyOjQzICswMTAwLCBTbGF3b21pciBTdGVwaWVuIHdyb3Rl
-Og0KPiBUaGVyZSBpcyBubyBuZWVkIHRvIHBhc3MgdGhpcyBwYXJhbWV0ZXIgc2luY2UgaXMgYWx3
-YXlzIGEgY29weSBvZg0KPiBwYXJhbWV0ZXIgdGhhdCBpcyBhdmFpbGFibGUgdmlhIHN0IHBvaW50
-ZXIuDQo+IA0KDQpIZXksDQoNCkNvbW1lbnRzIGlubGluZS4NCg0KVGhhbmtzDQpBbGV4DQoNCj4g
-U2lnbmVkLW9mZi1ieTogU2xhd29taXIgU3RlcGllbiA8c3N0QHBvY3p0YS5mbT4NCj4gLS0tDQo+
-IE5vdGU6IHRoaXMgaGFzIGJlZW4gcmViYXNlZCBvbiBrZXJuZWwvZ2l0L2ppYzIzL2lpby5naXQg
-dGVzdGluZyBicmFuY2guIEkNCj4gaG9wZQ0KPiAgICAgICB0aGF0J3MgT0shDQo+IA0KPiBDaGFu
-Z2VzIHNpbmNlIHYxOg0KPiAqIENoYW5nZSBteSBlbWFpbCBhZGRyZXNzDQo+IC0tLQ0KPiAgZHJp
-dmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3MjgwYS5jIHwgOCArKysrLS0tLQ0KPiAgMSBmaWxlIGNo
-YW5nZWQsIDQgaW5zZXJ0aW9ucygrKSwgNCBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1naXQg
-YS9kcml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9hZDcyODBhLmMNCj4gYi9kcml2ZXJzL3N0YWdpbmcv
-aWlvL2FkYy9hZDcyODBhLmMNCj4gaW5kZXggODljMmMyZGVjYTY0Li5mYzYyMzdkZGI0NjAgMTAw
-NjQ0DQo+IC0tLSBhL2RyaXZlcnMvc3RhZ2luZy9paW8vYWRjL2FkNzI4MGEuYw0KPiArKysgYi9k
-cml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9hZDcyODBhLmMNCj4gQEAgLTI5MSw3ICsyOTEsNyBAQCBz
-dGF0aWMgaW50IGFkNzI4MF9yZWFkX2NoYW5uZWwoc3RydWN0IGFkNzI4MF9zdGF0ZQ0KPiAqc3Qs
-IHVuc2lnbmVkIGludCBkZXZhZGRyLA0KPiAgCXJldHVybiAodG1wID4+IDExKSAmIDB4RkZGOw0K
-PiAgfQ0KPiAgDQo+IC1zdGF0aWMgaW50IGFkNzI4MF9yZWFkX2FsbF9jaGFubmVscyhzdHJ1Y3Qg
-YWQ3MjgwX3N0YXRlICpzdCwgdW5zaWduZWQNCj4gaW50IGNudCwNCj4gK3N0YXRpYyBpbnQgYWQ3
-MjgwX3JlYWRfYWxsX2NoYW5uZWxzKHN0cnVjdCBhZDcyODBfc3RhdGUgKnN0LA0KPiAgCQkJCSAg
-ICB1bnNpZ25lZCBpbnQgKmFycmF5KQ0KPiAgew0KDQpbR2VuZXJhbGx5IHNwZWFraW5nXSBXaGVu
-IHBhc3NpbmcgYW4gYXJyYXkgb2YgZWxlbWVudHMgdG8gYSBmdW5jdGlvbiBpbiBDLA0KaXQncyBh
-IGdvb2QgaWRlYSB0byBhbHNvIHBhc3MgdGhlIGNvdW50IG9mIGVsZW1lbnRzLCBzbyB0aGF0IHlv
-dSBrbm93IGhvdw0KbWFueSBlbGVtZW50cyB0byBpdGVyYXRlIG92ZXIuDQpTbywgdGhpcyBjb2Rl
-IHNob3VsZCBiZSBmaW5lIGFzLWlzLg0KDQpJIGFncmVlIHRoYXQgdGhlIGVsZW1lbnQgY291bnQg
-aXMgc3RvcmVkIG9uIGBzdGAsIGJ1dCBoYXZpbmcgYGNudGAgYXMgYQ0KcGFyYW1ldGVyIG9uIHRo
-ZSBhZDcyODBfcmVhZF9hbGxfY2hhbm5lbHMoKSBmdW5jdGlvbiBrZWVwcyBpdCBuZWF0bHkNCmNv
-dXBsZWQgd2l0aCBgYXJyYXlgIGFuZCBnaXZlcyB5b3UgdGhlIGZsZXhpYmlsaXR5IHRvIHJlYWQg
-bGVzcyB0aGFuIGBjbnRgDQpjaGFubmVscy4NCg0KSSBkb24ndCBmZWVsIHRoaXMgY2hhbmdlIChl
-dmVuIHRob3VnaCBjb3JyZWN0KSBpcyByZWFsbHkgd29ydGggdGhlIHRyb3VibGUsDQpzaW5jZSBp
-dCBkb2Vzbid0IHJlYWxseSBhZGQgbXVjaCB2YWx1ZSB0byB0aGUgZXhpc3RpbmcgY29kZS4NCg0K
-DQpCdXQgaWYgdGhlcmUgYXJlIGFueSBvcGluaW9ucyBvdGhlcndpc2UsIEkgZG9uJ3QgZmVlbCBy
-ZWFsbHkgc3Ryb25nbHkgYWJvdXQNCmRvaW5nIGl0IG9uZSB3YXkgKGJlZm9yZSB0aGlzIHBhdGNo
-KSBvciB0aGUgb3RoZXIgKHdpdGggdGhpcyBwYXRjaCkuDQoNCj4gIAlpbnQgaSwgcmV0Ow0KPiBA
-QCAtMzEyLDcgKzMxMiw3IEBAIHN0YXRpYyBpbnQgYWQ3MjgwX3JlYWRfYWxsX2NoYW5uZWxzKHN0
-cnVjdA0KPiBhZDcyODBfc3RhdGUgKnN0LCB1bnNpZ25lZCBpbnQgY250LA0KPiAgDQo+ICAJYWQ3
-MjgwX2RlbGF5KHN0KTsNCj4gIA0KPiAtCWZvciAoaSA9IDA7IGkgPCBjbnQ7IGkrKykgew0KPiAr
-CWZvciAoaSA9IDA7IGkgPCBzdC0+c2Nhbl9jbnQ7IGkrKykgew0KPiAgCQlyZXQgPSBfX2FkNzI4
-MF9yZWFkMzIoc3QsICZ0bXApOw0KPiAgCQlpZiAocmV0KQ0KPiAgCQkJcmV0dXJuIHJldDsNCj4g
-QEAgLTY4Nyw3ICs2ODcsNyBAQCBzdGF0aWMgaXJxcmV0dXJuX3QgYWQ3MjgwX2V2ZW50X2hhbmRs
-ZXIoaW50IGlycSwgdm9pZA0KPiAqcHJpdmF0ZSkNCj4gIAlpZiAoIWNoYW5uZWxzKQ0KPiAgCQly
-ZXR1cm4gSVJRX0hBTkRMRUQ7DQo+ICANCj4gLQlyZXQgPSBhZDcyODBfcmVhZF9hbGxfY2hhbm5l
-bHMoc3QsIHN0LT5zY2FuX2NudCwgY2hhbm5lbHMpOw0KPiArCXJldCA9IGFkNzI4MF9yZWFkX2Fs
-bF9jaGFubmVscyhzdCwgY2hhbm5lbHMpOw0KPiAgCWlmIChyZXQgPCAwKQ0KPiAgCQlnb3RvIG91
-dDsNCj4gIA0KPiBAQCAtNzkxLDcgKzc5MSw3IEBAIHN0YXRpYyBpbnQgYWQ3MjgwX3JlYWRfcmF3
-KHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYsDQo+ICAJY2FzZSBJSU9fQ0hBTl9JTkZPX1JBVzoN
-Cj4gIAkJbXV0ZXhfbG9jaygmc3QtPmxvY2spOw0KPiAgCQlpZiAoY2hhbi0+YWRkcmVzcyA9PSBB
-RDcyODBBX0FMTF9DRUxMUykNCj4gLQkJCXJldCA9IGFkNzI4MF9yZWFkX2FsbF9jaGFubmVscyhz
-dCwgc3QtPnNjYW5fY250LA0KPiBOVUxMKTsNCj4gKwkJCXJldCA9IGFkNzI4MF9yZWFkX2FsbF9j
-aGFubmVscyhzdCwgTlVMTCk7DQo+ICAJCWVsc2UNCj4gIAkJCXJldCA9IGFkNzI4MF9yZWFkX2No
-YW5uZWwoc3QsIGNoYW4tPmFkZHJlc3MgPj4gOCwNCj4gIAkJCQkJCSAgY2hhbi0+YWRkcmVzcyAm
-IDB4RkYpOw0K
+On lis 07, 2018 10:16, Ardelean, Alexandru wrote:
+> On Tue, 2018-11-06 at 22:43 +0100, Slawomir Stepien wrote:
+> > There is no need to pass this parameter since is always a copy of
+> > parameter that is available via st pointer.
+> > 
+> 
+> Hey,
+> 
+> Comments inline.
+> 
+> Thanks
+> Alex
+> 
+> > Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+> > ---
+> > Note: this has been rebased on kernel/git/jic23/iio.git testing branch. I
+> > hope
+> >       that's OK!
+> > 
+> > Changes since v1:
+> > * Change my email address
+> > ---
+> >  drivers/staging/iio/adc/ad7280a.c | 8 ++++----
+> >  1 file changed, 4 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/staging/iio/adc/ad7280a.c
+> > b/drivers/staging/iio/adc/ad7280a.c
+> > index 89c2c2deca64..fc6237ddb460 100644
+> > --- a/drivers/staging/iio/adc/ad7280a.c
+> > +++ b/drivers/staging/iio/adc/ad7280a.c
+> > @@ -291,7 +291,7 @@ static int ad7280_read_channel(struct ad7280_state
+> > *st, unsigned int devaddr,
+> >  	return (tmp >> 11) & 0xFFF;
+> >  }
+> >  
+> > -static int ad7280_read_all_channels(struct ad7280_state *st, unsigned
+> > int cnt,
+> > +static int ad7280_read_all_channels(struct ad7280_state *st,
+> >  				    unsigned int *array)
+> >  {
+> 
+> [Generally speaking] When passing an array of elements to a function in C,
+> it's a good idea to also pass the count of elements, so that you know how
+> many elements to iterate over.
+> So, this code should be fine as-is.
+> 
+> I agree that the element count is stored on `st`, but having `cnt` as a
+> parameter on the ad7280_read_all_channels() function keeps it neatly
+> coupled with `array` and gives you the flexibility to read less than `cnt`
+> channels.
+> 
+> I don't feel this change (even though correct) is really worth the trouble,
+> since it doesn't really add much value to the existing code.
+
+Yes. You are right here. It's not worth the trouble.
+Thank you for this review Alex.
+
+> But if there are any opinions otherwise, I don't feel really strongly about
+> doing it one way (before this patch) or the other (with this patch).
+> 
+> >  	int i, ret;
+> > @@ -312,7 +312,7 @@ static int ad7280_read_all_channels(struct
+> > ad7280_state *st, unsigned int cnt,
+> >  
+> >  	ad7280_delay(st);
+> >  
+> > -	for (i = 0; i < cnt; i++) {
+> > +	for (i = 0; i < st->scan_cnt; i++) {
+> >  		ret = __ad7280_read32(st, &tmp);
+> >  		if (ret)
+> >  			return ret;
+> > @@ -687,7 +687,7 @@ static irqreturn_t ad7280_event_handler(int irq, void
+> > *private)
+> >  	if (!channels)
+> >  		return IRQ_HANDLED;
+> >  
+> > -	ret = ad7280_read_all_channels(st, st->scan_cnt, channels);
+> > +	ret = ad7280_read_all_channels(st, channels);
+> >  	if (ret < 0)
+> >  		goto out;
+> >  
+> > @@ -791,7 +791,7 @@ static int ad7280_read_raw(struct iio_dev *indio_dev,
+> >  	case IIO_CHAN_INFO_RAW:
+> >  		mutex_lock(&st->lock);
+> >  		if (chan->address == AD7280A_ALL_CELLS)
+> > -			ret = ad7280_read_all_channels(st, st->scan_cnt,
+> > NULL);
+> > +			ret = ad7280_read_all_channels(st, NULL);
+> >  		else
+> >  			ret = ad7280_read_channel(st, chan->address >> 8,
+> >  						  chan->address & 0xFF);
+
+-- 
+Slawomir Stepien
