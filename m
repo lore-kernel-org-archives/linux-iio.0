@@ -1,121 +1,89 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-it1-f180.google.com ([209.85.166.180]:39582 "EHLO
-        mail-it1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727604AbeKHDgz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 7 Nov 2018 22:36:55 -0500
-Received: by mail-it1-f180.google.com with SMTP id m15so24051076itl.4
-        for <linux-iio@vger.kernel.org>; Wed, 07 Nov 2018 10:05:23 -0800 (PST)
-MIME-Version: 1.0
-References: <CAHd-oW68iJ=m2Woz63bVwnK_cCJi2uF2e0_EVur6DHJLRmKw+A@mail.gmail.com>
- <2ed30f2fa4ffc437c5a012831521d1eb6abe259f.camel@analog.com>
-In-Reply-To: <2ed30f2fa4ffc437c5a012831521d1eb6abe259f.camel@analog.com>
-From: Matheus Tavares Bernardino <matheus.bernardino@usp.br>
-Date: Wed, 7 Nov 2018 16:05:11 -0200
-Message-ID: <CAHd-oW79GbM8_-3aAx-ar_qKWZPyidNcjEH1H8Ta6hcT_hf4Ag@mail.gmail.com>
+Return-Path: <alexandru.Ardelean@analog.com>
+From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+To: "matheus.bernardino@usp.br" <matheus.bernardino@usp.br>
+CC: "victorcolombo@gmail.com" <victorcolombo@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "Hennerich, Michael"
+	<Michael.Hennerich@analog.com>, "jic23@jic23.retrosnub.co.uk"
+	<jic23@jic23.retrosnub.co.uk>, "graf.yang@analog.com" <graf.yang@analog.com>,
+	"kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>
 Subject: Re: Question about max frequency in ad2s90
-To: alexandru.Ardelean@analog.com
-Cc: jic23@jic23.retrosnub.co.uk, linux-iio@vger.kernel.org,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        graf.yang@analog.com, Victor Colombo <victorcolombo@gmail.com>,
-        kernel-usp@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Date: Thu, 8 Nov 2018 07:23:05 +0000
+Message-ID: <54460ef53be605486a20f4c8aba5f69681186047.camel@analog.com>
+References: <CAHd-oW68iJ=m2Woz63bVwnK_cCJi2uF2e0_EVur6DHJLRmKw+A@mail.gmail.com>
+	 <2ed30f2fa4ffc437c5a012831521d1eb6abe259f.camel@analog.com>
+	 <CAHd-oW79GbM8_-3aAx-ar_qKWZPyidNcjEH1H8Ta6hcT_hf4Ag@mail.gmail.com>
+In-Reply-To: <CAHd-oW79GbM8_-3aAx-ar_qKWZPyidNcjEH1H8Ta6hcT_hf4Ag@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, Nov 6, 2018 at 10:34 AM Ardelean, Alexandru
-<alexandru.Ardelean@analog.com> wrote:
->
-> On Mon, 2018-11-05 at 23:11 -0200, Matheus Tavares Bernardino wrote:
-> > Hello everyone,
-> >
->
-> Hey,
->
-> > While working on the ad2s90 driver, I had a question about the maximum
-> > frequency set. Any feedback will be much appreciated.
-> >
->
-> Just a note/reminder for you: that driver looks pretty old and [since it's
-> staging as well] you should also consider that it's likely that some [good]
-> practices were not yet existing at the time [about how to do things].
->
-> > The ad2s90 driver sets its maximum speed to 830000hz (or 0.83Mhz), but
-> > the datasheet [1] specifies a maximum of 2Mhz. Above the max_speed_hz
-> > setup, there's a commentary saying  "need 600ns between CS and the
-> > first falling edge of SCLK", which is also said in the datasheet.
-> >
-> > Is max_speed_hz set to 0.83Mhz, not 2Mhz, due to the required minimum
-> > delay of 600ns, somehow? If not:
-> >   1) is 0.83Mhz really correct? and
-> >   2) is the minimum delay of 600ns being respected?
-> >
->
-> The 0.83 Mhz limitation looks very much like it was added to satisfy the
-> 600 ns limitation. I quickly did the computation and it roughly ends up
-> being 0.83 Mhz for 600 ns. (i.e. (1 / 0,000600) / 2 = half a period )
->
-> That limitation (for the delay CS and the first data) is imposed by the
-> datasheet ; while the chip could operate at a lower delay (and subsequently
-> higher frequency up to 2 Mhz), it's safer to keep it somehow implemented.
->
-> I took a look in the SPI code and it doesn't look like it implements some
-> sort of delay between CS and first data being read. I may have missed stuff
-> though.
->
-> In any case, I do suggest removing all those 4 lines for the SPI setup
-> code.
-> i.e.
->
->         /* need 600ns between CS and the first falling edge of SCLK */
->         spi->max_speed_hz = 830000;
->         spi->mode = SPI_MODE_3;
->         spi_setup(spi);
->
-> This should be handled via device-tree.
->
-> Instead, what could be done in the ad2s90_probe() function, is to add
-> (early in the code) a check for the max frequency.
->
-> Something like:
->
-> #define AD2S90_MAX_SPI_FREQ_HZ  2000000
->
->        if (spi->max_speed_hz > AD2S90_MAX_SPI_FREQ_HZ) {
->                 dev_err(&spi->dev, "SPI CLK, %d Hz exceeds 2 MHz\n",
->                         spi->max_speed_hz);
->                 return -EINVAL;
->         }
->
-> Or, you could make AD2S90_MAX_SPI_FREQ_HZ = 830000
->
-> Or, you could just print a warning for > 830000.
-> Something like:
->
-> #define AD2S90_MAX_SPI_SAFE_FREQ_HZ  830000
->
->        if (spi->max_speed_hz > AD2S90_MAX_SPI_SAFE_FREQ_HZ)
->                 dev_warn(&spi->dev, "SPI CLK, %d Hz > 0.83 MHz, device may
-> not operate correctly\n",
->                         spi->max_speed_hz);
->
-
-I'm adding these suggestions in a patch set, but I don't really know
-what's the right way of crediting the authorship in this case. Should
-I set you as the author and add my S-o-B?
-
-Thanks
-Matheus
-
->
-> I'm not sure what would be recommended here. Maybe someone else has a
-> stronger opinion about this.
->
-> Thanks
-> Alex
->
-> > Thanks,
-> > Matheus.
-> >
-> > [1]
-> > https://www.analog.com/media/en/technical-documentation/data-sheets/AD2S90.pdf
-> >
+T24gV2VkLCAyMDE4LTExLTA3IGF0IDE2OjA1IC0wMjAwLCBNYXRoZXVzIFRhdmFyZXMgQmVybmFy
+ZGlubyB3cm90ZToNCj4gT24gVHVlLCBOb3YgNiwgMjAxOCBhdCAxMDozNCBBTSBBcmRlbGVhbiwg
+QWxleGFuZHJ1DQo+IDxhbGV4YW5kcnUuQXJkZWxlYW5AYW5hbG9nLmNvbT4gd3JvdGU6DQo+ID4g
+DQo+ID4gT24gTW9uLCAyMDE4LTExLTA1IGF0IDIzOjExIC0wMjAwLCBNYXRoZXVzIFRhdmFyZXMg
+QmVybmFyZGlubyB3cm90ZToNCj4gPiA+IEhlbGxvIGV2ZXJ5b25lLA0KPiA+ID4gDQo+ID4gDQo+
+ID4gSGV5LA0KPiA+IA0KPiA+ID4gV2hpbGUgd29ya2luZyBvbiB0aGUgYWQyczkwIGRyaXZlciwg
+SSBoYWQgYSBxdWVzdGlvbiBhYm91dCB0aGUNCj4gPiA+IG1heGltdW0NCj4gPiA+IGZyZXF1ZW5j
+eSBzZXQuIEFueSBmZWVkYmFjayB3aWxsIGJlIG11Y2ggYXBwcmVjaWF0ZWQuDQo+ID4gPiANCj4g
+PiANCj4gPiBKdXN0IGEgbm90ZS9yZW1pbmRlciBmb3IgeW91OiB0aGF0IGRyaXZlciBsb29rcyBw
+cmV0dHkgb2xkIGFuZCBbc2luY2UNCj4gPiBpdCdzDQo+ID4gc3RhZ2luZyBhcyB3ZWxsXSB5b3Ug
+c2hvdWxkIGFsc28gY29uc2lkZXIgdGhhdCBpdCdzIGxpa2VseSB0aGF0IHNvbWUNCj4gPiBbZ29v
+ZF0NCj4gPiBwcmFjdGljZXMgd2VyZSBub3QgeWV0IGV4aXN0aW5nIGF0IHRoZSB0aW1lIFthYm91
+dCBob3cgdG8gZG8gdGhpbmdzXS4NCj4gPiANCj4gPiA+IFRoZSBhZDJzOTAgZHJpdmVyIHNldHMg
+aXRzIG1heGltdW0gc3BlZWQgdG8gODMwMDAwaHogKG9yIDAuODNNaHopLA0KPiA+ID4gYnV0DQo+
+ID4gPiB0aGUgZGF0YXNoZWV0IFsxXSBzcGVjaWZpZXMgYSBtYXhpbXVtIG9mIDJNaHouIEFib3Zl
+IHRoZSBtYXhfc3BlZWRfaHoNCj4gPiA+IHNldHVwLCB0aGVyZSdzIGEgY29tbWVudGFyeSBzYXlp
+bmcgICJuZWVkIDYwMG5zIGJldHdlZW4gQ1MgYW5kIHRoZQ0KPiA+ID4gZmlyc3QgZmFsbGluZyBl
+ZGdlIG9mIFNDTEsiLCB3aGljaCBpcyBhbHNvIHNhaWQgaW4gdGhlIGRhdGFzaGVldC4NCj4gPiA+
+IA0KPiA+ID4gSXMgbWF4X3NwZWVkX2h6IHNldCB0byAwLjgzTWh6LCBub3QgMk1oeiwgZHVlIHRv
+IHRoZSByZXF1aXJlZCBtaW5pbXVtDQo+ID4gPiBkZWxheSBvZiA2MDBucywgc29tZWhvdz8gSWYg
+bm90Og0KPiA+ID4gICAxKSBpcyAwLjgzTWh6IHJlYWxseSBjb3JyZWN0PyBhbmQNCj4gPiA+ICAg
+MikgaXMgdGhlIG1pbmltdW0gZGVsYXkgb2YgNjAwbnMgYmVpbmcgcmVzcGVjdGVkPw0KPiA+ID4g
+DQo+ID4gDQo+ID4gVGhlIDAuODMgTWh6IGxpbWl0YXRpb24gbG9va3MgdmVyeSBtdWNoIGxpa2Ug
+aXQgd2FzIGFkZGVkIHRvIHNhdGlzZnkNCj4gPiB0aGUNCj4gPiA2MDAgbnMgbGltaXRhdGlvbi4g
+SSBxdWlja2x5IGRpZCB0aGUgY29tcHV0YXRpb24gYW5kIGl0IHJvdWdobHkgZW5kcyB1cA0KPiA+
+IGJlaW5nIDAuODMgTWh6IGZvciA2MDAgbnMuIChpLmUuICgxIC8gMCwwMDA2MDApIC8gMiA9IGhh
+bGYgYSBwZXJpb2QgKQ0KPiA+IA0KPiA+IFRoYXQgbGltaXRhdGlvbiAoZm9yIHRoZSBkZWxheSBD
+UyBhbmQgdGhlIGZpcnN0IGRhdGEpIGlzIGltcG9zZWQgYnkgdGhlDQo+ID4gZGF0YXNoZWV0IDsg
+d2hpbGUgdGhlIGNoaXAgY291bGQgb3BlcmF0ZSBhdCBhIGxvd2VyIGRlbGF5IChhbmQNCj4gPiBz
+dWJzZXF1ZW50bHkNCj4gPiBoaWdoZXIgZnJlcXVlbmN5IHVwIHRvIDIgTWh6KSwgaXQncyBzYWZl
+ciB0byBrZWVwIGl0IHNvbWVob3cNCj4gPiBpbXBsZW1lbnRlZC4NCj4gPiANCj4gPiBJIHRvb2sg
+YSBsb29rIGluIHRoZSBTUEkgY29kZSBhbmQgaXQgZG9lc24ndCBsb29rIGxpa2UgaXQgaW1wbGVt
+ZW50cw0KPiA+IHNvbWUNCj4gPiBzb3J0IG9mIGRlbGF5IGJldHdlZW4gQ1MgYW5kIGZpcnN0IGRh
+dGEgYmVpbmcgcmVhZC4gSSBtYXkgaGF2ZSBtaXNzZWQNCj4gPiBzdHVmZg0KPiA+IHRob3VnaC4N
+Cj4gPiANCj4gPiBJbiBhbnkgY2FzZSwgSSBkbyBzdWdnZXN0IHJlbW92aW5nIGFsbCB0aG9zZSA0
+IGxpbmVzIGZvciB0aGUgU1BJIHNldHVwDQo+ID4gY29kZS4NCj4gPiBpLmUuDQo+ID4gDQo+ID4g
+ICAgICAgICAvKiBuZWVkIDYwMG5zIGJldHdlZW4gQ1MgYW5kIHRoZSBmaXJzdCBmYWxsaW5nIGVk
+Z2Ugb2YgU0NMSyAqLw0KPiA+ICAgICAgICAgc3BpLT5tYXhfc3BlZWRfaHogPSA4MzAwMDA7DQo+
+ID4gICAgICAgICBzcGktPm1vZGUgPSBTUElfTU9ERV8zOw0KPiA+ICAgICAgICAgc3BpX3NldHVw
+KHNwaSk7DQo+ID4gDQo+ID4gVGhpcyBzaG91bGQgYmUgaGFuZGxlZCB2aWEgZGV2aWNlLXRyZWUu
+DQo+ID4gDQo+ID4gSW5zdGVhZCwgd2hhdCBjb3VsZCBiZSBkb25lIGluIHRoZSBhZDJzOTBfcHJv
+YmUoKSBmdW5jdGlvbiwgaXMgdG8gYWRkDQo+ID4gKGVhcmx5IGluIHRoZSBjb2RlKSBhIGNoZWNr
+IGZvciB0aGUgbWF4IGZyZXF1ZW5jeS4NCj4gPiANCj4gPiBTb21ldGhpbmcgbGlrZToNCj4gPiAN
+Cj4gPiAjZGVmaW5lIEFEMlM5MF9NQVhfU1BJX0ZSRVFfSFogIDIwMDAwMDANCj4gPiANCj4gPiAg
+ICAgICAgaWYgKHNwaS0+bWF4X3NwZWVkX2h6ID4gQUQyUzkwX01BWF9TUElfRlJFUV9IWikgew0K
+PiA+ICAgICAgICAgICAgICAgICBkZXZfZXJyKCZzcGktPmRldiwgIlNQSSBDTEssICVkIEh6IGV4
+Y2VlZHMgMiBNSHpcbiIsDQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgc3BpLT5tYXhfc3Bl
+ZWRfaHopOw0KPiA+ICAgICAgICAgICAgICAgICByZXR1cm4gLUVJTlZBTDsNCj4gPiAgICAgICAg
+IH0NCj4gPiANCj4gPiBPciwgeW91IGNvdWxkIG1ha2UgQUQyUzkwX01BWF9TUElfRlJFUV9IWiA9
+IDgzMDAwMA0KPiA+IA0KPiA+IE9yLCB5b3UgY291bGQganVzdCBwcmludCBhIHdhcm5pbmcgZm9y
+ID4gODMwMDAwLg0KPiA+IFNvbWV0aGluZyBsaWtlOg0KPiA+IA0KPiA+ICNkZWZpbmUgQUQyUzkw
+X01BWF9TUElfU0FGRV9GUkVRX0haICA4MzAwMDANCj4gPiANCj4gPiAgICAgICAgaWYgKHNwaS0+
+bWF4X3NwZWVkX2h6ID4gQUQyUzkwX01BWF9TUElfU0FGRV9GUkVRX0haKQ0KPiA+ICAgICAgICAg
+ICAgICAgICBkZXZfd2Fybigmc3BpLT5kZXYsICJTUEkgQ0xLLCAlZCBIeiA+IDAuODMgTUh6LCBk
+ZXZpY2UNCj4gPiBtYXkNCj4gPiBub3Qgb3BlcmF0ZSBjb3JyZWN0bHlcbiIsDQo+ID4gICAgICAg
+ICAgICAgICAgICAgICAgICAgc3BpLT5tYXhfc3BlZWRfaHopOw0KPiA+IA0KPiANCj4gSSdtIGFk
+ZGluZyB0aGVzZSBzdWdnZXN0aW9ucyBpbiBhIHBhdGNoIHNldCwgYnV0IEkgZG9uJ3QgcmVhbGx5
+IGtub3cNCj4gd2hhdCdzIHRoZSByaWdodCB3YXkgb2YgY3JlZGl0aW5nIHRoZSBhdXRob3JzaGlw
+IGluIHRoaXMgY2FzZS4gU2hvdWxkDQo+IEkgc2V0IHlvdSBhcyB0aGUgYXV0aG9yIGFuZCBhZGQg
+bXkgUy1vLUI/DQoNCkZlZWwgZnJlZSB0byBub3QgaW5jbHVkZSBtZSBpbiB0aGUgcGF0Y2gtc2V0
+IGluIGFueSB3YXkgOikNClRoaXMgZW1haWwgc2hvdWxkIHNlcnZlIGFzIGEgbm90ZS9tZW50aW9u
+IHRoYXQgSSBhbSBmaW5lIHdpdGggdGhpcy4NCg0KV2hhdCBJIHByb3ZpZGVkIHdhcyBtb3JlIG9m
+IGEgQyBwc2V1ZG8tY29kZSA7IHlvdXIgUy1vLUIgaW1wbGllcyB0aGF0IHlvdQ0KZGlkIHRoZSBm
+aW5hbCB3b3JrIGFuZCB0ZXN0aW5nIG9mIHRoZSBwYXRjaC4NCg0KVGhhbmtzDQpBbGV4DQo+IA0K
+PiBUaGFua3MNCj4gTWF0aGV1cw0KPiANCj4gPiANCj4gPiBJJ20gbm90IHN1cmUgd2hhdCB3b3Vs
+ZCBiZSByZWNvbW1lbmRlZCBoZXJlLiBNYXliZSBzb21lb25lIGVsc2UgaGFzIGENCj4gPiBzdHJv
+bmdlciBvcGluaW9uIGFib3V0IHRoaXMuDQo+ID4gDQo+ID4gVGhhbmtzDQo+ID4gQWxleA0KPiA+
+IA0KPiA+ID4gVGhhbmtzLA0KPiA+ID4gTWF0aGV1cy4NCj4gPiA+IA0KPiA+ID4gWzFdDQo+ID4g
+PiANCmh0dHBzOi8vd3d3LmFuYWxvZy5jb20vbWVkaWEvZW4vdGVjaG5pY2FsLWRvY3VtZW50YXRp
+b24vZGF0YS1zaGVldHMvQUQyUzkwLnBkZg0KPiA+ID4gDQo+IA0KPiANCg==
