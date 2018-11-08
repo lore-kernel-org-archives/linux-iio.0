@@ -1,69 +1,64 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:43688 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726068AbeKHEVX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 7 Nov 2018 23:21:23 -0500
-From: Giuliano Belinassi <giuliano.belinassi@gmail.com>
-Date: Wed, 7 Nov 2018 16:49:39 -0200
-To: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        renatogeh@gmail.com
-Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
-Subject: [PATCH 1/3] staging: iio: ad7780: Add is_ad778x flag chip info
-Message-ID: <e7f1b071157abbb92d5cb42f310fb471ea43ff01.1541615978.git.giuliano.belinassi@usp.br>
+Return-Path: <SRS0=EvUH=NT=analog.com=alexandru.Ardelean@kernel.org>
+From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+To: "lars@metafoo.de" <lars@metafoo.de>, "knaack.h@gmx.de" <knaack.h@gmx.de>,
+	"jic23@kernel.org" <jic23@kernel.org>, "Hennerich, Michael"
+	<Michael.Hennerich@analog.com>, "renatogeh@gmail.com" <renatogeh@gmail.com>,
+	"giuliano.belinassi@gmail.com" <giuliano.belinassi@gmail.com>,
+	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>, "gregkh@linuxfoundation.org"
+	<gregkh@linuxfoundation.org>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+	"kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>
+Subject: Re: [PATCH 1/3] staging: iio: ad7780: Add is_ad778x flag chip info
+Date: Thu, 8 Nov 2018 07:36:42 +0000
+Message-ID: <178aa1c7d2b94bb26560788b2400faef33d222de.camel@analog.com>
 References: <cover.1541615978.git.giuliano.belinassi@usp.br>
+	 <e7f1b071157abbb92d5cb42f310fb471ea43ff01.1541615978.git.giuliano.belinassi@usp.br>
+In-Reply-To: <e7f1b071157abbb92d5cb42f310fb471ea43ff01.1541615978.git.giuliano.belinassi@usp.br>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <cover.1541615978.git.giuliano.belinassi@usp.br>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-This patch allows further checking of whatever the chip is (ad778x or
-ad717x).
-
-Signed-off-by: Giuliano Belinassi <giuliano.belinassi@usp.br>
----
- drivers/staging/iio/adc/ad7780.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
-index 91e016d534ed..6e51bfdb076a 100644
---- a/drivers/staging/iio/adc/ad7780.c
-+++ b/drivers/staging/iio/adc/ad7780.c
-@@ -35,6 +35,7 @@ struct ad7780_chip_info {
- 	struct iio_chan_spec	channel;
- 	unsigned int		pattern_mask;
- 	unsigned int		pattern;
-+	u8			is_ad778x;
- };
- 
- struct ad7780_state {
-@@ -135,21 +136,25 @@ static const struct ad7780_chip_info ad7780_chip_info_tbl[] = {
- 		.channel = AD7780_CHANNEL(12, 24),
- 		.pattern = 0x5,
- 		.pattern_mask = 0x7,
-+		.is_ad778x = false,
- 	},
- 	[ID_AD7171] = {
- 		.channel = AD7780_CHANNEL(16, 24),
- 		.pattern = 0x5,
- 		.pattern_mask = 0x7,
-+		.is_ad778x = false,
- 	},
- 	[ID_AD7780] = {
- 		.channel = AD7780_CHANNEL(24, 32),
- 		.pattern = 0x1,
- 		.pattern_mask = 0x3,
-+		.is_ad778x = true,
- 	},
- 	[ID_AD7781] = {
- 		.channel = AD7780_CHANNEL(20, 32),
- 		.pattern = 0x1,
- 		.pattern_mask = 0x3,
-+		.is_ad778x = true,
- 	},
- };
- 
--- 
-2.19.1
+T24gV2VkLCAyMDE4LTExLTA3IGF0IDE2OjQ5IC0wMjAwLCBHaXVsaWFubyBCZWxpbmFzc2kgd3Jv
+dGU6DQo+IFRoaXMgcGF0Y2ggYWxsb3dzIGZ1cnRoZXIgY2hlY2tpbmcgb2Ygd2hhdGV2ZXIgdGhl
+IGNoaXAgaXMgKGFkNzc4eCBvcg0KPiBhZDcxN3gpLg0KDQpIZXksDQoNClRoZSBwYXRjaCBsb29r
+cyBnb29kIG92ZXJhbGwuDQpJIG9ubHkgaGF2ZSBvbmUgbml0cGljayBmb3IgdGhpcyBwYXRjaC4g
+U2VlIGlubGluZS4NCg0KQW5kIHlvdSBjYW4gc3F1YXNoIHRoaXMgcGF0Y2ggd2l0aCBwYXRjaCBg
+W1BBVENIIDIvM10gc3RhZ2luZzogaWlvOiBhZDc3ODA6DQpjaGVjayBpZiBhZDc3OHggYmVmb3Jl
+IGdhaW4gdXBkYXRlYC4NCkluIGZhY3QsIHRoZSB0aXRsZSBvZiB0aGUgc3F1YXNoZWQgcGF0Y2gg
+Y2FuIGp1c3QgYmUgYHN0YWdpbmc6IGlpbzogYWQ3NzgwOg0KY2hlY2sgaWYgYWQ3Nzh4IGJlZm9y
+ZSBnYWluIHVwZGF0ZWAgOyBiZWNhdXNlIHRoZSBjb2RlIGluIHRoaXMgcGF0Y2gNCmltcGxpZXMg
+dGhhdCBpdCdzIHVzZWQgdG8gY2hlY2sgaWYgdGhlIGRldmljZSBpcyBhbiBhZDc3OHggY2hpcC4N
+Cg0KVGhpcyBwYXRjaCBkb2Vzbid0IGhhdmUgbXVjaCB2YWx1ZSBvbiBpdCdzIG93biB3aXRob3V0
+IHRoZSAybmQgcGF0Y2gsIGFuZA0KeW91IGNhbiBkbyB0aGVtIGluIGEgc2luZ2xlIGdvLg0KDQov
+Kg0KICogTm90ZTogeWVzLCBJIGtub3cgdGhhdCB0aGVzZSBzdWJ0bGUgc2VtYW50aWNzIGJldHdl
+ZW4gcGF0Y2ggDQogKiBzcGxpdHRpbmcgJiBzcXVhc2hpbmcgY2FuIGJlIGEgYml0IGFubm95aW5n
+IDsgSSBkb24ndCBoYXZlIGEgZ2VuZXJhbA0KICogcmVjb21tZW5kYXRpb24gZm9yIHRoZW0sIG90
+aGVyIHRoYW4ganVzdCB0byBrZWVwIHNlbmRpbmcgcGF0Y2hlcw0KICovDQoNClRoYW5rcw0KQWxl
+eA0KDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBHaXVsaWFubyBCZWxpbmFzc2kgPGdpdWxpYW5vLmJl
+bGluYXNzaUB1c3AuYnI+DQo+IC0tLQ0KPiAgZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3Nzgw
+LmMgfCA1ICsrKysrDQo+ICAxIGZpbGUgY2hhbmdlZCwgNSBpbnNlcnRpb25zKCspDQo+IA0KPiBk
+aWZmIC0tZ2l0IGEvZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NzgwLmMNCj4gYi9kcml2ZXJz
+L3N0YWdpbmcvaWlvL2FkYy9hZDc3ODAuYw0KPiBpbmRleCA5MWUwMTZkNTM0ZWQuLjZlNTFiZmRi
+MDc2YSAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NzgwLmMNCj4g
+KysrIGIvZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NzgwLmMNCj4gQEAgLTM1LDYgKzM1LDcg
+QEAgc3RydWN0IGFkNzc4MF9jaGlwX2luZm8gew0KPiAgCXN0cnVjdCBpaW9fY2hhbl9zcGVjCWNo
+YW5uZWw7DQo+ICAJdW5zaWduZWQgaW50CQlwYXR0ZXJuX21hc2s7DQo+ICAJdW5zaWduZWQgaW50
+CQlwYXR0ZXJuOw0KPiArCXU4CQkJaXNfYWQ3Nzh4Ow0KWW91IGNvdWxkIG1ha2UgdGhpcyBgYm9v
+bGAgdHlwZSBzaW5jZSB5b3UgYXJlIGFzc2lnbmluZyBgdHJ1ZS9mYWxzZWAgdmFsdWVzDQp0byB0
+aGlzIGZpZWxkLiBJdCdzIGdlbmVyYWxseSBnb29kIHRvIGJlIGNvbnNpc3RlbnQgYmV0d2VlbiB0
+eXBlIG5hbWVzICYNCnR5cGUgdmFsdWVzIHdoZW4gdXNpbmcgdGhlbSBbZXZlbiB0aG91Z2ggaW4g
+QywgdGhlc2UgYXJlIHByZXR0eSBtdWNoIHRoZQ0Kc2FtZV0uDQoNCj4gIH07DQo+ICANCj4gIHN0
+cnVjdCBhZDc3ODBfc3RhdGUgew0KPiBAQCAtMTM1LDIxICsxMzYsMjUgQEAgc3RhdGljIGNvbnN0
+IHN0cnVjdCBhZDc3ODBfY2hpcF9pbmZvDQo+IGFkNzc4MF9jaGlwX2luZm9fdGJsW10gPSB7DQo+
+ICAJCS5jaGFubmVsID0gQUQ3NzgwX0NIQU5ORUwoMTIsIDI0KSwNCj4gIAkJLnBhdHRlcm4gPSAw
+eDUsDQo+ICAJCS5wYXR0ZXJuX21hc2sgPSAweDcsDQo+ICsJCS5pc19hZDc3OHggPSBmYWxzZSwN
+Cj4gIAl9LA0KPiAgCVtJRF9BRDcxNzFdID0gew0KPiAgCQkuY2hhbm5lbCA9IEFENzc4MF9DSEFO
+TkVMKDE2LCAyNCksDQo+ICAJCS5wYXR0ZXJuID0gMHg1LA0KPiAgCQkucGF0dGVybl9tYXNrID0g
+MHg3LA0KPiArCQkuaXNfYWQ3Nzh4ID0gZmFsc2UsDQo+ICAJfSwNCj4gIAlbSURfQUQ3NzgwXSA9
+IHsNCj4gIAkJLmNoYW5uZWwgPSBBRDc3ODBfQ0hBTk5FTCgyNCwgMzIpLA0KPiAgCQkucGF0dGVy
+biA9IDB4MSwNCj4gIAkJLnBhdHRlcm5fbWFzayA9IDB4MywNCj4gKwkJLmlzX2FkNzc4eCA9IHRy
+dWUsDQo+ICAJfSwNCj4gIAlbSURfQUQ3NzgxXSA9IHsNCj4gIAkJLmNoYW5uZWwgPSBBRDc3ODBf
+Q0hBTk5FTCgyMCwgMzIpLA0KPiAgCQkucGF0dGVybiA9IDB4MSwNCj4gIAkJLnBhdHRlcm5fbWFz
+ayA9IDB4MywNCj4gKwkJLmlzX2FkNzc4eCA9IHRydWUsDQo+ICAJfSwNCj4gIH07DQo+ICANCg==
