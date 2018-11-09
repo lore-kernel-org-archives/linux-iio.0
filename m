@@ -15,45 +15,54 @@ Cc: linux-iio@vger.kernel.org,
 	Alexandru Ardelean <alexandru.ardelean@analog.com>,
 	kernel-usp@googlegroups.com,
 	victorcolombo@gmail.com
-Subject: [PATCH 1/6] staging:iio:ad2s90: Add device tree support
-Date: Fri,  9 Nov 2018 20:00:39 -0200
-Message-Id: <20181109220044.24843-2-matheus.bernardino@usp.br>
+Subject: [PATCH 2/6] staging:iio:ad2s90: Remove spi setup that should be done via dt
+Date: Fri,  9 Nov 2018 20:00:40 -0200
+Message-Id: <20181109220044.24843-3-matheus.bernardino@usp.br>
 In-Reply-To: <20181109220044.24843-1-matheus.bernardino@usp.br>
 References: <20181109220044.24843-1-matheus.bernardino@usp.br>
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch adds device tree support to ad2s90 with standard
-device tree id table.
+The ad2s90 driver currently sets some spi settings (max_speed_hz and
+mode) at ad2s90_probe. This should, instead, be handled via device tree.
+This patch removes these configurations from the probe function.
+
+Note: The way in which the mentioned spi settings need to be specified
+on the ad2s90's node of a device tree will be documented in the future
+patch "dt-bindings:iio:resolver: Add docs for ad2s90".
 
 Signed-off-by: Matheus Tavares <matheus.bernardino@usp.br>
 ---
- drivers/staging/iio/resolver/ad2s90.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/staging/iio/resolver/ad2s90.c | 11 -----------
+ 1 file changed, 11 deletions(-)
 
 diff --git a/drivers/staging/iio/resolver/ad2s90.c b/drivers/staging/iio/resolver/ad2s90.c
-index 3e257ac46f7a..ff32ca76ca00 100644
+index ff32ca76ca00..95c118c48400 100644
 --- a/drivers/staging/iio/resolver/ad2s90.c
 +++ b/drivers/staging/iio/resolver/ad2s90.c
-@@ -107,6 +107,12 @@ static int ad2s90_probe(struct spi_device *spi)
+@@ -77,7 +77,6 @@ static int ad2s90_probe(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev;
+ 	struct ad2s90_state *st;
+-	int ret;
+ 
+ 	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+ 	if (!indio_dev)
+@@ -94,16 +93,6 @@ static int ad2s90_probe(struct spi_device *spi)
+ 	indio_dev->num_channels = 1;
+ 	indio_dev->name = spi_get_device_id(spi)->name;
+ 
+-	/* need 600ns between CS and the first falling edge of SCLK */
+-	spi->max_speed_hz = 830000;
+-	spi->mode = SPI_MODE_3;
+-	ret = spi_setup(spi);
+-
+-	if (ret < 0) {
+-		dev_err(&spi->dev, "spi_setup failed!\n");
+-		return ret;
+-	}
+-
  	return devm_iio_device_register(indio_dev->dev.parent, indio_dev);
  }
  
-+static const struct of_device_id ad2s90_of_match[] = {
-+	{ .compatible = "adi,ad2s90", },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, ad2s90_of_match);
-+
- static const struct spi_device_id ad2s90_id[] = {
- 	{ "ad2s90" },
- 	{}
-@@ -116,6 +122,7 @@ MODULE_DEVICE_TABLE(spi, ad2s90_id);
- static struct spi_driver ad2s90_driver = {
- 	.driver = {
- 		.name = "ad2s90",
-+		.of_match_table = of_match_ptr(ad2s90_of_match),
- 	},
- 	.probe = ad2s90_probe,
- 	.id_table = ad2s90_id,
 -- 
 2.18.0
