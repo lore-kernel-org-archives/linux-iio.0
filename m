@@ -1,113 +1,177 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-sn1nam02on0050.outbound.protection.outlook.com ([104.47.36.50]:48697
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727195AbeKIAWf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 8 Nov 2018 19:22:35 -0500
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "renatogeh@gmail.com" <renatogeh@gmail.com>
-CC: "giuliano.belinassi@usp.br" <giuliano.belinassi@usp.br>,
-        "giuliano.belinassi@gmail.com" <giuliano.belinassi@gmail.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>,
-        "jic23@jic23.retrosnub.co.uk" <jic23@jic23.retrosnub.co.uk>
-Subject: Re: Questions related to some drivers
-Date: Thu, 8 Nov 2018 14:46:39 +0000
-Message-ID: <cddb41ac39b2210359adc0421b2c3d46e884453f.camel@analog.com>
-References: <20181017190028.wu2kgsooj64beh7o@smtp.gmail.com>
-         <d0fc5a236a82d03fdbe4d05eb27ff3bd3ac36958.camel@analog.com>
-         <20181018114145.amqff57holmecxpo@smtp.gmail.com>
-         <CAEFO=4BjSiYeNW_n0PjoC3EqaN1Z8E1XB_CO+FJJdTwZo4enzg@mail.gmail.com>
-         <20181023105126.408ef7ab@archlinux>
-         <CAEFO=4Dc_v90MHFnniTpAcMvajpt3O55rtc730Pr0F6+Aau49A@mail.gmail.com>
-         <6f9ad9ace7828741f25ea6e7c555c9f4e91a203b.camel@analog.com>
-         <20181107185735.wryk5o4wndy6bkzn@renatolg>
-         <20181108140451.uwiwbjxoyxlmjqic@renatolg>
-In-Reply-To: <20181108140451.uwiwbjxoyxlmjqic@renatolg>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <giuliano.belinassi@usp.br>
 MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+References: <20181017190028.wu2kgsooj64beh7o@smtp.gmail.com>
+ <d0fc5a236a82d03fdbe4d05eb27ff3bd3ac36958.camel@analog.com>
+ <20181018114145.amqff57holmecxpo@smtp.gmail.com> <CAEFO=4BjSiYeNW_n0PjoC3EqaN1Z8E1XB_CO+FJJdTwZo4enzg@mail.gmail.com>
+ <20181023105126.408ef7ab@archlinux> <CAEFO=4Dc_v90MHFnniTpAcMvajpt3O55rtc730Pr0F6+Aau49A@mail.gmail.com>
+ <6f9ad9ace7828741f25ea6e7c555c9f4e91a203b.camel@analog.com>
+ <20181107185735.wryk5o4wndy6bkzn@renatolg> <20181108140451.uwiwbjxoyxlmjqic@renatolg>
+ <cddb41ac39b2210359adc0421b2c3d46e884453f.camel@analog.com>
+In-Reply-To: <cddb41ac39b2210359adc0421b2c3d46e884453f.camel@analog.com>
+From: Giuliano Augusto Faulin Belinassi <giuliano.belinassi@usp.br>
+Date: Fri, 9 Nov 2018 20:08:23 -0200
+Message-ID: <CAEFO=4DVtccLOAhpGfMRL+1Bkd78-VfeOU=BuyRKs1vmqZrDiQ@mail.gmail.com>
+Subject: Re: Questions related to some drivers
+To: alexandru.Ardelean@analog.com
+Cc: Renato Geh <renatogeh@gmail.com>, giuliano.belinassi@gmail.com,
+	linux-iio@vger.kernel.org, Kernel USP <kernel-usp@googlegroups.com>,
+	jic23@jic23.retrosnub.co.uk
+Content-Type: text/plain; charset="UTF-8"
+List-ID: <linux-iio@vger.kernel.org>
 
-T24gVGh1LCAyMDE4LTExLTA4IGF0IDEyOjA0IC0wMjAwLCBSZW5hdG8gTHVpIEdlaCB3cm90ZToN
-Cj4gSGksDQo+IA0KDQpIZXksDQoNCj4gT24gMTEvMDYsIEFyZGVsZWFuLCBBbGV4YW5kcnUgd3Jv
-dGU6DQo+ID4gRm9yIEFENzc4eCB5b3UgY291bGQgYWxzbyBhZGQgc3VwcG9ydCBmb3IgdGhlIEdB
-SU4gJiBGSUxURVIgcGlucyB2aWENCj4gPiBHUElPcywNCj4gPiB0byBjb250cm9sIHRoZXNlIHNl
-dHRpbmdzLiBBbmQgdGhlbiBpbiB0aGUgYWQ3NzgwX3Bvc3Rwcm9jZXNzX3NhbXBsZSgpDQo+ID4g
-ZnVuY3Rpb24gY2hlY2sgaWYgdGhlIEdQSU8gc2V0dGluZ3MgKHN0b3JlZCBvbiBhIGdwaW9fZGVz
-YyBvbg0KPiA+IGFkNzc4MF9zdGF0ZSkNCj4gPiBtYXRjaCB0aGUgZXhwZWN0ZWQgR0FJTiAmIEZJ
-TFRFUiBiaXQgc2V0dGluZ3MgOyBpZiBub3QgcmV0dXJuIC1FSU8uDQo+IA0KPiBXZSdyZSBoYXZp
-bmcgc29tZSB0cm91YmxlIHdpdGggdGhlIEdQSU9zLCBhbmQgd291bGQgbGlrZSBzb21lIGluc2ln
-aHQgb24NCj4gaG93IHRvIHByb2NlZWQuIEFueSBoZWxwIHdvdWxkIGJlIHZlcnkgbXVjaCBhcHBy
-ZWNpYXRlZCENCj4gDQo+IFdlJ3JlIHdvbmRlcmluZyBpZiB3ZSBzaG91bGQgZG8gc29tZXRoaW5n
-IGxpa2UgdGhpcyBpbiBhZDc3ODAuYydzIHByb2JlOg0KPiANCj4gc3QtPnBvd2VyZG93bl9ncGlv
-ID0gZGV2bV9ncGlvZF9nZXRfb3B0aW9uYWwoJnNwaS0+ZGV2LA0KPiAJCQkJCSAgICAgInBvd2Vy
-ZG93biIsDQo+IAkJCQkJICAgICBHUElPRF9PVVRfTE9XKTsNCj4gDQoNClllcywgc29tZXRoaW5n
-IGxpa2UgdGhpcy4NCg0KPiBmb3IgYm90aCBnYWluIGFuZCBmaWx0ZXIuIFRha2luZyBhIGxvb2sg
-YXQgZHJpdmVyIGRyaXZlcnMvaWlvL2FkYy9oeDcxMS5jDQo+IChhbm90aGVyIGFkYyBkcml2ZXIg
-b3V0IG9mIHN0YWdpbmcpLCB3ZSBoYXZlOg0KPiANCj4gaHg3MTFfZGF0YS0+Z3Bpb2RfcGRfc2Nr
-ID0gZGV2bV9ncGlvZF9nZXQoZGV2LCAic2NrIiwgR1BJT0RfT1VUX0xPVyk7DQo+IA0KPiBTbyB3
-ZSdyZSBhc3N1bWluZyAic2NrIiBhbmQgInBvd2VyZG93biIgYXJlIHRoZSBwaW5zIHdlJ3JlIGxv
-b2tpbmcgZm9yLg0KPiBBcmUgd2UNCj4gY29ycmVjdCB0byBhc3N1bWUgdGhhdCB0aGVzZSBzdHJp
-bmdzIGFyZSBjb21wYXJlZCB3aXRoIGEgdGFibGUgdGhhdCBtYXANCj4gdGhlDQo+IGFjdHVhbCBH
-UElPIHBpbnM/IFNvIHdlJ2QgaGF2ZSBzb21ldGhpbmcgbGlrZToNCj4gDQo+IHN0LT5nYWluX2dw
-aW8gPSBkZXZtX2dwaW9kX2dldF9vcHRpb25hbCgmc3BpLT5kZXYsDQo+IAkJCQkJImdhaW4iLA0K
-PiAJCQkJCUdQSU9fRE9VVF9MT1cpOw0KDQpUaGlzIGlzIGV4YWN0bHkgYSBnb29kIGlkZWEgdG8g
-ZG8gZm9yIGBnYWluYC4NCkFuZCBzaW1pbGFyIGZvciBgZmlsdGVyYA0KDQo+IA0KPiBXaGVyZSAi
-Z2FpbiIgaXMgdGhlIHBpbiA0IG9yIDUgb24gdGhlIEFENzc4eA0KDQpUaGUgcGluIDQgb3IgNSBv
-biB0aGUgQUQ3Nzh4IGFyZSBub3Qgd2hhdCB5b3UgZGVmaW5lIGhlcmUuDQpUaGUgR1BJT3MgeW91
-IGRlZmluZS91c2UgaGVyZSBhcmUgb24gdGhlIGhvc3QtYm9hcmQuDQoNClNvLA0KDQpIb3N0LWJv
-YXJkIFtkdC1lbnRyeV0gPC0tLS0+IEFENzc4eCBbSFctcGluXQ0KDQpXaGVyZToNCiogYGR0LWVu
-dHJ5YCBpcyBkZWZpbnRlZCBpbiB0aGUgZGV2aWNlLXRyZWUgc29tZXRoaW5nIGxpa2U6DQogICBn
-YWluLWdwaW8gPSA8JmdwaW8gR1BJT19OVU1CRVJfT05fSE9TVF9CT0FSRCBHUElPX0ZMQUdTPiAN
-CiogR1BJT19OVU1CRVJfT05fSE9TVF9CT0FSRCBpcyBhIG51bWJlciwgd2hpY2ggdmFyaWVzIDsg
-Zm9yIGV4YW1wbGUgZm9yDQpSYXNwYmVycnkgUGkgaXQgY291bGQgYmUgcGluIDI1IFtpbiB0aGUg
-ZGV2aWNlIHRyZWVdOyANCiogR1BJT19GTEFHUyBpcyB1c3VhbGx5IDAgOyBidXQgY2FuIGJlIGFu
-eSBvdGhlciBudW1lcmljIHZhbHVlIGRlZmluZWQNCmhlcmU6DQogIA0KaHR0cHM6Ly9naXRodWIu
-Y29tL3RvcnZhbGRzL2xpbnV4L2Jsb2IvbWFzdGVyL2luY2x1ZGUvZHQtYmluZGluZ3MvZ3Bpby9n
-cGlvLmgNCiogYEhXLXBpbmAgZG9lc24ndCBtYXR0ZXIsIGJlY2F1c2UgaXQncyBhIHBoeXNpY2Fs
-IHBpbiB0aGF0IGNhbiBiZSBkZWZpbmVkDQphcyBhbnl0aGluZyBpbiBTVw0KDQo+ICgNCj4gaHR0
-cHM6Ly93d3cuYW5hbG9nLmNvbS9tZWRpYS9lbi90ZWNobmljYWwtZG9jdW1lbnRhdGlvbi9kYXRh
-LXNoZWV0cy9hZDc3ODAucGRmDQo+ICkNCj4gY2hpcC4NCj4gDQo+IFdoZXJlIGNhbiB3ZSBmaW5k
-IHRoaXMgdGFibGUgdGhhdCBtYXBzIHRoZXNlIHBpbiBuYW1lcyB0byB0aGUgYWN0dWFsIHBpbg0K
-PiBudW1iZXJzPyBXZSBmb3VuZCB0aGlzIGxpbmsNCg0KVGhlIGFjdHVhbCBwaW4gbnVtYmVyIGRv
-ZXNuJ3QgbWF0dGVyIGluIHRoZSBkcml2ZXIgeW91IHdyaXRlLg0KSXQgbWF0dGVycyBpbiB0aGUg
-ZGV2aWNlLXRyZWUgZm9yIHRoZSBib2FyZCB5b3UgdXNlIHRoZSBkcml2ZXIgW2FuZCBjaGlwXQ0K
-b24uDQoNCklmIHlvdSB3ZXJlIHRvIHRlc3QgeW91ciBkcml2ZXIgY2hhbmdlIG9uIGEgUlBpIGJv
-YXJkIGFuZCB5b3UgcGh5c2ljYWxseQ0KY29ubmVjdCB0aGlzIG9uIFBpbiAyNSAocGh5c2ljYWwp
-IGFuZCBpbiB5b3VyIGRldmljZS10cmVlDQpHUElPX05VTUJFUl9PTl9IT1NUX0JPQVJEIGlzIHRo
-ZSB2YWx1ZSAoaW4gU1cpIGZvciBQaW4gMjUsIHRoZW4gdGhhdCdzIHdoYXQNCm1hdHRlcnMgd2hl
-biB5b3UgdGVzdC9ydW4gdGhlIGNvZGUuDQoNCkluIHRoZSBrZXJuZWwsIGEgcGluIG51bWJlcnMg
-dGFibGUgZm9yIHRoZSBSUGkgY2FuIGJlIGZvdW5kIGhlcmU6DQoNCmh0dHBzOi8vZ2l0aHViLmNv
-bS90b3J2YWxkcy9saW51eC9ibG9iL21hc3Rlci9hcmNoL2FybS9ib290L2R0cy9iY20yODN4LmR0
-c2kjTDE4NQ0KDQpJIGtlZXAgcmVmZXJyaW5nIHRvIFJQaSBiZWNhdXNlIHdlJ3ZlIHVzZWQgaXQg
-YSBiaXQgbW9yZSB0aGFuIG90aGVyIGJvYXJkcywNCmFuZCBhbHNvIGJlY2F1c2UgZm9yIFJQaSB1
-c3VhbGx5IFBpbiAyNSBpbiBIVyBpcyBhbHNvIFBpbiAyNSBpbiBTVy4NCg0KDQo+IGh0dHBzOi8v
-d3d3Lmtlcm5lbC5vcmcvZG9jL2h0bWwvdjQuMTcvZHJpdmVyLWFwaS9ncGlvL2JvYXJkLmh0bWwg
-dGhhdA0KPiBzaG93cyBob3cNCj4gdG8gZGVjbGFyZSB0YWJsZSBhdHRyaWJ1dGVzLCBidXQgd2Ug
-Y291bGRuJ3QgZmluZCB0aGlzIGxvb2t1cCB0YWJsZQ0KPiB0aGVyZS4NCj4gDQo+IEFyZSB3ZSBt
-aXNzaW5nIHNvbWV0aGluZz8gT3V0IG9mIGN1cmlvc2l0eSwgd2h5IGRvIHdlIGhhdmUgdG8gcGFz
-cyBhDQo+IHN0cmluZw0KPiAoZS5nLiBwb3dlcmRvd24sIGdhaW4sIHNjaywgZG91dCkgaW5zdGVh
-ZCBvZiB0aGUgcGluIG51bWJlcj8gV2UgZm91bmQNCj4gc29tZXdoZXJlDQo+IHRoYXQgdGhleSBh
-cmUgbmFtZXMgdG8gZnVuY3Rpb25zLiBBcmUgdGhlc2UgZnVuY3Rpb25zIGltcGxlbWVudGVkIG9u
-IHRoZQ0KPiBjaGlwPw0KPiANCg0KU28sIHRoZSBzdHJpbmcgaW4gdGhlIGRyaXZlciwgd2lsbCBi
-ZSB1c2VkIHRvIGxvb2t1cCB0aGUgcGh5c2ljYWwgcGluIGluDQp0aGUgZGV2aWNlLXRyZWUuDQpU
-aGUgcGluIG51bWJlciBkaWZmZXJzIGZyb20gb25lIGhvc3QtYm9hcmQgdG8gYW5vdGhlciBbYXMg
-SSd2ZSBzYWlkXSwgc28NCnRoZSBzdHJpbmcgaXMgYSB1bmlxdWUgaWRlbnRpZmllciBmb3IgdGhl
-IGRyaXZlciwgd2hpY2ggcmVzb2x2ZXMgdG8gdGhlDQpwaHlzaWNhbCBwaW4gb24gdGhlIGJvYXJk
-Lg0KDQpCeSB0aGUgd2F5OiBvbmUgd29yayBpdGVtIChtYXliZSBhZnRlciB0aGUgZHJpdmVyIGlz
-IG1vdmVkIG91dCBvZiBzdGFnaW5nKQ0Kd291bGQgYmUgdG8gYWxzbyB3cml0ZSBhIGRldmljZS10
-cmVlIGJpbmRpbmcgZG9jLg0KQW4gZXhhbXBsZToNCiANCmh0dHBzOi8vZ2l0aHViLmNvbS90b3J2
-YWxkcy9saW51eC9ibG9iL21hc3Rlci9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3Mv
-c291bmQvYWRpLGFkYXUxN3gxLnR4dA0KSXQncyBub3QgdGhlIGJlc3Qgb25lLCBhbmQgZmVlbCBm
-cmVlIHRvIGxvb2sgZm9yIG90aGVycyBhcyB3ZWxsLCB0aGF0DQpkZWZpbmUgR1BJT3MuIEJ1dCBp
-biB0aGF0IGZpbGUsIGlzIGFuIGV4YW1wbGUgb2YgaG93IHRvIGxpbmsgYSByZXNldC1ncGlvDQp0
-aGF0IHdvdWxkIGJlIGNhbGxlZCBieSB0aGF0IGRyaXZlciB0byBwaHlzaWNhbGx5IHJlc2V0IHRo
-ZSBkZXZpY2Ugd2hlbg0KcHJvYmVkICYgaW5pdGlhbGl6ZWQuDQoNClVzdWFsbHkgdGhlIGFyY2gv
-YXJtWzY0XS9ib290L2R0cyBoYXZlIGEgbG90IG9mIGRldmljZS10cmVlcyB0aGF0IG1heSBoZWxw
-DQpzaGFwZSBzb21lIHRoaW5raW5nIGFib3V0IGRldmljZS10cmVlcy4NCg0KSSdtIGhvcGluZyBJ
-IGdvdCB0byBleHBsYWluIHRoaW5ncyBzb21ld2hhdC4NCkl0IGlzIGEgYml0IGxhdGUgaW4gdGhl
-IGFmdGVybm9vbiBbZm9yIG1lXSwgYnV0IEkgdGhvdWdodCBJJ2QgZ2l2ZSBpdCBhIHRyeQ0KOikN
-Cg0KSWYgdGhlcmUgYXJlIHN0aWxsIHF1ZXN0aW9ucywgZmVlbCBmcmVlIHRvIGFzay4NCkkgdGhp
-bmsgSSBjYW4gZ2V0IHRvIHRoZW0gdG9tb3Jyb3cuDQoNClRoYW5rcw0KQWxleA0KDQo+IFRoYW5r
-cywNCj4gUmVuYXRvDQo+IA0K
+Hello. Sorry for the late reply
+
+> On a more private note: do you guys have HW to test your code/changes on ?
+No, we don't have it. I think it would be really nice if we could have
+access to the
+hardware to work on. :-)
+
+> Jonathan did ask us about this in private, but I think the discussion has
+> stalled a bit (time & priorities).
+>
+> We could send a few samples if there's anything you'd like to test this
+> code on.
+
+That would be really helpful :-)
+
+> FWIW: we usually test quite a few of this simple ADC/DAC changes on
+> Raspberry PI ; it's a pretty useful board for testing stuff.
+On Thu, Nov 8, 2018 at 12:46 PM Ardelean, Alexandru
+<alexandru.Ardelean@analog.com> wrote:
+>
+> On Thu, 2018-11-08 at 12:04 -0200, Renato Lui Geh wrote:
+> > Hi,
+> >
+>
+> Hey,
+>
+> > On 11/06, Ardelean, Alexandru wrote:
+> > > For AD778x you could also add support for the GAIN & FILTER pins via
+> > > GPIOs,
+> > > to control these settings. And then in the ad7780_postprocess_sample()
+> > > function check if the GPIO settings (stored on a gpio_desc on
+> > > ad7780_state)
+> > > match the expected GAIN & FILTER bit settings ; if not return -EIO.
+> >
+> > We're having some trouble with the GPIOs, and would like some insight on
+> > how to proceed. Any help would be very much appreciated!
+> >
+> > We're wondering if we should do something like this in ad7780.c's probe:
+> >
+> > st->powerdown_gpio = devm_gpiod_get_optional(&spi->dev,
+> >                                            "powerdown",
+> >                                            GPIOD_OUT_LOW);
+> >
+>
+> Yes, something like this.
+>
+> > for both gain and filter. Taking a look at driver drivers/iio/adc/hx711.c
+> > (another adc driver out of staging), we have:
+> >
+> > hx711_data->gpiod_pd_sck = devm_gpiod_get(dev, "sck", GPIOD_OUT_LOW);
+> >
+> > So we're assuming "sck" and "powerdown" are the pins we're looking for.
+> > Are we
+> > correct to assume that these strings are compared with a table that map
+> > the
+> > actual GPIO pins? So we'd have something like:
+> >
+> > st->gain_gpio = devm_gpiod_get_optional(&spi->dev,
+> >                                       "gain",
+> >                                       GPIO_DOUT_LOW);
+>
+> This is exactly a good idea to do for `gain`.
+> And similar for `filter`
+>
+> >
+> > Where "gain" is the pin 4 or 5 on the AD778x
+>
+> The pin 4 or 5 on the AD778x are not what you define here.
+> The GPIOs you define/use here are on the host-board.
+>
+> So,
+>
+> Host-board [dt-entry] <----> AD778x [HW-pin]
+>
+> Where:
+> * `dt-entry` is definted in the device-tree something like:
+>    gain-gpio = <&gpio GPIO_NUMBER_ON_HOST_BOARD GPIO_FLAGS>
+> * GPIO_NUMBER_ON_HOST_BOARD is a number, which varies ; for example for
+> Raspberry Pi it could be pin 25 [in the device tree];
+> * GPIO_FLAGS is usually 0 ; but can be any other numeric value defined
+> here:
+>
+> https://github.com/torvalds/linux/blob/master/include/dt-bindings/gpio/gpio.h
+> * `HW-pin` doesn't matter, because it's a physical pin that can be defined
+> as anything in SW
+>
+> > (
+> > https://www.analog.com/media/en/technical-documentation/data-sheets/ad7780.pdf
+> > )
+> > chip.
+> >
+> > Where can we find this table that maps these pin names to the actual pin
+> > numbers? We found this link
+>
+> The actual pin number doesn't matter in the driver you write.
+> It matters in the device-tree for the board you use the driver [and chip]
+> on.
+>
+> If you were to test your driver change on a RPi board and you physically
+> connect this on Pin 25 (physical) and in your device-tree
+> GPIO_NUMBER_ON_HOST_BOARD is the value (in SW) for Pin 25, then that's what
+> matters when you test/run the code.
+>
+> In the kernel, a pin numbers table for the RPi can be found here:
+>
+> https://github.com/torvalds/linux/blob/master/arch/arm/boot/dts/bcm283x.dtsi#L185
+>
+> I keep referring to RPi because we've used it a bit more than other boards,
+> and also because for RPi usually Pin 25 in HW is also Pin 25 in SW.
+>
+>
+> > https://www.kernel.org/doc/html/v4.17/driver-api/gpio/board.html that
+> > shows how
+> > to declare table attributes, but we couldn't find this lookup table
+> > there.
+> >
+> > Are we missing something? Out of curiosity, why do we have to pass a
+> > string
+> > (e.g. powerdown, gain, sck, dout) instead of the pin number? We found
+> > somewhere
+> > that they are names to functions. Are these functions implemented on the
+> > chip?
+> >
+>
+> So, the string in the driver, will be used to lookup the physical pin in
+> the device-tree.
+> The pin number differs from one host-board to another [as I've said], so
+> the string is a unique identifier for the driver, which resolves to the
+> physical pin on the board.
+>
+> By the way: one work item (maybe after the driver is moved out of staging)
+> would be to also write a device-tree binding doc.
+> An example:
+>
+> https://github.com/torvalds/linux/blob/master/Documentation/devicetree/bindings/sound/adi,adau17x1.txt
+> It's not the best one, and feel free to look for others as well, that
+> define GPIOs. But in that file, is an example of how to link a reset-gpio
+> that would be called by that driver to physically reset the device when
+> probed & initialized.
+>
+> Usually the arch/arm[64]/boot/dts have a lot of device-trees that may help
+> shape some thinking about device-trees.
+>
+> I'm hoping I got to explain things somewhat.
+> It is a bit late in the afternoon [for me], but I thought I'd give it a try
+> :)
+>
+> If there are still questions, feel free to ask.
+> I think I can get to them tomorrow.
+>
+> Thanks
+> Alex
+>
+> > Thanks,
+> > Renato
+> >
