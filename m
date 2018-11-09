@@ -1,257 +1,463 @@
-Return-Path: <SRS0=p19C=NU=analog.com=alexandru.Ardelean@kernel.org>
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "jic23@kernel.org" <jic23@kernel.org>
-CC: "lars@metafoo.de" <lars@metafoo.de>, "jackoalan@gmail.com"
-	<jackoalan@gmail.com>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "fabrice.gasnier@st.com"
-	<fabrice.gasnier@st.com>, "maitysanchayan@gmail.com"
-	<maitysanchayan@gmail.com>, "bhuvanchandra.dv@toradex.com"
-	<bhuvanchandra.dv@toradex.com>, "matt.ranostay@konsulko.com"
-	<matt.ranostay@konsulko.com>
-Subject: Re: [PATCH][RFC] iio: Move attach/detach of the poll func to the
- core
-Date: Fri, 9 Nov 2018 10:03:40 +0000
-Message-ID: <4d25b215147487bda8590b2b20676fa54f893f87.camel@analog.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:61175 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727532AbeKIUZd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Nov 2018 15:25:33 -0500
+Subject: Re: [PATCH][RFC] iio: Move attach/detach of the poll func to the core
+To: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>,
+        "jic23@kernel.org" <jic23@kernel.org>
+CC: "lars@metafoo.de" <lars@metafoo.de>,
+        "jackoalan@gmail.com" <jackoalan@gmail.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "maitysanchayan@gmail.com" <maitysanchayan@gmail.com>,
+        "bhuvanchandra.dv@toradex.com" <bhuvanchandra.dv@toradex.com>,
+        "matt.ranostay@konsulko.com" <matt.ranostay@konsulko.com>
 References: <20180622135322.3459-1-alexandru.ardelean@analog.com>
-	 <20181103181948.0da58f81@archlinux>
-In-Reply-To: <20181103181948.0da58f81@archlinux>
-Content-Type: text/plain; charset="utf-8"
+ <20181103181948.0da58f81@archlinux>
+ <4d25b215147487bda8590b2b20676fa54f893f87.camel@analog.com>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+Message-ID: <0c60336c-9cd2-1b60-0364-01091f0e3277@st.com>
+Date: Fri, 9 Nov 2018 11:44:53 +0100
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <4d25b215147487bda8590b2b20676fa54f893f87.camel@analog.com>
+Content-Type: text/plain; charset="utf-8"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-T24gU2F0LCAyMDE4LTExLTAzIGF0IDE4OjE5ICswMDAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
-Og0KPiBPbiBGcmksIDIyIEp1biAyMDE4IDE2OjUzOjIyICswMzAwDQo+IEFsZXhhbmRydSBBcmRl
-bGVhbiA8YWxleGFuZHJ1LmFyZGVsZWFuQGFuYWxvZy5jb20+IHdyb3RlOg0KDQpIZXksDQoNClRo
-YW5rcyBmb3IgdGFraW5nIHRoZSB0aW1lIGZvciB0aGlzLCBKb25hdGhhbi4NCg0KPiANCj4gPiBB
-bGwgZGV2aWNlcyB1c2luZyBhIHRyaWdnZXJlZCBidWZmZXIgbmVlZCB0byBhdHRhY2ggYW5kIGRl
-dGFjaCB0aGUNCj4gPiB0cmlnZ2VyDQo+ID4gdG8gdGhlIGRldmljZSBpbiBvcmRlciB0byBwcm9w
-ZXJseSB3b3JrLiBJbnN0ZWFkIG9mIGRvaW5nIHRoaXMgaW4gZWFjaA0KPiA+IGFuZA0KPiA+IGV2
-ZXJ5IGRyaXZlciBieSBoYW5kIG1vdmUgdGhpcyBpbnRvIHRoZSBjb3JlLg0KPiA+IA0KPiA+IFNp
-Z25lZC1vZmYtYnk6IExhcnMtUGV0ZXIgQ2xhdXNlbiA8bGFyc0BtZXRhZm9vLmRlPg0KPiA+IFNp
-Z25lZC1vZmYtYnk6IEFsZXhhbmRydSBBcmRlbGVhbiA8YWxleGFuZHJ1LmFyZGVsZWFuQGFuYWxv
-Zy5jb20+DQo+ID4gLS0tDQo+ID4gDQo+ID4gTm90ZTogYFNpZ25lZC1vZmYtYnlgIGlzIGFsc28g
-TGFycy1QZXRlciBDbGF1c2VuIGJlY2F1c2UgaGUgaXMgdGhlDQo+ID4gb3JpZ2luYWwgYXV0aG9y
-IG9mIHRoaXMgcGF0Y2ggW29uIGFuIG9sZGVyIGtlcm5lbF0uDQo+ID4gVGhlIHBhdGNoIGhhcyBi
-ZWVuIHVwZGF0ZWQgc2luY2UgdGhlIG9yaWdpbmFsIHBhdGNoIGZyb20gTGFycy4NCj4gPiANCj4g
-PiBUaGVyZSBoYXMgYmVlbiBhIChzbWFsbCkgZGlzY3Vzc2lvbiBhYm91dCB3aGV0aGVyIHN1Y2gg
-YSBwYXRjaCBtYWtlcw0KPiA+IHNlbnNlIHRvIGltcGxlbWVudCAoZm9yIHJlZHVjaW5nIGNvZGUg
-ZHVwbGljYXRpb24pLCBvciB3aGV0aGVyIGl0J3MgdG9vDQo+ID4gcmlza3kgdG8gZG8gaXQuDQo+
-ID4gDQo+ID4gVGhlIHJlYXNvbiBmb3IgdGhlIHJpc2t5LW5lc3MgaXMgdGhhdCB0aGVyZSBpcyBu
-byBjb25zaXN0ZW50IHdheSBpbg0KPiA+IHdoaWNoDQo+ID4gZHJpdmVycyBhdHRhY2gvZGV0YWNo
-IHRoZSBwb2xsIGZ1bmN0aW9uLg0KPiA+IGkuZS4NCj4gPiAgICAxLiBzb21lIGRyaXZlcnMgY2Fs
-bCBgaWlvX3RyaWdnZXJlZF9idWZmZXJfcG9zdGVuYWJsZSgpYCBiZWZvcmUNCj4gPiBkb2luZyBI
-Vw0KPiA+ICAgICAgIHN0dWZmLCBzb21lIGFmdGVyIChmb3IgYXR0YWNoaW5nIHRoZSBwb2xsIGZ1
-bmMpDQo+ID4gICAgMi4gc2ltaWxhcmx5LCBmb3IgYGlpb190cmlnZ2VyZWRfYnVmZmVyX3ByZWRp
-c2FibGUoKWAgc29tZSBkcml2ZXJzDQo+ID4gZG8gaXQNCj4gPiAgICAgICBiZWZvcmUgSFcgc3R1
-ZmYsIHNvbWUgYWZ0ZXIgKGZvciBkZXRhY2hpbmcgdGhlIHBvbGwgZnVuYykNCj4gPiANCj4gPiBD
-b21tb24gc2Vuc2Ugd291bGQgZGljdGF0ZSB0aGF0IChpbiB0aGUgY2FzZSBvZg0KPiA+IGBpaW9f
-dHJpZ2dlcmVkX2J1ZmZlcl9wb3N0ZW5hYmxlKClgKSB0aGVyZSB3b3VsZCBub3JtYWxseSBiZSBI
-VyBzZXR1cA0KPiA+IGZpcnN0DQo+ID4gYW5kIHRoZW4gYXR0YWNoIHRoZSBwb2xsIGZ1bmMuDQo+
-ID4gQW5kIHRoZSByZXZlcnNlIGRvbmUgZm9yIGBpaW9fdHJpZ2dlcmVkX2J1ZmZlcl9wcmVkaXNh
-YmxlKClgLg0KPiANCj4gSSdtIHN1cmUgSSBvbmNlIGhhZCB0aGUgZmxvdyBhcm91bmQgdGhpcyBh
-bGwgd2VsbCBsYWlkIG91dCwgYnV0IEkgcmVhbGx5DQo+IGNhbid0IHJlY2FsbCB3aGF0IGl0IHdh
-cyBhbmQgaXQgd2FzIGFsbCB0aWVkIGFyb3VuZCB0cnlpbmcgdG8gZG8gdGhlDQo+IGJ1ZmZlciBl
-bmFibGUgYXMgbG9ja2xlc3MgYXMgcG9zc2libGUuIFllYXJzIGFnbyBMYXJzIHBvaW50ZWQgb3V0
-IHRoYXQNCj4gd2FzIGltcG9zc2libGUgc28gYSBsb3Qgb2YgdGhlIGxvZ2ljIGhhcyBiZWVuIG1l
-c3NlZCB1cCBzaW5jZSB0aGVuLg0KPiANCj4gQW55aG93LCBJJ3ZlIHB1dCB0aGlzIG9mZiBsb25n
-IGVub3VnaCAoc29ycnkgYWJvdXQgdGhhdCAtIGp1c3QgbmV3IGl0DQo+IHdhcyBnb2luZyB0byBp
-bnZvbHZlIHNvbWUgaGVhZCBzY3JhdGNoaW5nISkgIENydWNpYWxseSBJIGhhdmUgYW5vdGhlcg0K
-PiBwbGFuLiAgRmlndXJlIG91dCB3aGljaCBkcml2ZXJzIHRoaXMgYWN0dWFsbHkgbWFrZXMgYSBk
-aWZmZXJlbmNlIHRvDQo+IGFuZCB0aGFua2Z1bGx5IGluIG1vc3QgY2FzZXMgdGhlIGF1dGhvciBp
-cyBzdGlsbCBhY3RpdmUgOikNCj4gDQo+IA0KPiA+IA0KPiA+IEhvd2V2ZXIsIGl0J3MgdW5jbGVh
-ciB3aGV0aGVyIHRoaXMgcmVhc29uaW5nIGlzIGNvbXBsZXRlbHkgc291bmQgZm9yDQo+ID4gYWxs
-DQo+ID4gZHJpdmVycy4NCj4gPiANCj4gPiBIZW5jZSB0aGlzIFJGQy4NCj4gDQo+IEkndmUgY3Vs
-bGVkIHRoZSBjYXNlcyB0aGF0IGFyZSBvYnZpb3VzLiAgRWl0aGVyIGp1c3QgdGhlIGRlZmF1bHRz
-IG9yDQo+IHdoZXJlIHdlIGRvIHRoZSBjYWxscyBhdCB0aGUgZW5kIG9mIGVuYWJsZSBhbmQgc3Rh
-cnQgb2YgZGlzYWJsZS4NCj4gDQo+IEluIHRob3NlIHRoZXJlIGlzIG5vIG9yZGVyaW5nIGNoYW5n
-ZS4NCj4gDQo+IFRoZXJlIGFyZSBzb21lIG9kZCBvbmVzDQo+IGdwMmFwMDIwYTAwZiBkb2VzIGl0
-IHVuZGVyIGEgbG9jay4gV2hpY2ggbWFrZXMgbm8gZGlmZmVyZW5jZS4NCj4gaXNsMjkxMjUgdG90
-YWxseSBtaXNzYmFsYW5jZWQgc28gdGhlIHByZWVuYWJsZSBkb2VzIHRoaW5ncyB1bmRvbmUgaW4g
-dGhlDQo+ICAgIHByZWRpc2FibGUuICBJIHdvbmRlciBpZiBhbnlvbmUgaGFzIG9uZSB0byBhbGxv
-dyB1cyB0byB0ZXN0IGNsZWFuaW5nDQo+ICAgIHRoYXQgdXAuIE5vIGZsb3cgY2hhbmdlIGR1ZSB0
-byB0aGlzIHBhdGNoIHRob3VnaCBzbyBmaW5lLg0KPiB0Y3MzNDE0IGlzIG11Y2ggdGhlIHNhbWUg
-YXMgdGhlIGlzbDI5MTI1Lg0KPiBsbXA5MTAwMD8/IElzIGFib3V0IGFsbCBJIGNhbiBzYXkgb24g
-dGhhdC4gIEl0IGRldGFjaGVzIGEgcG9sbCBmdW5jdGlvbg0KPiB0aGF0DQo+IHdhcyBuZXZlciBh
-dHRhY2hlZC4NCj4gDQo+IEFueWhvdywgc28gd2hhdCdzIGxlZnQgKGhvcGVmdWxseSB3ZSBoYXZl
-bid0IGhhZCBhbnkgY3JhemllcyBzaW5jZQ0KPiB5b3UgcG9zdGVkIHRoaXMgcGF0Y2guIEknbGwg
-Y2hlY2sgYXQgc29tZXBvaW50KQ0KPiANCj4gPiAgZHJpdmVycy9paW8vYWRjL2FkX3NpZ21hX2Rl
-bHRhLmMgICAgICAgICAgICAgIHwgIDUgLS0tLQ0KPiANCj4gSSdsbCBhc3N1bWUgeW91IGFyZSBm
-aW5lIHdpdGggdGhhdCBvbmUgOykNCj4gDQo+ID4gIGRyaXZlcnMvaWlvL2FkYy9kbG4yLWFkYy5j
-ICAgICAgICAgICAgICAgICAgICB8ICA0ICstLQ0KPiANCj4gKyBDQyBKYWNrIEFuZGVyc29uICh3
-b3JzdCBjb21lcyB0byB0aGUgd29yc3QgSSBoYXZlIG9uZSBvZiB0aGVzZSBhbmQgY2FuDQo+ICAg
-ICAgcnVuIGJhc2ljIHRlc3RzKS4NCj4gDQo+ID4gIGRyaXZlcnMvaWlvL2FkYy9zdG0zMi1hZGMu
-YyAgICAgICAgICAgICAgICAgICB8IDExIC0tLS0tLS0tDQo+IA0KPiArIENDIEZhYnJpY2UNCj4g
-DQo+ID4gIGRyaXZlcnMvaWlvL2FkYy92ZjYxMF9hZGMuYyAgICAgICAgICAgICAgICAgICB8ICA2
-ICstLS0tDQo+IA0KPiArIENDIFNhbmNoYXlhbiB3aG8gbWlnaHQgc3RpbGwgaGF2ZSBhY2Nlc3Mg
-dG8gb25lIG9mIHRoZXNlDQo+ICsgQmh1dmFuY2hhbmRhIHdobyBmaXhlZCBhIGJ1ZyBub3Qgc28g
-bG9uZyBhZ28uLi4NCj4gDQo+ID4gIGRyaXZlcnMvaWlvL2NoZW1pY2FsL2F0bGFzLXBoLXNlbnNv
-ci5jICAgICAgICB8ICA4IC0tLS0tLQ0KPiANCj4gKyBDQyBNYXR0IHdobyBpcyBkZWZpbml0ZWx5
-IHN0aWxsIGNvbnRhY3RhYmxlIGFzIEkgbWV0IGhpbSBsYXN0IHdlZWsgOykNCj4gDQo+ID4gIGRy
-aXZlcnMvaWlvL3BvdGVudGlvc3RhdC9sbXA5MTAwMC5jICAgICAgICAgICB8ICAxIC0NCj4gDQo+
-IEFub3RoZXIgb2YgTWF0dCdzLiAgT24gdGhpcyBvbmUsIEknbSBub3Qgc3VyZSB3aG8gaXQgYXR0
-YWNoZXMNCj4gdGhlIHBvbGxmdW5jIGluIHRoZSBmaXJzdCBwbGFjZS4gIEkgbWF5IGJlIGdvaW5n
-IGNyYXp5IGhvd2V2ZXIsIHNvDQo+IG92ZXIgdG8gTWF0dCB0byBwb2ludCBvdXQgd2hhdCBJJ20g
-bWlzc2luZy4NCj4gDQo+IFNvIHRoZSBhY3R1YWwgY2hhbmdlIHRoYXQgbWF0dGVycyBpczoNCj4g
-DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaWlvL2luZHVzdHJpYWxpby1idWZmZXIuYw0KPiA+
-IGIvZHJpdmVycy9paW8vaW5kdXN0cmlhbGlvLWJ1ZmZlci5jDQo+ID4gaW5kZXggY2Q1YmZlMzk1
-OTFiLi5kOGViNTM0YTk1NDQgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9paW8vaW5kdXN0cmlh
-bGlvLWJ1ZmZlci5jDQo+ID4gKysrIGIvZHJpdmVycy9paW8vaW5kdXN0cmlhbGlvLWJ1ZmZlci5j
-DQo+ID4gQEAgLTI0LDYgKzI0LDcgQEANCj4gPiAgDQo+ID4gICNpbmNsdWRlIDxsaW51eC9paW8v
-aWlvLmg+DQo+ID4gICNpbmNsdWRlICJpaW9fY29yZS5oIg0KPiA+ICsjaW5jbHVkZSAiaWlvX2Nv
-cmVfdHJpZ2dlci5oIg0KPiA+ICAjaW5jbHVkZSA8bGludXgvaWlvL3N5c2ZzLmg+DQo+ID4gICNp
-bmNsdWRlIDxsaW51eC9paW8vYnVmZmVyLmg+DQo+ID4gICNpbmNsdWRlIDxsaW51eC9paW8vYnVm
-ZmVyX2ltcGwuaD4NCj4gPiBAQCAtOTYxLDYgKzk2MiwxMyBAQCBzdGF0aWMgaW50IGlpb19lbmFi
-bGVfYnVmZmVycyhzdHJ1Y3QgaWlvX2Rldg0KPiA+ICppbmRpb19kZXYsDQo+ID4gIAkJfQ0KPiA+
-ICAJfQ0KPiA+ICANCj4gPiArCWlmIChpbmRpb19kZXYtPmN1cnJlbnRtb2RlID09IElORElPX0JV
-RkZFUl9UUklHR0VSRUQpIHsNCj4gPiArCQlyZXQgPSBpaW9fdHJpZ2dlcl9hdHRhY2hfcG9sbF9m
-dW5jKGluZGlvX2Rldi0+dHJpZywNCj4gPiArCQkJCQkJICAgaW5kaW9fZGV2LT5wb2xsZnVuYyk7
-DQo+ID4gKwkJaWYgKHJldCkNCj4gPiArCQkJZ290byBlcnJfZGlzYWJsZV9idWZmZXJzOw0KPiA+
-ICsJfQ0KPiA+ICsNCj4gDQo+IFRoaXMgaXMgaW1tZWRpYXRlbHkgYWZ0ZXIgdGhlIHBvc3RlbmFi
-bGUgY2FsbC4NCj4gDQoNCkknbSB2YWd1ZSBoZXJlIGFib3V0IHlvdXIgY29tbWVudC4NCkRvIEkg
-bmVlZCB0byBjaGFuZ2Ugc29tZXRoaW5nID8NCg0KPiA+ICAJcmV0dXJuIDA7DQo+ID4gIA0KPiA+
-ICBlcnJfZGlzYWJsZV9idWZmZXJzOg0KPiA+IEBAIC05ODcsNiArOTk1LDExIEBAIHN0YXRpYyBp
-bnQgaWlvX2Rpc2FibGVfYnVmZmVycyhzdHJ1Y3QgaWlvX2Rldg0KPiA+ICppbmRpb19kZXYpDQo+
-ID4gIAlpZiAobGlzdF9lbXB0eSgmaW5kaW9fZGV2LT5idWZmZXJfbGlzdCkpDQo+ID4gIAkJcmV0
-dXJuIDA7DQo+ID4gIA0KPiANCj4gVGhpcyBpcyBpbW1lZGlhdGVseSBiZWZvcmUgdGhlIHByZWRp
-c2FibGUgY2FsbC4NCg0KU2FtZSBoZXJlIGFzIGFib3ZlOg0KYGBgDQpJJ20gdmFndWUgaGVyZSBh
-Ym91dCB5b3VyIGNvbW1lbnQuDQpEbyBJIG5lZWQgdG8gY2hhbmdlIHNvbWV0aGluZyA/DQpgYGAN
-Cg0KPiANCj4gPiArCWlmIChpbmRpb19kZXYtPmN1cnJlbnRtb2RlID09IElORElPX0JVRkZFUl9U
-UklHR0VSRUQpIHsNCj4gPiArCQlpaW9fdHJpZ2dlcl9kZXRhY2hfcG9sbF9mdW5jKGluZGlvX2Rl
-di0+dHJpZywNCj4gPiArCQkJCQkgICAgIGluZGlvX2Rldi0+cG9sbGZ1bmMpOw0KPiA+ICsJfQ0K
-PiA+ICsNCj4gPiAgCS8qDQo+ID4gIAkgKiBJZiB0aGluZ3MgZ28gd3JvbmcgYXQgc29tZSBzdGVw
-IGluIGRpc2FibGUgd2Ugc3RpbGwgbmVlZCB0bw0KPiA+IGNvbnRpbnVlDQo+ID4gIAkgKiB0byBw
-ZXJmb3JtIHRoZSBvdGhlciBzdGVwcywgb3RoZXJ3aXNlIHdlIGxlYXZlIHRoZSBkZXZpY2UgaW4g
-YQ0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lpby9pbmR1c3RyaWFsaW8tdHJpZ2dlci5jDQo+
-ID4gYi9kcml2ZXJzL2lpby9pbmR1c3RyaWFsaW8tdHJpZ2dlci5jDQo+ID4gaW5kZXggY2U2NjY5
-OWM3ZmNjLi5hNGRhY2I2MzhhNzIgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9paW8vaW5kdXN0
-cmlhbGlvLXRyaWdnZXIuYw0KPiA+ICsrKyBiL2RyaXZlcnMvaWlvL2luZHVzdHJpYWxpby10cmln
-Z2VyLmMNCj4gPiBAQCAtMjQyLDggKzI0Miw4IEBAIHN0YXRpYyB2b2lkIGlpb190cmlnZ2VyX3B1
-dF9pcnEoc3RydWN0IGlpb190cmlnZ2VyDQo+ID4gKnRyaWcsIGludCBpcnEpDQo+ID4gICAqIHRo
-ZSByZWxldmFudCBmdW5jdGlvbiBpcyBpbiB0aGVyZSBtYXkgYmUgdGhlIGJlc3Qgb3B0aW9uLg0K
-PiA+ICAgKi8NCj4gPiAgLyogV29ydGggcHJvdGVjdGluZyBhZ2FpbnN0IGRvdWJsZSBhZGRpdGlv
-bnM/ICovDQo+ID4gLXN0YXRpYyBpbnQgaWlvX3RyaWdnZXJfYXR0YWNoX3BvbGxfZnVuYyhzdHJ1
-Y3QgaWlvX3RyaWdnZXIgKnRyaWcsDQo+ID4gLQkJCQkJc3RydWN0IGlpb19wb2xsX2Z1bmMgKnBm
-KQ0KPiA+ICtpbnQgaWlvX3RyaWdnZXJfYXR0YWNoX3BvbGxfZnVuYyhzdHJ1Y3QgaWlvX3RyaWdn
-ZXIgKnRyaWcsDQo+ID4gKwkJCQkgc3RydWN0IGlpb19wb2xsX2Z1bmMgKnBmKQ0KPiA+ICB7DQo+
-ID4gIAlpbnQgcmV0ID0gMDsNCj4gPiAgCWJvb2wgbm90aW51c2UNCj4gPiBAQCAtMjkwLDggKzI5
-MCw4IEBAIHN0YXRpYyBpbnQgaWlvX3RyaWdnZXJfYXR0YWNoX3BvbGxfZnVuYyhzdHJ1Y3QNCj4g
-PiBpaW9fdHJpZ2dlciAqdHJpZywNCj4gPiAgCXJldHVybiByZXQ7DQo+ID4gIH0NCj4gPiAgDQo+
-ID4gLXN0YXRpYyBpbnQgaWlvX3RyaWdnZXJfZGV0YWNoX3BvbGxfZnVuYyhzdHJ1Y3QgaWlvX3Ry
-aWdnZXIgKnRyaWcsDQo+ID4gLQkJCQkJIHN0cnVjdCBpaW9fcG9sbF9mdW5jICpwZikNCj4gPiAr
-aW50IGlpb190cmlnZ2VyX2RldGFjaF9wb2xsX2Z1bmMoc3RydWN0IGlpb190cmlnZ2VyICp0cmln
-LA0KPiA+ICsJCQkJIHN0cnVjdCBpaW9fcG9sbF9mdW5jICpwZikNCj4gPiAgew0KPiA+ICAJaW50
-IHJldCA9IDA7DQo+ID4gIAlib29sIG5vX290aGVyX3VzZXJzDQo+ID4gQEAgLTc1OCwxNyArNzU4
-LDMgQEAgdm9pZCBpaW9fZGV2aWNlX3VucmVnaXN0ZXJfdHJpZ2dlcl9jb25zdW1lcihzdHJ1Y3QN
-Cj4gPiBpaW9fZGV2ICppbmRpb19kZXYpDQo+ID4gIAlpZiAoaW5kaW9fZGV2LT50cmlnKQ0KPiA+
-ICAJCWlpb190cmlnZ2VyX3B1dChpbmRpb19kZXYtPnRyaWcpOw0KPiA+ICB9DQo+ID4gLQ0KPiA+
-IC1pbnQgaWlvX3RyaWdnZXJlZF9idWZmZXJfcG9zdGVuYWJsZShzdHJ1Y3QgaWlvX2RldiAqaW5k
-aW9fZGV2KQ0KPiA+IC17DQo+ID4gLQlyZXR1cm4gaWlvX3RyaWdnZXJfYXR0YWNoX3BvbGxfZnVu
-YyhpbmRpb19kZXYtPnRyaWcsDQo+ID4gLQkJCQkJICAgIGluZGlvX2Rldi0+cG9sbGZ1bmMpOw0K
-PiA+IC19DQo+ID4gLUVYUE9SVF9TWU1CT0woaWlvX3RyaWdnZXJlZF9idWZmZXJfcG9zdGVuYWJs
-ZSk7DQo+ID4gLQ0KPiA+IC1pbnQgaWlvX3RyaWdnZXJlZF9idWZmZXJfcHJlZGlzYWJsZShzdHJ1
-Y3QgaWlvX2RldiAqaW5kaW9fZGV2KQ0KPiA+IC17DQo+ID4gLQlyZXR1cm4gaWlvX3RyaWdnZXJf
-ZGV0YWNoX3BvbGxfZnVuYyhpbmRpb19kZXYtPnRyaWcsDQo+ID4gLQkJCQkJICAgICBpbmRpb19k
-ZXYtPnBvbGxmdW5jKTsNCj4gPiAtfQ0KPiA+IC1FWFBPUlRfU1lNQk9MKGlpb190cmlnZ2VyZWRf
-YnVmZmVyX3ByZWRpc2FibGUpOw0KPiANCj4gDQo+IA0KPiANCj4gPiBkaWZmIC0tZ2l0IGEvZHJp
-dmVycy9paW8vYWRjL2FkX3NpZ21hX2RlbHRhLmMNCj4gPiBiL2RyaXZlcnMvaWlvL2FkYy9hZF9z
-aWdtYV9kZWx0YS5jDQo+ID4gaW5kZXggY2YxYjA0OGIwNjY1Li5lZjA0NjI3N2JmN2IgMTAwNjQ0
-DQo+ID4gLS0tIGEvZHJpdmVycy9paW8vYWRjL2FkX3NpZ21hX2RlbHRhLmMNCj4gPiArKysgYi9k
-cml2ZXJzL2lpby9hZGMvYWRfc2lnbWFfZGVsdGEuYw0KPiA+IEBAIC0zMzgsMTAgKzMzOCw2IEBA
-IHN0YXRpYyBpbnQgYWRfc2RfYnVmZmVyX3Bvc3RlbmFibGUoc3RydWN0IGlpb19kZXYNCj4gPiAq
-aW5kaW9fZGV2KQ0KPiA+ICAJdW5zaWduZWQgaW50IGNoYW5uZWw7DQo+ID4gIAlpbnQgcmV0Ow0K
-PiA+ICANCj4gPiAtCXJldCA9IGlpb190cmlnZ2VyZWRfYnVmZmVyX3Bvc3RlbmFibGUoaW5kaW9f
-ZGV2KTsNCj4gPiAtCWlmIChyZXQgPCAwKQ0KPiA+IC0JCXJldHVybiByZXQ7DQo+ID4gLQ0KPiAN
-Cj4gSGVyZSBpcyBvbmUgd2hlcmUgdGhlIG9yZGVyaW5nIGFjdHVhbGx5IGNoYW5nZXMuIEknbSBn
-b2luZyB0byBob3BlIHlvdQ0KPiBjb25jbHVkZWQNCj4gdGhpcyBvbmUgd2FzIGZpbmUgOykNCj4g
-DQoNClllcCwgdGhpcyBwYXRjaCBzaG91bGQgYmUgZmluZSAoZm9yIHRoZSBhZF9zaWdtYV9kZWx0
-YS5jIGNoYW5nZSkuDQpJdCdzIGJlZW4gaW4gb3VyIHRyZWUgZm9yIGEgd2hpbGUuDQoNCj4gPiAg
-CWNoYW5uZWwgPSBmaW5kX2ZpcnN0X2JpdChpbmRpb19kZXYtPmFjdGl2ZV9zY2FuX21hc2ssDQo+
-ID4gIAkJCQkgaW5kaW9fZGV2LT5tYXNrbGVuZ3RoKTsNCj4gPiAgCXJldCA9IGFkX3NpZ21hX2Rl
-bHRhX3NldF9jaGFubmVsKHNpZ21hX2RlbHRhLA0KPiA+IEBAIC00MjYsNyArNDIyLDYgQEAgc3Rh
-dGljIGlycXJldHVybl90IGFkX3NkX3RyaWdnZXJfaGFuZGxlcihpbnQgaXJxLA0KPiA+IHZvaWQg
-KnApDQo+ID4gIA0KPiA+ICBzdGF0aWMgY29uc3Qgc3RydWN0IGlpb19idWZmZXJfc2V0dXBfb3Bz
-IGFkX3NkX2J1ZmZlcl9zZXR1cF9vcHMgPSB7DQo+ID4gIAkucG9zdGVuYWJsZSA9ICZhZF9zZF9i
-dWZmZXJfcG9zdGVuYWJsZSwNCj4gPiAtCS5wcmVkaXNhYmxlID0gJmlpb190cmlnZ2VyZWRfYnVm
-ZmVyX3ByZWRpc2FibGUsDQo+ID4gIAkucG9zdGRpc2FibGUgPSAmYWRfc2RfYnVmZmVyX3Bvc3Rk
-aXNhYmxlLA0KPiA+ICAJLnZhbGlkYXRlX3NjYW5fbWFzayA9ICZpaW9fdmFsaWRhdGVfc2Nhbl9t
-YXNrX29uZWhvdCwNCj4gPiAgfTsNCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9paW8vYWRjL2Rs
-bjItYWRjLmMgYi9kcml2ZXJzL2lpby9hZGMvZGxuMi1hZGMuYw0KPiA+IGluZGV4IGM2NGM2Njc1
-Y2FlNi4uNTExMzVlN2MwZDRmIDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvaWlvL2FkYy9kbG4y
-LWFkYy5jDQo+ID4gKysrIGIvZHJpdmVycy9paW8vYWRjL2RsbjItYWRjLmMNCj4gPiBAQCAtNTYw
-LDcgKzU2MCw3IEBAIHN0YXRpYyBpbnQNCj4gPiBkbG4yX2FkY190cmlnZ2VyZWRfYnVmZmVyX3Bv
-c3RlbmFibGUoc3RydWN0IGlpb19kZXYgKmluZGlvX2RldikNCj4gPiAgCQltdXRleF91bmxvY2so
-JmRsbjItPm11dGV4KTsNCj4gPiAgCX0NCj4gPiAgDQo+ID4gLQlyZXR1cm4gaWlvX3RyaWdnZXJl
-ZF9idWZmZXJfcG9zdGVuYWJsZShpbmRpb19kZXYpOw0KPiA+ICsJcmV0dXJuIDA7DQo+ID4gIH0N
-Cj4gPiAgDQo+ID4gIHN0YXRpYyBpbnQgZGxuMl9hZGNfdHJpZ2dlcmVkX2J1ZmZlcl9wcmVkaXNh
-YmxlKHN0cnVjdCBpaW9fZGV2DQo+ID4gKmluZGlvX2RldikNCj4gPiBAQCAtNTg1LDcgKzU4NSw3
-IEBAIHN0YXRpYyBpbnQNCj4gPiBkbG4yX2FkY190cmlnZ2VyZWRfYnVmZmVyX3ByZWRpc2FibGUo
-c3RydWN0IGlpb19kZXYgKmluZGlvX2RldikNCj4gPiAgCQlyZXR1cm4gcmV0Ow0KPiA+ICAJfQ0K
-PiA+ICANCj4gPiAtCXJldHVybiBpaW9fdHJpZ2dlcmVkX2J1ZmZlcl9wcmVkaXNhYmxlKGluZGlv
-X2Rldik7DQo+IA0KPiBBbiB1bmJhbGFuY2VkIG9uZS4gIFBvc3RlbmFibGUgaXMgZmluZSBidXQg
-cHJlc2Rpc2FibGUuICBXaG8ga25vd3MuLg0KPiANCj4gPiArCXJldHVybiAwOw0KPiA+ICB9DQo+
-ID4gIA0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lpby9hZGMvc3RtMzItYWRjLmMgYi9kcml2
-ZXJzL2lpby9hZGMvc3RtMzItYWRjLmMNCj4gPiBpbmRleCAzNzg0MTE4NTNkNzUuLmNlMGQxN2Mw
-M2Q3ZSAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL2lpby9hZGMvc3RtMzItYWRjLmMNCj4gPiAr
-KysgYi9kcml2ZXJzL2lpby9hZGMvc3RtMzItYWRjLmMNCj4gPiBAQCAtMTQ4MiwxMCArMTQ4Miw2
-IEBAIHN0YXRpYyBpbnQgc3RtMzJfYWRjX2J1ZmZlcl9wb3N0ZW5hYmxlKHN0cnVjdA0KPiA+IGlp
-b19kZXYgKmluZGlvX2RldikNCj4gPiAgCQlnb3RvIGVycl9jbHJfdHJpZzsNCj4gPiAgCX0NCj4g
-PiAgDQo+ID4gLQlyZXQgPSBpaW9fdHJpZ2dlcmVkX2J1ZmZlcl9wb3N0ZW5hYmxlKGluZGlvX2Rl
-dik7DQo+ID4gLQlpZiAocmV0IDwgMCkNCj4gPiAtCQlnb3RvIGVycl9zdG9wX2RtYTsNCj4gPiAt
-DQo+ID4gIAkvKiBSZXNldCBhZGMgYnVmZmVyIGluZGV4ICovDQo+ID4gIAlhZGMtPmJ1ZmkgPSAw
-Ow0KPiA+ICANCj4gPiBAQCAtMTQ5Niw5ICsxNDkyLDYgQEAgc3RhdGljIGludCBzdG0zMl9hZGNf
-YnVmZmVyX3Bvc3RlbmFibGUoc3RydWN0DQo+ID4gaWlvX2RldiAqaW5kaW9fZGV2KQ0KPiA+ICAN
-Cj4gPiAgCXJldHVybiAwOw0KPiA+ICANCj4gPiAtZXJyX3N0b3BfZG1hOg0KPiA+IC0JaWYgKGFk
-Yy0+ZG1hX2NoYW4pDQo+ID4gLQkJZG1hZW5naW5lX3Rlcm1pbmF0ZV9hbGwoYWRjLT5kbWFfY2hh
-bik7DQo+ID4gIGVycl9jbHJfdHJpZzoNCj4gPiAgCXN0bTMyX2FkY19zZXRfdHJpZyhpbmRpb19k
-ZXYsIE5VTEwpOw0KPiA+ICBlcnJfdW5wcmVwYXJlOg0KPiA+IEBAIC0xNTE3LDEwICsxNTEwLDYg
-QEAgc3RhdGljIGludCBzdG0zMl9hZGNfYnVmZmVyX3ByZWRpc2FibGUoc3RydWN0DQo+ID4gaWlv
-X2RldiAqaW5kaW9fZGV2KQ0KPiA+ICAJaWYgKCFhZGMtPmRtYV9jaGFuKQ0KPiA+ICAJCXN0bTMy
-X2FkY19jb252X2lycV9kaXNhYmxlKGFkYyk7DQo+ID4gIA0KPiA+IC0JcmV0ID0gaWlvX3RyaWdn
-ZXJlZF9idWZmZXJfcHJlZGlzYWJsZShpbmRpb19kZXYpOw0KPiA+IC0JaWYgKHJldCA8IDApDQo+
-ID4gLQkJZGV2X2VycigmaW5kaW9fZGV2LT5kZXYsICJwcmVkaXNhYmxlIGZhaWxlZFxuIik7DQo+
-ID4gLQ0KPiA+ICAJaWYgKGFkYy0+ZG1hX2NoYW4pDQo+ID4gIAkJZG1hZW5naW5lX3Rlcm1pbmF0
-ZV9hbGwoYWRjLT5kbWFfY2hhbik7DQo+ID4gIA0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lp
-by9hZGMvdmY2MTBfYWRjLmMgYi9kcml2ZXJzL2lpby9hZGMvdmY2MTBfYWRjLmMNCj4gPiBpbmRl
-eCBiYmNiN2E0ZDdlZGYuLjNhMTViOThjZmQzOSAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL2lp
-by9hZGMvdmY2MTBfYWRjLmMNCj4gPiArKysgYi9kcml2ZXJzL2lpby9hZGMvdmY2MTBfYWRjLmMN
-Cj4gPiBAQCAtNzQwLDEwICs3NDAsNiBAQCBzdGF0aWMgaW50IHZmNjEwX2FkY19idWZmZXJfcG9z
-dGVuYWJsZShzdHJ1Y3QNCj4gPiBpaW9fZGV2ICppbmRpb19kZXYpDQo+ID4gIAlpbnQgcmV0Ow0K
-PiA+ICAJaW50IHZhbDsNCj4gPiAgDQo+ID4gLQlyZXQgPSBpaW9fdHJpZ2dlcmVkX2J1ZmZlcl9w
-b3N0ZW5hYmxlKGluZGlvX2Rldik7DQo+ID4gLQlpZiAocmV0KQ0KPiA+IC0JCXJldHVybiByZXQ7
-DQo+ID4gLQ0KPiA+ICAJdmFsID0gcmVhZGwoaW5mby0+cmVncyArIFZGNjEwX1JFR19BRENfR0Mp
-Ow0KPiA+ICAJdmFsIHw9IFZGNjEwX0FEQ19BRENPTjsNCj4gPiAgCXdyaXRlbCh2YWwsIGluZm8t
-PnJlZ3MgKyBWRjYxMF9SRUdfQURDX0dDKTsNCj4gPiBAQCAtNzc0LDcgKzc3MCw3IEBAIHN0YXRp
-YyBpbnQgdmY2MTBfYWRjX2J1ZmZlcl9wcmVkaXNhYmxlKHN0cnVjdA0KPiA+IGlpb19kZXYgKmlu
-ZGlvX2RldikNCj4gPiAgDQo+ID4gIAl3cml0ZWwoaGNfY2ZnLCBpbmZvLT5yZWdzICsgVkY2MTBf
-UkVHX0FEQ19IQzApOw0KPiA+ICANCj4gPiAtCXJldHVybiBpaW9fdHJpZ2dlcmVkX2J1ZmZlcl9w
-cmVkaXNhYmxlKGluZGlvX2Rldik7DQo+ID4gKwlyZXR1cm4gMDsNCj4gPiAgfQ0KPiA+ICANCj4g
-PiAgc3RhdGljIGNvbnN0IHN0cnVjdCBpaW9fYnVmZmVyX3NldHVwX29wcw0KPiA+IGlpb190cmln
-Z2VyZWRfYnVmZmVyX3NldHVwX29wcyA9IHsNCj4gDQo+IA0KPiA+IGRpZmYgLS1naXQgYS9kcml2
-ZXJzL2lpby9jaGVtaWNhbC9hdGxhcy1waC1zZW5zb3IuYw0KPiA+IGIvZHJpdmVycy9paW8vY2hl
-bWljYWwvYXRsYXMtcGgtc2Vuc29yLmMNCj4gPiBpbmRleCBhNDA2YWQzMWIwOTYuLjhmZWQ3NWY5
-ZTk1ZCAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL2lpby9jaGVtaWNhbC9hdGxhcy1waC1zZW5z
-b3IuYw0KPiA+ICsrKyBiL2RyaXZlcnMvaWlvL2NoZW1pY2FsL2F0bGFzLXBoLXNlbnNvci5jDQo+
-ID4gQEAgLTMwNSwxMCArMzA1LDYgQEAgc3RhdGljIGludCBhdGxhc19idWZmZXJfcG9zdGVuYWJs
-ZShzdHJ1Y3QgaWlvX2Rldg0KPiA+ICppbmRpb19kZXYpDQo+ID4gIAlzdHJ1Y3QgYXRsYXNfZGF0
-YSAqZGF0YSA9IGlpb19wcml2KGluZGlvX2Rldik7DQo+ID4gIAlpbnQgcmV0Ow0KPiA+ICANCj4g
-PiAtCXJldCA9IGlpb190cmlnZ2VyZWRfYnVmZmVyX3Bvc3RlbmFibGUoaW5kaW9fZGV2KTsNCj4g
-PiAtCWlmIChyZXQpDQo+ID4gLQkJcmV0dXJuIHJldDsNCj4gPiAtDQo+ID4gIAlyZXQgPSBwbV9y
-dW50aW1lX2dldF9zeW5jKCZkYXRhLT5jbGllbnQtPmRldik7DQo+ID4gIAlpZiAocmV0IDwgMCkg
-ew0KPiA+ICAJCXBtX3J1bnRpbWVfcHV0X25vaWRsZSgmZGF0YS0+Y2xpZW50LT5kZXYpOw0KPiA+
-IEBAIC0zMjMsMTAgKzMxOSw2IEBAIHN0YXRpYyBpbnQgYXRsYXNfYnVmZmVyX3ByZWRpc2FibGUo
-c3RydWN0IGlpb19kZXYNCj4gPiAqaW5kaW9fZGV2KQ0KPiA+ICAJc3RydWN0IGF0bGFzX2RhdGEg
-KmRhdGEgPSBpaW9fcHJpdihpbmRpb19kZXYpOw0KPiA+ICAJaW50IHJldDsNCj4gPiAgDQo+ID4g
-LQlyZXQgPSBpaW9fdHJpZ2dlcmVkX2J1ZmZlcl9wcmVkaXNhYmxlKGluZGlvX2Rldik7DQo+ID4g
-LQlpZiAocmV0KQ0KPiA+IC0JCXJldHVybiByZXQ7DQo+ID4gLQ0KPiA+ICAJcmV0ID0gYXRsYXNf
-c2V0X2ludGVycnVwdChkYXRhLCBmYWxzZSk7DQo+ID4gIAlpZiAocmV0KQ0KPiA+ICAJCXJldHVy
-biByZXQ7DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaWlvL3BvdGVudGlvc3RhdC9sbXA5MTAw
-MC5jDQo+ID4gYi9kcml2ZXJzL2lpby9wb3RlbnRpb3N0YXQvbG1wOTEwMDAuYw0KPiA+IGluZGV4
-IDg1NzE0MDU1Y2M3NC4uODRmOTEwNWNiYjM3IDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvaWlv
-L3BvdGVudGlvc3RhdC9sbXA5MTAwMC5jDQo+ID4gKysrIGIvZHJpdmVycy9paW8vcG90ZW50aW9z
-dGF0L2xtcDkxMDAwLmMNCj4gPiBAQCAtMjk1LDcgKzI5NSw2IEBAIHN0YXRpYyBpbnQgbG1wOTEw
-MDBfYnVmZmVyX3ByZWRpc2FibGUoc3RydWN0DQo+ID4gaWlvX2RldiAqaW5kaW9fZGV2KQ0KPiA+
-ICANCj4gPiAgc3RhdGljIGNvbnN0IHN0cnVjdCBpaW9fYnVmZmVyX3NldHVwX29wcyBsbXA5MTAw
-MF9idWZmZXJfc2V0dXBfb3BzID0gew0KPiA+ICAJLnByZWVuYWJsZSA9IGxtcDkxMDAwX2J1ZmZl
-cl9wcmVlbmFibGUsDQo+ID4gLQkucG9zdGVuYWJsZSA9IGlpb190cmlnZ2VyZWRfYnVmZmVyX3Bv
-c3RlbmFibGUsDQo+IA0KPiBBIHJlc291bmRpbmcgPz8/IA0KPiA+ICAJLnByZWRpc2FibGUgPSBs
-bXA5MTAwMF9idWZmZXJfcHJlZGlzYWJsZSwNCj4gPiAgfTsNCj4gPiAgDQo+IA0KPiANCg==
+On 11/9/18 11:03 AM, Ardelean, Alexandru wrote:
+> On Sat, 2018-11-03 at 18:19 +0000, Jonathan Cameron wrote:
+>> On Fri, 22 Jun 2018 16:53:22 +0300
+>> Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
+> 
+> Hey,
+> 
+> Thanks for taking the time for this, Jonathan.
+> 
+>>
+>>> All devices using a triggered buffer need to attach and detach the
+>>> trigger
+>>> to the device in order to properly work. Instead of doing this in each
+>>> and
+>>> every driver by hand move this into the core.
+>>>
+>>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+>>> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+>>> ---
+>>>
+>>> Note: `Signed-off-by` is also Lars-Peter Clausen because he is the
+>>> original author of this patch [on an older kernel].
+>>> The patch has been updated since the original patch from Lars.
+>>>
+>>> There has been a (small) discussion about whether such a patch makes
+>>> sense to implement (for reducing code duplication), or whether it's too
+>>> risky to do it.
+>>>
+>>> The reason for the risky-ness is that there is no consistent way in
+>>> which
+>>> drivers attach/detach the poll function.
+>>> i.e.
+>>>    1. some drivers call `iio_triggered_buffer_postenable()` before
+>>> doing HW
+>>>       stuff, some after (for attaching the poll func)
+>>>    2. similarly, for `iio_triggered_buffer_predisable()` some drivers
+>>> do it
+>>>       before HW stuff, some after (for detaching the poll func)
+>>>
+>>> Common sense would dictate that (in the case of
+>>> `iio_triggered_buffer_postenable()`) there would normally be HW setup
+>>> first
+>>> and then attach the poll func.
+>>> And the reverse done for `iio_triggered_buffer_predisable()`.
+>>
+>> I'm sure I once had the flow around this all well laid out, but I really
+>> can't recall what it was and it was all tied around trying to do the
+>> buffer enable as lockless as possible. Years ago Lars pointed out that
+>> was impossible so a lot of the logic has been messed up since then.
+>>
+>> Anyhow, I've put this off long enough (sorry about that - just new it
+>> was going to involve some head scratching!)  Crucially I have another
+>> plan.  Figure out which drivers this actually makes a difference to
+>> and thankfully in most cases the author is still active :)
+>>
+>>
+>>>
+>>> However, it's unclear whether this reasoning is completely sound for
+>>> all
+>>> drivers.
+>>>
+>>> Hence this RFC.
+>>
+>> I've culled the cases that are obvious.  Either just the defaults or
+>> where we do the calls at the end of enable and start of disable.
+>>
+>> In those there is no ordering change.
+>>
+>> There are some odd ones
+>> gp2ap020a00f does it under a lock. Which makes no difference.
+>> isl29125 totally missbalanced so the preenable does things undone in the
+>>    predisable.  I wonder if anyone has one to allow us to test cleaning
+>>    that up. No flow change due to this patch though so fine.
+>> tcs3414 is much the same as the isl29125.
+>> lmp91000?? Is about all I can say on that.  It detaches a poll function
+>> that
+>> was never attached.
+>>
+>> Anyhow, so what's left (hopefully we haven't had any crazies since
+>> you posted this patch. I'll check at somepoint)
+>>
+>>>  drivers/iio/adc/ad_sigma_delta.c              |  5 ----
+>>
+>> I'll assume you are fine with that one ;)
+>>
+>>>  drivers/iio/adc/dln2-adc.c                    |  4 +--
+>>
+>> + CC Jack Anderson (worst comes to the worst I have one of these and can
+>>      run basic tests).
+>>
+>>>  drivers/iio/adc/stm32-adc.c                   | 11 --------
+>>
+>> + CC Fabrice
+
+Hi Ardelean, Jonathan,
+
+Thanks for CC'ing me. Please find my comments here here after.
+
+>>
+>>>  drivers/iio/adc/vf610_adc.c                   |  6 +----
+>>
+>> + CC Sanchayan who might still have access to one of these
+>> + Bhuvanchanda who fixed a bug not so long ago...
+>>
+>>>  drivers/iio/chemical/atlas-ph-sensor.c        |  8 ------
+>>
+>> + CC Matt who is definitely still contactable as I met him last week ;)
+>>
+>>>  drivers/iio/potentiostat/lmp91000.c           |  1 -
+>>
+>> Another of Matt's.  On this one, I'm not sure who it attaches
+>> the pollfunc in the first place.  I may be going crazy however, so
+>> over to Matt to point out what I'm missing.
+>>
+>> So the actual change that matters is:
+>>
+>>> diff --git a/drivers/iio/industrialio-buffer.c
+>>> b/drivers/iio/industrialio-buffer.c
+>>> index cd5bfe39591b..d8eb534a9544 100644
+>>> --- a/drivers/iio/industrialio-buffer.c
+>>> +++ b/drivers/iio/industrialio-buffer.c
+>>> @@ -24,6 +24,7 @@
+>>>  
+>>>  #include <linux/iio/iio.h>
+>>>  #include "iio_core.h"
+>>> +#include "iio_core_trigger.h"
+>>>  #include <linux/iio/sysfs.h>
+>>>  #include <linux/iio/buffer.h>
+>>>  #include <linux/iio/buffer_impl.h>
+>>> @@ -961,6 +962,13 @@ static int iio_enable_buffers(struct iio_dev
+>>> *indio_dev,
+>>>  		}
+>>>  	}
+>>>  
+>>> +	if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED) {
+>>> +		ret = iio_trigger_attach_poll_func(indio_dev->trig,
+>>> +						   indio_dev->pollfunc);
+>>> +		if (ret)
+>>> +			goto err_disable_buffers;
+>>> +	}
+>>> +
+>>
+>> This is immediately after the postenable call.
+>>
+> 
+> I'm vague here about your comment.
+> Do I need to change something ?
+> 
+
+I have some concern about the ordering here as well, regarding
+stm32-adc.c: I think this is same case as ad_sigma_delta.c (I haven't
+checked the others).
+
+With this patch, in stm32-adc case, the hardware gets started (e.g.
+getting data with interrupts or dma) before the handler has been attached:
+-> iio_triggered_buffer_postenable
+ -> iio_trigger_attach_poll_func
+  -> request_threaded_irq
+
+I haven't tested it, but I think this is racy. I feel like
+iio_trigger_attach_poll_func should happen before postenable call
+(rather than after), see after stm32-adc.c.
+
+>>>  	return 0;
+>>>  
+>>>  err_disable_buffers:
+>>> @@ -987,6 +995,11 @@ static int iio_disable_buffers(struct iio_dev
+>>> *indio_dev)
+>>>  	if (list_empty(&indio_dev->buffer_list))
+>>>  		return 0;
+>>>  
+>>
+>> This is immediately before the predisable call.
+> 
+> Same here as above:
+> ```
+> I'm vague here about your comment.
+> Do I need to change something ?
+> ```
+> 
+
+Same here (at least for stm32-adc case): the handler gets unregistered
+but the hardware is still running (e.g. getting data with interrupts or
+dma).
+
+I'd prefer the other way :-):
+- upon enable: attach the poll func, then start the HW
+- upon disable: stop the HW, detach the poll func
+
+>>
+>>> +	if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED) {
+>>> +		iio_trigger_detach_poll_func(indio_dev->trig,
+>>> +					     indio_dev->pollfunc);
+>>> +	}
+>>> +
+>>>  	/*
+>>>  	 * If things go wrong at some step in disable we still need to
+>>> continue
+>>>  	 * to perform the other steps, otherwise we leave the device in a
+>>> diff --git a/drivers/iio/industrialio-trigger.c
+>>> b/drivers/iio/industrialio-trigger.c
+>>> index ce66699c7fcc..a4dacb638a72 100644
+>>> --- a/drivers/iio/industrialio-trigger.c
+>>> +++ b/drivers/iio/industrialio-trigger.c
+>>> @@ -242,8 +242,8 @@ static void iio_trigger_put_irq(struct iio_trigger
+>>> *trig, int irq)
+>>>   * the relevant function is in there may be the best option.
+>>>   */
+>>>  /* Worth protecting against double additions? */
+>>> -static int iio_trigger_attach_poll_func(struct iio_trigger *trig,
+>>> -					struct iio_poll_func *pf)
+>>> +int iio_trigger_attach_poll_func(struct iio_trigger *trig,
+>>> +				 struct iio_poll_func *pf)
+>>>  {
+>>>  	int ret = 0;
+>>>  	bool notinuse
+>>> @@ -290,8 +290,8 @@ static int iio_trigger_attach_poll_func(struct
+>>> iio_trigger *trig,
+>>>  	return ret;
+>>>  }
+>>>  
+>>> -static int iio_trigger_detach_poll_func(struct iio_trigger *trig,
+>>> -					 struct iio_poll_func *pf)
+>>> +int iio_trigger_detach_poll_func(struct iio_trigger *trig,
+>>> +				 struct iio_poll_func *pf)
+>>>  {
+>>>  	int ret = 0;
+>>>  	bool no_other_users
+>>> @@ -758,17 +758,3 @@ void iio_device_unregister_trigger_consumer(struct
+>>> iio_dev *indio_dev)
+>>>  	if (indio_dev->trig)
+>>>  		iio_trigger_put(indio_dev->trig);
+>>>  }
+>>> -
+>>> -int iio_triggered_buffer_postenable(struct iio_dev *indio_dev)
+>>> -{
+>>> -	return iio_trigger_attach_poll_func(indio_dev->trig,
+>>> -					    indio_dev->pollfunc);
+>>> -}
+>>> -EXPORT_SYMBOL(iio_triggered_buffer_postenable);
+>>> -
+>>> -int iio_triggered_buffer_predisable(struct iio_dev *indio_dev)
+>>> -{
+>>> -	return iio_trigger_detach_poll_func(indio_dev->trig,
+>>> -					     indio_dev->pollfunc);
+>>> -}
+>>> -EXPORT_SYMBOL(iio_triggered_buffer_predisable);
+>>
+>>
+>>
+>>
+>>> diff --git a/drivers/iio/adc/ad_sigma_delta.c
+>>> b/drivers/iio/adc/ad_sigma_delta.c
+>>> index cf1b048b0665..ef046277bf7b 100644
+>>> --- a/drivers/iio/adc/ad_sigma_delta.c
+>>> +++ b/drivers/iio/adc/ad_sigma_delta.c
+>>> @@ -338,10 +338,6 @@ static int ad_sd_buffer_postenable(struct iio_dev
+>>> *indio_dev)
+>>>  	unsigned int channel;
+>>>  	int ret;
+>>>  
+>>> -	ret = iio_triggered_buffer_postenable(indio_dev);
+>>> -	if (ret < 0)
+>>> -		return ret;
+>>> -
+>>
+>> Here is one where the ordering actually changes. I'm going to hope you
+>> concluded
+>> this one was fine ;)
+>>
+> 
+> Yep, this patch should be fine (for the ad_sigma_delta.c change).
+> It's been in our tree for a while.
+> 
+>>>  	channel = find_first_bit(indio_dev->active_scan_mask,
+>>>  				 indio_dev->masklength);
+>>>  	ret = ad_sigma_delta_set_channel(sigma_delta,
+>>> @@ -426,7 +422,6 @@ static irqreturn_t ad_sd_trigger_handler(int irq,
+>>> void *p)
+>>>  
+>>>  static const struct iio_buffer_setup_ops ad_sd_buffer_setup_ops = {
+>>>  	.postenable = &ad_sd_buffer_postenable,
+>>> -	.predisable = &iio_triggered_buffer_predisable,
+>>>  	.postdisable = &ad_sd_buffer_postdisable,
+>>>  	.validate_scan_mask = &iio_validate_scan_mask_onehot,
+>>>  };
+>>> diff --git a/drivers/iio/adc/dln2-adc.c b/drivers/iio/adc/dln2-adc.c
+>>> index c64c6675cae6..51135e7c0d4f 100644
+>>> --- a/drivers/iio/adc/dln2-adc.c
+>>> +++ b/drivers/iio/adc/dln2-adc.c
+>>> @@ -560,7 +560,7 @@ static int
+>>> dln2_adc_triggered_buffer_postenable(struct iio_dev *indio_dev)
+>>>  		mutex_unlock(&dln2->mutex);
+>>>  	}
+>>>  
+>>> -	return iio_triggered_buffer_postenable(indio_dev);
+>>> +	return 0;
+>>>  }
+>>>  
+>>>  static int dln2_adc_triggered_buffer_predisable(struct iio_dev
+>>> *indio_dev)
+>>> @@ -585,7 +585,7 @@ static int
+>>> dln2_adc_triggered_buffer_predisable(struct iio_dev *indio_dev)
+>>>  		return ret;
+>>>  	}
+>>>  
+>>> -	return iio_triggered_buffer_predisable(indio_dev);
+>>
+>> An unbalanced one.  Postenable is fine but presdisable.  Who knows..
+>>
+>>> +	return 0;
+>>>  }
+>>>  
+>>> diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
+>>> index 378411853d75..ce0d17c03d7e 100644
+>>> --- a/drivers/iio/adc/stm32-adc.c
+>>> +++ b/drivers/iio/adc/stm32-adc.c
+>>> @@ -1482,10 +1482,6 @@ static int stm32_adc_buffer_postenable(struct
+>>> iio_dev *indio_dev)
+>>>  		goto err_clr_trig;
+>>>  	}
+>>>  
+>>> -	ret = iio_triggered_buffer_postenable(indio_dev);
+>>> -	if (ret < 0)
+>>> -		goto err_stop_dma;
+>>> -
+
+This is where the ordering changes.
+I'd rather prefer to call "iio_trigger_attach_poll_func" before calling
+the .postenable routine, and the reverse order when disabling.
+
+Thanks,
+Best regards,
+Fabrice
+
+>>>  	/* Reset adc buffer index */
+>>>  	adc->bufi = 0;
+>>>  
+>>> @@ -1496,9 +1492,6 @@ static int stm32_adc_buffer_postenable(struct
+>>> iio_dev *indio_dev)
+>>>  
+>>>  	return 0;
+>>>  
+>>> -err_stop_dma:
+>>> -	if (adc->dma_chan)
+>>> -		dmaengine_terminate_all(adc->dma_chan);
+>>>  err_clr_trig:
+>>>  	stm32_adc_set_trig(indio_dev, NULL);
+>>>  err_unprepare:
+>>> @@ -1517,10 +1510,6 @@ static int stm32_adc_buffer_predisable(struct
+>>> iio_dev *indio_dev)
+>>>  	if (!adc->dma_chan)
+>>>  		stm32_adc_conv_irq_disable(adc);
+>>>  
+>>> -	ret = iio_triggered_buffer_predisable(indio_dev);
+>>> -	if (ret < 0)
+>>> -		dev_err(&indio_dev->dev, "predisable failed\n");
+>>> -
+>>>  	if (adc->dma_chan)
+>>>  		dmaengine_terminate_all(adc->dma_chan);
+>>>  
+>>> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
+>>> index bbcb7a4d7edf..3a15b98cfd39 100644
+>>> --- a/drivers/iio/adc/vf610_adc.c
+>>> +++ b/drivers/iio/adc/vf610_adc.c
+>>> @@ -740,10 +740,6 @@ static int vf610_adc_buffer_postenable(struct
+>>> iio_dev *indio_dev)
+>>>  	int ret;
+>>>  	int val;
+>>>  
+>>> -	ret = iio_triggered_buffer_postenable(indio_dev);
+>>> -	if (ret)
+>>> -		return ret;
+>>> -
+>>>  	val = readl(info->regs + VF610_REG_ADC_GC);
+>>>  	val |= VF610_ADC_ADCON;
+>>>  	writel(val, info->regs + VF610_REG_ADC_GC);
+>>> @@ -774,7 +770,7 @@ static int vf610_adc_buffer_predisable(struct
+>>> iio_dev *indio_dev)
+>>>  
+>>>  	writel(hc_cfg, info->regs + VF610_REG_ADC_HC0);
+>>>  
+>>> -	return iio_triggered_buffer_predisable(indio_dev);
+>>> +	return 0;
+>>>  }
+>>>  
+>>>  static const struct iio_buffer_setup_ops
+>>> iio_triggered_buffer_setup_ops = {
+>>
+>>
+>>> diff --git a/drivers/iio/chemical/atlas-ph-sensor.c
+>>> b/drivers/iio/chemical/atlas-ph-sensor.c
+>>> index a406ad31b096..8fed75f9e95d 100644
+>>> --- a/drivers/iio/chemical/atlas-ph-sensor.c
+>>> +++ b/drivers/iio/chemical/atlas-ph-sensor.c
+>>> @@ -305,10 +305,6 @@ static int atlas_buffer_postenable(struct iio_dev
+>>> *indio_dev)
+>>>  	struct atlas_data *data = iio_priv(indio_dev);
+>>>  	int ret;
+>>>  
+>>> -	ret = iio_triggered_buffer_postenable(indio_dev);
+>>> -	if (ret)
+>>> -		return ret;
+>>> -
+>>>  	ret = pm_runtime_get_sync(&data->client->dev);
+>>>  	if (ret < 0) {
+>>>  		pm_runtime_put_noidle(&data->client->dev);
+>>> @@ -323,10 +319,6 @@ static int atlas_buffer_predisable(struct iio_dev
+>>> *indio_dev)
+>>>  	struct atlas_data *data = iio_priv(indio_dev);
+>>>  	int ret;
+>>>  
+>>> -	ret = iio_triggered_buffer_predisable(indio_dev);
+>>> -	if (ret)
+>>> -		return ret;
+>>> -
+>>>  	ret = atlas_set_interrupt(data, false);
+>>>  	if (ret)
+>>>  		return ret;
+>>> diff --git a/drivers/iio/potentiostat/lmp91000.c
+>>> b/drivers/iio/potentiostat/lmp91000.c
+>>> index 85714055cc74..84f9105cbb37 100644
+>>> --- a/drivers/iio/potentiostat/lmp91000.c
+>>> +++ b/drivers/iio/potentiostat/lmp91000.c
+>>> @@ -295,7 +295,6 @@ static int lmp91000_buffer_predisable(struct
+>>> iio_dev *indio_dev)
+>>>  
+>>>  static const struct iio_buffer_setup_ops lmp91000_buffer_setup_ops = {
+>>>  	.preenable = lmp91000_buffer_preenable,
+>>> -	.postenable = iio_triggered_buffer_postenable,
+>>
+>> A resounding ??? 
+>>>  	.predisable = lmp91000_buffer_predisable,
+>>>  };
+>>>  
+>>
+>>
