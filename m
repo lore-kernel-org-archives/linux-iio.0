@@ -1,105 +1,39 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:32800 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728712AbeKLBwB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 11 Nov 2018 20:52:01 -0500
-Date: Sun, 11 Nov 2018 16:03:00 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Baolin Wang <baolin.wang@linaro.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:39640 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727845AbeKIRNg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Nov 2018 12:13:36 -0500
+Date: Fri, 9 Nov 2018 13:04:09 +0530
+From: Nishad Kamdar <nishadkamdar@gmail.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        freeman.liu@unisoc.com, Mark Brown <broonie@kernel.org>,
-        linux-iio@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: adc: sc27xx: Add ADC data conversion timeout
-Message-ID: <20181111160300.3193196c@archlinux>
-In-Reply-To: <CAMz4kuJoJAEq1uGvwnnkbQDi8SqS+kWfpgjtmcNoutfgJDwQaw@mail.gmail.com>
-References: <208f9043fbd9b14b7a0c2743f68fa424388f5dcd.1541733478.git.baolin.wang@linaro.org>
-        <20181111124044.52f61897@archlinux>
-        <CAMz4kuJoJAEq1uGvwnnkbQDi8SqS+kWfpgjtmcNoutfgJDwQaw@mail.gmail.com>
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3 0/4] staging: iio: ad7816: Switch to the gpio descriptor
+ interface
+Message-ID: <cover.1541733949.git.nishadkamdar@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, 11 Nov 2018 23:00:18 +0800
-Baolin Wang <baolin.wang@linaro.org> wrote:
+Changes in v4:
+ - Drop busy pin in case of AD7818.
+ - Set RD/WR pin and CONVST pin as outputs.
+ - Add device tree table.
 
-> Hi Jonathan,
-> 
-> On 11 November 2018 at 20:40, Jonathan Cameron <jic23@kernel.org> wrote:
-> > On Fri,  9 Nov 2018 11:25:31 +0800
-> > Baolin Wang <baolin.wang@linaro.org> wrote:
-> >  
-> >> From: Freeman Liu <freeman.liu@unisoc.com>
-> >>
-> >> Sometimes the ADC controller met some problems, and it will not complete
-> >> the data conversion, that will can not wake up the read process any more
-> >> to block users. So we should add one maximum conversion time to avoid
-> >> this issue.
-> >>
-> >> Signed-off-by: Freeman Liu <freeman.liu@unisoc.com>
-> >> Signed-off-by: Baolin Wang <baolin.wang@linaro.org>  
-> > Hi.
-> >
-> > Patch looks good, but sounds like this is a fix so could I have a fixes
-> > tag and a patch title that makes that clear?
-> >
-> > I think we will want this one back ported to stable by the sound of it.
-> >
-> > If it is just a theoretical issue then perhaps we don't need to bother.  
-> 
-> Thanks for your review. This patch is not one bug fix, just make the
-> code more robust in case of some bad cases. So I think we do not need
-> the stable tag.
-Thanks.
+Nishad Kamdar (4):
+  staging: iio: ad7816: Switch to the gpio descriptor interface
+  staging: iio: ad7816: Do not use busy_pin in case of AD7818
+  staging: iio: ad7816: Set RD/WR pin and CONVST pin as outputs.
+  staging: iio: ad7816: Add device tree table.
 
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+ drivers/staging/iio/adc/ad7816.c | 111 +++++++++++++++++--------------
+ 1 file changed, 60 insertions(+), 51 deletions(-)
 
-Jonathan
-
-> 
-> >
-> > Thanks,
-> >
-> > Jonathan
-> >  
-> >> ---
-> >>  drivers/iio/adc/sc27xx_adc.c |   12 +++++++++++-
-> >>  1 file changed, 11 insertions(+), 1 deletion(-)
-> >>
-> >> diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
-> >> index 7940b23..f7f7a189 100644
-> >> --- a/drivers/iio/adc/sc27xx_adc.c
-> >> +++ b/drivers/iio/adc/sc27xx_adc.c
-> >> @@ -52,6 +52,9 @@
-> >>  /* Timeout (ms) for the trylock of hardware spinlocks */
-> >>  #define SC27XX_ADC_HWLOCK_TIMEOUT    5000
-> >>
-> >> +/* Timeout (ms) for ADC data conversion according to ADC datasheet */
-> >> +#define SC27XX_ADC_RDY_TIMEOUT               100
-> >> +
-> >>  /* Maximum ADC channel number */
-> >>  #define SC27XX_ADC_CHANNEL_MAX               32
-> >>
-> >> @@ -223,7 +226,14 @@ static int sc27xx_adc_read(struct sc27xx_adc_data *data, int channel,
-> >>       if (ret)
-> >>               goto disable_adc;
-> >>
-> >> -     wait_for_completion(&data->completion);
-> >> +     ret = wait_for_completion_timeout(&data->completion,
-> >> +                             msecs_to_jiffies(SC27XX_ADC_RDY_TIMEOUT));
-> >> +     if (!ret) {
-> >> +             dev_err(data->dev, "read ADC data timeout\n");
-> >> +             ret = -ETIMEDOUT;
-> >> +     } else {
-> >> +             ret = 0;
-> >> +     }
-> >>
-> >>  disable_adc:
-> >>       regmap_update_bits(data->regmap, data->base + SC27XX_ADC_CTL,  
-> >  
-> 
-> 
-> 
+-- 
+2.17.1
