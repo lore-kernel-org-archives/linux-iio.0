@@ -1,79 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:36020 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728802AbeKLCCt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 11 Nov 2018 21:02:49 -0500
-Date: Sun, 11 Nov 2018 16:13:48 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:37814 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728229AbeKLAEe (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 11 Nov 2018 19:04:34 -0500
+Received: by mail-wr1-f68.google.com with SMTP id o15-v6so6543514wrv.4
+        for <linux-iio@vger.kernel.org>; Sun, 11 Nov 2018 06:15:52 -0800 (PST)
+From: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To: jic23@kernel.org
 Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 2/9] iio: imu: st_lsm6dsx: reload trimming parameter
- at bootstrap
-Message-ID: <20181111161348.1dc61ab6@archlinux>
-In-Reply-To: <9b47f1429ddec5144d52605ef0ccf1f15a310db4.1541945612.git.lorenzo.bianconi@redhat.com>
+Subject: [PATCH v2 3/9] iio: imu: st_lsm6dsx: remove static from st_lsm6dsx_set_watermark
+Date: Sun, 11 Nov 2018 15:15:30 +0100
+Message-Id: <19b4dfa76bb6e06ccd7aa219d7867ccfca1e9c82.1541945612.git.lorenzo.bianconi@redhat.com>
+In-Reply-To: <cover.1541945612.git.lorenzo.bianconi@redhat.com>
 References: <cover.1541945612.git.lorenzo.bianconi@redhat.com>
-        <9b47f1429ddec5144d52605ef0ccf1f15a310db4.1541945612.git.lorenzo.bianconi@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, 11 Nov 2018 15:15:29 +0100
-Lorenzo Bianconi <lorenzo.bianconi@redhat.com> wrote:
+Remove static qualifier from st_lsm6dsx_set_watermark routine in
+order to be reused supporting st_lsm6dsx i2c controller
 
-> Perform a complete device reset at bootstrap reloading trimming parameter
-> after sw reset is completed. Device sw reset/boot is explained here:
-> https://www.st.com/resource/en/application_note/dm00517282.pdf,
-> section 5.7
-> 
-> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+---
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h      | 1 +
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 18 +++++++++++++++---
->  1 file changed, 15 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> index c8b993bea757..961ce9d65d82 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> @@ -56,6 +56,7 @@
->  #define ST_LSM6DSX_REG_WHOAMI_ADDR		0x0f
->  #define ST_LSM6DSX_REG_RESET_ADDR		0x12
->  #define ST_LSM6DSX_REG_RESET_MASK		BIT(0)
-> +#define ST_LSM6DSX_REG_BOOT_MASK		BIT(7)
->  #define ST_LSM6DSX_REG_BDU_ADDR			0x12
->  #define ST_LSM6DSX_REG_BDU_MASK			BIT(6)
->  #define ST_LSM6DSX_REG_INT2_ON_INT1_ADDR	0x13
-> @@ -778,12 +779,23 @@ static int st_lsm6dsx_init_device(struct st_lsm6dsx_hw *hw)
->  	u8 drdy_int_reg;
->  	int err;
->  
-> -	err = regmap_write(hw->regmap, ST_LSM6DSX_REG_RESET_ADDR,
-> -			   ST_LSM6DSX_REG_RESET_MASK);
-> +	/* device sw reset */
-> +	err = regmap_update_bits(hw->regmap, ST_LSM6DSX_REG_RESET_ADDR,
-> +				 ST_LSM6DSX_REG_RESET_MASK,
-> +				 FIELD_PREP(ST_LSM6DSX_REG_RESET_MASK, 1));
->  	if (err < 0)
->  		return err;
->  
-> -	msleep(200);
-> +	msleep(50);
-> +
-> +	/* reload trimming parameter */
-> +	err = regmap_update_bits(hw->regmap, ST_LSM6DSX_REG_RESET_ADDR,
-> +				 ST_LSM6DSX_REG_BOOT_MASK,
-> +				 FIELD_PREP(ST_LSM6DSX_REG_BOOT_MASK, 1));
-> +	if (err < 0)
-> +		return err;
-> +
-> +	msleep(50);
->  
->  	/* enable Block Data Update */
->  	err = regmap_update_bits(hw->regmap, ST_LSM6DSX_REG_BDU_ADDR,
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+index ec204d3b4b1f..ac4cbbb0b3fb 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+@@ -185,6 +185,7 @@ int st_lsm6dsx_probe(struct device *dev, int irq, int hw_id, const char *name,
+ int st_lsm6dsx_sensor_enable(struct st_lsm6dsx_sensor *sensor);
+ int st_lsm6dsx_sensor_disable(struct st_lsm6dsx_sensor *sensor);
+ int st_lsm6dsx_fifo_setup(struct st_lsm6dsx_hw *hw);
++int st_lsm6dsx_set_watermark(struct iio_dev *iio_dev, unsigned int val);
+ int st_lsm6dsx_update_watermark(struct st_lsm6dsx_sensor *sensor,
+ 				u16 watermark);
+ int st_lsm6dsx_flush_fifo(struct st_lsm6dsx_hw *hw);
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+index 961ce9d65d82..d703fcd8706a 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+@@ -600,7 +600,7 @@ static int st_lsm6dsx_write_raw(struct iio_dev *iio_dev,
+ 	return err;
+ }
+ 
+-static int st_lsm6dsx_set_watermark(struct iio_dev *iio_dev, unsigned int val)
++int st_lsm6dsx_set_watermark(struct iio_dev *iio_dev, unsigned int val)
+ {
+ 	struct st_lsm6dsx_sensor *sensor = iio_priv(iio_dev);
+ 	struct st_lsm6dsx_hw *hw = sensor->hw;
+-- 
+2.19.1
