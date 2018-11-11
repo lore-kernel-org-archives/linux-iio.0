@@ -1,179 +1,200 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-sn1nam02on0061.outbound.protection.outlook.com ([104.47.36.61]:29376
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728149AbeKIRr7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 9 Nov 2018 12:47:59 -0500
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "lars@metafoo.de" <lars@metafoo.de>,
-        "nishadkamdar@gmail.com" <nishadkamdar@gmail.com>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Received: from mail.kernel.org ([198.145.29.99]:53074 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727480AbeKKWMh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 11 Nov 2018 17:12:37 -0500
+Date: Sun, 11 Nov 2018 12:24:05 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Nishad Kamdar <nishadkamdar@gmail.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v3 1/4] staging: iio: ad7816: Switch to the gpio
  descriptor interface
-Date: Fri, 9 Nov 2018 08:08:24 +0000
-Message-ID: <3c8e9f9ced57c33dc7182cae91d6f72e0fdb6c58.camel@analog.com>
+Message-ID: <20181111122405.23970900@archlinux>
+In-Reply-To: <3f9ea18864230b2758f86899b9bd1acb020dd176.1541733949.git.nishadkamdar@gmail.com>
 References: <cover.1541733949.git.nishadkamdar@gmail.com>
-         <3f9ea18864230b2758f86899b9bd1acb020dd176.1541733949.git.nishadkamdar@gmail.com>
-         <5dc38ef5d09e176e720b3f3e31642f7c68ecb4a4.camel@analog.com>
-In-Reply-To: <5dc38ef5d09e176e720b3f3e31642f7c68ecb4a4.camel@analog.com>
-Content-Type: text/plain; charset="utf-8"
+        <3f9ea18864230b2758f86899b9bd1acb020dd176.1541733949.git.nishadkamdar@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-T24gRnJpLCAyMDE4LTExLTA5IGF0IDA4OjA1ICswMDAwLCBBcmRlbGVhbiwgQWxleGFuZHJ1IHdy
-b3RlOg0KPiBPbiBGcmksIDIwMTgtMTEtMDkgYXQgMTM6MDUgKzA1MzAsIE5pc2hhZCBLYW1kYXIg
-d3JvdGU6DQo+ID4gVXNlIHRoZSBncGlvZCBpbnRlcmZhY2UgZm9yIHJkd3JfcGluLCBjb252ZXJ0
-X3BpbiBhbmQgYnVzeV9waW4NCj4gPiBpbnN0ZWFkIG9mIHRoZSBkZXByZWNhdGVkIG9sZCBub24t
-ZGVzY3JpcHRvciBpbnRlcmZhY2UuDQo+ID4gDQo+IA0KPiBQYXRjaCBsb29rcyBnb29kLg0KPiBJ
-IGRvIGhhdmUgc29tZSB0aG91Z2h0cyBhYm91dCBpdC4gU2VlIGlubGluZS4NCj4gDQoNCk5ldmVy
-bWluZCB3aGF0IEkganVzdCBzYWlkIGhlcmU7IEkganVzdCBzYXcgcGF0Y2gzOiBgaWlvOiBhZDc4
-MTY6IFNldCBSRC9XUg0KcGluIGFuZCBDT05WU1QgcGluIGFzIG91dHB1dHMuYA0KDQpUaGlzIGxv
-b2tzIGdvb2QgYXMgaXMgaW4gdGhlIGNvbnRleHQgb2YgdGhlIHBhdGNoIHNlcmllcy4NCg0KPiAN
-Cj4gPiBTaWduZWQtb2ZmLWJ5OiBOaXNoYWQgS2FtZGFyIDxuaXNoYWRrYW1kYXJAZ21haWwuY29t
-Pg0KPiA+IC0tLQ0KPiA+ICBkcml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9hZDc4MTYuYyB8IDgwICsr
-KysrKysrKysrKysrLS0tLS0tLS0tLS0tLS0tLS0tDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAzNCBp
-bnNlcnRpb25zKCspLCA0NiBkZWxldGlvbnMoLSkNCj4gPiANCj4gPiBkaWZmIC0tZ2l0IGEvZHJp
-dmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3ODE2LmMNCj4gPiBiL2RyaXZlcnMvc3RhZ2luZy9paW8v
-YWRjL2FkNzgxNi5jDQo+ID4gaW5kZXggYmY3NmE4NjIwYmRiLi4xMmM0ZTBhYjQ3MTMgMTAwNjQ0
-DQo+ID4gLS0tIGEvZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3ODE2LmMNCj4gPiArKysgYi9k
-cml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9hZDc4MTYuYw0KPiA+IEBAIC03LDcgKzcsNyBAQA0KPiA+
-ICAgKi8NCj4gPiAgDQo+ID4gICNpbmNsdWRlIDxsaW51eC9pbnRlcnJ1cHQuaD4NCj4gPiAtI2lu
-Y2x1ZGUgPGxpbnV4L2dwaW8uaD4NCj4gPiArI2luY2x1ZGUgPGxpbnV4L2dwaW8vY29uc3VtZXIu
-aD4NCj4gPiAgI2luY2x1ZGUgPGxpbnV4L2RldmljZS5oPg0KPiA+ICAjaW5jbHVkZSA8bGludXgv
-a2VybmVsLmg+DQo+ID4gICNpbmNsdWRlIDxsaW51eC9zbGFiLmg+DQo+ID4gQEAgLTQ0LDkgKzQ0
-LDkgQEANCj4gPiAgDQo+ID4gIHN0cnVjdCBhZDc4MTZfY2hpcF9pbmZvIHsNCj4gPiAgCXN0cnVj
-dCBzcGlfZGV2aWNlICpzcGlfZGV2Ow0KPiA+IC0JdTE2IHJkd3JfcGluOw0KPiA+IC0JdTE2IGNv
-bnZlcnRfcGluOw0KPiA+IC0JdTE2IGJ1c3lfcGluOw0KPiA+ICsJc3RydWN0IGdwaW9fZGVzYyAq
-cmR3cl9waW47DQo+ID4gKwlzdHJ1Y3QgZ3Bpb19kZXNjICpjb252ZXJ0X3BpbjsNCj4gPiArCXN0
-cnVjdCBncGlvX2Rlc2MgKmJ1c3lfcGluOw0KPiANCj4gT25seSBpZiB5b3Ugd2FudCB0byBkbyBh
-IHJlLXNwaW4sIGhlcmUncyBhbiBpZGVhLg0KPiBJZiB5b3UgZG9uJ3Qgd2FudCB0bywgZmVlbCBm
-cmVlIHRvIGRpc3JlZ2FyZCwgc2luY2UgeW91ciBwYXRjaCBpcyBnb29kLg0KPiANCj4gWW91IGNv
-dWxkIGNvbXBhY3QgdGhpbmdzIGEgYml0OyBJIGtub3cgdGhpcyB3YXNuJ3Qgd2hhdCB0aGUgaW5p
-dGlhbCBjb2RlDQo+IHdhcyBkb2luZywgYnV0IGl0J3MgYW4gb3B0aW9uLg0KPiANCj4gU29tZXRo
-aW5nIGxpa2U6DQo+IA0KPiBlbnVtIHsNCj4gCUdQSU9fUldEUiwNCj4gCUdQSU9fQ09OVkVSVCwN
-Cj4gCUdQSU9fQlVTWSwNCj4gCV9fR1BJT19NQVgsDQo+IH0NCj4gDQo+IFRoZW4sIHdoYXQgeW91
-IGVuZCB1cCBoYXZpbmcgaXM6DQo+IA0KPiAgc3RydWN0IGFkNzgxNl9jaGlwX2luZm8gew0KPiAg
-IAlzdHJ1Y3Qgc3BpX2RldmljZSAqc3BpX2RldjsNCj4gIC0JdTE2IHJkd3JfcGluOw0KPiAgLQl1
-MTYgY29udmVydF9waW47DQo+ICAtCXUxNiBidXN5X3BpbjsNCj4gICsJc3RydWN0IGdwaW9fZGVz
-YyAqZ3Bpb3NbX19HUElPX01BWF07DQo+ICANCj4gDQo+IC8vIENvbnRpbnVlZCBiZWxvdw0KPiAN
-Cj4gDQo+ID4gIAl1OCAgb3RpX2RhdGFbQUQ3ODE2X0NTX01BWCArIDFdOw0KPiA+ICAJdTggIGNo
-YW5uZWxfaWQ7CS8qIDAgYWx3YXlzIGJlIHRlbXBlcmF0dXJlICovDQo+ID4gIAl1OCAgbW9kZTsN
-Cj4gPiBAQCAtNjEsMjggKzYxLDI4IEBAIHN0YXRpYyBpbnQgYWQ3ODE2X3NwaV9yZWFkKHN0cnVj
-dCBhZDc4MTZfY2hpcF9pbmZvDQo+ID4gKmNoaXAsIHUxNiAqZGF0YSkNCj4gPiAgCWludCByZXQg
-PSAwOw0KPiA+ICAJX19iZTE2IGJ1ZjsNCj4gPiAgDQo+ID4gLQlncGlvX3NldF92YWx1ZShjaGlw
-LT5yZHdyX3BpbiwgMSk7DQo+ID4gLQlncGlvX3NldF92YWx1ZShjaGlwLT5yZHdyX3BpbiwgMCk7
-DQo+ID4gKwlncGlvZF9zZXRfdmFsdWUoY2hpcC0+cmR3cl9waW4sIDEpOw0KPiA+ICsJZ3Bpb2Rf
-c2V0X3ZhbHVlKGNoaXAtPnJkd3JfcGluLCAwKTsNCj4gDQo+IE9idmlvdXNseSwgaW4gdGhlIGFi
-b3ZlIGNvbnRleHQsIHRoaXMgYmVjb21lczoNCj4gICsJZ3Bpb2Rfc2V0X3ZhbHVlKGNoaXAtPmdw
-aW9zW0dQSU9fUldEUl0sIDEpOw0KPiAgKwlncGlvZF9zZXRfdmFsdWUoY2hpcC0+Z3Bpb3NbR1BJ
-T19SV0RSXSwgMCk7DQo+IA0KPiA+ICAJcmV0ID0gc3BpX3dyaXRlKHNwaV9kZXYsICZjaGlwLT5j
-aGFubmVsX2lkLCBzaXplb2YoY2hpcC0NCj4gPiA+IGNoYW5uZWxfaWQpKTsNCj4gPiANCj4gPiAg
-CWlmIChyZXQgPCAwKSB7DQo+ID4gIAkJZGV2X2Vycigmc3BpX2Rldi0+ZGV2LCAiU1BJIGNoYW5u
-ZWwgc2V0dGluZyBlcnJvclxuIik7DQo+ID4gIAkJcmV0dXJuIHJldDsNCj4gPiAgCX0NCj4gPiAt
-CWdwaW9fc2V0X3ZhbHVlKGNoaXAtPnJkd3JfcGluLCAxKTsNCj4gPiArCWdwaW9kX3NldF92YWx1
-ZShjaGlwLT5yZHdyX3BpbiwgMSk7DQo+ID4gIA0KPiA+ICAJaWYgKGNoaXAtPm1vZGUgPT0gQUQ3
-ODE2X1BEKSB7IC8qIG9wZXJhdGluZyBtb2RlIDIgKi8NCj4gPiAtCQlncGlvX3NldF92YWx1ZShj
-aGlwLT5jb252ZXJ0X3BpbiwgMSk7DQo+ID4gLQkJZ3Bpb19zZXRfdmFsdWUoY2hpcC0+Y29udmVy
-dF9waW4sIDApOw0KPiA+ICsJCWdwaW9kX3NldF92YWx1ZShjaGlwLT5jb252ZXJ0X3BpbiwgMSk7
-DQo+ID4gKwkJZ3Bpb2Rfc2V0X3ZhbHVlKGNoaXAtPmNvbnZlcnRfcGluLCAwKTsNCj4gPiAgCX0g
-ZWxzZSB7IC8qIG9wZXJhdGluZyBtb2RlIDEgKi8NCj4gPiAtCQlncGlvX3NldF92YWx1ZShjaGlw
-LT5jb252ZXJ0X3BpbiwgMCk7DQo+ID4gLQkJZ3Bpb19zZXRfdmFsdWUoY2hpcC0+Y29udmVydF9w
-aW4sIDEpOw0KPiA+ICsJCWdwaW9kX3NldF92YWx1ZShjaGlwLT5jb252ZXJ0X3BpbiwgMCk7DQo+
-ID4gKwkJZ3Bpb2Rfc2V0X3ZhbHVlKGNoaXAtPmNvbnZlcnRfcGluLCAxKTsNCj4gPiAgCX0NCj4g
-PiAgDQo+ID4gLQl3aGlsZSAoZ3Bpb19nZXRfdmFsdWUoY2hpcC0+YnVzeV9waW4pKQ0KPiA+ICsJ
-d2hpbGUgKGdwaW9kX2dldF92YWx1ZShjaGlwLT5idXN5X3BpbikpDQo+ID4gIAkJY3B1X3JlbGF4
-KCk7DQo+ID4gIA0KPiA+IC0JZ3Bpb19zZXRfdmFsdWUoY2hpcC0+cmR3cl9waW4sIDApOw0KPiA+
-IC0JZ3Bpb19zZXRfdmFsdWUoY2hpcC0+cmR3cl9waW4sIDEpOw0KPiA+ICsJZ3Bpb2Rfc2V0X3Zh
-bHVlKGNoaXAtPnJkd3JfcGluLCAwKTsNCj4gPiArCWdwaW9kX3NldF92YWx1ZShjaGlwLT5yZHdy
-X3BpbiwgMSk7DQo+ID4gIAlyZXQgPSBzcGlfcmVhZChzcGlfZGV2LCAmYnVmLCBzaXplb2YoKmRh
-dGEpKTsNCj4gPiAgCWlmIChyZXQgPCAwKSB7DQo+ID4gIAkJZGV2X2Vycigmc3BpX2Rldi0+ZGV2
-LCAiU1BJIGRhdGEgcmVhZCBlcnJvclxuIik7DQo+ID4gQEAgLTk5LDggKzk5LDggQEAgc3RhdGlj
-IGludCBhZDc4MTZfc3BpX3dyaXRlKHN0cnVjdCBhZDc4MTZfY2hpcF9pbmZvDQo+ID4gKmNoaXAs
-IHU4IGRhdGEpDQo+ID4gIAlzdHJ1Y3Qgc3BpX2RldmljZSAqc3BpX2RldiA9IGNoaXAtPnNwaV9k
-ZXY7DQo+ID4gIAlpbnQgcmV0ID0gMDsNCj4gPiAgDQo+ID4gLQlncGlvX3NldF92YWx1ZShjaGlw
-LT5yZHdyX3BpbiwgMSk7DQo+ID4gLQlncGlvX3NldF92YWx1ZShjaGlwLT5yZHdyX3BpbiwgMCk7
-DQo+ID4gKwlncGlvZF9zZXRfdmFsdWUoY2hpcC0+cmR3cl9waW4sIDEpOw0KPiA+ICsJZ3Bpb2Rf
-c2V0X3ZhbHVlKGNoaXAtPnJkd3JfcGluLCAwKTsNCj4gPiAgCXJldCA9IHNwaV93cml0ZShzcGlf
-ZGV2LCAmZGF0YSwgc2l6ZW9mKGRhdGEpKTsNCj4gPiAgCWlmIChyZXQgPCAwKQ0KPiA+ICAJCWRl
-dl9lcnIoJnNwaV9kZXYtPmRldiwgIlNQSSBvdGkgZGF0YSB3cml0ZSBlcnJvclxuIik7DQo+ID4g
-QEAgLTEyOSwxMCArMTI5LDEwIEBAIHN0YXRpYyBzc2l6ZV90IGFkNzgxNl9zdG9yZV9tb2RlKHN0
-cnVjdCBkZXZpY2UNCj4gPiAqZGV2LA0KPiA+ICAJc3RydWN0IGFkNzgxNl9jaGlwX2luZm8gKmNo
-aXAgPSBpaW9fcHJpdihpbmRpb19kZXYpOw0KPiA+ICANCj4gPiAgCWlmIChzdHJjbXAoYnVmLCAi
-ZnVsbCIpKSB7DQo+ID4gLQkJZ3Bpb19zZXRfdmFsdWUoY2hpcC0+cmR3cl9waW4sIDEpOw0KPiA+
-ICsJCWdwaW9kX3NldF92YWx1ZShjaGlwLT5yZHdyX3BpbiwgMSk7DQo+ID4gIAkJY2hpcC0+bW9k
-ZSA9IEFENzgxNl9GVUxMOw0KPiA+ICAJfSBlbHNlIHsNCj4gPiAtCQlncGlvX3NldF92YWx1ZShj
-aGlwLT5yZHdyX3BpbiwgMCk7DQo+ID4gKwkJZ3Bpb2Rfc2V0X3ZhbHVlKGNoaXAtPnJkd3JfcGlu
-LCAwKTsNCj4gPiAgCQljaGlwLT5tb2RlID0gQUQ3ODE2X1BEOw0KPiA+ICAJfQ0KPiA+ICANCj4g
-PiBAQCAtMzQ1LDE1ICszNDUsOSBAQCBzdGF0aWMgaW50IGFkNzgxNl9wcm9iZShzdHJ1Y3Qgc3Bp
-X2RldmljZQ0KPiA+ICpzcGlfZGV2KQ0KPiA+ICB7DQo+ID4gIAlzdHJ1Y3QgYWQ3ODE2X2NoaXBf
-aW5mbyAqY2hpcDsNCj4gPiAgCXN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXY7DQo+ID4gLQl1bnNp
-Z25lZCBzaG9ydCAqcGlucyA9IGRldl9nZXRfcGxhdGRhdGEoJnNwaV9kZXYtPmRldik7DQo+ID4g
-IAlpbnQgcmV0ID0gMDsNCj4gPiAgCWludCBpOw0KPiA+ICANCj4gPiAtCWlmICghcGlucykgew0K
-PiA+IC0JCWRldl9lcnIoJnNwaV9kZXYtPmRldiwgIk5vIG5lY2Vzc2FyeSBHUElPIHBsYXRmb3Jt
-DQo+ID4gZGF0YS5cbiIpOw0KPiA+IC0JCXJldHVybiAtRUlOVkFMOw0KPiA+IC0JfQ0KPiA+IC0N
-Cj4gPiAgCWluZGlvX2RldiA9IGRldm1faWlvX2RldmljZV9hbGxvYygmc3BpX2Rldi0+ZGV2LCBz
-aXplb2YoKmNoaXApKTsNCj4gPiAgCWlmICghaW5kaW9fZGV2KQ0KPiA+ICAJCXJldHVybiAtRU5P
-TUVNOw0KPiA+IEBAIC0zNjQsMzQgKzM1OCwyOCBAQCBzdGF0aWMgaW50IGFkNzgxNl9wcm9iZShz
-dHJ1Y3Qgc3BpX2RldmljZQ0KPiA+ICpzcGlfZGV2KQ0KPiA+ICAJY2hpcC0+c3BpX2RldiA9IHNw
-aV9kZXY7DQo+ID4gIAlmb3IgKGkgPSAwOyBpIDw9IEFENzgxNl9DU19NQVg7IGkrKykNCj4gPiAg
-CQljaGlwLT5vdGlfZGF0YVtpXSA9IDIwMzsNCj4gPiAtCWNoaXAtPnJkd3JfcGluID0gcGluc1sw
-XTsNCj4gPiAtCWNoaXAtPmNvbnZlcnRfcGluID0gcGluc1sxXTsNCj4gPiAtCWNoaXAtPmJ1c3lf
-cGluID0gcGluc1syXTsNCj4gPiAtDQo+ID4gLQlyZXQgPSBkZXZtX2dwaW9fcmVxdWVzdCgmc3Bp
-X2Rldi0+ZGV2LCBjaGlwLT5yZHdyX3BpbiwNCj4gPiAtCQkJCXNwaV9nZXRfZGV2aWNlX2lkKHNw
-aV9kZXYpLT5uYW1lKTsNCj4gPiAtCWlmIChyZXQpIHsNCj4gPiAtCQlkZXZfZXJyKCZzcGlfZGV2
-LT5kZXYsICJGYWlsIHRvIHJlcXVlc3QgcmR3ciBncGlvIFBJTg0KPiA+ICVkLlxuIiwNCj4gPiAt
-CQkJY2hpcC0+cmR3cl9waW4pOw0KPiA+ICsNCj4gPiArCWNoaXAtPnJkd3JfcGluID0gZGV2bV9n
-cGlvZF9nZXQoJnNwaV9kZXYtPmRldiwgInJkd3IiLCBHUElPRF9JTik7DQo+ID4gKwlpZiAoSVNf
-RVJSKGNoaXAtPnJkd3JfcGluKSkgew0KPiA+ICsJCXJldCA9IFBUUl9FUlIoY2hpcC0+cmR3cl9w
-aW4pOw0KPiA+ICsJCWRldl9lcnIoJnNwaV9kZXYtPmRldiwgIkZhaWxlZCB0byByZXF1ZXN0IHJk
-d3IgR1BJTzogJWRcbiIsDQo+ID4gKwkJCXJldCk7DQo+ID4gIAkJcmV0dXJuIHJldDsNCj4gPiAg
-CX0NCj4gDQo+IEJ1dCB0aGUgcmVhbCBiZW5lZml0IGlmIHRoaXMgYXBwcm9hY2ggY29tZXMgaGVy
-ZS4NCj4gWW91IGNvdWxkIGRvOg0KPiANCj4gc3RhdGljIGNvbnN0IGNoYXIgKmdwaW9fbmFtZXNb
-X19HUElPX01BWF0gPSB7DQo+IAlbR1BJT19SV0RSXSA9ICJyd2RyIiwNCj4gCVtHUElPX0NPTlZF
-UlRdID0gImNvbnZlcnQiLA0KPiAJW0dQSU9fQlVTWV0gPSAiYnVzeSIsDQo+IH07DQo+IA0KPiAv
-LyBjb2RlIGZvciBwYXRjaDIJDQo+IGJvb2wgaGF2ZV9idXN5X3BpbiA9IChjaGlwLT5pZCA9PSBJ
-RF9BRDc4MTYgfHwgY2hpcC0+aWQgPT0gSURfQUQ3ODE3KTsNCj4gLy8gZW5kIGNvZGUgZm9yIHBh
-dGNoMgkNCj4gDQo+IA0KPiBmb3IgKGkgPSAwOyBpIDwgX19HUElPX01BWDsgaSsrKSB7DQo+IC8v
-IGNvZGUgZm9yIHBhdGNoMgkNCj4gCWlmIChpID09IEdQSU9fQlVTWSAmJiAhaGF2ZV9idXN5X3Bp
-bikNCj4gCQljb250aW51ZTsNCj4gLy8gZW5kIGNvZGUgZm9yIHBhdGNoMgkNCj4gDQo+IAljaGlw
-LT5ncGlvc1tpXSA9IGRldm1fZ3Bpb2RfZ2V0KCZzcGlfZGV2LT5kZXYsIGdwaW9fbmFtZXNbaV0s
-IA0KPiAJCQkJCUdQSU9EX0lOKTsNCj4gCWlmIChJU19FUlIoY2hpcC0+Z3Bpb3NbaV0pKSB7DQo+
-IAkJcmV0ID0gUFRSX0VSUihjaGlwLT5ncGlvc1tpXSk7DQo+IAkJZGV2X2Vycigmc3BpX2Rldi0+
-ZGV2LCAiRmFpbGVkIHRvIHJlcXVlc3QgcmR3ciBHUElPOiAlZFxuIiwNCj4gCQkJcmV0Ow0KPiAJ
-CXJldHVybiByZXQ7DQo+IAl9DQo+IH0NCj4gDQo+IFRoZW4sIGluIHlvdXIgcGF0Y2gyIChpLmUg
-IiBzdGFnaW5nOiBpaW86IGFkNzgxNjogRG8gbm90IHVzZSBidXN5X3BpbiBpbg0KPiBjYXNlIG9m
-IEFENzgxOCIpLCB3aGF0IHlvdSBjb3VsZCBkbywgaXMgdG8gYWRkIHRoYXQgY29kZSAoYWxvbmcg
-d2l0aCB0aGUNCj4gb3RoZXIgSUQgY29kZSkuDQo+IA0KPiBBbmQgZmluYWx5IHdoYXQgeW91IGNv
-dWxkIGRvIGluIHBhdGNoMiwgaXM6DQo+IA0KPiAJd2hpbGUgKGNoaXAtPmdwaW9zW0dQSU9fQlVT
-WV0gJiYNCj4gCSAgICAgICBncGlvZF9nZXRfdmFsdWUoY2hpcC0+YnVzeV9waW4pKQ0KPiAJCWNw
-dV9yZWxheCgpOw0KPiANCj4gDQo+IA0KPiA+IC0JZ3Bpb19kaXJlY3Rpb25faW5wdXQoY2hpcC0+
-cmR3cl9waW4pOw0KPiA+IC0JcmV0ID0gZGV2bV9ncGlvX3JlcXVlc3QoJnNwaV9kZXYtPmRldiwg
-Y2hpcC0+Y29udmVydF9waW4sDQo+ID4gLQkJCQlzcGlfZ2V0X2RldmljZV9pZChzcGlfZGV2KS0+
-bmFtZSk7DQo+ID4gLQlpZiAocmV0KSB7DQo+ID4gLQkJZGV2X2Vycigmc3BpX2Rldi0+ZGV2LCAi
-RmFpbCB0byByZXF1ZXN0IGNvbnZlcnQgZ3BpbyBQSU4NCj4gPiAlZC5cbiIsDQo+ID4gLQkJCWNo
-aXAtPmNvbnZlcnRfcGluKTsNCj4gPiArCWNoaXAtPmNvbnZlcnRfcGluID0gZGV2bV9ncGlvZF9n
-ZXQoJnNwaV9kZXYtPmRldiwgImNvbnZlcnQiLA0KPiA+IEdQSU9EX0lOKTsNCj4gPiArCWlmIChJ
-U19FUlIoY2hpcC0+Y29udmVydF9waW4pKSB7DQo+ID4gKwkJcmV0ID0gUFRSX0VSUihjaGlwLT5j
-b252ZXJ0X3Bpbik7DQo+ID4gKwkJZGV2X2Vycigmc3BpX2Rldi0+ZGV2LCAiRmFpbGVkIHRvIHJl
-cXVlc3QgY29udmVydCBHUElPOg0KPiA+ICVkXG4iLA0KPiA+ICsJCQlyZXQpOw0KPiA+ICAJCXJl
-dHVybiByZXQ7DQo+ID4gIAl9DQo+ID4gLQlncGlvX2RpcmVjdGlvbl9pbnB1dChjaGlwLT5jb252
-ZXJ0X3Bpbik7DQo+ID4gLQlyZXQgPSBkZXZtX2dwaW9fcmVxdWVzdCgmc3BpX2Rldi0+ZGV2LCBj
-aGlwLT5idXN5X3BpbiwNCj4gPiAtCQkJCXNwaV9nZXRfZGV2aWNlX2lkKHNwaV9kZXYpLT5uYW1l
-KTsNCj4gPiAtCWlmIChyZXQpIHsNCj4gPiAtCQlkZXZfZXJyKCZzcGlfZGV2LT5kZXYsICJGYWls
-IHRvIHJlcXVlc3QgYnVzeSBncGlvIFBJTg0KPiA+ICVkLlxuIiwNCj4gPiAtCQkJY2hpcC0+YnVz
-eV9waW4pOw0KPiA+ICsJY2hpcC0+YnVzeV9waW4gPSBkZXZtX2dwaW9kX2dldCgmc3BpX2Rldi0+
-ZGV2LCAiYnVzeSIsIEdQSU9EX0lOKTsNCj4gPiArCWlmIChJU19FUlIoY2hpcC0+YnVzeV9waW4p
-KSB7DQo+ID4gKwkJcmV0ID0gUFRSX0VSUihjaGlwLT5idXN5X3Bpbik7DQo+ID4gKwkJZGV2X2Vy
-cigmc3BpX2Rldi0+ZGV2LCAiRmFpbGVkIHRvIHJlcXVlc3QgYnVzeSBHUElPOiAlZFxuIiwNCj4g
-PiArCQkJcmV0KTsNCj4gPiAgCQlyZXR1cm4gcmV0Ow0KPiA+ICAJfQ0KPiA+IC0JZ3Bpb19kaXJl
-Y3Rpb25faW5wdXQoY2hpcC0+YnVzeV9waW4pOw0KPiA+ICANCj4gPiAgCWluZGlvX2Rldi0+bmFt
-ZSA9IHNwaV9nZXRfZGV2aWNlX2lkKHNwaV9kZXYpLT5uYW1lOw0KPiA+ICAJaW5kaW9fZGV2LT5k
-ZXYucGFyZW50ID0gJnNwaV9kZXYtPmRldjsNCg==
+On Fri, 9 Nov 2018 13:05:17 +0530
+Nishad Kamdar <nishadkamdar@gmail.com> wrote:
+
+> Use the gpiod interface for rdwr_pin, convert_pin and busy_pin
+> instead of the deprecated old non-descriptor interface.
+> 
+> Signed-off-by: Nishad Kamdar <nishadkamdar@gmail.com>
+Applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to play with it.
+
+Thanks,
+
+Jonathan
+
+> ---
+>  drivers/staging/iio/adc/ad7816.c | 80 ++++++++++++++------------------
+>  1 file changed, 34 insertions(+), 46 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
+> index bf76a8620bdb..12c4e0ab4713 100644
+> --- a/drivers/staging/iio/adc/ad7816.c
+> +++ b/drivers/staging/iio/adc/ad7816.c
+> @@ -7,7 +7,7 @@
+>   */
+>  
+>  #include <linux/interrupt.h>
+> -#include <linux/gpio.h>
+> +#include <linux/gpio/consumer.h>
+>  #include <linux/device.h>
+>  #include <linux/kernel.h>
+>  #include <linux/slab.h>
+> @@ -44,9 +44,9 @@
+>  
+>  struct ad7816_chip_info {
+>  	struct spi_device *spi_dev;
+> -	u16 rdwr_pin;
+> -	u16 convert_pin;
+> -	u16 busy_pin;
+> +	struct gpio_desc *rdwr_pin;
+> +	struct gpio_desc *convert_pin;
+> +	struct gpio_desc *busy_pin;
+>  	u8  oti_data[AD7816_CS_MAX + 1];
+>  	u8  channel_id;	/* 0 always be temperature */
+>  	u8  mode;
+> @@ -61,28 +61,28 @@ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
+>  	int ret = 0;
+>  	__be16 buf;
+>  
+> -	gpio_set_value(chip->rdwr_pin, 1);
+> -	gpio_set_value(chip->rdwr_pin, 0);
+> +	gpiod_set_value(chip->rdwr_pin, 1);
+> +	gpiod_set_value(chip->rdwr_pin, 0);
+>  	ret = spi_write(spi_dev, &chip->channel_id, sizeof(chip->channel_id));
+>  	if (ret < 0) {
+>  		dev_err(&spi_dev->dev, "SPI channel setting error\n");
+>  		return ret;
+>  	}
+> -	gpio_set_value(chip->rdwr_pin, 1);
+> +	gpiod_set_value(chip->rdwr_pin, 1);
+>  
+>  	if (chip->mode == AD7816_PD) { /* operating mode 2 */
+> -		gpio_set_value(chip->convert_pin, 1);
+> -		gpio_set_value(chip->convert_pin, 0);
+> +		gpiod_set_value(chip->convert_pin, 1);
+> +		gpiod_set_value(chip->convert_pin, 0);
+>  	} else { /* operating mode 1 */
+> -		gpio_set_value(chip->convert_pin, 0);
+> -		gpio_set_value(chip->convert_pin, 1);
+> +		gpiod_set_value(chip->convert_pin, 0);
+> +		gpiod_set_value(chip->convert_pin, 1);
+>  	}
+>  
+> -	while (gpio_get_value(chip->busy_pin))
+> +	while (gpiod_get_value(chip->busy_pin))
+>  		cpu_relax();
+>  
+> -	gpio_set_value(chip->rdwr_pin, 0);
+> -	gpio_set_value(chip->rdwr_pin, 1);
+> +	gpiod_set_value(chip->rdwr_pin, 0);
+> +	gpiod_set_value(chip->rdwr_pin, 1);
+>  	ret = spi_read(spi_dev, &buf, sizeof(*data));
+>  	if (ret < 0) {
+>  		dev_err(&spi_dev->dev, "SPI data read error\n");
+> @@ -99,8 +99,8 @@ static int ad7816_spi_write(struct ad7816_chip_info *chip, u8 data)
+>  	struct spi_device *spi_dev = chip->spi_dev;
+>  	int ret = 0;
+>  
+> -	gpio_set_value(chip->rdwr_pin, 1);
+> -	gpio_set_value(chip->rdwr_pin, 0);
+> +	gpiod_set_value(chip->rdwr_pin, 1);
+> +	gpiod_set_value(chip->rdwr_pin, 0);
+>  	ret = spi_write(spi_dev, &data, sizeof(data));
+>  	if (ret < 0)
+>  		dev_err(&spi_dev->dev, "SPI oti data write error\n");
+> @@ -129,10 +129,10 @@ static ssize_t ad7816_store_mode(struct device *dev,
+>  	struct ad7816_chip_info *chip = iio_priv(indio_dev);
+>  
+>  	if (strcmp(buf, "full")) {
+> -		gpio_set_value(chip->rdwr_pin, 1);
+> +		gpiod_set_value(chip->rdwr_pin, 1);
+>  		chip->mode = AD7816_FULL;
+>  	} else {
+> -		gpio_set_value(chip->rdwr_pin, 0);
+> +		gpiod_set_value(chip->rdwr_pin, 0);
+>  		chip->mode = AD7816_PD;
+>  	}
+>  
+> @@ -345,15 +345,9 @@ static int ad7816_probe(struct spi_device *spi_dev)
+>  {
+>  	struct ad7816_chip_info *chip;
+>  	struct iio_dev *indio_dev;
+> -	unsigned short *pins = dev_get_platdata(&spi_dev->dev);
+>  	int ret = 0;
+>  	int i;
+>  
+> -	if (!pins) {
+> -		dev_err(&spi_dev->dev, "No necessary GPIO platform data.\n");
+> -		return -EINVAL;
+> -	}
+> -
+>  	indio_dev = devm_iio_device_alloc(&spi_dev->dev, sizeof(*chip));
+>  	if (!indio_dev)
+>  		return -ENOMEM;
+> @@ -364,34 +358,28 @@ static int ad7816_probe(struct spi_device *spi_dev)
+>  	chip->spi_dev = spi_dev;
+>  	for (i = 0; i <= AD7816_CS_MAX; i++)
+>  		chip->oti_data[i] = 203;
+> -	chip->rdwr_pin = pins[0];
+> -	chip->convert_pin = pins[1];
+> -	chip->busy_pin = pins[2];
+> -
+> -	ret = devm_gpio_request(&spi_dev->dev, chip->rdwr_pin,
+> -				spi_get_device_id(spi_dev)->name);
+> -	if (ret) {
+> -		dev_err(&spi_dev->dev, "Fail to request rdwr gpio PIN %d.\n",
+> -			chip->rdwr_pin);
+> +
+> +	chip->rdwr_pin = devm_gpiod_get(&spi_dev->dev, "rdwr", GPIOD_IN);
+> +	if (IS_ERR(chip->rdwr_pin)) {
+> +		ret = PTR_ERR(chip->rdwr_pin);
+> +		dev_err(&spi_dev->dev, "Failed to request rdwr GPIO: %d\n",
+> +			ret);
+>  		return ret;
+>  	}
+> -	gpio_direction_input(chip->rdwr_pin);
+> -	ret = devm_gpio_request(&spi_dev->dev, chip->convert_pin,
+> -				spi_get_device_id(spi_dev)->name);
+> -	if (ret) {
+> -		dev_err(&spi_dev->dev, "Fail to request convert gpio PIN %d.\n",
+> -			chip->convert_pin);
+> +	chip->convert_pin = devm_gpiod_get(&spi_dev->dev, "convert", GPIOD_IN);
+> +	if (IS_ERR(chip->convert_pin)) {
+> +		ret = PTR_ERR(chip->convert_pin);
+> +		dev_err(&spi_dev->dev, "Failed to request convert GPIO: %d\n",
+> +			ret);
+>  		return ret;
+>  	}
+> -	gpio_direction_input(chip->convert_pin);
+> -	ret = devm_gpio_request(&spi_dev->dev, chip->busy_pin,
+> -				spi_get_device_id(spi_dev)->name);
+> -	if (ret) {
+> -		dev_err(&spi_dev->dev, "Fail to request busy gpio PIN %d.\n",
+> -			chip->busy_pin);
+> +	chip->busy_pin = devm_gpiod_get(&spi_dev->dev, "busy", GPIOD_IN);
+> +	if (IS_ERR(chip->busy_pin)) {
+> +		ret = PTR_ERR(chip->busy_pin);
+> +		dev_err(&spi_dev->dev, "Failed to request busy GPIO: %d\n",
+> +			ret);
+>  		return ret;
+>  	}
+> -	gpio_direction_input(chip->busy_pin);
+>  
+>  	indio_dev->name = spi_get_device_id(spi_dev)->name;
+>  	indio_dev->dev.parent = &spi_dev->dev;
