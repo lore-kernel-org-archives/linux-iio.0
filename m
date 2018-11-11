@@ -1,75 +1,94 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:44146 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727876AbeKLC3R (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 11 Nov 2018 21:29:17 -0500
-Date: Sun, 11 Nov 2018 16:40:12 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 6/9] iio: imu: st_lsm6dsx: add i2c embedded
- controller support
-Message-ID: <20181111164012.47b963b4@archlinux>
-In-Reply-To: <c9a134df6858ee2f290c844be18f8c2cef54c559.1541945612.git.lorenzo.bianconi@redhat.com>
+Return-Path: <SRS0=iy3a=NW=redhat.com=lorenzo.bianconi@kernel.org>
+From: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: [PATCH v2 7/9] iio: imu: st_lsm6dsx: add st_lsm6dsx_push_tagged_data routine
+Date: Sun, 11 Nov 2018 15:15:34 +0100
+Message-Id: <d65aca136a7d53305e2ca757f1df10c11082adc8.1541945612.git.lorenzo.bianconi@redhat.com>
+In-Reply-To: <cover.1541945612.git.lorenzo.bianconi@redhat.com>
 References: <cover.1541945612.git.lorenzo.bianconi@redhat.com>
-        <c9a134df6858ee2f290c844be18f8c2cef54c559.1541945612.git.lorenzo.bianconi@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, 11 Nov 2018 15:15:33 +0100
-Lorenzo Bianconi <lorenzo.bianconi@redhat.com> wrote:
+Introduce st_lsm6dsx_push_tagged_data routine to push samples
+to iio buffers. st_lsm6dsx_push_tagged_data will be reused adding
+hw fifo support to st_lsm6dsx i2c embedded controller in order to
+improve code readability
 
-> i2c controller embedded in lsm6dx series can connect up to four
-> slave devices using accelerometer sensor as trigger for i2c
-> read/write operations.
-> Introduce sensor hub support for lsm6dso sensor. Add register map
-> for lis2mdl magnetometer sensor.
-> In order to perform single read/write operations st_lsm6dsx driver
-> relies on SLV0 channel (hw FIFO is not supported yet)
-> 
-> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Hi Lorenzo.
+Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+---
+ .../iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c    | 44 ++++++++++++-------
+ 1 file changed, 29 insertions(+), 15 deletions(-)
 
-A build warning came up pointing out an issue with little endian
-sizes.
-
-I've 'guessed' that data is actually meant to be __le16 but
-please confirm I got that right!
-
-> +static int
-> +st_lsm6dsx_shub_read_oneshot(struct st_lsm6dsx_sensor *sensor,
-> +			     struct iio_chan_spec const *ch,
-> +			     int *val)
-> +{
-> +	int err, delay, len = ch->scan_type.realbits >> 3;
-> +	__le32 data;
-> +
-> +	err = st_lsm6dsx_shub_set_enable(sensor, true);
-> +	if (err < 0)
-> +		return err;
-> +
-> +	delay = 1000000 / sensor->odr;
-> +	usleep_range(delay, 2 * delay);
-> +
-> +	err = st_lsm6dsx_shub_read(sensor, ch->address, (u8 *)&data, len);
-> +	if (err < 0)
-> +		return err;
-> +
-> +	st_lsm6dsx_shub_set_enable(sensor, false);
-> +
-> +	switch (len) {
-> +	case 2:
-> +		*val = (s16)le16_to_cpu(data);
-This one is odd given data is an __le32?
-What's going on here?
-
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	return IIO_VAL_INT;
-> +}
-> +
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+index 6a379767b919..4e7ff370cbe0 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+@@ -453,6 +453,31 @@ int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
+ 	return read_len;
+ }
+ 
++static int
++st_lsm6dsx_push_tagged_data(struct st_lsm6dsx_hw *hw, u8 tag,
++			    u8 *data, s64 ts)
++{
++	struct st_lsm6dsx_sensor *sensor;
++	struct iio_dev *iio_dev;
++
++	switch (tag) {
++	case ST_LSM6DSX_GYRO_TAG:
++		iio_dev = hw->iio_devs[ST_LSM6DSX_ID_GYRO];
++		break;
++	case ST_LSM6DSX_ACC_TAG:
++		iio_dev = hw->iio_devs[ST_LSM6DSX_ID_ACC];
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	sensor = iio_priv(iio_dev);
++	iio_push_to_buffers_with_timestamp(iio_dev, data,
++					   ts + sensor->ts_ref);
++
++	return 0;
++}
++
+ /**
+  * st_lsm6dsx_read_tagged_fifo() - LSM6DSO read FIFO routine
+  * @hw: Pointer to instance of struct st_lsm6dsx_hw.
+@@ -508,8 +533,7 @@ int st_lsm6dsx_read_tagged_fifo(struct st_lsm6dsx_hw *hw)
+ 			       ST_LSM6DSX_SAMPLE_SIZE);
+ 
+ 			tag = hw->buff[i] >> 3;
+-			switch (tag) {
+-			case ST_LSM6DSX_TS_TAG:
++			if (tag == ST_LSM6DSX_TS_TAG) {
+ 				/*
+ 				 * hw timestamp is 4B long and it is stored
+ 				 * in FIFO according to this schema:
+@@ -526,19 +550,9 @@ int st_lsm6dsx_read_tagged_fifo(struct st_lsm6dsx_hw *hw)
+ 				if (!reset_ts && ts >= 0xffff0000)
+ 					reset_ts = true;
+ 				ts *= ST_LSM6DSX_TS_SENSITIVITY;
+-				break;
+-			case ST_LSM6DSX_GYRO_TAG:
+-				iio_push_to_buffers_with_timestamp(
+-					hw->iio_devs[ST_LSM6DSX_ID_GYRO],
+-					iio_buff, gyro_sensor->ts_ref + ts);
+-				break;
+-			case ST_LSM6DSX_ACC_TAG:
+-				iio_push_to_buffers_with_timestamp(
+-					hw->iio_devs[ST_LSM6DSX_ID_ACC],
+-					iio_buff, acc_sensor->ts_ref + ts);
+-				break;
+-			default:
+-				break;
++			} else {
++				st_lsm6dsx_push_tagged_data(hw, tag, iio_buff,
++							    ts);
+ 			}
+ 		}
+ 	}
+-- 
+2.19.1
