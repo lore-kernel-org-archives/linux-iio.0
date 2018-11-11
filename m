@@ -1,66 +1,109 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-eopbgr680049.outbound.protection.outlook.com ([40.107.68.49]:54272
-        "EHLO NAM04-BN3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726411AbeKGXKT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 7 Nov 2018 18:10:19 -0500
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "ilucas.ms@gmail.com" <ilucas.ms@gmail.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC: "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>
+Received: from saturn.retrosnub.co.uk ([46.235.226.198]:56388 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728585AbeKLAtX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 11 Nov 2018 19:49:23 -0500
+Date: Sun, 11 Nov 2018 15:00:32 +0000
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+To: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+Cc: "ilucas.ms@gmail.com" <ilucas.ms@gmail.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>
 Subject: Re: Work plan on ad5933
-Date: Wed, 7 Nov 2018 13:39:48 +0000
-Message-ID: <09719f42c739655736a0d7ca6c07c74db0246b67.camel@analog.com>
+Message-ID: <20181111150032.0a6a9a58@archlinux>
+In-Reply-To: <09719f42c739655736a0d7ca6c07c74db0246b67.camel@analog.com>
 References: <20181105185911.g5324s46ixlgbvxj@smtp.gmail.com>
-In-Reply-To: <20181105185911.g5324s46ixlgbvxj@smtp.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+        <09719f42c739655736a0d7ca6c07c74db0246b67.camel@analog.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-T24gTW9uLCAyMDE4LTExLTA1IGF0IDE2OjU5IC0wMjAwLCBMdWNhcyBTYW50b3Mgd3JvdGU6DQo+
-IEhlbGxvLA0KPiANCg0KSGV5LA0KDQpTb3JyeSBmb3IgdGhlIGxhdGUgcmVwbHkuDQpJIGRlZmVy
-cmVkIGFuc3dlcmluZyB5b3VyIGVtYWlsLCBhbmQgbmVhcmx5IGZvcmdvdC4NCg0KDQo+IEknbSBs
-b29raW5nIGF0IHRoZSBjb2RlIG9mIGltcGVkYWFuY2UtYW5hbHl6ZXIvYWQ1OTMzLCB0cnlpbmcg
-dG8NCj4gdW5kZXJzdGFuZA0KPiB3aGF0IGlzIG5lZWRlZCB0byBtb3ZlIGl0IHRvIHRoZSBtYWlu
-IHRyZWUuIEkgYW0gcGFydCBvZiBhIHN0dWR5IGdyb3VwDQo+IGFuZCB3ZQ0KPiBhcmUgd2lsbGlu
-ZyB0byB3b3JrIG9uIGl0Lg0KDQpDb29sIDopDQpUaGFua3MNCg0KPiANCj4gV2UgZG8gbm90IHVu
-ZGVyc3RhbmQgYWxsIHRoZSBuZWNlc3Nhcnkgc3RlcHMgeWV0LCBidXQgd2UgaGF2ZSBzb21lDQo+
-IGd1ZXN0cy4gSSdkDQo+IGxpa2UgdG8gYXNrIGlmIHdlIGFyZSBvbiB0aGUgcmlnaHQgdHJhY2su
-IEFsbCBmZWVkYmFjayB3aWxsIGJlIG11Y2gNCj4gYXBwcmVjaWF0ZWQuDQo+IA0KPiBXZSB1bmRl
-cnN0YW5kIHRoYXQgd2Ugc2hvdWxkIHJlZmFjdG9yIHRoZSB3YXkgdGhlIGRyaXZlciBpcyBkZXNp
-Z25lZC4gV2UNCj4gdGhpbmsNCj4gd2Ugc2hvdWxkIHJlbW92ZWQgdGhlIGRlbGF5ZWQgd29yayBw
-YXR0ZXJuIChldmVudHMgcXVldWUpIGFuZCB1c2UgSVJRDQo+IHBhdHRlcm4NCj4gaW5zdGVhZC4g
-SXMgdGhhdCBjb3JyZWN0PyBEbyB3ZSBuZWVkIHRvIGRvIGFueSBhZGRpdGlvbmFsIHdvcms/DQo+
-IA0KDQpJIGRvbid0IHRoaW5rIHRoZSBkcml2ZXIgbmVlZHMgYSByZS1kZXNpZ24gZnJvbSB0aGF0
-IHBlcnNwZWN0aXZlIChpLmUuDQpkZWxheWVkLXdvcmsgdG8gSVJRKTsgZXNwZWNpYWxseSwgc2lu
-Y2UgdGhlcmUgZG9lc24ndCBzZWVtIHRvIGJlIGFueSBwaW5zDQp0aGF0IGNhbiBiZSB1c2VkIHRv
-IHRyaWdnZXIgYW55IGludGVycnVwdHMuDQpJIGNvdWxkIGJlIHdyb25nIGFib3V0IHRoaXMsIGJ1
-dCB0aGF0J3MgbXkgY3VycmVudCB1bmRlcnN0YW5kaW5nIGZyb20gdGhlDQpkYXRhc2hlZXQuDQoN
-ClRoZSBkcml2ZXIgZG9lcyBuZWVkIHNvbWUgd29yayB0byBnZXQgb3V0IG9mIHN0YWdpbmcuDQoN
-CkZpcnN0ICYgZm9yZW1vc3Q6IGZpbmFsaXplIGRldmljZS10cmVlIHN1cHBvcnQgOyBhbmQgbWF5
-YmUgcmVtb3ZlIHRoZQ0KYGFkNTkzM19wbGF0Zm9ybV9kYXRhYCBhbHRvZ2V0aGVyLiBJIGFsc28g
-d2FudGVkIHRvIGRvIHRoaXMsIGJ1dCBKb25hdGhhbg0KbWFkZSBzb21lIGdvb2QgcG9pbnRzIGFi
-b3V0IG15IHBhdGNoZXMgYW5kIEkgZGlkIG5vdCBoYXZlIHRpbWUgdG8gcmUtc3Bpbi4NCkJhc2lj
-YWxseSB3aGF0IG5lZWRzIHRvIGJlIGRvbmUgaXMgdG8gcmVwbGFjZSB0aGUgdnJlZl9tdiB3aXRo
-IHVzaW5nIGENCnJlZ3VsYXRvciBhbmQgZXh0X2Nsa19IeiB1c2luZyBhIGNsb2NrIGZyYW1ld29y
-ay4NCg0KVGhlbiwgbWF5YmUgYWRkIGEgYG9mX2RldmljZV9pZGAgL2BvZl9tYXRjaF90YWJsZWAu
-DQoNCkNoZWNrIGlmIHRoZSBkcml2ZXIgaXMgcHJvcGVybHkgYWRhcHRlZCBmb3IgYm90aCBhZDU5
-MzMgYW5kIGFkNTkzNCAoc2luY2UNCml0IHN1cHBvcnRzIGJvdGgpIDsgaXQgY291bGQgYmUgdGhh
-dCB0aGVyZSBhcmUgc29tZSBkaWZmZXJlbmNlcyBiZXR3ZWVuIHRoZQ0KMiBjaGlwcyB0aGF0IG5l
-ZWQgdG8gYmUgdXBkYXRlZCBpbiB0aGUgZHJpdmVyIChJIGRpZG4ndCBsb29rIHlldCkuDQoNCllv
-dSBjb3VsZCB0YWtlIGEgbG9vayBhdCB1c2luZyB0aGUgcmVnbWFwIEkyQyBzdHVmZiB0aGF0J3Mg
-aW4gdGhlIGtlcm5lbC4NCkknbSBub3Qgc3VyZSBpZiB0aGlzIG1ha2VzIHNlbnNlIHRvIHVzZS9j
-aGFuZ2UgaW4gdGhpcyBkcml2ZXIsIGJ1dCBpdCBtYXkNCm1ha2Ugc2Vuc2UgdG8gaW52ZXN0aWdh
-dGUgdGhpcywgYW5kIGlmIHRoZSBvdmVyYWxsIGJlbmVmaXRzIGFyZSBvYnZpb3VzLA0KdGhpcyBj
-b3VsZCBnbyBpbi4gU2luY2UgaXQgaXMgaW52ZXN0aWdhdGlvbiB3b3JrLCB5b3UgY291bGQgYmUg
-ZXhwZWN0ZWQNCnRoYXQgdGhlIHdvcmsgZG9lc24ndCBnZXQgaW5jbHVkZWQgaW4gdGhlIGtlcm5l
-bC4NCg0KRGVmaW5pdGVseSBkbyBzb21lIHRlc3Rpbmcgb2Ygc29tZSBvZiB0aGUgZXhpc3Rpbmcg
-c3R1ZmY7IHdlIGRpZCBmaW5kIHNvbWUNCmJ1Z3MgaW4gYSBmZXcgb2Ygb3VyIG9sZCBkcml2ZXJz
-IChtaXNtYXRjaGVkIHJlZyB2YWx1ZXMsIG9yIGJpdCBmaWVsZHMsDQplcnJvbm91cyBzZXF1ZW5j
-ZXMsIHN0dWZmIGxpa2UgdGhhdCkuDQoNCkkgdGhpbmsgdGhlIG1haW4gdGhpbmcgdG8gZ2V0IHRo
-aXMgZHJpdmVyIG91dCBvZiBzdGFnaW5nIChhdCB0aGUgbW9tZW50KSBpcw0KanVzdCB0aGUgZGV2
-aWNlLXRyZWUgc3VwcG9ydC4NCg0KSSdsbCBhc2sgYXJvdW5kIChpbiBvdXIgb2ZmaWNlKSB0byBz
-ZWUgaWYgYW55b25lIGVsc2UgaGFzIG90aGVyIHRob3VnaHRzIG9uDQp0aGlzIGRyaXZlciwgYnV0
-IEkgdGhpbmsgdGhpcyB3b3VsZCBiZSBtb3N0bHkgaXQuDQoNClRoYW5rcw0KQWxleA0KDQo+IEJl
-c3QgcmVnYXJkcywNCj4gTHVjYXMNCj4gDQo=
+On Wed, 7 Nov 2018 13:39:48 +0000
+"Ardelean, Alexandru" <alexandru.Ardelean@analog.com> wrote:
+
+> On Mon, 2018-11-05 at 16:59 -0200, Lucas Santos wrote:
+> > Hello,
+> >   
+> 
+> Hey,
+> 
+> Sorry for the late reply.
+> I deferred answering your email, and nearly forgot.
+> 
+> 
+> > I'm looking at the code of impedaance-analyzer/ad5933, trying to
+> > understand
+> > what is needed to move it to the main tree. I am part of a study group
+> > and we
+> > are willing to work on it.  
+> 
+> Cool :)
+> Thanks
+> 
+> > 
+> > We do not understand all the necessary steps yet, but we have some
+> > guests. I'd
+> > like to ask if we are on the right track. All feedback will be much
+> > appreciated.
+> > 
+> > We understand that we should refactor the way the driver is designed. We
+> > think
+> > we should removed the delayed work pattern (events queue) and use IRQ
+> > pattern
+> > instead. Is that correct? Do we need to do any additional work?
+> >   
+> 
+> I don't think the driver needs a re-design from that perspective (i.e.
+> delayed-work to IRQ); especially, since there doesn't seem to be any pins
+> that can be used to trigger any interrupts.
+> I could be wrong about this, but that's my current understanding from the
+> datasheet.
+> 
+> The driver does need some work to get out of staging.
+> 
+> First & foremost: finalize device-tree support ; and maybe remove the
+> `ad5933_platform_data` altogether. I also wanted to do this, but Jonathan
+> made some good points about my patches and I did not have time to re-spin.
+> Basically what needs to be done is to replace the vref_mv with using a
+> regulator and ext_clk_Hz using a clock framework.
+> 
+> Then, maybe add a `of_device_id` /`of_match_table`.
+> 
+> Check if the driver is properly adapted for both ad5933 and ad5934 (since
+> it supports both) ; it could be that there are some differences between the
+> 2 chips that need to be updated in the driver (I didn't look yet).
+> 
+> You could take a look at using the regmap I2C stuff that's in the kernel.
+> I'm not sure if this makes sense to use/change in this driver, but it may
+> make sense to investigate this, and if the overall benefits are obvious,
+> this could go in. Since it is investigation work, you could be expected
+> that the work doesn't get included in the kernel.
+> 
+> Definitely do some testing of some of the existing stuff; we did find some
+> bugs in a few of our old drivers (mismatched reg values, or bit fields,
+> erronous sequences, stuff like that).
+> 
+> I think the main thing to get this driver out of staging (at the moment) is
+> just the device-tree support.
+> 
+> I'll ask around (in our office) to see if anyone else has other thoughts on
+> this driver, but I think this would be mostly it.
+There is the question of ABI for this one given we don't have an existing
+impedance devices.   Perhaps propose some docs for what is there already
+and we can discuss whether there are nicer ways of doing it?
+
+There is implicit creation of the kfifo which I suspect can use some of
+the triggered-buffer infrastructure for.
+
+Thanks,
+
+Jonathan
+
+> 
+> Thanks
+> Alex
+> 
+> > Best regards,
+> > Lucas
+> >   
