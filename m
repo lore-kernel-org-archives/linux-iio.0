@@ -1,13 +1,13 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-co1nam03on0055.outbound.protection.outlook.com ([104.47.40.55]:22848
-        "EHLO NAM03-CO1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726684AbeKICY2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 8 Nov 2018 21:24:28 -0500
-From: "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>
-To: "jic23@kernel.org" <jic23@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>
-CC: "knaack.h@gmx.de" <knaack.h@gmx.de>,
+Received: from mail.kernel.org ([198.145.29.99]:53918 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728498AbeKLBXC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 11 Nov 2018 20:23:02 -0500
+Date: Sun, 11 Nov 2018 15:34:05 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>
+Cc: "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
         "lars@metafoo.de" <lars@metafoo.de>,
         "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
         "Hennerich, Michael" <Michael.Hennerich@analog.com>,
@@ -15,70 +15,131 @@ CC: "knaack.h@gmx.de" <knaack.h@gmx.de>,
         "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Subject: Re: [PATCH v3 2/3] iio: adc: Add ad7124 support
-Date: Thu, 8 Nov 2018 16:48:02 +0000
-Message-ID: <1541695681.2091.10.camel@analog.com>
+Message-ID: <20181111153405.45ccb948@archlinux>
+In-Reply-To: <1541695681.2091.10.camel@analog.com>
 References: <1540831111-3040-1-git-send-email-stefan.popa@analog.com>
-         <20181103121606.2fc461ec@archlinux> <1541687328.2091.2.camel@analog.com>
-         <CAL_Jsq+zc2RGWgkwXNk8qjJqjo+FpdPZUOOxd44mb8Cu7+EsaQ@mail.gmail.com>
-In-Reply-To: <CAL_Jsq+zc2RGWgkwXNk8qjJqjo+FpdPZUOOxd44mb8Cu7+EsaQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+        <20181103121606.2fc461ec@archlinux>
+        <1541687328.2091.2.camel@analog.com>
+        <CAL_Jsq+zc2RGWgkwXNk8qjJqjo+FpdPZUOOxd44mb8Cu7+EsaQ@mail.gmail.com>
+        <1541695681.2091.10.camel@analog.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-T24gSm8sIDIwMTgtMTEtMDggYXQgMTA6MzQgLTA2MDAsIFJvYiBIZXJyaW5nIHdyb3RlOg0KPiBP
-biBUaHUsIE5vdiA4LCAyMDE4IGF0IDk6MDIgQU0gUG9wYSwgU3RlZmFuIFNlcmJhbg0KPiA8U3Rl
-ZmFuU2VyYmFuLlBvcGFAYW5hbG9nLmNvbT4gd3JvdGU6DQo+ID4gDQo+ID4gDQo+ID4gT24gU2Is
-IDIwMTgtMTEtMDMgYXQgMTI6MTYgKzAwMDAsIEpvbmF0aGFuIENhbWVyb24gd3JvdGU6DQo+ID4g
-PiANCj4gPiA+IE9uIE1vbiwgMjkgT2N0IDIwMTggMTg6Mzg6MzEgKzAyMDANCj4gPiA+IFN0ZWZh
-biBQb3BhIDxzdGVmYW4ucG9wYUBhbmFsb2cuY29tPiB3cm90ZToNCj4gPiA+IA0KPiA+ID4gPiAN
-Cj4gPiA+ID4gDQo+ID4gPiA+IFRoZSBhZDcxMjQtNCBhbmQgYWQ3MTI0LTggYXJlIGEgZmFtaWx5
-IG9mIDQgYW5kIDggY2hhbm5lbCBzaWdtYS0NCj4gPiA+ID4gZGVsdGENCj4gPiA+ID4gQURDcw0K
-PiA+ID4gPiB3aXRoIDI0LWJpdCBwcmVjaXNpb24gYW5kIHJlZmVyZW5jZS4NCj4gPiA+ID4gDQo+
-ID4gPiA+IFRocmVlIHBvd2VyIG1vZGVzIGFyZSBhdmFpbGFibGUgd2hpY2ggaW4gdHVybiBhZmZl
-Y3QgdGhlIG91dHB1dA0KPiA+ID4gPiBkYXRhDQo+ID4gPiA+IHJhdGU6DQo+ID4gPiA+IMKgKiBG
-dWxsIHBvd2VyOiA5LjM4IFNQUyB0byAxOSwyMDAgU1BTDQo+ID4gPiA+IMKgKiBNaWQgcG93ZXI6
-IDIuMzQgU1BTIHRvIDQ4MDAgU1BTDQo+ID4gPiA+IMKgKiBMb3cgcG93ZXI6IDEuMTcgU1BTIHRv
-IDI0MDAgU1BTDQo+ID4gPiA+IA0KPiA+ID4gPiBUaGUgYWQ3MTI0LTQgY2FuIGJlIGNvbmZpZ3Vy
-ZWQgdG8gaGF2ZSBmb3VyIGRpZmZlcmVudGlhbCBpbnB1dHMsDQo+ID4gPiA+IHdoaWxlDQo+ID4g
-PiA+IGFkNzEyNC04IGNhbiBoYXZlIDguIE1vcmVvdmVyLCBhZDcxMjQgYWxzbyBzdXBwb3J0cyBw
-ZXIgY2hhbm5lbA0KPiA+ID4gPiBjb25maWd1cmF0aW9uLiBFYWNoIGNvbmZpZ3VyYXRpb24gY29u
-c2lzdHMgb2YgZ2FpbiwgcmVmZXJlbmNlDQo+ID4gPiA+IHNvdXJjZSwNCj4gPiA+ID4gb3V0cHV0
-IGRhdGEgcmF0ZSBhbmQgYmlwb2xhci91bmlwb2xhciBjb25maWd1cmF0aW9uLg0KPiA+ID4gPiAN
-Cj4gPiA+ID4gRGF0YXNoZWV0czoNCj4gPiA+ID4gTGluazogaHR0cDovL3d3dy5hbmFsb2cuY29t
-L21lZGlhL2VuL3RlY2huaWNhbC1kb2N1bWVudGF0aW9uL2RhdGEtcw0KPiA+ID4gPiBoZWV0DQo+
-ID4gPiA+IHMvQUQ3MTI0LTQucGRmDQo+ID4gPiA+IExpbms6IGh0dHA6Ly93d3cuYW5hbG9nLmNv
-bS9tZWRpYS9lbi90ZWNobmljYWwtZG9jdW1lbnRhdGlvbi9kYXRhLXMNCj4gPiA+ID4gaGVldA0K
-PiA+ID4gPiBzL2FkNzEyNC04LnBkZg0KPiA+ID4gPiANCj4gPiA+ID4gU2lnbmVkLW9mZi1ieTog
-U3RlZmFuIFBvcGEgPHN0ZWZhbi5wb3BhQGFuYWxvZy5jb20+DQo+ID4gPiBIaSBTdGVmYW4sDQo+
-ID4gPiANCj4gPiA+IFRoZSBkaXNjdXNzaW9uIGFyb3VuZCB0aGUgRFQgYmluZGluZyBoYXMgZ290
-dGVuIG1lIGxvb2tpbmcgYXQgYml0DQo+ID4gPiBtb3JlIGNsb3NlbHkgYXQgdGhhdCBmb3IgdGhp
-cyB2ZXJzaW9uLg0KPiA+ID4gDQo+ID4gPiBTb21lIG1vc3QgY29tbWVudHMgaW4gdGhhdCBzZWN0
-aW9uLsKgwqBBbHNvIGEgcmVhbGx5IG1pbm9yIG9yZGVyaW5nDQo+ID4gPiBpc3N1ZQ0KPiA+ID4g
-aW4NCj4gPiA+IHJlbW92ZSB3aGljaCBJJ2QganVzdCBoYXZlIGZpeGVkIGlmIHdlIHdlcmVuJ3Qg
-Z29pbmcgYXJvdW5kIGFnYWluIGZvcg0KPiA+ID4gdGhlIGJpbmRpbmcuDQo+ID4gPiANCj4gPiA+
-IE1haW4gYmluZGluZyB0aGluZyBpcyBJIGRvbid0IHRoaW5rIHRoZSBvZHIgdmFsdWUgYmVsb25n
-cyBpbiBEVC4NCj4gPiA+IEdhaW4gaXMgbW9yZSBtYXJnaW5hbCAodW5sZXNzIHRoZSBwYXJ0IGNh
-biBhY3R1YWxseSBiZSBkYW1hZ2VkIGJ5DQo+ID4gPiBhIHdyb25nIHZhbHVlIC0gd2hpY2ggSSBo
-b3BlIGl0IGNhbid0ISkuwqDCoEknbSBub3QgdGhhdCBmdXNzZWQNCj4gPiA+IGFzIHRoZXJlIGFy
-ZSBkZWZpbml0ZWx5IHJlYXNvbnMgdG8gc3BlY2lmeSBhIGRlZmF1bHQgc2NhbGUgdG8NCj4gPiA+
-IGNvdmVyIHRoZSByZWFzb25hYmxlIHJhbmdlIG9uIGEgcGluLg0KPiA+ID4gDQo+ID4gPiBUaGFu
-a3MsDQo+ID4gPiANCj4gPiA+IEpvbmF0aGFuDQo+ID4gSGkgSm9uYXRoYW4sDQo+ID4gDQo+ID4g
-VGhhbmsgeW91IGZvciB0aGUgcmV2aWV3ISBTbywgaG93IHNob3VsZCBJIHByb2NlZWQ/DQo+ID4g
-DQo+ID4gRmlyc3QsIHdlIG5lZWQgYW4gYWRjLnR4dCBmaWxlIHdoZXJlICJiaXBvbGFyIiBhbmQg
-c29tZXRoaW5nIGxpa2UNCj4gPiAiZGlmZi0NCj4gPiBjaGFubmVscyIgc2hvdWxkIGJlIGRvY3Vt
-ZW50ZWQuIFNob3VsZCB0aGUgZmlsZSBiZSBwbGFjZWQgdW5kZXINCj4gPiBEb2N1bWVudGF0aW9u
-L2RldmljZXRyZWUvYmluZGluZ3MvaWlvL2FkYz8NCj4gWWVzLg0KPiANCj4gPiANCj4gPiBSZWdh
-cmRpbmcgdGhlICJvZHItaHoiIHByb3BlcnR5LCBpdCB0b3RhbGx5IG1ha2VzIHNlbnNlIHRvIHJl
-bW92ZSBpdA0KPiA+IGZyb20NCj4gPiB0aGUgRFQuIEhvdyBhYm91dCB0aGUgImdhaW4iPyBTaG91
-bGQgd2UgbGVhdmUgaXQgaW4gdGhlIERUIGFuZCBhbHNvIGFkZA0KPiA+IHRoZQ0KPiA+IHBvc3Np
-YmlsaXR5IHRvIGJlIGNvbmZpZ3VyZWQgZnJvbSB1c2VyIHNwYWNlPw0KPiBMb29rIGF0IG90aGVy
-IGJpbmRpbmdzLiBJIHRoaW5rIHRoZXJlIGFyZSBvdGhlcnMgaGF2aW5nIGdhaW4uIElmIG5vdCwN
-Cj4gdGhlbiBpdCBwcm9iYWJseSBzaG91bGQgb25seSBiZSB1c2VyIHNwYWNlIGNvbmZpZ3VyYWJs
-ZS4gSWYgc28sIHRoZW4NCj4gY2FuIGl0IGJlIGEgY29tbW9uIHByb3BlcnR5IHRvby4NCj4gDQo+
-IFJvYg0KPiANCg0KSGkgUm9iLA0KDQpJIGZvdW5kIG9ubHkgYSBjb3VwbGUgb2YgZXhhbXBsZXMg
-dXNpbmcgZ2FpbiBpbiBvdGhlciBiaW5kaW5ncywgc28gSSBndWVzcw0KaXQncyBub3QgY29tbW9u
-IHByYWN0aWNlLiBJIHdpbGwgcmVtb3ZlIHRoZSBnYWluIGFzIHdlbGwgZnJvbSB0aGUgRFQgYW5k
-DQpzZXQgaXQgd2l0aCB0aGUgZGVmYXVsdCBvZiAxLg0KDQpASm9uYXRoYW46IEkgdGhpbmsgdGhh
-dMKgSUlPX0NIQU5fSU5GT19IQVJEV0FSRUdBSU4gaXMgdGhlIGF0dHJpYnV0ZSB0aGF0DQpjYW4g
-YmUgdXNlZCBpbiB1c2VyIHNwYWNlPw0KDQpUaGFuayB5b3UhDQotU3RlZmFu
+On Thu, 8 Nov 2018 16:48:02 +0000
+"Popa, Stefan Serban" <StefanSerban.Popa@analog.com> wrote:
+
+> On Jo, 2018-11-08 at 10:34 -0600, Rob Herring wrote:
+> > On Thu, Nov 8, 2018 at 9:02 AM Popa, Stefan Serban
+> > <StefanSerban.Popa@analog.com> wrote: =20
+> > >=20
+> > >=20
+> > > On Sb, 2018-11-03 at 12:16 +0000, Jonathan Cameron wrote: =20
+> > > >=20
+> > > > On Mon, 29 Oct 2018 18:38:31 +0200
+> > > > Stefan Popa <stefan.popa@analog.com> wrote:
+> > > >  =20
+> > > > >=20
+> > > > >=20
+> > > > > The ad7124-4 and ad7124-8 are a family of 4 and 8 channel sigma-
+> > > > > delta
+> > > > > ADCs
+> > > > > with 24-bit precision and reference.
+> > > > >=20
+> > > > > Three power modes are available which in turn affect the output
+> > > > > data
+> > > > > rate:
+> > > > > =C2=A0* Full power: 9.38 SPS to 19,200 SPS
+> > > > > =C2=A0* Mid power: 2.34 SPS to 4800 SPS
+> > > > > =C2=A0* Low power: 1.17 SPS to 2400 SPS
+> > > > >=20
+> > > > > The ad7124-4 can be configured to have four differential inputs,
+> > > > > while
+> > > > > ad7124-8 can have 8. Moreover, ad7124 also supports per channel
+> > > > > configuration. Each configuration consists of gain, reference
+> > > > > source,
+> > > > > output data rate and bipolar/unipolar configuration.
+> > > > >=20
+> > > > > Datasheets:
+> > > > > Link: http://www.analog.com/media/en/technical-documentation/data=
+-s
+> > > > > heet
+> > > > > s/AD7124-4.pdf
+> > > > > Link: http://www.analog.com/media/en/technical-documentation/data=
+-s
+> > > > > heet
+> > > > > s/ad7124-8.pdf
+> > > > >=20
+> > > > > Signed-off-by: Stefan Popa <stefan.popa@analog.com> =20
+> > > > Hi Stefan,
+> > > >=20
+> > > > The discussion around the DT binding has gotten me looking at bit
+> > > > more closely at that for this version.
+> > > >=20
+> > > > Some most comments in that section.=C2=A0=C2=A0Also a really minor =
+ordering
+> > > > issue
+> > > > in
+> > > > remove which I'd just have fixed if we weren't going around again f=
+or
+> > > > the binding.
+> > > >=20
+> > > > Main binding thing is I don't think the odr value belongs in DT.
+> > > > Gain is more marginal (unless the part can actually be damaged by
+> > > > a wrong value - which I hope it can't!).=C2=A0=C2=A0I'm not that fu=
+ssed
+> > > > as there are definitely reasons to specify a default scale to
+> > > > cover the reasonable range on a pin.
+> > > >=20
+> > > > Thanks,
+> > > >=20
+> > > > Jonathan =20
+> > > Hi Jonathan,
+> > >=20
+> > > Thank you for the review! So, how should I proceed?
+> > >=20
+> > > First, we need an adc.txt file where "bipolar" and something like
+> > > "diff-
+> > > channels" should be documented. Should the file be placed under
+> > > Documentation/devicetree/bindings/iio/adc? =20
+> > Yes.
+> >  =20
+> > >=20
+> > > Regarding the "odr-hz" property, it totally makes sense to remove it
+> > > from
+> > > the DT. How about the "gain"? Should we leave it in the DT and also a=
+dd
+> > > the
+> > > possibility to be configured from user space? =20
+> > Look at other bindings. I think there are others having gain. If not,
+> > then it probably should only be user space configurable. If so, then
+> > can it be a common property too.
+> >=20
+> > Rob
+> >  =20
+>=20
+> Hi Rob,
+>=20
+> I found only a couple of examples using gain in other bindings, so I guess
+> it's not common practice. I will remove the gain as well from the DT and
+> set it with the default of 1.
+>=20
+> @Jonathan: I think that=C2=A0IIO_CHAN_INFO_HARDWAREGAIN is the attribute =
+that
+> can be used in user space?
+Sorry, I missed this.  Guess you will see my review anyway around now.
+Nope, hardwaregain is an oddity for devices where we aren't controlling
+the thing being measured, but something like the amplifier of a
+time of flight device.
+
+There is some argument to potentially provide sane limits on gain in DT
+(particularly if a device really doesn't like going out of range) but
+in general I'm not keen on it as it is rather an application specific
+question so best left to userspace.
+
+Jonathan
+
+>=20
+> Thank you!
+> -Stefan
