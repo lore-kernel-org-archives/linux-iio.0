@@ -1,12 +1,12 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-eopbgr70109.outbound.protection.outlook.com ([40.107.7.109]:30688
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728773AbeKLCig (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 11 Nov 2018 21:38:36 -0500
-From: Peter Rosin <peda@axentia.se>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Chris Coffey <cmc@babblebit.net>, Hartmut Knaack <knaack.h@gmx.de>,
+Received: from mail.kernel.org ([198.145.29.99]:51324 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729193AbeKLC4R (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 11 Nov 2018 21:56:17 -0500
+Date: Sun, 11 Nov 2018 17:07:08 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Peter Rosin <peda@axentia.se>
+Cc: Chris Coffey <cmc@babblebit.net>, Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Slawomir Stepien <sst@poczta.fm>,
@@ -16,37 +16,61 @@ CC: Chris Coffey <cmc@babblebit.net>, Hartmut Knaack <knaack.h@gmx.de>,
         "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 Subject: Re: [PATCH] iio: potentiometer: Add driver for Microchip
  MCP41xxx/42xxx
-Date: Sun, 11 Nov 2018 16:49:28 +0000
-Message-ID: <1d5f47e8-b69c-e40f-9b4f-7423ee485747@axentia.se>
+Message-ID: <20181111170708.5dbda253@archlinux>
+In-Reply-To: <1d5f47e8-b69c-e40f-9b4f-7423ee485747@axentia.se>
 References: <20181106113130.9612-1-cmc@babblebit.net>
- <6f3ead94-b1ed-900d-b675-3822d67dbfd7@axentia.se>
- <20181111145530.2463b9c3@archlinux>
-In-Reply-To: <20181111145530.2463b9c3@archlinux>
-Content-Type: text/plain; charset="utf-8"
+        <6f3ead94-b1ed-900d-b675-3822d67dbfd7@axentia.se>
+        <20181111145530.2463b9c3@archlinux>
+        <1d5f47e8-b69c-e40f-9b4f-7423ee485747@axentia.se>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-T24gMjAxOC0xMS0xMSAxNTo1NSwgSm9uYXRoYW4gQ2FtZXJvbiB3cm90ZToNCj4gT24gVHVlLCA2
-IE5vdiAyMDE4IDE2OjM3OjExICswMDAwDQo+IFBldGVyIFJvc2luIDxwZWRhQGF4ZW50aWEuc2U+
-IHdyb3RlOg0KPiANCj4+IEhpIQ0KPj4NCj4+IFNvbWUgY29tbWVudHMgaW5saW5lLi4uDQo+IEEg
-ZmV3IGFkZGl0aW9ucyBmcm9tIG1lLg0KDQoqc25pcCoNCg0KPj4+ICsJZGF0YSA9IGlpb19wcml2
-KGluZGlvX2Rldik7DQo+Pj4gKwlzcGlfc2V0X2RydmRhdGEoc3BpLCBpbmRpb19kZXYpOw0KPj4+
-ICsJZGF0YS0+c3BpID0gc3BpOw0KPj4+ICsJZGF0YS0+Y2ZnID0gJm1jcDQxMDEwX2NmZ1tkZXZp
-ZF07ICANCj4+DQo+PiBJJ20gbWlzc2luZyBhICJvZl9kZXZpY2VfZ2V0X21hdGNoX2RhdGEoZGV2
-KSIgY2FsbCBzb21ld2hlcmUgaW4gaGVyZSwgc2VlIGUuZy4gdGhlDQo+PiBtYXg1NDgxLmMgZmls
-ZSBpbiB0aGlzIGRpcmVjdG9yeS4gWWVzLCB0aGF0J3MgbWlzc2luZyBmcm9tIHRoZSBtY3A0MTMx
-IGRyaXZlciBhcw0KPj4gd2VsbCwgYnV0IHRoYXQncyBub3QgYSB2YWxpZCByZWFzb24gZm9yIG5v
-dCBkb2luZyBpdCBoZXJlIEFGQUlDVC4uLg0KPiBJZiB5b3Ugd2FudCB0byB1c2UgdGhlIGRhdGEg
-ZWxlbWVudHMgZnJvbSB0aGUgZGV2aWNldHJlZSBiaW5kaW5ncyB5b3UnbGwgbmVlZA0KPiB0byBk
-byB0aGF0LiAgSG93ZXZlciwgdGhlcmUgaXMgYW4gb2RkIHBhdGggdGhhdCBhY3R1YWxseSBtZWFu
-cyBpdCB3aWxsIGZhbGwgYmFjaw0KPiB0byBnZXR0aW5nIHRoZSByaWdodCB0aGluZyBhcyB5b3Ug
-aGF2ZSBpdCBoZXJlLg0KPiBzcGlfZ2V0X2RldmljZV9pZCBjYWxscyBzcGlfbWF0Y2hfaWQgd2hp
-Y2ggY29tcGFyZXMgdGhlIHNkZXYtPm1vZGFsaWFzDQo+IHdpdGggdGhlIGlkIHRhYmxlIG5hbWVz
-LiAgbW9kYWxpYXMgaGFzIGJlZW4gY2FyZWZ1bGx5IGNvbnN0cnVjdGVkDQo+IHRvIGJlIHRoZSB0
-ZXh0IGFmdGVyIHRoZSBjb21tYSBvbmx5IGFuZCBhcyBzdWNoIHRoaXMgd29ya3MgYXMgaXMuDQo+
-IA0KPiBQZXJoYXBzIGl0J3MgbmVhdGVyIHRob3VnaCB0byBqdXN0IHVzZSB0aGUgZGV2aWNldHJl
-ZSBhY2Nlc3MgZnVuY3Rpb25zLg0KDQpJc24ndCB0aGF0IHBhcnQgYWJvdXQgbm90IGxvb2tpbmcg
-YXQgdGhlIHZlbmRvci1wYXJ0IG9mIHRoZSBEVC1jb21wYXRpYmxlIHNsaWdodGx5DQpmcmFnaWxl
-PyBPciB3aWxsIG1vZGFsaWFzL2NoaXAtbnVtYmVyIGNsYXNoZXMgYmUgZGV0ZWN0ZWQgYnkgc29t
-ZXRoaW5nPw0KDQpDaGVlcnMsDQpQZXRlcg0K
+On Sun, 11 Nov 2018 16:49:28 +0000
+Peter Rosin <peda@axentia.se> wrote:
+
+> On 2018-11-11 15:55, Jonathan Cameron wrote:
+> > On Tue, 6 Nov 2018 16:37:11 +0000
+> > Peter Rosin <peda@axentia.se> wrote:
+> >   
+> >> Hi!
+> >>
+> >> Some comments inline...  
+> > A few additions from me.  
+> 
+> *snip*
+> 
+> >>> +	data = iio_priv(indio_dev);
+> >>> +	spi_set_drvdata(spi, indio_dev);
+> >>> +	data->spi = spi;
+> >>> +	data->cfg = &mcp41010_cfg[devid];    
+> >>
+> >> I'm missing a "of_device_get_match_data(dev)" call somewhere in here, see e.g. the
+> >> max5481.c file in this directory. Yes, that's missing from the mcp4131 driver as
+> >> well, but that's not a valid reason for not doing it here AFAICT...  
+> > If you want to use the data elements from the devicetree bindings you'll need
+> > to do that.  However, there is an odd path that actually means it will fall back
+> > to getting the right thing as you have it here.
+> > spi_get_device_id calls spi_match_id which compares the sdev->modalias
+> > with the id table names.  modalias has been carefully constructed
+> > to be the text after the comma only and as such this works as is.
+> > 
+> > Perhaps it's neater though to just use the devicetree access functions.  
+> 
+> Isn't that part about not looking at the vendor-part of the DT-compatible slightly
+> fragile? Or will modalias/chip-number clashes be detected by something?
+Yes :)
+
+Well actually in this case not so bad.
+
+It will use a match on the of_device_id to find which driver to probe if there is
+one. The modalias part is only being abused to then figure out which device we
+have within the driver.
+
+I definitely prefer the explicit route.  Just wanted to point out it 'worked'
+:)
+
+> 
+> Cheers,
+> Peter
