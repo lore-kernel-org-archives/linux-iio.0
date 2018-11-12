@@ -1,162 +1,120 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:51550 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727480AbeKKWIZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 11 Nov 2018 17:08:25 -0500
-Date: Sun, 11 Nov 2018 12:19:54 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Stefan Popa <stefan.popa@analog.com>
-Cc: <robh+dt@kernel.org>, <mark.rutland@arm.com>, <knaack.h@gmx.de>,
-        <lars@metafoo.de>, <pmeerw@pmeerw.net>,
-        <Michael.Hennerich@analog.com>, <gregkh@linuxfoundation.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
+Received: from mail-eopbgr810053.outbound.protection.outlook.com ([40.107.81.53]:36512
+        "EHLO NAM01-BY2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726190AbeKLTXW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 12 Nov 2018 14:23:22 -0500
+From: "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>
+To: "jic23@kernel.org" <jic23@kernel.org>
+CC: "lars@metafoo.de" <lars@metafoo.de>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
 Subject: Re: [PATCH v4 4/4] dt-bindings: iio: adc: Add docs for ad7124
-Message-ID: <20181111121954.145cbd2f@archlinux>
-In-Reply-To: <1541778180-7862-1-git-send-email-stefan.popa@analog.com>
+Date: Mon, 12 Nov 2018 09:30:47 +0000
+Message-ID: <1542015047.2091.16.camel@analog.com>
 References: <1541778180-7862-1-git-send-email-stefan.popa@analog.com>
+         <20181111121954.145cbd2f@archlinux>
+In-Reply-To: <20181111121954.145cbd2f@archlinux>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 9 Nov 2018 17:43:00 +0200
-Stefan Popa <stefan.popa@analog.com> wrote:
-
-> Add support for Analog Devices AD7124 4-channels and 8-channels ADC.
->=20
-> Signed-off-by: Stefan Popa <stefan.popa@analog.com>
-
-Your example still includes the other things that I think you have now drop=
-ped.
-gain and odr.
-
-> ---
-> Changes in v2:
-> 	- Nothing changed.
-> Changes in v3:
-> 	- Removed the "adi,channels" property.
-> 	- Used the "reg" property to get the channel number and "adi,diff-channe=
-ls"
-> 	  for the differential pins. The "adi,channel-number" property was remov=
-ed.
-> 	- adi,bipolar is of boolean type.
-> Changes in v4:
-> 	- Used the bipolar and diff-channels properties defined in the new adc.t=
-xt doc.
->=20
->  .../devicetree/bindings/iio/adc/adi,ad7124.txt     | 81 ++++++++++++++++=
-++++++
->  MAINTAINERS                                        |  1 +
->  2 files changed, 82 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7124.=
-txt
->=20
-> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7124.txt b/D=
-ocumentation/devicetree/bindings/iio/adc/adi,ad7124.txt
-> new file mode 100644
-> index 0000000..fa0c43b
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7124.txt
-> @@ -0,0 +1,81 @@
-> +Analog Devices AD7124 ADC device driver
-> +
-> +Required properties for the AD7124:
-> +	- compatible: Must be one of "adi,ad7124-4" or "adi,ad7124-8"
-> +	- reg: SPI chip select number for the device
-> +	- spi-max-frequency: Max SPI frequency to use
-> +		see: Documentation/devicetree/bindings/spi/spi-bus.txt
-> +	- clocks: phandle to the master clock (mclk)
-> +		see: Documentation/devicetree/bindings/clock/clock-bindings.txt
-> +	- clock-names: Must be "mclk".
-> +	- interrupts: IRQ line for the ADC
-> +		see: Documentation/devicetree/bindings/interrupt-controller/interrupts=
-.txt
-
-Given the driver doesn't currently use it, should perhaps be optional?
-
-> +
-> +	  Required properties:
-> +		* #address-cells: Must be 1.
-> +		* #size-cells: Must be 0.
-> +
-> +	  Subnode(s) represent the external channels which are connected to the=
- ADC.
-> +	  Each subnode represents one channel and has the following properties:
-> +		Required properties:
-> +			* reg: The channel number. It can have up to 4 channels on ad7124-4
-> +			  and 8 channels on ad7124-8, numbered from 0 to 15.
-> +			* diff-channels: see: Documentation/devicetree/bindings/iio/adc/adc.t=
-xt
-> +
-> +		Optional properties:
-> +			* bipolar: see: Documentation/devicetree/bindings/iio/adc/adc.txt
-> +			* adi,reference-select: Select the reference source to use when
-> +			  converting on the the specific channel. Valid values are:
-> +			  0: REFIN1(+)/REFIN1(=E2=88=92).
-> +			  1: REFIN2(+)/REFIN2(=E2=88=92).
-> +			  3: AVDD
-> +			  If this field is left empty, internal reference is selected.
-> +
-> +Optional properties:
-> +	- refin1-supply: refin1 supply can be used as reference for conversion.
-> +	- refin2-supply: refin2 supply can be used as reference for conversion.
-> +	- avdd-supply: avdd supply can be used as reference for conversion.
-> +
-> +Example:
-> +	adc@0 {
-> +		compatible =3D "adi,ad7124-4";
-> +		reg =3D <0>;
-> +		spi-max-frequency =3D <5000000>;
-> +		interrupts =3D <25 2>;
-> +		interrupt-parent =3D <&gpio>;
-> +		refin1-supply =3D <&adc_vref>;
-> +		clocks =3D <&ad7124_mclk>;
-> +		clock-names =3D "mclk";
-> +
-> +		#address-cells =3D <1>;
-> +		#size-cells =3D <0>;
-> +
-> +		channel@0 {
-> +			reg =3D <0>;
-> +			adi,diff-channels =3D <0 1>;
-> +			adi,reference-select =3D <0>;
-> +			adi,gain =3D <2>;
-> +			adi,odr-hz =3D <10>;
-I think you have dropped these two..
-
-> +		};
-> +
-> +		channel@1 {
-> +			reg =3D <1>;
-> +			adi,bipolar;
-> +			adi,diff-channels =3D <2 3>;
-> +			adi,reference-select =3D <0>;
-> +			adi,gain =3D <4>;
-> +			adi,odr-hz =3D <50>;
-> +		};
-> +
-> +		channel@2 {
-> +			reg =3D <2>;
-> +			adi,diff-channels =3D <4 5>;
-> +			adi,gain =3D <128>;
-> +			adi,odr-hz =3D <19200>;
-> +		};
-> +
-> +		channel@3 {
-> +			reg =3D <3>;
-> +			adi,diff-channels =3D <6 7>;
-> +		};
-> +	};
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 3a1bfcb..f2fa508 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -845,6 +845,7 @@ L:	linux-iio@vger.kernel.org
->  W:	http://ez.analog.com/community/linux-device-drivers
->  S:	Supported
->  F:	drivers/iio/adc/ad7124.c
-> +F:	Documentation/devicetree/bindings/iio/adc/adi,ad7124.txt
-> =20
->  ANALOG DEVICES INC AD9389B DRIVER
->  M:	Hans Verkuil <hans.verkuil@cisco.com>
+T24gRHUsIDIwMTgtMTEtMTEgYXQgMTI6MTkgKzAwMDAsIEpvbmF0aGFuIENhbWVyb24gd3JvdGU6
+DQo+IA0KPiBPbiBGcmksIDkgTm92IDIwMTggMTc6NDM6MDAgKzAyMDANCj4gU3RlZmFuIFBvcGEg
+PHN0ZWZhbi5wb3BhQGFuYWxvZy5jb20+IHdyb3RlOg0KPiANCj4gPiANCj4gPiANCj4gPiBBZGQg
+c3VwcG9ydCBmb3IgQW5hbG9nIERldmljZXMgQUQ3MTI0IDQtY2hhbm5lbHMgYW5kIDgtY2hhbm5l
+bHMgQURDLg0KPiA+IA0KPiA+IFNpZ25lZC1vZmYtYnk6IFN0ZWZhbiBQb3BhIDxzdGVmYW4ucG9w
+YUBhbmFsb2cuY29tPg0KPiBZb3VyIGV4YW1wbGUgc3RpbGwgaW5jbHVkZXMgdGhlIG90aGVyIHRo
+aW5ncyB0aGF0IEkgdGhpbmsgeW91IGhhdmUgbm93DQo+IGRyb3BwZWQuDQo+IGdhaW4gYW5kIG9k
+ci4NCj4gDQpZb3UgYXJlIHJpZ2h0ISBJIGFtIHNvcnJ5IGFib3V0IHRoaXMuDQo+IA0KPiA+IA0K
+PiA+IA0KPiA+IC0tLQ0KPiA+IENoYW5nZXMgaW4gdjI6DQo+ID4gCS0gTm90aGluZyBjaGFuZ2Vk
+Lg0KPiA+IENoYW5nZXMgaW4gdjM6DQo+ID4gCS0gUmVtb3ZlZCB0aGUgImFkaSxjaGFubmVscyIg
+cHJvcGVydHkuDQo+ID4gCS0gVXNlZCB0aGUgInJlZyIgcHJvcGVydHkgdG8gZ2V0IHRoZSBjaGFu
+bmVsIG51bWJlciBhbmQgImFkaSxkaWZmLQ0KPiA+IGNoYW5uZWxzIg0KPiA+IAnCoMKgZm9yIHRo
+ZSBkaWZmZXJlbnRpYWwgcGlucy4gVGhlICJhZGksY2hhbm5lbC1udW1iZXIiIHByb3BlcnR5IHdh
+cw0KPiA+IHJlbW92ZWQuDQo+ID4gCS0gYWRpLGJpcG9sYXIgaXMgb2YgYm9vbGVhbiB0eXBlLg0K
+PiA+IENoYW5nZXMgaW4gdjQ6DQo+ID4gCS0gVXNlZCB0aGUgYmlwb2xhciBhbmQgZGlmZi1jaGFu
+bmVscyBwcm9wZXJ0aWVzIGRlZmluZWQgaW4gdGhlIG5ldw0KPiA+IGFkYy50eHQgZG9jLg0KPiA+
+IA0KPiA+IMKgLi4uL2RldmljZXRyZWUvYmluZGluZ3MvaWlvL2FkYy9hZGksYWQ3MTI0LnR4dMKg
+wqDCoMKgwqB8IDgxDQo+ID4gKysrKysrKysrKysrKysrKysrKysrKw0KPiA+IMKgTUFJTlRBSU5F
+UlPCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHzCoMKgMSArDQo+ID4gwqAyIGZpbGVzIGNoYW5nZWQs
+IDgyIGluc2VydGlvbnMoKykNCj4gPiDCoGNyZWF0ZSBtb2RlIDEwMDY0NA0KPiA+IERvY3VtZW50
+YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9paW8vYWRjL2FkaSxhZDcxMjQudHh0DQo+ID4gDQo+
+ID4gZGlmZiAtLWdpdCBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9paW8vYWRj
+L2FkaSxhZDcxMjQudHh0DQo+ID4gYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3Mv
+aWlvL2FkYy9hZGksYWQ3MTI0LnR4dA0KPiA+IG5ldyBmaWxlIG1vZGUgMTAwNjQ0DQo+ID4gaW5k
+ZXggMDAwMDAwMC4uZmEwYzQzYg0KPiA+IC0tLSAvZGV2L251bGwNCj4gPiArKysgYi9Eb2N1bWVu
+dGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaWlvL2FkYy9hZGksYWQ3MTI0LnR4dA0KPiA+IEBA
+IC0wLDAgKzEsODEgQEANCj4gPiArQW5hbG9nIERldmljZXMgQUQ3MTI0IEFEQyBkZXZpY2UgZHJp
+dmVyDQo+ID4gKw0KPiA+ICtSZXF1aXJlZCBwcm9wZXJ0aWVzIGZvciB0aGUgQUQ3MTI0Og0KPiA+
+ICsJLSBjb21wYXRpYmxlOiBNdXN0IGJlIG9uZSBvZiAiYWRpLGFkNzEyNC00IiBvciAiYWRpLGFk
+NzEyNC04Ig0KPiA+ICsJLSByZWc6IFNQSSBjaGlwIHNlbGVjdCBudW1iZXIgZm9yIHRoZSBkZXZp
+Y2UNCj4gPiArCS0gc3BpLW1heC1mcmVxdWVuY3k6IE1heCBTUEkgZnJlcXVlbmN5IHRvIHVzZQ0K
+PiA+ICsJCXNlZTogRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3NwaS9zcGktYnVz
+LnR4dA0KPiA+ICsJLSBjbG9ja3M6IHBoYW5kbGUgdG8gdGhlIG1hc3RlciBjbG9jayAobWNsaykN
+Cj4gPiArCQlzZWU6IERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9jbG9jay9jbG9j
+ay0NCj4gPiBiaW5kaW5ncy50eHQNCj4gPiArCS0gY2xvY2stbmFtZXM6IE11c3QgYmUgIm1jbGsi
+Lg0KPiA+ICsJLSBpbnRlcnJ1cHRzOiBJUlEgbGluZSBmb3IgdGhlIEFEQw0KPiA+ICsJCXNlZTog
+RG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2ludGVycnVwdC0NCj4gPiBjb250cm9s
+bGVyL2ludGVycnVwdHMudHh0DQo+IEdpdmVuIHRoZSBkcml2ZXIgZG9lc24ndCBjdXJyZW50bHkg
+dXNlIGl0LCBzaG91bGQgcGVyaGFwcyBiZSBvcHRpb25hbD8NCj4gDQpUaGUgaW50ZXJydXB0IGlz
+IGFjdHVhbGx5IHJlcXVpcmVkIGJ5IGFkX3NpZ21hX2RlbHRhLg0KPiANCj4gPiANCj4gPiANCj4g
+PiArDQo+ID4gKwnCoMKgUmVxdWlyZWQgcHJvcGVydGllczoNCj4gPiArCQkqICNhZGRyZXNzLWNl
+bGxzOiBNdXN0IGJlIDEuDQo+ID4gKwkJKiAjc2l6ZS1jZWxsczogTXVzdCBiZSAwLg0KPiA+ICsN
+Cj4gPiArCcKgwqBTdWJub2RlKHMpIHJlcHJlc2VudCB0aGUgZXh0ZXJuYWwgY2hhbm5lbHMgd2hp
+Y2ggYXJlDQo+ID4gY29ubmVjdGVkIHRvIHRoZSBBREMuDQo+ID4gKwnCoMKgRWFjaCBzdWJub2Rl
+IHJlcHJlc2VudHMgb25lIGNoYW5uZWwgYW5kIGhhcyB0aGUgZm9sbG93aW5nDQo+ID4gcHJvcGVy
+dGllczoNCj4gPiArCQlSZXF1aXJlZCBwcm9wZXJ0aWVzOg0KPiA+ICsJCQkqIHJlZzogVGhlIGNo
+YW5uZWwgbnVtYmVyLiBJdCBjYW4gaGF2ZSB1cCB0byA0DQo+ID4gY2hhbm5lbHMgb24gYWQ3MTI0
+LTQNCj4gPiArCQkJwqDCoGFuZCA4IGNoYW5uZWxzIG9uIGFkNzEyNC04LCBudW1iZXJlZCBmcm9t
+IDANCj4gPiB0byAxNS4NCj4gPiArCQkJKiBkaWZmLWNoYW5uZWxzOiBzZWU6DQo+ID4gRG9jdW1l
+bnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2lpby9hZGMvYWRjLnR4dA0KPiA+ICsNCj4gPiAr
+CQlPcHRpb25hbCBwcm9wZXJ0aWVzOg0KPiA+ICsJCQkqIGJpcG9sYXI6IHNlZToNCj4gPiBEb2N1
+bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaWlvL2FkYy9hZGMudHh0DQo+ID4gKwkJCSog
+YWRpLHJlZmVyZW5jZS1zZWxlY3Q6IFNlbGVjdCB0aGUgcmVmZXJlbmNlDQo+ID4gc291cmNlIHRv
+IHVzZSB3aGVuDQo+ID4gKwkJCcKgwqBjb252ZXJ0aW5nIG9uIHRoZSB0aGUgc3BlY2lmaWMgY2hh
+bm5lbC4NCj4gPiBWYWxpZCB2YWx1ZXMgYXJlOg0KPiA+ICsJCQnCoMKgMDogUkVGSU4xKCspL1JF
+RklOMSjiiJIpLg0KPiA+ICsJCQnCoMKgMTogUkVGSU4yKCspL1JFRklOMijiiJIpLg0KPiA+ICsJ
+CQnCoMKgMzogQVZERA0KPiA+ICsJCQnCoMKgSWYgdGhpcyBmaWVsZCBpcyBsZWZ0IGVtcHR5LCBp
+bnRlcm5hbA0KPiA+IHJlZmVyZW5jZSBpcyBzZWxlY3RlZC4NCj4gPiArDQo+ID4gK09wdGlvbmFs
+IHByb3BlcnRpZXM6DQo+ID4gKwktIHJlZmluMS1zdXBwbHk6IHJlZmluMSBzdXBwbHkgY2FuIGJl
+IHVzZWQgYXMgcmVmZXJlbmNlIGZvcg0KPiA+IGNvbnZlcnNpb24uDQo+ID4gKwktIHJlZmluMi1z
+dXBwbHk6IHJlZmluMiBzdXBwbHkgY2FuIGJlIHVzZWQgYXMgcmVmZXJlbmNlIGZvcg0KPiA+IGNv
+bnZlcnNpb24uDQo+ID4gKwktIGF2ZGQtc3VwcGx5OiBhdmRkIHN1cHBseSBjYW4gYmUgdXNlZCBh
+cyByZWZlcmVuY2UgZm9yDQo+ID4gY29udmVyc2lvbi4NCj4gPiArDQo+ID4gK0V4YW1wbGU6DQo+
+ID4gKwlhZGNAMCB7DQo+ID4gKwkJY29tcGF0aWJsZSA9ICJhZGksYWQ3MTI0LTQiOw0KPiA+ICsJ
+CXJlZyA9IDwwPjsNCj4gPiArCQlzcGktbWF4LWZyZXF1ZW5jeSA9IDw1MDAwMDAwPjsNCj4gPiAr
+CQlpbnRlcnJ1cHRzID0gPDI1IDI+Ow0KPiA+ICsJCWludGVycnVwdC1wYXJlbnQgPSA8JmdwaW8+
+Ow0KPiA+ICsJCXJlZmluMS1zdXBwbHkgPSA8JmFkY192cmVmPjsNCj4gPiArCQljbG9ja3MgPSA8
+JmFkNzEyNF9tY2xrPjsNCj4gPiArCQljbG9jay1uYW1lcyA9ICJtY2xrIjsNCj4gPiArDQo+ID4g
+KwkJI2FkZHJlc3MtY2VsbHMgPSA8MT47DQo+ID4gKwkJI3NpemUtY2VsbHMgPSA8MD47DQo+ID4g
+Kw0KPiA+ICsJCWNoYW5uZWxAMCB7DQo+ID4gKwkJCXJlZyA9IDwwPjsNCj4gPiArCQkJYWRpLGRp
+ZmYtY2hhbm5lbHMgPSA8MCAxPjsNCj4gPiArCQkJYWRpLHJlZmVyZW5jZS1zZWxlY3QgPSA8MD47
+DQo+ID4gKwkJCWFkaSxnYWluID0gPDI+Ow0KPiA+ICsJCQlhZGksb2RyLWh6ID0gPDEwPjsNCj4g
+SSB0aGluayB5b3UgaGF2ZSBkcm9wcGVkIHRoZXNlIHR3by4uDQo+IA0KPiA+IA0KPiA+IA0KPiA+
+ICsJCX07DQo+ID4gKw0KPiA+ICsJCWNoYW5uZWxAMSB7DQo+ID4gKwkJCXJlZyA9IDwxPjsNCj4g
+PiArCQkJYWRpLGJpcG9sYXI7DQo+ID4gKwkJCWFkaSxkaWZmLWNoYW5uZWxzID0gPDIgMz47DQo+
+ID4gKwkJCWFkaSxyZWZlcmVuY2Utc2VsZWN0ID0gPDA+Ow0KPiA+ICsJCQlhZGksZ2FpbiA9IDw0
+PjsNCj4gPiArCQkJYWRpLG9kci1oeiA9IDw1MD47DQo+ID4gKwkJfTsNCj4gPiArDQo+ID4gKwkJ
+Y2hhbm5lbEAyIHsNCj4gPiArCQkJcmVnID0gPDI+Ow0KPiA+ICsJCQlhZGksZGlmZi1jaGFubmVs
+cyA9IDw0IDU+Ow0KPiA+ICsJCQlhZGksZ2FpbiA9IDwxMjg+Ow0KPiA+ICsJCQlhZGksb2RyLWh6
+ID0gPDE5MjAwPjsNCj4gPiArCQl9Ow0KPiA+ICsNCj4gPiArCQljaGFubmVsQDMgew0KPiA+ICsJ
+CQlyZWcgPSA8Mz47DQo+ID4gKwkJCWFkaSxkaWZmLWNoYW5uZWxzID0gPDYgNz47DQo+ID4gKwkJ
+fTsNCj4gPiArCX07DQo+ID4gZGlmZiAtLWdpdCBhL01BSU5UQUlORVJTIGIvTUFJTlRBSU5FUlMN
+Cj4gPiBpbmRleCAzYTFiZmNiLi5mMmZhNTA4IDEwMDY0NA0KPiA+IC0tLSBhL01BSU5UQUlORVJT
+DQo+ID4gKysrIGIvTUFJTlRBSU5FUlMNCj4gPiBAQCAtODQ1LDYgKzg0NSw3IEBAIEw6CWxpbnV4
+LWlpb0B2Z2VyLmtlcm5lbC5vcmcNCj4gPiDCoFc6CWh0dHA6Ly9lei5hbmFsb2cuY29tL2NvbW11
+bml0eS9saW51eC1kZXZpY2UtZHJpdmVycw0KPiA+IMKgUzoJU3VwcG9ydGVkDQo+ID4gwqBGOglk
+cml2ZXJzL2lpby9hZGMvYWQ3MTI0LmMNCj4gPiArRjoJRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVl
+L2JpbmRpbmdzL2lpby9hZGMvYWRpLGFkNzEyNC50eHQNCj4gPiDCoA0KPiA+IMKgQU5BTE9HIERF
+VklDRVMgSU5DIEFEOTM4OUIgRFJJVkVSDQo+ID4gwqBNOglIYW5zIFZlcmt1aWwgPGhhbnMudmVy
+a3VpbEBjaXNjby5jb20+
