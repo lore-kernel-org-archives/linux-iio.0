@@ -1,4 +1,10 @@
-Return-Path: <giuliano.belinassi@usp.br>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-oi1-f176.google.com ([209.85.167.176]:41867 "EHLO
+        mail-oi1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1733140AbeKMXyl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 13 Nov 2018 18:54:41 -0500
+Received: by mail-oi1-f176.google.com with SMTP id g188-v6so10322207oif.8
+        for <linux-iio@vger.kernel.org>; Tue, 13 Nov 2018 05:56:24 -0800 (PST)
 MIME-Version: 1.0
 References: <20181017190028.wu2kgsooj64beh7o@smtp.gmail.com>
  <d0fc5a236a82d03fdbe4d05eb27ff3bd3ac36958.camel@analog.com>
@@ -9,33 +15,25 @@ References: <20181017190028.wu2kgsooj64beh7o@smtp.gmail.com>
  <cddb41ac39b2210359adc0421b2c3d46e884453f.camel@analog.com>
 In-Reply-To: <cddb41ac39b2210359adc0421b2c3d46e884453f.camel@analog.com>
 From: Giuliano Augusto Faulin Belinassi <giuliano.belinassi@usp.br>
-Date: Fri, 9 Nov 2018 20:08:23 -0200
-Message-ID: <CAEFO=4DVtccLOAhpGfMRL+1Bkd78-VfeOU=BuyRKs1vmqZrDiQ@mail.gmail.com>
+Date: Tue, 13 Nov 2018 11:56:12 -0200
+Message-ID: <CAEFO=4Aoda5rcuXOHivk8cy2XtV1D0bwkKKuwzUi-z+8z26CLQ@mail.gmail.com>
 Subject: Re: Questions related to some drivers
 To: alexandru.Ardelean@analog.com
 Cc: Renato Geh <renatogeh@gmail.com>, giuliano.belinassi@gmail.com,
-	linux-iio@vger.kernel.org, Kernel USP <kernel-usp@googlegroups.com>,
-	jic23@jic23.retrosnub.co.uk
+        linux-iio@vger.kernel.org,
+        Kernel USP <kernel-usp@googlegroups.com>,
+        jic23@jic23.retrosnub.co.uk
 Content-Type: text/plain; charset="UTF-8"
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hello. Sorry for the late reply
+Hello,
+     We have some doubts regarding the FILTER and GAIN pins. Should
+these pins be set in userspace, and therefore there must be a
+'ad7780_write_raw' function? Or should we use the device tree with a
+value set on initialization?
 
-> On a more private note: do you guys have HW to test your code/changes on ?
-No, we don't have it. I think it would be really nice if we could have
-access to the
-hardware to work on. :-)
-
-> Jonathan did ask us about this in private, but I think the discussion has
-> stalled a bit (time & priorities).
->
-> We could send a few samples if there's anything you'd like to test this
-> code on.
-
-That would be really helpful :-)
-
-> FWIW: we usually test quite a few of this simple ADC/DAC changes on
-> Raspberry PI ; it's a pretty useful board for testing stuff.
+Thank you
 On Thu, Nov 8, 2018 at 12:46 PM Ardelean, Alexandru
 <alexandru.Ardelean@analog.com> wrote:
 >
