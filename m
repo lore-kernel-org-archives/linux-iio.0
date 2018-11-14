@@ -1,175 +1,154 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi1-f176.google.com ([209.85.167.176]:41867 "EHLO
-        mail-oi1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733140AbeKMXyl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 13 Nov 2018 18:54:41 -0500
-Received: by mail-oi1-f176.google.com with SMTP id g188-v6so10322207oif.8
-        for <linux-iio@vger.kernel.org>; Tue, 13 Nov 2018 05:56:24 -0800 (PST)
-MIME-Version: 1.0
-References: <20181017190028.wu2kgsooj64beh7o@smtp.gmail.com>
- <d0fc5a236a82d03fdbe4d05eb27ff3bd3ac36958.camel@analog.com>
- <20181018114145.amqff57holmecxpo@smtp.gmail.com> <CAEFO=4BjSiYeNW_n0PjoC3EqaN1Z8E1XB_CO+FJJdTwZo4enzg@mail.gmail.com>
- <20181023105126.408ef7ab@archlinux> <CAEFO=4Dc_v90MHFnniTpAcMvajpt3O55rtc730Pr0F6+Aau49A@mail.gmail.com>
- <6f9ad9ace7828741f25ea6e7c555c9f4e91a203b.camel@analog.com>
- <20181107185735.wryk5o4wndy6bkzn@renatolg> <20181108140451.uwiwbjxoyxlmjqic@renatolg>
- <cddb41ac39b2210359adc0421b2c3d46e884453f.camel@analog.com>
-In-Reply-To: <cddb41ac39b2210359adc0421b2c3d46e884453f.camel@analog.com>
-From: Giuliano Augusto Faulin Belinassi <giuliano.belinassi@usp.br>
-Date: Tue, 13 Nov 2018 11:56:12 -0200
-Message-ID: <CAEFO=4Aoda5rcuXOHivk8cy2XtV1D0bwkKKuwzUi-z+8z26CLQ@mail.gmail.com>
+Return-Path: <alexandru.Ardelean@analog.com>
+From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+To: "giuliano.belinassi@usp.br" <giuliano.belinassi@usp.br>
+CC: "giuliano.belinassi@gmail.com" <giuliano.belinassi@gmail.com>,
+	"renatogeh@gmail.com" <renatogeh@gmail.com>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "kernel-usp@googlegroups.com"
+	<kernel-usp@googlegroups.com>, "jic23@jic23.retrosnub.co.uk"
+	<jic23@jic23.retrosnub.co.uk>
 Subject: Re: Questions related to some drivers
-To: alexandru.Ardelean@analog.com
-Cc: Renato Geh <renatogeh@gmail.com>, giuliano.belinassi@gmail.com,
-        linux-iio@vger.kernel.org,
-        Kernel USP <kernel-usp@googlegroups.com>,
-        jic23@jic23.retrosnub.co.uk
-Content-Type: text/plain; charset="UTF-8"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Date: Wed, 14 Nov 2018 09:55:08 +0000
+Message-ID: <0419f814587c3d676c18178bc789a4c52202c349.camel@analog.com>
+References: <20181017190028.wu2kgsooj64beh7o@smtp.gmail.com>
+	 <d0fc5a236a82d03fdbe4d05eb27ff3bd3ac36958.camel@analog.com>
+	 <20181018114145.amqff57holmecxpo@smtp.gmail.com>
+	 <CAEFO=4BjSiYeNW_n0PjoC3EqaN1Z8E1XB_CO+FJJdTwZo4enzg@mail.gmail.com>
+	 <20181023105126.408ef7ab@archlinux>
+	 <CAEFO=4Dc_v90MHFnniTpAcMvajpt3O55rtc730Pr0F6+Aau49A@mail.gmail.com>
+	 <6f9ad9ace7828741f25ea6e7c555c9f4e91a203b.camel@analog.com>
+	 <20181107185735.wryk5o4wndy6bkzn@renatolg>
+	 <20181108140451.uwiwbjxoyxlmjqic@renatolg>
+	 <cddb41ac39b2210359adc0421b2c3d46e884453f.camel@analog.com>
+	 <CAEFO=4Aoda5rcuXOHivk8cy2XtV1D0bwkKKuwzUi-z+8z26CLQ@mail.gmail.com>
+In-Reply-To: <CAEFO=4Aoda5rcuXOHivk8cy2XtV1D0bwkKKuwzUi-z+8z26CLQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-Hello,
-     We have some doubts regarding the FILTER and GAIN pins. Should
-these pins be set in userspace, and therefore there must be a
-'ad7780_write_raw' function? Or should we use the device tree with a
-value set on initialization?
-
-Thank you
-On Thu, Nov 8, 2018 at 12:46 PM Ardelean, Alexandru
-<alexandru.Ardelean@analog.com> wrote:
->
-> On Thu, 2018-11-08 at 12:04 -0200, Renato Lui Geh wrote:
-> > Hi,
-> >
->
-> Hey,
->
-> > On 11/06, Ardelean, Alexandru wrote:
-> > > For AD778x you could also add support for the GAIN & FILTER pins via
-> > > GPIOs,
-> > > to control these settings. And then in the ad7780_postprocess_sample()
-> > > function check if the GPIO settings (stored on a gpio_desc on
-> > > ad7780_state)
-> > > match the expected GAIN & FILTER bit settings ; if not return -EIO.
-> >
-> > We're having some trouble with the GPIOs, and would like some insight on
-> > how to proceed. Any help would be very much appreciated!
-> >
-> > We're wondering if we should do something like this in ad7780.c's probe:
-> >
-> > st->powerdown_gpio = devm_gpiod_get_optional(&spi->dev,
-> >                                            "powerdown",
-> >                                            GPIOD_OUT_LOW);
-> >
->
-> Yes, something like this.
->
-> > for both gain and filter. Taking a look at driver drivers/iio/adc/hx711.c
-> > (another adc driver out of staging), we have:
-> >
-> > hx711_data->gpiod_pd_sck = devm_gpiod_get(dev, "sck", GPIOD_OUT_LOW);
-> >
-> > So we're assuming "sck" and "powerdown" are the pins we're looking for.
-> > Are we
-> > correct to assume that these strings are compared with a table that map
-> > the
-> > actual GPIO pins? So we'd have something like:
-> >
-> > st->gain_gpio = devm_gpiod_get_optional(&spi->dev,
-> >                                       "gain",
-> >                                       GPIO_DOUT_LOW);
->
-> This is exactly a good idea to do for `gain`.
-> And similar for `filter`
->
-> >
-> > Where "gain" is the pin 4 or 5 on the AD778x
->
-> The pin 4 or 5 on the AD778x are not what you define here.
-> The GPIOs you define/use here are on the host-board.
->
-> So,
->
-> Host-board [dt-entry] <----> AD778x [HW-pin]
->
-> Where:
-> * `dt-entry` is definted in the device-tree something like:
->    gain-gpio = <&gpio GPIO_NUMBER_ON_HOST_BOARD GPIO_FLAGS>
-> * GPIO_NUMBER_ON_HOST_BOARD is a number, which varies ; for example for
-> Raspberry Pi it could be pin 25 [in the device tree];
-> * GPIO_FLAGS is usually 0 ; but can be any other numeric value defined
-> here:
->
-> https://github.com/torvalds/linux/blob/master/include/dt-bindings/gpio/gpio.h
-> * `HW-pin` doesn't matter, because it's a physical pin that can be defined
-> as anything in SW
->
-> > (
-> > https://www.analog.com/media/en/technical-documentation/data-sheets/ad7780.pdf
-> > )
-> > chip.
-> >
-> > Where can we find this table that maps these pin names to the actual pin
-> > numbers? We found this link
->
-> The actual pin number doesn't matter in the driver you write.
-> It matters in the device-tree for the board you use the driver [and chip]
-> on.
->
-> If you were to test your driver change on a RPi board and you physically
-> connect this on Pin 25 (physical) and in your device-tree
-> GPIO_NUMBER_ON_HOST_BOARD is the value (in SW) for Pin 25, then that's what
-> matters when you test/run the code.
->
-> In the kernel, a pin numbers table for the RPi can be found here:
->
-> https://github.com/torvalds/linux/blob/master/arch/arm/boot/dts/bcm283x.dtsi#L185
->
-> I keep referring to RPi because we've used it a bit more than other boards,
-> and also because for RPi usually Pin 25 in HW is also Pin 25 in SW.
->
->
-> > https://www.kernel.org/doc/html/v4.17/driver-api/gpio/board.html that
-> > shows how
-> > to declare table attributes, but we couldn't find this lookup table
-> > there.
-> >
-> > Are we missing something? Out of curiosity, why do we have to pass a
-> > string
-> > (e.g. powerdown, gain, sck, dout) instead of the pin number? We found
-> > somewhere
-> > that they are names to functions. Are these functions implemented on the
-> > chip?
-> >
->
-> So, the string in the driver, will be used to lookup the physical pin in
-> the device-tree.
-> The pin number differs from one host-board to another [as I've said], so
-> the string is a unique identifier for the driver, which resolves to the
-> physical pin on the board.
->
-> By the way: one work item (maybe after the driver is moved out of staging)
-> would be to also write a device-tree binding doc.
-> An example:
->
-> https://github.com/torvalds/linux/blob/master/Documentation/devicetree/bindings/sound/adi,adau17x1.txt
-> It's not the best one, and feel free to look for others as well, that
-> define GPIOs. But in that file, is an example of how to link a reset-gpio
-> that would be called by that driver to physically reset the device when
-> probed & initialized.
->
-> Usually the arch/arm[64]/boot/dts have a lot of device-trees that may help
-> shape some thinking about device-trees.
->
-> I'm hoping I got to explain things somewhat.
-> It is a bit late in the afternoon [for me], but I thought I'd give it a try
-> :)
->
-> If there are still questions, feel free to ask.
-> I think I can get to them tomorrow.
->
-> Thanks
-> Alex
->
-> > Thanks,
-> > Renato
-> >
+T24gVHVlLCAyMDE4LTExLTEzIGF0IDExOjU2IC0wMjAwLCBHaXVsaWFubyBBdWd1c3RvIEZhdWxp
+biBCZWxpbmFzc2kgd3JvdGU6DQo+IEhlbGxvLA0KPiAgICAgIFdlIGhhdmUgc29tZSBkb3VidHMg
+cmVnYXJkaW5nIHRoZSBGSUxURVIgYW5kIEdBSU4gcGlucy4gU2hvdWxkDQo+IHRoZXNlIHBpbnMg
+YmUgc2V0IGluIHVzZXJzcGFjZSwgYW5kIHRoZXJlZm9yZSB0aGVyZSBtdXN0IGJlIGENCj4gJ2Fk
+Nzc4MF93cml0ZV9yYXcnIGZ1bmN0aW9uPyBPciBzaG91bGQgd2UgdXNlIHRoZSBkZXZpY2UgdHJl
+ZSB3aXRoIGENCj4gdmFsdWUgc2V0IG9uIGluaXRpYWxpemF0aW9uPw0KPiANCg0KU28sIGRlZmlu
+aXRlbHkgYWRkIHRoZSBjb2RlIHRoYXQgaW5pdGlhbGl6ZXMgdGhlIHBpbnMgdmlhIGRldmljZS10
+cmVlLg0KUXVpdGUgYSBmZXcgdXNlcnMgb2YgdGhlIGRyaXZlciBtYXkgb25seSB3YW50IGEgc2lu
+Z2xlIGdhaW4gdmFsdWUgZm9yIHRoZQ0KZW50aXJlIGxpZmUtY3ljbGUgb2YgdGhlIGNoaXAgcnVu
+bmluZyA7IGFuZCB0aGlzIGNhbiBiZSBuZWF0bHkgaW5pdGlhbGl6ZWQNCmZyb20gRFQuDQoNCkFk
+ZGluZyBhICdhZDc3ODBfd3JpdGVfcmF3JyBmdW5jdGlvbiBmb3IgdXBkYXRpbmcgdGhlc2UgcGlu
+cywgYWxzbyBzb3VuZHMNCmxpa2UgYSBuZWF0IGlkZWEuDQpUaGVuIHlvdSBjb3VsZCB1cGRhdGUg
+dGhlIEdBSU4gYW5kIEZJTFRFUiBwaW5zIHZpYSB1c2VyLXNwYWNlIGNhbGxzLg0KSSBndWVzcyBp
+dCdzIHVwIHRvIHlvdSBpZiB5b3Ugd2FudCB0byBkbyB0aGlzLiBCdXQgSSBkb24ndCBrbm93IGhv
+dyBtYW55DQp1c2VycyBvZiB0aGUgZHJpdmVyIHdvdWxkIHJlcXVpcmUvd2FudCB0aGlzIGZsZXhp
+YmlsaXR5IHdpdGggdGhpcw0KcGFydGljdWxhciBjaGlwIFt3ZSBoYXZlbid0IHJlY2VpdmVkIGFu
+eSByZXF1ZXN0cyBmb3IgdGhpcyAoeWV0KSBBRkFJS10uDQoNCkRvaW5nIHRoaXMgaXMgYSBiaXQg
+bW9yZSB3b3JrLCBiZWNhdXNlIHlvdSdsbCBoYXZlIHRvIGNyZWF0ZSBhIG5ldyBtYWNybw0KbGlr
+ZSBBRF9TRF9DSEFOTkVMKCkgd2hpY2ggYWxsb3dzIHRvIHNldCBjdXN0b20gYml0L21hc2sgZmll
+bGRzIFsxXSwgb3INCmp1c3QgY3JlYXRlIGEgQURfU0RfQ0hBTk5FTF9HQUlOKCkgb3IgQURfU0Rf
+Q0hBTk5FTF9HQUlOX0ZJTFRFUigpIG1hY3JvLg0KWyBzZWUgaW5jbHVkZS9saW51eC9paW8vYWRj
+L2FkX3NpZ21hX2RlbHRhLmggZm9yIEFEX1NEX0NIQU5ORUwoKSBdLg0KDQpJIGd1ZXNzIHRoZSBb
+MV0gdmFyaWFudCB3b3VsZCBiZSBtb3JlIGZsZXhpYmxlL2ludGVyZXN0aW5nLg0KVGhlIEFENzc4
+MCB1c2VzIHF1aXRlIGEgYml0IG9mIGxvZ2ljIGZyb20gdGhlIGdlbmVyaWMgYWRfc2lnbWFfZGVs
+dGENCmRyaXZlci4NCg0KPiBUaGFuayB5b3UNCj4gT24gVGh1LCBOb3YgOCwgMjAxOCBhdCAxMjo0
+NiBQTSBBcmRlbGVhbiwgQWxleGFuZHJ1DQo+IDxhbGV4YW5kcnUuQXJkZWxlYW5AYW5hbG9nLmNv
+bT4gd3JvdGU6DQo+ID4gDQo+ID4gT24gVGh1LCAyMDE4LTExLTA4IGF0IDEyOjA0IC0wMjAwLCBS
+ZW5hdG8gTHVpIEdlaCB3cm90ZToNCj4gPiA+IEhpLA0KPiA+ID4gDQo+ID4gDQo+ID4gSGV5LA0K
+PiA+IA0KPiA+ID4gT24gMTEvMDYsIEFyZGVsZWFuLCBBbGV4YW5kcnUgd3JvdGU6DQo+ID4gPiA+
+IEZvciBBRDc3OHggeW91IGNvdWxkIGFsc28gYWRkIHN1cHBvcnQgZm9yIHRoZSBHQUlOICYgRklM
+VEVSIHBpbnMNCj4gPiA+ID4gdmlhDQo+ID4gPiA+IEdQSU9zLA0KPiA+ID4gPiB0byBjb250cm9s
+IHRoZXNlIHNldHRpbmdzLiBBbmQgdGhlbiBpbiB0aGUNCj4gPiA+ID4gYWQ3NzgwX3Bvc3Rwcm9j
+ZXNzX3NhbXBsZSgpDQo+ID4gPiA+IGZ1bmN0aW9uIGNoZWNrIGlmIHRoZSBHUElPIHNldHRpbmdz
+IChzdG9yZWQgb24gYSBncGlvX2Rlc2Mgb24NCj4gPiA+ID4gYWQ3NzgwX3N0YXRlKQ0KPiA+ID4g
+PiBtYXRjaCB0aGUgZXhwZWN0ZWQgR0FJTiAmIEZJTFRFUiBiaXQgc2V0dGluZ3MgOyBpZiBub3Qg
+cmV0dXJuIC1FSU8uDQoNCkJ5IHRoZSB3YXk6IGxvb2tpbmcgYXQgdGhpcyBzdWdnZXN0aW9uIG5v
+dywgSSdtIG5vdCBzdXJlIFtub3ddIGlmIGl0J3MgYQ0KZ29vZCBpZGVhIHRvIHJlYWQgR1BJT3Mg
+aW4gdGhlIGFkNzc4MF9wb3N0cHJvY2Vzc19zYW1wbGUoKSBmdW5jdGlvbiBhcyB0aGF0DQpjb3Vs
+ZCBzbG93IGRvd24gdGhlIGRhdGEtcmF0ZSB3aGVuIHJlYWRpbmcgZnJvbSB0aGUgQURDLg0KU28s
+IEkgd291bGQgZHJvcCB0aGlzIGlkZWEuDQoNCj4gPiA+IA0KPiA+ID4gV2UncmUgaGF2aW5nIHNv
+bWUgdHJvdWJsZSB3aXRoIHRoZSBHUElPcywgYW5kIHdvdWxkIGxpa2Ugc29tZSBpbnNpZ2h0DQo+
+ID4gPiBvbg0KPiA+ID4gaG93IHRvIHByb2NlZWQuIEFueSBoZWxwIHdvdWxkIGJlIHZlcnkgbXVj
+aCBhcHByZWNpYXRlZCENCj4gPiA+IA0KPiA+ID4gV2UncmUgd29uZGVyaW5nIGlmIHdlIHNob3Vs
+ZCBkbyBzb21ldGhpbmcgbGlrZSB0aGlzIGluIGFkNzc4MC5jJ3MNCj4gPiA+IHByb2JlOg0KPiA+
+ID4gDQo+ID4gPiBzdC0+cG93ZXJkb3duX2dwaW8gPSBkZXZtX2dwaW9kX2dldF9vcHRpb25hbCgm
+c3BpLT5kZXYsDQo+ID4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgInBvd2VyZG93biIsDQo+ID4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgR1BJT0RfT1VUX0xPVyk7DQo+ID4gPiANCj4gPiANCj4gPiBZZXMsIHNvbWV0aGlu
+ZyBsaWtlIHRoaXMuDQo+ID4gDQo+ID4gPiBmb3IgYm90aCBnYWluIGFuZCBmaWx0ZXIuIFRha2lu
+ZyBhIGxvb2sgYXQgZHJpdmVyDQo+ID4gPiBkcml2ZXJzL2lpby9hZGMvaHg3MTEuYw0KPiA+ID4g
+KGFub3RoZXIgYWRjIGRyaXZlciBvdXQgb2Ygc3RhZ2luZyksIHdlIGhhdmU6DQo+ID4gPiANCj4g
+PiA+IGh4NzExX2RhdGEtPmdwaW9kX3BkX3NjayA9IGRldm1fZ3Bpb2RfZ2V0KGRldiwgInNjayIs
+IEdQSU9EX09VVF9MT1cpOw0KPiA+ID4gDQo+ID4gPiBTbyB3ZSdyZSBhc3N1bWluZyAic2NrIiBh
+bmQgInBvd2VyZG93biIgYXJlIHRoZSBwaW5zIHdlJ3JlIGxvb2tpbmcNCj4gPiA+IGZvci4NCj4g
+PiA+IEFyZSB3ZQ0KPiA+ID4gY29ycmVjdCB0byBhc3N1bWUgdGhhdCB0aGVzZSBzdHJpbmdzIGFy
+ZSBjb21wYXJlZCB3aXRoIGEgdGFibGUgdGhhdA0KPiA+ID4gbWFwDQo+ID4gPiB0aGUNCj4gPiA+
+IGFjdHVhbCBHUElPIHBpbnM/IFNvIHdlJ2QgaGF2ZSBzb21ldGhpbmcgbGlrZToNCj4gPiA+IA0K
+PiA+ID4gc3QtPmdhaW5fZ3BpbyA9IGRldm1fZ3Bpb2RfZ2V0X29wdGlvbmFsKCZzcGktPmRldiwN
+Cj4gPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgImdhaW4iLA0KPiA+
+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBHUElPX0RPVVRfTE9XKTsN
+Cj4gPiANCj4gPiBUaGlzIGlzIGV4YWN0bHkgYSBnb29kIGlkZWEgdG8gZG8gZm9yIGBnYWluYC4N
+Cj4gPiBBbmQgc2ltaWxhciBmb3IgYGZpbHRlcmANCj4gPiANCj4gPiA+IA0KPiA+ID4gV2hlcmUg
+ImdhaW4iIGlzIHRoZSBwaW4gNCBvciA1IG9uIHRoZSBBRDc3OHgNCj4gPiANCj4gPiBUaGUgcGlu
+IDQgb3IgNSBvbiB0aGUgQUQ3Nzh4IGFyZSBub3Qgd2hhdCB5b3UgZGVmaW5lIGhlcmUuDQo+ID4g
+VGhlIEdQSU9zIHlvdSBkZWZpbmUvdXNlIGhlcmUgYXJlIG9uIHRoZSBob3N0LWJvYXJkLg0KPiA+
+IA0KPiA+IFNvLA0KPiA+IA0KPiA+IEhvc3QtYm9hcmQgW2R0LWVudHJ5XSA8LS0tLT4gQUQ3Nzh4
+IFtIVy1waW5dDQo+ID4gDQo+ID4gV2hlcmU6DQo+ID4gKiBgZHQtZW50cnlgIGlzIGRlZmludGVk
+IGluIHRoZSBkZXZpY2UtdHJlZSBzb21ldGhpbmcgbGlrZToNCj4gPiAgICBnYWluLWdwaW8gPSA8
+JmdwaW8gR1BJT19OVU1CRVJfT05fSE9TVF9CT0FSRCBHUElPX0ZMQUdTPg0KPiA+ICogR1BJT19O
+VU1CRVJfT05fSE9TVF9CT0FSRCBpcyBhIG51bWJlciwgd2hpY2ggdmFyaWVzIDsgZm9yIGV4YW1w
+bGUgZm9yDQo+ID4gUmFzcGJlcnJ5IFBpIGl0IGNvdWxkIGJlIHBpbiAyNSBbaW4gdGhlIGRldmlj
+ZSB0cmVlXTsNCj4gPiAqIEdQSU9fRkxBR1MgaXMgdXN1YWxseSAwIDsgYnV0IGNhbiBiZSBhbnkg
+b3RoZXIgbnVtZXJpYyB2YWx1ZSBkZWZpbmVkDQo+ID4gaGVyZToNCj4gPiANCj4gPiANCmh0dHBz
+Oi8vZ2l0aHViLmNvbS90b3J2YWxkcy9saW51eC9ibG9iL21hc3Rlci9pbmNsdWRlL2R0LWJpbmRp
+bmdzL2dwaW8vZ3Bpby5oDQo+ID4gKiBgSFctcGluYCBkb2Vzbid0IG1hdHRlciwgYmVjYXVzZSBp
+dCdzIGEgcGh5c2ljYWwgcGluIHRoYXQgY2FuIGJlDQo+ID4gZGVmaW5lZA0KPiA+IGFzIGFueXRo
+aW5nIGluIFNXDQo+ID4gDQo+ID4gPiAoDQo+ID4gPiANCmh0dHBzOi8vd3d3LmFuYWxvZy5jb20v
+bWVkaWEvZW4vdGVjaG5pY2FsLWRvY3VtZW50YXRpb24vZGF0YS1zaGVldHMvYWQ3NzgwLnBkZg0K
+PiA+ID4gKQ0KPiA+ID4gY2hpcC4NCj4gPiA+IA0KPiA+ID4gV2hlcmUgY2FuIHdlIGZpbmQgdGhp
+cyB0YWJsZSB0aGF0IG1hcHMgdGhlc2UgcGluIG5hbWVzIHRvIHRoZSBhY3R1YWwNCj4gPiA+IHBp
+bg0KPiA+ID4gbnVtYmVycz8gV2UgZm91bmQgdGhpcyBsaW5rDQo+ID4gDQo+ID4gVGhlIGFjdHVh
+bCBwaW4gbnVtYmVyIGRvZXNuJ3QgbWF0dGVyIGluIHRoZSBkcml2ZXIgeW91IHdyaXRlLg0KPiA+
+IEl0IG1hdHRlcnMgaW4gdGhlIGRldmljZS10cmVlIGZvciB0aGUgYm9hcmQgeW91IHVzZSB0aGUg
+ZHJpdmVyIFthbmQNCj4gPiBjaGlwXQ0KPiA+IG9uLg0KPiA+IA0KPiA+IElmIHlvdSB3ZXJlIHRv
+IHRlc3QgeW91ciBkcml2ZXIgY2hhbmdlIG9uIGEgUlBpIGJvYXJkIGFuZCB5b3UNCj4gPiBwaHlz
+aWNhbGx5DQo+ID4gY29ubmVjdCB0aGlzIG9uIFBpbiAyNSAocGh5c2ljYWwpIGFuZCBpbiB5b3Vy
+IGRldmljZS10cmVlDQo+ID4gR1BJT19OVU1CRVJfT05fSE9TVF9CT0FSRCBpcyB0aGUgdmFsdWUg
+KGluIFNXKSBmb3IgUGluIDI1LCB0aGVuIHRoYXQncw0KPiA+IHdoYXQNCj4gPiBtYXR0ZXJzIHdo
+ZW4geW91IHRlc3QvcnVuIHRoZSBjb2RlLg0KPiA+IA0KPiA+IEluIHRoZSBrZXJuZWwsIGEgcGlu
+IG51bWJlcnMgdGFibGUgZm9yIHRoZSBSUGkgY2FuIGJlIGZvdW5kIGhlcmU6DQo+ID4gDQo+ID4g
+DQpodHRwczovL2dpdGh1Yi5jb20vdG9ydmFsZHMvbGludXgvYmxvYi9tYXN0ZXIvYXJjaC9hcm0v
+Ym9vdC9kdHMvYmNtMjgzeC5kdHNpI0wxODUNCj4gPiANCj4gPiBJIGtlZXAgcmVmZXJyaW5nIHRv
+IFJQaSBiZWNhdXNlIHdlJ3ZlIHVzZWQgaXQgYSBiaXQgbW9yZSB0aGFuIG90aGVyDQo+ID4gYm9h
+cmRzLA0KPiA+IGFuZCBhbHNvIGJlY2F1c2UgZm9yIFJQaSB1c3VhbGx5IFBpbiAyNSBpbiBIVyBp
+cyBhbHNvIFBpbiAyNSBpbiBTVy4NCj4gPiANCj4gPiANCj4gPiA+IGh0dHBzOi8vd3d3Lmtlcm5l
+bC5vcmcvZG9jL2h0bWwvdjQuMTcvZHJpdmVyLWFwaS9ncGlvL2JvYXJkLmh0bWwgdGhhdA0KPiA+
+ID4gc2hvd3MgaG93DQo+ID4gPiB0byBkZWNsYXJlIHRhYmxlIGF0dHJpYnV0ZXMsIGJ1dCB3ZSBj
+b3VsZG4ndCBmaW5kIHRoaXMgbG9va3VwIHRhYmxlDQo+ID4gPiB0aGVyZS4NCj4gPiA+IA0KPiA+
+ID4gQXJlIHdlIG1pc3Npbmcgc29tZXRoaW5nPyBPdXQgb2YgY3VyaW9zaXR5LCB3aHkgZG8gd2Ug
+aGF2ZSB0byBwYXNzIGENCj4gPiA+IHN0cmluZw0KPiA+ID4gKGUuZy4gcG93ZXJkb3duLCBnYWlu
+LCBzY2ssIGRvdXQpIGluc3RlYWQgb2YgdGhlIHBpbiBudW1iZXI/IFdlIGZvdW5kDQo+ID4gPiBz
+b21ld2hlcmUNCj4gPiA+IHRoYXQgdGhleSBhcmUgbmFtZXMgdG8gZnVuY3Rpb25zLiBBcmUgdGhl
+c2UgZnVuY3Rpb25zIGltcGxlbWVudGVkIG9uDQo+ID4gPiB0aGUNCj4gPiA+IGNoaXA/DQo+ID4g
+PiANCj4gPiANCj4gPiBTbywgdGhlIHN0cmluZyBpbiB0aGUgZHJpdmVyLCB3aWxsIGJlIHVzZWQg
+dG8gbG9va3VwIHRoZSBwaHlzaWNhbCBwaW4NCj4gPiBpbg0KPiA+IHRoZSBkZXZpY2UtdHJlZS4N
+Cj4gPiBUaGUgcGluIG51bWJlciBkaWZmZXJzIGZyb20gb25lIGhvc3QtYm9hcmQgdG8gYW5vdGhl
+ciBbYXMgSSd2ZSBzYWlkXSwNCj4gPiBzbw0KPiA+IHRoZSBzdHJpbmcgaXMgYSB1bmlxdWUgaWRl
+bnRpZmllciBmb3IgdGhlIGRyaXZlciwgd2hpY2ggcmVzb2x2ZXMgdG8gdGhlDQo+ID4gcGh5c2lj
+YWwgcGluIG9uIHRoZSBib2FyZC4NCj4gPiANCj4gPiBCeSB0aGUgd2F5OiBvbmUgd29yayBpdGVt
+IChtYXliZSBhZnRlciB0aGUgZHJpdmVyIGlzIG1vdmVkIG91dCBvZg0KPiA+IHN0YWdpbmcpDQo+
+ID4gd291bGQgYmUgdG8gYWxzbyB3cml0ZSBhIGRldmljZS10cmVlIGJpbmRpbmcgZG9jLg0KPiA+
+IEFuIGV4YW1wbGU6DQo+ID4gDQo+ID4gDQpodHRwczovL2dpdGh1Yi5jb20vdG9ydmFsZHMvbGlu
+dXgvYmxvYi9tYXN0ZXIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3NvdW5kL2Fk
+aSxhZGF1MTd4MS50eHQNCj4gPiBJdCdzIG5vdCB0aGUgYmVzdCBvbmUsIGFuZCBmZWVsIGZyZWUg
+dG8gbG9vayBmb3Igb3RoZXJzIGFzIHdlbGwsIHRoYXQNCj4gPiBkZWZpbmUgR1BJT3MuIEJ1dCBp
+biB0aGF0IGZpbGUsIGlzIGFuIGV4YW1wbGUgb2YgaG93IHRvIGxpbmsgYSByZXNldC0NCj4gPiBn
+cGlvDQo+ID4gdGhhdCB3b3VsZCBiZSBjYWxsZWQgYnkgdGhhdCBkcml2ZXIgdG8gcGh5c2ljYWxs
+eSByZXNldCB0aGUgZGV2aWNlIHdoZW4NCj4gPiBwcm9iZWQgJiBpbml0aWFsaXplZC4NCj4gPiAN
+Cj4gPiBVc3VhbGx5IHRoZSBhcmNoL2FybVs2NF0vYm9vdC9kdHMgaGF2ZSBhIGxvdCBvZiBkZXZp
+Y2UtdHJlZXMgdGhhdCBtYXkNCj4gPiBoZWxwDQo+ID4gc2hhcGUgc29tZSB0aGlua2luZyBhYm91
+dCBkZXZpY2UtdHJlZXMuDQo+ID4gDQo+ID4gSSdtIGhvcGluZyBJIGdvdCB0byBleHBsYWluIHRo
+aW5ncyBzb21ld2hhdC4NCj4gPiBJdCBpcyBhIGJpdCBsYXRlIGluIHRoZSBhZnRlcm5vb24gW2Zv
+ciBtZV0sIGJ1dCBJIHRob3VnaHQgSSdkIGdpdmUgaXQgYQ0KPiA+IHRyeQ0KPiA+IDopDQo+ID4g
+DQo+ID4gSWYgdGhlcmUgYXJlIHN0aWxsIHF1ZXN0aW9ucywgZmVlbCBmcmVlIHRvIGFzay4NCj4g
+PiBJIHRoaW5rIEkgY2FuIGdldCB0byB0aGVtIHRvbW9ycm93Lg0KPiA+IA0KPiA+IFRoYW5rcw0K
+PiA+IEFsZXgNCj4gPiANCj4gPiA+IFRoYW5rcywNCj4gPiA+IFJlbmF0bw0KPiA+ID4gDQo+IA0K
+PiANCg==
