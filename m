@@ -1,67 +1,36 @@
-Return-Path: <SRS0=anu/=NX=chromium.org=mka@kernel.org>
-From: Matthias Kaehlcke <mka@chromium.org>
-To: Andy Gross <andy.gross@linaro.org>,
-	David Brown <david.brown@linaro.org>,
-	Rob Herring <robh+dt@kernel.org>,
+Return-Path: <SRS0=PJWa=NZ=linaro.org=andy.gross@kernel.org>
+Date: Wed, 14 Nov 2018 10:20:37 -0800
+From: Andy Gross <andy.gross@linaro.org>
+To: Matthias Kaehlcke <mka@chromium.org>
+Cc: David Brown <david.brown@linaro.org>, Rob Herring <robh+dt@kernel.org>,
 	Mark Rutland <mark.rutland@arm.com>,
 	Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: linux-arm-msm@vger.kernel.org,
-	linux-soc@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Douglas Anderson <dianders@chromium.org>,
-	Matthias Kaehlcke <mka@chromium.org>
-Subject: [PATCH v6 2/2] arm64: dts: qcom: pm8998: Add die temperature channel node to the ADC
-Date: Mon, 12 Nov 2018 14:11:26 -0800
-Message-Id: <20181112221126.27142-3-mka@chromium.org>
-In-Reply-To: <20181112221126.27142-1-mka@chromium.org>
+	Douglas Anderson <dianders@chromium.org>
+Subject: Re: [PATCH v6 0/2] arm64: dts: qcom: pm8998: Add die temperature
+ channel node to the ADC
+Message-ID: <20181114182037.GF14703@hector>
 References: <20181112221126.27142-1-mka@chromium.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20181112221126.27142-1-mka@chromium.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-Add a channel node for the die temperature to the ADC.
+On Mon, Nov 12, 2018 at 02:11:24PM -0800, Matthias Kaehlcke wrote:
+> This series adds a channel for the die temperature to the QCOM SPMI
+> PMIC5 ADC. It also fixes an example in the DT documentation.
+> 
+> Matthias Kaehlcke (2):
+>   dt-bindings: iio: vadc: Add unit address to ADC channel node in
+>     example
+>   arm64: dts: qcom: pm8998: Add die temperature channel node to the ADC
+> 
 
-Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
----
-Changes in v6:
-- changed node name to 'adc-chan@'
+I queued both of these.  Thanks for updating these.
 
-Changes in v5:
-- added unit address to 'die-temp' node
-
-Changes in v4:
-- none
-
-Changes in v3:
-- fixed separator in commit message
-- remove duplicate 'Signed-off-by' tag
-
-Changes in v2:
-- none
----
- arch/arm64/boot/dts/qcom/pm8998.dtsi | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/qcom/pm8998.dtsi b/arch/arm64/boot/dts/qcom/pm8998.dtsi
-index 048f19fa01504..f1025a50c227b 100644
---- a/arch/arm64/boot/dts/qcom/pm8998.dtsi
-+++ b/arch/arm64/boot/dts/qcom/pm8998.dtsi
-@@ -75,6 +75,11 @@
- 			#address-cells = <1>;
- 			#size-cells = <0>;
- 			#io-channel-cells = <1>;
-+
-+			adc-chan@ADC5_DIE_TEMP {
-+				reg = <ADC5_DIE_TEMP>;
-+				label = "die_temp";
-+			};
- 		};
- 
- 		rtc@6000 {
--- 
-2.19.1.930.g4563a0d9d0-goog
+Andy
