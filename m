@@ -1,56 +1,55 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:41636 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726065AbeKRDAK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 17 Nov 2018 22:00:10 -0500
-Date: Sat, 17 Nov 2018 16:42:50 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Rob Herring <robh@kernel.org>
-Cc: Stefan Popa <stefan.popa@analog.com>, robh+dt@kernel.org,
-        mark.rutland@arm.com, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, Michael.Hennerich@analog.com,
-        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 4/4] dt-bindings: iio: adc: Add docs for ad7124
-Message-ID: <20181117164250.1fb5e80e@archlinux>
-In-Reply-To: <20181116225431.GA28284@bogus>
-References: <1542108138-3711-1-git-send-email-stefan.popa@analog.com>
-        <20181116225431.GA28284@bogus>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=SU2m=NZ=babblebit.net=cmc@kernel.org>
+From: Chris Coffey <cmc@babblebit.net>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Peter Rosin <peda@axentia.se>,
+	Slawomir Stepien <sst@poczta.fm>,
+	Rob Herring <robh+dt@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Chris Coffey <cmc@babblebit.net>
+Subject: [PATCH v2 0/2] Add support for Microchip MCP41xxx/42xxx potentiometers
+Date: Wed, 14 Nov 2018 09:52:39 +0000
+Message-Id: <20181114095241.27037-1-cmc@babblebit.net>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, 16 Nov 2018 16:54:31 -0600
-Rob Herring <robh@kernel.org> wrote:
+Hello all,
 
-> On Tue, 13 Nov 2018 13:22:18 +0200, Stefan Popa wrote:
-> > Add support for Analog Devices AD7124 4-channels and 8-channels ADC.
-> > 
-> > Signed-off-by: Stefan Popa <stefan.popa@analog.com>
-> > ---
-> > Changes in v2:
-> > 	- Nothing changed.
-> > Changes in v3:
-> > 	- Removed the "adi,channels" property.
-> > 	- Used the "reg" property to get the channel number and "adi,diff-channels"
-> > 	  for the differential pins. The "adi,channel-number" property was removed.
-> > 	- adi,bipolar is of boolean type.
-> > Changes in v4:
-> > 	- Used the bipolar and diff-channels properties defined in the new adc.txt doc.
-> > Changes in v5:
-> > 	- Removed the gain and odr properties from the example.
-> > 
-> >  .../devicetree/bindings/iio/adc/adi,ad7124.txt     | 75 ++++++++++++++++++++++
-> >  MAINTAINERS                                        |  1 +
-> >  2 files changed, 76 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7124.txt
-> >   
-> 
-> Reviewed-by: Rob Herring <robh@kernel.org>
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+This patch series adds device-tree documentation and driver support
+for the Microchip MCP41xxx/42xxx family of digital potentiometers.
 
-Thanks,
+Changes in v2:
+ - Move device tree binding documentation to separate commit as
+   pointed out by Himanshu Jha.
+ - Remove explicit '= 0' initialization in mcp41010_type enum as
+   recommended by Himanshu Jha.
+ - Change MCP41010_WRITE from (0x01 << 4) to BIT(4) as recommended by
+   Himanshu Jha.
+ - Use of_device_get_match_data() to load configuration as 
+   recommended by Peter Rosin. 
+ - Rename MCP41010_WIPER_ENABLE to MCP41010_WIPER_CHANNEL as 
+   suggested by Peter Rosin.
+ - Remove CONFIG_OF build protections as recommended by Jonathan
+   Cameron.
+ - Remove of_match_ptr wrapper from mcp41010_driver struct as 
+   recommended by Jonathan Cameron.
+ - Remove blank line in mcp41010.c intro as recommended by Jonathan
+   Cameron.
 
-Jonathan
+Chris Coffey (2):
+  dt-bindings: iio: potentiometer: Add Microchip MCP41xxx/42xxx
+  iio: potentiometer: Add driver for Microchip MCP41xxx/42xxx
+
+ .../bindings/iio/potentiometer/mcp41010.txt        |  29 +++
+ drivers/iio/potentiometer/Kconfig                  |  12 ++
+ drivers/iio/potentiometer/Makefile                 |   1 +
+ drivers/iio/potentiometer/mcp41010.c               | 216 +++++++++++++++++++++
+ 4 files changed, 258 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/potentiometer/mcp41010.txt
+ create mode 100644 drivers/iio/potentiometer/mcp41010.c
+
+-- 
+2.11.0
