@@ -1,56 +1,49 @@
-Return-Path: <SRS0=ngzp=NZ=gmail.com=nishadkamdar@kernel.org>
-Date: Wed, 14 Nov 2018 23:16:14 +0530
-From: Nishad Kamdar <nishadkamdar@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	"Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v4 4/4] staging: iio: ad7816: Add device tree table.
-Message-ID: <d2df511b4a84b92925a39b5051932eef4426f18d.1542215638.git.nishadkamdar@gmail.com>
+Return-Path: <SRS0=ZybX=N3=analog.com=alexandru.Ardelean@kernel.org>
+From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+To: "nishadkamdar@gmail.com" <nishadkamdar@gmail.com>, "jic23@kernel.org"
+	<jic23@kernel.org>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"lars@metafoo.de" <lars@metafoo.de>, "knaack.h@gmx.de" <knaack.h@gmx.de>,
+	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>, "gregkh@linuxfoundation.org"
+	<gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v4 4/4] staging: iio: ad7816: Add device tree table.
+Date: Thu, 15 Nov 2018 08:16:03 +0000
+Message-ID: <4abed67ee07c763151a76cf9e687b6edc6ced5c6.camel@analog.com>
 References: <cover.1542215638.git.nishadkamdar@gmail.com>
+	 <d2df511b4a84b92925a39b5051932eef4426f18d.1542215638.git.nishadkamdar@gmail.com>
+In-Reply-To: <d2df511b4a84b92925a39b5051932eef4426f18d.1542215638.git.nishadkamdar@gmail.com>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <cover.1542215638.git.nishadkamdar@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Add device tree table for matching vendor ID.
-
-Signed-off-by: Nishad Kamdar <nishadkamdar@gmail.com>
----
- drivers/staging/iio/adc/ad7816.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
-
-diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
-index a2fead85cd46..925f7086bc07 100644
---- a/drivers/staging/iio/adc/ad7816.c
-+++ b/drivers/staging/iio/adc/ad7816.c
-@@ -422,6 +422,14 @@ static int ad7816_probe(struct spi_device *spi_dev)
- 	return 0;
- }
- 
-+static const struct of_device_id ad7816_of_match[] = {
-+	{ .compatible = "adi,ad7816", },
-+	{ .compatible = "adi,ad7817", },
-+	{ .compatible = "adi,ad7818", },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, ad7816_of_match);
-+
- static const struct spi_device_id ad7816_id[] = {
- 	{ "ad7816", ID_AD7816 },
- 	{ "ad7817", ID_AD7817 },
-@@ -434,6 +442,7 @@ MODULE_DEVICE_TABLE(spi, ad7816_id);
- static struct spi_driver ad7816_driver = {
- 	.driver = {
- 		.name = "ad7816",
-+		.of_match_table = of_match_ptr(ad7816_of_match),
- 	},
- 	.probe = ad7816_probe,
- 	.id_table = ad7816_id,
--- 
-2.17.1
+T24gV2VkLCAyMDE4LTExLTE0IGF0IDIzOjE2ICswNTMwLCBOaXNoYWQgS2FtZGFyIHdyb3RlOg0K
+PiBBZGQgZGV2aWNlIHRyZWUgdGFibGUgZm9yIG1hdGNoaW5nIHZlbmRvciBJRC4NCj4gDQoNClRo
+aXMgY291bGQgaGF2ZSBiZWVuIGp1c3Qgb25lIHBhdGNoLg0KU29tZXRoaW5nIGxpa2UgDQogICBb
+UEFUQ0ggdjRdIHN0YWdpbmc6IGlpbzogYWQ3ODE2OiBBZGQgZGV2aWNlIHRyZWUgdGFibGUuDQoN
+Ckl0J3Mgbm8gbG9uZ2VyIGEgc2VyaWVzLCBiZWNhdXNlIHRoZSBvdGhlciBwYXRjaGVzIHdlcmUg
+YXBwbGllZCBhbHJlYWR5Lg0KDQpJIGRvbid0IHRoaW5rIHlvdSBuZWVkIHRvIHJlLXNwaW4gdGhp
+cyBbaXQncyB1cCB0byBKb25hdGhhbiB0aG91Z2hdLg0KDQpJdCdzIGp1c3Qgc29tZXRoaW5nIHRv
+IGtlZXAgaW4gbWluZCBmb3IgbGF0ZXIgd2hlbiByZS1zcGlubmluZyBwYXRjaGVzIG9yDQpzZXJp
+ZXMgb2YgcGF0Y2hlcy4NCg0KQWxleA0KDQo+IFNpZ25lZC1vZmYtYnk6IE5pc2hhZCBLYW1kYXIg
+PG5pc2hhZGthbWRhckBnbWFpbC5jb20+DQo+IC0tLQ0KPiAgZHJpdmVycy9zdGFnaW5nL2lpby9h
+ZGMvYWQ3ODE2LmMgfCA5ICsrKysrKysrKw0KPiAgMSBmaWxlIGNoYW5nZWQsIDkgaW5zZXJ0aW9u
+cygrKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvc3RhZ2luZy9paW8vYWRjL2FkNzgxNi5j
+DQo+IGIvZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3ODE2LmMNCj4gaW5kZXggYTJmZWFkODVj
+ZDQ2Li45MjVmNzA4NmJjMDcgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvc3RhZ2luZy9paW8vYWRj
+L2FkNzgxNi5jDQo+ICsrKyBiL2RyaXZlcnMvc3RhZ2luZy9paW8vYWRjL2FkNzgxNi5jDQo+IEBA
+IC00MjIsNiArNDIyLDE0IEBAIHN0YXRpYyBpbnQgYWQ3ODE2X3Byb2JlKHN0cnVjdCBzcGlfZGV2
+aWNlICpzcGlfZGV2KQ0KPiAgCXJldHVybiAwOw0KPiAgfQ0KPiAgDQo+ICtzdGF0aWMgY29uc3Qg
+c3RydWN0IG9mX2RldmljZV9pZCBhZDc4MTZfb2ZfbWF0Y2hbXSA9IHsNCj4gKwl7IC5jb21wYXRp
+YmxlID0gImFkaSxhZDc4MTYiLCB9LA0KPiArCXsgLmNvbXBhdGlibGUgPSAiYWRpLGFkNzgxNyIs
+IH0sDQo+ICsJeyAuY29tcGF0aWJsZSA9ICJhZGksYWQ3ODE4IiwgfSwNCj4gKwl7IH0NCj4gK307
+DQo+ICtNT0RVTEVfREVWSUNFX1RBQkxFKG9mLCBhZDc4MTZfb2ZfbWF0Y2gpOw0KPiArDQo+ICBz
+dGF0aWMgY29uc3Qgc3RydWN0IHNwaV9kZXZpY2VfaWQgYWQ3ODE2X2lkW10gPSB7DQo+ICAJeyAi
+YWQ3ODE2IiwgSURfQUQ3ODE2IH0sDQo+ICAJeyAiYWQ3ODE3IiwgSURfQUQ3ODE3IH0sDQo+IEBA
+IC00MzQsNiArNDQyLDcgQEAgTU9EVUxFX0RFVklDRV9UQUJMRShzcGksIGFkNzgxNl9pZCk7DQo+
+ICBzdGF0aWMgc3RydWN0IHNwaV9kcml2ZXIgYWQ3ODE2X2RyaXZlciA9IHsNCj4gIAkuZHJpdmVy
+ID0gew0KPiAgCQkubmFtZSA9ICJhZDc4MTYiLA0KPiArCQkub2ZfbWF0Y2hfdGFibGUgPSBvZl9t
+YXRjaF9wdHIoYWQ3ODE2X29mX21hdGNoKSwNCj4gIAl9LA0KPiAgCS5wcm9iZSA9IGFkNzgxNl9w
+cm9iZSwNCj4gIAkuaWRfdGFibGUgPSBhZDc4MTZfaWQsDQo=
