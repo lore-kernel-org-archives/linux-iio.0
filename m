@@ -1,29 +1,64 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtpo.poczta.interia.pl ([217.74.65.153]:44396 "EHLO
-        smtpo.poczta.interia.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727567AbeKPT6l (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 16 Nov 2018 14:58:41 -0500
+Return-Path: <SRS0=kG2y=N3=poczta.fm=sst@kernel.org>
 From: Slawomir Stepien <sst@poczta.fm>
-To: lars@metafoo.de, jic23@kernel.org, knaack.h@gmx.de,
-        pmeerw@pmeerw.net
+To: lars@metafoo.de,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	pmeerw@pmeerw.net
 Cc: linux-iio@vger.kernel.org
-Subject: [PATCH 0/2] Use OF API to get the driver data
-Date: Fri, 16 Nov 2018 10:47:20 +0100
-Message-Id: <20181116094722.1070-1-sst@poczta.fm>
+Subject: [PATCH 1/2] iio: potentiometer: mcp4131: use of_device_get_match_data()
+Date: Fri, 16 Nov 2018 10:47:21 +0100
+Message-Id: <20181116094722.1070-2-sst@poczta.fm>
+In-Reply-To: <20181116094722.1070-1-sst@poczta.fm>
+References: <20181116094722.1070-1-sst@poczta.fm>
 MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-This patch series will change how the driver finds out the device data. Now it
-will first try to use OF API and then, if needed, fallback to the spi framework
-capabilities.
+Try to get the device's data using OF API. In case of failure, fallback
+to the spi_get_device_id() method.
 
-Slawomir Stepien (2):
-  iio: potentiometer: mcp4131: use of_device_get_match_data()
-  iio: potentiometer mcp4131: use spi_get_device_id() only when needed
+Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+---
+ drivers/iio/potentiometer/mcp4131.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
- drivers/iio/potentiometer/mcp4131.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
-
+diff --git a/drivers/iio/potentiometer/mcp4131.c b/drivers/iio/potentiometer/mcp4131.c
+index b3e30db246cc..55f526a59215 100644
+--- a/drivers/iio/potentiometer/mcp4131.c
++++ b/drivers/iio/potentiometer/mcp4131.c
+@@ -42,6 +42,7 @@
+ #include <linux/module.h>
+ #include <linux/mutex.h>
+ #include <linux/of.h>
++#include <linux/of_device.h>
+ #include <linux/spi/spi.h>
+ 
+ #define MCP4131_WRITE		(0x00 << 2)
+@@ -254,7 +255,9 @@ static int mcp4131_probe(struct spi_device *spi)
+ 	data = iio_priv(indio_dev);
+ 	spi_set_drvdata(spi, indio_dev);
+ 	data->spi = spi;
+-	data->cfg = &mcp4131_cfg[devid];
++	data->cfg = of_device_get_match_data(&spi->dev);
++	if (!data->cfg)
++		data->cfg = &mcp4131_cfg[devid];
+ 
+ 	mutex_init(&data->lock);
+ 
+@@ -273,7 +276,6 @@ static int mcp4131_probe(struct spi_device *spi)
+ 	return 0;
+ }
+ 
+-#if defined(CONFIG_OF)
+ static const struct of_device_id mcp4131_dt_ids[] = {
+ 	{ .compatible = "microchip,mcp4131-502",
+ 		.data = &mcp4131_cfg[MCP413x_502] },
+@@ -406,7 +408,6 @@ static const struct of_device_id mcp4131_dt_ids[] = {
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, mcp4131_dt_ids);
+-#endif /* CONFIG_OF */
+ 
+ static const struct spi_device_id mcp4131_id[] = {
+ 	{ "mcp4131-502", MCP413x_502 },
 -- 
 2.19.1
