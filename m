@@ -1,79 +1,101 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:44994 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726128AbeKRDY3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 17 Nov 2018 22:24:29 -0500
-Date: Sat, 17 Nov 2018 17:07:05 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Shreeya Patel <shreeya.patel23498@gmail.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/7] Staging: iio: adt7316: Use device tree data to set
- ldac_pin
-Message-ID: <20181117170705.2532ca74@archlinux>
-In-Reply-To: <20181116225732.24823-1-shreeya.patel23498@gmail.com>
-References: <20181116225732.24823-1-shreeya.patel23498@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=ZCP2=N3=gmail.com=shreeya.patel23498@kernel.org>
+From: Shreeya Patel <shreeya.patel23498@gmail.com>
+To: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	pmeerw@pmeerw.net,
+	gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 5/7] Staging: iio: adt7316: Switch irq_flags to a local variable
+Date: Sat, 17 Nov 2018 04:29:49 +0530
+Message-Id: <20181116225949.24913-1-shreeya.patel23498@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, 17 Nov 2018 04:27:32 +0530
-Shreeya Patel <shreeya.patel23498@gmail.com> wrote:
+There is no need to store irq_flags into the structure as it
+is always set to the same thing. Hence switch irq_flags to a
+local variable.
 
-> Make the driver use device tree instead of the platform data.
-> Hence, use devm_gpiod_get_optional function to get the data from
-> device tree for ldac-pin and accordingly make the needed changes
-> in the driver.
-> 
-> Signed-off-by: Shreeya Patel <shreeya.patel23498@gmail.com>
-Looks good to me.  I'll pick this up once patch 3 is sorted.
+Signed-off-by: Shreeya Patel <shreeya.patel23498@gmail.com>
+---
+ drivers/staging/iio/addac/adt7316-i2c.c | 1 -
+ drivers/staging/iio/addac/adt7316-spi.c | 1 -
+ drivers/staging/iio/addac/adt7316.c     | 8 ++++----
+ drivers/staging/iio/addac/adt7316.h     | 1 -
+ 4 files changed, 4 insertions(+), 7 deletions(-)
 
-Thanks,
-
-Jonathan
-> ---
->  drivers/staging/iio/addac/adt7316.c | 14 ++++++++++----
->  1 file changed, 10 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
-> index 3f22d1088713..deb2f7b40f60 100644
-> --- a/drivers/staging/iio/addac/adt7316.c
-> +++ b/drivers/staging/iio/addac/adt7316.c
-> @@ -177,7 +177,7 @@
->  
->  struct adt7316_chip_info {
->  	struct adt7316_bus	bus;
-> -	u16			ldac_pin;
-> +	struct gpio_desc	*ldac_pin;
->  	u16			int_mask;	/* 0x2f */
->  	u8			config1;
->  	u8			config2;
-> @@ -950,8 +950,8 @@ static ssize_t adt7316_store_update_DAC(struct device *dev,
->  		if (ret)
->  			return -EIO;
->  	} else {
-> -		gpio_set_value(chip->ldac_pin, 0);
-> -		gpio_set_value(chip->ldac_pin, 1);
-> +		gpiod_set_value(chip->ldac_pin, 0);
-> +		gpiod_set_value(chip->ldac_pin, 1);
->  	}
->  
->  	return len;
-> @@ -2120,7 +2120,13 @@ int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
->  	else
->  		return -ENODEV;
->  
-> -	chip->ldac_pin = adt7316_platform_data[1];
-> +	chip->ldac_pin = devm_gpiod_get_optional(dev, "ldac", GPIOD_OUT_LOW);
-> +	if (IS_ERR(chip->ldac_pin)) {
-> +		ret = PTR_ERR(chip->ldac_pin);
-> +		dev_err(dev, "Failed to request ldac GPIO: %d\n", ret);
-> +		return ret;
-> +	}
-> +
->  	if (chip->ldac_pin) {
->  		chip->config3 |= ADT7316_DA_EN_VIA_DAC_LDCA;
->  		if ((chip->id & ID_FAMILY_MASK) == ID_ADT75XX)
+diff --git a/drivers/staging/iio/addac/adt7316-i2c.c b/drivers/staging/iio/addac/adt7316-i2c.c
+index d4b5060c18ee..91d6cdcb747e 100644
+--- a/drivers/staging/iio/addac/adt7316-i2c.c
++++ b/drivers/staging/iio/addac/adt7316-i2c.c
+@@ -104,7 +104,6 @@ static int adt7316_i2c_probe(struct i2c_client *client,
+ 	struct adt7316_bus bus = {
+ 		.client = client,
+ 		.irq = client->irq,
+-		.irq_flags = IRQF_TRIGGER_LOW,
+ 		.read = adt7316_i2c_read,
+ 		.write = adt7316_i2c_write,
+ 		.multi_read = adt7316_i2c_multi_read,
+diff --git a/drivers/staging/iio/addac/adt7316-spi.c b/drivers/staging/iio/addac/adt7316-spi.c
+index 5cd22743e140..e75827e326a6 100644
+--- a/drivers/staging/iio/addac/adt7316-spi.c
++++ b/drivers/staging/iio/addac/adt7316-spi.c
+@@ -94,7 +94,6 @@ static int adt7316_spi_probe(struct spi_device *spi_dev)
+ 	struct adt7316_bus bus = {
+ 		.client = spi_dev,
+ 		.irq = spi_dev->irq,
+-		.irq_flags = IRQF_TRIGGER_LOW,
+ 		.read = adt7316_spi_read,
+ 		.write = adt7316_spi_write,
+ 		.multi_read = adt7316_spi_multi_read,
+diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+index deb2f7b40f60..dfae22619287 100644
+--- a/drivers/staging/iio/addac/adt7316.c
++++ b/drivers/staging/iio/addac/adt7316.c
+@@ -2102,6 +2102,7 @@ int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
+ 	struct adt7316_chip_info *chip;
+ 	struct iio_dev *indio_dev;
+ 	unsigned short *adt7316_platform_data = dev->platform_data;
++	int irq_flags = IRQF_TRIGGER_LOW;
+ 	int ret = 0;
+ 
+ 	indio_dev = devm_iio_device_alloc(dev, sizeof(*chip));
+@@ -2146,19 +2147,18 @@ int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
+ 
+ 	if (chip->bus.irq > 0) {
+ 		if (adt7316_platform_data[0])
+-			chip->bus.irq_flags = adt7316_platform_data[0];
++			irq_flags = adt7316_platform_data[0];
+ 
+ 		ret = devm_request_threaded_irq(dev, chip->bus.irq,
+ 						NULL,
+ 						adt7316_event_handler,
+-						chip->bus.irq_flags |
+-						IRQF_ONESHOT,
++						irq_flags | IRQF_ONESHOT,
+ 						indio_dev->name,
+ 						indio_dev);
+ 		if (ret)
+ 			return ret;
+ 
+-		if (chip->bus.irq_flags & IRQF_TRIGGER_HIGH)
++		if (irq_flags & IRQF_TRIGGER_HIGH)
+ 			chip->config1 |= ADT7316_INT_POLARITY;
+ 	}
+ 
+diff --git a/drivers/staging/iio/addac/adt7316.h b/drivers/staging/iio/addac/adt7316.h
+index ec40fbb698a6..fd7c5c92b599 100644
+--- a/drivers/staging/iio/addac/adt7316.h
++++ b/drivers/staging/iio/addac/adt7316.h
+@@ -17,7 +17,6 @@
+ struct adt7316_bus {
+ 	void *client;
+ 	int irq;
+-	int irq_flags;
+ 	int (*read)(void *client, u8 reg, u8 *data);
+ 	int (*write)(void *client, u8 reg, u8 val);
+ 	int (*multi_read)(void *client, u8 first_reg, u8 count, u8 *data);
+-- 
+2.17.1
