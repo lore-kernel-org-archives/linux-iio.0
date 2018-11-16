@@ -1,65 +1,112 @@
-Return-Path: <SRS0=N5yM=NX=analog.com=alexandru.Ardelean@kernel.org>
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "jic23@kernel.org" <jic23@kernel.org>
-CC: "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>,
-	"lars@metafoo.de" <lars@metafoo.de>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-	"renatogeh@gmail.com" <renatogeh@gmail.com>, "giuliano.belinassi@usp.br"
-	<giuliano.belinassi@usp.br>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.99]:50060 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727462AbeKQElI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 16 Nov 2018 23:41:08 -0500
+Date: Fri, 16 Nov 2018 18:27:33 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+Cc: "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+        "renatogeh@gmail.com" <renatogeh@gmail.com>,
+        "giuliano.belinassi@usp.br" <giuliano.belinassi@usp.br>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
 Subject: Re: [PATCH v4 1/2] staging: iio: ad7780: update voltage on read
-Date: Mon, 12 Nov 2018 07:57:24 +0000
-Message-ID: <77b195ff53f05d3a7d98098810c5d2d4af3b2e7a.camel@analog.com>
+Message-ID: <20181116182733.080fe566@archlinux>
+In-Reply-To: <77b195ff53f05d3a7d98098810c5d2d4af3b2e7a.camel@analog.com>
 References: <cover.1541444377.git.renatogeh@gmail.com>
-	 <4b47bd8f4bac2575b72529b37e5ac90bebae2446.1541444377.git.renatogeh@gmail.com>
-	 <30c1ff317baefde88a0f4d0a002b19010290d16b.camel@analog.com>
-	 <20181111142939.316cdd47@archlinux>
-In-Reply-To: <20181111142939.316cdd47@archlinux>
-Content-Type: text/plain; charset="utf-8"
+        <4b47bd8f4bac2575b72529b37e5ac90bebae2446.1541444377.git.renatogeh@gmail.com>
+        <30c1ff317baefde88a0f4d0a002b19010290d16b.camel@analog.com>
+        <20181111142939.316cdd47@archlinux>
+        <77b195ff53f05d3a7d98098810c5d2d4af3b2e7a.camel@analog.com>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-T24gU3VuLCAyMDE4LTExLTExIGF0IDE0OjMwICswMDAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
-Og0KPiBPbiBUdWUsIDYgTm92IDIwMTggMDk6MjQ6NDQgKzAwMDANCj4gIkFyZGVsZWFuLCBBbGV4
-YW5kcnUiIDxhbGV4YW5kcnUuQXJkZWxlYW5AYW5hbG9nLmNvbT4gd3JvdGU6DQo+IA0KPiA+IE9u
-IE1vbiwgMjAxOC0xMS0wNSBhdCAxNzoxNCAtMDIwMCwgUmVuYXRvIEx1aSBHZWggd3JvdGU6DQo+
-ID4gPiBUaGUgYWQ3NzgwIGRyaXZlciBwcmV2aW91c2x5IGRpZCBub3QgcmVhZCB0aGUgY29ycmVj
-dCBkZXZpY2Ugb3V0cHV0LA0KPiA+ID4gYXMNCj4gPiA+IGl0IHJlYWQgYW4gb3V0ZGF0ZWQgdmFs
-dWUgc2V0IGF0IGluaXRpYWxpemF0aW9uLiBJdCBub3cgdXBkYXRlcyBpdHMNCj4gPiA+IHZvbHRh
-Z2Ugb24gcmVhZC4NCj4gPiA+ICAgDQo+IA0KPiBBcHBsaWVkIHRvIHRoZSB0b2dyZWcgYnJhbmNo
-IG9mIGlpby5naXQgYW5kIHB1c2hlZCBvdXQgYXMgdGVzdGluZyBmb3INCj4gdGhlIGF1dG9idWls
-ZGVycyB0byBjaGVjayBpdC4gIEknbSBub3QgdGhhdCBmdXNzZWQgYWJvdXQgcHVzaGluZyB0aGlz
-DQo+IG9uZSBhcyBhIGZpeCwgYXMgbW9zdCBvZiB0aGUgdGltZSB0aGVzZSB0aGluZ3MgYXJlIG9u
-IGZpeGVkIHJlZ3VsYXRvcnMNCj4gYW55d2F5LCBidXQgaXQgaXMgbmljZSB0byBkbyBpdCByaWdo
-dC4NCj4gDQo+ID4gTG9va3MgZ29vZCBmcm9tIG15IHNpZGUuDQo+IA0KPiBBY2s/DQoNCkFja2Vk
-LWJ5OiBBbGV4YW5kcnUgQXJkZWxlYW4gPGFsZXhhbmRydS5hcmRlbGVhbkBhbmFsb2cuY29tPg0K
-DQo+IA0KPiBNdWNoIHByZWZlcnJlZCBpZiB5b3UgYXJlIHdpbGxpbmcgdG8gZ2l2ZSBhIGZvcm1h
-bCBhY2tub3dsZWRnZW1lbnQuDQo+IA0KPiBUaGFua3MsDQo+IA0KPiBKb25hdGhhbg0KPiANCj4g
-DQo+ID4gDQo+ID4gQWxleA0KPiA+IA0KPiA+ID4gU2lnbmVkLW9mZi1ieTogUmVuYXRvIEx1aSBH
-ZWggPHJlbmF0b2dlaEBnbWFpbC5jb20+DQo+ID4gPiAtLS0NCj4gPiA+IENoYW5nZXMgaW4gdjM6
-DQo+ID4gPiAJLSByZW1vdmVkIGluaXRpYWxpemF0aW9uIChpbnQgdm9sdGFnZV91diA9IDApDQo+
-ID4gPiAJLSByZXR1cm5zIGVycm9yIHdoZW4gdm9sdGFnZV91diBpcyBudWxsDQo+ID4gPiBDaGFu
-Z2VzIGluIHY0Og0KPiA+ID4gCS0gcmV0dXJucyBlcnJvciB3aGVuIHZvbHRhZ2VfdXYgaXMgbmVn
-YXRpdmUNCj4gPiA+IA0KPiA+ID4gIGRyaXZlcnMvc3RhZ2luZy9paW8vYWRjL2FkNzc4MC5jIHwg
-NiArKysrKy0NCj4gPiA+ICAxIGZpbGUgY2hhbmdlZCwgNSBpbnNlcnRpb25zKCspLCAxIGRlbGV0
-aW9uKC0pDQo+ID4gPiANCj4gPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3N0YWdpbmcvaWlvL2Fk
-Yy9hZDc3ODAuYw0KPiA+ID4gYi9kcml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9hZDc3ODAuYw0KPiA+
-ID4gaW5kZXggYjY3NDEyZGIwMzE4Li5jN2NiMDVjZWRiYmMgMTAwNjQ0DQo+ID4gPiAtLS0gYS9k
-cml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9hZDc3ODAuYw0KPiA+ID4gKysrIGIvZHJpdmVycy9zdGFn
-aW5nL2lpby9hZGMvYWQ3NzgwLmMNCj4gPiA+IEBAIC04NywxMiArODcsMTYgQEAgc3RhdGljIGlu
-dCBhZDc3ODBfcmVhZF9yYXcoc3RydWN0IGlpb19kZXYNCj4gPiA+ICppbmRpb19kZXYsDQo+ID4g
-PiAgCQkJICAgbG9uZyBtKQ0KPiA+ID4gIHsNCj4gPiA+ICAJc3RydWN0IGFkNzc4MF9zdGF0ZSAq
-c3QgPSBpaW9fcHJpdihpbmRpb19kZXYpOw0KPiA+ID4gKwlpbnQgdm9sdGFnZV91djsNCj4gPiA+
-ICANCj4gPiA+ICAJc3dpdGNoIChtKSB7DQo+ID4gPiAgCWNhc2UgSUlPX0NIQU5fSU5GT19SQVc6
-DQo+ID4gPiAgCQlyZXR1cm4gYWRfc2lnbWFfZGVsdGFfc2luZ2xlX2NvbnZlcnNpb24oaW5kaW9f
-ZGV2LCBjaGFuLA0KPiA+ID4gdmFsKTsNCj4gPiA+ICAJY2FzZSBJSU9fQ0hBTl9JTkZPX1NDQUxF
-Og0KPiA+ID4gLQkJKnZhbCA9IHN0LT5pbnRfdnJlZl9tdiAqIHN0LT5nYWluOw0KPiA+ID4gKwkJ
-dm9sdGFnZV91diA9IHJlZ3VsYXRvcl9nZXRfdm9sdGFnZShzdC0+cmVnKTsNCj4gPiA+ICsJCWlm
-ICh2b2x0YWdlX3V2IDwgMCkNCj4gPiA+ICsJCQlyZXR1cm4gdm9sdGFnZV91djsNCj4gPiA+ICsJ
-CSp2YWwgPSAodm9sdGFnZV91diAvIDEwMDApICogc3QtPmdhaW47DQo+ID4gPiAgCQkqdmFsMiA9
-IGNoYW4tPnNjYW5fdHlwZS5yZWFsYml0cyAtIDE7DQo+ID4gPiAgCQlyZXR1cm4gSUlPX1ZBTF9G
-UkFDVElPTkFMX0xPRzI7DQo+ID4gPiAgCWNhc2UgSUlPX0NIQU5fSU5GT19PRkZTRVQ6ICANCj4g
-DQo+IA0K
+On Mon, 12 Nov 2018 07:57:24 +0000
+"Ardelean, Alexandru" <alexandru.Ardelean@analog.com> wrote:
+
+> On Sun, 2018-11-11 at 14:30 +0000, Jonathan Cameron wrote:
+> > On Tue, 6 Nov 2018 09:24:44 +0000
+> > "Ardelean, Alexandru" <alexandru.Ardelean@analog.com> wrote:
+> >   
+> > > On Mon, 2018-11-05 at 17:14 -0200, Renato Lui Geh wrote:  
+> > > > The ad7780 driver previously did not read the correct device output,
+> > > > as
+> > > > it read an outdated value set at initialization. It now updates its
+> > > > voltage on read.
+> > > >     
+> > 
+> > Applied to the togreg branch of iio.git and pushed out as testing for
+> > the autobuilders to check it.  I'm not that fussed about pushing this
+> > one as a fix, as most of the time these things are on fixed regulators
+> > anyway, but it is nice to do it right.
+> >   
+> > > Looks good from my side.  
+> > 
+> > Ack?  
+> 
+> Acked-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Added to both in this series.
+
+Thanks,
+
+Jonathan
+
+> 
+> > 
+> > Much preferred if you are willing to give a formal acknowledgement.
+> > 
+> > Thanks,
+> > 
+> > Jonathan
+> > 
+> >   
+> > > 
+> > > Alex
+> > >   
+> > > > Signed-off-by: Renato Lui Geh <renatogeh@gmail.com>
+> > > > ---
+> > > > Changes in v3:
+> > > > 	- removed initialization (int voltage_uv = 0)
+> > > > 	- returns error when voltage_uv is null
+> > > > Changes in v4:
+> > > > 	- returns error when voltage_uv is negative
+> > > > 
+> > > >  drivers/staging/iio/adc/ad7780.c | 6 +++++-
+> > > >  1 file changed, 5 insertions(+), 1 deletion(-)
+> > > > 
+> > > > diff --git a/drivers/staging/iio/adc/ad7780.c
+> > > > b/drivers/staging/iio/adc/ad7780.c
+> > > > index b67412db0318..c7cb05cedbbc 100644
+> > > > --- a/drivers/staging/iio/adc/ad7780.c
+> > > > +++ b/drivers/staging/iio/adc/ad7780.c
+> > > > @@ -87,12 +87,16 @@ static int ad7780_read_raw(struct iio_dev
+> > > > *indio_dev,
+> > > >  			   long m)
+> > > >  {
+> > > >  	struct ad7780_state *st = iio_priv(indio_dev);
+> > > > +	int voltage_uv;
+> > > >  
+> > > >  	switch (m) {
+> > > >  	case IIO_CHAN_INFO_RAW:
+> > > >  		return ad_sigma_delta_single_conversion(indio_dev, chan,
+> > > > val);
+> > > >  	case IIO_CHAN_INFO_SCALE:
+> > > > -		*val = st->int_vref_mv * st->gain;
+> > > > +		voltage_uv = regulator_get_voltage(st->reg);
+> > > > +		if (voltage_uv < 0)
+> > > > +			return voltage_uv;
+> > > > +		*val = (voltage_uv / 1000) * st->gain;
+> > > >  		*val2 = chan->scan_type.realbits - 1;
+> > > >  		return IIO_VAL_FRACTIONAL_LOG2;
+> > > >  	case IIO_CHAN_INFO_OFFSET:    
+> > 
+> >   
