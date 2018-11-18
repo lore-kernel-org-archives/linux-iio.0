@@ -15,43 +15,48 @@ Cc: linux-iio@vger.kernel.org,
 	Alexandru Ardelean <alexandru.ardelean@analog.com>,
 	kernel-usp@googlegroups.com,
 	victorcolombo@gmail.com
-Subject: [PATCH v2 0/7] staging:iio:ad2s90: Add dt support and move out of staging
-Date: Sun, 18 Nov 2018 02:25:33 -0200
-Message-Id: <20181118042540.12697-1-matheus.bernardino@usp.br>
+Subject: [PATCH v2 1/7] staging:iio:ad2s90: Add device tree support
+Date: Sun, 18 Nov 2018 02:25:34 -0200
+Message-Id: <20181118042540.12697-2-matheus.bernardino@usp.br>
+In-Reply-To: <20181118042540.12697-1-matheus.bernardino@usp.br>
+References: <20181118042540.12697-1-matheus.bernardino@usp.br>
 List-ID: <linux-iio@vger.kernel.org>
 
-This series adds device tree support to ad2s90, adds the respective dt-binding  
-documentation, solves all remaining codestyle problems in the driver code and
-move it out of staging.                                                                 
-                                                                                
-This patch set completes all the remaining itens listed to be done before moving
-the driver out of staging, enumerated in this mail thread:                      
-https://marc.info/?l=linux-iio&m=154028966111330&w=2.
+This patch adds device tree support to ad2s90 with standard
+device tree id table.
 
-Alexandru Ardelean (1):
-  staging:iio:ad2s90: Add max frequency check at probe
+Signed-off-by: Matheus Tavares <matheus.bernardino@usp.br>
+---
+Changes in v2:
+ - none
 
-Matheus Tavares (5):
-  staging:iio:ad2s90: Add device tree support
-  staging:iio:ad2s90: Remove spi setup that should be done via dt
-  dt-bindings:iio:resolver: Add docs for ad2s90
-  staging:iio:ad2s90: Replace license text w/ SPDX identifier
-  staging:iio:ad2s90: Move out of staging
+ drivers/staging/iio/resolver/ad2s90.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-Victor Colombo (1):
-  staging:iio:ad2s90: Add comment to device state mutex
-
- .../bindings/iio/resolver/ad2s90.txt          |  28 ++++
- drivers/iio/resolver/Kconfig                  |  10 ++
- drivers/iio/resolver/Makefile                 |   1 +
- drivers/iio/resolver/ad2s90.c                 | 131 ++++++++++++++++++
- drivers/staging/iio/resolver/Kconfig          |  10 --
- drivers/staging/iio/resolver/Makefile         |   1 -
- drivers/staging/iio/resolver/ad2s90.c         | 127 -----------------
- 7 files changed, 170 insertions(+), 138 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/resolver/ad2s90.txt
- create mode 100644 drivers/iio/resolver/ad2s90.c
- delete mode 100644 drivers/staging/iio/resolver/ad2s90.c
-
+diff --git a/drivers/staging/iio/resolver/ad2s90.c b/drivers/staging/iio/resolver/ad2s90.c
+index 3e257ac46f7a..6ffbac66b837 100644
+--- a/drivers/staging/iio/resolver/ad2s90.c
++++ b/drivers/staging/iio/resolver/ad2s90.c
+@@ -107,6 +107,12 @@ static int ad2s90_probe(struct spi_device *spi)
+ 	return devm_iio_device_register(indio_dev->dev.parent, indio_dev);
+ }
+ 
++static const struct of_device_id ad2s90_of_match[] = {
++	{ .compatible = "adi,ad2s90", },
++	{}
++};
++MODULE_DEVICE_TABLE(of, ad2s90_of_match);
++
+ static const struct spi_device_id ad2s90_id[] = {
+ 	{ "ad2s90" },
+ 	{}
+@@ -116,6 +122,7 @@ MODULE_DEVICE_TABLE(spi, ad2s90_id);
+ static struct spi_driver ad2s90_driver = {
+ 	.driver = {
+ 		.name = "ad2s90",
++		.of_match_table = of_match_ptr(ad2s90_of_match),
+ 	},
+ 	.probe = ad2s90_probe,
+ 	.id_table = ad2s90_id,
 -- 
 2.18.0
