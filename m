@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qk1-f170.google.com ([209.85.222.170]:40535 "EHLO
-        mail-qk1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726978AbeKROpd (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 18 Nov 2018 09:45:33 -0500
-Received: by mail-qk1-f170.google.com with SMTP id y16so43866346qki.7
-        for <linux-iio@vger.kernel.org>; Sat, 17 Nov 2018 20:26:32 -0800 (PST)
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:42583 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727096AbeKROpg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 18 Nov 2018 09:45:36 -0500
+Received: by mail-qk1-f195.google.com with SMTP id m5so43850423qka.9
+        for <linux-iio@vger.kernel.org>; Sat, 17 Nov 2018 20:26:36 -0800 (PST)
 From: Matheus Tavares <matheus.bernardino@usp.br>
 To: Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
@@ -18,46 +18,40 @@ Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Alexandru Ardelean <alexandru.ardelean@analog.com>,
         kernel-usp@googlegroups.com, victorcolombo@gmail.com
-Subject: [PATCH v2 5/7] staging:iio:ad2s90: Replace license text w/ SPDX identifier
-Date: Sun, 18 Nov 2018 02:25:38 -0200
-Message-Id: <20181118042540.12697-6-matheus.bernardino@usp.br>
+Subject: [PATCH v2 6/7] staging:iio:ad2s90: Add comment to device state mutex
+Date: Sun, 18 Nov 2018 02:25:39 -0200
+Message-Id: <20181118042540.12697-7-matheus.bernardino@usp.br>
 In-Reply-To: <20181118042540.12697-1-matheus.bernardino@usp.br>
 References: <20181118042540.12697-1-matheus.bernardino@usp.br>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch removes the license boilerplate text at the top of ad2s90.c
-and, instead, adds the SPDX GPL-2.0 license identifier, which solves the
-checkpatch.pl warning:
-"WARNING: Missing or malformed SPDX-License-Identifier tag in line 1".
+From: Victor Colombo <victorcolombo@gmail.com>
 
+Fix the checkpatch.pl issue:
+"CHECK: struct mutex definition without comment".
+
+Signed-off-by: Victor Colombo <victorcolombo@gmail.com>
 Signed-off-by: Matheus Tavares <matheus.bernardino@usp.br>
 ---
 Changes in v2:
- - Changed GPL-2.0-only identifier to GPL-2.0
- - Removed license boilerplate text
- - Rewritten patch message to reflect these modifications
+ - Patch added in v2
 
- drivers/staging/iio/resolver/ad2s90.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ drivers/staging/iio/resolver/ad2s90.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/staging/iio/resolver/ad2s90.c b/drivers/staging/iio/resolver/ad2s90.c
-index fe90f2056bff..9aa229ba47e7 100644
+index 9aa229ba47e7..f04dc5dede00 100644
 --- a/drivers/staging/iio/resolver/ad2s90.c
 +++ b/drivers/staging/iio/resolver/ad2s90.c
-@@ -1,12 +1,8 @@
-+// SPDX-License-Identifier: GPL-2.0
- /*
-  * ad2s90.c simple support for the ADI Resolver to Digital Converters: AD2S90
-  *
-  * Copyright (c) 2010-2010 Analog Devices Inc.
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License version 2 as
-- * published by the Free Software Foundation.
-- *
-  */
- #include <linux/types.h>
- #include <linux/mutex.h>
+@@ -22,7 +22,7 @@
+ #define AD2S90_MAX_SPI_FREQ_HZ  830000
+ 
+ struct ad2s90_state {
+-	struct mutex lock;
++	struct mutex lock; /* lock to protect rx buffer */
+ 	struct spi_device *sdev;
+ 	u8 rx[2] ____cacheline_aligned;
+ };
 -- 
 2.18.0
