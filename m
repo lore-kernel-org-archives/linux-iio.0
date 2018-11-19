@@ -1,62 +1,52 @@
-Return-Path: <SRS0=LmQH=N5=usp.br=matheus.bernardino@kernel.org>
-From: Matheus Tavares <matheus.bernardino@usp.br>
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>
-Cc: linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Alexandru Ardelean <alexandru.ardelean@analog.com>,
-	kernel-usp@googlegroups.com,
-	victorcolombo@gmail.com
-Subject: [PATCH v2 1/7] staging:iio:ad2s90: Add device tree support
-Date: Sun, 18 Nov 2018 02:25:34 -0200
-Message-Id: <20181118042540.12697-2-matheus.bernardino@usp.br>
-In-Reply-To: <20181118042540.12697-1-matheus.bernardino@usp.br>
+Return-Path: <SRS0=Z5pt=N6=analog.com=alexandru.Ardelean@kernel.org>
+From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+To: "lars@metafoo.de" <lars@metafoo.de>, "robh+dt@kernel.org"
+	<robh+dt@kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>, "jic23@kernel.org"
+	<jic23@kernel.org>, "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+	"mark.rutland@arm.com" <mark.rutland@arm.com>, "matheus.bernardino@usp.br"
+	<matheus.bernardino@usp.br>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+CC: "victorcolombo@gmail.com" <victorcolombo@gmail.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+	"kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v2 1/7] staging:iio:ad2s90: Add device tree support
+Date: Mon, 19 Nov 2018 08:09:21 +0000
+Message-ID: <f250fa3a01b51d59979e7a2e3e42cc34d02aa52e.camel@analog.com>
 References: <20181118042540.12697-1-matheus.bernardino@usp.br>
+	 <20181118042540.12697-2-matheus.bernardino@usp.br>
+In-Reply-To: <20181118042540.12697-2-matheus.bernardino@usp.br>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch adds device tree support to ad2s90 with standard
-device tree id table.
-
-Signed-off-by: Matheus Tavares <matheus.bernardino@usp.br>
----
-Changes in v2:
- - none
-
- drivers/staging/iio/resolver/ad2s90.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/staging/iio/resolver/ad2s90.c b/drivers/staging/iio/resolver/ad2s90.c
-index 3e257ac46f7a..6ffbac66b837 100644
---- a/drivers/staging/iio/resolver/ad2s90.c
-+++ b/drivers/staging/iio/resolver/ad2s90.c
-@@ -107,6 +107,12 @@ static int ad2s90_probe(struct spi_device *spi)
- 	return devm_iio_device_register(indio_dev->dev.parent, indio_dev);
- }
- 
-+static const struct of_device_id ad2s90_of_match[] = {
-+	{ .compatible = "adi,ad2s90", },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, ad2s90_of_match);
-+
- static const struct spi_device_id ad2s90_id[] = {
- 	{ "ad2s90" },
- 	{}
-@@ -116,6 +122,7 @@ MODULE_DEVICE_TABLE(spi, ad2s90_id);
- static struct spi_driver ad2s90_driver = {
- 	.driver = {
- 		.name = "ad2s90",
-+		.of_match_table = of_match_ptr(ad2s90_of_match),
- 	},
- 	.probe = ad2s90_probe,
- 	.id_table = ad2s90_id,
--- 
-2.18.0
+T24gU3VuLCAyMDE4LTExLTE4IGF0IDAyOjI1IC0wMjAwLCBNYXRoZXVzIFRhdmFyZXMgd3JvdGU6
+DQo+IFRoaXMgcGF0Y2ggYWRkcyBkZXZpY2UgdHJlZSBzdXBwb3J0IHRvIGFkMnM5MCB3aXRoIHN0
+YW5kYXJkDQo+IGRldmljZSB0cmVlIGlkIHRhYmxlLg0KPiANCg0KSGV5LA0KDQpDb21tZW50IGlu
+bGluZQ0KDQo+IFNpZ25lZC1vZmYtYnk6IE1hdGhldXMgVGF2YXJlcyA8bWF0aGV1cy5iZXJuYXJk
+aW5vQHVzcC5icj4NCj4gLS0tDQo+IENoYW5nZXMgaW4gdjI6DQo+ICAtIG5vbmUNCj4gDQo+ICBk
+cml2ZXJzL3N0YWdpbmcvaWlvL3Jlc29sdmVyL2FkMnM5MC5jIHwgNyArKysrKysrDQo+ICAxIGZp
+bGUgY2hhbmdlZCwgNyBpbnNlcnRpb25zKCspDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9z
+dGFnaW5nL2lpby9yZXNvbHZlci9hZDJzOTAuYw0KPiBiL2RyaXZlcnMvc3RhZ2luZy9paW8vcmVz
+b2x2ZXIvYWQyczkwLmMNCj4gaW5kZXggM2UyNTdhYzQ2ZjdhLi42ZmZiYWM2NmI4MzcgMTAwNjQ0
+DQo+IC0tLSBhL2RyaXZlcnMvc3RhZ2luZy9paW8vcmVzb2x2ZXIvYWQyczkwLmMNCj4gKysrIGIv
+ZHJpdmVycy9zdGFnaW5nL2lpby9yZXNvbHZlci9hZDJzOTAuYw0KPiBAQCAtMTA3LDYgKzEwNywx
+MiBAQCBzdGF0aWMgaW50IGFkMnM5MF9wcm9iZShzdHJ1Y3Qgc3BpX2RldmljZSAqc3BpKQ0KPiAg
+CXJldHVybiBkZXZtX2lpb19kZXZpY2VfcmVnaXN0ZXIoaW5kaW9fZGV2LT5kZXYucGFyZW50LCBp
+bmRpb19kZXYpOw0KPiAgfQ0KPiAgDQo+ICtzdGF0aWMgY29uc3Qgc3RydWN0IG9mX2RldmljZV9p
+ZCBhZDJzOTBfb2ZfbWF0Y2hbXSA9IHsNCj4gKwl7IC5jb21wYXRpYmxlID0gImFkaSxhZDJzOTAi
+LCB9LA0KPiArCXt9DQo+ICt9Ow0KPiArTU9EVUxFX0RFVklDRV9UQUJMRShvZiwgYWQyczkwX29m
+X21hdGNoKTsNCj4gKw0KPiAgc3RhdGljIGNvbnN0IHN0cnVjdCBzcGlfZGV2aWNlX2lkIGFkMnM5
+MF9pZFtdID0gew0KPiAgCXsgImFkMnM5MCIgfSwNCj4gIAl7fQ0KPiBAQCAtMTE2LDYgKzEyMiw3
+IEBAIE1PRFVMRV9ERVZJQ0VfVEFCTEUoc3BpLCBhZDJzOTBfaWQpOw0KPiAgc3RhdGljIHN0cnVj
+dCBzcGlfZHJpdmVyIGFkMnM5MF9kcml2ZXIgPSB7DQo+ICAJLmRyaXZlciA9IHsNCj4gIAkJLm5h
+bWUgPSAiYWQyczkwIiwNCj4gKwkJLm9mX21hdGNoX3RhYmxlID0gb2ZfbWF0Y2hfcHRyKGFkMnM5
+MF9vZl9tYXRjaCksDQoNCkkgdGhpbmsgeW91IG5lZWQgdG8gcmVtb3ZlIHRoZSBvZl9tYXRjaF9w
+dHIoKS4NClRoZXJlIHdhcyBhIGNvbW1lbnQgZnJvbSBKb25hdGhhbiBvbiBhbm90aGVyIHRocmVh
+ZCBhYm91dCB0aGlzLg0KU2VlOg0KICAgaHR0cHM6Ly9wYXRjaHdvcmsua2VybmVsLm9yZy9wYXRj
+aC8xMDY4Mjk2My8NCg0KU28sIA0KKwkJLm9mX21hdGNoX3RhYmxlID0gb2ZfbWF0Y2hfcHRyKGFk
+MnM5MF9vZl9tYXRjaCksDQoNCmJlY29tZXMNCj4gKwkJLm9mX21hdGNoX3RhYmxlID0gYWQyczkw
+X29mX21hdGNoLA0KDQo+ICAJfSwNCj4gIAkucHJvYmUgPSBhZDJzOTBfcHJvYmUsDQo+ICAJLmlk
+X3RhYmxlID0gYWQyczkwX2lkLA0K
