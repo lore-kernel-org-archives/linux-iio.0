@@ -1,83 +1,50 @@
-Return-Path: <SRS0=ADx5=OF=martingkelly.com=martin@kernel.org>
-Subject: Re: [PATCH 1/2] iio: bmi160: snap timestamp closer to event
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, Daniel Baluta <daniel.baluta@intel.com>
-References: <20181119005347.747-1-martin@martingkelly.com>
- <20181125135959.1b36ac18@archlinux>
-From: Martin Kelly <martin@martingkelly.com>
-Message-ID: <c6376fbc-2678-5def-c167-75fec52f15d2@martingkelly.com>
-Date: Mon, 26 Nov 2018 15:43:37 -0800
-MIME-Version: 1.0
-In-Reply-To: <20181125135959.1b36ac18@archlinux>
-Content-Type: text/plain; charset=utf-8; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:43223 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725908AbeKSQfQ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Nov 2018 11:35:16 -0500
+Received: by mail-pg1-f193.google.com with SMTP id v28so2845015pgk.10
+        for <linux-iio@vger.kernel.org>; Sun, 18 Nov 2018 22:12:40 -0800 (PST)
+From: Jian-Hong Pan <jian-hong@endlessm.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Dominique Martinet <asmadeus@codewreck.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux@endlessm.com, Jian-Hong Pan <jian-hong@endlessm.com>
+Subject: [PATCH] iio: st_sensors: Fix the sleep time for sampling
+Date: Mon, 19 Nov 2018 14:12:19 +0800
+Message-Id: <20181119061219.14238-1-jian-hong@endlessm.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 11/25/18 5:59 AM, Jonathan Cameron wrote:
-> On Sun, 18 Nov 2018 16:53:46 -0800
-> Martin Kelly <martin@martingkelly.com> wrote:
-> 
->> From: Martin Kelly <martin@martingkelly.com>
->>
->> Currently, we snap the timestamp after reading from the buffer and
->> processing the event. Technically, we can get a slightly more accurate
->> timestamp by snapping it prior to reading the data, since the data was
->> already generated prior to entering the trigger handler. This is not going
->> to make a huge difference, but we might as well improve slightly.
->>
->> Signed-off-by: Martin Kelly <martin@martingkelly.com>
-> Now this is always an interesting one.   We are running that handler
-> off the back of a trigger that isn't a dataready signal.  As such
-> the start of the function doesn't necessarily correspond to the
-> time that is closest to when the data is captured, it corresponds
-> to the time that is closest to when we asked for it (which is
-> not the most relevant number when processing the data)
-> 
-> Now, here we are talking on either side of the actual hardware
-> reads, so my suspicion is that it'll be just as inaccurate, but
-> in the other direction.
-> 
-> Also note that the compiler is probably within it's rights to
-> reorder that entirely if it can tell there are no side effects
-> (which it probably can't here... so this change will actually
-> do what you intend.)
-> 
-> So upshot is I'm currently unconvinced either way on whether this
-> is a useful change or not!
-> 
-> Jonathan
-> 
+According to the description of st_sensor_settings and st_sensor_data
+structures' comments:
+- bootime: samples to discard when sensor passing from power-down to
+power-up.
+- odr: Output data rate of the sensor [Hz].
 
-Yes, you are right that in the current driver, it's rather fuzzy when 
-the "correct" timestamp to snap is. Separately, I'm working on adding 
-interrupt support to this driver, so perhaps I should queue this up 
-after that change. With interrupts (based on a data ready signal), I 
-believe this change will be correct.
+The sleep time should be
+sdata->sensor_settings->bootime + 1000 / sdata->odr ms.
 
-> 
->> ---
->>   drivers/iio/imu/bmi160/bmi160_core.c | 4 ++--
->>   1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
->> index c85659ca9507..4d9d59d9e3a9 100644
->> --- a/drivers/iio/imu/bmi160/bmi160_core.c
->> +++ b/drivers/iio/imu/bmi160/bmi160_core.c
->> @@ -384,6 +384,7 @@ static irqreturn_t bmi160_trigger_handler(int irq, void *p)
->>   {
->>   	struct iio_poll_func *pf = p;
->>   	struct iio_dev *indio_dev = pf->indio_dev;
->> +	s64 ts = iio_get_time_ns(indio_dev);
->>   	struct bmi160_data *data = iio_priv(indio_dev);
->>   	__le16 buf[16];
->>   	/* 3 sens x 3 axis x __le16 + 3 x __le16 pad + 4 x __le16 tstamp */
->> @@ -399,8 +400,7 @@ static irqreturn_t bmi160_trigger_handler(int irq, void *p)
->>   		buf[j++] = sample;
->>   	}
->>   
->> -	iio_push_to_buffers_with_timestamp(indio_dev, buf,
->> -					   iio_get_time_ns(indio_dev));
->> +	iio_push_to_buffers_with_timestamp(indio_dev, buf, ts);
->>   done:
->>   	iio_trigger_notify_done(indio_dev->trig);
->>   	return IRQ_HANDLED;
-> 
+Signed-off-by: Jian-Hong Pan <jian-hong@endlessm.com>
+---
+ drivers/iio/common/st_sensors/st_sensors_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+index 26fbd1bd9413..6b87ea657a92 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_core.c
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -594,7 +594,7 @@ int st_sensors_read_info_raw(struct iio_dev *indio_dev,
+ 		if (err < 0)
+ 			goto out;
+ 
+-		msleep((sdata->sensor_settings->bootime * 1000) / sdata->odr);
++		msleep(sdata->sensor_settings->bootime + 1000 / sdata->odr);
+ 		err = st_sensors_read_axis_data(indio_dev, ch, val);
+ 		if (err < 0)
+ 			goto out;
+-- 
+2.11.0
