@@ -1,185 +1,42 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:33858 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726062AbeKZAIo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 25 Nov 2018 19:08:44 -0500
-Date: Sun, 25 Nov 2018 13:17:35 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Fabrice Gasnier <fabrice.gasnier@st.com>
-Cc: <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <mcoquelin.stm32@gmail.com>,
-        <alexandre.torgue@st.com>, <linux-iio@vger.kernel.org>,
-        <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
-        <linux-stm32@st-md-mailman.stormreply.com>
-Subject: Re: [PATCH 3/3] iio: adc: stm32-adc: switch off running adc when
- going to low power
-Message-ID: <20181125131735.616d6cf9@archlinux>
-In-Reply-To: <1542708752-26163-4-git-send-email-fabrice.gasnier@st.com>
-References: <1542708752-26163-1-git-send-email-fabrice.gasnier@st.com>
-        <1542708752-26163-4-git-send-email-fabrice.gasnier@st.com>
+Return-Path: <SRS0=D7RN=N7=redhat.com=hdegoede@kernel.org>
+From: Hans de Goede <hdegoede@redhat.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hans de Goede <hdegoede@redhat.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org
+Subject: [PATCH] iio: accel: kxcjk1013: Add KIOX010A ACPI Hardware-ID
+Date: Tue, 20 Nov 2018 12:10:14 +0100
+Message-Id: <20181120111014.22454-1-hdegoede@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, 20 Nov 2018 11:12:32 +0100
-Fabrice Gasnier <fabrice.gasnier@st.com> wrote:
+Various 2-in-1's use KIOX010A and KIOX020A as HIDs for 2 KXCJ91008
+accelerometers. The KIOX010A HID is for the one in the base and the
+KIOX020A for the accelerometer in the keyboard.
 
-> Switch off ADC when going to low power mode, in case it has been left
-> running in buffer mode. Then re-enable it when resuming.
-> 
-> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-My suspicion is that we have other drivers not correctly handing this
-case, but as far as I can see you have it well covered here.
+Since userspace does not have a way yet to deal with (or ignore) the
+accelerometer in the keyboard, this commit just adds the KIOX010A HID
+for now so that display rotation will work.
 
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+Related: https://github.com/hadess/iio-sensor-proxy/issues/166
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/iio/accel/kxcjk-1013.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/iio/adc/stm32-adc.c | 79 ++++++++++++++++++++++++++++++++++++---------
->  1 file changed, 63 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
-> index 32c9c61..2a9891c 100644
-> --- a/drivers/iio/adc/stm32-adc.c
-> +++ b/drivers/iio/adc/stm32-adc.c
-> @@ -1518,7 +1518,7 @@ static int stm32_adc_dma_start(struct iio_dev *indio_dev)
->  	return 0;
->  }
->  
-> -static int stm32_adc_buffer_postenable(struct iio_dev *indio_dev)
-> +static int __stm32_adc_buffer_postenable(struct iio_dev *indio_dev)
->  {
->  	struct stm32_adc *adc = iio_priv(indio_dev);
->  	struct device *dev = indio_dev->dev.parent;
-> @@ -1542,10 +1542,6 @@ static int stm32_adc_buffer_postenable(struct iio_dev *indio_dev)
->  		goto err_clr_trig;
->  	}
->  
-> -	ret = iio_triggered_buffer_postenable(indio_dev);
-> -	if (ret < 0)
-> -		goto err_stop_dma;
-> -
->  	/* Reset adc buffer index */
->  	adc->bufi = 0;
->  
-> @@ -1556,9 +1552,6 @@ static int stm32_adc_buffer_postenable(struct iio_dev *indio_dev)
->  
->  	return 0;
->  
-> -err_stop_dma:
-> -	if (adc->dma_chan)
-> -		dmaengine_terminate_all(adc->dma_chan);
->  err_clr_trig:
->  	stm32_adc_set_trig(indio_dev, NULL);
->  err_pm_put:
-> @@ -1568,20 +1561,30 @@ static int stm32_adc_buffer_postenable(struct iio_dev *indio_dev)
->  	return ret;
->  }
->  
-> -static int stm32_adc_buffer_predisable(struct iio_dev *indio_dev)
-> +static int stm32_adc_buffer_postenable(struct iio_dev *indio_dev)
-> +{
-> +	int ret;
-> +
-> +	ret = iio_triggered_buffer_postenable(indio_dev);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = __stm32_adc_buffer_postenable(indio_dev);
-> +	if (ret < 0)
-> +		iio_triggered_buffer_predisable(indio_dev);
-> +
-> +	return ret;
-> +}
-> +
-> +static void __stm32_adc_buffer_predisable(struct iio_dev *indio_dev)
->  {
->  	struct stm32_adc *adc = iio_priv(indio_dev);
->  	struct device *dev = indio_dev->dev.parent;
-> -	int ret;
->  
->  	adc->cfg->stop_conv(adc);
->  	if (!adc->dma_chan)
->  		stm32_adc_conv_irq_disable(adc);
->  
-> -	ret = iio_triggered_buffer_predisable(indio_dev);
-> -	if (ret < 0)
-> -		dev_err(&indio_dev->dev, "predisable failed\n");
-> -
->  	if (adc->dma_chan)
->  		dmaengine_terminate_all(adc->dma_chan);
->  
-> @@ -1590,6 +1593,17 @@ static int stm32_adc_buffer_predisable(struct iio_dev *indio_dev)
->  
->  	pm_runtime_mark_last_busy(dev);
->  	pm_runtime_put_autosuspend(dev);
-> +}
-> +
-> +static int stm32_adc_buffer_predisable(struct iio_dev *indio_dev)
-> +{
-> +	int ret;
-> +
-> +	__stm32_adc_buffer_predisable(indio_dev);
-> +
-> +	ret = iio_triggered_buffer_predisable(indio_dev);
-> +	if (ret < 0)
-> +		dev_err(&indio_dev->dev, "predisable failed\n");
->  
->  	return ret;
->  }
-> @@ -2013,6 +2027,40 @@ static int stm32_adc_remove(struct platform_device *pdev)
->  	return 0;
->  }
->  
-> +#if defined(CONFIG_PM_SLEEP)
-> +static int stm32_adc_suspend(struct device *dev)
-> +{
-> +	struct stm32_adc *adc = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = iio_priv_to_dev(adc);
-> +
-> +	if (iio_buffer_enabled(indio_dev))
-> +		__stm32_adc_buffer_predisable(indio_dev);
-> +
-> +	return pm_runtime_force_suspend(dev);
-> +}
-> +
-> +static int stm32_adc_resume(struct device *dev)
-> +{
-> +	struct stm32_adc *adc = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = iio_priv_to_dev(adc);
-> +	int ret;
-> +
-> +	ret = pm_runtime_force_resume(dev);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	if (!iio_buffer_enabled(indio_dev))
-> +		return 0;
-> +
-> +	ret = stm32_adc_update_scan_mode(indio_dev,
-> +					 indio_dev->active_scan_mask);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return __stm32_adc_buffer_postenable(indio_dev);
-> +}
-> +#endif
-> +
->  #if defined(CONFIG_PM)
->  static int stm32_adc_runtime_suspend(struct device *dev)
->  {
-> @@ -2026,8 +2074,7 @@ static int stm32_adc_runtime_resume(struct device *dev)
->  #endif
->  
->  static const struct dev_pm_ops stm32_adc_pm_ops = {
-> -	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
-> -				pm_runtime_force_resume)
-> +	SET_SYSTEM_SLEEP_PM_OPS(stm32_adc_suspend, stm32_adc_resume)
->  	SET_RUNTIME_PM_OPS(stm32_adc_runtime_suspend, stm32_adc_runtime_resume,
->  			   NULL)
->  };
+diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+index 8600e4be88ad..210742584041 100644
+--- a/drivers/iio/accel/kxcjk-1013.c
++++ b/drivers/iio/accel/kxcjk-1013.c
+@@ -1491,6 +1491,7 @@ static const struct acpi_device_id kx_acpi_match[] = {
+ 	{"KXCJ9000", KXCJ91008},
+ 	{"KIOX0009", KXTJ21009},
+ 	{"KIOX000A", KXCJ91008},
++	{"KIOX010A", KXCJ91008}, /* KXCJ91008 inside the display of a 2-in-1 */
+ 	{"KXTJ1009", KXTJ21009},
+ 	{"SMO8500",  KXCJ91008},
+ 	{ },
+-- 
+2.19.1
