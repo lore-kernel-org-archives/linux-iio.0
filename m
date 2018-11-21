@@ -1,68 +1,58 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:33665 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725925AbeKUDax (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 20 Nov 2018 22:30:53 -0500
-From: Shreeya Patel <shreeya.patel23498@gmail.com>
-To: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 5/5] Staging: iio: adt7316: Use device tree data to assign irq_type
-Date: Tue, 20 Nov 2018 22:30:36 +0530
-Message-Id: <20181120170036.7403-1-shreeya.patel23498@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=DOl1=OA=analog.com=alexandru.Ardelean@kernel.org>
+From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+To: "lars@metafoo.de" <lars@metafoo.de>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>,
+	"jic23@kernel.org" <jic23@kernel.org>, "Hennerich, Michael"
+	<Michael.Hennerich@analog.com>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "devel@driverdev.osuosl.org"
+	<devel@driverdev.osuosl.org>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+	"shreeya.patel23498@gmail.com" <shreeya.patel23498@gmail.com>
+Subject: Re: [PATCH v2 5/5] Staging: iio: adt7316: Use device tree data to
+ assign irq_type
+Date: Wed, 21 Nov 2018 08:21:28 +0000
+Message-ID: <8f659e4351a9b2511658b01c0b18bed94ef72802.camel@analog.com>
+References: <20181120170036.7403-1-shreeya.patel23498@gmail.com>
+In-Reply-To: <20181120170036.7403-1-shreeya.patel23498@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-ADT7316 driver no more uses platform data and hence use device tree
-data instead of platform data for assigning irq_type field.
-Switch case figures out the type of irq and if it's the default case
-then assign the default value to the irq_type i.e.
-irq_type = IRQF_TRIGGER_LOW
-
-Signed-off-by: Shreeya Patel <shreeya.patel23498@gmail.com>
----
- drivers/staging/iio/addac/adt7316.c | 21 +++++++++++++++++----
- 1 file changed, 17 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
-index 9c72538baf9e..c647875a64f5 100644
---- a/drivers/staging/iio/addac/adt7316.c
-+++ b/drivers/staging/iio/addac/adt7316.c
-@@ -2101,8 +2101,7 @@ int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
- {
- 	struct adt7316_chip_info *chip;
- 	struct iio_dev *indio_dev;
--	unsigned short *adt7316_platform_data = dev->platform_data;
--	int irq_type = IRQF_TRIGGER_LOW;
-+	int irq_type;
- 	int ret = 0;
- 
- 	indio_dev = devm_iio_device_alloc(dev, sizeof(*chip));
-@@ -2146,8 +2145,22 @@ int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
- 	if (chip->bus.irq > 0) {
--		if (adt7316_platform_data[0])
--			irq_type = adt7316_platform_data[0];
-+		irq_type =
-+			irqd_get_trigger_type(irq_get_irq_data(chip->bus.irq));
-+
-+		switch (irq_type) {
-+		case IRQF_TRIGGER_HIGH:
-+		case IRQF_TRIGGER_RISING:
-+			break;
-+		case IRQF_TRIGGER_LOW:
-+		case IRQF_TRIGGER_FALLING:
-+			break;
-+		default:
-+			dev_info(dev, "mode %d unsupported, using IRQF_TRIGGER_LOW\n",
-+				 irq_type);
-+			irq_type = IRQF_TRIGGER_LOW;
-+			break;
-+		}
- 
- 		ret = devm_request_threaded_irq(dev, chip->bus.irq,
- 						NULL,
--- 
-2.17.1
+T24gVHVlLCAyMDE4LTExLTIwIGF0IDIyOjMwICswNTMwLCBTaHJlZXlhIFBhdGVsIHdyb3RlOg0K
+PiBBRFQ3MzE2IGRyaXZlciBubyBtb3JlIHVzZXMgcGxhdGZvcm0gZGF0YSBhbmQgaGVuY2UgdXNl
+IGRldmljZSB0cmVlDQo+IGRhdGEgaW5zdGVhZCBvZiBwbGF0Zm9ybSBkYXRhIGZvciBhc3NpZ25p
+bmcgaXJxX3R5cGUgZmllbGQuDQo+IFN3aXRjaCBjYXNlIGZpZ3VyZXMgb3V0IHRoZSB0eXBlIG9m
+IGlycSBhbmQgaWYgaXQncyB0aGUgZGVmYXVsdCBjYXNlDQo+IHRoZW4gYXNzaWduIHRoZSBkZWZh
+dWx0IHZhbHVlIHRvIHRoZSBpcnFfdHlwZSBpLmUuDQo+IGlycV90eXBlID0gSVJRRl9UUklHR0VS
+X0xPVw0KPiANCg0KMSBjb21tZW50IGlubGluZQ0KDQo+IFNpZ25lZC1vZmYtYnk6IFNocmVleWEg
+UGF0ZWwgPHNocmVleWEucGF0ZWwyMzQ5OEBnbWFpbC5jb20+DQo+IC0tLQ0KPiAgZHJpdmVycy9z
+dGFnaW5nL2lpby9hZGRhYy9hZHQ3MzE2LmMgfCAyMSArKysrKysrKysrKysrKysrKy0tLS0NCj4g
+IDEgZmlsZSBjaGFuZ2VkLCAxNyBpbnNlcnRpb25zKCspLCA0IGRlbGV0aW9ucygtKQ0KPiANCj4g
+ZGlmZiAtLWdpdCBhL2RyaXZlcnMvc3RhZ2luZy9paW8vYWRkYWMvYWR0NzMxNi5jDQo+IGIvZHJp
+dmVycy9zdGFnaW5nL2lpby9hZGRhYy9hZHQ3MzE2LmMNCj4gaW5kZXggOWM3MjUzOGJhZjllLi5j
+NjQ3ODc1YTY0ZjUgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvc3RhZ2luZy9paW8vYWRkYWMvYWR0
+NzMxNi5jDQo+ICsrKyBiL2RyaXZlcnMvc3RhZ2luZy9paW8vYWRkYWMvYWR0NzMxNi5jDQo+IEBA
+IC0yMTAxLDggKzIxMDEsNyBAQCBpbnQgYWR0NzMxNl9wcm9iZShzdHJ1Y3QgZGV2aWNlICpkZXYs
+IHN0cnVjdA0KPiBhZHQ3MzE2X2J1cyAqYnVzLA0KPiAgew0KPiAgCXN0cnVjdCBhZHQ3MzE2X2No
+aXBfaW5mbyAqY2hpcDsNCj4gIAlzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2Ow0KPiAtCXVuc2ln
+bmVkIHNob3J0ICphZHQ3MzE2X3BsYXRmb3JtX2RhdGEgPSBkZXYtPnBsYXRmb3JtX2RhdGE7DQo+
+IC0JaW50IGlycV90eXBlID0gSVJRRl9UUklHR0VSX0xPVzsNCj4gKwlpbnQgaXJxX3R5cGU7DQo+
+ICAJaW50IHJldCA9IDA7DQo+ICANCj4gIAlpbmRpb19kZXYgPSBkZXZtX2lpb19kZXZpY2VfYWxs
+b2MoZGV2LCBzaXplb2YoKmNoaXApKTsNCj4gQEAgLTIxNDYsOCArMjE0NSwyMiBAQCBpbnQgYWR0
+NzMxNl9wcm9iZShzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdA0KPiBhZHQ3MzE2X2J1cyAqYnVz
+LA0KPiAgCWluZGlvX2Rldi0+bW9kZXMgPSBJTkRJT19ESVJFQ1RfTU9ERTsNCj4gIA0KPiAgCWlm
+IChjaGlwLT5idXMuaXJxID4gMCkgew0KPiAtCQlpZiAoYWR0NzMxNl9wbGF0Zm9ybV9kYXRhWzBd
+KQ0KPiAtCQkJaXJxX3R5cGUgPSBhZHQ3MzE2X3BsYXRmb3JtX2RhdGFbMF07DQo+ICsJCWlycV90
+eXBlID0NCj4gKwkJCWlycWRfZ2V0X3RyaWdnZXJfdHlwZShpcnFfZ2V0X2lycV9kYXRhKGNoaXAt
+DQo+ID5idXMuaXJxKSk7DQo+ICsNCj4gKwkJc3dpdGNoIChpcnFfdHlwZSkgew0KPiArCQljYXNl
+IElSUUZfVFJJR0dFUl9ISUdIOg0KPiArCQljYXNlIElSUUZfVFJJR0dFUl9SSVNJTkc6DQo+ICsJ
+CQlicmVhazsNCj4gKwkJY2FzZSBJUlFGX1RSSUdHRVJfTE9XOg0KPiArCQljYXNlIElSUUZfVFJJ
+R0dFUl9GQUxMSU5HOg0KPiArCQkJYnJlYWs7DQo+ICsJCWRlZmF1bHQ6DQo+ICsJCQlkZXZfaW5m
+byhkZXYsICJtb2RlICVkIHVuc3VwcG9ydGVkLCB1c2luZw0KPiBJUlFGX1RSSUdHRVJfTE9XXG4i
+LA0KPiArCQkJCSBpcnFfdHlwZSk7DQo+ICsJCQlpcnFfdHlwZSA9IElSUUZfVFJJR0dFUl9MT1c7
+DQo+ICsJCQlicmVhazsNCj4gKwkJfQ0KDQpJdCB3b3VsZCBiZSBhbiBpZGVhIHRvIG1vdmUgdGhp
+cyBwYXJ0IFt0b2dldGhlciB3aXRoDQpkZXZtX3JlcXVlc3RfdGhyZWFkZWRfaXJxKCldIGludG8g
+YSAiYWR0NzMxNl9zZXR1cF9pcnEoKSIgZnVuY3Rpb24uIFRvIHVuLQ0KY2x1dHRlciB0aGUgY29k
+ZSBpbiB0aGUgYWR0NzMxNl9wcm9iZSgpIGZ1bmN0aW9uLg0KDQo+ICANCj4gIAkJcmV0ID0gZGV2
+bV9yZXF1ZXN0X3RocmVhZGVkX2lycShkZXYsIGNoaXAtPmJ1cy5pcnEsDQo+ICAJCQkJCQlOVUxM
+LA0K
