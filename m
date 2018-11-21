@@ -1,120 +1,168 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:49024 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726023AbeKYWoV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 25 Nov 2018 17:44:21 -0500
-Date: Sun, 25 Nov 2018 11:53:20 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Shreeya Patel <shreeya.patel23498@gmail.com>
-Cc: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v2 5/5] Staging: iio: adt7316: Use device tree data to
- assign irq_type
-Message-ID: <20181125115320.08833521@archlinux>
-In-Reply-To: <394a787d3afaeb6314c517739697430102170027.camel@gmail.com>
-References: <20181120170036.7403-1-shreeya.patel23498@gmail.com>
-        <8f659e4351a9b2511658b01c0b18bed94ef72802.camel@analog.com>
-        <394a787d3afaeb6314c517739697430102170027.camel@gmail.com>
+Return-Path: <SRS0=dj3F=OA=gmail.com=giuliano.belinassi@kernel.org>
+From: Giuliano Belinassi <giuliano.belinassi@gmail.com>
+Date: Wed, 21 Nov 2018 16:04:43 -0200
+To: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+	knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+	alexandru.Ardelean@analog.com, stefan.popa@analog.com
+Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
+Subject: [PATCH] staging: iio: ad7780: Add gain & filter gpio support
+Message-ID: <20181121180443.tjgcpu2webrq53rh@smtp.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, 21 Nov 2018 15:02:52 +0530
-Shreeya Patel <shreeya.patel23498@gmail.com> wrote:
+Previously, the AD7780 driver only supported gpio for the 'powerdown'
+pin. This commit adds suppport for the 'gain' and 'filter' pin.
 
-> On Wed, 2018-11-21 at 08:21 +0000, Ardelean, Alexandru wrote:
-> > On Tue, 2018-11-20 at 22:30 +0530, Shreeya Patel wrote:  
-> > > ADT7316 driver no more uses platform data and hence use device tree
-> > > data instead of platform data for assigning irq_type field.
-> > > Switch case figures out the type of irq and if it's the default
-> > > case
-> > > then assign the default value to the irq_type i.e.
-> > > irq_type = IRQF_TRIGGER_LOW
-> > >   
-> > 
-> > 1 comment inline
-> >   
-> > > Signed-off-by: Shreeya Patel <shreeya.patel23498@gmail.com>
-> > > ---
-> > >  drivers/staging/iio/addac/adt7316.c | 21 +++++++++++++++++----
-> > >  1 file changed, 17 insertions(+), 4 deletions(-)
-> > > 
-> > > diff --git a/drivers/staging/iio/addac/adt7316.c
-> > > b/drivers/staging/iio/addac/adt7316.c
-> > > index 9c72538baf9e..c647875a64f5 100644
-> > > --- a/drivers/staging/iio/addac/adt7316.c
-> > > +++ b/drivers/staging/iio/addac/adt7316.c
-> > > @@ -2101,8 +2101,7 @@ int adt7316_probe(struct device *dev, struct
-> > > adt7316_bus *bus,
-> > >  {
-> > >  	struct adt7316_chip_info *chip;
-> > >  	struct iio_dev *indio_dev;
-> > > -	unsigned short *adt7316_platform_data = dev-  
-> > > >platform_data;  
-> > > -	int irq_type = IRQF_TRIGGER_LOW;
-> > > +	int irq_type;
-> > >  	int ret = 0;
-> > >  
-> > >  	indio_dev = devm_iio_device_alloc(dev, sizeof(*chip));
-> > > @@ -2146,8 +2145,22 @@ int adt7316_probe(struct device *dev, struct
-> > > adt7316_bus *bus,
-> > >  	indio_dev->modes = INDIO_DIRECT_MODE;
-> > >  
-> > >  	if (chip->bus.irq > 0) {
-> > > -		if (adt7316_platform_data[0])
-> > > -			irq_type = adt7316_platform_data[0];
-> > > +		irq_type =
-> > > +			irqd_get_trigger_type(irq_get_irq_data(chi
-> > > p-  
-> > > > bus.irq));  
-> > > 
-> > > +
-> > > +		switch (irq_type) {
-> > > +		case IRQF_TRIGGER_HIGH:
-> > > +		case IRQF_TRIGGER_RISING:
-> > > +			break;
-> > > +		case IRQF_TRIGGER_LOW:
-> > > +		case IRQF_TRIGGER_FALLING:
-> > > +			break;
-> > > +		default:
-> > > +			dev_info(dev, "mode %d unsupported, using
-> > > IRQF_TRIGGER_LOW\n",
-> > > +				 irq_type);
-> > > +			irq_type = IRQF_TRIGGER_LOW;
-> > > +			break;
-> > > +		}  
-> > 
-> > It would be an idea to move this part [together with
-> > devm_request_threaded_irq()] into a "adt7316_setup_irq()" function.
-> > To un-
-> > clutter the code in the adt7316_probe() function.
-> >   
-> 
-> Yes, seems like a good idea!
-> Even other drivers are doing the same as you told me to do...thanks :)
-> 
-> I'll do the change after Jonathan picks up the other patches and will
-> wait for some other reviews to come up if there are any.
-Agreed. This suggested change is good, so I'll leave this patch for now
-on the basis it probably makes sense to do it as a short series focused
-on that one element.
+Signed-off-by: Giuliano Belinassi <giuliano.belinassi@usp.br>
+---
+ drivers/staging/iio/adc/ad7780.c       | 61 ++++++++++++++++++++++++--
+ include/linux/iio/adc/ad_sigma_delta.h |  5 +++
+ 2 files changed, 62 insertions(+), 4 deletions(-)
 
-Thanks,
-
-Jonathan
-
-> 
-> Thanks
-> 
-> > >  
-> > >  		ret = devm_request_threaded_irq(dev, chip-  
-> > > >bus.irq,  
-> > >  						NULL,  
+diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
+index c4a85789c2db..69794f06dbcd 100644
+--- a/drivers/staging/iio/adc/ad7780.c
++++ b/drivers/staging/iio/adc/ad7780.c
+@@ -39,6 +39,9 @@
+ #define AD7170_PATTERN		(AD7780_PAT0 | AD7170_PAT2)
+ #define AD7170_PATTERN_MASK	(AD7780_PAT0 | AD7780_PAT1 | AD7170_PAT2)
+ 
++#define AD7780_GAIN_GPIO	0
++#define AD7780_FILTER_GPIO	1
++
+ struct ad7780_chip_info {
+ 	struct iio_chan_spec	channel;
+ 	unsigned int		pattern_mask;
+@@ -50,6 +53,8 @@ struct ad7780_state {
+ 	const struct ad7780_chip_info	*chip_info;
+ 	struct regulator		*reg;
+ 	struct gpio_desc		*powerdown_gpio;
++	struct gpio_desc		*gain_gpio;
++	struct gpio_desc		*filter_gpio;
+ 	unsigned int	gain;
+ 
+ 	struct ad_sigma_delta sd;
+@@ -115,18 +120,51 @@ static int ad7780_read_raw(struct iio_dev *indio_dev,
+ 	return -EINVAL;
+ }
+ 
++static int ad7780_write_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int val,
++			    int val2,
++			    long m)
++{
++	struct ad7780_state *st = iio_priv(indio_dev);
++
++	if (m != IIO_CHAN_INFO_RAW)
++		return -EINVAL;
++
++	if (st->chip_info->is_ad778x) {
++		switch(val) {
++		case AD7780_GAIN_GPIO:
++			gpiod_set_value(st->gain_gpio, val2);
++		break;
++		case AD7780_FILTER_GPIO:
++			gpiod_set_value(st->filter_gpio, val2);
++		break;
++		default:
++			return -EINVAL;
++		}
++	}
++
++	return 0;
++}
++
+ static int ad7780_postprocess_sample(struct ad_sigma_delta *sigma_delta,
+ 				     unsigned int raw_sample)
+ {
+ 	struct ad7780_state *st = ad_sigma_delta_to_ad7780(sigma_delta);
+ 	const struct ad7780_chip_info *chip_info = st->chip_info;
++	int val;
+ 
+ 	if ((raw_sample & AD7780_ERR) ||
+ 	    ((raw_sample & chip_info->pattern_mask) != chip_info->pattern))
+ 		return -EIO;
+ 
+ 	if (chip_info->is_ad778x) {
+-		if (raw_sample & AD7780_GAIN)
++		val = raw_sample & AD7780_GAIN;
++
++		if (val != gpiod_get_value(st->gain_gpio))
++			return -EIO;
++
++		if (val)
+ 			st->gain = 1;
+ 		else
+ 			st->gain = 128;
+@@ -141,18 +179,20 @@ static const struct ad_sigma_delta_info ad7780_sigma_delta_info = {
+ 	.has_registers = false,
+ };
+ 
+-#define AD7780_CHANNEL(bits, wordsize) \
++#define AD7170_CHANNEL(bits, wordsize) \
+ 	AD_SD_CHANNEL_NO_SAMP_FREQ(1, 0, 0, bits, 32, wordsize - bits)
++#define AD7780_CHANNEL(bits, wordsize) \
++	AD_SD_CHANNEL_GAIN_FILTER(1, 0, 0, bits, 32, wordsize - bits)
+ 
+ static const struct ad7780_chip_info ad7780_chip_info_tbl[] = {
+ 	[ID_AD7170] = {
+-		.channel = AD7780_CHANNEL(12, 24),
++		.channel = AD7170_CHANNEL(12, 24),
+ 		.pattern = AD7170_PATTERN,
+ 		.pattern_mask = AD7170_PATTERN_MASK,
+ 		.is_ad778x = false,
+ 	},
+ 	[ID_AD7171] = {
+-		.channel = AD7780_CHANNEL(16, 24),
++		.channel = AD7170_CHANNEL(16, 24),
+ 		.pattern = AD7170_PATTERN,
+ 		.pattern_mask = AD7170_PATTERN_MASK,
+ 		.is_ad778x = false,
+@@ -173,6 +213,7 @@ static const struct ad7780_chip_info ad7780_chip_info_tbl[] = {
+ 
+ static const struct iio_info ad7780_info = {
+ 	.read_raw = ad7780_read_raw,
++	.write_raw = ad7780_write_raw,
+ };
+ 
+ static int ad7780_probe(struct spi_device *spi)
+@@ -222,6 +263,18 @@ static int ad7780_probe(struct spi_device *spi)
+ 		goto error_disable_reg;
+ 	}
+ 
++	if (st->chip_info->is_ad778x) {
++		st->gain_gpio = devm_gpiod_get_optional(&spi->dev,
++							"gain",
++							GPIOD_OUT_HIGH);
++		if (IS_ERR(st->gain_gpio)) {
++			ret = PTR_ERR(st->gain_gpio);
++			dev_err(&spi->dev, "Failed to request gain GPIO: %d\n",
++				ret);
++			goto error_disable_reg;
++		}
++	}
++
+ 	ret = ad_sd_setup_buffer_and_trigger(indio_dev);
+ 	if (ret)
+ 		goto error_disable_reg;
+diff --git a/include/linux/iio/adc/ad_sigma_delta.h b/include/linux/iio/adc/ad_sigma_delta.h
+index 730ead1a46df..6cadab6fd5fd 100644
+--- a/include/linux/iio/adc/ad_sigma_delta.h
++++ b/include/linux/iio/adc/ad_sigma_delta.h
+@@ -173,6 +173,11 @@ int ad_sd_validate_trigger(struct iio_dev *indio_dev, struct iio_trigger *trig);
+ 	__AD_SD_CHANNEL(_si, _channel, -1, _address, _bits, \
+ 		_storagebits, _shift, NULL, IIO_VOLTAGE, 0)
+ 
++#define AD_SD_CHANNEL_GAIN_FILTER(_si, _channel, _address, _bits, \
++	_storagebits, _shift) \
++	__AD_SD_CHANNEL(_si, _channel, -1, _address, _bits, \
++		_storagebits, _shift, NULL, IIO_VOLTAGE, BIT(IIO_CHAN_INFO_RAW))
++
+ #define AD_SD_TEMP_CHANNEL(_si, _address, _bits, _storagebits, _shift) \
+ 	__AD_SD_CHANNEL(_si, 0, -1, _address, _bits, \
+ 		_storagebits, _shift, NULL, IIO_TEMP, \
+-- 
+2.19.1
