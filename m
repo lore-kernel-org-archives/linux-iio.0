@@ -1,110 +1,62 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-eopbgr760050.outbound.protection.outlook.com ([40.107.76.50]:45856
-        "EHLO NAM02-CY1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726683AbeK2XYY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 29 Nov 2018 18:24:24 -0500
-From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To: "giuliano.belinassi@gmail.com" <giuliano.belinassi@gmail.com>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>
-CC: "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] staging: iio: ad7780: Add gain & filter gpio support
-Date: Thu, 29 Nov 2018 12:19:08 +0000
-Message-ID: <a71bb89842260368353ebb66dff66b8f0583755b.camel@analog.com>
-References: <20181121180443.tjgcpu2webrq53rh@smtp.gmail.com>
-         <CAG4RSAHcEYj5bUpxT8apwXZZpWkPowFJ333tZiTHhb9VVn4m7g@mail.gmail.com>
-         <1543316945.22768.35.camel@analog.com>
-In-Reply-To: <1543316945.22768.35.camel@analog.com>
-Content-Type: text/plain; charset="utf-8"
+Received: from mail.kernel.org ([198.145.29.99]:51698 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732849AbeKVGUL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 22 Nov 2018 01:20:11 -0500
+Date: Wed, 21 Nov 2018 19:44:28 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org
+Subject: [PULL] First set of IIO fixes for 4.20
+Message-ID: <20181121194428.4ef99077@archlinux>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-T24gVHVlLCAyMDE4LTExLTI3IGF0IDA2OjExIC0wNTAwLCBQb3BhLCBTdGVmYW4gU2VyYmFuIHdy
-b3RlOg0KPiBPbiBMdSwgMjAxOC0xMS0yNiBhdCAxNzoyNCAtMDIwMCwgR2l1bGlhbm8gQmVsaW5h
-c3NpIHdyb3RlOg0KPiBIaSwgcGxlYXNlIHNlZSBiZWxsb3cNCj4gDQoNCk9uZSBub3RlIGZyb20g
-bWUgaGVyZS4NCg0KPiA+IEhpLCB0aGFuayB5b3UgZm9yIHRoZSByZXZpZXcNCj4gPiANCj4gPiA+
-IA0KPiA+ID4gT24gVGh1LCAyMiBOb3YgMjAxOCAxMTowMTowMCArMDAwMA0KPiA+ID4gIlBvcGEs
-IFN0ZWZhbiBTZXJiYW4iIDxTdGVmYW5TZXJiYW4uUG9wYUBhbmFsb2cuY29tPiB3cm90ZToNCj4g
-PiA+ID4gDQo+ID4gPiA+IEkgdGhpbmsgdGhhdCBpbnN0ZWFkIG9mIHNldHRpbmcgdGhlIGdhaW4g
-ZGlyZWN0bHksIHdlIHNob3VsZCB1c2UNCj4gPiA+ID4gdGhlIElJT19DSEFOX0lORk9fU0NBTEUg
-YXR0cmlidXRlLiBBdCBwYWdlIDEyIG9mIHRoZSBhZDc3ODANCj4gPiA+ID4gZGF0YXNoZWV0DQo+
-ID4gPiA+IHRoZXJlDQo+ID4gPiA+IGlzIGEgZm9ybXVsYSBmcm9tIHdoaWNoIHRoZSBvdXRwdXQg
-Y29kZSBjYW4gYmUgY2FsY3VsYXRlZDoNCj4gPiA+ID4gQ29kZSA9IDJeKE4g4oiSIDEpDQo+ID4g
-PiA+IMOXIFsoQUlOIMOXIEdhaW4gL1ZSRUYpICsgMV0uIFNvLCBieSBzZXR0aW5nIHRoZSBzY2Fs
-ZSBmcm9tIHVzZXINCj4gPiA+ID4gc3BhY2UsDQo+ID4gPiA+IHRoZQ0KPiA+ID4gPiBkcml2ZXIg
-Y2FuIGNhbGN1bGF0ZSB0aGUgY29ycmVjdCBnYWluIGJ5IHVzaW5nIHRoZSBmb3JtdWxhIGFib3Zl
-Lg0KPiA+ID4gPiBBbHNvLCBpdA0KPiA+ID4gPiB3b3VsZCBiZSB1c2VmdWwgdG8gaW50cm9kdWNl
-IHNjYWxlIGF2YWlsYWJsZS4NCj4gPiA+ID4gRnVydGhlcm1vcmUsIHRoZXJlIGlzIGEgbmV3DQo+
-ID4gPiA+IGFkNzEyNCBhZGMgZHJpdmVyIHdoaWNoIGRvZXMgdGhpcyBleGFjdCB0aGluZy4gVGFr
-ZSBhIGxvb2sgaGVyZToNCj4gPiA+ID4gaHR0cA0KPiA+ID4gPiBzOi8vZ2kNCj4gPiA+ID4gdGh1
-Yi5jb20vYW5hbG9nZGV2aWNlc2luYy9saW51eC9ibG9iL21hc3Rlci9kcml2ZXJzL2lpby9hZGMv
-YWQ3MTI0Lg0KPiA+ID4gPiBjIw0KPiA+ID4gPiBMMzM3Lg0KPiA+IA0KPiA+IFdlIGhhdmUgc29t
-ZSBxdWVzdGlvbnMgYWJvdXQgdGhlIGNvZGUgeW91IHByb3ZpZGVkIHRvIHVzOg0KPiA+ICAgMS0p
-IFdoYXQgaXMgZXhhY3RseSB0aGUgaW5wdXRzIGZvciB0aGUgd3JpdGVfcmF3IGZ1bmN0aW9uPw0K
-PiANCj4gSW4geW91ciB3cml0ZV9yYXcoKSBmdW5jdGlvbiB5b3UgbmVlZCB0byBhZGQgSUlPX0NI
-QU5fSU5GT19TQ0FMRSBjYXNlLg0KPiBTZXR0aW5nIHRoZSBzY2FsZSBmcm9tIHVzZXIgc3BhY2Ug
-bG9va3Mgc29tZXRoaW5nIGxpa2UgdGhpczoNCj4gcm9vdDovc3lzL2J1cy9paW8vZGV2aWNlcy9p
-aW86ZGV2aWNlMD4gZWNobyAwLjAwMDI5OCA+IGluX3ZvbHRhZ2Vfc2NhbGUgLg0KPiBGdXJ0aGVy
-bW9yZSwgaW4geW91ciB3cml0ZV9yYXcoKSBmdW5jdGlvbiwgdmFsPTAgYW5kIHZhbDI9Mjk4Lg0K
-PiBLbm93aW5nIHRoYXQgZnVsbF9zY2FsZV92b2x0YWdlID0gVnJlZiAvIChnYWluICogc2NhbGUp
-LCB3ZSBjYW4gY2FsY3VsYXRlDQo+IHRoZSBnYWluID0gVnJlZiAvIChmdWxsX3NjYWxlX3ZvbHRh
-Z2UgKiBzY2FsZSkuIFdlIG9ubHkgc3VwcG9ydCB0d28gZ2FpbnMNCj4gKDEgYW5kIDEyOCksIHNv
-IHdlIG5lZWQgdG8gZGV0ZXJtaW5lIHdoaWNoIG9uZSBmaXRzIGJldHRlciB3aXRoIHRoZQ0KPiBk
-ZXNpcmVkDQo+IHNjYWxlLiBGaW5hbGx5LCBhbGwgd2UgaGF2ZSBsZWZ0IHRvIGRvIGlzIHRvIHNl
-dCB0aGUgZ2Fpbi4gDQo+ICANCj4gPiAgIDItKSBDb3VsZCB5b3UgZ2l2ZSBtb3JlIGRldGFpbHMg
-YWJvdXQgdGhlIG1hdGggYXJvdW5kIGxpbmVzIDM0Ni0zNDg/DQo+ID4gSXMgaXQgY29ycmVjdCB0
-byBhc3N1bWUgdGhhdCB0aGUgbXVsdGlwbGljYXRpb24gYXQgbGluZSAzNDYgd29uJ3QNCj4gPiBv
-dmVyZmxvdz8gKHZyZWYgaXMgYW4gdWludCkNCj4gDQo+IEl0IGlzIGNvcnJlY3QgdGhhdCBWcmVm
-IGlzIGluIG1pY3Jvdm9sdHMsIHNvIGZvciBleGFtcGxlLCBWcmVmIG9mIDIuNVYgID0NCj4gMjUw
-MDAwMDAwMHVWLiBJdCB3b24ndCBvdmVyZmxvdyBzaW5jZSB3ZSB1c2UgdGhlIFZyZWYgYXMgbm9t
-aW5hdG9yLCB3aGlsZQ0KPiBmdWxsX3NjYWxlX3ZvbHRhZ2UgYW5kIHNjYWxlIGFyZSB0aGUgZGVu
-b21pbmF0b3JzLg0KPiANCg0KW1JlZ2FyZGluZyB0aGUgQUQ3MTI0XSBJIGd1ZXNzIEkgc2hvdWxk
-IGJlIG5vdGVkIHRoYXQgdGhlIGNvZGUgY2FuDQpvdmVyZmxvdywgYnV0IGluIHRoaXMgY2FzZSBp
-dCBzaG91bGRuJ3QsIGJlY2F1c2UgKGFjY29yZGluZyB0byB0aGUgZGV2aWNlDQpkYXRhc2hlZXQp
-IHRoZSBtYXhpbXVtIFZSRUYgY2FuIGJlIDM2MDAgbVYuDQpBIHVzZXIgY291bGQgc3BlY2lmeSAo
-aW4gdGhlIGRldmljZXRyZWUpIHNvbWV0aGluZyBsYXJnZXIgdGhhbiA0MzAwIG1WIChhbmQNCnRo
-YXQgd291bGQgb3ZlcmZsb3cpIGJ1dCB0aGF0IHdvdWxkIGFsc28gbWFrZSB0aGUgcmVhZGluZ3Mg
-dXNlbGVzcyBhcyB0aGUNCmV4dGVybmFsIFZSRUYgd291bGQgYmUgaW52YWxpZCA7IGFuZCB0aGVy
-ZSBpcyBhbHNvIHRoZSByaXNrIG9mIGZyeWluZyB0aGUNCmNoaXAgaW4gdGhhdCBjYXNlIFtzb21l
-dGhpbmcgeW91IHJlYWxseSBjYW4ndCBwcm90ZWN0IHRoZSB1c2VyIGFnYWluc3RdLg0KDQpUaGUg
-aW50ZXJuYWwgVlJFRiBob3dldmVyIGlzIDI1MDAgbVYsIHNvIHRoaW5ncyBzaG91bGQgYmUgZmlu
-ZSBmcm9tIHRoYXQNCnBvaW50IG9mIHZpZXcuDQoNClR5cGljYWxseSwgaW4gZGF0YXNoZWV0cyAo
-YXQgbGVhc3QgZnJvbSBBbmFsb2cgRGV2aWNlcykgaXQncyBnb29kIHRvIHRha2UgYQ0KbG9vayBh
-dCB0aGUgc3BlY2lmaWNhdGlvbnMgc2VjdGlvbnMuDQpbRm9yIEFENzEyNF0gWW91IHdpbGwgc2Vl
-IHRoYXQgdGhlIGludGVybmFsIFZSRUYgW3BhZ2UgOF0gaXMgMi41ViAod2l0aA0KYXBwcm94aW1h
-dGlvbiBvZiArLy0wLjIlKSBhbmQgZm9yIGV4dGVybmFsIHJlZmVyZW5jZSBpdCBnb2VzIGFsbCB0
-aGUgd2F5IHVwDQp0byBBVkRELCB3aGljaCBoYXMgdHlwaWNhbCB2YWx1ZXMgb2YgMi45ViAtIDMu
-NlYuDQpTbywgZm9yIHUzMiB0aGlzIGNvZGUgc2hvdWxkIGJlIGZpbmUgYW5kIG5vdCBvdmVyZmxv
-dy4NCg0KT25lIHNtYWxsIHRoaW5nIHRoYXQgY2FuIGJlIGNvbmZ1c2luZyBhYm91dCB0aGF0IGNv
-ZGUgaW4gQUQ3MTI0IGlzIHRoYXQgaXQNCmdldHMgbXVsdGlwbGllZCB3aXRoIDEwMDAwMDBMTCAo
-d2hpY2ggaXMgc2lnbmVkIGxvbmctbG9uZyksIGJ1dCB0aGF0IHNob3VsZA0KYmUgZmluZSwgc2lu
-Y2UgdGhlIG9wZXJhdGlvbiBzaG91bGQgYmUgY29udmVydGVkIHRvIHUzMiAodW5zaWduZWQgaW50
-KQ0KcmVwcmVzZW50YXRpb24gW2J5IGJlaW5nIGFzc2lnbmVkIHRvIHZyZWZdLCB3aGljaCBlbmRz
-IHVwIGJlaW5nIGZpbmUgaW4gdGhlDQplbmQuDQoNCj4gPiANCj4gPiBBbmQgcmVnYXJkaW5nIG91
-ciBjb2RlOg0KPiA+ICAgMS0pIFRoZSB2YWwgaW4gb3VyIHdyaXRlX3JhdyBmdW5jdGlvbiBzaG91
-bGQgYmUsIGluIGNhc2Ugb2YgR0FJTiwgYQ0KPiA+IG51bWJlciB0aGF0IGJlc3QgYXBwcm94aW1h
-dGUgdGhlIGFjdHVhbCBnYWluIHZhbHVlIG9mIDEgb3IgMTI4PyBGb3INCj4gPiBpbnN0YW5jZSwg
-aWYgdGhlIHVzZXIgaW5wdXRzIDEyNiwgd2Ugc2hvdWxkIGRlZmF1bHQgdG8gMTI4Pw0KPiANCj4g
-V2Ugc2hvdWxkIG5vdCBhbGxvdyB0aGUgdGhlIHVzZXIgdG8gaW5wdXQgdGhlIGdhaW4sIGhlIG5l
-ZWRzIHRvIGlucHV0IHRoZQ0KPiBzY2FsZSAoc2VlIHRoZSBtYWlsIGZyb20gSm9uYXRoYW4gYW5k
-IHRoZSBhYm92ZSBleHBsYW5hdGlvbikuIEhvd2V2ZXIsIGlmDQo+IHRoZSBjYWxjdWxhdGVkIGdh
-aW4gaXMgb25lIHRoYXQgaXMgbm90IHN1cHBvcnRlZCwgc3VjaCBhcyAxMjYsIHdlIHdpbGwNCj4g
-c2V0DQo+IHRoZSBjbG9zZXN0IG1hdGNoaW5nIHZhbHVlLCBpbiB0aGlzIGNhc2UgMTI4Lg0KPiAN
-Cj4gPiAgIDItKSBJbiB0aGUgY2FzZSBvZiBGSUxURVIsIGlzIGl0IHRoZSBzYW1lPyBJcyB0aGUg
-dXNlciBzZW5kaW5nIHRoZQ0KPiA+IHZhbHVlIGluIG1IeiAobWlsaWhlcnR6KT8NCj4gDQo+IFll
-cywgaXQgaXMgdGhlIHNhbWUgd2l0aCB0aGUgRklMVEVSLiBZb3UgbmVlZCB0byBhZGQNCj4gYSBJ
-SU9fQ0hBTl9JTkZPX1NBTVBfRlJFUSBjYXNlIGluIHlvdXIgd3JpdGVfcmF3KCkgZnVuY3Rpb24u
-IEZyb20gdXNlcg0KPiBzcGFjZSwgdGhlIGlucHV0IHZhbHVlIHNob3VsZCBiZSBpbiBIeiwgc29t
-ZXRoaW5nIGxpa2UgdGhpczoNCj4gcm9vdDovc3lzL2J1cy9paW8vZGV2aWNlcy9paW86ZGV2aWNl
-MD4gZWNobyAxMCA+DQo+IGluX3ZvbHRhZ2Vfc2FtcGxpbmdfZnJlcXVlbmN5DQo+IA0KPiA+IA0K
-PiA+IFRoYW5rIHlvdQ0K
+The following changes since commit 310c7585e8300ddc46211df0757c11e4299ec482:
+
+  Merge tag 'nfsd-4.20' of git://linux-nfs.org/~bfields/linux (2018-10-30 13:03:29 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.20a
+
+for you to fetch changes up to 0145b50566e7de5637e80ecba96c7f0e6fff1aad:
+
+  iio/hid-sensors: Fix IIO_CHAN_INFO_RAW returning wrong values for signed numbers (2018-11-16 11:42:12 +0000)
+
+----------------------------------------------------------------
+First set of IIO fixes for the 4.20 cycle.
+
+* st_magn
+  - Avoid an ordering issue that lead to large numbers of unhandled
+    interrupts whilst enabling buffered capture.
+* hid-sensors
+  - Fix a long running problem with signed values reading wrong from
+    sysfs on these sensors.   It appears people were only using the
+    buffered interface.  These typically occur in laptops so chances
+    are everyone was using the sensor-proxy which will use the buffered
+    interface by default.
+
+----------------------------------------------------------------
+Hans de Goede (1):
+      iio/hid-sensors: Fix IIO_CHAN_INFO_RAW returning wrong values for signed numbers
+
+Martin Kelly (1):
+      iio:st_magn: Fix enable device after trigger
+
+ drivers/hid/hid-sensor-custom.c                  |  2 +-
+ drivers/hid/hid-sensor-hub.c                     | 13 ++++++++++---
+ drivers/iio/accel/hid-sensor-accel-3d.c          |  5 ++++-
+ drivers/iio/gyro/hid-sensor-gyro-3d.c            |  5 ++++-
+ drivers/iio/humidity/hid-sensor-humidity.c       |  3 ++-
+ drivers/iio/light/hid-sensor-als.c               |  8 +++++---
+ drivers/iio/light/hid-sensor-prox.c              |  8 +++++---
+ drivers/iio/magnetometer/hid-sensor-magn-3d.c    |  8 +++++---
+ drivers/iio/magnetometer/st_magn_buffer.c        | 12 +++---------
+ drivers/iio/orientation/hid-sensor-incl-3d.c     |  8 +++++---
+ drivers/iio/pressure/hid-sensor-press.c          |  8 +++++---
+ drivers/iio/temperature/hid-sensor-temperature.c |  3 ++-
+ drivers/rtc/rtc-hid-sensor-time.c                |  2 +-
+ include/linux/hid-sensor-hub.h                   |  4 +++-
+ 14 files changed, 55 insertions(+), 34 deletions(-)
