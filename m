@@ -1,81 +1,52 @@
-Return-Path: <SRS0=kQCP=OH=linaro.org=lee.jones@kernel.org>
-Date: Wed, 28 Nov 2018 09:02:33 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Philippe Schenker <dev@pschenker.ch>
-Cc: jic23@kernel.org, marcel.ziswiler@toradex.com, stefan@agner.ch,
-	Max Krummenacher <max.krummenacher@toradex.com>,
-	Philippe Schenker <philippe.schenker@toradex.com>,
-	devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Alexandre Torgue <alexandre.torgue@st.com>,
-	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Rob Herring <robh+dt@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v3 3/4] iio: adc: add STMPE ADC devicetree bindings
-Message-ID: <20181128090233.GQ4272@dell>
-References: <20181123142411.8921-1-dev@pschenker.ch>
- <20181123142411.8921-3-dev@pschenker.ch>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:38660 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727607AbeKXKiV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 24 Nov 2018 05:38:21 -0500
+Date: Fri, 23 Nov 2018 21:51:59 -0200
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org
+Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
+Subject: [PATCH] staging: iio: ad5933: finalized device-tree support
+Message-ID: <20181123235159.hh43xnvvwsil4on2@smtp.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <20181123142411.8921-3-dev@pschenker.ch>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Fri, 23 Nov 2018, Philippe Schenker wrote:
+Added a of_device_id struct variable and subsequent call to
+MODULE_DEVICE_TABLE macro to complete device-tree support for this
+driver.
 
-> From: Stefan Agner <stefan@agner.ch>
-> 
-> This adds the devicetree bindings for the STMPE ADC.
-> 
-> Signed-off-by: Stefan Agner <stefan@agner.ch>
-> Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
-> Signed-off-by: Philippe Schenker <philippe.schenker@toradex.com>
-> ---
-> 
-> Changes in v3:
->  - Reformatted documentation for touchscreen to use tabs and have a better
->    overview of the settings.
->  - Added note which adc-settings will take precedence.
->  - changed typo in sample-time setting from 144 clocks to 124 clocks, as stated
->    in the datasheet.
-> 
-> Changes in v2:
->  - Moved the bindings for ADC to the overlying mfd.
->  - Reformatted for better readability
-> 
->  .../devicetree/bindings/iio/adc/stmpe-adc.txt | 21 +++++++
->  .../bindings/input/touchscreen/stmpe.txt      | 60 ++++++++++++-------
->  .../devicetree/bindings/mfd/stmpe.txt         | 28 ++++++---
->  3 files changed, 80 insertions(+), 29 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/stmpe-adc.txt
-[...]
+Signed-off-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+---
+ drivers/staging/iio/impedance-analyzer/ad5933.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-> diff --git a/Documentation/devicetree/bindings/mfd/stmpe.txt b/Documentation/devicetree/bindings/mfd/stmpe.txt
-> index c797c05cd3c2..d4408a417193 100644
-> --- a/Documentation/devicetree/bindings/mfd/stmpe.txt
-> +++ b/Documentation/devicetree/bindings/mfd/stmpe.txt
-> @@ -4,15 +4,29 @@ STMPE is an MFD device which may expose the following inbuilt devices: gpio,
->  keypad, touchscreen, adc, pwm, rotator.
->  
->  Required properties:
-> - - compatible                   : "st,stmpe[610|801|811|1600|1601|2401|2403]"
-> - - reg                          : I2C/SPI address of the device
-> + - compatible			: "st,stmpe[610|801|811|1600|1601|2401|2403]"
-> + - reg				: I2C/SPI address of the device
-
-Formatting changes should be completed in a separate patch.
-
-Here they only serve to obscure the real changes you have made.
-
-Please split the formatting changes out and re-submit.
-
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index edb8b540bbf1..19e8b6d2865c 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -771,9 +771,18 @@ static const struct i2c_device_id ad5933_id[] = {
+ 
+ MODULE_DEVICE_TABLE(i2c, ad5933_id);
+ 
++static const struct of_device_id ad5933_of_match[] = {
++	{ .compatible = "analog-devices,ad5933" },
++	{ .compatible = "analog-devices,ad5934" },
++	{ },
++};
++
++MODULE_DEVICE_TABLE(of, ad5933_of_match);
++
+ static struct i2c_driver ad5933_driver = {
+ 	.driver = {
+ 		.name = "ad5933",
++		.of_match_table = ad5933_of_match,
+ 	},
+ 	.probe = ad5933_probe,
+ 	.remove = ad5933_remove,
 -- 
-Lee Jones [李琼斯]
-Linaro Services Technical Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.17.1
