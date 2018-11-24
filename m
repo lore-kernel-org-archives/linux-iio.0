@@ -1,56 +1,61 @@
-Return-Path: <SRS0=qhg/=OD=poczta.fm=sst@kernel.org>
-Date: Sat, 24 Nov 2018 09:21:47 +0100
-From: Slawomir Stepien <sst@poczta.fm>
-To: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-	knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
-Subject: Re: [PATCH] staging: iio: ad5933: finalized device-tree support
-Message-ID: <20181124082147.GA8213@x220.localdomain>
-References: <20181123235159.hh43xnvvwsil4on2@smtp.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20181123235159.hh43xnvvwsil4on2@smtp.gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:36955 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728117AbeKXLJs (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 24 Nov 2018 06:09:48 -0500
+Received: by mail-qt1-f195.google.com with SMTP id z16so12044238qtq.4
+        for <linux-iio@vger.kernel.org>; Fri, 23 Nov 2018 16:23:27 -0800 (PST)
+From: Matheus Tavares <matheus.bernardino@usp.br>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>,
+        kernel-usp@googlegroups.com, victorcolombo@gmail.com
+Subject: [PATCH v3 0/7] staging:iio:ad2s90: Add dt support and move out of staging
+Date: Fri, 23 Nov 2018 22:23:05 -0200
+Message-Id: <20181124002312.6923-1-matheus.bernardino@usp.br>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On lis 23, 2018 21:51, Marcelo Schmitt wrote:
-> Added a of_device_id struct variable and subsequent call to
-> MODULE_DEVICE_TABLE macro to complete device-tree support for this
-> driver.
-> 
-> Signed-off-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-> ---
->  drivers/staging/iio/impedance-analyzer/ad5933.c | 9 +++++++++
->  1 file changed, 9 insertions(+)
-> 
-> diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> index edb8b540bbf1..19e8b6d2865c 100644
-> --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-> +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> @@ -771,9 +771,18 @@ static const struct i2c_device_id ad5933_id[] = {
->  
->  MODULE_DEVICE_TABLE(i2c, ad5933_id);
->  
-> +static const struct of_device_id ad5933_of_match[] = {
-> +	{ .compatible = "analog-devices,ad5933" },
-> +	{ .compatible = "analog-devices,ad5934" },
+This series adds device tree support to ad2s90, adds the respective dt-binding
+documentation, solves all remaining codestyle problems for ad2s90 and move it
+out of staging.
 
-Why "analog-devices", rather than "adi"? My understanding is that analog devices
-have "adi" as a manufacture part in compatible.
+This patch set completes all the remaining itens listed to be done before moving
+the driver out of staging, enumerated in this mail thread:
+https://marc.info/?l=linux-iio&m=154028966111330&w=2.
 
-> +	{ },
-> +};
-> +
-> +MODULE_DEVICE_TABLE(of, ad5933_of_match);
-> +
->  static struct i2c_driver ad5933_driver = {
->  	.driver = {
->  		.name = "ad5933",
-> +		.of_match_table = ad5933_of_match,
->  	},
->  	.probe = ad5933_probe,
->  	.remove = ad5933_remove,
+Alexandru Ardelean (1):
+  staging:iio:ad2s90: Add max frequency check at probe
+
+Matheus Tavares (5):
+  staging:iio:ad2s90: Add device tree support
+  staging:iio:ad2s90: Remove spi setup that should be done via dt
+  dt-bindings:iio:resolver: Add docs for ad2s90
+  staging:iio:ad2s90: Replace license text w/ SPDX identifier
+  staging:iio:ad2s90: Move out of staging
+
+Victor Colombo (1):
+  staging:iio:ad2s90: Add comment to device state mutex
+
+ .../bindings/iio/resolver/ad2s90.txt          |  31 +++++
+ drivers/iio/resolver/Kconfig                  |  10 ++
+ drivers/iio/resolver/Makefile                 |   1 +
+ drivers/iio/resolver/ad2s90.c                 | 131 ++++++++++++++++++
+ drivers/staging/iio/resolver/Kconfig          |  10 --
+ drivers/staging/iio/resolver/Makefile         |   1 -
+ drivers/staging/iio/resolver/ad2s90.c         | 127 -----------------
+ 7 files changed, 173 insertions(+), 138 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/resolver/ad2s90.txt
+ create mode 100644 drivers/iio/resolver/ad2s90.c
+ delete mode 100644 drivers/staging/iio/resolver/ad2s90.c
 
 -- 
-Slawomir Stepien
+2.18.0
