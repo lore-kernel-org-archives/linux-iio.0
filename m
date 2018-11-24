@@ -1,176 +1,427 @@
-Return-Path: <tduszyns@gmail.com>
-Date: Sun, 25 Nov 2018 16:35:34 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:40175 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726353AbeKYJEF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 25 Nov 2018 04:04:05 -0500
 From: Tomasz Duszynski <tduszyns@gmail.com>
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc: Matt Ranostay <matt.ranostay@konsulko.com>,
-	Tomasz Duszynski <tduszyns@gmail.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 1/3] iio: add IIO_MASSCONCENTRATION channel type
-Message-ID: <20181125153533.GB5053@arch>
+To: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Tomasz Duszynski <tduszyns@gmail.com>
+Subject: [PATCH 2/3] iio: chemical: add support for Sensirion SPS30 sensor
+Date: Sat, 24 Nov 2018 23:14:14 +0100
+Message-Id: <20181124221415.10081-3-tduszyns@gmail.com>
+In-Reply-To: <20181124221415.10081-1-tduszyns@gmail.com>
 References: <20181124221415.10081-1-tduszyns@gmail.com>
- <20181124221415.10081-2-tduszyns@gmail.com>
- <CAJCx=g=H6Zp4AtWPpC-KdZmyOxTymtdgf+Hx8VvThLFg0bjYVQ@mail.gmail.com>
- <20181125140316.59d9872b@archlinux>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <20181125140316.59d9872b@archlinux>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sun, Nov 25, 2018 at 02:03:16PM +0000, Jonathan Cameron wrote:
-> On Sun, 25 Nov 2018 05:51:32 -0800
-> Matt Ranostay <matt.ranostay@konsulko.com> wrote:
->
-> > On Sat, Nov 24, 2018 at 2:14 PM Tomasz Duszynski <tduszyns@gmail.com> wrote:
-> > >
-> > > Measuring particulate matter in ug / m3 (micro-grams per cubic meter)
-> > > is de facto standard. Existing air quality sensors usually follow
-> > > this convention and are capable of returning measurements using
-> > > this unit.
-> > >
-> > > IIO currently does not offer suitable channel type for this
-> > > type of measurements hence this patch adds this.
-> > >
-> > > In addition, two modifiers are introduced used for distinguishing
-> > > between coarse (PM10) and fine particles (PM2p5) measurements, i.e
-> > > IIO_MOD_PM10 and IIO_MOD_PM2p5.
-> > >
-> > > Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
-> > > ---
-> > >  Documentation/ABI/testing/sysfs-bus-iio | 11 ++++++++++-
-> > >  drivers/iio/industrialio-core.c         |  3 +++
-> > >  include/uapi/linux/iio/types.h          |  3 +++
-> > >  tools/iio/iio_event_monitor.c           |  6 ++++++
-> > >  4 files changed, 22 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> > > index 8127a08e366d..ce0ed140660d 100644
-> > > --- a/Documentation/ABI/testing/sysfs-bus-iio
-> > > +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> > > @@ -1684,4 +1684,13 @@ KernelVersion:   4.18
-> > >  Contact:       linux-iio@vger.kernel.org
-> > >  Description:
-> > >                 Raw (unscaled) phase difference reading from channel Y
-> > > -               that can be processed to radians.
-> > > \ No newline at end of file
-> > > +               that can be processed to radians.
-> > > +
-> > > +What:          /sys/bus/iio/devices/iio:deviceX/in_massconcentration_pm2p5_input
-> > > +What:          /sys/bus/iio/devices/iio:deviceX/in_massconcentrationY_pm2p5_input
-> > > +What:          /sys/bus/iio/devices/iio:deviceX/in_massconcentration_pm10_input
-> > > +What:          /sys/bus/iio/devices/iio:deviceX/in_massconcentrationY_pm10_input
-> > > +KernelVersion: 4.21
-> > > +Contact:       linux-iio@vger.kernel.org
-> > > +Description:
-> > > +               Mass concentration reading of particulate matter in ug / m3.
-> > > diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> > > index a062cfddc5af..2a9ef600c1fb 100644
-> > > --- a/drivers/iio/industrialio-core.c
-> > > +++ b/drivers/iio/industrialio-core.c
-> > > @@ -87,6 +87,7 @@ static const char * const iio_chan_type_name_spec[] = {
-> > >         [IIO_GRAVITY]  = "gravity",
-> > >         [IIO_POSITIONRELATIVE]  = "positionrelative",
-> > >         [IIO_PHASE] = "phase",
-> > > +       [IIO_MASSCONCENTRATION] = "massconcentration",
-> > >  };
-> > >
-> > >  static const char * const iio_modifier_names[] = {
-> > > @@ -127,6 +128,8 @@ static const char * const iio_modifier_names[] = {
-> > >         [IIO_MOD_Q] = "q",
-> > >         [IIO_MOD_CO2] = "co2",
-> > >         [IIO_MOD_VOC] = "voc",
-> > > +       [IIO_MOD_PM2p5] = "pm2p5",
-> > > +       [IIO_MOD_PM10] = "pm10",
-> > >  };
-> > >
-> > >  /* relies on pairs of these shared then separate */
-> > > diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
-> > > index 92baabc103ac..465044b42af5 100644
-> > > --- a/include/uapi/linux/iio/types.h
-> > > +++ b/include/uapi/linux/iio/types.h
-> > > @@ -46,6 +46,7 @@ enum iio_chan_type {
-> > >         IIO_GRAVITY,
-> > >         IIO_POSITIONRELATIVE,
-> > >         IIO_PHASE,
-> > > +       IIO_MASSCONCENTRATION,
-> >
-> > So I'm guessing IIO_CONCENTRATION can't be scaled to the micro-grams
-> > per cubic meter?
->
-> Currently concentration is defined as a percentage reading of a substance
-> (which does make me wonder if it is meant to be percentage of the volume or
-> percentage of the mass?)  Either way, if can't convert to a density measurement
-> as it's a unit free ratio (I think).
->
+Add support for Sensirion SPS30 particulate matter sensor.
 
-And this is the main reason behind introducing a new channel type.
+Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
+---
+ drivers/iio/chemical/Kconfig  |  11 ++
+ drivers/iio/chemical/Makefile |   1 +
+ drivers/iio/chemical/sps30.c  | 359 ++++++++++++++++++++++++++++++++++
+ 3 files changed, 371 insertions(+)
+ create mode 100644 drivers/iio/chemical/sps30.c
 
-> >
-> > >  };
-> > >
-> > >  enum iio_modifier {
-> > > @@ -87,6 +88,8 @@ enum iio_modifier {
-> > >         IIO_MOD_VOC,
-> > >         IIO_MOD_LIGHT_UV,
-> > >         IIO_MOD_LIGHT_DUV,
-> > > +       IIO_MOD_PM2p5,
-> >
-> > I know this is unit of measure but the lowercase p in IIO_MOD_PM2p5 is
-> > a bit non-standard for iio defines/enum.
-> It is a bit odd and will get us scripted reports so maybe best to
-> just go upper case and not worry about it.
->
-
-Initially I came up with IIO_MOD_PM2_5 but eventually replaced
-underscore with 'p' meaning 'decimal point'. Anyway, I am okay with the
-suggested change.
-
-> Jonathan
-> >
-> > - Matt
-> >
-> > > +       IIO_MOD_PM10,
-> > >  };
-> > >
-> > >  enum iio_event_type {
-> > > diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
-> > > index ac2de6b7e89f..f0fcfeddba2b 100644
-> > > --- a/tools/iio/iio_event_monitor.c
-> > > +++ b/tools/iio/iio_event_monitor.c
-> > > @@ -60,6 +60,7 @@ static const char * const iio_chan_type_name_spec[] = {
-> > >         [IIO_GRAVITY] = "gravity",
-> > >         [IIO_POSITIONRELATIVE] = "positionrelative",
-> > >         [IIO_PHASE] = "phase",
-> > > +       [IIO_MASSCONCENTRATION] = "massconcentration",
-> > >  };
-> > >
-> > >  static const char * const iio_ev_type_text[] = {
-> > > @@ -115,6 +116,8 @@ static const char * const iio_modifier_names[] = {
-> > >         [IIO_MOD_Q] = "q",
-> > >         [IIO_MOD_CO2] = "co2",
-> > >         [IIO_MOD_VOC] = "voc",
-> > > +       [IIO_MOD_PM2p5] = "pm2p5",
-> > > +       [IIO_MOD_PM10] = "pm10",
-> > >  };
-> > >
-> > >  static bool event_is_known(struct iio_event_data *event)
-> > > @@ -156,6 +159,7 @@ static bool event_is_known(struct iio_event_data *event)
-> > >         case IIO_GRAVITY:
-> > >         case IIO_POSITIONRELATIVE:
-> > >         case IIO_PHASE:
-> > > +       case IIO_MASSCONCENTRATION:
-> > >                 break;
-> > >         default:
-> > >                 return false;
-> > > @@ -200,6 +204,8 @@ static bool event_is_known(struct iio_event_data *event)
-> > >         case IIO_MOD_Q:
-> > >         case IIO_MOD_CO2:
-> > >         case IIO_MOD_VOC:
-> > > +       case IIO_MOD_PM2p5:
-> > > +       case IIO_MOD_PM10:
-> > >                 break;
-> > >         default:
-> > >                 return false;
-> > > --
-> > > 2.19.2
-> > >
->
+diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
+index b8e005be4f87..40057ecf8130 100644
+--- a/drivers/iio/chemical/Kconfig
++++ b/drivers/iio/chemical/Kconfig
+@@ -61,6 +61,17 @@ config IAQCORE
+ 	  iAQ-Core Continuous/Pulsed VOC (Volatile Organic Compounds)
+ 	  sensors
+ 
++config SPS30
++	tristate "SPS30 Particulate Matter sensor"
++	depends on I2C
++	select CRC8
++	help
++	  Say Y here to build support for the Sensirion SPS30 Particulate
++	  Matter sensor.
++
++	  To compile this driver as a module, choose M here: the module will
++	  be called sps30.
++
+ config VZ89X
+ 	tristate "SGX Sensortech MiCS VZ89X VOC sensor"
+ 	depends on I2C
+diff --git a/drivers/iio/chemical/Makefile b/drivers/iio/chemical/Makefile
+index 2f4c4ba4d781..9f42f4252151 100644
+--- a/drivers/iio/chemical/Makefile
++++ b/drivers/iio/chemical/Makefile
+@@ -9,4 +9,5 @@ obj-$(CONFIG_BME680_I2C) += bme680_i2c.o
+ obj-$(CONFIG_BME680_SPI) += bme680_spi.o
+ obj-$(CONFIG_CCS811)		+= ccs811.o
+ obj-$(CONFIG_IAQCORE)		+= ams-iaq-core.o
++obj-$(CONFIG_SPS30) += sps30.o
+ obj-$(CONFIG_VZ89X)		+= vz89x.o
+diff --git a/drivers/iio/chemical/sps30.c b/drivers/iio/chemical/sps30.c
+new file mode 100644
+index 000000000000..bf802621ae7f
+--- /dev/null
++++ b/drivers/iio/chemical/sps30.c
+@@ -0,0 +1,359 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Sensirion SPS30 Particulate Matter sensor driver
++ *
++ * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
++ *
++ * I2C slave address: 0x69
++ *
++ * TODO:
++ *  - support for turning on fan cleaning
++ *  - support for reading/setting auto cleaning interval
++ */
++
++#define pr_fmt(fmt) "sps30: " fmt
++
++#include <linux/crc8.h>
++#include <linux/delay.h>
++#include <linux/i2c.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
++#include <linux/module.h>
++
++#define SPS30_CRC8_POLYNOMIAL 0x31
++
++/* SPS30 commands */
++#define SPS30_START_MEAS 0x0010
++#define SPS30_STOP_MEAS 0x0104
++#define SPS30_RESET 0xd304
++#define SPS30_READ_DATA_READY_FLAG 0x0202
++#define SPS30_READ_DATA 0x0300
++#define SPS30_READ_SERIAL 0xD033
++
++#define SPS30_CHAN(_index, _mod) { \
++	.type = IIO_MASSCONCENTRATION, \
++	.modified = 1, \
++	.channel2 = IIO_MOD_ ## _mod, \
++	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED), \
++	.scan_index = _index, \
++	.scan_type = { \
++		.sign = 'u', \
++		.realbits = 12, \
++		.storagebits = 32, \
++		.endianness = IIO_CPU, \
++	}, \
++}
++
++enum {
++	PM1p0, /* just a placeholder */
++	PM2p5,
++	PM4p0, /* just a placeholder */
++	PM10,
++};
++
++struct sps30_state {
++	struct i2c_client *client;
++	/* guards against concurrent access to sensor registers */
++	struct mutex lock;
++};
++
++DECLARE_CRC8_TABLE(sps30_crc8_table);
++
++static int sps30_write_then_read(struct sps30_state *state, u8 *buf,
++				 int buf_size, u8 *data, int data_size)
++{
++	/* every two received data bytes are checksummed */
++	u8 tmp[data_size + data_size / 2];
++	int ret, i;
++
++	/*
++	 * Sensor does not support repeated start so instead of
++	 * sending two i2c messages in a row we just send one by one.
++	 */
++	ret = i2c_master_send(state->client, buf, buf_size);
++	if (ret != buf_size)
++		return ret < 0 ? ret : -EIO;
++
++	if (!data)
++		return 0;
++
++	ret = i2c_master_recv(state->client, tmp, sizeof(tmp));
++	if (ret != sizeof(tmp))
++		return ret < 0 ? ret : -EIO;
++
++	for (i = 0; i < sizeof(tmp); i += 3) {
++		u8 crc = crc8(sps30_crc8_table, &tmp[i], 2, CRC8_INIT_VALUE);
++
++		if (crc != tmp[i + 2]) {
++			dev_err(&state->client->dev,
++				"data integrity check failed\n");
++			return -EIO;
++		}
++
++		*data++ = tmp[i];
++		*data++ = tmp[i + 1];
++	}
++
++	return 0;
++}
++
++static int sps30_do_cmd(struct sps30_state *state, u16 cmd, u8 *data, int size)
++{
++	/* depending on the command up to 3 bytes may be needed for argument */
++	u8 buf[sizeof(cmd) + 3] = { cmd >> 8, cmd };
++
++	switch (cmd) {
++	case SPS30_START_MEAS:
++		buf[2] = 0x03;
++		buf[3] = 0x00;
++		buf[4] = 0xac; /* precomputed crc */
++		return sps30_write_then_read(state, buf, 5, NULL, 0);
++	case SPS30_STOP_MEAS:
++	case SPS30_RESET:
++		return sps30_write_then_read(state, buf, 2, NULL, 0);
++	case SPS30_READ_DATA_READY_FLAG:
++	case SPS30_READ_DATA:
++	case SPS30_READ_SERIAL:
++		return sps30_write_then_read(state, buf, 2, data, size);
++	default:
++		return -EINVAL;
++	};
++}
++
++static int sps30_ieee754_to_int(const u8 *data)
++{
++	u32 val = ((u32)data[0] << 24) | ((u32)data[1] << 16) |
++		  ((u32)data[2] << 8) | (u32)data[3],
++	    mantissa = (val << 9) >> 9;
++	int exp = (val >> 23) - 127;
++
++	if (!exp && !mantissa)
++		return 0;
++
++	if (exp < 0)
++		return 0;
++
++	return (1 << exp) + (mantissa >> (23 - exp));
++}
++
++static int sps30_do_meas(struct sps30_state *state, int *pm2p5, int *pm10)
++{
++	/*
++	 * Internally sensor stores measurements in a following manner:
++	 *
++	 * PM1p0: upper two bytes, crc8, lower two bytes, crc8
++	 * PM2p5: upper two bytes, crc8, lower two bytes, crc8
++	 * PM4p0: upper two bytes, crc8, lower two bytes, crc8
++	 * PM10:  upper two bytes, crc8, lower two bytes, crc8
++	 *
++	 * What follows next are number concentration measurements and
++	 * typical particle size measurement.
++	 *
++	 * Once data is read from sensor crc bytes are stripped off
++	 * hence we need 16 bytes of buffer space.
++	 */
++	int ret, tries = 5;
++	u8 buf[16];
++
++	while (tries--) {
++		ret = sps30_do_cmd(state, SPS30_READ_DATA_READY_FLAG, buf, 2);
++		if (ret)
++			return -EIO;
++
++		/* new measurements ready to be read */
++		if (buf[1] == 1)
++			break;
++
++		usleep_range(300000, 400000);
++	}
++
++	if (!tries)
++		return -ETIMEDOUT;
++
++	ret = sps30_do_cmd(state, SPS30_READ_DATA, buf, sizeof(buf));
++	if (ret)
++		return ret;
++
++	/*
++	 * All measurements come in IEEE754 single precision floating point
++	 * format but sensor itself is not precise enough (-+ 10% error)
++	 * to take full advantage of it. Hence converting result to int
++	 * to keep things simple.
++	 */
++	*pm2p5 = sps30_ieee754_to_int(&buf[PM2p5 * 4]);
++	*pm10 = sps30_ieee754_to_int(&buf[PM10 * 4]);
++
++	return 0;
++}
++
++static irqreturn_t sps30_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct sps30_state *state = iio_priv(indio_dev);
++	u32 buf[4]; /* PM2p5, PM10, timestamp */
++	int ret;
++
++	mutex_lock(&state->lock);
++	ret = sps30_do_meas(state, &buf[0], &buf[1]);
++	mutex_unlock(&state->lock);
++	if (ret < 0)
++		goto err;
++
++	iio_push_to_buffers_with_timestamp(indio_dev, buf,
++					   iio_get_time_ns(indio_dev));
++err:
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
++static int sps30_read_raw(struct iio_dev *indio_dev,
++			  struct iio_chan_spec const *chan,
++			  int *val, int *val2, long mask)
++{
++	struct sps30_state *state = iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_PROCESSED:
++		switch (chan->type) {
++		case IIO_MASSCONCENTRATION:
++			mutex_lock(&state->lock);
++			switch (chan->channel2) {
++			case IIO_MOD_PM2p5:
++				ret = sps30_do_meas(state, val, val2);
++				break;
++			case IIO_MOD_PM10:
++				ret = sps30_do_meas(state, val2, val);
++				break;
++			default:
++				break;
++			}
++			mutex_unlock(&state->lock);
++			if (ret)
++				return ret;
++
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
++		break;
++	default:
++		return -EINVAL;
++	}
++}
++
++static const struct iio_info sps30_info = {
++	.read_raw = sps30_read_raw,
++};
++
++static const struct iio_chan_spec sps30_channels[] = {
++	SPS30_CHAN(0, PM2p5),
++	SPS30_CHAN(1, PM10),
++	IIO_CHAN_SOFT_TIMESTAMP(2),
++};
++
++static const unsigned long sps30_scan_masks[] = { 0x03, 0x00 };
++
++static int sps30_probe(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev;
++	struct sps30_state *state;
++	u8 buf[32] = { };
++	int ret;
++
++	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C))
++		return -EOPNOTSUPP;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*state));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	state = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++	state->client = client;
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->info = &sps30_info;
++	indio_dev->name = client->name;
++	indio_dev->channels = sps30_channels;
++	indio_dev->num_channels = ARRAY_SIZE(sps30_channels);
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->available_scan_masks = sps30_scan_masks;
++
++	mutex_init(&state->lock);
++	crc8_populate_msb(sps30_crc8_table, SPS30_CRC8_POLYNOMIAL);
++
++	/*
++	 * Power-on-reset causes sensor to produce some glitch on i2c bus
++	 * and some controllers end up in error state. Recover simply
++	 * by placing something on the bus.
++	 */
++	ret = sps30_do_cmd(state, SPS30_RESET, NULL, 0);
++	if (ret) {
++		dev_err(&client->dev, "failed to reset device\n");
++		return ret;
++	}
++	usleep_range(2500000, 3500000);
++	sps30_do_cmd(state, SPS30_STOP_MEAS, NULL, 0);
++
++	ret = sps30_do_cmd(state, SPS30_READ_SERIAL, buf, sizeof(buf));
++	if (ret) {
++		dev_err(&client->dev, "failed to read serial number\n");
++		return ret;
++	}
++	dev_info(&client->dev, "serial number: %s\n", buf);
++
++	ret = sps30_do_cmd(state, SPS30_START_MEAS, NULL, 0);
++	if (ret) {
++		dev_err(&client->dev, "failed to start measurement\n");
++		return ret;
++	}
++
++	ret = devm_iio_triggered_buffer_setup(&client->dev, indio_dev, NULL,
++					      sps30_trigger_handler, NULL);
++	if (ret)
++		return ret;
++
++	return devm_iio_device_register(&client->dev, indio_dev);
++}
++
++static int sps30_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct sps30_state *state = iio_priv(indio_dev);
++
++	sps30_do_cmd(state, SPS30_STOP_MEAS, NULL, 0);
++
++	return 0;
++}
++
++static const struct i2c_device_id sps30_id[] = {
++	{ "sps30" },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, sps30_id);
++
++static const struct of_device_id sps30_of_match[] = {
++	{ .compatible = "sensirion,sps30" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, sps30_of_match);
++
++static struct i2c_driver sps30_driver = {
++	.driver = {
++		.name = "sps30",
++		.of_match_table = sps30_of_match,
++	},
++	.id_table = sps30_id,
++	.probe_new = sps30_probe,
++	.remove = sps30_remove,
++};
++module_i2c_driver(sps30_driver);
++
++MODULE_AUTHOR("Tomasz Duszynski <tduszyns@gmail.com>");
++MODULE_DESCRIPTION("Sensirion SPS30 particulate matter sensor driver");
++MODULE_LICENSE("GPL v2");
+-- 
+2.19.2
