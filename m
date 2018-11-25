@@ -1,37 +1,126 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ed1-f43.google.com ([209.85.208.43]:32877 "EHLO
-        mail-ed1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726795AbeKCVYA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Nov 2018 17:24:00 -0400
-Received: by mail-ed1-f43.google.com with SMTP id d15-v6so815161edr.0
-        for <linux-iio@vger.kernel.org>; Sat, 03 Nov 2018 05:12:51 -0700 (PDT)
-Subject: Re: [PATCH v4 1/2] iio:dac:ti-dac7311 Add driver for Texas Instrument
- DAC7311
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Received: from mail.kernel.org ([198.145.29.99]:42636 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726050AbeKZB0l (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 25 Nov 2018 20:26:41 -0500
+Date: Sun, 25 Nov 2018 14:35:25 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Matt Ranostay <matt.ranostay@konsulko.com>
 Cc: linux-iio@vger.kernel.org
-References: <20181028162402.16182-1-charles-antoine.couret@essensium.com>
- <20181103105707.1b8eee27@archlinux>
-From: Couret Charles-Antoine <charles-antoine.couret@essensium.com>
-Message-ID: <e1a6ed49-1625-1d5d-518d-5f2031abace1@essensium.com>
-Date: Sat, 3 Nov 2018 13:12:48 +0100
+Subject: Re: [PATCH v2] iio: potentiometer: tpl0102: add IIO_AVAIL_RANGE
+ support
+Message-ID: <20181125143525.42287818@archlinux>
+In-Reply-To: <20181028204354.9561-1-matt.ranostay@konsulko.com>
+References: <20181028204354.9561-1-matt.ranostay@konsulko.com>
 MIME-Version: 1.0
-In-Reply-To: <20181103105707.1b8eee27@archlinux>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Le 03/11/2018 à 11:57, Jonathan Cameron a écrit :
-> Hi Charles-Antoine
-Hi,
-> A quick initial process comment. Please remember to detail changes
-> from previous versions below the ---.  Some of us reviewers have the memory
-> of a goldfish and hence have no idea what we commented on the previous
-> time ;)
+On Sun, 28 Oct 2018 13:43:54 -0700
+Matt Ranostay <matt.ranostay@konsulko.com> wrote:
 
-Sorry for this oversight. Maybe I have also the memory of a goldfish. ;)
+> Report the step range of the respective potentiometers that are
+> possible to userspace.
+> 
+> Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
+Sorry, I lost this one completely it seems.
 
-Thanks for your reviews!
-
-Regards,
-
-Charles-Antoine Couret
+I had actually applied it but forgot to say so for some reason.
+Jonathan
+> ---
+> 
+> Changes from v1:
+> * Made commit message more clear
+> * Add missing .info_mask_separate_available channel defines
+> 
+>  drivers/iio/potentiometer/tpl0102.c | 34 +++++++++++++++++++++++------
+>  1 file changed, 27 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/iio/potentiometer/tpl0102.c b/drivers/iio/potentiometer/tpl0102.c
+> index 8e8adabe672b..a0a07e47f13f 100644
+> --- a/drivers/iio/potentiometer/tpl0102.c
+> +++ b/drivers/iio/potentiometer/tpl0102.c
+> @@ -15,7 +15,7 @@
+>  
+>  struct tpl0102_cfg {
+>  	int wipers;
+> -	int max_pos;
+> +	int avail[3];
+>  	int kohms;
+>  };
+>  
+> @@ -28,11 +28,11 @@ enum tpl0102_type {
+>  
+>  static const struct tpl0102_cfg tpl0102_cfg[] = {
+>  	/* on-semiconductor parts */
+> -	[CAT5140_503] = { .wipers = 1, .max_pos = 256, .kohms = 50, },
+> -	[CAT5140_104] = { .wipers = 1, .max_pos = 256, .kohms = 100, },
+> +	[CAT5140_503] = { .wipers = 1, .avail = { 0, 1, 255 }, .kohms = 50, },
+> +	[CAT5140_104] = { .wipers = 1, .avail = { 0, 1, 255 }, .kohms = 100, },
+>  	/* ti parts */
+> -	[TPL0102_104] = { .wipers = 2, .max_pos = 256, .kohms = 100 },
+> -	[TPL0401_103] = { .wipers = 1, .max_pos = 128, .kohms = 10, },
+> +	[TPL0102_104] = { .wipers = 2, .avail = { 0, 1, 255 }, .kohms = 100 },
+> +	[TPL0401_103] = { .wipers = 1, .avail = { 0, 1, 127 }, .kohms = 10, },
+>  };
+>  
+>  struct tpl0102_data {
+> @@ -52,6 +52,7 @@ static const struct regmap_config tpl0102_regmap_config = {
+>  	.channel = (ch),					\
+>  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+>  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+> +	.info_mask_separate_available = BIT(IIO_CHAN_INFO_RAW),	\
+>  }
+>  
+>  static const struct iio_chan_spec tpl0102_channels[] = {
+> @@ -73,13 +74,31 @@ static int tpl0102_read_raw(struct iio_dev *indio_dev,
+>  	}
+>  	case IIO_CHAN_INFO_SCALE:
+>  		*val = 1000 * data->cfg->kohms;
+> -		*val2 = data->cfg->max_pos;
+> +		*val2 = data->cfg->avail[2] + 1;
+>  		return IIO_VAL_FRACTIONAL;
+>  	}
+>  
+>  	return -EINVAL;
+>  }
+>  
+> +static int tpl0102_read_avail(struct iio_dev *indio_dev,
+> +			      struct iio_chan_spec const *chan,
+> +			      const int **vals, int *type, int *length,
+> +			      long mask)
+> +{
+> +	struct tpl0102_data *data = iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		*length = ARRAY_SIZE(data->cfg->avail);
+> +		*vals = data->cfg->avail;
+> +		*type = IIO_VAL_INT;
+> +		return IIO_AVAIL_RANGE;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+>  static int tpl0102_write_raw(struct iio_dev *indio_dev,
+>  			     struct iio_chan_spec const *chan,
+>  			     int val, int val2, long mask)
+> @@ -89,7 +108,7 @@ static int tpl0102_write_raw(struct iio_dev *indio_dev,
+>  	if (mask != IIO_CHAN_INFO_RAW)
+>  		return -EINVAL;
+>  
+> -	if (val >= data->cfg->max_pos || val < 0)
+> +	if (val > data->cfg->avail[2] || val < 0)
+>  		return -EINVAL;
+>  
+>  	return regmap_write(data->regmap, chan->channel, val);
+> @@ -97,6 +116,7 @@ static int tpl0102_write_raw(struct iio_dev *indio_dev,
+>  
+>  static const struct iio_info tpl0102_info = {
+>  	.read_raw = tpl0102_read_raw,
+> +	.read_avail = tpl0102_read_avail,
+>  	.write_raw = tpl0102_write_raw,
+>  };
+>  
