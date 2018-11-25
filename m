@@ -1,140 +1,248 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-eopbgr770057.outbound.protection.outlook.com ([40.107.77.57]:64992
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2388048AbeKVVkE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 22 Nov 2018 16:40:04 -0500
-From: "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>
-To: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>,
+Received: from mail.kernel.org ([198.145.29.99]:51334 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726131AbeKYV7f (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 25 Nov 2018 16:59:35 -0500
+Date: Sun, 25 Nov 2018 11:08:39 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>
+Cc: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>,
         "lars@metafoo.de" <lars@metafoo.de>,
         "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "jic23@kernel.org" <jic23@kernel.org>,
         "Hennerich, Michael" <Michael.Hennerich@analog.com>,
         "giuliano.belinassi@gmail.com" <giuliano.belinassi@gmail.com>,
         "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
         "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
         "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>
 Subject: Re: [PATCH] staging: iio: ad7780: Add gain & filter gpio support
-Date: Thu, 22 Nov 2018 11:01:00 +0000
-Message-ID: <1542884458.30645.22.camel@analog.com>
+Message-ID: <20181125110839.4a3aecf9@archlinux>
+In-Reply-To: <1542884458.30645.22.camel@analog.com>
 References: <20181121180443.tjgcpu2webrq53rh@smtp.gmail.com>
-In-Reply-To: <20181121180443.tjgcpu2webrq53rh@smtp.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+        <1542884458.30645.22.camel@analog.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-T24gTWksIDIwMTgtMTEtMjEgYXQgMTY6MDQgLTAyMDAsIEdpdWxpYW5vIEJlbGluYXNzaSB3cm90
-ZToNCj4gUHJldmlvdXNseSwgdGhlIEFENzc4MCBkcml2ZXIgb25seSBzdXBwb3J0ZWQgZ3BpbyBm
-b3IgdGhlICdwb3dlcmRvd24nDQo+IHBpbi4gVGhpcyBjb21taXQgYWRkcyBzdXBwcG9ydCBmb3Ig
-dGhlICdnYWluJyBhbmQgJ2ZpbHRlcicgcGluLg0KSGV5LA0KDQpDb21tZW50cyBpbmxpbmUuDQo+
-IA0KPiBTaWduZWQtb2ZmLWJ5OiBHaXVsaWFubyBCZWxpbmFzc2kgPGdpdWxpYW5vLmJlbGluYXNz
-aUB1c3AuYnI+DQo+IC0tLQ0KPiDCoGRyaXZlcnMvc3RhZ2luZy9paW8vYWRjL2FkNzc4MC5jwqDC
-oMKgwqDCoMKgwqB8IDYxICsrKysrKysrKysrKysrKysrKysrKysrKy0tDQo+IMKgaW5jbHVkZS9s
-aW51eC9paW8vYWRjL2FkX3NpZ21hX2RlbHRhLmggfMKgwqA1ICsrKw0KPiDCoDIgZmlsZXMgY2hh
-bmdlZCwgNjIgaW5zZXJ0aW9ucygrKSwgNCBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1naXQg
-YS9kcml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9hZDc3ODAuYw0KPiBiL2RyaXZlcnMvc3RhZ2luZy9p
-aW8vYWRjL2FkNzc4MC5jDQo+IGluZGV4IGM0YTg1Nzg5YzJkYi4uNjk3OTRmMDZkYmNkIDEwMDY0
-NA0KPiAtLS0gYS9kcml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9hZDc3ODAuYw0KPiArKysgYi9kcml2
-ZXJzL3N0YWdpbmcvaWlvL2FkYy9hZDc3ODAuYw0KPiBAQCAtMzksNiArMzksOSBAQA0KPiDCoCNk
-ZWZpbmUgQUQ3MTcwX1BBVFRFUk4JCShBRDc3ODBfUEFUMCB8IEFENzE3MF9QQVQyKQ0KPiDCoCNk
-ZWZpbmUgQUQ3MTcwX1BBVFRFUk5fTUFTSwkoQUQ3NzgwX1BBVDAgfCBBRDc3ODBfUEFUMSB8DQo+
-IEFENzE3MF9QQVQyKQ0KPiDCoA0KPiArI2RlZmluZSBBRDc3ODBfR0FJTl9HUElPCTANCj4gKyNk
-ZWZpbmUgQUQ3NzgwX0ZJTFRFUl9HUElPCTENCj4gKw0KPiDCoHN0cnVjdCBhZDc3ODBfY2hpcF9p
-bmZvIHsNCj4gwqAJc3RydWN0IGlpb19jaGFuX3NwZWMJY2hhbm5lbDsNCj4gwqAJdW5zaWduZWQg
-aW50CQlwYXR0ZXJuX21hc2s7DQo+IEBAIC01MCw2ICs1Myw4IEBAIHN0cnVjdCBhZDc3ODBfc3Rh
-dGUgew0KPiDCoAljb25zdCBzdHJ1Y3QgYWQ3NzgwX2NoaXBfaW5mbwkqY2hpcF9pbmZvOw0KPiDC
-oAlzdHJ1Y3QgcmVndWxhdG9yCQkqcmVnOw0KPiDCoAlzdHJ1Y3QgZ3Bpb19kZXNjCQkqcG93ZXJk
-b3duX2dwaW87DQo+ICsJc3RydWN0IGdwaW9fZGVzYwkJKmdhaW5fZ3BpbzsNCj4gKwlzdHJ1Y3Qg
-Z3Bpb19kZXNjCQkqZmlsdGVyX2dwaW87DQo+IMKgCXVuc2lnbmVkIGludAlnYWluOw0KPiDCoA0K
-PiDCoAlzdHJ1Y3QgYWRfc2lnbWFfZGVsdGEgc2Q7DQo+IEBAIC0xMTUsMTggKzEyMCw1MSBAQCBz
-dGF0aWMgaW50IGFkNzc4MF9yZWFkX3JhdyhzdHJ1Y3QgaWlvX2Rldg0KPiAqaW5kaW9fZGV2LA0K
-PiDCoAlyZXR1cm4gLUVJTlZBTDsNCj4gwqB9DQo+IMKgDQo+ICtzdGF0aWMgaW50IGFkNzc4MF93
-cml0ZV9yYXcoc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiwNCj4gKwkJCcKgwqDCoMKgc3RydWN0
-IGlpb19jaGFuX3NwZWMgY29uc3QgKmNoYW4sDQo+ICsJCQnCoMKgwqDCoGludCB2YWwsDQo+ICsJ
-CQnCoMKgwqDCoGludCB2YWwyLA0KPiArCQkJwqDCoMKgwqBsb25nIG0pDQo+ICt7DQo+ICsJc3Ry
-dWN0IGFkNzc4MF9zdGF0ZSAqc3QgPSBpaW9fcHJpdihpbmRpb19kZXYpOw0KPiArDQo+ICsJaWYg
-KG0gIT0gSUlPX0NIQU5fSU5GT19SQVcpDQo+ICsJCXJldHVybiAtRUlOVkFMOw0KPiArDQo+ICsJ
-aWYgKHN0LT5jaGlwX2luZm8tPmlzX2FkNzc4eCkgew0KPiArCQlzd2l0Y2godmFsKSB7DQo+ICsJ
-CWNhc2UgQUQ3NzgwX0dBSU5fR1BJTzoNCg0KSSB0aGluayB0aGF0IGluc3RlYWQgb2Ygc2V0dGlu
-ZyB0aGUgZ2FpbiBkaXJlY3RseSwgd2Ugc2hvdWxkIHVzZQ0KdGhlwqBJSU9fQ0hBTl9JTkZPX1ND
-QUxFIGF0dHJpYnV0ZS4gQXQgcGFnZSAxMiBvZiB0aGUgYWQ3NzgwIGRhdGFzaGVldCB0aGVyZQ0K
-aXMgYSBmb3JtdWxhIGZyb20gd2hpY2ggdGhlIG91dHB1dCBjb2RlIGNhbiBiZSBjYWxjdWxhdGVk
-Og0KQ29kZSA9IDJeKE4g4oiSIDEpDQrDlyBbKEFJTiDDlyBHYWluIC9WUkVGKSArIDFdLiBTbywg
-Ynkgc2V0dGluZyB0aGUgc2NhbGUgZnJvbSB1c2VyIHNwYWNlLCB0aGUNCmRyaXZlciBjYW4gY2Fs
-Y3VsYXRlIHRoZSBjb3JyZWN0IGdhaW4gYnkgdXNpbmcgdGhlIGZvcm11bGEgYWJvdmUuIEFsc28s
-IGl0DQp3b3VsZCBiZSB1c2VmdWwgdG8gaW50cm9kdWNlIHNjYWxlIGF2YWlsYWJsZS4NCkZ1cnRo
-ZXJtb3JlLCB0aGVyZSBpcyBhIG5ldw0KYWQ3MTI0IGFkYyBkcml2ZXIgd2hpY2ggZG9lcyB0aGlz
-IGV4YWN0IHRoaW5nLiBUYWtlIGEgbG9vayBoZXJlOsKgaHR0cHM6Ly9naQ0KdGh1Yi5jb20vYW5h
-bG9nZGV2aWNlc2luYy9saW51eC9ibG9iL21hc3Rlci9kcml2ZXJzL2lpby9hZGMvYWQ3MTI0LmMj
-TDMzNy4NCg0KPiArCQkJZ3Bpb2Rfc2V0X3ZhbHVlKHN0LT5nYWluX2dwaW8sIHZhbDIpOw0KPiAr
-CQlicmVhazsNCj4gKwkJY2FzZSBBRDc3ODBfRklMVEVSX0dQSU86DQoNClRoZSBhdHRyaWJ1dGUg
-dGhhdCBzaG91bGQgYmUgdXNlZCB0byBjb25maWd1cmUgdGhlIGZpbHRlciBncGlvIGlzDQpJSU9f
-Q0hBTl9JTkZPX1NBTVBfRlJFUS4gU28sIHdlIHNob3VsZCBoYXZlIDEwIEh6IGFuZCAxNi43IEh6
-IGF2YWlsYWJsZQ0Kc2FtcGxpbmcgZnJlcXVlbmNpZXMuIElmIGZyb20gdXNlciBzcGFjZSB0aGUg
-MTAgSHogc2FtcGxpbmcgZnJlcSBpcw0KcmVxdWVzdGVkLCB0aGVuIHdlIHNldCB0aGUgRklMVEVS
-IHBpbiBoaWdoLCB3aGlsZSBmb3IgMTYuNyBIeiB0aGUgRklMVEVSDQpwaW4gd2lsbCBiZSBsb3cu
-DQoNCj4gKwkJCWdwaW9kX3NldF92YWx1ZShzdC0+ZmlsdGVyX2dwaW8sIHZhbDIpOw0KPiArCQli
-cmVhazsNCj4gKwkJZGVmYXVsdDoNCj4gKwkJCXJldHVybiAtRUlOVkFMOw0KPiArCQl9DQo+ICsJ
-fQ0KPiArDQo+ICsJcmV0dXJuIDA7DQo+ICt9DQo+ICsNCj4gwqBzdGF0aWMgaW50IGFkNzc4MF9w
-b3N0cHJvY2Vzc19zYW1wbGUoc3RydWN0IGFkX3NpZ21hX2RlbHRhICpzaWdtYV9kZWx0YSwNCj4g
-wqAJCQkJwqDCoMKgwqDCoHVuc2lnbmVkIGludCByYXdfc2FtcGxlKQ0KPiDCoHsNCj4gwqAJc3Ry
-dWN0IGFkNzc4MF9zdGF0ZSAqc3QgPSBhZF9zaWdtYV9kZWx0YV90b19hZDc3ODAoc2lnbWFfZGVs
-dGEpOw0KPiDCoAljb25zdCBzdHJ1Y3QgYWQ3NzgwX2NoaXBfaW5mbyAqY2hpcF9pbmZvID0gc3Qt
-PmNoaXBfaW5mbzsNCj4gKwlpbnQgdmFsOw0KPiDCoA0KPiDCoAlpZiAoKHJhd19zYW1wbGUgJiBB
-RDc3ODBfRVJSKSB8fA0KPiDCoAnCoMKgwqDCoCgocmF3X3NhbXBsZSAmIGNoaXBfaW5mby0+cGF0
-dGVybl9tYXNrKSAhPSBjaGlwX2luZm8tDQo+ID5wYXR0ZXJuKSkNCj4gwqAJCXJldHVybiAtRUlP
-Ow0KPiDCoA0KPiDCoAlpZiAoY2hpcF9pbmZvLT5pc19hZDc3OHgpIHsNCj4gLQkJaWYgKHJhd19z
-YW1wbGUgJiBBRDc3ODBfR0FJTikNCj4gKwkJdmFsID0gcmF3X3NhbXBsZSAmIEFENzc4MF9HQUlO
-Ow0KPiArDQo+ICsJCWlmICh2YWwgIT0gZ3Bpb2RfZ2V0X3ZhbHVlKHN0LT5nYWluX2dwaW8pKQ0K
-PiArCQkJcmV0dXJuIC1FSU87DQo+ICsNCj4gKwkJaWYgKHZhbCkNCj4gwqAJCQlzdC0+Z2FpbiA9
-IDE7DQo+IMKgCQllbHNlDQo+IMKgCQkJc3QtPmdhaW4gPSAxMjg7DQo+IEBAIC0xNDEsMTggKzE3
-OSwyMCBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IGFkX3NpZ21hX2RlbHRhX2luZm8NCj4gYWQ3Nzgw
-X3NpZ21hX2RlbHRhX2luZm8gPSB7DQo+IMKgCS5oYXNfcmVnaXN0ZXJzID0gZmFsc2UsDQo+IMKg
-fTsNCj4gwqANCj4gLSNkZWZpbmUgQUQ3NzgwX0NIQU5ORUwoYml0cywgd29yZHNpemUpIFwNCj4g
-KyNkZWZpbmUgQUQ3MTcwX0NIQU5ORUwoYml0cywgd29yZHNpemUpIFwNCj4gwqAJQURfU0RfQ0hB
-Tk5FTF9OT19TQU1QX0ZSRVEoMSwgMCwgMCwgYml0cywgMzIsIHdvcmRzaXplIC0gYml0cykNCj4g
-KyNkZWZpbmUgQUQ3NzgwX0NIQU5ORUwoYml0cywgd29yZHNpemUpIFwNCj4gKwlBRF9TRF9DSEFO
-TkVMX0dBSU5fRklMVEVSKDEsIDAsIDAsIGJpdHMsIDMyLCB3b3Jkc2l6ZSAtIGJpdHMpDQo+IMKg
-DQo+IMKgc3RhdGljIGNvbnN0IHN0cnVjdCBhZDc3ODBfY2hpcF9pbmZvIGFkNzc4MF9jaGlwX2lu
-Zm9fdGJsW10gPSB7DQo+IMKgCVtJRF9BRDcxNzBdID0gew0KPiAtCQkuY2hhbm5lbCA9IEFENzc4
-MF9DSEFOTkVMKDEyLCAyNCksDQo+ICsJCS5jaGFubmVsID0gQUQ3MTcwX0NIQU5ORUwoMTIsIDI0
-KSwNCj4gwqAJCS5wYXR0ZXJuID0gQUQ3MTcwX1BBVFRFUk4sDQo+IMKgCQkucGF0dGVybl9tYXNr
-ID0gQUQ3MTcwX1BBVFRFUk5fTUFTSywNCj4gwqAJCS5pc19hZDc3OHggPSBmYWxzZSwNCj4gwqAJ
-fSwNCj4gwqAJW0lEX0FENzE3MV0gPSB7DQo+IC0JCS5jaGFubmVsID0gQUQ3NzgwX0NIQU5ORUwo
-MTYsIDI0KSwNCj4gKwkJLmNoYW5uZWwgPSBBRDcxNzBfQ0hBTk5FTCgxNiwgMjQpLA0KPiDCoAkJ
-LnBhdHRlcm4gPSBBRDcxNzBfUEFUVEVSTiwNCj4gwqAJCS5wYXR0ZXJuX21hc2sgPSBBRDcxNzBf
-UEFUVEVSTl9NQVNLLA0KPiDCoAkJLmlzX2FkNzc4eCA9IGZhbHNlLA0KPiBAQCAtMTczLDYgKzIx
-Myw3IEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3QgYWQ3NzgwX2NoaXBfaW5mbw0KPiBhZDc3ODBfY2hp
-cF9pbmZvX3RibFtdID0gew0KPiDCoA0KPiDCoHN0YXRpYyBjb25zdCBzdHJ1Y3QgaWlvX2luZm8g
-YWQ3NzgwX2luZm8gPSB7DQo+IMKgCS5yZWFkX3JhdyA9IGFkNzc4MF9yZWFkX3JhdywNCj4gKwku
-d3JpdGVfcmF3ID0gYWQ3NzgwX3dyaXRlX3JhdywNCj4gwqB9Ow0KPiDCoA0KPiDCoHN0YXRpYyBp
-bnQgYWQ3NzgwX3Byb2JlKHN0cnVjdCBzcGlfZGV2aWNlICpzcGkpDQo+IEBAIC0yMjIsNiArMjYz
-LDE4IEBAIHN0YXRpYyBpbnQgYWQ3NzgwX3Byb2JlKHN0cnVjdCBzcGlfZGV2aWNlICpzcGkpDQo+
-IMKgCQlnb3RvIGVycm9yX2Rpc2FibGVfcmVnOw0KPiDCoAl9DQo+IMKgDQo+ICsJaWYgKHN0LT5j
-aGlwX2luZm8tPmlzX2FkNzc4eCkgew0KPiArCQlzdC0+Z2Fpbl9ncGlvID0gZGV2bV9ncGlvZF9n
-ZXRfb3B0aW9uYWwoJnNwaS0+ZGV2LA0KPiArCQkJCQkJCSJnYWluIiwNCj4gKwkJCQkJCQlHUElP
-RF9PVVRfSElHSCk7DQo+ICsJCWlmIChJU19FUlIoc3QtPmdhaW5fZ3BpbykpIHsNCj4gKwkJCXJl
-dCA9IFBUUl9FUlIoc3QtPmdhaW5fZ3Bpbyk7DQo+ICsJCQlkZXZfZXJyKCZzcGktPmRldiwgIkZh
-aWxlZCB0byByZXF1ZXN0IGdhaW4gR1BJTzoNCj4gJWRcbiIsDQo+ICsJCQkJcmV0KTsNCj4gKwkJ
-CWdvdG8gZXJyb3JfZGlzYWJsZV9yZWc7DQo+ICsJCX0NCj4gKwl9DQo+ICsNCj4gwqAJcmV0ID0g
-YWRfc2Rfc2V0dXBfYnVmZmVyX2FuZF90cmlnZ2VyKGluZGlvX2Rldik7DQo+IMKgCWlmIChyZXQp
-DQo+IMKgCQlnb3RvIGVycm9yX2Rpc2FibGVfcmVnOw0KPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9s
-aW51eC9paW8vYWRjL2FkX3NpZ21hX2RlbHRhLmgNCj4gYi9pbmNsdWRlL2xpbnV4L2lpby9hZGMv
-YWRfc2lnbWFfZGVsdGEuaA0KPiBpbmRleCA3MzBlYWQxYTQ2ZGYuLjZjYWRhYjZmZDVmZCAxMDA2
-NDQNCj4gLS0tIGEvaW5jbHVkZS9saW51eC9paW8vYWRjL2FkX3NpZ21hX2RlbHRhLmgNCj4gKysr
-IGIvaW5jbHVkZS9saW51eC9paW8vYWRjL2FkX3NpZ21hX2RlbHRhLmgNCj4gQEAgLTE3Myw2ICsx
-NzMsMTEgQEAgaW50IGFkX3NkX3ZhbGlkYXRlX3RyaWdnZXIoc3RydWN0IGlpb19kZXYNCj4gKmlu
-ZGlvX2Rldiwgc3RydWN0IGlpb190cmlnZ2VyICp0cmlnKTsNCj4gwqAJX19BRF9TRF9DSEFOTkVM
-KF9zaSwgX2NoYW5uZWwsIC0xLCBfYWRkcmVzcywgX2JpdHMsIFwNCj4gwqAJCV9zdG9yYWdlYml0
-cywgX3NoaWZ0LCBOVUxMLCBJSU9fVk9MVEFHRSwgMCkNCj4gwqANCj4gKyNkZWZpbmUgQURfU0Rf
-Q0hBTk5FTF9HQUlOX0ZJTFRFUihfc2ksIF9jaGFubmVsLCBfYWRkcmVzcywgX2JpdHMsIFwNCj4g
-Kwlfc3RvcmFnZWJpdHMsIF9zaGlmdCkgXA0KPiArCV9fQURfU0RfQ0hBTk5FTChfc2ksIF9jaGFu
-bmVsLCAtMSwgX2FkZHJlc3MsIF9iaXRzLCBcDQo+ICsJCV9zdG9yYWdlYml0cywgX3NoaWZ0LCBO
-VUxMLCBJSU9fVk9MVEFHRSwNCj4gQklUKElJT19DSEFOX0lORk9fUkFXKSkNCj4gKw0KPiDCoCNk
-ZWZpbmUgQURfU0RfVEVNUF9DSEFOTkVMKF9zaSwgX2FkZHJlc3MsIF9iaXRzLCBfc3RvcmFnZWJp
-dHMsIF9zaGlmdCkgXA0KPiDCoAlfX0FEX1NEX0NIQU5ORUwoX3NpLCAwLCAtMSwgX2FkZHJlc3Ms
-IF9iaXRzLCBcDQo+IMKgCQlfc3RvcmFnZWJpdHMsIF9zaGlmdCwgTlVMTCwgSUlPX1RFTVAsIFw=
+On Thu, 22 Nov 2018 11:01:00 +0000
+"Popa, Stefan Serban" <StefanSerban.Popa@analog.com> wrote:
+
+> On Mi, 2018-11-21 at 16:04 -0200, Giuliano Belinassi wrote:
+> > Previously, the AD7780 driver only supported gpio for the 'powerdown'
+> > pin. This commit adds suppport for the 'gain' and 'filter' pin. =20
+> Hey,
+>=20
+> Comments inline.
+> >=20
+> > Signed-off-by: Giuliano Belinassi <giuliano.belinassi@usp.br>
+> > ---
+> > =C2=A0drivers/staging/iio/adc/ad7780.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0| 61 ++++++++++++++++++++++++--
+> > =C2=A0include/linux/iio/adc/ad_sigma_delta.h |=C2=A0=C2=A05 +++
+> > =C2=A02 files changed, 62 insertions(+), 4 deletions(-)
+> >=20
+> > diff --git a/drivers/staging/iio/adc/ad7780.c
+> > b/drivers/staging/iio/adc/ad7780.c
+> > index c4a85789c2db..69794f06dbcd 100644
+> > --- a/drivers/staging/iio/adc/ad7780.c
+> > +++ b/drivers/staging/iio/adc/ad7780.c
+> > @@ -39,6 +39,9 @@
+> > =C2=A0#define AD7170_PATTERN		(AD7780_PAT0 | AD7170_PAT2)
+> > =C2=A0#define AD7170_PATTERN_MASK	(AD7780_PAT0 | AD7780_PAT1 |
+> > AD7170_PAT2)
+> > =C2=A0
+> > +#define AD7780_GAIN_GPIO	0
+> > +#define AD7780_FILTER_GPIO	1
+> > +
+> > =C2=A0struct ad7780_chip_info {
+> > =C2=A0	struct iio_chan_spec	channel;
+> > =C2=A0	unsigned int		pattern_mask;
+> > @@ -50,6 +53,8 @@ struct ad7780_state {
+> > =C2=A0	const struct ad7780_chip_info	*chip_info;
+> > =C2=A0	struct regulator		*reg;
+> > =C2=A0	struct gpio_desc		*powerdown_gpio;
+> > +	struct gpio_desc		*gain_gpio;
+> > +	struct gpio_desc		*filter_gpio;
+> > =C2=A0	unsigned int	gain;
+> > =C2=A0
+> > =C2=A0	struct ad_sigma_delta sd;
+> > @@ -115,18 +120,51 @@ static int ad7780_read_raw(struct iio_dev
+> > *indio_dev,
+> > =C2=A0	return -EINVAL;
+> > =C2=A0}
+> > =C2=A0
+> > +static int ad7780_write_raw(struct iio_dev *indio_dev,
+> > +			=C2=A0=C2=A0=C2=A0=C2=A0struct iio_chan_spec const *chan,
+> > +			=C2=A0=C2=A0=C2=A0=C2=A0int val,
+> > +			=C2=A0=C2=A0=C2=A0=C2=A0int val2,
+> > +			=C2=A0=C2=A0=C2=A0=C2=A0long m)
+> > +{
+> > +	struct ad7780_state *st =3D iio_priv(indio_dev);
+> > +
+> > +	if (m !=3D IIO_CHAN_INFO_RAW)
+> > +		return -EINVAL;
+> > +
+> > +	if (st->chip_info->is_ad778x) {
+> > +		switch(val) {
+> > +		case AD7780_GAIN_GPIO: =20
+>=20
+> I think that instead of setting the gain directly, we should use
+> the=C2=A0IIO_CHAN_INFO_SCALE attribute. At page 12 of the ad7780 datashee=
+t there
+> is a formula from which the output code can be calculated:
+> Code =3D 2^(N =E2=88=92 1)
+> =C3=97 [(AIN =C3=97 Gain /VREF) + 1]. So, by setting the scale from user =
+space, the
+> driver can calculate the correct gain by using the formula above. Also, it
+> would be useful to introduce scale available.
+> Furthermore, there is a new
+> ad7124 adc driver which does this exact thing. Take a look here:=C2=A0htt=
+ps://gi
+> thub.com/analogdevicesinc/linux/blob/master/drivers/iio/adc/ad7124.c#L337.
+>=20
+> > +			gpiod_set_value(st->gain_gpio, val2);
+> > +		break;
+> > +		case AD7780_FILTER_GPIO: =20
+>=20
+> The attribute that should be used to configure the filter gpio is
+> IIO_CHAN_INFO_SAMP_FREQ. So, we should have 10 Hz and 16.7 Hz available
+> sampling frequencies. If from user space the 10 Hz sampling freq is
+> requested, then we set the FILTER pin high, while for 16.7 Hz the FILTER
+> pin will be low.
+
+Absolutely agreed with Stefan here.  If it had been decoupled from sampling
+frequency (sometimes they are) then we have specific controls for filters
+as well.  Here it directly effects the sampling frequency.
+
+Please in future avoid any driver specific control like you have here.
+I haven't really worked out what the interface is beyond some sort
+of bitmap passed through a write to a magic channel?
+
+If there isn't an existing interface in IIO for what you want to do
+please propose one rather than doing something that will only work
+with a particular userspace.  One of the primary purposes of having
+a subsystem is to standardise interfaces.  This definitely doesn't
+do that!
+
+Will be good to have the support along the lines Stefan suggested though!
+
+Thanks,
+
+Jonathan
+
+
+
+>=20
+> > +			gpiod_set_value(st->filter_gpio, val2);
+> > +		break;
+> > +		default:
+> > +			return -EINVAL;
+> > +		}
+> > +	}
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > =C2=A0static int ad7780_postprocess_sample(struct ad_sigma_delta *sigma=
+_delta,
+> > =C2=A0				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0unsigned int raw_sample)
+> > =C2=A0{
+> > =C2=A0	struct ad7780_state *st =3D ad_sigma_delta_to_ad7780(sigma_delta=
+);
+> > =C2=A0	const struct ad7780_chip_info *chip_info =3D st->chip_info;
+> > +	int val;
+> > =C2=A0
+> > =C2=A0	if ((raw_sample & AD7780_ERR) ||
+> > =C2=A0	=C2=A0=C2=A0=C2=A0=C2=A0((raw_sample & chip_info->pattern_mask) =
+!=3D chip_info- =20
+> > >pattern)) =20
+> > =C2=A0		return -EIO;
+> > =C2=A0
+> > =C2=A0	if (chip_info->is_ad778x) {
+> > -		if (raw_sample & AD7780_GAIN)
+> > +		val =3D raw_sample & AD7780_GAIN;
+> > +
+> > +		if (val !=3D gpiod_get_value(st->gain_gpio))
+> > +			return -EIO;
+> > +
+> > +		if (val)
+> > =C2=A0			st->gain =3D 1;
+> > =C2=A0		else
+> > =C2=A0			st->gain =3D 128;
+> > @@ -141,18 +179,20 @@ static const struct ad_sigma_delta_info
+> > ad7780_sigma_delta_info =3D {
+> > =C2=A0	.has_registers =3D false,
+> > =C2=A0};
+> > =C2=A0
+> > -#define AD7780_CHANNEL(bits, wordsize) \
+> > +#define AD7170_CHANNEL(bits, wordsize) \
+> > =C2=A0	AD_SD_CHANNEL_NO_SAMP_FREQ(1, 0, 0, bits, 32, wordsize - bits)
+> > +#define AD7780_CHANNEL(bits, wordsize) \
+> > +	AD_SD_CHANNEL_GAIN_FILTER(1, 0, 0, bits, 32, wordsize - bits)
+> > =C2=A0
+> > =C2=A0static const struct ad7780_chip_info ad7780_chip_info_tbl[] =3D {
+> > =C2=A0	[ID_AD7170] =3D {
+> > -		.channel =3D AD7780_CHANNEL(12, 24),
+> > +		.channel =3D AD7170_CHANNEL(12, 24),
+> > =C2=A0		.pattern =3D AD7170_PATTERN,
+> > =C2=A0		.pattern_mask =3D AD7170_PATTERN_MASK,
+> > =C2=A0		.is_ad778x =3D false,
+> > =C2=A0	},
+> > =C2=A0	[ID_AD7171] =3D {
+> > -		.channel =3D AD7780_CHANNEL(16, 24),
+> > +		.channel =3D AD7170_CHANNEL(16, 24),
+> > =C2=A0		.pattern =3D AD7170_PATTERN,
+> > =C2=A0		.pattern_mask =3D AD7170_PATTERN_MASK,
+> > =C2=A0		.is_ad778x =3D false,
+> > @@ -173,6 +213,7 @@ static const struct ad7780_chip_info
+> > ad7780_chip_info_tbl[] =3D {
+> > =C2=A0
+> > =C2=A0static const struct iio_info ad7780_info =3D {
+> > =C2=A0	.read_raw =3D ad7780_read_raw,
+> > +	.write_raw =3D ad7780_write_raw,
+> > =C2=A0};
+> > =C2=A0
+> > =C2=A0static int ad7780_probe(struct spi_device *spi)
+> > @@ -222,6 +263,18 @@ static int ad7780_probe(struct spi_device *spi)
+> > =C2=A0		goto error_disable_reg;
+> > =C2=A0	}
+> > =C2=A0
+> > +	if (st->chip_info->is_ad778x) {
+> > +		st->gain_gpio =3D devm_gpiod_get_optional(&spi->dev,
+> > +							"gain",
+> > +							GPIOD_OUT_HIGH);
+> > +		if (IS_ERR(st->gain_gpio)) {
+> > +			ret =3D PTR_ERR(st->gain_gpio);
+> > +			dev_err(&spi->dev, "Failed to request gain GPIO:
+> > %d\n",
+> > +				ret);
+> > +			goto error_disable_reg;
+> > +		}
+> > +	}
+> > +
+> > =C2=A0	ret =3D ad_sd_setup_buffer_and_trigger(indio_dev);
+> > =C2=A0	if (ret)
+> > =C2=A0		goto error_disable_reg;
+> > diff --git a/include/linux/iio/adc/ad_sigma_delta.h
+> > b/include/linux/iio/adc/ad_sigma_delta.h
+> > index 730ead1a46df..6cadab6fd5fd 100644
+> > --- a/include/linux/iio/adc/ad_sigma_delta.h
+> > +++ b/include/linux/iio/adc/ad_sigma_delta.h
+> > @@ -173,6 +173,11 @@ int ad_sd_validate_trigger(struct iio_dev
+> > *indio_dev, struct iio_trigger *trig);
+> > =C2=A0	__AD_SD_CHANNEL(_si, _channel, -1, _address, _bits, \
+> > =C2=A0		_storagebits, _shift, NULL, IIO_VOLTAGE, 0)
+> > =C2=A0
+> > +#define AD_SD_CHANNEL_GAIN_FILTER(_si, _channel, _address, _bits, \
+> > +	_storagebits, _shift) \
+> > +	__AD_SD_CHANNEL(_si, _channel, -1, _address, _bits, \
+> > +		_storagebits, _shift, NULL, IIO_VOLTAGE,
+> > BIT(IIO_CHAN_INFO_RAW))
+> > +
+> > =C2=A0#define AD_SD_TEMP_CHANNEL(_si, _address, _bits, _storagebits, _s=
+hift) \
+> > =C2=A0	__AD_SD_CHANNEL(_si, 0, -1, _address, _bits, \
+> > =C2=A0		_storagebits, _shift, NULL, IIO_TEMP,  =20
