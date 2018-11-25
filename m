@@ -1,19 +1,17 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:42449 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725880AbeKYVys (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 25 Nov 2018 16:54:48 -0500
-Date: Sun, 25 Nov 2018 16:33:50 +0530
-From: Himanshu Jha <himanshujha199640@gmail.com>
+Received: from mo4-p00-ob.smtp.rzone.de ([85.215.255.21]:21048 "EHLO
+        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726050AbeKZBHg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 25 Nov 2018 20:07:36 -0500
+Date: Sun, 25 Nov 2018 15:14:49 +0100
+From: Stephan Gerhold <stephan@gerhold.net>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Stephan Gerhold <stephan@gerhold.net>, linux-iio@vger.kernel.org,
-        Hartmut Knaack <knaack.h@gmx.de>,
+Cc: linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        linux-acpi@vger.kernel.org
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 Subject: Re: [PATCH] iio: accel: kxcjk-1013: Add the "KXJ2109" ACPI HID
-Message-ID: <20181125110350.GB19309@himanshu-Vostro-3559>
+Message-ID: <20181125141449.GA4136@droid>
 References: <20181124162220.8523-1-stephan@gerhold.net>
  <20181125090930.0086a021@archlinux>
 MIME-Version: 1.0
@@ -21,8 +19,6 @@ Content-Type: text/plain; charset=us-ascii
 In-Reply-To: <20181125090930.0086a021@archlinux>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
-
-[Cc acpi list]
 
 On Sun, Nov 25, 2018 at 09:09:30AM +0000, Jonathan Cameron wrote:
 > On Sat, 24 Nov 2018 17:22:20 +0100
@@ -41,34 +37,26 @@ On Sun, Nov 25, 2018 at 09:09:30AM +0000, Jonathan Cameron wrote:
 > "A valid ACPI ID must be of the form "NNNN####" where N is an uppercase letter or a
 > digit ('0'-'9') and # is a hex digit." is the text about a manufacturer defined
 > ID.
-
-I think it is a PNP ID(KXJ) instead.
-
-PNP ID: PNP Vendor IDs consist of 3 characters, each character 
-	being an uppercase letter (A-Z).
-
-+ four-characters(2109) as the Product Identifier.
-
-But didn't find anything on the forum:
-http://www.uefi.org/PNP_ID_List?search=KXJ
-
-Neither "KXTJ":
-http://www.uefi.org/ACPI_ID_List?search=KXTJ
-
-Sorry for nagging about this again, but I don't really
-understand the purpose of acpi spec.
-
-And I remember your point[1]:
-
-".. spec is governed by developers who put the tables in the BIOS
-and really by the spec"
-
-[1] https://marc.info/?l=linux-iio&m=154077000428250&w=2
-
+> 
 > If anyone has a contact at ASUS who I can rant at do pass it on!
+
+I didn't realize the ACPI ID is technically invalid, but I have to admit 
+I'm not very surprised about this: The DSDT of this tablet is absolutely 
+horrible - there is a lot more I could rant about :)
+
+(The tablet was originally shipped with Android; rather than fixing
+their firmware, they chose to hardcode hacks and workarounds for many 
+things in their heavily patched Linux kernel...)
+
+The sensors are one of the few things that work out of the box
+without additional workarounds (except adding the ACPI ID)...
+
 > 
 > Applied to the togreg branch of iio.git and pushed out as
 > testing for the autobuilders to play with it.
+
+Thanks!
+
 > 
 > Thanks,
 > 
@@ -91,9 +79,3 @@ and really by the spec"
 > >  	{ },
 > >  };
 > 
-
--- 
-Himanshu Jha
-Undergraduate Student
-Department of Electronics & Communication
-Guru Tegh Bahadur Institute of Technology
