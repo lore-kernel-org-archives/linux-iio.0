@@ -1,78 +1,89 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:48112 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726300AbeKSRE4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Nov 2018 12:04:56 -0500
-From: Vignesh R <vigneshr@ti.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
+Received: from mail.kernel.org ([198.145.29.99]:53042 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726157AbeKZAh1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 25 Nov 2018 19:37:27 -0500
+Date: Sun, 25 Nov 2018 13:46:15 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Vignesh R <vigneshr@ti.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Lee Jones <lee.jones@linaro.org>, Vignesh R <vigneshr@ti.com>,
-        <linux-iio@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 2/2] iio: adc: ti_am335x_tscadc: Improve accuracy of measurement
-Date: Mon, 19 Nov 2018 12:12:36 +0530
-Message-ID: <20181119064236.28902-3-vigneshr@ti.com>
-In-Reply-To: <20181119064236.28902-1-vigneshr@ti.com>
+        Lee Jones <lee.jones@linaro.org>, <linux-iio@vger.kernel.org>,
+        <linux-omap@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/2] iio: adc: ti_am335x_tscadc: Improve accuracy of
+ measurement
+Message-ID: <20181125134615.01d45e14@archlinux>
+In-Reply-To: <20181119064236.28902-3-vigneshr@ti.com>
 References: <20181119064236.28902-1-vigneshr@ti.com>
+        <20181119064236.28902-3-vigneshr@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-When performing single ended measurements with TSCADC, its recommended
-to set negative input (SEL_INM_SWC_3_0) of ADC step to ADC's VREFN in the
-corresponding STEP_CONFIGx register.
-Also, the positive(SEL_RFP_SWC_2_0) and negative(SEL_RFM_SWC_1_0)
-reference voltage for ADC step needs to be set to VREFP and VREFN
-respectively in STEP_CONFIGx register.
-Without these changes, there may be variation of as much as ~2% in the
-ADC's digital output which is bad for precise measurement.
+On Mon, 19 Nov 2018 12:12:36 +0530
+Vignesh R <vigneshr@ti.com> wrote:
 
-Signed-off-by: Vignesh R <vigneshr@ti.com>
----
- drivers/iio/adc/ti_am335x_adc.c      | 5 ++++-
- include/linux/mfd/ti_am335x_tscadc.h | 4 ++++
- 2 files changed, 8 insertions(+), 1 deletion(-)
+> When performing single ended measurements with TSCADC, its recommended
+> to set negative input (SEL_INM_SWC_3_0) of ADC step to ADC's VREFN in the
+> corresponding STEP_CONFIGx register.
+> Also, the positive(SEL_RFP_SWC_2_0) and negative(SEL_RFM_SWC_1_0)
+> reference voltage for ADC step needs to be set to VREFP and VREFN
+> respectively in STEP_CONFIGx register.
+> Without these changes, there may be variation of as much as ~2% in the
+> ADC's digital output which is bad for precise measurement.
+> 
+> Signed-off-by: Vignesh R <vigneshr@ti.com>
+Given the header changes in mfd and the fact not much is going on with this
+driver in IIO at the moment, I'm happy for this to go through the mfd tree.
 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index cafb1dcadc48..9d984f2a8ba7 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -142,7 +142,10 @@ static void tiadc_step_config(struct iio_dev *indio_dev)
- 			stepconfig |= STEPCONFIG_MODE_SWCNT;
- 
- 		tiadc_writel(adc_dev, REG_STEPCONFIG(steps),
--				stepconfig | STEPCONFIG_INP(chan));
-+				stepconfig | STEPCONFIG_INP(chan) |
-+				STEPCONFIG_INM_ADCREFM |
-+				STEPCONFIG_RFP_VREFP |
-+				STEPCONFIG_RFM_VREFN);
- 
- 		if (adc_dev->open_delay[i] > STEPDELAY_OPEN_MASK) {
- 			dev_warn(dev, "chan %d open delay truncating to 0x3FFFF\n",
-diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-index b9a53e013bff..483168403ae5 100644
---- a/include/linux/mfd/ti_am335x_tscadc.h
-+++ b/include/linux/mfd/ti_am335x_tscadc.h
-@@ -78,6 +78,8 @@
- #define STEPCONFIG_YNN		BIT(8)
- #define STEPCONFIG_XNP		BIT(9)
- #define STEPCONFIG_YPN		BIT(10)
-+#define STEPCONFIG_RFP(val)	((val) << 12)
-+#define STEPCONFIG_RFP_VREFP	(0x3 << 12)
- #define STEPCONFIG_INM_MASK	(0xF << 15)
- #define STEPCONFIG_INM(val)	((val) << 15)
- #define STEPCONFIG_INM_ADCREFM	STEPCONFIG_INM(8)
-@@ -86,6 +88,8 @@
- #define STEPCONFIG_INP_AN4	STEPCONFIG_INP(4)
- #define STEPCONFIG_INP_ADCREFM	STEPCONFIG_INP(8)
- #define STEPCONFIG_FIFO1	BIT(26)
-+#define STEPCONFIG_RFM(val)	((val) << 23)
-+#define STEPCONFIG_RFM_VREFN	(0x3 << 23)
- 
- /* Delay register */
- #define STEPDELAY_OPEN_MASK	(0x3FFFF << 0)
--- 
-2.19.1
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+
+Thanks,
+
+Jonathan
+
+> ---
+>  drivers/iio/adc/ti_am335x_adc.c      | 5 ++++-
+>  include/linux/mfd/ti_am335x_tscadc.h | 4 ++++
+>  2 files changed, 8 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+> index cafb1dcadc48..9d984f2a8ba7 100644
+> --- a/drivers/iio/adc/ti_am335x_adc.c
+> +++ b/drivers/iio/adc/ti_am335x_adc.c
+> @@ -142,7 +142,10 @@ static void tiadc_step_config(struct iio_dev *indio_dev)
+>  			stepconfig |= STEPCONFIG_MODE_SWCNT;
+>  
+>  		tiadc_writel(adc_dev, REG_STEPCONFIG(steps),
+> -				stepconfig | STEPCONFIG_INP(chan));
+> +				stepconfig | STEPCONFIG_INP(chan) |
+> +				STEPCONFIG_INM_ADCREFM |
+> +				STEPCONFIG_RFP_VREFP |
+> +				STEPCONFIG_RFM_VREFN);
+>  
+>  		if (adc_dev->open_delay[i] > STEPDELAY_OPEN_MASK) {
+>  			dev_warn(dev, "chan %d open delay truncating to 0x3FFFF\n",
+> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+> index b9a53e013bff..483168403ae5 100644
+> --- a/include/linux/mfd/ti_am335x_tscadc.h
+> +++ b/include/linux/mfd/ti_am335x_tscadc.h
+> @@ -78,6 +78,8 @@
+>  #define STEPCONFIG_YNN		BIT(8)
+>  #define STEPCONFIG_XNP		BIT(9)
+>  #define STEPCONFIG_YPN		BIT(10)
+> +#define STEPCONFIG_RFP(val)	((val) << 12)
+> +#define STEPCONFIG_RFP_VREFP	(0x3 << 12)
+>  #define STEPCONFIG_INM_MASK	(0xF << 15)
+>  #define STEPCONFIG_INM(val)	((val) << 15)
+>  #define STEPCONFIG_INM_ADCREFM	STEPCONFIG_INM(8)
+> @@ -86,6 +88,8 @@
+>  #define STEPCONFIG_INP_AN4	STEPCONFIG_INP(4)
+>  #define STEPCONFIG_INP_ADCREFM	STEPCONFIG_INP(8)
+>  #define STEPCONFIG_FIFO1	BIT(26)
+> +#define STEPCONFIG_RFM(val)	((val) << 23)
+> +#define STEPCONFIG_RFM_VREFN	(0x3 << 23)
+>  
+>  /* Delay register */
+>  #define STEPDELAY_OPEN_MASK	(0x3FFFF << 0)
