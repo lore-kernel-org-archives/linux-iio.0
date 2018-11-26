@@ -1,248 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:51334 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726131AbeKYV7f (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 25 Nov 2018 16:59:35 -0500
-Date: Sun, 25 Nov 2018 11:08:39 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>
-Cc: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        "giuliano.belinassi@gmail.com" <giuliano.belinassi@gmail.com>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-        "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>
-Subject: Re: [PATCH] staging: iio: ad7780: Add gain & filter gpio support
-Message-ID: <20181125110839.4a3aecf9@archlinux>
-In-Reply-To: <1542884458.30645.22.camel@analog.com>
-References: <20181121180443.tjgcpu2webrq53rh@smtp.gmail.com>
-        <1542884458.30645.22.camel@analog.com>
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:46639 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726357AbeK0GTb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 27 Nov 2018 01:19:31 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <20181121180443.tjgcpu2webrq53rh@smtp.gmail.com>
+ <1542884458.30645.22.camel@analog.com> <20181125110839.4a3aecf9@archlinux>
+In-Reply-To: <20181125110839.4a3aecf9@archlinux>
+From: Giuliano Belinassi <giuliano.belinassi@gmail.com>
+Date: Mon, 26 Nov 2018 17:24:13 -0200
+Message-ID: <CAG4RSAHcEYj5bUpxT8apwXZZpWkPowFJ333tZiTHhb9VVn4m7g@mail.gmail.com>
+Subject: Re: [PATCH] staging: iio: ad7780: Add gain & filter gpio support
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: StefanSerban.Popa@analog.com,
+        "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        devel@driverdev.osuosl.org, kernel-usp@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 22 Nov 2018 11:01:00 +0000
-"Popa, Stefan Serban" <StefanSerban.Popa@analog.com> wrote:
+Hi, thank you for the review
 
-> On Mi, 2018-11-21 at 16:04 -0200, Giuliano Belinassi wrote:
-> > Previously, the AD7780 driver only supported gpio for the 'powerdown'
-> > pin. This commit adds suppport for the 'gain' and 'filter' pin. =20
-> Hey,
->=20
-> Comments inline.
-> >=20
-> > Signed-off-by: Giuliano Belinassi <giuliano.belinassi@usp.br>
-> > ---
-> > =C2=A0drivers/staging/iio/adc/ad7780.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0| 61 ++++++++++++++++++++++++--
-> > =C2=A0include/linux/iio/adc/ad_sigma_delta.h |=C2=A0=C2=A05 +++
-> > =C2=A02 files changed, 62 insertions(+), 4 deletions(-)
-> >=20
-> > diff --git a/drivers/staging/iio/adc/ad7780.c
-> > b/drivers/staging/iio/adc/ad7780.c
-> > index c4a85789c2db..69794f06dbcd 100644
-> > --- a/drivers/staging/iio/adc/ad7780.c
-> > +++ b/drivers/staging/iio/adc/ad7780.c
-> > @@ -39,6 +39,9 @@
-> > =C2=A0#define AD7170_PATTERN		(AD7780_PAT0 | AD7170_PAT2)
-> > =C2=A0#define AD7170_PATTERN_MASK	(AD7780_PAT0 | AD7780_PAT1 |
-> > AD7170_PAT2)
-> > =C2=A0
-> > +#define AD7780_GAIN_GPIO	0
-> > +#define AD7780_FILTER_GPIO	1
-> > +
-> > =C2=A0struct ad7780_chip_info {
-> > =C2=A0	struct iio_chan_spec	channel;
-> > =C2=A0	unsigned int		pattern_mask;
-> > @@ -50,6 +53,8 @@ struct ad7780_state {
-> > =C2=A0	const struct ad7780_chip_info	*chip_info;
-> > =C2=A0	struct regulator		*reg;
-> > =C2=A0	struct gpio_desc		*powerdown_gpio;
-> > +	struct gpio_desc		*gain_gpio;
-> > +	struct gpio_desc		*filter_gpio;
-> > =C2=A0	unsigned int	gain;
-> > =C2=A0
-> > =C2=A0	struct ad_sigma_delta sd;
-> > @@ -115,18 +120,51 @@ static int ad7780_read_raw(struct iio_dev
-> > *indio_dev,
-> > =C2=A0	return -EINVAL;
-> > =C2=A0}
-> > =C2=A0
-> > +static int ad7780_write_raw(struct iio_dev *indio_dev,
-> > +			=C2=A0=C2=A0=C2=A0=C2=A0struct iio_chan_spec const *chan,
-> > +			=C2=A0=C2=A0=C2=A0=C2=A0int val,
-> > +			=C2=A0=C2=A0=C2=A0=C2=A0int val2,
-> > +			=C2=A0=C2=A0=C2=A0=C2=A0long m)
-> > +{
-> > +	struct ad7780_state *st =3D iio_priv(indio_dev);
-> > +
-> > +	if (m !=3D IIO_CHAN_INFO_RAW)
-> > +		return -EINVAL;
-> > +
-> > +	if (st->chip_info->is_ad778x) {
-> > +		switch(val) {
-> > +		case AD7780_GAIN_GPIO: =20
->=20
-> I think that instead of setting the gain directly, we should use
-> the=C2=A0IIO_CHAN_INFO_SCALE attribute. At page 12 of the ad7780 datashee=
-t there
-> is a formula from which the output code can be calculated:
-> Code =3D 2^(N =E2=88=92 1)
-> =C3=97 [(AIN =C3=97 Gain /VREF) + 1]. So, by setting the scale from user =
-space, the
-> driver can calculate the correct gain by using the formula above. Also, it
-> would be useful to introduce scale available.
-> Furthermore, there is a new
-> ad7124 adc driver which does this exact thing. Take a look here:=C2=A0htt=
-ps://gi
-> thub.com/analogdevicesinc/linux/blob/master/drivers/iio/adc/ad7124.c#L337.
->=20
-> > +			gpiod_set_value(st->gain_gpio, val2);
-> > +		break;
-> > +		case AD7780_FILTER_GPIO: =20
->=20
-> The attribute that should be used to configure the filter gpio is
-> IIO_CHAN_INFO_SAMP_FREQ. So, we should have 10 Hz and 16.7 Hz available
-> sampling frequencies. If from user space the 10 Hz sampling freq is
-> requested, then we set the FILTER pin high, while for 16.7 Hz the FILTER
-> pin will be low.
+> On Thu, 22 Nov 2018 11:01:00 +0000
+> "Popa, Stefan Serban" <StefanSerban.Popa@analog.com> wrote:
+> > I think that instead of setting the gain directly, we should use
+> > the IIO_CHAN_INFO_SCALE attribute. At page 12 of the ad7780 datasheet t=
+here
+> > is a formula from which the output code can be calculated:
+> > Code =3D 2^(N =E2=88=92 1)
+> > =C3=97 [(AIN =C3=97 Gain /VREF) + 1]. So, by setting the scale from use=
+r space, the
+> > driver can calculate the correct gain by using the formula above. Also,=
+ it
+> > would be useful to introduce scale available.
+> > Furthermore, there is a new
+> > ad7124 adc driver which does this exact thing. Take a look here: https:=
+//gi
+> > thub.com/analogdevicesinc/linux/blob/master/drivers/iio/adc/ad7124.c#L3=
+37.
 
-Absolutely agreed with Stefan here.  If it had been decoupled from sampling
-frequency (sometimes they are) then we have specific controls for filters
-as well.  Here it directly effects the sampling frequency.
+We have some questions about the code you provided to us:
+  1-) What is exactly the inputs for the write_raw function?
+  2-) Could you give more details about the math around lines 346-348?
+Is it correct to assume that the multiplication at line 346 won't
+overflow? (vref is an uint)
 
-Please in future avoid any driver specific control like you have here.
-I haven't really worked out what the interface is beyond some sort
-of bitmap passed through a write to a magic channel?
+And regarding our code:
+  1-) The val in our write_raw function should be, in case of GAIN, a
+number that best approximate the actual gain value of 1 or 128? For
+instance, if the user inputs 126, we should default to 128?
+  2-) In the case of FILTER, is it the same? Is the user sending the
+value in mHz (milihertz)?
 
-If there isn't an existing interface in IIO for what you want to do
-please propose one rather than doing something that will only work
-with a particular userspace.  One of the primary purposes of having
-a subsystem is to standardise interfaces.  This definitely doesn't
-do that!
-
-Will be good to have the support along the lines Stefan suggested though!
-
-Thanks,
-
-Jonathan
-
-
-
->=20
-> > +			gpiod_set_value(st->filter_gpio, val2);
-> > +		break;
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > =C2=A0static int ad7780_postprocess_sample(struct ad_sigma_delta *sigma=
-_delta,
-> > =C2=A0				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0unsigned int raw_sample)
-> > =C2=A0{
-> > =C2=A0	struct ad7780_state *st =3D ad_sigma_delta_to_ad7780(sigma_delta=
-);
-> > =C2=A0	const struct ad7780_chip_info *chip_info =3D st->chip_info;
-> > +	int val;
-> > =C2=A0
-> > =C2=A0	if ((raw_sample & AD7780_ERR) ||
-> > =C2=A0	=C2=A0=C2=A0=C2=A0=C2=A0((raw_sample & chip_info->pattern_mask) =
-!=3D chip_info- =20
-> > >pattern)) =20
-> > =C2=A0		return -EIO;
-> > =C2=A0
-> > =C2=A0	if (chip_info->is_ad778x) {
-> > -		if (raw_sample & AD7780_GAIN)
-> > +		val =3D raw_sample & AD7780_GAIN;
-> > +
-> > +		if (val !=3D gpiod_get_value(st->gain_gpio))
-> > +			return -EIO;
-> > +
-> > +		if (val)
-> > =C2=A0			st->gain =3D 1;
-> > =C2=A0		else
-> > =C2=A0			st->gain =3D 128;
-> > @@ -141,18 +179,20 @@ static const struct ad_sigma_delta_info
-> > ad7780_sigma_delta_info =3D {
-> > =C2=A0	.has_registers =3D false,
-> > =C2=A0};
-> > =C2=A0
-> > -#define AD7780_CHANNEL(bits, wordsize) \
-> > +#define AD7170_CHANNEL(bits, wordsize) \
-> > =C2=A0	AD_SD_CHANNEL_NO_SAMP_FREQ(1, 0, 0, bits, 32, wordsize - bits)
-> > +#define AD7780_CHANNEL(bits, wordsize) \
-> > +	AD_SD_CHANNEL_GAIN_FILTER(1, 0, 0, bits, 32, wordsize - bits)
-> > =C2=A0
-> > =C2=A0static const struct ad7780_chip_info ad7780_chip_info_tbl[] =3D {
-> > =C2=A0	[ID_AD7170] =3D {
-> > -		.channel =3D AD7780_CHANNEL(12, 24),
-> > +		.channel =3D AD7170_CHANNEL(12, 24),
-> > =C2=A0		.pattern =3D AD7170_PATTERN,
-> > =C2=A0		.pattern_mask =3D AD7170_PATTERN_MASK,
-> > =C2=A0		.is_ad778x =3D false,
-> > =C2=A0	},
-> > =C2=A0	[ID_AD7171] =3D {
-> > -		.channel =3D AD7780_CHANNEL(16, 24),
-> > +		.channel =3D AD7170_CHANNEL(16, 24),
-> > =C2=A0		.pattern =3D AD7170_PATTERN,
-> > =C2=A0		.pattern_mask =3D AD7170_PATTERN_MASK,
-> > =C2=A0		.is_ad778x =3D false,
-> > @@ -173,6 +213,7 @@ static const struct ad7780_chip_info
-> > ad7780_chip_info_tbl[] =3D {
-> > =C2=A0
-> > =C2=A0static const struct iio_info ad7780_info =3D {
-> > =C2=A0	.read_raw =3D ad7780_read_raw,
-> > +	.write_raw =3D ad7780_write_raw,
-> > =C2=A0};
-> > =C2=A0
-> > =C2=A0static int ad7780_probe(struct spi_device *spi)
-> > @@ -222,6 +263,18 @@ static int ad7780_probe(struct spi_device *spi)
-> > =C2=A0		goto error_disable_reg;
-> > =C2=A0	}
-> > =C2=A0
-> > +	if (st->chip_info->is_ad778x) {
-> > +		st->gain_gpio =3D devm_gpiod_get_optional(&spi->dev,
-> > +							"gain",
-> > +							GPIOD_OUT_HIGH);
-> > +		if (IS_ERR(st->gain_gpio)) {
-> > +			ret =3D PTR_ERR(st->gain_gpio);
-> > +			dev_err(&spi->dev, "Failed to request gain GPIO:
-> > %d\n",
-> > +				ret);
-> > +			goto error_disable_reg;
-> > +		}
-> > +	}
-> > +
-> > =C2=A0	ret =3D ad_sd_setup_buffer_and_trigger(indio_dev);
-> > =C2=A0	if (ret)
-> > =C2=A0		goto error_disable_reg;
-> > diff --git a/include/linux/iio/adc/ad_sigma_delta.h
-> > b/include/linux/iio/adc/ad_sigma_delta.h
-> > index 730ead1a46df..6cadab6fd5fd 100644
-> > --- a/include/linux/iio/adc/ad_sigma_delta.h
-> > +++ b/include/linux/iio/adc/ad_sigma_delta.h
-> > @@ -173,6 +173,11 @@ int ad_sd_validate_trigger(struct iio_dev
-> > *indio_dev, struct iio_trigger *trig);
-> > =C2=A0	__AD_SD_CHANNEL(_si, _channel, -1, _address, _bits, \
-> > =C2=A0		_storagebits, _shift, NULL, IIO_VOLTAGE, 0)
-> > =C2=A0
-> > +#define AD_SD_CHANNEL_GAIN_FILTER(_si, _channel, _address, _bits, \
-> > +	_storagebits, _shift) \
-> > +	__AD_SD_CHANNEL(_si, _channel, -1, _address, _bits, \
-> > +		_storagebits, _shift, NULL, IIO_VOLTAGE,
-> > BIT(IIO_CHAN_INFO_RAW))
-> > +
-> > =C2=A0#define AD_SD_TEMP_CHANNEL(_si, _address, _bits, _storagebits, _s=
-hift) \
-> > =C2=A0	__AD_SD_CHANNEL(_si, 0, -1, _address, _bits, \
-> > =C2=A0		_storagebits, _shift, NULL, IIO_TEMP,  =20
+Thank you
