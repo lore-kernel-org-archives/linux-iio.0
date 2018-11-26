@@ -1,64 +1,62 @@
-Return-Path: <SRS0=8+PZ=OF=osadl.org=hofrat@kernel.org>
-From: Nicholas Mc Guire <hofrat@osadl.org>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from aserp2120.oracle.com ([141.146.126.78]:41356 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726370AbeKZXzc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 26 Nov 2018 18:55:32 -0500
+Date: Mon, 26 Nov 2018 16:00:32 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: Nicholas Mc Guire <hofrat@osadl.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, devel@driverdev.osuosl.org,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        linux-iio@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, Nicholas Mc Guire <hofrat@osadl.org>
-Subject: [PATCH] staging: iio: adc: ad7280a: check for devm_kasprint() failure
-Date: Mon, 26 Nov 2018 10:39:04 +0100
-Message-Id: <1543225144-27468-1-git-send-email-hofrat@osadl.org>
-List-ID: <linux-iio@vger.kernel.org>
+        linux-kernel@vger.kernel.org,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH] staging: iio: adc: ad7280a: check for devm_kasprint()
+ failure
+Message-ID: <20181126130032.GJ3088@unbuntlaptop>
+References: <1543225144-27468-1-git-send-email-hofrat@osadl.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1543225144-27468-1-git-send-email-hofrat@osadl.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-devm_kasprintf() may return NULL on failure of internal allocation thus
-the assignments to  attr.name  are not safe if not checked. On error
-ad7280_attr_init() returns a negative return so -ENOMEM should be
-OK here (passed on as return value of the probe function).
+On Mon, Nov 26, 2018 at 10:39:04AM +0100, Nicholas Mc Guire wrote:
+> devm_kasprintf() may return NULL on failure of internal allocation thus
+> the assignments to  attr.name  are not safe if not checked. On error
+> ad7280_attr_init() returns a negative return so -ENOMEM should be
+> OK here (passed on as return value of the probe function).
+> 
+> Signed-off-by: Nicholas Mc Guire <hofrat@osadl.org>
+> Fixes: 2051f25d2a26 ("iio: adc: New driver for AD7280A Lithium Ion Battery Monitoring System2")
+> ---
+> 
+> Problem located with an experimental coccinelle script
+> 
+> As using   if(!st->iio_attr[cnt].dev_attr.attr.name)  seamed quite
+> unreadable in this case the  (var  == NULL)  variant was used. Not
+                                   ^^
+Why two spaces?
 
-Signed-off-by: Nicholas Mc Guire <hofrat@osadl.org>
-Fixes: 2051f25d2a26 ("iio: adc: New driver for AD7280A Lithium Ion Battery Monitoring System2")
----
+> sure if there are objections against this (checkpatch.pl issues
+> a CHECK on this).
+> 
 
-Problem located with an experimental coccinelle script
+You should just follow checkpatch rules here.  If you don't, someone
+else will just send a patch to make it checkpatch compliant.  One thing
+you could do is at the start of the loop do:
 
-As using   if(!st->iio_attr[cnt].dev_attr.attr.name)  seamed quite
-unreadable in this case the  (var  == NULL)  variant was used. Not
-sure if there are objections against this (checkpatch.pl issues
-a CHECK on this).
+	struct iio_dev_attr *attr = &st->iio_attr[cnt];
 
-Patch was compile tested with: x86_64_defconfig + STAGING=y
-SPI=y, IIO=y, AD7280=m
+Then it becomes:
 
-Patch is against 4.20-rc4 (localversion-next is next-20181126)
+	if (!attr->dev_attr.attr.name)
 
- drivers/staging/iio/adc/ad7280a.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+It's slightly more readable that way.  Keep in mind that we increment
+cnt++ in the middle of the loop so you'll have to update attr as well.
 
-diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-index 0bb9ab1..5b87530 100644
---- a/drivers/staging/iio/adc/ad7280a.c
-+++ b/drivers/staging/iio/adc/ad7280a.c
-@@ -584,6 +584,9 @@ static int ad7280_attr_init(struct ad7280_state *st)
- 				devm_kasprintf(&st->spi->dev, GFP_KERNEL,
- 					       "in%d-in%d_balance_switch_en",
- 					       index, index + 1);
-+			if (st->iio_attr[cnt].dev_attr.attr.name  == NULL)
-+				return -ENOMEM;
-+
- 			ad7280_attributes[cnt] =
- 				&st->iio_attr[cnt].dev_attr.attr;
- 			cnt++;
-@@ -600,6 +603,9 @@ static int ad7280_attr_init(struct ad7280_state *st)
- 				devm_kasprintf(&st->spi->dev, GFP_KERNEL,
- 					       "in%d-in%d_balance_timer",
- 					       index, index + 1);
-+			if (st->iio_attr[cnt].dev_attr.attr.name == NULL)
-+				return -ENOMEM;
-+
- 			ad7280_attributes[cnt] =
- 				&st->iio_attr[cnt].dev_attr.attr;
- 		}
--- 
-2.1.4
+regards,
+dan carpenter
