@@ -1,243 +1,215 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:54784 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726526AbeKYUr2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 25 Nov 2018 15:47:28 -0500
-Date: Sun, 25 Nov 2018 09:56:38 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Matheus Tavares <matheus.bernardino@usp.br>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        kernel-usp@googlegroups.com, victorcolombo@gmail.com
+Return-Path: <SRS0=/7DO=OG=analog.com=alexandru.Ardelean@kernel.org>
+From: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+To: "lars@metafoo.de" <lars@metafoo.de>, "robh+dt@kernel.org"
+	<robh+dt@kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>, "jic23@kernel.org"
+	<jic23@kernel.org>, "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+	"mark.rutland@arm.com" <mark.rutland@arm.com>, "matheus.bernardino@usp.br"
+	<matheus.bernardino@usp.br>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+CC: "victorcolombo@gmail.com" <victorcolombo@gmail.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+	"kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 Subject: Re: [PATCH v3 7/7] staging:iio:ad2s90: Move out of staging
-Message-ID: <20181125095638.68e5205a@archlinux>
-In-Reply-To: <20181124002312.6923-8-matheus.bernardino@usp.br>
+Date: Mon, 26 Nov 2018 07:34:35 +0000
+Message-ID: <a1b8b1fe23cd707e5988d42aa3d76e6daae5bd5e.camel@analog.com>
 References: <20181124002312.6923-1-matheus.bernardino@usp.br>
-        <20181124002312.6923-8-matheus.bernardino@usp.br>
+	 <20181124002312.6923-8-matheus.bernardino@usp.br>
+In-Reply-To: <20181124002312.6923-8-matheus.bernardino@usp.br>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, 23 Nov 2018 22:23:12 -0200
-Matheus Tavares <matheus.bernardino@usp.br> wrote:
-
-> Move ad2s90 resolver driver out of staging to the main tree.
-> 
-> Signed-off-by: Matheus Tavares <matheus.bernardino@usp.br>
-> Signed-off-by: Victor Colombo <victorcolombo@gmail.com>
-Hi.
-
-One totally trivial comment inline, but if you want to clean
-that up, do it after we have moved this out of staging
-(unless respinning for some other reason).
-
-However, I would like to let this sit on the mailing list for
-a little longer to let others comment and perhaps to pick up
-a review of the DT binding doc (which looks fine to me, but
-I am forever missing issues in those!)
-
-Good work and I'll probably pick this up later in the week.
-
-Thanks,
-
-Jonathan
-> ---
-> Changes in v3:
->  - none
-> 
-> Changes in v2:
->  - Disabled git move detection, to see the whole code, as Jonathan
->  suggested
-> 
->  drivers/iio/resolver/Kconfig          |  10 ++
->  drivers/iio/resolver/Makefile         |   1 +
->  drivers/iio/resolver/ad2s90.c         | 131 ++++++++++++++++++++++++++
->  drivers/staging/iio/resolver/Kconfig  |  10 --
->  drivers/staging/iio/resolver/Makefile |   1 -
->  drivers/staging/iio/resolver/ad2s90.c | 131 --------------------------
->  6 files changed, 142 insertions(+), 142 deletions(-)
->  create mode 100644 drivers/iio/resolver/ad2s90.c
->  delete mode 100644 drivers/staging/iio/resolver/ad2s90.c
-> 
-> diff --git a/drivers/iio/resolver/Kconfig b/drivers/iio/resolver/Kconfig
-> index 2ced9f22aa70..786801be54f6 100644
-> --- a/drivers/iio/resolver/Kconfig
-> +++ b/drivers/iio/resolver/Kconfig
-> @@ -3,6 +3,16 @@
->  #
->  menu "Resolver to digital converters"
->  
-> +config AD2S90
-> +	tristate "Analog Devices ad2s90 driver"
-> +	depends on SPI
-> +	help
-> +	  Say yes here to build support for Analog Devices spi resolver
-> +	  to digital converters, ad2s90, provides direct access via sysfs.
-> +
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called ad2s90.
-> +
->  config AD2S1200
->  	tristate "Analog Devices ad2s1200/ad2s1205 driver"
->  	depends on SPI
-> diff --git a/drivers/iio/resolver/Makefile b/drivers/iio/resolver/Makefile
-> index 4e1dccae07e7..398d82d50028 100644
-> --- a/drivers/iio/resolver/Makefile
-> +++ b/drivers/iio/resolver/Makefile
-> @@ -2,4 +2,5 @@
->  # Makefile for Resolver/Synchro drivers
->  #
->  
-> +obj-$(CONFIG_AD2S90) += ad2s90.o
->  obj-$(CONFIG_AD2S1200) += ad2s1200.o
-> diff --git a/drivers/iio/resolver/ad2s90.c b/drivers/iio/resolver/ad2s90.c
-> new file mode 100644
-> index 000000000000..a41f5cb10da5
-> --- /dev/null
-> +++ b/drivers/iio/resolver/ad2s90.c
-> @@ -0,0 +1,131 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * ad2s90.c simple support for the ADI Resolver to Digital Converters: AD2S90
-> + *
-> + * Copyright (c) 2010-2010 Analog Devices Inc.
-> + */
-> +#include <linux/types.h>
-> +#include <linux/mutex.h>
-> +#include <linux/device.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/slab.h>
-> +#include <linux/sysfs.h>
-> +#include <linux/module.h>
-
-We are into the truely trivial realms now - alphabetical order preferred
-for includes.
-
-> +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +
-> +/*
-> + * Although chip's max frequency is 2Mhz, it needs 600ns between CS and the
-> + * first falling edge of SCLK, so frequency should be at most 1 / (2 * 6e-7)
-> + */
-> +#define AD2S90_MAX_SPI_FREQ_HZ  830000
-> +
-> +struct ad2s90_state {
-> +	struct mutex lock; /* lock to protect rx buffer */
-> +	struct spi_device *sdev;
-> +	u8 rx[2] ____cacheline_aligned;
-> +};
-> +
-> +static int ad2s90_read_raw(struct iio_dev *indio_dev,
-> +			   struct iio_chan_spec const *chan,
-> +			   int *val,
-> +			   int *val2,
-> +			   long m)
-> +{
-> +	int ret;
-> +	struct ad2s90_state *st = iio_priv(indio_dev);
-> +
-> +	if (chan->type != IIO_ANGL)
-> +		return -EINVAL;
-> +
-> +	switch (m) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		/* 2 * Pi / 2^12 */
-> +		*val = 6283; /* mV */
-> +		*val2 = 12;
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +	case IIO_CHAN_INFO_RAW:
-> +		mutex_lock(&st->lock);
-> +		ret = spi_read(st->sdev, st->rx, 2);
-> +		if (ret < 0) {
-> +			mutex_unlock(&st->lock);
-> +			return ret;
-> +		}
-> +		*val = (((u16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >> 4);
-> +
-> +		mutex_unlock(&st->lock);
-> +
-> +		return IIO_VAL_INT;
-> +	default:
-> +		break;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static const struct iio_info ad2s90_info = {
-> +	.read_raw = ad2s90_read_raw,
-> +};
-> +
-> +static const struct iio_chan_spec ad2s90_chan = {
-> +	.type = IIO_ANGL,
-> +	.indexed = 1,
-> +	.channel = 0,
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-> +};
-> +
-> +static int ad2s90_probe(struct spi_device *spi)
-> +{
-> +	struct iio_dev *indio_dev;
-> +	struct ad2s90_state *st;
-> +
-> +	if (spi->max_speed_hz > AD2S90_MAX_SPI_FREQ_HZ) {
-> +		dev_err(&spi->dev, "SPI CLK, %d Hz exceeds %d Hz\n",
-> +			spi->max_speed_hz, AD2S90_MAX_SPI_FREQ_HZ);
-> +		return -EINVAL;
-> +	}
-> +
-> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +	st = iio_priv(indio_dev);
-> +	spi_set_drvdata(spi, indio_dev);
-> +
-> +	mutex_init(&st->lock);
-> +	st->sdev = spi;
-> +	indio_dev->dev.parent = &spi->dev;
-> +	indio_dev->info = &ad2s90_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = &ad2s90_chan;
-> +	indio_dev->num_channels = 1;
-> +	indio_dev->name = spi_get_device_id(spi)->name;
-> +
-> +	return devm_iio_device_register(indio_dev->dev.parent, indio_dev);
-> +}
-> +
-> +static const struct of_device_id ad2s90_of_match[] = {
-> +	{ .compatible = "adi,ad2s90", },
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(of, ad2s90_of_match);
-> +
-> +static const struct spi_device_id ad2s90_id[] = {
-> +	{ "ad2s90" },
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(spi, ad2s90_id);
-> +
-> +static struct spi_driver ad2s90_driver = {
-> +	.driver = {
-> +		.name = "ad2s90",
-> +		.of_match_table = ad2s90_of_match,
-> +	},
-> +	.probe = ad2s90_probe,
-> +	.id_table = ad2s90_id,
-> +};
-> +module_spi_driver(ad2s90_driver);
-> +
-> +MODULE_AUTHOR("Graff Yang <graff.yang@gmail.com>");
-> +MODULE_DESCRIPTION("Analog Devices AD2S90 Resolver to Digital SPI driver");
-> +MODULE_LICENSE("GPL v2");
-...
+T24gRnJpLCAyMDE4LTExLTIzIGF0IDIyOjIzIC0wMjAwLCBNYXRoZXVzIFRhdmFyZXMgd3JvdGU6
+DQo+IE1vdmUgYWQyczkwIHJlc29sdmVyIGRyaXZlciBvdXQgb2Ygc3RhZ2luZyB0byB0aGUgbWFp
+biB0cmVlLg0KPiANCg0KQWNrZWQtYnk6IEFsZXhhbmRydSBBcmRlbGVhbiA8YWxleGFuZHJ1LmFy
+ZGVsZWFuQGFuYWxvZy5jb20+DQoNCj4gU2lnbmVkLW9mZi1ieTogTWF0aGV1cyBUYXZhcmVzIDxt
+YXRoZXVzLmJlcm5hcmRpbm9AdXNwLmJyPg0KPiBTaWduZWQtb2ZmLWJ5OiBWaWN0b3IgQ29sb21i
+byA8dmljdG9yY29sb21ib0BnbWFpbC5jb20+DQo+IC0tLQ0KPiBDaGFuZ2VzIGluIHYzOg0KPiAg
+LSBub25lDQo+IA0KPiBDaGFuZ2VzIGluIHYyOg0KPiAgLSBEaXNhYmxlZCBnaXQgbW92ZSBkZXRl
+Y3Rpb24sIHRvIHNlZSB0aGUgd2hvbGUgY29kZSwgYXMgSm9uYXRoYW4NCj4gIHN1Z2dlc3RlZA0K
+PiANCj4gIGRyaXZlcnMvaWlvL3Jlc29sdmVyL0tjb25maWcgICAgICAgICAgfCAgMTAgKysNCj4g
+IGRyaXZlcnMvaWlvL3Jlc29sdmVyL01ha2VmaWxlICAgICAgICAgfCAgIDEgKw0KPiAgZHJpdmVy
+cy9paW8vcmVzb2x2ZXIvYWQyczkwLmMgICAgICAgICB8IDEzMSArKysrKysrKysrKysrKysrKysr
+KysrKysrKw0KPiAgZHJpdmVycy9zdGFnaW5nL2lpby9yZXNvbHZlci9LY29uZmlnICB8ICAxMCAt
+LQ0KPiAgZHJpdmVycy9zdGFnaW5nL2lpby9yZXNvbHZlci9NYWtlZmlsZSB8ICAgMSAtDQo+ICBk
+cml2ZXJzL3N0YWdpbmcvaWlvL3Jlc29sdmVyL2FkMnM5MC5jIHwgMTMxIC0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tDQo+ICA2IGZpbGVzIGNoYW5nZWQsIDE0MiBpbnNlcnRpb25zKCspLCAxNDIg
+ZGVsZXRpb25zKC0pDQo+ICBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9paW8vcmVzb2x2ZXIv
+YWQyczkwLmMNCj4gIGRlbGV0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL3N0YWdpbmcvaWlvL3Jlc29s
+dmVyL2FkMnM5MC5jDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9paW8vcmVzb2x2ZXIvS2Nv
+bmZpZyBiL2RyaXZlcnMvaWlvL3Jlc29sdmVyL0tjb25maWcNCj4gaW5kZXggMmNlZDlmMjJhYTcw
+Li43ODY4MDFiZTU0ZjYgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvaWlvL3Jlc29sdmVyL0tjb25m
+aWcNCj4gKysrIGIvZHJpdmVycy9paW8vcmVzb2x2ZXIvS2NvbmZpZw0KPiBAQCAtMyw2ICszLDE2
+IEBADQo+ICAjDQo+ICBtZW51ICJSZXNvbHZlciB0byBkaWdpdGFsIGNvbnZlcnRlcnMiDQo+ICAN
+Cj4gK2NvbmZpZyBBRDJTOTANCj4gKwl0cmlzdGF0ZSAiQW5hbG9nIERldmljZXMgYWQyczkwIGRy
+aXZlciINCj4gKwlkZXBlbmRzIG9uIFNQSQ0KPiArCWhlbHANCj4gKwkgIFNheSB5ZXMgaGVyZSB0
+byBidWlsZCBzdXBwb3J0IGZvciBBbmFsb2cgRGV2aWNlcyBzcGkgcmVzb2x2ZXINCj4gKwkgIHRv
+IGRpZ2l0YWwgY29udmVydGVycywgYWQyczkwLCBwcm92aWRlcyBkaXJlY3QgYWNjZXNzIHZpYSBz
+eXNmcy4NCj4gKw0KPiArCSAgVG8gY29tcGlsZSB0aGlzIGRyaXZlciBhcyBhIG1vZHVsZSwgY2hv
+b3NlIE0gaGVyZTogdGhlDQo+ICsJICBtb2R1bGUgd2lsbCBiZSBjYWxsZWQgYWQyczkwLg0KPiAr
+DQo+ICBjb25maWcgQUQyUzEyMDANCj4gIAl0cmlzdGF0ZSAiQW5hbG9nIERldmljZXMgYWQyczEy
+MDAvYWQyczEyMDUgZHJpdmVyIg0KPiAgCWRlcGVuZHMgb24gU1BJDQo+IGRpZmYgLS1naXQgYS9k
+cml2ZXJzL2lpby9yZXNvbHZlci9NYWtlZmlsZQ0KPiBiL2RyaXZlcnMvaWlvL3Jlc29sdmVyL01h
+a2VmaWxlDQo+IGluZGV4IDRlMWRjY2FlMDdlNy4uMzk4ZDgyZDUwMDI4IDEwMDY0NA0KPiAtLS0g
+YS9kcml2ZXJzL2lpby9yZXNvbHZlci9NYWtlZmlsZQ0KPiArKysgYi9kcml2ZXJzL2lpby9yZXNv
+bHZlci9NYWtlZmlsZQ0KPiBAQCAtMiw0ICsyLDUgQEANCj4gICMgTWFrZWZpbGUgZm9yIFJlc29s
+dmVyL1N5bmNocm8gZHJpdmVycw0KPiAgIw0KPiAgDQo+ICtvYmotJChDT05GSUdfQUQyUzkwKSAr
+PSBhZDJzOTAubw0KPiAgb2JqLSQoQ09ORklHX0FEMlMxMjAwKSArPSBhZDJzMTIwMC5vDQo+IGRp
+ZmYgLS1naXQgYS9kcml2ZXJzL2lpby9yZXNvbHZlci9hZDJzOTAuYw0KPiBiL2RyaXZlcnMvaWlv
+L3Jlc29sdmVyL2FkMnM5MC5jDQo+IG5ldyBmaWxlIG1vZGUgMTAwNjQ0DQo+IGluZGV4IDAwMDAw
+MDAwMDAwMC4uYTQxZjVjYjEwZGE1DQo+IC0tLSAvZGV2L251bGwNCj4gKysrIGIvZHJpdmVycy9p
+aW8vcmVzb2x2ZXIvYWQyczkwLmMNCj4gQEAgLTAsMCArMSwxMzEgQEANCj4gKy8vIFNQRFgtTGlj
+ZW5zZS1JZGVudGlmaWVyOiBHUEwtMi4wDQo+ICsvKg0KPiArICogYWQyczkwLmMgc2ltcGxlIHN1
+cHBvcnQgZm9yIHRoZSBBREkgUmVzb2x2ZXIgdG8gRGlnaXRhbCBDb252ZXJ0ZXJzOg0KPiBBRDJT
+OTANCj4gKyAqDQo+ICsgKiBDb3B5cmlnaHQgKGMpIDIwMTAtMjAxMCBBbmFsb2cgRGV2aWNlcyBJ
+bmMuDQo+ICsgKi8NCj4gKyNpbmNsdWRlIDxsaW51eC90eXBlcy5oPg0KPiArI2luY2x1ZGUgPGxp
+bnV4L211dGV4Lmg+DQo+ICsjaW5jbHVkZSA8bGludXgvZGV2aWNlLmg+DQo+ICsjaW5jbHVkZSA8
+bGludXgvc3BpL3NwaS5oPg0KPiArI2luY2x1ZGUgPGxpbnV4L3NsYWIuaD4NCj4gKyNpbmNsdWRl
+IDxsaW51eC9zeXNmcy5oPg0KPiArI2luY2x1ZGUgPGxpbnV4L21vZHVsZS5oPg0KPiArDQo+ICsj
+aW5jbHVkZSA8bGludXgvaWlvL2lpby5oPg0KPiArI2luY2x1ZGUgPGxpbnV4L2lpby9zeXNmcy5o
+Pg0KPiArDQo+ICsvKg0KPiArICogQWx0aG91Z2ggY2hpcCdzIG1heCBmcmVxdWVuY3kgaXMgMk1o
+eiwgaXQgbmVlZHMgNjAwbnMgYmV0d2VlbiBDUyBhbmQNCj4gdGhlDQo+ICsgKiBmaXJzdCBmYWxs
+aW5nIGVkZ2Ugb2YgU0NMSywgc28gZnJlcXVlbmN5IHNob3VsZCBiZSBhdCBtb3N0IDEgLyAoMiAq
+DQo+IDZlLTcpDQo+ICsgKi8NCj4gKyNkZWZpbmUgQUQyUzkwX01BWF9TUElfRlJFUV9IWiAgODMw
+MDAwDQo+ICsNCj4gK3N0cnVjdCBhZDJzOTBfc3RhdGUgew0KPiArCXN0cnVjdCBtdXRleCBsb2Nr
+OyAvKiBsb2NrIHRvIHByb3RlY3QgcnggYnVmZmVyICovDQo+ICsJc3RydWN0IHNwaV9kZXZpY2Ug
+KnNkZXY7DQo+ICsJdTggcnhbMl0gX19fX2NhY2hlbGluZV9hbGlnbmVkOw0KPiArfTsNCj4gKw0K
+PiArc3RhdGljIGludCBhZDJzOTBfcmVhZF9yYXcoc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiwN
+Cj4gKwkJCSAgIHN0cnVjdCBpaW9fY2hhbl9zcGVjIGNvbnN0ICpjaGFuLA0KPiArCQkJICAgaW50
+ICp2YWwsDQo+ICsJCQkgICBpbnQgKnZhbDIsDQo+ICsJCQkgICBsb25nIG0pDQo+ICt7DQo+ICsJ
+aW50IHJldDsNCj4gKwlzdHJ1Y3QgYWQyczkwX3N0YXRlICpzdCA9IGlpb19wcml2KGluZGlvX2Rl
+dik7DQo+ICsNCj4gKwlpZiAoY2hhbi0+dHlwZSAhPSBJSU9fQU5HTCkNCj4gKwkJcmV0dXJuIC1F
+SU5WQUw7DQo+ICsNCj4gKwlzd2l0Y2ggKG0pIHsNCj4gKwljYXNlIElJT19DSEFOX0lORk9fU0NB
+TEU6DQo+ICsJCS8qIDIgKiBQaSAvIDJeMTIgKi8NCj4gKwkJKnZhbCA9IDYyODM7IC8qIG1WICov
+DQo+ICsJCSp2YWwyID0gMTI7DQo+ICsJCXJldHVybiBJSU9fVkFMX0ZSQUNUSU9OQUxfTE9HMjsN
+Cj4gKwljYXNlIElJT19DSEFOX0lORk9fUkFXOg0KPiArCQltdXRleF9sb2NrKCZzdC0+bG9jayk7
+DQo+ICsJCXJldCA9IHNwaV9yZWFkKHN0LT5zZGV2LCBzdC0+cngsIDIpOw0KPiArCQlpZiAocmV0
+IDwgMCkgew0KPiArCQkJbXV0ZXhfdW5sb2NrKCZzdC0+bG9jayk7DQo+ICsJCQlyZXR1cm4gcmV0
+Ow0KPiArCQl9DQo+ICsJCSp2YWwgPSAoKCh1MTYpKHN0LT5yeFswXSkpIDw8IDQpIHwgKChzdC0+
+cnhbMV0gJiAweEYwKSA+Pg0KPiA0KTsNCj4gKw0KPiArCQltdXRleF91bmxvY2soJnN0LT5sb2Nr
+KTsNCj4gKw0KPiArCQlyZXR1cm4gSUlPX1ZBTF9JTlQ7DQo+ICsJZGVmYXVsdDoNCj4gKwkJYnJl
+YWs7DQo+ICsJfQ0KPiArDQo+ICsJcmV0dXJuIC1FSU5WQUw7DQo+ICt9DQo+ICsNCj4gK3N0YXRp
+YyBjb25zdCBzdHJ1Y3QgaWlvX2luZm8gYWQyczkwX2luZm8gPSB7DQo+ICsJLnJlYWRfcmF3ID0g
+YWQyczkwX3JlYWRfcmF3LA0KPiArfTsNCj4gKw0KPiArc3RhdGljIGNvbnN0IHN0cnVjdCBpaW9f
+Y2hhbl9zcGVjIGFkMnM5MF9jaGFuID0gew0KPiArCS50eXBlID0gSUlPX0FOR0wsDQo+ICsJLmlu
+ZGV4ZWQgPSAxLA0KPiArCS5jaGFubmVsID0gMCwNCj4gKwkuaW5mb19tYXNrX3NlcGFyYXRlID0g
+QklUKElJT19DSEFOX0lORk9fUkFXKSB8DQo+IEJJVChJSU9fQ0hBTl9JTkZPX1NDQUxFKSwNCj4g
+K307DQo+ICsNCj4gK3N0YXRpYyBpbnQgYWQyczkwX3Byb2JlKHN0cnVjdCBzcGlfZGV2aWNlICpz
+cGkpDQo+ICt7DQo+ICsJc3RydWN0IGlpb19kZXYgKmluZGlvX2RldjsNCj4gKwlzdHJ1Y3QgYWQy
+czkwX3N0YXRlICpzdDsNCj4gKw0KPiArCWlmIChzcGktPm1heF9zcGVlZF9oeiA+IEFEMlM5MF9N
+QVhfU1BJX0ZSRVFfSFopIHsNCj4gKwkJZGV2X2Vycigmc3BpLT5kZXYsICJTUEkgQ0xLLCAlZCBI
+eiBleGNlZWRzICVkIEh6XG4iLA0KPiArCQkJc3BpLT5tYXhfc3BlZWRfaHosIEFEMlM5MF9NQVhf
+U1BJX0ZSRVFfSFopOw0KPiArCQlyZXR1cm4gLUVJTlZBTDsNCj4gKwl9DQo+ICsNCj4gKwlpbmRp
+b19kZXYgPSBkZXZtX2lpb19kZXZpY2VfYWxsb2MoJnNwaS0+ZGV2LCBzaXplb2YoKnN0KSk7DQo+
+ICsJaWYgKCFpbmRpb19kZXYpDQo+ICsJCXJldHVybiAtRU5PTUVNOw0KPiArCXN0ID0gaWlvX3By
+aXYoaW5kaW9fZGV2KTsNCj4gKwlzcGlfc2V0X2RydmRhdGEoc3BpLCBpbmRpb19kZXYpOw0KPiAr
+DQo+ICsJbXV0ZXhfaW5pdCgmc3QtPmxvY2spOw0KPiArCXN0LT5zZGV2ID0gc3BpOw0KPiArCWlu
+ZGlvX2Rldi0+ZGV2LnBhcmVudCA9ICZzcGktPmRldjsNCj4gKwlpbmRpb19kZXYtPmluZm8gPSAm
+YWQyczkwX2luZm87DQo+ICsJaW5kaW9fZGV2LT5tb2RlcyA9IElORElPX0RJUkVDVF9NT0RFOw0K
+PiArCWluZGlvX2Rldi0+Y2hhbm5lbHMgPSAmYWQyczkwX2NoYW47DQo+ICsJaW5kaW9fZGV2LT5u
+dW1fY2hhbm5lbHMgPSAxOw0KPiArCWluZGlvX2Rldi0+bmFtZSA9IHNwaV9nZXRfZGV2aWNlX2lk
+KHNwaSktPm5hbWU7DQo+ICsNCj4gKwlyZXR1cm4gZGV2bV9paW9fZGV2aWNlX3JlZ2lzdGVyKGlu
+ZGlvX2Rldi0+ZGV2LnBhcmVudCwgaW5kaW9fZGV2KTsNCj4gK30NCj4gKw0KPiArc3RhdGljIGNv
+bnN0IHN0cnVjdCBvZl9kZXZpY2VfaWQgYWQyczkwX29mX21hdGNoW10gPSB7DQo+ICsJeyAuY29t
+cGF0aWJsZSA9ICJhZGksYWQyczkwIiwgfSwNCj4gKwl7fQ0KPiArfTsNCj4gK01PRFVMRV9ERVZJ
+Q0VfVEFCTEUob2YsIGFkMnM5MF9vZl9tYXRjaCk7DQo+ICsNCj4gK3N0YXRpYyBjb25zdCBzdHJ1
+Y3Qgc3BpX2RldmljZV9pZCBhZDJzOTBfaWRbXSA9IHsNCj4gKwl7ICJhZDJzOTAiIH0sDQo+ICsJ
+e30NCj4gK307DQo+ICtNT0RVTEVfREVWSUNFX1RBQkxFKHNwaSwgYWQyczkwX2lkKTsNCj4gKw0K
+PiArc3RhdGljIHN0cnVjdCBzcGlfZHJpdmVyIGFkMnM5MF9kcml2ZXIgPSB7DQo+ICsJLmRyaXZl
+ciA9IHsNCj4gKwkJLm5hbWUgPSAiYWQyczkwIiwNCj4gKwkJLm9mX21hdGNoX3RhYmxlID0gYWQy
+czkwX29mX21hdGNoLA0KPiArCX0sDQo+ICsJLnByb2JlID0gYWQyczkwX3Byb2JlLA0KPiArCS5p
+ZF90YWJsZSA9IGFkMnM5MF9pZCwNCj4gK307DQo+ICttb2R1bGVfc3BpX2RyaXZlcihhZDJzOTBf
+ZHJpdmVyKTsNCj4gKw0KPiArTU9EVUxFX0FVVEhPUigiR3JhZmYgWWFuZyA8Z3JhZmYueWFuZ0Bn
+bWFpbC5jb20+Iik7DQo+ICtNT0RVTEVfREVTQ1JJUFRJT04oIkFuYWxvZyBEZXZpY2VzIEFEMlM5
+MCBSZXNvbHZlciB0byBEaWdpdGFsIFNQSQ0KPiBkcml2ZXIiKTsNCj4gK01PRFVMRV9MSUNFTlNF
+KCJHUEwgdjIiKTsNCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvc3RhZ2luZy9paW8vcmVzb2x2ZXIv
+S2NvbmZpZw0KPiBiL2RyaXZlcnMvc3RhZ2luZy9paW8vcmVzb2x2ZXIvS2NvbmZpZw0KPiBpbmRl
+eCA2YTQ2OWVlNjEwMWYuLjRhNzI3YzE3YmI4ZiAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9zdGFn
+aW5nL2lpby9yZXNvbHZlci9LY29uZmlnDQo+ICsrKyBiL2RyaXZlcnMvc3RhZ2luZy9paW8vcmVz
+b2x2ZXIvS2NvbmZpZw0KPiBAQCAtMywxNiArMyw2IEBADQo+ICAjDQo+ICBtZW51ICJSZXNvbHZl
+ciB0byBkaWdpdGFsIGNvbnZlcnRlcnMiDQo+ICANCj4gLWNvbmZpZyBBRDJTOTANCj4gLQl0cmlz
+dGF0ZSAiQW5hbG9nIERldmljZXMgYWQyczkwIGRyaXZlciINCj4gLQlkZXBlbmRzIG9uIFNQSQ0K
+PiAtCWhlbHANCj4gLQkgIFNheSB5ZXMgaGVyZSB0byBidWlsZCBzdXBwb3J0IGZvciBBbmFsb2cg
+RGV2aWNlcyBzcGkgcmVzb2x2ZXINCj4gLQkgIHRvIGRpZ2l0YWwgY29udmVydGVycywgYWQyczkw
+LCBwcm92aWRlcyBkaXJlY3QgYWNjZXNzIHZpYSBzeXNmcy4NCj4gLQ0KPiAtCSAgVG8gY29tcGls
+ZSB0aGlzIGRyaXZlciBhcyBhIG1vZHVsZSwgY2hvb3NlIE0gaGVyZTogdGhlDQo+IC0JICBtb2R1
+bGUgd2lsbCBiZSBjYWxsZWQgYWQyczkwLg0KPiAtDQo+ICBjb25maWcgQUQyUzEyMTANCj4gIAl0
+cmlzdGF0ZSAiQW5hbG9nIERldmljZXMgYWQyczEyMTAgZHJpdmVyIg0KPiAgCWRlcGVuZHMgb24g
+U1BJDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3N0YWdpbmcvaWlvL3Jlc29sdmVyL01ha2VmaWxl
+DQo+IGIvZHJpdmVycy9zdGFnaW5nL2lpby9yZXNvbHZlci9NYWtlZmlsZQ0KPiBpbmRleCA4ZDkw
+MWRjNzUwMGIuLmIyMDQ5ZjJjZTM2ZSAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9zdGFnaW5nL2lp
+by9yZXNvbHZlci9NYWtlZmlsZQ0KPiArKysgYi9kcml2ZXJzL3N0YWdpbmcvaWlvL3Jlc29sdmVy
+L01ha2VmaWxlDQo+IEBAIC0yLDUgKzIsNCBAQA0KPiAgIyBNYWtlZmlsZSBmb3IgUmVzb2x2ZXIv
+U3luY2hybyBkcml2ZXJzDQo+ICAjDQo+ICANCj4gLW9iai0kKENPTkZJR19BRDJTOTApICs9IGFk
+MnM5MC5vDQo+ICBvYmotJChDT05GSUdfQUQyUzEyMTApICs9IGFkMnMxMjEwLm8NCj4gZGlmZiAt
+LWdpdCBhL2RyaXZlcnMvc3RhZ2luZy9paW8vcmVzb2x2ZXIvYWQyczkwLmMNCj4gYi9kcml2ZXJz
+L3N0YWdpbmcvaWlvL3Jlc29sdmVyL2FkMnM5MC5jDQo+IGRlbGV0ZWQgZmlsZSBtb2RlIDEwMDY0
+NA0KPiBpbmRleCBhNDFmNWNiMTBkYTUuLjAwMDAwMDAwMDAwMA0KPiAtLS0gYS9kcml2ZXJzL3N0
+YWdpbmcvaWlvL3Jlc29sdmVyL2FkMnM5MC5jDQo+ICsrKyAvZGV2L251bGwNCj4gQEAgLTEsMTMx
+ICswLDAgQEANCj4gLS8vIFNQRFgtTGljZW5zZS1JZGVudGlmaWVyOiBHUEwtMi4wDQo+IC0vKg0K
+PiAtICogYWQyczkwLmMgc2ltcGxlIHN1cHBvcnQgZm9yIHRoZSBBREkgUmVzb2x2ZXIgdG8gRGln
+aXRhbCBDb252ZXJ0ZXJzOg0KPiBBRDJTOTANCj4gLSAqDQo+IC0gKiBDb3B5cmlnaHQgKGMpIDIw
+MTAtMjAxMCBBbmFsb2cgRGV2aWNlcyBJbmMuDQo+IC0gKi8NCj4gLSNpbmNsdWRlIDxsaW51eC90
+eXBlcy5oPg0KPiAtI2luY2x1ZGUgPGxpbnV4L211dGV4Lmg+DQo+IC0jaW5jbHVkZSA8bGludXgv
+ZGV2aWNlLmg+DQo+IC0jaW5jbHVkZSA8bGludXgvc3BpL3NwaS5oPg0KPiAtI2luY2x1ZGUgPGxp
+bnV4L3NsYWIuaD4NCj4gLSNpbmNsdWRlIDxsaW51eC9zeXNmcy5oPg0KPiAtI2luY2x1ZGUgPGxp
+bnV4L21vZHVsZS5oPg0KPiAtDQo+IC0jaW5jbHVkZSA8bGludXgvaWlvL2lpby5oPg0KPiAtI2lu
+Y2x1ZGUgPGxpbnV4L2lpby9zeXNmcy5oPg0KPiAtDQo+IC0vKg0KPiAtICogQWx0aG91Z2ggY2hp
+cCdzIG1heCBmcmVxdWVuY3kgaXMgMk1oeiwgaXQgbmVlZHMgNjAwbnMgYmV0d2VlbiBDUyBhbmQN
+Cj4gdGhlDQo+IC0gKiBmaXJzdCBmYWxsaW5nIGVkZ2Ugb2YgU0NMSywgc28gZnJlcXVlbmN5IHNo
+b3VsZCBiZSBhdCBtb3N0IDEgLyAoMiAqDQo+IDZlLTcpDQo+IC0gKi8NCj4gLSNkZWZpbmUgQUQy
+UzkwX01BWF9TUElfRlJFUV9IWiAgODMwMDAwDQo+IC0NCj4gLXN0cnVjdCBhZDJzOTBfc3RhdGUg
+ew0KPiAtCXN0cnVjdCBtdXRleCBsb2NrOyAvKiBsb2NrIHRvIHByb3RlY3QgcnggYnVmZmVyICov
+DQo+IC0Jc3RydWN0IHNwaV9kZXZpY2UgKnNkZXY7DQo+IC0JdTggcnhbMl0gX19fX2NhY2hlbGlu
+ZV9hbGlnbmVkOw0KPiAtfTsNCj4gLQ0KPiAtc3RhdGljIGludCBhZDJzOTBfcmVhZF9yYXcoc3Ry
+dWN0IGlpb19kZXYgKmluZGlvX2RldiwNCj4gLQkJCSAgIHN0cnVjdCBpaW9fY2hhbl9zcGVjIGNv
+bnN0ICpjaGFuLA0KPiAtCQkJICAgaW50ICp2YWwsDQo+IC0JCQkgICBpbnQgKnZhbDIsDQo+IC0J
+CQkgICBsb25nIG0pDQo+IC17DQo+IC0JaW50IHJldDsNCj4gLQlzdHJ1Y3QgYWQyczkwX3N0YXRl
+ICpzdCA9IGlpb19wcml2KGluZGlvX2Rldik7DQo+IC0NCj4gLQlpZiAoY2hhbi0+dHlwZSAhPSBJ
+SU9fQU5HTCkNCj4gLQkJcmV0dXJuIC1FSU5WQUw7DQo+IC0NCj4gLQlzd2l0Y2ggKG0pIHsNCj4g
+LQljYXNlIElJT19DSEFOX0lORk9fU0NBTEU6DQo+IC0JCS8qIDIgKiBQaSAvIDJeMTIgKi8NCj4g
+LQkJKnZhbCA9IDYyODM7IC8qIG1WICovDQo+IC0JCSp2YWwyID0gMTI7DQo+IC0JCXJldHVybiBJ
+SU9fVkFMX0ZSQUNUSU9OQUxfTE9HMjsNCj4gLQljYXNlIElJT19DSEFOX0lORk9fUkFXOg0KPiAt
+CQltdXRleF9sb2NrKCZzdC0+bG9jayk7DQo+IC0JCXJldCA9IHNwaV9yZWFkKHN0LT5zZGV2LCBz
+dC0+cngsIDIpOw0KPiAtCQlpZiAocmV0IDwgMCkgew0KPiAtCQkJbXV0ZXhfdW5sb2NrKCZzdC0+
+bG9jayk7DQo+IC0JCQlyZXR1cm4gcmV0Ow0KPiAtCQl9DQo+IC0JCSp2YWwgPSAoKCh1MTYpKHN0
+LT5yeFswXSkpIDw8IDQpIHwgKChzdC0+cnhbMV0gJiAweEYwKSA+Pg0KPiA0KTsNCj4gLQ0KPiAt
+CQltdXRleF91bmxvY2soJnN0LT5sb2NrKTsNCj4gLQ0KPiAtCQlyZXR1cm4gSUlPX1ZBTF9JTlQ7
+DQo+IC0JZGVmYXVsdDoNCj4gLQkJYnJlYWs7DQo+IC0JfQ0KPiAtDQo+IC0JcmV0dXJuIC1FSU5W
+QUw7DQo+IC19DQo+IC0NCj4gLXN0YXRpYyBjb25zdCBzdHJ1Y3QgaWlvX2luZm8gYWQyczkwX2lu
+Zm8gPSB7DQo+IC0JLnJlYWRfcmF3ID0gYWQyczkwX3JlYWRfcmF3LA0KPiAtfTsNCj4gLQ0KPiAt
+c3RhdGljIGNvbnN0IHN0cnVjdCBpaW9fY2hhbl9zcGVjIGFkMnM5MF9jaGFuID0gew0KPiAtCS50
+eXBlID0gSUlPX0FOR0wsDQo+IC0JLmluZGV4ZWQgPSAxLA0KPiAtCS5jaGFubmVsID0gMCwNCj4g
+LQkuaW5mb19tYXNrX3NlcGFyYXRlID0gQklUKElJT19DSEFOX0lORk9fUkFXKSB8DQo+IEJJVChJ
+SU9fQ0hBTl9JTkZPX1NDQUxFKSwNCj4gLX07DQo+IC0NCj4gLXN0YXRpYyBpbnQgYWQyczkwX3By
+b2JlKHN0cnVjdCBzcGlfZGV2aWNlICpzcGkpDQo+IC17DQo+IC0Jc3RydWN0IGlpb19kZXYgKmlu
+ZGlvX2RldjsNCj4gLQlzdHJ1Y3QgYWQyczkwX3N0YXRlICpzdDsNCj4gLQ0KPiAtCWlmIChzcGkt
+Pm1heF9zcGVlZF9oeiA+IEFEMlM5MF9NQVhfU1BJX0ZSRVFfSFopIHsNCj4gLQkJZGV2X2Vycigm
+c3BpLT5kZXYsICJTUEkgQ0xLLCAlZCBIeiBleGNlZWRzICVkIEh6XG4iLA0KPiAtCQkJc3BpLT5t
+YXhfc3BlZWRfaHosIEFEMlM5MF9NQVhfU1BJX0ZSRVFfSFopOw0KPiAtCQlyZXR1cm4gLUVJTlZB
+TDsNCj4gLQl9DQo+IC0NCj4gLQlpbmRpb19kZXYgPSBkZXZtX2lpb19kZXZpY2VfYWxsb2MoJnNw
+aS0+ZGV2LCBzaXplb2YoKnN0KSk7DQo+IC0JaWYgKCFpbmRpb19kZXYpDQo+IC0JCXJldHVybiAt
+RU5PTUVNOw0KPiAtCXN0ID0gaWlvX3ByaXYoaW5kaW9fZGV2KTsNCj4gLQlzcGlfc2V0X2RydmRh
+dGEoc3BpLCBpbmRpb19kZXYpOw0KPiAtDQo+IC0JbXV0ZXhfaW5pdCgmc3QtPmxvY2spOw0KPiAt
+CXN0LT5zZGV2ID0gc3BpOw0KPiAtCWluZGlvX2Rldi0+ZGV2LnBhcmVudCA9ICZzcGktPmRldjsN
+Cj4gLQlpbmRpb19kZXYtPmluZm8gPSAmYWQyczkwX2luZm87DQo+IC0JaW5kaW9fZGV2LT5tb2Rl
+cyA9IElORElPX0RJUkVDVF9NT0RFOw0KPiAtCWluZGlvX2Rldi0+Y2hhbm5lbHMgPSAmYWQyczkw
+X2NoYW47DQo+IC0JaW5kaW9fZGV2LT5udW1fY2hhbm5lbHMgPSAxOw0KPiAtCWluZGlvX2Rldi0+
+bmFtZSA9IHNwaV9nZXRfZGV2aWNlX2lkKHNwaSktPm5hbWU7DQo+IC0NCj4gLQlyZXR1cm4gZGV2
+bV9paW9fZGV2aWNlX3JlZ2lzdGVyKGluZGlvX2Rldi0+ZGV2LnBhcmVudCwgaW5kaW9fZGV2KTsN
+Cj4gLX0NCj4gLQ0KPiAtc3RhdGljIGNvbnN0IHN0cnVjdCBvZl9kZXZpY2VfaWQgYWQyczkwX29m
+X21hdGNoW10gPSB7DQo+IC0JeyAuY29tcGF0aWJsZSA9ICJhZGksYWQyczkwIiwgfSwNCj4gLQl7
+fQ0KPiAtfTsNCj4gLU1PRFVMRV9ERVZJQ0VfVEFCTEUob2YsIGFkMnM5MF9vZl9tYXRjaCk7DQo+
+IC0NCj4gLXN0YXRpYyBjb25zdCBzdHJ1Y3Qgc3BpX2RldmljZV9pZCBhZDJzOTBfaWRbXSA9IHsN
+Cj4gLQl7ICJhZDJzOTAiIH0sDQo+IC0Je30NCj4gLX07DQo+IC1NT0RVTEVfREVWSUNFX1RBQkxF
+KHNwaSwgYWQyczkwX2lkKTsNCj4gLQ0KPiAtc3RhdGljIHN0cnVjdCBzcGlfZHJpdmVyIGFkMnM5
+MF9kcml2ZXIgPSB7DQo+IC0JLmRyaXZlciA9IHsNCj4gLQkJLm5hbWUgPSAiYWQyczkwIiwNCj4g
+LQkJLm9mX21hdGNoX3RhYmxlID0gYWQyczkwX29mX21hdGNoLA0KPiAtCX0sDQo+IC0JLnByb2Jl
+ID0gYWQyczkwX3Byb2JlLA0KPiAtCS5pZF90YWJsZSA9IGFkMnM5MF9pZCwNCj4gLX07DQo+IC1t
+b2R1bGVfc3BpX2RyaXZlcihhZDJzOTBfZHJpdmVyKTsNCj4gLQ0KPiAtTU9EVUxFX0FVVEhPUigi
+R3JhZmYgWWFuZyA8Z3JhZmYueWFuZ0BnbWFpbC5jb20+Iik7DQo+IC1NT0RVTEVfREVTQ1JJUFRJ
+T04oIkFuYWxvZyBEZXZpY2VzIEFEMlM5MCBSZXNvbHZlciB0byBEaWdpdGFsIFNQSQ0KPiBkcml2
+ZXIiKTsNCj4gLU1PRFVMRV9MSUNFTlNFKCJHUEwgdjIiKTsNCg==
