@@ -1,61 +1,83 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:46639 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726357AbeK0GTb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 27 Nov 2018 01:19:31 -0500
-MIME-Version: 1.0
-References: <20181121180443.tjgcpu2webrq53rh@smtp.gmail.com>
- <1542884458.30645.22.camel@analog.com> <20181125110839.4a3aecf9@archlinux>
-In-Reply-To: <20181125110839.4a3aecf9@archlinux>
-From: Giuliano Belinassi <giuliano.belinassi@gmail.com>
-Date: Mon, 26 Nov 2018 17:24:13 -0200
-Message-ID: <CAG4RSAHcEYj5bUpxT8apwXZZpWkPowFJ333tZiTHhb9VVn4m7g@mail.gmail.com>
-Subject: Re: [PATCH] staging: iio: ad7780: Add gain & filter gpio support
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: StefanSerban.Popa@analog.com,
+Received: from mail-eopbgr710058.outbound.protection.outlook.com ([40.107.71.58]:8368
+        "EHLO NAM05-BY2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726561AbeK0WJ3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 27 Nov 2018 17:09:29 -0500
+From: "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>
+To: "giuliano.belinassi@gmail.com" <giuliano.belinassi@gmail.com>,
+        "jic23@kernel.org" <jic23@kernel.org>
+CC: "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
         "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org, kernel-usp@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>
+Subject: Re: [PATCH] staging: iio: ad7780: Add gain & filter gpio support
+Date: Tue, 27 Nov 2018 11:11:49 +0000
+Message-ID: <1543316945.22768.35.camel@analog.com>
+References: <20181121180443.tjgcpu2webrq53rh@smtp.gmail.com>
+         <CAG4RSAHcEYj5bUpxT8apwXZZpWkPowFJ333tZiTHhb9VVn4m7g@mail.gmail.com>
+In-Reply-To: <CAG4RSAHcEYj5bUpxT8apwXZZpWkPowFJ333tZiTHhb9VVn4m7g@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi, thank you for the review
-
-> On Thu, 22 Nov 2018 11:01:00 +0000
-> "Popa, Stefan Serban" <StefanSerban.Popa@analog.com> wrote:
-> > I think that instead of setting the gain directly, we should use
-> > the IIO_CHAN_INFO_SCALE attribute. At page 12 of the ad7780 datasheet t=
-here
-> > is a formula from which the output code can be calculated:
-> > Code =3D 2^(N =E2=88=92 1)
-> > =C3=97 [(AIN =C3=97 Gain /VREF) + 1]. So, by setting the scale from use=
-r space, the
-> > driver can calculate the correct gain by using the formula above. Also,=
- it
-> > would be useful to introduce scale available.
-> > Furthermore, there is a new
-> > ad7124 adc driver which does this exact thing. Take a look here: https:=
-//gi
-> > thub.com/analogdevicesinc/linux/blob/master/drivers/iio/adc/ad7124.c#L3=
-37.
-
-We have some questions about the code you provided to us:
-  1-) What is exactly the inputs for the write_raw function?
-  2-) Could you give more details about the math around lines 346-348?
-Is it correct to assume that the multiplication at line 346 won't
-overflow? (vref is an uint)
-
-And regarding our code:
-  1-) The val in our write_raw function should be, in case of GAIN, a
-number that best approximate the actual gain value of 1 or 128? For
-instance, if the user inputs 126, we should default to 128?
-  2-) In the case of FILTER, is it the same? Is the user sending the
-value in mHz (milihertz)?
-
-Thank you
+T24gTHUsIDIwMTgtMTEtMjYgYXQgMTc6MjQgLTAyMDAsIEdpdWxpYW5vIEJlbGluYXNzaSB3cm90
+ZToNCkhpLCBwbGVhc2Ugc2VlIGJlbGxvdw0KDQo+IEhpLCB0aGFuayB5b3UgZm9yIHRoZSByZXZp
+ZXcNCj4gDQo+ID4gDQo+ID4gT24gVGh1LCAyMiBOb3YgMjAxOCAxMTowMTowMCArMDAwMA0KPiA+
+ICJQb3BhLCBTdGVmYW4gU2VyYmFuIiA8U3RlZmFuU2VyYmFuLlBvcGFAYW5hbG9nLmNvbT4gd3Jv
+dGU6DQo+ID4gPiANCj4gPiA+IEkgdGhpbmsgdGhhdCBpbnN0ZWFkIG9mIHNldHRpbmcgdGhlIGdh
+aW4gZGlyZWN0bHksIHdlIHNob3VsZCB1c2UNCj4gPiA+IHRoZSBJSU9fQ0hBTl9JTkZPX1NDQUxF
+IGF0dHJpYnV0ZS4gQXQgcGFnZSAxMiBvZiB0aGUgYWQ3NzgwIGRhdGFzaGVldA0KPiA+ID4gdGhl
+cmUNCj4gPiA+IGlzIGEgZm9ybXVsYSBmcm9tIHdoaWNoIHRoZSBvdXRwdXQgY29kZSBjYW4gYmUg
+Y2FsY3VsYXRlZDoNCj4gPiA+IENvZGUgPSAyXihOIOKIkiAxKQ0KPiA+ID4gw5cgWyhBSU4gw5cg
+R2FpbiAvVlJFRikgKyAxXS4gU28sIGJ5IHNldHRpbmcgdGhlIHNjYWxlIGZyb20gdXNlciBzcGFj
+ZSwNCj4gPiA+IHRoZQ0KPiA+ID4gZHJpdmVyIGNhbiBjYWxjdWxhdGUgdGhlIGNvcnJlY3QgZ2Fp
+biBieSB1c2luZyB0aGUgZm9ybXVsYSBhYm92ZS4NCj4gPiA+IEFsc28sIGl0DQo+ID4gPiB3b3Vs
+ZCBiZSB1c2VmdWwgdG8gaW50cm9kdWNlIHNjYWxlIGF2YWlsYWJsZS4NCj4gPiA+IEZ1cnRoZXJt
+b3JlLCB0aGVyZSBpcyBhIG5ldw0KPiA+ID4gYWQ3MTI0IGFkYyBkcml2ZXIgd2hpY2ggZG9lcyB0
+aGlzIGV4YWN0IHRoaW5nLiBUYWtlIGEgbG9vayBoZXJlOiBodHRwDQo+ID4gPiBzOi8vZ2kNCj4g
+PiA+IHRodWIuY29tL2FuYWxvZ2RldmljZXNpbmMvbGludXgvYmxvYi9tYXN0ZXIvZHJpdmVycy9p
+aW8vYWRjL2FkNzEyNC5jIw0KPiA+ID4gTDMzNy4NCj4gV2UgaGF2ZSBzb21lIHF1ZXN0aW9ucyBh
+Ym91dCB0aGUgY29kZSB5b3UgcHJvdmlkZWQgdG8gdXM6DQo+IMKgIDEtKSBXaGF0IGlzIGV4YWN0
+bHkgdGhlIGlucHV0cyBmb3IgdGhlIHdyaXRlX3JhdyBmdW5jdGlvbj8NCg0KSW4geW91ciB3cml0
+ZV9yYXcoKSBmdW5jdGlvbiB5b3UgbmVlZCB0byBhZGQgSUlPX0NIQU5fSU5GT19TQ0FMRSBjYXNl
+Lg0KU2V0dGluZyB0aGUgc2NhbGUgZnJvbSB1c2VyIHNwYWNlIGxvb2tzIHNvbWV0aGluZyBsaWtl
+IHRoaXM6DQpyb290Oi9zeXMvYnVzL2lpby9kZXZpY2VzL2lpbzpkZXZpY2UwPiBlY2hvIDAuMDAw
+Mjk4ID4gaW5fdm9sdGFnZV9zY2FsZSAuDQpGdXJ0aGVybW9yZSwgaW4geW91ciB3cml0ZV9yYXco
+KSBmdW5jdGlvbiwgdmFsPTAgYW5kIHZhbDI9Mjk4Lg0KS25vd2luZyB0aGF0IGZ1bGxfc2NhbGVf
+dm9sdGFnZSA9IFZyZWYgLyAoZ2FpbiAqIHNjYWxlKSwgd2UgY2FuIGNhbGN1bGF0ZQ0KdGhlIGdh
+aW4gPSBWcmVmIC8gKGZ1bGxfc2NhbGVfdm9sdGFnZSAqIHNjYWxlKS4gV2Ugb25seSBzdXBwb3J0
+IHR3byBnYWlucw0KKDEgYW5kIDEyOCksIHNvIHdlIG5lZWQgdG8gZGV0ZXJtaW5lIHdoaWNoIG9u
+ZSBmaXRzIGJldHRlciB3aXRoIHRoZSBkZXNpcmVkDQpzY2FsZS4gRmluYWxseSwgYWxsIHdlIGhh
+dmUgbGVmdCB0byBkbyBpcyB0byBzZXQgdGhlIGdhaW4uwqANCsKgDQo+IMKgIDItKSBDb3VsZCB5
+b3UgZ2l2ZSBtb3JlIGRldGFpbHMgYWJvdXQgdGhlIG1hdGggYXJvdW5kIGxpbmVzIDM0Ni0zNDg/
+DQo+IElzIGl0IGNvcnJlY3QgdG8gYXNzdW1lIHRoYXQgdGhlIG11bHRpcGxpY2F0aW9uIGF0IGxp
+bmUgMzQ2IHdvbid0DQo+IG92ZXJmbG93PyAodnJlZiBpcyBhbiB1aW50KQ0KDQpJdCBpcyBjb3Jy
+ZWN0IHRoYXQgVnJlZiBpcyBpbiBtaWNyb3ZvbHRzLCBzbyBmb3IgZXhhbXBsZSwgVnJlZiBvZiAy
+LjVWIMKgPQ0KMjUwMDAwMDAwMHVWLiBJdCB3b24ndCBvdmVyZmxvdyBzaW5jZSB3ZSB1c2UgdGhl
+IFZyZWYgYXMgbm9taW5hdG9yLCB3aGlsZQ0KZnVsbF9zY2FsZV92b2x0YWdlIGFuZCBzY2FsZSBh
+cmUgdGhlIGRlbm9taW5hdG9ycy4NCg0KPiANCj4gQW5kIHJlZ2FyZGluZyBvdXIgY29kZToNCj4g
+wqAgMS0pIFRoZSB2YWwgaW4gb3VyIHdyaXRlX3JhdyBmdW5jdGlvbiBzaG91bGQgYmUsIGluIGNh
+c2Ugb2YgR0FJTiwgYQ0KPiBudW1iZXIgdGhhdCBiZXN0IGFwcHJveGltYXRlIHRoZSBhY3R1YWwg
+Z2FpbiB2YWx1ZSBvZiAxIG9yIDEyOD8gRm9yDQo+IGluc3RhbmNlLCBpZiB0aGUgdXNlciBpbnB1
+dHMgMTI2LCB3ZSBzaG91bGQgZGVmYXVsdCB0byAxMjg/DQoNCldlIHNob3VsZCBub3QgYWxsb3cg
+dGhlIHRoZSB1c2VyIHRvIGlucHV0IHRoZSBnYWluLCBoZSBuZWVkcyB0byBpbnB1dCB0aGUNCnNj
+YWxlIChzZWUgdGhlIG1haWwgZnJvbSBKb25hdGhhbiBhbmQgdGhlIGFib3ZlIGV4cGxhbmF0aW9u
+KS4gSG93ZXZlciwgaWYNCnRoZSBjYWxjdWxhdGVkIGdhaW4gaXMgb25lIHRoYXQgaXMgbm90IHN1
+cHBvcnRlZCwgc3VjaCBhcyAxMjYsIHdlIHdpbGwgc2V0DQp0aGUgY2xvc2VzdCBtYXRjaGluZyB2
+YWx1ZSwgaW4gdGhpcyBjYXNlIDEyOC4NCg0KPiDCoCAyLSkgSW4gdGhlIGNhc2Ugb2YgRklMVEVS
+LCBpcyBpdCB0aGUgc2FtZT8gSXMgdGhlIHVzZXIgc2VuZGluZyB0aGUNCj4gdmFsdWUgaW4gbUh6
+IChtaWxpaGVydHopPw0KDQpZZXMsIGl0IGlzIHRoZSBzYW1lIHdpdGggdGhlIEZJTFRFUi4gWW91
+IG5lZWQgdG8gYWRkDQphwqBJSU9fQ0hBTl9JTkZPX1NBTVBfRlJFUSBjYXNlIGluIHlvdXIgd3Jp
+dGVfcmF3KCkgZnVuY3Rpb24uIEZyb20gdXNlcg0Kc3BhY2UsIHRoZSBpbnB1dCB2YWx1ZSBzaG91
+bGQgYmUgaW4gSHosIHNvbWV0aGluZyBsaWtlIHRoaXM6DQpyb290Oi9zeXMvYnVzL2lpby9kZXZp
+Y2VzL2lpbzpkZXZpY2UwPiBlY2hvIDEwID4NCmluX3ZvbHRhZ2Vfc2FtcGxpbmdfZnJlcXVlbmN5
+DQoNCj4gDQo+IFRoYW5rIHlvdQ0KPiA=
