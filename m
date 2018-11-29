@@ -1,194 +1,158 @@
-Return-Path: <SRS0=2Z4Y=OH=gmail.com=giuliano.belinassi@kernel.org>
-From: Giuliano Belinassi <giuliano.belinassi@gmail.com>
-Date: Wed, 28 Nov 2018 16:15:59 -0200
-To: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-	knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-	stefan.popa@analog.com, alexandru.Ardelean@analog.com,
-	renatogeh@gmail.com
-Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
-Subject: [PATCH 1/2] staging: iio: ad7780: Add gain & filter gpio support
-Message-ID: <231cbc909b892a0ebe172460d34e9eeb9cfa3003.1543428366.git.giuliano.belinassi@usp.br>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-eopbgr810054.outbound.protection.outlook.com ([40.107.81.54]:20488
+        "EHLO NAM01-BY2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726621AbeK2WXW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 29 Nov 2018 17:23:22 -0500
+From: "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>
+To: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        "renatogeh@gmail.com" <renatogeh@gmail.com>,
+        "giuliano.belinassi@gmail.com" <giuliano.belinassi@gmail.com>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+        "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>
+Subject: Re: [PATCH 1/2] staging: iio: ad7780: Add gain & filter gpio support
+Date: Thu, 29 Nov 2018 11:18:10 +0000
+Message-ID: <1543490289.11186.22.camel@analog.com>
 References: <cover.1543428366.git.giuliano.belinassi@usp.br>
+         <231cbc909b892a0ebe172460d34e9eeb9cfa3003.1543428366.git.giuliano.belinassi@usp.br>
+In-Reply-To: <231cbc909b892a0ebe172460d34e9eeb9cfa3003.1543428366.git.giuliano.belinassi@usp.br>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <cover.1543428366.git.giuliano.belinassi@usp.br>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Previously, the AD7780 driver only supported gpio for the 'powerdown'
-pin. This commit adds suppport for the 'gain' and 'filter' pin.
-
-Signed-off-by: Giuliano Belinassi <giuliano.belinassi@usp.br>
----
-Changes in v2:
-    - Now this patch is part of the patchset that aims to remove ad7780
-out of staging. https://marc.info/?l=linux-iio&m=154282349808890&w=2
-    - Also, now it reads voltage and filter values from the userspace
-instead of gpio pin states.
-
- drivers/staging/iio/adc/ad7780.c       | 78 ++++++++++++++++++++++++--
- include/linux/iio/adc/ad_sigma_delta.h |  5 ++
- 2 files changed, 79 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
-index c4a85789c2db..05979a79fda3 100644
---- a/drivers/staging/iio/adc/ad7780.c
-+++ b/drivers/staging/iio/adc/ad7780.c
-@@ -39,6 +39,12 @@
- #define AD7170_PATTERN		(AD7780_PAT0 | AD7170_PAT2)
- #define AD7170_PATTERN_MASK	(AD7780_PAT0 | AD7780_PAT1 | AD7170_PAT2)
- 
-+#define AD7780_GAIN_GPIO	0
-+#define AD7780_FILTER_GPIO	1
-+
-+#define AD7780_GAIN_MIDPOINT	64
-+#define AD7780_FILTER_MIDPOINT	13350
-+
- struct ad7780_chip_info {
- 	struct iio_chan_spec	channel;
- 	unsigned int		pattern_mask;
-@@ -50,6 +56,8 @@ struct ad7780_state {
- 	const struct ad7780_chip_info	*chip_info;
- 	struct regulator		*reg;
- 	struct gpio_desc		*powerdown_gpio;
-+	struct gpio_desc		*gain_gpio;
-+	struct gpio_desc		*filter_gpio;
- 	unsigned int	gain;
- 
- 	struct ad_sigma_delta sd;
-@@ -115,18 +123,65 @@ static int ad7780_read_raw(struct iio_dev *indio_dev,
- 	return -EINVAL;
- }
- 
-+static int ad7780_write_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan,
-+			    int val,
-+			    int val2,
-+			    long m)
-+{
-+	struct ad7780_state *st = iio_priv(indio_dev);
-+	const struct ad7780_chip_info *chip_info = st->chip_info;
-+	int uvref, gain;
-+	unsigned int full_scale;
-+
-+	if (!chip_info->is_ad778x)
-+		return 0;
-+
-+	switch (m) {
-+	case IIO_CHAN_INFO_SCALE:
-+		if (val != 0)
-+			return -EINVAL;
-+
-+		uvref = regulator_get_voltage(st->reg);
-+
-+		if (uvref < 0)
-+			return uvref;
-+
-+		full_scale = 1 << (chip_info->channel.scan_type.realbits - 1);
-+		gain = DIV_ROUND_CLOSEST(uvref, full_scale);
-+		gain = DIV_ROUND_CLOSEST(gain, val2);
-+
-+		gpiod_set_value(st->gain_gpio, gain < AD7780_GAIN_MIDPOINT ? 0 : 1);
-+	break;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		if (val2 != 0)
-+			return -EINVAL;
-+
-+		gpiod_set_value(st->filter_gpio, val < AD7780_FILTER_MIDPOINT ? 0 : 1);
-+	break;
-+	}
-+
-+	return 0;
-+}
-+
- static int ad7780_postprocess_sample(struct ad_sigma_delta *sigma_delta,
- 				     unsigned int raw_sample)
- {
- 	struct ad7780_state *st = ad_sigma_delta_to_ad7780(sigma_delta);
- 	const struct ad7780_chip_info *chip_info = st->chip_info;
-+	int val;
- 
- 	if ((raw_sample & AD7780_ERR) ||
- 	    ((raw_sample & chip_info->pattern_mask) != chip_info->pattern))
- 		return -EIO;
- 
- 	if (chip_info->is_ad778x) {
--		if (raw_sample & AD7780_GAIN)
-+		val = raw_sample & AD7780_GAIN;
-+
-+		if (val != gpiod_get_value(st->gain_gpio))
-+			return -EIO;
-+
-+		if (val)
- 			st->gain = 1;
- 		else
- 			st->gain = 128;
-@@ -141,18 +196,20 @@ static const struct ad_sigma_delta_info ad7780_sigma_delta_info = {
- 	.has_registers = false,
- };
- 
--#define AD7780_CHANNEL(bits, wordsize) \
-+#define AD7170_CHANNEL(bits, wordsize) \
- 	AD_SD_CHANNEL_NO_SAMP_FREQ(1, 0, 0, bits, 32, wordsize - bits)
-+#define AD7780_CHANNEL(bits, wordsize) \
-+	AD_SD_CHANNEL_GAIN_FILTER(1, 0, 0, bits, 32, wordsize - bits)
- 
- static const struct ad7780_chip_info ad7780_chip_info_tbl[] = {
- 	[ID_AD7170] = {
--		.channel = AD7780_CHANNEL(12, 24),
-+		.channel = AD7170_CHANNEL(12, 24),
- 		.pattern = AD7170_PATTERN,
- 		.pattern_mask = AD7170_PATTERN_MASK,
- 		.is_ad778x = false,
- 	},
- 	[ID_AD7171] = {
--		.channel = AD7780_CHANNEL(16, 24),
-+		.channel = AD7170_CHANNEL(16, 24),
- 		.pattern = AD7170_PATTERN,
- 		.pattern_mask = AD7170_PATTERN_MASK,
- 		.is_ad778x = false,
-@@ -173,6 +230,7 @@ static const struct ad7780_chip_info ad7780_chip_info_tbl[] = {
- 
- static const struct iio_info ad7780_info = {
- 	.read_raw = ad7780_read_raw,
-+	.write_raw = ad7780_write_raw,
- };
- 
- static int ad7780_probe(struct spi_device *spi)
-@@ -222,6 +280,18 @@ static int ad7780_probe(struct spi_device *spi)
- 		goto error_disable_reg;
- 	}
- 
-+	if (st->chip_info->is_ad778x) {
-+		st->gain_gpio = devm_gpiod_get_optional(&spi->dev,
-+							"gain",
-+							GPIOD_OUT_HIGH);
-+		if (IS_ERR(st->gain_gpio)) {
-+			ret = PTR_ERR(st->gain_gpio);
-+			dev_err(&spi->dev, "Failed to request gain GPIO: %d\n",
-+				ret);
-+			goto error_disable_reg;
-+		}
-+	}
-+
- 	ret = ad_sd_setup_buffer_and_trigger(indio_dev);
- 	if (ret)
- 		goto error_disable_reg;
-diff --git a/include/linux/iio/adc/ad_sigma_delta.h b/include/linux/iio/adc/ad_sigma_delta.h
-index 730ead1a46df..6cadab6fd5fd 100644
---- a/include/linux/iio/adc/ad_sigma_delta.h
-+++ b/include/linux/iio/adc/ad_sigma_delta.h
-@@ -173,6 +173,11 @@ int ad_sd_validate_trigger(struct iio_dev *indio_dev, struct iio_trigger *trig);
- 	__AD_SD_CHANNEL(_si, _channel, -1, _address, _bits, \
- 		_storagebits, _shift, NULL, IIO_VOLTAGE, 0)
- 
-+#define AD_SD_CHANNEL_GAIN_FILTER(_si, _channel, _address, _bits, \
-+	_storagebits, _shift) \
-+	__AD_SD_CHANNEL(_si, _channel, -1, _address, _bits, \
-+		_storagebits, _shift, NULL, IIO_VOLTAGE, BIT(IIO_CHAN_INFO_RAW))
-+
- #define AD_SD_TEMP_CHANNEL(_si, _address, _bits, _storagebits, _shift) \
- 	__AD_SD_CHANNEL(_si, 0, -1, _address, _bits, \
- 		_storagebits, _shift, NULL, IIO_TEMP, \
--- 
-2.19.1
+T24gTWksIDIwMTgtMTEtMjggYXQgMTY6MTUgLTAyMDAsIEdpdWxpYW5vIEJlbGluYXNzaSB3cm90
+ZToNCj4gUHJldmlvdXNseSwgdGhlIEFENzc4MCBkcml2ZXIgb25seSBzdXBwb3J0ZWQgZ3BpbyBm
+b3IgdGhlICdwb3dlcmRvd24nDQo+IHBpbi4gVGhpcyBjb21taXQgYWRkcyBzdXBwcG9ydCBmb3Ig
+dGhlICdnYWluJyBhbmQgJ2ZpbHRlcicgcGluLg0KPiANCj4gU2lnbmVkLW9mZi1ieTogR2l1bGlh
+bm8gQmVsaW5hc3NpIDxnaXVsaWFuby5iZWxpbmFzc2lAdXNwLmJyPg0KPiAtLS0NCj4gQ2hhbmdl
+cyBpbiB2MjoNCj4gwqDCoMKgwqAtIE5vdyB0aGlzIHBhdGNoIGlzIHBhcnQgb2YgdGhlIHBhdGNo
+c2V0IHRoYXQgYWltcyB0byByZW1vdmUgYWQ3NzgwDQo+IG91dCBvZiBzdGFnaW5nLiBodHRwczov
+L21hcmMuaW5mby8/bD1saW51eC1paW8mbT0xNTQyODIzNDk4MDg4OTAmdz0yDQo+IMKgwqDCoMKg
+LSBBbHNvLCBub3cgaXQgcmVhZHMgdm9sdGFnZSBhbmQgZmlsdGVyIHZhbHVlcyBmcm9tIHRoZSB1
+c2Vyc3BhY2UNCj4gaW5zdGVhZCBvZiBncGlvIHBpbiBzdGF0ZXMuDQoNCkhlbGxvLA0KUGxlYXNl
+IHNlZSBiZWxsb3cuDQoNCj4gDQo+IMKgZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NzgwLmPC
+oMKgwqDCoMKgwqDCoHwgNzggKysrKysrKysrKysrKysrKysrKysrKysrLS0NCj4gwqBpbmNsdWRl
+L2xpbnV4L2lpby9hZGMvYWRfc2lnbWFfZGVsdGEuaCB8wqDCoDUgKysNCj4gwqAyIGZpbGVzIGNo
+YW5nZWQsIDc5IGluc2VydGlvbnMoKyksIDQgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0
+IGEvZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NzgwLmMNCj4gYi9kcml2ZXJzL3N0YWdpbmcv
+aWlvL2FkYy9hZDc3ODAuYw0KPiBpbmRleCBjNGE4NTc4OWMyZGIuLjA1OTc5YTc5ZmRhMyAxMDA2
+NDQNCj4gLS0tIGEvZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NzgwLmMNCj4gKysrIGIvZHJp
+dmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NzgwLmMNCj4gQEAgLTM5LDYgKzM5LDEyIEBADQo+IMKg
+I2RlZmluZSBBRDcxNzBfUEFUVEVSTgkJKEFENzc4MF9QQVQwIHwgQUQ3MTcwX1BBVDIpDQo+IMKg
+I2RlZmluZSBBRDcxNzBfUEFUVEVSTl9NQVNLCShBRDc3ODBfUEFUMCB8IEFENzc4MF9QQVQxIHwN
+Cj4gQUQ3MTcwX1BBVDIpDQo+IMKgDQo+ICsjZGVmaW5lIEFENzc4MF9HQUlOX0dQSU8JMA0KPiAr
+I2RlZmluZSBBRDc3ODBfRklMVEVSX0dQSU8JMQ0KPiArDQo+ICsjZGVmaW5lIEFENzc4MF9HQUlO
+X01JRFBPSU5UCTY0DQo+ICsjZGVmaW5lIEFENzc4MF9GSUxURVJfTUlEUE9JTlQJMTMzNTANCj4g
+Kw0KPiDCoHN0cnVjdCBhZDc3ODBfY2hpcF9pbmZvIHsNCj4gwqAJc3RydWN0IGlpb19jaGFuX3Nw
+ZWMJY2hhbm5lbDsNCj4gwqAJdW5zaWduZWQgaW50CQlwYXR0ZXJuX21hc2s7DQo+IEBAIC01MCw2
+ICs1Niw4IEBAIHN0cnVjdCBhZDc3ODBfc3RhdGUgew0KPiDCoAljb25zdCBzdHJ1Y3QgYWQ3Nzgw
+X2NoaXBfaW5mbwkqY2hpcF9pbmZvOw0KPiDCoAlzdHJ1Y3QgcmVndWxhdG9yCQkqcmVnOw0KPiDC
+oAlzdHJ1Y3QgZ3Bpb19kZXNjCQkqcG93ZXJkb3duX2dwaW87DQo+ICsJc3RydWN0IGdwaW9fZGVz
+YwkJKmdhaW5fZ3BpbzsNCj4gKwlzdHJ1Y3QgZ3Bpb19kZXNjCQkqZmlsdGVyX2dwaW87DQo+IMKg
+CXVuc2lnbmVkIGludAlnYWluOw0KPiDCoA0KPiDCoAlzdHJ1Y3QgYWRfc2lnbWFfZGVsdGEgc2Q7
+DQo+IEBAIC0xMTUsMTggKzEyMyw2NSBAQCBzdGF0aWMgaW50IGFkNzc4MF9yZWFkX3JhdyhzdHJ1
+Y3QgaWlvX2Rldg0KPiAqaW5kaW9fZGV2LA0KPiDCoAlyZXR1cm4gLUVJTlZBTDsNCj4gwqB9DQo+
+IMKgDQo+ICtzdGF0aWMgaW50IGFkNzc4MF93cml0ZV9yYXcoc3RydWN0IGlpb19kZXYgKmluZGlv
+X2RldiwNCj4gKwkJCcKgwqDCoMKgc3RydWN0IGlpb19jaGFuX3NwZWMgY29uc3QgKmNoYW4sDQo+
+ICsJCQnCoMKgwqDCoGludCB2YWwsDQo+ICsJCQnCoMKgwqDCoGludCB2YWwyLA0KPiArCQkJwqDC
+oMKgwqBsb25nIG0pDQo+ICt7DQo+ICsJc3RydWN0IGFkNzc4MF9zdGF0ZSAqc3QgPSBpaW9fcHJp
+dihpbmRpb19kZXYpOw0KPiArCWNvbnN0IHN0cnVjdCBhZDc3ODBfY2hpcF9pbmZvICpjaGlwX2lu
+Zm8gPSBzdC0+Y2hpcF9pbmZvOw0KPiArCWludCB1dnJlZiwgZ2FpbjsNCj4gKwl1bnNpZ25lZCBp
+bnQgZnVsbF9zY2FsZTsNCj4gKw0KPiArCWlmICghY2hpcF9pbmZvLT5pc19hZDc3OHgpDQo+ICsJ
+CXJldHVybiAwOw0KPiArDQo+ICsJc3dpdGNoIChtKSB7DQo+ICsJY2FzZSBJSU9fQ0hBTl9JTkZP
+X1NDQUxFOg0KPiArCQlpZiAodmFsICE9IDApDQo+ICsJCQlyZXR1cm4gLUVJTlZBTDsNCj4gKw0K
+PiArCQl1dnJlZiA9IHJlZ3VsYXRvcl9nZXRfdm9sdGFnZShzdC0+cmVnKTsNCg0KcmVndWxhdG9y
+X2dldF92b2x0YWdlKCkgaGFzIGFscmVhZHkgYmVlbiBjYWxsZWQgaW4gdGhlIHByb2JlIGZ1bmN0
+aW9uIGFuZA0KdGhlIHJlc3VsdCBpcyBzdG9yZWQgaW7CoHN0LT5pbnRfdnJlZl9tdi4NCk15IHN1
+Z2dlc3Rpb24gd291bGQgYmUgdG8gdXNlIGEgbG9jYWwgdnJlZiB2YXJpYWJsZSBkZWNsYXJlZCBh
+cyB1bnNpZ25lZA0KaW50LiBJdCBpcyBteSBmYXVsdCB0aGF0IEkgaGF2ZW4ndCBleHBsYWluZWQg
+Y29ycmVjdGx5IGluIHRoZSBwcmV2aW91cw0KZW1haWwsIGJ1dCB5b3UgbmVlZCB0byBtdWx0aXBs
+eSB2cmVmX212IHdpdGjCoDEwMDAwMDBMTCBpbiBvcmRlciB0byBnZXQgdGhlDQpyaWdodCBwcmVj
+aXNpb246IHZyZWYgPSBzdC0+aW50X3ZyZWZfbXYgKiAxMDAwMDAwTEwuIEFmdGVyd2FyZHMgeW91
+IHdpbGwgYmUNCmFibGUgdG8gcGVyZm9ybSB0aGUgZGl2aXNpb25zLg0KPiArDQo+ICsJCWlmICh1
+dnJlZiA8IDApDQo+ICsJCQlyZXR1cm4gdXZyZWY7DQo+ICsNCj4gKwkJZnVsbF9zY2FsZSA9IDEg
+PDwgKGNoaXBfaW5mby0+Y2hhbm5lbC5zY2FuX3R5cGUucmVhbGJpdHMgDQo+IC0gMSk7DQo+ICsJ
+CWdhaW4gPSBESVZfUk9VTkRfQ0xPU0VTVCh1dnJlZiwgZnVsbF9zY2FsZSk7DQo+ICsJCWdhaW4g
+PSBESVZfUk9VTkRfQ0xPU0VTVChnYWluLCB2YWwyKTsNCj4gKw0KPiArCQlncGlvZF9zZXRfdmFs
+dWUoc3QtPmdhaW5fZ3BpbywgZ2FpbiA8DQo+IEFENzc4MF9HQUlOX01JRFBPSU5UID8gMCA6IDEp
+Ow0KDQpPbmNlIHRoZSBnYWluIGlzIHNldCwgeW91IGNhbiBzdG9yZSBpdCBpbiBzdC0+Z2FpbiB2
+YXJpYWJsZS4NCg0KPiArCWNhc2UgSUlPX0NIQU5fSU5GT19TQU1QX0ZSRVE6DQo+ICsJCWlmICh2
+YWwyICE9IDApDQo+ICsJCQlyZXR1cm4gLUVJTlZBTDsNCj4gKw0KPiArCQlncGlvZF9zZXRfdmFs
+dWUoc3QtPmZpbHRlcl9ncGlvLCB2YWwgPA0KPiBBRDc3ODBfRklMVEVSX01JRFBPSU5UID8gMCA6
+IDEpOw0KDQpUaGlzIGlzIHByb2JhYmx5IGZpbmUsIGFsdGhvdWdoIEkgYW0gbm90IGEgYmlnIGZh
+biBvZiB0aGUgdGVybmFyeSBvcGVyYXRvci4NCkEgc2ltcGxlIGlmIGVsc2Ugc3RhdGVtZW50IHdv
+dWxkIGRvLiBIb3dldmVyLCBJIGRvbid0IGZlZWwgc3Ryb25nbHkgYWJvdXQNCml0LCBzbyBmZWVs
+IGZyZWUgdG8gZGlzYWdyZWUuwqANCg0KPiArCWJyZWFrOw0KPiArCX0NCj4gKw0KPiArCXJldHVy
+biAwOw0KPiArfQ0KPiArDQo+IMKgc3RhdGljIGludCBhZDc3ODBfcG9zdHByb2Nlc3Nfc2FtcGxl
+KHN0cnVjdCBhZF9zaWdtYV9kZWx0YSAqc2lnbWFfZGVsdGEsDQo+IMKgCQkJCcKgwqDCoMKgwqB1
+bnNpZ25lZCBpbnQgcmF3X3NhbXBsZSkNCj4gwqB7DQo+IMKgCXN0cnVjdCBhZDc3ODBfc3RhdGUg
+KnN0ID0gYWRfc2lnbWFfZGVsdGFfdG9fYWQ3NzgwKHNpZ21hX2RlbHRhKTsNCj4gwqAJY29uc3Qg
+c3RydWN0IGFkNzc4MF9jaGlwX2luZm8gKmNoaXBfaW5mbyA9IHN0LT5jaGlwX2luZm87DQo+ICsJ
+aW50IHZhbDsNCj4gwqANCj4gwqAJaWYgKChyYXdfc2FtcGxlICYgQUQ3NzgwX0VSUikgfHwNCj4g
+wqAJwqDCoMKgwqAoKHJhd19zYW1wbGUgJiBjaGlwX2luZm8tPnBhdHRlcm5fbWFzaykgIT0gY2hp
+cF9pbmZvLQ0KPiA+cGF0dGVybikpDQo+IMKgCQlyZXR1cm4gLUVJTzsNCj4gwqANCj4gwqAJaWYg
+KGNoaXBfaW5mby0+aXNfYWQ3Nzh4KSB7DQo+IC0JCWlmIChyYXdfc2FtcGxlICYgQUQ3NzgwX0dB
+SU4pDQo+ICsJCXZhbCA9IHJhd19zYW1wbGUgJiBBRDc3ODBfR0FJTjsNCj4gKw0KPiArCQlpZiAo
+dmFsICE9IGdwaW9kX2dldF92YWx1ZShzdC0+Z2Fpbl9ncGlvKSkNCj4gKwkJCXJldHVybiAtRUlP
+Ow0KDQpJdCBpcyBub3Qgb2J2aW91cyB0byBtZSB3aGF0IGlzIHRoZSBwb2ludCBvZiB0aGlzIGNo
+ZWNrLiBNYXliZSB5b3UgY2FuIGFkZA0KYSBjb21tZW50Pw0KDQo+ICsNCj4gKwkJaWYgKHZhbCkN
+Cj4gwqAJCQlzdC0+Z2FpbiA9IDE7DQo+IMKgCQllbHNlDQo+IMKgCQkJc3QtPmdhaW4gPSAxMjg7
+DQoNCkRvIHdlIHN0aWxsIG5lZWQgdGhpcz8gSSBhbSBub3QgY29udmluY2VkLsKgDQoNCj4gQEAg
+LTE0MSwxOCArMTk2LDIwIEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3QgYWRfc2lnbWFfZGVsdGFfaW5m
+bw0KPiBhZDc3ODBfc2lnbWFfZGVsdGFfaW5mbyA9IHsNCj4gwqAJLmhhc19yZWdpc3RlcnMgPSBm
+YWxzZSwNCj4gwqB9Ow0KPiDCoA0KPiAtI2RlZmluZSBBRDc3ODBfQ0hBTk5FTChiaXRzLCB3b3Jk
+c2l6ZSkgXA0KPiArI2RlZmluZSBBRDcxNzBfQ0hBTk5FTChiaXRzLCB3b3Jkc2l6ZSkgXA0KPiDC
+oAlBRF9TRF9DSEFOTkVMX05PX1NBTVBfRlJFUSgxLCAwLCAwLCBiaXRzLCAzMiwgd29yZHNpemUg
+LSBiaXRzKQ0KPiArI2RlZmluZSBBRDc3ODBfQ0hBTk5FTChiaXRzLCB3b3Jkc2l6ZSkgXA0KPiAr
+CUFEX1NEX0NIQU5ORUxfR0FJTl9GSUxURVIoMSwgMCwgMCwgYml0cywgMzIsIHdvcmRzaXplIC0g
+Yml0cykNCj4gwqANCj4gwqBzdGF0aWMgY29uc3Qgc3RydWN0IGFkNzc4MF9jaGlwX2luZm8gYWQ3
+NzgwX2NoaXBfaW5mb190YmxbXSA9IHsNCj4gwqAJW0lEX0FENzE3MF0gPSB7DQo+IC0JCS5jaGFu
+bmVsID0gQUQ3NzgwX0NIQU5ORUwoMTIsIDI0KSwNCj4gKwkJLmNoYW5uZWwgPSBBRDcxNzBfQ0hB
+Tk5FTCgxMiwgMjQpLA0KPiDCoAkJLnBhdHRlcm4gPSBBRDcxNzBfUEFUVEVSTiwNCj4gwqAJCS5w
+YXR0ZXJuX21hc2sgPSBBRDcxNzBfUEFUVEVSTl9NQVNLLA0KPiDCoAkJLmlzX2FkNzc4eCA9IGZh
+bHNlLA0KPiDCoAl9LA0KPiDCoAlbSURfQUQ3MTcxXSA9IHsNCj4gLQkJLmNoYW5uZWwgPSBBRDc3
+ODBfQ0hBTk5FTCgxNiwgMjQpLA0KPiArCQkuY2hhbm5lbCA9IEFENzE3MF9DSEFOTkVMKDE2LCAy
+NCksDQo+IMKgCQkucGF0dGVybiA9IEFENzE3MF9QQVRURVJOLA0KPiDCoAkJLnBhdHRlcm5fbWFz
+ayA9IEFENzE3MF9QQVRURVJOX01BU0ssDQo+IMKgCQkuaXNfYWQ3Nzh4ID0gZmFsc2UsDQo+IEBA
+IC0xNzMsNiArMjMwLDcgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCBhZDc3ODBfY2hpcF9pbmZvDQo+
+IGFkNzc4MF9jaGlwX2luZm9fdGJsW10gPSB7DQo+IMKgDQo+IMKgc3RhdGljIGNvbnN0IHN0cnVj
+dCBpaW9faW5mbyBhZDc3ODBfaW5mbyA9IHsNCj4gwqAJLnJlYWRfcmF3ID0gYWQ3NzgwX3JlYWRf
+cmF3LA0KPiArCS53cml0ZV9yYXcgPSBhZDc3ODBfd3JpdGVfcmF3LA0KPiDCoH07DQo+IMKgDQo+
+IMKgc3RhdGljIGludCBhZDc3ODBfcHJvYmUoc3RydWN0IHNwaV9kZXZpY2UgKnNwaSkNCj4gQEAg
+LTIyMiw2ICsyODAsMTggQEAgc3RhdGljIGludCBhZDc3ODBfcHJvYmUoc3RydWN0IHNwaV9kZXZp
+Y2UgKnNwaSkNCj4gwqAJCWdvdG8gZXJyb3JfZGlzYWJsZV9yZWc7DQo+IMKgCX0NCj4gwqANCj4g
+KwlpZiAoc3QtPmNoaXBfaW5mby0+aXNfYWQ3Nzh4KSB7DQo+ICsJCXN0LT5nYWluX2dwaW8gPSBk
+ZXZtX2dwaW9kX2dldF9vcHRpb25hbCgmc3BpLT5kZXYsDQo+ICsJCQkJCQkJImdhaW4iLA0KPiAr
+CQkJCQkJCUdQSU9EX09VVF9ISUdIKTsNCj4gKwkJaWYgKElTX0VSUihzdC0+Z2Fpbl9ncGlvKSkg
+ew0KDQppZiB0aGUgR1BJTyBpcyBvcHRpb25hbCwgdGhlbiB3ZSBzaG91bGQgY29udGludWUgaW4g
+Y2FzZSBvZsKgLUVOT0RFVi4NCg0KU2hvdWxkbid0IHdlIGhhdmUgYcKgZGV2bV9ncGlvZF9nZXRf
+b3B0aW9uYWwoKSBjYWxsIGFsc28gZm9yIGZpbHRlcl9ncGlvPw0KDQo+ICsJCQlyZXQgPSBQVFJf
+RVJSKHN0LT5nYWluX2dwaW8pOw0KPiArCQkJZGV2X2Vycigmc3BpLT5kZXYsICJGYWlsZWQgdG8g
+cmVxdWVzdCBnYWluIEdQSU86DQo+ICVkXG4iLA0KPiArCQkJCXJldCk7DQo+ICsJCQlnb3RvIGVy
+cm9yX2Rpc2FibGVfcmVnOw0KPiArCQl9DQo+ICsJfQ0KPiArDQo+IMKgCXJldCA9IGFkX3NkX3Nl
+dHVwX2J1ZmZlcl9hbmRfdHJpZ2dlcihpbmRpb19kZXYpOw0KPiDCoAlpZiAocmV0KQ0KPiDCoAkJ
+Z290byBlcnJvcl9kaXNhYmxlX3JlZzsNCj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvaWlv
+L2FkYy9hZF9zaWdtYV9kZWx0YS5oDQo+IGIvaW5jbHVkZS9saW51eC9paW8vYWRjL2FkX3NpZ21h
+X2RlbHRhLmgNCj4gaW5kZXggNzMwZWFkMWE0NmRmLi42Y2FkYWI2ZmQ1ZmQgMTAwNjQ0DQo+IC0t
+LSBhL2luY2x1ZGUvbGludXgvaWlvL2FkYy9hZF9zaWdtYV9kZWx0YS5oDQo+ICsrKyBiL2luY2x1
+ZGUvbGludXgvaWlvL2FkYy9hZF9zaWdtYV9kZWx0YS5oDQo+IEBAIC0xNzMsNiArMTczLDExIEBA
+IGludCBhZF9zZF92YWxpZGF0ZV90cmlnZ2VyKHN0cnVjdCBpaW9fZGV2DQo+ICppbmRpb19kZXYs
+IHN0cnVjdCBpaW9fdHJpZ2dlciAqdHJpZyk7DQo+IMKgCV9fQURfU0RfQ0hBTk5FTChfc2ksIF9j
+aGFubmVsLCAtMSwgX2FkZHJlc3MsIF9iaXRzLCBcDQo+IMKgCQlfc3RvcmFnZWJpdHMsIF9zaGlm
+dCwgTlVMTCwgSUlPX1ZPTFRBR0UsIDApDQo+IMKgDQo+ICsjZGVmaW5lIEFEX1NEX0NIQU5ORUxf
+R0FJTl9GSUxURVIoX3NpLCBfY2hhbm5lbCwgX2FkZHJlc3MsIF9iaXRzLCBcDQo+ICsJX3N0b3Jh
+Z2ViaXRzLCBfc2hpZnQpIFwNCj4gKwlfX0FEX1NEX0NIQU5ORUwoX3NpLCBfY2hhbm5lbCwgLTEs
+IF9hZGRyZXNzLCBfYml0cywgXA0KPiArCQlfc3RvcmFnZWJpdHMsIF9zaGlmdCwgTlVMTCwgSUlP
+X1ZPTFRBR0UsDQo+IEJJVChJSU9fQ0hBTl9JTkZPX1JBVykpDQo+ICsNCj4gwqAjZGVmaW5lIEFE
+X1NEX1RFTVBfQ0hBTk5FTChfc2ksIF9hZGRyZXNzLCBfYml0cywgX3N0b3JhZ2ViaXRzLCBfc2hp
+ZnQpIFwNCj4gwqAJX19BRF9TRF9DSEFOTkVMKF9zaSwgMCwgLTEsIF9hZGRyZXNzLCBfYml0cywg
+XA0KPiDCoAkJX3N0b3JhZ2ViaXRzLCBfc2hpZnQsIE5VTEwsIElJT19URU1QLCBc
