@@ -1,52 +1,47 @@
-Return-Path: <SRS0=wpDB=OH=gmail.com=vilhelm.gray@kernel.org>
-Date: Thu, 29 Nov 2018 08:03:50 +0900
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: Matheus Tavares <matheus.bernardino@usp.br>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>,
-	Ludovic Desroches <ludovic.desroches@microchip.com>,
-	Eugen Hristev <eugen.hristev@microchip.com>,
-	Nicolas Ferre <nicolas.ferre@microchip.com>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Chen-Yu Tsai <wens@csie.org>, Hans de Goede <hdegoede@redhat.com>,
-	Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
-	Jon Mason <jonmason@broadcom.com>,
-	bcm-kernel-feedback-list@broadcom.com,
-	Support Opensource <support.opensource@diasemi.com>,
-	Kukjin Kim <kgene@kernel.org>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Andreas Klinger <ak@it-klinger.de>, Milo Kim <milo.kim@ti.com>,
-	Vladimir Zapolskiy <vz@mleia.com>,
-	Sylvain Lemieux <slemieux.tyco@gmail.com>,
-	Carlo Caione <carlo@caione.org>,
-	Kevin Hilman <khilman@baylibre.com>,
-	Heiko Stuebner <heiko@sntech.de>,
-	Maxime Ripard <maxime.ripard@bootlin.com>,
-	Michal Simek <michal.simek@xilinx.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-aspeed@lists.ozlabs.org, linux-samsung-soc@vger.kernel.org,
-	linux-amlogic@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, kernel-usp@googlegroups.com,
-	Lucas Santos <ilucas.ms@gmail.com>
-Subject: Re: [PATCH] iio: adc: Replace license text w/ SPDX identifier
-Message-ID: <20181128230350.GA3332@icarus>
-References: <20181128175312.9634-1-matheus.bernardino@usp.br>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.99]:48446 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726587AbeK2Sl4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 29 Nov 2018 13:41:56 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+References: <20181128175312.9634-1-matheus.bernardino@usp.br>
 In-Reply-To: <20181128175312.9634-1-matheus.bernardino@usp.br>
-List-ID: <linux-iio@vger.kernel.org>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Date: Thu, 29 Nov 2018 08:37:14 +0100
+Message-ID: <CAJKOXPeY7BENW=LdotGQtL25-7BZABZw=awnY5h2h52q+nN8+g@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: Replace license text w/ SPDX identifier
+To: matheus.bernardino@usp.br
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+        knaack.h@gmx.de, pmeerw@pmeerw.net, joel@jms.id.au,
+        andrew@aj.id.au, ludovic.desroches@microchip.com,
+        eugen.hristev@microchip.com, nicolas.ferre@microchip.com,
+        alexandre.belloni@bootlin.com, wens@csie.org, hdegoede@redhat.com,
+        rjui@broadcom.com, sbranden@broadcom.com, jonmason@broadcom.com,
+        bcm-kernel-feedback-list@broadcom.com,
+        support.opensource@diasemi.com, kgene@kernel.org, ak@it-klinger.de,
+        milo.kim@ti.com, vz@mleia.com, slemieux.tyco@gmail.com,
+        carlo@caione.org, khilman@baylibre.com, heiko@sntech.de,
+        vilhelm.gray@gmail.com, maxime.ripard@bootlin.com,
+        michal.simek@xilinx.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org,
+        "linux-samsung-soc@vger.kernel.org"
+        <linux-samsung-soc@vger.kernel.org>,
+        linux-amlogic@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, kernel-usp@googlegroups.com,
+        ilucas.ms@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, Nov 28, 2018 at 03:53:12PM -0200, Matheus Tavares wrote:
+On Wed, 28 Nov 2018 at 18:53, Matheus Tavares <matheus.bernardino@usp.br> wrote:
+>
 > From: Lucas Santos <ilucas.ms@gmail.com>
-> 
+>
 > This patch removes all license boilerplate texts from the .c and .h
 > files at drivers/iio/adc/ and, instead, adds the proper SPDX license
 > identifiers.
-> 
+>
 > Signed-off-by: Lucas Santos <ilucas.ms@gmail.com>
 > Signed-off-by: Matheus Tavares <matheus.bernardino@usp.br>
 > ---
@@ -119,29 +114,57 @@ On Wed, Nov 28, 2018 at 03:53:12PM -0200, Matheus Tavares wrote:
 >  drivers/iio/adc/xilinx-xadc-events.c |  3 +--
 >  drivers/iio/adc/xilinx-xadc.h        |  3 +--
 >  68 files changed, 68 insertions(+), 361 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/stx104.c b/drivers/iio/adc/stx104.c
-> index 0662ca199eb0..f9d0aaae836f 100644
-> --- a/drivers/iio/adc/stx104.c
-> +++ b/drivers/iio/adc/stx104.c
-> @@ -1,15 +1,7 @@
+>
+
+(...)
+
+> diff --git a/drivers/iio/adc/ep93xx_adc.c b/drivers/iio/adc/ep93xx_adc.c
+> index 5036c392cb20..8f614c84b643 100644
+> --- a/drivers/iio/adc/ep93xx_adc.c
+> +++ b/drivers/iio/adc/ep93xx_adc.c
+> @@ -1,12 +1,9 @@
 > +// SPDX-License-Identifier: GPL-2.0
 >  /*
->   * IIO driver for the Apex Embedded Systems STX104
->   * Copyright (C) 2016 William Breathitt Gray
-> - *
+>   * Driver for ADC module on the Cirrus Logic EP93xx series of SoCs
+>   *
+>   * Copyright (C) 2015 Alexander Sverdlin
+>   *
 > - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License, version 2, as
+> - * it under the terms of the GNU General Public License version 2 as
 > - * published by the Free Software Foundation.
 > - *
-> - * This program is distributed in the hope that it will be useful, but
-> - * WITHOUT ANY WARRANTY; without even the implied warranty of
-> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-> - * General Public License for more details.
->   */
->  #include <linux/bitops.h>
->  #include <linux/device.h>
+>   * The driver uses polling to get the conversion status. According to EP93xx
+>   * datasheets, reading ADCResult register starts the conversion, but user is also
+>   * responsible for ensuring that delay between adjacent conversion triggers is
+> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+> index f10443f92e4c..9f9c186e2135 100644
+> --- a/drivers/iio/adc/exynos_adc.c
+> +++ b/drivers/iio/adc/exynos_adc.c
+> @@ -1,3 +1,4 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+>  /*
+>   *  exynos_adc.c - Support for ADC in EXYNOS SoCs
+>   *
+> @@ -5,16 +6,6 @@
+>   *
+>   *  Copyright (C) 2013 Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+>   *
+> - *  This program is free software; you can redistribute it and/or modify
+> - *  it under the terms of the GNU General Public License as published by
+> - *  the Free Software Foundation; either version 2 of the License, or
+> - *  (at your option) any later version.
+> - *
+> - *  This program is distributed in the hope that it will be useful,
+> - *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+> - *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> - *  GNU General Public License for more details.
+> - *
+>   *  You should have received a copy of the GNU General Public License
+>   *  along with this program; if not, write to the Free Software
+>   *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-For stx104.c:
+The paragraph about writing to FSF should also go away, especially it
+is discouraged at first place (see checkpatch).
 
-Acked-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+Best regards,
+Krzysztof
