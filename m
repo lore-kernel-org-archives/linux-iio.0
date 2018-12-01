@@ -1,426 +1,203 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:53370 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726717AbeLBCyU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 1 Dec 2018 21:54:20 -0500
-Date: Sat, 1 Dec 2018 15:41:27 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-Cc: "lars@metafoo.de" <lars@metafoo.de>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "matheus.bernardino@usp.br" <matheus.bernardino@usp.br>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "victorcolombo@gmail.com" <victorcolombo@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-        "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v3 7/7] staging:iio:ad2s90: Move out of staging
-Message-ID: <20181201154127.4020c8a6@archlinux>
-In-Reply-To: <a1b8b1fe23cd707e5988d42aa3d76e6daae5bd5e.camel@analog.com>
-References: <20181124002312.6923-1-matheus.bernardino@usp.br>
-        <20181124002312.6923-8-matheus.bernardino@usp.br>
-        <a1b8b1fe23cd707e5988d42aa3d76e6daae5bd5e.camel@analog.com>
+Received: from saturn.retrosnub.co.uk ([46.235.226.198]:47234 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726717AbeLBDB2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 1 Dec 2018 22:01:28 -0500
+Date: Sat, 1 Dec 2018 15:48:35 +0000
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+To: Tomasz Duszynski <tduszyns@gmail.com>
+Cc: Matt Ranostay <matt.ranostay@konsulko.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH 1/3] iio: add IIO_MASSCONCENTRATION channel type
+Message-ID: <20181201154835.19482d7a@archlinux>
+In-Reply-To: <20181125154423.GC5053@arch>
+References: <20181124221415.10081-1-tduszyns@gmail.com>
+        <20181124221415.10081-2-tduszyns@gmail.com>
+        <CAJCx=g=H6Zp4AtWPpC-KdZmyOxTymtdgf+Hx8VvThLFg0bjYVQ@mail.gmail.com>
+        <20181125140316.59d9872b@archlinux>
+        <CAJCx=g=oUmcfCA2octwfaoWr6aC=ZF7LUkMsraNe8buHc9mjPg@mail.gmail.com>
+        <20181125154423.GC5053@arch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 26 Nov 2018 07:34:35 +0000
-"Ardelean, Alexandru" <alexandru.Ardelean@analog.com> wrote:
+On Sun, 25 Nov 2018 16:44:23 +0100
+Tomasz Duszynski <tduszyns@gmail.com> wrote:
 
-> On Fri, 2018-11-23 at 22:23 -0200, Matheus Tavares wrote:
-> > Move ad2s90 resolver driver out of staging to the main tree.
-> >   
+> On Sun, Nov 25, 2018 at 06:14:44AM -0800, Matt Ranostay wrote:
+> > On Sun, Nov 25, 2018 at 6:03 AM Jonathan Cameron
+> > <jic23@jic23.retrosnub.co.uk> wrote:  
+> > >
+> > > On Sun, 25 Nov 2018 05:51:32 -0800
+> > > Matt Ranostay <matt.ranostay@konsulko.com> wrote:
+> > >  
+> > > > On Sat, Nov 24, 2018 at 2:14 PM Tomasz Duszynski <tduszyns@gmail.com> wrote:  
+> > > > >
+> > > > > Measuring particulate matter in ug / m3 (micro-grams per cubic meter)
+> > > > > is de facto standard. Existing air quality sensors usually follow
+> > > > > this convention and are capable of returning measurements using
+> > > > > this unit.
+> > > > >
+> > > > > IIO currently does not offer suitable channel type for this
+> > > > > type of measurements hence this patch adds this.
+> > > > >
+> > > > > In addition, two modifiers are introduced used for distinguishing
+> > > > > between coarse (PM10) and fine particles (PM2p5) measurements, i.e
+> > > > > IIO_MOD_PM10 and IIO_MOD_PM2p5.
+> > > > >
+> > > > > Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
+> > > > > ---
+> > > > >  Documentation/ABI/testing/sysfs-bus-iio | 11 ++++++++++-
+> > > > >  drivers/iio/industrialio-core.c         |  3 +++
+> > > > >  include/uapi/linux/iio/types.h          |  3 +++
+> > > > >  tools/iio/iio_event_monitor.c           |  6 ++++++
+> > > > >  4 files changed, 22 insertions(+), 1 deletion(-)
+> > > > >
+> > > > > diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> > > > > index 8127a08e366d..ce0ed140660d 100644
+> > > > > --- a/Documentation/ABI/testing/sysfs-bus-iio
+> > > > > +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> > > > > @@ -1684,4 +1684,13 @@ KernelVersion:   4.18
+> > > > >  Contact:       linux-iio@vger.kernel.org
+> > > > >  Description:
+> > > > >                 Raw (unscaled) phase difference reading from channel Y
+> > > > > -               that can be processed to radians.
+> > > > > \ No newline at end of file
+> > > > > +               that can be processed to radians.
+> > > > > +
+> > > > > +What:          /sys/bus/iio/devices/iio:deviceX/in_massconcentration_pm2p5_input
+> > > > > +What:          /sys/bus/iio/devices/iio:deviceX/in_massconcentrationY_pm2p5_input
+> > > > > +What:          /sys/bus/iio/devices/iio:deviceX/in_massconcentration_pm10_input
+> > > > > +What:          /sys/bus/iio/devices/iio:deviceX/in_massconcentrationY_pm10_input
+> > > > > +KernelVersion: 4.21
+> > > > > +Contact:       linux-iio@vger.kernel.org
+> > > > > +Description:
+> > > > > +               Mass concentration reading of particulate matter in ug / m3.
+> > > > > diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> > > > > index a062cfddc5af..2a9ef600c1fb 100644
+> > > > > --- a/drivers/iio/industrialio-core.c
+> > > > > +++ b/drivers/iio/industrialio-core.c
+> > > > > @@ -87,6 +87,7 @@ static const char * const iio_chan_type_name_spec[] = {
+> > > > >         [IIO_GRAVITY]  = "gravity",
+> > > > >         [IIO_POSITIONRELATIVE]  = "positionrelative",
+> > > > >         [IIO_PHASE] = "phase",
+> > > > > +       [IIO_MASSCONCENTRATION] = "massconcentration",
+> > > > >  };
+> > > > >
+> > > > >  static const char * const iio_modifier_names[] = {
+> > > > > @@ -127,6 +128,8 @@ static const char * const iio_modifier_names[] = {
+> > > > >         [IIO_MOD_Q] = "q",
+> > > > >         [IIO_MOD_CO2] = "co2",
+> > > > >         [IIO_MOD_VOC] = "voc",
+> > > > > +       [IIO_MOD_PM2p5] = "pm2p5",
+> > > > > +       [IIO_MOD_PM10] = "pm10",
+> > > > >  };
+> > > > >
+> > > > >  /* relies on pairs of these shared then separate */
+> > > > > diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+> > > > > index 92baabc103ac..465044b42af5 100644
+> > > > > --- a/include/uapi/linux/iio/types.h
+> > > > > +++ b/include/uapi/linux/iio/types.h
+> > > > > @@ -46,6 +46,7 @@ enum iio_chan_type {
+> > > > >         IIO_GRAVITY,
+> > > > >         IIO_POSITIONRELATIVE,
+> > > > >         IIO_PHASE,
+> > > > > +       IIO_MASSCONCENTRATION,  
+> > > >
+> > > > So I'm guessing IIO_CONCENTRATION can't be scaled to the micro-grams
+> > > > per cubic meter?  
+> > >
+> > > Currently concentration is defined as a percentage reading of a substance
+> > > (which does make me wonder if it is meant to be percentage of the volume or
+> > > percentage of the mass?)  Either way, if can't convert to a density measurement
+> > > as it's a unit free ratio (I think).  
+> >
+> > Seems like it can be both..  guessing all the atmosphere ( CO2, VOC,
+> > etc) ones are mass/density because on how they work.  
 > 
-> Acked-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Hi Alexandru,
+> Hmm, but still percentage was picked up for IIO_CONCENTRATION which does
+> really match PM expectations. Perhaps if units were sticked to modifiers
+> it whould be easier to reuse that.
 
-I took that to apply to the whole series, hope you don't mind.
+It gets very messy if we start doing that modifiers, I'd rather stick to
+different channel types.  We already do this with other channel types
+position / positionrelative for example.
 
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
-
-Thanks,
+It isn't as though it's actually possible to convert between the two without
+knowing what the particles actually are...
 
 Jonathan
-
 > 
-> > Signed-off-by: Matheus Tavares <matheus.bernardino@usp.br>
-> > Signed-off-by: Victor Colombo <victorcolombo@gmail.com>
-> > ---
-> > Changes in v3:
-> >  - none
-> > 
-> > Changes in v2:
-> >  - Disabled git move detection, to see the whole code, as Jonathan
-> >  suggested
-> > 
-> >  drivers/iio/resolver/Kconfig          |  10 ++
-> >  drivers/iio/resolver/Makefile         |   1 +
-> >  drivers/iio/resolver/ad2s90.c         | 131 ++++++++++++++++++++++++++
-> >  drivers/staging/iio/resolver/Kconfig  |  10 --
-> >  drivers/staging/iio/resolver/Makefile |   1 -
-> >  drivers/staging/iio/resolver/ad2s90.c | 131 --------------------------
-> >  6 files changed, 142 insertions(+), 142 deletions(-)
-> >  create mode 100644 drivers/iio/resolver/ad2s90.c
-> >  delete mode 100644 drivers/staging/iio/resolver/ad2s90.c
-> > 
-> > diff --git a/drivers/iio/resolver/Kconfig b/drivers/iio/resolver/Kconfig
-> > index 2ced9f22aa70..786801be54f6 100644
-> > --- a/drivers/iio/resolver/Kconfig
-> > +++ b/drivers/iio/resolver/Kconfig
-> > @@ -3,6 +3,16 @@
-> >  #
-> >  menu "Resolver to digital converters"
+> > But the electro-conductivity sensor that is using IIO_CONCENTRATION
+> > channels is likely from percentage of volume.
+> >
+> > - Matt
 > >  
-> > +config AD2S90
-> > +	tristate "Analog Devices ad2s90 driver"
-> > +	depends on SPI
-> > +	help
-> > +	  Say yes here to build support for Analog Devices spi resolver
-> > +	  to digital converters, ad2s90, provides direct access via sysfs.
-> > +
-> > +	  To compile this driver as a module, choose M here: the
-> > +	  module will be called ad2s90.
-> > +
-> >  config AD2S1200
-> >  	tristate "Analog Devices ad2s1200/ad2s1205 driver"
-> >  	depends on SPI
-> > diff --git a/drivers/iio/resolver/Makefile
-> > b/drivers/iio/resolver/Makefile
-> > index 4e1dccae07e7..398d82d50028 100644
-> > --- a/drivers/iio/resolver/Makefile
-> > +++ b/drivers/iio/resolver/Makefile
-> > @@ -2,4 +2,5 @@
-> >  # Makefile for Resolver/Synchro drivers
-> >  #
-> >  
-> > +obj-$(CONFIG_AD2S90) += ad2s90.o
-> >  obj-$(CONFIG_AD2S1200) += ad2s1200.o
-> > diff --git a/drivers/iio/resolver/ad2s90.c
-> > b/drivers/iio/resolver/ad2s90.c
-> > new file mode 100644
-> > index 000000000000..a41f5cb10da5
-> > --- /dev/null
-> > +++ b/drivers/iio/resolver/ad2s90.c
-> > @@ -0,0 +1,131 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * ad2s90.c simple support for the ADI Resolver to Digital Converters:
-> > AD2S90
-> > + *
-> > + * Copyright (c) 2010-2010 Analog Devices Inc.
-> > + */
-> > +#include <linux/types.h>
-> > +#include <linux/mutex.h>
-> > +#include <linux/device.h>
-> > +#include <linux/spi/spi.h>
-> > +#include <linux/slab.h>
-> > +#include <linux/sysfs.h>
-> > +#include <linux/module.h>
-> > +
-> > +#include <linux/iio/iio.h>
-> > +#include <linux/iio/sysfs.h>
-> > +
-> > +/*
-> > + * Although chip's max frequency is 2Mhz, it needs 600ns between CS and
-> > the
-> > + * first falling edge of SCLK, so frequency should be at most 1 / (2 *
-> > 6e-7)
-> > + */
-> > +#define AD2S90_MAX_SPI_FREQ_HZ  830000
-> > +
-> > +struct ad2s90_state {
-> > +	struct mutex lock; /* lock to protect rx buffer */
-> > +	struct spi_device *sdev;
-> > +	u8 rx[2] ____cacheline_aligned;
-> > +};
-> > +
-> > +static int ad2s90_read_raw(struct iio_dev *indio_dev,
-> > +			   struct iio_chan_spec const *chan,
-> > +			   int *val,
-> > +			   int *val2,
-> > +			   long m)
-> > +{
-> > +	int ret;
-> > +	struct ad2s90_state *st = iio_priv(indio_dev);
-> > +
-> > +	if (chan->type != IIO_ANGL)
-> > +		return -EINVAL;
-> > +
-> > +	switch (m) {
-> > +	case IIO_CHAN_INFO_SCALE:
-> > +		/* 2 * Pi / 2^12 */
-> > +		*val = 6283; /* mV */
-> > +		*val2 = 12;
-> > +		return IIO_VAL_FRACTIONAL_LOG2;
-> > +	case IIO_CHAN_INFO_RAW:
-> > +		mutex_lock(&st->lock);
-> > +		ret = spi_read(st->sdev, st->rx, 2);
-> > +		if (ret < 0) {
-> > +			mutex_unlock(&st->lock);
-> > +			return ret;
-> > +		}
-> > +		*val = (((u16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >>
-> > 4);
-> > +
-> > +		mutex_unlock(&st->lock);
-> > +
-> > +		return IIO_VAL_INT;
-> > +	default:
-> > +		break;
-> > +	}
-> > +
-> > +	return -EINVAL;
-> > +}
-> > +
-> > +static const struct iio_info ad2s90_info = {
-> > +	.read_raw = ad2s90_read_raw,
-> > +};
-> > +
-> > +static const struct iio_chan_spec ad2s90_chan = {
-> > +	.type = IIO_ANGL,
-> > +	.indexed = 1,
-> > +	.channel = 0,
-> > +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> > BIT(IIO_CHAN_INFO_SCALE),
-> > +};
-> > +
-> > +static int ad2s90_probe(struct spi_device *spi)
-> > +{
-> > +	struct iio_dev *indio_dev;
-> > +	struct ad2s90_state *st;
-> > +
-> > +	if (spi->max_speed_hz > AD2S90_MAX_SPI_FREQ_HZ) {
-> > +		dev_err(&spi->dev, "SPI CLK, %d Hz exceeds %d Hz\n",
-> > +			spi->max_speed_hz, AD2S90_MAX_SPI_FREQ_HZ);
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> > +	if (!indio_dev)
-> > +		return -ENOMEM;
-> > +	st = iio_priv(indio_dev);
-> > +	spi_set_drvdata(spi, indio_dev);
-> > +
-> > +	mutex_init(&st->lock);
-> > +	st->sdev = spi;
-> > +	indio_dev->dev.parent = &spi->dev;
-> > +	indio_dev->info = &ad2s90_info;
-> > +	indio_dev->modes = INDIO_DIRECT_MODE;
-> > +	indio_dev->channels = &ad2s90_chan;
-> > +	indio_dev->num_channels = 1;
-> > +	indio_dev->name = spi_get_device_id(spi)->name;
-> > +
-> > +	return devm_iio_device_register(indio_dev->dev.parent, indio_dev);
-> > +}
-> > +
-> > +static const struct of_device_id ad2s90_of_match[] = {
-> > +	{ .compatible = "adi,ad2s90", },
-> > +	{}
-> > +};
-> > +MODULE_DEVICE_TABLE(of, ad2s90_of_match);
-> > +
-> > +static const struct spi_device_id ad2s90_id[] = {
-> > +	{ "ad2s90" },
-> > +	{}
-> > +};
-> > +MODULE_DEVICE_TABLE(spi, ad2s90_id);
-> > +
-> > +static struct spi_driver ad2s90_driver = {
-> > +	.driver = {
-> > +		.name = "ad2s90",
-> > +		.of_match_table = ad2s90_of_match,
-> > +	},
-> > +	.probe = ad2s90_probe,
-> > +	.id_table = ad2s90_id,
-> > +};
-> > +module_spi_driver(ad2s90_driver);
-> > +
-> > +MODULE_AUTHOR("Graff Yang <graff.yang@gmail.com>");
-> > +MODULE_DESCRIPTION("Analog Devices AD2S90 Resolver to Digital SPI
-> > driver");
-> > +MODULE_LICENSE("GPL v2");
-> > diff --git a/drivers/staging/iio/resolver/Kconfig
-> > b/drivers/staging/iio/resolver/Kconfig
-> > index 6a469ee6101f..4a727c17bb8f 100644
-> > --- a/drivers/staging/iio/resolver/Kconfig
-> > +++ b/drivers/staging/iio/resolver/Kconfig
-> > @@ -3,16 +3,6 @@
-> >  #
-> >  menu "Resolver to digital converters"
-> >  
-> > -config AD2S90
-> > -	tristate "Analog Devices ad2s90 driver"
-> > -	depends on SPI
-> > -	help
-> > -	  Say yes here to build support for Analog Devices spi resolver
-> > -	  to digital converters, ad2s90, provides direct access via sysfs.
-> > -
-> > -	  To compile this driver as a module, choose M here: the
-> > -	  module will be called ad2s90.
-> > -
-> >  config AD2S1210
-> >  	tristate "Analog Devices ad2s1210 driver"
-> >  	depends on SPI
-> > diff --git a/drivers/staging/iio/resolver/Makefile
-> > b/drivers/staging/iio/resolver/Makefile
-> > index 8d901dc7500b..b2049f2ce36e 100644
-> > --- a/drivers/staging/iio/resolver/Makefile
-> > +++ b/drivers/staging/iio/resolver/Makefile
-> > @@ -2,5 +2,4 @@
-> >  # Makefile for Resolver/Synchro drivers
-> >  #
-> >  
-> > -obj-$(CONFIG_AD2S90) += ad2s90.o
-> >  obj-$(CONFIG_AD2S1210) += ad2s1210.o
-> > diff --git a/drivers/staging/iio/resolver/ad2s90.c
-> > b/drivers/staging/iio/resolver/ad2s90.c
-> > deleted file mode 100644
-> > index a41f5cb10da5..000000000000
-> > --- a/drivers/staging/iio/resolver/ad2s90.c
-> > +++ /dev/null
-> > @@ -1,131 +0,0 @@
-> > -// SPDX-License-Identifier: GPL-2.0
-> > -/*
-> > - * ad2s90.c simple support for the ADI Resolver to Digital Converters:
-> > AD2S90
-> > - *
-> > - * Copyright (c) 2010-2010 Analog Devices Inc.
-> > - */
-> > -#include <linux/types.h>
-> > -#include <linux/mutex.h>
-> > -#include <linux/device.h>
-> > -#include <linux/spi/spi.h>
-> > -#include <linux/slab.h>
-> > -#include <linux/sysfs.h>
-> > -#include <linux/module.h>
-> > -
-> > -#include <linux/iio/iio.h>
-> > -#include <linux/iio/sysfs.h>
-> > -
-> > -/*
-> > - * Although chip's max frequency is 2Mhz, it needs 600ns between CS and
-> > the
-> > - * first falling edge of SCLK, so frequency should be at most 1 / (2 *
-> > 6e-7)
-> > - */
-> > -#define AD2S90_MAX_SPI_FREQ_HZ  830000
-> > -
-> > -struct ad2s90_state {
-> > -	struct mutex lock; /* lock to protect rx buffer */
-> > -	struct spi_device *sdev;
-> > -	u8 rx[2] ____cacheline_aligned;
-> > -};
-> > -
-> > -static int ad2s90_read_raw(struct iio_dev *indio_dev,
-> > -			   struct iio_chan_spec const *chan,
-> > -			   int *val,
-> > -			   int *val2,
-> > -			   long m)
-> > -{
-> > -	int ret;
-> > -	struct ad2s90_state *st = iio_priv(indio_dev);
-> > -
-> > -	if (chan->type != IIO_ANGL)
-> > -		return -EINVAL;
-> > -
-> > -	switch (m) {
-> > -	case IIO_CHAN_INFO_SCALE:
-> > -		/* 2 * Pi / 2^12 */
-> > -		*val = 6283; /* mV */
-> > -		*val2 = 12;
-> > -		return IIO_VAL_FRACTIONAL_LOG2;
-> > -	case IIO_CHAN_INFO_RAW:
-> > -		mutex_lock(&st->lock);
-> > -		ret = spi_read(st->sdev, st->rx, 2);
-> > -		if (ret < 0) {
-> > -			mutex_unlock(&st->lock);
-> > -			return ret;
-> > -		}
-> > -		*val = (((u16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >>
-> > 4);
-> > -
-> > -		mutex_unlock(&st->lock);
-> > -
-> > -		return IIO_VAL_INT;
-> > -	default:
-> > -		break;
-> > -	}
-> > -
-> > -	return -EINVAL;
-> > -}
-> > -
-> > -static const struct iio_info ad2s90_info = {
-> > -	.read_raw = ad2s90_read_raw,
-> > -};
-> > -
-> > -static const struct iio_chan_spec ad2s90_chan = {
-> > -	.type = IIO_ANGL,
-> > -	.indexed = 1,
-> > -	.channel = 0,
-> > -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> > BIT(IIO_CHAN_INFO_SCALE),
-> > -};
-> > -
-> > -static int ad2s90_probe(struct spi_device *spi)
-> > -{
-> > -	struct iio_dev *indio_dev;
-> > -	struct ad2s90_state *st;
-> > -
-> > -	if (spi->max_speed_hz > AD2S90_MAX_SPI_FREQ_HZ) {
-> > -		dev_err(&spi->dev, "SPI CLK, %d Hz exceeds %d Hz\n",
-> > -			spi->max_speed_hz, AD2S90_MAX_SPI_FREQ_HZ);
-> > -		return -EINVAL;
-> > -	}
-> > -
-> > -	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> > -	if (!indio_dev)
-> > -		return -ENOMEM;
-> > -	st = iio_priv(indio_dev);
-> > -	spi_set_drvdata(spi, indio_dev);
-> > -
-> > -	mutex_init(&st->lock);
-> > -	st->sdev = spi;
-> > -	indio_dev->dev.parent = &spi->dev;
-> > -	indio_dev->info = &ad2s90_info;
-> > -	indio_dev->modes = INDIO_DIRECT_MODE;
-> > -	indio_dev->channels = &ad2s90_chan;
-> > -	indio_dev->num_channels = 1;
-> > -	indio_dev->name = spi_get_device_id(spi)->name;
-> > -
-> > -	return devm_iio_device_register(indio_dev->dev.parent, indio_dev);
-> > -}
-> > -
-> > -static const struct of_device_id ad2s90_of_match[] = {
-> > -	{ .compatible = "adi,ad2s90", },
-> > -	{}
-> > -};
-> > -MODULE_DEVICE_TABLE(of, ad2s90_of_match);
-> > -
-> > -static const struct spi_device_id ad2s90_id[] = {
-> > -	{ "ad2s90" },
-> > -	{}
-> > -};
-> > -MODULE_DEVICE_TABLE(spi, ad2s90_id);
-> > -
-> > -static struct spi_driver ad2s90_driver = {
-> > -	.driver = {
-> > -		.name = "ad2s90",
-> > -		.of_match_table = ad2s90_of_match,
-> > -	},
-> > -	.probe = ad2s90_probe,
-> > -	.id_table = ad2s90_id,
-> > -};
-> > -module_spi_driver(ad2s90_driver);
-> > -
-> > -MODULE_AUTHOR("Graff Yang <graff.yang@gmail.com>");
-> > -MODULE_DESCRIPTION("Analog Devices AD2S90 Resolver to Digital SPI
-> > driver");
-> > -MODULE_LICENSE("GPL v2");  
+> > >  
+> > > >  
+> > > > >  };
+> > > > >
+> > > > >  enum iio_modifier {
+> > > > > @@ -87,6 +88,8 @@ enum iio_modifier {
+> > > > >         IIO_MOD_VOC,
+> > > > >         IIO_MOD_LIGHT_UV,
+> > > > >         IIO_MOD_LIGHT_DUV,
+> > > > > +       IIO_MOD_PM2p5,  
+> > > >
+> > > > I know this is unit of measure but the lowercase p in IIO_MOD_PM2p5 is
+> > > > a bit non-standard for iio defines/enum.  
+> > > It is a bit odd and will get us scripted reports so maybe best to
+> > > just go upper case and not worry about it.
+> > >
+> > > Jonathan  
+> > > >
+> > > > - Matt
+> > > >  
+> > > > > +       IIO_MOD_PM10,
+> > > > >  };
+> > > > >
+> > > > >  enum iio_event_type {
+> > > > > diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+> > > > > index ac2de6b7e89f..f0fcfeddba2b 100644
+> > > > > --- a/tools/iio/iio_event_monitor.c
+> > > > > +++ b/tools/iio/iio_event_monitor.c
+> > > > > @@ -60,6 +60,7 @@ static const char * const iio_chan_type_name_spec[] = {
+> > > > >         [IIO_GRAVITY] = "gravity",
+> > > > >         [IIO_POSITIONRELATIVE] = "positionrelative",
+> > > > >         [IIO_PHASE] = "phase",
+> > > > > +       [IIO_MASSCONCENTRATION] = "massconcentration",
+> > > > >  };
+> > > > >
+> > > > >  static const char * const iio_ev_type_text[] = {
+> > > > > @@ -115,6 +116,8 @@ static const char * const iio_modifier_names[] = {
+> > > > >         [IIO_MOD_Q] = "q",
+> > > > >         [IIO_MOD_CO2] = "co2",
+> > > > >         [IIO_MOD_VOC] = "voc",
+> > > > > +       [IIO_MOD_PM2p5] = "pm2p5",
+> > > > > +       [IIO_MOD_PM10] = "pm10",
+> > > > >  };
+> > > > >
+> > > > >  static bool event_is_known(struct iio_event_data *event)
+> > > > > @@ -156,6 +159,7 @@ static bool event_is_known(struct iio_event_data *event)
+> > > > >         case IIO_GRAVITY:
+> > > > >         case IIO_POSITIONRELATIVE:
+> > > > >         case IIO_PHASE:
+> > > > > +       case IIO_MASSCONCENTRATION:
+> > > > >                 break;
+> > > > >         default:
+> > > > >                 return false;
+> > > > > @@ -200,6 +204,8 @@ static bool event_is_known(struct iio_event_data *event)
+> > > > >         case IIO_MOD_Q:
+> > > > >         case IIO_MOD_CO2:
+> > > > >         case IIO_MOD_VOC:
+> > > > > +       case IIO_MOD_PM2p5:
+> > > > > +       case IIO_MOD_PM10:
+> > > > >                 break;
+> > > > >         default:
+> > > > >                 return false;
+> > > > > --
+> > > > > 2.19.2
+> > > > >  
+> > >  
