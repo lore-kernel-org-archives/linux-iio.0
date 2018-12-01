@@ -1,9 +1,9 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:50656 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:51528 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726717AbeLBCrU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 1 Dec 2018 21:47:20 -0500
-Date: Sat, 1 Dec 2018 15:34:28 +0000
+        id S1727035AbeLBCuU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 1 Dec 2018 21:50:20 -0500
+Date: Sat, 1 Dec 2018 15:37:28 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Matheus Tavares <matheus.bernardino@usp.br>
 Cc: Lars-Peter Clausen <lars@metafoo.de>,
@@ -17,76 +17,76 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
         linux-kernel@vger.kernel.org,
         Alexandru Ardelean <alexandru.ardelean@analog.com>,
         kernel-usp@googlegroups.com, victorcolombo@gmail.com
-Subject: Re: [PATCH v3 2/7] staging:iio:ad2s90: Remove spi setup that should
- be done via dt
-Message-ID: <20181201153428.399caf50@archlinux>
-In-Reply-To: <20181124002312.6923-3-matheus.bernardino@usp.br>
+Subject: Re: [PATCH v3 3/7] staging:iio:ad2s90: Add max frequency check at
+ probe
+Message-ID: <20181201153728.387f4695@archlinux>
+In-Reply-To: <20181124002312.6923-4-matheus.bernardino@usp.br>
 References: <20181124002312.6923-1-matheus.bernardino@usp.br>
-        <20181124002312.6923-3-matheus.bernardino@usp.br>
+        <20181124002312.6923-4-matheus.bernardino@usp.br>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 23 Nov 2018 22:23:07 -0200
+On Fri, 23 Nov 2018 22:23:08 -0200
 Matheus Tavares <matheus.bernardino@usp.br> wrote:
 
-> The ad2s90 driver currently sets some spi settings (max_speed_hz and
-> mode) at ad2s90_probe. Since the maximum frequency is a required element
-> in DT binding for spi slave devices and because the spi mode for the
-> device can be either (0,0) or (1,1), these settings should be handled
-> via device tree, not in the driver's code. This patch removes them from
-> the probe function.
+> From: Alexandru Ardelean <alexandru.ardelean@analog.com>
 > 
-> Note: The way in which the mentioned spi settings need to be specified
-> on the ad2s90's node of a device tree will be documented in the future
-> patch "dt-bindings:iio:resolver: Add docs for ad2s90".
+> This patch adds a max frequency check at the beginning of ad2s90_probe
+> function so that when it is set to a value above 0.83Mhz, dev_err is
+> called with an appropriate message and -EINVAL is returned.
 > 
+> The defined limit is 0.83Mhz instead of 2Mhz, which is the chip's max
+> frequency as specified in the datasheet, because, as also specified in
+> the datasheet, a 600ns delay is expected between the application of a
+> logic LO to CS and the application of SCLK. Since the delay is not
+> implemented in the spi code, to satisfy it, SCLK's period should be at
+> most 2 * 600ns, so the max frequency should be 1 / (2 * 6e-7), which
+> gives roughly 830000Hz.
+> 
+> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 > Signed-off-by: Matheus Tavares <matheus.bernardino@usp.br>
-
 Applied,
 
 Thanks,
-
-Jonathan
-
 > ---
 > Changes in v3:
 >  - none
 > 
 > Changes in v2:
->  - Rewritten patch message to better explain why the code snippet in
->  question should be removed.
+>  - Correctly credit Alexandru as the patch's author
 > 
->  drivers/staging/iio/resolver/ad2s90.c | 11 -----------
->  1 file changed, 11 deletions(-)
+>  drivers/staging/iio/resolver/ad2s90.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
 > 
 > diff --git a/drivers/staging/iio/resolver/ad2s90.c b/drivers/staging/iio/resolver/ad2s90.c
-> index fdae067ed866..abb9b9147ee6 100644
+> index abb9b9147ee6..4721e9bbb8b0 100644
 > --- a/drivers/staging/iio/resolver/ad2s90.c
 > +++ b/drivers/staging/iio/resolver/ad2s90.c
-> @@ -77,7 +77,6 @@ static int ad2s90_probe(struct spi_device *spi)
->  {
+> @@ -19,6 +19,12 @@
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/sysfs.h>
+>  
+> +/*
+> + * Although chip's max frequency is 2Mhz, it needs 600ns between CS and the
+> + * first falling edge of SCLK, so frequency should be at most 1 / (2 * 6e-7)
+> + */
+> +#define AD2S90_MAX_SPI_FREQ_HZ  830000
+> +
+>  struct ad2s90_state {
+>  	struct mutex lock;
+>  	struct spi_device *sdev;
+> @@ -78,6 +84,12 @@ static int ad2s90_probe(struct spi_device *spi)
 >  	struct iio_dev *indio_dev;
 >  	struct ad2s90_state *st;
-> -	int ret;
 >  
+> +	if (spi->max_speed_hz > AD2S90_MAX_SPI_FREQ_HZ) {
+> +		dev_err(&spi->dev, "SPI CLK, %d Hz exceeds %d Hz\n",
+> +			spi->max_speed_hz, AD2S90_MAX_SPI_FREQ_HZ);
+> +		return -EINVAL;
+> +	}
+> +
 >  	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
 >  	if (!indio_dev)
-> @@ -94,16 +93,6 @@ static int ad2s90_probe(struct spi_device *spi)
->  	indio_dev->num_channels = 1;
->  	indio_dev->name = spi_get_device_id(spi)->name;
->  
-> -	/* need 600ns between CS and the first falling edge of SCLK */
-> -	spi->max_speed_hz = 830000;
-> -	spi->mode = SPI_MODE_3;
-> -	ret = spi_setup(spi);
-> -
-> -	if (ret < 0) {
-> -		dev_err(&spi->dev, "spi_setup failed!\n");
-> -		return ret;
-> -	}
-> -
->  	return devm_iio_device_register(indio_dev->dev.parent, indio_dev);
->  }
->  
+>  		return -ENOMEM;
