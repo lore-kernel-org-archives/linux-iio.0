@@ -1,242 +1,304 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:38832 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:60770 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726788AbeLBEI5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 1 Dec 2018 23:08:57 -0500
-Date: Sat, 1 Dec 2018 16:55:50 +0000
+        id S1726788AbeLBEgr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 1 Dec 2018 23:36:47 -0500
+Date: Sat, 1 Dec 2018 17:23:41 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Matheus Tavares <matheus.bernardino@usp.br>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
+To: Giuliano Augusto Faulin Belinassi <giuliano.belinassi@usp.br>
+Cc: StefanSerban.Popa@analog.com, alexandru.Ardelean@analog.com,
+        lars@metafoo.de, knaack.h@gmx.de, Michael.Hennerich@analog.com,
+        Renato Geh <renatogeh@gmail.com>, giuliano.belinassi@gmail.com,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Jon Mason <jonmason@broadcom.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Support Opensource <support.opensource@diasemi.com>,
-        Kukjin Kim <kgene@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Andreas Klinger <ak@it-klinger.de>, Milo Kim <milo.kim@ti.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Sylvain Lemieux <slemieux.tyco@gmail.com>,
-        Carlo Caione <carlo@caione.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-samsung-soc@vger.kernel.org,
-        linux-amlogic@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, kernel-usp@googlegroups.com,
-        Lucas Santos <ilucas.ms@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH] iio: adc: Replace license text w/ SPDX identifier
-Message-ID: <20181201165550.51a78366@archlinux>
-In-Reply-To: <20181128175312.9634-1-matheus.bernardino@usp.br>
-References: <20181128175312.9634-1-matheus.bernardino@usp.br>
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        kernel-usp@googlegroups.com
+Subject: Re: [PATCH 1/2] staging: iio: ad7780: Add gain & filter gpio
+ support
+Message-ID: <20181201172341.4c353eae@archlinux>
+In-Reply-To: <CAEFO=4AQe0B0inmE=w2T+xaFkKgPwnHLP7XkT30TjFV_AEKGbg@mail.gmail.com>
+References: <cover.1543428366.git.giuliano.belinassi@usp.br>
+        <231cbc909b892a0ebe172460d34e9eeb9cfa3003.1543428366.git.giuliano.belinassi@usp.br>
+        <1543490289.11186.22.camel@analog.com>
+        <CAEFO=4AQe0B0inmE=w2T+xaFkKgPwnHLP7XkT30TjFV_AEKGbg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 28 Nov 2018 15:53:12 -0200
-Matheus Tavares <matheus.bernardino@usp.br> wrote:
+On Thu, 29 Nov 2018 11:02:46 -0200
+Giuliano Augusto Faulin Belinassi <giuliano.belinassi@usp.br> wrote:
 
-> From: Lucas Santos <ilucas.ms@gmail.com>
-> 
-> This patch removes all license boilerplate texts from the .c and .h
-> files at drivers/iio/adc/ and, instead, adds the proper SPDX license
-> identifiers.
-> 
-> Signed-off-by: Lucas Santos <ilucas.ms@gmail.com>
-> Signed-off-by: Matheus Tavares <matheus.bernardino@usp.br>
-Hi Lucas, Matheus,
+> Hi
 
-Doing this as a large all at once patch may seem like a good idea, but...
-
-Whilst it is now kernel policy (sort of) to use SPDX, that doesn't
-correspond to converting all code without input from the original
-authors.
-
-As such, I am normally only happy to apply SPDX patches with an
-ack from either the original author, or at least someone from the
-company who holds the copyright.
-
-I have expressed before that I actually consider these mostly
-noise and so am not keen at all unless there is other work
-being done on a particular driver.
-
-So please split this up into at least separate patches
-for each of the copyright holders, so they can provide an ACK
-if they are happy with this change.
-
-Some companies will for example want their legal departments to
-do a review of whether SPDX is acceptable for their past contributions.
-(lots won't care btw - but the potential is there).
-
-+CC Linus Walleij as one of his files doesn't have a license...
-
-A few other comments inline...
-
-Thanks,
+A few follow ups from me having read the result in patch 2.
 
 Jonathan
-
-> ---
->  drivers/iio/adc/ad7266.c             |  3 +--
->  drivers/iio/adc/ad7291.c             |  3 +--
->  drivers/iio/adc/ad7298.c             |  3 +--
->  drivers/iio/adc/ad7766.c             |  3 +--
->  drivers/iio/adc/ad7791.c             |  3 +--
->  drivers/iio/adc/ad7793.c             |  3 +--
->  drivers/iio/adc/ad7887.c             |  3 +--
->  drivers/iio/adc/ad7923.c             |  3 +--
->  drivers/iio/adc/ad799x.c             |  5 +----
->  drivers/iio/adc/ad_sigma_delta.c     |  3 +--
->  drivers/iio/adc/aspeed_adc.c         |  6 +-----
->  drivers/iio/adc/at91-sama5d2_adc.c   | 10 +---------
->  drivers/iio/adc/at91_adc.c           |  3 +--
->  drivers/iio/adc/axp20x_adc.c         |  5 +----
->  drivers/iio/adc/axp288_adc.c         | 13 +------------
->  drivers/iio/adc/bcm_iproc_adc.c      | 13 +------------
->  drivers/iio/adc/berlin2-adc.c        |  5 +----
->  drivers/iio/adc/cc10001_adc.c        |  6 +-----
->  drivers/iio/adc/cpcap-adc.c          | 10 +---------
->  drivers/iio/adc/da9150-gpadc.c       |  6 +-----
->  drivers/iio/adc/dln2-adc.c           |  5 +----
->  drivers/iio/adc/ep93xx_adc.c         |  5 +----
->  drivers/iio/adc/exynos_adc.c         | 11 +----------
->  drivers/iio/adc/fsl-imx25-gcq.c      |  5 +----
->  drivers/iio/adc/hi8435.c             |  6 +-----
->  drivers/iio/adc/hx711.c              |  6 +-----
->  drivers/iio/adc/imx7d_adc.c          |  6 +-----
->  drivers/iio/adc/ina2xx-adc.c         |  7 +------
->  drivers/iio/adc/lp8788_adc.c         |  5 +----
->  drivers/iio/adc/lpc18xx_adc.c        |  5 +----
->  drivers/iio/adc/lpc32xx_adc.c        | 15 +--------------
->  drivers/iio/adc/ltc2471.c            |  3 +--
->  drivers/iio/adc/ltc2485.c            |  5 +----
->  drivers/iio/adc/ltc2497.c            |  3 +--
->  drivers/iio/adc/max1027.c            |  5 +----
->  drivers/iio/adc/max1118.c            |  5 +----
->  drivers/iio/adc/max1363.c            |  5 +----
->  drivers/iio/adc/mcp320x.c            |  5 +----
->  drivers/iio/adc/mcp3422.c            |  6 +-----
->  drivers/iio/adc/men_z188_adc.c       |  5 +----
->  drivers/iio/adc/meson_saradc.c       |  5 +----
->  drivers/iio/adc/mt6577_auxadc.c      | 10 +---------
->  drivers/iio/adc/mxs-lradc-adc.c      | 11 +----------
->  drivers/iio/adc/nau7802.c            |  3 +--
->  drivers/iio/adc/palmas_gpadc.c       |  5 +----
->  drivers/iio/adc/qcom-pm8xxx-xoadc.c  |  1 +
->  drivers/iio/adc/qcom-spmi-iadc.c     | 10 +---------
->  drivers/iio/adc/qcom-spmi-vadc.c     | 10 +---------
->  drivers/iio/adc/rockchip_saradc.c    | 11 +----------
->  drivers/iio/adc/spear_adc.c          |  3 +--
->  drivers/iio/adc/stx104.c             | 10 +---------
->  drivers/iio/adc/sun4i-gpadc-iio.c    |  5 +----
->  drivers/iio/adc/ti-adc081c.c         |  5 +----
->  drivers/iio/adc/ti-adc0832.c         |  5 +----
->  drivers/iio/adc/ti-adc084s021.c      |  5 +----
->  drivers/iio/adc/ti-adc108s102.c      | 10 +---------
->  drivers/iio/adc/ti-adc12138.c        |  5 +----
->  drivers/iio/adc/ti-ads1015.c         |  5 +----
->  drivers/iio/adc/ti-ads8688.c         |  5 +----
->  drivers/iio/adc/ti-tlc4541.c         |  5 +----
->  drivers/iio/adc/ti_am335x_adc.c      | 10 +---------
->  drivers/iio/adc/twl4030-madc.c       | 16 +---------------
->  drivers/iio/adc/twl6030-gpadc.c      | 16 +---------------
->  drivers/iio/adc/vf610_adc.c          | 15 +--------------
->  drivers/iio/adc/viperboard_adc.c     |  7 +------
->  drivers/iio/adc/xilinx-xadc-core.c   |  3 +--
->  drivers/iio/adc/xilinx-xadc-events.c |  3 +--
->  drivers/iio/adc/xilinx-xadc.h        |  3 +--
->  68 files changed, 68 insertions(+), 361 deletions(-)
 > 
-...
+> On Thu, Nov 29, 2018 at 9:18 AM Popa, Stefan Serban
+> <StefanSerban.Popa@analog.com> wrote:
+> >
+> > On Mi, 2018-11-28 at 16:15 -0200, Giuliano Belinassi wrote:  
+> > > Previously, the AD7780 driver only supported gpio for the 'powerdown'
+> > > pin. This commit adds suppport for the 'gain' and 'filter' pin.
+> > >
+> > > Signed-off-by: Giuliano Belinassi <giuliano.belinassi@usp.br>
+> > > ---
+> > > Changes in v2:
+> > >     - Now this patch is part of the patchset that aims to remove ad7780
+> > > out of staging. https://marc.info/?l=linux-iio&m=154282349808890&w=2
+> > >     - Also, now it reads voltage and filter values from the userspace
+> > > instead of gpio pin states.  
+> >
+> > Hello,
+> > Please see bellow.
+> >  
+> > >
+> > >  drivers/staging/iio/adc/ad7780.c       | 78 ++++++++++++++++++++++++--
+> > >  include/linux/iio/adc/ad_sigma_delta.h |  5 ++
+> > >  2 files changed, 79 insertions(+), 4 deletions(-)
+> > >
+> > > diff --git a/drivers/staging/iio/adc/ad7780.c
+> > > b/drivers/staging/iio/adc/ad7780.c
+> > > index c4a85789c2db..05979a79fda3 100644
+> > > --- a/drivers/staging/iio/adc/ad7780.c
+> > > +++ b/drivers/staging/iio/adc/ad7780.c
+> > > @@ -39,6 +39,12 @@
+> > >  #define AD7170_PATTERN               (AD7780_PAT0 | AD7170_PAT2)
+> > >  #define AD7170_PATTERN_MASK  (AD7780_PAT0 | AD7780_PAT1 |
+> > > AD7170_PAT2)
+> > >
+> > > +#define AD7780_GAIN_GPIO     0
+> > > +#define AD7780_FILTER_GPIO   1
+> > > +
+> > > +#define AD7780_GAIN_MIDPOINT 64
+> > > +#define AD7780_FILTER_MIDPOINT       13350
+> > > +
+> > >  struct ad7780_chip_info {
+> > >       struct iio_chan_spec    channel;
+> > >       unsigned int            pattern_mask;
+> > > @@ -50,6 +56,8 @@ struct ad7780_state {
+> > >       const struct ad7780_chip_info   *chip_info;
+> > >       struct regulator                *reg;
+> > >       struct gpio_desc                *powerdown_gpio;
+> > > +     struct gpio_desc                *gain_gpio;
+> > > +     struct gpio_desc                *filter_gpio;
+> > >       unsigned int    gain;
+> > >
+> > >       struct ad_sigma_delta sd;
+> > > @@ -115,18 +123,65 @@ static int ad7780_read_raw(struct iio_dev
+> > > *indio_dev,
+> > >       return -EINVAL;
+> > >  }
+> > >
+> > > +static int ad7780_write_raw(struct iio_dev *indio_dev,
+> > > +                         struct iio_chan_spec const *chan,
+> > > +                         int val,
+> > > +                         int val2,
+> > > +                         long m)
+> > > +{
+> > > +     struct ad7780_state *st = iio_priv(indio_dev);
+> > > +     const struct ad7780_chip_info *chip_info = st->chip_info;
+> > > +     int uvref, gain;
+> > > +     unsigned int full_scale;
+> > > +
+> > > +     if (!chip_info->is_ad778x)
+> > > +             return 0;
+> > > +
+> > > +     switch (m) {
+> > > +     case IIO_CHAN_INFO_SCALE:
+> > > +             if (val != 0)
+> > > +                     return -EINVAL;
+> > > +
+> > > +             uvref = regulator_get_voltage(st->reg);  
+> >
+> > regulator_get_voltage() has already been called in the probe function and
+> > the result is stored in st->int_vref_mv.  
+> 
+> This was removed in commit  9eae69ddbc4717a0bd702eddac76c7848773bf71
+> because the value was not being updated. But I agree if the vref
+> voltage is not going to change at all after the initialization, then
+> this value should be kept in memory.
+> 
+> > My suggestion would be to use a local vref variable declared as unsigned
+> > int. It is my fault that I haven't explained correctly in the previous
+> > email, but you need to multiply vref_mv with 1000000LL in order to get the
+> > right precision: vref = st->int_vref_mv * 1000000LL. Afterwards you will be
+> > able to perform the divisions.  
+> 
+> Thanks for this info! :-)
+> Shouldn't we store this in uV (microVolts)? This will yield a more
+> accurate result after the multiplication.
+> 
+> > > +
+> > > +             if (uvref < 0)
+> > > +                     return uvref;
+> > > +
+> > > +             full_scale = 1 << (chip_info->channel.scan_type.realbits
+> > > - 1);
+> > > +             gain = DIV_ROUND_CLOSEST(uvref, full_scale);
+> > > +             gain = DIV_ROUND_CLOSEST(gain, val2);
+> > > +
+> > > +             gpiod_set_value(st->gain_gpio, gain <
+> > > AD7780_GAIN_MIDPOINT ? 0 : 1);  
+> >
+> > Once the gain is set, you can store it in st->gain variable.  
+> 
+> Yes, we forgot it.
+> 
+> >  
+> > > +     case IIO_CHAN_INFO_SAMP_FREQ:
+> > > +             if (val2 != 0)
+> > > +                     return -EINVAL;
+comment I raised in patch 2 about the odd preciseness of insisting
+no decimal places, but matching any value based on a threshold on the
+whole number part.
 
-> diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
-> index bdd7cba6f6b0..9bbcca9df401 100644
-> --- a/drivers/iio/adc/ina2xx-adc.c
-> +++ b/drivers/iio/adc/ina2xx-adc.c
-> @@ -1,20 +1,15 @@
-> +// SPDX-License-Identifier: GPL-2.0+
-Oh great, contradictory license text.   The first
-part would normally imply GPL-2.0 and the second
-is clearly GPL-2.0+
+I'd also expect to see read_raw support for this.
 
-I'd leave this one be unless you can get input from the various
-authors.
+> > > +
+> > > +             gpiod_set_value(st->filter_gpio, val <
+> > > AD7780_FILTER_MIDPOINT ? 0 : 1);  
+> >
+> > This is probably fine, although I am not a big fan of the ternary operator.
+> > A simple if else statement would do. However, I don't feel strongly about
+> > it, so feel free to disagree.
+> >  
+> > > +     break;
+> > > +     }
+> > > +
+> > > +     return 0;
+> > > +}
+> > > +
+> > >  static int ad7780_postprocess_sample(struct ad_sigma_delta *sigma_delta,
+> > >                                    unsigned int raw_sample)
+> > >  {
+> > >       struct ad7780_state *st = ad_sigma_delta_to_ad7780(sigma_delta);
+> > >       const struct ad7780_chip_info *chip_info = st->chip_info;
+> > > +     int val;
+> > >
+> > >       if ((raw_sample & AD7780_ERR) ||
+> > >           ((raw_sample & chip_info->pattern_mask) != chip_info-  
+> > > >pattern))  
+> > >               return -EIO;
+> > >
+> > >       if (chip_info->is_ad778x) {
+> > > -             if (raw_sample & AD7780_GAIN)
+> > > +             val = raw_sample & AD7780_GAIN;
+> > > +
+> > > +             if (val != gpiod_get_value(st->gain_gpio))
+> > > +                     return -EIO;  
+> >
+> > It is not obvious to me what is the point of this check. Maybe you can add
+> > a comment?  
+> 
+> It seems to be a redundancy check. It is getting the 32-bits
+> raw_output, getting the bit that represents the GAIN value and
+> checking if the pin is set accordingly (see Figure 22 of datasheet,
+> page 13). Is this correct? If yes we add a comment explaining this.
+> 
+> >  
+> > > +
+> > > +             if (val)
+> > >                       st->gain = 1;
+> > >               else
+> > >                       st->gain = 128;  
+> >
+> > Do we still need this? I am not convinced.  
+> No, I don't think so. Thanks for pointing this out :-)
+> 
+> >  
+> > > @@ -141,18 +196,20 @@ static const struct ad_sigma_delta_info
+> > > ad7780_sigma_delta_info = {
+> > >       .has_registers = false,
+> > >  };
+> > >
+> > > -#define AD7780_CHANNEL(bits, wordsize) \
+> > > +#define AD7170_CHANNEL(bits, wordsize) \
+> > >       AD_SD_CHANNEL_NO_SAMP_FREQ(1, 0, 0, bits, 32, wordsize - bits)
+> > > +#define AD7780_CHANNEL(bits, wordsize) \
+> > > +     AD_SD_CHANNEL_GAIN_FILTER(1, 0, 0, bits, 32, wordsize - bits)
+> > >
+> > >  static const struct ad7780_chip_info ad7780_chip_info_tbl[] = {
+> > >       [ID_AD7170] = {
+> > > -             .channel = AD7780_CHANNEL(12, 24),
+> > > +             .channel = AD7170_CHANNEL(12, 24),
+> > >               .pattern = AD7170_PATTERN,
+> > >               .pattern_mask = AD7170_PATTERN_MASK,
+> > >               .is_ad778x = false,
+> > >       },
+> > >       [ID_AD7171] = {
+> > > -             .channel = AD7780_CHANNEL(16, 24),
+> > > +             .channel = AD7170_CHANNEL(16, 24),
+> > >               .pattern = AD7170_PATTERN,
+> > >               .pattern_mask = AD7170_PATTERN_MASK,
+> > >               .is_ad778x = false,
+> > > @@ -173,6 +230,7 @@ static const struct ad7780_chip_info
+> > > ad7780_chip_info_tbl[] = {
+> > >
+> > >  static const struct iio_info ad7780_info = {
+> > >       .read_raw = ad7780_read_raw,
+> > > +     .write_raw = ad7780_write_raw,
+> > >  };
+> > >
+> > >  static int ad7780_probe(struct spi_device *spi)
+> > > @@ -222,6 +280,18 @@ static int ad7780_probe(struct spi_device *spi)
+> > >               goto error_disable_reg;
+> > >       }
+> > >
+> > > +     if (st->chip_info->is_ad778x) {
+> > > +             st->gain_gpio = devm_gpiod_get_optional(&spi->dev,
+> > > +                                                     "gain",
+> > > +                                                     GPIOD_OUT_HIGH);
+> > > +             if (IS_ERR(st->gain_gpio)) {  
+> >
+> > if the GPIO is optional, then we should continue in case of -ENODEV.
+> >
+> > Shouldn't we have a devm_gpiod_get_optional() call also for filter_gpio?
+I had to check this one...
 
->  /*
->   * INA2XX Current and Power Monitors
->   *
->   * Copyright 2015 Baylibre SAS.
->   *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License version 2 as
-> - * published by the Free Software Foundation.
-> - *
->   * Based on linux/drivers/iio/adc/ad7291.c
->   * Copyright 2010-2011 Analog Devices Inc.
->   *
->   * Based on linux/drivers/hwmon/ina2xx.c
->   * Copyright 2012 Lothar Felten <l-felten@ti.com>
->   *
-> - * Licensed under the GPL-2 or later.
-> - *
->   * IIO driver for INA219-220-226-230-231
->   *
->   * Configurable 7-bit I2C slave address from 0x40 to 0x4F
+ * This is equivalent to gpiod_get(), except that when no GPIO was assigned to
+ * the requested function it will return NULL. This is convenient for drivers
+ * that need to handle optional GPIOs.
 
+So nope, it shouldn't return -ENODEV;  unlike the clock equivalent which
+IIRC does...
 
-...
-
-> diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
-> index a8d35aebee80..6d191ffc4c7e 100644
-> --- a/drivers/iio/adc/max1363.c
-> +++ b/drivers/iio/adc/max1363.c
-> @@ -1,3 +1,4 @@
-> +// SPDX-License-Identifier: GPL-2.0
->   /*
->    * iio/adc/max1363.c
->    * Copyright (C) 2008-2010 Jonathan Cameron
-> @@ -9,10 +10,6 @@
->    * Copyright (C) 2000 Russell King
->    *
->    * Driver for max1363 and similar chips.
-> -  *
-> -  * This program is free software; you can redistribute it and/or modify
-> -  * it under the terms of the GNU General Public License version 2 as
-> -  * published by the Free Software Foundation.
->    */
-
-This one's mine so in a separate patch you can add.
-
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-
-> diff --git a/drivers/iio/adc/qcom-pm8xxx-xoadc.c b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
-> index c30c002f1fef..648136ed1f85 100644
-> --- a/drivers/iio/adc/qcom-pm8xxx-xoadc.c
-> +++ b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
-> @@ -1,3 +1,4 @@
-> +// SPDX-License-Identifier: GPL-2.0
-
-Oh goody.  A file with out a license.  oops.
-Thankfully an author we can easily get hold of!
-Linus, what should it be?
-
->  /*
->   * Qualcomm PM8xxx PMIC XOADC driver
->   *
+> >  
+> > > +                     ret = PTR_ERR(st->gain_gpio);
+> > > +                     dev_err(&spi->dev, "Failed to request gain GPIO:
+> > > %d\n",
+> > > +                             ret);
+> > > +                     goto error_disable_reg;
+> > > +             }
+> > > +     }
+> > > +
+> > >       ret = ad_sd_setup_buffer_and_trigger(indio_dev);
+> > >       if (ret)
+> > >               goto error_disable_reg;
+> > > diff --git a/include/linux/iio/adc/ad_sigma_delta.h
+> > > b/include/linux/iio/adc/ad_sigma_delta.h
+> > > index 730ead1a46df..6cadab6fd5fd 100644
+> > > --- a/include/linux/iio/adc/ad_sigma_delta.h
+> > > +++ b/include/linux/iio/adc/ad_sigma_delta.h
+> > > @@ -173,6 +173,11 @@ int ad_sd_validate_trigger(struct iio_dev
+> > > *indio_dev, struct iio_trigger *trig);
+> > >       __AD_SD_CHANNEL(_si, _channel, -1, _address, _bits, \
+> > >               _storagebits, _shift, NULL, IIO_VOLTAGE, 0)
+> > >
+> > > +#define AD_SD_CHANNEL_GAIN_FILTER(_si, _channel, _address, _bits, \
+> > > +     _storagebits, _shift) \
+> > > +     __AD_SD_CHANNEL(_si, _channel, -1, _address, _bits, \
+> > > +             _storagebits, _shift, NULL, IIO_VOLTAGE,
+> > > BIT(IIO_CHAN_INFO_RAW))
+> > > +
+> > >  #define AD_SD_TEMP_CHANNEL(_si, _address, _bits, _storagebits, _shift) \
+> > >       __AD_SD_CHANNEL(_si, 0, -1, _address, _bits, \
+> > >               _storagebits, _shift, NULL, IIO_TEMP, \  
+> >
+> > --
+> > You received this message because you are subscribed to the Google Groups "Kernel USP" group.
+> > To unsubscribe from this group and stop receiving emails from it, send an email to kernel-usp+unsubscribe@googlegroups.com.
+> > To post to this group, send email to kernel-usp@googlegroups.com.
+> > To view this discussion on the web visit https://groups.google.com/d/msgid/kernel-usp/1543490289.11186.22.camel%40analog.com.
+> > For more options, visit https://groups.google.com/d/optout.  
