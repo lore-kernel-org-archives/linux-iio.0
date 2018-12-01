@@ -1,157 +1,136 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:47552 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726767AbeLBDoW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 1 Dec 2018 22:44:22 -0500
-Date: Sat, 1 Dec 2018 16:31:25 +0000
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To: Daniel Drake <drake@endlessm.com>
-Cc: linux-iio@vger.kernel.org, denis.ciocca@st.com,
-        Bastien Nocera <hadess@hadess.net>, linux@endlessm.com,
-        Hans de Goede <hdegoede@redhat.com>
-Subject: Re: Inconsistent SMO8840 accelerometer data between Windows and
- Linux
-Message-ID: <20181201163125.596ee0be@archlinux>
-In-Reply-To: <20181201162852.7007d1c9@archlinux>
-References: <CAD8Lp45Ds3VU70kQ7fAUAegbzL-asxmF_iBacWpu7DMKp65sGA@mail.gmail.com>
-        <20181201162852.7007d1c9@archlinux>
+Received: from mail.kernel.org ([198.145.29.99]:34342 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726880AbeLBDsW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 1 Dec 2018 22:48:22 -0500
+Date: Sat, 1 Dec 2018 16:35:23 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Nicholas Mc Guire <hofrat@osadl.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Joe Perches <joe@perches.com>, linux-iio@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V2] staging: iio: adc: ad7280a: check for
+ devm_kasprint() failure
+Message-ID: <20181201163523.52a84b47@archlinux>
+In-Reply-To: <1543338304-892-1-git-send-email-hofrat@osadl.org>
+References: <1543338304-892-1-git-send-email-hofrat@osadl.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, 1 Dec 2018 16:28:52 +0000
-Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
+On Tue, 27 Nov 2018 18:05:04 +0100
+Nicholas Mc Guire <hofrat@osadl.org> wrote:
 
-> On Tue, 27 Nov 2018 14:54:15 +0800
-> Daniel Drake <drake@endlessm.com> wrote:
+> devm_kasprintf() may return NULL on failure of internal allocation thus
+> the assignments to  attr.name  are not safe if not checked. On error
+> ad7280_attr_init() returns a negative return so -ENOMEM should be
+> OK here (passed on as return value of the probe function). To make the
+> error case more readable a temporary  iio_attr  is introduced and the code
+> refactored.
 > 
-> > Hi,
-> > 
-> > We are working with SMO8840 sensors integrated into several Acer
-> > all-in-one consumer PCs and we would like to make the accelerometer
-> > work with iio-sensor-proxy so that the display is auto-rotated based
-> > on the physical orientation of the device.
-> > 
-> > One option is to inspect each device and then apply a mount matrix
-> > override in systemd, but we are looking for a generic solution. On
-> > Windows 10 the same functionality "just works" with the standard
-> > drivers from ST.
-> > 
-> > Looking at the Windows 10 situation, I can see that the ACPI DSDT
-> > includes orientation data for the accelerometer device, in a package
-> > named _ONT. Using an in-memory DSDT override I was able to remove this
-> > package in order to examine the "raw" uncorrected data from Windows.
-> > 
-> > I could then deduce the meanings of the 6 values in _ONT: the first 3
-> > are axis ordering, so the values "1 0 2" imply that the data arrives
-> > in order of axis Y, X, Z, or in other words X and Y are swapped. The
-> > final 3 values are inversion flags, values "0 0 1" mean that the Z
-> > values must have their sign flipped.  
-> 
-> Ouch, they could at least have done something that inherently maintained
-> the handedness of the axes rather than doing it as a swap axis and
-> separate correction for the handedness.
-> 
-> Or even, perhaps actually bothered to look at adding their _ONT
-> mapping to the ACPI spec.  It would be a stretch for me to justify
-> that one in the day job or I'd be tempted...  When will people learn
-> that they shouldn't just make up acpi elements.  There are perfectly
-> good ways  of adding manufacturer data.. *sigh*
-> 
-> Great digging by the way!  If others with ST sensors could dump their
-> DSDT and use iASL to decompile it to see if they have an _ONT entry
-> that would be great!
-> 
-> > 
-> > On this product the values are as above, 1 0 2 0 0 1 (swap X and Y,
-> > negate Z). acpidump:
-> > https://gist.github.com/dsd/588762aaa3b5601ff7fc6a8692755877
-> > 
-> > However, looking to implement the same _ONT logic on Linux, I was met
-> > with the surprise that the values read by st-accel-i2c do not match
-> > the Windows values taken even when _ONT is removed.
-> > 
-> > This is a "landscape-first" device like the one illustrated here:
-> > https://blogs.windows.com/buildingapps/2015/09/03/new-sensor-features-in-windows-10/
-> > 
-> > Here is the data. I took Windows measurements using the "Sensors" app
-> > in the app store, and Linux measurements from sysfs in_accel_[xyz]_raw
-> > and manually normalized into the range -1 to +1.
-> > 
-> > 1. Placed flat on the desk, face up "looking up at the sky"
-> > Windows (with _ONT): (0, 0, -1)
-> > Windows (no _ONT): (0, 0, 1)
-> > Linux: (0, 0, -1)  
-> 
-> So their default is flip the z axis.
-> 
-> > 
-> > 2. Normal landscape orientation (i.e. picture the device positioned
-> > the right way up and stuck to the wall)
-> > Windows (with _ONT): (0, -1, 0)
-> > Windows (no _ONT): (-1, 0, 0)
-> > Linux: (0, 1, 0)  
-> 
-> Then swap x and y (the flip is handedness correction in conjunction with the
-> zaxis flip above.
-> 
-> > 
-> > 3. Rotated 90 degrees right from normal landscape orientation
-> > Windows (with _ONT): (1, 0, 0)
-> > Windows (no _ONT): (0, 1, 0)
-> > Linux: (1, 0, 0)  
-> 
-> And finally just swap x and y.
-> 
-> > 
-> > 4. Rotated 90 degrees left from normal landscape orientation
-> > Windows (with _ONT): (-1, 0, 0)
-> > Windows (no _ONT): (0, -1, 0)
-> > Linux: (-1, 0, 0)
-> > 
-> > 5. Rotated 180 degrees from normal landscape orientation (i.e. upside down)
-> > Windows (with _ONT): (0, 1, 0)
-> > Windows (no _ONT): (1, 0, 0)
-> > Linux: (0, -1, 0)
-> > 
-> > Why is the data read by Linux inconsistent with the data from Windows
-> > even after I remove the _ONT orientation adjustment?  
-> 
-> Given I'm fairly sure we basically just spit out the data directly
-> from the sensor, the most likely explanation is that ST hard coded
-> their driver to apply a transform for the first device they even
-> mounted it in.  When another came along with it mounted differently
-> they figured they needed to apply some sort of transform.
-> 
-> So their default is to first apply the following:
-> 
-> 1) Swap x and y,
-> 2) Flip z and resulting x (which was y).
-> 
-> If we want to support their ONT we'll need to do this first, then
-> apply ONT on top of that by forming the relevant mount matrix and
-> outputting that to userspace.
-> 
-> If you fancy having a go it would be good to have this support!
-> 
-> Bastien / Hans if you could check my logic (as the two people who
-> most often deal with this sort of horribleness!) that would be great.
-> 
-I should also have asked... Denis, can you check if there is any
-documentation of this _ONT anywhere? 
+> Signed-off-by: Nicholas Mc Guire <hofrat@osadl.org>
+> Fixes: 2051f25d2a26 ("iio: adc: New driver for AD7280A Lithium Ion Battery Monitoring System2")
 
-Example dumps in any patch would also be great.  I have a horrible
-feeling the above 'default' transform will turn out to not be consistent
-across devices... Just a hunch :)
+Hmm. If this had been other than to a staging driver I think I would
+have asked you to split this into a rework patch doing the local variable
+change, then one actually making the fix.  Good result though,
+so as it's in staging we'll go with this :)
+
+Applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to play with it.
+
+Thanks,
 
 Jonathan
- 
-> Thanks,
+
+> ---
 > 
-> Jonathan
+> V2: use a tmp pointer to iio_attr to make the error check more readable
+>     as proposed by Dan Carpenter <dan.carpenter@oracle.com>
 > 
-> > 
-> > Thanks
-> > Daniel  
+> Problem located with an experimental coccinelle script
 > 
+> Patch was compile tested with: x86_64_defconfig + STAGING=y
+> SPI=y, IIO=y, AD7280=m
+> 
+> Patch is against 4.20-rc4 (localversion-next is next-20181127)
+> 
+>  drivers/staging/iio/adc/ad7280a.c | 43 +++++++++++++++++++--------------------
+>  1 file changed, 21 insertions(+), 22 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
+> index 0bb9ab1..7a0ba26 100644
+> --- a/drivers/staging/iio/adc/ad7280a.c
+> +++ b/drivers/staging/iio/adc/ad7280a.c
+> @@ -561,6 +561,7 @@ static int ad7280_attr_init(struct ad7280_state *st)
+>  {
+>  	int dev, ch, cnt;
+>  	unsigned int index;
+> +	struct iio_dev_attr *iio_attr;
+>  
+>  	st->iio_attr = devm_kcalloc(&st->spi->dev, 2, sizeof(*st->iio_attr) *
+>  				    (st->slave_num + 1) * AD7280A_CELLS_PER_DEV,
+> @@ -571,37 +572,35 @@ static int ad7280_attr_init(struct ad7280_state *st)
+>  	for (dev = 0, cnt = 0; dev <= st->slave_num; dev++)
+>  		for (ch = AD7280A_CELL_VOLTAGE_1; ch <= AD7280A_CELL_VOLTAGE_6;
+>  			ch++, cnt++) {
+> +			iio_attr = &st->iio_attr[cnt];
+>  			index = dev * AD7280A_CELLS_PER_DEV + ch;
+> -			st->iio_attr[cnt].address =
+> -				ad7280a_devaddr(dev) << 8 | ch;
+> -			st->iio_attr[cnt].dev_attr.attr.mode =
+> -				0644;
+> -			st->iio_attr[cnt].dev_attr.show =
+> -				ad7280_show_balance_sw;
+> -			st->iio_attr[cnt].dev_attr.store =
+> -				ad7280_store_balance_sw;
+> -			st->iio_attr[cnt].dev_attr.attr.name =
+> +			iio_attr->address = ad7280a_devaddr(dev) << 8 | ch;
+> +			iio_attr->dev_attr.attr.mode = 0644;
+> +			iio_attr->dev_attr.show = ad7280_show_balance_sw;
+> +			iio_attr->dev_attr.store = ad7280_store_balance_sw;
+> +			iio_attr->dev_attr.attr.name =
+>  				devm_kasprintf(&st->spi->dev, GFP_KERNEL,
+>  					       "in%d-in%d_balance_switch_en",
+>  					       index, index + 1);
+> -			ad7280_attributes[cnt] =
+> -				&st->iio_attr[cnt].dev_attr.attr;
+> +			if (!iio_attr->dev_attr.attr.name)
+> +				return -ENOMEM;
+> +
+> +			ad7280_attributes[cnt] = &iio_attr->dev_attr.attr;
+>  			cnt++;
+> -			st->iio_attr[cnt].address =
+> -				ad7280a_devaddr(dev) << 8 |
+> +			iio_attr = &st->iio_attr[cnt];
+> +			iio_attr->address = ad7280a_devaddr(dev) << 8 |
+>  				(AD7280A_CB1_TIMER + ch);
+> -			st->iio_attr[cnt].dev_attr.attr.mode =
+> -				0644;
+> -			st->iio_attr[cnt].dev_attr.show =
+> -				ad7280_show_balance_timer;
+> -			st->iio_attr[cnt].dev_attr.store =
+> -				ad7280_store_balance_timer;
+> -			st->iio_attr[cnt].dev_attr.attr.name =
+> +			iio_attr->dev_attr.attr.mode = 0644;
+> +			iio_attr->dev_attr.show = ad7280_show_balance_timer;
+> +			iio_attr->dev_attr.store = ad7280_store_balance_timer;
+> +			iio_attr->dev_attr.attr.name =
+>  				devm_kasprintf(&st->spi->dev, GFP_KERNEL,
+>  					       "in%d-in%d_balance_timer",
+>  					       index, index + 1);
+> -			ad7280_attributes[cnt] =
+> -				&st->iio_attr[cnt].dev_attr.attr;
+> +			if (!iio_attr->dev_attr.attr.name)
+> +				return -ENOMEM;
+> +
+> +			ad7280_attributes[cnt] = &iio_attr->dev_attr.attr;
+>  		}
+>  
+>  	ad7280_attributes[cnt] = NULL;
