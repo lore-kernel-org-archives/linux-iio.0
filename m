@@ -2,92 +2,170 @@ Return-Path: <SRS0=edWO=OK=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FBF7C04EB9
-	for <linux-iio@archiver.kernel.org>; Sat,  1 Dec 2018 16:51:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17B8FC04EB9
+	for <linux-iio@archiver.kernel.org>; Sat,  1 Dec 2018 17:00:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4C1A62082F
-	for <linux-iio@archiver.kernel.org>; Sat,  1 Dec 2018 16:51:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C87992146F
+	for <linux-iio@archiver.kernel.org>; Sat,  1 Dec 2018 17:00:52 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp-br.20150623.gappssmtp.com header.i=@usp-br.20150623.gappssmtp.com header.b="ubMCYgLL"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4C1A62082F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=usp.br
+	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="jGHhjNu+"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C87992146F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726933AbeLBEEQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 1 Dec 2018 23:04:16 -0500
-Received: from mail-it1-f182.google.com ([209.85.166.182]:52301 "EHLO
-        mail-it1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726778AbeLBEEQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 1 Dec 2018 23:04:16 -0500
-Received: by mail-it1-f182.google.com with SMTP id i7so3249006iti.2
-        for <linux-iio@vger.kernel.org>; Sat, 01 Dec 2018 08:51:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp-br.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=4jfBZDHxYfRZyGAXdEOcAdFVVta4f6xuVZnxV8YBvMo=;
-        b=ubMCYgLLFFPuu6KwGFMTUxx08ddi4kVGbL1tG7MKPBei5v5V43+DPHj4Sv8aYjHitn
-         qPzQbV+cBCDWge/Sl114qq6Vhb9Nq6qRF13rvqTYDxkGvSGxegbs52b0lCJbfLZuVSZy
-         glWr5uSZUeosvvT536uKkYHD+1vSlo++iNKcte7cu4z4HIGgFNNrcoW+07KVgv7XNmJS
-         SH36w2JxlEogxtOTJJDnhYnuIu1UEL4gzEmKH06NcdMNyWt9mD6PaKorNhG5hOP1pZrN
-         ahq+yMNP9Ts4Sn+s23wZd02yhuwkxGUCsZ5UdDuBsXb+jiQddBP6P6+KBoROIJS9mktI
-         FTHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=4jfBZDHxYfRZyGAXdEOcAdFVVta4f6xuVZnxV8YBvMo=;
-        b=AA8YdcWLXVz2uAng/6TG0UZOheNve1XzbdA9Y0ZNxNIYjRFOEkOOVP7hhGklUcvUMr
-         8I3JFv3chRGn1xk77uhw3NjRKg5YIgkqOA0fObeA0EsC06iMT+FkBYYfOXQl0jOPBjUU
-         rSvd8ijvH434wZ/Xu5MJ5ENEF7bdjKI0iV1vm4HfVSuNav35v3yhNufPzdKPaj5/+nkq
-         HcFE4UBDCU1yD0/oGd3381w4acrSc34pjr4JktNkyBCIWoHfj1n3bHnw+zOyV0IDXutd
-         XXKIHAoFySKQeafh/lMcXiMlbdH5DXLJmwUgWazlWQtUhG8zvlEQvRg7hmibzjc6qGLl
-         cjRA==
-X-Gm-Message-State: AA+aEWbW9hl1BxUfWk6CWwXtK3qNGxPq+0iGrQAw+W4X2K7Xe8v+2PrU
-        Nd+J4oHO3nl6NVCdyUYkMN2YtAA0Y7nHt0JfbkYiPSyTyz1y3g==
-X-Google-Smtp-Source: AFSGD/VJg3widFGXs3YsdwlA4ZHWQv2F8vu45KqkUwA+NBwEyv/0KOBQNjHW3vSjEVY2NdvUbQUl20dQN4JgMFmd6+8=
-X-Received: by 2002:a02:a315:: with SMTP id q21mr8574078jai.94.1543683079232;
- Sat, 01 Dec 2018 08:51:19 -0800 (PST)
+        id S1726885AbeLBENs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 1 Dec 2018 23:13:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43786 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726826AbeLBENs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 1 Dec 2018 23:13:48 -0500
+Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C34BD2082F;
+        Sat,  1 Dec 2018 17:00:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1543683650;
+        bh=+NcLsIDzFlsYDy3CvvHtroowrjtQSBa51KarVAtEx84=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jGHhjNu+YHXL4006UQ6mxHkm2DOK/RNZP6eWmmmagE0DOKueZeraLjeKJwlTNAAmt
+         C8thVMNIwQLRF5q8jjBBTOHCyITofBda8tGDFRTCX/5zsb8CW/qaIFg8SVAtOr2KEC
+         W9P3PqZS+0WOCDbefsH6pybgeMv/nQPcwWqXTYUs=
+Date:   Sat, 1 Dec 2018 17:00:46 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Stefan Popa <stefan.popa@analog.com>
+Cc:     <robh+dt@kernel.org>, <mark.rutland@arm.com>, <knaack.h@gmx.de>,
+        <lars@metafoo.de>, <pmeerw@pmeerw.net>,
+        <Michael.Hennerich@analog.com>, <gregkh@linuxfoundation.org>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 2/2] dt-bindings: iio: adc: Add docs for AD7606 ADC
+Message-ID: <20181201170046.13eef1fc@archlinux>
+In-Reply-To: <1543510663-14921-1-git-send-email-stefan.popa@analog.com>
+References: <1543510663-14921-1-git-send-email-stefan.popa@analog.com>
+X-Mailer: Claws Mail 3.17.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-From:   Matheus Tavares Bernardino <matheus.bernardino@usp.br>
-Date:   Sat, 1 Dec 2018 14:51:07 -0200
-Message-ID:
- <CAHd-oW4U-BGs+Enf07SP_XXWDPv4bzOM6KM83FX54gKWpW7hXw@mail.gmail.com>
-Subject: Questions about the contributing process
-To:     linux-iio@vger.kernel.org
-Cc:     kernel-usp@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
-Message-ID: <20181201165107.WOEoWW8rDdOaD3Hpeud6vdRIGuxtjHiuXvdAJgitM50@z>
+Message-ID: <20181201170046.rrwTw_u2CW6bjlu7VfcIs99hWWb628IgSMP1QzBBlIY@z>
 
-Hello everyone
+On Thu, 29 Nov 2018 18:57:43 +0200
+Stefan Popa <stefan.popa@analog.com> wrote:
 
-It's been a few months since I started sending patches, but there are
-still some points about the process that I do not quite understand. I
-would be really grateful if anyone could help clarify them for me.
+> Document support for AD7606 Analog to Digital Converter.
+>=20
+> Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+Looks good to me, but as it's a non trivial binding in complexity I'd
+definitely like a DT maintainers input before applying this.
 
-1) How do we credit more than one person as an author? Here at the
-University of S=C3=A3o Paulo we sometimes develop patches in pair
-programming, and I don't really know if in these cases we should just
-add the S-o-B of both authors or add the "Co-Developed-by" tag (or
-something else). Also, is this something specific to each subsystem?
+Thanks,
 
-2) Does iio have a test infrastructure? I know there are autobuilders
-playing with the iio.git testing branch, but how does it work? Also,
-if there is no test beyond building, is there some plan to make such
-an infrastructure in the near future?
+Jonathan
 
-3) When a reviewer sends an Acked-by, but I still have to send a v2
-for some reason (maybe adjusting the patch message, e.g.), should I
-add the Acked-by in v2 or that's something the maintainers will do?
+> ---
+> Changes in v2:
+> 	- fixed indentation issues.
+> 	- used gpios instead of gpio.
+> 	- added vendor prefix for conversion-start-gpios, first-data-gpios,
+> 	and range-gpios.
+> Changes in v3:
+> 	- Added adi,oversampling-ratio-gpios.
+>=20
+>  .../devicetree/bindings/iio/adc/adi,ad7606.txt     | 54 ++++++++++++++++=
+++++++
+>  MAINTAINERS                                        |  1 +
+>  2 files changed, 55 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7606.=
+txt
+>=20
+> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7606.txt b/D=
+ocumentation/devicetree/bindings/iio/adc/adi,ad7606.txt
+> new file mode 100644
+> index 0000000..02fae23
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7606.txt
+> @@ -0,0 +1,54 @@
+> +Analog Devices AD7606 Simultaneous Sampling ADC
+> +
+> +Required properties for the AD7606:
+> +
+> +- compatible: Must be one of
+> +	* "adi,ad7605-4"
+> +	* "adi,ad7606-8"
+> +	* "adi,ad7606-6"
+> +	* "adi,ad7606-4"
+> +- reg: SPI chip select number for the device
+> +- spi-max-frequency: Max SPI frequency to use
+> +	see: Documentation/devicetree/bindings/spi/spi-bus.txt
+> +- spi-cpha: See Documentation/devicetree/bindings/spi/spi-bus.txt
+> +- avcc-supply: phandle to the Avcc power supply
+> +- interrupts: IRQ line for the ADC
+> +	see: Documentation/devicetree/bindings/interrupt-controller/interrupts.=
+txt
+> +- adi,conversion-start-gpios: must be the device tree identifier of the =
+CONVST pin.
+> +		  This logic input is used to initiate conversions on the analog
+> +		  input channels.
+> +
+> +Optional properties:
+> +
+> +- reset-gpios: must be the device tree identifier of the RESET pin. If s=
+pecified,
+> +	       it will be asserted during driver probe.
+> +- standby-gpios: must be the device tree identifier of the STBY pin. Thi=
+s pin is used
+> +		to place the AD7606 into one of two power-down modes, Standby mode or
+> +		Shutdown mode.
+> +- adi,first-data-gpios: must be the device tree identifier of the FRSTDA=
+TA pin.
+> +		    The FRSTDATA output indicates when the first channel, V1, is
+> +		    being read back on either the parallel, byte or serial interface.
+> +- adi,range-gpios: must be the device tree identifier of the RANGE pin. =
+The polarity on
+> +	      this pin determines the input range of the analog input channels.=
+ If
+> +	      this pin is tied to a logic high, the analog input range is =C2=
+=B110V for
+> +	      all channels. If this pin is tied to a logic low, the analog inpu=
+t range
+> +	      is =C2=B15V for all channels.
+> +
+> +Example:
+> +
+> +	adc@0 {
+> +		compatible =3D "adi,ad7606-8";
+> +		reg =3D <0>;
+> +		spi-max-frequency =3D <1000000>;
+> +		spi-cpol;
+> +
+> +		avcc-supply =3D <&adc_vref>;
+> +
+> +		interrupts =3D <25 IRQ_TYPE_EDGE_FALLING>;
+> +		interrupt-parent =3D <&gpio>;
+> +
+> +		adi,conversion-start-gpios =3D <&gpio 17 0>;
+> +		reset-gpios =3D <&gpio 27 0>;
+> +		adi,first-data-gpios =3D <&gpio 22 0>;
+> +		standby-gpios =3D <&gpio 24 0>;
+> +	};
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 843545d..6d63db4 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -845,6 +845,7 @@ L:	linux-iio@vger.kernel.org
+>  W:	http://ez.analog.com/community/linux-device-drivers
+>  S:	Supported
+>  F:	drivers/iio/adc/ad7606.c
+> +F:	Documentation/devicetree/bindings/iio/adc/ad7606.txt
+> =20
+>  ANALOG DEVICES INC AD9389B DRIVER
+>  M:	Hans Verkuil <hans.verkuil@cisco.com>
 
-Thank you
-Matheus
