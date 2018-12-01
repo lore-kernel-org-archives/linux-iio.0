@@ -1,101 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.99]:40960 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:42152 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726642AbeLBCLD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 1 Dec 2018 21:11:03 -0500
-Date: Sat, 1 Dec 2018 14:58:18 +0000
+        id S1726642AbeLBCQq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 1 Dec 2018 21:16:46 -0500
+Date: Sat, 1 Dec 2018 15:04:00 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Martin Kelly <martin@martingkelly.com>
-Cc: linux-iio@vger.kernel.org, Daniel Baluta <daniel.baluta@intel.com>
-Subject: Re: [PATCH 1/2] iio: bmi160: snap timestamp closer to event
-Message-ID: <20181201145818.1653ef17@archlinux>
-In-Reply-To: <c6376fbc-2678-5def-c167-75fec52f15d2@martingkelly.com>
-References: <20181119005347.747-1-martin@martingkelly.com>
-        <20181125135959.1b36ac18@archlinux>
-        <c6376fbc-2678-5def-c167-75fec52f15d2@martingkelly.com>
+To: Lee Jones <lee.jones@linaro.org>
+Cc: Vignesh R <vigneshr@ti.com>, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio: adc: ti_am335x_tscadc: Improve accuracy of
+ measurement
+Message-ID: <20181201150400.09706f47@archlinux>
+In-Reply-To: <20181128091432.GT4272@dell>
+References: <20181119064236.28902-1-vigneshr@ti.com>
+        <20181119064236.28902-3-vigneshr@ti.com>
+        <20181128091432.GT4272@dell>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 26 Nov 2018 15:43:37 -0800
-Martin Kelly <martin@martingkelly.com> wrote:
+On Wed, 28 Nov 2018 09:14:32 +0000
+Lee Jones <lee.jones@linaro.org> wrote:
 
-> On 11/25/18 5:59 AM, Jonathan Cameron wrote:
-> > On Sun, 18 Nov 2018 16:53:46 -0800
-> > Martin Kelly <martin@martingkelly.com> wrote:
-> >   
-> >> From: Martin Kelly <martin@martingkelly.com>
-> >>
-> >> Currently, we snap the timestamp after reading from the buffer and
-> >> processing the event. Technically, we can get a slightly more accurate
-> >> timestamp by snapping it prior to reading the data, since the data was
-> >> already generated prior to entering the trigger handler. This is not going
-> >> to make a huge difference, but we might as well improve slightly.
-> >>
-> >> Signed-off-by: Martin Kelly <martin@martingkelly.com>  
-> > Now this is always an interesting one.   We are running that handler
-> > off the back of a trigger that isn't a dataready signal.  As such
-> > the start of the function doesn't necessarily correspond to the
-> > time that is closest to when the data is captured, it corresponds
-> > to the time that is closest to when we asked for it (which is
-> > not the most relevant number when processing the data)
-> > 
-> > Now, here we are talking on either side of the actual hardware
-> > reads, so my suspicion is that it'll be just as inaccurate, but
-> > in the other direction.
-> > 
-> > Also note that the compiler is probably within it's rights to
-> > reorder that entirely if it can tell there are no side effects
-> > (which it probably can't here... so this change will actually
-> > do what you intend.)
-> > 
-> > So upshot is I'm currently unconvinced either way on whether this
-> > is a useful change or not!
-> > 
-> > Jonathan
-> >   
+> On Mon, 19 Nov 2018, Vignesh R wrote:
 > 
-> Yes, you are right that in the current driver, it's rather fuzzy when 
-> the "correct" timestamp to snap is. Separately, I'm working on adding 
-> interrupt support to this driver, so perhaps I should queue this up 
-> after that change. With interrupts (based on a data ready signal), I 
-> believe this change will be correct.
+> > When performing single ended measurements with TSCADC, its recommended
+> > to set negative input (SEL_INM_SWC_3_0) of ADC step to ADC's VREFN in the
+> > corresponding STEP_CONFIGx register.
+> > Also, the positive(SEL_RFP_SWC_2_0) and negative(SEL_RFM_SWC_1_0)
+> > reference voltage for ADC step needs to be set to VREFP and VREFN
+> > respectively in STEP_CONFIGx register.
+> > Without these changes, there may be variation of as much as ~2% in the
+> > ADC's digital output which is bad for precise measurement.
+> > 
+> > Signed-off-by: Vignesh R <vigneshr@ti.com>
+> > ---
+> >  drivers/iio/adc/ti_am335x_adc.c      | 5 ++++-  
+> 
+> >  include/linux/mfd/ti_am335x_tscadc.h | 4 ++++  
+> 
+> Acked-by: Lee Jones <lee.jones@linaro.org>
+> 
+I'll leave this for v2 given changes in the first patch.
 
-Agreed.  That is the time to make this change as then it'll be obvious
-why.
-
-Thanks,
+My assumption is at the moment that both will go through mfd.
+Shout Lee if you have other plans.
 
 Jonathan
-
-> 
-> >   
-> >> ---
-> >>   drivers/iio/imu/bmi160/bmi160_core.c | 4 ++--
-> >>   1 file changed, 2 insertions(+), 2 deletions(-)
-> >>
-> >> diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
-> >> index c85659ca9507..4d9d59d9e3a9 100644
-> >> --- a/drivers/iio/imu/bmi160/bmi160_core.c
-> >> +++ b/drivers/iio/imu/bmi160/bmi160_core.c
-> >> @@ -384,6 +384,7 @@ static irqreturn_t bmi160_trigger_handler(int irq, void *p)
-> >>   {
-> >>   	struct iio_poll_func *pf = p;
-> >>   	struct iio_dev *indio_dev = pf->indio_dev;
-> >> +	s64 ts = iio_get_time_ns(indio_dev);
-> >>   	struct bmi160_data *data = iio_priv(indio_dev);
-> >>   	__le16 buf[16];
-> >>   	/* 3 sens x 3 axis x __le16 + 3 x __le16 pad + 4 x __le16 tstamp */
-> >> @@ -399,8 +400,7 @@ static irqreturn_t bmi160_trigger_handler(int irq, void *p)
-> >>   		buf[j++] = sample;
-> >>   	}
-> >>   
-> >> -	iio_push_to_buffers_with_timestamp(indio_dev, buf,
-> >> -					   iio_get_time_ns(indio_dev));
-> >> +	iio_push_to_buffers_with_timestamp(indio_dev, buf, ts);
-> >>   done:
-> >>   	iio_trigger_notify_done(indio_dev->trig);
-> >>   	return IRQ_HANDLED;  
-> >   
-> 
