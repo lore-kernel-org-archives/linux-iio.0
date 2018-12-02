@@ -2,112 +2,120 @@ Return-Path: <SRS0=4vqF=OL=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED,URIBL_SBL,URIBL_SBL_A,USER_AGENT_NEOMUTT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED529C04EB8
-	for <linux-iio@archiver.kernel.org>; Sun,  2 Dec 2018 16:41:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F7F5C64EB4
+	for <linux-iio@archiver.kernel.org>; Sun,  2 Dec 2018 16:57:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B412720881
-	for <linux-iio@archiver.kernel.org>; Sun,  2 Dec 2018 16:41:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5580020892
+	for <linux-iio@archiver.kernel.org>; Sun,  2 Dec 2018 16:57:19 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="FLSGk6b+"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B412720881
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="M9w+fouf"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5580020892
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725440AbeLBQlM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 2 Dec 2018 11:41:12 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43296 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725385AbeLBQlM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 2 Dec 2018 11:41:12 -0500
-Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D7E8820851;
-        Sun,  2 Dec 2018 16:41:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1543768870;
-        bh=qcnJ1ynZFQp8ZBJeUIHAu3ZZoT0Ph/WMfI/qwNzObao=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FLSGk6b+7mG4n5/QBdibZQUmXzPoRzvf5HjShzHl8OBLDomTxYGAFRjXBi6rcGw8k
-         WEr3vVR1iOqL9WsPRmiwMJ5Hg/xx4KDKnWFwVwq1FNyzQSquI3mUscfwihke3kUsMV
-         bydojegu1G4m0yt0ahTByIv57gaOz77jwvU8Gy2A=
-Date:   Sun, 2 Dec 2018 16:41:05 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Darren Hart <dvhart@infradead.org>,
-        platform-driver-x86@vger.kernel.org,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        linux-acpi@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        linux-i2c@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v5 15/15] iio: inv_mpu6050: Use
- i2c_acpi_get_i2c_resource() helper
-Message-ID: <20181202164105.17155c72@archlinux>
-In-Reply-To: <20181128114535.80223-16-andriy.shevchenko@linux.intel.com>
-References: <20181128114535.80223-1-andriy.shevchenko@linux.intel.com>
-        <20181128114535.80223-16-andriy.shevchenko@linux.intel.com>
-X-Mailer: Claws Mail 3.17.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1725767AbeLBQ5T (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 2 Dec 2018 11:57:19 -0500
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:37053 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725379AbeLBQ5T (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Dec 2018 11:57:19 -0500
+Received: by mail-qt1-f193.google.com with SMTP id z16so11259441qtq.4;
+        Sun, 02 Dec 2018 08:57:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=XuOrIdOrWdJpHvjAxch16kFCeUkFwdVXYlmRt8TRW/0=;
+        b=M9w+foufTMjekB5QUDTSZnlFctnBiuNnnwCgxC6sX0hTzrA50ILCwxOarJrpfK5FaK
+         +bOFP2ktKInACbJ2VYNphh4lU1Un0+peL7+B6cXsA3ATrbJnSGgQ6Cv+JF43bwkdDS7E
+         mz4CGQ81DHW+QMQDMAvm7muHV3Kiojm5/lWOKZgBAGeVbmpTzztzDle6U2bkhgWAfCrj
+         dopoPzv/B9RSVeULO4F0b60CDPBnZZcAh+JT/R9Y0yjjeuhn4E6ITc3E+uU1xTxjc50z
+         k0+lb7MlxGaQ5UaHR+YXasQczxhFINDFMpoWxT2Zg7/QYHEWrlrQLht0HCdA/3GVkgEE
+         9bPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=XuOrIdOrWdJpHvjAxch16kFCeUkFwdVXYlmRt8TRW/0=;
+        b=Bn6jra1EPoUX80QhVlJB8CFST1qIv6g9Gsixngxtxa+uxxFmHBrsNLGzIbR7ot89lt
+         mLLFNFribuy6HnQHDMwVUsP8VPGHbx2XQjmYAroy9XFMSaH3wOavuJ/k+t+jmnpREeRS
+         pFhpSoOS+qK/p14gYxp1dQ5WMh+PRnJ1PNSq267YhYk37ijNlBslJ1bDI9yfsAQ0BRbM
+         jihCSuLzPMKK/BI3KUc0wLddmcP7WQCXTihYk5IUbPfzjXonjrZsxUimnbJAqRp32IFo
+         C3eMa6AcrwYPpTy4XCEZqDxuFGZ0Z0KtwmLVQfCIJMywxjjwQ6DzGqENEOkE7OTpq3qd
+         QiHw==
+X-Gm-Message-State: AA+aEWbmJMgj/fGmU3QGWyEhHw+cjQPIWWCe0YY67HV28oDOxP2q3y2w
+        31ATxk2YOkRXe9cTfsW9oQI=
+X-Google-Smtp-Source: AFSGD/VYVcKSJTwcpFcv9DFfFenealG8guzajSeCPASi2IjrQwbxYkqKeEjA42RIEo7R216OVjMUYg==
+X-Received: by 2002:ac8:13c5:: with SMTP id i5mr6968516qtj.365.1543769837299;
+        Sun, 02 Dec 2018 08:57:17 -0800 (PST)
+Received: from smtp.gmail.com ([143.107.45.1])
+        by smtp.gmail.com with ESMTPSA id q2sm5026514qkc.68.2018.12.02.08.57.14
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Sun, 02 Dec 2018 08:57:16 -0800 (PST)
+Date:   Sun, 2 Dec 2018 14:57:12 -0200
+From:   Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To:     lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org
+Cc:     linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
+Subject: [PATCH] staging: iio: ad5933: add binding doc for ad5933
+Message-ID: <20181202165712.t6pd6ygq57llf2lr@smtp.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: NeoMutt/20171215
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+Add a devicetree documentation for the ad5933 and ad5934 impedance
+converter, network analyzer.
 
-+CC linux-iio mostly so I can track it and because others may care.
+Co-Developed-by: Gabriel Capella <gabriel@capella.pro>
 
-On Wed, 28 Nov 2018 13:45:35 +0200
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+Signed-off-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+Signed-off-by: Gabriel Capella <gabriel@capella.pro>
+---
+ .../iio/impedance-analyzer/ad5933.txt         | 23 +++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/impedance-analyzer/ad5933.txt
 
-> ACPI provides a generic helper to get I2C Serial Bus resources.
-> Use it instead of open coded variant.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-
-Thanks,
-
-Jonathan
-> ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c | 16 ++++++----------
->  1 file changed, 6 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-> index d78a10403bac..a961b5a06fe6 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-> @@ -91,18 +91,14 @@ static int asus_acpi_get_sensor_info(struct acpi_device *adev,
->  
->  static int acpi_i2c_check_resource(struct acpi_resource *ares, void *data)
->  {
-> +	struct acpi_resource_i2c_serialbus *sb;
->  	u32 *addr = data;
->  
-> -	if (ares->type == ACPI_RESOURCE_TYPE_SERIAL_BUS) {
-> -		struct acpi_resource_i2c_serialbus *sb;
-> -
-> -		sb = &ares->data.i2c_serial_bus;
-> -		if (sb->type == ACPI_RESOURCE_SERIAL_TYPE_I2C) {
-> -			if (*addr)
-> -				*addr |= (sb->slave_address << 16);
-> -			else
-> -				*addr = sb->slave_address;
-> -		}
-> +	if (i2c_acpi_get_i2c_resource(ares, &sb)) {
-> +		if (*addr)
-> +			*addr |= (sb->slave_address << 16);
-> +		else
-> +			*addr = sb->slave_address;
->  	}
->  
->  	/* Tell the ACPI core that we already copied this address */
+diff --git a/Documentation/devicetree/bindings/iio/impedance-analyzer/ad5933.txt b/Documentation/devicetree/bindings/iio/impedance-analyzer/ad5933.txt
+new file mode 100644
+index 000000000000..d9ae2babf016
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/impedance-analyzer/ad5933.txt
+@@ -0,0 +1,23 @@
++Analog Devices AD5933/AD5934 Impedance Converter, Network Analyzer
++
++https://www.analog.com/media/en/technical-documentation/data-sheets/AD5933.pdf
++https://www.analog.com/media/en/technical-documentation/data-sheets/AD5934.pdf
++
++Required properties:
++ - compatible : should be one of
++		"adi,ad5933"
++		"adi,ad5934"
++ - reg : the I2C address
++ - vdd-supply : supply reference for the device.
++
++Optional properties:
++ - vref_mv : default voltage reference.
++ - ext_clk_hz : external master clock for the system.
++
++Example:
++
++	impedance-analyzer@0d {
++		compatible = "adi,ad5933";
++		reg = <0x0d>;
++		vdd-supply = <&vdd_supply>;
++	};
+-- 
+2.17.1
 
