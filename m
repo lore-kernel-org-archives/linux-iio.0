@@ -1,207 +1,260 @@
-Return-Path: <SRS0=edWO=OK=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=4vqF=OL=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63C89C04EB9
-	for <linux-iio@archiver.kernel.org>; Sat,  1 Dec 2018 19:05:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52736C04EB8
+	for <linux-iio@archiver.kernel.org>; Sun,  2 Dec 2018 11:33:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1B9CE20867
-	for <linux-iio@archiver.kernel.org>; Sat,  1 Dec 2018 19:05:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 02515206B7
+	for <linux-iio@archiver.kernel.org>; Sun,  2 Dec 2018 11:33:10 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp-br.20150623.gappssmtp.com header.i=@usp-br.20150623.gappssmtp.com header.b="Y9Goiiyx"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1B9CE20867
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=usp.br
+	dkim=pass (1024-bit key) header.d=konsulko.com header.i=@konsulko.com header.b="PsprQx+y"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 02515206B7
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=konsulko.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725731AbeLBGS5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 2 Dec 2018 01:18:57 -0500
-Received: from mail-it1-f195.google.com ([209.85.166.195]:36482 "EHLO
-        mail-it1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725733AbeLBGS5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Dec 2018 01:18:57 -0500
-Received: by mail-it1-f195.google.com with SMTP id c9so3235804itj.1
-        for <linux-iio@vger.kernel.org>; Sat, 01 Dec 2018 11:05:45 -0800 (PST)
+        id S1725776AbeLBLdL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 2 Dec 2018 06:33:11 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:40841 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725801AbeLBLdL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Dec 2018 06:33:11 -0500
+Received: by mail-pl1-f193.google.com with SMTP id u18so5009170plq.7
+        for <linux-iio@vger.kernel.org>; Sun, 02 Dec 2018 03:33:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp-br.20150623.gappssmtp.com; s=20150623;
+        d=konsulko.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=owUaVBlmmSBFUdQStYOXCOLXWbCKgwwff3ephoUYEFc=;
-        b=Y9GoiiyxKbqDZ1DQ5x4JUfFOuiorKd5ynpiKG6ThDbTxFkQXsLeoFFovt5JVWIOP17
-         IC6WgCYXpQnxacMmAzGszPXjxfqHkYm/Mz7+bq/oDoERmI/l4YTZHQaRx6m8BQy3cAHo
-         C/53/GtPUFWmJLaf+vTBMxv25Jb5KCl1UW5DT/WLyZtRdnAnHbBhPjTiXUOOqstmCDXW
-         vOl2Mmt4dgTHO2AvrIe+9kwEGr8kZUYZA9DXkDyaWEIeZGYUY204r2kSqpztNGly5bae
-         X3NsPUvzdxQUzZr3Eirmtylhnr0FjF5q7SJJfTiQzaUc2mR/Jc1Fb4ZimeGJnuZb1QEu
-         BQ6g==
+         :cc;
+        bh=YOlco3d7uE0XIHwdEToQ2fnJSJ2kIsbt165zSmCUlkw=;
+        b=PsprQx+y10o+pGKDFXne/WlTd1coZdpBrG4RiARqtaltxedKBrKSKH4wH6IdyNpwr0
+         KAT0f5Vun0tvBxsAiz7CMNBnpgw4GLwy/ty4kpgbj5NxvY7tKWN0LDkSwIjZB74hAbNX
+         PbUBDL5kY6nHDHRz2KhgQU5UizKcHyR3OxVhM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=owUaVBlmmSBFUdQStYOXCOLXWbCKgwwff3ephoUYEFc=;
-        b=YUHBkAnJjKmYfCMq80a5O5LSs91zVeiX067Cx1yPCYO3kbuthmQ4i62MR7gadJwWwD
-         Aq1cX3qQeMFQagpbl/ItM+vNWyZp9Zk4WLdnHWKJMiTCixjLmjbV2U3w3oRn6E0oEPft
-         Zx9pPcXsWuYBqMwuHF+kmVc6vTwf+nC+jC82lESAtOCHsWBAXizLB/C+/SAI5trc/4E5
-         uPG9peX83+guibwIymxmiFLpFtK6fBhvPfobCWzzws2Fa3y5Spc2uoaG6GRxJ1ep8gxY
-         qXIE6Yhm2gdBOV0vl1MsbXm1RfDd3kq+7XP1yjp619uneap0uDuYgooiYgChb6OL4Swt
-         /j4Q==
-X-Gm-Message-State: AA+aEWZLRfD8AFdzebDNP/uRFbGOrcn9VDw9ZhAgpa6HboBwApD9ftd5
-        F74vqyYpcTWH3QewgpuBw6OUgqYo4ZNOH0bMIzAb6Q==
-X-Google-Smtp-Source: AFSGD/UJ0PovSnUVnhgmehEuaZ8s33DbIooM742/FGBMigCqGGvCkQKzU42nNswpL9st7ToHk2qXzG4ln4u+7AZX4hc=
-X-Received: by 2002:a24:22c6:: with SMTP id o189mr2804578ito.86.1543691145179;
- Sat, 01 Dec 2018 11:05:45 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=YOlco3d7uE0XIHwdEToQ2fnJSJ2kIsbt165zSmCUlkw=;
+        b=DCSb4KjDsoAygk4u3oj20hDVQJImMRW9RI58+zp5EC6+aHptxuAt75rAPSWlyIGt+n
+         DtyImvA4jqoYssNUNcwwP/tY9m3cJNcUswxjzs9WkOJ8ptQOQM/1Rxs9RTWULMGP9zeG
+         CQUM3nuZsFKITQ9slhiKTjQ7SAAZ4iTKjdt9pY4nj6JBDEROP0Q/afzEIXjohQyJ5nE4
+         RMWDGKGcWMAH17GUM7JLkd9zT9gtWQ52wz7Dn12XBLlNP4nVwJHv7iUC57QJ7SaaueBQ
+         FpqSJbzT1IHBgbeVryrcVxbDVU4ybsd+AKMngPi6KzQyVA2NyBJ8gMBMbHP+fJkG4r82
+         JswA==
+X-Gm-Message-State: AA+aEWbMtgAMQvzbohVDmyV6t2KatMB7Y/SMrvG/cvke8Mw9v7/GR76W
+        xfuTDYwXNX1sF0hM2GRPY3vIZ/Ae2x+UX0MHkoW+IA==
+X-Google-Smtp-Source: AFSGD/Va7lf3w92yORBrnbs82KvKCC+9ynfYQ7b6zkF85heldnIFJt5ESQwg7xyUH02Obff9wYlshFn7LS3kum6cE9s=
+X-Received: by 2002:a17:902:4d46:: with SMTP id o6mr11517476plh.302.1543750389190;
+ Sun, 02 Dec 2018 03:33:09 -0800 (PST)
 MIME-Version: 1.0
-References: <CAHd-oW4U-BGs+Enf07SP_XXWDPv4bzOM6KM83FX54gKWpW7hXw@mail.gmail.com>
- <20181201180847.1394579b@archlinux>
-In-Reply-To: <20181201180847.1394579b@archlinux>
-From:   Matheus Tavares Bernardino <matheus.bernardino@usp.br>
-Date:   Sat, 1 Dec 2018 17:05:33 -0200
-Message-ID: <CAHd-oW4pUqCMjvUw_to6S1-xOvgvCsTJHJFPBih2gbt-x-hg5Q@mail.gmail.com>
-Subject: Re: Questions about the contributing process
+References: <20181124221415.10081-1-tduszyns@gmail.com> <20181124221415.10081-2-tduszyns@gmail.com>
+ <CAJCx=g=H6Zp4AtWPpC-KdZmyOxTymtdgf+Hx8VvThLFg0bjYVQ@mail.gmail.com>
+ <20181125140316.59d9872b@archlinux> <CAJCx=g=oUmcfCA2octwfaoWr6aC=ZF7LUkMsraNe8buHc9mjPg@mail.gmail.com>
+ <20181125154423.GC5053@arch> <20181201154835.19482d7a@archlinux>
+In-Reply-To: <20181201154835.19482d7a@archlinux>
+From:   Matt Ranostay <matt.ranostay@konsulko.com>
+Date:   Sun, 2 Dec 2018 13:32:56 +0200
+Message-ID: <CAJCx=g=S1wxsYGZ-kLkS22whdxTgUf+mfFhvX4diMzE3=kze1g@mail.gmail.com>
+Subject: Re: [PATCH 1/3] iio: add IIO_MASSCONCENTRATION channel type
 To:     jic23@jic23.retrosnub.co.uk
-Cc:     linux-iio@vger.kernel.org, kernel-usp@googlegroups.com
+Cc:     Tomasz Duszynski <tduszyns@gmail.com>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Thanks a lot for the great answers, Jonathan!
-Some comments about them, inline.
-
-On Sat, Dec 1, 2018 at 4:08 PM Jonathan Cameron
+On Sat, Dec 1, 2018 at 5:48 PM Jonathan Cameron
 <jic23@jic23.retrosnub.co.uk> wrote:
 >
-> On Sat, 1 Dec 2018 14:51:07 -0200
-> Matheus Tavares Bernardino <matheus.bernardino@usp.br> wrote:
+> On Sun, 25 Nov 2018 16:44:23 +0100
+> Tomasz Duszynski <tduszyns@gmail.com> wrote:
 >
-> > Hello everyone
-> Hi Matheus.
+> > On Sun, Nov 25, 2018 at 06:14:44AM -0800, Matt Ranostay wrote:
+> > > On Sun, Nov 25, 2018 at 6:03 AM Jonathan Cameron
+> > > <jic23@jic23.retrosnub.co.uk> wrote:
+> > > >
+> > > > On Sun, 25 Nov 2018 05:51:32 -0800
+> > > > Matt Ranostay <matt.ranostay@konsulko.com> wrote:
+> > > >
+> > > > > On Sat, Nov 24, 2018 at 2:14 PM Tomasz Duszynski <tduszyns@gmail.com> wrote:
+> > > > > >
+> > > > > > Measuring particulate matter in ug / m3 (micro-grams per cubic meter)
+> > > > > > is de facto standard. Existing air quality sensors usually follow
+> > > > > > this convention and are capable of returning measurements using
+> > > > > > this unit.
+> > > > > >
+> > > > > > IIO currently does not offer suitable channel type for this
+> > > > > > type of measurements hence this patch adds this.
+> > > > > >
+> > > > > > In addition, two modifiers are introduced used for distinguishing
+> > > > > > between coarse (PM10) and fine particles (PM2p5) measurements, i.e
+> > > > > > IIO_MOD_PM10 and IIO_MOD_PM2p5.
+> > > > > >
+> > > > > > Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
+> > > > > > ---
+> > > > > >  Documentation/ABI/testing/sysfs-bus-iio | 11 ++++++++++-
+> > > > > >  drivers/iio/industrialio-core.c         |  3 +++
+> > > > > >  include/uapi/linux/iio/types.h          |  3 +++
+> > > > > >  tools/iio/iio_event_monitor.c           |  6 ++++++
+> > > > > >  4 files changed, 22 insertions(+), 1 deletion(-)
+> > > > > >
+> > > > > > diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> > > > > > index 8127a08e366d..ce0ed140660d 100644
+> > > > > > --- a/Documentation/ABI/testing/sysfs-bus-iio
+> > > > > > +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> > > > > > @@ -1684,4 +1684,13 @@ KernelVersion:   4.18
+> > > > > >  Contact:       linux-iio@vger.kernel.org
+> > > > > >  Description:
+> > > > > >                 Raw (unscaled) phase difference reading from channel Y
+> > > > > > -               that can be processed to radians.
+> > > > > > \ No newline at end of file
+> > > > > > +               that can be processed to radians.
+> > > > > > +
+> > > > > > +What:          /sys/bus/iio/devices/iio:deviceX/in_massconcentration_pm2p5_input
+> > > > > > +What:          /sys/bus/iio/devices/iio:deviceX/in_massconcentrationY_pm2p5_input
+> > > > > > +What:          /sys/bus/iio/devices/iio:deviceX/in_massconcentration_pm10_input
+> > > > > > +What:          /sys/bus/iio/devices/iio:deviceX/in_massconcentrationY_pm10_input
+> > > > > > +KernelVersion: 4.21
+> > > > > > +Contact:       linux-iio@vger.kernel.org
+> > > > > > +Description:
+> > > > > > +               Mass concentration reading of particulate matter in ug / m3.
+> > > > > > diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> > > > > > index a062cfddc5af..2a9ef600c1fb 100644
+> > > > > > --- a/drivers/iio/industrialio-core.c
+> > > > > > +++ b/drivers/iio/industrialio-core.c
+> > > > > > @@ -87,6 +87,7 @@ static const char * const iio_chan_type_name_spec[] = {
+> > > > > >         [IIO_GRAVITY]  = "gravity",
+> > > > > >         [IIO_POSITIONRELATIVE]  = "positionrelative",
+> > > > > >         [IIO_PHASE] = "phase",
+> > > > > > +       [IIO_MASSCONCENTRATION] = "massconcentration",
+> > > > > >  };
+> > > > > >
+> > > > > >  static const char * const iio_modifier_names[] = {
+> > > > > > @@ -127,6 +128,8 @@ static const char * const iio_modifier_names[] = {
+> > > > > >         [IIO_MOD_Q] = "q",
+> > > > > >         [IIO_MOD_CO2] = "co2",
+> > > > > >         [IIO_MOD_VOC] = "voc",
+> > > > > > +       [IIO_MOD_PM2p5] = "pm2p5",
+> > > > > > +       [IIO_MOD_PM10] = "pm10",
+> > > > > >  };
+> > > > > >
+> > > > > >  /* relies on pairs of these shared then separate */
+> > > > > > diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+> > > > > > index 92baabc103ac..465044b42af5 100644
+> > > > > > --- a/include/uapi/linux/iio/types.h
+> > > > > > +++ b/include/uapi/linux/iio/types.h
+> > > > > > @@ -46,6 +46,7 @@ enum iio_chan_type {
+> > > > > >         IIO_GRAVITY,
+> > > > > >         IIO_POSITIONRELATIVE,
+> > > > > >         IIO_PHASE,
+> > > > > > +       IIO_MASSCONCENTRATION,
+> > > > >
+> > > > > So I'm guessing IIO_CONCENTRATION can't be scaled to the micro-grams
+> > > > > per cubic meter?
+> > > >
+> > > > Currently concentration is defined as a percentage reading of a substance
+> > > > (which does make me wonder if it is meant to be percentage of the volume or
+> > > > percentage of the mass?)  Either way, if can't convert to a density measurement
+> > > > as it's a unit free ratio (I think).
+> > >
+> > > Seems like it can be both..  guessing all the atmosphere ( CO2, VOC,
+> > > etc) ones are mass/density because on how they work.
 > >
-> > It's been a few months since I started sending patches, but there are
-> > still some points about the process that I do not quite understand. I
-> > would be really grateful if anyone could help clarify them for me.
+> > Hmm, but still percentage was picked up for IIO_CONCENTRATION which does
+> > really match PM expectations. Perhaps if units were sticked to modifiers
+> > it whould be easier to reuse that.
+>
+> It gets very messy if we start doing that modifiers, I'd rather stick to
+> different channel types.  We already do this with other channel types
+> position / positionrelative for example.
+>
+> It isn't as though it's actually possible to convert between the two without
+> knowing what the particles actually are...
+
+Wondering if some of the current chemical sensors in the tree should
+be switched to IIO_MASSCONCENTRATION, and only one I can think is
+truly by volume is the electro-conductivity sensor (part of the
+atlas-ph-sensor.c)
+
+- Matt
+
+>
+> Jonathan
 > >
-> > 1) How do we credit more than one person as an author? Here at the
-> > University of S=C3=A3o Paulo we sometimes develop patches in pair
-> > programming, and I don't really know if in these cases we should just
-> > add the S-o-B of both authors or add the "Co-Developed-by" tag (or
-> > something else). Also, is this something specific to each subsystem?
+> > > But the electro-conductivity sensor that is using IIO_CONCENTRATION
+> > > channels is likely from percentage of volume.
+> > >
+> > > - Matt
+> > >
+> > > >
+> > > > >
+> > > > > >  };
+> > > > > >
+> > > > > >  enum iio_modifier {
+> > > > > > @@ -87,6 +88,8 @@ enum iio_modifier {
+> > > > > >         IIO_MOD_VOC,
+> > > > > >         IIO_MOD_LIGHT_UV,
+> > > > > >         IIO_MOD_LIGHT_DUV,
+> > > > > > +       IIO_MOD_PM2p5,
+> > > > >
+> > > > > I know this is unit of measure but the lowercase p in IIO_MOD_PM2p5 is
+> > > > > a bit non-standard for iio defines/enum.
+> > > > It is a bit odd and will get us scripted reports so maybe best to
+> > > > just go upper case and not worry about it.
+> > > >
+> > > > Jonathan
+> > > > >
+> > > > > - Matt
+> > > > >
+> > > > > > +       IIO_MOD_PM10,
+> > > > > >  };
+> > > > > >
+> > > > > >  enum iio_event_type {
+> > > > > > diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+> > > > > > index ac2de6b7e89f..f0fcfeddba2b 100644
+> > > > > > --- a/tools/iio/iio_event_monitor.c
+> > > > > > +++ b/tools/iio/iio_event_monitor.c
+> > > > > > @@ -60,6 +60,7 @@ static const char * const iio_chan_type_name_spec[] = {
+> > > > > >         [IIO_GRAVITY] = "gravity",
+> > > > > >         [IIO_POSITIONRELATIVE] = "positionrelative",
+> > > > > >         [IIO_PHASE] = "phase",
+> > > > > > +       [IIO_MASSCONCENTRATION] = "massconcentration",
+> > > > > >  };
+> > > > > >
+> > > > > >  static const char * const iio_ev_type_text[] = {
+> > > > > > @@ -115,6 +116,8 @@ static const char * const iio_modifier_names[] = {
+> > > > > >         [IIO_MOD_Q] = "q",
+> > > > > >         [IIO_MOD_CO2] = "co2",
+> > > > > >         [IIO_MOD_VOC] = "voc",
+> > > > > > +       [IIO_MOD_PM2p5] = "pm2p5",
+> > > > > > +       [IIO_MOD_PM10] = "pm10",
+> > > > > >  };
+> > > > > >
+> > > > > >  static bool event_is_known(struct iio_event_data *event)
+> > > > > > @@ -156,6 +159,7 @@ static bool event_is_known(struct iio_event_data *event)
+> > > > > >         case IIO_GRAVITY:
+> > > > > >         case IIO_POSITIONRELATIVE:
+> > > > > >         case IIO_PHASE:
+> > > > > > +       case IIO_MASSCONCENTRATION:
+> > > > > >                 break;
+> > > > > >         default:
+> > > > > >                 return false;
+> > > > > > @@ -200,6 +204,8 @@ static bool event_is_known(struct iio_event_data *event)
+> > > > > >         case IIO_MOD_Q:
+> > > > > >         case IIO_MOD_CO2:
+> > > > > >         case IIO_MOD_VOC:
+> > > > > > +       case IIO_MOD_PM2p5:
+> > > > > > +       case IIO_MOD_PM10:
+> > > > > >                 break;
+> > > > > >         default:
+> > > > > >                 return false;
+> > > > > > --
+> > > > > > 2.19.2
+> > > > > >
+> > > >
 >
-> It's certainly an interesting one and an area we probably need to
-> have a solution for in general given that methodologies such
-> as pair programming are becoming more common.
->
-> For IIO I have no real problem with multiple sign offs though slight
-> preference for having that and Co-Developed-by to explain the
-> additional signed-off-by is part of the actual developer's
-> Developer Certificate of Origin rather than one indicating having
-> 'handled the patch' line mine is...
->
-> I've not often come across this one but see it's in submitting-patches.rs=
-t
-> and is nice and clear so I'll be pushing for people to do this in future!
->
-
-Great! I'm going to forward this to my USP colleagues so we can start
-using Co-Developed-by, in addition to S-o-B.
-
-> >
-> > 2) Does iio have a test infrastructure? I know there are autobuilders
-> > playing with the iio.git testing branch, but how does it work? Also,
-> > if there is no test beyond building, is there some plan to make such
-> > an infrastructure in the near future?
->
-> This is indeed an area we are very weak on.  Partly this is about the
-> difficulty of having any sort of centralised test facility given the
-> huge number of devices that would be needed.  Hence it comes down
-> to individual developers testing patches that touch their drivers.
-> I assume that some of the larger companies have automated test setups
-> but don't actually know that.
->
-> I've thought about building a small CI setup myself but never actually
-> had the time to get it all wired up.  A certain class of device would
-> be fairly easy, though it would still require proper wiring rather than
-> the bunch of probes I often end up with whilst testing!
-> Others such as motion sensors would require another
-> level of automation to do any sort of thorough testing.
->
-
-It does really seems to be a hard job to build and maintain a CI setup
-for so many devices. But couldn't we have at least a simpler test
-suite, made entirely in software, that mocks [some off] the devices
-and tests part of the subsystem code? I know it wouldn't be as good as
-having all the physical hardware and wiring to test, but maybe it
-could be a start.
-
-In addition it would facilitate the process of contribution and
-revision because the test software could be run locally and would
-encounter problems in the patches before they were sent.
-
-> Hence all we have running all the time is the 0day build bots that
-> Intel kindly provide for the community.  Those will do a lot of build
-> and boot testing but there is no IIO specific testing in there. Kernelci
-> and other boot test focused systems will hit the code once it reaches lin=
-ux-next
-> which is after Greg pulls it (a couple of times a cycle).
->
-> Any progress in this area would be great. One day my garage may finally
-> gain a permanent test rig, but it's not at the top of my list for holiday
-> projects.
->
-> I know from the day job CI system, the huge amount of work in getting a
-> system set up and the constant maintenance burden that comes with it.
-> The effort of kernelci has certainly made the tooling easier to get
-> and use, but it is the perpetual issue with flakey hardware that keeps
-> things busy once you reach a certain scale of testing.  Have 10+ boards
-> and one of them will almost always be broken either physically or
-> in software terms.  For some classes of sensor we could standardise
-> on a host which would reduce the chance of this. The SoC ADCs won't
-> work for this though.
->
-> >
-> > 3) When a reviewer sends an Acked-by, but I still have to send a v2
-> > for some reason (maybe adjusting the patch message, e.g.), should I
-> > add the Acked-by in v2 or that's something the maintainers will do?
->
-> If there are no substantial changes to the actual code, or they are ones
-> the person giving the tags requested, please add any tags to your V2.
-> I will occasionally remember to go back through old series because I know
-> someone gave a tag, but mostly I will only look at the latest version whe=
-n
-> applying and assume all tags will already be there.
->
-
-Ok, got it. Thanks.
-
-> If you know I have missed one on a particular series, please point it
-> out as I may well not have pushed out a non rebasing version of the tree
-> (the main togreg branch) yet and so can edit the history to add the tag.
-> I often do this for DT reviews when I've assumed the patch was so simple
-> Rob wouldn't comment, neglecting how thorough he sometimes is and the
-> review comes in post me applying it!
->
-> >
-> > Thank you
-> > Matheus
->
-> All good thought provoking questions (particularly the testing one!).
-> Keep them coming as it's useful stuff for everyone to know.
->
-> There is the new Subsystem maintainer doc that I need to sit down and
-> write for IIO. https://lwn.net/Articles/772882/ (pay walled currently)
->
-> https://lwn.net/ml/linux-kernel/154225759358.2499188.15268218778137905050=
-.stgit@dwillia2-desk3.amr.corp.intel.com/#t
->
-> I'll try and remember to put the answers to these in there.
-> Note it'll probably be the Xmas week before I sit down and write that tho=
-ugh.
->
-
-Great! Thanks again for all the explanations.
-
-Matheus
