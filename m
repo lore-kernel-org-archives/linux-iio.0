@@ -2,736 +2,113 @@ Return-Path: <SRS0=fsUv=OM=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_PASS,USER_AGENT_MUTT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3571EC04EB9
-	for <linux-iio@archiver.kernel.org>; Mon,  3 Dec 2018 10:31:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97A89C07E85
+	for <linux-iio@archiver.kernel.org>; Mon,  3 Dec 2018 11:34:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D089120851
-	for <linux-iio@archiver.kernel.org>; Mon,  3 Dec 2018 10:31:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5DF1A20848
+	for <linux-iio@archiver.kernel.org>; Mon,  3 Dec 2018 11:34:57 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=elementarea-net.20150623.gappssmtp.com header.i=@elementarea-net.20150623.gappssmtp.com header.b="mefoUpYM"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D089120851
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=elementarea.net
+	dkim=pass (1024-bit key) header.d=linaro.org header.i=@linaro.org header.b="Poe7TRDp"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5DF1A20848
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726116AbeLCKbd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 3 Dec 2018 05:31:33 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:34064 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726111AbeLCKbc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Dec 2018 05:31:32 -0500
-Received: by mail-ed1-f67.google.com with SMTP id b3so10274786ede.1
-        for <linux-iio@vger.kernel.org>; Mon, 03 Dec 2018 02:31:04 -0800 (PST)
+        id S1725947AbeLCLff (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 3 Dec 2018 06:35:35 -0500
+Received: from mail-wm1-f46.google.com ([209.85.128.46]:33108 "EHLO
+        mail-wm1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726199AbeLCLfe (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Dec 2018 06:35:34 -0500
+Received: by mail-wm1-f46.google.com with SMTP id r24so6752014wmh.0
+        for <linux-iio@vger.kernel.org>; Mon, 03 Dec 2018 03:34:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=elementarea-net.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=lO1t2qaNSgwuZKNPnfq8ApwP8xsbcjMOLMJQMLOKQJM=;
-        b=mefoUpYMoonl51y/fI7z2CCn361QNEUFGF6BNbThcR28s2BhA7rt+rHhbJ03VWQwtI
-         KkO5QV8XhCr1MOwvYR4U1XcKcFijiklBFP7zjn+wS0bzGy3Mlx5SicTChjl6ImwE0z+l
-         dBYzz6xlbkQs4EfPpZkq0mwo/x8Vt1vPJyn0o1pl2WsWYRdqhH4cGbqmaeyx+Z9MKOmL
-         eKmIHKLbQw5C7uhiHIRH/td3pg9VWQacXMQe28jCIYwWdrb/HM1j1f80wQVG5EkAtZK0
-         IVMOTRgEhCTZD9IJChXfSd437VMOaVC/0itbeMybJkxtPb2Gt23y2HLUATqjGnd30MWL
-         mscw==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=rBkFXOg23Gau/VI9+SAGYUJ7hE0y+HGgpzMb1MFoRP0=;
+        b=Poe7TRDpWMu4iMvIIEG9EXd+RojoktJmaGJd6e4AGZniXRl/p1txulruGjc1kq+0Rt
+         +P3Xp2StwKSV67QWq/d3EK/sc88XsppS33YMAyQ/AzlqQ9ecCOqFVrMBWfC42L0RV2Hs
+         Z4RdLtV8uDVuS8WySxUsk8xD/BmBhu1Gay3Dk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=lO1t2qaNSgwuZKNPnfq8ApwP8xsbcjMOLMJQMLOKQJM=;
-        b=MjCm5JcOGA1mUuRaDSVnVwAG9X6Otb0cil/ZEmadY9Ju+QfwGKh+K2fgJ5OZ3d+aVH
-         MZMKsE7zUXHMD58oHt4kGSRTRu0ztJ2NMRfwENbXA7GkSSTU6Dr3HbnS97bxRNSFB2Ke
-         VYe3H4PN7SbYgoomkRakcQcxp1yY6i9cekJ8rWtPdhTxCT74LvQ457pL5Adl185so8b/
-         /1Fc8HJJfF0syIymmyPf62442kKdzHQ+JLA15cQD6LDM8Cnw5B1L2vKRvArYRjD60gNq
-         HBW+zhV0eCO4QtfzM8UNkcw6syl+P8Xt9tgUQEgDE2QXrtNoPizadCV6R6mSkqsv8Npu
-         /ZNw==
-X-Gm-Message-State: AA+aEWYXsOFED7C7gPo8x8KmJcy3mZdPU32CdenYo0PNXtcfr1kjDHcy
-        AVzWdSULSJK/BGIczOPZfy1j1dR+0HqkAGVQ
-X-Google-Smtp-Source: AFSGD/XWzLDcJxV2GmAOYkySzCXjnMGdTT9LToNF004xSZtngUpFXXFDWLk1A+oGmFOfF2aa7nqbWw==
-X-Received: by 2002:a50:a9e5:: with SMTP id n92mr13881263edc.63.1543833063124;
-        Mon, 03 Dec 2018 02:31:03 -0800 (PST)
-Received: from ch-sta-l-li0012.sensirion.lokal ([209.206.26.1])
-        by smtp.gmail.com with ESMTPSA id d5sm3828348edb.48.2018.12.03.02.31.00
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 03 Dec 2018 02:31:01 -0800 (PST)
-From:   Andreas Brauchli <a.brauchli@elementarea.net>
-X-Google-Original-From: Andreas Brauchli <andreas.brauchli@sensirion.com>
-To:     Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-        Tomasz Duszynski <tduszyns@gmail.com>
-Cc:     andreas.brauchli@sensirion.com, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Andreas Brauchli <a.brauchli@elementarea.net>
-Subject: Re: [PATCH 2/3] iio: chemical: add support for Sensirion SPS30 sensor
-Date:   Mon,  3 Dec 2018 11:30:45 +0100
-Message-Id: <20181203103045.10413-1-andreas.brauchli@sensirion.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20181201155857.214fcecc@archlinux>
-References: <20181201155857.214fcecc@archlinux>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=rBkFXOg23Gau/VI9+SAGYUJ7hE0y+HGgpzMb1MFoRP0=;
+        b=nxo0TDUycK9JQ8Pffa3HEejodblvaDUk12pigO+MJZ+HcSeEjBVoYvHhp9iBdAK123
+         8gNLV2r1ENL8vxbMJPcK5fVu1aiNNI2+bujUd54XvlCrD2SJs9c4FlS9u0mw0qVA8Ltb
+         oQalGurJW6M3E2t20lwJx10kb3h1GU6yFbAa2YNE+3MKw4JD4T8uq2ZPvdPZkY1FmWvX
+         c1riS9Q7sEXCz7d6LzU4lTKmQ+tA2MDIECyu/svCxeKz9yzbj87Z7r9m09d6LN9cL3VX
+         NV1euKtOuJ1WU7klEg5WltkJOQvcskMFhAnkZZlRLydcPBK44zLLhXHLQzM9yVKoQMTB
+         V1gw==
+X-Gm-Message-State: AA+aEWbtyi3MReSqIhB2VHs5iRUgiBwOuKOXFEd3/90reHHaHuojrrkz
+        A8qDU9ePkJJeRrl+08rVbIZBSicl2hg=
+X-Google-Smtp-Source: AFSGD/V+gq12fvuZnWIfpJdjUIfgGK7SlvwMh2OP8Hpocp7jvubfZ2LkEqByc6zwvHSEKx1mzbUvcA==
+X-Received: by 2002:a1c:85d2:: with SMTP id h201mr7455236wmd.151.1543836892940;
+        Mon, 03 Dec 2018 03:34:52 -0800 (PST)
+Received: from dell ([2.31.167.218])
+        by smtp.gmail.com with ESMTPSA id y13sm8992722wrw.85.2018.12.03.03.34.52
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 03 Dec 2018 03:34:52 -0800 (PST)
+Date:   Mon, 3 Dec 2018 11:34:50 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Vignesh R <vigneshr@ti.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT PULL] Immutable branch between MFD and IIO due for the v4.21
+ merge window
+Message-ID: <20181203113450.GM26661@dell>
+References: <20181203080118.17504-1-vigneshr@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20181203080118.17504-1-vigneshr@ti.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Andreas Brauchli <a.brauchli@elementarea.net>
+Enjoy!
 
-On Sat, 1 Dec 2018 15:58:57 +0000, Jonathan Cameron wrote:
-> On Sun, 25 Nov 2018 20:05:09 +0100
-> Tomasz Duszynski <tduszyns@gmail.com> wrote:
-> 
-> > On Sun, Nov 25, 2018 at 08:56:59AM +0000, Jonathan Cameron wrote:
-> > > On Sat, 24 Nov 2018 23:14:14 +0100
-> > > Tomasz Duszynski <tduszyns@gmail.com> wrote:
-> > >  
-> > > > Add support for Sensirion SPS30 particulate matter sensor.
+The following changes since commit 651022382c7f8da46cb4872a545ee1da6d097d2a:
 
-Thanks a lot for your work! A few comments inline, I'm also happy to assist with
-further clarifications.
+  Linux 4.20-rc1 (2018-11-04 15:37:52 -0800)
 
-Since I work for Sensirion, feel free to add me on the Acked-by list. (The
-company server molests emails..)
+are available in the Git repository at:
 
-Acked-by: Andreas Brauchli <andreas.brauchli@sensirion.com>
+  git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git ib-mfd-iio-v4.21
 
-> > > >
-> > > > Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>  
-> > > A few things inline.
-> > >
-> > > I'm particularly curious as to why we are ignoring two of the particle
-> > > sizes that the sensor seems to capture?
-> > >  
-> > 
-> > I was thinking about adding first the most common ones i.e PM2.5 and
-> > PM10 and the rest of them later on if there's a particular need.
-> > 
-> > On the other hand I can add PM1.0 and PM4.0 now so that we have
-> > everything in place once new dust sensors appear on the market.
-> 
-> I would.  I do hope there don't turn out to be 100s of different
-> views of what these values should be though.  The various standards
-> should prevent that even if people tuck in one or two extra
-> just because they could.
+for you to fetch changes up to 4b3ab9372ffa569827c8f7b7ffc7b69ba544a3bd:
 
-PM1.0 is definitely used in other sensors (e.g. Plantower), but on a quick
-search I couldn't find another PM4.0 one.
+  iio: adc: ti_am335x_tscadc: Improve accuracy of measurement (2018-12-03 11:33:20 +0000)
 
-Our rationale for the value is that, according to medical studies, anything
-below PM4.0 can affect the lungs.
+----------------------------------------------------------------
+Immutable branch between MFD and IIO due for the v4.21 merge window
 
-> 
-> > 
-> > It's seems reasonable to assume they will measure the very same
-> > subset of particulates.
-> > 
-> > > Also, a 'potential' race in remove that I'd like us to make
-> > > 'obviously' correct rather than requiring hard thought on whether
-> > > it would be a problem.
-> > >
-> > > Thanks,
-> > >
-> > > Jonathan
-> > >  
-> > > > ---
-> > > >  drivers/iio/chemical/Kconfig  |  11 ++
-> > > >  drivers/iio/chemical/Makefile |   1 +
-> > > >  drivers/iio/chemical/sps30.c  | 359 ++++++++++++++++++++++++++++++++++
-> > > >  3 files changed, 371 insertions(+)
-> > > >  create mode 100644 drivers/iio/chemical/sps30.c
-> > > >
-> > > > diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
-> > > > index b8e005be4f87..40057ecf8130 100644
-> > > > --- a/drivers/iio/chemical/Kconfig
-> > > > +++ b/drivers/iio/chemical/Kconfig
-> > > > @@ -61,6 +61,17 @@ config IAQCORE
-> > > >  	  iAQ-Core Continuous/Pulsed VOC (Volatile Organic Compounds)
-> > > >  	  sensors
-> > > >
-> > > > +config SPS30
-> > > > +	tristate "SPS30 Particulate Matter sensor"
-> > > > +	depends on I2C
-> > > > +	select CRC8
-> > > > +	help
-> > > > +	  Say Y here to build support for the Sensirion SPS30 Particulate
-> > > > +	  Matter sensor.
-> > > > +
-> > > > +	  To compile this driver as a module, choose M here: the module will
-> > > > +	  be called sps30.
-> > > > +
-> > > >  config VZ89X
-> > > >  	tristate "SGX Sensortech MiCS VZ89X VOC sensor"
-> > > >  	depends on I2C
-> > > > diff --git a/drivers/iio/chemical/Makefile b/drivers/iio/chemical/Makefile
-> > > > index 2f4c4ba4d781..9f42f4252151 100644
-> > > > --- a/drivers/iio/chemical/Makefile
-> > > > +++ b/drivers/iio/chemical/Makefile
-> > > > @@ -9,4 +9,5 @@ obj-$(CONFIG_BME680_I2C) += bme680_i2c.o
-> > > >  obj-$(CONFIG_BME680_SPI) += bme680_spi.o
-> > > >  obj-$(CONFIG_CCS811)		+= ccs811.o
-> > > >  obj-$(CONFIG_IAQCORE)		+= ams-iaq-core.o
-> > > > +obj-$(CONFIG_SPS30) += sps30.o
-> > > >  obj-$(CONFIG_VZ89X)		+= vz89x.o
-> > > > diff --git a/drivers/iio/chemical/sps30.c b/drivers/iio/chemical/sps30.c
-> > > > new file mode 100644
-> > > > index 000000000000..bf802621ae7f
-> > > > --- /dev/null
-> > > > +++ b/drivers/iio/chemical/sps30.c
-> > > > @@ -0,0 +1,359 @@
-> > > > +// SPDX-License-Identifier: GPL-2.0
-> > > > +/*
-> > > > + * Sensirion SPS30 Particulate Matter sensor driver
-> > > > + *
-> > > > + * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
-> > > > + *
-> > > > + * I2C slave address: 0x69
-> > > > + *
-> > > > + * TODO:
-> > > > + *  - support for turning on fan cleaning
-> > > > + *  - support for reading/setting auto cleaning interval
-> > > > + */
-> > > > +
-> > > > +#define pr_fmt(fmt) "sps30: " fmt
-> > > > +
-> > > > +#include <linux/crc8.h>
-> > > > +#include <linux/delay.h>
-> > > > +#include <linux/i2c.h>
-> > > > +#include <linux/iio/buffer.h>
-> > > > +#include <linux/iio/iio.h>
-> > > > +#include <linux/iio/sysfs.h>
-> > > > +#include <linux/iio/trigger_consumer.h>
-> > > > +#include <linux/iio/triggered_buffer.h>
-> > > > +#include <linux/module.h>
-> > > > +
-> > > > +#define SPS30_CRC8_POLYNOMIAL 0x31
-> > > > +
-> > > > +/* SPS30 commands */
-> > > > +#define SPS30_START_MEAS 0x0010
-> > > > +#define SPS30_STOP_MEAS 0x0104
-> > > > +#define SPS30_RESET 0xd304
+----------------------------------------------------------------
+Vignesh R (2):
+      mfd: ti_am335x_tscadc: Use PLATFORM_DEVID_AUTO while registering mfd cells
+      iio: adc: ti_am335x_tscadc: Improve accuracy of measurement
 
-lower case d vs upper case in SPS30_READ_SERIAL
-
-> > > > +#define SPS30_READ_DATA_READY_FLAG 0x0202
-> > > > +#define SPS30_READ_DATA 0x0300
-> > > > +#define SPS30_READ_SERIAL 0xD033
-> > > > +
-> > > > +#define SPS30_CHAN(_index, _mod) { \
-> > > > +	.type = IIO_MASSCONCENTRATION, \
-> > > > +	.modified = 1, \
-> > > > +	.channel2 = IIO_MOD_ ## _mod, \
-> > > > +	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED), \
-> > > > +	.scan_index = _index, \
-> > > > +	.scan_type = { \
-> > > > +		.sign = 'u', \
-> > > > +		.realbits = 12, \
-> > > > +		.storagebits = 32, \  
-> > >
-> > > That is unusual.  Why do we need 32 bits to store a 12 bit value?
-> > > 16 should be plenty.  It'll make a difference to the buffer
-> > > sizes if people just want to stream data and don't care about
-> > > timestamps as it'll halve the memory usage.  
-> > 
-> > Right, I could have picked up a petter values. But I've got at least one
-> > valid reason for doing that. Sensor datasheet specifies 0-1000
-> > measurement range but simple tests showed that SPS30 can measure way beyond
-> > that. Interestingly, measurements are consistent with third party sensors.
-> 
-> I'm guessing there are certification bodies for this sort of thing. They
-> may only have paid for the low end to be certified (or there may be no
-> official test for higher levels?)
-> 
-> > 
-> > So having 12/32 bit setting, especially 32 storagebits protects against
-> > future changes in datasheet (which is btw preliminary) i.e updating
-> > measurement range.
-
-The final datasheet is expected in Q1 2019. You could add the following link
-which always points to the latest version:
-
-https://www.sensirion.com/file/datasheet_sps30
-
-> 
-> Not really because userspace is going to assume the value is 12 bits and
-> will probably mask it as such, thus any change requires userspace to cope
-> with it. Once you are doing that, might as well just change the padding
-> as well.
-> 
-> > 
-> > But, I guess that 16 for real and storage bits should be more
-> > that enough.
-> 
-> Feels like it to me as well.
-> 
-> > 
-> > >
-> > > Also, convention has always been to got for next 8,16,32,64 above
-> > > the realbits if there isn't a reason not to (shifting etc)
-> > >
-> > > How did we end up with 12 bits off the floating point conversion
-> > > anyway?  Needs some docs.  
-> > 
-> > Matter of simple tests. I was able to trigger measurements of over
-> > 3000 ug/m3.
-> 
-> Hmm. So potentially it will give readings with more?  If so we should
-> work out a hard justification for that limit.  Userspace will mask
-> against it (as the rest of the bits may be garbage - we don't force
-> them to 0 in other drivers and they often contain meta data if
-> not actual garbage).
-
-The SPS30 can output high values (e.g. 60,000), but the measurement principle
-only applies up to somewhere between 3000-5000 ug/m3. Anything above 3000 is
-highly imprecise.
-
-> 
-> > 
-> > >
-> > >  
-> > > > +		.endianness = IIO_CPU, \
-> > > > +	}, \
-> > > > +}
-> > > > +
-> > > > +enum {
-> > > > +	PM1p0, /* just a placeholder */
-> > > > +	PM2p5,
-> > > > +	PM4p0, /* just a placeholder */
-> > > > +	PM10,
-> > > > +};
-> > > > +
-> > > > +struct sps30_state {
-> > > > +	struct i2c_client *client;
-> > > > +	/* guards against concurrent access to sensor registers */
-> > > > +	struct mutex lock;
-> > > > +};
-> > > > +
-> > > > +DECLARE_CRC8_TABLE(sps30_crc8_table);
-> > > > +  
-> > >
-> > > I think you are fine locking wise, but it would be good to add a note
-> > > on what locks are expected to be held on entering this function.
-> > >
-> > > Without locks it's obviously very racey!
-> > >  
-> > 
-> > Understood.
-> > 
-> > > > +static int sps30_write_then_read(struct sps30_state *state, u8 *buf,
-> > > > +				 int buf_size, u8 *data, int data_size)
-> > > > +{
-> > > > +	/* every two received data bytes are checksummed */
-> > > > +	u8 tmp[data_size + data_size / 2];
-> > > > +	int ret, i;
-> > > > +
-> > > > +	/*
-> > > > +	 * Sensor does not support repeated start so instead of
-> > > > +	 * sending two i2c messages in a row we just send one by one.
-> > > > +	 */
-> > > > +	ret = i2c_master_send(state->client, buf, buf_size);
-> > > > +	if (ret != buf_size)
-> > > > +		return ret < 0 ? ret : -EIO;
-> > > > +
-> > > > +	if (!data)
-> > > > +		return 0;
-> > > > +
-> > > > +	ret = i2c_master_recv(state->client, tmp, sizeof(tmp));
-> > > > +	if (ret != sizeof(tmp))
-> > > > +		return ret < 0 ? ret : -EIO;
-> > > > +
-> > > > +	for (i = 0; i < sizeof(tmp); i += 3) {
-> > > > +		u8 crc = crc8(sps30_crc8_table, &tmp[i], 2, CRC8_INIT_VALUE);
-> > > > +
-> > > > +		if (crc != tmp[i + 2]) {
-> > > > +			dev_err(&state->client->dev,
-> > > > +				"data integrity check failed\n");
-> > > > +			return -EIO;
-> > > > +		}
-> > > > +
-> > > > +		*data++ = tmp[i];
-> > > > +		*data++ = tmp[i + 1];
-> > > > +	}
-> > > > +
-> > > > +	return 0;
-> > > > +}
-> > > > +
-> > > > +static int sps30_do_cmd(struct sps30_state *state, u16 cmd, u8 *data, int size)
-> > > > +{
-> > > > +	/* depending on the command up to 3 bytes may be needed for argument */
-> > > > +	u8 buf[sizeof(cmd) + 3] = { cmd >> 8, cmd };
-> > > > +
-> > > > +	switch (cmd) {
-> > > > +	case SPS30_START_MEAS:
-> > > > +		buf[2] = 0x03;
-> > > > +		buf[3] = 0x00;
-> > > > +		buf[4] = 0xac; /* precomputed crc */  
-> > >
-> > > Could you put that in code and let the compiler do the pre compute?
-> > > Might be a little more elegant.
-> > >  
-> > 
-> > Okay.
-> > 
-> > > > +		return sps30_write_then_read(state, buf, 5, NULL, 0);
-> > > > +	case SPS30_STOP_MEAS:
-> > > > +	case SPS30_RESET:
-> > > > +		return sps30_write_then_read(state, buf, 2, NULL, 0);
-> > > > +	case SPS30_READ_DATA_READY_FLAG:
-> > > > +	case SPS30_READ_DATA:
-> > > > +	case SPS30_READ_SERIAL:
-> > > > +		return sps30_write_then_read(state, buf, 2, data, size);
-> > > > +	default:
-> > > > +		return -EINVAL;
-> > > > +	};
-> > > > +}
-> > > > +
-> > > > +static int sps30_ieee754_to_int(const u8 *data)
-> > > > +{
-> > > > +	u32 val = ((u32)data[0] << 24) | ((u32)data[1] << 16) |
-> > > > +		  ((u32)data[2] << 8) | (u32)data[3],  
-> > > Have a separate
-> > > u32 mantissa = (val << 9) >> 9 line.
-> > > What is this next line actually doing?  Kind of looks like
-> > > a mask?  If so just mask it with & as more readable.
-> > >  
-> > 
-> > Do you mean mantissa? We want to get rid of sign bit and 8 exponent bits.
-> Got it, but the above is the same as.
-> 
-> val & 0x7ffffff; I think...  Shifting like this immediately made me
-> think you were manually sign extending (but it's unsigned so obviously not).
-> 
-> It's a mask to extract just the mantissa, so code it as one.
-> 
-> 
-> > 
-> > > > +	    mantissa = (val << 9) >> 9;
-> > > > +	int exp = (val >> 23) - 127;
-> > > > +
-> > > > +	if (!exp && !mantissa)
-> > > > +		return 0;
-> > > > +
-> > > > +	if (exp < 0)
-> > > > +		return 0;
-> > > > +
-> > > > +	return (1 << exp) + (mantissa >> (23 - exp));
-> > > > +}
-> > > > +
-> > > > +static int sps30_do_meas(struct sps30_state *state, int *pm2p5, int *pm10)
-> > > > +{
-> > > > +	/*
-> > > > +	 * Internally sensor stores measurements in a following manner:
-> > > > +	 *
-> > > > +	 * PM1p0: upper two bytes, crc8, lower two bytes, crc8  
-> > >
-> > > So there are other particle sizes that this sensor reads?  Why
-> > > are we mapping them down to just the two channel types?
-> > >  
-> > 
-> > As said before, introducing PM1.0 and PM4.0 readings seems
-> > a reasonable option.
-> 
-> Go for it.  Userspace who doesn't care won't read them.
-> 
-> > 
-> > > > +	 * PM2p5: upper two bytes, crc8, lower two bytes, crc8
-> > > > +	 * PM4p0: upper two bytes, crc8, lower two bytes, crc8
-> > > > +	 * PM10:  upper two bytes, crc8, lower two bytes, crc8
-> > > > +	 *
-> > > > +	 * What follows next are number concentration measurements and
-> > > > +	 * typical particle size measurement.
-> > > > +	 *
-> > > > +	 * Once data is read from sensor crc bytes are stripped off
-> > > > +	 * hence we need 16 bytes of buffer space.
-> > > > +	 */
-> > > > +	int ret, tries = 5;
-> > > > +	u8 buf[16];
-> > > > +
-> > > > +	while (tries--) {
-> > > > +		ret = sps30_do_cmd(state, SPS30_READ_DATA_READY_FLAG, buf, 2);
-> > > > +		if (ret)
-> > > > +			return -EIO;
-> > > > +
-> > > > +		/* new measurements ready to be read */
-> > > > +		if (buf[1] == 1)
-> > > > +			break;
-> > > > +
-> > > > +		usleep_range(300000, 400000);
-> > > > +	}
-> > > > +
-> > > > +	if (!tries)
-> > > > +		return -ETIMEDOUT;
-> > > > +
-> > > > +	ret = sps30_do_cmd(state, SPS30_READ_DATA, buf, sizeof(buf));
-> > > > +	if (ret)
-> > > > +		return ret;
-> > > > +
-> > > > +	/*
-> > > > +	 * All measurements come in IEEE754 single precision floating point
-> > > > +	 * format but sensor itself is not precise enough (-+ 10% error)
-> > > > +	 * to take full advantage of it. Hence converting result to int
-> > > > +	 * to keep things simple.  
-> > >
-> > > Interesting.  We have talked about allowing floating point formats for
-> > > sensors the provide them.  Would that be beneficial here?
-> > >  
-> > 
-> > I recall this was discussed once but unfortunately do not
-> > remember final conclusion. Anyway, in case of this device datasheet
-> > states that readings have maximum error of -+10% in given range which
-> > makes me think that using floats here is an overkill.
-> > 
-> > Example, reading of 1000.123412ug/m3 has error of -+100ug/m3.
-> > Does it really matter if care about fractional part?
-
-The datasheet specifies absolute precision, the relative precision is much
-better. The noise level is at ca. 1%. We thus suggest using 16bit values with
-2bits dedicated to fixed point decimals.
-
-> 
-> *laughs*.  It does make you wonder why they ended up as floating point
-> unless it is sensitive at very low levels? Note I know nothing about
-> particle sensing at all! 
-> 
-
-..used internally
-
-> > 
-> > Just out of curiosity, if IIO gets support for floats would it
-> > be problematic to to add extra channel returning measurements in floats?
-> > Or it rather will not fly..
-> 
-> It's hard for userspace to interpret the case of two channels measuring the
-> same thing.  So it could be done (and we have once or twice done this)
-> but it's messy.
-> 
-> > 
-> > > > +	 */
-> > > > +	*pm2p5 = sps30_ieee754_to_int(&buf[PM2p5 * 4]);
-> > > > +	*pm10 = sps30_ieee754_to_int(&buf[PM10 * 4]);
-> > > > +
-> > > > +	return 0;
-> > > > +}
-> > > > +
-> > > > +static irqreturn_t sps30_trigger_handler(int irq, void *p)
-> > > > +{
-> > > > +	struct iio_poll_func *pf = p;
-> > > > +	struct iio_dev *indio_dev = pf->indio_dev;
-> > > > +	struct sps30_state *state = iio_priv(indio_dev);
-> > > > +	u32 buf[4]; /* PM2p5, PM10, timestamp */
-> > > > +	int ret;
-> > > > +
-> > > > +	mutex_lock(&state->lock);
-> > > > +	ret = sps30_do_meas(state, &buf[0], &buf[1]);
-> > > > +	mutex_unlock(&state->lock);
-> > > > +	if (ret < 0)
-> > > > +		goto err;
-> > > > +
-> > > > +	iio_push_to_buffers_with_timestamp(indio_dev, buf,
-> > > > +					   iio_get_time_ns(indio_dev));
-> > > > +err:
-> > > > +	iio_trigger_notify_done(indio_dev->trig);
-> > > > +
-> > > > +	return IRQ_HANDLED;
-> > > > +}
-> > > > +
-> > > > +static int sps30_read_raw(struct iio_dev *indio_dev,
-> > > > +			  struct iio_chan_spec const *chan,
-> > > > +			  int *val, int *val2, long mask)
-> > > > +{
-> > > > +	struct sps30_state *state = iio_priv(indio_dev);
-> > > > +	int ret;
-> > > > +
-> > > > +	switch (mask) {
-> > > > +	case IIO_CHAN_INFO_PROCESSED:
-> > > > +		switch (chan->type) {
-> > > > +		case IIO_MASSCONCENTRATION:
-> > > > +			mutex_lock(&state->lock);
-> > > > +			switch (chan->channel2) {
-> > > > +			case IIO_MOD_PM2p5:
-> > > > +				ret = sps30_do_meas(state, val, val2);
-> > > > +				break;
-> > > > +			case IIO_MOD_PM10:
-> > > > +				ret = sps30_do_meas(state, val2, val);
-> > > > +				break;
-> > > > +			default:
-> > > > +				break;
-> > > > +			}
-> > > > +			mutex_unlock(&state->lock);
-> > > > +			if (ret)
-> > > > +				return ret;
-> > > > +
-> > > > +			return IIO_VAL_INT;
-> > > > +		default:
-> > > > +			return -EINVAL;
-> > > > +		}
-> > > > +		break;
-> > > > +	default:  
-> > > You can't get here.  Is this a warning suppression?
-> > > If so just add a comment saying so to prevent it being removed
-> > > by someone else later.
-> > >  
-> > 
-> > Okay.
-> > 
-> > > > +		return -EINVAL;
-> > > > +	}
-> > > > +}
-> > > > +
-> > > > +static const struct iio_info sps30_info = {
-> > > > +	.read_raw = sps30_read_raw,
-> > > > +};
-> > > > +  
-> > > From a readability point of view, it would be helpful to pull
-> > > the macro SPS30_CHAN down here in the code so we don't
-> > > need to go jumping around to check what it is doing.
-> > >  
-> > 
-> > Okay.
-> > 
-> > > > +static const struct iio_chan_spec sps30_channels[] = {
-> > > > +	SPS30_CHAN(0, PM2p5),
-> > > > +	SPS30_CHAN(1, PM10),
-> > > > +	IIO_CHAN_SOFT_TIMESTAMP(2),
-> > > > +};
-> > > > +
-> > > > +static const unsigned long sps30_scan_masks[] = { 0x03, 0x00 };
-> > > > +
-> > > > +static int sps30_probe(struct i2c_client *client)
-> > > > +{
-> > > > +	struct iio_dev *indio_dev;
-> > > > +	struct sps30_state *state;
-> > > > +	u8 buf[32] = { };
-> > > > +	int ret;
-> > > > +
-> > > > +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C))
-> > > > +		return -EOPNOTSUPP;
-> > > > +
-> > > > +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*state));
-> > > > +	if (!indio_dev)
-> > > > +		return -ENOMEM;
-> > > > +
-> > > > +	state = iio_priv(indio_dev);
-> > > > +	i2c_set_clientdata(client, indio_dev);
-> > > > +	state->client = client;
-> > > > +	indio_dev->dev.parent = &client->dev;
-> > > > +	indio_dev->info = &sps30_info;
-> > > > +	indio_dev->name = client->name;
-> > > > +	indio_dev->channels = sps30_channels;
-> > > > +	indio_dev->num_channels = ARRAY_SIZE(sps30_channels);
-> > > > +	indio_dev->modes = INDIO_DIRECT_MODE;
-> > > > +	indio_dev->available_scan_masks = sps30_scan_masks;
-> > > > +
-> > > > +	mutex_init(&state->lock);
-> > > > +	crc8_populate_msb(sps30_crc8_table, SPS30_CRC8_POLYNOMIAL);
-> > > > +
-> > > > +	/*
-> > > > +	 * Power-on-reset causes sensor to produce some glitch on i2c bus
-> > > > +	 * and some controllers end up in error state. Recover simply
-> > > > +	 * by placing something on the bus.
-> > > > +	 */
-
-Apologies for that. I talked to the firmware engineer and we'll do our best to
-have it fixed in the next update scheduled for Q1 2019. The cause seems to be
-the pin initialization causing the clock to be pulled down for ca. 2.5us.
-
-> > > > +	ret = sps30_do_cmd(state, SPS30_RESET, NULL, 0);
-> > > > +	if (ret) {
-> > > > +		dev_err(&client->dev, "failed to reset device\n");
-> > > > +		return ret;
-> > > > +	}
-> > > > +	usleep_range(2500000, 3500000);
-> > > > +	sps30_do_cmd(state, SPS30_STOP_MEAS, NULL, 0);  
-> > >
-> > > Talk me through this logic.  We stop it then pretty much immediately
-> > > start it again?  Needs a comment.
-> > >  
-> > 
-> > The idea is to send some message after resetting sensor so that
-> > i2c controller recovers from error state. I decided to send STOP_MEAS
-> > as it's a NOP in this case. I'll try to do more testing with other
-> > SPS30s and perhaps different boards.
-> 
-> Ah.  Makes sense.  Just add a comment to the code saying this and it's
-> fine.
-
-Not to shift the blame, but the recovery is likely controller specific and might
-be better handled at that level. Consider the case where the faulty device is
-present but the driver is not loaded after the initialization..
-
-> 
-> > 
-> > > > +
-> > > > +	ret = sps30_do_cmd(state, SPS30_READ_SERIAL, buf, sizeof(buf));
-> > > > +	if (ret) {
-> > > > +		dev_err(&client->dev, "failed to read serial number\n");
-> > > > +		return ret;
-> > > > +	}
-> > > > +	dev_info(&client->dev, "serial number: %s\n", buf);
-> > > > +
-> > > > +	ret = sps30_do_cmd(state, SPS30_START_MEAS, NULL, 0);
-> > > > +	if (ret) {  
-> > >
-> > > This is not unwound on error.   See comment on remove race below.
-> > >  
-> > > > +		dev_err(&client->dev, "failed to start measurement\n");
-> > > > +		return ret;
-> > > > +	}
-> > > > +
-> > > > +	ret = devm_iio_triggered_buffer_setup(&client->dev, indio_dev, NULL,
-> > > > +					      sps30_trigger_handler, NULL);
-> > > > +	if (ret)
-> > > > +		return ret;
-> > > > +
-> > > > +	return devm_iio_device_register(&client->dev, indio_dev);
-> > > > +}
-> > > > +
-> > > > +static int sps30_remove(struct i2c_client *client)
-> > > > +{
-> > > > +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> > > > +	struct sps30_state *state = iio_priv(indio_dev);
-> > > > +
-> > > > +	sps30_do_cmd(state, SPS30_STOP_MEAS, NULL, 0);  
-> > > This looks like a race to me.
-> > >  
-> > 
-> > Right, this needs fixing.
-> > 
-> > > You turn off the measurements before removing the interface to them.
-> > > It's certainly not in the 'obviously' right category.
-> > >
-> > > As such I would either use a devm action to do this stop,
-> > > or not use the managed interfaces for everything in probe
-> > > after the equivalent start.
-> > > The devm_add_action_or_reset would be the cleanest option I think..
-> > > Will also fix the cleanup on error in probe.
-> > >  
-> > > > +
-> > > > +	return 0;
-> > > > +}
-> > > > +
-> > > > +static const struct i2c_device_id sps30_id[] = {
-> > > > +	{ "sps30" },
-> > > > +	{ }
-> > > > +};
-> > > > +MODULE_DEVICE_TABLE(i2c, sps30_id);
-> > > > +
-> > > > +static const struct of_device_id sps30_of_match[] = {
-> > > > +	{ .compatible = "sensirion,sps30" },
-> > > > +	{ }
-> > > > +};
-> > > > +MODULE_DEVICE_TABLE(of, sps30_of_match);
-> > > > +
-> > > > +static struct i2c_driver sps30_driver = {
-> > > > +	.driver = {
-> > > > +		.name = "sps30",
-> > > > +		.of_match_table = sps30_of_match,
-> > > > +	},
-> > > > +	.id_table = sps30_id,
-> > > > +	.probe_new = sps30_probe,
-> > > > +	.remove = sps30_remove,
-> > > > +};
-> > > > +module_i2c_driver(sps30_driver);
-> > > > +
-> > > > +MODULE_AUTHOR("Tomasz Duszynski <tduszyns@gmail.com>");
-> > > > +MODULE_DESCRIPTION("Sensirion SPS30 particulate matter sensor driver");
-> > > > +MODULE_LICENSE("GPL v2");  
-> > >  
+ drivers/iio/adc/ti_am335x_adc.c      | 5 ++++-
+ drivers/mfd/ti_am335x_tscadc.c       | 5 +++--
+ include/linux/mfd/ti_am335x_tscadc.h | 4 ++++
+ 3 files changed, 11 insertions(+), 3 deletions(-)
+ 
+-- 
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
