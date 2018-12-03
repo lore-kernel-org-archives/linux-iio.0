@@ -2,52 +2,53 @@ Return-Path: <SRS0=fsUv=OM=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 415DFC04EB9
-	for <linux-iio@archiver.kernel.org>; Mon,  3 Dec 2018 08:01:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53A45C04EB9
+	for <linux-iio@archiver.kernel.org>; Mon,  3 Dec 2018 08:01:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id F171E2081C
-	for <linux-iio@archiver.kernel.org>; Mon,  3 Dec 2018 08:01:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1D28B2081C
+	for <linux-iio@archiver.kernel.org>; Mon,  3 Dec 2018 08:01:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="ssV7Cja3"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F171E2081C
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="tvj0wNSd"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1D28B2081C
 Authentication-Results: mail.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=ti.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725858AbeLCIBK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 3 Dec 2018 03:01:10 -0500
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:36854 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725835AbeLCIBK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Dec 2018 03:01:10 -0500
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id wB380fVi062144;
-        Mon, 3 Dec 2018 02:00:41 -0600
+        id S1725927AbeLCIBT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 3 Dec 2018 03:01:19 -0500
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:42692 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725923AbeLCIBS (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Dec 2018 03:01:18 -0500
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id wB380itZ103278;
+        Mon, 3 Dec 2018 02:00:44 -0600
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1543824041;
-        bh=hQerg8EElqPefc6AUnRVPYxGXN5Ylc+pzOo+O3qYHA4=;
-        h=From:To:CC:Subject:Date;
-        b=ssV7Cja351xmLXdfn1EsU8wMOObmWGFV/VBPv6oLMnYb5sSMNAoZwJSrHqkuU6BKx
-         tq/aRnEtC3fwvlBk91APsa3mDR6p8YPxR75x+0NIM5lK8ngVZqJe7VoowL3oAZKETE
-         OaNwW1LH/u/87Nv+KOoJWtoxsONLyzfJKVbwbTpw=
-Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id wB380f3T053242
+        s=ti-com-17Q1; t=1543824044;
+        bh=UAQGemgoN+kqy6WpL1SIf3iBiOQ/DROHcMOufSSlNx0=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=tvj0wNSd3srbQND2rMhPNeDL7TY39DnFYTMdwznL2OdcytdgGsukJ8Vqvorg0Qcz3
+         fXl7VL5Y2058tp0J6g1Dd0UzwVOY9WIknpkWEorhWOuFIh1Ps3dVinpXb+9VIOItah
+         ORhGb75QfMD2OvX+BxBB/zRFay/jdyELJEXzFk98=
+Received: from DLEE110.ent.ti.com (dlee110.ent.ti.com [157.170.170.21])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id wB380ir6119840
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 3 Dec 2018 02:00:41 -0600
-Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
+        Mon, 3 Dec 2018 02:00:44 -0600
+Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1591.10; Mon, 3
- Dec 2018 02:00:40 -0600
-Received: from dlep32.itg.ti.com (157.170.170.100) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_0,
+ Dec 2018 02:00:43 -0600
+Received: from dlep32.itg.ti.com (157.170.170.100) by DLEE102.ent.ti.com
+ (157.170.170.32) with Microsoft SMTP Server (version=TLS1_0,
  cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.1.1591.10 via Frontend Transport;
- Mon, 3 Dec 2018 02:00:41 -0600
+ Mon, 3 Dec 2018 02:00:43 -0600
 Received: from a0132425.india.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by dlep32.itg.ti.com (8.14.3/8.13.8) with ESMTP id wB380bfZ024335;
-        Mon, 3 Dec 2018 02:00:38 -0600
+        by dlep32.itg.ti.com (8.14.3/8.13.8) with ESMTP id wB380bfa024335;
+        Mon, 3 Dec 2018 02:00:41 -0600
 From:   Vignesh R <vigneshr@ti.com>
 To:     Lee Jones <lee.jones@linaro.org>
 CC:     Jonathan Cameron <jic23@kernel.org>,
@@ -56,10 +57,12 @@ CC:     Jonathan Cameron <jic23@kernel.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Vignesh R <vigneshr@ti.com>, <linux-iio@vger.kernel.org>,
         <linux-omap@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 0/2] tscadc: Couple of fixes
-Date:   Mon, 3 Dec 2018 13:31:16 +0530
-Message-ID: <20181203080118.17504-1-vigneshr@ti.com>
+Subject: [PATCH v2 1/2] mfd: ti_am335x_tscadc: Use PLATFORM_DEVID_AUTO while registering mfd cells
+Date:   Mon, 3 Dec 2018 13:31:17 +0530
+Message-ID: <20181203080118.17504-2-vigneshr@ti.com>
 X-Mailer: git-send-email 2.19.2
+In-Reply-To: <20181203080118.17504-1-vigneshr@ti.com>
+References: <20181203080118.17504-1-vigneshr@ti.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -69,20 +72,33 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Couple of fixes for tscadc drivers that I found while adding support for
-new SoC.
+Use PLATFORM_DEVID_AUTO to number mfd cells while registering, so that
+different instances are uniquely identified. This is required in order
+to support registering of multiple instances of same ti_am335x_tscadc IP.
 
+Signed-off-by: Vignesh R <vigneshr@ti.com>
+---
+v2: use PLATFORM_DEVID_AUTO as suggested by Lee Jones
 
-Vignesh R (2):
-  mfd: ti_am335x_tscadc: Use PLATFORM_DEVID_AUTO while registering mfd
-    cells
-  iio: adc: ti_am335x_tscadc: Improve accuracy of measurement
+ drivers/mfd/ti_am335x_tscadc.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
- drivers/iio/adc/ti_am335x_adc.c      | 5 ++++-
- drivers/mfd/ti_am335x_tscadc.c       | 5 +++--
- include/linux/mfd/ti_am335x_tscadc.h | 4 ++++
- 3 files changed, 11 insertions(+), 3 deletions(-)
-
+diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+index c2d47d78705b..fd111296b959 100644
+--- a/drivers/mfd/ti_am335x_tscadc.c
++++ b/drivers/mfd/ti_am335x_tscadc.c
+@@ -264,8 +264,9 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+ 		cell->pdata_size = sizeof(tscadc);
+ 	}
+ 
+-	err = mfd_add_devices(&pdev->dev, pdev->id, tscadc->cells,
+-			tscadc->used_cells, NULL, 0, NULL);
++	err = mfd_add_devices(&pdev->dev, PLATFORM_DEVID_AUTO,
++			      tscadc->cells, tscadc->used_cells, NULL,
++			      0, NULL);
+ 	if (err < 0)
+ 		goto err_disable_clk;
+ 
 -- 
 2.19.2
 
