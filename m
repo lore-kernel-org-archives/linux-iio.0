@@ -2,252 +2,118 @@ Return-Path: <SRS0=EIYT=ON=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DAAEC04EB8
-	for <linux-iio@archiver.kernel.org>; Tue,  4 Dec 2018 12:44:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6FD2C04EB8
+	for <linux-iio@archiver.kernel.org>; Tue,  4 Dec 2018 18:00:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5F59420878
-	for <linux-iio@archiver.kernel.org>; Tue,  4 Dec 2018 12:44:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5F59420878
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTP id 6D6752082F
+	for <linux-iio@archiver.kernel.org>; Tue,  4 Dec 2018 18:00:08 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="qm6WNx/H"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6D6752082F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=ti.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725770AbeLDMoH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 4 Dec 2018 07:44:07 -0500
-Received: from szxga07-in.huawei.com ([45.249.212.35]:40754 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725767AbeLDMoG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 4 Dec 2018 07:44:06 -0500
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 6C3ED26D07797;
-        Tue,  4 Dec 2018 20:44:00 +0800 (CST)
-Received: from localhost (10.202.226.46) by DGGEMS414-HUB.china.huawei.com
- (10.3.19.214) with Microsoft SMTP Server id 14.3.408.0; Tue, 4 Dec 2018
- 20:44:00 +0800
-Date:   Tue, 4 Dec 2018 12:43:50 +0000
-From:   Jonathan Cameron <jonathan.cameron@huawei.com>
-To:     Slawomir Stepien <sst@poczta.fm>
-CC:     Jonathan Cameron <jic23@kernel.org>, <lars@metafoo.de>,
-        <Michael.Hennerich@analog.com>, <knaack.h@gmx.de>,
-        <pmeerw@pmeerw.net>, <linux-iio@vger.kernel.org>,
-        <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 1/3] staging: iio: adc: ad7280a: split
- ad7280_channel_init() to more functions
-Message-ID: <20181204124350.00005fe0@huawei.com>
-In-Reply-To: <20181203200641.GA1330@t480s.localdomain>
-References: <20181202115830.20363-1-sst@poczta.fm>
-        <20181202115830.20363-2-sst@poczta.fm>
-        <20181202154512.5ed31f1f@archlinux>
-        <20181203200641.GA1330@t480s.localdomain>
-Organization: Huawei
-X-Mailer: Claws Mail 3.16.0 (GTK+ 2.24.32; i686-w64-mingw32)
+        id S1726087AbeLDSAI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 4 Dec 2018 13:00:08 -0500
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:37680 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726083AbeLDSAH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 4 Dec 2018 13:00:07 -0500
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id wB4I05lc024478;
+        Tue, 4 Dec 2018 12:00:05 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1543946406;
+        bh=9V25X/s/7z9j5DxzpgBZfsq8q4Yjw8TDD4F1Bwxzkow=;
+        h=From:To:CC:Subject:Date;
+        b=qm6WNx/Hi45VCm6mbRcSSpYIPbLvIwdfcsnjcZtUpSLNKKtKz0ZQz3M/tiU0EFgY/
+         p66s+axNM+2ihN8zCI9CAReYQuWw+MuboqFUaJ4wKsW+GbxXB0lv2E4+YIjEXr0Nb0
+         Q5jEV7Z52PTFQPeTSi32yqp/sVA0jkM+4oBfX9Ow=
+Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id wB4I05Ec008996
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 4 Dec 2018 12:00:05 -0600
+Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1591.10; Tue, 4
+ Dec 2018 12:00:05 -0600
+Received: from dflp33.itg.ti.com (10.64.6.16) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_0,
+ cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.1.1591.10 via Frontend Transport;
+ Tue, 4 Dec 2018 12:00:05 -0600
+Received: from legion.dal.desgin.ti.com (legion.dal.design.ti.com [128.247.22.53])
+        by dflp33.itg.ti.com (8.14.3/8.13.8) with ESMTP id wB4I05ZZ017924;
+        Tue, 4 Dec 2018 12:00:05 -0600
+Received: from localhost (a0272616local-lt.dhcp.ti.com [172.22.101.186])
+        by legion.dal.desgin.ti.com (8.11.7p1+Sun/8.11.7) with ESMTP id wB4I04U27060;
+        Tue, 4 Dec 2018 12:00:04 -0600 (CST)
+From:   Dan Murphy <dmurphy@ti.com>
+To:     <linux-iio@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <jic23@kernel.org>,
+        <robh+dt@kernel.org>, Dan Murphy <dmurphy@ti.com>
+Subject: [PATCH 1/2] iio: ti-ads124s08: Add DT binding documentation
+Date:   Tue, 4 Dec 2018 11:59:54 -0600
+Message-ID: <20181204175955.8259-1-dmurphy@ti.com>
+X-Mailer: git-send-email 2.12.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.46]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 3 Dec 2018 21:06:41 +0100
-Slawomir Stepien <sst@poczta.fm> wrote:
+Adding binding documentation for Texas Instruments ADS124S08
+and ADS124S06 ADC.
 
-> On gru 02, 2018 15:45, Jonathan Cameron wrote:
-> > On Sun,  2 Dec 2018 12:58:28 +0100
-> > Slawomir Stepien <sst@poczta.fm> wrote:
-> >   
-> > > The ad7280_channel_init function has been split into more specific
-> > > functions to increase the code readability.
-> > > 
-> > > Signed-off-by: Slawomir Stepien <sst@poczta.fm>  
-> > Hi Slawomir,  
-> 
-> Hi
-> 
-> > A few comments inline.  I agree with the basic idea, but suggest
-> > a slight different balance in where things are handled.  
-> 
-> Thank you for the review. I agree with the comments, but please see one remark
-> below.
-> 
-> > > ---
-> > >  drivers/staging/iio/adc/ad7280a.c | 119 +++++++++++++++++++-----------
-> > >  1 file changed, 77 insertions(+), 42 deletions(-)
-> > > 
-> > > diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-> > > index 7a0ba26f9fd9..a6b1bdd9f372 100644
-> > > --- a/drivers/staging/iio/adc/ad7280a.c
-> > > +++ b/drivers/staging/iio/adc/ad7280a.c
-> > > @@ -496,6 +496,75 @@ static const struct attribute_group ad7280_attrs_group = {
-> > >  	.attrs = ad7280_attributes,
-> > >  };
-> > >  
-> > > +static void ad7280_voltage_channel_init(struct ad7280_state *st, int cnt,
-> > > +					int dev, int ch)
-> > > +{
-> > > +	struct iio_chan_spec *chan = &st->channels[cnt];  
-> > 
-> > Pass the chan spec in here instead of the _state structure.
-> > It will give cleaner code and better visibility on the scope of
-> > this function where it is called.
-> >   
-> > > +
-> > > +	chan->type = IIO_VOLTAGE;
-> > > +	chan->differential = 1;
-> > > +	chan->channel = (dev * 6) + ch;  
-> > 
-> > This offset does seem more than a little random buried away in this function.
-> > I would pass it in explicitly as a parameter so that the we have all the
-> > channel number manipulations visible in one place.
-> >   
-> > > +	chan->channel2 = chan->channel + 1;
-> > > +}
-> > > +
-> > > +static void ad7280_temp_channel_init(struct ad7280_state *st, int cnt, int dev,
-> > > +				     int ch)
-> > > +{
-> > > +	struct iio_chan_spec *chan = &st->channels[cnt];
-> > > +
-> > > +	chan->type = IIO_TEMP;
-> > > +	chan->channel = (dev * 6) + ch - 6;  
-> > This one is even more obscure when found in here. Pass it in as an additional parameter.  
-> > > +}
-> > > +
-> > > +static void ad7280_common_fields_init(struct ad7280_state *st, int cnt, int dev,
-> > > +				      int ch)  
-> > 
-> > It's not really the common fields given the voltage version is different.
-> > Perhaps there is a better name for this function?  
-> 
-> I don't understand. The fields of the chan in this function are set to the same
-> values for volt and temp channels (this function is called at the end of the
-> for loop regardless of the AD type of the channel). I do not see how the voltage
-> version is different.
+S08 is a 12 channel ADC
+S06 is a 6 channel ADC
 
-It's the all voltage one that is different.  My mistake.
+Datesheet can be found here:
+http://www.ti.com/lit/gpn/ads124s08
 
-> 
-> > > +{
-> > > +	struct iio_chan_spec *chan = &st->channels[cnt];
-> > > +
-> > > +	chan->indexed = 1;
-> > > +	chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
-> > > +	chan->info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE);
-> > > +	chan->address = ad7280a_devaddr(dev) << 8 | ch;
-> > > +	chan->scan_index = cnt;
-> > > +	chan->scan_type.sign = 'u';
-> > > +	chan->scan_type.realbits = 12;
-> > > +	chan->scan_type.storagebits = 32;
-> > > +	chan->scan_type.shift = 0;  
-> > 
-> > I doubt there is any need to set shift and 0 is the obvious default
-> > so no 'documentation' benefit in doing it here.
-> >   
-> > > +}
-> > > +
-> > > +static void ad7280_all_voltage_channel_init(struct ad7280_state *st, int cnt,
-> > > +					    int dev)  
-> > Total voltage perhaps rather than 'all'?   
-> > > +{
-> > > +	struct iio_chan_spec *chan = &st->channels[cnt];
-> > > +
-> > > +	chan->type = IIO_VOLTAGE;
-> > > +	chan->differential = 1;
-> > > +	chan->channel = 0;
-> > > +	chan->channel2 = dev * 6;
-> > > +	chan->address = AD7280A_ALL_CELLS;
-> > > +	chan->indexed = 1;
-> > > +	chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
-> > > +	chan->info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE);
-> > > +	chan->scan_index = cnt;
-> > > +	chan->scan_type.sign = 'u';
-> > > +	chan->scan_type.realbits = 32;
-> > > +	chan->scan_type.storagebits = 32;
-> > > +	chan->scan_type.shift = 0;
-> > > +}
-> > > +
-> > > +static void ad7280_timestamp_channel_init(struct ad7280_state *st, int cnt)
-> > > +{
-> > > +	struct iio_chan_spec *chan = &st->channels[cnt];
-> > > +
-> > > +	chan->type = IIO_TIMESTAMP;
-> > > +	chan->channel = -1;
-> > > +	chan->scan_index = cnt;
-> > > +	chan->scan_type.sign = 's';
-> > > +	chan->scan_type.realbits = 64;
-> > > +	chan->scan_type.storagebits = 64;
-> > > +	chan->scan_type.shift = 0;
-> > > +}
-> > > +
-> > >  static int ad7280_channel_init(struct ad7280_state *st)
-> > >  {
-> > >  	int dev, ch, cnt;
-> > > @@ -508,51 +577,17 @@ static int ad7280_channel_init(struct ad7280_state *st)
-> > >  	for (dev = 0, cnt = 0; dev <= st->slave_num; dev++)
-> > >  		for (ch = AD7280A_CELL_VOLTAGE_1; ch <= AD7280A_AUX_ADC_6;
-> > >  			ch++, cnt++) {
-> > > -			if (ch < AD7280A_AUX_ADC_1) {
-> > > -				st->channels[cnt].type = IIO_VOLTAGE;
-> > > -				st->channels[cnt].differential = 1;
-> > > -				st->channels[cnt].channel = (dev * 6) + ch;
-> > > -				st->channels[cnt].channel2 =
-> > > -					st->channels[cnt].channel + 1;
-> > > -			} else {
-> > > -				st->channels[cnt].type = IIO_TEMP;
-> > > -				st->channels[cnt].channel = (dev * 6) + ch - 6;
-> > > -			}
-> > > -			st->channels[cnt].indexed = 1;
-> > > -			st->channels[cnt].info_mask_separate =
-> > > -				BIT(IIO_CHAN_INFO_RAW);
-> > > -			st->channels[cnt].info_mask_shared_by_type =
-> > > -				BIT(IIO_CHAN_INFO_SCALE);
-> > > -			st->channels[cnt].address =
-> > > -				ad7280a_devaddr(dev) << 8 | ch;
-> > > -			st->channels[cnt].scan_index = cnt;
-> > > -			st->channels[cnt].scan_type.sign = 'u';
-> > > -			st->channels[cnt].scan_type.realbits = 12;
-> > > -			st->channels[cnt].scan_type.storagebits = 32;
-> > > -			st->channels[cnt].scan_type.shift = 0;
-> > > +			if (ch < AD7280A_AUX_ADC_1)
-> > > +				ad7280_voltage_channel_init(st, cnt, dev, ch);
-> > > +			else
-> > > +				ad7280_temp_channel_init(st, cnt, dev, ch);
-> > > +
-> > > +			ad7280_common_fields_init(st, cnt, dev, ch);
-> > >  		}
-> > >  
-> > > -	st->channels[cnt].type = IIO_VOLTAGE;
-> > > -	st->channels[cnt].differential = 1;
-> > > -	st->channels[cnt].channel = 0;
-> > > -	st->channels[cnt].channel2 = dev * 6;
-> > > -	st->channels[cnt].address = AD7280A_ALL_CELLS;
-> > > -	st->channels[cnt].indexed = 1;
-> > > -	st->channels[cnt].info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
-> > > -	st->channels[cnt].info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE);
-> > > -	st->channels[cnt].scan_index = cnt;
-> > > -	st->channels[cnt].scan_type.sign = 'u';
-> > > -	st->channels[cnt].scan_type.realbits = 32;
-> > > -	st->channels[cnt].scan_type.storagebits = 32;
-> > > -	st->channels[cnt].scan_type.shift = 0;
-> > > +	ad7280_all_voltage_channel_init(st, cnt, dev);
-> > >  	cnt++;
-> > > -	st->channels[cnt].type = IIO_TIMESTAMP;
-> > > -	st->channels[cnt].channel = -1;
-> > > -	st->channels[cnt].scan_index = cnt;
-> > > -	st->channels[cnt].scan_type.sign = 's';
-> > > -	st->channels[cnt].scan_type.realbits = 64;
-> > > -	st->channels[cnt].scan_type.storagebits = 64;
-> > > -	st->channels[cnt].scan_type.shift = 0;
-> > > +	ad7280_timestamp_channel_init(st, cnt);
-> > >  
-> > >  	return cnt + 1;
-> > >  }  
-> >   
-> 
+Signed-off-by: Dan Murphy <dmurphy@ti.com>
+---
+ .../bindings/iio/adc/ti-ads124s08.txt         | 25 +++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-ads124s08.txt
 
+diff --git a/Documentation/devicetree/bindings/iio/adc/ti-ads124s08.txt b/Documentation/devicetree/bindings/iio/adc/ti-ads124s08.txt
+new file mode 100644
+index 000000000000..41ab67379ee1
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/ti-ads124s08.txt
+@@ -0,0 +1,25 @@
++* Texas Instruments' ads124s08 and ads124s06 ADC chip
++
++Required properties:
++ - compatible: Should be "ti,ads124s08" or "ti,ads124s06"
++ - reg: spi chip select number for the device
++
++Recommended properties:
++ - spi-max-frequency: Definition as per
++		Documentation/devicetree/bindings/spi/spi-bus.txt
++ - spi-cpha: Definition as per
++		Documentation/devicetree/bindings/spi/spi-bus.txt
++
++Optional properties:
++ - vref-supply: The regulator supply for ADC reference voltage
++ - reset-gpios: GPIO pin used to reset the device.
++
++Example:
++adc@0 {
++	compatible = "ti,ads8688";
++	reg = <0>;
++	vref-supply = <&vdd_supply>;
++	spi-max-frequency = <1000000>;
++	spi-cpha;
++	reset-gpios = <&gpio1 16 GPIO_ACTIVE_LOW>;
++};
+-- 
+2.20.0.rc1.10.g7068cbc4ab
 
