@@ -2,103 +2,130 @@ Return-Path: <SRS0=tm1T=OO=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B728DC04EB8
-	for <linux-iio@archiver.kernel.org>; Wed,  5 Dec 2018 01:49:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7103CC04EBF
+	for <linux-iio@archiver.kernel.org>; Wed,  5 Dec 2018 10:01:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7A8E62082B
-	for <linux-iio@archiver.kernel.org>; Wed,  5 Dec 2018 01:49:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 36FD020989
+	for <linux-iio@archiver.kernel.org>; Wed,  5 Dec 2018 10:01:51 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JKCYG3gY"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7A8E62082B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="GGTW8VOY"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 36FD020989
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725864AbeLEBtc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 4 Dec 2018 20:49:32 -0500
-Received: from mail-it1-f196.google.com ([209.85.166.196]:32851 "EHLO
-        mail-it1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725834AbeLEBtc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 4 Dec 2018 20:49:32 -0500
-Received: by mail-it1-f196.google.com with SMTP id m8so12884244itk.0;
-        Tue, 04 Dec 2018 17:49:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2lh/8f/pnGj9DsItEKtdeExqEW4yKIG/NAVPJWqQXwo=;
-        b=JKCYG3gY0+bgAkBaxd8v/5YlWd4nxjjXTrhsOcopfqcDX8bRT65vYWWVbrC1RfykPe
-         Y1y35SP2y7zyIbwaH/k1JsmyQ924MwJRRiPCwfz0il18suFiZd+Zke3HcPZnoANrz9ud
-         nVmEozSupCiVM5nqw2bQ51uLMfGRClmSjlwQXdu9A8dA25FZILtszsaSO+XJ1OBMZNBk
-         TAYFrlKaU+k5ZWV8megIHgzDymKtJqOpVqWrN9k98DKuLGDnRsQBGjaPp13J7FHNJm7i
-         RdI6/oJg9njFcHmWiPV0vrEZ6uhhEDVSfIvN5R8u34qyBuQicDu+bVouacNd2bX5YZKp
-         te3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2lh/8f/pnGj9DsItEKtdeExqEW4yKIG/NAVPJWqQXwo=;
-        b=Ciu1uHq/SvOPbVhSOiUAho+IcJ+DinhT9zuvNmTBq96M3IWRkxGvy5gZPocEab8FFK
-         XjDxb9IaSkuC3ZalxLQtCmcIUP+7xGCQolt1vjGGOGSThELtqJPl1dCz43Dh8cUPlDSi
-         EPgxmF6g1hbSRT9LO5FwK/2OSNwGnuFjJ27Z+ng3lnENu6QtqAvThb3Q9PePxEoXgCLv
-         2NywtR9iEWVEu6nRyzc7MXZ6HnfQc/kD+rWD4pzjhFNyOyPjedezCfBUDw8Fendl/nuJ
-         Fe6D0CkdApgeqGr5pPCPVikYDR/PGe85hD++0r42zJA+g+rFSI0C+hSim1kpXt3tx8M4
-         MkdA==
-X-Gm-Message-State: AA+aEWb7U9bhIU1Rlbygs68MtH1jykC3/fnlaGUroPx9lQf/b9tj7FPK
-        eTHcIl69JIJOes2FztiPaV0=
-X-Google-Smtp-Source: AFSGD/VFLK0I8bxpxQ6RZbJsMjFOcfclt/Sf4j9cypAJzgoM902vkfZPJEtgQjtHMCrZ1UYaIJFCtg==
-X-Received: by 2002:a02:bb9a:: with SMTP id g26mr20338004jan.44.1543974571181;
-        Tue, 04 Dec 2018 17:49:31 -0800 (PST)
-Received: from r2700x.localdomain (c-75-70-96-103.hsd1.co.comcast.net. [75.70.96.103])
-        by smtp.gmail.com with ESMTPSA id l11sm7552412iob.24.2018.12.04.17.49.29
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 04 Dec 2018 17:49:30 -0800 (PST)
-From:   Jeremy Fertic <jeremyfertic@gmail.com>
-To:     jic23@kernel.org, linux-iio@vger.kernel.org
-Cc:     lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        Jeremy Fertic <jeremyfertic@gmail.com>
-Subject: [PATCH] Revert "Staging: iio: adt7316: Add an extra check for 'ret' equals to 0"
-Date:   Tue,  4 Dec 2018 18:49:00 -0700
-Message-Id: <20181205014900.4827-1-jeremyfertic@gmail.com>
-X-Mailer: git-send-email 2.19.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1727866AbeLEJsz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 5 Dec 2018 04:48:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54938 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727337AbeLEJsy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 5 Dec 2018 04:48:54 -0500
+Received: from sasha-vm.mshome.net (unknown [213.57.143.11])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B4AB32087F;
+        Wed,  5 Dec 2018 09:48:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1544003333;
+        bh=vZPSzNYPMiOhOKC4E6xYUZ0lqyp+YSxDWyBqB4W23Yg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GGTW8VOYAtDSfExYklj3+NbuzrKL1kC7qKRheCisJQvvh5ysPGV5elIE7s6SnK6ns
+         QAxngEbXw82KeCzZYTcS5knJPHEr1a6I5CP5OsxLcRIQvT+PjlBV7jluZtnBnIOqrq
+         NqCjIM76pUEn7v/GxFv2c1U5pknm6XGVrgLhh86c=
+From:   Sasha Levin <sashal@kernel.org>
+To:     stable@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Martin Kelly <martin@martingkelly.com>, Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 02/45] iio:st_magn: Fix enable device after trigger
+Date:   Wed,  5 Dec 2018 04:46:23 -0500
+Message-Id: <20181205094706.7225-2-sashal@kernel.org>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20181205094706.7225-1-sashal@kernel.org>
+References: <20181205094706.7225-1-sashal@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This reverts commit 00426e99789357dbff7e719a092ce36a3ce49d94.
+From: Martin Kelly <martin@martingkelly.com>
 
-i2c_smbus_read_byte() returns 0 when a byte with the value 0 is read from
-the device. This is a valid read so revert the check for 0.
+[ Upstream commit fe5192ac81ad0d4dfe1395d11f393f0513c15f7f ]
 
-Signed-off-by: Jeremy Fertic <jeremyfertic@gmail.com>
+Currently, we enable the device before we enable the device trigger. At
+high frequencies, this can cause interrupts that don't yet have a poll
+function associated with them and are thus treated as spurious. At high
+frequencies with level interrupts, this can even cause an interrupt storm
+of repeated spurious interrupts (~100,000 on my Beagleboard with the
+LSM9DS1 magnetometer). If these repeat too much, the interrupt will get
+disabled and the device will stop functioning.
+
+To prevent these problems, enable the device prior to enabling the device
+trigger, and disable the divec prior to disabling the trigger. This means
+there's no window of time during which the device creates interrupts but we
+have no trigger to answer them.
+
+Fixes: 90efe055629 ("iio: st_sensors: harden interrupt handling")
+Signed-off-by: Martin Kelly <martin@martingkelly.com>
+Tested-by: Denis Ciocca <denis.ciocca@st.com>
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/iio/addac/adt7316-i2c.c | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/iio/magnetometer/st_magn_buffer.c | 12 +++---------
+ 1 file changed, 3 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/staging/iio/addac/adt7316-i2c.c b/drivers/staging/iio/addac/adt7316-i2c.c
-index ac91163656b5..2d51bd425662 100644
---- a/drivers/staging/iio/addac/adt7316-i2c.c
-+++ b/drivers/staging/iio/addac/adt7316-i2c.c
-@@ -30,10 +30,6 @@ static int adt7316_i2c_read(void *client, u8 reg, u8 *data)
- 	}
+diff --git a/drivers/iio/magnetometer/st_magn_buffer.c b/drivers/iio/magnetometer/st_magn_buffer.c
+index 0a9e8fadfa9d..37ab30566464 100644
+--- a/drivers/iio/magnetometer/st_magn_buffer.c
++++ b/drivers/iio/magnetometer/st_magn_buffer.c
+@@ -30,11 +30,6 @@ int st_magn_trig_set_state(struct iio_trigger *trig, bool state)
+ 	return st_sensors_set_dataready_irq(indio_dev, state);
+ }
  
- 	ret = i2c_smbus_read_byte(client);
+-static int st_magn_buffer_preenable(struct iio_dev *indio_dev)
+-{
+-	return st_sensors_set_enable(indio_dev, true);
+-}
 -
--	if (!ret)
--		return -EIO;
--
- 	if (ret < 0) {
- 		dev_err(&cl->dev, "I2C read error\n");
- 		return ret;
+ static int st_magn_buffer_postenable(struct iio_dev *indio_dev)
+ {
+ 	int err;
+@@ -50,7 +45,7 @@ static int st_magn_buffer_postenable(struct iio_dev *indio_dev)
+ 	if (err < 0)
+ 		goto st_magn_buffer_postenable_error;
+ 
+-	return err;
++	return st_sensors_set_enable(indio_dev, true);
+ 
+ st_magn_buffer_postenable_error:
+ 	kfree(mdata->buffer_data);
+@@ -63,11 +58,11 @@ static int st_magn_buffer_predisable(struct iio_dev *indio_dev)
+ 	int err;
+ 	struct st_sensor_data *mdata = iio_priv(indio_dev);
+ 
+-	err = iio_triggered_buffer_predisable(indio_dev);
++	err = st_sensors_set_enable(indio_dev, false);
+ 	if (err < 0)
+ 		goto st_magn_buffer_predisable_error;
+ 
+-	err = st_sensors_set_enable(indio_dev, false);
++	err = iio_triggered_buffer_predisable(indio_dev);
+ 
+ st_magn_buffer_predisable_error:
+ 	kfree(mdata->buffer_data);
+@@ -75,7 +70,6 @@ static int st_magn_buffer_predisable(struct iio_dev *indio_dev)
+ }
+ 
+ static const struct iio_buffer_setup_ops st_magn_buffer_setup_ops = {
+-	.preenable = &st_magn_buffer_preenable,
+ 	.postenable = &st_magn_buffer_postenable,
+ 	.predisable = &st_magn_buffer_predisable,
+ };
 -- 
-2.19.1
+2.17.1
 
