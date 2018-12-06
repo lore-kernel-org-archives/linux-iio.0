@@ -4,284 +4,149 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
 	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 952D4C04EB8
-	for <linux-iio@archiver.kernel.org>; Thu,  6 Dec 2018 13:38:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5D23C04EB8
+	for <linux-iio@archiver.kernel.org>; Thu,  6 Dec 2018 13:53:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3145D20878
-	for <linux-iio@archiver.kernel.org>; Thu,  6 Dec 2018 13:38:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5462620672
+	for <linux-iio@archiver.kernel.org>; Thu,  6 Dec 2018 13:53:29 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="m03G2K0k"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3145D20878
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="uPR4pFas"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5462620672
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=analog.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727685AbeLFNip (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 6 Dec 2018 08:38:45 -0500
-Received: from mail-eopbgr710065.outbound.protection.outlook.com ([40.107.71.65]:46720
-        "EHLO NAM05-BY2-obe.outbound.protection.outlook.com"
+        id S1727737AbeLFNx2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 6 Dec 2018 08:53:28 -0500
+Received: from mail-eopbgr770083.outbound.protection.outlook.com ([40.107.77.83]:13292
+        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727704AbeLFNip (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 6 Dec 2018 08:38:45 -0500
+        id S1727685AbeLFNx2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 6 Dec 2018 08:53:28 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=analog.onmicrosoft.com; s=selector1-analog-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3nmJeZCSQ30hmEDeE5BlneD7y6oJs6tWIk726jgwzmY=;
- b=m03G2K0k0tbCPtpVhGy7s+ChzoHxDhkbs1DYgLUBdjAzUMdrbPbrfD1ljWfgTVREG1mWepKO7Q1kE4kCWN/vuMEwE/aF7DOr8WwG2ZyYjDq8SvjGPPAIue8PoPITO21M6dRfmAtbDScAFDSY2tEvkCjOcIZhyXHqryq4qFVEH3Y=
-Received: from BN6PR03CA0094.namprd03.prod.outlook.com (2603:10b6:405:6f::32)
- by BL2PR03MB546.namprd03.prod.outlook.com (2a01:111:e400:c24::24) with
+ bh=rkz+hqPm0OYx+KmjXSZw+Uh205t1zVXLn34PhJtSTw8=;
+ b=uPR4pFasGqoqJNRhUBiiC7j4FfSt6n7xk6rK/iB4vIsincREpIqOEgACsSJXkAgTYpRqQ7gpkhKGaoprLJ9C3LApSgBfXbvXxneIdDb2E5hjY+LSHt+eysFr+wrB2hVCh3jf4DAdc8kQ8U+Niao9GNIQ0rUeGqmzwQ0WbUnfOsQ=
+Received: from CY4PR03CA0090.namprd03.prod.outlook.com (2603:10b6:910:4d::31)
+ by CO2PR03MB2262.namprd03.prod.outlook.com (2603:10b6:102:a::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1404.20; Thu, 6 Dec
- 2018 13:38:41 +0000
-Received: from BY2FFO11FD008.protection.gbl (2a01:111:f400:7c0c::129) by
- BN6PR03CA0094.outlook.office365.com (2603:10b6:405:6f::32) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.1404.19 via Frontend Transport; Thu, 6 Dec 2018 13:38:41 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1404.19; Thu, 6 Dec
+ 2018 13:53:24 +0000
+Received: from BN1BFFO11FD026.protection.gbl (2a01:111:f400:7c10::1:113) by
+ CY4PR03CA0090.outlook.office365.com (2603:10b6:910:4d::31) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1404.19 via Frontend Transport; Thu, 6 Dec 2018 13:53:24 +0000
+Authentication-Results: spf=pass (sender IP is 137.71.25.57)
+ smtp.mailfrom=analog.com; gmx.de; dkim=none (message not signed)
+ header.d=none;gmx.de; dmarc=bestguesspass action=none header.from=analog.com;
 Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
- 137.71.25.55 as permitted sender) receiver=protection.outlook.com;
- client-ip=137.71.25.55; helo=nwd2mta1.analog.com;
-Received: from nwd2mta1.analog.com (137.71.25.55) by
- BY2FFO11FD008.mail.protection.outlook.com (10.1.14.159) with Microsoft SMTP
+ 137.71.25.57 as permitted sender) receiver=protection.outlook.com;
+ client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
+Received: from nwd2mta2.analog.com (137.71.25.57) by
+ BN1BFFO11FD026.mail.protection.outlook.com (10.58.144.89) with Microsoft SMTP
  Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.1404.13
- via Frontend Transport; Thu, 6 Dec 2018 13:38:40 +0000
+ via Frontend Transport; Thu, 6 Dec 2018 13:53:23 +0000
 Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
-        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id wB6Dcdwg022544
+        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id wB6DrNnv008207
         (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
-        Thu, 6 Dec 2018 05:38:39 -0800
+        Thu, 6 Dec 2018 05:53:23 -0800
 Received: from mircea-Latitude-E6540.analog.com (10.50.1.101) by
  NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
- 14.3.408.0; Thu, 6 Dec 2018 08:38:39 -0500
+ 14.3.408.0; Thu, 6 Dec 2018 08:53:23 -0500
 From:   Mircea Caprioru <mircea.caprioru@analog.com>
 To:     <jic23@kernel.org>
 CC:     <Michael.Hennerich@analog.com>, <knaack.h@gmx.de>,
         <lars@metafoo.de>, <pmeerw@pmeerw.net>,
         <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
         <linux-iio@vger.kernel.org>, <devel@driverdev.osuosl.org>,
-        Stefan Popa <stefan.popa@analog.com>,
-        "Mircea Caprioru" <mircea.caprioru@analog.com>
-Subject: [PATCH] iio:dac:ad5686: Add AD5310R support
-Date:   Thu, 6 Dec 2018 15:38:30 +0200
-Message-ID: <20181206133830.20488-1-mircea.caprioru@analog.com>
+        Mircea Caprioru <mircea.caprioru@analog.com>
+Subject: [PATCH] iio: dac: ad5686: fix bit shift read register
+Date:   Thu, 6 Dec 2018 15:53:15 +0200
+Message-ID: <20181206135315.22805-1-mircea.caprioru@analog.com>
 X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
 Content-Type: text/plain
 X-ADIRoutedOnPrem: True
 X-EOPAttributedMessage: 0
 X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(346002)(396003)(376002)(39860400002)(136003)(2980300002)(189003)(199004)(2906002)(246002)(6306002)(14444005)(478600001)(53416004)(7696005)(72206003)(86362001)(8676002)(6346003)(106466001)(26005)(107886003)(2351001)(77096007)(5660300001)(186003)(7636002)(47776003)(316002)(54906003)(1076002)(966005)(4326008)(50466002)(44832011)(6916009)(51416003)(305945005)(486006)(48376002)(6666004)(356004)(426003)(16586007)(50226002)(2616005)(8936002)(36756003)(336012)(106002)(476003)(126002);DIR:OUT;SFP:1101;SCL:1;SRVR:BL2PR03MB546;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;MX:1;A:1;
-X-Microsoft-Exchange-Diagnostics: 1;BY2FFO11FD008;1:BI31W0+2MwA3cBCxl+Z8p3HxX9aobB+Or2RLmLPr5mIbpC3mccTsEPj7aUBlc2REEDxsZH4qKiohRkulnm8sTbAifn0rGYpODDO15QJDyWG/ndK+e00teGzHTKZ/p0YQ
+X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(376002)(346002)(39860400002)(136003)(396003)(2980300002)(199004)(189003)(53416004)(8676002)(106002)(8936002)(356004)(486006)(86362001)(6666004)(2351001)(106466001)(44832011)(50226002)(5660300001)(305945005)(77096007)(476003)(478600001)(26005)(186003)(2616005)(107886003)(4326008)(336012)(426003)(72206003)(50466002)(126002)(7636002)(2906002)(36756003)(6916009)(246002)(1076002)(16586007)(48376002)(7696005)(316002)(14444005)(47776003)(51416003)(54906003);DIR:OUT;SFP:1101;SCL:1;SRVR:CO2PR03MB2262;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;A:1;MX:1;
+X-Microsoft-Exchange-Diagnostics: 1;BN1BFFO11FD026;1:c1EkH5RdxqfJe5+7s6gmAjIitU1Umd9wSKlxL2IqWpda7QSbInyqTX07kTaiHkgyM/p6xTkOPYIoeAgHX0jeqIXYk1vxAFjbeosp0rmu3ltCxjc7AKlIptbHbJ/9aZ7Y
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9bf7846a-75e8-4373-dddf-08d65b802252
-X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390098)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600074)(711020)(4608076)(2017052603328)(7153060);SRVR:BL2PR03MB546;
-X-Microsoft-Exchange-Diagnostics: 1;BL2PR03MB546;3:IYAyZWPv43qUaS0wUC5N9GyMMgTciMZ+knjubr/EuHY/czfbxtfVn1gult1XKA2wQJW8oSC3ynjih2fGOTRVcr0bUpFQxG+KcQoVH+JuOiLl9bI7sANHogC8piUF1R6WkF0GnYV0B6GcnfqXE5pLA/KBUaScEXnaG0EdDuqKFhyYTTxOqeEu47ILFDbPWzlZZ3SRD1wx7A68XtJluvWGj8tNxbqtLTd7Ig9rPBTODj4pPMDuztwb/hygbR07J8NPw8nurzpjv+wWnEVmXe96vD7G/4WWVv0tL7ubtGqmxEa6tElUaiXeDLDtakbXnqQX0zRQcFN3Nzh1gzDF/LXSiW3uzZjZB+K6pYMX4Ns0nEk=;25:PchtyjiJHlq3oXX2rAxxz0QT3pKZ6Y5lU7IemspDGokVFe6vkMXK0qOPlXcRYFlbZYOWFMmlYKBSFqPkHuAX8j6EeFvSXmBI/3eg9fPXThyWiEzuc2Kk437GbwiMn/tqhCUFK/UujkmTHuNp5DyfF9Z4Ho5SZqlfTEywQ86UDR9ZBSmY1d8/LazcKiwjNceHgmuBwKwOzWB3cwa39ZzpkRFharNiXdxuFZdGCODWpE4lS6eWLLgYOA6KUSHoBFV0xeZwEaX79iea4uRuU9zhbJJQY6Wa2aoq7cx81efkT0pe5V5JgmF255MU6eCmcC1JpmrrFM5650yV95lEz42Ttg==
-X-MS-TrafficTypeDiagnostic: BL2PR03MB546:
-X-Microsoft-Exchange-Diagnostics: 1;BL2PR03MB546;31:tu4ZyfpI7asAHKflVO4njW2qCTgku5CpLQvCjB3GIGVAFgJY5EOwPHa4kuqbyqiBUBvMTGDv/UQdd6BtTN+oStsde0qG+14CMkNSdms73YWtkO+k1/vGsVg9Vi4/aiy9FJS/NRKJrwuujn+Ihp3/puZBv9GHwy/ZegLRVuIFVy6lqov1knASU6p+bhVe77Woaag2NCJLDdXYua+04KVMrSW7wqboYaDB98ukWh8CBbU=;20:RkFpss/9iUAim623H5/G6X94RH0PlfebXr2jVW4RH6Zh+zwXDUv2EWRO9Go8x768bJhdvBUzSptHmKcbOl7PLlyW1PKU6r/dFJotmyKvkbabG4bxncNNmTRKGVQAFKrrSjcNlB2e9IpUNSxWMJWe9m0lgdQGKODK3DIiogKTZV4GUa/3xoQ3MuPQM11nqCQpda8h7uMlgyuHrm/0UAuD9VerIDLbMwSdVl15Ifj62YNqcxTFz7Jw6NG61H2seUfsZu1UQfLPc3dNMREPluQOfau73kA92lrUdmnTdDe/zVCC4aCOAj5/FBCf4MkkVm2HHcIGungtWtDpzdppr+AkvO/3pTw9/YGMxs9Ci92TgGSYYMG0yzpvFS/tLZRU44KC5h5ZjMbOkGXLKB7Wy222L6cfZp1pbOAdPs7RTO1y730b2sHf5mZFfDXYENRFY6QRlpyczbjVSPRhNE5BSNoRzokozDE4p8cor8T1j3A+UCsjdk8SM1YTzmFewtSY/YxY
-X-Microsoft-Antispam-PRVS: <BL2PR03MB546EE72C011430469DA35A381A90@BL2PR03MB546.namprd03.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: cc6ff826-1f81-4df7-6a59-08d65b8230ba
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390098)(7020095)(4652040)(8989299)(5600074)(711020)(4608076)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7153060);SRVR:CO2PR03MB2262;
+X-Microsoft-Exchange-Diagnostics: 1;CO2PR03MB2262;3:KLz+Vw4YGjDNl7frr+irZLeeKTDBDo68OL0wzRQbMFPi+JkS6z8rRhlNuqv8LeKGnP6O6DMfcZv7ss9Hx6CfJKiDOEebFXiXIdV7Zr0N/LV/wTG3n7nF9sJHJaDrK337zODFJCmP2eEDFSzEihBvwjI52KQILwGiGW6gjrFnmWoicoOEw2dFfiZt6Ywak8kYz7UyN1YX7p/1I/2OUuNad6U2hY/1g3DbC11aLnxnExhZKCXhfVZYy96t5WfJttH5JZxAoBSvLa4QCqFEf0kXn2GIOrvJ/hwD8xFc4FuSVl3DVDNoUtiidEQo8QVvCcaBg9TTwzxBDgedllxh/8jKIWxWu02NnasrqP820+kjx0U=;25:w6oxiGWenp09ZxkAOMWnOGUE/kA4Eak7FKkDif/7USZAj/sRKi+81eDC8qT7wd9hcjFxUtHD6j6MxwxpU2WDznoIyr1YPKj/NXRzVTWJFrpzYmmmUyh45mZ0oH/XhD0GD/QEc9AJffKP2r0Wqo0vGjuWox0/5sd3PEEwaQznQpTnkvYC6uME/0hKAqQkVmGEOVUHmIILzHMEDJ97a0UEMp/QaxhyCgfc5G8nPBPVol/aEFur1j+65+9JwcTCxl7DjD5vbTLqump/394UbX/6dTxxuNCypFDVv4oYgNIcBRd5t1HYYvytnaLDQx6/PzLNTbvS3LTrqwICm8mYunG0Aw==
+X-MS-TrafficTypeDiagnostic: CO2PR03MB2262:
+X-Microsoft-Exchange-Diagnostics: 1;CO2PR03MB2262;31:ISG4pmuRVzZ8X1OVDxQ+Eih9bjIRQRCdjaCUKdByV9xOORLqWZv6BYPKLEDkQxlnNNMLJNjXq01YvP9JODauqIQX/iNmYzjJiHyhtIOplMzw2cIMZcig87iKxw4higoHPC6Wm6pk9Yo/n77MtlwwZgnB8szNMX0VJbNBRvMArPJgY+eh8e01AynZFMVJHPrleXVrd0jLt8gGSvU6UT2SXVQ5Zg9EuJHfCIf/QKNmTGM=;20:NQoNuoNSAOSPLA7L7GrtaNzA+9tlgXa/9pfQzARU0bn4DvktINcsDq83ddVLdjXDXDU0PCBVXZXrTM0Jwz2uU1uYh5E5ZA4qnN3ZsPuk+qnedcTyYNmGkrZMDvKjbVh9/NBtBWfgqgrmjnXTF7qnFxqpKy662Fgu7D4V9jYJF55rwLJYTnrYJonvZzzn4rBH+v/WvvsmDlX8Hv0j76UXVYKJ2PoezCmmb5Z66wY3aSFlGYvEM+aQ+AX1/fVPHI9ljyKQEi6QUCabGikEctob++pCIEb0RYrEG0kZw1qRHkagFOq9qG20me/NcYBaEeJ78jXOpP9awWnFmPXRQJqJRujqG4bo8gmSSFRcjsANvzORCxrm8Xmgrg9Bp1ZNm6RwpvIEOP24v5JmZSTEwmhSsNsdYIfvZCGKnrz+Pb3zNu/iA1/WnqV1bZPHHSrV3DyG/xDUQKrEMKfzzPrGBH0TAxSTkihQUd+GaKFzR0jkBCMl+Q60hM3DGdU5iLHtZgcq
+X-Microsoft-Antispam-PRVS: <CO2PR03MB2262872BB2003470BBDC14C281A90@CO2PR03MB2262.namprd03.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
-X-Exchange-Antispam-Report-CFA-Test: BCL:0;PCL:0;RULEID:(8211001083)(6040522)(2401047)(5005006)(8121501046)(3231455)(999002)(944501520)(4982022)(52105112)(93006095)(93004095)(3002001)(10201501046)(6055026)(148016)(149066)(150057)(6041310)(20161123564045)(20161123560045)(20161123558120)(20161123562045)(201703131423095)(201702281528075)(20161123555045)(201703061421075)(201703061406153)(201708071742011)(7699051)(76991095);SRVR:BL2PR03MB546;BCL:0;PCL:0;RULEID:;SRVR:BL2PR03MB546;
-X-Microsoft-Exchange-Diagnostics: 1;BL2PR03MB546;4:gz4gDGMgYla5uHO/p7HCrT24zTQe9fApoEcpAcAeRbtx+JPuBKRp33KWJ8LCWjacXXbPyCJw2JnRnwpIB/TUnk6pEPx/0uy+ZX9PBBIOvDTKNguamWBPewNT0nLbEuVR+hKz6FJuA7DzPGmp1z9KX2WKoT/+1t2gMbK7/x1eT55p68vlhtkf9VidTOOvA8yJFpgVJUsO/XU7MGsdCt3FcRMSRauueh/dXLCZA77cCVArNs2VLp/QmoEZme4OzYoIKLNGBmLa22eHm3PbkqZA8w==
+X-Exchange-Antispam-Report-CFA-Test: BCL:0;PCL:0;RULEID:(8211001083)(6040522)(2401047)(5005006)(8121501046)(10201501046)(3002001)(93006095)(93004095)(3231455)(999002)(944501520)(52105112)(6055026)(148016)(149066)(150057)(6041310)(201703131423095)(201702281528075)(20161123555045)(201703061421075)(201703061406153)(20161123558120)(20161123562045)(20161123560045)(20161123564045)(201708071742011)(7699051)(76991095);SRVR:CO2PR03MB2262;BCL:0;PCL:0;RULEID:;SRVR:CO2PR03MB2262;
+X-Microsoft-Exchange-Diagnostics: 1;CO2PR03MB2262;4:HmvBmt5lszKycpJj5dlnWDkdCqdnCbHdcbiOrq5yA4BUFFD10QgEXyVvjcDxHnUdHqf0pG6YJ4L565D90Oy5SwpfuEJ5ifiwUpEFcVCTnTsgK2/i3z1ZibPUYBOIt/wVm2zo3HBn4l9vCxqS04mkIrEik4EQs9ffqxndvP3ih09hqW4xv2Q45yaOB6tcG4LsRWX0qg+txi8i0Bg6fj0CVPNEA570jkPkrs7CdKcEwZJrhEz4b6z/PZqjhVBBOHxGq7PWA4hQHwmEGPJsSOBD6w==
 X-Forefront-PRVS: 087894CD3C
-X-Microsoft-Exchange-Diagnostics: =?us-ascii?Q?1;BL2PR03MB546;23:VWXQuhChxsuF1EfMD32gjJsfo03cRDfkY/tmOjiwt6?=
- =?us-ascii?Q?FupZIg0HGPhILzzSNeWcbBaCq1pwvPSiOIqe7rL3yBhsIyV8WbuS0VwC974/?=
- =?us-ascii?Q?kWboNXa/URwxDLdIMIm27pQ7pO2KchAWqTzYwzeWfplr5F7T0kt0e74RyB32?=
- =?us-ascii?Q?4GUxHnDdhzwXiOAH7+mZJGmS6QsW4MmUYiLHnL9omoA1Spp7a0AwHXBE+9ZY?=
- =?us-ascii?Q?uRbt/fj47G7YBn+q4GJL17mkkHgt/i2s+foE8Q7vbFxucNPxxTRCuOG0F3cE?=
- =?us-ascii?Q?mLYlaPjs97tySLETIDGS2wlcjNBlBPary8YBFfOTAFN3kpyXYIegsjOsUWJi?=
- =?us-ascii?Q?C0FXI379xVFW7TkzHHPFqikWnCmcDIbRsMiwbS/2jcqwkp5O8YzlsdGyHv2C?=
- =?us-ascii?Q?FRdQBL3jKD3/ZgBBSD9/ofsan+42JZzfFqJgpsVcIi8iB/j8Cz30p97N7Q16?=
- =?us-ascii?Q?nmvfSNQKzMz1uHAOqmLZafAdKsKuNYC+6wKpUp0asKPJy7XpW0fuZFhu0eLd?=
- =?us-ascii?Q?2CSdUqUTulauiY7Qa1+AVcPl7Mln4S//YGsnlB1Lx2gVv5QA2XlQG6hWkp9T?=
- =?us-ascii?Q?3VCMfWZlPoLasVXKJ1kEPSgQaC26g5ia14b/nCHeyEwC9JPOubyhLc1JdX5q?=
- =?us-ascii?Q?ldz/Ptgg+0tiM1IhmKa9j01bmj329t2UEd9csplDJDu/zDeAwm3UpSFwXrRi?=
- =?us-ascii?Q?XSO15Ubko4ANzG0X2Gdp2gDvUosPxnl49eudniNiutbE3ZaTL4orYnS2NHJO?=
- =?us-ascii?Q?Ajy1fZgJvjseJhsWkzV1GCtLy53hUorTwNtHlubtFA12nGfo4WttD4dL331Z?=
- =?us-ascii?Q?dAtCEHy4MIEYh3HiLP5NDaJxMd7oHvK7ZkGNyL8oZbBJMrx02sK+Vlm9lABE?=
- =?us-ascii?Q?ozYZGL7/+U8Cogj4ISUqRntLvJ9VumotYhyD7yWagr91Q1stizdGNhp3+Wal?=
- =?us-ascii?Q?kvR6IgGWhmhtA8NT5Fwl4PBtvD2CFz/PDJlK2wSr+eDS4gmJSPjdDViuYZd2?=
- =?us-ascii?Q?1L2LkUorSy4T+LPzF9pPibHZ8jdzteLoGGlJ4Zz5F5weMsIjG6uoAktWxFyw?=
- =?us-ascii?Q?JcrE80zFwMe6QqtbUkoXDqhB0W3T6qx5R1t+MO16u+Xb+1ePDV2HOP4q/Rbv?=
- =?us-ascii?Q?rhXIJpwMXCuB8jm/J0tlK/Xrzoq2l5?=
-X-Microsoft-Antispam-Message-Info: G+JH4Vlsd+YsYovlpt1JuNneIco6kjY5cRilpvalc8v1i8mRrK0p2TgzZ+cBxgRz9yJ4G4kfV+ILN15xcFyZ5Jgt1+0H9JnPqStNA/UoRp+nkArSNwsNFSzIWKu7uFrPyGZMV5NTSOj5gnV5CTAtK+xQLRjJ+UXd2wnFdV1MH7e2scOhcpKz9rgimelyboN6UTj+xsdsjgc4yg9U5obWG9r/tXsx019Dm12ob5crs2IVPAzI7QxgjDUugc2QGai5X46jDwsDkgLtA1eA89hZd5UjbFQQ2LvPyjCjuT1tRHLzwDpAS4YOlHTLDruebiCmQ3VydNRQREcf6OSL9tvTMb8pG1Tpm3Y2qWTtQf0pO1M=
-X-Microsoft-Exchange-Diagnostics: 1;BL2PR03MB546;6:zhG/cm+mvUaAeLSBrkx8c+YME152ZKTIC9hsrhXWh2gzfVdaf1N/mzQDI/wR/c0H3S74FQDK17aemRgOPkKQtivNtXNpMTdh2btarl/HDftxZITeTKRSogNEopTxm/FXEEbigNHsXOVVaZI1AtMZATVZQdyC0N0FmmPPyJgyghNb3eqcQdcE4o9xb8O5B051ebuj2JRuYDBaQZenPFGe2pcVAjrNPSkH3FEKsk8k3HBMbffcoCHbrttMyeUGCcEAw91ckzV2T8nDfZQOuRlszL512+SoSLG3zHtuYmd6zoZ8mx9iW7CrPTct8UDgFssAy7zGpUx5rO0MfmYErJ9TbfNlLWqetpsofXiYYhdDlmS4wUteTQ+UM2WdKzI1io/lMHpW4DCqA8fGbDA+5bLm4So6HF6rjH6KyqhQT8NoENw2RSxZ3b5snN578gVA8RCxs2nq1/T7KKSzKoVrUR5yWg==;5:3bn8QcQIj+UT1K5xvRQ93Hcz/jL065G+Nzmsi85Dh3pI+g8tFA7pgNEH+CgaexdRIK3EQ9FbA8R+i4OPufJzcFh+ZXwE3Om5bdPF5UCaR7qW7LrsJ8pzFcQeJMDF3yDk1Qmb47PvdYq7PlcwsIBXW68sgDSiw7iMC5HnW1WO69g=;7:0ZO5OxMJmlCkqprkVNqI59S+Tll5PqSYeruRQx7ezk0CSMFp0QvcNU7/qfN0DjY7uJalPaCzpeZ7mPb28oE5+s+UhR67NJh5A5yN5jxrsCdmTiJ6+odMiFzXG/DT0R/yddoR17kvRYBb+Lp3zQJWKA==
+X-Microsoft-Exchange-Diagnostics: =?us-ascii?Q?1;CO2PR03MB2262;23:y+XmcK949T/5mAbWORSWt61WdqaZ3qN63c9DPHDhQ?=
+ =?us-ascii?Q?H+YgerDglkMzmsgPisVp7ULtZ+mFGSE+ZxY7BWJaOuInqVrni+xsEhDNJzJn?=
+ =?us-ascii?Q?rEubD6wzrIOMqxsXZSfn/NSZApuOeDI69enOx47fFQejnhGI2OqeHWgqCnBI?=
+ =?us-ascii?Q?0OmChUoCHi+LBiJDceXGU9nEMCy2vn/yR0KVEbLBYCmPGvn+F0WdRF9WOdGY?=
+ =?us-ascii?Q?A4kOwyHgd7ZLbNLbj3MyOMbYFYgHP4ehr+Or2N3EOBcj+soSGivQZ0N7nJjE?=
+ =?us-ascii?Q?fJt7BW8ksv6aWaC6yp+ClAZ3kQguVjB7x8hd7nPE6WY3VfLTqSTUuJnyN5rx?=
+ =?us-ascii?Q?BlcuD4FYN4k4fgLOxvM7eCy4ZdDe5ozonQh4IxBxyBv6PBqtRvjkOU9kT7A9?=
+ =?us-ascii?Q?5sHV7LKb62TPbv7ClFWTjuCOLmaUdWW+wxUdarJQ8Dw+AvQ9d2IM6RAQ1+Eq?=
+ =?us-ascii?Q?3rdjyFOOEW80UqqwPn9FRR1JimuIcId5pD6OCHphcCUXuUGe5lS1q3EtSV0I?=
+ =?us-ascii?Q?bWmAGt5iiphV2I1rVaOywSYMo9t9DSrrncMvf3GOFrkToRazI8Ya4gMEpZ2J?=
+ =?us-ascii?Q?m9pXbXvHp0xuAUraTqS/NZN6WPMfaxoKKX2LVYv5RfyVySOxvg/7PAkz56HH?=
+ =?us-ascii?Q?rq3MFRQC6p6X96XwY/LK8XQEl3AOIc9Wn1pUCBymYQigGDgcyadAcROnikNT?=
+ =?us-ascii?Q?oiZkx8i4Tk9iqAig8dqYQmighrNMlMYYVwZcC/6yzF+ZQM2zqJYrIqRe2994?=
+ =?us-ascii?Q?+TveXo3T3T7qNrXc96TS0PquEjRKfPZ9JhN7uOl2okykxgLnGop1pvT+WXX8?=
+ =?us-ascii?Q?REhFd6bKbmWvkubAuj0Jss2i4WxCjh4TOjfKID1pvqXULz+E5UVwiuB44UdR?=
+ =?us-ascii?Q?XepAZt1kAOmR7aoymZBOD/idKYPbN1vSC7ygP6e+OkeJcAPftD9QCGMIaikO?=
+ =?us-ascii?Q?3eoU7vFAbM8Mh7hLDy051tjTBYlEfSYnzjc9oZeJWBL3QjqsbUIOHZZpCecA?=
+ =?us-ascii?Q?KFbtLPwTrBKgJS9+V6Z3tLiVd/Oi5Wn1yrKUvFrLNz1Q30jElz8wvv6Bko7+?=
+ =?us-ascii?Q?XXbAAvlFVnVAh7KYh1rmzAk250l?=
+X-Microsoft-Antispam-Message-Info: 6gujfHZp6nsT2C3yYJQ3I/xkZBXMeqz5KXoflOhILxVv91FhqIt88kp9EReM9StpvmvixhmT4Vyw3HRiMVEmZqfcpaxkCVKyBLj2wsvHNTIzjAmG+pZtrF0UNZUDawK5Ef16eFBXz05k7j0KXX73/Eygfg5U5xfRricIdZtpCeOmitXKM8fO9Tnr6LNihaaahRkLF6T7q9gfmLbhkXH9FJGrD7REYip0W/bMo9xTJq+kF80P8aAnZXiE9o2oo5i9Rh8qlqRQ7JwaT2odf5auKFoLFkuDAohihZF8iCYcjMTbVWovTItD0qXUooPpdWbdsYqiVFjYvHD0XeCFE+T+3Ju8neyeMuiKIcdsswIifD4=
+X-Microsoft-Exchange-Diagnostics: 1;CO2PR03MB2262;6:mpSIIiNu41pB6Vb8aqud9kWCaJX+W74JfHpNSTHB0s/cZncBSSDXali6PDCAl0FupS+IKBMRoN0urJNVTKoryss5Bw4vy36SgOR3J4FcQe8Gc6+2bCzD4wxbsJxPt/8TxkLVZNBPGrTC0G27RCcQktK7aWXj+VGygTXqHJNIdgl0hKy6mLeKukLxAPzEeFA5BZ2Yjh1ados8vV8yqziz+bRZ+TrjP2MqlBjN5D5ZnMwSkdW9GFxWOsSiB34GoXh9R+lIVmy73QdvUCg7nvmaS+LoySF93UaH0MY4O24lT+bsPzZKeSAW4Jqy+zqSxaM1T8VMy9UiP9A5cA7G6L3k1hIxRiuZ1QaxBnFmlDDjC5Cmj6+Q0qcHCKeDGLHSmNf4KTxHy4UjyshPo0/sr97qO+uDN4CegZWAy6l9xr2G3sEU3N/I4pEpJ6xnkEPW7bmSW+as+d0pzM5A3B34bKU+rg==;5:jdQJZ0ZouLBdJGQTnIi8xBdLo/FI8/+j1oBonmYA2wJC2p7kZa/aILRMHf+ul42tKWX5d027Yh54kqTQgoRfVb4zmG2H0bQYBvRaI7+sMmXzGL8v3kcP3ZV5hSlvVlISdM3eWiqEK8XEjPN9uh+rvcUi1OjYNYzICv6Wglalvm4=;7:ompaAldvICtJWOaVyxVQrq1pVzZhOfj/jMPX0pI/+v9EA7Zvl8qKhOKz/LfDx4PXRb3DfLT1N0Chz9C00Jec+s1wE+plfhtQZ4d/CUj/k3CaRCZAFaeFM4C6EIQsObVBmb4aTriViXm7M0lI029jhA==
 SpamDiagnosticOutput: 1:99
 SpamDiagnosticMetadata: NSPM
 X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Dec 2018 13:38:40.6332
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Dec 2018 13:53:23.9653
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9bf7846a-75e8-4373-dddf-08d65b802252
+X-MS-Exchange-CrossTenant-Network-Message-Id: cc6ff826-1f81-4df7-6a59-08d65b8230ba
 X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.55];Helo=[nwd2mta1.analog.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL2PR03MB546
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO2PR03MB2262
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Stefan Popa <stefan.popa@analog.com>
+This patch solves the register readback issue with the bit shift. When the
+dac resolution was lower than the register size (ex. 12 bits out of 16
+bits) the readback value was not shifted with the difference in bits and
+the value was higher. Also a mask is applied on the read value in order to
+get the value relative to the actual bit size.
 
-The AD5310R is a single channel DAC with 10-bit precision, which is
-part of the same family as AD5311R, except that it uses the spi interface
-instead of i2c. The device has a built-in 2.5V reference which is enabled
-by default.
-
-Another important difference is that the SPI write command operation is
-16 bits long. The first four bits represent the command, while the
-remaining 12 bits are for data. In the control reg, DB9 and DB10 are used
-for power-down modes, while DB8 is the REF bit. In order to accommodate
-this change, a new regmap type was defined and checked accordingly.
-
-Because AD5310R does not have a readback register, the read_raw operation
-will return "Operation is not supported".
-
-Datasheet:
-Link: http://www.analog.com/media/en/technical-documentation/data-sheets/AD5310R_5311R.pdf
-
-Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+Fixes: 0357e488b8 ("iio:dac:ad5686: Refactor the driver")
 Signed-off-by: Mircea Caprioru <mircea.caprioru@analog.com>
 ---
- drivers/iio/dac/ad5686-spi.c | 21 ++++++++++++++++++---
- drivers/iio/dac/ad5686.c     | 16 ++++++++++++++++
- drivers/iio/dac/ad5686.h     |  7 +++++++
- 3 files changed, 41 insertions(+), 3 deletions(-)
+ drivers/iio/dac/ad5686.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/dac/ad5686-spi.c b/drivers/iio/dac/ad5686-spi.c
-index 1df9143f55e9..665fa6bd9ced 100644
---- a/drivers/iio/dac/ad5686-spi.c
-+++ b/drivers/iio/dac/ad5686-spi.c
-@@ -19,6 +19,12 @@ static int ad5686_spi_write(struct ad5686_state *st,
- 	u8 tx_len, *buf;
- 
- 	switch (st->chip_info->regmap_type) {
-+	case AD5310_REGMAP:
-+		st->data[0].d16 = cpu_to_be16(AD5310_CMD(cmd) |
-+					      val);
-+		buf = &st->data[0].d8[0];
-+		tx_len = 2;
-+		break;
- 	case AD5683_REGMAP:
- 		st->data[0].d32 = cpu_to_be32(AD5686_CMD(cmd) |
- 					      AD5683_DATA(val));
-@@ -56,10 +62,18 @@ static int ad5686_spi_read(struct ad5686_state *st, u8 addr)
- 	u8 cmd = 0;
- 	int ret;
- 
--	if (st->chip_info->regmap_type == AD5686_REGMAP)
--		cmd = AD5686_CMD_READBACK_ENABLE;
--	else if (st->chip_info->regmap_type == AD5683_REGMAP)
-+	switch (st->chip_info->regmap_type) {
-+	case AD5310_REGMAP:
-+		return -ENOTSUPP;
-+	case AD5683_REGMAP:
- 		cmd = AD5686_CMD_READBACK_ENABLE_V2;
-+		break;
-+	case AD5686_REGMAP:
-+		cmd = AD5686_CMD_READBACK_ENABLE;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
- 
- 	st->data[0].d32 = cpu_to_be32(AD5686_CMD(cmd) |
- 				      AD5686_ADDR(addr));
-@@ -86,6 +100,7 @@ static int ad5686_spi_remove(struct spi_device *spi)
- }
- 
- static const struct spi_device_id ad5686_spi_id[] = {
-+	{"ad5310r", ID_AD5310R},
- 	{"ad5672r", ID_AD5672R},
- 	{"ad5676", ID_AD5676},
- 	{"ad5676r", ID_AD5676R},
 diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index 0e134b13967a..54ff76b93366 100644
+index 54ff76b93366..a332b93ca2c4 100644
 --- a/drivers/iio/dac/ad5686.c
 +++ b/drivers/iio/dac/ad5686.c
-@@ -83,6 +83,10 @@ static ssize_t ad5686_write_dac_powerdown(struct iio_dev *indio_dev,
- 		st->pwr_down_mask &= ~(0x3 << (chan->channel * 2));
- 
- 	switch (st->chip_info->regmap_type) {
-+	case AD5310_REGMAP:
-+		shift = 9;
-+		ref_bit_msk = AD5310_REF_BIT_MSK;
-+		break;
- 	case AD5683_REGMAP:
- 		shift = 13;
- 		ref_bit_msk = AD5683_REF_BIT_MSK;
-@@ -221,6 +225,7 @@ static struct iio_chan_spec name[] = {				\
- 		AD5868_CHANNEL(7, 7, bits, _shift),		\
- }
- 
-+DECLARE_AD5693_CHANNELS(ad5310r_channels, 10, 2);
- DECLARE_AD5693_CHANNELS(ad5311r_channels, 10, 6);
- DECLARE_AD5676_CHANNELS(ad5672_channels, 12, 4);
- DECLARE_AD5676_CHANNELS(ad5676_channels, 16, 0);
-@@ -232,6 +237,12 @@ DECLARE_AD5693_CHANNELS(ad5692r_channels, 14, 2);
- DECLARE_AD5693_CHANNELS(ad5691r_channels, 12, 4);
- 
- static const struct ad5686_chip_info ad5686_chip_info_tbl[] = {
-+	[ID_AD5310R] = {
-+		.channels = ad5310r_channels,
-+		.int_vref_mv = 2500,
-+		.num_channels = 1,
-+		.regmap_type = AD5310_REGMAP,
-+	},
- 	[ID_AD5311R] = {
- 		.channels = ad5311r_channels,
- 		.int_vref_mv = 2500,
-@@ -419,6 +430,11 @@ int ad5686_probe(struct device *dev,
- 	indio_dev->num_channels = st->chip_info->num_channels;
- 
- 	switch (st->chip_info->regmap_type) {
-+	case AD5310_REGMAP:
-+		cmd = AD5686_CMD_CONTROL_REG;
-+		ref_bit_msk = AD5310_REF_BIT_MSK;
-+		st->use_internal_vref = !voltage_uv;
-+		break;
- 	case AD5683_REGMAP:
- 		cmd = AD5686_CMD_CONTROL_REG;
- 		ref_bit_msk = AD5683_REF_BIT_MSK;
-diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
-index 57b3c61bfb91..19f6917d4738 100644
---- a/drivers/iio/dac/ad5686.h
-+++ b/drivers/iio/dac/ad5686.h
-@@ -13,7 +13,10 @@
- #include <linux/mutex.h>
- #include <linux/kernel.h>
- 
-+#define AD5310_CMD(x)				((x) << 12)
-+
- #define AD5683_DATA(x)				((x) << 4)
-+
- #define AD5686_ADDR(x)				((x) << 16)
- #define AD5686_CMD(x)				((x) << 20)
- 
-@@ -38,6 +41,8 @@
- 
- #define AD5686_CMD_CONTROL_REG			0x4
- #define AD5686_CMD_READBACK_ENABLE_V2		0x5
-+
-+#define AD5310_REF_BIT_MSK			BIT(8)
- #define AD5683_REF_BIT_MSK			BIT(12)
- #define AD5693_REF_BIT_MSK			BIT(12)
- 
-@@ -45,6 +50,7 @@
-  * ad5686_supported_device_ids:
-  */
- enum ad5686_supported_device_ids {
-+	ID_AD5310R,
- 	ID_AD5311R,
- 	ID_AD5671R,
- 	ID_AD5672R,
-@@ -72,6 +78,7 @@ enum ad5686_supported_device_ids {
- };
- 
- enum ad5686_regmap_type {
-+	AD5310_REGMAP,
- 	AD5683_REGMAP,
- 	AD5686_REGMAP,
- 	AD5693_REGMAP
+@@ -128,7 +128,8 @@ static int ad5686_read_raw(struct iio_dev *indio_dev,
+ 		mutex_unlock(&indio_dev->mlock);
+ 		if (ret < 0)
+ 			return ret;
+-		*val = ret;
++		*val = (ret >> chan->scan_type.shift) &
++			GENMASK(chan->scan_type.realbits - 1, 0);
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_SCALE:
+ 		*val = st->vref_mv;
 -- 
 2.17.1
 
