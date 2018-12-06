@@ -7,36 +7,36 @@ X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32190C04EB8
-	for <linux-iio@archiver.kernel.org>; Thu,  6 Dec 2018 03:15:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63564C04EB9
+	for <linux-iio@archiver.kernel.org>; Thu,  6 Dec 2018 03:33:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C0BB12054F
-	for <linux-iio@archiver.kernel.org>; Thu,  6 Dec 2018 03:15:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 216942146D
+	for <linux-iio@archiver.kernel.org>; Thu,  6 Dec 2018 03:33:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="qmi6vsLa"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C0BB12054F
+	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="E4h7CBrZ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 216942146D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nxp.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728238AbeLFDPy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 5 Dec 2018 22:15:54 -0500
-Received: from mail-eopbgr50072.outbound.protection.outlook.com ([40.107.5.72]:6400
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        id S1728953AbeLFDd3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 5 Dec 2018 22:33:29 -0500
+Received: from mail-eopbgr70089.outbound.protection.outlook.com ([40.107.7.89]:10560
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727514AbeLFDPx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 5 Dec 2018 22:15:53 -0500
+        id S1727695AbeLFDd1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 5 Dec 2018 22:33:27 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WzW3x7nOr37PKTIA8/6JnMeJ9W02uKApG0A+azLa08k=;
- b=qmi6vsLaUBuC2KNujqFfpQSYzHzndR6PuhliXrQMV+4YQDpXdrh2vvRwMmkYWjd2jmkHh7N2PRXRfKPQFmZa4bywn6JpxqlPFBWjJAZEYuJYLHRSTHaqNjNPWDcE3I3znhTB6G/m3MB3HuW5ccK6C2aQZhwdo/rjUDxq7qEyPSE=
+ bh=kxXT2dpS/udP/+alHa8tm+NK2uTVAjQW3bKey97mxkw=;
+ b=E4h7CBrZUT+3ll6h85+8XWZYYhfmTEOj0DsywMgibDSGCk3+KHsHAiPaf5uNryzMb6P3ZKUlhqlIRoCBzUiA2evMDmBNu3VnauAMLn+uUng1VD6deNNvKUl6N7XLXw0wtitVB0SSjZWaTkte27mb8mAtHFV0+AuLvVvGlmsOkmw=
 Received: from DB3PR0402MB3916.eurprd04.prod.outlook.com (52.134.72.18) by
- DB3PR0402MB3802.eurprd04.prod.outlook.com (52.134.71.150) with Microsoft SMTP
+ DB3PR0402MB3929.eurprd04.prod.outlook.com (52.134.70.31) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1382.22; Thu, 6 Dec 2018 03:15:48 +0000
+ 15.20.1382.22; Thu, 6 Dec 2018 03:33:17 +0000
 Received: from DB3PR0402MB3916.eurprd04.prod.outlook.com
  ([fe80::adf8:f49d:deb4:58fd]) by DB3PR0402MB3916.eurprd04.prod.outlook.com
  ([fe80::adf8:f49d:deb4:58fd%3]) with mapi id 15.20.1382.023; Thu, 6 Dec 2018
- 03:15:48 +0000
+ 03:33:17 +0000
 From:   Anson Huang <anson.huang@nxp.com>
 To:     "jic23@kernel.org" <jic23@kernel.org>,
         "knaack.h@gmx.de" <knaack.h@gmx.de>,
@@ -45,51 +45,51 @@ To:     "jic23@kernel.org" <jic23@kernel.org>,
         "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 CC:     dl-linux-imx <linux-imx@nxp.com>
-Subject: [PATCH] iio: light: isl29018: add optional vcc regulator operation
+Subject: [PATCH V2] iio: light: isl29018: add optional vcc regulator operation
  support
-Thread-Topic: [PATCH] iio: light: isl29018: add optional vcc regulator
+Thread-Topic: [PATCH V2] iio: light: isl29018: add optional vcc regulator
  operation support
-Thread-Index: AQHUjRH8CfSZy5OH8ESc4x40JN2bLA==
-Date:   Thu, 6 Dec 2018 03:15:48 +0000
-Message-ID: <1544065798-4465-1-git-send-email-Anson.Huang@nxp.com>
+Thread-Index: AQHUjRRtd25dX/BzdEGxoNl5ggpGpA==
+Date:   Thu, 6 Dec 2018 03:33:16 +0000
+Message-ID: <1544066850-22617-1-git-send-email-Anson.Huang@nxp.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 x-mailer: git-send-email 2.7.4
-x-clientproxiedby: HK0PR03CA0066.apcprd03.prod.outlook.com
- (2603:1096:203:52::30) To DB3PR0402MB3916.eurprd04.prod.outlook.com
+x-clientproxiedby: HK2PR02CA0149.apcprd02.prod.outlook.com
+ (2603:1096:202:16::33) To DB3PR0402MB3916.eurprd04.prod.outlook.com
  (2603:10a6:8:10::18)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=anson.huang@nxp.com; 
 x-ms-exchange-messagesentrepresentingtype: 1
 x-originating-ip: [119.31.174.66]
 x-ms-publictraffictype: Email
-x-microsoft-exchange-diagnostics: 1;DB3PR0402MB3802;6:jTSiKxhVFLoHkbEYlhNmJL0v9oyhEF7zglN4zZq6jTUUhQluW/IVHJcOtcsOwLUevDHg2BTKDa8zTMJxFX676PjDplCpOmQtnvbTWIhrU04iF5QrD332S7FNwrbXvo6YkIDVYiESpUQCXPLYetdPw5nInWaA9845kR+uXSILb3vTronQOgQeJ85aylZo9qDAOXp0fxsnjiivxFUhQOChdNHjYlIOuhMcf2L+cnJrSfd+QySzi48AHezGTT83tGjgyXRMf+698WYPdai3MpWrAIl0gg/5Yi2betB9ZpdHBbCpeuIuZn5to8p2y1wjQ6c9+OZc44oLr/4QbVMYjWALXTasC0vcM9qVvWD0zr73htDAsHjUJwG8RpIQm0GA3A/w/ISt1N7ZcpV1mnXwCiMl58zKOWOv0PNyLFS7I46fXlt5MBQAuLrohZo1/UqReQHuR9H8UKzm62SVKPqfvGRKOA==;5:k/pngTcP5uUD25POHgm8QwUs0wcca2hO1VUI8EH2ykQPNbQmiWwysyMov0VmeI0C5CEHjkFwIpnwHQvatFFHrFuM+waxusGdrGFdQK5PW/eW3L7SMu6/7hIeei58ln9BT+34HECyVjXVL6etMLcMlVbfcyodnN8O6GIaqEIOMu0=;7:qXbnwVZwptFODwKTPVckhEIeJCQPwnOiS+vES0sX7lw7oyXFGilg6f041A4hGSPINl9/tpBDuWnr682w33FbeVegNEs3B+2fWkRRtNvTUx322aeBekhtwOPfJHForPj/j46Of4XmoWodfnSh0MQWZg==
-x-ms-office365-filtering-correlation-id: ec8c6f82-d50c-4b89-061c-08d65b291e71
+x-microsoft-exchange-diagnostics: 1;DB3PR0402MB3929;6:YT2mJwPAbXCG6NIh4okpHZSRvZ7mvUjShJfzSnCT7Z4z9w0FkZj/QlaOGVv3jlN6vVXFgpEjWAmzZA14j0kh4YvKtcK1U7mk5lrIXbcGaw5/CiLIZlL+0j53+czEDznVjZ52soFQWb92C6bBsnO1ClkxtPKWi2yxroSkEDJRpaCWEoqZL3v91ECI1LFu2Un+T6xIroL6mnjN+AwMsFapqERMiapFc2dMNCTRoSf16FzAiI3ziCZ8oufNg30quYfeMI+Iz1XIjhXiRU45eYRzYKZRSA274YxumwAkD0pHyP2cKZ+OGx9PAUfUXW12hhuviZcXER9FOnaMLBsAoNQs6S+1QfUgkYi+nBmtgaXIQXqAuyrsFas9a1L2DyQHau/NXCta/E7GuX5tZNJHSY8BbpN9/NpiMj8mZ1lqlEL4mXd/arfVHASl/OuQOYqufydyfAbSb84umj86JCifSc2cxQ==;5:HSh9m8b+eFCtqt9r4pjv9uj+V7Kb/QHmIArVPHrecvG/LTnDfQX/xN1GaQfTaW8BBlMyCv7ZDDccxamvtpxGtdPwpIbBvNkP2MYbLLnYTIRW8TIqLOzK6yFWWzz3mPj88PsO9XM/PDCkN6loZyIOOxM5nlzZ25KNd0veJxTWgq8=;7:Qvayyn8dmjmm/X3obEGsfnLGKOJCISPtxzdi64tRqwZc6zolXR9uAC031y1c6agvX2v4nJP5vSCTN/yCMnQe3FNnsjSqhtU2ODYUls7XNl7oaLkyigFKlnHPugFOllEjAAT/nLjK50MAB7QGzdKFcQ==
+x-ms-office365-filtering-correlation-id: 48728984-64a1-4e37-9152-08d65b2b8f6d
 x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390098)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600074)(711020)(4618075)(2017052603328)(7153060)(7193020);SRVR:DB3PR0402MB3802;
-x-ms-traffictypediagnostic: DB3PR0402MB3802:
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=anson.huang@nxp.com; 
-x-microsoft-antispam-prvs: <DB3PR0402MB380284ABE98DE2F019781D00F5A90@DB3PR0402MB3802.eurprd04.prod.outlook.com>
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390098)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600074)(711020)(4618075)(2017052603328)(7153060)(7193020);SRVR:DB3PR0402MB3929;
+x-ms-traffictypediagnostic: DB3PR0402MB3929:
+x-microsoft-antispam-prvs: <DB3PR0402MB39292C6C5624FFADC2017FBEF5A90@DB3PR0402MB3929.eurprd04.prod.outlook.com>
 x-ms-exchange-senderadcheck: 1
-x-exchange-antispam-report-cfa-test: BCL:0;PCL:0;RULEID:(8211001083)(6040522)(2401047)(8121501046)(5005006)(10201501046)(3231455)(999002)(944501520)(52105112)(93006095)(93001095)(3002001)(6055026)(148016)(149066)(150057)(6041310)(20161123558120)(20161123560045)(201703131423095)(201702281528075)(20161123555045)(201703061421075)(201703061406153)(20161123562045)(20161123564045)(201708071742011)(7699051)(76991095);SRVR:DB3PR0402MB3802;BCL:0;PCL:0;RULEID:;SRVR:DB3PR0402MB3802;
+x-exchange-antispam-report-cfa-test: BCL:0;PCL:0;RULEID:(8211001083)(6040522)(2401047)(8121501046)(5005006)(10201501046)(93006095)(93001095)(3002001)(3231455)(999002)(944501520)(52105112)(6055026)(148016)(149066)(150057)(6041310)(20161123558120)(20161123564045)(20161123560045)(201703131423095)(201702281528075)(20161123555045)(201703061421075)(201703061406153)(20161123562045)(201708071742011)(7699051)(76991095);SRVR:DB3PR0402MB3929;BCL:0;PCL:0;RULEID:;SRVR:DB3PR0402MB3929;
 x-forefront-prvs: 087894CD3C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(396003)(39850400004)(376002)(136003)(346002)(189003)(199004)(99286004)(26005)(106356001)(6116002)(6486002)(52116002)(97736004)(386003)(6436002)(25786009)(6506007)(102836004)(5660300001)(68736007)(110136005)(105586002)(186003)(3846002)(71200400001)(53936002)(14454004)(256004)(6512007)(71190400001)(8936002)(86362001)(14444005)(4326008)(66066001)(2906002)(36756003)(316002)(8676002)(81156014)(81166006)(305945005)(476003)(7736002)(2616005)(50226002)(486006)(2501003)(478600001)(2201001);DIR:OUT;SFP:1101;SCL:1;SRVR:DB3PR0402MB3802;H:DB3PR0402MB3916.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(366004)(39860400002)(346002)(396003)(376002)(199004)(189003)(54534003)(6506007)(4326008)(102836004)(68736007)(486006)(476003)(2616005)(50226002)(386003)(36756003)(97736004)(71200400001)(256004)(71190400001)(6512007)(53936002)(186003)(81156014)(86362001)(26005)(81166006)(8936002)(8676002)(478600001)(25786009)(2201001)(52116002)(66066001)(99286004)(5660300001)(14444005)(14454004)(6116002)(106356001)(3846002)(7736002)(305945005)(110136005)(6486002)(6436002)(2906002)(2501003)(316002)(105586002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB3PR0402MB3929;H:DB3PR0402MB3916.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: nxp.com does not designate
  permitted sender hosts)
-x-microsoft-antispam-message-info: 1D/3SLyDLMe1KnQS5v0fQp4+6sXLH6IpIVBpv5XR+qJLegNGh+osVYNHXopCfVPMKEhdQKbqOwhzL0Xtrt1KuCAlEp9KL0EXT0nfBO3nrQchrCSaBTG7FP2135ELcvk1Gt3bGtmnHgElezWTM4Aq8HR/lLtqqx6DoCBvcTa+CWzjOL72xADWBxmlvbZddCfLy9LttbDvVH1ZDsG5cAnuKbD9erppxQTwKD7qZskidGVFCXeqAxR7DUhzcm7CGc4QnnJQhLkKJ06AoZSF8WRhF3DuvryChQMGbl92CbnodGAX19Snof9qrx+zSpAKSzmDTchX+1GaSHangag3pHqq6bYkfpBLlAvaN30KScjnOfU=
+x-microsoft-antispam-message-info: JK1ss3io5+uPmgYHtCviimaD0zavoRTpMmqmmqDA5/LHJpLb15RPIRCfh0zD4ccoe89Dw/xghZ/b6V0mlevv0i8mJJmECn5py8ty0FHGo8Ya1TqJn2F0BntSkak1JJJ3CMPcISoQ0FqGGHz+ls0jtiL792N8CUv8VnqqNEM5mPiuMiBtEVaZuUURtkarnqI82dr7NB5CwpboRBodLhU7soa0blNYUwtZ9f62ktyuzlDtj3B02a1Jn9DdqTZx5wyQR7YMpW03vC1uNWq7TgfuXIj7BrHeBtZIErdljWlPCUljnGf7rjyZVeh+q78DQBUCwUzSbHHKiPz0OLXhyP+rirNPx3EBh2rELsYLPgGEpsE=
 spamdiagnosticoutput: 1:99
 spamdiagnosticmetadata: NSPM
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ec8c6f82-d50c-4b89-061c-08d65b291e71
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Dec 2018 03:15:48.5476
+X-MS-Exchange-CrossTenant-Network-Message-Id: 48728984-64a1-4e37-9152-08d65b2b8f6d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Dec 2018 03:33:16.9989
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB3PR0402MB3802
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB3PR0402MB3929
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
@@ -103,11 +103,14 @@ sensor, this patch adds optional vcc regulator operation support.
 
 Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
 ---
+ChangeLog:
+	replace "VDD" with "VCC" since the regulator name is vcc_reg.
+---
  drivers/iio/light/isl29018.c | 29 +++++++++++++++++++++++++++++
  1 file changed, 29 insertions(+)
 
 diff --git a/drivers/iio/light/isl29018.c b/drivers/iio/light/isl29018.c
-index b45400f..47a55c8 100644
+index b45400f..87dcbce 100644
 --- a/drivers/iio/light/isl29018.c
 +++ b/drivers/iio/light/isl29018.c
 @@ -23,6 +23,7 @@
@@ -134,7 +137,7 @@ index b45400f..47a55c8 100644
 +	if (!IS_ERR(chip->vcc_reg)) {
 +		err =3D regulator_enable(chip->vcc_reg);
 +		if (err) {
-+			dev_err(&client->dev, "failed to enable VDD regulator\n");
++			dev_err(&client->dev, "failed to enable VCC regulator\n");
 +			return err;
 +		}
 +	}
@@ -157,7 +160,7 @@ index b45400f..47a55c8 100644
 +	if (!IS_ERR(chip->vcc_reg)) {
 +		ret =3D regulator_disable(chip->vcc_reg);
 +		if (ret) {
-+			dev_err(dev, "failed to disable VDD regulator\n");
++			dev_err(dev, "failed to disable VCC regulator\n");
 +			mutex_unlock(&chip->lock);
 +			return ret;
 +		}
@@ -172,7 +175,7 @@ index b45400f..47a55c8 100644
 +	if (!IS_ERR(chip->vcc_reg)) {
 +		err =3D regulator_enable(chip->vcc_reg);
 +		if (err) {
-+			dev_err(dev, "failed to enable VDD regulator\n");
++			dev_err(dev, "failed to enable VCC regulator\n");
 +			mutex_unlock(&chip->lock);
 +			return err;
 +		}
