@@ -2,98 +2,179 @@ Return-Path: <SRS0=POtY=OQ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	T_DKIMWL_WL_HIGH,USER_AGENT_MUTT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8075EC07E85
-	for <linux-iio@archiver.kernel.org>; Fri,  7 Dec 2018 19:12:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D62CC07E85
+	for <linux-iio@archiver.kernel.org>; Fri,  7 Dec 2018 23:47:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4772520837
-	for <linux-iio@archiver.kernel.org>; Fri,  7 Dec 2018 19:12:15 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SgRhhQF3"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4772520837
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTP id F2D6F20868
+	for <linux-iio@archiver.kernel.org>; Fri,  7 Dec 2018 23:47:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1544226465;
+	bh=b8G7rxkT73TLkPU9hjvyW62L1ebNPUVDeTCtMJBJfnc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=DMyngL2JL8UScl2iU6PZSuzuPvsWxbgfOOytnZs8ql27+WNt/eZbofhJ1MhpFrQcO
+	 HO8guqYovX98gNuywGSD9D26gxyrValpXt8ho0kf/lYkfjmcaMZg7LI64yR9/Zf25e
+	 lzsD0fl/bmxpSq+huo+I8fWjXy4qI0Zq4DyGTny0=
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F2D6F20868
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726055AbeLGTLw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 7 Dec 2018 14:11:52 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:44646 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726018AbeLGTLw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 7 Dec 2018 14:11:52 -0500
-Received: by mail-lj1-f196.google.com with SMTP id k19-v6so4430376lji.11;
-        Fri, 07 Dec 2018 11:11:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZR1ed9GSG9BdMzcMINLqVwYYXkRWiGYuUR9UH9XRe40=;
-        b=SgRhhQF3xVp1KDgp08fv9DffIShhwiKHj6YQB3vVOnMBNVehZ+6WLxHJs/XR/x3XXV
-         RramA5k69woEyGjasX7pehsmPFYvkRhX/S0slAOaIzvMolsZRg60hUTNvMutC2/PF5fH
-         Mhv5lBueMqG7UFveIq8Jzz4m7AIXB3mTEWpNLe24PfeggvJy+fg68OtUXSmJk4CL3u+P
-         S5mvI+m1n0SV6jGe5pxaXLKeH02sLq477sxQAmm6DhNrFrNQoQ66enLNNtpvAf4Hou1n
-         LgplXDKSW9olCiMv/1W7VKQ7a6BkDWkKWZnf58p+jaFZb1d2C2eS+iweyyfdKHTs+kmr
-         CHrw==
+        id S1726047AbeLGXro (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 7 Dec 2018 18:47:44 -0500
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:45519 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725791AbeLGXro (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 7 Dec 2018 18:47:44 -0500
+Received: by mail-oi1-f194.google.com with SMTP id y1so2992600oie.12;
+        Fri, 07 Dec 2018 15:47:43 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZR1ed9GSG9BdMzcMINLqVwYYXkRWiGYuUR9UH9XRe40=;
-        b=bWysIIIphozyXZ3+DVvVsxUadlMB4+81hGkG0+i7AJ9qXUlOvZ7vHpo/3X2Idfwqjn
-         CAEA9jIM88UDyOiITTISYV3gCGO4KgyCtZXgupqgLXBEr2ghIArh5F8MfmRnWHJH6Nvr
-         N/SoxZphY91FKqNk3HP1DaA/+yH4XpU38QEV5RgGCQiQb9cCj2nVRvHlLLG9pfXJpvCC
-         4uvx+us/9D1Xav6oL/EtjoRGGKO4bfOW52nY8n+mEfP9VKfJNnrE+NI7Km6261IRaBXp
-         pQw4DTWCGWoVwrYKBHwtY98MPH1OCIb1wX8ZdKtGXdjH/xxzoYHlfm6phnxuQBTViHzE
-         Ay0A==
-X-Gm-Message-State: AA+aEWZ++Qpe8xf11ibJLes3yR0s1xka9b0a1RES2k3tumL0Ycdo+FSH
-        OD5C8DQThSYe5O5BHxvkXW0=
-X-Google-Smtp-Source: AFSGD/XSJe4ggEk3jerCBEO2iFMLtGWx+AlfEUveHZQTQTwrAR8Za7Xm1j6vkGbY/KwGqv2VgZ+9OA==
-X-Received: by 2002:a2e:1f01:: with SMTP id f1-v6mr2001283ljf.129.1544209908606;
-        Fri, 07 Dec 2018 11:11:48 -0800 (PST)
-Received: from localhost.localdomain ([2a02:a315:5445:5300:45d9:69e8:d41f:b616])
-        by smtp.googlemail.com with ESMTPSA id 12-v6sm727915ljs.29.2018.12.07.11.11.45
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 07 Dec 2018 11:11:47 -0800 (PST)
-From:   =?UTF-8?q?Pawe=C5=82=20Chmiel?= <pawel.mikolaj.chmiel@gmail.com>
-To:     jic23@kernel.org
-Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        kgene@kernel.org, krzk@kernel.org, xc-racer2@live.ca,
-        pawel.mikolaj.chmiel@gmail.com, broonie@kernel.org,
-        arnaud.pouliquen@st.com, baolin.wang@linaro.org,
-        smohanad@codeaurora.org, eugen.hristev@microchip.com,
-        rdunlap@infradead.org, vilhelm.gray@gmail.com,
-        freeman.liu@spreadtrum.com, marcus.folkesson@gmail.com,
-        geert@linux-m68k.org, robh+dt@kernel.org, mark.rutland@arm.com,
-        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 0/3] iio: adc: exynos-adc: Add support for S5PV210
-Date:   Fri,  7 Dec 2018 20:11:33 +0100
-Message-Id: <20181207191136.5464-1-pawel.mikolaj.chmiel@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=zgUiNoH5VCv3ea22aMcjPEG8bDqTd+yBwKbKL/P/Gdg=;
+        b=kjEtY0GqaB/GGBrn+mL9zg62oxRvBaziizOU4+BSJiD6zBgS380adr9vLDxNtWNdVB
+         n5g/0CTEmNmg9s9wUsr91oichSjcXu6UysDnNpcKY4LYxsdK/87A7maKj+bU70EuuDcR
+         TTpitfnEI8aCth5FMwfXAcm2qIjwYkFDSTLTA1yt5TfAN8aqmaoY7aj2xwJAtR1unaey
+         ERV24iH+ii0g9kDGx7ST26QnkTU0KThS964NZhn/7pIMuo4Ty4BUHRwb17b6HnhubZdt
+         x1pYUbJTGNlIcSUS2e3pa+PLjZyNjx7ADfVRLW+49cxvCy9IYEUJCNMR/le2T3hO47is
+         BZcQ==
+X-Gm-Message-State: AA+aEWZV5gvz7zY2nzIa44T8cnmuUFfIQmQmbIEtQQO/6LiZns75WYRv
+        jw4MRWnIg2KxM4onMW/N8w==
+X-Google-Smtp-Source: AFSGD/UjL488S84hAzh5kDILhcmt1Q0mFu7jW9zdoV5R3EYFwksm3mWi5fQREINGaOoxM/weTChiMQ==
+X-Received: by 2002:a05:6808:7:: with SMTP id u7mr2312364oic.272.1544226462978;
+        Fri, 07 Dec 2018 15:47:42 -0800 (PST)
+Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id c23sm1963554otn.21.2018.12.07.15.47.42
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 07 Dec 2018 15:47:42 -0800 (PST)
+Date:   Fri, 7 Dec 2018 17:47:41 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Stefan Popa <stefan.popa@analog.com>
+Cc:     jic23@kernel.org, mark.rutland@arm.com, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, Michael.Hennerich@analog.com,
+        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] dt-bindings: iio: adc: Add docs for AD7606 ADC
+Message-ID: <20181207234741.GA20026@bogus>
+References: <1543510663-14921-1-git-send-email-stefan.popa@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <1543510663-14921-1-git-send-email-stefan.popa@analog.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patchset adds support for S5PV210 adc variant to exynos-adc driver.
+On Thu, Nov 29, 2018 at 06:57:43PM +0200, Stefan Popa wrote:
+> Document support for AD7606 Analog to Digital Converter.
+> 
+> Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+> ---
+> Changes in v2:
+> 	- fixed indentation issues.
+> 	- used gpios instead of gpio.
+> 	- added vendor prefix for conversion-start-gpios, first-data-gpios,
+> 	and range-gpios.
+> Changes in v3:
+> 	- Added adi,oversampling-ratio-gpios.
+> 
+>  .../devicetree/bindings/iio/adc/adi,ad7606.txt     | 54 ++++++++++++++++++++++
+>  MAINTAINERS                                        |  1 +
+>  2 files changed, 55 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7606.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7606.txt b/Documentation/devicetree/bindings/iio/adc/adi,ad7606.txt
+> new file mode 100644
+> index 0000000..02fae23
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7606.txt
+> @@ -0,0 +1,54 @@
+> +Analog Devices AD7606 Simultaneous Sampling ADC
+> +
+> +Required properties for the AD7606:
+> +
+> +- compatible: Must be one of
+> +	* "adi,ad7605-4"
+> +	* "adi,ad7606-8"
+> +	* "adi,ad7606-6"
+> +	* "adi,ad7606-4"
+> +- reg: SPI chip select number for the device
+> +- spi-max-frequency: Max SPI frequency to use
+> +	see: Documentation/devicetree/bindings/spi/spi-bus.txt
+> +- spi-cpha: See Documentation/devicetree/bindings/spi/spi-bus.txt
+> +- avcc-supply: phandle to the Avcc power supply
+> +- interrupts: IRQ line for the ADC
+> +	see: Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
+> +- adi,conversion-start-gpios: must be the device tree identifier of the CONVST pin.
+> +		  This logic input is used to initiate conversions on the analog
+> +		  input channels.
 
-Jonathan Bakker (3):
-  iio: adc: exynos-adc: Add S5PV210 variant
-  iio: adc: Allow selection of Exynos ADC on S5PV210
-  dt-bindings: iio: adc: exynos-adc: Add S5PV210 variant
+Needs to say active high or low and set the flag appropriately.
 
- .../bindings/iio/adc/samsung,exynos-adc.txt        |  4 +++-
- drivers/iio/adc/Kconfig                            |  2 +-
- drivers/iio/adc/exynos_adc.c                       | 14 ++++++++++++++
- 3 files changed, 18 insertions(+), 2 deletions(-)
+> +
+> +Optional properties:
+> +
+> +- reset-gpios: must be the device tree identifier of the RESET pin. If specified,
+> +	       it will be asserted during driver probe.
 
--- 
-2.17.1
+active high or low?
 
+> +- standby-gpios: must be the device tree identifier of the STBY pin. This pin is used
+> +		to place the AD7606 into one of two power-down modes, Standby mode or
+> +		Shutdown mode.
+
+active high or low?
+
+> +- adi,first-data-gpios: must be the device tree identifier of the FRSTDATA pin.
+> +		    The FRSTDATA output indicates when the first channel, V1, is
+> +		    being read back on either the parallel, byte or serial interface.
+
+active high or low?
+
+> +- adi,range-gpios: must be the device tree identifier of the RANGE pin. The polarity on
+> +	      this pin determines the input range of the analog input channels. If
+> +	      this pin is tied to a logic high, the analog input range is ±10V for
+> +	      all channels. If this pin is tied to a logic low, the analog input range
+> +	      is ±5V for all channels.
+> +
+> +Example:
+> +
+> +	adc@0 {
+> +		compatible = "adi,ad7606-8";
+> +		reg = <0>;
+> +		spi-max-frequency = <1000000>;
+> +		spi-cpol;
+> +
+> +		avcc-supply = <&adc_vref>;
+> +
+> +		interrupts = <25 IRQ_TYPE_EDGE_FALLING>;
+> +		interrupt-parent = <&gpio>;
+> +
+> +		adi,conversion-start-gpios = <&gpio 17 0>;
+> +		reset-gpios = <&gpio 27 0>;
+> +		adi,first-data-gpios = <&gpio 22 0>;
+> +		standby-gpios = <&gpio 24 0>;
+> +	};
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 843545d..6d63db4 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -845,6 +845,7 @@ L:	linux-iio@vger.kernel.org
+>  W:	http://ez.analog.com/community/linux-device-drivers
+>  S:	Supported
+>  F:	drivers/iio/adc/ad7606.c
+> +F:	Documentation/devicetree/bindings/iio/adc/ad7606.txt
+>  
+>  ANALOG DEVICES INC AD9389B DRIVER
+>  M:	Hans Verkuil <hans.verkuil@cisco.com>
+> -- 
+> 2.7.4
+> 
