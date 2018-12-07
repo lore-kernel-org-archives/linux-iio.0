@@ -2,128 +2,100 @@ Return-Path: <SRS0=POtY=OQ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-2.4 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_MUTT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A622C07E85
-	for <linux-iio@archiver.kernel.org>; Fri,  7 Dec 2018 10:29:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FA57C64EB1
+	for <linux-iio@archiver.kernel.org>; Fri,  7 Dec 2018 14:50:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 42C9920838
-	for <linux-iio@archiver.kernel.org>; Fri,  7 Dec 2018 10:29:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CE6B4208E7
+	for <linux-iio@archiver.kernel.org>; Fri,  7 Dec 2018 14:50:09 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rHHT8flL"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 42C9920838
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Vj1syd19"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CE6B4208E7
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725986AbeLGK3d (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 7 Dec 2018 05:29:33 -0500
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:33701 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725985AbeLGK3d (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 7 Dec 2018 05:29:33 -0500
-Received: by mail-ot1-f67.google.com with SMTP id i20so3369765otl.0;
-        Fri, 07 Dec 2018 02:29:33 -0800 (PST)
+        id S1726077AbeLGOuJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 7 Dec 2018 09:50:09 -0500
+Received: from mail-pg1-f170.google.com ([209.85.215.170]:33678 "EHLO
+        mail-pg1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726074AbeLGOuJ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 7 Dec 2018 09:50:09 -0500
+Received: by mail-pg1-f170.google.com with SMTP id z11so1840030pgu.0
+        for <linux-iio@vger.kernel.org>; Fri, 07 Dec 2018 06:50:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KGex2yMlsN+vgL6Rv6Gp2x2aw4JWWLlzNzyfbMwfu2o=;
-        b=rHHT8flLGjd8L8H+OeZIkDx9HAAvOGSImJBnf9g/E8FTJZnyc39I87zuiU3Bdirx12
-         iMcU1t7FDM9waK5UsSIawdxjttHl/BBtjHu76x7ddCEGwPPXk+tTxz5scRBehK9+HBAz
-         LTcMTblbmdRwMqpfcZdL0y/8TqsoGF8vgmvEIeiZbLj6VKff7ziuEYuaZ0KeBvBibqMg
-         NboMXNYQRIalyuc6+ljUCp8q9/TNo16YnKjo5TkDkgOh8MiMCu2gvGtGs7t2duc7vKY5
-         CVmPq5vqc6LRmC10g9lx0Cy1XwE2h8DPF/281IvAe0oBN4lME8iTr7RkhYxaIyyske1j
-         W+ig==
+        h=date:from:to:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=Ki3ta2M2pDqPD7aP4r4svTp8M3mqQ3Vm8QhhFshSx88=;
+        b=Vj1syd19ZeJobkR12G6R6pDvfgrmBZBboeB4me6heMGFpg3zhcvS8cBkFmu0RRApkR
+         X6SzrC3NUhieB8oy6YopOyRKnBhdU6R5ItbIQVSY8n4tB0QEP1NVuOR4cDvA5PCPRgV0
+         AqQnfo1qttqPyAtvf4UVZyr1Qd/+BPkVhAgnpkP9qV6JDkuOiviXX2eCgIK2n/LoQtlf
+         2e4FLlKl4C31aH3kLheb06kfVjuAD6AZbO65XECiqZA+ZTol0nuaLY59QYpRfQs3Ywue
+         Nbo9nIny+deozu3zwUaRxkwO2yXKBxZOZ9ats+v2Rn80qTGDfSVWHrCtrYRK2VLqn89G
+         AZQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KGex2yMlsN+vgL6Rv6Gp2x2aw4JWWLlzNzyfbMwfu2o=;
-        b=UgXI29lD+aUFOIylxYlPY6pL0b/3Nw5heeVpmPlY5uiTIIbzBt55Up8BxLJK/0H84A
-         wYojIbHBPfva+6V+IBShzDwKBrqSDTZ8yqbIlYX1OZVGRNpXXeEiwS0OXlaNJP9Bdl6e
-         aJvtm+W7NGoVBsHhtaCGdYcaDPjkL+b25hfQg7RZLr4+IpewrfMPwM9ehwJsh87j6q6h
-         1J+VnHCHJDMNbOaWphzy9zNGwLxxKx0CaUDZ/qGyLQ8Oi/+HN4Q/8jIUYElyl1a/Vuzu
-         sSYXEzYWBdXZxx+x7SjJylDx5TO20RlnxALYQwvN0JN3Z79WeQ3bWdDcRKXRjBjz2bPt
-         OjHA==
-X-Gm-Message-State: AA+aEWY2Pn5pq+JAfiNKcGRW0x2+77dum9TOBiiYUxI/iX9d7o3GSsLk
-        BgftTgz86fXz1t5CQdzHC2QRi/vp/ZN83Pk1PWo=
-X-Google-Smtp-Source: AFSGD/Ufe2W94LjXwAcQN+NJx33NwfexI2qNrN4dh7tieft0fFXx9ua2RPY7KOvaqH8XkPkCgjf0tnT3MZGLuVtyqfk=
-X-Received: by 2002:a9d:401:: with SMTP id 1mr1047802otc.78.1544178572602;
- Fri, 07 Dec 2018 02:29:32 -0800 (PST)
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=Ki3ta2M2pDqPD7aP4r4svTp8M3mqQ3Vm8QhhFshSx88=;
+        b=dxx34Nlw8f/z62itbbXsi7YNK2UJneUbFaJMR1NecKImPjl7niv51vX5h1SG0yEkXk
+         SQJgAm9mWjbopejWSVZdjOa1MyYODQOSV5ruaJVnnIMnY/0J/H5Nr7EGeIxTSXdzBdQ0
+         oUC/L+48pL0ppgfP5bPiYIrJyH2OmGEcuUnvPGz4MFYZbBcAY9hyn8FPKQ5d7B/5hosF
+         3peygRMj+BTKHb9W+IX9nD6ZFXB/nX10v3KL8VoL/+vGZhg+7I9M4p9s2wiF/eA5jt7n
+         UlHKs4/pxtbA+grUqhcvJh67SCToVKOwVfeVCe+zxuzIcUAG3UZoMcOvsLheME0I447R
+         ug+g==
+X-Gm-Message-State: AA+aEWZxrM14xaXOvgZLSqkDmRvrtIy5k6tHS7qSUBIvmtlRgLzORBQ2
+        iN4m0tft39K4q10bQ4AOm9cBEWH6
+X-Google-Smtp-Source: AFSGD/XSom8d7eLYiX8CwPUQX3fQdQ0U3qpswvzGFwzXevHkoU1Pe+4snU8Uv5+dd9z+tRW+g1UVpA==
+X-Received: by 2002:a63:e84c:: with SMTP id a12mr2162633pgk.241.1544194207550;
+        Fri, 07 Dec 2018 06:50:07 -0800 (PST)
+Received: from himanshu-Vostro-3559 ([103.233.116.134])
+        by smtp.gmail.com with ESMTPSA id v5sm9433082pgn.5.2018.12.07.06.50.05
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 07 Dec 2018 06:50:06 -0800 (PST)
+Date:   Fri, 7 Dec 2018 20:20:00 +0530
+From:   Himanshu Jha <himanshujha199640@gmail.com>
+To:     linux-iio@vger.kernel.org
+Subject: [ANNOUNCE] New IIO mailing list archive
+Message-ID: <20181207145000.GB2023@himanshu-Vostro-3559>
 MIME-Version: 1.0
-References: <1544065798-4465-1-git-send-email-Anson.Huang@nxp.com>
-In-Reply-To: <1544065798-4465-1-git-send-email-Anson.Huang@nxp.com>
-From:   Fabio Estevam <festevam@gmail.com>
-Date:   Fri, 7 Dec 2018 08:29:23 -0200
-Message-ID: <CAOMZO5Be-RzekcsigNKrss-7DGV0F8yU2yhT11n+eAmqP1euKw@mail.gmail.com>
-Subject: Re: [PATCH] iio: light: isl29018: add optional vcc regulator
- operation support
-To:     Yongcai Huang <anson.huang@nxp.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Anson,
+Hello,
 
-On Thu, Dec 6, 2018 at 1:17 AM Anson Huang <anson.huang@nxp.com> wrote:
->
-> The light sensor's power supply could be controlled by regulator
-> on some platforms, such as i.MX6Q-SABRESD board, the light sensor
-> isl29023's power supply is controlled by a GPIO fixed regulator,
-> need to make sure the regulator is enabled before any operation of
-> sensor, this patch adds optional vcc regulator operation support.
->
-> Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
-> ---
->  drivers/iio/light/isl29018.c | 29 +++++++++++++++++++++++++++++
->  1 file changed, 29 insertions(+)
->
-> diff --git a/drivers/iio/light/isl29018.c b/drivers/iio/light/isl29018.c
-> index b45400f..47a55c8 100644
-> --- a/drivers/iio/light/isl29018.c
-> +++ b/drivers/iio/light/isl29018.c
-> @@ -23,6 +23,7 @@
->  #include <linux/mutex.h>
->  #include <linux/delay.h>
->  #include <linux/regmap.h>
-> +#include <linux/regulator/consumer.h>
->  #include <linux/slab.h>
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
-> @@ -95,6 +96,7 @@ struct isl29018_chip {
->         struct isl29018_scale   scale;
->         int                     prox_scheme;
->         bool                    suspended;
-> +       struct regulator        *vcc_reg;
->  };
->
->  static int isl29018_set_integration_time(struct isl29018_chip *chip,
-> @@ -735,6 +737,15 @@ static int isl29018_probe(struct i2c_client *client,
->
->         mutex_init(&chip->lock);
->
-> +       chip->vcc_reg = devm_regulator_get_optional(&client->dev, "vcc");
-> +       if (!IS_ERR(chip->vcc_reg)) {
-> +               err = regulator_enable(chip->vcc_reg);
-> +               if (err) {
-> +                       dev_err(&client->dev, "failed to enable VDD regulator\n");
 
-You call the regulator as "vcc", but in the error message you mention
-"VDD", which is confusing.
+IIO has a new archiving website with all permalink and search
+support etc., at https://lore.kernel.org/linux-iio/
 
-Same comment as in the previous patch.
+Pretty much it will be the "official" kernel mailing list in future
+and
 
-There is no VCC regulator as per the datasheet. There are VDDD and
-VDDA power supplies, so better represent both and with the same name
-they appear in the datasheet.
+YES
+	https://lkml.kernel.org/r/<MSG-ID>
+
+does direct to lore archive (previosuly it used to direct to marc.info?)
+
+Big shout out to our LF IT/Security Buoy a.k.a Konstantin Ryabitsev for
+archiving the list and Jonathan Cameron for the donations $$ ;)
+
+	(Konstantin is the one behind the pr-tracker-bot system ..)
+
+
+
+Namaste _/\_
+-- 
+Himanshu Jha
+Undergraduate Student
+Department of Electronics & Communication
+Guru Tegh Bahadur Institute of Technology
