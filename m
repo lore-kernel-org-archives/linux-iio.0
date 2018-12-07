@@ -2,179 +2,121 @@ Return-Path: <SRS0=POtY=OQ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9400CC07E85
-	for <linux-iio@archiver.kernel.org>; Fri,  7 Dec 2018 18:37:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8891FC64EB1
+	for <linux-iio@archiver.kernel.org>; Fri,  7 Dec 2018 19:12:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5804420672
-	for <linux-iio@archiver.kernel.org>; Fri,  7 Dec 2018 18:37:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4A52D20837
+	for <linux-iio@archiver.kernel.org>; Fri,  7 Dec 2018 19:12:05 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HG4NdIU+"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5804420672
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UMzuIcZe"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4A52D20837
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726078AbeLGSh3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 7 Dec 2018 13:37:29 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:41144 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726072AbeLGSh3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 7 Dec 2018 13:37:29 -0500
-Received: by mail-pg1-f193.google.com with SMTP id 70so2077600pgh.8;
-        Fri, 07 Dec 2018 10:37:28 -0800 (PST)
+        id S1726233AbeLGTL6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 7 Dec 2018 14:11:58 -0500
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:38380 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726172AbeLGTL6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 7 Dec 2018 14:11:58 -0500
+Received: by mail-lj1-f196.google.com with SMTP id c19-v6so4466508lja.5;
+        Fri, 07 Dec 2018 11:11:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=TipxjuVTetJLdNenIgGqyzJK986c8b3z8SSjGt//NU8=;
-        b=HG4NdIU+2AOGBg0HjvQlPBxcpJBbCAt33bd/X78GmzeDgOJaatawjkhdTkjxp7J+Pp
-         eGalkiRrVrgWj7HKeqpqjb5v+D//LfcSfVSWvpiGoYWgm3z8adLml8JimmIy3uV40usz
-         dY3ohSJcY/AHV8G+9kLXZCaRvZfPQ1PC96t8aWNuIOiOPHXlKs2BhCBtfjXlY5DcWhG3
-         6zF1eDjvhvWnG6LzzN7zfusMofXRoloJqBFHMmozX3Xlo/Pr+o2LcIAoShoNmSUdiLwJ
-         RYpFXuyoElrgqUUu/oZMzm90eTNbLcClYfaCZPsfdO4nWgLwXoZE9VbadrbG2eg5A4Gj
-         5nmw==
+        bh=g2x5BRD7D0OPE9JeIh4cIErJAv6rfykzoqrwzqsJVYI=;
+        b=UMzuIcZe7mTZw0Ou8g5w5fRJxwWU+RMMNT0TDXCHpZsj5rFme3BqLltsNGU0Pky18A
+         Iuryxn4DGVtfe+oHVSSZdyw2lq17D78s/AZhZHZi7L+Nbzr+ogLkuZ6F9C7lV/+V5eHX
+         U8MMpS9RYmre81XKtFsji0sdWV12MBaNuIa528SBoYb8wtz5/aTcLt7K3gcCW+xt6jtV
+         F7HIVkiIvTxRWI0pufOJUs1NYKoQGC2jHEmACi4iIfAg8mU+CbK/LxcVQOdv3SpvmBdA
+         woxfhwwF5Af2vHN4XrrtP7lKT0yJOgWbNzVDnCwv/jgU3N3D9kkG0qMLfQmRgCCiBHfO
+         ZO0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=TipxjuVTetJLdNenIgGqyzJK986c8b3z8SSjGt//NU8=;
-        b=MkwuND7a7gJ0X2/BjX5SUbuj2WgrMW3GsxLxzCNjKnWwZMgIghpp7+Y4bSnautm/VH
-         sLKdlFggp4MMz2FmFzkkADDJm2l4dvWCotl6j9ddf3ijWYiWWUJDxxchvmUA4ZViU1su
-         k8waDeMDigQbGM+VnFBp2neKcXgOuQs9kdA+KqmH5cnAsUdg1jjPbW3pdwSFy+aX1R1E
-         nuWUDYcYwDFp4cv6fnUxdmcFfyl+eL8970CezGaQA28dCwnfcJrpV2dWCd3P/5dZujeH
-         7b7RGuHeoANOoQWRLw0bBDQY7AzJdrO/b22JKl1EA4xoIi3rarvxt2/9GINvJw+g5ufk
-         +CSA==
-X-Gm-Message-State: AA+aEWYZIIHd3ILyxvrqamG/bJCf9i3LooNvNYd096dzYyq/KIs+xF6m
-        DOAVcd1EoUxqFASg3osJN9M=
-X-Google-Smtp-Source: AFSGD/X/+hF1Ph5ldWdIS2FJ0RBYwx10Rkpq6GO5IAuArDgqgWTLzsIRSJkaX1hQfnWVNS5oVkWm2Q==
-X-Received: by 2002:a63:c64f:: with SMTP id x15mr2845480pgg.16.1544207847681;
-        Fri, 07 Dec 2018 10:37:27 -0800 (PST)
-Received: from Shreeya-Patel ([103.212.140.150])
-        by smtp.googlemail.com with ESMTPSA id g15sm17915806pfj.131.2018.12.07.10.37.23
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 07 Dec 2018 10:37:26 -0800 (PST)
-Message-ID: <90e3066edb0616cd20ee019e3f2a392fd3a3f285.camel@gmail.com>
-Subject: Re: [PATCH] Revert "Staging: iio: adt7316: Add an extra check for
- 'ret' equals to 0"
-From:   Shreeya Patel <shreeya.patel23498@gmail.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Jeremy Fertic <jeremyfertic@gmail.com>
-Cc:     devel@driverdev.osuosl.org, lars@metafoo.de,
-        Michael.Hennerich@analog.com, linux-iio@vger.kernel.org,
-        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        pmeerw@pmeerw.net, knaack.h@gmx.de, jic23@kernel.org
-Date:   Sat, 08 Dec 2018 00:07:21 +0530
-In-Reply-To: <20181206124047.GH3095@unbuntlaptop>
-References: <20181205014900.4827-1-jeremyfertic@gmail.com>
-         <fccdb26936a9cfcd5134c760cd918929ad3dfa19.camel@gmail.com>
-         <20181205215953.GA2365@r2700x.localdomain>
-         <20181206124047.GH3095@unbuntlaptop>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.1-2 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        bh=g2x5BRD7D0OPE9JeIh4cIErJAv6rfykzoqrwzqsJVYI=;
+        b=A9ZszUIKsJQIqStwGPMbDeuQek8yzJmItzqYjl9bhxzJh+rTQF3VDXc5Q2Ok8TaNTD
+         BZpweq4ie2aF7NVmlDZP5GeKW0BFbEtJ39kqo4wovfhbOMVtoltKyXV7jSkPyVE5i7XD
+         70N+aMTWAf4i5o/Ut3jAMVDMPHXmA0nMWI1oqMWmnpVD9khz8s0OIVdTI16wxzfiBEAd
+         BTNppgsN7XVQbIGgC8z++0FM4bGEf57PhObC3oiR7ThBcfvWEWxMfUS6hMdjQAoC2e2d
+         iYsy12Pw8hQuzZqpff0DdaICwOu7vE7APMAc0np2vKU+rb1emXcnVrFCFUQXZnN5zlla
+         PS7w==
+X-Gm-Message-State: AA+aEWY158w1WUYMZc+DtVGdibhhtOLGozxeP/yGGidfmKqhQ8Nl5/R+
+        nbDyeRA3Z5zspz60ONcMkRs=
+X-Google-Smtp-Source: AFSGD/Uwhu9dmo2o6pcdMi52WE4LA4EXixzLK2K9odxFN1ZMjWB57nNPdaIOl/G02+0IfFuJOKdhMw==
+X-Received: by 2002:a2e:97d7:: with SMTP id m23-v6mr2275086ljj.18.1544209914351;
+        Fri, 07 Dec 2018 11:11:54 -0800 (PST)
+Received: from localhost.localdomain ([2a02:a315:5445:5300:45d9:69e8:d41f:b616])
+        by smtp.googlemail.com with ESMTPSA id 12-v6sm727915ljs.29.2018.12.07.11.11.52
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 07 Dec 2018 11:11:53 -0800 (PST)
+From:   =?UTF-8?q?Pawe=C5=82=20Chmiel?= <pawel.mikolaj.chmiel@gmail.com>
+To:     jic23@kernel.org
+Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        kgene@kernel.org, krzk@kernel.org, xc-racer2@live.ca,
+        pawel.mikolaj.chmiel@gmail.com, broonie@kernel.org,
+        arnaud.pouliquen@st.com, baolin.wang@linaro.org,
+        smohanad@codeaurora.org, eugen.hristev@microchip.com,
+        rdunlap@infradead.org, vilhelm.gray@gmail.com,
+        freeman.liu@spreadtrum.com, marcus.folkesson@gmail.com,
+        geert@linux-m68k.org, robh+dt@kernel.org, mark.rutland@arm.com,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 3/3] dt-bindings: iio: adc: exynos-adc: Add S5PV210 variant
+Date:   Fri,  7 Dec 2018 20:11:36 +0100
+Message-Id: <20181207191136.5464-4-pawel.mikolaj.chmiel@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20181207191136.5464-1-pawel.mikolaj.chmiel@gmail.com>
+References: <20181207191136.5464-1-pawel.mikolaj.chmiel@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 2018-12-06 at 15:40 +0300, Dan Carpenter wrote:
-> On Wed, Dec 05, 2018 at 02:59:53PM -0700, Jeremy Fertic wrote:
-> > On Thu, Dec 06, 2018 at 01:25:55AM +0530, Shreeya Patel wrote:
-> > > On Tue, 2018-12-04 at 18:49 -0700, Jeremy Fertic wrote:
-> > > > This reverts commit 00426e99789357dbff7e719a092ce36a3ce49d94.
-> > > > 
-> > > > i2c_smbus_read_byte() returns 0 when a byte with the value 0 is
-> > > > read
-> > > > from
-> > > > the device. This is a valid read so revert the check for 0.
-> > > > 
-> > > > Signed-off-by: Jeremy Fertic <jeremyfertic@gmail.com>
-> > > > ---
-> > > 
-> > > Hi Jeremy,
-> > > 
-> > > As per my understanding, 0 value indicates no error but no data
-> > > read.
-> > > Then how can this be a valid case?
-> > > 
-> > > Can you please make me understand that how can we consider this
-> > > as a
-> > > valid case even when no data has been read?
-> 
-> It's not reading no data.  It's reading one byte of data and
-> returning
-> it.
-> 
-> > > 
-> > > 
-> > > Thanks
-> > 
-> > I'm not sure I understand why the value 0 would indicate no data
-> > read.
-> > Doesn't that just mean a byte was read with the value 0.
-> 
-> Yes.  It does mean that.  Please don't ask rhetorical
-> questions...  :(
-> This list is full of people who can't resist answering every
-> question.
-> 
-> > For instance, if the input to the adc is 0V. Can you point me to
-> > where
-> > you're seeing that this would indicate no data read?
-> 
-> drivers/i2c/i2c-core-smbus.c
->     88  /**
->     89   * i2c_smbus_read_byte - SMBus "receive byte" protocol
->     90   * @client: Handle to slave device
->     91   *
->     92   * This executes the SMBus "receive byte" protocol, returning
-> negative errno
->     93   * else the byte received from the device.
->     94   */
->     95  s32 i2c_smbus_read_byte(const struct i2c_client *client)
->     96  {
->     97          union i2c_smbus_data data;
->     98          int status;
->     99  
->    100          status = i2c_smbus_xfer(client->adapter, client-
-> >addr, client->flags,
->    101                                  I2C_SMBUS_READ, 0,
->    102                                  I2C_SMBUS_BYTE, &data);
->    103          return (status < 0) ? status : data.byte;
->                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
->    104  }
->    105  EXPORT_SYMBOL(i2c_smbus_read_byte);
+From: Jonathan Bakker <xc-racer2@live.ca>
 
-Even I had sent the same code to Jonathan and we had a discussion on
-this. 
-I asked him that this code clearly shows that there is an error
-condition only when status < 0 then why do we need a check for status =
-0.
+Add information about new compatible for S5PV210
 
-Then he explained me that 0 isn't an error. The issue is the silliness
-of the i2c interface.
+Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
+Signed-off-by: Paweł Chmiel <pawel.mikolaj.chmiel@gmail.com>
+---
+ .../devicetree/bindings/iio/adc/samsung,exynos-adc.txt        | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Pretty much every other bus returns an error (negative) if less data is
-received than expected.  Most i2c
-bus master's do as well but in theory it can return 0 to indicate no
-error but no data read (which doesn't make any sense)
+diff --git a/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.txt b/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.txt
+index 6c49db7f8ad2..a10c1f89037d 100644
+--- a/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.txt
++++ b/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.txt
+@@ -11,7 +11,7 @@ New driver handles the following
+ 
+ Required properties:
+ - compatible:		Must be "samsung,exynos-adc-v1"
+-				for exynos4412/5250 and s5pv210 controllers.
++				for exynos4412/5250 controllers.
+ 			Must be "samsung,exynos-adc-v2" for
+ 				future controllers.
+ 			Must be "samsung,exynos3250-adc" for
+@@ -28,6 +28,8 @@ Required properties:
+ 				the ADC in s3c2443 and compatibles
+ 			Must be "samsung,s3c6410-adc" for
+ 				the ADC in s3c6410 and compatibles
++			Must be "samsung,s5pv210-adc" for
++				the ADC in s5pv210 and compatibles
+ - reg:			List of ADC register address range
+ 			- The base address and range of ADC register
+ 			- The base address and range of ADC_PHY register (every
+-- 
+2.17.1
 
-0 doesn't ever happen in reality but it should be handled for
-correctness though.
-
-So we should wait for what Jonathan has to say on this :)
-
-Thanks
-
-> You are right.  Commit 00426e997893 ("Staging: iio: adt7316: Add an
-> extra check for 'ret' equals to 0") needs to be reverted...
-> 
-> regards,
-> dan carpenter
-> 
-> 
