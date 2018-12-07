@@ -2,71 +2,70 @@ Return-Path: <SRS0=POtY=OQ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BBBCC07E85
-	for <linux-iio@archiver.kernel.org>; Fri,  7 Dec 2018 10:26:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A622C07E85
+	for <linux-iio@archiver.kernel.org>; Fri,  7 Dec 2018 10:29:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E9DF020838
-	for <linux-iio@archiver.kernel.org>; Fri,  7 Dec 2018 10:26:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 42C9920838
+	for <linux-iio@archiver.kernel.org>; Fri,  7 Dec 2018 10:29:34 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="he5/fwmZ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E9DF020838
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rHHT8flL"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 42C9920838
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726003AbeLGK0u (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 7 Dec 2018 05:26:50 -0500
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:35456 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725992AbeLGK0u (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 7 Dec 2018 05:26:50 -0500
-Received: by mail-oi1-f194.google.com with SMTP id v6so3001667oif.2;
-        Fri, 07 Dec 2018 02:26:49 -0800 (PST)
+        id S1725986AbeLGK3d (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 7 Dec 2018 05:29:33 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:33701 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725985AbeLGK3d (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 7 Dec 2018 05:29:33 -0500
+Received: by mail-ot1-f67.google.com with SMTP id i20so3369765otl.0;
+        Fri, 07 Dec 2018 02:29:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=HGLqBv9VTx+Qkeh6OznZaxEk9vgKm95sjYiJmxdO18g=;
-        b=he5/fwmZ+9HTN6QXrnWVRKUKud3dVGiAHDir/H6xFoRK14BiFYP31n5VMRVk+LwFJI
-         85Eb/JI+Lz6qGkRx03m2vvceGC7ld/3AnhVwSnj1tl3ZlDNPaOwm09HEyjcq9UhE7HBm
-         uGPUxsGiLPI+TOnrhhAvx6UnDspre96pu4bH8NtYnHf863wqzdKuv2mtqfq/E7QqpAIl
-         NmnVwnW8KNGMU/AKFdaDXu6/t6UQSz6bdyz3o1/4ao56HKOVtGxhFmw4xIzWGAF98V4p
-         FC/l72AUXw7IvaQj7prKhr2nSwBI/Uccm4qrbp/Hs6NWNAInvhNzQKf/gsJZOMkplOhe
-         YUXA==
+        bh=KGex2yMlsN+vgL6Rv6Gp2x2aw4JWWLlzNzyfbMwfu2o=;
+        b=rHHT8flLGjd8L8H+OeZIkDx9HAAvOGSImJBnf9g/E8FTJZnyc39I87zuiU3Bdirx12
+         iMcU1t7FDM9waK5UsSIawdxjttHl/BBtjHu76x7ddCEGwPPXk+tTxz5scRBehK9+HBAz
+         LTcMTblbmdRwMqpfcZdL0y/8TqsoGF8vgmvEIeiZbLj6VKff7ziuEYuaZ0KeBvBibqMg
+         NboMXNYQRIalyuc6+ljUCp8q9/TNo16YnKjo5TkDkgOh8MiMCu2gvGtGs7t2duc7vKY5
+         CVmPq5vqc6LRmC10g9lx0Cy1XwE2h8DPF/281IvAe0oBN4lME8iTr7RkhYxaIyyske1j
+         W+ig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=HGLqBv9VTx+Qkeh6OznZaxEk9vgKm95sjYiJmxdO18g=;
-        b=MZRXpmM07kUxeGA0eVhVbz2c66VV5AN/X07G8/yADaTqs1Mrt68BxH5/PynVJ2YdSg
-         AiKFiMuvSKGiVg9J6jVsGWwOeLFX5/ZZf5DS8Grx+10oQq+GNg3LgGTDJTDnTKjp3i/1
-         BfQx8ufV1aXLnVBIOyf/cnSisCuJ/M0vTTT1yeKUUOo219gyv/AAyMdYVktvWpEDu984
-         ejU/YaAwO/EROWEgmxYoEu7ND1a5Rkzmp82j7L17XL9cg4bl0m86CPngEChuKDsrCAmW
-         8mFZ6vQlIrXPLvXQ/N8gXWR8vls6ZziukmPq0gRtISplnATBASyBvS10uHmpBhGbDXY2
-         iGJw==
-X-Gm-Message-State: AA+aEWZwxO+7I7veaCnPrduZwjqvBmRTtT+poZMMZ7Gp26TQKYuzl4o4
-        JXow+KWjs5z/R2F6+diKz7bfdZht+WgFJYso2uA=
-X-Google-Smtp-Source: AFSGD/UYaRGcSCWuuJ4hi27297yC7y7TDBDlQY6Cmly7DFl+ZSh/i6IiZ81ClIB12qd/sAQoWmfTkXkLThOfKleD+Rc=
-X-Received: by 2002:aca:cdd0:: with SMTP id d199mr975973oig.266.1544178409303;
- Fri, 07 Dec 2018 02:26:49 -0800 (PST)
+        bh=KGex2yMlsN+vgL6Rv6Gp2x2aw4JWWLlzNzyfbMwfu2o=;
+        b=UgXI29lD+aUFOIylxYlPY6pL0b/3Nw5heeVpmPlY5uiTIIbzBt55Up8BxLJK/0H84A
+         wYojIbHBPfva+6V+IBShzDwKBrqSDTZ8yqbIlYX1OZVGRNpXXeEiwS0OXlaNJP9Bdl6e
+         aJvtm+W7NGoVBsHhtaCGdYcaDPjkL+b25hfQg7RZLr4+IpewrfMPwM9ehwJsh87j6q6h
+         1J+VnHCHJDMNbOaWphzy9zNGwLxxKx0CaUDZ/qGyLQ8Oi/+HN4Q/8jIUYElyl1a/Vuzu
+         sSYXEzYWBdXZxx+x7SjJylDx5TO20RlnxALYQwvN0JN3Z79WeQ3bWdDcRKXRjBjz2bPt
+         OjHA==
+X-Gm-Message-State: AA+aEWY2Pn5pq+JAfiNKcGRW0x2+77dum9TOBiiYUxI/iX9d7o3GSsLk
+        BgftTgz86fXz1t5CQdzHC2QRi/vp/ZN83Pk1PWo=
+X-Google-Smtp-Source: AFSGD/Ufe2W94LjXwAcQN+NJx33NwfexI2qNrN4dh7tieft0fFXx9ua2RPY7KOvaqH8XkPkCgjf0tnT3MZGLuVtyqfk=
+X-Received: by 2002:a9d:401:: with SMTP id 1mr1047802otc.78.1544178572602;
+ Fri, 07 Dec 2018 02:29:32 -0800 (PST)
 MIME-Version: 1.0
-References: <1544072280-26932-1-git-send-email-Anson.Huang@nxp.com>
-In-Reply-To: <1544072280-26932-1-git-send-email-Anson.Huang@nxp.com>
+References: <1544065798-4465-1-git-send-email-Anson.Huang@nxp.com>
+In-Reply-To: <1544065798-4465-1-git-send-email-Anson.Huang@nxp.com>
 From:   Fabio Estevam <festevam@gmail.com>
-Date:   Fri, 7 Dec 2018 08:26:40 -0200
-Message-ID: <CAOMZO5Dw1CU6v8OkVC6iJpgbSom9yD7g5ToEdZQ-V_FoYngoDw@mail.gmail.com>
-Subject: Re: [PATCH] iio: magnetometer: mag3110: add optional vcc regulator
+Date:   Fri, 7 Dec 2018 08:29:23 -0200
+Message-ID: <CAOMZO5Be-RzekcsigNKrss-7DGV0F8yU2yhT11n+eAmqP1euKw@mail.gmail.com>
+Subject: Re: [PATCH] iio: light: isl29018: add optional vcc regulator
  operation support
 To:     Yongcai Huang <anson.huang@nxp.com>
 Cc:     Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>, rtresidd@electromag.com.au,
-        linux-iio@vger.kernel.org,
+        Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
         linux-kernel <linux-kernel@vger.kernel.org>,
         NXP Linux Team <linux-imx@nxp.com>
 Content-Type: text/plain; charset="UTF-8"
@@ -77,27 +76,54 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 Hi Anson,
 
-On Thu, Dec 6, 2018 at 3:05 AM Anson Huang <anson.huang@nxp.com> wrote:
-
->  static int mag3110_request(struct mag3110_data *data)
-> @@ -469,17 +471,27 @@ static int mag3110_probe(struct i2c_client *client,
->         struct iio_dev *indio_dev;
->         int ret;
+On Thu, Dec 6, 2018 at 1:17 AM Anson Huang <anson.huang@nxp.com> wrote:
 >
-> +       indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +       if (!indio_dev)
-> +               return -ENOMEM;
-> +
-> +       data = iio_priv(indio_dev);
-> +
-> +       data->vcc_reg = devm_regulator_get_optional(&client->dev, "vcc");
-> +       if (!IS_ERR(data->vcc_reg)) {
-> +               ret = regulator_enable(data->vcc_reg);
-> +               if (ret) {
-> +                       dev_err(&client->dev, "failed to enable VCC regulator\n");
+> The light sensor's power supply could be controlled by regulator
+> on some platforms, such as i.MX6Q-SABRESD board, the light sensor
+> isl29023's power supply is controlled by a GPIO fixed regulator,
+> need to make sure the regulator is enabled before any operation of
+> sensor, this patch adds optional vcc regulator operation support.
+>
+> Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
+> ---
+>  drivers/iio/light/isl29018.c | 29 +++++++++++++++++++++++++++++
+>  1 file changed, 29 insertions(+)
+>
+> diff --git a/drivers/iio/light/isl29018.c b/drivers/iio/light/isl29018.c
+> index b45400f..47a55c8 100644
+> --- a/drivers/iio/light/isl29018.c
+> +++ b/drivers/iio/light/isl29018.c
+> @@ -23,6 +23,7 @@
+>  #include <linux/mutex.h>
+>  #include <linux/delay.h>
+>  #include <linux/regmap.h>
+> +#include <linux/regulator/consumer.h>
+>  #include <linux/slab.h>
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/sysfs.h>
+> @@ -95,6 +96,7 @@ struct isl29018_chip {
+>         struct isl29018_scale   scale;
+>         int                     prox_scheme;
+>         bool                    suspended;
+> +       struct regulator        *vcc_reg;
+>  };
+>
+>  static int isl29018_set_integration_time(struct isl29018_chip *chip,
+> @@ -735,6 +737,15 @@ static int isl29018_probe(struct i2c_client *client,
+>
+>         mutex_init(&chip->lock);
+>
+> +       chip->vcc_reg = devm_regulator_get_optional(&client->dev, "vcc");
+> +       if (!IS_ERR(chip->vcc_reg)) {
+> +               err = regulator_enable(chip->vcc_reg);
+> +               if (err) {
+> +                       dev_err(&client->dev, "failed to enable VDD regulator\n");
+
+You call the regulator as "vcc", but in the error message you mention
+"VDD", which is confusing.
 
 Same comment as in the previous patch.
 
-There is no VCC regulator as per the datasheet. There are VDD and
-VDDIO power supplies, so better represent both and with the same name
+There is no VCC regulator as per the datasheet. There are VDDD and
+VDDA power supplies, so better represent both and with the same name
 they appear in the datasheet.
