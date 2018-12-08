@@ -2,69 +2,56 @@ Return-Path: <SRS0=HNOD=OR=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98C3EC04EB8
-	for <linux-iio@archiver.kernel.org>; Sat,  8 Dec 2018 10:56:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E23BC04EB8
+	for <linux-iio@archiver.kernel.org>; Sat,  8 Dec 2018 11:00:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3FD0E20892
-	for <linux-iio@archiver.kernel.org>; Sat,  8 Dec 2018 10:56:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2C7AB20672
+	for <linux-iio@archiver.kernel.org>; Sat,  8 Dec 2018 11:00:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1544266562;
-	bh=+dd++7bquUrow6FTENRR2Gdgj7oQ3Tz5OvbEjEvqtvs=;
+	s=default; t=1544266829;
+	bh=RVUrI+QxImd+0DBH9U6dxRXzFVrJWchl/w+3kHHvhFM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=GtdYRH0GQmDN1rSX/8jrjehJ5n9DrZGyaMK/kLbi/J4658kQhWuDwl44ObLLSZouf
-	 osAAjTsLyp5xhoJHQYzxPIZomhxwryVF+BKlDOmHiHzMWAbtGwo2y3Zu/C6byHPlm/
-	 P3bT6ygZfSydkO6TvHdVPJ8KPmbrDsWqG1ow5YOg=
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3FD0E20892
+	b=G/s4n6vBjU0e87ic8+n5NJ2NNSkT1LC9ooLhmPzZHEtZT9GZEVApki8Tv1VzTqAJk
+	 lqFqg82iMHvSyHuhMUkBScpojbDfNWuambO5MQzTJPxb3wEeDmksB9FYdY0aGgWRN8
+	 2EZG76xlTTuZ9wT9xZYgetP8soNIWmCpfOAzC3sI=
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2C7AB20672
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726120AbeLHK4B (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 8 Dec 2018 05:56:01 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55686 "EHLO mail.kernel.org"
+        id S1726112AbeLHLA2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 8 Dec 2018 06:00:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57902 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726111AbeLHK4B (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 8 Dec 2018 05:56:01 -0500
+        id S1726111AbeLHLA2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 8 Dec 2018 06:00:28 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8D53620700;
-        Sat,  8 Dec 2018 10:55:56 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7B6B12064D;
+        Sat,  8 Dec 2018 11:00:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1544266559;
-        bh=+dd++7bquUrow6FTENRR2Gdgj7oQ3Tz5OvbEjEvqtvs=;
+        s=default; t=1544266826;
+        bh=RVUrI+QxImd+0DBH9U6dxRXzFVrJWchl/w+3kHHvhFM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nHOxxnyxwnltDi4TByTaeKBKA69Vpjw0H2dwpfvtekdlreOd2E2XSfZJ+YWs6wq8c
-         sA7AuYUX04nS62zaJLAzpyd/O/+IP5K2/PnU9UPaEEZmrHMwCci3s6hSapOiC4qss1
-         XwcTy+F2J9/s/8I+4P9B4KQbR9AU4oe5N/HTsUos=
-Date:   Sat, 8 Dec 2018 10:55:53 +0000
+        b=x6SQAAjVn5auhtbGi9z2dTZXv+qhSm+33tF24GlPJ1Zv35aSyajSo2cu67Tp9MnFN
+         fm/QRXRNiYqMQ8kTJQ60EcNxirRCoF1uUPhI8EIc3dVhXUc1Yn92Z2AdDqf3lxVTDD
+         Oy50pGR4/qFZGKlQkgSltaRB1Avl78QJW9gi8srk=
+Date:   Sat, 8 Dec 2018 11:00:22 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Philippe Schenker <dev@pschenker.ch>
-Cc:     marcel.ziswiler@toradex.com, stefan@agner.ch,
-        Max Krummenacher <max.krummenacher@toradex.com>,
-        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v3 3/4] iio: adc: add STMPE ADC devicetree bindings
-Message-ID: <20181208105553.61d51b7a@archlinux>
-In-Reply-To: <08da9873dd9b20512a7fce01399c9d778e0ea652.camel@pschenker.ch>
-References: <20181123142411.8921-1-dev@pschenker.ch>
-        <20181123142411.8921-3-dev@pschenker.ch>
-        <20181125100413.73bc729f@archlinux>
-        <08da9873dd9b20512a7fce01399c9d778e0ea652.camel@pschenker.ch>
+To:     Daniel Drake <drake@endlessm.com>
+Cc:     linux-iio@vger.kernel.org, denis.ciocca@st.com, hadess@hadess.net,
+        linux@endlessm.com, hdegoede@redhat.com,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+Subject: Re: [PATCH] Re: Inconsistent SMO8840 accelerometer data between
+ Windows and Linux
+Message-ID: <20181208110022.3d433321@archlinux>
+In-Reply-To: <20181203065707.3428-1-drake@endlessm.com>
+References: <20181201162852.7007d1c9@archlinux>
+        <20181203065707.3428-1-drake@endlessm.com>
 X-Mailer: Claws Mail 3.17.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -74,249 +61,263 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 06 Dec 2018 16:49:33 +0100
-Philippe Schenker <dev@pschenker.ch> wrote:
+On Mon,  3 Dec 2018 14:57:07 +0800
+Daniel Drake <drake@endlessm.com> wrote:
 
-> On Sun, 2018-11-25 at 10:04 +0000, Jonathan Cameron wrote:
-> > On Fri, 23 Nov 2018 15:24:10 +0100
-> > Philippe Schenker <dev@pschenker.ch> wrote:
-> >   
-> > > From: Stefan Agner <stefan@agner.ch>
-> > > 
-> > > This adds the devicetree bindings for the STMPE ADC.
-> > > 
-> > > Signed-off-by: Stefan Agner <stefan@agner.ch>
-> > > Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
-> > > Signed-off-by: Philippe Schenker <philippe.schenker@toradex.com>  
-> > Clearly this will need review from input and mfd.
-> > 
-> > I've suggested inline that you split the realignment out to a
-> > separate patch for reviewability reasons.  
+> Jonathan Cameron wrote:
+> > If we want to support their ONT we'll need to do this first, then
+> > apply ONT on top of that by forming the relevant mount matrix and
+> > outputting that to userspace.
+> > If you fancy having a go it would be good to have this support!  
 > 
-> Thank you again Jonathan for your feedback, and of course also all the others!
+> Cool, I didn't realise that there was a way to export mount matrices.
+> It looks like iio-sensor-proxy doesn't read that attribute yet, I will
+> submit a patch for that.
 > 
-> I will split it much more so everything will be much more readable in v4. You
-> suggested again, to use the naming 'adc {'. I know that this is standard naming,
-> but unfortunately, this naming is given by drivers/mfd/stmpe.c (line 1311). 
-> What do you suggest to do? break the naming scheme in mfd, or just use
-> 'stmpe_adc {' ?
-Leave it as it is, but add a note ideally to say that is the reason.
+> For the kernel changes, here is my initial attempt, comments welcome.
+> I had to drop the const typing from iio_mount_matrix otherwise it's
+> difficult to dynamically construct it.
+> 
+> Also I'm not sure whether we should apply this "default_ont" like Windows
+> does even when _ONT is not present?
+> 
+> I would also love to hear from ST about how this situation happened and
+> if this is the right way forward.
+> 
+> Regarding other devices with _ONT, the only other device we found
+> is Asus P4540UQ, a system that we worked on 2 years ago and no longer
+> have access to. I don't think we tested the accelerometer. The ACPI data
+> indicates SMO8820, with Y and Z axis values requiring sign flip.
+> 
+> Thanks
+> Daniel
+Code looks good to me.  Hopefully we'll get some info on where this came from
+and whether there is any standardization around it at all!
 
 Jonathan
+> ---
+>  drivers/iio/accel/st_accel_core.c     | 161 +++++++++++++++++++++++++-
+>  include/linux/iio/common/st_sensors.h |   1 +
+>  include/linux/iio/iio.h               |   2 +-
+>  3 files changed, 162 insertions(+), 2 deletions(-)
 > 
-> >   
-> > > ---
-> > > 
-> > > Changes in v3:
-> > >  - Reformatted documentation for touchscreen to use tabs and have a better
-> > >    overview of the settings.
-> > >  - Added note which adc-settings will take precedence.
-> > >  - changed typo in sample-time setting from 144 clocks to 124 clocks, as
-> > > stated
-> > >    in the datasheet.
-> > > 
-> > > Changes in v2:
-> > >  - Moved the bindings for ADC to the overlying mfd.
-> > >  - Reformatted for better readability
-> > > 
-> > >  .../devicetree/bindings/iio/adc/stmpe-adc.txt | 21 +++++++
-> > >  .../bindings/input/touchscreen/stmpe.txt      | 60 ++++++++++++-------
-> > >  .../devicetree/bindings/mfd/stmpe.txt         | 28 ++++++---
-> > >  3 files changed, 80 insertions(+), 29 deletions(-)
-> > >  create mode 100644 Documentation/devicetree/bindings/iio/adc/stmpe-adc.txt
-> > > 
-> > > diff --git a/Documentation/devicetree/bindings/iio/adc/stmpe-adc.txt
-> > > b/Documentation/devicetree/bindings/iio/adc/stmpe-adc.txt
-> > > new file mode 100644
-> > > index 000000000000..480e66422625
-> > > --- /dev/null
-> > > +++ b/Documentation/devicetree/bindings/iio/adc/stmpe-adc.txt
-> > > @@ -0,0 +1,21 @@
-> > > +STMPE ADC driver
-> > > +----------------
-> > > +
-> > > +Required properties:
-> > > + - compatible: "st,stmpe-adc"
-> > > +
-> > > +Optional properties:
-> > > +Note that the ADC is shared with the STMPE touchscreen. ADC related
-> > > settings
-> > > +have to be done in the mfd.
-> > > +- st,norequest-mask: bitmask specifying which ADC channels should _not_ be
-> > > +  requestable due to different usage (e.g. touch)
-> > > +
-> > > +Node name must be stmpe_adc and should be child node of stmpe node to
-> > > +which it belongs.
-> > > +
-> > > +Example:
-> > > +
-> > > +	stmpe_adc {  
-> > 
-> > Can we use adc { here to match standard naming?
-> >   
-> > > +		compatible = "st,stmpe-adc";
-> > > +		st,norequest-mask = <0x0F>; /* dont use ADC CH3-0 */
-> > > +	};
-> > > diff --git a/Documentation/devicetree/bindings/input/touchscreen/stmpe.txt
-> > > b/Documentation/devicetree/bindings/input/touchscreen/stmpe.txt
-> > > index 127baa31a77a..414586513a02 100644
-> > > --- a/Documentation/devicetree/bindings/input/touchscreen/stmpe.txt
-> > > +++ b/Documentation/devicetree/bindings/input/touchscreen/stmpe.txt
-> > > @@ -5,36 +5,52 @@ Required properties:
-> > >   - compatible: "st,stmpe-ts"
-> > >  
-> > >  Optional properties:
-> > > -- st,sample-time: ADC converstion time in number of clock.  (0 -> 36
-> > > clocks, 1 ->
-> > > -  44 clocks, 2 -> 56 clocks, 3 -> 64 clocks, 4 -> 80 clocks, 5 -> 96
-> > > clocks, 6  
-> > > -  -> 144 clocks), recommended is 4.    
-> > > -- st,mod-12b: ADC Bit mode (0 -> 10bit ADC, 1 -> 12bit ADC)
-> > > -- st,ref-sel: ADC reference source (0 -> internal reference, 1 -> external
-> > > -  reference)
-> > > -- st,adc-freq: ADC Clock speed (0 -> 1.625 MHz, 1 -> 3.25 MHz, 2 || 3 ->
-> > > 6.5 MHz)
-> > > -- st,ave-ctrl: Sample average control (0 -> 1 sample, 1 -> 2 samples, 2 ->
-> > > 4
-> > > -  samples, 3 -> 8 samples)
-> > > -- st,touch-det-delay: Touch detect interrupt delay (0 -> 10 us, 1 -> 50 us,
-> > > 2 ->
-> > > -  100 us, 3 -> 500 us, 4-> 1 ms, 5 -> 5 ms, 6 -> 10 ms, 7 -> 50 ms)
-> > > recommended
-> > > -  is 3
-> > > -- st,settling: Panel driver settling time (0 -> 10 us, 1 -> 100 us, 2 ->
-> > > 500 us, 3  
-> > > -  -> 1 ms, 4 -> 5 ms, 5 -> 10 ms, 6 for 50 ms, 7 -> 100 ms) recommended is  
-> > > 2  
-> > > -- st,fraction-z: Length of the fractional part in z (fraction-z ([0..7]) =
-> > > Count of
-> > > -  the fractional part) recommended is 7
-> > > -- st,i-drive: current limit value of the touchscreen drivers (0 -> 20 mA
-> > > typical 35
-> > > -  mA max, 1 -> 50 mA typical 80 mA max)
-> > > +- st,ave-ctrl		: Sample average control
-> > > +				0 -> 1 sample
-> > > +				1 -> 2 samples
-> > > +				2 -> 4 samples
-> > > +				3 -> 8 samples
-> > > +- st,touch-det-delay	: Touch detect interrupt delay (recommended is
-> > > 3)
-> > > +				0 -> 10 us		5 -> 5 ms
-> > > +				1 -> 50 us		6 -> 10 ms
-> > > +				2 -> 100 us		7 -> 50 ms
-> > > +				3 -> 500 us
-> > > +				4-> 1 ms
-> > > +- st,settling		: Panel driver settling time (recommended is 2)
-> > > +				0 -> 10 us		5 -> 10 ms
-> > > +				1 -> 100 us		6 for 50 ms
-> > > +				2 -> 500 us		7 -> 100 ms
-> > > +				3 -> 1 ms
-> > > +				4 -> 5 ms
-> > > +- st,fraction-z		: Length of the fractional part in z
-> > > (recommended is 7)
-> > > +			  (fraction-z ([0..7]) = Count of the fractional part)
-> > > +- st,i-drive		: current limit value of the touchscreen drivers
-> > > +				0 -> 20 mA (typical 35mA max)
-> > > +				1 -> 50 mA (typical 80 mA max)
-> > > +
-> > > +Optional properties common with MFD (deprecated):
-> > > + - st,sample-time	: ADC conversion time in number of clock.
-> > > +				0 -> 36 clocks		4 -> 80 clocks
-> > > (recommended)
-> > > +				1 -> 44 clocks		5 -> 96 clocks
-> > > +				2 -> 56 clocks		6 -> 124 clocks
-> > > +				3 -> 64 clocks
-> > > + - st,mod-12b		: ADC Bit mode
-> > > +				0 -> 10bit ADC		1 -> 12bit ADC
-> > > + - st,ref-sel		: ADC reference source
-> > > +				0 -> internal		1 -> external
-> > > + - st,adc-freq		: ADC Clock speed
-> > > +				0 -> 1.625 MHz		2 || 3 -> 6.5 MHz
-> > > +				1 -> 3.25 MHz
-> > >  
-> > >  Node name must be stmpe_touchscreen and should be child node of stmpe node
-> > > to
-> > >  which it belongs.
-> > >  
-> > > +Note that common ADC settings of stmpe_touchscreen will take precedence.
-> > > +
-> > >  Example:
-> > >  
-> > >  	stmpe_touchscreen {
-> > >  		compatible = "st,stmpe-ts";
-> > > -		st,sample-time = <4>;
-> > > -		st,mod-12b = <1>;
-> > > -		st,ref-sel = <0>;
-> > > -		st,adc-freq = <1>;
-> > >  		st,ave-ctrl = <1>;
-> > >  		st,touch-det-delay = <2>;
-> > >  		st,settling = <2>;
-> > > diff --git a/Documentation/devicetree/bindings/mfd/stmpe.txt
-> > > b/Documentation/devicetree/bindings/mfd/stmpe.txt
-> > > index c797c05cd3c2..d4408a417193 100644
-> > > --- a/Documentation/devicetree/bindings/mfd/stmpe.txt
-> > > +++ b/Documentation/devicetree/bindings/mfd/stmpe.txt
-> > > @@ -4,15 +4,29 @@ STMPE is an MFD device which may expose the following
-> > > inbuilt devices: gpio,
-> > >  keypad, touchscreen, adc, pwm, rotator.
-> > >  
-> > >  Required properties:
-> > > - - compatible                   :
-> > > "st,stmpe[610|801|811|1600|1601|2401|2403]"
-> > > - - reg                          : I2C/SPI address of the device
-> > > + - compatible			:
-> > > "st,stmpe[610|801|811|1600|1601|2401|2403]"
-> > > + - reg				: I2C/SPI address of the device  
-> > 
-> > Nothing wrong with correcting alignment, but it shouldn't be in the same patch
-> > as a fundamental change lie this.  Just adds noise.
-> > 
-> > If that means you first have to introduce the new block missaligned, then
-> > fix up the alignment in a follow up patch, then do that as we can then
-> > effectively ignore the realignment as obviously correct and focus on
-> > the real changes.
-> >   
-> > >  
-> > >  Optional properties:
-> > > - - interrupts                   : The interrupt outputs from the controller
-> > > - - interrupt-controller         : Marks the device node as an interrupt
-> > > controller
-> > > - - wakeup-source                : Marks the input device as wakable
-> > > - - st,autosleep-timeout         : Valid entries (ms); 4, 16, 32, 64, 128,
-> > > 256, 512 and 1024
-> > > - - irq-gpio                     : If present, which GPIO to use for event
-> > > IRQ
-> > > + - interrupts			: The interrupt outputs from the
-> > > controller
-> > > + - interrupt-controller		: Marks the device node as an interrupt
-> > > controller
-> > > + - wakeup-source		: Marks the input device as wakable
-> > > + - st,autosleep-timeout		: Valid entries (ms); 4, 16, 32, 64,
-> > > 128, 256, 512 and 1024
-> > > + - irq-gpio			: If present, which GPIO to use for
-> > > event IRQ
-> > > +
-> > > +Optional properties for devices with touch and ADC (STMPE811|STMPE610):
-> > > + - st,sample-time		: ADC conversion time in number of clock.
-> > > +					0 -> 36 clocks		4 -> 80
-> > > clocks (recommended)
-> > > +					1 -> 44 clocks		5 -> 96
-> > > clocks
-> > > +					2 -> 56 clocks		6 -> 124
-> > > clocks
-> > > +					3 -> 64 clocks
-> > > + - st,mod-12b			: ADC Bit mode
-> > > +					0 -> 10bit ADC		1 -> 12bit
-> > > ADC
-> > > + - st,ref-sel			: ADC reference source
-> > > +					0 -> internal		1 ->
-> > > external
-> > > + - st,adc-freq			: ADC Clock speed
-> > > +					0 -> 1.625 MHz		2 || 3 ->
-> > > 6.5 MHz
-> > > +					1 -> 3.25 MHz
-> > >  
-> > >  Example:
-> > >    
-> 
+> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+> index 3e6fd5a8ac5b..3eb4e4b55596 100644
+> --- a/drivers/iio/accel/st_accel_core.c
+> +++ b/drivers/iio/accel/st_accel_core.c
+> @@ -11,6 +11,7 @@
+>  #include <linux/kernel.h>
+>  #include <linux/module.h>
+>  #include <linux/slab.h>
+> +#include <linux/acpi.h>
+>  #include <linux/errno.h>
+>  #include <linux/types.h>
+>  #include <linux/mutex.h>
+> @@ -917,12 +918,157 @@ static const struct iio_trigger_ops st_accel_trigger_ops = {
+>  #define ST_ACCEL_TRIGGER_OPS NULL
+>  #endif
+>  
+> +static const struct iio_mount_matrix *
+> +get_mount_matrix(const struct iio_dev *indio_dev,
+> +		 const struct iio_chan_spec *chan)
+> +{
+> +	struct st_sensor_data *adata = iio_priv(indio_dev);
+> +
+> +	return adata->mount_matrix;
+> +}
+> +
+> +static const struct iio_chan_spec_ext_info mount_matrix_ext_info[] = {
+> +	IIO_MOUNT_MATRIX(IIO_SHARED_BY_ALL, get_mount_matrix),
+> +	{ },
+> +};
+> +
+> +/* Read ST-specific _ONT orientation data from ACPI and generate an
+> + * appropriate mount matrix.
+> + */
+> +static int apply_acpi_orientation(struct iio_dev *indio_dev,
+> +				  struct iio_chan_spec *channels)
+> +{
+> +	struct st_sensor_data *adata = iio_priv(indio_dev);
+> +	struct acpi_buffer buffer = {ACPI_ALLOCATE_BUFFER, NULL};
+> +	struct acpi_device *adev;
+> +	union acpi_object *ont;
+> +	union acpi_object *elements;
+> +	acpi_status status;
+> +	int ret = -EINVAL;
+> +	unsigned int val;
+> +	int i, j;
+> +	int final_ont[3][3] = { 0 };
+> +
+> +	/* For some reason, ST's _ONT translation does not apply directly
+> +	 * to the data read from the sensor. Another translation must be
+> +	 * performed first, as described by the matrix below. Perhaps
+> +	 * ST required this specific translation for the first product
+> +	 * where the device was mounted?
+> +	 */
+> +	const int default_ont[3][3] = {
+> +		{  0,  1,  0 },
+> +		{ -1,  0,  0 },
+> +		{  0,  0, -1 },
+> +	};
+> +
+> +
+> +	adev = ACPI_COMPANION(adata->dev);
+> +	if (!adev)
+> +		return 0;
+> +
+> +	/* Read _ONT data, which should be a package of 6 integers. */
+> +	status = acpi_evaluate_object(adev->handle, "_ONT", NULL, &buffer);
+> +	if (ACPI_FAILURE(status)) {
+> +		ret = status;
+> +		goto out;
+> +	}
+> +
+> +	ont = buffer.pointer;
+> +	if (ont->type != ACPI_TYPE_PACKAGE || ont->package.count != 6)
+> +		goto out;
+> +
+> +	/* The first 3 integers provide axis order information.
+> +	 * e.g. 0 1 2 would indicate normal X,Y,Z ordering.
+> +	 * e.g. 1 0 2 indicates that data arrives in order Y,X,Z.
+> +	 */
+> +	elements = ont->package.elements;
+> +	for (i = 0; i < 3; i++) {
+> +		if (elements[i].type != ACPI_TYPE_INTEGER)
+> +			goto out;
+> +
+> +		val = elements[i].integer.value;
+> +		if (val < 0 || val > 2)
+> +			goto out;
+> +
+> +		/* Avoiding full matrix multiplication, we simply reorder the
+> +		 * columns in the default_ont matrix according to the
+> +		 * ordering provided by _ONT.
+> +		 */
+> +		final_ont[0][i] = default_ont[0][val];
+> +		final_ont[1][i] = default_ont[1][val];
+> +		final_ont[2][i] = default_ont[2][val];
+> +	}
+> +
+> +	/* The final 3 integers provide sign flip information.
+> +	 * 0 means no change, 1 means flip.
+> +	 * e.g. 0 0 1 means that Z data should be sign-flipped.
+> +	 * This is applied after the axis reordering from above.
+> +	 */
+> +	elements += 3;
+> +	for (i = 0; i < 3; i++) {
+> +		if (elements[i].type != ACPI_TYPE_INTEGER)
+> +			goto out;
+> +
+> +		val = elements[i].integer.value;
+> +		if (val != 0 && val != 1)
+> +			goto out;
+> +		if (!val)
+> +			continue;
+> +
+> +		/* Flip the values in the indicated column */
+> +		final_ont[0][i] *= -1;
+> +		final_ont[1][i] *= -1;
+> +		final_ont[2][i] *= -1;
+> +	}
+> +
+> +	/* Convert our integer matrix to a string-based iio_mount_matrix */
+> +	adata->mount_matrix = devm_kmalloc(&indio_dev->dev,
+> +					   sizeof(*adata->mount_matrix),
+> +					   GFP_KERNEL);
+> +	if (!adata->mount_matrix)
+> +		goto out;
+> +
+> +	for (i = 0; i < 3; i++) {
+> +		for (j = 0; j < 3; j++) {
+> +			int matrix_val = final_ont[i][j];
+> +			char *str_value;
+> +
+> +			switch (matrix_val) {
+> +			case -1:
+> +				str_value = "-1";
+> +				break;
+> +			case 0:
+> +				str_value = "0";
+> +				break;
+> +			case 1:
+> +				str_value = "1";
+> +				break;
+> +			default:
+> +				goto out;
+> +			}
+> +			adata->mount_matrix->rotation[i * 3 + j] = str_value;
+> +		}
+> +	}
+> +
+> +	/* Expose the mount matrix via ext_info */
+> +	for (i = 0; i < indio_dev->num_channels; i++)
+> +		channels[i].ext_info = mount_matrix_ext_info;
+> +
+> +	ret = 0;
+> +
+> +out:
+> +	kfree(buffer.pointer);
+> +	return ret;
+> +}
+> +
+>  int st_accel_common_probe(struct iio_dev *indio_dev)
+>  {
+>  	struct st_sensor_data *adata = iio_priv(indio_dev);
+>  	struct st_sensors_platform_data *pdata =
+>  		(struct st_sensors_platform_data *)adata->dev->platform_data;
+>  	int irq = adata->get_irq_data_ready(indio_dev);
+> +	struct iio_chan_spec *channels;
+> +	size_t channels_size;
+>  	int err;
+>  
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+> @@ -941,9 +1087,22 @@ int st_accel_common_probe(struct iio_dev *indio_dev)
+>  
+>  	adata->num_data_channels = ST_ACCEL_NUMBER_DATA_CHANNELS;
+>  	adata->multiread_bit = adata->sensor_settings->multi_read_bit;
+> -	indio_dev->channels = adata->sensor_settings->ch;
+>  	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
+>  
+> +	channels_size = indio_dev->num_channels * sizeof(struct iio_chan_spec);
+> +	channels = devm_kmemdup(&indio_dev->dev,
+> +				adata->sensor_settings->ch,
+> +				channels_size, GFP_KERNEL);
+> +	if (!channels) {
+> +		err = -ENOMEM;
+> +		goto st_accel_power_off;
+> +	}
+> +
+> +	err = apply_acpi_orientation(indio_dev, channels);
+> +	if (err < 0)
+> +		goto st_accel_power_off;
+> +
+> +	indio_dev->channels = channels;
+>  	adata->current_fullscale = (struct st_sensor_fullscale_avl *)
+>  					&adata->sensor_settings->fs.fs_avl[0];
+>  	adata->odr = adata->sensor_settings->odr.odr_avl[0].hz;
+> diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
+> index f9bd6e8ab138..fe15694128ac 100644
+> --- a/include/linux/iio/common/st_sensors.h
+> +++ b/include/linux/iio/common/st_sensors.h
+> @@ -260,6 +260,7 @@ struct st_sensor_settings {
+>  struct st_sensor_data {
+>  	struct device *dev;
+>  	struct iio_trigger *trig;
+> +	struct iio_mount_matrix *mount_matrix;
+>  	struct st_sensor_settings *sensor_settings;
+>  	struct st_sensor_fullscale_avl *current_fullscale;
+>  	struct regulator *vdd;
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index a74cb177dc6f..d3094ffeb9da 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -125,7 +125,7 @@ ssize_t iio_enum_write(struct iio_dev *indio_dev,
+>   *            main hardware
+>   */
+>  struct iio_mount_matrix {
+> -	const char *rotation[9];
+> +	char *rotation[9];
+>  };
+>  
+>  ssize_t iio_show_mount_matrix(struct iio_dev *indio_dev, uintptr_t priv,
 
