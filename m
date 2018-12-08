@@ -4,52 +4,55 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64278C04EB8
-	for <linux-iio@archiver.kernel.org>; Sat,  8 Dec 2018 11:56:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9267C04EB8
+	for <linux-iio@archiver.kernel.org>; Sat,  8 Dec 2018 12:05:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 06CFD20673
-	for <linux-iio@archiver.kernel.org>; Sat,  8 Dec 2018 11:56:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 837FE20868
+	for <linux-iio@archiver.kernel.org>; Sat,  8 Dec 2018 12:05:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1544270175;
-	bh=FIdDRxk0IaGUJSsJYNUMQjKMqEZnUuzO+tmWbBXSsUU=;
+	s=default; t=1544270728;
+	bh=/Vm3WtqAq8bkzKwND88/cyeatgqIjS857dQPcPfc53A=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=nKWaIOni1Z7PrEl3Pzn7Tdh1lxTfZKyrP/m64hrIr4h7ciXniHbtAVYOGwE4aSO2p
-	 kjDgwGxkerFEMHRM3XLEoa9ljvt7xV2yu3dhDdA+6ye1/Tdfd+xG0RHOoioR9zwev4
-	 iwHTEi0uYO1w2nGPteFkKLyGdjG9OG/14ENy8E5w=
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 06CFD20673
+	b=Hos4VheeTgSELsAuxVn/k6j19MV0b09k6jjyhbWavF9f5/1K1XJOK4EnAtSE5l1YO
+	 /uJmWr0enU2N4KftYuC0a8Zwyk5VDlZagrmGKYv/PlNm2Z70kw5jAYXRA5QkTzT0bP
+	 Qi2v/ZE4edTQ+HugWlaZ5ULB7kK5f0EQvtJFoBL0=
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 837FE20868
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726120AbeLHL4O (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 8 Dec 2018 06:56:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48938 "EHLO mail.kernel.org"
+        id S1726204AbeLHMFW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 8 Dec 2018 07:05:22 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52488 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726112AbeLHL4O (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 8 Dec 2018 06:56:14 -0500
+        id S1726112AbeLHMFV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 8 Dec 2018 07:05:21 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 419D820673;
-        Sat,  8 Dec 2018 11:56:12 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8A91C2081C;
+        Sat,  8 Dec 2018 12:05:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1544270173;
-        bh=FIdDRxk0IaGUJSsJYNUMQjKMqEZnUuzO+tmWbBXSsUU=;
+        s=default; t=1544270720;
+        bh=/Vm3WtqAq8bkzKwND88/cyeatgqIjS857dQPcPfc53A=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Smd1z7bOl9ZsmtrAi9WJg39dy2id7SBnPoj3YE8EeuVDas0J4AvjjKv97qNPuuFTY
-         MzrZk8KHAkNUJq1Yu+gjoD88m2SH1t7mQhBlWH/kF1UWSfoKgE/V0oVTqb3ouRHi2d
-         Iuz0o4noYcVUf2o/q42CwhMlZDG5Sr6hfR6u1Os0=
-Date:   Sat, 8 Dec 2018 11:56:09 +0000
+        b=M9/hx/b1Al+hHTVxurjOfBLxZtyDpaGPJRWH+rZUNjsfTzNE59fJjY2GE7SLsTx/o
+         +fPMtp5AXaN5R/FD/ZaDo6MFQ07blAnkRVzU7JELlJPBZXVsDF9YRSwNDhzklQA219
+         naKKWMGHGNUR1GjJSZpWqC2Balv8Y7Ok+760xuP8=
+Date:   Sat, 8 Dec 2018 12:05:15 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Dan Murphy <dmurphy@ti.com>
-Cc:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <robh+dt@kernel.org>
-Subject: Re: [PATCH 2/2] iio: adc: Add the TI ads124s08 ADC code
-Message-ID: <20181208115609.1311188a@archlinux>
-In-Reply-To: <20181204175955.8259-2-dmurphy@ti.com>
-References: <20181204175955.8259-1-dmurphy@ti.com>
-        <20181204175955.8259-2-dmurphy@ti.com>
+To:     Matthias Kaehlcke <mka@chromium.org>
+Cc:     Evan Green <evgreen@chromium.org>, linux-iio@vger.kernel.org,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Siddartha Mohanadoss <smohanad@codeaurora.org>,
+        linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: Re: [PATCH] iio: adc: qcom-spmi-adc5: Initialize prescale properly
+Message-ID: <20181208120515.3ccf7e9a@archlinux>
+In-Reply-To: <20181204195732.GC14307@google.com>
+References: <20181204191419.144726-1-evgreen@chromium.org>
+        <20181204195732.GC14307@google.com>
 X-Mailer: Claws Mail 3.17.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -59,603 +62,192 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 4 Dec 2018 11:59:55 -0600
-Dan Murphy <dmurphy@ti.com> wrote:
+On Tue, 4 Dec 2018 11:57:32 -0800
+Matthias Kaehlcke <mka@chromium.org> wrote:
 
-> Introduce the TI ADS124S08 and the ADS124S06 ADC
-> devices from TI.  The ADS124S08 is the 12 channel ADC
-> and the ADS124S06 is the 6 channel ADC device
+> On Tue, Dec 04, 2018 at 11:14:19AM -0800, Evan Green wrote:
+> > adc5_get_dt_data uses a local, prop, feeds it to adc5_get_dt_channel_data,
+> > and then puts the result into adc->chan_props. The problem is
+> > adc5_get_dt_channel_data may not initialize that structure fully, so a
+> > garbage value is used for prescale if the optional "qcom,pre-scaling" is
+> > not defined in DT. adc5_read_raw then uses this as an array index,
+> > generating a crash that looks like this:
+> > 
+> > [    6.683186] Unable to handle kernel paging request at virtual address ffffff90e78c7964
+> > Call trace:
+> > qcom_vadc_scale_code_voltage_factor+0x74/0x104
+> > qcom_vadc_scale_hw_calib_die_temp+0x20/0x60
+> > qcom_adc5_hw_scale+0x78/0xa4
+> > adc5_read_raw+0x3d0/0x65c
+> > iio_channel_read+0x240/0x30c
+> > iio_read_channel_processed+0x10c/0x150
+> > qpnp_tm_get_temp+0xc0/0x40c
+> > of_thermal_get_temp+0x7c/0x98
+> > thermal_zone_get_temp+0xac/0xd8
+> > thermal_zone_device_update+0xc0/0x38c
+> > qpnp_tm_probe+0x624/0x81c
+> > platform_drv_probe+0xe4/0x11c
+> > really_probe+0x188/0x3fc
+> > driver_probe_device+0xb8/0x188
+> > __device_attach_driver+0x114/0x180
+> > bus_for_each_drv+0xd8/0x118
+> > __device_attach+0x180/0x27c
+> > device_initial_probe+0x20/0x2c
+> > bus_probe_device+0x78/0x124
+> > deferred_probe_work_func+0xfc/0x138
+> > process_one_work+0x3d8/0x8b0
+> > process_scheduled_works+0x48/0x6c
+> > worker_thread+0x488/0x7cc
+> > kthread+0x24c/0x264
+> > ret_from_fork+0x10/0x18
+> > 
+> > Unfortunately, when I went to add the initializer for this and tried to
+> > boot it, my machine shut down immediately, complaining that it was
+> > hotter than the sun. It appears that adc5_chans_pmic and adc5_chans_rev2
+> > were initializing prescale_index as if it were directly a divisor,
+> > rather than the index into adc5_prescale_ratios that it is.
+> > 
+> > Fix the uninitialized value, and change the static initialization to use
+> > indices into adc5_prescale_ratios.
+> > 
+> > Signed-off-by: Evan Green <evgreen@chromium.org>
+> > ---
+> > 
+> >  drivers/iio/adc/qcom-spmi-adc5.c | 58 +++++++++++++++++---------------
+> >  1 file changed, 31 insertions(+), 27 deletions(-)
+> > 
+> > diff --git a/drivers/iio/adc/qcom-spmi-adc5.c b/drivers/iio/adc/qcom-spmi-adc5.c
+> > index f9af6b082916b..6a866cc187f7d 100644
+> > --- a/drivers/iio/adc/qcom-spmi-adc5.c
+> > +++ b/drivers/iio/adc/qcom-spmi-adc5.c
+> > @@ -423,6 +423,7 @@ struct adc5_channels {
+> >  	enum vadc_scale_fn_type scale_fn_type;
+> >  };
+> >  
+> > +/* In these definitions, _pre refers to an index into adc5_prescale_ratios. */
+> >  #define ADC5_CHAN(_dname, _type, _mask, _pre, _scale)			\
+> >  	{								\
+> >  		.datasheet_name = _dname,				\
+> > @@ -443,63 +444,63 @@ struct adc5_channels {
+> >  		  _pre, _scale)						\
+> >  
+> >  static const struct adc5_channels adc5_chans_pmic[ADC5_MAX_CHANNEL] = {
+> > -	[ADC5_REF_GND]		= ADC5_CHAN_VOLT("ref_gnd", 1,
+> > +	[ADC5_REF_GND]		= ADC5_CHAN_VOLT("ref_gnd", 0,
+> >  					SCALE_HW_CALIB_DEFAULT)
+> > -	[ADC5_1P25VREF]		= ADC5_CHAN_VOLT("vref_1p25", 1,
+> > +	[ADC5_1P25VREF]		= ADC5_CHAN_VOLT("vref_1p25", 0,
+> >  					SCALE_HW_CALIB_DEFAULT)
+> > -	[ADC5_VPH_PWR]		= ADC5_CHAN_VOLT("vph_pwr", 3,
+> > +	[ADC5_VPH_PWR]		= ADC5_CHAN_VOLT("vph_pwr", 1,
+> >  					SCALE_HW_CALIB_DEFAULT)
+> > -	[ADC5_VBAT_SNS]		= ADC5_CHAN_VOLT("vbat_sns", 3,
+> > +	[ADC5_VBAT_SNS]		= ADC5_CHAN_VOLT("vbat_sns", 1,
+> >  					SCALE_HW_CALIB_DEFAULT)
+> > -	[ADC5_DIE_TEMP]		= ADC5_CHAN_TEMP("die_temp", 1,
+> > +	[ADC5_DIE_TEMP]		= ADC5_CHAN_TEMP("die_temp", 0,
+> >  					SCALE_HW_CALIB_PMIC_THERM)
+> > -	[ADC5_USB_IN_I]		= ADC5_CHAN_VOLT("usb_in_i_uv", 1,
+> > +	[ADC5_USB_IN_I]		= ADC5_CHAN_VOLT("usb_in_i_uv", 0,
+> >  					SCALE_HW_CALIB_DEFAULT)
+> > -	[ADC5_USB_IN_V_16]	= ADC5_CHAN_VOLT("usb_in_v_div_16", 16,
+> > +	[ADC5_USB_IN_V_16]	= ADC5_CHAN_VOLT("usb_in_v_div_16", 8,
+> >  					SCALE_HW_CALIB_DEFAULT)
+> > -	[ADC5_CHG_TEMP]		= ADC5_CHAN_TEMP("chg_temp", 1,
+> > +	[ADC5_CHG_TEMP]		= ADC5_CHAN_TEMP("chg_temp", 0,
+> >  					SCALE_HW_CALIB_PM5_CHG_TEMP)
+> >  	/* Charger prescales SBUx and MID_CHG to fit within 1.8V upper unit */
+> > -	[ADC5_SBUx]		= ADC5_CHAN_VOLT("chg_sbux", 3,
+> > +	[ADC5_SBUx]		= ADC5_CHAN_VOLT("chg_sbux", 1,
+> >  					SCALE_HW_CALIB_DEFAULT)
+> > -	[ADC5_MID_CHG_DIV6]	= ADC5_CHAN_VOLT("chg_mid_chg", 6,
+> > +	[ADC5_MID_CHG_DIV6]	= ADC5_CHAN_VOLT("chg_mid_chg", 3,
+> >  					SCALE_HW_CALIB_DEFAULT)
+> > -	[ADC5_XO_THERM_100K_PU]	= ADC5_CHAN_TEMP("xo_therm", 1,
+> > +	[ADC5_XO_THERM_100K_PU]	= ADC5_CHAN_TEMP("xo_therm", 0,
+> >  					SCALE_HW_CALIB_XOTHERM)
+> > -	[ADC5_AMUX_THM1_100K_PU] = ADC5_CHAN_TEMP("amux_thm1_100k_pu", 1,
+> > +	[ADC5_AMUX_THM1_100K_PU] = ADC5_CHAN_TEMP("amux_thm1_100k_pu", 0,
+> >  					SCALE_HW_CALIB_THERM_100K_PULLUP)
+> > -	[ADC5_AMUX_THM2_100K_PU] = ADC5_CHAN_TEMP("amux_thm2_100k_pu", 1,
+> > +	[ADC5_AMUX_THM2_100K_PU] = ADC5_CHAN_TEMP("amux_thm2_100k_pu", 0,
+> >  					SCALE_HW_CALIB_THERM_100K_PULLUP)
+> > -	[ADC5_AMUX_THM3_100K_PU] = ADC5_CHAN_TEMP("amux_thm3_100k_pu", 1,
+> > +	[ADC5_AMUX_THM3_100K_PU] = ADC5_CHAN_TEMP("amux_thm3_100k_pu", 0,
+> >  					SCALE_HW_CALIB_THERM_100K_PULLUP)
+> > -	[ADC5_AMUX_THM2]	= ADC5_CHAN_TEMP("amux_thm2", 1,
+> > +	[ADC5_AMUX_THM2]	= ADC5_CHAN_TEMP("amux_thm2", 0,
+> >  					SCALE_HW_CALIB_PM5_SMB_TEMP)
+> >  };
+> >  
+> >  static const struct adc5_channels adc5_chans_rev2[ADC5_MAX_CHANNEL] = {
+> > -	[ADC5_REF_GND]		= ADC5_CHAN_VOLT("ref_gnd", 1,
+> > +	[ADC5_REF_GND]		= ADC5_CHAN_VOLT("ref_gnd", 0,
+> >  					SCALE_HW_CALIB_DEFAULT)
+> > -	[ADC5_1P25VREF]		= ADC5_CHAN_VOLT("vref_1p25", 1,
+> > +	[ADC5_1P25VREF]		= ADC5_CHAN_VOLT("vref_1p25", 0,
+> >  					SCALE_HW_CALIB_DEFAULT)
+> > -	[ADC5_VPH_PWR]		= ADC5_CHAN_VOLT("vph_pwr", 3,
+> > +	[ADC5_VPH_PWR]		= ADC5_CHAN_VOLT("vph_pwr", 1,
+> >  					SCALE_HW_CALIB_DEFAULT)
+> > -	[ADC5_VBAT_SNS]		= ADC5_CHAN_VOLT("vbat_sns", 3,
+> > +	[ADC5_VBAT_SNS]		= ADC5_CHAN_VOLT("vbat_sns", 1,
+> >  					SCALE_HW_CALIB_DEFAULT)
+> > -	[ADC5_VCOIN]		= ADC5_CHAN_VOLT("vcoin", 3,
+> > +	[ADC5_VCOIN]		= ADC5_CHAN_VOLT("vcoin", 1,
+> >  					SCALE_HW_CALIB_DEFAULT)
+> > -	[ADC5_DIE_TEMP]		= ADC5_CHAN_TEMP("die_temp", 1,
+> > +	[ADC5_DIE_TEMP]		= ADC5_CHAN_TEMP("die_temp", 0,
+> >  					SCALE_HW_CALIB_PMIC_THERM)
+> > -	[ADC5_AMUX_THM1_100K_PU] = ADC5_CHAN_TEMP("amux_thm1_100k_pu", 1,
+> > +	[ADC5_AMUX_THM1_100K_PU] = ADC5_CHAN_TEMP("amux_thm1_100k_pu", 0,
+> >  					SCALE_HW_CALIB_THERM_100K_PULLUP)
+> > -	[ADC5_AMUX_THM2_100K_PU] = ADC5_CHAN_TEMP("amux_thm2_100k_pu", 1,
+> > +	[ADC5_AMUX_THM2_100K_PU] = ADC5_CHAN_TEMP("amux_thm2_100k_pu", 0,
+> >  					SCALE_HW_CALIB_THERM_100K_PULLUP)
+> > -	[ADC5_AMUX_THM3_100K_PU] = ADC5_CHAN_TEMP("amux_thm3_100k_pu", 1,
+> > +	[ADC5_AMUX_THM3_100K_PU] = ADC5_CHAN_TEMP("amux_thm3_100k_pu", 0,
+> >  					SCALE_HW_CALIB_THERM_100K_PULLUP)
+> > -	[ADC5_AMUX_THM4_100K_PU] = ADC5_CHAN_TEMP("amux_thm4_100k_pu", 1,
+> > +	[ADC5_AMUX_THM4_100K_PU] = ADC5_CHAN_TEMP("amux_thm4_100k_pu", 0,
+> >  					SCALE_HW_CALIB_THERM_100K_PULLUP)
+> > -	[ADC5_AMUX_THM5_100K_PU] = ADC5_CHAN_TEMP("amux_thm5_100k_pu", 1,
+> > +	[ADC5_AMUX_THM5_100K_PU] = ADC5_CHAN_TEMP("amux_thm5_100k_pu", 0,
+> >  					SCALE_HW_CALIB_THERM_100K_PULLUP)
+> > -	[ADC5_XO_THERM_100K_PU]	= ADC5_CHAN_TEMP("xo_therm_100k_pu", 1,
+> > +	[ADC5_XO_THERM_100K_PU]	= ADC5_CHAN_TEMP("xo_therm_100k_pu", 0,
+> >  					SCALE_HW_CALIB_THERM_100K_PULLUP)
+> >  };
+> >  
+> > @@ -558,6 +559,9 @@ static int adc5_get_dt_channel_data(struct adc5_chip *adc,
+> >  			return ret;
+> >  		}
+> >  		prop->prescale = ret;
+> > +	} else {
+> > +		prop->prescale =
+> > +			adc->data->adc_chans[prop->channel].prescale_index;
+> >  	}
+> >  
+> >  	ret = of_property_read_u32(node, "qcom,hw-settle-time", &value);  
 > 
-> These devices share a common datasheet:
-> http://www.ti.com/lit/gpn/ads124s08
+> Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
 > 
-> Signed-off-by: Dan Murphy <dmurphy@ti.com>
-Various minor things inline.
+> Good as an immediate fix.
+> 
+> In the long term I wonder if it would be better to pass a ratio to
+> ADC5_CHAN_XYZ and store it in struct adc5_channel_prop, instead of
+> specifying the index, which is more error prone and errors are harder
+> to spot. With this adc5_prescale_ratios would still exist, but only be
+> used for the sanity check of prescaling values from the DT.
+
+I am going to let this sit for a little longer to let Siddartha have
+a chance to comment as well.  We are getting late this cycle
+so this may end up going upstream at the start of the next one
+(as it'll be marked for stable that shouldn't matter much).
+
+Poke me if I seem to have forgotten it in a week or so.
 
 Thanks,
 
 Jonathan
-
-> ---
->  drivers/iio/adc/Kconfig        |  10 +
->  drivers/iio/adc/Makefile       |   1 +
->  drivers/iio/adc/ti-ads124s08.c | 437 +++++++++++++++++++++++++++++++++
->  3 files changed, 448 insertions(+)
->  create mode 100644 drivers/iio/adc/ti-ads124s08.c
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index a52fea8749a9..e8c5686e6716 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -887,6 +887,16 @@ config TI_ADS8688
->  	  This driver can also be built as a module. If so, the module will be
->  	  called ti-ads8688.
->  
-> +config TI_ADS124S08
-> +	tristate "Texas Instruments ADS124S08"
-> +	depends on SPI && OF
-> +	help
-> +	  If you say yes here you get support for Texas Instruments ADS124S08
-> +	  and ADS124S06 ADC chips
-> +
-> +	  This driver can also be built as a module. If so, the module will be
-> +	  called ti-ads124s08.
-> +
->  config TI_AM335X_ADC
->  	tristate "TI's AM335X ADC driver"
->  	depends on MFD_TI_AM335X_TSCADC && HAS_DMA
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index a6e6a0b659e2..d70293abfdba 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -79,6 +79,7 @@ obj-$(CONFIG_TI_ADC161S626) += ti-adc161s626.o
->  obj-$(CONFIG_TI_ADS1015) += ti-ads1015.o
->  obj-$(CONFIG_TI_ADS7950) += ti-ads7950.o
->  obj-$(CONFIG_TI_ADS8688) += ti-ads8688.o
-> +obj-$(CONFIG_TI_ADS124S08) += ti-ads124s08.o
->  obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
->  obj-$(CONFIG_TI_TLC4541) += ti-tlc4541.o
->  obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
-> diff --git a/drivers/iio/adc/ti-ads124s08.c b/drivers/iio/adc/ti-ads124s08.c
-> new file mode 100644
-> index 000000000000..b6fc93f37355
-> --- /dev/null
-> +++ b/drivers/iio/adc/ti-ads124s08.c
-> @@ -0,0 +1,437 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +// TI ADS124S0X chip family driver
-> +// Copyright (C) 2018 Texas Instruments Incorporated - http://www.ti.com/
-An oddity of current kernel style is that typically only the spdx
-line is // 
-
-The rest are a normal kernel multiline comment.
-
-> +
-> +#include <linux/err.h>
-> +#include <linux/delay.h>
-> +#include <linux/device.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/of_gpio.h>
-> +#include <linux/slab.h>
-> +#include <linux/sysfs.h>
-> +
-> +#include <linux/gpio/consumer.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/spi/spi.h>
-> +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +#include <linux/iio/sysfs.h>
-> +
-> +#define ADS124S08_ID		0x00
-> +#define ADS124S06_ID		0x01
-
-Use an enum for these as the actual values don't matter, only that
-they are unique.
-
-> +
-> +/* Commands */
-> +#define ADS124S_CMD_NOP		0x00
-Why this shorter prefix? Are all ADS124S parts
-compatible with this list? 
-
-> +#define ADS124S_CMD_WAKEUP	0x02
-> +#define ADS124S_CMD_PWRDWN	0x04
-> +#define ADS124S_CMD_RESET	0x06
-> +#define ADS124S_CMD_START	0x08
-> +#define ADS124S_CMD_STOP	0x0a
-> +#define ADS124S_CMD_SYOCAL	0x16
-> +#define ADS124S_CMD_SYGCAL	0x17
-> +#define ADS124S_CMD_SFOCAL	0x19
-> +#define ADS124S_CMD_RDATA	0x12
-> +#define ADS124S_CMD_RREG	0x20
-> +#define ADS124S_CMD_WREG	0x40
-> +
-> +/* Registers */
-> +#define ADS124S0X_ID		0x00
-Avoid wild cards in naming.  It always goes wrong when
-along comes another part that is similar but not quite the
-same yet fits in your naming scheme.  Just pick a part
-and name after that.
-
-> +#define ADS124S0X_STATUS	0x01
-> +#define ADS124S0X_INPUT_MUX	0x02
-> +#define ADS124S0X_PGA		0x03
-> +#define ADS124S0X_DATA_RATE	0x04
-> +#define ADS124S0X_REF		0x05
-> +#define ADS124S0X_IDACMAG	0x06
-> +#define ADS124S0X_IDACMUX	0x07
-> +#define ADS124S0X_VBIAS		0x08
-> +#define ADS124S0X_SYS		0x09
-> +#define ADS124S0X_OFCAL0	0x0a
-> +#define ADS124S0X_OFCAL1	0x0b
-> +#define ADS124S0X_OFCAL2	0x0c
-> +#define ADS124S0X_FSCAL0	0x0d
-> +#define ADS124S0X_FSCAL1	0x0e
-> +#define ADS124S0X_FSCAL2	0x0f
-> +#define ADS124S0X_GPIODAT	0x10
-> +#define ADS124S0X_GPIOCON	0x11
-> +
-> +/* ADS124S0x common channels */
-> +#define ADS124S0X_AIN0		0x00
-> +#define ADS124S0X_AIN1		0x01
-> +#define ADS124S0X_AIN2		0x02
-> +#define ADS124S0X_AIN3		0x03
-> +#define ADS124S0X_AIN4		0x04
-> +#define ADS124S0X_AIN5		0x05
-> +#define ADS124S08_AINCOM	0x0c
-> +/* ADS124S08 only channels */
-> +#define ADS124S08_AIN6		0x06
-> +#define ADS124S08_AIN7		0x07
-> +#define ADS124S08_AIN8		0x08
-> +#define ADS124S08_AIN9		0x09
-> +#define ADS124S08_AIN10		0x0a
-> +#define ADS124S08_AIN11		0x0b
-> +#define ADS124S0X_MAX_CHANNELS	12
-> +
-> +#define ADS124S0X_POS_MUX_SHIFT	0x04
-> +#define ADS124S_INT_REF		0x09
-> +
-> +#define ADS124S_START_REG_MASK	0x1f
-> +#define ADS124S_NUM_BYTES_MASK	0x1f
-> +
-> +#define ADS124S_START_CONV	0x01
-> +#define ADS124S_STOP_CONV	0x00
-> +
-> +struct ads124s_chip_info {
-> +	const struct iio_chan_spec *channels;
-> +	unsigned int num_channels;
-> +};
-> +
-> +struct ads124s_private {
-> +	const struct ads124s_chip_info	*chip_info;
-> +	struct gpio_desc *reset_gpio;
-> +	struct spi_device *spi;
-> +	struct regulator *reg;
-> +	struct mutex lock;
-> +	unsigned int vref_mv;
-> +	u8 data[ADS124S0X_MAX_CHANNELS];
-This will break in horrible ways on spi controllers using DMA.
-The data buffer needs to be in it's own cacheline to avoid
-possibly overwriting data in the rest of this structure.
-
-___cache_line_aligned is your friend.   Wolfram did a very
-good talk on this issue at elce. 
-https://events.linuxfoundation.org/wp-content/uploads/2017/12/20181023-Wolfram-Sang-ELCE18-safe_dma_buffers.pdf
-
-There's a video on youtube as well.
-
-He was addressing i2c, but the arguments still hold and unlike
-i2c, spi has always had dma controllers who assume they have
-dma safe buffers.
-
-> +};
-> +
-> +#define ADS124S_CHAN(index)					\
-> +{								\
-> +	.type = IIO_VOLTAGE,					\
-> +	.indexed = 1,						\
-> +	.channel = index,					\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-
-It looks like you started adding scale but didn't finish doing so.
-It's definitely a good thing to have so please see if that can be
-added for V2.
-
-> +	.scan_index = index,					\
-> +	.scan_type = {						\
-> +		.sign = 'u',					\
-> +		.realbits = 24,					\
-> +		.storagebits = 24,				\
-> +		.endianness = IIO_BE,				\
-> +	},							\
-> +}
-> +
-> +static const struct iio_chan_spec ads124s06_channels[] = {
-> +	ADS124S_CHAN(0),
-> +	ADS124S_CHAN(1),
-> +	ADS124S_CHAN(2),
-> +	ADS124S_CHAN(3),
-> +	ADS124S_CHAN(4),
-> +	ADS124S_CHAN(5),
-> +};
-> +
-> +static const struct iio_chan_spec ads124s08_channels[] = {
-> +	ADS124S_CHAN(0),
-> +	ADS124S_CHAN(1),
-> +	ADS124S_CHAN(2),
-> +	ADS124S_CHAN(3),
-> +	ADS124S_CHAN(4),
-> +	ADS124S_CHAN(5),
-> +	ADS124S_CHAN(6),
-> +	ADS124S_CHAN(7),
-> +	ADS124S_CHAN(8),
-> +	ADS124S_CHAN(9),
-> +	ADS124S_CHAN(10),
-> +	ADS124S_CHAN(11),
-> +};
-> +
-> +static const struct ads124s_chip_info ads124s_chip_info_tbl[] = {
-> +	[ADS124S08_ID] = {
-> +		.channels = ads124s08_channels,
-> +		.num_channels = ARRAY_SIZE(ads124s08_channels),
-> +	},
-> +	[ADS124S06_ID] = {
-> +		.channels = ads124s06_channels,
-> +		.num_channels = ARRAY_SIZE(ads124s06_channels),
-> +	},
-> +};
-> +
-> +static void ads124s_fill_nop(u8 *data, int start, int count)
-> +{
-> +	int i;
-> +
-> +	for (i = start; i <= count; i++)
-> +		data[i] = ADS124S_CMD_NOP;
-
-memset
-
-> +
-> +};
-> +
-> +static int ads124s_write_cmd(struct iio_dev *indio_dev, u8 command)
-> +{
-> +	struct ads124s_private *priv = iio_priv(indio_dev);
-> +	struct spi_transfer t[] = {
-> +		{
-> +			.tx_buf = &priv->data[0],
-> +			.len = 1,
-> +		}
-> +	};
-> +
-> +	priv->data[0] = command;
-> +
-> +	return spi_sync_transfer(priv->spi, t, ARRAY_SIZE(t));
-
-spi_write?
-
-> +}
-> +
-> +static int ads124s_write_reg(struct iio_dev *indio_dev, u8 reg, u8 data)
-> +{
-> +	struct ads124s_private *priv = iio_priv(indio_dev);
-> +	struct spi_transfer t[] = {
-> +		{
-> +			.tx_buf = &priv->data[0],
-> +			.len = 3,
-> +		}
-> +	};
-> +
-> +	priv->data[0] = ADS124S_CMD_WREG | reg;
-> +	priv->data[1] = 0x0;
-> +	priv->data[2] = data;
-> +
-> +	return spi_sync_transfer(priv->spi, t, ARRAY_SIZE(t));
-
-spi_write?
-
-> +}
-> +
-> +static int ads124s_reset(struct iio_dev *indio_dev)
-> +{
-> +	struct ads124s_private *priv = iio_priv(indio_dev);
-> +
-> +	if (priv->reset_gpio) {
-> +		gpiod_direction_output(priv->reset_gpio, 0);
-I'd expect that gpio to always be in the output
-direction, so just being controlled here.
-
-So gpiod_set_value
-
-> +		udelay(200);
-> +		gpiod_direction_output(priv->reset_gpio, 1);
-> +	} else {
-> +		return ads124s_write_cmd(indio_dev, ADS124S_CMD_RESET);
-> +	}
-> +
-> +	return 0;
-> +};
-> +
-> +static int ads124s_read(struct iio_dev *indio_dev, unsigned int chan)
-> +{
-> +	struct ads124s_private *priv = iio_priv(indio_dev);
-> +	int ret;
-> +	u32 tmp;
-> +	struct spi_transfer t[] = {
-> +		{
-> +			.tx_buf = &priv->data[0],
-> +			.len = 4,
-> +			.cs_change = 1,
-> +		}, {
-> +			.tx_buf = &priv->data[1],
-> +			.rx_buf = &priv->data[1],
-> +			.len = 4,
-> +		},
-> +	};
-
-Pity we don't have a spi_write_the_read_with_cs or
-something like that.  I wonder how common this structure is?
-
-> +
-> +	priv->data[0] = ADS124S_CMD_RDATA;
-> +	ads124s_fill_nop(priv->data, 1, 3);
-> +
-> +	ret = spi_sync_transfer(priv->spi, t, ARRAY_SIZE(t));
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	tmp = priv->data[2] << 16 | priv->data[3] << 8 | priv->data[4];
-> +
-> +	return tmp;
-> +}
-> +
-> +static int ads124s_read_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int *val, int *val2, long m)
-> +{
-> +	struct ads124s_private *priv = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	mutex_lock(&priv->lock);
-> +	switch (m) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = ads124s_write_reg(indio_dev, ADS124S0X_INPUT_MUX,
-> +					chan->channel);
-> +		if (ret) {
-> +			dev_err(&priv->spi->dev, "Set ADC CH failed\n");
-
-You are eating a bus error in favour of -EINVAL.  Please don't!
-
-> +			goto out;
-> +		}
-> +
-> +		ret = ads124s_write_cmd(indio_dev, ADS124S_START_CONV);
-> +		if (ret) {
-> +			dev_err(&priv->spi->dev, "Start ADC converions failed\n");
-> +			goto out;
-> +		}
-> +
-> +		ret = ads124s_read(indio_dev, chan->channel);
-> +		if (ret < 0) {
-> +			dev_err(&priv->spi->dev, "Read ADC failed\n");
-> +			goto out;
-> +		} else
-> +			*val = ret;
-
-This is the same code block as found in the buffered version below.  Factor
-it out to a utility function and use it both paths.
-
-> +
-> +		ret = ads124s_write_cmd(indio_dev, ADS124S_STOP_CONV);
-> +		if (ret) {
-> +			dev_err(&priv->spi->dev, "Stop ADC converions failed\n");
-> +			goto out;
-> +		}
-> +
-> +		mutex_unlock(&priv->lock);
-> +		if (ret < 0)
-> +			return ret;
-Given you need to unlock in both this path and the error path, cleaner
-to just set ret here and break.  Then return ret below having set
-it appropriately in the error paths.
-> +
-> +		return IIO_VAL_INT;
-> +	default:
-> +		break;
-> +	}
-> +out:
-> +	mutex_unlock(&priv->lock);
-> +	return -EINVAL;
-> +}
-> +
-> +static const struct iio_info ads124s_info = {
-> +	.read_raw = &ads124s_read_raw,
-> +};
-> +
-> +static irqreturn_t ads124s_trigger_handler(int irq, void *p)
-> +{
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct ads124s_private *priv = iio_priv(indio_dev);
-> +	u16 buffer[ADS124S0X_MAX_CHANNELS];
-
-There is an unfortunate oddity in how push_to_buffers_with_timestamp
-works in that it builds the data for the kfifo inline in the buffer
-provided.  Thus that buffer has to have room for the channels and
-the 64 bit timestamp.
-
-> +	int i, j = 0;
-> +	int ret;
-> +
-> +	for (i = 0; i < indio_dev->masklength; i++) {
-> +		if (!test_bit(i, indio_dev->active_scan_mask))
-
-for_each_bit_set 
-
-> +			continue;
-> +
-> +		ret = ads124s_write_reg(indio_dev, ADS124S0X_INPUT_MUX, i);
-
-Does this need to be rewritten if the channel is already correct?
-
-> +		if (ret)
-> +			dev_err(&priv->spi->dev, "Set ADC CH failed\n");
-> +
-> +		ret = ads124s_write_cmd(indio_dev, ADS124S_START_CONV);
-> +		if (ret)
-> +			dev_err(&priv->spi->dev, "Start ADC converions failed\n");
-> +
-> +		buffer[j] = ads124s_read(indio_dev, i);
-> +		ret = ads124s_write_cmd(indio_dev, ADS124S_STOP_CONV);
-> +		if (ret)
-> +			dev_err(&priv->spi->dev, "Stop ADC converions failed\n");
-> +
-> +		j++;
-> +	}
-> +
-> +	iio_push_to_buffers_with_timestamp(indio_dev, buffer,
-> +			pf->timestamp);
-> +
-> +	iio_trigger_notify_done(indio_dev->trig);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static int ads124s_probe(struct spi_device *spi)
-> +{
-> +	struct ads124s_private *ads124s_priv;
-> +	struct iio_dev *indio_dev;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*ads124s_priv));
-> +	if (indio_dev == NULL)
-> +		return -ENOMEM;
-> +
-> +	ads124s_priv = iio_priv(indio_dev);
-> +
-> +	ads124s_priv->reg = devm_regulator_get_optional(&spi->dev, "vref");
-> +	if (!IS_ERR(ads124s_priv->reg)) {
-> +		ret = regulator_enable(ads124s_priv->reg);
-> +		if (ret)
-> +			return ret;
-
-	As mentioned below, use devm_add_action_or_reset to provide
-	automatic disabling of this regulator letting you used managed
-	cleanup throughout. 
-
-> +
-> +		ads124s_priv->vref_mv = regulator_get_voltage(ads124s_priv->reg);
-
-This doesn't actually seem to be used...  As a general rule the only time you 
-want to read this is to provide a scale value.  As that isn't a fast path
-it's better to read it where needed in case the value is changing (not unusual
-during boot up if the voltage is being used for several things).
-
-> +		if (ads124s_priv->vref_mv <= 0)
-> +			goto err_regulator_disable;
-> +	} else {
-> +		/* Use internal reference */
-> +		ads124s_priv->vref_mv = 0;
-> +	}
-> +
-> +	ads124s_priv->reset_gpio = devm_gpiod_get_optional(&spi->dev,
-> +						   "reset", GPIOD_OUT_LOW);
-> +	if (IS_ERR(ads124s_priv->reset_gpio))
-> +		dev_info(&spi->dev, "Reset GPIO not defined\n");
-> +
-> +	ads124s_priv->chip_info = &ads124s_chip_info_tbl[spi_get_device_id(spi)->driver_data];
-> +
-> +	spi_set_drvdata(spi, indio_dev);
-> +
-> +	ads124s_priv->spi = spi;
-> +
-> +	indio_dev->name = spi_get_device_id(spi)->name;
-> +	indio_dev->dev.parent = &spi->dev;
-> +	indio_dev->dev.of_node = spi->dev.of_node;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = ads124s_priv->chip_info->channels;
-> +	indio_dev->num_channels = ads124s_priv->chip_info->num_channels;
-> +	indio_dev->info = &ads124s_info;
-> +
-> +	mutex_init(&ads124s_priv->lock);
-> +
-> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-> +					 ads124s_trigger_handler, NULL);
-> +	if (ret < 0) {
-> +		dev_err(&spi->dev, "iio triggered buffer setup failed\n");
-> +		goto err_regulator_disable;
-> +	}
-> +
-> +	ads124s_reset(indio_dev);
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret)
-> +		goto err_buffer_cleanup;
-> +
-> +	return 0;
-> +
-> +err_buffer_cleanup:
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +
-> +err_regulator_disable:
-> +	if (!IS_ERR(ads124s_priv->reg))
-> +		regulator_disable(ads124s_priv->reg);
-> +
-> +	return ret;
-> +}
-> +
-> +static int ads124s_remove(struct spi_device *spi)
-> +{
-> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-> +
-> +	iio_device_unregister(indio_dev);
-> +	iio_triggered_buffer_cleanup(indio_dev);
-Both of these functions can be automatically cleaned
-up if you use the devm_ variants of the registration functions
-which makes me suspicious..  Ah. The regulator disable
-is missing.
-
-You can move to fully managed if you use devm_add_action_or_reset
-to turn the regulator off.
-
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct spi_device_id ads124s_id[] = {
-> +	{ "ads124s08", ADS124S08_ID },
-> +	{ "ads124s06", ADS124S06_ID },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(spi, ads124s_id);
-> +
-> +static const struct of_device_id ads124s_of_table[] = {
-> +	{ .compatible = "ti,ads124s08" },
-> +	{ .compatible = "ti,ads124s06" },
-
-It's trivial but numerical order preferred as it makes it
-obvious where to add new devices later.
-
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(of, ads124s_of_table);
-> +
-> +static struct spi_driver ads124s_driver = {
-> +	.driver = {
-> +		.name	= "ads124s",
-> +		.of_match_table = ads124s_of_table,
-> +	},
-> +	.probe		= ads124s_probe,
-> +	.remove		= ads124s_remove,
-> +	.id_table	= ads124s_id,
-> +};
-> +module_spi_driver(ads124s_driver);
-> +
-> +MODULE_AUTHOR("Dan Murphy <dmuprhy@ti.com>");
-> +MODULE_DESCRIPTION("TI TI_ADS12S0X ADC");
-> +MODULE_LICENSE("GPL v2");
 
