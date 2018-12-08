@@ -2,58 +2,62 @@ Return-Path: <SRS0=HNOD=OR=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E3BEC04EB8
-	for <linux-iio@archiver.kernel.org>; Sat,  8 Dec 2018 11:09:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E151EC04EB8
+	for <linux-iio@archiver.kernel.org>; Sat,  8 Dec 2018 11:17:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BE6C020868
-	for <linux-iio@archiver.kernel.org>; Sat,  8 Dec 2018 11:09:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 92ECC20868
+	for <linux-iio@archiver.kernel.org>; Sat,  8 Dec 2018 11:17:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1544267363;
-	bh=cK+/Xp04g6AdoMZS0Lyg5jiTviSj1lrxlqEqiuCbaOA=;
+	s=default; t=1544267847;
+	bh=Ye96Xmhtk8Yuga9ks/JGcX/UBHFfWA8u7V66vGiV91U=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=jhA+Zti3sHlNVRo/T+DcKQCZ3ZtfSL9P4CyvYEuhA0AN+nwWAZGD167BM8sIKVqlK
-	 TgK86thL/OsgY5vX64ESBibSux43PpTbt/OYBNMS+3IoBMBpKNq8QXBZl0kmW0f1ej
-	 OCMaSKVgK6jYzu95xo77NXhug4gE6ILyzwyABs5w=
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BE6C020868
+	b=e1ba7qBhhQZN+xivjcBAipNl6warzaCmQUikq/qswtWlCmuYmSL50DGxwZWgppJkd
+	 nKh5oDk+NEWT4/IaBxeoYRuCocuVbQo3uo9LNDUDwOZbhpgqomq5whhQ3TPf05at6J
+	 8OUhtW/Ht1uI2STFR0GiHefjffRu4wwGLWqnbBEY=
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 92ECC20868
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726111AbeLHLJX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 8 Dec 2018 06:09:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:32896 "EHLO mail.kernel.org"
+        id S1726112AbeLHLR1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 8 Dec 2018 06:17:27 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34894 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726112AbeLHLJX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 8 Dec 2018 06:09:23 -0500
+        id S1726111AbeLHLR0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 8 Dec 2018 06:17:26 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 85B6820700;
-        Sat,  8 Dec 2018 11:09:20 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6644E20661;
+        Sat,  8 Dec 2018 11:17:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1544267362;
-        bh=cK+/Xp04g6AdoMZS0Lyg5jiTviSj1lrxlqEqiuCbaOA=;
+        s=default; t=1544267845;
+        bh=Ye96Xmhtk8Yuga9ks/JGcX/UBHFfWA8u7V66vGiV91U=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Ug6DdJtnnUmkhCZJgQQKFIaJBMqsyICvqF7F2WfgKg5e+bALn9vuml2bkHbbrsOgW
-         GmZv6Nm5HopvgR/maJtxnJGiER7t1UleWUe5RHn4OyyblXIF+9AeP3rTmq7rdKgoB2
-         mEAwit/8L/DEI3cqUepA6lS0HG5FLplWR9Iw10T0=
-Date:   Sat, 8 Dec 2018 11:09:17 +0000
+        b=js14xh+mjo9TdrKVc+4gK2+6SEEUApp7k4JObpr1sHE+aziu7g7KHLzwRLMGaeS9g
+         Pu8cwDiV21M7Z0xZBGn1XjZs8WF2xU9CcUfW/eVsKJzfLnPd1T+ksZRCBjDZ0OyS29
+         iK4Q618yKxMpdsgeM96dV0KKtXaxiPaPlJI9uXR8=
+Date:   Sat, 8 Dec 2018 11:17:20 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Lubomir Rintel <lkundrak@v3.sk>
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: iio: accel: use a generic node name for
- lis302
-Message-ID: <20181208110917.2dfc438f@archlinux>
-In-Reply-To: <20181203114740.637091-1-lkundrak@v3.sk>
-References: <20181203114740.637091-1-lkundrak@v3.sk>
+To:     Shreeya Patel <shreeya.patel23498@gmail.com>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Jeremy Fertic <jeremyfertic@gmail.com>,
+        devel@driverdev.osuosl.org, lars@metafoo.de,
+        Michael.Hennerich@analog.com, linux-iio@vger.kernel.org,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        pmeerw@pmeerw.net, knaack.h@gmx.de
+Subject: Re: [PATCH] Revert "Staging: iio: adt7316: Add an extra check for
+ 'ret' equals to 0"
+Message-ID: <20181208111720.068822f9@archlinux>
+In-Reply-To: <90e3066edb0616cd20ee019e3f2a392fd3a3f285.camel@gmail.com>
+References: <20181205014900.4827-1-jeremyfertic@gmail.com>
+        <fccdb26936a9cfcd5134c760cd918929ad3dfa19.camel@gmail.com>
+        <20181205215953.GA2365@r2700x.localdomain>
+        <20181206124047.GH3095@unbuntlaptop>
+        <90e3066edb0616cd20ee019e3f2a392fd3a3f285.camel@gmail.com>
 X-Mailer: Claws Mail 3.17.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -63,44 +67,119 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon,  3 Dec 2018 12:47:40 +0100
-Lubomir Rintel <lkundrak@v3.sk> wrote:
+On Sat, 08 Dec 2018 00:07:21 +0530
+Shreeya Patel <shreeya.patel23498@gmail.com> wrote:
 
-> The example should follow the practice or using a generic node name
-> instead of the precise programming model, as recommended by the DTSpec.
+> On Thu, 2018-12-06 at 15:40 +0300, Dan Carpenter wrote:
+> > On Wed, Dec 05, 2018 at 02:59:53PM -0700, Jeremy Fertic wrote:  
+> > > On Thu, Dec 06, 2018 at 01:25:55AM +0530, Shreeya Patel wrote:  
+> > > > On Tue, 2018-12-04 at 18:49 -0700, Jeremy Fertic wrote:  
+> > > > > This reverts commit 00426e99789357dbff7e719a092ce36a3ce49d94.
+> > > > > 
+> > > > > i2c_smbus_read_byte() returns 0 when a byte with the value 0 is
+> > > > > read
+> > > > > from
+> > > > > the device. This is a valid read so revert the check for 0.
+> > > > > 
+> > > > > Signed-off-by: Jeremy Fertic <jeremyfertic@gmail.com>
+> > > > > ---  
+> > > > 
+> > > > Hi Jeremy,
+> > > > 
+> > > > As per my understanding, 0 value indicates no error but no data
+> > > > read.
+> > > > Then how can this be a valid case?
+> > > > 
+> > > > Can you please make me understand that how can we consider this
+> > > > as a
+> > > > valid case even when no data has been read?  
+> > 
+> > It's not reading no data.  It's reading one byte of data and
+> > returning
+> > it.
+> >   
+> > > > 
+> > > > 
+> > > > Thanks  
+> > > 
+> > > I'm not sure I understand why the value 0 would indicate no data
+> > > read.
+> > > Doesn't that just mean a byte was read with the value 0.  
+> > 
+> > Yes.  It does mean that.  Please don't ask rhetorical
+> > questions...  :(
+> > This list is full of people who can't resist answering every
+> > question.
+> >   
+> > > For instance, if the input to the adc is 0V. Can you point me to
+> > > where
+> > > you're seeing that this would indicate no data read?  
+> > 
+> > drivers/i2c/i2c-core-smbus.c
+> >     88  /**
+> >     89   * i2c_smbus_read_byte - SMBus "receive byte" protocol
+> >     90   * @client: Handle to slave device
+> >     91   *
+> >     92   * This executes the SMBus "receive byte" protocol, returning
+> > negative errno
+> >     93   * else the byte received from the device.
+> >     94   */
+> >     95  s32 i2c_smbus_read_byte(const struct i2c_client *client)
+> >     96  {
+> >     97          union i2c_smbus_data data;
+> >     98          int status;
+> >     99  
+> >    100          status = i2c_smbus_xfer(client->adapter, client-  
+> > >addr, client->flags,  
+> >    101                                  I2C_SMBUS_READ, 0,
+> >    102                                  I2C_SMBUS_BYTE, &data);
+> >    103          return (status < 0) ? status : data.byte;
+> >                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> >    104  }
+> >    105  EXPORT_SYMBOL(i2c_smbus_read_byte);  
 > 
-> Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
-Applied to the togreg branch of iio.git and pushed out as testing
-to be largely ignored.
+> Even I had sent the same code to Jonathan and we had a discussion on
+> this. 
+> I asked him that this code clearly shows that there is an error
+> condition only when status < 0 then why do we need a check for status =
+> 0.
+> 
+> Then he explained me that 0 isn't an error. The issue is the silliness
+> of the i2c interface.
+> 
+> Pretty much every other bus returns an error (negative) if less data is
+> received than expected.  Most i2c
+> bus master's do as well but in theory it can return 0 to indicate no
+> error but no data read (which doesn't make any sense)
+> 
+> 0 doesn't ever happen in reality but it should be handled for
+> correctness though.
+> 
+> So we should wait for what Jonathan has to say on this :)
 
-Thanks,
+Yup, I was being an idiot.  Sorry about that!  For some reason I'd
+gotten it into my head that the particular function we were talking
+about was i2c_master_send which does indeed do as discussed above.
+
+Apologies for misleading you on this. Definitely a proper idiot
+moment of me not reading what the code actually was properly, even
+when you questioned what I was going on about.
+
+Thanks to Jeremy for catching this one.
+
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to play with it.
 
 Jonathan
 
-> ---
->  Documentation/devicetree/bindings/iio/accel/lis302.txt | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/accel/lis302.txt b/Documentation/devicetree/bindings/iio/accel/lis302.txt
-> index dfdce67826ba..764e28ec1a0a 100644
-> --- a/Documentation/devicetree/bindings/iio/accel/lis302.txt
-> +++ b/Documentation/devicetree/bindings/iio/accel/lis302.txt
-> @@ -64,7 +64,7 @@ Optional properties for all bus drivers:
->  
->  Example for a SPI device node:
->  
-> -	lis302@0 {
-> +	accelerometer@0 {
->  		compatible = "st,lis302dl-spi";
->  		reg = <0>;
->  		spi-max-frequency = <1000000>;
-> @@ -89,7 +89,7 @@ Example for a SPI device node:
->  
->  Example for a I2C device node:
->  
-> -	lis331dlh: lis331dlh@18 {
-> +	lis331dlh: accelerometer@18 {
->  		compatible = "st,lis331dlh", "st,lis3lv02d";
->  		reg = <0x18>;
->  		Vdd-supply = <&lis3_reg>;
+> Thanks
+> 
+> > You are right.  Commit 00426e997893 ("Staging: iio: adt7316: Add an
+> > extra check for 'ret' equals to 0") needs to be reverted...
+> > 
+> > regards,
+> > dan carpenter
+> > 
+> >   
 
