@@ -6,52 +6,54 @@ X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D421C04EB8
-	for <linux-iio@archiver.kernel.org>; Sat,  8 Dec 2018 11:07:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E3BEC04EB8
+	for <linux-iio@archiver.kernel.org>; Sat,  8 Dec 2018 11:09:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E641320868
-	for <linux-iio@archiver.kernel.org>; Sat,  8 Dec 2018 11:07:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BE6C020868
+	for <linux-iio@archiver.kernel.org>; Sat,  8 Dec 2018 11:09:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1544267260;
-	bh=4jvK4nxg7BGfaKewCrAdDdCVIRhR/+4aV9CiM5U7bzY=;
+	s=default; t=1544267363;
+	bh=cK+/Xp04g6AdoMZS0Lyg5jiTviSj1lrxlqEqiuCbaOA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=eZ6HeYuxrjTB9QFVcuqbuFbDaTDHxMx4gDvczEJ7YkL+KewZSJS9TEJxMhQ58gt0B
-	 x/fV4IRwxLupqXaB+mKfOjppWUrbdfww7lc23iOh/WxGdiL+bLMPZKJxc7w8ZJGYKj
-	 kQ3SWXXtnEKUhReNGDGlauQGTGz5vWSKfO+sKuYo=
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E641320868
+	b=jhA+Zti3sHlNVRo/T+DcKQCZ3ZtfSL9P4CyvYEuhA0AN+nwWAZGD167BM8sIKVqlK
+	 TgK86thL/OsgY5vX64ESBibSux43PpTbt/OYBNMS+3IoBMBpKNq8QXBZl0kmW0f1ej
+	 OCMaSKVgK6jYzu95xo77NXhug4gE6ILyzwyABs5w=
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BE6C020868
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726112AbeLHLHj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 8 Dec 2018 06:07:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60648 "EHLO mail.kernel.org"
+        id S1726111AbeLHLJX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 8 Dec 2018 06:09:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:32896 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726111AbeLHLHj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 8 Dec 2018 06:07:39 -0500
+        id S1726112AbeLHLJX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 8 Dec 2018 06:09:23 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A80ED20700;
-        Sat,  8 Dec 2018 11:07:37 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 85B6820700;
+        Sat,  8 Dec 2018 11:09:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1544267258;
-        bh=4jvK4nxg7BGfaKewCrAdDdCVIRhR/+4aV9CiM5U7bzY=;
+        s=default; t=1544267362;
+        bh=cK+/Xp04g6AdoMZS0Lyg5jiTviSj1lrxlqEqiuCbaOA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=g3nNLjfKdyBu3utXdbLDc0lUFyCDDueoX1lnbqalq41C38+2CUMY1Yg0Ym5HvSLRX
-         vAllaB6rX/O6ngDErYbm9Dz3xw+4PhkUyzrCpR72CfeIYWrmfQTqzmrSfvnwrMZCDO
-         69iUTFs4L8I8GRcY4b49JKxofg7kHfYmtTBnTmWU=
-Date:   Sat, 8 Dec 2018 11:07:35 +0000
+        b=Ug6DdJtnnUmkhCZJgQQKFIaJBMqsyICvqF7F2WfgKg5e+bALn9vuml2bkHbbrsOgW
+         GmZv6Nm5HopvgR/maJtxnJGiER7t1UleWUe5RHn4OyyblXIF+9AeP3rTmq7rdKgoB2
+         mEAwit/8L/DEI3cqUepA6lS0HG5FLplWR9Iw10T0=
+Date:   Sat, 8 Dec 2018 11:09:17 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andi Shyti <andi@etezian.org>
+To:     Lubomir Rintel <lkundrak@v3.sk>
 Cc:     Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: core: check 'info' value before registering the
- device
-Message-ID: <20181208110735.5da28a29@archlinux>
-In-Reply-To: <20181202183031.2471-1-andi@etezian.org>
-References: <20181202183031.2471-1-andi@etezian.org>
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: iio: accel: use a generic node name for
+ lis302
+Message-ID: <20181208110917.2dfc438f@archlinux>
+In-Reply-To: <20181203114740.637091-1-lkundrak@v3.sk>
+References: <20181203114740.637091-1-lkundrak@v3.sk>
 X-Mailer: Claws Mail 3.17.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -61,43 +63,44 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun,  2 Dec 2018 20:30:31 +0200
-Andi Shyti <andi@etezian.org> wrote:
+On Mon,  3 Dec 2018 12:47:40 +0100
+Lubomir Rintel <lkundrak@v3.sk> wrote:
 
-> When the 'info' structure inside indio_dev is left uninitialized,
-> a segmentation fault occurs.
+> The example should follow the practice or using a generic node name
+> instead of the precise programming model, as recommended by the DTSpec.
 > 
-> Check the 'info' value before using it and if it is equal to
-> NULL, return with -EINVAL.
-> 
-> Signed-off-by: Andi Shyti <andi@etezian.org>
-
-Hmm. It would be an impressive level of bug if that one got through
-in a driver but paranoia does no harm I suppose.
-
+> Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
 Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+to be largely ignored.
 
 Thanks,
 
 Jonathan
 
 > ---
->  drivers/iio/industrialio-core.c | 3 +++
->  1 file changed, 3 insertions(+)
+>  Documentation/devicetree/bindings/iio/accel/lis302.txt | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index a062cfddc5af..4f5cd9f60870 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -1671,6 +1671,9 @@ int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
->  	if (ret < 0)
->  		return ret;
+> diff --git a/Documentation/devicetree/bindings/iio/accel/lis302.txt b/Documentation/devicetree/bindings/iio/accel/lis302.txt
+> index dfdce67826ba..764e28ec1a0a 100644
+> --- a/Documentation/devicetree/bindings/iio/accel/lis302.txt
+> +++ b/Documentation/devicetree/bindings/iio/accel/lis302.txt
+> @@ -64,7 +64,7 @@ Optional properties for all bus drivers:
 >  
-> +	if (!indio_dev->info)
-> +		return -EINVAL;
-> +
->  	/* configure elements for the chrdev */
->  	indio_dev->dev.devt = MKDEV(MAJOR(iio_devt), indio_dev->id);
+>  Example for a SPI device node:
 >  
+> -	lis302@0 {
+> +	accelerometer@0 {
+>  		compatible = "st,lis302dl-spi";
+>  		reg = <0>;
+>  		spi-max-frequency = <1000000>;
+> @@ -89,7 +89,7 @@ Example for a SPI device node:
+>  
+>  Example for a I2C device node:
+>  
+> -	lis331dlh: lis331dlh@18 {
+> +	lis331dlh: accelerometer@18 {
+>  		compatible = "st,lis331dlh", "st,lis3lv02d";
+>  		reg = <0x18>;
+>  		Vdd-supply = <&lis3_reg>;
 
