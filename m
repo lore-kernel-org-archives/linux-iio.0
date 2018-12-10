@@ -2,96 +2,113 @@ Return-Path: <SRS0=Uw90=OT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.9 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ADABC65BAF
-	for <linux-iio@archiver.kernel.org>; Mon, 10 Dec 2018 08:26:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1454BC04EB8
+	for <linux-iio@archiver.kernel.org>; Mon, 10 Dec 2018 09:55:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 277B52081F
-	for <linux-iio@archiver.kernel.org>; Mon, 10 Dec 2018 08:26:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 277B52081F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=electromag.com.au
+	by mail.kernel.org (Postfix) with ESMTP id D04A62082D
+	for <linux-iio@archiver.kernel.org>; Mon, 10 Dec 2018 09:55:27 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YhmkUrdl"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D04A62082D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726471AbeLJIZ6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 10 Dec 2018 03:25:58 -0500
-Received: from anchovy2.45ru.net.au ([203.30.46.146]:42227 "EHLO
-        anchovy2.45ru.net.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726146AbeLJIZ6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 10 Dec 2018 03:25:58 -0500
-Received: (qmail 16128 invoked by uid 5089); 10 Dec 2018 08:19:16 -0000
-Received: by simscan 1.2.0 ppid: 15968, pid: 15969, t: 0.0583s
-         scanners: regex: 1.2.0 attach: 1.2.0 clamav: 0.88.3/m:40/d:1950
-Received: from unknown (HELO ?192.168.0.122?) (preid@electromag.com.au@203.59.235.95)
-  by anchovy3.45ru.net.au with ESMTPA; 10 Dec 2018 08:19:16 -0000
+        id S1726678AbeLJJz1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 10 Dec 2018 04:55:27 -0500
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:46510 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726146AbeLJJz1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 10 Dec 2018 04:55:27 -0500
+Received: by mail-ot1-f65.google.com with SMTP id w25so9759044otm.13;
+        Mon, 10 Dec 2018 01:55:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kMcPA0ob+XfedqoJIIULHLRD9wmQcHKGn0mWTn8zXpo=;
+        b=YhmkUrdl/bxr3Ay64gcsQSNx1Z99tA+eLteFwEpw9FtdxcG6mgceX6EJYhnqvb3msy
+         NzUA5Etd2C3HvBEq+Vxg3ucuf8S7A7N/IRZfMiVQEPnQC8RAURh2vLAX+LpT21TxVAoI
+         CRNQh3ineEuFsSlWwF5TUExuvcd5LK0Owufi+ytjnrjcVPNU5fewEBzU59r50mN4Zy6X
+         lj2kFzuUidZs8zNNyP4/PpPy2M35fbwTlT4AvHQrgxvM3BUhjs3A25oNTe5Gt5/aadxV
+         9NwRkOTRi+sLqyPqKCjLd7VUJ9j51576+4tnQwoVQbeCzwRJ8Gef5fGOeqBdYwCCItYV
+         yhOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kMcPA0ob+XfedqoJIIULHLRD9wmQcHKGn0mWTn8zXpo=;
+        b=KVAXHR+6zLwWFoyfwhSzDCUvQU6h+5/FMkc77n3FTBVNrr0uSQPT0FAlu520dbGczX
+         ZSRPbXHgcFEXsrtzqyCDy6XKRMZ9CYKWMdD1gHcobjJqGFqcTwX0o2NQYFBijhEd2ykd
+         EUHzgk1Xafy1VgSuoOOO4vGRT/g7PWgq3/nutmVSvMUxhHKq9buy5EoCNGvkKUn7jfLa
+         gltHTMMppOBAR6645yIdOu7NdIYfYIVv9Cz7R4qgakSc9mPPYBqhYnq/vmaOZ4b0KlFw
+         gwZxS0v8e5taxEO3KOoxcvnja9HBU4UjE6WcleRWAvDOOlfbKTxezwPf8QAsdc6biJj1
+         QGTQ==
+X-Gm-Message-State: AA+aEWYHBzsTGLMIhDmR9mF/2QkbVzTQndZhf5WgDA+H3hAuKp7sntZH
+        UBuBIzNurtYVaBzW4UHrYlnjSfwuB+Spw+Uqjz4=
+X-Google-Smtp-Source: AFSGD/U7Xxf8ypgt6BWr7FxYizqiKHZ/rYmZAAQFfMsy7DvYjc5DNLjLs5kXKqW4YORpePhSeYVBYnM213WNZK9KUdY=
+X-Received: by 2002:a9d:401:: with SMTP id 1mr7909584otc.78.1544435726240;
+ Mon, 10 Dec 2018 01:55:26 -0800 (PST)
+MIME-Version: 1.0
+References: <1544425869-8188-1-git-send-email-Anson.Huang@nxp.com>
+In-Reply-To: <1544425869-8188-1-git-send-email-Anson.Huang@nxp.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Mon, 10 Dec 2018 07:55:19 -0200
+Message-ID: <CAOMZO5AJv=DtqSsKKQLX10GQC64NNoWkmYKSs+sM0Jjb8ugFVQ@mail.gmail.com>
 Subject: Re: [PATCH V2] iio: magnetometer: mag3110: add optional vdd/vddio
  regulator operation support
-To:     Anson Huang <anson.huang@nxp.com>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "festevam@gmail.com" <festevam@gmail.com>
-Cc:     dl-linux-imx <linux-imx@nxp.com>
-References: <1544425869-8188-1-git-send-email-Anson.Huang@nxp.com>
-From:   Phil Reid <preid@electromag.com.au>
-Message-ID: <71e3e6b1-0821-aff9-df58-7f4425c3c75a@electromag.com.au>
-Date:   Mon, 10 Dec 2018 16:19:14 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.9.1
-MIME-Version: 1.0
-In-Reply-To: <1544425869-8188-1-git-send-email-Anson.Huang@nxp.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-AU
-Content-Transfer-Encoding: 7bit
+To:     Yongcai Huang <anson.huang@nxp.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-G'day Anson,
+Hi Anson,
 
-On 10/12/2018 3:17 PM, Anson Huang wrote:
-> The magnetometer's power supply could be controlled by regulator
-> on some platforms, such as i.MX6Q-SABRESD board, the mag3110's
-> power supply is controlled by a GPIO fixed regulator, need to make
-> sure the regulator is enabled before any communication with mag3110,
-> this patch adds optional vdd/vddio regulator operation support.
-> 
+On Mon, Dec 10, 2018 at 5:17 AM Anson Huang <anson.huang@nxp.com> wrote:
 
-[snip]
-
+> +       data->vdd_reg = devm_regulator_get_optional(&client->dev, "vdd");
+> +       if (!IS_ERR(data->vdd_reg)) {
+> +               ret = regulator_enable(data->vdd_reg);
+> +               if (ret) {
+> +                       dev_err(&client->dev, "failed to enable VDD regulator\n");
+> +                       return ret;
+> +               }
+> +       } else if (data->vdd_reg == ERR_PTR(-EPROBE_DEFER)) {
+> +               return -EPROBE_DEFER;
+> +       }
 > +
-> +	data->vdd_reg = devm_regulator_get_optional(&client->dev, "vdd");
-> +	if (!IS_ERR(data->vdd_reg)) {
-> +		ret = regulator_enable(data->vdd_reg);
-> +		if (ret) {
-> +			dev_err(&client->dev, "failed to enable VDD regulator\n");
-> +			return ret;
-> +		}
-> +	} else if (data->vdd_reg == ERR_PTR(-EPROBE_DEFER)) {
-> +		return -EPROBE_DEFER;
-> +	}
+> +       data->vddio_reg = devm_regulator_get_optional(&client->dev, "vddio");
+> +       if (!IS_ERR(data->vddio_reg)) {
+> +               ret = regulator_enable(data->vddio_reg);
+> +               if (ret) {
+> +                       dev_err(&client->dev, "failed to enable VDDIO regulator\n");
+> +                       return ret;
+
+In the case of error you should disable the vdd_reg regulator.
+
+> +               }
+> +       } else if (data->vddio_reg == ERR_PTR(-EPROBE_DEFER)) {
+> +               return -EPROBE_DEFER;
+> +       }
 > +
-IANAE, but normally the return pattern for devm_regulator_get_optional
+>         ret = i2c_smbus_read_byte_data(client, MAG3110_WHO_AM_I);
+>         if (ret < 0)
+>                 return ret;
 
-if (!IS_ERR(reg)) {
-     regulator_enable ...
-} else {
-     ret = PTR_ERR(reg);
-     if (ret != -ENODEV)
-         return ret;
-}
-
-
-
--- 
-Regards
-Phil
+and here you should disable vddio_reg.
