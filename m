@@ -2,129 +2,110 @@ Return-Path: <SRS0=Uw90=OT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76AD8C04EB8
-	for <linux-iio@archiver.kernel.org>; Mon, 10 Dec 2018 14:30:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF792C04EB8
+	for <linux-iio@archiver.kernel.org>; Mon, 10 Dec 2018 14:46:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3AED820672
-	for <linux-iio@archiver.kernel.org>; Mon, 10 Dec 2018 14:30:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 780592082F
+	for <linux-iio@archiver.kernel.org>; Mon, 10 Dec 2018 14:46:26 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.b="nBigxgGA"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3AED820672
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=posteo.de
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kfiIj21i"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 780592082F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727822AbeLJOah (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 10 Dec 2018 09:30:37 -0500
-Received: from mout02.posteo.de ([185.67.36.66]:53561 "EHLO mout02.posteo.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727562AbeLJOah (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 10 Dec 2018 09:30:37 -0500
-Received: from submission (posteo.de [89.146.220.130]) 
-        by mout02.posteo.de (Postfix) with ESMTPS id 46EC6240105
-        for <linux-iio@vger.kernel.org>; Mon, 10 Dec 2018 15:30:35 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=posteo.de; s=2017;
-        t=1544452235; bh=OT0x+EZbu5RBI4lKT8Jadh6V8lsSLrhlFYfbrrruxqA=;
-        h=Subject:To:Cc:From:Openpgp:Autocrypt:Date:From;
-        b=nBigxgGA0o7wZUNcc2WHe9pkLfgnlniif0vLWcTsZQIPxqf4bRUNtVa68VlygYppP
-         OZhtC9ubf3ByBXyJFI5AQpRxXDnFsC36lf0DVwLnBpLnS1ivfSoq03Q8OJa9JRH/sB
-         zAMZ2IX6z8ew6UWHAT4MwZpHdl4qQKBTXalY7mcJu8dwTKMzC2PmRtib/TmByQYAEU
-         Gwf6CNqczyFYBFrPQMilfnLtZSQrfiukAAYzTXh/WbtmVcO/h3KFnywVZUPtCqGwXK
-         2b3nbHS1sO9zxJs8Mqm/Mf2M8yUhTxeCpprVWvSeJlcRzrJcyAS4/ZEI0VFlnEStYD
-         270ItsIoxyqmw==
-Received: from customer (localhost [127.0.0.1])
-        by submission (posteo.de) with ESMTPSA id 43D58S0dJcz9rxV;
-        Mon, 10 Dec 2018 15:30:31 +0100 (CET)
+        id S1727287AbeLJOqZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 10 Dec 2018 09:46:25 -0500
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:35919 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726888AbeLJOqZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 10 Dec 2018 09:46:25 -0500
+Received: by mail-ot1-f68.google.com with SMTP id k98so10610989otk.3;
+        Mon, 10 Dec 2018 06:46:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8v8joAtLtbQz45WSH3svSJ/xIYvrhVCTJ3ubUyBE/Mo=;
+        b=kfiIj21iB0BbSIRMDFWsdDq30wwYgfnq9BnMwYlpg8SjTzHBDCs3J6h6dcMszOu1mv
+         aVePY6cN7pyhyy08EclWMS+jKouoVMIhOS88af/o2kbREQ4irBeNJQY1tUnwWBQ6OfFs
+         E9Z+VehTAP8G+P6O7Fw8mpsoi6B21OhRiV9w9hLkRMP0pbRdBw/7K32lkPwuXvxGjDTj
+         0XbTaNoRL2Xjw37Owl1IkuhXz6YEGkAox5r7GhfbcSbGKfHGBNLehNH4i/fyX+h32QEx
+         BVAPNPrr5+tTaO3O/9ODxSW4MbLq1bVK5EWjeP1kptcIfIQOm0PKY0RTgkQhu03dPqSW
+         1q2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8v8joAtLtbQz45WSH3svSJ/xIYvrhVCTJ3ubUyBE/Mo=;
+        b=HDkwYbXSysMTaH/OdQ8aaIrpb+EBBa7jQH9RhxktZhWUW9jamA+6suoe8KN2W66UJM
+         IMZLfqQuTYliSbsxi+jvrvAmlcIDlpVksWQaCJ0cVcOmqlOT1B5GqUBZVMUc8juebRnc
+         VzFNk/hzskvCV50D+kkCyXEDIIpZ174c9N+P+5ja3t/oQVXIU3z1eZcN7VrVFgR42gV5
+         omZfnQ2TRVflWcR3WHcl8A8NrxitW3BPpHjS1Nd2PGZXCEPIblV2z2GqU1TKdo47Tht5
+         4XEEc92KxYZ7VDrhLEcnn4n0YxnuWEokJXzislHXkNPYQ9yBxAjbsUk3V2zLZxqFRwci
+         yYtw==
+X-Gm-Message-State: AA+aEWa4E46KiWBOlFuw4FPPTtQJiOXYu/9NTSsVNbL4tf/BXimyN6Ri
+        1wRHml+zjE7dBL5ypRQdxKidn0fl3mXUqHTvErs=
+X-Google-Smtp-Source: AFSGD/X9cQC+3EZ0UDUdXTzQPOj0k3NorkMDiCMXekQ7u3F9A8Z3FtrV89mUuEzC+inROD2vWhYF6uyvgMtrofKIHWI=
+X-Received: by 2002:a9d:7e87:: with SMTP id m7mr9513039otp.225.1544453184260;
+ Mon, 10 Dec 2018 06:46:24 -0800 (PST)
+MIME-Version: 1.0
+References: <1544426368-16415-1-git-send-email-Anson.Huang@nxp.com> <1544426368-16415-2-git-send-email-Anson.Huang@nxp.com>
+In-Reply-To: <1544426368-16415-2-git-send-email-Anson.Huang@nxp.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Mon, 10 Dec 2018 12:46:17 -0200
+Message-ID: <CAOMZO5DT-cRYpCWShQqE7oX7v262s6K1G=R3PfBHs9RHXiiH6A@mail.gmail.com>
 Subject: Re: [PATCH V2 2/2] iio: accell: mma8452: add optional vdd/vddio
  regulator operation support
-To:     Anson Huang <anson.huang@nxp.com>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "rtresidd@electromag.com.au" <rtresidd@electromag.com.au>,
-        "gustavo@embeddedor.com" <gustavo@embeddedor.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Leonard Crestez <leonard.crestez@nxp.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "festevam@gmail.com" <festevam@gmail.com>
-Cc:     dl-linux-imx <linux-imx@nxp.com>
-References: <1544426368-16415-1-git-send-email-Anson.Huang@nxp.com>
- <1544426368-16415-2-git-send-email-Anson.Huang@nxp.com>
-From:   Martin Kepplinger <martink@posteo.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=martink@posteo.de; keydata=
- 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
-Message-ID: <0412034a-989b-1d57-a356-1fc3e87a0a91@posteo.de>
-Date:   Mon, 10 Dec 2018 15:30:31 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.3.0
-MIME-Version: 1.0
-In-Reply-To: <1544426368-16415-2-git-send-email-Anson.Huang@nxp.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+To:     Yongcai Huang <anson.huang@nxp.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        rtresidd@electromag.com.au,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Leonard Crestez <leonard.crestez@nxp.com>, martink@posteo.de,
+        linux-iio@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 10.12.18 08:25, Anson Huang wrote:
-> The accelerometer's power supply could be controlled by regulator
-> on some platforms, such as i.MX6Q-SABRESD board, the mma8451's
-> power supply is controlled by a GPIO fixed regulator, need to make
-> sure the regulator is enabled before any communication with mma8451,
-> this patch adds optional vdd/vddio regulator operation support.
-> 
-> Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
+On Mon, Dec 10, 2018 at 5:25 AM Anson Huang <anson.huang@nxp.com> wrote:
 
-Acked-by: Martin Kepplinger <martink@posteo.de>
+> @@ -1533,6 +1536,27 @@ static int mma8452_probe(struct i2c_client *client,
+>         data->client = client;
+>         mutex_init(&data->lock);
+>         data->chip_info = match->data;
+> +       data->vdd_reg = devm_regulator_get_optional(&client->dev, "vdd");
+> +       if (!IS_ERR(data->vdd_reg)) {
+> +               ret = regulator_enable(data->vdd_reg);
+> +               if (ret) {
+> +                       dev_err(&client->dev, "failed to enable VDD regulator\n");
+> +                       return ret;
+> +               }
+> +       } else if (data->vdd_reg == ERR_PTR(-EPROBE_DEFER)) {
+> +               return -EPROBE_DEFER;
+> +       }
+> +
+> +       data->vddio_reg = devm_regulator_get_optional(&client->dev, "vddio");
+> +       if (!IS_ERR(data->vddio_reg)) {
+> +               ret = regulator_enable(data->vddio_reg);
+> +               if (ret) {
+> +                       dev_err(&client->dev, "failed to enable VDDIO regulator\n");
+> +                       return ret;
 
+As mentioned in your other patch: you should disable the previously
+enabled regulator in the error path.
