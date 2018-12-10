@@ -6,58 +6,48 @@ X-Spam-Status: No, score=-7.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8949C04EB8
-	for <linux-iio@archiver.kernel.org>; Mon, 10 Dec 2018 20:48:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6C85C5CFFE
+	for <linux-iio@archiver.kernel.org>; Mon, 10 Dec 2018 21:15:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 95B192084C
-	for <linux-iio@archiver.kernel.org>; Mon, 10 Dec 2018 20:48:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 67E6A20672
+	for <linux-iio@archiver.kernel.org>; Mon, 10 Dec 2018 21:15:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1544474910;
-	bh=Jz24y8VP7n6rVZSAehKQ1D7/e6IVG6u27FnhmnpMhaE=;
+	s=default; t=1544476559;
+	bh=9GohbqKgPU8laOMPjZ7Etub0cI9YW+au8XcbIT+sulA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=WBJMKFL7lMz9ACp3qTc1iio1uxzYYq8X6BsC+zvh3Sa6FX6YaE2rB/tFkbdPz5wlc
-	 js6ffiMCa3n22YFTyxQI41IByPIDyd4D9q6SzreR1sUXkAZYGRIu4lT/6NGsXCm2Xj
-	 S3Ef2zTWRKcAwd9QalDX4yUecCXJq4x7S90ulsME=
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 95B192084C
+	b=2TwIATDMuxeYk1DId3h6Rq7OxP0WSyFJR/P91QvAJ+8uquE9wAvZ4Ud4htpdyazTG
+	 NJEOKr4g5inQFfUh+8M07rJBZqmXePeTpbqjRsk679Ci1Iaqr1yb7ZTheUf+xo5dkE
+	 u4yJZ9ZBDW2XoVAzTImxUt56Shiwkrz75rgV5iWY=
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 67E6A20672
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727473AbeLJUsa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 10 Dec 2018 15:48:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48692 "EHLO mail.kernel.org"
+        id S1729577AbeLJVPj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 10 Dec 2018 16:15:39 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57982 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726392AbeLJUs3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 10 Dec 2018 15:48:29 -0500
+        id S1729434AbeLJVPj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 10 Dec 2018 16:15:39 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2701D20821;
-        Mon, 10 Dec 2018 20:48:27 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E10432084C;
+        Mon, 10 Dec 2018 21:15:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1544474908;
-        bh=Jz24y8VP7n6rVZSAehKQ1D7/e6IVG6u27FnhmnpMhaE=;
+        s=default; t=1544476537;
+        bh=9GohbqKgPU8laOMPjZ7Etub0cI9YW+au8XcbIT+sulA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MDuCAskhhYTVn22ihDlcXIGb5Bd7qdZS6KYjv/rNP7wmVIW2++62WQYdUq5Di31IM
-         YI9NN8P6nKqsSfaCLBzV7/CpzSVEmzXTBRjt+8SgNXr7sO+Vxba/IQu83Fei+amnJO
-         tDtJ168LHM/OEOmQYVdVuLP7n6DkH6OjxW89CpNE=
-Date:   Mon, 10 Dec 2018 20:48:24 +0000
+        b=Zq1IHoqR595yWr4NVSJT+IA2LxWFcgYOE7F1kSDX1suHrpJWIY11E01p1j5xpIMdM
+         u3BhFRVWzbXMLaAtZutBTjBIstQtHH38bB4s7fdKww3rEZ+ElbtjdLjxMxXkNRznNt
+         bj70RC6HJIseOc/7ESG4i3ceDGnQxzdM0dKQpXsM=
+Date:   Mon, 10 Dec 2018 21:15:34 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Anson Huang <anson.huang@nxp.com>
-Cc:     "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: Re: [PATCH V3 2/2] iio: light: isl29018: add optional vdd/vdda
- regulator operation support
-Message-ID: <20181210204824.7234d253@archlinux>
-In-Reply-To: <1544425521-775-2-git-send-email-Anson.Huang@nxp.com>
-References: <1544425521-775-1-git-send-email-Anson.Huang@nxp.com>
-        <1544425521-775-2-git-send-email-Anson.Huang@nxp.com>
+To:     Martin Kelly <martin@martingkelly.com>
+Cc:     linux-iio@vger.kernel.org, Daniel Baluta <daniel.baluta@intel.com>
+Subject: Re: [PATCH v2] iio: bmi160: use all devm functions in probe
+Message-ID: <20181210211534.35aef897@archlinux>
+In-Reply-To: <20181210031455.2836-1-martin@martingkelly.com>
+References: <20181210031455.2836-1-martin@martingkelly.com>
 X-Mailer: Claws Mail 3.17.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -67,136 +57,159 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 10 Dec 2018 07:11:23 +0000
-Anson Huang <anson.huang@nxp.com> wrote:
+On Sun,  9 Dec 2018 19:14:55 -0800
+Martin Kelly <martin@martingkelly.com> wrote:
 
-> The light sensor's power supply could be controlled by regulator
-> on some platforms, such as i.MX6Q-SABRESD board, the light sensor
-> isl29023's power supply is controlled by a GPIO fixed regulator,
-> need to make sure the regulator is enabled before any operation of
-> sensor, this patch adds optional vdd/vdda regulator operation support.
+> From: Martin Kelly <martin@martingkelly.com>
 > 
-> Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
-Comments on the other patches apply on error handling and
-cleaner pattern for the error handling so I won't review this one.
+> Currently, we're using the devm version of some but not all functions.
+> Switch to the devm version of iio_triggered_buffer_setup and
+> iio_device_register to simplify the code a bit and decrease the chance of
+> bugs.
+> 
+> Signed-off-by: Martin Kelly <martin@martingkelly.com>
 
-Thanks,
+Great little tidy up. Thanks.  One little tweak. You missed the header so
+I'll tidy that up as well.
 
-Jonathan
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to play with it.
 
 
 > ---
-> ChangeLog since V2:
->     - Add defer_probe check if the return value from devm_regulator_get_optional is ERR_PTR(-EPROBE_DEFER);
->     - Replace the "vcc" with "vdd" according to datasheet, and add optional "vdda" supply as well since
->       isl29018 also has a vdda supply.
-> ---
->  drivers/iio/light/isl29018.c | 59 ++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 59 insertions(+)
+> v2:
+> - Use devm_add_action_or_reset to prevent device uninit prior to unregister.
 > 
-> diff --git a/drivers/iio/light/isl29018.c b/drivers/iio/light/isl29018.c
-> index b45400f..477eb95 100644
-> --- a/drivers/iio/light/isl29018.c
-> +++ b/drivers/iio/light/isl29018.c
-> @@ -23,6 +23,7 @@
->  #include <linux/mutex.h>
->  #include <linux/delay.h>
->  #include <linux/regmap.h>
-> +#include <linux/regulator/consumer.h>
->  #include <linux/slab.h>
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
-> @@ -95,6 +96,8 @@ struct isl29018_chip {
->  	struct isl29018_scale	scale;
->  	int			prox_scheme;
->  	bool			suspended;
-> +	struct regulator	*vdd_reg;
-> +	struct regulator	*vdda_reg;
->  };
->  
->  static int isl29018_set_integration_time(struct isl29018_chip *chip,
-> @@ -735,6 +738,28 @@ static int isl29018_probe(struct i2c_client *client,
->  
->  	mutex_init(&chip->lock);
->  
-> +	chip->vdd_reg = devm_regulator_get_optional(&client->dev, "vdd");
-> +	if (!IS_ERR(chip->vdd_reg)) {
-> +		err = regulator_enable(chip->vdd_reg);
-> +		if (err) {
-> +			dev_err(&client->dev, "failed to enable VDD regulator\n");
-> +			return err;
-> +		}
-> +	} else if (chip->vdd_reg == ERR_PTR(-EPROBE_DEFER)) {
-> +		return -EPROBE_DEFER;
-> +	}
-> +
-> +	chip->vdda_reg = devm_regulator_get_optional(&client->dev, "vdda");
-> +	if (!IS_ERR(chip->vdda_reg)) {
-> +		err = regulator_enable(chip->vdda_reg);
-> +		if (err) {
-> +			dev_err(&client->dev, "failed to enable VDDA regulator\n");
-> +			return err;
-> +		}
-> +	} else if (chip->vdda_reg == ERR_PTR(-EPROBE_DEFER)) {
-> +		return -EPROBE_DEFER;
-> +	}
-> +
->  	chip->type = dev_id;
->  	chip->calibscale = 1;
->  	chip->ucalibscale = 0;
-> @@ -768,6 +793,7 @@ static int isl29018_probe(struct i2c_client *client,
->  static int isl29018_suspend(struct device *dev)
+>  drivers/iio/imu/bmi160/bmi160_core.c | 38 +++++++++++++-----------------------
+>  drivers/iio/imu/bmi160/bmi160_i2c.c  |  8 --------
+>  drivers/iio/imu/bmi160/bmi160_spi.c  |  8 --------
+>  3 files changed, 14 insertions(+), 40 deletions(-)
+> 
+> diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
+> index c85659ca9507..b10330b0f93f 100644
+> --- a/drivers/iio/imu/bmi160/bmi160_core.c
+> +++ b/drivers/iio/imu/bmi160/bmi160_core.c
+> @@ -542,10 +542,12 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi)
+>  	return 0;
+>  }
+> 
+> -static void bmi160_chip_uninit(struct bmi160_data *data)
+> +static void bmi160_chip_uninit(void *data)
 >  {
->  	struct isl29018_chip *chip = iio_priv(dev_get_drvdata(dev));
-> +	int ret;
->  
->  	mutex_lock(&chip->lock);
->  
-> @@ -777,6 +803,22 @@ static int isl29018_suspend(struct device *dev)
->  	 * So we do not have much to do here.
->  	 */
->  	chip->suspended = true;
-> +	if (!IS_ERR(chip->vdd_reg)) {
-> +		ret = regulator_disable(chip->vdd_reg);
-> +		if (ret) {
-> +			dev_err(dev, "failed to disable VDD regulator\n");
-> +			mutex_unlock(&chip->lock);
-> +			return ret;
-> +		}
-> +	}
-> +	if (!IS_ERR(chip->vdda_reg)) {
-> +		ret = regulator_disable(chip->vdda_reg);
-> +		if (ret) {
-> +			dev_err(dev, "failed to disable VDDA regulator\n");
-> +			mutex_unlock(&chip->lock);
-> +			return ret;
-> +		}
-> +	}
->  
->  	mutex_unlock(&chip->lock);
->  
-> @@ -790,6 +832,23 @@ static int isl29018_resume(struct device *dev)
->  
->  	mutex_lock(&chip->lock);
->  
-> +	if (!IS_ERR(chip->vdd_reg)) {
-> +		err = regulator_enable(chip->vdd_reg);
-> +		if (err) {
-> +			dev_err(dev, "failed to enable VDD regulator\n");
-> +			mutex_unlock(&chip->lock);
-> +			return err;
-> +		}
-> +	}
-> +	if (!IS_ERR(chip->vdda_reg)) {
-> +		err = regulator_enable(chip->vdda_reg);
-> +		if (err) {
-> +			dev_err(dev, "failed to enable VDDA regulator\n");
-> +			mutex_unlock(&chip->lock);
-> +			return err;
-> +		}
-> +	}
+> -	bmi160_set_mode(data, BMI160_GYRO, false);
+> -	bmi160_set_mode(data, BMI160_ACCEL, false);
+> +	struct bmi160_data *bmi_data = data;
 > +
->  	err = isl29018_chip_init(chip);
->  	if (!err)
->  		chip->suspended = false;
+> +	bmi160_set_mode(bmi_data, BMI160_GYRO, false);
+> +	bmi160_set_mode(bmi_data, BMI160_ACCEL, false);
+>  }
+> 
+>  int bmi160_core_probe(struct device *dev, struct regmap *regmap,
+> @@ -567,6 +569,10 @@ int bmi160_core_probe(struct device *dev, struct regmap *regmap,
+>  	if (ret < 0)
+>  		return ret;
+> 
+> +	ret = devm_add_action_or_reset(dev, bmi160_chip_uninit, data);
+> +	if (ret < 0)
+> +		return ret;
+> +
+>  	if (!name && ACPI_HANDLE(dev))
+>  		name = bmi160_match_acpi_device(dev);
+> 
+> @@ -577,35 +583,19 @@ int bmi160_core_probe(struct device *dev, struct regmap *regmap,
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  	indio_dev->info = &bmi160_info;
+> 
+> -	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+> -					 bmi160_trigger_handler, NULL);
+> +	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
+> +					      bmi160_trigger_handler, NULL);
+>  	if (ret < 0)
+> -		goto uninit;
+> +		return ret;
+> 
+> -	ret = iio_device_register(indio_dev);
+> +	ret = devm_iio_device_register(dev, indio_dev);
+>  	if (ret < 0)
+> -		goto buffer_cleanup;
+> +		return ret;
+> 
+>  	return 0;
+> -buffer_cleanup:
+> -	iio_triggered_buffer_cleanup(indio_dev);
+> -uninit:
+> -	bmi160_chip_uninit(data);
+> -	return ret;
+>  }
+>  EXPORT_SYMBOL_GPL(bmi160_core_probe);
+> 
+> -void bmi160_core_remove(struct device *dev)
+> -{
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> -	struct bmi160_data *data = iio_priv(indio_dev);
+> -
+> -	iio_device_unregister(indio_dev);
+> -	iio_triggered_buffer_cleanup(indio_dev);
+> -	bmi160_chip_uninit(data);
+> -}
+> -EXPORT_SYMBOL_GPL(bmi160_core_remove);
+> -
+>  MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com");
+>  MODULE_DESCRIPTION("Bosch BMI160 driver");
+>  MODULE_LICENSE("GPL v2");
+> diff --git a/drivers/iio/imu/bmi160/bmi160_i2c.c b/drivers/iio/imu/bmi160/bmi160_i2c.c
+> index 155a31f72445..5b1f7e6af651 100644
+> --- a/drivers/iio/imu/bmi160/bmi160_i2c.c
+> +++ b/drivers/iio/imu/bmi160/bmi160_i2c.c
+> @@ -38,13 +38,6 @@ static int bmi160_i2c_probe(struct i2c_client *client,
+>  	return bmi160_core_probe(&client->dev, regmap, name, false);
+>  }
+> 
+> -static int bmi160_i2c_remove(struct i2c_client *client)
+> -{
+> -	bmi160_core_remove(&client->dev);
+> -
+> -	return 0;
+> -}
+> -
+>  static const struct i2c_device_id bmi160_i2c_id[] = {
+>  	{"bmi160", 0},
+>  	{}
+> @@ -72,7 +65,6 @@ static struct i2c_driver bmi160_i2c_driver = {
+>  		.of_match_table		= of_match_ptr(bmi160_of_match),
+>  	},
+>  	.probe		= bmi160_i2c_probe,
+> -	.remove		= bmi160_i2c_remove,
+>  	.id_table	= bmi160_i2c_id,
+>  };
+>  module_i2c_driver(bmi160_i2c_driver);
+> diff --git a/drivers/iio/imu/bmi160/bmi160_spi.c b/drivers/iio/imu/bmi160/bmi160_spi.c
+> index d34dfdfd1a7d..e521ad14eeac 100644
+> --- a/drivers/iio/imu/bmi160/bmi160_spi.c
+> +++ b/drivers/iio/imu/bmi160/bmi160_spi.c
+> @@ -29,13 +29,6 @@ static int bmi160_spi_probe(struct spi_device *spi)
+>  	return bmi160_core_probe(&spi->dev, regmap, id->name, true);
+>  }
+> 
+> -static int bmi160_spi_remove(struct spi_device *spi)
+> -{
+> -	bmi160_core_remove(&spi->dev);
+> -
+> -	return 0;
+> -}
+> -
+>  static const struct spi_device_id bmi160_spi_id[] = {
+>  	{"bmi160", 0},
+>  	{}
+> @@ -58,7 +51,6 @@ MODULE_DEVICE_TABLE(of, bmi160_of_match);
+> 
+>  static struct spi_driver bmi160_spi_driver = {
+>  	.probe		= bmi160_spi_probe,
+> -	.remove		= bmi160_spi_remove,
+>  	.id_table	= bmi160_spi_id,
+>  	.driver = {
+>  		.acpi_match_table	= ACPI_PTR(bmi160_acpi_match),
+> --
+> 2.11.0
+> 
 
