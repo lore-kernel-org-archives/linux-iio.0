@@ -2,29 +2,29 @@ Return-Path: <SRS0=mtDg=OU=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.9 required=3.0
-	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.9 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 503A4C5CFFE
-	for <linux-iio@archiver.kernel.org>; Tue, 11 Dec 2018 19:01:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B936FC67839
+	for <linux-iio@archiver.kernel.org>; Tue, 11 Dec 2018 19:05:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 054E52084E
-	for <linux-iio@archiver.kernel.org>; Tue, 11 Dec 2018 19:01:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 054E52084E
+	by mail.kernel.org (Postfix) with ESMTP id 8E66D20851
+	for <linux-iio@archiver.kernel.org>; Tue, 11 Dec 2018 19:05:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8E66D20851
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726435AbeLKTBJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 11 Dec 2018 14:01:09 -0500
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:49014 "EHLO
+        id S1726427AbeLKTFx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 11 Dec 2018 14:05:53 -0500
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:49072 "EHLO
         bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726329AbeLKTBJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 11 Dec 2018 14:01:09 -0500
+        with ESMTP id S1726313AbeLKTFw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 11 Dec 2018 14:05:52 -0500
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: eballetbo)
-        with ESMTPSA id 09183260976
+        with ESMTPSA id B2D9C278646
+Subject: Re: [PATCH] MAINTAINERS: add maintainers for ChromeOS EC sub-drivers
 From:   Enric Balletbo i Serra <enric.balletbo@collabora.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Alessandro Zummo <a.zummo@towertech.it>, linux-pwm@vger.kernel.org,
@@ -40,8 +40,7 @@ Cc:     Alessandro Zummo <a.zummo@towertech.it>, linux-pwm@vger.kernel.org,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         devicetree@vger.kernel.org,
         Thierry Reding <thierry.reding@gmail.com>,
-        linux-pm@vger.kernel.org, Benson Leung <bleung@chromiumg.org>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        linux-pm@vger.kernel.org, MyungJoo Ham <myungjoo.ham@samsung.com>,
         Lee Jones <lee.jones@linaro.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Rob Herring <robh+dt@kernel.org>,
@@ -51,64 +50,39 @@ Cc:     Alessandro Zummo <a.zummo@towertech.it>, linux-pwm@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
         Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
         Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        G reg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH] MAINTAINERS: add maintainers for ChromeOS EC sub-drivers
-Date:   Tue, 11 Dec 2018 20:00:53 +0100
-Message-Id: <20181211190053.9997-1-enric.balletbo@collabora.com>
-X-Mailer: git-send-email 2.19.2
+References: <20181211190053.9997-1-enric.balletbo@collabora.com>
+Message-ID: <2a01fb14-342e-7210-7861-f1fab277c8c5@collabora.com>
+Date:   Tue, 11 Dec 2018 20:05:44 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.3.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20181211190053.9997-1-enric.balletbo@collabora.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-There are multiple ChromeOS EC sub-drivers spread in different
-subsystems, as all of them are related to the Chrome stuff add
-Benson and myself as a maintainers for all these sub-drivers.
 
-Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
----
 
- MAINTAINERS | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+On 11/12/18 20:00, Enric Balletbo i Serra wrote:
+> There are multiple ChromeOS EC sub-drivers spread in different
+> subsystems, as all of them are related to the Chrome stuff add
+> Benson and myself as a maintainers for all these sub-drivers.
+> 
+> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> ---
+> 
+>  MAINTAINERS | 24 ++++++++++++++++++++++++
+>  1 file changed, 24 insertions(+)
+> 
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index a24129b0b043..2f24f5c977ca 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -3625,6 +3625,30 @@ S:	Maintained
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/bleung/chrome-platform.git
- F:	drivers/platform/chrome/
- 
-+CHROMEOS EC SUBDRIVERS
-+M:	Benson Leung <bleung@chromiumg.org>
-+M:	Enric Balletbo i Serra <enric.balletbo@collabora.com>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/extcon/extcon-usbc-cros-ec.txt
-+F:	Documentation/devicetree/bindings/input/cros-ec-keyb.txt
-+F:	Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.txt
-+F:	Documentation/devicetree/bindings/i2c/i2c-cros-ec-tunnel.txt
-+F:	Documentation/devicetree/bindings/mfd/cros-ec.txt
-+F:	Documentation/ABI/testing/sysfs-bus-iio-cros-ec
-+F:	drivers/extcon/extcon-usbc-cros-ec.c
-+F:	drivers/i2c/busses/i2c-cros-ec-tunnel.c
-+F:	drivers/iio/accel/cros_ec*
-+F:	drivers/iio/common/cros_ec_sensors/
-+F:	drivers/iio/light/cros_ec*
-+F:	drivers/iio/pressure/cros_ec*
-+F:	drivers/input/keyboard/cros_ec*
-+F:	drivers/mfd/cros_ec*
-+F:	drivers/power/supply/cros_usbpd-charger.c
-+F:	drivers/pwm/pwm-cros-ec.c
-+F:	drivers/rtc/rtc-cros-ec.c
-+F:	include/linux/iio/common/cros_ec_sensors_core.h
-+F:	include/linux/mfd/cros_ec*
-+
- CIRRUS LOGIC AUDIO CODEC DRIVERS
- M:	Brian Austin <brian.austin@cirrus.com>
- M:	Paul Handrigan <Paul.Handrigan@cirrus.com>
--- 
-2.19.2
+Sorry, I'll send a second version right now, there is a typo in Benson address.
+Sorry for the noise.
 
+Thanks,
+ Enric
