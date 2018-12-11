@@ -2,116 +2,119 @@ Return-Path: <SRS0=mtDg=OU=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.9 required=3.0
-	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96342C67839
-	for <linux-iio@archiver.kernel.org>; Tue, 11 Dec 2018 19:10:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C92CBC67839
+	for <linux-iio@archiver.kernel.org>; Tue, 11 Dec 2018 19:12:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 66CC920870
-	for <linux-iio@archiver.kernel.org>; Tue, 11 Dec 2018 19:10:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 66CC920870
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
+	by mail.kernel.org (Postfix) with ESMTP id 942DD20879
+	for <linux-iio@archiver.kernel.org>; Tue, 11 Dec 2018 19:12:15 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="shzvbxIn"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 942DD20879
+Authentication-Results: mail.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=ti.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726412AbeLKTKG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 11 Dec 2018 14:10:06 -0500
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:49118 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726329AbeLKTKG (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 11 Dec 2018 14:10:06 -0500
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: eballetbo)
-        with ESMTPSA id 1DB64260976
-From:   Enric Balletbo i Serra <enric.balletbo@collabora.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Alessandro Zummo <a.zummo@towertech.it>, linux-pwm@vger.kernel.org,
-        linux-iio@vger.kernel.org,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-i2c@vger.kernel.org, groeck@chromium.org,
-        kernel@collabora.com, linux-rtc@vger.kernel.org,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Benson Leung <bleung@chromium.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        linux-input@vger.kernel.org,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        devicetree@vger.kernel.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-pm@vger.kernel.org, MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH v2] MAINTAINERS: add maintainers for ChromeOS EC sub-drivers
-Date:   Tue, 11 Dec 2018 20:09:52 +0100
-Message-Id: <20181211190953.13626-1-enric.balletbo@collabora.com>
-X-Mailer: git-send-email 2.19.2
+        id S1726398AbeLKTMP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 11 Dec 2018 14:12:15 -0500
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:44397 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726340AbeLKTMO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 11 Dec 2018 14:12:14 -0500
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id wBBJCDTf069973;
+        Tue, 11 Dec 2018 13:12:13 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1544555533;
+        bh=g1Gu1tvMv1Y9EMPNKEnhoJEhOF9s2cZZX0dAjPhIBK4=;
+        h=From:To:CC:Subject:Date;
+        b=shzvbxIn9zf1+v7iCuyQYx6Fc87jJB+m1OoklhHfC/kxIHPQgcmc8c70K/6z0QBHk
+         JZYkSzdn7wGRc8xu9YahLYf/7Bju/NoSDqHxxaK7hHLqH2d51LITrHACYSfsOGCJJr
+         BCY3NDfEWi+z4SDZwJqoXpnL8Cq8XnIqMhnIEg7I=
+Received: from DFLE111.ent.ti.com (dfle111.ent.ti.com [10.64.6.32])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id wBBJCCSx127630
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 11 Dec 2018 13:12:13 -0600
+Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE111.ent.ti.com
+ (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1591.10; Tue, 11
+ Dec 2018 13:12:12 -0600
+Received: from dflp32.itg.ti.com (10.64.6.15) by DFLE101.ent.ti.com
+ (10.64.6.22) with Microsoft SMTP Server (version=TLS1_0,
+ cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.1.1591.10 via Frontend Transport;
+ Tue, 11 Dec 2018 13:12:12 -0600
+Received: from legion.dal.desgin.ti.com (legion.dal.design.ti.com [128.247.22.53])
+        by dflp32.itg.ti.com (8.14.3/8.13.8) with ESMTP id wBBJCCNl008718;
+        Tue, 11 Dec 2018 13:12:12 -0600
+Received: from localhost (a0272616local-lt.dhcp.ti.com [172.22.100.89])
+        by legion.dal.desgin.ti.com (8.11.7p1+Sun/8.11.7) with ESMTP id wBBJCCU05298;
+        Tue, 11 Dec 2018 13:12:12 -0600 (CST)
+From:   Dan Murphy <dmurphy@ti.com>
+To:     <linux-iio@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <jic23@kernel.org>,
+        <robh+dt@kernel.org>, Dan Murphy <dmurphy@ti.com>
+Subject: [PATCH v2 1/4] iio: ti-ads124s08: Add DT binding documentation
+Date:   Tue, 11 Dec 2018 13:12:04 -0600
+Message-ID: <20181211191207.21900-1-dmurphy@ti.com>
+X-Mailer: git-send-email 2.12.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-There are multiple ChromeOS EC sub-drivers spread in different
-subsystems, as all of them are related to the Chrome stuff add
-Benson and myself as a maintainers for all these sub-drivers.
+Adding binding documentation for Texas Instruments ADS124S08
+and ADS124S06 ADC.
 
-Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+S08 is a 12 channel ADC
+S06 is a 6 channel ADC
+
+Datesheet can be found here:
+http://www.ti.com/lit/gpn/ads124s08
+
+Signed-off-by: Dan Murphy <dmurphy@ti.com>
 ---
 
-Changes in v2:
-- Fix typo in Benson email address.
+v2 - Fixed incorrect compatible example and removed vref-supply - https://lore.kernel.org/patchwork/patch/1021047/
 
- MAINTAINERS | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ .../bindings/iio/adc/ti-ads124s08.txt         | 23 +++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-ads124s08.txt
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index a24129b0b043..bbe7180e2851 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -3625,6 +3625,30 @@ S:	Maintained
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/bleung/chrome-platform.git
- F:	drivers/platform/chrome/
- 
-+CHROMEOS EC SUBDRIVERS
-+M:	Benson Leung <bleung@chromium.org>
-+M:	Enric Balletbo i Serra <enric.balletbo@collabora.com>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/extcon/extcon-usbc-cros-ec.txt
-+F:	Documentation/devicetree/bindings/input/cros-ec-keyb.txt
-+F:	Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.txt
-+F:	Documentation/devicetree/bindings/i2c/i2c-cros-ec-tunnel.txt
-+F:	Documentation/devicetree/bindings/mfd/cros-ec.txt
-+F:	Documentation/ABI/testing/sysfs-bus-iio-cros-ec
-+F:	drivers/extcon/extcon-usbc-cros-ec.c
-+F:	drivers/i2c/busses/i2c-cros-ec-tunnel.c
-+F:	drivers/iio/accel/cros_ec*
-+F:	drivers/iio/common/cros_ec_sensors/
-+F:	drivers/iio/light/cros_ec*
-+F:	drivers/iio/pressure/cros_ec*
-+F:	drivers/input/keyboard/cros_ec*
-+F:	drivers/mfd/cros_ec*
-+F:	drivers/power/supply/cros_usbpd-charger.c
-+F:	drivers/pwm/pwm-cros-ec.c
-+F:	drivers/rtc/rtc-cros-ec.c
-+F:	include/linux/iio/common/cros_ec_sensors_core.h
-+F:	include/linux/mfd/cros_ec*
+diff --git a/Documentation/devicetree/bindings/iio/adc/ti-ads124s08.txt b/Documentation/devicetree/bindings/iio/adc/ti-ads124s08.txt
+new file mode 100644
+index 000000000000..6993e76e61c6
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/ti-ads124s08.txt
+@@ -0,0 +1,23 @@
++* Texas Instruments' ads124s08 and ads124s06 ADC chip
 +
- CIRRUS LOGIC AUDIO CODEC DRIVERS
- M:	Brian Austin <brian.austin@cirrus.com>
- M:	Paul Handrigan <Paul.Handrigan@cirrus.com>
++Required properties:
++ - compatible: Should be "ti,ads124s08" or "ti,ads124s06"
++ - reg: spi chip select number for the device
++
++Recommended properties:
++ - spi-max-frequency: Definition as per
++		Documentation/devicetree/bindings/spi/spi-bus.txt
++ - spi-cpha: Definition as per
++		Documentation/devicetree/bindings/spi/spi-bus.txt
++
++Optional properties:
++ - reset-gpios: GPIO pin used to reset the device.
++
++Example:
++adc@0 {
++	compatible = "ti,ads124s08";
++	reg = <0>;
++	spi-max-frequency = <1000000>;
++	spi-cpha;
++	reset-gpios = <&gpio1 16 GPIO_ACTIVE_LOW>;
++};
 -- 
-2.19.2
+2.20.0.rc2.7.g965798d1f2
 
