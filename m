@@ -5,58 +5,58 @@ X-Spam-Level:
 X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FB55C6783C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1B4AC67869
 	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 00:56:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C446420855
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 00:56:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 77C2E20855
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 00:56:26 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rOJtOOj1"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C446420855
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ONp0a3Ws"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 77C2E20855
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726363AbeLLAzv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 11 Dec 2018 19:55:51 -0500
-Received: from mail-io1-f67.google.com ([209.85.166.67]:38531 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726354AbeLLAzt (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 11 Dec 2018 19:55:49 -0500
-Received: by mail-io1-f67.google.com with SMTP id l14so13449296ioj.5;
-        Tue, 11 Dec 2018 16:55:48 -0800 (PST)
+        id S1726220AbeLLA4Z (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 11 Dec 2018 19:56:25 -0500
+Received: from mail-it1-f194.google.com ([209.85.166.194]:52910 "EHLO
+        mail-it1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726238AbeLLAzu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 11 Dec 2018 19:55:50 -0500
+Received: by mail-it1-f194.google.com with SMTP id g76so6587968itg.2;
+        Tue, 11 Dec 2018 16:55:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=BqAI0hgInZRj/HqBspWobjcKVjc1X8/CWrZ8LYW+zYw=;
-        b=rOJtOOj1/y0YQUdYJ6Z0+0sKiPNOzB6zvmboZBJGRE2W2t3EWjhe9w/TD5V7rP4n1y
-         C+FvH/UmfcZ+FBWdJX2lj9EFh4mSTpFfJ0DEzyrT3LwELXen1MLNLbDmHWV8IKpdhnx8
-         kNzLv7z6vnEFNgXiEqHqw8Xj/eRqfI03MN3s7+MOCyhqcYs4zXVpkJXgIYyrydOqxZs6
-         HtIKyXG4A7bibmbeQfRYaCPj+k2IsN99SWBZotuE8oH6tv+YGtJdiN9e7PeC122jNk2a
-         y9fTMr2ZOu6Td0UJuzzp7beNEWESvLf+1L2kqNTWKLjsux+lhW+8yHUXnNHJ/i4lCqoE
-         ebNw==
+        bh=8x3EfAi+dwJT7LG9r3AqAVh9KBm9FxEhlGxf1nFjco4=;
+        b=ONp0a3WsAdCvn6qEPX78E5QC9Mz6d6oRqo1iXX2JUGBV985+YrC2aEi0zru+q7VFfK
+         6csxPZpiGZhsFx4/ttWg8jxX8prv2ZmZtOYSulIvoDhSAHs2OwBK4J87Jho8O1K43AAX
+         60hYcWdRVgTjsEmP2KwN/Qz6QCfK2LaYMDZyyFjmmkjupBeKC0RyyzNCkUPXOw+Pk2PV
+         /HsXdOdgZgnijJgsVkq+aFnnoGtwmEUdaYnJu9VoUw51j5JhX05u0bKdBJW8V5pGLgDH
+         A+CQiHENTWdqQ1QUtkoOHWQw+FEdEj3oOXkMZo1yD8gcVMTgWcBB2XLFJc/V6zVgaiYg
+         /Q0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=BqAI0hgInZRj/HqBspWobjcKVjc1X8/CWrZ8LYW+zYw=;
-        b=SRxRZTo/wHeA8lbB24jazJFdWGLddOQlEY/YdAPNkXTgHSweNed7CfNahkMRt1xaWn
-         ocP21wI4Ui2OGTN41/QnprR24QDXDwyrvHNFmuUvLsoDN65fYgP97t+oZNa9OcSkob0/
-         iNrE1dnXgRwJaVMJebFtx99PpoE98wTcP/NNbap0kJlvzOzUsYm0kPXtwY86Y4SSsziZ
-         8gRiy8UP9ZqPOQg768UwQRkHqpu+YKP5JWN3KhLeLpzFispH9fRAYZZ1ONflmudOZIqG
-         4sa6J+EKHct7RS9VzRYGyxcHCgkisu+YkU2DVHo0f4dBAd9urdVxFfSE/IhYA/Yte2mr
-         Hzww==
-X-Gm-Message-State: AA+aEWbf75Prs78mij9x5SZaUE5kOH+1Mee9XdQ0W243kFxC8UupYRwC
-        SJ+aEz2hzijz4wFNBDhYaHI=
-X-Google-Smtp-Source: AFSGD/WObtNO2qHxwlg71Fiw23sLuwOvHNO26nAw9w3l66/EHzGSTgS52c7Iqpgn//u6SlEKq02mTw==
-X-Received: by 2002:a6b:b28a:: with SMTP id b132mr15048308iof.256.1544576148191;
-        Tue, 11 Dec 2018 16:55:48 -0800 (PST)
+        bh=8x3EfAi+dwJT7LG9r3AqAVh9KBm9FxEhlGxf1nFjco4=;
+        b=d6paOC2xvJ+iXWrVObNlnHWeYIVqADW6oEZEJu6vGjktQt9zXuLQkqDMM52ZGzflyM
+         O+4RQuf00TXmKxVr/bv2ftqxsKDwnnGr2oxlvrDH1ZpNeuj3sgu7jbTTeLtXe13yl+vC
+         nGPQi1Uvku+ORoGXtJBqzdqWu6gxjhBvbTPoN2cf+M/fogewPKswI3dc2SeYkY3A5Kou
+         4WTkjJhfCR6ykTy7HXy4xjHti4zxwXxq9tp8vlGXypqCtHgMPQGbuihGzAieVf0zcNLO
+         9bUWV7P8MW80rpn/6Hhmv3f8kqQNpJEoJ7GsGvbs7/as5JQnetP2hx3Reh764oXCfjzL
+         eDjQ==
+X-Gm-Message-State: AA+aEWaoDInGH14gWcC2S0I5XgzfjXm0E5Fz4iUmVoape9A0julPzxHK
+        3Ix9gc5KlsC+l2YdQB0cj5w=
+X-Google-Smtp-Source: AFSGD/U40Oc5azHSTu6+wK0HUW3z50CL3HQhebMK6cXLmPgfP06ZvdgJZnW2t/ruxxoSoludBIfWEw==
+X-Received: by 2002:a24:1c04:: with SMTP id c4mr4403205itc.79.1544576149095;
+        Tue, 11 Dec 2018 16:55:49 -0800 (PST)
 Received: from r2700x.localdomain (c-75-70-96-103.hsd1.co.comcast.net. [75.70.96.103])
-        by smtp.gmail.com with ESMTPSA id l186sm1952445itl.22.2018.12.11.16.55.47
+        by smtp.gmail.com with ESMTPSA id l186sm1952445itl.22.2018.12.11.16.55.48
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 11 Dec 2018 16:55:47 -0800 (PST)
+        Tue, 11 Dec 2018 16:55:48 -0800 (PST)
 From:   Jeremy Fertic <jeremyfertic@gmail.com>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
@@ -67,9 +67,9 @@ Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
         linux-kernel@vger.kernel.org,
         Jeremy Fertic <jeremyfertic@gmail.com>
-Subject: [PATCH 05/11] staging: iio: adt7316: fix the dac read calculation
-Date:   Tue, 11 Dec 2018 17:54:57 -0700
-Message-Id: <20181212005503.28054-6-jeremyfertic@gmail.com>
+Subject: [PATCH 06/11] staging: iio: adt7316: fix the dac write calculation
+Date:   Tue, 11 Dec 2018 17:54:58 -0700
+Message-Id: <20181212005503.28054-7-jeremyfertic@gmail.com>
 X-Mailer: git-send-email 2.19.1
 In-Reply-To: <20181212005503.28054-1-jeremyfertic@gmail.com>
 References: <20181212005503.28054-1-jeremyfertic@gmail.com>
@@ -80,52 +80,49 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The calculation of the current dac value is using the wrong bits of the
-dac lsb register. Create two macros to shift the lsb register value into
-lsb position, depending on whether the dac is 10 or 12 bit. Initialize
-data to 0 so, with an 8 bit dac, the msb register value can be bitwise
-ORed with data.
+The lsb calculation is not masking the correct bits from the user input.
+Subtract 1 from (1 << offset) to correctly set up the mask to be applied
+to user input.
+
+The lsb register stores its value starting at the bit 7 position.
+adt7316_store_DAC() currently assumes the value is at the other end of the
+register. Shift the lsb value before storing it in a new variable lsb_reg,
+and write this variable to the lsb register.
 
 Signed-off-by: Jeremy Fertic <jeremyfertic@gmail.com>
 ---
- drivers/staging/iio/addac/adt7316.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/staging/iio/addac/adt7316.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
-index eee7c04f93f4..b7d12d003ddc 100644
+index b7d12d003ddc..77ef3c209b67 100644
 --- a/drivers/staging/iio/addac/adt7316.c
 +++ b/drivers/staging/iio/addac/adt7316.c
-@@ -47,6 +47,8 @@
- #define ADT7516_MSB_AIN3		0xA
- #define ADT7516_MSB_AIN4		0xB
- #define ADT7316_DA_DATA_BASE		0x10
-+#define ADT7316_DA_10_BIT_LSB_SHIFT	6
-+#define ADT7316_DA_12_BIT_LSB_SHIFT	4
- #define ADT7316_DA_MSB_DATA_REGS	4
- #define ADT7316_LSB_DAC_A		0x10
- #define ADT7316_MSB_DAC_A		0x11
-@@ -1403,7 +1405,7 @@ static IIO_DEVICE_ATTR(ex_analog_temp_offset, 0644,
- static ssize_t adt7316_show_DAC(struct adt7316_chip_info *chip,
- 				int channel, char *buf)
+@@ -1442,7 +1442,7 @@ static ssize_t adt7316_show_DAC(struct adt7316_chip_info *chip,
+ static ssize_t adt7316_store_DAC(struct adt7316_chip_info *chip,
+ 				 int channel, const char *buf, size_t len)
  {
--	u16 data;
-+	u16 data = 0;
- 	u8 msb, lsb, offset;
+-	u8 msb, lsb, offset;
++	u8 msb, lsb, lsb_reg, offset;
+ 	u16 data;
  	int ret;
  
-@@ -1428,7 +1430,11 @@ static ssize_t adt7316_show_DAC(struct adt7316_chip_info *chip,
- 	if (ret)
- 		return -EIO;
+@@ -1460,9 +1460,13 @@ static ssize_t adt7316_store_DAC(struct adt7316_chip_info *chip,
+ 		return -EINVAL;
  
--	data = (msb << offset) + (lsb & ((1 << offset) - 1));
-+	if (chip->dac_bits == 12)
-+		data = lsb >> ADT7316_DA_12_BIT_LSB_SHIFT;
-+	else if (chip->dac_bits == 10)
-+		data = lsb >> ADT7316_DA_10_BIT_LSB_SHIFT;
-+	data |= msb << offset;
- 
- 	return sprintf(buf, "%d\n", data);
- }
+ 	if (chip->dac_bits > 8) {
+-		lsb = data & (1 << offset);
++		lsb = data & ((1 << offset) - 1);
++		if (chip->dac_bits == 12)
++			lsb_reg = lsb << ADT7316_DA_12_BIT_LSB_SHIFT;
++		else
++			lsb_reg = lsb << ADT7316_DA_10_BIT_LSB_SHIFT;
+ 		ret = chip->bus.write(chip->bus.client,
+-			ADT7316_DA_DATA_BASE + channel * 2, lsb);
++			ADT7316_DA_DATA_BASE + channel * 2, lsb_reg);
+ 		if (ret)
+ 			return -EIO;
+ 	}
 -- 
 2.19.1
 
