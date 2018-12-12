@@ -2,138 +2,85 @@ Return-Path: <SRS0=Gvxw=OV=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.4 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71CA2C67839
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 17:06:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48125C65BAF
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 17:18:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2636120870
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 17:06:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1544634411;
-	bh=MA9j7yNHyEaH3NdeSr24lwe9hZhkaVM7kHj29+c33mI=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=U1wajwobFPCiW//4FuwUbR9SUjTu+AEnQmESA+xdm6RdRpIUS0YLd5Sb1+X1v2Rqg
-	 yn7LU8QlJ4TEITl9jMTbgnTAozfc/elv0hWrRu2cfyTymkHc1A3nzfuKDx99m7WJ5v
-	 i0pBNT7/qpXTptQ4+/ksxmTKInSiWvuIWC9QcWuw=
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2636120870
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTP id 091B420851
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 17:18:25 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=interia.pl header.i=@interia.pl header.b="Eokq9W7X"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 091B420851
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=poczta.fm
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727681AbeLLRGo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 12 Dec 2018 12:06:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57760 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726879AbeLLRGo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 12 Dec 2018 12:06:44 -0500
-Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1727681AbeLLRSZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 12 Dec 2018 12:18:25 -0500
+Received: from smtpo.poczta.interia.pl ([217.74.65.155]:33096 "EHLO
+        smtpo.poczta.interia.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726922AbeLLRSZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Dec 2018 12:18:25 -0500
+X-Interia-R: Interia
+X-Interia-R-IP: 188.121.17.172
+X-Interia-R-Helo: <t480s.localdomain>
+Received: from t480s.localdomain (ipv4-188-121-17-172.net.internetunion.pl [188.121.17.172])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0132B20849;
-        Wed, 12 Dec 2018 17:06:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1544634403;
-        bh=MA9j7yNHyEaH3NdeSr24lwe9hZhkaVM7kHj29+c33mI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=L9/q6bqau5cew3qGq/0Uw5g0755WLBmstSkh612ng7haVhCabzoE3cQS/DkdTDxuk
-         qWmcK5hG0aivELamuP4eTrz2Sr1PwSyPRE3uLsag7m0YgeIVOvK87ZqKOiI8GwmPjn
-         Pyw3kReAyvdeyVblIWf0aYwCxOHG2gYAEZJbzo8Y=
-Date:   Wed, 12 Dec 2018 17:06:35 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-i2c@vger.kernel.org, groeck@chromium.org,
-        kernel@collabora.com, linux-rtc@vger.kernel.org,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Benson Leung <bleung@chromium.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        linux-input@vger.kernel.org,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        devicetree@vger.kernel.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-pm@vger.kernel.org, MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH v2] MAINTAINERS: add maintainers for ChromeOS EC
- sub-drivers
-Message-ID: <20181212170635.09c3363d@archlinux>
-In-Reply-To: <20181211190953.13626-1-enric.balletbo@collabora.com>
-References: <20181211190953.13626-1-enric.balletbo@collabora.com>
-X-Mailer: Claws Mail 3.17.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        by www.poczta.fm (INTERIA.PL) with ESMTPSA;
+        Wed, 12 Dec 2018 18:18:22 +0100 (CET)
+Date:   Wed, 12 Dec 2018 18:19:06 +0100
+From:   Slawomir Stepien <sst@poczta.fm>
+To:     lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+        knaack.h@gmx.de, pmeerw@pmeerw.net
+Cc:     linux-iio@vger.kernel.org, gregkh@linuxfoundation.org
+Subject: Re: [PATCH 1/2] staging: iio: adc: ad7280a: split
+ ad7280_channel_init() to more functions
+Message-ID: <20181212171906.GB1738@t480s.localdomain>
+References: <20181212170228.28498-1-sst@poczta.fm>
+ <20181212170228.28498-2-sst@poczta.fm>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20181212170228.28498-2-sst@poczta.fm>
+User-Agent: Mutt/1.11.1 (2018-12-01)
+X-Interia-Antivirus: OK
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=interia.pl;
+        s=biztos; t=1544635103;
+        bh=NII9OkuAqR61b9G5x5QqrsGYVHAXtjOiimqZiPRnqD8=;
+        h=X-Interia-R:X-Interia-R-IP:X-Interia-R-Helo:Date:From:To:Cc:
+         Subject:Message-ID:References:MIME-Version:Content-Type:
+         Content-Disposition:In-Reply-To:User-Agent:X-Interia-Antivirus;
+        b=Eokq9W7Xl09uKR70Pld7Pi7A5Gzo3psM7bIupYgzEv9bx3iNglZNp5I+dXVCd/5gv
+         O1S4zkPCtdPoKcgj05YqNWPMEiDKBdu99AtqnOLKSHte5OvVY7upMbrlHKAgfHAs8Y
+         u4Ec/kVibF91Q2WV/iEhN/n17xjBynHVgYrwHvjQ=
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 11 Dec 2018 20:09:52 +0100
-Enric Balletbo i Serra <enric.balletbo@collabora.com> wrote:
-
-> There are multiple ChromeOS EC sub-drivers spread in different
-> subsystems, as all of them are related to the Chrome stuff add
-> Benson and myself as a maintainers for all these sub-drivers.
+On gru 12, 2018 18:02, Slawomir Stepien wrote:
+> The ad7280_channel_init function has been split into more specific
+> functions to increase the code readability.
 > 
-> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com> for iio parts.
+> The setting of channel's scan_type.shift to 0, has been removed, since
+> it is the default value.
+> 
+> Signed-off-by: Slawomir Stepien <sst@poczta.fm>
 > ---
-> 
-> Changes in v2:
-> - Fix typo in Benson email address.
-> 
->  MAINTAINERS | 24 ++++++++++++++++++++++++
->  1 file changed, 24 insertions(+)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index a24129b0b043..bbe7180e2851 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -3625,6 +3625,30 @@ S:	Maintained
->  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/bleung/chrome-platform.git
->  F:	drivers/platform/chrome/
->  
-> +CHROMEOS EC SUBDRIVERS
-> +M:	Benson Leung <bleung@chromium.org>
-> +M:	Enric Balletbo i Serra <enric.balletbo@collabora.com>
-> +S:	Maintained
-> +F:	Documentation/devicetree/bindings/extcon/extcon-usbc-cros-ec.txt
-> +F:	Documentation/devicetree/bindings/input/cros-ec-keyb.txt
-> +F:	Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.txt
-> +F:	Documentation/devicetree/bindings/i2c/i2c-cros-ec-tunnel.txt
-> +F:	Documentation/devicetree/bindings/mfd/cros-ec.txt
-> +F:	Documentation/ABI/testing/sysfs-bus-iio-cros-ec
-> +F:	drivers/extcon/extcon-usbc-cros-ec.c
-> +F:	drivers/i2c/busses/i2c-cros-ec-tunnel.c
-> +F:	drivers/iio/accel/cros_ec*
-> +F:	drivers/iio/common/cros_ec_sensors/
-> +F:	drivers/iio/light/cros_ec*
-> +F:	drivers/iio/pressure/cros_ec*
-> +F:	drivers/input/keyboard/cros_ec*
-> +F:	drivers/mfd/cros_ec*
-> +F:	drivers/power/supply/cros_usbpd-charger.c
-> +F:	drivers/pwm/pwm-cros-ec.c
-> +F:	drivers/rtc/rtc-cros-ec.c
-> +F:	include/linux/iio/common/cros_ec_sensors_core.h
-> +F:	include/linux/mfd/cros_ec*
-> +
->  CIRRUS LOGIC AUDIO CODEC DRIVERS
->  M:	Brian Austin <brian.austin@cirrus.com>
->  M:	Paul Handrigan <Paul.Handrigan@cirrus.com>
+> Since v1:
+> * Added ad7280_init_dev_channels function.
+> * New functions are now using struct iio_chan_spec rather than struct
+>   ad7280_state.
+> * Channel's number on device calculation has been moved to macros.
+> * scan_type.shift assigned has been removed.
+> ---
 
+Sorry about not marking this as v2 in the subject line :( I'll fix that on next
+version (if that happens ;)).
+
+-- 
+Slawomir Stepien
