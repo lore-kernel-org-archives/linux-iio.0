@@ -2,207 +2,158 @@ Return-Path: <SRS0=Gvxw=OV=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.9 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,T_MIXED_ES,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-6.2 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D535AC04EB8
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 13:08:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A893DC65BAF
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 16:49:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9D26F20839
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 13:08:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9D26F20839
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=pschenker.ch
+	by mail.kernel.org (Postfix) with ESMTP id 6DB802084E
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 16:49:59 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Y4npIULt"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6DB802084E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726440AbeLLNHH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 12 Dec 2018 08:07:07 -0500
-Received: from mxout013.mail.hostpoint.ch ([217.26.49.173]:51030 "EHLO
-        mxout013.mail.hostpoint.ch" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726232AbeLLNHH (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Dec 2018 08:07:07 -0500
-Received: from [10.0.2.45] (helo=asmtp012.mail.hostpoint.ch)
-        by mxout013.mail.hostpoint.ch with esmtp (Exim 4.91 (FreeBSD))
-        (envelope-from <dev@pschenker.ch>)
-        id 1gX4EA-0006kR-JP; Wed, 12 Dec 2018 14:07:02 +0100
-Received: from [46.140.72.82] (helo=philippe-pc.toradex.int)
-        by asmtp012.mail.hostpoint.ch with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.91 (FreeBSD))
-        (envelope-from <dev@pschenker.ch>)
-        id 1gX4EA-000IXM-Dm; Wed, 12 Dec 2018 14:07:02 +0100
-X-Authenticated-Sender-Id: dev@pschenker.ch
-From:   Philippe Schenker <dev@pschenker.ch>
-To:     jic23@kernel.org, marcel.ziswiler@toradex.com, stefan@agner.ch
-Cc:     thierry.reding@gmail.com,
-        Max Krummenacher <max.krummenacher@toradex.com>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        id S1727984AbeLLQsD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 12 Dec 2018 11:48:03 -0500
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:37829 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727982AbeLLQsC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Dec 2018 11:48:02 -0500
+Received: by mail-pf1-f195.google.com with SMTP id y126so9137924pfb.4;
+        Wed, 12 Dec 2018 08:48:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=VQ76MmWEDHFd/lV2BrEIdRPF1rRqm0REaoxdp+MMFxQ=;
+        b=Y4npIULtH9OjYsb1UxqeCZ8/mH2XfBxKFpHYnEEi6LbaGhZqPQa0w27PnMwcVborA2
+         z4qYv50Si7dDgaKnRi9JVgguf9G5FVfPvltTT4ZkjUq5th0hqv9xHlcff7fUY8dpt+sX
+         1VK33+HBxClLM55hrg6xTCLhfBgdO87iIeQEKYliIvCbo06mLr5Gk4P5K3GD+DWUw/1R
+         qIiEwNT/q23/aVRa4oM9gLyx1ySOZ/w/13xChCyt2hh6Kjn4BM/jhwg0BAIaRg0isC0i
+         rhZZoAlRvjUz0p/Ixh8+V+j3Tl9Wdl5ljlnfoEFYoxjxEdPkXhUkgD7niP8j6BCocuiH
+         +GcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=VQ76MmWEDHFd/lV2BrEIdRPF1rRqm0REaoxdp+MMFxQ=;
+        b=QJr8ocIrv/QMD1mNgLrvMVV7/IzCh9v1cIgpqrGHDjSccowpiUxDxG0V6s6LdVKSf7
+         y6fzAsPH03r/hXmOBFzn2JxrMfUKLWAGGxb3+h7F2kkZzBJYFWRh9QQNSxMZtVSCUNdE
+         uDEWp83HT0gTBK6F2DzlMWEzG4vCV6Z3S+E0t3ohlBIQn6irk305FbEmkx34MYzL0VIv
+         d//ZFFhboGyHwWAMIkZ9/d/TJQ/0QiZRu2sh5Kt4rZywC6QfC6hJw8lI71I29t34Pcwu
+         zvwPsHyCypGIIAZG//VJqiAbbMC5Iz6ChIeLH5Uicm3euPqvxOBFQpPN4T40h8Kmju76
+         irMA==
+X-Gm-Message-State: AA+aEWYd9KSYAouhVgk9/rVpPqsXcs2KlhvFP4JKstpUTSoGLTI0DC9s
+        yB225K44qBXXsW5WwxCF2Zk=
+X-Google-Smtp-Source: AFSGD/Wx3eZE9/KZyUYq2m5eUJF8mXSy/pTAdxeW7gLK1vWjItRHBGge0mH+QQmxFLQH2+FvWpeZIg==
+X-Received: by 2002:a62:4b4d:: with SMTP id y74mr20658935pfa.186.1544633281239;
+        Wed, 12 Dec 2018 08:48:01 -0800 (PST)
+Received: from localhost.localdomain ([27.59.69.235])
+        by smtp.googlemail.com with ESMTPSA id v191sm44489471pgb.77.2018.12.12.08.47.56
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 12 Dec 2018 08:48:00 -0800 (PST)
+From:   Hardik Singh Rathore <hardiksingh.k@gmail.com>
+To:     jic23@kernel.org
+Cc:     Hardik Singh Rathore <hardiksingh.k@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
         Hartmut Knaack <knaack.h@gmx.de>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v4 6/8] iio: adc: add STMPE ADC devicetree bindings
-Date:   Wed, 12 Dec 2018 14:06:47 +0100
-Message-Id: <20181212130649.15146-6-dev@pschenker.ch>
-X-Mailer: git-send-email 2.19.2
-In-Reply-To: <20181212130649.15146-1-dev@pschenker.ch>
-References: <20181212130649.15146-1-dev@pschenker.ch>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: iio: adt7316: drop unnecessary initialization of variables
+Date:   Wed, 12 Dec 2018 22:17:46 +0530
+Message-Id: <20181212164747.6402-1-hardiksingh.k@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Stefan Agner <stefan@agner.ch>
+Initialization is unnecessary when the variable is written before it is
+read. There were some occasions in which the driver would initialize `ret'
+during declaration without need.
 
-This adds the devicetree bindings for the STMPE ADC. And corrects a
-typo in st,sample-time it is rather "6 -> 124 clocks" according
-to the datasheet and not 144.
+Purely a cosmetic change with no functional impact.
 
-Signed-off-by: Stefan Agner <stefan@agner.ch>
-Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
-Signed-off-by: Philippe Schenker <philippe.schenker@toradex.com>
+Signed-off-by: Hardik Singh Rathore <hardiksingh.k@gmail.com>
 ---
+ drivers/staging/iio/addac/adt7316-i2c.c | 6 +++---
+ drivers/staging/iio/addac/adt7316-spi.c | 4 ++--
+ drivers/staging/iio/addac/adt7316.c     | 2 +-
+ 3 files changed, 6 insertions(+), 6 deletions(-)
 
-Changes in v4:
- - Put reformatting in a separate precursor patch.
-
-Changes in v3:
- - Reformatted documentation for touchscreen to use tabs and have a better
-   overview of the settings.
- - Added note which adc-settings will take precedence.
- - changed typo in sample-time setting from 144 clocks to 124 clocks, as stated
-   in the datasheet.
-
-Changes in v2:
- - Moved the bindings for ADC to the overlying mfd.
- - Reformatted for better readability
-
- .../devicetree/bindings/iio/adc/stmpe-adc.txt | 21 ++++++++++++
- .../bindings/input/touchscreen/stmpe.txt      | 32 +++++++++----------
- .../devicetree/bindings/mfd/stmpe.txt         | 14 ++++++++
- 3 files changed, 51 insertions(+), 16 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/stmpe-adc.txt
-
-diff --git a/Documentation/devicetree/bindings/iio/adc/stmpe-adc.txt b/Documentation/devicetree/bindings/iio/adc/stmpe-adc.txt
-new file mode 100644
-index 000000000000..480e66422625
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/stmpe-adc.txt
-@@ -0,0 +1,21 @@
-+STMPE ADC driver
-+----------------
-+
-+Required properties:
-+ - compatible: "st,stmpe-adc"
-+
-+Optional properties:
-+Note that the ADC is shared with the STMPE touchscreen. ADC related settings
-+have to be done in the mfd.
-+- st,norequest-mask: bitmask specifying which ADC channels should _not_ be
-+  requestable due to different usage (e.g. touch)
-+
-+Node name must be stmpe_adc and should be child node of stmpe node to
-+which it belongs.
-+
-+Example:
-+
-+	stmpe_adc {
-+		compatible = "st,stmpe-adc";
-+		st,norequest-mask = <0x0F>; /* dont use ADC CH3-0 */
-+	};
-diff --git a/Documentation/devicetree/bindings/input/touchscreen/stmpe.txt b/Documentation/devicetree/bindings/input/touchscreen/stmpe.txt
-index 1d3f84308142..8e2b240882fa 100644
---- a/Documentation/devicetree/bindings/input/touchscreen/stmpe.txt
-+++ b/Documentation/devicetree/bindings/input/touchscreen/stmpe.txt
-@@ -5,18 +5,6 @@ Required properties:
-  - compatible: "st,stmpe-ts"
+diff --git a/drivers/staging/iio/addac/adt7316-i2c.c b/drivers/staging/iio/addac/adt7316-i2c.c
+index 473e5e34ec00..48736c0ab0ef 100644
+--- a/drivers/staging/iio/addac/adt7316-i2c.c
++++ b/drivers/staging/iio/addac/adt7316-i2c.c
+@@ -47,7 +47,7 @@ static int adt7316_i2c_read(void *client, u8 reg, u8 *data)
+ static int adt7316_i2c_write(void *client, u8 reg, u8 data)
+ {
+ 	struct i2c_client *cl = client;
+-	int ret = 0;
++	int ret;
  
- Optional properties:
--- st,sample-time	: ADC conversion time in number of clock.
--				0 -> 36 clocks		4 -> 80 clocks (recommended)
--				1 -> 44 clocks		5 -> 96 clocks
--				2 -> 56 clocks		6 -> 144 clocks
--				3 -> 64 clocks
--- st,mod-12b		: ADC Bit mode
--				0 -> 10bit ADC		1 -> 12bit ADC
--- st,ref-sel		: ADC reference source
--				0 -> internal		1 -> external
--- st,adc-freq		: ADC Clock speed
--				0 -> 1.625 MHz		2 || 3 -> 6.5 MHz
--				1 -> 3.25 MHz
- - st,ave-ctrl		: Sample average control
- 				0 -> 1 sample
- 				1 -> 2 samples
-@@ -40,17 +28,29 @@ Optional properties:
- 				0 -> 20 mA (typical 35mA max)
- 				1 -> 50 mA (typical 80 mA max)
+ 	ret = i2c_smbus_write_byte_data(cl, reg, data);
+ 	if (ret < 0)
+@@ -59,7 +59,7 @@ static int adt7316_i2c_write(void *client, u8 reg, u8 data)
+ static int adt7316_i2c_multi_read(void *client, u8 reg, u8 count, u8 *data)
+ {
+ 	struct i2c_client *cl = client;
+-	int i, ret = 0;
++	int i, ret;
  
-+Optional properties common with MFD (deprecated):
-+ - st,sample-time	: ADC conversion time in number of clock.
-+				0 -> 36 clocks		4 -> 80 clocks (recommended)
-+				1 -> 44 clocks		5 -> 96 clocks
-+				2 -> 56 clocks		6 -> 124 clocks
-+				3 -> 64 clocks
-+ - st,mod-12b		: ADC Bit mode
-+				0 -> 10bit ADC		1 -> 12bit ADC
-+ - st,ref-sel		: ADC reference source
-+				0 -> internal		1 -> external
-+ - st,adc-freq		: ADC Clock speed
-+				0 -> 1.625 MHz		2 || 3 -> 6.5 MHz
-+				1 -> 3.25 MHz
-+
- Node name must be stmpe_touchscreen and should be child node of stmpe node to
- which it belongs.
+ 	if (count > ADT7316_REG_MAX_ADDR)
+ 		count = ADT7316_REG_MAX_ADDR;
+@@ -78,7 +78,7 @@ static int adt7316_i2c_multi_read(void *client, u8 reg, u8 count, u8 *data)
+ static int adt7316_i2c_multi_write(void *client, u8 reg, u8 count, u8 *data)
+ {
+ 	struct i2c_client *cl = client;
+-	int i, ret = 0;
++	int i, ret;
  
-+Note that common ADC settings of stmpe_touchscreen will take precedence.
-+
- Example:
+ 	if (count > ADT7316_REG_MAX_ADDR)
+ 		count = ADT7316_REG_MAX_ADDR;
+diff --git a/drivers/staging/iio/addac/adt7316-spi.c b/drivers/staging/iio/addac/adt7316-spi.c
+index 5cd22743e140..f524b4ccf5c7 100644
+--- a/drivers/staging/iio/addac/adt7316-spi.c
++++ b/drivers/staging/iio/addac/adt7316-spi.c
+@@ -27,7 +27,7 @@ static int adt7316_spi_multi_read(void *client, u8 reg, u8 count, u8 *data)
+ {
+ 	struct spi_device *spi_dev = client;
+ 	u8 cmd[2];
+-	int ret = 0;
++	int ret;
  
- 	stmpe_touchscreen {
- 		compatible = "st,stmpe-ts";
--		st,sample-time = <4>;
--		st,mod-12b = <1>;
--		st,ref-sel = <0>;
--		st,adc-freq = <1>;
- 		st,ave-ctrl = <1>;
- 		st,touch-det-delay = <2>;
- 		st,settling = <2>;
-diff --git a/Documentation/devicetree/bindings/mfd/stmpe.txt b/Documentation/devicetree/bindings/mfd/stmpe.txt
-index a46e7177195d..d4408a417193 100644
---- a/Documentation/devicetree/bindings/mfd/stmpe.txt
-+++ b/Documentation/devicetree/bindings/mfd/stmpe.txt
-@@ -14,6 +14,20 @@ Optional properties:
-  - st,autosleep-timeout		: Valid entries (ms); 4, 16, 32, 64, 128, 256, 512 and 1024
-  - irq-gpio			: If present, which GPIO to use for event IRQ
+ 	if (count > ADT7316_REG_MAX_ADDR)
+ 		count = ADT7316_REG_MAX_ADDR;
+@@ -56,7 +56,7 @@ static int adt7316_spi_multi_write(void *client, u8 reg, u8 count, u8 *data)
+ {
+ 	struct spi_device *spi_dev = client;
+ 	u8 buf[ADT7316_REG_MAX_ADDR + 2];
+-	int i, ret = 0;
++	int i, ret;
  
-+Optional properties for devices with touch and ADC (STMPE811|STMPE610):
-+ - st,sample-time		: ADC conversion time in number of clock.
-+					0 -> 36 clocks		4 -> 80 clocks (recommended)
-+					1 -> 44 clocks		5 -> 96 clocks
-+					2 -> 56 clocks		6 -> 124 clocks
-+					3 -> 64 clocks
-+ - st,mod-12b			: ADC Bit mode
-+					0 -> 10bit ADC		1 -> 12bit ADC
-+ - st,ref-sel			: ADC reference source
-+					0 -> internal		1 -> external
-+ - st,adc-freq			: ADC Clock speed
-+					0 -> 1.625 MHz		2 || 3 -> 6.5 MHz
-+					1 -> 3.25 MHz
-+
- Example:
+ 	if (count > ADT7316_REG_MAX_ADDR)
+ 		count = ADT7316_REG_MAX_ADDR;
+diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+index 2f8a122f475d..2d1e707a8676 100644
+--- a/drivers/staging/iio/addac/adt7316.c
++++ b/drivers/staging/iio/addac/adt7316.c
+@@ -2104,7 +2104,7 @@ int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
+ 	struct adt7316_chip_info *chip;
+ 	struct iio_dev *indio_dev;
+ 	unsigned short *adt7316_platform_data = dev->platform_data;
+-	int ret = 0;
++	int ret;
  
- 	stmpe1601: stmpe1601@40 {
+ 	indio_dev = devm_iio_device_alloc(dev, sizeof(*chip));
+ 	if (!indio_dev)
 -- 
-2.19.2
+2.17.1
 
