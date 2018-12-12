@@ -2,104 +2,94 @@ Return-Path: <SRS0=Gvxw=OV=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.7 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_MUTT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 780E6C04EB8
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 08:32:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 716E5C04EB8
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 10:18:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3BE7D20849
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 08:32:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2FB9D20839
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 10:18:06 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="UDvGCFel"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3BE7D20849
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
+	dkim=pass (1024-bit key) header.d=linaro.org header.i=@linaro.org header.b="bC5J8Cb/"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2FB9D20839
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726710AbeLLIcS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 12 Dec 2018 03:32:18 -0500
-Received: from aserp2130.oracle.com ([141.146.126.79]:34846 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726437AbeLLIcS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Dec 2018 03:32:18 -0500
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.22/8.16.0.22) with SMTP id wBC8O6qN026774;
-        Wed, 12 Dec 2018 08:31:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2018-07-02;
- bh=jXK4V4XHXfEhwO+EvcGsnsmgMdReutd+SbHs7eW8u64=;
- b=UDvGCFelMSJC8+mzu1FKXeoTrlz8WjTFlVybLSeFhgQaIkdSANnIFKbEKJVcWwiYc4fz
- ohEll3ImKbvukj4zLhMh46ETAVCOYTjF0G1G4xhLrM5giZSjXZOqxF5eYt0UHvJg1Mji
- oxCrrBFYpITkVatIszUYtqZwN1gmiVSGCIk8295j0u4hCCJGlSef6UNsK1vCiaukquw3
- ChkdFJcSRF7nj2T/V5lsXq2Xx7itdFpzV/zFi/sKiCPhZAkGs8wTNHCf2BwryjBdO7A6
- WFDNgT/wrqDyO1rSBxLh3B8vpXYNTsgnGJipDSfMEdQAFtoGDWq+Nq0mjo+gH3yLO2Cw Og== 
-Received: from aserv0022.oracle.com (aserv0022.oracle.com [141.146.126.234])
-        by aserp2130.oracle.com with ESMTP id 2pawwp08h3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 12 Dec 2018 08:31:49 +0000
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by aserv0022.oracle.com (8.14.4/8.14.4) with ESMTP id wBC8ViF4021085
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 12 Dec 2018 08:31:44 GMT
-Received: from abhmp0015.oracle.com (abhmp0015.oracle.com [141.146.116.21])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id wBC8ViaF015434;
-        Wed, 12 Dec 2018 08:31:44 GMT
-Received: from kadam (/197.157.0.38)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 12 Dec 2018 00:31:43 -0800
-Date:   Wed, 12 Dec 2018 11:31:32 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Jeremy Fertic <jeremyfertic@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>, devel@driverdev.osuosl.org,
+        id S1727079AbeLLKSF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 12 Dec 2018 05:18:05 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:52255 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726681AbeLLKSE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Dec 2018 05:18:04 -0500
+Received: by mail-wm1-f68.google.com with SMTP id m1so4521675wml.2
+        for <linux-iio@vger.kernel.org>; Wed, 12 Dec 2018 02:18:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=5cPT9GpxXrgDMs3kw5IDizeavtp1cLxDs1ZTvdIZdz4=;
+        b=bC5J8Cb/CQucoJwy3nYWtDtVnsvSvrifYaIhS1dLDnGFpVqL/Xpq8U8+HdeLSEqQkZ
+         buGQucrJJmkzZh2gEclTLhfNg7kXCaHDQmVADNVB4B6pLuTg9y6gGEqH6zUvdOtTyss2
+         ZQC+bT6P/batiWMnLymqHBc+cij6WYQ3YXeEg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=5cPT9GpxXrgDMs3kw5IDizeavtp1cLxDs1ZTvdIZdz4=;
+        b=h9SAgqqsfP3YxXT5s63uQwajts1o2kH2d3+nibpcC32SMp5Rsx+cyv77QWG2Fw1C80
+         ce5WWyVh89B6+kRqJtnWtQZ7vQdLoOoreaHtkyn7YQO0wAqmuJHLejv+QEzUWPAg0Vd+
+         REDO48pnip9DjBIBFYSsJtqpef4I6ZODRjsyR3zyZ4gAUj9qY0pFREN+0jQEJXVaENw7
+         bf+jjPx6PJ+Hdn+4To5TCwQkVCtYXc6odj/a+CywasNFc/DQAkfNc/lm9Q2hRCc92VCw
+         +LamJT6LkQDEvH15cUOlddv5zcIFaduH0+PrSGglL1WKUnHslXS37KinDp7jX87+vMhO
+         F1eg==
+X-Gm-Message-State: AA+aEWay3GULKCSf1ThSgSmcR261S84XdgsaL0lTdAyVKcMoamxO/+bH
+        Ld00L/mzml2JAxZKhRoJVMTSyg==
+X-Google-Smtp-Source: AFSGD/UE8kG8OHJ8N2Z4IRtb/u/nc5vLhFfgVyupf1J0TIGrt149TfXziZHVlyLWL6DodLiM1KyC5Q==
+X-Received: by 2002:a1c:a84f:: with SMTP id r76mr5826388wme.16.1544609882818;
+        Wed, 12 Dec 2018 02:18:02 -0800 (PST)
+Received: from localhost ([49.248.93.253])
+        by smtp.gmail.com with ESMTPSA id n17sm2179384wmc.5.2018.12.12.02.18.00
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 12 Dec 2018 02:18:02 -0800 (PST)
+From:   Amit Kucheria <amit.kucheria@linaro.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     linux-arm-msm@vger.kernel.org, bjorn.andersson@linaro.org,
+        andy.gross@linaro.org, mka@chromium.org,
+        khasim.mohammed@linaro.org, devicetree@vger.kernel.org,
+        David Brown <david.brown@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        linux-iio@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org,
+        Mark Rutland <mark.rutland@arm.com>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Hartmut Knaack <knaack.h@gmx.de>
-Subject: Re: [PATCH 10/11] staging: iio: adt7316: change interpretation of
- write to dac update mode
-Message-ID: <20181212083132.GJ3116@kadam>
-References: <20181212005503.28054-1-jeremyfertic@gmail.com>
- <20181212005503.28054-11-jeremyfertic@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20181212005503.28054-11-jeremyfertic@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9104 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1810050000 definitions=main-1812120075
+        Rob Herring <robh+dt@kernel.org>,
+        Siddartha Mohanadoss <smohanad@codeaurora.org>,
+        linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS)
+Subject: [PATCH v1 0/2] Expose thermal information for pms405 PMIC
+Date:   Wed, 12 Dec 2018 15:47:53 +0530
+Message-Id: <cover.1544599950.git.amit.kucheria@linaro.org>
+X-Mailer: git-send-email 2.17.1
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, Dec 11, 2018 at 05:55:02PM -0700, Jeremy Fertic wrote:
-> Based on the output of adt7316_show_all_DAC_update_modes() and
-> adt7316_show_DAC_update_mode(), adt7316_store_DAC_update_mode() should
-> expect the user to enter an integer input from 0 to 3. The user input is
-> currently expected to account for the actual bit positions in the register.
-> For example, choosing option 3 would require a write of 0x30 (actually 48
-> since it expects base 10). To address this inconsistency, create a shift
-> macro to be used in the valid input check as well as the calculation for
-> the register write.
-> 
-> Signed-off-by: Jeremy Fertic <jeremyfertic@gmail.com>
-> ---
-> I'm not sure if this patch is appropriate since it's making a user visible
-> change. I've included it since the driver is still in staging.
+Expose the on-die temperature sensor on the pms405 PMIC through the
+spmi-temp-alarm driver.
 
-We don't want to break user space, but I agree with you that applying
-this patch is probably the right thing.
+This series applies on top of the qcs404 DT series by Vinod[1]
 
-regards,
-dan carpenter
+[1] https://patchwork.kernel.org/cover/10675575/
 
+Amit Kucheria (2):
+  dt-bindings: iio: adc: Add binding for ADC on pms405 PMIC
+  arm64: dts: pms405: Export PMIC temperature to thermal framework
+
+ .../bindings/iio/adc/qcom,spmi-vadc.txt       |  1 +
+ arch/arm64/boot/dts/qcom/pms405.dtsi          | 79 +++++++++++++++++++
+ 2 files changed, 80 insertions(+)
+
+-- 
+2.17.1
 
