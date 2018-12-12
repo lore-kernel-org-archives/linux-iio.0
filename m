@@ -4,43 +4,43 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6F29C65BAF
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 17:22:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A591DC67839
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 17:26:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7B66B20851
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 17:22:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6957820851
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 17:26:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1544635364;
-	bh=XuK4ExPc8bBFloe/2WoPw14IMFW3BHgc7sK3vLIdSCY=;
+	s=default; t=1544635572;
+	bh=taLdMqD8uGpTPXnoETTA3FKlb2OmR9x/D/srdsOy7jE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=LgPSWEkf33n18focrxsFMhkykVzsBVSfxjjIXtoD8rnYx288ZTSX2VaMXh6OVQtW8
-	 TVPjxozvwV7mKAqMzsMQ4Mnb0rO4Xe/EokKsBgqtlngx64mZG2ORh3asOndQv8Y4tB
-	 8fdkR5cL8ycBG2WCEz9m/tPf3hbezRtqO709KKPg=
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7B66B20851
+	b=iGJYE8UWCUtHJUX4mKAv0/MGdYanA4ox7bg+s4CZSgwQgfSEFPjRnufRAFPqwlrGd
+	 BEwF3wW1XLUpd8XOVpCKyKJp7PdSr+pLj831Sex1BltAN+svxKpRaRCpaRak/XbMFY
+	 1lAn236mkUXe+vyMJTBcGIDDrSQHCr+ZNnNo34RE=
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6957820851
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727858AbeLLRWj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 12 Dec 2018 12:22:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37664 "EHLO mail.kernel.org"
+        id S1727922AbeLLR0L (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 12 Dec 2018 12:26:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39380 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727857AbeLLRWj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 12 Dec 2018 12:22:39 -0500
+        id S1726922AbeLLR0L (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 12 Dec 2018 12:26:11 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0BE582084E;
-        Wed, 12 Dec 2018 17:22:33 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D5BCC2084E;
+        Wed, 12 Dec 2018 17:26:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1544635358;
-        bh=XuK4ExPc8bBFloe/2WoPw14IMFW3BHgc7sK3vLIdSCY=;
+        s=default; t=1544635570;
+        bh=taLdMqD8uGpTPXnoETTA3FKlb2OmR9x/D/srdsOy7jE=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Q/sdtdF46m1GbA7mV5HTba9rfAl/gJHCeHr6JFA9sKJIRhIg1Yq40MPA42M2iBRaP
-         lLScO5bAdWMg5uAnuhHx6vhu9KF6LlJNEe1nMy2jWZ2ejrVIY7lfZw+3gjk097HKRG
-         ilLMjYVZn14yJQnoAhhmNOn0LnZpxDX9S56KILdY=
-Date:   Wed, 12 Dec 2018 17:22:31 +0000
+        b=OQo+w0E2bfvk3XmlNAXG7GpnOJa8Vcl7oKXuJABsiIe8bnn0l8NXh6988aIqAcAhq
+         98a9JrxoaB4AAdtyAmNwnNQueYIUFGUD0w2aCFFJtLrYG0aqvRd3bfxrzRy0IDMUJV
+         UWs5kedJBLjWW4hVq+IqLG/E8iZmMDe86VvXqwps=
+Date:   Wed, 12 Dec 2018 17:26:04 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     =?UTF-8?B?UGF3ZcWC?= Chmiel <pawel.mikolaj.chmiel@gmail.com>
 Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
@@ -54,11 +54,12 @@ Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
         devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] iio: adc: Allow selection of Exynos ADC on S5PV210
-Message-ID: <20181212172231.0adaf43b@archlinux>
-In-Reply-To: <20181207191136.5464-3-pawel.mikolaj.chmiel@gmail.com>
+Subject: Re: [PATCH 3/3] dt-bindings: iio: adc: exynos-adc: Add S5PV210
+ variant
+Message-ID: <20181212172604.6336779e@archlinux>
+In-Reply-To: <20181207191136.5464-4-pawel.mikolaj.chmiel@gmail.com>
 References: <20181207191136.5464-1-pawel.mikolaj.chmiel@gmail.com>
-        <20181207191136.5464-3-pawel.mikolaj.chmiel@gmail.com>
+        <20181207191136.5464-4-pawel.mikolaj.chmiel@gmail.com>
 X-Mailer: Claws Mail 3.17.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -68,39 +69,48 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri,  7 Dec 2018 20:11:35 +0100
+On Fri,  7 Dec 2018 20:11:36 +0100
 Pawe=C5=82 Chmiel <pawel.mikolaj.chmiel@gmail.com> wrote:
 
 > From: Jonathan Bakker <xc-racer2@live.ca>
 >=20
-> Make it possible to use Exynos ADC driver on S5PV210 based devices.
+> Add information about new compatible for S5PV210
 >=20
 > Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
 > Signed-off-by: Pawe=C5=82 Chmiel <pawel.mikolaj.chmiel@gmail.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+
+Applied to the togreg branch of iio.git and pushed out as
+testing for the autobuilders to play with it.
 
 Thanks,
 
 Jonathan
 
 > ---
->  drivers/iio/adc/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  .../devicetree/bindings/iio/adc/samsung,exynos-adc.txt        | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 >=20
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index a52fea8749a9..20e126ff030e 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -274,7 +274,7 @@ config EP93XX_ADC
+> diff --git a/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc=
+.txt b/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.txt
+> index 6c49db7f8ad2..a10c1f89037d 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.txt
+> +++ b/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.txt
+> @@ -11,7 +11,7 @@ New driver handles the following
 > =20
->  config EXYNOS_ADC
->  	tristate "Exynos ADC driver support"
-> -	depends on ARCH_EXYNOS || ARCH_S3C24XX || ARCH_S3C64XX || (OF && COMPIL=
-E_TEST)
-> +	depends on ARCH_EXYNOS || ARCH_S3C24XX || ARCH_S3C64XX || ARCH_S5PV210 =
-|| (OF && COMPILE_TEST)
->  	depends on HAS_IOMEM
->  	help
->  	  Core support for the ADC block found in the Samsung EXYNOS series
+>  Required properties:
+>  - compatible:		Must be "samsung,exynos-adc-v1"
+> -				for exynos4412/5250 and s5pv210 controllers.
+> +				for exynos4412/5250 controllers.
+>  			Must be "samsung,exynos-adc-v2" for
+>  				future controllers.
+>  			Must be "samsung,exynos3250-adc" for
+> @@ -28,6 +28,8 @@ Required properties:
+>  				the ADC in s3c2443 and compatibles
+>  			Must be "samsung,s3c6410-adc" for
+>  				the ADC in s3c6410 and compatibles
+> +			Must be "samsung,s5pv210-adc" for
+> +				the ADC in s5pv210 and compatibles
+>  - reg:			List of ADC register address range
+>  			- The base address and range of ADC register
+>  			- The base address and range of ADC_PHY register (every
 
