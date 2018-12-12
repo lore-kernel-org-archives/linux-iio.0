@@ -2,63 +2,79 @@ Return-Path: <SRS0=Gvxw=OV=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F157C65BAF
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 17:04:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71CA2C67839
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 17:06:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 299D52084E
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 17:04:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2636120870
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 17:06:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1544634272;
-	bh=RGd5sItPu2V2cSmpAXaNI9TfO6umVQl4F6hBOZfXOsg=;
+	s=default; t=1544634411;
+	bh=MA9j7yNHyEaH3NdeSr24lwe9hZhkaVM7kHj29+c33mI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=JbHU1tgkbRZ9mSmOqlYQ2v08daEcMO1YOj0DRQmmLGs7tUvxbmUwrkojyOjDYq9N3
-	 VnKnn+jsuupk1czBUBDEbAC5V+utKbIjBoEo2//39HgGYdpwpjxCbPFD7Cbr7CDRdZ
-	 0LDSDSlZn06BNhvUwVBwluewKf1+EP1zaUpWIEi8=
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 299D52084E
+	b=U1wajwobFPCiW//4FuwUbR9SUjTu+AEnQmESA+xdm6RdRpIUS0YLd5Sb1+X1v2Rqg
+	 yn7LU8QlJ4TEITl9jMTbgnTAozfc/elv0hWrRu2cfyTymkHc1A3nzfuKDx99m7WJ5v
+	 i0pBNT7/qpXTptQ4+/ksxmTKInSiWvuIWC9QcWuw=
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2636120870
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727676AbeLLREb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 12 Dec 2018 12:04:31 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56580 "EHLO mail.kernel.org"
+        id S1727681AbeLLRGo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 12 Dec 2018 12:06:44 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57760 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726358AbeLLREb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 12 Dec 2018 12:04:31 -0500
+        id S1726879AbeLLRGo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 12 Dec 2018 12:06:44 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 83EB62080F;
-        Wed, 12 Dec 2018 17:04:28 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0132B20849;
+        Wed, 12 Dec 2018 17:06:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1544634270;
-        bh=RGd5sItPu2V2cSmpAXaNI9TfO6umVQl4F6hBOZfXOsg=;
+        s=default; t=1544634403;
+        bh=MA9j7yNHyEaH3NdeSr24lwe9hZhkaVM7kHj29+c33mI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Mk31a5lMTvTNZ/OFSFAovnUYulKiHQd/kjpYPyyn0JTh89vr0gCXDcLlkVSBlGzME
-         bbEQRKq07KsSBZmqO9U+cQnUpumtFNNLCIUtTZsliOAqd9jAh2NZqKW5rLa9RQsEtm
-         ClBWmnYf0v5Ic4dPGs9hd2gs4eHHttJsD5hZzAaQ=
-Date:   Wed, 12 Dec 2018 17:04:25 +0000
+        b=L9/q6bqau5cew3qGq/0Uw5g0755WLBmstSkh612ng7haVhCabzoE3cQS/DkdTDxuk
+         qWmcK5hG0aivELamuP4eTrz2Sr1PwSyPRE3uLsag7m0YgeIVOvK87ZqKOiI8GwmPjn
+         Pyw3kReAyvdeyVblIWf0aYwCxOHG2gYAEZJbzo8Y=
+Date:   Wed, 12 Dec 2018 17:06:35 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Anson Huang <anson.huang@nxp.com>
-Cc:     "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        "preid@electromag.com.au" <preid@electromag.com.au>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: Re: [PATCH V5 1/2] dt-bindings: iio: light: isl29018: update power
- supply name
-Message-ID: <20181212170425.49658e0c@archlinux>
-In-Reply-To: <1544504196-30277-1-git-send-email-Anson.Huang@nxp.com>
-References: <1544504196-30277-1-git-send-email-Anson.Huang@nxp.com>
+To:     Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        linux-i2c@vger.kernel.org, groeck@chromium.org,
+        kernel@collabora.com, linux-rtc@vger.kernel.org,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Benson Leung <bleung@chromium.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        linux-input@vger.kernel.org,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        devicetree@vger.kernel.org,
+        Thierry Reding <thierry.reding@gmail.com>,
+        linux-pm@vger.kernel.org, MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH v2] MAINTAINERS: add maintainers for ChromeOS EC
+ sub-drivers
+Message-ID: <20181212170635.09c3363d@archlinux>
+In-Reply-To: <20181211190953.13626-1-enric.balletbo@collabora.com>
+References: <20181211190953.13626-1-enric.balletbo@collabora.com>
 X-Mailer: Claws Mail 3.17.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -68,42 +84,56 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 11 Dec 2018 05:02:39 +0000
-Anson Huang <anson.huang@nxp.com> wrote:
+On Tue, 11 Dec 2018 20:09:52 +0100
+Enric Balletbo i Serra <enric.balletbo@collabora.com> wrote:
 
-> According to datasheet, the isl29018 has "vddd/vdda" power
-> supply, the "vdda" and "vddd" MUST be shorted externally,
-> and isl29023/isl29035 ONLY has "vdd" power supply, so just
-> one regulator is needed for the driver, update the power
-> supply name with "vdd" according to datasheet to avoid
-> confusion.
+> There are multiple ChromeOS EC sub-drivers spread in different
+> subsystems, as all of them are related to the Chrome stuff add
+> Benson and myself as a maintainers for all these sub-drivers.
 > 
-> Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
-Given the discussion on v4 I am assuming this should be dropped.
-Shout if I'm missing something.
-
-Jonathan
-
+> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com> for iio parts.
 > ---
-> ChangeLog since V4:
-> 	Since ONLY isl29018 has two power supplies and they are MUST shorted externally, so they can be
-> 	treated as one power supply as well, remove "vdda" power supply and ONLY update the "vcc" with
-> 	"vdd" according to datasheet.
-> ---
->  Documentation/devicetree/bindings/iio/light/isl29018.txt | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/light/isl29018.txt b/Documentation/devicetree/bindings/iio/light/isl29018.txt
-> index b9bbde3..c4c4e9e 100644
-> --- a/Documentation/devicetree/bindings/iio/light/isl29018.txt
-> +++ b/Documentation/devicetree/bindings/iio/light/isl29018.txt
-> @@ -15,7 +15,7 @@ Optional properties:
->    Refer to interrupt-controller/interrupts.txt for generic interrupt client
->    node bindings.
+> Changes in v2:
+> - Fix typo in Benson email address.
+> 
+>  MAINTAINERS | 24 ++++++++++++++++++++++++
+>  1 file changed, 24 insertions(+)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index a24129b0b043..bbe7180e2851 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -3625,6 +3625,30 @@ S:	Maintained
+>  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/bleung/chrome-platform.git
+>  F:	drivers/platform/chrome/
 >  
-> -  - vcc-supply: phandle to the regulator that provides power to the sensor.
-> +  - vdd-supply: phandle to the regulator that provides power to the sensor.
->  
->  Example:
->  
+> +CHROMEOS EC SUBDRIVERS
+> +M:	Benson Leung <bleung@chromium.org>
+> +M:	Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> +S:	Maintained
+> +F:	Documentation/devicetree/bindings/extcon/extcon-usbc-cros-ec.txt
+> +F:	Documentation/devicetree/bindings/input/cros-ec-keyb.txt
+> +F:	Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.txt
+> +F:	Documentation/devicetree/bindings/i2c/i2c-cros-ec-tunnel.txt
+> +F:	Documentation/devicetree/bindings/mfd/cros-ec.txt
+> +F:	Documentation/ABI/testing/sysfs-bus-iio-cros-ec
+> +F:	drivers/extcon/extcon-usbc-cros-ec.c
+> +F:	drivers/i2c/busses/i2c-cros-ec-tunnel.c
+> +F:	drivers/iio/accel/cros_ec*
+> +F:	drivers/iio/common/cros_ec_sensors/
+> +F:	drivers/iio/light/cros_ec*
+> +F:	drivers/iio/pressure/cros_ec*
+> +F:	drivers/input/keyboard/cros_ec*
+> +F:	drivers/mfd/cros_ec*
+> +F:	drivers/power/supply/cros_usbpd-charger.c
+> +F:	drivers/pwm/pwm-cros-ec.c
+> +F:	drivers/rtc/rtc-cros-ec.c
+> +F:	include/linux/iio/common/cros_ec_sensors_core.h
+> +F:	include/linux/mfd/cros_ec*
+> +
+>  CIRRUS LOGIC AUDIO CODEC DRIVERS
+>  M:	Brian Austin <brian.austin@cirrus.com>
+>  M:	Paul Handrigan <Paul.Handrigan@cirrus.com>
 
