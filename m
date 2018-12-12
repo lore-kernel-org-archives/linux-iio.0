@@ -2,206 +2,108 @@ Return-Path: <SRS0=Gvxw=OV=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 013CCC65BAF
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 17:01:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F157C65BAF
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 17:04:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B2B402080F
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 17:01:50 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=interia.pl header.i=@interia.pl header.b="OWXosmMP"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B2B402080F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=poczta.fm
+	by mail.kernel.org (Postfix) with ESMTP id 299D52084E
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 17:04:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1544634272;
+	bh=RGd5sItPu2V2cSmpAXaNI9TfO6umVQl4F6hBOZfXOsg=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=JbHU1tgkbRZ9mSmOqlYQ2v08daEcMO1YOj0DRQmmLGs7tUvxbmUwrkojyOjDYq9N3
+	 VnKnn+jsuupk1czBUBDEbAC5V+utKbIjBoEo2//39HgGYdpwpjxCbPFD7Cbr7CDRdZ
+	 0LDSDSlZn06BNhvUwVBwluewKf1+EP1zaUpWIEi8=
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 299D52084E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727634AbeLLRBu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 12 Dec 2018 12:01:50 -0500
-Received: from smtpo.poczta.interia.pl ([217.74.65.155]:36598 "EHLO
-        smtpo.poczta.interia.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727676AbeLLRBu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Dec 2018 12:01:50 -0500
-X-Interia-R: Interia
-X-Interia-R-IP: 188.121.17.172
-X-Interia-R-Helo: <localhost>
-Received: from localhost (unknown [188.121.17.172])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        id S1727676AbeLLREb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 12 Dec 2018 12:04:31 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56580 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726358AbeLLREb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 12 Dec 2018 12:04:31 -0500
+Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by www.poczta.fm (INTERIA.PL) with ESMTPSA;
-        Wed, 12 Dec 2018 18:01:46 +0100 (CET)
-From:   Slawomir Stepien <sst@poczta.fm>
-To:     lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-        knaack.h@gmx.de, pmeerw@pmeerw.net
-Cc:     linux-iio@vger.kernel.org, gregkh@linuxfoundation.org
-Subject: [PATCH 2/2] staging: iio: adc: ad7280a: split ad7280_attr_init() to more functions
-Date:   Wed, 12 Dec 2018 18:02:28 +0100
-Message-Id: <20181212170228.28498-3-sst@poczta.fm>
-X-Mailer: git-send-email 2.19.2
-In-Reply-To: <20181212170228.28498-1-sst@poczta.fm>
-References: <20181212170228.28498-1-sst@poczta.fm>
+        by mail.kernel.org (Postfix) with ESMTPSA id 83EB62080F;
+        Wed, 12 Dec 2018 17:04:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1544634270;
+        bh=RGd5sItPu2V2cSmpAXaNI9TfO6umVQl4F6hBOZfXOsg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Mk31a5lMTvTNZ/OFSFAovnUYulKiHQd/kjpYPyyn0JTh89vr0gCXDcLlkVSBlGzME
+         bbEQRKq07KsSBZmqO9U+cQnUpumtFNNLCIUtTZsliOAqd9jAh2NZqKW5rLa9RQsEtm
+         ClBWmnYf0v5Ic4dPGs9hd2gs4eHHttJsD5hZzAaQ=
+Date:   Wed, 12 Dec 2018 17:04:25 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Anson Huang <anson.huang@nxp.com>
+Cc:     "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        "preid@electromag.com.au" <preid@electromag.com.au>,
+        dl-linux-imx <linux-imx@nxp.com>
+Subject: Re: [PATCH V5 1/2] dt-bindings: iio: light: isl29018: update power
+ supply name
+Message-ID: <20181212170425.49658e0c@archlinux>
+In-Reply-To: <1544504196-30277-1-git-send-email-Anson.Huang@nxp.com>
+References: <1544504196-30277-1-git-send-email-Anson.Huang@nxp.com>
+X-Mailer: Claws Mail 3.17.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Interia-Antivirus: OK
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=interia.pl;
-        s=biztos; t=1544634107;
-        bh=vWYvIZZW0ja+Y9Z7584aaU11NTE+qSs9N0en5Lo8cX8=;
-        h=X-Interia-R:X-Interia-R-IP:X-Interia-R-Helo:From:To:Cc:Subject:
-         Date:Message-Id:X-Mailer:In-Reply-To:References:MIME-Version:
-         Content-Transfer-Encoding:X-Interia-Antivirus;
-        b=OWXosmMPWN+OIVe4QXAttbHfRuW6DRActdy6Oa7HmWhqyu3v55muiV0SbHoL99HHp
-         HK6yUDJM/Qbld1s4csB4nVnFLD2Ar0Mxrc4Ufhf8psrJcf6+15yHlVpwzPhJl7MGqD
-         Yef6D4kcaXx0P/El53lQVW9U01REnBMb6qaFhNiQ=
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The ad7280_attr_init function has been split into more specific
-functions to increase the code readability.
+On Tue, 11 Dec 2018 05:02:39 +0000
+Anson Huang <anson.huang@nxp.com> wrote:
 
-Signed-off-by: Slawomir Stepien <sst@poczta.fm>
----
-Since v1:
-* Added ad7280_init_dev_attrs function.
-* The new functions now operates on struct iio_dev_attr rather than on struct
-  ad7280_state.
----
- drivers/staging/iio/adc/ad7280a.c | 110 +++++++++++++++++++-----------
- 1 file changed, 72 insertions(+), 38 deletions(-)
+> According to datasheet, the isl29018 has "vddd/vdda" power
+> supply, the "vdda" and "vddd" MUST be shorted externally,
+> and isl29023/isl29035 ONLY has "vdd" power supply, so just
+> one regulator is needed for the driver, update the power
+> supply name with "vdd" according to datasheet to avoid
+> confusion.
+> 
+> Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
+Given the discussion on v4 I am assuming this should be dropped.
+Shout if I'm missing something.
 
-diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-index 8439a4e23228..d9df12665176 100644
---- a/drivers/staging/iio/adc/ad7280a.c
-+++ b/drivers/staging/iio/adc/ad7280a.c
-@@ -596,11 +596,75 @@ static int ad7280_channel_init(struct ad7280_state *st)
- 	return cnt + 1;
- }
- 
--static int ad7280_attr_init(struct ad7280_state *st)
-+static int ad7280_balance_switch_attr_init(struct iio_dev_attr *attr,
-+					   struct device *dev, int addr, int i)
-+{
-+	attr->address = addr;
-+	attr->dev_attr.attr.mode = 0644;
-+	attr->dev_attr.show = ad7280_show_balance_sw;
-+	attr->dev_attr.store = ad7280_store_balance_sw;
-+	attr->dev_attr.attr.name = devm_kasprintf(dev, GFP_KERNEL,
-+						  "in%d-in%d_balance_switch_en",
-+						  i, i + 1);
-+	if (!attr->dev_attr.attr.name)
-+		return -ENOMEM;
-+
-+	return 0;
-+}
-+
-+static int ad7280_balance_timer_attr_init(struct iio_dev_attr *attr,
-+					  struct device *dev, int addr, int i)
-+{
-+	attr->address = addr;
-+	attr->dev_attr.attr.mode = 0644;
-+	attr->dev_attr.show = ad7280_show_balance_timer;
-+	attr->dev_attr.store = ad7280_store_balance_timer;
-+	attr->dev_attr.attr.name = devm_kasprintf(dev, GFP_KERNEL,
-+						  "in%d-in%d_balance_timer",
-+						  i, i + 1);
-+	if (!attr->dev_attr.attr.name)
-+		return -ENOMEM;
-+
-+	return 0;
-+}
-+
-+static int ad7280_init_dev_attrs(struct ad7280_state *st, int dev, int *cnt)
- {
--	int dev, ch, cnt;
--	unsigned int index;
-+	int addr, ch, i, ret;
- 	struct iio_dev_attr *iio_attr;
-+	struct device *sdev = &st->spi->dev;
-+
-+	for (ch = AD7280A_CELL_VOLTAGE_1; ch <= AD7280A_CELL_VOLTAGE_6; ch++) {
-+		iio_attr = &st->iio_attr[*cnt];
-+		addr = ad7280a_devaddr(dev) << 8 | ch;
-+		i = dev * AD7280A_CELLS_PER_DEV + ch;
-+
-+		ret = ad7280_balance_switch_attr_init(iio_attr, sdev, addr, i);
-+		if (ret < 0)
-+			return ret;
-+
-+		ad7280_attributes[*cnt] = &iio_attr->dev_attr.attr;
-+
-+		(*cnt)++;
-+		iio_attr = &st->iio_attr[*cnt];
-+		addr = ad7280a_devaddr(dev) << 8 | (AD7280A_CB1_TIMER + ch);
-+
-+		ret = ad7280_balance_timer_attr_init(iio_attr, sdev, addr, i);
-+		if (ret < 0)
-+			return ret;
-+
-+		ad7280_attributes[*cnt] = &iio_attr->dev_attr.attr;
-+		(*cnt)++;
-+	}
-+
-+	ad7280_attributes[*cnt] = NULL;
-+
-+	return 0;
-+}
-+
-+static int ad7280_attr_init(struct ad7280_state *st)
-+{
-+	int dev, cnt = 0, ret;
- 
- 	st->iio_attr = devm_kcalloc(&st->spi->dev, 2, sizeof(*st->iio_attr) *
- 				    (st->slave_num + 1) * AD7280A_CELLS_PER_DEV,
-@@ -608,41 +672,11 @@ static int ad7280_attr_init(struct ad7280_state *st)
- 	if (!st->iio_attr)
- 		return -ENOMEM;
- 
--	for (dev = 0, cnt = 0; dev <= st->slave_num; dev++)
--		for (ch = AD7280A_CELL_VOLTAGE_1; ch <= AD7280A_CELL_VOLTAGE_6;
--			ch++, cnt++) {
--			iio_attr = &st->iio_attr[cnt];
--			index = dev * AD7280A_CELLS_PER_DEV + ch;
--			iio_attr->address = ad7280a_devaddr(dev) << 8 | ch;
--			iio_attr->dev_attr.attr.mode = 0644;
--			iio_attr->dev_attr.show = ad7280_show_balance_sw;
--			iio_attr->dev_attr.store = ad7280_store_balance_sw;
--			iio_attr->dev_attr.attr.name =
--				devm_kasprintf(&st->spi->dev, GFP_KERNEL,
--					       "in%d-in%d_balance_switch_en",
--					       index, index + 1);
--			if (!iio_attr->dev_attr.attr.name)
--				return -ENOMEM;
--
--			ad7280_attributes[cnt] = &iio_attr->dev_attr.attr;
--			cnt++;
--			iio_attr = &st->iio_attr[cnt];
--			iio_attr->address = ad7280a_devaddr(dev) << 8 |
--				(AD7280A_CB1_TIMER + ch);
--			iio_attr->dev_attr.attr.mode = 0644;
--			iio_attr->dev_attr.show = ad7280_show_balance_timer;
--			iio_attr->dev_attr.store = ad7280_store_balance_timer;
--			iio_attr->dev_attr.attr.name =
--				devm_kasprintf(&st->spi->dev, GFP_KERNEL,
--					       "in%d-in%d_balance_timer",
--					       index, index + 1);
--			if (!iio_attr->dev_attr.attr.name)
--				return -ENOMEM;
--
--			ad7280_attributes[cnt] = &iio_attr->dev_attr.attr;
--		}
--
--	ad7280_attributes[cnt] = NULL;
-+	for (dev = 0; dev <= st->slave_num; dev++) {
-+		ret = ad7280_init_dev_attrs(st, dev, &cnt);
-+		if (ret < 0)
-+			return ret;
-+	}
- 
- 	return 0;
- }
--- 
-2.19.2
+Jonathan
+
+> ---
+> ChangeLog since V4:
+> 	Since ONLY isl29018 has two power supplies and they are MUST shorted externally, so they can be
+> 	treated as one power supply as well, remove "vdda" power supply and ONLY update the "vcc" with
+> 	"vdd" according to datasheet.
+> ---
+>  Documentation/devicetree/bindings/iio/light/isl29018.txt | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/light/isl29018.txt b/Documentation/devicetree/bindings/iio/light/isl29018.txt
+> index b9bbde3..c4c4e9e 100644
+> --- a/Documentation/devicetree/bindings/iio/light/isl29018.txt
+> +++ b/Documentation/devicetree/bindings/iio/light/isl29018.txt
+> @@ -15,7 +15,7 @@ Optional properties:
+>    Refer to interrupt-controller/interrupts.txt for generic interrupt client
+>    node bindings.
+>  
+> -  - vcc-supply: phandle to the regulator that provides power to the sensor.
+> +  - vdd-supply: phandle to the regulator that provides power to the sensor.
+>  
+>  Example:
+>  
 
