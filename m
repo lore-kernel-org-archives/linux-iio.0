@@ -2,115 +2,119 @@ Return-Path: <SRS0=Gvxw=OV=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A591DC67839
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 17:26:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0E9AC65BAF
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 17:57:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6957820851
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 17:26:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1544635572;
-	bh=taLdMqD8uGpTPXnoETTA3FKlb2OmR9x/D/srdsOy7jE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=iGJYE8UWCUtHJUX4mKAv0/MGdYanA4ox7bg+s4CZSgwQgfSEFPjRnufRAFPqwlrGd
-	 BEwF3wW1XLUpd8XOVpCKyKJp7PdSr+pLj831Sex1BltAN+svxKpRaRCpaRak/XbMFY
-	 1lAn236mkUXe+vyMJTBcGIDDrSQHCr+ZNnNo34RE=
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6957820851
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTP id 7784A20839
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 17:57:55 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ffXGJmtG"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7784A20839
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727922AbeLLR0L (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 12 Dec 2018 12:26:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39380 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726922AbeLLR0L (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 12 Dec 2018 12:26:11 -0500
-Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D5BCC2084E;
-        Wed, 12 Dec 2018 17:26:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1544635570;
-        bh=taLdMqD8uGpTPXnoETTA3FKlb2OmR9x/D/srdsOy7jE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OQo+w0E2bfvk3XmlNAXG7GpnOJa8Vcl7oKXuJABsiIe8bnn0l8NXh6988aIqAcAhq
-         98a9JrxoaB4AAdtyAmNwnNQueYIUFGUD0w2aCFFJtLrYG0aqvRd3bfxrzRy0IDMUJV
-         UWs5kedJBLjWW4hVq+IqLG/E8iZmMDe86VvXqwps=
-Date:   Wed, 12 Dec 2018 17:26:04 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     =?UTF-8?B?UGF3ZcWC?= Chmiel <pawel.mikolaj.chmiel@gmail.com>
-Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        kgene@kernel.org, krzk@kernel.org, xc-racer2@live.ca,
-        broonie@kernel.org, arnaud.pouliquen@st.com,
-        baolin.wang@linaro.org, smohanad@codeaurora.org,
-        eugen.hristev@microchip.com, rdunlap@infradead.org,
-        vilhelm.gray@gmail.com, freeman.liu@spreadtrum.com,
-        marcus.folkesson@gmail.com, geert@linux-m68k.org,
-        robh+dt@kernel.org, mark.rutland@arm.com,
-        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] dt-bindings: iio: adc: exynos-adc: Add S5PV210
- variant
-Message-ID: <20181212172604.6336779e@archlinux>
-In-Reply-To: <20181207191136.5464-4-pawel.mikolaj.chmiel@gmail.com>
-References: <20181207191136.5464-1-pawel.mikolaj.chmiel@gmail.com>
-        <20181207191136.5464-4-pawel.mikolaj.chmiel@gmail.com>
-X-Mailer: Claws Mail 3.17.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+        id S1727808AbeLLR5y (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 12 Dec 2018 12:57:54 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:43605 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727748AbeLLR5y (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Dec 2018 12:57:54 -0500
+Received: by mail-pg1-f195.google.com with SMTP id v28so8664935pgk.10;
+        Wed, 12 Dec 2018 09:57:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=DA8Mk5U48AtUQez3Hhs0oXRls5co3Oyr1gu2A2vPDgs=;
+        b=ffXGJmtGvnqaxv3mWAg6/NR91TEUSuoA0a/pUJKDP3rQ3thRUK5+q+Et6y/kaAyIBW
+         E+srMqam7uZ/QCEZhQ5TPw3WjSMIBlgD3wAsTRPS/Pl8+jpqFHIaj6Ss0cB4Rb3DCWTZ
+         kbQjFqe5deOK3DR0OEf9yZhTyFxBowU8rlgGHFOOkDwMlJC1GSaLZJrRhhgcYgfQhdFz
+         n1SVHoEzED/YwLgNkabQnitmXs0MrGyo/QYqGiT5gElsvKZbKzAsouqPX3ShrL/jYVN3
+         N2GYihrwrCOz1zVfHP8kkO8IGTIzD24aacmHyFdD+Pm4mVFGKzOZSOEyREQvcyxq779W
+         7bdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=DA8Mk5U48AtUQez3Hhs0oXRls5co3Oyr1gu2A2vPDgs=;
+        b=GwW3ie+IFmpYHvKxpcK25bS5B98+p0WBmqQHDrptjiaLUzojCgAb9lID/n0MPYyFEK
+         ePigOyGRR01CCbYJ4Wle16OOH0/j6/7qvrHWwQZZZVoEMeyeXQAxmQT0wqMFiBFnsuIM
+         h2McMwK6i6hrjrP/kWdc0n2eep0HguYHG966G4HqsN7hDCGQ50r+02cD2Lx1D4p0WJIE
+         iML54KGbeJ2NtkYcphqB2+iSL1EXZdnVFuwdxa0BE0hkiaEsasTWmFsh35u7Bgrdr3m5
+         RK5ZODlDL2ZVBpED/aFqOnAOMv/ajSk4PNmm7WZTCP9XBjaX6a8DIN2vT0IoJPwrPqi7
+         wjug==
+X-Gm-Message-State: AA+aEWaXV+f9PmLZQS/zNHYR39UAQX00NxADdXJx0qMGekOmfC5FiOn4
+        sbv1SjwGYaQygjijMwVZAU8=
+X-Google-Smtp-Source: AFSGD/XJn0Nw93/PqLyrXJ+J6+zPKMm53rhsfKn9AXuJFGBKtCvzYTyqY6qP8pQ8PLjJ/bUr984LvA==
+X-Received: by 2002:a63:40c6:: with SMTP id n189mr18671707pga.355.1544637472955;
+        Wed, 12 Dec 2018 09:57:52 -0800 (PST)
+Received: from localhost.localdomain ([27.59.69.235])
+        by smtp.googlemail.com with ESMTPSA id w136sm26430922pfd.169.2018.12.12.09.57.43
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 12 Dec 2018 09:57:52 -0800 (PST)
+From:   Hardik Singh Rathore <hardiksingh.k@gmail.com>
+To:     jic23@kernel.org
+Cc:     Hardik Singh Rathore <hardiksingh.k@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: iio: ad7816: drop unnecessary initialization of variables
+Date:   Wed, 12 Dec 2018 23:27:07 +0530
+Message-Id: <20181212175707.12513-1-hardiksingh.k@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri,  7 Dec 2018 20:11:36 +0100
-Pawe=C5=82 Chmiel <pawel.mikolaj.chmiel@gmail.com> wrote:
+Initialization is unnecessary when the variable is written before it is
+read. There were some occasions in which the driver would initialize `ret'
+during declaration without need.
 
-> From: Jonathan Bakker <xc-racer2@live.ca>
->=20
-> Add information about new compatible for S5PV210
->=20
-> Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
-> Signed-off-by: Pawe=C5=82 Chmiel <pawel.mikolaj.chmiel@gmail.com>
+Signed-off-by: Hardik Singh Rathore <hardiksingh.k@gmail.com>
+---
+ drivers/staging/iio/adc/ad7816.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-Applied to the togreg branch of iio.git and pushed out as
-testing for the autobuilders to play with it.
-
-Thanks,
-
-Jonathan
-
-> ---
->  .../devicetree/bindings/iio/adc/samsung,exynos-adc.txt        | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
->=20
-> diff --git a/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc=
-.txt b/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.txt
-> index 6c49db7f8ad2..a10c1f89037d 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.txt
-> +++ b/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.txt
-> @@ -11,7 +11,7 @@ New driver handles the following
-> =20
->  Required properties:
->  - compatible:		Must be "samsung,exynos-adc-v1"
-> -				for exynos4412/5250 and s5pv210 controllers.
-> +				for exynos4412/5250 controllers.
->  			Must be "samsung,exynos-adc-v2" for
->  				future controllers.
->  			Must be "samsung,exynos3250-adc" for
-> @@ -28,6 +28,8 @@ Required properties:
->  				the ADC in s3c2443 and compatibles
->  			Must be "samsung,s3c6410-adc" for
->  				the ADC in s3c6410 and compatibles
-> +			Must be "samsung,s5pv210-adc" for
-> +				the ADC in s5pv210 and compatibles
->  - reg:			List of ADC register address range
->  			- The base address and range of ADC register
->  			- The base address and range of ADC_PHY register (every
+diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
+index 5209651a1b25..ee50e7296795 100644
+--- a/drivers/staging/iio/adc/ad7816.c
++++ b/drivers/staging/iio/adc/ad7816.c
+@@ -65,7 +65,7 @@ enum ad7816_type {
+ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
+ {
+ 	struct spi_device *spi_dev = chip->spi_dev;
+-	int ret = 0;
++	int ret;
+ 	__be16 buf;
+ 
+ 	gpiod_set_value(chip->rdwr_pin, 1);
+@@ -106,7 +106,7 @@ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
+ static int ad7816_spi_write(struct ad7816_chip_info *chip, u8 data)
+ {
+ 	struct spi_device *spi_dev = chip->spi_dev;
+-	int ret = 0;
++	int ret;
+ 
+ 	gpiod_set_value(chip->rdwr_pin, 1);
+ 	gpiod_set_value(chip->rdwr_pin, 0);
+@@ -354,8 +354,7 @@ static int ad7816_probe(struct spi_device *spi_dev)
+ {
+ 	struct ad7816_chip_info *chip;
+ 	struct iio_dev *indio_dev;
+-	int ret = 0;
+-	int i;
++	int i, ret;
+ 
+ 	indio_dev = devm_iio_device_alloc(&spi_dev->dev, sizeof(*chip));
+ 	if (!indio_dev)
+-- 
+2.17.1
 
