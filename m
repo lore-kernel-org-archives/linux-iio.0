@@ -7,56 +7,56 @@ X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C65D1C67839
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 00:56:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FB55C6783C
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 00:56:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8D03720811
+	by mail.kernel.org (Postfix) with ESMTP id C446420855
 	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 00:56:25 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nE9dzQCJ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8D03720811
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rOJtOOj1"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C446420855
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726241AbeLLA4T (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 11 Dec 2018 19:56:19 -0500
-Received: from mail-io1-f68.google.com ([209.85.166.68]:46409 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726371AbeLLAzw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 11 Dec 2018 19:55:52 -0500
-Received: by mail-io1-f68.google.com with SMTP id v10so13427388ios.13;
-        Tue, 11 Dec 2018 16:55:52 -0800 (PST)
+        id S1726363AbeLLAzv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 11 Dec 2018 19:55:51 -0500
+Received: from mail-io1-f67.google.com ([209.85.166.67]:38531 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726354AbeLLAzt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 11 Dec 2018 19:55:49 -0500
+Received: by mail-io1-f67.google.com with SMTP id l14so13449296ioj.5;
+        Tue, 11 Dec 2018 16:55:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=JuTVzGlrd5P62PmG1C4j7pV1yedB7ZGV8yxuvoLTCUk=;
-        b=nE9dzQCJntmbkZDYcuB0f+5CpI3dPJBVZLHrbsFI98fR9TAsoFsDQCEFQ1B7X4Co8S
-         tecCA7jCXf/g7ddZOc+7TINyGNGhadYfqtBSdnYy7yx46RgqSZkdU4h+NUq5TbDvrfOp
-         DUHqDMzxmZ/CuxIuynSpPmAB4XauAfGojrWAKcvXUTNUIOrbYb8ix+6rCsK2idISqqmG
-         igJnceluGbxVNu4pl+p4x5IVuwWhDcz91DSOR6FKr9E4FrgDwJsW4+xYdR7vwr4hh3yO
-         Q2km4flG5IWkAde0zyDZ1udb5qbfcBHlQ1AtXTcyA7NFbEuRgm81DfrFEplqMPw6s4FY
-         Gamw==
+        bh=BqAI0hgInZRj/HqBspWobjcKVjc1X8/CWrZ8LYW+zYw=;
+        b=rOJtOOj1/y0YQUdYJ6Z0+0sKiPNOzB6zvmboZBJGRE2W2t3EWjhe9w/TD5V7rP4n1y
+         C+FvH/UmfcZ+FBWdJX2lj9EFh4mSTpFfJ0DEzyrT3LwELXen1MLNLbDmHWV8IKpdhnx8
+         kNzLv7z6vnEFNgXiEqHqw8Xj/eRqfI03MN3s7+MOCyhqcYs4zXVpkJXgIYyrydOqxZs6
+         HtIKyXG4A7bibmbeQfRYaCPj+k2IsN99SWBZotuE8oH6tv+YGtJdiN9e7PeC122jNk2a
+         y9fTMr2ZOu6Td0UJuzzp7beNEWESvLf+1L2kqNTWKLjsux+lhW+8yHUXnNHJ/i4lCqoE
+         ebNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=JuTVzGlrd5P62PmG1C4j7pV1yedB7ZGV8yxuvoLTCUk=;
-        b=rutHdwu3r6ujBN85h+U423S3Bj2o4Vh1hZukcczUV2tCbisJRw3BeYHaOKieapK+Vc
-         XoOSSxAjV7Fz4vsNx0HmI6qRNAfpzE5dS0O/J7/JEMqCtTL7yp38pPoj2PYJI8NQieIf
-         /yltLgKCLeGTodhXFifwcfx+EcCE5PWh+tf8IR3fAM4BYVoUGs2n09964hioxg13F3w2
-         kzSNlK6XM39zqLOkgLXywArMxawOQZzffvv/mQN1zkZJcLcb9WiEUewfM+/L9SEADUHF
-         vjo7fRWokC2etfS7nutzRAXqVGxa2NMzscPJYJnIClRpyTZg7DE24NlQbYdsmKZlL5t+
-         1gUQ==
-X-Gm-Message-State: AA+aEWZpQ70VAL/XHlvUP8meOKV6PGs0My4PUWvqiBgKPv0bH8wNkde3
-        2DdynD9M/Z7M3PgyaeFFzAM=
-X-Google-Smtp-Source: AFSGD/XNg3HpCB72+QnrSv2pJhuwVhhGx9pLoGBz42yt8vFDigh25JESqZx8dWegswa6y605546pTA==
-X-Received: by 2002:a5e:8f09:: with SMTP id c9mr2173301iok.241.1544576151886;
-        Tue, 11 Dec 2018 16:55:51 -0800 (PST)
+        bh=BqAI0hgInZRj/HqBspWobjcKVjc1X8/CWrZ8LYW+zYw=;
+        b=SRxRZTo/wHeA8lbB24jazJFdWGLddOQlEY/YdAPNkXTgHSweNed7CfNahkMRt1xaWn
+         ocP21wI4Ui2OGTN41/QnprR24QDXDwyrvHNFmuUvLsoDN65fYgP97t+oZNa9OcSkob0/
+         iNrE1dnXgRwJaVMJebFtx99PpoE98wTcP/NNbap0kJlvzOzUsYm0kPXtwY86Y4SSsziZ
+         8gRiy8UP9ZqPOQg768UwQRkHqpu+YKP5JWN3KhLeLpzFispH9fRAYZZ1ONflmudOZIqG
+         4sa6J+EKHct7RS9VzRYGyxcHCgkisu+YkU2DVHo0f4dBAd9urdVxFfSE/IhYA/Yte2mr
+         Hzww==
+X-Gm-Message-State: AA+aEWbf75Prs78mij9x5SZaUE5kOH+1Mee9XdQ0W243kFxC8UupYRwC
+        SJ+aEz2hzijz4wFNBDhYaHI=
+X-Google-Smtp-Source: AFSGD/WObtNO2qHxwlg71Fiw23sLuwOvHNO26nAw9w3l66/EHzGSTgS52c7Iqpgn//u6SlEKq02mTw==
+X-Received: by 2002:a6b:b28a:: with SMTP id b132mr15048308iof.256.1544576148191;
+        Tue, 11 Dec 2018 16:55:48 -0800 (PST)
 Received: from r2700x.localdomain (c-75-70-96-103.hsd1.co.comcast.net. [75.70.96.103])
-        by smtp.gmail.com with ESMTPSA id l186sm1952445itl.22.2018.12.11.16.55.50
+        by smtp.gmail.com with ESMTPSA id l186sm1952445itl.22.2018.12.11.16.55.47
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 11 Dec 2018 16:55:51 -0800 (PST)
+        Tue, 11 Dec 2018 16:55:47 -0800 (PST)
 From:   Jeremy Fertic <jeremyfertic@gmail.com>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
@@ -67,9 +67,9 @@ Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
         linux-kernel@vger.kernel.org,
         Jeremy Fertic <jeremyfertic@gmail.com>
-Subject: [PATCH 09/11] staging: iio: adt7316: remove dac vref buffer bypass from adt751x
-Date:   Tue, 11 Dec 2018 17:55:01 -0700
-Message-Id: <20181212005503.28054-10-jeremyfertic@gmail.com>
+Subject: [PATCH 05/11] staging: iio: adt7316: fix the dac read calculation
+Date:   Tue, 11 Dec 2018 17:54:57 -0700
+Message-Id: <20181212005503.28054-6-jeremyfertic@gmail.com>
 X-Mailer: git-send-email 2.19.1
 In-Reply-To: <20181212005503.28054-1-jeremyfertic@gmail.com>
 References: <20181212005503.28054-1-jeremyfertic@gmail.com>
@@ -80,68 +80,52 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The option to allow the external vref to bypass the reference buffer is
-only available for adt7316/7/8. Remove the attributes for adt751x as
-well as the chip->id checks from the show and store functions.
+The calculation of the current dac value is using the wrong bits of the
+dac lsb register. Create two macros to shift the lsb register value into
+lsb position, depending on whether the dac is 10 or 12 bit. Initialize
+data to 0 so, with an 8 bit dac, the msb register value can be bitwise
+ORed with data.
 
 Signed-off-by: Jeremy Fertic <jeremyfertic@gmail.com>
 ---
- drivers/staging/iio/addac/adt7316.c | 14 --------------
- 1 file changed, 14 deletions(-)
+ drivers/staging/iio/addac/adt7316.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
-index 3348fdf08f2e..bca599d8c51c 100644
+index eee7c04f93f4..b7d12d003ddc 100644
 --- a/drivers/staging/iio/addac/adt7316.c
 +++ b/drivers/staging/iio/addac/adt7316.c
-@@ -964,9 +964,6 @@ static ssize_t adt7316_show_DA_AB_Vref_bypass(struct device *dev,
- 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
- 	struct adt7316_chip_info *chip = iio_priv(dev_info);
- 
--	if ((chip->id & ID_FAMILY_MASK) == ID_ADT75XX)
--		return -EPERM;
--
- 	return sprintf(buf, "%d\n",
- 		!!(chip->dac_config & ADT7316_VREF_BYPASS_DAC_AB));
- }
-@@ -981,9 +978,6 @@ static ssize_t adt7316_store_DA_AB_Vref_bypass(struct device *dev,
- 	u8 dac_config;
+@@ -47,6 +47,8 @@
+ #define ADT7516_MSB_AIN3		0xA
+ #define ADT7516_MSB_AIN4		0xB
+ #define ADT7316_DA_DATA_BASE		0x10
++#define ADT7316_DA_10_BIT_LSB_SHIFT	6
++#define ADT7316_DA_12_BIT_LSB_SHIFT	4
+ #define ADT7316_DA_MSB_DATA_REGS	4
+ #define ADT7316_LSB_DAC_A		0x10
+ #define ADT7316_MSB_DAC_A		0x11
+@@ -1403,7 +1405,7 @@ static IIO_DEVICE_ATTR(ex_analog_temp_offset, 0644,
+ static ssize_t adt7316_show_DAC(struct adt7316_chip_info *chip,
+ 				int channel, char *buf)
+ {
+-	u16 data;
++	u16 data = 0;
+ 	u8 msb, lsb, offset;
  	int ret;
  
--	if ((chip->id & ID_FAMILY_MASK) == ID_ADT75XX)
--		return -EPERM;
--
- 	dac_config = chip->dac_config & (~ADT7316_VREF_BYPASS_DAC_AB);
- 	if (buf[0] == '1')
- 		dac_config |= ADT7316_VREF_BYPASS_DAC_AB;
-@@ -1009,9 +1003,6 @@ static ssize_t adt7316_show_DA_CD_Vref_bypass(struct device *dev,
- 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
- 	struct adt7316_chip_info *chip = iio_priv(dev_info);
+@@ -1428,7 +1430,11 @@ static ssize_t adt7316_show_DAC(struct adt7316_chip_info *chip,
+ 	if (ret)
+ 		return -EIO;
  
--	if ((chip->id & ID_FAMILY_MASK) == ID_ADT75XX)
--		return -EPERM;
--
- 	return sprintf(buf, "%d\n",
- 		!!(chip->dac_config & ADT7316_VREF_BYPASS_DAC_CD));
+-	data = (msb << offset) + (lsb & ((1 << offset) - 1));
++	if (chip->dac_bits == 12)
++		data = lsb >> ADT7316_DA_12_BIT_LSB_SHIFT;
++	else if (chip->dac_bits == 10)
++		data = lsb >> ADT7316_DA_10_BIT_LSB_SHIFT;
++	data |= msb << offset;
+ 
+ 	return sprintf(buf, "%d\n", data);
  }
-@@ -1026,9 +1017,6 @@ static ssize_t adt7316_store_DA_CD_Vref_bypass(struct device *dev,
- 	u8 dac_config;
- 	int ret;
- 
--	if ((chip->id & ID_FAMILY_MASK) == ID_ADT75XX)
--		return -EPERM;
--
- 	dac_config = chip->dac_config & (~ADT7316_VREF_BYPASS_DAC_CD);
- 	if (buf[0] == '1')
- 		dac_config |= ADT7316_VREF_BYPASS_DAC_CD;
-@@ -1713,8 +1701,6 @@ static struct attribute *adt7516_attributes[] = {
- 	&iio_dev_attr_DAC_update_mode.dev_attr.attr,
- 	&iio_dev_attr_all_DAC_update_modes.dev_attr.attr,
- 	&iio_dev_attr_update_DAC.dev_attr.attr,
--	&iio_dev_attr_DA_AB_Vref_bypass.dev_attr.attr,
--	&iio_dev_attr_DA_CD_Vref_bypass.dev_attr.attr,
- 	&iio_dev_attr_DAC_internal_Vref.dev_attr.attr,
- 	&iio_dev_attr_VDD.dev_attr.attr,
- 	&iio_dev_attr_in_temp.dev_attr.attr,
 -- 
 2.19.1
 
