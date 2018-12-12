@@ -2,119 +2,199 @@ Return-Path: <SRS0=Gvxw=OV=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.4 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FSL_HELO_FAKE,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_MUTT,USER_IN_DEF_DKIM_WL autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0E9AC65BAF
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 17:57:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58ACBC67839
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 18:21:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7784A20839
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 17:57:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 12C0220851
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Dec 2018 18:21:44 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ffXGJmtG"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7784A20839
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="IfSe19RV"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 12C0220851
+Authentication-Results: mail.kernel.org; dmarc=fail (p=reject dis=none) header.from=google.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727808AbeLLR5y (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 12 Dec 2018 12:57:54 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:43605 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727748AbeLLR5y (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Dec 2018 12:57:54 -0500
-Received: by mail-pg1-f195.google.com with SMTP id v28so8664935pgk.10;
-        Wed, 12 Dec 2018 09:57:53 -0800 (PST)
+        id S1728170AbeLLSVf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 12 Dec 2018 13:21:35 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:38249 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728151AbeLLSVd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Dec 2018 13:21:33 -0500
+Received: by mail-pf1-f194.google.com with SMTP id q1so9251826pfi.5
+        for <linux-iio@vger.kernel.org>; Wed, 12 Dec 2018 10:21:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=DA8Mk5U48AtUQez3Hhs0oXRls5co3Oyr1gu2A2vPDgs=;
-        b=ffXGJmtGvnqaxv3mWAg6/NR91TEUSuoA0a/pUJKDP3rQ3thRUK5+q+Et6y/kaAyIBW
-         E+srMqam7uZ/QCEZhQ5TPw3WjSMIBlgD3wAsTRPS/Pl8+jpqFHIaj6Ss0cB4Rb3DCWTZ
-         kbQjFqe5deOK3DR0OEf9yZhTyFxBowU8rlgGHFOOkDwMlJC1GSaLZJrRhhgcYgfQhdFz
-         n1SVHoEzED/YwLgNkabQnitmXs0MrGyo/QYqGiT5gElsvKZbKzAsouqPX3ShrL/jYVN3
-         N2GYihrwrCOz1zVfHP8kkO8IGTIzD24aacmHyFdD+Pm4mVFGKzOZSOEyREQvcyxq779W
-         7bdw==
+        d=google.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=TfLMIUPsQ/Tgdv+Bv726oQuQKjEmkzwS3S5+Q0SXy0w=;
+        b=IfSe19RVaymu1st2qL9C6diCoHQYYPVSiCLwNqTUfeCPRZyZcTDZ1f45hw4kJxi8cU
+         pFIJtplnxzPq7VfBNSPX1bUPSGUBYMrDZIM4aCT24MyDy3F3LXCMMy2zq6+m+Gj/JM2o
+         5IL64FI5M/shFeiE9/blOuLcyFACwxVMhDA9IgpDen0PNWeXp8URDe3Lya2hlWwBhmzT
+         Q8URhtGnKR/YX+POsHNb1lmOBQsLMsvVnrtOkWmjJ5NK8T8Vnxsp9wIaxch36tYtzIqt
+         RfATu6tf52UMNROK0Z9qpeg5n3tz1/KTfnpz2NVpYctGRy5XcJZBfdLU03Pk7Ur/801x
+         hSqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=DA8Mk5U48AtUQez3Hhs0oXRls5co3Oyr1gu2A2vPDgs=;
-        b=GwW3ie+IFmpYHvKxpcK25bS5B98+p0WBmqQHDrptjiaLUzojCgAb9lID/n0MPYyFEK
-         ePigOyGRR01CCbYJ4Wle16OOH0/j6/7qvrHWwQZZZVoEMeyeXQAxmQT0wqMFiBFnsuIM
-         h2McMwK6i6hrjrP/kWdc0n2eep0HguYHG966G4HqsN7hDCGQ50r+02cD2Lx1D4p0WJIE
-         iML54KGbeJ2NtkYcphqB2+iSL1EXZdnVFuwdxa0BE0hkiaEsasTWmFsh35u7Bgrdr3m5
-         RK5ZODlDL2ZVBpED/aFqOnAOMv/ajSk4PNmm7WZTCP9XBjaX6a8DIN2vT0IoJPwrPqi7
-         wjug==
-X-Gm-Message-State: AA+aEWaXV+f9PmLZQS/zNHYR39UAQX00NxADdXJx0qMGekOmfC5FiOn4
-        sbv1SjwGYaQygjijMwVZAU8=
-X-Google-Smtp-Source: AFSGD/XJn0Nw93/PqLyrXJ+J6+zPKMm53rhsfKn9AXuJFGBKtCvzYTyqY6qP8pQ8PLjJ/bUr984LvA==
-X-Received: by 2002:a63:40c6:: with SMTP id n189mr18671707pga.355.1544637472955;
-        Wed, 12 Dec 2018 09:57:52 -0800 (PST)
-Received: from localhost.localdomain ([27.59.69.235])
-        by smtp.googlemail.com with ESMTPSA id w136sm26430922pfd.169.2018.12.12.09.57.43
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 12 Dec 2018 09:57:52 -0800 (PST)
-From:   Hardik Singh Rathore <hardiksingh.k@gmail.com>
-To:     jic23@kernel.org
-Cc:     Hardik Singh Rathore <hardiksingh.k@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=TfLMIUPsQ/Tgdv+Bv726oQuQKjEmkzwS3S5+Q0SXy0w=;
+        b=ItoyZ1L3UxnRwqWwtMotcNEsJBJcdgFfXfrolloEdRVDjR/mg7hwPNPglsYjo2gJlN
+         cbhF7acSvGRjfwp2lb2KtVlXDEYUikkKX16IMRPewUUDzkoxucbu5c+Wj9Ma3M8ENxe3
+         xkLFPKM+igZ1VUTCTZJoCOIQ5OmLg7HzSe3WuILaD10SJfpsqIaMtt13W3gZeP9kQtXg
+         kgyVjIdb/2vv8nsgJ3pJt83dh74H9pqRlZjOq1HPaYQRgylpMySrl5RxbTlbQ+Xk5tTS
+         kZEmC7v7e0uHp9+RBaFSReH9XFPCnebu5J4SSPKTldvKx9Sxvw+epHqr7ic+Iz4xArZg
+         2COQ==
+X-Gm-Message-State: AA+aEWZ9VNOsjUtlIUm+5UTdQhY1WqvfWb8PbbLvZE0L0uOIF62Etc7r
+        PEe8oET+fjxzce18Seo+XVD//Q==
+X-Google-Smtp-Source: AFSGD/UpjeUUSYdhb5PJESFeg0in8R362Dy6KcFRoaER8BUwAT+yZ/4aTS2l/jkkjQ+kWvArZJpwAQ==
+X-Received: by 2002:a63:fb10:: with SMTP id o16mr19077222pgh.211.1544638889697;
+        Wed, 12 Dec 2018 10:21:29 -0800 (PST)
+Received: from google.com ([2620:15c:202:1:c562:226a:6d78:2ae4])
+        by smtp.gmail.com with ESMTPSA id b2sm25738206pgg.87.2018.12.12.10.21.27
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 12 Dec 2018 10:21:28 -0800 (PST)
+Date:   Wed, 12 Dec 2018 10:21:26 -0800
+From:   Benson Leung <bleung@google.com>
+To:     Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        linux-i2c@vger.kernel.org, groeck@chromium.org,
+        kernel@collabora.com, linux-rtc@vger.kernel.org,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Benson Leung <bleung@chromium.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        linux-input@vger.kernel.org,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        devicetree@vger.kernel.org,
+        Thierry Reding <thierry.reding@gmail.com>,
+        linux-pm@vger.kernel.org, MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] staging: iio: ad7816: drop unnecessary initialization of variables
-Date:   Wed, 12 Dec 2018 23:27:07 +0530
-Message-Id: <20181212175707.12513-1-hardiksingh.k@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH v2] MAINTAINERS: add maintainers for ChromeOS EC
+ sub-drivers
+Message-ID: <20181212182126.GA32052@google.com>
+References: <20181211190953.13626-1-enric.balletbo@collabora.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="tThc/1wpZn/ma/RB"
+Content-Disposition: inline
+In-Reply-To: <20181211190953.13626-1-enric.balletbo@collabora.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Initialization is unnecessary when the variable is written before it is
-read. There were some occasions in which the driver would initialize `ret'
-during declaration without need.
 
-Signed-off-by: Hardik Singh Rathore <hardiksingh.k@gmail.com>
----
- drivers/staging/iio/adc/ad7816.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+--tThc/1wpZn/ma/RB
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
-index 5209651a1b25..ee50e7296795 100644
---- a/drivers/staging/iio/adc/ad7816.c
-+++ b/drivers/staging/iio/adc/ad7816.c
-@@ -65,7 +65,7 @@ enum ad7816_type {
- static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
- {
- 	struct spi_device *spi_dev = chip->spi_dev;
--	int ret = 0;
-+	int ret;
- 	__be16 buf;
- 
- 	gpiod_set_value(chip->rdwr_pin, 1);
-@@ -106,7 +106,7 @@ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
- static int ad7816_spi_write(struct ad7816_chip_info *chip, u8 data)
- {
- 	struct spi_device *spi_dev = chip->spi_dev;
--	int ret = 0;
-+	int ret;
- 
- 	gpiod_set_value(chip->rdwr_pin, 1);
- 	gpiod_set_value(chip->rdwr_pin, 0);
-@@ -354,8 +354,7 @@ static int ad7816_probe(struct spi_device *spi_dev)
- {
- 	struct ad7816_chip_info *chip;
- 	struct iio_dev *indio_dev;
--	int ret = 0;
--	int i;
-+	int i, ret;
- 
- 	indio_dev = devm_iio_device_alloc(&spi_dev->dev, sizeof(*chip));
- 	if (!indio_dev)
--- 
-2.17.1
+On Tue, Dec 11, 2018 at 08:09:52PM +0100, Enric Balletbo i Serra wrote:
+> There are multiple ChromeOS EC sub-drivers spread in different
+> subsystems, as all of them are related to the Chrome stuff add
+> Benson and myself as a maintainers for all these sub-drivers.
+>=20
+> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 
+Signed-off-by: Benson Leung <bleung@chromium.org>
+
+Thanks for sending this, Enric.
+
+> ---
+>=20
+> Changes in v2:
+> - Fix typo in Benson email address.
+>=20
+>  MAINTAINERS | 24 ++++++++++++++++++++++++
+>  1 file changed, 24 insertions(+)
+>=20
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index a24129b0b043..bbe7180e2851 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -3625,6 +3625,30 @@ S:	Maintained
+>  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/bleung/chrome-platf=
+orm.git
+>  F:	drivers/platform/chrome/
+> =20
+> +CHROMEOS EC SUBDRIVERS
+> +M:	Benson Leung <bleung@chromium.org>
+> +M:	Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> +S:	Maintained
+> +F:	Documentation/devicetree/bindings/extcon/extcon-usbc-cros-ec.txt
+> +F:	Documentation/devicetree/bindings/input/cros-ec-keyb.txt
+> +F:	Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.txt
+> +F:	Documentation/devicetree/bindings/i2c/i2c-cros-ec-tunnel.txt
+> +F:	Documentation/devicetree/bindings/mfd/cros-ec.txt
+> +F:	Documentation/ABI/testing/sysfs-bus-iio-cros-ec
+> +F:	drivers/extcon/extcon-usbc-cros-ec.c
+> +F:	drivers/i2c/busses/i2c-cros-ec-tunnel.c
+> +F:	drivers/iio/accel/cros_ec*
+> +F:	drivers/iio/common/cros_ec_sensors/
+> +F:	drivers/iio/light/cros_ec*
+> +F:	drivers/iio/pressure/cros_ec*
+> +F:	drivers/input/keyboard/cros_ec*
+> +F:	drivers/mfd/cros_ec*
+> +F:	drivers/power/supply/cros_usbpd-charger.c
+> +F:	drivers/pwm/pwm-cros-ec.c
+> +F:	drivers/rtc/rtc-cros-ec.c
+> +F:	include/linux/iio/common/cros_ec_sensors_core.h
+> +F:	include/linux/mfd/cros_ec*
+> +
+>  CIRRUS LOGIC AUDIO CODEC DRIVERS
+>  M:	Brian Austin <brian.austin@cirrus.com>
+>  M:	Paul Handrigan <Paul.Handrigan@cirrus.com>
+> --=20
+> 2.19.2
+>=20
+
+--=20
+Benson Leung
+Staff Software Engineer
+Chrome OS Kernel
+Google Inc.
+bleung@google.com
+Chromium OS Project
+bleung@chromium.org
+
+--tThc/1wpZn/ma/RB
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE6gYDF28Li+nEiKLaHwn1ewov5lgFAlwRUaYACgkQHwn1ewov
+5ljVzA/+LrEt1Rm2OOw/34K53k7jK/9/Y8LDf9Wp9RZ/BeOeZScECxRYkfKN9XL6
+LUzgBp+z/BgBOy4BYOjAeH5rknXpVieJkH/3I8AIi33oEpeWC0KxkyyNJIWjj7D1
+fq5Cz+DI9GKF4a/onTVsMYRoYftRLYTm+L/z3hJzLAYkqcwShs9ak15M/qDeFlZ8
+KF/Im4yeInCBHg6giScg72tMV7zh40pBOTopcMbzXAHch56OzXE4i0PueJJFhhCb
+BHesObxRHQEe+2TiijJRE1aoXKqKCwLwhz2uqo7qhnX+OItMUI2FQLkO0H8GrvZh
++9ZrENqy1rpLjYRWF92nHfv1FSXRhYHbidXHh045nSMdOElQqSQXDYa1JX9MNAZ5
+IU1LXMkNRwOz717JgSe2SszlkOw9fQK2mHhxkbqhwzvxh50TX2QHIfcSDW3wiSQT
+BW4sxqv8+DWKsOO2yPnq2wsG/AmaKDBSCUTif1U7e12G33etvychk1eN+4Dv8Fni
+fGu416RC9xcUe8vqXi8fDfFEpgqu5NyIiVnZQ/MTnoyFjV7u1nut38FQQmfRbOUM
+NMKLgGirJrY+ar4P/uyZvuakHpXEb0rZ7QGlWDcdtuoqMLlvSM8m35y9XTzhsVC3
+B0NfMIoxmuw7FQiGK7tI8eCdF8/+aCPxmpcM49SQWF9SUu+tmPk=
+=WY6c
+-----END PGP SIGNATURE-----
+
+--tThc/1wpZn/ma/RB--
