@@ -2,217 +2,111 @@ Return-Path: <SRS0=gFHn=OW=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.9 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.7 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
+	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CBF3C65BAE
-	for <linux-iio@archiver.kernel.org>; Thu, 13 Dec 2018 12:49:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CECB9C65BAE
+	for <linux-iio@archiver.kernel.org>; Thu, 13 Dec 2018 13:22:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2C62F20870
-	for <linux-iio@archiver.kernel.org>; Thu, 13 Dec 2018 12:49:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 914D92086D
+	for <linux-iio@archiver.kernel.org>; Thu, 13 Dec 2018 13:22:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="Ymwr7rRI"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2C62F20870
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=analog.com
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="icU8YEd5"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 914D92086D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729126AbeLMMtA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 13 Dec 2018 07:49:00 -0500
-Received: from mail-eopbgr730068.outbound.protection.outlook.com ([40.107.73.68]:15808
-        "EHLO NAM05-DM3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729205AbeLMMtA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 13 Dec 2018 07:49:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=analog.onmicrosoft.com; s=selector1-analog-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=a2kxjfOhUefns4v6JOufDd1g6UWLcjHNeNKbfrf523U=;
- b=Ymwr7rRIHhv18CxYS1LcpfyKFPhoG87r0PFOglLtIo0VIACdYZq6dqnS68SZuaA1VVG0+K7U0URXScpeoENLZ6BGz7OjWweRiCvMy5oKaApfijayWLNjb5C2c1IqYFpsTuNAnHZgoWdZwJbtTkWP/N9K2eDTJmmpjXvZt2tCe0s=
-Received: from CY4PR03CA0088.namprd03.prod.outlook.com (2603:10b6:910:4d::29)
- by CY1PR03MB2268.namprd03.prod.outlook.com (2a01:111:e400:c614::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1404.22; Thu, 13 Dec
- 2018 12:47:05 +0000
-Received: from BN1BFFO11FD025.protection.gbl (2a01:111:f400:7c10::1:111) by
- CY4PR03CA0088.outlook.office365.com (2603:10b6:910:4d::29) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.1425.19 via Frontend Transport; Thu, 13 Dec 2018 12:47:05 +0000
-Authentication-Results: spf=pass (sender IP is 137.71.25.57)
- smtp.mailfrom=analog.com; gmx.de; dkim=none (message not signed)
- header.d=none;gmx.de; dmarc=bestguesspass action=none header.from=analog.com;
-Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
- 137.71.25.57 as permitted sender) receiver=protection.outlook.com;
- client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
-Received: from nwd2mta2.analog.com (137.71.25.57) by
- BN1BFFO11FD025.mail.protection.outlook.com (10.58.144.88) with Microsoft SMTP
- Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.1425.16
- via Frontend Transport; Thu, 13 Dec 2018 12:47:04 +0000
-Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
-        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id wBDCl4XW004090
-        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
-        Thu, 13 Dec 2018 04:47:04 -0800
-Received: from linux.ad.analog.com (10.32.224.122) by
- NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
- 14.3.408.0; Thu, 13 Dec 2018 07:47:02 -0500
-From:   Stefan Popa <stefan.popa@analog.com>
-To:     <jic23@kernel.org>, <robh+dt@kernel.org>, <mark.rutland@arm.com>
-CC:     Stefan Popa <stefan.popa@analog.com>,
-        <Michael.Hennerich@analog.com>, <knaack.h@gmx.de>,
-        <lars@metafoo.de>, <pmeerw@pmeerw.net>,
-        <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, <devel@driverdev.osuosl.org>,
-        <stefan.popa@analog.co>
-Subject: [PATCH 02/11] staging: iio: adc: ad7606: Use SPDX identifier
-Date:   Thu, 13 Dec 2018 14:46:14 +0200
-Message-ID: <1544705183-13288-3-git-send-email-stefan.popa@analog.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1544705183-13288-1-git-send-email-stefan.popa@analog.com>
+        id S1729281AbeLMNWV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 13 Dec 2018 08:22:21 -0500
+Received: from userp2130.oracle.com ([156.151.31.86]:51938 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729265AbeLMNWU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 13 Dec 2018 08:22:20 -0500
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.22/8.16.0.22) with SMTP id wBDDIU3F026069;
+        Thu, 13 Dec 2018 13:21:35 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2018-07-02;
+ bh=2d3idHNMaH8gHEtCqY2+FtPFMA3pern48EJVygpmTy4=;
+ b=icU8YEd5lZRqt7syP0CHEvfMVYwh7Jt3iQcDd2Uidp6QHg4HnORlWWnXY8iiKsdsEM30
+ oKUhFI0yEOVD6p0bRPq0VYIgxvHX7Jv+upQ92kBTDcJGF7mZgt+jt2xQFKM2BtfOjEW8
+ ymJAuX6lNU/rmSf/aaWXtpeoErh0ER17acEEi8zQN1r+5yB7CvTcwQWrM9FYQhGfYu+2
+ /Z203soLnM9a2FUwYcii5AXwfBuNXwtqTgCnUK0pVpwSXuGgb2/D0mbXlESqzV63X4M7
+ p7Fs0kGIispz7GJnkcstbJmrfsguybn+XKOpRjcC8Zjbd2WBXsJ3qUxp9P0IbE0mTqj/ 6g== 
+Received: from aserv0021.oracle.com (aserv0021.oracle.com [141.146.126.233])
+        by userp2130.oracle.com with ESMTP id 2pb3n75s2a-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 13 Dec 2018 13:21:35 +0000
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserv0021.oracle.com (8.14.4/8.14.4) with ESMTP id wBDDLYl2011927
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 13 Dec 2018 13:21:34 GMT
+Received: from abhmp0014.oracle.com (abhmp0014.oracle.com [141.146.116.20])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id wBDDLXuU021562;
+        Thu, 13 Dec 2018 13:21:33 GMT
+Received: from kadam (/41.202.241.62)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 13 Dec 2018 05:21:32 -0800
+Date:   Thu, 13 Dec 2018 16:21:21 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Stefan Popa <stefan.popa@analog.com>
+Cc:     jic23@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com,
+        devel@driverdev.osuosl.org, lars@metafoo.de,
+        Michael.Hennerich@analog.com, linux-iio@vger.kernel.org,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        pmeerw@pmeerw.net, knaack.h@gmx.de, stefan.popa@analog.co
+Subject: Re: [PATCH 02/11] staging: iio: adc: ad7606: Use SPDX identifier
+Message-ID: <20181213132120.GS3116@kadam>
 References: <1544705183-13288-1-git-send-email-stefan.popa@analog.com>
+ <1544705183-13288-3-git-send-email-stefan.popa@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRoutedOnPrem: True
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(39860400002)(376002)(396003)(346002)(136003)(2980300002)(3190300001)(189003)(199004)(110136005)(54906003)(7416002)(5660300001)(316002)(305945005)(7636002)(116002)(126002)(476003)(2616005)(446003)(16586007)(4326008)(44832011)(2906002)(11346002)(106002)(47776003)(426003)(486006)(72206003)(246002)(48376002)(7696005)(106466001)(51416003)(6666004)(50466002)(8676002)(478600001)(50226002)(8936002)(336012)(356004)(76176011)(36756003)(186003)(26005)(77096007);DIR:OUT;SFP:1101;SCL:1;SRVR:CY1PR03MB2268;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;MX:1;A:1;
-X-Microsoft-Exchange-Diagnostics: 1;BN1BFFO11FD025;1:4jSH7FGc+/bgAjPaWjgxfKCv/yY8YQjqXmuACb9dQ1A/Wv2oKHmXNE6VMNQiHyvOIFayQxbP8k9va0BZRiq0WWLU59az/rK8q50AR4KGi4ikEMg8PwaiKYFyO4Hz+OPR
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5d726089-b5b4-487f-e5d0-08d660f915dd
-X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390098)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600074)(711020)(4608076)(2017052603328)(7153060);SRVR:CY1PR03MB2268;
-X-Microsoft-Exchange-Diagnostics: 1;CY1PR03MB2268;3:ggBXtOTMrYP8a1h+MN/UtZl/Xp5EOVtCJ7hi4BdC1oirv9X8rJPS03yo37wiYppq+AXfsAuDNjZIjnr2aitlTlbLNlhBK2m53dwNpefS/vx/Erg7Nzio3CHGLlXyb1Qr60nJ4qkwC7gS3w3cC+Vn4ieNVNxAtgLrrikvsjmXNfMPoX3YaJxOwP+gpYoX2gIX2IwuhaeQXVkJJWikwJ3od2CvxMhS+1qfKh6/mpIts8WWW7rfb/r2QhxbTPhshq9DC/IBHZDoAI2gxHemb0rbKxj1ewD/JKw8tU0Va8oeB3m1zv1fo7TCzS6gPlDPL+6Hbg5e5K290HHATrDU6nAY5GIFxFP2Obg88D6XXWk4QvQ=;25:+q+Nx+kGjxyQ6g0EQopeMilMCwFKpLuSXQddZvqJ+o+y1BEvSKkxeIyoQvmwa30zguh7SDRZA7TXmoIE3+k5zqWhWO1+SeUp7NLt14gnqsHTjtceP9Mku+f7/YOqut6Aw0807WJ7V/MW1h3mCbtktc/MJi49SfMels4uMc9qlUrmgi1YMb+A7tWxhSwXcvhwm15iv4ezM3xvmMosYaCiirXLvezgi0fc9AxoTPiLLsU8pD9+JiydStFPejqhW3Lc2XEo0Xjxj0n1+F+utjQpycpQjmZFHKww9XO6lqyTLz3VHKxPrFToXoHp8euQHH1gBCN2Uyr6qXr0rO3GX8MNmA==
-X-MS-TrafficTypeDiagnostic: CY1PR03MB2268:
-X-Microsoft-Exchange-Diagnostics: 1;CY1PR03MB2268;31:83824NESJmARn3jFeDDGHKswgvuedPzaL2aMulKP858G/aTY1L4CIm4MlivDu85UamF0/YYp4WFnBgnEfBQzRMfHqdrW3kSBCMxX8ULmiZvos1BgSjBT9w9g/d7HC1LL+b5OqXm08hEuaGNRvE80XHAuoT6t85MyESJPoEETmfoX+VbEt1Iq2gm9mjD0DtPFkZdwfrJlkj0rgIwsf0g3ieoxovopchXVPFs4G8Lymzw=;20:qqZH/vF+i0Dpx0zZMd6cczec9dfJWoH7ljv7cevOW/EcHdCmRtf4+dFB7JCW0BIufph353UW/EYa6KF85lPmp3jqTRZQ+pzsDLFkymye9RCU9mtzzAoeXxJYxIArYQ4saegCcJtVfv/dIkPdNuHWIj6LhXofPkKvj05WSS2g90UEDYFcOOvLS+x05aurlgDz8RuhLv1Yh+ciYzzogTzZxlBMdzz9TvStSCmNUsB5ru1GBIMK9dJbiX/q/x0w4M2OzEDqoGACh7BZsJbKPYV/y0uGFhHzelKNoQk+fRQQbirNZnTbhOLzb0MNC3xns2K40oI2s1ecUIPhgWYUMQW4bJPd6D8JfCEjUbI+p8NrW0oykQ83iC9hRmK4DgTqOetLwEWEqJyNQ8U0SSa1oYHb3nREyugVlWaCucmblcZItQ+SdSgdMq+Y4FxRA6Cj/TWGdWyIo2UglRcgu5pKySZQdK+3Puplukm/a3r8HidQEHVcjf2o75t0IaqjLNEmWGtN
-X-Microsoft-Antispam-PRVS: <CY1PR03MB226884DA919A30CA14DD59809DA00@CY1PR03MB2268.namprd03.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-Exchange-Antispam-Report-CFA-Test: BCL:0;PCL:0;RULEID:(8211001083)(3230021)(999002)(6040522)(2401047)(8121501046)(5005006)(10201501046)(3231475)(944501520)(52105112)(93006095)(93004095)(3002001)(6055026)(148016)(149066)(150057)(6041310)(20161123558120)(20161123564045)(20161123560045)(20161123562045)(201703131423095)(201702281528075)(20161123555045)(201703061421075)(201703061406153)(201708071742011)(7699051)(76991095);SRVR:CY1PR03MB2268;BCL:0;PCL:0;RULEID:;SRVR:CY1PR03MB2268;
-X-Microsoft-Exchange-Diagnostics: 1;CY1PR03MB2268;4:2rU8OkayHwtnHLT/A6XzXFu4r5SHu0L59A+Q9Alf0dXnPbnuqPheH2xZd0dtHME5wgj2KB+rXqrrFkwOSgzxpUk9eLSDhiGXfZN8Hk1eJCjxJFTYcZx5mzI6g/ZNTfM2h4jNTkV2E/d8Y0gwy9qBYvc4IGbVFAuZ3FIPaQ7jvVWI6HPOMi0QC7ncaIB+lYLCR9MWVRmJlD3i6AUNdqvhZprdBLkx/s0QaW1KDqu6Fs65ws23RUNDHshgO4IqSCXpG9Vex7RqtoL2MlS7CTE8DA==
-X-Forefront-PRVS: 088552DE73
-X-Microsoft-Exchange-Diagnostics: =?us-ascii?Q?1;CY1PR03MB2268;23:MVYu6gHN9l0FTMJS+PkONoCamTopNXJ7UXcpET8cD?=
- =?us-ascii?Q?I4mt64YWp4nKyjr0RuB/UYsU0PmMyfHGPUCbC5Vr7k0ikwrHZcWGC/tzfPfg?=
- =?us-ascii?Q?1NPeSYtdvKXmQGV3ziXtqvF1xdc6YEYGqKjYw02R3oRX2nIa7vmKNADj1vFW?=
- =?us-ascii?Q?nluGoRQat+WuxoF3VPrcwOG6iBo6Jvn89MwFZC4bvV+PxWk6H1zNPmaKb6vW?=
- =?us-ascii?Q?L/zh3KtyVwqtIZ2GWS9JJXUL9BLSDm8n5qPnyzhZCZ7eH4zEmR7C+SBwo1vJ?=
- =?us-ascii?Q?fPvPUnG525tPAxeBhZI9aLsQcoKlbF3ExS8I+t8o5ptYnK2dm1PyAl5cQFJm?=
- =?us-ascii?Q?HkXITGRtDtGRjidhAbBi504bruccw8MZcB0jdHiypOmxvgJkuVlbqv2a849E?=
- =?us-ascii?Q?H2Flpu+dodkh+IU9GVAnOabAQAbDWFo2+ey5SQuGQBrK3VE+nwZqHMqfv26g?=
- =?us-ascii?Q?AQsLmjgmX5Diwr7D1jx2U/30Bg6RwNG8K5i/GM9Sa/fvCwvgnXgDBWwHWcf7?=
- =?us-ascii?Q?X6z8D0fkAsBqmN8QuLz4n2yQf8XBG2Xa/4M4qBtM5WAmxSXcX41kKjYeV4NH?=
- =?us-ascii?Q?TEwg9d5QrJsZil9ExkM0ZuR5E00JCJcCVGBme0UZODe00qaJTQouQdrvzEml?=
- =?us-ascii?Q?4FNv5MzzClUyJb2N/Ek6Gref05lXiOmPETVZIEWnuvUghhB4DCq8bQSKex30?=
- =?us-ascii?Q?hpJrdMgAUcZGC8uujVJs8MgUjhiRNJeds68AgWy0z99bzaxpwWnNNx6I7e4f?=
- =?us-ascii?Q?ojL+vMzvKiHN+mGLCbkJXwPfTmgig5QbdL2XTd1ojnreYaL6/VkaCxlnWIPn?=
- =?us-ascii?Q?Os+Rn6QKBwe+qWGYvjSIiVqGuvjtAhGQvHC40LmwspJD6kXXuZT1imwag0/V?=
- =?us-ascii?Q?Jl4g47hA0VFCEzBrJNFRUWiCQaVITjrxRnbEPF1+/U4DTDLfnOcNbsmLrdAC?=
- =?us-ascii?Q?rgV4yajQolcgZU/9nTjbNlH6uzcAlATUHK6YxzF5kS/OtPxL9DkZrEFNDaSG?=
- =?us-ascii?Q?6TM6PpEsrW/wSrmKEprnPollD2OAPKZy3zGxLM7nFanzYnxm1fK0HrQ+UQ6y?=
- =?us-ascii?Q?V9jtkKfp7+3aS/Ursyr5crR0pLk?=
-X-Microsoft-Antispam-Message-Info: FqFsVkz9wLYij1cxqXr7jtOnvUE+ohJhiJ/I7f60yIpFOH6Lqc+OauSyKSllDsodGRjF+18OFUUXPgtnAFOnXkpeUQSgq/drqLtXfEvB5mTdhxOhm+T11ndJUCE00FMAsmbmtHr3nwSyKqBjV0rCQ2dM4iNlDfm/3Iuyn0C3yWGlQ4Mdc1NcwvcBai9ulpzgzhtSXdDltBNbmEB2BncM+qrs1blEDUZUbvQfH+HXyhBltOG/iRe77XWW/b3GTmhd144J40veOCWr2Z+aG3oEMZ+HbvKcuK6y2GyAVL/7q9gErJNLvSwwiEuqWRhRHN7X
-X-Microsoft-Exchange-Diagnostics: 1;CY1PR03MB2268;6:F9IhoWCT9Nen90YXdZKQwr4THbsMq7OYKbSPkRjfoaJidmWhFp52S4Oegqa8+5OYSjLNfCxZY59DCJsx3P3IkZqYaRKLbe0/bA4JKP60ZgmwlzRhGIPGVlCuVNMprFW9Ix9WNHuA/aSP2SgMbp1i+6ZGxr7s5u4nsk9JqZqVjr5NvBLo0rzac9pAx++6cbG1cjgXCJLw3eOsvmgiG8HgHGuxmhlEJlxGKuBFBzjo8z/JQlAoomZX9TViSZ0QQCl3ykbO9Y8te5OiRvWOfb6mERk/bRV8+ytf4KM5ltEtogEkq81UpptcIBLElgn/fuAAfzyf/Cz6j9t6+GAjXWNzbfMjZ7dasoKhWknQ8xL2JFR60q5ogliFbm+spbFGRbJRAZYk1ylep3nNJUV7H6htCZwJYAGWFlKq+ZwsLhNQfCB3NGzmxMk7wCLawJAat3kvhTk8uPQXmnuSjfqg/HzlMA==;5:cdUmndp6PVJ1YUGOxxTSuoXJqErxeI5k7SbaXlMziaUfp5ZmKFDPsevOZJQg5nMF7y3Z+90xyezpLP/FZGrfLihzSoWaQ6z8lUeJ8R89dXAslLKHyhQouJOV9nRi52fsJ66dghEw3tMzI2Y1AlDLEBGQuYzuF/SldbTLrIG1pDM=;7:2LXnl6h3WsPNNxvxM6jLHQ8xqgOTSbnXDx30aG0mXJZ0o3NVT4tiZzSY22HiXcxjfDBnml5I1Ug1JCV8pfFujjSrj9fkuuC2yYDIpoXW4ldkAN3UiEHV4g0tcRY2n+3FZPGE1vgj+sWsrs6g4th6oQ==
-SpamDiagnosticOutput: 1:99
-SpamDiagnosticMetadata: NSPM
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Dec 2018 12:47:04.8084
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5d726089-b5b4-487f-e5d0-08d660f915dd
-X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY1PR03MB2268
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1544705183-13288-3-git-send-email-stefan.popa@analog.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9105 signatures=668679
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=948
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1810050000 definitions=main-1812130117
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch replaces the license text at the top of ad7606 driver files
-and instead adds SPDX GPL-2.0+ license identifier.
+On Thu, Dec 13, 2018 at 02:46:14PM +0200, Stefan Popa wrote:
+> This patch replaces the license text at the top of ad7606 driver files
+> and instead adds SPDX GPL-2.0+ license identifier.
+> 
+> Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+> ---
+>  drivers/staging/iio/adc/ad7606.c     | 5 ++---
+>  drivers/staging/iio/adc/ad7606.h     | 3 +--
+>  drivers/staging/iio/adc/ad7606_par.c | 5 ++---
+>  drivers/staging/iio/adc/ad7606_spi.c | 5 ++---
+>  4 files changed, 7 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/ad7606.c b/drivers/staging/iio/adc/ad7606.c
+> index 7308fa8..aa5ab1e 100644
+> --- a/drivers/staging/iio/adc/ad7606.c
+> +++ b/drivers/staging/iio/adc/ad7606.c
+> @@ -1,9 +1,8 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+>  /*
+>   * AD7606 SPI ADC driver
+>   *
+>   * Copyright 2011 Analog Devices Inc.
+> - *
+> - * Licensed under the GPL-2.
 
-Signed-off-by: Stefan Popa <stefan.popa@analog.com>
----
- drivers/staging/iio/adc/ad7606.c     | 5 ++---
- drivers/staging/iio/adc/ad7606.h     | 3 +--
- drivers/staging/iio/adc/ad7606_par.c | 5 ++---
- drivers/staging/iio/adc/ad7606_spi.c | 5 ++---
- 4 files changed, 7 insertions(+), 11 deletions(-)
+You've changed the license from 2 to 2+.  That's literally breaking the
+law.  As in country laws with lawsuits and fines and what not.  Please
+be very careful with this stuff.
 
-diff --git a/drivers/staging/iio/adc/ad7606.c b/drivers/staging/iio/adc/ad7606.c
-index 7308fa8..aa5ab1e 100644
---- a/drivers/staging/iio/adc/ad7606.c
-+++ b/drivers/staging/iio/adc/ad7606.c
-@@ -1,9 +1,8 @@
-+// SPDX-License-Identifier: GPL-2.0+
- /*
-  * AD7606 SPI ADC driver
-  *
-  * Copyright 2011 Analog Devices Inc.
-- *
-- * Licensed under the GPL-2.
-  */
- 
- #include <linux/interrupt.h>
-@@ -560,4 +559,4 @@ EXPORT_SYMBOL_GPL(ad7606_pm_ops);
- 
- MODULE_AUTHOR("Michael Hennerich <michael.hennerich@analog.com>");
- MODULE_DESCRIPTION("Analog Devices AD7606 ADC");
--MODULE_LICENSE("GPL v2");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
-index 8618805..e365fa0 100644
---- a/drivers/staging/iio/adc/ad7606.h
-+++ b/drivers/staging/iio/adc/ad7606.h
-@@ -1,9 +1,8 @@
-+/* SPDX-License-Identifier: GPL-2.0+ */
- /*
-  * AD7606 ADC driver
-  *
-  * Copyright 2011 Analog Devices Inc.
-- *
-- * Licensed under the GPL-2.
-  */
- 
- #ifndef IIO_ADC_AD7606_H_
-diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/staging/iio/adc/ad7606_par.c
-index 8bd86e7..db2fede46 100644
---- a/drivers/staging/iio/adc/ad7606_par.c
-+++ b/drivers/staging/iio/adc/ad7606_par.c
-@@ -1,9 +1,8 @@
-+// SPDX-License-Identifier: GPL-2.0+
- /*
-  * AD7606 Parallel Interface ADC driver
-  *
-  * Copyright 2011 Analog Devices Inc.
-- *
-- * Licensed under the GPL-2.
-  */
- 
- #include <linux/module.h>
-@@ -110,4 +109,4 @@ module_platform_driver(ad7606_driver);
- 
- MODULE_AUTHOR("Michael Hennerich <michael.hennerich@analog.com>");
- MODULE_DESCRIPTION("Analog Devices AD7606 ADC");
--MODULE_LICENSE("GPL v2");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/staging/iio/adc/ad7606_spi.c b/drivers/staging/iio/adc/ad7606_spi.c
-index b76ca5a..b6553ce 100644
---- a/drivers/staging/iio/adc/ad7606_spi.c
-+++ b/drivers/staging/iio/adc/ad7606_spi.c
-@@ -1,9 +1,8 @@
-+// SPDX-License-Identifier: GPL-2.0+
- /*
-  * AD7606 SPI ADC driver
-  *
-  * Copyright 2011 Analog Devices Inc.
-- *
-- * Licensed under the GPL-2.
-  */
- 
- #include <linux/module.h>
-@@ -76,4 +75,4 @@ module_spi_driver(ad7606_driver);
- 
- MODULE_AUTHOR("Michael Hennerich <michael.hennerich@analog.com>");
- MODULE_DESCRIPTION("Analog Devices AD7606 ADC");
--MODULE_LICENSE("GPL v2");
-+MODULE_LICENSE("GPL");
--- 
-2.7.4
+regards,
+dan carpenter
+
 
