@@ -2,116 +2,177 @@ Return-Path: <SRS0=gFHn=OW=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 998E7C65BAE
-	for <linux-iio@archiver.kernel.org>; Thu, 13 Dec 2018 15:38:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9995DC67839
+	for <linux-iio@archiver.kernel.org>; Thu, 13 Dec 2018 19:43:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 557B52086D
-	for <linux-iio@archiver.kernel.org>; Thu, 13 Dec 2018 15:38:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1544715491;
-	bh=tEUtgrgbBbkMhRpyP02t+bNZtvpM2zX8nctqBRGCaDw=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
-	b=DmolW8io6bnEib3+FmQqvOqdJ9qFcE2geaUjaH8vzrJ2J67RGDRQ0PgMsb5h2z9OQ
-	 WxxM4ltO8GmT+wxN8PfsRSM/xNVbqSE2HoPqcPCpjKXmzQ98j7Hx9kzEsmSd+UgXsc
-	 21eMiPsA5SZnimSQLRcmLRsjWgQ/qY9zBcSJGJho=
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 557B52086D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTP id 6493B2086D
+	for <linux-iio@archiver.kernel.org>; Thu, 13 Dec 2018 19:43:54 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WazAsnA8"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6493B2086D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728965AbeLMPiK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 13 Dec 2018 10:38:10 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33490 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728930AbeLMPiK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 13 Dec 2018 10:38:10 -0500
-Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B3C2820870;
-        Thu, 13 Dec 2018 15:38:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1544715489;
-        bh=tEUtgrgbBbkMhRpyP02t+bNZtvpM2zX8nctqBRGCaDw=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=0wzrcN9w7gHWzgoMsu7hpqH+tfTz36CkSQtO6Ww5sFzGIrj747iL1tLgLYJzd1cby
-         zkE4xC/lGMWlnmesqPzWS78HmbCzCMG5L1MRUvInWKMUE3K1SSqdOzqduGgJdlIALv
-         5nmchj8Htr3/UhrGPDn+kV1hvq1hVKgOiHQOEDZw=
-Received: by mail-qk1-f171.google.com with SMTP id q1so1326736qkf.13;
-        Thu, 13 Dec 2018 07:38:09 -0800 (PST)
-X-Gm-Message-State: AA+aEWb8FXA2BLNKdImTPtL5hHsyYWxCAZBv00T1jasHJioccDVno9BE
-        ePADocls6nn9344xY+6yw1+UJo45YAvx8p3uxA==
-X-Google-Smtp-Source: AFSGD/W5LexxU/3vb56Ir91vqA7EDPRWGo+vjaKyNB+FbgO5CR1fDZ+mSGPxljWM0uZY6R9LBpOxpTtgE89VeH3+Ghk=
-X-Received: by 2002:a37:a483:: with SMTP id n125mr1208572qke.184.1544715488926;
- Thu, 13 Dec 2018 07:38:08 -0800 (PST)
-MIME-Version: 1.0
-References: <1544705183-13288-1-git-send-email-stefan.popa@analog.com> <1544705183-13288-2-git-send-email-stefan.popa@analog.com>
-In-Reply-To: <1544705183-13288-2-git-send-email-stefan.popa@analog.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Thu, 13 Dec 2018 09:37:57 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqLMF=uf5Dcrfz_57KwYK9XDtJamGtf23JiUMDH-F6xa7w@mail.gmail.com>
-Message-ID: <CAL_JsqLMF=uf5Dcrfz_57KwYK9XDtJamGtf23JiUMDH-F6xa7w@mail.gmail.com>
-Subject: Re: [PATCH 01/11] staging: iio: adc: ad7606: Simplify the Kconfing menu
-To:     Stefan Popa <stefan.popa@analog.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        id S1728077AbeLMTnn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 13 Dec 2018 14:43:43 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:37337 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728384AbeLMTnn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 13 Dec 2018 14:43:43 -0500
+Received: by mail-pl1-f193.google.com with SMTP id b5so1534505plr.4;
+        Thu, 13 Dec 2018 11:43:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:subject:date:message-id;
+        bh=YWzLkl43TNrxxJ4UiH7VZTyugNvX9odVpZLVLKgv65c=;
+        b=WazAsnA8ozMaviZ0Tmva3rpf8uEAU9q9lJyvuEIV6x56FIT0e+K62qJ+oUQGsVwmN1
+         MVfjMaOzN2hGU/3gazco4HnqCtbrjppRPtIW12SFF7BbBZ+E2pPH8vM1XuGCLSJEoZoh
+         RMAQ38G0+yIvM1PTsgYduzJy91YjXoLO+9/ECXYkzrPWeuwGHM4LVPaY+eZHXmRGWDjh
+         BQIp9afqQiSo3BAMm3FpiRZMWOdI22hNa9aMUdpK4QHq4V5KN9XFRD5mW22x9SNz7NZn
+         Iew+qSOTZz4fWL8/K1fczoi2rvNoiF4zAoQaBhcZBRBHrJQXgXMjRm2jkQgd55gQRPol
+         HZYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:subject:date:message-id;
+        bh=YWzLkl43TNrxxJ4UiH7VZTyugNvX9odVpZLVLKgv65c=;
+        b=NYQbiqfA1sifdFq8PTSq5/sdcOWwh7pyIhMmJfT4euz09wAeDbBQt3ZqbvXRsTw6VL
+         QbnGyIwAuGcdEIX3dEdWfO1KJoM5G37gzv172SBIAv6XG+S5J/9qakDL9dfSC2HI/Psr
+         eMYVf7IgXNg9NrvbPJ4MwdyzUEFiD2IxbJYeH62+fxo48tNhZjL2de+MqEA/IaJvKHJm
+         7GbypjqyJpyIGC10XOgMGt9Emg5vGwL+tjQD56AxYxGIvnS289VtLq+Ex8G8h+GZjx2x
+         Z7F+DyQJF5UqMvtCqp3ZOMAcdrOAL2bNECnmnssNpt+xr/ARSidWrac3flPp1GoLNcG1
+         FPmg==
+X-Gm-Message-State: AA+aEWY36MJ6KxXnIo931PMr9g175xN3a9vNDchZFt7WCDI6ws1aOdX3
+        PAYuhoIi5O2Evi2lM8n9KA0=
+X-Google-Smtp-Source: AFSGD/XafBNMSkq2NEdJZiNBXWB6fUbPe3t5VX7ZPuoS2Nh9IYkqi57Grm+m/czdP/yLuAP8MG7RqQ==
+X-Received: by 2002:a17:902:e10a:: with SMTP id cc10mr90594plb.165.1544730222252;
+        Thu, 13 Dec 2018 11:43:42 -0800 (PST)
+Received: from localhost.localdomain ([103.212.140.154])
+        by smtp.gmail.com with ESMTPSA id h82sm5548852pfa.105.2018.12.13.11.43.38
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 13 Dec 2018 11:43:41 -0800 (PST)
+From:   Shreeya Patel <shreeya.patel23498@gmail.com>
+To:     lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
         linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        Stefan Popa <stefan.popa@analog.co>
-Content-Type: text/plain; charset="UTF-8"
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v4] Staging: iio: adt7316: Add all irq related code in adt7316_irq_setup()
+Date:   Fri, 14 Dec 2018 01:13:35 +0530
+Message-Id: <20181213194335.11075-1-shreeya.patel23498@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Dec 13, 2018 at 8:18 AM Stefan Popa <stefan.popa@analog.com> wrote:
->
-> There is no point in having three menu entries that can be selected
-> individually. Instead, the SPI and parallel interfaces should select
-> AD7606.
->
-> Signed-off-by: Stefan Popa <stefan.popa@analog.com>
-> ---
->  drivers/staging/iio/adc/Kconfig | 24 +++++++++---------------
->  1 file changed, 9 insertions(+), 15 deletions(-)
->
-> diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
-> index fc23059..af1bad8 100644
-> --- a/drivers/staging/iio/adc/Kconfig
-> +++ b/drivers/staging/iio/adc/Kconfig
-> @@ -4,35 +4,29 @@
->  menu "Analog to digital converters"
->
->  config AD7606
-> -       tristate "Analog Devices AD7606 ADC driver"
-> +       tristate
->         depends on GPIOLIB || COMPILE_TEST
->         depends on HAS_IOMEM
->         select IIO_BUFFER
->         select IIO_TRIGGERED_BUFFER
-> -       help
-> -         Say yes here to build support for Analog Devices:
-> -         ad7605-4, ad7606, ad7606-6, ad7606-4 analog to digital converters (ADC).
-> -
-> -         To compile this driver as a module, choose M here: the
-> -         module will be called ad7606.
->
->  config AD7606_IFACE_PARALLEL
-> -       tristate "parallel interface support"
-> -       depends on AD7606
-> +       tristate "Analog Devices AD7606 ADC driver with parallel interface support"
-> +       select AD7606
+ADT7316 driver no more uses platform data and hence use device tree
+data instead of platform data for assigning irq_type field and
+implement this in adt7316_irq_setup function.
+Switch case figures out the type of irq and if it's the default case
+then assign the default value to the irq_type i.e.
+irq_type = IRQF_TRIGGER_LOW
+Move devm_request_threaded_irq() and assignment of chip->config1
+into the adt7316_setup_irq() to unclutter the code in probe function.
 
-I don't think this works because the depends on for AD7606 may not be
-satisfied. Moving the HAS_IOMEM here would help and either drop
-GPIOLIB or move that too.
+Signed-off-by: Shreeya Patel <shreeya.patel23498@gmail.com>
+---
+Changes in v4
+  - Merge patches *[1/3 v3], *[2/3 v3] and *[3/3 v3] to make it less
+complex to review.
 
-Rob
+Changes in v3
+  - Add a new function for having all interrupt related code.
+
+Changes in v2
+  - Make the commit message of patch *[1/5] appropriate.
+
+
+ drivers/staging/iio/addac/adt7316.c | 52 +++++++++++++++++++++--------
+ 1 file changed, 38 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+index 9c72538baf9e..1ca4ee0f30ee 100644
+--- a/drivers/staging/iio/addac/adt7316.c
++++ b/drivers/staging/iio/addac/adt7316.c
+@@ -1807,6 +1807,43 @@ static irqreturn_t adt7316_event_handler(int irq, void *private)
+ 	return IRQ_HANDLED;
+ }
+ 
++static int adt7316_setup_irq(struct iio_dev *indio_dev)
++{
++	struct adt7316_chip_info *chip = iio_priv(indio_dev);
++	int irq_type, ret;
++
++	irq_type = irqd_get_trigger_type(irq_get_irq_data(chip->bus.irq));
++
++	switch (irq_type) {
++	case IRQF_TRIGGER_HIGH:
++	case IRQF_TRIGGER_RISING:
++		break;
++	case IRQF_TRIGGER_LOW:
++	case IRQF_TRIGGER_FALLING:
++		break;
++	default:
++		dev_info(&indio_dev->dev, "mode %d unsupported, using IRQF_TRIGGER_LOW\n",
++			 irq_type);
++		irq_type = IRQF_TRIGGER_LOW;
++		break;
++	}
++
++	ret = devm_request_threaded_irq(&indio_dev->dev, chip->bus.irq,
++					NULL, adt7316_event_handler,
++					irq_type | IRQF_ONESHOT,
++					indio_dev->name, indio_dev);
++	if (ret) {
++		dev_err(&indio_dev->dev, "failed to request irq %d\n",
++			chip->bus.irq);
++		return ret;
++	}
++
++	if (irq_type & IRQF_TRIGGER_HIGH)
++		chip->config1 |= ADT7316_INT_POLARITY;
++
++	return 0;
++}
++
+ /*
+  * Show mask of enabled interrupts in Hex.
+  */
+@@ -2101,8 +2138,6 @@ int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
+ {
+ 	struct adt7316_chip_info *chip;
+ 	struct iio_dev *indio_dev;
+-	unsigned short *adt7316_platform_data = dev->platform_data;
+-	int irq_type = IRQF_TRIGGER_LOW;
+ 	int ret = 0;
+ 
+ 	indio_dev = devm_iio_device_alloc(dev, sizeof(*chip));
+@@ -2146,20 +2181,9 @@ int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+ 	if (chip->bus.irq > 0) {
+-		if (adt7316_platform_data[0])
+-			irq_type = adt7316_platform_data[0];
+-
+-		ret = devm_request_threaded_irq(dev, chip->bus.irq,
+-						NULL,
+-						adt7316_event_handler,
+-						irq_type | IRQF_ONESHOT,
+-						indio_dev->name,
+-						indio_dev);
++		ret = adt7316_setup_irq(indio_dev);
+ 		if (ret)
+ 			return ret;
+-
+-		if (irq_type & IRQF_TRIGGER_HIGH)
+-			chip->config1 |= ADT7316_INT_POLARITY;
+ 	}
+ 
+ 	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG1, chip->config1);
+-- 
+2.17.1
+
