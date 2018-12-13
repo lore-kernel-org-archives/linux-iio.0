@@ -2,111 +2,72 @@ Return-Path: <SRS0=gFHn=OW=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.4 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_PASS,USER_AGENT_MUTT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F70EC67839
-	for <linux-iio@archiver.kernel.org>; Thu, 13 Dec 2018 10:59:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AE31C65BAE
+	for <linux-iio@archiver.kernel.org>; Thu, 13 Dec 2018 12:38:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 40C2E20870
-	for <linux-iio@archiver.kernel.org>; Thu, 13 Dec 2018 10:59:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 40C2E20870
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=bootlin.com
+	by mail.kernel.org (Postfix) with ESMTP id 3D9A02086D
+	for <linux-iio@archiver.kernel.org>; Thu, 13 Dec 2018 12:38:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1544704684;
+	bh=LGrekOKBZpCqjAAKmzezbO6zWNlu5HpLk6BaIFIZbiU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=1ooLik7CRVPmD/G5oiBpZ+S9O5AJAEuvlPt/DGJQUyCXDKgmJzA4wXON2Hnwha2om
+	 LJ9yaz8jizOb40bcCTPIMhfqLhLVVFLV2F646j7fHsKo/Pa6bgOHM+v5hmp7Wov2HR
+	 plM+j17uQQon0FAa6py6pal0O527otj/HjLQxorY=
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3D9A02086D
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linuxfoundation.org
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728104AbeLMK71 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 13 Dec 2018 05:59:27 -0500
-Received: from mail.bootlin.com ([62.4.15.54]:44944 "EHLO mail.bootlin.com"
+        id S1728981AbeLMMiD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 13 Dec 2018 07:38:03 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55736 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727403AbeLMK70 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 13 Dec 2018 05:59:26 -0500
-Received: by mail.bootlin.com (Postfix, from userid 110)
-        id 3793A207D4; Thu, 13 Dec 2018 11:59:23 +0100 (CET)
-Received: from localhost (unknown [37.71.171.242])
-        by mail.bootlin.com (Postfix) with ESMTPSA id 13B0B206DC;
-        Thu, 13 Dec 2018 11:59:23 +0100 (CET)
-Date:   Thu, 13 Dec 2018 11:59:23 +0100
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-i2c@vger.kernel.org, groeck@chromium.org,
-        kernel@collabora.com, linux-rtc@vger.kernel.org,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Benson Leung <bleung@chromium.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        linux-input@vger.kernel.org,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        devicetree@vger.kernel.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-pm@vger.kernel.org, MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH v2] MAINTAINERS: add maintainers for ChromeOS EC
- sub-drivers
-Message-ID: <20181213105923.GN19816@piout.net>
-References: <20181211190953.13626-1-enric.balletbo@collabora.com>
- <20181212222937.GL19816@piout.net>
- <6f688bfe-2ebe-1934-0375-016ae859dcfb@collabora.com>
- <20181213095050.GM19816@piout.net>
- <d603fcb9-c1f1-a622-5774-10fac45fc7a5@collabora.com>
+        id S1728517AbeLMMiD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 13 Dec 2018 07:38:03 -0500
+Received: from localhost (5356596B.cm-6-7b.dynamic.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6C28C2086D;
+        Thu, 13 Dec 2018 12:38:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1544704682;
+        bh=LGrekOKBZpCqjAAKmzezbO6zWNlu5HpLk6BaIFIZbiU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Q7+VwOWnkwxx8eHZng2ghW4RoBr9qsYjh4PDhHteIrF7w3JLzMxxxYknvblZcLe6O
+         ot8gZ0ikcNC9lGwbGiDejBp+zbaYRhnqlwGOQdG2rsK362iN2nx+1JoF6fyYAyBBqS
+         rCYH0VvIP9hqMX6zXcBs60Ni+q4ff8R+XhHfnlkc=
+Date:   Thu, 13 Dec 2018 13:38:00 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org
+Subject: Re: [PULL] Second set of IIO new device support, features, cleanups
+ and minor fixes for 4.21
+Message-ID: <20181213123800.GA20099@kroah.com>
+References: <20181212183242.27562340@archlinux>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d603fcb9-c1f1-a622-5774-10fac45fc7a5@collabora.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20181212183242.27562340@archlinux>
+User-Agent: Mutt/1.11.1 (2018-12-01)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 13/12/2018 10:55:29+0100, Enric Balletbo i Serra wrote:
+On Wed, Dec 12, 2018 at 06:32:42PM +0000, Jonathan Cameron wrote:
+> The following changes since commit 16c44c57ecd89402a1acc81617cff463ff446fe7:
 > 
+>   staging: vboxvideo: Rename uint32_t type to u32 (2018-11-23 10:58:47 +0100)
 > 
-> On 13/12/18 10:50, Alexandre Belloni wrote:
-> > On 13/12/2018 10:30:16+0100, Enric Balletbo i Serra wrote:
-> >>> However, you should probably indicate which tree do you expect that to
-> >>> go through ;)
-> >>>
-> >>
-> >> Well, these are sub-drivers for different subsystems but are related to the main
-> >> ChromeOS EC. I expect all go through their specific subsystem and their
-> >> maintainer. I.e the rtc driver go through your tree, the mfd go through Lee's
-> >> tree, iio drivers through Jonathan's tree, etc. This is the reason I did not add
-> >> the tree. Main purpose here as that Benson and I are aware when someone sends a
-> >> change on one of the sub-drivers and we can review these patches.
-> >>
-> > 
-> > Sure, sorry I was not clear but I was asking about this particular
-> > patch because as it is, you will get acks from all the maintainers but I
-> > think they all think someone else will apply it ;)
-> > 
+> are available in the Git repository at:
 > 
-> Ah, ok, I didn't got it :)
-> 
-> If nobody complains and we have all the acks I think that this can go through
-> the Benson's tree (chrome-platform). The reason is that he already has a couple
-> of patches related to this (remove Olof as a chrome-platform maintainer and
-> adding me)
-> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-4.21b
 
-Ok, great.
+Now pulled and pushed out, thanks.
 
-
--- 
-Alexandre Belloni, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+greg k-h
