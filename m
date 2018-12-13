@@ -2,32 +2,34 @@ Return-Path: <SRS0=gFHn=OW=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.9 required=3.0
+X-Spam-Status: No, score=-10.4 required=3.0
 	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_PASS,UNPARSEABLE_RELAY autolearn=ham
+	MENTIONS_GIT_HOSTING,SPF_PASS,USER_AGENT_MUTT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5802C65BAE
-	for <linux-iio@archiver.kernel.org>; Thu, 13 Dec 2018 09:30:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28418C67839
+	for <linux-iio@archiver.kernel.org>; Thu, 13 Dec 2018 09:51:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9D66F2075B
-	for <linux-iio@archiver.kernel.org>; Thu, 13 Dec 2018 09:30:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9D66F2075B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
+	by mail.kernel.org (Postfix) with ESMTP id EC1A220645
+	for <linux-iio@archiver.kernel.org>; Thu, 13 Dec 2018 09:50:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EC1A220645
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=bootlin.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727072AbeLMJaZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 13 Dec 2018 04:30:25 -0500
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:56904 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726578AbeLMJaY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 13 Dec 2018 04:30:24 -0500
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: eballetbo)
-        with ESMTPSA id 5B402260B5F
-Subject: Re: [PATCH v2] MAINTAINERS: add maintainers for ChromeOS EC
- sub-drivers
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
+        id S1727709AbeLMJux (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 13 Dec 2018 04:50:53 -0500
+Received: from mail.bootlin.com ([62.4.15.54]:42476 "EHLO mail.bootlin.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727570AbeLMJux (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 13 Dec 2018 04:50:53 -0500
+Received: by mail.bootlin.com (Postfix, from userid 110)
+        id 78DE9207B8; Thu, 13 Dec 2018 10:50:50 +0100 (CET)
+Received: from localhost (unknown [88.191.26.124])
+        by mail.bootlin.com (Postfix) with ESMTPSA id 43EB92037D;
+        Thu, 13 Dec 2018 10:50:50 +0100 (CET)
+Date:   Thu, 13 Dec 2018 10:50:50 +0100
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Enric Balletbo i Serra <enric.balletbo@collabora.com>
 Cc:     linux-kernel@vger.kernel.org,
         Alessandro Zummo <a.zummo@towertech.it>,
         linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org,
@@ -52,99 +54,93 @@ Cc:     linux-kernel@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
         Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
         Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Greg Kroah-Hartman <"gre gkh"@linuxfoundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH v2] MAINTAINERS: add maintainers for ChromeOS EC
+ sub-drivers
+Message-ID: <20181213095050.GM19816@piout.net>
 References: <20181211190953.13626-1-enric.balletbo@collabora.com>
  <20181212222937.GL19816@piout.net>
-From:   Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Message-ID: <6f688bfe-2ebe-1934-0375-016ae859dcfb@collabora.com>
-Date:   Thu, 13 Dec 2018 10:30:16 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.3.1
+ <6f688bfe-2ebe-1934-0375-016ae859dcfb@collabora.com>
 MIME-Version: 1.0
-In-Reply-To: <20181212222937.GL19816@piout.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6f688bfe-2ebe-1934-0375-016ae859dcfb@collabora.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Alexandre,
-
-On 12/12/18 23:29, Alexandre Belloni wrote:
-> On 11/12/2018 20:09:52+0100, Enric Balletbo i Serra wrote:
->> There are multiple ChromeOS EC sub-drivers spread in different
->> subsystems, as all of them are related to the Chrome stuff add
->> Benson and myself as a maintainers for all these sub-drivers.
->>
->> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+On 13/12/2018 10:30:16+0100, Enric Balletbo i Serra wrote:
+> > However, you should probably indicate which tree do you expect that to
+> > go through ;)
+> > 
 > 
-> You definitively don't need my ack to get that applied but anyway:
-> > Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> 
-
-Thanks for the ack.
-
-> However, you should probably indicate which tree do you expect that to
-> go through ;)
+> Well, these are sub-drivers for different subsystems but are related to the main
+> ChromeOS EC. I expect all go through their specific subsystem and their
+> maintainer. I.e the rtc driver go through your tree, the mfd go through Lee's
+> tree, iio drivers through Jonathan's tree, etc. This is the reason I did not add
+> the tree. Main purpose here as that Benson and I are aware when someone sends a
+> change on one of the sub-drivers and we can review these patches.
 > 
 
-Well, these are sub-drivers for different subsystems but are related to the main
-ChromeOS EC. I expect all go through their specific subsystem and their
-maintainer. I.e the rtc driver go through your tree, the mfd go through Lee's
-tree, iio drivers through Jonathan's tree, etc. This is the reason I did not add
-the tree. Main purpose here as that Benson and I are aware when someone sends a
-change on one of the sub-drivers and we can review these patches.
+Sure, sorry I was not clear but I was asking about this particular
+patch because as it is, you will get acks from all the maintainers but I
+think they all think someone else will apply it ;)
 
-Thanks,
- Enric
-
->> ---
->>
->> Changes in v2:
->> - Fix typo in Benson email address.
->>
->>  MAINTAINERS | 24 ++++++++++++++++++++++++
->>  1 file changed, 24 insertions(+)
->>
->> diff --git a/MAINTAINERS b/MAINTAINERS
->> index a24129b0b043..bbe7180e2851 100644
->> --- a/MAINTAINERS
->> +++ b/MAINTAINERS
->> @@ -3625,6 +3625,30 @@ S:	Maintained
->>  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/bleung/chrome-platform.git
->>  F:	drivers/platform/chrome/
->>  
->> +CHROMEOS EC SUBDRIVERS
->> +M:	Benson Leung <bleung@chromium.org>
->> +M:	Enric Balletbo i Serra <enric.balletbo@collabora.com>
->> +S:	Maintained
->> +F:	Documentation/devicetree/bindings/extcon/extcon-usbc-cros-ec.txt
->> +F:	Documentation/devicetree/bindings/input/cros-ec-keyb.txt
->> +F:	Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.txt
->> +F:	Documentation/devicetree/bindings/i2c/i2c-cros-ec-tunnel.txt
->> +F:	Documentation/devicetree/bindings/mfd/cros-ec.txt
->> +F:	Documentation/ABI/testing/sysfs-bus-iio-cros-ec
->> +F:	drivers/extcon/extcon-usbc-cros-ec.c
->> +F:	drivers/i2c/busses/i2c-cros-ec-tunnel.c
->> +F:	drivers/iio/accel/cros_ec*
->> +F:	drivers/iio/common/cros_ec_sensors/
->> +F:	drivers/iio/light/cros_ec*
->> +F:	drivers/iio/pressure/cros_ec*
->> +F:	drivers/input/keyboard/cros_ec*
->> +F:	drivers/mfd/cros_ec*
->> +F:	drivers/power/supply/cros_usbpd-charger.c
->> +F:	drivers/pwm/pwm-cros-ec.c
->> +F:	drivers/rtc/rtc-cros-ec.c
->> +F:	include/linux/iio/common/cros_ec_sensors_core.h
->> +F:	include/linux/mfd/cros_ec*
->> +
->>  CIRRUS LOGIC AUDIO CODEC DRIVERS
->>  M:	Brian Austin <brian.austin@cirrus.com>
->>  M:	Paul Handrigan <Paul.Handrigan@cirrus.com>
->> -- 
->> 2.19.2
->>
+> Thanks,
+>  Enric
 > 
+> >> ---
+> >>
+> >> Changes in v2:
+> >> - Fix typo in Benson email address.
+> >>
+> >>  MAINTAINERS | 24 ++++++++++++++++++++++++
+> >>  1 file changed, 24 insertions(+)
+> >>
+> >> diff --git a/MAINTAINERS b/MAINTAINERS
+> >> index a24129b0b043..bbe7180e2851 100644
+> >> --- a/MAINTAINERS
+> >> +++ b/MAINTAINERS
+> >> @@ -3625,6 +3625,30 @@ S:	Maintained
+> >>  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/bleung/chrome-platform.git
+> >>  F:	drivers/platform/chrome/
+> >>  
+> >> +CHROMEOS EC SUBDRIVERS
+> >> +M:	Benson Leung <bleung@chromium.org>
+> >> +M:	Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> >> +S:	Maintained
+> >> +F:	Documentation/devicetree/bindings/extcon/extcon-usbc-cros-ec.txt
+> >> +F:	Documentation/devicetree/bindings/input/cros-ec-keyb.txt
+> >> +F:	Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.txt
+> >> +F:	Documentation/devicetree/bindings/i2c/i2c-cros-ec-tunnel.txt
+> >> +F:	Documentation/devicetree/bindings/mfd/cros-ec.txt
+> >> +F:	Documentation/ABI/testing/sysfs-bus-iio-cros-ec
+> >> +F:	drivers/extcon/extcon-usbc-cros-ec.c
+> >> +F:	drivers/i2c/busses/i2c-cros-ec-tunnel.c
+> >> +F:	drivers/iio/accel/cros_ec*
+> >> +F:	drivers/iio/common/cros_ec_sensors/
+> >> +F:	drivers/iio/light/cros_ec*
+> >> +F:	drivers/iio/pressure/cros_ec*
+> >> +F:	drivers/input/keyboard/cros_ec*
+> >> +F:	drivers/mfd/cros_ec*
+> >> +F:	drivers/power/supply/cros_usbpd-charger.c
+> >> +F:	drivers/pwm/pwm-cros-ec.c
+> >> +F:	drivers/rtc/rtc-cros-ec.c
+> >> +F:	include/linux/iio/common/cros_ec_sensors_core.h
+> >> +F:	include/linux/mfd/cros_ec*
+> >> +
+> >>  CIRRUS LOGIC AUDIO CODEC DRIVERS
+> >>  M:	Brian Austin <brian.austin@cirrus.com>
+> >>  M:	Paul Handrigan <Paul.Handrigan@cirrus.com>
+> >> -- 
+> >> 2.19.2
+> >>
+> > 
+
+-- 
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
