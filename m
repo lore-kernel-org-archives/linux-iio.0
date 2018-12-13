@@ -2,62 +2,62 @@ Return-Path: <SRS0=gFHn=OW=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.5 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-5.5 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_MUTT
-	autolearn=ham autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D29ABC65BAE
-	for <linux-iio@archiver.kernel.org>; Thu, 13 Dec 2018 22:01:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02C77C65BAE
+	for <linux-iio@archiver.kernel.org>; Thu, 13 Dec 2018 22:06:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 963E420811
-	for <linux-iio@archiver.kernel.org>; Thu, 13 Dec 2018 22:01:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B925C2075B
+	for <linux-iio@archiver.kernel.org>; Thu, 13 Dec 2018 22:06:33 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OVWvrZuH"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 963E420811
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="H8/sMyfg"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B925C2075B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727194AbeLMWBy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 13 Dec 2018 17:01:54 -0500
-Received: from mail-io1-f65.google.com ([209.85.166.65]:45572 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726457AbeLMWBy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 13 Dec 2018 17:01:54 -0500
-Received: by mail-io1-f65.google.com with SMTP id n3so2866946iog.12;
-        Thu, 13 Dec 2018 14:01:53 -0800 (PST)
+        id S1726470AbeLMWGd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 13 Dec 2018 17:06:33 -0500
+Received: from mail-it1-f194.google.com ([209.85.166.194]:50550 "EHLO
+        mail-it1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726461AbeLMWGd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 13 Dec 2018 17:06:33 -0500
+Received: by mail-it1-f194.google.com with SMTP id z7so6115159iti.0;
+        Thu, 13 Dec 2018 14:06:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=ck5VNCk3zkFstAhB+usPuWzSRVaH44SPvmgAQ6M6EtQ=;
-        b=OVWvrZuH/ia9nIoXmzEXyez1ZSQstM3L2KvOZohCIHh0cfj8YNFVpSE7d1BF8g/1wZ
-         xtvVNWjCmHzMMo0KPckWlAF3jzaNxHtOkIK96knYHyC8JqdmPTPHgj0rPtknb61p4Rue
-         +zoqzWQQDhLLozWHj/T60SWaoy6IcTbrjPQaKYlrkMricZ1QffESSB8Rdq/NJYARqUFW
-         we7OpFmpLn2VnTJSRcX24IBGuzjv9VzxypzCXQUi5tsAnnxjO4DiMOkPBFlzzgihifG0
-         oaoDOBiSXkNsch8repiN+0qb+Upr7Pp90nT/xt2KSL7vB/te624k2neQ1+aIAQ6+3Ilq
-         j8Yw==
+        bh=Irtg1MWzwLcTJvZ/Ca1ACf2zrzG1eygNsxjHRfKvoEI=;
+        b=H8/sMyfg1IHzUm+cgONUc4SFNTTJqe++aEkYkIPbCiQqnU4nYwiXGX2Q6lruSXQSXv
+         pmdegXYZNjBTySNZ3GNd62RXcwp8aEN1zhRTJU+zX8jjSbt4byX7XYTlQGRy1bN9zpEE
+         4MRkbTOd29OfdT1QwcSmvr0BpzHI0+S5NDfqZyhkuGLL8mK25d4wUhD1HuMvaqoV8NGQ
+         MbD2kwJXhtC3gTwBVlFMeI2HW7wGcQ+vbNWxLbF68ZB5FLIObPsAfrrrhvK9WL7o7knW
+         NzyAnfX/sOdLzGjxNdmlmjN1YpX2lmZKuLaFvHRDmfvj52ihONCQq5UlnoRJ5korzoPs
+         Xy7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ck5VNCk3zkFstAhB+usPuWzSRVaH44SPvmgAQ6M6EtQ=;
-        b=KdOXT3tuIetdzymn7ts/jxIZ6GhZLlp5bbonhiykOtEnt2oA2Hg9iwxf3uDuFVjlXr
-         /OFIkD5BGNTbDtg49o61FxuaD9QhU2sR/UG4MSdGQ5SPSsx3NYXizWyCkpl2nEAzIBA8
-         1y1lkbw9fucPpF6yMgL2WKAlE3eLE/pcsQHJKE9nrMS5sucIktzgtnsI5oLTVBPY4+Xt
-         rZp/FcoSz7rtrJneIR59J+mor/rbN04GKXTsoYyvxliRTfcU8jfTvJ7Dz8lMJNtpH55w
-         FMR4U095yr7DT3FU9wwq+ioNxWixGVoFD1Kour+0Ev70bHx5q11W+/kGybdvxsUOZqZo
-         1xwQ==
-X-Gm-Message-State: AA+aEWaH/ansfucpqsuKyB21dbrHdtNGDlPnilQd8EmWSjInati2fndY
-        KLq+y8Q5I4cUe5wpzlUYh+U=
-X-Google-Smtp-Source: AFSGD/WeJCzN7UnlPQBAwaGoxO6yqpxdj5SA7KTcQVniOqOxDBe2KRyb2Q5YJyZvuzhns03JqrfJ3A==
-X-Received: by 2002:a6b:6203:: with SMTP id f3mr553286iog.36.1544738513502;
-        Thu, 13 Dec 2018 14:01:53 -0800 (PST)
+        bh=Irtg1MWzwLcTJvZ/Ca1ACf2zrzG1eygNsxjHRfKvoEI=;
+        b=qC1xRGRgKuB6wOgIT1Yzosf29QnrjWHyKnJzPhALfz/p6hCEeOwdV/IqQONNtXynug
+         4SEiOM5rEGMTH59chAy6SceTTyOCdkejkdC6jMkRWV9eJiVtkGgtDk+EpgijuSJn2jFg
+         M7YAWHa7v0r+h600bBw96zZoBi/6mXST5Y99p4Ze/FZo4fS/7qxtUe03lPjvH1lcnxPn
+         KYohCMP8bPVUl5fvM56VVuFG+/Y7GLQRWA2qh7wn0Ubfy52uB1JIhp25O6kzg3F2dd87
+         SkAYYb6TTUelQKobrS/mpAL1YAxleGf9grBqvvfGoJmhn4lfbZNgZ2m0dRkZWVRu/XnF
+         t6KA==
+X-Gm-Message-State: AA+aEWa5MdP1xaCeWylYbBH6kLBFwIpPOD63sBvv0QSTWKlIZ5quyjIK
+        wlcKBxurfVlV6kkpxpDQOlE=
+X-Google-Smtp-Source: AFSGD/V8e4CtqGsFRItgsuxBKCDslZJaeyjzPAtv4HDB2D78aixp/iPOPn7QD2cs7rMGKNlpSbI9lA==
+X-Received: by 2002:a05:660c:14a:: with SMTP id r10mr1077356itk.100.1544738792271;
+        Thu, 13 Dec 2018 14:06:32 -0800 (PST)
 Received: from r2700x.localdomain (c-75-70-96-103.hsd1.co.comcast.net. [75.70.96.103])
-        by smtp.gmail.com with ESMTPSA id d192sm1430024iog.81.2018.12.13.14.01.52
+        by smtp.gmail.com with ESMTPSA id h14sm1211219ior.41.2018.12.13.14.06.31
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 13 Dec 2018 14:01:52 -0800 (PST)
-Date:   Thu, 13 Dec 2018 15:01:46 -0700
+        Thu, 13 Dec 2018 14:06:31 -0800 (PST)
+Date:   Thu, 13 Dec 2018 15:06:29 -0700
 From:   Jeremy Fertic <jeremyfertic@gmail.com>
 To:     Dan Carpenter <dan.carpenter@oracle.com>
 Cc:     Jonathan Cameron <jic23@kernel.org>, devel@driverdev.osuosl.org,
@@ -68,47 +68,40 @@ Cc:     Jonathan Cameron <jic23@kernel.org>, devel@driverdev.osuosl.org,
         linux-kernel@vger.kernel.org,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Hartmut Knaack <knaack.h@gmx.de>
-Subject: Re: [PATCH 04/11] staging: iio: adt7316: fix handling of dac high
- resolution option
-Message-ID: <20181213220146.GA2496@r2700x.localdomain>
+Subject: Re: [PATCH 02/11] staging: iio: adt7316: invert the logic of the
+ check for an ldac pin
+Message-ID: <20181213220629.GB2496@r2700x.localdomain>
 References: <20181212005503.28054-1-jeremyfertic@gmail.com>
- <20181212005503.28054-5-jeremyfertic@gmail.com>
- <20181212082315.GI3116@kadam>
+ <20181212005503.28054-3-jeremyfertic@gmail.com>
+ <20181212081949.GH3116@kadam>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20181212082315.GI3116@kadam>
+In-Reply-To: <20181212081949.GH3116@kadam>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Dec 12, 2018 at 11:23:16AM +0300, Dan Carpenter wrote:
-> On Tue, Dec 11, 2018 at 05:54:56PM -0700, Jeremy Fertic wrote:
-> > @@ -651,10 +649,12 @@ static ssize_t adt7316_store_da_high_resolution(struct device *dev,
-> >  	u8 config3;
-> >  	int ret;
-> >  
-> > +	if (chip->id == ID_ADT7318 || chip->id == ID_ADT7519)
-> > +		return -EPERM;
+On Wed, Dec 12, 2018 at 11:19:49AM +0300, Dan Carpenter wrote:
+> On Tue, Dec 11, 2018 at 05:54:54PM -0700, Jeremy Fertic wrote:
+> > ADT7316_DA_EN_VIA_DAC_LDCA is set when the dac and ldac registers are being
+> > used to update the dacs instead of the ldac pin. ADT7516_SEL_AIN3 is an adc
+> > input that shares the ldac pin. Only set these bits if an ldac pin is not
+> > being used.
+> > 
+> > Signed-off-by: Jeremy Fertic <jeremyfertic@gmail.com>
 > 
-> return -EINVAL is more appropriate than -EPERM.
+> Huh...  This bug has always been there...
+> 
+> Fixes: 35f6b6b86ede ("staging: iio: new ADT7316/7/8 and ADT7516/7/9 driver")
 > 
 > regards,
 > dan carpenter
 > 
 
-I chose -EPERM because the driver uses it quite a few times in similar
-circumstances. At least with this driver, -EINVAL is used when the user
-attempts to write data that would never be valid. -EPERM is used when
-either the current device settings prevent some functionality from being
-used, or the device never supports that functionality. This patch is the
-latter, that these two chip ids never support this function.
-
-I'll change to -EINVAL in a v2 series, but I wonder if I should hold off
-on a separate patch for other instances in this driver since it will be
-undergoing a substantial refactoring. Is there any rule of thumb about
-when -EPERM is appropriate for a driver, or is -EINVAL almost always the
-better option?
+Should I include this Fixes tag in v2? I wasn't sure how important this was
+in staging. I think most of the patches in this series fix bugs that date
+back to the introduction of the driver.
 
