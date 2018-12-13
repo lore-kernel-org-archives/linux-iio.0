@@ -2,177 +2,113 @@ Return-Path: <SRS0=gFHn=OW=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-2.5 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_MUTT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9995DC67839
-	for <linux-iio@archiver.kernel.org>; Thu, 13 Dec 2018 19:43:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D29ABC65BAE
+	for <linux-iio@archiver.kernel.org>; Thu, 13 Dec 2018 22:01:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6493B2086D
-	for <linux-iio@archiver.kernel.org>; Thu, 13 Dec 2018 19:43:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 963E420811
+	for <linux-iio@archiver.kernel.org>; Thu, 13 Dec 2018 22:01:55 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WazAsnA8"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6493B2086D
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OVWvrZuH"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 963E420811
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728077AbeLMTnn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 13 Dec 2018 14:43:43 -0500
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:37337 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728384AbeLMTnn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 13 Dec 2018 14:43:43 -0500
-Received: by mail-pl1-f193.google.com with SMTP id b5so1534505plr.4;
-        Thu, 13 Dec 2018 11:43:42 -0800 (PST)
+        id S1727194AbeLMWBy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 13 Dec 2018 17:01:54 -0500
+Received: from mail-io1-f65.google.com ([209.85.166.65]:45572 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726457AbeLMWBy (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 13 Dec 2018 17:01:54 -0500
+Received: by mail-io1-f65.google.com with SMTP id n3so2866946iog.12;
+        Thu, 13 Dec 2018 14:01:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id;
-        bh=YWzLkl43TNrxxJ4UiH7VZTyugNvX9odVpZLVLKgv65c=;
-        b=WazAsnA8ozMaviZ0Tmva3rpf8uEAU9q9lJyvuEIV6x56FIT0e+K62qJ+oUQGsVwmN1
-         MVfjMaOzN2hGU/3gazco4HnqCtbrjppRPtIW12SFF7BbBZ+E2pPH8vM1XuGCLSJEoZoh
-         RMAQ38G0+yIvM1PTsgYduzJy91YjXoLO+9/ECXYkzrPWeuwGHM4LVPaY+eZHXmRGWDjh
-         BQIp9afqQiSo3BAMm3FpiRZMWOdI22hNa9aMUdpK4QHq4V5KN9XFRD5mW22x9SNz7NZn
-         Iew+qSOTZz4fWL8/K1fczoi2rvNoiF4zAoQaBhcZBRBHrJQXgXMjRm2jkQgd55gQRPol
-         HZYg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=ck5VNCk3zkFstAhB+usPuWzSRVaH44SPvmgAQ6M6EtQ=;
+        b=OVWvrZuH/ia9nIoXmzEXyez1ZSQstM3L2KvOZohCIHh0cfj8YNFVpSE7d1BF8g/1wZ
+         xtvVNWjCmHzMMo0KPckWlAF3jzaNxHtOkIK96knYHyC8JqdmPTPHgj0rPtknb61p4Rue
+         +zoqzWQQDhLLozWHj/T60SWaoy6IcTbrjPQaKYlrkMricZ1QffESSB8Rdq/NJYARqUFW
+         we7OpFmpLn2VnTJSRcX24IBGuzjv9VzxypzCXQUi5tsAnnxjO4DiMOkPBFlzzgihifG0
+         oaoDOBiSXkNsch8repiN+0qb+Upr7Pp90nT/xt2KSL7vB/te624k2neQ1+aIAQ6+3Ilq
+         j8Yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id;
-        bh=YWzLkl43TNrxxJ4UiH7VZTyugNvX9odVpZLVLKgv65c=;
-        b=NYQbiqfA1sifdFq8PTSq5/sdcOWwh7pyIhMmJfT4euz09wAeDbBQt3ZqbvXRsTw6VL
-         QbnGyIwAuGcdEIX3dEdWfO1KJoM5G37gzv172SBIAv6XG+S5J/9qakDL9dfSC2HI/Psr
-         eMYVf7IgXNg9NrvbPJ4MwdyzUEFiD2IxbJYeH62+fxo48tNhZjL2de+MqEA/IaJvKHJm
-         7GbypjqyJpyIGC10XOgMGt9Emg5vGwL+tjQD56AxYxGIvnS289VtLq+Ex8G8h+GZjx2x
-         Z7F+DyQJF5UqMvtCqp3ZOMAcdrOAL2bNECnmnssNpt+xr/ARSidWrac3flPp1GoLNcG1
-         FPmg==
-X-Gm-Message-State: AA+aEWY36MJ6KxXnIo931PMr9g175xN3a9vNDchZFt7WCDI6ws1aOdX3
-        PAYuhoIi5O2Evi2lM8n9KA0=
-X-Google-Smtp-Source: AFSGD/XafBNMSkq2NEdJZiNBXWB6fUbPe3t5VX7ZPuoS2Nh9IYkqi57Grm+m/czdP/yLuAP8MG7RqQ==
-X-Received: by 2002:a17:902:e10a:: with SMTP id cc10mr90594plb.165.1544730222252;
-        Thu, 13 Dec 2018 11:43:42 -0800 (PST)
-Received: from localhost.localdomain ([103.212.140.154])
-        by smtp.gmail.com with ESMTPSA id h82sm5548852pfa.105.2018.12.13.11.43.38
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 13 Dec 2018 11:43:41 -0800 (PST)
-From:   Shreeya Patel <shreeya.patel23498@gmail.com>
-To:     lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v4] Staging: iio: adt7316: Add all irq related code in adt7316_irq_setup()
-Date:   Fri, 14 Dec 2018 01:13:35 +0530
-Message-Id: <20181213194335.11075-1-shreeya.patel23498@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ck5VNCk3zkFstAhB+usPuWzSRVaH44SPvmgAQ6M6EtQ=;
+        b=KdOXT3tuIetdzymn7ts/jxIZ6GhZLlp5bbonhiykOtEnt2oA2Hg9iwxf3uDuFVjlXr
+         /OFIkD5BGNTbDtg49o61FxuaD9QhU2sR/UG4MSdGQ5SPSsx3NYXizWyCkpl2nEAzIBA8
+         1y1lkbw9fucPpF6yMgL2WKAlE3eLE/pcsQHJKE9nrMS5sucIktzgtnsI5oLTVBPY4+Xt
+         rZp/FcoSz7rtrJneIR59J+mor/rbN04GKXTsoYyvxliRTfcU8jfTvJ7Dz8lMJNtpH55w
+         FMR4U095yr7DT3FU9wwq+ioNxWixGVoFD1Kour+0Ev70bHx5q11W+/kGybdvxsUOZqZo
+         1xwQ==
+X-Gm-Message-State: AA+aEWaH/ansfucpqsuKyB21dbrHdtNGDlPnilQd8EmWSjInati2fndY
+        KLq+y8Q5I4cUe5wpzlUYh+U=
+X-Google-Smtp-Source: AFSGD/WeJCzN7UnlPQBAwaGoxO6yqpxdj5SA7KTcQVniOqOxDBe2KRyb2Q5YJyZvuzhns03JqrfJ3A==
+X-Received: by 2002:a6b:6203:: with SMTP id f3mr553286iog.36.1544738513502;
+        Thu, 13 Dec 2018 14:01:53 -0800 (PST)
+Received: from r2700x.localdomain (c-75-70-96-103.hsd1.co.comcast.net. [75.70.96.103])
+        by smtp.gmail.com with ESMTPSA id d192sm1430024iog.81.2018.12.13.14.01.52
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 13 Dec 2018 14:01:52 -0800 (PST)
+Date:   Thu, 13 Dec 2018 15:01:46 -0700
+From:   Jeremy Fertic <jeremyfertic@gmail.com>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>, devel@driverdev.osuosl.org,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        linux-iio@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Hartmut Knaack <knaack.h@gmx.de>
+Subject: Re: [PATCH 04/11] staging: iio: adt7316: fix handling of dac high
+ resolution option
+Message-ID: <20181213220146.GA2496@r2700x.localdomain>
+References: <20181212005503.28054-1-jeremyfertic@gmail.com>
+ <20181212005503.28054-5-jeremyfertic@gmail.com>
+ <20181212082315.GI3116@kadam>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20181212082315.GI3116@kadam>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-ADT7316 driver no more uses platform data and hence use device tree
-data instead of platform data for assigning irq_type field and
-implement this in adt7316_irq_setup function.
-Switch case figures out the type of irq and if it's the default case
-then assign the default value to the irq_type i.e.
-irq_type = IRQF_TRIGGER_LOW
-Move devm_request_threaded_irq() and assignment of chip->config1
-into the adt7316_setup_irq() to unclutter the code in probe function.
+On Wed, Dec 12, 2018 at 11:23:16AM +0300, Dan Carpenter wrote:
+> On Tue, Dec 11, 2018 at 05:54:56PM -0700, Jeremy Fertic wrote:
+> > @@ -651,10 +649,12 @@ static ssize_t adt7316_store_da_high_resolution(struct device *dev,
+> >  	u8 config3;
+> >  	int ret;
+> >  
+> > +	if (chip->id == ID_ADT7318 || chip->id == ID_ADT7519)
+> > +		return -EPERM;
+> 
+> return -EINVAL is more appropriate than -EPERM.
+> 
+> regards,
+> dan carpenter
+> 
 
-Signed-off-by: Shreeya Patel <shreeya.patel23498@gmail.com>
----
-Changes in v4
-  - Merge patches *[1/3 v3], *[2/3 v3] and *[3/3 v3] to make it less
-complex to review.
+I chose -EPERM because the driver uses it quite a few times in similar
+circumstances. At least with this driver, -EINVAL is used when the user
+attempts to write data that would never be valid. -EPERM is used when
+either the current device settings prevent some functionality from being
+used, or the device never supports that functionality. This patch is the
+latter, that these two chip ids never support this function.
 
-Changes in v3
-  - Add a new function for having all interrupt related code.
-
-Changes in v2
-  - Make the commit message of patch *[1/5] appropriate.
-
-
- drivers/staging/iio/addac/adt7316.c | 52 +++++++++++++++++++++--------
- 1 file changed, 38 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
-index 9c72538baf9e..1ca4ee0f30ee 100644
---- a/drivers/staging/iio/addac/adt7316.c
-+++ b/drivers/staging/iio/addac/adt7316.c
-@@ -1807,6 +1807,43 @@ static irqreturn_t adt7316_event_handler(int irq, void *private)
- 	return IRQ_HANDLED;
- }
- 
-+static int adt7316_setup_irq(struct iio_dev *indio_dev)
-+{
-+	struct adt7316_chip_info *chip = iio_priv(indio_dev);
-+	int irq_type, ret;
-+
-+	irq_type = irqd_get_trigger_type(irq_get_irq_data(chip->bus.irq));
-+
-+	switch (irq_type) {
-+	case IRQF_TRIGGER_HIGH:
-+	case IRQF_TRIGGER_RISING:
-+		break;
-+	case IRQF_TRIGGER_LOW:
-+	case IRQF_TRIGGER_FALLING:
-+		break;
-+	default:
-+		dev_info(&indio_dev->dev, "mode %d unsupported, using IRQF_TRIGGER_LOW\n",
-+			 irq_type);
-+		irq_type = IRQF_TRIGGER_LOW;
-+		break;
-+	}
-+
-+	ret = devm_request_threaded_irq(&indio_dev->dev, chip->bus.irq,
-+					NULL, adt7316_event_handler,
-+					irq_type | IRQF_ONESHOT,
-+					indio_dev->name, indio_dev);
-+	if (ret) {
-+		dev_err(&indio_dev->dev, "failed to request irq %d\n",
-+			chip->bus.irq);
-+		return ret;
-+	}
-+
-+	if (irq_type & IRQF_TRIGGER_HIGH)
-+		chip->config1 |= ADT7316_INT_POLARITY;
-+
-+	return 0;
-+}
-+
- /*
-  * Show mask of enabled interrupts in Hex.
-  */
-@@ -2101,8 +2138,6 @@ int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
- {
- 	struct adt7316_chip_info *chip;
- 	struct iio_dev *indio_dev;
--	unsigned short *adt7316_platform_data = dev->platform_data;
--	int irq_type = IRQF_TRIGGER_LOW;
- 	int ret = 0;
- 
- 	indio_dev = devm_iio_device_alloc(dev, sizeof(*chip));
-@@ -2146,20 +2181,9 @@ int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
- 	if (chip->bus.irq > 0) {
--		if (adt7316_platform_data[0])
--			irq_type = adt7316_platform_data[0];
--
--		ret = devm_request_threaded_irq(dev, chip->bus.irq,
--						NULL,
--						adt7316_event_handler,
--						irq_type | IRQF_ONESHOT,
--						indio_dev->name,
--						indio_dev);
-+		ret = adt7316_setup_irq(indio_dev);
- 		if (ret)
- 			return ret;
--
--		if (irq_type & IRQF_TRIGGER_HIGH)
--			chip->config1 |= ADT7316_INT_POLARITY;
- 	}
- 
- 	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG1, chip->config1);
--- 
-2.17.1
+I'll change to -EINVAL in a v2 series, but I wonder if I should hold off
+on a separate patch for other instances in this driver since it will be
+undergoing a substantial refactoring. Is there any rule of thumb about
+when -EPERM is appropriate for a driver, or is -EINVAL almost always the
+better option?
 
