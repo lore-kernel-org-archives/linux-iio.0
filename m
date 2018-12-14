@@ -2,124 +2,103 @@ Return-Path: <SRS0=HY5B=OX=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0084BC43387
-	for <linux-iio@archiver.kernel.org>; Fri, 14 Dec 2018 18:13:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2815C43444
+	for <linux-iio@archiver.kernel.org>; Fri, 14 Dec 2018 18:28:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 331DF206C0
-	for <linux-iio@archiver.kernel.org>; Fri, 14 Dec 2018 18:13:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 46119206E0
+	for <linux-iio@archiver.kernel.org>; Fri, 14 Dec 2018 18:28:49 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="a7PvawGH"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="u+uGig00"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730542AbeLNSMw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 14 Dec 2018 13:12:52 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:38093 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730460AbeLNSMv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 14 Dec 2018 13:12:51 -0500
-Received: by mail-pg1-f194.google.com with SMTP id g189so3042426pgc.5;
-        Fri, 14 Dec 2018 10:12:51 -0800 (PST)
+        id S1730544AbeLNS2g (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 14 Dec 2018 13:28:36 -0500
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:46713 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730466AbeLNS2g (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 14 Dec 2018 13:28:36 -0500
+Received: by mail-lf1-f65.google.com with SMTP id f23so4938439lfc.13;
+        Fri, 14 Dec 2018 10:28:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=g0NfSkUDkaIz6kox8lZ3YDeNMI8rr7GHOns/3m1Txag=;
-        b=a7PvawGHKf0EpJThdVa2mKvInfIfWcQNp1McWSW7SusuyT2WIP2G/68NSPyw0ki1K7
-         GPpNGmIlylZ/1jVqGy5LjWnXa+kWzTYzBmXDiE+Y3z+ONBjp/IOtkCx8JmH8ocMf8nA6
-         Lw1vfx+71pxhgnmdrpt1MOXIzvSpnr/Ki4hKyTpRaJYIDWwcXgT+RGtOsnP81j1uE2yv
-         U+eKweJHNWw+9CfNd+7CDPfk9iGDHgLXutdh6ov1hM+DEiYfrMS7JBXmbcnUUkVppnP7
-         1MvN8ov9oxJpkgg8iIfq4kex8PMgqRQRVyu9p5DZYahWxLcUSrthzBqarHeFfy3miyF3
-         opNA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=WQzku6LlFX2y3XHHy0PAdDBhO1kmwTgThkP1DPTlgro=;
+        b=u+uGig00RToWVZRStpG+adwo8E+wOKZZee7oCND96Iv+GksRsgcUq2xdmGBsCUrnls
+         LzOZ3Tm9b/S4ADs5/YI2etKhdBYg++YwFy0eniQwbyI+IhxRPaB8d9HUeHXfbNqnsdEo
+         MYeEElthppIgli3Swu4YRKn/goP7NS7EenJYU9kA/holHbXVpOuuPy22Mujpz+89Xagy
+         MB06/2OUeIjmnhxHae1qKFmaVerR4ovAvnR2aNmI413ioRGaY0E49OD1Sbhi7yHExUmC
+         CqXx4eR7Rby1xsmbcRHs2DHJhZsSwvQ5gb7TYlROaipmJjPgEPRxNOkLvhUC0heAvMaJ
+         OiXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=g0NfSkUDkaIz6kox8lZ3YDeNMI8rr7GHOns/3m1Txag=;
-        b=ecpyFPVVNjYTmXB/iVzVuDe8XapXYYpV30GBWAwL+lvPOvUn+9/70XeP3yD8yasYrL
-         ZQsaUQe7hUoFWZYl6SBucunvdXyXmBmGpL7QDrXMwclcLAXAIQ+VttNTdGofzQX+4RMG
-         8PxFpp5e1SFYHNkGDQICWI1oX4sqpUNxXnRmd9uok6jiONHQJzutBoJEzvDGNt95crGX
-         ifx07kvdK5R6tVO6ShsjeOtahIj1ui+HQPy+2qTkQS2adyXbZuNym1xolmoKDlJXVVQu
-         ilrsWm4L0ikLVc4M34ZwCIIFmLEj9hOm4xuOHiDZi5OotbNwDpRMr4tqZItMkJd+8+i9
-         i4TA==
-X-Gm-Message-State: AA+aEWaZUIQtwdVeZiHV3nvRcgjEH9r6+0KK2jLOK03N4cIRxLjhIiI5
-        Top6WxNjoOQfEjkZD512S9Y=
-X-Google-Smtp-Source: AFSGD/Vh8b+Xbw+IfvUrSI4kFxUjlzleCIW5dq/wkmpujigOUKjIDMOywRIrEx32+Ntp03otlCAsvQ==
-X-Received: by 2002:a62:dbc2:: with SMTP id f185mr3713668pfg.235.1544811170650;
-        Fri, 14 Dec 2018 10:12:50 -0800 (PST)
-Received: from himanshu-Vostro-3559 ([103.233.116.134])
-        by smtp.gmail.com with ESMTPSA id v191sm10976336pgb.77.2018.12.14.10.12.46
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 14 Dec 2018 10:12:50 -0800 (PST)
-Date:   Fri, 14 Dec 2018 23:42:43 +0530
-From:   Himanshu Jha <himanshujha199640@gmail.com>
-To:     Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>,
-        jic23@kernel.org, linux-iio@vger.kernel.org
-Cc:     joe@perches.com, gregkh@linuxfoundation.org, apw@canonical.com,
-        akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
-        niklas.cassel@linaro.org, corbet@lwn.net, linux-doc@vger.kernel.org
-Subject: Re: [PATCH 1/2] docs: fix Co-Developed-by docs
-Message-ID: <20181214181240.GA20094@himanshu-Vostro-3559>
-References: <1544808928-20002-1-git-send-email-jorge.ramirez-ortiz@linaro.org>
- <1544808928-20002-2-git-send-email-jorge.ramirez-ortiz@linaro.org>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=WQzku6LlFX2y3XHHy0PAdDBhO1kmwTgThkP1DPTlgro=;
+        b=TxBC+0avj8fO+0WAgGKLMy+kfYcrLkklKMrZA+O7Bj0rkLMuB27K/7VcS8Jprv89bb
+         BHxhAHC7GohmkDk4w6f+2whQbqtjFL+yyz2MzAk8wTVBvGFrukYZb0xauDQvxnfe/4UN
+         RsPTOjDDsxPwm/pKm6+gxEouIZHZLiu25auzDxxcGsZ7E5oQEjIJd2Y6Gd3y+1LtUXNi
+         /SFqF+D8TNUDjeQjT91axH3j9D4jM+Rn3vuyfOt/3uh/4x+DdfsFK5SgiMmsorTrFjmG
+         AYWLUITTuqHhf5ENjSL01Dih5Cow4KJ77iQqoAaCsjjeUSYNbQnGRotx+rZbv6UZTdrk
+         jYxQ==
+X-Gm-Message-State: AA+aEWamt0tY5ViU4oW21mJxuv3A58d3kKvH2cfrpuoGjrW6h40A/rKu
+        lDQnBW9loFjZbMEYzMxaqTyc3Uuj50k=
+X-Google-Smtp-Source: AFSGD/XU6rX1fRQcc7pQTcJqlnTudmFp0sn4YPI9jHxhK4AdXDL4rWQdd2q8gMuw7TxPk46f6MV02A==
+X-Received: by 2002:a19:945b:: with SMTP id w88mr2299148lfd.15.1544812113370;
+        Fri, 14 Dec 2018 10:28:33 -0800 (PST)
+Received: from arch.domain.name (89-70-220-87.dynamic.chello.pl. [89.70.220.87])
+        by smtp.gmail.com with ESMTPSA id e14-v6sm947961ljb.31.2018.12.14.10.28.32
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 14 Dec 2018 10:28:32 -0800 (PST)
+From:   Tomasz Duszynski <tduszyns@gmail.com>
+To:     linux-iio@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        robh+dt@kernel.org, jic23@jic23.retrosnub.co.uk,
+        a.brauchli@elementarea.net, Tomasz Duszynski <tduszyns@gmail.com>
+Subject: [PATCH v4 3/3] iio: chemical: sps30: add device tree support
+Date:   Fri, 14 Dec 2018 19:28:03 +0100
+Message-Id: <20181214182803.9006-4-tduszyns@gmail.com>
+X-Mailer: git-send-email 2.20.0
+In-Reply-To: <20181214182803.9006-1-tduszyns@gmail.com>
+References: <20181214182803.9006-1-tduszyns@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1544808928-20002-2-git-send-email-jorge.ramirez-ortiz@linaro.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, Dec 14, 2018 at 06:35:27PM +0100, Jorge Ramirez-Ortiz wrote:
-> The accepted terminology will be Co-developed-by therefore losing the
-> capital letter from now on.
-> 
-> Signed-off-by: Jorge Ramirez-Ortiz <jorge.ramirez-ortiz@linaro.org>
-> ---
+Add device tree support for Sensirion SPS30 particulate
+matter sensor.
 
-Thanks. ACK!
+Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
+---
+ .../bindings/iio/chemical/sensirion,sps30.txt        | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/chemical/sensirion,sps30.txt
 
-Finally, the discussion converged at somepoint.
-
-FYI, Cc Jonathan Cameron + IIO list.
-
->  Documentation/process/submitting-patches.rst | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/process/submitting-patches.rst b/Documentation/process/submitting-patches.rst
-> index c091710..30dc00a 100644
-> --- a/Documentation/process/submitting-patches.rst
-> +++ b/Documentation/process/submitting-patches.rst
-> @@ -510,7 +510,7 @@ tracking your trees, and to people trying to troubleshoot bugs in your
->  tree.
->  
->  
-> -12) When to use Acked-by:, Cc:, and Co-Developed-by:
-> +12) When to use Acked-by:, Cc:, and Co-developed-by:
->  -------------------------------------------------------
->  
->  The Signed-off-by: tag indicates that the signer was involved in the
-> @@ -543,7 +543,7 @@ person it names - but it should indicate that this person was copied on the
->  patch.  This tag documents that potentially interested parties
->  have been included in the discussion.
->  
-> -A Co-Developed-by: states that the patch was also created by another developer
-> +A Co-developed-by: states that the patch was also created by another developer
->  along with the original author.  This is useful at times when multiple people
->  work on a single patch.  Note, this person also needs to have a Signed-off-by:
->  line in the patch as well.
-> -- 
-> 2.7.4
-> 
-
+diff --git a/Documentation/devicetree/bindings/iio/chemical/sensirion,sps30.txt b/Documentation/devicetree/bindings/iio/chemical/sensirion,sps30.txt
+new file mode 100644
+index 000000000000..6eee2709b5b6
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/chemical/sensirion,sps30.txt
+@@ -0,0 +1,12 @@
++* Sensirion SPS30 particulate matter sensor
++
++Required properties:
++- compatible: must be "sensirion,sps30"
++- reg: the I2C address of the sensor
++
++Example:
++
++sps30@69 {
++	compatible = "sensirion,sps30";
++	reg = <0x69>;
++};
 -- 
-Himanshu Jha
-Undergraduate Student
-Department of Electronics & Communication
-Guru Tegh Bahadur Institute of Technology
+2.20.0
+
