@@ -2,89 +2,115 @@ Return-Path: <SRS0=HY5B=OX=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.7 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_MUTT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F5DDC67872
-	for <linux-iio@archiver.kernel.org>; Fri, 14 Dec 2018 01:39:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E35C3C67839
+	for <linux-iio@archiver.kernel.org>; Fri, 14 Dec 2018 06:19:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id EFA87208E7
-	for <linux-iio@archiver.kernel.org>; Fri, 14 Dec 2018 01:39:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1544751565;
-	bh=OY7VzTFnl/o7Zj5mlJ2aBunXOzfDB/fOVSpzIQUoHkY=;
-	h=In-Reply-To:Subject:To:References:From:Cc:Date:List-ID:From;
-	b=oLY2zlNx4HDNEEFQaaRmWaGGCQwL27OtNrZqihF9OzE9LHgajec0rv9MEX/Rt+tAR
-	 F04iS1sLwnXvyiYFqEQSkbUWjQiwEln1Jl3AWkTzaiAkjIvU37QmXqSCvT5aBleY0m
-	 03+ui8k6rVTp3HqdxqNU8VybcMstW5pL+wZVkxWk=
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EFA87208E7
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTP id AA04E20811
+	for <linux-iio@archiver.kernel.org>; Fri, 14 Dec 2018 06:19:20 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="nkQGORe+"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AA04E20811
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728612AbeLNBjY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 13 Dec 2018 20:39:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34720 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728203AbeLNBjY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 13 Dec 2018 20:39:24 -0500
-Received: from localhost (unknown [104.132.0.74])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 795A220811;
-        Fri, 14 Dec 2018 01:39:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1544751563;
-        bh=OY7VzTFnl/o7Zj5mlJ2aBunXOzfDB/fOVSpzIQUoHkY=;
-        h=In-Reply-To:Subject:To:References:From:Cc:Date:From;
-        b=aCnnKHO8xtTgxe0yGbrerK54ciPcgG4eQUMM6YGQehYjuaNVcBoZV+b97sAl45u1r
-         7CRGT/TrvrJfawF5fKmqPXvX0GFwXewDKX8P4NahT5XLrr/hNS1TJlKS8TokblDUM/
-         ftoDKtw+5JGCKoK3oAvcIrotAz8VyTNl5Ji3Ip9s=
-Content-Type: text/plain; charset="utf-8"
+        id S1726554AbeLNGTU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 14 Dec 2018 01:19:20 -0500
+Received: from aserp2130.oracle.com ([141.146.126.79]:48784 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726437AbeLNGTT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 14 Dec 2018 01:19:19 -0500
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.22/8.16.0.22) with SMTP id wBE6IfJg146018;
+        Fri, 14 Dec 2018 06:18:49 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2018-07-02;
+ bh=p013JWnpjnca6mpV+iy5JtIUsLtbzpnYEmV0KlH72+k=;
+ b=nkQGORe+D2uoNaKYgD6vMQ+1mfNRv8rgFcwA7qe02zIFTSVhgt9bmGmwJpz1/drQh3HV
+ SzoMcOAqqpqv+qaZMmDWvxkv2AMbWW5liI2QczpYTEqbhKcVZm83uCTSORFSurdWws2b
+ TCIJiLLzZZAjI6z+BG4yp2K66nW5CeXDzp5kTrWVX4/MQV40nqgh1Ffp9va8bRYrH31v
+ xTh4oRMQdfEqc1FHj018TR920kfN4JlVB8A5STGwWRORznIbkINuoZDFXoUEFfMHoEiS
+ z/OCAK5xpCWjLc0i4rkuJ72PYAI/V5GUB0DM+29QCfOtG4acX4ZD5O89XStOnNEoYLst LQ== 
+Received: from userv0022.oracle.com (userv0022.oracle.com [156.151.31.74])
+        by aserp2130.oracle.com with ESMTP id 2pawwpbdq3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 14 Dec 2018 06:18:49 +0000
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by userv0022.oracle.com (8.14.4/8.14.4) with ESMTP id wBE6Imop017455
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 14 Dec 2018 06:18:48 GMT
+Received: from abhmp0019.oracle.com (abhmp0019.oracle.com [141.146.116.25])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id wBE6IkaO010051;
+        Fri, 14 Dec 2018 06:18:47 GMT
+Received: from kadam (/197.157.0.36)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 13 Dec 2018 22:18:46 -0800
+Date:   Fri, 14 Dec 2018 09:18:20 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Jeremy Fertic <jeremyfertic@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>, devel@driverdev.osuosl.org,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        linux-iio@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Hartmut Knaack <knaack.h@gmx.de>
+Subject: Re: [PATCH 02/11] staging: iio: adt7316: invert the logic of the
+ check for an ldac pin
+Message-ID: <20181214061820.GV3116@kadam>
+References: <20181212005503.28054-1-jeremyfertic@gmail.com>
+ <20181212005503.28054-3-jeremyfertic@gmail.com>
+ <20181212081949.GH3116@kadam>
+ <20181213220629.GB2496@r2700x.localdomain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20181208152954.596529f8@archlinux>
-Subject: Re: [PATCH 1/2] staging: iio: adc: ad7192: Add clock for external clock reference
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Mircea Caprioru <mircea.caprioru@analog.com>
-References: <20181206091052.7644-1-mircea.caprioru@analog.com> <20181208152954.596529f8@archlinux>
-Message-ID: <154475156267.19322.6284056396098102605@swboyd.mtv.corp.google.com>
-From:   Stephen Boyd <sboyd@kernel.org>
-User-Agent: alot/0.8
-Cc:     Michael.Hennerich@analog.com, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org, Rob Herring <robh+dt@kernel.org>,
-        linux-clk@vger.kernel.org
-Date:   Thu, 13 Dec 2018 17:39:22 -0800
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20181213220629.GB2496@r2700x.localdomain>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9106 signatures=668679
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=467
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1810050000 definitions=main-1812140058
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Quoting Jonathan Cameron (2018-12-08 07:29:54)
-> On Thu, 6 Dec 2018 11:10:51 +0200
-> Mircea Caprioru <mircea.caprioru@analog.com> wrote:
->=20
-> > This patch adds a clock to the state structure of ad7192 for getting the
-> > external clock frequency. This modifications is in accordance with clock
-> > framework dt bindings documentation.
-> >=20
-> > Signed-off-by: Mircea Caprioru <mircea.caprioru@analog.com>
->=20
-> +cc Rob and the clk list for advise on how to do the binding for this one.
->=20
-> It is basically 2 pins, you can put a clock in on one of them or connect
-> a crystal across them.  The driver has to set a register to say which is
-> the case. =20
->=20
-> Current proposal is two optional clocks (fall back to internal oscillator)
-> but that doesn't seem to be commonly done, so I'm wondering if there
-> is a 'standard' way to handle this sort of thing.
->=20
+On Thu, Dec 13, 2018 at 03:06:29PM -0700, Jeremy Fertic wrote:
+> On Wed, Dec 12, 2018 at 11:19:49AM +0300, Dan Carpenter wrote:
+> > On Tue, Dec 11, 2018 at 05:54:54PM -0700, Jeremy Fertic wrote:
+> > > ADT7316_DA_EN_VIA_DAC_LDCA is set when the dac and ldac registers are being
+> > > used to update the dacs instead of the ldac pin. ADT7516_SEL_AIN3 is an adc
+> > > input that shares the ldac pin. Only set these bits if an ldac pin is not
+> > > being used.
+> > > 
+> > > Signed-off-by: Jeremy Fertic <jeremyfertic@gmail.com>
+> > 
+> > Huh...  This bug has always been there...
+> > 
+> > Fixes: 35f6b6b86ede ("staging: iio: new ADT7316/7/8 and ADT7516/7/9 driver")
+> > 
+> > regards,
+> > dan carpenter
+> > 
+> 
+> Should I include this Fixes tag in v2? I wasn't sure how important this was
+> in staging. I think most of the patches in this series fix bugs that date
+> back to the introduction of the driver.
 
-I'm not sure I fully understand, but I think perhaps
-assigned-clock-parents would work? Or does that not work because either
-way some parent is assigned, either the crystal or the optional clk that
-isn't a crystal?
+I was just curious to see if it was a cleanup which introduced the
+inverted if statement.
 
+I think the Fixes tag is always useful.  For example, it would be
+interesting to do some data mining to see how many bugs drivers
+normally have when they're first merged.
+
+regards,
+dan carpenter
