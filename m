@@ -2,127 +2,111 @@ Return-Path: <SRS0=HY5B=OX=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_MUTT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.9 required=3.0
+	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00623C67839
-	for <linux-iio@archiver.kernel.org>; Fri, 14 Dec 2018 06:27:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AA67C67839
+	for <linux-iio@archiver.kernel.org>; Fri, 14 Dec 2018 11:49:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id AE62020645
-	for <linux-iio@archiver.kernel.org>; Fri, 14 Dec 2018 06:27:28 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="vz6aX/pJ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AE62020645
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
+	by mail.kernel.org (Postfix) with ESMTP id 2ABB6208E7
+	for <linux-iio@archiver.kernel.org>; Fri, 14 Dec 2018 11:49:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2ABB6208E7
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726465AbeLNG12 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 14 Dec 2018 01:27:28 -0500
-Received: from userp2130.oracle.com ([156.151.31.86]:33694 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726437AbeLNG11 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 14 Dec 2018 01:27:27 -0500
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.22/8.16.0.22) with SMTP id wBE6IhNN191044;
-        Fri, 14 Dec 2018 06:26:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2018-07-02;
- bh=N8Wwln5G6PBij62TYCeXG69bvcwF+NBe6v9H8nmBl4o=;
- b=vz6aX/pJRasMlJrZChKUmBR4hT/VK+e7IcPXNndFIXe/O4to1NrtDzisGBOSPJifLpn4
- CdP3sSoNDXkjiBbhf/ZRGaCvPyZpI48ornJ0Jh9AlUoh1X83XIvTF37xjcBt8zPmoVbN
- hhjqS7TEHXw2nFa9fnyTmNKGB5VUBW+AfD8TSK4OFa5MtZbE/3c2ItzQNmZ1HNxWjYrn
- ZUKcDK0/jeBtf9HbboViag2G9OHv0OCVjzKknfHGSrr5szN2+IutAAVlRO4ZaUPeopSY
- a59UM47DpE0RIXajvTpzWhsR0H4w0N4ZRloDAllPY+kKijv5RjzcP5X0ZQAmGRJ7mY2H hg== 
-Received: from userv0022.oracle.com (userv0022.oracle.com [156.151.31.74])
-        by userp2130.oracle.com with ESMTP id 2pb3n79k9y-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 14 Dec 2018 06:26:59 +0000
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userv0022.oracle.com (8.14.4/8.14.4) with ESMTP id wBE6QrlO005359
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 14 Dec 2018 06:26:53 GMT
-Received: from abhmp0019.oracle.com (abhmp0019.oracle.com [141.146.116.25])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id wBE6QquI009213;
-        Fri, 14 Dec 2018 06:26:52 GMT
-Received: from kadam (/197.157.0.36)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 13 Dec 2018 22:26:52 -0800
-Date:   Fri, 14 Dec 2018 09:26:18 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Jeremy Fertic <jeremyfertic@gmail.com>
-Cc:     devel@driverdev.osuosl.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
+        id S1726670AbeLNLtL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 14 Dec 2018 06:49:11 -0500
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:33606 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726281AbeLNLtL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 14 Dec 2018 06:49:11 -0500
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: eballetbo)
+        with ESMTPSA id 886C2263976
+From:   Enric Balletbo i Serra <enric.balletbo@collabora.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Alessandro Zummo <a.zummo@towertech.it>, linux-pwm@vger.kernel.org,
         linux-iio@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        linux-i2c@vger.kernel.org, groeck@chromium.org,
+        kernel@collabora.com, linux-rtc@vger.kernel.org,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Benson Leung <bleung@chromium.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        linux-input@vger.kernel.org,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        devicetree@vger.kernel.org,
+        Thierry Reding <thierry.reding@gmail.com>,
+        linux-pm@vger.kernel.org, MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Lee Jones <lee.jones@linaro.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
-        Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH 04/11] staging: iio: adt7316: fix handling of dac high
- resolution option
-Message-ID: <20181214062618.GW3116@kadam>
-References: <20181212005503.28054-1-jeremyfertic@gmail.com>
- <20181212005503.28054-5-jeremyfertic@gmail.com>
- <20181212082315.GI3116@kadam>
- <20181213220146.GA2496@r2700x.localdomain>
+        Rob Herring <robh+dt@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH v3] MAINTAINERS: add maintainers for ChromeOS EC sub-drivers
+Date:   Fri, 14 Dec 2018 12:48:58 +0100
+Message-Id: <20181214114858.21231-1-enric.balletbo@collabora.com>
+X-Mailer: git-send-email 2.19.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20181213220146.GA2496@r2700x.localdomain>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9106 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=878
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1810050000 definitions=main-1812140058
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Dec 13, 2018 at 03:01:46PM -0700, Jeremy Fertic wrote:
-> On Wed, Dec 12, 2018 at 11:23:16AM +0300, Dan Carpenter wrote:
-> > On Tue, Dec 11, 2018 at 05:54:56PM -0700, Jeremy Fertic wrote:
-> > > @@ -651,10 +649,12 @@ static ssize_t adt7316_store_da_high_resolution(struct device *dev,
-> > >  	u8 config3;
-> > >  	int ret;
-> > >  
-> > > +	if (chip->id == ID_ADT7318 || chip->id == ID_ADT7519)
-> > > +		return -EPERM;
-> > 
-> > return -EINVAL is more appropriate than -EPERM.
-> > 
-> > regards,
-> > dan carpenter
-> > 
-> 
-> I chose -EPERM because the driver uses it quite a few times in similar
-> circumstances.
+There are multiple ChromeOS EC sub-drivers spread in different
+subsystems, as all of them are related to the Chrome stuff add
+Benson and myself as a maintainers for all these sub-drivers.
 
-Yeah.  I saw that when I reviewed the later patches in this series.
+Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Signed-off-by: Benson Leung <bleung@chromium.org>
+Acked-by: Wolfram Sang <wsa@the-dreams.de>
+Acked-by: Chanwoo Choi <cw00.choi@samsung.com>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com> for iio parts.
+Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Acked-by: Lee Jones <lee.jones@linaro.org>
+---
 
-It's really not doing it right.  -EPERM means permission checks like
-access_ok() failed so it's not appropriate.  -EINVAL is sort of general
-purpose for invalid commands so it's probably the correct thing.
+Changes in v3:
+- Add collected acks
+- Use a cros[-_]ec pattern instead of list all the files.
+- Add Guenter as a reviewer.
 
-> At least with this driver, -EINVAL is used when the user
-> attempts to write data that would never be valid. -EPERM is used when
-> either the current device settings prevent some functionality from being
-> used, or the device never supports that functionality. This patch is the
-> latter, that these two chip ids never support this function.
-> 
-> I'll change to -EINVAL in a v2 series, but I wonder if I should hold off
-> on a separate patch for other instances in this driver since it will be
-> undergoing a substantial refactoring.
+Changes in v2:
+- Fix typo in Benson email address.
 
-Generally, you should prefer kernel standards over driver standards and
-especially for staging.  But it doesn't matter.  When I reviewed this
-patch, I hadn't seen that the driver was doing it like this but now I
-know so it's fine.  We can clean it all at once later if you want.
+ MAINTAINERS | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-regards,
-dan carpenter
+diff --git a/MAINTAINERS b/MAINTAINERS
+index e7260191301b..437e036435d5 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -3629,6 +3629,14 @@ S:	Maintained
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/bleung/chrome-platform.git
+ F:	drivers/platform/chrome/
+ 
++CHROMEOS EC SUBDRIVERS
++M:	Benson Leung <bleung@chromium.org>
++M:	Enric Balletbo i Serra <enric.balletbo@collabora.com>
++R:	Guenter Roeck <groeck@chromium.org>
++S:	Maintained
++N:	cros[-_]ec
++F:	drivers/power/supply/cros_usbpd-charger.c
++
+ CIRRUS LOGIC AUDIO CODEC DRIVERS
+ M:	Brian Austin <brian.austin@cirrus.com>
+ M:	Paul Handrigan <Paul.Handrigan@cirrus.com>
+-- 
+2.19.2
 
