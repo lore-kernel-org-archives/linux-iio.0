@@ -2,118 +2,133 @@ Return-Path: <SRS0=HY5B=OX=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-2.5 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_MUTT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30D73C43387
-	for <linux-iio@archiver.kernel.org>; Fri, 14 Dec 2018 18:28:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59259C43387
+	for <linux-iio@archiver.kernel.org>; Fri, 14 Dec 2018 21:29:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 79E47206C2
-	for <linux-iio@archiver.kernel.org>; Fri, 14 Dec 2018 18:28:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 831B9206DD
+	for <linux-iio@archiver.kernel.org>; Fri, 14 Dec 2018 21:29:53 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PUsd7wnf"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IkSUEX2Z"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729752AbeLNS2c (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 14 Dec 2018 13:28:32 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:38220 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729619AbeLNS2c (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 14 Dec 2018 13:28:32 -0500
-Received: by mail-lj1-f193.google.com with SMTP id c19-v6so5717598lja.5;
-        Fri, 14 Dec 2018 10:28:30 -0800 (PST)
+        id S1730734AbeLNV3w (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 14 Dec 2018 16:29:52 -0500
+Received: from mail-it1-f195.google.com ([209.85.166.195]:38275 "EHLO
+        mail-it1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730878AbeLNV3w (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 14 Dec 2018 16:29:52 -0500
+Received: by mail-it1-f195.google.com with SMTP id h65so11643171ith.3;
+        Fri, 14 Dec 2018 13:29:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UY4MZrqT9fOFmcCS99HsY3w6J1Hvl7LgpuVuFvc2yho=;
-        b=PUsd7wnfyputS55sdWacjqL3xgV1uC8A3h2wWzjzlJ6LSiTRlGJAHa+sFeZli6hoil
-         BOmdYQ/5q4OODgQPcEtiDwct/jXmZyf1G5YkR2cs+mrD7VAS7RzzYG0FmK+zDMj2xHno
-         qIIOB8TSKz+2unh8UicwsM6lPXxZfLqo8Mmrk9qsSc51J2L+3yrgTKEBAYdAS3X+HUZv
-         n2l0glwwPAZxqsZOffhbuU1LaPo6uINNuvhLgUJvtta7GemzTAyFXe5IOjGnjCohi9D1
-         9HZnMYY94r1U07O2oK67INxJwYgcH6EwcHiaUCe8SBOhIxSlP+oMcH4mI3lXXyhpK5XU
-         MJ1g==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=XPPxeyKFREoS2GcW2/S4Arhax4A1QyvIVUlnPDl3qyM=;
+        b=IkSUEX2ZG2+OXmGjasoWEA8H5Qt7SavwQcnYY4EzUCgPK6b/q+KtgSwMksPo6m/Hqs
+         zt5ny3D4v1LoUcbxvPo1dror9OWO0Npvlnk7in+Dl/etbWf2IHlHfiIFxetvy5BK0Ijn
+         tuRGw6xTh2kTJJT2AwMS65n/yplh8PJaagjIqK5ZR8W9n5W3ztGoLpEp819ya9r+PZGJ
+         oh5egrmNqbU6Lm3MyvcU6F/prCs6C5PorYtIJL1ILCy6NIOYHTDRzRLQeF6NiAUO+Gz4
+         omC3ynnLiw6Qq1ukLbfR5U5dkLchXtJvNxPWIuy3EKHCCTR/8zTrfu0fNuGY2vLt1Hk9
+         4Vyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UY4MZrqT9fOFmcCS99HsY3w6J1Hvl7LgpuVuFvc2yho=;
-        b=Ry8locCLyytqn0tRLNFAygY6ELWKnH27JAI/2Iy90Lp0VtPeL28nuDjrJXaMcKba6Y
-         6AX1/P8Koqfb4Pw8zHaLO74bVEnMuygllswI+tYYWRkYpje41PT+ja0GU7XA5X8QMABi
-         pkvQO+vLlLtot/LgS5zgUoxsUUMcvfhPVEMxwg0HXF0xeiZvVXYT/aclyWb191Jq3gxp
-         Nx85iskS++VPc0kimAoukG32/F9BAPUY72CRuJX8jzodjsRIUK7MTVfv39HPXvh/A47B
-         0/4J5oggBTtZ7tgwjfLlUVb6IkH170TyKH+7CZG1AxCM35PLgFNjK5V3ZFJZdQY8mKRA
-         gXsg==
-X-Gm-Message-State: AA+aEWaSiDk2VhGiDmdrmMO0xdoYbqehY+oiQe0Oh9YfGNIg7S/zvIFI
-        +8BGr8KSEeMPEp3V2QGl8NtX1mD5yYw=
-X-Google-Smtp-Source: AFSGD/WJU1CkJgptkvTSxCHFPEfgaEv3b44eFFGZapg7nbiIsCjIgQ2HuapfFWNGzv0v3HcAEaBx7w==
-X-Received: by 2002:a2e:92:: with SMTP id e18-v6mr2667379lji.130.1544812109268;
-        Fri, 14 Dec 2018 10:28:29 -0800 (PST)
-Received: from arch.domain.name (89-70-220-87.dynamic.chello.pl. [89.70.220.87])
-        by smtp.gmail.com with ESMTPSA id e14-v6sm947961ljb.31.2018.12.14.10.28.27
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 14 Dec 2018 10:28:28 -0800 (PST)
-From:   Tomasz Duszynski <tduszyns@gmail.com>
-To:     linux-iio@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        robh+dt@kernel.org, jic23@jic23.retrosnub.co.uk,
-        a.brauchli@elementarea.net, Tomasz Duszynski <tduszyns@gmail.com>
-Subject: [PATCH v4 0/3] add support for Sensirion SPS30 PM sensor
-Date:   Fri, 14 Dec 2018 19:28:00 +0100
-Message-Id: <20181214182803.9006-1-tduszyns@gmail.com>
-X-Mailer: git-send-email 2.20.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=XPPxeyKFREoS2GcW2/S4Arhax4A1QyvIVUlnPDl3qyM=;
+        b=gpMEmhVwJY4CogExiHDy4LG14PSXrObtHtBh+RcdINoDP8zx960b9j1DEsPiGA934x
+         9xkgVR1DyILDLBD3x3rxr0If3GhiDmMxanMsdaGVbdw5ahe/90T6HbBDGzY2nFtUXwMw
+         JhaTfmapWWXR7tkzUINnjJVfqUd8HSYQXR7pk5UtQqHhGzxJJ5mBW4vqA+90nqSHFI90
+         q2FIvrVgYno0VlYd04P+pRK7Wsras8BLKIj4+ZUXljT4/L3vfntElfqSPrRwLbvq6pxy
+         YFtkQes653xuL2fZL6dTOc67uFsyYDQRULzrzQdGcGqLjOaQ6tArwtSBqy6mJdr/ShfD
+         L41A==
+X-Gm-Message-State: AA+aEWaQULluR7DmJGYuJebwDwhj1Wrl8abZjxvgk7fdRfIo8qX972e0
+        kG8C+c0KEAUFG2H03tgUipE=
+X-Google-Smtp-Source: AFSGD/UfTLz/MxOqqJygvlIMgYovl8fsIpop1qPRtjweAUXD07pZcRWsoLWpsv+nJQF+8f9uk2o9NQ==
+X-Received: by 2002:a24:d30c:: with SMTP id n12mr4984203itg.50.1544822991358;
+        Fri, 14 Dec 2018 13:29:51 -0800 (PST)
+Received: from r2700x.localdomain (c-75-70-96-103.hsd1.co.comcast.net. [75.70.96.103])
+        by smtp.gmail.com with ESMTPSA id b192sm3084256itb.12.2018.12.14.13.29.50
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 14 Dec 2018 13:29:50 -0800 (PST)
+Date:   Fri, 14 Dec 2018 14:29:44 -0700
+From:   Jeremy Fertic <jeremyfertic@gmail.com>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     devel@driverdev.osuosl.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        linux-iio@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH 04/11] staging: iio: adt7316: fix handling of dac high
+ resolution option
+Message-ID: <20181214212944.GA2400@r2700x.localdomain>
+References: <20181212005503.28054-1-jeremyfertic@gmail.com>
+ <20181212005503.28054-5-jeremyfertic@gmail.com>
+ <20181212082315.GI3116@kadam>
+ <20181213220146.GA2496@r2700x.localdomain>
+ <20181214062618.GW3116@kadam>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20181214062618.GW3116@kadam>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch series adds support for Sensirion SPS30 particulate matter
-sensor. Along with a driver itself, new channel type and modifiers
-for distinguishing between coarse and fine particles measurements are
-introduced.
+On Fri, Dec 14, 2018 at 09:26:18AM +0300, Dan Carpenter wrote:
+> On Thu, Dec 13, 2018 at 03:01:46PM -0700, Jeremy Fertic wrote:
+> > On Wed, Dec 12, 2018 at 11:23:16AM +0300, Dan Carpenter wrote:
+> > > On Tue, Dec 11, 2018 at 05:54:56PM -0700, Jeremy Fertic wrote:
+> > > > @@ -651,10 +649,12 @@ static ssize_t adt7316_store_da_high_resolution(struct device *dev,
+> > > >  	u8 config3;
+> > > >  	int ret;
+> > > >  
+> > > > +	if (chip->id == ID_ADT7318 || chip->id == ID_ADT7519)
+> > > > +		return -EPERM;
+> > > 
+> > > return -EINVAL is more appropriate than -EPERM.
+> > > 
+> > > regards,
+> > > dan carpenter
+> > > 
+> > 
+> > I chose -EPERM because the driver uses it quite a few times in similar
+> > circumstances.
+> 
+> Yeah.  I saw that when I reviewed the later patches in this series.
+> 
+> It's really not doing it right.  -EPERM means permission checks like
+> access_ok() failed so it's not appropriate.  -EINVAL is sort of general
+> purpose for invalid commands so it's probably the correct thing.
+> 
+> > At least with this driver, -EINVAL is used when the user
+> > attempts to write data that would never be valid. -EPERM is used when
+> > either the current device settings prevent some functionality from being
+> > used, or the device never supports that functionality. This patch is the
+> > latter, that these two chip ids never support this function.
+> > 
+> > I'll change to -EINVAL in a v2 series, but I wonder if I should hold off
+> > on a separate patch for other instances in this driver since it will be
+> > undergoing a substantial refactoring.
+> 
+> Generally, you should prefer kernel standards over driver standards and
+> especially for staging.  But it doesn't matter.  When I reviewed this
+> patch, I hadn't seen that the driver was doing it like this but now I
+> know so it's fine.  We can clean it all at once later if you want.
+> 
+> regards,
+> dan carpenter
+> 
 
-Sensor datasheet can be downloaded from
-
-https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/0_Datasheets/Particulate_Matter/Sensirion_PM_Sensors_SPS30_Datasheet.pdf
-
-v4:
- * this will likely go in next release cycle so increase version to 4.22
- * use KBUILD_MODNAME in format specifier
-
-v3:
- * convert be32 to cpu using predefined macro
- * remove semicolon: reported by semicolon.cocci
- * use capitalization consistently (particulate matter)
-
-v2:
- * add support for PM1 and PM4 measurements
- * get rid of variable length arrays
- * do proper cleanup via devm_add_action_or_reset()
- * add extra level of precision (two decimal places) while displaying
-   measurements
- * improve comments a little bit
- * slight refactoring and general improvements here and there
-
-Tomasz Duszynski (3):
-  iio: add IIO_MASSCONCENTRATION channel type
-  iio: chemical: add support for Sensirion SPS30 sensor
-  iio: chemical: sps30: add device tree support
-
- Documentation/ABI/testing/sysfs-bus-iio       |  17 +-
- .../bindings/iio/chemical/sensirion,sps30.txt |  12 +
- drivers/iio/chemical/Kconfig                  |  11 +
- drivers/iio/chemical/Makefile                 |   1 +
- drivers/iio/chemical/sps30.c                  | 406 ++++++++++++++++++
- drivers/iio/industrialio-core.c               |   5 +
- include/uapi/linux/iio/types.h                |   5 +
- tools/iio/iio_event_monitor.c                 |  10 +
- 8 files changed, 466 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/devicetree/bindings/iio/chemical/sensirion,sps30.txt
- create mode 100644 drivers/iio/chemical/sps30.c
-
---
-2.20.0
+I'll wait to deal with these error values since some of them might go away
+with all the changes necessary to get the driver out of staging. Thanks
+for clarifying things for me.
 
