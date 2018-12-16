@@ -6,48 +6,48 @@ X-Spam-Status: No, score=-7.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0F91C43387
-	for <linux-iio@archiver.kernel.org>; Sun, 16 Dec 2018 11:06:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90A5CC43387
+	for <linux-iio@archiver.kernel.org>; Sun, 16 Dec 2018 11:10:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 712AA217FB
-	for <linux-iio@archiver.kernel.org>; Sun, 16 Dec 2018 11:06:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 57180217FB
+	for <linux-iio@archiver.kernel.org>; Sun, 16 Dec 2018 11:10:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1544958404;
-	bh=u3jAVTSZipPtN4rzyCLOx/ISE2Ku/CvEe1CPt7kxmyM=;
+	s=default; t=1544958631;
+	bh=peP0ySD2rux8PRNQ+MptN+pEnOstnOnZT07tn9NK5RQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=wcShp/WZqBrMF+qNGXqYwDIjPR+zpvLk299oH39V3C1mWFbnD7/UECDlllOBALjpt
-	 IKhB79JlKdvLeX6CqzHyzB/Lda8CfcsuGMH2/VPzBFbC99hZDjXDUyEDzDJcdcqSwU
-	 aLAAQ6ht4HjhXOC3q1S9+BLme0HaTI2y4VPSPq84=
+	b=QP87230Fi334MN+sZ4j8soIp3p16n+GhCK2ARhusYDci5IS7G1IuygbSnFzWUmbDw
+	 ySss79mYquS1FbDHQ1lyNnUo+Nal/+xSZOmGW3oBulOYvBYN50mCx2Sh/otbCfpdz0
+	 mEdSg2FMiPdCpfmiuofWuAge55bOiQJrsy5330sA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729822AbeLPLGn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 16 Dec 2018 06:06:43 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37380 "EHLO mail.kernel.org"
+        id S1730046AbeLPLKa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 16 Dec 2018 06:10:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38766 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729821AbeLPLGn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 16 Dec 2018 06:06:43 -0500
+        id S1729821AbeLPLKa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 16 Dec 2018 06:10:30 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 39AA0217FB;
-        Sun, 16 Dec 2018 11:06:42 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4F4B4217FB;
+        Sun, 16 Dec 2018 11:10:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1544958403;
-        bh=u3jAVTSZipPtN4rzyCLOx/ISE2Ku/CvEe1CPt7kxmyM=;
+        s=default; t=1544958630;
+        bh=peP0ySD2rux8PRNQ+MptN+pEnOstnOnZT07tn9NK5RQ=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=0Sr3N/0JRnKiAoxiKa2fnmtClKzLC6vc1XzXa8WeFrCnhJflj0cvqOXKJfJjgnkwt
-         oZ36QWaFrUsYj7pFZ+Hm/Dh8goSN85BZ1BrPlxsdQxjZ2rXPvJqyf+Zbxn2ik6CuEr
-         SX4XDA/TFZfdQuegU77mkdr+pwfBVTDfFh9lUc+I=
-Date:   Sun, 16 Dec 2018 11:06:39 +0000
+        b=2YYkIx1nmxSnVuiOMRZM/1Gp5Rm2rPSzREbNZFSa8//gpm5arDMyzu4yz3Eg5NL0S
+         5vvJ/LAKFsaqDXW3XS6WYPee5dPYpgy1uXumwmN6+IUG4s6RTdITGYaCH4zunYPsHa
+         GH/5hh3vrbI9qLktuDbjkMSvi6lGrgQIBrSFZakg=
+Date:   Sun, 16 Dec 2018 11:10:25 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Dan Murphy <dmurphy@ti.com>
 Cc:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <robh+dt@kernel.org>
-Subject: Re: [PATCH v2 3/4] iio: ti-ads8688: Update buffer allocation for
- timestamps
-Message-ID: <20181216110639.3eb2e7b9@archlinux>
-In-Reply-To: <20181211191207.21900-3-dmurphy@ti.com>
+Subject: Re: [PATCH v2 4/4] iio: ti-ads8688: Migrate to device managed IIO
+ calls
+Message-ID: <20181216111025.0be9cb9e@archlinux>
+In-Reply-To: <20181211191207.21900-4-dmurphy@ti.com>
 References: <20181211191207.21900-1-dmurphy@ti.com>
-        <20181211191207.21900-3-dmurphy@ti.com>
+        <20181211191207.21900-4-dmurphy@ti.com>
 X-Mailer: Claws Mail 3.17.2 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -57,44 +57,71 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 11 Dec 2018 13:12:06 -0600
+On Tue, 11 Dec 2018 13:12:07 -0600
 Dan Murphy <dmurphy@ti.com> wrote:
 
-> Per Jonathan Cameron, the buffer needs to allocate room for a
-> 64 bit timestamp as well as the channels.  Change the buffer
-> to allocate this additional space.
+> Migrate the driver to use the devm IIO calls as opposed to
+> the unmanaged calls.
 > 
 > Signed-off-by: Dan Murphy <dmurphy@ti.com>
-Same question around data types as in the previous patch.
+The remove order should always be the opposite of probe.
+As devm cleanup is done 'after' whatever is in the remove function
+you should never mix and match between managed and unmanaged.
 
-If you can track down the original patch that introduced the bug and add
-add a fixes tag, that would be great as well.  This one should go into
-stable.
-
-Thanks,
+That's not to say this can't be done, but it should also handle
+the regulator disables.  For that
+devm_add_action_or_reset is what you want.  As you need to check
+the regulator is not an error, you would need a little utility function.
 
 Jonathan
 > ---
 > 
-> v2 - New patch suggested change by maintainer - https://lore.kernel.org/patchwork/patch/1021048/
+> v2 - New patch
 > 
->  drivers/iio/adc/ti-ads8688.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/iio/adc/ti-ads8688.c | 17 +++++++----------
+>  1 file changed, 7 insertions(+), 10 deletions(-)
 > 
 > diff --git a/drivers/iio/adc/ti-ads8688.c b/drivers/iio/adc/ti-ads8688.c
-> index 184d686ebd99..3597bc0697ee 100644
+> index 3597bc0697ee..8f42103a1fd9 100644
 > --- a/drivers/iio/adc/ti-ads8688.c
 > +++ b/drivers/iio/adc/ti-ads8688.c
-> @@ -385,7 +385,7 @@ static irqreturn_t ads8688_trigger_handler(int irq, void *p)
->  {
->  	struct iio_poll_func *pf = p;
->  	struct iio_dev *indio_dev = pf->indio_dev;
-> -	u16 buffer[8];
-> +	unsigned short buffer[8 + sizeof(s64)/sizeof(short)];
-Why change from a well defined size of data to one that is only
-defined by the c spec to be no more than the size of an int?
-
->  	int i, j = 0;
+> @@ -462,21 +462,21 @@ static int ads8688_probe(struct spi_device *spi)
 >  
->  	for (i = 0; i < indio_dev->masklength; i++) {
+>  	mutex_init(&st->lock);
+>  
+> -	ret = iio_triggered_buffer_setup(indio_dev, NULL, ads8688_trigger_handler, NULL);
+> +	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev, NULL,
+> +					      ads8688_trigger_handler, NULL);
+>  	if (ret < 0) {
+>  		dev_err(&spi->dev, "iio triggered buffer setup failed\n");
+>  		goto err_regulator_disable;
+>  	}
+>  
+> -	ret = iio_device_register(indio_dev);
+> -	if (ret)
+> -		goto err_buffer_cleanup;
+> +	ret = devm_iio_device_register(&spi->dev, indio_dev);
+> +	if (ret < 0) {
+> +		dev_err(&spi->dev, "iio device registration failed\n");
+> +		goto err_regulator_disable;
+> +	}
+>  
+>  	return 0;
+>  
+> -err_buffer_cleanup:
+> -	iio_triggered_buffer_cleanup(indio_dev);
+> -
+>  err_regulator_disable:
+>  	if (!IS_ERR(st->reg))
+>  		regulator_disable(st->reg);
+> @@ -489,9 +489,6 @@ static int ads8688_remove(struct spi_device *spi)
+>  	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+>  	struct ads8688_state *st = iio_priv(indio_dev);
+>  
+> -	iio_device_unregister(indio_dev);
+> -	iio_triggered_buffer_cleanup(indio_dev);
+> -
+>  	if (!IS_ERR(st->reg))
+>  		regulator_disable(st->reg);
+>  
 
