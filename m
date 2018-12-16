@@ -4,50 +4,55 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90A5CC43387
-	for <linux-iio@archiver.kernel.org>; Sun, 16 Dec 2018 11:10:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8B4DC43387
+	for <linux-iio@archiver.kernel.org>; Sun, 16 Dec 2018 11:19:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 57180217FB
-	for <linux-iio@archiver.kernel.org>; Sun, 16 Dec 2018 11:10:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B12D021836
+	for <linux-iio@archiver.kernel.org>; Sun, 16 Dec 2018 11:19:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1544958631;
-	bh=peP0ySD2rux8PRNQ+MptN+pEnOstnOnZT07tn9NK5RQ=;
+	s=default; t=1544959157;
+	bh=yxRw3KTplIiiwFXbygJ3CU7wmNQ9uT5AznvadSmYd7E=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=QP87230Fi334MN+sZ4j8soIp3p16n+GhCK2ARhusYDci5IS7G1IuygbSnFzWUmbDw
-	 ySss79mYquS1FbDHQ1lyNnUo+Nal/+xSZOmGW3oBulOYvBYN50mCx2Sh/otbCfpdz0
-	 mEdSg2FMiPdCpfmiuofWuAge55bOiQJrsy5330sA=
+	b=okpy9rdvhIsc2VW63F0oTYN8pwExwv+QE0McOOPoT6jZY4vlMcAQf6u9RhAVDhU6W
+	 /IRYpy/amnrZt3h3FNfGVIzZIOMJe2Cw6U1v5cdlu+g7nFNch/Ue/ZVlxtLWUBQktV
+	 1jb/5vuAIkmdfJg+V/yAsOAKhbCHAXe865zRJG44=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730046AbeLPLKa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 16 Dec 2018 06:10:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38766 "EHLO mail.kernel.org"
+        id S1729859AbeLPLTR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 16 Dec 2018 06:19:17 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42256 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729821AbeLPLKa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 16 Dec 2018 06:10:30 -0500
+        id S1729821AbeLPLTQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 16 Dec 2018 06:19:16 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4F4B4217FB;
-        Sun, 16 Dec 2018 11:10:29 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 67388217FA;
+        Sun, 16 Dec 2018 11:19:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1544958630;
-        bh=peP0ySD2rux8PRNQ+MptN+pEnOstnOnZT07tn9NK5RQ=;
+        s=default; t=1544959156;
+        bh=yxRw3KTplIiiwFXbygJ3CU7wmNQ9uT5AznvadSmYd7E=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=2YYkIx1nmxSnVuiOMRZM/1Gp5Rm2rPSzREbNZFSa8//gpm5arDMyzu4yz3Eg5NL0S
-         5vvJ/LAKFsaqDXW3XS6WYPee5dPYpgy1uXumwmN6+IUG4s6RTdITGYaCH4zunYPsHa
-         GH/5hh3vrbI9qLktuDbjkMSvi6lGrgQIBrSFZakg=
-Date:   Sun, 16 Dec 2018 11:10:25 +0000
+        b=ZHimcCWVO/IVFUDkdpmgaVBfO1kDbZYuIG7dFhG44SQ5Z9OSKCLm6PR5n1VXMMhpR
+         GeeuBloZnhqLS8sL9vo0wAbWuoDRTEvAoal9kEk1+7OKEIX+gDMvnFrIxlupU5Oc1J
+         FuSb6ejtHF1cO77B6A0eKjhzB1Itz69xeGMTYJ9o=
+Date:   Sun, 16 Dec 2018 11:19:11 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Dan Murphy <dmurphy@ti.com>
-Cc:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <robh+dt@kernel.org>
-Subject: Re: [PATCH v2 4/4] iio: ti-ads8688: Migrate to device managed IIO
- calls
-Message-ID: <20181216111025.0be9cb9e@archlinux>
-In-Reply-To: <20181211191207.21900-4-dmurphy@ti.com>
-References: <20181211191207.21900-1-dmurphy@ti.com>
-        <20181211191207.21900-4-dmurphy@ti.com>
+To:     Jeremy Fertic <jeremyfertic@gmail.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 01/11] staging: iio: adt7316: fix register and bit
+ definitions
+Message-ID: <20181216111911.149d466b@archlinux>
+In-Reply-To: <20181212005503.28054-2-jeremyfertic@gmail.com>
+References: <20181212005503.28054-1-jeremyfertic@gmail.com>
+        <20181212005503.28054-2-jeremyfertic@gmail.com>
 X-Mailer: Claws Mail 3.17.2 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -57,71 +62,53 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 11 Dec 2018 13:12:07 -0600
-Dan Murphy <dmurphy@ti.com> wrote:
+On Tue, 11 Dec 2018 17:54:53 -0700
+Jeremy Fertic <jeremyfertic@gmail.com> wrote:
 
-> Migrate the driver to use the devm IIO calls as opposed to
-> the unmanaged calls.
+> Change two register addresses and one bit definition to match the
+> datasheet.
 > 
-> Signed-off-by: Dan Murphy <dmurphy@ti.com>
-The remove order should always be the opposite of probe.
-As devm cleanup is done 'after' whatever is in the remove function
-you should never mix and match between managed and unmanaged.
+> Signed-off-by: Jeremy Fertic <jeremyfertic@gmail.com>
+One comment inline.  I added a fixes tag but also a note saying I would
+not suggest backporting to stable.
 
-That's not to say this can't be done, but it should also handle
-the regulator disables.  For that
-devm_add_action_or_reset is what you want.  As you need to check
-the regulator is not an error, you would need a little utility function.
+There are too many things wrong with this driver for any backports
+to really be worthwhile.  It didn't work at all for i2c until last cycle
+for example!
 
 Jonathan
+
 > ---
+>  drivers/staging/iio/addac/adt7316.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 > 
-> v2 - New patch
-> 
->  drivers/iio/adc/ti-ads8688.c | 17 +++++++----------
->  1 file changed, 7 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ti-ads8688.c b/drivers/iio/adc/ti-ads8688.c
-> index 3597bc0697ee..8f42103a1fd9 100644
-> --- a/drivers/iio/adc/ti-ads8688.c
-> +++ b/drivers/iio/adc/ti-ads8688.c
-> @@ -462,21 +462,21 @@ static int ads8688_probe(struct spi_device *spi)
->  
->  	mutex_init(&st->lock);
->  
-> -	ret = iio_triggered_buffer_setup(indio_dev, NULL, ads8688_trigger_handler, NULL);
-> +	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev, NULL,
-> +					      ads8688_trigger_handler, NULL);
->  	if (ret < 0) {
->  		dev_err(&spi->dev, "iio triggered buffer setup failed\n");
->  		goto err_regulator_disable;
->  	}
->  
-> -	ret = iio_device_register(indio_dev);
-> -	if (ret)
-> -		goto err_buffer_cleanup;
-> +	ret = devm_iio_device_register(&spi->dev, indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&spi->dev, "iio device registration failed\n");
-> +		goto err_regulator_disable;
-> +	}
->  
->  	return 0;
->  
-> -err_buffer_cleanup:
-> -	iio_triggered_buffer_cleanup(indio_dev);
-> -
->  err_regulator_disable:
->  	if (!IS_ERR(st->reg))
->  		regulator_disable(st->reg);
-> @@ -489,9 +489,6 @@ static int ads8688_remove(struct spi_device *spi)
->  	struct iio_dev *indio_dev = spi_get_drvdata(spi);
->  	struct ads8688_state *st = iio_priv(indio_dev);
->  
-> -	iio_device_unregister(indio_dev);
-> -	iio_triggered_buffer_cleanup(indio_dev);
-> -
->  	if (!IS_ERR(st->reg))
->  		regulator_disable(st->reg);
->  
+> diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+> index dc93e85808e0..1fa4a4c2b4f3 100644
+> --- a/drivers/staging/iio/addac/adt7316.c
+> +++ b/drivers/staging/iio/addac/adt7316.c
+> @@ -59,8 +59,8 @@
+>  #define ADT7316_CONFIG1			0x18
+>  #define ADT7316_CONFIG2			0x19
+>  #define ADT7316_CONFIG3			0x1A
+> -#define ADT7316_LDAC_CONFIG		0x1B
+> -#define ADT7316_DAC_CONFIG		0x1C
+> +#define ADT7316_DAC_CONFIG		0x1B
+> +#define ADT7316_LDAC_CONFIG		0x1C
+>  #define ADT7316_INT_MASK1		0x1D
+>  #define ADT7316_INT_MASK2		0x1E
+>  #define ADT7316_IN_TEMP_OFFSET		0x1F
+> @@ -117,7 +117,7 @@
+>   */
+>  #define ADT7316_ADCLK_22_5		0x1
+>  #define ADT7316_DA_HIGH_RESOLUTION	0x2
+> -#define ADT7316_DA_EN_VIA_DAC_LDCA	0x4
+> +#define ADT7316_DA_EN_VIA_DAC_LDCA	0x8
+This looks to be called LDAC not LDCA?  
+
+Different error so I don't mind that being fixed later!
+
+Jonathan
+>  #define ADT7516_AIN_IN_VREF		0x10
+>  #define ADT7316_EN_IN_TEMP_PROP_DACA	0x20
+>  #define ADT7316_EN_EX_TEMP_PROP_DACB	0x40
 
