@@ -2,57 +2,58 @@ Return-Path: <SRS0=diYI=OZ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E789C43444
-	for <linux-iio@archiver.kernel.org>; Sun, 16 Dec 2018 10:07:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05300C43387
+	for <linux-iio@archiver.kernel.org>; Sun, 16 Dec 2018 10:19:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5037B21839
-	for <linux-iio@archiver.kernel.org>; Sun, 16 Dec 2018 10:07:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BC41721836
+	for <linux-iio@archiver.kernel.org>; Sun, 16 Dec 2018 10:19:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1544954869;
-	bh=Eh9wW8TO2y4lVphbj8fY/LBgvhDq4RcVnR/VtZC/9KA=;
+	s=default; t=1544955572;
+	bh=etZPC4UHLixq9MGB2zppWnASy2lHxvC7DvX+H3qfM8E=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=aTQNmzg+jY6VdkZd2f+tO7w5ls7phI7hvAS7EHdL+7p8KRHsi+tDZIVwdXKr6RloW
-	 iI2hb77FRf+iGDqmoVQ3LhbmPT8pQFYjQEyBwdGfV/WT3XnWOYciyL0KfohaF23Coi
-	 73JFX/jTYHzR8UlrrFGCGEVNHQyHZAy8TKP31pww=
+	b=EGFYQuCnked9E8lVl95vV6fCAsZgpCt32962cAQhcTjzA9X/OjsL32/vZCtBVrQ2N
+	 byuAkQHRBQ4wZuCo4iWj/+gL53y5HZSJc7LffBzTg/xnJI9IUXrWZ79jSatNRxMxKy
+	 KbGbScBoC5LOmTN3zDr/J9im5qbVrTn3jHS4HCLE=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729732AbeLPKHs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 16 Dec 2018 05:07:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58994 "EHLO mail.kernel.org"
+        id S1730196AbeLPKTc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 16 Dec 2018 05:19:32 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55524 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729354AbeLPKHs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 16 Dec 2018 05:07:48 -0500
+        id S1729819AbeLPKTb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 16 Dec 2018 05:19:31 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 542832086C;
-        Sun, 16 Dec 2018 10:07:45 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 656A3217FB;
+        Sun, 16 Dec 2018 10:19:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1544954867;
-        bh=Eh9wW8TO2y4lVphbj8fY/LBgvhDq4RcVnR/VtZC/9KA=;
+        s=default; t=1544955570;
+        bh=etZPC4UHLixq9MGB2zppWnASy2lHxvC7DvX+H3qfM8E=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=0hr31RY8GqkgL9j7cUK2ap7T6tTwSZ9oYmBbmhYxWN51H3XbIgRLkOQCFN0rdsbpw
-         nQmAe798yMfJaDpWHT3bndYOUAu+0J37qdsbO7fzkT0vX79OD6+8Zn30KAYeZYuOQF
-         3jGbjOcw0DOZ/Yf6oqS3xshE8XzfLYw2HOkn6TnQ=
-Date:   Sun, 16 Dec 2018 10:07:41 +0000
+        b=dJBhz4IoCa2NTPdh+PX8IlSf8vY8IeV0/nqj+fwHQXZu0KsUh7knstMyhKnCAFWu/
+         Pe2Z9mAboPs+T8feUVuh0DWhfsRQ+xaZpHF7fNF3x2yPuEw0abXCGEDQS9+tKKKoy5
+         KxdmA8AP8ieQc+SFcy+1D+OQhNRcftQ7kOQEfYSI=
+Date:   Sun, 16 Dec 2018 10:19:24 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Stephen Boyd <sboyd@kernel.org>
-Cc:     Mircea Caprioru <mircea.caprioru@analog.com>,
-        Michael.Hennerich@analog.com, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org, Rob Herring <robh+dt@kernel.org>,
-        linux-clk@vger.kernel.org
-Subject: Re: [PATCH 1/2] staging: iio: adc: ad7192: Add clock for external
- clock reference
-Message-ID: <20181216100741.4e362a17@archlinux>
-In-Reply-To: <154475156267.19322.6284056396098102605@swboyd.mtv.corp.google.com>
-References: <20181206091052.7644-1-mircea.caprioru@analog.com>
-        <20181208152954.596529f8@archlinux>
-        <154475156267.19322.6284056396098102605@swboyd.mtv.corp.google.com>
+To:     Anson Huang <anson.huang@nxp.com>
+Cc:     "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "rtresidd@electromag.com.au" <rtresidd@electromag.com.au>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        "preid@electromag.com.au" <preid@electromag.com.au>,
+        dl-linux-imx <linux-imx@nxp.com>
+Subject: Re: [PATCH V4] iio: magnetometer: mag3110: add optional vdd/vddio
+ regulator operation support
+Message-ID: <20181216101924.3819c916@archlinux>
+In-Reply-To: <1544504426-30335-1-git-send-email-Anson.Huang@nxp.com>
+References: <1544504426-30335-1-git-send-email-Anson.Huang@nxp.com>
 X-Mailer: Claws Mail 3.17.2 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -62,46 +63,191 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Rob, Clk experts, questions for you below.
+On Tue, 11 Dec 2018 05:06:20 +0000
+Anson Huang <anson.huang@nxp.com> wrote:
+
+> The magnetometer's power supply could be controlled by regulator
+> on some platforms, such as i.MX6Q-SABRESD board, the mag3110's
+> power supply is controlled by a GPIO fixed regulator, need to make
+> sure the regulator is enabled before any communication with mag3110,
+> this patch adds optional vdd/vddio regulator operation support.
+> 
+> Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
+
+This device currently has documented bindings in trivial-devices.txt
+Adding these non trivial elements means that we need to take it out
+of there and add a specific binding doc for it.
+
+So please provide a binding doc and drop the entry in trivial-devices.
+Remember to cc devicetree list and maintainers for that.
+
+Code looks good, but as we have missed the coming merge window
+anyway, we have plenty of time to tidy up those docs.
+
+Thanks,
 
 Jonathan
 
-
-On Thu, 13 Dec 2018 17:39:22 -0800
-Stephen Boyd <sboyd@kernel.org> wrote:
-
-> Quoting Jonathan Cameron (2018-12-08 07:29:54)
-> > On Thu, 6 Dec 2018 11:10:51 +0200
-> > Mircea Caprioru <mircea.caprioru@analog.com> wrote:
-> >   
-> > > This patch adds a clock to the state structure of ad7192 for getting the
-> > > external clock frequency. This modifications is in accordance with clock
-> > > framework dt bindings documentation.
-> > > 
-> > > Signed-off-by: Mircea Caprioru <mircea.caprioru@analog.com>  
-> > 
-> > +cc Rob and the clk list for advise on how to do the binding for this one.
-> > 
-> > It is basically 2 pins, you can put a clock in on one of them or connect
-> > a crystal across them.  The driver has to set a register to say which is
-> > the case.  
-> > 
-> > Current proposal is two optional clocks (fall back to internal oscillator)
-> > but that doesn't seem to be commonly done, so I'm wondering if there
-> > is a 'standard' way to handle this sort of thing.
-> >   
+> ---
+> ChangeLog since V3:
+> 	- add disabling vdd in vddio error path;
+> 	- improve the regulator enable/disable sequence.
+> ---
+>  drivers/iio/magnetometer/mag3110.c | 96 ++++++++++++++++++++++++++++++++++----
+>  1 file changed, 88 insertions(+), 8 deletions(-)
 > 
-> I'm not sure I fully understand, but I think perhaps
-> assigned-clock-parents would work? Or does that not work because either
-> way some parent is assigned, either the crystal or the optional clk that
-> isn't a crystal?
-> 
-My concern is they aren't really separate clock inputs.   They are just different
-ways of providing the same fundamental clock.  So I think we may want to just
-provide a single clock and have another dt binding to say what it is.
-
-So lots of ways we could do it, but I'm not sure what the right one to
-go with is!
-
-Jonathan
+> diff --git a/drivers/iio/magnetometer/mag3110.c b/drivers/iio/magnetometer/mag3110.c
+> index f063355..328c0c4 100644
+> --- a/drivers/iio/magnetometer/mag3110.c
+> +++ b/drivers/iio/magnetometer/mag3110.c
+> @@ -20,6 +20,7 @@
+>  #include <linux/iio/buffer.h>
+>  #include <linux/iio/triggered_buffer.h>
+>  #include <linux/delay.h>
+> +#include <linux/regulator/consumer.h>
+>  
+>  #define MAG3110_STATUS 0x00
+>  #define MAG3110_OUT_X 0x01 /* MSB first */
+> @@ -56,6 +57,8 @@ struct mag3110_data {
+>  	struct mutex lock;
+>  	u8 ctrl_reg1;
+>  	int sleep_val;
+> +	struct regulator *vdd_reg;
+> +	struct regulator *vddio_reg;
+>  };
+>  
+>  static int mag3110_request(struct mag3110_data *data)
+> @@ -469,17 +472,46 @@ static int mag3110_probe(struct i2c_client *client,
+>  	struct iio_dev *indio_dev;
+>  	int ret;
+>  
+> -	ret = i2c_smbus_read_byte_data(client, MAG3110_WHO_AM_I);
+> -	if (ret < 0)
+> -		return ret;
+> -	if (ret != MAG3110_DEVICE_ID)
+> -		return -ENODEV;
+> -
+>  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+>  	if (!indio_dev)
+>  		return -ENOMEM;
+>  
+>  	data = iio_priv(indio_dev);
+> +
+> +	data->vdd_reg = devm_regulator_get_optional(&client->dev, "vdd");
+> +	if (!IS_ERR(data->vdd_reg)) {
+> +		ret = regulator_enable(data->vdd_reg);
+> +		if (ret) {
+> +			dev_err(&client->dev, "failed to enable VDD regulator\n");
+> +			return ret;
+> +		}
+> +	} else {
+> +		ret = PTR_ERR(data->vdd_reg);
+> +		if (ret != -ENODEV)
+> +			return ret;
+> +	}
+> +
+> +	data->vddio_reg = devm_regulator_get_optional(&client->dev, "vddio");
+> +	if (!IS_ERR(data->vddio_reg)) {
+> +		ret = regulator_enable(data->vddio_reg);
+> +		if (ret) {
+> +			dev_err(&client->dev, "failed to enable VDDIO regulator\n");
+> +			goto disable_regulator_vdd;
+> +		}
+> +	} else {
+> +		ret = PTR_ERR(data->vddio_reg);
+> +		if (ret != -ENODEV)
+> +			goto disable_regulator_vdd;
+> +	}
+> +
+> +	ret = i2c_smbus_read_byte_data(client, MAG3110_WHO_AM_I);
+> +	if (ret < 0)
+> +		goto disable_regulators;
+> +	if (ret != MAG3110_DEVICE_ID) {
+> +		ret = -ENODEV;
+> +		goto disable_regulators;
+> +	}
+> +
+>  	data->client = client;
+>  	mutex_init(&data->lock);
+>  
+> @@ -499,7 +531,7 @@ static int mag3110_probe(struct i2c_client *client,
+>  
+>  	ret = mag3110_change_config(data, MAG3110_CTRL_REG1, data->ctrl_reg1);
+>  	if (ret < 0)
+> -		return ret;
+> +		goto disable_regulators;
+>  
+>  	ret = i2c_smbus_write_byte_data(client, MAG3110_CTRL_REG2,
+>  		MAG3110_CTRL_AUTO_MRST_EN);
+> @@ -520,6 +552,13 @@ static int mag3110_probe(struct i2c_client *client,
+>  	iio_triggered_buffer_cleanup(indio_dev);
+>  standby_on_error:
+>  	mag3110_standby(iio_priv(indio_dev));
+> +disable_regulators:
+> +	if (!IS_ERR(data->vddio_reg))
+> +		regulator_disable(data->vddio_reg);
+> +disable_regulator_vdd:
+> +	if (!IS_ERR(data->vdd_reg))
+> +		regulator_disable(data->vdd_reg);
+> +
+>  	return ret;
+>  }
+>  
+> @@ -537,14 +576,55 @@ static int mag3110_remove(struct i2c_client *client)
+>  #ifdef CONFIG_PM_SLEEP
+>  static int mag3110_suspend(struct device *dev)
+>  {
+> -	return mag3110_standby(iio_priv(i2c_get_clientdata(
+> +	struct mag3110_data *data = iio_priv(i2c_get_clientdata(
+> +		to_i2c_client(dev)));
+> +	int ret;
+> +
+> +	ret = mag3110_standby(iio_priv(i2c_get_clientdata(
+>  		to_i2c_client(dev))));
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (!IS_ERR(data->vddio_reg)) {
+> +		ret = regulator_disable(data->vddio_reg);
+> +		if (ret) {
+> +			dev_err(dev, "failed to disable VDDIO regulator\n");
+> +			return ret;
+> +		}
+> +	}
+> +	if (!IS_ERR(data->vdd_reg)) {
+> +		ret = regulator_disable(data->vdd_reg);
+> +		if (ret) {
+> +			dev_err(dev, "failed to disable VDD regulator\n");
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	return 0;
+>  }
+>  
+>  static int mag3110_resume(struct device *dev)
+>  {
+>  	struct mag3110_data *data = iio_priv(i2c_get_clientdata(
+>  		to_i2c_client(dev)));
+> +	int ret;
+> +
+> +	if (!IS_ERR(data->vdd_reg)) {
+> +		ret = regulator_enable(data->vdd_reg);
+> +		if (ret) {
+> +			dev_err(dev, "failed to enable VDD regulator\n");
+> +			return ret;
+> +		}
+> +	}
+> +	if (!IS_ERR(data->vddio_reg)) {
+> +		ret = regulator_enable(data->vddio_reg);
+> +		if (ret) {
+> +			dev_err(dev, "failed to enable VDDIO regulator\n");
+> +			if (!IS_ERR(data->vdd_reg))
+> +				regulator_disable(data->vdd_reg);
+> +			return ret;
+> +		}
+> +	}
+>  
+>  	return i2c_smbus_write_byte_data(data->client, MAG3110_CTRL_REG1,
+>  		data->ctrl_reg1);
 
