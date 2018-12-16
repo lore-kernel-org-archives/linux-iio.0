@@ -2,109 +2,134 @@ Return-Path: <SRS0=diYI=OZ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21AF2C43387
-	for <linux-iio@archiver.kernel.org>; Sun, 16 Dec 2018 14:16:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B213C43387
+	for <linux-iio@archiver.kernel.org>; Sun, 16 Dec 2018 14:39:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D9CE221836
-	for <linux-iio@archiver.kernel.org>; Sun, 16 Dec 2018 14:16:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1544969767;
-	bh=7vNKac0fWwoR1X+M4hS8Mzqy9qBYfZ9fh+LQrhtXDG0=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=oSP07ewJ6WKLdNwskQ6LnQ7wOFcPvxWIigth9F5qG8b0jf0QlTj+JidFRd6fC9Yd7
-	 38MaEKZpV1cXOuYDXLeFG38uAF83V/252EFXu8L6hK60MWXgtsXPzECqtZTufD7IQF
-	 0dhfq2Bafd0ancf+3vzqe2WbjGkcJcrhpI1QRQrI=
+	by mail.kernel.org (Postfix) with ESMTP id 5C3812086C
+	for <linux-iio@archiver.kernel.org>; Sun, 16 Dec 2018 14:39:45 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PhD2UTOa"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730518AbeLPOQH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 16 Dec 2018 09:16:07 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42410 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730181AbeLPOQH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 16 Dec 2018 09:16:07 -0500
-Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DE935217F9;
-        Sun, 16 Dec 2018 14:16:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1544969766;
-        bh=7vNKac0fWwoR1X+M4hS8Mzqy9qBYfZ9fh+LQrhtXDG0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=b0dTm0Gl5m393nE6LwZDxF2bvYS0ZUtJQi/UwJO7FASH2pcDjZeOY84zP0JVGzs7l
-         KJsDFfdZvilfXYrp4RJJJTvHGBQlfkZ3NNFH7B/GZhttPMs3TLyhwYd2QveGHkNQO9
-         hNxH40nrdpLPe5eo3yAvia59emH1wpTlmG54IzwE=
-Date:   Sun, 16 Dec 2018 14:16:01 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-Cc:     YueHaibing <yuehaibing@huawei.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH -next] iio: imu: st_lsm6dsx: remove set but not used
- variable ''
-Message-ID: <20181216141601.0bc53375@archlinux>
-In-Reply-To: <CAA2SeN+6eNer_tMdC97LCuvVN+LqQGFAZidA_O6Ot86XASKfTA@mail.gmail.com>
-References: <1544855484-154231-1-git-send-email-yuehaibing@huawei.com>
-        <CAA2SeN+6eNer_tMdC97LCuvVN+LqQGFAZidA_O6Ot86XASKfTA@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.2 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1730283AbeLPOjo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 16 Dec 2018 09:39:44 -0500
+Received: from mail-lf1-f53.google.com ([209.85.167.53]:37699 "EHLO
+        mail-lf1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729822AbeLPOjo (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 16 Dec 2018 09:39:44 -0500
+Received: by mail-lf1-f53.google.com with SMTP id y11so7590766lfj.4
+        for <linux-iio@vger.kernel.org>; Sun, 16 Dec 2018 06:39:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=0ziK7/Iz0PPvthPCvrWt3gfzAm+QSYa/+3DBvHPZBfM=;
+        b=PhD2UTOaLp7Q2M+RO9yaEjq/b9/9aRLNgig2rDyulPkjTAW25lvigEUThs8ziGgmz0
+         qfo35luw2xm8myVsJ/m3ffPRwF0SF1gQOMkkWfoDAtG7UXmQwg5un6lTgZa9OKxXz8Hz
+         TPWT2y71kRHdU77g32nF6fJlokb4VO+rc17K2JByI4By4RaF3D8cuwwBUYrEPeEEq2+j
+         zWFuxIUypMJvoAeyFhokchpI5Rhoinqs0R+t0tC4DaieeLoHI9vfNlKmC+r3cstRyP1l
+         4u4x7oHPmWQUWGcYJxYr0QdSJbuOKenQsudtJdzUFs+YbgEt31qG2v/aEFPJw4QG4FTq
+         AogQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=0ziK7/Iz0PPvthPCvrWt3gfzAm+QSYa/+3DBvHPZBfM=;
+        b=nioTKdhTq8wBu0GWlO8GiS3z/AwlBl6GLGe0KBzEFzugbHo93I2sW8sqp2it4cJJJm
+         ivtMwj+iXIQRycqjJphns2ElfnALykfv5x5DdcJ9ZtXSdCZQE1sipFlhPis4lY735KID
+         oTsJ1dUmlIKVGQFLJOyGAaT3r3hj5CJBVq0+rBfPbymisikB7UrlG2HUIdnVeUDBHAxh
+         ADC8l/lpA9Fd9zphru3N27f0eJpHef9or5pFFG6FR6U2HZZVsGvjOWty9pyKoOnRxUua
+         eEPXVf6ikFTW2bbvGy/KQ/rRpoBG/BtkRRDlhdTzLrrmqMGe8pBCoZoURAxaWefmuMU7
+         SqUQ==
+X-Gm-Message-State: AA+aEWYLHRt7cOcJEhouOBtmCKW75D0lH7GT6kMMkf9VYLwG85MG41Wa
+        v/bFXS1dT3aV01BgmgZtpqs=
+X-Google-Smtp-Source: AFSGD/WcBOvr+ad1CPwAzwqPgG9BBb8BXndYSipt8qUozrhUeSDM+AddPDPvqlzLDtR3zqy12uE+2w==
+X-Received: by 2002:a19:ae03:: with SMTP id f3mr5761273lfc.86.1544971182411;
+        Sun, 16 Dec 2018 06:39:42 -0800 (PST)
+Received: from [192.168.8.103] (188-67-112-9.bb.dnainternet.fi. [188.67.112.9])
+        by smtp.googlemail.com with ESMTPSA id k11-v6sm2008269ljk.40.2018.12.16.06.39.41
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 16 Dec 2018 06:39:41 -0800 (PST)
+Subject: Re: IIO BME680 driver
+To:     Himanshu Jha <himanshujha199640@gmail.com>
+Cc:     linux-iio@vger.kernel.org, dpfrey@gmail.com
+References: <712905bc-4d81-0b38-44d6-d4f31f08c3ae@gmail.com>
+ <20181215191743.GA1263@himanshu-Vostro-3559>
+From:   Tuukka Pasanen <pasanen.tuukka@gmail.com>
+Message-ID: <6f1d36a0-f059-4c8b-4497-12c9b2c73a12@gmail.com>
+Date:   Sun, 16 Dec 2018 16:39:40 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.3.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20181215191743.GA1263@himanshu-Vostro-3559>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 15 Dec 2018 09:24:57 +0100
-Lorenzo Bianconi <lorenzo.bianconi83@gmail.com> wrote:
+Hello,
 
-> >
-> > Fixes gcc '-Wunused-but-set-variable' warning:
-> >
-> > drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c: In function 'st_lsm6dsx_shub_read_reg':
-> > drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c:108:41: warning:
-> >  variable 'hub_settings' set but not used [-Wunused-but-set-variable]
-> >
-> > It never used since introduction in commit c91c1c844ebd ("iio: imu: st_lsm6dsx:
-> > add i2c embedded controller support")
-> >
-> > Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> > ---
-> >  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c | 2 --
-> >  1 file changed, 2 deletions(-)
-> >
-> > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
-> > index 8e47dcc..66fbcd9 100644
-> > --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
-> > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
-> > @@ -105,12 +105,10 @@ static void st_lsm6dsx_shub_wait_complete(struct st_lsm6dsx_hw *hw)
-> >  static int st_lsm6dsx_shub_read_reg(struct st_lsm6dsx_hw *hw, u8 addr,
-> >                                     u8 *data, int len)
-> >  {
-> > -       const struct st_lsm6dsx_shub_settings *hub_settings;
-> >         int err;
-> >
-> >         mutex_lock(&hw->page_lock);
-> >
-> > -       hub_settings = &hw->settings->shub_settings;
-> >         err = st_lsm6dsx_set_page(hw, true);
-> >         if (err < 0)
-> >                 goto out;
-> >
-> >
-> >  
-> Acked-by: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+Hmm. Why would anyone want to play with those calibration constants
+> programmed into the NVM of the sensor.
+>
+> And I wonder how the following came up ?
+> https://github.com/pimoroni/bme680-python/blob/e827e5d622fd70df2aee6a68ebac626cf539ee55/library/bme680/__init__.py#L331
+>
+> These algorithms are provided by Bosch and probably should be used as-is
+> unless you got some information from them. But I don't see any such
+> reference in the datasheet nor in their API.
+I think noone wants to tough those defaults. BME680 as said work as 
+expected. Idea behind that line is when it's not getting correct value 
+for temperature one adjust that little bit. It's ugly and it's not what 
+datasheet or API tolds us todo but it's practical.
+> Or it might be some heuristics. Not sure about it!
+>
+>> This one adjust temperature every time one reads it. For example my room
+>> temperature is something like 21C (I live in north) and BME680 reports 28C
+>> so humidity and pressure are incorrect (not much but notable).
+> Now since you're using IIO driver, I see the problem here:
+> https://github.com/torvalds/linux/blob/master/drivers/iio/chemical/bme680.h#L52
+>
+> 	#define BME680_AMB_TEMP				25
+>
+> Yes, it is hardcoded here and you should change it to according to your
+> room temperature(20-21 degC).
+Could this one turn into module parameter as it would be more 
+convenient? As it's hard breaking in year 2019 to recompile kernel to 
+make it fit to your room temperature. I can compile for testing but as I 
+can imagine most of the earth population won't do it.
+> There are two things that I shall be soon working on as soon as my
+> current work with Zephyr ends:
+>
+> 1. add profile duration function
+> 2. check for new available data before fetching
+>   ... and more if anything comes up.
 
-Applied to the togreg branch of iio.git and pushed out as testing for the
-autobuilders to play with it.
+One thing that should be addressed is that if you only read one 
+measurement and go to sleep then your VOC is incorrect as it needs 5 
+mins or something to warm up. Of course I can read very rapidly to make 
+that work and I assume that thread in mailing list with continous stream 
+is all about that.
 
-Thanks,
+> Bosch claimed that new datasheet shall be soon be available with all the
+> missing info, and then anyone wouldn't need to reverse engineer their API
+> or BSEC to get the desired info :P
+Hopefully this comes sooner than later as it would make things more easier
+> Thank you for using the IIO driver and I'm glad that there are users out
+> there testing it. Please let me know if there are any more issues :)
 
-Jonathan
+No problem.. I'll try to make it work as that Python library but I have 
+to over come these few problems.
 
+Sincerely,
+
+Tuukka
 
