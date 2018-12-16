@@ -6,38 +6,38 @@ X-Spam-Status: No, score=-7.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C740FC43387
-	for <linux-iio@archiver.kernel.org>; Sun, 16 Dec 2018 13:49:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56EEDC43387
+	for <linux-iio@archiver.kernel.org>; Sun, 16 Dec 2018 13:51:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7E18B21836
-	for <linux-iio@archiver.kernel.org>; Sun, 16 Dec 2018 13:49:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 23C5B21836
+	for <linux-iio@archiver.kernel.org>; Sun, 16 Dec 2018 13:51:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1544968161;
-	bh=+ak4PUuvoPX7Ze5mhLXfDdslPFPSUpruNkb80uVUlUQ=;
+	s=default; t=1544968304;
+	bh=Kwfk9nsyyvXbz9AHPtkTlVLJpJjkf5k9W5bzsr87Zms=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=Y6eiKnW6fIYGgYxpRe31tC5vDH9XoFaRKpA5EGeBHQRnL6sw5Z8C/PTO9R4nQPMpO
-	 QPQ4EUd9m32Wy/XUAgq0Q24ff/aGoIUa/APT0A3NdZ8HjFtfDUBL+3qwu+QSjwBqJq
-	 t7uyyYDbUCxmFSPHgYpFOwT7OkW0xhkNPC0Dro1s=
+	b=Are3r1IQCCGsBsBy7Z7djny6Bk8BoVKm2nVW7/XY95YGiXI6H9TwJ7r4RBMVKgX6i
+	 rIJ9uolwL6WbbixGXcEHuWSSmkMo+3iAOHDl5/XDFakA8CAPYFu4ZKVcmt33s89AB9
+	 c9z9DOQetCZZ62bK93ESagc2oDWANhjR81UW/tjs=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730319AbeLPNtU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 16 Dec 2018 08:49:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59522 "EHLO mail.kernel.org"
+        id S1730197AbeLPNvn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 16 Dec 2018 08:51:43 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60292 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730197AbeLPNtU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 16 Dec 2018 08:49:20 -0500
+        id S1729859AbeLPNvn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 16 Dec 2018 08:51:43 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C96422086C;
-        Sun, 16 Dec 2018 13:49:16 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EABCF2086C;
+        Sun, 16 Dec 2018 13:51:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1544968158;
-        bh=+ak4PUuvoPX7Ze5mhLXfDdslPFPSUpruNkb80uVUlUQ=;
+        s=default; t=1544968302;
+        bh=Kwfk9nsyyvXbz9AHPtkTlVLJpJjkf5k9W5bzsr87Zms=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ge9Q/xXFO8rhj2wh30PgXQ8ZxrA0v+95ZViY+Z9PX4M7/znncVPhytNNdMiJi+NtQ
-         XXG4bua55f8eecuRCiLVwnAbwFB28ZOOb5CjgSXk9qZfcc8UkdCkzO/o2HP3tKWUxY
-         54/Aj7IVQZJnOkqAVlaSt2QaxCDQyEHc8wTT5Rx0=
-Date:   Sun, 16 Dec 2018 13:49:13 +0000
+        b=OqhwEK7fdJkgghkFMxAB/6UHQTAbQT2S1xEIP9W0yDuE+YpAzK7/2FTisOkED16O7
+         M0OdjR2OKEMAnmP7KAJLPpMRJ77iz+tK3NHi7VhcpffNeGdMHe0QbNd82p4jOTbrQf
+         zK88VT1osaMnKIHfbLXWo+z8CWUGexmQ+m1mYrb8=
+Date:   Sun, 16 Dec 2018 13:51:36 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Stefan Popa <stefan.popa@analog.com>
 Cc:     <robh+dt@kernel.org>, <mark.rutland@arm.com>,
@@ -46,12 +46,12 @@ Cc:     <robh+dt@kernel.org>, <mark.rutland@arm.com>,
         <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
         <linux-iio@vger.kernel.org>, <devel@driverdev.osuosl.org>,
         <stefan.popa@analog.co>
-Subject: Re: [PATCH 05/11] staging: iio: adc: ad7606: Add support for
- threaded irq
-Message-ID: <20181216134913.1751b640@archlinux>
-In-Reply-To: <1544705183-13288-6-git-send-email-stefan.popa@analog.com>
+Subject: Re: [PATCH 06/11] staging: iio: adc: ad7606: Use find_closest()
+ macro
+Message-ID: <20181216135136.7c7bde18@archlinux>
+In-Reply-To: <1544705183-13288-7-git-send-email-stefan.popa@analog.com>
 References: <1544705183-13288-1-git-send-email-stefan.popa@analog.com>
-        <1544705183-13288-6-git-send-email-stefan.popa@analog.com>
+        <1544705183-13288-7-git-send-email-stefan.popa@analog.com>
 X-Mailer: Claws Mail 3.17.2 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -61,278 +61,141 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 13 Dec 2018 14:46:17 +0200
+On Thu, 13 Dec 2018 14:46:18 +0200
 Stefan Popa <stefan.popa@analog.com> wrote:
 
-> This patch replaces the use of a polling ring buffer with a threaded
-> interrupt.
-> 
-> Enabling the buffer sets the CONVST signal to high. When the rising edge
-> of the CONVST is applied, BUSY signal goes logic high and transitions low
-> at the end of the entire conversion process. The falling edge of the BUSY
-> signal triggers the interrupt.
-> 
-> ad7606_trigger_handler() is used as bottom half of the poll function.
-> It reads data from the device and stores it in the internal buffer.
+> When looking for the available scale or oversampling ratio, it is better
+> to use the find_closest() macro. This simplifies the code and also does
+> not require an exact value to be entered from the user space.
 > 
 > Signed-off-by: Stefan Popa <stefan.popa@analog.com>
-I'd like a little more info as comments in this one. See below.
-Which is another way of saying I have no idea what is going on :)
+Nice little cleanup.
+
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to play with it.
 
 Thanks,
 
-Jonathan.
+Jonathan
 
 > ---
->  drivers/staging/iio/adc/ad7606.c | 116 +++++++++++++++++++++++++++++----------
->  drivers/staging/iio/adc/ad7606.h |   6 +-
->  2 files changed, 89 insertions(+), 33 deletions(-)
+>  drivers/staging/iio/adc/ad7606.c | 58 +++++++++++++++-------------------------
+>  1 file changed, 22 insertions(+), 36 deletions(-)
 > 
 > diff --git a/drivers/staging/iio/adc/ad7606.c b/drivers/staging/iio/adc/ad7606.c
-> index 7191d51..13aeeec 100644
+> index 13aeeec..0925379 100644
 > --- a/drivers/staging/iio/adc/ad7606.c
 > +++ b/drivers/staging/iio/adc/ad7606.c
-> @@ -21,6 +21,7 @@
->  #include <linux/iio/sysfs.h>
->  #include <linux/iio/buffer.h>
->  #include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/trigger.h>
->  #include <linux/iio/triggered_buffer.h>
+> @@ -16,6 +16,7 @@
+>  #include <linux/delay.h>
+>  #include <linux/sched.h>
+>  #include <linux/module.h>
+> +#include <linux/util_macros.h>
 >  
->  #include "ad7606.h"
-> @@ -81,36 +82,24 @@ static int ad7606_read_samples(struct ad7606_state *st)
->  static irqreturn_t ad7606_trigger_handler(int irq, void *p)
->  {
->  	struct iio_poll_func *pf = p;
-> -	struct ad7606_state *st = iio_priv(pf->indio_dev);
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/sysfs.h>
+> @@ -30,8 +31,12 @@
+>   * Scales are computed as 5000/32768 and 10000/32768 respectively,
+>   * so that when applied to the raw values they provide mV values
+>   */
+> -static const unsigned int scale_avail[2][2] = {
+> -	{0, 152588}, {0, 305176}
+> +static const unsigned int scale_avail[2] = {
+> +	152588, 305176
+> +};
+> +
+> +static const unsigned int ad7606_oversampling_avail[7] = {
+> +	1, 2, 4, 8, 16, 32, 64,
+>  };
+>  
+>  static int ad7606_reset(struct ad7606_state *st)
+> @@ -148,8 +153,8 @@ static int ad7606_read_raw(struct iio_dev *indio_dev,
+>  		*val = (short)ret;
+>  		return IIO_VAL_INT;
+>  	case IIO_CHAN_INFO_SCALE:
+> -		*val = scale_avail[st->range][0];
+> -		*val2 = scale_avail[st->range][1];
+> +		*val = 0;
+> +		*val2 = scale_avail[st->range];
+>  		return IIO_VAL_INT_PLUS_MICRO;
+>  	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+>  		*val = st->oversampling;
+> @@ -165,8 +170,8 @@ static ssize_t in_voltage_scale_available_show(struct device *dev,
+>  	int i, len = 0;
+>  
+>  	for (i = 0; i < ARRAY_SIZE(scale_avail); i++)
+> -		len += scnprintf(buf + len, PAGE_SIZE - len, "%d.%06u ",
+> -				 scale_avail[i][0], scale_avail[i][1]);
+> +		len += scnprintf(buf + len, PAGE_SIZE - len, "0.%06u ",
+> +				 scale_avail[i]);
+>  
+>  	buf[len - 1] = '\n';
+>  
+> @@ -175,18 +180,6 @@ static ssize_t in_voltage_scale_available_show(struct device *dev,
+>  
+>  static IIO_DEVICE_ATTR_RO(in_voltage_scale_available, 0);
+>  
+> -static int ad7606_oversampling_get_index(unsigned int val)
+> -{
+> -	unsigned char supported[] = {1, 2, 4, 8, 16, 32, 64};
+> -	int i;
 > -
-> -	gpiod_set_value(st->gpio_convst, 1);
+> -	for (i = 0; i < ARRAY_SIZE(supported); i++)
+> -		if (val == supported[i])
+> -			return i;
 > -
-> -	return IRQ_HANDLED;
+> -	return -EINVAL;
 > -}
 > -
-> -/**
-> - * ad7606_poll_bh_to_ring() bh of trigger launched polling to ring buffer
-> - * @work_s:	the work struct through which this was scheduled
-> - *
-> - * Currently there is no option in this driver to disable the saving of
-> - * timestamps within the ring.
-> - * I think the one copy of this at a time was to avoid problems if the
-> - * trigger was set far too high and the reads then locked up the computer.
-> - **/
-> -static void ad7606_poll_bh_to_ring(struct work_struct *work_s)
-> -{
-> -	struct ad7606_state *st = container_of(work_s, struct ad7606_state,
-> -						poll_work);
-> -	struct iio_dev *indio_dev = iio_priv_to_dev(st);
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct ad7606_state *st = iio_priv(indio_dev);
->  	int ret;
->  
-> +	mutex_lock(&st->lock);
-> +
->  	ret = ad7606_read_samples(st);
->  	if (ret == 0)
->  		iio_push_to_buffers_with_timestamp(indio_dev, st->data,
->  						   iio_get_time_ns(indio_dev));
->  
-> -	gpiod_set_value(st->gpio_convst, 0);
->  	iio_trigger_notify_done(indio_dev->trig);
-> +	/* The rising edge of the CONVST signal starts a new conversion. */
-> +	gpiod_set_value(st->gpio_convst, 1);
-> +
-> +	mutex_unlock(&st->lock);
-> +
-> +	return IRQ_HANDLED;
->  }
->  
->  static int ad7606_scan_direct(struct iio_dev *indio_dev, unsigned int ch)
-> @@ -378,8 +367,11 @@ static int ad7606_request_gpios(struct ad7606_state *st)
->  	return PTR_ERR_OR_ZERO(st->gpio_os);
->  }
->  
-> -/**
-> - *  Interrupt handler
-> +/*
-> + * The BUSY signal indicates when conversions are in progress, so when a rising
-> + * edge of CONVST is applied, BUSY goes logic high and transitions low at the
-> + * end of the entire conversion process. The falling edge of the BUSY signal
-> + * triggers this interrupt.
->   */
->  static irqreturn_t ad7606_interrupt(int irq, void *dev_id)
+>  static int ad7606_write_raw(struct iio_dev *indio_dev,
+>  			    struct iio_chan_spec const *chan,
+>  			    int val,
+> @@ -195,36 +188,29 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
 >  {
-> @@ -387,7 +379,8 @@ static irqreturn_t ad7606_interrupt(int irq, void *dev_id)
 >  	struct ad7606_state *st = iio_priv(indio_dev);
+>  	DECLARE_BITMAP(values, 3);
+> -	int ret, i;
+> +	int i;
 >  
->  	if (iio_buffer_enabled(indio_dev)) {
-> -		schedule_work(&st->poll_work);
-> +		gpiod_set_value(st->gpio_convst, 0);
-> +		iio_trigger_poll_chained(st->trig);
->  	} else {
->  		complete(&st->completion);
->  	}
-> @@ -395,26 +388,74 @@ static irqreturn_t ad7606_interrupt(int irq, void *dev_id)
->  	return IRQ_HANDLED;
->  };
->  
-> +static int ad7606_validate_trigger(struct iio_dev *indio_dev,
-> +				   struct iio_trigger *trig)
-> +{
-> +	struct ad7606_state *st = iio_priv(indio_dev);
-> +
-> +	if (st->trig != trig)
-> +		return -EINVAL;
-> +
-> +	return 0;
-> +}
-> +
-> +static int ad7606_buffer_postenable(struct iio_dev *indio_dev)
-> +{
-> +	struct ad7606_state *st = iio_priv(indio_dev);
-> +
-> +	iio_triggered_buffer_postenable(indio_dev);
-> +	gpiod_set_value(st->gpio_convst, 1);
-> +
-> +	return 0;
-> +}
-> +
-> +static int ad7606_buffer_predisable(struct iio_dev *indio_dev)
-> +{
-> +	struct ad7606_state *st = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	reinit_completion(&st->completion);
-> +	gpiod_set_value(st->gpio_convst, 1);
-> +	ret = wait_for_completion_timeout(&st->completion,
-> +					  msecs_to_jiffies(1000));
-
-Along with Dan's comment. I'd like to see a comment here on what
-is actually going on.  Not immediately obvious a conversion should
-be triggered to disable the buffer...
-
-I'll guess there is a race against the normal handler that we
-are closing with this dance, but that race needs explaining.
-
-> +	gpiod_set_value(st->gpio_convst, 0);
-> +
-> +	return iio_triggered_buffer_predisable(indio_dev);
-> +}
-> +
-> +static const struct iio_buffer_setup_ops ad7606_buffer_ops = {
-> +	.postenable = &ad7606_buffer_postenable,
-> +	.predisable = &ad7606_buffer_predisable,
-> +};
-> +
->  static const struct iio_info ad7606_info_no_os_or_range = {
->  	.read_raw = &ad7606_read_raw,
-> +	.validate_trigger = &ad7606_validate_trigger,
->  };
->  
->  static const struct iio_info ad7606_info_os_and_range = {
->  	.read_raw = &ad7606_read_raw,
->  	.write_raw = &ad7606_write_raw,
->  	.attrs = &ad7606_attribute_group_os_and_range,
-> +	.validate_trigger = &ad7606_validate_trigger,
->  };
->  
->  static const struct iio_info ad7606_info_os = {
->  	.read_raw = &ad7606_read_raw,
->  	.write_raw = &ad7606_write_raw,
->  	.attrs = &ad7606_attribute_group_os,
-> +	.validate_trigger = &ad7606_validate_trigger,
->  };
->  
->  static const struct iio_info ad7606_info_range = {
->  	.read_raw = &ad7606_read_raw,
->  	.write_raw = &ad7606_write_raw,
->  	.attrs = &ad7606_attribute_group_range,
-> +	.validate_trigger = &ad7606_validate_trigger,
-> +};
-> +
-> +static const struct iio_trigger_ops ad7606_trigger_ops = {
-> +	.validate_device = iio_trigger_validate_own_device,
->  };
->  
->  static void ad7606_regulator_disable(void *data)
-> @@ -446,7 +487,6 @@ int ad7606_probe(struct device *dev, int irq, void __iomem *base_address,
->  	/* tied to logic low, analog input range is +/- 5V */
->  	st->range = 0;
->  	st->oversampling = 1;
-> -	INIT_WORK(&st->poll_work, &ad7606_poll_bh_to_ring);
->  
->  	st->reg = devm_regulator_get(dev, "avcc");
->  	if (IS_ERR(st->reg))
-> @@ -491,14 +531,32 @@ int ad7606_probe(struct device *dev, int irq, void __iomem *base_address,
->  	if (ret)
->  		dev_warn(st->dev, "failed to RESET: no RESET GPIO specified\n");
->  
-> -	ret = devm_request_irq(dev, irq, ad7606_interrupt, IRQF_TRIGGER_FALLING,
-> -			       name, indio_dev);
-> +	st->trig = devm_iio_trigger_alloc(dev, "%s-dev%d",
-> +					  indio_dev->name, indio_dev->id);
-> +	if (!st->trig)
-> +		return -ENOMEM;
-> +
-> +	st->trig->ops = &ad7606_trigger_ops;
-> +	st->trig->dev.parent = dev;
-> +	iio_trigger_set_drvdata(st->trig, indio_dev);
-> +	ret = devm_iio_trigger_register(dev, st->trig);
-> +	if (ret)
-> +		return ret;
-> +
-> +	indio_dev->trig = iio_trigger_get(st->trig);
-> +
-> +	ret = devm_request_threaded_irq(dev, irq,
-> +					NULL,
-> +					&ad7606_interrupt,
-> +					IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
-> +					name, indio_dev);
->  	if (ret)
->  		return ret;
->  
->  	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
-> +					      &iio_pollfunc_store_time,
->  					      &ad7606_trigger_handler,
-> -					      NULL, NULL);
-> +					      &ad7606_buffer_ops);
->  	if (ret)
->  		return ret;
->  
-> diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
-> index 70486ef..b238e9b 100644
-> --- a/drivers/staging/iio/adc/ad7606.h
-> +++ b/drivers/staging/iio/adc/ad7606.h
-> @@ -26,8 +26,6 @@ struct ad7606_chip_info {
->   * @dev		pointer to kernel device
->   * @chip_info		entry in the table of chips that describes this device
->   * @reg		regulator info for the the power supply of the device
-> - * @poll_work		work struct for continuously reading data from the device
-> - *			into an IIO triggered buffer
->   * @bops		bus operations (SPI or parallel)
->   * @range		voltage range selection, selects which scale to apply
->   * @oversampling	oversampling selection
-> @@ -42,14 +40,13 @@ struct ad7606_chip_info {
->   *			is being read on the first channel
->   * @gpio_os		GPIO descriptors to control oversampling on the device
->   * @complete		completion to indicate end of conversion
-> + * @trig		The IIO trigger associated with the device.
->   * @data		buffer for reading data from the device
->   */
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_SCALE:
+> -		ret = -EINVAL;
+>  		mutex_lock(&st->lock);
+> -		for (i = 0; i < ARRAY_SIZE(scale_avail); i++)
+> -			if (val2 == scale_avail[i][1]) {
+> -				gpiod_set_value(st->gpio_range, i);
+> -				st->range = i;
 > -
->  struct ad7606_state {
->  	struct device			*dev;
->  	const struct ad7606_chip_info	*chip_info;
->  	struct regulator		*reg;
-> -	struct work_struct		poll_work;
->  	const struct ad7606_bus_ops	*bops;
->  	unsigned int			range;
->  	unsigned int			oversampling;
-> @@ -62,6 +59,7 @@ struct ad7606_state {
->  	struct gpio_desc		*gpio_standby;
->  	struct gpio_desc		*gpio_frstdata;
->  	struct gpio_descs		*gpio_os;
-> +	struct iio_trigger		*trig;
->  	struct completion		completion;
+> -				ret = 0;
+> -				break;
+> -			}
+> +		i = find_closest(val2, scale_avail, ARRAY_SIZE(scale_avail));
+> +		gpiod_set_value(st->gpio_range, i);
+> +		st->range = i;
+>  		mutex_unlock(&st->lock);
 >  
->  	/*
+> -		return ret;
+> +		return 0;
+>  	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+>  		if (val2)
+>  			return -EINVAL;
+> -		ret = ad7606_oversampling_get_index(val);
+> -		if (ret < 0)
+> -			return ret;
+> +		i = find_closest(val, ad7606_oversampling_avail,
+> +				 ARRAY_SIZE(ad7606_oversampling_avail));
+>  
+> -		values[0] = ret;
+> +		values[0] = i;
+>  
+>  		mutex_lock(&st->lock);
+> -		gpiod_set_array_value(3, st->gpio_os->desc, st->gpio_os->info,
+> -				      values);
+> -		st->oversampling = val;
+> +		gpiod_set_array_value(ARRAY_SIZE(values), st->gpio_os->desc,
+> +				      st->gpio_os->info, values);
+> +		st->oversampling = ad7606_oversampling_avail[i];
+>  		mutex_unlock(&st->lock);
+>  
+>  		return 0;
 
