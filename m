@@ -4,37 +4,37 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
 	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 963F1C43387
-	for <linux-iio@archiver.kernel.org>; Mon, 17 Dec 2018 12:24:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 918C4C43387
+	for <linux-iio@archiver.kernel.org>; Mon, 17 Dec 2018 12:25:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5203F20645
-	for <linux-iio@archiver.kernel.org>; Mon, 17 Dec 2018 12:24:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 42A0320645
+	for <linux-iio@archiver.kernel.org>; Mon, 17 Dec 2018 12:25:14 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="P8sbdKyn"
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="t69Cn9oC"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727356AbeLQMYr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 17 Dec 2018 07:24:47 -0500
-Received: from mail-eopbgr690040.outbound.protection.outlook.com ([40.107.69.40]:15264
-        "EHLO NAM04-CO1-obe.outbound.protection.outlook.com"
+        id S1726981AbeLQMZI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 17 Dec 2018 07:25:08 -0500
+Received: from mail-eopbgr810040.outbound.protection.outlook.com ([40.107.81.40]:33440
+        "EHLO NAM01-BY2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727068AbeLQMYr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 17 Dec 2018 07:24:47 -0500
+        id S1726938AbeLQMZH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 17 Dec 2018 07:25:07 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=analog.onmicrosoft.com; s=selector1-analog-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Fg/1+UU99U33g2Rr7bYb8mBQa9NmDrj5RvPVE6WHu8c=;
- b=P8sbdKyn6cCTXSY0zZJc2urUhyfTE5YSWAczJinYm/Hsocb5EbSCkq78uCD2tWofOuL5Kk2lvBy1MdGxs/fcPF1GmRaNS+deg9uboC6hyDs+DHXbmetCJNaDYi5/FSIFyrNtCU3PYFFLz++rcjLvORi6BUWtJRkdUPrnqxPIpCU=
-Received: from DM6PR03CA0017.namprd03.prod.outlook.com (2603:10b6:5:40::30) by
- DM6PR03MB3756.namprd03.prod.outlook.com (2603:10b6:5:50::19) with Microsoft
+ bh=zTKwXQ5CLNBCPOn2zNXVn6JSO3H/Q35XSt7Wj/6E3/o=;
+ b=t69Cn9oCuXItWQ/I2k9aJqDIBXqE5nn3YUKCiCuxTAwyJ4QiZNPeV9Gw95m5vm/Wt3J6EpDvFbkm3tAB8Fn7uoN/ZCNFPsBuXeJ5PzqQDpkAV8aYMLkH0z3EfhQ+v74LzOZk0z9YWhMGeFII16xX3lerhMrY/akHLIkBZWMcVDk=
+Received: from DM6PR03CA0015.namprd03.prod.outlook.com (2603:10b6:5:40::28) by
+ SN6PR03MB3517.namprd03.prod.outlook.com (2603:10b6:805:41::10) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1425.18; Mon, 17 Dec 2018 12:24:43 +0000
-Received: from BN1BFFO11FD014.protection.gbl (2a01:111:f400:7c10::1:173) by
- DM6PR03CA0017.outlook.office365.com (2603:10b6:5:40::30) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.1425.19 via Frontend Transport; Mon, 17 Dec 2018 12:24:43 +0000
+ 15.20.1425.22; Mon, 17 Dec 2018 12:25:03 +0000
+Received: from BN1AFFO11FD006.protection.gbl (2a01:111:f400:7c10::126) by
+ DM6PR03CA0015.outlook.office365.com (2603:10b6:5:40::28) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1425.19 via Frontend Transport; Mon, 17 Dec 2018 12:25:03 +0000
 Authentication-Results: spf=pass (sender IP is 137.71.25.55)
  smtp.mailfrom=analog.com; gmx.de; dkim=none (message not signed)
  header.d=none;gmx.de; dmarc=bestguesspass action=none header.from=analog.com;
@@ -42,16 +42,16 @@ Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
  137.71.25.55 as permitted sender) receiver=protection.outlook.com;
  client-ip=137.71.25.55; helo=nwd2mta1.analog.com;
 Received: from nwd2mta1.analog.com (137.71.25.55) by
- BN1BFFO11FD014.mail.protection.outlook.com (10.58.144.77) with Microsoft SMTP
+ BN1AFFO11FD006.mail.protection.outlook.com (10.58.52.66) with Microsoft SMTP
  Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.1446.11
- via Frontend Transport; Mon, 17 Dec 2018 12:24:43 +0000
+ via Frontend Transport; Mon, 17 Dec 2018 12:25:03 +0000
 Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
-        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id wBHCOg0a016454
+        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id wBHCP2EV016567
         (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
-        Mon, 17 Dec 2018 04:24:42 -0800
+        Mon, 17 Dec 2018 04:25:02 -0800
 Received: from linux.analog.com (10.50.1.118) by NWD2HUBCAS7.ad.analog.com
  (10.64.69.107) with Microsoft SMTP Server id 14.3.408.0; Mon, 17 Dec 2018
- 07:24:42 -0500
+ 07:25:02 -0500
 From:   Stefan Popa <stefan.popa@analog.com>
 To:     <jic23@kernel.org>, <robh+dt@kernel.org>, <mark.rutland@arm.com>
 CC:     Stefan Popa <stefan.popa@analog.com>,
@@ -59,9 +59,9 @@ CC:     Stefan Popa <stefan.popa@analog.com>,
         <lars@metafoo.de>, <pmeerw@pmeerw.net>,
         <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
         <linux-iio@vger.kernel.org>, <devel@driverdev.osuosl.org>
-Subject: [PATCH v2 2/6] staging: iio: adc: ad7606: Use SPDX identifier
-Date:   Mon, 17 Dec 2018 14:23:36 +0200
-Message-ID: <1545049420-16484-3-git-send-email-stefan.popa@analog.com>
+Subject: [PATCH v2 3/6] staging: iio: adc: ad7606: Add support for threaded irq
+Date:   Mon, 17 Dec 2018 14:23:37 +0200
+Message-ID: <1545049420-16484-4-git-send-email-stefan.popa@analog.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1545049420-16484-1-git-send-email-stefan.popa@analog.com>
 References: <1545049420-16484-1-git-send-email-stefan.popa@analog.com>
@@ -70,145 +70,307 @@ Content-Type: text/plain
 X-ADIRoutedOnPrem: True
 X-EOPAttributedMessage: 0
 X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(376002)(346002)(396003)(136003)(39860400002)(2980300002)(3190300001)(189003)(199004)(53416004)(356004)(6666004)(316002)(54906003)(110136005)(16586007)(106466001)(50466002)(50226002)(5660300001)(246002)(51416003)(7696005)(8676002)(575784001)(76176011)(4326008)(478600001)(126002)(116002)(476003)(2616005)(72206003)(486006)(8936002)(7636002)(47776003)(44832011)(336012)(426003)(7416002)(186003)(446003)(2906002)(36756003)(48376002)(11346002)(77096007)(26005)(106002)(305945005);DIR:OUT;SFP:1101;SCL:1;SRVR:DM6PR03MB3756;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;MX:1;A:1;
-X-Microsoft-Exchange-Diagnostics: 1;BN1BFFO11FD014;1:Tum4ch4wq4hrejSPFDvaESSQrZ3LOgrO+h67wFr9kxqu+9RPZHEJMX9QH77d4QNjzenRWsJX4v9RNM88jLEm+y8slhQQ6w6oghbcXJ2jLj4nqyeJwLP7CSUX2+qo8aye
+X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(346002)(376002)(136003)(396003)(39860400002)(2980300002)(3190300001)(189003)(199004)(8936002)(54906003)(110136005)(72206003)(47776003)(478600001)(14444005)(48376002)(186003)(6666004)(356004)(106466001)(5660300001)(305945005)(7696005)(51416003)(7636002)(36756003)(50466002)(2616005)(53416004)(446003)(7416002)(2906002)(336012)(44832011)(16586007)(76176011)(11346002)(4326008)(426003)(26005)(8676002)(246002)(126002)(476003)(77096007)(316002)(50226002)(116002)(486006)(106002);DIR:OUT;SFP:1101;SCL:1;SRVR:SN6PR03MB3517;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;MX:1;A:1;
+X-Microsoft-Exchange-Diagnostics: 1;BN1AFFO11FD006;1:Q8YyPguWkgo48IJnXHOVktMmWCAwkqHwZ+1xoV3IkQ8hW2d//VYrnVIYt860EydVn7kdlC95B4ApwiHFP3LK61Mkv5y/cRRFFWVyT7Ko5mHJToauhA3V4Ir/jxiOu32r
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 84a8b62f-5b95-413e-1dc5-08d6641a9fca
-X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600074)(711020)(4608076)(2017052603328)(7153060);SRVR:DM6PR03MB3756;
-X-Microsoft-Exchange-Diagnostics: 1;DM6PR03MB3756;3:NDOugE1ewcwAhYshuPioDLWGByARIRdIS+X9LIUppO1w6kkw2/lshS9Znvn3hIAOEZ9NItx1DDXSBLIHIBNXYfzb1pAVDXrMASZki0CaWxOrh6T8jQtg6EuzMLjeix8n4/aU4p+Cs00kArj2emrau08wS6IBPv3ufgJGssmIFs3nx8zCS3Jy9+PJtmQfn0g6i4xsfrLK84g4i3UMXHLAbHE1UjvumfuyLYJ0QCpy1b383QTzV4F5sVBYDHXoDztPOPKOF0RTk63LxIglSCuPndTDFCZFnIVDq8OLIsnNYU1ryg+9d1qOyhOvTkrzhvW6S9Bbi1sUPBaHrTaaTjzqn9L5iWjMyEOLM2PpHXcQPf8=;25:/QE3L4wdRT+7APSioYsn3My3ItRI1WY4mGKQUDraeCJIP7Iq9hhoH3YInQ8iNt3amAPP5hig0ygLzLsVljMmxRZQfv2jiIwyLWjETtGQSPW3aVU9LMN2V3ehz+D3EeqaNiEArfKJ6FMyTyntUaXJt0iMTskswFFT5nb3EnJiH7ITMy6Iibl/cw7C8PIwbmbRQ7LEqL9eLTenOsRRYM7/gwipj+Y6GHCuQHc0X8dlJBxQnuz4vxqCKVarLP/m7lcxa2aJ0t5dDZyen4K+KPieW4kmLzxsXwDkWdsXoIQZ4UH0El15esJre6MzK1f/i7Zips5rAdUf/CVdYYdcDGl4Iw==
-X-MS-TrafficTypeDiagnostic: DM6PR03MB3756:
-X-Microsoft-Exchange-Diagnostics: 1;DM6PR03MB3756;31:yaFhYprVZhIis9KvRdrlYqeYn16e0iuu4b5er5CIID6HzC9ktBTmQjWTiJAyJwVSzJg4tR5204ey4kOJxrisO3LrQmoAAD3xpKrnrRU1/hQyTRkqTvV/vIx2efzoGxSFZ2siJePZwOOabCzyPwjpOegxnU3u2YlBGpAWEMMHOUUjGmfbo3UIWshy2NupvqrixdPILy1P2/cHPFwn7OOTUpvmMqG5KmBqjMhSuefQ2RI=;20:WAeX88n5xLOhzQt6UQP5mLd80J91sVfQHVSiUjZEo35d4kPy7Q/Cizv3aOWjv59ckwczS65IAakfMGVfHleQgAcqikQLw3jYbpHpRPGOxeReAdeZSNKHXbq9HJ7ooeTq1NWF73byWhEip9ogb9LNjstKdFt4UMih3WZJOW8/6hsRCYEoRGR9qGoo+JXXWf5hawXIST9TMf9mbOrPUZpyE2dYUelqiXNvgeS+VrKymTpSLNW4R3uhT03MHYS44T/OvVGtf0AM/TmXD/U2HtwJ5AIawZmY1bA/bggTGHhksZGfhax+PPeNczSvJc/LCEnQAuHwmLlYvAX6Dpa8O4hT21gLWVNqvhw7OQDq6CBUVlY144ywYtw89DSD6JNZZ1k0YPsRnCYPCKZo0vywObbhpJ7eNr0akhKaQWHxKxTUEsv+0SWyjOxUb9euagm5MveSthcfeCX/o01HFPcetJ7PokO+QnKQ4bBm9EXP13lBLnPSXeCQfPR0KAT6vobmdrQH
-X-Microsoft-Antispam-PRVS: <DM6PR03MB375684945E44E6419AFF81C59DBC0@DM6PR03MB3756.namprd03.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 7853e3ce-0fbc-41f8-31ff-08d6641aabb4
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600074)(711020)(4608076)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7153060);SRVR:SN6PR03MB3517;
+X-Microsoft-Exchange-Diagnostics: 1;SN6PR03MB3517;3:Y1+EHuEV3OgPPN7YujmthcElbRwYMvSYVgQpnKKLCn0U5gJSnmLWIxLFhkGjMZ+CpugVAQ5dsVW4ZCoM3TWAVgpm0YZNCL5DrRa+QkUiz83Y/q5a4Bp2ct9npkD32Qim7lSRwZIF1Rc7n5HQyv8ftb/ll9VQAeKHCRYXjcu5N3R2+g7bQpCQatkVtmEx3XFkVmz+JS4wOuJ/ruH9UbK5WN7os3HKVX+2N89zxhoHxl7oTCqKL/1rNeydzTrvEzd39zGpnnrYFWyzA4TasjJZL2FyJzaAzOVyIDAITdpsIrMbhIKGEy/k3+4S7JBNTBG9/tIZQKHR4jB8rsNINIdTxW9XiNuRGWFF/2yVsSP2osA=;25:/3KNP4iON4Yegc0lJZQO0oYkceOxBBBjPFzGRJcVax3TPX5B/TGjmvzyL9Vz74TgiRCLooAwp/Ws/V9YckpnKtE/HUK6dTLw55HMBvsbQ2K0ckzKYurtUnmx73yIxdS/Fh7mC6qxe7CrRb/vgVb/mtRJbSI5udopjzdxxxtd1Saw4zGHuUciGWjQ1DDTKOmK4V0RLpPtPytR3TIPtucEHH2v6XQktBsehgo9HZKNqxZkR32G4q5Jw6bW43oSSEDJtrf3xqwSfh7THHn6Kx4Ac+3oHErss2wlFH05E1/EKmA5o2T+Gufc7KvkzfEOFdcnYuDPonP4UcED9MUTdxmttQ==
+X-MS-TrafficTypeDiagnostic: SN6PR03MB3517:
+X-Microsoft-Exchange-Diagnostics: 1;SN6PR03MB3517;31:9mcEGizbE9vk6gfVTUVN0o+xb1dVjJJA1YeXoFWbvsh4EQZ8OUmBRlgH+N3EJZvR6iJA2nR33c/Jzm9VyihkxmqIzhIdi6vZ+leTdD/EBW6S/eg8f4WW6euQ+NCKTgUOKiT3PBUuckPTn2vp4I/skGZgcaVUGg0kMzUWuwUxRwcFhFYqeVAnrO4eFEJxdE1VWCEXoTgUw55ZJe4hbO08MZS5FCIN2A8GdLQUABA408Q=;20:E2FZssSwhCixkpyLZiuTlzMo7rql6ovatTBJ0Cae3NHvU0zozC/g0hbfX2J0S7sYILnsSzlyQ5PIjKg/oylVTWkhNYMDtG9T9jr+5aCSQSxu9fH1KlshdSJYfQtuQHsrlEAg5JHWHkXXCvFnwdWnrYV2W0MBn1zJFNuKiuTUSaikGYa2+PfFfcfzMNMYlvi3Zz+/rOhfotHe9wLK5aAFORyBfle0rlGxywmEPs1WRkXgitQTBRt2abY2y54uUCifF9jgs3itYUO9vuwTxbsIES93ZAmy1pqeuo++My6ghNgo5m1KUWTUiNdYsQie+Zu8TNqsnEoBaDBRbuYTjkNg7A9+ED43CMneFN3xBbWqw8wbDqFleNpYJQAVpzmNepcPvr67oYWTzDOLD2lMgKEodXUyT8Kr8QgrGDssVRhy1dhnJ/j+QwVkzusg+6UNGpJzKn3/veK4xl+cFezm1C0hUUsUqR0KM9vQldmWAMzS8EG9z+nDOiI5OpN87rZWNWZb
+X-Microsoft-Antispam-PRVS: <SN6PR03MB3517A9D12C7241BA0BAECE1A9DBC0@SN6PR03MB3517.namprd03.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
-X-Exchange-Antispam-Report-CFA-Test: BCL:0;PCL:0;RULEID:(8211001083)(3230021)(999002)(6040522)(2401047)(5005006)(8121501046)(10201501046)(3231475)(944501520)(52105112)(3002001)(93006095)(93004095)(6055026)(148016)(149066)(150057)(6041310)(20161123560045)(20161123562045)(20161123558120)(201703131423095)(201702281528075)(20161123555045)(201703061421075)(201703061406153)(20161123564045)(201708071742011)(7699051)(76991095);SRVR:DM6PR03MB3756;BCL:0;PCL:0;RULEID:;SRVR:DM6PR03MB3756;
-X-Microsoft-Exchange-Diagnostics: 1;DM6PR03MB3756;4:R2NmiQKLgVKXgyz/FnJ4iF/7wnEcKGEOkYfDUGenrrd2J7ubF3K/bFP8x6xmZRjKOTmNvwGaOX+1DEWI7aftXAfNnh9FPSCuw9DDZMGvrNwKGEO7zSM780eBt59fyofb/M0kN+FBlqlmmwuXMklf1aBf9qXDlfg0Rh/kAlgRQ/+YOT9pv77hgxVdDHMPKzmvsMMseakx/hQEmps4S/YfGK8FDUj2XdVI5Q9Q0FPbSGoU9VVC4BWJSh6uMTH9Kez4RzQ9WBGMC7HNikjpHUNYrA==
+X-Exchange-Antispam-Report-CFA-Test: BCL:0;PCL:0;RULEID:(8211001083)(3230021)(999002)(6040522)(2401047)(5005006)(8121501046)(10201501046)(93006095)(93004095)(3002001)(3231475)(944501520)(52105112)(6055026)(148016)(149066)(150057)(6041310)(20161123560045)(20161123558120)(20161123562045)(201703131423095)(201702281528075)(20161123555045)(201703061421075)(201703061406153)(20161123564045)(201708071742011)(7699051)(76991095);SRVR:SN6PR03MB3517;BCL:0;PCL:0;RULEID:;SRVR:SN6PR03MB3517;
+X-Microsoft-Exchange-Diagnostics: 1;SN6PR03MB3517;4:wZJjQR9U+LH+ZALGjTE+kKCnadJ+fnRQ9sRcdladujA6BZjhcHYeBiC0JgW39VHtLlMHQ+Jk1ru4h1EBK1rkNhyu1ZTGpdebSJ+JBUq+OBKdOyb/KLzyjKb2wLON4kqpjblpkm7qg8BJe7dNirP2CAu7/bxjS58IvPvbh0pVOGsrDGpmDnFL4hEDcK5qSQmm97S/VSH/b1Lf0+b1PyUp1ZVd3LgVv2v09VzCWXVOR9g6qhIpbRqiILxH2QWBUpXb+NfpaViEGz+XdhR2M9iC5g==
 X-Forefront-PRVS: 08897B549D
-X-Microsoft-Exchange-Diagnostics: =?us-ascii?Q?1;DM6PR03MB3756;23:KSVCbYO6A3HoCOxIcrAC1Gk8d9XGWJbQmVONyeI8B?=
- =?us-ascii?Q?nQ4yi0wsdTuPhr3fGEyYir4HX22z+DrWFoty1n1uLvbcPwlNrDrd6E0O3RAL?=
- =?us-ascii?Q?jA+3zghmwlqQbqYKkWDPjdSEOBPgIgOmKG3RJhuTw/yOgkyAC/AQM63spnPi?=
- =?us-ascii?Q?Dlftd2TbpYLUHg2HMDxgadGVPYbGl6v/gVgOjVAWwBZ80zK24ecO1+vtcQQO?=
- =?us-ascii?Q?xnCOPOzsy4fcEy+StnZGencroUvTIoQEI2PTnLRaJssls2UBiwcrnBjrJso1?=
- =?us-ascii?Q?jvQE5W/8a6wP9mR0eI/yXlfmhK5RBYBcOmBjY0gTGc37DnZuLguNJrk6KTLb?=
- =?us-ascii?Q?9jK3kDAnX1hX+HVtaq2V2XXqCbDshQoQqtEBnleV++a9ulYnUw498Esv23Mr?=
- =?us-ascii?Q?wuqwFdf/t9UQV/YPg89N9b9uyh7y0p+PFXlNWwlH1iF9JLkoslDhgrIvkZ1U?=
- =?us-ascii?Q?34HxXNOhhymfr8QWukDtCxtSA8fi9ozsRacrjqQXGzIiRxgW0R6Q3PKmA+3i?=
- =?us-ascii?Q?LBQvv6qhQ/GoSIJcpRKzwK8ZGFrz6UyqoV5lE/jrXAUfzn4EW7FND6OTsGJw?=
- =?us-ascii?Q?sCNXhzHbUJnGlc99DfIQRsnmn6ICHVQwg09IM1zSdjfNbS7gyVlRiRwQoKEo?=
- =?us-ascii?Q?2BkN7pKGQwZvpXhqJmLqbY+GwXfkjVO4g80d6/hqMdl3w1Am7icoi7mmmnQC?=
- =?us-ascii?Q?ong8TqDOuPAQbCB0jBFwbvJbnxvlcYTSbFqs/cLwUDsPw7N0iLRg/Rfhr2Pl?=
- =?us-ascii?Q?yNdXrvmVLA2OBpXSl1nSLuKoqBFIFUQ2FAVtOraz4mqzl4S3fcHhhPlHNPnr?=
- =?us-ascii?Q?W9TEHvSTYSnGJdXc2F9QCxZ+JfB5ozuC3VRQv6rYskGt/3GEjXObsPOhyBNa?=
- =?us-ascii?Q?/ulTRv8KKAzlgxhJAce5Ejq2lGd24HoiNMmfmP0jh7fFMBoQWSVynVL6oXy0?=
- =?us-ascii?Q?ZPI3JEBNQ8yZmMgVJGyvbtGcXauDvTCwM58T3bJB6q08KL4bEOLoTKXywlMb?=
- =?us-ascii?Q?b2dPKofjZLYU/BfQ50a5mmyUr7HIRCWxiaePTKqsIa9iJEw47Yf7gO4v2GiP?=
- =?us-ascii?Q?hLrYgwQIwxAdHT85ULPOGxXVW1MJgHaIcLcvELm3FRJyPD0g5vo2MH9tzF9Y?=
- =?us-ascii?Q?fT2OdwORUY=3D?=
-X-Microsoft-Antispam-Message-Info: qZUlYW63L3onALgRUGNyABA5bnTCBrnQvJYHFkaqatnxPh2EdZHCVFG5oaenDmLVtr9+KebrvNV6JEJKqZfwTlAJiS8Z2ehZrkVFTiILrJ0Ds1bp+e5BYGV+FcEPfW3LBvsyosLXU/9GW0AURHlvuD7w5yNraLNdGmjbEajpzVubZNy5n+KcRXuvs2+OscY3vg81gkkMLFA1gVhP8SljAN18RGdVcMem9COHfYIphQ2wuos7fIr9KoEXMwAIrO29RZ0eSo8LNVQWXdnDe95mZrYmqn8pzj0BYmmJBhLchZ1lMCbodDE+L0Hopr0OeAQX
-X-Microsoft-Exchange-Diagnostics: 1;DM6PR03MB3756;6:P2ekRs9px3C1qObFlpNiKD7++qEWrMrAD5FgPIsjg5hBKYmKbUUC/OgM/RcywydF0G/fzpwajwd+p0WuB5ZrMCbaE57WRSET9MLoHSKlPmQkhqaEizB2Nyd984Gq1ZvDxlf/UC5bouQYRVGhQAZ5dQvV+tR+21nhNLWG/SNc33mWFFOSi0abuDRoNda7lgCzV+qNvVIAMnf6M7JKHE4fAxafO3q9NabBoxveS+NbPzpSZCTdMPgm+VlbZg/+vEZKDRHZO8q/anrj4dkUqjxNT2sQt0kdwaCNw/k98zyeIrD5CMm+Oiw8vmN4zVmYEquia0W8CFtZuqHz1+VhSA6wbLNAQMxoM8zi1/QInSO9CI4wNm/LOJ8+j72ObYHKRc5KqhjCa/CybYL9exZlFoCDJGgZndeZy82dj9IEVvJkVK0BGBmR7R59ePyPmV0lkQbTAFDYounQLvaFIDp/VR1UAA==;5:6jITAWp/pzJ8B2bdD6OkPulOlW3uhXK1M1ijwQnxKXO1ZnFL+HVvOpspxXlYIfsukOYsvCFd4NF5MH6oSPr6SB5xhRvBfM0EfMztbXWN1A6duwP1XJD2ECwEsnv7neZwRhZUbRtq4SxI8bwzCsElJBjNUpOb7jM1tgaQstv45Jg=;7:rLJFk0VSgt3wlZXFYe00qyOSgA+burX1sqo+DtwS7iDEQNeiOwWsVeC8pwRHfXFb7CbvC5SeUHtVJgYdFYBc8/qhgNhRQ/twLzAHnfzqvzMoR/FXrPm/6WU9wHcZY9X0PxwBopd+6l1sGMA4ySZ3NQ==
+X-Microsoft-Exchange-Diagnostics: =?us-ascii?Q?1;SN6PR03MB3517;23:KI4wJs3ikkgwiMFgGhNQiv8FSgUUDFg6cf6JhLJ8J?=
+ =?us-ascii?Q?YN3tVfTncrPHOHxzVDGamzX7yx+BPJQ+xbcjhESD8SWPCJi3hfXNRvL1yKla?=
+ =?us-ascii?Q?Yac4rDEb/4p1U8yAP6xss0sA15Q6aOJQZ04q9APmUHCcuJYwWhav8mXLBu1K?=
+ =?us-ascii?Q?9HqVa8z52hCehbpH7YMOJ7w6UBq2DnNwsbk1V7V9reeAHNTN/gdKhAbrLYY/?=
+ =?us-ascii?Q?Rvg1S26sUTuryk+6LJOywVvmhgEB7TLeUcIkTmJHgL3dDBdQFxjxtIWd+yCF?=
+ =?us-ascii?Q?X3HVwUCuO6189JjZmIc10+mbJuF3B0cy7lUHBfgGhrF3fnlOI/rNY8uwACKe?=
+ =?us-ascii?Q?hw79Q9JeTc0pEU7ye70WDkTq5uVCQx3+qATkHRKLDAAuIdAAH3ZAgL4/BG+6?=
+ =?us-ascii?Q?bdhD9ORawH44//CrMFwWA6l5rqgEWcTHXJL3B3oQ5vhQ4W+ugCStTcOe26Ff?=
+ =?us-ascii?Q?GzjIewgF94i3pTXb6RJSTmNciq/0p2hPEi7M65/6W3hKYvvXKtNKKGZrEMEM?=
+ =?us-ascii?Q?cxWCoVgj5JhRxz3kd6SnxG2fBIp4/8lju0zBruLCWc3EyRRBBAb9xybkp+GY?=
+ =?us-ascii?Q?XOqv4r8AsAV4V8msF/FEmfgfNwEifeUC3UGZBp039f2tZARvCSeGhI5q+8ZZ?=
+ =?us-ascii?Q?le/9MGwh+7Rx9pxgGx7Xo/q3U5vDE4Iy4xUnD2aNi07Wmoc4UKjy9XXfWpkY?=
+ =?us-ascii?Q?M+x/HCf9RFQQMqNA9oN/fxulcFLrT+T1LudrFrgBVI3NCdVle2f3qwuYd27B?=
+ =?us-ascii?Q?hvVOE4iaDvQ5mibpzO2tx0UGAT3a0FaE3LOMTxh4yGYdVADfDV+NlL6UsP7u?=
+ =?us-ascii?Q?isuGzof9+Tvi5lIQNROrC6QNIWfWYlDWtT933WG9G3d2MpBl/Ba7v6huyueI?=
+ =?us-ascii?Q?zFOHMZdQbqssNESkyxms213kRbcO+6lfoNmRhjz7gNQ6GCYIr2e0ieaH2ae/?=
+ =?us-ascii?Q?uItVnejLL47TmgXWoxC2r8YCg/WAddlJ77xLg8x86sr41YI94ahrVhrEhEJD?=
+ =?us-ascii?Q?2/ZdKm8Gv1sEqASQBqK7Q9bfAS6jc+L05busQe0laJaU0+S0GXWOelmdFqPb?=
+ =?us-ascii?Q?TxbHkTYFVzV+qlTmqDOEb76jKbm6LzxSNqEOH1NF5aeUvEcx+wFmLdfUQd/Y?=
+ =?us-ascii?Q?z1DmbpyoCk=3D?=
+X-Microsoft-Antispam-Message-Info: PySwJbSJmhFM76BwcydHq4nBurylVjcYTRlclzwvtlJ/BjrB0u6BlUj4nWXWJyrbYWEJb72pMqFJjfDouV65g0/EatY4qEZMjzL8wIbxDBN5GDWbAqDrlKTXeCFEUlRTGOfht8x+iEy3wnbQ2OTRxHeW/C7GU9tnTeNacf2O2PRO6F/wolK0DfHYQSvzbpP2VKuHCwKnZW6aU6KaOdMnnOlFhldI3tfNbh0hU+FG1YCL4V0qHRgU18QV7EqquiR/fnrtHXdXzjH5tPE6tkVGBWbBbeGi8xcmuV/nrtDJQpMLT2lI1IadVZm4PL9gY1O8
+X-Microsoft-Exchange-Diagnostics: 1;SN6PR03MB3517;6:J01Sl0pAEtlvvwEj2aoE5bRe6QQT/m9pZa8LEf5V+ALy5XR9y8eiIQ9YsVvtQVSH9hW5DdiEKCwGzLcPJ8UzO+CrdznW7IR3Rtj5iHfFRiBBsJW0UyJ0SKrT1ebjdajR/qV9U2VnF3SBWLqd0NB05ecEuhZ562wpHQgIpKb8+bsbkGMrP08tni48302Fgah4QA/c68WC9edCUZ4m3DsR2ntHjJsyvju3K7LayCLfl+CDvz0V/G8swFXqlQgkKOyztS898KxUZqIGmYgYJeSoWZVa8XFUy/x0zThtGT0DbXBwrC3PfRifTMOdabkwSUppYAdieu3bZXv6AM5a9KS+SopKnIWhySLcrnzoBBqzXiJzhNbp7ig7djQIV/BgGaxYBkjCq4i/ZJQSrtr7xwxU5KcISG7p2s5XwbBbpD9x2jRNj1oLJN0oqWLHKbGAMrgx6Om0NWL4udzWtyqgWwgY+w==;5:QqlpK7mIyH+hDsdxBu/6W9GMmq092xa0hUpQ6smKvckRxgRMKvRDRLqgO21yLBiPphWeRKri6/h9rhwh08JGPVLDFJBbbxwoW20tGIMDTIqv5dbnyQOjvOhHD9WrcLHUsj41v2C/FoysalXpWmBeySTR1t0pw5N53InBuTxIH+Q=;7:MLNgZUh/bqOaZ8JqvQ/PRyLHyNvLijtffIhryte/W+73yPZytV/SQyCnSfh9uieqbOlw1GX+gqqAAcW3cSPh37RzJnCmIveOtM7QhN5Cx9IQl63PN3AtYrRYEZxut1eZi7Ix2AfGH3cTHXZE4SVBkg==
 SpamDiagnosticOutput: 1:99
 SpamDiagnosticMetadata: NSPM
 X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Dec 2018 12:24:43.0847
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Dec 2018 12:25:03.1050
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 84a8b62f-5b95-413e-1dc5-08d6641a9fca
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7853e3ce-0fbc-41f8-31ff-08d6641aabb4
 X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.55];Helo=[nwd2mta1.analog.com]
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR03MB3756
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR03MB3517
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch replaces the license text at the top of ad7606 driver files
-and instead adds SPDX GPL-2.0 license identifier.
+This patch replaces the use of a polling ring buffer with a threaded
+interrupt.
+
+Enabling the buffer sets the CONVST signal to high. When the rising edge
+of the CONVST is applied, BUSY signal goes logic high and transitions low
+at the end of the entire conversion process. The falling edge of the BUSY
+signal triggers the interrupt.
+
+ad7606_trigger_handler() is used as bottom half of the poll function.
+It reads data from the device and stores it in the internal buffer.
 
 Signed-off-by: Stefan Popa <stefan.popa@analog.com>
 ---
- drivers/staging/iio/adc/ad7606.c     | 5 ++---
- drivers/staging/iio/adc/ad7606.h     | 3 +--
- drivers/staging/iio/adc/ad7606_par.c | 5 ++---
- drivers/staging/iio/adc/ad7606_spi.c | 5 ++---
- 4 files changed, 7 insertions(+), 11 deletions(-)
+ drivers/staging/iio/adc/ad7606.c | 111 +++++++++++++++++++++++++++++----------
+ drivers/staging/iio/adc/ad7606.h |   6 +--
+ 2 files changed, 84 insertions(+), 33 deletions(-)
 
 diff --git a/drivers/staging/iio/adc/ad7606.c b/drivers/staging/iio/adc/ad7606.c
-index e1d85b7..97b4a83 100644
+index 97b4a83..5f0712c 100644
 --- a/drivers/staging/iio/adc/ad7606.c
 +++ b/drivers/staging/iio/adc/ad7606.c
-@@ -1,9 +1,8 @@
-+// SPDX-License-Identifier: GPL-2.0
- /*
-  * AD7606 SPI ADC driver
-  *
-  * Copyright 2011 Analog Devices Inc.
+@@ -22,6 +22,7 @@
+ #include <linux/iio/sysfs.h>
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/trigger_consumer.h>
++#include <linux/iio/trigger.h>
+ #include <linux/iio/triggered_buffer.h>
+ 
+ #include "ad7606.h"
+@@ -86,36 +87,24 @@ static int ad7606_read_samples(struct ad7606_state *st)
+ static irqreturn_t ad7606_trigger_handler(int irq, void *p)
+ {
+ 	struct iio_poll_func *pf = p;
+-	struct ad7606_state *st = iio_priv(pf->indio_dev);
+-
+-	gpiod_set_value(st->gpio_convst, 1);
+-
+-	return IRQ_HANDLED;
+-}
+-
+-/**
+- * ad7606_poll_bh_to_ring() bh of trigger launched polling to ring buffer
+- * @work_s:	the work struct through which this was scheduled
 - *
-- * Licensed under the GPL-2.
+- * Currently there is no option in this driver to disable the saving of
+- * timestamps within the ring.
+- * I think the one copy of this at a time was to avoid problems if the
+- * trigger was set far too high and the reads then locked up the computer.
+- **/
+-static void ad7606_poll_bh_to_ring(struct work_struct *work_s)
+-{
+-	struct ad7606_state *st = container_of(work_s, struct ad7606_state,
+-						poll_work);
+-	struct iio_dev *indio_dev = iio_priv_to_dev(st);
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct ad7606_state *st = iio_priv(indio_dev);
+ 	int ret;
+ 
++	mutex_lock(&st->lock);
++
+ 	ret = ad7606_read_samples(st);
+ 	if (ret == 0)
+ 		iio_push_to_buffers_with_timestamp(indio_dev, st->data,
+ 						   iio_get_time_ns(indio_dev));
+ 
+-	gpiod_set_value(st->gpio_convst, 0);
+ 	iio_trigger_notify_done(indio_dev->trig);
++	/* The rising edge of the CONVST signal starts a new conversion. */
++	gpiod_set_value(st->gpio_convst, 1);
++
++	mutex_unlock(&st->lock);
++
++	return IRQ_HANDLED;
+ }
+ 
+ static int ad7606_scan_direct(struct iio_dev *indio_dev, unsigned int ch)
+@@ -366,8 +355,11 @@ static int ad7606_request_gpios(struct ad7606_state *st)
+ 	return PTR_ERR_OR_ZERO(st->gpio_os);
+ }
+ 
+-/**
+- *  Interrupt handler
++/*
++ * The BUSY signal indicates when conversions are in progress, so when a rising
++ * edge of CONVST is applied, BUSY goes logic high and transitions low at the
++ * end of the entire conversion process. The falling edge of the BUSY signal
++ * triggers this interrupt.
   */
+ static irqreturn_t ad7606_interrupt(int irq, void *dev_id)
+ {
+@@ -375,7 +367,8 @@ static irqreturn_t ad7606_interrupt(int irq, void *dev_id)
+ 	struct ad7606_state *st = iio_priv(indio_dev);
  
- #include <linux/interrupt.h>
-@@ -531,4 +530,4 @@ EXPORT_SYMBOL_GPL(ad7606_pm_ops);
+ 	if (iio_buffer_enabled(indio_dev)) {
+-		schedule_work(&st->poll_work);
++		gpiod_set_value(st->gpio_convst, 0);
++		iio_trigger_poll_chained(st->trig);
+ 	} else {
+ 		complete(&st->completion);
+ 	}
+@@ -383,26 +376,69 @@ static irqreturn_t ad7606_interrupt(int irq, void *dev_id)
+ 	return IRQ_HANDLED;
+ };
  
- MODULE_AUTHOR("Michael Hennerich <michael.hennerich@analog.com>");
- MODULE_DESCRIPTION("Analog Devices AD7606 ADC");
--MODULE_LICENSE("GPL v2");
-+MODULE_LICENSE("GPL");
++static int ad7606_validate_trigger(struct iio_dev *indio_dev,
++				   struct iio_trigger *trig)
++{
++	struct ad7606_state *st = iio_priv(indio_dev);
++
++	if (st->trig != trig)
++		return -EINVAL;
++
++	return 0;
++}
++
++static int ad7606_buffer_postenable(struct iio_dev *indio_dev)
++{
++	struct ad7606_state *st = iio_priv(indio_dev);
++
++	iio_triggered_buffer_postenable(indio_dev);
++	gpiod_set_value(st->gpio_convst, 1);
++
++	return 0;
++}
++
++static int ad7606_buffer_predisable(struct iio_dev *indio_dev)
++{
++	struct ad7606_state *st = iio_priv(indio_dev);
++
++	gpiod_set_value(st->gpio_convst, 0);
++
++	return iio_triggered_buffer_predisable(indio_dev);
++}
++
++static const struct iio_buffer_setup_ops ad7606_buffer_ops = {
++	.postenable = &ad7606_buffer_postenable,
++	.predisable = &ad7606_buffer_predisable,
++};
++
+ static const struct iio_info ad7606_info_no_os_or_range = {
+ 	.read_raw = &ad7606_read_raw,
++	.validate_trigger = &ad7606_validate_trigger,
+ };
+ 
+ static const struct iio_info ad7606_info_os_and_range = {
+ 	.read_raw = &ad7606_read_raw,
+ 	.write_raw = &ad7606_write_raw,
+ 	.attrs = &ad7606_attribute_group_os_and_range,
++	.validate_trigger = &ad7606_validate_trigger,
+ };
+ 
+ static const struct iio_info ad7606_info_os = {
+ 	.read_raw = &ad7606_read_raw,
+ 	.write_raw = &ad7606_write_raw,
+ 	.attrs = &ad7606_attribute_group_os,
++	.validate_trigger = &ad7606_validate_trigger,
+ };
+ 
+ static const struct iio_info ad7606_info_range = {
+ 	.read_raw = &ad7606_read_raw,
+ 	.write_raw = &ad7606_write_raw,
+ 	.attrs = &ad7606_attribute_group_range,
++	.validate_trigger = &ad7606_validate_trigger,
++};
++
++static const struct iio_trigger_ops ad7606_trigger_ops = {
++	.validate_device = iio_trigger_validate_own_device,
+ };
+ 
+ static void ad7606_regulator_disable(void *data)
+@@ -434,7 +470,6 @@ int ad7606_probe(struct device *dev, int irq, void __iomem *base_address,
+ 	/* tied to logic low, analog input range is +/- 5V */
+ 	st->range = 0;
+ 	st->oversampling = 1;
+-	INIT_WORK(&st->poll_work, &ad7606_poll_bh_to_ring);
+ 
+ 	st->reg = devm_regulator_get(dev, "avcc");
+ 	if (IS_ERR(st->reg))
+@@ -479,14 +514,32 @@ int ad7606_probe(struct device *dev, int irq, void __iomem *base_address,
+ 	if (ret)
+ 		dev_warn(st->dev, "failed to RESET: no RESET GPIO specified\n");
+ 
+-	ret = devm_request_irq(dev, irq, ad7606_interrupt, IRQF_TRIGGER_FALLING,
+-			       name, indio_dev);
++	st->trig = devm_iio_trigger_alloc(dev, "%s-dev%d",
++					  indio_dev->name, indio_dev->id);
++	if (!st->trig)
++		return -ENOMEM;
++
++	st->trig->ops = &ad7606_trigger_ops;
++	st->trig->dev.parent = dev;
++	iio_trigger_set_drvdata(st->trig, indio_dev);
++	ret = devm_iio_trigger_register(dev, st->trig);
++	if (ret)
++		return ret;
++
++	indio_dev->trig = iio_trigger_get(st->trig);
++
++	ret = devm_request_threaded_irq(dev, irq,
++					NULL,
++					&ad7606_interrupt,
++					IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
++					name, indio_dev);
+ 	if (ret)
+ 		return ret;
+ 
+ 	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
++					      &iio_pollfunc_store_time,
+ 					      &ad7606_trigger_handler,
+-					      NULL, NULL);
++					      &ad7606_buffer_ops);
+ 	if (ret)
+ 		return ret;
+ 
 diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
-index 510a93d..3e12fff 100644
+index 3e12fff..9a832d2 100644
 --- a/drivers/staging/iio/adc/ad7606.h
 +++ b/drivers/staging/iio/adc/ad7606.h
-@@ -1,9 +1,8 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
- /*
-  * AD7606 ADC driver
-  *
-  * Copyright 2011 Analog Devices Inc.
-- *
-- * Licensed under the GPL-2.
+@@ -26,8 +26,6 @@ struct ad7606_chip_info {
+  * @dev		pointer to kernel device
+  * @chip_info		entry in the table of chips that describes this device
+  * @reg		regulator info for the the power supply of the device
+- * @poll_work		work struct for continuously reading data from the device
+- *			into an IIO triggered buffer
+  * @bops		bus operations (SPI or parallel)
+  * @range		voltage range selection, selects which scale to apply
+  * @oversampling	oversampling selection
+@@ -42,14 +40,13 @@ struct ad7606_chip_info {
+  *			is being read on the first channel
+  * @gpio_os		GPIO descriptors to control oversampling on the device
+  * @complete		completion to indicate end of conversion
++ * @trig		The IIO trigger associated with the device.
+  * @data		buffer for reading data from the device
   */
+-
+ struct ad7606_state {
+ 	struct device			*dev;
+ 	const struct ad7606_chip_info	*chip_info;
+ 	struct regulator		*reg;
+-	struct work_struct		poll_work;
+ 	const struct ad7606_bus_ops	*bops;
+ 	unsigned int			range;
+ 	unsigned int			oversampling;
+@@ -62,6 +59,7 @@ struct ad7606_state {
+ 	struct gpio_desc		*gpio_standby;
+ 	struct gpio_desc		*gpio_frstdata;
+ 	struct gpio_descs		*gpio_os;
++	struct iio_trigger		*trig;
+ 	struct completion		completion;
  
- #ifndef IIO_ADC_AD7606_H_
-diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/staging/iio/adc/ad7606_par.c
-index da26742..2d137b1 100644
---- a/drivers/staging/iio/adc/ad7606_par.c
-+++ b/drivers/staging/iio/adc/ad7606_par.c
-@@ -1,9 +1,8 @@
-+// SPDX-License-Identifier: GPL-2.0
- /*
-  * AD7606 Parallel Interface ADC driver
-  *
-  * Copyright 2011 Analog Devices Inc.
-- *
-- * Licensed under the GPL-2.
-  */
- 
- #include <linux/module.h>
-@@ -114,4 +113,4 @@ module_platform_driver(ad7606_driver);
- 
- MODULE_AUTHOR("Michael Hennerich <michael.hennerich@analog.com>");
- MODULE_DESCRIPTION("Analog Devices AD7606 ADC");
--MODULE_LICENSE("GPL v2");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/staging/iio/adc/ad7606_spi.c b/drivers/staging/iio/adc/ad7606_spi.c
-index e533917..f38f0d6 100644
---- a/drivers/staging/iio/adc/ad7606_spi.c
-+++ b/drivers/staging/iio/adc/ad7606_spi.c
-@@ -1,9 +1,8 @@
-+// SPDX-License-Identifier: GPL-2.0
- /*
-  * AD7606 SPI ADC driver
-  *
-  * Copyright 2011 Analog Devices Inc.
-- *
-- * Licensed under the GPL-2.
-  */
- 
- #include <linux/module.h>
-@@ -80,4 +79,4 @@ module_spi_driver(ad7606_driver);
- 
- MODULE_AUTHOR("Michael Hennerich <michael.hennerich@analog.com>");
- MODULE_DESCRIPTION("Analog Devices AD7606 ADC");
--MODULE_LICENSE("GPL v2");
-+MODULE_LICENSE("GPL");
+ 	/*
 -- 
 2.7.4
 
