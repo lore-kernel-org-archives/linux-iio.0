@@ -2,812 +2,183 @@ Return-Path: <SRS0=AW8Q=O2=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC933C43387
-	for <linux-iio@archiver.kernel.org>; Mon, 17 Dec 2018 11:59:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F06F3C43387
+	for <linux-iio@archiver.kernel.org>; Mon, 17 Dec 2018 12:24:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A7D532145D
-	for <linux-iio@archiver.kernel.org>; Mon, 17 Dec 2018 11:59:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A7DBF20645
+	for <linux-iio@archiver.kernel.org>; Mon, 17 Dec 2018 12:24:24 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="e0zHYuV0"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732596AbeLQL7w (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 17 Dec 2018 06:59:52 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:16580 "EHLO huawei.com"
+        id S1727225AbeLQMYY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 17 Dec 2018 07:24:24 -0500
+Received: from mail-eopbgr780088.outbound.protection.outlook.com ([40.107.78.88]:27695
+        "EHLO NAM03-BY2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727255AbeLQL7w (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 17 Dec 2018 06:59:52 -0500
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 81B7378F1D2F2;
-        Mon, 17 Dec 2018 19:59:47 +0800 (CST)
-Received: from localhost (10.202.226.46) by DGGEMS409-HUB.china.huawei.com
- (10.3.19.209) with Microsoft SMTP Server id 14.3.408.0; Mon, 17 Dec 2018
- 19:59:46 +0800
-Date:   Mon, 17 Dec 2018 11:59:36 +0000
-From:   Jonathan Cameron <jonathan.cameron@huawei.com>
-To:     Andreas Brauchli <a.brauchli@elementarea.net>
-CC:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v3 2/3] iio: chemical: sgp30: Support Sensirion
- SGP30/SGPC3 sensors
-Message-ID: <20181217115936.0000650d@huawei.com>
-In-Reply-To: <45293ab40a362b4ad909c3fed2d2376a8fe1dee2.camel@elementarea.net>
-References: <20181213144323.24820-3-andreas.brauchli@sensirion.com>
-        <20181216133444.3c4bbb16@archlinux>
-        <45293ab40a362b4ad909c3fed2d2376a8fe1dee2.camel@elementarea.net>
-Organization: Huawei
-X-Mailer: Claws Mail 3.16.0 (GTK+ 2.24.32; i686-w64-mingw32)
+        id S1727068AbeLQMYX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 17 Dec 2018 07:24:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=analog.onmicrosoft.com; s=selector1-analog-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=efl6YdC5zuNQ/GgkPLl0lIMlcGZ7aQrZ+MS2QX5lRNg=;
+ b=e0zHYuV0SJ3NOx+HtQH7UfPo3dV9Kaqes09p2mUSVoBZqMhSmpV560NmWzB2/lsbgKo0+gFPKILkwp/0ArFDgrdmPoMdEkwpylw6b7Waag1uU0NkeCV4treZT9mBFRi+pqCLWHdJOAL7B25On+/YIGkjZ76lIV802AtDqyPHmWE=
+Received: from BYAPR03CA0010.namprd03.prod.outlook.com (2603:10b6:a02:a8::23)
+ by BYAPR03MB3717.namprd03.prod.outlook.com (2603:10b6:a02:ac::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1425.22; Mon, 17 Dec
+ 2018 12:24:18 +0000
+Received: from BY2FFO11FD005.protection.gbl (2a01:111:f400:7c0c::126) by
+ BYAPR03CA0010.outlook.office365.com (2603:10b6:a02:a8::23) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.1425.19 via Frontend Transport; Mon, 17 Dec 2018 12:24:18 +0000
+Authentication-Results: spf=pass (sender IP is 137.71.25.55)
+ smtp.mailfrom=analog.com; gmx.de; dkim=none (message not signed)
+ header.d=none;gmx.de; dmarc=bestguesspass action=none header.from=analog.com;
+Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
+ 137.71.25.55 as permitted sender) receiver=protection.outlook.com;
+ client-ip=137.71.25.55; helo=nwd2mta1.analog.com;
+Received: from nwd2mta1.analog.com (137.71.25.55) by
+ BY2FFO11FD005.mail.protection.outlook.com (10.1.14.126) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.1446.11
+ via Frontend Transport; Mon, 17 Dec 2018 12:24:17 +0000
+Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
+        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id wBHCOHox016334
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
+        Mon, 17 Dec 2018 04:24:17 -0800
+Received: from linux.analog.com (10.50.1.118) by NWD2HUBCAS7.ad.analog.com
+ (10.64.69.107) with Microsoft SMTP Server id 14.3.408.0; Mon, 17 Dec 2018
+ 07:24:16 -0500
+From:   Stefan Popa <stefan.popa@analog.com>
+To:     <jic23@kernel.org>, <robh+dt@kernel.org>, <mark.rutland@arm.com>
+CC:     Stefan Popa <stefan.popa@analog.com>,
+        <Michael.Hennerich@analog.com>, <knaack.h@gmx.de>,
+        <lars@metafoo.de>, <pmeerw@pmeerw.net>,
+        <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <devel@driverdev.osuosl.org>
+Subject: [PATCH v2 1/6] staging: iio: adc: ad7606: Simplify the Kconfing menu
+Date:   Mon, 17 Dec 2018 14:23:35 +0200
+Message-ID: <1545049420-16484-2-git-send-email-stefan.popa@analog.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1545049420-16484-1-git-send-email-stefan.popa@analog.com>
+References: <1545049420-16484-1-git-send-email-stefan.popa@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.46]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(39860400002)(136003)(396003)(346002)(376002)(2980300002)(3190300001)(199004)(189003)(77096007)(478600001)(50226002)(76176011)(316002)(305945005)(486006)(5660300001)(2616005)(44832011)(116002)(476003)(106002)(126002)(16586007)(50466002)(6666004)(8676002)(356004)(54906003)(110136005)(36756003)(246002)(48376002)(7636002)(4326008)(11346002)(7416002)(2906002)(8936002)(53416004)(426003)(7696005)(47776003)(106466001)(72206003)(446003)(186003)(26005)(336012)(51416003);DIR:OUT;SFP:1101;SCL:1;SRVR:BYAPR03MB3717;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;A:1;MX:1;
+X-Microsoft-Exchange-Diagnostics: 1;BY2FFO11FD005;1:uQg2Ne+sarYRM4CfMAxfvjR6tmxE1YsDyY/CdJPvlspca2OPoLUr7EV4+lYq0TkIygMF5o8yqOYwEIw0+dDQnJSwuU2fERVKRqv0nETvH/lBMiMJc8HFgRpgWX2zAxHk
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 55f42daa-0c36-445e-aace-08d6641a90ab
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600074)(711020)(4608076)(2017052603328)(7153060);SRVR:BYAPR03MB3717;
+X-Microsoft-Exchange-Diagnostics: 1;BYAPR03MB3717;3:hHTInnOXl/8aGNeOVt+3gtgVkIWz2LgCZ/PpfBxwePBqoXdkAMs03KZxGLt77jHMczW3KNNFbzZpTlHT5gwihgov7Iaz32cPtFR4Kl7mhnmTQFlvdkSXVPvqaylML1/Tod9KoicNKURK7q+gseCa+/H/sBflUIQWDT71oVdu/OWDvg3FIaXAIvw66hvFbs4lby9QunmLogc5IJPFXC1TmRl6NLoS07+0tWyObF60H+HH1vuyjAbFvE1DIBowySbCDvC9jVn3/rDmQ+3omLpx4O1hm9ypk49I/4nF9OdDaeuU2UV+R/8V7k34TJHZHi0XzF1Tnf4BT4RC3on+GHeOEe6UxIlNf0CJuox1fhI9M14=;25:axvDRGFhjpbfL+BRm482EruuLr/stKa9LxxRe7FMo4sOhF7rxE1202BMTjsYAgJWrDoIoD4aA/9uTsLYa6L2OKtg9+fWAFStsQucypRFkQiLGoAeOavyoVjcrAi6SYoMzMOkeg4o9GKO5j5GC+ZRASEZ2MQtH2iQB+B4WrDokKZgQDn04CzSoRJr1QppvC1EgHc5Un2+e9kfWBzUl2M6vLtH5I4b341V3KkncXtpJWZhvQ8u++dlwC7pgDnge9OVYnjwUoD9V7ZT1d/SmlcWNzSneRnZhG1Uh29lwUUzas/YEhaw9ks9Hv93WE0PaRfXF9l0wCvZ23p1wTJdhyxrMw==
+X-MS-TrafficTypeDiagnostic: BYAPR03MB3717:
+X-Microsoft-Exchange-Diagnostics: 1;BYAPR03MB3717;31:PfTATKEi22J+SPDsPTi1WoAVxiR2TV9foYBJDmptr1UACdRDDI47PtoFT1ieaJl4KzqFPY6ACY9m5DOr09RnSt9swf1b3e0BHcC7TgCN+5aLBAGuWahLUVDekS+fsK2Or4EvU4em9+rKVNuLVBn+3ubN22nyqoY+XmamemfYYwiRthKDOq6Q7IGzt6BwOXt5vo8YvuPmTz1FDp+0ceRUW6UKgdnlO9hUp748pxZuoIY=;20:+Le7XTuxGnqicMWXTDqWM6Ny4Ff3Fi2NnGLNPZxDf86WnyMucOcWpzkFRU15B8J4fvAss+kAfaSEK1YMkYRYRQqgzy7RUoqADfsbVW5KggHIAkoDSHYAnDWtX7Z5GpEg1R6RiioVUZ9dHSht5FOlMrAccrOHrwfXcCGWvTnH60Mj8O+jY4qIDdisUOICDo0M/SG1DxMgF8KP7ikSJltOITfJAD2o/r6YQoF4j8PvqU6yQiGpaTDtDehzdF0O/H3BUHhduRw8QxX+c7ILZ4Rzeu/+hklWcdn2edRrbEHiL0lSjlyBAzVmMDXmiqKeIxnvlF0WLXS50CCAwh+mhwklCklCmWA2SacKMFzK4yY1MaQFRDRDSsedfw22uXEXCo9hv/qZ2xMocN/Cs6ecpTtsu0YlkZasXjfDq/q+uk56jK2wV/pTYyX8OUZfzglVXkVQ+Lu2TCin5izRlGC96dU3suEyhVqCeCjCimxDh/mP5VQaht9YCfcGUg8iDuDXzkCn
+X-Microsoft-Antispam-PRVS: <BYAPR03MB37178C647FE8A2111B9FFAC29DBC0@BYAPR03MB3717.namprd03.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-Exchange-Antispam-Report-CFA-Test: BCL:0;PCL:0;RULEID:(8211001083)(3230021)(999002)(6040522)(2401047)(8121501046)(5005006)(93006095)(93004095)(3231475)(944501520)(52105112)(3002001)(10201501046)(6055026)(148016)(149066)(150057)(6041310)(20161123558120)(201703131423095)(201702281528075)(20161123555045)(201703061421075)(201703061406153)(20161123562045)(20161123564045)(20161123560045)(201708071742011)(7699051)(76991095);SRVR:BYAPR03MB3717;BCL:0;PCL:0;RULEID:;SRVR:BYAPR03MB3717;
+X-Microsoft-Exchange-Diagnostics: 1;BYAPR03MB3717;4:rVikKa0yBtt+35q51kXcp5SPzViN+0Di1w2adZziMkxyzNUe/6Pez8vmcW6XuT1z6qUPLtuanolZ/yzo6ONUj+joNjC4QslgPZPsvFRZ79RenQosp5BusDjv0n2Tl3Jur6PaXOsJtLEJkLozxr8eGEIcm/On0PELsgWDTPPV1JS8hVhfYxkc8S+CAtfty1C1kWXaz3W9MJ5GvUT+GupPzRx1p74IXyH+VAirud3JnTh0tiA0tO1Gm7qDRV3FeGKJ8nTT3i3BwnnwfO9/hPXOAQ==
+X-Forefront-PRVS: 08897B549D
+X-Microsoft-Exchange-Diagnostics: =?us-ascii?Q?1;BYAPR03MB3717;23:aZOtpqLcpzUlsMD4XU0IAuRYbfym8jRP2j5yKkbxW?=
+ =?us-ascii?Q?Z66P2Bmm4cIwrbYOjQCNhwroaedtGzonWcUaUp2+7YW1b+aTRoqg1p+W54ui?=
+ =?us-ascii?Q?M/5LCnsl36Mkytb5Wa59UBMlPCPUCA5o9KR/cwwtSD5z0notzSnxNYnbM7YP?=
+ =?us-ascii?Q?JZCqse2ESIi7lio7UFQPJE2tPvMqKLfR4Ew9OnOwNNXA/obxZHNFkgLkW8H7?=
+ =?us-ascii?Q?ihC+GIw362Gmul7oGQSWbt0FDp/HmvM+3I23brwtAuQ19HtVvT0WKK+GbzR7?=
+ =?us-ascii?Q?hbC4e9MRIdWzwY7h2fg01CewhHIACNBENHuWc40972t3dsS/L9nj9AoqcHkB?=
+ =?us-ascii?Q?H7wgp6Jfe4XiuBEymEw2xzlGCf2Pf4T5MWfQjIk2gPvzuzBG+qMUIK7IU9eO?=
+ =?us-ascii?Q?xAK0+k3qg7poOm+XM2BqKPG1+++Zsv/Q1CrRsMyu/5dz3TE7Y2H0g1gJrBPX?=
+ =?us-ascii?Q?QqmO9x7D3DlmbhGHnYPqlg3Qlx0nykXM5nQg+Fy6wZfsn3YsPvQzVm49Ilim?=
+ =?us-ascii?Q?bR5TvyOxx0hc3zA0DC7uVPL1xCb9W2Rd1ctHTZbqfapV96UqwsmZAb2UDdNj?=
+ =?us-ascii?Q?you4MYyo/taaUb0uBl+4YPY6aznadIWhJnWOlsxBuEjiWvDALjmPVM2rhe6H?=
+ =?us-ascii?Q?bVya3HBuW+D95hYey2K+xN4dEWoxt5msdAYOXtNzwwdh/H9ZCY3W1K0qHNhu?=
+ =?us-ascii?Q?hdpYzPfDScvkRWAn0FlP3sK7+cJME1f0lK9D30FtjUILc4gDkkBix02Vr8Zo?=
+ =?us-ascii?Q?Ze7chhKuYR7BixhkAwpo6mYRJy5WveJEffvm5MZbzII9OAdZuDjVVEVjwHWl?=
+ =?us-ascii?Q?ucucbIviyQ5IbQW3h+VdYfWap1znqk1REbWpIOw7cpmucDUI2J8Q1x2mxZpt?=
+ =?us-ascii?Q?y9U4vge/jEQwgOtBqOuNeZdLLLYErfX3nyCHO7m5Vno6e08WeAyI1yvCeO1n?=
+ =?us-ascii?Q?X7NNUORSXNNtby4xAURSkASCrMeDOkZyDnsrABSszKRw5Utl2mFb1scYwp2h?=
+ =?us-ascii?Q?GF4r+g+HfNmirMk3i0lsvJYoGMMyYyoXrBf1J+okak3FgsYytXU8IfpsLoTW?=
+ =?us-ascii?Q?91GHfXCbwV4ZQtalsdKW45t5ZvDRxv4k7sQtrkV1rWjc6QVqA=3D=3D?=
+X-Microsoft-Antispam-Message-Info: TUTUVQ80o9K0uNqPPusKDhCllr3qIXAiWvgQn14ikleQR5eY/i/h3ymJhC93RHWfyslDNwfNO1B0pD8sQICDTFgepQ6s9OZwK8/tZpMswjIU47Ld7mHKC0Wd/XhjJxAkNSOPe/EgDj1OEjIZa2mTRVWLTAtNwQpd+zvgxLYcgaGpOBBAqx6NX8TQ64mN4CTxVoL5xHik1ne0SUufITVUTfBbJvqubqSceZ2ec4chiG8uqgRy3WqywuM+4mQJcusKX0fBnNg+aoqoga3ejSWP1UeN1wzY2/8BozpDEg3mBTy+IpkJXzNLtje5idCwMkRa
+X-Microsoft-Exchange-Diagnostics: 1;BYAPR03MB3717;6:JeG26eJ+UpJYkm1ykOHXG43KUU4E/PCEp59K2UjTzCf6Iw+6knw++L6D9T+IbyJhgxjqiKD22hWCvyXSx2PoCdilSDbgTDcwHg5ThWNDfVmksiXnqNRuG9hzQcZ6k6GA/vvQLLdEFVScvxx4gI0BeCCIhK0TUUVciXlOuPzmR8sQZ+p6DvQZ9LKZeKwGZBbWQIZdevzir/hurNqlJdA57e121nq1C4c1eFXERxuAED4OpFEgi2LlzS+LbKCd4/q0uTblaccRJHE2H4Oa3rba/kO8k1HHHm/qjEa25XPDGBmZAKZ9gw9wR76u772xwvxXJDyGRvHd3dUw1pO4aCpSQsU7X0zfSx2WGEqOol3P/7fOPZJI+wV470yc8+qSw0GEm1d7kCJkLQVMiM/d8Wv1Gf9L1wPULBQXKCDezXHdEnDgP3R4ZgaRWwArp+sZbiEwxhV/Y03H2Vhq/EmeSO34Wg==;5:ZKhni+yNW1XuRLdtYOyMNt5eL6HJX6VHi+TE/IeXtsFNumoDzwXs1ustGGj24JUrEjOYZXLaGw7qGBuMgYOUkpPxmP157S6b58UjLvuLm2KGMAvxAiO5M06Yx+7vTW2j1eQWYmZxgXKSDFGodKEi80WKL+BwB3m6ZX4vRn9osNo=;7:xN3vPu1zbmtWmgZammUzL3pVqmgaOAHC9v6Xo8riyw5eyR6Q0R9cviurd29LtO6jyAs9NwclCSAJhN+j0irSJDzWbjGQJf1PtyKuQ6rh+UcvLoVrOHQak9xM7gL7cm9OVBWtd/MkoXY91fQuRTkSlw==
+SpamDiagnosticOutput: 1:99
+SpamDiagnosticMetadata: NSPM
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Dec 2018 12:24:17.5788
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 55f42daa-0c36-445e-aace-08d6641a90ab
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.55];Helo=[nwd2mta1.analog.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR03MB3717
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 16 Dec 2018 17:38:18 +0100
-Andreas Brauchli <a.brauchli@elementarea.net> wrote:
+There is no point in having three menu entries that can be selected
+individually. Instead, the SPI and parallel interfaces should select
+AD7606.
 
-> On Sun, 2018-12-16 at 13:34 +0000, Jonathan Cameron wrote:
-> > On Thu, 13 Dec 2018 15:43:23 +0100
-> > Andreas Brauchli <a.brauchli@elementarea.net> wrote:
-> >   
-> > > Support Sensirion SGP30 and SGPC3 multi-pixel I2C gas sensors
-> > > 
-> > > Supported Features:
-> > > 
-> > > * Indoor Air Quality (IAQ) concentrations for
-> > >   - tVOC (in_concentration_voc_input)
-> > >   - CO2eq (in_concentration_co2_input) - SGP30 only
-> > > 
-> > >   IAQ concentrations are periodically read out by a background
-> > > thread
-> > >   to allow the sensor to maintain its internal baseline.
-> > > 
-> > > * Gas concentration signals
-> > >   - Ethanol (in_concentration_ethanol_raw)
-> > >   - H2 (in_concentration_h2_raw) - SGP30 only
-> > > 
-> > > https://www.sensirion.com/file/datasheet_sgp30
-> > > https://www.sensirion.com/file/datasheet_sgpc3
-> > > 
-> > > Signed-off-by: Andreas Brauchli <andreas.brauchli@sensirion.com>  
-> > 
-> > Why do we provide endianness info given we don't provide the buffered
-> > interface?  It's only used when we do.  
-> 
-> Makes sense but I wasn't aware of it. The initial submission came with
-> buffering, so it probably wasn't spotted in v2.
-> 
-> > 
-> > Some over the top line wrapping as well.  However as that's it
-> > I'll just clean up whilst applying.  If I've missed something odd
-> > around the endian thing shout!  
-> 
-> No that's it, thanks a lot.
-> 
-> > 
-> > Jonathan
-> >   
-> > > ---
-> > >  drivers/iio/chemical/Kconfig  |  13 +
-> > >  drivers/iio/chemical/Makefile |   1 +
-> > >  drivers/iio/chemical/sgp30.c  | 603
-> > > ++++++++++++++++++++++++++++++++++
-> > >  3 files changed, 617 insertions(+)
-> > >  create mode 100644 drivers/iio/chemical/sgp30.c
-> > > 
-> > > diff --git a/drivers/iio/chemical/Kconfig
-> > > b/drivers/iio/chemical/Kconfig
-> > > index b8e005be4f87..b0c912be94a9 100644
-> > > --- a/drivers/iio/chemical/Kconfig
-> > > +++ b/drivers/iio/chemical/Kconfig
-> > > @@ -61,6 +61,19 @@ config IAQCORE
-> > >  	  iAQ-Core Continuous/Pulsed VOC (Volatile Organic Compounds)
-> > >  	  sensors
-> > >  
-> > > +config SENSIRION_SGP30  
-> 
-> I noticed that in Tomasz's SPS30 patch it's just SPS30, so for
-> consistency's sake I'm fine with dropping the branding. Up to you.
+Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+---
+ drivers/staging/iio/adc/Kconfig | 27 ++++++++++-----------------
+ 1 file changed, 10 insertions(+), 17 deletions(-)
 
-We've never had any hard rules on this, at least partly because a lot
-of drivers came from other subsystems in the early days.
-
-We probably should have a rule though.  SGP30 for example is generic
-enough that it might well be reused by someone else.
-
-Anyone have any strong opinions on this?  If not I think I'll start
-encouraging prefixing with manufacturer of first supported device.
-
-Jonathan
-
-> 
-> > > +	tristate "Sensirion SGPxx gas sensors"
-> > > +	depends on I2C
-> > > +	select CRC8
-> > > +	help
-> > > +	  Say Y here to build I2C interface support for the following
-> > > +	  Sensirion SGP gas sensors:
-> > > +	    * SGP30 gas sensor
-> > > +	    * SGPC3 low power gas sensor
-> > > +
-> > > +	  To compile this driver as module, choose M here: the
-> > > +	  module will be called sgp30.
-> > > +
-> > >  config VZ89X
-> > >  	tristate "SGX Sensortech MiCS VZ89X VOC sensor"
-> > >  	depends on I2C
-> > > diff --git a/drivers/iio/chemical/Makefile
-> > > b/drivers/iio/chemical/Makefile
-> > > index 2f4c4ba4d781..61e83944db1a 100644
-> > > --- a/drivers/iio/chemical/Makefile
-> > > +++ b/drivers/iio/chemical/Makefile
-> > > @@ -9,4 +9,5 @@ obj-$(CONFIG_BME680_I2C) += bme680_i2c.o
-> > >  obj-$(CONFIG_BME680_SPI) += bme680_spi.o
-> > >  obj-$(CONFIG_CCS811)		+= ccs811.o
-> > >  obj-$(CONFIG_IAQCORE)		+= ams-iaq-core.o
-> > > +obj-$(CONFIG_SENSIRION_SGP30)	+= sgp30.o
-> > >  obj-$(CONFIG_VZ89X)		+= vz89x.o
-> > > diff --git a/drivers/iio/chemical/sgp30.c
-> > > b/drivers/iio/chemical/sgp30.c
-> > > new file mode 100644
-> > > index 000000000000..90eb4cbb18cf
-> > > --- /dev/null
-> > > +++ b/drivers/iio/chemical/sgp30.c
-> > > @@ -0,0 +1,603 @@
-> > > +// SPDX-License-Identifier: GPL-2.0
-> > > +/*
-> > > + * sgp30.c - Support for Sensirion SGP Gas Sensors
-> > > + *
-> > > + * Copyright (C) 2018 Andreas Brauchli <  
-> > > andreas.brauchli@sensirion.com>  
-> > > + *
-> > > + * I2C slave address: 0x58
-> > > + *
-> > > + * Datasheets:
-> > > + * https://www.sensirion.com/file/datasheet_sgp30
-> > > + * https://www.sensirion.com/file/datasheet_sgpc3
-> > > + *
-> > > + * TODO:
-> > > + * - baseline support
-> > > + * - humidity compensation
-> > > + * - power mode switching (SGPC3)
-> > > + */
-> > > +
-> > > +#include <linux/crc8.h>
-> > > +#include <linux/delay.h>
-> > > +#include <linux/kthread.h>
-> > > +#include <linux/module.h>
-> > > +#include <linux/mutex.h>
-> > > +#include <linux/i2c.h>
-> > > +#include <linux/of_device.h>
-> > > +#include <linux/iio/iio.h>
-> > > +#include <linux/iio/sysfs.h>
-> > > +
-> > > +#define SGP_WORD_LEN				2
-> > > +#define SGP_CRC8_POLYNOMIAL			0x31
-> > > +#define SGP_CRC8_INIT				0xff
-> > > +#define SGP_CRC8_LEN				1
-> > > +#define SGP_CMD(cmd_word)			cpu_to_be16(cmd_word)
-> > > +#define SGP_CMD_DURATION_US			12000
-> > > +#define SGP_MEASUREMENT_DURATION_US		50000
-> > > +#define SGP_CMD_LEN				SGP_WORD_LEN
-> > > +#define SGP_CMD_MAX_BUF_SIZE			(SGP_CMD_LEN +
-> > > 2 * SGP_WORD_LEN)
-> > > +#define SGP_MEASUREMENT_LEN			2
-> > > +#define SGP30_MEASURE_INTERVAL_HZ		1
-> > > +#define SGPC3_MEASURE_INTERVAL_HZ		2
-> > > +#define SGP_VERS_PRODUCT(data)	((((data)->feature_set) &
-> > > 0xf000) >> 12)
-> > > +#define SGP_VERS_RESERVED(data)	((((data)->feature_set) &
-> > > 0x0800) >> 11)
-> > > +#define SGP_VERS_GEN(data)	((((data)->feature_set) & 0x0600) >> 9)
-> > > +#define SGP_VERS_ENG_BIT(data)	((((data)->feature_set) &
-> > > 0x0100) >> 8)
-> > > +#define SGP_VERS_MAJOR(data)	((((data)->feature_set) &
-> > > 0x00e0) >> 5)
-> > > +#define SGP_VERS_MINOR(data)	(((data)->feature_set) &
-> > > 0x001f)
-> > > +
-> > > +DECLARE_CRC8_TABLE(sgp_crc8_table);
-> > > +
-> > > +enum sgp_product_id {
-> > > +	SGP30 = 0,
-> > > +	SGPC3,
-> > > +};
-> > > +
-> > > +enum sgp30_channel_idx {
-> > > +	SGP30_IAQ_TVOC_IDX = 0,
-> > > +	SGP30_IAQ_CO2EQ_IDX,
-> > > +	SGP30_SIG_ETOH_IDX,
-> > > +	SGP30_SIG_H2_IDX,
-> > > +};
-> > > +
-> > > +enum sgpc3_channel_idx {
-> > > +	SGPC3_IAQ_TVOC_IDX = 10,
-> > > +	SGPC3_SIG_ETOH_IDX,
-> > > +};
-> > > +
-> > > +enum sgp_cmd {
-> > > +	SGP_CMD_IAQ_INIT			= SGP_CMD(0x2003),
-> > > +	SGP_CMD_IAQ_MEASURE			= SGP_CMD(0x2008),
-> > > +	SGP_CMD_GET_FEATURE_SET			= SGP_CMD(0x202f),
-> > > +	SGP_CMD_GET_SERIAL_ID			= SGP_CMD(0x3682),
-> > > +
-> > > +	SGP30_CMD_MEASURE_SIGNAL		= SGP_CMD(0x2050),
-> > > +
-> > > +	SGPC3_CMD_MEASURE_RAW			= SGP_CMD(0x2046),
-> > > +};
-> > > +
-> > > +struct sgp_version {
-> > > +	u8 major;
-> > > +	u8 minor;
-> > > +};
-> > > +
-> > > +struct sgp_crc_word {
-> > > +	__be16 value;
-> > > +	u8 crc8;
-> > > +} __attribute__((__packed__));
-> > > +
-> > > +union sgp_reading {
-> > > +	u8 start;
-> > > +	struct sgp_crc_word raw_words[4];
-> > > +};
-> > > +
-> > > +enum _iaq_buffer_state {
-> > > +	IAQ_BUFFER_EMPTY = 0,
-> > > +	IAQ_BUFFER_DEFAULT_VALS,
-> > > +	IAQ_BUFFER_VALID,
-> > > +};
-> > > +
-> > > +struct sgp_data {
-> > > +	struct i2c_client *client;
-> > > +	struct task_struct *iaq_thread;
-> > > +	struct mutex data_lock;
-> > > +	unsigned long iaq_init_start_jiffies;
-> > > +	unsigned long iaq_defval_skip_jiffies;
-> > > +	u16 product_id;
-> > > +	u16 feature_set;
-> > > +	unsigned long measure_interval_jiffies;
-> > > +	enum sgp_cmd iaq_init_cmd;
-> > > +	enum sgp_cmd measure_iaq_cmd;
-> > > +	enum sgp_cmd measure_gas_signals_cmd;
-> > > +	union sgp_reading buffer;
-> > > +	union sgp_reading iaq_buffer;
-> > > +	enum _iaq_buffer_state iaq_buffer_state;
-> > > +};
-> > > +
-> > > +struct sgp_device {
-> > > +	const struct iio_chan_spec *channels;
-> > > +	int num_channels;
-> > > +};
-> > > +
-> > > +static const struct sgp_version supported_versions_sgp30[] = {
-> > > +	{
-> > > +		.major = 1,
-> > > +		.minor = 0,
-> > > +	},
-> > > +};
-> > > +
-> > > +static const struct sgp_version supported_versions_sgpc3[] = {
-> > > +	{
-> > > +		.major = 0,
-> > > +		.minor = 4,
-> > > +	},
-> > > +};
-> > > +
-> > > +static const struct iio_chan_spec sgp30_channels[] = {
-> > > +	{
-> > > +		.type = IIO_CONCENTRATION,
-> > > +		.channel2 = IIO_MOD_VOC,
-> > > +		.modified = 1,
-> > > +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> > > +		.address = SGP30_IAQ_TVOC_IDX,
-> > > +	},
-> > > +	{
-> > > +		.type = IIO_CONCENTRATION,
-> > > +		.channel2 = IIO_MOD_CO2,
-> > > +		.modified = 1,
-> > > +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> > > +		.address = SGP30_IAQ_CO2EQ_IDX,
-> > > +	},
-> > > +	{
-> > > +		.type = IIO_CONCENTRATION,
-> > > +		.channel2 = IIO_MOD_ETHANOL,
-> > > +		.modified = 1,
-> > > +		.info_mask_separate =
-> > > +			BIT(IIO_CHAN_INFO_RAW),  
-> > 
-> > Definitely looks like it'll fit in under 80 chars.
-> >   
-> > > +		.address = SGP30_SIG_ETOH_IDX,
-> > > +		.scan_type = {
-> > > +			.endianness = IIO_BE,
-> > > +		},
-> > > +	},
-> > > +	{
-> > > +		.type = IIO_CONCENTRATION,
-> > > +		.channel2 = IIO_MOD_H2,
-> > > +		.modified = 1,
-> > > +		.info_mask_separate =
-> > > +			BIT(IIO_CHAN_INFO_RAW),  
-> > 
-> > Same here on length.
-> >   
-> > > +		.address = SGP30_SIG_H2_IDX,
-> > > +		.scan_type = {
-> > > +			.endianness = IIO_BE,
-> > > +		},
-> > > +	},
-> > > +};
-> > > +
-> > > +static const struct iio_chan_spec sgpc3_channels[] = {
-> > > +	{
-> > > +		.type = IIO_CONCENTRATION,
-> > > +		.channel2 = IIO_MOD_VOC,
-> > > +		.modified = 1,
-> > > +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> > > +		.address = SGPC3_IAQ_TVOC_IDX,
-> > > +	},
-> > > +	{
-> > > +		.type = IIO_CONCENTRATION,
-> > > +		.channel2 = IIO_MOD_ETHANOL,
-> > > +		.modified = 1,
-> > > +		.info_mask_separate =
-> > > +			BIT(IIO_CHAN_INFO_RAW),  
-> > 
-> > And another on length.  
-> > > +		.address = SGPC3_SIG_ETOH_IDX,
-> > > +		.scan_type = {
-> > > +			.endianness = IIO_BE,
-> > > +		},
-> > > +	},
-> > > +};
-> > > +
-> > > +static const struct sgp_device sgp_devices[] = {
-> > > +	[SGP30] = {
-> > > +		.channels = sgp30_channels,
-> > > +		.num_channels = ARRAY_SIZE(sgp30_channels),
-> > > +	},
-> > > +	[SGPC3] = {
-> > > +		.channels = sgpc3_channels,
-> > > +		.num_channels = ARRAY_SIZE(sgpc3_channels),
-> > > +	},
-> > > +};
-> > > +
-> > > +/**
-> > > + * sgp_verify_buffer() - verify the checksums of the data buffer
-> > > words
-> > > + *
-> > > + * @data:       SGP data
-> > > + * @buf:        Raw data buffer
-> > > + * @word_count: Num data words stored in the buffer, excluding CRC
-> > > bytes
-> > > + *
-> > > + * Return:      0 on success, negative error otherwise.
-> > > + */
-> > > +static int sgp_verify_buffer(const struct sgp_data *data,
-> > > +			     union sgp_reading *buf, size_t word_count)
-> > > +{
-> > > +	size_t size = word_count * (SGP_WORD_LEN + SGP_CRC8_LEN);
-> > > +	int i;
-> > > +	u8 crc;
-> > > +	u8 *data_buf = &buf->start;
-> > > +
-> > > +	for (i = 0; i < size; i += SGP_WORD_LEN + SGP_CRC8_LEN) {
-> > > +		crc = crc8(sgp_crc8_table, &data_buf[i], SGP_WORD_LEN,
-> > > +			   SGP_CRC8_INIT);
-> > > +		if (crc != data_buf[i + SGP_WORD_LEN]) {
-> > > +			dev_err(&data->client->dev, "CRC error\n");
-> > > +			return -EIO;
-> > > +		}
-> > > +	}
-> > > +
-> > > +	return 0;
-> > > +}
-> > > +
-> > > +/**
-> > > + * sgp_read_cmd() - reads data from sensor after issuing a command
-> > > + * The caller must hold data->data_lock for the duration of the
-> > > call.
-> > > + * @data:        SGP data
-> > > + * @cmd:         SGP Command to issue
-> > > + * @buf:         Raw data buffer to use
-> > > + * @word_count:  Num words to read, excluding CRC bytes
-> > > + *
-> > > + * Return:       0 on success, negative error otherwise.
-> > > + */
-> > > +static int sgp_read_cmd(struct sgp_data *data, enum sgp_cmd cmd,
-> > > +			union sgp_reading *buf, size_t word_count,
-> > > +			unsigned long duration_us)
-> > > +{
-> > > +	int ret;
-> > > +	struct i2c_client *client = data->client;
-> > > +	size_t size = word_count * (SGP_WORD_LEN + SGP_CRC8_LEN);
-> > > +	u8 *data_buf;
-> > > +
-> > > +	ret = i2c_master_send(client, (const char *)&cmd, SGP_CMD_LEN);
-> > > +	if (ret != SGP_CMD_LEN)
-> > > +		return -EIO;
-> > > +	usleep_range(duration_us, duration_us + 1000);
-> > > +
-> > > +	if (word_count == 0)
-> > > +		return 0;
-> > > +
-> > > +	data_buf = &buf->start;
-> > > +	ret = i2c_master_recv(client, data_buf, size);
-> > > +	if (ret < 0)
-> > > +		return ret;
-> > > +	if (ret != size)
-> > > +		return -EIO;
-> > > +
-> > > +	return sgp_verify_buffer(data, buf, word_count);
-> > > +}
-> > > +
-> > > +/**
-> > > + * sgp_measure_iaq() - measure and retrieve IAQ values from sensor
-> > > + * The caller must hold data->data_lock for the duration of the
-> > > call.
-> > > + * @data:       SGP data
-> > > + *
-> > > + * Return:      0 on success, -EBUSY on default values, negative
-> > > error
-> > > + *              otherwise.
-> > > + */
-> > > +
-> > > +static int sgp_measure_iaq(struct sgp_data *data)
-> > > +{
-> > > +	int ret;
-> > > +	/* data contains default values */
-> > > +	bool default_vals = !time_after(jiffies, data-  
-> > > >iaq_init_start_jiffies +  
-> > > +						 data-  
-> > > >iaq_defval_skip_jiffies);  
-> > > +
-> > > +	ret = sgp_read_cmd(data, data->measure_iaq_cmd, &data-  
-> > > >iaq_buffer,  
-> > > +			   SGP_MEASUREMENT_LEN,
-> > > SGP_MEASUREMENT_DURATION_US);
-> > > +	if (ret < 0)
-> > > +		return ret;
-> > > +
-> > > +	data->iaq_buffer_state = IAQ_BUFFER_DEFAULT_VALS;
-> > > +
-> > > +	if (default_vals)
-> > > +		return -EBUSY;
-> > > +
-> > > +	data->iaq_buffer_state = IAQ_BUFFER_VALID;
-> > > +
-> > > +	return 0;
-> > > +}
-> > > +
-> > > +static void sgp_iaq_thread_sleep_until(const struct sgp_data
-> > > *data,
-> > > +				       unsigned long sleep_jiffies)
-> > > +{
-> > > +	const long IAQ_POLL = 50000;
-> > > +
-> > > +	while (!time_after(jiffies, sleep_jiffies)) {
-> > > +		usleep_range(IAQ_POLL, IAQ_POLL + 10000);
-> > > +		if (kthread_should_stop() || data-  
-> > > >iaq_init_start_jiffies == 0)  
-> > > +			return;
-> > > +	}
-> > > +}
-> > > +
-> > > +static int sgp_iaq_threadfn(void *p)
-> > > +{
-> > > +	struct sgp_data *data = (struct sgp_data *)p;
-> > > +	unsigned long next_update_jiffies;
-> > > +	int ret;
-> > > +
-> > > +	while (!kthread_should_stop()) {
-> > > +		mutex_lock(&data->data_lock);
-> > > +		if (data->iaq_init_start_jiffies == 0) {
-> > > +			ret = sgp_read_cmd(data, data->iaq_init_cmd,
-> > > NULL, 0,
-> > > +					   SGP_CMD_DURATION_US);
-> > > +			if (ret < 0)
-> > > +				goto unlock_sleep_continue;
-> > > +			data->iaq_init_start_jiffies = jiffies;
-> > > +		}
-> > > +
-> > > +		ret = sgp_measure_iaq(data);
-> > > +		if (ret && ret != -EBUSY) {
-> > > +			dev_warn(&data->client->dev,
-> > > +				 "IAQ measurement error [%d]\n", ret);
-> > > +		}
-> > > +unlock_sleep_continue:
-> > > +		next_update_jiffies = jiffies + data-  
-> > > >measure_interval_jiffies;  
-> > > +		mutex_unlock(&data->data_lock);
-> > > +		sgp_iaq_thread_sleep_until(data, next_update_jiffies);
-> > > +	}
-> > > +
-> > > +	return 0;
-> > > +}
-> > > +
-> > > +static int sgp_read_raw(struct iio_dev *indio_dev,
-> > > +			struct iio_chan_spec const *chan, int *val,
-> > > +			int *val2, long mask)
-> > > +{
-> > > +	struct sgp_data *data = iio_priv(indio_dev);
-> > > +	struct sgp_crc_word *words;
-> > > +	int ret;
-> > > +
-> > > +	switch (mask) {
-> > > +	case IIO_CHAN_INFO_PROCESSED:
-> > > +		mutex_lock(&data->data_lock);
-> > > +		if (data->iaq_buffer_state != IAQ_BUFFER_VALID) {
-> > > +			mutex_unlock(&data->data_lock);
-> > > +			return -EBUSY;
-> > > +		}
-> > > +		words = data->iaq_buffer.raw_words;
-> > > +		switch (chan->address) {
-> > > +		case SGP30_IAQ_TVOC_IDX:
-> > > +		case SGPC3_IAQ_TVOC_IDX:
-> > > +			*val = 0;
-> > > +			*val2 = be16_to_cpu(words[1].value);
-> > > +			ret = IIO_VAL_INT_PLUS_NANO;
-> > > +			break;
-> > > +		case SGP30_IAQ_CO2EQ_IDX:
-> > > +			*val = 0;
-> > > +			*val2 = be16_to_cpu(words[0].value);
-> > > +			ret = IIO_VAL_INT_PLUS_MICRO;
-> > > +			break;
-> > > +		default:
-> > > +			ret = -EINVAL;
-> > > +			break;
-> > > +		}
-> > > +		mutex_unlock(&data->data_lock);
-> > > +		break;
-> > > +	case IIO_CHAN_INFO_RAW:
-> > > +		mutex_lock(&data->data_lock);
-> > > +		if (chan->address == SGPC3_SIG_ETOH_IDX) {
-> > > +			if (data->iaq_buffer_state == IAQ_BUFFER_EMPTY)
-> > > +				ret = -EBUSY;
-> > > +			else
-> > > +				ret = 0;
-> > > +			words = data->iaq_buffer.raw_words;
-> > > +		} else {
-> > > +			ret = sgp_read_cmd(data, data-  
-> > > >measure_gas_signals_cmd,  
-> > > +					   &data->buffer,
-> > > SGP_MEASUREMENT_LEN,
-> > > +					   SGP_MEASUREMENT_DURATION_US)
-> > > ;
-> > > +			words = data->buffer.raw_words;
-> > > +		}
-> > > +		if (ret) {
-> > > +			mutex_unlock(&data->data_lock);
-> > > +			return ret;
-> > > +		}
-> > > +
-> > > +		switch (chan->address) {
-> > > +		case SGP30_SIG_ETOH_IDX:
-> > > +			*val = be16_to_cpu(words[1].value);
-> > > +			ret = IIO_VAL_INT;
-> > > +			break;
-> > > +		case SGPC3_SIG_ETOH_IDX:
-> > > +		case SGP30_SIG_H2_IDX:
-> > > +			*val = be16_to_cpu(words[0].value);
-> > > +			ret = IIO_VAL_INT;
-> > > +			break;
-> > > +		default:
-> > > +			ret = -EINVAL;
-> > > +			break;
-> > > +		}
-> > > +		mutex_unlock(&data->data_lock);
-> > > +		break;
-> > > +	default:
-> > > +		return -EINVAL;
-> > > +	}
-> > > +
-> > > +	return ret;
-> > > +}
-> > > +
-> > > +static int sgp_check_compat(struct sgp_data *data,
-> > > +			    unsigned int product_id)
-> > > +{
-> > > +	const struct sgp_version *supported_versions;
-> > > +	u16 ix, num_fs;
-> > > +	u16 product, generation, major, minor;
-> > > +
-> > > +	/* driver does not match product */
-> > > +	generation = SGP_VERS_GEN(data);
-> > > +	if (generation != 0) {
-> > > +		dev_err(&data->client->dev,
-> > > +			"incompatible product generation %d != 0",
-> > > generation);
-> > > +		return -ENODEV;
-> > > +	}
-> > > +
-> > > +	product = SGP_VERS_PRODUCT(data);
-> > > +	if (product != product_id) {
-> > > +		dev_err(&data->client->dev,
-> > > +			"sensor reports a different product:
-> > > 0x%04hx\n",
-> > > +			product);
-> > > +		return -ENODEV;
-> > > +	}
-> > > +
-> > > +	if (SGP_VERS_RESERVED(data))
-> > > +		dev_warn(&data->client->dev, "reserved bit is set\n");
-> > > +
-> > > +	/* engineering samples are not supported: no interface
-> > > guarantees */
-> > > +	if (SGP_VERS_ENG_BIT(data))
-> > > +		return -ENODEV;
-> > > +
-> > > +	switch (product) {
-> > > +	case SGP30:
-> > > +		supported_versions = supported_versions_sgp30;
-> > > +		num_fs = ARRAY_SIZE(supported_versions_sgp30);
-> > > +		break;
-> > > +	case SGPC3:
-> > > +		supported_versions = supported_versions_sgpc3;
-> > > +		num_fs = ARRAY_SIZE(supported_versions_sgpc3);
-> > > +		break;
-> > > +	default:
-> > > +		return -ENODEV;
-> > > +	}
-> > > +
-> > > +	major = SGP_VERS_MAJOR(data);
-> > > +	minor = SGP_VERS_MINOR(data);
-> > > +	for (ix = 0; ix < num_fs; ix++) {
-> > > +		if (major == supported_versions[ix].major &&
-> > > +		    minor >= supported_versions[ix].minor)
-> > > +			return 0;
-> > > +	}
-> > > +	dev_err(&data->client->dev, "unsupported sgp version: %d.%d\n",
-> > > +		major, minor);
-> > > +
-> > > +	return -ENODEV;
-> > > +}
-> > > +
-> > > +static void sgp_init(struct sgp_data *data)
-> > > +{
-> > > +	data->iaq_init_cmd = SGP_CMD_IAQ_INIT;
-> > > +	data->iaq_init_start_jiffies = 0;
-> > > +	data->iaq_buffer_state = IAQ_BUFFER_EMPTY;
-> > > +	switch (SGP_VERS_PRODUCT(data)) {
-> > > +	case SGP30:
-> > > +		data->measure_interval_jiffies =
-> > > SGP30_MEASURE_INTERVAL_HZ * HZ;
-> > > +		data->measure_iaq_cmd = SGP_CMD_IAQ_MEASURE;
-> > > +		data->measure_gas_signals_cmd =
-> > > SGP30_CMD_MEASURE_SIGNAL;
-> > > +		data->product_id = SGP30;
-> > > +		data->iaq_defval_skip_jiffies = 15 * HZ;
-> > > +		break;
-> > > +	case SGPC3:
-> > > +		data->measure_interval_jiffies =
-> > > SGPC3_MEASURE_INTERVAL_HZ * HZ;
-> > > +		data->measure_iaq_cmd = SGPC3_CMD_MEASURE_RAW;
-> > > +		data->measure_gas_signals_cmd = SGPC3_CMD_MEASURE_RAW;
-> > > +		data->product_id = SGPC3;
-> > > +		data->iaq_defval_skip_jiffies =
-> > > +			43 * data->measure_interval_jiffies;
-> > > +		break;
-> > > +	};
-> > > +}
-> > > +
-> > > +static const struct iio_info sgp_info = {
-> > > +	.read_raw	= sgp_read_raw,
-> > > +};
-> > > +
-> > > +static const struct of_device_id sgp_dt_ids[] = {
-> > > +	{ .compatible = "sensirion,sgp30", .data = (void *)SGP30 },
-> > > +	{ .compatible = "sensirion,sgpc3", .data = (void *)SGPC3 },
-> > > +	{ }
-> > > +};
-> > > +
-> > > +static int sgp_probe(struct i2c_client *client,
-> > > +		     const struct i2c_device_id *id)
-> > > +{
-> > > +	struct iio_dev *indio_dev;
-> > > +	struct sgp_data *data;
-> > > +	const struct of_device_id *of_id;
-> > > +	unsigned long product_id;
-> > > +	int ret;
-> > > +
-> > > +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> > > +	if (!indio_dev)
-> > > +		return -ENOMEM;
-> > > +
-> > > +	of_id = of_match_device(sgp_dt_ids, &client->dev);
-> > > +	if (of_id)
-> > > +		product_id = (unsigned long)of_id->data;
-> > > +	else
-> > > +		product_id = id->driver_data;
-> > > +
-> > > +	data = iio_priv(indio_dev);
-> > > +	i2c_set_clientdata(client, indio_dev);
-> > > +	data->client = client;
-> > > +	crc8_populate_msb(sgp_crc8_table, SGP_CRC8_POLYNOMIAL);
-> > > +	mutex_init(&data->data_lock);
-> > > +
-> > > +	/* get feature set version and write it to client data */
-> > > +	ret = sgp_read_cmd(data, SGP_CMD_GET_FEATURE_SET, &data-  
-> > > >buffer, 1,  
-> > > +			   SGP_CMD_DURATION_US);
-> > > +	if (ret < 0)
-> > > +		return ret;
-> > > +
-> > > +	data->feature_set = be16_to_cpu(data-  
-> > > >buffer.raw_words[0].value);  
-> > > +
-> > > +	ret = sgp_check_compat(data, product_id);
-> > > +	if (ret)
-> > > +		return ret;
-> > > +
-> > > +	indio_dev->dev.parent = &client->dev;
-> > > +	indio_dev->info = &sgp_info;
-> > > +	indio_dev->name = id->name;
-> > > +	indio_dev->modes = INDIO_DIRECT_MODE;
-> > > +	indio_dev->channels = sgp_devices[product_id].channels;
-> > > +	indio_dev->num_channels = sgp_devices[product_id].num_channels;
-> > > +
-> > > +	sgp_init(data);
-> > > +
-> > > +	ret = devm_iio_device_register(&client->dev, indio_dev);
-> > > +	if (ret) {
-> > > +		dev_err(&client->dev, "failed to register iio
-> > > device\n");
-> > > +		return ret;
-> > > +	}
-> > > +
-> > > +	data->iaq_thread = kthread_run(sgp_iaq_threadfn, data,
-> > > +				       "%s-iaq", data->client->name);
-> > > +
-> > > +	return 0;
-> > > +}
-> > > +
-> > > +static int sgp_remove(struct i2c_client *client)
-> > > +{
-> > > +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> > > +	struct sgp_data *data = iio_priv(indio_dev);
-> > > +
-> > > +	if (data->iaq_thread)
-> > > +		kthread_stop(data->iaq_thread);
-> > > +
-> > > +	return 0;
-> > > +}
-> > > +
-> > > +static const struct i2c_device_id sgp_id[] = {
-> > > +	{ "sgp30", SGP30 },
-> > > +	{ "sgpc3", SGPC3 },
-> > > +	{ }
-> > > +};
-> > > +
-> > > +MODULE_DEVICE_TABLE(i2c, sgp_id);
-> > > +MODULE_DEVICE_TABLE(of, sgp_dt_ids);
-> > > +
-> > > +static struct i2c_driver sgp_driver = {
-> > > +	.driver = {
-> > > +		.name = "sgp30",
-> > > +		.of_match_table = of_match_ptr(sgp_dt_ids),
-> > > +	},
-> > > +	.probe = sgp_probe,
-> > > +	.remove = sgp_remove,
-> > > +	.id_table = sgp_id,
-> > > +};
-> > > +module_i2c_driver(sgp_driver);
-> > > +
-> > > +MODULE_AUTHOR("Andreas Brauchli <andreas.brauchli@sensirion.com>")
-> > > ;
-> > > +MODULE_AUTHOR("Pascal Sachs <pascal.sachs@sensirion.com>");
-> > > +MODULE_DESCRIPTION("Sensirion SGP gas sensors");
-> > > +MODULE_LICENSE("GPL v2");  
-> > 
-> >   
-> 
-
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index fc23059..302639a 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -4,35 +4,28 @@
+ menu "Analog to digital converters"
+ 
+ config AD7606
+-	tristate "Analog Devices AD7606 ADC driver"
+-	depends on GPIOLIB || COMPILE_TEST
+-	depends on HAS_IOMEM
++	tristate
+ 	select IIO_BUFFER
+ 	select IIO_TRIGGERED_BUFFER
+-	help
+-	  Say yes here to build support for Analog Devices:
+-	  ad7605-4, ad7606, ad7606-6, ad7606-4 analog to digital converters (ADC).
+-
+-	  To compile this driver as a module, choose M here: the
+-	  module will be called ad7606.
+ 
+ config AD7606_IFACE_PARALLEL
+-	tristate "parallel interface support"
+-	depends on AD7606
++	tristate "Analog Devices AD7606 ADC driver with parallel interface support"
++	depends on HAS_IOMEM
++	select AD7606
+ 	help
+-	  Say yes here to include parallel interface support on the AD7606
+-	  ADC driver.
++	  Say yes here to build parallel interface support for Analog Devices:
++	  ad7605-4, ad7606, ad7606-6, ad7606-4 analog to digital converters (ADC).
+ 
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad7606_parallel.
+ 
+ config AD7606_IFACE_SPI
+-	tristate "spi interface support"
+-	depends on AD7606
++	tristate "Analog Devices AD7606 ADC driver with spi interface support"
+ 	depends on SPI
++	select AD7606
+ 	help
+-	  Say yes here to include parallel interface support on the AD7606
+-	  ADC driver.
++	  Say yes here to build spi interface support for Analog Devices:
++	  ad7605-4, ad7606, ad7606-6, ad7606-4 analog to digital converters (ADC).
+ 
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad7606_spi.
+-- 
+2.7.4
 
