@@ -2,94 +2,116 @@ Return-Path: <SRS0=AW8Q=O2=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.7 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C0F5C43387
-	for <linux-iio@archiver.kernel.org>; Mon, 17 Dec 2018 21:42:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C3DAC43387
+	for <linux-iio@archiver.kernel.org>; Mon, 17 Dec 2018 22:06:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 58EC8214C6
-	for <linux-iio@archiver.kernel.org>; Mon, 17 Dec 2018 21:42:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1545082938;
-	bh=nJuuDAdMNpOMQw8CTueZPgBLAH+b+m++4SJxoNj6Z6Q=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=lRglprUfJYq9cG1aNZGBtTrv6nvYHoTtPmzt0V+XZEmwFXr6T6t5BY1rJrogBCdqk
-	 mpKNuFRlN8aNpkcY4xHd1SupztmVszvPb95QRbavg0zuziBFqkNfI4W4kfUYev5uMF
-	 iVszAZ7kmBdHOlBCIlBk+whHRQ7CUpEWwp869aDk=
+	by mail.kernel.org (Postfix) with ESMTP id 57E9421473
+	for <linux-iio@archiver.kernel.org>; Mon, 17 Dec 2018 22:06:18 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="q3IJKOfC"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726459AbeLQVmR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 17 Dec 2018 16:42:17 -0500
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:44397 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726270AbeLQVmR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Dec 2018 16:42:17 -0500
-Received: by mail-ot1-f66.google.com with SMTP id f18so13628373otl.11;
-        Mon, 17 Dec 2018 13:42:17 -0800 (PST)
+        id S1726785AbeLQWGR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 17 Dec 2018 17:06:17 -0500
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:45736 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726574AbeLQWGR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Dec 2018 17:06:17 -0500
+Received: by mail-lf1-f65.google.com with SMTP id b20so10656204lfa.12;
+        Mon, 17 Dec 2018 14:06:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=MW5cW5OZpC1DDC/FTy5FPQ5EYY6bZ36cj/A6J4kdUxE=;
+        b=q3IJKOfC36zGz1QP/b2n0vGPXgdfuAqG7CTt8OP8DyZdb3En2f+6xT7feg8kLhb2i0
+         wSXWHv388pP/TW9FPh4ewAw66tMLxbWzK1pTroCNq+CiX2KJxYKO2NvhoAg2Yy0rK+pD
+         WwNuQ+gQv8bPyD1SkkTBBC9bUHR68zgUAy8qRDlhkKEHmuXVciTR2ep9fBf7bI5zD0h4
+         uKAeaRbS/hlmGnWJcuatgEvk4WFPsE8SzXMyVerp7FMfBg/Z9pkUcf7mVkbzkre91xnx
+         l4+uVbsQqj1yMZlxqdl2GXzzTx/dp14gmXPUuVgwr5qPcr0SR2z5ofb/y03jLeztV0Oi
+         bszg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=CiTFZ2Emf7NHYxEvHLVl8BgfwakG1WBOfabXdeusr+U=;
-        b=bcqcimKJKqvP2EeedLG1gfX1ObMtwgpZLMuzHpqP5laIlr5d8iKKskdCmAvMeclIlh
-         8c+dACGKSYwo99U3Wj2oAcBWDn7Z6kUXmjididLPQpf0+pqRotkfV/HVCrbcAGCu4def
-         YPPoMh8IUwlMIr9/3tTOmLa6Zkn7yRGsuLDyuFnTqgdcdxf3F2m3pkwXmBfR/hWZ4jaG
-         qm8iQ58bd19DgL8jUw6ujI6s61HNwAdJN0N2mgVAkyiGnSxG17HN/lx8FhOzSN0jHUia
-         njyPa0+/8abDGWAyUFK2NMikrE41RRXM/Hq0i2Vz2XTx6VUqcbaYROk2KBKl4ecjjkA/
-         zpCA==
-X-Gm-Message-State: AA+aEWYmbIzCzwzin5bXGu+lCMBFsj9fs2oMqsfGXJHJOETKqYEPRbfW
-        9S3/0oSd8wDxTjTnggM/JA==
-X-Google-Smtp-Source: AFSGD/X7ztxjWFevohjYgr+rWSVuw97i3L5hS4nXX8JlQjSvuvJuu0fVnkVQvqRukf6+P1TeQ5pOLw==
-X-Received: by 2002:a9d:22a:: with SMTP id 39mr11146334otb.354.1545082936723;
-        Mon, 17 Dec 2018 13:42:16 -0800 (PST)
-Received: from localhost (cpe-70-114-214-127.austin.res.rr.com. [70.114.214.127])
-        by smtp.gmail.com with ESMTPSA id m2sm7492400otp.34.2018.12.17.13.42.15
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 17 Dec 2018 13:42:16 -0800 (PST)
-Date:   Mon, 17 Dec 2018 15:42:15 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Anson Huang <anson.huang@nxp.com>
-Cc:     "jic23@kernel.org" <jic23@kernel.org>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "martink@posteo.de" <martink@posteo.de>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "gustavo@embeddedor.com" <gustavo@embeddedor.com>,
-        Leonard Crestez <leonard.crestez@nxp.com>,
-        "rtresidd@electromag.com.au" <rtresidd@electromag.com.au>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        "preid@electromag.com.au" <preid@electromag.com.au>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: Re: [PATCH V5 1/2] dt-bindings: iio: accel: mma8452: add power
- supplies  property
-Message-ID: <20181217214215.GA16536@bogus>
-References: <1545023805-31250-1-git-send-email-Anson.Huang@nxp.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1545023805-31250-1-git-send-email-Anson.Huang@nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=MW5cW5OZpC1DDC/FTy5FPQ5EYY6bZ36cj/A6J4kdUxE=;
+        b=B9krOprPp4cuIKOriDeNOV5mefhPuLwbB5nFaeyIu0oYgXbQl/U8iGJ88WJ/f/D8yZ
+         YjnICukxEJHwkmq76s8PqO2oKO3qWpdRlP65p5RGRxZQ7t2Z+a9mCSSXZ5jUYJ/J/m4e
+         lo3eKp3+uvYvT70n73w71B7oxXhCW9pfSInTfgSU7/yzMif4vSGwPVdH8k45RLzP5YMs
+         L0ttM9HWjqo8SYJsJ7oSMzIuivHaPCOhsTWdaHBrzyvJp3lyS5bkobO+gKl87D+7U2jM
+         2DLW6g7/qmVvqZQlNq+ijU5C8vcIh3kdc2IbifOEdf6rb7g1h19IAfwemFaFcnb94AWq
+         3RUw==
+X-Gm-Message-State: AA+aEWbycBaRRIqREh2zu86VlmPPLyj8M0/PQ/wa65s9T/7J6qohcHrT
+        WMlx+WSq/z7Ve4Ajlx52uBQ=
+X-Google-Smtp-Source: AFSGD/U7hXlJK/c1LaWsx7S1qIXkiPk30v4nQoNzgHtZH6TnAImZKZkVTlU2eQRhnIHtP7kcnYXjxA==
+X-Received: by 2002:a19:c995:: with SMTP id z143mr7099601lff.79.1545084375077;
+        Mon, 17 Dec 2018 14:06:15 -0800 (PST)
+Received: from localhost.localdomain (ppp79-139-228-252.pppoe.spdop.ru. [79.139.228.252])
+        by smtp.gmail.com with ESMTPSA id m13-v6sm2724741ljg.56.2018.12.17.14.06.14
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Mon, 17 Dec 2018 14:06:14 -0800 (PST)
+From:   Sergey Efimochkin <sergeyanton2007@gmail.com>
+X-Google-Original-From: Sergey Efimochkin <efimochkin.sv@phystech.edu>
+Cc:     dan.carpenter@oracle.com,
+        Sergey Efimochkin <efimochkin.sv@phystech.edu>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] staging: iio: adc: ad7280a: fix codestyle in ad7280_event_handler
+Date:   Tue, 18 Dec 2018 01:06:01 +0300
+Message-Id: <20181217220602.89406-1-efimochkin.sv@phystech.edu>
+X-Mailer: git-send-email 2.15.1 (Apple Git-101)
+In-Reply-To: <20181217074540.GC15451@kadam>
+References: <20181217074540.GC15451@kadam>
+To:     unlisted-recipients:; (no To-header on input)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 17 Dec 2018 05:22:49 +0000, Anson Huang wrote:
-> The accelerometer's power supplies could be controllable on some
-> platforms, add property "vdd/vddio" power supply to let device tree
-> to pass phandles to the regulators to driver.
-> 
-> Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
-> ---
->  Documentation/devicetree/bindings/iio/accel/mma8452.txt | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
+staging: iio: adc: ad7280a: fix codestyle in ad7280_event_handler
+Signed-off-by: Sergey Efimochkin <efimochkin.sv@phystech.edu>
+---
+Changes in v2:
+- changed patch prefix
+- changed patch description
+- removed incorrect fixes to codestyle
+ drivers/staging/iio/adc/ad7280a.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
+index 58420dcb406d..f167ee1b2127 100644
+--- a/drivers/staging/iio/adc/ad7280a.c
++++ b/drivers/staging/iio/adc/ad7280a.c
+@@ -725,8 +725,7 @@ static irqreturn_t ad7280_event_handler(int irq, void *private)
+ 		} else {
+ 			if (((channels[i] >> 11) & 0xFFF) >= st->aux_threshhigh)
+ 				iio_push_event(indio_dev,
+-					       IIO_UNMOD_EVENT_CODE(
+-							IIO_TEMP,
++					       IIO_UNMOD_EVENT_CODE(IIO_TEMP,
+ 							0,
+ 							IIO_EV_TYPE_THRESH,
+ 							IIO_EV_DIR_RISING),
+@@ -734,8 +733,7 @@ static irqreturn_t ad7280_event_handler(int irq, void *private)
+ 			else if (((channels[i] >> 11) & 0xFFF) <=
+ 				st->aux_threshlow)
+ 				iio_push_event(indio_dev,
+-					       IIO_UNMOD_EVENT_CODE(
+-							IIO_TEMP,
++					       IIO_UNMOD_EVENT_CODE(IIO_TEMP,
+ 							0,
+ 							IIO_EV_TYPE_THRESH,
+ 							IIO_EV_DIR_FALLING),
+-- 
+2.15.1 (Apple Git-101)
+
