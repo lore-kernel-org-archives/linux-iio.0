@@ -2,40 +2,39 @@ Return-Path: <SRS0=AW8Q=O2=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD5DEC43387
-	for <linux-iio@archiver.kernel.org>; Mon, 17 Dec 2018 12:25:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FC9EC43387
+	for <linux-iio@archiver.kernel.org>; Mon, 17 Dec 2018 12:27:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6D38520645
-	for <linux-iio@archiver.kernel.org>; Mon, 17 Dec 2018 12:25:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CE9AB20645
+	for <linux-iio@archiver.kernel.org>; Mon, 17 Dec 2018 12:27:02 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="FejgNDiF"
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="krsQDbCR"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731680AbeLQMZi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 17 Dec 2018 07:25:38 -0500
-Received: from mail-eopbgr810071.outbound.protection.outlook.com ([40.107.81.71]:51424
-        "EHLO NAM01-BY2-obe.outbound.protection.outlook.com"
+        id S1731959AbeLQM1C (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 17 Dec 2018 07:27:02 -0500
+Received: from mail-eopbgr690057.outbound.protection.outlook.com ([40.107.69.57]:34827
+        "EHLO NAM04-CO1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726938AbeLQMZh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 17 Dec 2018 07:25:37 -0500
+        id S1726436AbeLQM1C (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 17 Dec 2018 07:27:02 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=analog.onmicrosoft.com; s=selector1-analog-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DdRQfoIDXiInfjwnXJJa5Ls0fzDkePleJuZBaXEQuZc=;
- b=FejgNDiFa+Ar54z6YY2okqm/lNHRUlbdZnO3p6/pYXhJKs+zwoY4QbYB2f1ML4te90amMH0hU+qrgGKucDnYIJLVScVD0CQcFGXMCuVphv/lw8yfrxYPjtbynGt42zEQyh7PMe2nULdvOCoPwnCbbADCDerfBtJk2nH+K8DB2n8=
-Received: from BN3PR03CA0111.namprd03.prod.outlook.com (2603:10b6:400:4::29)
- by SN6PR03MB3727.namprd03.prod.outlook.com (2603:10b6:805:43::16) with
+ bh=s281Gs8KNyYQIpllwd/603PwwIgTjnQFAB93orfaVnc=;
+ b=krsQDbCRoigtk2JQL3uJIomQSfmV75eshXAVjc9233R0bcprthlTE5UcUlbI/mD1Hd+gpSP+P+J0rzFN15w+RCLcy5vaFXiHbcfmHzySEv7T7GeQD5jtJB7JodOkSQURQDoQNjvzDuSgZHJi9F9AJsExfVItzlDESTp3zo7lhyk=
+Received: from MWHPR03CA0005.namprd03.prod.outlook.com (2603:10b6:300:117::15)
+ by SN6PR03MB3758.namprd03.prod.outlook.com (2603:10b6:805:69::23) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1425.20; Mon, 17 Dec
- 2018 12:25:30 +0000
-Received: from BY2FFO11FD028.protection.gbl (2a01:111:f400:7c0c::109) by
- BN3PR03CA0111.outlook.office365.com (2603:10b6:400:4::29) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.1425.19 via Frontend Transport; Mon, 17 Dec 2018 12:25:30 +0000
+ 2018 12:24:06 +0000
+Received: from BY2FFO11FD012.protection.gbl (2a01:111:f400:7c0c::111) by
+ MWHPR03CA0005.outlook.office365.com (2603:10b6:300:117::15) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.1425.19 via Frontend Transport; Mon, 17 Dec 2018 12:24:06 +0000
 Authentication-Results: spf=pass (sender IP is 137.71.25.55)
  smtp.mailfrom=analog.com; gmx.de; dkim=none (message not signed)
  header.d=none;gmx.de; dmarc=bestguesspass action=none header.from=analog.com;
@@ -43,16 +42,16 @@ Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
  137.71.25.55 as permitted sender) receiver=protection.outlook.com;
  client-ip=137.71.25.55; helo=nwd2mta1.analog.com;
 Received: from nwd2mta1.analog.com (137.71.25.55) by
- BY2FFO11FD028.mail.protection.outlook.com (10.1.15.217) with Microsoft SMTP
+ BY2FFO11FD012.mail.protection.outlook.com (10.1.14.130) with Microsoft SMTP
  Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.1446.11
- via Frontend Transport; Mon, 17 Dec 2018 12:25:29 +0000
+ via Frontend Transport; Mon, 17 Dec 2018 12:24:06 +0000
 Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
-        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id wBHCPSef016650
+        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id wBHCO53v016311
         (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
-        Mon, 17 Dec 2018 04:25:28 -0800
+        Mon, 17 Dec 2018 04:24:05 -0800
 Received: from linux.analog.com (10.50.1.118) by NWD2HUBCAS7.ad.analog.com
  (10.64.69.107) with Microsoft SMTP Server id 14.3.408.0; Mon, 17 Dec 2018
- 07:25:28 -0500
+ 07:24:02 -0500
 From:   Stefan Popa <stefan.popa@analog.com>
 To:     <jic23@kernel.org>, <robh+dt@kernel.org>, <mark.rutland@arm.com>
 CC:     Stefan Popa <stefan.popa@analog.com>,
@@ -60,268 +59,107 @@ CC:     Stefan Popa <stefan.popa@analog.com>,
         <lars@metafoo.de>, <pmeerw@pmeerw.net>,
         <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
         <linux-iio@vger.kernel.org>, <devel@driverdev.osuosl.org>
-Subject: [PATCH v2 4/6] staging: iio: adc: ad7606: Misc style fixes (no functional change)
-Date:   Mon, 17 Dec 2018 14:23:38 +0200
-Message-ID: <1545049420-16484-5-git-send-email-stefan.popa@analog.com>
+Subject: [PATCH v2 0/6] staging: iio: ad7606: Move out of staging
+Date:   Mon, 17 Dec 2018 14:23:34 +0200
+Message-ID: <1545049420-16484-1-git-send-email-stefan.popa@analog.com>
 X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1545049420-16484-1-git-send-email-stefan.popa@analog.com>
-References: <1545049420-16484-1-git-send-email-stefan.popa@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-ADIRoutedOnPrem: True
 X-EOPAttributedMessage: 0
 X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(376002)(346002)(39860400002)(396003)(136003)(2980300002)(3190300001)(199004)(189003)(575784001)(4326008)(53416004)(110136005)(16586007)(6666004)(356004)(106002)(54906003)(48376002)(50466002)(426003)(316002)(336012)(7636002)(77096007)(26005)(246002)(76176011)(47776003)(51416003)(7696005)(106466001)(36756003)(8936002)(186003)(8676002)(2906002)(50226002)(2616005)(5660300001)(476003)(116002)(126002)(7416002)(72206003)(11346002)(14444005)(486006)(446003)(305945005)(478600001)(44832011);DIR:OUT;SFP:1101;SCL:1;SRVR:SN6PR03MB3727;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;A:1;MX:1;
-X-Microsoft-Exchange-Diagnostics: 1;BY2FFO11FD028;1:E4lmmK8HsT2MRFsnFsIsMOx1PWk/uNAogMwKOx6fFlMQIMdEWlxk/uye4cobp0vHzrHqHMxuYIKhF5f3VzdytUH3eEdOIkGgxSWd5lXYTItG3l8rPKFU0NnxkDfDuo58
+X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(376002)(136003)(346002)(396003)(39860400002)(2980300002)(3190300001)(189003)(199004)(316002)(2616005)(8936002)(50226002)(7636002)(7416002)(8676002)(5660300001)(305945005)(4326008)(478600001)(246002)(106466001)(106002)(54906003)(336012)(110136005)(50466002)(476003)(116002)(486006)(36756003)(53416004)(126002)(48376002)(51416003)(47776003)(72206003)(7696005)(186003)(44832011)(6666004)(356004)(14444005)(426003)(2906002)(16586007)(26005)(77096007);DIR:OUT;SFP:1101;SCL:1;SRVR:SN6PR03MB3758;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;MX:1;A:1;
+X-Microsoft-Exchange-Diagnostics: 1;BY2FFO11FD012;1:mf0SFmZtY2aPNqmJ7K8utg+M+G4Me2RdO/3ghlkYdwsh80p1PYgcXPE4nbeSWT+8/muiagcJO6i61fi607Ejb1J7+quwtZ4wuEicJT6MtjQjQijkkfb2EL63eXo5EloV
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6917a64d-c467-4a7f-b771-08d6641abb95
-X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600074)(711020)(4608076)(2017052603328)(7153060);SRVR:SN6PR03MB3727;
-X-Microsoft-Exchange-Diagnostics: 1;SN6PR03MB3727;3:p1AyKxIPXZ3mmO+cMcw9a8i4aKzJBwEQoxdSUTYYx33O5VYIvvSycPeUqDKQ9rUyqjKTt5oHtMRoc3iMtilPqpipAqCtsx43LUb9TiBXVnbP0QCy4iQtqnKlj2ZjjfJmsAimfnb5LvBCIcg5VKPWhPur7/+Gr2feEw88EW0jpQK1OUnkbdijqFe0yG+DGSeQR0ArUNZZI+Za1OsjSQyZPLoE+VcrW3v+c3g+hI3DLZYZy2DEQHswlYT4v7zuhFOPTIKFwTDT7mofSOv/6aWVngTIieIuRsI1nxUUy0a3C4CKoJnIfIbSyn2fXMextAQ9ErLWQg+APqCnJYkAm8S1bQJnFFrQ/FFAHzjpD7VEQ8c=;25:DhxMGy/9wwaqWUHB8C9anqaQaV3Q68aueecV+czNSmgG1PQXmcQClvm9pZ8BTohbsT7WMkHgJmH7hYsxZyBgD6tZAHxQ0SvLqliPpKwilPEkLciqAOwoBCfzBXxQv2Z9a1JeNP+VD5UY/zytnC5JKHYVrBQYKbUhs6t7RvkUZMQlnGixdsC3kRhsEwKBO/n7zYUAgHDiZ3DyV6Wd6eYkXDCuET4UiL7oj2Z6FdaW0bMf4gQq/pD9GNktnZDMMS1LTaoIsoNn7vo7QqajcOjI8H8lirTyEhXlxn345psmpr/7VddelJ/rEuFKRLkixNpE0hfmAudc6rZGsgIDT6ViEg==
-X-MS-TrafficTypeDiagnostic: SN6PR03MB3727:
-X-Microsoft-Exchange-Diagnostics: 1;SN6PR03MB3727;31:ddQ1Zp3v0fcp0KG7qq4IpuqtJzgW2+UujWmAEdQZ2+w/XJ5qEpdAy+t95EoR2HFFvnTBZcUA7IIK3OlmX/d4OvTe525QwDyryDruyPRr6VgjIuIxwU1zIWJfWSJW8ynufzwidXlhIEgnT3ey3qqXya5Q/aS+XrbYBIUwunIxrZzcrl93psDsKFmMXGQK7gkCl9zb+qUrnz81sijJ1FLkWnEEMA4i27xrFe7O65/kxbY=;20:cnWeusOcphZhaxUcJzpGyPYrQH48o9bilG6E/2GYZ73bIUP1xzIhwoZRONOEu+DfzqgkzCdG8cvZR5O9pWj6/CxOK9Hud6IiSojsVK4U+0sloFD8rLcmUF524hWKTnHV9R22JNo+/rHzkLWqPxf+DB/7yZIPHZTEWghLpE3STDOYLsM6aA9lOvQY2ih6uDu1AWZEcjaj/yfcZq0aVsly4H3KvIg/qKayq5a6pB51h2CORRyusBcryue1iLa9G5EMYBbsKPADsrpE0TVW3qcl/t6ooY880xnRqvV68ERhB5kJ06vOLTmrNg+kqx2At867KbDELCNmFL5cj1z4fT/+ZRv5OXCSd7Wqzparj1yfm4QZhkbvBiErHNGBcvJBbXjUq8LyOEblnpCMxTE5tiwGuzGqtvgx7TUA7iGCSCH77DaRLzIJxV/pUXc59yyKJcRaqlKWcx8Nlq7q9FFJ4qZXw6aMVX7VZAkPHzQ4peqnvtClqLahVCQ2762+iNJmkiZA
-X-Microsoft-Antispam-PRVS: <SN6PR03MB3727D68E8CF07D097C991D8E9DBC0@SN6PR03MB3727.namprd03.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: cf80d225-7fd1-448c-023c-08d6641a89d5
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600074)(711020)(4608076)(2017052603328)(7153060);SRVR:SN6PR03MB3758;
+X-Microsoft-Exchange-Diagnostics: 1;SN6PR03MB3758;3:pMfnwmmxPpiAClGn5D81BHcH90qNMm1PalPruMvGfxRsMsvzuNXVI9O0kZeQnmK3nJO3o4hKobA1Pb/14Lk2gXEDwoxtUFez/6UsPAQ1zu7m67Jb/FYNIIPt92sqyYgu9vuZGiuVWjwZXWvB36PQlZoUNnIEy0ea5Hd73RWJyKD7nfq+xcIrr42U5XcP/gLgF0TC10+s/TuRPQK5VAizgnkEwsd9bOOHo+0zli90FIYP5a4UM3cBWHyoDoFIJpcQ6Bu2hdTIfiLYm23svFR0l+CTsPBXauqPWHPra3KmaNdgUVb3r9/H+Y9pMuE5l75TSs93MOCZsSlFmHK561K7/26LqxsNThVfQSQonMyMdRs=;25:SpHeTSSWMk2842vwTHGvPpOQJaXz0LbCGz1nivS6wO8pAI78DVVMdAIvlmCcBr8wXWQwHo1FytAd0MUmT0E5Y12ZSVIMiMyI8mTLJYq6TGwg020t1MkvsN/o4oUhptrXUaDuiihTMy/LIuZwmMCo3AltsH7phsje6mYPm5i50usGkZKOJ8Koou1rGVwdU+d18J+8K5bJdmfFswYV0QgikFJK/H/So3IUVTUlkv+FFY199VWTU++PiXerTz3OjMJuqjyUetU5dIasZ6T0smekhRhnq4/7vPxkAkt5XsinPJe+/mkOCV7pI5L17yQst80mmc6K3808fFZ0hRZEI6QZ3w==
+X-MS-TrafficTypeDiagnostic: SN6PR03MB3758:
+X-Microsoft-Exchange-Diagnostics: 1;SN6PR03MB3758;31:rQWrmsmhWqVtfUO/FH4mxatJmLA3qm1bFRkAHpvkznTG9eIxTErJUZbYwqwDNiuU7HcWy1iPNw0f41cmQfXRl0K3m3cDxSoO3L/+fPEmbr0stBJDDGBmbO7NdEDcuj41ZdvAZvNASeG/PSpbBdICN88O4U28xFl8THgJsfY8mN3meQNrbrw37R2aqhoBbEXjh3ESJL8porluXnJjUyR8pxhr3Xmi4gPxSCNYt4iUu10=;20:Ck33mRu4TQnTRngH+GRCuKIlhYDAHI3pcy7wnFVLql/I4zkWlXWHmpkxvpLd1qIe4o2vmrgGBhuuYR8E0uXOn5Sh52vZf6Z/T3QX9zNyUXES/TszNzAAEu5yb1eY3pTl4yuTqYBgAfKZ2/GWIdplP20z/+WWhjhzGq4ZwFRplT6aITWorMUZxkVm1D6rkKtmbHcUfoHlgCEj3Cs8gaBRny2wAcGA8hL4NDrH5DPFwKDiC64k8+u8S7EuRpwQvVgp6ZGxgLbyIGiEQBI8ZzviYkApneto928yV6v4JutGS4k57Jpbm7hkf4QRsS05w8yI2eQtHMxdqh3HERs4eJa4mmxNPhNp2PGm/YjG26Ba5dNEkr7bVdfF40u0EPSvGPj/h6DU4c71rbUSkSYtNpwNMfVfz27Kx6bdDWAzPZwOqmio0B7+UeybvrmNcPdLVNwpCATS5qV+lPoOFwvgNC3z43G/phSsi0EoGXIYyrTkLe+qtCyABAklpnxOiMwkBna5
+X-Microsoft-Antispam-PRVS: <SN6PR03MB37585CC019562CF9AEE3D30A9DBC0@SN6PR03MB3758.namprd03.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
-X-Exchange-Antispam-Report-CFA-Test: BCL:0;PCL:0;RULEID:(8211001083)(3230021)(999002)(6040522)(2401047)(5005006)(8121501046)(93006095)(93004095)(3002001)(3231475)(944501520)(52105112)(10201501046)(6055026)(148016)(149066)(150057)(6041310)(20161123564045)(201703131423095)(201702281528075)(20161123555045)(201703061421075)(201703061406153)(20161123558120)(20161123562045)(20161123560045)(201708071742011)(7699051)(76991095);SRVR:SN6PR03MB3727;BCL:0;PCL:0;RULEID:;SRVR:SN6PR03MB3727;
-X-Microsoft-Exchange-Diagnostics: 1;SN6PR03MB3727;4:dpcm/9wRXCo+4eqSwJ59GFJWKnLPkbiYaKeaIq7fDgVI83vce7hMyaJ2Y+dS5XwFZZfqRAem9gkUV30ObtND34KW1iDrlcsnoV2RxPvV5lz8z1mFqjlUcrzgSnkXckXCRM0GA9wcvpRJ2SsCbaRSRy7Xi6QDV3DcP2WggBpuJfbxl0ZiAxWPZcShdrqbirmyPx0TocHvBc7IQrL/svPPjom1+wZWYT5VB/o4nQ0kjONEFshQ2xufMuhbfu3Kfxwj8ftqu5DY768HmUWzB5U17w==
+X-Exchange-Antispam-Report-CFA-Test: BCL:0;PCL:0;RULEID:(8211001083)(3230021)(999002)(5005020)(6040522)(2401047)(8121501046)(3002001)(3231475)(944501520)(52105112)(93006095)(93004095)(10201501046)(6055026)(148016)(149066)(150057)(6041310)(20161123564045)(20161123560045)(201703131423095)(201702281528075)(20161123555045)(201703061421075)(201703061406153)(20161123558120)(20161123562045)(201708071742011)(7699051)(76991095);SRVR:SN6PR03MB3758;BCL:0;PCL:0;RULEID:;SRVR:SN6PR03MB3758;
+X-Microsoft-Exchange-Diagnostics: 1;SN6PR03MB3758;4:dWo1WUyEw7mxAbTeeCiFrViQjP0tvCof1Ja9kg7/s2ku7DhxUXUSX9AVJIT8SBRWcYI9zTsJI1+T9W44kyj4KrvHvILblQp4b7RUsxFnoGQnm/ytD+jP//mGO2oMTCb/poFfxqEUdR6tqQxfZgnsIw1gHOM71iO6QutfP0m8S5uutFlOHRN9vITuY8Scq5uYlk8ybGgCja7A9dhhIknoG9XxXqQlyOgLj8ISyiIzCmsJ0vFavAEKz0w6XAtHnbIq+qTJcM/ZZdfgi/BKpZrOkA==
 X-Forefront-PRVS: 08897B549D
-X-Microsoft-Exchange-Diagnostics: =?us-ascii?Q?1;SN6PR03MB3727;23:CMsfBHo3RCIxlj8b/Ez75yYlONJT3Bxs9UKLiWlxs?=
- =?us-ascii?Q?tvMCVPkNlwaJb9Huw1OFGme26hOsKkwNTP1kW42MzgD+yFSbE2JEnS2cYzRJ?=
- =?us-ascii?Q?Npc+VYt0KPcNlVapQ/KK0+BY1WoE3Mq9A6YZkOfokLiJ7v6nIBgsyx8gnwja?=
- =?us-ascii?Q?z5HGCbWgxaVJ0l1HNnmdLJSm+CBVjXEtnHLzYq1ZeBis8z56PkCXF6sgir/U?=
- =?us-ascii?Q?kr62Ldj666yKey8sK1PTqBDFmUjSw1o7OesMqajdvWCdooP8WYw9IpbuRS86?=
- =?us-ascii?Q?jy+Cfvw4qWykq1DTp/y7ux8KCdgjtNOIYXgHlYwbszMx7CREBljp16yqd/K3?=
- =?us-ascii?Q?PM2EsNa12vU5+E/yzdxUaPrle5Q98Dv6qfvUYIrONLG3h2LLBjTNHb9nDV08?=
- =?us-ascii?Q?ja3OLpMF9GwMn9bx/WEo4/FprjKb5n+veNC2kHfRqk+B9kNx4B2YQRzOlkcX?=
- =?us-ascii?Q?46NqQVDetzUye1PK2ZjhYowBjMKlocnSK1YLc9PQgbBTAjTfIWeoKxkiEZMl?=
- =?us-ascii?Q?kqe8W8mXyzpby5he6e/Be2Tssvczag77iF/16NgovIVk9Qhy52QB6ScYYLn3?=
- =?us-ascii?Q?t/dWx6oHxSVmDV3DWNgHihqJ/wYgjCXGLx0xm0lT4XeCHOjjOQidGlgfB9wy?=
- =?us-ascii?Q?3Yjy48z13jfiTi54Dk5r0/dgkt9KWGUvcbxpISukrTgCs7TKd+eecW+wuQqS?=
- =?us-ascii?Q?62FYbzdyU1HP/yMMNQra5v+5nnRubWn7Rou5hux5si2e2ub0cLRUEzf2Ji+j?=
- =?us-ascii?Q?naxDpoUlDmqAIJWOzYH/AbysqM6X9TghSw9f5WR9USH5r9OFBHEhwjwmJoHH?=
- =?us-ascii?Q?+aYQjzpiC45F3lJMNNy2txeqqtZVY8uZ1p4nC49af1ky2LlSGRgrYFuKhUTp?=
- =?us-ascii?Q?KN4V97ISsqFXB2V+/xfAE4VHSw8mnYnWiPkNSjBkBLw3ja43OeUwxPb/tSO5?=
- =?us-ascii?Q?1gTOuyjhxckmqVhH+ue5jUPMrTkbflrA5toL+9n9yVQs4tb/9ev8oqRXRgdk?=
- =?us-ascii?Q?VzwWXeedmZPr78Uybv7qxI3NfyUHwTo5WVxuI0wtsEX4q2MK18AZ2ReIM1gC?=
- =?us-ascii?Q?NfRuGKAWzQWfQko5Uex4VhEkGXlHN8wg1kK/2OYW5DLQFi6V0vZDkE3EhFNl?=
- =?us-ascii?Q?IUcJtt+9xWxHplGkUVI/XuX6EYCZTvz?=
-X-Microsoft-Antispam-Message-Info: z8frv8yVHXr8/X+2eaorapnEfeJA4DYFWRc9JkpaxUSGKiOodj9EyuU1DdHoPYoiQNjxDkjzaeYySLLkB1Q1zpp8NAto9N3dB0d5OGnmssu78jHZoI2sBQ6Z3WdBqbyZpw3kBO09gRPk3Cc5CEyJbTMFY1nSwEZ1BTep1bYmDFLFHjkjEVtqbrOFL8m/EtFQNxBOMreylx8bghrySZRu9tjV3hN+VnDKZpsQTKmyNNSiHXugnn1ydrcFcjAcpI3y2k+nPlCB2wRHK1gsZ+pqF/ItBfJa5elPH75ep9xkMg7r6uNIWKYzR6gZyTP1hH1k
-X-Microsoft-Exchange-Diagnostics: 1;SN6PR03MB3727;6:1VZxtaXtrChDnAi+WCEt1kncGK0pY0OCkDlDojRdvRJcFTdREFv0PiRs5NOa5NaG14u/YiaRLBS4GDPREbRYyWHISwYDL8jlFnJzotE3FyXtAvsrGIy5GVIFvXf8A3ZaH5uhqNwwM7MDq3MD3h6woYvD/+pm9xB9QBwi0PNVme3rXCIyMg+9Cqnp4/CgUKYDjJetwsxzMA+LAkFPXtSJlrkxVr71rUvrx5qwM6oTfeQyZCHuViZgXrIx0eVKiDy34wARR0YLkkNE5JwvKm4yBeB8wNXeVn8gSEi68d5qNvOogMyRC8/xchTSRplmZnh0FG9C2BtJcFz+rXKsh7qPr47yEtUt9cVJ1dNX7axduG2S2+hmLXZQLHt/1/VIpJ7l5sYjDLSoKoKZXb9CnSjxqtmvx6x0kKlsnB/tNiD+9/Fp+DNJKKNEg+zzVMARmJ4cj9frAydsD0Rn/NezlCOK4g==;5:15IbjKAGbk/JacbnSJCdqcH5DUvnQjOXOy6C8gp4r++MtiuV/3q72FpraB+1QBJNAfNqVl/9tamLYh+lX4TGqEvnRpqfnekrh3RCoFml3TKBFz0a07tcVnltc5EEl4S4NlLfWGMK37n3CLeHbMm19N412Z+oScNFJeiWqOJf0+o=;7:tftlBZvOMx1yGG2Fhl4KCUnlEX+MDgGw8VpmPL7/nqu2PqDC7iEb1Q6T0gF1F8K/g388wOpp5jG3BbTwZq9o1BYn7lXKKNtFbDm18N0MN7lcaeUerzivhXocbBzjokQRSTOaCXRPssuLPxlm44PnRA==
+X-Microsoft-Exchange-Diagnostics: =?us-ascii?Q?1;SN6PR03MB3758;23:MpUryssVg5g9ogArXC5OH9fmYfq/JD6vTD5y0e2t0?=
+ =?us-ascii?Q?ktwiA4jPCWdlEaPNZpp7yfxVQtP4nsVsrURCo+MXHWcwoWSxgIgpcANbpis2?=
+ =?us-ascii?Q?/WNylFdPmEbzGP/Q9mJJpjSa85fqM493/z7tH5xq4E6j7sGnyLetBtJoKSSZ?=
+ =?us-ascii?Q?/ZGW+OT5ws5zqRcaa+d9X6fIzWNGyXmR/QRi52wc0d/XFNir+ip1chsBBSoj?=
+ =?us-ascii?Q?PQ884Onm4tCSzOW/5C+jFaa7e7POvK9IFdnIbsMo0FvAMFKYWsybmSQpIQz3?=
+ =?us-ascii?Q?emB5DX9/PnNLmoRiGKYGyPZt5b174HpubPhdPF5XkiYcBWrgP6VrTtiEMjjO?=
+ =?us-ascii?Q?r+s91qlvbCTUQtf2KliBpLMdvT3IaP6m6Fd6+zmBQqyXW+ciIhPyqQgNX6jx?=
+ =?us-ascii?Q?VkbuqQ0x0ptzteS8FtXskHnRnVKs3VEhZ05CUYK24LPGLvOAgJk5/6jfpdP0?=
+ =?us-ascii?Q?hm7c0R0AuNCmCv+oPgD/ZPzoGveAqsV0fNIu91UPx2gdh4I6EQvl8g9Q5zzx?=
+ =?us-ascii?Q?dv3/JWdu+cl9E6JB4MAH3VwpQz0b/pua9cqjXIeGDzOTejRlXu36nezTtn6d?=
+ =?us-ascii?Q?Fg1DO92OuNgRGtBnHMCz1q16xiIJW2b7usZAFgTrA/a/gjtCf5AdD5nFFsu3?=
+ =?us-ascii?Q?lmMYxAVGjXiwrauMu1QGi45n/qOliGUvsQ4poe0/8/ySRpMtM8+aTxaTSioL?=
+ =?us-ascii?Q?gIrMBn0wTDNefb9B39yhTycmcAiZ9LWAbSKaQgqliFbj3d111uPGqlgV65rh?=
+ =?us-ascii?Q?eWiHVQKPLZizh5xWTNfhT51eBxcDYf4SBZcrBJr8NZZfxcUXEUBVBOvotTN9?=
+ =?us-ascii?Q?Ge1lg7SedjKx5gK4SmjthvTm5L0goesuxVAN4xDY8zVhJdQb6k7j+54C0LVn?=
+ =?us-ascii?Q?Uk+PNBqYmQJqT9yN0XmuGncBFrDDAYBPBsb88cb955yxg28r4FxnzaV9fMrh?=
+ =?us-ascii?Q?xIROoAntTj5V4eKz5suNlVieVU6Uc7Ff9PnrCzsJagSZjNx6G1+CvbaYIb+U?=
+ =?us-ascii?Q?/bSLEPhYE2KnBNX/2GrCv2ZrCubkdEEasFhRCwI4y6sL5xN08lImsWXOzD8F?=
+ =?us-ascii?Q?sVhkEc=3D?=
+X-Microsoft-Antispam-Message-Info: 3q6YZswnDcaUxCiyhxO6oIEjLU0NerSpPlzaZfLSvOF9URG0e6ZNx2ENjDTdeN903c5Pc22CAsrUBdlfKMqOaeox+NHHKM1GiPrUc8rcjNOiUdNoxVC7RAk5Dt8qJfOz+6cMpYWMWMkGCDTA0XU74zFdrNqWEWDyT5+2zgz5AoAWaV56Tpq+98pTR5KYSVpobYuCk2tV4UHEAw472x1Tr/OnyRerwTAQWsYWGkaj52MuO+j0VPd7epi226ivTsyQ2kGWehOB8GqLoML2+wjM9KQA3JCUMeqHqcjVabSTzbLY1P36i/OlLuD2zdfojVJE
+X-Microsoft-Exchange-Diagnostics: 1;SN6PR03MB3758;6:eqe6O4Nso8MeA9vgfLTfEkHF3wwuQksedKFiADaR4sj3Wv+xCbkhuzA809uE8nJqj9PBoVJd4MIm/yf5LlEQs6mq2FlMQW1C1vcNq1l8jKkR2i70ZW8ctcDasmR/aKl/IB1TO5Y16xJ9g8RCpqOYzRVj5OXcFsR2jkk/AoDY6BIEpggu1e1IbSCR6QC7FVdgL1/Rrs6hjeTP40HIZv2vy9UHhvp+EoUQhAFlMO26lXRgNoJE27egbyFeZw5/7RZZ/bSxsmaree0marUN/F0MXypoJApwQQa84gIx2mEDOaUvlUOQkZtL0KGABNs72qk3UE4aIaC62IIHgKNOGYYVpHSv/KEV4+ONnVSHFroy8A2DiPoN0pBVj5PfdCdO4y2Au5MeQPVNNXD5rKtocGna5znekol3VwOUAZfoXvhVnh/Nis5il3BykGfJk6B798haB7E5CmorIUNAeKKlKBQhoA==;5:7ww5mb7k3L722d/CH+VwZCHTYmzVEQtq/CWXDKjlNfMv+EAX59NEjzbcSk6e0D+v9SjhVOdPzDXDNBjdGUAUUsFmhaEhT7/M/VMKKmvFaZujNrWdUoV57zClA1Gcxttc7FdDZX2yOkyv+IZ03w13QqjEE8g4l4F91zmU+iUb+o0=;7:/AJYZ0qDkafyV9/KqyDgUrOV09YC2UpChhi7PZ6HsjcA/F11dxfUadftqg5AXYZtv5Nj+ZMYVixvu9LmxmwlJJvLybpkWg1dU5pbBtW/8CGewRGb2uQXqtndql+eJ+Ht6zLP8YPa8D8VW9NfB8q3dw==
 SpamDiagnosticOutput: 1:99
 SpamDiagnosticMetadata: NSPM
 X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Dec 2018 12:25:29.5768
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Dec 2018 12:24:06.0275
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6917a64d-c467-4a7f-b771-08d6641abb95
+X-MS-Exchange-CrossTenant-Network-Message-Id: cf80d225-7fd1-448c-023c-08d6641a89d5
 X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.55];Helo=[nwd2mta1.analog.com]
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR03MB3727
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR03MB3758
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-* Placed includes in alphabetical order
-* Added brackets around num and mask through out for AD760X_CHANNEL
-* Used single line comments where needed
-* Removed extra lines and spaces
+Changes in v2:
+Patch 1:
+	- Moved the HAS_IOMEM under AD7606_IFACE_PARALLEL and dropped GPIOLIB.
+Patch 2:
+	- Used SPDX GPL-2.0 license identifier instead of GPL-2.0+.
+Patch 3:
+	- Before disabling the buffer, there is no need to trigger a conversion.
+Patches 4, 5, 6:
+	- Nothing changed.
 
-Signed-off-by: Stefan Popa <stefan.popa@analog.com>
----
- drivers/staging/iio/adc/ad7606.c     | 27 ++++++++++++---------------
- drivers/staging/iio/adc/ad7606.h     |  1 -
- drivers/staging/iio/adc/ad7606_par.c | 27 ++++++++-------------------
- drivers/staging/iio/adc/ad7606_spi.c | 16 ++++++++--------
- 4 files changed, 28 insertions(+), 43 deletions(-)
+Stefan Popa (6):
+  staging: iio: adc: ad7606: Simplify the Kconfing menu
+  staging: iio: adc: ad7606: Use SPDX identifier
+  staging: iio: adc: ad7606: Add support for threaded irq
+  staging: iio: adc: ad7606: Misc style fixes (no functional change)
+  staging: iio: adc: ad7606: Move out of staging
+  dt-bindings: iio: adc: Add docs for AD7606 ADC
 
-diff --git a/drivers/staging/iio/adc/ad7606.c b/drivers/staging/iio/adc/ad7606.c
-index 5f0712c..32854f1 100644
---- a/drivers/staging/iio/adc/ad7606.c
-+++ b/drivers/staging/iio/adc/ad7606.c
-@@ -5,25 +5,25 @@
-  * Copyright 2011 Analog Devices Inc.
-  */
- 
--#include <linux/interrupt.h>
-+#include <linux/delay.h>
- #include <linux/device.h>
--#include <linux/kernel.h>
--#include <linux/slab.h>
--#include <linux/sysfs.h>
--#include <linux/regulator/consumer.h>
- #include <linux/err.h>
- #include <linux/gpio/consumer.h>
--#include <linux/delay.h>
--#include <linux/sched.h>
-+#include <linux/interrupt.h>
-+#include <linux/kernel.h>
- #include <linux/module.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/sched.h>
-+#include <linux/slab.h>
-+#include <linux/sysfs.h>
- #include <linux/util_macros.h>
- 
- #include <linux/iio/iio.h>
--#include <linux/iio/sysfs.h>
- #include <linux/iio/buffer.h>
--#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/sysfs.h>
- #include <linux/iio/trigger.h>
- #include <linux/iio/triggered_buffer.h>
-+#include <linux/iio/trigger_consumer.h>
- 
- #include "ad7606.h"
- 
-@@ -249,8 +249,7 @@ static const struct attribute_group ad7606_attribute_group_range = {
- 	.attrs = ad7606_attributes_range,
- };
- 
--#define AD760X_CHANNEL(num, mask)				\
--	{							\
-+#define AD760X_CHANNEL(num, mask) {				\
- 		.type = IIO_VOLTAGE,				\
- 		.indexed = 1,					\
- 		.channel = num,					\
-@@ -265,7 +264,7 @@ static const struct attribute_group ad7606_attribute_group_range = {
- 			.storagebits = 16,			\
- 			.endianness = IIO_CPU,			\
- 		},						\
--	}
-+}
- 
- #define AD7605_CHANNEL(num)	\
- 	AD760X_CHANNEL(num, 0)
-@@ -294,9 +293,7 @@ static const struct iio_chan_spec ad7606_channels[] = {
- };
- 
- static const struct ad7606_chip_info ad7606_chip_info_tbl[] = {
--	/*
--	 * More devices added in future
--	 */
-+	/* More devices added in future */
- 	[ID_AD7605_4] = {
- 		.channels = ad7605_channels,
- 		.num_channels = 5,
-diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
-index 9a832d2..5d12410 100644
---- a/drivers/staging/iio/adc/ad7606.h
-+++ b/drivers/staging/iio/adc/ad7606.h
-@@ -14,7 +14,6 @@
-  * @num_channels:	number of channels
-  * @has_oversampling:   whether the device has oversampling support
-  */
--
- struct ad7606_chip_info {
- 	const struct iio_chan_spec	*channels;
- 	unsigned int			num_channels;
-diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/staging/iio/adc/ad7606_par.c
-index 2d137b1..df607c7 100644
---- a/drivers/staging/iio/adc/ad7606_par.c
-+++ b/drivers/staging/iio/adc/ad7606_par.c
-@@ -26,7 +26,7 @@ static int ad7606_par16_read_block(struct device *dev,
- }
- 
- static const struct ad7606_bus_ops ad7606_par16_bops = {
--	.read_block	= ad7606_par16_read_block,
-+	.read_block = ad7606_par16_read_block,
- };
- 
- static int ad7606_par8_read_block(struct device *dev,
-@@ -41,7 +41,7 @@ static int ad7606_par8_read_block(struct device *dev,
- }
- 
- static const struct ad7606_bus_ops ad7606_par8_bops = {
--	.read_block	= ad7606_par8_read_block,
-+	.read_block = ad7606_par8_read_block,
- };
- 
- static int ad7606_par_probe(struct platform_device *pdev)
-@@ -72,22 +72,12 @@ static int ad7606_par_probe(struct platform_device *pdev)
- }
- 
- static const struct platform_device_id ad7606_driver_ids[] = {
--	{
--		.name		= "ad7605-4",
--		.driver_data	= ID_AD7605_4,
--	}, {
--		.name		= "ad7606-8",
--		.driver_data	= ID_AD7606_8,
--	}, {
--		.name		= "ad7606-6",
--		.driver_data	= ID_AD7606_6,
--	}, {
--		.name		= "ad7606-4",
--		.driver_data	= ID_AD7606_4,
--	},
-+	{ .name	= "ad7605-4", .driver_data = ID_AD7605_4, },
-+	{ .name	= "ad7606-4", .driver_data = ID_AD7606_4, },
-+	{ .name	= "ad7606-6", .driver_data = ID_AD7606_6, },
-+	{ .name	= "ad7606-8", .driver_data = ID_AD7606_8, },
- 	{ }
- };
--
- MODULE_DEVICE_TABLE(platform, ad7606_driver_ids);
- 
- static const struct of_device_id ad7606_of_match[] = {
-@@ -103,12 +93,11 @@ static struct platform_driver ad7606_driver = {
- 	.probe = ad7606_par_probe,
- 	.id_table = ad7606_driver_ids,
- 	.driver = {
--		.name	 = "ad7606",
--		.pm	 = AD7606_PM_OPS,
-+		.name = "ad7606",
-+		.pm = AD7606_PM_OPS,
- 		.of_match_table = ad7606_of_match,
- 	},
- };
--
- module_platform_driver(ad7606_driver);
- 
- MODULE_AUTHOR("Michael Hennerich <michael.hennerich@analog.com>");
-diff --git a/drivers/staging/iio/adc/ad7606_spi.c b/drivers/staging/iio/adc/ad7606_spi.c
-index f38f0d6..f842eba 100644
---- a/drivers/staging/iio/adc/ad7606_spi.c
-+++ b/drivers/staging/iio/adc/ad7606_spi.c
-@@ -36,7 +36,7 @@ static int ad7606_spi_read_block(struct device *dev,
- }
- 
- static const struct ad7606_bus_ops ad7606_spi_bops = {
--	.read_block	= ad7606_spi_read_block,
-+	.read_block = ad7606_spi_read_block,
- };
- 
- static int ad7606_spi_probe(struct spi_device *spi)
-@@ -48,14 +48,14 @@ static int ad7606_spi_probe(struct spi_device *spi)
- 			    &ad7606_spi_bops);
- }
- 
--static const struct spi_device_id ad7606_id[] = {
--	{"ad7605-4", ID_AD7605_4},
--	{"ad7606-8", ID_AD7606_8},
--	{"ad7606-6", ID_AD7606_6},
--	{"ad7606-4", ID_AD7606_4},
-+static const struct spi_device_id ad7606_id_table[] = {
-+	{ "ad7605-4", ID_AD7605_4 },
-+	{ "ad7606-4", ID_AD7606_4 },
-+	{ "ad7606-6", ID_AD7606_6 },
-+	{ "ad7606-8", ID_AD7606_8 },
- 	{}
- };
--MODULE_DEVICE_TABLE(spi, ad7606_id);
-+MODULE_DEVICE_TABLE(spi, ad7606_id_table);
- 
- static const struct of_device_id ad7606_of_match[] = {
- 	{ .compatible = "adi,ad7605-4" },
-@@ -73,7 +73,7 @@ static struct spi_driver ad7606_driver = {
- 		.pm = AD7606_PM_OPS,
- 	},
- 	.probe = ad7606_spi_probe,
--	.id_table = ad7606_id,
-+	.id_table = ad7606_id_table,
- };
- module_spi_driver(ad7606_driver);
- 
+ .../devicetree/bindings/iio/adc/adi,ad7606.txt     |  65 +++
+ MAINTAINERS                                        |   8 +
+ drivers/iio/adc/Kconfig                            |  27 +
+ drivers/iio/adc/Makefile                           |   3 +
+ drivers/iio/adc/ad7606.c                           | 583 +++++++++++++++++++++
+ drivers/iio/adc/ad7606.h                           |  99 ++++
+ drivers/iio/adc/ad7606_par.c                       | 105 ++++
+ drivers/iio/adc/ad7606_spi.c                       |  82 +++
+ drivers/staging/iio/adc/Kconfig                    |  34 --
+ drivers/staging/iio/adc/Makefile                   |   4 -
+ drivers/staging/iio/adc/ad7606.c                   | 534 -------------------
+ drivers/staging/iio/adc/ad7606.h                   | 103 ----
+ drivers/staging/iio/adc/ad7606_par.c               | 117 -----
+ drivers/staging/iio/adc/ad7606_spi.c               |  83 ---
+ 14 files changed, 972 insertions(+), 875 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7606.txt
+ create mode 100644 drivers/iio/adc/ad7606.c
+ create mode 100644 drivers/iio/adc/ad7606.h
+ create mode 100644 drivers/iio/adc/ad7606_par.c
+ create mode 100644 drivers/iio/adc/ad7606_spi.c
+ delete mode 100644 drivers/staging/iio/adc/ad7606.c
+ delete mode 100644 drivers/staging/iio/adc/ad7606.h
+ delete mode 100644 drivers/staging/iio/adc/ad7606_par.c
+ delete mode 100644 drivers/staging/iio/adc/ad7606_spi.c
+
 -- 
 2.7.4
 
