@@ -2,123 +2,116 @@ Return-Path: <SRS0=AW8Q=O2=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.7 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
-	USER_AGENT_MUTT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-14.0 required=3.0
+	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B77C43387
-	for <linux-iio@archiver.kernel.org>; Mon, 17 Dec 2018 07:46:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9E24C43387
+	for <linux-iio@archiver.kernel.org>; Mon, 17 Dec 2018 09:54:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4E5352084D
-	for <linux-iio@archiver.kernel.org>; Mon, 17 Dec 2018 07:46:44 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="KJ96UORW"
+	by mail.kernel.org (Postfix) with ESMTP id B47912086C
+	for <linux-iio@archiver.kernel.org>; Mon, 17 Dec 2018 09:54:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731436AbeLQHqi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 17 Dec 2018 02:46:38 -0500
-Received: from userp2130.oracle.com ([156.151.31.86]:44308 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726349AbeLQHqh (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Dec 2018 02:46:37 -0500
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.22/8.16.0.22) with SMTP id wBH7csWc179272;
-        Mon, 17 Dec 2018 07:46:01 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2018-07-02;
- bh=cHqyWIVGvHqjra346FRxccAEo88k+fmoqCJgujZ5P08=;
- b=KJ96UORWIXzopdY6k5CHAEvP+pglAuySwI7EQ19yrZL27Uv5MbPYfK8goIu094pQIHbN
- ohzzBSk0ch88BbPraPMAFu3ln6h1V414nlh5BkE75KWKSghG7u36aXAwnxS63B5TE6mH
- AY1uN9vZ2kUTSvtLYyL+rTq62CjcvrDNw9n0XQnsquR81k0PGO7BwW5p8rU80wui7BMi
- 7Lle40+76PnhqylYm7aABMySht4nyNMZeWKmVKBhmauCctmLpgNw2oOAsYzHwMCRgNMj
- LeHE379DX9+zA05/DwF9I+3strsfSCbuPa4gfx1pPNQTHd7BlvDmV1ifiQAVIV8uvs89 nQ== 
-Received: from userv0021.oracle.com (userv0021.oracle.com [156.151.31.71])
-        by userp2130.oracle.com with ESMTP id 2pcs1tc9h3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 17 Dec 2018 07:46:01 +0000
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userv0021.oracle.com (8.14.4/8.14.4) with ESMTP id wBH7juaH006568
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 17 Dec 2018 07:45:56 GMT
-Received: from abhmp0005.oracle.com (abhmp0005.oracle.com [141.146.116.11])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id wBH7jrtX011080;
-        Mon, 17 Dec 2018 07:45:54 GMT
-Received: from kadam (/197.157.0.24)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Sun, 16 Dec 2018 23:45:52 -0800
-Date:   Mon, 17 Dec 2018 10:45:41 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Sergey Efimochkin <sergeyanton2007@gmail.com>
-Cc:     devel@driverdev.osuosl.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
+        id S1726780AbeLQJyU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 17 Dec 2018 04:54:20 -0500
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:43026 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726505AbeLQJyU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Dec 2018 04:54:20 -0500
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: eballetbo)
+        with ESMTPSA id E6D7C260A2F
+From:   Enric Balletbo i Serra <enric.balletbo@collabora.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Alessandro Zummo <a.zummo@towertech.it>, linux-pwm@vger.kernel.org,
         linux-iio@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org,
-        Sergey Efimochkin <efimochkin.sv@phystech.edu>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        linux-i2c@vger.kernel.org, groeck@chromium.org,
+        kernel@collabora.com, linux-rtc@vger.kernel.org,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Benson Leung <bleung@chromium.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        linux-input@vger.kernel.org,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        devicetree@vger.kernel.org,
+        Thierry Reding <thierry.reding@gmail.com>,
+        linux-pm@vger.kernel.org, MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Lee Jones <lee.jones@linaro.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
-        Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH] staging:iio:adc: fix codestyle
-Message-ID: <20181217074540.GC15451@kadam>
-References: <20181217014333.75969-1-efimochkin.sv@phystech.edu>
+        Rob Herring <robh+dt@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>, joe@perches.com,
+        Mark Rutland <mark.rutland@arm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH v4] MAINTAINERS: add maintainers for ChromeOS EC sub-drivers
+Date:   Mon, 17 Dec 2018 10:54:09 +0100
+Message-Id: <20181217095409.22627-1-enric.balletbo@collabora.com>
+X-Mailer: git-send-email 2.19.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20181217014333.75969-1-efimochkin.sv@phystech.edu>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9109 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1810050000 definitions=main-1812170073
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The patch prefix should be "staging: iio: adc: ad7280a:".  Do
-git log --oneline drivers/staging/iio/adc/ad7280a.c and copy what
-other people do.
+There are multiple ChromeOS EC sub-drivers spread in different
+subsystems, as all of them are related to the Chrome stuff add
+Benson and myself as a maintainers for all these sub-drivers.
 
-On Mon, Dec 17, 2018 at 04:43:33AM +0300, Sergey Efimochkin wrote:
-> staging:iio:adc: fix codestyle
+Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Signed-off-by: Benson Leung <bleung@chromium.org>
+Acked-by: Wolfram Sang <wsa@the-dreams.de>
+Acked-by: Chanwoo Choi <cw00.choi@samsung.com>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Acked-by: Lee Jones <lee.jones@linaro.org>
+Acked-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Acked-by: Guenter Roeck <groeck@chromium.org>
+---
 
-Only to do one thing per patch.  We need a better patch description.
+Changes in v4:
+- Remove the `for iio parts` from Jonathan's acked-by tag.
+- Add more collected acks.
+- Use two N patterns.
 
-> Signed-off-by: Sergey Efimochkin <efimochkin.sv@phystech.edu>
-> ---
->  drivers/staging/iio/adc/ad7280a.c | 20 +++++++++-----------
->  1 file changed, 9 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-> index 58420dcb406d..52e12d1201b3 100644
-> --- a/drivers/staging/iio/adc/ad7280a.c
-> +++ b/drivers/staging/iio/adc/ad7280a.c
-> @@ -706,8 +706,8 @@ static irqreturn_t ad7280_event_handler(int irq, void *private)
->  				st->cell_threshhigh)
->  				iio_push_event(indio_dev,
->  					       IIO_EVENT_CODE(IIO_VOLTAGE,
-> -							1,
-> -							0,
-> +							      1,
-> +							      0,
->  							IIO_EV_DIR_RISING,
->  							IIO_EV_TYPE_THRESH,
->  							0, 0, 0),
+Changes in v3:
+- Add collected acks
+- Use a cros[-_]ec pattern instead of list all the files.
+- Add Guenter as a reviewer.
 
-No.  Now the IIO_EV_DIR_RISING, and later columns are not aligned
-correctly.  Just ignore the checkpatch warning.  It's fine as-is.
+Changes in v2:
+- Fix typo in Benson email address.
 
-> @@ -987,6 +985,6 @@ static struct spi_driver ad7280_driver = {
->  };
->  module_spi_driver(ad7280_driver);
->  
-> -MODULE_AUTHOR("Michael Hennerich <michael.hennerich@analog.com>");
-> +MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
+ MAINTAINERS | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-This change needs to come from Michael.  Just leave the code as-is.
-
-regards,
-dan carpenter
+diff --git a/MAINTAINERS b/MAINTAINERS
+index fa6e2ad90568..1e27b24e912e 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -3629,6 +3629,15 @@ S:	Maintained
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/bleung/chrome-platform.git
+ F:	drivers/platform/chrome/
+ 
++CHROMEOS EC SUBDRIVERS
++M:	Benson Leung <bleung@chromium.org>
++M:	Enric Balletbo i Serra <enric.balletbo@collabora.com>
++R:	Guenter Roeck <groeck@chromium.org>
++S:	Maintained
++N:	cros_ec
++N:	cros-ec
++F:	drivers/power/supply/cros_usbpd-charger.c
++
+ CIRRUS LOGIC AUDIO CODEC DRIVERS
+ M:	Brian Austin <brian.austin@cirrus.com>
+ M:	Paul Handrigan <Paul.Handrigan@cirrus.com>
+-- 
+2.19.2
 
