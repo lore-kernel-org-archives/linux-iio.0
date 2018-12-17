@@ -2,339 +2,812 @@ Return-Path: <SRS0=AW8Q=O2=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 192C4C43387
-	for <linux-iio@archiver.kernel.org>; Mon, 17 Dec 2018 10:28:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC933C43387
+	for <linux-iio@archiver.kernel.org>; Mon, 17 Dec 2018 11:59:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B9E792133F
-	for <linux-iio@archiver.kernel.org>; Mon, 17 Dec 2018 10:28:29 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="ReAT9Hm9"
+	by mail.kernel.org (Postfix) with ESMTP id A7D532145D
+	for <linux-iio@archiver.kernel.org>; Mon, 17 Dec 2018 11:59:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731614AbeLQK23 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 17 Dec 2018 05:28:29 -0500
-Received: from mail-eopbgr750045.outbound.protection.outlook.com ([40.107.75.45]:17758
-        "EHLO NAM02-BL2-obe.outbound.protection.outlook.com"
+        id S1732596AbeLQL7w (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 17 Dec 2018 06:59:52 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:16580 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726801AbeLQK22 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 17 Dec 2018 05:28:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=analog.onmicrosoft.com; s=selector1-analog-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5Q1UvXL5aGOC68DLOV1F0Q4TmIQm1ReQeBd4UhUz6OA=;
- b=ReAT9Hm9vHjlQ7aPYcS8OWnvRPBvZTn0Xum2bdaPnEmxCwUAPQWGpLywy/GLjBikbBbGHjjV7eLNG2/7AFgJoYQ4sS8pjUbXlqnIVw41tSbQcwzs4uP3Uc4HEnHWpmnTZy4Ar3e0jYtsxXV4mP5DxjmNt3fC2CNNROMP9w06KWM=
-Received: from MWHPR03CA0042.namprd03.prod.outlook.com (2603:10b6:301:3b::31)
- by SN6PR03MB3520.namprd03.prod.outlook.com (2603:10b6:805:41::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1425.20; Mon, 17 Dec
- 2018 10:28:22 +0000
-Received: from BL2FFO11FD026.protection.gbl (2a01:111:f400:7c09::177) by
- MWHPR03CA0042.outlook.office365.com (2603:10b6:301:3b::31) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.1425.19 via Frontend Transport; Mon, 17 Dec 2018 10:28:21 +0000
-Authentication-Results: spf=pass (sender IP is 137.71.25.57)
- smtp.mailfrom=analog.com; analog.co; dkim=none (message not signed)
- header.d=none;analog.co; dmarc=bestguesspass action=none
- header.from=analog.com;
-Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
- 137.71.25.57 as permitted sender) receiver=protection.outlook.com;
- client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
-Received: from nwd2mta2.analog.com (137.71.25.57) by
- BL2FFO11FD026.mail.protection.outlook.com (10.173.161.105) with Microsoft
- SMTP Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id
- 15.20.1446.11 via Frontend Transport; Mon, 17 Dec 2018 10:28:21 +0000
-Received: from NWD2HUBCAS8.ad.analog.com (nwd2hubcas8.ad.analog.com [10.64.69.108])
-        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id wBHASK6A032086
-        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
-        Mon, 17 Dec 2018 02:28:20 -0800
-Received: from NWD2MBX5.ad.analog.com ([fe80::49e:7a9f:284e:1a49]) by
- NWD2HUBCAS8.ad.analog.com ([fe80::90a0:b93e:53c6:afee%12]) with mapi id
- 14.03.0415.000; Mon, 17 Dec 2018 05:28:20 -0500
-From:   "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>
-To:     "jic23@kernel.org" <jic23@kernel.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "stefan.popa@analog.co" <stefan.popa@analog.co>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 05/11] staging: iio: adc: ad7606: Add support for
- threaded irq
-Thread-Topic: [PATCH 05/11] staging: iio: adc: ad7606: Add support for
- threaded irq
-Thread-Index: AQHUkuH7ZLL9i8Zu50GtU/71LBabjKWBuk+AgAFaMYA=
-Date:   Mon, 17 Dec 2018 10:28:20 +0000
-Message-ID: <1545042497.12260.9.camel@analog.com>
-References: <1544705183-13288-1-git-send-email-stefan.popa@analog.com>
-         <1544705183-13288-6-git-send-email-stefan.popa@analog.com>
-         <20181216134913.1751b640@archlinux>
-In-Reply-To: <20181216134913.1751b640@archlinux>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.50.1.118]
-x-adiroutedonprem: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <9E2365F6E46D8D469629BEFA3DFF0CFE@analog.com>
-Content-Transfer-Encoding: base64
+        id S1727255AbeLQL7w (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 17 Dec 2018 06:59:52 -0500
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 81B7378F1D2F2;
+        Mon, 17 Dec 2018 19:59:47 +0800 (CST)
+Received: from localhost (10.202.226.46) by DGGEMS409-HUB.china.huawei.com
+ (10.3.19.209) with Microsoft SMTP Server id 14.3.408.0; Mon, 17 Dec 2018
+ 19:59:46 +0800
+Date:   Mon, 17 Dec 2018 11:59:36 +0000
+From:   Jonathan Cameron <jonathan.cameron@huawei.com>
+To:     Andreas Brauchli <a.brauchli@elementarea.net>
+CC:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH v3 2/3] iio: chemical: sgp30: Support Sensirion
+ SGP30/SGPC3 sensors
+Message-ID: <20181217115936.0000650d@huawei.com>
+In-Reply-To: <45293ab40a362b4ad909c3fed2d2376a8fe1dee2.camel@elementarea.net>
+References: <20181213144323.24820-3-andreas.brauchli@sensirion.com>
+        <20181216133444.3c4bbb16@archlinux>
+        <45293ab40a362b4ad909c3fed2d2376a8fe1dee2.camel@elementarea.net>
+Organization: Huawei
+X-Mailer: Claws Mail 3.16.0 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(136003)(396003)(39860400002)(346002)(376002)(2980300002)(199004)(189003)(7416002)(246002)(7736002)(102836004)(54906003)(106466001)(2351001)(186003)(5660300001)(36756003)(7636002)(305945005)(50466002)(5640700003)(14444005)(72206003)(2906002)(336012)(7696005)(2501003)(26005)(2616005)(6246003)(356004)(4326008)(6116002)(476003)(3846002)(8936002)(86362001)(478600001)(106002)(2486003)(23676004)(76176011)(486006)(14454004)(103116003)(126002)(8676002)(426003)(47776003)(436003)(316002)(11346002)(446003)(6916009)(4001150100001)(229853002)(345774005);DIR:OUT;SFP:1101;SCL:1;SRVR:SN6PR03MB3520;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;A:1;MX:1;
-X-Microsoft-Exchange-Diagnostics: 1;BL2FFO11FD026;1:1zr5prcLDPIq6vgDE7RdN7v6EosGuHQCqRe+RO1kNVmCZ94Ub6hPC9I0EStL5vdzVtmwQ7nS3Rbpd5VoXJwp2E6StMt2jC1KtlCA/ylOhMC0AVBfMeCag4Bd11MAklBd
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2b91120e-8a9a-4a03-5cb8-08d6640a5e55
-X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600074)(711020)(4608076)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7153060)(7193020);SRVR:SN6PR03MB3520;
-X-Microsoft-Exchange-Diagnostics: 1;SN6PR03MB3520;3:IqbGnL3wIZkXXruF9NWW7+YmaLLrz5xOzIAYctgZ6DnRKnBzN7JjMD4UOf7gTOF8OSl+cWMKKUPErtfz4eRj7Ur8OwEEvGVI29UipJiUH+ah2/xQvnkg7JqpS8lSQLB7Nd6V7J59VFR6VG930xdUhIsmg0VYXxKKZMKfjJSXvNq36+MLf0kZrpv57QX5csQuBzsSsomQg28RKBxUdskZSuWI5wXqkfAibzOY411uMoFOdBE20HLXuIRsdqzn6Ztw5yxrlONjWH5FOxFOFqo/WOp/v4R48TAksEnd7SR06KlzHCrPMNOBD/BARaVAfVsYauBEjfkW7VQA85nybP5pHoxkbMbyxKaFFcq0vzYbspM=;25:8MtQmzG5VYJOA5L3cbJg4bgik5uHGOAW3msjiaMoO4NfdYP/npdh8ZQABVSMujGh9wCx9w7cqkPURK2RoLUHPElrHMWrDdAza70LX5G5CrPLOv0l5/EFFhPzRnXXBjjudJPfTCRF9AuiISAEc3qsev8744ohMqz+za6v68ad9jyriQhPyvagn0aWCLw+WRXJXTM7Vd18rVmycFTdgWvMXBy63t1dXTzUn/yA5/f6Z6KdjlIoZGxq3jvljobOtOCGauV3I3w2d7x90BbIp2mjaEYhWyIfpA/bL35TQH52A0KDfnLxfsE3OJjAnBMqcUWukyjjkMszkBXA+vjYAoVe/w==
-X-MS-TrafficTypeDiagnostic: SN6PR03MB3520:
-X-Microsoft-Exchange-Diagnostics: 1;SN6PR03MB3520;31:igi2RNdTLZQpl/oSqnhUgipGC2wOftHNGNMOPB79P5h/+KIurwoqO/FrCqfrW0pLMI4vNYDzH6OAzJzzB0v7kx92v1fvGddfCl46s9H4CZaovTjJWYqEXsSRGdp1921PCJ7bHgiGbLIYSnn6LLx6A4Ma6NbIj7M3hq3yIMFggVV3LTyJi/jyfCNMephPrBnv07GecLvPlndSC98oAaVgdSRNwXf8+KQs5h0sCMc+CzQ=;20:sAQhuvizWA3jJi2U1GdR3g1fQSrPl5U4XqlPRG2UhgjkqMhVL5Rv6gexhpKjzCGhCygC9BxFs4eEPyqSr0IzdGp6lYuzgTN7gwPWQE0H8waesvKvmefSen/5+0fW0v97W4RHaFBAvS5yK9XjH8CQM6Ta/7WqE1D9xxheOa1+WDLFYVipScJUNTPSGHATRAyBvUjBHDlLb7tY1M9YbZPs68MlvROGdG1cp+cUsYIjZcvdGjOwXil7XJURff3vvtz6NoogBwSJpANJMn+l9PYdyEIbwrD39q2OUKEd1O+QZShviP6jIQvzkzwUWrmfKBUmlq5+xfR3jH5th5nJJEMJGhL3R7jo/E7HLFsujBybXM0aekEjS1TgnuSjXjm+PPU8HtVAgI3uxBqYajBcjZtp8R26WzVohKLH3H4GgU/lN2hofbWD4pPVrVTTLind6A7njHzfd1eQ+WHzvM9qI+nPuLrxkLOZ7AwOJ7eaxt28lGK+rMpExemPj+X7BY4lMjVY
-X-Microsoft-Antispam-PRVS: <SN6PR03MB352084C9E1B93897C1DDE2EF9DBC0@SN6PR03MB3520.namprd03.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-Exchange-Antispam-Report-CFA-Test: BCL:0;PCL:0;RULEID:(8211001083)(3230021)(999002)(5005020)(6040522)(2401047)(8121501046)(10201501046)(3231475)(944501520)(52105112)(3002001)(93006095)(93004095)(6055026)(148016)(149066)(150057)(6041310)(201703131423095)(201702281528075)(20161123555045)(201703061421075)(201703061406153)(20161123562045)(20161123564045)(20161123558120)(20161123560045)(201708071742011)(7699051)(76991095);SRVR:SN6PR03MB3520;BCL:0;PCL:0;RULEID:;SRVR:SN6PR03MB3520;
-X-Microsoft-Exchange-Diagnostics: 1;SN6PR03MB3520;4:7lBIOEBINnGwZ0JaT+d0HH421iD4ioDM2AxamKeebdEeIT8QUOARzsaM3qipStk/pAep0AUPCpT9dmtYR+JMMa/VLhm4sMh6lPYGyLhtQkmdbQmzmkSbOhJLYsC/IRSgMWFusA6pWVMqSCP72j9fOZ/HoO8YOkyq3IHLnDF4L97jrRmfW2mi0Ru0hYr5PSqVTJBrg9NkZBKkaHN/uTlOzi5w+eJU4qRlATSVh5HeIJm0CjAObR2tuW/St2o7OpGuKitfmPxbgSbwpvpF3O44qQ==
-X-Forefront-PRVS: 08897B549D
-X-Microsoft-Exchange-Diagnostics: =?utf-8?B?MTtTTjZQUjAzTUIzNTIwOzIzOmZPSXNGeVVHZ09tVUxiMjNRV3UyK3o1bmJV?=
- =?utf-8?B?aGo2S3pDZC9FcFV0Qk9ZREJCTmtId3ZidDVKNEYrZDRKcTNDVTJJcnk2ZVpH?=
- =?utf-8?B?c1grMFBxNjcxNEN2U2pnWEw3dlNoanhEc3N5N3h4NmdZbit5ak8vYVRYWi85?=
- =?utf-8?B?SmdqMEhMRHFwVEQ2Q083eW9iQXJFTG5UMlN6eENHaUJQb05GcmthRWhOSFA1?=
- =?utf-8?B?M1dYZVprQzZpNXZjTWZEUUJ1cG8xelhZU2NscTBqTU5UbDNnU3pkZUNlSWtw?=
- =?utf-8?B?allma0VUMmROL3J0SjFsVjZvZ05uRGM1dzA0QlRqRUdkSG9qQW1WemN2b3ZD?=
- =?utf-8?B?V2E2bDRucUtWM0RITFJBZkNGYXV5YWNrUkdNWU81THJkM0ZjTDhjNGFuNlMx?=
- =?utf-8?B?eFJRanlTTzgyUHJlQmNIUFlhbDhUWUR6WXFBczA2ZzZiRGl4MHNhTWNyUXZ6?=
- =?utf-8?B?M1JkaGZnY2NqWDV5c2RlbHllNWtOMTBmcVhLM0FuY05uZXRRNWFvSC9MQVVp?=
- =?utf-8?B?d2JDNncwa2QxclpEaGRRS3JSNklzK0FMN3FzMHpSVVNlMVltVFhlR3JNVi9p?=
- =?utf-8?B?ME00NUFnSHFuNXU5Y3k3bnlLZGZFQjd2WXZVM1FFc1crYTBpaFd4VGF5Ukll?=
- =?utf-8?B?cVFzWUtwTThJNDhBS2tHdUpNbVVvbzN1clRheGRkUFF1VVQySnp4TjdadmRo?=
- =?utf-8?B?L1k5TXh2UHY5WXBwcjRJMExjWUt1SjVqOTk1Y0RJMlRWR0o1QWJuRmZkQjBN?=
- =?utf-8?B?aVJkMHprN00xV0gzMVpFNnNMaG5hSWc3RVlURmdKeC9ROVdHaXc0d1JMaWdZ?=
- =?utf-8?B?Nk9qM2Z5SGhiRVdrdytUNDJkWmpjOU1sZTlVbktYUHc0eGovQmVvSXhHRlR0?=
- =?utf-8?B?UjArQStrTHhkWGc1elNoS2gyV3drU2ZUMkM3Zm55WWRKUTcxM2prUnBXVFYy?=
- =?utf-8?B?Z1BaeXBNaXl2WWt3UDVsWjJwbmEwMnhBVHA3RTVCbzdSbGVON3JRaXBJWEFS?=
- =?utf-8?B?ZkVZdk1qdFliU0I4TUh0MGs3eHdkKzRZN202ZXdJYWs1N1R4czlNMVJHbHRy?=
- =?utf-8?B?V1FhZHVLZldtWk50ai9EbzJ6SnA2dEtCc3JzUGJ0TmV1aWlGTGNTUEVITWpy?=
- =?utf-8?B?ZHcwdHNvcCt5dVlucEduVmwyUFBwcG1RS0JYd2srVVc1YitKSFVuRkJqTkFw?=
- =?utf-8?B?ZWo1UHI2N1JFZTdpZHh3eWFKY29POElrMlVURHduN001YnRnbU9xWlJ6Um5F?=
- =?utf-8?B?Q3BQZnZDNG5IeHJ0Vi9xL2QzcnZqRHMvZGJmd1FmczUzS1dLQVB3SnBINGJC?=
- =?utf-8?B?OFBPekYxOUlvN0xwVU14ejNqY2gzQTRZQXpta25zV1Fmck1PZGxtZytRSXE5?=
- =?utf-8?B?Q1p4ZVFrOHI3QzgwaFQ0OEJCamoyTFNTTWpXVTlBNnhLYnV6VithRDZqZkNV?=
- =?utf-8?B?YjM0Q2JmWmhUNjNRTitZdFZSWk9HdEpnTTBkOTJPejVKSk01aTdtTmpRd1Vs?=
- =?utf-8?B?SEI2V0tDT3pFcy9sakZDeWdTcHNJbzRoeXREaTlsQXhLcEdtYzRLODJVME1u?=
- =?utf-8?B?SnNNOFVYcDdzMFVDeE5jS0dYamxJQndEdUgwWWN4cStqMEdJOEl2TUNvRTdW?=
- =?utf-8?B?OVNobm1HeVBFcXBYRlY3MGRxYkp3Vzk2UUYwVjJqVExBYzNWblVkOGZtUHYv?=
- =?utf-8?Q?EQ3ZoZjSjVoNGVPIl7AgYNpJ/kMB5zi6e00UpZw?=
-X-Microsoft-Antispam-Message-Info: qvD7cRRKTm0B5agy8Rr51FfX+/v+7MeJXCmu0MmUU6DpjigSwkeq2VFel4Q7c5f82OjE+6megJKdtIv1ldGU0M0RUu6CITTVN0Xv6qaLaKvmebM0kOc7lPH/7nCvVL4tM+XCuMLWnqw0xR4k7vmFQ/62RVOOOgo5NZzaK4sPanWrqXX/+K6fauOCRj/bLv4gBMdpuoJGz58mCW2GbYpMQC8PwQskb3Ix96Qkc5je85EK64RfnjFoErkXHA61+2xL9petEgsmSL6Pw4H0TPbY/f6oZZfBHaj0ZbNfsRB43UJ743Jgl61u9cDiMTH5WZgW
-X-Microsoft-Exchange-Diagnostics: 1;SN6PR03MB3520;6:9dMb+6b74qHnkzpzgTOhCP+GkgkXa6uqsPnu76U0aFBitz9/lrLm4EAys26yLSNqPcmQ46S9yMmp695eLH/swvQbyFB4mKv0vXOaNVrCbgzVzyiqyqutkVTWX9dNz8/YaRP8rVpsi9x8xmLLAQcJewBTbxaoaIBiY/9SS+O1FRKzVgiNNM0gfQ923R+jb2iywkeDWRFofbfanVIwIrjVb7QUe6dTn9nmEB4qCrfxdEIK/48FKZL3gRALB6tQO3js/Yu9imCHK/2C1Kxug2Z6ZhqoN+AsYa8PT/qy864QDtihSAUewwoyZGzDaI0ZsErJeKylcOPXJzjucJ9PfFB8hAeCa+8DbVJkz28FWJl7HMNwckfgHM1FCFeLj0hgc1sSpEPH+nrwhElJIkPGlvlX719MFDmp3ZSixwD+VHiog0AGBfQCpm0YEFValNCJseGP4vnl8NLsmXqS/jp0yNcfdw==;5:3GeprbJ1trCIMFV1D1Ljfdvc0/KJY/6p3jtJJVBoaM/1MlfPTCZIXjmHt7mk8hLvg1PMMeEazKD+gCeNt0MkyoL25QmVOSXn/f9F8GqPd6tGKedO2yS2LHj9IEh47YGO1SogfgXbVXviaz43OVRHuXnS3v//vidDXovSRN0HKyA=;7:sNlQX55akwvA9Ex1OiXasSA5meCQdzEyR99whuvpka8woqwSiikF+EwO9BQP9BjfcFuJ0rtCtxLZP6kk40oiQXRo5+4vdy+SQi64fokuOFILkKqcVt8TCn28Ji633jiG2hhTvDjklNexf2iZT2f34g==
-SpamDiagnosticOutput: 1:99
-SpamDiagnosticMetadata: NSPM
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Dec 2018 10:28:21.3670
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2b91120e-8a9a-4a03-5cb8-08d6640a5e55
-X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR03MB3520
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.46]
+X-CFilter-Loop: Reflected
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-T24gRHUsIDIwMTgtMTItMTYgYXQgMTM6NDkgKzAwMDAsIEpvbmF0aGFuIENhbWVyb24gd3JvdGU6
-DQo+IE9uIFRodSwgMTMgRGVjIDIwMTggMTQ6NDY6MTcgKzAyMDANCj4gU3RlZmFuIFBvcGEgPHN0
-ZWZhbi5wb3BhQGFuYWxvZy5jb20+IHdyb3RlOg0KPiANCj4gPiANCj4gPiBUaGlzIHBhdGNoIHJl
-cGxhY2VzIHRoZSB1c2Ugb2YgYSBwb2xsaW5nIHJpbmcgYnVmZmVyIHdpdGggYSB0aHJlYWRlZA0K
-PiA+IGludGVycnVwdC4NCj4gPiANCj4gPiBFbmFibGluZyB0aGUgYnVmZmVyIHNldHMgdGhlIENP
-TlZTVCBzaWduYWwgdG8gaGlnaC4gV2hlbiB0aGUgcmlzaW5nDQo+ID4gZWRnZQ0KPiA+IG9mIHRo
-ZSBDT05WU1QgaXMgYXBwbGllZCwgQlVTWSBzaWduYWwgZ29lcyBsb2dpYyBoaWdoIGFuZCB0cmFu
-c2l0aW9ucw0KPiA+IGxvdw0KPiA+IGF0IHRoZSBlbmQgb2YgdGhlIGVudGlyZSBjb252ZXJzaW9u
-IHByb2Nlc3MuIFRoZSBmYWxsaW5nIGVkZ2Ugb2YgdGhlDQo+ID4gQlVTWQ0KPiA+IHNpZ25hbCB0
-cmlnZ2VycyB0aGUgaW50ZXJydXB0Lg0KPiA+IA0KPiA+IGFkNzYwNl90cmlnZ2VyX2hhbmRsZXIo
-KSBpcyB1c2VkIGFzIGJvdHRvbSBoYWxmIG9mIHRoZSBwb2xsIGZ1bmN0aW9uLg0KPiA+IEl0IHJl
-YWRzIGRhdGEgZnJvbSB0aGUgZGV2aWNlIGFuZCBzdG9yZXMgaXQgaW4gdGhlIGludGVybmFsIGJ1
-ZmZlci4NCj4gPiANCj4gPiBTaWduZWQtb2ZmLWJ5OiBTdGVmYW4gUG9wYSA8c3RlZmFuLnBvcGFA
-YW5hbG9nLmNvbT4NCj4gSSdkIGxpa2UgYSBsaXR0bGUgbW9yZSBpbmZvIGFzIGNvbW1lbnRzIGlu
-IHRoaXMgb25lLiBTZWUgYmVsb3cuDQo+IFdoaWNoIGlzIGFub3RoZXIgd2F5IG9mIHNheWluZyBJ
-IGhhdmUgbm8gaWRlYSB3aGF0IGlzIGdvaW5nIG9uIDopDQo+IA0KPiBUaGFua3MsDQo+IA0KPiBK
-b25hdGhhbi4NCj4gDQoNCkhpIEpvbmF0aGFuLA0KVGhhbmsgeW91IGZvciB0aGUgcmV2aWV3LiBJ
-dCB0dXJucyBvdXQgdGhhdCB0aGVyZSBpcyBubyByZWFzb24gdG8gdHJpZ2dlciBhDQpjb252ZXJz
-aW9uIGJlZm9yZSBkaXNhYmxpbmcgdGhlIGJ1ZmZlci4gSSB3aWxsIHJlbW92ZSBpdCBpbiB2Mi4N
-Cg0KVGhhbmsgeW91IQ0KLVN0ZWZhbg0KDQo+ID4gDQo+ID4gLS0tDQo+ID4gwqBkcml2ZXJzL3N0
-YWdpbmcvaWlvL2FkYy9hZDc2MDYuYyB8IDExNiArKysrKysrKysrKysrKysrKysrKysrKysrKysr
-Kw0KPiA+IC0tLS0tLS0tLS0NCj4gPiDCoGRyaXZlcnMvc3RhZ2luZy9paW8vYWRjL2FkNzYwNi5o
-IHzCoMKgwqA2ICstDQo+ID4gwqAyIGZpbGVzIGNoYW5nZWQsIDg5IGluc2VydGlvbnMoKyksIDMz
-IGRlbGV0aW9ucygtKQ0KPiA+IA0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3N0YWdpbmcvaWlv
-L2FkYy9hZDc2MDYuYw0KPiA+IGIvZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NjA2LmMNCj4g
-PiBpbmRleCA3MTkxZDUxLi4xM2FlZWVjIDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvc3RhZ2lu
-Zy9paW8vYWRjL2FkNzYwNi5jDQo+ID4gKysrIGIvZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3
-NjA2LmMNCj4gPiBAQCAtMjEsNiArMjEsNyBAQA0KPiA+IMKgI2luY2x1ZGUgPGxpbnV4L2lpby9z
-eXNmcy5oPg0KPiA+IMKgI2luY2x1ZGUgPGxpbnV4L2lpby9idWZmZXIuaD4NCj4gPiDCoCNpbmNs
-dWRlIDxsaW51eC9paW8vdHJpZ2dlcl9jb25zdW1lci5oPg0KPiA+ICsjaW5jbHVkZSA8bGludXgv
-aWlvL3RyaWdnZXIuaD4NCj4gPiDCoCNpbmNsdWRlIDxsaW51eC9paW8vdHJpZ2dlcmVkX2J1ZmZl
-ci5oPg0KPiA+IMKgDQo+ID4gwqAjaW5jbHVkZSAiYWQ3NjA2LmgiDQo+ID4gQEAgLTgxLDM2ICs4
-MiwyNCBAQCBzdGF0aWMgaW50IGFkNzYwNl9yZWFkX3NhbXBsZXMoc3RydWN0IGFkNzYwNl9zdGF0
-ZQ0KPiA+ICpzdCkNCj4gPiDCoHN0YXRpYyBpcnFyZXR1cm5fdCBhZDc2MDZfdHJpZ2dlcl9oYW5k
-bGVyKGludCBpcnEsIHZvaWQgKnApDQo+ID4gwqB7DQo+ID4gwqAJc3RydWN0IGlpb19wb2xsX2Z1
-bmMgKnBmID0gcDsNCj4gPiAtCXN0cnVjdCBhZDc2MDZfc3RhdGUgKnN0ID0gaWlvX3ByaXYocGYt
-PmluZGlvX2Rldik7DQo+ID4gLQ0KPiA+IC0JZ3Bpb2Rfc2V0X3ZhbHVlKHN0LT5ncGlvX2NvbnZz
-dCwgMSk7DQo+ID4gLQ0KPiA+IC0JcmV0dXJuIElSUV9IQU5ETEVEOw0KPiA+IC19DQo+ID4gLQ0K
-PiA+IC0vKioNCj4gPiAtICogYWQ3NjA2X3BvbGxfYmhfdG9fcmluZygpIGJoIG9mIHRyaWdnZXIg
-bGF1bmNoZWQgcG9sbGluZyB0byByaW5nDQo+ID4gYnVmZmVyDQo+ID4gLSAqIEB3b3JrX3M6CXRo
-ZSB3b3JrIHN0cnVjdCB0aHJvdWdoIHdoaWNoIHRoaXMgd2FzIHNjaGVkdWxlZA0KPiA+IC0gKg0K
-PiA+IC0gKiBDdXJyZW50bHkgdGhlcmUgaXMgbm8gb3B0aW9uIGluIHRoaXMgZHJpdmVyIHRvIGRp
-c2FibGUgdGhlIHNhdmluZw0KPiA+IG9mDQo+ID4gLSAqIHRpbWVzdGFtcHMgd2l0aGluIHRoZSBy
-aW5nLg0KPiA+IC0gKiBJIHRoaW5rIHRoZSBvbmUgY29weSBvZiB0aGlzIGF0IGEgdGltZSB3YXMg
-dG8gYXZvaWQgcHJvYmxlbXMgaWYgdGhlDQo+ID4gLSAqIHRyaWdnZXIgd2FzIHNldCBmYXIgdG9v
-IGhpZ2ggYW5kIHRoZSByZWFkcyB0aGVuIGxvY2tlZCB1cCB0aGUNCj4gPiBjb21wdXRlci4NCj4g
-PiAtICoqLw0KPiA+IC1zdGF0aWMgdm9pZCBhZDc2MDZfcG9sbF9iaF90b19yaW5nKHN0cnVjdCB3
-b3JrX3N0cnVjdCAqd29ya19zKQ0KPiA+IC17DQo+ID4gLQlzdHJ1Y3QgYWQ3NjA2X3N0YXRlICpz
-dCA9IGNvbnRhaW5lcl9vZih3b3JrX3MsIHN0cnVjdA0KPiA+IGFkNzYwNl9zdGF0ZSwNCj4gPiAt
-CQkJCQkJcG9sbF93b3JrKTsNCj4gPiAtCXN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYgPSBpaW9f
-cHJpdl90b19kZXYoc3QpOw0KPiA+ICsJc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiA9IHBmLT5p
-bmRpb19kZXY7DQo+ID4gKwlzdHJ1Y3QgYWQ3NjA2X3N0YXRlICpzdCA9IGlpb19wcml2KGluZGlv
-X2Rldik7DQo+ID4gwqAJaW50IHJldDsNCj4gPiDCoA0KPiA+ICsJbXV0ZXhfbG9jaygmc3QtPmxv
-Y2spOw0KPiA+ICsNCj4gPiDCoAlyZXQgPSBhZDc2MDZfcmVhZF9zYW1wbGVzKHN0KTsNCj4gPiDC
-oAlpZiAocmV0ID09IDApDQo+ID4gwqAJCWlpb19wdXNoX3RvX2J1ZmZlcnNfd2l0aF90aW1lc3Rh
-bXAoaW5kaW9fZGV2LCBzdC0NCj4gPiA+ZGF0YSwNCj4gPiDCoAkJCQkJCcKgwqDCoGlpb19nZXRf
-dGltZV9ucyhpbmQNCj4gPiBpb19kZXYpKTsNCj4gPiDCoA0KPiA+IC0JZ3Bpb2Rfc2V0X3ZhbHVl
-KHN0LT5ncGlvX2NvbnZzdCwgMCk7DQo+ID4gwqAJaWlvX3RyaWdnZXJfbm90aWZ5X2RvbmUoaW5k
-aW9fZGV2LT50cmlnKTsNCj4gPiArCS8qIFRoZSByaXNpbmcgZWRnZSBvZiB0aGUgQ09OVlNUIHNp
-Z25hbCBzdGFydHMgYSBuZXcNCj4gPiBjb252ZXJzaW9uLiAqLw0KPiA+ICsJZ3Bpb2Rfc2V0X3Zh
-bHVlKHN0LT5ncGlvX2NvbnZzdCwgMSk7DQo+ID4gKw0KPiA+ICsJbXV0ZXhfdW5sb2NrKCZzdC0+
-bG9jayk7DQo+ID4gKw0KPiA+ICsJcmV0dXJuIElSUV9IQU5ETEVEOw0KPiA+IMKgfQ0KPiA+IMKg
-DQo+ID4gwqBzdGF0aWMgaW50IGFkNzYwNl9zY2FuX2RpcmVjdChzdHJ1Y3QgaWlvX2RldiAqaW5k
-aW9fZGV2LCB1bnNpZ25lZCBpbnQNCj4gPiBjaCkNCj4gPiBAQCAtMzc4LDggKzM2NywxMSBAQCBz
-dGF0aWMgaW50IGFkNzYwNl9yZXF1ZXN0X2dwaW9zKHN0cnVjdA0KPiA+IGFkNzYwNl9zdGF0ZSAq
-c3QpDQo+ID4gwqAJcmV0dXJuIFBUUl9FUlJfT1JfWkVSTyhzdC0+Z3Bpb19vcyk7DQo+ID4gwqB9
-DQo+ID4gwqANCj4gPiAtLyoqDQo+ID4gLSAqwqDCoEludGVycnVwdCBoYW5kbGVyDQo+ID4gKy8q
-DQo+ID4gKyAqIFRoZSBCVVNZIHNpZ25hbCBpbmRpY2F0ZXMgd2hlbiBjb252ZXJzaW9ucyBhcmUg
-aW4gcHJvZ3Jlc3MsIHNvIHdoZW4NCj4gPiBhIHJpc2luZw0KPiA+ICsgKiBlZGdlIG9mIENPTlZT
-VCBpcyBhcHBsaWVkLCBCVVNZIGdvZXMgbG9naWMgaGlnaCBhbmQgdHJhbnNpdGlvbnMgbG93DQo+
-ID4gYXQgdGhlDQo+ID4gKyAqIGVuZCBvZiB0aGUgZW50aXJlIGNvbnZlcnNpb24gcHJvY2Vzcy4g
-VGhlIGZhbGxpbmcgZWRnZSBvZiB0aGUgQlVTWQ0KPiA+IHNpZ25hbA0KPiA+ICsgKiB0cmlnZ2Vy
-cyB0aGlzIGludGVycnVwdC4NCj4gPiDCoCAqLw0KPiA+IMKgc3RhdGljIGlycXJldHVybl90IGFk
-NzYwNl9pbnRlcnJ1cHQoaW50IGlycSwgdm9pZCAqZGV2X2lkKQ0KPiA+IMKgew0KPiA+IEBAIC0z
-ODcsNyArMzc5LDggQEAgc3RhdGljIGlycXJldHVybl90IGFkNzYwNl9pbnRlcnJ1cHQoaW50IGly
-cSwgdm9pZA0KPiA+ICpkZXZfaWQpDQo+ID4gwqAJc3RydWN0IGFkNzYwNl9zdGF0ZSAqc3QgPSBp
-aW9fcHJpdihpbmRpb19kZXYpOw0KPiA+IMKgDQo+ID4gwqAJaWYgKGlpb19idWZmZXJfZW5hYmxl
-ZChpbmRpb19kZXYpKSB7DQo+ID4gLQkJc2NoZWR1bGVfd29yaygmc3QtPnBvbGxfd29yayk7DQo+
-ID4gKwkJZ3Bpb2Rfc2V0X3ZhbHVlKHN0LT5ncGlvX2NvbnZzdCwgMCk7DQo+ID4gKwkJaWlvX3Ry
-aWdnZXJfcG9sbF9jaGFpbmVkKHN0LT50cmlnKTsNCj4gPiDCoAl9IGVsc2Ugew0KPiA+IMKgCQlj
-b21wbGV0ZSgmc3QtPmNvbXBsZXRpb24pOw0KPiA+IMKgCX0NCj4gPiBAQCAtMzk1LDI2ICszODgs
-NzQgQEAgc3RhdGljIGlycXJldHVybl90IGFkNzYwNl9pbnRlcnJ1cHQoaW50IGlycSwgdm9pZA0K
-PiA+ICpkZXZfaWQpDQo+ID4gwqAJcmV0dXJuIElSUV9IQU5ETEVEOw0KPiA+IMKgfTsNCj4gPiDC
-oA0KPiA+ICtzdGF0aWMgaW50IGFkNzYwNl92YWxpZGF0ZV90cmlnZ2VyKHN0cnVjdCBpaW9fZGV2
-ICppbmRpb19kZXYsDQo+ID4gKwkJCQnCoMKgwqBzdHJ1Y3QgaWlvX3RyaWdnZXIgKnRyaWcpDQo+
-ID4gK3sNCj4gPiArCXN0cnVjdCBhZDc2MDZfc3RhdGUgKnN0ID0gaWlvX3ByaXYoaW5kaW9fZGV2
-KTsNCj4gPiArDQo+ID4gKwlpZiAoc3QtPnRyaWcgIT0gdHJpZykNCj4gPiArCQlyZXR1cm4gLUVJ
-TlZBTDsNCj4gPiArDQo+ID4gKwlyZXR1cm4gMDsNCj4gPiArfQ0KPiA+ICsNCj4gPiArc3RhdGlj
-IGludCBhZDc2MDZfYnVmZmVyX3Bvc3RlbmFibGUoc3RydWN0IGlpb19kZXYgKmluZGlvX2RldikN
-Cj4gPiArew0KPiA+ICsJc3RydWN0IGFkNzYwNl9zdGF0ZSAqc3QgPSBpaW9fcHJpdihpbmRpb19k
-ZXYpOw0KPiA+ICsNCj4gPiArCWlpb190cmlnZ2VyZWRfYnVmZmVyX3Bvc3RlbmFibGUoaW5kaW9f
-ZGV2KTsNCj4gPiArCWdwaW9kX3NldF92YWx1ZShzdC0+Z3Bpb19jb252c3QsIDEpOw0KPiA+ICsN
-Cj4gPiArCXJldHVybiAwOw0KPiA+ICt9DQo+ID4gKw0KPiA+ICtzdGF0aWMgaW50IGFkNzYwNl9i
-dWZmZXJfcHJlZGlzYWJsZShzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2KQ0KPiA+ICt7DQo+ID4g
-KwlzdHJ1Y3QgYWQ3NjA2X3N0YXRlICpzdCA9IGlpb19wcml2KGluZGlvX2Rldik7DQo+ID4gKwlp
-bnQgcmV0Ow0KPiA+ICsNCj4gPiArCXJlaW5pdF9jb21wbGV0aW9uKCZzdC0+Y29tcGxldGlvbik7
-DQo+ID4gKwlncGlvZF9zZXRfdmFsdWUoc3QtPmdwaW9fY29udnN0LCAxKTsNCj4gPiArCXJldCA9
-IHdhaXRfZm9yX2NvbXBsZXRpb25fdGltZW91dCgmc3QtPmNvbXBsZXRpb24sDQo+ID4gKwkJCQkJ
-wqDCoG1zZWNzX3RvX2ppZmZpZXMoMTAwMCkpOw0KPiBBbG9uZyB3aXRoIERhbidzIGNvbW1lbnQu
-IEknZCBsaWtlIHRvIHNlZSBhIGNvbW1lbnQgaGVyZSBvbiB3aGF0DQo+IGlzIGFjdHVhbGx5IGdv
-aW5nIG9uLsKgwqBOb3QgaW1tZWRpYXRlbHkgb2J2aW91cyBhIGNvbnZlcnNpb24gc2hvdWxkDQo+
-IGJlIHRyaWdnZXJlZCB0byBkaXNhYmxlIHRoZSBidWZmZXIuLi4NCj4gDQo+IEknbGwgZ3Vlc3Mg
-dGhlcmUgaXMgYSByYWNlIGFnYWluc3QgdGhlIG5vcm1hbCBoYW5kbGVyIHRoYXQgd2UNCj4gYXJl
-IGNsb3Npbmcgd2l0aCB0aGlzIGRhbmNlLCBidXQgdGhhdCByYWNlIG5lZWRzIGV4cGxhaW5pbmcu
-DQo+IA0KPiA+IA0KPiA+ICsJZ3Bpb2Rfc2V0X3ZhbHVlKHN0LT5ncGlvX2NvbnZzdCwgMCk7DQo+
-ID4gKw0KPiA+ICsJcmV0dXJuIGlpb190cmlnZ2VyZWRfYnVmZmVyX3ByZWRpc2FibGUoaW5kaW9f
-ZGV2KTsNCj4gPiArfQ0KPiA+ICsNCj4gPiArc3RhdGljIGNvbnN0IHN0cnVjdCBpaW9fYnVmZmVy
-X3NldHVwX29wcyBhZDc2MDZfYnVmZmVyX29wcyA9IHsNCj4gPiArCS5wb3N0ZW5hYmxlID0gJmFk
-NzYwNl9idWZmZXJfcG9zdGVuYWJsZSwNCj4gPiArCS5wcmVkaXNhYmxlID0gJmFkNzYwNl9idWZm
-ZXJfcHJlZGlzYWJsZSwNCj4gPiArfTsNCj4gPiArDQo+ID4gwqBzdGF0aWMgY29uc3Qgc3RydWN0
-IGlpb19pbmZvIGFkNzYwNl9pbmZvX25vX29zX29yX3JhbmdlID0gew0KPiA+IMKgCS5yZWFkX3Jh
-dyA9ICZhZDc2MDZfcmVhZF9yYXcsDQo+ID4gKwkudmFsaWRhdGVfdHJpZ2dlciA9ICZhZDc2MDZf
-dmFsaWRhdGVfdHJpZ2dlciwNCj4gPiDCoH07DQo+ID4gwqANCj4gPiDCoHN0YXRpYyBjb25zdCBz
-dHJ1Y3QgaWlvX2luZm8gYWQ3NjA2X2luZm9fb3NfYW5kX3JhbmdlID0gew0KPiA+IMKgCS5yZWFk
-X3JhdyA9ICZhZDc2MDZfcmVhZF9yYXcsDQo+ID4gwqAJLndyaXRlX3JhdyA9ICZhZDc2MDZfd3Jp
-dGVfcmF3LA0KPiA+IMKgCS5hdHRycyA9ICZhZDc2MDZfYXR0cmlidXRlX2dyb3VwX29zX2FuZF9y
-YW5nZSwNCj4gPiArCS52YWxpZGF0ZV90cmlnZ2VyID0gJmFkNzYwNl92YWxpZGF0ZV90cmlnZ2Vy
-LA0KPiA+IMKgfTsNCj4gPiDCoA0KPiA+IMKgc3RhdGljIGNvbnN0IHN0cnVjdCBpaW9faW5mbyBh
-ZDc2MDZfaW5mb19vcyA9IHsNCj4gPiDCoAkucmVhZF9yYXcgPSAmYWQ3NjA2X3JlYWRfcmF3LA0K
-PiA+IMKgCS53cml0ZV9yYXcgPSAmYWQ3NjA2X3dyaXRlX3JhdywNCj4gPiDCoAkuYXR0cnMgPSAm
-YWQ3NjA2X2F0dHJpYnV0ZV9ncm91cF9vcywNCj4gPiArCS52YWxpZGF0ZV90cmlnZ2VyID0gJmFk
-NzYwNl92YWxpZGF0ZV90cmlnZ2VyLA0KPiA+IMKgfTsNCj4gPiDCoA0KPiA+IMKgc3RhdGljIGNv
-bnN0IHN0cnVjdCBpaW9faW5mbyBhZDc2MDZfaW5mb19yYW5nZSA9IHsNCj4gPiDCoAkucmVhZF9y
-YXcgPSAmYWQ3NjA2X3JlYWRfcmF3LA0KPiA+IMKgCS53cml0ZV9yYXcgPSAmYWQ3NjA2X3dyaXRl
-X3JhdywNCj4gPiDCoAkuYXR0cnMgPSAmYWQ3NjA2X2F0dHJpYnV0ZV9ncm91cF9yYW5nZSwNCj4g
-PiArCS52YWxpZGF0ZV90cmlnZ2VyID0gJmFkNzYwNl92YWxpZGF0ZV90cmlnZ2VyLA0KPiA+ICt9
-Ow0KPiA+ICsNCj4gPiArc3RhdGljIGNvbnN0IHN0cnVjdCBpaW9fdHJpZ2dlcl9vcHMgYWQ3NjA2
-X3RyaWdnZXJfb3BzID0gew0KPiA+ICsJLnZhbGlkYXRlX2RldmljZSA9IGlpb190cmlnZ2VyX3Zh
-bGlkYXRlX293bl9kZXZpY2UsDQo+ID4gwqB9Ow0KPiA+IMKgDQo+ID4gwqBzdGF0aWMgdm9pZCBh
-ZDc2MDZfcmVndWxhdG9yX2Rpc2FibGUodm9pZCAqZGF0YSkNCj4gPiBAQCAtNDQ2LDcgKzQ4Nyw2
-IEBAIGludCBhZDc2MDZfcHJvYmUoc3RydWN0IGRldmljZSAqZGV2LCBpbnQgaXJxLCB2b2lkDQo+
-ID4gX19pb21lbSAqYmFzZV9hZGRyZXNzLA0KPiA+IMKgCS8qIHRpZWQgdG8gbG9naWMgbG93LCBh
-bmFsb2cgaW5wdXQgcmFuZ2UgaXMgKy8tIDVWICovDQo+ID4gwqAJc3QtPnJhbmdlID0gMDsNCj4g
-PiDCoAlzdC0+b3ZlcnNhbXBsaW5nID0gMTsNCj4gPiAtCUlOSVRfV09SSygmc3QtPnBvbGxfd29y
-aywgJmFkNzYwNl9wb2xsX2JoX3RvX3JpbmcpOw0KPiA+IMKgDQo+ID4gwqAJc3QtPnJlZyA9IGRl
-dm1fcmVndWxhdG9yX2dldChkZXYsICJhdmNjIik7DQo+ID4gwqAJaWYgKElTX0VSUihzdC0+cmVn
-KSkNCj4gPiBAQCAtNDkxLDE0ICs1MzEsMzIgQEAgaW50IGFkNzYwNl9wcm9iZShzdHJ1Y3QgZGV2
-aWNlICpkZXYsIGludCBpcnEsDQo+ID4gdm9pZCBfX2lvbWVtICpiYXNlX2FkZHJlc3MsDQo+ID4g
-wqAJaWYgKHJldCkNCj4gPiDCoAkJZGV2X3dhcm4oc3QtPmRldiwgImZhaWxlZCB0byBSRVNFVDog
-bm8gUkVTRVQgR1BJTw0KPiA+IHNwZWNpZmllZFxuIik7DQo+ID4gwqANCj4gPiAtCXJldCA9IGRl
-dm1fcmVxdWVzdF9pcnEoZGV2LCBpcnEsIGFkNzYwNl9pbnRlcnJ1cHQsDQo+ID4gSVJRRl9UUklH
-R0VSX0ZBTExJTkcsDQo+ID4gLQkJCcKgwqDCoMKgwqDCoMKgbmFtZSwgaW5kaW9fZGV2KTsNCj4g
-PiArCXN0LT50cmlnID0gZGV2bV9paW9fdHJpZ2dlcl9hbGxvYyhkZXYsICIlcy1kZXYlZCIsDQo+
-ID4gKwkJCQkJwqDCoGluZGlvX2Rldi0+bmFtZSwgaW5kaW9fZGV2LQ0KPiA+ID5pZCk7DQo+ID4g
-KwlpZiAoIXN0LT50cmlnKQ0KPiA+ICsJCXJldHVybiAtRU5PTUVNOw0KPiA+ICsNCj4gPiArCXN0
-LT50cmlnLT5vcHMgPSAmYWQ3NjA2X3RyaWdnZXJfb3BzOw0KPiA+ICsJc3QtPnRyaWctPmRldi5w
-YXJlbnQgPSBkZXY7DQo+ID4gKwlpaW9fdHJpZ2dlcl9zZXRfZHJ2ZGF0YShzdC0+dHJpZywgaW5k
-aW9fZGV2KTsNCj4gPiArCXJldCA9IGRldm1faWlvX3RyaWdnZXJfcmVnaXN0ZXIoZGV2LCBzdC0+
-dHJpZyk7DQo+ID4gKwlpZiAocmV0KQ0KPiA+ICsJCXJldHVybiByZXQ7DQo+ID4gKw0KPiA+ICsJ
-aW5kaW9fZGV2LT50cmlnID0gaWlvX3RyaWdnZXJfZ2V0KHN0LT50cmlnKTsNCj4gPiArDQo+ID4g
-KwlyZXQgPSBkZXZtX3JlcXVlc3RfdGhyZWFkZWRfaXJxKGRldiwgaXJxLA0KPiA+ICsJCQkJCU5V
-TEwsDQo+ID4gKwkJCQkJJmFkNzYwNl9pbnRlcnJ1cHQsDQo+ID4gKwkJCQkJSVJRRl9UUklHR0VS
-X0ZBTExJTkcgfA0KPiA+IElSUUZfT05FU0hPVCwNCj4gPiArCQkJCQluYW1lLCBpbmRpb19kZXYp
-Ow0KPiA+IMKgCWlmIChyZXQpDQo+ID4gwqAJCXJldHVybiByZXQ7DQo+ID4gwqANCj4gPiDCoAly
-ZXQgPSBkZXZtX2lpb190cmlnZ2VyZWRfYnVmZmVyX3NldHVwKGRldiwgaW5kaW9fZGV2LA0KPiA+
-ICsJCQkJCcKgwqDCoMKgwqDCoCZpaW9fcG9sbGZ1bmNfc3RvcmVfdGltZQ0KPiA+ICwNCj4gPiDC
-oAkJCQkJwqDCoMKgwqDCoMKgJmFkNzYwNl90cmlnZ2VyX2hhbmRsZXIsDQo+ID4gLQkJCQkJwqDC
-oMKgwqDCoMKgTlVMTCwgTlVMTCk7DQo+ID4gKwkJCQkJwqDCoMKgwqDCoMKgJmFkNzYwNl9idWZm
-ZXJfb3BzKTsNCj4gPiDCoAlpZiAocmV0KQ0KPiA+IMKgCQlyZXR1cm4gcmV0Ow0KPiA+IMKgDQo+
-ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvc3RhZ2luZy9paW8vYWRjL2FkNzYwNi5oDQo+ID4gYi9k
-cml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9hZDc2MDYuaA0KPiA+IGluZGV4IDcwNDg2ZWYuLmIyMzhl
-OWIgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NjA2LmgNCj4g
-PiArKysgYi9kcml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9hZDc2MDYuaA0KPiA+IEBAIC0yNiw4ICsy
-Niw2IEBAIHN0cnVjdCBhZDc2MDZfY2hpcF9pbmZvIHsNCj4gPiDCoCAqIEBkZXYJCXBvaW50ZXIg
-dG8ga2VybmVsIGRldmljZQ0KPiA+IMKgICogQGNoaXBfaW5mbwkJZW50cnkgaW4gdGhlIHRhYmxl
-IG9mIGNoaXBzIHRoYXQNCj4gPiBkZXNjcmliZXMgdGhpcyBkZXZpY2UNCj4gPiDCoCAqIEByZWcJ
-CXJlZ3VsYXRvciBpbmZvIGZvciB0aGUgdGhlIHBvd2VyIHN1cHBseSBvZiB0aGUNCj4gPiBkZXZp
-Y2UNCj4gPiAtICogQHBvbGxfd29yawkJd29yayBzdHJ1Y3QgZm9yIGNvbnRpbnVvdXNseSByZWFk
-aW5nIGRhdGENCj4gPiBmcm9tIHRoZSBkZXZpY2UNCj4gPiAtICoJCQlpbnRvIGFuIElJTyB0cmln
-Z2VyZWQgYnVmZmVyDQo+ID4gwqAgKiBAYm9wcwkJYnVzIG9wZXJhdGlvbnMgKFNQSSBvciBwYXJh
-bGxlbCkNCj4gPiDCoCAqIEByYW5nZQkJdm9sdGFnZSByYW5nZSBzZWxlY3Rpb24sIHNlbGVjdHMg
-d2hpY2ggc2NhbGUNCj4gPiB0byBhcHBseQ0KPiA+IMKgICogQG92ZXJzYW1wbGluZwlvdmVyc2Ft
-cGxpbmcgc2VsZWN0aW9uDQo+ID4gQEAgLTQyLDE0ICs0MCwxMyBAQCBzdHJ1Y3QgYWQ3NjA2X2No
-aXBfaW5mbyB7DQo+ID4gwqAgKgkJCWlzIGJlaW5nIHJlYWQgb24gdGhlIGZpcnN0IGNoYW5uZWwN
-Cj4gPiDCoCAqIEBncGlvX29zCQlHUElPIGRlc2NyaXB0b3JzIHRvIGNvbnRyb2wgb3ZlcnNhbXBs
-aW5nIG9uDQo+ID4gdGhlIGRldmljZQ0KPiA+IMKgICogQGNvbXBsZXRlCQljb21wbGV0aW9uIHRv
-IGluZGljYXRlIGVuZCBvZiBjb252ZXJzaW9uDQo+ID4gKyAqIEB0cmlnCQlUaGUgSUlPIHRyaWdn
-ZXIgYXNzb2NpYXRlZCB3aXRoIHRoZSBkZXZpY2UuDQo+ID4gwqAgKiBAZGF0YQkJYnVmZmVyIGZv
-ciByZWFkaW5nIGRhdGEgZnJvbSB0aGUgZGV2aWNlDQo+ID4gwqAgKi8NCj4gPiAtDQo+ID4gwqBz
-dHJ1Y3QgYWQ3NjA2X3N0YXRlIHsNCj4gPiDCoAlzdHJ1Y3QgZGV2aWNlCQkJKmRldjsNCj4gPiDC
-oAljb25zdCBzdHJ1Y3QgYWQ3NjA2X2NoaXBfaW5mbwkqY2hpcF9pbmZvOw0KPiA+IMKgCXN0cnVj
-dCByZWd1bGF0b3IJCSpyZWc7DQo+ID4gLQlzdHJ1Y3Qgd29ya19zdHJ1Y3QJCXBvbGxfd29yazsN
-Cj4gPiDCoAljb25zdCBzdHJ1Y3QgYWQ3NjA2X2J1c19vcHMJKmJvcHM7DQo+ID4gwqAJdW5zaWdu
-ZWQgaW50CQkJcmFuZ2U7DQo+ID4gwqAJdW5zaWduZWQgaW50CQkJb3ZlcnNhbXBsaW5nOw0KPiA+
-IEBAIC02Miw2ICs1OSw3IEBAIHN0cnVjdCBhZDc2MDZfc3RhdGUgew0KPiA+IMKgCXN0cnVjdCBn
-cGlvX2Rlc2MJCSpncGlvX3N0YW5kYnk7DQo+ID4gwqAJc3RydWN0IGdwaW9fZGVzYwkJKmdwaW9f
-ZnJzdGRhdGE7DQo+ID4gwqAJc3RydWN0IGdwaW9fZGVzY3MJCSpncGlvX29zOw0KPiA+ICsJc3Ry
-dWN0IGlpb190cmlnZ2VyCQkqdHJpZzsNCj4gPiDCoAlzdHJ1Y3QgY29tcGxldGlvbgkJY29tcGxl
-dGlvbjsNCj4gPiDCoA0KPiA+IMKgCS8q
+On Sun, 16 Dec 2018 17:38:18 +0100
+Andreas Brauchli <a.brauchli@elementarea.net> wrote:
+
+> On Sun, 2018-12-16 at 13:34 +0000, Jonathan Cameron wrote:
+> > On Thu, 13 Dec 2018 15:43:23 +0100
+> > Andreas Brauchli <a.brauchli@elementarea.net> wrote:
+> >   
+> > > Support Sensirion SGP30 and SGPC3 multi-pixel I2C gas sensors
+> > > 
+> > > Supported Features:
+> > > 
+> > > * Indoor Air Quality (IAQ) concentrations for
+> > >   - tVOC (in_concentration_voc_input)
+> > >   - CO2eq (in_concentration_co2_input) - SGP30 only
+> > > 
+> > >   IAQ concentrations are periodically read out by a background
+> > > thread
+> > >   to allow the sensor to maintain its internal baseline.
+> > > 
+> > > * Gas concentration signals
+> > >   - Ethanol (in_concentration_ethanol_raw)
+> > >   - H2 (in_concentration_h2_raw) - SGP30 only
+> > > 
+> > > https://www.sensirion.com/file/datasheet_sgp30
+> > > https://www.sensirion.com/file/datasheet_sgpc3
+> > > 
+> > > Signed-off-by: Andreas Brauchli <andreas.brauchli@sensirion.com>  
+> > 
+> > Why do we provide endianness info given we don't provide the buffered
+> > interface?  It's only used when we do.  
+> 
+> Makes sense but I wasn't aware of it. The initial submission came with
+> buffering, so it probably wasn't spotted in v2.
+> 
+> > 
+> > Some over the top line wrapping as well.  However as that's it
+> > I'll just clean up whilst applying.  If I've missed something odd
+> > around the endian thing shout!  
+> 
+> No that's it, thanks a lot.
+> 
+> > 
+> > Jonathan
+> >   
+> > > ---
+> > >  drivers/iio/chemical/Kconfig  |  13 +
+> > >  drivers/iio/chemical/Makefile |   1 +
+> > >  drivers/iio/chemical/sgp30.c  | 603
+> > > ++++++++++++++++++++++++++++++++++
+> > >  3 files changed, 617 insertions(+)
+> > >  create mode 100644 drivers/iio/chemical/sgp30.c
+> > > 
+> > > diff --git a/drivers/iio/chemical/Kconfig
+> > > b/drivers/iio/chemical/Kconfig
+> > > index b8e005be4f87..b0c912be94a9 100644
+> > > --- a/drivers/iio/chemical/Kconfig
+> > > +++ b/drivers/iio/chemical/Kconfig
+> > > @@ -61,6 +61,19 @@ config IAQCORE
+> > >  	  iAQ-Core Continuous/Pulsed VOC (Volatile Organic Compounds)
+> > >  	  sensors
+> > >  
+> > > +config SENSIRION_SGP30  
+> 
+> I noticed that in Tomasz's SPS30 patch it's just SPS30, so for
+> consistency's sake I'm fine with dropping the branding. Up to you.
+
+We've never had any hard rules on this, at least partly because a lot
+of drivers came from other subsystems in the early days.
+
+We probably should have a rule though.  SGP30 for example is generic
+enough that it might well be reused by someone else.
+
+Anyone have any strong opinions on this?  If not I think I'll start
+encouraging prefixing with manufacturer of first supported device.
+
+Jonathan
+
+> 
+> > > +	tristate "Sensirion SGPxx gas sensors"
+> > > +	depends on I2C
+> > > +	select CRC8
+> > > +	help
+> > > +	  Say Y here to build I2C interface support for the following
+> > > +	  Sensirion SGP gas sensors:
+> > > +	    * SGP30 gas sensor
+> > > +	    * SGPC3 low power gas sensor
+> > > +
+> > > +	  To compile this driver as module, choose M here: the
+> > > +	  module will be called sgp30.
+> > > +
+> > >  config VZ89X
+> > >  	tristate "SGX Sensortech MiCS VZ89X VOC sensor"
+> > >  	depends on I2C
+> > > diff --git a/drivers/iio/chemical/Makefile
+> > > b/drivers/iio/chemical/Makefile
+> > > index 2f4c4ba4d781..61e83944db1a 100644
+> > > --- a/drivers/iio/chemical/Makefile
+> > > +++ b/drivers/iio/chemical/Makefile
+> > > @@ -9,4 +9,5 @@ obj-$(CONFIG_BME680_I2C) += bme680_i2c.o
+> > >  obj-$(CONFIG_BME680_SPI) += bme680_spi.o
+> > >  obj-$(CONFIG_CCS811)		+= ccs811.o
+> > >  obj-$(CONFIG_IAQCORE)		+= ams-iaq-core.o
+> > > +obj-$(CONFIG_SENSIRION_SGP30)	+= sgp30.o
+> > >  obj-$(CONFIG_VZ89X)		+= vz89x.o
+> > > diff --git a/drivers/iio/chemical/sgp30.c
+> > > b/drivers/iio/chemical/sgp30.c
+> > > new file mode 100644
+> > > index 000000000000..90eb4cbb18cf
+> > > --- /dev/null
+> > > +++ b/drivers/iio/chemical/sgp30.c
+> > > @@ -0,0 +1,603 @@
+> > > +// SPDX-License-Identifier: GPL-2.0
+> > > +/*
+> > > + * sgp30.c - Support for Sensirion SGP Gas Sensors
+> > > + *
+> > > + * Copyright (C) 2018 Andreas Brauchli <  
+> > > andreas.brauchli@sensirion.com>  
+> > > + *
+> > > + * I2C slave address: 0x58
+> > > + *
+> > > + * Datasheets:
+> > > + * https://www.sensirion.com/file/datasheet_sgp30
+> > > + * https://www.sensirion.com/file/datasheet_sgpc3
+> > > + *
+> > > + * TODO:
+> > > + * - baseline support
+> > > + * - humidity compensation
+> > > + * - power mode switching (SGPC3)
+> > > + */
+> > > +
+> > > +#include <linux/crc8.h>
+> > > +#include <linux/delay.h>
+> > > +#include <linux/kthread.h>
+> > > +#include <linux/module.h>
+> > > +#include <linux/mutex.h>
+> > > +#include <linux/i2c.h>
+> > > +#include <linux/of_device.h>
+> > > +#include <linux/iio/iio.h>
+> > > +#include <linux/iio/sysfs.h>
+> > > +
+> > > +#define SGP_WORD_LEN				2
+> > > +#define SGP_CRC8_POLYNOMIAL			0x31
+> > > +#define SGP_CRC8_INIT				0xff
+> > > +#define SGP_CRC8_LEN				1
+> > > +#define SGP_CMD(cmd_word)			cpu_to_be16(cmd_word)
+> > > +#define SGP_CMD_DURATION_US			12000
+> > > +#define SGP_MEASUREMENT_DURATION_US		50000
+> > > +#define SGP_CMD_LEN				SGP_WORD_LEN
+> > > +#define SGP_CMD_MAX_BUF_SIZE			(SGP_CMD_LEN +
+> > > 2 * SGP_WORD_LEN)
+> > > +#define SGP_MEASUREMENT_LEN			2
+> > > +#define SGP30_MEASURE_INTERVAL_HZ		1
+> > > +#define SGPC3_MEASURE_INTERVAL_HZ		2
+> > > +#define SGP_VERS_PRODUCT(data)	((((data)->feature_set) &
+> > > 0xf000) >> 12)
+> > > +#define SGP_VERS_RESERVED(data)	((((data)->feature_set) &
+> > > 0x0800) >> 11)
+> > > +#define SGP_VERS_GEN(data)	((((data)->feature_set) & 0x0600) >> 9)
+> > > +#define SGP_VERS_ENG_BIT(data)	((((data)->feature_set) &
+> > > 0x0100) >> 8)
+> > > +#define SGP_VERS_MAJOR(data)	((((data)->feature_set) &
+> > > 0x00e0) >> 5)
+> > > +#define SGP_VERS_MINOR(data)	(((data)->feature_set) &
+> > > 0x001f)
+> > > +
+> > > +DECLARE_CRC8_TABLE(sgp_crc8_table);
+> > > +
+> > > +enum sgp_product_id {
+> > > +	SGP30 = 0,
+> > > +	SGPC3,
+> > > +};
+> > > +
+> > > +enum sgp30_channel_idx {
+> > > +	SGP30_IAQ_TVOC_IDX = 0,
+> > > +	SGP30_IAQ_CO2EQ_IDX,
+> > > +	SGP30_SIG_ETOH_IDX,
+> > > +	SGP30_SIG_H2_IDX,
+> > > +};
+> > > +
+> > > +enum sgpc3_channel_idx {
+> > > +	SGPC3_IAQ_TVOC_IDX = 10,
+> > > +	SGPC3_SIG_ETOH_IDX,
+> > > +};
+> > > +
+> > > +enum sgp_cmd {
+> > > +	SGP_CMD_IAQ_INIT			= SGP_CMD(0x2003),
+> > > +	SGP_CMD_IAQ_MEASURE			= SGP_CMD(0x2008),
+> > > +	SGP_CMD_GET_FEATURE_SET			= SGP_CMD(0x202f),
+> > > +	SGP_CMD_GET_SERIAL_ID			= SGP_CMD(0x3682),
+> > > +
+> > > +	SGP30_CMD_MEASURE_SIGNAL		= SGP_CMD(0x2050),
+> > > +
+> > > +	SGPC3_CMD_MEASURE_RAW			= SGP_CMD(0x2046),
+> > > +};
+> > > +
+> > > +struct sgp_version {
+> > > +	u8 major;
+> > > +	u8 minor;
+> > > +};
+> > > +
+> > > +struct sgp_crc_word {
+> > > +	__be16 value;
+> > > +	u8 crc8;
+> > > +} __attribute__((__packed__));
+> > > +
+> > > +union sgp_reading {
+> > > +	u8 start;
+> > > +	struct sgp_crc_word raw_words[4];
+> > > +};
+> > > +
+> > > +enum _iaq_buffer_state {
+> > > +	IAQ_BUFFER_EMPTY = 0,
+> > > +	IAQ_BUFFER_DEFAULT_VALS,
+> > > +	IAQ_BUFFER_VALID,
+> > > +};
+> > > +
+> > > +struct sgp_data {
+> > > +	struct i2c_client *client;
+> > > +	struct task_struct *iaq_thread;
+> > > +	struct mutex data_lock;
+> > > +	unsigned long iaq_init_start_jiffies;
+> > > +	unsigned long iaq_defval_skip_jiffies;
+> > > +	u16 product_id;
+> > > +	u16 feature_set;
+> > > +	unsigned long measure_interval_jiffies;
+> > > +	enum sgp_cmd iaq_init_cmd;
+> > > +	enum sgp_cmd measure_iaq_cmd;
+> > > +	enum sgp_cmd measure_gas_signals_cmd;
+> > > +	union sgp_reading buffer;
+> > > +	union sgp_reading iaq_buffer;
+> > > +	enum _iaq_buffer_state iaq_buffer_state;
+> > > +};
+> > > +
+> > > +struct sgp_device {
+> > > +	const struct iio_chan_spec *channels;
+> > > +	int num_channels;
+> > > +};
+> > > +
+> > > +static const struct sgp_version supported_versions_sgp30[] = {
+> > > +	{
+> > > +		.major = 1,
+> > > +		.minor = 0,
+> > > +	},
+> > > +};
+> > > +
+> > > +static const struct sgp_version supported_versions_sgpc3[] = {
+> > > +	{
+> > > +		.major = 0,
+> > > +		.minor = 4,
+> > > +	},
+> > > +};
+> > > +
+> > > +static const struct iio_chan_spec sgp30_channels[] = {
+> > > +	{
+> > > +		.type = IIO_CONCENTRATION,
+> > > +		.channel2 = IIO_MOD_VOC,
+> > > +		.modified = 1,
+> > > +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> > > +		.address = SGP30_IAQ_TVOC_IDX,
+> > > +	},
+> > > +	{
+> > > +		.type = IIO_CONCENTRATION,
+> > > +		.channel2 = IIO_MOD_CO2,
+> > > +		.modified = 1,
+> > > +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> > > +		.address = SGP30_IAQ_CO2EQ_IDX,
+> > > +	},
+> > > +	{
+> > > +		.type = IIO_CONCENTRATION,
+> > > +		.channel2 = IIO_MOD_ETHANOL,
+> > > +		.modified = 1,
+> > > +		.info_mask_separate =
+> > > +			BIT(IIO_CHAN_INFO_RAW),  
+> > 
+> > Definitely looks like it'll fit in under 80 chars.
+> >   
+> > > +		.address = SGP30_SIG_ETOH_IDX,
+> > > +		.scan_type = {
+> > > +			.endianness = IIO_BE,
+> > > +		},
+> > > +	},
+> > > +	{
+> > > +		.type = IIO_CONCENTRATION,
+> > > +		.channel2 = IIO_MOD_H2,
+> > > +		.modified = 1,
+> > > +		.info_mask_separate =
+> > > +			BIT(IIO_CHAN_INFO_RAW),  
+> > 
+> > Same here on length.
+> >   
+> > > +		.address = SGP30_SIG_H2_IDX,
+> > > +		.scan_type = {
+> > > +			.endianness = IIO_BE,
+> > > +		},
+> > > +	},
+> > > +};
+> > > +
+> > > +static const struct iio_chan_spec sgpc3_channels[] = {
+> > > +	{
+> > > +		.type = IIO_CONCENTRATION,
+> > > +		.channel2 = IIO_MOD_VOC,
+> > > +		.modified = 1,
+> > > +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> > > +		.address = SGPC3_IAQ_TVOC_IDX,
+> > > +	},
+> > > +	{
+> > > +		.type = IIO_CONCENTRATION,
+> > > +		.channel2 = IIO_MOD_ETHANOL,
+> > > +		.modified = 1,
+> > > +		.info_mask_separate =
+> > > +			BIT(IIO_CHAN_INFO_RAW),  
+> > 
+> > And another on length.  
+> > > +		.address = SGPC3_SIG_ETOH_IDX,
+> > > +		.scan_type = {
+> > > +			.endianness = IIO_BE,
+> > > +		},
+> > > +	},
+> > > +};
+> > > +
+> > > +static const struct sgp_device sgp_devices[] = {
+> > > +	[SGP30] = {
+> > > +		.channels = sgp30_channels,
+> > > +		.num_channels = ARRAY_SIZE(sgp30_channels),
+> > > +	},
+> > > +	[SGPC3] = {
+> > > +		.channels = sgpc3_channels,
+> > > +		.num_channels = ARRAY_SIZE(sgpc3_channels),
+> > > +	},
+> > > +};
+> > > +
+> > > +/**
+> > > + * sgp_verify_buffer() - verify the checksums of the data buffer
+> > > words
+> > > + *
+> > > + * @data:       SGP data
+> > > + * @buf:        Raw data buffer
+> > > + * @word_count: Num data words stored in the buffer, excluding CRC
+> > > bytes
+> > > + *
+> > > + * Return:      0 on success, negative error otherwise.
+> > > + */
+> > > +static int sgp_verify_buffer(const struct sgp_data *data,
+> > > +			     union sgp_reading *buf, size_t word_count)
+> > > +{
+> > > +	size_t size = word_count * (SGP_WORD_LEN + SGP_CRC8_LEN);
+> > > +	int i;
+> > > +	u8 crc;
+> > > +	u8 *data_buf = &buf->start;
+> > > +
+> > > +	for (i = 0; i < size; i += SGP_WORD_LEN + SGP_CRC8_LEN) {
+> > > +		crc = crc8(sgp_crc8_table, &data_buf[i], SGP_WORD_LEN,
+> > > +			   SGP_CRC8_INIT);
+> > > +		if (crc != data_buf[i + SGP_WORD_LEN]) {
+> > > +			dev_err(&data->client->dev, "CRC error\n");
+> > > +			return -EIO;
+> > > +		}
+> > > +	}
+> > > +
+> > > +	return 0;
+> > > +}
+> > > +
+> > > +/**
+> > > + * sgp_read_cmd() - reads data from sensor after issuing a command
+> > > + * The caller must hold data->data_lock for the duration of the
+> > > call.
+> > > + * @data:        SGP data
+> > > + * @cmd:         SGP Command to issue
+> > > + * @buf:         Raw data buffer to use
+> > > + * @word_count:  Num words to read, excluding CRC bytes
+> > > + *
+> > > + * Return:       0 on success, negative error otherwise.
+> > > + */
+> > > +static int sgp_read_cmd(struct sgp_data *data, enum sgp_cmd cmd,
+> > > +			union sgp_reading *buf, size_t word_count,
+> > > +			unsigned long duration_us)
+> > > +{
+> > > +	int ret;
+> > > +	struct i2c_client *client = data->client;
+> > > +	size_t size = word_count * (SGP_WORD_LEN + SGP_CRC8_LEN);
+> > > +	u8 *data_buf;
+> > > +
+> > > +	ret = i2c_master_send(client, (const char *)&cmd, SGP_CMD_LEN);
+> > > +	if (ret != SGP_CMD_LEN)
+> > > +		return -EIO;
+> > > +	usleep_range(duration_us, duration_us + 1000);
+> > > +
+> > > +	if (word_count == 0)
+> > > +		return 0;
+> > > +
+> > > +	data_buf = &buf->start;
+> > > +	ret = i2c_master_recv(client, data_buf, size);
+> > > +	if (ret < 0)
+> > > +		return ret;
+> > > +	if (ret != size)
+> > > +		return -EIO;
+> > > +
+> > > +	return sgp_verify_buffer(data, buf, word_count);
+> > > +}
+> > > +
+> > > +/**
+> > > + * sgp_measure_iaq() - measure and retrieve IAQ values from sensor
+> > > + * The caller must hold data->data_lock for the duration of the
+> > > call.
+> > > + * @data:       SGP data
+> > > + *
+> > > + * Return:      0 on success, -EBUSY on default values, negative
+> > > error
+> > > + *              otherwise.
+> > > + */
+> > > +
+> > > +static int sgp_measure_iaq(struct sgp_data *data)
+> > > +{
+> > > +	int ret;
+> > > +	/* data contains default values */
+> > > +	bool default_vals = !time_after(jiffies, data-  
+> > > >iaq_init_start_jiffies +  
+> > > +						 data-  
+> > > >iaq_defval_skip_jiffies);  
+> > > +
+> > > +	ret = sgp_read_cmd(data, data->measure_iaq_cmd, &data-  
+> > > >iaq_buffer,  
+> > > +			   SGP_MEASUREMENT_LEN,
+> > > SGP_MEASUREMENT_DURATION_US);
+> > > +	if (ret < 0)
+> > > +		return ret;
+> > > +
+> > > +	data->iaq_buffer_state = IAQ_BUFFER_DEFAULT_VALS;
+> > > +
+> > > +	if (default_vals)
+> > > +		return -EBUSY;
+> > > +
+> > > +	data->iaq_buffer_state = IAQ_BUFFER_VALID;
+> > > +
+> > > +	return 0;
+> > > +}
+> > > +
+> > > +static void sgp_iaq_thread_sleep_until(const struct sgp_data
+> > > *data,
+> > > +				       unsigned long sleep_jiffies)
+> > > +{
+> > > +	const long IAQ_POLL = 50000;
+> > > +
+> > > +	while (!time_after(jiffies, sleep_jiffies)) {
+> > > +		usleep_range(IAQ_POLL, IAQ_POLL + 10000);
+> > > +		if (kthread_should_stop() || data-  
+> > > >iaq_init_start_jiffies == 0)  
+> > > +			return;
+> > > +	}
+> > > +}
+> > > +
+> > > +static int sgp_iaq_threadfn(void *p)
+> > > +{
+> > > +	struct sgp_data *data = (struct sgp_data *)p;
+> > > +	unsigned long next_update_jiffies;
+> > > +	int ret;
+> > > +
+> > > +	while (!kthread_should_stop()) {
+> > > +		mutex_lock(&data->data_lock);
+> > > +		if (data->iaq_init_start_jiffies == 0) {
+> > > +			ret = sgp_read_cmd(data, data->iaq_init_cmd,
+> > > NULL, 0,
+> > > +					   SGP_CMD_DURATION_US);
+> > > +			if (ret < 0)
+> > > +				goto unlock_sleep_continue;
+> > > +			data->iaq_init_start_jiffies = jiffies;
+> > > +		}
+> > > +
+> > > +		ret = sgp_measure_iaq(data);
+> > > +		if (ret && ret != -EBUSY) {
+> > > +			dev_warn(&data->client->dev,
+> > > +				 "IAQ measurement error [%d]\n", ret);
+> > > +		}
+> > > +unlock_sleep_continue:
+> > > +		next_update_jiffies = jiffies + data-  
+> > > >measure_interval_jiffies;  
+> > > +		mutex_unlock(&data->data_lock);
+> > > +		sgp_iaq_thread_sleep_until(data, next_update_jiffies);
+> > > +	}
+> > > +
+> > > +	return 0;
+> > > +}
+> > > +
+> > > +static int sgp_read_raw(struct iio_dev *indio_dev,
+> > > +			struct iio_chan_spec const *chan, int *val,
+> > > +			int *val2, long mask)
+> > > +{
+> > > +	struct sgp_data *data = iio_priv(indio_dev);
+> > > +	struct sgp_crc_word *words;
+> > > +	int ret;
+> > > +
+> > > +	switch (mask) {
+> > > +	case IIO_CHAN_INFO_PROCESSED:
+> > > +		mutex_lock(&data->data_lock);
+> > > +		if (data->iaq_buffer_state != IAQ_BUFFER_VALID) {
+> > > +			mutex_unlock(&data->data_lock);
+> > > +			return -EBUSY;
+> > > +		}
+> > > +		words = data->iaq_buffer.raw_words;
+> > > +		switch (chan->address) {
+> > > +		case SGP30_IAQ_TVOC_IDX:
+> > > +		case SGPC3_IAQ_TVOC_IDX:
+> > > +			*val = 0;
+> > > +			*val2 = be16_to_cpu(words[1].value);
+> > > +			ret = IIO_VAL_INT_PLUS_NANO;
+> > > +			break;
+> > > +		case SGP30_IAQ_CO2EQ_IDX:
+> > > +			*val = 0;
+> > > +			*val2 = be16_to_cpu(words[0].value);
+> > > +			ret = IIO_VAL_INT_PLUS_MICRO;
+> > > +			break;
+> > > +		default:
+> > > +			ret = -EINVAL;
+> > > +			break;
+> > > +		}
+> > > +		mutex_unlock(&data->data_lock);
+> > > +		break;
+> > > +	case IIO_CHAN_INFO_RAW:
+> > > +		mutex_lock(&data->data_lock);
+> > > +		if (chan->address == SGPC3_SIG_ETOH_IDX) {
+> > > +			if (data->iaq_buffer_state == IAQ_BUFFER_EMPTY)
+> > > +				ret = -EBUSY;
+> > > +			else
+> > > +				ret = 0;
+> > > +			words = data->iaq_buffer.raw_words;
+> > > +		} else {
+> > > +			ret = sgp_read_cmd(data, data-  
+> > > >measure_gas_signals_cmd,  
+> > > +					   &data->buffer,
+> > > SGP_MEASUREMENT_LEN,
+> > > +					   SGP_MEASUREMENT_DURATION_US)
+> > > ;
+> > > +			words = data->buffer.raw_words;
+> > > +		}
+> > > +		if (ret) {
+> > > +			mutex_unlock(&data->data_lock);
+> > > +			return ret;
+> > > +		}
+> > > +
+> > > +		switch (chan->address) {
+> > > +		case SGP30_SIG_ETOH_IDX:
+> > > +			*val = be16_to_cpu(words[1].value);
+> > > +			ret = IIO_VAL_INT;
+> > > +			break;
+> > > +		case SGPC3_SIG_ETOH_IDX:
+> > > +		case SGP30_SIG_H2_IDX:
+> > > +			*val = be16_to_cpu(words[0].value);
+> > > +			ret = IIO_VAL_INT;
+> > > +			break;
+> > > +		default:
+> > > +			ret = -EINVAL;
+> > > +			break;
+> > > +		}
+> > > +		mutex_unlock(&data->data_lock);
+> > > +		break;
+> > > +	default:
+> > > +		return -EINVAL;
+> > > +	}
+> > > +
+> > > +	return ret;
+> > > +}
+> > > +
+> > > +static int sgp_check_compat(struct sgp_data *data,
+> > > +			    unsigned int product_id)
+> > > +{
+> > > +	const struct sgp_version *supported_versions;
+> > > +	u16 ix, num_fs;
+> > > +	u16 product, generation, major, minor;
+> > > +
+> > > +	/* driver does not match product */
+> > > +	generation = SGP_VERS_GEN(data);
+> > > +	if (generation != 0) {
+> > > +		dev_err(&data->client->dev,
+> > > +			"incompatible product generation %d != 0",
+> > > generation);
+> > > +		return -ENODEV;
+> > > +	}
+> > > +
+> > > +	product = SGP_VERS_PRODUCT(data);
+> > > +	if (product != product_id) {
+> > > +		dev_err(&data->client->dev,
+> > > +			"sensor reports a different product:
+> > > 0x%04hx\n",
+> > > +			product);
+> > > +		return -ENODEV;
+> > > +	}
+> > > +
+> > > +	if (SGP_VERS_RESERVED(data))
+> > > +		dev_warn(&data->client->dev, "reserved bit is set\n");
+> > > +
+> > > +	/* engineering samples are not supported: no interface
+> > > guarantees */
+> > > +	if (SGP_VERS_ENG_BIT(data))
+> > > +		return -ENODEV;
+> > > +
+> > > +	switch (product) {
+> > > +	case SGP30:
+> > > +		supported_versions = supported_versions_sgp30;
+> > > +		num_fs = ARRAY_SIZE(supported_versions_sgp30);
+> > > +		break;
+> > > +	case SGPC3:
+> > > +		supported_versions = supported_versions_sgpc3;
+> > > +		num_fs = ARRAY_SIZE(supported_versions_sgpc3);
+> > > +		break;
+> > > +	default:
+> > > +		return -ENODEV;
+> > > +	}
+> > > +
+> > > +	major = SGP_VERS_MAJOR(data);
+> > > +	minor = SGP_VERS_MINOR(data);
+> > > +	for (ix = 0; ix < num_fs; ix++) {
+> > > +		if (major == supported_versions[ix].major &&
+> > > +		    minor >= supported_versions[ix].minor)
+> > > +			return 0;
+> > > +	}
+> > > +	dev_err(&data->client->dev, "unsupported sgp version: %d.%d\n",
+> > > +		major, minor);
+> > > +
+> > > +	return -ENODEV;
+> > > +}
+> > > +
+> > > +static void sgp_init(struct sgp_data *data)
+> > > +{
+> > > +	data->iaq_init_cmd = SGP_CMD_IAQ_INIT;
+> > > +	data->iaq_init_start_jiffies = 0;
+> > > +	data->iaq_buffer_state = IAQ_BUFFER_EMPTY;
+> > > +	switch (SGP_VERS_PRODUCT(data)) {
+> > > +	case SGP30:
+> > > +		data->measure_interval_jiffies =
+> > > SGP30_MEASURE_INTERVAL_HZ * HZ;
+> > > +		data->measure_iaq_cmd = SGP_CMD_IAQ_MEASURE;
+> > > +		data->measure_gas_signals_cmd =
+> > > SGP30_CMD_MEASURE_SIGNAL;
+> > > +		data->product_id = SGP30;
+> > > +		data->iaq_defval_skip_jiffies = 15 * HZ;
+> > > +		break;
+> > > +	case SGPC3:
+> > > +		data->measure_interval_jiffies =
+> > > SGPC3_MEASURE_INTERVAL_HZ * HZ;
+> > > +		data->measure_iaq_cmd = SGPC3_CMD_MEASURE_RAW;
+> > > +		data->measure_gas_signals_cmd = SGPC3_CMD_MEASURE_RAW;
+> > > +		data->product_id = SGPC3;
+> > > +		data->iaq_defval_skip_jiffies =
+> > > +			43 * data->measure_interval_jiffies;
+> > > +		break;
+> > > +	};
+> > > +}
+> > > +
+> > > +static const struct iio_info sgp_info = {
+> > > +	.read_raw	= sgp_read_raw,
+> > > +};
+> > > +
+> > > +static const struct of_device_id sgp_dt_ids[] = {
+> > > +	{ .compatible = "sensirion,sgp30", .data = (void *)SGP30 },
+> > > +	{ .compatible = "sensirion,sgpc3", .data = (void *)SGPC3 },
+> > > +	{ }
+> > > +};
+> > > +
+> > > +static int sgp_probe(struct i2c_client *client,
+> > > +		     const struct i2c_device_id *id)
+> > > +{
+> > > +	struct iio_dev *indio_dev;
+> > > +	struct sgp_data *data;
+> > > +	const struct of_device_id *of_id;
+> > > +	unsigned long product_id;
+> > > +	int ret;
+> > > +
+> > > +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> > > +	if (!indio_dev)
+> > > +		return -ENOMEM;
+> > > +
+> > > +	of_id = of_match_device(sgp_dt_ids, &client->dev);
+> > > +	if (of_id)
+> > > +		product_id = (unsigned long)of_id->data;
+> > > +	else
+> > > +		product_id = id->driver_data;
+> > > +
+> > > +	data = iio_priv(indio_dev);
+> > > +	i2c_set_clientdata(client, indio_dev);
+> > > +	data->client = client;
+> > > +	crc8_populate_msb(sgp_crc8_table, SGP_CRC8_POLYNOMIAL);
+> > > +	mutex_init(&data->data_lock);
+> > > +
+> > > +	/* get feature set version and write it to client data */
+> > > +	ret = sgp_read_cmd(data, SGP_CMD_GET_FEATURE_SET, &data-  
+> > > >buffer, 1,  
+> > > +			   SGP_CMD_DURATION_US);
+> > > +	if (ret < 0)
+> > > +		return ret;
+> > > +
+> > > +	data->feature_set = be16_to_cpu(data-  
+> > > >buffer.raw_words[0].value);  
+> > > +
+> > > +	ret = sgp_check_compat(data, product_id);
+> > > +	if (ret)
+> > > +		return ret;
+> > > +
+> > > +	indio_dev->dev.parent = &client->dev;
+> > > +	indio_dev->info = &sgp_info;
+> > > +	indio_dev->name = id->name;
+> > > +	indio_dev->modes = INDIO_DIRECT_MODE;
+> > > +	indio_dev->channels = sgp_devices[product_id].channels;
+> > > +	indio_dev->num_channels = sgp_devices[product_id].num_channels;
+> > > +
+> > > +	sgp_init(data);
+> > > +
+> > > +	ret = devm_iio_device_register(&client->dev, indio_dev);
+> > > +	if (ret) {
+> > > +		dev_err(&client->dev, "failed to register iio
+> > > device\n");
+> > > +		return ret;
+> > > +	}
+> > > +
+> > > +	data->iaq_thread = kthread_run(sgp_iaq_threadfn, data,
+> > > +				       "%s-iaq", data->client->name);
+> > > +
+> > > +	return 0;
+> > > +}
+> > > +
+> > > +static int sgp_remove(struct i2c_client *client)
+> > > +{
+> > > +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> > > +	struct sgp_data *data = iio_priv(indio_dev);
+> > > +
+> > > +	if (data->iaq_thread)
+> > > +		kthread_stop(data->iaq_thread);
+> > > +
+> > > +	return 0;
+> > > +}
+> > > +
+> > > +static const struct i2c_device_id sgp_id[] = {
+> > > +	{ "sgp30", SGP30 },
+> > > +	{ "sgpc3", SGPC3 },
+> > > +	{ }
+> > > +};
+> > > +
+> > > +MODULE_DEVICE_TABLE(i2c, sgp_id);
+> > > +MODULE_DEVICE_TABLE(of, sgp_dt_ids);
+> > > +
+> > > +static struct i2c_driver sgp_driver = {
+> > > +	.driver = {
+> > > +		.name = "sgp30",
+> > > +		.of_match_table = of_match_ptr(sgp_dt_ids),
+> > > +	},
+> > > +	.probe = sgp_probe,
+> > > +	.remove = sgp_remove,
+> > > +	.id_table = sgp_id,
+> > > +};
+> > > +module_i2c_driver(sgp_driver);
+> > > +
+> > > +MODULE_AUTHOR("Andreas Brauchli <andreas.brauchli@sensirion.com>")
+> > > ;
+> > > +MODULE_AUTHOR("Pascal Sachs <pascal.sachs@sensirion.com>");
+> > > +MODULE_DESCRIPTION("Sensirion SGP gas sensors");
+> > > +MODULE_LICENSE("GPL v2");  
+> > 
+> >   
+> 
+
+
