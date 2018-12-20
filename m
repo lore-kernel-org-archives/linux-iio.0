@@ -1,95 +1,99 @@
-Return-Path: <SRS0=iZB7=O4=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=mvch=O5=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8221BC43387
-	for <linux-iio@archiver.kernel.org>; Wed, 19 Dec 2018 21:08:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0867C43387
+	for <linux-iio@archiver.kernel.org>; Thu, 20 Dec 2018 06:59:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 50A2520869
-	for <linux-iio@archiver.kernel.org>; Wed, 19 Dec 2018 21:08:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AC65120869
+	for <linux-iio@archiver.kernel.org>; Thu, 20 Dec 2018 06:59:40 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Jm6vo+5o"
+	dkim=pass (2048-bit key) header.d=endlessm-com.20150623.gappssmtp.com header.i=@endlessm-com.20150623.gappssmtp.com header.b="f5FsAG7M"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729753AbeLSVIn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 19 Dec 2018 16:08:43 -0500
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:39085 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727852AbeLSVIn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Dec 2018 16:08:43 -0500
-Received: by mail-ot1-f67.google.com with SMTP id n8so20429258otl.6;
-        Wed, 19 Dec 2018 13:08:43 -0800 (PST)
+        id S1729563AbeLTG7k (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 20 Dec 2018 01:59:40 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:38925 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727976AbeLTG7j (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 20 Dec 2018 01:59:39 -0500
+Received: by mail-pf1-f193.google.com with SMTP id r136so462627pfc.6
+        for <linux-iio@vger.kernel.org>; Wed, 19 Dec 2018 22:59:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=xZOVkHNZuDx9b+ZJOP0AovVF6XB9OamR4l+O3qRxWmk=;
-        b=Jm6vo+5o27fOhKAJ4mrPH37TJo+DML8zyRVR8mzG7NuydRD7LzVielwIRVXt5b6DuH
-         SNKsBZFKoUHV+4p/X2uNanIcpFnBWK09HADLCrvAODbClAkhWa1YIpgy0UQW6Ld2GJEw
-         Db5czVyTR5KCyEnVsKxtaLkFdvXB91QuVd/iL9U6zLU0gVA1xozhTQ1ujy98mFbUlKTg
-         J6Z9RMpmEimz3/sysD4B2TS19f6VEaulq25O6FX/uQNf4gyIurk9Z99DIQ1n0dnIcm7W
-         5QfKSxLnNoLPEKaOWNDByl5MYkeW5iKtp0cruS++b8q5/7gWi9o412k/THyCIJgsFHIo
-         H7Zg==
+        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=T1IUzYJqmbd9OZPBJLfHwOP1jDLvMfSlhyBAHHr6cRA=;
+        b=f5FsAG7Mi9tk1OEUsabVYG4ji3GwF/cAJnPEAOM83t5DldZPK1+foNZ+fIM8G/C/b7
+         DMr65a7i9qRkEc9EEHgzeWYXPlSD63HaEmdkyfR72OwKDhdAbWjf8D1vO7VO1vlfAckq
+         QNKYMwCT6v21MpOaqiXfwGjAJsgJgQi2iGmvD6le4VW9fyPDNfk5MMtvJcvxUXZjeQpE
+         K4T7WMg4fSA6X6ix3B76iCxL9+QNiE0WRhZjLapauh+e+EnHpMI/XJ7sLtqSzLHTMpZf
+         i9KR9xZl670Qoaz+DiDRO7TTArwMqS1Zrc5ADoQsKNBjHy/VBipX/6s7G8qBX/tzDiv0
+         Nurg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=xZOVkHNZuDx9b+ZJOP0AovVF6XB9OamR4l+O3qRxWmk=;
-        b=TZJ+BPTUKkbo1bkY18eRe0f64+GGWUhQP7Ggaa2Q3aJ9GDxn3U8LRo3RKVP6Z31/i7
-         FhipU55pvIiApBxghQoeYWT8hKKc43YPHUIBLYxHy8r0Phx25F9nJwQzO9E99rqVS67S
-         X7xntLevgZFXFif2QYo48AD1ZOLTEjjxQoo9RXvBY90wrSb6Gy8IXJwrQXIQ3GCDh0J4
-         8t+Zw1fTenfFLuAL13WuHzizJlhk5II15e+y8U2exfsJ/gS5bSOtLdnsUwYdEiv/GjEz
-         g2dpilMIlunTgCWxED/fQmUysJkOCvkI1T+6ud54Q7LRHmDH9IyyGSp4D9VJQ7NBdNFE
-         Bs1Q==
-X-Gm-Message-State: AA+aEWZ0OxYuinPFshjSqm627LQ534YZ97fTGS2fB2LgO3XfJDxWWnLv
-        DLWodvIk6Sq8s7Var8+Qzv0=
-X-Google-Smtp-Source: AFSGD/XVOSRncE3bzt/gnqp6EbbBKSwnmOEqnWlLdcCM2F/Kohj0RM8e+tWkfr710dDBlAIsFZQCjQ==
-X-Received: by 2002:a9d:6c3:: with SMTP id 61mr17221498otx.314.1545253722728;
-        Wed, 19 Dec 2018 13:08:42 -0800 (PST)
-Received: from localhost.localdomain (172-3-172-117.lightspeed.tukrga.sbcglobal.net. [172.3.172.117])
-        by smtp.googlemail.com with ESMTPSA id o2sm12273268otj.2.2018.12.19.13.08.41
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Wed, 19 Dec 2018 13:08:42 -0800 (PST)
-From:   Amir Mahdi Ghorbanian <indigoomega021@gmail.com>
-To:     lars@metafoo.de
-Cc:     Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Amir Mahdi Ghorbanian <indigoomega021@gmail.com>
-Subject: [PATCH] Staging: iio: adis16240: fixed a SPDX identifier tag mistake
-Date:   Wed, 19 Dec 2018 13:07:31 -0800
-Message-Id: <1545253651-13891-1-git-send-email-indigoomega021@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=T1IUzYJqmbd9OZPBJLfHwOP1jDLvMfSlhyBAHHr6cRA=;
+        b=dHrKUAkibV8AEkOr2tRhcAsB7Ag9RGFZ561BLUAIugf9/Cut2mol44HbFGUN7a45h+
+         wHwgIl80v/QP7H3FBFcORgkE+S9I8WobGUzFFoGb0Dxt+U2L/NXlF+uRj83VrlT6Uqdo
+         NEUMpenyDFCmyhOI/w/ly8tSdmzKE/GCUvrN1DlRMGgFpW1lwPNrxQHHoL8BRVkWTGCV
+         dCXqkSDlvdQtFvat/g9ARcTNpLnqHBFrl2twiEJs9VOArfBNVJ0600lo1wffpg6EDfV0
+         kvhdnoc+GK/6H7CmRjNY6n5dF2z/U32dgT/Y2VEVWOCXOMU/p4TrGB2K3zeZX0anXOtz
+         RUWw==
+X-Gm-Message-State: AA+aEWb7P6bq3IE0SS79BQnGfqQRM/SdWJaB6Kx6tCz4mCtySlp5Pu1M
+        /y+dO/5o6zXAjUsYR23JpRO6YQ==
+X-Google-Smtp-Source: AFSGD/U+KB/T1+6shD1dQnM/1Tf2I25Tc7HBUlHXg3WEfwdt8dyFRk6AhqQpD39hFaER/vnQfAOxJQ==
+X-Received: by 2002:a63:8149:: with SMTP id t70mr22525126pgd.172.1545289178900;
+        Wed, 19 Dec 2018 22:59:38 -0800 (PST)
+Received: from limbo.local (125-227-158-176.HINET-IP.hinet.net. [125.227.158.176])
+        by smtp.gmail.com with ESMTPSA id 83sm29980791pgf.57.2018.12.19.22.59.35
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 19 Dec 2018 22:59:38 -0800 (PST)
+From:   Daniel Drake <drake@endlessm.com>
+To:     jic23@kernel.org
+Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-iio@vger.kernel.org, linux@endlessm.com,
+        lorenzo.bianconi83@gmail.com, denis.ciocca@st.com,
+        hadess@hadess.net, hdegoede@redhat.com
+Subject: [PATCH 1/2] iio: drop const typing from iio_mount_matrix rotation
+Date:   Thu, 20 Dec 2018 14:59:32 +0800
+Message-Id: <20181220065933.25964-1-drake@endlessm.com>
+X-Mailer: git-send-email 2.19.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Fixed a coding style mistake by adding the SPDX identifier tag to the
-first line of the code.
+In order to conform with orientation data from the firmware, we
+need to dynamically construct the mount matrix in the ST accelerometer
+driver.
 
-Signed-off-by: Amir Mahdi Ghorbanian <indigoomega021@gmail.com>
+Drop the const type from the mount matrix data to make this possible.
+
+Signed-off-by: Daniel Drake <drake@endlessm.com>
 ---
- drivers/staging/iio/accel/adis16240.c | 2 +-
+ include/linux/iio/iio.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/iio/accel/adis16240.c b/drivers/staging/iio/accel/adis16240.c
-index 24e525f..2c40189 100644
---- a/drivers/staging/iio/accel/adis16240.c
-+++ b/drivers/staging/iio/accel/adis16240.c
-@@ -1,9 +1,9 @@
-+// SPDX-License-Identifier: GPL-2.0+
- /*
-  * ADIS16240 Programmable Impact Sensor and Recorder driver
-  *
-  * Copyright 2010 Analog Devices Inc.
-  *
-- * Licensed under the GPL-2 or later.
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index a74cb177dc6f..d3094ffeb9da 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -125,7 +125,7 @@ ssize_t iio_enum_write(struct iio_dev *indio_dev,
+  *            main hardware
   */
+ struct iio_mount_matrix {
+-	const char *rotation[9];
++	char *rotation[9];
+ };
  
- #include <linux/interrupt.h>
+ ssize_t iio_show_mount_matrix(struct iio_dev *indio_dev, uintptr_t priv,
 -- 
-2.7.4
+2.19.1
 
