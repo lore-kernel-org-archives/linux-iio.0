@@ -2,119 +2,148 @@ Return-Path: <SRS0=mvch=O5=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FROM,MAILING_LIST_MULTI,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 918F8C43387
-	for <linux-iio@archiver.kernel.org>; Thu, 20 Dec 2018 07:28:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42152C43387
+	for <linux-iio@archiver.kernel.org>; Thu, 20 Dec 2018 07:41:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5D17F2176F
-	for <linux-iio@archiver.kernel.org>; Thu, 20 Dec 2018 07:28:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 07B012176F
+	for <linux-iio@archiver.kernel.org>; Thu, 20 Dec 2018 07:41:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=umn.edu header.i=@umn.edu header.b="TcovvE9H"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="S9qJBT+b"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729329AbeLTH2w (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 20 Dec 2018 02:28:52 -0500
-Received: from mta-p8.oit.umn.edu ([134.84.196.208]:56026 "EHLO
-        mta-p8.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727644AbeLTH2w (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 20 Dec 2018 02:28:52 -0500
-X-Greylist: delayed 428 seconds by postgrey-1.27 at vger.kernel.org; Thu, 20 Dec 2018 02:28:51 EST
-Received: from localhost (unknown [127.0.0.1])
-        by mta-p8.oit.umn.edu (Postfix) with ESMTP id 9BF90C7C
-        for <linux-iio@vger.kernel.org>; Thu, 20 Dec 2018 07:21:43 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at umn.edu
-Received: from mta-p8.oit.umn.edu ([127.0.0.1])
-        by localhost (mta-p8.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id uTYk74u2CbSO for <linux-iio@vger.kernel.org>;
-        Thu, 20 Dec 2018 01:21:43 -0600 (CST)
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
-        (using TLSv1.2 with cipher AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mta-p8.oit.umn.edu (Postfix) with ESMTPS id 6DA7CB9F
-        for <linux-iio@vger.kernel.org>; Thu, 20 Dec 2018 01:21:43 -0600 (CST)
-Received: by mail-io1-f69.google.com with SMTP id i11so848156iog.2
-        for <linux-iio@vger.kernel.org>; Wed, 19 Dec 2018 23:21:43 -0800 (PST)
+        id S1728956AbeLTHlB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 20 Dec 2018 02:41:01 -0500
+Received: from mail-lj1-f178.google.com ([209.85.208.178]:42032 "EHLO
+        mail-lj1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728949AbeLTHlA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 20 Dec 2018 02:41:00 -0500
+Received: by mail-lj1-f178.google.com with SMTP id l15-v6so632823lja.9
+        for <linux-iio@vger.kernel.org>; Wed, 19 Dec 2018 23:40:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=umn.edu; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=olSBnnx9NjGp0W7zHvNXGFjUnYVNv5tLVlKkHGT7CZc=;
-        b=TcovvE9HAEINP+YPIMNf2zL7m3HwyZp/V0/dv4l+knhgon+g4cIiPdDyCrn1XaGysB
-         bylQUIMOJ42UNJ8mifBon49OvKAZTrlUQRIacfSep+RQGmrvm8mxUFONvP9ZFEKO0UBn
-         1spxLbexo5Ynjnp3qJn1Dc6DByJYs3RmvTlg2wBOvHEsSKRyBvEJaEudrR7b2crqgqz2
-         7L2nHCIbNMszCKeYA7sS1Ke+pGYEC+f8yu3NsERqm6860Z2QIUVVnd6GGOoOiVlTFCDp
-         yg8lcDnzUlCaflBcQSsGwvzh1z1ApRMNy424HwLSp2PkwXrr0GEtML2Ml2M0WWxdPGLr
-         ZFhg==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=OlBvt53tt7vkfNH26PD+R0NJn7mduTKOVaeDsEbxtBQ=;
+        b=S9qJBT+b6MX0gMoRsgw2tPz92X/tD9CQYuD2+3gB1xYRzyvjT4PxJDLhyAc8igBqsQ
+         ou78ncij1TUHqNjMHpp9R/mqsdKvAblmai7V4UlnfEStbbvYJb5L78XG0ORy6zpk/v2h
+         im3BtNA/kWUbExDVVXHJLQZg3RTJdO+vUzDrUeuOFgvGmsbA1Wcr0jN5Qo9AyKsKrJH9
+         5FryPyN66FdSFw6I7ROB8p9L1pmKvYoBj4UF5/YACifWkrDxudLgU6oSqmgpa29dYoUd
+         4XsicmENV6zlIKz7F+zPsJkc6NF8WPbW5P/fviDafTVr/rF9j1J/IsYNIKaOwGHniHSp
+         kYZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=olSBnnx9NjGp0W7zHvNXGFjUnYVNv5tLVlKkHGT7CZc=;
-        b=U0U4KvvkAwqjPEuRQ8eh1w547o9eRDI8jrseYdM9kuHvRVpvWNfQzyNHEiUmpA2N71
-         M4XO3gWQXifIp594Dfj7ihJKsRdLtK7koMzcYR/ECjDqNRYcpBoYOuoep6BZyY543M9v
-         FohpXwB5bLoW+JakacGUNRb23w3b/rgyvsvxJRkHvQeZ7h9TAtdoVdl4vKcoZgeC88JN
-         73Z3VQFb8IK5O3E6DUxHtwdd2tmZDBGhiU3Z3GMf3I+7/2180IOrWsjV8AOO5yjoB01s
-         z6a4SEpeakYwarwFPUsfeQzj1WqCfhu6ShZVpXVIZrs+bCjIuGL8+q/WlM8kDvwaBeaQ
-         neug==
-X-Gm-Message-State: AA+aEWbtK+wyUvao0V7szKLpmVu4WvHzeNB0xNwvlZnepOKJ3wtjdSuY
-        oJgl8Bv4UDx4fqcSn3BRy4KcVk9FD4W8jdtxwFhlVnJhKFwmEJdq6TorHnVFTWR5eng0U9AEUUq
-        OUKwexzl4ByPZvdBvhsEdzOfC
-X-Received: by 2002:a02:734b:: with SMTP id a11mr20952740jae.62.1545290503065;
-        Wed, 19 Dec 2018 23:21:43 -0800 (PST)
-X-Google-Smtp-Source: AFSGD/UjZrri35WC+p0WOBT0eQNleqn0zgKrcRH89zSyKiosxaSuDUy3hydJGX8Tuy3q3PemCCHTDw==
-X-Received: by 2002:a02:734b:: with SMTP id a11mr20952731jae.62.1545290502816;
-        Wed, 19 Dec 2018 23:21:42 -0800 (PST)
-Received: from localhost.localdomain (host-173-230-104-24.mnmigsc.mn.minneapolis.us.clients.pavlovmedia.net. [173.230.104.24])
-        by smtp.gmail.com with ESMTPSA id n129sm5393195itb.20.2018.12.19.23.21.41
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Wed, 19 Dec 2018 23:21:41 -0800 (PST)
-From:   Kangjie Lu <kjlu@umn.edu>
-To:     kjlu@umn.edu
-Cc:     pakki001@umn.edu, Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: ad9523: fix a missing check of return value
-Date:   Thu, 20 Dec 2018 01:21:22 -0600
-Message-Id: <20181220072122.40469-1-kjlu@umn.edu>
-X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=OlBvt53tt7vkfNH26PD+R0NJn7mduTKOVaeDsEbxtBQ=;
+        b=TgVG00f/P+ZIF5XncMtJFgGakOrYGCIJWCB8pnxZA4L934PqYrL6cbZt2sJ5oWMetM
+         obn/wf3/pfd03g5p2wbtJz35iiZuEHBKZLLYl1uH6P/DJ7S/6oQ7EZ/YhLWgX2RYdLtl
+         t/LmgaG47bBTus7WB8meFJkHvwajfXDvk8XdWQZ+N6jJRwtqBDMcCo9S0mfFtUHD5sqt
+         vWs0A+rcccwX5DNoLOfCHZVC1GlITu7j/3fWe3Htfxaee2N85QvMzZOmzGGp3+RUwZq7
+         6My6LELz2QY10meN78+iKKvEZrUqCv1fmUDldvb2z2H3R2GIWPyvBl+JNZAZ5xNHRMa4
+         tUog==
+X-Gm-Message-State: AA+aEWak9z9i/LC+lXyL7Q5YlIPUGcUvXdHXvKmWLzwsRHnrU/CNpgwa
+        Cb8kxjpYll76/ry+j48aayQ=
+X-Google-Smtp-Source: AFSGD/Uz0FfrNzOaXeIc7TOqoYquoghHmDZRkZ3JFVjoqArVFPd9DGAfCp7YUmtb4/L0I82mqb90Yw==
+X-Received: by 2002:a2e:3308:: with SMTP id d8-v6mr1073294ljc.38.1545291658571;
+        Wed, 19 Dec 2018 23:40:58 -0800 (PST)
+Received: from [192.168.128.162] (85-76-113-206-nat.elisa-mobile.fi. [85.76.113.206])
+        by smtp.googlemail.com with ESMTPSA id g4-v6sm4031468lji.17.2018.12.19.23.40.57
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 19 Dec 2018 23:40:57 -0800 (PST)
+Subject: Re: IIO BME680 driver
+To:     Himanshu Jha <himanshujha199640@gmail.com>
+Cc:     linux-iio@vger.kernel.org, dpfrey@gmail.com
+References: <712905bc-4d81-0b38-44d6-d4f31f08c3ae@gmail.com>
+ <20181215191743.GA1263@himanshu-Vostro-3559>
+ <6f1d36a0-f059-4c8b-4497-12c9b2c73a12@gmail.com>
+ <20181216155900.GA19465@himanshu-Vostro-3559>
+From:   Tuukka Pasanen <pasanen.tuukka@gmail.com>
+Message-ID: <53682349-3998-63a7-db0f-ebd23eff6167@gmail.com>
+Date:   Thu, 20 Dec 2018 09:40:56 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.3.3
+MIME-Version: 1.0
+In-Reply-To: <20181216155900.GA19465@himanshu-Vostro-3559>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-If ad9523_write() fails, indio_dev may get incorrect data. The fix
-inserts a check for the return value of ad9523_write(), and it fails,
-returns an error.
+Hello,
 
-Signed-off-by: Kangjie Lu <kjlu@umn.edu>
----
- drivers/iio/frequency/ad9523.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
-index f3f94fbdd20a..3f9be69499ec 100644
---- a/drivers/iio/frequency/ad9523.c
-+++ b/drivers/iio/frequency/ad9523.c
-@@ -943,11 +943,14 @@ static int ad9523_setup(struct iio_dev *indio_dev)
- 		}
- 	}
- 
--	for_each_clear_bit(i, &active_mask, AD9523_NUM_CHAN)
--		ad9523_write(indio_dev,
-+	for_each_clear_bit(i, &active_mask, AD9523_NUM_CHAN) {
-+		ret = ad9523_write(indio_dev,
- 			     AD9523_CHANNEL_CLOCK_DIST(i),
- 			     AD9523_CLK_DIST_DRIVER_MODE(TRISTATE) |
- 			     AD9523_CLK_DIST_PWR_DOWN_EN);
-+		if (ret < 0)
-+			return ret;
-+	}
- 
- 	ret = ad9523_write(indio_dev, AD9523_POWER_DOWN_CTRL, 0);
- 	if (ret < 0)
--- 
-2.17.2 (Apple Git-113)
+>> One thing that should be addressed is that if you only read one measurement
+>> and go to sleep then your VOC is incorrect as it needs 5 mins or something
+>> to warm up. Of course I can read very rapidly to make that work and I assume
+>> that thread in mailing list with continous stream is all about that.
+> 5 mins ? Are you sure ?
+>
+> Datasheet:
+> ---------
+>
+> "The heating duration is specified by writing to the corresponding
+> gas_wait_x<7:0> control register. Heating durations between 1 ms
+> and 4032 ms can be configured. In practice, approximately 20–30 ms
+> are necessary for the heater to reach the intended target temperature."
+>
+> For ensuring that the heater sink is heated to the target temperature, I
+> added the following in the driver, and if it fails to do that we just
+> abort:
+>
+> <snip>
+>
+> 729         /*
+> 730          * occurs if either the gas heating duration was insuffient
+> 731          * to reach the target heater temperature or the target
+> 732          * heater temperature was too high for the heater sink to
+> 733          * reach.
+> 734          */
+> 735         if ((check & BME680_GAS_STAB_BIT) == 0) {
+> 736                 dev_err(dev, "heater failed to reach the target temperature\n");
+> 737                 return -EINVAL;
+> 738         }
+>
+> </snip>
+>
+> And now I wonder that -EINVAL isn't the best way to represent such a
+> failure. -ERETRY or something more appropriate should have been used.
+>
+> That thread was about adding power management support + triggered buffer
+> support.
+>
+> Device is already power managed as it automatically goes to sleep mode
+> soon after a single TPHG cycle is performed.
+>
+> OTOH, I'm not brave and smart enough to add triggered buffer support
+> even after the long string of email threads.
+I don't know about data-sheet but when you rapidly read BME680 then 
+resistance in VOC reader tends to rise something like 3-5 mins and then 
+you can get 'correct' reading (rising stops in somepoint). To have 
+something in kernel under public eye is brave enough :). But I have to 
+investigate data-sheet better and see if I am doing something very very 
+stupid and heater just heats up.
+>>> Bosch claimed that new datasheet shall be soon be available with all the
+>>> missing info, and then anyone wouldn't need to reverse engineer their API
+>>> or BSEC to get the desired info :P
+>> Hopefully this comes sooner than later as it would make things more easier
+>>> Thank you for using the IIO driver and I'm glad that there are users out
+>>> there testing it. Please let me know if there are any more issues :)
+>> No problem.. I'll try to make it work as that Python library but I have to
+>> over come these few problems.
+> Sorry! I will try to recticy those and others that I have in mind, but
+> might not quick about it.
+
+No worries, take you time as I have 'working' solution and I can test 
+new features as they appear as I have personal interest about this.
+
+Sincerely,
+
+Tuukka
 
