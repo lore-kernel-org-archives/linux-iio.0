@@ -2,125 +2,104 @@ Return-Path: <SRS0=Fqn4=O6=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FROM,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 168FCC43387
-	for <linux-iio@archiver.kernel.org>; Fri, 21 Dec 2018 18:25:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D67EC43387
+	for <linux-iio@archiver.kernel.org>; Fri, 21 Dec 2018 23:26:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D205A2190A
-	for <linux-iio@archiver.kernel.org>; Fri, 21 Dec 2018 18:25:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1545416720;
-	bh=U+LgE9l/VPj0JM5FucyVfIagpPvD0CiqhS0TZ2AXaj8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=JAkL7OD3OB++BedX3P3EJp+cbTu5CjZPUoDna5towNiMjMBwTZXW+QeNWZE9s9HON
-	 G7NA9S2APEai6D3e8u2PbV+OO4laUxNO+mseCdhRnW5BNDCKWEsGsNjJhFJQJRR3r4
-	 inC7RN0a+Zwd2nVPHLXFiVJGHAEhXUtc0qSmq2Cg=
+	by mail.kernel.org (Postfix) with ESMTP id E184821929
+	for <linux-iio@archiver.kernel.org>; Fri, 21 Dec 2018 23:26:47 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mGrE0qGK"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391409AbeLUSZU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 21 Dec 2018 13:25:20 -0500
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:44741 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388745AbeLUSZU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Dec 2018 13:25:20 -0500
-Received: by mail-ot1-f65.google.com with SMTP id f18so5905424otl.11;
-        Fri, 21 Dec 2018 10:25:19 -0800 (PST)
+        id S2403947AbeLUX0r (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 21 Dec 2018 18:26:47 -0500
+Received: from mail-yb1-f196.google.com ([209.85.219.196]:44266 "EHLO
+        mail-yb1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2403946AbeLUX0r (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Dec 2018 18:26:47 -0500
+Received: by mail-yb1-f196.google.com with SMTP id d2so2782188ybs.11;
+        Fri, 21 Dec 2018 15:26:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=bnqYQO8FYfQi6F/3FHJMrOf2qBEBdHGC+joEM/JCZp8=;
+        b=mGrE0qGKK+HYbhUAu4QxQ7Rwrpb0TZFqFu04mmLUk3aWYoH1Nw93OsrnQ3+VdGKx7x
+         BqLdfiKq5NIvlNj/DeCQDoVGVJg4393qWq7JJuc8/LcH+AYkcMdJGIlI/MBXB19aotAe
+         3cYo/gPM+NV4DGI5Sp8YKOK7jPapqBWoi6vchUxSMjwnZi2hJ4lynqHwKX6c76Lq9STJ
+         KUzKnkP8Ey8YNk5m8Bti+Rc956zXCzROb56akdgn8+RoVcsz6jSIerkLiy4xFgT3tHnk
+         idILiIZyCCmFU9lHApRG8r5GhqG/ICl4kB6S5zK8NXpti9rzww83eulig9HsmsII/xOR
+         qEkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=nnv9jUXgk30zxmuYJX7EViK68oqsu0CngVr3vKAQyFQ=;
-        b=S+Sikd/z5kQDp93F4X2H68cTsWrW8C1ZmKE4x3FHvH6NyScKk6ge23Uizn89m0pxXQ
-         Qd/Rq9JBIU+BZHy8SJhcIhoTBjB7Fsf7ZV9QfAQuOk8YRd+TCiNnE5ZeoidZWa0oFNcs
-         vX6ktQT4lXU23GW/sp31D31EuJZPDH5SeAJZDwwuvKTQq3aZYrmWqOXfWjZx5Ai6y7pu
-         Bl6iGG6Xm/IeeJxAduhz/SxhExnlaG3sXTEjRjgDL/8gAP28qIXPuL6AZp0dI3/Vphn5
-         MwYSgg8ZeGeLyq0mCYaQieJ0oZxo1CqO3hHkxiM7EPmAXw3MWHWvSSzu9aVFwmLboqRs
-         5WAQ==
-X-Gm-Message-State: AJcUukev4X7TNQd7AHAKelMjKgEVompbTly86tXN3LuGa2Ec7eNQGY1/
-        bwpEMT64vmqdAi9LydkjiLf5Bu4=
-X-Google-Smtp-Source: ALg8bN4Yh2IvPYPf3f3hnBkLlqZFGQds/veTkjWTyBnajbn3Anfvr8DHJUZ79vglPDmqAOXduoDy7g==
-X-Received: by 2002:a9d:14e:: with SMTP id 72mr2489882otu.54.1545416719180;
-        Fri, 21 Dec 2018 10:25:19 -0800 (PST)
-Received: from localhost (ip-70-12-27-227.kscymo.spcsdns.net. [70.12.27.227])
-        by smtp.gmail.com with ESMTPSA id b12sm11120812otp.75.2018.12.21.10.25.17
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 21 Dec 2018 10:25:18 -0800 (PST)
-Date:   Fri, 21 Dec 2018 12:25:12 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Philippe Schenker <dev@pschenker.ch>
-Cc:     jic23@kernel.org, marcel.ziswiler@toradex.com, stefan@agner.ch,
-        robh@kernel.org, alexandre.torgue@st.com, shawnguo@kernel.org,
-        dmitry.torokhov@gmail.com, thierry.reding@gmail.com,
-        digetx@gmail.com, lee.jones@linaro.org, coquelin.stm32@gmail.com,
-        Max Krummenacher <max.krummenacher@toradex.com>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        Hartmut Knaack <knaack.h@gmx.de>, linux-input@vger.kernel.org,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=bnqYQO8FYfQi6F/3FHJMrOf2qBEBdHGC+joEM/JCZp8=;
+        b=XrusFl8m3JzzZSZI1yoSB3fVi/trq8+s1fl6fUGsvNJiGAPLo1YIan6dRTTZVTElHi
+         UKEB38iQa5KAX8jGy5RXk3JVxx2GuwAZyI5pjKOyc6NjxSmTk3zOOh0C1bSyFqwEWh6C
+         y92s1uY3LwRh1EQOaWIn2Qc05cZQLtMqidMJJJyTZxBJ8UjOv97M/SKpLbk8N2o1lznu
+         +QPTJTRSWk0AY/DNBcTjQBC+6cDWRfzwls89S60SCpjMXGHMdqIOciF+gDiopfYq8wqA
+         SuaHS9LlzKbgm4FzsU/t1z6RSr3XQ8vEAC9YfzBQ47jQnumS8yUePclx5+FH8CC4ware
+         FxLQ==
+X-Gm-Message-State: AJcUukc+bfcnR6gh0c7vZnGR78UttyjWrNR4IM/jK9I2elsuECN11phu
+        wOaiBwSs2KQ1kA7dMa9aXu4=
+X-Google-Smtp-Source: ALg8bN7P/4wHolNKa2ABRWOzTGYRQuTQ6MUY/x0RPm2lFGJCXIwD1Hxaq3Dx6fSdz19l8y4mvhIhNg==
+X-Received: by 2002:a25:c3c3:: with SMTP id t186mr4606231ybf.337.1545434806273;
+        Fri, 21 Dec 2018 15:26:46 -0800 (PST)
+Received: from localhost.localdomain ([67.191.186.148])
+        by smtp.googlemail.com with ESMTPSA id l140sm8011664ywe.77.2018.12.21.15.26.45
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Fri, 21 Dec 2018 15:26:45 -0800 (PST)
+From:   Amir Mahdi Ghorbanian <indigoomega021@gmail.com>
+To:     lars@metafoo.de
+Cc:     Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
         linux-kernel@vger.kernel.org,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v5 6/8] iio: adc: add STMPE ADC devicetree bindings
-Message-ID: <20181221182512.GA8531@bogus>
-References: <20181221134638.20600-1-dev@pschenker.ch>
- <20181221134638.20600-7-dev@pschenker.ch>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20181221134638.20600-7-dev@pschenker.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Amir Mahdi Ghorbanian <indigoomega021@gmail.com>
+Subject: [PATCH] Staging: iio: ad7192: replaced bool in struct
+Date:   Fri, 21 Dec 2018 15:26:26 -0800
+Message-Id: <1545434786-15220-1-git-send-email-indigoomega021@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 21 Dec 2018 14:46:35 +0100, Philippe Schenker wrote:
-> From: Stefan Agner <stefan@agner.ch>
-> 
-> This adds the devicetree bindings for the STMPE ADC. This also corrects
-> a typo in st,sample-time it is rather "6 -> 124 clocks" according
-> to the datasheet and not 144.
-> We need to use the naming stmpe_adc in devicetree because this is given
-> by the mfd device.
-> 
-> Signed-off-by: Stefan Agner <stefan@agner.ch>
-> Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
-> Signed-off-by: Philippe Schenker <philippe.schenker@toradex.com>
-> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
-> ---
-> 
-> Changes in v5:
->  - Made a one column list
->  - Cleared note about precedence
->  - Changed example to a full STMPE811 device with MFD, touchscreen, and the new
->    stmpe_adc driver.
->  - Added Jonathan Cameron's Reviewed-by
-> 
-> Changes in v4:
->  - Put reformatting in a separate precursor patch.
-> 
-> Changes in v3:
->  - Reformatted documentation for touchscreen to use tabs and have a better
->    overview of the settings.
->  - Added note which adc-settings will take precedence.
->  - changed typo in sample-time setting from 144 clocks to 124 clocks, as stated
->    in the datasheet.
-> 
-> Changes in v2:
->  - Moved the bindings for ADC to the overlying mfd.
->  - Reformatted for better readability
-> 
->  .../devicetree/bindings/iio/adc/stmpe-adc.txt | 21 +++++
->  .../bindings/input/touchscreen/stmpe.txt      | 88 +++++++++++++------
->  .../devicetree/bindings/mfd/stmpe.txt         | 14 +++
->  3 files changed, 98 insertions(+), 25 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/stmpe-adc.txt
-> 
+Replaced bool in struct with unsigned int bitfield to conserve space and
+more clearly define size of varibales
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Amir Mahdi Ghorbanian <indigoomega021@gmail.com>
+---
+ drivers/staging/iio/adc/ad7192.h | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/staging/iio/adc/ad7192.h b/drivers/staging/iio/adc/ad7192.h
+index 7433a43..7d3e62f 100644
+--- a/drivers/staging/iio/adc/ad7192.h
++++ b/drivers/staging/iio/adc/ad7192.h
+@@ -35,13 +35,13 @@ struct ad7192_platform_data {
+ 	u16		vref_mv;
+ 	u8		clock_source_sel;
+ 	u32		ext_clk_hz;
+-	bool		refin2_en;
+-	bool		rej60_en;
+-	bool		sinc3_en;
+-	bool		chop_en;
+-	bool		buf_en;
+-	bool		unipolar_en;
+-	bool		burnout_curr_en;
++	unsigned int	refin2_en : 1;
++	unsigned int	rej60_en : 1;
++	unsigned int	sinc3_en : 1;
++	unsigned int	chop_en : 1;
++	unsigned int	buf_en : 1;
++	unsigned int	unipolar_en : 1;
++	unsigned int	burnout_curr_en : 1;
+ };
+ 
+ #endif /* IIO_ADC_AD7192_H_ */
+-- 
+2.7.4
+
