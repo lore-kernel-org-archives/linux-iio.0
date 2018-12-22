@@ -2,199 +2,171 @@ Return-Path: <SRS0=pB1S=QD=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=DATE_IN_PAST_96_XX,
+	DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA090C282CA
-	for <linux-iio@archiver.kernel.org>; Sun, 27 Jan 2019 15:07:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12684C282CA
+	for <linux-iio@archiver.kernel.org>; Sun, 27 Jan 2019 15:15:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 75666217D7
-	for <linux-iio@archiver.kernel.org>; Sun, 27 Jan 2019 15:07:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D0D5821736
+	for <linux-iio@archiver.kernel.org>; Sun, 27 Jan 2019 15:15:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1548601646;
-	bh=wijys3Fvl7GTbymGO3hqJMq834shSsXCs8R8URg3mDg=;
+	s=default; t=1548602102;
+	bh=QTU7DbAMAk+C7LilXz27oiXjcUUysO0UUf2o21ePPXA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=tTpQUC0SvwWG7P/UXOb1Nq0pTIH9GBVE10D8TxM8e5ueUrTSrS5sPn2Z/IRIaLry3
-	 mfk7XLY8h6dyS+tCWa4XSoQuIvV+gSfq1o++9bPeVfYjc6dFqAdqbYl+Ha81/mlXLC
-	 mXqgbh0Lifgkl4fIXpsmo9y3fxCRARRSUwXiw4G4=
+	b=GqS6R9CSB6FA8e66L+l0ih2CN13LYVya6bn7p4iB9yVSPPQRtU0FiejqBkz8Mbhk+
+	 D6swBlfodaXmztz49EGBDy4GrmDsWUCXEsfqE63UaCv4urtfZQ7Llo+1t5UrXcwwA8
+	 HduX+ZDETjkgkbd7WEdgsy+MKRwcgVy00M6+mdBg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726397AbfA0PH0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 27 Jan 2019 10:07:26 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34844 "EHLO mail.kernel.org"
+        id S1726360AbfA0PPC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 27 Jan 2019 10:15:02 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38260 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726357AbfA0PHZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 27 Jan 2019 10:07:25 -0500
+        id S1726344AbfA0PPC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 27 Jan 2019 10:15:02 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B48D4214C6;
-        Sun, 27 Jan 2019 15:07:22 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D8E6C2148D;
+        Sun, 27 Jan 2019 15:14:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1548601644;
-        bh=wijys3Fvl7GTbymGO3hqJMq834shSsXCs8R8URg3mDg=;
+        s=default; t=1548602100;
+        bh=QTU7DbAMAk+C7LilXz27oiXjcUUysO0UUf2o21ePPXA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jGitwHHoYrCwqru07RDkgbTS87+mCYySgEcvYl88bU1G9J/H8+qFqVuRvsyX18kW6
-         2kZ7jjsu6z0LlO321ki8hwUiGH/eQ0+w9tlAC/fcU9Je0zyT4IoUgLs2ISAShMx0N4
-         Lx/VR+UHK5B7nwiSu9M3vbmVPLpDylapgqGAWflg=
-Date:   Sun, 27 Jan 2019 15:07:19 +0000
+        b=TEIr6ftXvXRgOwnWyT7yyg8ccBLN6iubbvBxMnmwZII/amfDuQlhQK90wJz9+LFI4
+         3MX8IdB0/bkKiQfxPi5cQcaJWLChB2Uhlt3H9oavCx5x5n66WTIGdoxr/ZhBjnmOfV
+         5OHkG9xx+ydiB5Mw4YoZvoDPBdVoBqdFjeoGCywY=
+Date:   Sat, 22 Dec 2018 18:03:10 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Martin Kelly <martin@martingkelly.com>
-Cc:     linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
+To:     Jeremy Fertic <jeremyfertic@gmail.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Daniel Baluta <daniel.baluta@gmail.com>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 2/6] iio:bmi160: add drdy interrupt support
-Message-ID: <20190127150719.110b4735@archlinux>
-In-Reply-To: <afe5de11-54b7-dbcf-defc-cfa6e8f121db@martingkelly.com>
-References: <20190122020431.5338-1-martin@martingkelly.com>
-        <20190122020431.5338-2-martin@martingkelly.com>
-        <20190126201756.12faa7bb@archlinux>
-        <afe5de11-54b7-dbcf-defc-cfa6e8f121db@martingkelly.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 03/11] staging: iio: adt7316: fix dac_bits assignment
+Message-ID: <20181222180310.4ad9a1c6@archlinux>
+In-Reply-To: <20181217213059.GA11856@r2700x.localdomain>
+References: <20181212005503.28054-1-jeremyfertic@gmail.com>
+        <20181212005503.28054-4-jeremyfertic@gmail.com>
+        <20181216113756.70d76d0a@archlinux>
+        <20181217213059.GA11856@r2700x.localdomain>
+X-Mailer: Claws Mail 3.17.2 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
+Message-ID: <20181222180310.aVOnLW6IFOyM6G3bNhtKzJxMjPO0EcStBifJzKoB5w4@z>
 
-On Sat, 26 Jan 2019 15:39:16 -0800
-Martin Kelly <martin@martingkelly.com> wrote:
+On Mon, 17 Dec 2018 14:30:59 -0700
+Jeremy Fertic <jeremyfertic@gmail.com> wrote:
 
-> On 1/26/19 12:17 PM, Jonathan Cameron wrote:
-> > On Mon, 21 Jan 2019 18:04:27 -0800
-> > Martin Kelly <martin@martingkelly.com> wrote:
+> On Sun, Dec 16, 2018 at 11:37:56AM +0000, Jonathan Cameron wrote:
+> > On Tue, 11 Dec 2018 17:54:55 -0700
+> > Jeremy Fertic <jeremyfertic@gmail.com> wrote:
 > >   
-> >> From: Martin Kelly <martin@martingkelly.com>
-> >>
-> >> Add interrupt support for the data ready signal on the BMI160, which fires
-> >> an interrupt whenever new accelerometer/gyroscope data is ready to read.
-> >>
-> >> Signed-off-by: Martin Kelly <martin@martingkelly.com>  
+> > > The only assignment to dac_bits is in adt7316_store_da_high_resolution().
+> > > This function enables or disables 10 bit dac resolution for the adt7316/7
+> > > and adt7516/7 when they're set to output voltage proportional to
+> > > temperature. Remove these assignments since they're unnecessary for the
+> > > dac high resolution functionality.
+> > > 
+> > > Instead, assign a value to dac_bits in adt7316_probe() since the number
+> > > of dac bits might be needed as soon as the device is registered and
+> > > available to userspace.
+> > > 
+> > > Signed-off-by: Jeremy Fertic <jeremyfertic@gmail.com>  
 > > 
-> > Various minor bits inline.  I would also, if possible like Daniel to
-> > take a glance at this series before we apply it. I don't know this hardware
-> > at all well!
+> > I'm a little confused as it seems to me that in the orignal code
+> > if we were setting high resolution 'off' we would fall back to 8
+> > bits for either type of device.  Now you just have a check on the
+> > device type?
 > > 
-> > Jonathan
+> > The result will be that we read more bytes than we want to
+> > in show_DAC.
+> > 
+> > I'd need a pretty strong argument to persuade me it is worth
+> > supporting the 8 bit mode at all btw on devices that will go
+> > higher.  It adds interface complexity and the number of usecases
+> > where the saving in bus traffic is worthwhile are probably fairly
+> > few!
+> > 
+> > Jonathan  
+> 
+> Thanks for the feedback Jonathan, and sorry for the confusion on this one.
+> My commit message should have been clearer. This is not a general purpose
+> option to change the dac resolution. It is specific to an optional feature
+> where one or two of the four dacs can be set to output voltage proportional
+> to temperature. If the user chooses to set dac a and/or dac b to ouput
+> voltage proportional to temperature, this da_high_resolution attribute can
+> optionally be enabled to use 10 bit resolution rather than the default 8
+> bits. It is only available on the 10 and 12 bit dac devices. If the user
+> attempts to read or write dacs a or b under these settings, the driver's
+> current behaviour is to return an error. The dacs c and d continue to
+> operate normally under these conditions.
+> 
+> With the above in mind, dac_bits should have never been assigned to in this
+> da_high_resolution attribute. Before this patch, if the user didn't write
+> to this optional attribute, dac_bits would be 0 since it was never assigned
+> to anywhere else. This would result in incorrect calculations in show_DAC
+> and store_DAC.
+> 
+Good explanation.  Send me a v2 with that in the description.
+
+Thanks,
+
+Jonathan
+
+> Jeremy
+> 
+> > > ---
+> > >  drivers/staging/iio/addac/adt7316.c | 18 +++++++++---------
+> > >  1 file changed, 9 insertions(+), 9 deletions(-)
+> > > 
+> > > diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+> > > index e5e1f9d6357f..a9990e7f2a4d 100644
+> > > --- a/drivers/staging/iio/addac/adt7316.c
+> > > +++ b/drivers/staging/iio/addac/adt7316.c
+> > > @@ -651,17 +651,10 @@ static ssize_t adt7316_store_da_high_resolution(struct device *dev,
+> > >  	u8 config3;
+> > >  	int ret;
+> > >  
+> > > -	chip->dac_bits = 8;
+> > > -
+> > > -	if (buf[0] == '1') {
+> > > +	if (buf[0] == '1')
+> > >  		config3 = chip->config3 | ADT7316_DA_HIGH_RESOLUTION;
+> > > -		if (chip->id == ID_ADT7316 || chip->id == ID_ADT7516)
+> > > -			chip->dac_bits = 12;
+> > > -		else if (chip->id == ID_ADT7317 || chip->id == ID_ADT7517)
+> > > -			chip->dac_bits = 10;
+> > > -	} else {
+> > > +	else
+> > >  		config3 = chip->config3 & (~ADT7316_DA_HIGH_RESOLUTION);
+> > > -	}
+> > >  
+> > >  	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG3, config3);
+> > >  	if (ret)
+> > > @@ -2123,6 +2116,13 @@ int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
+> > >  	else
+> > >  		return -ENODEV;
+> > >  
+> > > +	if (chip->id == ID_ADT7316 || chip->id == ID_ADT7516)
+> > > +		chip->dac_bits = 12;
+> > > +	else if (chip->id == ID_ADT7317 || chip->id == ID_ADT7517)
+> > > +		chip->dac_bits = 10;
+> > > +	else
+> > > +		chip->dac_bits = 8;
+> > > +
+> > >  	chip->ldac_pin = devm_gpiod_get_optional(dev, "adi,ldac", GPIOD_OUT_LOW);
+> > >  	if (IS_ERR(chip->ldac_pin)) {
+> > >  		ret = PTR_ERR(chip->ldac_pin);  
 > >   
-...
-
-> >> +
-> >> +static int bmi160_config_pin(struct regmap *regmap, enum bmi160_int_pin pin,
-> >> +				bool open_drain, u8 irq_mask,
-> >> +				unsigned long write_usleep)
-> >> +{
-> >> +	int ret;
-> >> +	u8 int_out_ctrl_shift;
-> >> +	u8 int_latch_mask;
-> >> +	u8 int_map_mask;
-> >> +	u8 int_out_ctrl_mask;
-> >> +	u8 int_out_ctrl_bits;
-> >> +
-> >> +	switch (pin) {
-> >> +	case BMI160_PIN_INT1:
-> >> +		int_out_ctrl_shift = BMI160_INT1_OUT_CTRL_SHIFT;
-> >> +		int_latch_mask = BMI160_INT1_LATCH_MASK;
-> >> +		int_map_mask = BMI160_INT1_MAP_DRDY_EN;
-> >> +		break;
-> >> +	case BMI160_PIN_INT2:
-> >> +		int_out_ctrl_shift = BMI160_INT2_OUT_CTRL_SHIFT;
-> >> +		int_latch_mask = BMI160_INT2_LATCH_MASK;
-> >> +		int_map_mask = BMI160_INT2_MAP_DRDY_EN;
-> >> +		break;
-> >> +	}
-> >> +	int_out_ctrl_mask = BMI160_INT_OUT_CTRL_MASK << int_out_ctrl_shift;
-> >> +
-> >> +	/*
-> >> +	 * Enable the requested pin with the right settings:
-> >> +	 * - Push-pull/open-drain
-> >> +	 * - Active low/high
-> >> +	 * - Edge/level triggered
-> >> +	 */
-> >> +	int_out_ctrl_bits = BMI160_OUTPUT_EN;
-> >> +	if (open_drain)
-> >> +		/* Default is push-pull. */
-> >> +		int_out_ctrl_bits |= BMI160_OPEN_DRAIN;
-> >> +	int_out_ctrl_bits |= irq_mask;
-> >> +	int_out_ctrl_bits <<= int_out_ctrl_shift;
-> >> +
-> >> +	ret = bmi160_write_conf_reg(regmap, BMI160_REG_INT_OUT_CTRL,
-> >> +				    int_out_ctrl_mask, int_out_ctrl_bits,
-> >> +				    write_usleep);
-> >> +	if (ret)
-> >> +		return ret;
-> >> +
-> >> +	/* Set the pin to input mode with no latching. */
-> >> +	ret = bmi160_write_conf_reg(regmap, BMI160_REG_INT_LATCH,
-> >> +				    int_latch_mask, int_latch_mask,
-> >> +				    write_usleep);
-> >> +	if (ret)
-> >> +		return ret;
-> >> +
-> >> +	/* Map interrupts to the requested pin. */
-> >> +	ret = bmi160_write_conf_reg(regmap, BMI160_REG_INT_MAP,
-> >> +				    int_map_mask, int_map_mask,
-> >> +				    write_usleep);
-> >> +	if (ret)
-> >> +		return ret;  
-> > return bmi160...  
-> >> +
-> >> +	return 0;
-> >> +}
-> >> +
-> >> +int bmi160_enable_irq(struct regmap *regmap, bool enable)
-> >> +{
-> >> +	unsigned int enable_bit = 0;
-> >> +
-> >> +	if (enable)
-> >> +		enable_bit = BMI160_DRDY_INT_EN;
-> >> +
-> >> +	return bmi160_write_conf_reg(regmap, BMI160_REG_INT_EN,
-> >> +				     BMI160_DRDY_INT_EN, enable_bit,
-> >> +				     BMI160_NORMAL_WRITE_USLEEP);
-> >> +}
-> >> +EXPORT_SYMBOL(bmi160_enable_irq);
-> >> +
-> >> +static bool bmi160_parse_irqname(struct device_node *of_node, int irq,
-> >> +				 enum bmi160_int_pin *pin)
-> >> +{
-> >> +	int ret;
-> >> +
-> >> +	/* of_irq_get_byname returns the IRQ number if the entry is found. */
-> >> +	ret = of_irq_get_byname(of_node, "INT1");
-> >> +	if (ret == irq) {
-> >> +		*pin = BMI160_PIN_INT1;
-> >> +		return true;
-> >> +	}  
-> > 
-> > Given both could be provided, and we are implying a preference,
-> > why not just get INT1 first by name and if it's not there try for
-> > INT2?  No need for this separate does the name match query.
-> >   
-> 
-> I actually didn't mean to imply a preference; I just figured that a 
-> given IRQ can have only one name, and therefore at most one of the names 
-> "INT1" and "INT2" will match the passed-in IRQ. Is this a bad assumption?
-
-I'm saying that you should express a preference. It makes
-things predictable.  But not by matching the 'first' one (which is
-currently what happens) but rather just asking for INT1 by name
-(don't use the spi->irq at all) and use that if present.
-
-> 
-> >> +
-> >> +	ret = of_irq_get_byname(of_node, "INT2");
-> >> +	if (ret == irq) {
-> >> +		*pin = BMI160_PIN_INT2;
-> >> +		return true;
-> >> +	}
-> >> +
-> >> +	return false;
-> >> +}
-> 
 
