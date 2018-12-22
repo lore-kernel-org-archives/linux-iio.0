@@ -4,40 +4,41 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	T_DKIMWL_WL_HIGH,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	T_DKIMWL_WL_HIGH,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 879ECC43387
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Dec 2018 17:40:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EF21C43387
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Dec 2018 17:47:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5983021A7E
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Dec 2018 17:40:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0038C20578
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Dec 2018 17:47:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1545500434;
-	bh=Nk+HsR/bnw6WXZBFAfBvVHSo8OxM5kBlExi/g7MFIzM=;
+	s=default; t=1545500852;
+	bh=+y8DKVpaShJxLpAouXY8gjjoxuJIui3wt1YAbafvzHg=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=C4o93x7nN/EeFga06u9HHjFB1RKEVy59PVu8MOI52x5n4zjBqppZCbZHufPGsiLEF
-	 G+wC9aMQ02ru3JY4VIh+8HdglLyQPsj3V3qVkpWzfhQ/+dneVRXdliARC1XYasIB4t
-	 2q9K0S8nF4LHlZJQ2/1lFvgtMmHH3dol9iNS+X2A=
+	b=Q4mQ1V92HsOizf8GMPJFTQHeiGR+jh6zKSfuOWnJK5hPL8XRYVbp52BcN4FpZKcHn
+	 oTAOENPKC48hW5BoIGndzIngt3TKzCBW0R17Nbw9BQKYp879RZ5N5obGIOaEbt/Frw
+	 ewi2yuxHLB0Zzw6BFBfeISs1k1l35yNKR02kkmfU=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389577AbeLVRkd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 22 Dec 2018 12:40:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58598 "EHLO mail.kernel.org"
+        id S2391572AbeLVRr0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 22 Dec 2018 12:47:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34398 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389509AbeLVRkd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 22 Dec 2018 12:40:33 -0500
+        id S2389059AbeLVRr0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 22 Dec 2018 12:47:26 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DD09021A4E;
-        Sat, 22 Dec 2018 17:40:30 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 041992054F;
+        Sat, 22 Dec 2018 17:47:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1545500432;
-        bh=Nk+HsR/bnw6WXZBFAfBvVHSo8OxM5kBlExi/g7MFIzM=;
+        s=default; t=1545500845;
+        bh=+y8DKVpaShJxLpAouXY8gjjoxuJIui3wt1YAbafvzHg=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=1lQ5ou7f5UFTi5GtRnLsS473eNNJgiPCnxrhV5Bf+rB47KiSATxdUotQ/D8C8rkMw
-         kuJmE324sBednrHXKHc7OOBx4hTcbAKwP0Wv6qQWxYJV1uZoPy4i4JKfnxuQBJjT5+
-         HaTK+XHwc3JEgREBxci5zaStnWJhUO/iUP1i3z+E=
-Date:   Sat, 22 Dec 2018 17:40:26 +0000
+        b=L8sd5BtYLy3+7IZyHIRGwSNrGHU0qYFX4e5k+a6UMfD3nIdpnyZclrC3FjrepeNA3
+         uPRm1ODpCNUOABh5cvkDhCFNCEPCAma1ESoZ5ECTDR471NyAi6p6LhvMRuRuc7hHIl
+         smygyol+AJOUT4v5eLZmqDy9qwQ1ajD4wW+IHmaU=
+Date:   Sat, 22 Dec 2018 17:47:19 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Stefan Popa <stefan.popa@analog.com>
 Cc:     <robh+dt@kernel.org>, <mark.rutland@arm.com>,
@@ -45,12 +46,11 @@ Cc:     <robh+dt@kernel.org>, <mark.rutland@arm.com>,
         <lars@metafoo.de>, <pmeerw@pmeerw.net>,
         <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
         <linux-iio@vger.kernel.org>, <devel@driverdev.osuosl.org>
-Subject: Re: [PATCH v2 1/6] staging: iio: adc: ad7606: Simplify the Kconfing
- menu
-Message-ID: <20181222174026.63bb6d02@archlinux>
-In-Reply-To: <1545049420-16484-2-git-send-email-stefan.popa@analog.com>
+Subject: Re: [PATCH v2 2/6] staging: iio: adc: ad7606: Use SPDX identifier
+Message-ID: <20181222174719.424b8fc2@archlinux>
+In-Reply-To: <1545049420-16484-3-git-send-email-stefan.popa@analog.com>
 References: <1545049420-16484-1-git-send-email-stefan.popa@analog.com>
-        <1545049420-16484-2-git-send-email-stefan.popa@analog.com>
+        <1545049420-16484-3-git-send-email-stefan.popa@analog.com>
 X-Mailer: Claws Mail 3.17.2 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -60,77 +60,106 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 17 Dec 2018 14:23:35 +0200
+On Mon, 17 Dec 2018 14:23:36 +0200
 Stefan Popa <stefan.popa@analog.com> wrote:
 
-> There is no point in having three menu entries that can be selected
-> individually. Instead, the SPI and parallel interfaces should select
-> AD7606.
+> This patch replaces the license text at the top of ad7606 driver files
+> and instead adds SPDX GPL-2.0 license identifier.
 > 
 > Signed-off-by: Stefan Popa <stefan.popa@analog.com>
-I think this looks right, but I've gotten these wrong too many times
-to remember so fingers crossed.
+> ---
+>  drivers/staging/iio/adc/ad7606.c     | 5 ++---
+>  drivers/staging/iio/adc/ad7606.h     | 3 +--
+>  drivers/staging/iio/adc/ad7606_par.c | 5 ++---
+>  drivers/staging/iio/adc/ad7606_spi.c | 5 ++---
+>  4 files changed, 7 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/ad7606.c b/drivers/staging/iio/adc/ad7606.c
+> index e1d85b7..97b4a83 100644
+> --- a/drivers/staging/iio/adc/ad7606.c
+> +++ b/drivers/staging/iio/adc/ad7606.c
+> @@ -1,9 +1,8 @@
+> +// SPDX-License-Identifier: GPL-2.0
+>  /*
+>   * AD7606 SPI ADC driver
+>   *
+>   * Copyright 2011 Analog Devices Inc.
+> - *
+> - * Licensed under the GPL-2.
+>   */
+>  
+>  #include <linux/interrupt.h>
+> @@ -531,4 +530,4 @@ EXPORT_SYMBOL_GPL(ad7606_pm_ops);
+>  
+>  MODULE_AUTHOR("Michael Hennerich <michael.hennerich@analog.com>");
+>  MODULE_DESCRIPTION("Analog Devices AD7606 ADC");
+> -MODULE_LICENSE("GPL v2");
+> +MODULE_LICENSE("GPL");
+> diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
+> index 510a93d..3e12fff 100644
+> --- a/drivers/staging/iio/adc/ad7606.h
+> +++ b/drivers/staging/iio/adc/ad7606.h
+> @@ -1,9 +1,8 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+>  /*
+>   * AD7606 ADC driver
+>   *
+>   * Copyright 2011 Analog Devices Inc.
+> - *
+> - * Licensed under the GPL-2.
+>   */
+>  
+>  #ifndef IIO_ADC_AD7606_H_
+> diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/staging/iio/adc/ad7606_par.c
+> index da26742..2d137b1 100644
+> --- a/drivers/staging/iio/adc/ad7606_par.c
+> +++ b/drivers/staging/iio/adc/ad7606_par.c
+> @@ -1,9 +1,8 @@
+> +// SPDX-License-Identifier: GPL-2.0
+>  /*
+>   * AD7606 Parallel Interface ADC driver
+>   *
+>   * Copyright 2011 Analog Devices Inc.
+> - *
+> - * Licensed under the GPL-2.
+>   */
+>  
+>  #include <linux/module.h>
+> @@ -114,4 +113,4 @@ module_platform_driver(ad7606_driver);
+>  
+>  MODULE_AUTHOR("Michael Hennerich <michael.hennerich@analog.com>");
+>  MODULE_DESCRIPTION("Analog Devices AD7606 ADC");
+> -MODULE_LICENSE("GPL v2");
+> +MODULE_LICENSE("GPL");
+> diff --git a/drivers/staging/iio/adc/ad7606_spi.c b/drivers/staging/iio/adc/ad7606_spi.c
+> index e533917..f38f0d6 100644
+> --- a/drivers/staging/iio/adc/ad7606_spi.c
+> +++ b/drivers/staging/iio/adc/ad7606_spi.c
+> @@ -1,9 +1,8 @@
+> +// SPDX-License-Identifier: GPL-2.0
+>  /*
+>   * AD7606 SPI ADC driver
+>   *
+>   * Copyright 2011 Analog Devices Inc.
+> - *
+> - * Licensed under the GPL-2.
+>   */
+>  
+>  #include <linux/module.h>
+> @@ -80,4 +79,4 @@ module_spi_driver(ad7606_driver);
+>  
+>  MODULE_AUTHOR("Michael Hennerich <michael.hennerich@analog.com>");
+>  MODULE_DESCRIPTION("Analog Devices AD7606 ADC");
+> -MODULE_LICENSE("GPL v2");
+> +MODULE_LICENSE("GPL");
+Err. Nope. That is "GPL v2 or later"  Guessing accidentally left behind.
 
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.  Particularly useful with these
-sorts of patches!
+I've cleaned up all 3 cases of this whilst applying.   Shout if that
+doesn't actually make sense.  Now we have consistent SPDX and MODULE_LICENSE
+with all being GPL v2 only.
 
 Thanks,
 
 Jonathan
 
-> ---
->  drivers/staging/iio/adc/Kconfig | 27 ++++++++++-----------------
->  1 file changed, 10 insertions(+), 17 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
-> index fc23059..302639a 100644
-> --- a/drivers/staging/iio/adc/Kconfig
-> +++ b/drivers/staging/iio/adc/Kconfig
-> @@ -4,35 +4,28 @@
->  menu "Analog to digital converters"
->  
->  config AD7606
-> -	tristate "Analog Devices AD7606 ADC driver"
-> -	depends on GPIOLIB || COMPILE_TEST
-> -	depends on HAS_IOMEM
-> +	tristate
->  	select IIO_BUFFER
->  	select IIO_TRIGGERED_BUFFER
-> -	help
-> -	  Say yes here to build support for Analog Devices:
-> -	  ad7605-4, ad7606, ad7606-6, ad7606-4 analog to digital converters (ADC).
-> -
-> -	  To compile this driver as a module, choose M here: the
-> -	  module will be called ad7606.
->  
->  config AD7606_IFACE_PARALLEL
-> -	tristate "parallel interface support"
-> -	depends on AD7606
-> +	tristate "Analog Devices AD7606 ADC driver with parallel interface support"
-> +	depends on HAS_IOMEM
-> +	select AD7606
->  	help
-> -	  Say yes here to include parallel interface support on the AD7606
-> -	  ADC driver.
-> +	  Say yes here to build parallel interface support for Analog Devices:
-> +	  ad7605-4, ad7606, ad7606-6, ad7606-4 analog to digital converters (ADC).
->  
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called ad7606_parallel.
->  
->  config AD7606_IFACE_SPI
-> -	tristate "spi interface support"
-> -	depends on AD7606
-> +	tristate "Analog Devices AD7606 ADC driver with spi interface support"
->  	depends on SPI
-> +	select AD7606
->  	help
-> -	  Say yes here to include parallel interface support on the AD7606
-> -	  ADC driver.
-> +	  Say yes here to build spi interface support for Analog Devices:
-> +	  ad7605-4, ad7606, ad7606-6, ad7606-4 analog to digital converters (ADC).
->  
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called ad7606_spi.
 
