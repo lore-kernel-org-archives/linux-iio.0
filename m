@@ -6,45 +6,48 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
 	T_DKIMWL_WL_HIGH autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD439C43387
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Dec 2018 17:23:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 207F7C43387
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Dec 2018 17:29:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7DE4521974
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Dec 2018 17:23:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E627B21A4B
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Dec 2018 17:29:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1545499435;
-	bh=tfK8GXVHRc8eguZqSBemy1Mx2WbKhGjdXhtUQT8DRlo=;
+	s=default; t=1545499748;
+	bh=faTOkyHoSxtRC5mOWzbDqVgzvo91S99q++LO8u+WawY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=ZPO1LdUtFOs6qeaP63A8tHmLRfR/W/mcsQbXx69KJajhkXTbFZMc+lmfQVbckaCNH
-	 7QygUOFfSA0FbN55Vxvd/065eGGjuyefhCvqXQJFDJbhET86DGaMGYQVo/5CMH6fPa
-	 NPLEVgzx3hd48w5rcEou993X3lAS1WcOZo7j5MSI=
+	b=FDgZ7AVTcbZWm/boW/IKUpC7ahx3qGoL8QzL0ZsiRTZjPnvgu5E4xHRYo/cbLS+f8
+	 0yMCt/ED6twVdIvJ+YWkA6qu14bloSkYwUgsn5IHu1cgBYYn8nb4hsfFMjHVEQXg+w
+	 xSpq2r0btH0/L/nl5svfFUcUAJB/Js/7/T92URqY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727680AbeLVRXz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 22 Dec 2018 12:23:55 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55340 "EHLO mail.kernel.org"
+        id S1728109AbeLVR3H (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 22 Dec 2018 12:29:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56514 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731167AbeLVRXy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 22 Dec 2018 12:23:54 -0500
+        id S1725825AbeLVR3H (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 22 Dec 2018 12:29:07 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 42ABF21974;
-        Sat, 22 Dec 2018 17:23:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 01BAB219D6;
+        Sat, 22 Dec 2018 17:29:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1545499433;
-        bh=tfK8GXVHRc8eguZqSBemy1Mx2WbKhGjdXhtUQT8DRlo=;
+        s=default; t=1545499746;
+        bh=faTOkyHoSxtRC5mOWzbDqVgzvo91S99q++LO8u+WawY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dlCo3waX3Uh2mu7fOi4aK76g1kCmGz+XuXe6Hr8PCIR7ay86YftkVeo9wzMdrhV+u
-         vq6T8QhvOhuWfbm6ceK1F0/u/yci04ebmKObrJu9QKh3dcd//lv4zPyfgddabS9nsa
-         njbT7sAsw2qK3WhmMUrdGst3dG7uE86Acgmg6g3Y=
-Date:   Sat, 22 Dec 2018 17:23:46 +0000
+        b=TX8PnhFRAsnxngXrrPQEDxbyi0zzR5ZfVITNlkDPWH6xyDJrvdK+aA27ewdl2EUEW
+         Owa5UqRuZhwOvrI3/4xQulSsQ6nVqlTxcxqx/qQhNjTuLui2aDAPTvJ7Zbsmn2P9MY
+         3LbUFVNV9x+gbruMiSYdAwq2RwGE0hKt9QLZ2Is8=
+Date:   Sat, 22 Dec 2018 17:28:59 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Tomasz Duszynski <tduszyns@gmail.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: chemical: sps30: add support for self cleaning
-Message-ID: <20181222172346.7d520112@archlinux>
-In-Reply-To: <20181218202809.25822-1-tduszyns@gmail.com>
-References: <20181218202809.25822-1-tduszyns@gmail.com>
+To:     Amir Mahdi Ghorbanian <indigoomega021@gmail.com>
+Cc:     lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] Staging: iio: ad7192: replaced bool in struct
+Message-ID: <20181222172859.6d3b84ae@archlinux>
+In-Reply-To: <1545434786-15220-1-git-send-email-indigoomega021@gmail.com>
+References: <1545434786-15220-1-git-send-email-indigoomega021@gmail.com>
 X-Mailer: Claws Mail 3.17.2 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -54,123 +57,65 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 18 Dec 2018 21:28:09 +0100
-Tomasz Duszynski <tduszyns@gmail.com> wrote:
+On Fri, 21 Dec 2018 15:26:26 -0800
+Amir Mahdi Ghorbanian <indigoomega021@gmail.com> wrote:
 
-> Self cleaning is especially useful in cases where sensor undergoes
-> frequent power on/off cycles. In such scenarios it is recommended to
-> turn self cleaning at least once per week in order to maintain reliable
-> measurements.
+> Replaced bool in struct with unsigned int bitfield to conserve space and
+> more clearly define size of varibales
 > 
-> Self cleaning is activated by writing 1 to a dedicated attribute.
-> Internal fan accelerates to its maximum speed and keeps spinning
-> for about 10 seconds blowing out accumulated dust.
-> 
-> Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
-Applied to the togreg branch of iio.git.   I took this today rather than
-leaving it on the list for longer simply because I'm not sure I'll be
-very timely in applying patches.
+> Signed-off-by: Amir Mahdi Ghorbanian <indigoomega021@gmail.com>
+Hi Amir,
 
-If anyone has any comments, it'll only be out as testing so we can
-still modify if that make sense for at least the next couple of weeks.
+I'm a bit in two minds on this one.  It's not a size critical structure
+and the advantage of bools is they make it clear the thing really is
+true or false.
+
+Another element here is that this is a platform data structure and unless
+we have users in the kernel tree, the chances that we'll maintain it's
+existence at all as we look to move this driver out of staging is very
+small!
+
+So slightly marginal advantage to the change on a structure that I certainly
+hope is shortly going away!
+
+Sorry, but I'm not convinced and won't be applying it.
+
+If you want to work on this driver though that would be great and I'm happy
+to do a review of it to highlight what other elements need cleaning up.
+Just say on the list and either I'll take a look or one of our other
+reviewers will.
 
 Thanks,
 
 Jonathan
 
 > ---
-> v2:
->  * removed TODO item
->  * sensor cleaning is not measurement related per se so drop in_ prefix
+>  drivers/staging/iio/adc/ad7192.h | 14 +++++++-------
+>  1 file changed, 7 insertions(+), 7 deletions(-)
 > 
->  Documentation/ABI/testing/sysfs-bus-iio-sps30 |  8 +++++
->  drivers/iio/chemical/sps30.c                  | 35 ++++++++++++++++++-
->  2 files changed, 42 insertions(+), 1 deletion(-)
->  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-sps30
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-sps30 b/Documentation/ABI/testing/sysfs-bus-iio-sps30
-> new file mode 100644
-> index 000000000000..e7ce2c57635e
-> --- /dev/null
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio-sps30
-> @@ -0,0 +1,8 @@
-> +What:		/sys/bus/iio/devices/iio:deviceX/start_cleaning
-> +Date:		December 2018
-> +KernelVersion:	4.22
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Writing 1 starts sensor self cleaning. Internal fan accelerates
-> +		to its maximum speed and keeps spinning for about 10 seconds in
-> +		order to blow out accumulated dust.
-> diff --git a/drivers/iio/chemical/sps30.c b/drivers/iio/chemical/sps30.c
-> index fa3cd409b90b..f3b4390c8f5c 100644
-> --- a/drivers/iio/chemical/sps30.c
-> +++ b/drivers/iio/chemical/sps30.c
-> @@ -7,7 +7,6 @@
->   * I2C slave address: 0x69
->   *
->   * TODO:
-> - *  - support for turning on fan cleaning
->   *  - support for reading/setting auto cleaning interval
->   */
-> 
-> @@ -37,6 +36,7 @@
->  #define SPS30_READ_DATA_READY_FLAG 0x0202
->  #define SPS30_READ_DATA 0x0300
->  #define SPS30_READ_SERIAL 0xd033
-> +#define SPS30_START_FAN_CLEANING 0x5607
-> 
->  enum {
->  	PM1,
-> @@ -104,6 +104,7 @@ static int sps30_do_cmd(struct sps30_state *state, u16 cmd, u8 *data, int size)
->  		break;
->  	case SPS30_STOP_MEAS:
->  	case SPS30_RESET:
-> +	case SPS30_START_FAN_CLEANING:
->  		ret = sps30_write_then_read(state, buf, 2, NULL, 0);
->  		break;
->  	case SPS30_READ_DATA_READY_FLAG:
-> @@ -275,7 +276,39 @@ static int sps30_read_raw(struct iio_dev *indio_dev,
->  	return -EINVAL;
->  }
-> 
-> +static ssize_t start_cleaning_store(struct device *dev,
-> +				    struct device_attribute *attr,
-> +				    const char *buf, size_t len)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct sps30_state *state = iio_priv(indio_dev);
-> +	int val, ret;
-> +
-> +	if (kstrtoint(buf, 0, &val) || val != 1)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&state->lock);
-> +	ret = sps30_do_cmd(state, SPS30_START_FAN_CLEANING, NULL, 0);
-> +	mutex_unlock(&state->lock);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return len;
-> +}
-> +
-> +static IIO_DEVICE_ATTR_WO(start_cleaning, 0);
-> +
-> +static struct attribute *sps30_attrs[] = {
-> +	&iio_dev_attr_start_cleaning.dev_attr.attr,
-> +	NULL
-> +};
-> +
-> +static const struct attribute_group sps30_attr_group = {
-> +	.attrs = sps30_attrs,
-> +};
-> +
->  static const struct iio_info sps30_info = {
-> +	.attrs = &sps30_attr_group,
->  	.read_raw = sps30_read_raw,
+> diff --git a/drivers/staging/iio/adc/ad7192.h b/drivers/staging/iio/adc/ad7192.h
+> index 7433a43..7d3e62f 100644
+> --- a/drivers/staging/iio/adc/ad7192.h
+> +++ b/drivers/staging/iio/adc/ad7192.h
+> @@ -35,13 +35,13 @@ struct ad7192_platform_data {
+>  	u16		vref_mv;
+>  	u8		clock_source_sel;
+>  	u32		ext_clk_hz;
+> -	bool		refin2_en;
+> -	bool		rej60_en;
+> -	bool		sinc3_en;
+> -	bool		chop_en;
+> -	bool		buf_en;
+> -	bool		unipolar_en;
+> -	bool		burnout_curr_en;
+> +	unsigned int	refin2_en : 1;
+> +	unsigned int	rej60_en : 1;
+> +	unsigned int	sinc3_en : 1;
+> +	unsigned int	chop_en : 1;
+> +	unsigned int	buf_en : 1;
+> +	unsigned int	unipolar_en : 1;
+> +	unsigned int	burnout_curr_en : 1;
 >  };
-> 
-> --
-> 2.20.1
-> 
+>  
+>  #endif /* IIO_ADC_AD7192_H_ */
 
