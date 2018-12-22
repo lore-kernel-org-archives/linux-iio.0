@@ -6,54 +6,49 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
 	T_DKIMWL_WL_HIGH autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBADDC43387
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Dec 2018 18:03:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 014EDC43387
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Dec 2018 18:09:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 939422173C
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Dec 2018 18:03:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B8B1A218D9
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Dec 2018 18:09:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1545501804;
-	bh=QTU7DbAMAk+C7LilXz27oiXjcUUysO0UUf2o21ePPXA=;
+	s=default; t=1545502162;
+	bh=a4lfkB/72Lra612Sb3M9fu7qXdpTkDEQxXUfTyjeraI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=t8t5M84uSVWPU9mtuwziNfUDOiDmm3msxhwJnbY2faDwcsDV4CEag5befJtG6bd/V
-	 1t8PkJROM9Z/gDJF1ci5Ly390tfgmO+fa/1AUZQ1DPyqCR8V+O8Dv/6G4vyMnLm86g
-	 Vqif47ZF38lTpZB5E5WHFqixczZODXzsXQgLKEyc=
+	b=Eeh8BlykMdwimqA8PzR6lU0v12fWThPpVgA5B1FZIhy5L7GpV6Ukq3zb7lc0dZjJ6
+	 2Z/osYagZ/NAsaMgbM+D1mX3GTjLRosHC/XwP6fQcydl63He1xP94m+sa7231NFk9Q
+	 TeK03yhjvByYwLMMBSVqbx6+XH1Vl7X/jPObTQZg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388274AbeLVSDY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 22 Dec 2018 13:03:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39642 "EHLO mail.kernel.org"
+        id S1733023AbeLVSJW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 22 Dec 2018 13:09:22 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40974 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387990AbeLVSDY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 22 Dec 2018 13:03:24 -0500
+        id S1731181AbeLVSJV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 22 Dec 2018 13:09:21 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2C67420874;
-        Sat, 22 Dec 2018 18:03:21 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B7A6D217F9;
+        Sat, 22 Dec 2018 18:09:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1545501802;
-        bh=QTU7DbAMAk+C7LilXz27oiXjcUUysO0UUf2o21ePPXA=;
+        s=default; t=1545502160;
+        bh=a4lfkB/72Lra612Sb3M9fu7qXdpTkDEQxXUfTyjeraI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LRbpFtncNfbFHbQ1nOC5H0bbu4RBMRcKuohxlsi3qYTbRLSOCY0EdHIgJokyiKppR
-         W0D+Cz0o2zrgPzUm6RnYPhvrm/DYmRmJzXEfYMjzTrmpdHFguMPqKgN9wloUs+KtbV
-         g1nDmwPy3NzYsyEkgKYnAmApG/985cofr3bgWook=
-Date:   Sat, 22 Dec 2018 18:03:16 +0000
+        b=dQTYKVrzKdxeY3n5t84XiJwpby3kDmV+IsNQN+lv7lnL4JZyNoXa7TEa1qwyNhuuD
+         8Gs3NBk1QeoR1LkRh/SYgi6hvpWqIIbHJtmLtDW4q/1FAB7+dPQDWshZm9yFwl6OBd
+         A4uikGwoWDo2RFrOiCP+JPBL3/xCcPwgR8mBPirI=
+Date:   Sat, 22 Dec 2018 18:09:14 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Jeremy Fertic <jeremyfertic@gmail.com>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 03/11] staging: iio: adt7316: fix dac_bits assignment
-Message-ID: <20181222180310.4ad9a1c6@archlinux>
-In-Reply-To: <20181217213059.GA11856@r2700x.localdomain>
-References: <20181212005503.28054-1-jeremyfertic@gmail.com>
-        <20181212005503.28054-4-jeremyfertic@gmail.com>
-        <20181216113756.70d76d0a@archlinux>
-        <20181217213059.GA11856@r2700x.localdomain>
+To:     Daniel Drake <drake@endlessm.com>
+Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-iio@vger.kernel.org, linux@endlessm.com,
+        lorenzo.bianconi83@gmail.com, denis.ciocca@st.com,
+        hadess@hadess.net, hdegoede@redhat.com
+Subject: Re: [PATCH 2/2] iio: st_accel: use ACPI orientation data
+Message-ID: <20181222180914.6d3b5e5e@archlinux>
+In-Reply-To: <20181220065933.25964-2-drake@endlessm.com>
+References: <20181220065933.25964-1-drake@endlessm.com>
+        <20181220065933.25964-2-drake@endlessm.com>
 X-Mailer: Claws Mail 3.17.2 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -63,108 +58,264 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 17 Dec 2018 14:30:59 -0700
-Jeremy Fertic <jeremyfertic@gmail.com> wrote:
+On Thu, 20 Dec 2018 14:59:33 +0800
+Daniel Drake <drake@endlessm.com> wrote:
 
-> On Sun, Dec 16, 2018 at 11:37:56AM +0000, Jonathan Cameron wrote:
-> > On Tue, 11 Dec 2018 17:54:55 -0700
-> > Jeremy Fertic <jeremyfertic@gmail.com> wrote:
-> >   
-> > > The only assignment to dac_bits is in adt7316_store_da_high_resolution().
-> > > This function enables or disables 10 bit dac resolution for the adt7316/7
-> > > and adt7516/7 when they're set to output voltage proportional to
-> > > temperature. Remove these assignments since they're unnecessary for the
-> > > dac high resolution functionality.
-> > > 
-> > > Instead, assign a value to dac_bits in adt7316_probe() since the number
-> > > of dac bits might be needed as soon as the device is registered and
-> > > available to userspace.
-> > > 
-> > > Signed-off-by: Jeremy Fertic <jeremyfertic@gmail.com>  
-> > 
-> > I'm a little confused as it seems to me that in the orignal code
-> > if we were setting high resolution 'off' we would fall back to 8
-> > bits for either type of device.  Now you just have a check on the
-> > device type?
-> > 
-> > The result will be that we read more bytes than we want to
-> > in show_DAC.
-> > 
-> > I'd need a pretty strong argument to persuade me it is worth
-> > supporting the 8 bit mode at all btw on devices that will go
-> > higher.  It adds interface complexity and the number of usecases
-> > where the saving in bus traffic is worthwhile are probably fairly
-> > few!
-> > 
-> > Jonathan  
+> Platform-specific ST accelerometer mount matrix information can be
+> provided by returning a package of 6 integers from the ACPI _ONT
+> method. This has been seen on Acer products such as Veriton Z4860G,
+> Z6860G and A890, which include a ST SMO8840 sensor. We have also
+> confirmed experimentally that the Windows driver uses such information.
 > 
-> Thanks for the feedback Jonathan, and sorry for the confusion on this one.
-> My commit message should have been clearer. This is not a general purpose
-> option to change the dac resolution. It is specific to an optional feature
-> where one or two of the four dacs can be set to output voltage proportional
-> to temperature. If the user chooses to set dac a and/or dac b to ouput
-> voltage proportional to temperature, this da_high_resolution attribute can
-> optionally be enabled to use 10 bit resolution rather than the default 8
-> bits. It is only available on the 10 and 12 bit dac devices. If the user
-> attempts to read or write dacs a or b under these settings, the driver's
-> current behaviour is to return an error. The dacs c and d continue to
-> operate normally under these conditions.
+> The _ONT data format was explained by a ST vendor contact. However,
+> strangely enough, the _ONT transformations must be applied after first
+> applying another mount matrix which we determined experimentally. ST
+> have not commented on why this is the case, but we imagine that perhaps
+> earlier devices (before _ONT was introduced) required this translation
+> and hence it became 'standard.'
 > 
-> With the above in mind, dac_bits should have never been assigned to in this
-> da_high_resolution attribute. Before this patch, if the user didn't write
-> to this optional attribute, dac_bits would be 0 since it was never assigned
-> to anywhere else. This would result in incorrect calculations in show_DAC
-> and store_DAC.
+> Interpret the _ONT data and export the equivalent mount matrix to
+> userspace.
 > 
-Good explanation.  Send me a v2 with that in the description.
+> If no _ONT data is present, no mount matrix is exported.
+> 
+> Signed-off-by: Daniel Drake <drake@endlessm.com>
+A trivial point.  Please stick to the local (and most common in kernel)
+multiline comment syntax of
+/*
+ * asdfsdfs
+ * more...
+ */
+
+Otherwise looks sensible.  However, I'd really like Dennis or someone
+else at ST to take a look before I take this.  We are early in the cycle
+(well it hasn't quite started yet) so plenty of time.  Give me a
+bump in a few weeks if nothing is happening...
 
 Thanks,
 
 Jonathan
 
-> Jeremy
+
+> ---
+>  drivers/iio/accel/st_accel_core.c     | 171 +++++++++++++++++++++++++-
+>  include/linux/iio/common/st_sensors.h |   1 +
+>  2 files changed, 171 insertions(+), 1 deletion(-)
 > 
-> > > ---
-> > >  drivers/staging/iio/addac/adt7316.c | 18 +++++++++---------
-> > >  1 file changed, 9 insertions(+), 9 deletions(-)
-> > > 
-> > > diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
-> > > index e5e1f9d6357f..a9990e7f2a4d 100644
-> > > --- a/drivers/staging/iio/addac/adt7316.c
-> > > +++ b/drivers/staging/iio/addac/adt7316.c
-> > > @@ -651,17 +651,10 @@ static ssize_t adt7316_store_da_high_resolution(struct device *dev,
-> > >  	u8 config3;
-> > >  	int ret;
-> > >  
-> > > -	chip->dac_bits = 8;
-> > > -
-> > > -	if (buf[0] == '1') {
-> > > +	if (buf[0] == '1')
-> > >  		config3 = chip->config3 | ADT7316_DA_HIGH_RESOLUTION;
-> > > -		if (chip->id == ID_ADT7316 || chip->id == ID_ADT7516)
-> > > -			chip->dac_bits = 12;
-> > > -		else if (chip->id == ID_ADT7317 || chip->id == ID_ADT7517)
-> > > -			chip->dac_bits = 10;
-> > > -	} else {
-> > > +	else
-> > >  		config3 = chip->config3 & (~ADT7316_DA_HIGH_RESOLUTION);
-> > > -	}
-> > >  
-> > >  	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG3, config3);
-> > >  	if (ret)
-> > > @@ -2123,6 +2116,13 @@ int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
-> > >  	else
-> > >  		return -ENODEV;
-> > >  
-> > > +	if (chip->id == ID_ADT7316 || chip->id == ID_ADT7516)
-> > > +		chip->dac_bits = 12;
-> > > +	else if (chip->id == ID_ADT7317 || chip->id == ID_ADT7517)
-> > > +		chip->dac_bits = 10;
-> > > +	else
-> > > +		chip->dac_bits = 8;
-> > > +
-> > >  	chip->ldac_pin = devm_gpiod_get_optional(dev, "adi,ldac", GPIOD_OUT_LOW);
-> > >  	if (IS_ERR(chip->ldac_pin)) {
-> > >  		ret = PTR_ERR(chip->ldac_pin);  
-> >   
+> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+> index 3e6fd5a8ac5b..54cc1a0c6a1d 100644
+> --- a/drivers/iio/accel/st_accel_core.c
+> +++ b/drivers/iio/accel/st_accel_core.c
+> @@ -11,6 +11,7 @@
+>  #include <linux/kernel.h>
+>  #include <linux/module.h>
+>  #include <linux/slab.h>
+> +#include <linux/acpi.h>
+>  #include <linux/errno.h>
+>  #include <linux/types.h>
+>  #include <linux/mutex.h>
+> @@ -917,12 +918,167 @@ static const struct iio_trigger_ops st_accel_trigger_ops = {
+>  #define ST_ACCEL_TRIGGER_OPS NULL
+>  #endif
+>  
+> +static const struct iio_mount_matrix *
+> +get_mount_matrix(const struct iio_dev *indio_dev,
+> +		 const struct iio_chan_spec *chan)
+> +{
+> +	struct st_sensor_data *adata = iio_priv(indio_dev);
+> +
+> +	return adata->mount_matrix;
+> +}
+> +
+> +static const struct iio_chan_spec_ext_info mount_matrix_ext_info[] = {
+> +	IIO_MOUNT_MATRIX(IIO_SHARED_BY_ALL, get_mount_matrix),
+> +	{ },
+> +};
+> +
+> +/* Read ST-specific _ONT orientation data from ACPI and generate an
+> + * appropriate mount matrix.
+> + */
+> +static int apply_acpi_orientation(struct iio_dev *indio_dev,
+> +				  struct iio_chan_spec *channels)
+> +{
+> +#ifdef CONFIG_ACPI
+> +	struct st_sensor_data *adata = iio_priv(indio_dev);
+> +	struct acpi_buffer buffer = {ACPI_ALLOCATE_BUFFER, NULL};
+> +	struct acpi_device *adev;
+> +	union acpi_object *ont;
+> +	union acpi_object *elements;
+> +	acpi_status status;
+> +	int ret = -EINVAL;
+> +	unsigned int val;
+> +	int i, j;
+> +	int final_ont[3][3] = { 0 };
+> +
+> +	/* For some reason, ST's _ONT translation does not apply directly
+> +	 * to the data read from the sensor. Another translation must be
+> +	 * performed first, as described by the matrix below. Perhaps
+> +	 * ST required this specific translation for the first product
+> +	 * where the device was mounted?
+> +	 */
+> +	const int default_ont[3][3] = {
+> +		{  0,  1,  0 },
+> +		{ -1,  0,  0 },
+> +		{  0,  0, -1 },
+> +	};
+> +
+> +
+> +	adev = ACPI_COMPANION(adata->dev);
+> +	if (!adev)
+> +		return 0;
+> +
+> +	/* Read _ONT data, which should be a package of 6 integers. */
+> +	status = acpi_evaluate_object(adev->handle, "_ONT", NULL, &buffer);
+> +	if (status == AE_NOT_FOUND) {
+> +		return 0;
+> +	} else if (ACPI_FAILURE(status)) {
+> +		dev_warn(&indio_dev->dev, "failed to execute _ONT: %d\n",
+> +			 status);
+> +		return status;
+> +	}
+> +
+> +	ont = buffer.pointer;
+> +	if (ont->type != ACPI_TYPE_PACKAGE || ont->package.count != 6)
+> +		goto out;
+> +
+> +	/* The first 3 integers provide axis order information.
+> +	 * e.g. 0 1 2 would indicate normal X,Y,Z ordering.
+> +	 * e.g. 1 0 2 indicates that data arrives in order Y,X,Z.
+> +	 */
+> +	elements = ont->package.elements;
+> +	for (i = 0; i < 3; i++) {
+> +		if (elements[i].type != ACPI_TYPE_INTEGER)
+> +			goto out;
+> +
+> +		val = elements[i].integer.value;
+> +		if (val < 0 || val > 2)
+> +			goto out;
+> +
+> +		/* Avoiding full matrix multiplication, we simply reorder the
+> +		 * columns in the default_ont matrix according to the
+> +		 * ordering provided by _ONT.
+> +		 */
+> +		final_ont[0][i] = default_ont[0][val];
+> +		final_ont[1][i] = default_ont[1][val];
+> +		final_ont[2][i] = default_ont[2][val];
+> +	}
+> +
+> +	/* The final 3 integers provide sign flip information.
+> +	 * 0 means no change, 1 means flip.
+> +	 * e.g. 0 0 1 means that Z data should be sign-flipped.
+> +	 * This is applied after the axis reordering from above.
+> +	 */
+> +	elements += 3;
+> +	for (i = 0; i < 3; i++) {
+> +		if (elements[i].type != ACPI_TYPE_INTEGER)
+> +			goto out;
+> +
+> +		val = elements[i].integer.value;
+> +		if (val != 0 && val != 1)
+> +			goto out;
+> +		if (!val)
+> +			continue;
+> +
+> +		/* Flip the values in the indicated column */
+> +		final_ont[0][i] *= -1;
+> +		final_ont[1][i] *= -1;
+> +		final_ont[2][i] *= -1;
+> +	}
+> +
+> +	/* Convert our integer matrix to a string-based iio_mount_matrix */
+> +	adata->mount_matrix = devm_kmalloc(&indio_dev->dev,
+> +					   sizeof(*adata->mount_matrix),
+> +					   GFP_KERNEL);
+> +	if (!adata->mount_matrix) {
+> +		ret = -ENOMEM;
+> +		goto out;
+> +	}
+> +
+> +	for (i = 0; i < 3; i++) {
+> +		for (j = 0; j < 3; j++) {
+> +			int matrix_val = final_ont[i][j];
+> +			char *str_value;
+> +
+> +			switch (matrix_val) {
+> +			case -1:
+> +				str_value = "-1";
+> +				break;
+> +			case 0:
+> +				str_value = "0";
+> +				break;
+> +			case 1:
+> +				str_value = "1";
+> +				break;
+> +			default:
+> +				goto out;
+> +			}
+> +			adata->mount_matrix->rotation[i * 3 + j] = str_value;
+> +		}
+> +	}
+> +
+> +	/* Expose the mount matrix via ext_info */
+> +	for (i = 0; i < indio_dev->num_channels; i++)
+> +		channels[i].ext_info = mount_matrix_ext_info;
+> +
+> +	ret = 0;
+> +	dev_info(&indio_dev->dev, "computed mount matrix from ACPI\n");
+> +
+> +out:
+> +	kfree(buffer.pointer);
+> +	return ret;
+> +#else /* !CONFIG_ACPI */
+> +	return 0;
+> +#endif
+> +}
+> +
+>  int st_accel_common_probe(struct iio_dev *indio_dev)
+>  {
+>  	struct st_sensor_data *adata = iio_priv(indio_dev);
+>  	struct st_sensors_platform_data *pdata =
+>  		(struct st_sensors_platform_data *)adata->dev->platform_data;
+>  	int irq = adata->get_irq_data_ready(indio_dev);
+> +	struct iio_chan_spec *channels;
+> +	size_t channels_size;
+>  	int err;
+>  
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+> @@ -941,9 +1097,22 @@ int st_accel_common_probe(struct iio_dev *indio_dev)
+>  
+>  	adata->num_data_channels = ST_ACCEL_NUMBER_DATA_CHANNELS;
+>  	adata->multiread_bit = adata->sensor_settings->multi_read_bit;
+> -	indio_dev->channels = adata->sensor_settings->ch;
+>  	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
+>  
+> +	channels_size = indio_dev->num_channels * sizeof(struct iio_chan_spec);
+> +	channels = devm_kmemdup(&indio_dev->dev,
+> +				adata->sensor_settings->ch,
+> +				channels_size, GFP_KERNEL);
+> +	if (!channels) {
+> +		err = -ENOMEM;
+> +		goto st_accel_power_off;
+> +	}
+> +
+> +	if (apply_acpi_orientation(indio_dev, channels))
+> +		dev_warn(&indio_dev->dev,
+> +			 "failed to apply ACPI orientation data: %d\n", err);
+> +
+> +	indio_dev->channels = channels;
+>  	adata->current_fullscale = (struct st_sensor_fullscale_avl *)
+>  					&adata->sensor_settings->fs.fs_avl[0];
+>  	adata->odr = adata->sensor_settings->odr.odr_avl[0].hz;
+> diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
+> index f9bd6e8ab138..fe15694128ac 100644
+> --- a/include/linux/iio/common/st_sensors.h
+> +++ b/include/linux/iio/common/st_sensors.h
+> @@ -260,6 +260,7 @@ struct st_sensor_settings {
+>  struct st_sensor_data {
+>  	struct device *dev;
+>  	struct iio_trigger *trig;
+> +	struct iio_mount_matrix *mount_matrix;
+>  	struct st_sensor_settings *sensor_settings;
+>  	struct st_sensor_fullscale_avl *current_fullscale;
+>  	struct regulator *vdd;
 
