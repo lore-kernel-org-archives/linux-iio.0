@@ -4,64 +4,47 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	T_DKIMWL_WL_HIGH,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	T_DKIMWL_WL_HIGH autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC55FC43387
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Dec 2018 17:20:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD439C43387
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Dec 2018 17:23:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 980F221A4B
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Dec 2018 17:20:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7DE4521974
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Dec 2018 17:23:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1545499224;
-	bh=M/C97+5ORIhTcbwNr4f1GIY4l7IPErbuC6CfHygf4jA=;
+	s=default; t=1545499435;
+	bh=tfK8GXVHRc8eguZqSBemy1Mx2WbKhGjdXhtUQT8DRlo=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=Y8cgr2Vxa/GHqo6CmL5ck93PZX0rabtRtISXtoOUBr/76BnHDFxx971Rn5Q+Pr2sO
-	 lCqmLW6zbZeZX/QG8UbVWzAryOURT+Ndsd3hmzcyisZATgJAUdiXIN1OVW9VWw2pI1
-	 XGSCf0QcVVsY/ouu+nsVWdQkXMnXz154N5jq38m0=
+	b=ZPO1LdUtFOs6qeaP63A8tHmLRfR/W/mcsQbXx69KJajhkXTbFZMc+lmfQVbckaCNH
+	 7QygUOFfSA0FbN55Vxvd/065eGGjuyefhCvqXQJFDJbhET86DGaMGYQVo/5CMH6fPa
+	 NPLEVgzx3hd48w5rcEou993X3lAS1WcOZo7j5MSI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391096AbeLVRUY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 22 Dec 2018 12:20:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54136 "EHLO mail.kernel.org"
+        id S1727680AbeLVRXz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 22 Dec 2018 12:23:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55340 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390141AbeLVRUX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 22 Dec 2018 12:20:23 -0500
+        id S1731167AbeLVRXy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 22 Dec 2018 12:23:54 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 29D6E21A48;
-        Sat, 22 Dec 2018 17:20:18 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 42ABF21974;
+        Sat, 22 Dec 2018 17:23:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1545499222;
-        bh=M/C97+5ORIhTcbwNr4f1GIY4l7IPErbuC6CfHygf4jA=;
+        s=default; t=1545499433;
+        bh=tfK8GXVHRc8eguZqSBemy1Mx2WbKhGjdXhtUQT8DRlo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RjqcZfmn2qqAHqaSMPLoFZzWd0MF0JsUgh+eMWiKOehIkPZFeLfjK8PkXG1Kcxwlt
-         rpD5bBXgms87ZUTydnofiqy6kjLV91WypsCVpw61NN8HcgAI4kAA9f5uliRbL4KsYZ
-         KJrTTTe7u96S5MLahx0JFpdRZfU1G62g17tsCcqQ=
-Date:   Sat, 22 Dec 2018 17:20:14 +0000
+        b=dlCo3waX3Uh2mu7fOi4aK76g1kCmGz+XuXe6Hr8PCIR7ay86YftkVeo9wzMdrhV+u
+         vq6T8QhvOhuWfbm6ceK1F0/u/yci04ebmKObrJu9QKh3dcd//lv4zPyfgddabS9nsa
+         njbT7sAsw2qK3WhmMUrdGst3dG7uE86Acgmg6g3Y=
+Date:   Sat, 22 Dec 2018 17:23:46 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Anson Huang <anson.huang@nxp.com>
-Cc:     "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "martink@posteo.de" <martink@posteo.de>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "gustavo@embeddedor.com" <gustavo@embeddedor.com>,
-        Leonard Crestez <leonard.crestez@nxp.com>,
-        "rtresidd@electromag.com.au" <rtresidd@electromag.com.au>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        "preid@electromag.com.au" <preid@electromag.com.au>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: Re: [PATCH V5 2/2] iio: accell: mma8452: add vdd/vddio regulator
- operation support
-Message-ID: <20181222172014.45196bd2@archlinux>
-In-Reply-To: <1545023805-31250-2-git-send-email-Anson.Huang@nxp.com>
-References: <1545023805-31250-1-git-send-email-Anson.Huang@nxp.com>
-        <1545023805-31250-2-git-send-email-Anson.Huang@nxp.com>
+To:     Tomasz Duszynski <tduszyns@gmail.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: chemical: sps30: add support for self cleaning
+Message-ID: <20181222172346.7d520112@archlinux>
+In-Reply-To: <20181218202809.25822-1-tduszyns@gmail.com>
+References: <20181218202809.25822-1-tduszyns@gmail.com>
 X-Mailer: Claws Mail 3.17.2 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -71,352 +54,123 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 17 Dec 2018 05:22:55 +0000
-Anson Huang <anson.huang@nxp.com> wrote:
+On Tue, 18 Dec 2018 21:28:09 +0100
+Tomasz Duszynski <tduszyns@gmail.com> wrote:
 
-> The accelerometer's power supply could be controllable on some
-> platforms, such as i.MX6Q-SABRESD board, the mma8451's power supplies
-> are controlled by a GPIO fixed regulator, need to make sure the
-> regulators are enabled before any communication with mma8451, this
-> patch adds vdd/vddio regulator operation support.
+> Self cleaning is especially useful in cases where sensor undergoes
+> frequent power on/off cycles. In such scenarios it is recommended to
+> turn self cleaning at least once per week in order to maintain reliable
+> measurements.
 > 
-> Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
-> Acked-by: Martin Kepplinger <martink@posteo.de>
+> Self cleaning is activated by writing 1 to a dedicated attribute.
+> Internal fan accelerates to its maximum speed and keeps spinning
+> for about 10 seconds blowing out accumulated dust.
+> 
+> Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
+Applied to the togreg branch of iio.git.   I took this today rather than
+leaving it on the list for longer simply because I'm not sure I'll be
+very timely in applying patches.
 
-There is a lot of manual handling in the suspend and resume I would not expect
-to see.  That should be using the runtime pm calls to take control of pm rather
-than making assumptions about what runtime pm state we are in...
+If anyone has any comments, it'll only be out as testing so we can
+still modify if that make sense for at least the next couple of weeks.
+
+Thanks,
 
 Jonathan
 
 > ---
-> ChangeLog since V4:
->     - using devm_regulator_get() instead of devm_regulator_get_optional() since the regulator is
->       there always, if dtb does NOT specify one, regulator framework will assign dummy regulator for it.
-> ---
->  drivers/iio/accel/mma8452.c | 183 +++++++++++++++++++++++++++++++++++++++++---
->  1 file changed, 172 insertions(+), 11 deletions(-)
+> v2:
+>  * removed TODO item
+>  * sensor cleaning is not measurement related per se so drop in_ prefix
 > 
-> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> index 421a0a8..9a52426 100644
-> --- a/drivers/iio/accel/mma8452.c
-> +++ b/drivers/iio/accel/mma8452.c
-> @@ -31,6 +31,7 @@
->  #include <linux/of_device.h>
->  #include <linux/of_irq.h>
->  #include <linux/pm_runtime.h>
-> +#include <linux/regulator/consumer.h>
->  
->  #define MMA8452_STATUS				0x00
->  #define  MMA8452_STATUS_DRDY			(BIT(2) | BIT(1) | BIT(0))
-> @@ -107,6 +108,8 @@ struct mma8452_data {
->  	u8 data_cfg;
->  	const struct mma_chip_info *chip_info;
->  	int sleep_val;
-> +	struct regulator *vdd_reg;
-> +	struct regulator *vddio_reg;
+>  Documentation/ABI/testing/sysfs-bus-iio-sps30 |  8 +++++
+>  drivers/iio/chemical/sps30.c                  | 35 ++++++++++++++++++-
+>  2 files changed, 42 insertions(+), 1 deletion(-)
+>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-sps30
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-sps30 b/Documentation/ABI/testing/sysfs-bus-iio-sps30
+> new file mode 100644
+> index 000000000000..e7ce2c57635e
+> --- /dev/null
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio-sps30
+> @@ -0,0 +1,8 @@
+> +What:		/sys/bus/iio/devices/iio:deviceX/start_cleaning
+> +Date:		December 2018
+> +KernelVersion:	4.22
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Writing 1 starts sensor self cleaning. Internal fan accelerates
+> +		to its maximum speed and keeps spinning for about 10 seconds in
+> +		order to blow out accumulated dust.
+> diff --git a/drivers/iio/chemical/sps30.c b/drivers/iio/chemical/sps30.c
+> index fa3cd409b90b..f3b4390c8f5c 100644
+> --- a/drivers/iio/chemical/sps30.c
+> +++ b/drivers/iio/chemical/sps30.c
+> @@ -7,7 +7,6 @@
+>   * I2C slave address: 0x69
+>   *
+>   * TODO:
+> - *  - support for turning on fan cleaning
+>   *  - support for reading/setting auto cleaning interval
+>   */
+> 
+> @@ -37,6 +36,7 @@
+>  #define SPS30_READ_DATA_READY_FLAG 0x0202
+>  #define SPS30_READ_DATA 0x0300
+>  #define SPS30_READ_SERIAL 0xd033
+> +#define SPS30_START_FAN_CLEANING 0x5607
+> 
+>  enum {
+>  	PM1,
+> @@ -104,6 +104,7 @@ static int sps30_do_cmd(struct sps30_state *state, u16 cmd, u8 *data, int size)
+>  		break;
+>  	case SPS30_STOP_MEAS:
+>  	case SPS30_RESET:
+> +	case SPS30_START_FAN_CLEANING:
+>  		ret = sps30_write_then_read(state, buf, 2, NULL, 0);
+>  		break;
+>  	case SPS30_READ_DATA_READY_FLAG:
+> @@ -275,7 +276,39 @@ static int sps30_read_raw(struct iio_dev *indio_dev,
+>  	return -EINVAL;
+>  }
+> 
+> +static ssize_t start_cleaning_store(struct device *dev,
+> +				    struct device_attribute *attr,
+> +				    const char *buf, size_t len)
+> +{
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	struct sps30_state *state = iio_priv(indio_dev);
+> +	int val, ret;
+> +
+> +	if (kstrtoint(buf, 0, &val) || val != 1)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&state->lock);
+> +	ret = sps30_do_cmd(state, SPS30_START_FAN_CLEANING, NULL, 0);
+> +	mutex_unlock(&state->lock);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return len;
+> +}
+> +
+> +static IIO_DEVICE_ATTR_WO(start_cleaning, 0);
+> +
+> +static struct attribute *sps30_attrs[] = {
+> +	&iio_dev_attr_start_cleaning.dev_attr.attr,
+> +	NULL
+> +};
+> +
+> +static const struct attribute_group sps30_attr_group = {
+> +	.attrs = sps30_attrs,
+> +};
+> +
+>  static const struct iio_info sps30_info = {
+> +	.attrs = &sps30_attr_group,
+>  	.read_raw = sps30_read_raw,
 >  };
->  
->   /**
-> @@ -1534,9 +1537,37 @@ static int mma8452_probe(struct i2c_client *client,
->  	mutex_init(&data->lock);
->  	data->chip_info = match->data;
->  
-> +	data->vdd_reg = devm_regulator_get(&client->dev, "vdd");
-> +	if (IS_ERR(data->vdd_reg)) {
-> +		ret = PTR_ERR(data->vdd_reg);
-> +		if (ret != -EPROBE_DEFER)
-> +			dev_err(&client->dev, "failed to get VDD regulator!\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = regulator_enable(data->vdd_reg);
-> +	if (ret) {
-> +		dev_err(&client->dev, "failed to enable VDD regulator!\n");
-> +		return ret;
-> +	}
-
-Please reorder so the unwind order in remove and devm cleanup is the
-opposite of setup order.  I suspect that is just a case of
-doing the two gets before enabling either regulator, but I haven't checked.
-
-> +
-> +	data->vddio_reg = devm_regulator_get(&client->dev, "vddio");
-> +	if (IS_ERR(data->vddio_reg)) {
-> +		ret = PTR_ERR(data->vddio_reg);
-> +		if (ret != -EPROBE_DEFER)
-> +			dev_err(&client->dev, "failed to get VDDIO regulator!\n");
-> +		goto disable_regulator_vdd;
-> +	}
-> +
-> +	ret = regulator_enable(data->vddio_reg);
-> +	if (ret) {
-> +		dev_err(&client->dev, "failed to enable VDDIO regulator!\n");
-> +		goto disable_regulator_vdd;
-> +	}
-> +
->  	ret = i2c_smbus_read_byte_data(client, MMA8452_WHO_AM_I);
->  	if (ret < 0)
-> -		return ret;
-> +		goto disable_regulators;
->  
->  	switch (ret) {
->  	case MMA8451_DEVICE_ID:
-> @@ -1549,7 +1580,8 @@ static int mma8452_probe(struct i2c_client *client,
->  			break;
->  		/* else: fall through */
->  	default:
-> -		return -ENODEV;
-> +		ret = -ENODEV;
-> +		goto disable_regulators;
->  	}
->  
->  	dev_info(&client->dev, "registering %s accelerometer; ID 0x%x\n",
-> @@ -1566,13 +1598,13 @@ static int mma8452_probe(struct i2c_client *client,
->  
->  	ret = mma8452_reset(client);
->  	if (ret < 0)
-> -		return ret;
-> +		goto disable_regulators;
->  
->  	data->data_cfg = MMA8452_DATA_CFG_FS_2G;
->  	ret = i2c_smbus_write_byte_data(client, MMA8452_DATA_CFG,
->  					data->data_cfg);
->  	if (ret < 0)
-> -		return ret;
-> +		goto disable_regulators;
->  
->  	/*
->  	 * By default set transient threshold to max to avoid events if
-> @@ -1581,7 +1613,7 @@ static int mma8452_probe(struct i2c_client *client,
->  	ret = i2c_smbus_write_byte_data(client, MMA8452_TRANSIENT_THS,
->  					MMA8452_TRANSIENT_THS_MASK);
->  	if (ret < 0)
-> -		return ret;
-> +		goto disable_regulators;
->  
->  	if (client->irq) {
->  		int irq2;
-> @@ -1595,7 +1627,7 @@ static int mma8452_probe(struct i2c_client *client,
->  						MMA8452_CTRL_REG5,
->  						data->chip_info->all_events);
->  			if (ret < 0)
-> -				return ret;
-> +				goto disable_regulators;
->  
->  			dev_dbg(&client->dev, "using interrupt line INT1\n");
->  		}
-> @@ -1604,11 +1636,11 @@ static int mma8452_probe(struct i2c_client *client,
->  					MMA8452_CTRL_REG4,
->  					data->chip_info->enabled_events);
->  		if (ret < 0)
-> -			return ret;
-> +			goto disable_regulators;
->  
->  		ret = mma8452_trigger_setup(indio_dev);
->  		if (ret < 0)
-> -			return ret;
-> +			goto disable_regulators;
->  	}
->  
->  	data->ctrl_reg1 = MMA8452_CTRL_ACTIVE |
-> @@ -1661,12 +1693,20 @@ static int mma8452_probe(struct i2c_client *client,
->  trigger_cleanup:
->  	mma8452_trigger_cleanup(indio_dev);
->  
-> +disable_regulators:
-> +	regulator_disable(data->vddio_reg);
-> +
-> +disable_regulator_vdd:
-> +	regulator_disable(data->vdd_reg);
-> +
->  	return ret;
->  }
->  
->  static int mma8452_remove(struct i2c_client *client)
->  {
->  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +	struct mma8452_data *data = iio_priv(indio_dev);
-> +	int ret;
->  
->  	iio_device_unregister(indio_dev);
->  
-> @@ -1678,6 +1718,18 @@ static int mma8452_remove(struct i2c_client *client)
->  	mma8452_trigger_cleanup(indio_dev);
->  	mma8452_standby(iio_priv(indio_dev));
->  
-> +	ret = regulator_disable(data->vddio_reg);
-> +	if (ret) {
-> +		dev_err(&client->dev, "failed to disable VDDIO regulator\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = regulator_disable(data->vdd_reg);
-> +	if (ret) {
-> +		dev_err(&client->dev, "failed to disable VDD regulator\n");
-> +		return ret;
-> +	}
-> +
->  	return 0;
->  }
->  
-> @@ -1696,6 +1748,18 @@ static int mma8452_runtime_suspend(struct device *dev)
->  		return -EAGAIN;
->  	}
->  
-> +	ret = regulator_disable(data->vddio_reg);
-> +	if (ret) {
-> +		dev_err(dev, "failed to disable VDDIO regulator\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = regulator_disable(data->vdd_reg);
-> +	if (ret) {
-> +		dev_err(dev, "failed to disable VDD regulator\n");
-> +		return ret;
-> +	}
-> +
->  	return 0;
->  }
->  
-> @@ -1705,9 +1769,22 @@ static int mma8452_runtime_resume(struct device *dev)
->  	struct mma8452_data *data = iio_priv(indio_dev);
->  	int ret, sleep_val;
->  
-> +	ret = regulator_enable(data->vdd_reg);
-> +	if (ret) {
-> +		dev_err(dev, "failed to enable VDD regulator\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = regulator_enable(data->vddio_reg);
-> +	if (ret) {
-> +		dev_err(dev, "failed to enable VDDIO regulator\n");
-> +		regulator_disable(data->vdd_reg);
-> +		return ret;
-> +	}
-> +
->  	ret = mma8452_active(data);
->  	if (ret < 0)
-> -		return ret;
-> +		goto runtime_resume_failed;
->  
->  	ret = mma8452_get_odr_index(data);
->  	sleep_val = 1000 / mma8452_samp_freq[ret][0];
-> @@ -1717,20 +1794,104 @@ static int mma8452_runtime_resume(struct device *dev)
->  		msleep_interruptible(sleep_val);
->  
->  	return 0;
-> +
-> +runtime_resume_failed:
-> +	regulator_disable(data->vddio_reg);
-> +	regulator_disable(data->vdd_reg);
-> +
-> +	return ret;
->  }
->  #endif
->  
->  #ifdef CONFIG_PM_SLEEP
->  static int mma8452_suspend(struct device *dev)
->  {
-> -	return mma8452_standby(iio_priv(i2c_get_clientdata(
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> +	struct mma8452_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-
-I'd rather see the runtime pm calls done than doing this directly.
-So you should let the runtime pm know it needs to power the device on,
-then take over control (disable runtime pm) and power down.
-
-> +	ret = regulator_enable(data->vdd_reg);
-> +	if (ret) {
-> +		dev_err(dev, "failed to enable VDD regulator\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = regulator_enable(data->vddio_reg);
-> +	if (ret) {
-> +		dev_err(dev, "failed to enable VDDIO regulator\n");
-> +		regulator_disable(data->vdd_reg);
-> +		return ret;
-> +	}
-> +
-> +	ret = mma8452_standby(iio_priv(i2c_get_clientdata(
->  		to_i2c_client(dev))));
-> +	if (ret)
-> +		goto suspend_failed;
-> +
-> +	ret = regulator_disable(data->vddio_reg);
-> +	if (ret) {
-> +		dev_err(dev, "failed to disable VDDIO regulator\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = regulator_disable(data->vdd_reg);
-> +	if (ret) {
-> +		dev_err(dev, "failed to disable VDD regulator\n");
-> +		return ret;
-> +	}
-> +
-> +	return 0;
-> +
-> +suspend_failed:
-> +	regulator_disable(data->vddio_reg);
-> +	regulator_disable(data->vdd_reg);
-> +
-> +	return ret;
->  }
->  
->  static int mma8452_resume(struct device *dev)
->  {
-> -	return mma8452_active(iio_priv(i2c_get_clientdata(
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> +	struct mma8452_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	ret = regulator_enable(data->vdd_reg);
-> +	if (ret) {
-> +		dev_err(dev, "failed to enable VDD regulator\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = regulator_enable(data->vddio_reg);
-> +	if (ret) {
-> +		dev_err(dev, "failed to enable VDDIO regulator\n");
-> +		regulator_disable(data->vdd_reg);
-> +		return ret;
-> +	}
-> +
-> +	ret = mma8452_active(iio_priv(i2c_get_clientdata(
->  		to_i2c_client(dev))));
-> +	if (ret)
-> +		goto resume_failed;
-> +
-> +	ret = regulator_disable(data->vddio_reg);
-> +	if (ret) {
-> +		dev_err(dev, "failed to disable VDDIO regulator\n");
-> +		return ret;
-
-This is odd in a resume path to turn it off.  Normally you just hand
-off to the runtime pm again to autosuspend as necessary.
-
-> +	}
-> +
-> +	ret = regulator_disable(data->vdd_reg);
-> +	if (ret) {
-> +		dev_err(dev, "failed to disable VDD regulator\n");
-> +		return ret;
-> +	}
-> +
-> +	return 0;
-> +
-> +resume_failed:
-> +	regulator_disable(data->vddio_reg);
-> +	regulator_disable(data->vdd_reg);
-> +
-> +	return ret;
->  }
->  #endif
->  
+> 
+> --
+> 2.20.1
+> 
 
