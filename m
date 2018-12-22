@@ -4,51 +4,51 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	T_DKIMWL_WL_HIGH,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	T_DKIMWL_WL_HIGH autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72F00C43387
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Dec 2018 17:35:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D62EC43387
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Dec 2018 17:38:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1D5FD21A4B
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Dec 2018 17:35:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0DD1E21A7E
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Dec 2018 17:38:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1545500101;
-	bh=QEo7PX5rqLv9Krp/ERlLOSOHnE2pgLqC2t4JZ7FlVxg=;
+	s=default; t=1545500294;
+	bh=PvLOGNzUUydT5IbRkFjXGQoF+cji0Lu/HYXKNWkHjiQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=toECJ6TSeOtxJkadsCTVabtz0417v+meVE5pdXLZyJX9lap9m9Tm1LQ9WEFRKHD7r
-	 JWATsQwZg+lP8tpsMleSKz8OkQCbVD0Wa2lPpmTCQ0MwEAY00AxGN1P2N3XaUGODOS
-	 u92OrH7lXN/EpMPpVLnTUVaQPlhCmnqTaiGh0rl0=
+	b=NepaPn+zVMcEtW7bs63ALK2rf7dN4be6LvxH9CjlZOvO2/cjfAIBN+btS5xMNGio5
+	 XYTFkN1uDPE2p9V1v8gymDVmpsw3ptbM8Vp0fKtbkSjC54VkQeAmFg1Mnde49TDweT
+	 wAmn5mdIBsRod3Ftk4HtOy8+I18ftrTLGOCm4U+o=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731403AbeLVRfA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 22 Dec 2018 12:35:00 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57422 "EHLO mail.kernel.org"
+        id S2389013AbeLVRiN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 22 Dec 2018 12:38:13 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57868 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725842AbeLVRfA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 22 Dec 2018 12:35:00 -0500
+        id S2389286AbeLVRiN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 22 Dec 2018 12:38:13 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D351721A47;
-        Sat, 22 Dec 2018 17:34:57 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0D8EC21A4E;
+        Sat, 22 Dec 2018 17:38:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1545500099;
-        bh=QEo7PX5rqLv9Krp/ERlLOSOHnE2pgLqC2t4JZ7FlVxg=;
+        s=default; t=1545500292;
+        bh=PvLOGNzUUydT5IbRkFjXGQoF+cji0Lu/HYXKNWkHjiQ=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=F+TrF3CLABRrBlt0zMVyWn3U2vknA7Kjh2TCM6SVBxD8FAM5LfGowHdCc1u4XKZRK
-         3mpzwIlbnlAhImDbfLCCeMInEcIE7YGbAZjBCOLymt5N9vxpMHKC+iwtiRM/pjCkvU
-         kcrmBAzmSfxn+tU/wZo8xShn3NLuG5mG07TRyYEI=
-Date:   Sat, 22 Dec 2018 17:34:54 +0000
+        b=isyNorE4j6fszE0DzQlrGjiKBM5zuD1uI2WqlvHFAPOGB2uFib3MvQIo7qYv3HjoR
+         4UhZcqq3hIze6i750fmFfl7sbsp7Zq/qpBEF0nV2PiQrs5AyHJiwApPYzolwYwtWjs
+         XNpS84BLvhLyysv1Yb1x7BPB+bAmqhPMt/wvZVfM=
+Date:   Sat, 22 Dec 2018 17:38:07 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Kangjie Lu <kjlu@umn.edu>
-Cc:     pakki001@umn.edu, Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: ad9523: fix a missing check of return value
-Message-ID: <20181222173454.5387f5bc@archlinux>
-In-Reply-To: <20181220072122.40469-1-kjlu@umn.edu>
-References: <20181220072122.40469-1-kjlu@umn.edu>
+To:     Amir Mahdi Ghorbanian <indigoomega021@gmail.com>
+Cc:     lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Barry Song <21cnbao@gmail.com>
+Subject: Re: [PATCH] Staging: iio: adis16240: fixed a SPDX identifier tag
+ mistake
+Message-ID: <20181222173807.0284c33a@archlinux>
+In-Reply-To: <1545253651-13891-1-git-send-email-indigoomega021@gmail.com>
+References: <1545253651-13891-1-git-send-email-indigoomega021@gmail.com>
 X-Mailer: Claws Mail 3.17.2 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -58,44 +58,44 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 20 Dec 2018 01:21:22 -0600
-Kangjie Lu <kjlu@umn.edu> wrote:
+On Wed, 19 Dec 2018 13:07:31 -0800
+Amir Mahdi Ghorbanian <indigoomega021@gmail.com> wrote:
 
-> If ad9523_write() fails, indio_dev may get incorrect data. The fix
-> inserts a check for the return value of ad9523_write(), and it fails,
-> returns an error.
+> Fixed a coding style mistake by adding the SPDX identifier tag to the
+> first line of the code.
 > 
-> Signed-off-by: Kangjie Lu <kjlu@umn.edu>
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+> Signed-off-by: Amir Mahdi Ghorbanian <indigoomega021@gmail.com>
+*groans*  Another one where the MODULE_LICENSE is different.
+Michael, Analog copyright, so if you want to express a view on
+the intent that would be great.
+
+My feeling would be that the MODULE_LICENSE is the wrong one given it's
+easier to get that wrong than to add an 'or later' to the text..
+
+On these I generally want an ack from the copyright holder anyway
+just to be sure everything is in order.
 
 Thanks,
 
 Jonathan
 
 > ---
->  drivers/iio/frequency/ad9523.c | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
+>  drivers/staging/iio/accel/adis16240.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
-> index f3f94fbdd20a..3f9be69499ec 100644
-> --- a/drivers/iio/frequency/ad9523.c
-> +++ b/drivers/iio/frequency/ad9523.c
-> @@ -943,11 +943,14 @@ static int ad9523_setup(struct iio_dev *indio_dev)
->  		}
->  	}
+> diff --git a/drivers/staging/iio/accel/adis16240.c b/drivers/staging/iio/accel/adis16240.c
+> index 24e525f..2c40189 100644
+> --- a/drivers/staging/iio/accel/adis16240.c
+> +++ b/drivers/staging/iio/accel/adis16240.c
+> @@ -1,9 +1,9 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+>  /*
+>   * ADIS16240 Programmable Impact Sensor and Recorder driver
+>   *
+>   * Copyright 2010 Analog Devices Inc.
+>   *
+> - * Licensed under the GPL-2 or later.
+>   */
 >  
-> -	for_each_clear_bit(i, &active_mask, AD9523_NUM_CHAN)
-> -		ad9523_write(indio_dev,
-> +	for_each_clear_bit(i, &active_mask, AD9523_NUM_CHAN) {
-> +		ret = ad9523_write(indio_dev,
->  			     AD9523_CHANNEL_CLOCK_DIST(i),
->  			     AD9523_CLK_DIST_DRIVER_MODE(TRISTATE) |
->  			     AD9523_CLK_DIST_PWR_DOWN_EN);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
->  
->  	ret = ad9523_write(indio_dev, AD9523_POWER_DOWN_CTRL, 0);
->  	if (ret < 0)
+>  #include <linux/interrupt.h>
 
