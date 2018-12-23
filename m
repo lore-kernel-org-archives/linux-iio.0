@@ -1,321 +1,93 @@
-Return-Path: <SRS0=QpE6=O7=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=i5w7=PA=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	T_DKIMWL_WL_HIGH autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 014EDC43387
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Dec 2018 18:09:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4790CC43387
+	for <linux-iio@archiver.kernel.org>; Sun, 23 Dec 2018 04:58:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B8B1A218D9
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Dec 2018 18:09:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1545502162;
-	bh=a4lfkB/72Lra612Sb3M9fu7qXdpTkDEQxXUfTyjeraI=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=Eeh8BlykMdwimqA8PzR6lU0v12fWThPpVgA5B1FZIhy5L7GpV6Ukq3zb7lc0dZjJ6
-	 2Z/osYagZ/NAsaMgbM+D1mX3GTjLRosHC/XwP6fQcydl63He1xP94m+sa7231NFk9Q
-	 TeK03yhjvByYwLMMBSVqbx6+XH1Vl7X/jPObTQZg=
+	by mail.kernel.org (Postfix) with ESMTP id CB326218D3
+	for <linux-iio@archiver.kernel.org>; Sun, 23 Dec 2018 04:58:12 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="T2IXd4ec"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733023AbeLVSJW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 22 Dec 2018 13:09:22 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40974 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731181AbeLVSJV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 22 Dec 2018 13:09:21 -0500
-Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B7A6D217F9;
-        Sat, 22 Dec 2018 18:09:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1545502160;
-        bh=a4lfkB/72Lra612Sb3M9fu7qXdpTkDEQxXUfTyjeraI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dQTYKVrzKdxeY3n5t84XiJwpby3kDmV+IsNQN+lv7lnL4JZyNoXa7TEa1qwyNhuuD
-         8Gs3NBk1QeoR1LkRh/SYgi6hvpWqIIbHJtmLtDW4q/1FAB7+dPQDWshZm9yFwl6OBd
-         A4uikGwoWDo2RFrOiCP+JPBL3/xCcPwgR8mBPirI=
-Date:   Sat, 22 Dec 2018 18:09:14 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Daniel Drake <drake@endlessm.com>
-Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        linux-iio@vger.kernel.org, linux@endlessm.com,
-        lorenzo.bianconi83@gmail.com, denis.ciocca@st.com,
-        hadess@hadess.net, hdegoede@redhat.com
-Subject: Re: [PATCH 2/2] iio: st_accel: use ACPI orientation data
-Message-ID: <20181222180914.6d3b5e5e@archlinux>
-In-Reply-To: <20181220065933.25964-2-drake@endlessm.com>
-References: <20181220065933.25964-1-drake@endlessm.com>
-        <20181220065933.25964-2-drake@endlessm.com>
-X-Mailer: Claws Mail 3.17.2 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1725298AbeLWE6M (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 22 Dec 2018 23:58:12 -0500
+Received: from mail-it1-f196.google.com ([209.85.166.196]:36872 "EHLO
+        mail-it1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725267AbeLWE6L (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Dec 2018 23:58:11 -0500
+Received: by mail-it1-f196.google.com with SMTP id b5so11948611iti.2;
+        Sat, 22 Dec 2018 20:58:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hdF8ugqool5/7m6T7Ru9/LvgWvMiths0KxMCiJxQh18=;
+        b=T2IXd4ec316bMaxZrMZylztEvbIWSZwGaqqD8hau+vaEDcZWA5cNTXkYLfTOJECljB
+         ymOj4ZbwZuM5+JbzAhYphzG/Fkx+F7NkWmLsNvw0R3tdTEw3wxtt8bgWTiWwgv7xfoZh
+         ATgf1wjLbabJeQChwTvEOIiWscAa0eCw9zAtIhVET5U8AseDLPf9k9/oFESTKJLe48On
+         CspXiA9CMzK1NRyeXF8mSdWG9kRWZUYAhRw7IKSnwhV0qpkBTJSDf9mwHlG4d/wPe4bw
+         toj6WRVLE8MOyKnns9ASCKi+VXW7XO1cNkpmdKzMCL1nLTSQCTp6rcuxu4ZBdd4ihTTh
+         VFWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hdF8ugqool5/7m6T7Ru9/LvgWvMiths0KxMCiJxQh18=;
+        b=d4u7+T7ZP5h2M9T+wdzCC/hDCS40mykHOuWjvz7a5Vp9qjonLDxSX6VFyajYORtJHC
+         Wyt53rw7EwpZD8bGsb1yquO69s93nWTBE/RIMzSXjDjGoatiVYevdCrcP1+ldDhaZIPu
+         MXZNUiuDQKi2TfiUbeNEILqu35D19945YnjbZ2f1d+ui7+zu2wpzfHiMdTveaWhD+XOp
+         1YHfaaMH8Y27DSh34+0NDOt0Vbr3hmDUhMLT1i1UTT3IiTPyTGSEAFG89rKf/FLIia1c
+         uW7jdHVZMIUc8siIFYo5gLEqXoLekxUXaIlSUOEifFe8pnjrQtAa4HsYO3f5bFIAOkww
+         f1Hg==
+X-Gm-Message-State: AA+aEWa4653sNTBWDOBqrUUoA6ZRol4Sh6RR6gV9ITexiYg/rkTn1Iff
+        YAoDSJ52o0SXoHiWxOqPiuc=
+X-Google-Smtp-Source: AFSGD/UiE85174qgRU8jfccvRUWf7Dk0DHduRGrk2cJyVfgR4YG/ZVpI2Ag9lWX1C4mmI8tY+1AdEw==
+X-Received: by 2002:a02:1217:: with SMTP id i23mr5772148jad.53.1545541091089;
+        Sat, 22 Dec 2018 20:58:11 -0800 (PST)
+Received: from r2700x.localdomain (c-75-70-96-103.hsd1.co.comcast.net. [75.70.96.103])
+        by smtp.gmail.com with ESMTPSA id 15sm8435378itv.11.2018.12.22.20.58.09
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 22 Dec 2018 20:58:10 -0800 (PST)
+From:   Jeremy Fertic <jeremyfertic@gmail.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org,
+        Jeremy Fertic <jeremyfertic@gmail.com>
+Subject: [PATCH v2 0/4] staging: iio: adt7316: dac fixes
+Date:   Sat, 22 Dec 2018 21:57:39 -0700
+Message-Id: <20181223045743.10716-1-jeremyfertic@gmail.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 20 Dec 2018 14:59:33 +0800
-Daniel Drake <drake@endlessm.com> wrote:
+Changes in v2:
+ - Patches 1-2: reworded commit messages and added Fixes tags
+ - Patches 3-4: added Fixes tags
 
-> Platform-specific ST accelerometer mount matrix information can be
-> provided by returning a package of 6 integers from the ACPI _ONT
-> method. This has been seen on Acer products such as Veriton Z4860G,
-> Z6860G and A890, which include a ST SMO8840 sensor. We have also
-> confirmed experimentally that the Windows driver uses such information.
-> 
-> The _ONT data format was explained by a ST vendor contact. However,
-> strangely enough, the _ONT transformations must be applied after first
-> applying another mount matrix which we determined experimentally. ST
-> have not commented on why this is the case, but we imagine that perhaps
-> earlier devices (before _ONT was introduced) required this translation
-> and hence it became 'standard.'
-> 
-> Interpret the _ONT data and export the equivalent mount matrix to
-> userspace.
-> 
-> If no _ONT data is present, no mount matrix is exported.
-> 
-> Signed-off-by: Daniel Drake <drake@endlessm.com>
-A trivial point.  Please stick to the local (and most common in kernel)
-multiline comment syntax of
-/*
- * asdfsdfs
- * more...
- */
+Jeremy Fertic (4):
+  staging: iio: adt7316: fix dac_bits assignment
+  staging: iio: adt7316: fix handling of dac high resolution option
+  staging: iio: adt7316: fix the dac read calculation
+  staging: iio: adt7316: fix the dac write calculation
 
-Otherwise looks sensible.  However, I'd really like Dennis or someone
-else at ST to take a look before I take this.  We are early in the cycle
-(well it hasn't quite started yet) so plenty of time.  Give me a
-bump in a few weeks if nothing is happening...
+ drivers/staging/iio/addac/adt7316.c | 46 ++++++++++++++++++-----------
+ 1 file changed, 28 insertions(+), 18 deletions(-)
 
-Thanks,
-
-Jonathan
-
-
-> ---
->  drivers/iio/accel/st_accel_core.c     | 171 +++++++++++++++++++++++++-
->  include/linux/iio/common/st_sensors.h |   1 +
->  2 files changed, 171 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-> index 3e6fd5a8ac5b..54cc1a0c6a1d 100644
-> --- a/drivers/iio/accel/st_accel_core.c
-> +++ b/drivers/iio/accel/st_accel_core.c
-> @@ -11,6 +11,7 @@
->  #include <linux/kernel.h>
->  #include <linux/module.h>
->  #include <linux/slab.h>
-> +#include <linux/acpi.h>
->  #include <linux/errno.h>
->  #include <linux/types.h>
->  #include <linux/mutex.h>
-> @@ -917,12 +918,167 @@ static const struct iio_trigger_ops st_accel_trigger_ops = {
->  #define ST_ACCEL_TRIGGER_OPS NULL
->  #endif
->  
-> +static const struct iio_mount_matrix *
-> +get_mount_matrix(const struct iio_dev *indio_dev,
-> +		 const struct iio_chan_spec *chan)
-> +{
-> +	struct st_sensor_data *adata = iio_priv(indio_dev);
-> +
-> +	return adata->mount_matrix;
-> +}
-> +
-> +static const struct iio_chan_spec_ext_info mount_matrix_ext_info[] = {
-> +	IIO_MOUNT_MATRIX(IIO_SHARED_BY_ALL, get_mount_matrix),
-> +	{ },
-> +};
-> +
-> +/* Read ST-specific _ONT orientation data from ACPI and generate an
-> + * appropriate mount matrix.
-> + */
-> +static int apply_acpi_orientation(struct iio_dev *indio_dev,
-> +				  struct iio_chan_spec *channels)
-> +{
-> +#ifdef CONFIG_ACPI
-> +	struct st_sensor_data *adata = iio_priv(indio_dev);
-> +	struct acpi_buffer buffer = {ACPI_ALLOCATE_BUFFER, NULL};
-> +	struct acpi_device *adev;
-> +	union acpi_object *ont;
-> +	union acpi_object *elements;
-> +	acpi_status status;
-> +	int ret = -EINVAL;
-> +	unsigned int val;
-> +	int i, j;
-> +	int final_ont[3][3] = { 0 };
-> +
-> +	/* For some reason, ST's _ONT translation does not apply directly
-> +	 * to the data read from the sensor. Another translation must be
-> +	 * performed first, as described by the matrix below. Perhaps
-> +	 * ST required this specific translation for the first product
-> +	 * where the device was mounted?
-> +	 */
-> +	const int default_ont[3][3] = {
-> +		{  0,  1,  0 },
-> +		{ -1,  0,  0 },
-> +		{  0,  0, -1 },
-> +	};
-> +
-> +
-> +	adev = ACPI_COMPANION(adata->dev);
-> +	if (!adev)
-> +		return 0;
-> +
-> +	/* Read _ONT data, which should be a package of 6 integers. */
-> +	status = acpi_evaluate_object(adev->handle, "_ONT", NULL, &buffer);
-> +	if (status == AE_NOT_FOUND) {
-> +		return 0;
-> +	} else if (ACPI_FAILURE(status)) {
-> +		dev_warn(&indio_dev->dev, "failed to execute _ONT: %d\n",
-> +			 status);
-> +		return status;
-> +	}
-> +
-> +	ont = buffer.pointer;
-> +	if (ont->type != ACPI_TYPE_PACKAGE || ont->package.count != 6)
-> +		goto out;
-> +
-> +	/* The first 3 integers provide axis order information.
-> +	 * e.g. 0 1 2 would indicate normal X,Y,Z ordering.
-> +	 * e.g. 1 0 2 indicates that data arrives in order Y,X,Z.
-> +	 */
-> +	elements = ont->package.elements;
-> +	for (i = 0; i < 3; i++) {
-> +		if (elements[i].type != ACPI_TYPE_INTEGER)
-> +			goto out;
-> +
-> +		val = elements[i].integer.value;
-> +		if (val < 0 || val > 2)
-> +			goto out;
-> +
-> +		/* Avoiding full matrix multiplication, we simply reorder the
-> +		 * columns in the default_ont matrix according to the
-> +		 * ordering provided by _ONT.
-> +		 */
-> +		final_ont[0][i] = default_ont[0][val];
-> +		final_ont[1][i] = default_ont[1][val];
-> +		final_ont[2][i] = default_ont[2][val];
-> +	}
-> +
-> +	/* The final 3 integers provide sign flip information.
-> +	 * 0 means no change, 1 means flip.
-> +	 * e.g. 0 0 1 means that Z data should be sign-flipped.
-> +	 * This is applied after the axis reordering from above.
-> +	 */
-> +	elements += 3;
-> +	for (i = 0; i < 3; i++) {
-> +		if (elements[i].type != ACPI_TYPE_INTEGER)
-> +			goto out;
-> +
-> +		val = elements[i].integer.value;
-> +		if (val != 0 && val != 1)
-> +			goto out;
-> +		if (!val)
-> +			continue;
-> +
-> +		/* Flip the values in the indicated column */
-> +		final_ont[0][i] *= -1;
-> +		final_ont[1][i] *= -1;
-> +		final_ont[2][i] *= -1;
-> +	}
-> +
-> +	/* Convert our integer matrix to a string-based iio_mount_matrix */
-> +	adata->mount_matrix = devm_kmalloc(&indio_dev->dev,
-> +					   sizeof(*adata->mount_matrix),
-> +					   GFP_KERNEL);
-> +	if (!adata->mount_matrix) {
-> +		ret = -ENOMEM;
-> +		goto out;
-> +	}
-> +
-> +	for (i = 0; i < 3; i++) {
-> +		for (j = 0; j < 3; j++) {
-> +			int matrix_val = final_ont[i][j];
-> +			char *str_value;
-> +
-> +			switch (matrix_val) {
-> +			case -1:
-> +				str_value = "-1";
-> +				break;
-> +			case 0:
-> +				str_value = "0";
-> +				break;
-> +			case 1:
-> +				str_value = "1";
-> +				break;
-> +			default:
-> +				goto out;
-> +			}
-> +			adata->mount_matrix->rotation[i * 3 + j] = str_value;
-> +		}
-> +	}
-> +
-> +	/* Expose the mount matrix via ext_info */
-> +	for (i = 0; i < indio_dev->num_channels; i++)
-> +		channels[i].ext_info = mount_matrix_ext_info;
-> +
-> +	ret = 0;
-> +	dev_info(&indio_dev->dev, "computed mount matrix from ACPI\n");
-> +
-> +out:
-> +	kfree(buffer.pointer);
-> +	return ret;
-> +#else /* !CONFIG_ACPI */
-> +	return 0;
-> +#endif
-> +}
-> +
->  int st_accel_common_probe(struct iio_dev *indio_dev)
->  {
->  	struct st_sensor_data *adata = iio_priv(indio_dev);
->  	struct st_sensors_platform_data *pdata =
->  		(struct st_sensors_platform_data *)adata->dev->platform_data;
->  	int irq = adata->get_irq_data_ready(indio_dev);
-> +	struct iio_chan_spec *channels;
-> +	size_t channels_size;
->  	int err;
->  
->  	indio_dev->modes = INDIO_DIRECT_MODE;
-> @@ -941,9 +1097,22 @@ int st_accel_common_probe(struct iio_dev *indio_dev)
->  
->  	adata->num_data_channels = ST_ACCEL_NUMBER_DATA_CHANNELS;
->  	adata->multiread_bit = adata->sensor_settings->multi_read_bit;
-> -	indio_dev->channels = adata->sensor_settings->ch;
->  	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
->  
-> +	channels_size = indio_dev->num_channels * sizeof(struct iio_chan_spec);
-> +	channels = devm_kmemdup(&indio_dev->dev,
-> +				adata->sensor_settings->ch,
-> +				channels_size, GFP_KERNEL);
-> +	if (!channels) {
-> +		err = -ENOMEM;
-> +		goto st_accel_power_off;
-> +	}
-> +
-> +	if (apply_acpi_orientation(indio_dev, channels))
-> +		dev_warn(&indio_dev->dev,
-> +			 "failed to apply ACPI orientation data: %d\n", err);
-> +
-> +	indio_dev->channels = channels;
->  	adata->current_fullscale = (struct st_sensor_fullscale_avl *)
->  					&adata->sensor_settings->fs.fs_avl[0];
->  	adata->odr = adata->sensor_settings->odr.odr_avl[0].hz;
-> diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-> index f9bd6e8ab138..fe15694128ac 100644
-> --- a/include/linux/iio/common/st_sensors.h
-> +++ b/include/linux/iio/common/st_sensors.h
-> @@ -260,6 +260,7 @@ struct st_sensor_settings {
->  struct st_sensor_data {
->  	struct device *dev;
->  	struct iio_trigger *trig;
-> +	struct iio_mount_matrix *mount_matrix;
->  	struct st_sensor_settings *sensor_settings;
->  	struct st_sensor_fullscale_avl *current_fullscale;
->  	struct regulator *vdd;
+-- 
+2.19.1
 
