@@ -1,494 +1,348 @@
-Return-Path: <SRS0=dduM=PC=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=MTjr=PD=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-6.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS,UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1804AC43387
-	for <linux-iio@archiver.kernel.org>; Tue, 25 Dec 2018 22:00:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD834C43387
+	for <linux-iio@archiver.kernel.org>; Wed, 26 Dec 2018 19:31:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B7DE221726
-	for <linux-iio@archiver.kernel.org>; Tue, 25 Dec 2018 22:00:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9F4F620882
+	for <linux-iio@archiver.kernel.org>; Wed, 26 Dec 2018 19:31:48 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=pmeerw.net header.i=@pmeerw.net header.b="oZzwxUDQ"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XGfA1c4G"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725860AbeLYWAP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 25 Dec 2018 17:00:15 -0500
-Received: from ns.pmeerw.net ([84.19.176.117]:41222 "EHLO ns.pmeerw.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725859AbeLYWAP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 25 Dec 2018 17:00:15 -0500
-Received: by ns.pmeerw.net (Postfix, from userid 1000)
-        id 66176E0226; Tue, 25 Dec 2018 23:00:12 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=pmeerw.net; s=mail;
-        t=1545775212; bh=BAwCTk/K6TjMoMJLRPBeEDxcFo9mOF15a0uGpD0vXLk=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=oZzwxUDQgmQ1zUTmPWCpYgfoEAsDFd0rk6S9OAyD99qS50hrVAEtdF2afK3TkGBD1
-         RUrX5V0NYSXQctCLsUeu8XwESGdK9EKJv6lOUXS/SLVmTvrPMQtYt4rOdhxQI/rCfC
-         a2c7+ZsGLjhj5juSUfMqeYg3uvJnOS7JvnIixmzg=
-Received: from localhost (localhost [127.0.0.1])
-        by ns.pmeerw.net (Postfix) with ESMTP id 0521AE01BA;
-        Tue, 25 Dec 2018 23:00:12 +0100 (CET)
-Date:   Tue, 25 Dec 2018 23:00:11 +0100 (CET)
-From:   Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To:     Tomer Maimon <tmaimon77@gmail.com>
-cc:     jic23@kernel.org, yuenn@google.com, venture@google.com,
-        brendanhiggins@google.com, avifishman70@gmail.com, joel@jms.id.au,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH v1 2/2] iio: adc: add NPCM ADC driver
-In-Reply-To: <20181224164755.286932-3-tmaimon77@gmail.com>
-Message-ID: <alpine.DEB.2.21.1812252247290.8212@vps.pmeerw.net>
-References: <20181224164755.286932-1-tmaimon77@gmail.com> <20181224164755.286932-3-tmaimon77@gmail.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        id S1727521AbeLZTbF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 26 Dec 2018 14:31:05 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:46075 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727508AbeLZTbF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Dec 2018 14:31:05 -0500
+Received: by mail-lj1-f195.google.com with SMTP id s5-v6so14529529ljd.12;
+        Wed, 26 Dec 2018 11:31:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CojuasIwDrAB3CvS+E6S9WithTfIsPwfoAXvkLeIxUE=;
+        b=XGfA1c4GlY3JbN1FQfQ+lvAh033diteaDHVUB7k2BIwoczs3zia4RuPq2GBn1hCt3Z
+         M9Frf2mUDxGuPMK0jW5xJox7j+AA2+gw8eA/yuWYVMAj8cv0faHL2dFCprpjIeyx3Ijq
+         glJI0/pcAYFzR7WvoZcpBWPL7iNKQik5u2vJ8GM0Wf8AtaZ73SbkcfYzD5KL4isEV8UK
+         bR8qLu11qogXn4uJX21KZZ8b0Cbxz3P2R7t0PPmTpLSCXrskDiNIoZEaK1V3W0ajaaYb
+         aNH66zp+A/FbGDgLwCyjdHtiAItaQf5mqOcwuDbM1kvMG+vMdD3t4jE6z6RPN5Nb9RFc
+         Tuxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CojuasIwDrAB3CvS+E6S9WithTfIsPwfoAXvkLeIxUE=;
+        b=jpTXMR7nrSqWgxgWuA0vt/rz4pHs6tIdMGuWStj6zcnlTSsR2n58VntOzattDCwhRe
+         YqpSQdXptlVQoIdZ7w9eA/OQ3BT9y8m0pt4qyUSl6SdWTSbDLjHAA1HYA9WeOn4F0Ew1
+         D8aJC91E7m/+tc0843yH6OwaOaeNYoia3PzV8nAFXB7qW0h5lWm+fa5Mxb4MhFfNxpwl
+         OIqB9kxJZPQS+LOMV8ppkqdhT3xGsY1BYsTxMjvyqPMJPjg3X7nlNTuBRwRomNYJ0vww
+         Br8dv7Psu+jVHaqGacyW0Ht5yCwVXCQ/YN5bR/brTyp+Fvt19t5FM9vKeUjvhrpMKHRD
+         1b+g==
+X-Gm-Message-State: AJcUukd1mUdB3bs4uK5hD9Tewo3Xoh/LirY8sihA+9D2kIV1JDNtImP3
+        pUAPz3X93BQcqiT7CkbcVHta23Xr
+X-Google-Smtp-Source: ALg8bN7uxBQkLEsLmkOp/DfALZAhwgz8dKItBPNL6eAX9XEEUpwymuqjDhjGqwsk0GfC2HvYvE1UQw==
+X-Received: by 2002:a2e:93d7:: with SMTP id p23-v6mr12148784ljh.22.1545852662164;
+        Wed, 26 Dec 2018 11:31:02 -0800 (PST)
+Received: from arch.domain.name (89-70-37-207.dynamic.chello.pl. [89.70.37.207])
+        by smtp.gmail.com with ESMTPSA id x29-v6sm7638299ljb.97.2018.12.26.11.31.00
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 26 Dec 2018 11:31:01 -0800 (PST)
+From:   Tomasz Duszynski <tduszyns@gmail.com>
+To:     linux-iio@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Tomasz Duszynski <tduszyns@gmail.com>
+Subject: [PATCH] iio: chemical: sps30: allow changing self cleaning period
+Date:   Wed, 26 Dec 2018 20:30:35 +0100
+Message-Id: <20181226193035.3144-1-tduszyns@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hello,
+Sensor can periodically trigger self cleaning. Period can be changed by
+writing a new value to a dedicated attribute. Upon attribute read
+triplet representing respectively current, minimum and maximum period is
+returned.
 
-> Add Nuvoton NPCM BMC Analog-to-Digital Converter(ADC) driver.
+Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio-sps30 |  11 ++
+ drivers/iio/chemical/sps30.c                  | 134 +++++++++++++++---
+ 2 files changed, 127 insertions(+), 18 deletions(-)
 
-some minor comments below...
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-sps30 b/Documentation/ABI/testing/sysfs-bus-iio-sps30
+index e7ce2c57635e..d83d9192a3e0 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-sps30
++++ b/Documentation/ABI/testing/sysfs-bus-iio-sps30
+@@ -6,3 +6,14 @@ Description:
+ 		Writing 1 starts sensor self cleaning. Internal fan accelerates
+ 		to its maximum speed and keeps spinning for about 10 seconds in
+ 		order to blow out accumulated dust.
++
++What:		/sys/bus/iio/devices/iio:deviceX/cleaning_interval
++Date:		December 2018
++KernelVersion:	4.22
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Sensor is capable of triggering self cleaning periodically.
++		Period can be changed by writing a new value here. Upon reading
++		three values are returned representing respectively current,
++		minimum and maximum period. All values are in seconds.
++		Writing 0 here disables periodical self cleaning entirely.
+diff --git a/drivers/iio/chemical/sps30.c b/drivers/iio/chemical/sps30.c
+index f3b4390c8f5c..c219fda08cba 100644
+--- a/drivers/iio/chemical/sps30.c
++++ b/drivers/iio/chemical/sps30.c
+@@ -5,9 +5,6 @@
+  * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
+  *
+  * I2C slave address: 0x69
+- *
+- * TODO:
+- *  - support for reading/setting auto cleaning interval
+  */
  
-> The NPCM ADC is a 10-bit converter for eight channel inputs.
-> 
-> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
-> ---
->  drivers/iio/adc/Kconfig    |  10 ++
->  drivers/iio/adc/Makefile   |   1 +
->  drivers/iio/adc/npcm_adc.c | 336 +++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 347 insertions(+)
->  create mode 100644 drivers/iio/adc/npcm_adc.c
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index a52fea8749a9..63a4204c5673 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -555,6 +555,16 @@ config NAU7802
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called nau7802.
->  
-> +config NPCM_ADC
-> +	tristate "Nuvoton NPCM ADC driver"
-> +	depends on ARCH_NPCM || COMPILE_TEST
-> +	depends on HAS_IOMEM
-> +	help
-> +	  Say yes here to build support for Nuvoton NPCM ADC.
-> +
-> +	  This driver can also be built as a module. If so, the module
-> +	  will be called npcm_adc.
-> +
->  config PALMAS_GPADC
->  	tristate "TI Palmas General Purpose ADC"
->  	depends on MFD_PALMAS
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index a6e6a0b659e2..b0c3f3b73a5f 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -53,6 +53,7 @@ obj-$(CONFIG_MEN_Z188_ADC) += men_z188_adc.o
->  obj-$(CONFIG_MESON_SARADC) += meson_saradc.o
->  obj-$(CONFIG_MXS_LRADC_ADC) += mxs-lradc-adc.o
->  obj-$(CONFIG_NAU7802) += nau7802.o
-> +obj-$(CONFIG_NPCM_ADC) += npcm_adc.o
->  obj-$(CONFIG_PALMAS_GPADC) += palmas_gpadc.o
->  obj-$(CONFIG_QCOM_SPMI_ADC5) += qcom-spmi-adc5.o
->  obj-$(CONFIG_QCOM_SPMI_IADC) += qcom-spmi-iadc.o
-> diff --git a/drivers/iio/adc/npcm_adc.c b/drivers/iio/adc/npcm_adc.c
-> new file mode 100644
-> index 000000000000..4f7851472997
-> --- /dev/null
-> +++ b/drivers/iio/adc/npcm_adc.c
-> @@ -0,0 +1,336 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +// Copyright (c) 2016-2018 Nuvoton Technology corporation.
-> +
-> +#include <linux/clk.h>
-> +#include <linux/device.h>
-> +#include <linux/mfd/syscon.h>
-> +#include <linux/io.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/regmap.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/spinlock.h>
-> +#include <linux/uaccess.h>
-> +
-> +struct npcm_adc {
-> +	u32 vref_mv;
-> +	bool int_status;
-> +	u32 adc_sample_hz;
-> +	struct device *dev;
-> +	void __iomem *regs;
-> +	struct clk *adc_clk;
-> +	wait_queue_head_t wq;
-> +	struct regulator *vref;
-> +	struct regmap *rst_regmap;
-> +};
-> +
-> +/* NPCM7xx reset module */
-> +#define IPSRST1_OFFSET		0x020
-
-NPCM_ prefix please
-
-> +#define IPSRST1_ADC_RST		BIT(27)
-> +
-> +/* ADC registers */
-> +#define NPCM_ADCCON	 0x00
-> +#define NPCM_ADCDATA	 0x04
-> +
-> +/* ADCCON Register Bits */
-> +#define NPCM_ADCCON_ADC_INT_EN		BIT(21)
-> +#define NPCM_ADCCON_REFSEL		BIT(19)
-> +#define NPCM_ADCCON_ADC_INT_ST		BIT(18)
-> +#define NPCM_ADCCON_ADC_EN		BIT(17)
-> +#define NPCM_ADCCON_ADC_RST		BIT(16)
-> +#define NPCM_ADCCON_ADC_CONV		BIT(13)
-> +
-> +#define NPCM_ADCCON_CH_MASK		GENMASK(27, 24)
-> +#define NPCM_ADCCON_CH(x)		((x) << 24)
-> +#define NPCM_ADCCON_DIV_SHIFT		1
-> +#define NPCM_ADCCON_DIV_MASK		GENMASK(8, 1)
-> +#define NPCM_ADC_DATA_MASK(x)		((x) & GENMASK(9, 0))
-> +
-> +#define NPCM_ADC_ENABLE		(NPCM_ADCCON_ADC_EN | NPCM_ADCCON_ADC_INT_EN)
-> +
-> +/* ADC General Definition */
-> +#define NPCM_RESOLUTION_BITS		10
-> +#define ADC_DEFAULT_SAMPLE_RATE		12500000
-
-NPCM_ prefix please
-
-> +#define INT_VREF_MV			2000
-> +
-> +#define NPCM_ADC_CHAN(ch) {					\
-> +	.type = IIO_VOLTAGE,					\
-> +	.indexed = 1,						\
-> +	.channel = ch,						\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-
-SAMPLE_FREQ might be missing, it is implemented in _read()
-
-> +}
-> +
-> +static const struct iio_chan_spec npcm_adc_iio_channels[] = {
-> +	NPCM_ADC_CHAN(0),
-> +	NPCM_ADC_CHAN(1),
-> +	NPCM_ADC_CHAN(2),
-> +	NPCM_ADC_CHAN(3),
-> +	NPCM_ADC_CHAN(4),
-> +	NPCM_ADC_CHAN(5),
-> +	NPCM_ADC_CHAN(6),
-> +	NPCM_ADC_CHAN(7),
-> +};
-> +
-> +static irqreturn_t npcm_adc_isr(int irq, void *data)
-> +{
-> +	u32 regtemp = 0;
-
-initialization not needed
-
-> +	struct iio_dev *indio_dev = data;
-> +	struct npcm_adc *info = iio_priv(indio_dev);
-> +
-> +	regtemp = ioread32(info->regs + NPCM_ADCCON);
-> +	if (regtemp & NPCM_ADCCON_ADC_INT_ST) {
-> +		iowrite32(regtemp, info->regs + NPCM_ADCCON);
-> +		wake_up_interruptible(&info->wq);
-> +		info->int_status = true;
-> +	}
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static int npcm_adc_read(struct npcm_adc *info, int *val, u8 channel)
-> +{
-> +	int ret;
-> +	u32 regtemp = 0;
-
-initialization not needed
-> +
-> +	/* Select ADC channal */
-
-channel
-
-> +	regtemp = ioread32(info->regs + NPCM_ADCCON);
-> +	regtemp &= ~NPCM_ADCCON_CH_MASK;
-> +	iowrite32(regtemp | NPCM_ADCCON_CH(channel) |
-> +		  NPCM_ADCCON_ADC_CONV, info->regs + NPCM_ADCCON);
-> +
-> +	info->int_status = false;
-
-this might be racy; shouldn't int_status be set to false before starting 
-the conversion
-
-> +	ret = wait_event_interruptible_timeout(info->wq, info->int_status,
-> +					       msecs_to_jiffies(10));
-> +	if (ret == 0) {
-> +		regtemp = ioread32(info->regs + NPCM_ADCCON);
-> +		if ((regtemp & NPCM_ADCCON_ADC_CONV) && info->rst_regmap) {
-> +			/* if conversion failed - reset ADC module */
-> +			regmap_write(info->rst_regmap, IPSRST1_OFFSET,
-> +				     IPSRST1_ADC_RST);
-> +			msleep(100);
-> +			regmap_write(info->rst_regmap, IPSRST1_OFFSET, 0x0);
-> +			msleep(100);
-> +
-> +			/* Enable ADC and start conversion Module */
-
-module (lowercase)
-
-> +			iowrite32(NPCM_ADC_ENABLE | NPCM_ADCCON_ADC_CONV,
-> +				  info->regs + NPCM_ADCCON);
-> +			dev_err(info->dev, "RESET ADC Complete\n");
-> +		}
-> +		return -ETIMEDOUT;
-> +	}
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	*val = NPCM_ADC_DATA_MASK(ioread32(info->regs + NPCM_ADCDATA));
-> +
-> +	return 0;
-> +}
-> +
-> +static int npcm_adc_read_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan, int *val,
-> +			     int *val2, long mask)
-> +{
-> +	int ret;
-> +	struct npcm_adc *info = iio_priv(indio_dev);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		mutex_lock(&indio_dev->mlock);
-> +		ret = npcm_adc_read(info, val, chan->channel);
-> +		if (ret) {
-> +			dev_err(info->dev, "NPCM ADC read failed\n");
-> +			mutex_unlock(&indio_dev->mlock);
-> +			return ret;
-> +		}
-> +		mutex_unlock(&indio_dev->mlock);
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = info->vref_mv;
-> +		*val2 = NPCM_RESOLUTION_BITS;
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		*val = info->adc_sample_hz;
-> +		return IIO_VAL_INT;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct iio_info npcm_adc_iio_info = {
-> +	.read_raw = &npcm_adc_read_raw,
-> +};
-> +
-> +static const struct of_device_id npcm_adc_match[] = {
-> +	{ .compatible = "nuvoton,npcm750-adc", },
-> +	{ /* sentinel */ }
-> +};
-> +MODULE_DEVICE_TABLE(of, npcm_adc_match);
-> +
-> +static int npcm_adc_probe(struct platform_device *pdev)
-> +{
-> +	int ret;
-> +	int irq;
-> +	u32 div;
-> +	u32 reg_con;
-> +	struct resource *res;
-> +	struct npcm_adc *info;
-> +	struct iio_dev *indio_dev;
-> +	struct device *dev = &pdev->dev;
-> +	struct device_node *np = pdev->dev.of_node;
-> +
-> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +	info = iio_priv(indio_dev);
-> +
-> +	info->dev = &pdev->dev;
-> +
-> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	info->regs = devm_ioremap_resource(&pdev->dev, res);
-> +	if (IS_ERR(info->regs))
-> +		return PTR_ERR(info->regs);
-> +
-> +	info->adc_clk = devm_clk_get(&pdev->dev, NULL);
-> +	if (IS_ERR(info->adc_clk)) {
-> +		dev_warn(&pdev->dev, "ADC clock failed: can't read clk, Assuming ADC clock Rate 12.5MHz\n");
-
-assuming, rate (lowercase)
-
-> +		info->adc_sample_hz = ADC_DEFAULT_SAMPLE_RATE;
-> +	} else {
-> +		/* calculate ADC clock sample rate */
-> +		reg_con = ioread32(info->regs + NPCM_ADCCON);
-> +		div = reg_con & NPCM_ADCCON_DIV_MASK;
-> +		div = div >> NPCM_ADCCON_DIV_SHIFT;
-> +		info->adc_sample_hz = clk_get_rate(info->adc_clk) /
-> +			((div + 1) * 2);
-> +	}
-> +
-> +	if (of_device_is_compatible(np, "nuvoton,npcm750-adc")) {
-> +		info->rst_regmap = syscon_regmap_lookup_by_compatible
-> +			("nuvoton,npcm750-rst");
-> +		if (IS_ERR(info->rst_regmap)) {
-> +			dev_err(&pdev->dev, "Failed to find nuvoton,npcm750-rst\n");
-> +			ret = PTR_ERR(info->rst_regmap);
-> +			goto err_disable_clk;
-> +		}
-> +	}
-> +
-> +	reg_con = ioread32(info->regs + NPCM_ADCCON);
-> +	info->vref = devm_regulator_get_optional(&pdev->dev, "vref");
-> +	if (!IS_ERR(info->vref)) {
-> +		ret = regulator_enable(info->vref);
-> +		if (ret) {
-> +			dev_err(&pdev->dev, "Can't enable ADC reference voltage\n");
-> +			goto err_disable_clk;
-> +		}
-> +
-> +		ret = regulator_get_voltage(info->vref);
-> +		if (ret < 0)
-> +			goto err_disable_vref_reg;
-> +
-> +		info->vref_mv = ret / 1000;
-> +		iowrite32(reg_con & ~NPCM_ADCCON_REFSEL,
-> +			  info->regs + NPCM_ADCCON);
-> +	} else {
-> +		/* Any other error indicates that the regulator does exist */
-
-does not?
-
-> +		if (PTR_ERR(info->vref) != -ENODEV) {
-> +			goto err_disable_clk;
-> +			return PTR_ERR(info->vref);
-> +		}
-> +
-> +		/* Use internal reference */
-> +		info->vref_mv = INT_VREF_MV;
-> +		iowrite32(reg_con | NPCM_ADCCON_REFSEL,
-> +			  info->regs + NPCM_ADCCON);
-> +	}
-> +
-> +	irq = platform_get_irq(pdev, 0);
-> +	if (irq <= 0) {
-> +		dev_err(dev, "failed getting interrupt resource\n");
-> +		ret = -EINVAL;
-> +		goto err_disable_vref_reg;
-> +	}
-> +
-> +	ret = devm_request_irq(&pdev->dev, irq, npcm_adc_isr, 0,
-> +			       "NPCM_ADC", indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(dev, "failed requesting interrupt\n");
-> +		goto err_disable_vref_reg;
-> +	}
-> +
-> +	init_waitqueue_head(&info->wq);
-> +
-> +	platform_set_drvdata(pdev, indio_dev);
-> +	indio_dev->name = dev_name(&pdev->dev);
-> +	indio_dev->dev.parent = &pdev->dev;
-> +	indio_dev->info = &npcm_adc_iio_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = npcm_adc_iio_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(npcm_adc_iio_channels);
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "Couldn't register the device.\n");
-> +		goto err_disable_vref_reg;
-> +	}
-> +
-
-might be racy; I'd rather do this before _register()
-the device could be in a half-initialized state
-
-> +	reg_con = ioread32(info->regs + NPCM_ADCCON);
-> +	reg_con |= NPCM_ADC_ENABLE;
-> +
-> +	/* Enable the ADC Module */
-
-module (lowercase)
-
-> +	iowrite32(reg_con, info->regs + NPCM_ADCCON);
-> +
-> +	/* Start ADC conversion */
-> +	iowrite32(reg_con | NPCM_ADCCON_ADC_CONV, info->regs + NPCM_ADCCON);
-> +
-> +	pr_info("NPCM ADC driver probed, sample Rate %dHz\n",
-> +		info->adc_sample_hz);
-
-don't do this logging, it just clutters the log
-
-> +
-> +	return 0;
-> +
-> +err_disable_vref_reg:
-> +	if (!IS_ERR(info->vref))
-> +		regulator_disable(info->vref);
-> +err_disable_clk:
-> +	clk_disable_unprepare(info->adc_clk);
-> +
-> +	return ret;
-> +}
-> +
-> +static int npcm_adc_remove(struct platform_device *pdev)
-> +{
-> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> +	struct npcm_adc *info = iio_priv(indio_dev);
-> +	u32 regtemp = 0;
-
-no initialization needed
-
-> +
-> +	regtemp = ioread32(info->regs + NPCM_ADCCON);
-> +
-> +	/* Disable the ADC Module */
-> +	iowrite32(regtemp & ~NPCM_ADCCON_ADC_EN, info->regs + NPCM_ADCCON);
-> +
-> +	iio_device_unregister(indio_dev);
-> +	clk_disable_unprepare(info->adc_clk);
-> +	if (!IS_ERR(info->vref))
-> +		regulator_disable(info->vref);
-> +
-> +	return 0;
-> +}
-> +
-> +static struct platform_driver npcm_adc_driver = {
-> +	.probe		= npcm_adc_probe,
-> +	.remove		= npcm_adc_remove,
-> +	.driver		= {
-> +		.name	= "npcm_adc",
-> +		.of_match_table = npcm_adc_match,
-> +	},
-> +};
-> +
-> +module_platform_driver(npcm_adc_driver);
-> +
-> +MODULE_DESCRIPTION("Nuvoton NPCM ADC Sensor Driver");
-
-I'd rather drop 'sensor'
-
-> +MODULE_AUTHOR("Tomer Maimon <tomer.maimon@nuvoton.com>");
-> +MODULE_LICENSE("GPL v2");
-> 
-
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+@@ -21,6 +18,7 @@
+ #include <linux/iio/sysfs.h>
+ #include <linux/iio/trigger_consumer.h>
+ #include <linux/iio/triggered_buffer.h>
++#include <linux/kernel.h>
+ #include <linux/module.h>
+ 
+ #define SPS30_CRC8_POLYNOMIAL 0x31
+@@ -28,6 +26,9 @@
+ #define SPS30_MAX_READ_SIZE 48
+ /* sensor measures reliably up to 3000 ug / m3 */
+ #define SPS30_MAX_PM 3000
++/* minimum and maximum self cleaning intervals in seconds */
++#define SPS30_AUTO_CLEANING_INTERVAL_MIN 0
++#define SPS30_AUTO_CLEANING_INTERVAL_MAX 604800
+ 
+ /* SPS30 commands */
+ #define SPS30_START_MEAS 0x0010
+@@ -37,6 +38,9 @@
+ #define SPS30_READ_DATA 0x0300
+ #define SPS30_READ_SERIAL 0xd033
+ #define SPS30_START_FAN_CLEANING 0x5607
++#define SPS30_AUTO_CLEANING_INTERVAL 0x8004
++/* not a sensor command per se, used only to distinguish write from read */
++#define SPS30_READ_AUTO_CLEANING_INTERVAL 0x8005
+ 
+ enum {
+ 	PM1,
+@@ -45,6 +49,11 @@ enum {
+ 	PM10,
+ };
+ 
++enum {
++	RESET,
++	MEASURING,
++};
++
+ struct sps30_state {
+ 	struct i2c_client *client;
+ 	/*
+@@ -52,6 +61,7 @@ struct sps30_state {
+ 	 * Must be held whenever sequence of commands is to be executed.
+ 	 */
+ 	struct mutex lock;
++	int state;
+ };
+ 
+ DECLARE_CRC8_TABLE(sps30_crc8_table);
+@@ -107,6 +117,9 @@ static int sps30_do_cmd(struct sps30_state *state, u16 cmd, u8 *data, int size)
+ 	case SPS30_START_FAN_CLEANING:
+ 		ret = sps30_write_then_read(state, buf, 2, NULL, 0);
+ 		break;
++	case SPS30_READ_AUTO_CLEANING_INTERVAL:
++		buf[0] = SPS30_AUTO_CLEANING_INTERVAL >> 8;
++		buf[1] = (u8)SPS30_AUTO_CLEANING_INTERVAL;
+ 	case SPS30_READ_DATA_READY_FLAG:
+ 	case SPS30_READ_DATA:
+ 	case SPS30_READ_SERIAL:
+@@ -114,6 +127,15 @@ static int sps30_do_cmd(struct sps30_state *state, u16 cmd, u8 *data, int size)
+ 		size += size / 2;
+ 		ret = sps30_write_then_read(state, buf, 2, buf, size);
+ 		break;
++	case SPS30_AUTO_CLEANING_INTERVAL:
++		buf[2] = data[0];
++		buf[3] = data[1];
++		buf[4] = crc8(sps30_crc8_table, &buf[2], 2, CRC8_INIT_VALUE);
++		buf[5] = data[2];
++		buf[6] = data[3];
++		buf[7] = crc8(sps30_crc8_table, &buf[5], 2, CRC8_INIT_VALUE);
++		ret = sps30_write_then_read(state, buf, 8, NULL, 0);
++		break;
+ 	}
+ 
+ 	if (ret)
+@@ -170,6 +192,14 @@ static int sps30_do_meas(struct sps30_state *state, s32 *data, int size)
+ 	int i, ret, tries = 5;
+ 	u8 tmp[16];
+ 
++	if (state->state == RESET) {
++		ret = sps30_do_cmd(state, SPS30_START_MEAS, NULL, 0);
++		if (ret)
++			return ret;
++
++		state->state = MEASURING;
++	}
++
+ 	while (tries--) {
+ 		ret = sps30_do_cmd(state, SPS30_READ_DATA_READY_FLAG, tmp, 2);
+ 		if (ret)
+@@ -276,6 +306,24 @@ static int sps30_read_raw(struct iio_dev *indio_dev,
+ 	return -EINVAL;
+ }
+ 
++static int sps30_do_cmd_reset(struct sps30_state *state)
++{
++	int ret;
++
++	ret = sps30_do_cmd(state, SPS30_RESET, NULL, 0);
++	msleep(300);
++	/*
++	 * Power-on-reset causes sensor to produce some glitch on i2c bus and
++	 * some controllers end up in error state. Recover simply by placing
++	 * some data on the bus, for example STOP_MEAS command, which
++	 * is NOP in this case.
++	 */
++	sps30_do_cmd(state, SPS30_STOP_MEAS, NULL, 0);
++	state->state = RESET;
++
++	return ret;
++}
++
+ static ssize_t start_cleaning_store(struct device *dev,
+ 				    struct device_attribute *attr,
+ 				    const char *buf, size_t len)
+@@ -296,10 +344,73 @@ static ssize_t start_cleaning_store(struct device *dev,
+ 	return len;
+ }
+ 
++static ssize_t cleaning_interval_show(struct device *dev,
++				      struct device_attribute *attr,
++				      char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct sps30_state *state = iio_priv(indio_dev);
++	u8 tmp[4];
++	int ret;
++
++	mutex_lock(&state->lock);
++	ret = sps30_do_cmd(state, SPS30_READ_AUTO_CLEANING_INTERVAL, tmp, 4);
++	mutex_unlock(&state->lock);
++	if (ret)
++		return ret;
++
++	return sprintf(buf, "%d %d %d\n", get_unaligned_be32(tmp),
++		       SPS30_AUTO_CLEANING_INTERVAL_MIN,
++		       SPS30_AUTO_CLEANING_INTERVAL_MAX);
++}
++
++static ssize_t cleaning_interval_store(struct device *dev,
++				       struct device_attribute *attr,
++				       const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct sps30_state *state = iio_priv(indio_dev);
++	int val, ret;
++	u8 tmp[4];
++
++	if (kstrtoint(buf, 0, &val))
++		return -EINVAL;
++
++	if ((val < SPS30_AUTO_CLEANING_INTERVAL_MIN) &&
++	    (val > SPS30_AUTO_CLEANING_INTERVAL_MAX))
++		return -EINVAL;
++
++	put_unaligned_be32(val, tmp);
++
++	mutex_lock(&state->lock);
++	ret = sps30_do_cmd(state, SPS30_AUTO_CLEANING_INTERVAL, tmp, 0);
++	if (ret) {
++		mutex_unlock(&state->lock);
++		return ret;
++	}
++
++	msleep(20);
++
++	/*
++	 * sensor requires reset in order to return up to date self cleaning
++	 * period
++	 */
++	ret = sps30_do_cmd_reset(state);
++	if (ret)
++		dev_warn(dev,
++			 "interval changed but reads will return the old value\n");
++
++	mutex_unlock(&state->lock);
++
++	return len;
++}
++
+ static IIO_DEVICE_ATTR_WO(start_cleaning, 0);
++static IIO_DEVICE_ATTR_RW(cleaning_interval, 0);
+ 
+ static struct attribute *sps30_attrs[] = {
+ 	&iio_dev_attr_start_cleaning.dev_attr.attr,
++	&iio_dev_attr_cleaning_interval.dev_attr.attr,
+ 	NULL
+ };
+ 
+@@ -362,6 +473,7 @@ static int sps30_probe(struct i2c_client *client)
+ 	state = iio_priv(indio_dev);
+ 	i2c_set_clientdata(client, indio_dev);
+ 	state->client = client;
++	state->state = RESET;
+ 	indio_dev->dev.parent = &client->dev;
+ 	indio_dev->info = &sps30_info;
+ 	indio_dev->name = client->name;
+@@ -373,19 +485,11 @@ static int sps30_probe(struct i2c_client *client)
+ 	mutex_init(&state->lock);
+ 	crc8_populate_msb(sps30_crc8_table, SPS30_CRC8_POLYNOMIAL);
+ 
+-	ret = sps30_do_cmd(state, SPS30_RESET, NULL, 0);
++	ret = sps30_do_cmd_reset(state);
+ 	if (ret) {
+ 		dev_err(&client->dev, "failed to reset device\n");
+ 		return ret;
+ 	}
+-	msleep(300);
+-	/*
+-	 * Power-on-reset causes sensor to produce some glitch on i2c bus and
+-	 * some controllers end up in error state. Recover simply by placing
+-	 * some data on the bus, for example STOP_MEAS command, which
+-	 * is NOP in this case.
+-	 */
+-	sps30_do_cmd(state, SPS30_STOP_MEAS, NULL, 0);
+ 
+ 	ret = sps30_do_cmd(state, SPS30_READ_SERIAL, buf, sizeof(buf));
+ 	if (ret) {
+@@ -395,12 +499,6 @@ static int sps30_probe(struct i2c_client *client)
+ 	/* returned serial number is already NUL terminated */
+ 	dev_info(&client->dev, "serial number: %s\n", buf);
+ 
+-	ret = sps30_do_cmd(state, SPS30_START_MEAS, NULL, 0);
+-	if (ret) {
+-		dev_err(&client->dev, "failed to start measurement\n");
+-		return ret;
+-	}
+-
+ 	ret = devm_add_action_or_reset(&client->dev, sps30_stop_meas, state);
+ 	if (ret)
+ 		return ret;
 -- 
+2.20.1
 
-Peter Meerwald-Stadler
-Mobile: +43 664 24 44 418
