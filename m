@@ -8,53 +8,53 @@ X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA58C43387
-	for <linux-iio@archiver.kernel.org>; Thu, 27 Dec 2018 21:50:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 006CEC43387
+	for <linux-iio@archiver.kernel.org>; Thu, 27 Dec 2018 21:50:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7747521901
-	for <linux-iio@archiver.kernel.org>; Thu, 27 Dec 2018 21:50:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B4172214C6
+	for <linux-iio@archiver.kernel.org>; Thu, 27 Dec 2018 21:50:56 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.b="kD97fW8f"
+	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.b="MZEWHRlx"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730301AbeL0Vur (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 27 Dec 2018 16:50:47 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:38586 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730096AbeL0Vur (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Dec 2018 16:50:47 -0500
-Received: by mail-wr1-f65.google.com with SMTP id v13so19433115wrw.5;
-        Thu, 27 Dec 2018 13:50:46 -0800 (PST)
+        id S1726845AbeL0Vuw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 27 Dec 2018 16:50:52 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:51276 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730257AbeL0Vuu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Dec 2018 16:50:50 -0500
+Received: by mail-wm1-f65.google.com with SMTP id b11so17714072wmj.1;
+        Thu, 27 Dec 2018 13:50:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=googlemail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=vwjI45tfNGokg0tQ5bvI2hO5i8EXM3XX5a012DEAbX0=;
-        b=kD97fW8f4BIW1Dp2BscUjoKLy6dxZKcu/RDYP0FusvauFwMXuNiBIjOS4H22WWWm/U
-         gUwGq+ox9b2Dxs2kyyNq8vO2/CSEtqKsQanjvDqwSYti+BzQi/EsDS8Xsn7RmS2OO6vW
-         kg5Fpht89pPLhjreYktKtcDeuclxUEc2Oax4pTTwEknSwZVderdQrGI5roanjllObz+1
-         R9xyJ4UlENObC/qrxlgvgVmwW7O0zEIi3uYWOeRwwmRvLNT0LInKSEbySLn/jfbf0UzP
-         4wCjIOHssZ5zWArdqD4f0v7w9EHqYrKPE3dxaDLbjkZ4E9x+Yf0Mot8uxH+9CjNbUEXj
-         EIBw==
+        bh=lpJZNxi0lfyjPq2DOZ1N4ZgeJo5jnwrwv6zYfdTu/XE=;
+        b=MZEWHRlxukr3TVr/+J9GcVck7lzhvcJo7uRAyUDuYKhq3QM9as3zFVCmdWfTT1BTCL
+         Mo0BEQ/Oc1hFiVUVwOwITnUQTPEWEz7kR4uDnrCwVM1HzcE2b4R8bVYgG+Ead57WeJFd
+         pZhqSAKhUnTbQ0tKBicrWo7RbqpxsyrQWagnhF4Xc07JyGAYlr6vjzoXXBueQ33TRJEh
+         5gRx2KUOulz+JSVhRLUyR++9PhYUb+2rIxlM5rFFt4LFyetLo2BHwKHWcoQsOoywOyTS
+         f837w8nRT835Ns5lZ8NGLAdHOuqCQLa674Cn89RR07MgmC4pT+j0PH+ZDjZYgS9BDjq8
+         AAFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=vwjI45tfNGokg0tQ5bvI2hO5i8EXM3XX5a012DEAbX0=;
-        b=IO7PVNWszNVVfqW2kmgY7wAr1tF6Nm+ZYrci/o9qU7e8RfVT8Ha9xJCTk2lsYrFk4m
-         criXTKwQ1IDGYeagPHSBcEGkwklBE22nbsS9DdZDKSIbPiZ6JGSFbGk+cWdh7Sd1LkC9
-         lPD28rQIQCy+shgyxlm4t46N2wY+WAraymPWxBhrP8rwIouMN98k6bMH68Ihny/Z2zIJ
-         013M61CHgwJD+0/5aJ/8HkvB40cpmneynVJmbfHRChzmpE6FMlgu74mK1P37Udb5PA4I
-         BAysbKksi+xqKjBkwjOw5wO6r42mfV83kVCDUOPferZRkDYkYMheN/d7YpL4FA7MIt6q
-         nYaA==
-X-Gm-Message-State: AJcUukfq6YxcoYJ/3trUFWG+E1l6k6yxCa8CVLRYG76NNQO0rtKIceza
-        EQCg55nPYqlawBhJcmoG2kaNkYgL
-X-Google-Smtp-Source: ALg8bN5aFigp/wAZszU57y2/4eApQU0EgVujJSumDoMaGdpnm99RxIlzwQ/C/S5x71cqzLPyFlSECA==
-X-Received: by 2002:adf:81b6:: with SMTP id 51mr24928584wra.240.1545947445287;
-        Thu, 27 Dec 2018 13:50:45 -0800 (PST)
+        bh=lpJZNxi0lfyjPq2DOZ1N4ZgeJo5jnwrwv6zYfdTu/XE=;
+        b=jeIbPWLRVwS+wYm3snj7XZBd0B1ushyn1V3wWiRc5ee65l8rqEwS6QJdWsGCsx8tgm
+         qEf97RO9SfWK7tPmpbuUDq2V3B6vbOZE1HKnc/RiWbwQZMRpNFtWDxJDsIniQQRuVZZE
+         yweGx0cZ/nX2D9qjswjMokgdo0k0YKHldBOlU2SCuqdHbiIuPDSAplj56KVmCVDKCIzr
+         RXJbEjROdMQqKbVFxl2z3CqRxOVxVXjBKtA9nMS2VHFpvyX1aKqcEWd9/3c161NDFyxw
+         Smun4KJo1AUHtnHyXQyczcD0qRK3OshzNowETEuFG+bPApMEMHwR/Fu0VJIbn3U0ky9x
+         u39A==
+X-Gm-Message-State: AJcUukeJVtx81yOA/VDt3r+E+wN3V0aomcZUQ9w32c8gKPscx4ReYI2r
+        ambwq0wTDkxYv8O697LYRvU=
+X-Google-Smtp-Source: ALg8bN4LwXOC6Od3bQrCvJ5wI00pK1Br2wvc86MuMB8vExxb417vahgIsH0SVF7dTI6iI9phpIo4qg==
+X-Received: by 2002:a1c:4807:: with SMTP id v7mr22944033wma.53.1545947446671;
+        Thu, 27 Dec 2018 13:50:46 -0800 (PST)
 Received: from blackbox.darklights.net (p200300DCD711B00071582302E30AD474.dip0.t-ipconnect.de. [2003:dc:d711:b000:7158:2302:e30a:d474])
-        by smtp.googlemail.com with ESMTPSA id m4sm34538164wmi.3.2018.12.27.13.50.44
+        by smtp.googlemail.com with ESMTPSA id m4sm34538164wmi.3.2018.12.27.13.50.45
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 27 Dec 2018 13:50:44 -0800 (PST)
+        Thu, 27 Dec 2018 13:50:46 -0800 (PST)
 From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 To:     linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
         linux-iio@vger.kernel.org, jic23@kernel.org, lars@metafoo.de,
@@ -62,9 +62,9 @@ To:     linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
 Cc:     balbes-150@yandex.ru, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH 1/2] dt-bindings: iio: adc: meson-saradc: update temperature sensor support
-Date:   Thu, 27 Dec 2018 22:50:19 +0100
-Message-Id: <20181227215020.9803-2-martin.blumenstingl@googlemail.com>
+Subject: [PATCH 2/2] iio: adc: meson-saradc: enable the temperature sensor two more SoCs
+Date:   Thu, 27 Dec 2018 22:50:20 +0100
+Message-Id: <20181227215020.9803-3-martin.blumenstingl@googlemail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20181227215020.9803-1-martin.blumenstingl@googlemail.com>
 References: <20181227215020.9803-1-martin.blumenstingl@googlemail.com>
@@ -75,33 +75,107 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Meson8b and Meson8m2 use a 5-bit wide TSC (temperature sensor
-coefficient). The SAR ADC registers however can only store (the lower)
-4 bits. The fifth (upper-most) bit is stored inside the
-MESON_HHI_DPLL_TOP_0[9] register from the HHI register area.
-This adds a syscon property to the HHI register area so a driver can
-fetch the HHI register map and store the fifth TSC bit in there.
+Meson8b and Meson8m2 use the same logic to convert the ADC register
+value to celsius, which is different from Meson8:
+- Meson8 has different multiplier and divider values
+- Meson8 uses a 4-bit TSC (temperature sensor coefficient) which fits
+  into the 4-bit field in the MESON_SAR_ADC_DELTA_10 register:
+  MESON_SAR_ADC_DELTA_10_TS_C_MASK. Meson8b and Meson8m2 have a 5-bit
+  TSC which requires writing the upper-most bit into the
+  MESON_HHI_DPLL_TOP_0[9] register from the HHI register area.
+
+This adds support for the temperature sensor on the Meson8b and Meson8m2
+SoCs by implementing the logic to write the upper-most TSC bit into the
+HHI register area. The SoC-specific values (temperature_trimming_bits,
+temperature_multiplier, temperature_divider) are added - these simply
+integrate into the existing infrastructure (which was implemented for
+Meson8) and thus require no further changes to the existing temperature
+calculation logic.
 
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 ---
- .../devicetree/bindings/iio/adc/amlogic,meson-saradc.txt      | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/iio/adc/meson_saradc.c | 33 +++++++++++++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt
-index 325090e43ce6..75c775954102 100644
---- a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt
-+++ b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt
-@@ -23,6 +23,10 @@ Required properties:
- - #io-channel-cells: must be 1, see ../iio-bindings.txt
+diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
+index 729becb2d3d9..f8600fbcdfe3 100644
+--- a/drivers/iio/adc/meson_saradc.c
++++ b/drivers/iio/adc/meson_saradc.c
+@@ -26,6 +26,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/regmap.h>
+ #include <linux/regulator/consumer.h>
++#include <linux/mfd/syscon.h>
  
- Optional properties:
-+- amlogic,hhi-sysctrl:	phandle to the syscon which contains the 5th bit
-+			of the TSC (temperature sensor coefficient) on
-+			Meson8b and Meson8m2 (which used to calibrate the
-+			temperature sensor)
- - nvmem-cells:		phandle to the temperature_calib eFuse cells
- - nvmem-cell-names:	if present (to enable the temperature sensor
- 			calibration) this must contain "temperature_calib"
+ #define MESON_SAR_ADC_REG0					0x00
+ 	#define MESON_SAR_ADC_REG0_PANEL_DETECT			BIT(31)
+@@ -174,6 +175,9 @@
+ #define MESON_SAR_ADC_EFUSE_BYTE3_UPPER_ADC_VAL			GENMASK(6, 0)
+ #define MESON_SAR_ADC_EFUSE_BYTE3_IS_CALIBRATED			BIT(7)
+ 
++#define MESON_HHI_DPLL_TOP_0					0x318
++#define MESON_HHI_DPLL_TOP_0_TSC_BIT4				BIT(9)
++
+ /* for use with IIO_VAL_INT_PLUS_MICRO */
+ #define MILLION							1000000
+ 
+@@ -280,6 +284,7 @@ struct meson_sar_adc_priv {
+ 	struct completion			done;
+ 	int					calibbias;
+ 	int					calibscale;
++	struct regmap				*tsc_regmap;
+ 	bool					temperature_sensor_calibrated;
+ 	u8					temperature_sensor_coefficient;
+ 	u16					temperature_sensor_adc_val;
+@@ -727,6 +732,15 @@ static int meson_sar_adc_temp_sensor_init(struct iio_dev *indio_dev)
+ 		return ret;
+ 	}
+ 
++	priv->tsc_regmap =
++		syscon_regmap_lookup_by_phandle(indio_dev->dev.parent->of_node,
++						"amlogic,hhi-sysctrl");
++	if (IS_ERR(priv->tsc_regmap)) {
++		dev_err(indio_dev->dev.parent,
++			"failed to get amlogic,hhi-sysctrl regmap\n");
++		return PTR_ERR(priv->tsc_regmap);
++	}
++
+ 	read_len = MESON_SAR_ADC_EFUSE_BYTES;
+ 	buf = nvmem_cell_read(temperature_calib, &read_len);
+ 	if (IS_ERR(buf)) {
+@@ -861,6 +875,22 @@ static int meson_sar_adc_init(struct iio_dev *indio_dev)
+ 				    priv->temperature_sensor_coefficient);
+ 		regmap_update_bits(priv->regmap, MESON_SAR_ADC_DELTA_10,
+ 				   MESON_SAR_ADC_DELTA_10_TS_C_MASK, regval);
++
++		if (priv->param->temperature_trimming_bits == 5) {
++			if (priv->temperature_sensor_coefficient & BIT(4))
++				regval = MESON_HHI_DPLL_TOP_0_TSC_BIT4;
++			else
++				regval = 0;
++
++			/*
++			 * bit [4] (the 5th bit when starting to count at 1)
++			 * of the TSC is located in the HHI register area.
++			 */
++			regmap_update_bits(priv->tsc_regmap,
++					   MESON_HHI_DPLL_TOP_0,
++					   MESON_HHI_DPLL_TOP_0_TSC_BIT4,
++					   regval);
++		}
+ 	} else {
+ 		regmap_update_bits(priv->regmap, MESON_SAR_ADC_DELTA_10,
+ 				   MESON_SAR_ADC_DELTA_10_TS_REVE1, 0);
+@@ -1064,6 +1094,9 @@ static const struct meson_sar_adc_param meson_sar_adc_meson8b_param = {
+ 	.bandgap_reg = MESON_SAR_ADC_DELTA_10,
+ 	.regmap_config = &meson_sar_adc_regmap_config_meson8,
+ 	.resolution = 10,
++	.temperature_trimming_bits = 5,
++	.temperature_multiplier = 10,
++	.temperature_divider = 32,
+ };
+ 
+ static const struct meson_sar_adc_param meson_sar_adc_gxbb_param = {
 -- 
 2.20.1
 
