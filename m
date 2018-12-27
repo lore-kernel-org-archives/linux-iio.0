@@ -2,98 +2,106 @@ Return-Path: <SRS0=GgFY=PE=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.7 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1961CC43387
-	for <linux-iio@archiver.kernel.org>; Thu, 27 Dec 2018 21:09:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA58C43387
+	for <linux-iio@archiver.kernel.org>; Thu, 27 Dec 2018 21:50:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D78D52148D
-	for <linux-iio@archiver.kernel.org>; Thu, 27 Dec 2018 21:09:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1545944963;
-	bh=xV/Jk3cOlRR+s2/rxUFitc2AsZTrqa+i6SySG1cA548=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=kI4A/FKxAM7+oO7B8gmJNMdPOSSzZCCm0J+L9pYr3d31Mb9D3vdVEdNWpSgLH6Cgo
-	 wgqQtO/2D5sxI6rGVAcAB1gRja3nJulY7xyfK8akVIeXY5MwHXpuDyvJuPKToKsouX
-	 Pa3JNGpER0bvZnA7nuFUKGw1e8/qEdGrQKqFzbj8=
+	by mail.kernel.org (Postfix) with ESMTP id 7747521901
+	for <linux-iio@archiver.kernel.org>; Thu, 27 Dec 2018 21:50:48 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.b="kD97fW8f"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727007AbeL0VJX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 27 Dec 2018 16:09:23 -0500
-Received: from mail-it1-f196.google.com ([209.85.166.196]:36239 "EHLO
-        mail-it1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730175AbeL0VJW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Dec 2018 16:09:22 -0500
-Received: by mail-it1-f196.google.com with SMTP id c9so25112212itj.1;
-        Thu, 27 Dec 2018 13:09:21 -0800 (PST)
+        id S1730301AbeL0Vur (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 27 Dec 2018 16:50:47 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:38586 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730096AbeL0Vur (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Dec 2018 16:50:47 -0500
+Received: by mail-wr1-f65.google.com with SMTP id v13so19433115wrw.5;
+        Thu, 27 Dec 2018 13:50:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=vwjI45tfNGokg0tQ5bvI2hO5i8EXM3XX5a012DEAbX0=;
+        b=kD97fW8f4BIW1Dp2BscUjoKLy6dxZKcu/RDYP0FusvauFwMXuNiBIjOS4H22WWWm/U
+         gUwGq+ox9b2Dxs2kyyNq8vO2/CSEtqKsQanjvDqwSYti+BzQi/EsDS8Xsn7RmS2OO6vW
+         kg5Fpht89pPLhjreYktKtcDeuclxUEc2Oax4pTTwEknSwZVderdQrGI5roanjllObz+1
+         R9xyJ4UlENObC/qrxlgvgVmwW7O0zEIi3uYWOeRwwmRvLNT0LInKSEbySLn/jfbf0UzP
+         4wCjIOHssZ5zWArdqD4f0v7w9EHqYrKPE3dxaDLbjkZ4E9x+Yf0Mot8uxH+9CjNbUEXj
+         EIBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=weg7pla2q9bSgFWHonLZvXPSCtSpISrecsa2XwV6AhA=;
-        b=K6swmPofP0f8gJezRZWFl9zD7Y5qJrCHULE/K/4fkD3xJdv6c4aA1FG2TC7Eu4dZc+
-         SlZHa4kBs70y5NvM6ABqFmq5sJRDvvF1vhwldlzULqubvfQnQN1f+RJHePe5DF3rdqE+
-         50tyflfhINCGJBPSF5aocN7M706E1aG5m8NaxG0qbEBl2NyYnEH0sSeT53mAfabIxcX2
-         C91GV53U9i+Eo3OH9OeWXQRM2Sp8gwZvk0zI9WsqP76TZyTLBZtpbYUzvydb+859VwEv
-         KPUf08PuVrIvOc1X0okrSiu1WLXFM4ToKhpk9aHJ2hNiyuoFmw4dET9uKpEDcJ1B0vKW
-         jZCg==
-X-Gm-Message-State: AA+aEWak/wa3ZsuAwWs6R9yaxHoMf1/ZCSCsTq1gyTwemuHbHQ19u3uI
-        PRpJyIix/8bZNpbRxR2ZfA==
-X-Google-Smtp-Source: AFSGD/WU+k20KlzA2v6QC0yru2HBYF0Ru3P+/c2xqN31sS+ZHmlXqNdY1ZgaAMi9yly/8lt4l3J/hQ==
-X-Received: by 2002:a24:f2c1:: with SMTP id j184mr15672381ith.35.1545944960950;
-        Thu, 27 Dec 2018 13:09:20 -0800 (PST)
-Received: from localhost ([24.51.61.172])
-        by smtp.gmail.com with ESMTPSA id x79sm13849465ita.34.2018.12.27.13.09.20
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 27 Dec 2018 13:09:20 -0800 (PST)
-Date:   Thu, 27 Dec 2018 15:09:19 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Anson Huang <anson.huang@nxp.com>
-Cc:     "jic23@kernel.org" <jic23@kernel.org>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "martink@posteo.de" <martink@posteo.de>,
-        Leonard Crestez <leonard.crestez@nxp.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "gustavo@embeddedor.com" <gustavo@embeddedor.com>,
-        "rtresidd@electromag.com.au" <rtresidd@electromag.com.au>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: Re: [PATCH V6 1/2] dt-bindings: iio: accel: mma8452: add power
- supplies  property
-Message-ID: <20181227210919.GA25796@bogus>
-References: <1545555462-16121-1-git-send-email-Anson.Huang@nxp.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=vwjI45tfNGokg0tQ5bvI2hO5i8EXM3XX5a012DEAbX0=;
+        b=IO7PVNWszNVVfqW2kmgY7wAr1tF6Nm+ZYrci/o9qU7e8RfVT8Ha9xJCTk2lsYrFk4m
+         criXTKwQ1IDGYeagPHSBcEGkwklBE22nbsS9DdZDKSIbPiZ6JGSFbGk+cWdh7Sd1LkC9
+         lPD28rQIQCy+shgyxlm4t46N2wY+WAraymPWxBhrP8rwIouMN98k6bMH68Ihny/Z2zIJ
+         013M61CHgwJD+0/5aJ/8HkvB40cpmneynVJmbfHRChzmpE6FMlgu74mK1P37Udb5PA4I
+         BAysbKksi+xqKjBkwjOw5wO6r42mfV83kVCDUOPferZRkDYkYMheN/d7YpL4FA7MIt6q
+         nYaA==
+X-Gm-Message-State: AJcUukfq6YxcoYJ/3trUFWG+E1l6k6yxCa8CVLRYG76NNQO0rtKIceza
+        EQCg55nPYqlawBhJcmoG2kaNkYgL
+X-Google-Smtp-Source: ALg8bN5aFigp/wAZszU57y2/4eApQU0EgVujJSumDoMaGdpnm99RxIlzwQ/C/S5x71cqzLPyFlSECA==
+X-Received: by 2002:adf:81b6:: with SMTP id 51mr24928584wra.240.1545947445287;
+        Thu, 27 Dec 2018 13:50:45 -0800 (PST)
+Received: from blackbox.darklights.net (p200300DCD711B00071582302E30AD474.dip0.t-ipconnect.de. [2003:dc:d711:b000:7158:2302:e30a:d474])
+        by smtp.googlemail.com with ESMTPSA id m4sm34538164wmi.3.2018.12.27.13.50.44
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 27 Dec 2018 13:50:44 -0800 (PST)
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To:     linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org, jic23@kernel.org, lars@metafoo.de,
+        pmeerw@pmeerw.net, robh+dt@kernel.org, mark.rutland@arm.com
+Cc:     balbes-150@yandex.ru, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH 1/2] dt-bindings: iio: adc: meson-saradc: update temperature sensor support
+Date:   Thu, 27 Dec 2018 22:50:19 +0100
+Message-Id: <20181227215020.9803-2-martin.blumenstingl@googlemail.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20181227215020.9803-1-martin.blumenstingl@googlemail.com>
+References: <20181227215020.9803-1-martin.blumenstingl@googlemail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1545555462-16121-1-git-send-email-Anson.Huang@nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 23 Dec 2018 09:02:27 +0000, Anson Huang wrote:
-> The accelerometer's power supplies could be controllable on some
-> platforms, add property "vdd/vddio" power supply to let device tree
-> to pass phandles to the regulators to driver.
-> 
-> Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
-> ---
-> No change since V5.
-> ---
->  Documentation/devicetree/bindings/iio/accel/mma8452.txt | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
+Meson8b and Meson8m2 use a 5-bit wide TSC (temperature sensor
+coefficient). The SAR ADC registers however can only store (the lower)
+4 bits. The fifth (upper-most) bit is stored inside the
+MESON_HHI_DPLL_TOP_0[9] register from the HHI register area.
+This adds a syscon property to the HHI register area so a driver can
+fetch the HHI register map and store the fifth TSC bit in there.
 
-Please add Acked-by/Reviewed-by tags when posting new versions. However,
-there's no need to repost patches *only* to add the tags. The upstream
-maintainer will do that for acks received on the version they apply.
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ .../devicetree/bindings/iio/adc/amlogic,meson-saradc.txt      | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-If a tag was not added on purpose, please state why and what changed.
+diff --git a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt
+index 325090e43ce6..75c775954102 100644
+--- a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt
++++ b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt
+@@ -23,6 +23,10 @@ Required properties:
+ - #io-channel-cells: must be 1, see ../iio-bindings.txt
+ 
+ Optional properties:
++- amlogic,hhi-sysctrl:	phandle to the syscon which contains the 5th bit
++			of the TSC (temperature sensor coefficient) on
++			Meson8b and Meson8m2 (which used to calibrate the
++			temperature sensor)
+ - nvmem-cells:		phandle to the temperature_calib eFuse cells
+ - nvmem-cell-names:	if present (to enable the temperature sensor
+ 			calibration) this must contain "temperature_calib"
+-- 
+2.20.1
+
