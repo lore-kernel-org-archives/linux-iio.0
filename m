@@ -1,109 +1,63 @@
-Return-Path: <SRS0=GgFY=PE=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=LpUi=PF=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04130C43387
-	for <linux-iio@archiver.kernel.org>; Thu, 27 Dec 2018 21:51:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABE18C43387
+	for <linux-iio@archiver.kernel.org>; Fri, 28 Dec 2018 08:52:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C7E02214C6
-	for <linux-iio@archiver.kernel.org>; Thu, 27 Dec 2018 21:51:04 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.b="MvR42ypG"
+	by mail.kernel.org (Postfix) with ESMTP id 6ED272146F
+	for <linux-iio@archiver.kernel.org>; Fri, 28 Dec 2018 08:52:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730540AbeL0Vus (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 27 Dec 2018 16:50:48 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:35209 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726845AbeL0Vus (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Dec 2018 16:50:48 -0500
-Received: by mail-wm1-f67.google.com with SMTP id t200so6456231wmt.0;
-        Thu, 27 Dec 2018 13:50:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hGl6wDcv18nbdMCsHxKqHa15xVmZTDDMiXxC8PDTofU=;
-        b=MvR42ypGbUXKRDB3dpUyyzgsNMVVpHcnsUhotUvvXBaCiHtCtWt9sCiC2BBzgX/mVm
-         B7+5sCbZ6FUNmwk8sl2wFaJbxVl/BHK0Ox9HcVmO9C8X3NMp71ci6l75kQvq/K+Onc0V
-         CWadsSwcfq8V6mLnJjvyOMp0bsT1dVnvPt76D1oKc6ih+4T/PQ6kiJZ7bpj9WdnRBCAu
-         bREm7m1svtljiMwUng1ejHpvxhojCQkmLXaQhNdmHxEk/MHJAAS52uufDfDqLXn5491e
-         hU6L6Wwh1x0BLkbIOo20rQ391akgKRg08U6YDhOxGpg5TTvvE9xYWkTzP5qbZtBs4lWl
-         1yYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hGl6wDcv18nbdMCsHxKqHa15xVmZTDDMiXxC8PDTofU=;
-        b=DpNLiH9trH9XduZun5QtfcRbJe8AWVV/hQUetNaXwrCImD5ETMp8Iqe4bx3CAmokWq
-         1k4kADGdy2S+Mrg70h4eJ9et181OlR57smzJfRJjubgZLQYL4IYqjufGeI3l5Tw50h+Q
-         XMTmtbsrBMzq4wwjITSykvP53VObOQivCeUsEfQ35poMVE2WbBq0r4P/oV9UW7h011Q3
-         ZTEoUKb09FSwHTOE2UYRv5rH74Hw8xk2nlGQr1GCuzO5ndR3mv78WgwkAbA93JQED7z0
-         E9rEB++BljeA1hibLHdc7C4G2KR9FeD49TMizyr+8ASOdEdxD8y4UqwchUep817G5KiX
-         VMRw==
-X-Gm-Message-State: AJcUukeF/sZtig2OdX5CudbVK11Q30snUvMhwnpAQgKr2IMwI2PJqimP
-        P0xa7y+eZPFPeVAXPav7qs8=
-X-Google-Smtp-Source: ALg8bN6ieOhYIq1Kis9m7na7acyY2+nvXugjt1uuR7Dii8uadNTOEZZDjJAx2UYcFua+8zlMFsGBdA==
-X-Received: by 2002:a1c:8acd:: with SMTP id m196mr22837472wmd.120.1545947444131;
-        Thu, 27 Dec 2018 13:50:44 -0800 (PST)
-Received: from blackbox.darklights.net (p200300DCD711B00071582302E30AD474.dip0.t-ipconnect.de. [2003:dc:d711:b000:7158:2302:e30a:d474])
-        by smtp.googlemail.com with ESMTPSA id m4sm34538164wmi.3.2018.12.27.13.50.42
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 27 Dec 2018 13:50:42 -0800 (PST)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, jic23@kernel.org, lars@metafoo.de,
-        pmeerw@pmeerw.net, robh+dt@kernel.org, mark.rutland@arm.com
-Cc:     balbes-150@yandex.ru, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH 0/2] meson-saradc: temperature sensor support for Meson8b/Meson8m2
-Date:   Thu, 27 Dec 2018 22:50:18 +0100
-Message-Id: <20181227215020.9803-1-martin.blumenstingl@googlemail.com>
-X-Mailer: git-send-email 2.20.1
+        id S1729360AbeL1Iwd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 28 Dec 2018 03:52:33 -0500
+Received: from www381.your-server.de ([78.46.137.84]:41416 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729345AbeL1Iwd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 28 Dec 2018 03:52:33 -0500
+X-Greylist: delayed 1356 seconds by postgrey-1.27 at vger.kernel.org; Fri, 28 Dec 2018 03:52:32 EST
+Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
+        by www381.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <lars@metafoo.de>)
+        id 1gcnWl-0007pB-UN; Fri, 28 Dec 2018 09:29:55 +0100
+Received: from [188.174.112.20] (helo=[192.168.178.20])
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <lars@metafoo.de>)
+        id 1gcnWl-000XW6-OP; Fri, 28 Dec 2018 09:29:55 +0100
+Subject: Re: Loging int PlutoSDR
+To:     Kerry Miller <n0wiq@comcast.net>, linux-iio@vger.kernel.org
+References: <2569cb00-2759-f4c0-28e7-062a3e4a2f19@comcast.net>
+From:   Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <781e2c61-9f57-291a-141e-cdf64bbe936c@metafoo.de>
+Date:   Fri, 28 Dec 2018 09:29:55 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.3.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <2569cb00-2759-f4c0-28e7-062a3e4a2f19@comcast.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: lars@metafoo.de
+X-Virus-Scanned: Clear (ClamAV 0.100.2/25246/Fri Dec 28 02:06:38 2018)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This adds support for the temperature sensor on Meson8b and Meson8m2
-(both are sharing the same logic).
+Hi,
 
-These SoCs can use most of the existing infrastructure that we already
-have for Meson8:
-- parsing the TSC (calibration data) from an nvmem-cell
-- the math to calculate millicelsius from the register values
+On 12/23/18 12:40 PM, Kerry Miller wrote:
+> I have forgotten the PlutoSDR
+> ssh login and I don't remember where on the web I found that information
+> a year ago.
 
-What this series adds on top of the existing infrastructure:
-- The TSC data is 5-bit wide instead of 4-bit. The upper-most bit has t
-  be written into a register in the HHI area (which is outside the ADC
-  register space). Thus this adds a new device tree property to pass the
-  HHI syscon to the SAR ADC and we set up this register during SAR ADC
-  driver initialization
-- the multiplier and divider values (to convert the raw register value
-  to celsius / millicelsius) are different compared to Meson8
+You can find the ssh login details at
+https://wiki.analog.com/university/tools/pluto/drivers/linux#ssh_config
 
-This was successfully tested on multiple boards:
-- Meson8b Odroid-C1 (me)
-- Meson8b EC-100 (me)
-- Meson8m2 M8S (not upstream yet, me)
-- Meson8m2 MXIII-Plus (an earlier version of this series, Oleg Ivanov)
-
-
-Martin Blumenstingl (2):
-  dt-bindings: iio: adc: meson-saradc: update temperature sensor support
-  iio: adc: meson-saradc: enable the temperature sensor two more SoCs
-
- .../bindings/iio/adc/amlogic,meson-saradc.txt |  4 +++
- drivers/iio/adc/meson_saradc.c                | 33 +++++++++++++++++++
- 2 files changed, 37 insertions(+)
-
--- 
-2.20.1
+- Lars
 
