@@ -2,62 +2,203 @@ Return-Path: <SRS0=LpUi=PF=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABE18C43387
-	for <linux-iio@archiver.kernel.org>; Fri, 28 Dec 2018 08:52:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82F22C43387
+	for <linux-iio@archiver.kernel.org>; Fri, 28 Dec 2018 14:48:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6ED272146F
-	for <linux-iio@archiver.kernel.org>; Fri, 28 Dec 2018 08:52:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 448C920869
+	for <linux-iio@archiver.kernel.org>; Fri, 28 Dec 2018 14:48:33 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=elementarea-net.20150623.gappssmtp.com header.i=@elementarea-net.20150623.gappssmtp.com header.b="aWIE28Gw"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729360AbeL1Iwd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 28 Dec 2018 03:52:33 -0500
-Received: from www381.your-server.de ([78.46.137.84]:41416 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729345AbeL1Iwd (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 28 Dec 2018 03:52:33 -0500
-X-Greylist: delayed 1356 seconds by postgrey-1.27 at vger.kernel.org; Fri, 28 Dec 2018 03:52:32 EST
-Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
-        by www381.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <lars@metafoo.de>)
-        id 1gcnWl-0007pB-UN; Fri, 28 Dec 2018 09:29:55 +0100
-Received: from [188.174.112.20] (helo=[192.168.178.20])
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <lars@metafoo.de>)
-        id 1gcnWl-000XW6-OP; Fri, 28 Dec 2018 09:29:55 +0100
-Subject: Re: Loging int PlutoSDR
-To:     Kerry Miller <n0wiq@comcast.net>, linux-iio@vger.kernel.org
-References: <2569cb00-2759-f4c0-28e7-062a3e4a2f19@comcast.net>
-From:   Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <781e2c61-9f57-291a-141e-cdf64bbe936c@metafoo.de>
-Date:   Fri, 28 Dec 2018 09:29:55 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.3.0
-MIME-Version: 1.0
-In-Reply-To: <2569cb00-2759-f4c0-28e7-062a3e4a2f19@comcast.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: lars@metafoo.de
-X-Virus-Scanned: Clear (ClamAV 0.100.2/25246/Fri Dec 28 02:06:38 2018)
+        id S1731253AbeL1Osc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 28 Dec 2018 09:48:32 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:33966 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731236AbeL1Osc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 28 Dec 2018 09:48:32 -0500
+Received: by mail-ed1-f66.google.com with SMTP id b3so17754698ede.1
+        for <linux-iio@vger.kernel.org>; Fri, 28 Dec 2018 06:48:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=elementarea-net.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=UqZrBk/bDXnGiwPoVhGqa4oXoq27TAOZ7ISWzrMmnuI=;
+        b=aWIE28GwCgJBl+JGA25u2V3JkDXEqspi5KMixEs44SbKCyPm83ShC7YqOeilOyPey5
+         ubIljwb38m90s4vuJqHvD8Iva1oLH5OhUTqkkKAd1aHfuCt/26SycqZhNVdpHUhUUdWE
+         vPe96wovSuO60EnheH5sUBOH2aAQXwggWuuKx+NwJARs4xftVJBJ0BPjMdzfP8oANmL5
+         co39VfrDCDCutXZucQ++FnaBWyqYlVd10wLjsU/eqw7MkohwKHf4uCodA6WziVVzrYF1
+         7YYjzu87KrWQGy7u5IHuRK78OQXpfDc9JFhEoVCLQocyXdsDKGSrZivWYP1f2NfM4Ups
+         dKtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=UqZrBk/bDXnGiwPoVhGqa4oXoq27TAOZ7ISWzrMmnuI=;
+        b=RLNvLsT8aRNObmSvlCOijpZNkiIPPvRxdkwM4w3iZ3G2nf6DoK43QkpP2wmZvo/kui
+         P4IeY2n4Jqpj1wu8FG5nR/bYUulneR9fp4tWUi6K/E/DVN+GhDOpDLFZprepMLcDe8kc
+         mYBQq1N1RXC2zOht9vIZ+q10xSOhUNFU2q4YhdHgULCgNqKs7t4yfkNzsnZ1Wmk3OLOY
+         x+ZbKI5y6GV1jxXxi1sAF4JZv9RCEhYOzWs6XbgBlUM6zvYf04zw5Ks66F51tG5PpUCy
+         VIJJgKhXq4K885WRyHgJngWv1TyF2nkH6ARt9vQUWYw62sM7QHqViwCfJlMtAS0h21tK
+         4Jwg==
+X-Gm-Message-State: AA+aEWaSL23Gd2UMUGwqF9t9K+THRVHnu0bGAtC5Q6JteCswXu2cAxWe
+        rvv9gCvnPDthQSiG7ETWHofDYQ==
+X-Google-Smtp-Source: AFSGD/XskYoGNQkHLRaNcQoY1iKfsjO5nzqXdHuwOQCTCUAJOQc8SleAr3veSEcNikE5jofV/RAFwQ==
+X-Received: by 2002:a50:ccdd:: with SMTP id b29mr22319885edj.102.1546008509762;
+        Fri, 28 Dec 2018 06:48:29 -0800 (PST)
+Received: from ch-sta-l-li0012.sensirion.lokal ([209.206.26.2])
+        by smtp.gmail.com with ESMTPSA id w56sm13180478edb.72.2018.12.28.06.48.28
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 28 Dec 2018 06:48:28 -0800 (PST)
+From:   Andreas Brauchli <a.brauchli@elementarea.net>
+X-Google-Original-From: Andreas Brauchli <andreas.brauchli@sensirion.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Tomasz Duszynski <tduszyns@gmail.com>
+Cc:     andreas.brauchli@sensirion.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: chemical: sps30: add support for self cleaning
+Date:   Fri, 28 Dec 2018 15:47:47 +0100
+Message-Id: <20181228144747.15730-1-andreas.brauchli@sensirion.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20181222172346.7d520112@archlinux>
+References: <20181222172346.7d520112@archlinux>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi,
+On Sat, 22 Dec 2018 17:23:46 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-On 12/23/18 12:40 PM, Kerry Miller wrote:
-> I have forgotten the PlutoSDR
-> ssh login and I don't remember where on the web I found that information
-> a year ago.
+> On Tue, 18 Dec 2018 21:28:09 +0100
+> Tomasz Duszynski <tduszyns@gmail.com> wrote:
+> 
+> > Self cleaning is especially useful in cases where sensor undergoes
+> > frequent power on/off cycles. In such scenarios it is recommended to
+> > turn self cleaning at least once per week in order to maintain reliable
+> > measurements.
+> > 
+> > Self cleaning is activated by writing 1 to a dedicated attribute.
+> > Internal fan accelerates to its maximum speed and keeps spinning
+> > for about 10 seconds blowing out accumulated dust.
+> > 
+> > Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
+> Applied to the togreg branch of iio.git.   I took this today rather than
+> leaving it on the list for longer simply because I'm not sure I'll be
+> very timely in applying patches.
+> 
+> If anyone has any comments, it'll only be out as testing so we can
+> still modify if that make sense for at least the next couple of weeks.
 
-You can find the ssh login details at
-https://wiki.analog.com/university/tools/pluto/drivers/linux#ssh_config
+I backported and tested the whole series on a 4.9.53 raspberry pi with an SPS30.
 
-- Lars
+Tested-by: Andreas Brauchli <andreas.brauchli@sensirion.com>
 
+Cheers,
+Andreas
+
+> 
+> Thanks,
+> 
+> Jonathan
+> 
+> > ---
+> > v2:
+> >  * removed TODO item
+> >  * sensor cleaning is not measurement related per se so drop in_ prefix
+> > 
+> >  Documentation/ABI/testing/sysfs-bus-iio-sps30 |  8 +++++
+> >  drivers/iio/chemical/sps30.c                  | 35 ++++++++++++++++++-
+> >  2 files changed, 42 insertions(+), 1 deletion(-)
+> >  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-sps30
+> > 
+> > diff --git a/Documentation/ABI/testing/sysfs-bus-iio-sps30
+> b/Documentation/ABI/testing/sysfs-bus-iio-sps30
+> > new file mode 100644
+> > index 000000000000..e7ce2c57635e
+> > --- /dev/null
+> > +++ b/Documentation/ABI/testing/sysfs-bus-iio-sps30
+> > @@ -0,0 +1,8 @@
+> > +What:		/sys/bus/iio/devices/iio:deviceX/start_cleaning
+> > +Date:		December 2018
+> > +KernelVersion:	4.22
+> > +Contact:	linux-iio@vger.kernel.org
+> > +Description:
+> > +		Writing 1 starts sensor self cleaning. Internal fan accelerates
+> > +		to its maximum speed and keeps spinning for about 10 seconds in
+> > +		order to blow out accumulated dust.
+> > diff --git a/drivers/iio/chemical/sps30.c b/drivers/iio/chemical/sps30.c
+> > index fa3cd409b90b..f3b4390c8f5c 100644
+> > --- a/drivers/iio/chemical/sps30.c
+> > +++ b/drivers/iio/chemical/sps30.c
+> > @@ -7,7 +7,6 @@
+> >   * I2C slave address: 0x69
+> >   *
+> >   * TODO:
+> > - *  - support for turning on fan cleaning
+> >   *  - support for reading/setting auto cleaning interval
+> >   */
+> > 
+> > @@ -37,6 +36,7 @@
+> >  #define SPS30_READ_DATA_READY_FLAG 0x0202
+> >  #define SPS30_READ_DATA 0x0300
+> >  #define SPS30_READ_SERIAL 0xd033
+> > +#define SPS30_START_FAN_CLEANING 0x5607
+> > 
+> >  enum {
+> >  	PM1,
+> > @@ -104,6 +104,7 @@ static int sps30_do_cmd(struct sps30_state *state, u16 cmd, u8 *data, int
+> size)
+> >  		break;
+> >  	case SPS30_STOP_MEAS:
+> >  	case SPS30_RESET:
+> > +	case SPS30_START_FAN_CLEANING:
+> >  		ret = sps30_write_then_read(state, buf, 2, NULL, 0);
+> >  		break;
+> >  	case SPS30_READ_DATA_READY_FLAG:
+> > @@ -275,7 +276,39 @@ static int sps30_read_raw(struct iio_dev *indio_dev,
+> >  	return -EINVAL;
+> >  }
+> > 
+> > +static ssize_t start_cleaning_store(struct device *dev,
+> > +				    struct device_attribute *attr,
+> > +				    const char *buf, size_t len)
+> > +{
+> > +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> > +	struct sps30_state *state = iio_priv(indio_dev);
+> > +	int val, ret;
+> > +
+> > +	if (kstrtoint(buf, 0, &val) || val != 1)
+> > +		return -EINVAL;
+> > +
+> > +	mutex_lock(&state->lock);
+> > +	ret = sps30_do_cmd(state, SPS30_START_FAN_CLEANING, NULL, 0);
+> > +	mutex_unlock(&state->lock);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	return len;
+> > +}
+> > +
+> > +static IIO_DEVICE_ATTR_WO(start_cleaning, 0);
+> > +
+> > +static struct attribute *sps30_attrs[] = {
+> > +	&iio_dev_attr_start_cleaning.dev_attr.attr,
+> > +	NULL
+> > +};
+> > +
+> > +static const struct attribute_group sps30_attr_group = {
+> > +	.attrs = sps30_attrs,
+> > +};
+> > +
+> >  static const struct iio_info sps30_info = {
+> > +	.attrs = &sps30_attr_group,
+> >  	.read_raw = sps30_read_raw,
+> >  };
+> > 
+> > --
+> > 2.20.1
+> > 
