@@ -2,114 +2,142 @@ Return-Path: <SRS0=ccXU=PK=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.0 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_MUTT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23168C43387
-	for <linux-iio@archiver.kernel.org>; Wed,  2 Jan 2019 11:34:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08040C43612
+	for <linux-iio@archiver.kernel.org>; Wed,  2 Jan 2019 21:25:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E5D8E2171F
-	for <linux-iio@archiver.kernel.org>; Wed,  2 Jan 2019 11:34:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CAAD620652
+	for <linux-iio@archiver.kernel.org>; Wed,  2 Jan 2019 21:25:31 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="Wd+zzXhY"
+	dkim=pass (1024-bit key) header.d=konsulko.com header.i=@konsulko.com header.b="SiP/BPXN"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729102AbfABLek (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 2 Jan 2019 06:34:40 -0500
-Received: from userp2120.oracle.com ([156.151.31.85]:37158 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728876AbfABLek (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 2 Jan 2019 06:34:40 -0500
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.22/8.16.0.22) with SMTP id x02BTDFC021085;
-        Wed, 2 Jan 2019 11:34:10 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2018-07-02;
- bh=UmChkRnrEq6k2X3BG6k328rkxH6SwfkrBWfrbXBpbnI=;
- b=Wd+zzXhYT5kDXr3PxCtUF2CoiSkeeZilusZwFq8gnQrcKKTBT2ZtAuPEjeFQDEtdcqJz
- iUd4a5A33j5salQClSmRrf43FtDevNj3Bt39HxFe6La4Sz6YccAEONCrV8DBMBpVTbY0
- Kl+ImLUiMOM0vKxXT/1YgyBwsdmxpGpddc+ByN4TwOEGi5IXlSnvpbH0JbKsFZwP5xA4
- URxYq8/qnDSBi3eCAZlx7CyfT38XAIgIkAPQeLXk+9uWBW4TB4NGIZofGiTANxX+qqY3
- e2c19S/08gcWQ2QodIJFvfKZf41H/nobscHOkojr95aUaRc41m6d62aaoueITV8Az+xp +g== 
-Received: from userv0021.oracle.com (userv0021.oracle.com [156.151.31.71])
-        by userp2120.oracle.com with ESMTP id 2pp1jr1kej-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 02 Jan 2019 11:34:09 +0000
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userv0021.oracle.com (8.14.4/8.14.4) with ESMTP id x02BY8Bq030729
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 2 Jan 2019 11:34:08 GMT
-Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x02BY6qd006308;
-        Wed, 2 Jan 2019 11:34:06 GMT
-Received: from kadam (/197.157.0.49)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 02 Jan 2019 03:34:06 -0800
-Date:   Wed, 2 Jan 2019 14:33:46 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Amir Mahdi Ghorbanian <indigoomega021@gmail.com>
-Cc:     lars@metafoo.de, devel@driverdev.osuosl.org,
-        Michael.Hennerich@analog.com, linux-iio@vger.kernel.org,
-        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        pmeerw@pmeerw.net, knaack.h@gmx.de, jic23@kernel.org
+        id S1725985AbfABVZa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 2 Jan 2019 16:25:30 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:41052 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725879AbfABVZa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 2 Jan 2019 16:25:30 -0500
+Received: by mail-pf1-f196.google.com with SMTP id b7so15704727pfi.8
+        for <linux-iio@vger.kernel.org>; Wed, 02 Jan 2019 13:25:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=konsulko.com; s=google;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=1R9fDNLKzK/DHJVcx+9QWLyfDT+tFplpDcNxwCy2mIQ=;
+        b=SiP/BPXNIKXOen9BlTC8DP6NgotfETsnHbO+KMRRXWx3LCOqbo2/ljKfMGPN88k7Be
+         mYdWERme9+9lCOwDob8UohqvYnLBvL3LedIX8Xq68VfB+FgitH6PXMsUhP4EGRHlqEm8
+         7FqCggkq2Bd4fkifEzWGRYqxDhnQRqrQx+p7A=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=1R9fDNLKzK/DHJVcx+9QWLyfDT+tFplpDcNxwCy2mIQ=;
+        b=lgfaXMfGEtKNNAzdtZ7d5V9Koz22WzGeVVmIc4L8aFqL9lwrQ43Qwc76y2NFOPtiGI
+         qjCasPUTrjPQB6ReCeU8N/KToDtDyLWqJ1u4FJ+ZDgfivmTKouWTJCCB+GtRpzto8aBZ
+         wjp5kflkJLwDeN7Xsizj+pB7zSIawAGKNLYgS8w9IDBvTz+g5Nzg4O/xcyZYt4KRM4es
+         HtI531Tct1+83uLvL99VZPNBQeCU1vRUF787aoLJyV+loAH8M2UbEMIwwGlQmVs2s8Y+
+         0cQWC17IHn8AmLG5EtSPJDLvgwI2OLOREo7sSMKkY5/vVGXAYuZRKz/uQB+VJzeMO66y
+         rnBQ==
+X-Gm-Message-State: AA+aEWZK80h5XW152WAGhzq7TTO4E8zMnh3pV38tWfGVepYTo/pCwumo
+        2Sn1syY5CoWLPGZOkxZvC4FONQ==
+X-Google-Smtp-Source: AFSGD/UcYFRvAl7Cq1y4oxgiVVgZ3KtXfr5rw4DgAeayAvwDvM1Vj+eWGvO8pscQUbnyUzq+G4xuhA==
+X-Received: by 2002:a62:fc8a:: with SMTP id e132mr45124147pfh.176.1546464329093;
+        Wed, 02 Jan 2019 13:25:29 -0800 (PST)
+Received: from ?IPv6:2607:fb90:323d:1279:cc3d:efbc:3e13:b6a? ([2607:fb90:323d:1279:cc3d:efbc:3e13:b6a])
+        by smtp.gmail.com with ESMTPSA id v190sm76861513pfv.26.2019.01.02.13.25.28
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 02 Jan 2019 13:25:28 -0800 (PST)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (1.0)
 Subject: Re: [PATCH] Staging: iio: ad7192: replaced bool in struct
-Message-ID: <20190102113346.GM3781@kadam>
-References: <1545434786-15220-1-git-send-email-indigoomega021@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1545434786-15220-1-git-send-email-indigoomega021@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9123 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=871
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1810050000 definitions=main-1901020105
+From:   Matt Ranostay <matt.ranostay@konsulko.com>
+X-Mailer: iPhone Mail (16C101)
+In-Reply-To: <20181224095823.GA17061@himanshu-Vostro-3559>
+Date:   Wed, 2 Jan 2019 13:25:27 -0800
+Cc:     Amir Mahdi Ghorbanian <indigoomega021@gmail.com>, lars@metafoo.de,
+        Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <8E720BF2-7AFC-4FFA-8FA2-5A403FD5DD1D@konsulko.com>
+References: <1545434786-15220-1-git-send-email-indigoomega021@gmail.com> <20181224095823.GA17061@himanshu-Vostro-3559>
+To:     Himanshu Jha <himanshujha199640@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, Dec 21, 2018 at 03:26:26PM -0800, Amir Mahdi Ghorbanian wrote:
-> Replaced bool in struct with unsigned int bitfield to conserve space and
-> more clearly define size of varibales
-> 
-> Signed-off-by: Amir Mahdi Ghorbanian <indigoomega021@gmail.com>
-> ---
->  drivers/staging/iio/adc/ad7192.h | 14 +++++++-------
->  1 file changed, 7 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7192.h b/drivers/staging/iio/adc/ad7192.h
-> index 7433a43..7d3e62f 100644
-> --- a/drivers/staging/iio/adc/ad7192.h
-> +++ b/drivers/staging/iio/adc/ad7192.h
-> @@ -35,13 +35,13 @@ struct ad7192_platform_data {
->  	u16		vref_mv;
->  	u8		clock_source_sel;
->  	u32		ext_clk_hz;
-> -	bool		refin2_en;
-> -	bool		rej60_en;
-> -	bool		sinc3_en;
-> -	bool		chop_en;
-> -	bool		buf_en;
-> -	bool		unipolar_en;
-> -	bool		burnout_curr_en;
-> +	unsigned int	refin2_en : 1;
-> +	unsigned int	rej60_en : 1;
-> +	unsigned int	sinc3_en : 1;
-> +	unsigned int	chop_en : 1;
-> +	unsigned int	buf_en : 1;
-> +	unsigned int	unipolar_en : 1;
-> +	unsigned int	burnout_curr_en : 1;
 
-Don't put spaces around the :.  Just do:
+> On Dec 24, 2018, at 01:58, Himanshu Jha <himanshujha199640@gmail.com> wrot=
+e:
+>=20
+>> On Fri, Dec 21, 2018 at 03:26:26PM -0800, Amir Mahdi Ghorbanian wrote:
+>> Replaced bool in struct with unsigned int bitfield to conserve space and
+>> more clearly define size of varibales
 
-	unsigned int    burnout_curr_en:1;
+Important thing to note is depending on padding, alignment, and position of f=
+ield it probably won=E2=80=99t save any space.
 
-Otherwise it looks like part of a select statement or something.
+Also for internal unpacked structures it really makes little sense to save a=
+ few bytes of data. Don=E2=80=99t read into that packed structures are good.=
+. they usually aren=E2=80=99t :)
 
-regards,
-dan carpenter
-
+- Matt
+>>=20
+>> Signed-off-by: Amir Mahdi Ghorbanian <indigoomega021@gmail.com>
+>> ---
+>=20
+> There was some discussion on this at Outreachy list:
+> https://groups.google.com/d/msg/outreachy-kernel/xpQAl-Gn8HA/yqcQRG_qBgAJ
+>=20
+> I think unless you post some statistics about 'conserving' space,=20
+> it is unlikely that maintainers will apply it.
+>=20
+> This idea was originally given by Linus and that thread of discussion=20
+> is worth reading too.
+>=20
+>> drivers/staging/iio/adc/ad7192.h | 14 +++++++-------
+>> 1 file changed, 7 insertions(+), 7 deletions(-)
+>>=20
+>> diff --git a/drivers/staging/iio/adc/ad7192.h b/drivers/staging/iio/adc/a=
+d7192.h
+>> index 7433a43..7d3e62f 100644
+>> --- a/drivers/staging/iio/adc/ad7192.h
+>> +++ b/drivers/staging/iio/adc/ad7192.h
+>> @@ -35,13 +35,13 @@ struct ad7192_platform_data {
+>>    u16        vref_mv;
+>>    u8        clock_source_sel;
+>>    u32        ext_clk_hz;
+>> -    bool        refin2_en;
+>> -    bool        rej60_en;
+>> -    bool        sinc3_en;
+>> -    bool        chop_en;
+>> -    bool        buf_en;
+>> -    bool        unipolar_en;
+>> -    bool        burnout_curr_en;
+>> +    unsigned int    refin2_en : 1;
+>> +    unsigned int    rej60_en : 1;
+>> +    unsigned int    sinc3_en : 1;
+>> +    unsigned int    chop_en : 1;
+>> +    unsigned int    buf_en : 1;
+>> +    unsigned int    unipolar_en : 1;
+>> +    unsigned int    burnout_curr_en : 1;
+>> };
+>>=20
+>> #endif /* IIO_ADC_AD7192_H_ */
+>> --=20
+>> 2.7.4
+>>=20
+>=20
+> Goodluck!
+>=20
+> --=20
+> Himanshu Jha
+> Undergraduate Student
+> Department of Electronics & Communication
+> Guru Tegh Bahadur Institute of Technology
