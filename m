@@ -2,50 +2,56 @@ Return-Path: <SRS0=5rro=PN=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02297C43387
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Jan 2019 16:34:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B21AC43387
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Jan 2019 16:40:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B41BD2085A
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Jan 2019 16:34:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D2DFB2087F
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Jan 2019 16:40:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1546706065;
-	bh=1EnQr3NJhuutTVHRqMYAZr41eyRe3Uwb4QfEqoNJDMA=;
+	s=default; t=1546706402;
+	bh=ySrb+rbphNkf3LVkBFKXb5+bZ+pG16+NCn9BcPz+c0U=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=leaxFExI48I4zZ6X0ydCQKhr9jU10zGblQH3aKFjCCAagPBbQbryQPAWEIAeLQgIP
-	 rw4pQTtd96Sek+APvkvDJMbCkC9ujh5ssuTBQxUkNcLpMVcwAsez39936Ooybn1SlQ
-	 qjMNGj/7E/0W+TViDAKEeOyhU2prTP368HU3TkEw=
+	b=rMtDV+FxBv0oOx0f6O2BVOp8o5xqy+X8//e4fOqRnfjXnuDUxojPFku5J/1+8XtaY
+	 MssJwNUNiAFmjLiVUXCJsz8YpKfW+8Yy8YUScjV8TroB2UKhgSllPJj65Yf22yNSo4
+	 gbIr3SQ0beOCGgJJ23wZGIsOKykMdxC/30Luq0MI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726248AbfAEQeZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 5 Jan 2019 11:34:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37214 "EHLO mail.kernel.org"
+        id S1726251AbfAEQkC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 5 Jan 2019 11:40:02 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38134 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726243AbfAEQeZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 5 Jan 2019 11:34:25 -0500
+        id S1726243AbfAEQkC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 5 Jan 2019 11:40:02 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 214242085A;
-        Sat,  5 Jan 2019 16:34:23 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 509102085A;
+        Sat,  5 Jan 2019 16:39:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1546706064;
-        bh=1EnQr3NJhuutTVHRqMYAZr41eyRe3Uwb4QfEqoNJDMA=;
+        s=default; t=1546706401;
+        bh=ySrb+rbphNkf3LVkBFKXb5+bZ+pG16+NCn9BcPz+c0U=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lubOMMDcSYXSGoC5qAY85gnK8gSWT/S0VrGtdwHv2xAJtpaV1GECHRoD584JVN8IB
-         zBm7pGxMRXJbVYY23XQQQDMIkxgC8Ln8jkKD3fbqsNSxJs6BXEe9RGlSCJC6haa92L
-         /bNSmiYVSgGDGCC1M5QBMUpYjX755J5DHIqMDNKE=
-Date:   Sat, 5 Jan 2019 16:34:20 +0000
+        b=hqRt4pednMW15qjLV1NdpZWilBWag6MHnC+FOXqFgx5Fi1p0xkDSipIvAckZ/m3Dz
+         cxhT5lbzbpQgJ49R0ERzBb+ectmTp4YkAV8Pv5ggOdYUSv41kTSrph55GnN5so5zUK
+         6J8sQ1u5v1bYd8OHD6Ha12Allgv3MYRJJUiV4cRk=
+Date:   Sat, 5 Jan 2019 16:39:56 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Matt Ranostay <matt.ranostay@konsulko.com>
-Cc:     linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: chemical: atlas-ph-sensor: correct IIO_TEMP values
- to millicelsius
-Message-ID: <20190105163420.48a047fc@archlinux>
-In-Reply-To: <20181231030701.29789-1-matt.ranostay@konsulko.com>
-References: <20181231030701.29789-1-matt.ranostay@konsulko.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org, lars@metafoo.de, pmeerw@pmeerw.net,
+        robh+dt@kernel.org, mark.rutland@arm.com, balbes-150@yandex.ru,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: meson-saradc: update
+ temperature sensor support
+Message-ID: <20190105163956.195752d6@archlinux>
+In-Reply-To: <20190103230209.GA21801@bogus>
+References: <20181227215020.9803-1-martin.blumenstingl@googlemail.com>
+        <20181227215020.9803-2-martin.blumenstingl@googlemail.com>
+        <20190103230209.GA21801@bogus>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -55,52 +61,28 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 30 Dec 2018 19:07:01 -0800
-Matt Ranostay <matt.ranostay@konsulko.com> wrote:
+On Thu, 3 Jan 2019 17:02:09 -0600
+Rob Herring <robh@kernel.org> wrote:
 
-> IIO_TEMP scale value for temperature was incorrect and not in millicelsius
-> as required by the ABI documentation.
+> On Thu, 27 Dec 2018 22:50:19 +0100, Martin Blumenstingl wrote:
+> > Meson8b and Meson8m2 use a 5-bit wide TSC (temperature sensor
+> > coefficient). The SAR ADC registers however can only store (the lower)
+> > 4 bits. The fifth (upper-most) bit is stored inside the
+> > MESON_HHI_DPLL_TOP_0[9] register from the HHI register area.
+> > This adds a syscon property to the HHI register area so a driver can
+> > fetch the HHI register map and store the fifth TSC bit in there.
+> > 
+> > Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> > ---
+> >  .../devicetree/bindings/iio/adc/amlogic,meson-saradc.txt      | 4 ++++
+> >  1 file changed, 4 insertions(+)
+> >   
 > 
-> Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
-Ideally would have had a fixes tag.  Looks superficially like this
-goes back a long way but always nice to confirm how far :)
-
-Anyhow, given we are in the merge window, I'll pick this up once rc1
-is out and mark it for stable etc.
-
-Give me a poke if I seem to have lost it in a week or so.
+> Reviewed-by: Rob Herring <robh@kernel.org>
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to play with it.
 
 Thanks,
 
 Jonathan
-
-> ---
->  drivers/iio/chemical/atlas-ph-sensor.c | 7 +++----
->  1 file changed, 3 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
-> index a406ad31b096..3a20cb5d9bff 100644
-> --- a/drivers/iio/chemical/atlas-ph-sensor.c
-> +++ b/drivers/iio/chemical/atlas-ph-sensor.c
-> @@ -444,9 +444,8 @@ static int atlas_read_raw(struct iio_dev *indio_dev,
->  	case IIO_CHAN_INFO_SCALE:
->  		switch (chan->type) {
->  		case IIO_TEMP:
-> -			*val = 1; /* 0.01 */
-> -			*val2 = 100;
-> -			break;
-> +			*val = 10;
-> +			return IIO_VAL_INT;
->  		case IIO_PH:
->  			*val = 1; /* 0.001 */
->  			*val2 = 1000;
-> @@ -477,7 +476,7 @@ static int atlas_write_raw(struct iio_dev *indio_dev,
->  			   int val, int val2, long mask)
->  {
->  	struct atlas_data *data = iio_priv(indio_dev);
-> -	__be32 reg = cpu_to_be32(val);
-> +	__be32 reg = cpu_to_be32(val / 10);
->  
->  	if (val2 != 0 || val < 0 || val > 20000)
->  		return -EINVAL;
 
