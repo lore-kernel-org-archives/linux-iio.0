@@ -4,54 +4,55 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA1D2C43387
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Jan 2019 17:46:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CA20C43387
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Jan 2019 17:51:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id AB3F521873
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Jan 2019 17:46:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0BFB9218DE
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Jan 2019 17:51:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1546710402;
-	bh=tnspQe1zgh51q23x0ZskxmrKMCSVWl6A8hUR/wZzaNo=;
+	s=default; t=1546710692;
+	bh=yqVQEvMOZsZvvEswMo+hDEcfXbu20+aDs2m213ULL9s=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=oXPVfoEHmbwrqWJ4OW++ToUgVskQlZX5W4GJn5oXzH11UTpl4IxaNcqAPM1YYCG1d
-	 nbdatMfJzZFUGJvk67xeJ61RMyYu3D/sV2wxNGFX2n3u+SA3r3PnKKO0SqLDweXd4N
-	 W+4LTd4Rvzqz68EwMGiOTN8rTbr6cjH49A09wSSw=
+	b=nQn7Kn/VzEEuXcsrU3LV7NizTAOSHpbj2Iwjkzc0Y+ItmvL8iXnc2VJBjNpZqMnLx
+	 bZubyrCkVaavolso3ExTnumrdO5NBWNbomjW4Q6j2NunDEbeyYme979QtFNKVFF5el
+	 CYE+gRBkjuKMCgr3WLoDdR3GbITAtmXYvsJqpOD4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726310AbfAERqm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 5 Jan 2019 12:46:42 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34188 "EHLO mail.kernel.org"
+        id S1726252AbfAERvb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 5 Jan 2019 12:51:31 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36558 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726299AbfAERqm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 5 Jan 2019 12:46:42 -0500
+        id S1726344AbfAERvb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 5 Jan 2019 12:51:31 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9FAD521871;
-        Sat,  5 Jan 2019 17:46:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CC60B218EA;
+        Sat,  5 Jan 2019 17:51:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1546710401;
-        bh=tnspQe1zgh51q23x0ZskxmrKMCSVWl6A8hUR/wZzaNo=;
+        s=default; t=1546710690;
+        bh=yqVQEvMOZsZvvEswMo+hDEcfXbu20+aDs2m213ULL9s=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=C2M5wKYSAuTf1ze+iUPnJhXp/f7NY75umkekwPVP3Vr516E5I1yafL1TOezwVr50m
-         Aglw2SNX69bb2NVLK99CryTuwjQzLpMdM33IYCrS+F1fkY02xRT7wC0CRZ4rO8hnUl
-         PyVJm098n8d1XNq6qY+l+3/kbnUYFt79/6obpDNM=
-Date:   Sat, 5 Jan 2019 17:46:36 +0000
+        b=hGZi5bPJMpMSbpC3+fYocZxQMBf8nyMv1KZR+FypL7qFly1oau6ZV7oRSvteR/VwS
+         s6yRW89zOI9H/HGX3CBkzc0H50P19f8yKAlW3tdv3VSJsEASbLeLbyGfLsRhck/83N
+         fQZvKhcJ+XhtZW8G0qTWD59zfO0OeUq5/bVwBb1w=
+Date:   Sat, 5 Jan 2019 17:51:25 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Anson Huang <anson.huang@nxp.com>
-Cc:     "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "rtresidd@electromag.com.au" <rtresidd@electromag.com.au>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: Re: [PATCH V6] iio: magnetometer: mag3110: add vdd/vddio regulator
- operation support
-Message-ID: <20190105174636.4971accb@archlinux>
-In-Reply-To: <1545545266-6741-1-git-send-email-Anson.Huang@nxp.com>
-References: <1545545266-6741-1-git-send-email-Anson.Huang@nxp.com>
+To:     Jeremy Fertic <jeremyfertic@gmail.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org,
+        Shreeya Patel <shreeya.patel23498@gmail.com>
+Subject: Re: [PATCH v2 1/4] staging: iio: adt7316: fix dac_bits assignment
+Message-ID: <20190105175125.6c3626a7@archlinux>
+In-Reply-To: <20181223045743.10716-2-jeremyfertic@gmail.com>
+References: <20181223045743.10716-1-jeremyfertic@gmail.com>
+        <20181223045743.10716-2-jeremyfertic@gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -61,188 +62,86 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 23 Dec 2018 06:12:30 +0000
-Anson Huang <anson.huang@nxp.com> wrote:
++ CC Shreeya who is working on the same driver.
 
-> The magnetometer's power supplies could be controllable on some platforms,
-> such as i.MX6Q-SABRESD board, the mag3110's power supplies are controlled
-> by a GPIO fixed regulator, need to make sure the regulators are enabled
-> before any communication with mag3110, this patch adds vdd/vddio regulator
-> operation support.
+On Sat, 22 Dec 2018 21:57:40 -0700
+Jeremy Fertic <jeremyfertic@gmail.com> wrote:
+
+> The value of dac_bits is used in adt7316_show_DAC() and adt7316_store_DAC(),
+> and it should be either 8, 10, or 12 bits depending on the device in use. The
+> driver currently only assigns a value to dac_bits in
+> adt7316_store_da_high_resolution(). The purpose of the dac high resolution
+> option is not to change dac resolution for normal operation. Instead, it
+> is specific to an optional feature where one or two of the four dacs can
+> be set to output voltage proportional to temperature. If the user chooses
+> to set dac a and/or dac b to output voltage proportional to temperature,
+> the da_high_resolution attribute can optionally be enabled to use 10 bit
+> resolution rather than the default 8 bits. This is only available on the
+> 10 and 12 bit dac devices. If the user attempts to read or write dacs a
+> or b under these settings, the driver's current behaviour is to return an
+> error. Dacs c and d continue to operate normally under these conditions.
+> With the above in mind, remove the dac_bits assignments from this function
+> since the value of dac_bits as used in the driver is not dependent on this
+> dac high resolution option.
 > 
-> Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
-Same comment on not combining the error handling.  It's simply
-harder to read to save a few lines of code.
+> Since the dac_bits assignments discussed above are currently the only ones
+> in this driver, the default value of dac_bits is 0. This results in incorrect
+> calculations when the dacs are read or written in adt7316_show_DAC() and
+> adt7316_store_DAC(). To correct this, assign a value to dac_bits in
+> adt7316_probe() to ensure correct operation as soon as the device is
+> registered and available to userspace.
+> 
+> Fixes: 35f6b6b86ede ("staging: iio: new ADT7316/7/8 and ADT7516/7/9 driver")
+> Signed-off-by: Jeremy Fertic <jeremyfertic@gmail.com>
 
-Otherwise, looks fine, though I would ideally like an ack from
-Peter on this as it's his driver. If he's busy though I think this
-should be safe enough without.
+Applied to the togreg branch of iio.git and pushed out as testing for the
+autobuilders to play with.  The driver has been broken a long time and
+is undergoing a lot of churn at the moment, so I'm not going to rush
+this in even though it's a fix.
 
-thanks,
+Thanks,
 
 Jonathan
-
 > ---
-> ChangeLog since V5:
->     Make sure both vdd and vddio regulators are aquired before enabling any one of them.
-> ---
->  drivers/iio/magnetometer/mag3110.c | 88 ++++++++++++++++++++++++++++++++++----
->  1 file changed, 80 insertions(+), 8 deletions(-)
+>  drivers/staging/iio/addac/adt7316.c | 18 +++++++++---------
+>  1 file changed, 9 insertions(+), 9 deletions(-)
 > 
-> diff --git a/drivers/iio/magnetometer/mag3110.c b/drivers/iio/magnetometer/mag3110.c
-> index f063355..f56a99a 100644
-> --- a/drivers/iio/magnetometer/mag3110.c
-> +++ b/drivers/iio/magnetometer/mag3110.c
-> @@ -20,6 +20,7 @@
->  #include <linux/iio/buffer.h>
->  #include <linux/iio/triggered_buffer.h>
->  #include <linux/delay.h>
-> +#include <linux/regulator/consumer.h>
->  
->  #define MAG3110_STATUS 0x00
->  #define MAG3110_OUT_X 0x01 /* MSB first */
-> @@ -56,6 +57,8 @@ struct mag3110_data {
->  	struct mutex lock;
->  	u8 ctrl_reg1;
->  	int sleep_val;
-> +	struct regulator *vdd_reg;
-> +	struct regulator *vddio_reg;
->  };
->  
->  static int mag3110_request(struct mag3110_data *data)
-> @@ -469,17 +472,44 @@ static int mag3110_probe(struct i2c_client *client,
->  	struct iio_dev *indio_dev;
+> diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+> index 9db49aa186bb..e17c1cb12c94 100644
+> --- a/drivers/staging/iio/addac/adt7316.c
+> +++ b/drivers/staging/iio/addac/adt7316.c
+> @@ -652,17 +652,10 @@ static ssize_t adt7316_store_da_high_resolution(struct device *dev,
+>  	u8 config3;
 >  	int ret;
 >  
-> -	ret = i2c_smbus_read_byte_data(client, MAG3110_WHO_AM_I);
-> -	if (ret < 0)
-> -		return ret;
-> -	if (ret != MAG3110_DEVICE_ID)
-> -		return -ENODEV;
+> -	chip->dac_bits = 8;
 > -
->  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->  	if (!indio_dev)
->  		return -ENOMEM;
+> -	if (buf[0] == '1') {
+> +	if (buf[0] == '1')
+>  		config3 = chip->config3 | ADT7316_DA_HIGH_RESOLUTION;
+> -		if (chip->id == ID_ADT7316 || chip->id == ID_ADT7516)
+> -			chip->dac_bits = 12;
+> -		else if (chip->id == ID_ADT7317 || chip->id == ID_ADT7517)
+> -			chip->dac_bits = 10;
+> -	} else {
+> +	else
+>  		config3 = chip->config3 & (~ADT7316_DA_HIGH_RESOLUTION);
+> -	}
 >  
->  	data = iio_priv(indio_dev);
-> +
-> +	data->vdd_reg = devm_regulator_get(&client->dev, "vdd");
-> +	data->vddio_reg = devm_regulator_get(&client->dev, "vddio");
-> +	if (IS_ERR(data->vdd_reg) || IS_ERR(data->vddio_reg)) {
-> +		if (PTR_ERR(data->vdd_reg) == -EPROBE_DEFER ||
-> +			PTR_ERR(data->vddio_reg) == -EPROBE_DEFER)
-> +			return -EPROBE_DEFER;
-> +
-> +		dev_err(&client->dev, "failed to get VDD/VDDIO regulator!\n");
-> +		return IS_ERR(data->vdd_reg) ?
-> +		       PTR_ERR(data->vdd_reg) : PTR_ERR(data->vddio_reg);
-> +	}
-> +
-> +	ret = regulator_enable(data->vdd_reg);
-> +	if (ret) {
-> +		dev_err(&client->dev, "failed to enable VDD regulator!\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = regulator_enable(data->vddio_reg);
-> +	if (ret) {
-> +		dev_err(&client->dev, "failed to enable VDDIO regulator!\n");
-> +		goto disable_regulator_vdd;
-> +	}
-> +
-> +	ret = i2c_smbus_read_byte_data(client, MAG3110_WHO_AM_I);
-> +	if (ret < 0)
-> +		goto disable_regulators;
-> +	if (ret != MAG3110_DEVICE_ID) {
-> +		ret = -ENODEV;
-> +		goto disable_regulators;
-> +	}
-> +
->  	data->client = client;
->  	mutex_init(&data->lock);
+>  	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG3, config3);
+>  	if (ret)
+> @@ -2145,6 +2138,13 @@ int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
+>  	else
+>  		return -ENODEV;
 >  
-> @@ -499,7 +529,7 @@ static int mag3110_probe(struct i2c_client *client,
->  
->  	ret = mag3110_change_config(data, MAG3110_CTRL_REG1, data->ctrl_reg1);
->  	if (ret < 0)
-> -		return ret;
-> +		goto disable_regulators;
->  
->  	ret = i2c_smbus_write_byte_data(client, MAG3110_CTRL_REG2,
->  		MAG3110_CTRL_AUTO_MRST_EN);
-> @@ -520,16 +550,24 @@ static int mag3110_probe(struct i2c_client *client,
->  	iio_triggered_buffer_cleanup(indio_dev);
->  standby_on_error:
->  	mag3110_standby(iio_priv(indio_dev));
-> +disable_regulators:
-> +	regulator_disable(data->vddio_reg);
-> +disable_regulator_vdd:
-> +	regulator_disable(data->vdd_reg);
+> +	if (chip->id == ID_ADT7316 || chip->id == ID_ADT7516)
+> +		chip->dac_bits = 12;
+> +	else if (chip->id == ID_ADT7317 || chip->id == ID_ADT7517)
+> +		chip->dac_bits = 10;
+> +	else
+> +		chip->dac_bits = 8;
 > +
->  	return ret;
->  }
->  
->  static int mag3110_remove(struct i2c_client *client)
->  {
->  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +	struct mag3110_data *data = iio_priv(indio_dev);
->  
->  	iio_device_unregister(indio_dev);
->  	iio_triggered_buffer_cleanup(indio_dev);
->  	mag3110_standby(iio_priv(indio_dev));
-> +	regulator_disable(data->vddio_reg);
-> +	regulator_disable(data->vdd_reg);
->  
->  	return 0;
->  }
-> @@ -537,14 +575,48 @@ static int mag3110_remove(struct i2c_client *client)
->  #ifdef CONFIG_PM_SLEEP
->  static int mag3110_suspend(struct device *dev)
->  {
-> -	return mag3110_standby(iio_priv(i2c_get_clientdata(
-> +	struct mag3110_data *data = iio_priv(i2c_get_clientdata(
-> +		to_i2c_client(dev)));
-> +	int ret;
-> +
-> +	ret = mag3110_standby(iio_priv(i2c_get_clientdata(
->  		to_i2c_client(dev))));
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regulator_disable(data->vddio_reg);
-> +	if (ret) {
-> +		dev_err(dev, "failed to disable VDDIO regulator\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = regulator_disable(data->vdd_reg);
-> +	if (ret) {
-> +		dev_err(dev, "failed to disable VDD regulator\n");
-> +		return ret;
-> +	}
-> +
-> +	return 0;
->  }
->  
->  static int mag3110_resume(struct device *dev)
->  {
->  	struct mag3110_data *data = iio_priv(i2c_get_clientdata(
->  		to_i2c_client(dev)));
-> +	int ret;
-> +
-> +	ret = regulator_enable(data->vdd_reg);
-> +	if (ret) {
-> +		dev_err(dev, "failed to enable VDD regulator\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = regulator_enable(data->vddio_reg);
-> +	if (ret) {
-> +		dev_err(dev, "failed to enable VDDIO regulator\n");
-> +		regulator_disable(data->vdd_reg);
-> +		return ret;
-> +	}
->  
->  	return i2c_smbus_write_byte_data(data->client, MAG3110_CTRL_REG1,
->  		data->ctrl_reg1);
+>  	chip->ldac_pin = devm_gpiod_get_optional(dev, "adi,ldac", GPIOD_OUT_LOW);
+>  	if (IS_ERR(chip->ldac_pin)) {
+>  		ret = PTR_ERR(chip->ldac_pin);
 
