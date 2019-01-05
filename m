@@ -2,53 +2,53 @@ Return-Path: <SRS0=5rro=PN=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+X-Spam-Status: No, score=-6.7 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS,UNWANTED_LANGUAGE_BODY autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F846C43387
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Jan 2019 17:08:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A75C3C43387
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Jan 2019 17:20:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id CB1152087F
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Jan 2019 17:08:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 635B42087F
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Jan 2019 17:20:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1546708107;
-	bh=rpiT/+y2XdO/UMYgP3eanAX76MGsiomoEILOs/RBfL4=;
+	s=default; t=1546708846;
+	bh=26j3vLyRnWlcPa68ItKr4F3mh6l3TJrDtxFSe0ghmSQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=cPSRnhhmsWY9EO/CjZv6RjxNQFOvCGA1/dx+erf4gHYoLRi8n//1BL8k55XuhUqAu
-	 MygFK/naMOIXtnSrwQLbITCVubmSXzHMysfFsEkix8P3TCNRPjibNHVjQvCBPHQB8N
-	 idwgrZD5UgOfz8UaLwOdyZvZ4RXypV0mfBbp1crk=
+	b=NlYso8byegJfTwZ2FYSOsYO3889OXxplPe7JSE0zrpfrTRWikiS/QnXXqj8XOii2V
+	 +cyEqsaJPRK6RpwcQiFH/sAjaCTyT4eypu65g9exQd4OhwBNDBSL+9wKwvXnT2wof7
+	 RMyjnUxwToyaWtfzt7jdUgOR4EeoWkrbmD0AjLr0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726263AbfAERI0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 5 Jan 2019 12:08:26 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45306 "EHLO mail.kernel.org"
+        id S1726279AbfAERUq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 5 Jan 2019 12:20:46 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48916 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726252AbfAERIZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 5 Jan 2019 12:08:25 -0500
+        id S1726252AbfAERUp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 5 Jan 2019 12:20:45 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B3A622070C;
-        Sat,  5 Jan 2019 17:08:22 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3E1E72085A;
+        Sat,  5 Jan 2019 17:20:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1546708104;
-        bh=rpiT/+y2XdO/UMYgP3eanAX76MGsiomoEILOs/RBfL4=;
+        s=default; t=1546708843;
+        bh=26j3vLyRnWlcPa68ItKr4F3mh6l3TJrDtxFSe0ghmSQ=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lN1al6S3Uou7IeJ8yGpD7jLCickUtbO49ov7Gm1jYdLfJHxEkUipdr7zcgwSHbvij
-         b58SnHmyj1kadoYfYcI6+hNDM6v95gKDKDl2vyRkTrHOhwrBBgqQB2uaqj3cpg9LEY
-         oZ0JXv0cxZnbIpaTfnR8Uf0PKKbCUjYXFCSMEOWc=
-Date:   Sat, 5 Jan 2019 17:08:19 +0000
+        b=mdrow8CFBtuLQ1bG6gNVgDF8WbJStF176fGwngoyCceT/uaIM1itCXB1a0Lhdy00V
+         8DdHm2fhk5XGzHvRnTZvVKGFrWRIau9YmQNYCH5NKUlj7MSt/KwxxuZA3E3KHqDR7+
+         neUDW24AUcvbd3ZKlmD7vj+bAZkeLu22BrCaE+l0=
+Date:   Sat, 5 Jan 2019 17:20:37 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc:     Tomer Maimon <tmaimon77@gmail.com>, yuenn@google.com,
-        venture@google.com, brendanhiggins@google.com,
-        avifishman70@gmail.com, joel@jms.id.au, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v1 2/2] iio: adc: add NPCM ADC driver
-Message-ID: <20190105170819.56834495@archlinux>
-In-Reply-To: <alpine.DEB.2.21.1812252247290.8212@vps.pmeerw.net>
-References: <20181224164755.286932-1-tmaimon77@gmail.com>
-        <20181224164755.286932-3-tmaimon77@gmail.com>
-        <alpine.DEB.2.21.1812252247290.8212@vps.pmeerw.net>
+To:     Shreeya Patel <shreeya.patel23498@gmail.com>
+Cc:     lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org,
+        Jeremy Fertic <jeremyfertic@gmail.com>
+Subject: Re: [PATCH] Staging: iio: adt7316: Add regmap support
+Message-ID: <20190105172037.7cc5006b@archlinux>
+In-Reply-To: <20181223140224.10958-1-shreeya.patel23498@gmail.com>
+References: <20181223140224.10958-1-shreeya.patel23498@gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -58,468 +58,843 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 25 Dec 2018 23:00:11 +0100 (CET)
-Peter Meerwald-Stadler <pmeerw@pmeerw.net> wrote:
++CC Jeremy who is also working with this device.
 
-> Hello,
-> 
-> > Add Nuvoton NPCM BMC Analog-to-Digital Converter(ADC) driver.  
-> 
-> some minor comments below...
-+ a few more from me.
+On Sun, 23 Dec 2018 19:32:24 +0530
+Shreeya Patel <shreeya.patel23498@gmail.com> wrote:
 
-Generally looking pretty good.
+> Both i2c and spi drivers have functions for reading and writing
+> to/from registers. Remove this redundant and common code by using
+> regmap API.
+> Also remove multi_read and multi_write functions from i2c
+> and spi driver as they are not being used anywhere.
+> 
+> Signed-off-by: Shreeya Patel <shreeya.patel23498@gmail.com>
+
+I would have preferred an initial patch that removed the multi_read
+and multi_write first as that would (I assume) be easily separated
+from the 'major' change of moving to regmap.  I also suggest
+another section to pull out to a precursor patch below.
+
+The result looks fine to me.
+
+Thanks,
 
 Jonathan
 
+> ---
+>  drivers/staging/iio/addac/adt7316-i2c.c | 101 ++--------------
+>  drivers/staging/iio/addac/adt7316-spi.c |  94 +++------------
+>  drivers/staging/iio/addac/adt7316.c     | 147 ++++++++++++------------
+>  drivers/staging/iio/addac/adt7316.h     |  15 +--
+>  4 files changed, 103 insertions(+), 254 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/addac/adt7316-i2c.c b/drivers/staging/iio/addac/adt7316-i2c.c
+> index ac91163656b5..435b65845174 100644
+> --- a/drivers/staging/iio/addac/adt7316-i2c.c
+> +++ b/drivers/staging/iio/addac/adt7316-i2c.c
+> @@ -12,105 +12,28 @@
+>  #include <linux/i2c.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/module.h>
+> +#include <linux/regmap.h>
 >  
-> > The NPCM ADC is a 10-bit converter for eight channel inputs.
-> > 
-> > Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
-> > ---
-> >  drivers/iio/adc/Kconfig    |  10 ++
-> >  drivers/iio/adc/Makefile   |   1 +
-> >  drivers/iio/adc/npcm_adc.c | 336 +++++++++++++++++++++++++++++++++++++++++++++
-> >  3 files changed, 347 insertions(+)
-> >  create mode 100644 drivers/iio/adc/npcm_adc.c
-> > 
-> > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> > index a52fea8749a9..63a4204c5673 100644
-> > --- a/drivers/iio/adc/Kconfig
-> > +++ b/drivers/iio/adc/Kconfig
-> > @@ -555,6 +555,16 @@ config NAU7802
-> >  	  To compile this driver as a module, choose M here: the
-> >  	  module will be called nau7802.
-> >  
-> > +config NPCM_ADC
-> > +	tristate "Nuvoton NPCM ADC driver"
-> > +	depends on ARCH_NPCM || COMPILE_TEST
-> > +	depends on HAS_IOMEM
-> > +	help
-> > +	  Say yes here to build support for Nuvoton NPCM ADC.
-> > +
-> > +	  This driver can also be built as a module. If so, the module
-> > +	  will be called npcm_adc.
-> > +
-> >  config PALMAS_GPADC
-> >  	tristate "TI Palmas General Purpose ADC"
-> >  	depends on MFD_PALMAS
-> > diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> > index a6e6a0b659e2..b0c3f3b73a5f 100644
-> > --- a/drivers/iio/adc/Makefile
-> > +++ b/drivers/iio/adc/Makefile
-> > @@ -53,6 +53,7 @@ obj-$(CONFIG_MEN_Z188_ADC) += men_z188_adc.o
-> >  obj-$(CONFIG_MESON_SARADC) += meson_saradc.o
-> >  obj-$(CONFIG_MXS_LRADC_ADC) += mxs-lradc-adc.o
-> >  obj-$(CONFIG_NAU7802) += nau7802.o
-> > +obj-$(CONFIG_NPCM_ADC) += npcm_adc.o
-> >  obj-$(CONFIG_PALMAS_GPADC) += palmas_gpadc.o
-> >  obj-$(CONFIG_QCOM_SPMI_ADC5) += qcom-spmi-adc5.o
-> >  obj-$(CONFIG_QCOM_SPMI_IADC) += qcom-spmi-iadc.o
-> > diff --git a/drivers/iio/adc/npcm_adc.c b/drivers/iio/adc/npcm_adc.c
-> > new file mode 100644
-> > index 000000000000..4f7851472997
-> > --- /dev/null
-> > +++ b/drivers/iio/adc/npcm_adc.c
-> > @@ -0,0 +1,336 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +// Copyright (c) 2016-2018 Nuvoton Technology corporation.
+>  #include "adt7316.h"
+>  
+> -/*
+> - * adt7316 register access by I2C
+> - */
+> -static int adt7316_i2c_read(void *client, u8 reg, u8 *data)
+> -{
+> -	struct i2c_client *cl = client;
+> -	int ret;
+> -
+> -	ret = i2c_smbus_write_byte(cl, reg);
+> -	if (ret < 0) {
+> -		dev_err(&cl->dev, "I2C fail to select reg\n");
+> -		return ret;
+> -	}
+> -
+> -	ret = i2c_smbus_read_byte(client);
+> -
+> -	if (!ret)
+> -		return -EIO;
+> -
+> -	if (ret < 0) {
+> -		dev_err(&cl->dev, "I2C read error\n");
+> -		return ret;
+> -	}
+> -
+> -	*data = ret;
+> -
+> -	return 0;
+> -}
+> -
+> -static int adt7316_i2c_write(void *client, u8 reg, u8 data)
+> -{
+> -	struct i2c_client *cl = client;
+> -	int ret = 0;
+> -
+> -	ret = i2c_smbus_write_byte_data(cl, reg, data);
+> -	if (ret < 0)
+> -		dev_err(&cl->dev, "I2C write error\n");
+> -
+> -	return ret;
+> -}
+> -
+> -static int adt7316_i2c_multi_read(void *client, u8 reg, u8 count, u8 *data)
+> -{
+> -	struct i2c_client *cl = client;
+> -	int i, ret = 0;
+> -
+> -	if (count > ADT7316_REG_MAX_ADDR)
+> -		count = ADT7316_REG_MAX_ADDR;
+> -
+> -	for (i = 0; i < count; i++) {
+> -		ret = adt7316_i2c_read(cl, reg, &data[i]);
+> -		if (ret < 0) {
+> -			dev_err(&cl->dev, "I2C multi read error\n");
+> -			return ret;
+> -		}
+> -	}
+> -
+> -	return 0;
+> -}
+> -
+> -static int adt7316_i2c_multi_write(void *client, u8 reg, u8 count, u8 *data)
+> -{
+> -	struct i2c_client *cl = client;
+> -	int i, ret = 0;
+> -
+> -	if (count > ADT7316_REG_MAX_ADDR)
+> -		count = ADT7316_REG_MAX_ADDR;
+> -
+> -	for (i = 0; i < count; i++) {
+> -		ret = adt7316_i2c_write(cl, reg, data[i]);
+> -		if (ret < 0) {
+> -			dev_err(&cl->dev, "I2C multi write error\n");
+> -			return ret;
+> -		}
+> -	}
+> -
+> -	return 0;
+> -}
+> -
+>  /*
+>   * device probe and remove
+>   */
+> -
+>  static int adt7316_i2c_probe(struct i2c_client *client,
+>  			     const struct i2c_device_id *id)
+>  {
+> -	struct adt7316_bus bus = {
+> -		.client = client,
+> -		.irq = client->irq,
+> -		.read = adt7316_i2c_read,
+> -		.write = adt7316_i2c_write,
+> -		.multi_read = adt7316_i2c_multi_read,
+> -		.multi_write = adt7316_i2c_multi_write,
+> -	};
+> +	struct regmap *regmap;
+> +
+> +	regmap = devm_regmap_init_i2c(client, &adt7316_regmap_config);
+> +
+> +	if (IS_ERR(regmap)) {
+> +		dev_err(&client->dev, "Error initializing i2c regmap: %ld\n",
+> +			PTR_ERR(regmap));
+> +		return PTR_ERR(regmap);
+> +	}
+>  
+> -	return adt7316_probe(&client->dev, &bus, id->name);
+> +	return adt7316_probe(&client->dev, regmap, id ? id->name : NULL,
+> +			     client->irq);
+>  }
+>  
+>  static const struct i2c_device_id adt7316_i2c_id[] = {
+> diff --git a/drivers/staging/iio/addac/adt7316-spi.c b/drivers/staging/iio/addac/adt7316-spi.c
+> index e75827e326a6..9e3decb5cb77 100644
+> --- a/drivers/staging/iio/addac/adt7316-spi.c
+> +++ b/drivers/staging/iio/addac/adt7316-spi.c
+> @@ -11,79 +11,12 @@
+>  #include <linux/kernel.h>
+>  #include <linux/module.h>
+>  #include <linux/interrupt.h>
+> +#include <linux/regmap.h>
+>  #include <linux/spi/spi.h>
+>  
+>  #include "adt7316.h"
+>  
+>  #define ADT7316_SPI_MAX_FREQ_HZ		5000000
+> -#define ADT7316_SPI_CMD_READ		0x91
+> -#define ADT7316_SPI_CMD_WRITE		0x90
+> -
+> -/*
+> - * adt7316 register access by SPI
+> - */
+> -
+> -static int adt7316_spi_multi_read(void *client, u8 reg, u8 count, u8 *data)
+> -{
+> -	struct spi_device *spi_dev = client;
+> -	u8 cmd[2];
+> -	int ret = 0;
+> -
+> -	if (count > ADT7316_REG_MAX_ADDR)
+> -		count = ADT7316_REG_MAX_ADDR;
+> -
+> -	cmd[0] = ADT7316_SPI_CMD_WRITE;
+> -	cmd[1] = reg;
+> -
+> -	ret = spi_write(spi_dev, cmd, 2);
+> -	if (ret < 0) {
+> -		dev_err(&spi_dev->dev, "SPI fail to select reg\n");
+> -		return ret;
+> -	}
+> -
+> -	cmd[0] = ADT7316_SPI_CMD_READ;
+> -
+> -	ret = spi_write_then_read(spi_dev, cmd, 1, data, count);
+> -	if (ret < 0) {
+> -		dev_err(&spi_dev->dev, "SPI read data error\n");
+> -		return ret;
+> -	}
+> -
+> -	return 0;
+> -}
+> -
+> -static int adt7316_spi_multi_write(void *client, u8 reg, u8 count, u8 *data)
+> -{
+> -	struct spi_device *spi_dev = client;
+> -	u8 buf[ADT7316_REG_MAX_ADDR + 2];
+> -	int i, ret = 0;
+> -
+> -	if (count > ADT7316_REG_MAX_ADDR)
+> -		count = ADT7316_REG_MAX_ADDR;
+> -
+> -	buf[0] = ADT7316_SPI_CMD_WRITE;
+> -	buf[1] = reg;
+> -	for (i = 0; i < count; i++)
+> -		buf[i + 2] = data[i];
+> -
+> -	ret = spi_write(spi_dev, buf, count + 2);
+> -	if (ret < 0) {
+> -		dev_err(&spi_dev->dev, "SPI write error\n");
+> -		return ret;
+> -	}
+> -
+> -	return ret;
+> -}
+> -
+> -static int adt7316_spi_read(void *client, u8 reg, u8 *data)
+> -{
+> -	return adt7316_spi_multi_read(client, reg, 1, data);
+> -}
+> -
+> -static int adt7316_spi_write(void *client, u8 reg, u8 val)
+> -{
+> -	return adt7316_spi_multi_write(client, reg, 1, &val);
+> -}
+>  
+>  /*
+>   * device probe and remove
+> @@ -91,14 +24,7 @@ static int adt7316_spi_write(void *client, u8 reg, u8 val)
+>  
+>  static int adt7316_spi_probe(struct spi_device *spi_dev)
+>  {
+> -	struct adt7316_bus bus = {
+> -		.client = spi_dev,
+> -		.irq = spi_dev->irq,
+> -		.read = adt7316_spi_read,
+> -		.write = adt7316_spi_write,
+> -		.multi_read = adt7316_spi_multi_read,
+> -		.multi_write = adt7316_spi_multi_write,
+> -	};
+> +	struct regmap *regmap;
+>  
+>  	/* don't exceed max specified SPI CLK frequency */
+>  	if (spi_dev->max_speed_hz > ADT7316_SPI_MAX_FREQ_HZ) {
+> @@ -107,12 +33,20 @@ static int adt7316_spi_probe(struct spi_device *spi_dev)
+>  		return -EINVAL;
+>  	}
+>  
+> +	regmap = devm_regmap_init_spi(spi_dev, &adt7316_regmap_config);
+> +	if (IS_ERR(regmap)) {
+> +		dev_err(&spi_dev->dev, "Error initializing spi regmap: %ld\n",
+> +			PTR_ERR(regmap));
+> +		return PTR_ERR(regmap);
+> +	}
+> +
+>  	/* switch from default I2C protocol to SPI protocol */
+> -	adt7316_spi_write(spi_dev, 0, 0);
+> -	adt7316_spi_write(spi_dev, 0, 0);
+> -	adt7316_spi_write(spi_dev, 0, 0);
+> +	regmap_write(regmap, 0, 0);
+> +	regmap_write(regmap, 0, 0);
+> +	regmap_write(regmap, 0, 0);
+>  
+> -	return adt7316_probe(&spi_dev->dev, &bus, spi_dev->modalias);
+> +	return adt7316_probe(&spi_dev->dev, regmap, spi_dev->modalias,
+> +			     spi_dev->irq);
+>  }
+>  
+>  static const struct spi_device_id adt7316_spi_id[] = {
+> diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+> index 1ca4ee0f30ee..be2330a42706 100644
+> --- a/drivers/staging/iio/addac/adt7316.c
+> +++ b/drivers/staging/iio/addac/adt7316.c
+> @@ -17,6 +17,7 @@
+>  #include <linux/list.h>
+>  #include <linux/i2c.h>
+>  #include <linux/rtc.h>
+> +#include <linux/regmap.h>
+>  #include <linux/module.h>
+>  
+>  #include <linux/iio/iio.h>
+> @@ -176,7 +177,7 @@
+>   */
+>  
+>  struct adt7316_chip_info {
+> -	struct adt7316_bus	bus;
+> +	struct regmap *regmap;
+>  	struct gpio_desc	*ldac_pin;
+>  	u16			int_mask;	/* 0x2f */
+>  	u8			config1;
+> @@ -237,7 +238,7 @@ static ssize_t _adt7316_store_enabled(struct adt7316_chip_info *chip,
+>  	else
+>  		config1 = chip->config1 & ~ADT7316_EN;
+>  
+> -	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG1, config1);
+> +	ret = regmap_write(chip->regmap, ADT7316_CONFIG1, config1);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -301,7 +302,7 @@ static ssize_t adt7316_store_select_ex_temp(struct device *dev,
+>  	if (buf[0] == '1')
+>  		config1 |= ADT7516_SEL_EX_TEMP;
+>  
+> -	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG1, config1);
+> +	ret = regmap_write(chip->regmap, ADT7316_CONFIG1, config1);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -342,7 +343,7 @@ static ssize_t adt7316_store_mode(struct device *dev,
+>  	if (!memcmp(buf, "single_channel", 14))
+>  		config2 |= ADT7316_AD_SINGLE_CH_MODE;
+>  
+> -	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG2, config2);
+> +	ret = regmap_write(chip->regmap, ADT7316_CONFIG2, config2);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -435,7 +436,7 @@ static ssize_t adt7316_store_ad_channel(struct device *dev,
+>  
+>  	config2 |= data;
+>  
+> -	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG2, config2);
+> +	ret = regmap_write(chip->regmap, ADT7316_CONFIG2, config2);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -495,7 +496,7 @@ static ssize_t adt7316_store_disable_averaging(struct device *dev,
+>  	if (buf[0] == '1')
+>  		config2 |= ADT7316_DISABLE_AVERAGING;
+>  
+> -	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG2, config2);
+> +	ret = regmap_write(chip->regmap, ADT7316_CONFIG2, config2);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -534,7 +535,7 @@ static ssize_t adt7316_store_enable_smbus_timeout(struct device *dev,
+>  	if (buf[0] == '1')
+>  		config2 |= ADT7316_EN_SMBUS_TIMEOUT;
+>  
+> -	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG2, config2);
+> +	ret = regmap_write(chip->regmap, ADT7316_CONFIG2, config2);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -572,7 +573,7 @@ static ssize_t adt7316_store_powerdown(struct device *dev,
+>  	if (buf[0] == '1')
+>  		config1 |= ADT7316_PD;
+>  
+> -	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG1, config1);
+> +	ret = regmap_write(chip->regmap, ADT7316_CONFIG1, config1);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -610,7 +611,7 @@ static ssize_t adt7316_store_fast_ad_clock(struct device *dev,
+>  	if (buf[0] == '1')
+>  		config3 |= ADT7316_ADCLK_22_5;
+>  
+> -	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG3, config3);
+> +	ret = regmap_write(chip->regmap, ADT7316_CONFIG3, config3);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -663,7 +664,7 @@ static ssize_t adt7316_store_da_high_resolution(struct device *dev,
+>  		config3 = chip->config3 & (~ADT7316_DA_HIGH_RESOLUTION);
+>  	}
+>  
+> -	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG3, config3);
+> +	ret = regmap_write(chip->regmap, ADT7316_CONFIG3, config3);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -709,7 +710,7 @@ static ssize_t adt7316_store_AIN_internal_Vref(struct device *dev,
+>  	else
+>  		config3 = chip->config3 | ADT7516_AIN_IN_VREF;
+>  
+> -	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG3, config3);
+> +	ret = regmap_write(chip->regmap, ADT7316_CONFIG3, config3);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -748,7 +749,7 @@ static ssize_t adt7316_store_enable_prop_DACA(struct device *dev,
+>  	if (buf[0] == '1')
+>  		config3 |= ADT7316_EN_IN_TEMP_PROP_DACA;
+>  
+> -	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG3, config3);
+> +	ret = regmap_write(chip->regmap, ADT7316_CONFIG3, config3);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -787,7 +788,7 @@ static ssize_t adt7316_store_enable_prop_DACB(struct device *dev,
+>  	if (buf[0] == '1')
+>  		config3 |= ADT7316_EN_EX_TEMP_PROP_DACB;
+>  
+> -	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG3, config3);
+> +	ret = regmap_write(chip->regmap, ADT7316_CONFIG3, config3);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -830,7 +831,7 @@ static ssize_t adt7316_store_DAC_2Vref_ch_mask(struct device *dev,
+>  	dac_config = chip->dac_config & (~ADT7316_DA_2VREF_CH_MASK);
+>  	dac_config |= data;
+>  
+> -	ret = chip->bus.write(chip->bus.client, ADT7316_DAC_CONFIG, dac_config);
+> +	ret = regmap_write(chip->regmap, ADT7316_DAC_CONFIG, dac_config);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -890,7 +891,7 @@ static ssize_t adt7316_store_DAC_update_mode(struct device *dev,
+>  	dac_config = chip->dac_config & (~ADT7316_DA_EN_MODE_MASK);
+>  	dac_config |= data;
+>  
+> -	ret = chip->bus.write(chip->bus.client, ADT7316_DAC_CONFIG, dac_config);
+> +	ret = regmap_write(chip->regmap, ADT7316_DAC_CONFIG, dac_config);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -945,8 +946,8 @@ static ssize_t adt7316_store_update_DAC(struct device *dev,
+>  		ldac_config = chip->ldac_config & (~ADT7316_LDAC_EN_DA_MASK);
+>  		ldac_config |= data;
+>  
+> -		ret = chip->bus.write(chip->bus.client, ADT7316_LDAC_CONFIG,
+> -			ldac_config);
+> +		ret = regmap_write(chip->regmap, ADT7316_LDAC_CONFIG,
+> +				   ldac_config);
+>  		if (ret)
+>  			return -EIO;
+>  	} else {
+> @@ -993,7 +994,7 @@ static ssize_t adt7316_store_DA_AB_Vref_bypass(struct device *dev,
+>  	if (buf[0] == '1')
+>  		dac_config |= ADT7316_VREF_BYPASS_DAC_AB;
+>  
+> -	ret = chip->bus.write(chip->bus.client, ADT7316_DAC_CONFIG, dac_config);
+> +	ret = regmap_write(chip->regmap, ADT7316_DAC_CONFIG, dac_config);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -1038,7 +1039,7 @@ static ssize_t adt7316_store_DA_CD_Vref_bypass(struct device *dev,
+>  	if (buf[0] == '1')
+>  		dac_config |= ADT7316_VREF_BYPASS_DAC_CD;
+>  
+> -	ret = chip->bus.write(chip->bus.client, ADT7316_DAC_CONFIG, dac_config);
+> +	ret = regmap_write(chip->regmap, ADT7316_DAC_CONFIG, dac_config);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -1098,8 +1099,7 @@ static ssize_t adt7316_store_DAC_internal_Vref(struct device *dev,
+>  			ldac_config = chip->ldac_config | ADT7316_DAC_IN_VREF;
+>  	}
+>  
+> -	ret = chip->bus.write(chip->bus.client, ADT7316_LDAC_CONFIG,
+> -			ldac_config);
+> +	ret = regmap_write(chip->regmap, ADT7316_LDAC_CONFIG, ldac_config);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -1117,7 +1117,7 @@ static ssize_t adt7316_show_ad(struct adt7316_chip_info *chip,
+>  		int channel, char *buf)
+>  {
+>  	u16 data;
+> -	u8 msb, lsb;
+> +	unsigned int msb, lsb;
+>  	char sign = ' ';
+>  	int ret;
+>  
+> @@ -1127,13 +1127,12 @@ static ssize_t adt7316_show_ad(struct adt7316_chip_info *chip,
+>  
+>  	switch (channel) {
+>  	case ADT7316_AD_SINGLE_CH_IN:
+> -		ret = chip->bus.read(chip->bus.client,
+> -			ADT7316_LSB_IN_TEMP_VDD, &lsb);
+> +		ret = regmap_read(chip->regmap, ADT7316_LSB_IN_TEMP_VDD, &lsb);
+>  		if (ret)
+>  			return -EIO;
+>  
+> -		ret = chip->bus.read(chip->bus.client,
+> -			ADT7316_AD_MSB_DATA_BASE + channel, &msb);
+> +		ret = regmap_read(chip->regmap,
+> +				  ADT7316_AD_MSB_DATA_BASE + channel, &msb);
+>  		if (ret)
+>  			return -EIO;
+>  
+> @@ -1141,14 +1140,12 @@ static ssize_t adt7316_show_ad(struct adt7316_chip_info *chip,
+>  		data |= lsb & ADT7316_LSB_IN_TEMP_MASK;
+>  		break;
+>  	case ADT7316_AD_SINGLE_CH_VDD:
+> -		ret = chip->bus.read(chip->bus.client,
+> -			ADT7316_LSB_IN_TEMP_VDD, &lsb);
+> +		ret = regmap_read(chip->regmap, ADT7316_LSB_IN_TEMP_VDD, &lsb);
+>  		if (ret)
+>  			return -EIO;
+>  
+> -		ret = chip->bus.read(chip->bus.client,
+> -
+> -			ADT7316_AD_MSB_DATA_BASE + channel, &msb);
+> +		ret = regmap_read(chip->regmap,
+> +				  ADT7316_AD_MSB_DATA_BASE + channel, &msb);
+>  		if (ret)
+>  			return -EIO;
+>  
+> @@ -1156,13 +1153,12 @@ static ssize_t adt7316_show_ad(struct adt7316_chip_info *chip,
+>  		data |= (lsb & ADT7316_LSB_VDD_MASK) >> ADT7316_LSB_VDD_OFFSET;
+>  		return sprintf(buf, "%d\n", data);
+>  	default: /* ex_temp and ain */
+> -		ret = chip->bus.read(chip->bus.client,
+> -			ADT7316_LSB_EX_TEMP_AIN, &lsb);
+> +		ret = regmap_read(chip->regmap, ADT7316_LSB_EX_TEMP_AIN, &lsb);
+>  		if (ret)
+>  			return -EIO;
+>  
+> -		ret = chip->bus.read(chip->bus.client,
+> -			ADT7316_AD_MSB_DATA_BASE + channel, &msb);
+> +		ret = regmap_read(chip->regmap,
+> +				  ADT7316_AD_MSB_DATA_BASE + channel, &msb);
+>  		if (ret)
+>  			return -EIO;
+>  
+> @@ -1262,10 +1258,10 @@ static ssize_t adt7316_show_temp_offset(struct adt7316_chip_info *chip,
+>  		int offset_addr, char *buf)
+>  {
+>  	int data;
+> -	u8 val;
+> +	unsigned int val;
+>  	int ret;
+>  
+> -	ret = chip->bus.read(chip->bus.client, offset_addr, &val);
+> +	ret = regmap_read(chip->regmap, offset_addr, &val);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -1292,7 +1288,7 @@ static ssize_t adt7316_store_temp_offset(struct adt7316_chip_info *chip,
+>  
+>  	val = (u8)data;
+>  
+> -	ret = chip->bus.write(chip->bus.client, offset_addr, val);
+> +	ret = regmap_write(chip->regmap, offset_addr, val);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -1409,7 +1405,7 @@ static ssize_t adt7316_show_DAC(struct adt7316_chip_info *chip,
+>  		int channel, char *buf)
+>  {
+>  	u16 data;
+> -	u8 msb, lsb, offset;
+> +	unsigned int msb, lsb, offset;
+>  	int ret;
+>  
+>  	if (channel >= ADT7316_DA_MSB_DATA_REGS ||
+> @@ -1422,14 +1418,14 @@ static ssize_t adt7316_show_DAC(struct adt7316_chip_info *chip,
+>  	offset = chip->dac_bits - 8;
+>  
+>  	if (chip->dac_bits > 8) {
+> -		ret = chip->bus.read(chip->bus.client,
+> -			ADT7316_DA_DATA_BASE + channel * 2, &lsb);
+> +		ret = regmap_read(chip->regmap,
+> +				  ADT7316_DA_DATA_BASE + channel * 2, &lsb);
+>  		if (ret)
+>  			return -EIO;
+>  	}
+>  
+> -	ret = chip->bus.read(chip->bus.client,
+> -		ADT7316_DA_DATA_BASE + 1 + channel * 2, &msb);
+> +	ret = regmap_read(chip->regmap, ADT7316_DA_DATA_BASE + 1 + channel * 2,
+> +			  &msb);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -1460,15 +1456,15 @@ static ssize_t adt7316_store_DAC(struct adt7316_chip_info *chip,
+>  
+>  	if (chip->dac_bits > 8) {
+>  		lsb = data & (1 << offset);
+> -		ret = chip->bus.write(chip->bus.client,
+> -			ADT7316_DA_DATA_BASE + channel * 2, lsb);
+> +		ret = regmap_write(chip->regmap,
+> +				   ADT7316_DA_DATA_BASE + channel * 2, lsb);
+>  		if (ret)
+>  			return -EIO;
+>  	}
+>  
+>  	msb = data >> offset;
+> -	ret = chip->bus.write(chip->bus.client,
+> -		ADT7316_DA_DATA_BASE + 1 + channel * 2, msb);
+> +	ret = regmap_write(chip->regmap, ADT7316_DA_DATA_BASE + 1 + channel * 2,
+> +			   msb);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -1577,10 +1573,10 @@ static ssize_t adt7316_show_device_id(struct device *dev,
+>  {
+>  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+>  	struct adt7316_chip_info *chip = iio_priv(dev_info);
+> -	u8 id;
+> +	unsigned int id;
+>  	int ret;
+>  
+> -	ret = chip->bus.read(chip->bus.client, ADT7316_DEVICE_ID, &id);
+> +	ret = regmap_read(chip->regmap, ADT7316_DEVICE_ID, &id);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -1595,10 +1591,10 @@ static ssize_t adt7316_show_manufactorer_id(struct device *dev,
+>  {
+>  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+>  	struct adt7316_chip_info *chip = iio_priv(dev_info);
+> -	u8 id;
+> +	unsigned int id;
+>  	int ret;
+>  
+> -	ret = chip->bus.read(chip->bus.client, ADT7316_MANUFACTURE_ID, &id);
+> +	ret = regmap_read(chip->regmap, ADT7316_MANUFACTURE_ID, &id);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -1614,10 +1610,10 @@ static ssize_t adt7316_show_device_rev(struct device *dev,
+>  {
+>  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+>  	struct adt7316_chip_info *chip = iio_priv(dev_info);
+> -	u8 rev;
+> +	unsigned int rev;
+>  	int ret;
+>  
+> -	ret = chip->bus.read(chip->bus.client, ADT7316_DEVICE_REV, &rev);
+> +	ret = regmap_read(chip->regmap, ADT7316_DEVICE_REV, &rev);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -1632,10 +1628,10 @@ static ssize_t adt7316_show_bus_type(struct device *dev,
+>  {
+>  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+>  	struct adt7316_chip_info *chip = iio_priv(dev_info);
+> -	u8 stat;
+> +	unsigned int stat;
+>  	int ret;
+>  
+> -	ret = chip->bus.read(chip->bus.client, ADT7316_SPI_LOCK_STAT, &stat);
+> +	ret = regmap_read(chip->regmap, ADT7316_SPI_LOCK_STAT, &stat);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -1740,11 +1736,11 @@ static irqreturn_t adt7316_event_handler(int irq, void *private)
+>  {
+>  	struct iio_dev *indio_dev = private;
+>  	struct adt7316_chip_info *chip = iio_priv(indio_dev);
+> -	u8 stat1, stat2;
+> +	unsigned int stat1, stat2;
+>  	int ret;
+>  	s64 time;
+>  
+> -	ret = chip->bus.read(chip->bus.client, ADT7316_INT_STAT1, &stat1);
+> +	ret = regmap_read(chip->regmap, ADT7316_INT_STAT1, &stat1);
+>  	if (!ret) {
+>  		if ((chip->id & ID_FAMILY_MASK) != ID_ADT75XX)
+>  			stat1 &= 0x1F;
+> @@ -1793,7 +1789,7 @@ static irqreturn_t adt7316_event_handler(int irq, void *private)
+>  							    IIO_EV_DIR_EITHER),
+>  				       time);
+>  		}
+> -	ret = chip->bus.read(chip->bus.client, ADT7316_INT_STAT2, &stat2);
+> +	ret = regmap_read(chip->regmap, ADT7316_INT_STAT2, &stat2);
+>  	if (!ret) {
+>  		if (stat2 & ADT7316_INT_MASK2_VDD)
+>  			iio_push_event(indio_dev,
+> @@ -1807,12 +1803,12 @@ static irqreturn_t adt7316_event_handler(int irq, void *private)
+>  	return IRQ_HANDLED;
+>  }
+>  
+> -static int adt7316_setup_irq(struct iio_dev *indio_dev)
+> +static int adt7316_setup_irq(struct iio_dev *indio_dev, int irq)
+>  {
+>  	struct adt7316_chip_info *chip = iio_priv(indio_dev);
+>  	int irq_type, ret;
+>  
+> -	irq_type = irqd_get_trigger_type(irq_get_irq_data(chip->bus.irq));
+> +	irq_type = irqd_get_trigger_type(irq_get_irq_data(irq));
+>  
+>  	switch (irq_type) {
+>  	case IRQF_TRIGGER_HIGH:
+> @@ -1828,13 +1824,12 @@ static int adt7316_setup_irq(struct iio_dev *indio_dev)
+>  		break;
+>  	}
+>  
+> -	ret = devm_request_threaded_irq(&indio_dev->dev, chip->bus.irq,
+> +	ret = devm_request_threaded_irq(&indio_dev->dev, irq,
+>  					NULL, adt7316_event_handler,
+>  					irq_type | IRQF_ONESHOT,
+>  					indio_dev->name, indio_dev);
+>  	if (ret) {
+> -		dev_err(&indio_dev->dev, "failed to request irq %d\n",
+> -			chip->bus.irq);
+> +		dev_err(&indio_dev->dev, "failed to request irq %d\n", irq);
+>  		return ret;
+>  	}
+>  
+> @@ -1880,7 +1875,7 @@ static ssize_t adt7316_set_int_mask(struct device *dev,
+>  	else
+>  		mask = ADT7316_INT_MASK2_VDD;	/* disable vdd int */
+>  
+> -	ret = chip->bus.write(chip->bus.client, ADT7316_INT_MASK2, mask);
+> +	ret = regmap_write(chip->regmap, ADT7316_INT_MASK2, mask);
+>  	if (!ret) {
+>  		chip->int_mask &= ~ADT7316_VDD_INT_MASK;
+>  		chip->int_mask |= data & ADT7316_VDD_INT_MASK;
+> @@ -1894,7 +1889,7 @@ static ssize_t adt7316_set_int_mask(struct device *dev,
+>  			/* mask in reg is opposite, set 1 to disable */
+>  			mask = (~data) & ADT7316_TEMP_AIN_INT_MASK;
+>  	}
+> -	ret = chip->bus.write(chip->bus.client, ADT7316_INT_MASK1, mask);
+> +	ret = regmap_write(chip->regmap, ADT7316_INT_MASK1, mask);
+>  
+>  	chip->int_mask = mask;
+>  
+> @@ -1908,7 +1903,7 @@ static inline ssize_t adt7316_show_ad_bound(struct device *dev,
+>  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+>  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
+>  	struct adt7316_chip_info *chip = iio_priv(dev_info);
+> -	u8 val;
+> +	unsigned int val;
+>  	int data;
+>  	int ret;
+>  
+> @@ -1916,7 +1911,7 @@ static inline ssize_t adt7316_show_ad_bound(struct device *dev,
+>  		this_attr->address > ADT7316_EX_TEMP_LOW)
+>  		return -EPERM;
+>  
+> -	ret = chip->bus.read(chip->bus.client, this_attr->address, &val);
+> +	ret = regmap_read(chip->regmap, this_attr->address, &val);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -1965,7 +1960,7 @@ static inline ssize_t adt7316_set_ad_bound(struct device *dev,
+>  
+>  	val = (u8)data;
+>  
+> -	ret = chip->bus.write(chip->bus.client, this_attr->address, val);
+> +	ret = regmap_write(chip->regmap, this_attr->address, val);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -1996,7 +1991,7 @@ static ssize_t adt7316_set_int_enabled(struct device *dev,
+>  	if (buf[0] == '1')
+>  		config1 |= ADT7316_INT_EN;
+>  
+> -	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG1, config1);
+> +	ret = regmap_write(chip->regmap, ADT7316_CONFIG1, config1);
+>  	if (ret)
+>  		return -EIO;
+>  
+> @@ -2133,8 +2128,8 @@ static const struct iio_info adt7516_info = {
+>  /*
+>   * device probe and remove
+>   */
+> -int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
+> -		const char *name)
+> +int adt7316_probe(struct device *dev, struct regmap *regmap, const char *name,
+> +		  int irq)
+>  {
+>  	struct adt7316_chip_info *chip;
+>  	struct iio_dev *indio_dev;
+> @@ -2147,7 +2142,7 @@ int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
+>  	/* this is only used for device removal purposes */
+>  	dev_set_drvdata(dev, indio_dev);
+>  
+> -	chip->bus = *bus;
+> +	chip->regmap = regmap;
+>  
+>  	if (name[4] == '3')
+>  		chip->id = ID_ADT7316 + (name[6] - '6');
+> @@ -2180,17 +2175,17 @@ int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
+>  	indio_dev->name = name;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  
+> -	if (chip->bus.irq > 0) {
+> -		ret = adt7316_setup_irq(indio_dev);
+> +	if (irq > 0) {
+> +		ret = adt7316_setup_irq(indio_dev, irq);
 
-Slight preference for not using c++ comments except for the 
-SPDX line.  This is mostly for consistency with older
-code that predates this even being an accepted option!
+This may also have been clearer as a separate patch before the regmap
+one that moved to passing in irq rather than getting it from the bus
+route.  It is a necessary change to implement regmap but it can be
+done separately before the regmap patch I think...
 
-> > +
-> > +#include <linux/clk.h>
-> > +#include <linux/device.h>
-> > +#include <linux/mfd/syscon.h>
-> > +#include <linux/io.h>
-> > +#include <linux/iio/iio.h>
-> > +#include <linux/interrupt.h>
-> > +#include <linux/kernel.h>
-> > +#include <linux/module.h>
-> > +#include <linux/platform_device.h>
-> > +#include <linux/regmap.h>
-> > +#include <linux/regulator/consumer.h>
-> > +#include <linux/spinlock.h>
-> > +#include <linux/uaccess.h>
-> > +
-> > +struct npcm_adc {
-> > +	u32 vref_mv;
-> > +	bool int_status;
-> > +	u32 adc_sample_hz;
-> > +	struct device *dev;
-> > +	void __iomem *regs;
-> > +	struct clk *adc_clk;
-> > +	wait_queue_head_t wq;
-> > +	struct regulator *vref;
-> > +	struct regmap *rst_regmap;
-> > +};
-> > +
-> > +/* NPCM7xx reset module */
-> > +#define IPSRST1_OFFSET		0x020  
-> 
-> NPCM_ prefix please
-> 
-> > +#define IPSRST1_ADC_RST		BIT(27)
-> > +
-> > +/* ADC registers */
-> > +#define NPCM_ADCCON	 0x00
-> > +#define NPCM_ADCDATA	 0x04
-> > +
-> > +/* ADCCON Register Bits */
-> > +#define NPCM_ADCCON_ADC_INT_EN		BIT(21)
-> > +#define NPCM_ADCCON_REFSEL		BIT(19)
-> > +#define NPCM_ADCCON_ADC_INT_ST		BIT(18)
-> > +#define NPCM_ADCCON_ADC_EN		BIT(17)
-> > +#define NPCM_ADCCON_ADC_RST		BIT(16)
-> > +#define NPCM_ADCCON_ADC_CONV		BIT(13)
-> > +
-> > +#define NPCM_ADCCON_CH_MASK		GENMASK(27, 24)
-> > +#define NPCM_ADCCON_CH(x)		((x) << 24)
-> > +#define NPCM_ADCCON_DIV_SHIFT		1
-> > +#define NPCM_ADCCON_DIV_MASK		GENMASK(8, 1)
-> > +#define NPCM_ADC_DATA_MASK(x)		((x) & GENMASK(9, 0))
-> > +
-> > +#define NPCM_ADC_ENABLE		(NPCM_ADCCON_ADC_EN | NPCM_ADCCON_ADC_INT_EN)
-> > +
-> > +/* ADC General Definition */
-> > +#define NPCM_RESOLUTION_BITS		10
-> > +#define ADC_DEFAULT_SAMPLE_RATE		12500000  
-> 
-> NPCM_ prefix please
-> 
-> > +#define INT_VREF_MV			2000
-> > +
-> > +#define NPCM_ADC_CHAN(ch) {					\
-> > +	.type = IIO_VOLTAGE,					\
-> > +	.indexed = 1,						\
-> > +	.channel = ch,						\
-> > +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> > +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\  
-> 
-> SAMPLE_FREQ might be missing, it is implemented in _read()
-> 
-> > +}
-> > +
-> > +static const struct iio_chan_spec npcm_adc_iio_channels[] = {
-> > +	NPCM_ADC_CHAN(0),
-> > +	NPCM_ADC_CHAN(1),
-> > +	NPCM_ADC_CHAN(2),
-> > +	NPCM_ADC_CHAN(3),
-> > +	NPCM_ADC_CHAN(4),
-> > +	NPCM_ADC_CHAN(5),
-> > +	NPCM_ADC_CHAN(6),
-> > +	NPCM_ADC_CHAN(7),
-> > +};
-> > +
-> > +static irqreturn_t npcm_adc_isr(int irq, void *data)
-> > +{
-> > +	u32 regtemp = 0;  
-> 
-> initialization not needed
-> 
-> > +	struct iio_dev *indio_dev = data;
-> > +	struct npcm_adc *info = iio_priv(indio_dev);
-> > +
-> > +	regtemp = ioread32(info->regs + NPCM_ADCCON);
-> > +	if (regtemp & NPCM_ADCCON_ADC_INT_ST) {
-> > +		iowrite32(regtemp, info->regs + NPCM_ADCCON);
-> > +		wake_up_interruptible(&info->wq);
-> > +		info->int_status = true;
-> > +	}
-> > +
-> > +	return IRQ_HANDLED;
-> > +}
-> > +
-> > +static int npcm_adc_read(struct npcm_adc *info, int *val, u8 channel)
-> > +{
-> > +	int ret;
-> > +	u32 regtemp = 0;  
-> 
-> initialization not needed
-> > +
-> > +	/* Select ADC channal */  
-> 
-> channel
-> 
-> > +	regtemp = ioread32(info->regs + NPCM_ADCCON);
-> > +	regtemp &= ~NPCM_ADCCON_CH_MASK;
-> > +	iowrite32(regtemp | NPCM_ADCCON_CH(channel) |
-> > +		  NPCM_ADCCON_ADC_CONV, info->regs + NPCM_ADCCON);
-> > +
-> > +	info->int_status = false;  
-> 
-> this might be racy; shouldn't int_status be set to false before starting 
-> the conversion
-> 
-> > +	ret = wait_event_interruptible_timeout(info->wq, info->int_status,
-> > +					       msecs_to_jiffies(10));
-> > +	if (ret == 0) {
-> > +		regtemp = ioread32(info->regs + NPCM_ADCCON);
-> > +		if ((regtemp & NPCM_ADCCON_ADC_CONV) && info->rst_regmap) {
-> > +			/* if conversion failed - reset ADC module */
-> > +			regmap_write(info->rst_regmap, IPSRST1_OFFSET,
-> > +				     IPSRST1_ADC_RST);
-> > +			msleep(100);
-> > +			regmap_write(info->rst_regmap, IPSRST1_OFFSET, 0x0);
-> > +			msleep(100);
-> > +
-> > +			/* Enable ADC and start conversion Module */  
-> 
-> module (lowercase)
-> 
-> > +			iowrite32(NPCM_ADC_ENABLE | NPCM_ADCCON_ADC_CONV,
-> > +				  info->regs + NPCM_ADCCON);
-> > +			dev_err(info->dev, "RESET ADC Complete\n");
-> > +		}
-> > +		return -ETIMEDOUT;
-> > +	}
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	*val = NPCM_ADC_DATA_MASK(ioread32(info->regs + NPCM_ADCDATA));
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int npcm_adc_read_raw(struct iio_dev *indio_dev,
-> > +			     struct iio_chan_spec const *chan, int *val,
-> > +			     int *val2, long mask)
-> > +{
-> > +	int ret;
-> > +	struct npcm_adc *info = iio_priv(indio_dev);
-> > +
-> > +	switch (mask) {
-> > +	case IIO_CHAN_INFO_RAW:
-> > +		mutex_lock(&indio_dev->mlock);
-> > +		ret = npcm_adc_read(info, val, chan->channel);
-> > +		if (ret) {
-> > +			dev_err(info->dev, "NPCM ADC read failed\n");
-> > +			mutex_unlock(&indio_dev->mlock);
-
-Unlock before checking ret.  Then only one unlock is needed for the
-good and bad paths.
-
-> > +			return ret;
-> > +		}
-> > +		mutex_unlock(&indio_dev->mlock);
-> > +		return IIO_VAL_INT;
-> > +	case IIO_CHAN_INFO_SCALE:
-> > +		*val = info->vref_mv;
-> > +		*val2 = NPCM_RESOLUTION_BITS;
-> > +		return IIO_VAL_FRACTIONAL_LOG2;
-> > +	case IIO_CHAN_INFO_SAMP_FREQ:
-> > +		*val = info->adc_sample_hz;
-> > +		return IIO_VAL_INT;
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static const struct iio_info npcm_adc_iio_info = {
-> > +	.read_raw = &npcm_adc_read_raw,
-> > +};
-> > +
-> > +static const struct of_device_id npcm_adc_match[] = {
-> > +	{ .compatible = "nuvoton,npcm750-adc", },
-> > +	{ /* sentinel */ }
-> > +};
-> > +MODULE_DEVICE_TABLE(of, npcm_adc_match);
-> > +
-> > +static int npcm_adc_probe(struct platform_device *pdev)
-> > +{
-> > +	int ret;
-> > +	int irq;
-> > +	u32 div;
-> > +	u32 reg_con;
-> > +	struct resource *res;
-> > +	struct npcm_adc *info;
-> > +	struct iio_dev *indio_dev;
-> > +	struct device *dev = &pdev->dev;
-> > +	struct device_node *np = pdev->dev.of_node;
-> > +
-> > +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
-> > +	if (!indio_dev)
-> > +		return -ENOMEM;
-> > +	info = iio_priv(indio_dev);
-> > +
-> > +	info->dev = &pdev->dev;
-> > +
-> > +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> > +	info->regs = devm_ioremap_resource(&pdev->dev, res);
-> > +	if (IS_ERR(info->regs))
-> > +		return PTR_ERR(info->regs);
-> > +
-> > +	info->adc_clk = devm_clk_get(&pdev->dev, NULL);
-> > +	if (IS_ERR(info->adc_clk)) {
-> > +		dev_warn(&pdev->dev, "ADC clock failed: can't read clk, Assuming ADC clock Rate 12.5MHz\n");  
-> 
-> assuming, rate (lowercase)
-> 
-> > +		info->adc_sample_hz = ADC_DEFAULT_SAMPLE_RATE;
-> > +	} else {
-> > +		/* calculate ADC clock sample rate */
-> > +		reg_con = ioread32(info->regs + NPCM_ADCCON);
-> > +		div = reg_con & NPCM_ADCCON_DIV_MASK;
-> > +		div = div >> NPCM_ADCCON_DIV_SHIFT;
-> > +		info->adc_sample_hz = clk_get_rate(info->adc_clk) /
-> > +			((div + 1) * 2);
-> > +	}
-> > +
-> > +	if (of_device_is_compatible(np, "nuvoton,npcm750-adc")) {
-> > +		info->rst_regmap = syscon_regmap_lookup_by_compatible
-> > +			("nuvoton,npcm750-rst");
-> > +		if (IS_ERR(info->rst_regmap)) {
-> > +			dev_err(&pdev->dev, "Failed to find nuvoton,npcm750-rst\n");
-> > +			ret = PTR_ERR(info->rst_regmap);
-> > +			goto err_disable_clk;
-> > +		}
-> > +	}
-> > +
-> > +	reg_con = ioread32(info->regs + NPCM_ADCCON);
-> > +	info->vref = devm_regulator_get_optional(&pdev->dev, "vref");
-> > +	if (!IS_ERR(info->vref)) {
-> > +		ret = regulator_enable(info->vref);
-> > +		if (ret) {
-> > +			dev_err(&pdev->dev, "Can't enable ADC reference voltage\n");
-> > +			goto err_disable_clk;
-> > +		}
-> > +
-> > +		ret = regulator_get_voltage(info->vref);
-> > +		if (ret < 0)
-> > +			goto err_disable_vref_reg;
-
-As reading voltage is normally only done for the scale attribute and that
-should never be in a fast path, I generally think it is better to read
-the reference voltage when needed.  It might have changed...
-
-> > +
-> > +		info->vref_mv = ret / 1000;
-> > +		iowrite32(reg_con & ~NPCM_ADCCON_REFSEL,
-> > +			  info->regs + NPCM_ADCCON);
-> > +	} else {
-> > +		/* Any other error indicates that the regulator does exist */  
-> 
-> does not?
-I think it is correct as it stands, but could be worded clearer.
-Perhaps "Any error which is not ENODEV indicates the regulator has been specified and so is a failure case".
-> 
-> > +		if (PTR_ERR(info->vref) != -ENODEV) {
-> > +			goto err_disable_clk;
-> > +			return PTR_ERR(info->vref);
-> > +		}
-> > +
-> > +		/* Use internal reference */
-> > +		info->vref_mv = INT_VREF_MV;
-> > +		iowrite32(reg_con | NPCM_ADCCON_REFSEL,
-> > +			  info->regs + NPCM_ADCCON);
-> > +	}
-> > +
-> > +	irq = platform_get_irq(pdev, 0);
-> > +	if (irq <= 0) {
-> > +		dev_err(dev, "failed getting interrupt resource\n");
-> > +		ret = -EINVAL;
-> > +		goto err_disable_vref_reg;
-> > +	}
-> > +
-> > +	ret = devm_request_irq(&pdev->dev, irq, npcm_adc_isr, 0,
-> > +			       "NPCM_ADC", indio_dev);
-> > +	if (ret < 0) {
-> > +		dev_err(dev, "failed requesting interrupt\n");
-> > +		goto err_disable_vref_reg;
-> > +	}
-> > +
-> > +	init_waitqueue_head(&info->wq);
-> > +
-> > +	platform_set_drvdata(pdev, indio_dev);
-> > +	indio_dev->name = dev_name(&pdev->dev);
-> > +	indio_dev->dev.parent = &pdev->dev;
-> > +	indio_dev->info = &npcm_adc_iio_info;
-> > +	indio_dev->modes = INDIO_DIRECT_MODE;
-> > +	indio_dev->channels = npcm_adc_iio_channels;
-> > +	indio_dev->num_channels = ARRAY_SIZE(npcm_adc_iio_channels);
-> > +
-> > +	ret = iio_device_register(indio_dev);
-> > +	if (ret) {
-> > +		dev_err(&pdev->dev, "Couldn't register the device.\n");
-> > +		goto err_disable_vref_reg;
-> > +	}
-> > +  
-> 
-> might be racy; I'd rather do this before _register()
-> the device could be in a half-initialized state
-> 
-> > +	reg_con = ioread32(info->regs + NPCM_ADCCON);
-> > +	reg_con |= NPCM_ADC_ENABLE;
-> > +
-> > +	/* Enable the ADC Module */  
-> 
-> module (lowercase)
-> 
-> > +	iowrite32(reg_con, info->regs + NPCM_ADCCON);
-> > +
-> > +	/* Start ADC conversion */
-> > +	iowrite32(reg_con | NPCM_ADCCON_ADC_CONV, info->regs + NPCM_ADCCON);
-> > +
-> > +	pr_info("NPCM ADC driver probed, sample Rate %dHz\n",
-> > +		info->adc_sample_hz);  
-> 
-> don't do this logging, it just clutters the log
-> 
-> > +
-> > +	return 0;
-> > +
-> > +err_disable_vref_reg:
-> > +	if (!IS_ERR(info->vref))
-> > +		regulator_disable(info->vref);
-> > +err_disable_clk:
-> > +	clk_disable_unprepare(info->adc_clk);
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static int npcm_adc_remove(struct platform_device *pdev)
-> > +{
-> > +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> > +	struct npcm_adc *info = iio_priv(indio_dev);
-> > +	u32 regtemp = 0;  
-> 
-> no initialization needed
-> 
-> > +
-> > +	regtemp = ioread32(info->regs + NPCM_ADCCON);
-> > +
-> > +	/* Disable the ADC Module */
-> > +	iowrite32(regtemp & ~NPCM_ADCCON_ADC_EN, info->regs + NPCM_ADCCON);
-> > +
-> > +	iio_device_unregister(indio_dev);
-> > +	clk_disable_unprepare(info->adc_clk);
-> > +	if (!IS_ERR(info->vref))
-> > +		regulator_disable(info->vref);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static struct platform_driver npcm_adc_driver = {
-> > +	.probe		= npcm_adc_probe,
-> > +	.remove		= npcm_adc_remove,
-> > +	.driver		= {
-> > +		.name	= "npcm_adc",
-> > +		.of_match_table = npcm_adc_match,
-> > +	},
-> > +};
-> > +
-> > +module_platform_driver(npcm_adc_driver);
-> > +
-> > +MODULE_DESCRIPTION("Nuvoton NPCM ADC Sensor Driver");  
-> 
-> I'd rather drop 'sensor'
-> 
-> > +MODULE_AUTHOR("Tomer Maimon <tomer.maimon@nuvoton.com>");
-> > +MODULE_LICENSE("GPL v2");
-> >   
-> 
+>  		if (ret)
+>  			return ret;
+>  	}
+>  
+> -	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG1, chip->config1);
+> +	ret = regmap_write(chip->regmap, ADT7316_CONFIG1, chip->config1);
+>  	if (ret)
+>  		return -EIO;
+>  
+> -	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG3, chip->config3);
+> +	ret = regmap_write(chip->regmap, ADT7316_CONFIG3, chip->config3);
+>  	if (ret)
+>  		return -EIO;
+>  
+> diff --git a/drivers/staging/iio/addac/adt7316.h b/drivers/staging/iio/addac/adt7316.h
+> index fd7c5c92b599..2c72cf3f71cd 100644
+> --- a/drivers/staging/iio/addac/adt7316.h
+> +++ b/drivers/staging/iio/addac/adt7316.h
+> @@ -11,16 +11,13 @@
+>  
+>  #include <linux/types.h>
+>  #include <linux/pm.h>
+> +#include <linux/regmap.h>
+>  
+>  #define ADT7316_REG_MAX_ADDR		0x3F
+>  
+> -struct adt7316_bus {
+> -	void *client;
+> -	int irq;
+> -	int (*read)(void *client, u8 reg, u8 *data);
+> -	int (*write)(void *client, u8 reg, u8 val);
+> -	int (*multi_read)(void *client, u8 first_reg, u8 count, u8 *data);
+> -	int (*multi_write)(void *client, u8 first_reg, u8 count, u8 *data);
+> +static const struct regmap_config adt7316_regmap_config = {
+> +	.reg_bits = 8,
+> +	.val_bits = 10,
+>  };
+>  
+>  #ifdef CONFIG_PM_SLEEP
+> @@ -29,7 +26,7 @@ extern const struct dev_pm_ops adt7316_pm_ops;
+>  #else
+>  #define ADT7316_PM_OPS NULL
+>  #endif
+> -int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
+> -		   const char *name);
+> +int adt7316_probe(struct device *dev, struct regmap *regmap, const char *name,
+> +		  int irq);
+>  
+>  #endif
 
