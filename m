@@ -4,40 +4,40 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7EC4C43387
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Jan 2019 16:41:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45F00C43387
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Jan 2019 16:44:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 837F62087F
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Jan 2019 16:41:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0CBF12087F
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Jan 2019 16:44:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1546706484;
-	bh=MEygMgqeG8M0f2Aor83TanJM1pYbahZ3kO+b7rece5M=;
+	s=default; t=1546706675;
+	bh=y6g3RC2jupLKkYvU50Kw8dU3yHjiAEgyUOv6lo+XkOo=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=wBXksVgGPX2T3dcXqDDU8tvOT76DFD9MkBR5ep6S4r3a7MyyvU4p4Tid42P5VAQ2W
-	 KfKBvZIiLfkA2ukfnw0dpYIOTk87YoSN/lFctv6zCMqx72WxXPjy7TdiXcpX4lQ/0Y
-	 Rfq7nbfFJyo9R2aCMIeZfsiCdfqSD0YjCxXNO30E=
+	b=iGwLJwZl0o005LUS5wfdQIHcEKQgZNjXpjzLZrpOsOGro+PTSCo0zqlrk+31PfEnX
+	 KOuzY0/mPHEInLKQpIk53k623hF07ratwTzaZE9VDdypxFZ09JPzX+SdA9FYveaVUa
+	 jtWN+CarmQ6nfyQxLrru/ZtFx666YZlLlJd0fcrQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726249AbfAEQlY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 5 Jan 2019 11:41:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38500 "EHLO mail.kernel.org"
+        id S1726249AbfAEQoe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 5 Jan 2019 11:44:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39246 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726243AbfAEQlX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 5 Jan 2019 11:41:23 -0500
+        id S1726243AbfAEQoe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 5 Jan 2019 11:44:34 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3F4A52085A;
-        Sat,  5 Jan 2019 16:41:20 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D2CF020868;
+        Sat,  5 Jan 2019 16:44:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1546706482;
-        bh=MEygMgqeG8M0f2Aor83TanJM1pYbahZ3kO+b7rece5M=;
+        s=default; t=1546706672;
+        bh=y6g3RC2jupLKkYvU50Kw8dU3yHjiAEgyUOv6lo+XkOo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pz2cZDP1FJw1+o/Tllm71StwEgLCHDLj6WEqMqa+SfzNibCgqB6D1+qGFWOwDS8DX
-         fOV2tK+UZEUHUkd6k1ct9Lqlu8zk+G993GLU4rAg31nsDVI1OdbfL7zPr6NjMnlsJa
-         VHZwH4EZ/xyeLOfwYoytFfT95ZbGnzhE6j/9YX40=
-Date:   Sat, 5 Jan 2019 16:41:17 +0000
+        b=fzZappERtnQP9KuQ5fMhPitA0oHB5+b9fwrz28GoS+iOfXL+Pr/rtPyf/uR5q9uv6
+         Og9Fxp7c57oB/EMsR18oiIfthR3a980t7Rk/9X6RRwisVm5fEqIExFY4sFNE8m5UyW
+         BjsCZg3VMJp0uXYUy0rQadR118JSTx6tihcySmOY=
+Date:   Sat, 5 Jan 2019 16:44:27 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 Cc:     linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
@@ -46,7 +46,7 @@ Cc:     linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH 2/2] iio: adc: meson-saradc: enable the temperature
  sensor two more SoCs
-Message-ID: <20190105164117.125fbba8@archlinux>
+Message-ID: <20190105164427.03e2a013@archlinux>
 In-Reply-To: <20181227215020.9803-3-martin.blumenstingl@googlemail.com>
 References: <20181227215020.9803-1-martin.blumenstingl@googlemail.com>
         <20181227215020.9803-3-martin.blumenstingl@googlemail.com>
@@ -80,8 +80,8 @@ Martin Blumenstingl <martin.blumenstingl@googlemail.com> wrote:
 > calculation logic.
 > 
 > Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Applied to the togreg branch of iio.git and pushed out as testing for the
-autobuilders to play with it.
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to play with it.
 
 Thanks,
 
