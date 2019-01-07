@@ -1,536 +1,683 @@
-Return-Path: <SRS0=rJc9=PO=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=36nr=PP=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35636C43387
-	for <linux-iio@archiver.kernel.org>; Sun,  6 Jan 2019 17:17:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B2AEC43387
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Jan 2019 13:26:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E6BFA2085A
-	for <linux-iio@archiver.kernel.org>; Sun,  6 Jan 2019 17:17:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0E62E21736
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Jan 2019 13:26:26 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="S9hNSC0j"
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="AFnwOnur"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726176AbfAFRQs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 6 Jan 2019 12:16:48 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:35670 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725986AbfAFRQs (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 6 Jan 2019 12:16:48 -0500
-Received: by mail-lj1-f193.google.com with SMTP id x85-v6so36212933ljb.2;
-        Sun, 06 Jan 2019 09:16:45 -0800 (PST)
+        id S1727935AbfAGN0N (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Jan 2019 08:26:13 -0500
+Received: from mail-eopbgr740042.outbound.protection.outlook.com ([40.107.74.42]:42336
+        "EHLO NAM01-BN3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727159AbfAGN0M (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 7 Jan 2019 08:26:12 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=gHo/XoxzJN6vcVqXBcsUzxsbduPLa88Ltz+bqJBxl7M=;
-        b=S9hNSC0jlQHTSj/STIIfooZnePhFCAS+6Pg1Xy0e9FzTW9QDR0SECa/7DBMEUi2wFB
-         Uncu4rM+5MKvFJrUBUmqcIr4wFuHUdsY7gM5/1qvm0eK6tJYr6Rx+Eso/xiP2ZOC5InY
-         en0KOnHGk78L/whybY9sG+frShuCiRfbNkY46+Q3H0/MX/JlbsCIj0PK8x73uObxVwlS
-         SvmeU5hNLpI0XGpPKIyWbRAdwfv6+Yp+VE2f5PIoBuwfnmqHm6vjuA8KAyyy2GQRm0qQ
-         Kux/JURX8DlNNwMdsjqBbt42jyMz5zuVztu62eq7AcmwGTwFjoUHa1aB9tUNhHPF0/ob
-         vB1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=gHo/XoxzJN6vcVqXBcsUzxsbduPLa88Ltz+bqJBxl7M=;
-        b=hTHneMraUoqVfwfCiZHpAwZImM2Ta8SWdSrjSVp6YD/plaapePffeHjP2aIl2ff3qt
-         AfL0WLCtNhRW9D9vScbI6zyyQuVCzBnf/Tfkme0wjWxzquXZM1rN87tnCYSf4BdO382E
-         W+PV13fJxw6IYty6m0ydzLtFFSdqo7K2EdfV6O4iCVIt8YOZ3Ym/y69jzvXEr6NHoUcS
-         x2bl2j59rfZVd3JPNDTSCjRD2wu8otpxjMoUHh+/BuPMtHodm/1hWclyglneJp7wdmsI
-         hOSzdGus0B1blBGbUY+jEhvQ2sW5XjDYQY+yvITpXhKZ0Hpj/4fLlEMPLAvY8LDaFvxa
-         IqFw==
-X-Gm-Message-State: AJcUukcNX3r3YOtNe5gugu2axQuLFW5lDMDefVqJUtOKD4UNaZf/bfrm
-        jUWhndV1CM6zz0rtCStMo79Ad2gG
-X-Google-Smtp-Source: ALg8bN6Ff8pGqzQc+MadSMcdmD47TwvBSmQbCuRfueDrg7HBB+9vC/9I6U56Mv3Qo0fMwH/uPwtFQw==
-X-Received: by 2002:a2e:6a13:: with SMTP id f19-v6mr28437777ljc.41.1546795004306;
-        Sun, 06 Jan 2019 09:16:44 -0800 (PST)
-Received: from arch.domain.name (89-70-37-207.dynamic.chello.pl. [89.70.37.207])
-        by smtp.gmail.com with ESMTPSA id b17sm12339409lfc.21.2019.01.06.09.16.43
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 06 Jan 2019 09:16:43 -0800 (PST)
-From:   Tomasz Duszynski <tduszyns@gmail.com>
-To:     linux-iio@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Tomasz Duszynski <tduszyns@gmail.com>
-Subject: [PATCH 1/3] iio: chemical: add support for Plantower PMS7003 sensor
-Date:   Sun,  6 Jan 2019 18:16:12 +0100
-Message-Id: <20190106171614.12615-2-tduszyns@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190106171614.12615-1-tduszyns@gmail.com>
-References: <20190106171614.12615-1-tduszyns@gmail.com>
+ d=analog.onmicrosoft.com; s=selector1-analog-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OG7r/pTid2JeCeGdREFS7UVB9QBL6B6XyYCVIqQSxfk=;
+ b=AFnwOnurU6qYDBEJSj94RuMCXsPNDoOyZp4pDTRp+1i9hwZeZBm7Yn61vlZCcyUE35nI0QrRXoLVrozuiKM0dOMiir6SXivq9ypy8fQXY8ok9sSQh7QATQzwhDpSwb7hpgLNejcCZNR1XCe8SVZvJ77zXXBbSbQTcSJw2mhGGZE=
+Received: from CY4PR03CA0073.namprd03.prod.outlook.com (2603:10b6:910:4d::14)
+ by SN6PR03MB3504.namprd03.prod.outlook.com (2603:10b6:805:3f::33) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1495.6; Mon, 7 Jan
+ 2019 13:26:05 +0000
+Received: from BL2NAM02FT046.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e46::208) by CY4PR03CA0073.outlook.office365.com
+ (2603:10b6:910:4d::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.1495.6 via Frontend
+ Transport; Mon, 7 Jan 2019 13:26:05 +0000
+Authentication-Results: spf=pass (sender IP is 137.71.25.55)
+ smtp.mailfrom=analog.com; gmx.de; dkim=none (message not signed)
+ header.d=none;gmx.de; dmarc=bestguesspass action=none header.from=analog.com;
+Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
+ 137.71.25.55 as permitted sender) receiver=protection.outlook.com;
+ client-ip=137.71.25.55; helo=nwd2mta1.analog.com;
+Received: from nwd2mta1.analog.com (137.71.25.55) by
+ BL2NAM02FT046.mail.protection.outlook.com (10.152.76.118) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.1471.13
+ via Frontend Transport; Mon, 7 Jan 2019 13:26:05 +0000
+Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
+        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id x07DQ45h032734
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
+        Mon, 7 Jan 2019 05:26:04 -0800
+Received: from linux.ad.analog.com (10.32.224.122) by
+ NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
+ 14.3.408.0; Mon, 7 Jan 2019 08:26:03 -0500
+From:   Stefan Popa <stefan.popa@analog.com>
+To:     <jic23@kernel.org>
+CC:     <Michael.Hennerich@analog.com>, <knaack.h@gmx.de>,
+        <lars@metafoo.de>, <pmeerw@pmeerw.net>,
+        <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <stefan.popa@analog.com>
+Subject: [PATCH 1/2] iio: adc: Add AD7768-1 ADC basic support
+Date:   Mon, 7 Jan 2019 15:25:36 +0200
+Message-ID: <1546867536-4116-1-git-send-email-stefan.popa@analog.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(396003)(346002)(376002)(136003)(39860400002)(2980300002)(3190300001)(199004)(189003)(51416003)(316002)(2906002)(47776003)(476003)(2616005)(116002)(126002)(356004)(305945005)(486006)(48376002)(26005)(77096007)(186003)(8936002)(246002)(5660300001)(44832011)(4326008)(8676002)(50466002)(966005)(478600001)(426003)(72206003)(107886003)(106002)(50226002)(6916009)(106466001)(575784001)(6306002)(36756003)(336012)(7636002)(16586007)(14444005)(6666004)(4744004)(7696005)(2351001)(54906003);DIR:OUT;SFP:1101;SCL:1;SRVR:SN6PR03MB3504;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;A:1;MX:1;
+X-Microsoft-Exchange-Diagnostics: 1;BL2NAM02FT046;1:5vtyhs9PloOA7UcMhYcVc/NxYS/l0duhUnMis3/y2kGwmfiPB3/QKI+rpu+WWTtU/Ck+8EV4nFH5iiFf4quVv9uJ2ZD9/Xz1g/q6oLLbwgPRBkJuYRC1Mx9f/E8D0dEY
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c9590a72-7088-43c3-e970-08d674a3ad3e
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600109)(711020)(4608076)(4709027)(2017052603328)(7153060);SRVR:SN6PR03MB3504;
+X-Microsoft-Exchange-Diagnostics: 1;SN6PR03MB3504;3:q+SMFvnQUU9tSY/BIYs7pzhC2leYQrWgirLLPHTrDtPgbHPeGuIo91YqGcrhkNkb24MGAbKBL0kQPUQwIdDNp1Zuk5AjU3DQB6WjZvWGK4Y6jow+pqZnx3rcFxdUUkjwJb5TOTZW7h2GjgRpF1zdrE4EPiv8mAuMlOxqKjmDas6TyKVlFUsc5XR1qqzkBMh9VuoFvRcseZdUB6WOdOcrbIx2uu7AjPMuZAUe7OZSPjEzgfRXs9pZ8tTGxegEyoHzOTfb3x2x7OEYbZ9CbcBKCLcu9V+IXAIUTwSxliP0KZFIgOezQe2LxWD9+OqYzzSWdCuXQGV+9SnGdf6ONExe9XTykxYOfHIpE8ST8jBNkBjUNnZnTG4UMgBrjUplcQ38;25:6vs4vFjkvAKIhdY/LKWgBV9qWvwIwmhWZSdLqWMn9ApFvLN+be0zto9h+VKv9GECw3efTR2mAzKqauckfywYgQm3yC6gvgAG+mDOZZUlmxxhIzyTEX5a331xnMW3fM0VJ1sMkzZGds6CdiKKlxjx4/aaijeygs4igwC9U5rJYwfVcez980hcKCjSnOXlH+/uFJeJzcaH51VOgDBKGfIo4kzabaZhhVk9yaLNoEa5oGaUAyXlzet+EbZ6Wz9LsK83OTMaNCeootcDmDodpwupISq+pwQQ/KvSP66y541eG3CUYGngu0gvWWR2IE8Rp9m2tr3y5agcBM8G5STDRU2qAg==
+X-MS-TrafficTypeDiagnostic: SN6PR03MB3504:
+X-Microsoft-Exchange-Diagnostics: 1;SN6PR03MB3504;31:5beAEKMivLaAtxLfTIpJ1hqpaFoi1aCOPIjrpOuwBbkT+D8QyhLnhkCiIqcQ2goIwmzRz+msB5brOK1CP7I6tGxQ2MYI1GJ9qoHvwlEKJAnzdowMd9EYAZrADRnlWbMjz/8H76qNHdbhCtPOQvDVBeVG1GQlPWjmuxvE/fEOFiIVXOqND8a34QP4pIxsS3sTYYcmJMH1znvyGmT9IzdfABlm8u7BXoXxunOupA1VqWI=;20:Zs1QQulBs/Ha3U25lD++nuSknqpaDqLkMyqovrbcnSSEWwlDsAclSooEIlbzqWHkbXnXBT79pqGgIA2Zf5D+TvEruotXrTvVO9FLAWkbjNPnIaP9Xt6tp8XcGSf1zZH8WcYQkFIJ7rqSIgh3NN2q5Py2GlhQzfT+bVFOp2QgUd0835rsszGw4I5RI1CicjIoWd2Ox3HdXVSU7WHsvY2lH6t35GWESUAFXYByu/T1DiwVZCozRZZ1IYSc3Dv42MsYC/CmiMXgVCr4wpQ4uXWtFLbCygLlHz3KlICAjrlx4Iidfo5hhCnJQGBaWtttEeTY6QLjAMLmASasufjzFPhqiFiXA0/i3ouucM1x+YgMdIx85Hp8E0r8eJgmmfJTuz3K1ximrRDFTlG9DotgxTg54vuZutnyRtmrGBsmfe+kDlYZUzNOvTPXt+xqarRNVeX9F4AQjdflGle7I3vmiWKPoeq3tjmb67f0/WWUDbY63UFMNTUEFcswun0DvaIH1vqR
+X-Microsoft-Antispam-PRVS: <SN6PR03MB35048E21BEA4481F43E167269D890@SN6PR03MB3504.namprd03.prod.outlook.com>
+X-Exchange-Antispam-Report-CFA-Test: BCL:0;PCL:0;RULEID:(8211001083)(3230021)(908002)(999002)(5005026)(6040522)(8220060)(2401047)(8121501046)(10201501046)(93006095)(93004095)(3231475)(944501520)(4982022)(52105112)(3002001)(6055026)(6041310)(201703131423095)(201702281528075)(20161123555045)(201703061421075)(201703061406153)(20161123564045)(20161123562045)(20161123560045)(20161123558120)(201708071742011)(7699051)(76991095);SRVR:SN6PR03MB3504;BCL:0;PCL:0;RULEID:;SRVR:SN6PR03MB3504;
+X-Microsoft-Exchange-Diagnostics: 1;SN6PR03MB3504;4:bVaj0zlLPrKoJb0Ir4CJVBwS0xHWq7g5PLQsVjHXytU4I95lctCihyWfgs6trcH5doUd0nVu0WaYav1gs9TWC0DWf5Y4xPveSMyLZJsnp7+lRjB4OrT10/zLM2dLZZ0mZzCSRSo1sKChL9iLwUqi5p25swbxfrbCzISwH89tRreeSLEDKDod50fKDd4C6zliDbK93APcOmgLf1BXsYxWwPSpvY8EonHC4KD2a66JTwgpJ9HCwLcGVMB33og69D9+vPM3GgdiP6hZ1v4TLJ+YVm04UVNSqMuLXArPI3rqjzWH0Hn+iaxKGnTsqETeGxb5
+X-Forefront-PRVS: 0910AAF391
+X-Microsoft-Exchange-Diagnostics: =?us-ascii?Q?1;SN6PR03MB3504;23:7166DUih9ZWFnqBM/R4K0ibQH7wT+7LzfaFdXh+Po?=
+ =?us-ascii?Q?5fw89V9sm7YvbfOC8PIJcfAIlJkXhLyAzAwZK3qc4ZVV/CKtcg79F4h3PDc7?=
+ =?us-ascii?Q?rRDr9S+aU3EJ/bvuSi2wRnK3Je2nP6ssmHGKegWw08CoVVagCBIm1VuJ47dG?=
+ =?us-ascii?Q?b2NpYejWSRNFWrEpnC+p0CwKHsxMIKcjQGVSa+2MFPwuOwX1gbcZttrgEjSt?=
+ =?us-ascii?Q?70QjltlLSfSWih3YBOTUZdZ5g0F4MTXn/GOJjK0lQUat4IOrFo7kVW6Di+eu?=
+ =?us-ascii?Q?v26oPS82X8fQW6PwwyVunl4uIXhnLfXxcvx4HmSftXnwMsaVrpf7xOpIpmFa?=
+ =?us-ascii?Q?BL8UmSKagXWfCiz0ug7aXhvhIoImopR1r24x5TQCzD/bEiWtbSxTKIyHYZTL?=
+ =?us-ascii?Q?xzrABDHA1ztJbQe01yXkuIPJgVa6gez+wPwYBX1e/dpmsr2OzLZfedZ4NsrB?=
+ =?us-ascii?Q?r1z+ouFqtPLl63X8DMATxdMrFWdvhDbu844RFuDI7Eaa6+HQ6GFnHszkAzNL?=
+ =?us-ascii?Q?sKd+vDn4bUV537BXGf4GVjO4vfm4CJZO9cX24lvX145iX5YqwH+DNp2hvL2d?=
+ =?us-ascii?Q?n3W5wAEzmPcPZ1vuP4llIhZO6yCPmKnltKPnreIpHOB0oZOCk4bf4OoOIW9z?=
+ =?us-ascii?Q?w4gAh7J15gqopzcPFrCZY2Y3rFWN6h8f0IaACsbdWOUcF/0ZVTbWzPv0dzJd?=
+ =?us-ascii?Q?qzV8SaZElg+0eoF430baref7JEeHPviRLknXU7jwLT2TrBgmHa5MuULmKDhj?=
+ =?us-ascii?Q?FSnzidOsfNrXQxQZDZjTrijMkWP29kJzAGEIfYKAtqq0CJ4m0Ej/y8F4stTt?=
+ =?us-ascii?Q?S/lmKI7YwUpvQE5QNwcyIqGGU5fLuAWJt8GRwuzYdVGh/pt3fUzp4tzaB+My?=
+ =?us-ascii?Q?09fsu74O9vfSa2PUaS3OZwYzmdPF94mJYgmEesunmccGqk3hp8fW8o41l25j?=
+ =?us-ascii?Q?JYIOhciO/lwVsNeXl1Zk2bkjkE4gt1J2+9uHbGWJ0PsGLEKeLZ1+zWj8WRwI?=
+ =?us-ascii?Q?27K6y013lJ4ah2b6qJN2R6tx6JLYApuiM9cBXEu9gEjho6aKpq0m0gSPvNpp?=
+ =?us-ascii?Q?ltjTusyzeqhJ04/UK/tAYqwE/nHi/SokTxV2lW19tV0JD0kh0qkXAEPjfnx1?=
+ =?us-ascii?Q?JQO2pIpGA8JCKfySUW/qXf7aQMrwNd4?=
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Message-Info: q6EGknlPG6hCcmVm8NIvPKnZ7AHDdNdLoX5VfC/6uoCJLV73KbBy2TTebwTEP4Y28vfL8a1jbkN5IpdvrLjjgEOoYImGRno1u3/GjcOdQq8FDTe2/+2zbvdEVnQboKzOtJrBhxi6W8YtYwZaIL7rYMCHEWxvAXoA8yjKASVzj3FEndJvO+SmLB3TKVaePCmCDvceXJhp1mdv6Ce2cTX1t4hAJXgVd14qqLsqKu9JFZ2fxJEf53JcgAa/E4nPoCfnd8DkgfIT7rr5mmVSIm3y/H2sA413oMJSuLmHoY6coHESebIhNcddCACK1fazfO/Y
+X-Microsoft-Exchange-Diagnostics: 1;SN6PR03MB3504;6:d99buAP0prw644ZwfmYH5071bQRjhZCQ+s6/8hOyGGD/F9Ger0IKLWbLQA1APcmHKI2Sg6+Z48++0EmmjFp8kJ1BHfvCU6VShBzCtmHDIcSHRlp17nKqz6pzhxnOpYIES2Ga3YR5CyAa71uEChJ0R1/vhHKv2dMsC9fdDRPfu1sgwCnry4gQi8HnRT8u0x5r8r8W7I6t6gMllZNHo1b+oUUZo9u1WBUY1D3nDw/ASON8E+SvoktzKJMyuEUbkJxV2G+debpREHG1oS7kA3K4ypc10+4ntg5ythpt4tPQiN0wFCVnGFGlVdNwLZNAoSdSd9UW91xgNsthRW7tPn1la98sNnChWQ4wLT+KBp1cU6VYK/1c2/NvFuE0TtMIomD2g9wcGSGhyIcCOEzVIsIUwE/7U4gk+Z3aHYL8FJb+VBAPtnv6THa08Exiz6ri1s5sHIF1O9MvhxhiwQTneFy9EQ==;5:tGrdxd3hF8gE9QCNbVF31OCfpitWH6oX0Bw2ORLZ/Bmr5avTRGpE8h4zvNQ7lOSzM6cvcwJj6fqwM9ZbhJMndTI91EGLcrqhsC3oq9N5Jiux+0+qX1mbSw6zeSNr7HI9/FjrLwXMfzHZB+TwcV5SDjC/q97gqrn0i2LGvpoomeUWXgjaqY9s8sHKwEmRptHdHMF2B8ovWhTK5VL/VCH4aw==;7:f7rgcX3LTCGUN0sgb2UuUspxSPm1+PQHpQOZj3qOvTRXfEknedVQIJPfCN+VSH54mGWv4vZkMLDmQZQ/w9mPfb4ruVx6BydMG0SFGITe0wAnq9Y89FennaoHouHdlTBFNU9X5XSMUA9g3C9R2GTTHQ==
+SpamDiagnosticOutput: 1:99
+SpamDiagnosticMetadata: NSPM
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jan 2019 13:26:05.3638
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: c9590a72-7088-43c3-e970-08d674a3ad3e
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.55];Helo=[nwd2mta1.analog.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR03MB3504
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add support for Plantower PMS7003 particulate matter sensor.
+The ad7768-1 is a single channel, precision 24-bit analog to digital
+converter (ADC).
 
-Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
+This basic patch configures the device in fast mode, with 32 kSPS and
+leaves the default sinc5 filter.
+
+Two data conversion modes are made available. When data is retrieved by
+using the read_raw attribute, one shot single conversion mode is set.
+The continuous conversion mode is enabled when the triggered buffer
+mechanism is used. To assure correct data retrieval, the driver waits
+for the interrupt triggered by the low to high transition of the DRDY
+pin.
+
+Datasheets:
+Link: https://www.analog.com/media/en/technical-documentation/data-sheets/ad7768-1.pdf
+
+Signed-off-by: Stefan Popa <stefan.popa@analog.com>
 ---
- drivers/iio/chemical/Kconfig   |  10 +
- drivers/iio/chemical/Makefile  |   1 +
- drivers/iio/chemical/pms7003.c | 411 +++++++++++++++++++++++++++++++++
- 3 files changed, 422 insertions(+)
- create mode 100644 drivers/iio/chemical/pms7003.c
+ MAINTAINERS                |   7 +
+ drivers/iio/adc/Kconfig    |  13 ++
+ drivers/iio/adc/Makefile   |   1 +
+ drivers/iio/adc/ad7768-1.c | 474 +++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 495 insertions(+)
+ create mode 100644 drivers/iio/adc/ad7768-1.c
 
-diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
-index 57832b4360e9..d5d146e9e372 100644
---- a/drivers/iio/chemical/Kconfig
-+++ b/drivers/iio/chemical/Kconfig
-@@ -61,6 +61,16 @@ config IAQCORE
- 	  iAQ-Core Continuous/Pulsed VOC (Volatile Organic Compounds)
- 	  sensors
+diff --git a/MAINTAINERS b/MAINTAINERS
+index d039f66..3ba3811 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -862,6 +862,13 @@ S:	Supported
+ F:	drivers/iio/adc/ad7606.c
+ F:	Documentation/devicetree/bindings/iio/adc/ad7606.txt
  
-+config PMS7003
-+	tristate "Plantower PMS7003 particulate matter sensor"
-+	depends on SERIAL_DEV_BUS
++ANALOG DEVICES INC AD7768-1 DRIVER
++M:	Stefan Popa <stefan.popa@analog.com>
++L:	linux-iio@vger.kernel.org
++W:	http://ez.analog.com/community/linux-device-drivers
++S:	Supported
++F:	drivers/iio/adc/ad7768-1.c
++
+ ANALOG DEVICES INC AD9389B DRIVER
+ M:	Hans Verkuil <hans.verkuil@cisco.com>
+ L:	linux-media@vger.kernel.org
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index f3cc7a3..6c19dfe 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -108,6 +108,19 @@ config AD7766
+ 	  To compile this driver as a module, choose M here: the module will be
+ 	  called ad7766.
+ 
++config AD7768_1
++	tristate "Analog Devices AD7768-1 ADC driver"
++	depends on SPI
++	select IIO_BUFFER
++	select IIO_TRIGGER
++	select IIO_TRIGGERED_BUFFER
 +	help
-+	  Say Y here to build support for the Plantower PMS7003 particulate
-+	  matter sensor.
++	  Say yes here to build support for Analog Devices AD7768-1 SPI
++	  simultaneously sampling sigma-delta analog to digital converter (ADC).
 +
-+	  To compile this driver as a module, choose M here: the module will
-+	  be called pms7003.
++	  To compile this driver as a module, choose M here: the module will be
++	  called ad7768-1.
 +
- config SPS30
- 	tristate "SPS30 particulate matter sensor"
- 	depends on I2C
-diff --git a/drivers/iio/chemical/Makefile b/drivers/iio/chemical/Makefile
-index 65bf0f89c0e4..f5d1365acb49 100644
---- a/drivers/iio/chemical/Makefile
-+++ b/drivers/iio/chemical/Makefile
-@@ -9,6 +9,7 @@ obj-$(CONFIG_BME680_I2C) += bme680_i2c.o
- obj-$(CONFIG_BME680_SPI) += bme680_spi.o
- obj-$(CONFIG_CCS811)		+= ccs811.o
- obj-$(CONFIG_IAQCORE)		+= ams-iaq-core.o
-+obj-$(CONFIG_PMS7003) += pms7003.o
- obj-$(CONFIG_SENSIRION_SGP30)	+= sgp30.o
- obj-$(CONFIG_SPS30) += sps30.o
- obj-$(CONFIG_VZ89X)		+= vz89x.o
-diff --git a/drivers/iio/chemical/pms7003.c b/drivers/iio/chemical/pms7003.c
+ config AD7791
+ 	tristate "Analog Devices AD7791 ADC driver"
+ 	depends on SPI
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index ea50313..9d50f7b 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -15,6 +15,7 @@ obj-$(CONFIG_AD7606_IFACE_PARALLEL) += ad7606_par.o
+ obj-$(CONFIG_AD7606_IFACE_SPI) += ad7606_spi.o
+ obj-$(CONFIG_AD7606) += ad7606.o
+ obj-$(CONFIG_AD7766) += ad7766.o
++obj-$(CONFIG_AD7768_1) += ad7768-1.o
+ obj-$(CONFIG_AD7791) += ad7791.o
+ obj-$(CONFIG_AD7793) += ad7793.o
+ obj-$(CONFIG_AD7887) += ad7887.o
+diff --git a/drivers/iio/adc/ad7768-1.c b/drivers/iio/adc/ad7768-1.c
 new file mode 100644
-index 000000000000..bc8a4fbdf641
+index 0000000..7ba98d603
 --- /dev/null
-+++ b/drivers/iio/chemical/pms7003.c
-@@ -0,0 +1,411 @@
++++ b/drivers/iio/adc/ad7768-1.c
+@@ -0,0 +1,474 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
-+ * Plantower PMS7003 particulate matter sensor driver
++ * Analog Devices AD7768-1 SPI ADC driver
 + *
-+ * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
++ * Copyright 2017 Analog Devices Inc.
 + */
-+
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-+
-+#include <asm/unaligned.h>
-+#include <linux/completion.h>
++#include <linux/bitfield.h>
++#include <linux/clk.h>
++#include <linux/delay.h>
 +#include <linux/device.h>
-+#include <linux/errno.h>
++#include <linux/err.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/regulator/consumer.h>
++#include <linux/sysfs.h>
++#include <linux/spi/spi.h>
++
 +#include <linux/iio/buffer.h>
 +#include <linux/iio/iio.h>
-+#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/trigger.h>
 +#include <linux/iio/triggered_buffer.h>
-+#include <linux/jiffies.h>
-+#include <linux/kernel.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/serdev.h>
++#include <linux/iio/trigger_consumer.h>
 +
-+#define PMS7003_DRIVER_NAME "pms7003"
++/* AD7768 registers definition */
++#define AD7768_REG_CHIP_TYPE		0x3
++#define AD7768_REG_PROD_ID_L		0x4
++#define AD7768_REG_PROD_ID_H		0x5
++#define AD7768_REG_CHIP_GRADE		0x6
++#define AD7768_REG_SCRATCH_PAD		0x0A
++#define AD7768_REG_VENDOR_L		0x0C
++#define AD7768_REG_VENDOR_H		0x0D
++#define AD7768_REG_INTERFACE_FORMAT	0x14
++#define AD7768_REG_POWER_CLOCK		0x15
++#define AD7768_REG_ANALOG		0x16
++#define AD7768_REG_ANALOG2		0x17
++#define AD7768_REG_CONVERSION		0x18
++#define AD7768_REG_DIGITAL_FILTER	0x19
++#define AD7768_REG_SINC3_DEC_RATE_MSB	0x1A
++#define AD7768_REG_SINC3_DEC_RATE_LSB	0x1B
++#define AD7768_REG_DUTY_CYCLE_RATIO	0x1C
++#define AD7768_REG_SYNC_RESET		0x1D
++#define AD7768_REG_GPIO_CONTROL		0x1E
++#define AD7768_REG_GPIO_WRITE		0x1F
++#define AD7768_REG_GPIO_READ		0x20
++#define AD7768_REG_OFFSET_HI		0x21
++#define AD7768_REG_OFFSET_MID		0x22
++#define AD7768_REG_OFFSET_LO		0x23
++#define AD7768_REG_GAIN_HI		0x24
++#define AD7768_REG_GAIN_MID		0x25
++#define AD7768_REG_GAIN_LO		0x26
++#define AD7768_REG_SPI_DIAG_ENABLE	0x28
++#define AD7768_REG_ADC_DIAG_ENABLE	0x29
++#define AD7768_REG_DIG_DIAG_ENABLE	0x2A
++#define AD7768_REG_ADC_DATA		0x2C
++#define AD7768_REG_MASTER_STATUS	0x2D
++#define AD7768_REG_SPI_DIAG_STATUS	0x2E
++#define AD7768_REG_ADC_DIAG_STATUS	0x2F
++#define AD7768_REG_DIG_DIAG_STATUS	0x30
++#define AD7768_REG_MCLK_COUNTER		0x31
 +
-+#define PMS7003_MAGIC_MSB 0x42
-+#define PMS7003_MAGIC_LSB 0x4d
-+/* last 2 data bytes hold frame checksum */
-+#define PMS7003_MAX_DATA_LENGTH 28
-+#define PMS7003_CHECKSUM_LENGTH 2
-+#define PMS7003_PM10_OFFSET 10
-+#define PMS7003_PM2P5_OFFSET 8
-+#define PMS7003_PM1_OFFSET 6
++/* AD7768_REG_CONVERSION */
++#define AD7768_CONV_MODE_MSK		GENMASK(2, 0)
++#define AD7768_CONV_MODE(x)		FIELD_PREP(AD7768_CONV_MODE_MSK, x)
 +
-+#define PMS7003_TIMEOUT msecs_to_jiffies(6000)
-+#define PMS7003_CMD_LENGTH 7
-+#define PMS7003_PM_MAX 1000
-+#define PMS7003_PM_MIN 0
++#define AD7768_RD_FLAG_MSK(x)		(BIT(6) | ((x) & 0x3F))
++#define AD7768_WR_FLAG_MSK(x)		((x) & 0x3F)
 +
-+enum {
-+	PM1,
-+	PM2P5,
-+	PM10,
++enum ad7768_conv_mode {
++	AD7768_CONTINUOUS,
++	AD7768_ONE_SHOT,
++	AD7768_SINGLE,
++	AD7768_PERIODIC,
++	AD7768_STANDBY
 +};
 +
-+enum {
-+	CMD_WAKEUP,
-+	CMD_ENTER_PASSIVE_MODE,
-+	CMD_READ_PASSIVE,
-+	CMD_SLEEP,
++enum ad7768_pwrmode {
++	AD7768_ECO_MODE,
++	AD7768_MED_MODE = 2,
++	AD7768_FAST_MODE
 +};
 +
-+enum {
-+	STATE_MAGIC_MSB,
-+	STATE_MAGIC_LSB,
-+	STATE_LENGTH_MSB,
-+	STATE_LENGTH_LSB,
-+	STATE_DATA,
++static const struct iio_chan_spec ad7768_channels[] = {
++	{
++		.type = IIO_VOLTAGE,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
++		.indexed = 1,
++		.channel = 0,
++		.scan_index = 0,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = 24,
++			.storagebits = 32,
++			.shift = 8,
++			.endianness = IIO_BE,
++		},
++	},
 +};
 +
-+struct pms7003_frame {
-+	u8 data[PMS7003_MAX_DATA_LENGTH];
-+	u16 expected_length;
-+	u16 length;
-+	int state;
++struct ad7768_state {
++	struct spi_device *spi;
++	struct regulator *vref;
++	struct mutex lock;
++	struct completion completion;
++	struct iio_trigger *trig;
++	__be16 d16;
++	__be32 d32;
 +};
 +
-+struct pms7003_state {
-+	struct serdev_device *serdev;
-+	struct pms7003_frame frame;
-+	struct completion frame_ready;
-+	struct mutex lock; /* must be held whenever state gets touched */
++enum ad7768_ids {
++	ID_AD7768_1,
 +};
 +
-+static u16 pms7003_calc_checksum(const u8 *data, int size)
++static int ad7768_spi_reg_read(struct ad7768_state *st, unsigned int addr,
++			       unsigned int len)
 +{
-+	u16 checksum = 0;
++	struct spi_transfer t[] = {
++		{
++			.tx_buf = &st->d16,
++			.len = 1,
++			.cs_change = 0,
++		}, {
++			.rx_buf = &st->d32,
++			.len = len,
++		},
++	};
++	unsigned int shift;
++	int ret;
 +
-+	while (size--)
-+		checksum += data[size];
++	shift = 32 - (8 * len);
 +
-+	return checksum;
-+}
++	st->d16 = cpu_to_be16((AD7768_RD_FLAG_MSK(addr) << 8));
 +
-+static int pms7003_do_cmd(struct pms7003_state *state, u8 cmd)
-+{
-+	/*
-+	 * commands have following format:
-+	 *
-+	 * +------+------+-----+------+-----+-----------+-----------+
-+	 * | 0x42 | 0x4d | cmd | 0x00 | arg | cksum msb | cksum lsb |
-+	 * +------+------+-----+------+-----+-----------+-----------+
-+	 */
-+	u8 tmp[PMS7003_CMD_LENGTH] = { PMS7003_MAGIC_MSB, PMS7003_MAGIC_LSB };
-+	int ret, n = 2;
-+	u16 checksum;
-+
-+	switch (cmd) {
-+	case CMD_WAKEUP:
-+		tmp[n++] = 0xe4;
-+		tmp[n++] = 0x00;
-+		tmp[n++] = 0x01;
-+		break;
-+	case CMD_ENTER_PASSIVE_MODE:
-+		tmp[n++] = 0xe1;
-+		tmp[n++] = 0x00;
-+		tmp[n++] = 0x00;
-+		break;
-+	case CMD_READ_PASSIVE:
-+		tmp[n++] = 0xe2;
-+		tmp[n++] = 0x00;
-+		tmp[n++] = 0x00;
-+		break;
-+	case CMD_SLEEP:
-+		tmp[n++] = 0xe4;
-+		tmp[n++] = 0x00;
-+		tmp[n++] = 0x00;
-+		break;
-+	}
-+
-+	checksum = pms7003_calc_checksum(tmp, n);
-+	put_unaligned_be16(checksum, tmp + n);
-+	n += PMS7003_CHECKSUM_LENGTH;
-+
-+	ret = serdev_device_write(state->serdev, tmp, n, PMS7003_TIMEOUT);
-+	if (ret)
++	ret = spi_sync_transfer(st->spi, t, ARRAY_SIZE(t));
++	if (ret < 0)
 +		return ret;
 +
-+	ret = wait_for_completion_interruptible_timeout(&state->frame_ready,
-+							PMS7003_TIMEOUT);
++	return (be32_to_cpu(st->d32) >> shift);
++}
++
++static int ad7768_spi_reg_write(struct ad7768_state *st,
++				unsigned int addr,
++				unsigned int val)
++{
++	st->d16 = cpu_to_be16((AD7768_WR_FLAG_MSK(addr) << 8) |
++			      (val & 0xFF));
++
++	return spi_write(st->spi, &st->d16, sizeof(st->d16));
++}
++
++static int ad7768_set_mode(struct ad7768_state *st,
++			   enum ad7768_conv_mode mode)
++{
++	int regval;
++
++	regval = ad7768_spi_reg_read(st, AD7768_REG_CONVERSION, 1);
++	if (regval < 0)
++		return regval;
++
++	regval &= ~AD7768_CONV_MODE_MSK;
++	regval |= AD7768_CONV_MODE(mode);
++
++	return ad7768_spi_reg_write(st, AD7768_REG_CONVERSION, regval);
++}
++
++static int ad7768_scan_direct(struct iio_dev *indio_dev)
++{
++	struct ad7768_state *st = iio_priv(indio_dev);
++	int readval, ret;
++
++	reinit_completion(&st->completion);
++
++	ret = ad7768_set_mode(st, AD7768_ONE_SHOT);
++	if (ret < 0)
++		return ret;
++
++	ret = wait_for_completion_timeout(&st->completion,
++					  msecs_to_jiffies(1000));
 +	if (!ret)
-+		ret = -ETIMEDOUT;
++		return -ETIMEDOUT;
 +
-+	return ret < 0 ? ret : 0;
++	readval = ad7768_spi_reg_read(st, AD7768_REG_ADC_DATA, 3);
++	if (readval < 0)
++		return readval;
++	/*
++	 * Any SPI configuration of the AD7768-1 can only be
++	 * performed in continuous conversion mode.
++	 */
++	ret = ad7768_set_mode(st, AD7768_CONTINUOUS);
++	if (ret < 0)
++		return ret;
++
++	return readval;
 +}
 +
-+static u16 pms7003_get_pm(struct pms7003_frame *frame, int offset)
++static int ad7768_reg_access(struct iio_dev *indio_dev,
++			     unsigned int reg,
++			     unsigned int writeval,
++			     unsigned int *readval)
 +{
-+	return clamp_val(get_unaligned_be16(frame->data + offset),
-+			 PMS7003_PM_MIN, PMS7003_PM_MAX);
-+}
-+
-+static irqreturn_t pms7003_trigger_handler(int irq, void *p)
-+{
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct pms7003_state *state = iio_priv(indio_dev);
-+	struct pms7003_frame *frame = &state->frame;
-+	u16 data[3 + 1 + 4]; /* PM1, PM2P5, PM10, padding, timestamp */
++	struct ad7768_state *st = iio_priv(indio_dev);
 +	int ret;
 +
-+	mutex_lock(&state->lock);
-+	ret = pms7003_do_cmd(state, CMD_READ_PASSIVE);
-+	if (ret) {
-+		mutex_unlock(&state->lock);
-+		goto err;
++	mutex_lock(&st->lock);
++	if (readval) {
++		ret = ad7768_spi_reg_read(st, reg, 1);
++		if (ret < 0)
++			goto err_unlock;
++		*readval = ret;
++		ret = 0;
++	} else {
++		ret = ad7768_spi_reg_write(st, reg, writeval);
 +	}
++err_unlock:
++	mutex_unlock(&st->lock);
 +
-+	data[PM1] = pms7003_get_pm(frame, PMS7003_PM1_OFFSET);
-+	data[PM2P5] = pms7003_get_pm(frame, PMS7003_PM2P5_OFFSET);
-+	data[PM10] = pms7003_get_pm(frame, PMS7003_PM10_OFFSET);
-+	mutex_unlock(&state->lock);
-+
-+	iio_push_to_buffers_with_timestamp(indio_dev, data,
-+					   iio_get_time_ns(indio_dev));
-+err:
-+	iio_trigger_notify_done(indio_dev->trig);
-+
-+	return IRQ_HANDLED;
++	return ret;
 +}
 +
-+static int pms7003_read_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan,
-+			    int *val, int *val2, long mask)
++static int ad7768_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val, int *val2, long info)
 +{
-+	struct pms7003_state *state = iio_priv(indio_dev);
-+	struct pms7003_frame *frame = &state->frame;
-+	int ret;
++	struct ad7768_state *st = iio_priv(indio_dev);
++	int scale_uv, ret;
 +
-+	switch (mask) {
-+	case IIO_CHAN_INFO_PROCESSED:
-+		switch (chan->type) {
-+		case IIO_MASSCONCENTRATION:
-+			mutex_lock(&state->lock);
-+			ret = pms7003_do_cmd(state, CMD_READ_PASSIVE);
-+			if (ret) {
-+				mutex_unlock(&state->lock);
-+				return ret;
-+			}
++	switch (info) {
++	case IIO_CHAN_INFO_RAW:
++		ret = iio_device_claim_direct_mode(indio_dev);
++		if (ret)
++			return ret;
 +
-+			switch (chan->channel2) {
-+			case IIO_MOD_PM1:
-+				*val = pms7003_get_pm(frame,
-+						      PMS7003_PM1_OFFSET);
-+				break;
-+			case IIO_MOD_PM2P5:
-+				*val = pms7003_get_pm(frame,
-+						      PMS7003_PM2P5_OFFSET);
-+				break;
-+			case IIO_MOD_PM10:
-+				*val = pms7003_get_pm(frame,
-+						      PMS7003_PM10_OFFSET);
-+				break;
-+			}
-+			mutex_unlock(&state->lock);
++		ret = ad7768_scan_direct(indio_dev);
++		if (ret == 0)
++			*val = ret;
 +
-+			return IIO_VAL_INT;
-+		default:
-+			return -EINVAL;
-+		}
++		iio_device_release_direct_mode(indio_dev);
++		if (ret < 0)
++			return ret;
++
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_SCALE:
++		scale_uv = regulator_get_voltage(st->vref);
++		if (scale_uv < 0)
++			return scale_uv;
++
++		*val = (scale_uv * 2) / 1000;
++		*val2 = chan->scan_type.realbits;
++
++		return IIO_VAL_FRACTIONAL_LOG2;
 +	}
 +
 +	return -EINVAL;
 +}
 +
-+
-+static const struct iio_info pms7003_info = {
-+	.read_raw = pms7003_read_raw,
++static const struct iio_info ad7768_info = {
++	.read_raw = &ad7768_read_raw,
++	.debugfs_reg_access = &ad7768_reg_access,
 +};
 +
-+#define PMS7003_CHAN(_index, _mod) { \
-+	.type = IIO_MASSCONCENTRATION, \
-+	.modified = 1, \
-+	.channel2 = IIO_MOD_ ## _mod, \
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED), \
-+	.scan_index = _index, \
-+	.scan_type = { \
-+		.sign = 'u', \
-+		.realbits = 10, \
-+		.storagebits = 16, \
-+		.endianness = IIO_CPU, \
-+	}, \
++static int ad7768_setup(struct ad7768_state *st)
++{
++	int ret;
++
++	/*
++	 * Two writes to the SPI_RESET[1:0] bits are required to initiate
++	 * a software reset. The bits must first be set to 11, and then
++	 * to 10. When the sequence is detected, the reset occurs.
++	 * See the datasheet, page 70.
++	 */
++	ret = ad7768_spi_reg_write(st, AD7768_REG_SYNC_RESET, 0x3);
++	if (ret)
++		return ret;
++
++	ret = ad7768_spi_reg_write(st, AD7768_REG_SYNC_RESET, 0x2);
++	if (ret)
++		return ret;
++
++	/* Set power mode to fast */
++	return ad7768_spi_reg_write(st, AD7768_REG_POWER_CLOCK,
++				    AD7768_FAST_MODE);
 +}
 +
-+static const struct iio_chan_spec pms7003_channels[] = {
-+	PMS7003_CHAN(0, PM1),
-+	PMS7003_CHAN(1, PM2P5),
-+	PMS7003_CHAN(2, PM10),
-+	IIO_CHAN_SOFT_TIMESTAMP(3),
++static irqreturn_t ad7768_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct ad7768_state *st = iio_priv(indio_dev);
++	struct spi_transfer t[] = {
++		{
++			.rx_buf = &st->d32,
++			.len = 3,
++		},
++	};
++	int ret;
++
++	mutex_lock(&st->lock);
++
++	ret = spi_sync_transfer(st->spi, t, ARRAY_SIZE(t));
++	if (ret < 0)
++		goto err_unlock;
++
++	iio_push_to_buffers_with_timestamp(indio_dev, &st->d32,
++					   iio_get_time_ns(indio_dev));
++
++	iio_trigger_notify_done(indio_dev->trig);
++err_unlock:
++	mutex_unlock(&st->lock);
++
++	return IRQ_HANDLED;
++}
++
++static irqreturn_t ad7768_interrupt(int irq, void *dev_id)
++{
++	struct iio_dev *indio_dev = dev_id;
++	struct ad7768_state *st = iio_priv(indio_dev);
++
++	if (iio_buffer_enabled(indio_dev))
++		iio_trigger_poll_chained(st->trig);
++	else
++		complete(&st->completion);
++
++	return IRQ_HANDLED;
 +};
 +
-+static int pms7003_frame_okay(struct pms7003_frame *frame)
++static int ad7768_buffer_postenable(struct iio_dev *indio_dev)
 +{
-+	int offset = frame->length - PMS7003_CHECKSUM_LENGTH;
-+	u16 checksum = PMS7003_MAGIC_MSB + PMS7003_MAGIC_LSB +
-+		       (frame->length >> 8) + (u8)frame->length +
-+		       pms7003_calc_checksum(frame->data, offset);
++	struct ad7768_state *st = iio_priv(indio_dev);
 +
-+	return checksum == get_unaligned_be16(frame->data + offset);
++	iio_triggered_buffer_postenable(indio_dev);
++	/*
++	 * Write a 1 to the LSB of the INTERFACE_FORMAT register to enter
++	 * continuous read mode. Subsequent data reads do not require an
++	 * initial 8-bit write to query the ADC_DATA register.
++	 */
++	return ad7768_spi_reg_write(st, AD7768_REG_INTERFACE_FORMAT, 0x01);
 +}
 +
-+static int pms7003_update_frame(struct pms7003_frame *frame, u8 byte)
++static int ad7768_buffer_predisable(struct iio_dev *indio_dev)
 +{
-+	switch (frame->state) {
-+	case STATE_MAGIC_MSB:
-+		if (byte != PMS7003_MAGIC_MSB)
-+			return 1;
-+		frame->state = STATE_MAGIC_LSB;
-+		frame->length = 0;
-+		return 1;
-+	case STATE_MAGIC_LSB:
-+		if (byte != PMS7003_MAGIC_LSB) {
-+			frame->state = STATE_MAGIC_MSB;
-+			return 1;
-+		}
-+		frame->state = STATE_LENGTH_MSB;
-+		return 1;
-+	case STATE_LENGTH_MSB:
-+		frame->expected_length = (u16)byte << 8;
-+		frame->state = STATE_LENGTH_LSB;
-+		return 1;
-+	case STATE_LENGTH_LSB:
-+		frame->expected_length |= byte;
-+		frame->state = STATE_DATA;
-+		return 1;
-+	case STATE_DATA:
-+		if (frame->length > PMS7003_MAX_DATA_LENGTH) {
-+			frame->state = STATE_MAGIC_MSB;
-+			return 1;
-+		}
++	struct ad7768_state *st = iio_priv(indio_dev);
++	int ret;
 +
-+		frame->data[frame->length++] = byte;
++	/*
++	 * To exit continuous read mode, perform a single read of the ADC_DATA
++	 * reg (0x2C), which allows further configuration of the device.
++	 */
++	ret = ad7768_spi_reg_read(st, AD7768_REG_ADC_DATA, 3);
++	if (ret < 0)
++		return ret;
 +
-+		if (frame->length != frame->expected_length)
-+			return 1;
-+
-+		if (!pms7003_frame_okay(frame)) {
-+			frame->state = STATE_MAGIC_MSB;
-+			return 1;
-+		}
-+
-+		frame->state = STATE_MAGIC_MSB;
-+		break;
-+	}
-+
-+	return 0;
++	return iio_triggered_buffer_predisable(indio_dev);
 +}
 +
-+static int pms7003_receive_buf(struct serdev_device *serdev,
-+			       const unsigned char *buf, size_t size)
-+{
-+	struct iio_dev *indio_dev = serdev_device_get_drvdata(serdev);
-+	struct pms7003_state *state = iio_priv(indio_dev);
-+	struct pms7003_frame *frame = &state->frame;
-+	int i, ret;
-+
-+	for (i = 0; i < size; i++) {
-+		ret = pms7003_update_frame(frame, buf[i]);
-+		if (ret)
-+			continue;
-+
-+		complete(&state->frame_ready);
-+		return i + 1;
-+	}
-+
-+	return size;
-+}
-+
-+static const struct serdev_device_ops pms7003_serdev_ops = {
-+	.receive_buf = pms7003_receive_buf,
-+	.write_wakeup = serdev_device_write_wakeup,
++static const struct iio_buffer_setup_ops ad7768_buffer_ops = {
++	.postenable = &ad7768_buffer_postenable,
++	.predisable = &ad7768_buffer_predisable,
 +};
 +
-+static void pms7003_stop(void *data)
-+{
-+	struct pms7003_state *state = data;
++static const struct iio_trigger_ops ad7768_trigger_ops = {
++	.validate_device = iio_trigger_validate_own_device,
++};
 +
-+	pms7003_do_cmd(state, CMD_SLEEP);
++static void ad7768_regulator_disable(void *data)
++{
++	struct ad7768_state *st = data;
++
++	regulator_disable(st->vref);
 +}
 +
-+static const unsigned long pms7003_scan_masks[] = { 0x07, 0x00 };
-+
-+static int pms7003_probe(struct serdev_device *serdev)
++static int ad7768_probe(struct spi_device *spi)
 +{
-+	struct pms7003_state *state;
++	struct ad7768_state *st;
 +	struct iio_dev *indio_dev;
 +	int ret;
 +
-+	indio_dev = devm_iio_device_alloc(&serdev->dev, sizeof(*state));
++	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
 +	if (!indio_dev)
 +		return -ENOMEM;
 +
-+	state = iio_priv(indio_dev);
-+	serdev_device_set_drvdata(serdev, indio_dev);
-+	state->serdev = serdev;
-+	indio_dev->dev.parent = &serdev->dev;
-+	indio_dev->info = &pms7003_info;
-+	indio_dev->name = PMS7003_DRIVER_NAME;
-+	indio_dev->channels = pms7003_channels,
-+	indio_dev->num_channels = ARRAY_SIZE(pms7003_channels);
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->available_scan_masks = pms7003_scan_masks;
++	st = iio_priv(indio_dev);
++	st->spi = spi;
 +
-+	mutex_init(&state->lock);
-+	init_completion(&state->frame_ready);
++	st->vref = devm_regulator_get(&spi->dev, "vref");
++	if (IS_ERR(st->vref))
++		return PTR_ERR(st->vref);
 +
-+	serdev_device_set_client_ops(serdev, &pms7003_serdev_ops);
-+	ret = devm_serdev_device_open(&serdev->dev, serdev);
-+	if (ret)
-+		return ret;
-+
-+	serdev_device_set_baudrate(serdev, 9600);
-+	serdev_device_set_flow_control(serdev, false);
-+
-+	ret = serdev_device_set_parity(serdev, SERDEV_PARITY_NONE);
-+	if (ret)
-+		return ret;
-+
-+	ret = pms7003_do_cmd(state, CMD_WAKEUP);
++	ret = regulator_enable(st->vref);
 +	if (ret) {
-+		dev_err(&serdev->dev, "failed to wakeup sensor\n");
++		dev_err(&spi->dev, "Failed to enable specified vref supply\n");
 +		return ret;
 +	}
 +
-+	ret = pms7003_do_cmd(state, CMD_ENTER_PASSIVE_MODE);
-+	if (ret) {
-+		dev_err(&serdev->dev, "failed to enter passive mode\n");
++	ret = devm_add_action_or_reset(&spi->dev, ad7768_regulator_disable, st);
++	if (ret)
++		return ret;
++
++	spi_set_drvdata(spi, indio_dev);
++	mutex_init(&st->lock);
++
++	indio_dev->channels = ad7768_channels;
++	indio_dev->num_channels = ARRAY_SIZE(ad7768_channels);
++	indio_dev->dev.parent = &spi->dev;
++	indio_dev->name = spi_get_device_id(spi)->name;
++	indio_dev->info = &ad7768_info;
++	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_TRIGGERED;
++
++	ret = ad7768_setup(st);
++	if (ret < 0) {
++		dev_err(&spi->dev, "AD7768 setup failed\n");
 +		return ret;
 +	}
 +
-+	ret = devm_add_action_or_reset(&serdev->dev, pms7003_stop, state);
++	st->trig = devm_iio_trigger_alloc(&spi->dev, "%s-dev%d",
++					  indio_dev->name, indio_dev->id);
++	if (!st->trig)
++		return -ENOMEM;
++
++	st->trig->ops = &ad7768_trigger_ops;
++	st->trig->dev.parent = &spi->dev;
++	iio_trigger_set_drvdata(st->trig, indio_dev);
++	ret = devm_iio_trigger_register(&spi->dev, st->trig);
 +	if (ret)
 +		return ret;
 +
-+	ret = devm_iio_triggered_buffer_setup(&serdev->dev, indio_dev, NULL,
-+					      pms7003_trigger_handler, NULL);
++	indio_dev->trig = iio_trigger_get(st->trig);
++
++	init_completion(&st->completion);
++
++	ret = devm_request_threaded_irq(&spi->dev, spi->irq,
++					NULL,
++					&ad7768_interrupt,
++					IRQF_TRIGGER_RISING | IRQF_ONESHOT,
++					indio_dev->name, indio_dev);
 +	if (ret)
 +		return ret;
 +
-+	return devm_iio_device_register(&serdev->dev, indio_dev);
++	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
++					      &iio_pollfunc_store_time,
++					      &ad7768_trigger_handler,
++					      &ad7768_buffer_ops);
++	if (ret)
++		return ret;
++
++	return devm_iio_device_register(&spi->dev, indio_dev);
 +}
 +
-+static const struct of_device_id pms7003_of_match[] = {
-+	{ .compatible = "plantower,pms7003" },
-+	{ }
++static const struct spi_device_id ad7768_id_table[] = {
++	{ "ad7768-1", ID_AD7768_1 },
++	{}
 +};
-+MODULE_DEVICE_TABLE(of, pms7003_of_match);
++MODULE_DEVICE_TABLE(spi, ad7768_id_table);
 +
-+static struct serdev_device_driver pms7003_driver = {
++static const struct of_device_id ad7768_of_match[] = {
++	{ .compatible = "adi,ad7768-1" },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, ad7768_of_match);
++
++static struct spi_driver ad7768_driver = {
 +	.driver = {
-+		.name = PMS7003_DRIVER_NAME,
-+		.of_match_table = pms7003_of_match,
++		.name = "ad7768-1",
++		.of_match_table = ad7768_of_match,
 +	},
-+	.probe = pms7003_probe,
++	.probe = ad7768_probe,
++	.id_table = ad7768_id_table,
 +};
-+module_serdev_device_driver(pms7003_driver);
++module_spi_driver(ad7768_driver);
 +
-+MODULE_AUTHOR("Tomasz Duszynski <tduszyns@gmail.com>");
-+MODULE_DESCRIPTION("Plantower PMS7003 particulate matter sensor driver");
-+MODULE_LICENSE("GPL v2");
++MODULE_AUTHOR("Stefan Popa <stefan.popa@analog.com>");
++MODULE_DESCRIPTION("Analog Devices AD7768-1 ADC driver");
++MODULE_LICENSE("GPL");
 -- 
-2.20.1
+2.7.4
 
