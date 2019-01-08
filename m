@@ -2,231 +2,144 @@ Return-Path: <SRS0=0K8c=PQ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+X-Spam-Status: No, score=-7.1 required=3.0 tests=BIGNUM_EMAILS,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_MUTT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CDBEC43444
-	for <linux-iio@archiver.kernel.org>; Tue,  8 Jan 2019 20:04:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EAF3C43387
+	for <linux-iio@archiver.kernel.org>; Tue,  8 Jan 2019 20:38:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E52B220660
-	for <linux-iio@archiver.kernel.org>; Tue,  8 Jan 2019 20:04:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1546977876;
-	bh=PnqgOVsckHKUZK2V0zZ24v5f3g2oEoPYHUH4QLC2OLY=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=EFNMi+wisE4mbvVqGMD2fbqr+3hkxA+KxRVjrrZvyZTv8s1HLfxwCgIXWqx+iuwfD
-	 OVNguMRncfQvLkrb2KdezQ6TedYlD17/Q1ki6fPWnax4DErJKRxzYFWE/SPQTb0FUz
-	 aEYiDHYvrxnWZEXFM9dOfuF4Sa5d2LY36Qv6czko=
+	by mail.kernel.org (Postfix) with ESMTP id CF0B920883
+	for <linux-iio@archiver.kernel.org>; Tue,  8 Jan 2019 20:38:27 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="d/Hj3S6x"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729581AbfAHUEW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 8 Jan 2019 15:04:22 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35604 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730068AbfAHT2d (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 8 Jan 2019 14:28:33 -0500
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3CC9A20827;
-        Tue,  8 Jan 2019 19:28:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1546975712;
-        bh=PnqgOVsckHKUZK2V0zZ24v5f3g2oEoPYHUH4QLC2OLY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hb0CQYn+PG3gmpPmFCoImY8i9ZGk3YcaBV2DeAtwk7H0QwxuhPTIyfqgDgQ2fZa/c
-         09URSEBZM5wXFwcWlaqct9CZJ/QO4iMxTszBx97o9eF5qCW+uyUJHN46pnreafnhdW
-         Xh3cv6zB8G4XFDUtHpReIwDOBuS0pLSzHd8C+qmo=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Evan Green <evgreen@chromium.org>, Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.20 069/117] iio: adc: qcom-spmi-adc5: Initialize prescale properly
-Date:   Tue,  8 Jan 2019 14:25:37 -0500
-Message-Id: <20190108192628.121270-69-sashal@kernel.org>
-X-Mailer: git-send-email 2.19.1
-In-Reply-To: <20190108192628.121270-1-sashal@kernel.org>
-References: <20190108192628.121270-1-sashal@kernel.org>
+        id S1729043AbfAHUi1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 8 Jan 2019 15:38:27 -0500
+Received: from userp2120.oracle.com ([156.151.31.85]:49552 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728945AbfAHUi1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Jan 2019 15:38:27 -0500
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.22/8.16.0.22) with SMTP id x08KYwI1117056;
+        Tue, 8 Jan 2019 20:38:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2018-07-02;
+ bh=pJOQHOMayID1WkEHwaEl8OoJQRELeiNM+sb+FQ+wOng=;
+ b=d/Hj3S6xcj5ywsnpobsxZpheI5k67cpHllV+KAX6PJ6Dvg1/5NH/lKIAFHELQLdRX89o
+ dUtUmpMuKjdaV5u0NEQhzkhQJf0dmrvniOOvtujJHHj1MpMrLtNxNJWDXw5ByhCTmSFU
+ tSzkuYM12UWFxm++CS7U+lX9iH3wf1hoTj5iOjpdttnEhdHpjl/IWskuN/zjsrMsW7du
+ 33z27Pm3XRrrw1cpCNeOJOTH8vC/XtLG/tZCL2E3vjuZKawIJwbKW2EMPyd6DU6d+YYr
+ G2eZifGBW/laoOv6OXpnnA2k4uJ2MW68uaOKDrBh7NvjcfkM2b4geNHcA4SVCpbVUqV2 fw== 
+Received: from aserv0021.oracle.com (aserv0021.oracle.com [141.146.126.233])
+        by userp2120.oracle.com with ESMTP id 2ptn7qwq89-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 08 Jan 2019 20:38:25 +0000
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserv0021.oracle.com (8.14.4/8.14.4) with ESMTP id x08KcOpj005930
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 8 Jan 2019 20:38:24 GMT
+Received: from abhmp0015.oracle.com (abhmp0015.oracle.com [141.146.116.21])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x08KcNPF007948;
+        Tue, 8 Jan 2019 20:38:23 GMT
+Received: from kadam (/10.175.191.32)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 08 Jan 2019 12:38:23 -0800
+Date:   Tue, 8 Jan 2019 23:38:09 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     mkelly@xevo.com
+Cc:     linux-iio@vger.kernel.org
+Subject: [bug report] tools: iio: iio_generic_buffer: allow continuous looping
+Message-ID: <20190108203809.GA27223@kadam>
 MIME-Version: 1.0
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9130 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=1 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=765
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1810050000 definitions=main-1901080159
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Evan Green <evgreen@chromium.org>
+Hello Martin Kelly,
 
-[ Upstream commit db23d88756abd38e0995ea8449d0025b3de4b26b ]
+The patch 55dda0abcf9d: "tools: iio: iio_generic_buffer: allow
+continuous looping" from May 17, 2018, leads to the following static
+checker warning:
 
-adc5_get_dt_data uses a local, prop, feeds it to adc5_get_dt_channel_data,
-and then puts the result into adc->chan_props. The problem is
-adc5_get_dt_channel_data may not initialize that structure fully, so a
-garbage value is used for prescale if the optional "qcom,pre-scaling" is
-not defined in DT. adc5_read_raw then uses this as an array index,
-generating a crash that looks like this:
+	./tools/iio/iio_generic_buffer.c:640 main()
+	warn: unsigned 'num_loops' is never less than zero.
 
-[    6.683186] Unable to handle kernel paging request at virtual address ffffff90e78c7964
-Call trace:
-qcom_vadc_scale_code_voltage_factor+0x74/0x104
-qcom_vadc_scale_hw_calib_die_temp+0x20/0x60
-qcom_adc5_hw_scale+0x78/0xa4
-adc5_read_raw+0x3d0/0x65c
-iio_channel_read+0x240/0x30c
-iio_read_channel_processed+0x10c/0x150
-qpnp_tm_get_temp+0xc0/0x40c
-of_thermal_get_temp+0x7c/0x98
-thermal_zone_get_temp+0xac/0xd8
-thermal_zone_device_update+0xc0/0x38c
-qpnp_tm_probe+0x624/0x81c
-platform_drv_probe+0xe4/0x11c
-really_probe+0x188/0x3fc
-driver_probe_device+0xb8/0x188
-__device_attach_driver+0x114/0x180
-bus_for_each_drv+0xd8/0x118
-__device_attach+0x180/0x27c
-device_initial_probe+0x20/0x2c
-bus_probe_device+0x78/0x124
-deferred_probe_work_func+0xfc/0x138
-process_one_work+0x3d8/0x8b0
-process_scheduled_works+0x48/0x6c
-worker_thread+0x488/0x7cc
-kthread+0x24c/0x264
-ret_from_fork+0x10/0x18
+./tools/iio/iio_generic_buffer.c
+    331 int main(int argc, char **argv)
+    332 {
+    333 	unsigned long long num_loops = 2;
+                ^^^^^^^^
 
-Unfortunately, when I went to add the initializer for this and tried to
-boot it, my machine shut down immediately, complaining that it was
-hotter than the sun. It appears that adc5_chans_pmic and adc5_chans_rev2
-were initializing prescale_index as if it were directly a divisor,
-rather than the index into adc5_prescale_ratios that it is.
+    334 	unsigned long timedelay = 1000000;
+    335 	unsigned long buf_len = 128;
+    336 
+    337 	ssize_t i;
+    338 	unsigned long long j;
+    339 	unsigned long toread;
+    340 	int ret, c;
+    341 	int fp = -1;
+    342 
+    343 	int num_channels = 0;
+    344 	char *trigger_name = NULL, *device_name = NULL;
+    345 
+    346 	char *data = NULL;
+    347 	ssize_t read_size;
+    348 	int dev_num = -1, trig_num = -1;
+    349 	char *buffer_access = NULL;
+    350 	int scan_size;
+    351 	int noevents = 0;
+    352 	int notrigger = 0;
+    353 	char *dummy;
+    354 	bool force_autochannels = false;
+    355 
+    356 	struct iio_channel_info *channels = NULL;
+    357 
 
-Fix the uninitialized value, and change the static initialization to use
-indices into adc5_prescale_ratios.
+[ snip ]
 
-Signed-off-by: Evan Green <evgreen@chromium.org>
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iio/adc/qcom-spmi-adc5.c | 58 +++++++++++++++++---------------
- 1 file changed, 31 insertions(+), 27 deletions(-)
+    632 	/* Attempt to open non blocking the access dev */
+    633 	fp = open(buffer_access, O_RDONLY | O_NONBLOCK);
+    634 	if (fp == -1) { /* TODO: If it isn't there make the node */
+    635 		ret = -errno;
+    636 		fprintf(stderr, "Failed to open %s\n", buffer_access);
+    637 		goto error;
+    638 	}
+    639 
+--> 640 	for (j = 0; j < num_loops || num_loops < 0; j++) {
+                                             ^^^^^^^^^^^^^
+If num_loops is -1 then it's supposed to loop forever.  It basically
+does, except for the static checker warning.
 
-diff --git a/drivers/iio/adc/qcom-spmi-adc5.c b/drivers/iio/adc/qcom-spmi-adc5.c
-index f9af6b082916..6a866cc187f7 100644
---- a/drivers/iio/adc/qcom-spmi-adc5.c
-+++ b/drivers/iio/adc/qcom-spmi-adc5.c
-@@ -423,6 +423,7 @@ struct adc5_channels {
- 	enum vadc_scale_fn_type scale_fn_type;
- };
- 
-+/* In these definitions, _pre refers to an index into adc5_prescale_ratios. */
- #define ADC5_CHAN(_dname, _type, _mask, _pre, _scale)			\
- 	{								\
- 		.datasheet_name = _dname,				\
-@@ -443,63 +444,63 @@ struct adc5_channels {
- 		  _pre, _scale)						\
- 
- static const struct adc5_channels adc5_chans_pmic[ADC5_MAX_CHANNEL] = {
--	[ADC5_REF_GND]		= ADC5_CHAN_VOLT("ref_gnd", 1,
-+	[ADC5_REF_GND]		= ADC5_CHAN_VOLT("ref_gnd", 0,
- 					SCALE_HW_CALIB_DEFAULT)
--	[ADC5_1P25VREF]		= ADC5_CHAN_VOLT("vref_1p25", 1,
-+	[ADC5_1P25VREF]		= ADC5_CHAN_VOLT("vref_1p25", 0,
- 					SCALE_HW_CALIB_DEFAULT)
--	[ADC5_VPH_PWR]		= ADC5_CHAN_VOLT("vph_pwr", 3,
-+	[ADC5_VPH_PWR]		= ADC5_CHAN_VOLT("vph_pwr", 1,
- 					SCALE_HW_CALIB_DEFAULT)
--	[ADC5_VBAT_SNS]		= ADC5_CHAN_VOLT("vbat_sns", 3,
-+	[ADC5_VBAT_SNS]		= ADC5_CHAN_VOLT("vbat_sns", 1,
- 					SCALE_HW_CALIB_DEFAULT)
--	[ADC5_DIE_TEMP]		= ADC5_CHAN_TEMP("die_temp", 1,
-+	[ADC5_DIE_TEMP]		= ADC5_CHAN_TEMP("die_temp", 0,
- 					SCALE_HW_CALIB_PMIC_THERM)
--	[ADC5_USB_IN_I]		= ADC5_CHAN_VOLT("usb_in_i_uv", 1,
-+	[ADC5_USB_IN_I]		= ADC5_CHAN_VOLT("usb_in_i_uv", 0,
- 					SCALE_HW_CALIB_DEFAULT)
--	[ADC5_USB_IN_V_16]	= ADC5_CHAN_VOLT("usb_in_v_div_16", 16,
-+	[ADC5_USB_IN_V_16]	= ADC5_CHAN_VOLT("usb_in_v_div_16", 8,
- 					SCALE_HW_CALIB_DEFAULT)
--	[ADC5_CHG_TEMP]		= ADC5_CHAN_TEMP("chg_temp", 1,
-+	[ADC5_CHG_TEMP]		= ADC5_CHAN_TEMP("chg_temp", 0,
- 					SCALE_HW_CALIB_PM5_CHG_TEMP)
- 	/* Charger prescales SBUx and MID_CHG to fit within 1.8V upper unit */
--	[ADC5_SBUx]		= ADC5_CHAN_VOLT("chg_sbux", 3,
-+	[ADC5_SBUx]		= ADC5_CHAN_VOLT("chg_sbux", 1,
- 					SCALE_HW_CALIB_DEFAULT)
--	[ADC5_MID_CHG_DIV6]	= ADC5_CHAN_VOLT("chg_mid_chg", 6,
-+	[ADC5_MID_CHG_DIV6]	= ADC5_CHAN_VOLT("chg_mid_chg", 3,
- 					SCALE_HW_CALIB_DEFAULT)
--	[ADC5_XO_THERM_100K_PU]	= ADC5_CHAN_TEMP("xo_therm", 1,
-+	[ADC5_XO_THERM_100K_PU]	= ADC5_CHAN_TEMP("xo_therm", 0,
- 					SCALE_HW_CALIB_XOTHERM)
--	[ADC5_AMUX_THM1_100K_PU] = ADC5_CHAN_TEMP("amux_thm1_100k_pu", 1,
-+	[ADC5_AMUX_THM1_100K_PU] = ADC5_CHAN_TEMP("amux_thm1_100k_pu", 0,
- 					SCALE_HW_CALIB_THERM_100K_PULLUP)
--	[ADC5_AMUX_THM2_100K_PU] = ADC5_CHAN_TEMP("amux_thm2_100k_pu", 1,
-+	[ADC5_AMUX_THM2_100K_PU] = ADC5_CHAN_TEMP("amux_thm2_100k_pu", 0,
- 					SCALE_HW_CALIB_THERM_100K_PULLUP)
--	[ADC5_AMUX_THM3_100K_PU] = ADC5_CHAN_TEMP("amux_thm3_100k_pu", 1,
-+	[ADC5_AMUX_THM3_100K_PU] = ADC5_CHAN_TEMP("amux_thm3_100k_pu", 0,
- 					SCALE_HW_CALIB_THERM_100K_PULLUP)
--	[ADC5_AMUX_THM2]	= ADC5_CHAN_TEMP("amux_thm2", 1,
-+	[ADC5_AMUX_THM2]	= ADC5_CHAN_TEMP("amux_thm2", 0,
- 					SCALE_HW_CALIB_PM5_SMB_TEMP)
- };
- 
- static const struct adc5_channels adc5_chans_rev2[ADC5_MAX_CHANNEL] = {
--	[ADC5_REF_GND]		= ADC5_CHAN_VOLT("ref_gnd", 1,
-+	[ADC5_REF_GND]		= ADC5_CHAN_VOLT("ref_gnd", 0,
- 					SCALE_HW_CALIB_DEFAULT)
--	[ADC5_1P25VREF]		= ADC5_CHAN_VOLT("vref_1p25", 1,
-+	[ADC5_1P25VREF]		= ADC5_CHAN_VOLT("vref_1p25", 0,
- 					SCALE_HW_CALIB_DEFAULT)
--	[ADC5_VPH_PWR]		= ADC5_CHAN_VOLT("vph_pwr", 3,
-+	[ADC5_VPH_PWR]		= ADC5_CHAN_VOLT("vph_pwr", 1,
- 					SCALE_HW_CALIB_DEFAULT)
--	[ADC5_VBAT_SNS]		= ADC5_CHAN_VOLT("vbat_sns", 3,
-+	[ADC5_VBAT_SNS]		= ADC5_CHAN_VOLT("vbat_sns", 1,
- 					SCALE_HW_CALIB_DEFAULT)
--	[ADC5_VCOIN]		= ADC5_CHAN_VOLT("vcoin", 3,
-+	[ADC5_VCOIN]		= ADC5_CHAN_VOLT("vcoin", 1,
- 					SCALE_HW_CALIB_DEFAULT)
--	[ADC5_DIE_TEMP]		= ADC5_CHAN_TEMP("die_temp", 1,
-+	[ADC5_DIE_TEMP]		= ADC5_CHAN_TEMP("die_temp", 0,
- 					SCALE_HW_CALIB_PMIC_THERM)
--	[ADC5_AMUX_THM1_100K_PU] = ADC5_CHAN_TEMP("amux_thm1_100k_pu", 1,
-+	[ADC5_AMUX_THM1_100K_PU] = ADC5_CHAN_TEMP("amux_thm1_100k_pu", 0,
- 					SCALE_HW_CALIB_THERM_100K_PULLUP)
--	[ADC5_AMUX_THM2_100K_PU] = ADC5_CHAN_TEMP("amux_thm2_100k_pu", 1,
-+	[ADC5_AMUX_THM2_100K_PU] = ADC5_CHAN_TEMP("amux_thm2_100k_pu", 0,
- 					SCALE_HW_CALIB_THERM_100K_PULLUP)
--	[ADC5_AMUX_THM3_100K_PU] = ADC5_CHAN_TEMP("amux_thm3_100k_pu", 1,
-+	[ADC5_AMUX_THM3_100K_PU] = ADC5_CHAN_TEMP("amux_thm3_100k_pu", 0,
- 					SCALE_HW_CALIB_THERM_100K_PULLUP)
--	[ADC5_AMUX_THM4_100K_PU] = ADC5_CHAN_TEMP("amux_thm4_100k_pu", 1,
-+	[ADC5_AMUX_THM4_100K_PU] = ADC5_CHAN_TEMP("amux_thm4_100k_pu", 0,
- 					SCALE_HW_CALIB_THERM_100K_PULLUP)
--	[ADC5_AMUX_THM5_100K_PU] = ADC5_CHAN_TEMP("amux_thm5_100k_pu", 1,
-+	[ADC5_AMUX_THM5_100K_PU] = ADC5_CHAN_TEMP("amux_thm5_100k_pu", 0,
- 					SCALE_HW_CALIB_THERM_100K_PULLUP)
--	[ADC5_XO_THERM_100K_PU]	= ADC5_CHAN_TEMP("xo_therm_100k_pu", 1,
-+	[ADC5_XO_THERM_100K_PU]	= ADC5_CHAN_TEMP("xo_therm_100k_pu", 0,
- 					SCALE_HW_CALIB_THERM_100K_PULLUP)
- };
- 
-@@ -558,6 +559,9 @@ static int adc5_get_dt_channel_data(struct adc5_chip *adc,
- 			return ret;
- 		}
- 		prop->prescale = ret;
-+	} else {
-+		prop->prescale =
-+			adc->data->adc_chans[prop->channel].prescale_index;
- 	}
- 
- 	ret = of_property_read_u32(node, "qcom,hw-settle-time", &value);
--- 
-2.19.1
+    641 		if (!noevents) {
+    642 			struct pollfd pfd = {
+    643 				.fd = fp,
+    644 				.events = POLLIN,
+    645 			};
+    646 
+    647 			ret = poll(&pfd, 1, -1);
+    648 			if (ret < 0) {
+    649 				ret = -errno;
+    650 				goto error;
+    651 			} else if (ret == 0) {
+    652 				continue;
+    653 			}
+    654 
+    655 			toread = buf_len;
+    656 		} else {
+    657 			usleep(timedelay);
+    658 			toread = 64;
+    659 		}
 
+regards,
+dan carpenter
