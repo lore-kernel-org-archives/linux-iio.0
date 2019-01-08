@@ -2,136 +2,128 @@ Return-Path: <SRS0=0K8c=PQ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4C3DC43387
-	for <linux-iio@archiver.kernel.org>; Tue,  8 Jan 2019 10:57:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AE02C43387
+	for <linux-iio@archiver.kernel.org>; Tue,  8 Jan 2019 11:02:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 94267206B7
-	for <linux-iio@archiver.kernel.org>; Tue,  8 Jan 2019 10:57:26 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=linaro.org header.i=@linaro.org header.b="da0gHnAe"
+	by mail.kernel.org (Postfix) with ESMTP id E8ECD206B7
+	for <linux-iio@archiver.kernel.org>; Tue,  8 Jan 2019 11:02:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727107AbfAHK50 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 8 Jan 2019 05:57:26 -0500
-Received: from mail-oi1-f181.google.com ([209.85.167.181]:39057 "EHLO
-        mail-oi1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727782AbfAHK5Z (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Jan 2019 05:57:25 -0500
-Received: by mail-oi1-f181.google.com with SMTP id i6so2951751oia.6
-        for <linux-iio@vger.kernel.org>; Tue, 08 Jan 2019 02:57:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=xWpzVdg/e6UzVOjrd4RtIckInPRkRyaSSS21wxmlbwE=;
-        b=da0gHnAe+uyOwsRktXvfE71bVxMFbgEknQBo2D2+GGapQ6j6CWkaA9mrLq/9UeWD5N
-         2817lc9ysrpAgHmY1vTrhVh5C125a4jSO0tPE/JdUcLLWYLzV4IFB3R1p45DLDlHdk/1
-         RbMVB1lmLbn0er0GvmSOinw6IQI3E6LGjvXPg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=xWpzVdg/e6UzVOjrd4RtIckInPRkRyaSSS21wxmlbwE=;
-        b=t3juV/Z4LcLzkLCa9MmhFFn1sAl7tD3RwtWvz7+3gBpbtA8IY0iVA9ilDzZRKsVfaF
-         Q9NtJGUGTZxzSGqnDfyZvlLr1UL4+DBcbhJ0pQeLKBSSdUx0idkEdiuNbwqROurXqVo4
-         zFvY3TVYOuPeiwSya9ifWK8+Cvvqdg/INEyGJl/26bVAHYedwQloi1DnKitxKrdcpyJO
-         H1fTsGaYcp2lngqwgvzC/qsQ6/WwrffQFEYq8AWKkD4VrfA8NCU9Q10FT09XccZ8xHWJ
-         0nsf7vZn3jqYpxrKJoEYB3CdCt/yUeHhHfhghJ6lUgyV25Phz+/dv7hkP/dpvENqqQh/
-         fsJw==
-X-Gm-Message-State: AJcUukfDzGMtXEZG2c0ku6tsCoI93zSNXdkY6RV0uTVZvANbdQHDpD5+
-        Lmn/ZNhq/65RdxLa1c3MyMY8CagXTA4D5PBYWbTr3g==
-X-Google-Smtp-Source: ALg8bN785s8id1Mhe/zipIcUqyQef83MGcXhYd7OHCu7MT/49DFLViIwU3g2vSL/Z1k2XsLyvWZ9lDPZruQWGHRhtCc=
-X-Received: by 2002:aca:f103:: with SMTP id p3mr805419oih.94.1546945044745;
- Tue, 08 Jan 2019 02:57:24 -0800 (PST)
-MIME-Version: 1.0
-References: <CAKKE0ZHmODzhvjPNJFVgT2cF_F=f2kNKr5K_CGP+0XgA5XZokw@mail.gmail.com>
- <20190108004632.GA3247@icarus>
-In-Reply-To: <20190108004632.GA3247@icarus>
-From:   Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Date:   Tue, 8 Jan 2019 11:57:13 +0100
-Message-ID: <CA+M3ks7wX6MxvapDi_5SQ0rkJWoV+BcmzmbvtiqHVBzrrwAp4g@mail.gmail.com>
+        id S1727538AbfAHLCh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 8 Jan 2019 06:02:37 -0500
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:7546 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727107AbfAHLCh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Jan 2019 06:02:37 -0500
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx08-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x08Au4Jn016914;
+        Tue, 8 Jan 2019 12:02:01 +0100
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx08-00178001.pphosted.com with ESMTP id 2ptt11xepy-1
+        (version=TLSv1 cipher=ECDHE-RSA-AES256-SHA bits=256 verify=NOT);
+        Tue, 08 Jan 2019 12:02:01 +0100
+Received: from zeta.dmz-eu.st.com (zeta.dmz-eu.st.com [164.129.230.9])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 16C1238;
+        Tue,  8 Jan 2019 11:01:59 +0000 (GMT)
+Received: from Webmail-eu.st.com (sfhdag5node3.st.com [10.75.127.15])
+        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id C8E5C2A7F;
+        Tue,  8 Jan 2019 11:01:58 +0000 (GMT)
+Received: from [10.48.0.167] (10.75.127.50) by SFHDAG5NODE3.st.com
+ (10.75.127.15) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Tue, 8 Jan
+ 2019 12:01:57 +0100
 Subject: Re: New IIO/counter driver
-To:     William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc:     Patrick Havelange <patrick.havelange@essensium.com>,
+To:     Benjamin Gaignard <benjamin.gaignard@linaro.org>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+CC:     Patrick Havelange <patrick.havelange@essensium.com>,
         Jonathan Cameron <jic23@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        devicetree@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        <devicetree@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
         Benjamin GAIGNARD <benjamin.gaignard@st.com>,
-        linux-iio@vger.kernel.org,
+        <linux-iio@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Fabrice Gasnier <fabrice.gasnier@st.com>,
         Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+References: <CAKKE0ZHmODzhvjPNJFVgT2cF_F=f2kNKr5K_CGP+0XgA5XZokw@mail.gmail.com>
+ <20190108004632.GA3247@icarus>
+ <CA+M3ks7wX6MxvapDi_5SQ0rkJWoV+BcmzmbvtiqHVBzrrwAp4g@mail.gmail.com>
+From:   Fabrice Gasnier <fabrice.gasnier@st.com>
+Message-ID: <8b2bb569-a6e0-25ec-740d-48083b30fe60@st.com>
+Date:   Tue, 8 Jan 2019 12:01:57 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.2.1
+MIME-Version: 1.0
+In-Reply-To: <CA+M3ks7wX6MxvapDi_5SQ0rkJWoV+BcmzmbvtiqHVBzrrwAp4g@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.75.127.50]
+X-ClientProxiedBy: SFHDAG8NODE1.st.com (10.75.127.22) To SFHDAG5NODE3.st.com
+ (10.75.127.15)
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-01-08_06:,,
+ signatures=0
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Le mar. 8 janv. 2019 =C3=A0 01:46, William Breathitt Gray
-<vilhelm.gray@gmail.com> a =C3=A9crit :
->
-> On Mon, Jan 07, 2019 at 02:45:37PM +0100, Patrick Havelange wrote:
-> > Hello,
-> >
-> > I'm in the process of adding a new IIO/counter driver, however I also s=
-aw
-> > that there was a work in progress to have a separate counter subsystem =
-(
-> > https://marc.info/?l=3Dlinux-iio&m=3D153974167727206 ). But it seems th=
-ere is
-> > no recent progress on it.
-> > What is the state of those patches ? Is it still interesting to develop=
- the
-> > driver as an IIO/counter , or should I use already that new subsystem ?
-> >
-> > Best Regards,
-> >
-> > Patrick Havelange.
->
-> Hello,
->
-> I am still open to merging this patchset and maintaining the Counter
-> subsystem. However, I took the lack of response for my latest
-> submission to indicate a loss of interest in this patchset's approach.
-> If there are still people who want this, I can rebase and resend this
-> patchset for submission; the past few versions have primarily been code
-> clarity and documentation changes so I believe the core design itself is
-> somewhat stable now.
->
-> Just let me know how best to proceed and I shall be happy to oblige --
-> whether to continue maintaining this patchset or to drop this design in
-> favor of improving the existing IIO Counter code in the kernel.
->
-> I'll CC those from the patchset submission to keep them in the loop.
+On 1/8/19 11:57 AM, Benjamin Gaignard wrote:
+> Le mar. 8 janv. 2019 à 01:46, William Breathitt Gray
+> <vilhelm.gray@gmail.com> a écrit :
+>>
+>> On Mon, Jan 07, 2019 at 02:45:37PM +0100, Patrick Havelange wrote:
+>>> Hello,
+>>>
+>>> I'm in the process of adding a new IIO/counter driver, however I also saw
+>>> that there was a work in progress to have a separate counter subsystem (
+>>> https://marc.info/?l=linux-iio&m=153974167727206 ). But it seems there is
+>>> no recent progress on it.
+>>> What is the state of those patches ? Is it still interesting to develop the
+>>> driver as an IIO/counter , or should I use already that new subsystem ?
+>>>
+>>> Best Regards,
+>>>
+>>> Patrick Havelange.
+>>
+>> Hello,
+>>
+>> I am still open to merging this patchset and maintaining the Counter
+>> subsystem. However, I took the lack of response for my latest
+>> submission to indicate a loss of interest in this patchset's approach.
+>> If there are still people who want this, I can rebase and resend this
+>> patchset for submission; the past few versions have primarily been code
+>> clarity and documentation changes so I believe the core design itself is
+>> somewhat stable now.
+>>
+>> Just let me know how best to proceed and I shall be happy to oblige --
+>> whether to continue maintaining this patchset or to drop this design in
+>> favor of improving the existing IIO Counter code in the kernel.
+>>
+>> I'll CC those from the patchset submission to keep them in the loop.
+> 
+> I confirm that I still interested to get those patches merged.
+> 
+> Regards,
+> Benjamin
+Hi,
 
-I confirm that I still interested to get those patches merged.
+Same for me,
 
 Regards,
-Benjamin
->
-> Sincerely,
->
-> William Breathitt Gray
->
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
-
-
---=20
-Benjamin Gaignard
-
-Graphic Study Group
-
-Linaro.org =E2=94=82 Open source software for ARM SoCs
-
-Follow Linaro: Facebook | Twitter | Blog
+Fabrice
+>>
+>> Sincerely,
+>>
+>> William Breathitt Gray
+>>
+>> _______________________________________________
+>> linux-arm-kernel mailing list
+>> linux-arm-kernel@lists.infradead.org
+>> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> 
+> 
+> 
