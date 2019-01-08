@@ -1,160 +1,111 @@
-Return-Path: <SRS0=36nr=PP=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=0K8c=PQ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_MUTT
-	autolearn=ham autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47FA9C43387
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Jan 2019 17:57:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 109F8C43387
+	for <linux-iio@archiver.kernel.org>; Tue,  8 Jan 2019 00:46:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0E3F820663
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Jan 2019 17:57:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CC3AA2087F
+	for <linux-iio@archiver.kernel.org>; Tue,  8 Jan 2019 00:46:10 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="a33XiXj+"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="k2791II8"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726718AbfAGR56 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Jan 2019 12:57:58 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:44543 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726589AbfAGR56 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Jan 2019 12:57:58 -0500
-Received: by mail-pl1-f195.google.com with SMTP id e11so482809plt.11;
-        Mon, 07 Jan 2019 09:57:57 -0800 (PST)
+        id S1726689AbfAHAqK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Jan 2019 19:46:10 -0500
+Received: from mail-pg1-f175.google.com ([209.85.215.175]:37371 "EHLO
+        mail-pg1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726667AbfAHAqK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Jan 2019 19:46:10 -0500
+Received: by mail-pg1-f175.google.com with SMTP id c25so910342pgb.4;
+        Mon, 07 Jan 2019 16:46:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=LyK0RGSnDLBKcnzEtoopjbp/ZcAzp0tD5nabM9I/cFg=;
-        b=a33XiXj++aofqToiVtFvZNO/wxrOjwILKPk5WSNYkVMikCV7CWl/JcdUnRbQd2hb5E
-         xaM3Fy9AJ7G4VrqezIGr3sKLxZyvWkAm5vKlN1ULrHSUQWvfXwhmYqLHVXCp6ivG4nGI
-         QDrTV7qZlsewO0slAnxJtqkZ3z8GvPDSbjrTHZvAmwbxTmL9ThI0dixkAZR9SnXuWu0f
-         f9cLnu3te0Axap70oCh90VgIuabeA6i+BOy+x7qkPbYQVW7xvNo3pwUVfMR11IK6fFV0
-         bTWXcdIoCsVmdRhkqcFTWYHs//v/mVmRaybwI07uLO+a8E1bb/3IAhLyQvgD0l0sxGaN
-         aHwQ==
+         :content-disposition:in-reply-to:user-agent;
+        bh=Snvh6Ow7n3uk2POMbNVXitzrCaFvEq04lk3zzwRJXcM=;
+        b=k2791II8ShxWskzTaqJFueGmHUnsV3hTJ9t40Qse9ilQTsVofbhtEJ94ddNVe9+LpV
+         rtGE3goxE6psxRjGldEhbjdas2sfdqjBmfrOz9WK97Zbgp8N9IE6sI436s/spRDvMUs7
+         jTLFRa4fBUJDqvhS2bMj+Qo+VRhAxc5TEOZCXUNb+34gGIEogLGs2xiOaEy4piYyM0dX
+         dS5hiJ+qH7xH4q3QIZ5DvIfDUZjTPDvXVIs37Ryvx+aYUhejLIa7eI0lPlEqXiYebyYp
+         FWKUFzQAlf9jeupGHGaLZRrZFpe5r2gACvZ8f0JpbC5GySJD7t685Nsr0sRSHhmRkOSf
+         0E3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=LyK0RGSnDLBKcnzEtoopjbp/ZcAzp0tD5nabM9I/cFg=;
-        b=NVK/xmKGgPEhz3snl20iNk8j6OcB2Wa03Yef82V6WdcbEdBBsDDplizfJgUFiYjdoc
-         fiX07e4rLErCotrCRPXzawLOXFnF6E1LddQTIQRV8ts3ypyIUhvy63hsk6ejhQ+QyfjT
-         g9hOAi1yP4SM/z6NNah3My0cEEPKB2p2KMKw++UF5H3uV7BMPbGpSXchYAoso7F8ncWH
-         5HcG+8fzOd5Z7vIYrSVC54IxS7JBdWobuhj94V2xxSBNZNe31tfUjQ+ByGq9z9kLsayx
-         m5uN38kWiovmmv2gr2KHgMRtx3rg//wXBV5JsJ1DfCy3FBRra7f+etJwVgkI42iM1qyN
-         feZg==
-X-Gm-Message-State: AJcUukdUo//jOuYl+saBRBVJWPKIIpDucqTEqdgZ+LYaU7dlYct9BANV
-        MGGHa/wTqUnPkXMhLfHNsNw=
-X-Google-Smtp-Source: ALg8bN73E42eX/ytRjx3/WSQcdjuWrBh5FwIToHcO+VSHd21ugH+t8YobaTM97vaRCB8sWnb8o9uVg==
-X-Received: by 2002:a17:902:7848:: with SMTP id e8mr63434845pln.100.1546883877196;
-        Mon, 07 Jan 2019 09:57:57 -0800 (PST)
-Received: from himanshu-Vostro-3559 ([103.233.116.134])
-        by smtp.gmail.com with ESMTPSA id i184sm93904921pfc.41.2019.01.07.09.57.52
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 07 Jan 2019 09:57:56 -0800 (PST)
-Date:   Mon, 7 Jan 2019 23:27:48 +0530
-From:   Himanshu Jha <himanshujha199640@gmail.com>
-To:     Matt Ranostay <matt.ranostay@konsulko.com>
-Cc:     Amir Mahdi Ghorbanian <indigoomega021@gmail.com>, lars@metafoo.de,
-        Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Staging: iio: ad7192: replaced bool in struct
-Message-ID: <20190107175748.GA29220@himanshu-Vostro-3559>
-References: <1545434786-15220-1-git-send-email-indigoomega021@gmail.com>
- <20181224095823.GA17061@himanshu-Vostro-3559>
- <8E720BF2-7AFC-4FFA-8FA2-5A403FD5DD1D@konsulko.com>
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Snvh6Ow7n3uk2POMbNVXitzrCaFvEq04lk3zzwRJXcM=;
+        b=dgs9V8wl8MiQWSPYa1xNMqwFoNrNAHlzDdzw4xR7Wzeu6t96f0ErmdEZRdZ1Fp92ME
+         X50LAykSKBcJl1nW/8g7fPJRRyzRII+zgkXH3+rkVq0B7pupSKU8HCRp4a1KBTnrsbU+
+         1BA+C+zdTha9JZecUl6XFid/FNGpQSlROFFwvNS3QTc8/kzdgyHOfOgiR5/n35YBtO65
+         gBv5L/NYaO/s/P24oNinCNsAuQXTmXu2Gcyl/uN0ebMwTCCXbUkx5k/N9epOhCou6rRE
+         ASjDEBaDrH1cJZQI2muS+Dfu4PFjmCxTEBTUYMjPCIV0bAXx7BiEV4xZxWXJL3pnQZsp
+         EPxQ==
+X-Gm-Message-State: AJcUukdC8sNxtaxP1sCkQ1u+pKNR8cDkIq3NAY45BYZh0pOYwuLUgAZf
+        1+mBUW4DIagI8PJ4bl7zEI8=
+X-Google-Smtp-Source: ALg8bN7FwyZJ+F8saacMoC6xj3PEZJIeLQtbbJHC4h+w/z0VHqR6O8Rn+Ysbbg76HUWDrLX+w9rF/Q==
+X-Received: by 2002:a63:db48:: with SMTP id x8mr12397898pgi.365.1546908368876;
+        Mon, 07 Jan 2019 16:46:08 -0800 (PST)
+Received: from icarus ([2001:268:c0a3:b52b:e409:8f0c:a3eb:73df])
+        by smtp.gmail.com with ESMTPSA id v190sm97819675pfv.26.2019.01.07.16.46.02
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 07 Jan 2019 16:46:08 -0800 (PST)
+Date:   Tue, 8 Jan 2019 09:46:32 +0900
+From:   William Breathitt Gray <vilhelm.gray@gmail.com>
+To:     Patrick Havelange <patrick.havelange@essensium.com>,
+        Jonathan Cameron <jic23@kernel.org>, gregkh@linuxfoundation.org
+Cc:     linux-iio@vger.kernel.org, fabrice.gasnier@st.com,
+        benjamin.gaignard@st.com, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        akpm@linux-foundation.org
+Subject: Re: New IIO/counter driver
+Message-ID: <20190108004632.GA3247@icarus>
+References: <CAKKE0ZHmODzhvjPNJFVgT2cF_F=f2kNKr5K_CGP+0XgA5XZokw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <8E720BF2-7AFC-4FFA-8FA2-5A403FD5DD1D@konsulko.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <CAKKE0ZHmODzhvjPNJFVgT2cF_F=f2kNKr5K_CGP+0XgA5XZokw@mail.gmail.com>
+User-Agent: Mutt/1.11.1 (2018-12-01)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Jan 02, 2019 at 01:25:27PM -0800, Matt Ranostay wrote:
+On Mon, Jan 07, 2019 at 02:45:37PM +0100, Patrick Havelange wrote:
+> Hello,
 > 
-> > On Dec 24, 2018, at 01:58, Himanshu Jha <himanshujha199640@gmail.com> wrote:
-> > 
-> >> On Fri, Dec 21, 2018 at 03:26:26PM -0800, Amir Mahdi Ghorbanian wrote:
-> >> Replaced bool in struct with unsigned int bitfield to conserve space and
-> >> more clearly define size of varibales
+> I'm in the process of adding a new IIO/counter driver, however I also saw
+> that there was a work in progress to have a separate counter subsystem (
+> https://marc.info/?l=linux-iio&m=153974167727206 ). But it seems there is
+> no recent progress on it.
+> What is the state of those patches ? Is it still interesting to develop the
+> driver as an IIO/counter , or should I use already that new subsystem ?
 > 
-> Important thing to note is depending on padding, alignment, and position of field it probably won’t save any space.
+> Best Regards,
+> 
+> Patrick Havelange.
 
-Well, then what do you say about the following results ;-)
+Hello,
 
-Before:
-------
+I am still open to merging this patchset and maintaining the Counter
+subsystem. However, I took the lack of response for my latest
+submission to indicate a loss of interest in this patchset's approach.
+If there are still people who want this, I can rebase and resend this
+patchset for submission; the past few versions have primarily been code
+clarity and documentation changes so I believe the core design itself is
+somewhat stable now.
 
-himanshu@himanshu-Vostro-3559:~/gsoc/linux$ pahole -C ad7192_platform_data drivers/staging/iio/adc/ad7192.o
-struct ad7192_platform_data {
-	u16                        vref_mv;              /*     0     2 */
-	u8                         clock_source_sel;     /*     2     1 */
+Just let me know how best to proceed and I shall be happy to oblige --
+whether to continue maintaining this patchset or to drop this design in
+favor of improving the existing IIO Counter code in the kernel.
 
-	/* XXX 1 byte hole, try to pack */
+I'll CC those from the patchset submission to keep them in the loop.
 
-	u32                        ext_clk_hz;           /*     4     4 */
-	bool                       refin2_en;            /*     8     1 */
-	bool                       rej60_en;             /*     9     1 */
-	bool                       sinc3_en;             /*    10     1 */
-	bool                       chop_en;              /*    11     1 */
-	bool                       buf_en;               /*    12     1 */
-	bool                       unipolar_en;          /*    13     1 */
-	bool                       burnout_curr_en;      /*    14     1 */
+Sincerely,
 
-	/* size: 16, cachelines: 1, members: 10 */
-	/* sum members: 14, holes: 1, sum holes: 1 */
-	/* padding: 1 */
-	/* last cacheline: 16 bytes */
-};
-
-After:
------
-
-himanshu@himanshu-Vostro-3559:~/gsoc/linux$ pahole -C ad7192_platform_data drivers/staging/iio/adc/ad7192.o
-struct ad7192_platform_data {
-	u16                        vref_mv;              /*     0     2 */
-	u8                         clock_source_sel;     /*     2     1 */
-
-	/* XXX 1 byte hole, try to pack */
-
-	u32                        ext_clk_hz;           /*     4     4 */
-	unsigned int               refin2_en:1;          /*     8:31  4 */
-	unsigned int               rej60_en:1;           /*     8:30  4 */
-	unsigned int               sinc3_en:1;           /*     8:29  4 */
-	unsigned int               chop_en:1;            /*     8:28  4 */
-	unsigned int               buf_en:1;             /*     8:27  4 */
-	unsigned int               unipolar_en:1;        /*     8:26  4 */
-	unsigned int               burnout_curr_en:1;    /*     8:25  4 */
-
-	/* size: 12, cachelines: 1, members: 10 */
-	/* sum members: 11, holes: 1, sum holes: 1 */
-	/* bit_padding: 25 bits */
-	/* last cacheline: 12 bytes */
-};
-
-> Also for internal unpacked structures it really makes little sense to save a few bytes of data. Don’t read into that packed structures are good.. they usually aren’t :)
-
-Yes, agreed, but I often see patches to save few bytes by marking
-array as static.
-
-There is some effort in this direction:
-https://lore.kernel.org/lkml/20181221235230.GC13168@ziepe.ca/
-
-Very likely to get more patches if the above patch gets merged.
-
-
--- 
-Himanshu Jha
-Undergraduate Student
-Department of Electronics & Communication
-Guru Tegh Bahadur Institute of Technology
+William Breathitt Gray
