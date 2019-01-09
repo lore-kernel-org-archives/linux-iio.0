@@ -2,288 +2,524 @@ Return-Path: <SRS0=j9az=PR=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6B45C43387
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Jan 2019 09:14:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13C94C43387
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Jan 2019 13:42:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 572ED20821
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Jan 2019 09:14:39 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="NizfxGxn"
+	by mail.kernel.org (Postfix) with ESMTP id CEE5E2075C
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Jan 2019 13:42:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727828AbfAIJOi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 9 Jan 2019 04:14:38 -0500
-Received: from mail-eopbgr740079.outbound.protection.outlook.com ([40.107.74.79]:8672
-        "EHLO NAM01-BN3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729996AbfAIJOi (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 9 Jan 2019 04:14:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=analog.onmicrosoft.com; s=selector1-analog-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uaJp6RZ/TI1fvbn/vkyEdxxAbyLwjows7VDMx1+hEM4=;
- b=NizfxGxnw1702O5NzMQJJTnxoK0RMSFhF5uaw1RegVI7RgEPHZHbBcMTO7WmSSO3eGdsvPWflpjI146OrZFs51WefBaTc0gtBzvx1dFdtewjWO1P3m5kNIh2f0kflTEGOY+V2qnIllxcq12xkJZCAnlPUbIlP+p76dWyO5uykhc=
-Received: from BN3PR03CA0110.namprd03.prod.outlook.com (2603:10b6:400:4::28)
- by MWHPR03MB2477.namprd03.prod.outlook.com (2603:10b6:300:7::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1516.13; Wed, 9 Jan
- 2019 09:14:32 +0000
-Received: from CY1NAM02FT023.eop-nam02.prod.protection.outlook.com
- (2a01:111:f400:7e45::201) by BN3PR03CA0110.outlook.office365.com
- (2603:10b6:400:4::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.1516.14 via Frontend
- Transport; Wed, 9 Jan 2019 09:14:31 +0000
-Authentication-Results: spf=pass (sender IP is 137.71.25.55)
- smtp.mailfrom=analog.com; metafoo.de; dkim=none (message not signed)
- header.d=none;metafoo.de; dmarc=bestguesspass action=none
- header.from=analog.com;
-Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
- 137.71.25.55 as permitted sender) receiver=protection.outlook.com;
- client-ip=137.71.25.55; helo=nwd2mta1.analog.com;
-Received: from nwd2mta1.analog.com (137.71.25.55) by
- CY1NAM02FT023.mail.protection.outlook.com (10.152.74.237) with Microsoft SMTP
- Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.1471.13
- via Frontend Transport; Wed, 9 Jan 2019 09:14:30 +0000
-Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
-        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id x099ETj4001228
-        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
-        Wed, 9 Jan 2019 01:14:29 -0800
-Received: from mircea-Latitude-E6540.analog.com (10.50.1.101) by
- NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
- 14.3.408.0; Wed, 9 Jan 2019 04:14:29 -0500
-From:   Mircea Caprioru <mircea.caprioru@analog.com>
-To:     <jic23@kernel.org>
-CC:     <Michael.Hennerich@analog.com>, <lars@metafoo.de>,
-        <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>,
-        Mircea Caprioru <mircea.caprioru@analog.com>
-Subject: [PATCH] iio: dac: ad5686: Add support for AD5674R/AD5679R
-Date:   Wed, 9 Jan 2019 11:14:16 +0200
-Message-ID: <20190109091416.12060-1-mircea.caprioru@analog.com>
-X-Mailer: git-send-email 2.17.1
+        id S1731257AbfAINml (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 9 Jan 2019 08:42:41 -0500
+Received: from mxout013.mail.hostpoint.ch ([217.26.49.173]:11760 "EHLO
+        mxout013.mail.hostpoint.ch" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730995AbfAINmj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Jan 2019 08:42:39 -0500
+Received: from [10.0.2.45] (helo=asmtp012.mail.hostpoint.ch)
+        by mxout013.mail.hostpoint.ch with esmtp (Exim 4.91 (FreeBSD))
+        (envelope-from <dev@pschenker.ch>)
+        id 1ghE7n-0002he-5B; Wed, 09 Jan 2019 14:42:27 +0100
+Received: from 252.222.41.212.static.wline.lns.sme.cust.swisscom.ch ([212.41.222.252] helo=philippe-pc.toradex.int)
+        by asmtp012.mail.hostpoint.ch with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.91 (FreeBSD))
+        (envelope-from <dev@pschenker.ch>)
+        id 1ghE7m-0006KA-U2; Wed, 09 Jan 2019 14:42:27 +0100
+X-Authenticated-Sender-Id: dev@pschenker.ch
+From:   Philippe Schenker <dev@pschenker.ch>
+To:     jic23@kernel.org, marcel.ziswiler@toradex.com, stefan@agner.ch
+Cc:     robh@kernel.org, alexandre.torgue@st.com, shawnguo@kernel.org,
+        dmitry.torokhov@gmail.com, thierry.reding@gmail.com,
+        mcoquelin.stm32@gmail.com, digetx@gmail.com, lee.jones@linaro.org,
+        Max Krummenacher <max.krummenacher@toradex.com>,
+        Philippe Schenker <philippe.schenker@toradex.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Mark Brown <broonie@kernel.org>,
+        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
+        linux-iio@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Stefan Popa <stefan.popa@analog.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Freeman Liu <freeman.liu@spreadtrum.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Charles-Antoine Couret <charles-antoine.couret@essensium.com>,
+        Jonathan Bakker <xc-racer2@live.ca>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        linux-arm-kernel@lists.infradead.org,
+        Siddartha Mohanadoss <smohanad@codeaurora.org>,
+        linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Kent Gustavsson <kent@minoris.se>
+Subject: [PATCH v6 5/8] iio: adc: add STMPE ADC driver using IIO framework
+Date:   Wed,  9 Jan 2019 14:42:04 +0100
+Message-Id: <20190109134208.5660-6-dev@pschenker.ch>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190109134208.5660-1-dev@pschenker.ch>
+References: <20190109134208.5660-1-dev@pschenker.ch>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRoutedOnPrem: True
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(346002)(39860400002)(376002)(396003)(136003)(2980300002)(199004)(189003)(126002)(426003)(6916009)(575784001)(72206003)(2616005)(246002)(478600001)(1076003)(48376002)(336012)(7636002)(8676002)(476003)(305945005)(86362001)(77096007)(316002)(26005)(16586007)(54906003)(486006)(51416003)(186003)(106466001)(36756003)(53416004)(50466002)(5660300001)(47776003)(2351001)(356004)(6666004)(106002)(107886003)(50226002)(44832011)(7696005)(8936002)(2906002)(4326008);DIR:OUT;SFP:1101;SCL:1;SRVR:MWHPR03MB2477;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;A:1;MX:1;
-X-Microsoft-Exchange-Diagnostics: 1;CY1NAM02FT023;1:QPFVACU+nQkl0jAhELkyjT75ESHpVNj7dGdQJqxMrVcEupjzZJnMUCree+rz8UShLiC2/+Yfcw96pNq/QQJ9NCCjLRvXPEn0zpuDFzEWODOpTkR8cOy74V/ZqWCOq90J
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1939a768-33bb-4eff-230a-08d67612dcf2
-X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600109)(711020)(4608076)(4709027)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7153060);SRVR:MWHPR03MB2477;
-X-Microsoft-Exchange-Diagnostics: 1;MWHPR03MB2477;3:eaSbAxEP2H5ATCh1JCnTMwwCtINGX/Y3Lxd+WVHXUmh1uzynxwvbAiulkP7GOhQglHxkgOKSsIqRXQtyTUzWjddwS4QT5xYnlG20ZD4cdqRt+JwwO+hWWHL+/9eyoCoJRm/OAsFMKx4oKNnGa7L09SVcRdhkTY31om8PX2uZ8MSU/iTW/At1El9jef/lpFCAFOlm3JLPiIc+6ooSw8GeXFBCHSTdAl3dW1YlebD3yq1W9d8pk7wExaDrHc/qw7ByzIxsN+qz3T3qDIjXRJlZfag0BrwvkL+FqY27wRm2m6ZNKrGvKwo61Ixi3W/+4D1tcrT40eByephDDW5QY2Q2MBTD2qsbNGfwQsEtdCr3t8LbUfIUF0IgkQN1OhcOuHA0;25:q4fjUJf2VFZbEx6oDfmhBdVdL/MfVWs0dcjGL63rXNQVUL8hNMG3CH15xMg4TiytgIYhl+RImo/B4lVOhXGwKZfuFhezuxr/x9wYTdWx2EC9ywOa+vUTBwt7Jug0XjlAXHjeBMQJHDjXC7xPUDjTm3rHs/UNAi2DhJwacI4iaTQaGZBol1z0Xe5CS2wy3gdF7fCqX4IraoUVO7qNm0rpfyChpmM6iYrL8+j6nx4M0dnQ3JVknVsn5U3LbNrIHydFcXkrXs3qz+VilmhTSVAeeK1ZqhW+Zs0ttOilBlS3JLv2eKOr8IbUnaacKd1mQmUZ06/EJweys6apZpW0SNaHjQ==
-X-MS-TrafficTypeDiagnostic: MWHPR03MB2477:
-X-Microsoft-Exchange-Diagnostics: 1;MWHPR03MB2477;31:6j+XkBsm7ujubtVxZ4C+VSeoGfOvo+ZU6xHNUCheYBUD1H7nN6ogHOwj2HLf69GOIxdc2tFnJBSz7ltQLAHUanA/au8uIFTk4koydAGSdUs94PTaxisCcgvoFICpJeuZMXLUuTje8+UmoSJOAVbtO+inihYyjkZ1I2T9mKxa3960NmoCHvXrt8wOYKfzN3qvKT1uK1+p9hbYIULvtORaljpQsI1OlPAvDuVOgpktI7M=;20:QQ06B9f5evCbK7F9XUVov7WnYEl80BZHqC4f7P72SWR8Le7O+/+VxOK91tVdj0LDWXrXJ+oeUDUltM2nj13CMlHsnH7Xh763GEkjh7eqfGy+3WlJkq4Q0JDZFHzrG497Q6Oyy5qyHft03gI68+GYU5Z3MPc2PnRJHLcocd+7AEIuuuiCnBWcwbq1cgKcvyv9+9zvRvC9kp0fhXXKoVUPy1oW7yN5axuTO0QFJBKUEWlQ+ZDIxb7n9BPp/f2OanwsNwbZ0DJNIZjL3vzdIrxa0LePBuKCWKuJ0Min0diMxvTe0Y9UritIxnRfeMGZlAotYzXZyrTmE4WyCd4rMHZ4vI4CYWLbm6Gs378lRtOg4dCr94TAdMxRjB4deo+an64F/H/nDzCfvaAfmJRV/Bzh+PBpIns7p3lU5Cw7CFFkFqjXGDe8PD7a4I8z4WOP9spZ+8BerI9m+Btut2jlF0Xgwkk9ssMLveZoWPKDx4OaBQ6X0rZlUGCx0MtZNdTQKp5h
-X-Microsoft-Antispam-PRVS: <MWHPR03MB24779D6C3D30B8253891C020818B0@MWHPR03MB2477.namprd03.prod.outlook.com>
-X-Microsoft-Exchange-Diagnostics: 1;MWHPR03MB2477;4:AzliD9isQ3xxKB5GG/O0RLBfqKG4bZaExlN++04VlJY+EhkdsYqn9OIdlzO0H0LU/cqwETY05c3wNhhtS2MA3Ud1ax3MfDmThtEiLcC06ieaVxDFyEJlMwNLwSRoM75vA0XKV3N4lL7Wm9astsK3nkf9vIYrARAMhRMxYbSlUIn45n7RhXlyHUXLpJqTlqoxGCW7qhZr3OzyxhYa1QEdF8erxp0yltj2NuABkeXLDvmOnuCI04DrVkYCgSKv08v31oofAAUGxmHvoHfJ4Cyiwl7lNY/8ilczgdsP/mauF/sZP8YWIjAf3CRl9AJ/htJS
-X-Forefront-PRVS: 0912297777
-X-Microsoft-Exchange-Diagnostics: =?us-ascii?Q?1;MWHPR03MB2477;23:Sy+UKAyDrjNnujkfjQuOOA6FUeWy72WmX5p6kJuFd?=
- =?us-ascii?Q?+6wLzPPaK4IjI58mK6eSwG40uWGyi3swKrX7O2iZ+sN1POVBaZ9z2qRGXxoP?=
- =?us-ascii?Q?NNlhRDJk5l2OFgAo+Od3rrPaqr8ECX58ULFr9wbCy17ZoePVlAW9H7FmgHXq?=
- =?us-ascii?Q?kfNTsvR+9cagWwjoaKvfrlbsEHe4kzlJdTI7/1pmFb7F3YYjTkJRJR/nQgob?=
- =?us-ascii?Q?h7pR6qPCh/tSuYzSVuIeoZ0+3S7ucvMvXn8d8PRA9dkLPpKcdt0Vh5nLbIoJ?=
- =?us-ascii?Q?q3goiqu5iL73kgaTUBofo4uJQTbJ01fh++7PQWJ2pNMdAsGayWGeJczaxV9x?=
- =?us-ascii?Q?v4mg6PsDeg1132Tg8sklhZjn3hPYeMJtF761m/RgPAORH9fLw3jAmGbK+HlT?=
- =?us-ascii?Q?QVFuL+ZjiBeYdvZQZnm5gIdZ3OlACpxLmeGVmD3HtwK4VZZWUW9JqLGhsBeX?=
- =?us-ascii?Q?5N5Z9JzhafLtQ4zQGxmK2LE4lroJJ7L/X2iwMR/7PE3EESQGbUUpDfB1CJ7B?=
- =?us-ascii?Q?2w/Cmd/YQI0GyPTlQeVxeX+AwCfmCbP1xspDkNogi56oi1e15WYphJMnbyBv?=
- =?us-ascii?Q?zxBOayIYjl9EdQOu3eWGbfNG7yEmeIIM22ZMzxCGq3o/Rp1p+9rOyU3YayE1?=
- =?us-ascii?Q?cDBwdapWz968nr8wNouahoon1awx4GWoX0SbwT+wtwGphDowOUcx99/OvvTL?=
- =?us-ascii?Q?LJfW4iNKI2yvYQP99uQ/UJBMg5qRydwqpBn2c7/3Eyb53VxkVcFZNwNN6268?=
- =?us-ascii?Q?0TV8/zsrqR6TMmYe7uiuKh02QuYk4fssSo05ITCQgdpvdaL2KM4V8wC2EHaY?=
- =?us-ascii?Q?ryblONHe+gIreB5XPXBHcH2FXEUUPhHtAbwLt2KdO+G4ft6g2CqEDTI7Rd41?=
- =?us-ascii?Q?nBuz6wk6K1Xx7Ykcq8Fjamj9xAuod9Qk5vtnsVamUDIw+D9gHdgKkwlnTPQz?=
- =?us-ascii?Q?nUa/apXvVtiotunW09c1n1AqDoncDRqQSxPGwA/5CN8cz4gLlC2XWGG31kdH?=
- =?us-ascii?Q?k1l8CTlNKiEH0ZMYS1OnetU13IK8plue+EBLJ2wCdQIe+d2Boa6cBUnXvo7G?=
- =?us-ascii?Q?I9KQDKReSy1oKKrHvTboc41veyo?=
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Message-Info: i4Vs/OnEKgWeCoeM1cnwOkT6+zh09oPHjogAN19Gg5nzx4DKQPNGMivud3mbCFG1FvJGgWmbWzqkIfbUSG8xR8DZOdjdtnIX5OzGXDnPsRgb65aaAeh0abyoQ4URQ3nfHz7egnBLuc2lr+hqis/o4TN9zmn4jfDbhLUKMcVEMz+wnt1PZC1IweCEV6OFT1XMyH5PVe84ORnb0kcVQfylCNy8EbeJBiUmwb4mDTVV/Ty7D1+1tTqcARmGx45+P8M0JuGwABiyALPurSJQd6WIa8ZktbbFGXHa/28CgJayvILaLpmnE0/NoupDKdSipb6V
-X-Microsoft-Exchange-Diagnostics: 1;MWHPR03MB2477;6:TpoPJs6AKFQzyIHz6SJ0ag2dJ1qMAQkErFugtzGDrg7OmQfgFZmdifEYuHY9zgoNDc/NiiQvziyoH6Yv5ZRHC7auqN1LQa7jKMqjCtS8duc5XV7jLBeY+PxJzDuUPBoLvB7T+fco9/6w7LpHQu0NOq+o/2Z0hhQpUpcdw7gx/kMPLEAAECSsPYcXWIHz2Y3WjxIYVOHdvNnf8PNdc78K4+1qEWnQbRAjAmBvy7ubL1of90aQQpdQrKDfjMUjm19KfR3qLs2niwxJuRsnJ9NOZmZwpbIl/cszNf9jHPFTAswP7YalWD4GHVSU9Z9FZwxd1DtIQAZk9XagGPVmTpmDAB4TO37G6N8qV7utNZCKXUUKTsKmDzRTKytbZHUOL4bzeODW3hy0h+P6t18f4FY+YaB3ZfvFXimcAk/e6p7tk83SRdKUrAJzRuA1mC61RQcCRInBMcon0qvZCEI6TEGUqQ==;5:JbNS3aAzrDLWEI8gsHbU5oaBOBrHbMevaEPQLrw0rBxHyFzZSJ56tYeMnSqrLwfHGC7K1UBDwZJMEUday0gH5jslvetQt4GusyN1DfmS+kBUaUk1lght1QWzmzNFowfzVD4A+s/PVu/TaLoPO/VAk7DR5Re/pnCLwYOdYsthbQF89IdrRLG9bAP2gsgxOk8KRCP1IONBMoEWhN0jPk5Fbg==;7:PVcWtbt+mLofJPXmwbZEZaOzEN/Ad2iQ5r7KQgCLUVXoJhAn+4NW5Yjumq2UVCNv9r3M4GdNdKmaBvyo3/1dSDzTom/8bVeHCOS507PYDxevl81//AOqU6cEo/s4n2Ac0PbRO/nxfhuPuJAzowNnSA==
-SpamDiagnosticOutput: 1:99
-SpamDiagnosticMetadata: NSPM
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jan 2019 09:14:30.3786
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1939a768-33bb-4eff-230a-08d67612dcf2
-X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.55];Helo=[nwd2mta1.analog.com]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR03MB2477
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The AD5674R/AD5679R are low power, 16-channel, 12-/16-bit buffered voltage
-output digital-to-analog converters (DACs). They include a 2.5 V internal
-reference (enabled by default).
+From: Stefan Agner <stefan@agner.ch>
 
-These devices are very similar to AD5684R/AD5686R, except that they have 16
-channels.
+This adds an ADC driver for the STMPE device using the industrial
+input/output interface. The driver supports raw reading of values.
+The driver depends on the MFD STMPE driver. If the touchscreen
+block is enabled too, only four of the 8 ADC channels are available.
 
-Signed-off-by: Mircea Caprioru <mircea.caprioru@analog.com>
+Signed-off-by: Stefan Agner <stefan@agner.ch>
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+Signed-off-by: Philippe Schenker <philippe.schenker@toradex.com>
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+
 ---
- drivers/iio/dac/Kconfig      |  6 +++---
- drivers/iio/dac/ad5686-spi.c |  7 ++++--
- drivers/iio/dac/ad5686.c     | 42 ++++++++++++++++++++++++++++++++++--
- drivers/iio/dac/ad5686.h     |  2 ++
- 4 files changed, 50 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-index 851b61eaf3da..f28daf67db6a 100644
---- a/drivers/iio/dac/Kconfig
-+++ b/drivers/iio/dac/Kconfig
-@@ -148,9 +148,9 @@ config AD5686_SPI
- 	depends on SPI
- 	select AD5686
- 	help
--	  Say yes here to build support for Analog Devices AD5672R, AD5676,
--	  AD5676R, AD5684, AD5684R, AD5684R, AD5685R, AD5686, AD5686R.
--	  Voltage Output Digital to Analog Converter.
-+	  Say yes here to build support for Analog Devices AD5672R, AD5674R,
-+	  AD5676, AD5676R, AD5679R, AD5684, AD5684R, AD5684R, AD5685R, AD5686,
-+	  AD5686R Voltage Output Digital to Analog Converter.
+Changes in v6: None
+Changes in v5:
+ - Removed devm_add_action_or_reset
+ - Changed iio_device_register to devm_iio_device_register
+ - Added Jonathan Cameron's Reviewed-by
+ - Added correct author of commit, as this changed by accident
+
+Changes in v4:
+ - Moved MFD changes to a precursor patch
+ - Moved stmpe-ts changes to a precursor patch
+ - Created stmpe_read_temp and stmpe_read_voltage functions to make
+   read_raw more readable
+ - Added local lock instead of using indio_dev's mlock
+ - Use be16_to_cpu() macro instead of bitshifting
+ - Added stmpe_enable again to stmpe_adc_init_hw
+ - Use devm_add_action_or_reset to get rid of the remove function
+   (I tested if that actually works)
+
+Changes in v3:
+ - Removed COMPILE_TEST from dependings in Kconfig
+ - Removed stmpe_adc_get_platform_info() function and integrated the
+   few code lines in the other function
+
+Changes in v2:
+ - Code formatting
+ - Removed unused includes
+ - Defined the macro STMPE_START_ONE_TEMP_CONV with other macros.
+ - Added new macro that defines the channel of the temperature sensor.
+   Took new name for STMPE_MAX_ADC->STMPE_ADC_LAST_NR and used it
+   throughout the code for better readability.
+ - Added mutex_unlock where missing.
+
+ drivers/iio/adc/Kconfig     |   7 +
+ drivers/iio/adc/Makefile    |   1 +
+ drivers/iio/adc/stmpe-adc.c | 363 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 371 insertions(+)
+ create mode 100644 drivers/iio/adc/stmpe-adc.c
+
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 7a3ca4ec0cb7..5b72e2963153 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -755,6 +755,13 @@ config STM32_DFSDM_ADC
+ 	  This driver can also be built as a module.  If so, the module
+ 	  will be called stm32-dfsdm-adc.
  
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called ad5686.
-diff --git a/drivers/iio/dac/ad5686-spi.c b/drivers/iio/dac/ad5686-spi.c
-index 665fa6bd9ced..4d857c8da2d2 100644
---- a/drivers/iio/dac/ad5686-spi.c
-+++ b/drivers/iio/dac/ad5686-spi.c
-@@ -1,7 +1,8 @@
- // SPDX-License-Identifier: GPL-2.0+
- /*
-- * AD5672R, AD5676, AD5676R, AD5681R, AD5682R, AD5683, AD5683R,
-- * AD5684, AD5684R, AD5685R, AD5686, AD5686R
-+ * AD5672R, AD5674R, AD5676, AD5676R, AD5679R,
-+ * AD5681R, AD5682R, AD5683, AD5683R, AD5684,
-+ * AD5684R, AD5685R, AD5686, AD5686R
-  * Digital to analog converters driver
-  *
-  * Copyright 2018 Analog Devices Inc.
-@@ -102,8 +103,10 @@ static int ad5686_spi_remove(struct spi_device *spi)
- static const struct spi_device_id ad5686_spi_id[] = {
- 	{"ad5310r", ID_AD5310R},
- 	{"ad5672r", ID_AD5672R},
-+	{"ad5674r", ID_AD5674R},
- 	{"ad5676", ID_AD5676},
- 	{"ad5676r", ID_AD5676R},
-+	{"ad5679r", ID_AD5679R},
- 	{"ad5681r", ID_AD5681R},
- 	{"ad5682r", ID_AD5682R},
- 	{"ad5683", ID_AD5683},
-diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index a332b93ca2c4..6dd2759b9092 100644
---- a/drivers/iio/dac/ad5686.c
-+++ b/drivers/iio/dac/ad5686.c
-@@ -71,7 +71,7 @@ static ssize_t ad5686_write_dac_powerdown(struct iio_dev *indio_dev,
- 	int ret;
- 	struct ad5686_state *st = iio_priv(indio_dev);
- 	unsigned int val, ref_bit_msk;
--	u8 shift;
-+	u8 shift, address = 0;
- 
- 	ret = strtobool(buf, &readin);
- 	if (ret)
-@@ -94,6 +94,9 @@ static ssize_t ad5686_write_dac_powerdown(struct iio_dev *indio_dev,
- 	case AD5686_REGMAP:
- 		shift = 0;
- 		ref_bit_msk = 0;
-+		/* AD5674R/AD5679R have 16 channels and 2 powerdown registers */
-+		if (chan->channel > 0x7)
-+			address = 0x8;
- 		break;
- 	case AD5693_REGMAP:
- 		shift = 13;
-@@ -107,7 +110,8 @@ static ssize_t ad5686_write_dac_powerdown(struct iio_dev *indio_dev,
- 	if (!st->use_internal_vref)
- 		val |= ref_bit_msk;
- 
--	ret = st->write(st, AD5686_CMD_POWERDOWN_DAC, 0, val);
-+	ret = st->write(st, AD5686_CMD_POWERDOWN_DAC,
-+			address, val >> (address * 2));
- 
- 	return ret ? ret : len;
- }
-@@ -226,10 +230,32 @@ static struct iio_chan_spec name[] = {				\
- 		AD5868_CHANNEL(7, 7, bits, _shift),		\
- }
- 
-+#define DECLARE_AD5679_CHANNELS(name, bits, _shift)		\
-+static struct iio_chan_spec name[] = {				\
-+		AD5868_CHANNEL(0, 0, bits, _shift),		\
-+		AD5868_CHANNEL(1, 1, bits, _shift),		\
-+		AD5868_CHANNEL(2, 2, bits, _shift),		\
-+		AD5868_CHANNEL(3, 3, bits, _shift),		\
-+		AD5868_CHANNEL(4, 4, bits, _shift),		\
-+		AD5868_CHANNEL(5, 5, bits, _shift),		\
-+		AD5868_CHANNEL(6, 6, bits, _shift),		\
-+		AD5868_CHANNEL(7, 7, bits, _shift),		\
-+		AD5868_CHANNEL(8, 8, bits, _shift),		\
-+		AD5868_CHANNEL(9, 9, bits, _shift),		\
-+		AD5868_CHANNEL(10, 10, bits, _shift),		\
-+		AD5868_CHANNEL(11, 11, bits, _shift),		\
-+		AD5868_CHANNEL(12, 12, bits, _shift),		\
-+		AD5868_CHANNEL(13, 13, bits, _shift),		\
-+		AD5868_CHANNEL(14, 14, bits, _shift),		\
-+		AD5868_CHANNEL(15, 15, bits, _shift),		\
++config STMPE_ADC
++	tristate "STMicroelectronics STMPE ADC driver"
++	depends on OF && MFD_STMPE
++	help
++	  Say yes here to build support for ST Microelectronics STMPE
++	  built-in ADC block (stmpe811).
++
+ config STX104
+ 	tristate "Apex Embedded Systems STX104 driver"
+ 	depends on PC104 && X86
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 07df37f621bd..6d4e3149ac15 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -71,6 +71,7 @@ obj-$(CONFIG_STM32_ADC_CORE) += stm32-adc-core.o
+ obj-$(CONFIG_STM32_ADC) += stm32-adc.o
+ obj-$(CONFIG_STM32_DFSDM_CORE) += stm32-dfsdm-core.o
+ obj-$(CONFIG_STM32_DFSDM_ADC) += stm32-dfsdm-adc.o
++obj-$(CONFIG_STMPE_ADC) += stmpe-adc.o
+ obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+ obj-$(CONFIG_TI_ADC0832) += ti-adc0832.o
+ obj-$(CONFIG_TI_ADC084S021) += ti-adc084s021.o
+diff --git a/drivers/iio/adc/stmpe-adc.c b/drivers/iio/adc/stmpe-adc.c
+new file mode 100644
+index 000000000000..37f4b74a5d32
+--- /dev/null
++++ b/drivers/iio/adc/stmpe-adc.c
+@@ -0,0 +1,363 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ *  STMicroelectronics STMPE811 IIO ADC Driver
++ *
++ *  4 channel, 10/12-bit ADC
++ *
++ *  Copyright (C) 2013-2018 Toradex AG <stefan.agner@toradex.com>
++ */
++
++#include <linux/completion.h>
++#include <linux/err.h>
++#include <linux/iio/iio.h>
++#include <linux/interrupt.h>
++#include <linux/kernel.h>
++#include <linux/mfd/stmpe.h>
++#include <linux/module.h>
++#include <linux/of_platform.h>
++#include <linux/platform_device.h>
++#include <linux/device.h>
++
++#define STMPE_REG_INT_STA		0x0B
++#define STMPE_REG_ADC_INT_EN		0x0E
++#define STMPE_REG_ADC_INT_STA		0x0F
++
++#define STMPE_REG_ADC_CTRL1		0x20
++#define STMPE_REG_ADC_CTRL2		0x21
++#define STMPE_REG_ADC_CAPT		0x22
++#define STMPE_REG_ADC_DATA_CH(channel)	(0x30 + 2 * (channel))
++
++#define STMPE_REG_TEMP_CTRL		0x60
++#define STMPE_TEMP_CTRL_ENABLE		BIT(0)
++#define STMPE_TEMP_CTRL_ACQ		BIT(1)
++#define STMPE_TEMP_CTRL_THRES_EN	BIT(3)
++#define STMPE_START_ONE_TEMP_CONV	(STMPE_TEMP_CTRL_ENABLE | \
++					STMPE_TEMP_CTRL_ACQ | \
++					STMPE_TEMP_CTRL_THRES_EN)
++#define STMPE_REG_TEMP_DATA		0x61
++#define STMPE_REG_TEMP_TH		0x63
++#define STMPE_ADC_LAST_NR		7
++#define STMPE_TEMP_CHANNEL		(STMPE_ADC_LAST_NR + 1)
++
++#define STMPE_ADC_CH(channel)		((1 << (channel)) & 0xff)
++
++#define STMPE_ADC_TIMEOUT		msecs_to_jiffies(1000)
++
++struct stmpe_adc {
++	struct stmpe *stmpe;
++	struct clk *clk;
++	struct device *dev;
++	struct mutex lock;
++
++	/* We are allocating plus one for the temperature channel */
++	struct iio_chan_spec stmpe_adc_iio_channels[STMPE_ADC_LAST_NR + 2];
++
++	struct completion completion;
++
++	u8 channel;
++	u32 value;
++};
++
++static int stmpe_read_voltage(struct stmpe_adc *info,
++		struct iio_chan_spec const *chan, int *val)
++{
++	long ret;
++
++	mutex_lock(&info->lock);
++
++	info->channel = (u8)chan->channel;
++
++	if (info->channel > STMPE_ADC_LAST_NR) {
++		mutex_unlock(&info->lock);
++		return -EINVAL;
++	}
++
++	stmpe_reg_write(info->stmpe, STMPE_REG_ADC_INT_EN,
++			STMPE_ADC_CH(info->channel));
++
++	stmpe_reg_write(info->stmpe, STMPE_REG_ADC_CAPT,
++			STMPE_ADC_CH(info->channel));
++
++	*val = info->value;
++
++	ret = wait_for_completion_interruptible_timeout
++		(&info->completion, STMPE_ADC_TIMEOUT);
++
++	if (ret <= 0) {
++		mutex_unlock(&info->lock);
++		if (ret == 0)
++			return -ETIMEDOUT;
++		else
++			return ret;
++	}
++
++	*val = info->value;
++
++	mutex_unlock(&info->lock);
++
++	return 0;
 +}
 +
- DECLARE_AD5693_CHANNELS(ad5310r_channels, 10, 2);
- DECLARE_AD5693_CHANNELS(ad5311r_channels, 10, 6);
- DECLARE_AD5676_CHANNELS(ad5672_channels, 12, 4);
-+DECLARE_AD5679_CHANNELS(ad5674r_channels, 12, 4);
- DECLARE_AD5676_CHANNELS(ad5676_channels, 16, 0);
-+DECLARE_AD5679_CHANNELS(ad5679r_channels, 16, 0);
- DECLARE_AD5686_CHANNELS(ad5684_channels, 12, 4);
- DECLARE_AD5686_CHANNELS(ad5685r_channels, 14, 2);
- DECLARE_AD5686_CHANNELS(ad5686_channels, 16, 0);
-@@ -262,6 +288,12 @@ static const struct ad5686_chip_info ad5686_chip_info_tbl[] = {
- 		.num_channels = 8,
- 		.regmap_type = AD5686_REGMAP,
- 	},
-+	[ID_AD5674R] = {
-+		.channels = ad5674r_channels,
-+		.int_vref_mv = 2500,
-+		.num_channels = 16,
-+		.regmap_type = AD5686_REGMAP,
++static int stmpe_read_temp(struct stmpe_adc *info,
++		struct iio_chan_spec const *chan, int *val)
++{
++	long ret;
++
++	mutex_lock(&info->lock);
++
++	info->channel = (u8)chan->channel;
++
++	if (info->channel != STMPE_TEMP_CHANNEL) {
++		mutex_unlock(&info->lock);
++		return -EINVAL;
++	}
++
++	stmpe_reg_write(info->stmpe, STMPE_REG_TEMP_CTRL,
++			STMPE_START_ONE_TEMP_CONV);
++
++	ret = wait_for_completion_interruptible_timeout
++		(&info->completion, STMPE_ADC_TIMEOUT);
++
++	if (ret <= 0) {
++		mutex_unlock(&info->lock);
++		if (ret == 0)
++			return -ETIMEDOUT;
++		else
++			return ret;
++	}
++
++	/*
++	 * absolute temp = +V3.3 * value /7.51 [K]
++	 * scale to [milli °C]
++	 */
++	*val = ((449960l * info->value) / 1024l) - 273150;
++
++	mutex_unlock(&info->lock);
++
++	return 0;
++}
++
++static int stmpe_read_raw(struct iio_dev *indio_dev,
++			  struct iio_chan_spec const *chan,
++			  int *val,
++			  int *val2,
++			  long mask)
++{
++	struct stmpe_adc *info = iio_priv(indio_dev);
++	long ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++	case IIO_CHAN_INFO_PROCESSED:
++
++		switch (chan->type) {
++		case IIO_VOLTAGE:
++			ret = stmpe_read_voltage(info, chan, val);
++			break;
++
++		case IIO_TEMP:
++			ret = stmpe_read_temp(info, chan, val);
++			break;
++		default:
++			return -EINVAL;
++		}
++
++		if (ret < 0)
++			return ret;
++
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_SCALE:
++		*val = 3300;
++		*val2 = info->stmpe->mod_12b ? 12 : 10;
++		return IIO_VAL_FRACTIONAL_LOG2;
++
++	default:
++		break;
++	}
++
++	return -EINVAL;
++}
++
++static irqreturn_t stmpe_adc_isr(int irq, void *dev_id)
++{
++	struct stmpe_adc *info = (struct stmpe_adc *)dev_id;
++	u16 data;
++
++	if (info->channel > STMPE_TEMP_CHANNEL)
++		return IRQ_NONE;
++
++	if (info->channel <= STMPE_ADC_LAST_NR) {
++		int int_sta;
++
++		int_sta = stmpe_reg_read(info->stmpe, STMPE_REG_ADC_INT_STA);
++
++		/* Is the interrupt relevant */
++		if (!(int_sta & STMPE_ADC_CH(info->channel)))
++			return IRQ_NONE;
++
++		/* Read value */
++		stmpe_block_read(info->stmpe,
++			STMPE_REG_ADC_DATA_CH(info->channel), 2, (u8 *) &data);
++
++		stmpe_reg_write(info->stmpe, STMPE_REG_ADC_INT_STA, int_sta);
++	} else if (info->channel == STMPE_TEMP_CHANNEL) {
++		/* Read value */
++		stmpe_block_read(info->stmpe, STMPE_REG_TEMP_DATA, 2,
++				(u8 *) &data);
++	}
++
++	info->value = (u32) be16_to_cpu(data);
++	complete(&info->completion);
++
++	return IRQ_HANDLED;
++}
++
++static const struct iio_info stmpe_adc_iio_info = {
++	.read_raw = &stmpe_read_raw,
++};
++
++static void stmpe_adc_voltage_chan(struct iio_chan_spec *ics, int chan)
++{
++	ics->type = IIO_VOLTAGE;
++	ics->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
++	ics->info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE);
++	ics->indexed = 1;
++	ics->channel = chan;
++}
++
++static void stmpe_adc_temp_chan(struct iio_chan_spec *ics, int chan)
++{
++	ics->type = IIO_TEMP;
++	ics->info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED);
++	ics->indexed = 1;
++	ics->channel = chan;
++}
++
++static int stmpe_adc_init_hw(struct stmpe_adc *adc)
++{
++	int ret;
++	struct stmpe *stmpe = adc->stmpe;
++
++	ret = stmpe_enable(stmpe, STMPE_BLOCK_ADC);
++	if (ret) {
++		dev_err(stmpe->dev, "Could not enable clock for ADC\n");
++		return ret;
++	}
++
++	ret = stmpe811_adc_common_init(stmpe);
++	if (ret) {
++		stmpe_disable(stmpe, STMPE_BLOCK_ADC);
++		return ret;
++	}
++
++	/* use temp irq for each conversion completion */
++	stmpe_reg_write(stmpe, STMPE_REG_TEMP_TH, 0);
++	stmpe_reg_write(stmpe, STMPE_REG_TEMP_TH + 1, 0);
++
++	return 0;
++}
++
++static int stmpe_adc_probe(struct platform_device *pdev)
++{
++	struct iio_dev *indio_dev;
++	struct stmpe_adc *info;
++	struct device_node *np;
++	u32 norequest_mask = 0;
++	int irq_temp, irq_adc;
++	int num_chan = 0;
++	int i = 0;
++	int ret;
++
++	irq_adc = platform_get_irq_byname(pdev, "STMPE_ADC");
++	if (irq_adc < 0)
++		return irq_adc;
++
++	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(struct stmpe_adc));
++	if (!indio_dev) {
++		dev_err(&pdev->dev, "failed allocating iio device\n");
++		return -ENOMEM;
++	}
++
++	info = iio_priv(indio_dev);
++	mutex_init(&info->lock);
++
++	init_completion(&info->completion);
++	ret = devm_request_threaded_irq(&pdev->dev, irq_adc, NULL,
++					stmpe_adc_isr, IRQF_ONESHOT,
++					"stmpe-adc", info);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "failed requesting irq, irq = %d\n",
++				irq_adc);
++		return ret;
++	}
++
++	irq_temp = platform_get_irq_byname(pdev, "STMPE_TEMP_SENS");
++	if (irq_temp >= 0) {
++		ret = devm_request_threaded_irq(&pdev->dev, irq_temp, NULL,
++						stmpe_adc_isr, IRQF_ONESHOT,
++						"stmpe-adc", info);
++		if (ret < 0)
++			dev_warn(&pdev->dev, "failed requesting irq for"
++				 " temp sensor, irq = %d\n", irq_temp);
++	}
++
++	platform_set_drvdata(pdev, indio_dev);
++
++	indio_dev->name		= dev_name(&pdev->dev);
++	indio_dev->dev.parent	= &pdev->dev;
++	indio_dev->info		= &stmpe_adc_iio_info;
++	indio_dev->modes	= INDIO_DIRECT_MODE;
++
++	info->stmpe = dev_get_drvdata(pdev->dev.parent);
++
++	np = pdev->dev.of_node;
++
++	if (!np)
++		dev_err(&pdev->dev, "no device tree node found\n");
++
++	of_property_read_u32(np, "st,norequest-mask", &norequest_mask);
++
++	for_each_clear_bit(i, (unsigned long *) &norequest_mask,
++			   (STMPE_ADC_LAST_NR + 1)) {
++		stmpe_adc_voltage_chan(&info->stmpe_adc_iio_channels[num_chan], i);
++		num_chan++;
++	}
++	stmpe_adc_temp_chan(&info->stmpe_adc_iio_channels[num_chan], i);
++	num_chan++;
++	indio_dev->channels = info->stmpe_adc_iio_channels;
++	indio_dev->num_channels = num_chan;
++
++	ret = stmpe_adc_init_hw(info);
++	if (ret)
++		return ret;
++
++	return devm_iio_device_register(&pdev->dev, indio_dev);
++}
++
++static int __maybe_unused stmpe_adc_resume(struct device *dev)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct stmpe_adc *info = iio_priv(indio_dev);
++
++	stmpe_adc_init_hw(info);
++
++	return 0;
++}
++
++static SIMPLE_DEV_PM_OPS(stmpe_adc_pm_ops, NULL, stmpe_adc_resume);
++
++static struct platform_driver stmpe_adc_driver = {
++	.probe		= stmpe_adc_probe,
++	.driver		= {
++		.name	= "stmpe-adc",
++		.pm	= &stmpe_adc_pm_ops,
 +	},
- 	[ID_AD5675R] = {
- 		.channels = ad5676_channels,
- 		.int_vref_mv = 2500,
-@@ -279,6 +311,12 @@ static const struct ad5686_chip_info ad5686_chip_info_tbl[] = {
- 		.num_channels = 8,
- 		.regmap_type = AD5686_REGMAP,
- 	},
-+	[ID_AD5679R] = {
-+		.channels = ad5679r_channels,
-+		.int_vref_mv = 2500,
-+		.num_channels = 16,
-+		.regmap_type = AD5686_REGMAP,
-+	},
- 	[ID_AD5681R] = {
- 		.channels = ad5691r_channels,
- 		.int_vref_mv = 2500,
-diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
-index 19f6917d4738..4c3e171ce0cc 100644
---- a/drivers/iio/dac/ad5686.h
-+++ b/drivers/iio/dac/ad5686.h
-@@ -54,9 +54,11 @@ enum ad5686_supported_device_ids {
- 	ID_AD5311R,
- 	ID_AD5671R,
- 	ID_AD5672R,
-+	ID_AD5674R,
- 	ID_AD5675R,
- 	ID_AD5676,
- 	ID_AD5676R,
-+	ID_AD5679R,
- 	ID_AD5681R,
- 	ID_AD5682R,
- 	ID_AD5683,
++};
++
++module_platform_driver(stmpe_adc_driver);
++
++MODULE_AUTHOR("Stefan Agner <stefan.agner@toradex.com>");
++MODULE_DESCRIPTION("STMPEXXX ADC driver");
++MODULE_LICENSE("GPL v2");
++MODULE_ALIAS("platform:stmpe-adc");
 -- 
-2.17.1
+2.20.1
 
