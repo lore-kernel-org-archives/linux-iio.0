@@ -2,103 +2,119 @@ Return-Path: <SRS0=UtJi=PT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BFF1C43387
-	for <linux-iio@archiver.kernel.org>; Fri, 11 Jan 2019 19:33:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 805A9C43387
+	for <linux-iio@archiver.kernel.org>; Fri, 11 Jan 2019 19:57:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 089B8218D4
-	for <linux-iio@archiver.kernel.org>; Fri, 11 Jan 2019 19:33:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 52B172177B
+	for <linux-iio@archiver.kernel.org>; Fri, 11 Jan 2019 19:57:23 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ToWKXzoG"
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="jK8F+2Uq"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388565AbfAKTdB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 11 Jan 2019 14:33:01 -0500
-Received: from mail-it1-f196.google.com ([209.85.166.196]:50947 "EHLO
-        mail-it1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732371AbfAKTdB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Jan 2019 14:33:01 -0500
-Received: by mail-it1-f196.google.com with SMTP id z7so4354583iti.0;
-        Fri, 11 Jan 2019 11:32:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=1HI4PTAIhhLhQfiaKKjEHEUmrLNj0YGMEMyV9ySNdkQ=;
-        b=ToWKXzoGwR9lXTeA96pFL8t5agtwEr2lBWtlpeIwGcAhP0xCDmRZveZ4mHLxcJkpG4
-         Nq9jeWCdWF/LIE1dg5WcYtyod0bG8d9+H+mLF7eQGvCrglNaAbd3YenrjBUiMPvs92x3
-         WsnJBNKQIRU1Su9jhFbT4ExHSqQpRniwqIDb8eUhnyHu92Qf2+UbFJ4YpGVYVe3hm1/X
-         BhJIB8gnREy92VDwE2WtjGln1waEJCw7L7uJ0AIFF8m1ypE2kgF1i0MDDfajUoTay5h/
-         /Q2oO7DQMedwHePNwWIIomDtcrtphUZDQgdGzJA/XgRMcsmUQsmGv/0GTN0/7VhluVIf
-         +8Kg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=1HI4PTAIhhLhQfiaKKjEHEUmrLNj0YGMEMyV9ySNdkQ=;
-        b=FlAvPLjQXyCDJ9BhFhmVQOEo1d5p3JDa+/o044ziQRrJiAew4ET8VMPDtUwaBxL2Sn
-         yVM2/8xOb3aRf/+tNw7qAaWA+MxQL8khwgtvKDXIADhXxOH48/LDcv01J9Mx5tZ1vPNc
-         Ny95mP7aE8+2k8eY+ZkCFAPvVaQY61iAl0TZ695OfCg3F3VI3oaS0evthDeSxN1vdChL
-         AzBIMRcdl6AsqrC6m69djijpg/2CQ0XSA4BX9zQBwnK2dBUSolHTy2l6yKxEtOJAN4qc
-         IvvVzW0HScXn1yPmWyxSY/WmtBJZvgvaBQ6UxQfLPjGR4KDaW1FSFkrDgavdNHmt43ku
-         IYVg==
-X-Gm-Message-State: AJcUuketOrEeTcfmovurIqLLWGjGbQagF9zOt+uflhkyf6FyL3A/PvnB
-        1ebDrqR0y/WWx3QhP6mP0Xq4o06XGaA=
-X-Google-Smtp-Source: ALg8bN6PziUpYQTgSMD/PMUc6KBnJC1yuQlsvPBObxq/A9dZapJssSp0ygdEpReQUcG3nG6DTE4aEA==
-X-Received: by 2002:a24:3dd5:: with SMTP id n204mr2265194itn.104.1547235179023;
-        Fri, 11 Jan 2019 11:32:59 -0800 (PST)
-Received: from localhost ([67.218.223.154])
-        by smtp.gmail.com with ESMTPSA id z10sm33992203ioh.20.2019.01.11.11.32.58
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 11 Jan 2019 11:32:58 -0800 (PST)
-From:   Sebastien Bourdelin <sebastien.bourdelin@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        himanshujha199640@gmail.com, mark.rutland@arm.com,
-        robh+dt@kernel.org, pmeerw@pmeerw.net, lars@metafoo.de,
-        knaack.h@gmx.de, jic23@kernel.org,
-        Sebastien Bourdelin <sebastien.bourdelin@gmail.com>
-Subject: [PATCH 2/2] dt-bindings: iio: chemical: Add bindings for bme680
-Date:   Fri, 11 Jan 2019 14:31:41 -0500
-Message-Id: <20190111193141.20607-2-sebastien.bourdelin@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190111193141.20607-1-sebastien.bourdelin@gmail.com>
-References: <20190111193141.20607-1-sebastien.bourdelin@gmail.com>
+        id S2388759AbfAKT5W (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 11 Jan 2019 14:57:22 -0500
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:33746 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729825AbfAKT5W (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Jan 2019 14:57:22 -0500
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id x0BJvKGD098702;
+        Fri, 11 Jan 2019 13:57:20 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1547236640;
+        bh=XC/TOnaoY1Kxf8eT4PNhV6VhfPKTETz4rPDtGj0hPlQ=;
+        h=From:To:CC:Subject:Date;
+        b=jK8F+2Uq3hADZRHaVjSZowT4UInpIIXdp/qIjxcM4X49moS4K3u3tpFjvCCYHp6mn
+         WLPIcQ+HkQJ3kwKv6gsdDv0en57hCXQutDJLVtgX/mnvi5RRDJfk7ADOWBrfE9xKNA
+         gC1n2QNscuo3f4yDXfFdRV4D7yO9wqpZqg4dVfwE=
+Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x0BJvKgc001113
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 11 Jan 2019 13:57:20 -0600
+Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1591.10; Fri, 11
+ Jan 2019 13:57:20 -0600
+Received: from dlep33.itg.ti.com (157.170.170.75) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_0,
+ cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.1.1591.10 via Frontend Transport;
+ Fri, 11 Jan 2019 13:57:20 -0600
+Received: from legion.dal.desgin.ti.com (legion.dal.design.ti.com [128.247.22.53])
+        by dlep33.itg.ti.com (8.14.3/8.13.8) with ESMTP id x0BJvK3F031019;
+        Fri, 11 Jan 2019 13:57:20 -0600
+Received: from localhost (a0272616local-lt.dhcp.ti.com [172.22.73.213])
+        by legion.dal.desgin.ti.com (8.11.7p1+Sun/8.11.7) with ESMTP id x0BJvJU18761;
+        Fri, 11 Jan 2019 13:57:19 -0600 (CST)
+From:   Dan Murphy <dmurphy@ti.com>
+To:     <linux-iio@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <jic23@kernel.org>,
+        <robh+dt@kernel.org>, Dan Murphy <dmurphy@ti.com>
+Subject: [PATCH v3 1/3] iio: ti-ads124s08: Add DT binding documentation
+Date:   Fri, 11 Jan 2019 13:57:05 -0600
+Message-ID: <20190111195707.2086-1-dmurphy@ti.com>
+X-Mailer: git-send-email 2.12.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-BME680 is a pressure/temperature/humidity/voc sensor.
+Adding binding documentation for Texas Instruments ADS124S08
+and ADS124S06 ADC.
 
-Signed-off-by: Sebastien Bourdelin <sebastien.bourdelin@gmail.com>
+S08 is a 12 channel ADC
+S06 is a 6 channel ADC
+
+Datesheet can be found here:
+http://www.ti.com/lit/gpn/ads124s08
+
+Signed-off-by: Dan Murphy <dmurphy@ti.com>
 ---
- .../devicetree/bindings/iio/chemical/bme680.txt       | 11 +++++++++++
- 1 file changed, 11 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/chemical/bme680.txt
 
-diff --git a/Documentation/devicetree/bindings/iio/chemical/bme680.txt b/Documentation/devicetree/bindings/iio/chemical/bme680.txt
+v3 - Fixed the compatible made the colon spacing consistent - https://lore.kernel.org/patchwork/patch/1023969/
+v2 - Fixed incorrect compatible example and removed vref-supply - https://lore.kernel.org/patchwork/patch/1021047/
+
+ .../bindings/iio/adc/ti-ads124s08.txt         | 25 +++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-ads124s08.txt
+
+diff --git a/Documentation/devicetree/bindings/iio/adc/ti-ads124s08.txt b/Documentation/devicetree/bindings/iio/adc/ti-ads124s08.txt
 new file mode 100644
-index 000000000000..885a1b918340
+index 000000000000..ecf807bb32f7
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/chemical/bme680.txt
-@@ -0,0 +1,11 @@
-+Bosch Sensortec BME680 pressure/temperature/humidity/voc sensors
++++ b/Documentation/devicetree/bindings/iio/adc/ti-ads124s08.txt
+@@ -0,0 +1,25 @@
++* Texas Instruments' ads124s08 and ads124s06 ADC chip
 +
 +Required properties:
-+- compatible: must be "bosch,bme680"
++ - compatible :
++	"ti,ads124s08"
++	"ti,ads124s06"
++ - reg : spi chip select number for the device
++
++Recommended properties:
++ - spi-max-frequency : Definition as per
++		Documentation/devicetree/bindings/spi/spi-bus.txt
++ - spi-cpha : Definition as per
++		Documentation/devicetree/bindings/spi/spi-bus.txt
++
++Optional properties:
++ - reset-gpios : GPIO pin used to reset the device.
 +
 +Example:
-+
-+bme680@77 {
-+          compatible = "bosch,bme680";
-+          reg = <0x77>;
++adc@0 {
++	compatible = "ti,ads124s08";
++	reg = <0>;
++	spi-max-frequency = <1000000>;
++	spi-cpha;
++	reset-gpios = <&gpio1 16 GPIO_ACTIVE_LOW>;
 +};
 -- 
-2.20.1
+2.20.1.98.gecbdaf0899
 
