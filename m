@@ -2,103 +2,77 @@ Return-Path: <SRS0=UtJi=PT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D16AC43387
-	for <linux-iio@archiver.kernel.org>; Fri, 11 Jan 2019 20:55:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84B2CC43387
+	for <linux-iio@archiver.kernel.org>; Fri, 11 Jan 2019 22:12:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5EABD2133F
-	for <linux-iio@archiver.kernel.org>; Fri, 11 Jan 2019 20:55:08 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EtEZw6NF"
+	by mail.kernel.org (Postfix) with ESMTP id 5308621783
+	for <linux-iio@archiver.kernel.org>; Fri, 11 Jan 2019 22:12:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1547244728;
+	bh=DS5JNitD0e3Cj2gbJFesogeTeOmO4XXZqPOiWYD50Dg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=fE1g8n2RWfBWhVWh6ZKSP5UxP8u6CYCf/8VRfInbzbQXp/czkb4q4K1jsliQouyLE
+	 5jOKcO0zKGXfV6R99WQHV26uEVeEJ2ls+bhe8C7SG5s9UWlZ9Fcnd9/uwHhfJwkgxV
+	 Ze9nzwhV7Jmi/DCOvnFjiR56RFxC3X2lDvFNlcAA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726591AbfAKUzA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 11 Jan 2019 15:55:00 -0500
-Received: from mail-it1-f196.google.com ([209.85.166.196]:52880 "EHLO
-        mail-it1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725613AbfAKUzA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Jan 2019 15:55:00 -0500
-Received: by mail-it1-f196.google.com with SMTP id g76so4754969itg.2;
-        Fri, 11 Jan 2019 12:54:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=1HI4PTAIhhLhQfiaKKjEHEUmrLNj0YGMEMyV9ySNdkQ=;
-        b=EtEZw6NFJHES8kV224Qg1+F9GOquEvrU15z/OBnmePl/smUqrCyhXHRdJLuSwHskop
-         eovaoKBBT7MHgMWHpoz96XhzC5zfn1phZAHF2A4abMxVPGPNCopeMPM+k6E95mo2kfFu
-         74A/pzdbm/eQM6uXNuy1NXJVaU8m7www981UzKYhpamgoxLYYEZUL7PYeuVA1+PwBR0D
-         4SwFjh5MxcVL3MpBHqBFx6BOkcN/71zaG3xagf+s4nhKs7ZJ26s5Gem/g0vA6QPOc5LJ
-         n6S4KSDqDt5FyHNaTywkFK8+Xkxjyt5ZHU8s/JxrHba3j9cAObO0AFtqXtHM5A0BddWD
-         xCSg==
+        id S1726476AbfAKWMH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 11 Jan 2019 17:12:07 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:37277 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726116AbfAKWMH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Jan 2019 17:12:07 -0500
+Received: by mail-ot1-f67.google.com with SMTP id s13so5998499otq.4;
+        Fri, 11 Jan 2019 14:12:07 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=1HI4PTAIhhLhQfiaKKjEHEUmrLNj0YGMEMyV9ySNdkQ=;
-        b=Fw+s3Eu7GGvxGVGJT/Cx7M+aIzM1iSTMl6txYmaOiaJLTAD9+6ww0n9/2U+LuBteqy
-         Wp9SeDKp57hvrp89Z7mYfYnaFlOZNRswSSvhGfGg/yHMwza1E01hnEs4NNjRpVfn6lys
-         4dBn/FN/BLbnGz5tYCiAGmwECAyCUq2v1yAFlD0P7XtYRZBAKgVR2uLie/7Bv/WA2nBT
-         OzJC646/5cw2B0XRnJVptqi5CErXVJwM6cpMnO0EbnWWlvWV9R5jDF43xtCImyLq5I1e
-         kTxfHh6qt/Kse+GlqMC/4z1tsb5DhX//UIQuJaGauoVNRJi3sozAXfVwFZ+X/9TA3wRo
-         eBvg==
-X-Gm-Message-State: AJcUukcU05wrZZT5jCzPkUPGv/O8mDOC9R3UPD4hC0m0cxNovXbE6a3Y
-        3K41fHZEsbpH5bq1k/K40fEeU8E2pkQ=
-X-Google-Smtp-Source: ALg8bN4ECw1fjjcdVSJx/8dToj3YgfBn1hQurkFvjOdwiGhjPY+86MTl75wSqMWmCa2HXMh9co8gzA==
-X-Received: by 2002:a02:8894:: with SMTP id n20mr12184112jaj.52.1547240098915;
-        Fri, 11 Jan 2019 12:54:58 -0800 (PST)
-Received: from localhost ([67.218.223.154])
-        by smtp.gmail.com with ESMTPSA id y21sm34930550iof.51.2019.01.11.12.54.57
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Vqtkt5WV8SwYflc3uN7hXP9niRVwRim52jfkt+0R24E=;
+        b=VhFYAIuTYGaAU1yisi0RjIfEipBVjZ/4SkSSZq3Y/+48Tx8JJolcqo2Q7PZm/hTSlj
+         t/Idk4XRfcus1r9oEZtgg5GAJc3GxtqA1fMXch/B/GUnlF0tHfWAQdskwirSCi5EBPKj
+         /6liDN8mb33fQ1KUde7vO7daJOy1b/7suKqFO/S3skk5tA7zESvmKVNpNuIoDNkRjNOD
+         hNiuBy1jXnrRfusIu6t6Qt1BVeXol4xuq6H20PLgmlatgdWu8IlfXXWhrMhLeGQUvgYM
+         FhVm5tpg4AaPgfvSb6hp6QRyJeo0NWarc36D1yXf+qtLeDjBXbzHnVNdFEcttoMvNTGZ
+         5Kqg==
+X-Gm-Message-State: AJcUukfTL5tYHwbJ0JystRSquCrc1GIHmJ3VjOkYN5XpueUEbAB+OuqT
+        PI9Vhh8XtBrbX5hcXVfEqkm3bI9Ebg==
+X-Google-Smtp-Source: ALg8bN6qPivUL/Z54bbkZq7ulevAc/5BNHUPlZZIGYI4JUWvRDnpwjpa/N6g3PSnBp5uJYKQM5wwqw==
+X-Received: by 2002:a9d:6a1a:: with SMTP id g26mr11303402otn.172.1547244726750;
+        Fri, 11 Jan 2019 14:12:06 -0800 (PST)
+Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id k13sm59795014otj.19.2019.01.11.14.12.06
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 11 Jan 2019 12:54:58 -0800 (PST)
-From:   Sebastien Bourdelin <sebastien.bourdelin@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        himanshujha199640@gmail.com, mark.rutland@arm.com,
-        robh+dt@kernel.org, pmeerw@pmeerw.net, lars@metafoo.de,
-        knaack.h@gmx.de, jic23@kernel.org,
-        Sebastien Bourdelin <sebastien.bourdelin@gmail.com>
-Subject: [PATCH v2 2/2] dt-bindings: iio: chemical: Add bindings for bme680
-Date:   Fri, 11 Jan 2019 15:53:59 -0500
-Message-Id: <20190111205359.14158-2-sebastien.bourdelin@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190111205359.14158-1-sebastien.bourdelin@gmail.com>
-References: <20190111205359.14158-1-sebastien.bourdelin@gmail.com>
+        Fri, 11 Jan 2019 14:12:06 -0800 (PST)
+Date:   Fri, 11 Jan 2019 16:12:05 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Tomasz Duszynski <tduszyns@gmail.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, Tomasz Duszynski <tduszyns@gmail.com>
+Subject: Re: [PATCH 2/3] dt-bindings: add Plantower to the vendor prefixes
+Message-ID: <20190111221205.GA29073@bogus>
+References: <20190106171614.12615-1-tduszyns@gmail.com>
+ <20190106171614.12615-3-tduszyns@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190106171614.12615-3-tduszyns@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-BME680 is a pressure/temperature/humidity/voc sensor.
+On Sun,  6 Jan 2019 18:16:13 +0100, Tomasz Duszynski wrote:
+> Add Plantower to the vendor prefixes.
+> 
+> Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
+> ---
+>  Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
-Signed-off-by: Sebastien Bourdelin <sebastien.bourdelin@gmail.com>
----
- .../devicetree/bindings/iio/chemical/bme680.txt       | 11 +++++++++++
- 1 file changed, 11 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/chemical/bme680.txt
-
-diff --git a/Documentation/devicetree/bindings/iio/chemical/bme680.txt b/Documentation/devicetree/bindings/iio/chemical/bme680.txt
-new file mode 100644
-index 000000000000..885a1b918340
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/chemical/bme680.txt
-@@ -0,0 +1,11 @@
-+Bosch Sensortec BME680 pressure/temperature/humidity/voc sensors
-+
-+Required properties:
-+- compatible: must be "bosch,bme680"
-+
-+Example:
-+
-+bme680@77 {
-+          compatible = "bosch,bme680";
-+          reg = <0x77>;
-+};
--- 
-2.20.1
-
+Reviewed-by: Rob Herring <robh@kernel.org>
