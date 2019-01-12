@@ -6,49 +6,48 @@ X-Spam-Status: No, score=-11.7 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C6AEC43387
-	for <linux-iio@archiver.kernel.org>; Sat, 12 Jan 2019 18:13:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5082C43387
+	for <linux-iio@archiver.kernel.org>; Sat, 12 Jan 2019 18:22:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 45F142086C
-	for <linux-iio@archiver.kernel.org>; Sat, 12 Jan 2019 18:13:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8C4EE2086C
+	for <linux-iio@archiver.kernel.org>; Sat, 12 Jan 2019 18:22:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1547316827;
-	bh=v/eobD9TeoY5tAUQbQwkFtv1rf3Ca1GTeEvbHdyCujg=;
+	s=default; t=1547317348;
+	bh=KTU9HeytrPIth6NO0Wfle5VKWzDAw2lsi3pguDN8ces=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=Z0Tb2fDMLvdNheii+61gMzNeGRxGZDwt2xE30QYpMaIJYwo/ACG+wO91WM+bMYOcv
-	 ey5l9Bqktr2psqb1owrFrxkwDr+LE/c6wGMcpMAzCxyvddJDJwTbhQMGCiCgRq2mu4
-	 tuzvnpV1SniKKQiZDwxCmIUbkCMSR717iTKPDET8=
+	b=u5ZIoDKzZAt1B6nX6JdVJORCOMJzi/8btRsCeX/1gZQA7AiEHtkeDlK3YB27EAU/5
+	 R5xxKrTb03CdVVoQ4X8X0CAkjGC1g+MUcqMcG8LkESAIuB+ErogOgCYFXjqSALaIL6
+	 yQw61GsjNy+6XWvE0rLaPTuAhT8IfhQJRvcne4YI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726094AbfALSNq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 12 Jan 2019 13:13:46 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56252 "EHLO mail.kernel.org"
+        id S1725920AbfALSW2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 12 Jan 2019 13:22:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58218 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725843AbfALSNq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 12 Jan 2019 13:13:46 -0500
+        id S1725854AbfALSW1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 12 Jan 2019 13:22:27 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B97A320836;
-        Sat, 12 Jan 2019 18:13:43 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2DB0D20836;
+        Sat, 12 Jan 2019 18:22:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1547316825;
-        bh=v/eobD9TeoY5tAUQbQwkFtv1rf3Ca1GTeEvbHdyCujg=;
+        s=default; t=1547317347;
+        bh=KTU9HeytrPIth6NO0Wfle5VKWzDAw2lsi3pguDN8ces=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BDY6h/R5k6J+TThDBgOk3HH+lIePC3V8zQjLvHNd+ipY/VEcD1rCRKKgYpw1GL+hz
-         fYHSehUm+g35EczDyNxLXThqEWEPLuRK+8+icCbhWWHVM/csQ2Wgex480FdZgO6bLr
-         7nAyeuiDV3ApM6XYZZTyRyqwvQdW4SlzjbRxzDW0=
-Date:   Sat, 12 Jan 2019 18:13:40 +0000
+        b=eJaIC/2au8+hSzfJggXOBJ/oTyg9/Fhm/ZxUC+ammFN8b/DHZmc7LFDppDUym++HU
+         ZR6vQ/v/7nPU9HcKP6FNwi3YQhMRBgSqD2XrAG0wW89xLxtaW1YqOgvxZ3SUKg+iL+
+         xRbQZEemGK+7O0PNK7B0utCcapOvKLdDxgh2Ju00=
+Date:   Sat, 12 Jan 2019 18:22:21 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Stefan Popa <stefan.popa@analog.com>
-Cc:     <robh+dt@kernel.org>, <mark.rutland@arm.com>, <knaack.h@gmx.de>,
-        <lars@metafoo.de>, <pmeerw@pmeerw.net>,
-        <Michael.Hennerich@analog.com>, <gregkh@linuxfoundation.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/2] dt-bindings: iio: adc: Add docs for AD7768-1
-Message-ID: <20190112181340.0efe0ea0@archlinux>
-In-Reply-To: <1546867609-4273-1-git-send-email-stefan.popa@analog.com>
-References: <1546867609-4273-1-git-send-email-stefan.popa@analog.com>
+To:     Sebastien Bourdelin <sebastien.bourdelin@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org, himanshujha199640@gmail.com,
+        mark.rutland@arm.com, robh+dt@kernel.org, pmeerw@pmeerw.net,
+        lars@metafoo.de, knaack.h@gmx.de
+Subject: Re: [PATCH v2 1/2] iio: chemical: bme680: Add device-tree support
+Message-ID: <20190112182221.4765d287@archlinux>
+In-Reply-To: <20190111205359.14158-1-sebastien.bourdelin@gmail.com>
+References: <20190111205359.14158-1-sebastien.bourdelin@gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -58,81 +57,87 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 7 Jan 2019 15:26:49 +0200
-Stefan Popa <stefan.popa@analog.com> wrote:
+On Fri, 11 Jan 2019 15:53:58 -0500
+Sebastien Bourdelin <sebastien.bourdelin@gmail.com> wrote:
 
-> Document support for AD7768-1 Analog to Digital Converter.
+> This commit allow the driver to work with device-tree.
 > 
-> Signed-off-by: Stefan Popa <stefan.popa@analog.com>
-
-A few comments inline.
+> Signed-off-by: Sebastien Bourdelin <sebastien.bourdelin@gmail.com>
+Minor stuff inline.
 
 J
 > ---
->  .../devicetree/bindings/iio/adc/adi,ad7768-1.txt   | 34 ++++++++++++++++++++++
->  MAINTAINERS                                        |  1 +
->  2 files changed, 35 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.txt
+> v1 -> v2:
+>   - add missing of.h header in bme680_spi.c
+> ---
+>  drivers/iio/chemical/bme680_i2c.c | 7 +++++++
+>  drivers/iio/chemical/bme680_spi.c | 9 +++++++++
+>  2 files changed, 16 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.txt b/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.txt
-> new file mode 100644
-> index 0000000..bf619fa8
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.txt
-> @@ -0,0 +1,34 @@
-> +Analog Devices AD7768-1 ADC device driver
-> +
-> +Required properties for the AD7768-1:
-> +
-> +- compatible: Must be "adi,ad7768-1"
-> +- reg: SPI chip select number for the device
-> +- spi-max-frequency: Max SPI frequency to use
-> +	see: Documentation/devicetree/bindings/spi/spi-bus.txt
-> +- clocks: phandle to the master clock (mclk)
-> +	see: Documentation/devicetree/bindings/clock/clock-bindings.txt
-> +- clock-names: Must be "mclk".
-> +- interrupts: IRQ line for the ADC
-> +	see: Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
-> +- vref-supply: vref supply can be used as reference for conversion
-> +- adi,sync-in-gpios: must be the device tree identifier of the SYNC-IN pin. A pulse
-> +	is always required if the configuration is changed in any way, for example
-> +	if the filter decimation rate changes. As the line is active low, it should
-> +	be marked GPIO_ACTIVE_LOW.
-Should mention it's also used for simultaneous sampling.  The name makes that
-kind of obvious, but then the comment doesn't mention it.
-
-There are some other potential gpios it seems.  Good to get them in the binding
-now even if we don't do anything much with them.  Reset definitely.  The others
-maybe not as we are only supporting the spi control mode and I can't see why
-we would want to do anything different. I suppose there might be boards wired
-with it set to pin mode but hopefully not.
-
-> +
-> +Example:
-> +
-> +	adc@0 {
-> +		compatible = "adi,ad7768-1";
-> +		reg = <0>;
-> +		spi-max-frequency = <2000000>;
-> +		spi-cpol;
-> +		spi-cpha;
-> +		vref-supply = <&adc_vref>;
-> +		interrupts = <25 IRQ_TYPE_EDGE_RISING>;
-> +		interrupt-parent = <&gpio>;
-> +		adi,sync-in-gpios = <&gpio 22 GPIO_ACTIVE_LOW>;
-> +		clocks = <&ad7768_mclk>;
-> +		clock-names = "mclk";
-> +	};
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 3ba3811..e5613b6 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -868,6 +868,7 @@ L:	linux-iio@vger.kernel.org
->  W:	http://ez.analog.com/community/linux-device-drivers
->  S:	Supported
->  F:	drivers/iio/adc/ad7768-1.c
-> +F:	Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.txt
+> diff --git a/drivers/iio/chemical/bme680_i2c.c b/drivers/iio/chemical/bme680_i2c.c
+> index 06d4be539d2e..94a36ebdf0b2 100644
+> --- a/drivers/iio/chemical/bme680_i2c.c
+> +++ b/drivers/iio/chemical/bme680_i2c.c
+> @@ -70,10 +70,17 @@ static const struct acpi_device_id bme680_acpi_match[] = {
+>  };
+>  MODULE_DEVICE_TABLE(acpi, bme680_acpi_match);
 >  
->  ANALOG DEVICES INC AD9389B DRIVER
->  M:	Hans Verkuil <hans.verkuil@cisco.com>
+> +static const struct of_device_id bme680_of_i2c_match[] = {
+> +	{ .compatible = "bosch,bme680", },
+> +	{},
+> +}
+> +MODULE_DEVICE_TABLE(of, bme680_of_i2c_match);
+> +
+>  static struct i2c_driver bme680_i2c_driver = {
+>  	.driver = {
+>  		.name			= "bme680_i2c",
+>  		.acpi_match_table       = ACPI_PTR(bme680_acpi_match),
+> +		.of_match_table		= of_match_ptr(bme680_of_i2c_match),
+
+As below. just = bme680...
+
+>  	},
+>  	.probe = bme680_i2c_probe,
+>  	.id_table = bme680_i2c_id,
+> diff --git a/drivers/iio/chemical/bme680_spi.c b/drivers/iio/chemical/bme680_spi.c
+> index c9fb05e8d0b9..caa57287a911 100644
+> --- a/drivers/iio/chemical/bme680_spi.c
+> +++ b/drivers/iio/chemical/bme680_spi.c
+> @@ -6,9 +6,11 @@
+>   */
+>  #include <linux/acpi.h>
+>  #include <linux/module.h>
+> +#include <linux/of.h>
+>  #include <linux/regmap.h>
+>  #include <linux/spi/spi.h>
+>  
+> +
+
+This white space change should not be here.
+
+>  #include "bme680.h"
+>  
+>  static int bme680_regmap_spi_write(void *context, const void *data,
+> @@ -110,10 +112,17 @@ static const struct acpi_device_id bme680_acpi_match[] = {
+>  };
+>  MODULE_DEVICE_TABLE(acpi, bme680_acpi_match);
+>  
+> +static const struct of_device_id bme680_of_spi_match[] = {
+> +	{ .compatible = "bosch,bme680", },
+> +	{},
+> +}
+> +MODULE_DEVICE_TABLE(of, bme680_of_spi_match);
+> +
+>  static struct spi_driver bme680_spi_driver = {
+>  	.driver = {
+>  		.name			= "bme680_spi",
+>  		.acpi_match_table	= ACPI_PTR(bme680_acpi_match),
+> +		.of_match_table		= of_match_ptr(bme680_of_spi_match),
+Please don't use of_match_ptr.  We actually want this entry to be there even
+if devicetree is not in use.  This is because there is a magic ACPI hid
+that can use this table even from ACPI.
+
+>  	},
+>  	.probe = bme680_spi_probe,
+>  	.id_table = bme680_spi_id,
 
