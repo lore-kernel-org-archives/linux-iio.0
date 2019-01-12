@@ -2,174 +2,155 @@ Return-Path: <SRS0=wu9M=PU=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.7 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38271C43387
-	for <linux-iio@archiver.kernel.org>; Sat, 12 Jan 2019 09:42:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 665EEC43387
+	for <linux-iio@archiver.kernel.org>; Sat, 12 Jan 2019 16:59:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E6D322086C
-	for <linux-iio@archiver.kernel.org>; Sat, 12 Jan 2019 09:42:37 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fVj6E578"
+	by mail.kernel.org (Postfix) with ESMTP id 2F7CF2086C
+	for <linux-iio@archiver.kernel.org>; Sat, 12 Jan 2019 16:59:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1547312386;
+	bh=hulV5sPXet9pEokAbxnrMAD/RYPwyBi6bPx2wuN4cHY=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=T+7iwVbsNZIX32z52IfX8Ah3p4H7MGgiZn+WTDG+e4RQm066cLPUOPjM/vbymuOFx
+	 XTg/X+7rJWdehx10yFX6h7bzfS1OpN9dWLMtsWhLHbIHatgGG0bUAWQ4fcic/b89j3
+	 ZiirDEDFKF0NGDdBQsbWfB8z6AB8kO3J2D7C22hc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725823AbfALJmh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 12 Jan 2019 04:42:37 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:39027 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725816AbfALJmg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Jan 2019 04:42:36 -0500
-Received: by mail-pg1-f196.google.com with SMTP id w6so7366916pgl.6;
-        Sat, 12 Jan 2019 01:42:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=X1nWV4nBzlRo77/xlbjpztD7qUJA/hTJMXekGf8rO3M=;
-        b=fVj6E578g6OPv+K0qvR9DJatp+zMDOtYwl9amt3nykdmlugNae95tpFO4y5yW/vPHL
-         6IOZtC7hZy+UuFRXB7ubaRiGIeU05yfdql1Wfp6aL2WEtsT5s9wkMp7W2BYp8k17bb9v
-         g3uN95VAAlohZ1QXRUYHaKZb0JTlU5MNotjSC9H7HR8ezIp0351SvHOfM7XtdeycdLzQ
-         /Rrv9nRPormG5Vp5lr86XxfX/pYUPRjLCZUJqEPTYPeU0vJmAm8oT1QVzEYtDfFhtQUf
-         9NbPLlF4ZqrxRmk0We2NB9cqcxkWu70gNO5fdHjrL7K1jcn7JI82fX9jSrigQHb404Ev
-         /azQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=X1nWV4nBzlRo77/xlbjpztD7qUJA/hTJMXekGf8rO3M=;
-        b=MBrLB4aDwLX7BTewAOD8btio0R3WuhCPbyna0sJ4u196tqmkP7sHl9U0KhX0gt1bl1
-         L9sFaSIfCyJ1V9ejY9yqXJjak8vddJ0H7qRpbbdRBOHNDQlf8L3RWLJ/BHiCTYTGBwSL
-         9FvLjOHd7AVhlen5kYER9yi3w5V7JZIDSMKArE0OUo6l0Xe7YAG+j9ZfGT1mSSwzcyYt
-         VpfLEQGMeoBCV52QiyNsmd3wIW0BU59HN9UZ9j2gP42p2SadpkHKBucWU6Go/mjWrxov
-         lQotg5pSSzF31quAe49+9AQOFgtAubMK7z2NVtF48L0DMENstIwiUXwyBBro62X3HwuZ
-         yYSg==
-X-Gm-Message-State: AJcUuked0rTpNSFwIUdrGMoAIrp+Z56NE5Zp6uZs3ZdgyvNelJ+anPpH
-        VjXT9H1L0b353W5OXIFh7ew=
-X-Google-Smtp-Source: ALg8bN6M+NminiLHRX1zNCXF1QAstOt5vuyLyP9SL47/MMORZ2/k+Oex+6VXbp7cCJHPxVdQQMTnVA==
-X-Received: by 2002:a63:f615:: with SMTP id m21mr16682707pgh.428.1547286155648;
-        Sat, 12 Jan 2019 01:42:35 -0800 (PST)
-Received: from himanshu-Vostro-3559 ([103.233.116.134])
-        by smtp.gmail.com with ESMTPSA id m67sm112806550pfm.73.2019.01.12.01.42.30
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 12 Jan 2019 01:42:34 -0800 (PST)
-Date:   Sat, 12 Jan 2019 15:12:26 +0530
-From:   Himanshu Jha <himanshujha199640@gmail.com>
-To:     Sebastien Bourdelin <sebastien.bourdelin@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, mark.rutland@arm.com,
-        robh+dt@kernel.org, pmeerw@pmeerw.net, lars@metafoo.de,
-        knaack.h@gmx.de, jic23@kernel.org
-Subject: Re: [PATCH v2 1/2] iio: chemical: bme680: Add device-tree support
-Message-ID: <20190112094226.GA910@himanshu-Vostro-3559>
-References: <20190111205359.14158-1-sebastien.bourdelin@gmail.com>
+        id S1726399AbfALQ7p (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 12 Jan 2019 11:59:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47802 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725843AbfALQ7p (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 12 Jan 2019 11:59:45 -0500
+Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B4E1E2084C;
+        Sat, 12 Jan 2019 16:59:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1547312383;
+        bh=hulV5sPXet9pEokAbxnrMAD/RYPwyBi6bPx2wuN4cHY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ALT2ilrWFHjk4y00kGjSr0GUD4+Me3/Q3OOieM9nlobvyPsWFbiCFXMfLZrmQuRTr
+         CKKhkMgYZ5+8Eov/c/usgbEf+7PToUlYhV8Zue9bqPgbwrDvkkxPd5f2qUbPJEKcIS
+         mWMD2ahYp4bOW6umbNsHALZjmnn01OeOAPiUpQc0=
+Date:   Sat, 12 Jan 2019 16:59:38 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Himanshu Jha <himanshujha199640@gmail.com>
+Cc:     Matt Ranostay <matt.ranostay@konsulko.com>,
+        Amir Mahdi Ghorbanian <indigoomega021@gmail.com>,
+        lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] Staging: iio: ad7192: replaced bool in struct
+Message-ID: <20190112165938.0a7baa50@archlinux>
+In-Reply-To: <20190107175748.GA29220@himanshu-Vostro-3559>
+References: <1545434786-15220-1-git-send-email-indigoomega021@gmail.com>
+        <20181224095823.GA17061@himanshu-Vostro-3559>
+        <8E720BF2-7AFC-4FFA-8FA2-5A403FD5DD1D@konsulko.com>
+        <20190107175748.GA29220@himanshu-Vostro-3559>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190111205359.14158-1-sebastien.bourdelin@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, Jan 11, 2019 at 03:53:58PM -0500, Sebastien Bourdelin wrote:
-> This commit allow the driver to work with device-tree.
-> 
-> Signed-off-by: Sebastien Bourdelin <sebastien.bourdelin@gmail.com>
-> ---
+On Mon, 7 Jan 2019 23:27:48 +0530
+Himanshu Jha <himanshujha199640@gmail.com> wrote:
 
-I get the following compilation failure:
+> On Wed, Jan 02, 2019 at 01:25:27PM -0800, Matt Ranostay wrote:
+> >  =20
+> > > On Dec 24, 2018, at 01:58, Himanshu Jha <himanshujha199640@gmail.com>=
+ wrote:
+> > >  =20
+> > >> On Fri, Dec 21, 2018 at 03:26:26PM -0800, Amir Mahdi Ghorbanian wrot=
+e:
+> > >> Replaced bool in struct with unsigned int bitfield to conserve space=
+ and
+> > >> more clearly define size of varibales =20
+> >=20
+> > Important thing to note is depending on padding, alignment, and positio=
+n of field it probably won=E2=80=99t save any space. =20
+>=20
+> Well, then what do you say about the following results ;-)
+>=20
+> Before:
+> ------
+>=20
+> himanshu@himanshu-Vostro-3559:~/gsoc/linux$ pahole -C ad7192_platform_dat=
+a drivers/staging/iio/adc/ad7192.o
+> struct ad7192_platform_data {
+> 	u16                        vref_mv;              /*     0     2 */
+> 	u8                         clock_source_sel;     /*     2     1 */
+>=20
+> 	/* XXX 1 byte hole, try to pack */
+>=20
+> 	u32                        ext_clk_hz;           /*     4     4 */
+> 	bool                       refin2_en;            /*     8     1 */
+> 	bool                       rej60_en;             /*     9     1 */
+> 	bool                       sinc3_en;             /*    10     1 */
+> 	bool                       chop_en;              /*    11     1 */
+> 	bool                       buf_en;               /*    12     1 */
+> 	bool                       unipolar_en;          /*    13     1 */
+> 	bool                       burnout_curr_en;      /*    14     1 */
+>=20
+> 	/* size: 16, cachelines: 1, members: 10 */
+> 	/* sum members: 14, holes: 1, sum holes: 1 */
+> 	/* padding: 1 */
+> 	/* last cacheline: 16 bytes */
+> };
+>=20
+> After:
+> -----
+>=20
+> himanshu@himanshu-Vostro-3559:~/gsoc/linux$ pahole -C ad7192_platform_dat=
+a drivers/staging/iio/adc/ad7192.o
+> struct ad7192_platform_data {
+> 	u16                        vref_mv;              /*     0     2 */
+> 	u8                         clock_source_sel;     /*     2     1 */
+>=20
+> 	/* XXX 1 byte hole, try to pack */
+>=20
+> 	u32                        ext_clk_hz;           /*     4     4 */
+> 	unsigned int               refin2_en:1;          /*     8:31  4 */
+> 	unsigned int               rej60_en:1;           /*     8:30  4 */
+> 	unsigned int               sinc3_en:1;           /*     8:29  4 */
+> 	unsigned int               chop_en:1;            /*     8:28  4 */
+> 	unsigned int               buf_en:1;             /*     8:27  4 */
+> 	unsigned int               unipolar_en:1;        /*     8:26  4 */
+> 	unsigned int               burnout_curr_en:1;    /*     8:25  4 */
+>=20
+> 	/* size: 12, cachelines: 1, members: 10 */
+> 	/* sum members: 11, holes: 1, sum holes: 1 */
+> 	/* bit_padding: 25 bits */
+> 	/* last cacheline: 12 bytes */
+> };
+>=20
+> > Also for internal unpacked structures it really makes little sense to s=
+ave a few bytes of data. Don=E2=80=99t read into that packed structures are=
+ good.. they usually aren=E2=80=99t :) =20
+>=20
+> Yes, agreed, but I often see patches to save few bytes by marking
+> array as static.
+>=20
+> There is some effort in this direction:
+> https://lore.kernel.org/lkml/20181221235230.GC13168@ziepe.ca/
+>=20
+> Very likely to get more patches if the above patch gets merged.
+>=20
+The one additional thing that is relevant here is that we will probably
+drop the whole structure anyway as part of moving it out of staging.
+There might be some equivalent elements stored elsewhere, but quite
+likely it won't be all of them.  As a result I'm not particularly keen
+on patches to clean platform data up.
 
-Below I have `allyesconfig` except 'BME680' configure as [M]
-in case you wish to reproduce.
++ we really are dealing with trivial amounts of data here..
 
-himanshu@himanshu-Vostro-3559:~/linux-next$ grep -i -w 'CONFIG_BME680\|CONFIG_ACPI\|CONFIG_OF' .config
-CONFIG_ACPI=y
-CONFIG_OF=y
-CONFIG_BME680=m
-himanshu@himanshu-Vostro-3559:~/linux-next$ sudo make drivers/iio/chemical/bme680_spi.o
-make[1]: Nothing to be done for 'all'.
-  CALL    scripts/checksyscalls.sh
-  DESCEND  objtool
-  CC [M]  drivers/iio/chemical/bme680_spi.o
-In file included from ./include/linux/acpi.h:41:0,
-                 from drivers/iio/chemical/bme680_spi.c:7:
-./include/linux/module.h:213:1: error: expected ‘,’ or ‘;’ before ‘extern’
- extern typeof(name) __mod_##type##__##name##_device_table  \
- ^
-drivers/iio/chemical/bme680_spi.c:119:1: note: in expansion of macro ‘MODULE_DEVICE_TABLE’
- MODULE_DEVICE_TABLE(of, bme680_of_spi_match);
- ^~~~~~~~~~~~~~~~~~~
-scripts/Makefile.build:291: recipe for target 'drivers/iio/chemical/bme680_spi.o' failed
-make[1]: *** [drivers/iio/chemical/bme680_spi.o] Error 1
-Makefile:1741: recipe for target 'drivers/iio/chemical/bme680_spi.o' failed
-make: *** [drivers/iio/chemical/bme680_spi.o] Error 2
-
-BUT if:
-
-himanshu@himanshu-Vostro-3559:~/linux-next$ make allyesconfig
-scripts/kconfig/conf  --allyesconfig Kconfig
-#
-# configuration written to .config
-#
-
-himanshu@himanshu-Vostro-3559:~/linux-next$ sudo make drivers/iio/chemical/bme680_spi.o
-scripts/kconfig/conf  --syncconfig Kconfig
-make[1]: Nothing to be done for 'all'.
-  HOSTCC  scripts/dtc/dtc.o
-  HOSTCC  scripts/dtc/flattree.o
-  HOSTCC  scripts/dtc/fstree.o
-  HOSTCC  scripts/dtc/data.o
-  HOSTCC  scripts/dtc/livetree.o
-  HOSTCC  scripts/dtc/treesource.o
-  HOSTCC  scripts/dtc/srcpos.o
-  HOSTCC  scripts/dtc/checks.o
-  HOSTCC  scripts/dtc/util.o
-  LEX     scripts/dtc/dtc-lexer.lex.c
-  YACC    scripts/dtc/dtc-parser.tab.h
-  HOSTCC  scripts/dtc/dtc-lexer.lex.o
-  YACC    scripts/dtc/dtc-parser.tab.c
-  HOSTCC  scripts/dtc/dtc-parser.tab.o
-  HOSTLD  scripts/dtc/dtc
-  CC      scripts/mod/empty.o
-  MKELF   scripts/mod/elfconfig.h
-  HOSTCC  scripts/mod/modpost.o
-  CC      scripts/mod/devicetable-offsets.s
-  HOSTCC  scripts/mod/file2alias.o
-  HOSTCC  scripts/mod/sumversion.o
-  HOSTLD  scripts/mod/modpost
-  CC      kernel/bounds.s
-  CC      arch/x86/kernel/asm-offsets.s
-  CALL    scripts/checksyscalls.sh
-  DESCEND  objtool
-  CC      drivers/iio/chemical/bme680_spi.o
-
-Compiles without any issues. 
-
-Also, wondering when is 0x77 i2c address used, since I tested
-this on 3 different boards with 0x76(when SDO is connected to GND)
-
-And why do I connect SDO to ground everytime ?
-It is because if SDO pin is left floating then I2C address will be
-undefined as said in datasheet + I have observed this while testing.
-
-Actallly, I don't understand what "VDIDO" is, as explained in the
-datasheet.
-
-
-Anyway, if the above compilation issue is not a problem, then
-
-	Acked-by: Himanshu Jha <himanshujha199640@gmail.com>
-
-
-Thanks
--- 
-Himanshu Jha
-Undergraduate Student
-Department of Electronics & Communication
-Guru Tegh Bahadur Institute of Technology
+J
