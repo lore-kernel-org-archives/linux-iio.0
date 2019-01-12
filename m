@@ -4,124 +4,267 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-11.7 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F8F1C43387
-	for <linux-iio@archiver.kernel.org>; Sat, 12 Jan 2019 17:08:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81A69C43387
+	for <linux-iio@archiver.kernel.org>; Sat, 12 Jan 2019 17:16:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1C16720656
-	for <linux-iio@archiver.kernel.org>; Sat, 12 Jan 2019 17:08:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3C8222086C
+	for <linux-iio@archiver.kernel.org>; Sat, 12 Jan 2019 17:16:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1547312883;
-	bh=cVOhqHAilxzuWKDeY/BP+wZiywa5IukuG8vekLAn9EA=;
+	s=default; t=1547313412;
+	bh=22VWgJtnwHbWB7GMxaIgMgRd+WJxdA5qRAVUYY3eR9A=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=GzDVwwb+Pf8erePzKBGd2DgUOkGA0tM4YSPYhcYoydVP1h4TaFbm+9IaaWpgOa0nt
-	 fD8cdm8qqw017vDIuMQ/Z7ah8ljd1RR9eoQyLWMvzCbakT2k62NVyVqJvoTyK6PX0W
-	 jg/yqrZmvkUVZ1BeJybpyGcIbiKUvxZsG+f2e8Wo=
+	b=J8B+NQfW1CIZwTzJ/2vSG2Ap9G/JE0VfSwezlQ8KB7VXymaQP/nX0RIRIeyZgWrIj
+	 OlUK1E/HDJDyjEchjFhMOjgjWNOTCRwB0TNKKS+vTqA1ATisnrc4ELiExS7eI/h82c
+	 dYXJiF4I9jBWb8tfJNe5qtZjjhbpQVars1sqw95M=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725877AbfALRIC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 12 Jan 2019 12:08:02 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52104 "EHLO mail.kernel.org"
+        id S1725845AbfALRQv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 12 Jan 2019 12:16:51 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57198 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725843AbfALRIC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 12 Jan 2019 12:08:02 -0500
+        id S1725841AbfALRQv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 12 Jan 2019 12:16:51 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 24C5B2084C;
-        Sat, 12 Jan 2019 17:08:00 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C39512084E;
+        Sat, 12 Jan 2019 17:16:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1547312881;
-        bh=cVOhqHAilxzuWKDeY/BP+wZiywa5IukuG8vekLAn9EA=;
+        s=default; t=1547313409;
+        bh=22VWgJtnwHbWB7GMxaIgMgRd+WJxdA5qRAVUYY3eR9A=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XviuZaarCnpLRJnbamqDjknQrU5G4HERHFlAQ1xuwQQV1R6etLsqddSysegcoGE7t
-         5FZ/J2mXECHEyGP4H9bzi9neDB5SPWGYa8t47cl7Gq21/jxlqlneJoQoaxZ+Rc4bei
-         MBhRUNvth+nhM8e9GZjgqeaSwNgfHDTEn/rN2q8A=
-Date:   Sat, 12 Jan 2019 17:07:57 +0000
+        b=hBNLrnD7fFTsYc9pbaFCnKKyvI/qzbFyqqd7szMMCHTRyiBBCTpHcTsmTxMAb0mWf
+         tyLeFlvDFL4uhWMIsAWtKA7VbNzg35OPbFaxJ4MBqOhu718BfeWyeZ2yigZfs14YTU
+         VPAhQDR7esk7BLg/P0hpVCc1u1aIJz0YEQ8aWG9c=
+Date:   Sat, 12 Jan 2019 17:16:44 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Matt Ranostay <matt.ranostay@konsulko.com>
-Cc:     linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: chemical: atlas-ph-sensor: correct IIO_TEMP values
- to millicelsius
-Message-ID: <20190112170757.77fb48f2@archlinux>
-In-Reply-To: <CAJCx=gkHyO8ggUhsdPGqgdSB=Efe-2VStm0JivsKq3yhZ9-S3g@mail.gmail.com>
-References: <20181231030701.29789-1-matt.ranostay@konsulko.com>
-        <20190105163420.48a047fc@archlinux>
-        <CAJCx=gkHyO8ggUhsdPGqgdSB=Efe-2VStm0JivsKq3yhZ9-S3g@mail.gmail.com>
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Chen-Yu Tsai <wens@csie.org>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] iio: adc: axp288: Fix TS-pin handling
+Message-ID: <20190112171644.3fe8afd9@archlinux>
+In-Reply-To: <20190105183618.6519-1-hdegoede@redhat.com>
+References: <20190105183618.6519-1-hdegoede@redhat.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 5 Jan 2019 14:44:18 -0800
-Matt Ranostay <matt.ranostay@konsulko.com> wrote:
+On Sat,  5 Jan 2019 19:36:18 +0100
+Hans de Goede <hdegoede@redhat.com> wrote:
 
-> On Sat, Jan 5, 2019 at 8:34 AM Jonathan Cameron <jic23@kernel.org> wrote:
-> >
-> > On Sun, 30 Dec 2018 19:07:01 -0800
-> > Matt Ranostay <matt.ranostay@konsulko.com> wrote:
-> >  
-> > > IIO_TEMP scale value for temperature was incorrect and not in millicelsius
-> > > as required by the ABI documentation.
-> > >
-> > > Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>  
-> > Ideally would have had a fixes tag.  Looks superficially like this
-> > goes back a long way but always nice to confirm how far :)
-> >  
-> 
-> Fixes: 27dec00ecf2d (iio: chemical: add Atlas pH-SM sensor support)
-> 
-> And yes it goes back a far way..., and guess this happens when one
-> doesn't use the libiio for userspace development :).
+> Prior to this commit there were 3 issues with our handling of the TS-pin:
+>=20
+> 1) There are 2 ways how the firmware can disable monitoring of the TS-pin
+> for designs which do not have a temperature-sensor for the battery:
+> a) Clearing bit 0 of the AXP20X_ADC_EN1 register
+> b) Setting bit 2 of the AXP288_ADC_TS_PIN_CTRL monitoring
+>=20
+> Prior to this commit we were unconditionally setting both bits to the
+> value used on devices with a TS. This causes the temperature protection to
+> kick in on devices without a TS, such as the Jumper ezbook v2, causing
+> them to not charge under Linux.
+>=20
+> This commit fixes this by using regmap_update_bits when updating these 2
+> registers, leaving the 2 mentioned bits alone.
+>=20
+> The next 2 problems are related to our handling of the current-source
+> for the TS-pin. The current-source used for the battery temp-sensor (TS)
+> is shared with the GPADC. For proper fuel-gauge and charger operation the
+> TS current-source needs to be permanently on. But to read the GPADC we
+> need to temporary switch the TS current-source to ondemand, so that the
+> GPADC can use it, otherwise we will always read an all 0 value.
+>=20
+> 2) Problem 2 is we were writing hardcoded values to the ADC TS pin-ctrl
+> register, overwriting various other unrelated bits. Specifically we were
+> overwriting the current-source setting for the TS and GPIO0 pins, forcing
+> it to 80=C5=B3A independent of its original setting. On a Chuwi Vi10 tabl=
+et
+> this was causing us to get a too high adc value (due to a too high
+> current-source) resulting in the following errors being logged:
+>=20
+> ACPI Error: AE_ERROR, Returned by Handler for [UserDefinedRegion]
+> ACPI Error: Method parse/execution failed \_SB.SXP1._TMP, AE_ERROR
+>=20
+> This commit fixes this by using regmap_update_bits to change only the
+> relevant bits.
+>=20
+> 3) After reading the GPADC channel we were unconditionally enabling the
+> TS current-source even on devices where the TS-pin is not used and the
+> current-source thus was off before axp288_adc_read_raw call.
+>=20
+> This commit fixes this by making axp288_adc_set_ts a nop on devices where
+> the ADC is not enabled for the TS-pin.
+>=20
+> BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=3D1610545
+> Fixes: 3091141d7803 ("iio: adc: axp288: Fix the GPADC pin ...")
+> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 
 Applied to the fixes-togreg branch of iio.git and marked for stable.
 
-Thanks for chasing down that tag for me.
+Thanks,
 
 Jonathan
 
-> 
-> > Anyhow, given we are in the merge window, I'll pick this up once rc1
-> > is out and mark it for stable etc.
-> >
-> > Give me a poke if I seem to have lost it in a week or so.
-> >
-> > Thanks,
-> >
-> > Jonathan
-> >  
-> > > ---
-> > >  drivers/iio/chemical/atlas-ph-sensor.c | 7 +++----
-> > >  1 file changed, 3 insertions(+), 4 deletions(-)
-> > >
-> > > diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
-> > > index a406ad31b096..3a20cb5d9bff 100644
-> > > --- a/drivers/iio/chemical/atlas-ph-sensor.c
-> > > +++ b/drivers/iio/chemical/atlas-ph-sensor.c
-> > > @@ -444,9 +444,8 @@ static int atlas_read_raw(struct iio_dev *indio_dev,
-> > >       case IIO_CHAN_INFO_SCALE:
-> > >               switch (chan->type) {
-> > >               case IIO_TEMP:
-> > > -                     *val = 1; /* 0.01 */
-> > > -                     *val2 = 100;
-> > > -                     break;
-> > > +                     *val = 10;
-> > > +                     return IIO_VAL_INT;
-> > >               case IIO_PH:
-> > >                       *val = 1; /* 0.001 */
-> > >                       *val2 = 1000;
-> > > @@ -477,7 +476,7 @@ static int atlas_write_raw(struct iio_dev *indio_dev,
-> > >                          int val, int val2, long mask)
-> > >  {
-> > >       struct atlas_data *data = iio_priv(indio_dev);
-> > > -     __be32 reg = cpu_to_be32(val);
-> > > +     __be32 reg = cpu_to_be32(val / 10);
-> > >
-> > >       if (val2 != 0 || val < 0 || val > 20000)
-> > >               return -EINVAL;  
-> >  
+> ---
+> Changes in v2:
+> -Make sure we enable the TS current-source on probe when the TS pin is en=
+abled
+> ---
+>  drivers/iio/adc/axp288_adc.c | 76 ++++++++++++++++++++++++++++--------
+>  1 file changed, 60 insertions(+), 16 deletions(-)
+>=20
+> diff --git a/drivers/iio/adc/axp288_adc.c b/drivers/iio/adc/axp288_adc.c
+> index 031d568b4972..4e339cfd0c54 100644
+> --- a/drivers/iio/adc/axp288_adc.c
+> +++ b/drivers/iio/adc/axp288_adc.c
+> @@ -27,9 +27,18 @@
+>  #include <linux/iio/machine.h>
+>  #include <linux/iio/driver.h>
+> =20
+> -#define AXP288_ADC_EN_MASK		0xF1
+> -#define AXP288_ADC_TS_PIN_GPADC		0xF2
+> -#define AXP288_ADC_TS_PIN_ON		0xF3
+> +/*
+> + * This mask enables all ADCs except for the battery temp-sensor (TS), t=
+hat is
+> + * left as-is to avoid breaking charging on devices without a temp-senso=
+r.
+> + */
+> +#define AXP288_ADC_EN_MASK				0xF0
+> +#define AXP288_ADC_TS_ENABLE				0x01
+> +
+> +#define AXP288_ADC_TS_CURRENT_ON_OFF_MASK		GENMASK(1, 0)
+> +#define AXP288_ADC_TS_CURRENT_OFF			(0 << 0)
+> +#define AXP288_ADC_TS_CURRENT_ON_WHEN_CHARGING		(1 << 0)
+> +#define AXP288_ADC_TS_CURRENT_ON_ONDEMAND		(2 << 0)
+> +#define AXP288_ADC_TS_CURRENT_ON			(3 << 0)
+> =20
+>  enum axp288_adc_id {
+>  	AXP288_ADC_TS,
+> @@ -44,6 +53,7 @@ enum axp288_adc_id {
+>  struct axp288_adc_info {
+>  	int irq;
+>  	struct regmap *regmap;
+> +	bool ts_enabled;
+>  };
+> =20
+>  static const struct iio_chan_spec axp288_adc_channels[] =3D {
+> @@ -115,21 +125,33 @@ static int axp288_adc_read_channel(int *val, unsign=
+ed long address,
+>  	return IIO_VAL_INT;
+>  }
+> =20
+> -static int axp288_adc_set_ts(struct regmap *regmap, unsigned int mode,
+> -				unsigned long address)
+> +/*
+> + * The current-source used for the battery temp-sensor (TS) is shared
+> + * with the GPADC. For proper fuel-gauge and charger operation the TS
+> + * current-source needs to be permanently on. But to read the GPADC we
+> + * need to temporary switch the TS current-source to ondemand, so that
+> + * the GPADC can use it, otherwise we will always read an all 0 value.
+> + */
+> +static int axp288_adc_set_ts(struct axp288_adc_info *info,
+> +			     unsigned int mode, unsigned long address)
+>  {
+>  	int ret;
+> =20
+> -	/* channels other than GPADC do not need to switch TS pin */
+> +	/* No need to switch the current-source if the TS pin is disabled */
+> +	if (!info->ts_enabled)
+> +		return 0;
+> +
+> +	/* Channels other than GPADC do not need the current source */
+>  	if (address !=3D AXP288_GP_ADC_H)
+>  		return 0;
+> =20
+> -	ret =3D regmap_write(regmap, AXP288_ADC_TS_PIN_CTRL, mode);
+> +	ret =3D regmap_update_bits(info->regmap, AXP288_ADC_TS_PIN_CTRL,
+> +				 AXP288_ADC_TS_CURRENT_ON_OFF_MASK, mode);
+>  	if (ret)
+>  		return ret;
+> =20
+>  	/* When switching to the GPADC pin give things some time to settle */
+> -	if (mode =3D=3D AXP288_ADC_TS_PIN_GPADC)
+> +	if (mode =3D=3D AXP288_ADC_TS_CURRENT_ON_ONDEMAND)
+>  		usleep_range(6000, 10000);
+> =20
+>  	return 0;
+> @@ -145,14 +167,14 @@ static int axp288_adc_read_raw(struct iio_dev *indi=
+o_dev,
+>  	mutex_lock(&indio_dev->mlock);
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_RAW:
+> -		if (axp288_adc_set_ts(info->regmap, AXP288_ADC_TS_PIN_GPADC,
+> +		if (axp288_adc_set_ts(info, AXP288_ADC_TS_CURRENT_ON_ONDEMAND,
+>  					chan->address)) {
+>  			dev_err(&indio_dev->dev, "GPADC mode\n");
+>  			ret =3D -EINVAL;
+>  			break;
+>  		}
+>  		ret =3D axp288_adc_read_channel(val, chan->address, info->regmap);
+> -		if (axp288_adc_set_ts(info->regmap, AXP288_ADC_TS_PIN_ON,
+> +		if (axp288_adc_set_ts(info, AXP288_ADC_TS_CURRENT_ON,
+>  						chan->address))
+>  			dev_err(&indio_dev->dev, "TS pin restore\n");
+>  		break;
+> @@ -164,13 +186,35 @@ static int axp288_adc_read_raw(struct iio_dev *indi=
+o_dev,
+>  	return ret;
+>  }
+> =20
+> -static int axp288_adc_set_state(struct regmap *regmap)
+> +static int axp288_adc_initialize(struct axp288_adc_info *info)
+>  {
+> -	/* ADC should be always enabled for internal FG to function */
+> -	if (regmap_write(regmap, AXP288_ADC_TS_PIN_CTRL, AXP288_ADC_TS_PIN_ON))
+> -		return -EIO;
+> +	int ret, adc_enable_val;
+> +
+> +	/*
+> +	 * Determine if the TS pin is enabled and set the TS current-source
+> +	 * accordingly.
+> +	 */
+> +	ret =3D regmap_read(info->regmap, AXP20X_ADC_EN1, &adc_enable_val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (adc_enable_val & AXP288_ADC_TS_ENABLE) {
+> +		info->ts_enabled =3D true;
+> +		ret =3D regmap_update_bits(info->regmap, AXP288_ADC_TS_PIN_CTRL,
+> +					 AXP288_ADC_TS_CURRENT_ON_OFF_MASK,
+> +					 AXP288_ADC_TS_CURRENT_ON);
+> +	} else {
+> +		info->ts_enabled =3D false;
+> +		ret =3D regmap_update_bits(info->regmap, AXP288_ADC_TS_PIN_CTRL,
+> +					 AXP288_ADC_TS_CURRENT_ON_OFF_MASK,
+> +					 AXP288_ADC_TS_CURRENT_OFF);
+> +	}
+> +	if (ret)
+> +		return ret;
+> =20
+> -	return regmap_write(regmap, AXP20X_ADC_EN1, AXP288_ADC_EN_MASK);
+> +	/* Turn on the ADC for all channels except TS, leave TS as is */
+> +	return regmap_update_bits(info->regmap, AXP20X_ADC_EN1,
+> +				  AXP288_ADC_EN_MASK, AXP288_ADC_EN_MASK);
+>  }
+> =20
+>  static const struct iio_info axp288_adc_iio_info =3D {
+> @@ -200,7 +244,7 @@ static int axp288_adc_probe(struct platform_device *p=
+dev)
+>  	 * Set ADC to enabled state at all time, including system suspend.
+>  	 * otherwise internal fuel gauge functionality may be affected.
+>  	 */
+> -	ret =3D axp288_adc_set_state(axp20x->regmap);
+> +	ret =3D axp288_adc_initialize(info);
+>  	if (ret) {
+>  		dev_err(&pdev->dev, "unable to enable ADC device\n");
+>  		return ret;
 
