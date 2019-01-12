@@ -2,36 +2,52 @@ Return-Path: <SRS0=wu9M=PU=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.7 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEEF5C43387
-	for <linux-iio@archiver.kernel.org>; Sat, 12 Jan 2019 17:04:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F8F1C43387
+	for <linux-iio@archiver.kernel.org>; Sat, 12 Jan 2019 17:08:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B054A2084C
-	for <linux-iio@archiver.kernel.org>; Sat, 12 Jan 2019 17:04:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1C16720656
+	for <linux-iio@archiver.kernel.org>; Sat, 12 Jan 2019 17:08:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1547312883;
+	bh=cVOhqHAilxzuWKDeY/BP+wZiywa5IukuG8vekLAn9EA=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=GzDVwwb+Pf8erePzKBGd2DgUOkGA0tM4YSPYhcYoydVP1h4TaFbm+9IaaWpgOa0nt
+	 fD8cdm8qqw017vDIuMQ/Z7ah8ljd1RR9eoQyLWMvzCbakT2k62NVyVqJvoTyK6PX0W
+	 jg/yqrZmvkUVZ1BeJybpyGcIbiKUvxZsG+f2e8Wo=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725877AbfALREy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 12 Jan 2019 12:04:54 -0500
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:33754 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725843AbfALREy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Jan 2019 12:04:54 -0500
+        id S1725877AbfALRIC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 12 Jan 2019 12:08:02 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52104 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725843AbfALRIC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 12 Jan 2019 12:08:02 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id 36E789E789B;
-        Sat, 12 Jan 2019 17:04:51 +0000 (GMT)
-Date:   Sat, 12 Jan 2019 17:04:49 +0000
-From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To:     Tomasz Duszynski <tduszyns@gmail.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: chemical: sps30: allow changing self cleaning
- period
-Message-ID: <20190112170449.5418c9bf@archlinux>
-In-Reply-To: <20190106105730.GA6449@arch>
-References: <20181226193035.3144-1-tduszyns@gmail.com>
-        <20190105165447.0056fb2e@archlinux>
-        <20190106105730.GA6449@arch>
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 24C5B2084C;
+        Sat, 12 Jan 2019 17:08:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1547312881;
+        bh=cVOhqHAilxzuWKDeY/BP+wZiywa5IukuG8vekLAn9EA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XviuZaarCnpLRJnbamqDjknQrU5G4HERHFlAQ1xuwQQV1R6etLsqddSysegcoGE7t
+         5FZ/J2mXECHEyGP4H9bzi9neDB5SPWGYa8t47cl7Gq21/jxlqlneJoQoaxZ+Rc4bei
+         MBhRUNvth+nhM8e9GZjgqeaSwNgfHDTEn/rN2q8A=
+Date:   Sat, 12 Jan 2019 17:07:57 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Matt Ranostay <matt.ranostay@konsulko.com>
+Cc:     linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: chemical: atlas-ph-sensor: correct IIO_TEMP values
+ to millicelsius
+Message-ID: <20190112170757.77fb48f2@archlinux>
+In-Reply-To: <CAJCx=gkHyO8ggUhsdPGqgdSB=Efe-2VStm0JivsKq3yhZ9-S3g@mail.gmail.com>
+References: <20181231030701.29789-1-matt.ranostay@konsulko.com>
+        <20190105163420.48a047fc@archlinux>
+        <CAJCx=gkHyO8ggUhsdPGqgdSB=Efe-2VStm0JivsKq3yhZ9-S3g@mail.gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -41,84 +57,71 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 6 Jan 2019 11:57:31 +0100
-Tomasz Duszynski <tduszyns@gmail.com> wrote:
+On Sat, 5 Jan 2019 14:44:18 -0800
+Matt Ranostay <matt.ranostay@konsulko.com> wrote:
 
-> On Sat, Jan 05, 2019 at 04:54:47PM +0000, Jonathan Cameron wrote:
-> > On Wed, 26 Dec 2018 20:30:35 +0100
-> > Tomasz Duszynski <tduszyns@gmail.com> wrote:
+> On Sat, Jan 5, 2019 at 8:34 AM Jonathan Cameron <jic23@kernel.org> wrote:
+> >
+> > On Sun, 30 Dec 2018 19:07:01 -0800
+> > Matt Ranostay <matt.ranostay@konsulko.com> wrote:
 > >  
-> > > Sensor can periodically trigger self cleaning. Period can be changed by
-> > > writing a new value to a dedicated attribute. Upon attribute read
-> > > triplet representing respectively current, minimum and maximum period is
-> > > returned.
+> > > IIO_TEMP scale value for temperature was incorrect and not in millicelsius
+> > > as required by the ABI documentation.
 > > >
-> > > Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>  
-> >
-> > Code is fine, but to end up with predictable generic interface
-> > that fits with the rest of IIO we need a different userspace interface I think...
-> >
-> > See below.
-> >
-> > Jonathan  
-> > > ---
-> > >  Documentation/ABI/testing/sysfs-bus-iio-sps30 |  11 ++
-> > >  drivers/iio/chemical/sps30.c                  | 134 +++++++++++++++---
-> > >  2 files changed, 127 insertions(+), 18 deletions(-)
-> > >
-> > > diff --git a/Documentation/ABI/testing/sysfs-bus-iio-sps30 b/Documentation/ABI/testing/sysfs-bus-iio-sps30
-> > > index e7ce2c57635e..d83d9192a3e0 100644
-> > > --- a/Documentation/ABI/testing/sysfs-bus-iio-sps30
-> > > +++ b/Documentation/ABI/testing/sysfs-bus-iio-sps30
-> > > @@ -6,3 +6,14 @@ Description:
-> > >  		Writing 1 starts sensor self cleaning. Internal fan accelerates
-> > >  		to its maximum speed and keeps spinning for about 10 seconds in
-> > >  		order to blow out accumulated dust.
-> > > +
-> > > +What:		/sys/bus/iio/devices/iio:deviceX/cleaning_interval
-> > > +Date:		December 2018
-> > > +KernelVersion:	4.22
-> > > +Contact:	linux-iio@vger.kernel.org
-> > > +Description:
-> > > +		Sensor is capable of triggering self cleaning periodically.
-> > > +		Period can be changed by writing a new value here. Upon reading
-> > > +		three values are returned representing respectively current,
-> > > +		minimum and maximum period. All values are in seconds.
-> > > +		Writing 0 here disables periodical self cleaning entirely.  
-> > Hmm. The issue here is that the value isn't:
-> > 1. Intuitive
-> > 2. A single value (requirement for sysfs interfaces - we stretch the meaning
-> > a bit where there the values really don't have any meaning on their own but
-> > that isn't true here).
+> > > Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>  
+> > Ideally would have had a fixes tag.  Looks superficially like this
+> > goes back a long way but always nice to confirm how far :)
 > >  
 > 
-> This is not uncommon in sysfs for attributes to list both available
-> range and current value. Hence I though I could try to sneak that here.
+> Fixes: 27dec00ecf2d (iio: chemical: add Atlas pH-SM sensor support)
 > 
-> Turned out that without luck ;).
-Indeed, in general some drivers an subsystems do that.   We decided not
-to a long time ago.  Mainly because we already had an interface for
-the value itself without the extras and so couldn't change it without
-breaking the userspace ABI.
+> And yes it goes back a far way..., and guess this happens when one
+> doesn't use the libiio for userspace development :).
 
-Even though we are looking at new interfaces, we need to be consistent!
+Applied to the fixes-togreg branch of iio.git and marked for stable.
 
-> 
-> > We have a syntax in IIO use when we want to specify a range of acceptable
-> > values.  It's done for 'core' attributes using the available callback
-> > (I need to write some proper docs for it though...)
-> >
-> > cleaning_period - the actual value.
-> > cleaning_period_available
-> > The range version (rather than list of values) is formatted
-> > by iio_format_avail_range which generates [min step max]
-> >
-> > Please do something along those lines for this control as well.
-> >  
-> 
-> Agree.
-> 
-
-Thanks,
+Thanks for chasing down that tag for me.
 
 Jonathan
+
+> 
+> > Anyhow, given we are in the merge window, I'll pick this up once rc1
+> > is out and mark it for stable etc.
+> >
+> > Give me a poke if I seem to have lost it in a week or so.
+> >
+> > Thanks,
+> >
+> > Jonathan
+> >  
+> > > ---
+> > >  drivers/iio/chemical/atlas-ph-sensor.c | 7 +++----
+> > >  1 file changed, 3 insertions(+), 4 deletions(-)
+> > >
+> > > diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
+> > > index a406ad31b096..3a20cb5d9bff 100644
+> > > --- a/drivers/iio/chemical/atlas-ph-sensor.c
+> > > +++ b/drivers/iio/chemical/atlas-ph-sensor.c
+> > > @@ -444,9 +444,8 @@ static int atlas_read_raw(struct iio_dev *indio_dev,
+> > >       case IIO_CHAN_INFO_SCALE:
+> > >               switch (chan->type) {
+> > >               case IIO_TEMP:
+> > > -                     *val = 1; /* 0.01 */
+> > > -                     *val2 = 100;
+> > > -                     break;
+> > > +                     *val = 10;
+> > > +                     return IIO_VAL_INT;
+> > >               case IIO_PH:
+> > >                       *val = 1; /* 0.001 */
+> > >                       *val2 = 1000;
+> > > @@ -477,7 +476,7 @@ static int atlas_write_raw(struct iio_dev *indio_dev,
+> > >                          int val, int val2, long mask)
+> > >  {
+> > >       struct atlas_data *data = iio_priv(indio_dev);
+> > > -     __be32 reg = cpu_to_be32(val);
+> > > +     __be32 reg = cpu_to_be32(val / 10);
+> > >
+> > >       if (val2 != 0 || val < 0 || val > 20000)
+> > >               return -EINVAL;  
+> >  
+
