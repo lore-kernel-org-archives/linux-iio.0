@@ -6,375 +6,327 @@ X-Spam-Status: No, score=-11.7 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E5DC43387
-	for <linux-iio@archiver.kernel.org>; Sat, 12 Jan 2019 19:11:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71F43C43387
+	for <linux-iio@archiver.kernel.org>; Sat, 12 Jan 2019 19:13:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 93C7D20836
-	for <linux-iio@archiver.kernel.org>; Sat, 12 Jan 2019 19:11:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 355F620870
+	for <linux-iio@archiver.kernel.org>; Sat, 12 Jan 2019 19:13:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1547320280;
-	bh=SpepeSHh9N1o3YLZ5wdEJrtRvOAfS9wkfugOIOLhJwc=;
+	s=default; t=1547320392;
+	bh=WbV2DEMCVKVHRLXEWSSMguxB0kHQ7lP6yN6kQEd98GY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=OhTRC8qO7M07av0y3DWnALCMIFSjx6YywQMzqZ6SnWXCoc9TqZxkpUvLVC2qVXgek
-	 cQZzXmhpnqeUf6M5GJDxPhvReaaDdqU/X9yukUiUotYXn8TObs4vrM8pQtPKZBCU8M
-	 5fEM0u3fTbqjmjzFHGtD9wZJJm8N2Dp2LaZgwgwE=
+	b=A8K3GaEJYv7p7Z30p5y7O5vJ+gJMx5IeNd3f7R2YOv1odOIj2sbGQ2cWJT5GKZnA6
+	 RVjbcjAWBUUE48f9uIKGCfMSjIxMsnPeuyw5Xd7XTjVUyCxqeWbd7qxQa79F8G2Q16
+	 n+IYadWm95zIYBmjCSsZcMHk5VgZ/7kpQcFb94KM=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726734AbfALTLU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 12 Jan 2019 14:11:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43826 "EHLO mail.kernel.org"
+        id S1726399AbfALTNL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 12 Jan 2019 14:13:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44288 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725855AbfALTLU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 12 Jan 2019 14:11:20 -0500
+        id S1725855AbfALTNL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 12 Jan 2019 14:13:11 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D7A6920835;
-        Sat, 12 Jan 2019 19:11:14 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8D85820836;
+        Sat, 12 Jan 2019 19:13:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1547320278;
-        bh=SpepeSHh9N1o3YLZ5wdEJrtRvOAfS9wkfugOIOLhJwc=;
+        s=default; t=1547320390;
+        bh=WbV2DEMCVKVHRLXEWSSMguxB0kHQ7lP6yN6kQEd98GY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=sF7/mTE5e341Fo4rwkKoyf/tJvUThCVQFGLduiNR+EU9OvbQTG9r0BvoQYroYIOV2
-         P7+2Vhjchs2v0xhHINiT82y2e59O97LHDnuoQYjk21oiX3BurUWVA8kPZIqKSwlJ6q
-         0QTNeK14GqFO7YkqYCJ0mY0yJk1iZNihnJKOzyrY=
-Date:   Sat, 12 Jan 2019 19:11:11 +0000
+        b=p/+hcLUmlk0nYw0sykhbGtW4lr8czJws60pBO5UmQF10SBad1y0P+Iyw1suh2hTVW
+         xsyh93PPntN/a87yEOIDE7X8+KRgXTMr8LcGM5AponCKqC0NED9K23369yltU97Moj
+         x5RwFG2fDcMNNa58ej2tCmnNUKlZLkpOa5WLeKLU=
+Date:   Sat, 12 Jan 2019 19:13:05 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Anson Huang <anson.huang@nxp.com>
-Cc:     Martin Kepplinger <martink@posteo.de>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "gustavo@embeddedor.com" <gustavo@embeddedor.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Leonard Crestez <leonard.crestez@nxp.com>,
-        "rtresidd@electromag.com.au" <rtresidd@electromag.com.au>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: Re: [PATCH V7 2/2] iio: accell: mma8452: add vdd/vddio regulator
- operation support
-Message-ID: <20190112191111.4909e254@archlinux>
-In-Reply-To: <4CB70D1B-06A6-4E34-B701-58E72B1AC9D9@nxp.com>
-References: <1546938556-26969-1-git-send-email-Anson.Huang@nxp.com>
-        <1546938556-26969-2-git-send-email-Anson.Huang@nxp.com>
-        <84c2971b-29d5-a0d0-c830-11504c381dd2@posteo.de>
-        <4CB70D1B-06A6-4E34-B701-58E72B1AC9D9@nxp.com>
+To:     Daniel Drake <drake@endlessm.com>
+Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-iio@vger.kernel.org, linux@endlessm.com,
+        lorenzo.bianconi83@gmail.com, denis.ciocca@st.com,
+        hadess@hadess.net, hdegoede@redhat.com
+Subject: Re: [PATCH 2/2] iio: st_accel: use ACPI orientation data
+Message-ID: <20190112191305.103daa46@archlinux>
+In-Reply-To: <20181222180914.6d3b5e5e@archlinux>
+References: <20181220065933.25964-1-drake@endlessm.com>
+        <20181220065933.25964-2-drake@endlessm.com>
+        <20181222180914.6d3b5e5e@archlinux>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 8 Jan 2019 14:48:48 +0000
-Anson Huang <anson.huang@nxp.com> wrote:
+On Sat, 22 Dec 2018 18:09:14 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-> Hi, Martin
->=20
-> From Anson's iPhone 6
->=20
->=20
-> > =E5=9C=A8 2019=E5=B9=B41=E6=9C=888=E6=97=A5=EF=BC=8C19:41=EF=BC=8CMarti=
-n Kepplinger <martink@posteo.de> =E5=86=99=E9=81=93=EF=BC=9A
-> >  =20
-> >> On 08.01.19 10:14, Anson Huang wrote:
-> >> The accelerometer's power supply could be controllable on some
-> >> platforms, such as i.MX6Q-SABRESD board, the mma8451's power supplies
-> >> are controlled by a GPIO fixed regulator, need to make sure the
-> >> regulators are enabled before any communication with mma8451, this
-> >> patch adds vdd/vddio regulator operation support.
-> >>=20
-> >> Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
-> >> Acked-by: Martin Kepplinger <martink@posteo.de>
-> >> ---
-> >> ChangeLog Since V6:
-> >>  - separate the error handling of regulators get to make code easy to =
-read.
-> >> ---
-> >> drivers/iio/accel/mma8452.c | 105 ++++++++++++++++++++++++++++++++++--=
---------
-> >> 1 file changed, 83 insertions(+), 22 deletions(-)
-> >>=20
-> >> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> >> index 421a0a8..3027811 100644
-> >> --- a/drivers/iio/accel/mma8452.c
-> >> +++ b/drivers/iio/accel/mma8452.c
-> >> @@ -31,6 +31,7 @@
-> >> #include <linux/of_device.h>
-> >> #include <linux/of_irq.h>
-> >> #include <linux/pm_runtime.h>
-> >> +#include <linux/regulator/consumer.h>
-> >>=20
-> >> #define MMA8452_STATUS                0x00
-> >> #define  MMA8452_STATUS_DRDY            (BIT(2) | BIT(1) | BIT(0))
-> >> @@ -107,6 +108,8 @@ struct mma8452_data {
-> >>    u8 data_cfg;
-> >>    const struct mma_chip_info *chip_info;
-> >>    int sleep_val;
-> >> +    struct regulator *vdd_reg;
-> >> +    struct regulator *vddio_reg;
-> >> };
-> >>=20
-> >>  /**
-> >> @@ -1534,9 +1537,39 @@ static int mma8452_probe(struct i2c_client *cli=
-ent,
-> >>    mutex_init(&data->lock);
-> >>    data->chip_info =3D match->data;
-> >>=20
-> >> +    data->vdd_reg =3D devm_regulator_get(&client->dev, "vdd");
-> >> +    if (IS_ERR(data->vdd_reg)) {
-> >> +        if (PTR_ERR(data->vdd_reg) =3D=3D -EPROBE_DEFER)
-> >> +            return -EPROBE_DEFER;
-> >> +
-> >> +        dev_err(&client->dev, "failed to get VDD regulator!\n");
-> >> +        return PTR_ERR(data->vdd_reg);
-> >> +    }
-> >> +
-> >> +    data->vddio_reg =3D devm_regulator_get(&client->dev, "vddio");
-> >> +    if (IS_ERR(data->vddio_reg)) {
-> >> +        if (PTR_ERR(data->vddio_reg) =3D=3D -EPROBE_DEFER)
-> >> +            return -EPROBE_DEFER;
-> >> +
-> >> +        dev_err(&client->dev, "failed to get VDDIO regulator!\n");
-> >> +        return PTR_ERR(data->vddio_reg);
-> >> +    }
-> >> +
-> >> +    ret =3D regulator_enable(data->vdd_reg);
-> >> +    if (ret) {
-> >> +        dev_err(&client->dev, "failed to enable VDD regulator!\n");
-> >> +        return ret;
-> >> +    }
-> >> +
-> >> +    ret =3D regulator_enable(data->vddio_reg);
-> >> +    if (ret) {
-> >> +        dev_err(&client->dev, "failed to enable VDDIO regulator!\n");
-> >> +        goto disable_regulator_vdd;
-> >> +    }
-> >> +
-> >>    ret =3D i2c_smbus_read_byte_data(client, MMA8452_WHO_AM_I);
-> >>    if (ret < 0)
-> >> -        return ret;
-> >> +        goto disable_regulators;
-> >>=20
-> >>    switch (ret) {
-> >>    case MMA8451_DEVICE_ID:
-> >> @@ -1549,7 +1582,8 @@ static int mma8452_probe(struct i2c_client *clie=
-nt,
-> >>            break;
-> >>        /* else: fall through */
-> >>    default:
-> >> -        return -ENODEV;
-> >> +        ret =3D -ENODEV;
-> >> +        goto disable_regulators;
-> >>    }
-> >>=20
-> >>    dev_info(&client->dev, "registering %s accelerometer; ID 0x%x\n",
-> >> @@ -1566,13 +1600,13 @@ static int mma8452_probe(struct i2c_client *cl=
-ient,
-> >>=20
-> >>    ret =3D mma8452_reset(client);
-> >>    if (ret < 0)
-> >> -        return ret;
-> >> +        goto disable_regulators;
-> >>=20
-> >>    data->data_cfg =3D MMA8452_DATA_CFG_FS_2G;
-> >>    ret =3D i2c_smbus_write_byte_data(client, MMA8452_DATA_CFG,
-> >>                    data->data_cfg);
-> >>    if (ret < 0)
-> >> -        return ret;
-> >> +        goto disable_regulators;
-> >>=20
-> >>    /*
-> >>     * By default set transient threshold to max to avoid events if
-> >> @@ -1581,7 +1615,7 @@ static int mma8452_probe(struct i2c_client *clie=
-nt,
-> >>    ret =3D i2c_smbus_write_byte_data(client, MMA8452_TRANSIENT_THS,
-> >>                    MMA8452_TRANSIENT_THS_MASK);
-> >>    if (ret < 0)
-> >> -        return ret;
-> >> +        goto disable_regulators;
-> >>=20
-> >>    if (client->irq) {
-> >>        int irq2;
-> >> @@ -1595,7 +1629,7 @@ static int mma8452_probe(struct i2c_client *clie=
-nt,
-> >>                        MMA8452_CTRL_REG5,
-> >>                        data->chip_info->all_events);
-> >>            if (ret < 0)
-> >> -                return ret;
-> >> +                goto disable_regulators;
-> >>=20
-> >>            dev_dbg(&client->dev, "using interrupt line INT1\n");
-> >>        }
-> >> @@ -1604,11 +1638,11 @@ static int mma8452_probe(struct i2c_client *cl=
-ient,
-> >>                    MMA8452_CTRL_REG4,
-> >>                    data->chip_info->enabled_events);
-> >>        if (ret < 0)
-> >> -            return ret;
-> >> +            goto disable_regulators;
-> >>=20
-> >>        ret =3D mma8452_trigger_setup(indio_dev);
-> >>        if (ret < 0)
-> >> -            return ret;
-> >> +            goto disable_regulators;
-> >>    }
-> >>=20
-> >>    data->ctrl_reg1 =3D MMA8452_CTRL_ACTIVE |
-> >> @@ -1661,12 +1695,19 @@ static int mma8452_probe(struct i2c_client *cl=
-ient,
-> >> trigger_cleanup:
-> >>    mma8452_trigger_cleanup(indio_dev);
-> >>=20
-> >> +disable_regulators:
-> >> +    regulator_disable(data->vddio_reg);
-> >> +
-> >> +disable_regulator_vdd:
-> >> +    regulator_disable(data->vdd_reg);
-> >> +
-> >>    return ret;
-> >> }
-> >>=20
-> >> static int mma8452_remove(struct i2c_client *client)
-> >> {
-> >>    struct iio_dev *indio_dev =3D i2c_get_clientdata(client);
-> >> +    struct mma8452_data *data =3D iio_priv(indio_dev);
-> >>=20
-> >>    iio_device_unregister(indio_dev);
-> >>=20
-> >> @@ -1678,6 +1719,9 @@ static int mma8452_remove(struct i2c_client *cli=
-ent)
-> >>    mma8452_trigger_cleanup(indio_dev);
-> >>    mma8452_standby(iio_priv(indio_dev));
-> >>=20
-> >> +    regulator_disable(data->vddio_reg);
-> >> +    regulator_disable(data->vdd_reg);
-> >> +
-> >>    return 0;
-> >> }
-> >>=20
-> >> @@ -1696,6 +1740,18 @@ static int mma8452_runtime_suspend(struct devic=
-e *dev)
-> >>        return -EAGAIN;
-> >>    }
-> >>=20
-> >> +    ret =3D regulator_disable(data->vddio_reg);
-> >> +    if (ret) {
-> >> +        dev_err(dev, "failed to disable VDDIO regulator\n");
-> >> +        return ret;
-> >> +    }
-> >> +
-> >> +    ret =3D regulator_disable(data->vdd_reg);
-> >> +    if (ret) {
-> >> +        dev_err(dev, "failed to disable VDD regulator\n");
-> >> +        return ret;
-> >> +    }
-> >> +
-> >>    return 0;
-> >> }
-> >>=20
-> >> @@ -1705,9 +1761,22 @@ static int mma8452_runtime_resume(struct device=
- *dev)
-> >>    struct mma8452_data *data =3D iio_priv(indio_dev);
-> >>    int ret, sleep_val;
-> >>=20
-> >> +    ret =3D regulator_enable(data->vdd_reg);
-> >> +    if (ret) {
-> >> +        dev_err(dev, "failed to enable VDD regulator\n");
-> >> +        return ret;
-> >> +    }
-> >> +
-> >> +    ret =3D regulator_enable(data->vddio_reg);
-> >> +    if (ret) {
-> >> +        dev_err(dev, "failed to enable VDDIO regulator\n");
-> >> +        regulator_disable(data->vdd_reg);
-> >> +        return ret;
-> >> +    }
-> >> +
-> >>    ret =3D mma8452_active(data);
-> >>    if (ret < 0)
-> >> -        return ret;
-> >> +        goto runtime_resume_failed;
-> >>=20
-> >>    ret =3D mma8452_get_odr_index(data);
-> >>    sleep_val =3D 1000 / mma8452_samp_freq[ret][0];
-> >> @@ -1717,25 +1786,17 @@ static int mma8452_runtime_resume(struct devic=
-e *dev)
-> >>        msleep_interruptible(sleep_val);
-> >>=20
-> >>    return 0;
-> >> -}
-> >> -#endif
-> >>=20
-> >> -#ifdef CONFIG_PM_SLEEP
-> >> -static int mma8452_suspend(struct device *dev)
-> >> -{
-> >> -    return mma8452_standby(iio_priv(i2c_get_clientdata(
-> >> -        to_i2c_client(dev))));
-> >> -}
-> >> +runtime_resume_failed:
-> >> +    regulator_disable(data->vddio_reg);
-> >> +    regulator_disable(data->vdd_reg);
-> >>=20
-> >> -static int mma8452_resume(struct device *dev)
-> >> -{
-> >> -    return mma8452_active(iio_priv(i2c_get_clientdata(
-> >> -        to_i2c_client(dev))));
-> >> +    return ret;
-> >> }
-> >> #endif
-> >>=20
-> >> static const struct dev_pm_ops mma8452_pm_ops =3D {
-> >> -    SET_SYSTEM_SLEEP_PM_OPS(mma8452_suspend, mma8452_resume)
-> >> +    SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend, pm_runtime_forc=
-e_resume) =20
-> >=20
-> > Just a quesion: Isn't it semantically a different change to replace
-> > mma8452_suspend() and mma8452_resume()? If not, why is it needed here?
-> >=20
-> > other than that, lgtm. =20
->=20
-> It is because with regulator operation added, before system suspend, driv=
-er is in runtime suspend already, the suspend/resume callback need to deal =
-with regulator again including error handling etc., and also need to disabl=
-e runtime pm and re-enable it etc., this introduces too many complicated co=
-de/logic, also, the things suspend/resume callback does are actually same a=
-s runtime suspend/ resume, so just using pm_runtime_force_suspend/resume ca=
-n save these duplicated operations and make code easy/clean.
->=20
-Anson, please wrap below 80 chars.  Some of us have old old old
-laptops, (though I admit I still have more than 80 chars ;)
+> On Thu, 20 Dec 2018 14:59:33 +0800
+> Daniel Drake <drake@endlessm.com> wrote:
+> 
+> > Platform-specific ST accelerometer mount matrix information can be
+> > provided by returning a package of 6 integers from the ACPI _ONT
+> > method. This has been seen on Acer products such as Veriton Z4860G,
+> > Z6860G and A890, which include a ST SMO8840 sensor. We have also
+> > confirmed experimentally that the Windows driver uses such information.
+> > 
+> > The _ONT data format was explained by a ST vendor contact. However,
+> > strangely enough, the _ONT transformations must be applied after first
+> > applying another mount matrix which we determined experimentally. ST
+> > have not commented on why this is the case, but we imagine that perhaps
+> > earlier devices (before _ONT was introduced) required this translation
+> > and hence it became 'standard.'
+> > 
+> > Interpret the _ONT data and export the equivalent mount matrix to
+> > userspace.
+> > 
+> > If no _ONT data is present, no mount matrix is exported.
+> > 
+> > Signed-off-by: Daniel Drake <drake@endlessm.com>  
+> A trivial point.  Please stick to the local (and most common in kernel)
+> multiline comment syntax of
+> /*
+>  * asdfsdfs
+>  * more...
+>  */
+> 
+> Otherwise looks sensible.  However, I'd really like Dennis or someone
+> else at ST to take a look before I take this.  We are early in the cycle
+> (well it hasn't quite started yet) so plenty of time.  Give me a
+> bump in a few weeks if nothing is happening...
 
-I 'think' Anson is correct that these end up running the same
-code, but with considerably less complexity an this is
-the reason the force functions exist.  Often the runtime case
-is very similar to the full pm case so you can avoid the whole
-runtime resume then suspend dance by doing this.
+Note  I'm still lookign for Denis or someone else to come back on this one!
 
-Anyhow I've applied it to the togreg branch of iio.git and pushed
-it out as testing.  Hopefully we haven't missed any corner
-cases.
-
-Runtime PM always gives me a headache when I dig into exactly
-what the various dances are that go on.
-
-Thanks
+Thanks,
 
 Jonathan
-> Anson.
->=20
->=20
->=20
->=20
-> >  =20
-> >>    SET_RUNTIME_PM_OPS(mma8452_runtime_suspend,
-> >>               mma8452_runtime_resume, NULL)
-> >> };
-> >>  =20
-> >  =20
+> 
+> Thanks,
+> 
+> Jonathan
+> 
+> 
+> > ---
+> >  drivers/iio/accel/st_accel_core.c     | 171 +++++++++++++++++++++++++-
+> >  include/linux/iio/common/st_sensors.h |   1 +
+> >  2 files changed, 171 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+> > index 3e6fd5a8ac5b..54cc1a0c6a1d 100644
+> > --- a/drivers/iio/accel/st_accel_core.c
+> > +++ b/drivers/iio/accel/st_accel_core.c
+> > @@ -11,6 +11,7 @@
+> >  #include <linux/kernel.h>
+> >  #include <linux/module.h>
+> >  #include <linux/slab.h>
+> > +#include <linux/acpi.h>
+> >  #include <linux/errno.h>
+> >  #include <linux/types.h>
+> >  #include <linux/mutex.h>
+> > @@ -917,12 +918,167 @@ static const struct iio_trigger_ops st_accel_trigger_ops = {
+> >  #define ST_ACCEL_TRIGGER_OPS NULL
+> >  #endif
+> >  
+> > +static const struct iio_mount_matrix *
+> > +get_mount_matrix(const struct iio_dev *indio_dev,
+> > +		 const struct iio_chan_spec *chan)
+> > +{
+> > +	struct st_sensor_data *adata = iio_priv(indio_dev);
+> > +
+> > +	return adata->mount_matrix;
+> > +}
+> > +
+> > +static const struct iio_chan_spec_ext_info mount_matrix_ext_info[] = {
+> > +	IIO_MOUNT_MATRIX(IIO_SHARED_BY_ALL, get_mount_matrix),
+> > +	{ },
+> > +};
+> > +
+> > +/* Read ST-specific _ONT orientation data from ACPI and generate an
+> > + * appropriate mount matrix.
+> > + */
+> > +static int apply_acpi_orientation(struct iio_dev *indio_dev,
+> > +				  struct iio_chan_spec *channels)
+> > +{
+> > +#ifdef CONFIG_ACPI
+> > +	struct st_sensor_data *adata = iio_priv(indio_dev);
+> > +	struct acpi_buffer buffer = {ACPI_ALLOCATE_BUFFER, NULL};
+> > +	struct acpi_device *adev;
+> > +	union acpi_object *ont;
+> > +	union acpi_object *elements;
+> > +	acpi_status status;
+> > +	int ret = -EINVAL;
+> > +	unsigned int val;
+> > +	int i, j;
+> > +	int final_ont[3][3] = { 0 };
+> > +
+> > +	/* For some reason, ST's _ONT translation does not apply directly
+> > +	 * to the data read from the sensor. Another translation must be
+> > +	 * performed first, as described by the matrix below. Perhaps
+> > +	 * ST required this specific translation for the first product
+> > +	 * where the device was mounted?
+> > +	 */
+> > +	const int default_ont[3][3] = {
+> > +		{  0,  1,  0 },
+> > +		{ -1,  0,  0 },
+> > +		{  0,  0, -1 },
+> > +	};
+> > +
+> > +
+> > +	adev = ACPI_COMPANION(adata->dev);
+> > +	if (!adev)
+> > +		return 0;
+> > +
+> > +	/* Read _ONT data, which should be a package of 6 integers. */
+> > +	status = acpi_evaluate_object(adev->handle, "_ONT", NULL, &buffer);
+> > +	if (status == AE_NOT_FOUND) {
+> > +		return 0;
+> > +	} else if (ACPI_FAILURE(status)) {
+> > +		dev_warn(&indio_dev->dev, "failed to execute _ONT: %d\n",
+> > +			 status);
+> > +		return status;
+> > +	}
+> > +
+> > +	ont = buffer.pointer;
+> > +	if (ont->type != ACPI_TYPE_PACKAGE || ont->package.count != 6)
+> > +		goto out;
+> > +
+> > +	/* The first 3 integers provide axis order information.
+> > +	 * e.g. 0 1 2 would indicate normal X,Y,Z ordering.
+> > +	 * e.g. 1 0 2 indicates that data arrives in order Y,X,Z.
+> > +	 */
+> > +	elements = ont->package.elements;
+> > +	for (i = 0; i < 3; i++) {
+> > +		if (elements[i].type != ACPI_TYPE_INTEGER)
+> > +			goto out;
+> > +
+> > +		val = elements[i].integer.value;
+> > +		if (val < 0 || val > 2)
+> > +			goto out;
+> > +
+> > +		/* Avoiding full matrix multiplication, we simply reorder the
+> > +		 * columns in the default_ont matrix according to the
+> > +		 * ordering provided by _ONT.
+> > +		 */
+> > +		final_ont[0][i] = default_ont[0][val];
+> > +		final_ont[1][i] = default_ont[1][val];
+> > +		final_ont[2][i] = default_ont[2][val];
+> > +	}
+> > +
+> > +	/* The final 3 integers provide sign flip information.
+> > +	 * 0 means no change, 1 means flip.
+> > +	 * e.g. 0 0 1 means that Z data should be sign-flipped.
+> > +	 * This is applied after the axis reordering from above.
+> > +	 */
+> > +	elements += 3;
+> > +	for (i = 0; i < 3; i++) {
+> > +		if (elements[i].type != ACPI_TYPE_INTEGER)
+> > +			goto out;
+> > +
+> > +		val = elements[i].integer.value;
+> > +		if (val != 0 && val != 1)
+> > +			goto out;
+> > +		if (!val)
+> > +			continue;
+> > +
+> > +		/* Flip the values in the indicated column */
+> > +		final_ont[0][i] *= -1;
+> > +		final_ont[1][i] *= -1;
+> > +		final_ont[2][i] *= -1;
+> > +	}
+> > +
+> > +	/* Convert our integer matrix to a string-based iio_mount_matrix */
+> > +	adata->mount_matrix = devm_kmalloc(&indio_dev->dev,
+> > +					   sizeof(*adata->mount_matrix),
+> > +					   GFP_KERNEL);
+> > +	if (!adata->mount_matrix) {
+> > +		ret = -ENOMEM;
+> > +		goto out;
+> > +	}
+> > +
+> > +	for (i = 0; i < 3; i++) {
+> > +		for (j = 0; j < 3; j++) {
+> > +			int matrix_val = final_ont[i][j];
+> > +			char *str_value;
+> > +
+> > +			switch (matrix_val) {
+> > +			case -1:
+> > +				str_value = "-1";
+> > +				break;
+> > +			case 0:
+> > +				str_value = "0";
+> > +				break;
+> > +			case 1:
+> > +				str_value = "1";
+> > +				break;
+> > +			default:
+> > +				goto out;
+> > +			}
+> > +			adata->mount_matrix->rotation[i * 3 + j] = str_value;
+> > +		}
+> > +	}
+> > +
+> > +	/* Expose the mount matrix via ext_info */
+> > +	for (i = 0; i < indio_dev->num_channels; i++)
+> > +		channels[i].ext_info = mount_matrix_ext_info;
+> > +
+> > +	ret = 0;
+> > +	dev_info(&indio_dev->dev, "computed mount matrix from ACPI\n");
+> > +
+> > +out:
+> > +	kfree(buffer.pointer);
+> > +	return ret;
+> > +#else /* !CONFIG_ACPI */
+> > +	return 0;
+> > +#endif
+> > +}
+> > +
+> >  int st_accel_common_probe(struct iio_dev *indio_dev)
+> >  {
+> >  	struct st_sensor_data *adata = iio_priv(indio_dev);
+> >  	struct st_sensors_platform_data *pdata =
+> >  		(struct st_sensors_platform_data *)adata->dev->platform_data;
+> >  	int irq = adata->get_irq_data_ready(indio_dev);
+> > +	struct iio_chan_spec *channels;
+> > +	size_t channels_size;
+> >  	int err;
+> >  
+> >  	indio_dev->modes = INDIO_DIRECT_MODE;
+> > @@ -941,9 +1097,22 @@ int st_accel_common_probe(struct iio_dev *indio_dev)
+> >  
+> >  	adata->num_data_channels = ST_ACCEL_NUMBER_DATA_CHANNELS;
+> >  	adata->multiread_bit = adata->sensor_settings->multi_read_bit;
+> > -	indio_dev->channels = adata->sensor_settings->ch;
+> >  	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
+> >  
+> > +	channels_size = indio_dev->num_channels * sizeof(struct iio_chan_spec);
+> > +	channels = devm_kmemdup(&indio_dev->dev,
+> > +				adata->sensor_settings->ch,
+> > +				channels_size, GFP_KERNEL);
+> > +	if (!channels) {
+> > +		err = -ENOMEM;
+> > +		goto st_accel_power_off;
+> > +	}
+> > +
+> > +	if (apply_acpi_orientation(indio_dev, channels))
+> > +		dev_warn(&indio_dev->dev,
+> > +			 "failed to apply ACPI orientation data: %d\n", err);
+> > +
+> > +	indio_dev->channels = channels;
+> >  	adata->current_fullscale = (struct st_sensor_fullscale_avl *)
+> >  					&adata->sensor_settings->fs.fs_avl[0];
+> >  	adata->odr = adata->sensor_settings->odr.odr_avl[0].hz;
+> > diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
+> > index f9bd6e8ab138..fe15694128ac 100644
+> > --- a/include/linux/iio/common/st_sensors.h
+> > +++ b/include/linux/iio/common/st_sensors.h
+> > @@ -260,6 +260,7 @@ struct st_sensor_settings {
+> >  struct st_sensor_data {
+> >  	struct device *dev;
+> >  	struct iio_trigger *trig;
+> > +	struct iio_mount_matrix *mount_matrix;
+> >  	struct st_sensor_settings *sensor_settings;
+> >  	struct st_sensor_fullscale_avl *current_fullscale;
+> >  	struct regulator *vdd;  
+> 
 
