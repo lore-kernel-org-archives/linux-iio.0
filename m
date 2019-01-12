@@ -1,124 +1,175 @@
-Return-Path: <SRS0=UtJi=PT=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=wu9M=PU=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4DF7C43387
-	for <linux-iio@archiver.kernel.org>; Fri, 11 Jan 2019 23:13:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38271C43387
+	for <linux-iio@archiver.kernel.org>; Sat, 12 Jan 2019 09:42:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7E51E206B6
-	for <linux-iio@archiver.kernel.org>; Fri, 11 Jan 2019 23:13:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E6D322086C
+	for <linux-iio@archiver.kernel.org>; Sat, 12 Jan 2019 09:42:37 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=uievolution.onmicrosoft.com header.i=@uievolution.onmicrosoft.com header.b="yNzEx4HO"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fVj6E578"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726090AbfAKXNM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 11 Jan 2019 18:13:12 -0500
-Received: from mail-eopbgr810051.outbound.protection.outlook.com ([40.107.81.51]:13184
-        "EHLO NAM01-BY2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725794AbfAKXNL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 11 Jan 2019 18:13:11 -0500
+        id S1725823AbfALJmh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 12 Jan 2019 04:42:37 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:39027 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725816AbfALJmg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Jan 2019 04:42:36 -0500
+Received: by mail-pg1-f196.google.com with SMTP id w6so7366916pgl.6;
+        Sat, 12 Jan 2019 01:42:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=uievolution.onmicrosoft.com; s=selector1-xevo-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OGyRmZP3QZZNNlCT3Wbx8UDP+f5yAWht2UgjLrLSxSU=;
- b=yNzEx4HOi57feetZ6MZAmLKLkGxl0+KllqThg8ZbyLfZgW0+GGBlodQPo6ipIei5rnCJD6ItBZSq4LS0Aa8cYu3KW/K0C1oclKfOq7fKw+mUOZtGpGqSdr6H7/3mS6GClCDJi6JoHR/PoEq9r7HP+wWzazJwWsvBF58Doxs947A=
-Received: from DM5PR18MB1452.namprd18.prod.outlook.com (10.173.214.17) by
- DM5PR18MB2278.namprd18.prod.outlook.com (52.132.143.165) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1516.13; Fri, 11 Jan 2019 23:13:09 +0000
-Received: from DM5PR18MB1452.namprd18.prod.outlook.com
- ([fe80::51ee:5442:1dca:d8fa]) by DM5PR18MB1452.namprd18.prod.outlook.com
- ([fe80::51ee:5442:1dca:d8fa%8]) with mapi id 15.20.1516.010; Fri, 11 Jan 2019
- 23:13:09 +0000
-From:   Martin Kelly <mkelly@xevo.com>
-To:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC:     Jonathan Cameron <jic23@kernel.org>,
-        Martin Kelly <mkelly@xevo.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [PATCH v2] tools: iio: iio_generic_buffer: make num_loops signed
-Thread-Topic: [PATCH v2] tools: iio: iio_generic_buffer: make num_loops signed
-Thread-Index: AQHUqgM3d3tbG7RCl0CXPXChaor2fw==
-Date:   Fri, 11 Jan 2019 23:13:09 +0000
-Message-ID: <20190111231236.21048-1-mkelly@xevo.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR19CA0023.namprd19.prod.outlook.com
- (2603:10b6:300:d4::33) To DM5PR18MB1452.namprd18.prod.outlook.com
- (2603:10b6:3:bc::17)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=mkelly@xevo.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [174.21.177.9]
-x-ms-publictraffictype: Email
-x-microsoft-exchange-diagnostics: 1;DM5PR18MB2278;6:tudRiwD4rpKW4x6HVoljUJ9sv0Asgn/m3W9tHidc2DLZdf2kJ5jt54tnIQAbsjM9AXdefQF9ApC3nXflg2akoCvQn8/7MfmWxNx8gTi2O02V4Hjj+8Huvj6nEWFvea/jEbmgs49MDg7lw1OkMsyzWUarP/P/BYD3fQKUFtO+p/UWnve2dn2O0ikULkfl4lI+sy4qJ2JvYXSYtr/+tpvPdUNRXiXP3pCN52r9GQFGM88QjutUq7hizxGYBWBr/wZx9PQqLn7zDDYA29rnnE+2CHka5nF21MRT1voiVtLNDAZhHfYLOgv5FNaxaSmzTK38urr4AEnlRnWMSKevr4iNv8YUEeDQF/Ziwv7ByixMlywSuK8Ep+JxFzWgm0clURLG/H6T0Bug3uyAkYIdGR56q9fa/vFUeKbXgHrgdIaBqeVktGcwh3kZfwKl2Tco3fqX1u2Rifa4nDt3l56us9iUbw==;5:UTb39Ks+FzVFjHfwdxaNTMyFYaJRdnxGxcEAPkueLjytOhAv7BvFrWga1RAnRESNxjGh2GLna6RXSiF45BDLh/VUX2GeLqCVFP7x0MXXlg1+6XqFcBmkTgAwevvMuhcCr9o0trgA7jv0Mme5ggsGf08ee+a86ZcDHV5k6gDisAnxo2AM3ioNhCjDqruFG5BwX+fMIoDjQzTZ/FRShYvBxw==;7:o67WBmVYSVrPcJjBPSfawt2LyKwOg21miPUIbU5tTF1Ua0IPriU9L3oNnm8mGcComzDdH4EDFROXsLMwCA+HPrDYy5s/x8XJJjii+U4vPTmGfKd73Bx8QZXRa/YAGYKGLQ5vV2w3jebH3e5Ad5Rjjg==
-x-ms-office365-filtering-correlation-id: 793f6c8e-dc3a-4011-328b-08d6781a59a9
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600109)(711020)(2017052603328)(7153060)(7193020);SRVR:DM5PR18MB2278;
-x-ms-traffictypediagnostic: DM5PR18MB2278:
-x-microsoft-antispam-prvs: <DM5PR18MB2278579CB5BB149BCA824645AB850@DM5PR18MB2278.namprd18.prod.outlook.com>
-x-forefront-prvs: 09144DB0F7
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39840400004)(136003)(396003)(346002)(366004)(376002)(189003)(199004)(6116002)(5660300001)(478600001)(53936002)(256004)(3846002)(14444005)(14454004)(4326008)(575784001)(186003)(386003)(476003)(6506007)(86362001)(66066001)(36756003)(25786009)(102836004)(97736004)(52116002)(6512007)(2906002)(486006)(2501003)(26005)(106356001)(316002)(105586002)(6486002)(8936002)(71190400001)(99286004)(81156014)(6916009)(71200400001)(8676002)(81166006)(54906003)(2351001)(1076003)(5640700003)(305945005)(6436002)(7736002)(2616005)(68736007)(41533002);DIR:OUT;SFP:1101;SCL:1;SRVR:DM5PR18MB2278;H:DM5PR18MB1452.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: xevo.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: zP9EhgxhRZB81rocyAO+HZ4wzrSVMbuWsVANxbKSJGRWGpKR52W9LVqG4aXakoOMa0cUSSlSVY3NWWtTpPImLoeGunjqgZyObY1uTWCsOiALivghxTvEcCWz/HbmcCgAXpWqg9dyZwZC3udANTUsE5MivfTW08hefq8S9RIFc8V7aDkFkcjrXxPC58mVKsXy7w395w5MK/Emy8p5ENqx+cmLfVeg6OtOWpxqMLvjiJjiiKf4FWWl3K0FhTccOCXe6hxa5Js11wgBpKkOhcA2dJEwbaP+J/v2CrmZpeuqcKQpY5S28jXhP7GNKk/TBcEYHn/r9tvf8thz4HUuNATgYewvMZbHhuQJ92cN6eQOIwNlN2Iu0YcJ1SDfedyp0t6J8YJajG7SXOcLvRn9KNCNbuLZqDDEsDgXkhpFoYFkIJA=
-spamdiagnosticoutput: 1:99
-spamdiagnosticmetadata: NSPM
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=X1nWV4nBzlRo77/xlbjpztD7qUJA/hTJMXekGf8rO3M=;
+        b=fVj6E578g6OPv+K0qvR9DJatp+zMDOtYwl9amt3nykdmlugNae95tpFO4y5yW/vPHL
+         6IOZtC7hZy+UuFRXB7ubaRiGIeU05yfdql1Wfp6aL2WEtsT5s9wkMp7W2BYp8k17bb9v
+         g3uN95VAAlohZ1QXRUYHaKZb0JTlU5MNotjSC9H7HR8ezIp0351SvHOfM7XtdeycdLzQ
+         /Rrv9nRPormG5Vp5lr86XxfX/pYUPRjLCZUJqEPTYPeU0vJmAm8oT1QVzEYtDfFhtQUf
+         9NbPLlF4ZqrxRmk0We2NB9cqcxkWu70gNO5fdHjrL7K1jcn7JI82fX9jSrigQHb404Ev
+         /azQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=X1nWV4nBzlRo77/xlbjpztD7qUJA/hTJMXekGf8rO3M=;
+        b=MBrLB4aDwLX7BTewAOD8btio0R3WuhCPbyna0sJ4u196tqmkP7sHl9U0KhX0gt1bl1
+         L9sFaSIfCyJ1V9ejY9yqXJjak8vddJ0H7qRpbbdRBOHNDQlf8L3RWLJ/BHiCTYTGBwSL
+         9FvLjOHd7AVhlen5kYER9yi3w5V7JZIDSMKArE0OUo6l0Xe7YAG+j9ZfGT1mSSwzcyYt
+         VpfLEQGMeoBCV52QiyNsmd3wIW0BU59HN9UZ9j2gP42p2SadpkHKBucWU6Go/mjWrxov
+         lQotg5pSSzF31quAe49+9AQOFgtAubMK7z2NVtF48L0DMENstIwiUXwyBBro62X3HwuZ
+         yYSg==
+X-Gm-Message-State: AJcUuked0rTpNSFwIUdrGMoAIrp+Z56NE5Zp6uZs3ZdgyvNelJ+anPpH
+        VjXT9H1L0b353W5OXIFh7ew=
+X-Google-Smtp-Source: ALg8bN6M+NminiLHRX1zNCXF1QAstOt5vuyLyP9SL47/MMORZ2/k+Oex+6VXbp7cCJHPxVdQQMTnVA==
+X-Received: by 2002:a63:f615:: with SMTP id m21mr16682707pgh.428.1547286155648;
+        Sat, 12 Jan 2019 01:42:35 -0800 (PST)
+Received: from himanshu-Vostro-3559 ([103.233.116.134])
+        by smtp.gmail.com with ESMTPSA id m67sm112806550pfm.73.2019.01.12.01.42.30
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Sat, 12 Jan 2019 01:42:34 -0800 (PST)
+Date:   Sat, 12 Jan 2019 15:12:26 +0530
+From:   Himanshu Jha <himanshujha199640@gmail.com>
+To:     Sebastien Bourdelin <sebastien.bourdelin@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org, mark.rutland@arm.com,
+        robh+dt@kernel.org, pmeerw@pmeerw.net, lars@metafoo.de,
+        knaack.h@gmx.de, jic23@kernel.org
+Subject: Re: [PATCH v2 1/2] iio: chemical: bme680: Add device-tree support
+Message-ID: <20190112094226.GA910@himanshu-Vostro-3559>
+References: <20190111205359.14158-1-sebastien.bourdelin@gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: xevo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 793f6c8e-dc3a-4011-328b-08d6781a59a9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jan 2019 23:13:09.2153
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: e0a7ca1f-2458-4cd6-a7c7-d733c07495ab
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR18MB2278
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190111205359.14158-1-sebastien.bourdelin@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Currently, num_loops is unsigned, but it's set by strtoll, which returns a
-(signed) long long int. This could lead to overflow, and it also makes the
-check "num_loops < 0" always be false, since num_loops is unsigned.
-Setting num_loops to -1 to loop forever is almost working because num_loops
-is getting set to a very high number, but it's technically still incorrect.
+On Fri, Jan 11, 2019 at 03:53:58PM -0500, Sebastien Bourdelin wrote:
+> This commit allow the driver to work with device-tree.
+> 
+> Signed-off-by: Sebastien Bourdelin <sebastien.bourdelin@gmail.com>
+> ---
 
-Fix this issue by making num_loops signed. This also fixes an error found
-by Smatch.
+I get the following compilation failure:
 
-Signed-off-by: Martin Kelly <mkelly@xevo.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Fixes: 55dda0abcf9d ("tools: iio: iio_generic_buffer: allow continuous loop=
-ing")
----
-v2:
-- No content change; added a Fixes tag.
+Below I have `allyesconfig` except 'BME680' configure as [M]
+in case you wish to reproduce.
 
- tools/iio/iio_generic_buffer.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+himanshu@himanshu-Vostro-3559:~/linux-next$ grep -i -w 'CONFIG_BME680\|CONFIG_ACPI\|CONFIG_OF' .config
+CONFIG_ACPI=y
+CONFIG_OF=y
+CONFIG_BME680=m
+himanshu@himanshu-Vostro-3559:~/linux-next$ sudo make drivers/iio/chemical/bme680_spi.o
+make[1]: Nothing to be done for 'all'.
+  CALL    scripts/checksyscalls.sh
+  DESCEND  objtool
+  CC [M]  drivers/iio/chemical/bme680_spi.o
+In file included from ./include/linux/acpi.h:41:0,
+                 from drivers/iio/chemical/bme680_spi.c:7:
+./include/linux/module.h:213:1: error: expected ‘,’ or ‘;’ before ‘extern’
+ extern typeof(name) __mod_##type##__##name##_device_table  \
+ ^
+drivers/iio/chemical/bme680_spi.c:119:1: note: in expansion of macro ‘MODULE_DEVICE_TABLE’
+ MODULE_DEVICE_TABLE(of, bme680_of_spi_match);
+ ^~~~~~~~~~~~~~~~~~~
+scripts/Makefile.build:291: recipe for target 'drivers/iio/chemical/bme680_spi.o' failed
+make[1]: *** [drivers/iio/chemical/bme680_spi.o] Error 1
+Makefile:1741: recipe for target 'drivers/iio/chemical/bme680_spi.o' failed
+make: *** [drivers/iio/chemical/bme680_spi.o] Error 2
 
-diff --git a/tools/iio/iio_generic_buffer.c b/tools/iio/iio_generic_buffer.=
-c
-index 3040830d7797..84545666a09c 100644
---- a/tools/iio/iio_generic_buffer.c
-+++ b/tools/iio/iio_generic_buffer.c
-@@ -330,7 +330,7 @@ static const struct option longopts[] =3D {
-=20
- int main(int argc, char **argv)
- {
--	unsigned long long num_loops =3D 2;
-+	long long num_loops =3D 2;
- 	unsigned long timedelay =3D 1000000;
- 	unsigned long buf_len =3D 128;
-=20
---=20
-2.20.1
+BUT if:
 
+himanshu@himanshu-Vostro-3559:~/linux-next$ make allyesconfig
+scripts/kconfig/conf  --allyesconfig Kconfig
+#
+# configuration written to .config
+#
+
+himanshu@himanshu-Vostro-3559:~/linux-next$ sudo make drivers/iio/chemical/bme680_spi.o
+scripts/kconfig/conf  --syncconfig Kconfig
+make[1]: Nothing to be done for 'all'.
+  HOSTCC  scripts/dtc/dtc.o
+  HOSTCC  scripts/dtc/flattree.o
+  HOSTCC  scripts/dtc/fstree.o
+  HOSTCC  scripts/dtc/data.o
+  HOSTCC  scripts/dtc/livetree.o
+  HOSTCC  scripts/dtc/treesource.o
+  HOSTCC  scripts/dtc/srcpos.o
+  HOSTCC  scripts/dtc/checks.o
+  HOSTCC  scripts/dtc/util.o
+  LEX     scripts/dtc/dtc-lexer.lex.c
+  YACC    scripts/dtc/dtc-parser.tab.h
+  HOSTCC  scripts/dtc/dtc-lexer.lex.o
+  YACC    scripts/dtc/dtc-parser.tab.c
+  HOSTCC  scripts/dtc/dtc-parser.tab.o
+  HOSTLD  scripts/dtc/dtc
+  CC      scripts/mod/empty.o
+  MKELF   scripts/mod/elfconfig.h
+  HOSTCC  scripts/mod/modpost.o
+  CC      scripts/mod/devicetable-offsets.s
+  HOSTCC  scripts/mod/file2alias.o
+  HOSTCC  scripts/mod/sumversion.o
+  HOSTLD  scripts/mod/modpost
+  CC      kernel/bounds.s
+  CC      arch/x86/kernel/asm-offsets.s
+  CALL    scripts/checksyscalls.sh
+  DESCEND  objtool
+  CC      drivers/iio/chemical/bme680_spi.o
+
+Compiles without any issues. 
+
+Also, wondering when is 0x77 i2c address used, since I tested
+this on 3 different boards with 0x76(when SDO is connected to GND)
+
+And why do I connect SDO to ground everytime ?
+It is because if SDO pin is left floating then I2C address will be
+undefined as said in datasheet + I have observed this while testing.
+
+Actallly, I don't understand what "VDIDO" is, as explained in the
+datasheet.
+
+
+Anyway, if the above compilation issue is not a problem, then
+
+	Acked-by: Himanshu Jha <himanshujha199640@gmail.com>
+
+
+Thanks
+-- 
+Himanshu Jha
+Undergraduate Student
+Department of Electronics & Communication
+Guru Tegh Bahadur Institute of Technology
