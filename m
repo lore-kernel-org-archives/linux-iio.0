@@ -2,124 +2,143 @@ Return-Path: <SRS0=BsLG=PW=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01387C43387
-	for <linux-iio@archiver.kernel.org>; Mon, 14 Jan 2019 20:17:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 879FEC43387
+	for <linux-iio@archiver.kernel.org>; Mon, 14 Jan 2019 20:20:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C2CC32064C
-	for <linux-iio@archiver.kernel.org>; Mon, 14 Jan 2019 20:17:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5A89F2064C
+	for <linux-iio@archiver.kernel.org>; Mon, 14 Jan 2019 20:20:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hXcKbxBY"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="E7QHgD9d"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726776AbfANUR6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 14 Jan 2019 15:17:58 -0500
-Received: from mail-io1-f65.google.com ([209.85.166.65]:44396 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726774AbfANUR5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Jan 2019 15:17:57 -0500
-Received: by mail-io1-f65.google.com with SMTP id r200so236688iod.11;
-        Mon, 14 Jan 2019 12:17:57 -0800 (PST)
+        id S1726832AbfANUUO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 14 Jan 2019 15:20:14 -0500
+Received: from mail-it1-f196.google.com ([209.85.166.196]:35839 "EHLO
+        mail-it1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726760AbfANUUO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Jan 2019 15:20:14 -0500
+Received: by mail-it1-f196.google.com with SMTP id p197so1342057itp.0;
+        Mon, 14 Jan 2019 12:20:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=F29jFLdAuPQ8chk11jDxup2570edwRGoQbpMM9uafmA=;
-        b=hXcKbxBYn2I0epxMdLz7AeHF9MBW4wP4rWWlGoq8cwqolwSVjxQCjbhPiOBUBA3d/S
-         S6/Gj/CTNyzlB1chcG64rpVtu49vk89vOwGaF8P+Iwl8szCJRIhhc1m39NRglC1uCma5
-         9VNMyETtRGfnk/Ht0ps25teaOZAcpIhMwJ0eYv9Ew2I1pAx62tqNpuAPZa+NtwSGAK9t
-         gapSaUSR9uP1tK3A/PgJF3JrARXw4SSnFqxp5/Scx2bqNa8U33pgfMgRKxN738nO5UDY
-         +sg6wsYCk5ZlmT2Pym2ZB98/6T1jpYT3jfWNtPHLYFE2Hn5RmQfmT48QtdEgXmRiLdr8
-         XT4A==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=r7/vljl9wcoslPN7/8KEh45eFBFCMxetW0Cqy/5oxxQ=;
+        b=E7QHgD9duPz+gnRc2u6DwA2n0U2nX+1R2MgkCV0sJc16rkvYhAxma7KygNBz4cXA2M
+         ValihZGYgm4prV3qZQxmvmlV3E+a2bOkDgYqQ5VuGP7LaMNndKItew8VlOD6GQL+wys0
+         Hm7bwN0H9YeU0c6owmG2J9BiseIBnls9Ns4dQg12FFDcuhI2mxuaY2+CGY1cjPjbPdz/
+         MXWRRnPKTcDTj65z4TOkuhR+gqunnjji/5ZWkb+r3I+gy1oZawiwqeF9+fOnJgel87RG
+         KnCA7JwIJdVQXFT6UMxPGoJ0ULqoArpYV7zHmNgn97HTZe0sLrSfK8MYz4/IYgU7HANl
+         S3lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=F29jFLdAuPQ8chk11jDxup2570edwRGoQbpMM9uafmA=;
-        b=GQCuYy+rCdUxO1srOjsd72wGI8EoMtVxUK1dNGi0EDIIlejX31VkTVIZtySj0upi7A
-         n5LmmFQJmcIjrhAo7JnJNiYzDyraCgn0oAtOvFzNl8M37vQ5fn719mzt3F7z90NtrwxH
-         CYiFlFMEEW8FPE9+i0eFFfz6dIST3904r/Icve71dcUSheTsNW5DTJmq/rfXh8s5AiPT
-         OkJGQGIqWxnydXySgUCB/B+NBXfMtJyl0jZXMKxzLu57pydoE8PE0QETnW1r+1fpYEdb
-         zv3OTAH/imB781cVq2SlVecqOR721hmqwNtJLOTdru5xAmuTRvp3TY3RvJ9QGaeUIFsH
-         6tOw==
-X-Gm-Message-State: AJcUukcoa2Lgw2596U3ef6qfb+tegW1EK7973gJSoZZrVUyKeYBMIr7e
-        IH4+wYCqCARQyD3AONVwjN0=
-X-Google-Smtp-Source: ALg8bN7PXz+XCuBZxtjgoPKKZQJsqZW+zuoADBpn0tccsZaVe0zONo2EXILZTBr6sMQdcyjkP3O6Iw==
-X-Received: by 2002:a5e:c00c:: with SMTP id u12mr157226iol.152.1547497076534;
-        Mon, 14 Jan 2019 12:17:56 -0800 (PST)
-Received: from [192.168.1.133] ([67.218.223.154])
-        by smtp.gmail.com with ESMTPSA id g21sm662855itg.44.2019.01.14.12.17.55
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 14 Jan 2019 12:17:55 -0800 (PST)
-Subject: Re: [PATCH v2 2/2] dt-bindings: iio: chemical: Add bindings for
- bme680
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, himanshujha199640@gmail.com,
-        mark.rutland@arm.com, robh+dt@kernel.org, pmeerw@pmeerw.net,
-        lars@metafoo.de, knaack.h@gmx.de
-References: <20190111205359.14158-1-sebastien.bourdelin@gmail.com>
- <20190111205359.14158-2-sebastien.bourdelin@gmail.com>
- <20190112182837.4cc42743@archlinux>
-From:   sebastien bourdelin <sebastien.bourdelin@gmail.com>
-Message-ID: <4768d945-61aa-a8ab-3e41-68b4f861cc69@gmail.com>
-Date:   Mon, 14 Jan 2019 15:17:10 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.3.3
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=r7/vljl9wcoslPN7/8KEh45eFBFCMxetW0Cqy/5oxxQ=;
+        b=PvPBCigK8tBdm3Ux+CGoc0oYm/0qnmvz9TcQhrrO67ho3892s67EDEmCY1KKQda3Hq
+         ur/vd9PAXi+q60jRvTYhw+KEdmamPJdnszBmyL32D0Kdz/CBzrnoKqblLtkEP57ZDtWU
+         TVD77DlOwKc5t5dxk+voKB1GPHGrnAzkmlyQ+3q6u7i2n3NE8gnFVXuL84T0sv0ptyz7
+         c01wp7vQ1kjaNE0XhF18yJUvol+0auccTwoNwJdGyGwArqpVlTWXw6AYVZp4nWi0W8Tg
+         LUoblvM4bSOdiqfrTjJyo11sCXeW4Rc5tLgOKD4hKc28H6GXs+3oMlp0zjucYkz6vVOm
+         htpA==
+X-Gm-Message-State: AJcUukdoBM9lRQiYFGJKkwY7TdBIF7mODexxDsZ6nABRpCptu81m2iKs
+        bMfZGLXNHY6ot4QttUYr+5khyiCkoME=
+X-Google-Smtp-Source: ALg8bN5hiQIH/S3mEzwLbYo7t3s+JiqywbbS7H9vxmRYJ+15ExKHO1hSKnU/JmJSdHPxJLxN06I8mQ==
+X-Received: by 2002:a05:660c:914:: with SMTP id s20mr571441itj.160.1547497213108;
+        Mon, 14 Jan 2019 12:20:13 -0800 (PST)
+Received: from localhost ([67.218.223.154])
+        by smtp.gmail.com with ESMTPSA id m37sm704233iti.6.2019.01.14.12.20.12
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 14 Jan 2019 12:20:12 -0800 (PST)
+From:   Sebastien Bourdelin <sebastien.bourdelin@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        himanshujha199640@gmail.com, mark.rutland@arm.com,
+        robh+dt@kernel.org, pmeerw@pmeerw.net, lars@metafoo.de,
+        knaack.h@gmx.de, jic23@kernel.org,
+        Sebastien Bourdelin <sebastien.bourdelin@gmail.com>
+Subject: [PATCH v3 1/2] iio: chemical: bme680: Add device-tree support
+Date:   Mon, 14 Jan 2019 15:19:13 -0500
+Message-Id: <20190114201914.24572-1-sebastien.bourdelin@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20190112182837.4cc42743@archlinux>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+This commit allow the driver to work with device-tree.
 
-On 1/12/19 1:28 PM, Jonathan Cameron wrote:
-> On Fri, 11 Jan 2019 15:53:59 -0500
-> Sebastien Bourdelin <sebastien.bourdelin@gmail.com> wrote:
->
->> BME680 is a pressure/temperature/humidity/voc sensor.
->>
->> Signed-off-by: Sebastien Bourdelin <sebastien.bourdelin@gmail.com>
-> Hmm. We could add the VDD and VDIO regulators perhaps.
-> Driver assumes they are on currently but we'll get a board where control
-> is needed sooner or later.  I'm not that fussed about this though.
+Signed-off-by: Sebastien Bourdelin <sebastien.bourdelin@gmail.com>
+---
+v2 -> v3:
+  - remove of_match_ptr: Suggested by Jonathan Cameron <jic23@kernel.org>
+  - minor style fixup
+  - rebase on master
+v1 -> v2:
+  - add missing of.h header in bme680_spi.c
+---
+ drivers/iio/chemical/bme680_i2c.c | 7 +++++++
+ drivers/iio/chemical/bme680_spi.c | 8 ++++++++
+ 2 files changed, 15 insertions(+)
 
-If that's fine with you, i prefer to leave it as it is right now as i 
-don't feel
+diff --git a/drivers/iio/chemical/bme680_i2c.c b/drivers/iio/chemical/bme680_i2c.c
+index 06d4be539d2e..b2f805b6b36a 100644
+--- a/drivers/iio/chemical/bme680_i2c.c
++++ b/drivers/iio/chemical/bme680_i2c.c
+@@ -70,10 +70,17 @@ static const struct acpi_device_id bme680_acpi_match[] = {
+ };
+ MODULE_DEVICE_TABLE(acpi, bme680_acpi_match);
+ 
++static const struct of_device_id bme680_of_i2c_match[] = {
++	{ .compatible = "bosch,bme680", },
++	{},
++};
++MODULE_DEVICE_TABLE(of, bme680_of_i2c_match);
++
+ static struct i2c_driver bme680_i2c_driver = {
+ 	.driver = {
+ 		.name			= "bme680_i2c",
+ 		.acpi_match_table       = ACPI_PTR(bme680_acpi_match),
++		.of_match_table		= bme680_of_i2c_match,
+ 	},
+ 	.probe = bme680_i2c_probe,
+ 	.id_table = bme680_i2c_id,
+diff --git a/drivers/iio/chemical/bme680_spi.c b/drivers/iio/chemical/bme680_spi.c
+index c9fb05e8d0b9..d0b7bdd3f066 100644
+--- a/drivers/iio/chemical/bme680_spi.c
++++ b/drivers/iio/chemical/bme680_spi.c
+@@ -6,6 +6,7 @@
+  */
+ #include <linux/acpi.h>
+ #include <linux/module.h>
++#include <linux/of.h>
+ #include <linux/regmap.h>
+ #include <linux/spi/spi.h>
+ 
+@@ -110,10 +111,17 @@ static const struct acpi_device_id bme680_acpi_match[] = {
+ };
+ MODULE_DEVICE_TABLE(acpi, bme680_acpi_match);
+ 
++static const struct of_device_id bme680_of_spi_match[] = {
++	{ .compatible = "bosch,bme680", },
++	{},
++};
++MODULE_DEVICE_TABLE(of, bme680_of_spi_match);
++
+ static struct spi_driver bme680_spi_driver = {
+ 	.driver = {
+ 		.name			= "bme680_spi",
+ 		.acpi_match_table	= ACPI_PTR(bme680_acpi_match),
++		.of_match_table		= bme680_of_spi_match,
+ 	},
+ 	.probe = bme680_spi_probe,
+ 	.id_table = bme680_spi_id,
+-- 
+2.20.1
 
-confident enough to correctly explain it in the Documentation.
-
-But if you have more input, you are more then welcome!
-
-> Jonathan
->
->> ---
->>   .../devicetree/bindings/iio/chemical/bme680.txt       | 11 +++++++++++
->>   1 file changed, 11 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/iio/chemical/bme680.txt
->>
->> diff --git a/Documentation/devicetree/bindings/iio/chemical/bme680.txt b/Documentation/devicetree/bindings/iio/chemical/bme680.txt
->> new file mode 100644
->> index 000000000000..885a1b918340
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/chemical/bme680.txt
->> @@ -0,0 +1,11 @@
->> +Bosch Sensortec BME680 pressure/temperature/humidity/voc sensors
->> +
->> +Required properties:
->> +- compatible: must be "bosch,bme680"
->> +
->> +Example:
->> +
->> +bme680@77 {
->> +          compatible = "bosch,bme680";
->> +          reg = <0x77>;
->> +};
