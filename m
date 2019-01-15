@@ -2,252 +2,109 @@ Return-Path: <SRS0=ObhF=PX=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
+X-Spam-Status: No, score=-1.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1951C43612
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Jan 2019 00:19:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12EF2C43612
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Jan 2019 02:13:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8E89620578
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Jan 2019 00:19:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D23F520659
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Jan 2019 02:13:29 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=martingkelly-com.20150623.gappssmtp.com header.i=@martingkelly-com.20150623.gappssmtp.com header.b="SdkO5qPz"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726871AbfAOATF convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 14 Jan 2019 19:19:05 -0500
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:37360 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726911AbfAOATF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Jan 2019 19:19:05 -0500
-Received: from pps.filterd (m0046668.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x0F0GFX0025501;
-        Tue, 15 Jan 2019 01:19:00 +0100
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 2pyc012h1g-1
-        (version=TLSv1 cipher=ECDHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Tue, 15 Jan 2019 01:19:00 +0100
-Received: from zeta.dmz-eu.st.com (zeta.dmz-eu.st.com [164.129.230.9])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 94C2F31;
-        Tue, 15 Jan 2019 00:18:59 +0000 (GMT)
-Received: from Webmail-eu.st.com (sfhdag4node1.st.com [10.75.127.10])
-        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 6D4C81130;
-        Tue, 15 Jan 2019 00:18:59 +0000 (GMT)
-Received: from SFHDAG2NODE1.st.com (10.75.127.4) by SFHDAG4NODE1.st.com
- (10.75.127.10) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Tue, 15 Jan
- 2019 01:18:59 +0100
-Received: from SFHDAG2NODE1.st.com ([fe80::4413:c8c:992b:bb90]) by
- SFHDAG2NODE1.st.com ([fe80::4413:c8c:992b:bb90%20]) with mapi id
- 15.00.1347.000; Tue, 15 Jan 2019 01:18:58 +0100
-From:   Denis CIOCCA <denis.ciocca@st.com>
-To:     Mario Tesi <martepisa@gmail.com>,
-        "jic23@kernel.org" <jic23@kernel.org>
-CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Mario TESI <mario.tesi@st.com>
-Subject: RE: [PATCH] iio:st_pressure:initial lps22hh sensor support
-Thread-Topic: [PATCH] iio:st_pressure:initial lps22hh sensor support
-Thread-Index: AQHUrC4eDiZaIhqSo064Gq5PC9PrK6Wvd1Ew
-Date:   Tue, 15 Jan 2019 00:18:58 +0000
-Message-ID: <2844d78742404a0ebea470fa5e0ec722@SFHDAG2NODE1.st.com>
-References: <1547486660-15359-1-git-send-email-mario.tesi@st.com>
-In-Reply-To: <1547486660-15359-1-git-send-email-mario.tesi@st.com>
-Accept-Language: it-IT, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.75.127.51]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1727403AbfAOCN2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 14 Jan 2019 21:13:28 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:33502 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726886AbfAOCN2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Jan 2019 21:13:28 -0500
+Received: by mail-pl1-f195.google.com with SMTP id z23so541321plo.0
+        for <linux-iio@vger.kernel.org>; Mon, 14 Jan 2019 18:13:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=martingkelly-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=gMBIDsNAalFYB0850sa3IFqPi56CukaEtOrmWGkfXc8=;
+        b=SdkO5qPzNnFbvz4dN99DL/+2rrzgL/lUsZstR5Da7hAVhdHnGwJ23ZIm6Thb8eaxT3
+         T1zQNRovV1JyyUiMg2NE2MvSuR0W6sWA6OxiW7ovZ8AXHlPxLevC4CkT9YPARyy12Vjz
+         7nKgAKimQWQkeomUMUMxr3Emm1mNWWc7T4kfdK1tAgX/Cb+RnO4B7OUYnDMr0n1EuyOU
+         tw8pLYzKoiElzlJcEajsr0Kp0FBlcIAFL8GpmbGCVxewblbZpKGsd+2y0RQi1jjKghUz
+         JQ01F3GDVU4zZ/RguTSS568NPc0CrwQZt0rpXysqZwh4P01h2//m6pmJKW0x+wmgOCal
+         E/KQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=gMBIDsNAalFYB0850sa3IFqPi56CukaEtOrmWGkfXc8=;
+        b=IdaDJRbtwlv8mEpX1KD91dtf7PPTOmT5jvAuiY94aHMPYet4A9NLVciRnwNKNSoNL6
+         blHl9QMYGKHXOONWE535IQ92rbB02zMiACds7j9ezrbGL02AsvHZeB8BzNHWmVDrgMp0
+         /CunFB4mm55xpHGeAxpV6WutGzh4CCLX5vix9gJKK0YfJLvnla6Ucdl/T06FrNkHlWMy
+         +9EgLLP9uFUMINupy/1I6+Nlb3I3FwXug7XlNoJRyocibDxsnEuvbiJbMd16mtcCYTvC
+         Lzh7v5vvJAUpuswXRCOfGZM4zFOr/ohcaufEDZNJmlla8TgmWvZDvL7nyeK/tp82arNZ
+         bs0w==
+X-Gm-Message-State: AJcUukcLv2D8Tibym69iUXzTtY7FE1vl5pOpDUmEN4pDL/8GuMX28w0H
+        1FQAFjMz0fiGNWv0j66TTnYv1g==
+X-Google-Smtp-Source: ALg8bN7EGIzWc4dfvJN6VZDDD63YCU0iC3oca+6e6qFOBFMuAaB63CQZY0/HqzIgSqI9EuGkjOUMpg==
+X-Received: by 2002:a17:902:d68c:: with SMTP id v12mr1631184ply.4.1547518406903;
+        Mon, 14 Jan 2019 18:13:26 -0800 (PST)
+Received: from [192.168.0.8] (174-21-177-9.tukw.qwest.net. [174.21.177.9])
+        by smtp.gmail.com with ESMTPSA id t21sm2283340pgg.24.2019.01.14.18.13.26
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 14 Jan 2019 18:13:26 -0800 (PST)
+Subject: Re: [PATCH 0/5] iio:bmi160: add drdy interrupt support
+To:     linux-iio@vger.kernel.org
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>
+References: <20190114035621.5252-1-martin@martingkelly.com>
+From:   Martin Kelly <martin@martingkelly.com>
+Message-ID: <0c8451a9-8d13-bcc1-a662-0d225c124618@martingkelly.com>
+Date:   Mon, 14 Jan 2019 18:13:25 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.4.0
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-01-14_13:,,
- signatures=0
+In-Reply-To: <20190114035621.5252-1-martin@martingkelly.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Acked-by: Denis Ciocca <denis.ciocca@st.com>
+On 1/13/19 7:56 PM, Martin Kelly wrote:
+> From: Martin Kelly <martin@martingkelly.com>
+> 
+> This patch series adds drdy interrupt support to the BMI160 IMU. It also updates
+> the relevant DT bindings and does a little bit of related cleanup.
+> 
+> Martin Kelly (5):
+>    iio:bmi160: add SPDX identifiers
+>    iio:bmi160: add drdy interrupt support
+>    dt-bindings: fix incorrect bmi160 IRQ note
+>    dt-bindings:bmi160: add "BOTH" int pin type
+>    iio:bmi160:snap timestamp closer to event
+> 
+>   .../devicetree/bindings/iio/imu/bmi160.txt         |  17 +-
+>   drivers/iio/imu/bmi160/Makefile                    |   1 +
+>   drivers/iio/imu/bmi160/bmi160.h                    |  13 +-
+>   drivers/iio/imu/bmi160/bmi160_core.c               | 280 ++++++++++++++++++++-
+>   drivers/iio/imu/bmi160/bmi160_i2c.c                |   8 +-
+>   drivers/iio/imu/bmi160/bmi160_spi.c                |   6 +-
+>   drivers/iio/imu/bmi160/bmi160_trigger.c            |  60 +++++
+>   7 files changed, 360 insertions(+), 25 deletions(-)
+>   create mode 100644 drivers/iio/imu/bmi160/bmi160_trigger.c
+> 
+> --
+> 2.11.0
+> 
 
-
------Original Message-----
-From: linux-iio-owner@vger.kernel.org <linux-iio-owner@vger.kernel.org> On Behalf Of Mario Tesi
-Sent: Monday, January 14, 2019 9:24 AM
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org; Mario TESI <mario.tesi@st.com>
-Subject: [PATCH] iio:st_pressure:initial lps22hh sensor support
-
-From: mario tesi <mario.tesi@st.com>
-
-Initial support for ST LPS22HH pressure sensor. Datasheet:
-http://www2.st.com/resource/en/datasheet/lps22hh.pdf
-
-Features:
- * pressure, temperature data and timestamping channels
- * sampling frequency selection [1..200] Hz
- * interrupt based trigger
- * over I2C or SPI interface
-
-Signed-off-by: mario tesi <mario.tesi@st.com>
----
- drivers/iio/pressure/Kconfig            |  2 +-
- drivers/iio/pressure/st_pressure.h      |  2 +
- drivers/iio/pressure/st_pressure_core.c | 69 +++++++++++++++++++++++++++++++++  drivers/iio/pressure/st_pressure_i2c.c  |  5 +++  drivers/iio/pressure/st_pressure_spi.c  |  5 +++
- 5 files changed, 82 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig index eaa7cfc..efeb89f 100644
---- a/drivers/iio/pressure/Kconfig
-+++ b/drivers/iio/pressure/Kconfig
-@@ -165,7 +165,7 @@ config IIO_ST_PRESS
- 	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
- 	help
- 	  Say yes here to build support for STMicroelectronics pressure
--	  sensors: LPS001WP, LPS25H, LPS331AP, LPS22HB.
-+	  sensors: LPS001WP, LPS25H, LPS331AP, LPS22HB, LPS22HH.
- 
- 	  This driver can also be built as a module. If so, these modules
- 	  will be created:
-diff --git a/drivers/iio/pressure/st_pressure.h b/drivers/iio/pressure/st_pressure.h
-index e67eb0d..5794660 100644
---- a/drivers/iio/pressure/st_pressure.h
-+++ b/drivers/iio/pressure/st_pressure.h
-@@ -21,6 +21,7 @@ enum st_press_type {
- 	LPS22HB,
- 	LPS33HW,
- 	LPS35HW,
-+	LPS22HH,
- 	ST_PRESS_MAX,
- };
- 
-@@ -30,6 +31,7 @@ enum st_press_type {
- #define LPS22HB_PRESS_DEV_NAME		"lps22hb"
- #define LPS33HW_PRESS_DEV_NAME		"lps33hw"
- #define LPS35HW_PRESS_DEV_NAME		"lps35hw"
-+#define LPS22HH_PRESS_DEV_NAME		"lps22hh"
- 
- /**
-  * struct st_sensors_platform_data - default press platform data diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-index 4ddb6cf..38dcdb7 100644
---- a/drivers/iio/pressure/st_pressure_core.c
-+++ b/drivers/iio/pressure/st_pressure_core.c
-@@ -492,6 +492,75 @@
- 		.multi_read_bit = false,
- 		.bootime = 2,
- 	},
-+	{
-+		/*
-+		 * CUSTOM VALUES FOR LPS22HH SENSOR
-+		 * See LPS22HH datasheet:
-+		 * http://www2.st.com/resource/en/datasheet/lps22hh.pdf
-+		 */
-+		.wai = 0xb3,
-+		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
-+		.sensors_supported = {
-+			[0] = LPS22HH_PRESS_DEV_NAME,
-+		},
-+		.ch = (struct iio_chan_spec *)st_press_lps22hb_channels,
-+		.num_ch = ARRAY_SIZE(st_press_lps22hb_channels),
-+		.odr = {
-+			.addr = 0x10,
-+			.mask = 0x70,
-+			.odr_avl = {
-+				{ .hz = 1, .value = 0x01 },
-+				{ .hz = 10, .value = 0x02 },
-+				{ .hz = 25, .value = 0x03 },
-+				{ .hz = 50, .value = 0x04 },
-+				{ .hz = 75, .value = 0x05 },
-+				{ .hz = 100, .value = 0x06 },
-+				{ .hz = 200, .value = 0x07 },
-+			},
-+		},
-+		.pw = {
-+			.addr = 0x10,
-+			.mask = 0x70,
-+			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
-+		},
-+		.fs = {
-+			.fs_avl = {
-+				/*
-+				 * Pressure and temperature sensitivity values
-+				 * as defined in table 3 of LPS22HH datasheet.
-+				 */
-+				[0] = {
-+					.num = ST_PRESS_FS_AVL_1260MB,
-+					.gain = ST_PRESS_KPASCAL_NANO_SCALE,
-+					.gain2 = ST_PRESS_LPS22HB_LSB_PER_CELSIUS,
-+				},
-+			},
-+		},
-+		.bdu = {
-+			.addr = 0x10,
-+			.mask = BIT(1),
-+		},
-+		.drdy_irq = {
-+			.int1 = {
-+				.addr = 0x12,
-+				.mask = BIT(2),
-+				.addr_od = 0x11,
-+				.mask_od = BIT(5),
-+			},
-+			.addr_ihl = 0x11,
-+			.mask_ihl = BIT(6),
-+			.stat_drdy = {
-+				.addr = ST_SENSORS_DEFAULT_STAT_ADDR,
-+				.mask = 0x03,
-+			},
-+		},
-+		.sim = {
-+			.addr = 0x10,
-+			.value = BIT(0),
-+		},
-+		.multi_read_bit = false,
-+		.bootime = 2,
-+	},
- };
- 
- static int st_press_write_raw(struct iio_dev *indio_dev, diff --git a/drivers/iio/pressure/st_pressure_i2c.c b/drivers/iio/pressure/st_pressure_i2c.c
-index 2026a10..a60849d 100644
---- a/drivers/iio/pressure/st_pressure_i2c.c
-+++ b/drivers/iio/pressure/st_pressure_i2c.c
-@@ -45,6 +45,10 @@
- 		.compatible = "st,lps35hw",
- 		.data = LPS35HW_PRESS_DEV_NAME,
- 	},
-+	{
-+		.compatible = "st,lps22hh",
-+		.data = LPS22HH_PRESS_DEV_NAME,
-+	},
- 	{},
- };
- MODULE_DEVICE_TABLE(of, st_press_of_match); @@ -69,6 +73,7 @@
- 	{ LPS22HB_PRESS_DEV_NAME, LPS22HB },
- 	{ LPS33HW_PRESS_DEV_NAME, LPS33HW },
- 	{ LPS35HW_PRESS_DEV_NAME, LPS35HW },
-+	{ LPS22HH_PRESS_DEV_NAME, LPS22HH },
- 	{},
- };
- MODULE_DEVICE_TABLE(i2c, st_press_id_table); diff --git a/drivers/iio/pressure/st_pressure_spi.c b/drivers/iio/pressure/st_pressure_spi.c
-index 9a3441b..79a12ed 100644
---- a/drivers/iio/pressure/st_pressure_spi.c
-+++ b/drivers/iio/pressure/st_pressure_spi.c
-@@ -49,6 +49,10 @@
- 		.compatible = "st,lps35hw",
- 		.data = LPS35HW_PRESS_DEV_NAME,
- 	},
-+	{
-+		.compatible = "st,lps22hh",
-+		.data = LPS22HH_PRESS_DEV_NAME,
-+	},
- 	{},
- };
- MODULE_DEVICE_TABLE(of, st_press_of_match); @@ -93,6 +97,7 @@ static int st_press_spi_remove(struct spi_device *spi)
- 	{ LPS22HB_PRESS_DEV_NAME },
- 	{ LPS33HW_PRESS_DEV_NAME },
- 	{ LPS35HW_PRESS_DEV_NAME },
-+	{ LPS22HH_PRESS_DEV_NAME },
- 	{},
- };
- MODULE_DEVICE_TABLE(spi, st_press_id_table);
---
-1.9.1
-
+I realized this patch series does not contain updated binding 
+documentation for the added bmi160,int1-open-drain and 
+bmi160,int2-open-drain keys. I assume there will be other review 
+feedback, so I will add a patch for this in a v2 series.
