@@ -2,386 +2,275 @@ Return-Path: <SRS0=ObhF=PX=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	USER_AGENT_MUTT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73113C43387
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Jan 2019 18:32:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 267EEC43387
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Jan 2019 18:41:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2D80A20859
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Jan 2019 18:32:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D969820657
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Jan 2019 18:41:32 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="O57pWJE7"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iODOvuAu"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730280AbfAOScD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Jan 2019 13:32:03 -0500
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:35018 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727088AbfAOScD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Jan 2019 13:32:03 -0500
-Received: by mail-lf1-f65.google.com with SMTP id e26so2838245lfc.2;
-        Tue, 15 Jan 2019 10:32:01 -0800 (PST)
+        id S1731498AbfAOSl1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Jan 2019 13:41:27 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:43699 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728911AbfAOSl1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Jan 2019 13:41:27 -0500
+Received: by mail-pf1-f196.google.com with SMTP id w73so1707672pfk.10;
+        Tue, 15 Jan 2019 10:41:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=25yZ+tmli1MPXVX4ha840NozHxbCjWITEmRfreBlfCE=;
-        b=O57pWJE72Mpsc6RbiPWF1C5In/wbipu3ODXqdvyWkxNkq5CplEh1/jYjPp5P4xe/gJ
-         5CSdE7JXvsKpDimur+lvSCZT/UYL9mjQzMy2fnM6G87gfFELvy9ThD2WBzlfYuCqebWN
-         KzDxaKM6tiK/RqjQR0AEpkku1oCFBPgkzrlxaly/M6nilLG3x/pVTnKQUk97Xosn0JPI
-         Ckfq5JRS0j7Y6xFFLJo6dxo8Pt68pow3utCIEraZxoWkMwhbZxCW1dbhHnyGv63b91lm
-         CMCl2/uX/xMIPcEghxVWESnC8COP4b4alodJCyOlhVwAdA8xM7AI8OX2CAX10tx1ptlg
-         n5Og==
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=1gNo1y+dIxdHxK499SDgABwOKeUfhKYaZKkqSCe+rf4=;
+        b=iODOvuAu3JkhXkG6MXxTyFvyVHwfFVnHU2l70XnVe7pBdNhWkLeFtQIwqNmPkqSPeX
+         0q9LtUlF1oUFIB9KykYBP4AycK2D5Q0+O03MkfpJ8+vnWhv9D/bXgJllM9nbh6EhfRzT
+         tAbdnhlkbwfSNDP3Yt9i6OJwdUicuUM6eLoJ/TzU0eLIOtgr3fv5escB8850S1adnFHQ
+         Dxx2hRpNzh7rrW3/y3WTLlxw9PH8TS/lT6dTU+ugdWBAkN+pvt/C4Fc2uoN5MdbsLH58
+         vSUugz2yuYHyvnfOXIkRxV/RXbj/8taGld/7aUVHFnSFBOC6sjJEEZGbj9vvZY84Gi4K
+         zSyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=25yZ+tmli1MPXVX4ha840NozHxbCjWITEmRfreBlfCE=;
-        b=mS4RfvBF3P9haSSB3uJOd5Ea/695iE/Qm3iiqWiuHgbywIOF8Yyfhu54ecz2qVMl9z
-         vuYT2ZYM2QSfNQIBP5B9skEFv5VKdRu3ikUAZs4B/8t4Vv6dm5RxHTf6v3resiaDRPoU
-         JAlzJvTSaSkLSKqGK4tRuu7qXB8K2wk6UUdRaagiH2c2rhpZmHqXBIVNm22/V9eqMntK
-         c4V9NuYBMBykcl5fJu87MSEmKbxKnguq2RfdD9mRhn4CiCw+UczJJMUknIBBKJGqkPGP
-         atUTF9Xcw2qalTnVqTxiv3mJ/cFE80v5S/5MwQVbYw3LJP38C0lDjgp+mvMv8naZ7NYn
-         hxew==
-X-Gm-Message-State: AJcUukfFFRIQOwpLviDmee30FscG+zAtUMykhJO2zo+SkSTaGlTJjCiM
-        2I/VIgWvo6KhqwU1KfhyofE=
-X-Google-Smtp-Source: ALg8bN5Rkku1eVE/faPA5nMkpQ2a5BwuVOanb9aLr3ACNos09Gn38yTCeAd4O8eMoYJD6ZuyhuVviA==
-X-Received: by 2002:a19:ef15:: with SMTP id n21mr3985037lfh.21.1547577119998;
-        Tue, 15 Jan 2019 10:31:59 -0800 (PST)
-Received: from localhost (89-70-37-207.dynamic.chello.pl. [89.70.37.207])
-        by smtp.gmail.com with ESMTPSA id x11sm842039lfd.81.2019.01.15.10.31.58
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=1gNo1y+dIxdHxK499SDgABwOKeUfhKYaZKkqSCe+rf4=;
+        b=Rrhi2KFaHPsMyK2frjMPbytI0QX3phK6AETU2c4yLchmpwJhTcNnbTm0JeAjOe/Vz6
+         2bm9/XL1Y/guJWuQhDAlYTqWBgUh1PDqvh1o5XfkszupsukfXj6pfGKIlb1OS2+5yGGD
+         pigY0lSlbvaX2gqSgoDC7vcviVlrsLcsfDjfTBr1BwaMF2fWaZAYIoE50IRrk0yTR/Lc
+         XysPAhn6R6fh4ravnK3anZreBz3O6+XBkPTT0IC3ZTlDn+bkER4d8D3bcnKGzEtV0RoO
+         V6vAya154uxhMDLR2BkamdJb1bT5rPzhHtZ9/CVLZGkun9Yl8XPb4/kxR1kteoSOsZKH
+         WP8g==
+X-Gm-Message-State: AJcUukdoaPPFXTWcDLVfD7Fls8FlLHLC0BLi0HZdFJVVVuPpCmzIRZ1j
+        muTb56CcgrXP1V53TIpyEicC5j5e
+X-Google-Smtp-Source: ALg8bN6AqONSSSKg1Z9wV0aTMghGW72YRnCBZzQd1Z/d1EjHYb6YCmlnCffPMXmOlJVBxAZdVVQGUw==
+X-Received: by 2002:a65:4ccb:: with SMTP id n11mr5061245pgt.257.1547577685189;
+        Tue, 15 Jan 2019 10:41:25 -0800 (PST)
+Received: from himanshu-Vostro-3559 ([103.233.116.134])
+        by smtp.gmail.com with ESMTPSA id l5sm3909299pgp.82.2019.01.15.10.41.21
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 15 Jan 2019 10:31:59 -0800 (PST)
-Date:   Tue, 15 Jan 2019 19:31:34 +0100
-From:   Tomasz Duszynski <tduszyns@gmail.com>
-To:     Jeremy Fertic <jeremyfertic@gmail.com>
-Cc:     Tomasz Duszynski <tduszyns@gmail.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] iio: chemical: sps30: allow changing self cleaning
- period
-Message-ID: <20190115183133.GA9202@arch>
-References: <20190113100912.29665-1-tduszyns@gmail.com>
- <20190115001539.GA20418@r2700x.localdomain>
+        Tue, 15 Jan 2019 10:41:24 -0800 (PST)
+Date:   Wed, 16 Jan 2019 00:11:17 +0530
+From:   Himanshu Jha <himanshujha199640@gmail.com>
+To:     sebastien bourdelin <sebastien.bourdelin@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org, mark.rutland@arm.com,
+        robh+dt@kernel.org, pmeerw@pmeerw.net, lars@metafoo.de,
+        knaack.h@gmx.de, jic23@kernel.org
+Subject: Re: [PATCH v2 1/2] iio: chemical: bme680: Add device-tree support
+Message-ID: <20190115184117.GA10186@himanshu-Vostro-3559>
+References: <20190111205359.14158-1-sebastien.bourdelin@gmail.com>
+ <20190112094226.GA910@himanshu-Vostro-3559>
+ <2522efda-2762-01a6-7597-38c086779b74@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20190115001539.GA20418@r2700x.localdomain>
-User-Agent: Mutt/1.11.2 (2019-01-07)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <2522efda-2762-01a6-7597-38c086779b74@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Jan 14, 2019 at 05:15:39PM -0700, Jeremy Fertic wrote:
-> On Sun, Jan 13, 2019 at 11:09:12AM +0100, Tomasz Duszynski wrote:
-> > Sensor can periodically trigger self cleaning. Period can be changed by
-> > writing a new value to a dedicated attribute. Upon attribute read
-> > current period gets returned.
-> >
-> > Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
-> > ---
-> > v3:
-> >  * add info about used units to attribute docs
-> >
-> > v2:
-> >  * return available values formated as a range
-> >  * tweak naming a little (interval -> period)
-> >
-> >  Documentation/ABI/testing/sysfs-bus-iio-sps30 |  20 +++
-> >  drivers/iio/chemical/sps30.c                  | 143 +++++++++++++++---
-> >  2 files changed, 145 insertions(+), 18 deletions(-)
-> >
-> > diff --git a/Documentation/ABI/testing/sysfs-bus-iio-sps30 b/Documentation/ABI/testing/sysfs-bus-iio-sps30
-> > index e7ce2c57635e..143df8e89d08 100644
-> > --- a/Documentation/ABI/testing/sysfs-bus-iio-sps30
-> > +++ b/Documentation/ABI/testing/sysfs-bus-iio-sps30
-> > @@ -6,3 +6,23 @@ Description:
-> >  		Writing 1 starts sensor self cleaning. Internal fan accelerates
-> >  		to its maximum speed and keeps spinning for about 10 seconds in
-> >  		order to blow out accumulated dust.
-> > +
-> > +What:		/sys/bus/iio/devices/iio:deviceX/cleaning_period
-> > +Date:		January 2019
-> > +KernelVersion:	5.1
-> > +Contact:	linux-iio@vger.kernel.org
-> > +Description:
-> > +		Sensor is capable of triggering self cleaning periodically.
-> > +		Period can be changed by writing a new value here. Upon reading
-> > +		the current one is returned. Units are seconds.
-> > +
-> > +		Writing 0 disables periodical self cleaning entirely.
-> > +
-> > +What:		/sys/bus/iio/devices/iio:deviceX/cleaning_period_available
-> > +Date:		January 2019
-> > +KernelVersion:	5.1
-> > +Contact:	linux-iio@vger.kernel.org
-> > +Description:
-> > +		The range of available values in seconds represented as the
-> > +		minimum value, the step and the maximum value, all enclosed in
-> > +		square brackets.
-> > diff --git a/drivers/iio/chemical/sps30.c b/drivers/iio/chemical/sps30.c
-> > index f3b4390c8f5c..fe5f6309191b 100644
-> > --- a/drivers/iio/chemical/sps30.c
-> > +++ b/drivers/iio/chemical/sps30.c
-> > @@ -5,9 +5,6 @@
-> >   * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
-> >   *
-> >   * I2C slave address: 0x69
-> > - *
-> > - * TODO:
-> > - *  - support for reading/setting auto cleaning interval
-> >   */
-> >
-> >  #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-> > @@ -21,6 +18,7 @@
-> >  #include <linux/iio/sysfs.h>
-> >  #include <linux/iio/trigger_consumer.h>
-> >  #include <linux/iio/triggered_buffer.h>
-> > +#include <linux/kernel.h>
-> >  #include <linux/module.h>
-> >
-> >  #define SPS30_CRC8_POLYNOMIAL 0x31
-> > @@ -28,6 +26,9 @@
-> >  #define SPS30_MAX_READ_SIZE 48
-> >  /* sensor measures reliably up to 3000 ug / m3 */
-> >  #define SPS30_MAX_PM 3000
-> > +/* minimum and maximum self cleaning periods in seconds */
-> > +#define SPS30_AUTO_CLEANING_PERIOD_MIN 0
-> > +#define SPS30_AUTO_CLEANING_PERIOD_MAX 604800
-> >
-> >  /* SPS30 commands */
-> >  #define SPS30_START_MEAS 0x0010
-> > @@ -37,6 +38,9 @@
-> >  #define SPS30_READ_DATA 0x0300
-> >  #define SPS30_READ_SERIAL 0xd033
-> >  #define SPS30_START_FAN_CLEANING 0x5607
-> > +#define SPS30_AUTO_CLEANING_PERIOD 0x8004
-> > +/* not a sensor command per se, used only to distinguish write from read */
-> > +#define SPS30_READ_AUTO_CLEANING_PERIOD 0x8005
-> >
-> >  enum {
-> >  	PM1,
-> > @@ -45,6 +49,11 @@ enum {
-> >  	PM10,
-> >  };
-> >
-> > +enum {
-> > +	RESET,
-> > +	MEASURING,
-> > +};
-> > +
-> >  struct sps30_state {
-> >  	struct i2c_client *client;
-> >  	/*
-> > @@ -52,6 +61,7 @@ struct sps30_state {
-> >  	 * Must be held whenever sequence of commands is to be executed.
-> >  	 */
-> >  	struct mutex lock;
-> > +	int state;
-> >  };
-> >
-> >  DECLARE_CRC8_TABLE(sps30_crc8_table);
-> > @@ -107,6 +117,9 @@ static int sps30_do_cmd(struct sps30_state *state, u16 cmd, u8 *data, int size)
-> >  	case SPS30_START_FAN_CLEANING:
-> >  		ret = sps30_write_then_read(state, buf, 2, NULL, 0);
-> >  		break;
-> > +	case SPS30_READ_AUTO_CLEANING_PERIOD:
-> > +		buf[0] = SPS30_AUTO_CLEANING_PERIOD >> 8;
-> > +		buf[1] = (u8)SPS30_AUTO_CLEANING_PERIOD;
-> >  	case SPS30_READ_DATA_READY_FLAG:
-> >  	case SPS30_READ_DATA:
-> >  	case SPS30_READ_SERIAL:
-> > @@ -114,6 +127,15 @@ static int sps30_do_cmd(struct sps30_state *state, u16 cmd, u8 *data, int size)
-> >  		size += size / 2;
-> >  		ret = sps30_write_then_read(state, buf, 2, buf, size);
-> >  		break;
-> > +	case SPS30_AUTO_CLEANING_PERIOD:
-> > +		buf[2] = data[0];
-> > +		buf[3] = data[1];
-> > +		buf[4] = crc8(sps30_crc8_table, &buf[2], 2, CRC8_INIT_VALUE);
-> > +		buf[5] = data[2];
-> > +		buf[6] = data[3];
-> > +		buf[7] = crc8(sps30_crc8_table, &buf[5], 2, CRC8_INIT_VALUE);
-> > +		ret = sps30_write_then_read(state, buf, 8, NULL, 0);
-> > +		break;
-> >  	}
-> >
-> >  	if (ret)
-> > @@ -170,6 +192,14 @@ static int sps30_do_meas(struct sps30_state *state, s32 *data, int size)
-> >  	int i, ret, tries = 5;
-> >  	u8 tmp[16];
-> >
-> > +	if (state->state == RESET) {
-> > +		ret = sps30_do_cmd(state, SPS30_START_MEAS, NULL, 0);
-> > +		if (ret)
-> > +			return ret;
-> > +
-> > +		state->state = MEASURING;
-> > +	}
-> > +
-> >  	while (tries--) {
-> >  		ret = sps30_do_cmd(state, SPS30_READ_DATA_READY_FLAG, tmp, 2);
-> >  		if (ret)
-> > @@ -276,6 +306,24 @@ static int sps30_read_raw(struct iio_dev *indio_dev,
-> >  	return -EINVAL;
-> >  }
-> >
-> > +static int sps30_do_cmd_reset(struct sps30_state *state)
-> > +{
-> > +	int ret;
-> > +
-> > +	ret = sps30_do_cmd(state, SPS30_RESET, NULL, 0);
-> > +	msleep(300);
-> > +	/*
-> > +	 * Power-on-reset causes sensor to produce some glitch on i2c bus and
-> > +	 * some controllers end up in error state. Recover simply by placing
-> > +	 * some data on the bus, for example STOP_MEAS command, which
-> > +	 * is NOP in this case.
-> > +	 */
-> > +	sps30_do_cmd(state, SPS30_STOP_MEAS, NULL, 0);
-> > +	state->state = RESET;
-> > +
-> > +	return ret;
-> > +}
-> > +
-> >  static ssize_t start_cleaning_store(struct device *dev,
-> >  				    struct device_attribute *attr,
-> >  				    const char *buf, size_t len)
-> > @@ -296,10 +344,82 @@ static ssize_t start_cleaning_store(struct device *dev,
-> >  	return len;
-> >  }
-> >
-> > +static ssize_t cleaning_period_show(struct device *dev,
-> > +				      struct device_attribute *attr,
-> > +				      char *buf)
-> > +{
-> > +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> > +	struct sps30_state *state = iio_priv(indio_dev);
-> > +	u8 tmp[4];
-> > +	int ret;
-> > +
-> > +	mutex_lock(&state->lock);
-> > +	ret = sps30_do_cmd(state, SPS30_READ_AUTO_CLEANING_PERIOD, tmp, 4);
-> > +	mutex_unlock(&state->lock);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	return sprintf(buf, "%d\n", get_unaligned_be32(tmp));
-> > +}
-> > +
-> > +static ssize_t cleaning_period_store(struct device *dev,
-> > +				       struct device_attribute *attr,
-> > +				       const char *buf, size_t len)
-> > +{
-> > +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> > +	struct sps30_state *state = iio_priv(indio_dev);
-> > +	int val, ret;
-> > +	u8 tmp[4];
-> > +
-> > +	if (kstrtoint(buf, 0, &val))
-> > +		return -EINVAL;
-> > +
-> > +	if ((val < SPS30_AUTO_CLEANING_PERIOD_MIN) &&
-> > +	    (val > SPS30_AUTO_CLEANING_PERIOD_MAX))
-> > +		return -EINVAL;
->
-> Should this be || instead of &&?
->
+Hi Sebastien,
 
-Definitely. Thanks for catching this.
+On Mon, Jan 14, 2019 at 03:00:41PM -0500, sebastien bourdelin wrote:
+> Hi,
+> 
+> On 1/12/19 4:42 AM, Himanshu Jha wrote:
+> > On Fri, Jan 11, 2019 at 03:53:58PM -0500, Sebastien Bourdelin wrote:
+> > > This commit allow the driver to work with device-tree.
+> > > 
+> > > Signed-off-by: Sebastien Bourdelin <sebastien.bourdelin@gmail.com>
+> > > ---
+> > I get the following compilation failure:
+> > 
+> > Below I have `allyesconfig` except 'BME680' configure as [M]
+> > in case you wish to reproduce.
+> > 
+> > himanshu@himanshu-Vostro-3559:~/linux-next$ grep -i -w 'CONFIG_BME680\|CONFIG_ACPI\|CONFIG_OF' .config
+> > CONFIG_ACPI=y
+> > CONFIG_OF=y
+> > CONFIG_BME680=m
+> > himanshu@himanshu-Vostro-3559:~/linux-next$ sudo make drivers/iio/chemical/bme680_spi.o
+> > make[1]: Nothing to be done for 'all'.
+> >    CALL    scripts/checksyscalls.sh
+> >    DESCEND  objtool
+> >    CC [M]  drivers/iio/chemical/bme680_spi.o
+> > In file included from ./include/linux/acpi.h:41:0,
+> >                   from drivers/iio/chemical/bme680_spi.c:7:
+> > ./include/linux/module.h:213:1: error: expected ‘,’ or ‘;’ before ‘extern’
+> >   extern typeof(name) __mod_##type##__##name##_device_table  \
+> >   ^
+> > drivers/iio/chemical/bme680_spi.c:119:1: note: in expansion of macro ‘MODULE_DEVICE_TABLE’
+> >   MODULE_DEVICE_TABLE(of, bme680_of_spi_match);
+> >   ^~~~~~~~~~~~~~~~~~~
+> > scripts/Makefile.build:291: recipe for target 'drivers/iio/chemical/bme680_spi.o' failed
+> > make[1]: *** [drivers/iio/chemical/bme680_spi.o] Error 1
+> > Makefile:1741: recipe for target 'drivers/iio/chemical/bme680_spi.o' failed
+> > make: *** [drivers/iio/chemical/bme680_spi.o] Error 2
+> Thanks for the test, this is bad, i will fix that!
+> > BUT if:
+> > 
+> > himanshu@himanshu-Vostro-3559:~/linux-next$ make allyesconfig
+> > scripts/kconfig/conf  --allyesconfig Kconfig
+> > #
+> > # configuration written to .config
+> > #
+> > 
+> > himanshu@himanshu-Vostro-3559:~/linux-next$ sudo make drivers/iio/chemical/bme680_spi.o
+> > scripts/kconfig/conf  --syncconfig Kconfig
+> > make[1]: Nothing to be done for 'all'.
+> >    HOSTCC  scripts/dtc/dtc.o
+> >    HOSTCC  scripts/dtc/flattree.o
+> >    HOSTCC  scripts/dtc/fstree.o
+> >    HOSTCC  scripts/dtc/data.o
+> >    HOSTCC  scripts/dtc/livetree.o
+> >    HOSTCC  scripts/dtc/treesource.o
+> >    HOSTCC  scripts/dtc/srcpos.o
+> >    HOSTCC  scripts/dtc/checks.o
+> >    HOSTCC  scripts/dtc/util.o
+> >    LEX     scripts/dtc/dtc-lexer.lex.c
+> >    YACC    scripts/dtc/dtc-parser.tab.h
+> >    HOSTCC  scripts/dtc/dtc-lexer.lex.o
+> >    YACC    scripts/dtc/dtc-parser.tab.c
+> >    HOSTCC  scripts/dtc/dtc-parser.tab.o
+> >    HOSTLD  scripts/dtc/dtc
+> >    CC      scripts/mod/empty.o
+> >    MKELF   scripts/mod/elfconfig.h
+> >    HOSTCC  scripts/mod/modpost.o
+> >    CC      scripts/mod/devicetable-offsets.s
+> >    HOSTCC  scripts/mod/file2alias.o
+> >    HOSTCC  scripts/mod/sumversion.o
+> >    HOSTLD  scripts/mod/modpost
+> >    CC      kernel/bounds.s
+> >    CC      arch/x86/kernel/asm-offsets.s
+> >    CALL    scripts/checksyscalls.sh
+> >    DESCEND  objtool
+> >    CC      drivers/iio/chemical/bme680_spi.o
+> > 
+> > Compiles without any issues.
+> Hum, weird it compiles actually :s
 
-> Jeremy
->
-> > +
-> > +	put_unaligned_be32(val, tmp);
-> > +
-> > +	mutex_lock(&state->lock);
-> > +	ret = sps30_do_cmd(state, SPS30_AUTO_CLEANING_PERIOD, tmp, 0);
-> > +	if (ret) {
-> > +		mutex_unlock(&state->lock);
-> > +		return ret;
-> > +	}
-> > +
-> > +	msleep(20);
-> > +
-> > +	/*
-> > +	 * sensor requires reset in order to return up to date self cleaning
-> > +	 * period
-> > +	 */
-> > +	ret = sps30_do_cmd_reset(state);
-> > +	if (ret)
-> > +		dev_warn(dev,
-> > +			 "period changed but reads will return the old value\n");
-> > +
-> > +	mutex_unlock(&state->lock);
-> > +
-> > +	return len;
-> > +}
-> > +
-> > +static ssize_t cleaning_period_available_show(struct device *dev,
-> > +					      struct device_attribute *attr,
-> > +					      char *buf)
-> > +{
-> > +	return snprintf(buf, PAGE_SIZE, "[%d %d %d]\n",
-> > +			SPS30_AUTO_CLEANING_PERIOD_MIN, 1,
-> > +			SPS30_AUTO_CLEANING_PERIOD_MAX);
-> > +}
-> > +
-> >  static IIO_DEVICE_ATTR_WO(start_cleaning, 0);
-> > +static IIO_DEVICE_ATTR_RW(cleaning_period, 0);
-> > +static IIO_DEVICE_ATTR_RO(cleaning_period_available, 0);
-> >
-> >  static struct attribute *sps30_attrs[] = {
-> >  	&iio_dev_attr_start_cleaning.dev_attr.attr,
-> > +	&iio_dev_attr_cleaning_period.dev_attr.attr,
-> > +	&iio_dev_attr_cleaning_period_available.dev_attr.attr,
-> >  	NULL
-> >  };
-> >
-> > @@ -362,6 +482,7 @@ static int sps30_probe(struct i2c_client *client)
-> >  	state = iio_priv(indio_dev);
-> >  	i2c_set_clientdata(client, indio_dev);
-> >  	state->client = client;
-> > +	state->state = RESET;
-> >  	indio_dev->dev.parent = &client->dev;
-> >  	indio_dev->info = &sps30_info;
-> >  	indio_dev->name = client->name;
-> > @@ -373,19 +494,11 @@ static int sps30_probe(struct i2c_client *client)
-> >  	mutex_init(&state->lock);
-> >  	crc8_populate_msb(sps30_crc8_table, SPS30_CRC8_POLYNOMIAL);
-> >
-> > -	ret = sps30_do_cmd(state, SPS30_RESET, NULL, 0);
-> > +	ret = sps30_do_cmd_reset(state);
-> >  	if (ret) {
-> >  		dev_err(&client->dev, "failed to reset device\n");
-> >  		return ret;
-> >  	}
-> > -	msleep(300);
-> > -	/*
-> > -	 * Power-on-reset causes sensor to produce some glitch on i2c bus and
-> > -	 * some controllers end up in error state. Recover simply by placing
-> > -	 * some data on the bus, for example STOP_MEAS command, which
-> > -	 * is NOP in this case.
-> > -	 */
-> > -	sps30_do_cmd(state, SPS30_STOP_MEAS, NULL, 0);
-> >
-> >  	ret = sps30_do_cmd(state, SPS30_READ_SERIAL, buf, sizeof(buf));
-> >  	if (ret) {
-> > @@ -395,12 +508,6 @@ static int sps30_probe(struct i2c_client *client)
-> >  	/* returned serial number is already NUL terminated */
-> >  	dev_info(&client->dev, "serial number: %s\n", buf);
-> >
-> > -	ret = sps30_do_cmd(state, SPS30_START_MEAS, NULL, 0);
-> > -	if (ret) {
-> > -		dev_err(&client->dev, "failed to start measurement\n");
-> > -		return ret;
-> > -	}
-> > -
-> >  	ret = devm_add_action_or_reset(&client->dev, sps30_stop_meas, state);
-> >  	if (ret)
-> >  		return ret;
-> > --
-> > 2.20.1
-> >
+I think this behavior is observed due to:
+
+include/linux/module.h +212
+
+#ifdef MODULE
+ /* Creates an alias so file2alias.c can find device table. */
+ #define MODULE_DEVICE_TABLE(type, name)                                 \
+ extern typeof(name) __mod_##type##__##name##_device_table               \
+   __attribute__ ((unused, alias(__stringify(name))))
+ #else  /* !MODULE */
+ #define MODULE_DEVICE_TABLE(type, name)
+ #endif
+
+So, when we build the driver as a module[M] then macro expansion
+takes place giving us the compiler warning.
+
+OTOH, if the driver is built as builtin[*] then marco expands
+to nothing or simply goes away. And `;' completes the struct
+declaration while silencing the warning.
+
+ static const struct of_device_id bme680_of_spi_match[] = {
+         { .compatible = "bosch,bme680", },
+         {},
+ }
+ MODULE_DEVICE_TABLE(of, bme680_of_spi_match);
+
+converts to:
+
+ static const struct of_device_id bme680_of_spi_match[] = {
+         { .compatible = "bosch,bme680", },
+         {},
+ }
+					     ;
+					    ^^^	
+
+Amazing!
+Correct me if I'm wrong somewhere, took me 2 hours to figure
+that out :D
+
+Also, I some additional interesting observations:
+
+When buitin[*] ->  no symbol tables in the RO segment of object file
+
+himanshu@himanshu-Vostro-3559:~/linux-next$ nm drivers/iio/chemical/bme680_spi.o
+0000000000000000 d __addressable_bme680_spi_driver_init130
+00000000000001a0 r bme680_acpi_match
+                 U bme680_core_probe
+0000000000000000 r bme680_of_spi_match
+00000000000000a0 d bme680_regmap_bus
+                 U bme680_regmap_config
+0000000000000000 t bme680_regmap_spi_read
+0000000000000010 t bme680_regmap_spi_write
+0000000000000000 d bme680_spi_driver
+0000000000000000 t bme680_spi_driver_exit
+0000000000000000 t bme680_spi_driver_init
+00000000000001e0 r bme680_spi_id
+0000000000000070 t bme680_spi_probe
+                 U _dev_err
+                 U __devm_regmap_init
+                 U driver_unregister
+0000000000000000 d __exitcall_bme680_spi_driver_exit
+0000000000000000 t __initcall_bme680_spi_driver_init6
+                 U regmap_read
+                 U regmap_update_bits_base
+                 U regmap_write
+                 U spi_get_device_id
+                 U __spi_register_driver
+                 U spi_setup
+                 U spi_write_then_read
+                 U __stack_chk_fail
+
+
+While when [M] -> we can see the symbol tables in the RO segment
+
+himanshu@himanshu-Vostro-3559:~/linux-next$ nm drivers/iio/chemical/bme680_spi.o
+00000000000001a0 r bme680_acpi_match
+                 U bme680_core_probe
+0000000000000000 r bme680_of_spi_match
+00000000000000a0 d bme680_regmap_bus
+                 U bme680_regmap_config
+0000000000000000 t bme680_regmap_spi_read
+0000000000000010 t bme680_regmap_spi_write
+0000000000000000 d bme680_spi_driver
+0000000000000000 t bme680_spi_driver_exit
+0000000000000000 t bme680_spi_driver_init
+00000000000001e0 r bme680_spi_id
+0000000000000070 t bme680_spi_probe
+0000000000000000 T cleanup_module
+                 U _dev_err
+                 U __devm_regmap_init
+                 U driver_unregister
+0000000000000000 T init_module
+00000000000001a0 R __mod_acpi__bme680_acpi_match_device_table   <---
+0000000000000000 R __mod_of__bme680_of_spi_match_device_table   <---
+00000000000001e0 R __mod_spi__bme680_spi_id_device_table        <---
+                 U regmap_read
+                 U regmap_update_bits_base
+                 U regmap_write
+                 U spi_get_device_id
+                 U __spi_register_driver
+                 U spi_setup
+                 U spi_write_then_read
+                 U __stack_chk_fail
+                 U __this_module
+0000000000000033 r __UNIQUE_ID_author38
+000000000000000f r __UNIQUE_ID_description39
+0000000000000000 r __UNIQUE_ID_license40
+
+
+Thanks!
+-- 
+Himanshu Jha
+Undergraduate Student
+Department of Electronics & Communication
+Guru Tegh Bahadur Institute of Technology
