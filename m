@@ -2,192 +2,386 @@ Return-Path: <SRS0=ObhF=PX=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A0FAC43387
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Jan 2019 12:37:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73113C43387
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Jan 2019 18:32:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 00ACD20657
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Jan 2019 12:37:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2D80A20859
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Jan 2019 18:32:04 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="M3rbcbQj"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="O57pWJE7"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727352AbfAOMhB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Jan 2019 07:37:01 -0500
-Received: from mail-eopbgr700041.outbound.protection.outlook.com ([40.107.70.41]:14848
-        "EHLO NAM04-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727703AbfAOMhB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 15 Jan 2019 07:37:01 -0500
+        id S1730280AbfAOScD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Jan 2019 13:32:03 -0500
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:35018 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727088AbfAOScD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Jan 2019 13:32:03 -0500
+Received: by mail-lf1-f65.google.com with SMTP id e26so2838245lfc.2;
+        Tue, 15 Jan 2019 10:32:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=analog.onmicrosoft.com; s=selector1-analog-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HaLW6Imh2GfryteF+Rh6351HpC42pu6ILM4iX6lbn8I=;
- b=M3rbcbQjKHmHAZJGpQi4EXtSoKE0hIWr/b62HWKfC9QnMFFJW/YzrhYbSnXVSSkI8H2Zjw/B+j/YkNpq0UHGTUQirUzGr8Zm3kVX3z5b4YV0F+KnnKromMi1Df55oKWHJHWSJxfC2nPEI6CvhmKekHNKEb+V14L2tIpNXwmv8Us=
-Received: from DM5PR03CA0030.namprd03.prod.outlook.com (2603:10b6:4:3b::19) by
- BYAPR03MB3493.namprd03.prod.outlook.com (2603:10b6:a02:a9::30) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1516.14; Tue, 15 Jan 2019 12:34:17 +0000
-Received: from SN1NAM02FT062.eop-nam02.prod.protection.outlook.com
- (2a01:111:f400:7e44::203) by DM5PR03CA0030.outlook.office365.com
- (2603:10b6:4:3b::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.1516.14 via Frontend
- Transport; Tue, 15 Jan 2019 12:34:16 +0000
-Authentication-Results: spf=pass (sender IP is 137.71.25.55)
- smtp.mailfrom=analog.com; gmx.de; dkim=none (message not signed)
- header.d=none;gmx.de; dmarc=bestguesspass action=none header.from=analog.com;
-Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
- 137.71.25.55 as permitted sender) receiver=protection.outlook.com;
- client-ip=137.71.25.55; helo=nwd2mta1.analog.com;
-Received: from nwd2mta1.analog.com (137.71.25.55) by
- SN1NAM02FT062.mail.protection.outlook.com (10.152.72.208) with Microsoft SMTP
- Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.1471.13
- via Frontend Transport; Tue, 15 Jan 2019 12:34:16 +0000
-Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
-        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id x0FCYFYh007929
-        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
-        Tue, 15 Jan 2019 04:34:15 -0800
-Received: from linux.ad.analog.com (10.32.224.122) by
- NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
- 14.3.408.0; Tue, 15 Jan 2019 07:34:15 -0500
-From:   Stefan Popa <stefan.popa@analog.com>
-To:     <jic23@kernel.org>, <robh+dt@kernel.org>
-CC:     <mark.rutland@arm.com>, <knaack.h@gmx.de>, <lars@metafoo.de>,
-        <pmeerw@pmeerw.net>, <Michael.Hennerich@analog.com>,
-        <gregkh@linuxfoundation.org>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <stefan.popa@analog.com>
-Subject: [PATCH v2 2/2] dt-bindings: iio: adc: Add docs for AD7768-1
-Date:   Tue, 15 Jan 2019 14:34:03 +0200
-Message-ID: <1547555643-2248-1-git-send-email-stefan.popa@analog.com>
-X-Mailer: git-send-email 2.7.4
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=25yZ+tmli1MPXVX4ha840NozHxbCjWITEmRfreBlfCE=;
+        b=O57pWJE72Mpsc6RbiPWF1C5In/wbipu3ODXqdvyWkxNkq5CplEh1/jYjPp5P4xe/gJ
+         5CSdE7JXvsKpDimur+lvSCZT/UYL9mjQzMy2fnM6G87gfFELvy9ThD2WBzlfYuCqebWN
+         KzDxaKM6tiK/RqjQR0AEpkku1oCFBPgkzrlxaly/M6nilLG3x/pVTnKQUk97Xosn0JPI
+         Ckfq5JRS0j7Y6xFFLJo6dxo8Pt68pow3utCIEraZxoWkMwhbZxCW1dbhHnyGv63b91lm
+         CMCl2/uX/xMIPcEghxVWESnC8COP4b4alodJCyOlhVwAdA8xM7AI8OX2CAX10tx1ptlg
+         n5Og==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=25yZ+tmli1MPXVX4ha840NozHxbCjWITEmRfreBlfCE=;
+        b=mS4RfvBF3P9haSSB3uJOd5Ea/695iE/Qm3iiqWiuHgbywIOF8Yyfhu54ecz2qVMl9z
+         vuYT2ZYM2QSfNQIBP5B9skEFv5VKdRu3ikUAZs4B/8t4Vv6dm5RxHTf6v3resiaDRPoU
+         JAlzJvTSaSkLSKqGK4tRuu7qXB8K2wk6UUdRaagiH2c2rhpZmHqXBIVNm22/V9eqMntK
+         c4V9NuYBMBykcl5fJu87MSEmKbxKnguq2RfdD9mRhn4CiCw+UczJJMUknIBBKJGqkPGP
+         atUTF9Xcw2qalTnVqTxiv3mJ/cFE80v5S/5MwQVbYw3LJP38C0lDjgp+mvMv8naZ7NYn
+         hxew==
+X-Gm-Message-State: AJcUukfFFRIQOwpLviDmee30FscG+zAtUMykhJO2zo+SkSTaGlTJjCiM
+        2I/VIgWvo6KhqwU1KfhyofE=
+X-Google-Smtp-Source: ALg8bN5Rkku1eVE/faPA5nMkpQ2a5BwuVOanb9aLr3ACNos09Gn38yTCeAd4O8eMoYJD6ZuyhuVviA==
+X-Received: by 2002:a19:ef15:: with SMTP id n21mr3985037lfh.21.1547577119998;
+        Tue, 15 Jan 2019 10:31:59 -0800 (PST)
+Received: from localhost (89-70-37-207.dynamic.chello.pl. [89.70.37.207])
+        by smtp.gmail.com with ESMTPSA id x11sm842039lfd.81.2019.01.15.10.31.58
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 15 Jan 2019 10:31:59 -0800 (PST)
+Date:   Tue, 15 Jan 2019 19:31:34 +0100
+From:   Tomasz Duszynski <tduszyns@gmail.com>
+To:     Jeremy Fertic <jeremyfertic@gmail.com>
+Cc:     Tomasz Duszynski <tduszyns@gmail.com>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] iio: chemical: sps30: allow changing self cleaning
+ period
+Message-ID: <20190115183133.GA9202@arch>
+References: <20190113100912.29665-1-tduszyns@gmail.com>
+ <20190115001539.GA20418@r2700x.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRoutedOnPrem: True
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(376002)(136003)(346002)(39860400002)(396003)(2980300002)(199004)(189003)(77096007)(26005)(110136005)(186003)(486006)(44832011)(6306002)(305945005)(7636002)(7696005)(47776003)(54906003)(51416003)(7416002)(36756003)(316002)(16586007)(106002)(5660300001)(106466001)(2906002)(966005)(356004)(6666004)(72206003)(2616005)(476003)(126002)(426003)(48376002)(336012)(50466002)(8936002)(50226002)(8676002)(246002)(478600001)(4326008)(107886003);DIR:OUT;SFP:1101;SCL:1;SRVR:BYAPR03MB3493;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;A:1;MX:1;
-X-Microsoft-Exchange-Diagnostics: 1;SN1NAM02FT062;1:HIVJsYwsK5TomRv6MCjtZHWyQHp3Uaw0WZ0grbpUk4GMdbhidYYA+dltAa0TqCgLzPLaPWZr5fc5Xqlj2hSYmXHuRtUDmLxjezGrglgf8rZV7rdu92aNwgDzVfRrawBn
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4f882752-d8ee-4f2a-5c1c-08d67ae5c3aa
-X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600109)(711020)(4608076)(4709027)(2017052603328)(7153060);SRVR:BYAPR03MB3493;
-X-Microsoft-Exchange-Diagnostics: 1;BYAPR03MB3493;3:iw9juaUWAwmGviSGu9iYJ7jBRQZpo91We3x8ua/WhqqBZu2IUm0zZ09n+cxZfeu8nX4nF+gCaGxuJSslV82ZFtVr9NNbJfXPzle9tSughKsE8Ih432dQ0gWqhyssM+IBk7w7t/8ZjpVZ5ATLki2n/lzyEum9xgny9JQBQmV1R/PAFhJd3ZcrwrcRjLU5JG90/DGf577h4v9uF8oY3kJ9vizR+qx2TCOVxT3BitRSH/RRjmrTe0pluiOO1qtxCxoyB2VLCDfXCnU2FdDgUkz7kHeReE2Xsj7jcGTQOvPo68SI0iP/1JwpxXNb4/Dw3u+rMlKbIfmKhEmlx3CxuYhKARwKArYxn0W+Emx1DN/MiB/fQYcbENqHr8FrHeAMAEvy;25:OPyr8M1ZsUN3H3FsR/hKZ4Z3/eCw0Oa4HUJkxQf7Ek3xg1bkM+JOdndN9SxhF7g4gCwErXoAknhI5F6F0YYS64umn90k47Cj33ixeu+ODilo/tKTEGDhCKz/i95fPW7VpovRJfRJwoAKzqBNu2wXW9Ewl4fO/riMzXDHSV9C3UnYNKfLDxX+JlGqn/YN4e1TLqnsRDwSk6h2ve8lJwdsflUVCX1C/VYP/jTFmehS1ajc1g2JfYI9S+xC20OyEL3s16vhwVHTWmEaiMOur3TWFZBfMbFvZnzDukwBVsf41u0kN5TnU+2LrziCgd7HPw7m1qAQ/mxd8Jy+3i9YS+skWQ==
-X-MS-TrafficTypeDiagnostic: BYAPR03MB3493:
-X-Microsoft-Exchange-Diagnostics: 1;BYAPR03MB3493;31:2sEvI20GIzvzCuLe2DpbZkP7Qv5SnIZyjPxMrC6wPEWlDFJe/SuC/YCnm0y2iS6TR1YVxwJPe5a6NB08raWcwYtG7H9bcJsvSQPVOtlsJqeqpj/lUrfmndGUzdpfjD7s3OE1iG7TL0Bm64Xraeo4Ji8XFSZ9ZPKKPAtusYEmXACNebkHj5X+oqnKW8FO4nNWo0tmz4arBwjkI9gTzRn52M1M+ZaDPDXZWuLefdYc/Pg=;20:yVSefg+XmTraeZWlPG5S0jl4pdpbjMHw7nBhEqe7RBbm2wOzvG1nnIcsHXJMODh5EvMxedeyV7JX5+YIZll/Y8mGRoSVXEzTMAXB5R9pepzZcZsZWVQbKlNgs7XbyQ56wmz1Dn88se1+ePiQMwblHDCaYLMGWQMB4NajrU61mKlt71H3LyooiM6wpacteE6tav6ThiT+GMGuYrriSy4omoTqhHWvhMeox1VXlUxerOh6Ia1C4ChUq85RZOgYp4HJ2Vl7nWe1tOn9hUGyEUX0PX7H9Y2CwjQqOq1QshOHfG2Lyv0wVaCR1GZ65GskRiPO4V3QgkDBJGdUCOjj03Xu5ByoVCwvuaH3Ep+XVIAMFEIoPFUFZqrv7OIpjgvwIMiL2oI74Kj2fQ4PY2+m8BAjXL4/n2t0WLaE/1PnYuXdlNFa/4CMtvmPeUpJ04o1aJGnNhYDkDC4/IdtuIc11np7owCl1nYxxV4BiD055yMqDki/+U//+P7rhkkGRqNv0Dnj
-X-Microsoft-Antispam-PRVS: <BYAPR03MB3493D036959E62CEFAF39CE49D810@BYAPR03MB3493.namprd03.prod.outlook.com>
-X-Microsoft-Exchange-Diagnostics: 1;BYAPR03MB3493;4:r9EVOO4HdD3BR2G15ilc1r5QB9YkStUEg12pE1piMeTCRogkJFPgzcoUxqIOy1cVmS56SnWWA1Tb2FK69jzZ1gzPEKLwM2Zmeg3hngAZVatljxIkkCqx1yv4Xd5ISm3FAn+z7VcOfcajblXjIFVqs7rhbzCcoZjkGFcVaq6RurZPY67CCB6ZLTP7CKyVNMB34WmD98iCFz/BNPkn8rtvanaqeWfLja+PW+XmvdkizvnjA6MerAkV6xsCBAHw0KrPUG2794xYo7Bh5vDyBo09XtGWm0PYZCcxXuCmFf/T1ysi6+Z9CfKTl7vkQWW8A0Qn
-X-Forefront-PRVS: 0918748D70
-X-Microsoft-Exchange-Diagnostics: =?us-ascii?Q?1;BYAPR03MB3493;23:UoAn8ldFXu7v1lsz7OjZcl25YJG9KBE4FcQEW6dM1?=
- =?us-ascii?Q?FJFmREPsNe9TwbS07eQM7jcOyazSLQnUQoetMc6hu0/mYPKnvKOVu8BzpJKt?=
- =?us-ascii?Q?5tGBLy7T8V9J2LzwkH1NOERX7ZeJflG9J+GfW2v4Quzg5nVZToTgnNY2+4D9?=
- =?us-ascii?Q?XgeURsTjHjweh/fwGP010oaUxsTp5RQiLRZWMr+i4CNj2y7UsyVM7mrgbqBj?=
- =?us-ascii?Q?7rI0JL2pibk+9rSoJNxpihqnTzBSw5/Wuj5ai6zXKrKbcjetmroyijUNuxon?=
- =?us-ascii?Q?XZ/+opDLNxdbNjehMJbDE9KkLF5Y28gZewzzkMv0llA62IIIuM0OsfHVd6UI?=
- =?us-ascii?Q?taEf/l1/tcc0ZV9L18ulBPYB9nqdpVM/25tFs4rVZdxTSyaX1pzDR/PiXlGW?=
- =?us-ascii?Q?5HH4CEWNCVxBzu7wa14eTs/0Vz0jgmNvaOSiNLFAH1kgj/XD/lrM6dMFVB75?=
- =?us-ascii?Q?fp+CeIJkOoI44gHzMZJOwaxVJLjqNX5wzjPxeuyfkx2T+XqkH31kRjp24sTM?=
- =?us-ascii?Q?wvi6dqFQGdJHiAq/1yFnINkP7zX+L7bxb1UEoNMYR+h7HRk4jJWnmMio0IUj?=
- =?us-ascii?Q?X88OBZZ/Dq5zrONw/INx3Jhz4Uh0TxatYzvuKI2s2+jnHzP0qYYTztJMxpXw?=
- =?us-ascii?Q?50WbxCskbYz0PzzRs4Kr9HsQWwbMxHPVkFa5Oy3y2iZALYCE/vThPEDL6phe?=
- =?us-ascii?Q?a9U9gII8slrZIRCeKqV1PKSn5fl923yk8TuF7dJwIfA27sM5byT2re/Srkpl?=
- =?us-ascii?Q?igqwyTNO3qS6mPQNSkmT1NsnWOqpMI/cKCbPnmdtspwBviRMESn97NvtcTPe?=
- =?us-ascii?Q?kqVGvvWX+3Y59S3vSS0OgcoueCCUl9JXp9iAv6I3bDr+BndvC4XNSTjvmTjX?=
- =?us-ascii?Q?rmN/X6hBEIqEpkqBmi0dYxKKbXN7a0KjyPPclN/TfB8UH4czlpyrSiQBnm39?=
- =?us-ascii?Q?fgheXuzRciGDnMrRMKwKCaLPR7y1MmdscyEqmqoUV5aTPMR4Pu4f4cJrejhy?=
- =?us-ascii?Q?S2WjIc7B/abCoJtihjXvfv3wbzz9X0ZN9Nd0q3MqB3p2Q=3D=3D?=
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Message-Info: bmKnb8WNOuprIjwhIItJeOeGmVOTMUKYYl/fCJDY8u7UfIZvYabVFi9xtK8Ln+bvaftRu7VjU+pMFuGrHvHo6TNz7E4wwxWw1WadkTmoqJ4/u027TeMuB8Cocywrbw1qlZxtnXIymV2nWzSCKnO8HgJ8rmYPB8ePmt9fOkMdv1vj8wDvFlvHac1+g9yRVKzOt4ALQXMpf+D8ljn1kvKpRFJcezGFiNi5gHVdAI1bsSYM9tvV4DszsCM1TEU9OsxwjaY7Bo3pI0Z/+Nc6w+s0d4gqQ5wZxpC3iM4TItPw4ynRXSN9UVlYZ50aVMGM3ONrPMeMFxkzEK9uNokFATOoRGV8yqooiAL+hUahpp9NQCBHgfhVyR0re9rn73oj9zRp/bTosqsE/nxi4O9u5E7YpKKyepJ8PQIVWhLuTs9LTfI=
-X-Microsoft-Exchange-Diagnostics: 1;BYAPR03MB3493;6:u2usjnA1R9kRJthObBc3gBqsRNfekQae66jGiRBx5US/L+7AelAwO8Iur44ZhD/sow4dAJna9DM19nCAIQOwDoYYXgYDDTeOuEluGefSf4yT05usyXnB2IojpWJt2YtK5MTGluoJmkm0SfgBvV+4hCpgIQahad4eWqmRcGhbx4F/VfLjSfMttgKzgFaxHUf864xEIPx3Kv67EshJgrTUOFm7DeZCj3+J0iuXSpFTZlXM2/Y+LjWvyUrF3umSVFhu19BTJPXCcVekpTzkv+PP7ehpEdXtunZ1iFbPUIf2P7rAQIQT60Z5jq2aDSF1d8f7hH2hrZzjsRkkdy6JdaNTZ1HgiMLkRjbsVZ5PNMDFwBhgDP1N0x6ufAXPA/f61sYJsglWxLw4FuWY7h/ijxD5zsYOlMgW1/Ah+ixMvglPl7racx+aT5G4e6g0dfJwq0K7v98OzALhbP04+YIbKjkkDw==;5:mN+6bZcTb9veOzCp1M6xjkBUp+8ZSJgfzPHcgDKiRoUTBUeknmcQohroFZH14AqoM5LB+gcc1Vn7k2+xX5CvDGeDCFtrV6Pi/7qRVAyLEnwPLsuIflpEw2vnN3Nd/t2rBsQ6QX4QRJAxxrRPzMYECJQ5mDaSbnfxIOxUxvK2SnWKbidBBUNEBivSexaUNAaisDJx+EFC6j5kZmHUHFv7Dg==;7:9wOAFMitS7gJ3eDqgbw27ZlZ+cDuc/QJouL8FyMcrM/+MZ89y40CQ3tOtfN4rR5IqXkuu+tfW40arHCN6fm8McRYYmNlnYB+X0dcj06c1JDhTFtddwV3x48PnlGrPYRfBt96xxfqg/DvopwFOqVPbw==
-SpamDiagnosticOutput: 1:99
-SpamDiagnosticMetadata: NSPM
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jan 2019 12:34:16.3324
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4f882752-d8ee-4f2a-5c1c-08d67ae5c3aa
-X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.55];Helo=[nwd2mta1.analog.com]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR03MB3493
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20190115001539.GA20418@r2700x.localdomain>
+User-Agent: Mutt/1.11.2 (2019-01-07)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Document support for AD7768-1 Analog to Digital Converter.
+On Mon, Jan 14, 2019 at 05:15:39PM -0700, Jeremy Fertic wrote:
+> On Sun, Jan 13, 2019 at 11:09:12AM +0100, Tomasz Duszynski wrote:
+> > Sensor can periodically trigger self cleaning. Period can be changed by
+> > writing a new value to a dedicated attribute. Upon attribute read
+> > current period gets returned.
+> >
+> > Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
+> > ---
+> > v3:
+> >  * add info about used units to attribute docs
+> >
+> > v2:
+> >  * return available values formated as a range
+> >  * tweak naming a little (interval -> period)
+> >
+> >  Documentation/ABI/testing/sysfs-bus-iio-sps30 |  20 +++
+> >  drivers/iio/chemical/sps30.c                  | 143 +++++++++++++++---
+> >  2 files changed, 145 insertions(+), 18 deletions(-)
+> >
+> > diff --git a/Documentation/ABI/testing/sysfs-bus-iio-sps30 b/Documentation/ABI/testing/sysfs-bus-iio-sps30
+> > index e7ce2c57635e..143df8e89d08 100644
+> > --- a/Documentation/ABI/testing/sysfs-bus-iio-sps30
+> > +++ b/Documentation/ABI/testing/sysfs-bus-iio-sps30
+> > @@ -6,3 +6,23 @@ Description:
+> >  		Writing 1 starts sensor self cleaning. Internal fan accelerates
+> >  		to its maximum speed and keeps spinning for about 10 seconds in
+> >  		order to blow out accumulated dust.
+> > +
+> > +What:		/sys/bus/iio/devices/iio:deviceX/cleaning_period
+> > +Date:		January 2019
+> > +KernelVersion:	5.1
+> > +Contact:	linux-iio@vger.kernel.org
+> > +Description:
+> > +		Sensor is capable of triggering self cleaning periodically.
+> > +		Period can be changed by writing a new value here. Upon reading
+> > +		the current one is returned. Units are seconds.
+> > +
+> > +		Writing 0 disables periodical self cleaning entirely.
+> > +
+> > +What:		/sys/bus/iio/devices/iio:deviceX/cleaning_period_available
+> > +Date:		January 2019
+> > +KernelVersion:	5.1
+> > +Contact:	linux-iio@vger.kernel.org
+> > +Description:
+> > +		The range of available values in seconds represented as the
+> > +		minimum value, the step and the maximum value, all enclosed in
+> > +		square brackets.
+> > diff --git a/drivers/iio/chemical/sps30.c b/drivers/iio/chemical/sps30.c
+> > index f3b4390c8f5c..fe5f6309191b 100644
+> > --- a/drivers/iio/chemical/sps30.c
+> > +++ b/drivers/iio/chemical/sps30.c
+> > @@ -5,9 +5,6 @@
+> >   * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
+> >   *
+> >   * I2C slave address: 0x69
+> > - *
+> > - * TODO:
+> > - *  - support for reading/setting auto cleaning interval
+> >   */
+> >
+> >  #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+> > @@ -21,6 +18,7 @@
+> >  #include <linux/iio/sysfs.h>
+> >  #include <linux/iio/trigger_consumer.h>
+> >  #include <linux/iio/triggered_buffer.h>
+> > +#include <linux/kernel.h>
+> >  #include <linux/module.h>
+> >
+> >  #define SPS30_CRC8_POLYNOMIAL 0x31
+> > @@ -28,6 +26,9 @@
+> >  #define SPS30_MAX_READ_SIZE 48
+> >  /* sensor measures reliably up to 3000 ug / m3 */
+> >  #define SPS30_MAX_PM 3000
+> > +/* minimum and maximum self cleaning periods in seconds */
+> > +#define SPS30_AUTO_CLEANING_PERIOD_MIN 0
+> > +#define SPS30_AUTO_CLEANING_PERIOD_MAX 604800
+> >
+> >  /* SPS30 commands */
+> >  #define SPS30_START_MEAS 0x0010
+> > @@ -37,6 +38,9 @@
+> >  #define SPS30_READ_DATA 0x0300
+> >  #define SPS30_READ_SERIAL 0xd033
+> >  #define SPS30_START_FAN_CLEANING 0x5607
+> > +#define SPS30_AUTO_CLEANING_PERIOD 0x8004
+> > +/* not a sensor command per se, used only to distinguish write from read */
+> > +#define SPS30_READ_AUTO_CLEANING_PERIOD 0x8005
+> >
+> >  enum {
+> >  	PM1,
+> > @@ -45,6 +49,11 @@ enum {
+> >  	PM10,
+> >  };
+> >
+> > +enum {
+> > +	RESET,
+> > +	MEASURING,
+> > +};
+> > +
+> >  struct sps30_state {
+> >  	struct i2c_client *client;
+> >  	/*
+> > @@ -52,6 +61,7 @@ struct sps30_state {
+> >  	 * Must be held whenever sequence of commands is to be executed.
+> >  	 */
+> >  	struct mutex lock;
+> > +	int state;
+> >  };
+> >
+> >  DECLARE_CRC8_TABLE(sps30_crc8_table);
+> > @@ -107,6 +117,9 @@ static int sps30_do_cmd(struct sps30_state *state, u16 cmd, u8 *data, int size)
+> >  	case SPS30_START_FAN_CLEANING:
+> >  		ret = sps30_write_then_read(state, buf, 2, NULL, 0);
+> >  		break;
+> > +	case SPS30_READ_AUTO_CLEANING_PERIOD:
+> > +		buf[0] = SPS30_AUTO_CLEANING_PERIOD >> 8;
+> > +		buf[1] = (u8)SPS30_AUTO_CLEANING_PERIOD;
+> >  	case SPS30_READ_DATA_READY_FLAG:
+> >  	case SPS30_READ_DATA:
+> >  	case SPS30_READ_SERIAL:
+> > @@ -114,6 +127,15 @@ static int sps30_do_cmd(struct sps30_state *state, u16 cmd, u8 *data, int size)
+> >  		size += size / 2;
+> >  		ret = sps30_write_then_read(state, buf, 2, buf, size);
+> >  		break;
+> > +	case SPS30_AUTO_CLEANING_PERIOD:
+> > +		buf[2] = data[0];
+> > +		buf[3] = data[1];
+> > +		buf[4] = crc8(sps30_crc8_table, &buf[2], 2, CRC8_INIT_VALUE);
+> > +		buf[5] = data[2];
+> > +		buf[6] = data[3];
+> > +		buf[7] = crc8(sps30_crc8_table, &buf[5], 2, CRC8_INIT_VALUE);
+> > +		ret = sps30_write_then_read(state, buf, 8, NULL, 0);
+> > +		break;
+> >  	}
+> >
+> >  	if (ret)
+> > @@ -170,6 +192,14 @@ static int sps30_do_meas(struct sps30_state *state, s32 *data, int size)
+> >  	int i, ret, tries = 5;
+> >  	u8 tmp[16];
+> >
+> > +	if (state->state == RESET) {
+> > +		ret = sps30_do_cmd(state, SPS30_START_MEAS, NULL, 0);
+> > +		if (ret)
+> > +			return ret;
+> > +
+> > +		state->state = MEASURING;
+> > +	}
+> > +
+> >  	while (tries--) {
+> >  		ret = sps30_do_cmd(state, SPS30_READ_DATA_READY_FLAG, tmp, 2);
+> >  		if (ret)
+> > @@ -276,6 +306,24 @@ static int sps30_read_raw(struct iio_dev *indio_dev,
+> >  	return -EINVAL;
+> >  }
+> >
+> > +static int sps30_do_cmd_reset(struct sps30_state *state)
+> > +{
+> > +	int ret;
+> > +
+> > +	ret = sps30_do_cmd(state, SPS30_RESET, NULL, 0);
+> > +	msleep(300);
+> > +	/*
+> > +	 * Power-on-reset causes sensor to produce some glitch on i2c bus and
+> > +	 * some controllers end up in error state. Recover simply by placing
+> > +	 * some data on the bus, for example STOP_MEAS command, which
+> > +	 * is NOP in this case.
+> > +	 */
+> > +	sps30_do_cmd(state, SPS30_STOP_MEAS, NULL, 0);
+> > +	state->state = RESET;
+> > +
+> > +	return ret;
+> > +}
+> > +
+> >  static ssize_t start_cleaning_store(struct device *dev,
+> >  				    struct device_attribute *attr,
+> >  				    const char *buf, size_t len)
+> > @@ -296,10 +344,82 @@ static ssize_t start_cleaning_store(struct device *dev,
+> >  	return len;
+> >  }
+> >
+> > +static ssize_t cleaning_period_show(struct device *dev,
+> > +				      struct device_attribute *attr,
+> > +				      char *buf)
+> > +{
+> > +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> > +	struct sps30_state *state = iio_priv(indio_dev);
+> > +	u8 tmp[4];
+> > +	int ret;
+> > +
+> > +	mutex_lock(&state->lock);
+> > +	ret = sps30_do_cmd(state, SPS30_READ_AUTO_CLEANING_PERIOD, tmp, 4);
+> > +	mutex_unlock(&state->lock);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	return sprintf(buf, "%d\n", get_unaligned_be32(tmp));
+> > +}
+> > +
+> > +static ssize_t cleaning_period_store(struct device *dev,
+> > +				       struct device_attribute *attr,
+> > +				       const char *buf, size_t len)
+> > +{
+> > +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> > +	struct sps30_state *state = iio_priv(indio_dev);
+> > +	int val, ret;
+> > +	u8 tmp[4];
+> > +
+> > +	if (kstrtoint(buf, 0, &val))
+> > +		return -EINVAL;
+> > +
+> > +	if ((val < SPS30_AUTO_CLEANING_PERIOD_MIN) &&
+> > +	    (val > SPS30_AUTO_CLEANING_PERIOD_MAX))
+> > +		return -EINVAL;
+>
+> Should this be || instead of &&?
+>
 
-Signed-off-by: Stefan Popa <stefan.popa@analog.com>
----
-Changes in v2:
-	- Added information regarding the simultaneous sampling of the SYNC-IN pin
-	- Added the reset-gpios in the binding.
+Definitely. Thanks for catching this.
 
- .../devicetree/bindings/iio/adc/adi,ad7768-1.txt   | 41 ++++++++++++++++++++++
- MAINTAINERS                                        |  1 +
- 2 files changed, 42 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.txt
-
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.txt b/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.txt
-new file mode 100644
-index 0000000..9f5b88c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.txt
-@@ -0,0 +1,41 @@
-+Analog Devices AD7768-1 ADC device driver
-+
-+Required properties for the AD7768-1:
-+
-+- compatible: Must be "adi,ad7768-1"
-+- reg: SPI chip select number for the device
-+- spi-max-frequency: Max SPI frequency to use
-+	see: Documentation/devicetree/bindings/spi/spi-bus.txt
-+- clocks: phandle to the master clock (mclk)
-+	see: Documentation/devicetree/bindings/clock/clock-bindings.txt
-+- clock-names: Must be "mclk".
-+- interrupts: IRQ line for the ADC
-+	see: Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
-+- vref-supply: vref supply can be used as reference for conversion
-+- adi,sync-in-gpios: must be the device tree identifier of the SYNC-IN pin. Enables
-+	synchronization of multiple devices that require simultaneous sampling.
-+	A pulse is always required if the configuration is changed in any way, for example
-+	if the filter decimation rate changes. As the line is active low, it should
-+	be marked GPIO_ACTIVE_LOW.
-+
-+Optional properties:
-+
-+ - reset-gpios : GPIO spec for the RESET pin. If specified, it will be asserted during
-+	driver probe. As the line is active low, it should be marked GPIO_ACTIVE_LOW.
-+
-+Example:
-+
-+	adc@0 {
-+		compatible = "adi,ad7768-1";
-+		reg = <0>;
-+		spi-max-frequency = <2000000>;
-+		spi-cpol;
-+		spi-cpha;
-+		vref-supply = <&adc_vref>;
-+		interrupts = <25 IRQ_TYPE_EDGE_RISING>;
-+		interrupt-parent = <&gpio>;
-+		adi,sync-in-gpios = <&gpio 22 GPIO_ACTIVE_LOW>;
-+		reset-gpios = <&gpio 27 GPIO_ACTIVE_LOW>;
-+		clocks = <&ad7768_mclk>;
-+		clock-names = "mclk";
-+	};
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 3ba3811..e5613b6 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -868,6 +868,7 @@ L:	linux-iio@vger.kernel.org
- W:	http://ez.analog.com/community/linux-device-drivers
- S:	Supported
- F:	drivers/iio/adc/ad7768-1.c
-+F:	Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.txt
- 
- ANALOG DEVICES INC AD9389B DRIVER
- M:	Hans Verkuil <hans.verkuil@cisco.com>
--- 
-2.7.4
-
+> Jeremy
+>
+> > +
+> > +	put_unaligned_be32(val, tmp);
+> > +
+> > +	mutex_lock(&state->lock);
+> > +	ret = sps30_do_cmd(state, SPS30_AUTO_CLEANING_PERIOD, tmp, 0);
+> > +	if (ret) {
+> > +		mutex_unlock(&state->lock);
+> > +		return ret;
+> > +	}
+> > +
+> > +	msleep(20);
+> > +
+> > +	/*
+> > +	 * sensor requires reset in order to return up to date self cleaning
+> > +	 * period
+> > +	 */
+> > +	ret = sps30_do_cmd_reset(state);
+> > +	if (ret)
+> > +		dev_warn(dev,
+> > +			 "period changed but reads will return the old value\n");
+> > +
+> > +	mutex_unlock(&state->lock);
+> > +
+> > +	return len;
+> > +}
+> > +
+> > +static ssize_t cleaning_period_available_show(struct device *dev,
+> > +					      struct device_attribute *attr,
+> > +					      char *buf)
+> > +{
+> > +	return snprintf(buf, PAGE_SIZE, "[%d %d %d]\n",
+> > +			SPS30_AUTO_CLEANING_PERIOD_MIN, 1,
+> > +			SPS30_AUTO_CLEANING_PERIOD_MAX);
+> > +}
+> > +
+> >  static IIO_DEVICE_ATTR_WO(start_cleaning, 0);
+> > +static IIO_DEVICE_ATTR_RW(cleaning_period, 0);
+> > +static IIO_DEVICE_ATTR_RO(cleaning_period_available, 0);
+> >
+> >  static struct attribute *sps30_attrs[] = {
+> >  	&iio_dev_attr_start_cleaning.dev_attr.attr,
+> > +	&iio_dev_attr_cleaning_period.dev_attr.attr,
+> > +	&iio_dev_attr_cleaning_period_available.dev_attr.attr,
+> >  	NULL
+> >  };
+> >
+> > @@ -362,6 +482,7 @@ static int sps30_probe(struct i2c_client *client)
+> >  	state = iio_priv(indio_dev);
+> >  	i2c_set_clientdata(client, indio_dev);
+> >  	state->client = client;
+> > +	state->state = RESET;
+> >  	indio_dev->dev.parent = &client->dev;
+> >  	indio_dev->info = &sps30_info;
+> >  	indio_dev->name = client->name;
+> > @@ -373,19 +494,11 @@ static int sps30_probe(struct i2c_client *client)
+> >  	mutex_init(&state->lock);
+> >  	crc8_populate_msb(sps30_crc8_table, SPS30_CRC8_POLYNOMIAL);
+> >
+> > -	ret = sps30_do_cmd(state, SPS30_RESET, NULL, 0);
+> > +	ret = sps30_do_cmd_reset(state);
+> >  	if (ret) {
+> >  		dev_err(&client->dev, "failed to reset device\n");
+> >  		return ret;
+> >  	}
+> > -	msleep(300);
+> > -	/*
+> > -	 * Power-on-reset causes sensor to produce some glitch on i2c bus and
+> > -	 * some controllers end up in error state. Recover simply by placing
+> > -	 * some data on the bus, for example STOP_MEAS command, which
+> > -	 * is NOP in this case.
+> > -	 */
+> > -	sps30_do_cmd(state, SPS30_STOP_MEAS, NULL, 0);
+> >
+> >  	ret = sps30_do_cmd(state, SPS30_READ_SERIAL, buf, sizeof(buf));
+> >  	if (ret) {
+> > @@ -395,12 +508,6 @@ static int sps30_probe(struct i2c_client *client)
+> >  	/* returned serial number is already NUL terminated */
+> >  	dev_info(&client->dev, "serial number: %s\n", buf);
+> >
+> > -	ret = sps30_do_cmd(state, SPS30_START_MEAS, NULL, 0);
+> > -	if (ret) {
+> > -		dev_err(&client->dev, "failed to start measurement\n");
+> > -		return ret;
+> > -	}
+> > -
+> >  	ret = devm_add_action_or_reset(&client->dev, sps30_stop_meas, state);
+> >  	if (ret)
+> >  		return ret;
+> > --
+> > 2.20.1
+> >
