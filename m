@@ -2,83 +2,99 @@ Return-Path: <SRS0=ObhF=PX=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E477C43387
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Jan 2019 21:32:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4E91C43387
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Jan 2019 23:21:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C59A32086D
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Jan 2019 21:32:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1547587921;
-	bh=88VJeO6jo2Kjn5ZG6TlHcwm9guwqKoIrqosPywIEhOo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=lFjPkz04hv42eUJjtmYWrFoANTcpKlnUW392i2Q17MXLC7t5FlwHWu9TwaoivgUmZ
-	 KJWtW1n7r1HwRXKRqVrSVKG/+bWi9I7GGWmX0U8+0qbWpW5RGnLR/t2dVb6Ukad1tr
-	 9DgS6eSI7V31e79nUphlD2aIUKAK2NTqay0mrjgA=
+	by mail.kernel.org (Postfix) with ESMTP id AA76420866
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Jan 2019 23:21:43 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=jms.id.au header.i=@jms.id.au header.b="PGFOt4XG"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390467AbfAOVcB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Jan 2019 16:32:01 -0500
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:34898 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732817AbfAOVcB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Jan 2019 16:32:01 -0500
-Received: by mail-oi1-f194.google.com with SMTP id v6so3373675oif.2;
-        Tue, 15 Jan 2019 13:32:00 -0800 (PST)
+        id S2387982AbfAOXVn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Jan 2019 18:21:43 -0500
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:38129 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728858AbfAOXVn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Jan 2019 18:21:43 -0500
+Received: by mail-qt1-f196.google.com with SMTP id p17so5078159qtl.5;
+        Tue, 15 Jan 2019 15:21:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=jms.id.au; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uJY4lwOCQUNKRZERBYPlCOhWD3u8IjOlUrsRcWLxW8s=;
+        b=PGFOt4XG7tkv/XzZ9jYKTv2a/Fs+ps/iGvjiA8tK0C9GG3H39SvV+A259P1YKKX+Gm
+         HZ8p7WrykuuaO8FHP3hFGaTrdUPTXNUv70fqENF3cXj7yqH+fxUvSGrGKuH/mEcT1DpA
+         507/DtU8+jooaMDLHsegqLpbeqrkGVnbBFlKc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=z9gEuT+YNXtCWVAFBTcu1FTumM4T92y7to9PgZX0coQ=;
-        b=jNP43C9ojiKqUI+uVO0Z3sA+knK/gJMPtzTJ7N/nucdtD68a61HfONtuvo3NntlD8j
-         Ef4JRLR5KJKOLX08oqP3Fky9TW69vTEuVevC4Oc5xQcCBAlHn35NdXe2WrGuRp4prUvW
-         cXxlf8OYtALRWdRonGTGNPUkjNaGQdDvkPH4x0eysmwT72nCQAOV7+Eva3AXT8K+Uhuq
-         KvfYK6k4Es282fGGskX4Jp3lV6WcLsVcYSUz+b4xdu6HVtYHhd6f8j45gZT8nzoAKf7t
-         WbrW+WnnZmjJazyjuhita1sDLizkyHBUqW0UZJrpybNPgXEBLGww+vDlCyOgMYkDBAhK
-         My3Q==
-X-Gm-Message-State: AJcUukcYdYlyWIi7LsfxfUhHuk0R9QLbxHTJtsAZswScr23wBczgPC0h
-        B4K8to7BUWfEmdciEgub/Q==
-X-Google-Smtp-Source: ALg8bN46tdJkXSr9UlbEAiQScxzL4Sh2niknXE4jMQPxp0hHi2TBQnCAmqsaPBl7jSHP+unwEvy0Xg==
-X-Received: by 2002:aca:4d3:: with SMTP id 202mr488889oie.345.1547587920354;
-        Tue, 15 Jan 2019 13:32:00 -0800 (PST)
-Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id z18sm1862540otp.41.2019.01.15.13.31.59
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 15 Jan 2019 13:31:59 -0800 (PST)
-Date:   Tue, 15 Jan 2019 15:31:58 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Tomer Maimon <tmaimon77@gmail.com>
-Cc:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, robh+dt@kernel.org, mark.rutland@arm.com,
-        yuenn@google.com, venture@google.com, brendanhiggins@google.com,
-        avifishman70@gmail.com, joel@jms.id.au, linux-iio@vger.kernel.org,
-        openbmc@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, Tomer Maimon <tmaimon77@gmail.com>
-Subject: Re: [PATCH v2 1/2] dt-binding: iio: add NPCM ADC documentation
-Message-ID: <20190115213158.GA7016@bogus>
-References: <20190109164343.164205-1-tmaimon77@gmail.com>
- <20190109164343.164205-2-tmaimon77@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uJY4lwOCQUNKRZERBYPlCOhWD3u8IjOlUrsRcWLxW8s=;
+        b=Gy1DQB8G2tlA9aHF8Vgz02AKRoGgZW2Z4CfmmFkvtxYhoB1g20iO6dTg4WYjG0sQi2
+         kM3clLj71DaTekCEXrqTUHhBbjJV/CY99TEzTYpnfEs6SmmpZ+8kBxZL3vTZXFZPyRB2
+         FPEg0+0xdNPsZgIKf5jQinp/oSFZXji5srO9rjJTec/3P21NbiSicm+5jpu5EA+ZS85T
+         H7YewtDDeNs3nEjSQDBI+dJXnn2+c7uO47Uezmr5Ee5hTuHs1SOyYncv7pU1Ac9y9RAF
+         LhZ2vQhKSHDriWLsEZ19hilWI4f3Ka8depyfmtdbwLQnL4COGE5OsgRaLzoCetY6Hvkx
+         IMKQ==
+X-Gm-Message-State: AJcUukd6o4fNZcL8B4ZRKzAaGFG7nTLoxvGnXvMBESgy6F/hki5BLmeT
+        v4U59ZOpHD8nlLmambYrmL2ZGKSSxqhJ0HpqpKA=
+X-Google-Smtp-Source: ALg8bN4J74fIT+l5wj9d3fnPDj1BYRvZ6aCu+KiVfjam3KMGNuiuhUyiwyQvgjFeZuKhNpJxyQqLPNk+GaiF3HvlbOs=
+X-Received: by 2002:ac8:29b7:: with SMTP id 52mr4835382qts.266.1547594501921;
+ Tue, 15 Jan 2019 15:21:41 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20190109164343.164205-1-tmaimon77@gmail.com> <20190109164343.164205-2-tmaimon77@gmail.com>
 In-Reply-To: <20190109164343.164205-2-tmaimon77@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+From:   Joel Stanley <joel@jms.id.au>
+Date:   Wed, 16 Jan 2019 10:21:30 +1100
+Message-ID: <CACPK8XebHzVAO2TX25N24S0Pgg_0xA=7GN3j0oXhSyD4LmL4=w@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] dt-binding: iio: add NPCM ADC documentation
+To:     Tomer Maimon <tmaimon77@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Patrick Venture <venture@google.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Avi Fishman <avifishman70@gmail.com>,
+        linux-iio@vger.kernel.org,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed,  9 Jan 2019 18:43:42 +0200, Tomer Maimon wrote:
-> Added device tree binding documentation for Nuvoton BMC
-> NPCM Analog-to-Digital Converter(ADC).
-> 
-> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
-> ---
->  .../bindings/iio/adc/nuvoton,npcm-adc.txt          | 35 ++++++++++++++++++++++
->  1 file changed, 35 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt
-> 
+On Thu, 10 Jan 2019 at 03:44, Tomer Maimon <tmaimon77@gmail.com> wrote:
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+> +Required Node in the NPCM7xx BMC:
+> +An additional register is present in the NPCM7xx SOC which is
+> +assumed to be in the same device tree, with and marked as
+> +compatible with "nuvoton,npcm750-rst".
+
+Is there a reason you don't include a phandle to the reset node?
+
+I think doing that would make more sense.
+
+> +adc: adc@f000c000 {
+> +       compatible = "nuvoton,npcm750-adc";
+> +       reg = <0xf000c000 0x8>;
+> +       interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>;
+> +       clocks = <&clk NPCM7XX_CLK_ADC>;
+> +};
+
+> +
+> +rst: rst@f0801000 {
+> +       compatible = "nuvoton,npcm750-rst", "syscon",
+> +       "simple-mfd";
+> +       reg = <0xf0801000 0x6C>;
+> +};
