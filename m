@@ -6,82 +6,79 @@ X-Spam-Status: No, score=-6.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
 	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4037DC43387
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Jan 2019 20:28:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E477C43387
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Jan 2019 21:32:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id F3641205C9
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Jan 2019 20:28:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C59A32086D
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Jan 2019 21:32:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1547584086;
-	bh=bTeBJ98wO/06oAXlo/Jjh8qyfbz+bUhnskRhaU7yNDE=;
+	s=default; t=1547587921;
+	bh=88VJeO6jo2Kjn5ZG6TlHcwm9guwqKoIrqosPywIEhOo=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=yNGNG7JRHK0xESEKl/E9VuHJNDH/6OkmLpBGx8y0VvB6Q8WC8KZ2I+6QYXIHpCIof
-	 Sm8hPYUhCJs+BiR2ZFdwHUR4aocDDR+k3mElFCSotlG18+3u3sxM8ysnsh9ReYT1r6
-	 vWRFzwG67/fDKWTM3JrWxYdniMFSDbcPKXKbL/vA=
+	b=lFjPkz04hv42eUJjtmYWrFoANTcpKlnUW392i2Q17MXLC7t5FlwHWu9TwaoivgUmZ
+	 KJWtW1n7r1HwRXKRqVrSVKG/+bWi9I7GGWmX0U8+0qbWpW5RGnLR/t2dVb6Ukad1tr
+	 9DgS6eSI7V31e79nUphlD2aIUKAK2NTqay0mrjgA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389823AbfAOU2F (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Jan 2019 15:28:05 -0500
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:37521 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732409AbfAOU2F (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Jan 2019 15:28:05 -0500
-Received: by mail-oi1-f195.google.com with SMTP id y23so3212172oia.4;
-        Tue, 15 Jan 2019 12:28:05 -0800 (PST)
+        id S2390467AbfAOVcB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Jan 2019 16:32:01 -0500
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:34898 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732817AbfAOVcB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Jan 2019 16:32:01 -0500
+Received: by mail-oi1-f194.google.com with SMTP id v6so3373675oif.2;
+        Tue, 15 Jan 2019 13:32:00 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ML6L9EJQ9F/ewqA/pMz/yO2vKjQ+u9rsJNws7hr2pMo=;
-        b=D2K8pupPhf4Qis6yInSzm+/pHqHVUByDNS3D/k+l2FBvVUu7EKQZ0a+olmJA4BgD/Y
-         5zGAQC7nwCvKCDg+HnG24BYHb3nsW5G8la1djJTHA/kg6LZKMnS3mkTiu+WOOOJwOBqJ
-         Yjlcm6P1MdQeMEXrllp1Z/B0b33gl05f8tPHk+CuwcvVMxcP66/8d9N/p7LaDIkTULAU
-         ZMdbp6AW2GC42oM/yPrb04WqRZ9BRvSv8dwshSb1oBSnhXmkZ9w8XH19GAll3vIGQZXq
-         kyVtdu9jgbg89mZ3ljWnkVOsDv9BePubODEm52bJYTeNWJ1t6APY0IQDXQqK9JpC4cAw
-         3XFQ==
-X-Gm-Message-State: AJcUukcSoW5QrK/BMP5HKD3YjPvf96sCRADHDFk8r31vyIOV1ftc2CR0
-        y8qVNt9TuthpLgpVkAf/1Q==
-X-Google-Smtp-Source: ALg8bN5uN8aaGt1pmzzYYf1Ib2nQ+W2XYcfZc7MlNqSpJDydvoUNMW8R/vv5Rf6tNsfgJF5TIJX6Cg==
-X-Received: by 2002:aca:654a:: with SMTP id j10mr2799591oiw.301.1547584084157;
-        Tue, 15 Jan 2019 12:28:04 -0800 (PST)
-Received: from localhost ([70.231.7.113])
-        by smtp.gmail.com with ESMTPSA id z9sm1959278oiz.21.2019.01.15.12.28.03
+        bh=z9gEuT+YNXtCWVAFBTcu1FTumM4T92y7to9PgZX0coQ=;
+        b=jNP43C9ojiKqUI+uVO0Z3sA+knK/gJMPtzTJ7N/nucdtD68a61HfONtuvo3NntlD8j
+         Ef4JRLR5KJKOLX08oqP3Fky9TW69vTEuVevC4Oc5xQcCBAlHn35NdXe2WrGuRp4prUvW
+         cXxlf8OYtALRWdRonGTGNPUkjNaGQdDvkPH4x0eysmwT72nCQAOV7+Eva3AXT8K+Uhuq
+         KvfYK6k4Es282fGGskX4Jp3lV6WcLsVcYSUz+b4xdu6HVtYHhd6f8j45gZT8nzoAKf7t
+         WbrW+WnnZmjJazyjuhita1sDLizkyHBUqW0UZJrpybNPgXEBLGww+vDlCyOgMYkDBAhK
+         My3Q==
+X-Gm-Message-State: AJcUukcYdYlyWIi7LsfxfUhHuk0R9QLbxHTJtsAZswScr23wBczgPC0h
+        B4K8to7BUWfEmdciEgub/Q==
+X-Google-Smtp-Source: ALg8bN46tdJkXSr9UlbEAiQScxzL4Sh2niknXE4jMQPxp0hHi2TBQnCAmqsaPBl7jSHP+unwEvy0Xg==
+X-Received: by 2002:aca:4d3:: with SMTP id 202mr488889oie.345.1547587920354;
+        Tue, 15 Jan 2019 13:32:00 -0800 (PST)
+Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id z18sm1862540otp.41.2019.01.15.13.31.59
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 15 Jan 2019 12:28:03 -0800 (PST)
-Date:   Tue, 15 Jan 2019 14:28:02 -0600
+        Tue, 15 Jan 2019 13:31:59 -0800 (PST)
+Date:   Tue, 15 Jan 2019 15:31:58 -0600
 From:   Rob Herring <robh@kernel.org>
-To:     Sebastien Bourdelin <sebastien.bourdelin@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, himanshujha199640@gmail.com,
-        mark.rutland@arm.com, robh+dt@kernel.org, pmeerw@pmeerw.net,
-        lars@metafoo.de, knaack.h@gmx.de, jic23@kernel.org,
-        Sebastien Bourdelin <sebastien.bourdelin@gmail.com>
-Subject: Re: [PATCH v3 2/2] dt-bindings: iio: chemical: Add bindings for
- bme680
-Message-ID: <20190115202802.GA26149@bogus>
-References: <20190114201914.24572-1-sebastien.bourdelin@gmail.com>
- <20190114201914.24572-2-sebastien.bourdelin@gmail.com>
+To:     Tomer Maimon <tmaimon77@gmail.com>
+Cc:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, robh+dt@kernel.org, mark.rutland@arm.com,
+        yuenn@google.com, venture@google.com, brendanhiggins@google.com,
+        avifishman70@gmail.com, joel@jms.id.au, linux-iio@vger.kernel.org,
+        openbmc@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, Tomer Maimon <tmaimon77@gmail.com>
+Subject: Re: [PATCH v2 1/2] dt-binding: iio: add NPCM ADC documentation
+Message-ID: <20190115213158.GA7016@bogus>
+References: <20190109164343.164205-1-tmaimon77@gmail.com>
+ <20190109164343.164205-2-tmaimon77@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190114201914.24572-2-sebastien.bourdelin@gmail.com>
+In-Reply-To: <20190109164343.164205-2-tmaimon77@gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 14 Jan 2019 15:19:14 -0500, Sebastien Bourdelin wrote:
-> BME680 is a pressure/temperature/humidity/voc sensor.
+On Wed,  9 Jan 2019 18:43:42 +0200, Tomer Maimon wrote:
+> Added device tree binding documentation for Nuvoton BMC
+> NPCM Analog-to-Digital Converter(ADC).
 > 
-> Signed-off-by: Sebastien Bourdelin <sebastien.bourdelin@gmail.com>
+> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
 > ---
-> v2 -> v3:
->   - change i2c address to 0x76 as it seems more reliable: Suggested by Himanshu Jha <himanshujha199640@gmail.com>
->   - rebase on master
-> ---
->  .../devicetree/bindings/iio/chemical/bme680.txt       | 11 +++++++++++
->  1 file changed, 11 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/chemical/bme680.txt
+>  .../bindings/iio/adc/nuvoton,npcm-adc.txt          | 35 ++++++++++++++++++++++
+>  1 file changed, 35 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt
 > 
 
 Reviewed-by: Rob Herring <robh@kernel.org>
