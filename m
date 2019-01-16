@@ -2,79 +2,85 @@ Return-Path: <SRS0=kvxZ=PY=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.0 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63875C43387
-	for <linux-iio@archiver.kernel.org>; Wed, 16 Jan 2019 16:50:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24CB2C43387
+	for <linux-iio@archiver.kernel.org>; Wed, 16 Jan 2019 21:40:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3CAA0205C9
-	for <linux-iio@archiver.kernel.org>; Wed, 16 Jan 2019 16:50:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E55E720675
+	for <linux-iio@archiver.kernel.org>; Wed, 16 Jan 2019 21:40:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1547674858;
+	bh=OTp2nIulo/RBn8xZWus1RKDhpD+Q6SB/hcK9lr+Fz74=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=ZoWJzNOgJfhlPIXBaILIRr4iqVCiitQ8BHM0jQuRzVu1NLWWJ2CigpdWmuphK+8oq
+	 Ghb7+Xxvk5xeRVsP9nYIQbcvckmjnrW8xw6GD3siewnBqfzkJQpfxE6v0+hHbo804e
+	 JOnsT8uXpPBUSLdTOFhXwLk1fMYzdW6DIms3Z2UA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388314AbfAPQtw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 16 Jan 2019 11:49:52 -0500
-Received: from 212.199.177.27.static.012.net.il ([212.199.177.27]:57534 "EHLO
-        herzl.nuvoton.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2388272AbfAPQtv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 16 Jan 2019 11:49:51 -0500
-Received: from taln60.nuvoton.co.il (ntil-fw [212.199.177.25])
-        by herzl.nuvoton.co.il (8.13.8/8.13.8) with ESMTP id x0GGIxUE013485;
-        Wed, 16 Jan 2019 18:18:59 +0200
-Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
-        id B429962DA4; Wed, 16 Jan 2019 18:48:56 +0200 (IST)
-From:   Tomer Maimon <tmaimon77@gmail.com>
-To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, robh+dt@kernel.org, mark.rutland@arm.com,
-        yuenn@google.com, venture@google.com, brendanhiggins@google.com,
-        avifishman70@gmail.com, joel@jms.id.au
-Cc:     linux-iio@vger.kernel.org, openbmc@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Tomer Maimon <tmaimon77@gmail.com>
-Subject: [PATCH v3 0/2] iio: adc: npcm: add NPCM ADC driver
-Date:   Wed, 16 Jan 2019 18:48:53 +0200
-Message-Id: <20190116164855.200357-1-tmaimon77@gmail.com>
-X-Mailer: git-send-email 2.14.1
+        id S1730824AbfAPVk5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 16 Jan 2019 16:40:57 -0500
+Received: from mail-ot1-f48.google.com ([209.85.210.48]:41987 "EHLO
+        mail-ot1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729361AbfAPVk5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 16 Jan 2019 16:40:57 -0500
+Received: by mail-ot1-f48.google.com with SMTP id v23so9167555otk.9;
+        Wed, 16 Jan 2019 13:40:56 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=DQ2nEF4GJXL+CBtlCXl6GU+saOaf/4f16zN5OoYLAxg=;
+        b=NVsLhoWYQNjSDFXklsi8MuZoXkAwuka5pgGaDjQRA4lTMUF8EC/OTkfSuVREfEdhCw
+         BvG91nOLKzpinHqvzkVPChmGdpvvyjNM2pzG2bakVIG5CKjfJnMPPyHsL+Ccegw8BAbJ
+         hx+w0irecdf16GPBxdHG0NSDUHBeCUoKpTRA+9MKEEGyVcpGo5GaBuPQvH6H4aAMQuC4
+         zwTeZ8Oea7CRhnL4odz0cn5tiaZyocHLACzSad//SCF3blV64srV/df5XocPiLIlUgNG
+         9qd8y943rmF7bnorC3JPzu/bW/5wAaSt8ktZWLA40UwlB3HiTTg3T6KucakJQAWktISc
+         z0Ew==
+X-Gm-Message-State: AJcUukfiTSFoQDkQrVcNbSBRPlb9VoXN3mpIX96tyydwlRgAT1a3eO+s
+        BRg3zi5tFbpeWEqnKZiiwg==
+X-Google-Smtp-Source: ALg8bN4ta6KLEDnsarbAFfCMKSdl6xjuajp19zoiRhplWj98SFsaBX5dAS4qJlci3IbqkmeSv/61Wg==
+X-Received: by 2002:a9d:64c8:: with SMTP id n8mr7181076otl.115.1547674856268;
+        Wed, 16 Jan 2019 13:40:56 -0800 (PST)
+Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id t2sm3007409otl.4.2019.01.16.13.40.55
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 16 Jan 2019 13:40:55 -0800 (PST)
+Date:   Wed, 16 Jan 2019 15:40:55 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Stefan Popa <stefan.popa@analog.com>
+Cc:     jic23@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        Michael.Hennerich@analog.com, gregkh@linuxfoundation.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stefan.popa@analog.com
+Subject: Re: [PATCH v2 2/2] dt-bindings: iio: adc: Add docs for AD7768-1
+Message-ID: <20190116214055.GA3346@bogus>
+References: <1547555643-2248-1-git-send-email-stefan.popa@analog.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1547555643-2248-1-git-send-email-stefan.popa@analog.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch set adds Analog-to-Digital Converter (ADC) support 
-for the Nuvoton NPCM Baseboard Management Controller (BMC).
+On Tue, 15 Jan 2019 14:34:03 +0200, Stefan Popa wrote:
+> Document support for AD7768-1 Analog to Digital Converter.
+> 
+> Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+> ---
+> Changes in v2:
+> 	- Added information regarding the simultaneous sampling of the SYNC-IN pin
+> 	- Added the reset-gpios in the binding.
+> 
+>  .../devicetree/bindings/iio/adc/adi,ad7768-1.txt   | 41 ++++++++++++++++++++++
+>  MAINTAINERS                                        |  1 +
+>  2 files changed, 42 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.txt
+> 
 
-The NPCM ADC is a 10-bit converter for eight channel inputs.
-
-The NPCM ADC driver tested on NPCM750 evaluation board.
-
-Addressed comments from:.
- - Jonathan Cameron: https://lore.kernel.org/patchwork/patch/1030483/
-
-Changes since version 2:
- - Return error if clock have not found in the device tree ADC node.
- - Modify regulator order for avoid mixing devm and non-devm path.
- - Modify probe and remove function to have relative ordering.
- 				  
-Changes since version 1:
- - Add NPCM prefix.
- - Remove unnecessary parameter initialization.
- - Modify read function to avoid racy condition.
- - Reading the reference voltage when needed.
- - Modify dt-binding documentation according Jonathan comments.
-
-Tomer Maimon (2):
-  dt-binding: iio: add NPCM ADC documentation
-  iio: adc: add NPCM ADC driver
-
- .../bindings/iio/adc/nuvoton,npcm-adc.txt          |  35 +++
- drivers/iio/adc/Kconfig                            |  10 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/npcm_adc.c                         | 335 +++++++++++++++++++++
- 4 files changed, 381 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt
- create mode 100644 drivers/iio/adc/npcm_adc.c
-
--- 
-2.14.1
-
+Reviewed-by: Rob Herring <robh@kernel.org>
