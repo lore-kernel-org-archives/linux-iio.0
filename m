@@ -4,54 +4,52 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6051EC61CE8
-	for <linux-iio@archiver.kernel.org>; Sat, 19 Jan 2019 16:57:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09EACC61CE8
+	for <linux-iio@archiver.kernel.org>; Sat, 19 Jan 2019 17:03:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2EDD82087E
-	for <linux-iio@archiver.kernel.org>; Sat, 19 Jan 2019 16:57:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CE6242087E
+	for <linux-iio@archiver.kernel.org>; Sat, 19 Jan 2019 17:03:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1547917041;
-	bh=3gxBaH2bE68Yfp+/oibOe9+ZC9R4mkaIaW55U9uYlT4=;
+	s=default; t=1547917392;
+	bh=ABTfCy+ybHCfegXKSTjJ+uwqzIxi0vCHqrGLVxxTxSQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=dHrfPQN1CbI2c+HBtB8vH/waxIDctj0wCi6ZF//GwD+bT/5YsspOouSSt/Rkat3Gs
-	 8DXxEfxnCzPRmahXyQnL2Ui6f2HG2T3Ingn+nbLkhj3mHQyfmjmBvT7M7EEr9nnjeL
-	 pUylqVNpIdxE6oPw2dcIYZKMrVzCz0a7LfKlBY60=
+	b=FdEMoV+wr+60NWMk+J1066iDLvO9uhqDKR633HAckyZUbdBI4zJ2kLi4I/Q78sWJg
+	 6e/PEov4JqLd2dqQxcqDJDrpjLFtfesjnlLfBBlyqs2b8P6b1tPxJS8FpOhbm5gG4m
+	 T9vb34To+7FfUdIZQGu1mH3eCSFQV7UlSz8sJtIY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728515AbfASQ5P (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 19 Jan 2019 11:57:15 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38448 "EHLO mail.kernel.org"
+        id S1728680AbfASRDM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 19 Jan 2019 12:03:12 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41796 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726763AbfASQ5P (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 19 Jan 2019 11:57:15 -0500
+        id S1726679AbfASRDM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 19 Jan 2019 12:03:12 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E2D162084F;
-        Sat, 19 Jan 2019 16:57:12 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8E8392084F;
+        Sat, 19 Jan 2019 17:03:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1547917034;
-        bh=3gxBaH2bE68Yfp+/oibOe9+ZC9R4mkaIaW55U9uYlT4=;
+        s=default; t=1547917390;
+        bh=ABTfCy+ybHCfegXKSTjJ+uwqzIxi0vCHqrGLVxxTxSQ=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uP7kLrpd0OlwbcUuSZ/kW5hEZ714LQxe8Zrbi9Kg5D2KChwNQQA4UqMgtZqJ/x/OG
-         eMkCDi5BbOp31llRv2d02P2dUcb1mrcnDvcm5otZWHET2wRP13HAXPyXBlsSxUGz85
-         QUlqMcc6v+3Hxp4mNjBo5ZdDmiKwK/M9uzjI+wB8=
-Date:   Sat, 19 Jan 2019 16:57:09 +0000
+        b=Ekug9gj+/bCMMQqAb4DZIek3UvbOZHFO9X7crrvM6NlZFJ59aeewk7w7h3nFLX66q
+         1+lln+XR9718RdU/rAkrFfKLKG36LPoVII99og+J/ks6MZ+wyfkW9c2IXT6VRHI6cB
+         Wkp7cIeQxT5RsyODREq+RTBvwS7/YdVuL5k7wm8M=
+Date:   Sat, 19 Jan 2019 17:03:05 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     sebastien bourdelin <sebastien.bourdelin@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, himanshujha199640@gmail.com,
-        mark.rutland@arm.com, robh+dt@kernel.org, pmeerw@pmeerw.net,
-        lars@metafoo.de, knaack.h@gmx.de
-Subject: Re: [PATCH v2 2/2] dt-bindings: iio: chemical: Add bindings for
- bme680
-Message-ID: <20190119165709.5045a18b@archlinux>
-In-Reply-To: <4768d945-61aa-a8ab-3e41-68b4f861cc69@gmail.com>
-References: <20190111205359.14158-1-sebastien.bourdelin@gmail.com>
-        <20190111205359.14158-2-sebastien.bourdelin@gmail.com>
-        <20190112182837.4cc42743@archlinux>
-        <4768d945-61aa-a8ab-3e41-68b4f861cc69@gmail.com>
+To:     Martin Kelly <martin@martingkelly.com>
+Cc:     linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Daniel Baluta <daniel.baluta@gmail.com>
+Subject: Re: [PATCH 1/5] iio:bmi160: add SPDX identifiers
+Message-ID: <20190119170305.7b391c55@archlinux>
+In-Reply-To: <20190114035621.5252-2-martin@martingkelly.com>
+References: <20190114035621.5252-1-martin@martingkelly.com>
+        <20190114035621.5252-2-martin@martingkelly.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -61,55 +59,77 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 14 Jan 2019 15:17:10 -0500
-sebastien bourdelin <sebastien.bourdelin@gmail.com> wrote:
+On Sun, 13 Jan 2019 19:56:17 -0800
+Martin Kelly <martin@martingkelly.com> wrote:
 
-> On 1/12/19 1:28 PM, Jonathan Cameron wrote:
-> > On Fri, 11 Jan 2019 15:53:59 -0500
-> > Sebastien Bourdelin <sebastien.bourdelin@gmail.com> wrote:
-> >  
-> >> BME680 is a pressure/temperature/humidity/voc sensor.
-> >>
-> >> Signed-off-by: Sebastien Bourdelin <sebastien.bourdelin@gmail.com>  
-> > Hmm. We could add the VDD and VDIO regulators perhaps.
-> > Driver assumes they are on currently but we'll get a board where control
-> > is needed sooner or later.  I'm not that fussed about this though.  
+> From: Martin Kelly <martin@martingkelly.com>
 > 
-> If that's fine with you, i prefer to leave it as it is right now as i 
-> don't feel
+> Add SPDX identifiers (GPL 2) for the BMI160 driver. bmi160.h had an
+> identifier, but the other files did not.
 > 
-> confident enough to correctly explain it in the Documentation.
-> 
-> But if you have more input, you are more then welcome!
-Given we aren't planning to do more than turn them on and that'll work
-fine with stub regulators (so they can effectively be optional for ever),
-there is no particular need to put them in now if you prefer not to.
+> Signed-off-by: Martin Kelly <martin@martingkelly.com>
 
-Jonathan
+This is fine, but for anything (even SPDX) that touches licenses
+I ideally like to get an Ack from the main author.  
+cc'd Daniel.
 
+> ---
+>  drivers/iio/imu/bmi160/bmi160_core.c | 5 +----
+>  drivers/iio/imu/bmi160/bmi160_i2c.c  | 5 +----
+>  drivers/iio/imu/bmi160/bmi160_spi.c  | 4 +---
+>  3 files changed, 3 insertions(+), 11 deletions(-)
 > 
-> > Jonathan
-> >  
-> >> ---
-> >>   .../devicetree/bindings/iio/chemical/bme680.txt       | 11 +++++++++++
-> >>   1 file changed, 11 insertions(+)
-> >>   create mode 100644 Documentation/devicetree/bindings/iio/chemical/bme680.txt
-> >>
-> >> diff --git a/Documentation/devicetree/bindings/iio/chemical/bme680.txt b/Documentation/devicetree/bindings/iio/chemical/bme680.txt
-> >> new file mode 100644
-> >> index 000000000000..885a1b918340
-> >> --- /dev/null
-> >> +++ b/Documentation/devicetree/bindings/iio/chemical/bme680.txt
-> >> @@ -0,0 +1,11 @@
-> >> +Bosch Sensortec BME680 pressure/temperature/humidity/voc sensors
-> >> +
-> >> +Required properties:
-> >> +- compatible: must be "bosch,bme680"
-> >> +
-> >> +Example:
-> >> +
-> >> +bme680@77 {
-> >> +          compatible = "bosch,bme680";
-> >> +          reg = <0x77>;
-> >> +};  
+> diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
+> index b10330b0f93f..ce61026d84c3 100644
+> --- a/drivers/iio/imu/bmi160/bmi160_core.c
+> +++ b/drivers/iio/imu/bmi160/bmi160_core.c
+> @@ -1,12 +1,9 @@
+> +// SPDX-License-Identifier: GPL-2.0
+>  /*
+>   * BMI160 - Bosch IMU (accel, gyro plus external magnetometer)
+>   *
+>   * Copyright (c) 2016, Intel Corporation.
+>   *
+> - * This file is subject to the terms and conditions of version 2 of
+> - * the GNU General Public License.  See the file COPYING in the main
+> - * directory of this archive for more details.
+> - *
+>   * IIO core driver for BMI160, with support for I2C/SPI busses
+>   *
+>   * TODO: magnetometer, interrupts, hardware FIFO
+> diff --git a/drivers/iio/imu/bmi160/bmi160_i2c.c b/drivers/iio/imu/bmi160/bmi160_i2c.c
+> index 5b1f7e6af651..e36f5e82d400 100644
+> --- a/drivers/iio/imu/bmi160/bmi160_i2c.c
+> +++ b/drivers/iio/imu/bmi160/bmi160_i2c.c
+> @@ -1,12 +1,9 @@
+> +// SPDX-License-Identifier: GPL-2.0
+>  /*
+>   * BMI160 - Bosch IMU, I2C bits
+>   *
+>   * Copyright (c) 2016, Intel Corporation.
+>   *
+> - * This file is subject to the terms and conditions of version 2 of
+> - * the GNU General Public License.  See the file COPYING in the main
+> - * directory of this archive for more details.
+> - *
+>   * 7-bit I2C slave address is:
+>   *      - 0x68 if SDO is pulled to GND
+>   *      - 0x69 if SDO is pulled to VDDIO
+> diff --git a/drivers/iio/imu/bmi160/bmi160_spi.c b/drivers/iio/imu/bmi160/bmi160_spi.c
+> index e521ad14eeac..c19e3df35559 100644
+> --- a/drivers/iio/imu/bmi160/bmi160_spi.c
+> +++ b/drivers/iio/imu/bmi160/bmi160_spi.c
+> @@ -1,11 +1,9 @@
+> +// SPDX-License-Identifier: GPL-2.0
+>  /*
+>   * BMI160 - Bosch IMU, SPI bits
+>   *
+>   * Copyright (c) 2016, Intel Corporation.
+>   *
+> - * This file is subject to the terms and conditions of version 2 of
+> - * the GNU General Public License.  See the file COPYING in the main
+> - * directory of this archive for more details.
+>   */
+>  #include <linux/acpi.h>
+>  #include <linux/module.h>
 
