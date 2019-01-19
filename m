@@ -4,51 +4,51 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E61F5C61CE4
-	for <linux-iio@archiver.kernel.org>; Sat, 19 Jan 2019 17:29:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7AEBC61CE4
+	for <linux-iio@archiver.kernel.org>; Sat, 19 Jan 2019 17:33:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B5C932087E
-	for <linux-iio@archiver.kernel.org>; Sat, 19 Jan 2019 17:29:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 78ACD2087E
+	for <linux-iio@archiver.kernel.org>; Sat, 19 Jan 2019 17:33:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1547918971;
-	bh=DwUtINT9UdnwZEL00Y4ZodmXXx/FBT6JSWd0skq1dGg=;
+	s=default; t=1547919216;
+	bh=DtvgE/snMwSj3ZN1+bmlCAElg0h7LXzdeERzCLJc92U=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=rExc9bR9wYCfo3rmKLRHVIeyz2zfiM93mxEy6EXsgOzSeVliILv4zAA29vBccpXU8
-	 gmE+9jdpOw6am07YNH5mGSOOOOXVbVAdtdALCbO+ko1pCvbhaKH8W4xAOjcXs239QU
-	 uK9BhwJr45d4vbAxBfQ264rQUMmI2SsEjceOoeFk=
+	b=2YOtbo3VdNehkgo2Bj8X+NmVbsGBWYmXGaqzSH/XP8RuGp+TewIj6Vkg4hYGbThtC
+	 efsruvpC39ZRQSexD4v25cpPgsz3Rw24Rg82x0o/Lcx2V0W38uX5n1e06jJM4I3jM1
+	 EREn4A9Z1xXf1Nl9ycNCLi41OMC0tx1JqjZRp8KM=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728725AbfASR3b (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 19 Jan 2019 12:29:31 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50946 "EHLO mail.kernel.org"
+        id S1728643AbfASRdg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 19 Jan 2019 12:33:36 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51706 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728423AbfASR3a (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 19 Jan 2019 12:29:30 -0500
+        id S1728620AbfASRdf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 19 Jan 2019 12:33:35 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 07BE92086D;
-        Sat, 19 Jan 2019 17:29:28 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B233D2086D;
+        Sat, 19 Jan 2019 17:33:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1547918970;
-        bh=DwUtINT9UdnwZEL00Y4ZodmXXx/FBT6JSWd0skq1dGg=;
+        s=default; t=1547919214;
+        bh=DtvgE/snMwSj3ZN1+bmlCAElg0h7LXzdeERzCLJc92U=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qj9v76+IV4YkH1Tc+xWch7Gq9Rzpxg4m+fDZHhghwu/TqVEce1dHDaPxyZY+UyLhc
-         KTvLBYhnD9MSHDuintZpgKEZWnTqjH7yGuJnUGfyJDCPHKkx1RS6m8cINmR7c7NKQh
-         fbzgMlekxYcU5/JXCup/F591clIzYa16Rpa2F79w=
-Date:   Sat, 19 Jan 2019 17:29:25 +0000
+        b=Jd4aTyMPUW4q4BSBL/RMcJ1TndjPS9QXxSUSNucBDinZiH3vd2XcA+357b0HcAYEO
+         JL72Ot84z3qe+DNPd34tm/5SU7KFpEVmEgztdmpkVQqFaThw8NuqOOhzAe24dZXmvP
+         JmGKlD2Wxtf9sEjA/odm99HBE88Gr4FUCxzt7aeM=
+Date:   Sat, 19 Jan 2019 17:33:30 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Martin Kelly <martin@martingkelly.com>
-Cc:     linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH 5/5] iio:bmi160:snap timestamp closer to event
-Message-ID: <20190119172925.6dafec11@archlinux>
-In-Reply-To: <20190114035621.5252-6-martin@martingkelly.com>
-References: <20190114035621.5252-1-martin@martingkelly.com>
-        <20190114035621.5252-6-martin@martingkelly.com>
+To:     Denis CIOCCA <denis.ciocca@st.com>
+Cc:     Mario Tesi <martepisa@gmail.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Mario TESI <mario.tesi@st.com>
+Subject: Re: [PATCH] iio:st_pressure:initial lps22hh sensor support
+Message-ID: <20190119173330.29e49c63@archlinux>
+In-Reply-To: <2844d78742404a0ebea470fa5e0ec722@SFHDAG2NODE1.st.com>
+References: <1547486660-15359-1-git-send-email-mario.tesi@st.com>
+        <2844d78742404a0ebea470fa5e0ec722@SFHDAG2NODE1.st.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -58,63 +58,198 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 13 Jan 2019 19:56:21 -0800
-Martin Kelly <martin@martingkelly.com> wrote:
+On Tue, 15 Jan 2019 00:18:58 +0000
+Denis CIOCCA <denis.ciocca@st.com> wrote:
 
-> From: Martin Kelly <martin@martingkelly.com>
+> Acked-by: Denis Ciocca <denis.ciocca@st.com>
 > 
-> Currently, we snap the timestamp after reading from the buffer and
-> processing the event. When the IIO poll function is triggered by an
-> interrupt,  we can get a slightly more accurate timestamp by snapping it
-> prior to reading the data, since the data was already generated prior to
-> entering the trigger handler. This is not going to make a huge difference,
-> but we might as well improve slightly.
 > 
-> Signed-off-by: Martin Kelly <martin@martingkelly.com>
-Could do better by using the standard iio_pollfunc_store_time
-to grab the timestamp in the interrupt handler itself rather than in
-it's thread.
+> -----Original Message-----
+> From: linux-iio-owner@vger.kernel.org <linux-iio-owner@vger.kernel.org> On Behalf Of Mario Tesi
+> Sent: Monday, January 14, 2019 9:24 AM
+> To: jic23@kernel.org
+> Cc: linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org; Mario TESI <mario.tesi@st.com>
+> Subject: [PATCH] iio:st_pressure:initial lps22hh sensor support
+> 
+> From: mario tesi <mario.tesi@st.com>
+> 
+> Initial support for ST LPS22HH pressure sensor. Datasheet:
+> http://www2.st.com/resource/en/datasheet/lps22hh.pdf
+> 
+> Features:
+>  * pressure, temperature data and timestamping channels
+>  * sampling frequency selection [1..200] Hz
+>  * interrupt based trigger
+>  * over I2C or SPI interface
+> 
+> Signed-off-by: mario tesi <mario.tesi@st.com>
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to play with it.
 
-There is some argument that we should only do that if we know it's
-'our' trigger. If we are triggered by someone else, we might report
-a time before when the sample we then read was actually captured.
-
-Still most of the time people will use the devices own trigger, or
-be running slowly enough they won't care.
-
-Anyhow, if we are going to argue this makes any sense use the
-iio_pollfunc_store_time approach please.
-
-As you will probably guess, this isn't the first device with a
-dataready interrupt!
- :)
+Thanks,
 
 Jonathan
 
 > ---
->  drivers/iio/imu/bmi160/bmi160_core.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  drivers/iio/pressure/Kconfig            |  2 +-
+>  drivers/iio/pressure/st_pressure.h      |  2 +
+>  drivers/iio/pressure/st_pressure_core.c | 69 +++++++++++++++++++++++++++++++++  drivers/iio/pressure/st_pressure_i2c.c  |  5 +++  drivers/iio/pressure/st_pressure_spi.c  |  5 +++
+>  5 files changed, 82 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
-> index e119965e64a3..4b4456af0971 100644
-> --- a/drivers/iio/imu/bmi160/bmi160_core.c
-> +++ b/drivers/iio/imu/bmi160/bmi160_core.c
-> @@ -408,6 +408,7 @@ static irqreturn_t bmi160_trigger_handler(int irq, void *p)
->  {
->  	struct iio_poll_func *pf = p;
->  	struct iio_dev *indio_dev = pf->indio_dev;
-> +	s64 ts = iio_get_time_ns(indio_dev);
->  	struct bmi160_data *data = iio_priv(indio_dev);
->  	__le16 buf[16];
->  	/* 3 sens x 3 axis x __le16 + 3 x __le16 pad + 4 x __le16 tstamp */
-> @@ -423,8 +424,7 @@ static irqreturn_t bmi160_trigger_handler(int irq, void *p)
->  		buf[j++] = sample;
->  	}
+> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig index eaa7cfc..efeb89f 100644
+> --- a/drivers/iio/pressure/Kconfig
+> +++ b/drivers/iio/pressure/Kconfig
+> @@ -165,7 +165,7 @@ config IIO_ST_PRESS
+>  	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
+>  	help
+>  	  Say yes here to build support for STMicroelectronics pressure
+> -	  sensors: LPS001WP, LPS25H, LPS331AP, LPS22HB.
+> +	  sensors: LPS001WP, LPS25H, LPS331AP, LPS22HB, LPS22HH.
 >  
-> -	iio_push_to_buffers_with_timestamp(indio_dev, buf,
-> -					   iio_get_time_ns(indio_dev));
-> +	iio_push_to_buffers_with_timestamp(indio_dev, buf, ts);
->  done:
->  	iio_trigger_notify_done(indio_dev->trig);
->  	return IRQ_HANDLED;
+>  	  This driver can also be built as a module. If so, these modules
+>  	  will be created:
+> diff --git a/drivers/iio/pressure/st_pressure.h b/drivers/iio/pressure/st_pressure.h
+> index e67eb0d..5794660 100644
+> --- a/drivers/iio/pressure/st_pressure.h
+> +++ b/drivers/iio/pressure/st_pressure.h
+> @@ -21,6 +21,7 @@ enum st_press_type {
+>  	LPS22HB,
+>  	LPS33HW,
+>  	LPS35HW,
+> +	LPS22HH,
+>  	ST_PRESS_MAX,
+>  };
+>  
+> @@ -30,6 +31,7 @@ enum st_press_type {
+>  #define LPS22HB_PRESS_DEV_NAME		"lps22hb"
+>  #define LPS33HW_PRESS_DEV_NAME		"lps33hw"
+>  #define LPS35HW_PRESS_DEV_NAME		"lps35hw"
+> +#define LPS22HH_PRESS_DEV_NAME		"lps22hh"
+>  
+>  /**
+>   * struct st_sensors_platform_data - default press platform data diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
+> index 4ddb6cf..38dcdb7 100644
+> --- a/drivers/iio/pressure/st_pressure_core.c
+> +++ b/drivers/iio/pressure/st_pressure_core.c
+> @@ -492,6 +492,75 @@
+>  		.multi_read_bit = false,
+>  		.bootime = 2,
+>  	},
+> +	{
+> +		/*
+> +		 * CUSTOM VALUES FOR LPS22HH SENSOR
+> +		 * See LPS22HH datasheet:
+> +		 * http://www2.st.com/resource/en/datasheet/lps22hh.pdf
+> +		 */
+> +		.wai = 0xb3,
+> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
+> +		.sensors_supported = {
+> +			[0] = LPS22HH_PRESS_DEV_NAME,
+> +		},
+> +		.ch = (struct iio_chan_spec *)st_press_lps22hb_channels,
+> +		.num_ch = ARRAY_SIZE(st_press_lps22hb_channels),
+> +		.odr = {
+> +			.addr = 0x10,
+> +			.mask = 0x70,
+> +			.odr_avl = {
+> +				{ .hz = 1, .value = 0x01 },
+> +				{ .hz = 10, .value = 0x02 },
+> +				{ .hz = 25, .value = 0x03 },
+> +				{ .hz = 50, .value = 0x04 },
+> +				{ .hz = 75, .value = 0x05 },
+> +				{ .hz = 100, .value = 0x06 },
+> +				{ .hz = 200, .value = 0x07 },
+> +			},
+> +		},
+> +		.pw = {
+> +			.addr = 0x10,
+> +			.mask = 0x70,
+> +			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
+> +		},
+> +		.fs = {
+> +			.fs_avl = {
+> +				/*
+> +				 * Pressure and temperature sensitivity values
+> +				 * as defined in table 3 of LPS22HH datasheet.
+> +				 */
+> +				[0] = {
+> +					.num = ST_PRESS_FS_AVL_1260MB,
+> +					.gain = ST_PRESS_KPASCAL_NANO_SCALE,
+> +					.gain2 = ST_PRESS_LPS22HB_LSB_PER_CELSIUS,
+> +				},
+> +			},
+> +		},
+> +		.bdu = {
+> +			.addr = 0x10,
+> +			.mask = BIT(1),
+> +		},
+> +		.drdy_irq = {
+> +			.int1 = {
+> +				.addr = 0x12,
+> +				.mask = BIT(2),
+> +				.addr_od = 0x11,
+> +				.mask_od = BIT(5),
+> +			},
+> +			.addr_ihl = 0x11,
+> +			.mask_ihl = BIT(6),
+> +			.stat_drdy = {
+> +				.addr = ST_SENSORS_DEFAULT_STAT_ADDR,
+> +				.mask = 0x03,
+> +			},
+> +		},
+> +		.sim = {
+> +			.addr = 0x10,
+> +			.value = BIT(0),
+> +		},
+> +		.multi_read_bit = false,
+> +		.bootime = 2,
+> +	},
+>  };
+>  
+>  static int st_press_write_raw(struct iio_dev *indio_dev, diff --git a/drivers/iio/pressure/st_pressure_i2c.c b/drivers/iio/pressure/st_pressure_i2c.c
+> index 2026a10..a60849d 100644
+> --- a/drivers/iio/pressure/st_pressure_i2c.c
+> +++ b/drivers/iio/pressure/st_pressure_i2c.c
+> @@ -45,6 +45,10 @@
+>  		.compatible = "st,lps35hw",
+>  		.data = LPS35HW_PRESS_DEV_NAME,
+>  	},
+> +	{
+> +		.compatible = "st,lps22hh",
+> +		.data = LPS22HH_PRESS_DEV_NAME,
+> +	},
+>  	{},
+>  };
+>  MODULE_DEVICE_TABLE(of, st_press_of_match); @@ -69,6 +73,7 @@
+>  	{ LPS22HB_PRESS_DEV_NAME, LPS22HB },
+>  	{ LPS33HW_PRESS_DEV_NAME, LPS33HW },
+>  	{ LPS35HW_PRESS_DEV_NAME, LPS35HW },
+> +	{ LPS22HH_PRESS_DEV_NAME, LPS22HH },
+>  	{},
+>  };
+>  MODULE_DEVICE_TABLE(i2c, st_press_id_table); diff --git a/drivers/iio/pressure/st_pressure_spi.c b/drivers/iio/pressure/st_pressure_spi.c
+> index 9a3441b..79a12ed 100644
+> --- a/drivers/iio/pressure/st_pressure_spi.c
+> +++ b/drivers/iio/pressure/st_pressure_spi.c
+> @@ -49,6 +49,10 @@
+>  		.compatible = "st,lps35hw",
+>  		.data = LPS35HW_PRESS_DEV_NAME,
+>  	},
+> +	{
+> +		.compatible = "st,lps22hh",
+> +		.data = LPS22HH_PRESS_DEV_NAME,
+> +	},
+>  	{},
+>  };
+>  MODULE_DEVICE_TABLE(of, st_press_of_match); @@ -93,6 +97,7 @@ static int st_press_spi_remove(struct spi_device *spi)
+>  	{ LPS22HB_PRESS_DEV_NAME },
+>  	{ LPS33HW_PRESS_DEV_NAME },
+>  	{ LPS35HW_PRESS_DEV_NAME },
+> +	{ LPS22HH_PRESS_DEV_NAME },
+>  	{},
+>  };
+>  MODULE_DEVICE_TABLE(spi, st_press_id_table);
+> --
+> 1.9.1
+> 
 
