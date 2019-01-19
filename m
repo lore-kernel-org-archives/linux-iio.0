@@ -2,123 +2,86 @@ Return-Path: <SRS0=JcFl=P3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DB97C61CE4
-	for <linux-iio@archiver.kernel.org>; Sat, 19 Jan 2019 18:09:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC98FC61CE4
+	for <linux-iio@archiver.kernel.org>; Sat, 19 Jan 2019 18:39:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id F38972087E
-	for <linux-iio@archiver.kernel.org>; Sat, 19 Jan 2019 18:09:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1547921371;
-	bh=TRfwSUdSbdNMGsguewbJrudMny1rBeOLYIVHaCRhEnA=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=tGTXlZzTj1gsFHnbiepwIv/rUnH4JCQLzFjgu2T0KxWHji6ogKsiH6v43jyCiWVlR
-	 IM8XLibsElZmduc19ty0TPAO3c+aRhEvDvzuCFDZl3ovBhnS8qA6D6DJ+IWIaCh4xn
-	 vcz9mvuLhG/MY+xepzV+WZ1z2dd1pwYmusySbviw=
+	by mail.kernel.org (Postfix) with ESMTP id 9BBD82084F
+	for <linux-iio@archiver.kernel.org>; Sat, 19 Jan 2019 18:39:43 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MbMppkYu"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728878AbfASSJZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 19 Jan 2019 13:09:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38648 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728804AbfASSJZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 19 Jan 2019 13:09:25 -0500
-Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B956D2084C;
-        Sat, 19 Jan 2019 18:09:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1547921364;
-        bh=TRfwSUdSbdNMGsguewbJrudMny1rBeOLYIVHaCRhEnA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=zZ3yJJwNUmrYIUwSfmD+u8HikXbcrsxIawubbm3XsBQfYbZSYMKOVkAUe23WjEqaz
-         q3Akg+79PUFfHeT2BEGaOUCPnJNUFCDaGRctRqDFV3RQepf1wAFL79fPppkheuAAOh
-         9jBsB9eHV6PsVa4o4T4beZDlFam+CJUGuiWMiOJk=
-Date:   Sat, 19 Jan 2019 18:09:18 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Tomer Maimon <tmaimon77@gmail.com>
-Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        robh+dt@kernel.org, mark.rutland@arm.com, yuenn@google.com,
-        venture@google.com, brendanhiggins@google.com,
-        avifishman70@gmail.com, joel@jms.id.au, linux-iio@vger.kernel.org,
-        openbmc@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] dt-binding: iio: add NPCM ADC documentation
-Message-ID: <20190119180918.2bfd9be1@archlinux>
-In-Reply-To: <20190116164855.200357-2-tmaimon77@gmail.com>
-References: <20190116164855.200357-1-tmaimon77@gmail.com>
-        <20190116164855.200357-2-tmaimon77@gmail.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1728647AbfASSjn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 19 Jan 2019 13:39:43 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:45990 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728590AbfASSjn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 19 Jan 2019 13:39:43 -0500
+Received: by mail-pf1-f196.google.com with SMTP id g62so8180637pfd.12;
+        Sat, 19 Jan 2019 10:39:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:subject:date:message-id;
+        bh=ntPlN8O5ix9MTWk+pNPs1SfGLLi/+g0hRkSJC0iaDn0=;
+        b=MbMppkYu+KX1dnuJqZa+gd+01WpRIxiysr0ASr/+envppdboY+DFFRQDfQ3EDpflX3
+         DxK6Eiqf97ewldOZxvcukXUYRblS/WKhlYMYn+FLmpFEvfi5kWKVH4O6A7qtUim+12Ou
+         mAxGDpGoW/PL+9BIdP1ji0WzdOYlYp5zriH/yFBRpaRIxeoNg9Tt8lzaCLlcGtlTYV4t
+         FNMqSOHWEWmX5SSaekeqkDYFxRtFvaKezSUs2YFuuY5Vo2QUE3jlEfxud0UBUvmA+pgl
+         Peyc3zKRaoADOqeSgW0JjzTHYElvQdNNHGme4NISuTEtyfkVKMCWqtJajXHdUZ3LLfLt
+         tQRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:subject:date:message-id;
+        bh=ntPlN8O5ix9MTWk+pNPs1SfGLLi/+g0hRkSJC0iaDn0=;
+        b=VCrMqELZ4e/eSpBaBTOM/uhoCRBzYfDNdF4ntz+aFRsIJXrAzL5u5cY1054H1gihsG
+         RGR3HIMAO31oCpNw8OYmmAdiTWfdwCYy5MFxx4K3WAtNXeA3wiW90duxnsSFZZlw0PIF
+         1qKLE9h+6mZaArVafCpf6OLgsPG95p7lZDI06hPs3zyLAnUJejxwfePw5+LFo5kE1WSk
+         yK78dih2WJJ7cyYabQJibhLKpdr5eZPAtVTytFVWEksqzHGzWwdqLn4FAE1d0CLEZRgj
+         bEW8sEMjoYOn0pQeLdc5XcrNZTtfX7SuIQYyEejbU+0YqNHubkRWDstVgpvuxiXh/GK/
+         T9Qw==
+X-Gm-Message-State: AJcUukfTJPSDTpEFtWD98a94DhmhGLlWyhP+aQkzExC8lt5wQLLhB44p
+        yUxi7AEShs+kdtytAs1WZCQ=
+X-Google-Smtp-Source: ALg8bN70hCgKkOKliX4XX7yTLdk4cRt+yRik4tktHNBZgvyk/FriGdmt55+K34aveFVHJkhQIGjzdw==
+X-Received: by 2002:a63:6604:: with SMTP id a4mr22379949pgc.118.1547923181862;
+        Sat, 19 Jan 2019 10:39:41 -0800 (PST)
+Received: from localhost.localdomain ([49.33.214.52])
+        by smtp.gmail.com with ESMTPSA id m20sm10127471pgb.56.2019.01.19.10.39.37
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 19 Jan 2019 10:39:41 -0800 (PST)
+From:   Shreeya Patel <shreeya.patel23498@gmail.com>
+To:     lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, shreeya.patel23498@gmail.com
+Subject: [PATCH v2 0/3] adt7316 regmap implementation
+Date:   Sun, 20 Jan 2019 00:09:29 +0530
+Message-Id: <20190119183932.14321-1-shreeya.patel23498@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 16 Jan 2019 18:48:54 +0200
-Tomer Maimon <tmaimon77@gmail.com> wrote:
+This patchset consist of some initial patches for heading
+towards the regmap implementation and also the final patch
+which enables the driver to use regmap API thus removing
+the redundant and common code.
 
-> Added device tree binding documentation for Nuvoton BMC
-> NPCM Analog-to-Digital Converter(ADC).
-> 
-> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-Applied to the togreg branch of iio.git and pushed out as testing for the
-autobuilders to play with it.
+Shreeya Patel (3):
+  Staging: iio: adt7316: Remove irq from bus structure
+  Staging: iio: adt7316: Remove multi read and write functions
+  Staging: iio: adt7316: Add regmap support
 
-Thanks,
+ drivers/staging/iio/addac/adt7316-i2c.c | 101 ++--------------
+ drivers/staging/iio/addac/adt7316-spi.c |  95 +++------------
+ drivers/staging/iio/addac/adt7316.c     | 147 ++++++++++++------------
+ drivers/staging/iio/addac/adt7316.h     |  15 +--
+ 4 files changed, 103 insertions(+), 255 deletions(-)
 
-Jonathan
-
-> ---
->  .../bindings/iio/adc/nuvoton,npcm-adc.txt          | 35 ++++++++++++++++++++++
->  1 file changed, 35 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt b/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt
-> new file mode 100644
-> index 000000000000..1b8132cd9060
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt
-> @@ -0,0 +1,35 @@
-> +Nuvoton NPCM Analog to Digital Converter (ADC)
-> +
-> +The NPCM ADC is a 10-bit converter for eight channel inputs.
-> +
-> +Required properties:
-> +- compatible: "nuvoton,npcm750-adc" for the NPCM7XX BMC.
-> +- reg: specifies physical base address and size of the registers.
-> +- interrupts: Contain the ADC interrupt with flags for falling edge.
-> +
-> +Optional properties:
-> +- clocks: phandle of ADC reference clock, in case the clock is not
-> +		  added the ADC will use the default ADC sample rate.
-> +- vref-supply: The regulator supply ADC reference voltage, in case the
-> +			   vref-supply is not added the ADC will use internal voltage
-> +			   reference.
-> +
-> +Required Node in the NPCM7xx BMC:
-> +An additional register is present in the NPCM7xx SOC which is
-> +assumed to be in the same device tree, with and marked as
-> +compatible with "nuvoton,npcm750-rst".
-> +
-> +Example:
-> +
-> +adc: adc@f000c000 {
-> +	compatible = "nuvoton,npcm750-adc";
-> +	reg = <0xf000c000 0x8>;
-> +	interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>;
-> +	clocks = <&clk NPCM7XX_CLK_ADC>;
-> +};
-> +
-> +rst: rst@f0801000 {
-> +	compatible = "nuvoton,npcm750-rst", "syscon",
-> +	"simple-mfd";
-> +	reg = <0xf0801000 0x6C>;
-> +};
+-- 
+2.17.1
 
