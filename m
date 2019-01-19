@@ -2,38 +2,54 @@ Return-Path: <SRS0=JcFl=P3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB511C61CE4
-	for <linux-iio@archiver.kernel.org>; Sat, 19 Jan 2019 17:40:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE186C61CE8
+	for <linux-iio@archiver.kernel.org>; Sat, 19 Jan 2019 17:44:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7A1CA2086D
-	for <linux-iio@archiver.kernel.org>; Sat, 19 Jan 2019 17:40:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 925172087E
+	for <linux-iio@archiver.kernel.org>; Sat, 19 Jan 2019 17:44:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1547919865;
+	bh=TM35aWnH5m8UtndAVmOGbGnPUwbzCNoxZUtWLpUhstI=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=lJmGjMmBaRlx2aVdodfJYuMZO73EqAwbQctJDd90JCg83QvqnSQjtYNa1TNJTUFyw
+	 nVFY6N/GgaT0bmWAWdhXXpil0o8Z0tpBPsnPw6jIcv9wrY0UAWavA1bJm1cHYJRbT3
+	 D6R5h/cbaPNVv0qfzrsh3Ip27/RtCFu44fhofjGI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728668AbfASRkM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 19 Jan 2019 12:40:12 -0500
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:47164 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728423AbfASRkL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 19 Jan 2019 12:40:11 -0500
+        id S1728804AbfASRoZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 19 Jan 2019 12:44:25 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58068 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728658AbfASRoZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 19 Jan 2019 12:44:25 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id 9854F9E7555;
-        Sat, 19 Jan 2019 17:40:08 +0000 (GMT)
-Date:   Sat, 19 Jan 2019 17:40:06 +0000
-From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To:     Denis CIOCCA <denis.ciocca@st.com>
-Cc:     Mario Tesi <martepisa@gmail.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Mario TESI <mario.tesi@st.com>
-Subject: Re: [PATCH] iio:st_pressure:initial lps22hh sensor support
-Message-ID: <20190119174006.16f06638@archlinux>
-In-Reply-To: <20190119173330.29e49c63@archlinux>
-References: <1547486660-15359-1-git-send-email-mario.tesi@st.com>
-        <2844d78742404a0ebea470fa5e0ec722@SFHDAG2NODE1.st.com>
-        <20190119173330.29e49c63@archlinux>
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 33E9D2084F;
+        Sat, 19 Jan 2019 17:44:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1547919864;
+        bh=TM35aWnH5m8UtndAVmOGbGnPUwbzCNoxZUtWLpUhstI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pXGykSWYvUkn1McjbodDAjjZ/gQc7yMwc3Og6TARvpKkuFv762UXr+k/BZEK045aA
+         sYMQgStQMqFxgZrSe9gDA6Tj0QovDq6NEkDhj4nZxmBo7Ti4O5fxCtOtJOlEmNDF+v
+         FRDQnNU4lmNxp1llVmrRSP5knDz0r+6ZKqvr4Icc=
+Date:   Sat, 19 Jan 2019 17:44:18 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Himanshu Jha <himanshujha199640@gmail.com>
+Cc:     Sebastien Bourdelin <sebastien.bourdelin@gmail.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org, mark.rutland@arm.com,
+        robh+dt@kernel.org, pmeerw@pmeerw.net, lars@metafoo.de,
+        knaack.h@gmx.de
+Subject: Re: [PATCH v3 1/2] iio: chemical: bme680: Add device-tree support
+Message-ID: <20190119174418.32cb9a3f@archlinux>
+In-Reply-To: <20190115184713.GC10186@himanshu-Vostro-3559>
+References: <20190114201914.24572-1-sebastien.bourdelin@gmail.com>
+        <20190115184713.GC10186@himanshu-Vostro-3559>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -43,221 +59,90 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 19 Jan 2019 17:33:30 +0000
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Wed, 16 Jan 2019 00:17:13 +0530
+Himanshu Jha <himanshujha199640@gmail.com> wrote:
 
-> On Tue, 15 Jan 2019 00:18:58 +0000
-> Denis CIOCCA <denis.ciocca@st.com> wrote:
+> On Mon, Jan 14, 2019 at 03:19:13PM -0500, Sebastien Bourdelin wrote:
+> > This commit allow the driver to work with device-tree.
+> > 
+> > Signed-off-by: Sebastien Bourdelin <sebastien.bourdelin@gmail.com>
+> > ---  
 > 
-> > Acked-by: Denis Ciocca <denis.ciocca@st.com>
-Denis,
+> 	Acked-by: Himanshu Jha <himanshujha199640@gmail.com>
+Applied to the togreg branch of iio.git and pushed out as testing for the
+autobuilders to play with it and see if we missed anything.
 
-One random question inline.  Not about this patch as such...
-> > 
-> > 
-> > -----Original Message-----
-> > From: linux-iio-owner@vger.kernel.org <linux-iio-owner@vger.kernel.org> On Behalf Of Mario Tesi
-> > Sent: Monday, January 14, 2019 9:24 AM
-> > To: jic23@kernel.org
-> > Cc: linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org; Mario TESI <mario.tesi@st.com>
-> > Subject: [PATCH] iio:st_pressure:initial lps22hh sensor support
-> > 
-> > From: mario tesi <mario.tesi@st.com>
-> > 
-> > Initial support for ST LPS22HH pressure sensor. Datasheet:
-> > http://www2.st.com/resource/en/datasheet/lps22hh.pdf
-> > 
-> > Features:
-> >  * pressure, temperature data and timestamping channels
-> >  * sampling frequency selection [1..200] Hz
-> >  * interrupt based trigger
-> >  * over I2C or SPI interface
-> > 
-> > Signed-off-by: mario tesi <mario.tesi@st.com>  
-> Applied to the togreg branch of iio.git and pushed out as testing for
-> the autobuilders to play with it.
-> 
-> Thanks,
-> 
-> Jonathan
-> 
-> > ---
-> >  drivers/iio/pressure/Kconfig            |  2 +-
-> >  drivers/iio/pressure/st_pressure.h      |  2 +
-> >  drivers/iio/pressure/st_pressure_core.c | 69 +++++++++++++++++++++++++++++++++  drivers/iio/pressure/st_pressure_i2c.c  |  5 +++  drivers/iio/pressure/st_pressure_spi.c  |  5 +++
-> >  5 files changed, 82 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig index eaa7cfc..efeb89f 100644
-> > --- a/drivers/iio/pressure/Kconfig
-> > +++ b/drivers/iio/pressure/Kconfig
-> > @@ -165,7 +165,7 @@ config IIO_ST_PRESS
-> >  	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
-> >  	help
-> >  	  Say yes here to build support for STMicroelectronics pressure
-> > -	  sensors: LPS001WP, LPS25H, LPS331AP, LPS22HB.
-> > +	  sensors: LPS001WP, LPS25H, LPS331AP, LPS22HB, LPS22HH.
-> >  
-> >  	  This driver can also be built as a module. If so, these modules
-> >  	  will be created:
-> > diff --git a/drivers/iio/pressure/st_pressure.h b/drivers/iio/pressure/st_pressure.h
-> > index e67eb0d..5794660 100644
-> > --- a/drivers/iio/pressure/st_pressure.h
-> > +++ b/drivers/iio/pressure/st_pressure.h
-> > @@ -21,6 +21,7 @@ enum st_press_type {
-> >  	LPS22HB,
-> >  	LPS33HW,
-> >  	LPS35HW,
-> > +	LPS22HH,
-> >  	ST_PRESS_MAX,
-> >  };
-> >  
-> > @@ -30,6 +31,7 @@ enum st_press_type {
-> >  #define LPS22HB_PRESS_DEV_NAME		"lps22hb"
-> >  #define LPS33HW_PRESS_DEV_NAME		"lps33hw"
-> >  #define LPS35HW_PRESS_DEV_NAME		"lps35hw"
-> > +#define LPS22HH_PRESS_DEV_NAME		"lps22hh"
-> >  
-> >  /**
-> >   * struct st_sensors_platform_data - default press platform data diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-> > index 4ddb6cf..38dcdb7 100644
-> > --- a/drivers/iio/pressure/st_pressure_core.c
-> > +++ b/drivers/iio/pressure/st_pressure_core.c
-> > @@ -492,6 +492,75 @@
-> >  		.multi_read_bit = false,
-> >  		.bootime = 2,
-> >  	},
-> > +	{
-> > +		/*
-> > +		 * CUSTOM VALUES FOR LPS22HH SENSOR
-> > +		 * See LPS22HH datasheet:
-> > +		 * http://www2.st.com/resource/en/datasheet/lps22hh.pdf
-> > +		 */
-> > +		.wai = 0xb3,
-> > +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
-> > +		.sensors_supported = {
-> > +			[0] = LPS22HH_PRESS_DEV_NAME,
-> > +		},
-> > +		.ch = (struct iio_chan_spec *)st_press_lps22hb_channels,
-
-Why is ch not
-const stuct iio_chan_spec *
-in the structure definition?
-
-I tried it to see if it would throw complaints at me and it didn't
-rather implying the code never assumes it can change the content of
-channels via this pointer.
-
-It dates right back to the start of this driver I think.  If we
-make it const, we can get rid of all the casts in locations like this
-which would be a nice tidy up. Never good to cast away a const
-without very very good reasons!
+Thanks,
 
 Jonathan
-
-> > +		.num_ch = ARRAY_SIZE(st_press_lps22hb_channels),
-> > +		.odr = {
-> > +			.addr = 0x10,
-> > +			.mask = 0x70,
-> > +			.odr_avl = {
-> > +				{ .hz = 1, .value = 0x01 },
-> > +				{ .hz = 10, .value = 0x02 },
-> > +				{ .hz = 25, .value = 0x03 },
-> > +				{ .hz = 50, .value = 0x04 },
-> > +				{ .hz = 75, .value = 0x05 },
-> > +				{ .hz = 100, .value = 0x06 },
-> > +				{ .hz = 200, .value = 0x07 },
-> > +			},
-> > +		},
-> > +		.pw = {
-> > +			.addr = 0x10,
-> > +			.mask = 0x70,
-> > +			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
-> > +		},
-> > +		.fs = {
-> > +			.fs_avl = {
-> > +				/*
-> > +				 * Pressure and temperature sensitivity values
-> > +				 * as defined in table 3 of LPS22HH datasheet.
-> > +				 */
-> > +				[0] = {
-> > +					.num = ST_PRESS_FS_AVL_1260MB,
-> > +					.gain = ST_PRESS_KPASCAL_NANO_SCALE,
-> > +					.gain2 = ST_PRESS_LPS22HB_LSB_PER_CELSIUS,
-> > +				},
-> > +			},
-> > +		},
-> > +		.bdu = {
-> > +			.addr = 0x10,
-> > +			.mask = BIT(1),
-> > +		},
-> > +		.drdy_irq = {
-> > +			.int1 = {
-> > +				.addr = 0x12,
-> > +				.mask = BIT(2),
-> > +				.addr_od = 0x11,
-> > +				.mask_od = BIT(5),
-> > +			},
-> > +			.addr_ihl = 0x11,
-> > +			.mask_ihl = BIT(6),
-> > +			.stat_drdy = {
-> > +				.addr = ST_SENSORS_DEFAULT_STAT_ADDR,
-> > +				.mask = 0x03,
-> > +			},
-> > +		},
-> > +		.sim = {
-> > +			.addr = 0x10,
-> > +			.value = BIT(0),
-> > +		},
-> > +		.multi_read_bit = false,
-> > +		.bootime = 2,
-> > +	},
+> 
+> Thanks!
+> 
+> > v2 -> v3:
+> >   - remove of_match_ptr: Suggested by Jonathan Cameron <jic23@kernel.org>
+> >   - minor style fixup
+> >   - rebase on master
+> > v1 -> v2:
+> >   - add missing of.h header in bme680_spi.c
+> > ---
+> >  drivers/iio/chemical/bme680_i2c.c | 7 +++++++
+> >  drivers/iio/chemical/bme680_spi.c | 8 ++++++++
+> >  2 files changed, 15 insertions(+)
+> > 
+> > diff --git a/drivers/iio/chemical/bme680_i2c.c b/drivers/iio/chemical/bme680_i2c.c
+> > index 06d4be539d2e..b2f805b6b36a 100644
+> > --- a/drivers/iio/chemical/bme680_i2c.c
+> > +++ b/drivers/iio/chemical/bme680_i2c.c
+> > @@ -70,10 +70,17 @@ static const struct acpi_device_id bme680_acpi_match[] = {
 > >  };
+> >  MODULE_DEVICE_TABLE(acpi, bme680_acpi_match);
 > >  
-> >  static int st_press_write_raw(struct iio_dev *indio_dev, diff --git a/drivers/iio/pressure/st_pressure_i2c.c b/drivers/iio/pressure/st_pressure_i2c.c
-> > index 2026a10..a60849d 100644
-> > --- a/drivers/iio/pressure/st_pressure_i2c.c
-> > +++ b/drivers/iio/pressure/st_pressure_i2c.c
-> > @@ -45,6 +45,10 @@
-> >  		.compatible = "st,lps35hw",
-> >  		.data = LPS35HW_PRESS_DEV_NAME,
+> > +static const struct of_device_id bme680_of_i2c_match[] = {
+> > +	{ .compatible = "bosch,bme680", },
+> > +	{},
+> > +};
+> > +MODULE_DEVICE_TABLE(of, bme680_of_i2c_match);
+> > +
+> >  static struct i2c_driver bme680_i2c_driver = {
+> >  	.driver = {
+> >  		.name			= "bme680_i2c",
+> >  		.acpi_match_table       = ACPI_PTR(bme680_acpi_match),
+> > +		.of_match_table		= bme680_of_i2c_match,
 > >  	},
-> > +	{
-> > +		.compatible = "st,lps22hh",
-> > +		.data = LPS22HH_PRESS_DEV_NAME,
-> > +	},
-> >  	{},
+> >  	.probe = bme680_i2c_probe,
+> >  	.id_table = bme680_i2c_id,
+> > diff --git a/drivers/iio/chemical/bme680_spi.c b/drivers/iio/chemical/bme680_spi.c
+> > index c9fb05e8d0b9..d0b7bdd3f066 100644
+> > --- a/drivers/iio/chemical/bme680_spi.c
+> > +++ b/drivers/iio/chemical/bme680_spi.c
+> > @@ -6,6 +6,7 @@
+> >   */
+> >  #include <linux/acpi.h>
+> >  #include <linux/module.h>
+> > +#include <linux/of.h>
+> >  #include <linux/regmap.h>
+> >  #include <linux/spi/spi.h>
+> >  
+> > @@ -110,10 +111,17 @@ static const struct acpi_device_id bme680_acpi_match[] = {
 > >  };
-> >  MODULE_DEVICE_TABLE(of, st_press_of_match); @@ -69,6 +73,7 @@
-> >  	{ LPS22HB_PRESS_DEV_NAME, LPS22HB },
-> >  	{ LPS33HW_PRESS_DEV_NAME, LPS33HW },
-> >  	{ LPS35HW_PRESS_DEV_NAME, LPS35HW },
-> > +	{ LPS22HH_PRESS_DEV_NAME, LPS22HH },
-> >  	{},
-> >  };
-> >  MODULE_DEVICE_TABLE(i2c, st_press_id_table); diff --git a/drivers/iio/pressure/st_pressure_spi.c b/drivers/iio/pressure/st_pressure_spi.c
-> > index 9a3441b..79a12ed 100644
-> > --- a/drivers/iio/pressure/st_pressure_spi.c
-> > +++ b/drivers/iio/pressure/st_pressure_spi.c
-> > @@ -49,6 +49,10 @@
-> >  		.compatible = "st,lps35hw",
-> >  		.data = LPS35HW_PRESS_DEV_NAME,
+> >  MODULE_DEVICE_TABLE(acpi, bme680_acpi_match);
+> >  
+> > +static const struct of_device_id bme680_of_spi_match[] = {
+> > +	{ .compatible = "bosch,bme680", },
+> > +	{},
+> > +};
+> > +MODULE_DEVICE_TABLE(of, bme680_of_spi_match);
+> > +
+> >  static struct spi_driver bme680_spi_driver = {
+> >  	.driver = {
+> >  		.name			= "bme680_spi",
+> >  		.acpi_match_table	= ACPI_PTR(bme680_acpi_match),
+> > +		.of_match_table		= bme680_of_spi_match,
 > >  	},
-> > +	{
-> > +		.compatible = "st,lps22hh",
-> > +		.data = LPS22HH_PRESS_DEV_NAME,
-> > +	},
-> >  	{},
-> >  };
-> >  MODULE_DEVICE_TABLE(of, st_press_of_match); @@ -93,6 +97,7 @@ static int st_press_spi_remove(struct spi_device *spi)
-> >  	{ LPS22HB_PRESS_DEV_NAME },
-> >  	{ LPS33HW_PRESS_DEV_NAME },
-> >  	{ LPS35HW_PRESS_DEV_NAME },
-> > +	{ LPS22HH_PRESS_DEV_NAME },
-> >  	{},
-> >  };
-> >  MODULE_DEVICE_TABLE(spi, st_press_id_table);
-> > --
-> > 1.9.1
+> >  	.probe = bme680_spi_probe,
+> >  	.id_table = bme680_spi_id,
+> > -- 
+> > 2.20.1
 > >   
 > 
 
