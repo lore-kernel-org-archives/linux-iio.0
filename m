@@ -4,52 +4,52 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A354C6369F
-	for <linux-iio@archiver.kernel.org>; Sat, 19 Jan 2019 18:53:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA6AAC61CE4
+	for <linux-iio@archiver.kernel.org>; Sat, 19 Jan 2019 19:03:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5F9E920883
-	for <linux-iio@archiver.kernel.org>; Sat, 19 Jan 2019 18:53:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 77D382087E
+	for <linux-iio@archiver.kernel.org>; Sat, 19 Jan 2019 19:03:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1547924012;
-	bh=l7trAWaqlgDBGc8JWCbXqOEuCYG3deGxF4DmRLR1iOA=;
+	s=default; t=1547924589;
+	bh=40nrlDnXr4tDByzHhw7hA0c4XfP+2r3WVL5NA5ACiJs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=TEcygZtgriFC1apRH0vOuhO5CSkMzHZpmIucCfo2/MUK1+yVi5Egzz5wr5WDQyA33
-	 khbmQDn1esPl9SZ52tLCLL9wd4MvIVDIYIYGZe0d/ozORNIrkBi9y5kg5xElo20Jte
-	 3HMlCZkXGmjZDnjseZu29SmUCpqFNq6Ndzcq5d1E=
+	b=ejRPqlNh2LngJ7FY4PEL9mfhBn0XK3YWkkhwj13G39hrbmbHV3c4ayBTq2e63UR1M
+	 CO0qSFUMTrWKMEXxtj7uEfLycHNX6ekRKFOsFSJHqDDu0x+4e0yG5JXxcWFpOAb1YD
+	 LBO2dNq2wPRlXKgSJpvVrOdxV6KQuAoH/KrqqjiM=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728706AbfASSx1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 19 Jan 2019 13:53:27 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51760 "EHLO mail.kernel.org"
+        id S1728928AbfASTDJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 19 Jan 2019 14:03:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55242 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726793AbfASSx1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 19 Jan 2019 13:53:27 -0500
+        id S1728647AbfASTDI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 19 Jan 2019 14:03:08 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EE6DA2084C;
-        Sat, 19 Jan 2019 18:53:22 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 672A42086D;
+        Sat, 19 Jan 2019 19:03:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1547924005;
-        bh=l7trAWaqlgDBGc8JWCbXqOEuCYG3deGxF4DmRLR1iOA=;
+        s=default; t=1547924588;
+        bh=40nrlDnXr4tDByzHhw7hA0c4XfP+2r3WVL5NA5ACiJs=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mplfZVkyGdwWwgvUxu+SLWH4xWwYYDn5w/HW3MOCccVq8ux/F6MeRIGu0PadT+lWw
-         HSDmf0dE/L2EO/EFTkQwtSAU/CEMHqNlxfCHEwK1HPp1u0liYQyh6cpwYEvLivcJEL
-         T5JcWfqIbZakPcZApTrclY28JCNDN86XaYsUhBsg=
-Date:   Sat, 19 Jan 2019 18:53:19 +0000
+        b=jagVNFLLEUCpGJroBwx2aLTYAm0KCLpk6uCD+T+gOSw1AEaQ6PVykTjwM4kQx7unt
+         gL/f3xdzIXki/odeRuubhyDmrIejEXpesX/Eeq0L/AzRv3D7R3axl7OCdxfUlCaGxm
+         e8OW11BwCncz2oSuzRxUrKA89TqUjcILrx81k99E=
+Date:   Sat, 19 Jan 2019 19:03:03 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Robert Eshleman <bobbyeshleman@gmail.com>
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: light: add driver support for MAX44009
-Message-ID: <20190119185319.4b20b939@archlinux>
-In-Reply-To: <20190117065623.12169-1-bobbyeshleman@gmail.com>
-References: <20190117065623.12169-1-bobbyeshleman@gmail.com>
+To:     Shreeya Patel <shreeya.patel23498@gmail.com>
+Cc:     lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] Staging: iio: adt7316: Remove irq from bus
+ structure
+Message-ID: <20190119190303.65434e58@archlinux>
+In-Reply-To: <20190119183932.14321-2-shreeya.patel23498@gmail.com>
+References: <20190119183932.14321-1-shreeya.patel23498@gmail.com>
+        <20190119183932.14321-2-shreeya.patel23498@gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -59,943 +59,150 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 16 Jan 2019 22:56:23 -0800
-Robert Eshleman <bobbyeshleman@gmail.com> wrote:
+On Sun, 20 Jan 2019 00:09:30 +0530
+Shreeya Patel <shreeya.patel23498@gmail.com> wrote:
 
-Hi Robert,
-
-Note I review drivers backwards, so comments may make more sense that
-way around.
-
-> The MAX44009 is a low-power ambient light sensor from Maxim Integrated.
-> It differs from the MAX44000 in that it doesn't have proximity sensing and that
-> it requires far less current (1 micro-amp vs 5 micro-amps). The register
-> mapping and feature set between the two are different enough to require a new
-> driver for the MAX44009.
+> interrupt request is not needed to be present in the bus
+> structure. It is a good option to pass it as a parameter
+> in the probe function instead of having it in the bus structure.
 > 
-> Developed and tested with a BeagleBone Black and UDOO Neo (i.MX6SX)
-> 
-> Supported features:
-> 
-> * Rising and falling illuminance threshold
->   events
+> Signed-off-by: Shreeya Patel <shreeya.patel23498@gmail.com>
+Hi Shreeya,
 
-Not really on this one.  You support using them as a trigger, which
-is not how threshold events should be handled in IIO. Please
-report them as events.   This device doesn't seem  to have
-a trigger that can be used in general, so you shouldn't provide
-one.
+I just tried applying this to the current testing branch of
+iio.git and unfortunately it doesn't apply. Please rebase
+on that as there have been various changes.
 
-Userspace can use the event to decide to do a read if it wants to
-follow the classic move the thresholds so as to detect big
-'changes' in light intensity.
+Superficially I think it is all white space related and a bit
+of code movement, but I'd rather you made sure the rebase
+worked well than I made assumptions!
 
-Various other comments inline.  Quite a bit of style cleanup
-needed as well, please check the kernel docs for coding style
-https://www.kernel.org/doc/Documentation/process/coding-style.rst
-
-Also take a look at other IIO drivers for the bits that are
-noted in there as varying across the kernel.
-
-Whilst there is quite a bit to work on in here yet, great to see
-support for this new part! Looking forward to v2.
+The change looks good otherwise.
 
 Jonathan
 
-> 
-> * Illuminance triggered buffers
-> 
-> * Integration time
-> 
-> https://datasheets.maximintegrated.com/en/ds/MAX44009.pdf
-> 
-> Signed-off-by: Robert Eshleman <bobbyeshleman@gmail.com>
-
 > ---
->  .../bindings/iio/light/max44009.txt           |  25 +
->  drivers/iio/light/Kconfig                     |  13 +
->  drivers/iio/light/Makefile                    |   1 +
->  drivers/iio/light/max44009.c                  | 696 ++++++++++++++++++
->  4 files changed, 735 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/light/max44009.txt
->  create mode 100644 drivers/iio/light/max44009.c
+>  drivers/staging/iio/addac/adt7316-i2c.c |  3 +--
+>  drivers/staging/iio/addac/adt7316-spi.c |  4 ++--
+>  drivers/staging/iio/addac/adt7316.c     | 15 +++++++--------
+>  drivers/staging/iio/addac/adt7316.h     |  3 +--
+>  4 files changed, 11 insertions(+), 14 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/light/max44009.txt b/Documentation/devicetree/bindings/iio/light/max44009.txt
-> new file mode 100644
-> index 000000000000..220c2808dca1
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/light/max44009.txt
-> @@ -0,0 +1,25 @@
-> +* MAX44009 Ambient Light Sensor
-> +
-> +Required properties:
-> +
-> +- compatible: should be "maxim,max44009"
-> +- reg: the I2C address of the device (default is <0x4a>)
-> +
-> +Optional properties:
-> +
-> +- interrupts : interrupt mapping for GPIO IRQ. Should be configured with
-> +  IRQ_TYPE_EDGE_FALLING.
-> +
-> +Refer to interrupt-controller/interrupts.txt for generic interrupt client
-> +node bindings.
-> +
-> +Example:
-> +
-> +max44009: max44009@4a {
-> +	compatible = "maxim,max44009";
-> +	reg = <0x4a>;
-> +
-> +	interrupt-parent = <&gpio1>;
-> +	interrupts = <17 IRQ_TYPE_EDGE_FALLING>;
-> +};
-> +
-> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index 36f458433480..cda544f1047d 100644
-> --- a/drivers/iio/light/Kconfig
-> +++ b/drivers/iio/light/Kconfig
-> @@ -299,6 +299,19 @@ config MAX44000
->  	 To compile this driver as a module, choose M here:
->  	 the module will be called max44000.
+> diff --git a/drivers/staging/iio/addac/adt7316-i2c.c b/drivers/staging/iio/addac/adt7316-i2c.c
+> index ac91163656b5..335c17731cf7 100644
+> --- a/drivers/staging/iio/addac/adt7316-i2c.c
+> +++ b/drivers/staging/iio/addac/adt7316-i2c.c
+> @@ -103,14 +103,13 @@ static int adt7316_i2c_probe(struct i2c_client *client,
+>  {
+>  	struct adt7316_bus bus = {
+>  		.client = client,
+> -		.irq = client->irq,
+>  		.read = adt7316_i2c_read,
+>  		.write = adt7316_i2c_write,
+>  		.multi_read = adt7316_i2c_multi_read,
+>  		.multi_write = adt7316_i2c_multi_write,
+>  	};
 >  
-> +config MAX44009
-> +	tristate "MAX44009 Ambient Light Sensor"
-> +	depends on I2C
-> +	select IIO_BUFFER
-> +	select IIO_TRIGGERED_BUFFER
-> +	select IIO_TRIGGERED_EVENT
-> +	help
-> +	 Say Y here if you want to build support for Maxim Integrated's
-> +	 MAX44009 ambient light sensor device.
-> +
-> +	 To compile this driver as a module, choose M here:
-> +	 the module will be called max44009.
-> +
->  config OPT3001
->  	tristate "Texas Instruments OPT3001 Light Sensor"
->  	depends on I2C
-> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-> index 286bf3975372..e40794fbb435 100644
-> --- a/drivers/iio/light/Makefile
-> +++ b/drivers/iio/light/Makefile
-> @@ -28,6 +28,7 @@ obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
->  obj-$(CONFIG_LTR501)		+= ltr501.o
->  obj-$(CONFIG_LV0104CS)		+= lv0104cs.o
->  obj-$(CONFIG_MAX44000)		+= max44000.o
-> +obj-$(CONFIG_MAX44009)		+= max44009.o
->  obj-$(CONFIG_OPT3001)		+= opt3001.o
->  obj-$(CONFIG_PA12203001)	+= pa12203001.o
->  obj-$(CONFIG_RPR0521)		+= rpr0521.o
-> diff --git a/drivers/iio/light/max44009.c b/drivers/iio/light/max44009.c
-> new file mode 100644
-> index 000000000000..e15aa8eeb2f6
-> --- /dev/null
-> +++ b/drivers/iio/light/max44009.c
-> @@ -0,0 +1,696 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * max44009.c - Support for MAX44009 Ambient Light Sensor
-> + *
-> + * Copyright (c) 2019 Robert Eshleman <bobbyeshleman@gmail.com>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-If you have SPDX, no need to have a license statement.
-> + *
-> + *
-> + * Datasheet: https://datasheets.maximintegrated.com/en/ds/MAX44009.pdf
-> + *
-> + * TODO: Support continuous mode and processed event value (IIO_EV_INFO_VALUE)
-> + *
-> + * Default I2C address: 0x4a
-> + *
-No point in this blank line.
-
-> + */
-> +
-> +#include <linux/bits.h>
-> +#include <linux/i2c.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/events.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +#include <linux/init.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/regmap.h>
-> +#include <linux/util_macros.h>
-> +
-> +#define MAX44009_DRV_NAME "max44009"
-> +#define MAX44009_IRQ_NAME "max44009_event"
-
-Unless used more than once, no point in defines like this.  Just put
-the string inline.
-
-> +
-> +/* Registers in datasheet order */
-> +#define MAX44009_REG_STATUS 0x0
-> +#define MAX44009_REG_ENABLE 0x1
-> +#define MAX44009_REG_CFG 0x2
-> +#define MAX44009_REG_LUX_HI 0x3
-> +#define MAX44009_REG_LUX_LO 0x4
-> +#define MAX44009_REG_UPPER_THR 0x5
-> +#define MAX44009_REG_LOWER_THR 0x6
-> +#define MAX44009_REG_THR_TIMER 0x7
-> +
-> +#define MAX44009_INT_TIME_MASK (BIT(2) | BIT(1) | BIT(0))
-
-GENMASK
-
-> +#define MAX44009_INT_TIME_SHIFT (0)
-> +
-> +#define MAX44009_MANUAL_MODE_MASK BIT(6)
-> +
-> +/* The maxmimum raw rising threshold for the max44009 */
-> +#define MAX44009_MAXIMUM_THRESHOLD 8355840
-> +
-> +#define MAX44009_HI_NIBBLE(reg) (((reg) >> 4) & 0xf)
-> +#define MAX44009_LO_NIBBLE(reg) ((reg) & 0xf)
-> +
-> +#define MAX44009_EXP_MASK 0xf00
-> +#define MAX44009_EXP_RSHIFT 8
-> +#define MAX44009_LUX_EXP(reg)	                                              \
-> +	(1 << (((reg) & MAX44009_EXP_MASK) >> MAX44009_EXP_RSHIFT))
-> +#define MAX44009_LUX_MANT(reg) ((reg) & 0xff)
-> +
-> +#define MAX44009_LUX(reg) (MAX44009_LUX_EXP(reg) * MAX44009_LUX_MANT(reg))
-
-These are complex enough that a few small functions with documentation
-would be better than macros.
-
-> +
-> +#define MAX44009_THRESH_MANT(reg) ((MAX44009_LO_NIBBLE(reg) << 4) + 15)
-> +#define MAX44009_THRESHOLD(reg)                                                \
-> +	((1 << MAX44009_HI_NIBBLE(reg)) * MAX44009_THRESH_MANT(reg))
-> +
-
-> +static const u32 max44009_int_time_ns_array[] = {
-> +	800000000,
-> +	400000000,
-> +	200000000,
-> +	100000000,
-> +	50000000, /* Manual mode only */
-> +	25000000, /* Manual mode only */
-> +	12500000, /* Manual mode only */
-> +	6250000,  /* Manual mode only */
-> +};
-> +
-> +static const char max44009_int_time_str[] =
-> +	"0.8 "
-> +	"0.4 "
-> +	"0.2 "
-> +	"0.1 "
-> +	"0.05 "
-> +	"0.025 "
-> +	"0.0125 "
-> +	"0.00625";
-> +
-> +static const u8 max44009_scale_avail_ulux_array[] = {45};
-> +static const char max44009_scale_avail_str[] = "0.045";
-
-If there is only one value, don't provide the avail stuff
-and just put the value in directly where used.
-
-> +
-> +struct max44009_data {
-> +	struct i2c_client *client;
-> +	struct iio_trigger *trigger;
-> +	struct mutex lock;
-> +	int64_t timestamp;
-> +};
-> +
-> +static const struct iio_event_spec max44009_event_spec[] = {
-> +	{
-> +		.type = IIO_EV_TYPE_THRESH,
-> +		.dir = IIO_EV_DIR_RISING,
-> +		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
-> +				 BIT(IIO_EV_INFO_ENABLE),
-> +	},
-> +	{
-> +		.type = IIO_EV_TYPE_THRESH,
-> +		.dir = IIO_EV_DIR_FALLING,
-> +		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
-> +				 BIT(IIO_EV_INFO_ENABLE),
-> +	},
-> +};
-> +
-> +static const struct iio_chan_spec max44009_channels[] = {
-> +	{
-> +		.type = IIO_LIGHT,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_INT_TIME),
-> +		.scan_index = 0,
-> +		.scan_type = {
-> +				.sign = 'u',
-> +				.realbits = 24,
-> +				.storagebits = 32,
-> +			},
-> +		.event_spec = max44009_event_spec,
-> +		.num_event_specs = ARRAY_SIZE(max44009_event_spec),
-> +	},
-> +	IIO_CHAN_SOFT_TIMESTAMP(1),
-> +};
-> +
-> +static int max44009_read_reg(struct max44009_data *data, char reg)
-> +{
-> +	struct i2c_client *client = data->client;
-> +	int ret;
-> +
-> +	mutex_lock(&data->lock);
-> +	ret = i2c_smbus_read_byte_data(client, reg);
-> +	if (ret < 0) {
-
-Same as below.
-
-> +		dev_err(&client->dev,
-> +			"failed to read reg 0x%0x, err: %d\n", reg, ret);
-> +		goto err;
-> +	}
-> +
-> +err:
-> +	mutex_unlock(&data->lock);
-> +	return ret;
-> +}
-> +
-> +static int max44009_write_reg(struct max44009_data *data, char reg, char buf)
-> +{
-> +	struct i2c_client *client = data->client;
-> +	int ret;
-> +
-> +	mutex_lock(&data->lock);
-
-What is this mutex protecting?
-
-> +	ret = i2c_smbus_write_byte_data(client, reg, buf);
-> +	if (ret < 0) {
-
-returns 0 on success.  So do
-if (ret) as it'll prove simpler to follow for handling later.
-
-> +		dev_err(&client->dev,
-> +			"failed to write reg 0x%0x, err: %d\n",
-> +			reg, ret);
-> +		goto err;
-> +	}
-> +
-> +err:
-> +	mutex_unlock(&data->lock);
-> +	return ret;
-> +}
-> +
-> +static int max44009_read_int_time(struct max44009_data *data)
-> +{
-> +	int ret = max44009_read_reg(data, MAX44009_REG_CFG);
-> +
-> +	if (ret < 0) {
-> +		return ret;
-> +	}
-> +
-> +	return max44009_int_time_ns_array[ret & MAX44009_INT_TIME_MASK];
-> +}
-> +
-> +static int max44009_write_raw(struct iio_dev *indio_dev,
-> +			      struct iio_chan_spec const *chan, int val,
-> +			      int val2, long mask)
-> +{
-> +	struct max44009_data *data = iio_priv(indio_dev);
-> +	int ret, int_time;
-> +	s64 ns;
-> +
-> +	if (mask == IIO_CHAN_INFO_INT_TIME && chan->type == IIO_LIGHT) {
-> +		ns = val * NSEC_PER_SEC + val2;
-> +		int_time = find_closest_descending(
-> +				ns,
-> +				max44009_int_time_ns_array,
-> +				ARRAY_SIZE(max44009_int_time_ns_array));
-> +
-> +		ret = max44009_read_reg(data, MAX44009_REG_CFG);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		ret &= ~MAX44009_INT_TIME_MASK;
-> +		ret |= (int_time << MAX44009_INT_TIME_SHIFT);
-> +		ret |= MAX44009_MANUAL_MODE_MASK;
-> +
-> +		return max44009_write_reg(data, MAX44009_REG_CFG, ret);
-> +	}
-> +	return -EINVAL;
-> +}
-> +
-> +static int max44009_write_raw_get_fmt(struct iio_dev *indio_dev,
-> +				      struct iio_chan_spec const *chan,
-> +				      long mask)
-> +{
-> +	if (mask == IIO_CHAN_INFO_INT_TIME && chan->type == IIO_LIGHT) {
-
-Make sure to get rid of all the brackets where kernel style doesn't have them.
-Basically any single statements if or else blocks (or simiilar).
-
-> +		return IIO_VAL_INT_PLUS_NANO;
-> +	} else {
-
-You don't have any others...
-
-> +		return IIO_VAL_INT;
-> +	}
-> +}
-> +
-> +#define READ_LUX_XFER_LEN (4)
-> +
-> +static int max44009_read_lux_raw(struct max44009_data *data)
-> +{
-> +	int ret;
-> +	struct i2c_msg xfer[READ_LUX_XFER_LEN];
-> +	u8 luxhireg[1] = {MAX44009_REG_LUX_HI};
-> +	u8 luxloreg[1] = {MAX44009_REG_LUX_LO};
-> +	u8 lo = 0;
-> +	u8 hi = 0;
-> +	u16 reg = 0;
-> +
-> +	xfer[0].addr = data->client->addr;
-> +	xfer[0].flags = 0;
-> +	xfer[0].len = 1;
-> +	xfer[0].buf = luxhireg;
-> +
-> +	xfer[1].addr = data->client->addr;
-> +	xfer[1].flags = I2C_M_RD;
-> +	xfer[1].len = 1;
-> +	xfer[1].buf = &hi;
-> +
-> +	xfer[2].addr = data->client->addr;
-> +	xfer[2].flags = 0;
-> +	xfer[2].len = 1;
-> +	xfer[2].buf = luxloreg;
-> +
-> +	xfer[3].addr = data->client->addr;
-> +	xfer[3].flags = I2C_M_RD;
-> +	xfer[3].len = 1;
-> +	xfer[3].buf = &lo;
-> +
-> +	/*
-> +	 * Use i2c_transfer instead of smbus read because i2c_transfer
-> +	 * does NOT use a stop bit between address write and data read.
-> +	 * Using a stop bit causes disjoint upper/lower byte reads and
-> +	 * reduces accuracy
-> +	 */
-> +	mutex_lock(&data->lock);
-> +	ret = i2c_transfer(data->client->adapter, xfer, READ_LUX_XFER_LEN);
-> +	mutex_unlock(&data->lock);
-> +	if (ret != READ_LUX_XFER_LEN) {
-> +		return -EIO;
-> +	}
-> +
-> +	reg = (((u16)hi) << 4) | (lo & 0xf);
-
-> +
-> +	return MAX44009_LUX(reg);
-> +}
-> +
-> +static int max44009_read_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan, int *val,
-> +			     int *val2, long mask)
-> +{
-> +	struct max44009_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW: {
-> +		switch (chan->type) {
-> +		case IIO_LIGHT: {
-> +			ret = max44009_read_lux_raw(data);
-> +			if (ret < 0) {
-> +				return ret;
-> +			}
-> +			*val = ret;
-> +			*val2 = 0;
-> +			return IIO_VAL_INT;
-> +		}
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +		break;
-> +	}
-> +
-> +	case IIO_CHAN_INFO_INT_TIME: {
-> +		ret = max44009_read_int_time(data);
-> +		if (ret < 0) {
-> +			return ret;
-> +		}
-> +
-> +		*val2 = ret;
-> +		*val = 0;
-> +		return IIO_VAL_INT_PLUS_NANO;
-> +	}
-> +
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static IIO_CONST_ATTR(illuminance_scale_available, max44009_scale_avail_str);
-> +static IIO_CONST_ATTR(illuminance_integration_time_available,
-> +		      max44009_int_time_str);
-> +
-> +static struct attribute *max44009_attributes[] = {
-> +	&iio_const_attr_illuminance_integration_time_available.dev_attr.attr,
-> +	&iio_const_attr_illuminance_scale_available.dev_attr.attr, NULL
-> +};
-> +
-> +static const struct attribute_group max44009_attribute_group = {
-> +	.attrs = max44009_attributes,
-> +};
-> +
-> +static int max44009_thresh_byte_from_int(int thresh)
-> +{
-> +	int mantissa, exp;
-> +
-> +	if (thresh < 0 || thresh > MAX44009_MAXIMUM_THRESHOLD) {
-> +		return -EINVAL;
-> +	}
-> +
-> +	for (mantissa = thresh, exp = 0; mantissa > 0xff; exp++) {
-> +		mantissa >>= 1;
-> +	}
-> +
-> +	mantissa >>= 4;
-> +	mantissa &= 0xf;
-> +	exp <<= 4;
-> +
-> +	return exp | mantissa;
-> +}
-> +
-> +static int max44009_get_thr_reg(enum iio_event_direction dir)
-> +{
-> +	switch (dir) {
-> +	case IIO_EV_DIR_RISING:
-> +		return MAX44009_REG_UPPER_THR;
-> +	case IIO_EV_DIR_FALLING:
-> +		return MAX44009_REG_LOWER_THR;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int max44009_write_thresh(struct iio_dev *indio_dev,
-> +				 enum iio_event_direction dir, int val)
-> +{
-> +	struct max44009_data *data = iio_priv(indio_dev);
-> +	int thresh;
-> +	int reg;
-> +
-> +	reg = max44009_get_thr_reg(dir);
-> +	if (reg < 0) {
-> +		return reg;
-> +	}
-> +
-> +	thresh = max44009_thresh_byte_from_int(val);
-> +	if (thresh < 0) {
-> +		return thresh;
-> +	}
-> +
-> +	return max44009_write_reg(data, reg, thresh);
-> +}
-> +
-> +static int max44009_write_event_value(struct iio_dev *indio_dev,
-> +				      const struct iio_chan_spec *chan,
-> +				      enum iio_event_type type,
-> +				      enum iio_event_direction dir,
-> +				      enum iio_event_info info,
-> +				      int val, int val2)
-> +{
-> +	if (info != IIO_EV_INFO_VALUE || chan->type != IIO_LIGHT || val2 != 0) {
-> +		return -EINVAL;
-> +	}
-> +
-> +	return max44009_write_thresh(indio_dev, dir, val);
-> +}
-> +
-> +static int max44009_read_event_value(struct iio_dev *indio_dev,
-> +				     const struct iio_chan_spec *chan,
-> +				     enum iio_event_type type,
-> +				     enum iio_event_direction dir,
-> +				     enum iio_event_info info,
-> +				     int *val, int *val2)
-> +{
-> +	int thresh, reg;
-> +	struct max44009_data *data = iio_priv(indio_dev);
-> +
-> +	if (chan->type != IIO_LIGHT || type != IIO_EV_TYPE_THRESH) {
-> +		return -EINVAL;
-> +	}
-> +
-> +	reg = max44009_get_thr_reg(dir);
-> +	if (reg < 0) {
-> +		return reg;
-> +	}
-> +
-> +	thresh = max44009_read_reg(data, reg);
-> +	if (thresh < 0) {
-> +		return thresh;
-> +	}
-> +
-> +	*val = MAX44009_THRESHOLD(thresh);
-> +
-> +	return IIO_VAL_INT;
-> +}
-> +
-> +static int max44009_write_event_config(struct iio_dev *indio_dev,
-> +				       const struct iio_chan_spec *chan,
-> +				       enum iio_event_type type,
-> +				       enum iio_event_direction dir,
-> +				       int state)
-> +{
-> +	struct max44009_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	if (chan->type != IIO_LIGHT || type != IIO_EV_TYPE_THRESH) {
-> +		return -EINVAL;
-> +	}
-> +
-> +	ret = max44009_write_reg(data, MAX44009_REG_ENABLE, state);
-> +	if (ret < 0) {
-> +		return ret;
-> +	}
-> +
-> +	/*
-> +	 * Set device to trigger interrupt immediately upon exceeding
-> +	 * the threshold limit
-> +	 */
-> +	ret = max44009_write_reg(data, MAX44009_REG_THR_TIMER, 0);
-> +	if (ret < 0) {
-> +		return ret;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int max44009_read_event_config(struct iio_dev *indio_dev,
-> +				      const struct iio_chan_spec *chan,
-> +				      enum iio_event_type type,
-> +				      enum iio_event_direction dir)
-> +{
-> +	struct max44009_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	if (chan->type != IIO_LIGHT || type != IIO_EV_TYPE_THRESH) {
-> +		return -EINVAL;
-> +	}
-> +
-> +	ret = max44009_read_reg(data, MAX44009_REG_ENABLE);
-> +	if (ret < 0) {
-> +		return ret;
-> +	}
-> +
-> +	return ret;
-> +}
-We have lots of event config, but they are actually controlling the
-trigger.  The device doesn't generate any iio events at all that I can see.
-
-> +
-> +static const struct iio_info max44009_info = {
-> +	.read_raw = max44009_read_raw,
-> +	.write_raw = max44009_write_raw,
-> +	.write_raw_get_fmt = max44009_write_raw_get_fmt,
-> +	.read_event_value = max44009_read_event_value,
-> +	.read_event_config = max44009_read_event_config,
-> +	.write_event_value = max44009_write_event_value,
-> +	.write_event_config = max44009_write_event_config,
-> +	.attrs = &max44009_attribute_group,
-> +};
-> +
-> +static int max44009_set_trigger_state(struct iio_trigger *trigger,
-> +				      bool enable)
-> +{
-> +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trigger);
-> +	struct max44009_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	ret = max44009_write_reg(data, MAX44009_REG_ENABLE, enable);
-> +	if (ret < 0) {
-> +		return ret;
-> +	}
-> +
-> +	ret = max44009_write_reg(data, MAX44009_REG_THR_TIMER, 0);
-> +	if (ret < 0) {
-As suggested above, write_reg should clearly only return 0 or negative.
-you can just do
-return max440..
-
-> +		return ret;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct iio_trigger_ops max44009_trigger_ops = {
-> +	.set_trigger_state = max44009_set_trigger_state,
-> +};
-> +
-> +static irqreturn_t max44009_trigger_handler(int irq, void *p)
-> +{
-> +	struct iio_dev *indio_dev = p;
-> +	struct max44009_data *data = iio_priv(indio_dev);
-> +	int lux, upper, lower;
-> +	int ret;
-> +	enum iio_event_direction direction;
-> +
-> +	/* 32-bit for lux and 64-bit for timestamp */
-> +	u32 buf[3] = {0};
-
-Except the timestamp needs to be 64 bit aligned so this isn't big enough.
-All elements in IIO buffers are 'naturally' aligned. so 32 bit is
-aligned to 32 bits, 64 to 64 bits.
-
-> +
-> +	ret = max44009_read_reg(data, MAX44009_REG_STATUS);
-> +	if (ret <= 0) {
-> +		goto err;
-> +	}
-> +
-> +	ret = max44009_read_reg(data, MAX44009_REG_ENABLE);
-> +	if (ret <= 0) {
-> +		goto err;
-> +	}
-
-If these reads are necessary, then add comments on why.
-
-> +
-> +	/* Clear interrupt by disabling interrupt (see datasheet) */
-> +	ret = max44009_write_reg(data, MAX44009_REG_ENABLE, 0);
-> +	if (ret < 0) {
-> +		goto err;
-> +	}
-> +
-> +	lux = max44009_read_lux_raw(data);
-> +	if (lux < 0) {
-> +		goto err;
-> +	}
-> +
-> +	upper = max44009_read_reg(data, MAX44009_REG_UPPER_THR);
-> +	if (upper < 0) {
-> +		goto err;
-> +	}
-> +	upper = MAX44009_THRESHOLD(upper);
-> +
-> +	lower = max44009_read_reg(data, MAX44009_REG_LOWER_THR);
-> +	if (lower < 0) {
-> +		goto err;
-> +	}
-> +	lower = MAX44009_THRESHOLD(lower);
-> +
-> +	/* If lux is NOT out-of-bounds then the interrupt was not triggered
-> +	 * by this device
-Multiline comment syntax in IIO (and most of the kernel) is
-/*
- * If...
- */
-
-Do we support shared interrupt lines?  Doesn't look like it, which means
-it 'probably was' generate by this device, but we don't know why because the value
-has changed.
-
-Returning IRQ_NONE is a bad idea unless we are pretty sure it is a spurious
-interrupt, or we have a shared interrupt line.  It will ultimately result
-in your interrupt being disable by the kernel and all activity breaking.
-
-There is also a perfectly good register to tell use if we generated the interrupt.
-Read that one and use that, not this racey approach.
-
-> +	 */
-> +	if (lux < upper && lux > lower) {
-> +		goto err;
-> +	}
-> +
-> +	/* Get event for correct thresh direction */
-> +	if (lux >= upper) {
-> +		direction = IIO_EV_DIR_RISING;
-> +	} else if (lux <= lower) {
-> +		direction = IIO_EV_DIR_FALLING;
-> +	} else {
-> +		goto err;
-> +	}
-> +
-> +	buf[0] = lux;
-> +	iio_push_to_buffers_with_timestamp(indio_dev, &buf, data->timestamp);
-> +	iio_trigger_notify_done(data->trigger);
-> +
-> +	iio_push_event(indio_dev,
-> +		       IIO_UNMOD_EVENT_CODE(IIO_LIGHT, 0,
-> +					    IIO_EV_TYPE_THRESH, direction),
-> +		       data->timestamp);
-> +
-> +	ret = max44009_write_reg(data, MAX44009_REG_ENABLE, 1);
-> +	if (ret < 0) {
-> +		goto err;
-> +	}
-> +
-> +	return IRQ_HANDLED;
-> +
-> +err:
-> +	/* Re-enable interrupt */
-> +	max44009_write_reg(data, MAX44009_REG_ENABLE, 1);
-> +	return IRQ_NONE;
-> +}
-> +
-> +static irqreturn_t max44009_irq_handler(int irq, void *p)
-> +{
-> +	struct iio_dev *indio_dev = p;
-> +	struct max44009_data *data = iio_priv(indio_dev);
-> +
-> +	data->timestamp = iio_get_time_ns(indio_dev);
-
-We have a standard core function to do this..
-iio_pollfunc_store_time.
-
-There 'might' be a reason to do it differently depending
-on whether you really need it to be that good if you
-can't identify whether it is your interrupt until the
-interrupt thread.
-
-
-> +	return IRQ_WAKE_THREAD;
-> +}
-> +
-> +static int max44009_probe(struct i2c_client *client,
-> +			  const struct i2c_device_id *id)
-> +{
-> +	struct max44009_data *data;
-> +	struct iio_dev *indio_dev;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev) {
-> +		return -ENOMEM;
-> +	}
-> +	data = iio_priv(indio_dev);
-> +	i2c_set_clientdata(client, indio_dev);
-> +	data->client = client;
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->info = &max44009_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->name = MAX44009_DRV_NAME;
-> +	indio_dev->channels = max44009_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(max44009_channels);
-> +	mutex_init(&data->lock);
-> +
-> +	/* Clear stale interrupt bit */
-> +	ret = max44009_read_reg(data, MAX44009_REG_STATUS);
-> +	if (ret < 0) {
-> +		goto err;
-> +	}
-> +
-> +	if (client->irq > 0) {
-> +		ret = devm_request_threaded_irq(&client->dev, client->irq,
-> +						max44009_irq_handler,
-
-This is wrong. The interrupt handler should call the iio_trigger_poll functions
-to cause the trigger handlers for all attached devices to be called.
-
-If for some reason the trigger is only suitable for use by this device
-then things get more blurred, but if not, the interrupt handler itself
-should establish that the interrupt is the data ready signal and call
-iio_trigger_poll.  If it is in a thread, call iio_trigger_poll_chained.
-
-The interrupt should be cleared (if it hasn't naturally happened for
-some other reason, in the trigger try_reenable callback.
-
-
-> +						max44009_trigger_handler,
-> +						IRQF_TRIGGER_FALLING |
-> +						IRQF_ONESHOT,
-> +						MAX44009_IRQ_NAME, indio_dev);
-> +		if (ret < 0) {
-> +			goto err;
-> +		}
-> +
-> +		ret = devm_iio_triggered_buffer_setup(&client->dev, indio_dev,
-> +						      max44009_irq_handler,
-> +						      max44009_trigger_handler,
-> +						      NULL);
-> +		if (ret < 0) {
-
-It's going to change anyway (see below) but note kernel style is no
-brackets when only one item in an block like this.
-
-> +			goto err;
-> +		}
-> +
-> +		data->trigger = devm_iio_trigger_alloc(indio_dev->dev.parent,
-> +						       "%s-dev%d",
-> +						       indio_dev->name,
-> +						       indio_dev->id);
-> +		if (!data->trigger) {
-> +			ret = -ENOMEM;
-> +			goto err;
-> +		}
-> +		data->trigger->dev.parent = indio_dev->dev.parent;
-> +		data->trigger->ops = &max44009_trigger_ops;
-> +		iio_trigger_set_drvdata(data->trigger, indio_dev);
-> +
-> +		ret = devm_iio_trigger_register(&client->dev, data->trigger);
-> +		if (ret < 0) {
-> +			goto err;
-> +		}
-> +	}
-> +
-> +	ret = devm_iio_device_register(&client->dev, indio_dev);
-> +	if (ret < 0) {
-> +		goto err;
-
-Without the mutex destroy these all just become return ret;
-
-> +	}
-> +
-> +	return 0;
-> +err:
-> +	mutex_destroy(&data->lock);
-
-mutex destroy is only really useful for lock debugging.  Given we don't
-leave anything behind here anyway, it just makes the flow more complex
-for no gain.  We very rarely bother with it as a result.
-
-> +	return ret;
-> +}
-> +
-> +static const struct i2c_device_id max44009_id[] = {
-> +	{ "max44009", 0 },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(i2c, max44009_id);
-> +
-> +static struct i2c_driver max44009_driver = {
-> +	.driver = {
-> +		.name = MAX44009_DRV_NAME,
-> +	},
-> +	.probe = max44009_probe,
-> +	.id_table = max44009_id,
-> +};
-> +module_i2c_driver(max44009_driver);
-> +
-> +static const struct of_device_id max44009_of_match[] = {
-> +	{ .compatible = "maxim,max44009" },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(of, max44009_of_match);
-> +
-> +MODULE_AUTHOR("Robert Eshleman <bobbyeshleman@gmail.com>");
-> +MODULE_LICENSE("GPL v2");
-> +MODULE_VERSION("1.0.0");
-Please drop.  MODULE_VERSION provides very little useful info
-and tends to lead to people assuming it does.
-
-Userspace has no obligation to ever look at it and we can't
-break userspace that doesn't so it doesn't provide any value.
-
-> +MODULE_DESCRIPTION("MAX44009 ambient light sensor driver");
+> -	return adt7316_probe(&client->dev, &bus, id->name);
+> +	return adt7316_probe(&client->dev, &bus, id->name, client->irq);
+>  }
+>  
+>  static const struct i2c_device_id adt7316_i2c_id[] = {
+> diff --git a/drivers/staging/iio/addac/adt7316-spi.c b/drivers/staging/iio/addac/adt7316-spi.c
+> index e75827e326a6..adaaa3eecd04 100644
+> --- a/drivers/staging/iio/addac/adt7316-spi.c
+> +++ b/drivers/staging/iio/addac/adt7316-spi.c
+> @@ -93,7 +93,6 @@ static int adt7316_spi_probe(struct spi_device *spi_dev)
+>  {
+>  	struct adt7316_bus bus = {
+>  		.client = spi_dev,
+> -		.irq = spi_dev->irq,
+>  		.read = adt7316_spi_read,
+>  		.write = adt7316_spi_write,
+>  		.multi_read = adt7316_spi_multi_read,
+> @@ -112,7 +111,8 @@ static int adt7316_spi_probe(struct spi_device *spi_dev)
+>  	adt7316_spi_write(spi_dev, 0, 0);
+>  	adt7316_spi_write(spi_dev, 0, 0);
+>  
+> -	return adt7316_probe(&spi_dev->dev, &bus, spi_dev->modalias);
+> +	return adt7316_probe(&spi_dev->dev, &bus, spi_dev->modalias,
+> +			     spi_dev->irq);
+>  }
+>  
+>  static const struct spi_device_id adt7316_spi_id[] = {
+> diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+> index 1ca4ee0f30ee..6b4b80fd80cc 100644
+> --- a/drivers/staging/iio/addac/adt7316.c
+> +++ b/drivers/staging/iio/addac/adt7316.c
+> @@ -1807,12 +1807,12 @@ static irqreturn_t adt7316_event_handler(int irq, void *private)
+>  	return IRQ_HANDLED;
+>  }
+>  
+> -static int adt7316_setup_irq(struct iio_dev *indio_dev)
+> +static int adt7316_setup_irq(struct iio_dev *indio_dev, int irq)
+>  {
+>  	struct adt7316_chip_info *chip = iio_priv(indio_dev);
+>  	int irq_type, ret;
+>  
+> -	irq_type = irqd_get_trigger_type(irq_get_irq_data(chip->bus.irq));
+> +	irq_type = irqd_get_trigger_type(irq_get_irq_data(irq));
+>  
+>  	switch (irq_type) {
+>  	case IRQF_TRIGGER_HIGH:
+> @@ -1828,13 +1828,12 @@ static int adt7316_setup_irq(struct iio_dev *indio_dev)
+>  		break;
+>  	}
+>  
+> -	ret = devm_request_threaded_irq(&indio_dev->dev, chip->bus.irq,
+> +	ret = devm_request_threaded_irq(&indio_dev->dev, irq,
+>  					NULL, adt7316_event_handler,
+>  					irq_type | IRQF_ONESHOT,
+>  					indio_dev->name, indio_dev);
+>  	if (ret) {
+> -		dev_err(&indio_dev->dev, "failed to request irq %d\n",
+> -			chip->bus.irq);
+> +		dev_err(&indio_dev->dev, "failed to request irq %d\n", irq);
+>  		return ret;
+>  	}
+>  
+> @@ -2134,7 +2133,7 @@ static const struct iio_info adt7516_info = {
+>   * device probe and remove
+>   */
+>  int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
+> -		const char *name)
+> +		  const char *name, int irq)
+>  {
+>  	struct adt7316_chip_info *chip;
+>  	struct iio_dev *indio_dev;
+> @@ -2180,8 +2179,8 @@ int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
+>  	indio_dev->name = name;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  
+> -	if (chip->bus.irq > 0) {
+> -		ret = adt7316_setup_irq(indio_dev);
+> +	if (irq > 0) {
+> +		ret = adt7316_setup_irq(indio_dev, irq);
+>  		if (ret)
+>  			return ret;
+>  	}
+> diff --git a/drivers/staging/iio/addac/adt7316.h b/drivers/staging/iio/addac/adt7316.h
+> index fd7c5c92b599..03d5300a98cd 100644
+> --- a/drivers/staging/iio/addac/adt7316.h
+> +++ b/drivers/staging/iio/addac/adt7316.h
+> @@ -16,7 +16,6 @@
+>  
+>  struct adt7316_bus {
+>  	void *client;
+> -	int irq;
+>  	int (*read)(void *client, u8 reg, u8 *data);
+>  	int (*write)(void *client, u8 reg, u8 val);
+>  	int (*multi_read)(void *client, u8 first_reg, u8 count, u8 *data);
+> @@ -30,6 +29,6 @@ extern const struct dev_pm_ops adt7316_pm_ops;
+>  #define ADT7316_PM_OPS NULL
+>  #endif
+>  int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
+> -		   const char *name);
+> +		  const char *name, int irq);
+>  
+>  #endif
 
