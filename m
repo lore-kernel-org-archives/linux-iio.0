@@ -2,90 +2,108 @@ Return-Path: <SRS0=fZBy=P5=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E702C282F6
-	for <linux-iio@archiver.kernel.org>; Mon, 21 Jan 2019 08:42:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6D0EC282F6
+	for <linux-iio@archiver.kernel.org>; Mon, 21 Jan 2019 09:49:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5B70A20861
-	for <linux-iio@archiver.kernel.org>; Mon, 21 Jan 2019 08:42:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B264F2085A
+	for <linux-iio@archiver.kernel.org>; Mon, 21 Jan 2019 09:49:31 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=endlessm-com.20150623.gappssmtp.com header.i=@endlessm-com.20150623.gappssmtp.com header.b="VdHDGV4s"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Bi4TG4RM"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728085AbfAUImV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 21 Jan 2019 03:42:21 -0500
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:35338 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729106AbfAUImU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 21 Jan 2019 03:42:20 -0500
-Received: by mail-qt1-f194.google.com with SMTP id v11so22766827qtc.2
-        for <linux-iio@vger.kernel.org>; Mon, 21 Jan 2019 00:42:20 -0800 (PST)
+        id S1726872AbfAUJtb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 21 Jan 2019 04:49:31 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:38836 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726738AbfAUJta (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 21 Jan 2019 04:49:30 -0500
+Received: by mail-lj1-f195.google.com with SMTP id c19-v6so16951367lja.5
+        for <linux-iio@vger.kernel.org>; Mon, 21 Jan 2019 01:49:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=UF2QoYFePYcYKLKxBh0A2KIyN9VcodvhLxsKudI3zNA=;
-        b=VdHDGV4sHXYAKWnCWGCc6YtzU8cAt8zTWAFvQafadmOFHYN0a13DGwnQF5geclXmp/
-         ei8JfpwUTgA/e2FrpOSQpKS3tpukygDkkWP8Y6ty7JwfKYrBwxkA6jcqj7HbGX0/gkW3
-         Z+ivBH6MgMwVIu3LsT8vv4+jqqxhTLc2BNQinxi4I8nOLY5m/h3Zi66l4ThOPQT5gVm9
-         tzezAgoutOhQ3pI0VJJQ92W6wQkxO2fRz+wFpoR1r2iyZIv0t/oHQknlXicOepeqdmBo
-         vHwbqC7lOjXSK4xWq+E4eGtJ8TYUxgERk6yL2ErOKWv4M3eJmDWh2Y2elieybyEvRND+
-         iR6g==
+        bh=klCGRFpkS10f4pHp7uFNtolnPPHMvSv8HkXKShYpYFo=;
+        b=Bi4TG4RMoPy+SDdap0em7KMZJCLyUt0i3nj7xI5+ACcl55nFQ74Qs58rFwNt6zXfLH
+         t2KaCRINJGYAk8IP+/kXM+kSFN1ox/qnbV7jeGXlynomzsFv6RfpPLDbqaZli10fZH5n
+         wTsZJQoryKn3vlntLZsZcS5T2KCS7PiqbYYKgI8pt1Yc/mhmmWobak15DFqG2R8WNqvr
+         Kh3LBNP4X8fDP26zPpuiQmqcNwOrUHf8Ro5htlB31pxnaO7RxHQn1aEHxI8xUn3WiFaD
+         KjwiY1UK4RFDU7sq/iSF4wVmhK9iwgpA/yM6HsRsSt5kkjw7NEe424PEo/Ym6thiJIKL
+         w2ng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=UF2QoYFePYcYKLKxBh0A2KIyN9VcodvhLxsKudI3zNA=;
-        b=ZT04Zwr35DKdqGVP2YjJrnJMONVvcpTD3yIh1elmZ2SJiCmsjBBl2G+ucoK+ZEHtaY
-         s2vfE4PjpDzVn4qolqz5eBCOiW+2Ar4TzuHogxu76W6K9aTuUi57nVQQw8cRx5sPfqOD
-         GqMxvkNxqLik2VLisAXII8D4HYMIoOJikWGqqrBfyO/TrDgTphS3qHmGGF+qzN2NT8oO
-         Jbl/u5aZscoCJVr7QrT98npzNp8M042UfMvXCvM5ifAkIusQmTd3x23Cc1ULW8bZsiN+
-         Didh9K2Uag6nKXw1Dq6Dad6XNRNVUj4+NTrl79uWBtyngdz1qGEy8Bxr5Ye8sbHbSEIe
-         36fQ==
-X-Gm-Message-State: AJcUukcb+24IjMXnro1NT4A1MgyRWHWWJfhOZTUTa1iraEj0n4OhzzqK
-        2wMYKXFtmpSuT9MiySFmPi8Dcq/68R4yl8TONhRasQ==
-X-Google-Smtp-Source: ALg8bN5NYLl4lAI6BLJ9MubkAk36y6wUj1tdtWbYLW6cxuVOi2d9AS+G3MGdy7HbSGvuleBF5imJYQDizNJmp1zSFJI=
-X-Received: by 2002:a0c:8a29:: with SMTP id 38mr24417673qvt.222.1548060139696;
- Mon, 21 Jan 2019 00:42:19 -0800 (PST)
+        bh=klCGRFpkS10f4pHp7uFNtolnPPHMvSv8HkXKShYpYFo=;
+        b=TcYX6m+rkNk7Aa8vqA+JLN5Lqjh3CQN3NsdTHrc9MIYHLMDp7BR6f6Hg0a3HOxPi4/
+         tYvAWPq70xLWBijU6ODR7WofCiOi1+6TlifsF/kM3vRKE7H/Wa056Y7ddZFmswoqWjzw
+         HT+xCegrnPKliwm41FRGU3sClFsD2LYoU4c32pMZZUqic1s8//3ixV8xn4gCoyBVsv5S
+         tfNekMNBVtXGzHWAho3PYAWrXkiZyXaFkq9dIuA9qSkjZHACX9bw2HCOwuPxOHAiWp7t
+         UR5v/K+NnA3w2m4FGErM/xGohBUpQPniZyIdG0+qdaN4wBhTF5F/XpwU9i+dUohbrI1L
+         eoyA==
+X-Gm-Message-State: AJcUukfuWTLd3Q+kHpI2mQczereLCC+z41OZitcnSuel/sFLhZwXf6iV
+        hDpLD3C2PuBAGdQvQyynAaQvs2jkboccNzJKyRTlisKu
+X-Google-Smtp-Source: ALg8bN7mW9yb+xXTqxxnrqy2ktluUwa1ax+7VXUJzbbaKvU1Z4+TEKwSya/OQTSIAOlYq9GkNKfvGCPGMpz11rMmbX4=
+X-Received: by 2002:a2e:974a:: with SMTP id f10-v6mr18960935ljj.61.1548064168696;
+ Mon, 21 Jan 2019 01:49:28 -0800 (PST)
 MIME-Version: 1.0
-References: <20181220065933.25964-1-drake@endlessm.com> <20190119164915.2475b713@archlinux>
-In-Reply-To: <20190119164915.2475b713@archlinux>
-From:   Daniel Drake <drake@endlessm.com>
-Date:   Mon, 21 Jan 2019 16:42:08 +0800
-Message-ID: <CAD8Lp46LStHJbLAdzC9haLdhsbMXvXS2=k=EoJJuOudVf8YSEw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] iio: drop const typing from iio_mount_matrix rotation
+References: <1542679806-5812-1-git-send-email-ibtsam.haq.0x01@gmail.com>
+ <alpine.DEB.2.21.1811200637130.11466@vps.pmeerw.net> <20181125130102.62c32183@archlinux>
+In-Reply-To: <20181125130102.62c32183@archlinux>
+From:   Ibtsam Ul-Haq <ibtsam.haq.0x01@gmail.com>
+Date:   Mon, 21 Jan 2019 10:49:17 +0100
+Message-ID: <CAPQseg1q=heJpKPQX-PcPkThHq2NVM1k2tQj1SpUTYTfC=D1Hg@mail.gmail.com>
+Subject: Re: [PATCH] iio: Add driver for TLA202x ADCs
 To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     knaack.h@gmx.de, lars@metafoo.de,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org,
-        Linux Upstreaming Team <linux@endlessm.com>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Denis CIOCCA <denis.ciocca@st.com>,
-        Bastien Nocera <hadess@hadess.net>,
-        Hans de Goede <hdegoede@redhat.com>
+Cc:     Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, Jan 20, 2019 at 12:49 AM Jonathan Cameron <jic23@kernel.org> wrote:
-> Also, I didn't think that much about it until now, but I'm not sure
-> why you need this change in the first place. It is an array of
-> pointers to constant characters.  Given we allocate said array
-> before setting this variable to it and don't modify it via this
-> pointer, I believe we are fine with out this.
+Hi,
+
+Thanks a lot for the review. I shall apply all these in the v2, I do
+have just one question, below.
+
+> > > +
+> > > +static int tla2024_of_find_chan(struct tla2024 *priv, struct device_node *ch)
+> > > +{
+> > > +   u16 chan_idx = 0;
+> > > +   u32 tmp_p, tmp_n;
+> > > +   int ainp, ainn;
+> > > +   int ret;
+> > > +
+> > > +   ret = of_property_read_u32_index(ch, "single-ended", 0, &tmp_p);
+> There is now (only very recently) a generic description in DT for
+> acpi channels.  Please look at that:
 >
-> Compiler certainly isn't complaining about patch 2 without this
-> one.  Am I missing something?
+> https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/tree/Documentation/devicetree/bindings/iio/adc/adc.txt?h=togreg&id=00426e99789357dbff7e719a092ce36a3ce49d94
+>
+> It is minimalist.  If it is single ended, you can tell that by the absence
+> of diff-channels.
+>
 
-Hmm, I definitely had a need for it, but I can't reproduce any
-compiler errors without it now, as you say.
+How should we specify which single ended channel to use? For example,
+say I want to configure the driver for reading single-ended values
+only from input pin AIN3. When we only signify a single-ended channel
+by the absence of "diff-channels", where should the "3" be specified?
 
-I think I changed approach somewhere along the way, and this patch is
-no longer necessary.
+> If the binding needs additional elements (it probably does)
+> then propose them for that generic binding.  We are trying to move
+> away from each driver doing it's own thing given all this stuff is
+> pretty generic!
+>
 
-Thanks
-Daniel
+Sorry for trimming the message. Gmail was otherwise blocking my
+outbound message, and I could not find any other way to get it
+through.
+
+Best regards,
+Ibtsam Haq
