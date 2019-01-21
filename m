@@ -1,205 +1,90 @@
-Return-Path: <SRS0=uG3I=P4=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=fZBy=P5=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.0 required=3.0 tests=DATE_IN_PAST_03_06,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A074DC676ED
-	for <linux-iio@archiver.kernel.org>; Sun, 20 Jan 2019 15:37:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B27FEC31D64
+	for <linux-iio@archiver.kernel.org>; Mon, 21 Jan 2019 07:17:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 716B12087B
-	for <linux-iio@archiver.kernel.org>; Sun, 20 Jan 2019 15:37:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 52C6D20880
+	for <linux-iio@archiver.kernel.org>; Mon, 21 Jan 2019 07:17:14 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cFONTUXn"
+	dkim=pass (1024-bit key) header.d=jms.id.au header.i=@jms.id.au header.b="kF7MDOz0"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727152AbfATPgq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 20 Jan 2019 10:36:46 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:33059 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725977AbfATPgq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 20 Jan 2019 10:36:46 -0500
-Received: by mail-pg1-f195.google.com with SMTP id z11so8314750pgu.0;
-        Sun, 20 Jan 2019 07:36:45 -0800 (PST)
+        id S1727673AbfAUHRO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 21 Jan 2019 02:17:14 -0500
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:45956 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726003AbfAUHRN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 21 Jan 2019 02:17:13 -0500
+Received: by mail-qt1-f193.google.com with SMTP id e5so22479402qtr.12;
+        Sun, 20 Jan 2019 23:17:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=fRCPX5chTIBAFsDlbyZCIlcj9BgORSL+wFqz9r1DqOs=;
-        b=cFONTUXnI/smo10RppPd+szehK1qn9ddmEJiFruYrUwbAwyBxqmaqV1kn4qMFMz8vu
-         Q4ObGBrlpGWrrZbOToiUdYl90Zs5FuXfds3HXrE7qhGdMOtP4bDabhvyC+pirkXm77WD
-         lf/sOkb5/cHEZt/K5ijvWkQHI9OBEECXApyJ3GW5pjd0qJazloZXC42ceIZFxfUVNS+w
-         dS6LaNCsrWeT4T3DLZBXwErCAXYFIz6xTdCvnXOdlV0/tfnCWRUO26199oTLu79XGt93
-         G2RJhzkVVzv1O5wuw2dBgse/PggfVU4FW24Nm36JFMonloDcPF50TsuhQ9E9pHjlxrLp
-         NibQ==
+        d=jms.id.au; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dQS4dApOQ8D+jq9Hf+FEXLnyJvAFN5QvNThj5XsJjH8=;
+        b=kF7MDOz04YfonTsmUw6Hw9Bl27lA2DYqMtZ28shJmJ5zSNJZqrIcjKW/F+FCBxz5QW
+         jrc3WlNejTskjQd0vjaPpuMRAZ2YOxCsxxgdg/puoLPf7rJXzvRUKfZvjzSkn5F433Yq
+         InqjzFsxXYAnX/MMZmKJA2UbahN6jy+UbD0zY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=fRCPX5chTIBAFsDlbyZCIlcj9BgORSL+wFqz9r1DqOs=;
-        b=je6jADnTb5DLsEwkIuB5w/qySGLGYg5zDsYNqwBjAdGJPhmM3bEhQJYEyJgttsLh2R
-         6vccir914D1NpLZ4FexFxa+Ii2wmFeOMldoDh4UbS4cvshRifamuYta9JuPyP7a/KCPn
-         9pjY3Lwhcsist5a2ACI/1PSqoiwf9fOzTwLmLcmPmiD8d7gUuSwDQYLgkkdJls4l8OPj
-         TL+6u70IU+5/5S79dMdeYSZohTADMzapdY4jRLIwNn4PEwnsVMvBAWzGiKki7chdhAu2
-         Rf5bISXijWnTkuNUnRDDkXR9lUorD2nl9cPDLkIK4rFOjutzZIyESzwPFzZ/LFIAhPix
-         tBjQ==
-X-Gm-Message-State: AJcUuketa1JdKJhx25Upwj2YE2bsv4ARLGZ7D/mTAdjIr8PyHTCe/fcN
-        6op6qnx9NqkOQmCyGfm7Ndo=
-X-Google-Smtp-Source: ALg8bN4eZpUHtcD8b9YiUg5EKFUG9iX9v7y+0khaM8o58jL7kO0qK9gD0lB9M2VMn7DS8a5dLTqOLQ==
-X-Received: by 2002:a63:f141:: with SMTP id o1mr25320499pgk.134.1547998605263;
-        Sun, 20 Jan 2019 07:36:45 -0800 (PST)
-Received: from localhost.localdomain ([223.189.18.171])
-        by smtp.gmail.com with ESMTPSA id o8sm21451376pfa.42.2019.01.20.07.36.41
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 20 Jan 2019 07:36:44 -0800 (PST)
-From:   Shreeya Patel <shreeya.patel23498@gmail.com>
-To:     jic23@kernel.org
-Cc:     lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, jeremyfertic@gmail.com,
-        shreeya.patel23498@gmail.com
-Subject: [PATCH v3 1/3] Staging: iio: adt7316: Remove irq from bus structure
-Date:   Sun, 20 Jan 2019 21:06:31 +0530
-Message-Id: <20190120153633.18231-2-shreeya.patel23498@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190120153633.18231-1-shreeya.patel23498@gmail.com>
-References: <20190120153633.18231-1-shreeya.patel23498@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dQS4dApOQ8D+jq9Hf+FEXLnyJvAFN5QvNThj5XsJjH8=;
+        b=p3BWhVvvRdQc40PXm/lYZi3UuLstaDXAoE0rjthGHRnS4N1ed027E2uCRxTYs0bYnO
+         pwKPrbXKijAmwT46IPcpgmlAy6HGxEfhJFDH6LSt84lFrJDVW2K4csHpkW3TIXeaiEtz
+         JmbCvHAuihTHd9No4sZadClJRnw1Oj3Z4vnsCFP4klpoWe3o3xPQSh1C2HM4fxnawDXB
+         ouUkfiJaU3s1bLynbFR5QAazPlli6HYiYMqmY6ABISTmvx5KA604e0T5uy4069l0M3qp
+         tCiOPR8wrWXYhK08aQMoU0k4tFRiiGG8cmz75S45yuRsmH72eP50WHRvFc7Q1w4B/38V
+         RW9w==
+X-Gm-Message-State: AJcUukcbsiKeNUEwJiRvgLgDpICvECvRzni28CiLb+OOskyfBVVoges1
+        +Zcc0kpAgQyLg2VZQJXed+oFSZDR8jjaN3RZpErkGvu2
+X-Google-Smtp-Source: ALg8bN44shxb2J0M3z9sjRCFuo4/J0aMjjxqNvJ52rP1UcA1tnGgudSEPIMVnKPVzBjGDURtQ9HSX83f/Ti71iUvX2s=
+X-Received: by 2002:a0c:c927:: with SMTP id r36mr24582500qvj.51.1548035295703;
+ Sun, 20 Jan 2019 17:48:15 -0800 (PST)
+MIME-Version: 1.0
+References: <20190109164343.164205-1-tmaimon77@gmail.com> <20190109164343.164205-2-tmaimon77@gmail.com>
+ <CACPK8XebHzVAO2TX25N24S0Pgg_0xA=7GN3j0oXhSyD4LmL4=w@mail.gmail.com> <CAP6Zq1j=oPdVXZKBteBcaLVZcvoU7M6YbfGhSCaC44Ld9AQ9Ag@mail.gmail.com>
+In-Reply-To: <CAP6Zq1j=oPdVXZKBteBcaLVZcvoU7M6YbfGhSCaC44Ld9AQ9Ag@mail.gmail.com>
+From:   Joel Stanley <joel@jms.id.au>
+Date:   Mon, 21 Jan 2019 12:48:04 +1100
+Message-ID: <CACPK8XfFRigW9pN4JLrH+KcE6ACJUzX0qJV8xeph_DkfKWgBEQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] dt-binding: iio: add NPCM ADC documentation
+To:     Tomer Maimon <tmaimon77@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Patrick Venture <venture@google.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Avi Fishman <avifishman70@gmail.com>,
+        linux-iio@vger.kernel.org,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-interrupt request is not needed to be present in the bus
-structure. It is a good option to pass it as a parameter
-in the probe function instead of having it in the bus structure.
+On Sat, 19 Jan 2019 at 02:12, Tomer Maimon <tmaimon77@gmail.com> wrote:
+>
+> Hi Joel,
+>
+> Thanks for bringing this to my attention,
+>
+> I think I will leave it the same way it is now because I will like to develop the reset driver and to handle the NPCM7xx SOC resets.
 
-Signed-off-by: Shreeya Patel <shreeya.patel23498@gmail.com>
----
- drivers/staging/iio/addac/adt7316-i2c.c |  3 +--
- drivers/staging/iio/addac/adt7316-spi.c |  4 ++--
- drivers/staging/iio/addac/adt7316.c     | 15 +++++++--------
- drivers/staging/iio/addac/adt7316.h     |  3 +--
- 4 files changed, 11 insertions(+), 14 deletions(-)
+You could also do that.
 
-diff --git a/drivers/staging/iio/addac/adt7316-i2c.c b/drivers/staging/iio/addac/adt7316-i2c.c
-index 2d51bd425662..b6571db2e8d8 100644
---- a/drivers/staging/iio/addac/adt7316-i2c.c
-+++ b/drivers/staging/iio/addac/adt7316-i2c.c
-@@ -99,14 +99,13 @@ static int adt7316_i2c_probe(struct i2c_client *client,
- {
- 	struct adt7316_bus bus = {
- 		.client = client,
--		.irq = client->irq,
- 		.read = adt7316_i2c_read,
- 		.write = adt7316_i2c_write,
- 		.multi_read = adt7316_i2c_multi_read,
- 		.multi_write = adt7316_i2c_multi_write,
- 	};
- 
--	return adt7316_probe(&client->dev, &bus, id->name);
-+	return adt7316_probe(&client->dev, &bus, id->name, client->irq);
- }
- 
- static const struct i2c_device_id adt7316_i2c_id[] = {
-diff --git a/drivers/staging/iio/addac/adt7316-spi.c b/drivers/staging/iio/addac/adt7316-spi.c
-index e75827e326a6..adaaa3eecd04 100644
---- a/drivers/staging/iio/addac/adt7316-spi.c
-+++ b/drivers/staging/iio/addac/adt7316-spi.c
-@@ -93,7 +93,6 @@ static int adt7316_spi_probe(struct spi_device *spi_dev)
- {
- 	struct adt7316_bus bus = {
- 		.client = spi_dev,
--		.irq = spi_dev->irq,
- 		.read = adt7316_spi_read,
- 		.write = adt7316_spi_write,
- 		.multi_read = adt7316_spi_multi_read,
-@@ -112,7 +111,8 @@ static int adt7316_spi_probe(struct spi_device *spi_dev)
- 	adt7316_spi_write(spi_dev, 0, 0);
- 	adt7316_spi_write(spi_dev, 0, 0);
- 
--	return adt7316_probe(&spi_dev->dev, &bus, spi_dev->modalias);
-+	return adt7316_probe(&spi_dev->dev, &bus, spi_dev->modalias,
-+			     spi_dev->irq);
- }
- 
- static const struct spi_device_id adt7316_spi_id[] = {
-diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
-index 8cf3ff25eb62..30808a897fc2 100644
---- a/drivers/staging/iio/addac/adt7316.c
-+++ b/drivers/staging/iio/addac/adt7316.c
-@@ -1809,12 +1809,12 @@ static irqreturn_t adt7316_event_handler(int irq, void *private)
- 	return IRQ_HANDLED;
- }
- 
--static int adt7316_setup_irq(struct iio_dev *indio_dev)
-+static int adt7316_setup_irq(struct iio_dev *indio_dev, int irq)
- {
- 	struct adt7316_chip_info *chip = iio_priv(indio_dev);
- 	int irq_type, ret;
- 
--	irq_type = irqd_get_trigger_type(irq_get_irq_data(chip->bus.irq));
-+	irq_type = irqd_get_trigger_type(irq_get_irq_data(irq));
- 
- 	switch (irq_type) {
- 	case IRQF_TRIGGER_HIGH:
-@@ -1830,13 +1830,12 @@ static int adt7316_setup_irq(struct iio_dev *indio_dev)
- 		break;
- 	}
- 
--	ret = devm_request_threaded_irq(&indio_dev->dev, chip->bus.irq,
-+	ret = devm_request_threaded_irq(&indio_dev->dev, irq,
- 					NULL, adt7316_event_handler,
- 					irq_type | IRQF_ONESHOT,
- 					indio_dev->name, indio_dev);
- 	if (ret) {
--		dev_err(&indio_dev->dev, "failed to request irq %d\n",
--			chip->bus.irq);
-+		dev_err(&indio_dev->dev, "failed to request irq %d\n", irq);
- 		return ret;
- 	}
- 
-@@ -2136,7 +2135,7 @@ static const struct iio_info adt7516_info = {
-  * device probe and remove
-  */
- int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
--		  const char *name)
-+		  const char *name, int irq)
- {
- 	struct adt7316_chip_info *chip;
- 	struct iio_dev *indio_dev;
-@@ -2182,8 +2181,8 @@ int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
- 	indio_dev->name = name;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
--	if (chip->bus.irq > 0) {
--		ret = adt7316_setup_irq(indio_dev);
-+	if (irq > 0) {
-+		ret = adt7316_setup_irq(indio_dev, irq);
- 		if (ret)
- 			return ret;
- 	}
-diff --git a/drivers/staging/iio/addac/adt7316.h b/drivers/staging/iio/addac/adt7316.h
-index 84ca4f6c88f5..03d5300a98cd 100644
---- a/drivers/staging/iio/addac/adt7316.h
-+++ b/drivers/staging/iio/addac/adt7316.h
-@@ -16,7 +16,6 @@
- 
- struct adt7316_bus {
- 	void *client;
--	int irq;
- 	int (*read)(void *client, u8 reg, u8 *data);
- 	int (*write)(void *client, u8 reg, u8 val);
- 	int (*multi_read)(void *client, u8 first_reg, u8 count, u8 *data);
-@@ -30,6 +29,6 @@ extern const struct dev_pm_ops adt7316_pm_ops;
- #define ADT7316_PM_OPS NULL
- #endif
- int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
--		  const char *name);
-+		  const char *name, int irq);
- 
- #endif
--- 
-2.17.1
-
+But I was suggesting you use a phandle, so you could then find the
+node you want without searching the entire device tree for the node
+with the correct compatible.
