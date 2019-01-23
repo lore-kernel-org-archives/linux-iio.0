@@ -2,53 +2,77 @@ Return-Path: <SRS0=F8OE=P7=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ECF4C282C0
-	for <linux-iio@archiver.kernel.org>; Wed, 23 Jan 2019 09:14:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAEDAC282C0
+	for <linux-iio@archiver.kernel.org>; Wed, 23 Jan 2019 19:36:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4332820870
-	for <linux-iio@archiver.kernel.org>; Wed, 23 Jan 2019 09:14:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7505F21855
+	for <linux-iio@archiver.kernel.org>; Wed, 23 Jan 2019 19:36:25 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TYFjh/1x"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726207AbfAWJO2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 23 Jan 2019 04:14:28 -0500
-Received: from anchovy2.45ru.net.au ([203.30.46.146]:40229 "EHLO
-        anchovy2.45ru.net.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726158AbfAWJO2 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 23 Jan 2019 04:14:28 -0500
-X-Greylist: delayed 400 seconds by postgrey-1.27 at vger.kernel.org; Wed, 23 Jan 2019 04:14:28 EST
-Received: (qmail 22404 invoked by uid 5089); 23 Jan 2019 09:07:46 -0000
-Received: by simscan 1.2.0 ppid: 22372, pid: 22373, t: 0.0433s
-         scanners: regex: 1.2.0 attach: 1.2.0 clamav: 0.88.3/m:40/d:1950
-Received: from unknown (HELO ?192.168.0.122?) (preid@electromag.com.au@203.59.235.95)
-  by anchovy3.45ru.net.au with ESMTPA; 23 Jan 2019 09:07:46 -0000
-To:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-From:   Phil Reid <preid@electromag.com.au>
-Subject: iio scale precision
-Message-ID: <ec351562-c263-6550-4c6e-7ba2c605e5c0@electromag.com.au>
-Date:   Wed, 23 Jan 2019 17:07:45 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.4.0
+        id S1726027AbfAWTgY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 23 Jan 2019 14:36:24 -0500
+Received: from mail-yw1-f41.google.com ([209.85.161.41]:36641 "EHLO
+        mail-yw1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725999AbfAWTgY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 23 Jan 2019 14:36:24 -0500
+Received: by mail-yw1-f41.google.com with SMTP id i73so1398072ywg.3
+        for <linux-iio@vger.kernel.org>; Wed, 23 Jan 2019 11:36:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=S2czTqVO7MrOb0aEEIoh9i20Mc05XGmWbIIElK/bR88=;
+        b=TYFjh/1xMhMHTYUCFy44uBK+eEZDr6Cuap236K09eWeZVc42JGus2zKoBIo3PcA27W
+         rrwLZt6FH/Fr9Mv8cHhZwy+giXaAR0vsR/8Ldqtc7hnNGvSA3If89g/HYXwc+HVOXoMe
+         1eZnARQaSMLJSjOckILb5cVpgfKF7TI03v51NgHYtprv0IjX63vmj9fuUlfedRiTXRfb
+         CdCY7J4jJYGkblEe5Js/f+QHmJS7mR7tq/PbAttMVGxFO2yzWIEvny2IYqMhYW47TCt/
+         eONLs+54WMGnIAVSJHyyk5CWy18v7vWaTvON9D2p96KcBaeM4WjwSFKxIThJG6rmL5je
+         1JbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=S2czTqVO7MrOb0aEEIoh9i20Mc05XGmWbIIElK/bR88=;
+        b=SBA+1O40nNHXa+uZL4vl82WVUW3yolSoo9vjz/xJplibC6gFzXGsxsVqwe1mYCavXC
+         uCG/kNOf100QeUfmubN5JsUqsfIWmmEL9AUFKdlSoD2hHlrHON/Aog++ZTn69ivJNyfM
+         AzmqI7TwiYe91/82U2vJqkKZkj7NlgAI7ZU2DJjTmNFg+giTFDGU1cbFeXgQUQxrGSXw
+         pv15P6xe8yx0VV9XXUbu/Js7ZP5JGWQ2lbTXrfL2u0JvBRGcOnAeZwpFu791FdfRr42y
+         P8qseTLZ5eE2P166hMtuCUMUx1oo7Y1sHrilJWFAD689w/Lrf8u5AxBED65A/9ttd/ww
+         xM2A==
+X-Gm-Message-State: AJcUukcjDgnF4TOxY7rZjl71LzHypwbvpbnY2dAW+Kmq6dUsne2U2ZkS
+        G6htu9+dCeeIXncdC9euWzHw6yiIevdQzBrClCPccw==
+X-Google-Smtp-Source: ALg8bN4oOTJquiXjs+7Y1f2IhJSJp02BX4yG6CX0+h6EN9PANrIWSdm4ywmfjmHhMoKh4+9R8fooIC4TOR/da+czbvc=
+X-Received: by 2002:a81:2916:: with SMTP id p22mr3459582ywp.176.1548272183493;
+ Wed, 23 Jan 2019 11:36:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-AU
-Content-Transfer-Encoding: 7bit
+From:   Justin Chen <justinpopo6@gmail.com>
+Date:   Wed, 23 Jan 2019 11:36:12 -0800
+Message-ID: <CAJx26kVrDbxrp+rKQOhao_k5O8LThLcDRs8HibcohVEvhAF3Tg@mail.gmail.com>
+Subject: ti-ads7950.c GPIO Pins
+To:     linux-iio@vger.kernel.org
+Cc:     jic23@kernel.org, knaack.h@gmx.de, pmeerw@pmeerw.net,
+        lars@metafoo.de, andriy.shevchenko@linux.intel.com,
+        david@lechnology.com, Florian Fainelli <f.fainelli@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-What's the best way to handle scale values for very high precision ADC's.
+Hello,
 
-eg a 24 or even a 32 bit dac with a 2.5v full scale range.
+I have an use case where I need to configure the 4 GPIO pins on a
+ADS7953. The current driver does not support this. What would be the
+proper way to implement this?
 
-Even using the nV conversion param it looses a fair bit of precision.
+I created an IIO_VOLTAGE channel for each GPIO to enable or disable
+them, but this doesn't seem right to me.
 
-Would a option to return a rational number would be better?
+Any suggestions?
 
-Or am I doing something wrong.
-
--- 
-Regards
-Phil
+Thanks,
+Justin
