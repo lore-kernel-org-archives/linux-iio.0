@@ -2,98 +2,151 @@ Return-Path: <SRS0=9Qm3=QA=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7C91C282C5
-	for <linux-iio@archiver.kernel.org>; Thu, 24 Jan 2019 19:33:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7CD4C282C3
+	for <linux-iio@archiver.kernel.org>; Thu, 24 Jan 2019 21:32:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A615F218D4
-	for <linux-iio@archiver.kernel.org>; Thu, 24 Jan 2019 19:33:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6B1E4218D0
+	for <linux-iio@archiver.kernel.org>; Thu, 24 Jan 2019 21:32:33 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HqDgNskN"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="B7iBPOuJ"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731937AbfAXTdF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 24 Jan 2019 14:33:05 -0500
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:36134 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731501AbfAXTdE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 24 Jan 2019 14:33:04 -0500
-Received: by mail-qt1-f193.google.com with SMTP id t13so8054516qtn.3;
-        Thu, 24 Jan 2019 11:33:04 -0800 (PST)
+        id S1726173AbfAXVcc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 24 Jan 2019 16:32:32 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:37265 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725974AbfAXVcc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 24 Jan 2019 16:32:32 -0500
+Received: by mail-ed1-f66.google.com with SMTP id h15so5793734edb.4;
+        Thu, 24 Jan 2019 13:32:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=dABOoRdMc3ONkW9VtJfZtO0pYsaEfgtakPv9Q33V1xw=;
-        b=HqDgNskN3KNCjeq7bYYjInz0eTtzLRFdJntR0+tGj7QEum40oadzieHkbtjwBreVh5
-         botrSZPeNoMbGwqMDbzyJ52cv5tSnbdx7b4KWJZRTy+beQDtCi0xQXXqQy6Yimwvz42l
-         4kZ0C0J9gCvghZBoDeNR2V+qb7sVOGWepUyjd4WPjNOJDPINkgk3BvNPDLgmdtaaGhR0
-         z2gwn0UhthzBfoCFXdzTVp0G2YpsOtpA+UTDt1lZJdmi5zvyiZgONLYSGKGqaTcPbb2R
-         8dOXN+X/DjaehXJrgd9tzUhMKJuGHO72rjDIt+LODd697gcB7D0NQAAPBn3TM1q2WJC7
-         i2FQ==
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nHhy75h0M+XnKhlhRGvdc3h5y52wRsXerFO8ELPp8XI=;
+        b=B7iBPOuJCOK5a1dQZyHSN73uCzw2OrG3kJ4KcdRkWQYP2Q4iux5lE7tugF1xLXv6Bs
+         EyzC6QJ0UgcvUC1XsboWh5HjHAqVcO9sYBd6MCgKpDi+l4izfHcN7w2YlI1H+v1kJNLj
+         uv10qDRZ4W1pgOn/1IirQtu/1AsZ2L0mlq5kHx2LDeJukttyEDoaXVOucV7r98cnVrbC
+         sepldAJ1SM28zfpjhxXmh9oEECu3fx/QBSgBQiED807/wrd6uYOBPQn4s9UF89gJF0+b
+         FZa0ccUb90/kGkBFkofm0DAGsPceOIOUqmPr4GZzaJvtyXVxKSJa4QquMsF3iYMc8nYe
+         3z9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=dABOoRdMc3ONkW9VtJfZtO0pYsaEfgtakPv9Q33V1xw=;
-        b=R9l7aH75MXEeezwYquRfoTgw1IIowMg4YmEqAlHCEwpgN91PwUSkpwZmrUGPbSVA84
-         3zX056bb31ySb6pX5ms4XVqrBaushVZSocMCWe7d8Yh1NW4WrD2PYaaJdksOgzJUaBeD
-         bPnVEh8JCzzzi9SDAqqXvLYWVr2tNm4IhzNxmoADVoh5jqgnL3umrd7cjUg8wYLf8w9U
-         6I2cemSKCTxAuOuHdpEduKGEn/8e6Lvo70112WVvvWeO9HrsNZeQekvFZ/RBlHMfs+Yd
-         +QzIQBZUqRnS2CYMe9/g8MX6QiTySwgSlsUFolPpnCsy6M3j3UxX8PHTJ7L7jnWW7HBo
-         C++A==
-X-Gm-Message-State: AJcUukf0GPFEP/JQwNhF5LI1onxusXq1D4g4PNW9LJzNjejkJfRyUhlN
-        I5XUaLWYvwd8MpyUrRmGqRdQjFxgQLf+rg==
-X-Google-Smtp-Source: ALg8bN5X3awJxgpBPV2BIyRUDKstA5j4mU44edb0fBso5pQQjKhhcmfBpyVpcaM5goZQ3+NJs7fFFQ==
-X-Received: by 2002:ac8:2bd4:: with SMTP id n20mr8019780qtn.172.1548358383782;
-        Thu, 24 Jan 2019 11:33:03 -0800 (PST)
-Received: from rodrigo-note.semfio.usp.br ([143.107.45.1])
-        by smtp.gmail.com with ESMTPSA id t5sm48752762qkl.14.2019.01.24.11.32.58
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 24 Jan 2019 11:33:03 -0800 (PST)
-From:   Rodrigo Ribeiro <rodrigorsdc@gmail.com>
-To:     lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org
-Cc:     linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com,
-        Rafael Tsuha <rafael.tsuha@usp.br>
-Subject: [PATCH] staging:iio:ad7152: Rename misspelled RESEVERD -> RESERVED
-Date:   Thu, 24 Jan 2019 17:31:56 -0200
-Message-Id: <1548358316-8062-1-git-send-email-rodrigorsdc@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=nHhy75h0M+XnKhlhRGvdc3h5y52wRsXerFO8ELPp8XI=;
+        b=iKwVqDk6YGEw978ET/dpAYalNV4gchOG2TS/JRtPXvQ4L8ZtWOn+Dhi4Qo4+gdPTRL
+         aIXG8uTMs31kapNi/U/h2+sjp0HMiCx9zsLznLhyxE/ovxHhw0jooKnk/bseBlytNVRC
+         blNeer9hAqwZ7M7vuWVolwC737ZEx1qFO3eWBVOxBd7RWmN5CeFg7N25tVuP0OrV4ZJ/
+         IX1rkmI+DoR2Atq2Bz/bcsMzpVyEFf0ZF0wAfIs0sJpWxWKjuaTXpmFEFC7XZzyNg9P6
+         kLk/j0M0Wq1gjt7jhdIpUQO6oAljzfqly2goqygM6oUwMW7nJofr34speW0Ne/mvXb6x
+         AqnA==
+X-Gm-Message-State: AJcUukdV1zeNr7cL46hQKAMQLXwFqL9NuJzfy0788ZAsP+qUgGbEK9LK
+        7PVi8I2eRR8CcuxUbZy0dwaIFHae
+X-Google-Smtp-Source: ALg8bN7CfzTmVbuVGtW+fFk0aDU1x1nBtpizV7C01XqZAcnxGHr3M2RBa+hsS86RwSV3mxEnjQGZyA==
+X-Received: by 2002:a17:906:914a:: with SMTP id y10mr7509154ejw.124.1548365550659;
+        Thu, 24 Jan 2019 13:32:30 -0800 (PST)
+Received: from piling.lan (80-71-134-83.u.parknet.dk. [80.71.134.83])
+        by smtp.gmail.com with ESMTPSA id p7-v6sm6462959ejx.27.2019.01.24.13.32.28
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 24 Jan 2019 13:32:29 -0800 (PST)
+From:   Ricardo Ribalda Delgado <ricardo@ribalda.com>
+To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Ricardo Ribalda Delgado <ricardo@ribalda.com>
+Subject: [PATCH] iio: adc: ad7476: Add support for ADS786X ADCs
+Date:   Thu, 24 Jan 2019 22:32:25 +0100
+Message-Id: <20190124213225.11803-1-ricardo@ribalda.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Remove the checkpatch.pl check:
+Add support for ADS7866, ADS7867 and ADS7868 8/10/12 bit Single channel
+ADC.
 
-CHECK: 'RESEVERD' may be misspelled - perhaps 'RESERVED'?
+Datasheet: http://www.ti.com/product/ADS7866
+Datasheet: http://www.ti.com/product/ADS7867
+Datasheet: http://www.ti.com/product/ADS7868
 
-Signed-off-by: Rodrigo Ribeiro <rodrigorsdc@gmail.com>
-Signed-off-by: Rafael Tsuha <rafael.tsuha@usp.br>
+Signed-off-by: Ricardo Ribalda Delgado <ricardo@ribalda.com>
 ---
-This macro is not used anywhere. Should we just correct the
-spelling or remove the macro?
+ drivers/iio/adc/Kconfig  |  3 ++-
+ drivers/iio/adc/ad7476.c | 20 ++++++++++++++++++++
+ 2 files changed, 22 insertions(+), 1 deletion(-)
 
- drivers/staging/iio/cdc/ad7152.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/staging/iio/cdc/ad7152.c b/drivers/staging/iio/cdc/ad7152.c
-index 25f51db..c9da6d4 100644
---- a/drivers/staging/iio/cdc/ad7152.c
-+++ b/drivers/staging/iio/cdc/ad7152.c
-@@ -35,7 +35,7 @@
- #define AD7152_REG_CH2_GAIN_HIGH	12
- #define AD7152_REG_CH2_SETUP		14
- #define AD7152_REG_CFG			15
--#define AD7152_REG_RESEVERD		16
-+#define AD7152_REG_RESERVED		16
- #define AD7152_REG_CAPDAC_POS		17
- #define AD7152_REG_CAPDAC_NEG		18
- #define AD7152_REG_CFG2			26
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index f9354e5ee65c..d86900fc2634 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -64,7 +64,8 @@ config AD7476
+ 	help
+ 	  Say yes here to build support for Analog Devices AD7273, AD7274, AD7276,
+ 	  AD7277, AD7278, AD7475, AD7476, AD7477, AD7478, AD7466, AD7467, AD7468,
+-	  AD7495, AD7910, AD7920, AD7920 SPI analog to digital converters (ADC).
++	  AD7495, AD7910, AD7920, AD7920, ADS7866, ADS7867, ADS7868 SPI analog
++	  to digital converters (ADC).
+ 
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad7476.
+diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
+index 0549686b9ef8..108c18d64f7d 100644
+--- a/drivers/iio/adc/ad7476.c
++++ b/drivers/iio/adc/ad7476.c
+@@ -59,6 +59,9 @@ enum ad7476_supported_device_ids {
+ 	ID_ADC081S,
+ 	ID_ADC101S,
+ 	ID_ADC121S,
++	ID_ADS7866,
++	ID_ADS7867,
++	ID_ADS7868,
+ };
+ 
+ static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
+@@ -157,6 +160,8 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
+ #define AD7940_CHAN(bits) _AD7476_CHAN((bits), 15 - (bits), \
+ 		BIT(IIO_CHAN_INFO_RAW))
+ #define AD7091R_CHAN(bits) _AD7476_CHAN((bits), 16 - (bits), 0)
++#define ADS786X_CHAN(bits) _AD7476_CHAN((bits) + 4, 0, \
++		BIT(IIO_CHAN_INFO_RAW))
+ 
+ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
+ 	[ID_AD7091R] = {
+@@ -209,6 +214,18 @@ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
+ 		.channel[0] = ADC081S_CHAN(12),
+ 		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+ 	},
++	[ID_ADS7866] = {
++		.channel[0] = ADS786X_CHAN(8),
++		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
++	},
++	[ID_ADS7867] = {
++		.channel[0] = ADS786X_CHAN(10),
++		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
++	},
++	[ID_ADS7868] = {
++		.channel[0] = ADS786X_CHAN(12),
++		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
++	},
+ };
+ 
+ static const struct iio_info ad7476_info = {
+@@ -314,6 +331,9 @@ static const struct spi_device_id ad7476_id[] = {
+ 	{"adc081s", ID_ADC081S},
+ 	{"adc101s", ID_ADC101S},
+ 	{"adc121s", ID_ADC121S},
++	{"ads7866", ID_ADS7866},
++	{"ads7867", ID_ADS7867},
++	{"ads7868", ID_ADS7868},
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(spi, ad7476_id);
 -- 
-2.7.4
+2.20.1
 
