@@ -7,114 +7,94 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DB7EC282C0
-	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 05:57:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14F91C282C0
+	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 06:55:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id CB4A8218D2
-	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 05:57:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D1DF5218D0
+	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 06:55:41 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="vGfx4zWd"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="K0CLtXuU"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726219AbfAYF5D (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 25 Jan 2019 00:57:03 -0500
-Received: from mail-yw1-f67.google.com ([209.85.161.67]:43797 "EHLO
-        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726097AbfAYF5D (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 25 Jan 2019 00:57:03 -0500
-Received: by mail-yw1-f67.google.com with SMTP id n21so3458833ywd.10;
-        Thu, 24 Jan 2019 21:57:02 -0800 (PST)
+        id S1728012AbfAYGzl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 25 Jan 2019 01:55:41 -0500
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:42848 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726323AbfAYGzk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 25 Jan 2019 01:55:40 -0500
+Received: by mail-oi1-f196.google.com with SMTP id w13so6942844oiw.9;
+        Thu, 24 Jan 2019 22:55:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=oIq5VzwbevlyF+FQ7R0JLZtfms9gCxDV+ruYNPlLjHw=;
-        b=vGfx4zWdd8JZhq/FjnbKasft/97BhsFUkAUT7F+lzWu2V9yf1mxvqXSoVmymS9ySwN
-         d5nOZTuSTB2ic6CuLJs1G7O4fphspSFIR6A7TmQb9HejyGHwgfl6tMGCfJMoeGZi+9iS
-         N11Wtdq8VQ2dKnhePfHzRIW2eflPxI3dWCX+BPxD21U+Ker754ZeXbivrcYegul+TKu4
-         oAKQ+Jym1Bd0F1JQkeHT3MMnvtJ5ZFrP30rXw1pw55wKafLVkM9bCDBvAe41p5nvS9ga
-         6yOMdQYaDVFovCS9XNxIGb4N8agNe8PatQfre7JbC2QglffJ0KzkDkxrUjMSH9qKT739
-         x1Rw==
+        bh=zv8x412M3xy9NTN/1GaiIYd9L8YDnqNfiS5wtnkMdJk=;
+        b=K0CLtXuUr2acDIGOdrHOwdHaL9+tPvNv6Ck0qg2XMOD15tzgtjpWmUzG/0QXnrU1OU
+         vGlfdfVpZpKrq4gtSbBz5UXuW6dygo4uyl0WJgv/4p6FNKBjbJbi+C6Xl232or5O6pIU
+         28UbKCHnOeY7fhzEf9/FlqSx+p5FCfjcp/pp1i1VVymWEWCthl7cnmRV98QLzeVeaHya
+         7IsM9JUWsz+HJomfJUmp6TIN9TUABg256cPb/dAl8NvmXXBDJCbbl87rDOteMVh3yrcH
+         hyq/68xJgCNlV+RUBvN35D4lBaRjd66Z7tcYQyGwbewsjsMPMkq9Tti5k7oTcu/AXy3/
+         NJCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=oIq5VzwbevlyF+FQ7R0JLZtfms9gCxDV+ruYNPlLjHw=;
-        b=OL7qJZpdotuEnLFA/jp0+m/U/zwaz7pfyiCJNS3/N5DdDbWF12KFZo4uMGzA2BgtF5
-         Gze317kfVfvEOoXK+eKGRzzJN62CjIed4GPe+dY46Hai2jIJ/iaCxcMeo+o4z0ob7/UM
-         XibW0H91rOmZego1iR66QhRXRos47vpFQOdCYHrUkRoywyOEqpvOl51nFF9N+nScQNtK
-         80PJrBl6dGFJazaoeziLgqHQKl3KHoZNoN9tskIhmtOkF1IYwxXCw18r9CqdwvIP/qeZ
-         8mdBH8B68XU/R9ibA4gFE7AgU/DCsjHAJDMS4yTzwk/3Ce7Cz7w+jAPEWdYVUilMrroi
-         4VIA==
-X-Gm-Message-State: AJcUukeWP5smaRvf0hMo3m5YC1SXREaMphZVsujAFWWLI5PUdoFVc0ym
-        WUZXFmEoYJYbXc89ZlEthLbV2/Y5C0biMBaY1U4=
-X-Google-Smtp-Source: ALg8bN6p1JA8l9f7GAFoEaIoKcU2Zp214QnwcUXzAKBUiEzDBNzoN73UC8tsffxbqgfJyyeR9H8ubZ2u3zU8C9qduvM=
-X-Received: by 2002:a81:4411:: with SMTP id r17mr9442063ywa.16.1548395821488;
- Thu, 24 Jan 2019 21:57:01 -0800 (PST)
+        bh=zv8x412M3xy9NTN/1GaiIYd9L8YDnqNfiS5wtnkMdJk=;
+        b=e5z90sbXVg4U5PChCO5OZjJ31UoMKiUINjAspQDwbTAA8mVOhaDPeberLBU1dfqd5Q
+         8E9bIBXivOnz40OHq5D1ixwx6dP9gYzPqlok9X+y0/7aKV6wgxEgiQ9nXdWPjQL+FHMF
+         /lNUzpUuM3/L+FFotuQd+7qpgJIner4GSMc98RTMPTTYETVRox4lSZu17On0BLl2/R4f
+         pDIFHg/r0rbdR8wTj+0nkwOLcUM0oFDyxEPS76HYLVLriYKL+DCYgouiahRUmtd1nh5g
+         d+xUucUnPtVsX4wrip0nAP23eid3IjIZkOkc5aHkGwtzcTND9Xsai89Va66YM65wWwYP
+         e03w==
+X-Gm-Message-State: AJcUukdtRagYlaYML4sV3SictUL++M+w7qecMyZXhpD31yfCU0rs0MHH
+        cCouih84uTLKy124YX+qPeoSpnvLNsGH89Ad10o=
+X-Google-Smtp-Source: AHgI3IYOWKq30XYuyXva4WjqpbXiZSMzNMKN+17mtdsS4uJANSOlcweDeP6Dv00QxlNyUXF2vOPWQ68tNPY/Gr8yq3s=
+X-Received: by 2002:aca:6c4:: with SMTP id 187mr611054oig.290.1548399339886;
+ Thu, 24 Jan 2019 22:55:39 -0800 (PST)
 MIME-Version: 1.0
-References: <1548381414-20561-1-git-send-email-justinpopo6@gmail.com> <ac0a8ff6-92f5-09ef-932b-aba6378f1f47@gmail.com>
-In-Reply-To: <ac0a8ff6-92f5-09ef-932b-aba6378f1f47@gmail.com>
-From:   Justin Chen <justinpopo6@gmail.com>
-Date:   Thu, 24 Jan 2019 21:56:50 -0800
-Message-ID: <CAJx26kWg=9FQonEWRQ2OjQWEStRQ_p8OOgperFp+9E_UdQGYNQ@mail.gmail.com>
-Subject: Re: [PATCH] iio: adc: ti-ads7950: inconsistency with spi msg
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     linux-iio@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, linux-kernel@vger.kernel.org
+References: <20190124142755.GA31059@bhar.linux>
+In-Reply-To: <20190124142755.GA31059@bhar.linux>
+From:   Alexandru Ardelean <ardeleanalex@gmail.com>
+Date:   Fri, 25 Jan 2019 08:55:27 +0200
+Message-ID: <CA+U=Dsrefk01AbyKmkhLrwQyq8mkBKoO6kv_zXYEFSSCCqDObw@mail.gmail.com>
+Subject: Re: [PATCH] drivers: iio: industrialio-core: add check when kzalloc fails
+To:     Bharath Vedartham <linux.bhar@gmail.com>
+Cc:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hello Florian
+On Thu, Jan 24, 2019 at 4:28 PM Bharath Vedartham <linux.bhar@gmail.com> wrote:
+>
+> add code to handle the case when kzalloc fails to allocate memory to dev
+>
+> Signed-off-by: Bharath Vedartham <linux.bhar@gmail.com>
+> ---
+>  drivers/iio/industrialio-core.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index 4f5cd9f..93caa6b 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -1475,6 +1475,8 @@ struct iio_dev *iio_device_alloc(int sizeof_priv)
+>                 }
+>                 dev_set_name(&dev->dev, "iio:device%d", dev->id);
+>                 INIT_LIST_HEAD(&dev->buffer_list);
+> +       } else {
+> +               return NULL;
 
+I'd argue that this is a bit redundant, because `dev` is NULL, the
+return below (return dev) will also return NULL.
 
-On Thu, Jan 24, 2019 at 8:30 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
+Alex
+
+>         }
 >
->
-> Hi Justin,
->
-> On 1/24/19 5:56 PM, justinpopo6@gmail.com wrote:
-> > From: Justin Chen <justinpopo6@gmail.com>
-> >
-> > To read a channel we require 3 cycles to send, process, and receive
-> > the data. The transfer buffer for the third transaction is left blank.
-> > This leaves it up to the SPI driver to decide what to do.
-> >
-> > In one particular case, if the tx buffer is not set the spi driver
-> > sets it to 0xff. This puts the ADC in a alarm programming state,
-> > therefore the following read to a channel becomes erroneous.
-> >
-> > Instead of leaving us to the mercy of the SPI driver, we send the
-> > ADC cmd on the third transaction to prevent inconsistent behavior.
->
-> Do you think this warrants a Fixes: tag?
->
-This was an issue when the driver was introduced. Should I tag that
-commit the introduced the driver?
-> >
-> > Signed-off-by: Justin Chen <justinpopo6@gmail.com>
-> > ---
-> >  drivers/iio/adc/ti-ads7950.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
-> > index 0ad6359..5453e10 100644
-> > --- a/drivers/iio/adc/ti-ads7950.c
-> > +++ b/drivers/iio/adc/ti-ads7950.c
-> > @@ -422,6 +422,7 @@ static int ti_ads7950_probe(struct spi_device *spi)
-> >       st->scan_single_xfer[1].tx_buf = &st->single_tx;
-> >       st->scan_single_xfer[1].len = 2;
-> >       st->scan_single_xfer[1].cs_change = 1;
-> > +     st->scan_single_xfer[2].rx_buf = &st->single_tx;
->
-> Should this be st->scan_single_xfer[2].tx_buf?
->
-Oh yes. Good catch. Careless mistake! v2 incoming.
-> >       st->scan_single_xfer[2].rx_buf = &st->single_rx;
-> >       st->scan_single_xfer[2].len = 2;
-> >
-> >
->
+>         return dev;
 > --
-> Florian
+> 2.7.4
+>
