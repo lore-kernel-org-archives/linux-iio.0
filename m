@@ -2,86 +2,154 @@ Return-Path: <SRS0=ZZPN=QB=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_SIGNED,DKIM_VALID,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17CFAC282C0
-	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 18:20:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2ED5C282C0
+	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 18:38:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D9329218B0
-	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 18:20:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9EE922087E
+	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 18:38:18 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="JG0t3YBY"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eRE96xBN"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726451AbfAYSUf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 25 Jan 2019 13:20:35 -0500
-Received: from rnd-relay.smtp.broadcom.com ([192.19.229.170]:37488 "EHLO
-        rnd-relay.smtp.broadcom.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726329AbfAYSUf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 25 Jan 2019 13:20:35 -0500
-Received: from nis-sj1-27.broadcom.com (nis-sj1-27.lvn.broadcom.net [10.75.144.136])
-        by rnd-relay.smtp.broadcom.com (Postfix) with ESMTP id 7AAA730C0A5;
-        Fri, 25 Jan 2019 10:20:29 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 rnd-relay.smtp.broadcom.com 7AAA730C0A5
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=broadcom.com;
-        s=dkimrelay; t=1548440429;
-        bh=OnBTKt6woy+u6w5wYAW86X+xtJCsSnClrQJsvmKgaP8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=JG0t3YBYG3o9k1hxzlEnmvlHZ9cIty5MU9hayH0MPDMF+RUg+YINy7TI8NLZGdO6s
-         mwCTMN6G0sFA7HlB56zq0ZJIT+iebipS/BVAfmt8sud1PSCpE2/Iqzegsd0936fieV
-         Gm4WthlueHWrwrKKrgo0exJhkVHTkgPYZwhQr7nQ=
-Received: from stbirv-lnx-2.igp.broadcom.net (stbirv-lnx-2.igp.broadcom.net [10.67.48.34])
-        by nis-sj1-27.broadcom.com (Postfix) with ESMTP id 6D943AC0730;
-        Fri, 25 Jan 2019 10:20:29 -0800 (PST)
-Received: by stbirv-lnx-2.igp.broadcom.net (Postfix, from userid 47169)
-        id 5188A2800EA; Fri, 25 Jan 2019 10:20:29 -0800 (PST)
-From:   justinpopo6@gmail.com
-To:     linux-iio@vger.kernel.org
+        id S1728632AbfAYSiS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 25 Jan 2019 13:38:18 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:41588 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726321AbfAYSiS (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 25 Jan 2019 13:38:18 -0500
+Received: by mail-ed1-f66.google.com with SMTP id a20so8106944edc.8;
+        Fri, 25 Jan 2019 10:38:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=RK/RNSLuJatuThuuwTlo2+3dPMmT4AcQSJQ01+f058Y=;
+        b=eRE96xBNp/uuyGV5ORtH/Z632cCIIwVt2rLSaF4XBtK0QETCQ6FIqsb6BF/CIvAsfd
+         w87zJ7h3tio47EeUGdMI4a80wnk0onbmZUcD5VqmKD2YfNBtJ9y2uJGp5JT7UCdBWNWh
+         VOUKK73oPKQavU3JNzG6zyVLHBj0LhbYt3BgzIAXuB19jcn3c0m+duuSevK6QKAClbSK
+         AqFMHRzivUqQ+ELYo8W9XZwTt+hjTCNYx4VNE1ohV6uZiRl8vPKZUJwfhaBTuKu71Ln3
+         yFfuDiW0yhLr8B+fFHkKNu3vENAgkb1l6vV1UmHQ/hCK1pLhDAMINsvCjy28UyAAqUv4
+         PNug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=RK/RNSLuJatuThuuwTlo2+3dPMmT4AcQSJQ01+f058Y=;
+        b=gwbsqZw3TxEBF0rKpQa0TGA+TYo8iQeRwBR86hU5DjOX+rMgNjjCGNP111CKPkxnRH
+         RICgXE29Ko0r2BiZbqBH5azC3HmK3k1Lsw5KPdBJwJLcthSpCb2owC4owKoks4kUSkGH
+         sVEThpbudCPBunCR3QZfp+T6zKVGy+KIrLzXvvJ2ib8wBoOiFbRW4Mm5cH3BY+KI7fg4
+         N/jpl89/4j0rOf4JczfnAauQnM9HzOLHcHQjYLUbimRPbtyco4W5iNoywbE8hUiPc/oV
+         z3qYxG5WCcApnmrlDBFC3l+xtx+h2GTkV7mBuMxLyiPEqBFbNzikPZ0a4JEu2CHSBiB9
+         11eQ==
+X-Gm-Message-State: AJcUukfY1GwlP84B2LQbGHvzd8+xGrRDWKc1zUr3crndoCOs/M2GJoF+
+        q7Ajr1gt4rmiYYrHxoLcG2qPPFJ5
+X-Google-Smtp-Source: ALg8bN7ZKy04C6VTlG50QHnN28TDkdYKeueRiVStwUw2HxPH/3RsuXAbbsNkWfDGRckb7lRWqb8Wyg==
+X-Received: by 2002:a50:f61e:: with SMTP id c30mr11424357edn.197.1548441495047;
+        Fri, 25 Jan 2019 10:38:15 -0800 (PST)
+Received: from [10.67.49.9] ([192.19.223.250])
+        by smtp.googlemail.com with ESMTPSA id b46sm12248971edc.57.2019.01.25.10.38.12
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 25 Jan 2019 10:38:14 -0800 (PST)
+Subject: Re: [PATCH v2] iio: adc: ti-ads7950: inconsistency with spi msg
+To:     justinpopo6@gmail.com, linux-iio@vger.kernel.org
 Cc:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        linux-kernel@vger.kernel.org, f.fainelli@gmail.com,
-        Justin Chen <justinpopo6@gmail.com>
-Subject: [PATCH v2] iio: adc: ti-ads7950: inconsistency with spi msg
-Date:   Fri, 25 Jan 2019 10:20:22 -0800
-Message-Id: <1548440422-27943-1-git-send-email-justinpopo6@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        linux-kernel@vger.kernel.org
+References: <1548440422-27943-1-git-send-email-justinpopo6@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <9d110c8a-2a2a-412e-847e-215b9edc97e4@gmail.com>
+Date:   Fri, 25 Jan 2019 10:38:11 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.2.1
+MIME-Version: 1.0
+In-Reply-To: <1548440422-27943-1-git-send-email-justinpopo6@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Justin Chen <justinpopo6@gmail.com>
+On 1/25/19 10:20 AM, justinpopo6@gmail.com wrote:
+> From: Justin Chen <justinpopo6@gmail.com>
+> 
+> To read a channel we require 3 cycles to send, process, and receive
+> the data. The transfer buffer for the third transaction is left blank.
+> This leaves it up to the SPI driver to decide what to do.
+> 
+> In one particular case, if the tx buffer is not set the spi driver
+> sets it to 0xff. This puts the ADC in a alarm programming state,
+> therefore the following read to a channel becomes erroneous.
+> 
+> Instead of leaving us to the mercy of the SPI driver, we send the
+> ADC cmd on the third transaction to prevent inconsistent behavior.
+> 
+> Fixes: 902c4b2446d4 ("iio: adc: New driver for TI ADS7950 chips")
+> Signed-off-by: Justin Chen <justinpopo6@gmail.com>
 
-To read a channel we require 3 cycles to send, process, and receive
-the data. The transfer buffer for the third transaction is left blank.
-This leaves it up to the SPI driver to decide what to do.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 
-In one particular case, if the tx buffer is not set the spi driver
-sets it to 0xff. This puts the ADC in a alarm programming state,
-therefore the following read to a channel becomes erroneous.
-
-Instead of leaving us to the mercy of the SPI driver, we send the
-ADC cmd on the third transaction to prevent inconsistent behavior.
-
-Fixes: 902c4b2446d4 ("iio: adc: New driver for TI ADS7950 chips")
-Signed-off-by: Justin Chen <justinpopo6@gmail.com>
----
- drivers/iio/adc/ti-ads7950.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
-index 0ad6359..1255d8b 100644
---- a/drivers/iio/adc/ti-ads7950.c
-+++ b/drivers/iio/adc/ti-ads7950.c
-@@ -422,6 +422,7 @@ static int ti_ads7950_probe(struct spi_device *spi)
- 	st->scan_single_xfer[1].tx_buf = &st->single_tx;
- 	st->scan_single_xfer[1].len = 2;
- 	st->scan_single_xfer[1].cs_change = 1;
-+	st->scan_single_xfer[2].tx_buf = &st->single_tx;
- 	st->scan_single_xfer[2].rx_buf = &st->single_rx;
- 	st->scan_single_xfer[2].len = 2;
- 
+Thanks!
 -- 
-2.7.4
-
+Florian
