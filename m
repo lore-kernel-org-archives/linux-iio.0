@@ -2,153 +2,119 @@ Return-Path: <SRS0=ZZPN=QB=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_PASS,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE497C282C0
-	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 10:04:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBEEDC282C0
+	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 10:53:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id AB452218A2
-	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 10:04:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B53ED218A6
+	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 10:53:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aC+L/fLT"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YeVa+flA"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728007AbfAYKE4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 25 Jan 2019 05:04:56 -0500
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:35595 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729145AbfAYKE4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 25 Jan 2019 05:04:56 -0500
-Received: by mail-ed1-f68.google.com with SMTP id x30so6951780edx.2;
-        Fri, 25 Jan 2019 02:04:54 -0800 (PST)
+        id S1726108AbfAYKxW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 25 Jan 2019 05:53:22 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:44776 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725909AbfAYKxW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 25 Jan 2019 05:53:22 -0500
+Received: by mail-pf1-f196.google.com with SMTP id u6so4576582pfh.11;
+        Fri, 25 Jan 2019 02:53:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZvohXcEKajDUL0TBJ4gjZVmzI1Z8Ns4WdfDOcdvTKgA=;
-        b=aC+L/fLT5ny3bdPfz9DhqkJBTFLacEzfFtXpV/sDiL8sOgHu8fz4EUggDRMjTjB74D
-         hdkhaFc+mKuN6FlPS5WvpifssMxwp+4cW9BcD5f3Q7+sLSI4ZFu8UwovYK22yQWSvW4N
-         cbuOjuKPYJ+S4AYQB6A+4TBtdDT68bsbjIpeQ6dmstWXPCkOYGeqJMWxEAddjy87t3Db
-         WRJH7JRos/+107/y0XEAfAJQ/81V9FsBHHVBLzfxOAfVxwoirKloViDIbprb8fWExQSm
-         g/eEFRqowIY2TME0UJ7cHm2UoIb8UsDqfPaO2wCCinYzS/zWhaxGUH4t59wrBHCYU1kp
-         /Thg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=L91MzvIDdYc15dcB4zub4pVbI3kUIlxSQxQ4CtMFeUg=;
+        b=YeVa+flAOTHV/vGbsnDqk7YesNYLq2GhYxqwpObfIztwUsYl8R7CYn+SBIrYhvyHi6
+         +IdqA0jIKu0sOooEUzGkRDlHXBH+QUKdOyPjjQu30eYuP23Uh7ZG3oFmW0oL8uQFxftn
+         /nBs9qaEvHCXMuaevtRBw/2BXnCKUF12zeZyoYBrgBWU7ojcWMqbttLJq6A2qCE3wIw0
+         ca4c8wkI8S7Lnq6kx1ZD7uT6E3MTrHgNX6chYgOXnZbjx0YNSYzADkTOSCakyMS3wQuP
+         irXgKaOmszQHT0lW1+p0BsrUJ06rbGXkgtfymYr14rgSG/mNjFSZr8+UlG5WUh0lJv5c
+         llxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=ZvohXcEKajDUL0TBJ4gjZVmzI1Z8Ns4WdfDOcdvTKgA=;
-        b=F7ztxVY7rjq5ej199fUXMH/KXunNvCXb/tsQGCIAJBiI9eQ/UwjMgKFzOyCi+3b9Bn
-         FZTKsyB2rqGCzFoGKA4uLErTfCAkk5gfl55LmPRcMUp6I9sdGId2SSpNUDK/drUZHP4E
-         1B1AhEdWNvihgcE3iipSPq+66aCJTEbc4xbpiM2sE6vf8lf12ZBSLNAcWBdlmSlDLDXa
-         izf7M8f0ihqkdOQ3PNNvOjxj9Zev7UdVsVoNTfIMD0EFWDZPXV5arpejTWdVXEyZ7wqk
-         rOPKRDc/LXmK6n2n33ars1srn5nQXd4ySg6+nANX7Z/80pE8FnADoR9kgEy3XpRJtQtI
-         5TIw==
-X-Gm-Message-State: AJcUukcju1rMlvBi29tAwIWLxek+2gLBK58dv5eW3k36Xre1Bms+ivbJ
-        sljKkVdz/xw5NwimUl1TxsQ=
-X-Google-Smtp-Source: ALg8bN6Rv+wK24wNAW/a33aKAOps4d++ftpf/Xmr1wOWj004yCMJD3W5t6LtEfdNh4SdlTC2eGb+Tg==
-X-Received: by 2002:a17:906:b292:: with SMTP id q18mr8959462ejz.184.1548410694111;
-        Fri, 25 Jan 2019 02:04:54 -0800 (PST)
-Received: from neopili.qtec.com (cpe.xe-3-0-1-778.vbrnqe10.dk.customer.tdc.net. [80.197.57.18])
-        by smtp.gmail.com with ESMTPSA id g16sm1181467ejb.65.2019.01.25.02.04.52
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 25 Jan 2019 02:04:52 -0800 (PST)
-From:   Ricardo Ribalda Delgado <ricardo@ribalda.com>
-To:     Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        alexandru.ardelean@analog.com, linux-iio@vger.kernel.org
-Cc:     Ricardo Ribalda Delgado <ricardo@ribalda.com>
-Subject: [PATCH v2] iio: adc: ad7476: Add support for ADS786X ADCs
-Date:   Fri, 25 Jan 2019 11:04:51 +0100
-Message-Id: <20190125100451.15011-1-ricardo@ribalda.com>
-X-Mailer: git-send-email 2.20.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=L91MzvIDdYc15dcB4zub4pVbI3kUIlxSQxQ4CtMFeUg=;
+        b=lKox0lyVceHpRSpMi3Rl1s0ygrE1BYU3rh5Ykx2RcqT/56tVELeBmTkVBSraOyLjLT
+         QwEiX1ZfGA6ZJ2iXfU6jgr0YZ+4ElFLS4A6gMKEebywafJJ2R308U8/EQvPhUj3kFnAN
+         RGNaf/BldAtRQEBJG0pikDUSTCqMRMi89JO46igUb6e41y8jk3bv65E6cTHTbrNoMrvb
+         /vVp2MtDolBtp7KMbJXZ0GFMtkSb8A0CwsVs0pA++RmZVA4QmDyub5+em1T3tJAyufRT
+         nQTQcqHg5H9ANxwzDojlcQQYQw/8SmrrgNAXlq3GPPgPII6qu/p1aZx9zRIPNfIjupcf
+         1yWA==
+X-Gm-Message-State: AJcUukfYf43spc2pzklGn7J3+4lZhyxP9H9VJcAAoipaEyuJQANiJ87V
+        Kl7suP5+qm0cYGvU3rwsm70=
+X-Google-Smtp-Source: ALg8bN5DtGRkf5lPkQvEyIQQLfiWgyn1s7cMEFjaH/WC5XUfqEtHpDDonw5CgnG4Dg+rftaxDd21mQ==
+X-Received: by 2002:a62:2f06:: with SMTP id v6mr10560033pfv.216.1548413601065;
+        Fri, 25 Jan 2019 02:53:21 -0800 (PST)
+Received: from himanshu-Vostro-3559 ([103.233.116.134])
+        by smtp.gmail.com with ESMTPSA id q75sm49621022pfa.38.2019.01.25.02.53.17
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 25 Jan 2019 02:53:20 -0800 (PST)
+Date:   Fri, 25 Jan 2019 16:23:13 +0530
+From:   Himanshu Jha <himanshujha199640@gmail.com>
+To:     Alexandru Ardelean <ardeleanalex@gmail.com>
+Cc:     Bharath Vedartham <linux.bhar@gmail.com>, jic23@kernel.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] drivers: iio: industrialio-core: add check when kzalloc
+ fails
+Message-ID: <20190125105313.GA16451@himanshu-Vostro-3559>
+References: <20190124142755.GA31059@bhar.linux>
+ <CA+U=Dsrefk01AbyKmkhLrwQyq8mkBKoO6kv_zXYEFSSCCqDObw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+U=Dsrefk01AbyKmkhLrwQyq8mkBKoO6kv_zXYEFSSCCqDObw@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add support for ADS7866, ADS7867 and ADS7868 8/10/12 bit Single channel
-ADC.
+On Fri, Jan 25, 2019 at 08:55:27AM +0200, Alexandru Ardelean wrote:
+> On Thu, Jan 24, 2019 at 4:28 PM Bharath Vedartham <linux.bhar@gmail.com> wrote:
+> >
+> > add code to handle the case when kzalloc fails to allocate memory to dev
+> >
+> > Signed-off-by: Bharath Vedartham <linux.bhar@gmail.com>
+> > ---
+> >  drivers/iio/industrialio-core.c | 2 ++
+> >  1 file changed, 2 insertions(+)
+> >
+> > diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> > index 4f5cd9f..93caa6b 100644
+> > --- a/drivers/iio/industrialio-core.c
+> > +++ b/drivers/iio/industrialio-core.c
+> > @@ -1475,6 +1475,8 @@ struct iio_dev *iio_device_alloc(int sizeof_priv)
+> >                 }
+> >                 dev_set_name(&dev->dev, "iio:device%d", dev->id);
+> >                 INIT_LIST_HEAD(&dev->buffer_list);
+> > +       } else {
+> > +               return NULL;
+> 
+> I'd argue that this is a bit redundant, because `dev` is NULL, the
+> return below (return dev) will also return NULL.
 
-Datasheet: http://www.ti.com/lit/ds/symlink/ads7868.pdf
++1
 
-Signed-off-by: Ricardo Ribalda Delgado <ricardo@ribalda.com>
----
-v2: I have missnamed the devices
- drivers/iio/adc/Kconfig  |  3 ++-
- drivers/iio/adc/ad7476.c | 20 ++++++++++++++++++++
- 2 files changed, 22 insertions(+), 1 deletion(-)
+Also, subject title is incorrect.
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index f9354e5ee65c..d86900fc2634 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -64,7 +64,8 @@ config AD7476
- 	help
- 	  Say yes here to build support for Analog Devices AD7273, AD7274, AD7276,
- 	  AD7277, AD7278, AD7475, AD7476, AD7477, AD7478, AD7466, AD7467, AD7468,
--	  AD7495, AD7910, AD7920, AD7920 SPI analog to digital converters (ADC).
-+	  AD7495, AD7910, AD7920, AD7920, ADS7866, ADS7867, ADS7868 SPI analog
-+	  to digital converters (ADC).
- 
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called ad7476.
-diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
-index 0549686b9ef8..76747488044b 100644
---- a/drivers/iio/adc/ad7476.c
-+++ b/drivers/iio/adc/ad7476.c
-@@ -59,6 +59,9 @@ enum ad7476_supported_device_ids {
- 	ID_ADC081S,
- 	ID_ADC101S,
- 	ID_ADC121S,
-+	ID_ADS7866,
-+	ID_ADS7867,
-+	ID_ADS7868,
- };
- 
- static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
-@@ -157,6 +160,8 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
- #define AD7940_CHAN(bits) _AD7476_CHAN((bits), 15 - (bits), \
- 		BIT(IIO_CHAN_INFO_RAW))
- #define AD7091R_CHAN(bits) _AD7476_CHAN((bits), 16 - (bits), 0)
-+#define ADS786X_CHAN(bits) _AD7476_CHAN((bits), 12 - (bits), \
-+		BIT(IIO_CHAN_INFO_RAW))
- 
- static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
- 	[ID_AD7091R] = {
-@@ -209,6 +214,18 @@ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
- 		.channel[0] = ADC081S_CHAN(12),
- 		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
- 	},
-+	[ID_ADS7866] = {
-+		.channel[0] = ADS786X_CHAN(12),
-+		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-+	},
-+	[ID_ADS7867] = {
-+		.channel[0] = ADS786X_CHAN(10),
-+		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-+	},
-+	[ID_ADS7868] = {
-+		.channel[0] = ADS786X_CHAN(8),
-+		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-+	},
- };
- 
- static const struct iio_info ad7476_info = {
-@@ -314,6 +331,9 @@ static const struct spi_device_id ad7476_id[] = {
- 	{"adc081s", ID_ADC081S},
- 	{"adc101s", ID_ADC101S},
- 	{"adc121s", ID_ADC121S},
-+	{"ads7866", ID_ADS7866},
-+	{"ads7867", ID_ADS7867},
-+	{"ads7868", ID_ADS7868},
- 	{}
- };
- MODULE_DEVICE_TABLE(spi, ad7476_id);
+Always use:
+
+$ git log --oneline drivers/iio/industrialio-core.c
+
+Use the most frequently tag/subject from the output of above
+command.
+
+"iio: core: ...." would be fine.
+
+
 -- 
-2.20.1
-
+Himanshu Jha
+Undergraduate Student
+Department of Electronics & Communication
+Guru Tegh Bahadur Institute of Technology
