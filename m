@@ -2,172 +2,315 @@ Return-Path: <SRS0=ZZPN=QB=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B4DAC282C0
-	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 09:58:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE8BC282C0
+	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 10:01:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 334FD218D9
-	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 09:58:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6582D218A2
+	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 10:01:01 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZbWBaX30"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726878AbfAYJ6O (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 25 Jan 2019 04:58:14 -0500
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:45182 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726761AbfAYJ6O (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 25 Jan 2019 04:58:14 -0500
-Received: by mail-lf1-f66.google.com with SMTP id b20so6477781lfa.12;
-        Fri, 25 Jan 2019 01:58:12 -0800 (PST)
+        id S1727955AbfAYKBB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 25 Jan 2019 05:01:01 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:38631 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728047AbfAYKBA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 25 Jan 2019 05:01:00 -0500
+Received: by mail-ed1-f66.google.com with SMTP id h50so6903589ede.5;
+        Fri, 25 Jan 2019 02:00:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ak/HccNT/vanAsvE/mQMcJJC3R6nO4DOkbbdIoTYpZo=;
+        b=ZbWBaX30tyzirgx0nszrbMIrdKcB8wzMdGgobXXeKv5zDqSFpt5B5Ez+U5+DL5xdcD
+         ytuNXfn3swlgt2krUbWyi6Hma5ke7FLZO/bpEPqbIdnma+a4+l+88WSrHgztiyjbpcas
+         1PCZYNWTZ9uT4xw1MNcQuTXXTkLV3OOjUQS5Wq75iStIQzQgUrgOqlT1OVvwmJ7HV79u
+         BOnqkEc4tO9w63qiaLLWUY8X9QADHuae+v3JojMcU4vurMgZK4F7ZMilNhTNgdduFjf5
+         7+1QpgL6eIXxQMQsyPqPh6lkzO75hSUrmK5LpC/2XMCwFdkvuJtYdl38yQ9Xj9AU8cor
+         QwCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CYeko+af6F4gO4SAzprh3pA1X3jo+XdCPxCt0jkax4g=;
-        b=taHe4dPeLe8G2lRrn4XxM7A0B6WETnZuRtY/UwwX8rfbOWa8htSVYozO9SUlzxBo3D
-         MEwKSFER2Ns1NePhlxZSTIvX0DyobmbPgR8myS1OlGMGS/MbdkC91wwsfATKDCmZ4H+z
-         ELCbLB9Rs2UMuW1JyzrHidAlVIzUg95roDCqCsuYrS3yu2j9b5Z4kVNsjewLZlVh1pq+
-         4eE/ohz5bfO9Y/l2EkYnti6Xl3utUHMn/bc3wI9Gtoa2SzvVtA/nNpzmMUV72XmEBUHS
-         5Ng2/TiX6eLujOPYTPne1dqCxWKaCs5GJRcHI8eUlmPPl2pFN2ej+Qbe1rVKTysmyn4w
-         z15Q==
-X-Gm-Message-State: AJcUukf5kP/cWi/IpeGtZCm2TTq66Xps4gMtVkOYYsQ3kgWlu0TP+qc6
-        eijkwiL5N0D8y9F2hjqNkPYJSjJPJ8DxPIpin94=
-X-Google-Smtp-Source: ALg8bN6CSpj8eSUJSd3VXDju9Yevc6QAqgr9UJckWsfJclHkt0A5x23yVgcy3qsb4hfiQAAkcP2S8YNjuj8eUK45LiI=
-X-Received: by 2002:ac2:5599:: with SMTP id v25mr8635837lfg.169.1548410291818;
- Fri, 25 Jan 2019 01:58:11 -0800 (PST)
-MIME-Version: 1.0
-References: <20190124213225.11803-1-ricardo@ribalda.com> <CA+U=Dspe=xvki7rZPhofiV50yOLnRR2sg9v1R_XRVxHbDXh-_Q@mail.gmail.com>
-In-Reply-To: <CA+U=Dspe=xvki7rZPhofiV50yOLnRR2sg9v1R_XRVxHbDXh-_Q@mail.gmail.com>
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=ak/HccNT/vanAsvE/mQMcJJC3R6nO4DOkbbdIoTYpZo=;
+        b=b+zwKwV+efQODIbqDfGYO/rkoA371cFXHrTqiP5awnwT50PGWnd/ybMxf3ui2LQFdK
+         WY8lUXaAkpq7qvu0zyInfioG/+gNCvbNXiJIK6Tf00xkaRW2gA31P4gL+NnIwFNNFPEi
+         ipOXci9Z6ppSwanrUBnLSGEIdoNwfwI1SoNFDSTyV7W19fRRPiQZh2yA3SOPZTPzRxCo
+         L5O0hJ7DzgNHXgfQY2MFvE9Lgele1MX+OIQ770vj57hziKzE13am1d65YXyvMreSkHV7
+         qQk22JxCTWYUX0NEBkzuGd3DvwB3pu4Vp10958l9OzGx9rEo5l2hSBhYJ8vVhXErHPPk
+         KWrA==
+X-Gm-Message-State: AJcUukflhDa78BKQNVQsi76LX0PpJtxyty7qbTuyroVHUeNY03Pa1aTr
+        g7JIeWYqjLEQ1UQJTeGBvJ8ChLvs
+X-Google-Smtp-Source: ALg8bN4sMXWZ/ADYIp1eoYl8fJDA18TKtpGFdoUYn/UU5f51OiuKLc28C2EIdLrV9xQogw9dVs7kMw==
+X-Received: by 2002:a17:906:5e43:: with SMTP id b3mr9224917eju.200.1548410458230;
+        Fri, 25 Jan 2019 02:00:58 -0800 (PST)
+Received: from neopili.qtec.com (cpe.xe-3-0-1-778.vbrnqe10.dk.customer.tdc.net. [80.197.57.18])
+        by smtp.gmail.com with ESMTPSA id i20-v6sm1311563ejv.13.2019.01.25.02.00.57
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 25 Jan 2019 02:00:57 -0800 (PST)
 From:   Ricardo Ribalda Delgado <ricardo@ribalda.com>
-Date:   Fri, 25 Jan 2019 10:57:55 +0100
-Message-ID: <CAPybu_084MFXDT=Op7icdbo2K3LimxoK_jRew7S6R0=q-yqNng@mail.gmail.com>
-Subject: Re: [PATCH] iio: adc: ad7476: Add support for ADS786X ADCs
-To:     Alexandru Ardelean <ardeleanalex@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+To:     Alexandru Ardelean <ardeleanalex@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         LKML <linux-kernel@vger.kernel.org>,
-        alexandru.ardelean@analog.com
-Content-Type: text/plain; charset="UTF-8"
+        alexandru.ardelean@analog.com, linux-iio@vger.kernel.org
+Cc:     Ricardo Ribalda Delgado <ricardo@ribalda.com>
+Subject: [PATCH v2] iio:dac:ti-dac7612: Add driver for Texas Instruments DAC7612
+Date:   Fri, 25 Jan 2019 11:00:55 +0100
+Message-Id: <20190125100055.13836-1-ricardo@ribalda.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Alexandru
+It is a driver for Texas Instruments Dual, 12-Bit Serial Input
+Digital-to-Analog Converter.
 
-On Fri, Jan 25, 2019 at 9:29 AM Alexandru Ardelean
-<ardeleanalex@gmail.com> wrote:
->
-> On Thu, Jan 24, 2019 at 11:33 PM Ricardo Ribalda Delgado
-> <ricardo@ribalda.com> wrote:
-> >
-> > Add support for ADS7866, ADS7867 and ADS7868 8/10/12 bit Single channel
-> > ADC.
-> >
-> > Datasheet: http://www.ti.com/product/ADS7866
-> > Datasheet: http://www.ti.com/product/ADS7867
-> > Datasheet: http://www.ti.com/product/ADS7868
-> >
-> > Signed-off-by: Ricardo Ribalda Delgado <ricardo@ribalda.com>
-> > ---
-> >  drivers/iio/adc/Kconfig  |  3 ++-
-> >  drivers/iio/adc/ad7476.c | 20 ++++++++++++++++++++
-> >  2 files changed, 22 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> > index f9354e5ee65c..d86900fc2634 100644
-> > --- a/drivers/iio/adc/Kconfig
-> > +++ b/drivers/iio/adc/Kconfig
-> > @@ -64,7 +64,8 @@ config AD7476
-> >         help
-> >           Say yes here to build support for Analog Devices AD7273, AD7274, AD7276,
-> >           AD7277, AD7278, AD7475, AD7476, AD7477, AD7478, AD7466, AD7467, AD7468,
-> > -         AD7495, AD7910, AD7920, AD7920 SPI analog to digital converters (ADC).
-> > +         AD7495, AD7910, AD7920, AD7920, ADS7866, ADS7867, ADS7868 SPI analog
-> > +         to digital converters (ADC).
->
-> The driver is for Analog Devices parts.
-> And these new parts are from TI.
->
-> I'm not sure what the policy is for mixing manufacturers in drivers.
-> But if that is allowed/fine, then maybe it would be a good idea to
-> highlight that these chips are from another manufacturer.
-> Or maybe rename the driver to a generic form to support both manufacturers ?
->
-> In any case, Jonathan will have to tell us what to do here :)
+Datasheet of this chip:
+http://www.ti.com/lit/ds/sbas106/sbas106.pdf
 
-Thanks for your review.
+Signed-off-by: Ricardo Ribalda Delgado <ricardo@ribalda.com>
+---
 
-I have to send a v2, because I have inverted the name of the devices :S.
+v2: Fix range
+ MAINTAINERS                  |   6 ++
+ drivers/iio/dac/Kconfig      |  10 +++
+ drivers/iio/dac/Makefile     |   1 +
+ drivers/iio/dac/ti-dac7612.c | 169 +++++++++++++++++++++++++++++++++++
+ 4 files changed, 186 insertions(+)
+ create mode 100644 drivers/iio/dac/ti-dac7612.c
 
-I will send it right away to avoid that anyone uses this version and
-then wait for Jonathan feedback
-
->
-> Thanks
-> Alex
->
-> >
-> >           To compile this driver as a module, choose M here: the
-> >           module will be called ad7476.
-> > diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
-> > index 0549686b9ef8..108c18d64f7d 100644
-> > --- a/drivers/iio/adc/ad7476.c
-> > +++ b/drivers/iio/adc/ad7476.c
-> > @@ -59,6 +59,9 @@ enum ad7476_supported_device_ids {
-> >         ID_ADC081S,
-> >         ID_ADC101S,
-> >         ID_ADC121S,
-> > +       ID_ADS7866,
-> > +       ID_ADS7867,
-> > +       ID_ADS7868,
-> >  };
-> >
-> >  static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
-> > @@ -157,6 +160,8 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
-> >  #define AD7940_CHAN(bits) _AD7476_CHAN((bits), 15 - (bits), \
-> >                 BIT(IIO_CHAN_INFO_RAW))
-> >  #define AD7091R_CHAN(bits) _AD7476_CHAN((bits), 16 - (bits), 0)
-> > +#define ADS786X_CHAN(bits) _AD7476_CHAN((bits) + 4, 0, \
-> > +               BIT(IIO_CHAN_INFO_RAW))
-> >
-> >  static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
-> >         [ID_AD7091R] = {
-> > @@ -209,6 +214,18 @@ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
-> >                 .channel[0] = ADC081S_CHAN(12),
-> >                 .channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-> >         },
-> > +       [ID_ADS7866] = {
-> > +               .channel[0] = ADS786X_CHAN(8),
-> > +               .channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-> > +       },
-> > +       [ID_ADS7867] = {
-> > +               .channel[0] = ADS786X_CHAN(10),
-> > +               .channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-> > +       },
-> > +       [ID_ADS7868] = {
-> > +               .channel[0] = ADS786X_CHAN(12),
-> > +               .channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-> > +       },
-> >  };
-> >
-> >  static const struct iio_info ad7476_info = {
-> > @@ -314,6 +331,9 @@ static const struct spi_device_id ad7476_id[] = {
-> >         {"adc081s", ID_ADC081S},
-> >         {"adc101s", ID_ADC101S},
-> >         {"adc121s", ID_ADC121S},
-> > +       {"ads7866", ID_ADS7866},
-> > +       {"ads7867", ID_ADS7867},
-> > +       {"ads7868", ID_ADS7868},
-> >         {}
-> >  };
-> >  MODULE_DEVICE_TABLE(spi, ad7476_id);
-> > --
-> > 2.20.1
-> >
-
-
-
+diff --git a/MAINTAINERS b/MAINTAINERS
+index d039f66a5cef..30ba5435906b 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -14877,6 +14877,12 @@ F:	Documentation/devicetree/bindings/clock/ti,sci-clk.txt
+ F:	drivers/clk/keystone/sci-clk.c
+ F:	drivers/reset/reset-ti-sci.c
+ 
++Texas Instruments' DAC7612 DAC Driver
++M:	Ricardo Ribalda <ricardo@ribalda.com>
++L:	linux-iio@vger.kernel.org
++S:	Supported
++F:	drivers/iio/dac/ti-dac7612.c
++
+ THANKO'S RAREMONO AM/FM/SW RADIO RECEIVER USB DRIVER
+ M:	Hans Verkuil <hverkuil@xs4all.nl>
+ L:	linux-media@vger.kernel.org
+diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+index f28daf67db6a..fbef9107acad 100644
+--- a/drivers/iio/dac/Kconfig
++++ b/drivers/iio/dac/Kconfig
+@@ -375,6 +375,16 @@ config TI_DAC7311
+ 
+ 	  If compiled as a module, it will be called ti-dac7311.
+ 
++config TI_DAC7612
++	tristate "Texas Instruments 12-bit 2-channel DAC driver"
++	depends on SPI_MASTER && GPIOLIB
++	help
++	  Driver for the Texas Instruments DAC7612, DAC7612U, DAC7612UB
++	  The driver hand drive the load pin automatically, otherwise
++	  it needs to be toggled manually.
++
++	  If compiled as a module, it will be called ti-dac7612.
++
+ config VF610_DAC
+ 	tristate "Vybrid vf610 DAC driver"
+ 	depends on OF
+diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+index f0a37c93de8e..1369fa1d2f0e 100644
+--- a/drivers/iio/dac/Makefile
++++ b/drivers/iio/dac/Makefile
+@@ -41,4 +41,5 @@ obj-$(CONFIG_STM32_DAC) += stm32-dac.o
+ obj-$(CONFIG_TI_DAC082S085) += ti-dac082s085.o
+ obj-$(CONFIG_TI_DAC5571) += ti-dac5571.o
+ obj-$(CONFIG_TI_DAC7311) += ti-dac7311.o
++obj-$(CONFIG_TI_DAC7612) += ti-dac7612.o
+ obj-$(CONFIG_VF610_DAC) += vf610_dac.o
+diff --git a/drivers/iio/dac/ti-dac7612.c b/drivers/iio/dac/ti-dac7612.c
+new file mode 100644
+index 000000000000..278406f69e0c
+--- /dev/null
++++ b/drivers/iio/dac/ti-dac7612.c
+@@ -0,0 +1,169 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * DAC7612 Dual, 12-Bit Serial input Digital-to-Analog Converter
++ *
++ * Copyright 2019 Qtechnology A/S
++ * 2019 Ricardo Ribalda <ricardo@ribalda.com>
++ *
++ * Licensed under the GPL-2.
++ */
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/spi/spi.h>
++#include <linux/gpio/consumer.h>
++#include <linux/iio/iio.h>
++
++#define NUM_CHANS 2
++#define RESOLUTION 12
++
++struct dac7612 {
++	struct spi_device *spi;
++	struct gpio_desc *nld;
++	uint16_t cache[NUM_CHANS];
++};
++
++static int dac7612_cmd_single(struct dac7612 *priv, int channel, u16 val)
++{
++	uint8_t buffer[2];
++	int ret;
++
++	if (channel >= NUM_CHANS)
++		return -EINVAL;
++
++	buffer[0] = BIT(5) | (channel << 4) | (val >> 8);
++	buffer[1] = val & 0xff;
++
++	priv->cache[channel] = val;
++
++	ret = spi_write(priv->spi, buffer, sizeof(buffer));
++	if (ret)
++		return ret;
++
++	gpiod_set_value(priv->nld, 0);
++	gpiod_set_value(priv->nld, 1);
++
++	return 0;
++}
++
++#define dac7612_CHANNEL(chan, name) {				\
++	.type = IIO_VOLTAGE,					\
++	.channel = (chan),					\
++	.address = (chan),					\
++	.indexed = true,					\
++	.output = true,						\
++	.datasheet_name = name,					\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++	.scan_type = {						\
++			.sign = 'u',				\
++			.realbits = RESOLUTION,			\
++			.storagebits = RESOLUTION,		\
++	},							\
++}
++
++static const struct iio_chan_spec dac7612_channels[] = {
++	dac7612_CHANNEL(0, "OUTA"),
++	dac7612_CHANNEL(1, "OUTB"),
++};
++
++static int dac7612_read_raw(struct iio_dev *iio_dev,
++			    const struct iio_chan_spec *chan,
++			    int *val, int *val2, long mask)
++{
++	struct dac7612 *priv;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		priv = iio_priv(iio_dev);
++		*val = priv->cache[chan->channel];
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_SCALE:
++		*val = 1000000;
++		return IIO_VAL_INT_PLUS_MICRO;
++
++	default:
++		return -EINVAL;
++	}
++}
++
++static int dac7612_write_raw(struct iio_dev *iio_dev,
++			     const struct iio_chan_spec *chan,
++			     int val, int val2, long mask)
++{
++	struct dac7612 *priv;
++	int ret;
++
++	if (mask != IIO_CHAN_INFO_RAW)
++		return -EINVAL;
++
++	if ((val >= BIT(RESOLUTION)) || val < 0)
++		return -EINVAL;
++
++	priv = iio_priv(iio_dev);
++	if (val == priv->cache[chan->channel])
++		return 0;
++
++	mutex_lock(&iio_dev->mlock);
++	ret = dac7612_cmd_single(priv, chan->channel, val);
++	mutex_unlock(&iio_dev->mlock);
++
++	return ret;
++}
++
++static const struct iio_info dac7612_info = {
++	.read_raw = dac7612_read_raw,
++	.write_raw = dac7612_write_raw,
++};
++
++static int dac7612_probe(struct spi_device *spi)
++{
++	struct iio_dev *iio_dev;
++	struct dac7612 *priv;
++	int i;
++	int ret;
++
++	iio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*priv));
++	if (!iio_dev)
++		return -ENOMEM;
++
++	priv = iio_priv(iio_dev);
++	priv->nld = devm_gpiod_get_optional(&spi->dev, "nLD", GPIOD_OUT_HIGH);
++	if (IS_ERR(priv->nld))
++		return PTR_ERR(priv->nld);
++	priv->spi = spi;
++	spi_set_drvdata(spi, iio_dev);
++	iio_dev->dev.parent = &spi->dev;
++	iio_dev->info = &dac7612_info;
++	iio_dev->modes = INDIO_DIRECT_MODE;
++	iio_dev->channels = dac7612_channels;
++	iio_dev->num_channels = NUM_CHANS;
++	iio_dev->name = spi_get_device_id(spi)->name;
++
++	for (i = 0; i < NUM_CHANS; i++) {
++		ret = dac7612_cmd_single(priv, i, 0);
++		if (ret)
++			return ret;
++	}
++
++	return devm_iio_device_register(&spi->dev, iio_dev);
++}
++
++static const struct spi_device_id dac7612_id[] = {
++	{"ti-dac7612"},
++	{}
++};
++MODULE_DEVICE_TABLE(spi, dac7612_id);
++
++static struct spi_driver dac7612_driver = {
++	.driver = {
++		   .name = "ti-dac7612",
++		   },
++	.probe = dac7612_probe,
++	.id_table = dac7612_id,
++};
++module_spi_driver(dac7612_driver);
++
++MODULE_AUTHOR("Ricardo Ribalda <ricardo@ribalda.com>");
++MODULE_DESCRIPTION("Texas Instruments DAC7612 DAC driver");
++MODULE_LICENSE("GPL v2");
 -- 
-Ricardo Ribalda
-http://ribalda.com
+2.20.1
+
