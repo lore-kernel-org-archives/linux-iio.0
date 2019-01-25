@@ -1,126 +1,87 @@
-Return-Path: <SRS0=9Qm3=QA=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=ZZPN=QB=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_SIGNED,DKIM_VALID,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 540D7C282C6
-	for <linux-iio@archiver.kernel.org>; Thu, 24 Jan 2019 22:41:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86257C282C3
+	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 02:05:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2416C218D9
-	for <linux-iio@archiver.kernel.org>; Thu, 24 Jan 2019 22:41:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1548369684;
-	bh=k+kztCmBaXjD7kREzHoQpwFEViSbeAc9Ddlz0bZdawM=;
-	h=Subject:References:Cc:From:In-Reply-To:To:Date:List-ID:From;
-	b=0+lOr/3IuETOWSTQ6Ri5+WmiseEO6Yuzb1VqkIxHo0Nfgc4ZoEjE4HEpa+USWSU22
-	 AkOVNpfYAMnsupQtgamwIz7UJmhbdEDWSnKJVLf3GrnS4C0lamGxYttuReKn3E/cNE
-	 FaRBWVcRmOTERVTbtKYMYtHohnyWQVFI7YpFUUUw=
+	by mail.kernel.org (Postfix) with ESMTP id 4413E218D2
+	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 02:05:36 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="gx9mFuZ3"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726028AbfAXWlX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 24 Jan 2019 17:41:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47472 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725996AbfAXWlX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 24 Jan 2019 17:41:23 -0500
-Received: from localhost (unknown [104.132.0.74])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F0A5421872;
-        Thu, 24 Jan 2019 22:41:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1548369682;
-        bh=k+kztCmBaXjD7kREzHoQpwFEViSbeAc9Ddlz0bZdawM=;
-        h=Subject:References:Cc:From:In-Reply-To:To:Date:From;
-        b=r6q0Wm0m+7ed8ty+jdYDLsN1YhUGUDyNpNt6ArP84dJTyqWYzovoM5z96MCx/o5f3
-         /1+IgzU6g4F0vNgdTnQNAP2C9LJirOZMx2R32GqGE9rz4WJkgnfE56KKWgvGQfIyOd
-         9t6kESaQOahIc2YAqkf60gwuhTrlgyeoVJbPXq7E=
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH 1/2] staging: iio: adc: ad7192: Add clock for external clock reference
-References: <20181206091052.7644-1-mircea.caprioru@analog.com> <20181208152954.596529f8@archlinux> <154475156267.19322.6284056396098102605@swboyd.mtv.corp.google.com> <20181216100741.4e362a17@archlinux>
-User-Agent: alot/0.8
-Cc:     Mircea Caprioru <mircea.caprioru@analog.com>,
-        Michael.Hennerich@analog.com, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org, Rob Herring <robh+dt@kernel.org>,
-        linux-clk@vger.kernel.org
-From:   Stephen Boyd <sboyd@kernel.org>
-In-Reply-To: <20181216100741.4e362a17@archlinux>
-Message-ID: <154836968107.136743.11352935762099070131@swboyd.mtv.corp.google.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Date:   Thu, 24 Jan 2019 14:41:21 -0800
+        id S1728362AbfAYCFf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 24 Jan 2019 21:05:35 -0500
+Received: from rnd-relay.smtp.broadcom.com ([192.19.229.170]:36094 "EHLO
+        rnd-relay.smtp.broadcom.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727983AbfAYCFf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 24 Jan 2019 21:05:35 -0500
+X-Greylist: delayed 502 seconds by postgrey-1.27 at vger.kernel.org; Thu, 24 Jan 2019 21:05:35 EST
+Received: from nis-sj1-27.broadcom.com (nis-sj1-27.lvn.broadcom.net [10.75.144.136])
+        by rnd-relay.smtp.broadcom.com (Postfix) with ESMTP id E1AAC30C012;
+        Thu, 24 Jan 2019 17:57:11 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 rnd-relay.smtp.broadcom.com E1AAC30C012
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=broadcom.com;
+        s=dkimrelay; t=1548381431;
+        bh=cZOP/nX3nnggIGwSwr68BY+QBEhuNcDNNNnqUyDj8rk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=gx9mFuZ3mwaDlKdhz9+KpZ8SL8CA5iHUJdvyFcGDOazTGM/71Uvn9cB9V5uMO+o7+
+         jIfOwhvgJKp6nMwn5GRVkKk/SUF++5ykFUF5mDtUaBu15LZOoZ3WhhyT4li5ARhZm7
+         fRSsTTsTJe2WzxW2/yWYyUjzZNELMo4jyy5O9Kjg=
+Received: from stbirv-lnx-2.igp.broadcom.net (stbirv-lnx-2.igp.broadcom.net [10.67.48.34])
+        by nis-sj1-27.broadcom.com (Postfix) with ESMTP id 3690DAC074C;
+        Thu, 24 Jan 2019 17:57:12 -0800 (PST)
+Received: by stbirv-lnx-2.igp.broadcom.net (Postfix, from userid 47169)
+        id 15E2A2800EA; Thu, 24 Jan 2019 17:57:12 -0800 (PST)
+From:   justinpopo6@gmail.com
+To:     linux-iio@vger.kernel.org
+Cc:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        linux-kernel@vger.kernel.org, f.fainelli@gmail.com,
+        Justin Chen <justinpopo6@gmail.com>
+Subject: [PATCH] iio: adc: ti-ads7950: inconsistency with spi msg
+Date:   Thu, 24 Jan 2019 17:56:54 -0800
+Message-Id: <1548381414-20561-1-git-send-email-justinpopo6@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Quoting Jonathan Cameron (2018-12-16 02:07:41)
-> Rob, Clk experts, questions for you below.
->=20
-> Jonathan
->=20
->=20
-> On Thu, 13 Dec 2018 17:39:22 -0800
-> Stephen Boyd <sboyd@kernel.org> wrote:
->=20
-> > Quoting Jonathan Cameron (2018-12-08 07:29:54)
-> > > On Thu, 6 Dec 2018 11:10:51 +0200
-> > > Mircea Caprioru <mircea.caprioru@analog.com> wrote:
-> > >  =20
-> > > > This patch adds a clock to the state structure of ad7192 for gettin=
-g the
-> > > > external clock frequency. This modifications is in accordance with =
-clock
-> > > > framework dt bindings documentation.
-> > > >=20
-> > > > Signed-off-by: Mircea Caprioru <mircea.caprioru@analog.com> =20
-> > >=20
-> > > +cc Rob and the clk list for advise on how to do the binding for this=
- one.
-> > >=20
-> > > It is basically 2 pins, you can put a clock in on one of them or conn=
-ect
-> > > a crystal across them.  The driver has to set a register to say which=
- is
-> > > the case. =20
-> > >=20
-> > > Current proposal is two optional clocks (fall back to internal oscill=
-ator)
-> > > but that doesn't seem to be commonly done, so I'm wondering if there
-> > > is a 'standard' way to handle this sort of thing.
-> > >  =20
-> >=20
-> > I'm not sure I fully understand, but I think perhaps
-> > assigned-clock-parents would work? Or does that not work because either
-> > way some parent is assigned, either the crystal or the optional clk that
-> > isn't a crystal?
-> >=20
-> My concern is they aren't really separate clock inputs.   They are just d=
-ifferent
-> ways of providing the same fundamental clock.  So I think we may want to =
-just
-> provide a single clock and have another dt binding to say what it is.
->=20
-> So lots of ways we could do it, but I'm not sure what the right one to
-> go with is!
->=20
+From: Justin Chen <justinpopo6@gmail.com>
 
-Sorry for getting back to this so late. Is the datasheet public for this
-device? If so, any link to it?
+To read a channel we require 3 cycles to send, process, and receive
+the data. The transfer buffer for the third transaction is left blank.
+This leaves it up to the SPI driver to decide what to do.
 
-If it's two pins, and sometimes one pin is connected and other times two
-pins are connected but a register needs to be set if the pins are
-connected in one configuration or the other I would say your plan for a
-DT property indicating how the pins are configured sounds good. Usually
-the hardware can figure these things out itself so I find this sort of
-odd, but if this is how it is then there's not much that we can do.
+In one particular case, if the tx buffer is not set the spi driver
+sets it to 0xff. This puts the ADC in a alarm programming state,
+therefore the following read to a channel becomes erroneous.
 
-It sounds like there aren't two different clk inputs to the device.
-Given that information specifying two optional clks is incorrect because
-there is only one 'slot' is the external clk source.
+Instead of leaving us to the mercy of the SPI driver, we send the
+ADC cmd on the third transaction to prevent inconsistent behavior.
+
+Signed-off-by: Justin Chen <justinpopo6@gmail.com>
+---
+ drivers/iio/adc/ti-ads7950.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
+index 0ad6359..5453e10 100644
+--- a/drivers/iio/adc/ti-ads7950.c
++++ b/drivers/iio/adc/ti-ads7950.c
+@@ -422,6 +422,7 @@ static int ti_ads7950_probe(struct spi_device *spi)
+ 	st->scan_single_xfer[1].tx_buf = &st->single_tx;
+ 	st->scan_single_xfer[1].len = 2;
+ 	st->scan_single_xfer[1].cs_change = 1;
++	st->scan_single_xfer[2].rx_buf = &st->single_tx;
+ 	st->scan_single_xfer[2].rx_buf = &st->single_rx;
+ 	st->scan_single_xfer[2].len = 2;
+ 
+-- 
+2.7.4
 
