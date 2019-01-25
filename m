@@ -2,63 +2,50 @@ Return-Path: <SRS0=ZZPN=QB=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97836C282C0
-	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 08:36:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B4DAC282C0
+	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 09:58:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5D6A22084A
-	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 08:36:32 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EG17qrKf"
+	by mail.kernel.org (Postfix) with ESMTP id 334FD218D9
+	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 09:58:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726273AbfAYIgc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 25 Jan 2019 03:36:32 -0500
-Received: from mail-ot1-f45.google.com ([209.85.210.45]:38310 "EHLO
-        mail-ot1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726200AbfAYIgb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 25 Jan 2019 03:36:31 -0500
-Received: by mail-ot1-f45.google.com with SMTP id e12so7834634otl.5
-        for <linux-iio@vger.kernel.org>; Fri, 25 Jan 2019 00:36:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WQztIlymY9qyT9ACcYwSCz7wVkStPOt9BT8WdgdIAh4=;
-        b=EG17qrKfG5fMSMmqelJUVCbOLdcl7T6jSw7zdptYY3vbo3MuQSXw2kTvXUnrhgwijv
-         h8OpB9zhVldWXU+nvB114H4LnmrTM3kDqcNO1d0mEH+3C1cnnfJXdznXoPYJOobJYd04
-         uWw4btiQoMzNFzvtUELyxLPDQTL57zn6XYCuXHVnLBq50c23AMatoDVCt2JI9LIeIWJV
-         62YqXV0IKM5+1L/qlJ9PmuAXj51R5qTzFKCJH87JJ5m9V8NSiAsGbiFL+u+Gxo9BB/hb
-         NTCaLjaeq0+D8F7xux0cksaCVNWf6wxZjgU9V2KeQpsVhQS7kt6Cz5b8IRNJmmjuQK3W
-         1tew==
+        id S1726878AbfAYJ6O (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 25 Jan 2019 04:58:14 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:45182 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726761AbfAYJ6O (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 25 Jan 2019 04:58:14 -0500
+Received: by mail-lf1-f66.google.com with SMTP id b20so6477781lfa.12;
+        Fri, 25 Jan 2019 01:58:12 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=WQztIlymY9qyT9ACcYwSCz7wVkStPOt9BT8WdgdIAh4=;
-        b=nxICBr/IunOGgHLI7E7cNcoLN05jglx5fiaWYMlYc+3BKgM2U1TznJXzv35xtcZjw4
-         YXTOAuTGhGf0k3pBO5nwa4v3elXkaz0zmGFK1FurLfxxYIrVohSXhD26yWicQ4crhAUV
-         VzOE5htE1GHPEyG8u84PYShvE1OoYhlGeA8Mvr8714riyAtAYmIbCyL0wuh/F6SHYv4m
-         xA6Vyiwfm3wE9ejYLuYVV2fXl1aTPez2ev94j/vY+iKalvY0v+gwROpF3VnIqWCg6Zno
-         zqnUi+9wSV31fc01MqGrpA4HzcLxQ0zbsAml8o9QlW8HViCXCxTZ8ydR5TYaJ6lAujEl
-         ibzQ==
-X-Gm-Message-State: AJcUukfkYGgE6HE3yirvZ9hVEg3Lh1yFxy7PUMneMaTuB492TP5cRwde
-        0OLfAfRhhLHd2gacolkEJwyoEHP/Cv8StjqSsuoHnlahk6Q=
-X-Google-Smtp-Source: ALg8bN7lswiGzziDhk3I5/PAK1Iv57cg+8ywe/3d6DTzhylPyK9vsW/qeE6nBWuw9cx5ocJm/96ySt6b0luV3pn9GEU=
-X-Received: by 2002:a9d:42c:: with SMTP id 41mr7432666otc.41.1548405390896;
- Fri, 25 Jan 2019 00:36:30 -0800 (PST)
+        bh=CYeko+af6F4gO4SAzprh3pA1X3jo+XdCPxCt0jkax4g=;
+        b=taHe4dPeLe8G2lRrn4XxM7A0B6WETnZuRtY/UwwX8rfbOWa8htSVYozO9SUlzxBo3D
+         MEwKSFER2Ns1NePhlxZSTIvX0DyobmbPgR8myS1OlGMGS/MbdkC91wwsfATKDCmZ4H+z
+         ELCbLB9Rs2UMuW1JyzrHidAlVIzUg95roDCqCsuYrS3yu2j9b5Z4kVNsjewLZlVh1pq+
+         4eE/ohz5bfO9Y/l2EkYnti6Xl3utUHMn/bc3wI9Gtoa2SzvVtA/nNpzmMUV72XmEBUHS
+         5Ng2/TiX6eLujOPYTPne1dqCxWKaCs5GJRcHI8eUlmPPl2pFN2ej+Qbe1rVKTysmyn4w
+         z15Q==
+X-Gm-Message-State: AJcUukf5kP/cWi/IpeGtZCm2TTq66Xps4gMtVkOYYsQ3kgWlu0TP+qc6
+        eijkwiL5N0D8y9F2hjqNkPYJSjJPJ8DxPIpin94=
+X-Google-Smtp-Source: ALg8bN6CSpj8eSUJSd3VXDju9Yevc6QAqgr9UJckWsfJclHkt0A5x23yVgcy3qsb4hfiQAAkcP2S8YNjuj8eUK45LiI=
+X-Received: by 2002:ac2:5599:: with SMTP id v25mr8635837lfg.169.1548410291818;
+ Fri, 25 Jan 2019 01:58:11 -0800 (PST)
 MIME-Version: 1.0
-References: <ec351562-c263-6550-4c6e-7ba2c605e5c0@electromag.com.au>
-In-Reply-To: <ec351562-c263-6550-4c6e-7ba2c605e5c0@electromag.com.au>
-From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-Date:   Fri, 25 Jan 2019 10:36:19 +0200
-Message-ID: <CA+U=DsqtHkZYMVuWKJGYMOsQ3m4N5Cf2B9pj18JZPSvW_aNbzg@mail.gmail.com>
-Subject: Re: iio scale precision
-To:     Phil Reid <preid@electromag.com.au>
-Cc:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+References: <20190124213225.11803-1-ricardo@ribalda.com> <CA+U=Dspe=xvki7rZPhofiV50yOLnRR2sg9v1R_XRVxHbDXh-_Q@mail.gmail.com>
+In-Reply-To: <CA+U=Dspe=xvki7rZPhofiV50yOLnRR2sg9v1R_XRVxHbDXh-_Q@mail.gmail.com>
+From:   Ricardo Ribalda Delgado <ricardo@ribalda.com>
+Date:   Fri, 25 Jan 2019 10:57:55 +0100
+Message-ID: <CAPybu_084MFXDT=Op7icdbo2K3LimxoK_jRew7S6R0=q-yqNng@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: ad7476: Add support for ADS786X ADCs
+To:     Alexandru Ardelean <ardeleanalex@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
         alexandru.ardelean@analog.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
@@ -66,44 +53,121 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Jan 23, 2019 at 11:17 AM Phil Reid <preid@electromag.com.au> wrote:
+Hi Alexandru
+
+On Fri, Jan 25, 2019 at 9:29 AM Alexandru Ardelean
+<ardeleanalex@gmail.com> wrote:
 >
-> What's the best way to handle scale values for very high precision ADC's.
+> On Thu, Jan 24, 2019 at 11:33 PM Ricardo Ribalda Delgado
+> <ricardo@ribalda.com> wrote:
+> >
+> > Add support for ADS7866, ADS7867 and ADS7868 8/10/12 bit Single channel
+> > ADC.
+> >
+> > Datasheet: http://www.ti.com/product/ADS7866
+> > Datasheet: http://www.ti.com/product/ADS7867
+> > Datasheet: http://www.ti.com/product/ADS7868
+> >
+> > Signed-off-by: Ricardo Ribalda Delgado <ricardo@ribalda.com>
+> > ---
+> >  drivers/iio/adc/Kconfig  |  3 ++-
+> >  drivers/iio/adc/ad7476.c | 20 ++++++++++++++++++++
+> >  2 files changed, 22 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> > index f9354e5ee65c..d86900fc2634 100644
+> > --- a/drivers/iio/adc/Kconfig
+> > +++ b/drivers/iio/adc/Kconfig
+> > @@ -64,7 +64,8 @@ config AD7476
+> >         help
+> >           Say yes here to build support for Analog Devices AD7273, AD7274, AD7276,
+> >           AD7277, AD7278, AD7475, AD7476, AD7477, AD7478, AD7466, AD7467, AD7468,
+> > -         AD7495, AD7910, AD7920, AD7920 SPI analog to digital converters (ADC).
+> > +         AD7495, AD7910, AD7920, AD7920, ADS7866, ADS7867, ADS7868 SPI analog
+> > +         to digital converters (ADC).
 >
-> eg a 24 or even a 32 bit dac with a 2.5v full scale range.
+> The driver is for Analog Devices parts.
+> And these new parts are from TI.
 >
-> Even using the nV conversion param it looses a fair bit of precision.
+> I'm not sure what the policy is for mixing manufacturers in drivers.
+> But if that is allowed/fine, then maybe it would be a good idea to
+> highlight that these chips are from another manufacturer.
+> Or maybe rename the driver to a generic form to support both manufacturers ?
 >
-> Would a option to return a rational number would be better?
+> In any case, Jonathan will have to tell us what to do here :)
 
-Are you saying something like float/double C types ?
-Typically those are not allowed in kernel.
+Thanks for your review.
 
-Scale values are typically/mostly for informational purposes.
-i.e. the driver computes the scales [and the current selected scales]
-for the measured values, so that the userspace parts [usually libiio]
-can compute actual values
+I have to send a v2, because I have inverted the name of the devices :S.
 
-So, you could compute & display scales almost any way you want it,
-even just displaying a string representation of the scale value.
-It is good to follow some conventions though.
-
-You could take a look at various formats for the scales.
-Something like IIO_VAL_INT_PLUS_NANO or IIO_VAL_FRACTIONAL or
-IIO_VAL_FRACTIONAL_LOG2 [see __iio_format_value  in
-drivers/iio/industrialio-core.c to get some idea ] .
-Depends what you really need.
-
-I guess to give a better answer here [I deferred giving one hoping
-someone more informed would jump-in], we would also need a more
-concrete example.
-
-Thanks
-Alex
+I will send it right away to avoid that anyone uses this version and
+then wait for Jonathan feedback
 
 >
-> Or am I doing something wrong.
+> Thanks
+> Alex
 >
-> --
-> Regards
-> Phil
+> >
+> >           To compile this driver as a module, choose M here: the
+> >           module will be called ad7476.
+> > diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
+> > index 0549686b9ef8..108c18d64f7d 100644
+> > --- a/drivers/iio/adc/ad7476.c
+> > +++ b/drivers/iio/adc/ad7476.c
+> > @@ -59,6 +59,9 @@ enum ad7476_supported_device_ids {
+> >         ID_ADC081S,
+> >         ID_ADC101S,
+> >         ID_ADC121S,
+> > +       ID_ADS7866,
+> > +       ID_ADS7867,
+> > +       ID_ADS7868,
+> >  };
+> >
+> >  static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
+> > @@ -157,6 +160,8 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
+> >  #define AD7940_CHAN(bits) _AD7476_CHAN((bits), 15 - (bits), \
+> >                 BIT(IIO_CHAN_INFO_RAW))
+> >  #define AD7091R_CHAN(bits) _AD7476_CHAN((bits), 16 - (bits), 0)
+> > +#define ADS786X_CHAN(bits) _AD7476_CHAN((bits) + 4, 0, \
+> > +               BIT(IIO_CHAN_INFO_RAW))
+> >
+> >  static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
+> >         [ID_AD7091R] = {
+> > @@ -209,6 +214,18 @@ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
+> >                 .channel[0] = ADC081S_CHAN(12),
+> >                 .channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+> >         },
+> > +       [ID_ADS7866] = {
+> > +               .channel[0] = ADS786X_CHAN(8),
+> > +               .channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+> > +       },
+> > +       [ID_ADS7867] = {
+> > +               .channel[0] = ADS786X_CHAN(10),
+> > +               .channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+> > +       },
+> > +       [ID_ADS7868] = {
+> > +               .channel[0] = ADS786X_CHAN(12),
+> > +               .channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+> > +       },
+> >  };
+> >
+> >  static const struct iio_info ad7476_info = {
+> > @@ -314,6 +331,9 @@ static const struct spi_device_id ad7476_id[] = {
+> >         {"adc081s", ID_ADC081S},
+> >         {"adc101s", ID_ADC101S},
+> >         {"adc121s", ID_ADC121S},
+> > +       {"ads7866", ID_ADS7866},
+> > +       {"ads7867", ID_ADS7867},
+> > +       {"ads7868", ID_ADS7868},
+> >         {}
+> >  };
+> >  MODULE_DEVICE_TABLE(spi, ad7476_id);
+> > --
+> > 2.20.1
+> >
+
+
+
+-- 
+Ricardo Ribalda
+http://ribalda.com
