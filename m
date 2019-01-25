@@ -2,155 +2,115 @@ Return-Path: <SRS0=ZZPN=QB=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B49AAC282C0
-	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 08:17:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB857C282C0
+	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 08:20:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8265421919
-	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 08:17:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 768D221919
+	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 08:20:08 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XtiE7QN0"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UD8QdFDm"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726954AbfAYIRN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 25 Jan 2019 03:17:13 -0500
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:43871 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726200AbfAYIRN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 25 Jan 2019 03:17:13 -0500
-Received: by mail-ot1-f68.google.com with SMTP id a11so7751357otr.10;
-        Fri, 25 Jan 2019 00:17:12 -0800 (PST)
+        id S1726273AbfAYIUI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 25 Jan 2019 03:20:08 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:44713 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726669AbfAYIUH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 25 Jan 2019 03:20:07 -0500
+Received: by mail-ot1-f67.google.com with SMTP id g16so3783570otg.11;
+        Fri, 25 Jan 2019 00:20:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=51rjv/rE8IVdsNp/pu/SqvKcr4yosm/xU7bN7sHEyl4=;
-        b=XtiE7QN0siN9qE83S4VaURtlrAfecWQIQJ7yuon0UZGNZtoDpA6NO+z4QWaZBeG5oG
-         t5Tygns5ugebqZ+HxiZ9GkpaUh5hK11hh913ttR6dcdU6IukAInViFyZGzQpJJC1YKfs
-         0zuNwC7KRf3pk+L9QGpznBoKsioWvuBfKoFWCYa05PER79+c4apqOJUwOyWORWOgqVrz
-         AaoqbL1NDxAq7/kM14pHwrTp6PIBcdMtFRjPe65AA2l0GAykLmAok4g6HN2hm8oo2RCf
-         dy1rtQQmCgWD5unj2GIBfXAxZiCOchvHSOPgX/hXxadXOzYcZo7U0DQ7npKGeuvFUxmW
-         qlAg==
+        bh=yDpwFo8slxvY3MeyQ7feqeISNLme7f0W9Ov63wW5t7A=;
+        b=UD8QdFDmdJKdG1UwBXvJ9IhfvLh4SU3O1FGCq3sfLSOBcix22SSKCoXplxRE81UR96
+         Djc8PeuYJ8C3ASyuycyeOLamSAnZldi4GwWpaSVsp81lpIbRhPtv8vQRvt9xTgC1TR/u
+         Opq+yMYRRtT5TsugPFRC3WgAVtF+0YekrSes/ZQUgswWpoHKW8PH8eSE5cOOMTK2JHSX
+         zPAcs5R7jFNQqIGyyU3GP1C6SSQWLIfqGvCbjeqkyPPTkMBAr+FRyu45iDOQ8P5in8k3
+         GJj0a/6Wpfe/L2sB+M1KxvtT6w6vBhN4y6ctwAeinsgvgqAzoJTpVMMdSNoNJN7itzTT
+         utYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=51rjv/rE8IVdsNp/pu/SqvKcr4yosm/xU7bN7sHEyl4=;
-        b=GI8EZkF9YRxHw6gjI7xpCjN9cbbPMSTucH3vK6VYLOdz2n6mUwfPWsAbXTTdT2s7pI
-         Wq6pdzV9gd4vH4FwhdkFmCJ2QVbTzZc5AKwMxPRqfs7fPBH+MbtopyQAI/JfbLybvJLn
-         zXWk7D/F8ZmZB5gp0r2pDBZ4h+T/wP0CmQXCvqgEOGgVZ97F5uKEZP3VIeKV6ZT9w2hM
-         EkC3YQO+OMGexkfc50mdiFBE1NzTXClZ+zL/Jmtvxs01KQCwCHXTrZnAz0QUlPFiwd0o
-         D9pDM/bgm0ypWl/zsSjbKPPQsaKnPnav8NPFF/vdBLUfgTpjXd+BEmxPpwD3SFtxQu23
-         x1pA==
-X-Gm-Message-State: AJcUukfsc9H6uSY2eeZrad/dMXxi2uYZQw95AcOQrM9ztAJaudizhMkH
-        xaqMRRk+gWE9U1TTF9ctkamRNALEUWqdIzHGRHM=
-X-Google-Smtp-Source: ALg8bN6K74jiOvlxVvF3zxoNHdbOXAUeOPysoSzVE83lWk89ux31aGyqlfQuY0OFys36+JmXzzesuWhuWkEn7Qxnhj4=
-X-Received: by 2002:a9d:4d17:: with SMTP id n23mr7190739otf.66.1548404232067;
- Fri, 25 Jan 2019 00:17:12 -0800 (PST)
+        bh=yDpwFo8slxvY3MeyQ7feqeISNLme7f0W9Ov63wW5t7A=;
+        b=HCaspL+YEWL5jjVc8MXxIeIXhd7Yp6p9QDdF7jqs7wi4PNjcM5A4UOgCa7eOeA8Nu7
+         xGFZRbkkUVZg9NtPks0pxIt6gbGkdeyQaX82+OETQ8wTuQgptna9M3kKPtV1/EELKdDo
+         HfpWwHaICJyzqN+3w99fAshqhkV1rcLcUREyITY0uzNXUunhCht/mr5M3caLRo97ZRoC
+         D21mtl70Xrrwl+qcLpH5DkBWz7RgQ36gZvCTkxXjG97k21usxYD+FSkDukLnVgRkq6sW
+         YeTeZlCcJzYGyXyl57rjxxbG2g8Qr5chd1YnneCY8dNH+QiwWlqQ1TdDAUiVH0ZPmiHf
+         eqIg==
+X-Gm-Message-State: AJcUukfy8gFkdCsZ9uMD1FCxf1/Io7qAUBbiPZuyyOwCU81lQKK+kNDx
+        LI6z4D6+4Vx61VdkEhmYxPwYryqoAur9NxlOPzw=
+X-Google-Smtp-Source: ALg8bN5YBqAvsrlNX4mvODmlLpvBNa1o2LNwCm8A9UgsKl5xsNj99ri5FdZIMdiXqTcRZoGQPQnC/pEcRN10jvKk1Lk=
+X-Received: by 2002:a9d:4d17:: with SMTP id n23mr7197398otf.66.1548404406667;
+ Fri, 25 Jan 2019 00:20:06 -0800 (PST)
 MIME-Version: 1.0
-References: <20181206091052.7644-1-mircea.caprioru@analog.com>
- <20181208152954.596529f8@archlinux> <154475156267.19322.6284056396098102605@swboyd.mtv.corp.google.com>
- <20181216100741.4e362a17@archlinux> <154836968107.136743.11352935762099070131@swboyd.mtv.corp.google.com>
-In-Reply-To: <154836968107.136743.11352935762099070131@swboyd.mtv.corp.google.com>
+References: <1548358316-8062-1-git-send-email-rodrigorsdc@gmail.com>
+In-Reply-To: <1548358316-8062-1-git-send-email-rodrigorsdc@gmail.com>
 From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-Date:   Fri, 25 Jan 2019 10:16:59 +0200
-Message-ID: <CA+U=DsqcGqBVnNhx+aYm7Z=igyLMdXt+2x6LTe_GWsp+=ZaWiQ@mail.gmail.com>
-Subject: Re: [PATCH 1/2] staging: iio: adc: ad7192: Add clock for external
- clock reference
-To:     Stephen Boyd <sboyd@kernel.org>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Mircea Caprioru <mircea.caprioru@analog.com>,
-        Michael.Hennerich@analog.com, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org, Rob Herring <robh+dt@kernel.org>,
-        linux-clk@vger.kernel.org
+Date:   Fri, 25 Jan 2019 10:19:54 +0200
+Message-ID: <CA+U=DsqG6PKs1Off9QP_3_q+c5=uzRypHCs+O6iur=NC5QdDdQ@mail.gmail.com>
+Subject: Re: [PATCH] staging:iio:ad7152: Rename misspelled RESEVERD -> RESERVED
+To:     Rodrigo Ribeiro <rodrigorsdc@gmail.com>
+Cc:     lars@metafoo.de, Michael.Hennerich@analog.com,
+        Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        kernel-usp@googlegroups.com, Rafael Tsuha <rafael.tsuha@usp.br>
 Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, Jan 25, 2019 at 12:41 AM Stephen Boyd <sboyd@kernel.org> wrote:
+On Thu, Jan 24, 2019 at 9:35 PM Rodrigo Ribeiro <rodrigorsdc@gmail.com> wrote:
 >
-> Quoting Jonathan Cameron (2018-12-16 02:07:41)
-> > Rob, Clk experts, questions for you below.
-> >
-> > Jonathan
-> >
-> >
-> > On Thu, 13 Dec 2018 17:39:22 -0800
-> > Stephen Boyd <sboyd@kernel.org> wrote:
-> >
-> > > Quoting Jonathan Cameron (2018-12-08 07:29:54)
-> > > > On Thu, 6 Dec 2018 11:10:51 +0200
-> > > > Mircea Caprioru <mircea.caprioru@analog.com> wrote:
-> > > >
-> > > > > This patch adds a clock to the state structure of ad7192 for getting the
-> > > > > external clock frequency. This modifications is in accordance with clock
-> > > > > framework dt bindings documentation.
-> > > > >
-> > > > > Signed-off-by: Mircea Caprioru <mircea.caprioru@analog.com>
-> > > >
-> > > > +cc Rob and the clk list for advise on how to do the binding for this one.
-> > > >
-> > > > It is basically 2 pins, you can put a clock in on one of them or connect
-> > > > a crystal across them.  The driver has to set a register to say which is
-> > > > the case.
-> > > >
-> > > > Current proposal is two optional clocks (fall back to internal oscillator)
-> > > > but that doesn't seem to be commonly done, so I'm wondering if there
-> > > > is a 'standard' way to handle this sort of thing.
-> > > >
-> > >
-> > > I'm not sure I fully understand, but I think perhaps
-> > > assigned-clock-parents would work? Or does that not work because either
-> > > way some parent is assigned, either the crystal or the optional clk that
-> > > isn't a crystal?
-> > >
-> > My concern is they aren't really separate clock inputs.   They are just different
-> > ways of providing the same fundamental clock.  So I think we may want to just
-> > provide a single clock and have another dt binding to say what it is.
-> >
-> > So lots of ways we could do it, but I'm not sure what the right one to
-> > go with is!
-> >
+> Remove the checkpatch.pl check:
 >
-> Sorry for getting back to this so late. Is the datasheet public for this
-> device? If so, any link to it?
->
+> CHECK: 'RESEVERD' may be misspelled - perhaps 'RESERVED'?
 
 Hey,
-Link is http://analog.com/ad7192 and that should resolve to the proper
-page, where the datasheet is available.
-[ General info: most [if not all] datasheets from Analog Devices can
-be found by concatenating "http://analog.com/ + "<part name>" ]
 
-But more directly, the link to the PDF is:
-https://www.analog.com/media/en/technical-documentation/data-sheets/AD7192.pdf
-Page 10 provides some description of the pins, page 20 the mode
-register for the clock, and page 32 a general description of the
-clock.
-If you search for MCLK1 or MCLK2 you should navigate pretty quick
-through the doc.
+A bit curios about this one.
+Are you using this chip/driver ?
 
-The clock circuitry [the 2 pins] is common for all chips this driver
-supports [AD7190/2/3/5].
+Thing is: the part is nearing EOL, and it could be an idea to be
+marked for removal (since it's still in staging).
+But if there are users for this driver, it could be left around for a while.
 
 Thanks
 Alex
 
-> If it's two pins, and sometimes one pin is connected and other times two
-> pins are connected but a register needs to be set if the pins are
-> connected in one configuration or the other I would say your plan for a
-> DT property indicating how the pins are configured sounds good. Usually
-> the hardware can figure these things out itself so I find this sort of
-> odd, but if this is how it is then there's not much that we can do.
 >
-> It sounds like there aren't two different clk inputs to the device.
-> Given that information specifying two optional clks is incorrect because
-> there is only one 'slot' is the external clk source.
+> Signed-off-by: Rodrigo Ribeiro <rodrigorsdc@gmail.com>
+> Signed-off-by: Rafael Tsuha <rafael.tsuha@usp.br>
+> ---
+> This macro is not used anywhere. Should we just correct the
+> spelling or remove the macro?
+>
+>  drivers/staging/iio/cdc/ad7152.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/staging/iio/cdc/ad7152.c b/drivers/staging/iio/cdc/ad7152.c
+> index 25f51db..c9da6d4 100644
+> --- a/drivers/staging/iio/cdc/ad7152.c
+> +++ b/drivers/staging/iio/cdc/ad7152.c
+> @@ -35,7 +35,7 @@
+>  #define AD7152_REG_CH2_GAIN_HIGH       12
+>  #define AD7152_REG_CH2_SETUP           14
+>  #define AD7152_REG_CFG                 15
+> -#define AD7152_REG_RESEVERD            16
+> +#define AD7152_REG_RESERVED            16
+>  #define AD7152_REG_CAPDAC_POS          17
+>  #define AD7152_REG_CAPDAC_NEG          18
+>  #define AD7152_REG_CFG2                        26
+> --
+> 2.7.4
 >
