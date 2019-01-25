@@ -2,106 +2,145 @@ Return-Path: <SRS0=ZZPN=QB=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C033C282C0
-	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 10:03:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED973C282C0
+	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 10:04:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E9E16218A2
-	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 10:03:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C4E8F218A2
+	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 10:04:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726926AbfAYKDB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 25 Jan 2019 05:03:01 -0500
-Received: from szxga05-in.huawei.com ([45.249.212.191]:2755 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726761AbfAYKDB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 25 Jan 2019 05:03:01 -0500
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 761B857D5D5F977E172B;
-        Fri, 25 Jan 2019 18:02:59 +0800 (CST)
-Received: from localhost (10.202.226.61) by DGGEMS403-HUB.china.huawei.com
- (10.3.19.203) with Microsoft SMTP Server id 14.3.408.0; Fri, 25 Jan 2019
- 18:02:57 +0800
-Date:   Fri, 25 Jan 2019 10:02:47 +0000
-From:   Jonathan Cameron <jonathan.cameron@huawei.com>
-To:     Alexandru Ardelean <ardeleanalex@gmail.com>
-CC:     Phil Reid <preid@electromag.com.au>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        <alexandru.ardelean@analog.com>
-Subject: Re: iio scale precision
-Message-ID: <20190125100247.000070ca@huawei.com>
-In-Reply-To: <CA+U=DsqtHkZYMVuWKJGYMOsQ3m4N5Cf2B9pj18JZPSvW_aNbzg@mail.gmail.com>
-References: <ec351562-c263-6550-4c6e-7ba2c605e5c0@electromag.com.au>
-        <CA+U=DsqtHkZYMVuWKJGYMOsQ3m4N5Cf2B9pj18JZPSvW_aNbzg@mail.gmail.com>
-Organization: Huawei
-X-Mailer: Claws Mail 3.16.0 (GTK+ 2.24.32; i686-w64-mingw32)
+        id S1726878AbfAYKE2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 25 Jan 2019 05:04:28 -0500
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:46968 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726761AbfAYKE2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 25 Jan 2019 05:04:28 -0500
+Received: by mail-lj1-f194.google.com with SMTP id v15-v6so7848044ljh.13;
+        Fri, 25 Jan 2019 02:04:26 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=7aOMs0vIJjrHNIHohArKs+ZYg6iu1l6evR+1mvQBGMA=;
+        b=jlprIs3hZY668Eih1ccM8MMgcyKEhxPFwqsjynufBS3C5815EGtqeJLKqcWj2XGEyB
+         mZ49Q8j9Rh/xNNEqeAr0E/90j87Z8cMTJH+KjfwzrW+8G/JK91qpBSZO/Omnts2SXdI7
+         psWeyCBfYUNNO7Q+kIxxSi6me4//DDgNhedA7fsnQXSc7m5yHnBww0TDmN9D4YHTaraP
+         +sZJHpbiyUfcd2s3uUGA/1IDIqqNPGZ+BVThttHfxcXmgRvNURd0AfiSvIWxm2Wu/imQ
+         sAM1zSxYrU4WsAl1K0izFs4PsXgYa92bk3dzUonVMnJFXMAa3L95nfrIPcK6YXXNnAZL
+         AE4g==
+X-Gm-Message-State: AJcUukfWbsu/8MwGnSDNnScSyjL62CZxi3Dnc+vmS80/HraYE0KvOzXO
+        yyuSvoXuMVdeMnQP0JWXQKvRucS/U4mQ16M6WwI=
+X-Google-Smtp-Source: ALg8bN5lkyEpDtaLjaJgYnezYmtFGYQANkX8xyqrVlQmgIcQLGcNyH+jBMZ2IjnXE/kPP8j5qzSknPO9yAARPfV5lFI=
+X-Received: by 2002:a2e:84ca:: with SMTP id q10-v6mr8550463ljh.65.1548410665846;
+ Fri, 25 Jan 2019 02:04:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.61]
-X-CFilter-Loop: Reflected
+References: <20190125100147.14259-1-ricardo@ribalda.com>
+In-Reply-To: <20190125100147.14259-1-ricardo@ribalda.com>
+From:   Ricardo Ribalda Delgado <ricardo@ribalda.com>
+Date:   Fri, 25 Jan 2019 11:04:09 +0100
+Message-ID: <CAPybu_3ueYtdSofu=vZu5hr+EkfH1O8-ww31UyaKniikGfzECg@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: ad7476: Add support for ADS786X ADCs
+To:     Alexandru Ardelean <ardeleanalex@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        alexandru.ardelean@analog.com, linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 25 Jan 2019 10:36:19 +0200
-Alexandru Ardelean <ardeleanalex@gmail.com> wrote:
+Sorry, for the last two mails with the wrong [PATCH], instead of
+[PATCH v2]. I thought I was "dry-running" my script.
 
-> On Wed, Jan 23, 2019 at 11:17 AM Phil Reid <preid@electromag.com.au> wrote:
-> >
-> > What's the best way to handle scale values for very high precision ADC's.
-> >
-> > eg a 24 or even a 32 bit dac with a 2.5v full scale range.
-> >
-> > Even using the nV conversion param it looses a fair bit of precision.
-> >
-> > Would a option to return a rational number would be better?  
-> 
-> Are you saying something like float/double C types ?
-> Typically those are not allowed in kernel.
-> 
-> Scale values are typically/mostly for informational purposes.
-> i.e. the driver computes the scales [and the current selected scales]
-> for the measured values, so that the userspace parts [usually libiio]
-> can compute actual values
-> 
-> So, you could compute & display scales almost any way you want it,
-> even just displaying a string representation of the scale value.
-> It is good to follow some conventions though.
-> 
-> You could take a look at various formats for the scales.
-> Something like IIO_VAL_INT_PLUS_NANO or IIO_VAL_FRACTIONAL or
-> IIO_VAL_FRACTIONAL_LOG2 [see __iio_format_value  in
-> drivers/iio/industrialio-core.c to get some idea ] .
-> Depends what you really need.
+On Fri, Jan 25, 2019 at 11:01 AM Ricardo Ribalda Delgado
+<ricardo@ribalda.com> wrote:
+>
+> Add support for ADS7866, ADS7867 and ADS7868 8/10/12 bit Single channel
+> ADC.
+>
+> Datasheet: http://www.ti.com/lit/ds/symlink/ads7868.pdf
+>
+> Signed-off-by: Ricardo Ribalda Delgado <ricardo@ribalda.com>
+> ---
+> v2: I have missnamed the devices
+>  drivers/iio/adc/Kconfig  |  3 ++-
+>  drivers/iio/adc/ad7476.c | 20 ++++++++++++++++++++
+>  2 files changed, 22 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index f9354e5ee65c..d86900fc2634 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -64,7 +64,8 @@ config AD7476
+>         help
+>           Say yes here to build support for Analog Devices AD7273, AD7274, AD7276,
+>           AD7277, AD7278, AD7475, AD7476, AD7477, AD7478, AD7466, AD7467, AD7468,
+> -         AD7495, AD7910, AD7920, AD7920 SPI analog to digital converters (ADC).
+> +         AD7495, AD7910, AD7920, AD7920, ADS7866, ADS7867, ADS7868 SPI analog
+> +         to digital converters (ADC).
+>
+>           To compile this driver as a module, choose M here: the
+>           module will be called ad7476.
+> diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
+> index 0549686b9ef8..76747488044b 100644
+> --- a/drivers/iio/adc/ad7476.c
+> +++ b/drivers/iio/adc/ad7476.c
+> @@ -59,6 +59,9 @@ enum ad7476_supported_device_ids {
+>         ID_ADC081S,
+>         ID_ADC101S,
+>         ID_ADC121S,
+> +       ID_ADS7866,
+> +       ID_ADS7867,
+> +       ID_ADS7868,
+>  };
+>
+>  static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
+> @@ -157,6 +160,8 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
+>  #define AD7940_CHAN(bits) _AD7476_CHAN((bits), 15 - (bits), \
+>                 BIT(IIO_CHAN_INFO_RAW))
+>  #define AD7091R_CHAN(bits) _AD7476_CHAN((bits), 16 - (bits), 0)
+> +#define ADS786X_CHAN(bits) _AD7476_CHAN((bits), 12 - (bits), \
+> +               BIT(IIO_CHAN_INFO_RAW))
+>
+>  static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
+>         [ID_AD7091R] = {
+> @@ -209,6 +214,18 @@ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
+>                 .channel[0] = ADC081S_CHAN(12),
+>                 .channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+>         },
+> +       [ID_ADS7866] = {
+> +               .channel[0] = ADS786X_CHAN(12),
+> +               .channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+> +       },
+> +       [ID_ADS7867] = {
+> +               .channel[0] = ADS786X_CHAN(10),
+> +               .channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+> +       },
+> +       [ID_ADS7868] = {
+> +               .channel[0] = ADS786X_CHAN(8),
+> +               .channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+> +       },
+>  };
+>
+>  static const struct iio_info ad7476_info = {
+> @@ -314,6 +331,9 @@ static const struct spi_device_id ad7476_id[] = {
+>         {"adc081s", ID_ADC081S},
+>         {"adc101s", ID_ADC101S},
+>         {"adc121s", ID_ADC121S},
+> +       {"ads7866", ID_ADS7866},
+> +       {"ads7867", ID_ADS7867},
+> +       {"ads7868", ID_ADS7868},
+>         {}
+>  };
+>  MODULE_DEVICE_TABLE(spi, ad7476_id);
+> --
+> 2.20.1
+>
 
-If we are dealing with a 32bit device we may just need to add a pico version
-which will generate a pile of leading zeros.  Even smaller types are fine
-as well if needed.
 
-As Alex says, it's just formatted to a string (mostly). The exception is
-if we have in kernel users in which case it'll be up to the consumer
-to figure out how to apply the scale.  We provide some utility functions
-but I doubt these high precision ADCs are going to get used by another driver
-in kernel.
-
-J
-> 
-> I guess to give a better answer here [I deferred giving one hoping
-> someone more informed would jump-in], we would also need a more
-> concrete example.
-> 
-> Thanks
-> Alex
-> 
-> >
-> > Or am I doing something wrong.
-> >
-> > --
-> > Regards
-> > Phil  
-
-
+-- 
+Ricardo Ribalda
