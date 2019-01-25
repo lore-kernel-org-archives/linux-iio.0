@@ -2,154 +2,159 @@ Return-Path: <SRS0=ZZPN=QB=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2ED5C282C0
-	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 18:38:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C823FC282C0
+	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 23:47:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9EE922087E
-	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 18:38:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 959DE218D0
+	for <linux-iio@archiver.kernel.org>; Fri, 25 Jan 2019 23:47:12 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eRE96xBN"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KB6PR2Yy"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728632AbfAYSiS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 25 Jan 2019 13:38:18 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:41588 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726321AbfAYSiS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 25 Jan 2019 13:38:18 -0500
-Received: by mail-ed1-f66.google.com with SMTP id a20so8106944edc.8;
-        Fri, 25 Jan 2019 10:38:16 -0800 (PST)
+        id S1729460AbfAYXrM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 25 Jan 2019 18:47:12 -0500
+Received: from mail-it1-f195.google.com ([209.85.166.195]:56304 "EHLO
+        mail-it1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728236AbfAYXrL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 25 Jan 2019 18:47:11 -0500
+Received: by mail-it1-f195.google.com with SMTP id m62so13107143ith.5;
+        Fri, 25 Jan 2019 15:47:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=RK/RNSLuJatuThuuwTlo2+3dPMmT4AcQSJQ01+f058Y=;
-        b=eRE96xBNp/uuyGV5ORtH/Z632cCIIwVt2rLSaF4XBtK0QETCQ6FIqsb6BF/CIvAsfd
-         w87zJ7h3tio47EeUGdMI4a80wnk0onbmZUcD5VqmKD2YfNBtJ9y2uJGp5JT7UCdBWNWh
-         VOUKK73oPKQavU3JNzG6zyVLHBj0LhbYt3BgzIAXuB19jcn3c0m+duuSevK6QKAClbSK
-         AqFMHRzivUqQ+ELYo8W9XZwTt+hjTCNYx4VNE1ohV6uZiRl8vPKZUJwfhaBTuKu71Ln3
-         yFfuDiW0yhLr8B+fFHkKNu3vENAgkb1l6vV1UmHQ/hCK1pLhDAMINsvCjy28UyAAqUv4
-         PNug==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=0YgK5L1z0BuGqJVSt87p+qQmdsVCGZ2vh5acRVjkM5Q=;
+        b=KB6PR2Yy8dALNRcAZZqE1S+bsgwksVwPEhbB0cmnwgLWRQSbAaoa3lCwK/0T03SI8n
+         +CLs3aiA98FrRi0xa871U5YpfPw/BlApN8ZnpXhHGJ5vkLwi7hrUrmDlMWDaN45xh5le
+         XUBZ88QIH8EPz9KGr8gyA+cq8ZjU0R/1RoHAGo+h4B/WzfBC98X0XbhUWebMIjk4kdmf
+         lbnZsZa5Xp1p36sFl807g26zqUEcqgBkPg0IbUkNzIXYQzvi6nJuTKVpPtNjaDp5QzY7
+         hqQDE4TsetCMYh/WFxToTHN115kZjO4CfeI265CfJFkqGwN+2p44ARHvHKGPBnAQbAW9
+         CpqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=RK/RNSLuJatuThuuwTlo2+3dPMmT4AcQSJQ01+f058Y=;
-        b=gwbsqZw3TxEBF0rKpQa0TGA+TYo8iQeRwBR86hU5DjOX+rMgNjjCGNP111CKPkxnRH
-         RICgXE29Ko0r2BiZbqBH5azC3HmK3k1Lsw5KPdBJwJLcthSpCb2owC4owKoks4kUSkGH
-         sVEThpbudCPBunCR3QZfp+T6zKVGy+KIrLzXvvJ2ib8wBoOiFbRW4Mm5cH3BY+KI7fg4
-         N/jpl89/4j0rOf4JczfnAauQnM9HzOLHcHQjYLUbimRPbtyco4W5iNoywbE8hUiPc/oV
-         z3qYxG5WCcApnmrlDBFC3l+xtx+h2GTkV7mBuMxLyiPEqBFbNzikPZ0a4JEu2CHSBiB9
-         11eQ==
-X-Gm-Message-State: AJcUukfY1GwlP84B2LQbGHvzd8+xGrRDWKc1zUr3crndoCOs/M2GJoF+
-        q7Ajr1gt4rmiYYrHxoLcG2qPPFJ5
-X-Google-Smtp-Source: ALg8bN7ZKy04C6VTlG50QHnN28TDkdYKeueRiVStwUw2HxPH/3RsuXAbbsNkWfDGRckb7lRWqb8Wyg==
-X-Received: by 2002:a50:f61e:: with SMTP id c30mr11424357edn.197.1548441495047;
-        Fri, 25 Jan 2019 10:38:15 -0800 (PST)
-Received: from [10.67.49.9] ([192.19.223.250])
-        by smtp.googlemail.com with ESMTPSA id b46sm12248971edc.57.2019.01.25.10.38.12
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 25 Jan 2019 10:38:14 -0800 (PST)
-Subject: Re: [PATCH v2] iio: adc: ti-ads7950: inconsistency with spi msg
-To:     justinpopo6@gmail.com, linux-iio@vger.kernel.org
-Cc:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        linux-kernel@vger.kernel.org
-References: <1548440422-27943-1-git-send-email-justinpopo6@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <9d110c8a-2a2a-412e-847e-215b9edc97e4@gmail.com>
-Date:   Fri, 25 Jan 2019 10:38:11 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.2.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=0YgK5L1z0BuGqJVSt87p+qQmdsVCGZ2vh5acRVjkM5Q=;
+        b=FmiVXrhSbZiYOJWrCuQcaBF2cMBmgZXz4v7LtXzdaJCZcHu6ZCYTfhpH2ThgX3/4p0
+         OdaWaKR8n5TPZl9bN5/JNpBXzeG8TeMEUH4DD8UnkDWDQ0qqs+c5GdwH/pyAbcLe1K1K
+         zu+AMEzU+ztbUxteRTlpZwYDajXvIGnPmCgO3GrKC9uLgrZp1aOHiX5VlPhl5KnBvACP
+         ph46hQ69aZLFyl6Nc0JSatQ87kLOtBVmR2+Q6N4PrR1UddG1CdM+VotG+zckVzh17FwJ
+         9FHjQ0eOfgTAfCsMK8msMOgk8MPZtI/LTOCtrV2WyW6R3ALjGvHpXhrj/KZP5e9f74+R
+         VSsg==
+X-Gm-Message-State: AJcUukeoSy+ZPrQHXh8BY2FWxAXXbTjEiSpv6YpctN7BnG89bBcHX2c7
+        Q51mExr0f5bqrhXtpWeWszlVx63YQ+D05a8X6q4=
+X-Google-Smtp-Source: ALg8bN74Da3VA9uB5wewYIZjTJo89WLpZ/0DNSrUrBxNmmXr8HtxOSTd2aBwbLHbTNcV6jj+Gwv97n37DlSZuXpMV7c=
+X-Received: by 2002:a24:9e87:: with SMTP id p129mr5185791itd.148.1548460030776;
+ Fri, 25 Jan 2019 15:47:10 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <1548440422-27943-1-git-send-email-justinpopo6@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <1548358316-8062-1-git-send-email-rodrigorsdc@gmail.com> <CA+U=DsqG6PKs1Off9QP_3_q+c5=uzRypHCs+O6iur=NC5QdDdQ@mail.gmail.com>
+In-Reply-To: <CA+U=DsqG6PKs1Off9QP_3_q+c5=uzRypHCs+O6iur=NC5QdDdQ@mail.gmail.com>
+From:   Rodrigo Ribeiro <rodrigorsdc@gmail.com>
+Date:   Fri, 25 Jan 2019 21:46:58 -0200
+Message-ID: <CAOeBkLogWyxbB3ZNwZh9=6xVUKxmT1YGZQseAx4uo7a4u+M+gw@mail.gmail.com>
+Subject: Re: [PATCH] staging:iio:ad7152: Rename misspelled RESEVERD -> RESERVED
+To:     Alexandru Ardelean <ardeleanalex@gmail.com>
+Cc:     lars@metafoo.de, Michael.Hennerich@analog.com,
+        Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        kernel-usp@googlegroups.com, Rafael Tsuha <rafael.tsuha@usp.br>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 1/25/19 10:20 AM, justinpopo6@gmail.com wrote:
-> From: Justin Chen <justinpopo6@gmail.com>
-> 
-> To read a channel we require 3 cycles to send, process, and receive
-> the data. The transfer buffer for the third transaction is left blank.
-> This leaves it up to the SPI driver to decide what to do.
-> 
-> In one particular case, if the tx buffer is not set the spi driver
-> sets it to 0xff. This puts the ADC in a alarm programming state,
-> therefore the following read to a channel becomes erroneous.
-> 
-> Instead of leaving us to the mercy of the SPI driver, we send the
-> ADC cmd on the third transaction to prevent inconsistent behavior.
-> 
-> Fixes: 902c4b2446d4 ("iio: adc: New driver for TI ADS7950 chips")
-> Signed-off-by: Justin Chen <justinpopo6@gmail.com>
+Em sex, 25 de jan de 2019 =C3=A0s 06:20, Alexandru Ardelean
+<ardeleanalex@gmail.com> escreveu:
+>
+> On Thu, Jan 24, 2019 at 9:35 PM Rodrigo Ribeiro <rodrigorsdc@gmail.com> w=
+rote:
+> >
+> > Remove the checkpatch.pl check:
+> >
+> > CHECK: 'RESEVERD' may be misspelled - perhaps 'RESERVED'?
+>
+> Hey,
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Hi,
 
-Thanks!
--- 
-Florian
+Thanks for answering.
+
+> A bit curios about this one.
+> Are you using this chip/driver ?
+
+No, I am just a student at USP (University of S=C3=A3o Paulo) starting in L=
+inux
+Kernel and a new member of the USP Linux Kernel group that has contributed
+for a few months.
+
+> Thing is: the part is nearing EOL, and it could be an idea to be
+> marked for removal (since it's still in staging).
+> But if there are users for this driver, it could be left around for a whi=
+le.
+
+This is my first patch in Linux Kernel, but if the driver will be removed, =
+I
+can send a patch for another driver. Is there any driver that I can
+fix a style warning?
+
+Thanks
+
+
+Em sex, 25 de jan de 2019 =C3=A0s 06:20, Alexandru Ardelean
+<ardeleanalex@gmail.com> escreveu:
+>
+> On Thu, Jan 24, 2019 at 9:35 PM Rodrigo Ribeiro <rodrigorsdc@gmail.com> w=
+rote:
+> >
+> > Remove the checkpatch.pl check:
+> >
+> > CHECK: 'RESEVERD' may be misspelled - perhaps 'RESERVED'?
+>
+> Hey,
+>
+> A bit curios about this one.
+> Are you using this chip/driver ?
+>
+> Thing is: the part is nearing EOL, and it could be an idea to be
+> marked for removal (since it's still in staging).
+> But if there are users for this driver, it could be left around for a whi=
+le.
+>
+> Thanks
+> Alex
+>
+> >
+> > Signed-off-by: Rodrigo Ribeiro <rodrigorsdc@gmail.com>
+> > Signed-off-by: Rafael Tsuha <rafael.tsuha@usp.br>
+> > ---
+> > This macro is not used anywhere. Should we just correct the
+> > spelling or remove the macro?
+> >
+> >  drivers/staging/iio/cdc/ad7152.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/staging/iio/cdc/ad7152.c b/drivers/staging/iio/cdc=
+/ad7152.c
+> > index 25f51db..c9da6d4 100644
+> > --- a/drivers/staging/iio/cdc/ad7152.c
+> > +++ b/drivers/staging/iio/cdc/ad7152.c
+> > @@ -35,7 +35,7 @@
+> >  #define AD7152_REG_CH2_GAIN_HIGH       12
+> >  #define AD7152_REG_CH2_SETUP           14
+> >  #define AD7152_REG_CFG                 15
+> > -#define AD7152_REG_RESEVERD            16
+> > +#define AD7152_REG_RESERVED            16
+> >  #define AD7152_REG_CAPDAC_POS          17
+> >  #define AD7152_REG_CAPDAC_NEG          18
+> >  #define AD7152_REG_CFG2                        26
+> > --
+> > 2.7.4
+> >
