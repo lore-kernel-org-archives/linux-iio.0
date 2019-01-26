@@ -2,400 +2,296 @@ Return-Path: <SRS0=WfKE=QC=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.0 required=3.0
-	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 643F6C282C7
-	for <linux-iio@archiver.kernel.org>; Sat, 26 Jan 2019 21:35:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3B21C282C7
+	for <linux-iio@archiver.kernel.org>; Sat, 26 Jan 2019 21:42:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 329AB218A2
-	for <linux-iio@archiver.kernel.org>; Sat, 26 Jan 2019 21:35:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7A39021903
+	for <linux-iio@archiver.kernel.org>; Sat, 26 Jan 2019 21:42:42 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CFHWFkPb"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726372AbfAZVfK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 26 Jan 2019 16:35:10 -0500
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:39019 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726367AbfAZVfK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 26 Jan 2019 16:35:10 -0500
-Received: by mail-lj1-f195.google.com with SMTP id t9-v6so11149180ljh.6;
-        Sat, 26 Jan 2019 13:35:07 -0800 (PST)
+        id S1726372AbfAZVmm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 26 Jan 2019 16:42:42 -0500
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:42211 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726350AbfAZVml (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 26 Jan 2019 16:42:41 -0500
+Received: by mail-qt1-f194.google.com with SMTP id d19so14511402qtq.9
+        for <linux-iio@vger.kernel.org>; Sat, 26 Jan 2019 13:42:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=eg1+XsuaihSDL/7UPsB8Obs2S0wAfPbTZnwhY7puDNI=;
+        b=CFHWFkPbms58IE+tnJ2wM0qTocHSkUCKbnFIvgT5+4h9duQqIXAVnL4Ao4h0I7FCK5
+         2JQT5KYDgWCT/sa4dmdwjlJdaZAu/eyy5feJDj9udMXKAYBRf5NG7WI1DDAbUdS4rvnu
+         QU5Q32cvcL2lc+FLkWiDFBC8J4nr5U7hy6HIIenr5MBwK9TEvNp+rBJV5ygihiEwtp2m
+         40bOJ13ojvCJHJusqhqwK+dHveg5Bfq9XLrjTZX6Gdu6dfGsa6lZcwcLS8/xDk48/OWx
+         xw7cDG2Cb/YC4wt9eXW1lOXyxMnu/EMKfDWuHJZmRBE+MjE43kh64zN7+8rIP49DgFUN
+         +dYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qyyLi38U3W7EsUrqILTlfAYDTAdsPIGh0xrENJZE6js=;
-        b=n6koI42o6cR6dqDr1m1Hm46K6r7H+Z5isWbF0S2JQAWfT3krO7UsVtcv40Zrn1J30t
-         0uHbQ6uAEq8mpR2X5IBWrJ+H8kfCub7vEZrub8FirzYEpcM/xqTu1CW5rltNQVZdtBoY
-         ByKU9kT9MXJpoAD2lzwG0DTyCRhHCLKrTbUOhiLn7ivOBhzKTySsuXVc2fdY0fgu+ckC
-         svKu3zr0MQ2rRci8uKEIXtQf8JVvB5n+XK8mAuHYkr1w7Su8LParv85lNGBCfNl8Y4l3
-         Sz0rlV66MXxkvsCV/2cqirEwDYFQ9CVJS+z0FtQomwVAU6rp878VnuZiCrVWY4iuUs2X
-         bHww==
-X-Gm-Message-State: AJcUukeNZy/n/mO4o+zT3Zro3bZ5VfxnVEyXrCSW2UUPmtCGIp6m9qrU
-        P1/fABdTWBgdfMS2F6CH9vFoQwy2LlxkIK8OXj8=
-X-Google-Smtp-Source: ALg8bN66Q6+wmIKRbfdL+6gPceA0NeHiz6SFfoKAO6TWIACOZiJstJ1Zg4Kk0oOOSLulvZD6LXki+RHo0vNYy4Ip9No=
-X-Received: by 2002:a2e:974a:: with SMTP id f10-v6mr13878229ljj.61.1548538506939;
- Sat, 26 Jan 2019 13:35:06 -0800 (PST)
-MIME-Version: 1.0
-References: <20190125100055.13836-1-ricardo@ribalda.com> <20190126204155.6fbb9512@archlinux>
-In-Reply-To: <20190126204155.6fbb9512@archlinux>
-From:   Ricardo Ribalda Delgado <ricardo@ribalda.com>
-Date:   Sat, 26 Jan 2019 22:34:50 +0100
-Message-ID: <CAPybu_2pk9twU6Wmxng0jcdZyN_1L0jWPwDB266Cs3ZwyMmFLw@mail.gmail.com>
-Subject: Re: [PATCH v2] iio:dac:ti-dac7612: Add driver for Texas Instruments DAC7612
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=eg1+XsuaihSDL/7UPsB8Obs2S0wAfPbTZnwhY7puDNI=;
+        b=JtQKpTC8eT+NzQ9aRLL5Ii8avIg0ucjFLF79wfKLdU2SGWP6pNodmYWBCnPeaGid1h
+         OV/9tBoBqwqhnQN40ejj11pg9Z126WI24RKWxV2T78tAurc911IR8Bq5sLkTt3Hnkvro
+         lOsUUgkyRzocAXMYU59QWTPKAPV7TqV6p5ibI6FpXAVnByI+uHYnXUzeAABTSFawf8k5
+         k0h+YuyVf5sfumeZWOQWMA3pIaA/l40BS10yxvTafUcTYESuCT6Bmx7pdoaTri6PbkTN
+         URh/HJCAZ/xBOsc9uEQK4PN9rhAbWF6NP1SUpEUJsYHK09r+YNuDR3zRaNuuiE3Viw+L
+         tiCA==
+X-Gm-Message-State: AJcUuke2J7t5plRakVxaCyytKL12nHIWerq1nsCPVswQKQV7PCogoLxC
+        rgs9iVtQkhhNonmd6cvEpwI=
+X-Google-Smtp-Source: ALg8bN4QBlpFW4ZHmKfJjUzmbzOKkL5qgTjLBQS7X2KOW5CJ7M2EzEG+XmK5r5S7hKfpgcpERAYL2w==
+X-Received: by 2002:ac8:4258:: with SMTP id r24mr16395785qtm.213.1548538959953;
+        Sat, 26 Jan 2019 13:42:39 -0800 (PST)
+Received: from archfcr.localdomain ([177.139.38.48])
+        by smtp.gmail.com with ESMTPSA id 5sm98152577qtw.50.2019.01.26.13.42.36
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Sat, 26 Jan 2019 13:42:39 -0800 (PST)
+Date:   Sat, 26 Jan 2019 19:42:31 -0200
+From:   Felipe Cardoso Resende <felipecardoso.fcr@gmail.com>
 To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Alexandru Ardelean <ardeleanalex@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        alexandru.ardelean@analog.com, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH] drivers: staging: iio: adc: Include SPDX Identifier
+Message-ID: <20190126214227.GA32372@archfcr.localdomain>
+References: <20190126173746.GA7100@archfcr.localdomain>
+ <20190126204820.5998bf29@archlinux>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190126204820.5998bf29@archlinux>
+User-Agent: Mutt/1.11.2 (2019-01-07)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-HI Jonathan
+Hi James,
 
-Thanks for your review. I will make the changes and send it back to
-you after testing it on Monday on real hardware.
+On Sat, Jan 26, 2019 at 08:48:20PM +0000, Jonathan Cameron wrote:
+> On Sat, 26 Jan 2019 15:37:53 -0200
+> Felipe Cardoso Resende <felipecardoso.fcr@gmail.com> wrote:
+> 
+> > Remove warning found by checkpatch.pl by including SPDX Identifier
+> > 
+> > Signed-off-by: Felipe Cardoso Resende <felipecardoso.fcr@gmail.com>
+> 
+> However much checkpatch moans about this they all need careful individual
+> checking and I always prefer to get input from someone who either wrote
+> the code or works for the company with the copyright.
 
-Until then I have pushed my changes to
-https://github.com/ribalda/linux/tree/ribalda-iio-v3 in case you want
-to see it before I send it to the list.
-(I am still missing the dt-bindings)
+I see your point. I took it for granted as the license was explicit in the 
+beginning of each file.
+> 
+> It's particularly fun as one of these is currently inconsistent
+> within the file. I've raised it with Analog and they have promised to clean
+> these up.  There is also one that has been done already (and indeed moved
+> out of staging). If we apply this I'll just drop that one.
 
-Some comments inline.
+I noticed one of them was different from the others, but not that it was 
+inconsistent within itself.
+> 
+> Obviously if they are happy with your change that is great but I will need
+> an Ack from one of the current Analog team.
 
-Best regards!
+That's alright. I'll wait for an input from them and update this patch if 
+necessary.
 
-On Sat, Jan 26, 2019 at 9:42 PM Jonathan Cameron <jic23@kernel.org> wrote:
->
-> On Fri, 25 Jan 2019 11:00:55 +0100
-> Ricardo Ribalda Delgado <ricardo@ribalda.com> wrote:
->
-> > It is a driver for Texas Instruments Dual, 12-Bit Serial Input
-> > Digital-to-Analog Converter.
-> >
-> > Datasheet of this chip:
-> > http://www.ti.com/lit/ds/sbas106/sbas106.pdf
-> >
-> > Signed-off-by: Ricardo Ribalda Delgado <ricardo@ribalda.com>
-> Hi Ricardo,
->
-> Various bits and pieces inline.
->
+Thanks,
+
+Felipe
+> 
+> Thanks,
+> 
 > Jonathan
->
+> 
 > > ---
-> >
-> > v2: Fix range
-> >  MAINTAINERS                  |   6 ++
-> >  drivers/iio/dac/Kconfig      |  10 +++
-> >  drivers/iio/dac/Makefile     |   1 +
-> >  drivers/iio/dac/ti-dac7612.c | 169 +++++++++++++++++++++++++++++++++++
-> >  4 files changed, 186 insertions(+)
-> >  create mode 100644 drivers/iio/dac/ti-dac7612.c
-> >
-> > diff --git a/MAINTAINERS b/MAINTAINERS
-> > index d039f66a5cef..30ba5435906b 100644
-> > --- a/MAINTAINERS
-> > +++ b/MAINTAINERS
-> > @@ -14877,6 +14877,12 @@ F:   Documentation/devicetree/bindings/clock/ti,sci-clk.txt
-> >  F:   drivers/clk/keystone/sci-clk.c
-> >  F:   drivers/reset/reset-ti-sci.c
-> >
-> > +Texas Instruments' DAC7612 DAC Driver
-> > +M:   Ricardo Ribalda <ricardo@ribalda.com>
-> > +L:   linux-iio@vger.kernel.org
-> > +S:   Supported
-> > +F:   drivers/iio/dac/ti-dac7612.c
-> > +
-> >  THANKO'S RAREMONO AM/FM/SW RADIO RECEIVER USB DRIVER
-> >  M:   Hans Verkuil <hverkuil@xs4all.nl>
-> >  L:   linux-media@vger.kernel.org
-> > diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> > index f28daf67db6a..fbef9107acad 100644
-> > --- a/drivers/iio/dac/Kconfig
-> > +++ b/drivers/iio/dac/Kconfig
-> > @@ -375,6 +375,16 @@ config TI_DAC7311
-> >
-> >         If compiled as a module, it will be called ti-dac7311.
-> >
-> > +config TI_DAC7612
-> > +     tristate "Texas Instruments 12-bit 2-channel DAC driver"
-> > +     depends on SPI_MASTER && GPIOLIB
-> > +     help
-> > +       Driver for the Texas Instruments DAC7612, DAC7612U, DAC7612UB
-> > +       The driver hand drive the load pin automatically, otherwise
-> > +       it needs to be toggled manually.
->
-> Given the driver doesn't load without that pin, do we need to give
-> the otherwise?  I would drop this comment entirely.
-
-I am probing the gpio with devm_gpiod_get_optional() so the driver can
-load without the pin
-
->
-> > +
-> > +       If compiled as a module, it will be called ti-dac7612.
-> > +
-> >  config VF610_DAC
-> >       tristate "Vybrid vf610 DAC driver"
-> >       depends on OF
-> > diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
-> > index f0a37c93de8e..1369fa1d2f0e 100644
-> > --- a/drivers/iio/dac/Makefile
-> > +++ b/drivers/iio/dac/Makefile
-> > @@ -41,4 +41,5 @@ obj-$(CONFIG_STM32_DAC) += stm32-dac.o
-> >  obj-$(CONFIG_TI_DAC082S085) += ti-dac082s085.o
-> >  obj-$(CONFIG_TI_DAC5571) += ti-dac5571.o
-> >  obj-$(CONFIG_TI_DAC7311) += ti-dac7311.o
-> > +obj-$(CONFIG_TI_DAC7612) += ti-dac7612.o
-> >  obj-$(CONFIG_VF610_DAC) += vf610_dac.o
-> > diff --git a/drivers/iio/dac/ti-dac7612.c b/drivers/iio/dac/ti-dac7612.c
-> > new file mode 100644
-> > index 000000000000..278406f69e0c
-> > --- /dev/null
-> > +++ b/drivers/iio/dac/ti-dac7612.c
-> > @@ -0,0 +1,169 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * DAC7612 Dual, 12-Bit Serial input Digital-to-Analog Converter
+> >  drivers/staging/iio/adc/ad7192.c     | 3 +--
+> >  drivers/staging/iio/adc/ad7192.h     | 5 ++---
+> >  drivers/staging/iio/adc/ad7280a.c    | 3 +--
+> >  drivers/staging/iio/adc/ad7280a.h    | 5 ++---
+> >  drivers/staging/iio/adc/ad7606.c     | 3 +--
+> >  drivers/staging/iio/adc/ad7606.h     | 5 ++---
+> >  drivers/staging/iio/adc/ad7606_par.c | 3 +--
+> >  drivers/staging/iio/adc/ad7606_spi.c | 3 +--
+> >  drivers/staging/iio/adc/ad7780.c     | 3 +--
+> >  drivers/staging/iio/adc/ad7816.c     | 3 +--
+> >  10 files changed, 13 insertions(+), 23 deletions(-)
+> > 
+> > diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+> > index acdbc07fd259..b01d4cd6bb82 100644
+> > --- a/drivers/staging/iio/adc/ad7192.c
+> > +++ b/drivers/staging/iio/adc/ad7192.c
+> > @@ -1,9 +1,8 @@
+> > +// SPDX-License-Identifier: GPL-2.0-only
+> >  /*
+> >   * AD7190 AD7192 AD7193 AD7195 SPI ADC driver
+> >   *
+> >   * Copyright 2011-2015 Analog Devices Inc.
+> > - *
+> > - * Licensed under the GPL-2.
+> >   */
+> >  
+> >  #include <linux/interrupt.h>
+> > diff --git a/drivers/staging/iio/adc/ad7192.h b/drivers/staging/iio/adc/ad7192.h
+> > index 7433a43c2611..2a5a55fdd825 100644
+> > --- a/drivers/staging/iio/adc/ad7192.h
+> > +++ b/drivers/staging/iio/adc/ad7192.h
+> > @@ -1,9 +1,8 @@
+> > -/*
+> > +/* SPDX-License-Identifier: GPL-2.0-only
 > > + *
-> > + * Copyright 2019 Qtechnology A/S
-> > + * 2019 Ricardo Ribalda <ricardo@ribalda.com>
+> >   * AD7190 AD7192 AD7195 SPI ADC driver
+> >   *
+> >   * Copyright 2011 Analog Devices Inc.
+> > - *
+> > - * Licensed under the GPL-2.
+> >   */
+> >  #ifndef IIO_ADC_AD7192_H_
+> >  #define IIO_ADC_AD7192_H_
+> > diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
+> > index 14f6a3ced060..c10fdce511a6 100644
+> > --- a/drivers/staging/iio/adc/ad7280a.c
+> > +++ b/drivers/staging/iio/adc/ad7280a.c
+> > @@ -1,9 +1,8 @@
+> > +// SPDX-License-Identifier: GPL-2.0-only
+> >  /*
+> >   * AD7280A Lithium Ion Battery Monitoring System
+> >   *
+> >   * Copyright 2011 Analog Devices Inc.
+> > - *
+> > - * Licensed under the GPL-2.
+> >   */
+> >  
+> >  #include <linux/crc8.h>
+> > diff --git a/drivers/staging/iio/adc/ad7280a.h b/drivers/staging/iio/adc/ad7280a.h
+> > index ccfb90d20e71..400d47ab3744 100644
+> > --- a/drivers/staging/iio/adc/ad7280a.h
+> > +++ b/drivers/staging/iio/adc/ad7280a.h
+> > @@ -1,9 +1,8 @@
+> > -/*
+> > +/* SPDX-License-Identifier: GPL-2.0-only
 > > + *
-> > + * Licensed under the GPL-2.
-> > + */
-> > +#include <linux/kernel.h>
-> > +#include <linux/module.h>
-> > +#include <linux/spi/spi.h>
-> > +#include <linux/gpio/consumer.h>
-> > +#include <linux/iio/iio.h>
-> > +
-> > +#define NUM_CHANS 2
-> > +#define RESOLUTION 12
-> Please prefix any naming that is generic like this with
-> the driver name.  Avoids potential redefined clashes in the future.
-> Where they are 'real numbers' rather than Magic numbers I would
-> generally look at using the actual number rather than a define.
->
-> > +
-> > +struct dac7612 {
-> > +     struct spi_device *spi;
-> > +     struct gpio_desc *nld;
-> > +     uint16_t cache[NUM_CHANS];
-> > +};
-> > +
-> > +static int dac7612_cmd_single(struct dac7612 *priv, int channel, u16 val)
-> > +{
-> > +     uint8_t buffer[2];
-> > +     int ret;
-> > +
-> > +     if (channel >= NUM_CHANS)
-> Is there any way this can happen?  Seems a little over paranoid.
-> > +             return -EINVAL;
-> > +
-> > +     buffer[0] = BIT(5) | (channel << 4) | (val >> 8);
-> BIT(5) is a magic number so should probably come from a define
-> as should the shifts of the other parts.
->
-> > +     buffer[1] = val & 0xff;
-> > +
-> > +     priv->cache[channel] = val;
-> > +
-> > +     ret = spi_write(priv->spi, buffer, sizeof(buffer));
->
-> spi write can potentially do a dma transfer so it needs
-> a dma safe buffer.  This one isn't as it is on the stack.
-> Given it is a moderately fast path, best option is to put the
-> buffer in priv and use the __cacheline_aligned trick (plus the
-> fact private data is already cacheline aligned) to get it into
-> it's own cacheline.  Wofram Sang's OSS talk on i2c dma is a good
-> tutorial on this and is on youtube if you have time.
->
-> https://www.youtube.com/watch?v=JDwaMClvV-s
->
-> > +     if (ret)
-> > +             return ret;
-> > +
-> > +     gpiod_set_value(priv->nld, 0);
-> > +     gpiod_set_value(priv->nld, 1);
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +#define dac7612_CHANNEL(chan, name) {                                \
-> > +     .type = IIO_VOLTAGE,                                    \
-> > +     .channel = (chan),                                      \
-> > +     .address = (chan),                                      \
-> Not used, so don't set it.
->
-> > +     .indexed = true,                                        \
-> These are bit fields, so whilst this works, = 1 is more conventional.
->
-> > +     .output = true,                                         \
-> > +     .datasheet_name = name,                                 \
-> > +     .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),           \
-> > +     .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),   \
-> > +     .scan_type = {                                          \
-> > +                     .sign = 'u',                            \
-> > +                     .realbits = RESOLUTION,                 \
-> > +                     .storagebits = RESOLUTION,              \
-> No need to provide scan_type as we don't have buffered output in
-> mainline.  Also this would be wrong as storagebits needs to be
-> 8/16/32/64 etc.
->
-> Would prefer a straight forward value like RESOLUTION was just
-> expressed as a number.
->
-> > +     },                                                      \
-> > +}
-> > +
-> > +static const struct iio_chan_spec dac7612_channels[] = {
-> > +     dac7612_CHANNEL(0, "OUTA"),
-> > +     dac7612_CHANNEL(1, "OUTB"),
-> > +};
-> > +
-> > +static int dac7612_read_raw(struct iio_dev *iio_dev,
-> > +                         const struct iio_chan_spec *chan,
-> > +                         int *val, int *val2, long mask)
-> > +{
-> > +     struct dac7612 *priv;
-> > +
-> > +     switch (mask) {
-> > +     case IIO_CHAN_INFO_RAW:
-> > +             priv = iio_priv(iio_dev);
-> > +             *val = priv->cache[chan->channel];
-> > +             return IIO_VAL_INT;
-> > +
-> > +     case IIO_CHAN_INFO_SCALE:
-> > +             *val = 1000000;
->
-> This makes me wonder.  The units of voltage are millivolts, so is
-> raw value * 1000000 = value in mv?
-
-I tried using IIO_VAL_FRACTIONAL, with val = 1 and val2=1000000, and
-it only returned -EINVAL.
-Then I discovered the PLUS_MICRO and I want to remember that cating
-the range sysfs file returned:
-0,000001, but I will try again on Monday.
-
->
-> That would make this a very high voltage device.
-> See Documentation/ABI/testing/sysfs-bus-iio* for
-> IIO ABI documentation.
->
-> > +             return IIO_VAL_INT_PLUS_MICRO;
-> > +
-> > +     default:
-> > +             return -EINVAL;
-> > +     }
-> > +}
-> > +
-> > +static int dac7612_write_raw(struct iio_dev *iio_dev,
-> > +                          const struct iio_chan_spec *chan,
-> > +                          int val, int val2, long mask)
-> > +{
-> > +     struct dac7612 *priv;
->
-> struct dac7612 *priv = iio_priv(iio_dev);
->
-> (it's just macro magic to get the right point so normally considered
-> fine to be called like this).
->
->
-> > +     int ret;
-> > +
-> > +     if (mask != IIO_CHAN_INFO_RAW)
-> > +             return -EINVAL;
-> > +
-> > +     if ((val >= BIT(RESOLUTION)) || val < 0)
-> > +             return -EINVAL;
->
-> As not providing a write_fmt function (which is fine)
-> should also sanity check that val2 is 0.
->
-> > +
-> > +     priv = iio_priv(iio_dev);
-> > +     if (val == priv->cache[chan->channel])
-> > +             return 0;
-> > +
-> > +     mutex_lock(&iio_dev->mlock);
-> > +     ret = dac7612_cmd_single(priv, chan->channel, val);
-> > +     mutex_unlock(&iio_dev->mlock);
-> > +
-> > +     return ret;
-> > +}
-> > +
-> > +static const struct iio_info dac7612_info = {
-> > +     .read_raw = dac7612_read_raw,
-> > +     .write_raw = dac7612_write_raw,
-> > +};
-> > +
-> > +static int dac7612_probe(struct spi_device *spi)
-> > +{
-> > +     struct iio_dev *iio_dev;
-> > +     struct dac7612 *priv;
-> > +     int i;
-> > +     int ret;
-> > +
-> > +     iio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*priv));
-> > +     if (!iio_dev)
-> > +             return -ENOMEM;
-> > +
-> > +     priv = iio_priv(iio_dev);
-> > +     priv->nld = devm_gpiod_get_optional(&spi->dev, "nLD", GPIOD_OUT_HIGH);
->
-> This isn't a particularly standard gpio name.  Hence this driver definitely
-> needs a DT binding doc (remember to cc dt list and maintainers).  Also
-> this should almost certainly be prefixed with a vendor prefix.
->
-> It's also not the name I'm seeing on the datasheet, so needs some justifying
-> comments.
->
-> > +     if (IS_ERR(priv->nld))
-> > +             return PTR_ERR(priv->nld);
-> > +     priv->spi = spi;
-> > +     spi_set_drvdata(spi, iio_dev);
-> > +     iio_dev->dev.parent = &spi->dev;
-> > +     iio_dev->info = &dac7612_info;
-> > +     iio_dev->modes = INDIO_DIRECT_MODE;
-> > +     iio_dev->channels = dac7612_channels;
-> > +     iio_dev->num_channels = NUM_CHANS;
-> ARRAY_SIZE.
-> > +     iio_dev->name = spi_get_device_id(spi)->name;
-> > +
-> > +     for (i = 0; i < NUM_CHANS; i++) {
-> ARRAY_SIZE
-> > +             ret = dac7612_cmd_single(priv, i, 0);
-> > +             if (ret)
-> > +                     return ret;
-> > +     }
-> > +
-> > +     return devm_iio_device_register(&spi->dev, iio_dev);
-> > +}
-> > +
-> > +static const struct spi_device_id dac7612_id[] = {
-> > +     {"ti-dac7612"},
-> > +     {}
-> > +};
-> > +MODULE_DEVICE_TABLE(spi, dac7612_id);
-> > +
-> > +static struct spi_driver dac7612_driver = {
-> > +     .driver = {
-> > +                .name = "ti-dac7612",
-> > +                },
-> > +     .probe = dac7612_probe,
-> > +     .id_table = dac7612_id,
-> > +};
-> > +module_spi_driver(dac7612_driver);
-> > +
-> > +MODULE_AUTHOR("Ricardo Ribalda <ricardo@ribalda.com>");
-> > +MODULE_DESCRIPTION("Texas Instruments DAC7612 DAC driver");
-> > +MODULE_LICENSE("GPL v2");
->
-
-
--- 
-Ricardo Ribalda
+> >   * AD7280A Lithium Ion Battery Monitoring System
+> >   *
+> >   * Copyright 2011 Analog Devices Inc.
+> > - *
+> > - * Licensed under the GPL-2.
+> >   */
+> >  
+> >  #ifndef IIO_ADC_AD7280_H_
+> > diff --git a/drivers/staging/iio/adc/ad7606.c b/drivers/staging/iio/adc/ad7606.c
+> > index 7308fa8fbb4c..b4a28cddfc91 100644
+> > --- a/drivers/staging/iio/adc/ad7606.c
+> > +++ b/drivers/staging/iio/adc/ad7606.c
+> 
+> This one isn't even there any more.  Please be careful to check you have
+> the right tree to work against, particularly when doing mass changes
+> like this.  In this particular case it's iio.git and right now the
+> only near up to date version is the testing branch (coincidence of where
+> we are in the cycle).
+> 
+> > @@ -1,9 +1,8 @@
+> > +// SPDX-License-Identifier: GPL-2.0-only
+> >  /*
+> >   * AD7606 SPI ADC driver
+> >   *
+> >   * Copyright 2011 Analog Devices Inc.
+> > - *
+> > - * Licensed under the GPL-2.
+> >   */
+> >  
+> >  #include <linux/interrupt.h>
+> > diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
+> > index 86188054b60b..3a57bc5539b6 100644
+> > --- a/drivers/staging/iio/adc/ad7606.h
+> > +++ b/drivers/staging/iio/adc/ad7606.h
+> > @@ -1,9 +1,8 @@
+> > -/*
+> > +/* SPDX-License-Identifier: GPL-2.0-only
+> > + *
+> >   * AD7606 ADC driver
+> >   *
+> >   * Copyright 2011 Analog Devices Inc.
+> > - *
+> > - * Licensed under the GPL-2.
+> >   */
+> >  
+> >  #ifndef IIO_ADC_AD7606_H_
+> > diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/staging/iio/adc/ad7606_par.c
+> > index 8bd86e727b02..ec2280f07b78 100644
+> > --- a/drivers/staging/iio/adc/ad7606_par.c
+> > +++ b/drivers/staging/iio/adc/ad7606_par.c
+> > @@ -1,9 +1,8 @@
+> > +// SPDX-License-Identifier: GPL-2.0-only
+> >  /*
+> >   * AD7606 Parallel Interface ADC driver
+> >   *
+> >   * Copyright 2011 Analog Devices Inc.
+> > - *
+> > - * Licensed under the GPL-2.
+> >   */
+> >  
+> >  #include <linux/module.h>
+> > diff --git a/drivers/staging/iio/adc/ad7606_spi.c b/drivers/staging/iio/adc/ad7606_spi.c
+> > index b76ca5a8c059..0b848da3ac08 100644
+> > --- a/drivers/staging/iio/adc/ad7606_spi.c
+> > +++ b/drivers/staging/iio/adc/ad7606_spi.c
+> > @@ -1,9 +1,8 @@
+> > +// SPDX-License-Identifier: GPL-2.0-only
+> >  /*
+> >   * AD7606 SPI ADC driver
+> >   *
+> >   * Copyright 2011 Analog Devices Inc.
+> > - *
+> > - * Licensed under the GPL-2.
+> >   */
+> >  
+> >  #include <linux/module.h>
+> > diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
+> > index c4a85789c2db..88caa6617c74 100644
+> > --- a/drivers/staging/iio/adc/ad7780.c
+> > +++ b/drivers/staging/iio/adc/ad7780.c
+> > @@ -1,9 +1,8 @@
+> > +// SPDX-License-Identifier: GPL-2.0-only
+> >  /*
+> >   * AD7170/AD7171 and AD7780/AD7781 SPI ADC driver
+> >   *
+> >   * Copyright 2011 Analog Devices Inc.
+> > - *
+> > - * Licensed under the GPL-2.
+> >   */
+> >  
+> >  #include <linux/interrupt.h>
+> > diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
+> > index 5209651a1b25..0ac6b3f32d13 100644
+> > --- a/drivers/staging/iio/adc/ad7816.c
+> > +++ b/drivers/staging/iio/adc/ad7816.c
+> > @@ -1,9 +1,8 @@
+> > +// SPDX-License-Identifier: GPL-2.0-or-later
+> >  /*
+> >   * AD7816 digital temperature sensor driver supporting AD7816/7/8
+> >   *
+> >   * Copyright 2010 Analog Devices Inc.
+> > - *
+> > - * Licensed under the GPL-2 or later.
+> 
+> This one is inconsistent as the module driver marking is GPL V2 only.
+> Hence we should confirm this with Analog.
+> 
+> >   */
+> >  
+> >  #include <linux/interrupt.h>
+> 
