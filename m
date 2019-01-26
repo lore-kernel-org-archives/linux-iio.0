@@ -2,56 +2,52 @@ Return-Path: <SRS0=WfKE=QC=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+X-Spam-Status: No, score=-8.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E069C282C7
-	for <linux-iio@archiver.kernel.org>; Sat, 26 Jan 2019 20:22:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD15FC282C7
+	for <linux-iio@archiver.kernel.org>; Sat, 26 Jan 2019 20:42:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E9B2721872
-	for <linux-iio@archiver.kernel.org>; Sat, 26 Jan 2019 20:22:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9672021872
+	for <linux-iio@archiver.kernel.org>; Sat, 26 Jan 2019 20:42:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1548534159;
-	bh=tqi7MseWk9SUOHKCRrSMT29iWYG/30ZSqqkDieU8hWA=;
+	s=default; t=1548535322;
+	bh=V+K2tTS5n6G8J+ys+JczNogQmEH54aDiUpvRlq8CNSs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=BJCm59t9pwxxP9/FJLXACr5es8bLt0IjuyPkiZkEq/kD7LvvwVUgAJUMHZ8xz0Jt4
-	 l2ry4uyXoyv4xiFBM93ELxirNyFnhJnguU6Iocaq7ncxjUuFnbzbtkqCu5CzFz8cro
-	 VVpyUO840MbJZJRZnJzqDLTy7jU7AxReVCeApQlQ=
+	b=xuVNbZD5yFot/LMeo9mQO0FsOct+FimzYRNTk75RT7JidNQl+D8e6kaN748QBOeHo
+	 nLL3j/Z6rx8u/1Sc2hYrdEjxkaUA/hfYktX9/L1O4WYFJKOtcJ9I3sBgdTNlY4ecIQ
+	 LALru6lcB7TIHeQhVnBU7fo5tY0aDwRXqPzuDcys=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726189AbfAZUWi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 26 Jan 2019 15:22:38 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33592 "EHLO mail.kernel.org"
+        id S1726218AbfAZUmC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 26 Jan 2019 15:42:02 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41920 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726180AbfAZUWi (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 26 Jan 2019 15:22:38 -0500
+        id S1726180AbfAZUmB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 26 Jan 2019 15:42:01 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EBA6E20C01;
-        Sat, 26 Jan 2019 20:22:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 438882133D;
+        Sat, 26 Jan 2019 20:41:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1548534156;
-        bh=tqi7MseWk9SUOHKCRrSMT29iWYG/30ZSqqkDieU8hWA=;
+        s=default; t=1548535320;
+        bh=V+K2tTS5n6G8J+ys+JczNogQmEH54aDiUpvRlq8CNSs=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=S+6owRMqAvM0NslNRMKgi9+U5FU2rteYxJ4+ClEyf7zjC4KP9eEYEY9VLTaXzuqHu
-         j15RrK8+n7ex8EPdvUwBoVjwlw1MrScP5EeCdV1Pl5gTjVJXgagTK+kNXmghXev48u
-         eMuUt2xeEwLnmTvD3yHJNygNjBIShIHEpyrz8nTM=
-Date:   Sat, 26 Jan 2019 20:22:31 +0000
+        b=OCpBoZVsRh5SypiX+9PLQiIBmC5mLE62GnXecvwK8wEVqPDciB4kvq7PgDUDmqhYy
+         Fhdnwiv3JaKyvKCcVNB+QteTAlbc8nstJZYdymyXMP1WlTUk7tNa8I5WMynp8F0u7I
+         CcbZRxztPvo4VGtlXJPLijN0Kp1DBra5qXX6o3+c=
+Date:   Sat, 26 Jan 2019 20:41:55 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Martin Kelly <martin@martingkelly.com>
-Cc:     linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Daniel Baluta <daniel.baluta@gmail.com>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 6/6] iio:bmi160: use if (ret) instead of if (ret < 0)
-Message-ID: <20190126202231.2d7b8553@archlinux>
-In-Reply-To: <20190122020431.5338-6-martin@martingkelly.com>
-References: <20190122020431.5338-1-martin@martingkelly.com>
-        <20190122020431.5338-6-martin@martingkelly.com>
+To:     Ricardo Ribalda Delgado <ricardo@ribalda.com>
+Cc:     Alexandru Ardelean <ardeleanalex@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        alexandru.ardelean@analog.com, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] iio:dac:ti-dac7612: Add driver for Texas Instruments
+ DAC7612
+Message-ID: <20190126204155.6fbb9512@archlinux>
+In-Reply-To: <20190125100055.13836-1-ricardo@ribalda.com>
+References: <20190125100055.13836-1-ricardo@ribalda.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -61,169 +57,317 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 21 Jan 2019 18:04:31 -0800
-Martin Kelly <martin@martingkelly.com> wrote:
+On Fri, 25 Jan 2019 11:00:55 +0100
+Ricardo Ribalda Delgado <ricardo@ribalda.com> wrote:
 
-> From: Martin Kelly <martin@martingkelly.com>
+> It is a driver for Texas Instruments Dual, 12-Bit Serial Input
+> Digital-to-Analog Converter.
 > 
-> We are using "if (ret < 0)" in many places in which the function returns 0
-> on success. Use "if (ret)" instead for better clarity and correctness.
+> Datasheet of this chip:
+> http://www.ti.com/lit/ds/sbas106/sbas106.pdf
 > 
-> Signed-off-by: Martin Kelly <martin@martingkelly.com>
-The rest of the series that I haven't commented on looks fine to me.
-I think there is one of these changes in an earlier patch but otherwise
-this looks good for v3.
+> Signed-off-by: Ricardo Ribalda Delgado <ricardo@ribalda.com>
+Hi Ricardo,
 
-One small tidy up inline though.
+Various bits and pieces inline.
+
+Jonathan
 
 > ---
->  drivers/iio/imu/bmi160/bmi160_core.c | 34 +++++++++++++++++-----------------
->  1 file changed, 17 insertions(+), 17 deletions(-)
 > 
-> diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
-> index dca53be066e1..0ec9ded975e2 100644
-> --- a/drivers/iio/imu/bmi160/bmi160_core.c
-> +++ b/drivers/iio/imu/bmi160/bmi160_core.c
-> @@ -299,7 +299,7 @@ int bmi160_set_mode(struct bmi160_data *data, enum bmi160_sensor_type t,
->  		cmd = bmi160_regs[t].pmu_cmd_suspend;
+> v2: Fix range
+>  MAINTAINERS                  |   6 ++
+>  drivers/iio/dac/Kconfig      |  10 +++
+>  drivers/iio/dac/Makefile     |   1 +
+>  drivers/iio/dac/ti-dac7612.c | 169 +++++++++++++++++++++++++++++++++++
+>  4 files changed, 186 insertions(+)
+>  create mode 100644 drivers/iio/dac/ti-dac7612.c
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index d039f66a5cef..30ba5435906b 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -14877,6 +14877,12 @@ F:	Documentation/devicetree/bindings/clock/ti,sci-clk.txt
+>  F:	drivers/clk/keystone/sci-clk.c
+>  F:	drivers/reset/reset-ti-sci.c
 >  
->  	ret = regmap_write(data->regmap, BMI160_REG_CMD, cmd);
-> -	if (ret < 0)
-> +	if (ret)
->  		return ret;
+> +Texas Instruments' DAC7612 DAC Driver
+> +M:	Ricardo Ribalda <ricardo@ribalda.com>
+> +L:	linux-iio@vger.kernel.org
+> +S:	Supported
+> +F:	drivers/iio/dac/ti-dac7612.c
+> +
+>  THANKO'S RAREMONO AM/FM/SW RADIO RECEIVER USB DRIVER
+>  M:	Hans Verkuil <hverkuil@xs4all.nl>
+>  L:	linux-media@vger.kernel.org
+> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> index f28daf67db6a..fbef9107acad 100644
+> --- a/drivers/iio/dac/Kconfig
+> +++ b/drivers/iio/dac/Kconfig
+> @@ -375,6 +375,16 @@ config TI_DAC7311
 >  
->  	usleep_range(bmi160_pmu_time[t], bmi160_pmu_time[t] + 1000);
-> @@ -331,7 +331,7 @@ int bmi160_get_scale(struct bmi160_data *data, enum bmi160_sensor_type t,
->  	int i, ret, val;
+>  	  If compiled as a module, it will be called ti-dac7311.
 >  
->  	ret = regmap_read(data->regmap, bmi160_regs[t].range, &val);
-> -	if (ret < 0)
-> +	if (ret)
->  		return ret;
->  
->  	for (i = 0; i < bmi160_scale_table[t].num; i++)
-> @@ -354,7 +354,7 @@ static int bmi160_get_data(struct bmi160_data *data, int chan_type,
->  	reg = bmi160_regs[t].data + (axis - IIO_MOD_X) * sizeof(sample);
->  
->  	ret = regmap_bulk_read(data->regmap, reg, &sample, sizeof(sample));
-> -	if (ret < 0)
-> +	if (ret)
->  		return ret;
->  
->  	*val = sign_extend32(le16_to_cpu(sample), 15);
-> @@ -388,7 +388,7 @@ static int bmi160_get_odr(struct bmi160_data *data, enum bmi160_sensor_type t,
->  	int i, val, ret;
->  
->  	ret = regmap_read(data->regmap, bmi160_regs[t].config, &val);
-> -	if (ret < 0)
-> +	if (ret)
->  		return ret;
->  
->  	val &= bmi160_regs[t].config_odr_mask;
-> @@ -420,7 +420,7 @@ static irqreturn_t bmi160_trigger_handler(int irq, void *p)
->  			 indio_dev->masklength) {
->  		ret = regmap_bulk_read(data->regmap, base + i * sizeof(sample),
->  				       &sample, sizeof(sample));
-> -		if (ret < 0)
-> +		if (ret)
->  			goto done;
->  		buf[j++] = sample;
->  	}
-> @@ -441,18 +441,18 @@ static int bmi160_read_raw(struct iio_dev *indio_dev,
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
->  		ret = bmi160_get_data(data, chan->type, chan->channel2, val);
-> -		if (ret < 0)
-> +		if (ret)
->  			return ret;
->  		return IIO_VAL_INT;
->  	case IIO_CHAN_INFO_SCALE:
->  		*val = 0;
->  		ret = bmi160_get_scale(data,
->  				       bmi160_to_sensor(chan->type), val2);
-> -		return ret < 0 ? ret : IIO_VAL_INT_PLUS_MICRO;
-> +		return ret ? ret : IIO_VAL_INT_PLUS_MICRO;
->  	case IIO_CHAN_INFO_SAMP_FREQ:
->  		ret = bmi160_get_odr(data, bmi160_to_sensor(chan->type),
->  				     val, val2);
-> -		return ret < 0 ? ret : IIO_VAL_INT_PLUS_MICRO;
-> +		return ret ? ret : IIO_VAL_INT_PLUS_MICRO;
->  	default:
->  		return -EINVAL;
->  	}
-> @@ -732,7 +732,7 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi, int irq)
->  	struct device *dev = regmap_get_device(data->regmap);
->  
->  	ret = regmap_write(data->regmap, BMI160_REG_CMD, BMI160_CMD_SOFTRESET);
-> -	if (ret < 0)
-> +	if (ret)
->  		return ret;
->  
->  	usleep_range(BMI160_SOFTRESET_USLEEP, BMI160_SOFTRESET_USLEEP + 1);
-> @@ -743,7 +743,7 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi, int irq)
->  	 */
->  	if (use_spi) {
->  		ret = regmap_read(data->regmap, BMI160_REG_DUMMY, &val);
-> -		if (ret < 0)
-> +		if (ret)
->  			return ret;
->  	}
->  
-> @@ -759,11 +759,11 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi, int irq)
->  	}
->  
->  	ret = bmi160_set_mode(data, BMI160_ACCEL, true);
-> -	if (ret < 0)
-> +	if (ret)
->  		return ret;
->  
->  	ret = bmi160_set_mode(data, BMI160_GYRO, true);
-> -	if (ret < 0)
-> +	if (ret)
->  		return ret;
->  
->  	return 0;
-> @@ -796,7 +796,7 @@ int bmi160_probe_trigger(struct iio_dev *indio_dev, int irq, u32 irq_type)
->  	ret = devm_request_irq(&indio_dev->dev, irq,
->  			       &iio_trigger_generic_data_rdy_poll,
->  			       irq_type, "bmi160", data->trig);
-> -	if (ret < 0)
-> +	if (ret)
->  		return ret;
->  
->  	data->trig->dev.parent = regmap_get_device(data->regmap);
-> @@ -836,11 +836,11 @@ int bmi160_core_probe(struct device *dev, struct regmap *regmap,
->  	data->regmap = regmap;
->  
->  	ret = bmi160_chip_init(data, use_spi, irq);
-> -	if (ret < 0)
-> +	if (ret)
->  		return ret;
->  
->  	ret = devm_add_action_or_reset(dev, bmi160_chip_uninit, data);
-> -	if (ret < 0)
-> +	if (ret)
->  		return ret;
->  
->  	if (!name && ACPI_HANDLE(dev))
-> @@ -856,7 +856,7 @@ int bmi160_core_probe(struct device *dev, struct regmap *regmap,
->  	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
->  					      iio_pollfunc_store_time,
->  					      bmi160_trigger_handler, NULL);
-> -	if (ret < 0)
-> +	if (ret)
->  		return ret;
->  
->  	if (irq) {
-> @@ -866,7 +866,7 @@ int bmi160_core_probe(struct device *dev, struct regmap *regmap,
->  	}
->  
->  	ret = devm_iio_device_register(dev, indio_dev);
-> -	if (ret < 0)
-> +	if (ret)
->  		return ret;
-return devm_iio_device_register.
+> +config TI_DAC7612
+> +	tristate "Texas Instruments 12-bit 2-channel DAC driver"
+> +	depends on SPI_MASTER && GPIOLIB
+> +	help
+> +	  Driver for the Texas Instruments DAC7612, DAC7612U, DAC7612UB
+> +	  The driver hand drive the load pin automatically, otherwise
+> +	  it needs to be toggled manually.
 
->  
->  	return 0;
+Given the driver doesn't load without that pin, do we need to give
+the otherwise?  I would drop this comment entirely.
+
+> +
+> +	  If compiled as a module, it will be called ti-dac7612.
+> +
+>  config VF610_DAC
+>  	tristate "Vybrid vf610 DAC driver"
+>  	depends on OF
+> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+> index f0a37c93de8e..1369fa1d2f0e 100644
+> --- a/drivers/iio/dac/Makefile
+> +++ b/drivers/iio/dac/Makefile
+> @@ -41,4 +41,5 @@ obj-$(CONFIG_STM32_DAC) += stm32-dac.o
+>  obj-$(CONFIG_TI_DAC082S085) += ti-dac082s085.o
+>  obj-$(CONFIG_TI_DAC5571) += ti-dac5571.o
+>  obj-$(CONFIG_TI_DAC7311) += ti-dac7311.o
+> +obj-$(CONFIG_TI_DAC7612) += ti-dac7612.o
+>  obj-$(CONFIG_VF610_DAC) += vf610_dac.o
+> diff --git a/drivers/iio/dac/ti-dac7612.c b/drivers/iio/dac/ti-dac7612.c
+> new file mode 100644
+> index 000000000000..278406f69e0c
+> --- /dev/null
+> +++ b/drivers/iio/dac/ti-dac7612.c
+> @@ -0,0 +1,169 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * DAC7612 Dual, 12-Bit Serial input Digital-to-Analog Converter
+> + *
+> + * Copyright 2019 Qtechnology A/S
+> + * 2019 Ricardo Ribalda <ricardo@ribalda.com>
+> + *
+> + * Licensed under the GPL-2.
+> + */
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/gpio/consumer.h>
+> +#include <linux/iio/iio.h>
+> +
+> +#define NUM_CHANS 2
+> +#define RESOLUTION 12
+Please prefix any naming that is generic like this with
+the driver name.  Avoids potential redefined clashes in the future.
+Where they are 'real numbers' rather than Magic numbers I would
+generally look at using the actual number rather than a define.
+
+> +
+> +struct dac7612 {
+> +	struct spi_device *spi;
+> +	struct gpio_desc *nld;
+> +	uint16_t cache[NUM_CHANS];
+> +};
+> +
+> +static int dac7612_cmd_single(struct dac7612 *priv, int channel, u16 val)
+> +{
+> +	uint8_t buffer[2];
+> +	int ret;
+> +
+> +	if (channel >= NUM_CHANS)
+Is there any way this can happen?  Seems a little over paranoid.
+> +		return -EINVAL;
+> +
+> +	buffer[0] = BIT(5) | (channel << 4) | (val >> 8);
+BIT(5) is a magic number so should probably come from a define
+as should the shifts of the other parts.
+
+> +	buffer[1] = val & 0xff;
+> +
+> +	priv->cache[channel] = val;
+> +
+> +	ret = spi_write(priv->spi, buffer, sizeof(buffer));
+
+spi write can potentially do a dma transfer so it needs
+a dma safe buffer.  This one isn't as it is on the stack.
+Given it is a moderately fast path, best option is to put the
+buffer in priv and use the __cacheline_aligned trick (plus the
+fact private data is already cacheline aligned) to get it into
+it's own cacheline.  Wofram Sang's OSS talk on i2c dma is a good
+tutorial on this and is on youtube if you have time.
+
+https://www.youtube.com/watch?v=JDwaMClvV-s
+
+> +	if (ret)
+> +		return ret;
+> +
+> +	gpiod_set_value(priv->nld, 0);
+> +	gpiod_set_value(priv->nld, 1);
+> +
+> +	return 0;
+> +}
+> +
+> +#define dac7612_CHANNEL(chan, name) {				\
+> +	.type = IIO_VOLTAGE,					\
+> +	.channel = (chan),					\
+> +	.address = (chan),					\
+Not used, so don't set it.
+
+> +	.indexed = true,					\
+These are bit fields, so whilst this works, = 1 is more conventional.
+
+> +	.output = true,						\
+> +	.datasheet_name = name,					\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+> +	.scan_type = {						\
+> +			.sign = 'u',				\
+> +			.realbits = RESOLUTION,			\
+> +			.storagebits = RESOLUTION,		\
+No need to provide scan_type as we don't have buffered output in
+mainline.  Also this would be wrong as storagebits needs to be
+8/16/32/64 etc.
+
+Would prefer a straight forward value like RESOLUTION was just
+expressed as a number.
+
+> +	},							\
+> +}
+> +
+> +static const struct iio_chan_spec dac7612_channels[] = {
+> +	dac7612_CHANNEL(0, "OUTA"),
+> +	dac7612_CHANNEL(1, "OUTB"),
+> +};
+> +
+> +static int dac7612_read_raw(struct iio_dev *iio_dev,
+> +			    const struct iio_chan_spec *chan,
+> +			    int *val, int *val2, long mask)
+> +{
+> +	struct dac7612 *priv;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		priv = iio_priv(iio_dev);
+> +		*val = priv->cache[chan->channel];
+> +		return IIO_VAL_INT;
+> +
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = 1000000;
+
+This makes me wonder.  The units of voltage are millivolts, so is
+raw value * 1000000 = value in mv?
+
+That would make this a very high voltage device.
+See Documentation/ABI/testing/sysfs-bus-iio* for
+IIO ABI documentation.
+
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int dac7612_write_raw(struct iio_dev *iio_dev,
+> +			     const struct iio_chan_spec *chan,
+> +			     int val, int val2, long mask)
+> +{
+> +	struct dac7612 *priv;
+
+struct dac7612 *priv = iio_priv(iio_dev);
+
+(it's just macro magic to get the right point so normally considered
+fine to be called like this).
+
+
+> +	int ret;
+> +
+> +	if (mask != IIO_CHAN_INFO_RAW)
+> +		return -EINVAL;
+> +
+> +	if ((val >= BIT(RESOLUTION)) || val < 0)
+> +		return -EINVAL;
+
+As not providing a write_fmt function (which is fine)
+should also sanity check that val2 is 0.
+
+> +
+> +	priv = iio_priv(iio_dev);
+> +	if (val == priv->cache[chan->channel])
+> +		return 0;
+> +
+> +	mutex_lock(&iio_dev->mlock);
+> +	ret = dac7612_cmd_single(priv, chan->channel, val);
+> +	mutex_unlock(&iio_dev->mlock);
+> +
+> +	return ret;
+> +}
+> +
+> +static const struct iio_info dac7612_info = {
+> +	.read_raw = dac7612_read_raw,
+> +	.write_raw = dac7612_write_raw,
+> +};
+> +
+> +static int dac7612_probe(struct spi_device *spi)
+> +{
+> +	struct iio_dev *iio_dev;
+> +	struct dac7612 *priv;
+> +	int i;
+> +	int ret;
+> +
+> +	iio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*priv));
+> +	if (!iio_dev)
+> +		return -ENOMEM;
+> +
+> +	priv = iio_priv(iio_dev);
+> +	priv->nld = devm_gpiod_get_optional(&spi->dev, "nLD", GPIOD_OUT_HIGH);
+
+This isn't a particularly standard gpio name.  Hence this driver definitely
+needs a DT binding doc (remember to cc dt list and maintainers).  Also
+this should almost certainly be prefixed with a vendor prefix.
+
+It's also not the name I'm seeing on the datasheet, so needs some justifying
+comments.
+
+> +	if (IS_ERR(priv->nld))
+> +		return PTR_ERR(priv->nld);
+> +	priv->spi = spi;
+> +	spi_set_drvdata(spi, iio_dev);
+> +	iio_dev->dev.parent = &spi->dev;
+> +	iio_dev->info = &dac7612_info;
+> +	iio_dev->modes = INDIO_DIRECT_MODE;
+> +	iio_dev->channels = dac7612_channels;
+> +	iio_dev->num_channels = NUM_CHANS;
+ARRAY_SIZE.
+> +	iio_dev->name = spi_get_device_id(spi)->name;
+> +
+> +	for (i = 0; i < NUM_CHANS; i++) {
+ARRAY_SIZE
+> +		ret = dac7612_cmd_single(priv, i, 0);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	return devm_iio_device_register(&spi->dev, iio_dev);
+> +}
+> +
+> +static const struct spi_device_id dac7612_id[] = {
+> +	{"ti-dac7612"},
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(spi, dac7612_id);
+> +
+> +static struct spi_driver dac7612_driver = {
+> +	.driver = {
+> +		   .name = "ti-dac7612",
+> +		   },
+> +	.probe = dac7612_probe,
+> +	.id_table = dac7612_id,
+> +};
+> +module_spi_driver(dac7612_driver);
+> +
+> +MODULE_AUTHOR("Ricardo Ribalda <ricardo@ribalda.com>");
+> +MODULE_DESCRIPTION("Texas Instruments DAC7612 DAC driver");
+> +MODULE_LICENSE("GPL v2");
 
