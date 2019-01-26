@@ -4,170 +4,191 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A14BC282C7
-	for <linux-iio@archiver.kernel.org>; Sat, 26 Jan 2019 18:13:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9655AC282C7
+	for <linux-iio@archiver.kernel.org>; Sat, 26 Jan 2019 18:17:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2EABF218A6
-	for <linux-iio@archiver.kernel.org>; Sat, 26 Jan 2019 18:13:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6AE7F218A6
+	for <linux-iio@archiver.kernel.org>; Sat, 26 Jan 2019 18:17:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1548526409;
-	bh=oD1+bXXBTn4vItmpVLJ4xhXNHqpcAIxp3KxFEgkmFQw=;
+	s=default; t=1548526648;
+	bh=lgFuBwHkLU/6piaKUPoh8tsQjofieMDIzapn1TfeaoY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=MnnGHHRkSE3YeXd30XITb8BQ+VlmH0iLbg33vuFNMK7WsoPcgE5mBandevlqafohr
-	 RfVa0zqM2yPbwdVLCX+1PE1OrOk3L/m9/eJFEnajjOPvzcgv031jUnIGeHftkeQXo9
-	 qMt28yoYVckfZpxU8loUZykVW5zDgwFsUFY6M14U=
+	b=eLqER/wDbEK7fRmBytY8nr1+8wv2TdFb2Yo6qyTBuX8rE6966LaD2poEByu4AlggV
+	 ZsXxsRcLBZXv7MKSI7umSdI7PAkDuDQxLqMuJI0LcfyzOR8S8IH/Zn7P50WddFvYb9
+	 JAEKaX9UuPY+YnyKpTCou3sSgzPPfd2TJpSDLaZs=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726089AbfAZSN2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 26 Jan 2019 13:13:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36830 "EHLO mail.kernel.org"
+        id S1726313AbfAZSR1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 26 Jan 2019 13:17:27 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38194 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726073AbfAZSN2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 26 Jan 2019 13:13:28 -0500
+        id S1726073AbfAZSR1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 26 Jan 2019 13:17:27 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A9F3621872;
-        Sat, 26 Jan 2019 18:13:24 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0D86E21872;
+        Sat, 26 Jan 2019 18:17:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1548526407;
-        bh=oD1+bXXBTn4vItmpVLJ4xhXNHqpcAIxp3KxFEgkmFQw=;
+        s=default; t=1548526646;
+        bh=lgFuBwHkLU/6piaKUPoh8tsQjofieMDIzapn1TfeaoY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qyqwPsjP/LcZPOD0lWYbt1lrKn0RLVDsTFAoWFAEfe0btMsIsN7XX54C618IBudUk
-         vAV0xFbn8tbnspaOYBC8/Gt09dlSFgPIgmjS/vbeprVQpuhh3/kYVEATSQJHUAoyI6
-         S+7i+HOs4ecg67XbS3LmQLP+ah1vBR5nCXFYmqLM=
-Date:   Sat, 26 Jan 2019 18:13:21 +0000
+        b=PnbcmM5ZOoQA3UxngMa/Zu4rlrg/pE9bvSrPiUcy/FMes10EQg3Wj7OzNBkMz6eUe
+         9/rsfxwCGF9rVf8hJNYjBdtDizoa3u7CFTrQ7A72MFCf7tksf3cB44oVlWcZiXTDMA
+         JaM6iRM0voAdwIWSRtiLvQHeZ07LnirWrbG7pHew=
+Date:   Sat, 26 Jan 2019 18:17:21 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Rodrigo Ribeiro <rodrigorsdc@gmail.com>
-Cc:     Alexandru Ardelean <ardeleanalex@gmail.com>, lars@metafoo.de,
-        Michael.Hennerich@analog.com, knaack.h@gmx.de,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        kernel-usp@googlegroups.com, Rafael Tsuha <rafael.tsuha@usp.br>
-Subject: Re: [PATCH] staging:iio:ad7152: Rename misspelled RESEVERD ->
- RESERVED
-Message-ID: <20190126181321.1439e485@archlinux>
-In-Reply-To: <CAOeBkLq18nP6xsOCNNE2Bew=u37MsLCgH=W-8ofnFSAi6dYx=Q@mail.gmail.com>
-References: <1548358316-8062-1-git-send-email-rodrigorsdc@gmail.com>
-        <CA+U=DsqG6PKs1Off9QP_3_q+c5=uzRypHCs+O6iur=NC5QdDdQ@mail.gmail.com>
-        <CAOeBkLogWyxbB3ZNwZh9=6xVUKxmT1YGZQseAx4uo7a4u+M+gw@mail.gmail.com>
-        <CAOeBkLq18nP6xsOCNNE2Bew=u37MsLCgH=W-8ofnFSAi6dYx=Q@mail.gmail.com>
+To:     Ricardo Ribalda Delgado <ricardo@ribalda.com>
+Cc:     Alexandru Ardelean <ardeleanalex@gmail.com>,
+        linux-iio@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        alexandru.ardelean@analog.com
+Subject: Re: [PATCH] iio: adc: ad7476: Add support for ADS786X ADCs
+Message-ID: <20190126181721.5e176d6e@archlinux>
+In-Reply-To: <CAPybu_084MFXDT=Op7icdbo2K3LimxoK_jRew7S6R0=q-yqNng@mail.gmail.com>
+References: <20190124213225.11803-1-ricardo@ribalda.com>
+        <CA+U=Dspe=xvki7rZPhofiV50yOLnRR2sg9v1R_XRVxHbDXh-_Q@mail.gmail.com>
+        <CAPybu_084MFXDT=Op7icdbo2K3LimxoK_jRew7S6R0=q-yqNng@mail.gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 25 Jan 2019 22:14:32 -0200
-Rodrigo Ribeiro <rodrigorsdc@gmail.com> wrote:
+On Fri, 25 Jan 2019 10:57:55 +0100
+Ricardo Ribalda Delgado <ricardo@ribalda.com> wrote:
 
-> Em sex, 25 de jan de 2019 =C3=A0s 21:46, Rodrigo Ribeiro
-> <rodrigorsdc@gmail.com> escreveu:
+> Hi Alexandru
+> 
+> On Fri, Jan 25, 2019 at 9:29 AM Alexandru Ardelean
+> <ardeleanalex@gmail.com> wrote:
 > >
-> > Em sex, 25 de jan de 2019 =C3=A0s 06:20, Alexandru Ardelean
-> > <ardeleanalex@gmail.com> escreveu: =20
+> > On Thu, Jan 24, 2019 at 11:33 PM Ricardo Ribalda Delgado
+> > <ricardo@ribalda.com> wrote:  
 > > >
-> > > On Thu, Jan 24, 2019 at 9:35 PM Rodrigo Ribeiro <rodrigorsdc@gmail.co=
-m> wrote: =20
-> > > >
-> > > > Remove the checkpatch.pl check:
-> > > >
-> > > > CHECK: 'RESEVERD' may be misspelled - perhaps 'RESERVED'? =20
+> > > Add support for ADS7866, ADS7867 and ADS7868 8/10/12 bit Single channel
+> > > ADC.
 > > >
-> > > Hey, =20
+> > > Datasheet: http://www.ti.com/product/ADS7866
+> > > Datasheet: http://www.ti.com/product/ADS7867
+> > > Datasheet: http://www.ti.com/product/ADS7868
+> > >
+> > > Signed-off-by: Ricardo Ribalda Delgado <ricardo@ribalda.com>
+> > > ---
+> > >  drivers/iio/adc/Kconfig  |  3 ++-
+> > >  drivers/iio/adc/ad7476.c | 20 ++++++++++++++++++++
+> > >  2 files changed, 22 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> > > index f9354e5ee65c..d86900fc2634 100644
+> > > --- a/drivers/iio/adc/Kconfig
+> > > +++ b/drivers/iio/adc/Kconfig
+> > > @@ -64,7 +64,8 @@ config AD7476
+> > >         help
+> > >           Say yes here to build support for Analog Devices AD7273, AD7274, AD7276,
+> > >           AD7277, AD7278, AD7475, AD7476, AD7477, AD7478, AD7466, AD7467, AD7468,
+> > > -         AD7495, AD7910, AD7920, AD7920 SPI analog to digital converters (ADC).
+> > > +         AD7495, AD7910, AD7920, AD7920, ADS7866, ADS7867, ADS7868 SPI analog
+> > > +         to digital converters (ADC).  
 > >
-> > Hi,
+> > The driver is for Analog Devices parts.
+> > And these new parts are from TI.
 > >
-> > Thanks for answering.
-> > =20
-> > > A bit curios about this one.
-> > > Are you using this chip/driver ? =20
-> >
-> > No, I am just a student at USP (University of S=C3=A3o Paulo) starting =
-in Linux
-> > Kernel and a new member of the USP Linux Kernel group that has contribu=
-ted
-> > for a few months.
-> > =20
-> > > Thing is: the part is nearing EOL, and it could be an idea to be
-> > > marked for removal (since it's still in staging).
-> > > But if there are users for this driver, it could be left around for a=
- while. =20
-> >
-> > This is my first patch in Linux Kernel, but if the driver will be remov=
-ed, I
-> > can send a patch for another driver. Is there any driver that I can
-> > fix a style warning? =20
->=20
-> Maybe, one checkstyle patch is enough, right? Which drivers can I truly
-> contribute to?
+> > I'm not sure what the policy is for mixing manufacturers in drivers.
+> > But if that is allowed/fine, then maybe it would be a good idea to
+> > highlight that these chips are from another manufacturer.
+> > Or maybe rename the driver to a generic form to support both manufacturers ?
 
-How about the ad7150?  That one is still listed as production.
-What do you think Alex, you probably have better visibility on the
-status of these parts and their drivers than I do!
+Don't rename the driver.  That always goes wrong in the long run.
 
-(note I haven't even opened that one for a few years so no idea
-what state the driver is in!)
+However, absolutely highlight that multiple manufacturers parts are being
+covered in the help text.  That should be sufficient.
+
+This isn't the first time we have had a multi manufacturer driver but
+they are rare in IIO.  Really common in other subsystems though where
+cloning is more common (or devices are naturally similar because
+they are simple - which is what I would guess is happening here though
+I haven't actually looked yet!)
 
 Jonathan
 
->=20
+
+> >
+> > In any case, Jonathan will have to tell us what to do here :)  
+> 
+> Thanks for your review.
+> 
+> I have to send a v2, because I have inverted the name of the devices :S.
+> 
+> I will send it right away to avoid that anyone uses this version and
+> then wait for Jonathan feedback
+> 
+> >
 > > Thanks
-> >
-> >
-> > Em sex, 25 de jan de 2019 =C3=A0s 06:20, Alexandru Ardelean
-> > <ardeleanalex@gmail.com> escreveu: =20
+> > Alex
+> >  
 > > >
-> > > On Thu, Jan 24, 2019 at 9:35 PM Rodrigo Ribeiro <rodrigorsdc@gmail.co=
-m> wrote: =20
-> > > >
-> > > > Remove the checkpatch.pl check:
-> > > >
-> > > > CHECK: 'RESEVERD' may be misspelled - perhaps 'RESERVED'? =20
+> > >           To compile this driver as a module, choose M here: the
+> > >           module will be called ad7476.
+> > > diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
+> > > index 0549686b9ef8..108c18d64f7d 100644
+> > > --- a/drivers/iio/adc/ad7476.c
+> > > +++ b/drivers/iio/adc/ad7476.c
+> > > @@ -59,6 +59,9 @@ enum ad7476_supported_device_ids {
+> > >         ID_ADC081S,
+> > >         ID_ADC101S,
+> > >         ID_ADC121S,
+> > > +       ID_ADS7866,
+> > > +       ID_ADS7867,
+> > > +       ID_ADS7868,
+> > >  };
 > > >
-> > > Hey,
+> > >  static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
+> > > @@ -157,6 +160,8 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
+> > >  #define AD7940_CHAN(bits) _AD7476_CHAN((bits), 15 - (bits), \
+> > >                 BIT(IIO_CHAN_INFO_RAW))
+> > >  #define AD7091R_CHAN(bits) _AD7476_CHAN((bits), 16 - (bits), 0)
+> > > +#define ADS786X_CHAN(bits) _AD7476_CHAN((bits) + 4, 0, \
+> > > +               BIT(IIO_CHAN_INFO_RAW))
 > > >
-> > > A bit curios about this one.
-> > > Are you using this chip/driver ?
+> > >  static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
+> > >         [ID_AD7091R] = {
+> > > @@ -209,6 +214,18 @@ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
+> > >                 .channel[0] = ADC081S_CHAN(12),
+> > >                 .channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+> > >         },
+> > > +       [ID_ADS7866] = {
+> > > +               .channel[0] = ADS786X_CHAN(8),
+> > > +               .channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+> > > +       },
+> > > +       [ID_ADS7867] = {
+> > > +               .channel[0] = ADS786X_CHAN(10),
+> > > +               .channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+> > > +       },
+> > > +       [ID_ADS7868] = {
+> > > +               .channel[0] = ADS786X_CHAN(12),
+> > > +               .channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+> > > +       },
+> > >  };
 > > >
-> > > Thing is: the part is nearing EOL, and it could be an idea to be
-> > > marked for removal (since it's still in staging).
-> > > But if there are users for this driver, it could be left around for a=
- while.
-> > >
-> > > Thanks
-> > > Alex
-> > > =20
-> > > >
-> > > > Signed-off-by: Rodrigo Ribeiro <rodrigorsdc@gmail.com>
-> > > > Signed-off-by: Rafael Tsuha <rafael.tsuha@usp.br>
-> > > > ---
-> > > > This macro is not used anywhere. Should we just correct the
-> > > > spelling or remove the macro?
-> > > >
-> > > >  drivers/staging/iio/cdc/ad7152.c | 2 +-
-> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > >
-> > > > diff --git a/drivers/staging/iio/cdc/ad7152.c b/drivers/staging/iio=
-/cdc/ad7152.c
-> > > > index 25f51db..c9da6d4 100644
-> > > > --- a/drivers/staging/iio/cdc/ad7152.c
-> > > > +++ b/drivers/staging/iio/cdc/ad7152.c
-> > > > @@ -35,7 +35,7 @@
-> > > >  #define AD7152_REG_CH2_GAIN_HIGH       12
-> > > >  #define AD7152_REG_CH2_SETUP           14
-> > > >  #define AD7152_REG_CFG                 15
-> > > > -#define AD7152_REG_RESEVERD            16
-> > > > +#define AD7152_REG_RESERVED            16
-> > > >  #define AD7152_REG_CAPDAC_POS          17
-> > > >  #define AD7152_REG_CAPDAC_NEG          18
-> > > >  #define AD7152_REG_CFG2                        26
-> > > > --
-> > > > 2.7.4
-> > > > =20
+> > >  static const struct iio_info ad7476_info = {
+> > > @@ -314,6 +331,9 @@ static const struct spi_device_id ad7476_id[] = {
+> > >         {"adc081s", ID_ADC081S},
+> > >         {"adc101s", ID_ADC101S},
+> > >         {"adc121s", ID_ADC121S},
+> > > +       {"ads7866", ID_ADS7866},
+> > > +       {"ads7867", ID_ADS7867},
+> > > +       {"ads7868", ID_ADS7868},
+> > >         {}
+> > >  };
+> > >  MODULE_DEVICE_TABLE(spi, ad7476_id);
+> > > --
+> > > 2.20.1
+> > >  
+> 
+> 
+> 
 
