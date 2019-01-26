@@ -2,167 +2,113 @@ Return-Path: <SRS0=WfKE=QC=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_MUTT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A502C282C0
-	for <linux-iio@archiver.kernel.org>; Sat, 26 Jan 2019 00:14:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29DDCC282C0
+	for <linux-iio@archiver.kernel.org>; Sat, 26 Jan 2019 01:22:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id DFF19218B0
-	for <linux-iio@archiver.kernel.org>; Sat, 26 Jan 2019 00:14:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E7FA8218F0
+	for <linux-iio@archiver.kernel.org>; Sat, 26 Jan 2019 01:22:51 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gMbq7xLT"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fDVJFcQ+"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726329AbfAZAOq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 25 Jan 2019 19:14:46 -0500
-Received: from mail-it1-f194.google.com ([209.85.166.194]:34925 "EHLO
-        mail-it1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726218AbfAZAOp (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 25 Jan 2019 19:14:45 -0500
-Received: by mail-it1-f194.google.com with SMTP id p197so12227261itp.0;
-        Fri, 25 Jan 2019 16:14:44 -0800 (PST)
+        id S1725916AbfAZBWv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 25 Jan 2019 20:22:51 -0500
+Received: from mail-it1-f195.google.com ([209.85.166.195]:35416 "EHLO
+        mail-it1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725550AbfAZBWv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 25 Jan 2019 20:22:51 -0500
+Received: by mail-it1-f195.google.com with SMTP id p197so12368427itp.0;
+        Fri, 25 Jan 2019 17:22:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=PAsA5oaNC5v3V4hNn9ia29FXNhL0AmQg8w27/YvO9VE=;
-        b=gMbq7xLTHMbeqnc+g9iivdqEbvItToDV2KjmXtM8JDVrEyn02hIL9YmEL3CKjEA2xi
-         2/hBrP5nJzltXApGzewXaelRX9Zf+yWm705vF8iIjIc2TiyY5f+V+/cIbmHKvmxm+Vga
-         Xek+g6kuOTezN4D54P0A+ygMcCs/q65Fl4rRtWkzTAwTchb/Usf0BuAY9dbRq8YM6njB
-         EO7Tj+GGr59y6oxWwf60daTh+0v8fypTWqL7g7cmvm+lasvppVBADUrWmoH1Wyh0EO16
-         xJ1U+xo/JljDk8OqNi2a1uW60pPGB1TfUpq360IRjdZAZHHI7cM0UhZ15powPsjiFRK9
-         Eudg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=4duhNk+tNEwcTFis0uSjbAvx5kQ0UnlzAsLkrgG7FmY=;
+        b=fDVJFcQ+bASWiUChwgQxfczPrx0R3VJgREmILqK/GkUSWz9/EflriTHieqxbU0v39J
+         OxiTM7MhaCUd1vuUNu9PKYZ0SQEUM5pyVafrlwolRNMtZ5JOQzs1aZB1e2KVIoSqmMmp
+         O/ydYwF8+DHruH8j8XVaPP4Az8XBXnfbHR02O3J1znZAUf56Esvyx/1pEodNhWNdTQRF
+         S+N3lHLKkvRrdabLqw1qfJ+PidqXnqWNf+vShfxWGeoSwuZ/igINV1a1u8qj1uGozDRP
+         OrDqSqRvBCv/ot43AYb4bp8QapQYKZ5M4FbH5Rm8KPUT0jT+Q7a9PT16CDvPxIwFYj2s
+         NLgQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=PAsA5oaNC5v3V4hNn9ia29FXNhL0AmQg8w27/YvO9VE=;
-        b=bh3namxTibIBDbTEGjBlLNn7aAlrDlxX4SC5zBt7T5XVzfPgx1Gre6HmaUBymnjh79
-         U0FT5rreIgKQJ9xrTluFhlSwX47lxFlTiXTcpUnlB+q6lBXbJgTLfREs+8uw9q3BZEqD
-         ctfB8JRGAlao6RRnWlC0mK/fSGR7kO+Xbm2zABy7n5zx8Xn+1lMnuQleinURi4Twj8Kk
-         3SctpdPn3zNJ+2jNn8B6Z+mJARlLKa6Qzv+3po47MbaZ2tPCWSdIJugUWXs3it8QvZUg
-         kg0HzyzKpZRM6pcB+GN5plgIPYRj24+aH4f3G82AcJG3aBd4hRKUh+LcuDAfbxy4XAef
-         6wbQ==
-X-Gm-Message-State: AJcUukcvzBtfEMfpVOMZUO2FlTmCp2DgFBUmbhN6myX7QiAv3BDGu7OG
-        HnGjpcIdGcszliX0IqPlMSc0+AKaZ5x/9Bfj7BM=
-X-Google-Smtp-Source: ALg8bN5cLj55r2AFJJCGiONdbE07c0uw1elbFiCp+l/w6yxJzYEkgTdlBuJnTufJX6rKGDaimmssdVhHEjZlazmqx0s=
-X-Received: by 2002:a02:b424:: with SMTP id i33mr9151384jaj.37.1548461684454;
- Fri, 25 Jan 2019 16:14:44 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=4duhNk+tNEwcTFis0uSjbAvx5kQ0UnlzAsLkrgG7FmY=;
+        b=ix7rCUkOZ2bPiLdCa6w8ardKmZSOcC2tkb+5mGjQwyf4LjdHoeyDJF+Y/cWxC4I4Ng
+         KlSEbMIXeOzRbJAnuBP2CLbIwjyxfSrS7xZFmRQ8dpPMwsF4KmbytDYOoklXMdSFwNoj
+         2W43/kgoD/s1dJADXPQFBn2GpWlZftOfWqd8wpUqitOhIs1oxwZUzkNgG95Ztvh5pfR6
+         Lu7/EbMcW8kTa73KRx9/vJndsUisxgcTsD9uherUBCoRJcoilJuRf2QBAhcGvlXMFffV
+         P3utRzx9am2WCDhgnH3PnMk46JoMmY7Q1wSpfHi7MSMA0tO+L42fC28NHU0Iq3C2wUpR
+         7S2g==
+X-Gm-Message-State: AHQUAuZC68RGOOhvF6brkSCNHrEQ51UtVhWFFeWGwcJ4p43AQveSCUSx
+        KjXnaGohN2vZnsRtaZwDRA4=
+X-Google-Smtp-Source: AHgI3IaikGc4/BKKf6K2TafRXWDfwaPhhL5c1Jch+sT4NentSx4B0uhcLMQL/q7vZdGtwliRmKsZCg==
+X-Received: by 2002:a24:f607:: with SMTP id u7mr5547001ith.89.1548465770141;
+        Fri, 25 Jan 2019 17:22:50 -0800 (PST)
+Received: from r2700x.localdomain (c-75-70-96-103.hsd1.co.comcast.net. [75.70.96.103])
+        by smtp.gmail.com with ESMTPSA id m10sm10584589ioq.25.2019.01.25.17.22.48
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 25 Jan 2019 17:22:49 -0800 (PST)
+Date:   Fri, 25 Jan 2019 18:22:43 -0700
+From:   Jeremy Fertic <jeremyfertic@gmail.com>
+To:     Shreeya Patel <shreeya.patel23498@gmail.com>
+Cc:     jic23@kernel.org, lars@metafoo.de, Michael.Hennerich@analog.com,
+        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/3] adt7316 regmap implementation
+Message-ID: <20190126012243.GA4762@r2700x.localdomain>
+References: <20190120153633.18231-1-shreeya.patel23498@gmail.com>
 MIME-Version: 1.0
-References: <1548358316-8062-1-git-send-email-rodrigorsdc@gmail.com>
- <CA+U=DsqG6PKs1Off9QP_3_q+c5=uzRypHCs+O6iur=NC5QdDdQ@mail.gmail.com> <CAOeBkLogWyxbB3ZNwZh9=6xVUKxmT1YGZQseAx4uo7a4u+M+gw@mail.gmail.com>
-In-Reply-To: <CAOeBkLogWyxbB3ZNwZh9=6xVUKxmT1YGZQseAx4uo7a4u+M+gw@mail.gmail.com>
-From:   Rodrigo Ribeiro <rodrigorsdc@gmail.com>
-Date:   Fri, 25 Jan 2019 22:14:32 -0200
-Message-ID: <CAOeBkLq18nP6xsOCNNE2Bew=u37MsLCgH=W-8ofnFSAi6dYx=Q@mail.gmail.com>
-Subject: Re: [PATCH] staging:iio:ad7152: Rename misspelled RESEVERD -> RESERVED
-To:     Alexandru Ardelean <ardeleanalex@gmail.com>
-Cc:     lars@metafoo.de, Michael.Hennerich@analog.com,
-        Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        kernel-usp@googlegroups.com, Rafael Tsuha <rafael.tsuha@usp.br>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190120153633.18231-1-shreeya.patel23498@gmail.com>
+User-Agent: Mutt/1.11.2 (2019-01-07)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Em sex, 25 de jan de 2019 =C3=A0s 21:46, Rodrigo Ribeiro
-<rodrigorsdc@gmail.com> escreveu:
->
-> Em sex, 25 de jan de 2019 =C3=A0s 06:20, Alexandru Ardelean
-> <ardeleanalex@gmail.com> escreveu:
-> >
-> > On Thu, Jan 24, 2019 at 9:35 PM Rodrigo Ribeiro <rodrigorsdc@gmail.com>=
- wrote:
-> > >
-> > > Remove the checkpatch.pl check:
-> > >
-> > > CHECK: 'RESEVERD' may be misspelled - perhaps 'RESERVED'?
-> >
-> > Hey,
->
-> Hi,
->
-> Thanks for answering.
->
-> > A bit curios about this one.
-> > Are you using this chip/driver ?
->
-> No, I am just a student at USP (University of S=C3=A3o Paulo) starting in=
- Linux
-> Kernel and a new member of the USP Linux Kernel group that has contribute=
-d
-> for a few months.
->
-> > Thing is: the part is nearing EOL, and it could be an idea to be
-> > marked for removal (since it's still in staging).
-> > But if there are users for this driver, it could be left around for a w=
-hile.
->
-> This is my first patch in Linux Kernel, but if the driver will be removed=
-, I
-> can send a patch for another driver. Is there any driver that I can
-> fix a style warning?
+On Sun, Jan 20, 2019 at 09:06:30PM +0530, Shreeya Patel wrote:
+> This patchset consist of some initial patches for heading
+> towards the regmap implementation and also the final patch
+> which enables the driver to use regmap API thus removing
+> the redundant and common code.
+> 
+> Changes in v3
+>   -Fetch the changes from remote and rebase to have it in
+> the current working directory.
+> 
+> Changes in v2
+>   -Change the val_bits to 8 and add two more patches
+> having a different change before the final implemetation
+> of regmap.
+> 
+> Shreeya Patel (3):
+>   Staging: iio: adt7316: Remove irq from bus structure
+>   Staging: iio: adt7316: Remove multi read and write functions
+>   Staging: iio: adt7316: Add regmap support
+> 
+>  drivers/staging/iio/addac/adt7316-i2c.c |  97 ++--------------
+>  drivers/staging/iio/addac/adt7316-spi.c |  95 +++------------
+>  drivers/staging/iio/addac/adt7316.c     | 147 ++++++++++++------------
+>  drivers/staging/iio/addac/adt7316.h     |  15 +--
+>  4 files changed, 103 insertions(+), 251 deletions(-)
+> 
+> -- 
+> 2.17.1
+> 
 
-Maybe, one checkstyle patch is enough, right? Which drivers can I truly
-contribute to?
+The series doesn't apply to the current iio testing branch. If there's any
+value in a quick sanity testing, I can do that after a rebase. I wasn't
+planning to test everything the patch touches, but thought I could at
+least test a few register reads and writes to make sure we haven't missed
+anything obvious in the regmap implementation.
 
-> Thanks
->
->
-> Em sex, 25 de jan de 2019 =C3=A0s 06:20, Alexandru Ardelean
-> <ardeleanalex@gmail.com> escreveu:
-> >
-> > On Thu, Jan 24, 2019 at 9:35 PM Rodrigo Ribeiro <rodrigorsdc@gmail.com>=
- wrote:
-> > >
-> > > Remove the checkpatch.pl check:
-> > >
-> > > CHECK: 'RESEVERD' may be misspelled - perhaps 'RESERVED'?
-> >
-> > Hey,
-> >
-> > A bit curios about this one.
-> > Are you using this chip/driver ?
-> >
-> > Thing is: the part is nearing EOL, and it could be an idea to be
-> > marked for removal (since it's still in staging).
-> > But if there are users for this driver, it could be left around for a w=
-hile.
-> >
-> > Thanks
-> > Alex
-> >
-> > >
-> > > Signed-off-by: Rodrigo Ribeiro <rodrigorsdc@gmail.com>
-> > > Signed-off-by: Rafael Tsuha <rafael.tsuha@usp.br>
-> > > ---
-> > > This macro is not used anywhere. Should we just correct the
-> > > spelling or remove the macro?
-> > >
-> > >  drivers/staging/iio/cdc/ad7152.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/staging/iio/cdc/ad7152.c b/drivers/staging/iio/c=
-dc/ad7152.c
-> > > index 25f51db..c9da6d4 100644
-> > > --- a/drivers/staging/iio/cdc/ad7152.c
-> > > +++ b/drivers/staging/iio/cdc/ad7152.c
-> > > @@ -35,7 +35,7 @@
-> > >  #define AD7152_REG_CH2_GAIN_HIGH       12
-> > >  #define AD7152_REG_CH2_SETUP           14
-> > >  #define AD7152_REG_CFG                 15
-> > > -#define AD7152_REG_RESEVERD            16
-> > > +#define AD7152_REG_RESERVED            16
-> > >  #define AD7152_REG_CAPDAC_POS          17
-> > >  #define AD7152_REG_CAPDAC_NEG          18
-> > >  #define AD7152_REG_CFG2                        26
-> > > --
-> > > 2.7.4
-> > >
+Jeremy
+
