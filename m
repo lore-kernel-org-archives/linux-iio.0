@@ -2,520 +2,101 @@ Return-Path: <SRS0=WfKE=QC=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E32EC282C7
-	for <linux-iio@archiver.kernel.org>; Sat, 26 Jan 2019 17:32:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EB7CC282C7
+	for <linux-iio@archiver.kernel.org>; Sat, 26 Jan 2019 17:34:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3F206218A2
-	for <linux-iio@archiver.kernel.org>; Sat, 26 Jan 2019 17:32:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1548523969;
-	bh=oJ3NN00mwI0y/xBGgM3NSkTIlUX/qbXv4h/n4er/BIE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=Qx/ETxONgeX6aI4/jFtuahQQHvTaKDWtpus+aSL48KAHznb7PRnaCMQYSPI04Wt+i
-	 YWvQlhN3rQASTSHLmfMu/HL9iozklpiMEchf6dhDbplxQGhhA1xynof14r4f3TPce0
-	 AvGTi5BeWehr1peyC0N0THgzCEPjRt6BhraivQPo=
+	by mail.kernel.org (Postfix) with ESMTP id 30404218A2
+	for <linux-iio@archiver.kernel.org>; Sat, 26 Jan 2019 17:34:14 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="tdbdy3F0"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726155AbfAZRcs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 26 Jan 2019 12:32:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49876 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726070AbfAZRcs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 26 Jan 2019 12:32:48 -0500
-Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7DA6E21872;
-        Sat, 26 Jan 2019 17:32:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1548523966;
-        bh=oJ3NN00mwI0y/xBGgM3NSkTIlUX/qbXv4h/n4er/BIE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KPPNK6/Ry3Qboli2gK8yQGDcFmGOl9Q7erVFYw4I7c6AH8znRqXwNHfeQk5DaPZhR
-         KuqgjIRjJUDpLWAV9dTjQQUf0TdLq8gWfAeOKA28RnJxAxeeUFgwcPa2rA0cx/dVIv
-         AkYPQLGukHaPwo7zo0kTKhwzdYnFRzuS2BSxUD9I=
-Date:   Sat, 26 Jan 2019 17:32:40 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Tomer Maimon <tmaimon77@gmail.com>
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Patrick Venture <venture@google.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Joel Stanley <joel@jms.id.au>, linux-iio@vger.kernel.org,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v3 2/2] iio: adc: add NPCM ADC driver
-Message-ID: <20190126173240.4f87423d@archlinux>
-In-Reply-To: <CAP6Zq1j=wjkKYsP=aFSDCYKV3ESUibtV0oXTXG5P1LikVgdJdw@mail.gmail.com>
-References: <20190116164855.200357-1-tmaimon77@gmail.com>
-        <20190116164855.200357-3-tmaimon77@gmail.com>
-        <20190119180843.78510580@archlinux>
-        <CAP6Zq1j=wjkKYsP=aFSDCYKV3ESUibtV0oXTXG5P1LikVgdJdw@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1726155AbfAZReN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 26 Jan 2019 12:34:13 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:42297 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726070AbfAZReN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 26 Jan 2019 12:34:13 -0500
+Received: by mail-pf1-f196.google.com with SMTP id 64so6107309pfr.9;
+        Sat, 26 Jan 2019 09:34:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:subject:date:message-id;
+        bh=BFicm88r+0qpqh0sISAyMs4S8ExnHqgpaDgIsLuempY=;
+        b=tdbdy3F0vhAOYHfBmunr0NcVIecWfHCcWoyQGH3WtHm1bQCnv1RYCpbguuRCXKSkoX
+         FmIPLeOkc+sp9FR2zwyY38plTZP0JbpBW/M/n9EcmdADov/oBwovzQdo+x0cndSZ17ah
+         jcuCfUBeMViNRpQNo7T24QeZWwFMletuwWfzzZMnECjIEmpPwX0hifAFIgsd5ZagFPtf
+         dXsxW0hdXFBdDIQh6NXsJCmGfrJwqW/e+i8raEeWcOZlHMt1ac/ABv6Mda3T2MtYQXlC
+         8uLn4zERLeXnfW1OHW6f3hj79Kiq3lrdmY1Kzw+5i7L1AKGaMXiwfuhVUOYPHb16ThvV
+         WF7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:subject:date:message-id;
+        bh=BFicm88r+0qpqh0sISAyMs4S8ExnHqgpaDgIsLuempY=;
+        b=nJQ6DGoxkFM2nIiYrVW49O7UDPnS9OG+Rg2v46VFyAGMQHa4isx2U9t+jMqRh3wivR
+         43eK8+dP2nUbFgh4KKz+nGYZzNq9AbMwOZsxtPXxiAGYwW40yNBuHcW8K3CSoH8vjR+7
+         iUyy+ToME34p6jbcCvz3XxNw3hgrYPW7pVymO5CeHOCy9eTc0g154R99Rlgh3aa1fYXh
+         G0uOTZwKHRB1JJEMthI+AQIdYwoXf17R00wavuRRn4DatrN3Sofp2Vph3R2ZR9EYqehF
+         caBtUfvqIdB9hi9ym4psE1IxhoWzHwfVHlumpGoed7CVB/gih5xYh5RkDsaUZ75PHa6n
+         mn0A==
+X-Gm-Message-State: AJcUukery0NqxAHwYmFGT6sxSeNDUL2ueqe7eCHUKW7ceILXIat/YcLC
+        xyDUqCFBIoJlgV92yZ5W9Bg=
+X-Google-Smtp-Source: ALg8bN6MFAQ0mYeEKHT158oZEO6SnR9Ex17troe8i1Y1rZwfLFKdG0PPSk0GmL4BDImRS/k+dHygrA==
+X-Received: by 2002:a63:e655:: with SMTP id p21mr13913428pgj.70.1548524052683;
+        Sat, 26 Jan 2019 09:34:12 -0800 (PST)
+Received: from localhost.localdomain ([49.32.227.18])
+        by smtp.gmail.com with ESMTPSA id a65sm28745690pge.65.2019.01.26.09.34.07
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 26 Jan 2019 09:34:12 -0800 (PST)
+From:   Shreeya Patel <shreeya.patel23498@gmail.com>
+To:     lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, jeremyfertic@gmail.com,
+        shreeya.patel23498@gmail.com
+Subject: [PATCH v4 0/3] adt7316 regmap implementation
+Date:   Sat, 26 Jan 2019 23:03:59 +0530
+Message-Id: <20190126173402.12428-1-shreeya.patel23498@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 20 Jan 2019 17:05:38 +0200
-Tomer Maimon <tmaimon77@gmail.com> wrote:
+This patchset consist of some initial patches for heading
+towards the regmap implementation and also the final patch
+which enables the driver to use regmap API thus removing
+the redundant and common code.
 
-> Hi Jonathan,
-> 
-> Thanks a lot for reviewing our driver,
-> 
-> On Sat, 19 Jan 2019 at 20:08, Jonathan Cameron <jic23@kernel.org> wrote:
-> 
-> > On Wed, 16 Jan 2019 18:48:55 +0200
-> > Tomer Maimon <tmaimon77@gmail.com> wrote:
-> >  
-> > > Add Nuvoton NPCM BMC Analog-to-Digital Converter(ADC) driver.
-> > >
-> > > The NPCM ADC is a 10-bit converter for eight channel inputs.
-> > >
-> > > Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>  
-> > One trivial ordering in remove oddity that I'll just fix up.
-> > Also, I don't particularly like printing a message on success
-> > as it's not providing any useful info.  Hmm. I don't care
-> > strongly enough to remove it though.
-> >  
-> 
-> The Probe log is is important for us when customers doing bring-up or have
-> some issues,
-> we ask the logs w/o asking to do all kinds of things to see if a device was
-> probed.
 
-You should probably develop a proper info gathering script.  Chances of this
-randomly getting 'tidied up' in future (i.e. remove) is rather high and
-I doubt I'll remember this if you miss the patch...
+Changes in v4
+  -Rebase against iio's testing branch. Previous series
+was rebased against greg's testing branch.
 
-I don't care all that much though and your problem if it goes away. Kernel
-logs shouldn't be used as ABI.  Even error messages tend to change over time!
+Changes in v3
+  -Fetch the changes from remote and rebase to have it in
+the current working directory.
 
-Jonathan
+Changes in v2
+  -Change the val_bits to 8 and add two more patches
+having a different change before the final implemetation
+of regmap.
 
-> 
-> 
-> > Applied to the togreg branch of iio.git and pushed out as
-> > testing for the autobuilders to play with it.
-> >
-> > Thanks,
-> >
-> > Jonathan
-> >  
-> > > ---
-> > >  drivers/iio/adc/Kconfig    |  10 ++
-> > >  drivers/iio/adc/Makefile   |   1 +
-> > >  drivers/iio/adc/npcm_adc.c | 335  
-> > +++++++++++++++++++++++++++++++++++++++++++++  
-> > >  3 files changed, 346 insertions(+)
-> > >  create mode 100644 drivers/iio/adc/npcm_adc.c
-> > >
-> > > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> > > index 7a3ca4ec0cb7..2d1e70a7d5c4 100644
-> > > --- a/drivers/iio/adc/Kconfig
-> > > +++ b/drivers/iio/adc/Kconfig
-> > > @@ -576,6 +576,16 @@ config NAU7802
-> > >         To compile this driver as a module, choose M here: the
-> > >         module will be called nau7802.
-> > >
-> > > +config NPCM_ADC
-> > > +     tristate "Nuvoton NPCM ADC driver"
-> > > +     depends on ARCH_NPCM || COMPILE_TEST
-> > > +     depends on HAS_IOMEM
-> > > +     help
-> > > +       Say yes here to build support for Nuvoton NPCM ADC.
-> > > +
-> > > +       This driver can also be built as a module. If so, the module
-> > > +       will be called npcm_adc.
-> > > +
-> > >  config PALMAS_GPADC
-> > >       tristate "TI Palmas General Purpose ADC"
-> > >       depends on MFD_PALMAS
-> > > diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> > > index 07df37f621bd..3337eb1f4c30 100644
-> > > --- a/drivers/iio/adc/Makefile
-> > > +++ b/drivers/iio/adc/Makefile
-> > > @@ -55,6 +55,7 @@ obj-$(CONFIG_MEN_Z188_ADC) += men_z188_adc.o
-> > >  obj-$(CONFIG_MESON_SARADC) += meson_saradc.o
-> > >  obj-$(CONFIG_MXS_LRADC_ADC) += mxs-lradc-adc.o
-> > >  obj-$(CONFIG_NAU7802) += nau7802.o
-> > > +obj-$(CONFIG_NPCM_ADC) += npcm_adc.o
-> > >  obj-$(CONFIG_PALMAS_GPADC) += palmas_gpadc.o
-> > >  obj-$(CONFIG_QCOM_SPMI_ADC5) += qcom-spmi-adc5.o
-> > >  obj-$(CONFIG_QCOM_SPMI_IADC) += qcom-spmi-iadc.o
-> > > diff --git a/drivers/iio/adc/npcm_adc.c b/drivers/iio/adc/npcm_adc.c
-> > > new file mode 100644
-> > > index 000000000000..1cc377cdf1f7
-> > > --- /dev/null
-> > > +++ b/drivers/iio/adc/npcm_adc.c
-> > > @@ -0,0 +1,335 @@
-> > > +// SPDX-License-Identifier: GPL-2.0
-> > > +// Copyright (c) 2019 Nuvoton Technology corporation.
-> > > +
-> > > +#include <linux/clk.h>
-> > > +#include <linux/device.h>
-> > > +#include <linux/mfd/syscon.h>
-> > > +#include <linux/io.h>
-> > > +#include <linux/iio/iio.h>
-> > > +#include <linux/interrupt.h>
-> > > +#include <linux/kernel.h>
-> > > +#include <linux/module.h>
-> > > +#include <linux/platform_device.h>
-> > > +#include <linux/regmap.h>
-> > > +#include <linux/regulator/consumer.h>
-> > > +#include <linux/spinlock.h>
-> > > +#include <linux/uaccess.h>
-> > > +
-> > > +struct npcm_adc {
-> > > +     bool int_status;
-> > > +     u32 adc_sample_hz;
-> > > +     struct device *dev;
-> > > +     void __iomem *regs;
-> > > +     struct clk *adc_clk;
-> > > +     wait_queue_head_t wq;
-> > > +     struct regulator *vref;
-> > > +     struct regmap *rst_regmap;
-> > > +};
-> > > +
-> > > +/* NPCM7xx reset module */
-> > > +#define NPCM7XX_IPSRST1_OFFSET               0x020
-> > > +#define NPCM7XX_IPSRST1_ADC_RST              BIT(27)
-> > > +
-> > > +/* ADC registers */
-> > > +#define NPCM_ADCCON   0x00
-> > > +#define NPCM_ADCDATA  0x04
-> > > +
-> > > +/* ADCCON Register Bits */
-> > > +#define NPCM_ADCCON_ADC_INT_EN               BIT(21)
-> > > +#define NPCM_ADCCON_REFSEL           BIT(19)
-> > > +#define NPCM_ADCCON_ADC_INT_ST               BIT(18)
-> > > +#define NPCM_ADCCON_ADC_EN           BIT(17)
-> > > +#define NPCM_ADCCON_ADC_RST          BIT(16)
-> > > +#define NPCM_ADCCON_ADC_CONV         BIT(13)
-> > > +
-> > > +#define NPCM_ADCCON_CH_MASK          GENMASK(27, 24)
-> > > +#define NPCM_ADCCON_CH(x)            ((x) << 24)
-> > > +#define NPCM_ADCCON_DIV_SHIFT                1
-> > > +#define NPCM_ADCCON_DIV_MASK         GENMASK(8, 1)
-> > > +#define NPCM_ADC_DATA_MASK(x)                ((x) & GENMASK(9, 0))
-> > > +
-> > > +#define NPCM_ADC_ENABLE              (NPCM_ADCCON_ADC_EN |  
-> > NPCM_ADCCON_ADC_INT_EN)  
-> > > +
-> > > +/* ADC General Definition */
-> > > +#define NPCM_RESOLUTION_BITS         10
-> > > +#define NPCM_INT_VREF_MV             2000
-> > > +
-> > > +#define NPCM_ADC_CHAN(ch) {                                  \
-> > > +     .type = IIO_VOLTAGE,                                    \
-> > > +     .indexed = 1,                                           \
-> > > +     .channel = ch,                                          \
-> > > +     .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),           \
-> > > +     .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |  \
-> > > +                             BIT(IIO_CHAN_INFO_SAMP_FREQ),   \
-> > > +}
-> > > +
-> > > +static const struct iio_chan_spec npcm_adc_iio_channels[] = {
-> > > +     NPCM_ADC_CHAN(0),
-> > > +     NPCM_ADC_CHAN(1),
-> > > +     NPCM_ADC_CHAN(2),
-> > > +     NPCM_ADC_CHAN(3),
-> > > +     NPCM_ADC_CHAN(4),
-> > > +     NPCM_ADC_CHAN(5),
-> > > +     NPCM_ADC_CHAN(6),
-> > > +     NPCM_ADC_CHAN(7),
-> > > +};
-> > > +
-> > > +static irqreturn_t npcm_adc_isr(int irq, void *data)
-> > > +{
-> > > +     u32 regtemp;
-> > > +     struct iio_dev *indio_dev = data;
-> > > +     struct npcm_adc *info = iio_priv(indio_dev);
-> > > +
-> > > +     regtemp = ioread32(info->regs + NPCM_ADCCON);
-> > > +     if (regtemp & NPCM_ADCCON_ADC_INT_ST) {
-> > > +             iowrite32(regtemp, info->regs + NPCM_ADCCON);
-> > > +             wake_up_interruptible(&info->wq);
-> > > +             info->int_status = true;
-> > > +     }
-> > > +
-> > > +     return IRQ_HANDLED;
-> > > +}
-> > > +
-> > > +static int npcm_adc_read(struct npcm_adc *info, int *val, u8 channel)
-> > > +{
-> > > +     int ret;
-> > > +     u32 regtemp;
-> > > +
-> > > +     /* Select ADC channel */
-> > > +     regtemp = ioread32(info->regs + NPCM_ADCCON);
-> > > +     regtemp &= ~NPCM_ADCCON_CH_MASK;
-> > > +     info->int_status = false;
-> > > +     iowrite32(regtemp | NPCM_ADCCON_CH(channel) |
-> > > +               NPCM_ADCCON_ADC_CONV, info->regs + NPCM_ADCCON);
-> > > +
-> > > +     ret = wait_event_interruptible_timeout(info->wq, info->int_status,
-> > > +                                            msecs_to_jiffies(10));
-> > > +     if (ret == 0) {
-> > > +             regtemp = ioread32(info->regs + NPCM_ADCCON);
-> > > +             if ((regtemp & NPCM_ADCCON_ADC_CONV) && info->rst_regmap) {
-> > > +                     /* if conversion failed - reset ADC module */
-> > > +                     regmap_write(info->rst_regmap,  
-> > NPCM7XX_IPSRST1_OFFSET,  
-> > > +                                  NPCM7XX_IPSRST1_ADC_RST);
-> > > +                     msleep(100);
-> > > +                     regmap_write(info->rst_regmap,  
-> > NPCM7XX_IPSRST1_OFFSET,  
-> > > +                                  0x0);
-> > > +                     msleep(100);
-> > > +
-> > > +                     /* Enable ADC and start conversion module */
-> > > +                     iowrite32(NPCM_ADC_ENABLE | NPCM_ADCCON_ADC_CONV,
-> > > +                               info->regs + NPCM_ADCCON);
-> > > +                     dev_err(info->dev, "RESET ADC Complete\n");
-> > > +             }
-> > > +             return -ETIMEDOUT;
-> > > +     }
-> > > +     if (ret < 0)
-> > > +             return ret;
-> > > +
-> > > +     *val = NPCM_ADC_DATA_MASK(ioread32(info->regs + NPCM_ADCDATA));
-> > > +
-> > > +     return 0;
-> > > +}
-> > > +
-> > > +static int npcm_adc_read_raw(struct iio_dev *indio_dev,
-> > > +                          struct iio_chan_spec const *chan, int *val,
-> > > +                          int *val2, long mask)
-> > > +{
-> > > +     int ret;
-> > > +     int vref_uv;
-> > > +     struct npcm_adc *info = iio_priv(indio_dev);
-> > > +
-> > > +     switch (mask) {
-> > > +     case IIO_CHAN_INFO_RAW:
-> > > +             mutex_lock(&indio_dev->mlock);
-> > > +             ret = npcm_adc_read(info, val, chan->channel);
-> > > +             mutex_unlock(&indio_dev->mlock);
-> > > +             if (ret) {
-> > > +                     dev_err(info->dev, "NPCM ADC read failed\n");
-> > > +                     return ret;
-> > > +             }
-> > > +             return IIO_VAL_INT;
-> > > +     case IIO_CHAN_INFO_SCALE:
-> > > +             if (info->vref) {
-> > > +                     vref_uv = regulator_get_voltage(info->vref);
-> > > +                     *val = vref_uv / 1000;
-> > > +             } else {
-> > > +                     *val = NPCM_INT_VREF_MV;
-> > > +             }
-> > > +             *val2 = NPCM_RESOLUTION_BITS;
-> > > +             return IIO_VAL_FRACTIONAL_LOG2;
-> > > +     case IIO_CHAN_INFO_SAMP_FREQ:
-> > > +             *val = info->adc_sample_hz;
-> > > +             return IIO_VAL_INT;
-> > > +     default:
-> > > +             return -EINVAL;
-> > > +     }
-> > > +
-> > > +     return 0;
-> > > +}
-> > > +
-> > > +static const struct iio_info npcm_adc_iio_info = {
-> > > +     .read_raw = &npcm_adc_read_raw,
-> > > +};
-> > > +
-> > > +static const struct of_device_id npcm_adc_match[] = {
-> > > +     { .compatible = "nuvoton,npcm750-adc", },
-> > > +     { /* sentinel */ }
-> > > +};
-> > > +MODULE_DEVICE_TABLE(of, npcm_adc_match);
-> > > +
-> > > +static int npcm_adc_probe(struct platform_device *pdev)
-> > > +{
-> > > +     int ret;
-> > > +     int irq;
-> > > +     u32 div;
-> > > +     u32 reg_con;
-> > > +     struct resource *res;
-> > > +     struct npcm_adc *info;
-> > > +     struct iio_dev *indio_dev;
-> > > +     struct device *dev = &pdev->dev;
-> > > +     struct device_node *np = pdev->dev.of_node;
-> > > +
-> > > +     indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
-> > > +     if (!indio_dev)
-> > > +             return -ENOMEM;
-> > > +     info = iio_priv(indio_dev);
-> > > +
-> > > +     info->dev = &pdev->dev;
-> > > +
-> > > +     res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> > > +     info->regs = devm_ioremap_resource(&pdev->dev, res);
-> > > +     if (IS_ERR(info->regs))
-> > > +             return PTR_ERR(info->regs);
-> > > +
-> > > +     info->adc_clk = devm_clk_get(&pdev->dev, NULL);
-> > > +     if (IS_ERR(info->adc_clk)) {
-> > > +             dev_warn(&pdev->dev, "ADC clock failed: can't read clk\n");
-> > > +             return PTR_ERR(info->adc_clk);
-> > > +     }
-> > > +
-> > > +     /* calculate ADC clock sample rate */
-> > > +     reg_con = ioread32(info->regs + NPCM_ADCCON);
-> > > +     div = reg_con & NPCM_ADCCON_DIV_MASK;
-> > > +     div = div >> NPCM_ADCCON_DIV_SHIFT;
-> > > +     info->adc_sample_hz = clk_get_rate(info->adc_clk) / ((div + 1) *  
-> > 2);  
-> > > +
-> > > +     if (of_device_is_compatible(np, "nuvoton,npcm750-adc")) {
-> > > +             info->rst_regmap = syscon_regmap_lookup_by_compatible
-> > > +                     ("nuvoton,npcm750-rst");
-> > > +             if (IS_ERR(info->rst_regmap)) {
-> > > +                     dev_err(&pdev->dev, "Failed to find  
-> > nuvoton,npcm750-rst\n");  
-> > > +                     ret = PTR_ERR(info->rst_regmap);
-> > > +                     goto err_disable_clk;
-> > > +             }
-> > > +     }
-> > > +
-> > > +     irq = platform_get_irq(pdev, 0);
-> > > +     if (irq <= 0) {
-> > > +             dev_err(dev, "failed getting interrupt resource\n");
-> > > +             ret = -EINVAL;
-> > > +             goto err_disable_clk;
-> > > +     }
-> > > +
-> > > +     ret = devm_request_irq(&pdev->dev, irq, npcm_adc_isr, 0,
-> > > +                            "NPCM_ADC", indio_dev);
-> > > +     if (ret < 0) {
-> > > +             dev_err(dev, "failed requesting interrupt\n");
-> > > +             goto err_disable_clk;
-> > > +     }
-> > > +
-> > > +     reg_con = ioread32(info->regs + NPCM_ADCCON);
-> > > +     info->vref = devm_regulator_get_optional(&pdev->dev, "vref");
-> > > +     if (!IS_ERR(info->vref)) {
-> > > +             ret = regulator_enable(info->vref);
-> > > +             if (ret) {
-> > > +                     dev_err(&pdev->dev, "Can't enable ADC reference  
-> > voltage\n");  
-> > > +                     goto err_disable_clk;
-> > > +             }
-> > > +
-> > > +             iowrite32(reg_con & ~NPCM_ADCCON_REFSEL,
-> > > +                       info->regs + NPCM_ADCCON);
-> > > +     } else {
-> > > +             /*
-> > > +              * Any error which is not ENODEV indicates the regulator
-> > > +              * has been specified and so is a failure case.
-> > > +              */
-> > > +             if (PTR_ERR(info->vref) != -ENODEV) {
-> > > +                     ret = PTR_ERR(info->vref);
-> > > +                     goto err_disable_clk;
-> > > +             }
-> > > +
-> > > +             /* Use internal reference */
-> > > +             iowrite32(reg_con | NPCM_ADCCON_REFSEL,
-> > > +                       info->regs + NPCM_ADCCON);
-> > > +     }
-> > > +
-> > > +     init_waitqueue_head(&info->wq);
-> > > +
-> > > +     reg_con = ioread32(info->regs + NPCM_ADCCON);
-> > > +     reg_con |= NPCM_ADC_ENABLE;
-> > > +
-> > > +     /* Enable the ADC Module */
-> > > +     iowrite32(reg_con, info->regs + NPCM_ADCCON);
-> > > +
-> > > +     /* Start ADC conversion */
-> > > +     iowrite32(reg_con | NPCM_ADCCON_ADC_CONV, info->regs +  
-> > NPCM_ADCCON);  
-> > > +
-> > > +     platform_set_drvdata(pdev, indio_dev);
-> > > +     indio_dev->name = dev_name(&pdev->dev);
-> > > +     indio_dev->dev.parent = &pdev->dev;
-> > > +     indio_dev->info = &npcm_adc_iio_info;
-> > > +     indio_dev->modes = INDIO_DIRECT_MODE;
-> > > +     indio_dev->channels = npcm_adc_iio_channels;
-> > > +     indio_dev->num_channels = ARRAY_SIZE(npcm_adc_iio_channels);
-> > > +
-> > > +     ret = iio_device_register(indio_dev);
-> > > +     if (ret) {
-> > > +             dev_err(&pdev->dev, "Couldn't register the device.\n");
-> > > +             goto err_iio_register;
-> > > +     }
-> > > +
-> > > +     pr_info("NPCM ADC driver probed\n");  
-> > Hmm. Not sure this tells us anything useful.  If we have succeeding
-> > in probing there are lots of ways to find out that are better than
-> > filling up the kernel log.
-> >  
-> > > +
-> > > +     return 0;
-> > > +
-> > > +err_iio_register:
-> > > +     iowrite32(reg_con & ~NPCM_ADCCON_ADC_EN, info->regs + NPCM_ADCCON);
-> > > +     if (!IS_ERR(info->vref))
-> > > +             regulator_disable(info->vref);
-> > > +err_disable_clk:
-> > > +     clk_disable_unprepare(info->adc_clk);
-> > > +
-> > > +     return ret;
-> > > +}
-> > > +
-> > > +static int npcm_adc_remove(struct platform_device *pdev)
-> > > +{
-> > > +     struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> > > +     struct npcm_adc *info = iio_priv(indio_dev);
-> > > +     u32 regtemp;
-> > > +
-> > > +     regtemp = ioread32(info->regs + NPCM_ADCCON);  
-> >
-> > The ordering is a bit odd here.  I would have done the unregister
-> > first then read the value.  Doesn't have any real effect other than making
-> > reviewers wonder if there is something interesting going on!
-> >  
-> > > +
-> > > +     iio_device_unregister(indio_dev);
-> > > +     iowrite32(regtemp & ~NPCM_ADCCON_ADC_EN, info->regs + NPCM_ADCCON);
-> > > +     if (!IS_ERR(info->vref))
-> > > +             regulator_disable(info->vref);
-> > > +     clk_disable_unprepare(info->adc_clk);
-> > > +
-> > > +     return 0;
-> > > +}
-> > > +
-> > > +static struct platform_driver npcm_adc_driver = {
-> > > +     .probe          = npcm_adc_probe,
-> > > +     .remove         = npcm_adc_remove,
-> > > +     .driver         = {
-> > > +             .name   = "npcm_adc",
-> > > +             .of_match_table = npcm_adc_match,
-> > > +     },
-> > > +};
-> > > +
-> > > +module_platform_driver(npcm_adc_driver);
-> > > +
-> > > +MODULE_DESCRIPTION("Nuvoton NPCM ADC Driver");
-> > > +MODULE_AUTHOR("Tomer Maimon <tomer.maimon@nuvoton.com>");
-> > > +MODULE_LICENSE("GPL v2");  
-> >
-> >  
-> Thanks,
-> 
-> Tomer
+Shreeya Patel (3):
+  Staging: iio: adt7316: Remove irq from bus structure
+  Staging: iio: adt7316: Remove multi read and write functions
+  Staging: iio: adt7316: Add regmap support
+
+ drivers/staging/iio/addac/adt7316-i2c.c |  97 ++-------------
+ drivers/staging/iio/addac/adt7316-spi.c |  95 +++------------
+ drivers/staging/iio/addac/adt7316.c     | 149 ++++++++++++------------
+ drivers/staging/iio/addac/adt7316.h     |  15 +--
+ 4 files changed, 104 insertions(+), 252 deletions(-)
+
+-- 
+2.17.1
 
