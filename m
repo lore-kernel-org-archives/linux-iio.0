@@ -2,117 +2,420 @@ Return-Path: <SRS0=pB1S=QD=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9782BC282CA
-	for <linux-iio@archiver.kernel.org>; Sun, 27 Jan 2019 13:45:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E5CCC282CA
+	for <linux-iio@archiver.kernel.org>; Sun, 27 Jan 2019 15:03:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5C77C2148D
-	for <linux-iio@archiver.kernel.org>; Sun, 27 Jan 2019 13:45:35 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GfRcgeV6"
+	by mail.kernel.org (Postfix) with ESMTP id D2C5B214C6
+	for <linux-iio@archiver.kernel.org>; Sun, 27 Jan 2019 15:03:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1548601437;
+	bh=ENGOCHW7hGgblzm9bCcg3uNAeM4F4IFlpmUZ1c0Qvm0=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=sH0BLtEhwsBt16vuiMXXdXCC320HGRrEwr1iVQj0pTZVXlluTCqWcHAsTbsW96u6q
+	 0TKwDagbzVnlK7uBPg6TM9eWeZ6cyX+D6DwtHzSYjOWZxFgZkP5Y+EQ5p4P4c2w9gx
+	 e8bAI76UyV9slYL7rte3pW0Srp4aUxuU2LulvEpc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726566AbfA0Npe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 27 Jan 2019 08:45:34 -0500
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:34809 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726505AbfA0Npe (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 Jan 2019 08:45:34 -0500
-Received: by mail-lj1-f195.google.com with SMTP id u89-v6so12031530lje.1;
-        Sun, 27 Jan 2019 05:45:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=gD0diEcJYXip57apvaI31OtlaTTImHgLdZy1DD0fwpM=;
-        b=GfRcgeV66XLH7gF/BrpWDcyR3HqjeQtStrxMJFETE12MK+oReOX27IolkUzqtJvnoa
-         XnVm+9ZzluuiOfnd2j4JBCRs/6XuwzeDmAfCUWKzCCLmW8tQHHzNVGMXmo80Z2ctXwyr
-         xOy/tBYKJ1RGxEvZdPTDikVTRBn2zMSgxgwLdw0b0VF9Q5PEcp2IOI0s+1Z073675Wpk
-         IGvCcTKU8Dpr3nUF5Ou3jduAsG5VXMsecKw4nxo+JvFmj1bvMKcgj08k7ZGS/eKQ2Nw3
-         lbpQKIkIeFXi7MgJZMtHqA0kSVWTiKgDVMaeOq4CDCrznzzuOIurvAxCGJEP13e+JAZb
-         3h9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=gD0diEcJYXip57apvaI31OtlaTTImHgLdZy1DD0fwpM=;
-        b=tNE4XrJCQtET2+NS/VN80Hu/VhApH+F7LzZuTQiQRsDWw+A7GTcKJoUfiVKvkr+LHS
-         zoAlGGKzgb/r+WESEVh5pE/ieTnIjhQCKhDHFiovjuyMfqHWP8tonklc6fAjRsKinVTa
-         N3/9GfU2CjR7pUzRmUF1XHr7E1/d+mayZjZ+6MWttOQ0s6CTYvPYGaFtc8/exafMXen5
-         NXTi3WRfzO6noMLfWKX2cnlngS+yLmwGFh6itwy6SQ3CKHyw+5jyMoEq85/eDuSdGZEa
-         AloH/HVPFbwzf+ngioiFUptOD4+9224VVVma7eA4d9Bl9T5Rndb7oA43dd+FD7RfgThP
-         gAtA==
-X-Gm-Message-State: AJcUukcpsMm1HbZ+7Y9OYK9cJA/Tqlr6y6kyEzjIZ/JyE5eVhka5LmjS
-        gAUiN0y6w9IliZFdmXYQDmA=
-X-Google-Smtp-Source: ALg8bN7sNNQmBVk0nWnjWZCpvEMhb+2caLmpbjQ20j1vo35O95verYWxY9M401GeFoa6nmXRLbW2FQ==
-X-Received: by 2002:a2e:8087:: with SMTP id i7-v6mr14108186ljg.179.1548596731697;
-        Sun, 27 Jan 2019 05:45:31 -0800 (PST)
-Received: from localhost (89-70-37-207.dynamic.chello.pl. [89.70.37.207])
-        by smtp.gmail.com with ESMTPSA id h3sm2446962lfj.25.2019.01.27.05.45.30
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 27 Jan 2019 05:45:31 -0800 (PST)
-Date:   Sun, 27 Jan 2019 14:45:07 +0100
-From:   Tomasz Duszynski <tduszyns@gmail.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Tomasz Duszynski <tduszyns@gmail.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 3/3] dt-bindings: iio: chemical: pms7003: add device tree
- support
-Message-ID: <20190127134506.GA10793@arch>
-References: <20190106171614.12615-1-tduszyns@gmail.com>
- <20190106171614.12615-4-tduszyns@gmail.com>
- <20190111221526.GA29234@bogus>
+        id S1726516AbfA0PD4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 27 Jan 2019 10:03:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33830 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726511AbfA0PD4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 27 Jan 2019 10:03:56 -0500
+Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6E86120855;
+        Sun, 27 Jan 2019 15:03:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1548601434;
+        bh=ENGOCHW7hGgblzm9bCcg3uNAeM4F4IFlpmUZ1c0Qvm0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=LcTJmhxpVcB+u3Uak4/p/eOGuhJyhWdvVbm2fjQzc4/NemiyCESZSBpy3ts/NiaKJ
+         S8y/NBzvw7jVxxQZzODsUAW5eGfpMMwYUTn9T83Wjt4SMrQRtZlBVFnpheDGuyNEAe
+         Ih72CvsGefia6XleVe7T2gdcN89lXBXdgZQEkl7c=
+Date:   Sun, 27 Jan 2019 15:03:49 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Ricardo Ribalda Delgado <ricardo@ribalda.com>
+Cc:     Alexandru Ardelean <ardeleanalex@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        alexandru.ardelean@analog.com, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] iio:dac:ti-dac7612: Add driver for Texas Instruments
+ DAC7612
+Message-ID: <20190127150349.304fcd7a@archlinux>
+In-Reply-To: <CAPybu_2pk9twU6Wmxng0jcdZyN_1L0jWPwDB266Cs3ZwyMmFLw@mail.gmail.com>
+References: <20190125100055.13836-1-ricardo@ribalda.com>
+        <20190126204155.6fbb9512@archlinux>
+        <CAPybu_2pk9twU6Wmxng0jcdZyN_1L0jWPwDB266Cs3ZwyMmFLw@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20190111221526.GA29234@bogus>
-User-Agent: Mutt/1.11.2 (2019-01-07)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, Jan 11, 2019 at 04:15:26PM -0600, Rob Herring wrote:
-> On Sun, Jan 06, 2019 at 06:16:14PM +0100, Tomasz Duszynski wrote:
-> > Add device tree support for Plantower PMS7003 particulate matter sensor.
-> >
-> > Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
-> > ---
-> >  .../bindings/iio/chemical/plantower,pms7003.txt    | 14 ++++++++++++++
-> >  1 file changed, 14 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
-> >
-> > diff --git a/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt b/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
-> > new file mode 100644
-> > index 000000000000..79eb538eb932
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
-> > @@ -0,0 +1,14 @@
-> > +* Plantower PMS7003 particulate matter sensor
-> > +
-> > +Required properties:
-> > +- compatible: must be "plantower,pms7003"
->
-> Looks like this has reset and set GPIO lines as well as Vcc supply.
-> Bindings should be complete even if the driver or a platform doesn't use
-> some parts.
->
+On Sat, 26 Jan 2019 22:34:50 +0100
+Ricardo Ribalda Delgado <ricardo@ribalda.com> wrote:
 
-Fine. I'll add missing pin descriptions in v2 then.
+> HI Jonathan
+> 
+> Thanks for your review. I will make the changes and send it back to
+> you after testing it on Monday on real hardware.
+> 
+> Until then I have pushed my changes to
+> https://github.com/ribalda/linux/tree/ribalda-iio-v3 in case you want
+> to see it before I send it to the list.
+> (I am still missing the dt-bindings)
+> 
+> Some comments inline.
+Replies inline.
 
-> > +
-> > +Refer to serial/slave-device.txt for generic serial attached device bindings.
-> > +
-> > +Example:
-> > +
-> > +&uart@0 {
-> > +	pms7003 {
-> > +		compatible = "plantower,pms7003";
-> > +	};
-> > +};
-> > --
-> > 2.20.1
+> 
+> Best regards!
+> 
+> On Sat, Jan 26, 2019 at 9:42 PM Jonathan Cameron <jic23@kernel.org> wrote:
 > >
+> > On Fri, 25 Jan 2019 11:00:55 +0100
+> > Ricardo Ribalda Delgado <ricardo@ribalda.com> wrote:
+> >  
+> > > It is a driver for Texas Instruments Dual, 12-Bit Serial Input
+> > > Digital-to-Analog Converter.
+> > >
+> > > Datasheet of this chip:
+> > > http://www.ti.com/lit/ds/sbas106/sbas106.pdf
+> > >
+> > > Signed-off-by: Ricardo Ribalda Delgado <ricardo@ribalda.com>  
+> > Hi Ricardo,
+> >
+> > Various bits and pieces inline.
+> >
+> > Jonathan
+> >  
+> > > ---
+> > >
+> > > v2: Fix range
+> > >  MAINTAINERS                  |   6 ++
+> > >  drivers/iio/dac/Kconfig      |  10 +++
+> > >  drivers/iio/dac/Makefile     |   1 +
+> > >  drivers/iio/dac/ti-dac7612.c | 169 +++++++++++++++++++++++++++++++++++
+> > >  4 files changed, 186 insertions(+)
+> > >  create mode 100644 drivers/iio/dac/ti-dac7612.c
+> > >
+> > > diff --git a/MAINTAINERS b/MAINTAINERS
+> > > index d039f66a5cef..30ba5435906b 100644
+> > > --- a/MAINTAINERS
+> > > +++ b/MAINTAINERS
+> > > @@ -14877,6 +14877,12 @@ F:   Documentation/devicetree/bindings/clock/ti,sci-clk.txt
+> > >  F:   drivers/clk/keystone/sci-clk.c
+> > >  F:   drivers/reset/reset-ti-sci.c
+> > >
+> > > +Texas Instruments' DAC7612 DAC Driver
+> > > +M:   Ricardo Ribalda <ricardo@ribalda.com>
+> > > +L:   linux-iio@vger.kernel.org
+> > > +S:   Supported
+> > > +F:   drivers/iio/dac/ti-dac7612.c
+> > > +
+> > >  THANKO'S RAREMONO AM/FM/SW RADIO RECEIVER USB DRIVER
+> > >  M:   Hans Verkuil <hverkuil@xs4all.nl>
+> > >  L:   linux-media@vger.kernel.org
+> > > diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> > > index f28daf67db6a..fbef9107acad 100644
+> > > --- a/drivers/iio/dac/Kconfig
+> > > +++ b/drivers/iio/dac/Kconfig
+> > > @@ -375,6 +375,16 @@ config TI_DAC7311
+> > >
+> > >         If compiled as a module, it will be called ti-dac7311.
+> > >
+> > > +config TI_DAC7612
+> > > +     tristate "Texas Instruments 12-bit 2-channel DAC driver"
+> > > +     depends on SPI_MASTER && GPIOLIB
+> > > +     help
+> > > +       Driver for the Texas Instruments DAC7612, DAC7612U, DAC7612UB
+> > > +       The driver hand drive the load pin automatically, otherwise
+> > > +       it needs to be toggled manually.  
+> >
+> > Given the driver doesn't load without that pin, do we need to give
+> > the otherwise?  I would drop this comment entirely.  
+> 
+> I am probing the gpio with devm_gpiod_get_optional() so the driver can
+> load without the pin
+Hmm. I thought that would blow up when you tried to set the output but
+it seems not as the gpiod function just returns without doing anything.
+
+So is this a an actual usecase you have?  My inclination would be to just
+make it non optional otherwise.  The thought of relying on a random pulse
+from another device doesn't seem like a good idea to me.
+
+> 
+> >  
+> > > +
+> > > +       If compiled as a module, it will be called ti-dac7612.
+> > > +
+> > >  config VF610_DAC
+> > >       tristate "Vybrid vf610 DAC driver"
+> > >       depends on OF
+> > > diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+> > > index f0a37c93de8e..1369fa1d2f0e 100644
+> > > --- a/drivers/iio/dac/Makefile
+> > > +++ b/drivers/iio/dac/Makefile
+> > > @@ -41,4 +41,5 @@ obj-$(CONFIG_STM32_DAC) += stm32-dac.o
+> > >  obj-$(CONFIG_TI_DAC082S085) += ti-dac082s085.o
+> > >  obj-$(CONFIG_TI_DAC5571) += ti-dac5571.o
+> > >  obj-$(CONFIG_TI_DAC7311) += ti-dac7311.o
+> > > +obj-$(CONFIG_TI_DAC7612) += ti-dac7612.o
+> > >  obj-$(CONFIG_VF610_DAC) += vf610_dac.o
+> > > diff --git a/drivers/iio/dac/ti-dac7612.c b/drivers/iio/dac/ti-dac7612.c
+> > > new file mode 100644
+> > > index 000000000000..278406f69e0c
+> > > --- /dev/null
+> > > +++ b/drivers/iio/dac/ti-dac7612.c
+> > > @@ -0,0 +1,169 @@
+> > > +// SPDX-License-Identifier: GPL-2.0
+> > > +/*
+> > > + * DAC7612 Dual, 12-Bit Serial input Digital-to-Analog Converter
+> > > + *
+> > > + * Copyright 2019 Qtechnology A/S
+> > > + * 2019 Ricardo Ribalda <ricardo@ribalda.com>
+> > > + *
+> > > + * Licensed under the GPL-2.
+> > > + */
+> > > +#include <linux/kernel.h>
+> > > +#include <linux/module.h>
+> > > +#include <linux/spi/spi.h>
+> > > +#include <linux/gpio/consumer.h>
+> > > +#include <linux/iio/iio.h>
+> > > +
+> > > +#define NUM_CHANS 2
+> > > +#define RESOLUTION 12  
+> > Please prefix any naming that is generic like this with
+> > the driver name.  Avoids potential redefined clashes in the future.
+> > Where they are 'real numbers' rather than Magic numbers I would
+> > generally look at using the actual number rather than a define.
+> >  
+> > > +
+> > > +struct dac7612 {
+> > > +     struct spi_device *spi;
+> > > +     struct gpio_desc *nld;
+> > > +     uint16_t cache[NUM_CHANS];
+> > > +};
+> > > +
+> > > +static int dac7612_cmd_single(struct dac7612 *priv, int channel, u16 val)
+> > > +{
+> > > +     uint8_t buffer[2];
+> > > +     int ret;
+> > > +
+> > > +     if (channel >= NUM_CHANS)  
+> > Is there any way this can happen?  Seems a little over paranoid.  
+> > > +             return -EINVAL;
+> > > +
+> > > +     buffer[0] = BIT(5) | (channel << 4) | (val >> 8);  
+> > BIT(5) is a magic number so should probably come from a define
+> > as should the shifts of the other parts.
+> >  
+> > > +     buffer[1] = val & 0xff;
+> > > +
+> > > +     priv->cache[channel] = val;
+> > > +
+> > > +     ret = spi_write(priv->spi, buffer, sizeof(buffer));  
+> >
+> > spi write can potentially do a dma transfer so it needs
+> > a dma safe buffer.  This one isn't as it is on the stack.
+> > Given it is a moderately fast path, best option is to put the
+> > buffer in priv and use the __cacheline_aligned trick (plus the
+> > fact private data is already cacheline aligned) to get it into
+> > it's own cacheline.  Wofram Sang's OSS talk on i2c dma is a good
+> > tutorial on this and is on youtube if you have time.
+> >
+> > https://www.youtube.com/watch?v=JDwaMClvV-s
+> >  
+> > > +     if (ret)
+> > > +             return ret;
+> > > +
+> > > +     gpiod_set_value(priv->nld, 0);
+> > > +     gpiod_set_value(priv->nld, 1);
+> > > +
+> > > +     return 0;
+> > > +}
+> > > +
+> > > +#define dac7612_CHANNEL(chan, name) {                                \
+> > > +     .type = IIO_VOLTAGE,                                    \
+> > > +     .channel = (chan),                                      \
+> > > +     .address = (chan),                                      \  
+> > Not used, so don't set it.
+> >  
+> > > +     .indexed = true,                                        \  
+> > These are bit fields, so whilst this works, = 1 is more conventional.
+> >  
+> > > +     .output = true,                                         \
+> > > +     .datasheet_name = name,                                 \
+> > > +     .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),           \
+> > > +     .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),   \
+> > > +     .scan_type = {                                          \
+> > > +                     .sign = 'u',                            \
+> > > +                     .realbits = RESOLUTION,                 \
+> > > +                     .storagebits = RESOLUTION,              \  
+> > No need to provide scan_type as we don't have buffered output in
+> > mainline.  Also this would be wrong as storagebits needs to be
+> > 8/16/32/64 etc.
+> >
+> > Would prefer a straight forward value like RESOLUTION was just
+> > expressed as a number.
+> >  
+> > > +     },                                                      \
+> > > +}
+> > > +
+> > > +static const struct iio_chan_spec dac7612_channels[] = {
+> > > +     dac7612_CHANNEL(0, "OUTA"),
+> > > +     dac7612_CHANNEL(1, "OUTB"),
+> > > +};
+> > > +
+> > > +static int dac7612_read_raw(struct iio_dev *iio_dev,
+> > > +                         const struct iio_chan_spec *chan,
+> > > +                         int *val, int *val2, long mask)
+> > > +{
+> > > +     struct dac7612 *priv;
+> > > +
+> > > +     switch (mask) {
+> > > +     case IIO_CHAN_INFO_RAW:
+> > > +             priv = iio_priv(iio_dev);
+> > > +             *val = priv->cache[chan->channel];
+> > > +             return IIO_VAL_INT;
+> > > +
+> > > +     case IIO_CHAN_INFO_SCALE:
+> > > +             *val = 1000000;  
+> >
+> > This makes me wonder.  The units of voltage are millivolts, so is
+> > raw value * 1000000 = value in mv?  
+> 
+> I tried using IIO_VAL_FRACTIONAL, with val = 1 and val2=1000000, and
+> it only returned -EINVAL.
+
+That is odd and definitely worth chasing down the reason.
+
+> Then I discovered the PLUS_MICRO and I want to remember that cating
+> the range sysfs file returned:
+> 0,000001, but I will try again on Monday.
+> 
+> >
+> > That would make this a very high voltage device.
+> > See Documentation/ABI/testing/sysfs-bus-iio* for
+> > IIO ABI documentation.
+> >  
+> > > +             return IIO_VAL_INT_PLUS_MICRO;
+> > > +
+> > > +     default:
+> > > +             return -EINVAL;
+> > > +     }
+> > > +}
+> > > +
+> > > +static int dac7612_write_raw(struct iio_dev *iio_dev,
+> > > +                          const struct iio_chan_spec *chan,
+> > > +                          int val, int val2, long mask)
+> > > +{
+> > > +     struct dac7612 *priv;  
+> >
+> > struct dac7612 *priv = iio_priv(iio_dev);
+> >
+> > (it's just macro magic to get the right point so normally considered
+> > fine to be called like this).
+> >
+> >  
+> > > +     int ret;
+> > > +
+> > > +     if (mask != IIO_CHAN_INFO_RAW)
+> > > +             return -EINVAL;
+> > > +
+> > > +     if ((val >= BIT(RESOLUTION)) || val < 0)
+> > > +             return -EINVAL;  
+> >
+> > As not providing a write_fmt function (which is fine)
+> > should also sanity check that val2 is 0.
+> >  
+> > > +
+> > > +     priv = iio_priv(iio_dev);
+> > > +     if (val == priv->cache[chan->channel])
+> > > +             return 0;
+> > > +
+> > > +     mutex_lock(&iio_dev->mlock);
+> > > +     ret = dac7612_cmd_single(priv, chan->channel, val);
+> > > +     mutex_unlock(&iio_dev->mlock);
+> > > +
+> > > +     return ret;
+> > > +}
+> > > +
+> > > +static const struct iio_info dac7612_info = {
+> > > +     .read_raw = dac7612_read_raw,
+> > > +     .write_raw = dac7612_write_raw,
+> > > +};
+> > > +
+> > > +static int dac7612_probe(struct spi_device *spi)
+> > > +{
+> > > +     struct iio_dev *iio_dev;
+> > > +     struct dac7612 *priv;
+> > > +     int i;
+> > > +     int ret;
+> > > +
+> > > +     iio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*priv));
+> > > +     if (!iio_dev)
+> > > +             return -ENOMEM;
+> > > +
+> > > +     priv = iio_priv(iio_dev);
+> > > +     priv->nld = devm_gpiod_get_optional(&spi->dev, "nLD", GPIOD_OUT_HIGH);  
+> >
+> > This isn't a particularly standard gpio name.  Hence this driver definitely
+> > needs a DT binding doc (remember to cc dt list and maintainers).  Also
+> > this should almost certainly be prefixed with a vendor prefix.
+> >
+> > It's also not the name I'm seeing on the datasheet, so needs some justifying
+> > comments.
+> >  
+> > > +     if (IS_ERR(priv->nld))
+> > > +             return PTR_ERR(priv->nld);
+> > > +     priv->spi = spi;
+> > > +     spi_set_drvdata(spi, iio_dev);
+> > > +     iio_dev->dev.parent = &spi->dev;
+> > > +     iio_dev->info = &dac7612_info;
+> > > +     iio_dev->modes = INDIO_DIRECT_MODE;
+> > > +     iio_dev->channels = dac7612_channels;
+> > > +     iio_dev->num_channels = NUM_CHANS;  
+> > ARRAY_SIZE.  
+> > > +     iio_dev->name = spi_get_device_id(spi)->name;
+> > > +
+> > > +     for (i = 0; i < NUM_CHANS; i++) {  
+> > ARRAY_SIZE  
+> > > +             ret = dac7612_cmd_single(priv, i, 0);
+> > > +             if (ret)
+> > > +                     return ret;
+> > > +     }
+> > > +
+> > > +     return devm_iio_device_register(&spi->dev, iio_dev);
+> > > +}
+> > > +
+> > > +static const struct spi_device_id dac7612_id[] = {
+> > > +     {"ti-dac7612"},
+> > > +     {}
+> > > +};
+> > > +MODULE_DEVICE_TABLE(spi, dac7612_id);
+> > > +
+> > > +static struct spi_driver dac7612_driver = {
+> > > +     .driver = {
+> > > +                .name = "ti-dac7612",
+> > > +                },
+> > > +     .probe = dac7612_probe,
+> > > +     .id_table = dac7612_id,
+> > > +};
+> > > +module_spi_driver(dac7612_driver);
+> > > +
+> > > +MODULE_AUTHOR("Ricardo Ribalda <ricardo@ribalda.com>");
+> > > +MODULE_DESCRIPTION("Texas Instruments DAC7612 DAC driver");
+> > > +MODULE_LICENSE("GPL v2");  
+> >  
+> 
+> 
+
