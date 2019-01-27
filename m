@@ -7,54 +7,54 @@ X-Spam-Status: No, score=-3.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_NEOMUTT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B41CFC282CA
-	for <linux-iio@archiver.kernel.org>; Sun, 27 Jan 2019 19:45:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85E06C282CA
+	for <linux-iio@archiver.kernel.org>; Sun, 27 Jan 2019 20:30:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 789E620989
-	for <linux-iio@archiver.kernel.org>; Sun, 27 Jan 2019 19:45:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 464362133D
+	for <linux-iio@archiver.kernel.org>; Sun, 27 Jan 2019 20:30:15 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="E76DYkUp"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pW5Omw8p"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726926AbfA0TpN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 27 Jan 2019 14:45:13 -0500
-Received: from mail-qk1-f169.google.com ([209.85.222.169]:41227 "EHLO
-        mail-qk1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726878AbfA0TpN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 Jan 2019 14:45:13 -0500
-Received: by mail-qk1-f169.google.com with SMTP id 189so8285976qkj.8;
-        Sun, 27 Jan 2019 11:45:13 -0800 (PST)
+        id S1726913AbfA0UaO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 27 Jan 2019 15:30:14 -0500
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:37239 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726630AbfA0UaO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 Jan 2019 15:30:14 -0500
+Received: by mail-qt1-f194.google.com with SMTP id t33so16230179qtt.4;
+        Sun, 27 Jan 2019 12:30:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:mime-version:content-disposition
          :user-agent;
-        bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-        b=E76DYkUpBgoSUAnJJ71Pf0zW0Chwh0q/XSVXNBBj2OINwX3sEuI5dxZe6RkVUU+BIh
-         hxUc8nwFqgWWlMNgRDmH0TKianKZP1Rr9RNyIM8wjEFGoW8aVhSyq6XlZPSMl+z6reAj
-         y6pklOe5P/3Bnhwbn9vB8S6MKN0P3MZ4OQ9vRWjU2JkIkcfq/QTWRjvTq03MSS+xaqE3
-         tN50mkCpEVyImWcfrFH55loCq/h6Rn8sZnFdSkkYLu9g5mPD5immkm6uUjT+BojUbBQB
-         D+BPS6R2+V43f7G7/udGlTFPVxwelqCDjpzoPUzOEzeeNxITBD9YqUmQlZvoridzOiWK
-         B5vg==
+        bh=x0xpwfJTYmKMrI6IiBvN0+6STIL0Vh4u6UvzeC6GJo4=;
+        b=pW5Omw8p6G8BzpwC1kCuWI+4cJtrNY+Fiiak/naWdzD+vne1gHMieJadn0+1k4CQnE
+         3coWixByAAbYQWm9zGIGt9KOWuDeodELQ+o+7xgLCgVWWC2w86JtwualPR/9HguMG6KC
+         3yy/TSB4kgazR1omO+fa1+add9cuLA8BGayRFfrAEq4sQ8VIkvNPapLEPFJoDSZtzZWr
+         v4T0VsgpIHTa47u5WIT6mbS7gpKm9ZzQ1EgtZIpnn2Vktmyj1lc2sLNF25O2KreRr76k
+         UxPRh2+T6oBxbMfZ/Q4bHIzaDeTdeLlDnU+32f/S0GFW5YpLtM8Fh21yalHx9OBiarTE
+         pyyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
          :content-disposition:user-agent;
-        bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-        b=PtDh65laPAWJavv9wp5KFeO9mCKsj9rNTLxlkFhGhZiX7dbfrPuffcDnSnrzAOOAhO
-         PMyqX+EmvZvDTkyEf/8ng7/Z6OACee00bn5bEjmEuAbB/VIhKxJgu9KDqgF3Czce4dGy
-         MIaj4hd0mOJFfiY2o1rOz7MBM91f3aJ7W7b5c9z3hWugZqeid1fi9CqjGQrrjlPqGacL
-         +bc0yX6+f8bVexKd5zSN9cyL54apdN4mmYSUaR2T95uWfYgD074O2YAqGEjAQvNrTrX+
-         Kb/7ANaOUezVyUBoe+a97e+vQLFetYst6InwPL/SFO7QEIwJZRTc9JvBpoQL8yq6SQ+u
-         XyjQ==
-X-Gm-Message-State: AJcUukc+8UPsj/IPe8QpsxIStPfT9BMcpv2QIY9v0Wl+j3pYrjjpVMKD
-        gYBQe/UdpKICnXbgRrVEzC8=
-X-Google-Smtp-Source: ALg8bN4/f9YqNM6OxXF7W99OWoIoo2oOFX7savAgfQeDNQmOxE7z3lSSCXu5mM8hXIAyMyTv/gM54w==
-X-Received: by 2002:ae9:dec5:: with SMTP id s188mr17025961qkf.127.1548618312547;
-        Sun, 27 Jan 2019 11:45:12 -0800 (PST)
+        bh=x0xpwfJTYmKMrI6IiBvN0+6STIL0Vh4u6UvzeC6GJo4=;
+        b=RAQOR2bUOgmTBhbGCsTXf7OFp1OMeCMMEDLGIv2KoOB6YfAHh6BCEnIrKQhf4HjQKT
+         6UsuQKz51kioQIFtrR0o4+dDPUXAx6UAYjOrUHqJFGJ2c5ok6khsbWhuY+YRfzoi9Bg4
+         IEqx92QlTE5EwpVYxB/d6RhUsCYOzAAMHdaagI/vs0wKbjSVDjUCmWZ0ArbLLpMJQNhr
+         oRowQjn83968DSTkZqDnuDV4ASv4Kp1dVr6EebNMafCPKMZb8Cj0nDww00Ch3eGzsxf4
+         JZgmEmE75UqO3WSUfTFF0mhhkJx80anFXh3x69co/M8O7zME8nNmI0KfkNNF9LL7aqpk
+         y9QQ==
+X-Gm-Message-State: AJcUukcJ/iKswK/OjWzwlADz+fHS5z+nS7a6on97jPfMNwF+0+va1RHd
+        5msv1yME7Vvh1vEQtGuV3XU=
+X-Google-Smtp-Source: ALg8bN6RmF4UawEAhLMuhFUIVNrs0Obu59DkbGCkWUDskDO5oFG10HgoeQQPdjq6HinPWWsvKjFN0Q==
+X-Received: by 2002:ac8:2e6a:: with SMTP id s39mr19307233qta.355.1548621013703;
+        Sun, 27 Jan 2019 12:30:13 -0800 (PST)
 Received: from renatolg ([186.220.19.121])
-        by smtp.gmail.com with ESMTPSA id d79sm21506496qkg.56.2019.01.27.11.45.04
+        by smtp.gmail.com with ESMTPSA id e186sm59608324qkb.32.2019.01.27.12.30.09
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 27 Jan 2019 11:45:12 -0800 (PST)
-Date:   Sun, 27 Jan 2019 17:45:01 -0200
+        Sun, 27 Jan 2019 12:30:13 -0800 (PST)
+Date:   Sun, 27 Jan 2019 18:30:00 -0200
 From:   Renato Lui Geh <renatogeh@gmail.com>
 To:     lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
         knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
@@ -63,7 +63,7 @@ To:     lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
 Cc:     linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
         linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
 Subject: [PATCH v2 0/2] staging: iio: ad7780: move out of staging
-Message-ID: <20190127194452.nkewca2dbvkf5ez6@renatolg>
+Message-ID: <20190127202957.o3ghqnwjt2konxge@renatolg>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Disposition: inline
@@ -72,4 +72,26 @@ Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
+
+This series of patches add user input to ad7780 'gain' & 'filter' gpio
+pins. It also includes a patch to move ad7780 out of staging and to the
+main tree.
+
+Renato Lui Geh (2):
+  staging: iio: ad7780: add gain & filter gpio support
+  staging: iio: ad7780: moving ad7780 out of staging
+
+ drivers/iio/adc/Kconfig                |  13 +
+ drivers/iio/adc/Makefile               |   1 +
+ drivers/iio/adc/ad7780.c               | 361 +++++++++++++++++++++++++
+ drivers/staging/iio/adc/Kconfig        |  13 -
+ drivers/staging/iio/adc/Makefile       |   1 -
+ drivers/staging/iio/adc/ad7780.c       | 277 -------------------
+ include/linux/iio/adc/ad_sigma_delta.h |   5 +
+ 7 files changed, 380 insertions(+), 291 deletions(-)
+ create mode 100644 drivers/iio/adc/ad7780.c
+ delete mode 100644 drivers/staging/iio/adc/ad7780.c
+
+-- 
+2.20.1
 
