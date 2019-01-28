@@ -4,49 +4,49 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54D7DC282C8
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 17:07:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62E52C282C8
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 17:08:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1B7E521741
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 17:07:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 295F621741
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 17:08:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1548695225;
-	bh=7N+LpQ+NxZq/CHIg4NnQJQGooRQutIYwya96um++ZJE=;
+	s=default; t=1548695336;
+	bh=eeJkX3MlOaYG2SFXfVVq2C8vQUYeLfSYpfRI94OOgBg=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=LzWlfKfH3kpqjQpVA40mjs01z1xZdZ28wRqfkeaPlvlNUgk+olYTWdd3Z+H4lltZ0
-	 ACYviwRsqwPj1N1sM2cyxtzdEmWBN8Qn8q8OSYsnL0XFkbMjc/VpkN1Mw7lUC0b067
-	 NoPZk8wySfJp5RfUQ12cxGqz2KmbvQGuPpQHiLDc=
+	b=YhyoqPp9GcV6L6EeQ0ZFhL6qBgBt9fG5WqOmexrI4cT/plUfRyWFxOj8FqFIo4NW6
+	 YMcvA7EP7UXhPvB0w0rMPCHBG0rWidg9GNkYSeiyWHxZHFyAULr9mB7aZ8FWzc0ZV1
+	 GqwmDucJteItheg91+pYzJVbxkWrHZNWPlUcOVsc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733246AbfA1RHE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 28 Jan 2019 12:07:04 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41480 "EHLO mail.kernel.org"
+        id S1733116AbfA1RIp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 28 Jan 2019 12:08:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39852 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732860AbfA1QM5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 28 Jan 2019 11:12:57 -0500
+        id S1733070AbfA1QMF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 28 Jan 2019 11:12:05 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2AA192148E;
-        Mon, 28 Jan 2019 16:12:55 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 054B82175B;
+        Mon, 28 Jan 2019 16:12:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1548691976;
-        bh=7N+LpQ+NxZq/CHIg4NnQJQGooRQutIYwya96um++ZJE=;
+        s=default; t=1548691925;
+        bh=eeJkX3MlOaYG2SFXfVVq2C8vQUYeLfSYpfRI94OOgBg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oQCKRWn6BJ+dqh18WNagk8KjPAko2DbMgskeGW5b8oK4VPpQBSSns1qBePlPu/KiC
-         E5Ub+tOVMa1VhximYTbEeVb6Y7HFJCK+BZqp79LxJzVnz8o9iEcJ2U+evyMS5q2k12
-         q5HYmdG2AB33D4ZxWVAl4CiUj1V54OFxJkY25xLA=
+        b=wUbQcNXc4m7Jq9cgxKeOIWHyuVUG5MoMCHksVionAadlYexomfEDYH6NotmenSLsy
+         LGhf8n0biiBJK0YnDPh0FSAqoWrqeH7NqzfAAC2eU/vkVabpSWeiHCdhm391CUQiFJ
+         miSnRUEzNY2d4fpn9fLCOBiM6mK/N0fag1P0JDFk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Matheus Tavares <matheus.bernardino@usp.br>,
+Cc:     Slawomir Stepien <sst@poczta.fm>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org,
         devel@driverdev.osuosl.org
-Subject: [PATCH AUTOSEL 4.14 024/170] staging:iio:ad2s90: Make probe handle spi_setup failure
-Date:   Mon, 28 Jan 2019 11:09:34 -0500
-Message-Id: <20190128161200.55107-24-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 002/170] staging: iio: adc: ad7280a: handle error from __ad7280_read32()
+Date:   Mon, 28 Jan 2019 11:09:12 -0500
+Message-Id: <20190128161200.55107-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.19.1
 In-Reply-To: <20190128161200.55107-1-sashal@kernel.org>
 References: <20190128161200.55107-1-sashal@kernel.org>
@@ -58,46 +58,70 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Matheus Tavares <matheus.bernardino@usp.br>
+From: Slawomir Stepien <sst@poczta.fm>
 
-[ Upstream commit b3a3eafeef769c6982e15f83631dcbf8d1794efb ]
+[ Upstream commit 0559ef7fde67bc6c83c6eb6329dbd6649528263e ]
 
-Previously, ad2s90_probe ignored the return code from spi_setup, not
-handling its possible failure. This patch makes ad2s90_probe check if
-the code is an error code and, if so, do the following:
+Inside __ad7280_read32(), the spi_sync_transfer() can fail with negative
+error code. This change will ensure that this error is being passed up
+in the call stack, so it can be handled.
 
-- Call dev_err with an appropriate error message.
-- Return the spi_setup's error code.
-
-Note: The 'return ret' statement could be out of the 'if' block, but
-this whole block will be moved up in the function in the patch:
-'staging:iio:ad2s90: Move device registration to the end of probe'.
-
-Signed-off-by: Matheus Tavares <matheus.bernardino@usp.br>
+Signed-off-by: Slawomir Stepien <sst@poczta.fm>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/iio/resolver/ad2s90.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/staging/iio/adc/ad7280a.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/staging/iio/resolver/ad2s90.c b/drivers/staging/iio/resolver/ad2s90.c
-index b2270908f26f..cbee9ad00f0d 100644
---- a/drivers/staging/iio/resolver/ad2s90.c
-+++ b/drivers/staging/iio/resolver/ad2s90.c
-@@ -86,7 +86,12 @@ static int ad2s90_probe(struct spi_device *spi)
- 	/* need 600ns between CS and the first falling edge of SCLK */
- 	spi->max_speed_hz = 830000;
- 	spi->mode = SPI_MODE_3;
--	spi_setup(spi);
-+	ret = spi_setup(spi);
-+
-+	if (ret < 0) {
-+		dev_err(&spi->dev, "spi_setup failed!\n");
-+		return ret;
-+	}
+diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
+index f85dde9805e0..f17f700ea04f 100644
+--- a/drivers/staging/iio/adc/ad7280a.c
++++ b/drivers/staging/iio/adc/ad7280a.c
+@@ -256,7 +256,9 @@ static int ad7280_read(struct ad7280_state *st, unsigned int devaddr,
+ 	if (ret)
+ 		return ret;
  
- 	return 0;
- }
+-	__ad7280_read32(st, &tmp);
++	ret = __ad7280_read32(st, &tmp);
++	if (ret)
++		return ret;
+ 
+ 	if (ad7280_check_crc(st, tmp))
+ 		return -EIO;
+@@ -294,7 +296,9 @@ static int ad7280_read_channel(struct ad7280_state *st, unsigned int devaddr,
+ 
+ 	ad7280_delay(st);
+ 
+-	__ad7280_read32(st, &tmp);
++	ret = __ad7280_read32(st, &tmp);
++	if (ret)
++		return ret;
+ 
+ 	if (ad7280_check_crc(st, tmp))
+ 		return -EIO;
+@@ -327,7 +331,9 @@ static int ad7280_read_all_channels(struct ad7280_state *st, unsigned int cnt,
+ 	ad7280_delay(st);
+ 
+ 	for (i = 0; i < cnt; i++) {
+-		__ad7280_read32(st, &tmp);
++		ret = __ad7280_read32(st, &tmp);
++		if (ret)
++			return ret;
+ 
+ 		if (ad7280_check_crc(st, tmp))
+ 			return -EIO;
+@@ -370,7 +376,10 @@ static int ad7280_chain_setup(struct ad7280_state *st)
+ 		return ret;
+ 
+ 	for (n = 0; n <= AD7280A_MAX_CHAIN; n++) {
+-		__ad7280_read32(st, &val);
++		ret = __ad7280_read32(st, &val);
++		if (ret)
++			return ret;
++
+ 		if (val == 0)
+ 			return n - 1;
+ 
 -- 
 2.19.1
 
