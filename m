@@ -7,46 +7,46 @@ X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 889DFC282CD
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 17:46:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 972EAC282C8
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 17:48:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5254A20881
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 17:46:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5C33B20823
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 17:48:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1548697607;
-	bh=fbFe8DlZvj0NZ61TLj7w1CkS7E42p1s7wUWOC2ZTcIc=;
+	s=default; t=1548697732;
+	bh=7i13Zz+9iuHQLVh439EvUq7Ce1S5bG7zfXTU7lEvDIc=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=LX+YVFOAUNidJRjISn86RVTSASHEYJ5vGC2T8+Pla6VcV8i+oZwZWLfjV6JhRCGw5
-	 L+zwkOowNQMGitDd1TLy0wbYj3KtseqWaO1xy+GsMZ8jiTKRvmUnMemFiWNUnaYrk4
-	 y3cMObkKH559oEVRVWW5RjLQ7ZVl8jTmRcyU/Qjk=
+	b=2bofWdT5OV3Z3wZxd/EOw9d02VbgB0HyRoQGPhNGaRT9cmTg7Myx0p7eZCCy1EXiw
+	 i1nkehqeCJVOYwByLP37T+oh62VCvYpyJV4lFkOIXBaO0fGgxPfzQ+ilgOErnr1qnJ
+	 dGv9p35j0cNlNnrOSZFMn7hRGR1tThZURSZuvoN4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726853AbfA1Pq6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 28 Jan 2019 10:46:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60352 "EHLO mail.kernel.org"
+        id S1726947AbfA1PpZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 28 Jan 2019 10:45:25 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58768 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728166AbfA1Pq6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 28 Jan 2019 10:46:58 -0500
+        id S1727742AbfA1PpY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 28 Jan 2019 10:45:24 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BDA0B2147A;
-        Mon, 28 Jan 2019 15:46:55 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 411DA21741;
+        Mon, 28 Jan 2019 15:45:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1548690417;
-        bh=fbFe8DlZvj0NZ61TLj7w1CkS7E42p1s7wUWOC2ZTcIc=;
+        s=default; t=1548690323;
+        bh=7i13Zz+9iuHQLVh439EvUq7Ce1S5bG7zfXTU7lEvDIc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=heyLqA2CLY1ZjoiAk/+NnpMu4utADR6WSxkUdhuhGTsw52GfEnpnvekKassvOSwpB
-         GjpMNAwgNKV3OeHB3pWufVHjmVfxsHTNmZRqf23PC/qhhIEyWWEq1IFzVqjFi0R9cC
-         RI1k89mRpuCMybDN7EYYbIFs8vMMbe26eE8VWX1I=
+        b=j27Zbm6l+lyNQTfCQTrI1MYh7zr9fYlBIb1ioWBtFMlb10wpshnvhVlaGnd41uMJe
+         IjFFdHizNLi1ieYzmO1Lmo2LpyckxP73vTnLM5GUws2JqrlEp8DYQaSwR0GBVQ7Z+e
+         hoO7DjYy5P97cin216Ugp8PrERzccmJy8iRJJe2s=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nicholas Mc Guire <hofrat@osadl.org>,
+Cc:     Renato Lui Geh <renatogeh@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org,
-        linux-amlogic@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.20 079/304] iio: adc: meson-saradc: check for devm_kasprintf failure
-Date:   Mon, 28 Jan 2019 10:39:56 -0500
-Message-Id: <20190128154341.47195-79-sashal@kernel.org>
+        devel@driverdev.osuosl.org
+Subject: [PATCH AUTOSEL 4.20 051/304] staging: iio: ad7780: update voltage on read
+Date:   Mon, 28 Jan 2019 10:39:28 -0500
+Message-Id: <20190128154341.47195-51-sashal@kernel.org>
 X-Mailer: git-send-email 2.19.1
 In-Reply-To: <20190128154341.47195-1-sashal@kernel.org>
 References: <20190128154341.47195-1-sashal@kernel.org>
@@ -58,49 +58,44 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Nicholas Mc Guire <hofrat@osadl.org>
+From: Renato Lui Geh <renatogeh@gmail.com>
 
-[ Upstream commit aad172b017617994343e36d8659c69e14cd694fd ]
+[ Upstream commit 336650c785b62c3bea7c8cf6061c933a90241f67 ]
 
-devm_kasprintf() may return NULL on failure of internal allocation thus
-the assignments to  init.name  are not safe if not checked. On error
-meson_sar_adc_clk_init() returns negative values so -ENOMEM in the
-(unlikely) failure case of devm_kasprintf() should be fine here.
+The ad7780 driver previously did not read the correct device output, as
+it read an outdated value set at initialization. It now updates its
+voltage on read.
 
-Signed-off-by: Nicholas Mc Guire <hofrat@osadl.org>
-Fixes: 3adbf3427330 ("iio: adc: add a driver for the SAR ADC found in Amlogic Meson SoCs")
-Acked-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Tested-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Renato Lui Geh <renatogeh@gmail.com>
+Acked-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/meson_saradc.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/staging/iio/adc/ad7780.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
-index 028ccd218f82..672a5dee4a9d 100644
---- a/drivers/iio/adc/meson_saradc.c
-+++ b/drivers/iio/adc/meson_saradc.c
-@@ -589,6 +589,9 @@ static int meson_sar_adc_clk_init(struct iio_dev *indio_dev,
+diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
+index b67412db0318..c7cb05cedbbc 100644
+--- a/drivers/staging/iio/adc/ad7780.c
++++ b/drivers/staging/iio/adc/ad7780.c
+@@ -87,12 +87,16 @@ static int ad7780_read_raw(struct iio_dev *indio_dev,
+ 			   long m)
+ {
+ 	struct ad7780_state *st = iio_priv(indio_dev);
++	int voltage_uv;
  
- 	init.name = devm_kasprintf(&indio_dev->dev, GFP_KERNEL, "%pOF#adc_div",
- 				   indio_dev->dev.of_node);
-+	if (!init.name)
-+		return -ENOMEM;
-+
- 	init.flags = 0;
- 	init.ops = &clk_divider_ops;
- 	clk_parents[0] = __clk_get_name(priv->clkin);
-@@ -608,6 +611,9 @@ static int meson_sar_adc_clk_init(struct iio_dev *indio_dev,
- 
- 	init.name = devm_kasprintf(&indio_dev->dev, GFP_KERNEL, "%pOF#adc_en",
- 				   indio_dev->dev.of_node);
-+	if (!init.name)
-+		return -ENOMEM;
-+
- 	init.flags = CLK_SET_RATE_PARENT;
- 	init.ops = &clk_gate_ops;
- 	clk_parents[0] = __clk_get_name(priv->adc_div_clk);
+ 	switch (m) {
+ 	case IIO_CHAN_INFO_RAW:
+ 		return ad_sigma_delta_single_conversion(indio_dev, chan, val);
+ 	case IIO_CHAN_INFO_SCALE:
+-		*val = st->int_vref_mv * st->gain;
++		voltage_uv = regulator_get_voltage(st->reg);
++		if (voltage_uv < 0)
++			return voltage_uv;
++		*val = (voltage_uv / 1000) * st->gain;
+ 		*val2 = chan->scan_type.realbits - 1;
+ 		return IIO_VAL_FRACTIONAL_LOG2;
+ 	case IIO_CHAN_INFO_OFFSET:
 -- 
 2.19.1
 
