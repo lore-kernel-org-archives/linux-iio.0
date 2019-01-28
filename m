@@ -7,46 +7,46 @@ X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 079F6C282C8
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 16:32:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E911C282C8
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 16:32:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C400920663
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 16:32:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 637F320663
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 16:32:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1548693164;
-	bh=Xv5jPtmK0A+grYouMJDcojhSF+A/s5ETfA62vx0eyOY=;
+	s=default; t=1548693173;
+	bh=uRmZe6tSocQbSBIfWSXtqYU4PlIieLk0nxbKKT+NDH8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=yOmzzREHCZ29iuvTsjK863zYDtvXfc6lKKjOzOUKpI2Q/cDN8yXo/560o67TK6DG2
-	 l8Vnq5/o/nJlXE/hZ8600Q1s0tWNOMWzbCRbnK9xbChh5H9/4ovN0xJW1xtdumGd/Q
-	 rsClaUceB6k4cxXpBNIfQcrdXlfS/3gbI6H3VWfA=
+	b=C0Hwughjaz+RMe36c/wVKKfVUyYNcC1N2cnzgpgnoAde1ZcuF3LQO0TpsKhsHkVMW
+	 Yk5ij8r416VIeaXxr2GLeNEjezHRUdgP1flvAoedQE+orIJs0ygTgkqLA+kZoDjqJx
+	 l8OtLu8rCwHVhgZMiGAQm7UQbhJov6Y8o9QzBYro=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390212AbfA1Qce (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 28 Jan 2019 11:32:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36088 "EHLO mail.kernel.org"
+        id S1727878AbfA1Qcr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 28 Jan 2019 11:32:47 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36024 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390254AbfA1Q0j (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 28 Jan 2019 11:26:39 -0500
+        id S2390248AbfA1Q0i (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 28 Jan 2019 11:26:38 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 044792147A;
-        Mon, 28 Jan 2019 16:26:37 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C90EF2173C;
+        Mon, 28 Jan 2019 16:26:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1548692798;
-        bh=Xv5jPtmK0A+grYouMJDcojhSF+A/s5ETfA62vx0eyOY=;
+        s=default; t=1548692797;
+        bh=uRmZe6tSocQbSBIfWSXtqYU4PlIieLk0nxbKKT+NDH8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IuveAGVj1kz/Ntagr6NLazU5sNQR8S7jR7GHbD8pTA28d52ZCVL/Za3nOIlUGV/W7
-         OxQerM0T/FrN8k/8iG9wEf8FDzPVieUvp1U6uf6Zl6pc790F3RNnBoGj9/ADQidZMy
-         dLuXGz41etE4ytX9uPxO6k8zSIctW2dpSNHJUcjI=
+        b=GEZ51RRx7GJvjbMjiiYq5zfUwLrI35c/XbraWXkLnx/kiX7UCjD8GUMEVQUhhunHY
+         +ThyuuFTlJQpcXdCj5edPWelNreczf15Z/Ce/Ll4uOaTMFWITsyr7dNbCrOyIV7YV0
+         xv+xSqg6iXyEmYA3D3fpEjLYUBFAa3hpMCcIFnDs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Renato Lui Geh <renatogeh@gmail.com>,
+Cc:     Matheus Tavares <matheus.bernardino@usp.br>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org,
         devel@driverdev.osuosl.org
-Subject: [PATCH AUTOSEL 3.18 11/61] staging: iio: ad7780: update voltage on read
-Date:   Mon, 28 Jan 2019 11:25:33 -0500
-Message-Id: <20190128162623.59854-11-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 3.18 10/61] staging:iio:ad2s90: Make probe handle spi_setup failure
+Date:   Mon, 28 Jan 2019 11:25:32 -0500
+Message-Id: <20190128162623.59854-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.19.1
 In-Reply-To: <20190128162623.59854-1-sashal@kernel.org>
 References: <20190128162623.59854-1-sashal@kernel.org>
@@ -58,44 +58,46 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Renato Lui Geh <renatogeh@gmail.com>
+From: Matheus Tavares <matheus.bernardino@usp.br>
 
-[ Upstream commit 336650c785b62c3bea7c8cf6061c933a90241f67 ]
+[ Upstream commit b3a3eafeef769c6982e15f83631dcbf8d1794efb ]
 
-The ad7780 driver previously did not read the correct device output, as
-it read an outdated value set at initialization. It now updates its
-voltage on read.
+Previously, ad2s90_probe ignored the return code from spi_setup, not
+handling its possible failure. This patch makes ad2s90_probe check if
+the code is an error code and, if so, do the following:
 
-Signed-off-by: Renato Lui Geh <renatogeh@gmail.com>
-Acked-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+- Call dev_err with an appropriate error message.
+- Return the spi_setup's error code.
+
+Note: The 'return ret' statement could be out of the 'if' block, but
+this whole block will be moved up in the function in the patch:
+'staging:iio:ad2s90: Move device registration to the end of probe'.
+
+Signed-off-by: Matheus Tavares <matheus.bernardino@usp.br>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/iio/adc/ad7780.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/staging/iio/resolver/ad2s90.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
-index 273add3ed63f..5a3072740326 100644
---- a/drivers/staging/iio/adc/ad7780.c
-+++ b/drivers/staging/iio/adc/ad7780.c
-@@ -90,12 +90,16 @@ static int ad7780_read_raw(struct iio_dev *indio_dev,
- 			   long m)
- {
- 	struct ad7780_state *st = iio_priv(indio_dev);
-+	int voltage_uv;
+diff --git a/drivers/staging/iio/resolver/ad2s90.c b/drivers/staging/iio/resolver/ad2s90.c
+index e24c5890652f..c0cee97bd0f1 100644
+--- a/drivers/staging/iio/resolver/ad2s90.c
++++ b/drivers/staging/iio/resolver/ad2s90.c
+@@ -86,7 +86,12 @@ static int ad2s90_probe(struct spi_device *spi)
+ 	/* need 600ns between CS and the first falling edge of SCLK */
+ 	spi->max_speed_hz = 830000;
+ 	spi->mode = SPI_MODE_3;
+-	spi_setup(spi);
++	ret = spi_setup(spi);
++
++	if (ret < 0) {
++		dev_err(&spi->dev, "spi_setup failed!\n");
++		return ret;
++	}
  
- 	switch (m) {
- 	case IIO_CHAN_INFO_RAW:
- 		return ad_sigma_delta_single_conversion(indio_dev, chan, val);
- 	case IIO_CHAN_INFO_SCALE:
--		*val = st->int_vref_mv * st->gain;
-+		voltage_uv = regulator_get_voltage(st->reg);
-+		if (voltage_uv < 0)
-+			return voltage_uv;
-+		*val = (voltage_uv / 1000) * st->gain;
- 		*val2 = chan->scan_type.realbits - 1;
- 		return IIO_VAL_FRACTIONAL_LOG2;
- 	case IIO_CHAN_INFO_OFFSET:
+ 	return 0;
+ }
 -- 
 2.19.1
 
