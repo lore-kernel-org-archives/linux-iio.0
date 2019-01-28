@@ -2,54 +2,53 @@ Return-Path: <SRS0=hFoe=QE=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-14.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62E52C282C8
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 17:08:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E95F2C282C8
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 17:23:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 295F621741
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 17:08:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AE61D20989
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 17:23:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1548695336;
-	bh=eeJkX3MlOaYG2SFXfVVq2C8vQUYeLfSYpfRI94OOgBg=;
+	s=default; t=1548696212;
+	bh=7th7D4fr9d2chQ+Vm0EW43uOlgWH6nxQaaMdIP9gS84=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=YhyoqPp9GcV6L6EeQ0ZFhL6qBgBt9fG5WqOmexrI4cT/plUfRyWFxOj8FqFIo4NW6
-	 YMcvA7EP7UXhPvB0w0rMPCHBG0rWidg9GNkYSeiyWHxZHFyAULr9mB7aZ8FWzc0ZV1
-	 GqwmDucJteItheg91+pYzJVbxkWrHZNWPlUcOVsc=
+	b=p3MFTCngZWPe3awSURK6lq7HoXoP6BLCPnwxEb5cQNHjrxLUnifPNoPCP9SxO/UII
+	 OFI4mpff2xW1aneZIo6ezARgQqF47NMFb3jD4Vr+0NH0zDoSwBxZYqdYyekMLV/g9f
+	 7U9TFQ0b69nx1OLlB5wfIq1dI4wl93ceWro3Qg6s=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733116AbfA1RIp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 28 Jan 2019 12:08:45 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39852 "EHLO mail.kernel.org"
+        id S1730116AbfA1QCs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 28 Jan 2019 11:02:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48058 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1733070AbfA1QMF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 28 Jan 2019 11:12:05 -0500
+        id S1731269AbfA1QCo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 28 Jan 2019 11:02:44 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 054B82175B;
-        Mon, 28 Jan 2019 16:12:03 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4B87F2082E;
+        Mon, 28 Jan 2019 16:02:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1548691925;
-        bh=eeJkX3MlOaYG2SFXfVVq2C8vQUYeLfSYpfRI94OOgBg=;
+        s=default; t=1548691363;
+        bh=7th7D4fr9d2chQ+Vm0EW43uOlgWH6nxQaaMdIP9gS84=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wUbQcNXc4m7Jq9cgxKeOIWHyuVUG5MoMCHksVionAadlYexomfEDYH6NotmenSLsy
-         LGhf8n0biiBJK0YnDPh0FSAqoWrqeH7NqzfAAC2eU/vkVabpSWeiHCdhm391CUQiFJ
-         miSnRUEzNY2d4fpn9fLCOBiM6mK/N0fag1P0JDFk=
+        b=sjV+SlePa8MZ8BRDNVUcvjEsqDJaOD00myJrkiQ+GD6nxutwIa7a3LQAlmH3iDox/
+         ljuwMmEYJQ2d04a6AL2DAarFU+yKfmYYbzNK91nj9NebUcuxp0So07tjmD+LgdRkxj
+         l6p0yvszMUQw0dYM30BYrgNx0uROjulvgsXp+moA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Slawomir Stepien <sst@poczta.fm>,
+Cc:     Hans de Goede <hdegoede@redhat.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org
-Subject: [PATCH AUTOSEL 4.14 002/170] staging: iio: adc: ad7280a: handle error from __ad7280_read32()
-Date:   Mon, 28 Jan 2019 11:09:12 -0500
-Message-Id: <20190128161200.55107-2-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 068/258] iio: accel: kxcjk1013: Add KIOX010A ACPI Hardware-ID
+Date:   Mon, 28 Jan 2019 10:56:14 -0500
+Message-Id: <20190128155924.51521-68-sashal@kernel.org>
 X-Mailer: git-send-email 2.19.1
-In-Reply-To: <20190128161200.55107-1-sashal@kernel.org>
-References: <20190128161200.55107-1-sashal@kernel.org>
+In-Reply-To: <20190128155924.51521-1-sashal@kernel.org>
+References: <20190128155924.51521-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -58,70 +57,38 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Slawomir Stepien <sst@poczta.fm>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 0559ef7fde67bc6c83c6eb6329dbd6649528263e ]
+[ Upstream commit 7f6232e69539971cf9eaed07a6c14ab4a2361133 ]
 
-Inside __ad7280_read32(), the spi_sync_transfer() can fail with negative
-error code. This change will ensure that this error is being passed up
-in the call stack, so it can be handled.
+Various 2-in-1's use KIOX010A and KIOX020A as HIDs for 2 KXCJ91008
+accelerometers. The KIOX010A HID is for the one in the base and the
+KIOX020A for the accelerometer in the keyboard.
 
-Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+Since userspace does not have a way yet to deal with (or ignore) the
+accelerometer in the keyboard, this commit just adds the KIOX010A HID
+for now so that display rotation will work.
+
+Related: https://github.com/hadess/iio-sensor-proxy/issues/166
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/iio/adc/ad7280a.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+ drivers/iio/accel/kxcjk-1013.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-index f85dde9805e0..f17f700ea04f 100644
---- a/drivers/staging/iio/adc/ad7280a.c
-+++ b/drivers/staging/iio/adc/ad7280a.c
-@@ -256,7 +256,9 @@ static int ad7280_read(struct ad7280_state *st, unsigned int devaddr,
- 	if (ret)
- 		return ret;
- 
--	__ad7280_read32(st, &tmp);
-+	ret = __ad7280_read32(st, &tmp);
-+	if (ret)
-+		return ret;
- 
- 	if (ad7280_check_crc(st, tmp))
- 		return -EIO;
-@@ -294,7 +296,9 @@ static int ad7280_read_channel(struct ad7280_state *st, unsigned int devaddr,
- 
- 	ad7280_delay(st);
- 
--	__ad7280_read32(st, &tmp);
-+	ret = __ad7280_read32(st, &tmp);
-+	if (ret)
-+		return ret;
- 
- 	if (ad7280_check_crc(st, tmp))
- 		return -EIO;
-@@ -327,7 +331,9 @@ static int ad7280_read_all_channels(struct ad7280_state *st, unsigned int cnt,
- 	ad7280_delay(st);
- 
- 	for (i = 0; i < cnt; i++) {
--		__ad7280_read32(st, &tmp);
-+		ret = __ad7280_read32(st, &tmp);
-+		if (ret)
-+			return ret;
- 
- 		if (ad7280_check_crc(st, tmp))
- 			return -EIO;
-@@ -370,7 +376,10 @@ static int ad7280_chain_setup(struct ad7280_state *st)
- 		return ret;
- 
- 	for (n = 0; n <= AD7280A_MAX_CHAIN; n++) {
--		__ad7280_read32(st, &val);
-+		ret = __ad7280_read32(st, &val);
-+		if (ret)
-+			return ret;
-+
- 		if (val == 0)
- 			return n - 1;
- 
+diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+index af53a1084ee5..471caa5323e4 100644
+--- a/drivers/iio/accel/kxcjk-1013.c
++++ b/drivers/iio/accel/kxcjk-1013.c
+@@ -1490,6 +1490,7 @@ static const struct acpi_device_id kx_acpi_match[] = {
+ 	{"KXCJ1008", KXCJ91008},
+ 	{"KXCJ9000", KXCJ91008},
+ 	{"KIOX000A", KXCJ91008},
++	{"KIOX010A", KXCJ91008}, /* KXCJ91008 inside the display of a 2-in-1 */
+ 	{"KXTJ1009", KXTJ21009},
+ 	{"SMO8500",  KXCJ91008},
+ 	{ },
 -- 
 2.19.1
 
