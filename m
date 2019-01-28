@@ -7,49 +7,49 @@ X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02BB8C282C8
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 16:02:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77ACDC282C8
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 16:13:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C866E21916
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 16:02:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 499532148E
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 16:13:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1548691359;
-	bh=ksyqAxsdi17NA/ckmWFnZP/js1AKsQqIMJxepDtbAW4=;
+	s=default; t=1548692023;
+	bh=lkyY0tObXL8LZJZtu8aaksFzniZLcRHe6ULix8ZaTjQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=vPN/N/6ohGTnH9eObDlDU4DgK9bsOSLxmNe/nuVPjNypz/kqlHbfoWDMZwydoKSNY
-	 lzOtBy1/DyjD3XrBoXVXGDajxxz11VOxOAzOKtl2wdAqkdq4QMK3VW/Iv3yToVPmxP
-	 75iPVEtzJhNiiSjC3ZTmEJgk2s4WJJQ8HMSD77MA=
+	b=Z4PqpI9zhuz6nj3HHxQhLJ3ZdMfB1Pq/nZBa7ezpm8XlCvj58UvaDrPNfBI00pjVg
+	 gOlPa+gET4jV9x1IHJyv6eNunXAb5KW306pRc/jT1k5Q0EjzUhFKuOg7kxCarhsZIn
+	 Pc8L20gIOyfwKaCMUxAnRZFYl9WLJDAZ0WICoE68=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730823AbfA1QCh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 28 Jan 2019 11:02:37 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47936 "EHLO mail.kernel.org"
+        id S1730823AbfA1QNm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 28 Jan 2019 11:13:42 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42352 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731254AbfA1QCg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 28 Jan 2019 11:02:36 -0500
+        id S1732873AbfA1QNj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 28 Jan 2019 11:13:39 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C1AC721848;
-        Mon, 28 Jan 2019 16:02:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6CDDE2148E;
+        Mon, 28 Jan 2019 16:13:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1548691356;
-        bh=ksyqAxsdi17NA/ckmWFnZP/js1AKsQqIMJxepDtbAW4=;
+        s=default; t=1548692019;
+        bh=lkyY0tObXL8LZJZtu8aaksFzniZLcRHe6ULix8ZaTjQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GdgDTy+jIvL7zpkiWdr7jHFwNUVteNskTZw0EwcYiffD7N1e3RlVVcrmPQK+97Vwb
-         FwEVY0q6rdzc0HgYCbUpZaWIMn+BHB5I6KqnFi6GgGt586ohV4i94JwmJEdouGiahj
-         KNeTelOFb2+XwLoGtcxsElv5pF21+jaHsqfODjxU=
+        b=f1XRwJU7TPEKtFxrzSIbapEF3VaBUVGfHWkdtRqqxS4cWLq85B3V8j3oZR939ctoY
+         FS117MqthBeOokCQnRDxja2Zwtv+oKj0rkdDc/3h2MXTIbyVIwIsVOV4PIGNnNlRxk
+         7+TLwsWH3XLCZo5EM3tGYL0WSJLazGK9IgWYpgeU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nicholas Mc Guire <hofrat@osadl.org>,
+Cc:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org,
         linux-amlogic@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.19 066/258] iio: adc: meson-saradc: check for devm_kasprintf failure
-Date:   Mon, 28 Jan 2019 10:56:12 -0500
-Message-Id: <20190128155924.51521-66-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 040/170] iio: adc: meson-saradc: fix internal clock names
+Date:   Mon, 28 Jan 2019 11:09:50 -0500
+Message-Id: <20190128161200.55107-40-sashal@kernel.org>
 X-Mailer: git-send-email 2.19.1
-In-Reply-To: <20190128155924.51521-1-sashal@kernel.org>
-References: <20190128155924.51521-1-sashal@kernel.org>
+In-Reply-To: <20190128161200.55107-1-sashal@kernel.org>
+References: <20190128161200.55107-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -58,49 +58,64 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Nicholas Mc Guire <hofrat@osadl.org>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-[ Upstream commit aad172b017617994343e36d8659c69e14cd694fd ]
+[ Upstream commit 50314f98b0ac468218e7c9af8c99f215a35436df ]
 
-devm_kasprintf() may return NULL on failure of internal allocation thus
-the assignments to  init.name  are not safe if not checked. On error
-meson_sar_adc_clk_init() returns negative values so -ENOMEM in the
-(unlikely) failure case of devm_kasprintf() should be fine here.
+Before this patch we are registering the internal clocks (for example on
+Meson8b, where the SAR ADC IP block implements the divider and gate
+clocks) with the following names:
+- /soc/cbus@c1100000/adc@8680#adc_div
+- /soc/cbus@c1100000/adc@8680#adc_en
 
-Signed-off-by: Nicholas Mc Guire <hofrat@osadl.org>
-Fixes: 3adbf3427330 ("iio: adc: add a driver for the SAR ADC found in Amlogic Meson SoCs")
-Acked-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Tested-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+This is bad because the common clock framework uses the clock to create
+a directory in <debugfs>/clk. With such name, the directory creation
+(silently) fails and the debugfs entry ends up being created at the
+debugfs root.
+
+With this change, the new clock names are:
+- c1108680.adc#adc_div
+- c1108680.adc#adc_en
+
+This matches the clock naming scheme used in the PWM, Ethernet and MMC
+drivers. It also fixes the problem with debugfs.
+The idea is shamelessly taken from commit b96e9eb62841c5 ("pwm: meson:
+Fix mux clock names").
+
+Fixes: 3921db46a8c5bc ("iio: Convert to using %pOF instead of full_name")
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/meson_saradc.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/iio/adc/meson_saradc.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
-index da2d16dfa63e..da4c391b8977 100644
+index 9a52a91166d2..2515badf8b28 100644
 --- a/drivers/iio/adc/meson_saradc.c
 +++ b/drivers/iio/adc/meson_saradc.c
-@@ -589,6 +589,9 @@ static int meson_sar_adc_clk_init(struct iio_dev *indio_dev,
+@@ -583,8 +583,8 @@ static int meson_sar_adc_clk_init(struct iio_dev *indio_dev,
+ 	struct clk_init_data init;
+ 	const char *clk_parents[1];
  
- 	init.name = devm_kasprintf(&indio_dev->dev, GFP_KERNEL, "%pOF#adc_div",
- 				   indio_dev->dev.of_node);
-+	if (!init.name)
-+		return -ENOMEM;
-+
- 	init.flags = 0;
- 	init.ops = &clk_divider_ops;
- 	clk_parents[0] = __clk_get_name(priv->clkin);
-@@ -608,6 +611,9 @@ static int meson_sar_adc_clk_init(struct iio_dev *indio_dev,
+-	init.name = devm_kasprintf(&indio_dev->dev, GFP_KERNEL, "%pOF#adc_div",
+-				   indio_dev->dev.of_node);
++	init.name = devm_kasprintf(&indio_dev->dev, GFP_KERNEL, "%s#adc_div",
++				   dev_name(indio_dev->dev.parent));
+ 	if (!init.name)
+ 		return -ENOMEM;
  
- 	init.name = devm_kasprintf(&indio_dev->dev, GFP_KERNEL, "%pOF#adc_en",
- 				   indio_dev->dev.of_node);
-+	if (!init.name)
-+		return -ENOMEM;
-+
- 	init.flags = CLK_SET_RATE_PARENT;
- 	init.ops = &clk_gate_ops;
- 	clk_parents[0] = __clk_get_name(priv->adc_div_clk);
+@@ -605,8 +605,8 @@ static int meson_sar_adc_clk_init(struct iio_dev *indio_dev,
+ 	if (WARN_ON(IS_ERR(priv->adc_div_clk)))
+ 		return PTR_ERR(priv->adc_div_clk);
+ 
+-	init.name = devm_kasprintf(&indio_dev->dev, GFP_KERNEL, "%pOF#adc_en",
+-				   indio_dev->dev.of_node);
++	init.name = devm_kasprintf(&indio_dev->dev, GFP_KERNEL, "%s#adc_en",
++				   dev_name(indio_dev->dev.parent));
+ 	if (!init.name)
+ 		return -ENOMEM;
+ 
 -- 
 2.19.1
 
