@@ -4,52 +4,52 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77ACDC282C8
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 16:13:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 079F6C282C8
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 16:32:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 499532148E
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 16:13:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C400920663
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 16:32:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1548692023;
-	bh=lkyY0tObXL8LZJZtu8aaksFzniZLcRHe6ULix8ZaTjQ=;
+	s=default; t=1548693164;
+	bh=Xv5jPtmK0A+grYouMJDcojhSF+A/s5ETfA62vx0eyOY=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=Z4PqpI9zhuz6nj3HHxQhLJ3ZdMfB1Pq/nZBa7ezpm8XlCvj58UvaDrPNfBI00pjVg
-	 gOlPa+gET4jV9x1IHJyv6eNunXAb5KW306pRc/jT1k5Q0EjzUhFKuOg7kxCarhsZIn
-	 Pc8L20gIOyfwKaCMUxAnRZFYl9WLJDAZ0WICoE68=
+	b=yOmzzREHCZ29iuvTsjK863zYDtvXfc6lKKjOzOUKpI2Q/cDN8yXo/560o67TK6DG2
+	 l8Vnq5/o/nJlXE/hZ8600Q1s0tWNOMWzbCRbnK9xbChh5H9/4ovN0xJW1xtdumGd/Q
+	 rsClaUceB6k4cxXpBNIfQcrdXlfS/3gbI6H3VWfA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730823AbfA1QNm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 28 Jan 2019 11:13:42 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42352 "EHLO mail.kernel.org"
+        id S2390212AbfA1Qce (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 28 Jan 2019 11:32:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36088 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732873AbfA1QNj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 28 Jan 2019 11:13:39 -0500
+        id S2390254AbfA1Q0j (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 28 Jan 2019 11:26:39 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6CDDE2148E;
-        Mon, 28 Jan 2019 16:13:35 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 044792147A;
+        Mon, 28 Jan 2019 16:26:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1548692019;
-        bh=lkyY0tObXL8LZJZtu8aaksFzniZLcRHe6ULix8ZaTjQ=;
+        s=default; t=1548692798;
+        bh=Xv5jPtmK0A+grYouMJDcojhSF+A/s5ETfA62vx0eyOY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f1XRwJU7TPEKtFxrzSIbapEF3VaBUVGfHWkdtRqqxS4cWLq85B3V8j3oZR939ctoY
-         FS117MqthBeOokCQnRDxja2Zwtv+oKj0rkdDc/3h2MXTIbyVIwIsVOV4PIGNnNlRxk
-         7+TLwsWH3XLCZo5EM3tGYL0WSJLazGK9IgWYpgeU=
+        b=IuveAGVj1kz/Ntagr6NLazU5sNQR8S7jR7GHbD8pTA28d52ZCVL/Za3nOIlUGV/W7
+         OxQerM0T/FrN8k/8iG9wEf8FDzPVieUvp1U6uf6Zl6pc790F3RNnBoGj9/ADQidZMy
+         dLuXGz41etE4ytX9uPxO6k8zSIctW2dpSNHJUcjI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+Cc:     Renato Lui Geh <renatogeh@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org,
-        linux-amlogic@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.14 040/170] iio: adc: meson-saradc: fix internal clock names
-Date:   Mon, 28 Jan 2019 11:09:50 -0500
-Message-Id: <20190128161200.55107-40-sashal@kernel.org>
+        devel@driverdev.osuosl.org
+Subject: [PATCH AUTOSEL 3.18 11/61] staging: iio: ad7780: update voltage on read
+Date:   Mon, 28 Jan 2019 11:25:33 -0500
+Message-Id: <20190128162623.59854-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.19.1
-In-Reply-To: <20190128161200.55107-1-sashal@kernel.org>
-References: <20190128161200.55107-1-sashal@kernel.org>
+In-Reply-To: <20190128162623.59854-1-sashal@kernel.org>
+References: <20190128162623.59854-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -58,64 +58,44 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+From: Renato Lui Geh <renatogeh@gmail.com>
 
-[ Upstream commit 50314f98b0ac468218e7c9af8c99f215a35436df ]
+[ Upstream commit 336650c785b62c3bea7c8cf6061c933a90241f67 ]
 
-Before this patch we are registering the internal clocks (for example on
-Meson8b, where the SAR ADC IP block implements the divider and gate
-clocks) with the following names:
-- /soc/cbus@c1100000/adc@8680#adc_div
-- /soc/cbus@c1100000/adc@8680#adc_en
+The ad7780 driver previously did not read the correct device output, as
+it read an outdated value set at initialization. It now updates its
+voltage on read.
 
-This is bad because the common clock framework uses the clock to create
-a directory in <debugfs>/clk. With such name, the directory creation
-(silently) fails and the debugfs entry ends up being created at the
-debugfs root.
-
-With this change, the new clock names are:
-- c1108680.adc#adc_div
-- c1108680.adc#adc_en
-
-This matches the clock naming scheme used in the PWM, Ethernet and MMC
-drivers. It also fixes the problem with debugfs.
-The idea is shamelessly taken from commit b96e9eb62841c5 ("pwm: meson:
-Fix mux clock names").
-
-Fixes: 3921db46a8c5bc ("iio: Convert to using %pOF instead of full_name")
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Renato Lui Geh <renatogeh@gmail.com>
+Acked-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/meson_saradc.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/staging/iio/adc/ad7780.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
-index 9a52a91166d2..2515badf8b28 100644
---- a/drivers/iio/adc/meson_saradc.c
-+++ b/drivers/iio/adc/meson_saradc.c
-@@ -583,8 +583,8 @@ static int meson_sar_adc_clk_init(struct iio_dev *indio_dev,
- 	struct clk_init_data init;
- 	const char *clk_parents[1];
+diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
+index 273add3ed63f..5a3072740326 100644
+--- a/drivers/staging/iio/adc/ad7780.c
++++ b/drivers/staging/iio/adc/ad7780.c
+@@ -90,12 +90,16 @@ static int ad7780_read_raw(struct iio_dev *indio_dev,
+ 			   long m)
+ {
+ 	struct ad7780_state *st = iio_priv(indio_dev);
++	int voltage_uv;
  
--	init.name = devm_kasprintf(&indio_dev->dev, GFP_KERNEL, "%pOF#adc_div",
--				   indio_dev->dev.of_node);
-+	init.name = devm_kasprintf(&indio_dev->dev, GFP_KERNEL, "%s#adc_div",
-+				   dev_name(indio_dev->dev.parent));
- 	if (!init.name)
- 		return -ENOMEM;
- 
-@@ -605,8 +605,8 @@ static int meson_sar_adc_clk_init(struct iio_dev *indio_dev,
- 	if (WARN_ON(IS_ERR(priv->adc_div_clk)))
- 		return PTR_ERR(priv->adc_div_clk);
- 
--	init.name = devm_kasprintf(&indio_dev->dev, GFP_KERNEL, "%pOF#adc_en",
--				   indio_dev->dev.of_node);
-+	init.name = devm_kasprintf(&indio_dev->dev, GFP_KERNEL, "%s#adc_en",
-+				   dev_name(indio_dev->dev.parent));
- 	if (!init.name)
- 		return -ENOMEM;
- 
+ 	switch (m) {
+ 	case IIO_CHAN_INFO_RAW:
+ 		return ad_sigma_delta_single_conversion(indio_dev, chan, val);
+ 	case IIO_CHAN_INFO_SCALE:
+-		*val = st->int_vref_mv * st->gain;
++		voltage_uv = regulator_get_voltage(st->reg);
++		if (voltage_uv < 0)
++			return voltage_uv;
++		*val = (voltage_uv / 1000) * st->gain;
+ 		*val2 = chan->scan_type.realbits - 1;
+ 		return IIO_VAL_FRACTIONAL_LOG2;
+ 	case IIO_CHAN_INFO_OFFSET:
 -- 
 2.19.1
 
