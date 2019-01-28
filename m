@@ -1,85 +1,84 @@
-Return-Path: <SRS0=pB1S=QD=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=hFoe=QE=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EC49C282CA
-	for <linux-iio@archiver.kernel.org>; Sun, 27 Jan 2019 23:39:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45B87C282CE
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 02:50:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4990C2147A
-	for <linux-iio@archiver.kernel.org>; Sun, 27 Jan 2019 23:39:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 214AB2147A
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 02:50:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726361AbfA0Xjj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 27 Jan 2019 18:39:39 -0500
-Received: from outbound.smtp.vt.edu ([198.82.183.121]:39990 "EHLO
+        id S1726575AbfA1CrQ convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 27 Jan 2019 21:47:16 -0500
+Received: from outbound.smtp.vt.edu ([198.82.183.121]:53118 "EHLO
         omr1.cc.vt.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726302AbfA0Xjj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 Jan 2019 18:39:39 -0500
-X-Greylist: delayed 1882 seconds by postgrey-1.27 at vger.kernel.org; Sun, 27 Jan 2019 18:39:38 EST
-Received: from mr5.cc.vt.edu (mr5.cc.ipv6.vt.edu [IPv6:2607:b400:92:8400:0:72:232:758b])
-        by omr1.cc.vt.edu (8.14.4/8.14.4) with ESMTP id x0RN8Gui027696
-        for <linux-iio@vger.kernel.org>; Sun, 27 Jan 2019 18:08:16 -0500
+        with ESMTP id S1726566AbfA1CrP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 Jan 2019 21:47:15 -0500
+Received: from mr6.cc.vt.edu (mr6.cc.ipv6.vt.edu [IPv6:2607:b400:92:8500:0:af:2d00:4488])
+        by omr1.cc.vt.edu (8.14.4/8.14.4) with ESMTP id x0S2lELc019928
+        for <linux-iio@vger.kernel.org>; Sun, 27 Jan 2019 21:47:14 -0500
 Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com [209.85.160.197])
-        by mr5.cc.vt.edu (8.14.7/8.14.7) with ESMTP id x0RN8Bfd005441
-        for <linux-iio@vger.kernel.org>; Sun, 27 Jan 2019 18:08:16 -0500
-Received: by mail-qt1-f197.google.com with SMTP id w15so18746029qtk.19
-        for <linux-iio@vger.kernel.org>; Sun, 27 Jan 2019 15:08:16 -0800 (PST)
+        by mr6.cc.vt.edu (8.14.7/8.14.7) with ESMTP id x0S2l9HW023482
+        for <linux-iio@vger.kernel.org>; Sun, 27 Jan 2019 21:47:14 -0500
+Received: by mail-qt1-f197.google.com with SMTP id p24so19227630qtl.2
+        for <linux-iio@vger.kernel.org>; Sun, 27 Jan 2019 18:47:14 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:sender:from:to:cc:subject:in-reply-to:references
-         :mime-version:date:message-id;
-        bh=QQQI1VeREQLrhDI8VVdoD+egvcJS/4EzoFBcR02kzdA=;
-        b=HwRJDkxn2UWTS7GXMKynilF5bQqkLfyqbDIceL7JXSLBrTliuTXmftB+MyJ4THu2EJ
-         8eET+Tp3clik4cGoQjOSTLl7pxkIbJHMYEnIEF7kAhLCXYBvRJpFStah0V+LjNbTwbR8
-         GWTMrovw/bZLCTpAa1ySJA89mPa6ry34kaHW7fZM3y3EeXp6A4QiD680bR0k+zS+nj+3
-         EBgTnTImlAJawWbkwwo+5ktlh9617Rz1KzPbVOioPdLaUeGWn+swxzFQOm/fftODRQdR
-         dryiop4YVb4R8UQdIL5U1B8AQZ/QAxhaN/SBdSeilKZXA0tNBAn4ehs4nMesAwvE4grk
-         AcCg==
-X-Gm-Message-State: AJcUukeoqxlJnsZoVPWGhKuvoPDFmVTxmalhMCY/o4wQ/299DZoq/DJs
-        ZErO0m/yQXQmUgrs9ld07P3DHufl4Tsb954g4ywc5lzk/N1sR/aQNMLOHBnGnsMLd5hXNYD1G4f
-        y1P8dMTctYma6ooIe1HBnTvQZjkvBveI=
-X-Received: by 2002:a37:61cd:: with SMTP id v196mr17796077qkb.25.1548630490998;
-        Sun, 27 Jan 2019 15:08:10 -0800 (PST)
-X-Google-Smtp-Source: ALg8bN6YKNOekIeWq2fp5ZJWmzwVkrTCS4z7c8HwfcFREpt0CaQunJIEglpMk5hX4Ez5BUMeqNrmGQ==
-X-Received: by 2002:a37:61cd:: with SMTP id v196mr17796068qkb.25.1548630490866;
-        Sun, 27 Jan 2019 15:08:10 -0800 (PST)
+         :mime-version:content-transfer-encoding:date:message-id;
+        bh=1KUZ9QACuUu4LpeWYm9i3bv5tCvi3H7I0vuFykW2IRs=;
+        b=DqXs4oOHJjNg2nuo64vpmjKMS4m5soP2C/8g4VEIZ4al4ZoZTFXfDzdYDlXjYN+Hln
+         SZBitBGzQUNhrvexoxMKHoZi6VYtBW6QkIYZD7EHS/F2TxXlptjUqJpGYFr1VKZ4+le8
+         7bQ+f/EYqnnZLOag+OFS5iw7/AE/XB/ZYsI2+KafITbiuT7WMj7j1+u2uMTWq+O8jEvu
+         oeRdytFXXU/OlnXtJyW4c/LY0YgQC7CV+F7j7cwLLjiEsc0RfXj2+0W6nlxlrflwUpT1
+         XeL+8VCtTkNOVeHeoHeEz31CZRZi45H0sR+loAwZz6MsR5KsDRfCYykspMIV5R2TNGCY
+         v3qA==
+X-Gm-Message-State: AJcUukfja5giI5dGOZCcks5n42cm4NPomW03D/ISS/7tTFh2fcH2cc+j
+        sEhYdz2WP/kVDBiJvpUssuEF7r1bPU2pJ1mvD2daZKgpn8KOu7D9TVRTRgXKB3eSm+7HEoKHoN3
+        VLXReZBT6oqO8VavcmK5UQFwv37FBAMs=
+X-Received: by 2002:a05:620a:12bb:: with SMTP id x27mr18310737qki.159.1548643629491;
+        Sun, 27 Jan 2019 18:47:09 -0800 (PST)
+X-Google-Smtp-Source: ALg8bN5s6OmjOjTbtg1Dass3UTu8Pnpwy8G69AAz5hvHhQVa2o3G0EkFRdQ5q/HfNyyIPJFXMzJkBA==
+X-Received: by 2002:a05:620a:12bb:: with SMTP id x27mr18310725qki.159.1548643629333;
+        Sun, 27 Jan 2019 18:47:09 -0800 (PST)
 Received: from turing-police.cc.vt.edu ([2601:5c0:c001:4341::936])
-        by smtp.gmail.com with ESMTPSA id w184sm97215556qkw.90.2019.01.27.15.08.09
+        by smtp.gmail.com with ESMTPSA id f143sm35231407qka.73.2019.01.27.18.47.07
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 27 Jan 2019 15:08:09 -0800 (PST)
+        Sun, 27 Jan 2019 18:47:08 -0800 (PST)
 From:   valdis.kletnieks@vt.edu
 X-Google-Original-From: Valdis.Kletnieks@vt.edu
 X-Mailer: exmh version 2.9.0 11/07/2018 with nmh-1.7+dev
-To:     Bharath Vedartham <linux.bhar@gmail.com>
-cc:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drivers: iio: industrialio-core: add check when kzalloc fails
-In-reply-to: <20190124142755.GA31059@bhar.linux>
-References: <20190124142755.GA31059@bhar.linux>
+To:     Rodrigo Ribeiro <rodrigorsdc@gmail.com>
+cc:     Alexandru Ardelean <ardeleanalex@gmail.com>, lars@metafoo.de,
+        Michael.Hennerich@analog.com, Jonathan Cameron <jic23@kernel.org>,
+        knaack.h@gmx.de, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        kernel-usp@googlegroups.com, Rafael Tsuha <rafael.tsuha@usp.br>
+Subject: Re: [PATCH] staging:iio:ad7152: Rename misspelled RESEVERD -> RESERVED
+In-reply-to: <CAOeBkLq18nP6xsOCNNE2Bew=u37MsLCgH=W-8ofnFSAi6dYx=Q@mail.gmail.com>
+References: <1548358316-8062-1-git-send-email-rodrigorsdc@gmail.com> <CA+U=DsqG6PKs1Off9QP_3_q+c5=uzRypHCs+O6iur=NC5QdDdQ@mail.gmail.com> <CAOeBkLogWyxbB3ZNwZh9=6xVUKxmT1YGZQseAx4uo7a4u+M+gw@mail.gmail.com>
+ <CAOeBkLq18nP6xsOCNNE2Bew=u37MsLCgH=W-8ofnFSAi6dYx=Q@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Date:   Sun, 27 Jan 2019 18:08:36 -0500
-Message-ID: <17314.1548630516@turing-police.cc.vt.edu>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
+Date:   Sun, 27 Jan 2019 21:47:39 -0500
+Message-ID: <25499.1548643659@turing-police.cc.vt.edu>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 24 Jan 2019 19:58:00 +0530, Bharath Vedartham said:
-> add code to handle the case when kzalloc fails to allocate memory to dev
->
-> Signed-off-by: Bharath Vedartham <linux.bhar@gmail.com>
+On Fri, 25 Jan 2019 22:14:32 -0200, Rodrigo Ribeiro said:
+> Maybe, one checkstyle patch is enough, right? Which drivers can I truly
+> contribute to?
 
->  		dev_set_name(&dev->dev, "iio:device%d", dev->id);
->  		INIT_LIST_HEAD(&dev->buffer_list);
-> +	} else {
-> +		return NULL;
->  	}
->  
->  	return dev;
+I'll give you a pointer to the "How to contribute" the Kernel Newbies list and IRC
+channel uses:
 
-Not needed, as the 'if (dev)' statement fails, dev is already null.
+https://lists.kernelnewbies.org/pipermail/kernelnewbies/2017-April/017765.html
