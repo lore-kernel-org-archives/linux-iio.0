@@ -2,186 +2,115 @@ Return-Path: <SRS0=hFoe=QE=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_MUTT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6471FC282C8
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 12:00:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7DF3C282C8
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 12:55:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 318E1214DA
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 12:00:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 979DE214DA
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 12:55:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="N7+u0tsM"
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="BFuvZ8YD"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726888AbfA1MA3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 28 Jan 2019 07:00:29 -0500
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:36429 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726648AbfA1MA3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 28 Jan 2019 07:00:29 -0500
-Received: by mail-oi1-f196.google.com with SMTP id x23so12782798oix.3;
-        Mon, 28 Jan 2019 04:00:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RS7TGw3Q7q6W0EWIJ93uDTECWNvTB7WUq0nmAIxF1CY=;
-        b=N7+u0tsMqAabw9jkYIOKKyc6MWUszmEb5C/ybwo69c8JJLBDFSir7TkkrWeMPZaugM
-         IsZmv2qpgLUTDCM0rNkp4JPbAsPRzZLRnonNni+bGwa3oafdlOVSEo4IDPeNLn4Q2X/7
-         tNRPv6JqnkXQ5YPv0RYx0aQ+j2KbOIwMjHPjTyNxtMGF69azYHIweBLQsIuCYqgQ5dwX
-         h49vXKmxgYYjUQ3BLdkhoTQb9jsd0qYtppw1miabwHm0mRTML+KYStdxz6ZggUeikDbd
-         9V2Q+GIVtfyg2YoW2b/TmIlVnOpv+7aCTEwzzZ/wBurMw01v37hlTKUtPGHT7xe4Q437
-         y0jQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RS7TGw3Q7q6W0EWIJ93uDTECWNvTB7WUq0nmAIxF1CY=;
-        b=Y+0U2FWGHXlgvU67NfYT4QKWsWew/KPN4kfloNvhZXFR9pfbuyk79LTjsr/tgjHL0/
-         +RNpOsfX7SvrQfSXV+cWRKRQ6zXxIIP/2vLr7uso4YZTLreOMWcrqQPZgWL4qmY6s6W+
-         I2CutXxWzkVCdmP8rYqFClTfOnofIePd3SDUK7B6vdioSvt/g+as30mCl2LWCD1As1l3
-         o7AdTJ8f0smvnlNbC0LyBZiK6IHN+IQoh2FdAaYotj+M7/Upirx0XLOalwNEt3KKQwIC
-         QNVhMh84M3O9NAfenwVtluMFaJMx+hHlcwkigF0Kw5ZJokvEixOUGRqJ950vL+n8VEIi
-         60WQ==
-X-Gm-Message-State: AJcUukez7+LtltVIcq0QogJKcVzN3PeTuOaaeg+noXvvG/ZJGncW+d2v
-        m/zSSLzcwBQuqcEtzjfLkQ0ko2Xw7L8dVYL9BWQ=
-X-Google-Smtp-Source: ALg8bN5iNpnpcaFrHlj+NNfQ5VTJ4ghSNBkWzhQtAoi3N19JChsvR4OWHdskX/6LufsrBt/pBuW4vWa/LrpMRuPG3Kw=
-X-Received: by 2002:aca:d644:: with SMTP id n65mr5699040oig.287.1548676827827;
- Mon, 28 Jan 2019 04:00:27 -0800 (PST)
+        id S1726694AbfA1MzW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 28 Jan 2019 07:55:22 -0500
+Received: from aserp2130.oracle.com ([141.146.126.79]:33800 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726611AbfA1MzW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 28 Jan 2019 07:55:22 -0500
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.22/8.16.0.22) with SMTP id x0SCSYxo026326;
+        Mon, 28 Jan 2019 12:54:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2018-07-02;
+ bh=ty+oDqCF72Ap8JwvZRllH7Lg7RZJslz8F/8pyO958aU=;
+ b=BFuvZ8YD3NGfXoSw1YzJwi7TCjDxCP067fqOulXvovAVfM5TTskWlfU/YSI2OK6mBVvB
+ zWzw/aq2mwPpQolkOUQ6ybvDm+Pm22dpxTFLZyT5MTmSn82wbdnmKbhjNb9c+wiSj9w7
+ 5xb1IADw7B2FiSlBRAec5LeeOnz8zKyxxaR3n6vx6WWizZDbjw9yMMq3DS47k+AurpDb
+ yDH5qPgOsqjXwcQsJr3jzBKnmfxePdn4bfjfqcOJS099oX0ZYKb4NKDuW2/kUKmQds0P
+ mHIhIe1uc5uB+UD8fWJeR9/Wx3zMUFt5zGKM7p1BCtajmy1r6Wlh5pe1hDZhpiNSL5Oe 5A== 
+Received: from aserv0022.oracle.com (aserv0022.oracle.com [141.146.126.234])
+        by aserp2130.oracle.com with ESMTP id 2q8d2dx3b9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 28 Jan 2019 12:54:46 +0000
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserv0022.oracle.com (8.14.4/8.14.4) with ESMTP id x0SCsebZ028645
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 28 Jan 2019 12:54:40 GMT
+Received: from abhmp0010.oracle.com (abhmp0010.oracle.com [141.146.116.16])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x0SCsdRP023335;
+        Mon, 28 Jan 2019 12:54:39 GMT
+Received: from kadam (/197.157.34.178)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 28 Jan 2019 04:54:39 -0800
+Date:   Mon, 28 Jan 2019 15:54:26 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Renato Lui Geh <renatogeh@gmail.com>
+Cc:     lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        stefan.popa@analog.com, alexandru.Ardelean@analog.com,
+        giuliano.belinassi@usp.br, linux-iio@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        kernel-usp@googlegroups.com
+Subject: Re: [PATCH v2 2/2] staging: iio: ad7780: moving ad7780 out of staging
+Message-ID: <20190128125426.GG1795@kadam>
+References: <20190127203344.ofryhhrae2wjn6j2@renatolg>
 MIME-Version: 1.0
-References: <20190128094851.3975-1-ricardo@ribalda.com>
-In-Reply-To: <20190128094851.3975-1-ricardo@ribalda.com>
-From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-Date:   Mon, 28 Jan 2019 14:00:15 +0200
-Message-ID: <CA+U=DspRfs8G7Vaa_s367Aryde8uX4ioRcWv9yFGu6hkzQKH6Q@mail.gmail.com>
-Subject: Re: [PATCH v3] iio: adc: ad7476: Add support for TI ADS786X ADCs
-To:     Ricardo Ribalda Delgado <ricardo@ribalda.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        alexandru.ardelean@analog.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190127203344.ofryhhrae2wjn6j2@renatolg>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9149 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=608
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1810050000 definitions=main-1901280100
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Jan 28, 2019 at 11:49 AM Ricardo Ribalda Delgado
-<ricardo@ribalda.com> wrote:
->
-> Add support for Texas Instruments ADS7866, ADS7867 and ADS7868
-> 8/10/12 bit Single channel ADC.
->
-> Datasheet: http://www.ti.com/lit/ds/symlink/ads7868.pdf
->
-> Cc: Alexandru Ardelean <ardeleanalex@gmail.com>
-> Signed-off-by: Ricardo Ribalda Delgado <ricardo@ribalda.com>
-> ---
-> v3: Changes by Alexandru Ardelean <ardeleanalex@gmail.com>
->
-> - Modify Kconfig to clarify that the chip is not from AD, but from TI
->
->  drivers/iio/adc/Kconfig  |  6 ++++--
->  drivers/iio/adc/ad7476.c | 20 ++++++++++++++++++++
->  2 files changed, 24 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index f9354e5ee65c..2d3442252e32 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -57,14 +57,16 @@ config AD7298
->           module will be called ad7298.
->
->  config AD7476
-> -       tristate "Analog Devices AD7476 and similar 1-channel ADCs driver"
-> +       tristate "Analog Devices AD7476 1-channel ADCs driver and other similar devices from AD an TI"
->         depends on SPI
->         select IIO_BUFFER
->         select IIO_TRIGGERED_BUFFER
->         help
->           Say yes here to build support for Analog Devices AD7273, AD7274, AD7276,
->           AD7277, AD7278, AD7475, AD7476, AD7477, AD7478, AD7466, AD7467, AD7468,
-> -         AD7495, AD7910, AD7920, AD7920 SPI analog to digital converters (ADC).
-> +         AD7495, AD7910, AD7920, AD7920. SPI analog to digital converters (ADC).
-> +         And for Texas Instrumments ADS7866, ADS7867, ADS7868. SPI analog to
-Typo: Instrumments -> Instruments
+On Sun, Jan 27, 2019 at 06:33:52PM -0200, Renato Lui Geh wrote:
+> +	st->reg = devm_regulator_get(&spi->dev, "avdd");
+> +	if (IS_ERR(st->reg))
+> +		return PTR_ERR(st->reg);
+> +
+> +	ret = regulator_enable(st->reg);
+> +	if (ret) {
+> +		dev_err(&spi->dev, "Failed to enable specified AVdd supply\n");
+> +		goto error_disable_reg;
+> +	}
 
-> +         digital converters (ADC).
-
-I would break it into a table-like format.
-I didn't see if there is a common/recommended way of doing things for
-these drivers.
-
-But something like:
-
-           Say yes here to build support for the following SPI analog
-to digital converters (ADCs):
-           Analog Devices:  AD7273, AD7274, AD7276, AD7277, AD7278,
-AD7475, AD7476,
-                                     AD7477, AD7478, AD7466, AD7467,
-AD7468, AD7495, AD7910,
-                                     AD7920
-           Texas Instruments:  ADS7866, ADS7867, ADS7868
-
-Funny thing: I just noticed that the AD7920 was listed twice.
+We don't need to disable the regulator if enabling it failed (probably,
+I haven't looked at the code).
 
 
->
->           To compile this driver as a module, choose M here: the
->           module will be called ad7476.
-> diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
-> index 0549686b9ef8..76747488044b 100644
-> --- a/drivers/iio/adc/ad7476.c
-> +++ b/drivers/iio/adc/ad7476.c
-> @@ -59,6 +59,9 @@ enum ad7476_supported_device_ids {
->         ID_ADC081S,
->         ID_ADC101S,
->         ID_ADC121S,
-> +       ID_ADS7866,
-> +       ID_ADS7867,
-> +       ID_ADS7868,
->  };
->
->  static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
-> @@ -157,6 +160,8 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
->  #define AD7940_CHAN(bits) _AD7476_CHAN((bits), 15 - (bits), \
->                 BIT(IIO_CHAN_INFO_RAW))
->  #define AD7091R_CHAN(bits) _AD7476_CHAN((bits), 16 - (bits), 0)
-> +#define ADS786X_CHAN(bits) _AD7476_CHAN((bits), 12 - (bits), \
-> +               BIT(IIO_CHAN_INFO_RAW))
->
->  static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
->         [ID_AD7091R] = {
-> @@ -209,6 +214,18 @@ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
->                 .channel[0] = ADC081S_CHAN(12),
->                 .channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
->         },
-> +       [ID_ADS7866] = {
-> +               .channel[0] = ADS786X_CHAN(12),
-> +               .channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-> +       },
-> +       [ID_ADS7867] = {
-> +               .channel[0] = ADS786X_CHAN(10),
-> +               .channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-> +       },
-> +       [ID_ADS7868] = {
-> +               .channel[0] = ADS786X_CHAN(8),
-> +               .channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-> +       },
->  };
->
->  static const struct iio_info ad7476_info = {
-> @@ -314,6 +331,9 @@ static const struct spi_device_id ad7476_id[] = {
->         {"adc081s", ID_ADC081S},
->         {"adc101s", ID_ADC101S},
->         {"adc121s", ID_ADC121S},
-> +       {"ads7866", ID_ADS7866},
-> +       {"ads7867", ID_ADS7867},
-> +       {"ads7868", ID_ADS7868},
->         {}
->  };
->  MODULE_DEVICE_TABLE(spi, ad7476_id);
-> --
-> 2.20.1
->
+> +
+> +	ret = ad_sd_setup_buffer_and_trigger(indio_dev);
+> +	if (ret)
+> +		goto error_disable_reg;
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret)
+> +		goto error_cleanup_buffer_and_trigger;
+> +
+> +	return 0;
+> +
+> +error_cleanup_buffer_and_trigger:
+> +	ad_sd_cleanup_buffer_and_trigger(indio_dev);
+> +error_disable_reg:
+> +	regulator_disable(st->reg);
+> +
+
+Well chosen label names, btw.  Very easy to review.
+
+> +	return ret;
+> +}
+> +
+
+regards,
+dan carpenter
