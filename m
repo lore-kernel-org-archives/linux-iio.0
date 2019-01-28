@@ -2,219 +2,116 @@ Return-Path: <SRS0=hFoe=QE=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,USER_AGENT_MUTT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F4D4C282C8
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 07:51:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 603A0C282C8
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 07:58:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 20B4420881
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 07:51:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2C80420882
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 07:58:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1548662315;
+	bh=+9Q7ezDpx6kMr43h4c4CTUe+4tLiKv4QfZ4uxKhM4wM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=vjeFqKPby9zluFMUriWVGnKxzF6mzdhmoXbxvTN+6fAI2BUuYUpbw+xcfcpJICzcz
+	 ejVMoGCxU9TmcVDl0uQoKvBbczFGfn6zqz1pQgYLLTpE6GRstkpkCMLfx9O/yhDkEl
+	 UUwQrt2yR0gLNwJXAasO3aA5S9HQ1qzIYop/QMes=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726851AbfA1Hvb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 28 Jan 2019 02:51:31 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:37216 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726669AbfA1Hvb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 28 Jan 2019 02:51:31 -0500
-Received: by mail-lj1-f196.google.com with SMTP id t18-v6so13350199ljd.4;
-        Sun, 27 Jan 2019 23:51:29 -0800 (PST)
+        id S1726798AbfA1H63 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 28 Jan 2019 02:58:29 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:34051 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726627AbfA1H62 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 28 Jan 2019 02:58:28 -0500
+Received: by mail-lj1-f195.google.com with SMTP id u89-v6so13401595lje.1;
+        Sun, 27 Jan 2019 23:58:27 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kbhHZZ0d6sVDbXbyE/OR5OCU1WWVnpEG6d81tbPbvRk=;
-        b=d3hLSUtn8Zn0hm+5UOdOklMnaC9wYYK8nWfcXXEDFyhqmzld6S1DtfysWDv//lbX6y
-         WHNA2HT6QnSD299WOq/6jJyzAKlDlnzQHk0u8Qs0E03e3kfCP8RvSJO8Vk3ZtMSnab32
-         cyKyqJIZEBqEVP3Z8KXORaqceyOHoqf4/ruxyG7V6HzmugEwBfxrNNjXff18cA2tD8UV
-         wR7Lk1fJuSdfUYsB+qhBwQLBsqLyljD8pNmWOhQuvtxcYkSkPxBR09qiHqQFr9FZFBAc
-         US6O1Nc0TfYhO1iucXXRfdUV2Xlv2GTsoFow/PLNomu3zmNil62CzYdchQUtagQvUSMK
-         QNXQ==
-X-Gm-Message-State: AJcUuken22xlu+sHW3cxZVkctkDQIAUV9UIZV2gKPKV2KwGjZe/Ho9Ct
-        MqXfxAUVLeGha0b6VDWuMHnQ0O6lavwEjh/hWh9dcQ==
-X-Google-Smtp-Source: ALg8bN7DI5zJQTIvDKqFnxjiFaf1xv0IAs72nFqoAPqAj6zIibLwcDURGprn5pfVCWNtWTG3OcoR6VA4syqvAqw2oOk=
-X-Received: by 2002:a2e:9747:: with SMTP id f7-v6mr11160213ljj.70.1548661888515;
- Sun, 27 Jan 2019 23:51:28 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=uX4EWl+872Z83SHKtTPVAAO1e9XNAnakGSaGM3zqyVY=;
+        b=TowfRVOa4u4eikpTYZYpMO50+dCm5ur0fKYBeEw24xqYv0nM53NE6yG20Pd3hxoK7R
+         CJ2irbZ+PaxQRFkn9BeuYMsBs9YVUN/TWlA2+fHvxyZlRrkEdbKHc6jPlTSEUL3Sq50L
+         W3czxVUcVw+IMnMu/YREGcnXufqVNtsuKbCXtefmh544BeE+12dNSu3remmmXqIC42Xc
+         bzBiWD/GHjYHBUPJcAxhSjHxZOSDIwxuUQjgssfSiFqgPidni+545luMD4O7LO9sDgK/
+         D17MkoAoCCO0WQQ5xhWcr5snB8JUaf7+Y/OUzis4NIK+STSYPuQzcdOa6IGWmeLJJu7d
+         t9zw==
+X-Gm-Message-State: AJcUukf6AJFH0B75gkeqfYTVvc/o5btgLIst/36ScxEnnJclmPaeLO1y
+        5dltTOZC86fg97y828Hxt/s=
+X-Google-Smtp-Source: ALg8bN54kxMDhxn7/V+/4QYFNuMpaDXkPqz/pe+5yXkSoxMbvC4Ly5x2lVQHNQgFd4bWUZv+BTdhWA==
+X-Received: by 2002:a2e:310a:: with SMTP id x10-v6mr16006353ljx.6.1548662306567;
+        Sun, 27 Jan 2019 23:58:26 -0800 (PST)
+Received: from xi.terra (c-74bee655.07-184-6d6c6d4.bbcust.telenor.se. [85.230.190.116])
+        by smtp.gmail.com with ESMTPSA id y23-v6sm2904753ljk.95.2019.01.27.23.58.25
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 27 Jan 2019 23:58:25 -0800 (PST)
+Received: from johan by xi.terra with local (Exim 4.91)
+        (envelope-from <johan@kernel.org>)
+        id 1go1oB-0000R0-UG; Mon, 28 Jan 2019 08:58:19 +0100
+Date:   Mon, 28 Jan 2019 08:58:19 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Tomasz Duszynski <tduszyns@gmail.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, johan@kernel.org, robh@kernel.org,
+        jic23@jic23.retrosnub.co.uk
+Subject: Re: [PATCH v2 3/3] dt-bindings: iio: chemical: pms7003: add device
+ tree support
+Message-ID: <20190128075819.GK3691@localhost>
+References: <20190127181916.19948-1-tduszyns@gmail.com>
+ <20190127181916.19948-4-tduszyns@gmail.com>
 MIME-Version: 1.0
-References: <20190125100451.15011-1-ricardo@ribalda.com> <20190126182114.15ac673c@archlinux>
- <CA+U=DsqX-FOYYdS5NGrqfVySsf4NnnDKYxN8hXO6P_3OgUmiWQ@mail.gmail.com>
- <CAPybu_2pFHbwaJMQxso17My+UoCtAyVVSZBabVE4xsp0HLV7UA@mail.gmail.com> <CA+U=DsprCm6GpPSROAN9dC5De4=ivhY9m_75Kn-h=jWpw-5JfA@mail.gmail.com>
-In-Reply-To: <CA+U=DsprCm6GpPSROAN9dC5De4=ivhY9m_75Kn-h=jWpw-5JfA@mail.gmail.com>
-From:   Ricardo Ribalda Delgado <ricardo@ribalda.com>
-Date:   Mon, 28 Jan 2019 08:51:12 +0100
-Message-ID: <CAPybu_37GaRJko4K8gX64j1D_hd86yARAFD9409MVL5twc9Hmw@mail.gmail.com>
-Subject: Re: [PATCH v2] iio: adc: ad7476: Add support for ADS786X ADCs
-To:     Alexandru Ardelean <ardeleanalex@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        alexandru.ardelean@analog.com, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190127181916.19948-4-tduszyns@gmail.com>
+User-Agent: Mutt/1.11.2 (2019-01-07)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-HI Alexandru
+On Sun, Jan 27, 2019 at 07:19:16PM +0100, Tomasz Duszynski wrote:
+> Add device tree support for Plantower PMS7003 particulate matter sensor.
+> 
+> Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
+> ---
+>  .../iio/chemical/plantower,pms7003.txt        | 19 +++++++++++++++++++
+>  1 file changed, 19 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt b/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
+> new file mode 100644
+> index 000000000000..e4c7f2fb1e30
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
+> @@ -0,0 +1,19 @@
+> +* Plantower PMS7003 particulate matter sensor
+> +
+> +Required properties:
+> +- compatible: must be "plantower,pms7003"
+> +
+> +Optional properties:
+> +- vcc-supply: phandle to the regulator that provides power to the sensor
 
-On Mon, Jan 28, 2019 at 8:47 AM Alexandru Ardelean
-<ardeleanalex@gmail.com> wrote:
->
-> On Mon, Jan 28, 2019 at 9:43 AM Ricardo Ribalda Delgado
-> <ricardo@ribalda.com> wrote:
-> >
-> > HI Alexandru
-> >
-> > On Mon, Jan 28, 2019 at 8:38 AM Alexandru Ardelean
-> > <ardeleanalex@gmail.com> wrote:
-> > >
-> > > On Sat, Jan 26, 2019 at 8:21 PM Jonathan Cameron <jic23@kernel.org> wrote:
-> > > >
-> > > > On Fri, 25 Jan 2019 11:04:51 +0100
-> > > > Ricardo Ribalda Delgado <ricardo@ribalda.com> wrote:
-> > > >
-> > > > > Add support for ADS7866, ADS7867 and ADS7868 8/10/12 bit Single channel
-> > > > > ADC.
-> > > > >
-> > >
-> > > I don't want this reply be offensive or anything.
-> > > But since I've seen this precedence, I do have to ask if these driver
-> > > changes were tested on at least one of the TI chips/eval-boards.
-> > >
-> > > Ideally, before adding new drivers it would be nice to make sure that
-> > > they were run on actual HW.
-> > > Good code-review can get us only so far.
-> > >
-> > > We could ask someone who has any of these chips to test.
-> > > Or maybe some eval boards from TI could be obtained to test these changes.
-> > >
-> > > Overall changes seem good [I haven't taken a close look], but HW
-> > > testing is king.
-> > >
-> >
-> > I have access to ADS7868 (the 8 bit version) which has been connected
-> > in "loopback" to the ti-dac7612 (also new driver). I can run any test
-> > that you need or even give you or someone access (privately) to the
-> > board via vpn
-> > or something like that.
-> >
-> > Would that work for you?
->
-> No, that's fine :)
-> Thank you for the answer.
-> And apologies [again] if this was a bit too forward/harsh from my side.
->
-Absolutely no worries! it wasn't. When I use a driver from kernel.org
-I expect it
-to have the maximum quality and work on real hardware. This is how we get there.
+Shouldn't this one be a required property?
 
-Best regards!
+> +- set-gpios: phandle to the GPIO connected to the SET line
+> +- reset-gpios: phandle to the GPIO connected to the RESET line
+> +
+> +Refer to serial/slave-device.txt for generic serial attached device bindings.
+> +
+> +Example:
+> +
+> +&uart0 {
+> +	pms7003 {
 
-> Thanks
-> Alex
->
-> >
-> > Best regards!
-> >
-> > > Thanks
-> > > Alex
-> > >
-> > > > > Datasheet: http://www.ti.com/lit/ds/symlink/ads7868.pdf
-> > > > >
-> > > > > Signed-off-by: Ricardo Ribalda Delgado <ricardo@ribalda.com>
-> > > > > ---
-> > > > > v2: I have missnamed the devices
-> > > > >  drivers/iio/adc/Kconfig  |  3 ++-
-> > > > >  drivers/iio/adc/ad7476.c | 20 ++++++++++++++++++++
-> > > > >  2 files changed, 22 insertions(+), 1 deletion(-)
-> > > > >
-> > > > > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> > > > > index f9354e5ee65c..d86900fc2634 100644
-> > > > > --- a/drivers/iio/adc/Kconfig
-> > > > > +++ b/drivers/iio/adc/Kconfig
-> > > > > @@ -64,7 +64,8 @@ config AD7476
-> > > > >       help
-> > > > >         Say yes here to build support for Analog Devices AD7273, AD7274, AD7276,
-> > > > >         AD7277, AD7278, AD7475, AD7476, AD7477, AD7478, AD7466, AD7467, AD7468,
-> > > > > -       AD7495, AD7910, AD7920, AD7920 SPI analog to digital converters (ADC).
-> > > > > +       AD7495, AD7910, AD7920, AD7920, ADS7866, ADS7867, ADS7868 SPI analog
-> > > > > +       to digital converters (ADC).
-> > > >
-> > > > As commented in the earlier thread (after you sent this!), please make sure
-> > > > the help text makes it clear that these aren't all Analog devices parts.
-> > > >
-> > > > Likely to cause confusion otherwise.
-> > > >
-> > > > Good to see you didn't spin another driver but instead tracked down that
-> > > > this one would work well!
-> > > >
-> > > > Thanks,
-> > > >
-> > > > Jonathan
-> > > >
-> > > > >
-> > > > >         To compile this driver as a module, choose M here: the
-> > > > >         module will be called ad7476.
-> > > > > diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
-> > > > > index 0549686b9ef8..76747488044b 100644
-> > > > > --- a/drivers/iio/adc/ad7476.c
-> > > > > +++ b/drivers/iio/adc/ad7476.c
-> > > > > @@ -59,6 +59,9 @@ enum ad7476_supported_device_ids {
-> > > > >       ID_ADC081S,
-> > > > >       ID_ADC101S,
-> > > > >       ID_ADC121S,
-> > > > > +     ID_ADS7866,
-> > > > > +     ID_ADS7867,
-> > > > > +     ID_ADS7868,
-> > > > >  };
-> > > > >
-> > > > >  static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
-> > > > > @@ -157,6 +160,8 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
-> > > > >  #define AD7940_CHAN(bits) _AD7476_CHAN((bits), 15 - (bits), \
-> > > > >               BIT(IIO_CHAN_INFO_RAW))
-> > > > >  #define AD7091R_CHAN(bits) _AD7476_CHAN((bits), 16 - (bits), 0)
-> > > > > +#define ADS786X_CHAN(bits) _AD7476_CHAN((bits), 12 - (bits), \
-> > > > > +             BIT(IIO_CHAN_INFO_RAW))
-> > > > >
-> > > > >  static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
-> > > > >       [ID_AD7091R] = {
-> > > > > @@ -209,6 +214,18 @@ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
-> > > > >               .channel[0] = ADC081S_CHAN(12),
-> > > > >               .channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-> > > > >       },
-> > > > > +     [ID_ADS7866] = {
-> > > > > +             .channel[0] = ADS786X_CHAN(12),
-> > > > > +             .channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-> > > > > +     },
-> > > > > +     [ID_ADS7867] = {
-> > > > > +             .channel[0] = ADS786X_CHAN(10),
-> > > > > +             .channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-> > > > > +     },
-> > > > > +     [ID_ADS7868] = {
-> > > > > +             .channel[0] = ADS786X_CHAN(8),
-> > > > > +             .channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-> > > > > +     },
-> > > > >  };
-> > > > >
-> > > > >  static const struct iio_info ad7476_info = {
-> > > > > @@ -314,6 +331,9 @@ static const struct spi_device_id ad7476_id[] = {
-> > > > >       {"adc081s", ID_ADC081S},
-> > > > >       {"adc101s", ID_ADC101S},
-> > > > >       {"adc121s", ID_ADC121S},
-> > > > > +     {"ads7866", ID_ADS7866},
-> > > > > +     {"ads7867", ID_ADS7867},
-> > > > > +     {"ads7868", ID_ADS7868},
-> > > > >       {}
-> > > > >  };
-> > > > >  MODULE_DEVICE_TABLE(spi, ad7476_id);
-> > > >
-> >
-> >
-> >
-> > --
-> > Ricardo Ribalda
+The node name should be generic and reflect the functionality rather
+than model. Perhaps "pms" will do here.
 
+> +		compatible = "plantower,pms7003";
+> +	};
+> +};
 
-
--- 
-Ricardo Ribalda
+Johan
