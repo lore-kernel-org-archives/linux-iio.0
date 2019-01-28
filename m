@@ -4,52 +4,51 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E51E5C282C8
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 17:30:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 375A9C282C8
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 17:46:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id AB00D2147A
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 17:30:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F3D6220881
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 17:46:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1548696606;
-	bh=t5Tx9wOUdjwV1AZezCkGQiVXL1YLa/2ZDs3LGxniwpM=;
+	s=default; t=1548697602;
+	bh=lMrhYFkrtu2AQ8XSDmofkJaojQnx5bpb7QiiXQL2ng4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=gxM72j50Db0wLZYrc3gQVepkHPWgFGsPubfMeaaP+s8n30lDsvbTD9jys28FmbbqO
-	 T7BfF5HZkncH5IHDNc2fXbgoxuUYTS3lYd3mmp1KuMfZchhdSNbD4hE+zY1xQVGoRp
-	 fNCaY8+9TKPevxmWhpVNH/1k5/tD49anB9YUWeQc=
+	b=S8Rfe2qtR3DQEs9eXiTB+iy4Whr5EhriojdHRklPckEjrB39eSviADj5iKsH46RNM
+	 Zua/jc9dgv28hoh3IJhAG3JPpj+r1NoN7xOWpVMFvem5A19JmIFyUXlDwhgXtLpID9
+	 L0193C9YSa1koYkpxQYp+JFMUHaXzTQ9d9mrcuUY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730301AbfA1P7c (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 28 Jan 2019 10:59:32 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44820 "EHLO mail.kernel.org"
+        id S1728199AbfA1PrG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 28 Jan 2019 10:47:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60432 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728987AbfA1P7c (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 28 Jan 2019 10:59:32 -0500
+        id S1728180AbfA1PrC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 28 Jan 2019 10:47:02 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E3F772175B;
-        Mon, 28 Jan 2019 15:59:29 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D906420880;
+        Mon, 28 Jan 2019 15:46:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1548691171;
-        bh=t5Tx9wOUdjwV1AZezCkGQiVXL1YLa/2ZDs3LGxniwpM=;
+        s=default; t=1548690421;
+        bh=lMrhYFkrtu2AQ8XSDmofkJaojQnx5bpb7QiiXQL2ng4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SivOAHz5ESyl1lEDcyb9QSLDnj7eXCWQWt14kv9ep4kBAEml4KQTaXRolJqqKXhxU
-         usYUKpRPzPq/ux+kUwvxQrvj7PIdqBhNdqstjroRvHIiGDDI5GFiA4Rc2or4/JfKlE
-         CnKeLbZKEjlQSxptUXCoq12ofyeB0Zaph6rnHdJY=
+        b=JKUABrPzSu2zJ1wlFhu36lgLtfSTmJxATN+GqYhN6sVYp0DUP265uf5crDckbXfer
+         8mAK7exrB9lE5PliUXAm+QoGl6D1X5o4atAGFFJAeLbJgYHO+5Gc2ZKsKFlfBFg+ez
+         i269wjdxhA7pEHxeFfLEPQDMCOi/YAbtgc07chXw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Slawomir Stepien <sst@poczta.fm>,
+Cc:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org
-Subject: [PATCH AUTOSEL 4.19 002/258] staging: iio: adc: ad7280a: handle error from __ad7280_read32()
-Date:   Mon, 28 Jan 2019 10:55:08 -0500
-Message-Id: <20190128155924.51521-2-sashal@kernel.org>
+        linux-amlogic@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.20 080/304] iio: adc: meson-saradc: fix internal clock names
+Date:   Mon, 28 Jan 2019 10:39:57 -0500
+Message-Id: <20190128154341.47195-80-sashal@kernel.org>
 X-Mailer: git-send-email 2.19.1
-In-Reply-To: <20190128155924.51521-1-sashal@kernel.org>
-References: <20190128155924.51521-1-sashal@kernel.org>
+In-Reply-To: <20190128154341.47195-1-sashal@kernel.org>
+References: <20190128154341.47195-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -58,69 +57,63 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Slawomir Stepien <sst@poczta.fm>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-[ Upstream commit 0559ef7fde67bc6c83c6eb6329dbd6649528263e ]
+[ Upstream commit 50314f98b0ac468218e7c9af8c99f215a35436df ]
 
-Inside __ad7280_read32(), the spi_sync_transfer() can fail with negative
-error code. This change will ensure that this error is being passed up
-in the call stack, so it can be handled.
+Before this patch we are registering the internal clocks (for example on
+Meson8b, where the SAR ADC IP block implements the divider and gate
+clocks) with the following names:
+- /soc/cbus@c1100000/adc@8680#adc_div
+- /soc/cbus@c1100000/adc@8680#adc_en
 
-Signed-off-by: Slawomir Stepien <sst@poczta.fm>
+This is bad because the common clock framework uses the clock to create
+a directory in <debugfs>/clk. With such name, the directory creation
+(silently) fails and the debugfs entry ends up being created at the
+debugfs root.
+
+With this change, the new clock names are:
+- c1108680.adc#adc_div
+- c1108680.adc#adc_en
+
+This matches the clock naming scheme used in the PWM, Ethernet and MMC
+drivers. It also fixes the problem with debugfs.
+The idea is shamelessly taken from commit b96e9eb62841c5 ("pwm: meson:
+Fix mux clock names").
+
+Fixes: 3921db46a8c5bc ("iio: Convert to using %pOF instead of full_name")
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/iio/adc/ad7280a.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+ drivers/iio/adc/meson_saradc.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-index b736275c10f5..6a48ad067a8b 100644
---- a/drivers/staging/iio/adc/ad7280a.c
-+++ b/drivers/staging/iio/adc/ad7280a.c
-@@ -256,7 +256,9 @@ static int ad7280_read(struct ad7280_state *st, unsigned int devaddr,
- 	if (ret)
- 		return ret;
+diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
+index 672a5dee4a9d..ba4b42429a2a 100644
+--- a/drivers/iio/adc/meson_saradc.c
++++ b/drivers/iio/adc/meson_saradc.c
+@@ -587,8 +587,8 @@ static int meson_sar_adc_clk_init(struct iio_dev *indio_dev,
+ 	struct clk_init_data init;
+ 	const char *clk_parents[1];
  
--	__ad7280_read32(st, &tmp);
-+	ret = __ad7280_read32(st, &tmp);
-+	if (ret)
-+		return ret;
+-	init.name = devm_kasprintf(&indio_dev->dev, GFP_KERNEL, "%pOF#adc_div",
+-				   indio_dev->dev.of_node);
++	init.name = devm_kasprintf(&indio_dev->dev, GFP_KERNEL, "%s#adc_div",
++				   dev_name(indio_dev->dev.parent));
+ 	if (!init.name)
+ 		return -ENOMEM;
  
- 	if (ad7280_check_crc(st, tmp))
- 		return -EIO;
-@@ -294,7 +296,9 @@ static int ad7280_read_channel(struct ad7280_state *st, unsigned int devaddr,
+@@ -609,8 +609,8 @@ static int meson_sar_adc_clk_init(struct iio_dev *indio_dev,
+ 	if (WARN_ON(IS_ERR(priv->adc_div_clk)))
+ 		return PTR_ERR(priv->adc_div_clk);
  
- 	ad7280_delay(st);
- 
--	__ad7280_read32(st, &tmp);
-+	ret = __ad7280_read32(st, &tmp);
-+	if (ret)
-+		return ret;
- 
- 	if (ad7280_check_crc(st, tmp))
- 		return -EIO;
-@@ -327,7 +331,9 @@ static int ad7280_read_all_channels(struct ad7280_state *st, unsigned int cnt,
- 	ad7280_delay(st);
- 
- 	for (i = 0; i < cnt; i++) {
--		__ad7280_read32(st, &tmp);
-+		ret = __ad7280_read32(st, &tmp);
-+		if (ret)
-+			return ret;
- 
- 		if (ad7280_check_crc(st, tmp))
- 			return -EIO;
-@@ -370,7 +376,10 @@ static int ad7280_chain_setup(struct ad7280_state *st)
- 		return ret;
- 
- 	for (n = 0; n <= AD7280A_MAX_CHAIN; n++) {
--		__ad7280_read32(st, &val);
-+		ret = __ad7280_read32(st, &val);
-+		if (ret)
-+			return ret;
-+
- 		if (val == 0)
- 			return n - 1;
+-	init.name = devm_kasprintf(&indio_dev->dev, GFP_KERNEL, "%pOF#adc_en",
+-				   indio_dev->dev.of_node);
++	init.name = devm_kasprintf(&indio_dev->dev, GFP_KERNEL, "%s#adc_en",
++				   dev_name(indio_dev->dev.parent));
+ 	if (!init.name)
+ 		return -ENOMEM;
  
 -- 
 2.19.1
