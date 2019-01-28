@@ -2,83 +2,151 @@ Return-Path: <SRS0=hFoe=QE=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45B87C282CE
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 02:50:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DE69C282C8
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 07:23:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 214AB2147A
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 02:50:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4D3732084C
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Jan 2019 07:23:55 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OshT1GdS"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726575AbfA1CrQ convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 27 Jan 2019 21:47:16 -0500
-Received: from outbound.smtp.vt.edu ([198.82.183.121]:53118 "EHLO
-        omr1.cc.vt.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726566AbfA1CrP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 Jan 2019 21:47:15 -0500
-Received: from mr6.cc.vt.edu (mr6.cc.ipv6.vt.edu [IPv6:2607:b400:92:8500:0:af:2d00:4488])
-        by omr1.cc.vt.edu (8.14.4/8.14.4) with ESMTP id x0S2lELc019928
-        for <linux-iio@vger.kernel.org>; Sun, 27 Jan 2019 21:47:14 -0500
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com [209.85.160.197])
-        by mr6.cc.vt.edu (8.14.7/8.14.7) with ESMTP id x0S2l9HW023482
-        for <linux-iio@vger.kernel.org>; Sun, 27 Jan 2019 21:47:14 -0500
-Received: by mail-qt1-f197.google.com with SMTP id p24so19227630qtl.2
-        for <linux-iio@vger.kernel.org>; Sun, 27 Jan 2019 18:47:14 -0800 (PST)
+        id S1726648AbfA1HXz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 28 Jan 2019 02:23:55 -0500
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:34387 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726647AbfA1HXy (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 28 Jan 2019 02:23:54 -0500
+Received: by mail-ot1-f68.google.com with SMTP id t5so13842444otk.1;
+        Sun, 27 Jan 2019 23:23:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PpKSzmaRDODSwUyXeKk+KgJ41/j+0HcFQypPO2rAs+Q=;
+        b=OshT1GdSwOflU25jR1S7/3xOtf7JR3ZxE2II8swufQF+Jtt7qtLkNbWpc2epL8Koyu
+         00WWFMOiNvxyZjUqYu/0E7T8EBKaQ3z9pxXJSuGnbrxwsJFB/ioOA2Eq1kxHpGsTr7E+
+         ZDpLE9DMrEJmff2KB696Y8mPx0rARM+IQFuj72ttpUg/dm2Qp3L1eg4FhjeG6//cQANZ
+         mDGHggfQRGAkFFIWEHd0PEunDF518COsFHcGQCfI92ja/aQIcRZbgwBZ3F/upDeczLJZ
+         UbpAG1j6PE2rMWpZjzbD1qhmxyha/jXwVh8KJIPGzR9OURciY5IEUhbUBqERFKj2UXRG
+         QrHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-transfer-encoding:date:message-id;
-        bh=1KUZ9QACuUu4LpeWYm9i3bv5tCvi3H7I0vuFykW2IRs=;
-        b=DqXs4oOHJjNg2nuo64vpmjKMS4m5soP2C/8g4VEIZ4al4ZoZTFXfDzdYDlXjYN+Hln
-         SZBitBGzQUNhrvexoxMKHoZi6VYtBW6QkIYZD7EHS/F2TxXlptjUqJpGYFr1VKZ4+le8
-         7bQ+f/EYqnnZLOag+OFS5iw7/AE/XB/ZYsI2+KafITbiuT7WMj7j1+u2uMTWq+O8jEvu
-         oeRdytFXXU/OlnXtJyW4c/LY0YgQC7CV+F7j7cwLLjiEsc0RfXj2+0W6nlxlrflwUpT1
-         XeL+8VCtTkNOVeHeoHeEz31CZRZi45H0sR+loAwZz6MsR5KsDRfCYykspMIV5R2TNGCY
-         v3qA==
-X-Gm-Message-State: AJcUukfja5giI5dGOZCcks5n42cm4NPomW03D/ISS/7tTFh2fcH2cc+j
-        sEhYdz2WP/kVDBiJvpUssuEF7r1bPU2pJ1mvD2daZKgpn8KOu7D9TVRTRgXKB3eSm+7HEoKHoN3
-        VLXReZBT6oqO8VavcmK5UQFwv37FBAMs=
-X-Received: by 2002:a05:620a:12bb:: with SMTP id x27mr18310737qki.159.1548643629491;
-        Sun, 27 Jan 2019 18:47:09 -0800 (PST)
-X-Google-Smtp-Source: ALg8bN5s6OmjOjTbtg1Dass3UTu8Pnpwy8G69AAz5hvHhQVa2o3G0EkFRdQ5q/HfNyyIPJFXMzJkBA==
-X-Received: by 2002:a05:620a:12bb:: with SMTP id x27mr18310725qki.159.1548643629333;
-        Sun, 27 Jan 2019 18:47:09 -0800 (PST)
-Received: from turing-police.cc.vt.edu ([2601:5c0:c001:4341::936])
-        by smtp.gmail.com with ESMTPSA id f143sm35231407qka.73.2019.01.27.18.47.07
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 27 Jan 2019 18:47:08 -0800 (PST)
-From:   valdis.kletnieks@vt.edu
-X-Google-Original-From: Valdis.Kletnieks@vt.edu
-X-Mailer: exmh version 2.9.0 11/07/2018 with nmh-1.7+dev
-To:     Rodrigo Ribeiro <rodrigorsdc@gmail.com>
-cc:     Alexandru Ardelean <ardeleanalex@gmail.com>, lars@metafoo.de,
-        Michael.Hennerich@analog.com, Jonathan Cameron <jic23@kernel.org>,
-        knaack.h@gmx.de, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PpKSzmaRDODSwUyXeKk+KgJ41/j+0HcFQypPO2rAs+Q=;
+        b=PhAZNInB0KlfQ4b5UVy/10Lj7vFTa8vZk5T7bg9bHTnPPKdCG8YCZMgI6xRgKxJ6Lb
+         4RRST2SH8HLp8HvvvI/hnHttULoZlr2owfv1PKQQBlXN3cN9RcrNs5OHgAv7mdEsSlE8
+         TdkmEh2wd2ezvLPnId8PjrpL4YbtCk7gG8RkgR08FWaFeUAqa4np9zYjdf8/cAJP/Z2Q
+         lgBTgkgMXPnLBRwBOPnjRzYJTY7m3U40aP2oPB2e7JimA1DoUGqBAg3hJ/OjaIbkGbHC
+         qsCgEL+gKqlFFgnGU4HEXoV7YxSwHlM54s8Ci+DneWkPRr9hxvKaouOtVyth8CMzo5Jl
+         VXLw==
+X-Gm-Message-State: AJcUukdExuTd6m46ommPPT9c1cJn8SyvL3QavUdfnECRgp4E7K8M9PD5
+        e3NOEqEdhafEyyfIULoJnHvDSARog1CYCUxbAbY=
+X-Google-Smtp-Source: ALg8bN5GYj+D2d1PwenZBAQlNLo2jXh5vwhReZROXmsIQQG3xD0BB4Pj7RHT7/kp2xDwszHAli5WBoubnmssumiA+6s=
+X-Received: by 2002:a9d:6d95:: with SMTP id x21mr14470233otp.99.1548660233519;
+ Sun, 27 Jan 2019 23:23:53 -0800 (PST)
+MIME-Version: 1.0
+References: <1548358316-8062-1-git-send-email-rodrigorsdc@gmail.com>
+ <CA+U=DsqG6PKs1Off9QP_3_q+c5=uzRypHCs+O6iur=NC5QdDdQ@mail.gmail.com> <20190126180909.38380f05@archlinux>
+In-Reply-To: <20190126180909.38380f05@archlinux>
+From:   Alexandru Ardelean <ardeleanalex@gmail.com>
+Date:   Mon, 28 Jan 2019 09:23:41 +0200
+Message-ID: <CA+U=DsoP_Y62ONbb5OmU3r=0UFihDT0GC3ur4i_bHFjBMAeWpw@mail.gmail.com>
+Subject: Re: [PATCH] staging:iio:ad7152: Rename misspelled RESEVERD -> RESERVED
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Rodrigo Ribeiro <rodrigorsdc@gmail.com>, lars@metafoo.de,
+        Michael.Hennerich@analog.com, knaack.h@gmx.de,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
         devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        kernel-usp@googlegroups.com, Rafael Tsuha <rafael.tsuha@usp.br>
-Subject: Re: [PATCH] staging:iio:ad7152: Rename misspelled RESEVERD -> RESERVED
-In-reply-to: <CAOeBkLq18nP6xsOCNNE2Bew=u37MsLCgH=W-8ofnFSAi6dYx=Q@mail.gmail.com>
-References: <1548358316-8062-1-git-send-email-rodrigorsdc@gmail.com> <CA+U=DsqG6PKs1Off9QP_3_q+c5=uzRypHCs+O6iur=NC5QdDdQ@mail.gmail.com> <CAOeBkLogWyxbB3ZNwZh9=6xVUKxmT1YGZQseAx4uo7a4u+M+gw@mail.gmail.com>
- <CAOeBkLq18nP6xsOCNNE2Bew=u37MsLCgH=W-8ofnFSAi6dYx=Q@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
-Date:   Sun, 27 Jan 2019 21:47:39 -0500
-Message-ID: <25499.1548643659@turing-police.cc.vt.edu>
+        kernel-usp@googlegroups.com, Rafael Tsuha <rafael.tsuha@usp.br>,
+        alexandru.ardelean@analog.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 25 Jan 2019 22:14:32 -0200, Rodrigo Ribeiro said:
-> Maybe, one checkstyle patch is enough, right? Which drivers can I truly
-> contribute to?
+On Sat, Jan 26, 2019 at 8:09 PM Jonathan Cameron <jic23@kernel.org> wrote:
+>
+> On Fri, 25 Jan 2019 10:19:54 +0200
+> Alexandru Ardelean <ardeleanalex@gmail.com> wrote:
+>
+> > On Thu, Jan 24, 2019 at 9:35 PM Rodrigo Ribeiro <rodrigorsdc@gmail.com> wrote:
+> > >
+> > > Remove the checkpatch.pl check:
+> > >
+> > > CHECK: 'RESEVERD' may be misspelled - perhaps 'RESERVED'?
+> >
+> > Hey,
+> >
+> > A bit curios about this one.
+> > Are you using this chip/driver ?
+> >
+> > Thing is: the part is nearing EOL, and it could be an idea to be
+> > marked for removal (since it's still in staging).
+> > But if there are users for this driver, it could be left around for a while.
+>
+> While it might be going away soon, I'm also not that bothered about
+> the small amount of churn that a tidy up patch like this causes,
+> and it might not go away ;)
+>
+> However it is rather odd to have a 'reserved' entry for a register.
+> can't see that providing any useful information.  Normally I'm
+> happy to have complete register sets as a form of documentation
+> if the author wants to do it that way.  This however seems silly.
+>
+> Alex, we haven't really gone with marking things as 'going away'
+> before.  I'd suggest we take a guess and remove it if you and the
+> team an analog don't think it's in use.  Happy to get a patch for
+> that if you want to send one.  Of course, Rodrigo could do that
+> patch to get started if that works for everyone? :)
+>
 
-I'll give you a pointer to the "How to contribute" the Kernel Newbies list and IRC
-channel uses:
+We'll also start a discussion about this particular driver internally.
+And maybe a procedure for removing drivers that become obsolete [or
+come close to it].
+We also don't/didn't have one for removing "going away" drivers; I
+just remembered that we took a look over this one and decided not to
+invest time into it as it's close to being obsolete.
 
-https://lists.kernelnewbies.org/pipermail/kernelnewbies/2017-April/017765.html
+Thanks
+Alex
+
+> Jonathan
+> >
+> > Thanks
+> > Alex
+> >
+> > >
+> > > Signed-off-by: Rodrigo Ribeiro <rodrigorsdc@gmail.com>
+> > > Signed-off-by: Rafael Tsuha <rafael.tsuha@usp.br>
+> > > ---
+> > > This macro is not used anywhere. Should we just correct the
+> > > spelling or remove the macro?
+> > >
+> > >  drivers/staging/iio/cdc/ad7152.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/staging/iio/cdc/ad7152.c b/drivers/staging/iio/cdc/ad7152.c
+> > > index 25f51db..c9da6d4 100644
+> > > --- a/drivers/staging/iio/cdc/ad7152.c
+> > > +++ b/drivers/staging/iio/cdc/ad7152.c
+> > > @@ -35,7 +35,7 @@
+> > >  #define AD7152_REG_CH2_GAIN_HIGH       12
+> > >  #define AD7152_REG_CH2_SETUP           14
+> > >  #define AD7152_REG_CFG                 15
+> > > -#define AD7152_REG_RESEVERD            16
+> > > +#define AD7152_REG_RESERVED            16
+> > >  #define AD7152_REG_CAPDAC_POS          17
+> > >  #define AD7152_REG_CAPDAC_NEG          18
+> > >  #define AD7152_REG_CFG2                        26
+> > > --
+> > > 2.7.4
+> > >
+>
