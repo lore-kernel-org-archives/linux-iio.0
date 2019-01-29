@@ -5,99 +5,133 @@ X-Spam-Level:
 X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D098C169C4
-	for <linux-iio@archiver.kernel.org>; Tue, 29 Jan 2019 18:31:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 385D8C169C4
+	for <linux-iio@archiver.kernel.org>; Tue, 29 Jan 2019 18:37:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1F61E2080F
-	for <linux-iio@archiver.kernel.org>; Tue, 29 Jan 2019 18:31:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0C5302080F
+	for <linux-iio@archiver.kernel.org>; Tue, 29 Jan 2019 18:37:16 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hc5XmYBA"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="avnzGOKX"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727229AbfA2SbP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 29 Jan 2019 13:31:15 -0500
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:46303 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727198AbfA2SbP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 29 Jan 2019 13:31:15 -0500
-Received: by mail-qk1-f196.google.com with SMTP id q1so12101753qkf.13;
-        Tue, 29 Jan 2019 10:31:15 -0800 (PST)
+        id S1728627AbfA2ShP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 29 Jan 2019 13:37:15 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:42190 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727229AbfA2ShP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 29 Jan 2019 13:37:15 -0500
+Received: by mail-qk1-f195.google.com with SMTP id 68so12106977qke.9;
+        Tue, 29 Jan 2019 10:37:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=S9EDHsw96cyd0/3F78W3MTcTmErK7XmN4nklDQL57yg=;
-        b=hc5XmYBA4bLnJOvvnDyVmhqXK77vAvxbXnSvAMaocWUubq5Ku4mQvXm+0/jnTrslQ+
-         WAuvDyg0PF4yMpNHfE1sZl5j7qMq/v+Nmin/wJdkbnanc7yS4WARsJo8P1qOh+zIGYGb
-         IlUXMED1RUIT3vrmeXgGLc61B2HG2fdWf49ontHd1SSJem6b5LyZVEqGgcB3res+udhQ
-         2mxYrWTi09H6cKbadgiUAwofjwyDgTSTKiucE7B1hcanzO0hh3PMjSHsPd0SYfJcEieK
-         0fvu2t/6oxUsqa0Hgl/QGuksAOBmfkquVITCqWM7xwV7u3dCqkMPRGwHJ4MmrbPrFJnr
-         9Mqg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=m8DKRRaYVDWWj7eK5BlqC9nwhgc+tZAka4nGRVNCp+8=;
+        b=avnzGOKX2aFJ1RqqA35h94U4Es7ETgWYsVCV2MvSgIThDp7DzfEi6tIjDgm0VWy3+J
+         LVDZ6U9gqARUXQIKDn0LdNNVBC55epxPGFxVO/PmzTF74P9eyWJMmmo5GiG3fWlFExmR
+         axGmDAlzkn1HZHOGmbjHplYG3oQ76FeASRO1nhffA4r3NFjD21aQNE2o63O71Vj3VIhd
+         Og55BklycGPFuz6hfg3t27bkuE8oqOWxDJGAfBKkTrqQDxVooaKP6aAbU9aLkg9F6qWC
+         YwH/fxcq5hqDd8LqFKMN0bs9ypH6PwumcSWCAp/dqRMOItkostCdZJ68Gb56Op+OXBaQ
+         De5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=S9EDHsw96cyd0/3F78W3MTcTmErK7XmN4nklDQL57yg=;
-        b=ukgmGhfhwbdcGOIyS/oz4eMCv2ASW5LKabV+lSvzlVgqi6pTfqPTldalcFmYdpw+11
-         LZAXezQg/rPMSyxozazaRFK9v9Q8J6aHL7O7GVdnxjvn+Qby/vzgY98rJFxGPyC+1bvQ
-         v5f8LtMKiqjIUZztm8U5psFRyy45SeFVz4XDZwh7Tqy6p6gzEc01QfIGwBmjEtKB5jea
-         9YXwt21PujUElBxMYpiKb7wepBV0OhPbbWR2cKmpgrB8SdKfXMdGe/WuLumHXT6kA4bk
-         8zXNYSN6egndY8KZ1/E5goNagSWOhMvKAdVQWnbXRCbtFQBUKSt6ZE46Vh72wTSfE6KM
-         K/rA==
-X-Gm-Message-State: AJcUukfN6wW/EOVNb/OrrP6pO+xXp6H+Y1oxHM/2gCfCzaIKkDJGJbFo
-        TFzFvduijEH6yY0guVlzGq3Gac2PoOOWXg==
-X-Google-Smtp-Source: ALg8bN7JUagEy384ubMe4QDPv6Hdw2AUwEPFy7fTx9Cg9/lMx1oa00esEj7Q06VMI1Mke5LjLhU0YA==
-X-Received: by 2002:a37:6749:: with SMTP id b70mr24565322qkc.41.1548786674411;
-        Tue, 29 Jan 2019 10:31:14 -0800 (PST)
-Received: from voyager.ime.usp.br ([143.107.45.1])
-        by smtp.gmail.com with ESMTPSA id a3sm49357708qkd.86.2019.01.29.10.31.11
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Tue, 29 Jan 2019 10:31:13 -0800 (PST)
-From:   Camylla Cantanheide <c.cantanheide@gmail.com>
-To:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com,
-        Feulo <guifeulo@gmail.com>,
-        Camylla Cantanheide <c.cantanheide@gmail.com>
-Subject: [PATCH] staging:iio:ad7152: align line to match open parenthesis
-Date:   Tue, 29 Jan 2019 16:31:00 -0200
-Message-Id: <1548786660-11935-1-git-send-email-c.cantanheide@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=m8DKRRaYVDWWj7eK5BlqC9nwhgc+tZAka4nGRVNCp+8=;
+        b=UhewqnHeLeIa55MLhduyxlBLZWFUcvTAHPGos76Z1ItMoPIcVjfmIHBKdlH4QhdFxo
+         QekdDo7pdtPO9RjxBuTl+ojSc7OgsV6fxxUhJcu0ZsKygwDWderbEEU0AMbtLda7lJjy
+         2HKQNa/8XYbe1KjQgTayzPaZCngTpkLOe7ljCkCSGlfy7LCcDJJgf4OnfcP6gK0GfL+R
+         QEm3XVTTVNY9DCjYsY0YhVYexfcGD0cBQNxfgjnb9ySRCQwwcemFYBFDf2Kx2ekhCpSb
+         nFbeXdwOLYuwWwTlSbYVuiHZwj9bv4JWAbL2x0HbdzSpcuVBdZe9T4krzfL6vUkOwOkG
+         yRqw==
+X-Gm-Message-State: AJcUuke/qMOmZDSbeebjFU5NQWKxHpZfpK03TMfQRbf7LjD3n36b2SAf
+        eN1ZU7zQtTQbqNZYjXxgZAQ=
+X-Google-Smtp-Source: ALg8bN5V4B7jlcesbMQ4WVLPimlIOr/aKdeFnaS3jL2ks6hj2H4OsJ7vofWRGBZb+YZp+nZfvH0vHg==
+X-Received: by 2002:a37:8b41:: with SMTP id n62mr24555460qkd.262.1548787034442;
+        Tue, 29 Jan 2019 10:37:14 -0800 (PST)
+Received: from wall-e.ime.usp.br ([143.107.45.1])
+        by smtp.gmail.com with ESMTPSA id o65sm82888562qkl.11.2019.01.29.10.37.11
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 29 Jan 2019 10:37:13 -0800 (PST)
+From:   Lucas Oshiro <lucasseikioshiro@gmail.com>
+To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-usp@googlegroups.com,
+        Anderson Reis <andersonreisrosa@gmail.com>
+Subject: [PATCH] iio:potentiostat:lmp91000: solve codestyle WARNINGs and CHECKs
+Date:   Tue, 29 Jan 2019 16:36:56 -0200
+Message-Id: <20190129183656.15656-1-lucasseikioshiro@gmail.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Feulo <guifeulo@gmail.com>
+Solve most of the checkpatch.pl WARNINGs and CHECKs on lmp9100.c. They
+are the following:
 
-Align broken line to match upper line parenthesis. Solves the
-checkpatch.pl's message
+lmp91000.c:116: CHECK: Unnecessary parentheses around 'state != channel'
+lmp91000.c:116: CHECK: Unnecessary parentheses around 'channel == LMP91000_REG_MODECN_TEMP'
+lmp91000.c:214: CHECK: braces {} should be used on all arms of this statement
+lmp91000.c:216: CHECK: Unbalanced braces around else statement
+lmp91000.c:258: WARNING: line over 80 characters
+lmp91000.c:279: CHECK: Please don't use multiple blank lines
 
-CHECK: Alignment should match open parenthesis.
-
-Signed-off-by: Feulo <guifeulo@gmail.com>
-Signed-off-by: Camylla Cantanheide <c.cantanheide@gmail.com>
+Signed-off-by: Lucas Oshiro <lucasseikioshiro@gmail.com>
+Signed-off-by: Anderson Reis <andersonreisrosa@gmail.com>
 ---
- drivers/staging/iio/cdc/ad7152.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/potentiostat/lmp91000.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/staging/iio/cdc/ad7152.c b/drivers/staging/iio/cdc/ad7152.c
-index 25f51db..e7f082f 100644
---- a/drivers/staging/iio/cdc/ad7152.c
-+++ b/drivers/staging/iio/cdc/ad7152.c
-@@ -362,7 +362,7 @@ static int ad7152_read_raw(struct iio_dev *indio_dev,
- 		/* Trigger a single read */
- 		regval |= AD7152_CONF_MODE_SINGLE_CONV;
- 		ret = i2c_smbus_write_byte_data(chip->client, AD7152_REG_CFG,
--				regval);
-+						regval);
- 		if (ret < 0)
- 			goto out;
+diff --git a/drivers/iio/potentiostat/lmp91000.c b/drivers/iio/potentiostat/lmp91000.c
+index 90e895adf997..6dba26121a62 100644
+--- a/drivers/iio/potentiostat/lmp91000.c
++++ b/drivers/iio/potentiostat/lmp91000.c
+@@ -113,7 +113,7 @@ static int lmp91000_read(struct lmp91000_data *data, int channel, int *val)
+ 		return -EINVAL;
  
+ 	/* delay till first temperature reading is complete */
+-	if ((state != channel) && (channel == LMP91000_REG_MODECN_TEMP))
++	if (state != channel && channel == LMP91000_REG_MODECN_TEMP)
+ 		usleep_range(3000, 4000);
+ 
+ 	data->chan_select = channel != LMP91000_REG_MODECN_3LEAD;
+@@ -211,9 +211,9 @@ static int lmp91000_read_config(struct lmp91000_data *data)
+ 
+ 	ret = of_property_read_u32(np, "ti,tia-gain-ohm", &val);
+ 	if (ret) {
+-		if (of_property_read_bool(np, "ti,external-tia-resistor"))
++		if (of_property_read_bool(np, "ti,external-tia-resistor")) {
+ 			val = 0;
+-		else {
++		} else {
+ 			dev_err(dev, "no ti,tia-gain-ohm defined");
+ 			return ret;
+ 		}
+@@ -255,8 +255,8 @@ static int lmp91000_read_config(struct lmp91000_data *data)
+ 
+ 	regmap_write(data->regmap, LMP91000_REG_LOCK, 0);
+ 	regmap_write(data->regmap, LMP91000_REG_TIACN, reg);
+-	regmap_write(data->regmap, LMP91000_REG_REFCN, LMP91000_REG_REFCN_EXT_REF
+-					| LMP91000_REG_REFCN_50_ZERO);
++	regmap_write(data->regmap, LMP91000_REG_REFCN,
++		     LMP91000_REG_REFCN_EXT_REF	| LMP91000_REG_REFCN_50_ZERO);
+ 	regmap_write(data->regmap, LMP91000_REG_LOCK, 1);
+ 
+ 	return 0;
+@@ -276,7 +276,6 @@ static int lmp91000_buffer_cb(const void *val, void *private)
+ static const struct iio_trigger_ops lmp91000_trigger_ops = {
+ };
+ 
+-
+ static int lmp91000_buffer_preenable(struct iio_dev *indio_dev)
+ {
+ 	struct lmp91000_data *data = iio_priv(indio_dev);
 -- 
-2.7.4
+2.20.1
 
