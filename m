@@ -7,193 +7,205 @@ X-Spam-Status: No, score=-7.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83505C169C4
-	for <linux-iio@archiver.kernel.org>; Tue, 29 Jan 2019 08:32:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED57AC169C4
+	for <linux-iio@archiver.kernel.org>; Tue, 29 Jan 2019 09:10:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 43EA420844
-	for <linux-iio@archiver.kernel.org>; Tue, 29 Jan 2019 08:32:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AF9C12084A
+	for <linux-iio@archiver.kernel.org>; Tue, 29 Jan 2019 09:10:26 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XVCGf4Vb"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ahW0WsR2"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727586AbfA2Ick (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 29 Jan 2019 03:32:40 -0500
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:45848 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726383AbfA2Ick (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 29 Jan 2019 03:32:40 -0500
-Received: by mail-oi1-f195.google.com with SMTP id y1so15428310oie.12
-        for <linux-iio@vger.kernel.org>; Tue, 29 Jan 2019 00:32:39 -0800 (PST)
+        id S1727310AbfA2JK0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 29 Jan 2019 04:10:26 -0500
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:34751 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725846AbfA2JK0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 29 Jan 2019 04:10:26 -0500
+Received: by mail-ot1-f66.google.com with SMTP id t5so17277937otk.1;
+        Tue, 29 Jan 2019 01:10:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0kooBdsDJ8beSmzMmXF9YQfA1Oe+Rq/boaot15Jcaro=;
-        b=XVCGf4VbBlEj6Hx4AjIERfMEocwP7e6Wc/vERZgWVWUXHJqwqwXvKXZKpD+uoChjdx
-         zJfFrrXUV12Qf2wTyUl46HQeOZlnuNpjYV/As+sgtPPnpV8a9RX0jbx6YoYSozpIrIgY
-         iJVyrEGRudNYYk7xDSOrGZryhuhWppZRBfU65N0Eyye0piIY/cYD8AcRFhDh0GTxKhRM
-         IePRFmhqx1fivyJIek3XVbqERroFinXAwvSWcowQQ1QqedvM2na4uEv2cbjoEh0P2tPm
-         V63h3IHVqOGjWhjs/p3IplbyTNISXzAG/DGlFLWKR5TE6HNENtrNzab8pVM5It4FKQue
-         Ed1A==
+         :cc:content-transfer-encoding;
+        bh=Y+gbl4XAbjxC+xEtAEEdUUUi3y94Kpx9B6/DnGdEXio=;
+        b=ahW0WsR25FK3F6uzmrm0SDqmkB46FwyDWFkuVqPgJc/uhF8jF5mIgkM5JztTPgIond
+         zt2Esr/05wFtGaqTBG6b2iaWBAGg+8M/I6ajG1raexEL720HXDL5Qfff17dzuDGNw1Wd
+         il/12pkIUdmtEw5fmrJgZno38r4Waj76OALJBOvAcobm5faWQWA0w+jcncILKrohualc
+         H+ByKhsR2SSIycD/r6Nsy29/QyylmC6BSFC+MHeQT7vf3qiNBf3xsdlRbzeiujZMJtMC
+         ZtkUxTNnOneX6roP02FPjlbVhCReO3IAn+Si7H9EUD648wEANd2HK+iE6drDPwRFfStP
+         1VWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0kooBdsDJ8beSmzMmXF9YQfA1Oe+Rq/boaot15Jcaro=;
-        b=Fy3W6UO0KXQbmP6CTVnoAv5X27KIelqbmiHEF+K5OJObNbGEIXENLbenyW3cHezaDf
-         dwb6SsRqeznMz3mUpqDoj8teTNxsmiwmmlpa9gswX5tIICBhoINsn/AXwiyuMInZazam
-         /233/nohWSNPiId9GNUE2UK0RtaCPbb5SexhDQGSnLN+w5aYbOJFW5/Xim6ZZBBHb8Rb
-         4CpksvvC73UIdcAo4yheopjbCnmQfJRe3f16pokUkhCp5rjLgUPjbXaESwy4ivmuma+O
-         phShiEUGbxCNsMe1QCJOhbsBfBeRPpcHvcnQu446+P/OgYlnxXlBTuRInGPTeFnf1enG
-         PoAQ==
-X-Gm-Message-State: AHQUAuY0vxwGGIAEaTAMTOvMea3r8vxfFJw/etLin/3KtbACEWaDaSY0
-        smVozu5qKF9fHwtYLi2lXSp1QPVoabn/wPLK9Uo=
-X-Google-Smtp-Source: AHgI3IbyYn3yVlSfkC4uSBDtRTewPeTwRS7RPCf0Pcx4SWh+uuVsXAIQspCNfRbSyBMUlVJ1eALUU9GQTp80IjPykZA=
-X-Received: by 2002:aca:58d7:: with SMTP id m206mr8948612oib.140.1548750759526;
- Tue, 29 Jan 2019 00:32:39 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Y+gbl4XAbjxC+xEtAEEdUUUi3y94Kpx9B6/DnGdEXio=;
+        b=CiJ8ElK7/wW6NCOwXv3yM0dkmtGbN78l4dNHS8WwQhh0e1mWhNumR7fvQ3p9hIrqhD
+         7jdIASzGotAXuoYqxK0JGO+wJlP7u1uHl9/JaJKqgrxtZEAasgmrv7Mw6Uvu1grePodc
+         LgvHQBxPLjace1kU8pCeHnLVt6d8sDD85hRraEY+9+Cpw5MGBpOYfaTdjGNcb2WD7xmF
+         rMB4KUsUUv0wiHGuADI9pasSY5TOD+OgJoInvhnZi7DR0lt6QcKmE5RXrdX0GkMUKsSo
+         oqxKTqffq/Ow2ZGSxB/0choPd8ozf8uYi/vUkZ7I0Ge4cUKYZ96k79ZdyP+UQolBZgbW
+         6/zA==
+X-Gm-Message-State: AJcUukeSkOT/8xdme4fe9ykz7qdhCXAuHJj3Mu+Z9YrAhGCJy38Ep/Xc
+        AvICrO6RPw+hMwkc1ielS2F69kVQ9J81I/mwZ/U=
+X-Google-Smtp-Source: ALg8bN70nyUOnPM7P0Xumgz3FkLZ2RFploc+bR/RWsGAb7HSFx6LbCHfP+Uy4lIDwvFMbpsR8TuMhXLDEm6rsPri5vc=
+X-Received: by 2002:a9d:7059:: with SMTP id x25mr19637398otj.35.1548753024905;
+ Tue, 29 Jan 2019 01:10:24 -0800 (PST)
 MIME-Version: 1.0
-References: <1548743212-83787-1-git-send-email-preid@electromag.com.au>
-In-Reply-To: <1548743212-83787-1-git-send-email-preid@electromag.com.au>
+References: <1548358316-8062-1-git-send-email-rodrigorsdc@gmail.com>
+ <CA+U=DsqG6PKs1Off9QP_3_q+c5=uzRypHCs+O6iur=NC5QdDdQ@mail.gmail.com>
+ <CAOeBkLogWyxbB3ZNwZh9=6xVUKxmT1YGZQseAx4uo7a4u+M+gw@mail.gmail.com>
+ <CAOeBkLq18nP6xsOCNNE2Bew=u37MsLCgH=W-8ofnFSAi6dYx=Q@mail.gmail.com> <20190126181321.1439e485@archlinux>
+In-Reply-To: <20190126181321.1439e485@archlinux>
 From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-Date:   Tue, 29 Jan 2019 10:32:28 +0200
-Message-ID: <CA+U=Dso+_dn4mEew5y62nGg8AmEABOCnV9aFgHvQV9WsM0enrA@mail.gmail.com>
-Subject: Re: [PATCH 1/1] iio: core: Improve precision of __iio_format_value
- for FRACTIONAL values
-To:     Phil Reid <preid@electromag.com.au>
-Cc:     Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de,
-        lars@metafoo.de, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
+Date:   Tue, 29 Jan 2019 11:10:12 +0200
+Message-ID: <CA+U=DsqwVsXyaDiBa1VLUjWmEcGLCYfk3iVZ5h5xEAcqyrXgQw@mail.gmail.com>
+Subject: Re: [PATCH] staging:iio:ad7152: Rename misspelled RESEVERD -> RESERVED
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Rodrigo Ribeiro <rodrigorsdc@gmail.com>, lars@metafoo.de,
+        Michael.Hennerich@analog.com, knaack.h@gmx.de,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
+        devel@driverdev.osuosl.org, LKML <linux-kernel@vger.kernel.org>,
+        kernel-usp@googlegroups.com, Rafael Tsuha <rafael.tsuha@usp.br>,
+        alexandru.ardelean@analog.com, stefan.popa@analog.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, Jan 29, 2019 at 8:28 AM Phil Reid <preid@electromag.com.au> wrote:
+On Sat, Jan 26, 2019 at 8:13 PM Jonathan Cameron <jic23@kernel.org> wrote:
 >
-> Currently FRACTIONAL values are outputed with 9 digits after the decimal
-> place. This is not always sufficient to resolve the raw value with 1 bit.
-> Output FRACTIONAL values to 15 decimal places of precision, regardless
-> of the number of leading zeros.
+> On Fri, 25 Jan 2019 22:14:32 -0200
+> Rodrigo Ribeiro <rodrigorsdc@gmail.com> wrote:
 >
-> Currently for a 2.5V ref with 24 bits of precision the code outputs only
-> to 9 decimal places.
+> > Em sex, 25 de jan de 2019 =C3=A0s 21:46, Rodrigo Ribeiro
+> > <rodrigorsdc@gmail.com> escreveu:
+> > >
+> > > Em sex, 25 de jan de 2019 =C3=A0s 06:20, Alexandru Ardelean
+> > > <ardeleanalex@gmail.com> escreveu:
+> > > >
+> > > > On Thu, Jan 24, 2019 at 9:35 PM Rodrigo Ribeiro <rodrigorsdc@gmail.=
+com> wrote:
+> > > > >
+> > > > > Remove the checkpatch.pl check:
+> > > > >
+> > > > > CHECK: 'RESEVERD' may be misspelled - perhaps 'RESERVED'?
+> > > >
+> > > > Hey,
+> > >
+> > > Hi,
+> > >
+> > > Thanks for answering.
+> > >
+> > > > A bit curios about this one.
+> > > > Are you using this chip/driver ?
+> > >
+> > > No, I am just a student at USP (University of S=C3=A3o Paulo) startin=
+g in Linux
+> > > Kernel and a new member of the USP Linux Kernel group that has contri=
+buted
+> > > for a few months.
+> > >
+> > > > Thing is: the part is nearing EOL, and it could be an idea to be
+> > > > marked for removal (since it's still in staging).
+> > > > But if there are users for this driver, it could be left around for=
+ a while.
+> > >
+> > > This is my first patch in Linux Kernel, but if the driver will be rem=
+oved, I
+> > > can send a patch for another driver. Is there any driver that I can
+> > > fix a style warning?
+> >
+> > Maybe, one checkstyle patch is enough, right? Which drivers can I truly
+> > contribute to?
 >
-> Cur: 0.00014901100000000000 * 16777216 = 2499.989733
-> New: 0.00014901161193847600 * 16777216 = 2500.000000
-> Signed-off-by: Phil Reid <preid@electromag.com.au>
-> ---
+> How about the ad7150?  That one is still listed as production.
+> What do you think Alex, you probably have better visibility on the
+> status of these parts and their drivers than I do!
 >
-> Notes:
->     Alternatively I could add additonal FRACTIONAL types that select the new
->     behaviour to prevent any possible regressions.
+> (note I haven't even opened that one for a few years so no idea
+> what state the driver is in!)
 >
->  drivers/iio/industrialio-core.c | 55 ++++++++++++++++++++++++++++++++++-------
->  1 file changed, 46 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index a062cfd..bd9da64 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -571,11 +571,53 @@ int of_iio_read_mount_matrix(const struct device *dev,
->  #endif
->  EXPORT_SYMBOL(of_iio_read_mount_matrix);
->
-> +static ssize_t __iio_format_div_prec(char *buf, unsigned int len, s64 x, s32 y)
-> +{
-> +       unsigned int prec = 0;
-> +       unsigned int idx = 0;
-> +       s64 d;
-> +
-> +       if (!len)
-> +               return 0;
-> +
-> +       if (!y)
-> +               return snprintf(buf, len, "inf");
-> +
-> +       if (!x)
-> +               return snprintf(buf, len, "0");
-> +
-> +       if (((x > 0) && (y < 0)) || ((x < 0) && (y > 0))) {
-> +               buf[idx++] = '-';
-> +               x = x > 0 ? x : -x;
-> +               y = y > 0 ? y : -y;
-> +       }
-> +
-> +       d = div64_s64(x, y);
-> +       idx += snprintf(buf+idx, len-idx, "%d", (int)d);
-> +       x = x - (y * d);
-> +       if ((x != 0) && (idx < len-1)) {
-> +               buf[idx++] = '.';
-> +               x = x * 10;
-> +               d = div64_s64(x, y);
-> +
-> +               while ((idx < len-1) && (prec < 15)) {
-> +                       if (d || prec)
-> +                               prec++;
-> +                       buf[idx++] = '0' + (char)d;
-> +                       x = x - (y * d);
-> +                       if (!x)
-> +                               break;
-> +                       x = x * 10;
-> +                       d = div64_s64(x, y);
-> +               }
-> +               buf[idx] = 0;
-> +       }
-> +       return idx;
-> +}
-> +
->  static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
->                                   int size, const int *vals)
->  {
-> -       unsigned long long tmp;
-> -       int tmp0, tmp1;
->         bool scale_db = false;
->
->         switch (type) {
-> @@ -598,14 +640,9 @@ static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
->                 else
->                         return snprintf(buf, len, "%d.%09u", vals[0], vals[1]);
->         case IIO_VAL_FRACTIONAL:
-> -               tmp = div_s64((s64)vals[0] * 1000000000LL, vals[1]);
-> -               tmp1 = vals[1];
-> -               tmp0 = (int)div_s64_rem(tmp, 1000000000, &tmp1);
-> -               return snprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
-> +               return __iio_format_div_prec(buf, len, vals[0], vals[1]);
 
-Maybe I'm a bit naive, but I'm also a bit curious.
-If you just bump the numbers here, would it work the same ?
+ad7150 is a good alternative.
+At a first glance over the driver it looks like it could do with some
+polish/conversions to newer IIO constructs (like IIO triggers, maybe
+some newer event handling mechanisms?).
+I'll sync with Stefan [Popa] to see about this stuff at a later point in ti=
+me.
 
-i.e.   10^9 -> 10^15 and "snprintf(buf, len, "%d.%15u", tmp0, abs(tmp1));"
+I'd also add here the adxl345 driver.
+This is mostly informational for anyone who'd find this interesting.
+There are 2 drivers for this chip, one in IIO
+[drivers/iio/accel/adxl345] and another one in
+"drivers/misc/adxl34x.c" as part of the input sub-system.
+What would be interesting here is to finalize the IIO driver [ I think
+some features are lacking behind the input driver], and make the input
+driver a consumer of the IIO driver.
 
-But in any case, what would be interesting now, is to extend the IIO
-core logic to provide [somehow] a precision number, default being 9.
-This could probably be specified on per-channel basis [somehow],
-similar to other channel params.
-
-So, for example in the default case, if you have "uint32_t precision =
-9", you would have the same behavior, with something like
-
-      tmp = div_s64((s64)vals[0] * pow_of_10(precision), vals[1]);
-      tmp1 = vals[1];
-      tmp0 = (int)div_s64_rem(tmp, pow_of_10(precision), &tmp1);
-      return snprintf(buf, len, "%d.%" precision "u", tmp0, abs(tmp1));
-
-Obviously, the above code is just pseudo-code, where pow_of_10()
-multiplies 10 a "precision" number of times, and the snprintf() would
-need a temporary buffer to create a format string, which then would be
-used.
+From my side, both these variants are fine to take on.
+The ad7150 is a good idea as a starter project, and the adxl one is
+more of a long-term medium-level project.
 
 Thanks
 Alex
 
->         case IIO_VAL_FRACTIONAL_LOG2:
-> -               tmp = shift_right((s64)vals[0] * 1000000000LL, vals[1]);
-> -               tmp0 = (int)div_s64_rem(tmp, 1000000000LL, &tmp1);
-> -               return snprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
-> +               return __iio_format_div_prec(buf, len, vals[0], 1 << vals[1]);
->         case IIO_VAL_INT_MULTIPLE:
->         {
->                 int i;
-> --
-> 1.8.3.1
+> Jonathan
+>
+> >
+> > > Thanks
+> > >
+> > >
+> > > Em sex, 25 de jan de 2019 =C3=A0s 06:20, Alexandru Ardelean
+> > > <ardeleanalex@gmail.com> escreveu:
+> > > >
+> > > > On Thu, Jan 24, 2019 at 9:35 PM Rodrigo Ribeiro <rodrigorsdc@gmail.=
+com> wrote:
+> > > > >
+> > > > > Remove the checkpatch.pl check:
+> > > > >
+> > > > > CHECK: 'RESEVERD' may be misspelled - perhaps 'RESERVED'?
+> > > >
+> > > > Hey,
+> > > >
+> > > > A bit curios about this one.
+> > > > Are you using this chip/driver ?
+> > > >
+> > > > Thing is: the part is nearing EOL, and it could be an idea to be
+> > > > marked for removal (since it's still in staging).
+> > > > But if there are users for this driver, it could be left around for=
+ a while.
+> > > >
+> > > > Thanks
+> > > > Alex
+> > > >
+> > > > >
+> > > > > Signed-off-by: Rodrigo Ribeiro <rodrigorsdc@gmail.com>
+> > > > > Signed-off-by: Rafael Tsuha <rafael.tsuha@usp.br>
+> > > > > ---
+> > > > > This macro is not used anywhere. Should we just correct the
+> > > > > spelling or remove the macro?
+> > > > >
+> > > > >  drivers/staging/iio/cdc/ad7152.c | 2 +-
+> > > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > >
+> > > > > diff --git a/drivers/staging/iio/cdc/ad7152.c b/drivers/staging/i=
+io/cdc/ad7152.c
+> > > > > index 25f51db..c9da6d4 100644
+> > > > > --- a/drivers/staging/iio/cdc/ad7152.c
+> > > > > +++ b/drivers/staging/iio/cdc/ad7152.c
+> > > > > @@ -35,7 +35,7 @@
+> > > > >  #define AD7152_REG_CH2_GAIN_HIGH       12
+> > > > >  #define AD7152_REG_CH2_SETUP           14
+> > > > >  #define AD7152_REG_CFG                 15
+> > > > > -#define AD7152_REG_RESEVERD            16
+> > > > > +#define AD7152_REG_RESERVED            16
+> > > > >  #define AD7152_REG_CAPDAC_POS          17
+> > > > >  #define AD7152_REG_CAPDAC_NEG          18
+> > > > >  #define AD7152_REG_CFG2                        26
+> > > > > --
+> > > > > 2.7.4
+> > > > >
 >
