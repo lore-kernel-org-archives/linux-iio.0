@@ -1,98 +1,103 @@
-Return-Path: <SRS0=/rIq=QF=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=THUK=QG=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E993C169C4
-	for <linux-iio@archiver.kernel.org>; Tue, 29 Jan 2019 22:55:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30A06C282D4
+	for <linux-iio@archiver.kernel.org>; Wed, 30 Jan 2019 08:04:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 14BEA20882
-	for <linux-iio@archiver.kernel.org>; Tue, 29 Jan 2019 22:55:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 06F3421473
+	for <linux-iio@archiver.kernel.org>; Wed, 30 Jan 2019 08:04:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729764AbfA2Wy7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 29 Jan 2019 17:54:59 -0500
-Received: from smtprelay0015.hostedemail.com ([216.40.44.15]:52397 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727488AbfA2Wy7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 29 Jan 2019 17:54:59 -0500
-X-Greylist: delayed 396 seconds by postgrey-1.27 at vger.kernel.org; Tue, 29 Jan 2019 17:54:58 EST
-Received: from smtprelay.hostedemail.com (10.5.19.251.rfc1918.com [10.5.19.251])
-        by smtpgrave01.hostedemail.com (Postfix) with ESMTP id 7683118045C04
-        for <linux-iio@vger.kernel.org>; Tue, 29 Jan 2019 22:48:23 +0000 (UTC)
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay01.hostedemail.com (Postfix) with ESMTP id 13A5B100E86C4;
-        Tue, 29 Jan 2019 22:48:22 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-HE-Tag: geese95_ea4c13ea441b
-X-Filterd-Recvd-Size: 2428
-Received: from XPS-9350.home (unknown [47.151.153.53])
-        (Authenticated sender: joe@perches.com)
-        by omf10.hostedemail.com (Postfix) with ESMTPA;
-        Tue, 29 Jan 2019 22:48:20 +0000 (UTC)
-Message-ID: <a8ae5209f676171a97cae7211411e7ced3ebefbc.camel@perches.com>
-Subject: Re: [PATCH] iio:potentiostat:lmp91000: solve codestyle WARNINGs and
- CHECKs
-From:   Joe Perches <joe@perches.com>
-To:     Lucas Oshiro <lucasseikioshiro@gmail.com>, jic23@kernel.org,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-usp@googlegroups.com,
-        Anderson Reis <andersonreisrosa@gmail.com>
-Date:   Tue, 29 Jan 2019 14:48:19 -0800
-In-Reply-To: <20190129183656.15656-1-lucasseikioshiro@gmail.com>
-References: <20190129183656.15656-1-lucasseikioshiro@gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.30.1-1build1 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S1725834AbfA3IEo convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 30 Jan 2019 03:04:44 -0500
+Received: from mailgw04.loh-group.com ([195.226.74.53]:58190 "EHLO
+        mailgw04.loh-group.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725830AbfA3IEo (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Jan 2019 03:04:44 -0500
+Received: from mailgw04.loh-group.com (mailgw04.loh-group.com [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0C0F5DFA3A;
+        Wed, 30 Jan 2019 09:04:41 +0100 (CET)
+Received: from mailgw04.loh-group.com (mailgw04.loh-group.com [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 00A51DFA37;
+        Wed, 30 Jan 2019 09:04:41 +0100 (CET)
+Received: from notesroot2.de.flg.int (rootserver2.de.flg.int [10.201.6.141])
+        by mailgw04.loh-group.com (Postfix) with ESMTP;
+        Wed, 30 Jan 2019 09:04:40 +0100 (CET)
+MIME-Version: 1.0
+X-Disclaimed: 1
+Importance: Normal
+X-Priority: 3 (Normal)
+In-Reply-To: <20190126175810.2b6f8058@archlinux>
+References: <20190126175810.2b6f8058@archlinux>,
+        <OF76C145E1.65F3BD5B-ONC125838C.00390E6F-C125838C.003B6395@rittal.de>
+Subject: Re: Re: imx25 ADC values wrong after sporadic time
+From:   Benjamin Beckmeyer <beckmeyer.b@rittal.de>
+To:     Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Cc:     linux-iio@vger.kernel.org
+Message-ID: <OF3C596761.167B90FC-ONC1258392.002AA183-C1258392.002C5F53@rittal.de>
+X-Mailer: Lotus Domino Web Server Release 9.0.1FP6 April  20, 2016
+X-MIMETrack: Serialize by http on herborn07/DE/FLG(Release 9.0.1FP6|April  20, 2016) at
+ 30.01.2019 09:04:39,
+        Serialize complete at 30.01.2019 09:04:39,
+        Itemize by http on herborn07/DE/FLG(Release 9.0.1FP6|April  20, 2016) at
+ 30.01.2019 09:04:39,
+        Serialize by Router on rootserver2/FLG(Release 9.0.1FP6|April  20, 2016) at
+ 30.01.2019 09:04:40,
+        Serialize complete at 30.01.2019 09:04:40
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain;
+        charset=ISO-8859-1
+Date:   Wed, 30 Jan 2019 09:04:41 +0100 (CET)
+X-TM-AS-GCONF: 00
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 2019-01-29 at 16:36 -0200, Lucas Oshiro wrote:
-> Solve most of the checkpatch.pl WARNINGs and CHECKs on lmp9100.c. They
-> are the following:
-> 
-> lmp91000.c:116: CHECK: Unnecessary parentheses around 'state != channel'
-> lmp91000.c:116: CHECK: Unnecessary parentheses around 'channel == LMP91000_REG_MODECN_TEMP'
-> lmp91000.c:214: CHECK: braces {} should be used on all arms of this statement
-> lmp91000.c:216: CHECK: Unbalanced braces around else statement
-> lmp91000.c:258: WARNING: line over 80 characters
-> lmp91000.c:279: CHECK: Please don't use multiple blank lines
+> Obviously I'm guessing just as much as you are.
 
-Some will say this is too many things to do at once.
-I think it's mostly fine, but there are a few nits
-that also could use fixing.
+> I would first check to see if the interrupt fired at all in the case
+> where the timeout occurred.  The completion only fires if we have
+> a flag set in the status register.  Add an else to that block see
+> if we get interrupts where it isn't set.  For example if we are
+> getting spurious interrupts from somewhere occasionally we might
+> get a race in there as it clears all the irq sources, not just the
+> ones we have actually handled (which is dubious as there is defintely
+> a race in there if any of the others are firing).
+> You could cynically add a spinning loop of some type to waste time
+> in that race period and see if you can open the window up to replicate
+> on your system.
 
-> diff --git a/drivers/iio/potentiostat/lmp91000.c b/drivers/iio/potentiostat/lmp91000.c
-[]
-> @@ -211,9 +211,9 @@ static int lmp91000_read_config(struct lmp91000_data *data)
->  
->  	ret = of_property_read_u32(np, "ti,tia-gain-ohm", &val);
->  	if (ret) {
-> -		if (of_property_read_bool(np, "ti,external-tia-resistor"))
-> +		if (of_property_read_bool(np, "ti,external-tia-resistor")) {
->  			val = 0;
-> -		else {
-> +		} else {
->  			dev_err(dev, "no ti,tia-gain-ohm defined");
->  			return ret;
->  		}
+> I don't have one of these, but perhaps try on your 'good' system
+> with just clearing the SR_E0Q interrupt and it may give us some insight
+> into why the others are being cleared.
 
-This could use inverting the test
+> Note that if we don't find an expected interrupt (and there isn't
+> a weird hardware bug that needs working around) then we should
+> return IRQ_NONE to let the kernel spurious interrupt handling kick
+> in correctly.
 
-	if (ret) {
-		if (!of_property_read_bool(...)) {
-			dev_err(dev, "no ti,ti-gain-ohm defined\n");
-			return ret;
-		}
-		val = 0;
-	}
+> Otherwise, I would indeed look at the interrupt controller driver.
+> Might be something dubious in there.  Of course the RTC error
+> could be something entirely different.
 
-Also the dev_err is missing a '\n' termination
+> Of course the usual issues of power brownout and similar might
+> also be going on.  The delights of systems at customers working
+> differently than the ones you have!
 
+> Jonathan
 
+Hey Jonathan,
+
+thanks for your reply and your guesses, too.
+I will try some changes and maybe come back again. Like it wrote before
+it could take 2 months.
+I thought maybe somebody else could have the same problem or better I 
+hoped somebody had the same problem and a solution for me. But I know 
+that this hardware is really rare. 
+
+Benjamin
