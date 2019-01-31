@@ -2,118 +2,129 @@ Return-Path: <SRS0=eBr9=QH=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78B06C282D7
-	for <linux-iio@archiver.kernel.org>; Thu, 31 Jan 2019 03:02:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B987C169C4
+	for <linux-iio@archiver.kernel.org>; Thu, 31 Jan 2019 05:15:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4A3902184D
-	for <linux-iio@archiver.kernel.org>; Thu, 31 Jan 2019 03:02:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F3751218AC
+	for <linux-iio@archiver.kernel.org>; Thu, 31 Jan 2019 05:15:58 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=martingkelly-com.20150623.gappssmtp.com header.i=@martingkelly-com.20150623.gappssmtp.com header.b="OXTtkyfW"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="B2ScClUQ"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725798AbfAaDC5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 30 Jan 2019 22:02:57 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:44129 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725535AbfAaDC5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Jan 2019 22:02:57 -0500
-Received: by mail-pg1-f194.google.com with SMTP id t13so717428pgr.11
-        for <linux-iio@vger.kernel.org>; Wed, 30 Jan 2019 19:02:57 -0800 (PST)
+        id S1725875AbfAaFP6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 31 Jan 2019 00:15:58 -0500
+Received: from mail-yw1-f67.google.com ([209.85.161.67]:39476 "EHLO
+        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725857AbfAaFP6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 31 Jan 2019 00:15:58 -0500
+Received: by mail-yw1-f67.google.com with SMTP id k188so811880ywa.6;
+        Wed, 30 Jan 2019 21:15:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=martingkelly-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Mj5mOLY9bCrOBp8ERb8JtB9PpUxLCpRUSjJlMW9siE8=;
-        b=OXTtkyfWraQg6ZAVv1wWG1KwFbQidOC5+En1MjdV79gR1TUcU8offJcieHOQLBaWn5
-         uWUHn22Ojd2Y5J9K2QnrSEApZtIjqgTtVytG6QuRxFwNwNB0npOvtNPeW60t+e50mMop
-         S2EoOmvcLHPeGKw2WLQxnsmEEODxKATlPyhENQVJ89XlsFRp+pVVvEDRHfbdEgg6UD6U
-         7SBBc5KJGlx1V96eI3rhIOy23hP/V4PyQH7k1Lz+fJlDWy/Uo6roZ3wCJx8zrjMjXOmR
-         HNejeXsvsdWKHms+2S09tod3MB0O014AsAe5T8+hetxg2bfEUbPtMb6mrm1YuxldsNcj
-         wjvw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WbexUhY9aqcT+1SE9D/xYA5ED9xHab81qjVL0E3Ao0k=;
+        b=B2ScClUQNBBiaRyChUU0FpZdhHExy5iO5jHeEfHzFL2Lk6BNLNq2uEZzHuhU5pOjAk
+         Vs13m3x5b+8ZzQY0dEVlvTHVJebJhpvPzzm6Ksw08F+R85/+6hSdNqx8ILYKIpBWdzIF
+         tWqpt2/2OgSr7WJ/6/WSwtRfD5g8L5n1ulGwxwfpNOmC4DMbNI+LRoZs0OIljNrqnk/y
+         Z+prA72Tv4FGFCD22Pk5s0WBc9/GHo5xKabje3Ky3kqzMdKIy5cDeetwb3TGrXGf8Jna
+         1ovNITaLhXSAmjgt4oRA1RICHxv7q+a4QZnqbMdeBErPOaaZYzBdAepNquDHktObb3uH
+         tRvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Mj5mOLY9bCrOBp8ERb8JtB9PpUxLCpRUSjJlMW9siE8=;
-        b=XydOpGapYrdMZJTQXDHEBIr2wTwtZWqpzX3+c2+yDXR5aqEZ/2iPz/BCF6yHoP4r+n
-         7I5rhLQMQnISbrwPuI8FYTjpjWrkbmUmTDCqGxkKsWNQrBfWbiED/Uy9vpUKSYxB5i0h
-         FtlKTErdGP6D0YMvB2v/QnZlFXs+vUcDcx+/btkqZDtM/VMN8i8OdgPgXSAnmiiTZbSp
-         kXwQbyVRzwrvArphJOnL9Uf7W+HJ4JoYPj3b3IUyUwi5KqBwTG7FeYitm2qICxEkzE/h
-         ssPAILf3jrUvPevr0lb5PliQzY9mOoMG2Y0HQrEKAIjCttoNSntQSlouSOrt2z8wN3tH
-         eJrQ==
-X-Gm-Message-State: AJcUukfskR6Z2G6uQi0HhhEelFPnnKPFhsVOSj9Qd2mS8Fy3j7haMTZB
-        UNwktI4304K0NUIG94cKUHH0UQ==
-X-Google-Smtp-Source: ALg8bN7o9XG6U2G5gVCdton3pX3wvYXbE0bXDjikq7dC/bolFaP9BNtaqVkRjfuVWa+K1/tFBwo8Zw==
-X-Received: by 2002:a62:c42:: with SMTP id u63mr32565795pfi.73.1548903776568;
-        Wed, 30 Jan 2019 19:02:56 -0800 (PST)
-Received: from [192.168.0.8] (174-21-177-9.tukw.qwest.net. [174.21.177.9])
-        by smtp.gmail.com with ESMTPSA id h129sm11670144pfb.110.2019.01.30.19.02.55
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 30 Jan 2019 19:02:55 -0800 (PST)
-Subject: Re: [PATCH v3 4/6] dt-bindings: document open-drain property
-To:     Rob Herring <robh@kernel.org>
-Cc:     linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Daniel Baluta <daniel.baluta@gmail.com>,
-        devicetree@vger.kernel.org
-References: <20190127203911.8696-1-martin@martingkelly.com>
- <20190127203911.8696-5-martin@martingkelly.com>
- <20190130165723.GA22934@bogus>
-From:   Martin Kelly <martin@martingkelly.com>
-Message-ID: <a58bfea9-9570-53ab-2811-05c1519952fb@martingkelly.com>
-Date:   Wed, 30 Jan 2019 19:02:54 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.4.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WbexUhY9aqcT+1SE9D/xYA5ED9xHab81qjVL0E3Ao0k=;
+        b=XVw1CgKAGickIjvT69OhjFN89evVixyAk3xKCR4y1eKyNjqAUDDNV1v4biG4FUzmfz
+         MC0+98P5tO2gSFiEFUGWXnEnkT/zn1Bw0I+jJqGPf2jtlUI4ByLkWtr3Njl3kIEnFWaP
+         qBtwPlNYqjJy88ZLtc25Wm3lpF4vi9L6ugOUAC2TPIiecm1Y9ojJt0eanS5Of2+XZDyK
+         eRWw3rnU7YCdvjteK4s5xCkHwz5hJRW8+grilOQ6K5U8XN/f0Cl95PaAMJFvBePktoLB
+         F3HfOM1hN3iYXAX3KyVkKd4xt8JYPp+wyHIEXS9pbEazXHNvbHs0/zPBBDpMNLn4FUNG
+         Pvrw==
+X-Gm-Message-State: AJcUukcoIdVhK564/h80N/7mKYHrQ3OVPT8PoXkfWm+jt1WJddWgSj72
+        16HNjMiPtvmQta5BQKsj2MHCd/lUUDqRZQAsr1Y=
+X-Google-Smtp-Source: ALg8bN4fpGRlWgaAiiaPJbKIGGTZK5eCvdadJ+zuC0hXVW3dwC27xN+jTMs6o01O8z+9HsL2JK64lbn4RQej2ZUYYGE=
+X-Received: by 2002:a81:a87:: with SMTP id 129mr32238076ywk.195.1548911757198;
+ Wed, 30 Jan 2019 21:15:57 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20190130165723.GA22934@bogus>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <1548440422-27943-1-git-send-email-justinpopo6@gmail.com> <20190126183011.00f03cc3@archlinux>
+In-Reply-To: <20190126183011.00f03cc3@archlinux>
+From:   Justin Chen <justinpopo6@gmail.com>
+Date:   Wed, 30 Jan 2019 21:15:45 -0800
+Message-ID: <CAJx26kXY+Hg-M11LJ-ATP8y_-8RJ=gQ2DPn2Y9YDJHDkQNh=Kw@mail.gmail.com>
+Subject: Re: [PATCH v2] iio: adc: ti-ads7950: inconsistency with spi msg
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        linux-kernel@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 1/30/19 8:57 AM, Rob Herring wrote:
-> On Sun, Jan 27, 2019 at 12:39:09PM -0800, Martin Kelly wrote:
->> From: Martin Kelly <martin@martingkelly.com>
->>
->> We have added an optional boolean property for configuring a BMI160
->> interrupt pin as open-drain, as opposed to the default push-pull, so
->> document this.
->>
->> Signed-off-by: Martin Kelly <martin@martingkelly.com>
->> ---
->>   Documentation/devicetree/bindings/iio/imu/bmi160.txt | 2 ++
->>   1 file changed, 2 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/iio/imu/bmi160.txt b/Documentation/devicetree/bindings/iio/imu/bmi160.txt
->> index 1aec19997fb5..7eb4b6016404 100644
->> --- a/Documentation/devicetree/bindings/iio/imu/bmi160.txt
->> +++ b/Documentation/devicetree/bindings/iio/imu/bmi160.txt
->> @@ -12,6 +12,8 @@ Optional properties:
->>    - interrupts : interrupt mapping for IRQ
->>    - interrupt-names : set to "INT1" if INT1 pin should be used as interrupt
->>      input, set to "INT2" if INT2 pin should be used instead
->> +- bmi160,open-drain : set if the specified interrupt pin should be configured as
->> +  open drain. If not set, defaults to push-pull.
-> 
-> Use 'drive-open-drain' like others.
-> 
+On Sat, Jan 26, 2019 at 10:30 AM Jonathan Cameron <jic23@kernel.org> wrote:
+>
+> On Fri, 25 Jan 2019 10:20:22 -0800
+> justinpopo6@gmail.com wrote:
+>
+> > From: Justin Chen <justinpopo6@gmail.com>
+> >
+> > To read a channel we require 3 cycles to send, process, and receive
+> > the data. The transfer buffer for the third transaction is left blank.
+> > This leaves it up to the SPI driver to decide what to do.
+> Interesting.  I think that means you may have a bug in your SPI driver.
+> The pointer in question is always left set to NULL in the adc
+> driver (not explicitly but it will be because ultimately comes from
+> a kzalloc).
+>
+> Documentation for an SPI message makes it clear that NULL is
+> allowed.  From include/linux/spi/spi.h
+>
+> "* Those segments always read the same number of bits as they
+>  * write; but one or the other is easily ignored by passing a null buffer
+>  * pointer. "
+>
+> Hmm. It does say 'ignored'.  My assumption has always been that
+> means it would be filled with zeros, but maybe I'm wrong.
+>
+> Mark?
+>
+I looked more into this and other SPI drivers do fill it with zeros.
+I'll submit a patch for the SPI driver instead and see what the SPI
+maintainers say.
 
-OK, I'll do this in the next revision.
-
->>   
->>   Examples:
->>   
->> -- 
->> 2.11.0
->>
-
+Thanks,
+Justin
+> >
+> > In one particular case, if the tx buffer is not set the spi driver
+> > sets it to 0xff. This puts the ADC in a alarm programming state,
+> > therefore the following read to a channel becomes erroneous.
+> >
+> > Instead of leaving us to the mercy of the SPI driver, we send the
+> > ADC cmd on the third transaction to prevent inconsistent behavior.
+> >
+> > Fixes: 902c4b2446d4 ("iio: adc: New driver for TI ADS7950 chips")
+> > Signed-off-by: Justin Chen <justinpopo6@gmail.com>
+> > ---
+> >  drivers/iio/adc/ti-ads7950.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
+> > index 0ad6359..1255d8b 100644
+> > --- a/drivers/iio/adc/ti-ads7950.c
+> > +++ b/drivers/iio/adc/ti-ads7950.c
+> > @@ -422,6 +422,7 @@ static int ti_ads7950_probe(struct spi_device *spi)
+> >       st->scan_single_xfer[1].tx_buf = &st->single_tx;
+> >       st->scan_single_xfer[1].len = 2;
+> >       st->scan_single_xfer[1].cs_change = 1;
+> > +     st->scan_single_xfer[2].tx_buf = &st->single_tx;
+> >       st->scan_single_xfer[2].rx_buf = &st->single_rx;
+> >       st->scan_single_xfer[2].len = 2;
+> >
+>
