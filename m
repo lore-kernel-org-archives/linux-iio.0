@@ -7,54 +7,54 @@ X-Spam-Status: No, score=-8.5 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1363FC169C4
-	for <linux-iio@archiver.kernel.org>; Thu, 31 Jan 2019 15:32:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57758C169C4
+	for <linux-iio@archiver.kernel.org>; Thu, 31 Jan 2019 15:49:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D59752085B
-	for <linux-iio@archiver.kernel.org>; Thu, 31 Jan 2019 15:32:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2622A218FC
+	for <linux-iio@archiver.kernel.org>; Thu, 31 Jan 2019 15:49:26 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="uWviNoww"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HctFDfQH"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727189AbfAaPcZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 31 Jan 2019 10:32:25 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:40543 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726239AbfAaPcZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 31 Jan 2019 10:32:25 -0500
-Received: by mail-pl1-f194.google.com with SMTP id u18so1619917plq.7;
-        Thu, 31 Jan 2019 07:32:24 -0800 (PST)
+        id S1733105AbfAaPtZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 31 Jan 2019 10:49:25 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:45527 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725855AbfAaPtZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 31 Jan 2019 10:49:25 -0500
+Received: by mail-pg1-f193.google.com with SMTP id y4so1499942pgc.12;
+        Thu, 31 Jan 2019 07:49:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=d8EaDJxEMO1Wa4XMCP07czzfkvcJWqHHhB+W3APYyaM=;
-        b=uWviNoww0mVd8+5SLn41oR4CklYVV3V4UEb7dXwYKu7qw0W37KaJyp5iLKdbM8n3fF
-         PRlTHUQzaVXQZQtr+OCGcybY/wn38S0QqVotH0BbsBMt0OjTWxqU/cMaI6DMnuiHeFoq
-         2NKCpxAiRtJqTjdOpWguobSRHhjRanY4+gJB5UYbwCIfkDPG0MLzbpBSnk5B3UTLY2Mb
-         wlNLkkqyUxWY6Bm6JMSaGgqafP2jsy/hV4lubMq17gY10ZTm295ApcraPGF6IBmt+8ay
-         +GSc9TCQ0pt7fEGDIuJOA3hFUeee1zxXcMDo3Uopt/F7ln1FT0XJ1cjd8iPiMv43FkTs
-         pgOA==
+        bh=YjbibIfATA+o+XTsnltHYmkIl5XvdZaaurPfArOK03s=;
+        b=HctFDfQHLBHoynvH+zrCmsI5VpRzeuPwxxb0KnFqow4BQwbqcGOoX+S7jzh+5GVzub
+         Za1bXwjuEnqzHV+HU/S8IGVzKIt7Cu9wqgG+yxgAgFbpKzWQmFzJUeYwy5iiJ/anZ+1A
+         R2Dvs1+jhBBO4MvBDDfdT//FgdIQQ9U2lVR/zaE0LhegjgapF/0Uh4vLryR0wXqpx4iT
+         1mWvph3S0hYxsIc8Qda/TXG7WH/VsuHCwyHUWIoBXvO6ta5yGIUV6bFgVppN56tssP4w
+         kMhITlUrqXc8kxsV5cORvSRniFNWsXQVKFY8ZlxYObFaZJBJzaiKqk6Kf2aBI5dFQcI/
+         xXCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=d8EaDJxEMO1Wa4XMCP07czzfkvcJWqHHhB+W3APYyaM=;
-        b=RoGIGUgyoAY6ps/cC16rS8L5+Rh3UR/Xfny8XuLtaYKeiuXdkK6BneqaihcFkEpNcr
-         k2CCuOClQ4e7ldyX0xj1JnqGqq/EsKrH2NMPGwhTV7guW3pu3vLqAEd9C6tPXUCFwHH3
-         YRACPTi3Y8JVjjUsZYP9RoGPUsW112hqHPENMzDUEbXbeRe8F0HSEpbRYv4P0xCFmtj6
-         zbsbswWmedxrmBsmgA+fb/20wKEwEmIpUzVtLC7HOXcHcPAYZFS761wCRJNHE5qeiTRN
-         pCiFLd/4l63FC3MSymR6GpzYxeyO/qxLRQDJXy5HXp6C7wVrelPmg+7CJ4AMN84WPbwJ
-         AtAg==
-X-Gm-Message-State: AJcUukfHzXwR9aYWsmE7fvMea+LfjdtMioIDG5Z5OADGy6I2ACp6hJU4
-        phGqJkqNNoWubETZ8OgdmGI=
-X-Google-Smtp-Source: ALg8bN66BK1Yzadaoxdrkb6vonZqMqvWSNheTKLJjL30NDOjP6PUTfMgav+L72RcGB5HwMU6V9d04A==
-X-Received: by 2002:a17:902:2868:: with SMTP id e95mr35384259plb.317.1548948744341;
-        Thu, 31 Jan 2019 07:32:24 -0800 (PST)
+        bh=YjbibIfATA+o+XTsnltHYmkIl5XvdZaaurPfArOK03s=;
+        b=WN11iQUhecCrS84R+VBWGtH08rhAmaHD0pt1iFhx8qhR4CHi4JHXizXHFcjeIev/EL
+         v5tlQbuhGv+mV8cYopDQCucZS0BmaUYTnHlttB2/Ls7I1nfqViZhXAvCTBRBfKw7uuuo
+         bD7cjSV96v6H9CIu0Q99JAoGnhRZyvd0zFMhOTKjUBul3UkVS59PL9TXdTubzyjrI7FT
+         hJuJSyJbzqV5hQ3OHOylaqDCX1OAsqS6CjeybU8GZtqdnuiwhEmX0MnJmT7BXeUP4fWZ
+         pecsQG1nUcY4W/zzpCSRHGgFOETNHO/1Yvpm7Fmg9J/F4NXsUKn87aK3SAKXV0eGqSIx
+         k9oQ==
+X-Gm-Message-State: AJcUukd+h5/gg9izOI0OqgHILwL2T3pI1cR14PoaKEIWj9B3mrnDpfre
+        chun30++O2sEZwG/DqK7ZOk=
+X-Google-Smtp-Source: ALg8bN7iXVmHnltlUs1tIBLCrAthR9u7OBF/3M4knZ+d7XVeSBjzumJhveT3rYgWi0mWKNw3UCZ9Kg==
+X-Received: by 2002:a62:1542:: with SMTP id 63mr35512774pfv.230.1548949764138;
+        Thu, 31 Jan 2019 07:49:24 -0800 (PST)
 Received: from bobby.localdomain ([2601:1c0:5501:37e2::3977])
-        by smtp.gmail.com with ESMTPSA id g190sm6359246pgc.28.2019.01.31.07.32.23
+        by smtp.gmail.com with ESMTPSA id a15sm6309651pgb.1.2019.01.31.07.49.22
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 31 Jan 2019 07:32:23 -0800 (PST)
-Date:   Thu, 31 Jan 2019 07:32:21 -0800
+        Thu, 31 Jan 2019 07:49:23 -0800 (PST)
+Date:   Thu, 31 Jan 2019 07:49:16 -0800
 From:   Robert Eshleman <bobbyeshleman@gmail.com>
 To:     bobbyeshleman@gmail.com
 Cc:     Jonathan Cameron <jic23@kernel.org>,
@@ -63,14 +63,13 @@ Cc:     Jonathan Cameron <jic23@kernel.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.orghange-folder>?" 
-        <toggle-mailboxes@bobby.localdomain>
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: [PATCH v4 2/2] dt-bindings: iio: light: Add max44009
-Message-ID: <b36579acc3031a28657b6f2e143e9ea4051d7c46.1548947951.git.bobbyeshleman@gmail.com>
+Message-ID:
+ <b36579acc3031a28657b6f2e143e9ea4051d7c46.1548947951.git.bobbyeshleman@gmail.com>
 References: <01f62d9d67110fd2c2f34e7835973fc6874a9fe8.1548947951.git.bobbyeshleman@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
 Content-Disposition: inline
 In-Reply-To: <01f62d9d67110fd2c2f34e7835973fc6874a9fe8.1548947951.git.bobbyeshleman@gmail.com>
 User-Agent: Mutt/1.11.2 (2019-01-07)
@@ -78,14 +77,16 @@ Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
+Message-ID: <20190131154916.pogrjzVGLLTSO9GXoXr-nQQcow2N7R6E2Otgw-orpO8@z>
 
 Adds device tree bindings for the max44009 light sensor.
 
 Signed-off-by: Robert Eshleman <bobbyeshleman@gmail.com>
 ---
 Changes to v4:
-- Use correct subject style
+- Add subsystem to subject line
 - Change node name to be 'light-sensor' 
+- Clean up style
 
 Changes to v3:
 - None
