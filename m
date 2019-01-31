@@ -3,321 +3,143 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AC14C169C4
-	for <linux-iio@archiver.kernel.org>; Thu, 31 Jan 2019 13:48:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5CFFC169C4
+	for <linux-iio@archiver.kernel.org>; Thu, 31 Jan 2019 14:33:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2C5342085B
-	for <linux-iio@archiver.kernel.org>; Thu, 31 Jan 2019 13:48:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A0097218AF
+	for <linux-iio@archiver.kernel.org>; Thu, 31 Jan 2019 14:33:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726977AbfAaNsh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 31 Jan 2019 08:48:37 -0500
-Received: from szxga05-in.huawei.com ([45.249.212.191]:3257 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726863AbfAaNsh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 31 Jan 2019 08:48:37 -0500
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 375F7F1FFC23333CBCB4;
-        Thu, 31 Jan 2019 21:48:32 +0800 (CST)
-Received: from localhost (10.202.226.61) by DGGEMS408-HUB.china.huawei.com
- (10.3.19.208) with Microsoft SMTP Server id 14.3.408.0; Thu, 31 Jan 2019
- 21:48:30 +0800
-Date:   Thu, 31 Jan 2019 13:48:21 +0000
-From:   Jonathan Cameron <jonathan.cameron@huawei.com>
-To:     Ricardo Ribalda Delgado <ricardo@ribalda.com>
-CC:     Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 1/2] iio:dac:ti-dac7612: Add driver for Texas
- Instruments DAC7612
-Message-ID: <20190131134821.00007dd0@huawei.com>
-In-Reply-To: <20190128094931.4430-1-ricardo@ribalda.com>
-References: <20190128094931.4430-1-ricardo@ribalda.com>
-Organization: Huawei
-X-Mailer: Claws Mail 3.16.0 (GTK+ 2.24.32; i686-w64-mingw32)
+        id S1728011AbfAaOdX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 31 Jan 2019 09:33:23 -0500
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:44439 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725787AbfAaOdX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 31 Jan 2019 09:33:23 -0500
+Received: by mail-lf1-f65.google.com with SMTP id z13so2454582lfe.11;
+        Thu, 31 Jan 2019 06:33:22 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AAI3iAGxTIvgVC1skHcS3IaLf6SHSz14WV+Xwa/qpPM=;
+        b=f3JzS/+52NBZCQ6dh+DT9ngZmySS9xI2E0/sX4z/SYt0geR6RmWWJMstaFGxuNiyOW
+         AVkWf4FW0+uqsHU5hquIKNrj3r3wn9erpkkxwJFoTWw0Ze6raN8bx6LCDQG9B23Un5vx
+         3iMUENlZvS0I3SGQob6/rY+sAyzi5zVNqgsSVpsQeGa+xIMgx5sRtVEpD47VaGmEOEQm
+         D23HvfioKMAkoEzFhUdnLbTxwjIzZdh9shYahFJU9uNStsoAR+Kg3U3R9z8ZhebPJEUK
+         UM+/ERrLqHqY6gzBqlE+7pcUsiTwpzQTh/NkPOHDTJwr8RugEiAQHiY0ktVkDL8uE11s
+         XBSg==
+X-Gm-Message-State: AJcUukfwx14BzVWTPti1vScrzooU+qRfzaIF4wfUNVUxuCoDVW/4tayQ
+        gDnwN1szD99APn45coMsvc/nvTR853P4L9XCYAZhh0jS
+X-Google-Smtp-Source: ALg8bN4i2Y2lC1DfUcQyx/YPP/7NYEwg97uQuLiOt5lxc3108rXRTVYLmR6/KP4MxmW6x4GQhOjvCKxkkXTpBoiRhPM=
+X-Received: by 2002:a19:9e11:: with SMTP id h17mr27175229lfe.73.1548945201032;
+ Thu, 31 Jan 2019 06:33:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.61]
-X-CFilter-Loop: Reflected
+References: <20190128094931.4430-1-ricardo@ribalda.com> <20190128094931.4430-2-ricardo@ribalda.com>
+ <20190130170723.GA24708@bogus>
+In-Reply-To: <20190130170723.GA24708@bogus>
+From:   Ricardo Ribalda Delgado <ricardo@ribalda.com>
+Date:   Thu, 31 Jan 2019 15:33:04 +0100
+Message-ID: <CAPybu_0Pd4xNzhR2RAdegomckcMxHeM8t7uCrNCXY4CZz2bZZg@mail.gmail.com>
+Subject: Re: [PATCH v3 2/2] iio:dac:dac7612: device tree bindings
+To:     Rob Herring <robh@kernel.org>
+Cc:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 28 Jan 2019 10:49:30 +0100
-Ricardo Ribalda Delgado <ricardo@ribalda.com> wrote:
+Hi Rob
 
-> It is a driver for Texas Instruments Dual, 12-Bit Serial Input
-> Digital-to-Analog Converter.
-> 
-> Datasheet of this chip:
-> http://www.ti.com/lit/ds/sbas106/sbas106.pdf
-> 
-> Signed-off-by: Ricardo Ribalda Delgado <ricardo@ribalda.com>
-Hi Ricardo,
+Thanks for your comments!
 
-Trivial bits inline I would have fixed, but seems we will be going for a v4
-for the binding anyway!
+On Wed, Jan 30, 2019 at 6:07 PM Rob Herring <robh@kernel.org> wrote:
+>
+> On Mon, Jan 28, 2019 at 10:49:31AM +0100, Ricardo Ribalda Delgado wrote:
+> > Bindings for dac7612.
+> >
+> > Cc: devicetree@vger.kernel.org
+> > Signed-off-by: Ricardo Ribalda Delgado <ricardo@ribalda.com>
+> > ---
+> >  .../bindings/iio/dac/ti,dac7612.txt           | 29 +++++++++++++++++++
+> >  MAINTAINERS                                   |  1 +
+> >  2 files changed, 30 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/iio/dac/ti,dac7612.txt
+> >
+> > diff --git a/Documentation/devicetree/bindings/iio/dac/ti,dac7612.txt b/Documentation/devicetree/bindings/iio/dac/ti,dac7612.txt
+> > new file mode 100644
+> > index 000000000000..e1b8158fab35
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/iio/dac/ti,dac7612.txt
+> > @@ -0,0 +1,29 @@
+> > +* Texas Instruments Dual, 12-Bit Serial Input Digital-to-Analog Converter
+> > +
+> > +The DAC7612 is a dual, 12-bit digital-to-analog converter (DAC) with guaranteed
+> > +12-bit monotonicity performance over the industrial temperature range.
+> > +Is is programmable through an SPI interface.
+> > +
+> > +The internal DACs are loaded when the LOADDACS pin is pulled down.
+> > +
+> > +http://www.ti.com/lit/ds/sbas106/sbas106.pdf
+> > +
+> > +Required Properties:
+> > +- compatible: Should be one of:
+> > +             "ti,dac7612"
+> > +             "ti,dac7612u"
+> > +             "ti,dac7612b"
+>
+> What's the difference? I can only find 'u' and 'ub' variants and nothing
+> about how those are different. So maybe just 1 string is enough?
 
-Jonathan
+dac7612 is how it is named on the datasheet commercial name.
+dac7612u and dac7612ub being the variants. ub being slightly more
+accurante. Shall I leave only 7612?
+or keep the tree variants (fixing 7612b with 7612ub)?
 
-> ---
-> v3: Changes by Jonathan Cameron <jic23@kernel.org>
-> 
-> - Include OF compatible strings
-> - Rename RESOLUTION define
-> - Create defines for BIT positions
-> - Support DMA
-> - Rename gpio
-> - Remove scantype
-> - Fix scale
-> - Use iio_priv at variable definition
-> - (Ab)use ARRAY_SIZE for number of channels (love the idea)
-> 
-> 
->  MAINTAINERS                  |   6 ++
->  drivers/iio/dac/Kconfig      |  10 ++
->  drivers/iio/dac/Makefile     |   1 +
->  drivers/iio/dac/ti-dac7612.c | 173 +++++++++++++++++++++++++++++++++++
->  4 files changed, 190 insertions(+)
->  create mode 100644 drivers/iio/dac/ti-dac7612.c
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index d039f66a5cef..30ba5435906b 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -14877,6 +14877,12 @@ F:	Documentation/devicetree/bindings/clock/ti,sci-clk.txt
->  F:	drivers/clk/keystone/sci-clk.c
->  F:	drivers/reset/reset-ti-sci.c
->  
-> +Texas Instruments' DAC7612 DAC Driver
-> +M:	Ricardo Ribalda <ricardo@ribalda.com>
-> +L:	linux-iio@vger.kernel.org
-> +S:	Supported
-> +F:	drivers/iio/dac/ti-dac7612.c
-> +
->  THANKO'S RAREMONO AM/FM/SW RADIO RECEIVER USB DRIVER
->  M:	Hans Verkuil <hverkuil@xs4all.nl>
->  L:	linux-media@vger.kernel.org
-> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> index f28daf67db6a..fbef9107acad 100644
-> --- a/drivers/iio/dac/Kconfig
-> +++ b/drivers/iio/dac/Kconfig
-> @@ -375,6 +375,16 @@ config TI_DAC7311
->  
->  	  If compiled as a module, it will be called ti-dac7311.
->  
-> +config TI_DAC7612
-> +	tristate "Texas Instruments 12-bit 2-channel DAC driver"
-> +	depends on SPI_MASTER && GPIOLIB
-> +	help
-> +	  Driver for the Texas Instruments DAC7612, DAC7612U, DAC7612UB
-> +	  The driver hand drive the load pin automatically, otherwise
-> +	  it needs to be toggled manually.
-> +
-> +	  If compiled as a module, it will be called ti-dac7612.
-> +
->  config VF610_DAC
->  	tristate "Vybrid vf610 DAC driver"
->  	depends on OF
-> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
-> index f0a37c93de8e..1369fa1d2f0e 100644
-> --- a/drivers/iio/dac/Makefile
-> +++ b/drivers/iio/dac/Makefile
-> @@ -41,4 +41,5 @@ obj-$(CONFIG_STM32_DAC) += stm32-dac.o
->  obj-$(CONFIG_TI_DAC082S085) += ti-dac082s085.o
->  obj-$(CONFIG_TI_DAC5571) += ti-dac5571.o
->  obj-$(CONFIG_TI_DAC7311) += ti-dac7311.o
-> +obj-$(CONFIG_TI_DAC7612) += ti-dac7612.o
->  obj-$(CONFIG_VF610_DAC) += vf610_dac.o
-> diff --git a/drivers/iio/dac/ti-dac7612.c b/drivers/iio/dac/ti-dac7612.c
-> new file mode 100644
-> index 000000000000..a2f58256a784
-> --- /dev/null
-> +++ b/drivers/iio/dac/ti-dac7612.c
-> @@ -0,0 +1,173 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * DAC7612 Dual, 12-Bit Serial input Digital-to-Analog Converter
-> + *
-> + * Copyright 2019 Qtechnology A/S
-> + * 2019 Ricardo Ribalda <ricardo@ribalda.com>
-> + *
-> + * Licensed under the GPL-2.
-> + */
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/gpio/consumer.h>
-> +#include <linux/iio/iio.h>
-> +
-> +#define DAC7612_RESOLUTION 12
-> +#define DAC7612_ADDRESS 4
-> +#define DAC7612_START 5
-> +
-> +struct dac7612 {
-> +	struct spi_device *spi;
-> +	struct gpio_desc *loaddacs;
-> +	uint16_t cache[2];
-> +
-> +	// DMA
-/* DMA */
+Thanks!
 
-But a slightly more detailed comment preferred.
-
-> +	uint8_t data[2] ____cacheline_aligned;
-> +};
-> +
-> +static int dac7612_cmd_single(struct dac7612 *priv, int channel, u16 val)
-> +{
-> +	int ret;
-> +
-> +	priv->data[0] = BIT(DAC7612_START) | (channel << DAC7612_ADDRESS);
-> +	priv->data[0] |= val >> 8;
-> +	priv->data[1] = val & 0xff;
-> +
-> +	priv->cache[channel] = val;
-> +
-> +	ret = spi_write(priv->spi, priv->data, sizeof(priv->data));
-> +	if (ret)
-> +		return ret;
-> +
-> +	gpiod_set_value(priv->loaddacs, 1);
-> +	gpiod_set_value(priv->loaddacs, 0);
-> +
-> +	return 0;
-> +}
-> +
-> +#define dac7612_CHANNEL(chan, name) {				\
-> +	.type = IIO_VOLTAGE,					\
-> +	.channel = (chan),					\
-> +	.indexed = 1,						\
-> +	.output = 1,						\
-> +	.datasheet_name = name,					\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +}
-> +
-> +static const struct iio_chan_spec dac7612_channels[] = {
-> +	dac7612_CHANNEL(0, "OUTA"),
-> +	dac7612_CHANNEL(1, "OUTB"),
-> +};
-> +
-> +static int dac7612_read_raw(struct iio_dev *iio_dev,
-> +			    const struct iio_chan_spec *chan,
-> +			    int *val, int *val2, long mask)
-> +{
-> +	struct dac7612 *priv;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		priv = iio_priv(iio_dev);
-> +		*val = priv->cache[chan->channel];
-> +		return IIO_VAL_INT;
-> +
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = 1;
-> +		return IIO_VAL_INT;
-> +
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int dac7612_write_raw(struct iio_dev *iio_dev,
-> +			     const struct iio_chan_spec *chan,
-> +			     int val, int val2, long mask)
-> +{
-> +	struct dac7612 *priv = iio_priv(iio_dev);
-> +	int ret;
-> +
-> +	if (mask != IIO_CHAN_INFO_RAW)
-> +		return -EINVAL;
-> +
-> +	if ((val >= BIT(DAC7612_RESOLUTION)) || val < 0 || val2)
-> +		return -EINVAL;
-> +
-> +	if (val == priv->cache[chan->channel])
-> +		return 0;
-> +
-> +	mutex_lock(&iio_dev->mlock);
-> +	ret = dac7612_cmd_single(priv, chan->channel, val);
-> +	mutex_unlock(&iio_dev->mlock);
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct iio_info dac7612_info = {
-> +	.read_raw = dac7612_read_raw,
-> +	.write_raw = dac7612_write_raw,
-> +};
-> +
-> +static int dac7612_probe(struct spi_device *spi)
-> +{
-> +	struct iio_dev *iio_dev;
-> +	struct dac7612 *priv;
-> +	int i;
-> +	int ret;
-> +
-> +	iio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*priv));
-> +	if (!iio_dev)
-> +		return -ENOMEM;
-> +
-> +	priv = iio_priv(iio_dev);
-
-Please add a comment here about why it's optional but we then use
-it anyway (which is fine but none obvious!)
-
-> +	priv->loaddacs = devm_gpiod_get_optional(&spi->dev, "loaddacs",
-> +						 GPIOD_OUT_LOW);
-> +	if (IS_ERR(priv->loaddacs))
-> +		return PTR_ERR(priv->loaddacs);
-> +	priv->spi = spi;
-> +	spi_set_drvdata(spi, iio_dev);
-> +	iio_dev->dev.parent = &spi->dev;
-> +	iio_dev->info = &dac7612_info;
-> +	iio_dev->modes = INDIO_DIRECT_MODE;
-> +	iio_dev->channels = dac7612_channels;
-> +	iio_dev->num_channels = ARRAY_SIZE(priv->cache);
-> +	iio_dev->name = spi_get_device_id(spi)->name;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(priv->cache); i++) {
-> +		ret = dac7612_cmd_single(priv, i, 0);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	return devm_iio_device_register(&spi->dev, iio_dev);
-> +}
-> +
-> +static const struct spi_device_id dac7612_id[] = {
-> +	{"ti-dac7612"},
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(spi, dac7612_id);
-> +
-> +static const struct of_device_id dac7612_of_match[] = {
-> +	{ .compatible = "ti,dac7612" },
-> +	{ .compatible = "ti,dac7612u" },
-> +	{ .compatible = "ti,dac7612b" },
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(of, dac7612_of_match);
-> +
-> +static struct spi_driver dac7612_driver = {
-> +	.driver = {
-> +		   .name = "ti-dac7612",
-> +		   .of_match_table = dac7612_of_match,
-> +		   },
-> +	.probe = dac7612_probe,
-> +	.id_table = dac7612_id,
-> +};
-> +module_spi_driver(dac7612_driver);
-> +
-> +MODULE_AUTHOR("Ricardo Ribalda <ricardo@ribalda.com>");
-> +MODULE_DESCRIPTION("Texas Instruments DAC7612 DAC driver");
-> +MODULE_LICENSE("GPL v2");
+>
+> > +- reg: Definition as per Documentation/devicetree/bindings/spi/spi-bus.txt
+> > +
+> > +Optional Properties:
+> > +- loaddacs-gpios: GPIO descriptor for the LOADDACS pin.
+>
+> Needs a 'ti' vendor prefix.
+>
+> > +- spi-*: Definition as per Documentation/devicetree/bindings/spi/spi-bus.txt
+> > +
+> > +Example:
+> > +
+> > +     dac7612@1 {
+>
+> dac@1
+>
+> > +             compatible = "ti,dac7612";
+> > +             reg = <0x1>;
+> > +             loaddacs-gpios = <&msmgpio 25 GPIO_ACTIVE_LOW>;
+> > +     };
+> > +
+> > diff --git a/MAINTAINERS b/MAINTAINERS
+> > index 30ba5435906b..e28e5afaae16 100644
+> > --- a/MAINTAINERS
+> > +++ b/MAINTAINERS
+> > @@ -14882,6 +14882,7 @@ M:    Ricardo Ribalda <ricardo@ribalda.com>
+> >  L:   linux-iio@vger.kernel.org
+> >  S:   Supported
+> >  F:   drivers/iio/dac/ti-dac7612.c
+> > +F:   Documentation/devicetree/bindings/iio/dac/ti,dac7612.txt
+> >
+> >  THANKO'S RAREMONO AM/FM/SW RADIO RECEIVER USB DRIVER
+> >  M:   Hans Verkuil <hverkuil@xs4all.nl>
+> > --
+> > 2.20.1
+> >
 
 
+
+-- 
+Ricardo Ribalda
