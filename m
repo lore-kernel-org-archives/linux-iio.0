@@ -2,129 +2,671 @@ Return-Path: <SRS0=eBr9=QH=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B987C169C4
-	for <linux-iio@archiver.kernel.org>; Thu, 31 Jan 2019 05:15:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0444C169C4
+	for <linux-iio@archiver.kernel.org>; Thu, 31 Jan 2019 13:18:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id F3751218AC
-	for <linux-iio@archiver.kernel.org>; Thu, 31 Jan 2019 05:15:58 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="B2ScClUQ"
+	by mail.kernel.org (Postfix) with ESMTP id 9AED1218D3
+	for <linux-iio@archiver.kernel.org>; Thu, 31 Jan 2019 13:18:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725875AbfAaFP6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 31 Jan 2019 00:15:58 -0500
-Received: from mail-yw1-f67.google.com ([209.85.161.67]:39476 "EHLO
-        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725857AbfAaFP6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 31 Jan 2019 00:15:58 -0500
-Received: by mail-yw1-f67.google.com with SMTP id k188so811880ywa.6;
-        Wed, 30 Jan 2019 21:15:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WbexUhY9aqcT+1SE9D/xYA5ED9xHab81qjVL0E3Ao0k=;
-        b=B2ScClUQNBBiaRyChUU0FpZdhHExy5iO5jHeEfHzFL2Lk6BNLNq2uEZzHuhU5pOjAk
-         Vs13m3x5b+8ZzQY0dEVlvTHVJebJhpvPzzm6Ksw08F+R85/+6hSdNqx8ILYKIpBWdzIF
-         tWqpt2/2OgSr7WJ/6/WSwtRfD5g8L5n1ulGwxwfpNOmC4DMbNI+LRoZs0OIljNrqnk/y
-         Z+prA72Tv4FGFCD22Pk5s0WBc9/GHo5xKabje3Ky3kqzMdKIy5cDeetwb3TGrXGf8Jna
-         1ovNITaLhXSAmjgt4oRA1RICHxv7q+a4QZnqbMdeBErPOaaZYzBdAepNquDHktObb3uH
-         tRvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WbexUhY9aqcT+1SE9D/xYA5ED9xHab81qjVL0E3Ao0k=;
-        b=XVw1CgKAGickIjvT69OhjFN89evVixyAk3xKCR4y1eKyNjqAUDDNV1v4biG4FUzmfz
-         MC0+98P5tO2gSFiEFUGWXnEnkT/zn1Bw0I+jJqGPf2jtlUI4ByLkWtr3Njl3kIEnFWaP
-         qBtwPlNYqjJy88ZLtc25Wm3lpF4vi9L6ugOUAC2TPIiecm1Y9ojJt0eanS5Of2+XZDyK
-         eRWw3rnU7YCdvjteK4s5xCkHwz5hJRW8+grilOQ6K5U8XN/f0Cl95PaAMJFvBePktoLB
-         F3HfOM1hN3iYXAX3KyVkKd4xt8JYPp+wyHIEXS9pbEazXHNvbHs0/zPBBDpMNLn4FUNG
-         Pvrw==
-X-Gm-Message-State: AJcUukcoIdVhK564/h80N/7mKYHrQ3OVPT8PoXkfWm+jt1WJddWgSj72
-        16HNjMiPtvmQta5BQKsj2MHCd/lUUDqRZQAsr1Y=
-X-Google-Smtp-Source: ALg8bN4fpGRlWgaAiiaPJbKIGGTZK5eCvdadJ+zuC0hXVW3dwC27xN+jTMs6o01O8z+9HsL2JK64lbn4RQej2ZUYYGE=
-X-Received: by 2002:a81:a87:: with SMTP id 129mr32238076ywk.195.1548911757198;
- Wed, 30 Jan 2019 21:15:57 -0800 (PST)
+        id S1727202AbfAaNSx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 31 Jan 2019 08:18:53 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:53868 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726153AbfAaNSx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 31 Jan 2019 08:18:53 -0500
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 098394B96F7AF881CC10;
+        Thu, 31 Jan 2019 21:18:50 +0800 (CST)
+Received: from localhost (10.202.226.61) by DGGEMS404-HUB.china.huawei.com
+ (10.3.19.204) with Microsoft SMTP Server id 14.3.408.0; Thu, 31 Jan 2019
+ 21:18:45 +0800
+Date:   Thu, 31 Jan 2019 13:18:36 +0000
+From:   Jonathan Cameron <jonathan.cameron@huawei.com>
+To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
+CC:     <linux-iio@vger.kernel.org>, <jic23@kernel.org>,
+        <michael.hennerich@analog.com>
+Subject: Re: [PATCH] staging: iio: cdc: ad7152: remove driver completely
+Message-ID: <20190131131836.00006d4d@huawei.com>
+In-Reply-To: <20190130091236.22155-1-alexandru.ardelean@analog.com>
+References: <20190130091236.22155-1-alexandru.ardelean@analog.com>
+Organization: Huawei
+X-Mailer: Claws Mail 3.16.0 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-References: <1548440422-27943-1-git-send-email-justinpopo6@gmail.com> <20190126183011.00f03cc3@archlinux>
-In-Reply-To: <20190126183011.00f03cc3@archlinux>
-From:   Justin Chen <justinpopo6@gmail.com>
-Date:   Wed, 30 Jan 2019 21:15:45 -0800
-Message-ID: <CAJx26kXY+Hg-M11LJ-ATP8y_-8RJ=gQ2DPn2Y9YDJHDkQNh=Kw@mail.gmail.com>
-Subject: Re: [PATCH v2] iio: adc: ti-ads7950: inconsistency with spi msg
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        linux-kernel@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.61]
+X-CFilter-Loop: Reflected
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, Jan 26, 2019 at 10:30 AM Jonathan Cameron <jic23@kernel.org> wrote:
->
-> On Fri, 25 Jan 2019 10:20:22 -0800
-> justinpopo6@gmail.com wrote:
->
-> > From: Justin Chen <justinpopo6@gmail.com>
-> >
-> > To read a channel we require 3 cycles to send, process, and receive
-> > the data. The transfer buffer for the third transaction is left blank.
-> > This leaves it up to the SPI driver to decide what to do.
-> Interesting.  I think that means you may have a bug in your SPI driver.
-> The pointer in question is always left set to NULL in the adc
-> driver (not explicitly but it will be because ultimately comes from
-> a kzalloc).
->
-> Documentation for an SPI message makes it clear that NULL is
-> allowed.  From include/linux/spi/spi.h
->
-> "* Those segments always read the same number of bits as they
->  * write; but one or the other is easily ignored by passing a null buffer
->  * pointer. "
->
-> Hmm. It does say 'ignored'.  My assumption has always been that
-> means it would be filled with zeros, but maybe I'm wrong.
->
-> Mark?
->
-I looked more into this and other SPI drivers do fill it with zeros.
-I'll submit a patch for the SPI driver instead and see what the SPI
-maintainers say.
+On Wed, 30 Jan 2019 11:12:36 +0200
+Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
 
-Thanks,
-Justin
-> >
-> > In one particular case, if the tx buffer is not set the spi driver
-> > sets it to 0xff. This puts the ADC in a alarm programming state,
-> > therefore the following read to a channel becomes erroneous.
-> >
-> > Instead of leaving us to the mercy of the SPI driver, we send the
-> > ADC cmd on the third transaction to prevent inconsistent behavior.
-> >
-> > Fixes: 902c4b2446d4 ("iio: adc: New driver for TI ADS7950 chips")
-> > Signed-off-by: Justin Chen <justinpopo6@gmail.com>
-> > ---
-> >  drivers/iio/adc/ti-ads7950.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
-> > index 0ad6359..1255d8b 100644
-> > --- a/drivers/iio/adc/ti-ads7950.c
-> > +++ b/drivers/iio/adc/ti-ads7950.c
-> > @@ -422,6 +422,7 @@ static int ti_ads7950_probe(struct spi_device *spi)
-> >       st->scan_single_xfer[1].tx_buf = &st->single_tx;
-> >       st->scan_single_xfer[1].len = 2;
-> >       st->scan_single_xfer[1].cs_change = 1;
-> > +     st->scan_single_xfer[2].tx_buf = &st->single_tx;
-> >       st->scan_single_xfer[2].rx_buf = &st->single_rx;
-> >       st->scan_single_xfer[2].len = 2;
-> >
->
+> The AD7153 part has been obsoleted for some time. The AD7152 part will be
+> obsolete in the coming future.
+> Moving it out of staging doesn't make sense anymore. Which makes the driver
+> enter a limbo state.
+> 
+> This patch removes the driver completely, so that no effort is placed on
+> it, allowing people to focus on other parts that will still be around.
+> 
+> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+
+Hi Alex,
+
+I'll let this sit for a week maybe, though the chances of anyone on list
+using this part seem minimal.  Hence we'll probably only find out when someone
+screams after we have removed it.  Easy to bring back though if that happens.
+
+Anyhow, give me a poke if I seem to have forgotten about it.
+
+Jonathan
+> ---
+> 
+> If there are any users around, feel free to speak up and we can leave the
+> driver in staging, for a while longer. Otherwise I would prefer to remove
+> it, so we can redirect people to active parts.
+> 
+>  drivers/staging/iio/cdc/Kconfig  |  10 -
+>  drivers/staging/iio/cdc/Makefile |   1 -
+>  drivers/staging/iio/cdc/ad7152.c | 552 -------------------------------
+>  3 files changed, 563 deletions(-)
+>  delete mode 100644 drivers/staging/iio/cdc/ad7152.c
+> 
+> diff --git a/drivers/staging/iio/cdc/Kconfig b/drivers/staging/iio/cdc/Kconfig
+> index 80211df8c577..b97478e7cbd0 100644
+> --- a/drivers/staging/iio/cdc/Kconfig
+> +++ b/drivers/staging/iio/cdc/Kconfig
+> @@ -13,16 +13,6 @@ config AD7150
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called ad7150.
+>  
+> -config AD7152
+> -	tristate "Analog Devices ad7152/3 capacitive sensor driver"
+> -	depends on I2C
+> -	help
+> -	  Say yes here to build support for Analog Devices capacitive sensors.
+> -	  (ad7152, ad7153) Provides direct access via sysfs.
+> -
+> -	  To compile this driver as a module, choose M here: the
+> -	  module will be called ad7152.
+> -
+>  config AD7746
+>  	tristate "Analog Devices AD7745, AD7746 AD7747 capacitive sensor driver"
+>  	depends on I2C
+> diff --git a/drivers/staging/iio/cdc/Makefile b/drivers/staging/iio/cdc/Makefile
+> index a5fbabf5c8bf..1466bc31f244 100644
+> --- a/drivers/staging/iio/cdc/Makefile
+> +++ b/drivers/staging/iio/cdc/Makefile
+> @@ -3,5 +3,4 @@
+>  #
+>  
+>  obj-$(CONFIG_AD7150) += ad7150.o
+> -obj-$(CONFIG_AD7152) += ad7152.o
+>  obj-$(CONFIG_AD7746) += ad7746.o
+> diff --git a/drivers/staging/iio/cdc/ad7152.c b/drivers/staging/iio/cdc/ad7152.c
+> deleted file mode 100644
+> index 25f51db05d2d..000000000000
+> --- a/drivers/staging/iio/cdc/ad7152.c
+> +++ /dev/null
+> @@ -1,552 +0,0 @@
+> -/*
+> - * AD7152 capacitive sensor driver supporting AD7152/3
+> - *
+> - * Copyright 2010-2011a Analog Devices Inc.
+> - *
+> - * Licensed under the GPL-2 or later.
+> - */
+> -
+> -#include <linux/interrupt.h>
+> -#include <linux/device.h>
+> -#include <linux/kernel.h>
+> -#include <linux/slab.h>
+> -#include <linux/sysfs.h>
+> -#include <linux/i2c.h>
+> -#include <linux/module.h>
+> -#include <linux/delay.h>
+> -
+> -#include <linux/iio/iio.h>
+> -#include <linux/iio/sysfs.h>
+> -
+> -/*
+> - * TODO: Check compliance of calibbias with abi (units)
+> - */
+> -/*
+> - * AD7152 registers definition
+> - */
+> -
+> -#define AD7152_REG_STATUS		0
+> -#define AD7152_REG_CH1_DATA_HIGH	1
+> -#define AD7152_REG_CH2_DATA_HIGH	3
+> -#define AD7152_REG_CH1_OFFS_HIGH	5
+> -#define AD7152_REG_CH2_OFFS_HIGH	7
+> -#define AD7152_REG_CH1_GAIN_HIGH	9
+> -#define AD7152_REG_CH1_SETUP		11
+> -#define AD7152_REG_CH2_GAIN_HIGH	12
+> -#define AD7152_REG_CH2_SETUP		14
+> -#define AD7152_REG_CFG			15
+> -#define AD7152_REG_RESEVERD		16
+> -#define AD7152_REG_CAPDAC_POS		17
+> -#define AD7152_REG_CAPDAC_NEG		18
+> -#define AD7152_REG_CFG2			26
+> -
+> -/* Status Register Bit Designations (AD7152_REG_STATUS) */
+> -#define AD7152_STATUS_RDY1		BIT(0)
+> -#define AD7152_STATUS_RDY2		BIT(1)
+> -#define AD7152_STATUS_C1C2		BIT(2)
+> -#define AD7152_STATUS_PWDN		BIT(7)
+> -
+> -/* Setup Register Bit Designations (AD7152_REG_CHx_SETUP) */
+> -#define AD7152_SETUP_CAPDIFF		BIT(5)
+> -#define AD7152_SETUP_RANGE_2pF		(0 << 6)
+> -#define AD7152_SETUP_RANGE_0_5pF	(1 << 6)
+> -#define AD7152_SETUP_RANGE_1pF		(2 << 6)
+> -#define AD7152_SETUP_RANGE_4pF		(3 << 6)
+> -#define AD7152_SETUP_RANGE(x)		((x) << 6)
+> -
+> -/* Config Register Bit Designations (AD7152_REG_CFG) */
+> -#define AD7152_CONF_CH2EN		BIT(3)
+> -#define AD7152_CONF_CH1EN		BIT(4)
+> -#define AD7152_CONF_MODE_IDLE		(0 << 0)
+> -#define AD7152_CONF_MODE_CONT_CONV	(1 << 0)
+> -#define AD7152_CONF_MODE_SINGLE_CONV	(2 << 0)
+> -#define AD7152_CONF_MODE_OFFS_CAL	(5 << 0)
+> -#define AD7152_CONF_MODE_GAIN_CAL	(6 << 0)
+> -
+> -/* Capdac Register Bit Designations (AD7152_REG_CAPDAC_XXX) */
+> -#define AD7152_CAPDAC_DACEN		BIT(7)
+> -#define AD7152_CAPDAC_DACP(x)		((x) & 0x1F)
+> -
+> -/* CFG2 Register Bit Designations (AD7152_REG_CFG2) */
+> -#define AD7152_CFG2_OSR(x)		(((x) & 0x3) << 4)
+> -
+> -enum {
+> -	AD7152_DATA,
+> -	AD7152_OFFS,
+> -	AD7152_GAIN,
+> -	AD7152_SETUP
+> -};
+> -
+> -/*
+> - * struct ad7152_chip_info - chip specific information
+> - */
+> -
+> -struct ad7152_chip_info {
+> -	struct i2c_client *client;
+> -	/*
+> -	 * Capacitive channel digital filter setup;
+> -	 * conversion time/update rate setup per channel
+> -	 */
+> -	u8	filter_rate_setup;
+> -	u8	setup[2];
+> -	struct mutex state_lock;	/* protect hardware state */
+> -};
+> -
+> -static inline ssize_t ad7152_start_calib(struct device *dev,
+> -					 struct device_attribute *attr,
+> -					 const char *buf,
+> -					 size_t len,
+> -					 u8 regval)
+> -{
+> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> -	struct ad7152_chip_info *chip = iio_priv(indio_dev);
+> -	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+> -	bool doit;
+> -	int ret, timeout = 10;
+> -
+> -	ret = strtobool(buf, &doit);
+> -	if (ret < 0)
+> -		return ret;
+> -
+> -	if (!doit)
+> -		return 0;
+> -
+> -	if (this_attr->address == 0)
+> -		regval |= AD7152_CONF_CH1EN;
+> -	else
+> -		regval |= AD7152_CONF_CH2EN;
+> -
+> -	mutex_lock(&chip->state_lock);
+> -	ret = i2c_smbus_write_byte_data(chip->client, AD7152_REG_CFG, regval);
+> -	if (ret < 0)
+> -		goto unlock;
+> -
+> -	do {
+> -		mdelay(20);
+> -		ret = i2c_smbus_read_byte_data(chip->client, AD7152_REG_CFG);
+> -		if (ret < 0)
+> -			goto unlock;
+> -
+> -	} while ((ret == regval) && timeout--);
+> -
+> -	mutex_unlock(&chip->state_lock);
+> -	return len;
+> -
+> -unlock:
+> -	mutex_unlock(&chip->state_lock);
+> -	return ret;
+> -}
+> -
+> -static ssize_t ad7152_start_offset_calib(struct device *dev,
+> -					 struct device_attribute *attr,
+> -					 const char *buf,
+> -					 size_t len)
+> -{
+> -	return ad7152_start_calib(dev, attr, buf, len,
+> -				  AD7152_CONF_MODE_OFFS_CAL);
+> -}
+> -
+> -static ssize_t ad7152_start_gain_calib(struct device *dev,
+> -				       struct device_attribute *attr,
+> -				       const char *buf,
+> -				       size_t len)
+> -{
+> -	return ad7152_start_calib(dev, attr, buf, len,
+> -				  AD7152_CONF_MODE_GAIN_CAL);
+> -}
+> -
+> -static IIO_DEVICE_ATTR(in_capacitance0_calibbias_calibration,
+> -		       0200, NULL, ad7152_start_offset_calib, 0);
+> -static IIO_DEVICE_ATTR(in_capacitance1_calibbias_calibration,
+> -		       0200, NULL, ad7152_start_offset_calib, 1);
+> -static IIO_DEVICE_ATTR(in_capacitance0_calibscale_calibration,
+> -		       0200, NULL, ad7152_start_gain_calib, 0);
+> -static IIO_DEVICE_ATTR(in_capacitance1_calibscale_calibration,
+> -		       0200, NULL, ad7152_start_gain_calib, 1);
+> -
+> -/* Values are Update Rate (Hz), Conversion Time (ms) + 1*/
+> -static const unsigned char ad7152_filter_rate_table[][2] = {
+> -	{200, 5 + 1}, {50, 20 + 1}, {20, 50 + 1}, {17, 60 + 1},
+> -};
+> -
+> -static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("200 50 20 17");
+> -
+> -static IIO_CONST_ATTR(in_capacitance_scale_available,
+> -		      "0.000061050 0.000030525 0.000015263 0.000007631");
+> -
+> -static struct attribute *ad7152_attributes[] = {
+> -	&iio_dev_attr_in_capacitance0_calibbias_calibration.dev_attr.attr,
+> -	&iio_dev_attr_in_capacitance1_calibbias_calibration.dev_attr.attr,
+> -	&iio_dev_attr_in_capacitance0_calibscale_calibration.dev_attr.attr,
+> -	&iio_dev_attr_in_capacitance1_calibscale_calibration.dev_attr.attr,
+> -	&iio_const_attr_in_capacitance_scale_available.dev_attr.attr,
+> -	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+> -	NULL,
+> -};
+> -
+> -static const struct attribute_group ad7152_attribute_group = {
+> -	.attrs = ad7152_attributes,
+> -};
+> -
+> -static const u8 ad7152_addresses[][4] = {
+> -	{ AD7152_REG_CH1_DATA_HIGH, AD7152_REG_CH1_OFFS_HIGH,
+> -	  AD7152_REG_CH1_GAIN_HIGH, AD7152_REG_CH1_SETUP },
+> -	{ AD7152_REG_CH2_DATA_HIGH, AD7152_REG_CH2_OFFS_HIGH,
+> -	  AD7152_REG_CH2_GAIN_HIGH, AD7152_REG_CH2_SETUP },
+> -};
+> -
+> -/* Values are nano relative to pf base. */
+> -static const int ad7152_scale_table[] = {
+> -	30525, 7631, 15263, 61050
+> -};
+> -
+> -/**
+> - * read_raw handler for IIO_CHAN_INFO_SAMP_FREQ
+> - *
+> - * lock must be held
+> - **/
+> -static int ad7152_read_raw_samp_freq(struct device *dev, int *val)
+> -{
+> -	struct ad7152_chip_info *chip = iio_priv(dev_to_iio_dev(dev));
+> -
+> -	*val = ad7152_filter_rate_table[chip->filter_rate_setup][0];
+> -
+> -	return 0;
+> -}
+> -
+> -/**
+> - * write_raw handler for IIO_CHAN_INFO_SAMP_FREQ
+> - *
+> - * lock must be held
+> - **/
+> -static int ad7152_write_raw_samp_freq(struct device *dev, int val)
+> -{
+> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> -	struct ad7152_chip_info *chip = iio_priv(indio_dev);
+> -	int ret, i;
+> -
+> -	for (i = 0; i < ARRAY_SIZE(ad7152_filter_rate_table); i++)
+> -		if (val >= ad7152_filter_rate_table[i][0])
+> -			break;
+> -
+> -	if (i >= ARRAY_SIZE(ad7152_filter_rate_table))
+> -		i = ARRAY_SIZE(ad7152_filter_rate_table) - 1;
+> -
+> -	ret = i2c_smbus_write_byte_data(chip->client,
+> -					AD7152_REG_CFG2, AD7152_CFG2_OSR(i));
+> -	if (ret < 0)
+> -		return ret;
+> -
+> -	chip->filter_rate_setup = i;
+> -
+> -	return ret;
+> -}
+> -
+> -static int ad7152_write_raw(struct iio_dev *indio_dev,
+> -			    struct iio_chan_spec const *chan,
+> -			    int val,
+> -			    int val2,
+> -			    long mask)
+> -{
+> -	struct ad7152_chip_info *chip = iio_priv(indio_dev);
+> -	int ret, i;
+> -
+> -	mutex_lock(&chip->state_lock);
+> -
+> -	switch (mask) {
+> -	case IIO_CHAN_INFO_CALIBSCALE:
+> -		if (val != 1) {
+> -			ret = -EINVAL;
+> -			goto out;
+> -		}
+> -
+> -		val = (val2 * 1024) / 15625;
+> -
+> -		ret = i2c_smbus_write_word_data(chip->client,
+> -				ad7152_addresses[chan->channel][AD7152_GAIN],
+> -				swab16(val));
+> -		if (ret < 0)
+> -			goto out;
+> -
+> -		ret = 0;
+> -		break;
+> -
+> -	case IIO_CHAN_INFO_CALIBBIAS:
+> -		if ((val < 0) | (val > 0xFFFF)) {
+> -			ret = -EINVAL;
+> -			goto out;
+> -		}
+> -		ret = i2c_smbus_write_word_data(chip->client,
+> -				ad7152_addresses[chan->channel][AD7152_OFFS],
+> -				swab16(val));
+> -		if (ret < 0)
+> -			goto out;
+> -
+> -		ret = 0;
+> -		break;
+> -	case IIO_CHAN_INFO_SCALE:
+> -		if (val) {
+> -			ret = -EINVAL;
+> -			goto out;
+> -		}
+> -		for (i = 0; i < ARRAY_SIZE(ad7152_scale_table); i++)
+> -			if (val2 == ad7152_scale_table[i])
+> -				break;
+> -
+> -		chip->setup[chan->channel] &= ~AD7152_SETUP_RANGE_4pF;
+> -		chip->setup[chan->channel] |= AD7152_SETUP_RANGE(i);
+> -
+> -		ret = i2c_smbus_write_byte_data(chip->client,
+> -				ad7152_addresses[chan->channel][AD7152_SETUP],
+> -				chip->setup[chan->channel]);
+> -		if (ret < 0)
+> -			goto out;
+> -
+> -		ret = 0;
+> -		break;
+> -	case IIO_CHAN_INFO_SAMP_FREQ:
+> -		if (val2) {
+> -			ret = -EINVAL;
+> -			goto out;
+> -		}
+> -		ret = ad7152_write_raw_samp_freq(&indio_dev->dev, val);
+> -		if (ret < 0)
+> -			goto out;
+> -
+> -		ret = 0;
+> -		break;
+> -	default:
+> -		ret = -EINVAL;
+> -	}
+> -
+> -out:
+> -	mutex_unlock(&chip->state_lock);
+> -	return ret;
+> -}
+> -
+> -static int ad7152_read_raw(struct iio_dev *indio_dev,
+> -			   struct iio_chan_spec const *chan,
+> -			   int *val, int *val2,
+> -			   long mask)
+> -{
+> -	struct ad7152_chip_info *chip = iio_priv(indio_dev);
+> -	int ret;
+> -	u8 regval = 0;
+> -
+> -	mutex_lock(&chip->state_lock);
+> -
+> -	switch (mask) {
+> -	case IIO_CHAN_INFO_RAW:
+> -		/* First set whether in differential mode */
+> -
+> -		regval = chip->setup[chan->channel];
+> -
+> -		if (chan->differential)
+> -			chip->setup[chan->channel] |= AD7152_SETUP_CAPDIFF;
+> -		else
+> -			chip->setup[chan->channel] &= ~AD7152_SETUP_CAPDIFF;
+> -
+> -		if (regval != chip->setup[chan->channel]) {
+> -			ret = i2c_smbus_write_byte_data(chip->client,
+> -				ad7152_addresses[chan->channel][AD7152_SETUP],
+> -				chip->setup[chan->channel]);
+> -			if (ret < 0)
+> -				goto out;
+> -		}
+> -		/* Make sure the channel is enabled */
+> -		if (chan->channel == 0)
+> -			regval = AD7152_CONF_CH1EN;
+> -		else
+> -			regval = AD7152_CONF_CH2EN;
+> -
+> -		/* Trigger a single read */
+> -		regval |= AD7152_CONF_MODE_SINGLE_CONV;
+> -		ret = i2c_smbus_write_byte_data(chip->client, AD7152_REG_CFG,
+> -				regval);
+> -		if (ret < 0)
+> -			goto out;
+> -
+> -		msleep(ad7152_filter_rate_table[chip->filter_rate_setup][1]);
+> -		/* Now read the actual register */
+> -		ret = i2c_smbus_read_word_data(chip->client,
+> -				ad7152_addresses[chan->channel][AD7152_DATA]);
+> -		if (ret < 0)
+> -			goto out;
+> -		*val = swab16(ret);
+> -
+> -		if (chan->differential)
+> -			*val -= 0x8000;
+> -
+> -		ret = IIO_VAL_INT;
+> -		break;
+> -	case IIO_CHAN_INFO_CALIBSCALE:
+> -
+> -		ret = i2c_smbus_read_word_data(chip->client,
+> -				ad7152_addresses[chan->channel][AD7152_GAIN]);
+> -		if (ret < 0)
+> -			goto out;
+> -		/* 1 + gain_val / 2^16 */
+> -		*val = 1;
+> -		*val2 = (15625 * swab16(ret)) / 1024;
+> -
+> -		ret = IIO_VAL_INT_PLUS_MICRO;
+> -		break;
+> -	case IIO_CHAN_INFO_CALIBBIAS:
+> -		ret = i2c_smbus_read_word_data(chip->client,
+> -				ad7152_addresses[chan->channel][AD7152_OFFS]);
+> -		if (ret < 0)
+> -			goto out;
+> -		*val = swab16(ret);
+> -
+> -		ret = IIO_VAL_INT;
+> -		break;
+> -	case IIO_CHAN_INFO_SCALE:
+> -		ret = i2c_smbus_read_byte_data(chip->client,
+> -				ad7152_addresses[chan->channel][AD7152_SETUP]);
+> -		if (ret < 0)
+> -			goto out;
+> -		*val = 0;
+> -		*val2 = ad7152_scale_table[ret >> 6];
+> -
+> -		ret = IIO_VAL_INT_PLUS_NANO;
+> -		break;
+> -	case IIO_CHAN_INFO_SAMP_FREQ:
+> -		ret = ad7152_read_raw_samp_freq(&indio_dev->dev, val);
+> -		if (ret < 0)
+> -			goto out;
+> -
+> -		ret = IIO_VAL_INT;
+> -		break;
+> -	default:
+> -		ret = -EINVAL;
+> -	}
+> -out:
+> -	mutex_unlock(&chip->state_lock);
+> -	return ret;
+> -}
+> -
+> -static int ad7152_write_raw_get_fmt(struct iio_dev *indio_dev,
+> -				    struct iio_chan_spec const *chan,
+> -				    long mask)
+> -{
+> -	switch (mask) {
+> -	case IIO_CHAN_INFO_SCALE:
+> -		return IIO_VAL_INT_PLUS_NANO;
+> -	default:
+> -		return IIO_VAL_INT_PLUS_MICRO;
+> -	}
+> -}
+> -
+> -static const struct iio_info ad7152_info = {
+> -	.attrs = &ad7152_attribute_group,
+> -	.read_raw = ad7152_read_raw,
+> -	.write_raw = ad7152_write_raw,
+> -	.write_raw_get_fmt = ad7152_write_raw_get_fmt,
+> -};
+> -
+> -static const struct iio_chan_spec ad7152_channels[] = {
+> -	{
+> -		.type = IIO_CAPACITANCE,
+> -		.indexed = 1,
+> -		.channel = 0,
+> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> -		BIT(IIO_CHAN_INFO_CALIBSCALE) |
+> -		BIT(IIO_CHAN_INFO_CALIBBIAS) |
+> -		BIT(IIO_CHAN_INFO_SCALE),
+> -		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+> -	}, {
+> -		.type = IIO_CAPACITANCE,
+> -		.differential = 1,
+> -		.indexed = 1,
+> -		.channel = 0,
+> -		.channel2 = 2,
+> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> -		BIT(IIO_CHAN_INFO_CALIBSCALE) |
+> -		BIT(IIO_CHAN_INFO_CALIBBIAS) |
+> -		BIT(IIO_CHAN_INFO_SCALE),
+> -		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+> -	}, {
+> -		.type = IIO_CAPACITANCE,
+> -		.indexed = 1,
+> -		.channel = 1,
+> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> -		BIT(IIO_CHAN_INFO_CALIBSCALE) |
+> -		BIT(IIO_CHAN_INFO_CALIBBIAS) |
+> -		BIT(IIO_CHAN_INFO_SCALE),
+> -		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+> -	}, {
+> -		.type = IIO_CAPACITANCE,
+> -		.differential = 1,
+> -		.indexed = 1,
+> -		.channel = 1,
+> -		.channel2 = 3,
+> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> -		BIT(IIO_CHAN_INFO_CALIBSCALE) |
+> -		BIT(IIO_CHAN_INFO_CALIBBIAS) |
+> -		BIT(IIO_CHAN_INFO_SCALE),
+> -		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+> -	}
+> -};
+> -
+> -/*
+> - * device probe and remove
+> - */
+> -
+> -static int ad7152_probe(struct i2c_client *client,
+> -			const struct i2c_device_id *id)
+> -{
+> -	int ret = 0;
+> -	struct ad7152_chip_info *chip;
+> -	struct iio_dev *indio_dev;
+> -
+> -	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
+> -	if (!indio_dev)
+> -		return -ENOMEM;
+> -	chip = iio_priv(indio_dev);
+> -	/* this is only used for device removal purposes */
+> -	i2c_set_clientdata(client, indio_dev);
+> -
+> -	chip->client = client;
+> -	mutex_init(&chip->state_lock);
+> -
+> -	/* Establish that the iio_dev is a child of the i2c device */
+> -	indio_dev->name = id->name;
+> -	indio_dev->dev.parent = &client->dev;
+> -	indio_dev->info = &ad7152_info;
+> -	indio_dev->channels = ad7152_channels;
+> -	if (id->driver_data == 0)
+> -		indio_dev->num_channels = ARRAY_SIZE(ad7152_channels);
+> -	else
+> -		indio_dev->num_channels = 2;
+> -	indio_dev->num_channels = ARRAY_SIZE(ad7152_channels);
+> -	indio_dev->modes = INDIO_DIRECT_MODE;
+> -
+> -	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
+> -	if (ret)
+> -		return ret;
+> -
+> -	dev_err(&client->dev, "%s capacitive sensor registered\n", id->name);
+> -
+> -	return 0;
+> -}
+> -
+> -static const struct i2c_device_id ad7152_id[] = {
+> -	{ "ad7152", 0 },
+> -	{ "ad7153", 1 },
+> -	{}
+> -};
+> -
+> -MODULE_DEVICE_TABLE(i2c, ad7152_id);
+> -
+> -static struct i2c_driver ad7152_driver = {
+> -	.driver = {
+> -		.name = KBUILD_MODNAME,
+> -	},
+> -	.probe = ad7152_probe,
+> -	.id_table = ad7152_id,
+> -};
+> -module_i2c_driver(ad7152_driver);
+> -
+> -MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");
+> -MODULE_DESCRIPTION("Analog Devices AD7152/3 capacitive sensor driver");
+> -MODULE_LICENSE("GPL v2");
+
+
