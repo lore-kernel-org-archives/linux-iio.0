@@ -6,33 +6,38 @@ X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0444C169C4
-	for <linux-iio@archiver.kernel.org>; Thu, 31 Jan 2019 13:18:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9A04C169C4
+	for <linux-iio@archiver.kernel.org>; Thu, 31 Jan 2019 13:35:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9AED1218D3
-	for <linux-iio@archiver.kernel.org>; Thu, 31 Jan 2019 13:18:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9E1432085B
+	for <linux-iio@archiver.kernel.org>; Thu, 31 Jan 2019 13:35:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727202AbfAaNSx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 31 Jan 2019 08:18:53 -0500
-Received: from szxga06-in.huawei.com ([45.249.212.32]:53868 "EHLO huawei.com"
+        id S1727689AbfAaNfe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 31 Jan 2019 08:35:34 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:3256 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726153AbfAaNSx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 31 Jan 2019 08:18:53 -0500
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 098394B96F7AF881CC10;
-        Thu, 31 Jan 2019 21:18:50 +0800 (CST)
-Received: from localhost (10.202.226.61) by DGGEMS404-HUB.china.huawei.com
- (10.3.19.204) with Microsoft SMTP Server id 14.3.408.0; Thu, 31 Jan 2019
- 21:18:45 +0800
-Date:   Thu, 31 Jan 2019 13:18:36 +0000
+        id S1727210AbfAaNfd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 31 Jan 2019 08:35:33 -0500
+Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 5E8C9C2EBDBE2F17970D;
+        Thu, 31 Jan 2019 21:35:30 +0800 (CST)
+Received: from localhost (10.202.226.61) by DGGEMS414-HUB.china.huawei.com
+ (10.3.19.214) with Microsoft SMTP Server id 14.3.408.0; Thu, 31 Jan 2019
+ 21:35:28 +0800
+Date:   Thu, 31 Jan 2019 13:35:17 +0000
 From:   Jonathan Cameron <jonathan.cameron@huawei.com>
-To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
-CC:     <linux-iio@vger.kernel.org>, <jic23@kernel.org>,
-        <michael.hennerich@analog.com>
-Subject: Re: [PATCH] staging: iio: cdc: ad7152: remove driver completely
-Message-ID: <20190131131836.00006d4d@huawei.com>
-In-Reply-To: <20190130091236.22155-1-alexandru.ardelean@analog.com>
-References: <20190130091236.22155-1-alexandru.ardelean@analog.com>
+To:     Phil Reid <preid@electromag.com.au>
+CC:     Alexandru Ardelean <ardeleanalex@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>, <knaack.h@gmx.de>,
+        <lars@metafoo.de>, "Peter Meerwald-Stadler" <pmeerw@pmeerw.net>,
+        <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH 1/1] iio: core: Improve precision of __iio_format_value
+ for FRACTIONAL values
+Message-ID: <20190131133517.0000716d@huawei.com>
+In-Reply-To: <20364822-e17d-5386-cd97-f244fa32f665@electromag.com.au>
+References: <1548743212-83787-1-git-send-email-preid@electromag.com.au>
+        <CA+U=Dso+_dn4mEew5y62nGg8AmEABOCnV9aFgHvQV9WsM0enrA@mail.gmail.com>
+        <20364822-e17d-5386-cd97-f244fa32f665@electromag.com.au>
 Organization: Huawei
 X-Mailer: Claws Mail 3.16.0 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
@@ -45,628 +50,184 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 30 Jan 2019 11:12:36 +0200
-Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
+On Tue, 29 Jan 2019 17:11:25 +0800
+Phil Reid <preid@electromag.com.au> wrote:
 
-> The AD7153 part has been obsoleted for some time. The AD7152 part will be
-> obsolete in the coming future.
-> Moving it out of staging doesn't make sense anymore. Which makes the driver
-> enter a limbo state.
+> G'day Alex,
 > 
-> This patch removes the driver completely, so that no effort is placed on
-> it, allowing people to focus on other parts that will still be around.
+> On 29/01/2019 4:32 pm, Alexandru Ardelean wrote:
+> > On Tue, Jan 29, 2019 at 8:28 AM Phil Reid <preid@electromag.com.au> wrote:  
+> >>
+> >> Currently FRACTIONAL values are outputed with 9 digits after the decimal
+> >> place. This is not always sufficient to resolve the raw value with 1 bit.
+> >> Output FRACTIONAL values to 15 decimal places of precision, regardless
+> >> of the number of leading zeros.
+> >>
+> >> Currently for a 2.5V ref with 24 bits of precision the code outputs only
+> >> to 9 decimal places.
+> >>
+> >> Cur: 0.00014901100000000000 * 16777216 = 2499.989733
+> >> New: 0.00014901161193847600 * 16777216 = 2500.000000
+> >> Signed-off-by: Phil Reid <preid@electromag.com.au>
+> >> ---
+> >>
+> >> Notes:
+> >>      Alternatively I could add additonal FRACTIONAL types that select the new
+> >>      behaviour to prevent any possible regressions.
+> >>
+> >>   drivers/iio/industrialio-core.c | 55 ++++++++++++++++++++++++++++++++++-------
+> >>   1 file changed, 46 insertions(+), 9 deletions(-)
+> >>
+> >> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> >> index a062cfd..bd9da64 100644
+> >> --- a/drivers/iio/industrialio-core.c
+> >> +++ b/drivers/iio/industrialio-core.c
+> >> @@ -571,11 +571,53 @@ int of_iio_read_mount_matrix(const struct device *dev,
+> >>   #endif
+> >>   EXPORT_SYMBOL(of_iio_read_mount_matrix);
+> >>
+> >> +static ssize_t __iio_format_div_prec(char *buf, unsigned int len, s64 x, s32 y)
+> >> +{
+> >> +       unsigned int prec = 0;
+> >> +       unsigned int idx = 0;
+> >> +       s64 d;
+> >> +
+> >> +       if (!len)
+> >> +               return 0;
+> >> +
+> >> +       if (!y)
+> >> +               return snprintf(buf, len, "inf");
+> >> +
+> >> +       if (!x)
+> >> +               return snprintf(buf, len, "0");
+> >> +
+> >> +       if (((x > 0) && (y < 0)) || ((x < 0) && (y > 0))) {
+> >> +               buf[idx++] = '-';
+> >> +               x = x > 0 ? x : -x;
+> >> +               y = y > 0 ? y : -y;
+> >> +       }
+> >> +
+> >> +       d = div64_s64(x, y);
+> >> +       idx += snprintf(buf+idx, len-idx, "%d", (int)d);
+> >> +       x = x - (y * d);
+> >> +       if ((x != 0) && (idx < len-1)) {
+> >> +               buf[idx++] = '.';
+> >> +               x = x * 10;
+> >> +               d = div64_s64(x, y);
+> >> +
+> >> +               while ((idx < len-1) && (prec < 15)) {
+> >> +                       if (d || prec)
+> >> +                               prec++;
+> >> +                       buf[idx++] = '0' + (char)d;
+> >> +                       x = x - (y * d);
+> >> +                       if (!x)
+> >> +                               break;
+> >> +                       x = x * 10;
+> >> +                       d = div64_s64(x, y);
+> >> +               }
+> >> +               buf[idx] = 0;
+> >> +       }
+> >> +       return idx;
+> >> +}
+> >> +
+> >>   static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
+> >>                                    int size, const int *vals)
+> >>   {
+> >> -       unsigned long long tmp;
+> >> -       int tmp0, tmp1;
+> >>          bool scale_db = false;
+> >>
+> >>          switch (type) {
+> >> @@ -598,14 +640,9 @@ static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
+> >>                  else
+> >>                          return snprintf(buf, len, "%d.%09u", vals[0], vals[1]);
+> >>          case IIO_VAL_FRACTIONAL:
+> >> -               tmp = div_s64((s64)vals[0] * 1000000000LL, vals[1]);
+> >> -               tmp1 = vals[1];
+> >> -               tmp0 = (int)div_s64_rem(tmp, 1000000000, &tmp1);
+> >> -               return snprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
+> >> +               return __iio_format_div_prec(buf, len, vals[0], vals[1]);  
+> > 
+> > Maybe I'm a bit naive, but I'm also a bit curious.
+> > If you just bump the numbers here, would it work the same ?
+> > 
+> > i.e.   10^9 -> 10^15 and "snprintf(buf, len, "%d.%15u", tmp0, abs(tmp1));"  
+> I did look at that solution.
 > 
-> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+> But I was running into overflow issues (even with 64 bit numbers).
+> 
+> eg: with a 2500 reference and 32 bits.
+> 
+> 2500 * 10^15 = 2e+18 = 61 bits
+> And the result of
+> 2500 / 2^32 =  0.000000582076609
+> Only provides 9 significant digits with 15 decimal places.
+> 
+> I was looking to provide 15 significant digits to match a standard double
+> precision floating point value.
 
-Hi Alex,
+I'll ask the awkward engineering question.  Is this precision actually valid?
+I.e. typical voltage references are +- 0.0x %
 
-I'll let this sit for a week maybe, though the chances of anyone on list
-using this part seem minimal.  Hence we'll probably only find out when someone
-screams after we have removed it.  Easy to bring back though if that happens.
+The fact we have a 32 bit ADC means you'll detect small changes, but I'm
+dubious about whether the absolute value will ever be 'that good'.
 
-Anyhow, give me a poke if I seem to have forgotten about it.
+If we are going to go out of way to support greater precision we need
+a strong justification of why.
+To take advantage of these high precision devices you need to take into
+account non linear effects, temperature etc.  These will swamp (I think)
+any effect of a lack of precision the scale value.
 
-Jonathan
-> ---
 > 
-> If there are any users around, feel free to speak up and we can leave the
-> driver in staging, for a while longer. Otherwise I would prefer to remove
-> it, so we can redirect people to active parts.
+> Proposed solution seemed to work with a wider range, but I admit it's not elegant.
+> Certainly interested in other peoples ideas.
 > 
->  drivers/staging/iio/cdc/Kconfig  |  10 -
->  drivers/staging/iio/cdc/Makefile |   1 -
->  drivers/staging/iio/cdc/ad7152.c | 552 -------------------------------
->  3 files changed, 563 deletions(-)
->  delete mode 100644 drivers/staging/iio/cdc/ad7152.c
+> My alternative thought was to introduce a new type that returns the scale
+> as a rational. eg: return string like
+> scale_rational = 2500/4294967296
 > 
-> diff --git a/drivers/staging/iio/cdc/Kconfig b/drivers/staging/iio/cdc/Kconfig
-> index 80211df8c577..b97478e7cbd0 100644
-> --- a/drivers/staging/iio/cdc/Kconfig
-> +++ b/drivers/staging/iio/cdc/Kconfig
-> @@ -13,16 +13,6 @@ config AD7150
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called ad7150.
->  
-> -config AD7152
-> -	tristate "Analog Devices ad7152/3 capacitive sensor driver"
-> -	depends on I2C
-> -	help
-> -	  Say yes here to build support for Analog Devices capacitive sensors.
-> -	  (ad7152, ad7153) Provides direct access via sysfs.
-> -
-> -	  To compile this driver as a module, choose M here: the
-> -	  module will be called ad7152.
-> -
->  config AD7746
->  	tristate "Analog Devices AD7745, AD7746 AD7747 capacitive sensor driver"
->  	depends on I2C
-> diff --git a/drivers/staging/iio/cdc/Makefile b/drivers/staging/iio/cdc/Makefile
-> index a5fbabf5c8bf..1466bc31f244 100644
-> --- a/drivers/staging/iio/cdc/Makefile
-> +++ b/drivers/staging/iio/cdc/Makefile
-> @@ -3,5 +3,4 @@
->  #
->  
->  obj-$(CONFIG_AD7150) += ad7150.o
-> -obj-$(CONFIG_AD7152) += ad7152.o
->  obj-$(CONFIG_AD7746) += ad7746.o
-> diff --git a/drivers/staging/iio/cdc/ad7152.c b/drivers/staging/iio/cdc/ad7152.c
-> deleted file mode 100644
-> index 25f51db05d2d..000000000000
-> --- a/drivers/staging/iio/cdc/ad7152.c
-> +++ /dev/null
-> @@ -1,552 +0,0 @@
-> -/*
-> - * AD7152 capacitive sensor driver supporting AD7152/3
-> - *
-> - * Copyright 2010-2011a Analog Devices Inc.
-> - *
-> - * Licensed under the GPL-2 or later.
-> - */
-> -
-> -#include <linux/interrupt.h>
-> -#include <linux/device.h>
-> -#include <linux/kernel.h>
-> -#include <linux/slab.h>
-> -#include <linux/sysfs.h>
-> -#include <linux/i2c.h>
-> -#include <linux/module.h>
-> -#include <linux/delay.h>
-> -
-> -#include <linux/iio/iio.h>
-> -#include <linux/iio/sysfs.h>
-> -
-> -/*
-> - * TODO: Check compliance of calibbias with abi (units)
-> - */
-> -/*
-> - * AD7152 registers definition
-> - */
-> -
-> -#define AD7152_REG_STATUS		0
-> -#define AD7152_REG_CH1_DATA_HIGH	1
-> -#define AD7152_REG_CH2_DATA_HIGH	3
-> -#define AD7152_REG_CH1_OFFS_HIGH	5
-> -#define AD7152_REG_CH2_OFFS_HIGH	7
-> -#define AD7152_REG_CH1_GAIN_HIGH	9
-> -#define AD7152_REG_CH1_SETUP		11
-> -#define AD7152_REG_CH2_GAIN_HIGH	12
-> -#define AD7152_REG_CH2_SETUP		14
-> -#define AD7152_REG_CFG			15
-> -#define AD7152_REG_RESEVERD		16
-> -#define AD7152_REG_CAPDAC_POS		17
-> -#define AD7152_REG_CAPDAC_NEG		18
-> -#define AD7152_REG_CFG2			26
-> -
-> -/* Status Register Bit Designations (AD7152_REG_STATUS) */
-> -#define AD7152_STATUS_RDY1		BIT(0)
-> -#define AD7152_STATUS_RDY2		BIT(1)
-> -#define AD7152_STATUS_C1C2		BIT(2)
-> -#define AD7152_STATUS_PWDN		BIT(7)
-> -
-> -/* Setup Register Bit Designations (AD7152_REG_CHx_SETUP) */
-> -#define AD7152_SETUP_CAPDIFF		BIT(5)
-> -#define AD7152_SETUP_RANGE_2pF		(0 << 6)
-> -#define AD7152_SETUP_RANGE_0_5pF	(1 << 6)
-> -#define AD7152_SETUP_RANGE_1pF		(2 << 6)
-> -#define AD7152_SETUP_RANGE_4pF		(3 << 6)
-> -#define AD7152_SETUP_RANGE(x)		((x) << 6)
-> -
-> -/* Config Register Bit Designations (AD7152_REG_CFG) */
-> -#define AD7152_CONF_CH2EN		BIT(3)
-> -#define AD7152_CONF_CH1EN		BIT(4)
-> -#define AD7152_CONF_MODE_IDLE		(0 << 0)
-> -#define AD7152_CONF_MODE_CONT_CONV	(1 << 0)
-> -#define AD7152_CONF_MODE_SINGLE_CONV	(2 << 0)
-> -#define AD7152_CONF_MODE_OFFS_CAL	(5 << 0)
-> -#define AD7152_CONF_MODE_GAIN_CAL	(6 << 0)
-> -
-> -/* Capdac Register Bit Designations (AD7152_REG_CAPDAC_XXX) */
-> -#define AD7152_CAPDAC_DACEN		BIT(7)
-> -#define AD7152_CAPDAC_DACP(x)		((x) & 0x1F)
-> -
-> -/* CFG2 Register Bit Designations (AD7152_REG_CFG2) */
-> -#define AD7152_CFG2_OSR(x)		(((x) & 0x3) << 4)
-> -
-> -enum {
-> -	AD7152_DATA,
-> -	AD7152_OFFS,
-> -	AD7152_GAIN,
-> -	AD7152_SETUP
-> -};
-> -
-> -/*
-> - * struct ad7152_chip_info - chip specific information
-> - */
-> -
-> -struct ad7152_chip_info {
-> -	struct i2c_client *client;
-> -	/*
-> -	 * Capacitive channel digital filter setup;
-> -	 * conversion time/update rate setup per channel
-> -	 */
-> -	u8	filter_rate_setup;
-> -	u8	setup[2];
-> -	struct mutex state_lock;	/* protect hardware state */
-> -};
-> -
-> -static inline ssize_t ad7152_start_calib(struct device *dev,
-> -					 struct device_attribute *attr,
-> -					 const char *buf,
-> -					 size_t len,
-> -					 u8 regval)
-> -{
-> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> -	struct ad7152_chip_info *chip = iio_priv(indio_dev);
-> -	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-> -	bool doit;
-> -	int ret, timeout = 10;
-> -
-> -	ret = strtobool(buf, &doit);
-> -	if (ret < 0)
-> -		return ret;
-> -
-> -	if (!doit)
-> -		return 0;
-> -
-> -	if (this_attr->address == 0)
-> -		regval |= AD7152_CONF_CH1EN;
-> -	else
-> -		regval |= AD7152_CONF_CH2EN;
-> -
-> -	mutex_lock(&chip->state_lock);
-> -	ret = i2c_smbus_write_byte_data(chip->client, AD7152_REG_CFG, regval);
-> -	if (ret < 0)
-> -		goto unlock;
-> -
-> -	do {
-> -		mdelay(20);
-> -		ret = i2c_smbus_read_byte_data(chip->client, AD7152_REG_CFG);
-> -		if (ret < 0)
-> -			goto unlock;
-> -
-> -	} while ((ret == regval) && timeout--);
-> -
-> -	mutex_unlock(&chip->state_lock);
-> -	return len;
-> -
-> -unlock:
-> -	mutex_unlock(&chip->state_lock);
-> -	return ret;
-> -}
-> -
-> -static ssize_t ad7152_start_offset_calib(struct device *dev,
-> -					 struct device_attribute *attr,
-> -					 const char *buf,
-> -					 size_t len)
-> -{
-> -	return ad7152_start_calib(dev, attr, buf, len,
-> -				  AD7152_CONF_MODE_OFFS_CAL);
-> -}
-> -
-> -static ssize_t ad7152_start_gain_calib(struct device *dev,
-> -				       struct device_attribute *attr,
-> -				       const char *buf,
-> -				       size_t len)
-> -{
-> -	return ad7152_start_calib(dev, attr, buf, len,
-> -				  AD7152_CONF_MODE_GAIN_CAL);
-> -}
-> -
-> -static IIO_DEVICE_ATTR(in_capacitance0_calibbias_calibration,
-> -		       0200, NULL, ad7152_start_offset_calib, 0);
-> -static IIO_DEVICE_ATTR(in_capacitance1_calibbias_calibration,
-> -		       0200, NULL, ad7152_start_offset_calib, 1);
-> -static IIO_DEVICE_ATTR(in_capacitance0_calibscale_calibration,
-> -		       0200, NULL, ad7152_start_gain_calib, 0);
-> -static IIO_DEVICE_ATTR(in_capacitance1_calibscale_calibration,
-> -		       0200, NULL, ad7152_start_gain_calib, 1);
-> -
-> -/* Values are Update Rate (Hz), Conversion Time (ms) + 1*/
-> -static const unsigned char ad7152_filter_rate_table[][2] = {
-> -	{200, 5 + 1}, {50, 20 + 1}, {20, 50 + 1}, {17, 60 + 1},
-> -};
-> -
-> -static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("200 50 20 17");
-> -
-> -static IIO_CONST_ATTR(in_capacitance_scale_available,
-> -		      "0.000061050 0.000030525 0.000015263 0.000007631");
-> -
-> -static struct attribute *ad7152_attributes[] = {
-> -	&iio_dev_attr_in_capacitance0_calibbias_calibration.dev_attr.attr,
-> -	&iio_dev_attr_in_capacitance1_calibbias_calibration.dev_attr.attr,
-> -	&iio_dev_attr_in_capacitance0_calibscale_calibration.dev_attr.attr,
-> -	&iio_dev_attr_in_capacitance1_calibscale_calibration.dev_attr.attr,
-> -	&iio_const_attr_in_capacitance_scale_available.dev_attr.attr,
-> -	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-> -	NULL,
-> -};
-> -
-> -static const struct attribute_group ad7152_attribute_group = {
-> -	.attrs = ad7152_attributes,
-> -};
-> -
-> -static const u8 ad7152_addresses[][4] = {
-> -	{ AD7152_REG_CH1_DATA_HIGH, AD7152_REG_CH1_OFFS_HIGH,
-> -	  AD7152_REG_CH1_GAIN_HIGH, AD7152_REG_CH1_SETUP },
-> -	{ AD7152_REG_CH2_DATA_HIGH, AD7152_REG_CH2_OFFS_HIGH,
-> -	  AD7152_REG_CH2_GAIN_HIGH, AD7152_REG_CH2_SETUP },
-> -};
-> -
-> -/* Values are nano relative to pf base. */
-> -static const int ad7152_scale_table[] = {
-> -	30525, 7631, 15263, 61050
-> -};
-> -
-> -/**
-> - * read_raw handler for IIO_CHAN_INFO_SAMP_FREQ
-> - *
-> - * lock must be held
-> - **/
-> -static int ad7152_read_raw_samp_freq(struct device *dev, int *val)
-> -{
-> -	struct ad7152_chip_info *chip = iio_priv(dev_to_iio_dev(dev));
-> -
-> -	*val = ad7152_filter_rate_table[chip->filter_rate_setup][0];
-> -
-> -	return 0;
-> -}
-> -
-> -/**
-> - * write_raw handler for IIO_CHAN_INFO_SAMP_FREQ
-> - *
-> - * lock must be held
-> - **/
-> -static int ad7152_write_raw_samp_freq(struct device *dev, int val)
-> -{
-> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> -	struct ad7152_chip_info *chip = iio_priv(indio_dev);
-> -	int ret, i;
-> -
-> -	for (i = 0; i < ARRAY_SIZE(ad7152_filter_rate_table); i++)
-> -		if (val >= ad7152_filter_rate_table[i][0])
-> -			break;
-> -
-> -	if (i >= ARRAY_SIZE(ad7152_filter_rate_table))
-> -		i = ARRAY_SIZE(ad7152_filter_rate_table) - 1;
-> -
-> -	ret = i2c_smbus_write_byte_data(chip->client,
-> -					AD7152_REG_CFG2, AD7152_CFG2_OSR(i));
-> -	if (ret < 0)
-> -		return ret;
-> -
-> -	chip->filter_rate_setup = i;
-> -
-> -	return ret;
-> -}
-> -
-> -static int ad7152_write_raw(struct iio_dev *indio_dev,
-> -			    struct iio_chan_spec const *chan,
-> -			    int val,
-> -			    int val2,
-> -			    long mask)
-> -{
-> -	struct ad7152_chip_info *chip = iio_priv(indio_dev);
-> -	int ret, i;
-> -
-> -	mutex_lock(&chip->state_lock);
-> -
-> -	switch (mask) {
-> -	case IIO_CHAN_INFO_CALIBSCALE:
-> -		if (val != 1) {
-> -			ret = -EINVAL;
-> -			goto out;
-> -		}
-> -
-> -		val = (val2 * 1024) / 15625;
-> -
-> -		ret = i2c_smbus_write_word_data(chip->client,
-> -				ad7152_addresses[chan->channel][AD7152_GAIN],
-> -				swab16(val));
-> -		if (ret < 0)
-> -			goto out;
-> -
-> -		ret = 0;
-> -		break;
-> -
-> -	case IIO_CHAN_INFO_CALIBBIAS:
-> -		if ((val < 0) | (val > 0xFFFF)) {
-> -			ret = -EINVAL;
-> -			goto out;
-> -		}
-> -		ret = i2c_smbus_write_word_data(chip->client,
-> -				ad7152_addresses[chan->channel][AD7152_OFFS],
-> -				swab16(val));
-> -		if (ret < 0)
-> -			goto out;
-> -
-> -		ret = 0;
-> -		break;
-> -	case IIO_CHAN_INFO_SCALE:
-> -		if (val) {
-> -			ret = -EINVAL;
-> -			goto out;
-> -		}
-> -		for (i = 0; i < ARRAY_SIZE(ad7152_scale_table); i++)
-> -			if (val2 == ad7152_scale_table[i])
-> -				break;
-> -
-> -		chip->setup[chan->channel] &= ~AD7152_SETUP_RANGE_4pF;
-> -		chip->setup[chan->channel] |= AD7152_SETUP_RANGE(i);
-> -
-> -		ret = i2c_smbus_write_byte_data(chip->client,
-> -				ad7152_addresses[chan->channel][AD7152_SETUP],
-> -				chip->setup[chan->channel]);
-> -		if (ret < 0)
-> -			goto out;
-> -
-> -		ret = 0;
-> -		break;
-> -	case IIO_CHAN_INFO_SAMP_FREQ:
-> -		if (val2) {
-> -			ret = -EINVAL;
-> -			goto out;
-> -		}
-> -		ret = ad7152_write_raw_samp_freq(&indio_dev->dev, val);
-> -		if (ret < 0)
-> -			goto out;
-> -
-> -		ret = 0;
-> -		break;
-> -	default:
-> -		ret = -EINVAL;
-> -	}
-> -
-> -out:
-> -	mutex_unlock(&chip->state_lock);
-> -	return ret;
-> -}
-> -
-> -static int ad7152_read_raw(struct iio_dev *indio_dev,
-> -			   struct iio_chan_spec const *chan,
-> -			   int *val, int *val2,
-> -			   long mask)
-> -{
-> -	struct ad7152_chip_info *chip = iio_priv(indio_dev);
-> -	int ret;
-> -	u8 regval = 0;
-> -
-> -	mutex_lock(&chip->state_lock);
-> -
-> -	switch (mask) {
-> -	case IIO_CHAN_INFO_RAW:
-> -		/* First set whether in differential mode */
-> -
-> -		regval = chip->setup[chan->channel];
-> -
-> -		if (chan->differential)
-> -			chip->setup[chan->channel] |= AD7152_SETUP_CAPDIFF;
-> -		else
-> -			chip->setup[chan->channel] &= ~AD7152_SETUP_CAPDIFF;
-> -
-> -		if (regval != chip->setup[chan->channel]) {
-> -			ret = i2c_smbus_write_byte_data(chip->client,
-> -				ad7152_addresses[chan->channel][AD7152_SETUP],
-> -				chip->setup[chan->channel]);
-> -			if (ret < 0)
-> -				goto out;
-> -		}
-> -		/* Make sure the channel is enabled */
-> -		if (chan->channel == 0)
-> -			regval = AD7152_CONF_CH1EN;
-> -		else
-> -			regval = AD7152_CONF_CH2EN;
-> -
-> -		/* Trigger a single read */
-> -		regval |= AD7152_CONF_MODE_SINGLE_CONV;
-> -		ret = i2c_smbus_write_byte_data(chip->client, AD7152_REG_CFG,
-> -				regval);
-> -		if (ret < 0)
-> -			goto out;
-> -
-> -		msleep(ad7152_filter_rate_table[chip->filter_rate_setup][1]);
-> -		/* Now read the actual register */
-> -		ret = i2c_smbus_read_word_data(chip->client,
-> -				ad7152_addresses[chan->channel][AD7152_DATA]);
-> -		if (ret < 0)
-> -			goto out;
-> -		*val = swab16(ret);
-> -
-> -		if (chan->differential)
-> -			*val -= 0x8000;
-> -
-> -		ret = IIO_VAL_INT;
-> -		break;
-> -	case IIO_CHAN_INFO_CALIBSCALE:
-> -
-> -		ret = i2c_smbus_read_word_data(chip->client,
-> -				ad7152_addresses[chan->channel][AD7152_GAIN]);
-> -		if (ret < 0)
-> -			goto out;
-> -		/* 1 + gain_val / 2^16 */
-> -		*val = 1;
-> -		*val2 = (15625 * swab16(ret)) / 1024;
-> -
-> -		ret = IIO_VAL_INT_PLUS_MICRO;
-> -		break;
-> -	case IIO_CHAN_INFO_CALIBBIAS:
-> -		ret = i2c_smbus_read_word_data(chip->client,
-> -				ad7152_addresses[chan->channel][AD7152_OFFS]);
-> -		if (ret < 0)
-> -			goto out;
-> -		*val = swab16(ret);
-> -
-> -		ret = IIO_VAL_INT;
-> -		break;
-> -	case IIO_CHAN_INFO_SCALE:
-> -		ret = i2c_smbus_read_byte_data(chip->client,
-> -				ad7152_addresses[chan->channel][AD7152_SETUP]);
-> -		if (ret < 0)
-> -			goto out;
-> -		*val = 0;
-> -		*val2 = ad7152_scale_table[ret >> 6];
-> -
-> -		ret = IIO_VAL_INT_PLUS_NANO;
-> -		break;
-> -	case IIO_CHAN_INFO_SAMP_FREQ:
-> -		ret = ad7152_read_raw_samp_freq(&indio_dev->dev, val);
-> -		if (ret < 0)
-> -			goto out;
-> -
-> -		ret = IIO_VAL_INT;
-> -		break;
-> -	default:
-> -		ret = -EINVAL;
-> -	}
-> -out:
-> -	mutex_unlock(&chip->state_lock);
-> -	return ret;
-> -}
-> -
-> -static int ad7152_write_raw_get_fmt(struct iio_dev *indio_dev,
-> -				    struct iio_chan_spec const *chan,
-> -				    long mask)
-> -{
-> -	switch (mask) {
-> -	case IIO_CHAN_INFO_SCALE:
-> -		return IIO_VAL_INT_PLUS_NANO;
-> -	default:
-> -		return IIO_VAL_INT_PLUS_MICRO;
-> -	}
-> -}
-> -
-> -static const struct iio_info ad7152_info = {
-> -	.attrs = &ad7152_attribute_group,
-> -	.read_raw = ad7152_read_raw,
-> -	.write_raw = ad7152_write_raw,
-> -	.write_raw_get_fmt = ad7152_write_raw_get_fmt,
-> -};
-> -
-> -static const struct iio_chan_spec ad7152_channels[] = {
-> -	{
-> -		.type = IIO_CAPACITANCE,
-> -		.indexed = 1,
-> -		.channel = 0,
-> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> -		BIT(IIO_CHAN_INFO_CALIBSCALE) |
-> -		BIT(IIO_CHAN_INFO_CALIBBIAS) |
-> -		BIT(IIO_CHAN_INFO_SCALE),
-> -		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-> -	}, {
-> -		.type = IIO_CAPACITANCE,
-> -		.differential = 1,
-> -		.indexed = 1,
-> -		.channel = 0,
-> -		.channel2 = 2,
-> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> -		BIT(IIO_CHAN_INFO_CALIBSCALE) |
-> -		BIT(IIO_CHAN_INFO_CALIBBIAS) |
-> -		BIT(IIO_CHAN_INFO_SCALE),
-> -		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-> -	}, {
-> -		.type = IIO_CAPACITANCE,
-> -		.indexed = 1,
-> -		.channel = 1,
-> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> -		BIT(IIO_CHAN_INFO_CALIBSCALE) |
-> -		BIT(IIO_CHAN_INFO_CALIBBIAS) |
-> -		BIT(IIO_CHAN_INFO_SCALE),
-> -		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-> -	}, {
-> -		.type = IIO_CAPACITANCE,
-> -		.differential = 1,
-> -		.indexed = 1,
-> -		.channel = 1,
-> -		.channel2 = 3,
-> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> -		BIT(IIO_CHAN_INFO_CALIBSCALE) |
-> -		BIT(IIO_CHAN_INFO_CALIBBIAS) |
-> -		BIT(IIO_CHAN_INFO_SCALE),
-> -		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-> -	}
-> -};
-> -
-> -/*
-> - * device probe and remove
-> - */
-> -
-> -static int ad7152_probe(struct i2c_client *client,
-> -			const struct i2c_device_id *id)
-> -{
-> -	int ret = 0;
-> -	struct ad7152_chip_info *chip;
-> -	struct iio_dev *indio_dev;
-> -
-> -	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
-> -	if (!indio_dev)
-> -		return -ENOMEM;
-> -	chip = iio_priv(indio_dev);
-> -	/* this is only used for device removal purposes */
-> -	i2c_set_clientdata(client, indio_dev);
-> -
-> -	chip->client = client;
-> -	mutex_init(&chip->state_lock);
-> -
-> -	/* Establish that the iio_dev is a child of the i2c device */
-> -	indio_dev->name = id->name;
-> -	indio_dev->dev.parent = &client->dev;
-> -	indio_dev->info = &ad7152_info;
-> -	indio_dev->channels = ad7152_channels;
-> -	if (id->driver_data == 0)
-> -		indio_dev->num_channels = ARRAY_SIZE(ad7152_channels);
-> -	else
-> -		indio_dev->num_channels = 2;
-> -	indio_dev->num_channels = ARRAY_SIZE(ad7152_channels);
-> -	indio_dev->modes = INDIO_DIRECT_MODE;
-> -
-> -	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
-> -	if (ret)
-> -		return ret;
-> -
-> -	dev_err(&client->dev, "%s capacitive sensor registered\n", id->name);
-> -
-> -	return 0;
-> -}
-> -
-> -static const struct i2c_device_id ad7152_id[] = {
-> -	{ "ad7152", 0 },
-> -	{ "ad7153", 1 },
-> -	{}
-> -};
-> -
-> -MODULE_DEVICE_TABLE(i2c, ad7152_id);
-> -
-> -static struct i2c_driver ad7152_driver = {
-> -	.driver = {
-> -		.name = KBUILD_MODNAME,
-> -	},
-> -	.probe = ad7152_probe,
-> -	.id_table = ad7152_id,
-> -};
-> -module_i2c_driver(ad7152_driver);
-> -
-> -MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");
-> -MODULE_DESCRIPTION("Analog Devices AD7152/3 capacitive sensor driver");
-> -MODULE_LICENSE("GPL v2");
+> But that'd require existing user space to become aware of the new format.
+> 
+> 
+> > 
+> > But in any case, what would be interesting now, is to extend the IIO
+> > core logic to provide [somehow] a precision number, default being 9.
+> > This could probably be specified on per-channel basis [somehow],
+> > similar to other channel params.
+> > 
+> > So, for example in the default case, if you have "uint32_t precision =
+> > 9", you would have the same behavior, with something like
+> > 
+> >        tmp = div_s64((s64)vals[0] * pow_of_10(precision), vals[1]);
+> >        tmp1 = vals[1];
+> >        tmp0 = (int)div_s64_rem(tmp, pow_of_10(precision), &tmp1);
+> >        return snprintf(buf, len, "%d.%" precision "u", tmp0, abs(tmp1));
+> > 
+> > Obviously, the above code is just pseudo-code, where pow_of_10()
+> > multiplies 10 a "precision" number of times, and the snprintf() would
+> > need a temporary buffer to create a format string, which then would be
+> > used.  
+> 
+> Good idea to have some kind of overide, I'll have a look
+> 
+> > 
+> > Thanks
+> > Alex
+> >   
+> >>          case IIO_VAL_FRACTIONAL_LOG2:
+> >> -               tmp = shift_right((s64)vals[0] * 1000000000LL, vals[1]);
+> >> -               tmp0 = (int)div_s64_rem(tmp, 1000000000LL, &tmp1);
+> >> -               return snprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
+> >> +               return __iio_format_div_prec(buf, len, vals[0], 1 << vals[1]);
+> >>          case IIO_VAL_INT_MULTIPLE:
+> >>          {
+> >>                  int i;
+> >> --
+> >> 1.8.3.1
+> >>  
+> > 
+> >   
+> 
+> 
 
 
