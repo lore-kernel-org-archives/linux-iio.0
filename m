@@ -2,179 +2,106 @@ Return-Path: <SRS0=jBoM=QI=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-3.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_NEOMUTT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12CADC282D8
-	for <linux-iio@archiver.kernel.org>; Fri,  1 Feb 2019 17:11:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33D42C282D8
+	for <linux-iio@archiver.kernel.org>; Fri,  1 Feb 2019 17:55:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D1FF12086C
-	for <linux-iio@archiver.kernel.org>; Fri,  1 Feb 2019 17:11:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 02AD3218AC
+	for <linux-iio@archiver.kernel.org>; Fri,  1 Feb 2019 17:55:24 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BHgt6g/4"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="W96qr3HU"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729722AbfBARLA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 1 Feb 2019 12:11:00 -0500
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:41087 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726542AbfBARLA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 1 Feb 2019 12:11:00 -0500
-Received: by mail-lf1-f65.google.com with SMTP id c16so5582799lfj.8;
-        Fri, 01 Feb 2019 09:10:57 -0800 (PST)
+        id S1729984AbfBARzX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 1 Feb 2019 12:55:23 -0500
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:41629 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726639AbfBARzX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 1 Feb 2019 12:55:23 -0500
+Received: by mail-qk1-f194.google.com with SMTP id m66so1191836qke.8;
+        Fri, 01 Feb 2019 09:55:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=+k3jBZgOiGWsF48btTSWXSYXJ6qIP2mZUeP7Mb1/fuc=;
-        b=BHgt6g/4qemIHI4eGucVTMY62de9Da2ZpTfwhHmlZbDrNRUztIxGxlqztqjBWHy7zt
-         nGSesxYwDnvPSZ3s8kAoQYB3t6ojl7kKbwUbclBo7Aflfhxq3gS/le4JxliJ4XWjrBj8
-         i6muAk2TnS1E9qGbU9xXJz1TWNJW8/TGClJKkK52++AwR3hXUNcSvjQSxFQB090wQFXc
-         3UhafhOy240mpXAza1iApWbpyDuuBNgXleVFZZxDIy61O9oZJk9CR54SIV29gB+0TNhr
-         DIik5Y/BIOCWElBZJUZuV1eqKhD8+AAl5hf7n6y9RUspce6lVUv9RPWHxhFbEySSRHmF
-         FogQ==
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=mJ7jNsfeOz0MY1JlVhpOEDzDLyvdTgVqAvz5ywe12Ok=;
+        b=W96qr3HU5wW7Gw0J5ArhtS6msR9h5pTpwtfiZH5exkuHqLZusdeI68H84nUlwzCF76
+         XQO7Ib8p3RTGxOfTqzvJFKkt9d/tiPmoQLkkC24s7XD18CasxH6Az6TOLMTwv7VRBFg3
+         8GQamZZL+mV7AGr3GbLypiD0Q76R/lIJCqvu4VZTbU2Lf4zgdTzI0cY82ZuGqtZal5PR
+         1Ckkps1mIt5C3FC12dALcT4OmkjPdm85GiSiar1ztt94tj9I2eYcu3jPDbpYr3Pb+Vvh
+         TrbFclFzeTEB49tDjjHIuon5mN25HYjV4jgse7aXU6r4KSkfoMlHOgUD9t/m+UKXLbMk
+         8v/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=+k3jBZgOiGWsF48btTSWXSYXJ6qIP2mZUeP7Mb1/fuc=;
-        b=UGZwjF936/ATp4GVOvgIpskkw7fCdEf88GPVDZYk4kZEdb1b3GF8SrgmUVIhe9Yz0Y
-         lVyXPkz753AnWqqXReC+QgAW24Fsj68A1gXroK6lg7u94lNWlWxKSRpYUm5oMO/7NVFJ
-         H2wc1SYtwwtZunCMIsMW8v3lWuWfat3wsERlcew7vKiDj86K1jDiM9hhFWOcnpFZAmwy
-         Vfn5vWTYa0aMbbx74/jC+UPGmgKq+KZUJL72qHWARLotd+2TK5mldlai3eIu7u0L8+G9
-         rgMqezbbWV/hN35ZSxYiFSx+D8aK0gzFdeJeDwOvCr/Vz5gnl/p21taTsPdooVOvAh7S
-         tluw==
-X-Gm-Message-State: AJcUukd5yumfAbrTVT9AsnuIRgnNsuQUM90dJgvtBXerMUI0JxmBjx/k
-        lmPHkTPUjHqdrQCGUszy8UU=
-X-Google-Smtp-Source: ALg8bN5RU3bHhIwNeAtKl70JvFGVfXKbQ/+wq7pmm7t8cwgMIeWzGatN5KKtlyRQcDFClmfxzprW4w==
-X-Received: by 2002:a19:2c44:: with SMTP id s65mr33556653lfs.41.1549041056811;
-        Fri, 01 Feb 2019 09:10:56 -0800 (PST)
-Received: from localhost (89-70-37-207.dynamic.chello.pl. [89.70.37.207])
-        by smtp.gmail.com with ESMTPSA id h22sm815570lfc.12.2019.02.01.09.10.55
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=mJ7jNsfeOz0MY1JlVhpOEDzDLyvdTgVqAvz5ywe12Ok=;
+        b=hUgRQMC3K/GsFdslNZpPGh2afjK7t16Gl/rqO+yQdm/PxVdmbdRO5PNfnfdUgfnx6u
+         oRL9JU635omjGbVn9pkSbuUPPgKklJmsZll5U536BzukO2nbTJ2Exf9xg9Vay0Rke+OX
+         6O28uecLnTWtGzk7orZCbDKsHgd/3LM9KsvD0mBcZgT5pyPtE6MD1WtBjZKv2eY2fPDS
+         gKxX9qfN63Uj4Dn0n1A0LrUICqhiUQ1kwrtYtBYPy4AP5YCEXK3agVlWMG/FiJx8rUdx
+         Vkt9WTlwMu3TUfq1MebPIS/q84JhR+T34+I3knEd3fECJyWoiAUVWFnLnYtlkggW8VtK
+         3JDw==
+X-Gm-Message-State: AHQUAuZvooVdRoh5W7q9t+sgmb0oCjvhVpxDGqTBhqycgttIONxS7Xr2
+        w9+bKGnaLLxrOI3EGYbq19c=
+X-Google-Smtp-Source: AHgI3Ibl+gBuRsqRz5uuAOi2ssX6eRVHqugag++ARzCNolT38qaL2L6ilseAf42t/Cl1TXWeZkntSA==
+X-Received: by 2002:ae9:e90e:: with SMTP id x14mr3740603qkf.242.1549043721829;
+        Fri, 01 Feb 2019 09:55:21 -0800 (PST)
+Received: from renatolg ([191.180.131.98])
+        by smtp.gmail.com with ESMTPSA id k62sm6133035qte.86.2019.02.01.09.55.18
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 01 Feb 2019 09:10:56 -0800 (PST)
-Date:   Fri, 1 Feb 2019 18:10:33 +0100
-From:   Tomasz Duszynski <tduszyns@gmail.com>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Tomasz Duszynski <tduszyns@gmail.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        robh@kernel.org, jic23@jic23.retrosnub.co.uk
-Subject: Re: [PATCH v2 3/3] dt-bindings: iio: chemical: pms7003: add device
- tree support
-Message-ID: <20190201171031.GA20304@arch>
-References: <20190127181916.19948-1-tduszyns@gmail.com>
- <20190127181916.19948-4-tduszyns@gmail.com>
- <20190128075819.GK3691@localhost>
- <20190128184332.GA25627@arch>
- <20190130091254.GN3691@localhost>
- <20190131204000.GA14750@arch>
- <20190201091231.GZ3691@localhost>
+        Fri, 01 Feb 2019 09:55:21 -0800 (PST)
+From:   Renato Lui Geh <renatogeh@gmail.com>
+X-Google-Original-From: Renato Lui Geh <renatogeh@renatolg>
+Date:   Fri, 1 Feb 2019 15:55:16 -0200
+To:     "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>
+Cc:     "renatogeh@gmail.com" <renatogeh@gmail.com>,
+        "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+        "giuliano.belinassi@usp.br" <giuliano.belinassi@usp.br>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2 1/2] staging: iio: ad7780: add gain & filter gpio
+ support
+Message-ID: <20190201175514.7kerqvuln4mrhinp@renatolg>
+References: <20190127203044.yytctplecwey4an4@renatolg>
+ <1548850985.9460.23.camel@analog.com>
+ <20190201145459.ukfzo6s4rvg4c5ri@renatolg>
+ <1549036667.9460.41.camel@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20190201091231.GZ3691@localhost>
-User-Agent: Mutt/1.11.2 (2019-01-07)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1549036667.9460.41.camel@analog.com>
+User-Agent: NeoMutt/20180716
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, Feb 01, 2019 at 10:12:31AM +0100, Johan Hovold wrote:
-> On Thu, Jan 31, 2019 at 09:40:04PM +0100, Tomasz Duszynski wrote:
-> > On Wed, Jan 30, 2019 at 10:12:54AM +0100, Johan Hovold wrote:
-> > > On Mon, Jan 28, 2019 at 07:43:33PM +0100, Tomasz Duszynski wrote:
-> > > > On Mon, Jan 28, 2019 at 08:58:19AM +0100, Johan Hovold wrote:
-> > > > > On Sun, Jan 27, 2019 at 07:19:16PM +0100, Tomasz Duszynski wrote:
-> > > > > > Add device tree support for Plantower PMS7003 particulate matter sensor.
-> > > > > >
-> > > > > > Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
-> > > > > > ---
-> > > > > >  .../iio/chemical/plantower,pms7003.txt        | 19 +++++++++++++++++++
-> > > > > >  1 file changed, 19 insertions(+)
-> > > > > >  create mode 100644 Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
-> > > > > >
-> > > > > > diff --git a/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt b/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
-> > > > > > new file mode 100644
-> > > > > > index 000000000000..e4c7f2fb1e30
-> > > > > > --- /dev/null
-> > > > > > +++ b/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
-> > > > > > @@ -0,0 +1,19 @@
-> > > > > > +* Plantower PMS7003 particulate matter sensor
-> > > > > > +
-> > > > > > +Required properties:
-> > > > > > +- compatible: must be "plantower,pms7003"
-> > > > > > +
-> > > > > > +Optional properties:
-> > > > > > +- vcc-supply: phandle to the regulator that provides power to the sensor
-> > > > >
-> > > > > Shouldn't this one be a required property?
-> > > > >
-> > > >
-> > > > Driver does not use regulator framework hence to me this property fits
-> > > > here better.
-> > >
-> > > The device tree describes hardware, not any particular driver.
-> > >
-> > > That said, there is a bit of an on-going debate on whether mandatory
-> > > supplies (from a hardware perspective) should always be represented in
-> > > device tree or not.
-> > >
-> > > 	https://lore.kernel.org/lkml/20181123133126.GF2089@sirena.org.uk/T/#u
-> > >         https://lore.kernel.org/lkml/20180409102244.GB11532@sirena.org.uk/T/#u
-> > > 	https://lore.kernel.org/lkml/20180425171123.xhyoay3nu463btoq@rob-hp-laptop/T/#u
-> > >
-> >
-> > Even after going through this threads I am still unconvinced that
-> > vcc-supply should be a requirement. Making this a mandatory property
-> > would automatically imply using *_regulator_get() in a driver code
-> > (on condition one is adding regulator support). In case there
-> > isn't any physically connected we end up with a dummy one and a warning.
+On 02/01, Popa, Stefan Serban wrote:
 >
-> How would the device work at all without a physical vcc supply?
->
+>Adding support for gpios, normally doesn't have anything to do with
+>the information stored in the iio_chan_spec struct.
+>Also, we need to try to work with the already defined attributes. In your
+>case, setting the gain GPIO is equivalent to modifying the scale, while
+>setting the filter GPIO results in a change in sampling frequency.
+>Therefore, we need use a macro which has the IIO_CHAN_INFO_SCALE and
+>IIO_CHAN_INFO_FREQUENCY flags set. I think AD_SD_CHANNEL should do just
+>fine.
+>I hope this answers your question.
+>-Stefan
 
-I meant the discrete IC regulator.
-
-> > Is it how this should work?
->
-> As Mark mentioned in the threads above, you could add a fixed,
-> always-on regulator for cases where the device is always powered.
->
-> Boards failing to describe this supply would still work on Linux, but
-> would end up with a dummy regulator and a warning.
->
-
-Fair enough.
-
-> > > > > > +- set-gpios: phandle to the GPIO connected to the SET line
-> > > > > > +- reset-gpios: phandle to the GPIO connected to the RESET line
-> > > > > > +
-> > > > > > +Refer to serial/slave-device.txt for generic serial attached device bindings.
-> > > > > > +
-> > > > > > +Example:
-> > > > > > +
-> > > > > > +&uart0 {
-> > > > > > +	pms7003 {
-> > > > >
-> > > > > The node name should be generic and reflect the functionality rather
-> > > > > than model. Perhaps "pms" will do here.
-> > > >
-> > > > Agree, ideally we should have a generic dt name for this kind of sensors
-> > > > (something like air-pollution-sensor perhaps?). But unfortunately there isn't
-> > > > anything available now so I guess compatible part name should be okay
-> > > > (besides this is the type of naming commonly used in other iio bindings).
-> > >
-> > > What's wrong with particulate matter sensor ("pms")?
-> > >
-> > > Seems like a better fix than any particular model name to me at least.
-> > >
-> >
-> > Personally I would vote for a more descriptive node name, for example:
-> > particulate-matter-sensor or air-pollution-sensor or other name
-> > which clearly shows what device we are dealing with.
->
-> Spelling it out seems preferable, yes. You know the domain better than
-> I do; I only suggest you come up with a generic node name.
->
-> Johan
+It does. Thank you. :)
