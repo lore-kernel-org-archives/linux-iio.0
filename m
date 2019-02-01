@@ -2,134 +2,133 @@ Return-Path: <SRS0=jBoM=QI=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 371FAC282D8
-	for <linux-iio@archiver.kernel.org>; Fri,  1 Feb 2019 12:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCABFC282D8
+	for <linux-iio@archiver.kernel.org>; Fri,  1 Feb 2019 14:29:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0FFF221872
-	for <linux-iio@archiver.kernel.org>; Fri,  1 Feb 2019 12:42:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9D19E20863
+	for <linux-iio@archiver.kernel.org>; Fri,  1 Feb 2019 14:29:16 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lYruMBcs"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727078AbfBAMm4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 1 Feb 2019 07:42:56 -0500
-Received: from szxga07-in.huawei.com ([45.249.212.35]:48356 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726270AbfBAMm4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 1 Feb 2019 07:42:56 -0500
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id CF8F42B9F710286E4652;
-        Fri,  1 Feb 2019 20:42:54 +0800 (CST)
-Received: from localhost (10.202.226.61) by DGGEMS414-HUB.china.huawei.com
- (10.3.19.214) with Microsoft SMTP Server id 14.3.408.0; Fri, 1 Feb 2019
- 20:42:49 +0800
-Date:   Fri, 1 Feb 2019 12:42:41 +0000
-From:   Jonathan Cameron <jonathan.cameron@huawei.com>
-To:     "Bia, Beniamin" <Beniamin.Bia@analog.com>
-CC:     Beniamin Bia <biabeniamin@gmail.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 1/2] staging: iio: frequency: ad9833: Get frequency
- value statically
-Message-ID: <20190201124241.000069ae@huawei.com>
-In-Reply-To: <24EEBB4A0151D9478A8841F4BAF525137824F7@NWD2MBX7.ad.analog.com>
-References: <20190201093638.26068-1-biabeniamin@gmail.com>
-        <20190201112401.00005d16@huawei.com>
-        <24EEBB4A0151D9478A8841F4BAF525137824F7@NWD2MBX7.ad.analog.com>
-Organization: Huawei
-X-Mailer: Claws Mail 3.16.0 (GTK+ 2.24.32; i686-w64-mingw32)
+        id S1728053AbfBAO3Q (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 1 Feb 2019 09:29:16 -0500
+Received: from mail-yb1-f193.google.com ([209.85.219.193]:36650 "EHLO
+        mail-yb1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726172AbfBAO3P (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 1 Feb 2019 09:29:15 -0500
+Received: by mail-yb1-f193.google.com with SMTP id 64so2724658ybf.3;
+        Fri, 01 Feb 2019 06:29:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=41Adg7DB31aKVRgt8DbNhNlbpU9yjOns/3+6Ddh3bPY=;
+        b=lYruMBcsM5UnhhfGTGZqPkx+jYeW7F9UhX8vJf6BSLTxnuktw9xM3HpsSN5pKEI3OC
+         rxsDdE1px84mDmEc9jTXvjSvFtDXSXyJCs982INcjDoEqir3P8DFi3Avqh7DBgPe5j5w
+         0ZX1BN/YNq5pi6CIMcFcFKF+nxykMj3eEXB4l9f9oCeP5CRBfTY6hcEKy6ueP0XSV4Fy
+         tpKPqa31m2yM5sAhk80+sA9BTJdsWEL1TvELBhv/6seTmIfuYa1Rd+W8ZBYawF2YoZRc
+         gVK4HqSnLyIQ6XViUUNIr5PYiHZkwEVK6mNB5JJLaMYCLxxh4Y9ZolghgjD8LWDdb2ic
+         vOKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=41Adg7DB31aKVRgt8DbNhNlbpU9yjOns/3+6Ddh3bPY=;
+        b=prJXUKZDs8egHkQASqf+7vus6bgrWn4JtOzOvlm1El1btTnu8PBGb/oJvToFNQjnfq
+         +jx8sCCT5rKe97jqPce3wE0jefiXyUGI7gYNYD1ZUEoW5OTxI6YLjhXEV8YB9Cfhp8PY
+         wVldBop5v87HzTAtyeNiPs8ENniolPM0cbn+RrQAtzxFPQqxE9Z+xOfItVMBelKWgTBB
+         9bLtoUqkncXv+l+TgZztwk+LHbGfT+zWqqwFApqbmj22iRwtp8RtNZmPrIThF8iAHUFD
+         TxBmjNjo7Sn88h3Zj5VbxmCNNjvMS32L5A5hkrroIN7ysRJh5teNsSSlsvb3UJJUZBL4
+         kQ8g==
+X-Gm-Message-State: AHQUAubgnc1xMkUF8BdgS9yYEBcoYuG/Srbj+DrhtZr0mBIEHVUwVgZH
+        9YyKuwuCRaNYfldijof5U3FcD5vs2is=
+X-Google-Smtp-Source: AHgI3IZa2/dj4MKAvHhDmqTGFCyCXjPHCAoSRAd2FgzAWnlT1Mx0a2KiKHPiz7UcqKYRJO/ifSXjnQ==
+X-Received: by 2002:a25:d896:: with SMTP id p144mr25585042ybg.225.1549031354829;
+        Fri, 01 Feb 2019 06:29:14 -0800 (PST)
+Received: from [192.168.100.2] ([187.38.229.162])
+        by smtp.gmail.com with ESMTPSA id z186sm2608936ywd.107.2019.02.01.06.29.12
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 01 Feb 2019 06:29:14 -0800 (PST)
+Subject: Re: [PATCH] iio:potentiostat:lmp91000: solve codestyle WARNINGs and
+ CHECKs
+To:     Joe Perches <joe@perches.com>, jic23@kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-usp@googlegroups.com,
+        Anderson Reis <andersonreisrosa@gmail.com>
+References: <20190129183656.15656-1-lucasseikioshiro@gmail.com>
+ <a8ae5209f676171a97cae7211411e7ced3ebefbc.camel@perches.com>
+From:   LSO <lucasseikioshiro@gmail.com>
+Message-ID: <d2c70e04-f20c-6847-9740-d883c327c55f@gmail.com>
+Date:   Fri, 1 Feb 2019 12:29:11 -0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
+In-Reply-To: <a8ae5209f676171a97cae7211411e7ced3ebefbc.camel@perches.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.61]
-X-CFilter-Loop: Reflected
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 1 Feb 2019 12:25:29 +0000
-"Bia, Beniamin" <Beniamin.Bia@analog.com> wrote:
+Thanks for the review!
 
-> The mclk is loaded from device tree in the next patch. This was just a intermediate step.
-> But what should i do with the rest of the fields?
-> Frequency and phase are the default configuration of the device and they don't belong in device tree.
-> They could also be modified from sysfs.
-> Should i remove the struct and write directly the value in probe function?
+On 29/01/2019 20:48, Joe Perches wrote:
+> On Tue, 2019-01-29 at 16:36 -0200, Lucas Oshiro wrote:
+>> Solve most of the checkpatch.pl WARNINGs and CHECKs on lmp9100.c. They
+>> are the following:
+>>
+>> lmp91000.c:116: CHECK: Unnecessary parentheses around 'state != channel'
+>> lmp91000.c:116: CHECK: Unnecessary parentheses around 'channel == LMP91000_REG_MODECN_TEMP'
+>> lmp91000.c:214: CHECK: braces {} should be used on all arms of this statement
+>> lmp91000.c:216: CHECK: Unbalanced braces around else statement
+>> lmp91000.c:258: WARNING: line over 80 characters
+>> lmp91000.c:279: CHECK: Please don't use multiple blank lines
+> 
+> Some will say this is too many things to do at once.
+> I think it's mostly fine, but there are a few nits
+> that also could use fixing.
+> 
+>> diff --git a/drivers/iio/potentiostat/lmp91000.c b/drivers/iio/potentiostat/lmp91000.c
+> []
+>> @@ -211,9 +211,9 @@ static int lmp91000_read_config(struct lmp91000_data *data)
+>>   
+>>   	ret = of_property_read_u32(np, "ti,tia-gain-ohm", &val);
+>>   	if (ret) {
+>> -		if (of_property_read_bool(np, "ti,external-tia-resistor"))
+>> +		if (of_property_read_bool(np, "ti,external-tia-resistor")) {
+>>   			val = 0;
+>> -		else {
+>> +		} else {
+>>   			dev_err(dev, "no ti,tia-gain-ohm defined");
+>>   			return ret;
+>>   		}
+> 
+> This could use inverting the test
+> 
+> 	if (ret) {
+> 		if (!of_property_read_bool(...)) {
+> 			dev_err(dev, "no ti,ti-gain-ohm defined\n");
+> 			return ret;
+> 		}
+> 		val = 0;
+> 	}
+>
+Thanks for the suggestion, I'll do that in the next version.
 
-Yes, that would make sense.
+> Also the dev_err is missing a '\n' termination
 
-Jonathan
-
-> 
-> Ben
-> ________________________________________
-> From: Jonathan Cameron [jonathan.cameron@huawei.com]
-> Sent: Friday, February 01, 2019 1:24 PM
-> To: Beniamin Bia
-> Cc: linux-iio@vger.kernel.org; Bia, Beniamin
-> Subject: Re: [PATCH 1/2] staging: iio: frequency: ad9833: Get frequency value statically
-> 
-> [External]
+My aim in this patch was only solve style problems, but I
+can put that missing '\n' too. Do you think it could be done
+in the same commit or it's a better idea do it in another
+commit and send both as a patchset?
 > 
 > 
-> On Fri, 1 Feb 2019 11:36:37 +0200
-> Beniamin Bia <biabeniamin@gmail.com> wrote:
-> 
-> > The value of frequency is taken from ad9834.c instead of platform data  
-> 
-> Why?  I would rather see this move over to DT than take aways the flexibility
-> that was previously there.
-> 
-> Jonathan
-> 
-> >
-> > Signed-off-by: Beniamin Bia <beniamin.bia@analog.com>
-> > ---
-> >  drivers/staging/iio/frequency/ad9834.c | 17 ++++++++++++-----
-> >  1 file changed, 12 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
-> > index 995acdd7c942..d92d4bf71261 100644
-> > --- a/drivers/staging/iio/frequency/ad9834.c
-> > +++ b/drivers/staging/iio/frequency/ad9834.c
-> > @@ -99,6 +99,16 @@ enum ad9834_supported_device_ids {
-> >       ID_AD9838,
-> >  };
-> >
-> > +static struct ad9834_platform_data default_config = {
-> > +     .mclk = 25000000,
-> > +     .freq0 = 1000000,
-> > +     .freq1 = 5000000,
-> > +     .phase0 = 512,
-> > +     .phase1 = 1024,
-> > +     .en_div2 = false,
-> > +     .en_signbit_msb_out = false,
-> > +};
-> > +
-> >  static unsigned int ad9834_calc_freqreg(unsigned long mclk, unsigned long fout)
-> >  {
-> >       unsigned long long freqreg = (u64)fout * (u64)BIT(AD9834_FREQ_BITS);
-> > @@ -391,16 +401,13 @@ static const struct iio_info ad9833_info = {
-> >
-> >  static int ad9834_probe(struct spi_device *spi)
-> >  {
-> > -     struct ad9834_platform_data *pdata = dev_get_platdata(&spi->dev);
-> > +     struct ad9834_platform_data *pdata;
-> >       struct ad9834_state *st;
-> >       struct iio_dev *indio_dev;
-> >       struct regulator *reg;
-> >       int ret;
-> >
-> > -     if (!pdata) {
-> > -             dev_dbg(&spi->dev, "no platform data?\n");
-> > -             return -ENODEV;
-> > -     }
-> > +     pdata = &default_config;
-> >
-> >       reg = devm_regulator_get(&spi->dev, "avdd");
-> >       if (IS_ERR(reg))  
-> 
-> 
-
-
